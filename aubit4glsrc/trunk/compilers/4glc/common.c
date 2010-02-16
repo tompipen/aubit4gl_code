@@ -479,7 +479,9 @@ struct variable *find_variable_vu_in_p2(char *errbuff,struct variable *v, char *
       /* If we get to here we've found our name! */
       /* Now we need to know what to do next.... */
 
+#ifdef DEBUG
       A4GL_debug ("v->var_data.variable_type=%d\n", v->var_data.variable_type);
+#endif
       if (v->var_data.variable_type > 10 || v->var_data.variable_type < 0)
 	{
 	  A4GL_assertion (1, "Internal error");

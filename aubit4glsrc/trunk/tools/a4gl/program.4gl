@@ -1175,24 +1175,34 @@ foreach c_get_modules into lv_type,lv_name,lv_flags
 	if lv_type="G" then # Globals
       if fgl_getenv("VMAKE")!= " " then
 		   call channel::write("make",lv_buildstr clipped||lv_name clipped||"$(A4GL_OBJ_EXT): "||lv_fullname clipped||".4gl $(DEFAULT_GLOBALS)")
+		   call channel::write("make","	4glc -K $(CFLAGS) -o $@ $<")
       else
 		   call channel::write("make",lv_buildstr clipped||lv_name clipped||"$(A4GL_OBJ_EXT): "||lv_fullname clipped||".4gl")
+		   call channel::write("make","	4glpc -K $(CFLAGS) -o $@ $<")
       end if
-		call channel::write("make","	4glpc -K $(CFLAGS) -o $@ $<")
+
 		call channel::write("make",lv_buildstr clipped||lv_name clipped||".mif: "||lv_fullname clipped||".4gl")
 		call channel::write("make","	A4GL_PACKER_EXT=.mif A4GL_PACKER=PACKED 4glpc -t WRITE -o $@ $<")
 	end if
 
 	if lv_type="M"  then # Normal modules
 		call channel::write("make",lv_buildstr clipped||lv_name clipped||"$(A4GL_OBJ_EXT): "||lv_fullname clipped||".4gl  $(GLOBALS_DEFS)")
+if fgl_getenv("VMAKE")!= " " then
+		call channel::write("make","	4glc -K $(CFLAGS) -o $@ $<")
+else
 		call channel::write("make","	4glpc -K $(CFLAGS) -o $@ $<")
+end if
 		call channel::write("make",lv_buildstr clipped||lv_name clipped||".mif: "||lv_fullname clipped||".4gl  $(GLOBALS_DEFS)")
 		call channel::write("make","	A4GL_PACKER_EXT=.mif A4GL_PACKER=PACKED 4glpc -t WRITE -o $@ $<")
 	end if
 
 	if lv_type="C" then # C code
 		call channel::write("make",lv_buildstr clipped||lv_name clipped||"$(A4GL_OBJ_EXT): "||lv_fullname clipped||".c")
+if fgl_getenv("VMAKE")!= " " then
+		call channel::write("make","	4glc $(CFLAGS) -o $@ $^")
+else
 		call channel::write("make","	4glpc $(CFLAGS) -o $@ $^")
+end if
 	end if
 
 	if lv_type="f" then # C Form code
@@ -1203,7 +1213,11 @@ foreach c_get_modules into lv_type,lv_name,lv_flags
 
 	if lv_type="E" then # ESQL/C code
 		call channel::write("make",lv_buildstr clipped||lv_name clipped||"$(A4GL_OBJ_EXT): "||lv_fullname clipped||"$(A4GL_EC_EXT)")
+if fgl_getenv("VMAKE")!= " " then
+		call channel::write("make","	4glc $(CFLAGS) -o $@ $^")
+else
 		call channel::write("make","	4glpc $(CFLAGS) -o $@ $^")
+end if
 	end if
 
 	if lv_type="F" then # Form
@@ -1255,7 +1269,12 @@ end if
 call channel::write("make"," ")
 
 call channel::write("make",lv_buildstr clipped||"$(A4GL_EXE_PREFIX)"||lv_prog clipped||"$(A4GL_EXE_EXT): $(FGLOBJS) $(OTHOBJS) $(OBJS_CFORMS) ")
+
+if fgl_getenv("VMAKE")!= " " then
+call channel::write("make","	4glc $(LFLAGS) -o $@ $(FGLOBJS) $(OTHOBJS) $(OBJS_CFORMS) $(LIBS)")
+else
 call channel::write("make","	4glpc $(LFLAGS) -o $@ $(FGLOBJS) $(OTHOBJS) $(OBJS_CFORMS) $(LIBS)")
+end if
 
 call channel::write("make"," ")
 call channel::write("make","clean:")
@@ -1287,9 +1306,17 @@ if fgl_getenv("VMAKE") !=" " then
 
 
 		call channel::write("make", lv_buildstr clipped||"g_"||lv_prog clipped||"txv$(A4GL_OBJ_EXT): "|| "$(LFILE_DIR)/g_"||lv_prog clipped||"txv.4gl")
+if fgl_getenv("VMAKE")!= " " then
+		call channel::write("make","	4glc -K $(CFLAGS) -o $@ $<")
+else
 		call channel::write("make","	4glpc -K $(CFLAGS) -o $@ $<")
+end if
 		call channel::write("make", lv_buildstr clipped||"t_"||lv_prog clipped||"$(A4GL_OBJ_EXT): "|| "$(LFILE_DIR)/t_"||lv_prog clipped||".4gl")
+if fgl_getenv("VMAKE")!= " " then
+		call channel::write("make","	unset DEFAULT_GLOBALS; DBPATH=$(DBPATH):$(V4GL):$(LFILE_DIR) 4glc -K $(CFLAGS) -o $@ $<")
+else
 		call channel::write("make","	unset DEFAULT_GLOBALS; DBPATH=$(DBPATH):$(V4GL):$(LFILE_DIR) 4glpc -K $(CFLAGS) -o $@ $<")
+end if
 
 		call channel::write("make","$(G_TXX):  $(ALL4GLSRC)")
   		call channel::write("make","	mktxx_grep $(ALL4GLSRC) > $(G_TXX)")

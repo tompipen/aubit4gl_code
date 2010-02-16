@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper.c,v 1.87 2010-01-21 18:19:47 mikeaubury Exp $
+# $Id: helper.c,v 1.88 2010-02-16 13:16:31 mikeaubury Exp $
 #
 */
 
@@ -686,7 +686,9 @@ int_get_info_window (char *ptr, char *info)
       A4GL_exitwith ("Invalid Window info request");
       return 0;
     }
+#ifdef DEBUG
   A4GL_debug ("params=%d", params);
+#endif
   return params;
 
 }
@@ -1039,7 +1041,9 @@ A4GL_get_last_field_name (char *s)
 void
 A4GL_add_compiled_form (char *s, char *formtype, char *packer, char *frm)
 {
+#ifdef DEBUG
   A4GL_debug ("Adding compiled form name='%s' ptr=%p\n", s, frm);
+#endif
   if (!(A4GL_has_pointer (s, COMPILED_FORM)))
     {
       A4GL_add_pointer (s, COMPILED_FORM, frm);
@@ -1072,10 +1076,14 @@ A4GL_read_form (char *s, char *p)
     {
       char *formtype;
       char *packer;
+#ifdef DEBUG
       A4GL_debug ("COMPILED_FORM!");
+#endif
       strcpy (old_packer, acl_getenv ("A4GL_PACKER"));
       strcpy (old_formtype, acl_getenv ("A4GL_FORMTYPE"));
+#ifdef DEBUG
       A4GL_debug ("Saved old packer=%s formtype=%s", old_packer, old_formtype);
+#endif
       A4GLFORM_clrlibptr ();
       A4GLPACKER_clrlibptr ();
       formtype = A4GL_find_pointer_val (s, COMPILED_FORM_FORMTYPE);
@@ -1142,7 +1150,9 @@ A4GL_read_form (char *s, char *p)
 
   if (A4GL_has_pointer (s, COMPILED_FORM))
     {
+#ifdef DEBUG
       A4GL_debug ("Restoring old packer & formtype");
+#endif
       A4GL_setenv ("A4GL_PACKER", old_packer, 1);
       A4GL_setenv ("A4GL_FORMTYPE", old_formtype, 1);
       A4GLFORM_clrlibptr ();
@@ -1341,7 +1351,9 @@ a4gl_toupper (int n)
   int nnew = n;
   if (n >= 0 && n <= 255)
     nnew = toupper (n);
+#ifdef DEBUG
   A4GL_debug ("toupper : %d %d (%c %c)", n, nnew, n, nnew);
+#endif
   return nnew;
 }
 

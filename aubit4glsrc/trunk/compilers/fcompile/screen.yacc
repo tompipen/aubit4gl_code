@@ -761,7 +761,9 @@ field_type op_att
 	A4GL_make_downshift(fld->colname);
 	fld->colours.colours_len=0;
 	fld->colours.colours_val=0;
+#ifdef DEBUG
 	A4GL_debug("add color %d\n",FA_C_WHITE);
+#endif
 }
 op_field_desc
 {
@@ -935,7 +937,9 @@ op_field_desc
 	{
 	        extern FILE *yyin;
 
+#ifdef DEBUG
 			A4GL_debug("Currpos = %ld\n",ftell(yyin));
+#endif
 	        yyerror("A button must have a default value for its caption");
 	        YYERROR;
 	}
@@ -1305,10 +1309,26 @@ A4GL_add_bool_attr(fld,FA_B_AUTONEXT); }
 | COMMENTS EQUAL CHAR_VALUE { A4GL_add_str_attr(A4GL_get_fld(),FA_S_COMMENTS,$<str>3); }
 | DEFAULT EQUAL def_val { A4GL_add_str_attr(A4GL_get_fld(),FA_S_DEFAULT,$<str>3); }
 | OPTIONS EQUAL def_val { A4GL_add_str_attr(A4GL_get_fld(),FA_S_OPTIONS,$<str>3); }
-| DISPLAY LIKE named_or_kw_any {	A4GL_debug("WARNING : DISPLAY LIKE not really implemented");}
-| DISPLAY LIKE named_or_kw_any DOT named_or_kw_any {	A4GL_debug("WARNING : DISPLAY LIKE not really implemented");}
-| VALIDATE LIKE named_or_kw_any {	A4GL_debug("WARNING : VALIDATE LIKE not really implemented");}
-| VALIDATE LIKE named_or_kw_any DOT named_or_kw_any {	A4GL_debug("WARNING : VALIDATE LIKE not really implemented");}
+| DISPLAY LIKE named_or_kw_any {	
+#ifdef DEBUG
+A4GL_debug("WARNING : DISPLAY LIKE not really implemented");
+#endif
+}
+| DISPLAY LIKE named_or_kw_any DOT named_or_kw_any {	
+#ifdef DEBUG
+A4GL_debug("WARNING : DISPLAY LIKE not really implemented");
+#endif
+}
+| VALIDATE LIKE named_or_kw_any {	
+#ifdef DEBUG
+A4GL_debug("WARNING : VALIDATE LIKE not really implemented");
+#endif
+}
+| VALIDATE LIKE named_or_kw_any DOT named_or_kw_any {	
+#ifdef DEBUG
+A4GL_debug("WARNING : VALIDATE LIKE not really implemented");
+#endif
+}
 | DOWNSHIFT { A4GL_add_bool_attr(A4GL_get_fld(),FA_B_DOWNSHIFT); }
 | UPSHIFT { A4GL_add_bool_attr(A4GL_get_fld(),FA_B_UPSHIFT); }
 | FORMAT EQUAL CHAR_VALUE { A4GL_add_str_attr(A4GL_get_fld(),FA_S_FORMAT,$<str>3); }
@@ -1317,8 +1337,16 @@ A4GL_add_bool_attr(fld,FA_B_AUTONEXT); }
 | CONFIG EQUAL CHAR_VALUE { A4GL_add_str_attr(A4GL_get_fld(),FA_S_CONFIG,$<str>3); }
 | KW_ACTION EQUAL named_or_kw_any { A4GL_add_str_attr(A4GL_get_fld(),FA_S_ACTION,$<str>3); }
 | INVISIBLE { A4GL_add_bool_attr(A4GL_get_fld(),FA_B_INVISIBLE); }
-| DYNAMIC KW_SIZE EQUAL NUMBER_VALUE { A4GL_get_fld()->dynamic=atoi($<str>4); A4GL_debug("fld->dynamic=%d",A4GL_get_fld()->dynamic); }
-| DYNAMIC  { A4GL_get_fld()->dynamic=-1; A4GL_debug("dynamic=-1"); }
+| DYNAMIC KW_SIZE EQUAL NUMBER_VALUE { A4GL_get_fld()->dynamic=atoi($<str>4); 
+#ifdef DEBUG
+A4GL_debug("fld->dynamic=%d",A4GL_get_fld()->dynamic); 
+#endif
+}
+| DYNAMIC  { A4GL_get_fld()->dynamic=-1; 
+#ifdef DEBUG
+A4GL_debug("dynamic=-1"); 
+#endif
+}
 | SQLONLY  { printf("Warning %s is not implemented for 4GL\n",$<str>1); }
 
 | NOENTRY { A4GL_add_bool_attr(A4GL_get_fld(),FA_B_NOENTRY); }
@@ -1716,9 +1744,13 @@ opt_int_ext : {strcpy($<str>$,"");}
 
 
 opt_unit_size: {
+#ifdef DEBUG
 A4GL_debug("Nothing in fraction - assume 2");
+#endif
 strcpy($<str>$,"2");} |  OPEN_BRACKET NUMBER_VALUE CLOSE_BRACKET {
+#ifdef DEBUG
 A4GL_debug("    %s",$<str>2);
+#endif
 strcpy($<str>$,$<str>2);
 };
 
@@ -1741,7 +1773,9 @@ int_start_unit : YEAR {strcpy($<str>$,"1");}
 | SECOND{strcpy($<str>$,"6");}
 | FRACTION opt_frac
   {
+#ifdef DEBUG
   A4GL_debug("opt_frac returns %s",$<str>2);
+#endif
   sprintf($<str>$,"%d",atoi($<str>2)+6); }
   ;
 
@@ -1766,15 +1800,21 @@ YEAR {strcpy($<str>$,"1");}
 | SECOND{strcpy($<str>$,"6");}
 | FRACTION opt_frac
 {
+#ifdef DEBUG
 A4GL_debug("opt_frac returns %s",$<str>2);
+#endif
 sprintf($<str>$,"%d",atoi($<str>2)+6); }
 ;
 
 opt_frac: {
+#ifdef DEBUG
 A4GL_debug("Nothing in fraction - assume 2");
+#endif
 strcpy($<str>$,"2");} |  OPEN_BRACKET dtfrac CLOSE_BRACKET {
+#ifdef DEBUG
 A4GL_debug("Read fraction .. ");
 A4GL_debug("    %s",$<str>2);
+#endif
 strcpy($<str>$,$<str>2);
 };
 

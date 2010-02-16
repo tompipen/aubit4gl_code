@@ -221,10 +221,14 @@ static void base_channel_destructor(int *objectID) {
 		data=ptr->objData;
 		if (data) {
 			if (data->handle) {
+#ifdef DEBUG
 				A4GL_debug("Was open - closing");
+#endif
 				fclose(data->handle);
 			} else {
+#ifdef DEBUG
 				A4GL_debug("Wasn't open - dont need to close");
+#endif
 			}
 		}
 	}

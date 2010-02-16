@@ -25,7 +25,9 @@ check_for_msgno (char *file, int msgno)
   lv_msgline = A4GL_pop_long ();
   if (lv_msgline)
     {
+#ifdef DEBUG
       A4GL_debug ("FOUND IN %s", file);
+#endif
       A4GL_trim_nl (lv_char);
       return lv_char;
     }
@@ -71,7 +73,9 @@ internal_get_errmsg_from_helpfile (char *path, int n)
 	      lv_char = check_for_msgno (buff2, n);
 	      if (lv_char)
 		{
+#ifdef DEBUG
 		  A4GL_debug ("FOUND IN %s file %s", buff2);
+#endif
 		  closedir (d);
 		  d = 0;
 		  return lv_char;
@@ -107,7 +111,9 @@ A4GL_get_errmsg_from_helpfiles (int n)
   strcat (buff, A4GLSQL_dbms_dialect ());
 
   SPRINTF2 (buff2, "%s%s", buff, acl_getenv ("A4GL_HLP_EXT"));
+#ifdef DEBUG
   A4GL_debug ("Looking in file '%s'\n", buff2);
+#endif
   if (A4GL_file_exists (buff2))
     {
       ptr = check_for_msgno (buff2, n);
@@ -116,10 +122,14 @@ A4GL_get_errmsg_from_helpfiles (int n)
     }
   else
     {
+#ifdef DEBUG
       A4GL_debug ("Skipping - no file");
+#endif
     }
   SPRINTF1 (buff2, "%s.iem", buff);
+#ifdef DEBUG
   A4GL_debug ("Looking in file '%s'\n", buff2);
+#endif
   if (A4GL_file_exists (buff2))
     {
       ptr = check_for_msgno (buff2, n);
@@ -128,10 +138,14 @@ A4GL_get_errmsg_from_helpfiles (int n)
     }
   else
     {
+#ifdef DEBUG
       A4GL_debug ("Skipping - no file");
+#endif
     }
   SPRINTF1 (buff2, "%s.hlp", buff);
+#ifdef DEBUG
   A4GL_debug ("Looking in file '%s'\n", buff2);
+#endif
   if (A4GL_file_exists (buff2))
     {
       ptr = check_for_msgno (buff2, n);
@@ -140,7 +154,9 @@ A4GL_get_errmsg_from_helpfiles (int n)
     }
   else
     {
+#ifdef DEBUG
       A4GL_debug ("Skipping - no file");
+#endif
     }
 
 
@@ -154,7 +170,9 @@ A4GL_get_errmsg_from_helpfiles (int n)
 #endif
 
 
+#ifdef DEBUG
   A4GL_debug ("Looking in directory %s\n", buff);
+#endif
   ptr = internal_get_errmsg_from_helpfile (buff, n);
   if (ptr)
     return ptr;
@@ -166,7 +184,9 @@ A4GL_get_errmsg_from_helpfiles (int n)
       if (acl_getenv_not_set_as_0 ("INFORMIXDIR") != 0)
 	{
 	  SPRINTF1 (buff, "%s/msg/en_us/0333", acl_getenv ("INFORMIXDIR"));
+#ifdef DEBUG
 	  A4GL_debug ("Looking in directory %s\n", buff);
+#endif
 	  ptr = internal_get_errmsg_from_helpfile (buff, n);
 	  if (ptr)
 	    {

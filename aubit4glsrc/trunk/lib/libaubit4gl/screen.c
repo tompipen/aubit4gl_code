@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: screen.c,v 1.23 2008-10-02 17:40:50 mikeaubury Exp $
+# $Id: screen.c,v 1.24 2010-02-16 13:16:34 mikeaubury Exp $
 #*/
 
 /**
@@ -80,11 +80,15 @@ A4GL_find_attribute (struct s_form_dets *f, int field_no)
 
       if (f->fileform->attributes.attributes_val[a].field_no == field_no)
 	{
+#ifdef DEBUG
 	  A4GL_debug ("FIeld no %d is reference by attribute %d\n", field_no, a);
+#endif
 	  return (char *) &f->fileform->attributes.attributes_val[a];
 	}
     }
+#ifdef DEBUG
   A4GL_debug ("Couldnt find entry for field no %d\n", field_no);
+#endif
   return 0;
 
 }
@@ -106,8 +110,12 @@ A4GL_chk_iskey (char *base, char *iot, char *keys)
 //
   if (processed_onkey == 0)
     {
+#ifdef DEBUG
       A4GL_debug ("In A4GL_processed_onkey_v2");
+#endif
+#ifdef DEBUG
       A4GL_debug ("Already handled...");
+#endif
       return 0;
     }
 
@@ -116,7 +124,9 @@ A4GL_chk_iskey (char *base, char *iot, char *keys)
 
   strcpy (s, keys);
   strcat (s, "|");
+#ifdef DEBUG
   A4GL_debug ("Chk keys %s\n", s);
+#endif
 
 
   if (strcmp (keys, "->ANY") == 0)
@@ -125,7 +135,9 @@ A4GL_chk_iskey (char *base, char *iot, char *keys)
   k = strtok (s, "|");
   while (1)
     {
+#ifdef DEBUG
       A4GL_debug ("Chk keys (%s - %d %d )\n", k, A4GL_key_val (k), A4GL_get_lastkey ());
+#endif
       if (A4GL_key_val (k) == A4GL_get_lastkey ())
 	{
 	  return 1;

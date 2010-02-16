@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dates.c,v 1.26 2009-07-13 14:15:18 mikeaubury Exp $
+# $Id: dates.c,v 1.27 2010-02-16 13:16:27 mikeaubury Exp $
 #
 */
 
@@ -193,13 +193,17 @@ gen_dateno2 (int day, int month, int year)
     }
   if (day < 1)
     {
+#ifdef DEBUG
       A4GL_debug ("Invalid date (<1)");
+#endif
 
       return DATE_INVALID;
     }
   if (day > days_in_month[leap_year (year)][month])
     {
+#ifdef DEBUG
       A4GL_debug ("Invalid date (>month end)");
+#endif
       return DATE_INVALID;
     }
 

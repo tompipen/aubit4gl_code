@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formwrite2.c,v 1.52 2009-12-11 13:29:37 mikeaubury Exp $
+# $Id: formwrite2.c,v 1.53 2010-02-16 13:16:42 mikeaubury Exp $
 #*/
 
 /**
@@ -123,7 +123,9 @@ new_attribute (void)
   the_form_ptr=A4GL_get_the_form_ptr();
 
 
+#ifdef DEBUG
   A4GL_debug ("new_attribute\n");
+#endif
 
 
   the_form_ptr->attributes.attributes_len++;
@@ -160,7 +162,9 @@ A4GLFORM_A4GL_init_fld (void)
   int cnt;
   struct struct_form *the_form_ptr;
   the_form_ptr=A4GL_get_the_form_ptr();
+#ifdef DEBUG
   A4GL_debug ("init_fld\n");
+#endif
   new_attribute ();
 
   cnt = the_form_ptr->attributes.attributes_len - 1;
@@ -190,7 +194,9 @@ A4GLFORM_A4GL_init_fld (void)
   xxfield.lookup.lookups.lookups_len = 0;
   xxfield.lookup.lookups.lookups_val = 0;
   A4GL_set_fld (&xxfield);
+#ifdef DEBUG
   A4GL_debug ("done init_fld\n");
+#endif
 }
 
 /**
@@ -206,7 +212,9 @@ chk_alias (char *s)
   struct struct_form *the_form_ptr;
   if (s==0) return s;
   the_form_ptr=A4GL_get_the_form_ptr();
+#ifdef DEBUG
   A4GL_debug ("chk_alias\n");
+#endif
 
   for (a = 0; a < the_form_ptr->tables.tables_len; a++)
     {
@@ -229,15 +237,21 @@ A4GLFORM_A4GL_find_field (char *s)
   struct struct_form *the_form_ptr;
   the_form_ptr=A4GL_get_the_form_ptr();
   int a;
+#ifdef DEBUG
   A4GL_debug ("Looking for tag '%s' in %d fields\n", s,
 	 the_form_ptr->fields.fields_len);
+#endif
 
   for (a = 0; a < the_form_ptr->fields.fields_len; a++)
     {
+#ifdef DEBUG
       A4GL_debug ("%s %s", the_form_ptr->fields.fields_val[a].tag, s);
+#endif
       if (strcasecmp (the_form_ptr->fields.fields_val[a].tag, s) == 0)
 	{
+#ifdef DEBUG
 	  A4GL_debug ("Found it @ %d\n", a);
+#endif
 	  return a;
 	}
     }
@@ -271,7 +285,9 @@ char buff[256];
   sprintf (buff, s, a, b);
   A4GL_set_fcompile_err(buff);
 
+#ifdef DEBUG
   A4GL_debug ("\n");
+#endif
   A4GL_exitwith("Form compilation error");
 }
 
@@ -285,7 +301,9 @@ new_records (void)
   struct struct_form *the_form_ptr;
   the_form_ptr=A4GL_get_the_form_ptr();
   int cnt;
+#ifdef DEBUG
   A4GL_debug ("new_records\n");
+#endif
   the_form_ptr->records.records_len++;
   cnt = the_form_ptr->records.records_len;
 
@@ -307,7 +325,9 @@ A4GLFORM_A4GL_add_srec (void)
 {
   struct struct_form *the_form_ptr;
   the_form_ptr=A4GL_get_the_form_ptr();
+#ifdef DEBUG
   A4GL_debug ("add_srec\n");
+#endif
   new_records ();
   curr_rec = &the_form_ptr->records.records_val[the_form_ptr->records.records_len - 1];
   curr_rec->dim = 0;
@@ -324,7 +344,9 @@ A4GLFORM_A4GL_add_srec (void)
 void
 A4GLFORM_A4GL_set_dim_srec (char *s, int a)
 {
+#ifdef DEBUG
   A4GL_debug ("set_dim_srec\n");
+#endif
   curr_rec->dim = a;
   curr_rec->name = strdup (s);
 }
@@ -343,7 +365,9 @@ add_srec_direct (char *tab, int a)
   if (tab==0) {
 		return ;
 	}
+#ifdef DEBUG
   A4GL_debug ("add_srec_direct\n");
+#endif
   for (z = 0; z < the_form_ptr->records.records_len; z++)
     {
       if (strcasecmp (the_form_ptr->records.records_val[z].name, tab) == 0)
@@ -396,7 +420,9 @@ real_set_field (char *s, struct struct_scr_field *f)
   //int mno;
   char *ptr;
 
+#ifdef DEBUG
   A4GL_debug ("set_field\n");
+#endif
 
   if (f->tabname==0) return;
 
@@ -434,7 +460,9 @@ real_set_field (char *s, struct struct_scr_field *f)
   f->field_no = A4GLFORM_A4GL_find_field (s);
 	
 
+#ifdef DEBUG
   A4GL_debug ("****************** set field number to %d\n", f->field_no);
+#endif
 
   if (f->field_no == -1)
     {
@@ -483,7 +511,9 @@ new_metric (int x, int y, int wid, int scr, int delim, char *label)
 {
   struct struct_form *the_form_ptr;
   the_form_ptr=A4GL_get_the_form_ptr();
+#ifdef DEBUG
   A4GL_debug ("new_metric\n");
+#endif
   the_form_ptr->metrics.metrics_len++;
   the_form_ptr->metrics.metrics_val = realloc (the_form_ptr->metrics.metrics_val,
 					  the_form_ptr->metrics.metrics_len *
@@ -518,7 +548,9 @@ add_new_field (void)
 {
   struct struct_form *the_form_ptr;
   the_form_ptr=A4GL_get_the_form_ptr();
+#ifdef DEBUG
   A4GL_debug ("add_new_field\n");
+#endif
   the_form_ptr->fields.fields_len++;
   the_form_ptr->fields.fields_val = realloc (the_form_ptr->fields.fields_val,
 					the_form_ptr->fields.fields_len *
@@ -543,7 +575,9 @@ new_form_metric (int cnt)
 {
   struct struct_form *the_form_ptr;
   the_form_ptr=A4GL_get_the_form_ptr();
+#ifdef DEBUG
   A4GL_debug ("new form metric\n");
+#endif
   if (cnt == -1)
     cnt = the_form_ptr->fields.fields_len - 1;
 
@@ -597,34 +631,46 @@ A4GLFORM_A4GL_add_field (char *s, int x, int y, int wid, int scr, int delim, cha
 	      the_form_ptr->metrics.metrics_val[a].label = ptr;
 	      the_form_ptr->metrics.metrics_val[a].w += wid;
 
+#ifdef DEBUG
 	      A4GL_debug ("Straight Continuation: '%s' and '%s' = '%s'\n",
 		     the_form_ptr->metrics.metrics_val[a].label, label, ptr);
+#endif
 	      return 0;
 	    }
 
 	  if (the_form_ptr->metrics.metrics_val[a].x +
 	      the_form_ptr->metrics.metrics_val[a].w == x - 2)
 	    {
+#ifdef DEBUG
 	      A4GL_debug ("Alloc %d bytes",
 		     the_form_ptr->metrics.metrics_val[a].w + wid + 1);
+#endif
 	      ptr = acl_malloc2 (the_form_ptr->metrics.metrics_val[a].w + wid + 2);
 	      sprintf (ptr, "%s %s", the_form_ptr->metrics.metrics_val[a].label,
 		       label);
+#ifdef DEBUG
 	      A4GL_debug ("Got : %s\n", ptr);
+#endif
 
 	      free (the_form_ptr->metrics.metrics_val[a].label);
+#ifdef DEBUG
 	      A4GL_debug ("Freed");
+#endif
 	      the_form_ptr->metrics.metrics_val[a].label = ptr;
 	      the_form_ptr->metrics.metrics_val[a].w += wid + 1;
 
+#ifdef DEBUG
 	      A4GL_debug ("Single Spaced Continuation: '%s' and '%s' = '%s'\n",
 		     the_form_ptr->metrics.metrics_val[a].label, label, ptr);
+#endif
 	      return 0;
 	    }
 	}
     }
 
+#ifdef DEBUG
   A4GL_debug ("add_field %s %d %d %d %d %d\n", s, x, y, wid, scr, label);
+#endif
   f = new_metric (x, y, wid, scr, delim, label);
 
   for (a = 0; a < the_form_ptr->fields.fields_len; a++)
@@ -635,7 +681,9 @@ A4GLFORM_A4GL_add_field (char *s, int x, int y, int wid, int scr, int delim, cha
 	  xx = new_form_metric (a);
 
 	  the_form_ptr->fields.fields_val[a].metric.metric_val[xx] = f;
+#ifdef DEBUG
 	  A4GL_debug ("b\n");
+#endif
 	  return 1;
 	}
     }
@@ -663,7 +711,9 @@ A4GLFORM_A4GL_add_table (char *s, char *a)
   char z[3];
   z[0] = 0;
 
+#ifdef DEBUG
   A4GL_debug ("add_table %s %s\n", s, a);
+#endif
   if (s == 0 || strlen (s) == 0)
     {
       s = a;
@@ -698,7 +748,9 @@ find_attribs (int **ptr, char *tab, char *colname)
   int a;
   int cnt = 0;
 
+#ifdef DEBUG
   A4GL_debug ("find_attribs\n");
+#endif
   *ptr = (int *) &attrib_list;
 
   for (a = 0; a < the_form_ptr->attributes.attributes_len; a++)
@@ -741,7 +793,9 @@ proc_thru (void)
   int b;
   int z;
 
+#ifdef DEBUG
   A4GL_debug ("proc_thru\n");
+#endif
   a = curr_rec->attribs.attribs_val[curr_rec->attribs.attribs_len - 2];
   b = curr_rec->attribs.attribs_val[curr_rec->attribs.attribs_len - 1];
   curr_rec->attribs.attribs_len -= 2;
@@ -768,7 +822,9 @@ A4GLFORM_A4GL_add_srec_attribute (char *tab, char *col, char *thru)
   int a;
   int z;
 
+#ifdef DEBUG
   A4GL_debug ("add_srec_attribute %s %s %s\n", tab, col, thru);
+#endif
   if (strlen (thru) > 0)
     {
       proc_thru ();
@@ -783,14 +839,18 @@ A4GLFORM_A4GL_add_srec_attribute (char *tab, char *col, char *thru)
       A4GL_error_with ("No fields matching %s.%s were found\n", tab, col);
     }
 
+#ifdef DEBUG
   A4GL_debug ("Find_attribs returns %d\n", a);
+#endif
 
   for (z = 0; z < a; z++)
     {
       //A4GL_debug ("Adding attribute %p",
 	     //curr_rec->attribs.attribs_val[curr_rec->attribs.attribs_len]);
 
+#ifdef DEBUG
       A4GL_debug ("ptr[z]=%d\n", ptr[z]);
+#endif
 
       /*
          curr_rec->attribs.attribs_val=realloc(
@@ -816,8 +876,10 @@ A4GLFORM_A4GL_add_srec_attribute (char *tab, char *col, char *thru)
       if (the_form_ptr->fields.  fields_val[the_form_ptr->attributes.attributes_val[ptr[z]].field_no].
 	  metric.metric_len != curr_rec->dim)
 	{
+#ifdef DEBUG
 	  A4GL_debug ("cnt=%d dim=%d",
 		 the_form_ptr->fields.fields_val[the_form_ptr->attributes.  attributes_val[ptr[z]].field_no].metric.metric_len, curr_rec->dim);
+#endif
 
 	//printf("ABC : %p %s %s\n", &the_form_ptr->attributes.attributes_val[ptr[z]], the_form_ptr->attributes.attributes_val[ptr[z]].tabname, the_form_ptr->attributes.attributes_val[ptr[z]].colname);
     	if (!A4GLFORM_A4GL_has_bool_attribute( &the_form_ptr->attributes.attributes_val[ptr[z]] , FA_B_WORDWRAP)){
@@ -851,16 +913,22 @@ find_field_attr(int fno)
   struct struct_form *the_form_ptr;
   the_form_ptr=A4GL_get_the_form_ptr();
   int a;
+#ifdef DEBUG
   A4GL_debug("find_field_attr\n");
+#endif
   for (a=0;a<the_form_ptr->attributes.attributes_len;a++)
   {
     if (the_form_ptr->attributes.attributes_val[a].field_no==fno)
     {
       return a;
+#ifdef DEBUG
       A4GL_debug("Field %d found at %d",fno,a);
+#endif
     }
   }
+#ifdef DEBUG
   A4GL_debug("Not found (%d)",fno);
+#endif
   return -1;
 }
 
@@ -882,17 +950,21 @@ chk_for_wordwrap(void)
   int x,x1;
   int y,y1;
   int fno;
+#ifdef DEBUG
   A4GL_debug("chk_for_wordwrap\n");
+#endif
   for (a = 0; a < the_form_ptr->fields.fields_len; a++) 
   {
     fno=a; 
     fno=find_field_attr(a);
     if (fno==-1) continue;
 
+#ifdef DEBUG
     A4GL_debug("%s=%s.%s",
     the_form_ptr->fields.fields_val[a].tag,
     the_form_ptr->attributes.attributes_val[fno].tabname,
     the_form_ptr->attributes.attributes_val[fno].colname);
+#endif
 
     if (!A4GLFORM_A4GL_has_bool_attribute( &the_form_ptr->attributes.attributes_val[fno] ,
         FA_B_WORDWRAP)) 
@@ -918,7 +990,9 @@ chk_for_wordwrap(void)
 
       if (w1!=w||x1!=x||y1-b!=y) 
       {
+#ifdef DEBUG
         A4GL_debug("w1=%d w=%d x1=%d x=%d y1+b=%d y=%d", w1,w,x1,x,y1+b,y);
+#endif
         A4GL_error_with(
 	  "Wordwrapped fields must be the same width, start at the same place and be on consecutive lines\n",0,0
 	);
@@ -987,12 +1061,16 @@ int a;
   chk_for_wordwrap();
   translate_form ();
 
+#ifdef DEBUG
   A4GL_debug ("Writing to %s\n", fname);
+#endif
   a = A4GL_write_data_to_file ("struct_form", ptr, fname);
 
   if (!a)
     {
+#ifdef DEBUG
       A4GL_debug ("*** Write FAILED ***\n");
+#endif
       A4GL_error_with ("Unable to write data\n", 0, 0);
     }
 
@@ -1004,7 +1082,9 @@ int a;
       int a;
       int len;
 	char *override;
+#ifdef DEBUG
       A4GL_debug ("Asc...\n");
+#endif
 #ifdef __WIN32__
       fxx = fopen ((char *)A4GL_get_last_outfile (), "rb");
 #else
@@ -1083,7 +1163,9 @@ A4GLFORM_A4GL_getdatatype (char *col, char *tab)
   char buff[256];
   int a;
   int c=0;
+#ifdef DEBUG
   A4GL_debug ("getdatatype\n");
+#endif
 
   for (a = 0; a < the_form_ptr->tables.tables_len; a++)
     {
@@ -1100,7 +1182,9 @@ A4GLFORM_A4GL_getdatatype (char *col, char *tab)
 
   tabs[c] = 0;
 
+#ifdef DEBUG
   A4GL_debug ("Calling A4GL_get_dtype with %s %s %s", the_form_ptr->dbname, tab, col);
+#endif
   /* int        A4GL_get_dtype                       (char *tabname, char *colname,char *dbname,char *tablist[]); */
   //a=get_dtype(tab,col,the_form_ptr->dbname,the_form_ptr->tables.tables_val);
 
@@ -1111,13 +1195,17 @@ A4GLFORM_A4GL_getdatatype (char *col, char *tab)
      warning: passing arg 4 of `get_dtype' from incompatible pointer type
      so we are passing a char ponter to function expecting char array !!
    */
+#ifdef DEBUG
   A4GL_debug ("get_dtype returns %d", a);
+#endif
   /* 6-2 ? CHECK */
   //if (a == 6) a = 2;
 
   if (a == -1)
     {
+#ifdef DEBUG
       A4GL_debug ("get_dtype failed\n");
+#endif
       sprintf (buff, "%s.%s not found in database\n", tab, col);
       //yyerror (buff);
       A4GL_error_with (buff, "", "");
@@ -1135,7 +1223,9 @@ A4GLFORM_A4GL_init_form (void)
 {
   struct struct_form *the_form_ptr;
   the_form_ptr=A4GL_get_the_form_ptr();
+#ifdef DEBUG
   A4GL_debug ("init_form\n");
+#endif
   the_form_ptr->dbname = strdup ("");
   the_form_ptr->delim = strdup ("[]|");
   the_form_ptr->maxcol = 0;
@@ -1194,7 +1284,9 @@ static void
 real_add_str_attr (struct struct_scr_field *f, int type, char *str)
 {
 char buff[1024];
+#ifdef DEBUG
   A4GL_debug ("add_str_attr %p %d - '%s'\n", f, type, str);
+#endif
 
 /*
 List of input functionality attributes: (not interesting for DD)
@@ -1309,7 +1401,9 @@ char buff[1024];
 
   };
 
+#ifdef DEBUG
   A4GL_debug ("add_bool_attr\n");
+#endif
 
   if (strcmp (acl_getenv ("DUMPCOMMENTS"), "YES") == 0)
    {
@@ -1330,9 +1424,11 @@ char buff[1024];
       if (f->bool_attribs.bool_attribs_len == 0)
 	f->bool_attribs.bool_attribs_val = 0;
 
+#ifdef DEBUG
       A4GL_debug ("n1 %d %p\n",
 	     f->bool_attribs.bool_attribs_len,
 	     f->bool_attribs.bool_attribs_val);
+#endif
 
       f->bool_attribs.bool_attribs_len++;
       f->bool_attribs.bool_attribs_val =

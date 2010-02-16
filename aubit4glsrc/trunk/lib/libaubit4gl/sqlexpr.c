@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlexpr.c,v 1.85 2010-01-06 17:48:59 mikeaubury Exp $
+# $Id: sqlexpr.c,v 1.86 2010-02-16 13:16:42 mikeaubury Exp $
 #
 */
 
@@ -822,7 +822,9 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
   A4GL_assertion (p == 0, "No item...");
   if (p)
     {
+#ifdef DEBUG
       A4GL_debug ("%d (%s)\n", p->data.type, get_sli_type (p->data.type));
+#endif
     }
 
   switch (p->data.type)
@@ -862,7 +864,9 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
       return acl_strdup_With_Context (p->data.s_select_list_item_data_u.expression);
 
     case E_SLI_COLUMN_NOT_TRANSFORMED:
+#ifdef DEBUG
       A4GL_debug ("Not transformed : %s", p->data.s_select_list_item_data_u.expression);
+#endif
       return acl_strdup_With_Context (p->data.s_select_list_item_data_u.expression);
 
     case E_SLI_OP: 
@@ -1372,7 +1376,9 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
 								   p->data.s_select_list_item_data_u.column.subscript.i0,
 								   p->data.s_select_list_item_data_u.column.subscript.i1,
 								   p->data.s_select_list_item_data_u.column.subscript.i2));
+#ifdef DEBUG
 	    A4GL_debug ("returning %s\n", rval);
+#endif
 
 	    //ADDMAP("UseColumn",rval);
 
@@ -1389,7 +1395,9 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
 	      acl_strdup_With_Context (A4GLSQLCV_check_colname_alias
 				       (p->data.s_select_list_item_data_u.column.tabname, orig,
 					p->data.s_select_list_item_data_u.column.colname));
+#ifdef DEBUG
 	    A4GL_debug ("returning %s\n", rval);
+#endif
 	    //ADDMAP("UseColumn",rval);
 	    return rval;
 	  }
@@ -1412,9 +1420,13 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
 		      {
 			t = select->table_elements.tables.tables_val[0].tabname;
 		      }
+#ifdef DEBUG
 		    A4GL_debug ("t=%s", t);
+#endif
 		    rval = acl_strdup_With_Context (A4GLSQLCV_check_colname (t, p->data.s_select_list_item_data_u.column.colname));
+#ifdef DEBUG
 		    A4GL_debug ("returning %s\n", rval);
+#endif
 		    //ADDMAP("UseColumn",rval);
 		    return rval;
 		  }
@@ -1425,7 +1437,9 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
 	rval =
 	  make_sql_string_and_free (acl_strdup_With_Context (p->data.s_select_list_item_data_u.column.colname),
 				    acl_strdup_With_Context (buff), NULL);
+#ifdef DEBUG
 	A4GL_debug ("returning %s\n", rval);
+#endif
 	//ADDMAP("UseColumn",rval);
 	return rval;
       }
@@ -1947,11 +1961,15 @@ preprocess_sql_statement (struct s_select *select)
 */
 
 // 
+#ifdef DEBUG
   A4GL_debug ("That appears to have %d elements", select->list_of_items.list.list_len);
+#endif
   for (a = 0; a < select->list_of_items.list.list_len; a++)
     {
       p = select->list_of_items.list.list_val[a];
+#ifdef DEBUG
       A4GL_debug ("%d %d - %s\n", a, p->data.type, get_sli_type (p->data.type));
+#endif
       if (p->data.type == E_SLI_COLUMN)
 	{
 	  int b;
@@ -1961,11 +1979,15 @@ preprocess_sql_statement (struct s_select *select)
 	      char *t = 0;
 	      int matches = 0;
 	      nelements = select->table_elements.tables.tables_len;
+#ifdef DEBUG
 	      A4GL_debug ("No tabname for column : %s %d\n",
 			  p->data.s_select_list_item_data_u.column.colname, select->table_elements.tables.tables_len);
+#endif
 	      for (b = nelements - 1; b >= 0; b--)
 		{
+#ifdef DEBUG
 		  A4GL_debug ("Looking in %s\n", select->table_elements.tables.tables_val[b].tabname);
+#endif
 		  if (A4GLSQLCV_check_requirement ("NEVER_CONVERT"))
 		    {
 		      // Do nothing...
@@ -1975,9 +1997,11 @@ preprocess_sql_statement (struct s_select *select)
 		      if (A4GL_has_column
 			  (select->table_elements.tables.tables_val[b].tabname, p->data.s_select_list_item_data_u.column.colname))
 			{
+#ifdef DEBUG
 			  A4GL_debug ("select->table_elements.tables.tables_val[b].tabname=%s has columns %s",
 				      select->table_elements.tables.tables_val[b].tabname,
 				      p->data.s_select_list_item_data_u.column.colname);
+#endif
 			  matches++;
 			  if (matches == 1)
 			    {
@@ -1989,7 +2013,9 @@ preprocess_sql_statement (struct s_select *select)
 
 				  t = select->table_elements.tables.tables_val[b].tabname;
 				}
+#ifdef DEBUG
 			      A4GL_debug ("table set to %s", t);
+#endif
 			    }
 			  else
 			    {
@@ -2011,20 +2037,26 @@ preprocess_sql_statement (struct s_select *select)
 
 	      if (matches == 1)
 		{
+#ifdef DEBUG
 		  A4GL_debug ("Setting to %s\n", t);
+#endif
 		  p->data.s_select_list_item_data_u.column.tabname = acl_strdup_With_Context (t);
 		  break;
 		}
 	      else
 		{
+#ifdef DEBUG
 		  A4GL_debug ("No table for column %s\n", p->data.s_select_list_item_data_u.column.colname);
+#endif
 		  p->data.s_select_list_item_data_u.column.tabname = 0;
 		}
 	    }
 
 	  if (p->data.s_select_list_item_data_u.column.tabname == 0 && 0)
 	    {
+#ifdef DEBUG
 	      A4GL_debug ("Unknown column : %s\n", p->data.s_select_list_item_data_u.column.colname);
+#endif
 
 	      if (select->table_elements.tables.tables_len == 1)
 		{
@@ -2037,15 +2069,19 @@ preprocess_sql_statement (struct s_select *select)
 		    }
 
 		  p->data.s_select_list_item_data_u.column.tabname = acl_strdup_With_Context (t);
+#ifdef DEBUG
 		  A4GL_debug ("   But as we only have one table - guessing its %s\n", t);
+#endif
 		}
 
 
 	    }
 	  else
 	    {
+#ifdef DEBUG
 	      A4GL_debug ("<%s>.<%s>", p->data.s_select_list_item_data_u.column.tabname,
 			  p->data.s_select_list_item_data_u.column.colname);
+#endif
 	    }
 	}
 
@@ -2053,15 +2089,21 @@ preprocess_sql_statement (struct s_select *select)
 
       if (p->data.type == E_SLI_COLUMN_NOT_TRANSFORMED)
 	{
+#ifdef DEBUG
 	  A4GL_debug ("    Untransformed : %s\n", p->data.s_select_list_item_data_u.expression);
+#endif
 	}
       if (p->data.type == E_SLI_OP)
 	{
+#ifdef DEBUG
 	  A4GL_debug ("    OP=%s\n", p->data.s_select_list_item_data_u.complex_expr.op);
+#endif
 	}
     }
 
+#ifdef DEBUG
   A4GL_debug ("Done1");
+#endif
 
   for (a = 0; a < select->list_of_items.list.list_len; a++)
     {
@@ -2151,7 +2193,9 @@ make_select_stmt_v2 (char *c_upd_or_del, struct s_select *select, char *into_por
   A4GLSQLPARSE_from_clause (select, select->first, buff_from, &select->table_elements);
 
 
+#ifdef DEBUG
   A4GL_debug ("Has %d tables :\n", select->table_elements.tables.tables_len);
+#endif
   for (a = 0; a < select->table_elements.tables.tables_len; a++)
     {
       char *tabname;
@@ -2160,9 +2204,13 @@ make_select_stmt_v2 (char *c_upd_or_del, struct s_select *select, char *into_por
       alias = select->table_elements.tables.tables_val[a].alias;
       if (alias == 0)
 	alias = "";
+#ifdef DEBUG
       A4GL_debug ("   %-20s %s\n", tabname, alias);
+#endif
     }
+#ifdef DEBUG
   A4GL_debug ("\n");
+#endif
 
   strcpy (buff, "");
   if (select->sf)
@@ -2181,7 +2229,9 @@ make_select_stmt_v2 (char *c_upd_or_del, struct s_select *select, char *into_por
     {
       strcpy (buff, "SELECT ");
     }
+#ifdef DEBUG
   A4GL_debug ("buff=%s", buff);
+#endif
 
 
   if (select->limit.start != -1)
@@ -2201,19 +2251,29 @@ make_select_stmt_v2 (char *c_upd_or_del, struct s_select *select, char *into_por
 
   if (select->modifier)
     {
+#ifdef DEBUG
       A4GL_debug ("buff=%s", buff);
+#endif
       if (strlen (select->modifier))
 	{
 	  strcat (buff, select->modifier);
+#ifdef DEBUG
 	  A4GL_debug ("buff=%s", buff);
+#endif
 	  strcat (buff, " ");
+#ifdef DEBUG
 	  A4GL_debug ("buff=%s", buff);
+#endif
 	}
+#ifdef DEBUG
       A4GL_debug ("buff=%s", buff);
+#endif
     }
 
 
+#ifdef DEBUG
   A4GL_debug ("buff=%s", buff);
+#endif
 
 
   for (a = 0; a < select->select_list->list.list_len; a++)
@@ -2223,7 +2283,9 @@ make_select_stmt_v2 (char *c_upd_or_del, struct s_select *select, char *into_por
       if (a)
 	strcat (buff, ",\n   ");
       strcat (buff, ptr);
+#ifdef DEBUG
       A4GL_debug ("buff=%s", buff);
+#endif
       acl_free_With_Context (ptr);
 
 
@@ -2236,7 +2298,9 @@ make_select_stmt_v2 (char *c_upd_or_del, struct s_select *select, char *into_por
   strcat (buff, into_portion);
 
 /*
+#ifdef DEBUG
   A4GL_debug ("buff=%s", buff);
+#endif
   if (select->into)
     {
       if (strlen (select->into))
@@ -2285,10 +2349,14 @@ make_select_stmt_v2 (char *c_upd_or_del, struct s_select *select, char *into_por
   if (select->table_elements.tables.tables_len)
     {
       strcat (buff, "\n FROM ");
+#ifdef DEBUG
       A4GL_debug ("buff=%s", buff);
+#endif
       strcat (buff, buff_from);
 
+#ifdef DEBUG
       A4GL_debug ("buff=%s", buff);
+#endif
       if (select->where_clause)
 	{
 	  char *ptr;
@@ -2298,7 +2366,9 @@ make_select_stmt_v2 (char *c_upd_or_del, struct s_select *select, char *into_por
 	  acl_free_With_Context (ptr);
 	}
 
+#ifdef DEBUG
       A4GL_debug ("buff=%s", buff);
+#endif
       if (select->group_by)
 	{
 	  char *ptr;
@@ -2306,7 +2376,9 @@ make_select_stmt_v2 (char *c_upd_or_del, struct s_select *select, char *into_por
 	  ptr = get_select_list_item_list (select, select->group_by);
 	  strcat (buff, ptr);
 	}
+#ifdef DEBUG
       A4GL_debug ("buff=%s", buff);
+#endif
 
       if (select->having)
 	{
@@ -2325,26 +2397,42 @@ make_select_stmt_v2 (char *c_upd_or_del, struct s_select *select, char *into_por
 	}
     }
 
+#ifdef DEBUG
   A4GL_debug ("buff=%s", buff);
+#endif
 
   if (select->next)
     {
       char *ptr;
       ptr = make_select_stmt_v2 (0, select->next, "");
+#ifdef DEBUG
       A4GL_debug ("ptr=%s", ptr);
+#endif
+#ifdef DEBUG
       A4GL_debug ("buff=%s", buff);
+#endif
       strcat (buff, "\n UNION\n");
+#ifdef DEBUG
       A4GL_debug ("buff=%s", buff);
+#endif
       if (select->next->union_op && strlen (select->next->union_op))
 	{
 	  strcat (buff, select->next->union_op);
+#ifdef DEBUG
 	  A4GL_debug ("buff=%s", buff);
+#endif
 	  strcat (buff, " ");
+#ifdef DEBUG
 	  A4GL_debug ("buff=%s", buff);
+#endif
 	}
+#ifdef DEBUG
       A4GL_debug ("buff=%s", buff);
+#endif
       strcat (buff, ptr);
+#ifdef DEBUG
       A4GL_debug ("buff=%s", buff);
+#endif
       acl_free_With_Context (ptr);
     }
 
@@ -2433,7 +2521,9 @@ make_select_stmt_v2 (char *c_upd_or_del, struct s_select *select, char *into_por
 	}
     }
 
+#ifdef DEBUG
   A4GL_debug ("buff=%s", buff);
+#endif
 
   if (select->table_elements.tables.tables_val) {
   		free(select->table_elements.tables.tables_val) ;
@@ -2441,7 +2531,9 @@ make_select_stmt_v2 (char *c_upd_or_del, struct s_select *select, char *into_por
 		select->table_elements.tables.tables_len=0;
   }
 
+#ifdef DEBUG
   A4GL_debug ("--->%s\n", buff);
+#endif
   return acl_strdup_With_Context (buff);
 
 }
@@ -2681,11 +2773,15 @@ make_sql_string_and_free (char *first, ...)
   va_start (ap, first);
   ptr = acl_strdup_With_Context (first);
 
+#ifdef DEBUG
   A4GL_debug ("First=%s", first);
+#endif
 
   if (first != kw_comma && first != kw_space && first != kw_ob && first != kw_cb)
     {
+#ifdef DEBUG
       A4GL_debug ("FREE %p (%s)\n", first, first);
+#endif
       if (A4GL_isyes (acl_getenv ("FREE_SQL_MEM")))
 	{
 	  acl_free_With_Context (first);
@@ -2698,7 +2794,9 @@ make_sql_string_and_free (char *first, ...)
     {
       n++;
       next = va_arg (ap, char *);
+#ifdef DEBUG
       A4GL_debug ("Next=%p comma=%p space=%p ob=%p cb=%p\n", next, kw_comma, kw_space, kw_ob, kw_cb);
+#endif
       if (next == 0)
 	break;
       l += strlen (next);
@@ -2707,7 +2805,9 @@ make_sql_string_and_free (char *first, ...)
       strcat (ptr, next);
       if (next != kw_comma && next != kw_space && next != kw_ob && next != kw_cb)
 	{
+#ifdef DEBUG
 	  A4GL_debug ("FREE %p (%s)\n", next, next);
+#endif
 	  if (A4GL_isyes (acl_getenv ("FREE_SQL_MEM")))
 	    {
 	      //PRINTF("Freeing : %s",next);
@@ -2715,7 +2815,9 @@ make_sql_string_and_free (char *first, ...)
 	    }
 	}
     }
+#ifdef DEBUG
   A4GL_debug ("Generated : %s\n", ptr);
+#endif
   return ptr;
 }
 
@@ -3028,7 +3130,9 @@ convstrsql (char *s)
   static char buff[64000];
   int a;
   int b = 0;
+#ifdef DEBUG
   A4GL_debug ("Convstrsql ... %s", s);
+#endif
   for (a = 0; a <= strlen (s); a++)
     {
       if (s[a] == '"')
@@ -3059,6 +3163,8 @@ convstrsql (char *s)
       buff[b++] = s[a];
 
     }
+#ifdef DEBUG
   A4GL_debug ("Convstrsql ... %s => %s", s, buff);
+#endif
   return buff;
 }

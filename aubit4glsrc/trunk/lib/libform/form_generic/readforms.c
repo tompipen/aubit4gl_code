@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: readforms.c,v 1.37 2008-07-06 11:34:36 mikeaubury Exp $
+# $Id: readforms.c,v 1.38 2010-02-16 13:16:42 mikeaubury Exp $
 #*/
 
 /**
@@ -131,7 +131,9 @@ static void real_dump_srec (struct s_form_dets *fd);
 void *
 A4GLFORM_A4GL_read_form_internal (char *fname, char *formname)
 {
+#ifdef DEBUG
   A4GL_debug ("via A4GL_read_form in lib");
+#endif
   return real_read_form (fname, formname);
 }
 
@@ -187,7 +189,9 @@ void *oldcontext=0;
      A4GL_set_malloc_context(oldcontext);
    }
 
+#ifdef DEBUG
   A4GL_debug("A4GL_read_data_from_file returns %d",a);
+#endif
   if (a==0)
     {
 		free(formdets->fileform);
@@ -198,25 +202,39 @@ void *oldcontext=0;
 
   		if (formdets->fileform->fcompile_version != FCOMILE_XDR_VERSION)
     		{
+#ifdef DEBUG
       		A4GL_debug ("Form version %d - my version %d",
 	     		formdets->fileform->fcompile_version, FCOMILE_XDR_VERSION);
+#endif
       		A4GL_exitwith ("This form has a version number that I can't handle");
       		return 0;
     		}
 		
   		do_translate_form (formdets->fileform);
   		formdets->currentfield = 0;
+#ifdef DEBUG
   		A4GL_debug ("formdets=%p", formdets);
+#endif
   		read_attributes (formdets);
+#ifdef DEBUG
   		A4GL_debug ("formdets=%p", formdets);
+#endif
   		A4GL_read_metrics (formdets);
+#ifdef DEBUG
   		A4GL_debug ("formdets=%p", formdets);
+#endif
   		A4GL_read_fields (formdets);
+#ifdef DEBUG
   		A4GL_debug ("formdets=%p", formdets);
+#endif
+#ifdef DEBUG
   		A4GL_debug ("Loaded form...");
+#endif
   		//A4GL_gui_endform ();
+#ifdef DEBUG
   		A4GL_debug ("Ended loading forms (%d, %d)", formdets->fileform->maxcol,
 	 		formdets->fileform->maxline);
+#endif
   		return formdets;
    }
 
@@ -254,7 +272,9 @@ static void
 read_attributes (struct s_form_dets *f)
 {
   int a;
+#ifdef DEBUG
   A4GL_debug ("read_attributes %d", f->fileform->attributes.attributes_len);
+#endif
   for (a = 0; a < f->fileform->attributes.attributes_len; a++)
     {
       //A4GL_debug ("a=%d colour=%d", a, f->fileform->attributes.attributes_val[a].colour);
@@ -266,9 +286,13 @@ read_attributes (struct s_form_dets *f)
 	f->fileform->attributes.attributes_val[a].do_reverse = 1;
       else
 	f->fileform->attributes.attributes_val[a].do_reverse = 0;
+#ifdef DEBUG
       A4GL_debug ("moving onto next\n");
+#endif
     }
+#ifdef DEBUG
   A4GL_debug ("returning\n");
+#endif
 }
 
 /**
@@ -296,18 +320,24 @@ real_dump_srec (struct s_form_dets *fd)
 
   return;
 
+#ifdef DEBUG
   A4GL_debug ("fd=%p srecs_cnt=%ld", fd, fd->fileform->records.records_len);
+#endif
   for (a = 0; a < fd->fileform->records.records_len; a++)
     {
+#ifdef DEBUG
       A4GL_debug ("Screen record : %s [%d] (%d)\n",
 	     fd->fileform->records.records_val[a].name,
 	     fd->fileform->records.records_val[a].dim,
 	     fd->fileform->records.records_val[a].attribs.attribs_len);
+#endif
       for (b = 0;
 	   b < fd->fileform->records.records_val[a].attribs.attribs_len; b++)
 	{
+#ifdef DEBUG
 	  A4GL_debug ("                    %d\n",
 		 fd->fileform->records.records_val[a].attribs.attribs_val[b]);
+#endif
 	}
     }
 }
@@ -322,7 +352,9 @@ A4GLFORM_A4GL_check_field_for_include (char *s, char *inc, int dtype)
 {
   static char buff[10024];
   char *ptr;
+#ifdef DEBUG
   A4GL_debug ("check_field_for_include (%s,'%s',%d)", s, inc, dtype);
+#endif
 /* no include specified - must be OK */
 
   if (inc == 0)
@@ -330,14 +362,18 @@ A4GLFORM_A4GL_check_field_for_include (char *s, char *inc, int dtype)
   if (strlen (inc) == 0)
     return TRUE;
 
+#ifdef DEBUG
   A4GL_debug ("Checking include");
+#endif
   dtype = dtype & DTYPE_MASK;
   strcpy (buff, inc);
   ptr = strtok (buff, INC_EACH);
 
   while (ptr)
     {
+#ifdef DEBUG
       A4GL_debug ("Checking token '%s'", ptr);
+#endif
       if (A4GL_include_range_check (s, ptr, dtype))
 	return TRUE;
       ptr = strtok (0, INC_EACH);
@@ -362,10 +398,14 @@ include_range_check (char *ss, char *ptr, int dtype)
 
   s = strdup (ss);
   A4GL_trim (s);
+#ifdef DEBUG
   A4GL_debug ("include_range_check(%s,%s,%d)", s, ptr, dtype);
+#endif
 	if (strcasecmp(ptr,"NULL")==0) {
 		// Check for a null...
+#ifdef DEBUG
 		A4GL_debug("NULL ALLOWED");
+#endif
 		if (strlen(s)==0) {
 			return 1;
 		}
@@ -377,19 +417,25 @@ include_range_check (char *ss, char *ptr, int dtype)
     {
       ptr3[0] = 0;
       ptr3++;
+#ifdef DEBUG
       A4GL_debug ("a range has been specified '%s' to '%s'", ptr, ptr3);
+#endif
     }
 
   if (dtype != 0)
     {
 	int dim=0;
+#ifdef DEBUG
 	A4GL_debug("X111 - dtype!=0 %s (%s)\n",ptr2,ptr1);
+#endif
 
 
       if (dtype==5||dtype==8) {
 		dim=0x2010;
 	}
+#ifdef DEBUG
       A4GL_debug ("Not a string expression");
+#endif
       A4GL_push_char (s);
       A4GL_pop_param (&buff[0], dtype, dim);
 
@@ -399,7 +445,9 @@ include_range_check (char *ss, char *ptr, int dtype)
       /* do we have a range of values to check ? */
       if (ptr3)
 	{
+#ifdef DEBUG
           A4GL_debug("Have a ptr3 - %s - suggests a range",ptr3);
+#endif
 	  A4GL_push_char (ptr3);
 	  A4GL_pop_param (&buff3[0], dtype, dim);
       	  ptr3 = buff3;
@@ -410,7 +458,9 @@ include_range_check (char *ss, char *ptr, int dtype)
     }
   else
     {
+#ifdef DEBUG
       A4GL_debug ("String expression");
+#endif
       ptr1 = s;
       ptr2 = ptr;
     }
@@ -431,14 +481,18 @@ include_range_check (char *ss, char *ptr, int dtype)
       A4GL_push_param (ptr2, dtype);
       A4GL_debug_print_stack ();
       A4GL_pushop (OP_EQUAL);
+#ifdef DEBUG
       A4GL_debug ("Checking for equal");
+#endif
       free (s);
 
 
       chk_again= A4GL_pop_bool ();
 
       if ((dtype==DTYPE_SMINT||dtype==DTYPE_INT||dtype==DTYPE_DECIMAL ||dtype==DTYPE_FLOAT||dtype==DTYPE_SMFLOAT) && chk_again && !strncmp(ptr, "NULL", 4)) {
+#ifdef DEBUG
         A4GL_debug ("zero not equal to NULL during form range checks");
+#endif
         chk_again = 0;
       }
       return chk_again;
@@ -457,7 +511,9 @@ include_range_check (char *ss, char *ptr, int dtype)
       A4GL_push_param (ptr2, dtype);
       A4GL_debug_print_stack ();
       A4GL_pushop (OP_GREATER_THAN_EQ);
+#ifdef DEBUG
       A4GL_debug ("Checking for <=");
+#endif
       if (A4GL_pop_bool () == 0)
 	{
 	  free (s);
@@ -469,7 +525,9 @@ include_range_check (char *ss, char *ptr, int dtype)
       A4GL_push_param (ptr3, dtype);
       A4GL_debug_print_stack ();
       A4GL_pushop (OP_LESS_THAN_EQ);
+#ifdef DEBUG
       A4GL_debug ("Checking for >=");
+#endif
       free (s);
       if (A4GL_pop_bool () == 0)
 	return FALSE;
@@ -486,7 +544,9 @@ include_range_check (char *ss, char *ptr, int dtype)
 int
 A4GLFORM_A4GL_has_bool_attribute (void *f, int boolval)
 {
+#ifdef DEBUG
   A4GL_debug ("via A4GL_has_bool_attribute in lib");
+#endif
   return real_has_bool_attribute (f, boolval);
 }
 
@@ -494,14 +554,20 @@ static int
 real_has_bool_attribute (struct struct_scr_field *f, int boolval)
 {
   int a;
+#ifdef DEBUG
   A4GL_debug ("Checking %p for %d\n", f, boolval);
+#endif
   for (a = 0; a < f->bool_attribs.bool_attribs_len; a++)
     {
+#ifdef DEBUG
       A4GL_debug ("%d %d %d\n", boolval, a, f->bool_attribs.bool_attribs_len);
+#endif
       if (f->bool_attribs.bool_attribs_val[a] == boolval)
 	return 1;
     }
+#ifdef DEBUG
   A4GL_debug ("Nope");
+#endif
   return 0;
 }
 

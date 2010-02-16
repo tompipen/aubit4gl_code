@@ -43,7 +43,9 @@ int a;
     if (a<1 ) { 
 		A4GL_assertion(1,"Failed to read int");
 	}
+#ifdef DEBUG
 A4GL_debug("Read : %d", a4gl_ntohl(n));
+#endif
   return a4gl_ntohl(n);
 }
 
@@ -88,7 +90,9 @@ static char * read_string (void)
   	A4GL_assertion(a!=n,"Failed to read string");
   	}
   p[n] = 0;
+#ifdef DEBUG
   A4GL_debug("Read : %s", p);
+#endif
   return p;
 }
 

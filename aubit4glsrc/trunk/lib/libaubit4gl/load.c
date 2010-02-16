@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: load.c,v 1.61 2009-07-10 09:40:32 mikeaubury Exp $
+# $Id: load.c,v 1.62 2010-02-16 13:16:31 mikeaubury Exp $
 #
 */
 
@@ -147,7 +147,9 @@ find_delims (char delim)
   for (a = 0; a < cnt; a++)
     {
       //printf ("Field %d = %s\n", a, colptr[a]);
+#ifdef DEBUG
       A4GL_debug ("Field %d = %s", a, colptr[a]);
+#endif
     }
   return cnt;
 }
@@ -331,7 +333,9 @@ char nullbuff[200];
     }
 
 
+#ifdef DEBUG
   A4GL_debug ("In load_data - LOAD_ORIG");
+#endif
   strncpy (filename, fname, sizeof (filename));
   filename[1023] = 0;		// Just to make sure...
 
@@ -351,7 +355,9 @@ char nullbuff[200];
       colname = va_arg (ap, char *);
       if (colname == 0)
 	break;
+#ifdef DEBUG
       A4GL_debug ("Adding %s to col_list", colname);
+#endif
       strcpy (col_list[cnt], colname);
       cnt++;
     }
@@ -359,12 +365,16 @@ char nullbuff[200];
   if (cnt == 0)
     {
       /* get columns from database */
+#ifdef DEBUG
       A4GL_debug ("Getting columns from database");
+#endif
       cnt = A4GLSQL_fill_array (MAXLOADCOLS, (char *) col_list, MAXCOLLENGTH - 1, 0, 0, "COLUMNS", 0, tabname);
 
     }
 
+#ifdef DEBUG
   A4GL_debug ("Read %d columns", cnt);
+#endif
 
   if (cnt == 0)
     {
@@ -376,7 +386,9 @@ char nullbuff[200];
       doing_load = 0;
       return 0;
     }
+#ifdef DEBUG
   A4GL_debug ("Calling gen_insert_for_load %s %d\n", tabname, cnt);
+#endif
 
   for (a=0;a<cnt;a++) {
 	int idtype;
@@ -388,7 +400,9 @@ char nullbuff[200];
   insertstr = gen_insert_for_load (tabname, cnt);
 
 
+#ifdef DEBUG
   A4GL_debug ("Adding prepare.. for %s", insertstr);
+#endif
 
 
   if (A4GL_add_prepare ("load", A4GL_prepare_select (0, 0, 0, 0, insertstr, "__internal_load", 23, 0, 0)) != 1)
@@ -409,7 +423,9 @@ char nullbuff[200];
 	{
 	int b;
 	
+#ifdef DEBUG
 	  A4GL_debug ("Binding %s @ %d", colptr[a], a);
+#endif
 
 	 switch (col_list_types[a]&DTYPE_MASK) {
 		case DTYPE_BYTE:
@@ -459,7 +475,9 @@ char nullbuff[200];
 			}
 	}
 
+#ifdef DEBUG
       A4GL_debug ("Read line '%s'\n", loadbuff);
+#endif
 
 
       if (feof (p) && strlen (loadbuff)) // If its the last line - make sure we've got a whole line with a trailing \n
@@ -475,7 +493,9 @@ char nullbuff[200];
 
       lineno++;
       stripnlload (loadbuff, delim);
+#ifdef DEBUG
       A4GL_debug ("Read line '%s'\n", loadbuff);
+#endif
       if (filterfunc)
 	{
 	  // We're using a filter function.
@@ -518,7 +538,9 @@ char nullbuff[200];
 	{
 	  nfields = find_delims (delim);
 	}
+#ifdef DEBUG
       A4GL_debug ("nfields=%d number of columns=%d", nfields, cnt);
+#endif
       if (nfields == 0 && delim == 0)
 	nfields = 1;		// No delimiter - whole line...
 
@@ -543,7 +565,9 @@ char nullbuff[200];
 	{
 	int b;
 	
+#ifdef DEBUG
 	  A4GL_debug ("Binding %s @ %d", colptr[a], a);
+#endif
 
 	 switch (col_list_types[a]&DTYPE_MASK) {
 		case DTYPE_BYTE:
@@ -610,7 +634,9 @@ char nullbuff[200];
 	}
       if (feof (p))
 	{
+#ifdef DEBUG
 	  A4GL_debug ("Got to end of the file");
+#endif
 	  break;
 	}
     }
@@ -692,7 +718,9 @@ A4GL_load_data (char *fname, char *delims, void *filterfunc, char *tabname, ...)
   delim = delims[0];
 
 
+#ifdef DEBUG
   A4GL_debug ("In load_data");
+#endif
   strncpy (filename, fname, sizeof (filename));
   filename[1023] = 0;		// Just to make sure...
 
@@ -712,7 +740,9 @@ A4GL_load_data (char *fname, char *delims, void *filterfunc, char *tabname, ...)
       colname = va_arg (ap, char *);
       if (colname == 0)
 	break;
+#ifdef DEBUG
       A4GL_debug ("Adding %s to col_list", colname);
+#endif
       strcpy (col_list[cnt], colname);
       cnt++;
     }
@@ -720,12 +750,16 @@ A4GL_load_data (char *fname, char *delims, void *filterfunc, char *tabname, ...)
   if (cnt == 0)
     {
       /* get columns from database */
+#ifdef DEBUG
       A4GL_debug ("Getting columns from database");
+#endif
       cnt = A4GLSQL_fill_array (MAXLOADCOLS, (char *) col_list, MAXCOLLENGTH - 1, 0, 0, "COLUMNS", 0, tabname);
 
     }
 
+#ifdef DEBUG
   A4GL_debug ("Read %d columns", cnt);
+#endif
 
   if (cnt == 0)
     {
@@ -733,12 +767,16 @@ A4GL_load_data (char *fname, char *delims, void *filterfunc, char *tabname, ...)
       doing_load = 0;
       return 0;
     }
+#ifdef DEBUG
   A4GL_debug ("Calling gen_insert_for_load %s %d\n", tabname, cnt);
+#endif
 
   insertstr = gen_insert_for_load (tabname, cnt);
 
 
+#ifdef DEBUG
   A4GL_debug ("Adding prepare.. for %s", insertstr);
+#endif
 
 
   if (use_insert_cursor)
@@ -753,13 +791,17 @@ A4GL_load_data (char *fname, char *delims, void *filterfunc, char *tabname, ...)
 	  ibind[a].start_char_subscript = 0;
 	  ibind[a].end_char_subscript = 0;
 	}
+#ifdef DEBUG
       A4GL_debug ("Declare..\n");
+#endif
 
       A4GL_add_prepare ("a4gl_pload", (void *) A4GL_prepare_select (0, 0, 0, 0, insertstr, "__internal_load", 1, 0));
 
       A4GL_declare_cursor (0 + 0, A4GL_find_prepare ("a4gl_pload"), 0, "a4gl_load");
 
+#ifdef DEBUG
       A4GL_debug ("Open..\n");
+#endif
 
       A4GL_open_cursor ("a4gl_load", 0, 0);
 
@@ -784,14 +826,18 @@ A4GL_load_data (char *fname, char *delims, void *filterfunc, char *tabname, ...)
 
       if (feof (p))
 	{
+#ifdef DEBUG
 	  A4GL_debug ("Got to end of the file");
+#endif
 	  break;
 	}
       lineno++;
       stripnlload (loadbuff, delim);
       //printf ("Read line '%s'", loadbuff);
       nfields = find_delims (delim);
+#ifdef DEBUG
       A4GL_debug ("nfields=%d number of columns=%d", nfields, cnt);
+#endif
       if (nfields == 0 && delim == 0)
 	nfields = 1;		// No delimiter - whole line...
 
@@ -830,7 +876,9 @@ A4GL_load_data (char *fname, char *delims, void *filterfunc, char *tabname, ...)
 
       for (a = 0; a < cnt; a++)
 	{
+#ifdef DEBUG
 	  A4GL_debug ("Binding %s @ %d", colptr[a], a);
+#endif
 
 	  ibind[a].ptr = colptr[a];
 	  if (strlen (colptr[a]) == 0)
@@ -846,7 +894,9 @@ A4GL_load_data (char *fname, char *delims, void *filterfunc, char *tabname, ...)
 
       if (use_insert_cursor)
 	{
+#ifdef DEBUG
 	  A4GL_debug ("Put");
+#endif
 	  A4GL_push_char ("a4gl_load");
 	  A4GL_put_insert (ibind, cnt);
 	}
@@ -869,7 +919,9 @@ A4GL_load_data (char *fname, char *delims, void *filterfunc, char *tabname, ...)
 
   if (use_insert_cursor)
     {
+#ifdef DEBUG
       A4GL_debug ("Close");
+#endif
       A4GL_close_cursor ("a4gl_load",1);
     }
 
@@ -936,7 +988,9 @@ A4GL_load_data_str (char *fname, char *delims, void *filterfunc, char *sqlstmt_o
   if (sqlstmt)
     free (sqlstmt);
   sqlstmt = acl_strdup (sqlstmt_orig);
+#ifdef DEBUG
   A4GL_debug ("In load_data");
+#endif
   strcpy (filename, fname);
   A4GL_trim (filename);
   p = A4GL_mja_fopen (filename, "r");
@@ -965,11 +1019,15 @@ A4GL_load_data_str (char *fname, char *delims, void *filterfunc, char *sqlstmt_o
       fgets (loadbuff, LOADBUFFSIZE - 1, p);
       if (feof (p))
 	{
+#ifdef DEBUG
 	  A4GL_debug ("Got to end of the file");
+#endif
 	  break;
 	}
       stripnlload (loadbuff, delim);
+#ifdef DEBUG
       A4GL_debug ("Read line '%s'", loadbuff);
+#endif
       if (filterfunc)
 	{
 	  // We're using a filter function.
@@ -1012,7 +1070,9 @@ A4GL_load_data_str (char *fname, char *delims, void *filterfunc, char *sqlstmt_o
 	{
 	  nfields = find_delims (delim);
 	}
+#ifdef DEBUG
       A4GL_debug ("nfields=%d number of columns=%d", nfields, cnt);
+#endif
 
       if (nfields != cnt && cnt)
 	{
@@ -1069,7 +1129,9 @@ A4GL_load_data_str (char *fname, char *delims, void *filterfunc, char *sqlstmt_o
       ibind = acl_malloc2 (sizeof (struct BINDING) * nfields);
       for (a = 0; a < nfields; a++)
 	{
+#ifdef DEBUG
 	  A4GL_debug ("Binding %s @ %d", colptr[a], a);
+#endif
 	  ibind[a].ptr = colptr[a];
 	  ibind[a].dtype = DTYPE_CHAR;
 	  ibind[a].size = strlen (colptr[a]);
@@ -1077,7 +1139,9 @@ A4GL_load_data_str (char *fname, char *delims, void *filterfunc, char *sqlstmt_o
 	ibind[a].end_char_subscript=0;
 	ibind[a].libptr=0;
 	}
+#ifdef DEBUG
       A4GL_debug ("EXECUTE SQL nfields=%d", nfields);
+#endif
       A4GL_execute_sql ("load", nfields, ibind);
 
       if (a4gl_status != 0)

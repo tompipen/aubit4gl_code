@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile.c,v 1.137 2010-02-12 14:39:40 mikeaubury Exp $
+# $Id: compile.c,v 1.138 2010-02-16 13:14:53 mikeaubury Exp $
 #*/
 
 /**
@@ -426,8 +426,9 @@ initArguments (int argc, char *argv[])
 					/* we will have to assume executable when there is no
 					extension, as this is a common practice on UNIX and 
 					also C compilers make executable by default*/
-					A4GL_debug
-					("assuming executable, there was no extension on -o parameter and no --shared flag");
+#ifdef DEBUG
+					A4GL_debug ("assuming executable, there was no extension on -o parameter and no --shared flag");
+#endif
 					compile_object = 1;
 					compile_exec = 1;
 				}
@@ -499,7 +500,9 @@ initArguments (int argc, char *argv[])
 	case 'N':		/* User specified namespace prefix*/
 	  if (optarg == 0)
 	    optarg = "";
+#ifdef DEBUG
 	  A4GL_debug ("Using specified namespace : %s\n", optarg);
+#endif
 	  set_namespace (optarg);
 	  break;
 
@@ -637,7 +640,9 @@ initArguments (int argc, char *argv[])
 	strcat(gcc_exec," ");
         strcat(gcc_exec,acl_getenv("CFLAGS"));
 
+#ifdef DEBUG
 	A4GL_debug("--> %s\n",gcc_exec);
+#endif
 
 	/* ============================================== */
 	for (index = optind; index < argc; index++) {
@@ -791,11 +796,15 @@ initArguments (int argc, char *argv[])
 				 //unless -o was different from input
 				 if (strcmp (all_objects, output_object) == 0) {
 					if (verbose) {PRINTF ("WARNING: compile_so or _lib active with only one input. Disbled.\n");}
+#ifdef DEBUG
 					A4GL_debug ("WARNING: compile_so or _lib active with only one input. Disbled.");
+#endif
 					compile_so=0;
 					compile_lib=0;
 					if (verbose) {PRINTF ("Single input/output not exec - we are done.\n");}
+#ifdef DEBUG
 					A4GL_debug ("Single input/output not exec - we are done.");
+#endif
 				 } else {
 					// output specified with -o is not the same we allready created - 
 					// so we must go troug linking stage even with one object...
@@ -817,7 +826,9 @@ initArguments (int argc, char *argv[])
 #endif
 
 	if (compile_exec) {
+#ifdef DEBUG
 		A4GL_debug ("Linking exec\n");
+#endif
 		if ((strcmp (acl_getenv ("PRINTPROGRESS"), "Y") == 0) || (verbose)) {
 			PRINTF("Linking exec\n");fflush(stdout);
 			//This was \r not \n for some reason
@@ -920,7 +931,9 @@ initArguments (int argc, char *argv[])
 		PRINTF("Linking\n");fflush(stdout); //\r
 	}
 	#ifndef __MINGW32__ /* UNIX */
+#ifdef DEBUG
 		A4GL_debug ("Linking static library\n");
+#endif
 		if (strcmp (acl_getenv ("A4GL_LEXTYPE"), "EC") == 0){
             /* When using Embedded C output, we need to run appropriate ESQL/C
             compiler to do the linking */
@@ -955,7 +968,9 @@ initArguments (int argc, char *argv[])
 	         link with libaubit4gl - but we do not make any static Aubit libraries any more, so we
 	         must link with .dll - meaning that we must force shared linking even when user specified
 	         static flag */
+#ifdef DEBUG
 	      A4GL_debug ("Static linking specified - forcing shared linking on Windows\n");
+#endif
 	      compile_lib = 0;
 	      compile_so = 1;
 	#endif /* UNIX or Windows */
@@ -965,7 +980,9 @@ initArguments (int argc, char *argv[])
 	if ((strcmp (acl_getenv ("PRINTPROGRESS"), "Y") == 0) || (verbose)) {
 		PRINTF("Linking Shared Library\n");fflush(stdout); //\r
 	}
+#ifdef DEBUG
 	A4GL_debug ("Linking shared library\n");
+#endif
 	#ifndef __MINGW32__ /* UNIX */
 		if (strcmp (acl_getenv ("A4GL_LEXTYPE"), "EC") == 0){
             /* When using Embedded C output, we need to run appropriate ESQL/C
@@ -1054,7 +1071,9 @@ initArguments (int argc, char *argv[])
 					*/
 					char fbuff[2000];
 					char tbuff[2000];
+#ifdef DEBUG
 					A4GL_debug ("%s file size is not zero %d\n", buff, flength);
+#endif
 					if (verbose) { PRINTF ("%s is non-zero\n", buff); }
 	
 					//something wrong here - does not show 1 or 0 but large random integer
@@ -1089,8 +1108,9 @@ initArguments (int argc, char *argv[])
 	}
 } else {
 	if ((!todo) && (!c_to_o))  {
-	  A4GL_debug
-	    ("Error in parameters to 4glc - no 4gl input files and no linking.\n");
+#ifdef DEBUG
+	  A4GL_debug ("Error in parameters to 4glc - no 4gl input files and no linking.\n");
+#endif
 	  FPRINTF
 	    (stderr,"Error in parameters to 4glc - no 4gl input files and no linking.\n");
 	  return (5);
@@ -1175,7 +1195,9 @@ compiled_4gl++;
 	//that 4gl file was specified as GLOBALS file
 	//
 
+#ifdef DEBUG
 	A4GL_debug ("Compiling: %s to %s\n", fgl_file,output_object);
+#endif
 	if (verbose) {PRINTF ("Compiling: %s to %s\n", fgl_file,output_object);}
 
 
@@ -1766,9 +1788,11 @@ a4gl_yyerror (char *s)
   long ld;
   char a;
   const char *matchstr="unexpected NAMED_GEN";
+#ifdef DEBUG
   A4GL_debug("s=%s\n",s);
   A4GL_debug("errbuff=%s\n",errbuff);
   A4GL_debug("yytext=%s\n",yytext);
+#endif
   if (strstr(s,matchstr)) {
 	static char buff[1024];
 	char *ptr;

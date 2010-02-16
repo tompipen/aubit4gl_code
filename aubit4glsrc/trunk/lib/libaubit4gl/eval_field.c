@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: eval_field.c,v 1.12 2008-10-02 17:40:50 mikeaubury Exp $
+# $Id: eval_field.c,v 1.13 2010-02-16 13:16:27 mikeaubury Exp $
 #
 */
 
@@ -50,7 +50,9 @@ A4GL_evaluate_field_colour (char *field_contents, struct struct_scr_field *fprop
 {
   int a;
 
+#ifdef DEBUG
   A4GL_debug ("CHECKING FOR A FIELD EXPRESSION MATCH");
+#endif
   if (fprop->colours.colours_len == 0 || field_contents == 0)
     {
 //A4GL_debug("CHECKING FOR A FIELD EXPRESSION MATCH : %d",fprop->colour);
@@ -58,12 +60,16 @@ A4GL_evaluate_field_colour (char *field_contents, struct struct_scr_field *fprop
       //return fprop->colour;
     }
 
+#ifdef DEBUG
   A4GL_debug ("CHECKING FOR A FIELD EXPRESSION MATCH ...");
+#endif
   for (a = 0; a < fprop->colours.colours_len; a++)
     {
       if (field_expr_is_true (field_contents, fprop->colours.colours_val[a].whereexpr))
 	{
+#ifdef DEBUG
 	  A4GL_debug ("FOUND EXPRESSION MATCH !!! returning %d", fprop->colours.colours_val[a].colour);
+#endif
 	  return fprop->colours.colours_val[a].colour;
 	}
     }
@@ -99,7 +105,9 @@ evaluate_field_expr (char *s, u_expression * expr, long *value, int *is_char)
 {
 
 
+#ifdef DEBUG
   A4GL_debug ("Evaludate field_expr - s=%s exprtype = %d", s, expr->itemtype);
+#endif
 
   if (expr->itemtype == ITEMTYPE_INT)
     {
@@ -139,7 +147,9 @@ evaluate_field_expr (char *s, u_expression * expr, long *value, int *is_char)
 
   if (expr->itemtype == ITEMTYPE_FIELD)
     {
+#ifdef DEBUG
       A4GL_debug ("TYPE FIELD %s", s);
+#endif
       *value = (long) s;
       *is_char = 1;
       return 1;
@@ -147,7 +157,9 @@ evaluate_field_expr (char *s, u_expression * expr, long *value, int *is_char)
 
   if (expr->itemtype == ITEMTYPE_CHAR)
     {
+#ifdef DEBUG
       A4GL_debug ("TYPE CHAR %s", expr->u_expression_u.charval);
+#endif
       *value = (long) expr->u_expression_u.charval;
       *is_char = 1;
       return 1;
@@ -243,7 +255,9 @@ evaluate_field_expr (char *s, u_expression * expr, long *value, int *is_char)
 	    }
 	}
 
+#ifdef DEBUG
       A4GL_debug ("Comparison/Complex ID : %d (%s) ", compid, ptr2->comparitor);
+#endif
       if (compid == -1)
 	{
 	  A4GL_exitwith ("Unknown comparison %s");
@@ -285,7 +299,9 @@ evaluate_field_expr (char *s, u_expression * expr, long *value, int *is_char)
 
 	  if (compid == 6)
 	    {
+#ifdef DEBUG
 	      A4GL_debug ("MATCHES : XXXX '%s' matches '%s'", na1, na2);
+#endif
 	    }
 
 	  switch (compid)
@@ -404,11 +420,15 @@ evaluate_field_expr (char *s, u_expression * expr, long *value, int *is_char)
 	}
 
 
+#ifdef DEBUG
       A4GL_debug ("Can't handle it yet - %s", ptr2->comparitor);
+#endif
       return 0;
     }
 
 
+#ifdef DEBUG
   A4GL_debug ("Unknown expression type %d\n", expr->itemtype);
+#endif
   return 0;
 }

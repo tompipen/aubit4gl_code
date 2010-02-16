@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dmy.c,v 1.25 2008-11-29 17:21:02 mikeaubury Exp $
+# $Id: dmy.c,v 1.26 2010-02-16 13:16:27 mikeaubury Exp $
 #
 */
 
@@ -194,7 +194,9 @@ A4GL_using_date (int dn, char *us)
       // SOmethings gone wrong
       return "";
     }
+#ifdef DEBUG
   A4GL_debug ("Got date : %d %d %d", d, m, y);
+#endif
   dno = A4GL_day_in_week (d, m, y);
   A4GL_assertion (dno < 0 || dno > 6, "Invalid day of week");
 
@@ -213,7 +215,9 @@ A4GL_using_date (int dn, char *us)
   SPRINTF1 (rep_strs[5], "%02d", m);
   SPRINTF1 (rep_strs[6], "%04d", y);
   SPRINTF1 (rep_strs[7], "%02d", y % 100);
+#ifdef DEBUG
   A4GL_debug ("--DNO=%d", dno);
+#endif
   SPRINTF1 (rep_strs[8], "%s", (char *) A4GL_find_str_resource_int ("_DAYTH", d));
   SPRINTF1 (rep_strs[9], "%d", d);
   SPRINTF1 (rep_strs[10], "%d", m);

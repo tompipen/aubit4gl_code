@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: memfile.c,v 1.46 2009-08-27 17:26:44 mikeaubury Exp $
+# $Id: memfile.c,v 1.47 2010-02-16 13:16:31 mikeaubury Exp $
 #
 */
 
@@ -129,11 +129,15 @@ A4GL_memdup (void *ptr, int size)
   A4GL_assertion (ptr == 0, "No pointer to copy");
   A4GL_assertion (size <= 0, "Invalid side for memdup");
 
+#ifdef DEBUG
   A4GL_debug ("A4GL_memdup - ptr=%p ", ptr);
   A4GL_debug ("A4GL_memdup - size=%p",  size);
+#endif
   p2 = acl_malloc2 (size);
   memcpy (p2, ptr, size);
+#ifdef DEBUG
   A4GL_debug ("Done");
+#endif
   return p2;
 }
 
@@ -306,7 +310,9 @@ A4GL_memfile_feof (FILE * f)
       //debug("pos = %ld buff_len = %ld f=%x in=%x\n",pos,buff_len,f,in);
       strncpy (buffer, &buff[pos], 255);
       buff[255] = 0;
+#ifdef DEBUG
       A4GL_debug ("Something horrible has gone wrong in the compiler - set DEBUG=ALL, retry and check debug.out");
+#endif
       PRINTF ("Something horrible has gone wrong in the compiler - set DEBUG=ALL, retry and check debug.out");
       A4GL_fgl_die (2);
       return feof (f);
@@ -322,7 +328,9 @@ A4GL_memfile_fread (char *ptr, int s, int n, FILE * f)
 {
   if (f != in)
     {
+#ifdef DEBUG
       A4GL_debug ("Reading from fread with a file...This is bad!!!");
+#endif
       return fread (ptr, s, n, f);
     }
   else
@@ -361,7 +369,9 @@ A4GL_dump_buffer (char *s, int l)
   char buffx[256];
   strcpy (buff, "");
   return;
+#ifdef DEBUG
   A4GL_debug ("Dump buffer");
+#endif
   for (a = 0; a < l; a++)
     {
       SPRINTF1 (buffx, "0x%02x,", s[a] & 0xff);
@@ -369,11 +379,15 @@ A4GL_dump_buffer (char *s, int l)
       if (strlen (buff) >= 80)
 	{
 	  strcat (buff, ":");
+#ifdef DEBUG
 	  A4GL_debug ("%s", buff);
+#endif
 	  strcpy (buff, "");
 	}
     }
+#ifdef DEBUG
   A4GL_debug ("%s", buff);
+#endif
 }
 
 
@@ -402,7 +416,9 @@ char **strings;
 int nstrings;
   if (f != in)
     {
+#ifdef DEBUG
       A4GL_debug ("pos = %ld buff_len = %ld f=%x in=%x\n", pos, buff_len, f, in);
+#endif
       //a4gl_yyerror ("Something horrible has gone wrong in the compiler - set DEBUG=ALL, retry and check debug.out");
       //      return;
      }
@@ -473,7 +489,9 @@ int escp=0;
 
   if (f != in)
     {
+#ifdef DEBUG
       A4GL_debug ("pos = %ld buff_len = %ld f=%x in=%x\n", pos, buff_len, f, in);
+#endif
       //a4gl_yyerror ("Something horrible has gone wrong in the compiler - set DEBUG=ALL, retry and check debug.out");
       return;
     }

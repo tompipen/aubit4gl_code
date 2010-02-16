@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: keys.c,v 1.46 2008-10-02 17:40:50 mikeaubury Exp $
+# $Id: keys.c,v 1.47 2010-02-16 13:16:31 mikeaubury Exp $
 #
 */
 
@@ -80,7 +80,9 @@ A4GL_check_keys (int val, char *str2)
   int a;
   int l;
 
+#ifdef DEBUG
   A4GL_debug ("check_keys : %d %s", val, str2);
+#endif
   ptr = str2;
   l = strlen (str2);
   for (a = 0; a < l; a++)
@@ -112,7 +114,9 @@ A4GL_check_key (int val, char *a, int ln)
 
   strncpy (buff, a, ln);
   buff[ln] = 0;
+#ifdef DEBUG
   A4GL_debug ("Checking key %d against %s  ln=%d", val, a, ln);
+#endif
   if (ln == 1)
     {
       if (tolower (buff[0]) == tolower (val))
@@ -134,7 +138,9 @@ A4GL_key_val (char *str)
 {
   int a;
   a = A4GL_key_val2 (str);
+#ifdef DEBUG
   A4GL_debug (" key_val : '%s' = %d", str, a);
+#endif
   return a;
 }
 
@@ -178,13 +184,17 @@ A4GL_is_special_key (int k, int type)
     case A4GLKEY_DELETE:
       return (std_dbscr.delkey == k);
     case A4GLKEY_HELP:
+#ifdef DEBUG
       A4GL_debug ("Help key : %d\n", std_dbscr.helpkey);
+#endif
       return (std_dbscr.helpkey == k);
     case A4GLKEY_ACCEPT:
       return (std_dbscr.acckey == k);
     }
+#ifdef DEBUG
   A4GL_debug ("HELP=%d\n", A4GLKEY_HELP);
   A4GL_debug ("Unexpected internal key : hex=%x decimal=%d\n", type, type);
+#endif
 
   PRINTF ("%x\n", type);
   A4GL_exitwith ("Internal error-unexpected keytype for A4GL_is_special_key");
@@ -211,7 +221,9 @@ A4GL_key_val2 (char *str_x)
   A4GL_trim (str);
   A4GL_init_stddbscr ();
 
+#ifdef DEBUG
   A4GL_debug ("In A4GL_key_val str=%s", str);
+#endif
 
   if (strlen (str) == 1)
     {
@@ -336,23 +348,31 @@ A4GL_key_val2 (char *str_x)
 
   if (A4GL_mja_strncmp ("CONTROL", str, 7) == 0)
     {
+#ifdef DEBUG
       A4GL_debug ("control key '%s' - returning '%c'\n", str, str[8]);
+#endif
       if (toupper (str[8]) >= 'A' && toupper (str[8]) <= 'Z')
 	{
 	  rval = a4gl_toupper (str[8]) - 'A' + 1;
+#ifdef DEBUG
 	  A4GL_debug ("rval1=%d\n", rval);
+#endif
 	  return rval;
 	}
       if (toupper (str[9]) >= 'A' && toupper (str[9]) <= 'Z')
 	{
 	  rval = a4gl_toupper (str[9]) - 'A' + 1;
+#ifdef DEBUG
 	  A4GL_debug ("rval2=%d\n", rval);
+#endif
 	  return rval;
 	}
       if (toupper (str[10]) >= 'A' && toupper (str[10]) <= 'Z')
 	{
 	  rval = a4gl_toupper (str[10]) - 'A' + 1;
+#ifdef DEBUG
 	  A4GL_debug ("rval3=%d\n", rval);
+#endif
 	  return rval;
 	}
     }
@@ -373,10 +393,14 @@ A4GL_key_val2 (char *str_x)
       b[0] = str[1];
       b[1] = str[2];
       b[2] = 0;
+#ifdef DEBUG
       A4GL_debug ("Function key..");
+#endif
       a = atoi (b);
       a = A4GLKEY_F (a);
+#ifdef DEBUG
       A4GL_debug ("F%s = %d", b, a);
+#endif
       return a;
     }
 
@@ -459,7 +483,9 @@ int
 A4GL_get_option_value (char type)
 {
   A4GL_init_stddbscr ();
+#ifdef DEBUG
   A4GL_debug ("Get option value : %c", type);
+#endif
   switch (type)
     {
     case 'C':
@@ -532,7 +558,9 @@ A4GL_init_stddbscr (void)
   if (inited)
     return;
   inited = 1;
+#ifdef DEBUG
   A4GL_debug ("init_stddbscr - form_line");
+#endif
   std_dbscr.mode = 0;
   std_dbscr.colour = 0;
   std_dbscr.border = 0;

@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: others.c,v 1.72 2009-11-13 11:58:01 mikeaubury Exp $
+# $Id: others.c,v 1.73 2010-02-16 13:16:31 mikeaubury Exp $
 #
 */
 
@@ -144,7 +144,9 @@ aclfgl_fgl_lastkey (int _np)
     }
 
   _r = A4GL_get_lastkey ();
+#ifdef DEBUG
   A4GL_debug ("TST1 Lastkey=%d", _r);
+#endif
 
   A4GL_push_long (_r);
   return 1;
@@ -209,7 +211,9 @@ A4GL_fgl_keyval (int _np)
   if (_np != 1)
     {
       A4GL_set_status (-3000, 0);
+#ifdef DEBUG
       A4GL_debug ("Bad number of arguments to A4GL_fgl_keyval got %d - expected 1", _np);
+#endif
 
       for (_r = 0; _r < _np; _r++)
 	{
@@ -218,10 +222,14 @@ A4GL_fgl_keyval (int _np)
     }
 
   v0 = A4GL_char_pop ();
+#ifdef DEBUG
   A4GL_debug ("TST1 - v0=%s", v0);
+#endif
 
   _r = A4GL_key_val (v0);
+#ifdef DEBUG
   A4GL_debug ("TST1 - r=%d\n", _r);
+#endif
   A4GL_push_long (_r);
   acl_free (v0);
   return 1;
@@ -274,11 +282,15 @@ A4GL_net_keyval (char *v)
   char v0[800];
   long _r;
 
+#ifdef DEBUG
   A4GL_debug ("In net_keyval");
+#endif
   strcpy (v0, v);
   A4GL_trim (v);
   A4GL_stripnl (v);
+#ifdef DEBUG
   A4GL_debug ("Decoding ...%s...", v0);
+#endif
   if (strlen (v0) == 1)
     {
       return v0[0];
@@ -330,7 +342,9 @@ A4GL_net_keyval (char *v)
     {
       return (v0[1] - 'A' + 1);
     }
+#ifdef DEBUG
   A4GL_debug ("Not found in here");
+#endif
   return 0;
 }
 
@@ -394,7 +408,9 @@ A4GL_replace_sql_var (char *s)
   static char buff[1024];
   char *ptr;
 
+#ifdef DEBUG
   A4GL_debug ("In replace_sql_var :%s\n", s);
+#endif
 
   //if (s[0] != '\n')
   //{
@@ -402,7 +418,9 @@ A4GL_replace_sql_var (char *s)
   //}
   strcpy (buff, s);
 
+#ifdef DEBUG
   A4GL_debug ("Buff=%s\n", buff);
+#endif
 
   if (A4GL_aubit_strcasecmp (buff, "today") == 0)
     {
@@ -410,8 +428,12 @@ A4GL_replace_sql_var (char *s)
       ptr = A4GL_char_pop ();
       strcpy (buff, ptr);
       acl_free (ptr);
+#ifdef DEBUG
       A4GL_debug ("Its today!");
+#endif
+#ifdef DEBUG
       A4GL_debug ("replace_sql_var :Returning %s", buff);
+#endif
       return buff;
     }
 
@@ -421,11 +443,15 @@ A4GL_replace_sql_var (char *s)
       ptr = A4GL_char_pop ();
       strcpy (buff, ptr);
       acl_free (ptr);
+#ifdef DEBUG
       A4GL_debug ("replace_sql_var :Returning %s", buff);
+#endif
       return buff;
     }
   return s;
+#ifdef DEBUG
   A4GL_debug ("replace_sql_var :Returning %s", buff);
+#endif
 
 }
 
@@ -445,16 +471,24 @@ A4GL_attr_name_match (struct struct_scr_field *field, char *s_x)
   int ab;
   char s[256];
 
+#ifdef DEBUG
   A4GL_debug ("Field : %p \n", field);
+#endif
 
   strcpy (s, s_x);
   A4GL_trim (s);
+#ifdef DEBUG
   A4GL_debug ("attr_name_match : %s", s);
+#endif
   A4GL_bname (s, tabname, colname);
 
 
+#ifdef DEBUG
   A4GL_debug ("Splits to %s & %s", tabname, colname);
+#endif
+#ifdef DEBUG
   A4GL_debug ("field is [%s %s]", field->tabname, field->colname);
+#endif
 
 
   aa = strcmp (field->tabname, tabname);
@@ -462,16 +496,22 @@ A4GL_attr_name_match (struct struct_scr_field *field, char *s_x)
   /* A4GL_debug ("Matches = %d %d ", aa, ab); */
   if ((ab == 0) || (colname[0] == '*'))
     {
+#ifdef DEBUG
       A4GL_debug ("Match on * (%s,%s,%s) (%s,%s)", s, tabname, colname, field->tabname, field->colname);
+#endif
       return 1;
     }
   if (ab == 0 && tabname[0] == 0)
     {
+#ifdef DEBUG
       A4GL_debug ("Matched %s.%s = %s.%s ", tabname, colname, field->tabname, field->colname);
+#endif
       return 1;
     }
 
+#ifdef DEBUG
   A4GL_debug ("Not matched (%s!=%s or %s!=%s)", field->tabname, tabname, field->colname, colname);
+#endif
 
   return 0;
 }
@@ -511,14 +551,20 @@ A4GL_find_srec (struct_form * fd, char *name)
 {
   int a;
   A4GL_assertion (fd == 0, "No struct_form passed to A4GL_find_rec");
+#ifdef DEBUG
   A4GL_debug ("No of records : %d", fd->records.records_len);
+#endif
 
   for (a = 0; a < fd->records.records_len; a++)
     {
+#ifdef DEBUG
       A4GL_debug ("MJA MJA %s - %s\n", fd->records.records_val[a].name, name);
+#endif
       if (A4GL_aubit_strcasecmp (name, fd->records.records_val[a].name) == 0)
 	{
+#ifdef DEBUG
 	  A4GL_debug ("Found it...");
+#endif
 	  return a;
 	}
     }
@@ -596,22 +642,32 @@ A4GL_get_srec (char *name)
 {
   int a;
   struct s_form_dets *form;
+#ifdef DEBUG
   A4GL_debug ("Get_srec");
+#endif
   form = A4GL_get_curr_form (1);
+#ifdef DEBUG
   A4GL_debug ("found form");
 
   A4GL_debug ("Got form %p", form);
+#endif
 
   if (form == 0)
     {
+#ifdef DEBUG
       A4GL_debug ("No form...");
+#endif
       return (struct struct_screen_record *) 0;
     }
 
+#ifdef DEBUG
   A4GL_debug ("fileform=%p name=%p(%s)", form->fileform, name, name);
   A4GL_debug ("Database =%s", form->fileform->dbname);
+#endif
   a = A4GL_find_srec (form->fileform, name);
+#ifdef DEBUG
   A4GL_debug ("Got %d", a);
+#endif
   if (a == -1)
     return (struct struct_screen_record *) 0;
   else

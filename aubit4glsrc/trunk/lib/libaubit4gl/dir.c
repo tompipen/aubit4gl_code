@@ -75,7 +75,9 @@ A4GL_read_directory (char *dir, char *spec)
 
       cnt++;
       names = realloc (names, sizeof (char *) * (cnt + 1));
+#ifdef DEBUG
       A4GL_debug ("DIR : %s", buff);
+#endif
       names[cnt - 1] = strdup (buff);
       /************************************************************************
       * Here we are examining one of the components of the directory entry's
@@ -169,7 +171,9 @@ merge_list (char **list, char **newlist)
       if (isinlist (list, newlist[a]))
 	continue;
       nlist++;
+#ifdef DEBUG
       A4GL_debug ("Adding : %s\n", newlist[a]);
+#endif
       list = realloc (list, sizeof (char *) * (nlist + 1));
       list[nlist - 1] = strdup (newlist[a]);
       list[nlist] = 0;
@@ -216,7 +220,9 @@ A4GL_gen_list_dbpath (char *spec, char *path)
       if (str_path[cnt] == ':')
 	{
 #endif
+#ifdef DEBUG
 	  A4GL_debug ("Found separator at %d", cnt);
+#endif
 	  str_path[cnt] = 0;
 	  if (strlen (ptr))
 	    {
@@ -234,7 +240,9 @@ A4GL_gen_list_dbpath (char *spec, char *path)
 		  if (str_path2[cnt2] == ':')
 		    {
 #endif
+#ifdef DEBUG
 		      A4GL_debug ("Skipping one more separator");
+#endif
 		      ptr = &str_path2[cnt2 + 1];
 		    }
 		  else
@@ -264,7 +272,9 @@ A4GL_gen_list_dbpath (char *spec, char *path)
       list = merge_list (list, A4GL_read_directory (ptr, spec));
     }
 
+#ifdef DEBUG
   A4GL_debug ("Returning %p\n", list);
+#endif
   return list;
 }
 

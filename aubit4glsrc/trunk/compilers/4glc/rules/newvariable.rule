@@ -426,7 +426,9 @@ array_r_variable_or_ident_vu: identifier arr_subscripts_al
 arr_subscripts_al :
         OPEN_SQUARE num_list_e CLOSE_SQUARE {
 		struct array_list *al;
+#ifdef DEBUG
          	A4GL_debug("---> Subscript or substring");
+#endif
 		al=acl_malloc2(sizeof(struct array_list));
 		al->array=$<ptr_list>2;
 		al->substr=NULL;
@@ -435,7 +437,9 @@ arr_subscripts_al :
         } 
 	| OPEN_SQUARE num_list_e CLOSE_SQUARE OPEN_SQUARE num_list_e CLOSE_SQUARE {
 		struct array_list *al;
+#ifdef DEBUG
          	A4GL_debug("---> Subscript & substring");
+#endif
 		al=acl_malloc2(sizeof(struct array_list));
 		al->array=$<ptr_list>2;
 		al->substr=$<ptr_list>5;

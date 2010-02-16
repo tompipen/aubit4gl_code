@@ -24,12 +24,12 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.518 2010-02-12 14:39:44 mikeaubury Exp $
+# $Id: compile_c.c,v 1.519 2010-02-16 13:16:47 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
-static char const module_id[] = "$Id: compile_c.c,v 1.518 2010-02-12 14:39:44 mikeaubury Exp $";
+static char const module_id[] = "$Id: compile_c.c,v 1.519 2010-02-16 13:16:47 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -529,7 +529,9 @@ dump_cmd (struct command *r,int isAtModuleLevel)
   int ok;
   int last_line = 0;
   A4GL_assertion (r->module == 0, "No module");
+#ifdef DEBUG
   A4GL_debug ("Dumping command type : %d (%s %d)\n", r->cmd_data.type, r->module, r->lineno);
+#endif
 
 
   if (r->cmd_data.type == E_CMD_LINT_IGNORE_CMD || r->cmd_data.type == E_CMD_LINT_EXPECT_CMD)
@@ -707,7 +709,9 @@ open_outfile (void)
 
   //if ( A4GL_isno(acl_getenv ("A4GL_NOCLOBBER")) ||A4GL_isno(acl_getenv ("A4GL_NOSQLCLOBBER")) )
   //{
+#ifdef DEBUG
   A4GL_debug ("Clobbering...");
+#endif
 
 
   //A4GL_set_clobber (this_module_name);
@@ -717,7 +721,9 @@ open_outfile (void)
   //}
 
 
+#ifdef DEBUG
   A4GL_debug ("Opening output map");
+#endif
 
   //openmap (this_module_name);
 
@@ -726,7 +732,9 @@ open_outfile (void)
     {
       if (ptr[0] == 'Y' || ptr[0] == 'y')
 	{
+#ifdef DEBUG
 	  A4GL_debug (">>> NO C FILES... %s", ptr);
+#endif
 	  return;
 	}
     }
@@ -824,7 +832,9 @@ open_outfile (void)
       exit (3);
     }
 
+#ifdef DEBUG
   A4GL_debug ("Output file is %s", filename_for_c);
+#endif
 
 
   FPRINTF (outfile, "#define fgldate long\n");
@@ -975,7 +985,9 @@ void
 printc (char *fmt, ...)
 {
   va_list ap;
+#ifdef DEBUG
   /*A4GL_debug("via printc (a) in lib\n"); */
+#endif
   va_start (ap, fmt);
   if (strcmp (fmt, "#") == 0)
     {
@@ -1243,7 +1255,9 @@ real_print_expr (struct expr_str *ptr)
 {
   void *optr;
   int a;
+#ifdef DEBUG
   A4GL_debug ("Print expr... %p", ptr);
+#endif
 
   A4GL_assertion (ptr == 0, "can't print a null pointer...");
 
@@ -4529,7 +4543,9 @@ get_key_codes (char *keys)
   strcpy (s, keys);
   A4GL_trim (s);
   strcat (s, "||");
+#ifdef DEBUG
   A4GL_debug ("Chk keys %s\n", s);
+#endif
 
   if (strcmp (keys, "->ANY") == 0)
     {
@@ -5222,12 +5238,16 @@ print_nullify (char type, variable_list * v)
 {
   int a;
   //printf ("print_nullify called :%c\n", type);
+#ifdef DEBUG
   A4GL_debug ("AUTONULL ?");
+#endif
 
   printc ("/* Print nullify */\n");
 
   a = A4GL_isyes (acl_getenv ("AUTONULL"));
+#ifdef DEBUG
   A4GL_debug ("isyes returns %d ", a);
+#endif
 
   if (!a)
     return;
@@ -5337,7 +5357,9 @@ print_variable_new (struct variable *v, enum e_scope scope, int level)
 
   strcpy (arrbuff, "-1");
   /* are we dealing with the sqlca variable ? */
+#ifdef DEBUG
   A4GL_debug ("v->names.name=%s", v->names.names.names_val[0].name);
+#endif
   if (level == 0 && strcmp (v->names.names.names_val[0].name, "sqlca") == 0)
     {
 #ifdef DEBUG
@@ -5695,11 +5717,15 @@ local_rettype (char *s)
   };
   int i;
 
+#ifdef DEBUG
   A4GL_debug ("In rettype : %s", A4GL_null_as_null (s));
+#endif
 
   if (!initialized)
     {
+#ifdef DEBUG
       A4GL_debug ("In rettype - initializing type names");
+#endif
       for (i = 0; vals[i]; i++)
 	{
 	  if (A4GL_has_datatype_function_i (i, "OUTPUT"))
@@ -5960,7 +5986,9 @@ merge_files (void)
 
   if (A4GL_isyes (acl_getenv ("A4GL_NOCFILE")))
     {
+#ifdef DEBUG
       A4GL_debug (">>> NO C FILES... ");
+#endif
       return;
     }
 
@@ -6492,7 +6520,9 @@ LEXLIB_A4GL_write_generated_code (struct module_definition *m)
 	      char *(*function) (void);
 
 	      function = A4GL_get_datatype_function_n (s, "INCLUDE");
+#ifdef DEBUG
 	      A4GL_debug ("function=%p\n", function);
+#endif
 	      strcpy (ss, function ());
 	      printh ("#include <%s.h>\n", ss);
 	    }

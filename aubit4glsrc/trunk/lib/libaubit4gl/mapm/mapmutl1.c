@@ -18,7 +18,7 @@
  */
 
 /*
- *      $Id: mapmutl1.c,v 1.2 2007-08-25 11:45:04 mikeaubury Exp $
+ *      $Id: mapmutl1.c,v 1.3 2010-02-16 13:16:42 mikeaubury Exp $
  *
  *      This file contains the utility function 'M_apm_log_error_msg'
  *
@@ -26,6 +26,9 @@
  *	their own custom version easily without changing the base library.
  *
  *      $Log: not supported by cvs2svn $
+ *      Revision 1.2  2007/08/25 11:45:04  mikeaubury
+ *      .
+ *
  *      Revision 1.1  2007/07/26 12:04:28  mikeaubury
  *      fix some issues with decimals
  *      fix issue with freeing sql memory
@@ -52,13 +55,17 @@ void	M_apm_log_error_msg(int fatal, char *message)
 if (fatal)
   {
 	
+#ifdef DEBUG
 	A4GL_debug("MAPM Error: %s",message);
+#endif
    	A4GL_exitwith("MAPM Error");
    exit(100);
   }
 else
   {
+#ifdef DEBUG
 	A4GL_debug("MAPM Warning: %s",message);
+#endif
    	A4GL_exitwith("MAPM Warning");
   }
 }

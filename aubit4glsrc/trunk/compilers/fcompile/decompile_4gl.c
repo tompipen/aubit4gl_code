@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: decompile_4gl.c,v 1.8 2009-11-13 11:58:00 mikeaubury Exp $
+# $Id: decompile_4gl.c,v 1.9 2010-02-16 13:15:27 mikeaubury Exp $
 #
 */
 
@@ -116,7 +116,9 @@ int main (int argc, char *argv[])
   a = A4GL_read_data_from_file ("struct_form", &the_form, form);
   if (!a) {
   	strcat(form,".afr");
+#ifdef DEBUG
   	A4GL_debug("opening form %s\n",form);
+#endif
   	a = A4GL_read_data_from_file ("struct_form", &the_form, form);
   }
 

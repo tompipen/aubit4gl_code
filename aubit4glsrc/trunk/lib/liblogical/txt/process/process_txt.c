@@ -23,14 +23,18 @@ int maxwidth;
 
 
 int RP_default_file (void *report,char *errbuff,void *rbx, int rbs) {
+#ifdef DEBUG
 A4GL_debug("RP_default_file");
+#endif
 	// As there is no file description to mess with!
 	return 1;
 }
 
 
 int RP_load_file (void *report, FILE *fin) {
+#ifdef DEBUG
 A4GL_debug("RP_load_file");
+#endif
 	// As there is no file description to mess with!
 	return 1;
 }
@@ -41,7 +45,9 @@ clear_page (int w, int h)
 {
   int a;
   char *buff;
+#ifdef DEBUG
 A4GL_debug("clear_page");
+#endif
   buff = acl_malloc2 (w + 1);
   memset (buff, ' ', w);
   buff[w] = 0;
@@ -69,7 +75,9 @@ trim (char *s)
 {
   int a, b;
   b = 0;
+#ifdef DEBUG
 A4GL_debug("trim");
+#endif
   for (a = strlen (s) - 1; a > 0; a--)
     {
       if (A4GL_isblank (s[a]))
@@ -99,13 +107,17 @@ x=0.0;
 y=0.0;
 w=0.0;
 h=0.0;
+#ifdef DEBUG
 A4GL_debug("ChkForBarcode");
+#endif
 
 	s_new=A4GL_check_for_tags(s_orig);
 
 	if (strcmp(s_new,s_orig)!=0) {
 		//printf("Got %s from %s\n", s_new,s_orig);
+#ifdef DEBUG
 		A4GL_debug("Got %s from %s\n", s_new,s_orig);
+#endif
 	}
 
 
@@ -144,8 +156,10 @@ A4GL_debug("ChkForBarcode");
 	*p2=0;
 	p2+=3;
 	len=p2-sstart;
+#ifdef DEBUG
 	A4GL_debug("Txt=%s x=%lf y=%lf w=%lf h=%lf\n",p, x,y,w,h);
 	A4GL_debug("barcodeline=%s\n",barcodeline);
+#endif
 	p=strdup(p);
         A4GL_trim(p);
 	barcode=strdup(generate_barcode(x,y,w,h,p));
@@ -194,7 +208,9 @@ output_page (FILE * fout, int width, int h)
   int a;
   int hnew;
   char *ptr;
+#ifdef DEBUG
 A4GL_debug("output_page");
+#endif
 
   if (A4GL_isyes (acl_getenv ("USETOPOFPAGE")))
     {
@@ -267,7 +283,9 @@ static void
 set_text (int x, int y, char *s)
 {
   char *ptr;
+#ifdef DEBUG
 A4GL_debug("set_text");
+#endif
   ptr = lines[y - 1];
   memcpy (&ptr[x - 1], s, strlen (s));
   page_touched = 1;
@@ -320,7 +338,9 @@ int RP_process_report (void *rp, char *buff,void *rbx, int rbs)
   int this_page;
   page_touched = 0;
 
+#ifdef DEBUG
 A4GL_debug("here");
+#endif
   report=rp;
 
 

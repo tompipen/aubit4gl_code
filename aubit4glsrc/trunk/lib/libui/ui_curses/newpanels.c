@@ -24,11 +24,11 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.179 2010-01-20 13:14:42 mikeaubury Exp $
+# $Id: newpanels.c,v 1.180 2010-02-16 13:17:29 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: newpanels.c,v 1.179 2010-01-20 13:14:42 mikeaubury Exp $";
+		"$Id: newpanels.c,v 1.180 2010-02-16 13:17:29 mikeaubury Exp $";
 #endif
 
 /**
@@ -288,14 +288,18 @@ if (A4GL_isyes(acl_getenv("ODDOPTIONS"))) {
 
       h = A4GL_screen_height () - 1;
       w = A4GL_screen_width () - 1;
+#ifdef DEBUG
       A4GL_debug ("Creating window : h=%d w=%d y=%d x=%d", h, w, y - 1, x - 1);
       A4GL_debug ("win = newwin (%d,%d,0,0)", A4GL_screen_height (), A4GL_screen_width ());
+#endif
 
       win = newwin (0, 0, 0, 0);
+#ifdef DEBUG
       A4GL_debug ("Calling screen height");
       A4GL_debug ("h=%d", h);
       A4GL_debug ("Calling screen width");
       A4GL_debug ("w=%d", w);
+#endif
       A4GL_add_pointer (name, WINCODE, win);
     }
   else
@@ -316,7 +320,9 @@ if (A4GL_isyes(acl_getenv("ODDOPTIONS"))) {
 	  A4GL_add_pointer (name, WINCODE, win);
 	  A4GL_add_pointer (name, DROPSHADOW, dswin);
 	  A4GL_set_bkg (dswin, '+');
+#ifdef DEBUG
 	  A4GL_debug ("XX3 REVERSE");
+#endif
 	  wbkgdset (dswin, COLOR_RED | A_REVERSE);
 	  A4GL_mja_wrefresh (dswin);
 	}
@@ -327,7 +333,9 @@ if (A4GL_isyes(acl_getenv("ODDOPTIONS"))) {
 	  win = newwin (h, w, y - 2, x - 2);
 	  A4GL_add_pointer (name, WINCODE, win);
 	  A4GL_add_pointer (name, DROPSHADOW, dswin);
+#ifdef DEBUG
 	  A4GL_debug ("XX4 REVERSE");
+#endif
 	  wbkgdset (dswin, COLOR_RED | A_REVERSE);
 	  A4GL_mja_wrefresh (dswin);
 	}
@@ -337,7 +345,9 @@ if (A4GL_isyes(acl_getenv("ODDOPTIONS"))) {
 	  win = newwin (h, w, y - 1, x - 1);
 	  if (a4gl_toupper (name[0]) != name[0])
 	  A4GL_add_pointer (name, WINCODE, win);
+#ifdef DEBUG
 	  A4GL_debug ("Window = %p name=%s", win,name);
+#endif
 	}
 
     }
@@ -361,9 +371,13 @@ if (A4GL_isyes(acl_getenv("ODDOPTIONS"))) {
   if ((attrib & 0xff) == 0 || (attrib & 0xff) == 0xff)
     {
       attrib = attrib + ' ';
+#ifdef DEBUG
       A4GL_debug ("Set pad char to space");
+#endif
     }
+#ifdef DEBUG
   A4GL_debug ("Setting attribute for window to 0x%x for %s\n", attrib, name);
+#endif
 
 
 
@@ -373,7 +387,9 @@ if (A4GL_isyes(acl_getenv("ODDOPTIONS"))) {
   A4GL_add_pointer (name, ATTRIBUTE, (void *) ((long)attrib));
   if (border)
     {
+#ifdef DEBUG
       A4GL_debug ("Adding border %x", attrib);
+#endif
 
       A4GL_set_bkg (win, attrib);
    if (A4GL_isyes(acl_getenv("SIMPLE_GRAPHICS")))  {
@@ -383,9 +399,13 @@ if (A4GL_isyes(acl_getenv("ODDOPTIONS"))) {
    }
       A4GL_mja_wrefresh (win);
     }
+#ifdef DEBUG
   A4GL_debug("new_panel %p",win);
+#endif
   pan = new_panel (win);
+#ifdef DEBUG
   A4GL_debug("New panel %p for window %p name '%s'  ",pan,win,name);
+#endif
   set_panel_userptr (pan, strdup (name));
   A4GL_add_pointer (name, PANCODE, pan);
 
@@ -416,7 +436,9 @@ if (A4GL_isyes(acl_getenv("ODDOPTIONS"))) {
 	  windows[a].form = 0;
 	  windows[a].winattr.comment_line = comment_line;
 	  windows[a].winattr.menu_line = menu_line;
+#ifdef DEBUG
 	  A4GL_debug ("Setting prompt line to %d", prompt_line);
+#endif
 	  windows[a].winattr.prompt_line = prompt_line;
 	  windows[a].winattr.form_line = form_line;
 	  windows[a].winattr.message_line = message_line;
@@ -441,7 +463,9 @@ if (A4GL_isyes(acl_getenv("ODDOPTIONS"))) {
 
   keypad (win, TRUE);
 
+#ifdef DEBUG
   A4GL_debug ("Deciding what to do... %s\n", name);
+#endif
   if (a4gl_toupper (name[0]) != name[0] || 1)
     {
 #ifdef DEBUG
@@ -504,7 +528,9 @@ void
 
   if (win->winattr.border)
     {
+#ifdef DEBUG
       A4GL_debug ("Clr screen - redraw border");
+#endif
    if (A4GL_isyes(acl_getenv("SIMPLE_GRAPHICS")))  {
       wborder (w, '|', '|', '-', '-', '+','+', '+', '+');
    } else {
@@ -540,7 +566,9 @@ void
 char buff[256]="";
   PANEL *panel = 0;
   struct s_form_dets *f;
+#ifdef DEBUG
   A4GL_debug("before remove window - currwinno=%d",currwinno);
+#endif
   A4GL_chkwin ();
 
 
@@ -587,8 +615,8 @@ char buff[256]="";
 	  }
 #endif
 	  delwin (win);
-	 A4GL_debug("delwin : %p",win);
 #ifdef DEBUG
+	 A4GL_debug("delwin : %p",win);
 	  {
 	    A4GL_debug ("Here...");
 	  }
@@ -648,32 +676,58 @@ char buff[256]="";
   }
 #endif
 #ifdef __WIN32__
+#ifdef DEBUG
 	A4GL_debug("Skipping unpost on windows - causes a fault for some reason..");
+#endif
 #else
 	unpost_form(curses_form);
 #endif
+#ifdef DEBUG
     A4GL_debug ("unposted form");
+#endif
 			
 				for (a=0;a<f->fileform->metrics.metrics_len;a++) {
 					FIELD *fld;
+#ifdef DEBUG
     A4GL_debug ("loop a=%d",a);
+#endif
 					fld=(FIELD *)f->fileform->metrics.metrics_val[a].field;
 					// Do I need to free the buffer ???
 					//free(fld->buf);
+#ifdef DEBUG
     A4GL_debug ("Here1..");
+#endif
 					
-					if (free_field(fld)!=E_OK) {	A4GL_debug("Couldn't free field"); }
+					if (free_field(fld)!=E_OK) {	
+#ifdef DEBUG
+A4GL_debug("Couldn't free field"); 
+#endif
+}
 
 					fld=(FIELD *)f->fileform->metrics.metrics_val[a].dlm1;
+#ifdef DEBUG
     A4GL_debug ("Here2..");
-					if (free_field(fld)!=E_OK) {	A4GL_debug("Couldn't free field"); }
+#endif
+					if (free_field(fld)!=E_OK) {	
+#ifdef DEBUG
+A4GL_debug("Couldn't free field"); 
+#endif
+}
 					fld=(FIELD *)f->fileform->metrics.metrics_val[a].dlm2;
-					if (free_field(fld)!=E_OK) {	A4GL_debug("Couldn't free field"); }
+					if (free_field(fld)!=E_OK) {	
+#ifdef DEBUG
+A4GL_debug("Couldn't free field"); 
+#endif
+}
+#ifdef DEBUG
     A4GL_debug ("Here3..");
+#endif
 	
 				}
 				if (free_form(curses_form)!=E_OK) {
+#ifdef DEBUG
 					A4GL_debug("Couldn't free form");
+#endif
 				}
 				f->form=0;
 
@@ -687,12 +741,16 @@ char buff[256]="";
 		
 		
 			if (f->fileform) {
+#ifdef DEBUG
     A4GL_debug ("Here5..");
+#endif
 //				A4GL_free_associated_mem(f->fileform);
 				acl_free(f->fileform);
 				f->fileform=NULL;
 			}
+#ifdef DEBUG
     A4GL_debug ("Here4..");
+#endif
 //			A4GL_free_associated_mem(f);
 			acl_free(f);
 		}
@@ -711,7 +769,9 @@ char buff[256]="";
   }
 #endif
   
+#ifdef DEBUG
   A4GL_debug("after remove window - currwinno=%d",currwinno);
+#endif
 
 }
 
@@ -754,8 +814,10 @@ int
 {
   PANEL *p;
   WINDOW *w;
+#ifdef DEBUG
   A4GL_debug ("Current window....");
   A4GL_debug ("currwinno=%d currwin=%p", currwinno, currwin);
+#endif
   A4GL_set_status(0,0);
   A4GL_chkwin ();
 #ifdef DEBUG
@@ -841,26 +903,38 @@ A4GL_mja_gotoxy (int x, int y)
   int a;
   A4GL_chkwin ();
 
+#ifdef DEBUG
   A4GL_debug ("In move - %d %d current window=%p", x, y, A4GL_window_on_top ());
   A4GL_debug ("In move - %d %d", x, y);
+#endif
   if (windows[currwinno].winattr.border)
     {
+#ifdef DEBUG
       A4GL_debug ("In move border - %d %d", x, y);
+#endif
       a = wmove (currwin, y, x);
     }
   else
     {
+#ifdef DEBUG
       A4GL_debug ("In move no border - %d %d", x, y);
+#endif
       a = wmove (currwin, y - 1, x - 1);
     }
+#ifdef DEBUG
   A4GL_debug ("In move - %d %d", x, y);
+#endif
   if (a == OK)
     {
+#ifdef DEBUG
       A4GL_debug ("Move to %d,%d - %d", x, y, a);
+#endif
     }
   else
     {
+#ifdef DEBUG
       A4GL_debug ("Move to %d %d fails", x, y);
+#endif
     }
 
   if (A4GL_isyes(acl_getenv("REFRESH_AFTER_MOVE"))) {
@@ -908,7 +982,9 @@ A4GL_tui_printr (int refreshwin, char *fmt, ...)
   A4GL_chkwin ();
   va_start (args, fmt);
   vsprintf (buff, fmt, args);
+#ifdef DEBUG
   A4GL_debug ("addsr : %s", buff);
+#endif
 
   if (A4GL_isyes (acl_getenv ("ENABLEACSMAPPING")) || 1)
     {
@@ -974,7 +1050,9 @@ erase_form (FORM * f)
 #endif
   delwin (s);
   delwin (w);
+#ifdef DEBUG
 A4GL_debug("delwin %p %p",s,w);
+#endif
 }
 */
 
@@ -995,7 +1073,9 @@ A4GL_display_form (struct s_form_dets *f,int attrib)
 
   int fl;
   A4GL_chkwin ();
+#ifdef DEBUG
   A4GL_debug ("In display_form");
+#endif
   w = currwin;
 
   SPRINTF1(buff,"%p",f);
@@ -1005,7 +1085,9 @@ A4GL_display_form (struct s_form_dets *f,int attrib)
     {
       A4GL_error_box ("NO WINDOW",0);
     }
+#ifdef DEBUG
   A4GL_debug ("scale form %p", f->form);
+#endif
 
   fl = A4GL_getform_line ();
   for (a=fl;a<=UILIB_A4GL_get_curr_height();a++) {
@@ -1018,9 +1100,11 @@ A4GL_display_form (struct s_form_dets *f,int attrib)
   rows = f->fileform->maxline - 1;
   cols = f->fileform->maxcol;
 
+#ifdef DEBUG
   A4GL_debug ("Form line=%d", fl);
   A4GL_debug ("Scale form returns %d %d", rows, cols);
   A4GL_debug ("Current window %d %d", windows[currwinno].h, windows[currwinno].w);
+#endif
 
   if (windows[currwinno].winattr.border)
     {
@@ -1032,7 +1116,9 @@ A4GL_display_form (struct s_form_dets *f,int attrib)
 
   if (rows - windows[currwinno].winattr.border > windows[currwinno].h + 1)
     {
+#ifdef DEBUG
 	A4GL_debug("%d - %d > %d + 1",rows,windows[currwinno].winattr.border , windows[currwinno].h );
+#endif
       A4GL_exitwith ("Window is too small to display this form (too high)");
       return 0;
     }
@@ -1058,6 +1144,7 @@ A4GL_display_form (struct s_form_dets *f,int attrib)
 
   f->form_details.border = windows[currwinno].winattr.border;
 
+#ifdef DEBUG
   if (f->form_details.border)
     {
       A4GL_debug ("Form details returns it has border");
@@ -1076,15 +1163,20 @@ A4GL_display_form (struct s_form_dets *f,int attrib)
       A4GL_debug ("Window details returns it has *NO* border ");
     }
   A4GL_debug ("derwin - %d rows %d cols form line=%d", rows, cols, fl);
+#endif
 
   if (windows[currwinno].winattr.border)
     {
+#ifdef DEBUG
       A4GL_debug ("MJAPASS1");
+#endif
       drwin = derwin (w, rows, cols, fl , 1);
     }
   else
     {
+#ifdef DEBUG
       A4GL_debug ("MJAPASS2 rows=%d cols=%d fl=%d", rows, cols, fl);
+#endif
       drwin = derwin (w, rows, cols, fl - 1, 0);
 
     }
@@ -1115,7 +1207,9 @@ A4GL_display_form (struct s_form_dets *f,int attrib)
 
   a = set_form_sub (f->form, drwin);
 
+#ifdef DEBUG
   A4GL_debug ("setup windows");
+#endif
   keypad (w, TRUE);
   SPRINTF1 (buff, "Currwinno=%d", currwinno);
   /*error_box(buff); */
@@ -1127,19 +1221,25 @@ A4GL_display_form (struct s_form_dets *f,int attrib)
       return 0;
     }
 
+#ifdef DEBUG
   A4GL_debug ("post the form s_form_dets=%p form=%p", f, f->form);
+#endif
   a = post_form (f->form);
 
   if (a == E_POSTED)
     {
+#ifdef DEBUG
       A4GL_debug ("Form posted already - dumping and re-doing");
+#endif
       unpost_form (f->form);
       a = post_form (f->form);
     }
 
   if (f->form_details.border)
     {
+#ifdef DEBUG
       A4GL_debug ("Form has border");
+#endif
    if (A4GL_isyes(acl_getenv("SIMPLE_GRAPHICS")))  {
       wborder (w, '|', '|', '-', '-', '+','+', '+', '+');
    } else {
@@ -1148,15 +1248,21 @@ A4GL_display_form (struct s_form_dets *f,int attrib)
     }
 
   
+#ifdef DEBUG
   A4GL_debug ("start the form");
+#endif
   A4GL_start_form (f);
 
   if ((attrib & 0xff) == 0 || (attrib & 0xff) == 0xff)
     {
       attrib = attrib + ' ';
+#ifdef DEBUG
       A4GL_debug ("Set pad char to space");
+#endif
     }
+#ifdef DEBUG
   A4GL_debug ("Setting attribute for form to 0x%x \n", attrib);
+#endif
 
 
   A4GL_set_bkg (drwin, attrib);
@@ -1166,7 +1272,9 @@ A4GL_display_form (struct s_form_dets *f,int attrib)
   A4GL_mja_wrefresh (w);
   A4GL_clr_form(0);
   UILIB_A4GL_zrefresh();
+#ifdef DEBUG
   A4GL_debug ("And return");
+#endif
   return w;
 }
 
@@ -1184,7 +1292,9 @@ A4GL_display_form_new_win (char *name, struct s_form_dets * f, int x, int y,int 
   char buff[80];
   A4GL_chkwin ();
   A4GL_set_status(0,0);
+#ifdef DEBUG
   A4GL_debug ("display_form_new_win - name=%s got errorline as %d\n", name,f->form_details.error_line);
+#endif
   A4GL_chkwin();
   scale_form (f->form, &rows, &cols);
   if (f->form_details.border)
@@ -1196,10 +1306,14 @@ A4GL_display_form_new_win (char *name, struct s_form_dets * f, int x, int y,int 
       rows = f->fileform->maxline;
     }
   cols = f->fileform->maxcol;
+#ifdef DEBUG
   A4GL_debug ("display_form_new_win : %d rows %d cols at %d,%d x,y", rows, cols, x,
 	 y);
+#endif
 
+#ifdef DEBUG
   A4GL_debug ("display_form_new_win - border=%d", f->form_details.border);
+#endif
   SPRINTF2 (buff, "%d %d", cols, rows);
 #ifdef DEBUG
   {				/*debug("Rows=%d formline=%d f2 = %d",rows,getform_line(),f->form_details.form_line); */
@@ -1315,7 +1429,9 @@ A4GL_get_curr_left (void)
 int
  UILIB_A4GL_get_curr_height (void)
 {
+#ifdef DEBUG
 	A4GL_debug("get_curr_height : %d = %d",currwinno,windows[currwinno].h);
+#endif
   return windows[currwinno].h;
 }
 
@@ -1354,8 +1470,10 @@ int
  UILIB_A4GL_get_curr_width (void)
 {
   A4GL_chkwin ();
+#ifdef DEBUG
   A4GL_debug ("get curr width, currwinno=%d windows name =%s %d", currwinno,
 	 windows[currwinno].name, windows[currwinno].w);
+#endif
   return windows[currwinno].w;
 }
 
@@ -1377,8 +1495,10 @@ char *
 int
 A4GL_get_curr_border (void)
 {
+#ifdef DEBUG
   A4GL_debug ("get curr border, currwinno=%d windows name =%s %d", currwinno,
 	 windows[currwinno].name, windows[currwinno].winattr.border);
+#endif
   return windows[currwinno].winattr.border;
 }
 
@@ -1391,18 +1511,26 @@ A4GL_get_curr_border (void)
 void
 A4GL_mja_setcolor (int typ)
 {
+#ifdef DEBUG
   A4GL_debug ("Set color.");
+#endif
   if (has_colors ())
     {
+#ifdef DEBUG
       A4GL_debug ("Has color\n");
+#endif
       switch (typ)
 	{
 	case ERROR_COL:
+#ifdef DEBUG
 	  A4GL_debug ("XX4 REVERSE");
+#endif
 	  currwin->_attrs = A4GL_colour_code (COLOR_RED) | A_REVERSE;
 	  break;
 	case MESSAGE:
+#ifdef DEBUG
 	  A4GL_debug ("XX4 REVERSE");
+#endif
 	  currwin->_attrs = A4GL_colour_code (COLOR_CYAN) | A_REVERSE;
 	  break;
 	case NORMAL_MENU:
@@ -1411,7 +1539,9 @@ A4GL_mja_setcolor (int typ)
 	  break;
 	case INVERT_MENU:
 	  standout ();
+#ifdef DEBUG
 	  A4GL_debug ("XX4 REVERSE");
+#endif
 	  /* currwin->_attrs = A4GL_colour_code (COLOR_WHITE) | A_REVERSE; */
 	  break;
 	case TITLE_COL:
@@ -1432,7 +1562,9 @@ A4GL_mja_setcolor (int typ)
       switch (typ)
 	{
 	case ERROR_COL:
+#ifdef DEBUG
 	  A4GL_debug ("XX4 REVERSE");
+#endif
 	  currwin->_attrs = A_REVERSE;
 	  break;
 	case MESSAGE:
@@ -1443,15 +1575,21 @@ A4GL_mja_setcolor (int typ)
 	  break;
 	case INVERT_MENU:
 	  standout ();
+#ifdef DEBUG
 	  A4GL_debug ("XX4 REVERSE");
+#endif
 	  /* currwin->_attrs = A_REVERSE; */
 	  break;
 	case TITLE_COL:
+#ifdef DEBUG
 	  A4GL_debug ("XX4 REVERSE");
+#endif
 	  currwin->_attrs = A_REVERSE;
 	  break;
 	case EDIT_FIELD:
+#ifdef DEBUG
 	  A4GL_debug ("XX4 REVERSE");
+#endif
 	  currwin->_attrs = A_REVERSE;
 	  break;
 	case NORMAL_TEXT:
@@ -1459,7 +1597,9 @@ A4GL_mja_setcolor (int typ)
 	  break;
 	}
     }
+#ifdef DEBUG
   A4GL_debug ("Done..");
+#endif
 }
 #endif
 
@@ -1471,10 +1611,14 @@ int
 A4GL_getch_win (void)
 {
 int a;
+#ifdef DEBUG
   A4GL_debug ("getch_win called...");
+#endif
   a=A4GL_getch_swin (A4GL_window_on_top ());
   if (a) A4GL_clr_error_nobox("A4GL_getch_win");
+#ifdef DEBUG
   A4GL_debug("a=%d",a);
+#endif
   return a;
 }
 
@@ -1487,11 +1631,15 @@ A4GL_getch_swin (WINDOW * window_ptr)
 {
   int a;
   static int no_delay=-1;
+#ifdef DEBUG
   A4GL_debug ("Reading from keyboard on window %p", window_ptr);
+#endif
   A4GL_set_abort (0);
   a=A4GL_readkey();
   if (a!=0) {
+#ifdef DEBUG
 		A4GL_debug("Read %d from keyfile",a);
+#endif
 		return a;
 	}
 
@@ -1502,22 +1650,30 @@ A4GL_getch_swin (WINDOW * window_ptr)
 		    	no_delay=(A4GL_isno(acl_getenv("HALFDELAY")));
 	   }
 
+#ifdef DEBUG
 	A4GL_debug("HALF DELAY\n");
+#endif
 
 	if(!no_delay) {
       		halfdelay (5); 
 	}
 #endif
+#ifdef DEBUG
       A4GL_debug("Waiting for key press");
+#endif
 #ifdef __WIN32__
+#ifdef DEBUG
 	A4GL_debug("WINDOW KEYPRESS");
+#endif
 	keypad(stdscr,TRUE);
       a = wgetch (stdscr); // GETCH - getch_swin
 #else
       //a = wgetch (stdscr); // GETCH - getch_swin
       a = getch (); // GETCH - getch_swin
 #endif
+#ifdef DEBUG
       A4GL_debug("key press : %d",a);
+#endif
 
 
 
@@ -1540,12 +1696,16 @@ A4GL_getch_swin (WINDOW * window_ptr)
 
       if (a == KEY_MOUSE)
 	{
+#ifdef DEBUG
 	  A4GL_debug ("Mouse event...");
+#endif
 	}
 
       if (abort_pressed)
 	{
+#ifdef DEBUG
 	  A4GL_debug ("MJAC Aborted!");
+#endif
 	  a = KEY_CANCEL;
 	  break;
 	}
@@ -1559,7 +1719,9 @@ A4GL_getch_swin (WINDOW * window_ptr)
 
       if (a != -1 )
 	{
+#ifdef DEBUG
 	  A4GL_debug ("MJAC Key Pressed %d", a);
+#endif
 	  break;
 	}
 		A4GL_monitor_key_pressed(a);
@@ -1569,7 +1731,9 @@ A4GL_getch_swin (WINDOW * window_ptr)
   a=A4GL_curses_to_aubit (a); // Convert it to an aubit key...
   A4GL_chk_for_screen_print(a);
   A4GL_logkey(a);
+#ifdef DEBUG
   A4GL_debug ("Got char from keyboard : %d F2=%d LEFT=%d 4GL for f5 = %d", a,KEY_F(2),KEY_LEFT,A4GLKEY_F (5));
+#endif
 
   return a;
 }
@@ -1585,12 +1749,16 @@ A4GL_real_getch_swin (WINDOW * window_ptr)
   int a;
   static int no_delay=-1;
 
+#ifdef DEBUG
   A4GL_debug ("Reading from keyboard on window %p", window_ptr);
+#endif
   A4GL_set_abort (0);
   a=A4GL_readkey();
 
   if (a!=0) {
+#ifdef DEBUG
                 A4GL_debug("Read %d from keyfile",a);
+#endif
                 return a;
         }
 
@@ -1598,38 +1766,56 @@ A4GL_real_getch_swin (WINDOW * window_ptr)
 	   if (no_delay==-1) {
 		    	no_delay=(A4GL_isno(acl_getenv("HALFDELAY")));
 	   }
+#ifdef DEBUG
 	A4GL_debug("HALF DELAY\n");
+#endif
 	if(!no_delay) {
       	halfdelay (5);
 	}
+#ifdef DEBUG
 	A4GL_debug("SET HALF DELAY\n");
+#endif
 #endif
 
   while (1)
     {
       if (window_ptr) {
+#ifdef DEBUG
 		A4GL_debug("KEYPAD\n");
+#endif
   		keypad (window_ptr, TRUE);
+#ifdef DEBUG
 		A4GL_debug("WGETCH\n");
+#endif
 		a = wgetch (window_ptr);
+#ifdef DEBUG
 		A4GL_debug("WGETCH : %d",a);
+#endif
 	}
 
       else {
+#ifdef DEBUG
 		A4GL_debug("GETCH");
+#endif
 		a = getch (); // GETCH1 - A4GL_real_getch_swin
 	}
 
+#ifdef DEBUG
 	A4GL_debug("getch returns %d",a);
+#endif
 
       if (a == KEY_MOUSE)
         {
+#ifdef DEBUG
           A4GL_debug ("Mouse event...");
+#endif
         }
 
       if (abort_pressed)
         {
+#ifdef DEBUG
           A4GL_debug ("MJAC Aborted!");
+#endif
           a = KEY_CANCEL;
           break;
         }
@@ -1637,7 +1823,9 @@ A4GL_real_getch_swin (WINDOW * window_ptr)
 
       if (a != -1)
         {
+#ifdef DEBUG
           A4GL_debug ("MJAC Key Pressed %d", a);
+#endif
           break;
         }
 
@@ -1658,11 +1846,15 @@ A4GL_real_getch_swin (WINDOW * window_ptr)
 	}
 #endif
   cbreak ();
+#ifdef DEBUG
   A4GL_debug ("Got char from keyboard : %d LEFT=%d", a,KEY_LEFT);
+#endif
   a=A4GL_curses_to_aubit (a);
   A4GL_chk_for_screen_print(a);
   A4GL_logkey(a);
+#ifdef DEBUG
   A4GL_debug (" = %d", a);
+#endif
   return a;
 }
 
@@ -1673,7 +1865,9 @@ A4GL_real_getch_swin (WINDOW * window_ptr)
 int
 A4GL_decode_line_scr (int l)
 {
+#ifdef DEBUG
 	A4GL_debug("decode_line_scr - l=%d",l);
+#endif
   if (l > 0)
     {
 		while (l>A4GL_screen_height()) l--;
@@ -1681,9 +1875,13 @@ A4GL_decode_line_scr (int l)
     }  
 	if (l<0)
 	{
+#ifdef DEBUG
 	A4GL_debug("l=%d",l);
+#endif
 	  l=A4GL_screen_height () + l +1;
+#ifdef DEBUG
 	A4GL_debug("l=%d",l);	
+#endif
 	return l;
 	}
   return 0;
@@ -1701,14 +1899,18 @@ A4GL_decode_line (int l)
     {
       if (A4GL_get_curr_border ())
 	{
+#ifdef DEBUG
 	  A4GL_debug ("Decoded (1) line %d to %d (because of border)", l, l - 1);
+#endif
 		l--;
 	  while (l>UILIB_A4GL_get_curr_height()) l--;
 	  return l;
 	}
       else
 	{
+#ifdef DEBUG
 	  A4GL_debug ("Decoded (2) line %d to %d", l, l);
+#endif
 	  while (l>UILIB_A4GL_get_curr_height()) l--;
 	  return l;
 	}
@@ -1721,7 +1923,9 @@ A4GL_decode_line (int l)
 
   if (A4GL_get_curr_border ())
     {
+#ifdef DEBUG
 	  A4GL_debug ("Decoded (3) line %d to %d (because of border)", l, UILIB_A4GL_get_curr_height ());
+#endif
 	  l=0-l;
 	  l--;
 	  return UILIB_A4GL_get_curr_height () - l;
@@ -1730,7 +1934,9 @@ A4GL_decode_line (int l)
     {
 	  l=0-l;
 	  l--;
+#ifdef DEBUG
 	  A4GL_debug ("Decoded (4) line %d to %d ", l, UILIB_A4GL_get_curr_height ());
+#endif
 	  return UILIB_A4GL_get_curr_height () - l +1;
     }
 
@@ -1751,14 +1957,18 @@ A4GL_decode_line_ib (int l)
     {
       if (A4GL_get_curr_border ())
 	{
+#ifdef DEBUG
 	  A4GL_debug ("Decoded (1) line %d to %d (because of border)", l, l - 1);
+#endif
 	  while (l>UILIB_A4GL_get_curr_height()) l--;
 	  return l ;
 	}
       else
 	{
 	  while (l>UILIB_A4GL_get_curr_height()) l--;
+#ifdef DEBUG
 	  A4GL_debug ("Decoded (2) line %d to %d", l, l);
+#endif
 	  return l;
 	}
     }
@@ -1770,7 +1980,9 @@ A4GL_decode_line_ib (int l)
 
   if (A4GL_get_curr_border ())
     {
+#ifdef DEBUG
 	  A4GL_debug ("Decoded (3) line %d to %d (because of border)", l, UILIB_A4GL_get_curr_height ());
+#endif
 	  l=0-l;
 	  l--;
 	  return UILIB_A4GL_get_curr_height () - l;
@@ -1779,7 +1991,9 @@ A4GL_decode_line_ib (int l)
     {
 	  l=0-l;
 	  l--;
+#ifdef DEBUG
 	  A4GL_debug ("Decoded (4) line %d to %d ", l, UILIB_A4GL_get_curr_height ());
+#endif
 	  return UILIB_A4GL_get_curr_height () - l ;
     }
 
@@ -2949,7 +3163,9 @@ int
 A4GL_getform_line (void)
 {
 int a;
+#ifdef DEBUG
 A4GL_debug("Get formline...%d",windows[currwinno].winattr.form_line);
+#endif
   if (windows[currwinno].winattr.form_line!=0xff) {
 	a=windows[currwinno].winattr.form_line;
   } else {
@@ -2966,7 +3182,9 @@ A4GL_debug("Get formline...%d",windows[currwinno].winattr.form_line);
 */
 
 
+#ifdef DEBUG
  A4GL_debug("FORMLINE = %d",a);
+#endif
   return a;
 
 }
@@ -2980,7 +3198,9 @@ A4GL_getcomment_line (void)
 {
 int default_comment_line;
 
+#ifdef DEBUG
 A4GL_debug("Comment line for currwin=%d std_dbscr=%d",windows[currwinno].winattr.comment_line,A4GL_get_dbscr_commentline());
+#endif
 
 if (A4GL_get_dbscr_commentline()==0xff) {
 	if (currwinno==0) {
@@ -3007,9 +3227,13 @@ int
 A4GL_geterror_line (void)
 {
 
+#ifdef DEBUG
   A4GL_debug ("geterror_line - %d (%d)", windows[currwinno].winattr.error_line,currwinno);
+#endif
   if (windows[currwinno].winattr.error_line!=0xff) {
+#ifdef DEBUG
 	A4GL_debug("Window specific...");
+#endif
         return A4GL_decode_line_scr (windows[currwinno].winattr.error_line);
   }
    
@@ -3026,7 +3250,9 @@ A4GL_getmessage_line (void)
 {
 int a;
 int b;
+#ifdef DEBUG
   A4GL_debug ("getmessage_line - %d", windows[currwinno].winattr.message_line);
+#endif
 
 
 
@@ -3040,30 +3266,48 @@ int b;
 
 
   if (a<0) {
+#ifdef DEBUG
         A4GL_debug("a<0 - %d",a);
+#endif
         a=0-a-1;
+#ifdef DEBUG
         A4GL_debug("a now %d",a);
+#endif
         if (currwinno==0) {
                 a=A4GL_screen_height()-a;
+#ifdef DEBUG
                 A4GL_debug("a=%d from screen_height",a);
+#endif
         } else {
                 a=UILIB_A4GL_get_curr_height()-a;
+#ifdef DEBUG
                 A4GL_debug("a=%d from curr_height",a);
+#endif
         }
+#ifdef DEBUG
         A4GL_debug("a=%d",a);
+#endif
   }
 
+#ifdef DEBUG
   A4GL_debug("Thinking message_line should be %d - window height=%d",a,UILIB_A4GL_get_curr_height());
+#endif
 
   if (currwinno==0) {
+#ifdef DEBUG
         A4GL_debug("MSG SCR %d %d %d",a,UILIB_A4GL_get_curr_height(),A4GL_iscurrborder());
+#endif
   } else {
+#ifdef DEBUG
         A4GL_debug("MSG WIN %d %d %d",a,UILIB_A4GL_get_curr_height(),A4GL_iscurrborder());
+#endif
   }
 
   if (currwinno==0) {
          while (a>A4GL_screen_height()) {
+#ifdef DEBUG
                 A4GL_debug("message_line line - Too far down screen - moving up %d>%d+%d", a,UILIB_A4GL_get_curr_height(),A4GL_iscurrborder());
+#endif
                 a--;
         }
   } else {
@@ -3076,7 +3320,9 @@ int b;
 
   if (a<=0) a=1;
 
+#ifdef DEBUG
   A4GL_debug("Msg line %d",a);
+#endif
 return a;
 
 }
@@ -3091,7 +3337,9 @@ A4GL_getprompt_line (void)
 {
 int a;
 int b;
+#ifdef DEBUG
   A4GL_debug ("getprompt_line - %d", windows[currwinno].winattr.prompt_line);
+#endif
 
 
 
@@ -3105,30 +3353,48 @@ int b;
 
 
   if (a<0) {
+#ifdef DEBUG
 	A4GL_debug("a<0 - %d",a);
+#endif
 	a=0-a-1;
+#ifdef DEBUG
 	A4GL_debug("a now %d",a);
+#endif
 	if (currwinno==0) {
 		a=A4GL_screen_height()-a;
+#ifdef DEBUG
 		A4GL_debug("a=%d from screen_height",a);
+#endif
 	} else {
 		a=UILIB_A4GL_get_curr_height()-a;
+#ifdef DEBUG
 		A4GL_debug("a=%d from curr_height",a);
+#endif
 	}
+#ifdef DEBUG
 	A4GL_debug("a=%d",a);
+#endif
   }
 
+#ifdef DEBUG
   A4GL_debug("Thinking prompt should be %d - window height=%d",a,UILIB_A4GL_get_curr_height());
+#endif
 
   if (currwinno==0) {
+#ifdef DEBUG
 	A4GL_debug("PROMPT SCR %d %d %d",a,UILIB_A4GL_get_curr_height(),A4GL_iscurrborder());
+#endif
   } else {
+#ifdef DEBUG
 	A4GL_debug("PROMPT WIN %d %d %d",a,UILIB_A4GL_get_curr_height(),A4GL_iscurrborder());
+#endif
   }
 
   if (currwinno==0) {
 	 while (a>A4GL_screen_height()) {
+#ifdef DEBUG
 		A4GL_debug("prompt line - Too far down screen - moving up %d>%d+%d", a,UILIB_A4GL_get_curr_height(),A4GL_iscurrborder());
+#endif
 		a--;
   	} 
   } else {
@@ -3140,7 +3406,9 @@ int b;
 
   if (a<=0) a=1;
  
+#ifdef DEBUG
   A4GL_debug("Prompt line %d",a);
+#endif
 return a;
 }
 
@@ -3260,10 +3528,14 @@ A4GL_get_currwin (void)
 int
  UILIB_A4GL_iscurrborder (void)
 {
+#ifdef DEBUG
   A4GL_debug ("currwinno=%d", currwinno);
+#endif
 if (currwinno>=0) {
+#ifdef DEBUG
   A4GL_debug ("Winattr=%p", windows[currwinno].winattr);
   A4GL_debug ("border=%p", windows[currwinno].winattr.border);
+#endif
   return windows[currwinno].winattr.border;
 } 
 return 0;
@@ -3289,11 +3561,15 @@ void
 print_panel_stack (void)
 {
   PANEL *ptr;
+#ifdef DEBUG
   A4GL_debug ("Printing panel stack");
+#endif
   ptr = panel_below (0);
   while (ptr != 0)
     {
+#ifdef DEBUG
       A4GL_debug ("Panel : %p (%s)", ptr, A4GL_null_as_null((char *)panel_userptr (ptr)));
+#endif
       ptr = panel_below (ptr);
     }
 }
@@ -3333,7 +3609,9 @@ A4GL_window_on_top (void)
 	if (s) break;
 	
   }
+#ifdef DEBUG
   A4GL_debug("window_on_top - %s",s);
+#endif
   winptr = A4GL_find_pointer (s, WINCODE);
   return winptr;
 }
@@ -3350,13 +3628,19 @@ A4GL_window_on_top_ign_menu (void)
 
   while (1) {
   	ptr = panel_below (ptr);
+#ifdef DEBUG
 	A4GL_debug("panel below=%p",ptr);
+#endif
   	s = (char *)panel_userptr (ptr);	/* get name of panel */
 	if (strcmp(s,"error window")==0) continue;
+#ifdef DEBUG
 	A4GL_debug("userptr=%p",s);
+#endif
 	
 	if (s) {
+#ifdef DEBUG
 		A4GL_debug("Got an s = '%s'",s);
+#endif
 		ok=1;
 		break;
 	}
@@ -3364,19 +3648,27 @@ A4GL_window_on_top_ign_menu (void)
   }
 
   if (ok==0) {
+#ifdef DEBUG
 	A4GL_debug("can't find window on top....");
+#endif
   } else {
+#ifdef DEBUG
   	A4GL_debug("window_on_top - %s",s);
+#endif
   }
 /*
   if (A4GL_has_pointer (s, MNPARCODE)) {
 		// Damn - its a menu - whats our parent ?
+#ifdef DEBUG
 		A4GL_debug("Was menu window...");
+#endif
 		return A4GL_find_pointer (s, MNPARCODE);
   }
 */
   winptr = A4GL_find_pointer (s, WINCODE);
+#ifdef DEBUG
 	A4GL_debug("Winptr=%p",winptr);
+#endif
   return winptr;
 }
 
@@ -3420,7 +3712,9 @@ A4GL_screen_width (void)
 	  scr_height = atoi (acl_getenv ("LINES"));
 	}
     }
+#ifdef DEBUG
   A4GL_debug ("screen_width returning %d", scr_width);
+#endif
   return scr_width;
 }
 
@@ -3441,7 +3735,9 @@ A4GL_screen_height (void)
 	}
 
     }
+#ifdef DEBUG
   A4GL_debug ("screen_height returning %d", scr_height);
+#endif
   return scr_height;
 }
 
@@ -3463,7 +3759,9 @@ void A4GL_make_window_with_this_form_current(void *form) {
 int a;
 for (a=0;a<MAXWIN;a++) {
 	if (windows[a].form==form) {
+#ifdef DEBUG
 		A4GL_debug("Found it... @ %d",a);
+#endif
   		UILIB_A4GL_current_window (windows[a].name);
 		return;
 	}

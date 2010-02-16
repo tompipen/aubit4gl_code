@@ -47,7 +47,9 @@ opt_into_fetch_part: { $<ptr_list>$=0;} | INTO expanded_obind_var_list {
 ;
 
 opt_foreach_into_fetch_part: {
+#ifdef DEBUG
 		A4GL_debug("no into\n");
+#endif
 		$<ptr_list>$=0;
 		} | INTO expanded_obind_var_list {
 			$<ptr_list>$=$<ptr_list>2;

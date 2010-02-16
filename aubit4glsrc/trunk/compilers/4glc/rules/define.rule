@@ -224,13 +224,17 @@ number_arr_list :
 				$<int_list>$.i0=$1;
 				$<int_list>$.i1=$3;
 				$<int_list>$.i2=$5;
+#ifdef DEBUG
 		    		A4GL_debug("Triplet");
+#endif
 		} 
 	|	number_value_arr KW_COMMA number_value_arr {
 				$<int_list>$.i0=$1;
 				$<int_list>$.i1=$3;
 				$<int_list>$.i2=0;
+#ifdef DEBUG
 		    		A4GL_debug("double");
+#endif
 		} 
 	|	number_value_arr {
 				$<int_list>$.i0=$1;
@@ -268,14 +272,20 @@ record_variable :
 	|	RECORD_LIKE  define_table_name KW_DOT KW_MULTIPLY {
 			add_feature("DEFINE_LIKE");
 			add_dependant_table($<str>2);
+#ifdef DEBUG
 			A4GL_debug("Link Table : %s\n",$<str>2);
+#endif
 			$$=new_variable_pushLikeAllTableColumns($<str>2,NULL);
 		} 
 	|	LINKED_TO define_table_name PRIMARY_KEY OPEN_BRACKET link_to_pk_list CLOSE_BRACKET {
 			add_dependant_table($<str>2);
+#ifdef DEBUG
 		        A4GL_debug("Table:%s\n",$<str>3);
+#endif
 			add_feature("DEFINE_LINKED");
+#ifdef DEBUG
 		        A4GL_debug("Push record...\n");
+#endif
 			$$=new_variable_pushLikeAllTableColumns($<str>2,$<str_list>5);
 	} 
 ;
@@ -604,7 +614,9 @@ like_var :
 
 col_name :
 		identifier {
+#ifdef DEBUG
 		   A4GL_debug("--->%s\n",$<str>1);
+#endif
 		   strcpy($<str>$,$<str>1);
 		} 
 ;
@@ -615,7 +627,9 @@ datetime_qual :
 			$<integer_val>$=0;
 		   
 		} 	|	dtime_start KW_TO dtime_end {
+#ifdef DEBUG
 		   A4GL_debug("Real datetime %s to %s\n",$<str>1,$<str>3);
+#endif
 			$<integer_val>$=$1*16+$3;	
 		} 
 ;
@@ -675,11 +689,15 @@ dtime_end :
 opt_frac :
 		 {
 		$<integer_val>$=2;
+#ifdef DEBUG
 		   A4GL_debug("Nothing in fraction - assume 2");
+#endif
 		   
 		} 	|	OPEN_BRACKET dtfrac CLOSE_BRACKET {
+#ifdef DEBUG
 		   A4GL_debug("Read fraction .. ");
 		   A4GL_debug("    %s",$<str>2);
+#endif
 		$<integer_val>$=$2;
 		   
 		} 
@@ -688,7 +706,9 @@ opt_frac :
 
 opt_unit_size :
 		 { $<integer_val>$=2;
+#ifdef DEBUG
 		  A4GL_debug("Nothing in fraction - assume 2");
+#endif
 		} 	
 		|	OPEN_BRACKET INT_VALUE CLOSE_BRACKET {
 			$<integer_val>$=atoi($<str>2);
@@ -737,7 +757,9 @@ int_start_unit :
 			$<integer_val>$=6;
 		} 
 	|	FRACTION opt_frac {
+#ifdef DEBUG
 		   A4GL_debug("opt_frac returns %s",$<str>2);
+#endif
 			$<integer_val>$=$2+6;
 	} 
 ;

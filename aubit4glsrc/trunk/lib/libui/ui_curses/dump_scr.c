@@ -3,7 +3,7 @@
 
 #ifndef lint
 	static char const module_id[] =
-		"$Id: dump_scr.c,v 1.12 2005-03-23 08:24:12 afalout Exp $";
+		"$Id: dump_scr.c,v 1.13 2010-02-16 13:17:15 mikeaubury Exp $";
 #endif
 
 FILE *f;
@@ -80,14 +80,18 @@ int
     }
 
   if (n==0) {
+#ifdef DEBUG
 	A4GL_debug("AUTO PRINT...");
+#endif
 		// We want to dump to to PRINTSCRFILE
 		ptr=acl_getenv("A4GL_PRINTSCRFILE");
 		if (ptr) {
 			if (strlen(ptr)==0) ptr=0;
 		}
 		if (ptr==0) {
+#ifdef DEBUG
 			A4GL_debug("No PRINTSCRFILE - ignored print dump request");
+#endif
 			return 0;
 		}
 		if (ptr[0]=='|') {
@@ -107,7 +111,9 @@ int
 
   if (f == 0)
     {
+#ifdef DEBUG
       A4GL_debug ("Unable to open A4GL_dump file");
+#endif
       return 0;
     }
 

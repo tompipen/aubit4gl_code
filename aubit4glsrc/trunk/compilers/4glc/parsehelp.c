@@ -208,9 +208,11 @@ push_blockcommand (char *cmd_type)
 {
   int ccnt;
   ccnt = A4GL_get_ccnt ();
+#ifdef DEBUG
   A4GL_debug ("START BLOCK %s", cmd_type);
   A4GL_debug ("\n\n--------->%s\n\n", cmd_type);
   A4GL_debug (" /* new block %s %d */\n", cmd_type, ccnt);
+#endif
   strcpy (command_stack[ccnt].cmd_type, cmd_type);
   if (strcmp (cmd_type, "MAIN") == 0
       || strcmp (cmd_type, "FUNC") == 0 ||
@@ -226,7 +228,9 @@ push_blockcommand (char *cmd_type)
 
       command_stack[ccnt].block_no = nblock_no++;
     }
+#ifdef DEBUG
   A4GL_debug (" Added new block");
+#endif
   ccnt++;
   file_out_indent (ccnt);
   A4GL_set_ccnt (ccnt);
@@ -251,7 +255,9 @@ pop_blockcommand (char *cmd_type)
   int a;
   int ccnt;
   char err[80];
+#ifdef DEBUG
   A4GL_debug ("END BLOCK %s", cmd_type);
+#endif
   ccnt = A4GL_get_ccnt ();
   /* more checks here ! */
 
@@ -270,7 +276,9 @@ pop_blockcommand (char *cmd_type)
 	*/
     }
 
+#ifdef DEBUG
   A4GL_debug ("\n\n--------->%s\n\n", cmd_type);
+#endif
 
   if (strcmp (command_stack[ccnt].cmd_type, cmd_type) == 0)
     {
@@ -283,13 +291,19 @@ pop_blockcommand (char *cmd_type)
 
   SPRINTF3 (err, "%s was not last block command (I've got a %s @ %d)\n",
 	    cmd_type, command_stack[ccnt].cmd_type, ccnt);
+#ifdef DEBUG
   A4GL_debug (err);
   A4GL_debug ("------------------\n");
+#endif
   for (a = 0; a <= ccnt; a++)
     {
+#ifdef DEBUG
       A4GL_debug ("   %s\n", command_stack[a].cmd_type);
+#endif
     }
+#ifdef DEBUG
   A4GL_debug ("------------------\n");
+#endif
   a4gl_yyerror (err);
   //exit (0);
 }
@@ -343,8 +357,10 @@ continue_loop (char *cmd_type)
 
   for (a = ccnt - 1; a >= 0; a--)
     {
+#ifdef DEBUG
       A4GL_debug ("continue_loop:%s %s %s\n", command_stack[a].cmd_type,
 		  cmd_type, internal_cmd_type);
+#endif
 
       if (strcmp (command_stack[a].cmd_type, internal_cmd_type) == 0)
 	{
@@ -354,7 +370,9 @@ continue_loop (char *cmd_type)
     }
   if (g == 0)
     {
+#ifdef DEBUG
       A4GL_debug ("/* wanted to continue a %s but wasnt in one! */", cmd_type);
+#endif
       return;
     }
   /* print_continue_loop (command_stack[a].block_no, cmd_type); */
@@ -427,12 +445,16 @@ add_report_agg (char t, struct expr_str *s1, struct expr_str *s2, int a, long *n
   if (s2 == 0)
     {
 
+#ifdef DEBUG
       A4GL_debug ("Adding default where on report aggregate of 1");
+#endif
       sreports[sreports_cnt].rep_where_expr = A4GL_new_literal_long_str ("1");
     }
   else
     {
+#ifdef DEBUG
       A4GL_debug ("Adding non-default where on report aggregate");
+#endif
       sreports[sreports_cnt].rep_where_expr = s2;
     }
 
@@ -572,9 +594,13 @@ add_ex_dtype (char *sx)
   strcpy (s, sx);
   A4GL_trim (s);
   strcpy (s, downshift (s));
+#ifdef DEBUG
   A4GL_debug ("Initializing datatype : %s\n", s);
+#endif
   A4GLEXDATA_initlib (s);
+#ifdef DEBUG
   A4GL_debug ("Checking if we need an extra include...");
+#endif
   add_external_datatypes(s);
 
 #ifdef OLD
@@ -582,11 +608,15 @@ add_ex_dtype (char *sx)
     {
       /* char *(*function) (); */
       char *(*function) (void);
+#ifdef DEBUG
       A4GL_debug ("yep");
+#endif
 
       function = A4GL_get_datatype_function_n (s, "INCLUDE");
 
+#ifdef DEBUG
       A4GL_debug ("function=%s\n", function);
+#endif
 
       strcpy (ss, function ());
 
@@ -713,7 +743,9 @@ int A4GL_open_class_dll(char *s) {
 	FILE *f;
 	strcpy(buff,s);
 	strcat(buff,acl_getenv("A4GL_DLL_EXT"));
+#ifdef DEBUG
 	A4GL_debug("Looking for : %s\n",buff);
+#endif
 	f=A4GL_open_file_classpath(buff);
 
 	if (f) { // We've found our dll...
@@ -742,7 +774,9 @@ char * rettype_integer (int n)
 	    /*static char rs[20] = "long";*/
 	    /*int a;*/
 
+#ifdef DEBUG
 	    A4GL_debug ("rettype_integer : %d\n", n);
+#endif
 
 	      SPRINTF1 (s, "%d", n);
 	        return rettype (s);
@@ -784,20 +818,30 @@ char *rettype (char *s) {
 
   strcpy(rs,"unknown");
 
+#ifdef DEBUG
   A4GL_debug ("In rettype : %s", A4GL_null_as_null (s));
+#endif
 
   a = atoi (s);
 
+#ifdef DEBUG
   A4GL_debug ("In rettype");
+#endif
   if (A4GL_has_datatype_function_i (a, "OUTPUT"))
     {
       /* char *(*function) (); */
       char *(*function) (void);
+#ifdef DEBUG
       A4GL_debug ("In datatype");
+#endif
       function = A4GL_get_datatype_function_i (a, "OUTPUT");
+#ifdef DEBUG
       A4GL_debug ("Copy");
+#endif
       strcpy (rs, function ());
+#ifdef DEBUG
       A4GL_debug ("Returning %s\n", A4GL_null_as_null (rs));
+#endif
       return rs;
     }
   if (strcmp (s, "0") == 0)
@@ -861,16 +905,22 @@ FGLPARSE_A4GL_lexer_find_type (char *s)
           if (strcmp(types[a],s)==0) { return a; }
   }
 
+#ifdef DEBUG
   A4GL_debug ("Looking for type '%s'", s);
+#endif
 
   if (A4GL_find_datatype_out (s) != -1)
     {
+#ifdef DEBUG
       A4GL_debug ("Found it...");
+#endif
       return A4GL_find_datatype_out (s);
     }
 
+#ifdef DEBUG
   A4GL_debug ("Not found - keep looking");
   A4GL_debug ("find_type %s\n", s);
+#endif
   if (strcmp ("char", s) == 0) return DTYPE_CHAR;
   if (strcmp ("long", s) == 0) return DTYPE_INT;
   if (strcmp ("int8", s) == 0) return DTYPE_INT8;
@@ -897,7 +947,9 @@ FGLPARSE_A4GL_lexer_find_type (char *s)
   if (strcmp ("basechannel", s) == 0) return 9;
   if (strcmp ("string", s) == 0) return 9;
   if (strncmp ("struct _class_struct_", s,21) == 0) { return -3; }
+#ifdef DEBUG
   A4GL_debug ("Invalid type : '%s'\n", s);
+#endif
   SPRINTF1 (errbuff, "Internal Error (Invalid type : '%s')\n", s);
   a4gl_yyerror (errbuff);
   return 0;
@@ -939,7 +991,9 @@ int A4GL_is_class_static(char *s) {
 
 
 void FGLPARSE_A4GL_lexer_parsed_fgl(void) {
+#ifdef DEBUG
 	A4GL_debug("A4GL_lexer_parsed_fgl");
+#endif
 	//A4GL_lex_parsed_fgl ();
 }
 
@@ -992,12 +1046,18 @@ struct command *print_linked_cmd (int type, expr_str *var)
 
       for (azcnt = 1; azcnt <= no_keys; azcnt++)
 	{
+#ifdef DEBUG
 	  A4GL_debug ("Getting key no %d", azcnt);
+#endif
 	  linked_split (pklist, azcnt, buff2);
 	  sprintf (buff, "%s.%s", var, buff2);
+#ifdef DEBUG
 	  A4GL_debug ("Adding linked %s", buff);
+#endif
 	  add_bind ('i', buff);
+#ifdef DEBUG
 	  A4GL_debug (" key count %d %d\n", azcnt, no_keys);
+#endif
 	}
 	
       if (type == 'S') sprintf (buff, "SELECT * FROM %s WHERE ", tabname);
@@ -1668,7 +1728,9 @@ A4GL_pause_execution();
 	return 0; // Error condition
 }
 
+#ifdef DEBUG
 A4GL_debug("Dtype set to  %d\n",p->datatype);
+#endif
 return 1;
 }
 
@@ -2046,7 +2108,9 @@ for (param_to_add=0;param_to_add<parameters->list.list_len;param_to_add++) {
 				} else {
 				vu1=parameters->list.list_val[param_to_add]->expr_str_u.expr_variable_usage_with_asc_desc->var_usage;
 				}
+#ifdef DEBUG
 				A4GL_debug("Got : %s %d \n", cmds_get_variable_usage_as_string(vu1), err_if_whole_array);
+#endif
 				v1=find_variable_vu_ptr(errbuff, vu1, &scope, err_if_whole_array);
 
 
@@ -2083,7 +2147,9 @@ for (param_to_add=0;param_to_add<parameters->list.list_len;param_to_add++) {
 						}
 						last_vu->next=0;
 
+#ifdef DEBUG
 						A4GL_debug("Got to here.. %d %d\n", v1->arr_subscripts.arr_subscripts_len, last_vu->subscripts.subscripts_len);
+#endif
 				
 						if (v1->arr_subscripts.arr_subscripts_len && last_vu->subscripts.subscripts_len!=v1->arr_subscripts.arr_subscripts_len) {
 							int is_dynamic_array=0;

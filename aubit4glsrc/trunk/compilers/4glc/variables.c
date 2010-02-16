@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: variables.c,v 1.115 2010-01-14 08:08:05 mikeaubury Exp $
+# $Id: variables.c,v 1.116 2010-02-16 13:15:23 mikeaubury Exp $
 #
 */
 
@@ -173,7 +173,9 @@ int cnt=0;
    			if (A4GL_aubit_strcasecmp(name,"notfound")==0) continue;
  			if (A4GL_aubit_strcasecmp(name,"true")==0)     continue;
  			if (A4GL_aubit_strcasecmp(name,"false")==0)    continue;
+#ifdef DEBUG
 			A4GL_debug("CONSTANT: %s\n", v->variables.variables_val[a]->names.names.names_val[0].name);
+#endif
 			cnt++;
 
 		}
@@ -897,7 +899,9 @@ struct variable *find_variable_vu_ptr(char *errbuff, struct variable_usage *v, e
     {
 	v->escope=E_SCOPE_LOCAL;
 	*scope=E_SCOPE_LOCAL;
+#ifdef DEBUG
         A4GL_debug ("local variable");
+#endif
         return ptr;
     }
 
@@ -906,7 +910,9 @@ struct variable *find_variable_vu_ptr(char *errbuff, struct variable_usage *v, e
     {
 	v->escope=E_SCOPE_MODULE;
 	*scope=E_SCOPE_MODULE;
+#ifdef DEBUG
       A4GL_debug ("Module variable");
+#endif
       return ptr;
     }
 
@@ -915,7 +921,9 @@ struct variable *find_variable_vu_ptr(char *errbuff, struct variable_usage *v, e
     {
 	v->escope=E_SCOPE_EXPORTED_GLOBAL;
 	*scope=E_SCOPE_EXPORTED_GLOBAL;
+#ifdef DEBUG
       A4GL_debug ("Global variable");
+#endif
       return ptr;
     }
 
@@ -924,7 +932,9 @@ struct variable *find_variable_vu_ptr(char *errbuff, struct variable_usage *v, e
     {
 	v->escope=E_SCOPE_IMPORTED_GLOBAL;
 	*scope=E_SCOPE_IMPORTED_GLOBAL;
+#ifdef DEBUG
       A4GL_debug ("Global variable");
+#endif
       return ptr;
     }
   return ptr; /* Will be NULL - or it would have been returned already... */

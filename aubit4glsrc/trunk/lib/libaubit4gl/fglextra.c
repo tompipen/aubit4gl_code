@@ -55,7 +55,9 @@ aclfgl_fgl_keyval (int _np)
 {
   int a;
   a = A4GL_fgl_keyval (_np);
+#ifdef DEBUG
   A4GL_debug ("TST1 Got %d\n", a);
+#endif
   return a;
 }
 

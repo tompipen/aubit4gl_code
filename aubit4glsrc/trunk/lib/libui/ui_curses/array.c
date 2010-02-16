@@ -24,13 +24,13 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: array.c,v 1.61 2009-03-10 11:14:11 mikeaubury Exp $
+# $Id: array.c,v 1.62 2010-02-16 13:17:11 mikeaubury Exp $
 #*/
 
 
 #ifndef lint
 	static char const module_id[] =
-		"$Id: array.c,v 1.61 2009-03-10 11:14:11 mikeaubury Exp $";
+		"$Id: array.c,v 1.62 2010-02-16 13:17:11 mikeaubury Exp $";
 #endif
 
 
@@ -106,11 +106,15 @@ clear_srec (struct s_disp_arr *disp,struct struct_screen_record *srec)
 {
   int b;
   char srec1[256];
+#ifdef DEBUG
   A4GL_debug ("Clearing %s", srec->name);
+#endif
   A4GL_chkwin();
   strcpy (srec1, srec->name);
   strcat (srec1, ".*");
+#ifdef DEBUG
   A4GL_debug ("Got fields as %s", srec1);
+#endif
 
 
   for (b = 0; b < srec->dim; b++)
@@ -171,7 +175,9 @@ draw_arr (struct s_disp_arr *disp, int type, int no)
   if (type == 2)
     {
 	int nv;
+#ifdef DEBUG
       A4GL_debug ("calling set_arr_Fields");
+#endif
 	nv=disp->nbind;
 	if (disp->start_slice!=-1) { nv=disp->end_slice-disp->start_slice+1; }
       A4GL_set_arr_fields (nv, 0, srec2, scr_line, 0, 0);
@@ -184,14 +190,18 @@ draw_arr (struct s_disp_arr *disp, int type, int no)
     }
 
 
+#ifdef DEBUG
   A4GL_debug ("Print array no %d to scr %d", no, disp->scr_line);
   A4GL_debug ("calling disp_arR_fields");
+#endif
 
   //disp->highlight=1;
 
   if (disp->highlight)
     {
+#ifdef DEBUG
       A4GL_debug ("With highlight");
+#endif
   	A4GL_disp_arr_fields_v2 (disp, type,
 				0,  // blank
 			 	type*AUBIT_ATTR_REVERSE,  // Attribute
@@ -204,7 +214,9 @@ draw_arr (struct s_disp_arr *disp, int type, int no)
     }
   else
     {
+#ifdef DEBUG
       A4GL_debug ("Without highlight");
+#endif
   	A4GL_disp_arr_fields_v2 (disp, 
 				type,
 				0,  // blank
@@ -284,7 +296,9 @@ redisplay_arr (struct s_disp_arr *arr, int redisp)
 
   if (redisp == 2 )
     {
+#ifdef DEBUG
       A4GL_debug ("Redisplay all");
+#endif
       draw_arr_all (arr);
     }
 
@@ -364,9 +378,13 @@ draw_arr (arr, -1, arr->arr_line);
 
   if (arr->cntrl != 0)
     {
+#ifdef DEBUG
 	A4GL_debug("Got some cntrl to do.. %d",arr->cntrl);
+#endif
       a = arr->cntrl;
+#ifdef DEBUG
 	A4GL_debug("Got some cntrl to do.. %d",arr->cntrl);
+#endif
       arr->cntrl = 0;
     }
   else
@@ -389,7 +407,9 @@ draw_arr (arr, -1, arr->arr_line);
 		if (abort_pressed) {
 			int_flag=1;
 			a=A4GLKEY_INTERRUPT;
+#ifdef DEBUG
 			A4GL_debug("Abort pressed");
+#endif
 			break;
 		}
 
@@ -427,7 +447,9 @@ draw_arr (arr, -1, arr->arr_line);
   	A4GL_set_last_key(a);
 
         if (A4GL_has_event_for_keypress(a,evt)) {
+#ifdef DEBUG
 		A4GL_debug("has event...");
+#endif
                 return A4GL_has_event_for_keypress(a,evt);
         }
 	arr->processed_onkey=0;
@@ -438,7 +460,9 @@ draw_arr (arr, -1, arr->arr_line);
   redisp = 0;
   act_as=a;
 
+#ifdef DEBUG
   A4GL_debug("act as %d",act_as);
+#endif
 
   if (A4GL_is_special_key(a,A4GLKEY_ACCEPT)) {
 	act_as=-99;
@@ -561,7 +585,9 @@ if ( (arr->arr_line+arr->srec->dim  -arr->scr_line-1<= arr->no_arr) || ( (arr->a
     case '\t':
     case A4GLKEY_RIGHT:
     case A4GLKEY_DOWN:
+#ifdef DEBUG
       A4GL_debug ("Key down");
+#endif
       if (arr->arr_line < arr->no_arr)
 	{
 	  arr->cntrl = 0 - A4GLKEY_DOWN;
@@ -572,10 +598,14 @@ if ( (arr->arr_line+arr->srec->dim  -arr->scr_line-1<= arr->no_arr) || ( (arr->a
       break;
 
     case 0 - A4GLKEY_DOWN:
+#ifdef DEBUG
       A4GL_debug ("Keydown +");
+#endif
       arr->last_arr = arr->arr_line;
       arr->arr_line++;
+#ifdef DEBUG
       A4GL_debug ("Is really down %d", arr->arr_line);
+#endif
       redisp = 1;
       arr->scr_line++;
       if (arr->scr_line > arr->srec->dim)
@@ -608,7 +638,9 @@ if ( (arr->arr_line+arr->srec->dim  -arr->scr_line-1<= arr->no_arr) || ( (arr->a
     case 0 - A4GLKEY_UP:
       arr->last_arr = arr->arr_line;
       arr->arr_line--;
+#ifdef DEBUG
       A4GL_debug ("Is really up");
+#endif
       arr->scr_line--;
       if (arr->scr_line == 0)
 
@@ -630,12 +662,16 @@ if ( (arr->arr_line+arr->srec->dim  -arr->scr_line-1<= arr->no_arr) || ( (arr->a
 
 
     case -99:
+#ifdef DEBUG
 		A4GL_debug("Maybe ACCEPT");
+#endif
       		if (A4GL_has_event(A4GL_EVENT_AFTER_INP_CLEAN,evt)) return A4GL_has_event(A4GL_EVENT_AFTER_INP_CLEAN,evt);
 		break;
 
     case A4GLKEY_INTERRUPT: 
+#ifdef DEBUG
  		A4GL_debug("act as %d - abort!",act_as);
+#endif
 		int_flag=1;
       		if (A4GL_has_event(A4GL_EVENT_AFTER_INP_CLEAN,evt)) return A4GL_has_event(A4GL_EVENT_AFTER_INP_CLEAN,evt);
 	return 0;
@@ -685,10 +721,14 @@ evt=vevt;
 
   A4GL_chkwin();
   curr_arr_disp = disp;
+#ifdef DEBUG
   A4GL_debug ("In A4GL_disp_arr : %s %p %p %d", srecname, ptr, disp, attrib);
+#endif
   if (disp->srec == 0)
     {
+#ifdef DEBUG
       A4GL_debug ("disparr1");
+#endif
       disp->srec = A4GL_get_srec (srecname);
 
 
@@ -711,7 +751,9 @@ evt=vevt;
       disp->highlight = 0;
       disp->attribute=attrib;
 
+#ifdef DEBUG
       A4GL_debug ("disparr2");
+#endif
       if (disp->srec == 0)
 	{
 	  A4GL_exitwith ("Screen record does not exist");
@@ -719,7 +761,9 @@ evt=vevt;
 	  return 0;
 
 	}
+#ifdef DEBUG
       A4GL_debug ("disparr3");
+#endif
  
      nv=disp->nbind;
      if (disp->start_slice!=-1) {nv=disp->end_slice - disp->start_slice +1;}
@@ -728,15 +772,21 @@ evt=vevt;
 	{
 		A4GL_exitwith("Too many or too few variables for fields");
 
+#ifdef DEBUG
 	  	A4GL_debug ("Too many or too few variables for fields %d %d %d", disp->srec->dim, disp->nbind, disp->srec->attribs.attribs_len);
+#endif
 
 	  return -999;
 
 	}
 
+#ifdef DEBUG
       A4GL_debug ("Clearing Record");
+#endif
       clear_srec (disp,disp->srec);
+#ifdef DEBUG
       A4GL_debug ("Cleared record");
+#endif
 
 	A4GL_clr_evt_timeouts(evt);
 
@@ -780,7 +830,9 @@ evt=vevt;
       A4GL_mja_wrefresh (currwin);
       if (A4GL_has_event(A4GL_EVENT_BEF_ROW,evt)) return A4GL_has_event(A4GL_EVENT_BEF_ROW,evt);
     }
+#ifdef DEBUG
   A4GL_debug ("disparr4");
+#endif
 
   return disp_loop (disp,evt);
 }
@@ -887,7 +939,9 @@ int orig_set=0;
   char *cptr;
   static char buff[256];
   struct struct_scr_field *f;
+#ifdef DEBUG
   A4GL_debug ("In disp_arr_fields_v2 - %p blank=%d attr=%d arr_line=%d",disp,blank,attr,arr_line);
+#endif
   formdets = UILIB_A4GL_get_curr_form (1);
   flg = 0;
 
@@ -895,7 +949,9 @@ int orig_set=0;
 	
   nofields = A4GL_gen_field_list (&field_list, formdets, 9999 , &ap,0);
 
+#ifdef DEBUG
   A4GL_debug("disp_arr_fields_v2 - %d fields",nofields);
+#endif
 
   if (first_only) {
 	int n;
@@ -903,11 +959,15 @@ int orig_set=0;
 		n=local_field_opts(field_list[0]);
 		orig_set=n;
 		n2=n;
+#ifdef DEBUG
 		A4GL_debug("First only set : %x %x %x",n,O_ACTIVE,O_EDIT);
+#endif
 		nofields=0;
 		if ((n&O_EDIT)==0) { was_disabled=1; n2+=O_EDIT;}
 		if ((n&O_ACTIVE)==0) { was_disabled=1; n2+=O_ACTIVE;}
+#ifdef DEBUG
 		A4GL_debug("First only set now  %x %x %x",n2,O_ACTIVE,O_EDIT);
+#endif
 		local_set_field_opts(field_list[0],n2);
 	}
 
@@ -915,7 +975,9 @@ int orig_set=0;
 	int nattr;
 	int bno;
   	f = (struct struct_scr_field *) (field_userptr (field_list[a]));
+#ifdef DEBUG
 	A4GL_debug("f=%p",f);
+#endif
 
 	bno=a;
 	if (disp->start_slice!=-1) {
@@ -924,17 +986,23 @@ int orig_set=0;
 
 
   	if (!blank) {
+#ifdef DEBUG
 			A4GL_debug("Displaying something..");
 			A4GL_debug("disp->binding[a].ptr =%p",disp->binding[bno].ptr );
 			A4GL_debug("disp->arr_elemsize=%d",disp->arr_elemsize);
 			A4GL_debug("arr_line=%d",arr_line);
+#endif
              		cptr=(char *) disp->binding[bno].ptr + disp->arr_elemsize * (arr_line - 1);
+#ifdef DEBUG
 			A4GL_debug("cptr=%p",cptr);
 			A4GL_debug(" disp->binding[a].dtype=%d", disp->binding[bno].dtype);
 			A4GL_debug("ENCODE_SIZE(disp->binding[a].size)=%d",ENCODE_SIZE(disp->binding[bno].size));
+#endif
              		A4GL_push_param (cptr, disp->binding[bno].dtype+ENCODE_SIZE(disp->binding[bno].size));
     	} else {
+#ifdef DEBUG
 			A4GL_debug("Displaying blank..");
+#endif
                         strcpy(buff,"");
                         cptr=&buff[0];
 			A4GL_setnull(disp->binding[bno].dtype, cptr,disp->binding[bno].size);
@@ -945,7 +1013,9 @@ int orig_set=0;
   	A4GL_display_field_contents(field_list[a],disp->binding[bno].dtype,disp->binding[bno].size,cptr, disp->binding[bno].dtype+ENCODE_SIZE(disp->binding[bno].size));
 
   	nattr=A4GL_determine_attribute(FGL_CMD_DISPLAY_CMD, disp->attribute, f,field_buffer(field_list[a],0));
+#ifdef DEBUG
 	A4GL_debug("XXXX3 nattr=%d",nattr);
+#endif
 
 
 
@@ -975,8 +1045,10 @@ int orig_set=0;
 	}
 
 
+#ifdef DEBUG
 	A4GL_debug("XXXX3 nattr now =%d (reverse=%d)",nattr,attr&AUBIT_ATTR_REVERSE);
 	A4GL_debug("Attr=%d",attr);
+#endif
 
 
 	if (first_only) {
@@ -1045,7 +1117,9 @@ if (ptr==0) {
 
 *ptr=0;
 
+#ifdef DEBUG
 A4GL_debug("barr=%s",barr);
+#endif
 A4GL_assertion(f->fileform==NULL,"No fileform");
 srec_no=A4GL_find_srec(f->fileform,barr);
 
@@ -1054,9 +1128,11 @@ if (srec_no==-1) {
         return;
 }
 
+#ifdef DEBUG
 A4GL_debug("srec_no=%d nrows=%d attribs=%d",srec_no,
 f->fileform->records.records_val[srec_no].dim,
 f->fileform->records.records_val[srec_no].attribs.attribs_len);
+#endif
 buff=acl_malloc2(sizeof(char *) * f->fileform->records.records_val[srec_no].dim);
 
 
@@ -1072,7 +1148,9 @@ for (b=0;b<nfields;b++) {
       		fno = f->fileform->attributes.attributes_val[attr].field_no;
 		mno=f->fileform->fields.fields_val[fno].metric.metric_val[a];
 		field=(void *)f->fileform->metrics.metrics_val[mno].field;
+#ifdef DEBUG
 		A4GL_debug("SCROLL %s [ %d] . %d = %p (%s)",barr,a,b,field,field_buffer(field,0));
+#endif
 		buff[a][b]=field;
 	}
 }
@@ -1081,9 +1159,13 @@ for (b=0;b<nfields;b++) {
 if (dir==-1) {
 	for (a=dim-1;a>0;a--) {
 		for (b=0;b<nfields;b++) {
+#ifdef DEBUG
 			A4GL_debug("field[%d][%d] = buffer[%d][%d]",a,b,a-1,b);
+#endif
 			ptr=field_buffer(buff[a-1][b],0);
+#ifdef DEBUG
 			A4GL_debug("              = %s",ptr);
+#endif
 			set_field_buffer(buff[a][b],0,ptr);
 		}
 	}
@@ -1095,9 +1177,13 @@ if (dir==-1) {
 if (dir==1) {
 	for (a=0;a<dim-1;a++) {
 		for (b=0;b<nfields;b++) {
+#ifdef DEBUG
 			A4GL_debug("field[%d][%d] = buffer[%d][%d]",a,b,a+1,b);
+#endif
 			ptr=field_buffer(buff[a+1][b],0);
+#ifdef DEBUG
 			A4GL_debug("              = %s",ptr);
+#endif
 			set_field_buffer(buff[a][b],0,ptr);
 		}
 	}

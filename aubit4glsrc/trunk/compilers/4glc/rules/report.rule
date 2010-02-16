@@ -839,7 +839,11 @@ pdf_op_output_section : {$<pdf_startrep>$=0;} | OUTPUT pdf_output_commands
 ;
 
 pdf_output_command : 
-  LEFT_MARGIN nval {pdf_rep_struct.left_margin=atof($<str>2);A4GL_debug("Left margin=%s\n",$<str>2);}
+  LEFT_MARGIN nval {pdf_rep_struct.left_margin=atof($<str>2);
+#ifdef DEBUG
+A4GL_debug("Left margin=%s\n",$<str>2);
+#endif
+}
 | RIGHT_MARGIN nval {pdf_rep_struct.right_margin=atof($<str>2);}
 | TOP_MARGIN nval {pdf_rep_struct.top_margin=atof($<str>2);}
 | BOTTOM_MARGIN nval {pdf_rep_struct.bottom_margin=atof($<str>2);}

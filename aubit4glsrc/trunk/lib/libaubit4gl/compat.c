@@ -52,7 +52,9 @@ popint (int *s)
 
   a = A4GL_pop_long ();
   *s = (a);
+#ifdef DEBUG
   A4GL_debug ("popint returning %d\n", *s);
+#endif
 }
 
 void
@@ -108,28 +110,36 @@ retquote (char *s)
 void
 pushint (int a)
 {
+#ifdef DEBUG
   A4GL_debug ("pushint  got %d\n", a);
+#endif
   A4GL_push_long (a);
 }
 
 void
 retint (int a)
 {
+#ifdef DEBUG
   A4GL_debug ("retint  %d\n", a);
+#endif
   A4GL_push_long (a);
 }
 
 void
 pushshort (short a)
 {
+#ifdef DEBUG
   A4GL_debug ("push_short  %d\n", a);
+#endif
   A4GL_push_int (a & 0xffff);
 }
 
 void
 pushlong (long a)
 {
+#ifdef DEBUG
   A4GL_debug ("push_long  %d\n", a);
+#endif
   A4GL_push_long (a);
 }
 
@@ -188,7 +198,9 @@ A4GL_strip (char *s)
 void
 retshort (short x)
 {
+#ifdef DEBUG
   A4GL_debug ("retshort  %d\n", x);
+#endif
   A4GL_push_int (x & 0xffff);
 }
 
@@ -198,7 +210,9 @@ poplong (long *x)
   long a;
   a = A4GL_pop_long ();
   *x = a;
+#ifdef DEBUG
   A4GL_debug ("poplong  %d\n", *x);
+#endif
 }
 
 void
@@ -207,20 +221,26 @@ popdate (long *x)
   long a;
   a = A4GL_pop_date ();
   *x = a;
+#ifdef DEBUG
   A4GL_debug ("popdate  %d\n", *x);
+#endif
 }
 
 void
 retlong (long x)
 {
+#ifdef DEBUG
   A4GL_debug ("retlong  %d\n", x);
+#endif
   A4GL_push_long (x);
 }
 
 void
 retdate (long x)
 {
+#ifdef DEBUG
   A4GL_debug ("retdate  %d\n", x);
+#endif
   A4GL_push_date (x);
 }
 
@@ -305,7 +325,9 @@ popshort (short *x)
   int a;
   a = A4GL_pop_int ();
   *x = a & 0xffff;
+#ifdef DEBUG
   A4GL_debug ("popshort  %d\n", *x);
+#endif
 }
 
 

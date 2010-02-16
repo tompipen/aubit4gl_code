@@ -701,7 +701,9 @@ static int get_exit_loop (char *cmd_type)
   if (g == 0)
     {
       printf ("wanted to exit a %s but wasnt in one!\n", cmd_type);
+#ifdef DEBUG
       A4GL_debug ("/* wanted to exit a %s but wasnt in one! */", cmd_type);
+#endif
       return 0;
     }
 

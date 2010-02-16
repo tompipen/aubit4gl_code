@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.337 2010-02-12 14:39:40 mikeaubury Exp $
+# $Id: mod.c,v 1.338 2010-02-16 13:15:18 mikeaubury Exp $
 #
 */
 
@@ -419,7 +419,9 @@ static char *
 with_strip_bracket (const char *buff)
 {
   static char bff[256];
+#ifdef DEBUG
   A4GL_debug ("with_strip_bracket\n");
+#endif
   strcpy (bff, buff);
   strip_bracket (bff);
   return bff;
@@ -477,7 +479,9 @@ isin_command (char *cmd_type)
 
       if (strcmp (command_stack[z].cmd_type, cmd_type) == 0)
 	{
+#ifdef DEBUG
 	  A4GL_debug ("OK\n");
+#endif
 	  return z + 1;
 	}
     }
@@ -595,7 +599,9 @@ void
 push_command (int mn, int mnopt, char *a, char *b, char *c, char *hlp)
 {
 
+#ifdef DEBUG
   A4GL_debug ("Menu %d Option %d '%s'", mn, mnopt, A4GL_null_as_null (b));
+#endif
   A4GL_assertion (mn >= MAXMENU, "Ran out of menu spaces");
   A4GL_assertion (mnopt >= MAXMENUOPTS, "Ran out of option slots");
   strcpy (menu_stack[mn][mnopt - 1].menu_title, b);
@@ -779,14 +785,18 @@ open_db (char *s)
   char db[2048];
   char buff[256];
 
+#ifdef DEBUG
   A4GL_debug ("open_db %s", A4GL_null_as_null (s));
+#endif
   strcpy (db, s);
 
   if (has_default_database ())
     {
       strcpy (db, get_default_database ());
+#ifdef DEBUG
       A4GL_debug ("Overriding default database with %s",
 		  A4GL_null_as_null (db));
+#endif
       A4GL_trim (db);
     }
 
@@ -822,7 +832,9 @@ pushValidateTableColumn (char *tableName, char *columnName)
   /*char cdtype[20]; */
   char buff[300];
 
+#ifdef DEBUG
   A4GL_debug ("pushValidateTableColumn()");
+#endif
   rval = A4GL_read_columns (tableName, columnName, &idtype, &isize);
   if (rval == 0)
     {
@@ -848,14 +860,20 @@ pushValidateAllTableColumns (char *tableName)
   char buff[300];
   char *ccol;
 
+#ifdef DEBUG
   A4GL_debug ("pushValidateAllTableColumns()");
+#endif
 
 
+#ifdef DEBUG
   A4GL_debug ("Calling get_columns : %s\n", A4GL_null_as_null (tableName));
+#endif
 
   rval = A4GLSQL_get_columns (tableName, colname, &idtype, &isize);
 
+#ifdef DEBUG
   A4GL_debug ("rval = %d", rval);
+#endif
   if (rval == 0 && tableName)
     {
       SPRINTF1 (buff, "%s does not exist in the database", tableName);
@@ -864,7 +882,9 @@ pushValidateAllTableColumns (char *tableName)
       return 1;
     }
 
+#ifdef DEBUG
   A4GL_debug ("Rval !=0");
+#endif
 
   while (1)
     {
@@ -882,9 +902,11 @@ pushValidateAllTableColumns (char *tableName)
 
       strcpy (colname, ccol);
 
+#ifdef DEBUG
       A4GL_debug ("next column for table '%p' is '%p'", tableName, ccol);
       A4GL_debug ("next column for table '%s' is '%s'",
 		  A4GL_null_as_null (tableName), A4GL_null_as_null (ccol));
+#endif
 
       trim_spaces (colname);
       push_validate_column (tableName, colname);
@@ -903,7 +925,9 @@ push_validate (char *t2)
   char *tableName;
   char *columnName;
   char t[256];
+#ifdef DEBUG
   A4GL_debug ("In push_validate");
+#endif
 
 
 /* Skip any owner bit...*/
@@ -932,8 +956,10 @@ push_validate (char *t2)
 
   tableName = strtok (buff, ".");	/* table name */
   columnName = strtok (0, ".");	/* column name */
+#ifdef DEBUG
   A4GL_debug ("a='%s' b='%s'", A4GL_null_as_null (tableName),
 	      A4GL_null_as_null (columnName));
+#endif
 
   if (columnName && strcmp (columnName, "*") != 0)
     {
@@ -976,11 +1002,15 @@ in_command (char *cmd_type)
   int z;
   char buff[255];
 ccnt=A4GL_get_ccnt();
+#ifdef DEBUG
   A4GL_debug ("Check for %s %d \n", cmd_type, ccnt);
+#endif
 
   if (ccnt == 0)
     {
+#ifdef DEBUG
       A4GL_debug ("Stack is empty\n");
+#endif
       return 0;
     }
 
@@ -992,7 +1022,9 @@ ccnt=A4GL_get_ccnt();
 
       if (strcmp (command_stack[z].cmd_type, cmd_type) == 0)
 	{
+#ifdef DEBUG
 	  A4GL_debug ("OK\n");
+#endif
 	  return 1;
 	}
     }
@@ -1094,7 +1126,9 @@ init_report_structure (struct rep_structure *rep)
 void
 pdf_init_report_structure (struct pdf_rep_structure *rep)
 {
+#ifdef DEBUG
   A4GL_debug ("ZZ1 init structure...");
+#endif
   rep->top_margin = -36.0;
   rep->bottom_margin = -36.0;
   rep->left_margin = -36.0;
@@ -1132,7 +1166,9 @@ resize_paper (struct pdf_rep_structure *pdf_rep_struct)
   int portrait = 1;
   float a;
 
+#ifdef DEBUG
   A4GL_debug ("ZZ1 Fixing paper size.....");
+#endif
 
   if (pdf_rep_struct->paper_size != 0)
     {
@@ -1192,7 +1228,9 @@ resize_paper (struct pdf_rep_structure *pdf_rep_struct)
 void
 reset_attrib (struct form_attr *form_attrib)
 {
+#ifdef DEBUG
   A4GL_debug ("Reseting attributes\n");
+#endif
   form_attrib->iswindow = 0;
 
   form_attrib->attrib = 0xffff;
@@ -1217,7 +1255,9 @@ int
 attr_code (char *s)
 {
 
+#ifdef DEBUG
   A4GL_debug ("Decoding colour %s\n", s);
+#endif
 
   return A4GL_get_attr_from_string (s);
 
@@ -1315,8 +1355,10 @@ new_counter (void)
 int
 get_counter_val (void)
 {
+#ifdef DEBUG
   A4GL_debug ("/* get_counter_val =  %d counter number %d*/\n",
 	      counters[count_counters], count_counters);
+#endif
   return counters[count_counters];
 }
 
@@ -1373,8 +1415,10 @@ void
 inc_counter_by (int a)
 {
   counters[count_counters] += a;
+#ifdef DEBUG
   A4GL_debug ("/* inc_by =  %d counter number %d*/\n",
 	      counters[count_counters], count_counters);
+#endif
 }
 
 /**
@@ -1412,17 +1456,23 @@ cons_list* append_constr_col_list(struct cons_list *c ,struct cons_list_entry *n
   		char *ccol;
 		struct cons_list_entry *generated_new_entry;
 
+#ifdef DEBUG
   		A4GL_debug ("push_construct_table()");
   		A4GL_debug ("Calling get_columns : %s\n", new_entry->tabname);
+#endif
   		rval = A4GLSQL_get_columns (new_entry->tabname, colname, &idtype, &isize);
+#ifdef DEBUG
   		A4GL_debug ("rval = %d", rval);
+#endif
   		if (rval == 0 && new_entry->tabname) {
       			SPRINTF1 (buff, "%s does not exist in the database", new_entry->tabname);
       			a4gl_yyerror (buff);
       			A4GLSQL_end_get_columns ();
       			return 0;
     		}
+#ifdef DEBUG
   		A4GL_debug ("Rval !=0");
+#endif
 
   		while (1) {
       			colname[0] = 0;
@@ -1491,10 +1541,14 @@ push_construct_table (char *tableName)
   char buff[300];
   char *ccol;
 
+#ifdef DEBUG
   A4GL_debug ("push_construct_table()");
   A4GL_debug ("Calling get_columns : %s\n", tableName);
+#endif
   rval = A4GLSQL_get_columns (tableName, colname, &idtype, &isize);
+#ifdef DEBUG
   A4GL_debug ("rval = %d", rval);
+#endif
   if (rval == 0 && tableName)
     {
       SPRINTF1 (buff, "%s does not exist in the database", tableName);
@@ -1503,15 +1557,19 @@ push_construct_table (char *tableName)
       return 1;
     }
 
+#ifdef DEBUG
   A4GL_debug ("Rval !=0");
+#endif
 
   while (1)
     {
       colname[0] = 0;
 
       rval = A4GLSQL_next_column (&ccol, &idtype, &isize);
+#ifdef DEBUG
       A4GL_debug ("next column for table '%p' is '%p'", tableName, ccol);
       A4GL_debug ("next column for table '%s' is '%s'", tableName, ccol);
+#endif
 
       strcpy (colname, ccol);
       A4GL_trim (colname);
@@ -1553,7 +1611,9 @@ convstrsql (char *s)
   static char buff[1024];
   int a;
   int b = 0;
+#ifdef DEBUG
   A4GL_debug ("Convstrsql ... %s", s);
+#endif
   for (a = 0; a <= strlen (s); a++)
     {
       if (s[a] == '"')
@@ -1581,7 +1641,9 @@ convstrsql (char *s)
       buff[b++] = s[a];
 
     }
+#ifdef DEBUG
   A4GL_debug ("Convstrsql ... %s => %s", s, buff);
+#endif
   return buff;
 }
 
@@ -1658,7 +1720,9 @@ set_whento_store (char *p)
 void
 set_whento (char *p)
 {
+#ifdef DEBUG
   A4GL_debug ("whento = %p", p);
+#endif
   strcpy (when_to_tmp, p);
 }
 
@@ -1693,7 +1757,9 @@ npush_menu (void)
   max_menu_no++;
   cmenu++;
   menu_nos[cmenu] = max_menu_no;
+#ifdef DEBUG
   A4GL_debug ("Menu no %d", max_menu_no);
+#endif
   return max_menu_no;
 }
 
@@ -1709,11 +1775,15 @@ pop_menu (void)
   if (cmenu >= 0)
     {
       menu_cnt = menu_nos[cmenu];
+#ifdef DEBUG
       A4GL_debug ("Reset Menu no %d", menu_cnt);
+#endif
     }
   else
     {
+#ifdef DEBUG
       A4GL_debug ("Nothing to reset to...");
+#endif
     }
 }
 
@@ -1768,7 +1838,9 @@ swapstring (char *d, char *s)
       else
 	d[b++] = s[a];
     }
+#ifdef DEBUG
   A4GL_debug ("Converted : %s to %s", s, d);
+#endif
 }
 */
 
@@ -1883,7 +1955,9 @@ linked_split (char *s, int a, char *buff)
   strcat (buffer, ",");
 
   cnt = 0;
+#ifdef DEBUG
   A4GL_debug ("linked_split %s %d %p", s, a, buff);
+#endif
   if (a == 0)
     {
       for (z = 0; z < strlen (buffer); z++)
@@ -1909,7 +1983,9 @@ linked_split (char *s, int a, char *buff)
 		{
 		  buffer[z] = 0;
 		  strcpy (buff, p);
+#ifdef DEBUG
 		  A4GL_debug ("Linked found:%s", p);
+#endif
 		  return 1;
 		}
 	      p = &buffer[z + 1];
@@ -1927,7 +2003,9 @@ linked_split (char *s, int a, char *buff)
 void
 set_pklist (char *s)
 {
+#ifdef DEBUG
   A4GL_debug ("pklist set to %s\n", s);
+#endif
   strcpy (pklist, s);
   strcpy (upd_using_notpk, "");
   upd_using_notpk_cnt = 0;
@@ -1941,8 +2019,12 @@ set_pklist (char *s)
 char *
 get_upd_using_notpk (void)
 {
+#ifdef DEBUG
   A4GL_debug ("get_upd_using_notpk");
+#endif
+#ifdef DEBUG
   A4GL_debug ("Returning %s", upd_using_notpk);
+#endif
   return upd_using_notpk;
 }
 
@@ -1956,7 +2038,9 @@ get_upd_using_queries (void)
 {
   static char buff[2000];
   int a;
+#ifdef DEBUG
   A4GL_debug ("get_upd_using_???");
+#endif
   strcpy (buff, "");
 
   for (a = 0; a < upd_using_notpk_cnt; a++)
@@ -1972,7 +2056,9 @@ get_upd_using_queries (void)
 	  strcat (buff, "?");
 	}
     }
+#ifdef DEBUG
   A4GL_debug ("Returning %s", buff);
+#endif
   return buff;
 
 }
@@ -2009,21 +2095,29 @@ dump_expr (struct expr_str *orig_ptr)
   struct expr_str *start;
   start = orig_ptr;
 
+#ifdef DEBUG
   A4GL_debug ("DUMP EXPR : ");
+#endif
   while (orig_ptr)
     {
       int printed = 0;
       if (orig_ptr->expr_type == ET_EXPR_STRING)
 	{
+#ifdef DEBUG
 	  A4GL_debug ("     %d - %s", orig_ptr->expr_type, orig_ptr->expr_str_u.expr_string);
+#endif
 	  printed = 1;
 	}
       if (!printed)
 	{
+#ifdef DEBUG
 	  A4GL_debug ("exprtype : %d", orig_ptr->expr_type);
+#endif
 	}
     }
+#ifdef DEBUG
   A4GL_debug ("---------------------------------------------------");
+#endif
 }
 
 
@@ -2302,7 +2396,9 @@ pg_make_sql_string_and_free (char *first, ...)
 	  free (next);
 	}
     }
+#ifdef DEBUG
   A4GL_debug ("Generated : %s\n", ptr);
+#endif
   return ptr;
 }
 
@@ -2957,7 +3053,9 @@ if (sfc->col) {
       char buff[300];
       char *ccol;
       rval = A4GLSQL_get_columns (sfc->tab, 0, &idtype, &isize);
+#ifdef DEBUG
       A4GL_debug ("rval = %d", rval);
+#endif
       if (rval == 0 && sfc->tab)
         {
           SPRINTF1 (buff, "%s does not exist in the database", sfc->tab);

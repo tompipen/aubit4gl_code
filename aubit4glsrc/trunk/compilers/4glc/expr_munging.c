@@ -489,7 +489,10 @@ ensure_bool (char *module, int lineno, struct expr_str *s, int notnull)
       // No break so this will drop through...
     default:
 
+#ifdef DEBUG
       A4GL_debug ("Implicit cast to boolean @ %d\n", yylineno);
+#endif
+	;
     }
 
   make_cast (module,lineno,s, FAKE_DTYPE_BOOL, notnull, 0);

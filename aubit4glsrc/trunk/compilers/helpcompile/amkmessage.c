@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: amkmessage.c,v 1.16 2008-07-06 11:34:26 mikeaubury Exp $
+# $Id: amkmessage.c,v 1.17 2010-02-16 13:15:31 mikeaubury Exp $
 #*/
 
 /**
@@ -176,7 +176,9 @@ main (int argc, char *argv[])
       FPRINTF (stderr, "%s: %s contains no messages!\n", argv[0], argv[1]);
       exit (2);
     }
+#ifdef DEBUG
   A4GL_debug ("%d messages found\n", count);
+#endif
   fwrite2 ("\xFE\x68", outfile);
   out2 (count, outfile);
 

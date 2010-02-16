@@ -984,7 +984,9 @@ print_let_cmd (struct_let_cmd * cmd_data)
       			if (to_vars != from_exprs)
 				{
 	  			A4GL_assertion (1, "Should be right by here...");
+#ifdef DEBUG
 	  			A4GL_debug ("to_Vars = %d from_Exprs = %d\n", to_vars, from_exprs);
+#endif
 	  			return 0;
 				}
       				printc ("A4GL_pop_params(obind,%d);", from_exprs);

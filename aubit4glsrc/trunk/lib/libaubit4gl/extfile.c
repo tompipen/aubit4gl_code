@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: extfile.c,v 1.31 2008-10-02 17:40:50 mikeaubury Exp $
+# $Id: extfile.c,v 1.32 2010-02-16 13:16:27 mikeaubury Exp $
 #
 */
 
@@ -147,7 +147,9 @@ A4GL_set_lang_file (char *fname_orig)
 
   fname = acl_strdup (fname_orig);
   A4GL_trim (fname);
+#ifdef DEBUG
   A4GL_debug ("Language file='%s'", fname);
+#endif
 
   if (language_file_contents != 0)
     free (language_file_contents);
@@ -170,7 +172,9 @@ A4GL_set_lang_file (char *fname_orig)
   language_file_contents[l] = 0x0;
 
   fclose (langfile);
+#ifdef DEBUG
   A4GL_debug ("langfile=%p", langfile);
+#endif
 
   for (a = 0; a < l; a++)
     {
@@ -217,7 +221,9 @@ A4GL_get_translated_id (char *no_c)
   max_width = 0;
   cnt = 0;
   no = atoi (no_c);
+#ifdef DEBUG
   A4GL_debug ("no=%d (from %s)", no, no_c);
+#endif
   cptr = language_file_contents;
   if (cptr == 0)
     {
@@ -231,12 +237,16 @@ A4GL_get_translated_id (char *no_c)
   while (1)
     {
       mno = cptr[0] * 256 + cptr[1];
+#ifdef DEBUG
       A4GL_debug ("pos=%d (%x)", mno, mno);
+#endif
 
 
       if (mno == -1 || mno > no)
 	{
+#ifdef DEBUG
 	  A4GL_debug ("Out of range 1");
+#endif
 	  A4GL_exitwith ("message not found");
 	  return 0;
 	  break;
@@ -252,7 +262,9 @@ A4GL_get_translated_id (char *no_c)
       if (mno == no)
 	{
 	  cptr = language_file_contents + offset;
+#ifdef DEBUG
 	  A4GL_debug ("returning %p", cptr);
+#endif
 	  return cptr;
 
 	}
@@ -324,7 +336,9 @@ A4GL_get_help_disp (int n)
 void
 A4GL_set_last_outfile (char *s)
 {
+#ifdef DEBUG
   A4GL_debug ("last_outfile=%s", s);
+#endif
   strcpy (last_outfile, s);
 }
 
@@ -335,7 +349,9 @@ A4GL_set_last_outfile (char *s)
 char *
 A4GL_get_last_outfile (void)
 {
+#ifdef DEBUG
   A4GL_debug ("Returning last_outfile=%s", last_outfile);
+#endif
   return last_outfile;
 }
 

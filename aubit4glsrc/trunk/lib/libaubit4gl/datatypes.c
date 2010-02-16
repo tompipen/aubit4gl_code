@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: datatypes.c,v 1.41 2010-01-14 08:08:21 mikeaubury Exp $
+# $Id: datatypes.c,v 1.42 2010-02-16 13:16:27 mikeaubury Exp $
 #
 */
 
@@ -291,8 +291,10 @@ A4GL_find_datatype_out (char *name)
 	{
 	  char *(*function) (void);
 	  function = A4GL_get_datatype_function_i (a, "OUTPUT");
+#ifdef DEBUG
 	  A4GL_debug ("Got function as %p - comparing %s and %s", function,
 		      A4GL_null_as_null (function ()), A4GL_null_as_null (name));
+#endif
 	  if (A4GL_aubit_strcasecmp (function (), name) == 0)
 	    return a;
 	}
@@ -314,7 +316,9 @@ A4GL_find_datatype (char *name)
   if (!inited)
     A4GL_init_datatypes ();
 
+#ifdef DEBUG
   A4GL_debug ("Find datatype : %s\n", name);
+#endif
 
   for (a = 0; a < MAX_DTYPE; a++)
     {
@@ -322,7 +326,9 @@ A4GL_find_datatype (char *name)
       if (dtypes[a].name == 0)
 	continue;
 
+#ifdef DEBUG
       A4GL_debug ("Find datatype : %s = %s ? \n", name, dtypes[a].name);
+#endif
       if (A4GL_aubit_strcasecmp (dtypes[a].name, name) == 0)
 	{
 	  return a;

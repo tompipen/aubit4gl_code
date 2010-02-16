@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pack_xml.c,v 1.36 2009-01-23 18:24:15 mikeaubury Exp $
+# $Id: pack_xml.c,v 1.37 2010-02-16 13:17:11 mikeaubury Exp $
 #*/
 
 /**
@@ -275,7 +275,9 @@ A4GLPacker_A4GL_open_packer (char *basename, char dir,char *packname,char *versi
 	} else {
 		strcpy(buff,override);
 	}
+#ifdef DEBUG
   	A4GL_debug (buff);
+#endif
 
       /* write XML file */
       outfile = fopen (buff, "w");
@@ -300,7 +302,9 @@ A4GLPacker_A4GL_open_packer (char *basename, char dir,char *packname,char *versi
 	} else {
   		sprintf (buff, "%s", basename);
 	}
+#ifdef DEBUG
   A4GL_debug (buff);
+#endif
       /* read XML file */
       infile = A4GL_open_file_dbpath (buff);
 	inlineno=0;
@@ -319,7 +323,9 @@ A4GLPacker_A4GL_open_packer (char *basename, char dir,char *packname,char *versi
 
     }
 
+#ifdef DEBUG
   A4GL_debug ("Error in open_packer()\n");
+#endif
 
   return 0;
 
@@ -333,7 +339,9 @@ A4GLPacker_A4GL_open_packer (char *basename, char dir,char *packname,char *versi
 void
 A4GLPacker_A4GL_close_packer (char dir)
 {
+#ifdef DEBUG
   A4GL_debug ("In close_packer()");
+#endif
 
   if (toupper (dir) == 'O')
     fclose (outfile);
@@ -341,7 +349,9 @@ A4GLPacker_A4GL_close_packer (char dir)
   if (toupper (dir) == 'I')
     fclose (infile);
 
+#ifdef DEBUG
   A4GL_debug ("exiting close_packer()");
+#endif
 }
 
 /*
@@ -448,7 +458,9 @@ A4GLPacker_output_string (char *name, char *val, int ptr, int isarr)
 //char buff[10];
   print_level ();
   if (val==0) val="";
+#ifdef DEBUG
   A4GL_debug ("in output_string() outfile=%p\n", outfile);
+#endif
 
   fprintf (outfile, "<ATTR NAME=\"%s\" TYPE=\"STRING\"%s>", name,
 	   A4GL_pr_elem (isarr, ptr));
@@ -473,7 +485,9 @@ A4GLPacker_output_string (char *name, char *val, int ptr, int isarr)
     }
   fprintf (outfile, "</ATTR>\n");
 
+#ifdef DEBUG
   A4GL_debug ("exit output_string()\n");
+#endif
 
   return 1;
 }
@@ -600,7 +614,9 @@ getaline (void)
 	inlineno++;
   a = fgets (ibuff, sizeof (ibuff), infile);
 
+#ifdef DEBUG
   A4GL_debug("%d. %s", inlineno,ibuff);
+#endif
 
   if (a == 0)
     {
@@ -652,7 +668,9 @@ A4GLPacker_input_int (char *name, int *val, int ptr, int isarr)
   chk (val);
   if (!getaline ())
     return 0;
+#ifdef DEBUG
 A4GL_debug("input_int : ptr=%d\n",ptr);
+#endif
   a = atoi (A4GL_find_contents (ibuff));
   *val = a;
 
@@ -669,7 +687,9 @@ A4GLPacker_input_short (char *name, short *val, int ptr, int isarr)
   chk (val);
   if (!getaline ())
     return 0;
+#ifdef DEBUG
 A4GL_debug("input_int : ptr=%d\n",ptr);
+#endif
   a = atoi (A4GL_find_contents (ibuff));
   *val = a;
 
@@ -685,7 +705,9 @@ A4GLPacker_input_char (char *name, char *val, int ptr, int isarr)
   chk (val);
   if (!getaline ())
     return 0;
+#ifdef DEBUG
 A4GL_debug("input_int : ptr=%d\n",ptr);
+#endif
   a = atoi (A4GL_find_contents (ibuff));
   *val = a;
 
@@ -704,7 +726,9 @@ A4GLPacker_input_long (char *name, long *val, int ptr, int isarr)
   /* <ATTR NAME=\"%s\" TYPE=\"LONG\"%s>%d</ATTR> */
 
   chk (val);
+#ifdef DEBUG
 A4GL_debug("input_long : ptr=%d\n",ptr);
+#endif
   if (!getaline ())
     return 0;
   *val = atoi (A4GL_find_contents (ibuff));
@@ -724,7 +748,9 @@ A4GLPacker_input_bool (char *name, int *val, int ptr, int isarr)
   chk (val);
   if (!getaline ())
     return 0;
+#ifdef DEBUG
 A4GL_debug("input_bool : ptr=%d\n",ptr);
+#endif
   *val = atoi (A4GL_find_contents (ibuff));
   return contentok;
 }
@@ -745,14 +771,20 @@ A4GLPacker_input_string (char *name, char **val, int ptr, int isarr)
   int a;
   int blen;
   /* <ATTR NAME=\"%s\" TYPE=\"STRING\"%s>%s</ATTR> */
+#ifdef DEBUG
  A4GL_debug("input_string : ptr=%d\n",ptr);
+#endif
   chk (val);
   if (!getaline ())
     return 0;
   buff = A4GL_find_contents (ibuff);
+#ifdef DEBUG
   A4GL_debug("buff=%s",buff);
+#endif
   blen=strlen(buff);
+#ifdef DEBUG
   A4GL_debug("blen=%d",blen);
+#endif
   //blen=blen/2;
   blen+=2;
   pptr = malloc (blen);
@@ -796,7 +828,9 @@ A4GLPacker_input_double (char *name, double *val, int ptr, int isarr)
 {
   /* <ATTR NAME=\"%s\" TYPE=\"DOUBLE\"%s>%f</ATTR> */
   chk (val);
+#ifdef DEBUG
  A4GL_debug("input_double : ptr=%d\n",ptr);
+#endif
   if (!getaline ())
     return 0;
   *val = atof (A4GL_find_contents (ibuff));

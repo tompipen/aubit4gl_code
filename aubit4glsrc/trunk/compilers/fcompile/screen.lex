@@ -75,7 +75,9 @@
 		}
 	}
 
+#ifdef DEBUG
  	A4GL_debug("CH : %s\n",yytext);  
+#endif
 	return CH;
 }
 "]"		{ strcpy(yylval.str, yytext); return(CLOSE_SQUARE);}
@@ -149,7 +151,9 @@ is[ ]+not[ ]+null 		{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KWNO
 "+" 		{if (ignorekw) REJECT;
 			strcpy(yylval.str,yytext); 
 			if (graphics_mode) {
+#ifdef DEBUG
 				A4GL_debug("GM +");
+#endif
 				strcpy(yylval.str,"\n+");
 				return CH;
 				}
@@ -380,7 +384,9 @@ on[	 ]beginning 	{if (ign_kw(yystate, KW_ON_BEGINNING)||doing_4gl()) REJECT;strc
 [a-zA-Z_]+[a-zA-Z\_0-9]*	{
 	if (ignorekw) REJECT;
 	strcpy(yylval.str, yytext);
+#ifdef DEBUG
 	A4GL_debug("NAMED : %s\n",yytext);
+#endif
 	if (yydebug) {printf("NAMED: %s\n",yytext); fflush(stdout);}
  	return(NAMED);
 }
@@ -407,8 +413,10 @@ if (ignorekw!=1) REJECT;
 }
 
 strcpy(yylval.str, yytext);
+#ifdef DEBUG
  A4GL_debug("NAMED : %s\n",yytext); 
 	A4GL_debug("NAMED : %s\n",yytext);
+#endif
 	if (yydebug) {printf("NAMED: %s\n",yytext); fflush(stdout);}
 return(NAMED);}
 
@@ -439,7 +447,9 @@ return(NAMED);}
 	}
 
 
+#ifdef DEBUG
  A4GL_debug("CH : %s\n",yytext);  
+#endif
 	if (yydebug) printf("%s\n",yytext);
 return CH;
 }

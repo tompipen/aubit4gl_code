@@ -2320,7 +2320,9 @@ int no;
   for (a=0;a<cmd_data->list->list.list_len;a++) {
 	expr_str *e;
 	e=cmd_data->list->list.list_val[a];
+#ifdef DEBUG
 	A4GL_debug("%d - %s\n",a, decode_e_expr_type(e->expr_type));
+#endif
 	switch (e->expr_type) {
 		
 		case ET_EXPR_SQLBLOCK_INTO:
@@ -3389,7 +3391,9 @@ printc("/*******************************************************************/");
 		A4GL_assertion(funcbind->list.list_val[b]->expr_type!=ET_EXPR_VARIABLE_USAGE, "Expecting a variable usage for funcbind");
 		vu_funcbind=funcbind->list.list_val[b]->expr_str_u.expr_variable_usage;
 	
+#ifdef DEBUG
 	A4GL_debug("COMPARING: %s %s\n",generation_get_variable_usage_as_string(vu_funcbind), generation_get_variable_usage_as_string(vu_orderbind));
+#endif
 
 	      if (match_variable_usage(vu_funcbind, vu_orderbind)) {
 		  char tmpbuff[256];

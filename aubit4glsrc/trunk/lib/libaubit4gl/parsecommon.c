@@ -7,7 +7,9 @@ ensure_bind (long *a_bindp, long need, struct binding_comp *b)
 {
   long a_bind;
   a_bind = *a_bindp;
+#ifdef DEBUG
   A4GL_debug ("ensure bind %d %d\n", a_bind, need);
+#endif
 
   if (a_bind > need)
     return b;
@@ -22,7 +24,9 @@ ensure_bind (long *a_bindp, long need, struct binding_comp *b)
 	}
     }
   b = realloc (b, sizeof (struct binding_comp) * a_bind);
+#ifdef DEBUG
   A4GL_debug ("ensure bind Allocted %d\n", a_bind);
+#endif
   A4GL_assertion (b == 0, "Unable to allocation memory for binding");
   *a_bindp = a_bind;
   return b;
@@ -40,7 +44,9 @@ A4GL_strip_bracket (char *s)
   int c = 0;
   int f = 0;
 
+#ifdef DEBUG
   A4GL_debug ("strip_bracket %s\n", s);
+#endif
   for (a = 0; a <= strlen (s); a++)
     {
       if (s[a] == '[')

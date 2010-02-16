@@ -25,7 +25,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: gen_stack.c,v 1.8 2008-10-02 17:40:50 mikeaubury Exp $
+# $Id: gen_stack.c,v 1.9 2010-02-16 13:16:31 mikeaubury Exp $
 #
 */
 
@@ -110,14 +110,18 @@ void
 A4GL_4glc_push_gen (int a, char *s)
 {
   int c;
+#ifdef DEBUG
   A4GL_debug ("Push %d %s - %d\n", a, A4GL_null_as_null (s), gen_stack_cnt[a]);
+#endif
   c = gen_stack_cnt[a];
 
   if (c >= gen_stack_alloc[a] || gen_stack_ptr[a] == 0)
     {				// Allocate some more space...
       int d;
       gen_stack_alloc[a] += 1024;
+#ifdef DEBUG
       A4GL_debug ("Allocating more space for generic stack %d (%d rows)", a, gen_stack_alloc[a]);
+#endif
       gen_stack_ptr[a] = realloc (gen_stack_ptr[a], gen_stack_alloc[a] * sizeof (char *));
       for (d = gen_stack_cnt[a]; d < gen_stack_alloc[a]; d++)
 	gen_stack_ptr[a][d] = 0;
@@ -178,9 +182,14 @@ A4GL_4glc_pop_all_gen (int a, char *s)
   int z;
   for (z = 0; z < gen_stack_cnt[a]; z++)
     {
-      if (z > 0)
+      if (z > 0) {
+#ifdef DEBUG
 	A4GL_debug ("%s ", A4GL_null_as_null (s));
+#endif
+	}
+#ifdef DEBUG
       A4GL_debug ("%s", A4GL_null_as_null (gen_stack_ptr[a][z]));
+#endif
     }
   A4GL_4glc_clr_gen (a);
   //gen_stack_cnt[a] = 0;

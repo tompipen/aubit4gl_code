@@ -153,6 +153,7 @@ A4GL_init_default_formats ()
   a4gl_convfmts.using_decfmt = a4gl_convfmts.ui_decfmt;
   a4gl_convfmts.using_decfmt.thsep = 0;
 
+#ifdef DEBUG
   A4GL_debug ("Default numeric formats: a4gl=<%c%c> db=<%c%c> printf=<%c%c> scanf=<%c%c> using=<%c%c>\n",
 	      a4gl_convfmts.ui_decfmt.decsep ? a4gl_convfmts.ui_decfmt.decsep : 'N',
 	      a4gl_convfmts.ui_decfmt.thsep ? a4gl_convfmts.ui_decfmt.thsep : 'N',
@@ -164,6 +165,8 @@ A4GL_init_default_formats ()
 	      a4gl_convfmts.scanf_decfmt.thsep ? a4gl_convfmts.scanf_decfmt.thsep : 'N',
 	      a4gl_convfmts.using_decfmt.decsep ? a4gl_convfmts.using_decfmt.decsep : 'N',
 	      a4gl_convfmts.using_decfmt.thsep ? a4gl_convfmts.using_decfmt.thsep : 'N');
+
+#endif
 }
 
 /**
@@ -209,8 +212,10 @@ A4GL_decstr_convert (char *buf, s_decfmt from, s_decfmt to, int newbuf, int trim
   char *optr;
   char sign = 0;
   // find a decimal separator
+#ifdef DEBUG
   A4GL_debug ("Converting \"%s\" %c%c->%c%c", buf,
 	      from.decsep, from.thsep ? from.thsep : 'N', to.decsep, to.thsep ? to.thsep : 'N');
+#endif
   for (dpos = 0; buf[dpos]; ++dpos)
     {
       if (buf[dpos] == from.decsep)
@@ -251,7 +256,9 @@ A4GL_decstr_convert (char *buf, s_decfmt from, s_decfmt to, int newbuf, int trim
 	    }
 	  else
 	    {
+#ifdef DEBUG
 	      A4GL_debug ("parse error, state %i\n", st);
+#endif
 	      st = DEC_STATE_S_ERR;
 	    }
 	  break;
@@ -274,7 +281,9 @@ A4GL_decstr_convert (char *buf, s_decfmt from, s_decfmt to, int newbuf, int trim
 	    }
 	  else
 	    {
+#ifdef DEBUG
 	      A4GL_debug ("parse error, state %i\n", st);
+#endif
 	      st = DEC_STATE_S_ERR;
 	    }
 	  break;
@@ -307,7 +316,9 @@ A4GL_decstr_convert (char *buf, s_decfmt from, s_decfmt to, int newbuf, int trim
 	    }
 	  else
 	    {
+#ifdef DEBUG
 	      A4GL_debug ("parse error, state %i\n", st);
+#endif
 	      st = DEC_STATE_S_ERR;
 	    }
 	  break;
@@ -319,7 +330,9 @@ A4GL_decstr_convert (char *buf, s_decfmt from, s_decfmt to, int newbuf, int trim
 	    }
 	  else
 	    {
+#ifdef DEBUG
 	      A4GL_debug ("parse error, state %i\n", st);
+#endif
 	      st = DEC_STATE_S_ERR;
 	    }
 	  break;
@@ -347,7 +360,9 @@ A4GL_decstr_convert (char *buf, s_decfmt from, s_decfmt to, int newbuf, int trim
 	    }
 	  else
 	    {
+#ifdef DEBUG
 	      A4GL_debug ("parse error, state %i\n", st);
+#endif
 	      st = DEC_STATE_S_ERR;
 	    }
 	  break;
@@ -364,7 +379,9 @@ A4GL_decstr_convert (char *buf, s_decfmt from, s_decfmt to, int newbuf, int trim
 	    }
 	  else
 	    {
+#ifdef DEBUG
 	      A4GL_debug ("parse error, state %i\n", st);
+#endif
 	      st = DEC_STATE_S_ERR;
 	    }
 	  break;
@@ -385,13 +402,17 @@ A4GL_decstr_convert (char *buf, s_decfmt from, s_decfmt to, int newbuf, int trim
 	{
 	  if (trim)
 	    {
+#ifdef DEBUG
 	      A4GL_debug ("maxlen exceeded, filling with '*'s");
+#endif
 	      memset (optr, '*', maxlen);
 	      optr[maxlen] = 0;
 	    }
 	  else
 	    {
+#ifdef DEBUG
 	      A4GL_debug ("maxlen exceeded, trying to grab the whitespace, if possible");
+#endif
 	      int bl = 0;
 	      if (sign)
 		{
@@ -417,7 +438,9 @@ A4GL_decstr_convert (char *buf, s_decfmt from, s_decfmt to, int newbuf, int trim
 		}
 	      if (bl > maxlen && to.thsep)
 		{
+#ifdef DEBUG
 		  A4GL_debug ("maxlen exceeded, trying to grab thousand separators");
+#endif
 		  s_decfmt tmpfrom = to;
 		  s_decfmt tmpto = to;
 		  from.thsep = to.thsep;
@@ -427,7 +450,9 @@ A4GL_decstr_convert (char *buf, s_decfmt from, s_decfmt to, int newbuf, int trim
 		}
 	      if (bl > maxlen)
 		{
+#ifdef DEBUG
 		  A4GL_debug ("maxlen exceeded, filling with '*'s");
+#endif
 		  memset (optr, '*', maxlen);
 		  optr[maxlen] = 0;
 		}
@@ -435,7 +460,9 @@ A4GL_decstr_convert (char *buf, s_decfmt from, s_decfmt to, int newbuf, int trim
 	}
     }
 
+#ifdef DEBUG
   A4GL_debug ("Conversion result\"%s\"", optr);
+#endif
   if (newbuf)
     return strdup (optr);
   strcpy (buf, optr);
@@ -581,12 +608,16 @@ A4GL_str_to_dec (char *str_orig, fgldecimal * dec)
       A4GL_conversion_ok (0);
       if (A4GL_isyes (acl_getenv ("A4GL_NULL_DECIMAL_IF_BAD")))
 	{
+#ifdef DEBUG
 	  A4GL_debug ("Bad...");
+#endif
 	  A4GL_setnull (DTYPE_DECIMAL, dec, dec->dec_data[0] * 256 + dec->dec_data[1]);
 	}
       else
 	{
+#ifdef DEBUG
 	  A4GL_debug ("Bad...");
+#endif
 	  return A4GL_str_to_dec ("0", dec);
 	}
       return dec;
@@ -609,7 +640,9 @@ A4GL_str_to_dec (char *str_orig, fgldecimal * dec)
   if (strlen (head) > digits - decimals)
     {
       // Its too big..
+#ifdef DEBUG
       A4GL_debug ("Bad %s %d - %d %d ", head, strlen (head), digits, decimals);
+#endif
       A4GL_setnull (DTYPE_DECIMAL, dec, dec->dec_data[0] * 256 + dec->dec_data[1]);
       return dec;
     }
@@ -627,7 +660,9 @@ A4GL_str_to_dec (char *str_orig, fgldecimal * dec)
 
   while (carry)
     {
+#ifdef DEBUG
       A4GL_debug ("Doing Carry... %s", tail);
+#endif
       round_cnt--;
       if (round_cnt < 0)
 	break;
@@ -715,13 +750,15 @@ A4GL_dec_to_str (fgldecimal * dec, int size)
     {
       has_neg = 1;
     }
-  A4GL_debug("Decimal %d %d\n", dec->dec_data[0] &127, dec->dec_data[1]);
 #ifdef DEBUG
+  A4GL_debug("Decimal %d %d\n", dec->dec_data[0] &127, dec->dec_data[1]);
   A4GL_debug ("XYXY dec to str : %s", &dec->dec_data[2]);
 #endif
   ptr = (char *)&dec->dec_data[2];
   strcat (buff, ptr);
+#ifdef DEBUG
 A4GL_debug("ptr=%s\n",ptr);
+#endif
   l = strlen (buff);
   for (a = has_neg; a < l; a++)
     {

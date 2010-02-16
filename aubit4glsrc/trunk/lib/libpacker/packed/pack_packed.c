@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pack_packed.c,v 1.50 2009-07-13 19:29:44 mikeaubury Exp $
+# $Id: pack_packed.c,v 1.51 2010-02-16 13:17:11 mikeaubury Exp $
 #*/
 
 /**
@@ -483,8 +483,8 @@ A4GLPacker_input_start_array (char *s, int type, int *len)
 {
   int a;
   a = A4GLPacker_input_int (s, len, 0, -1);
-  if (!a) { A4GL_debug("Failed to read array %s",s); }
 #ifdef DEBUG
+  if (!a) { A4GL_debug("Failed to read array %s",s); }
   A4GL_debug ("ARRAY %s - Length of array=%d", s, *len);
 
 #endif
@@ -511,7 +511,11 @@ A4GLPacker_input_short (char *name, short *val, int ptr, int isarr)
   int a;
   a = fread (val, 1, sizeof (short), infile);
   *val = a4gl_ntohs (*val);
-  if (!a) { A4GL_debug("Failed to read short %s",name); }
+  if (!a) { 
+#ifdef DEBUG
+A4GL_debug("Failed to read short %s",name); 
+#endif
+}
   return a;
 
 }
@@ -546,7 +550,11 @@ int a;
 	A4GL_debug("Read : %d", * (int *) val);
 #endif
     }
-  if (!a) { A4GL_debug("Failed to read int %s",name); }
+  if (!a) { 
+#ifdef DEBUG
+A4GL_debug("Failed to read int %s",name); 
+#endif
+}
 return a;
 }
 
@@ -565,7 +573,11 @@ A4GLPacker_input_long (char *name, long *val, int ptr, int isarr)
   A4GL_debug("LONG Got %s %x %x",name,*val, a4gl_ntohl (*val));
 #endif
   *val = a4gl_ntohl (*val);
-  if (!a) { A4GL_debug("Failed to read long %s",name); }
+  if (!a) { 
+#ifdef DEBUG
+A4GL_debug("Failed to read long %s",name); 
+#endif
+}
   return a;
 }
 
@@ -576,7 +588,11 @@ A4GLPacker_input_char (char *name, char *val, int ptr, int isarr)
   int a;
   /* long n; */
   a = fread (val, 1, sizeof (char), infile);
-  if (!a) { A4GL_debug("Failed to read char %s",name); }
+  if (!a) { 
+#ifdef DEBUG
+A4GL_debug("Failed to read char %s",name); 
+#endif
+}
   return a;
 }
 
@@ -671,7 +687,11 @@ A4GLPacker_input_start_union (char *s, char *en, int *e,char *n, int ptr, int is
 {
 int a;
   a=A4GLPacker_input_int (en, e, 0, -1);
-  if (!a) { A4GL_debug("Failed to read %s %s %s",s,en,n); }
+  if (!a) { 
+#ifdef DEBUG
+A4GL_debug("Failed to read %s %s %s",s,en,n); 
+#endif
+}
   return a;
 }
 
@@ -709,7 +729,11 @@ A4GLPacker_input_enum (char *rn, char *name, int *d)
 {
   int a;
   a=A4GLPacker_input_int (name, d, 0, -1);
-  if (!a) { A4GL_debug("Failed to read %s %s",rn,name); }
+  if (!a) { 
+#ifdef DEBUG
+A4GL_debug("Failed to read %s %s",rn,name); 
+#endif
+}
   return a;
 }
 

@@ -13,11 +13,15 @@ A4GL_net_keyval (char *v)
   char v0[800];
   long _r;
 
+#ifdef DEBUG
   A4GL_debug ("In net_keyval");
+#endif
   strcpy (v0, v);
   A4GL_trim (v);
   A4GL_stripnl (v);
+#ifdef DEBUG
   A4GL_debug ("Decoding ...%s...", v0);
+#endif
   if (strlen (v0) == 1)
     {
       return v0[0];
@@ -69,6 +73,8 @@ A4GL_net_keyval (char *v)
     {
       return (v0[1] - 'A' + 1);
     }
+#ifdef DEBUG
   A4GL_debug ("Not found in here");
+#endif
   return 0;
 }

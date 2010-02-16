@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: read_dty.c,v 1.21 2009-02-23 17:31:50 mikeaubury Exp $
+# $Id: read_dty.c,v 1.22 2010-02-16 13:16:31 mikeaubury Exp $
 #
 */
 
@@ -142,7 +142,9 @@ A4GL_get_dtype (char *tabname, char *colname, char *dbname, char **tablist)
 
   if (tablist == 0)
     {
+#ifdef DEBUG
       A4GL_debug ("Column not found");
+#endif
       return -1;
     }
 

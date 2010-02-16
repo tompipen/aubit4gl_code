@@ -83,7 +83,9 @@ A4GLSQLLIB_A4GLSQL_init_connection_internal (char *dbName)
   strcpy(fname, dbName);
 	A4GL_trim(fname);
   strcat(fname,f);
+#ifdef DEBUG
   A4GL_debug("OPEN SCHEMA : %s",fname);
+#endif
 
    if (!read_s_idx_tables(&current_tables,fname)) {
       A4GL_set_errm (fname);
@@ -166,7 +168,9 @@ for (a=0;a<current_tables.tables.tables_len;a++) {
 	      return 1;
     } else {
   	A4GL_set_errm (tabname);
+#ifdef DEBUG
 	A4GL_debug("tabname : %s not found",tabname);
+#endif
   	A4GL_exitwith ("Table not found\n");
   	return 0;
     }

@@ -117,7 +117,9 @@ if (ext!=0) {
       if (fgets (buff, 255, fin)==NULL) continue;
       A4GL_trim_nl(buff);
 	if (strlen(buff)==0) continue;
+#ifdef DEBUG
       A4GL_debug("%s\n", buff);
+#endif
 
       if (buff[0] == '[')
 	{

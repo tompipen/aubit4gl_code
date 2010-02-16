@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack_ops.c,v 1.24 2009-02-23 17:31:50 mikeaubury Exp $
+# $Id: stack_ops.c,v 1.25 2010-02-16 13:16:42 mikeaubury Exp $
 #
 */
 
@@ -43,34 +43,50 @@ A4GL_process_stack_op_other (int d)
   int s1;
   //int ptr1;
   long ptr1;
+#ifdef DEBUG
   A4GL_debug ("A4GL_process_stack_op_other");
+#endif
   if (d == OP_IN || d == OP_NOTIN)
     {
       int a;
       int ok = 0;
       int eql;
+#ifdef DEBUG
       A4GL_debug ("OP_IN Set");
+#endif
       a = A4GL_pop_int ();
+#ifdef DEBUG
       A4GL_debug ("OP_IN Set checking against %d values", a);
+#endif
       while (a >= 1)
 	{
+#ifdef DEBUG
 	  A4GL_debug ("Getting base value from stack.. a=%d", a);
+#endif
 	  A4GL_get_top_of_stack (a + 1, &d1, &s1, (void *) &ptr1);
+#ifdef DEBUG
 	  A4GL_debug ("Got %p 0x%x %d\n", ptr1, d1, s1);
+#endif
 	  //A4GL_debug (" *ptr1=%d", *(int *) ptr1);
 	  A4GL_push_param ((void *) ptr1, (d1 & DTYPE_MASK) + ENCODE_SIZE (s1));
 	  A4GL_pushop (OP_EQUAL);
+#ifdef DEBUG
 	  A4GL_debug ("Pushed OP_EQUAL");
+#endif
 	  eql = A4GL_pop_long ();
 	  if (A4GL_isnull (DTYPE_INT, (void *) &eql))
 	    eql = 0;
 	  if (eql)
 	    ok = 1;
+#ifdef DEBUG
 	  A4GL_debug ("Got OP_EQUAL  = %d (%x) ok=%d\n", eql, eql, ok);
+#endif
 
 	  a--;
 	}
+#ifdef DEBUG
       A4GL_debug ("Setting ok=%d\n", ok);
+#endif
       A4GL_drop_param ();	/* Get rid of the base... */
       if (d == OP_IN)
 	A4GL_push_int (ok);
@@ -101,7 +117,9 @@ A4GL_process_stack_op_other (int d)
 	struct BINDING *ibind;
 	struct BINDING obind[] = { {0, 0, 0, 0, 0, 0} };	/* end of binding */
 	ibind = A4GL_pop_binding (&n);
+#ifdef DEBUG
 	A4GL_debug ("declare - binding : %d\n", n);
+#endif
 	A4GL_declare_cursor (0, A4GL_prepare_select (ibind, n, obind, 0, s, "__internal_stackops", 1, 0, 0), 0, cname);
       }
       if (a4gl_status != 0)
@@ -122,7 +140,9 @@ A4GL_process_stack_op_other (int d)
 	  A4GL_fetch_cursor (cname, 2, 1, 1, ibind);
 	  if (a4gl_status != 0)
 	    break;
+#ifdef DEBUG
 	  A4GL_debug ("tmpvar=%s\n", tmpvar);
+#endif
 	  A4GL_push_param (tmpvar, 0);
 	  A4GL_push_param ((void *) ptr1, (d1 & DTYPE_MASK) + ENCODE_SIZE (s1));
 	  A4GL_pushop (OP_EQUAL);
@@ -154,18 +174,30 @@ A4GL_process_stack_op_other (int d)
 
       int n;
 
+#ifdef DEBUG
       A4GL_debug ("OP_EXISTS - OP_NOTEXISTS...");
+#endif
       SPRINTF1 (cname, "chkex%d", cntsql_1++);
+#ifdef DEBUG
       A4GL_debug ("Popping binding...");
+#endif
 
       dbind = A4GL_pop_binding (&n);
+#ifdef DEBUG
       A4GL_debug ("poped dbind - Poping Sql");
+#endif
       s = A4GL_char_pop ();
+#ifdef DEBUG
       A4GL_debug ("s=%s\n", s);
+#endif
       A4GLSQL_set_sqlca_sqlcode (0);
+#ifdef DEBUG
       A4GL_debug ("Prepare seelct...");
+#endif
       prep = A4GL_prepare_select (dbind, n, obind, 0, s, "__internal_stackops", 2, 0, 0);
+#ifdef DEBUG
       A4GL_debug ("Declare");
+#endif
       free (s);
       A4GL_declare_cursor (0, prep, 0, cname);
 
@@ -176,25 +208,33 @@ A4GL_process_stack_op_other (int d)
 	}
       A4GLSQL_set_sqlca_sqlcode (0);
       A4GL_open_cursor (cname, 0, 0);
+#ifdef DEBUG
       A4GL_debug ("opened cursor");
+#endif
       if (a4gl_status != 0)
 	{
 	  A4GL_push_int (0);
 	  return;
 	}
       A4GL_fetch_cursor (cname, 2, 1, 1, ibind);
+#ifdef DEBUG
       A4GL_debug ("fetched");
+#endif
       if (a4gl_status == 0)
 	ok = 1;
       if (a4gl_status == 100)
 	ok = 0;
       if (a4gl_status != 0 && a4gl_status != 100)
 	{
+#ifdef DEBUG
 	  A4GL_debug ("Some error with the exists stuff.");
+#endif
 	  A4GL_push_int (0);
 	  return;
 	}
+#ifdef DEBUG
       A4GL_debug ("ok=%d", ok);
+#endif
       if (d == OP_EXISTS)
 	A4GL_push_int (ok);
       else

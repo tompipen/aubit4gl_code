@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: data_if.c,v 1.40 2009-02-23 17:31:49 mikeaubury Exp $
+# $Id: data_if.c,v 1.41 2010-02-16 13:16:27 mikeaubury Exp $
 #
 */
 
@@ -102,7 +102,9 @@ get_set_s_screenio (void *ptr, int mode, char *name, long var)
 
   struct s_s_screenio_1 *val;
 
+#ifdef DEBUG
   A4GL_debug ("screenio - %p mode=%d name=%s var=%x", ptr, mode, A4GL_null_as_null (name), var);
+#endif
   if (mode == GETSETNEW)
     {
       return (void *) acl_malloc2 (sizeof (struct s_s_screenio_1));
@@ -328,7 +330,9 @@ get_set_s_screenio (void *ptr, int mode, char *name, long var)
 
 
 
+#ifdef DEBUG
   A4GL_debug ("No found name %s\n", A4GL_null_as_null (name));
+#endif
 
   return (void *) 0;		/* unknown value */
 }
@@ -389,9 +393,12 @@ get_set_s_inp_arr (void *ptr, int mode, char *name, long var)
   };
 
   struct s_s_inp_arr_1 *val;
+#ifdef DEBUG
   A4GL_debug ("getcount=%d XYX", A4GL_get_count ());
-
   A4GL_debug ("mode = %d ptr=%x  name=%s size=%d", mode, ptr, A4GL_null_as_null (name), sizeof (struct s_s_inp_arr_1));
+#endif
+
+
   if (mode == GETSETNEW)
     {
       return (void *) acl_malloc2 (sizeof (struct s_s_inp_arr_1));
@@ -532,7 +539,9 @@ get_set_s_inp_arr (void *ptr, int mode, char *name, long var)
 	return (void *) &(val->count);
       if (mode == GETSETSET)
 	{
+#ifdef DEBUG
 	  A4GL_debug ("Setting count %d XYX\n", var);
+#endif
 	  val->count = (int) var;
 	  return (void *) 1;
 	}
@@ -792,7 +801,9 @@ get_set_s_inp_arr (void *ptr, int mode, char *name, long var)
 
   if (strcmp (name, "nbind") == 0)
     {
+#ifdef DEBUG
       A4GL_debug ("Setting nbind=%d", (int) var);
+#endif
       if (mode == GETSETGET)
 	return (void *) (long) val->nbind;
       if (mode == GETSETGETPTR)
@@ -871,7 +882,9 @@ get_set_s_inp_arr (void *ptr, int mode, char *name, long var)
     }
 
   A4GL_assertion (1, "CRITICAL ERROR - unknown name in GETSET/s_inp_arr");
+#ifdef DEBUG
   A4GL_debug ("CRITICAL - UNKNOWN VALUE FOR  s_inp_arr - %s\n", A4GL_null_as_null (name));
+#endif
 
   return (void *) 0;		/* unknown value */
 }
@@ -1612,7 +1625,9 @@ A4GL_get_set (char *str, void *ptr, int mode, char *name, long var)
 {
   int a;
 
+#ifdef DEBUG
   A4GL_debug ("Get_set %s\n", A4GL_null_as_null (str));
+#endif
   if ((a = atoi (str)) != 0)
     {
       if (a == 0)
@@ -1660,7 +1675,9 @@ A4GL_get_set (char *str, void *ptr, int mode, char *name, long var)
     {
       return get_set_s_disp_arr (ptr, mode, name, var);
     }
+#ifdef DEBUG
   A4GL_debug ("No found %s\n", A4GL_null_as_null (str));
+#endif
   return (void *) 0;
 }
 

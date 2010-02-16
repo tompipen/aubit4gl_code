@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: readkeys.c,v 1.17 2008-11-04 13:20:05 mikeaubury Exp $
+# $Id: readkeys.c,v 1.18 2010-02-16 13:16:31 mikeaubury Exp $
 #*/
 
 /**
@@ -61,7 +61,9 @@ open_keyfile (void)
   have_keyfile = 0;
 
   fname = acl_getenv ("KEYFILE");
+#ifdef DEBUG
   A4GL_debug ("Keyfilename= %s", fname);
+#endif
   if (fname == 0)
     return;
   if (strlen (fname) == 0)
@@ -128,7 +130,9 @@ A4GL_readkey (void)
   if (a == '\\')
     {
       int cnt = 0;
+#ifdef DEBUG
       A4GL_debug ("Getting keyval");
+#endif
       while (1)
 	{
 	  buff[cnt] = fgetc (keyfile);
@@ -141,7 +145,9 @@ A4GL_readkey (void)
 	  cnt++;
 	  buff[cnt] = 0;
 	}
+#ifdef DEBUG
       A4GL_debug ("Getting keyval - %s", buff);
+#endif
       if (strcmp(buff,"PAUSE")==0) {
 		char str[2000];
 		// We need to prompt the user to wait or do something
@@ -269,11 +275,15 @@ A4GL_logkey (long a)
 
   for (k = 0; keys[k]; k++)
     {
+#ifdef DEBUG
       A4GL_debug ("Checking against built in key for %s - %d %d", keys[k], a, A4GL_key_val (keys[k]));
+#endif
 
       if (a == A4GL_key_val (keys[k]))
 	{
+#ifdef DEBUG
 	  A4GL_debug ("Log keypress %s in file %p", keys[k], keylog);
+#endif
 	  FPRINTF (keylog, "\\%s\n", keys[k]);
 	  fflush (keylog);
 	  return;
@@ -295,5 +305,7 @@ A4GL_logkey (long a)
 
   // Darn - couldn't detect what the key was...
 
+#ifdef DEBUG
   A4GL_debug ("Unknown key %d", a);
+#endif
 }

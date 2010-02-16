@@ -1,7 +1,7 @@
 #include "a4gl_lib_ui_tui_int.h"
 #ifndef lint
 	static char const module_id[] =
-		"$Id: generic_ui.c,v 1.54 2009-12-16 13:59:40 mikeaubury Exp $";
+		"$Id: generic_ui.c,v 1.55 2010-02-16 13:17:15 mikeaubury Exp $";
 #endif
 
 static int A4GL_find_shown (ACL_Menu * menu, int chk, int dir);
@@ -16,11 +16,17 @@ A4GL_string_width (char *s)
   static char buff2[10024];
 
   a = UILIB_A4GL_get_curr_width () - 2;
+#ifdef DEBUG
   A4GL_debug("String width=%d",a);
+#endif
   SPRINTF2 (buff, "%%-%d.%ds", a, a);
+#ifdef DEBUG
   A4GL_debug("Buff=%s - s=%s",buff,s);
+#endif
   SPRINTF1 (buff2, buff, s);
+#ifdef DEBUG
   A4GL_debug("Buff2=%s",buff2);
+#endif
   return buff2;
 }
 
@@ -77,7 +83,9 @@ A4GL_new_do_keys (ACL_Menu * menu, int a)
 		a=A4GLKEY_ENTER;
   }
   opt1 = (ACL_Menu_Opts *) menu->curr_option;
+#ifdef DEBUG
   A4GL_debug ("new_do_keys A=%d", a);
+#endif
 
   fc= A4GL_find_char (menu, a);
 
@@ -98,18 +106,24 @@ A4GL_new_do_keys (ACL_Menu * menu, int a)
 
   if (a == A4GLKEY_ESCAPE)
     {
+#ifdef DEBUG
       A4GL_debug ("Escape!");
+#endif
       abort_pressed = 1;
       return 0;
     }
 
   if (a == A4GLKEY_ENTER)
     {
+#ifdef DEBUG
       A4GL_debug ("CR..");
+#endif
       return 1;
     }
 
+#ifdef DEBUG
     A4GL_debug ("Dropped through");
+#endif
 
     if (A4GL_isyes(acl_getenv("BEEP_BADMENUKEY"))) {
   	 beep();
@@ -165,7 +179,9 @@ buff[1]=0;
 			strcat(buff,b);
 			A4GL_show_menu_large_get_matches(menu, buff,cw, &cnt,&uniq);
 			
+#ifdef DEBUG
 			A4GL_debug("got %d matches", cnt);
+#endif
 			if (cnt==0) { // bad character...
 				A4GL_dobeep();
 				l=strlen(buff);
@@ -184,7 +200,9 @@ buff[1]=0;
 				buff[l-1]=0;
 			}
 			
+#ifdef DEBUG
 			A4GL_debug("menu_large - LEFT (%s)", buff);
+#endif
 			continue;
 		}
 
@@ -202,7 +220,9 @@ A4GL_find_char (ACL_Menu * menu, int key)
   int flg = 0;
   opt2 = (ACL_Menu_Opts *) menu->curr_option;
 
+#ifdef DEBUG
   A4GL_debug ("ZZ : key = %d opt2->optkey=%s\n", key, opt2->optkey);
+#endif
 //A4GL_pause_execution();
 
   if (!opt2->attributes & ACL_MN_HIDE)	// Is it hidden ? 
@@ -210,12 +230,16 @@ A4GL_find_char (ACL_Menu * menu, int key)
       // No - its not hidden...
       if (strcmp (opt2->optkey, "EMPTY") != 0)
 	{
+#ifdef DEBUG
 	  A4GL_debug ("defined keys only");
+#endif
 	  flg = A4GL_check_keys (key, opt2->optkey);
 	}
       else
 	{
+#ifdef DEBUG
 	  A4GL_debug ("default key only");
+#endif
 	  if (A4GL_is_unique_menu_key (menu, key)==1)
 	    {
 	      flg = A4GL_check_key (key, &opt2->opt_title[1], 1);
@@ -227,7 +251,9 @@ A4GL_find_char (ACL_Menu * menu, int key)
       // It is hidden - but it might be a command key(..)
       if (strlen (opt2->opt_title) == 0)
 	{
+#ifdef DEBUG
 	  A4GL_debug ("defined keys only");
+#endif
 	  flg = A4GL_check_keys (key, opt2->optkey);
 	}
     }
@@ -237,7 +263,9 @@ A4GL_find_char (ACL_Menu * menu, int key)
       menu->curr_option = (ACL_Menu_Opts *) opt2;
 	  	menu->curr_page =menu->curr_option->page;
       A4GL_display_menu (menu);
+#ifdef DEBUG
       A4GL_debug ("We're on it!");
+#endif
       return 1;
     }
 
@@ -253,7 +281,9 @@ A4GL_find_char (ACL_Menu * menu, int key)
 		}
 		return 0;
   } else {
+#ifdef DEBUG
       A4GL_debug ("Checking next option...");
+#endif
       opt1 = (ACL_Menu_Opts *) opt2->next_option;
 
       if (opt1 == 0)
@@ -261,7 +291,9 @@ A4GL_find_char (ACL_Menu * menu, int key)
 
       while (opt2 != opt1)
 	{
+#ifdef DEBUG
 	  A4GL_debug ("ZZ2 : key = %d opt1->optkey=%s\n", key, opt1->optkey);
+#endif
 
 	  flg = 0;
 
@@ -269,12 +301,16 @@ A4GL_find_char (ACL_Menu * menu, int key)
 	    {
 	      if (strcmp (opt1->optkey, "EMPTY"))
 		{
+#ifdef DEBUG
 		  A4GL_debug ("defined keys only");
+#endif
 		  flg = A4GL_check_keys (key, opt1->optkey);
 		}
 	      else
 		{
+#ifdef DEBUG
 		  A4GL_debug ("default key only");
+#endif
 		  flg = A4GL_check_key (key, &opt1->opt_title[1], 1);
 		}
 	    }
@@ -282,7 +318,9 @@ A4GL_find_char (ACL_Menu * menu, int key)
 	    {
 	      if (strlen (opt1->opt_title) == 0)
 		{
+#ifdef DEBUG
 		  A4GL_debug ("defined keys only");
+#endif
 		  flg = A4GL_check_keys (key, opt1->optkey);
 		}
 
@@ -319,17 +357,25 @@ A4GL_move_bar (ACL_Menu * menu, int a)
   flg = 0;
   opt2 = opt1;
 
+#ifdef DEBUG
   A4GL_debug ("In movebar curropt=%p", menu->curr_option);
+#endif
 #ifdef OLDCODE
   if (a == 0xffff)
     {
+#ifdef DEBUG
       A4GL_debug ("Decoding new option");
+#endif
       z = A4GL_decode_clicked ();
+#ifdef DEBUG
       A4GL_debug ("Got z as %p", z);
+#endif
 
       if (z)
 	{
+#ifdef DEBUG
 	  A4GL_debug ("Setting curropt to z");
+#endif
 	  opt2 = z;
 	  menu->curr_option = ((ACL_Menu_Opts *) opt2);
 	}
@@ -341,11 +387,15 @@ A4GL_move_bar (ACL_Menu * menu, int a)
 
       if (a == A4GLKEY_UP || a == A4GLKEY_LEFT || a == 8)
 	{
+#ifdef DEBUG
 	  A4GL_debug ("Left key");
+#endif
 	  opt2 = (ACL_Menu_Opts *) opt2->prev_option;
 	  if (opt2 == 0)
 	    {
+#ifdef DEBUG
 	      A4GL_debug ("Move to last");
+#endif
 	      opt2 = (ACL_Menu_Opts *) menu->last;
 	    }
 	  menu->curr_option = ((ACL_Menu_Opts *) opt2);
@@ -354,17 +404,23 @@ A4GL_move_bar (ACL_Menu * menu, int a)
 
       if (a == ' ' || a == A4GLKEY_DOWN || a == A4GLKEY_RIGHT)
 	{
+#ifdef DEBUG
 	  A4GL_debug ("Right Key");
+#endif
 	  opt2 = (ACL_Menu_Opts *) opt2->next_option;
 	  if (opt2 == 0)
 	    {
+#ifdef DEBUG
 	      A4GL_debug ("Move to first");
+#endif
 	      opt2 = (ACL_Menu_Opts *) menu->first;
 	    }
 	  menu->curr_option = ((ACL_Menu_Opts *) opt2);
 	  dir = 1;
 	}
+#ifdef DEBUG
       A4GL_debug ("Calling find_down - dir = %d", dir);
+#endif
       A4GL_find_shown (menu, 0, dir);
 #ifdef OLDCODE
     }
@@ -374,7 +430,9 @@ A4GL_move_bar (ACL_Menu * menu, int a)
 
   if (npage != opage)
     {
+#ifdef DEBUG
       A4GL_debug ("Page Changed on menu");
+#endif
       menu->curr_page = npage;
       A4GL_display_menu (menu);
     }
@@ -450,7 +508,9 @@ void
       strcpy (s, &option->opt_title[1]);
       A4GL_trim (s);
 
+#ifdef DEBUG
       A4GL_debug ("Testing '%s' = '%s'", s, nextopt);
+#endif
 
       if (A4GL_menu_opts_compare (s, nextopt,MENU_COMPARE_NEXT_OPTION) == 0)
         {
@@ -468,7 +528,9 @@ void
   if (f == 0)
     {
       option = old_option;
+#ifdef DEBUG
       A4GL_debug ("Menu Option %s not found", nextopt);
+#endif
     }
 
   if (matches==0) { A4GL_exitwith("The NEXT OPTION name is not in the menu"); }
@@ -482,7 +544,9 @@ int
 {
  ACL_Menu *menu;
   menu=menuv;
+#ifdef DEBUG
   A4GL_debug ("Menu hide\n");
+#endif
   A4GL_menu_attrib (menu, 0, ap);
 return 1;
 }
@@ -496,7 +560,9 @@ int
 {
  ACL_Menu *menu;
   menu=menuv;
+#ifdef DEBUG
   A4GL_debug ("Show");
+#endif
   A4GL_menu_attrib (menu, 1, ap);
   A4GL_find_shown (menu, 0, 1);
 return 1;
@@ -511,18 +577,24 @@ static void A4GL_menu_attrib (ACL_Menu * menu, int attr, va_list *ap)
   char s[256];
   int flg;
   int matches;
+#ifdef DEBUG
   A4GL_debug ("Menu attrib %d\n", attr);
+#endif
   while ((argp = va_arg (*ap, char *)))
     {
 	char buff[3000];
 	strcpy(buff,argp);
       A4GL_trim (buff);
+#ifdef DEBUG
       A4GL_debug ("change attrib to %d of %s", attr, buff);
+#endif
       option = (ACL_Menu_Opts *) menu->first;
       matches=0;
       for (a = 0; a < menu->num_opts; a++)
         {
+#ifdef DEBUG
           A4GL_debug ("before copy");
+#endif
           //strcpy (s, &option->opt_title[1]);
 
           if (option->opt_title && strlen(option->opt_title)) {
@@ -533,22 +605,32 @@ static void A4GL_menu_attrib (ACL_Menu * menu, int attr, va_list *ap)
           }
 
 
+#ifdef DEBUG
           A4GL_debug ("after copy '%s' '%s'", s, option->opt_title);
+#endif
           A4GL_trim (s);
+#ifdef DEBUG
           A4GL_debug ("trim %s", s);
+#endif
           flg = 0;
 
           if (strcmp (buff, MENU_ALL) != 0)
             {
+#ifdef DEBUG
               A4GL_debug ("Cmp '%s' to '%s'", s, buff);
+#endif
               if (A4GL_menu_opts_compare (s, buff,MENU_COMPARE_SHOWHIDE) == 0)
                 {
+#ifdef DEBUG
                   A4GL_debug ("Cmpok\n");
+#endif
                   flg = 1;
                 }
               else
                 {
+#ifdef DEBUG
                   A4GL_debug ("Cmpbad\n");
+#endif
                 }
             }
           else
@@ -557,15 +639,21 @@ static void A4GL_menu_attrib (ACL_Menu * menu, int attr, va_list *ap)
           if (flg == 1)
             {
 		    matches++;
+#ifdef DEBUG
               A4GL_debug ("   FOund it : %s , %s (%x) %d", s, buff,
                      option->attributes & ACL_MN_HIDE, attr);
+#endif
               if (attr)
                 {
+#ifdef DEBUG
                   A4GL_debug ("Attemp to turn on %d %d %d", option->attributes,
                          ACL_MN_HIDE, option->attributes & ACL_MN_HIDE);
+#endif
                   if (option->attributes & ACL_MN_HIDE && option->optlength)
                     {
+#ifdef DEBUG
                       A4GL_debug ("Turn on");
+#endif
                       option->attributes = option->attributes - ACL_MN_HIDE;
                     }
                 }
@@ -573,15 +661,21 @@ static void A4GL_menu_attrib (ACL_Menu * menu, int attr, va_list *ap)
                 {
                   if (!(option->attributes & ACL_MN_HIDE))
                     {
+#ifdef DEBUG
                       A4GL_debug ("Turn off");
+#endif
                       option->attributes = option->attributes + ACL_MN_HIDE;
                     }
                 }
             }
+#ifdef DEBUG
           A4GL_debug ("chk next");
+#endif
           option =
             (ACL_Menu_Opts *) ((ACL_Menu_Opts *) (option))->next_option;
+#ifdef DEBUG
           A4GL_debug ("set next");
+#endif
         }
 
 
@@ -593,20 +687,28 @@ static void A4GL_menu_attrib (ACL_Menu * menu, int attr, va_list *ap)
 		}
 	}
     }
+#ifdef DEBUG
   A4GL_debug ("f1");
+#endif
   A4GL_find_shown (menu, 0, 1);
+#ifdef DEBUG
   A4GL_debug ("f2");
+#endif
   A4GL_size_menu (menu);                /* MJA 10/5/2000 */
   A4GL_display_menu (menu);
+#ifdef DEBUG
   A4GL_debug ("f4");
+#endif
 
 #if ! defined (__CYGWIN__)
   //On CygWin: generic_ui.c:469: error: incompatible type for argument 1 of `__builtin_va_end'
   va_end (*ap);
 #else
+#ifdef DEBUG
   A4GL_debug ("*******************************");
   A4GL_debug ("FIXME: va_end problem on CygWin");
   A4GL_debug ("*******************************");
+#endif
 #endif
 
 }
@@ -617,15 +719,19 @@ A4GL_find_shown (ACL_Menu * menu, int chk, int dir)
   ACL_Menu_Opts *opt;
   ACL_Menu_Opts *opt1;
   ACL_Menu_Opts *lastopt;
+#ifdef DEBUG
   A4GL_debug ("In find_shown");
+#endif
 
   opt = (ACL_Menu_Opts *) menu->curr_option;
 
   lastopt = (ACL_Menu_Opts *) menu->curr_option;
 
+#ifdef DEBUG
   A4GL_debug ("current item = (%s) %d", menu->curr_option->opt_title,
          ((((ACL_Menu_Opts *) (menu->curr_option))->
            attributes) & ACL_MN_HIDE));
+#endif
 
   while ((((ACL_Menu_Opts *) (menu->curr_option))->attributes) & ACL_MN_HIDE)
     {
@@ -652,29 +758,39 @@ A4GL_find_shown (ACL_Menu * menu, int chk, int dir)
 
 
 
+#ifdef DEBUG
       A4GL_debug ("A5  ");
       A4GL_debug ("A5a %p", ((ACL_Menu_Opts *) menu));
       A4GL_debug ("A5b %p %p", (ACL_Menu_Opts *) menu->curr_option,
              (ACL_Menu_Opts *) lastopt);
+#endif
 
       if (((ACL_Menu_Opts *) menu->curr_option == (ACL_Menu_Opts *) lastopt))
         {
           if (chk)
             {
+#ifdef DEBUG
               A4GL_debug ("A6");
+#endif
               A4GL_exitwith ("No current option");
               return 1;
               break;
             }
           else
             {
+#ifdef DEBUG
               A4GL_debug ("Return!");
+#endif
               return 1;
             }
         }
+#ifdef DEBUG
       A4GL_debug ("A5c");
+#endif
     }
+#ifdef DEBUG
   A4GL_debug ("A7");
+#endif
 
 
   return 0;
@@ -719,18 +835,20 @@ A4GL_size_menu (ACL_Menu * menu)
 #ifdef DEBUG
       {
  A4GL_debug ("Here... %p", opt1->opt_title);
-      }
-      {
  A4GL_debug ("Processing %s", opt1->opt_title);
       }
 #endif
       if ((opt1->attributes & ACL_MN_HIDE) != ACL_MN_HIDE)
         {
+#ifdef DEBUG
           A4GL_debug (" Show %s\n", opt1->opt_title);
+#endif
         }
       else
         {
+#ifdef DEBUG
           A4GL_debug (" HIdden %s\n", opt1->opt_title);
+#endif
         }
       if ((opt1->attributes & ACL_MN_HIDE) != ACL_MN_HIDE)
         {
@@ -740,7 +858,9 @@ A4GL_size_menu (ACL_Menu * menu)
           }
 #endif
           s_length = strlen (opt1->opt_title);
+#ifdef DEBUG
           A4GL_debug ("GREPME disp=%d width=%d %d %s .. %d > %d ", disp_cnt2, menu->w, menu->menu_offset, opt1->opt_title,disp_cnt2 + menu->menu_offset + s_length  , menu->w);
+#endif
 
 
 
@@ -860,19 +980,27 @@ void
    menu=menuv;
   memset(op1,0,256);
   opt1 = nalloc (ACL_Menu_Opts);
+#ifdef DEBUG
   A4GL_debug ("MJAMJA helpno=%d", helpno);
+#endif
 
   opt1->next_option = 0;
   opt1->page = 0;
   opt1->prev_option = 0;
   menu->num_opts++;
 
+#ifdef DEBUG
   A4GL_debug ("In add menu option : %s\n", txt);
+#endif
 
+#ifdef DEBUG
   A4GL_debug ("MJAMJA helpno=%d", helpno);
+#endif
   if (menu->first == 0)
     {
+#ifdef DEBUG
       A4GL_debug ("Setting first..\n");
+#endif
       menu->first = opt1;
       menu->last = opt1;
     }
@@ -881,18 +1009,22 @@ void
   nopts = menu->num_opts;
   opt2 = menu->last;
   opt1->opt_no = nopts - 1;
+#ifdef DEBUG
   A4GL_debug ("MJAMJA helpno=%d", helpno);
+#endif
   if (opt1 != opt2)
     {
       opt2->next_option = opt1;
       opt1->prev_option = opt2;
     }
 
+#ifdef DEBUG
   A4GL_debug ("menu->first=%p opt1=%p opt2=%p ", menu->first, opt1, opt2);
   A4GL_debug ("opt1 : prev=%p next=%p", opt1->prev_option, opt1->next_option);
   A4GL_debug ("opt2 : prev=%p next=%p", opt2->prev_option, opt2->next_option);
   
   A4GL_debug ("MJAMJA helpno=%d", helpno);
+#endif
   memset(opt1->opt_title,0,sizeof(opt1->opt_title));
   if (strlen (txt))
     {
@@ -908,22 +1040,32 @@ void
       strcpy (opt1->opt_title, "");
     }
 
+#ifdef DEBUG
   A4GL_debug ("MJAMJA helpno=%d", helpno);
+#endif
   opt1->optlength = strlen (opt1->opt_title);
+#ifdef DEBUG
   A4GL_debug ("MJAMJA helpno=%d", helpno);
+#endif
   strcpy (opt1->optkey, keys);
+#ifdef DEBUG
   A4GL_debug ("MJAMJA helpno=%d", helpno);
+#endif
   strncpy (opt1->shorthelp, desc,80);
   opt1->shorthelp[79]=0;
 
+#ifdef DEBUG
   A4GL_debug ("MJA setting opt1->help_no = %d", helpno);
+#endif
   opt1->help_no = helpno;
   opt1->attributes = attr;
   if (opt1->optlength == 0)
     opt1->attributes |= ACL_MN_HIDE;
   menu->last = (ACL_Menu_Opts *) opt1;
   menu->num_opts = nopts;
+#ifdef DEBUG
   A4GL_debug ("MJA opt1->help_no = %d", opt1->help_no);
+#endif
 }
 
 
@@ -942,7 +1084,9 @@ void UILIB_A4GL_ensure_menu_option (int optno, void* menuv, char *txt, char *key
   }
 
   if (opt1->help_no!=helpno) {
+#ifdef DEBUG
 		A4GL_debug("Changed helpno");
+#endif
 		opt1->help_no=helpno;
   }
 
@@ -965,7 +1109,9 @@ void UILIB_A4GL_ensure_menu_option (int optno, void* menuv, char *txt, char *key
     }
 
    if (strcmp(opt_title, opt1->opt_title)!=0) {
+#ifdef DEBUG
 		A4GL_debug("Title changed");
+#endif
 		strcpy(opt1->opt_title,opt_title);	
 		opt1->optlength = strlen (opt1->opt_title);
    }
@@ -975,12 +1121,16 @@ void UILIB_A4GL_ensure_menu_option (int optno, void* menuv, char *txt, char *key
 
   if (opt1->attributes!=attr) {
 
+#ifdef DEBUG
                 A4GL_debug("Changed attributes");
+#endif
 		// Dont change the attributes - it will mess up the option hiding
   		//opt1->attributes=attr;
   }
   if (strcmp(opt1->shorthelp,desc)!=0) {
+#ifdef DEBUG
 	A4GL_debug("shorthelp changed");
+#endif
   	strncpy (opt1->shorthelp, desc,80);
   	opt1->shorthelp[79]=0;
   }
@@ -1027,8 +1177,10 @@ void
 
 
 
+#ifdef DEBUG
   A4GL_debug ("Current option=%p", menu->curr_option);
   A4GL_debug ("Current option help=%d", menu->curr_option->help_no);
+#endif
   return;
 }
 
@@ -1081,7 +1233,9 @@ A4GL_new_menu (char *title,
     return 0;
   strcpy (buff, title);
   A4GL_trim (buff);
+#ifdef DEBUG
   A4GL_debug (" Menu title : '%s'", title);
+#endif
   menu = nalloc (ACL_Menu);
   strcpy (menu->menu_title, buff);
   A4GL_trim (menu->menu_title);
@@ -1098,7 +1252,9 @@ A4GL_new_menu (char *title,
   opt1 = nalloc (ACL_Menu_Opts);
   menu->first = (ACL_Menu_Opts *) opt1;
   opt1->prev_option = 0;
+#ifdef DEBUG
   A4GL_debug ("Menu=%p &Menu=%p", menu, &menu);
+#endif
   for (ret = 0; ret < nopts; ret++)
     {
       if (ret != 0)
@@ -1111,7 +1267,9 @@ A4GL_new_menu (char *title,
         }
       opt1->opt_no = ret;
       argp_c = va_arg (*ap, char *);
+#ifdef DEBUG
       A4GL_debug ("argp_c = %s\n", argp_c);
+#endif
       if (strlen (argp_c))
         {
           strcpy (opt1->opt_title, " ");
@@ -1135,7 +1293,9 @@ A4GL_new_menu (char *title,
 
       argp_i = va_arg (*ap, int);
       opt1->help_no = argp_i;
+#ifdef DEBUG
       A4GL_debug ("Help number for %s = %d", opt1->opt_title, argp_i);
+#endif
 
       argp_i = va_arg (*ap, int);
       opt1->attributes = argp_i;

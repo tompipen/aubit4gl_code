@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: err.c,v 1.22 2009-02-23 17:31:49 mikeaubury Exp $
+# $Id: err.c,v 1.23 2010-02-16 13:16:27 mikeaubury Exp $
 #
 */
 
@@ -77,12 +77,16 @@ A4GL_err_print (int a, char *s)
 {
   char *k;
   static char static_err[1024];
+#ifdef DEBUG
   A4GL_debug ("In err print %d %s", a, s);
+#endif
   SPRINTF2 (static_err, "Unknown error %d (%s)", a, s);
   k = static_err;
   if (a == -3001)
     {
+#ifdef DEBUG
       A4GL_debug ("Ignore wrong number of variables..");
+#endif
       strcpy (static_err, "Wrong number of variables returned from function");
       return k;
     }
@@ -90,7 +94,9 @@ A4GL_err_print (int a, char *s)
 /*
   if (a == -400)
     {
+#ifdef DEBUG
       A4GL_debug ("Ignore wrong number of variables..");
+#endif
       SPRINTF1 (static_err, "Database error (%s)", s);
 
       return static_err;
@@ -101,15 +107,21 @@ A4GL_err_print (int a, char *s)
 
   if (a == -3002)
     {
+#ifdef DEBUG
       A4GL_debug ("Ignore wrong number of variables..");
+#endif
       strcpy (static_err, "Wrong number of parameters passed to function");
       return k;
     }
 
 
+#ifdef DEBUG
   A4GL_debug ("Calling get_errmsg");
+#endif
   k = A4GL_get_errmsg (a * -1);
+#ifdef DEBUG
   A4GL_debug ("Got %s", k);
+#endif
   SPRINTF1 (static_err, k, s);
   return static_err;
 

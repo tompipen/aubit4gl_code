@@ -301,12 +301,11 @@ print_report_ctrl (int report_cnt, int rord_type, char *curr_rep_name,int rep_ty
   int a;
   int printed_every;
 
-  A4GL_debug
-    ("/* ********************************************************** */\n");
-  A4GL_debug
-    ("/*                 Report Control Block                       */\n");
-  A4GL_debug
-    ("/* ********************************************************** */\n");
+#ifdef DEBUG
+  A4GL_debug ("/* ********************************************************** */\n");
+  A4GL_debug ("/*                 Report Control Block                       */\n");
+  A4GL_debug ("/* ********************************************************** */\n");
+#endif
   printc ("report%d_ctrl:\n", report_cnt);
   printc ("if (_rep.lines_in_header      ==-1) _rep.lines_in_header=%d;", rf->lines_in_header);
   printc ("if (_rep.lines_in_first_header==-1) _rep.lines_in_first_header=%d;", rf->lines_in_first_header);

@@ -24,11 +24,11 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: colours.c,v 1.29 2008-07-06 11:34:44 mikeaubury Exp $
+# $Id: colours.c,v 1.30 2010-02-16 13:17:11 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: colours.c,v 1.29 2008-07-06 11:34:44 mikeaubury Exp $";
+		"$Id: colours.c,v 1.30 2010-02-16 13:17:11 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -76,7 +76,9 @@ A4GL_colour_code (int a)
 
   if (!has_colors ()||A4GL_isyes(acl_getenv("MONO")))
     {
+#ifdef DEBUG
 	A4GL_debug("MJA - STANDOUT");
+#endif
       if (a==7) return 0;
       if (a==0) return 0;
       //z = A_STANDOUT;
@@ -94,12 +96,16 @@ A4GL_colour_code (int a)
 	} else {
 		z=0;
 	}
+#ifdef DEBUG
 	A4GL_debug("colour code for mono for %d = %d",a,z);
+#endif
 
 
       return z;
     }
+#ifdef DEBUG
   A4GL_debug ("MJA Returning color code (%d+1)\n", a);
+#endif
   if (a == 0) return 0;
 	if (a==7){
 		 //// white...
@@ -135,7 +141,9 @@ A4GL_colour_code (int a)
   		a=COLOR_PAIR (a + 1);
 #endif
 	}
+#ifdef DEBUG
   A4GL_debug ("MJA Returning color code = %d\n", a);
+#endif
   return a;
 }
 
@@ -150,14 +158,20 @@ A4GL_decode_colour_attr_aubit (int a)
   char colour[20];
   char attr[256];
 //int col;
+#ifdef DEBUG
   A4GL_debug ("MJA Decoding %d",a);
+#endif
   A4GL_get_strings_from_attr (a, colour, attr);
 
+#ifdef DEBUG
   A4GL_debug ("MJA Got colour as : %s - %s", colour,attr);
+#endif
   A4GL_trim(colour);
 
   if (strlen(colour)==0) {
+#ifdef DEBUG
   		A4GL_debug ("MJA Got colour as nothing - Using WHITE ", colour,attr);
+#endif
 		return A4GL_colour_code(COLOR_WHITE);
   }
 
@@ -176,7 +190,9 @@ A4GL_decode_colour_attr_aubit (int a)
   if (strcmp (colour, "CYAN") == 0)
     return A4GL_colour_code (COLOR_CYAN);
   if (strcmp (colour, "WHITE") == 0) {
+#ifdef DEBUG
 	 A4GL_debug("Its white.. %d",A4GL_colour_code (COLOR_WHITE));
+#endif
     return A4GL_colour_code (COLOR_WHITE);
 	}
 
@@ -196,7 +212,9 @@ a4glattr_wattrset (WINDOW * w, int a)
 if (w) {
 	wattrset (w, A4GL_decode_aubit_attr (a, 'w'));
 } else {
+#ifdef DEBUG
 	A4GL_debug("SERIOUS PROBLEM - w is set to zero....");
+#endif
 }
 
 
@@ -217,7 +235,9 @@ A4GL_decode_aubit_attr (int a, char s)
 
   A4GL_get_strings_from_attr (a, colour, attr);
 
+#ifdef DEBUG
   A4GL_debug("A=%d colour=%s attr=%s MJAMJAMJA",a,colour,attr);
+#endif
 
   ca = A_NORMAL;
   if (s == 'w')
@@ -277,7 +297,9 @@ A4GL_decode_aubit_attr (int a, char s)
       if (strstr (attr, "UNDERLINE"))
 	ca += A_UNDERLINE;
     }
+#ifdef DEBUG
 A4GL_debug("Returning ca = %d %x (visible=%d)",ca,ca,!(ca&A_INVIS));
+#endif
 if (A4GL_isyes(acl_getenv("NO_INVIS_ATTR"))) {
 	if (ca&A_INVIS) ca-=A_INVIS;
 }
@@ -289,13 +311,19 @@ void UILIB_A4GL_init_color(int n,int r,int g,int b) {
 #ifdef NCURSES_VERSION
 	A4GL_chkwin();
 	if (can_change_color())   {
+#ifdef DEBUG
 		A4GL_debug("Changing Colour - %d %d %d %d",n,r,g,b);
+#endif
 		init_color(n,r,g,b);
 	} else {
+#ifdef DEBUG
 		A4GL_debug("Cannot change colour %d %d %d %d - not supported by terminal",n,r,g,b);
+#endif
 	}
 #else
+#ifdef DEBUG
 	A4GL_debug("Cannot change colour - not supported unless using ncurses");
+#endif
 #endif
 }
 

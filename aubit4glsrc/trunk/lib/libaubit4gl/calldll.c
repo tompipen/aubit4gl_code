@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: calldll.c,v 1.89 2009-12-17 12:55:42 mikeaubury Exp $
+# $Id: calldll.c,v 1.90 2010-02-16 13:16:27 mikeaubury Exp $
 #
 */
 
@@ -777,7 +777,10 @@ A4GL_call_4gl_dll (char *xfilename, char *function, int args)
 
   if (A4GL_has_pointer(filename,'`')) {
 		dllhandle=A4GL_find_pointer(filename,'`');
+
+#ifdef DEBUG
 		A4GL_debug("%s Opened already : %p",filename, dllhandle);
+#endif
   } else {
   dllhandle = dlopen (filename, RTLD_LAZY);
 #ifdef DEBUG
@@ -795,7 +798,9 @@ A4GL_call_4gl_dll (char *xfilename, char *function, int args)
 #endif
       dllhandle = dlopen (buff, RTLD_LAZY);
 #ifdef DEBUG
-      if (dllhandle == 0) { A4GL_debug ("Opps - can't open DLL - %s", A4GL_null_as_null (dlerror ())); }
+      if (dllhandle == 0) { 
+		A4GL_debug ("Opps - can't open DLL - %s", A4GL_null_as_null (dlerror ())); 
+	}
 #endif
     }
 
@@ -970,7 +975,10 @@ A4GL_call_4gl_dll_bound_new (char *filename, char *function, int nparam)
   if (dllhandle == 0)
     {
       SPRINTF2 (buff, "./%s.%s", nfile, SO_EXT);
+#ifdef DEBUG
       A4GL_debug ("Trying %s", A4GL_null_as_null (buff));
+#endif
+
       dllhandle = dlopen (buff, RTLD_LAZY);
 #ifdef DEBUG
       if (dllhandle == 0) { A4GL_debug ("Opps - can't open DLL - %s", A4GL_null_as_null (dlerror ())); }
@@ -1118,7 +1126,9 @@ A4GL_call_4gl_dll_bound (char *filename, char *function, int ni, struct BINDING 
   if (dllhandle == 0)
     {
       SPRINTF2 (buff, "./%s.%s", nfile, SO_EXT);
+#ifdef DEBUG
       A4GL_debug ("Trying %s", A4GL_null_as_null (buff));
+#endif
       dllhandle = dlopen (buff, RTLD_LAZY);
 #ifdef DEBUG
       if (dllhandle == 0) { A4GL_debug ("Opps - can't open DLL - %s", A4GL_null_as_null (dlerror ())); }

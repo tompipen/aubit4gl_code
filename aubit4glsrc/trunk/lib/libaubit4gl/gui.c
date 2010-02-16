@@ -95,7 +95,9 @@ A4GL_start_monitor (void)
   if (p == 0)
     {
       connected = 0;
+#ifdef DEBUG
       A4GL_debug ("No monitoring");
+#endif
       return;
     }
 

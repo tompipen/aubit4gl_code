@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: schema_in_file.c,v 1.34 2010-02-15 13:21:17 mikeaubury Exp $
+# $Id: schema_in_file.c,v 1.35 2010-02-16 13:17:11 mikeaubury Exp $
 #*/
 
 /**
@@ -102,7 +102,9 @@ A4GLSQLLIB_A4GLSQL_init_connection_internal (char *dbName)
   strcpy(fname, dbName);
 	A4GL_trim(fname);
   strcat(fname,f);
+#ifdef DEBUG
   A4GL_debug("OPEN SCHEMA : %s",fname);
+#endif
   f_db_in = A4GL_open_file_dbpath (fname);
   if (f_db_in == 0)
     {
@@ -159,7 +161,9 @@ A4GLSQLLIB_A4GLSQL_read_columns (char *tabname, char *colname, int *dtype,
       A4GL_exitwith ("Not connected to database");
       return 0;
     }
+#ifdef DEBUG
   A4GL_debug ("READ COLUMNS\n");
+#endif
   A4GLSQLLIB_A4GLSQL_get_columns (tabname, colname, dtype, size);
 
   while (A4GLSQL_next_column (&buff, dtype, size))
@@ -200,7 +204,9 @@ A4GLSQLLIB_A4GLSQL_get_columns (char *tabname, char *colname, int *dtype,
       if (feof (f_db_in))
 	break;
       fgets (buff, 255, f_db_in);
+#ifdef DEBUG
       A4GL_debug ("%s\n", buff);
+#endif
       if (buff[0] == '[')
 	{
 	  char *ptr;
@@ -217,7 +223,9 @@ A4GLSQLLIB_A4GLSQL_get_columns (char *tabname, char *colname, int *dtype,
 	  if (ptr)
 	    *ptr = 0;
 
+#ifdef DEBUG
 	  A4GL_debug ("Checking table : %s %s\n", tname, tabname);
+#endif
 	  if (strcasecmp (tname, tabname) == 0)
 	    {
 	      // Found it...
@@ -226,7 +234,9 @@ A4GLSQLLIB_A4GLSQL_get_columns (char *tabname, char *colname, int *dtype,
 	}
     }
   A4GL_set_errm (tabname);
+#ifdef DEBUG
 	A4GL_debug("tabname : %s not found",tabname);
+#endif
   A4GL_exitwith ("Table not found\n");
   return 0;
 }
@@ -264,7 +274,9 @@ A4GLSQLLIB_A4GLSQL_next_column (char **colname, int *dtype, int *size)
   *dtype=((*dtype) & DTYPE_MASK);
   *colname = cname;
 
+#ifdef DEBUG
   A4GL_debug ("Got cname as %s dtype=%d\n", cname,*dtype);
+#endif
   return 1;
 
 }

@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fcompile.c,v 1.71 2009-09-16 15:14:24 mikeaubury Exp $
+# $Id: fcompile.c,v 1.72 2010-02-16 13:15:27 mikeaubury Exp $
 #*/
 
 /**
@@ -135,7 +135,9 @@ main (int argc, char *argv[])
       usage (argv[0]);
     }
 
+#ifdef DEBUG
   A4GL_debug ("Initializing fcompile\n");
+#endif
   A4GL_setenv("A4GL_UI","CONSOLE",1);
   A4GL_fgl_start(argc,argv);
   default_database=acl_getenv_not_set_as_0("DEFAULT_DATABASE");
@@ -450,7 +452,9 @@ if (a==-1) {
 }
 
 
+#ifdef DEBUG
   A4GL_debug ("DATATYPE : %s.%s = %d (%x)\n", tab, col, a,a);
+#endif
 
   if (a==DTYPE_VCHAR) a=DTYPE_CHAR;
   

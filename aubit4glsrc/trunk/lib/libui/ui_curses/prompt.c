@@ -24,11 +24,11 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: prompt.c,v 1.79 2009-03-25 17:28:03 mikeaubury Exp $
+# $Id: prompt.c,v 1.80 2010-02-16 13:17:41 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: prompt.c,v 1.79 2009-03-25 17:28:03 mikeaubury Exp $";
+		"$Id: prompt.c,v 1.80 2010-02-16 13:17:41 mikeaubury Exp $";
 #endif
 
 /**
@@ -93,14 +93,20 @@ int
   int field_cnt=0;
   A4GL_chkwin();
   prompt = vprompt;
+#ifdef DEBUG
   A4GL_debug ("In start prompt %p %d %d %d %d", prompt, ap, c, h_helpno, af);
+#endif
   prompt_last_key=0;
   memset (buff, ' ', 255);
   promptline = A4GL_getprompt_line ();
+#ifdef DEBUG
   A4GL_debug ("promptline=%d", promptline);
+#endif
   width = UILIB_A4GL_get_curr_width ();
+#ifdef DEBUG
   A4GL_debug ("create window %d %d", 1, promptline);
   A4GL_debug ("%d %d", width - 1, 2);
+#endif
   cw = (WINDOW *) A4GL_get_currwin ();
   if (A4GL_iscurrborder()) promptline++;
   p = derwin (cw, 1, width, promptline-1  , UILIB_A4GL_iscurrborder ());
@@ -116,7 +122,9 @@ int
 		A4GL_exitwith("No prompt window created");
 		return 0;
   }
+#ifdef DEBUG
 A4GL_debug("derwin = %p",p);
+#endif
   prompt->win = p;
   buff[width]=0;
   wprintw(p,"%s",buff);
@@ -150,7 +158,9 @@ A4GL_debug("derwin = %p",p);
 	  A4GL_exitwith("Prompt message is too long to fit in the window.");
 	  return 0;
   }
+#ifdef DEBUG
   A4GL_debug ("Creating field %d %d %d", strlen (promptstr) + 1, 1, width - 1);
+#endif
   if (field_cnt > 0)
       set_new_page (sarr[field_cnt-1], 1);
   sarr[field_cnt++] = (FIELD *) A4GL_make_field (0, strlen (promptstr), 1, width + 1);
@@ -158,21 +168,27 @@ A4GL_debug("derwin = %p",p);
   sarr[field_cnt++] = 0;			/* (FIELD *) A4GL_make_label (0, strlen(promptstr)+width-1,"|"); */
 
   /* set_field_pad(sarr[1],' '); */
+#ifdef DEBUG
   A4GL_debug ("set field to =%p", prompt->field);
   A4GL_debug ("Field=%p", prompt->field);
+#endif
 
   /* A4GL_default_attributes (sarr[0], 0); */
 
   A4GL_default_attributes (prompt->field, 0);
   local_field_opts_off (prompt->field, O_STATIC);
 
+#ifdef DEBUG
   A4GL_debug ("ap=%d(%x) af=%d(%x)", ap, ap, af, af);
+#endif
   ap=A4GL_determine_attribute(FGL_CMD_DISPLAY_CMD , ap,0,0);
   af=A4GL_determine_attribute(FGL_CMD_INPUT, af,0,0);
 
   if (ap)
     {
+#ifdef DEBUG
 	A4GL_debug("AP...");
+#endif
       if (strlen(promptstr)) {
       		set_field_fore (sarr[0], A4GL_decode_aubit_attr (ap, 'f'));
       		set_field_back (sarr[0], A4GL_decode_aubit_attr (ap, 'b')); // maybe need 'B' for whole field..
@@ -184,31 +200,45 @@ A4GL_debug("derwin = %p",p);
 
   if (af)
     {
+#ifdef DEBUG
 	A4GL_debug("AF...");
+#endif
       set_field_back (prompt->field, A4GL_decode_aubit_attr (af, 'f'));
       set_field_fore (prompt->field, A4GL_decode_aubit_attr (af, 'b')); // maybe need 'B' for whole field..
       if (af&AUBIT_ATTR_INVISIBLE) {
+#ifdef DEBUG
           A4GL_debug ("Invisible");
+#endif
           local_field_opts_off (prompt->field, O_PUBLIC);
           }
 
     }
 
   local_field_opts_on (prompt->field, O_NULLOK);
+#ifdef DEBUG
   A4GL_debug ("Set attributes");
+#endif
 
   buff[0] = 0;			/* -2 */
+#ifdef DEBUG
   A4GL_debug ("Setting Buffer %p to '%s'", prompt->field, buff);
+#endif
   set_field_buffer (prompt->field, 0, buff);
+#ifdef DEBUG
   A4GL_debug ("Set buffer ");
+#endif
 
+#ifdef DEBUG
   A4GL_debug ("Made fields");
   A4GL_debug ("Field attr : %d", local_field_opts (prompt->field));
+#endif
 
   A4GL_set_status (0, 0);
   f = new_form (sarr);
 
+#ifdef DEBUG
   A4GL_debug ("Form f = %p", f);
+#endif
 
   if (a4gl_status!=0 || f==0) {
 	  A4GL_exitwith("Prompt message is too long to fit in the window.");
@@ -227,15 +257,21 @@ A4GL_debug("derwin = %p",p);
 #endif
   set_form_win (f, p);
   set_form_sub (f, d);
+#ifdef DEBUG
   A4GL_debug ("Set form win");
+#endif
   a = post_form (f);
+#ifdef DEBUG
   A4GL_debug ("Posted form=%d", a);
+#endif
 
 
 
   A4GL_int_form_driver (f, REQ_FIRST_FIELD);
   A4GL_int_form_driver (f, REQ_OVL_MODE);
+#ifdef DEBUG
   A4GL_debug ("Initialized form");
+#endif
   A4GL_set_status (0, 0);
 
   A4GL_mja_refresh ();
@@ -255,7 +291,9 @@ A4GL_proc_key_prompt (int a, FORM * mform, struct s_prompt *prompt)
   f = current_field (mform);
 
 
+#ifdef DEBUG
   A4GL_debug ("In proc_key_prompt.... for %d", a);
+#endif
   switch (a)
     {
     case 18:
@@ -278,11 +316,15 @@ A4GL_proc_key_prompt (int a, FORM * mform, struct s_prompt *prompt)
     case 8:
     case A4GLKEY_DL:
     case A4GLKEY_BACKSPACE:
+#ifdef DEBUG
       A4GL_debug ("Req del prev");
+#endif
       if (A4GL_get_curr_field_col (mform))
 	{
 	  A4GL_int_form_driver (mform, REQ_DEL_PREV);
+#ifdef DEBUG
 	  A4GL_debug ("Done...");
+#endif
 	}
       return 0;
 
@@ -344,7 +386,9 @@ A4GL_proc_key_prompt (int a, FORM * mform, struct s_prompt *prompt)
       a = 0;
     }
 
+#ifdef DEBUG
   A4GL_debug ("Returning %d from proc_key_prompt\n", a);
+#endif
   return a;
 }
 
@@ -408,7 +452,9 @@ int was_aborted=0;
       prompt->mode = 2;
 	
       unpost_form (prompt->f);
+#ifdef DEBUG
       A4GL_debug("Calling clear_prmpt");
+#endif
       A4GL_clear_prompt (prompt);
       return 0;
     }
@@ -427,7 +473,9 @@ int was_aborted=0;
   	A4GL_mja_pos_form_cursor (mform);
 	abort_pressed=0;
 	was_aborted=0;
+#ifdef DEBUG
         A4GL_debug("Timeout : %d\n",timeout);
+#endif
 
 
 	while (1) {
@@ -442,7 +490,9 @@ int was_aborted=0;
 	}
 
         prompt->processed_onkey=a;
+#ifdef DEBUG
 	A4GL_debug("Read character... %d",a);
+#endif
   	if (a) {A4GL_clr_error_nobox("prompt");}
 	if (abort_pressed ) a=A4GLKEY_INTERRUPT;
 	prompt_last_key=a;
@@ -459,11 +509,15 @@ int was_aborted=0;
       		A4GL_push_null (DTYPE_CHAR,1);
       		prompt->mode = 2;
       		unpost_form (prompt->f);
+#ifdef DEBUG
       		A4GL_debug("Calling clear_prmpt");
+#endif
       		A4GL_clear_prompt (prompt);
 		return rblock;
 	}
+#ifdef DEBUG
 	A4GL_debug("No lastkey..");
+#endif
 
 
   a = A4GL_proc_key_prompt (a, mform, prompt);
@@ -494,22 +548,30 @@ int was_aborted=0;
   if (a < 0)
     return a;
 
+#ifdef DEBUG
   A4GL_debug ("Requested..");
+#endif
   if (a == 10 || a == 13)
     {
 	prompt_last_key=0;
       A4GL_int_form_driver (mform, REQ_VALIDATION);
 	A4GL_zrefresh();
       wrefresh (p);
+#ifdef DEBUG
       A4GL_debug ("Return pressed");
+#endif
       prompt->mode = 1;
       return 0;
     }
 
+#ifdef DEBUG
   A4GL_debug ("Requesting Validation : %p %x %d", mform, a, a);
+#endif
   if (a_isprint (a) && a<0xff) {
     	A4GL_int_form_driver (mform, a);
+#ifdef DEBUG
   	A4GL_debug ("Called int_form_driver");
+#endif
   	A4GL_int_form_driver (mform, REQ_VALIDATION);
   }
 
@@ -528,7 +590,9 @@ int was_aborted=0;
 	if (a_isprint(a)&&a<0xff) {
       		A4GL_push_char (field_buffer (prompt->field, 0));
       		unpost_form (prompt->f);
+#ifdef DEBUG
       A4GL_debug("Calling clear_prmpt");
+#endif
       		A4GL_clear_prompt (prompt);
       		prompt->mode=2;
 	}
@@ -564,7 +628,9 @@ A4GL_curses_to_aubit_int (int a)
 				env_cancel=atoi(ptr);
 			}
 		} 
+#ifdef DEBUG
 	A4GL_debug("cancel = %d\n",env_cancel);
+#endif
    }
 
    if (keycode_home==-1) {
@@ -603,7 +669,9 @@ A4GL_curses_to_aubit_int (int a)
   if (a == keycode_shome) return A4GLKEY_SHOME;
   if (a == keycode_send) return A4GLKEY_SEND;
 
+#ifdef DEBUG
 A4GL_debug("curses -> aubit a=%d %x\n",a,a);
+#endif
   for (b = 0; b < 64; b++)
     {
       if (a == KEY_F (b))
@@ -629,7 +697,9 @@ A4GL_debug("curses -> aubit a=%d %x\n",a,a);
 
   if (a == KEY_CANCEL || (a==env_cancel && env_cancel!=-1) ) {
 		A4GL_set_intr();
+#ifdef DEBUG
 		A4GL_debug("Got Cancel...");
+#endif
 		return A4GLKEY_CANCEL;
   }
 
@@ -699,7 +769,9 @@ if (p)
     {
       werase(p);
       delwin (p);
+#ifdef DEBUG
       A4GL_debug ("delwin : %p", p);
+#endif
       prmt->win = 0;
       UILIB_A4GL_zrefresh ();
     }

@@ -89,7 +89,9 @@ if (f==0) return 0;
 while (fgets(buff,255,f)) {
 	if (buff[0]=='#') continue;
         sscanf(buff,"%s %s",module,function);
+#ifdef DEBUG
         A4GL_debug("Import %s, %s\n",module,function);
+#endif
 	a=add_file(module);
 	add_function(a,function,FLIST_NORMAL,0);
 }
@@ -103,7 +105,9 @@ char buff[512];
 FILE *f;
 strcpy(buff,s);
 strcat(buff,acl_getenv("A4GL_DLL_EXT"));
+#ifdef DEBUG
 A4GL_debug("Looking for : %s\n",buff);
+#endif
 f=A4GL_open_file_classpath(buff);
 
 if (f) { // We've found our dll...

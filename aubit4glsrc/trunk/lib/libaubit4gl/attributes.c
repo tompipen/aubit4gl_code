@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: attributes.c,v 1.46 2008-10-02 17:40:50 mikeaubury Exp $
+# $Id: attributes.c,v 1.47 2010-02-16 13:16:27 mikeaubury Exp $
 #*/
 
 /**
@@ -226,15 +226,21 @@ A4GL_get_curr_form_attr (void)
 int
 A4GL_get_curr_window_attr (void)
 {
+#ifdef DEBUG
   A4GL_debug ("30 XXX - get_curr_window_attr");
+#endif
   if (A4GL_has_pointer ((char *) A4GL_get_currwin_name (), ATTRIBUTE))
     {
       int a;
       a = (int) ((long) A4GL_find_pointer ((char *) A4GL_get_currwin_name (), ATTRIBUTE) & 0xffffffff);
+#ifdef DEBUG
       A4GL_debug ("30 Current window has an attribute %d", a);
+#endif
       return a;
     }
+#ifdef DEBUG
   A4GL_debug ("30 Current window has no attribute");
+#endif
   return 0;
 }
 
@@ -256,12 +262,16 @@ A4GL_get_strings_from_attr (int attr, char *col_str, char *attr_str)
 {
   int col_int = 0;
 
+#ifdef DEBUG
   A4GL_debug ("Attr=%x\n", attr);
+#endif
   strcpy (col_str, "WHITE");
   strcpy (attr_str, "");
 
   col_int = (attr & 0xf00);
+#ifdef DEBUG
   A4GL_debug ("col_int=%x\n", col_int);
+#endif
   /* Work out the colours first */
   switch (col_int)
     {
@@ -308,7 +318,9 @@ A4GL_get_strings_from_attr (int attr, char *col_str, char *attr_str)
     strcat (attr_str, "INVISIBLE ");
   if (attr & AUBIT_ATTR_ALTCHARSET)
     strcat (attr_str, "ALT ");
+#ifdef DEBUG
   A4GL_debug ("30 get_strings returning %s %s (DIM=%d)", A4GL_null_as_null (col_str), A4GL_null_as_null (attr_str), AUBIT_ATTR_DIM);
+#endif
 }
 
 /**
@@ -357,7 +369,9 @@ A4GL_get_attr_from_string (char *s)
     return AUBIT_ATTR_LEFT;
 
 
+#ifdef DEBUG
   A4GL_debug ("Unknown attribute : %s\n", s);
+#endif
   A4GL_exitwith ("Unknown attribute");
 
   return -1;
@@ -375,7 +389,9 @@ A4GL_strattr_to_num (char *s)
   int l;
   buff = acl_strdup (s);
   ptr = buff;
+#ifdef DEBUG
   A4GL_debug ("Got str attr as : %s", s);
+#endif
   l = (int) strlen (s);
   for (a = 0; a <= l; a++)
     {
@@ -387,7 +403,9 @@ A4GL_strattr_to_num (char *s)
 	  A4GL_trim (b2);
 	  if (strlen (b2))
 	    {
+#ifdef DEBUG
 	      A4GL_debug ("Checking : %s\n", b2);
+#endif
 	      nattr = A4GL_get_attr_from_string (b2);
 	      if (nattr != -1)
 		attr += nattr;
@@ -409,7 +427,9 @@ A4GL_strattr_to_num (char *s)
     }
 
   free (buff);
+#ifdef DEBUG
   A4GL_debug ("Returning %d\n", attr);
+#endif
   return attr;
 }
 
@@ -439,16 +459,22 @@ A4GL_determine_attribute_as_std_attr (int cmd_type, struct s_std_attr *attrib_cu
     case FGL_CMD_DISPLAY_CMD:	// DISPLAY / DISPLAY @
     case FGL_CMD_DISPLAY_FIELD_CMD:	// DISPLAY TO, DISPLAY BY NAME
     case FGL_CMD_DISPLAY_FORM:
+#ifdef DEBUG
       A4GL_debug ("30 Command is DISPLAY");
+#endif
       int_options = A4GL_get_option_value ('d');
       int_disp_form = A4GL_get_curr_form_attr ();
       int_open_window = A4GL_get_curr_window_attr ();
+#ifdef DEBUG
       A4GL_debug ("30 int_options=%x int_disp_form=%x int_open_window=%x", int_options, int_disp_form, int_open_window);
+#endif
       break;
 
     case FGL_CMD_INPUT:
     case FGL_CMD_CONSTRUCT:
+#ifdef DEBUG
       A4GL_debug ("30 Command is INPUT");
+#endif
       int_options = A4GL_get_option_value ('i');
       int_disp_form = A4GL_get_curr_form_attr ();
       int_open_window = A4GL_get_curr_window_attr ();
@@ -461,28 +487,38 @@ A4GL_determine_attribute_as_std_attr (int cmd_type, struct s_std_attr *attrib_cu
     int_disp_form = 0;
   if (int_open_window == 0xffff || int_open_window == -1)
     int_open_window = 0;
+#ifdef DEBUG
   A4GL_debug ("INT OPTS : %x %x %x", int_options, int_disp_form, int_open_window);
+#endif
 
   if (int_options)
     {
       ptr_std_options = &std_options;
+#ifdef DEBUG
       A4GL_debug ("a");
+#endif
       A4GL_attr_int_to_std (int_options, ptr_std_options);
     }
   if (int_disp_form)
     {
       ptr_std_disp_form = &std_disp_form;
+#ifdef DEBUG
       A4GL_debug ("a");
+#endif
       A4GL_attr_int_to_std (int_disp_form, ptr_std_disp_form);
     }
   if (int_open_window)
     {
       ptr_std_open_window = &std_open_window;
+#ifdef DEBUG
       A4GL_debug ("a");
+#endif
       A4GL_attr_int_to_std (int_open_window, ptr_std_open_window);
     }
 
+#ifdef DEBUG
   A4GL_debug ("XXX %x", attrib_curr);
+#endif
   return A4GL_determine_attribute_internal (attrib_curr, attrib_field, 0,	// We don't do syscol yet...
 					    ptr_std_options, ptr_std_disp_form, ptr_std_open_window);
 
@@ -503,9 +539,11 @@ A4GL_determine_attribute_internal (struct s_std_attr *attrib_curr,
   static struct s_std_attr rval;
   struct s_std_attr *r = 0;
 
+#ifdef DEBUG
   A4GL_debug
     ("30 A4GL_determine_attribute_internal : c=%p f=%p s=%p o=%p d=%p w=%p",
      attrib_curr, attrib_field, syscol, options, disp_form, open_window);
+#endif
 
 /*
 
@@ -527,70 +565,93 @@ A4GL_determine_attribute_internal (struct s_std_attr *attrib_curr,
 
   if (attrib_curr)
     {
+#ifdef DEBUG
       A4GL_debug
 	("30 determine_attribute_internal - Attribute : attrib_curr= %x %d %d %d %d %d %d %d",
 	 attrib_curr->colour, attrib_curr->normal, attrib_curr->reverse,
 	 attrib_curr->underline, attrib_curr->bold, attrib_curr->blink, attrib_curr->dim, attrib_curr->invisible);
+#endif
     }
 
   if (attrib_field)
     {
+#ifdef DEBUG
       A4GL_debug
 	("30 determine_attribute_internal - Attribute : attrib_field= %x %d %d %d %d %d %d %d",
 	 attrib_field->colour, attrib_field->normal, attrib_field->reverse,
 	 attrib_field->underline, attrib_field->bold, attrib_field->blink, attrib_field->dim, attrib_field->invisible);
+
+#endif
     }
 
+#ifdef DEBUG
   A4GL_debug
     ("30 Determining attribute : curr=%p field=%p syscol=%p options=%p disp_Form=%p open_window=%p",
      attrib_curr, attrib_field, syscol, options, disp_form, open_window);
+#endif
   if (attrib_curr && r == 0)
     {
+#ifdef DEBUG
       A4GL_debug ("30 Attribute 1");
+#endif
       memcpy (&rval, attrib_curr, sizeof (struct s_std_attr));
       r = &rval;
     }
   if (attrib_field && r == 0)
     {
+#ifdef DEBUG
       A4GL_debug ("30 Attribute 2");
+#endif
       memcpy (&rval, attrib_field, sizeof (struct s_std_attr));
       r = &rval;
     }
   if (syscol && r == 0)
     {
+#ifdef DEBUG
       A4GL_debug ("30 Attribute 3");
+#endif
       memcpy (&rval, syscol, sizeof (struct s_std_attr));
       r = &rval;
     }
   if (options && r == 0)
     {
+#ifdef DEBUG
       A4GL_debug ("30 Attribute 4");
+#endif
       memcpy (&rval, options, sizeof (struct s_std_attr));
       r = &rval;
     }
   if (disp_form && r == 0)
     {
+#ifdef DEBUG
       A4GL_debug ("30 Attribute 5");
+#endif
       memcpy (&rval, disp_form, sizeof (struct s_std_attr));
       r = &rval;
     }
   if (open_window && r == 0)
     {
+#ifdef DEBUG
       A4GL_debug ("30 Attribute 6");
+#endif
       memcpy (&rval, open_window, sizeof (struct s_std_attr));
       r = &rval;
     }
 
   if (r)
     {
+#ifdef DEBUG
       A4GL_debug ("30 determine_attribute_internal - Attribute : %x %d %d %d %d %d %d %d",
 		  r->colour, r->normal, r->reverse, r->underline, r->bold, r->blink, r->dim, r->invisible);
+#endif
 
       return r;
     }
   else
     {
+#ifdef DEBUG
       A4GL_debug ("30 determine_attribute_internal - Attribute : No attribute");
+#endif
       return r;
     }
 
@@ -628,7 +689,9 @@ A4GL_attr_int_to_std_from_form (int attr, struct s_std_attr *p)
   if (attr & AUBIT_ATTR_INVISIBLE)
     p->invisible = 1;
 
+#ifdef DEBUG
   A4GL_debug ("30 Attribute : %x %d %d %d %d %d %d", p->colour, p->normal, p->reverse, p->underline, p->bold, p->blink, p->dim);
+#endif
 }
 
 
@@ -663,7 +726,9 @@ A4GL_attr_int_to_std (int attr, struct s_std_attr *p)
   if (attr & AUBIT_ATTR_INVISIBLE)
     p->invisible = 1;
 
+#ifdef DEBUG
   A4GL_debug ("30 Attribute : %x %d %d %d %d %d %d", p->colour, p->normal, p->reverse, p->underline, p->bold, p->blink, p->dim);
+#endif
 }
 
 
@@ -716,24 +781,32 @@ A4GL_determine_attribute (int cmd_type, int attrib_curr_int, void *vfprop, char 
 
   if (cmd_type == FGL_CMD_CLEAR)
     {				// Dont bother with clear...
+#ifdef DEBUG
       A4GL_debug ("30 CMD_CLEAR Attributes are always 0...");
+#endif
       return 0;
     }
 
   fprop = vfprop;
 /* Decode our current attribute */
+#ifdef DEBUG
   A4GL_debug ("attrib_curr_int=0x%x (%d)", attrib_curr_int, attrib_curr_int);
+#endif
 
   if (attrib_curr_int != -1 && attrib_curr_int != 0)
     {
+#ifdef DEBUG
       A4GL_debug ("a - %x %d", attrib_curr_int, attrib_curr_int);
+#endif
       A4GL_attr_int_to_std (attrib_curr_int, &attrib_curr);
       ptr_attrib_curr = &attrib_curr;
+#ifdef DEBUG
       A4GL_debug
 	("30 determined Attribute setting attrib_curr =  %x %d %d %d %d %d %d %d",
 	 ptr_attrib_curr->colour, ptr_attrib_curr->normal,
 	 ptr_attrib_curr->reverse, ptr_attrib_curr->underline,
 	 ptr_attrib_curr->bold, ptr_attrib_curr->blink, ptr_attrib_curr->dim, ptr_attrib_curr->invisible);
+#endif
     }
 
   if (fprop)
@@ -752,7 +825,9 @@ A4GL_determine_attribute (int cmd_type, int attrib_curr_int, void *vfprop, char 
 
       a = A4GL_evaluate_field_colour (val_for_field, fprop);
 
+#ifdef DEBUG
       A4GL_debug ("eval = %d", a);
+#endif
 
       if (a == -1)
 	{
@@ -760,7 +835,9 @@ A4GL_determine_attribute (int cmd_type, int attrib_curr_int, void *vfprop, char 
 	}
       else
 	{
+#ifdef DEBUG
 	  A4GL_debug ("a =%d", a);
+#endif
 
 	  A4GL_attr_int_to_std_from_form (a, &attrib_field);
 	  attr = attrib_field.colour;
@@ -769,7 +846,9 @@ A4GL_determine_attribute (int cmd_type, int attrib_curr_int, void *vfprop, char 
 	}
 
 
+#ifdef DEBUG
       A4GL_debug ("30 attrib_field.colour=%d\n", attrib_field.colour);
+#endif
 
       if (A4GL_has_bool_attribute (fprop, FA_B_REVERSE))
 	{
@@ -781,7 +860,9 @@ A4GL_determine_attribute (int cmd_type, int attrib_curr_int, void *vfprop, char 
 	}
 
 
+#ifdef DEBUG
       A4GL_debug ("attr before = %x", attr);
+#endif
 
       if (attrib_field.normal)
 	attr += AUBIT_ATTR_NORMAL;
@@ -797,10 +878,12 @@ A4GL_determine_attribute (int cmd_type, int attrib_curr_int, void *vfprop, char 
 	attr += AUBIT_ATTR_DIM;
       if (attrib_field.invisible)
 	attr += AUBIT_ATTR_INVISIBLE;
+#ifdef DEBUG
       A4GL_debug ("attr after = %x", attr);
 
 
       A4GL_debug ("Form attribute = %x\n", attr);
+#endif
 
 
       if (attr == 0)
@@ -810,24 +893,30 @@ A4GL_determine_attribute (int cmd_type, int attrib_curr_int, void *vfprop, char 
       else
 	{
 	  ptr_attrib_field = &attrib_field;
+#ifdef DEBUG
 	  A4GL_debug
 	    (" determined Attribute setting attrib_field =  %x %d %d %d %d %d %d",
 	     ptr_attrib_field->colour, ptr_attrib_field->normal,
 	     ptr_attrib_field->reverse, ptr_attrib_field->underline,
 	     ptr_attrib_field->bold, ptr_attrib_field->blink, ptr_attrib_field->dim);
+#endif
 	}
 
     }
 
+#ifdef DEBUG
   A4GL_debug ("30 ptr_attrib_field=%p\n", ptr_attrib_field);
 
   A4GL_debug ("ptr_attrib_curr=%p ptr_attrib_field=%p", ptr_attrib_curr, ptr_attrib_field);
+#endif
 
   r = A4GL_determine_attribute_as_std_attr (cmd_type, ptr_attrib_curr, ptr_attrib_field);
 
   if (r == 0)
     {
+#ifdef DEBUG
       A4GL_debug ("30 no Attribute specified anywhere...");
+#endif
       return 0;
     }
 
@@ -836,10 +925,14 @@ A4GL_determine_attribute (int cmd_type, int attrib_curr_int, void *vfprop, char 
     {
       A4GL_assertion (1, "Too many options set - probably corrupt attribute");
     }
+#ifdef DEBUG
   A4GL_debug (" MJAMJAMJA determined Attribute : %x %d %d %d %d %d %d",
 	      r->colour, r->normal, r->reverse, r->underline, r->bold, r->blink, r->dim);
+#endif
   attr = 0;
+#ifdef DEBUG
   A4GL_debug ("30 Have Attribute..");
+#endif
   attr = attr + r->colour;
   if (r->normal)
     attr += AUBIT_ATTR_NORMAL;
@@ -855,7 +948,9 @@ A4GL_determine_attribute (int cmd_type, int attrib_curr_int, void *vfprop, char 
     attr += AUBIT_ATTR_DIM;
   if (r->invisible)
     attr += AUBIT_ATTR_INVISIBLE;
+#ifdef DEBUG
   A4GL_debug (" Returning Attribute : %d (%x)\n", attr, attr);
+#endif
 
   return attr;
 }

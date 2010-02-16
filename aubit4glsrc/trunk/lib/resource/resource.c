@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.163 2010-02-12 14:39:49 mikeaubury Exp $
+# $Id: resource.c,v 1.164 2010-02-16 13:17:41 mikeaubury Exp $
 #
 */
 
@@ -1403,7 +1403,9 @@ add_resources_in (FILE * resourcefile,char *filename)
       fgets (buff, 511, resourcefile);
       if (feof (resourcefile))
 	break;
+#ifdef DEBUG
 		A4GL_debug("99 Read %s",buff);
+#endif
       ptr = strchr (buff, '#');
       if (ptr)
 	{

@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.153 2010-02-12 14:39:43 mikeaubury Exp $
+# $Id: fglwrap.c,v 1.154 2010-02-16 13:16:27 mikeaubury Exp $
 #
 */
 
@@ -1474,7 +1474,9 @@ initsig_child ()
 
 #endif
 #else
+#ifdef DEBUG
       A4GL_debug ("SA_NOCLDWAIT on Windows? FIXME!");
+#endif
 
 #endif
     }

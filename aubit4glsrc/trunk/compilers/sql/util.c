@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: util.c,v 1.75 2010-02-15 13:20:30 mikeaubury Exp $
+# $Id: util.c,v 1.76 2010-02-16 13:16:22 mikeaubury Exp $
 #
 */
 
@@ -156,7 +156,6 @@ make_sql_string_and_free (char *first, ...)
   if (first != kw_comma && first != kw_space && first != kw_ob
       && first != kw_cb)
     {
-      //A4GL_debug("FREE %p (%s)\n",first,first);
       if (A4GL_isyes (acl_getenv ("FREE_SQL_MEM")))
 	{
 	  acl_free (first);
@@ -187,7 +186,6 @@ make_sql_string_and_free (char *first, ...)
       if (next != kw_comma && next != kw_space && next != kw_ob
 	  && next != kw_cb)
 	{
-	  //A4GL_debug("FREE %p (%s)\n",next,next);
 	  if (A4GL_isyes (acl_getenv ("FREE_SQL_MEM")))
 	    {
 	      acl_free (next);
@@ -207,7 +205,9 @@ make_sql_string_and_free (char *first, ...)
 void
 push_gen (int a, char *s)
 {
+#ifdef DEBUG
   A4GL_debug ("Push %d %s - %d\n", a, A4GL_null_as_null (s),
+#endif
 	      gen_stack_cnt[a]);
   /*printf ("Push %d %s - %d\n", a, s,gen_stack_cnt[a]); */
   if (gen_stack_cnt[a] >= GEN_STACK_SIZE)
@@ -265,10 +265,15 @@ pop_all_gen (int a, char *s)
   int z;
   for (z = 0; z < gen_stack_cnt[a]; z++)
     {
-      if (z > 0)
+      if (z > 0) {
+#ifdef DEBUG
 	A4GL_debug ("%s ", A4GL_null_as_null (s));
+#endif
+	}
 
+#ifdef DEBUG
       A4GL_debug ("%s", A4GL_null_as_null (gen_stack[a][z]));
+#endif
     }
   gen_stack_cnt[a] = 0;
 }
@@ -615,12 +620,16 @@ sqlparse_yyerror (char *s)
       fprintf (stderr, "%s @ %d\n", s, sqlparse_yylineno);
     }
 
+#ifdef DEBUG
   A4GL_debug ("%s Sql=%p\n", s, Sql);
+#endif
   if (Sql)
     {
       char buff[8192];
       int c;
+#ifdef DEBUG
       A4GL_debug ("Here\n");
+#endif
       c = sql_string_cnt;
       c -= 20;
       if (c < 0)
@@ -629,7 +638,9 @@ sqlparse_yyerror (char *s)
 	}
       strncpy (buff, &Sql[sql_string_cnt], sizeof(buff)-1);
       buff[sizeof(buff)-1] = 0;
+#ifdef DEBUG
       A4GL_debug ("MEMREAD syntax error: %s\n", buff);
+#endif
     }
   was_ok = 0;
   return 0;
@@ -662,7 +673,9 @@ convstr_dbl_to_single (char *s)
   static char buff[1024];
   int a;
   int b = 0;
+#ifdef DEBUG
   A4GL_debug ("Convstrsql ... %s", s);
+#endif
   for (a = 0; a <= strlen (s); a++)
     {
       if (s[a] == '"')
@@ -1033,8 +1046,10 @@ A4GLSQLCV_convert_sql_internal (char *source_dialect, char *target_dialect,
       yydebug = 1;
     }
 
+#ifdef DEBUG
   A4GL_debug ("A4GLSQLCV_convert_sql_internal %s %s %s %d", source_dialect,
 	      target_dialect, sql, from_file);
+#endif
 
   sprintf (buff, "%s_%s", source_dialect, target_dialect);
   if (strcmp (last_conversion, buff) != 0)
@@ -1057,7 +1072,9 @@ A4GLSQLCV_convert_sql_internal (char *source_dialect, char *target_dialect,
       A4GLSQLCV_setbuffer (sql);
     }
 
+#ifdef DEBUG
   A4GL_debug ("stmts=%p stmts_cnt=%d Sql=%s", stmts, stmts_cnt, Sql);
+#endif
 
   if (A4GLSQLCV_process ())
     {
@@ -1067,7 +1084,9 @@ A4GLSQLCV_convert_sql_internal (char *source_dialect, char *target_dialect,
 	}
       A4GL_set_sql_conv (1);
       // All ok !
+#ifdef DEBUG
       A4GL_debug ("SQL processed OK (%d statements)", stmts_cnt);
+#endif
     }
   else
     {
@@ -1077,14 +1096,18 @@ A4GLSQLCV_convert_sql_internal (char *source_dialect, char *target_dialect,
 	  fprintf (stderr, "Error\n");
 	}
       // Some sql error....
+#ifdef DEBUG
       A4GL_debug ("Possible issue with the SQL", stmts_cnt);
+#endif
       if (from_file)
 	return "<err>";
       else
       {
 	  if (A4GL_isyes(acl_getenv("A4GL_EXIT_ON_BAD_SQL")))
 	  {
+#ifdef DEBUG
 	      A4GL_debug("Bad SQL: %s", sql);
+#endif
 	      A4GL_set_errm(sql);
 	      A4GL_exitwith("Bad SQL: %s");
 	  }
@@ -1115,13 +1138,17 @@ A4GLSQLCV_convert_sql_internal (char *source_dialect, char *target_dialect,
 	{
 	  ptr = acl_realloc (ptr, l);
 	}
+#ifdef DEBUG
       A4GL_debug ("Statement %d = %s", a, stmts[a].val);
+#endif
       strcat (ptr, stmts[a].val);
       if (a + 1 != stmts_cnt)
 	strcat (ptr, ";\n");
     }
 
+#ifdef DEBUG
   A4GL_debug ("-->%s\n", ptr);
+#endif
   return ptr;
 }
 

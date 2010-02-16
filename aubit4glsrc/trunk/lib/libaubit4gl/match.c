@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: match.c,v 1.23 2008-10-02 17:40:50 mikeaubury Exp $
+# $Id: match.c,v 1.24 2010-02-16 13:16:31 mikeaubury Exp $
 #*/
 
 /**
@@ -312,7 +312,9 @@ A4GL_matche (register char *p, register char *t, char multi, char single, char b
   C_BRACE = brace;
 
 
+#ifdef DEBUG
   A4GL_debug ("In matche...");
+#endif
   for (; *p; p++, t++)
     {
       /* if this is the end of the text
@@ -325,7 +327,9 @@ A4GL_matche (register char *p, register char *t, char multi, char single, char b
 
       /* determine and react to pattern type */
 
+#ifdef DEBUG
       A4GL_debug ("Looking at %c\n", *p);
+#endif
 
 
 
@@ -342,7 +346,9 @@ A4GL_matche (register char *p, register char *t, char multi, char single, char b
 	      /* [..] construct, single member/exclusion character A4GL_match */
 	      if (*p == C_BRACE && C_BRACE != ' ')
 		{
+#ifdef DEBUG
 		  A4GL_debug ("Got an open brace..");
+#endif
 		  /* move to beginning of range */
 
 		  p++;
@@ -355,7 +361,9 @@ A4GL_matche (register char *p, register char *t, char multi, char single, char b
 		      invert = TRUE;
 		      p++;
 		    }
+#ifdef DEBUG
 		  A4GL_debug ("A1");
+#endif
 		  /* if closing bracket here or at range start then we have a
 		     malformed pattern */
 
@@ -363,17 +371,23 @@ A4GL_matche (register char *p, register char *t, char multi, char single, char b
 		    {
 		      return MATCH_PATTERN;
 		    }
+#ifdef DEBUG
 		  A4GL_debug ("A1");
+#endif
 
 		  member_match = FALSE;
 		  loop = TRUE;
 
+#ifdef DEBUG
 		  A4GL_debug ("A1");
+#endif
 		  while (loop)
 		    {
 		      /* if end of A4GL_construct then loop is done */
 
+#ifdef DEBUG
 		      A4GL_debug ("LOOP : %c", *p);
+#endif
 		      if (*p == ']')
 			{
 			  loop = FALSE;
@@ -433,7 +447,9 @@ A4GL_matche (register char *p, register char *t, char multi, char single, char b
 		      /* if the text character is in range then A4GL_match found.
 		         make sure the range letters have the proper
 		         relationship to one another before comparison */
+#ifdef DEBUG
 		      A4GL_debug ("Range : %c %c", range_start, range_end);
+#endif
 
 		      if (range_start < range_end)
 			{
@@ -464,7 +480,9 @@ A4GL_matche (register char *p, register char *t, char multi, char single, char b
 
 		  if (member_match)
 		    {
+#ifdef DEBUG
 		      A4GL_debug ("member_match");
+#endif
 		      while (*p != ']')
 			{
 			  /* bad pattern (Missing ']') */
@@ -490,7 +508,9 @@ A4GL_matche (register char *p, register char *t, char multi, char single, char b
 		  else
 		    {
 		      /* must A4GL_match this character exactly */
+#ifdef DEBUG
 		      A4GL_debug ("Literal matching : %c %c", *p, *t);
+#endif
 		      if (*p != *t)
 			return MATCH_LITERAL;
 		    }
@@ -601,7 +621,9 @@ A4GL_match (char *p, char *t, char m, char s, char b)
   int error_type;
 
   error_type = A4GL_matche (p, t, m, s, b);
+#ifdef DEBUG
   A4GL_debug ("error_type=%d - VALID=%d\n", error_type, MATCH_VALID);
+#endif
   return (error_type == MATCH_VALID) ? TRUE : FALSE;
 }
 

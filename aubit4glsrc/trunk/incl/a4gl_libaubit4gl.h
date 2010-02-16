@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.394 2010-02-12 14:39:42 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.395 2010-02-16 13:16:22 mikeaubury Exp $
 #
 */
 
@@ -1432,15 +1432,14 @@ char *A4GL_get_pdf_encoding(void) ;
 //
 // Because the #define that follows will map A4GL_debug to A4GL_debug_full
 // we should *never* really be calling a function called 'A4GL_debug'....
-void A4GL_debug(char *s); 
 
-/*
-#ifndef NODEBUG
-#define A4GL_debug A4GL_set_line(__FILE__,__LINE__),A4GL_debug_full
-#else
-#define A4GL_debug null_func
+
+#ifdef NODEBUG
+#define A4GL_debug error error A4GL_debug shouldnt be used
+
+//void A4GL_debug(); 
 #endif
-*/
+
 
 #ifndef NODEBUG
 

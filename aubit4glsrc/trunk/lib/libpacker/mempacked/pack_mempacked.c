@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pack_mempacked.c,v 1.16 2009-01-24 13:17:07 mikeaubury Exp $
+# $Id: pack_mempacked.c,v 1.17 2010-02-16 13:16:58 mikeaubury Exp $
 #*/
 
 /**
@@ -124,7 +124,9 @@ A4GLPacker_input_start_array (char *s, int type, int *len)
 {
   int a;
   a = A4GLPacker_input_int (s, len, 0, -1);
+#ifdef DEBUG
   A4GL_debug ("ARRAY %s - Length of array=%d", s, *len);
+#endif
   return a;
 }
 
@@ -146,7 +148,9 @@ int
 A4GLPacker_input_short (char *name, short *val, int ptr, int isarr)
 {
   int a;
+#ifdef DEBUG
   A4GL_debug ("Input short %s", name);
+#endif
   a = A4GL_memfile_fread ((char *)val, 1, sizeof (short), (void *)infile);
   *val = a4gl_ntohs (*val);
   return a;
@@ -157,7 +161,9 @@ int
 A4GLPacker_input_char (char *name, char *val, int ptr, int isarr)
 {
   int a;
+#ifdef DEBUG
   A4GL_debug ("Input short %s", name);
+#endif
   a = A4GL_memfile_fread ((char *)val, 1, sizeof (char), (void *)infile);
   return a;
 
@@ -194,11 +200,17 @@ A4GLPacker_input_long (char *name, long *val, int ptr, int isarr)
 {
   /* long n; */
   int a;
+#ifdef DEBUG
   A4GL_debug ("Reading long %s", name);
+#endif
   a = A4GL_memfile_fread ((char *)val, 1, sizeof (long), (void *)infile);
+#ifdef DEBUG
   A4GL_debug("Got a as %d val=%d (%x)\n",a,*val,*val);
+#endif
   *val = a4gl_ntohl (*val);
+#ifdef DEBUG
   A4GL_debug ("->Got long %s  as %x\n", name, *val);
+#endif
   return a;
 }
 
@@ -223,10 +235,14 @@ A4GLPacker_input_string (char *name, char **val, int ptr, int isarr)
 {
   long l;
   int a;
+#ifdef DEBUG
   A4GL_debug ("Inputing string %s", name);
+#endif
   if (!A4GLPacker_input_long ("", &l, 0, -1))
     return 0;
+#ifdef DEBUG
   A4GL_debug ("Got length as %d", l);
+#endif
   *val = acl_malloc2 (l + 1);	/* Extra 1 for the \0 */
   memset (*val, 0, l + 1);
   a = A4GL_memfile_fread ((char *)*val, 1, l, (void *)infile);
@@ -274,7 +290,11 @@ A4GLPacker_input_start_union (char *s, char *en, int *e,char *n, int ptr, int is
 {
 int a;
   a=A4GLPacker_input_int (en, e, 0, -1);
-  if (!a) { A4GL_debug("Failed to read %s %s %s",s,en,n); }
+  if (!a) { 
+#ifdef DEBUG
+A4GL_debug("Failed to read %s %s %s",s,en,n); 
+#endif
+}
   return a;
 
 }
@@ -337,7 +357,9 @@ A4GLPacker_A4GL_open_packer (char *basename, char dir,char *packname,char *versi
 {
   //char buff[256];
   char *ptr = 0;
+#ifdef DEBUG
   A4GL_debug ("MEMPACKER : basename=%s\n", basename);
+#endif
   ptr = strchr (basename, '.');
   *ptr = 0;
 

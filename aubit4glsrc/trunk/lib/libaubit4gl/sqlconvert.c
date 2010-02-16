@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.170 2009-11-03 10:12:03 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.171 2010-02-16 13:16:38 mikeaubury Exp $
 #
 */
 
@@ -287,7 +287,9 @@ A4GL_convert_sql_new (char *source_dialect, char *target_dialect, char *sqlx, in
 	}
   sql_duped=acl_strdup(sqlx);
 
+#ifdef DEBUG
   A4GL_debug ("A4GL_convert_sql_new : %s", sql);
+#endif
 
   cache = A4GL_isyes (acl_getenv ("A4GL_DISABLE_QUERY_CACHE")) ? 0 : 1;
   if (cache && has_query (sqlx, &sql_new))
@@ -309,7 +311,9 @@ A4GL_convert_sql_new (char *source_dialect, char *target_dialect, char *sqlx, in
 
   // Silently drop source dialect for now - it should be picked up from A4GL_SQLDIALECT anyway...
   //
+#ifdef DEBUG
   A4GL_debug ("sql=%s\n", sql);
+#endif
 
   sql = acl_strdup (sqlx);
 
@@ -324,7 +328,9 @@ A4GL_convert_sql_new (char *source_dialect, char *target_dialect, char *sqlx, in
 	  A4GL_assertion (1, "Failed to convert SQL (1)");
 	}
 
+#ifdef DEBUG
       A4GL_debug ("Translates to %s", sql_new);
+#endif
       if (converted != 1)
 	{
 	  sql_new = A4GLSQLCV_check_sql (sql_new, &converted);
@@ -339,7 +345,9 @@ A4GL_convert_sql_new (char *source_dialect, char *target_dialect, char *sqlx, in
       sql_new = "";
     }
   //for (a=0;a<strlen(sql_new);a++) { if (sql_new[a]=='\n') sql_new[a]=' '; }
+#ifdef DEBUG
   A4GL_debug ("check_sql.. %s", sql_new);
+#endif
 
   if (cache) {
     add_query (sql_duped, sql_new);
@@ -455,7 +463,9 @@ A4GLSQLCV_load_convert (char *source_dialect, char *target_dialect)
 //void *p=0;
 
   SPRINTF2 (buff, "%s_%s", source_dialect, target_dialect);
+#ifdef DEBUG
   A4GL_debug ("Load convert : %s %s", source_dialect, target_dialect);
+#endif
 
   if (!A4GL_isno (acl_getenv ("COMPILETIMEFIX")))
     {
@@ -483,9 +493,13 @@ cnfopen (char *path, char *buff_sm)
   FILE *f;
   char buff[512];
   SPRINTF2 (buff, "%s%s", path, buff_sm);
+#ifdef DEBUG
   A4GL_debug ("Trying to cnfopen %s", buff);
+#endif
   f = fopen (buff, "r");
+#ifdef DEBUG
   A4GL_debug ("Trying to cnfopen %s - f=%p", buff, f);
+#endif
   return f;
 }
 
@@ -719,7 +733,9 @@ int sz;
 	    }
 
 
+#ifdef DEBUG
 	  A4GL_debug ("%s %d %s, %d", ptest, cond, pval, ok);
+#endif
 	  // Add it to our if stack...
 	  if_stack[if_stack_cnt++] = ok;
 	  continue;
@@ -776,7 +792,9 @@ int sz;
 	  p1 = strchr (t, ' ');
 	  if (p1)
 	    {
+#ifdef DEBUG
 	      A4GL_debug ("SQLCONVERT (%s): %s\n", thisline, p1);
+#endif
 	    }
 	  continue;
 	}
@@ -844,9 +862,11 @@ int sz;
       conversion_rules[conversion_rules_cnt - 1].data.to = 0;
       if (t)
 	{
+#ifdef DEBUG
 	  A4GL_debug ("Loaded convertion ---> %d %s\n",
 		      conversion_rules[conversion_rules_cnt - 1].type,
 		      cvsql_names[conversion_rules[conversion_rules_cnt - 1].type]);
+#endif
 	}
       A4GL_trim (t);
       /* get the argument list, A4GL_strip off leading = sign */
@@ -948,7 +968,9 @@ A4GL_cv_fnlist (char *source, char *target, char *name)
 
   if (fh == NULL)
     {
+#ifdef DEBUG
       A4GL_debug ("failed to open file");
+#endif
       return;			/* NULL */
     }
 
@@ -1009,7 +1031,9 @@ A4GLSQLCV_check_sql (char *s, int *converted)
   static char *buff = 0;
   char *ptr = 0;
   A4GL_assertion (s == 0, "No pointer");
+#ifdef DEBUG
   A4GL_debug ("check sql : %s\n", s);
+#endif
   *converted = 1;
 	if (buff) {
 		acl_free(buff);
@@ -1039,7 +1063,9 @@ A4GLSQLCV_check_sql (char *s, int *converted)
 	}
     }
 
+#ifdef DEBUG
   A4GL_debug ("check sql 2\n");
+#endif
   ptr = acl_malloc2 (strlen (s) * 2 + 1000);
 
   strcpy (ptr, s);
@@ -1053,7 +1079,9 @@ A4GLSQLCV_check_sql (char *s, int *converted)
 	    }
 	}
     }
+#ifdef DEBUG
   A4GL_debug ("returning\n");
+#endif
 
   if (A4GLSQLCV_check_requirement ("LIMIT_LINE"))
     {
@@ -1099,9 +1127,11 @@ A4GLSQLCV_insert_alias_column (char *t, char *c, char *v, int dtype)
 #endif
   c = A4GL_confirm_colname (t, c);
   sv[511] = 0;
+#ifdef DEBUG
   A4GL_debug ("Alias : '%s'\n", s);
 
   A4GL_debug ("Alias ? %s %s %s %x\n", t, c, v, dtype);
+#endif
   if (A4GLSQLCV_check_requirement ("OMIT_SERIAL_COL_FROM_INSERT") && dtype == DTYPE_SERIAL)
     {
       return "";
@@ -1114,7 +1144,9 @@ A4GLSQLCV_insert_alias_column (char *t, char *c, char *v, int dtype)
 	{
 	  if (A4GL_strwscmp (sv, current_conversion_rules[b].data.from) == 0)
 	    {
+#ifdef DEBUG
 	      A4GL_debug ("Substitute : %s\n", current_conversion_rules[b].data.to);
+#endif
 	      return current_conversion_rules[b].data.to;
 	    }
 	}
@@ -1138,7 +1170,9 @@ A4GLSQLCV_insert_alias_column (char *t, char *c, char *v, int dtype)
 	    {
 	      if (A4GL_strwscmp (ptr, current_conversion_rules[b].data.from) == 0)
 		{
+#ifdef DEBUG
 		  A4GL_debug ("Substitute : %s\n", current_conversion_rules[b].data.to);
+#endif
 		  SPRINTF2 (buff, "%s(%s", current_conversion_rules[b].data.to, ptr2);
 		  return buff;
 		}
@@ -1153,7 +1187,9 @@ A4GLSQLCV_insert_alias_column (char *t, char *c, char *v, int dtype)
 	{
 	  if (A4GL_strwscmp (s, current_conversion_rules[b].data.from) == 0)
 	    {
+#ifdef DEBUG
 	      A4GL_debug ("Substitute : %s\n", current_conversion_rules[b].data.to);
+#endif
 	      return current_conversion_rules[b].data.to;
 	    }
 	}
@@ -1177,7 +1213,9 @@ A4GLSQLCV_insert_alias_column (char *t, char *c, char *v, int dtype)
 	    {
 	      if (A4GL_strwscmp (ptr, current_conversion_rules[b].data.from) == 0)
 		{
+#ifdef DEBUG
 		  A4GL_debug ("Substitute : %s\n", current_conversion_rules[b].data.to);
+#endif
 		  SPRINTF2 (buff, "%s(%s", current_conversion_rules[b].data.to, ptr2);
 		  return buff;
 		}
@@ -1186,7 +1224,9 @@ A4GLSQLCV_insert_alias_column (char *t, char *c, char *v, int dtype)
     }
 
 
+#ifdef DEBUG
   A4GL_debug ("No substitute for '%s'\n", s);
+#endif
   return c;
 }
 
@@ -1206,9 +1246,13 @@ A4GLSQLCV_insert_alias_value (char *t, char *c, char *v, int dtype)
   SNPRINTF (sv, 512, "%s.%s.%s", t, c, v);
 #endif
   sv[511] = 0;
+#ifdef DEBUG
   A4GL_debug ("Alias : '%s'\n", s);
+#endif
 
+#ifdef DEBUG
   A4GL_debug ("Alias ? %s %s %s %x\n", t, c, v, dtype);
+#endif
 
   for (b = 0; b < current_conversion_rules_cnt; b++)
     {
@@ -1216,7 +1260,9 @@ A4GLSQLCV_insert_alias_value (char *t, char *c, char *v, int dtype)
 	{
 	  if (A4GL_strwscmp (sv, current_conversion_rules[b].data.from) == 0)
 	    {
+#ifdef DEBUG
 	      A4GL_debug ("Substitute : %s\n", current_conversion_rules[b].data.to);
+#endif
 	      return current_conversion_rules[b].data.to;
 	    }
 	}
@@ -1240,7 +1286,9 @@ A4GLSQLCV_insert_alias_value (char *t, char *c, char *v, int dtype)
 	    {
 	      if (A4GL_strwscmp (ptr, current_conversion_rules[b].data.from) == 0)
 		{
+#ifdef DEBUG
 		  A4GL_debug ("Substitute : %s\n", current_conversion_rules[b].data.to);
+#endif
 		  SPRINTF2 (buff, "%s(%s", current_conversion_rules[b].data.to, ptr2);
 		  return buff;
 		}
@@ -1255,7 +1303,9 @@ A4GLSQLCV_insert_alias_value (char *t, char *c, char *v, int dtype)
 	{
 	  if (A4GL_strwscmp (s, current_conversion_rules[b].data.from) == 0)
 	    {
+#ifdef DEBUG
 	      A4GL_debug ("Substitute : %s\n", current_conversion_rules[b].data.to);
+#endif
 	      return current_conversion_rules[b].data.to;
 	    }
 	}
@@ -1279,7 +1329,9 @@ A4GLSQLCV_insert_alias_value (char *t, char *c, char *v, int dtype)
 	    {
 	      if (A4GL_strwscmp (ptr, current_conversion_rules[b].data.from) == 0)
 		{
+#ifdef DEBUG
 		  A4GL_debug ("Substitute : %s\n", current_conversion_rules[b].data.to);
+#endif
 		  SPRINTF2 (buff, "%s(%s", current_conversion_rules[b].data.to, ptr2);
 		  return buff;
 		}
@@ -1288,7 +1340,9 @@ A4GLSQLCV_insert_alias_value (char *t, char *c, char *v, int dtype)
     }
 
 
+#ifdef DEBUG
   A4GL_debug ("No substitute for '%s'\n", s);
+#endif
   return v;
 }
 
@@ -1317,7 +1371,9 @@ char *
 A4GLSQLCV_dtype_alias (char *s)
 {
   int b;
+#ifdef DEBUG
   A4GL_debug ("Alias : '%s'\n", s);
+#endif
 
   for (b = 0; b < current_conversion_rules_cnt; b++)
     {
@@ -1325,7 +1381,9 @@ A4GLSQLCV_dtype_alias (char *s)
 	{
 	  if (A4GL_strwscmp (s, current_conversion_rules[b].data.from) == 0)
 	    {
+#ifdef DEBUG
 	      A4GL_debug ("Substitute : %s\n", current_conversion_rules[b].data.to);
+#endif
 	      return current_conversion_rules[b].data.to;
 	    }
 	}
@@ -1348,7 +1406,9 @@ A4GLSQLCV_dtype_alias (char *s)
 	    {
 	      if (A4GL_strwscmp (ptr, current_conversion_rules[b].data.from) == 0)
 		{
+#ifdef DEBUG
 		  A4GL_debug ("Substitute : %s\n", current_conversion_rules[b].data.to);
+#endif
 		  SPRINTF2 (buff, "%s(%s", current_conversion_rules[b].data.to, ptr2);
 		  return buff;
 		}
@@ -1363,7 +1423,9 @@ A4GLSQLCV_dtype_alias (char *s)
 
 
 
+#ifdef DEBUG
   A4GL_debug ("No substitute for '%s'\n", s);
+#endif
   return s;
 }
 
@@ -1382,7 +1444,9 @@ A4GL_cvsql_replace_str (char *buff, char *from, char *to)
   int ln;
   l = strlen (buff) * 2 + 1000;
   buff2 = acl_realloc (buff2, l);
+#ifdef DEBUG
   A4GL_debug ("replace_str from :%s to %s", from, to);
+#endif
   strcpy (buff2, "");
   ln = strlen (buff);
   for (a = 0; a <= ln; a++)
@@ -1424,7 +1488,9 @@ A4GL_cvsql_replace_str (char *buff, char *from, char *to)
     {
       A4GL_assertion (1, "Not allocated enough space for replace_str");
     }
+#ifdef DEBUG
   A4GL_debug ("New string : %s\n", buff2);
+#endif
   strcpy (buff, buff2);
 
 }
@@ -1437,7 +1503,9 @@ A4GLSQLCV_check_expr (char *s)
   int b;
   static char *buff = 0;
 
+#ifdef DEBUG
   A4GL_debug ("%s\n", s);
+#endif
 
   buff = acl_realloc (buff, strlen (s) * 2 + 1000);
   strcpy (buff, s);
@@ -1458,13 +1526,19 @@ A4GLSQLCV_check_expr (char *s)
 		{
 		  to = current_conversion_rules[b].data.to;
 		}
+#ifdef DEBUG
 	      A4GL_debug ("Converting %s to %s in %s\n", current_conversion_rules[b].data.from, to, buff);
+#endif
 	      A4GL_cvsql_replace_str (buff, current_conversion_rules[b].data.from, to);
+#ifdef DEBUG
 	      A4GL_debug ("Converted: %s\n", buff);
+#endif
 	    }
 	}
     }
+#ifdef DEBUG
   A4GL_debug ("Returning %s\n", buff);
+#endif
   return buff;
 
 }
@@ -1534,7 +1608,9 @@ check_requirement_i (char *s)
 
 
   a = A4GL_cv_str_to_func (s, strlen (s), 1);
+#ifdef DEBUG
   A4GL_debug ("Checking for a type %d\n", a);
+#endif
 
   if (a == 0)
     {
@@ -1545,13 +1621,17 @@ check_requirement_i (char *s)
 	  fprintf (f, "%s\n", s);
 	  fclose (f);
 	}
+#ifdef DEBUG
       A4GL_debug ("WARNING : Unknown type : %s", s);
+#endif
       return 0;			// I don't know what they are talking about...
     }
 
   if (current_conversion_rules == 0)
     {
+#ifdef DEBUG
       A4GL_debug ("A4GLSQLCV_check_requirement(%s) - No rules", s);
+#endif
       return 0;
     }
 
@@ -1564,7 +1644,9 @@ check_requirement_i (char *s)
 	}
     }
 
+#ifdef DEBUG
   A4GL_debug ("A4GLSQLCV_check_requirement(%s) - no", s);
+#endif
   return 0;
 }
 
@@ -1751,7 +1833,9 @@ A4GLSQLCV_make_substr_s (char *colname, int n, char *l, char *r)
 	  return buff;
 	}
     }
+#ifdef DEBUG
   A4GL_debug ("Shouldn't get to here...");
+#endif
   return "???";
 }
 
@@ -2535,10 +2619,14 @@ A4GLSQLCV_select_into_temp (char *sel, char *lp, char *tabname)
     {
       //if (ptr) free(ptr);
       ptr = acl_malloc2 (strlen (sel) + 2000);
+#ifdef DEBUG
       A4GL_debug ("Creating temp table called %s", tabname);
+#endif
       if (!A4GL_has_pointer (tabname, LOG_TEMP_TABLE))
 	{
+#ifdef DEBUG
 	  A4GL_debug ("Adding LOG_TEMP_TABLE for %s", tabname);
+#endif
 	  A4GL_add_pointer (tabname, LOG_TEMP_TABLE, (void *) 1);
 	}
       SPRINTF2 (ptr, "DECLARE GLOBAL TEMPORARY TABLE SESSION.%s AS %s ON COMMIT PRESERVE ROWS WITH NORECOVERY", tabname, sel);
@@ -2549,10 +2637,14 @@ A4GLSQLCV_select_into_temp (char *sel, char *lp, char *tabname)
     {
       //if (ptr) free(ptr);
       ptr = acl_malloc2 (strlen (sel) + 2000);
+#ifdef DEBUG
       A4GL_debug ("Creating temp table called %s (declare+insert) ", tabname);
+#endif
       if (!A4GL_has_pointer (tabname, LOG_TEMP_TABLE))
 	{
+#ifdef DEBUG
 	  A4GL_debug ("Adding LOG_TEMP_TABLE for %s", tabname);
+#endif
 	  A4GL_add_pointer (tabname, LOG_TEMP_TABLE, (void *) 1);
 	}
       SPRINTF2 (ptr, "INSERT INTO SESSION.%s %s", tabname, sel);
@@ -2600,7 +2692,9 @@ A4GLSQLCV_add_temp_table (char *tabname)
 {
   if (!A4GL_has_pointer (tabname, LOG_TEMP_TABLE))
     {
+#ifdef DEBUG
       A4GL_debug ("Adding LOG_TEMP_TABLE for %s", tabname);
+#endif
       A4GL_add_pointer (tabname, LOG_TEMP_TABLE, (void *) 1);
     }
 
@@ -2623,7 +2717,9 @@ A4GLSQLCV_create_temp_table (char *tabname, char *elements, char *extra, char *o
 
   if (A4GLSQLCV_check_requirement ("TEMP_AS_DECLARE_GLOBAL"))
     {
+#ifdef DEBUG
       A4GL_debug ("Creating temp table called TABLE : %s", tabname);
+#endif
 
       //if (!A4GL_has_pointer (tabname, LOG_TEMP_TABLE)) { A4GL_add_pointer (tabname, LOG_TEMP_TABLE, (void *) 1); }
       if (A4GLSQLCV_check_requirement ("ADD_WITH_OIDS"))
@@ -2907,8 +3003,10 @@ A4GLSQLCV_sql_func (char *f, char *param)
 	    {
 	      if (sql_convert_func (current_conversion_rules[b].data.to, param, buff, sizeof (buff)) == 0)
 		{
+#ifdef DEBUG
 		  A4GL_debug ("Conversion error (CVSQL_REPLACE_SQLFUNC) %s->%s(%s)",
 			      current_conversion_rules[b].data.from, current_conversion_rules[b].data.to, param);
+#endif
 		}
 	      break;
 	    }
@@ -2985,7 +3083,9 @@ A4GLSQLCV_check_tablename (char *t)
   static char buff1[2000];
   char *ptr;
   char *codeu;
+#ifdef DEBUG
   A4GL_debug ("TABLE : %s\n", t);
+#endif
 
   // runtime mapping of table names
   codeu = strdup (t);
@@ -2993,7 +3093,9 @@ A4GLSQLCV_check_tablename (char *t)
   ptr = A4GL_find_pointer (codeu, RUNTIME_MAPPED_TNAME);
   if (ptr)
     {
+#ifdef DEBUG
       A4GL_debug ("table name mapped: \"%s\"(code) \"%s\"(db)\n", codeu, ptr);
+#endif
       t = ptr;
     }
   acl_free (codeu);
@@ -3063,10 +3165,14 @@ A4GLSQLCV_make_tablename (char *t, char *c)
   static char buff[400];
   char b2[200];
   int doneSession = 0;
+#ifdef DEBUG
   A4GL_debug ("Make_tablename : %s ", t);
+#endif
   if (c)
     {
+#ifdef DEBUG
       A4GL_debug ("Alias= %s", c);
+#endif
     }
 
   if (A4GLSQLCV_check_requirement ("ADD_SESSION_TO_TEMP_TABLE"))
@@ -3643,7 +3749,9 @@ static void
 add_table_mapping (char *db, char *instance, char *tab, char *newtab)
 {
   ntable_mappings++;
+#ifdef DEBUG
   A4GL_debug ("ADD MAP db=%s inst=%s tab=%s newtab=%s\n", db, instance, tab, newtab);
+#endif
   table_mappings = acl_realloc (table_mappings, sizeof (struct table_remap) * ntable_mappings);
   table_mappings[ntable_mappings - 1].orig_db = strdup (db);
   table_mappings[ntable_mappings - 1].orig_instance = strdup (instance);

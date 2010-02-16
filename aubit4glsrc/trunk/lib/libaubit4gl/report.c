@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.192 2010-01-18 14:33:25 mikeaubury Exp $
+# $Id: report.c,v 1.193 2010-02-16 13:16:31 mikeaubury Exp $
 #
 */
 
@@ -272,7 +272,9 @@ A4GL_cleanup_undeleted_files (void)
     {
       if (repnames[a])
 	{
+#ifdef DEBUG
 	  A4GL_debug ("Cleaning up : %s", repnames[a]);
+#endif
 	  if (!A4GL_isyes (acl_getenv ("LEAVETMPREPORTS")))
 	    {
 	      unlink (repnames[a]);
@@ -391,7 +393,9 @@ add_header_entry (struct rep_structure *rep, struct s_save_header *hdr, char *bu
 
 	  hdr->save[hdr->save_cnt - 1].rb = rep->curr_rb;
 
+#ifdef DEBUG
 	  A4GL_debug ("Add header entry : %d %d %d %d %s\n", rep->page_no, rep->line_no, rep->col_no, entry, buff);
+#endif
 	}
       free (n);
     }
@@ -439,7 +443,9 @@ print_header_entries (struct rep_structure *rep)
 	  rep->line_no = hdr->save[a].line_no;
 	  rep->col_no = hdr->save[a].col_no;
 	  print_data (rep, hdr->save[a].s, hdr->save[a].entry);
+#ifdef DEBUG
 	  A4GL_debug ("PRINING         : %d %d %d %d %s\n", rep->page_no, rep->line_no, rep->col_no, hdr->save[a].entry, hdr->save[a].s);
+#endif
 	  free (hdr->save[a].s);
 	}
 
@@ -456,6 +462,7 @@ print_header_entries (struct rep_structure *rep)
       		A4GL_pop_report_section (rep, rep->curr_rb);
       		rb = last_rb;
 
+#ifdef DEBUG
       		A4GL_debug ("rep=%p", rep);
       		A4GL_debug ("rep->modName=%s", rep->modName);
       		A4GL_debug ("rep->repName=%s", rep->repName);
@@ -463,6 +470,7 @@ print_header_entries (struct rep_structure *rep)
       		A4GL_debug ("lineno=%d", rep->blocks[rb].lineno);
       		A4GL_debug ("where=%c", rep->blocks[rb].where);
       		A4GL_debug ("why=%s", rep->blocks[rb].why);
+#endif
       		A4GL_assertion (rb > rep->nblocks, "Corrupt block (rb > rep->nblocks)");
 		
       		A4GL_push_report_section (rep, rep->modName, rep->repName, rep->blocks[rb].lineno, rep->blocks[rb].where, rep->blocks[rb].why, rb);
@@ -513,7 +521,9 @@ report_print (struct rep_structure *rep, int entry, char *fmt, ...)
     entry = 0;
   VSPRINTF (buff, fmt, ap);
 
+#ifdef DEBUG
   A4GL_debug ("'%s' - %d\n", buff, entry);
+#endif
   if (rep->print_section == SECTION_NORMAL)
     {
 
@@ -788,7 +798,9 @@ A4GL_internal_open_report_file (struct rep_structure *rep, int no_param)
 		}
 	      else
 		{
+#ifdef DEBUG
 		  A4GL_debug ("popen '%s'", rep->output_loc_str);
+#endif
 		  rep->output = popen (rep->output_loc_str, "w");
 		  if (rep->output == 0)
 		    {
@@ -859,8 +871,10 @@ A4GL_rep_print (struct rep_structure *rep, int no_param, int dontwant_nl, int ri
   int b;
   int cnt;
   char *str;
+#ifdef DEBUG
   A4GL_debug ("In A4GL_rep_print rep=%p rep->report=%p Page=%d Line=%d Col=%d entry=%d", rep, rep->report, rep->page_no,
 	      rep->line_no, rep->col_no, entry);
+#endif
 
 
 
@@ -1070,7 +1084,9 @@ A4GL_rep_print (struct rep_structure *rep, int no_param, int dontwant_nl, int ri
 
 	      if (rep->lines_in_trailer)
 		{
+#ifdef DEBUG
 		  A4GL_debug ("Calling rep_print");
+#endif
 		  A4GL_rep_print (rep, 0, 1, 0, -10);
 		}
 	    }
@@ -1085,28 +1101,40 @@ A4GL_rep_print (struct rep_structure *rep, int no_param, int dontwant_nl, int ri
       rep->line_no = 1;
       rep->page_no++;
       rep->print_section = SECTION_HEADER;
+#ifdef DEBUG
       A4GL_debug ("Need page header ?");
+#endif
 
       if (rep->top_margin)
 	{
+#ifdef DEBUG
 	  A4GL_debug ("Skip lines...");
+#endif
 	  A4GL_push_int (rep->top_margin);
 	  A4GL_aclfgli_skip_lines (rep);
+#ifdef DEBUG
 	  A4GL_debug ("Done skip lines");
+#endif
 	}
 
       if (rep->report == 0)
 	{
+#ifdef DEBUG
 	  A4GL_debug ("OOPS - no report function!!!");
+#endif
 	  A4GL_assertion (1, "Internal error - no report function");
 	  A4GL_fgl_die (10);
 	}
       rep->report (0, REPORT_PAGEHEADER);	/* report.c:180: too many arguments to function */
       rep->print_section = 0;
+#ifdef DEBUG
       A4GL_debug ("Done page header");
+#endif
     }
 
+#ifdef DEBUG
   A4GL_debug ("Popping %d parameters", no_param);
+#endif
 
 
 
@@ -1125,7 +1153,9 @@ A4GL_rep_print (struct rep_structure *rep, int no_param, int dontwant_nl, int ri
       for (b = 0; b < no_param; b++)
 	{
 	  str = A4GL_report_char_pop ();
+#ifdef DEBUG
 	  A4GL_debug ("Popped '%s'...", str);
+#endif
 
 	  if (strchr (str, '\n'))
 	    {
@@ -1156,12 +1186,16 @@ A4GL_rep_print (struct rep_structure *rep, int no_param, int dontwant_nl, int ri
 	      rep->col_no += strlen (str);
 	    }
 
+#ifdef DEBUG
 	  A4GL_debug ("Popped %s\n", str);
+#endif
 	  acl_free (str);
 	}
     }
 
+#ifdef DEBUG
   A4GL_debug ("Newline : %d", dontwant_nl);
+#endif
 
 
 
@@ -1219,7 +1253,9 @@ A4GL_set_column (struct rep_structure *rep)
 	return ;
   }
   A4GL_push_empty_char();
+#ifdef DEBUG
   A4GL_debug ("in set_column a=%d Calling rep_print", a);
+#endif
   A4GL_rep_print (rep, 1, 1, 0, -2);
 #ifdef DEBUG
   /* {DEBUG} */
@@ -1590,7 +1626,9 @@ fixlength (int dtype, int length)
   int n1, n2,n3;
   if (dtype > 255)
     dtype -= 256;
+#ifdef DEBUG
   A4GL_debug ("Got datatype : %d length %d\n", dtype, length);
+#endif
   if (dtype==DTYPE_DECIMAL||dtype==DTYPE_MONEY) {
         int a1,a2;
         a1=length&0xff;
@@ -1738,7 +1776,9 @@ A4GL_add_row_report_table (struct BINDING *b, int n)
   x = A4GL_find_prepare (b2);
   if (x == NULL)
     {
+#ifdef DEBUG
       A4GL_debug ("Add row report table");
+#endif
       SPRINTF1 (buff, "INSERT INTO %s VALUES (", gen_rep_tab_name (b, 0));
 
       for (a = 0; a < n; a++)
@@ -1749,14 +1789,20 @@ A4GL_add_row_report_table (struct BINDING *b, int n)
 	}
       strcat (buff, ")");
 
+#ifdef DEBUG
       A4GL_debug ("Attempting to execute %s\n", buff);
+#endif
       x = (void *) A4GL_prepare_select (b, n, 0, 0, buff, "__internal_report", 1, 0, 0);
+#ifdef DEBUG
       A4GL_debug ("x=%p\n", x);
+#endif
       A4GL_add_prepare (b2, x);
     }
   A4GL_execute_implicit_sql (x, 0, 0, 0);
   //A4GLSQL_free_prepare(x);
+#ifdef DEBUG
   A4GL_debug ("a4glsqlca.sqlcode=%d", a4gl_sqlca.sqlcode);
+#endif
 }
 
 /**
@@ -1781,7 +1827,9 @@ A4GL_init_report_table (struct BINDING *b, int n, struct BINDING *o, int no, str
     {0, 0, 0, 0, 0, 0}
   };				/* end of binding */
 
+#ifdef DEBUG
   A4GL_debug ("init_rep_table");
+#endif
   *reread = A4GL_duplicate_binding (b, n);
 
 
@@ -1792,13 +1840,17 @@ A4GL_init_report_table (struct BINDING *b, int n, struct BINDING *o, int no, str
   for (a1 = 0; a1 < no; a1++)
     {
       ok = 0;
+#ifdef DEBUG
       A4GL_debug ("Looking for %p", o[a1]);
+#endif
 
       if (a1)
 	strcat (buff, ",");
       for (a2 = 0; a2 < n; a2++)
 	{
+#ifdef DEBUG
 	  A4GL_debug ("Checking %p %p", o[a1].ptr, b[a2].ptr);
+#endif
 
 	  if (o[a1].ptr == b[a2].ptr)
 	    {
@@ -1817,34 +1869,50 @@ A4GL_init_report_table (struct BINDING *b, int n, struct BINDING *o, int no, str
 	}
       if (ok == 0)
 	{
+#ifdef DEBUG
 	  A4GL_debug ("Can't A4GL_match column in orderby....");
+#endif
 	  A4GL_exitwith ("Big Oops");
 	  return 0;
 	}
     }
 
 
+#ifdef DEBUG
   A4GL_debug ("Got select statement as : %s\n", buff);
+#endif
 
 
 
 
 
+#ifdef DEBUG
   A4GL_debug ("prepare...");
+#endif
   pstmt = A4GL_prepare_select (ibind, 0, obind, 0, buff, "__internal_report", 2, 0, 0);
+#ifdef DEBUG
   A4GL_debug ("%d\n", a4gl_sqlca.sqlcode);
+#endif
   if (a4gl_sqlca.sqlcode != 0)
     {
+#ifdef DEBUG
       A4GL_debug ("prepare failed");
+#endif
       A4GL_exitwith ("Internal error - unable to prepare statement");
       return 0;
     }
+#ifdef DEBUG
   A4GL_debug ("declare...");
+#endif
   A4GL_declare_cursor (2, pstmt, 0, cursor_for_rep_tab (b));
+#ifdef DEBUG
   A4GL_debug ("%d\n", a4gl_sqlca.sqlcode);
+#endif
   if (a4gl_sqlca.sqlcode != 0)
     {
+#ifdef DEBUG
       A4GL_debug ("declare failed");
+#endif
       A4GL_exitwith ("Internal error - unable to declare statement");
       return 0;
     }
@@ -1908,7 +1976,9 @@ A4GL_duplicate_binding (struct BINDING *b, int n)
   struct BINDING *rbind;
   int a;
   int sz;
+#ifdef DEBUG
   A4GL_debug ("Duplicating bindings....");
+#endif
   rbind = acl_malloc2 (sizeof (struct BINDING) * n);
 
   for (a = 0; a < n; a++)
@@ -1951,17 +2021,23 @@ A4GL_duplicate_binding (struct BINDING *b, int n)
 	  break;
 	}
 
+#ifdef DEBUG
       A4GL_debug ("allocing %d bytes\n", sz);
+#endif
       rbind[a].ptr = acl_malloc2 (sz);
       memset (rbind[a].ptr, 0, sz);
+#ifdef DEBUG
       A4GL_debug ("allocated as %p", rbind[a].ptr);
+#endif
 
       rbind[a].dtype = b[a].dtype;
       rbind[a].size = b[a].size;
       rbind[a].libptr = 0;
     }
 
+#ifdef DEBUG
   A4GL_debug ("All done");
+#endif
   return rbind;
 }
 
@@ -1973,14 +2049,20 @@ void
 A4GL_free_duplicate_binding (struct BINDING *b, int n)
 {
   int a;
+#ifdef DEBUG
   A4GL_debug ("Freeing duplicate..");
+#endif
   for (a = 0; a < n; a++)
     {
+#ifdef DEBUG
       A4GL_debug ("Freeing %p", b[a].ptr);
+#endif
       if (b[a].ptr)
 	free (b[a].ptr);
     }
+#ifdef DEBUG
   A4GL_debug ("Freeing structure %p", b);
+#endif
   free (b);
 }
 
@@ -3253,7 +3335,9 @@ return "";
 static char *get_tag(char *convFile, char t, char *s) {
 FILE *cfile;
 char ebuff[200];
+#ifdef DEBUG
 A4GL_debug("Get tag : %s\n",s);
+#endif
 //
 //      bold=101
 //      /bold=101
@@ -3290,7 +3374,9 @@ while (1) {
 		char *ptr2;
 		fclose(cfile);
 		ptr2= convTagExpr(t, ptr);
+#ifdef DEBUG
 		A4GL_debug("Got : %s\n",ptr2);
+#endif
 		return ptr2;
 	}
 	

@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.167 2010-01-07 09:22:05 mikeaubury Exp $
+# $Id: curslib.c,v 1.168 2010-02-16 13:17:11 mikeaubury Exp $
 #*/
 
 /**
@@ -41,7 +41,7 @@
  */
 #ifndef lint
 static char const module_id[] =
-  "$Id: curslib.c,v 1.167 2010-01-07 09:22:05 mikeaubury Exp $";
+  "$Id: curslib.c,v 1.168 2010-02-16 13:17:11 mikeaubury Exp $";
 #endif
 /*
 =====================================================================
@@ -188,7 +188,9 @@ A4GL_error_nobox (char *str_orig, int attr)
   char str[512];
 
   A4GL_chkwin ();
+#ifdef DEBUG
   A4GL_debug ("start");
+#endif
   print_panel_stack ();
 
   if (curr_error_panel_visible)
@@ -196,13 +198,17 @@ A4GL_error_nobox (char *str_orig, int attr)
       A4GL_clr_error_nobox ("A4GL_error_nobox");
     }
   eline = A4GL_geterror_line () - 1;
+#ifdef DEBUG
   A4GL_debug ("Eline=%d\n", eline);
+#endif
 
 
 
   if (curr_error_window == 0)
     {
+#ifdef DEBUG
       A4GL_debug ("%d %d %d %d", 1, A4GL_screen_width () - 1, eline, 0);
+#endif
       curr_error_window = newwin (1, A4GL_screen_width () - 1, eline, 0);
 
       if (curr_error_window == 0)
@@ -211,28 +217,40 @@ A4GL_error_nobox (char *str_orig, int attr)
 	  return;
 	}
 
+#ifdef DEBUG
       A4GL_debug ("new_panel using %p", curr_error_window);
+#endif
 
       if (curr_error_panel == 0)
 	{
+#ifdef DEBUG
 	  A4GL_debug ("AAA");
+#endif
 	  print_panel_stack ();
 	  curr_error_panel = new_panel (curr_error_window);
+#ifdef DEBUG
 	  A4GL_debug ("BBB");
+#endif
 	  print_panel_stack ();
 	  set_panel_userptr (curr_error_panel, "error window");
+#ifdef DEBUG
 	  A4GL_debug ("CCC");
+#endif
 	  print_panel_stack ();
 	}
     }
 
+#ifdef DEBUG
   A4GL_debug ("Before");
+#endif
   print_panel_stack ();
 
   show_panel (curr_error_panel);
   werase (curr_error_window);
 
+#ifdef DEBUG
   A4GL_debug ("After");
+#endif
   print_panel_stack ();
   strcpy (str, str_orig);
 
@@ -244,11 +262,15 @@ A4GL_error_nobox (char *str_orig, int attr)
 
   wattrset (curr_error_window, attr);
 
+#ifdef DEBUG
   A4GL_debug ("Calling subwin_print...");
+#endif
 
   A4GL_subwin_print (curr_error_window, "%s", str);
 
+#ifdef DEBUG
   A4GL_debug ("Beeping because of error : %s", str);
+#endif
 
 
 
@@ -288,11 +310,15 @@ A4GL_clr_error_nobox (char *dbg_fromwhere)
 {
   int a;
   A4GL_chkwin ();
+#ifdef DEBUG
   A4GL_debug ("MJA clr_error_nobox called from %s", dbg_fromwhere);
+#endif
   if (curr_error_window)
     {
       curr_error_panel_visible = 0;
+#ifdef DEBUG
       A4GL_debug ("MJA Clear error");
+#endif
       hide_panel (curr_error_panel);
       UILIB_A4GL_zrefresh ();
       return;
@@ -304,7 +330,9 @@ A4GL_clr_error_nobox (char *dbg_fromwhere)
 
   A4GL_push_empty_char ();
   a = A4GL_geterror_line ();
+#ifdef DEBUG
   A4GL_debug ("Error line = %d", a);
+#endif
   A4GL_push_int (a);
   A4GL_push_int (1);
 
@@ -390,11 +418,15 @@ UILIB_aclfgl_fgl_drawbox (int n)
     {
       c = A4GL_pop_int ();
       c = infx_to_curses[c % 8];
+#ifdef DEBUG
       A4GL_debug ("drawbox Been passed a colour");
+#endif
     }
   else
     {
+#ifdef DEBUG
       A4GL_debug ("drawbox No colour");
+#endif
       c = 0;
     }
 
@@ -407,13 +439,18 @@ UILIB_aclfgl_fgl_drawbox (int n)
   y = A4GL_pop_int () + A4GL_get_curr_border ();
   w = A4GL_pop_int ();
   h = A4GL_pop_int ();
+#ifdef DEBUG
   A4GL_debug ("In fgl_drawbox c=%d x=%d y=%d w=%d h=%d", c, x, y, w, h);
   A4GL_debug ("h=%d y+h=%d", h, y + h);
+#endif
   //win=curscr;
   //win = A4GL_find_pointer ("screen", WINCODE);
   win = A4GL_window_on_top_ign_menu ();
+#ifdef DEBUG
   A4GL_debug ("Got win as %p from window_on_top", win);
   A4GL_debug ("ATTR = %d", A4GL_decode_colour_attr_aubit (c));
+#endif
+
 #define PMOVE(x,y,ch) 	mvwaddch(win,(y-1),(x-1),ch+A4GL_decode_colour_attr_aubit(c))
 
 
@@ -502,7 +539,9 @@ void A4GL_clearbox (textarea * area)
 {
   /*wclear(area->win_no); */
   delwin (area->win_no);
+#ifdef DEBUG
   A4GL_debug ("delwin : %p", area->win_no);
+#endif
   A4GL_puttext (area->x1, area->y1, area->x2, area->y2, (area->buf));
 }
 #endif
@@ -644,7 +683,9 @@ A4GL_init_curses_stuff ()
 // Have we already done it ?
   if (init_curses_mode)
     {
+#ifdef DEBUG
       A4GL_debug ("init_curses_stuff Already done - returning");
+#endif
       return;
     }
   init_curses_mode = 1;
@@ -821,14 +862,19 @@ UILIB_A4GL_disp_h_menu (void *menuv)
   cpt = A4GL_get_curr_print_top ();
   mnln = A4GL_getmenu_line () - 1;
   menu->menu_line = mnln;
+#ifdef DEBUG
   A4GL_debug ("Current window : %s", UILIB_A4GL_get_currwin_name ());
+#endif
   attrib = (long) A4GL_find_pointer (UILIB_A4GL_get_currwin_name (), ATTRIBUTE);
+#ifdef DEBUG
   A4GL_debug ("Current window attrib = %d", attrib);
+#endif
   parent_window = A4GL_find_pointer (UILIB_A4GL_get_currwin_name (), WINCODE);
   menu->gw_b = UILIB_A4GL_iscurrborder ();
   menu->gw_y = mnln + UILIB_A4GL_iscurrborder ();
-  A4GL_debug ("setting gw_y %d %d %d %d px)", menu->gw_y, cpt, mnln,
-	      UILIB_A4GL_iscurrborder ());
+#ifdef DEBUG
+  A4GL_debug ("setting gw_y %d %d %d %d px)", menu->gw_y, cpt, mnln, UILIB_A4GL_iscurrborder ());
+#endif
   menu->gw_x = cl;
 
 
@@ -893,7 +939,9 @@ UILIB_A4GL_menu_loop_v2 (void *menuv, void *vevt)
   A4GL_menu_setcolor (menu, NORMAL_TEXT);
   A4GL_current_window (menu->parent_window_name);
   A4GL_disp_h_menu (menu);
+#ifdef DEBUG
   A4GL_debug ("Refreshed window - going into while loop");
+#endif
 
   while (1 == 1)
     {
@@ -963,14 +1011,20 @@ UILIB_A4GL_menu_loop_v2 (void *menuv, void *vevt)
 	    {
 	      int hlp;
 	      hlp = menu->curr_option->help_no;
+#ifdef DEBUG
 	      A4GL_debug ("Curroption=%p", menu->curr_option);
+#endif
 	      A4GL_push_int (hlp);
 	      aclfgli_show_help (1);
+#ifdef DEBUG
 	      A4GL_debug ("After show help Curroption=%p", menu->curr_option);
+#endif
 	      continue;
 	    }
 	}
+#ifdef DEBUG
 	A4GL_debug("a=%d abort_pressed=%d",a,abort_pressed);
+#endif
 
       A4GL_set_last_key(0);
       key_pressed = A4GL_new_do_keys (menu, a);
@@ -980,7 +1034,9 @@ UILIB_A4GL_menu_loop_v2 (void *menuv, void *vevt)
 	
       if (abort_pressed) {
 		if (!key_pressed) {
+#ifdef DEBUG
 	  		A4GL_debug ("setting menu->abort_pressed");
+#endif
 	  		menu->abort_pressed = 1;
 	  		break;
 		} else {
@@ -1007,7 +1063,9 @@ UILIB_A4GL_menu_loop_v2 (void *menuv, void *vevt)
 
   if (abort_pressed)
     {
+#ifdef DEBUG
       A4GL_debug ("Returning aborted");
+#endif
       return menu->num_opts + 1;
     }
   if (strcmp (menu->curr_option->optkey, "EMPTY") != 0)
@@ -1019,7 +1077,9 @@ UILIB_A4GL_menu_loop_v2 (void *menuv, void *vevt)
 
     }
   old_option = (ACL_Menu_Opts *) menu->curr_option;
+#ifdef DEBUG
   A4GL_debug ("Returning %d", old_option->opt_no);
+#endif
   return old_option->opt_no;
 }
 
@@ -1039,7 +1099,9 @@ A4GL_display_menu (ACL_Menu * menu)
   int have_displayed = 0;
 
   memset (disp_str, 0, 80);
+#ifdef DEBUG
   A4GL_debug ("In display_menu");
+#endif
   A4GL_current_window (menu->parent_window_name);
 
 
@@ -1056,7 +1118,9 @@ A4GL_display_menu (ACL_Menu * menu)
     }
 
 
+#ifdef DEBUG
   A4GL_debug ("Printing titles....");
+#endif
   A4GL_h_disp_title (menu, disp_str);
 
 
@@ -1066,9 +1130,11 @@ A4GL_display_menu (ACL_Menu * menu)
   while (opt1 != 0)
     {
       /* opt1->optpos = -9; */
+#ifdef DEBUG
       A4GL_debug ("Option %s  attributes %d %d %d ", opt1->opt_title,
 		  opt1->attributes, ACL_MN_HIDE,
 		  opt1->attributes & ACL_MN_HIDE);
+#endif
       if ((opt1->attributes & ACL_MN_HIDE) != ACL_MN_HIDE)
 	{
 #ifdef DEBUG
@@ -1081,7 +1147,9 @@ A4GL_display_menu (ACL_Menu * menu)
 		{
 		  /* first one displayed */
 		  have_displayed = 1;
+#ifdef DEBUG
 		  A4GL_debug ("First option is %s", opt1->opt_title);
+#endif
 		  if (menu->curr_page != 0)
 		    {
 		      /* its not the first page print the ... at the beginning */
@@ -1092,9 +1160,11 @@ A4GL_display_menu (ACL_Menu * menu)
 		}
 	      /* opt1->optpos = disp_cnt2; */
 	      disp_cnt2 += strlen (opt1->opt_title);
+#ifdef DEBUG
 	      A4GL_debug ("disp=%d width=%d %d %s page %d", disp_cnt2,
 			  menu->w, menu->menu_offset, opt1->opt_title,
 			  opt1->page);
+#endif
 
 	      if ((ACL_Menu_Opts *) menu->curr_option !=
 		  (ACL_Menu_Opts *) opt1)
@@ -1106,15 +1176,21 @@ A4GL_display_menu (ACL_Menu * menu)
 	    }
 	  else
 	    {
+#ifdef DEBUG
 	      A4GL_debug ("Option %s is out of view", opt1->opt_title);
+#endif
 	      if (prev_opt)
 		{
+#ifdef DEBUG
 		  A4GL_debug ("prev option=%p menu=%p");
 		  A4GL_debug (" -> %d \n", prev_opt->page);
 		  A4GL_debug (" -> = %d \n", menu->curr_page);
+#endif
 		  if (prev_opt->page == menu->curr_page)
 		    {
+#ifdef DEBUG
 		      A4GL_debug ("More More More!!!");
+#endif
 		      A4GL_h_disp_more (menu, menu->menu_offset,
 					menu->mn_offset, disp_cnt2);
 		    }
@@ -1149,8 +1225,10 @@ A4GL_h_disp_opt (ACL_Menu * menu, ACL_Menu_Opts * opt1, int offset, int y,
 {
 
 // @ FIXME
+#ifdef DEBUG
   A4GL_debug ("Printing %s at %d %d", opt1->opt_title, opt1->optpos + offset,
 	      1);
+#endif
 
   if (opt1->page != menu->curr_page)
     return;
@@ -1211,10 +1289,14 @@ A4GL_h_disp_opt (ACL_Menu * menu, ACL_Menu_Opts * opt1, int offset, int y,
 void
 A4GL_h_disp_title (ACL_Menu * menu, char *str)
 {
+#ifdef DEBUG
   A4GL_debug ("h_disp_title : %s", str);
+#endif
   A4GL_mja_gotoxy (1, 1 + menu->menu_line);
   A4GL_menu_setcolor (menu, NORMAL_MENU);
+#ifdef DEBUG
   A4GL_debug ("Calling subwin_print...");
+#endif
   A4GL_tui_printr (0, "%s", str);
   A4GL_menu_setcolor (menu, NORMAL_MENU);
   UILIB_A4GL_zrefresh ();
@@ -1230,10 +1312,14 @@ A4GL_h_disp_title (ACL_Menu * menu, char *str)
 static void
 A4GL_h_disp_more (ACL_Menu * menu, int offset, int y, int pos)
 {
+#ifdef DEBUG
   A4GL_debug ("MORE MARKERS : Displaying ... at %d %d", pos + offset, 1);
+#endif
   A4GL_mja_gotoxy (pos + offset, 1 + menu->menu_line);
   A4GL_menu_setcolor (menu, NORMAL_MENU);
+#ifdef DEBUG
   A4GL_debug ("Calling subwin_print...");
+#endif
   A4GL_tui_printr (0, " ...");
 }
 
@@ -1257,7 +1343,9 @@ A4GL_clr_menu_disp (ACL_Menu * menu)
 
   buff[w - menu->menu_offset + 2] = 0;
   A4GL_tui_printr (0, buff);
+#ifdef DEBUG
 A4GL_debug("Clr menu : %s\n",buff);
+#endif
 }
 
 
@@ -1425,7 +1513,9 @@ UILIB_aclfgli_pr_message_internal (int attr, int wait, char *s)
   char buff[512];
   static WINDOW *mw;
   A4GL_chkwin ();
+#ifdef DEBUG
   A4GL_debug ("In message...");
+#endif
   cw = (WINDOW *) A4GL_get_currwin ();
   ml = A4GL_getmessage_line ();
 
@@ -1437,7 +1527,9 @@ UILIB_aclfgli_pr_message_internal (int attr, int wait, char *s)
       A4GL_exitwith ("Internal error - negative messageline");
       return;
     }
+#ifdef DEBUG
   A4GL_debug ("MJA - Got message line as %d - %s\n", ml, s);
+#endif
   width = UILIB_A4GL_get_curr_width ();
 
   strcpy (p, s);
@@ -1457,10 +1549,14 @@ UILIB_aclfgli_pr_message_internal (int attr, int wait, char *s)
       p[UILIB_A4GL_get_curr_width ()] = 0;
 
     }
+#ifdef DEBUG
   A4GL_debug ("Message : '%s'", p);
+#endif
   A4GL_push_char (p);
 
+#ifdef DEBUG
   A4GL_debug (" Wait =%d\n", wait);
+#endif
 
   if (wait == 0)
     {
@@ -1486,15 +1582,21 @@ UILIB_aclfgli_pr_message_internal (int attr, int wait, char *s)
     }
   return;			/* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
 
+#ifdef DEBUG
   A4GL_debug (" NW PTR");
+#endif
   SPRINTF1 (buff, "MS%p", cw);
 
   if (A4GL_has_pointer (buff, MESSAGEWIN))
     {
       mw = A4GL_find_pointer (buff, MESSAGEWIN);
+#ifdef DEBUG
       A4GL_debug ("Removing old message window... %p", mw);
+#endif
       delwin (mw);
+#ifdef DEBUG
       A4GL_debug ("delwin : %p", mw);
+#endif
       A4GL_del_pointer (buff, MESSAGEWIN);
       wsyncup (cw);
       touchwin (cw);
@@ -1504,20 +1606,30 @@ UILIB_aclfgli_pr_message_internal (int attr, int wait, char *s)
 
   if (strlen (p))
     {
+#ifdef DEBUG
       A4GL_debug ("Creating new message window");
+#endif
       mw =
 	derwin (cw, 1, width, ml - 1 + UILIB_A4GL_iscurrborder () * 2,
 		A4GL_iscurrborder ());
+#ifdef DEBUG
       A4GL_debug ("Created window %p", mw);
+#endif
       touchwin (mw);
       A4GL_add_pointer (buff, MESSAGEWIN, mw);
+#ifdef DEBUG
       A4GL_debug ("Message String : %s", p);
+#endif
       w = A4GL_xwattr_get (mw);
+#ifdef DEBUG
       A4GL_debug ("Got old attr");
+#endif
       wattrset (mw, attr);
       wprintw (mw, "%s", p);
       wattrset (mw, w);
+#ifdef DEBUG
       A4GL_debug ("Reset attributes");
+#endif
       wrefresh (mw);
       wrefresh (cw);
     }
@@ -1541,13 +1653,17 @@ A4GL_set_bkg (WINDOW * win, int attr)
 {
   if (attr != 0xff)
     {
+#ifdef DEBUG
       A4GL_debug ("MJAMJA set_bkg : %x\n", attr);
+#endif
       wbkgd (win, A4GL_decode_aubit_attr (attr, 'w'));
       wbkgdset (win, A4GL_decode_aubit_attr (attr, 'w'));
     }
   else
     {
+#ifdef DEBUG
       A4GL_debug ("MJAMJA set_bkg : %x\n", 0);
+#endif
       wbkgdset (win, 0);
     }
 
@@ -1572,14 +1688,18 @@ A4GL_menu_setcolor (ACL_Menu * menu, int typ)
 
 
   currwin = A4GL_find_pointer (UILIB_A4GL_get_currwin_name (), WINCODE);
+#ifdef DEBUG
   A4GL_debug("%d\n",menu->attrib);
+#endif
   attr = menu->attrib;
   //if (attr & 255) attr = attr - (attr & 255);
 
 
   /* wbkgd(menu->menu_win,0); */
 
+#ifdef DEBUG
   A4GL_debug ("Window background = %x - window - %x", attr, currwin);
+#endif
 
   attr = A4GL_decode_colour_attr_aubit (attr);
   if ((attr - (attr & 0xff)) == 0)
@@ -1589,29 +1709,39 @@ A4GL_menu_setcolor (ACL_Menu * menu, int typ)
 
   if ((attr & 0xff) == 0)
     {
+#ifdef DEBUG
       A4GL_debug ("Nothing specified for the background..");
+#endif
       //attr += ' ';
     }
 
+#ifdef DEBUG
   A4GL_debug ("Subwin - setcolor - attr=%x", attr);
+#endif
   switch (typ)
     {
     case NORMAL_TEXT:
     case NORMAL_MENU:
+#ifdef DEBUG
       A4GL_debug ("Normal : %x\n", attr);
+#endif
       wattrset (currwin, attr);
       break;
 
     case INVERT_MENU:
+#ifdef DEBUG
       A4GL_debug ("Invert...");
       A4GL_debug ("YY REVERSE");
+#endif
 
       if (attr & A_REVERSE)
 	attr2 = attr - A_REVERSE;
       else
 	attr2 = attr + A_REVERSE;
 
+#ifdef DEBUG
       A4GL_debug ("Reverse : %x\n", attr2);
+#endif
       wattrset (currwin, attr2);
       break;
     }
@@ -1643,7 +1773,9 @@ A4GL_menu_getkey (ACL_Menu * menu)
       a = A4GL_getch_win ();
 
       if (a == -1) {
+#ifdef DEBUG
 	A4GL_debug("Return 0");
+#endif
 	return 0;
 	}
 
@@ -1660,11 +1792,15 @@ A4GL_menu_getkey (ACL_Menu * menu)
 #ifdef FIXME
 	  if (abort_pressed)
 	    {
+#ifdef DEBUG
 	      A4GL_debug ("Got interrupt key pressed....");
+#endif
 	      a = A4GLKEY_INTERRUPT;
 	      wrapper_wgetch (menu->menu_win);
 	      A4GL_set_abort (0);
+#ifdef DEBUG
 	A4GL_debug("Return a=%d",a);
+#endif
 	      return a;
 	    }
 #endif
@@ -1673,7 +1809,9 @@ A4GL_menu_getkey (ACL_Menu * menu)
 
 	}
 
+#ifdef DEBUG
       A4GL_debug (">>>>>>>>>>>A=%d %c\n", a, a_isprint (a) ? a : '.');
+#endif
 #ifdef WIN32_BROKEN
       if (a == KEY_MOUSE)
 	{
@@ -1702,7 +1840,9 @@ A4GL_menu_getkey (ACL_Menu * menu)
 
        */
 
+#ifdef DEBUG
       A4GL_debug ("Check for autobang");
+#endif
 
       if (strcmp (acl_getenv ("A4GL_AUTOBANG"), "1") != 0)
 	{
@@ -1729,7 +1869,9 @@ A4GL_menu_getkey (ACL_Menu * menu)
 	    }
 	}
 
+#ifdef DEBUG
       A4GL_debug ("Returning A=%d abort_pressed=%d\n", a,abort_pressed);
+#endif
       return a;
     }
 }
@@ -1866,7 +2008,9 @@ A4GL_comments (struct struct_scr_field *fprop)
 
 
   buff[UILIB_A4GL_get_curr_width ()] = 0;
+#ifdef DEBUG
   A4GL_debug ("MJA COMMENTS 1,%d,%s", cline, buff);
+#endif
   if (cline > UILIB_A4GL_get_curr_height ())
     {
       cline = UILIB_A4GL_get_curr_height ();
@@ -1897,7 +2041,9 @@ wrapper_wgetch (WINDOW * w)
   a = A4GL_readkey ();
   if (a != 0)
     {
+#ifdef DEBUG
       A4GL_debug ("Read %d from keyfile", a);
+#endif
       return a;
     }
   return A4GL_curses_to_aubit (wgetch (w));
@@ -1934,7 +2080,9 @@ UILIB_A4GL_get_key (int timeout)
   if (A4GL_islinemode()) {
 	  x=A4GL_readkey();
   	if (x!=0) {
+#ifdef DEBUG
                 A4GL_debug("Read %d from keyfile",x);
+#endif
                 return x;
         }
 
@@ -1956,15 +2104,21 @@ UILIB_A4GL_get_key (int timeout)
       A4GL_has_timeout (0);
     }
 
+#ifdef DEBUG
   A4GL_debug ("get_key returns %d (%x)", x, x);
+#endif
   if (A4GL_is_special_key (x, A4GLKEY_ACCEPT))
     {
+#ifdef DEBUG
       A4GL_debug ("Looks like an accept - returning that instead");
+#endif
       x = A4GLKEY_ACCEPT;
     }
   if (abort_pressed)
     {
+#ifdef DEBUG
       A4GL_debug ("Looks like an interrupt - returning that instead");
+#endif
       x = A4GLKEY_INTERRUPT;
     }
   return x;
@@ -2017,8 +2171,10 @@ try_to_stop_alternate_view ()
 void
 make_error_panel_top (void)
 {
+#ifdef DEBUG
   A4GL_debug ("make_Error_panel_top %p %p %d", curr_error_panel,
 	      curr_error_window, curr_error_panel_visible);
+#endif
   if (curr_error_panel_visible)
     {
       top_panel (curr_error_panel);
@@ -2031,7 +2187,9 @@ PANEL *
 get_below_panel (PANEL * p)
 {
   PANEL *pl;
+#ifdef DEBUG
   A4GL_debug ("get_below_panel : %p", p);
+#endif
   pl = panel_below (p);
   if (pl == curr_error_panel)
     {
@@ -2115,29 +2273,41 @@ int UILIB_UI_initlib() {
 
 static int A4GL_local_get_curr_window_attr (void)
 {
+#ifdef DEBUG
 	  A4GL_debug ("30 XXX - get_curr_window_attr");
+#endif
 	    if (A4GL_has_pointer ((char *) A4GL_get_currwin_name (), ATTRIBUTE))
 		        {
 		      int a;
 	            	a = (int) ((long)A4GL_find_pointer ((char *) A4GL_get_currwin_name (), ATTRIBUTE));
+#ifdef DEBUG
 					          A4GL_debug ("30 Current window has an attribute %d", a);
+#endif
 						        return a;
 							    }
+#ifdef DEBUG
 	      A4GL_debug ("30 Current window has no attribute");
+#endif
 	        return 0;
 
 }
 
 int local_set_field_opts(FIELD *field, int opts) {
 	int a;
+#ifdef DEBUG
 	A4GL_debug("UUU SET %p %x",field,opts);
+#endif
 	a=set_field_opts(field,opts);
+#ifdef DEBUG
 	A4GL_debug_print_field_opts(field);
+#endif
 	return  a;
 }
 int local_field_opts_on(FIELD *field, int opts) {
 	int a;
+#ifdef DEBUG
 	A4GL_debug("UUU ON %p %x",field,opts);
+#endif
 	A4GL_debug_print_field_opts(field);
 	a=field_opts_on(field,opts);
 	A4GL_debug_print_field_opts(field);
@@ -2146,7 +2316,9 @@ int local_field_opts_on(FIELD *field, int opts) {
 
 int local_field_opts_off(FIELD *field, int opts) {
 	int a;
+#ifdef DEBUG
 	A4GL_debug("UUU OFF %p %x",field,opts);
+#endif
 	A4GL_debug_print_field_opts(field);
 	a=field_opts_off(field,opts);
 	A4GL_debug_print_field_opts(field);
@@ -2154,7 +2326,9 @@ int local_field_opts_off(FIELD *field, int opts) {
 }
 
 int local_field_opts(const FIELD *field) {
+#ifdef DEBUG
 	A4GL_debug("UUU GOT %p %x",field,field_opts(field));
+#endif
 	A4GL_debug_print_field_opts((FIELD *)field);
 	return field_opts(field);
 }
@@ -2176,8 +2350,10 @@ A4GL_error_box (char *str, int attr)
   a = 4;
   pos = (A4GL_screen_width () - (strlen (str))) / 2;
 
+#ifdef DEBUG
   A4GL_debug ("error_box - screen_width=%d pos=%d", A4GL_screen_width (),
               pos);
+#endif
 
   x = A4GL_create_blank_window ("error", pos, a, strlen (str), 3, 1);
   /*wmove(x,2,2); */
@@ -2188,7 +2364,9 @@ A4GL_error_box (char *str, int attr)
   //A4GL_do_pause ();
   UILIB_A4GL_remove_window ("error");
   UILIB_A4GL_zrefresh ();
+#ifdef DEBUG
   A4GL_debug ("All done in error box");
+#endif
   //A4GL_mja_setcolor (NORMAL_TEXT);
 }
 

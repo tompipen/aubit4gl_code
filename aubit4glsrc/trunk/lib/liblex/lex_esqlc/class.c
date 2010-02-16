@@ -97,7 +97,9 @@ if (strlen(parent_name)) {
 
 	for (a=0;a<nparents;a++)  {
 		redirect=1;
+#ifdef DEBUG
 		A4GL_debug("   %s\n",parents[a]);
+#endif
 		for (b=0;b<nmethods;b++) {
 			if (strcmp(parents[a],methods[b].name)==0) { // We're overloading
 				redirect=0;

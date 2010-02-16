@@ -25,7 +25,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: variables_new.c,v 1.24 2010-01-14 08:08:06 mikeaubury Exp $
+# $Id: variables_new.c,v 1.25 2010-02-16 13:15:23 mikeaubury Exp $
 #
 */
 
@@ -430,7 +430,9 @@ struct variable *v;
       return NULL;
     }
 
+#ifdef DEBUG
   A4GL_debug ("Rval (%d) !=0", rval);
+#endif
 
   while (1)
     {
@@ -442,7 +444,9 @@ struct variable *v;
       rval = A4GLSQL_next_column (&ccol, &idtype, &isize);
       if (rval == 0)
 	{
+#ifdef DEBUG
 	  A4GL_debug ("Got rval back from next_column as 0");
+#endif
 	  break;
 	}
 
@@ -450,8 +454,12 @@ struct variable *v;
 
       A4GL_assertion (ccol == 0, "No column name set");
 
+#ifdef DEBUG
       A4GL_debug ("next column for table '%p' is '%p'", tableName, ccol);
+#endif
+#ifdef DEBUG
       A4GL_debug ("next column for table '%s' is '%s'", A4GL_null_as_null (tableName), A4GL_null_as_null (ccol));
+#endif
       strcpy (colname, ccol);
       trim_spaces (colname);
 
@@ -472,7 +480,9 @@ struct variable *v;
        append_variable_list(vlist,v);
     }
 
+#ifdef DEBUG
   A4GL_debug ("ncol=%d\n", ncol);
+#endif
 
   if (ncol == 0)
     {
@@ -524,7 +534,9 @@ struct variable *new_variable_pushLikeTableColumn(char *tableName,char *columnNa
   char *cname;
   struct variable *v;
 
+#ifdef DEBUG
   A4GL_debug ("pushLikeTableColumn()");
+#endif
   if (strchr(tableName,'@')) {
         if (strchr(tableName,':')) {
                         a=strsplit(tableName, "@:",s_db,s_instance,s_tab);
@@ -593,7 +605,9 @@ struct variable *new_variable_like(char *tabcol) {
 
   tableName = strtok (buff, ".");       /* table name */
   columnName = strtok (0, "."); /* column name */
+#ifdef DEBUG
   A4GL_debug ("a='%s' b='%s'", A4GL_null_as_null (tableName), A4GL_null_as_null (columnName));
+#endif
 
   if (columnName)
     {

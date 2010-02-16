@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: translate.c,v 1.27 2008-10-02 17:40:50 mikeaubury Exp $
+# $Id: translate.c,v 1.28 2010-02-16 13:16:42 mikeaubury Exp $
 #
 */
 
@@ -104,11 +104,15 @@ A4GL_translate (char *s)
     {
       if (strcmp (translate_list[a].from, s) == 0)
 	{
+#ifdef DEBUG
 	  A4GL_debug ("TRANSLATION FOUND for %s", s);
+#endif
 
 	  if (translate_list[a].to != 0)
 	    {
+#ifdef DEBUG
 	      A4GL_debug ("->%s\n", translate_list[a].to);
+#endif
 	      return translate_list[a].to;
 	    }
 
@@ -116,7 +120,9 @@ A4GL_translate (char *s)
 	    {
 	      return translate_list[a].identifier;
 	    }
+#ifdef DEBUG
 	  A4GL_debug ("Shouldn't happen");
+#endif
 	}
     }
 
@@ -269,7 +275,9 @@ A4GL_add_translate (int mode, char *from, char *to, int quote)
   translate_list_cnt++;
   translate_list = (struct translate_string *) realloc (translate_list, sizeof (struct translate_string) * translate_list_cnt);
   translate_list[translate_list_cnt - 1].from = acl_strdup (from);
+#ifdef DEBUG
   A4GL_debug ("Adding %s -> %s mode %d", from, to, mode);
+#endif
   if (mode == 1)
     {
       if (quote == 0)

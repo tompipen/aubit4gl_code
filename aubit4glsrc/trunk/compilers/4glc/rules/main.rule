@@ -18,7 +18,9 @@ trad_module: op_module_header
 	char b[256];
 	char *ptr;
 		if (glob_only==1) {
+#ifdef DEBUG
        			A4GL_debug("Read globals section so Im done\n");
+#endif
        			YYACCEPT;
 		}
 
@@ -32,7 +34,9 @@ trad_module: op_module_header
 			strcpy(b,ptr);
 			set_current_variable_scope('G');
 			tr_glob_fname(b);
+#ifdef DEBUG
 			A4GL_debug("Reading globals file %s\n",b);
+#endif
 			rm_quote(b);
 			read_glob(b);
 			add_globals_file_to_this_module(b);
@@ -315,7 +319,9 @@ globals_entry: GLOBALS {
 
 glob_section : define_section END_GLOBALS {
  A4GL_lex_printcomment("/* end of globals */");
+#ifdef DEBUG
 	A4GL_debug("end of globals\n");
+#endif
 	lastlineno=yylineno;
       set_has_globals();
 	merge_variable_list(&this_module.exported_global_variables,$1);
@@ -327,7 +333,9 @@ glob_section : define_section END_GLOBALS {
 	strcpy(b,$<str>1);
 	set_current_variable_scope('G');
 	tr_glob_fname(b);
+#ifdef DEBUG
 	A4GL_debug("Reading globals file %s\n",b);
+#endif
 	rm_quote(b);
 	read_glob(b);
 	add_globals_file_to_this_module(b);

@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: lexer.c,v 1.137 2009-08-26 12:12:29 mikeaubury Exp $
+# $Id: lexer.c,v 1.138 2010-02-16 13:14:53 mikeaubury Exp $
 #*/
 
 /**
@@ -913,7 +913,9 @@ words (int cnt, int pos, FILE * f, char *p, int t_last)
 	  char *ptr = 0;
 	  *ptr = 0;
 	}			/* Sanity check */
+#ifdef DEBUG
       A4GL_debug ("token = %d %s \n", kwords[cnt].id, kwords[cnt].name);
+#endif
       return 1;
     }
 
@@ -925,7 +927,9 @@ words (int cnt, int pos, FILE * f, char *p, int t_last)
     {
       return 0;
     }
+#ifdef DEBUG
   A4GL_debug("Accepted");
+#endif
   return 1;
 }
 
@@ -1005,7 +1009,9 @@ chk_word (FILE * f, char *str)
   strcpy(trimmed,p);
   A4GL_trim(trimmed);
 
+#ifdef DEBUG
   A4GL_debug ("chk_word: read_word returns %s\n", p);
+#endif
 
   /* C/SQL code can be embedded in 4GL inside code/endcode blocks.
    * These are handled entirely by the lexer, so we test for this
@@ -1123,13 +1129,17 @@ chk_word (FILE * f, char *str)
 	case WHENEVER_WARNING_CALL:  		set_whento_store(idents[0]); 	set_whenever_store(WHEN_WARNING+WHEN_CALL,0);		t=KW_WHENEVER_SET;break;
    }
 
+#ifdef DEBUG
 A4GL_debug("t=%d\n",t);
+#endif
   if (t == KWS_COMMENT)
     {
       strcpy (str, p);
       return chk_word (f, str);
     }
+#ifdef DEBUG
 A4GL_debug("returning t=%d\n",t);
+#endif
 
   return t;
 }
@@ -1224,7 +1234,9 @@ chk_word_more (FILE * f, char *buff, char *p, char *str, int t)
 
     }
 
+#ifdef DEBUG
 A4GL_debug("p=%s buff=%s",p,buff);
+#endif
   /* check for literal numbers - these cannot be key words or identifiers */
 
   a = isnum (p);
@@ -1299,7 +1311,9 @@ fix_bad_strings (char *s)
     }
 
   buff[c] = 0;
+#ifdef DEBUG
   A4GL_debug ("Fixstring changed %s to %s", s, buff);
+#endif
   strcpy (s, buff);
   return;
 }
@@ -1379,14 +1393,18 @@ a4gl_yylex (void *pyylval, int yystate, void *yys1, void *yys2)
 
 
 
+#ifdef DEBUG
   A4GL_debug ("chk_word returns token=%d, buff=%s state=%d sql_mode=%d\n", a, buff, yystate,sql_mode);
+#endif
 
   /*if (chk4var)*/
   /*a = NAMED_GEN;*/
 
   if (isin_formhandler) { if (a==KW_INPUT) {a=FINPUT;} }
   allow = allow_token_state (yystate, a);
+#ifdef DEBUG
   A4GL_debug ("Allow_token_State = %d state=%d\n", allow, yystate);
+#endif
 
 
   if (sql_mode == 0)
@@ -1438,11 +1456,15 @@ a4gl_yylex (void *pyylval, int yystate, void *yys1, void *yys2)
     }
 
 
+#ifdef DEBUG
   A4GL_debug ("-> %d (NAMED_GEN=%d)\n", a, NAMED_GEN);
+#endif
 
   if (a == 2 || a == NAMED_GEN)
     {
+#ifdef DEBUG
       A4GL_debug ("  Constant check returns %d", check_for_constant (buff, buffval));
+#endif
 
       switch (check_for_constant (buff, buffval))
 	{
@@ -1450,24 +1472,32 @@ a4gl_yylex (void *pyylval, int yystate, void *yys1, void *yys2)
 	  break;
 
 	case 1:
+#ifdef DEBUG
 	  A4GL_debug (" Constant switch %s Char", buffval);
+#endif
 	  strcpy (buff, buffval);
 	  a = CHAR_VALUE;
 	  break;		/* 'c' */
 
 	case 2:
+#ifdef DEBUG
 	  A4GL_debug (" Constant switch %s Float", buffval);
+#endif
 	  strcpy (buff, buffval);
 				//printf("SETTING TO NUMBER VALUE 3\n");
 	  a = NUMBER_VALUE;
 	  break;		/* 'f' */
 	case 3:
+#ifdef DEBUG
 	  A4GL_debug (" Constant switch %s Integer", buffval);
+#endif
 	  strcpy (buff, buffval);
 	  a = INT_VALUE;
 	  break;		/* 'i' */
 	case 4:
+#ifdef DEBUG
 	  A4GL_debug (" Constant switch %s ident", buffval);
+#endif
 	  strcpy (buff, buffval);
 	  a = NAMED_GEN;
 	  break;		/* 'C' */
@@ -1501,7 +1531,9 @@ a4gl_yylex (void *pyylval, int yystate, void *yys1, void *yys2)
 
   lastword = buff;
   lastlex = a;
+#ifdef DEBUG
   A4GL_debug (">>>>>%04d %d (%4d) %s code=%d fpos=%d chk4var=%d", yylineno, A4GL_get_ccnt(), a, buff, xccode, fpos, chk4var);
+#endif
   word_cnt = 0;
   if (file_out) { 
 		char*buff2;
@@ -1514,7 +1546,9 @@ a4gl_yylex (void *pyylval, int yystate, void *yys1, void *yys2)
 		FPRINTF(file_out,":%s\n",buff2);
 		free(buff2);
 	}
+#ifdef DEBUG
   A4GL_debug ("lexer returns  a=%d, buff=%s\n", a, buff);
+#endif
 
   return a;
 }

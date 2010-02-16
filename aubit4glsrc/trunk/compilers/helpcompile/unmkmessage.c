@@ -56,7 +56,9 @@ main (int argc, char *argv[])
   int count = 0;		//full count of messages found
   int i;			// loop counter of course!
 
+#ifdef DEBUG
   A4GL_debug ("Start..");
+#endif
   if (argc < 2)
 
     {
@@ -94,7 +96,9 @@ main (int argc, char *argv[])
       exit (1);
     }
   count = header[2] * 256 + header[3];
+#ifdef DEBUG
   A4GL_debug ("Count=%d\n", count);
+#endif
 
   //fprintf(stderr, "msgcount = %d\n", count);
   for (i = 0; i < count; i++)
@@ -110,7 +114,9 @@ main (int argc, char *argv[])
 	+ indexrec[5] * 65536	// 256 ^ 2
 	+ indexrec[6] * 256 + indexrec[7];
 
+#ifdef DEBUG
 	A4GL_debug("-> %d %d %d",msgno,len,offset);
+#endif
 
       /*
          fprintf(stderr, "Message No %d len=%d offset = %08X\n", 

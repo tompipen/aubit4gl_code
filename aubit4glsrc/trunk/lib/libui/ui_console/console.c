@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: console.c,v 1.53 2010-02-15 12:53:49 mikeaubury Exp $
+# $Id: console.c,v 1.54 2010-02-16 13:17:11 mikeaubury Exp $
 #*/
 
 /**
@@ -224,11 +224,15 @@ void
   opt1->prev_option = 0;
   menu->num_opts++;
 
+#ifdef DEBUG
   A4GL_debug ("In add menu option : %s\n", txt);
+#endif
 
   if (menu->first == 0)
     {
+#ifdef DEBUG
       A4GL_debug ("Setting first..\n");
+#endif
       menu->first = opt1;
       menu->last = opt1;
     }
@@ -243,9 +247,11 @@ void
       opt1->prev_option = opt2;
     }
 
+#ifdef DEBUG
   A4GL_debug ("menu->first=%p opt1=%p opt2=%p ", menu->first, opt1, opt2);
   A4GL_debug ("opt1 : prev=%p next=%p", opt1->prev_option, opt1->next_option);
   A4GL_debug ("opt2 : prev=%p next=%p", opt2->prev_option, opt2->next_option);
+#endif
 
   if (strlen (txt))
     {
@@ -286,7 +292,9 @@ void UILIB_A4GL_ensure_menu_option (int optno, void* menuv, char *txt, char *key
   }
 
   if (opt1->help_no!=helpno) {
+#ifdef DEBUG
 		A4GL_debug("Changed helpno");
+#endif
 		opt1->help_no=helpno;
   }
 
@@ -309,7 +317,9 @@ void UILIB_A4GL_ensure_menu_option (int optno, void* menuv, char *txt, char *key
     }
 
    if (strcmp(opt_title, opt1->opt_title)!=0) {
+#ifdef DEBUG
 		A4GL_debug("Title changed");
+#endif
 		strcpy(opt1->opt_title,opt_title);	
 		opt1->optlength = strlen (opt1->opt_title);
    }
@@ -319,13 +329,17 @@ void UILIB_A4GL_ensure_menu_option (int optno, void* menuv, char *txt, char *key
   }
 
   if (opt1->attributes!=attr) {
+#ifdef DEBUG
                 A4GL_debug("Changed attributes");
+#endif
 		// Dont change the attribute - it will hide/unhide options
                 //opt1->attributes=attr;
   }
 
   if (strcmp(opt1->shorthelp,desc)!=0) {
+#ifdef DEBUG
 	A4GL_debug("shorthelp changed");
+#endif
   	strncpy (opt1->shorthelp, desc,80);
   	opt1->shorthelp[79]=0;
   }
@@ -498,7 +512,9 @@ void
 /* Does nothing - we are already in line mode when using UI=CONSOLE
 but we need dummy finction to satisfy API_ui
 */
+#ifdef DEBUG
   A4GL_debug ("in console gotolinemode...");
+#endif
   return;
 }
 
@@ -540,32 +556,48 @@ A4GL_menu_attrib (void* menuv, int attr, va_list ap)
   int flg;
    menu=menuv;
 
+#ifdef DEBUG
   A4GL_debug ("Menu attrib %d\n", attr);
+#endif
   while ((argp = (va_arg (ap, char *))))
     {
       A4GL_trim (argp);
+#ifdef DEBUG
       A4GL_debug ("change attrib to %d of %s", attr, argp);
+#endif
       option = (ACL_Menu_Opts *) menu->first;
       for (a = 0; a < menu->num_opts; a++)
 	{
+#ifdef DEBUG
 	  A4GL_debug ("before copy");
+#endif
 	  strcpy (s, &option->opt_title[1]);
+#ifdef DEBUG
 	  A4GL_debug ("after copy '%s' '%s'", s, option->opt_title);
+#endif
 	  A4GL_trim (s);
+#ifdef DEBUG
 	  A4GL_debug ("trim %s", s);
+#endif
 	  flg = 0;
 
 	  if (strcmp (argp, MENU_ALL) != 0)
 	    {
+#ifdef DEBUG
 	      A4GL_debug ("Cmp '%s' to '%s'", s, argp);
+#endif
 	      if (strcmp (s, argp) == 0)
 		{
+#ifdef DEBUG
 		  A4GL_debug ("Cmpok\n");
+#endif
 		  flg = 1;
 		}
 	      else
 		{
+#ifdef DEBUG
 		  A4GL_debug ("Cmpbad\n");
+#endif
 		}
 	    }
 	  else
@@ -573,32 +605,46 @@ A4GL_menu_attrib (void* menuv, int attr, va_list ap)
 
 	  if (flg == 1)
 	    {
+#ifdef DEBUG
 	      A4GL_debug ("   FOund it : %s , %s (%x) %d", s, argp,
 		     option->attributes & ACL_MN_HIDE, attr);
+#endif
 	      if (attr)
 		{
+#ifdef DEBUG
 		  A4GL_debug ("Turn On ?");
 		  A4GL_debug ("Attemp to turn on %d %d %d", option->attributes,
 			 ACL_MN_HIDE, option->attributes & ACL_MN_HIDE);
+#endif
 		  if (option->attributes & ACL_MN_HIDE)
 		    {
+#ifdef DEBUG
 		      A4GL_debug ("Turn on");
+#endif
 		      option->attributes = option->attributes - ACL_MN_HIDE;
 		    }
 		}
 	      else
 		{
+#ifdef DEBUG
 		  A4GL_debug ("Turn off ?");
+#endif
 		  if (!(option->attributes & ACL_MN_HIDE))
 		    {
+#ifdef DEBUG
 		      A4GL_debug ("Turn off");
+#endif
 		      option->attributes = option->attributes + ACL_MN_HIDE;
 		    }
 		}
 	    }
+#ifdef DEBUG
 	  A4GL_debug ("chk next");
+#endif
 	  option = (ACL_Menu_Opts *) ((ACL_Menu_Opts *) (option))->next_option;
+#ifdef DEBUG
 	  A4GL_debug ("set next");
+#endif
 	}
     }
   va_end (ap);

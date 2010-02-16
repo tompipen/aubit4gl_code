@@ -1,6 +1,8 @@
 label_cmd :  LABEL  {
 	char buff[256];
+#ifdef DEBUG
 	A4GL_debug("Label : %s\n",get_idents(0));
+#endif
 	add_feature("LABEL");
 	strcpy(buff,get_idents(0));
 	A4GL_convlower(buff);

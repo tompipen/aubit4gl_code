@@ -40,20 +40,30 @@ static char *local_rettype (char *s) {
 
   strcpy(rs,"unknown");
 
+#ifdef DEBUG
   A4GL_debug ("In rettype : %s", A4GL_null_as_null (s));
+#endif
 
   a = atoi (s);
 
+#ifdef DEBUG
   A4GL_debug ("In rettype");
+#endif
   if (A4GL_has_datatype_function_i (a, "OUTPUT"))
     {
       /* char *(*function) (); */
       char *(*function) (void);
+#ifdef DEBUG
       A4GL_debug ("In datatype");
+#endif
       function = A4GL_get_datatype_function_i (a, "OUTPUT");
+#ifdef DEBUG
       A4GL_debug ("Copy");
+#endif
       strcpy (rs, function ());
+#ifdef DEBUG
       A4GL_debug ("Returning %s\n", A4GL_null_as_null (rs));
+#endif
       return rs;
     }
   if (strcmp (s, "0") == 0)
@@ -102,7 +112,9 @@ static char * local_rettype_integer (int n)
             /*static char rs[20] = "long";*/
             /*int a;*/
 
+#ifdef DEBUG
             A4GL_debug ("rettype_integer : %d\n", n);
+#endif
 
               SPRINTF1 (s, "%d", n);
                 return local_rettype (s);

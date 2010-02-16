@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: globals.c,v 1.65 2009-12-10 19:19:03 mikeaubury Exp $
+# $Id: globals.c,v 1.66 2010-02-16 13:14:53 mikeaubury Exp $
 #
 */
 
@@ -213,7 +213,9 @@ generate_globals_for (char *s)
  { 
  	char db[64]; 
  	strcpy (db, get_default_database ()); 
+#ifdef DEBUG
  	A4GL_debug ("Overriding default database with %s", A4GL_null_as_null(db)); 
+#endif
  	A4GL_trim (db); 
 #ifdef __WIN32__
  	SPRINTF2 (buff, "4glc -d %s --globals %s", db, nfilename); 
