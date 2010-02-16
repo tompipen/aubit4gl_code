@@ -23445,7 +23445,7 @@ $as_echo "yes" >&6; }
       AUBIT_DEBUG=0
       A4GL_CFLAGS="$CFLAGS -O2 -DNODEBUG -DOPTIMIZED"
       DBGFLAG=
-      STD_CFLAGS=" -O2"
+      STD_CFLAGS=" -O2  -DNODEBUG -DOPTIMIZED"
 else
     #FIXME: DEBUG=ALL in environment? aubitrc?
     A4GL_CFLAGS="$CFLAGS -g -Wall -DDEBUG"
@@ -48457,7 +48457,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure,v 1.442 2010-02-16 10:07:30 mikeaubury Exp $
+| $Id: configure,v 1.443 2010-02-16 13:08:23 mikeaubury Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X
