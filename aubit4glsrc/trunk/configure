@@ -23443,7 +23443,7 @@ if test "$enable_optimised" = "yes" ; then
       { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
 $as_echo "yes" >&6; }
       AUBIT_DEBUG=0
-      A4GL_CFLAGS="$CFLAGS -O2 -DNODEBUG"
+      A4GL_CFLAGS="$CFLAGS -O2 -DNODEBUG -DOPTIMIZED"
       DBGFLAG=
       STD_CFLAGS=" -O2"
 else
@@ -48457,7 +48457,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure,v 1.441 2010-02-10 14:30:24 mikeaubury Exp $
+| $Id: configure,v 1.442 2010-02-16 10:07:30 mikeaubury Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X
