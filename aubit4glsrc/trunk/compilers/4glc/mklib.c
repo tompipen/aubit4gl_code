@@ -20,9 +20,13 @@ int nwhitelist=0;
 
 int added=0;
 
+static int isOnWhiteList(char *s) ;
 
 
 static void addToWhitelist(char *s) {
+	if (isOnWhiteList(s)) {
+		printf("Fatal error : %s is already on the whitelist\n",s);
+	}
 	whitelist[nwhitelist++]=strdup(s);
 	added++;
 	
@@ -390,6 +394,7 @@ return 1;
 static void mklib_program(module_definition *m,int a) {
 int n;
 int *processed;
+int loop=0;
 processed=malloc(sizeof(int)*a);
 
         for (n=0;n<a;n++) {
@@ -399,6 +404,7 @@ processed=malloc(sizeof(int)*a);
 	printf("Processing %d modules\n",a);
 
 	while (1) {
+		printf("Loop cycle : %d, %d whitelisted\n",loop, nwhitelist);
 		added=0;
 		for (n=0;n<a;n++) {
 			if (processed[n]==1) continue ; /* Already safe */
@@ -410,6 +416,7 @@ processed=malloc(sizeof(int)*a);
 			}
 		}
 		if (!added) break; // No more added - so we're done...
+		loop++;
 	}
 
 	for (n=0;n<a;n++) {
