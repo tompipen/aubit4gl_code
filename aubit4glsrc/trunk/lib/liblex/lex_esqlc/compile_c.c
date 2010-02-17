@@ -24,12 +24,12 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.519 2010-02-16 13:16:47 mikeaubury Exp $
+# $Id: compile_c.c,v 1.520 2010-02-17 11:54:41 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
-static char const module_id[] = "$Id: compile_c.c,v 1.519 2010-02-16 13:16:47 mikeaubury Exp $";
+static char const module_id[] = "$Id: compile_c.c,v 1.520 2010-02-17 11:54:41 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -859,7 +859,7 @@ open_outfile (void)
 
   FPRINTF (outfile, "static void a4gl_show_compiled_version(void) {\n");
   FPRINTF (outfile, "printf(\"Log: %s\\n\");\n", escape_quotes_and_remove_nl (logtxt));
-  FPRINTF (outfile, "printf(\"Aubit4GL Version: %s%d\\n\");\n", A4GL_internal_version (), A4GL_internal_build ());
+  FPRINTF (outfile, "printf(\"Aubit4GL Version: %s.%d\\n\");\n", A4GL_internal_version (), A4GL_internal_build ());
 
   if (A4GL_isyes (acl_getenv ("INCLTIMEINCFILE")))
     {
