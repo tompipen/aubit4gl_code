@@ -314,6 +314,7 @@ define lv_q1 char(512)
 				when 13 let lv_sc.coldesc="VARCHAR(",decode_varchar(lv_sc.collength) clipped,")"," ",lv_nn
 				when 14 let lv_sc.coldesc=decode_interval(lv_sc.collength) clipped," ",lv_nn
 				when 15 let lv_sc.coldesc="NCHAR(",lv_sc.collength using "<<<<<<<",")"," ",lv_nn
+				when 16 let lv_sc.coldesc="NVARCHAR(",lv_sc.collength using "<<<<<<<",")"," ",lv_nn
 				when 17 let lv_sc.coldesc="INT8"," ",lv_nn
 	#Andrej mod
 				#This is just a hack to allow us to retrive Informix sys* tables info
