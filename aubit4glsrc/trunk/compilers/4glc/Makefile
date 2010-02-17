@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.63 2010-02-15 13:24:25 mikeaubury Exp $
+# $Id: Makefile,v 1.64 2010-02-17 16:53:11 mikeaubury Exp $
 #
 
 ROOT		=../..
@@ -373,6 +373,11 @@ fglcalltree:../../bin/fglcalltree
 ../../bin/fglcalltree: calltree.o API_lex.o  linearise.o calltree_expr.o module_def.o 
 	$(CC) ${CFLAGS} ${RDYNAMIC}  -g -o $@ $^ -L$(AUBITDIR)/lib -laubit4gl
 	#cp fglcalltree $(AUBITDIR)/bin
+
+fglmklib:../../bin/fglmklib
+../../bin/fglmklib: mklib.o API_lex.o  linearise.o calltree_expr.o module_def.o 
+	$(CC) ${CFLAGS} ${RDYNAMIC}  -g -o $@ $^ -L$(AUBITDIR)/lib -laubit4gl
+
 
 #fglsplit: split.o API_lex.o  linearise.o
 	#$(CC) -Wall -rdynamic  -g -o $@ $^ -L$(AUBITDIR)/lib -laubit4gl
