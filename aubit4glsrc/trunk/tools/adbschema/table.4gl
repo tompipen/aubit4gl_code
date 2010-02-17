@@ -263,7 +263,7 @@ define lv_q1 char(512)
 		foreach c2 into lv_sc.*
 			let lv_c=lv_sc.colno
 			let lv_colnames[lv_c]=lv_sc.colname
-	
+		
 	
 			case get_mode()
 			when 0 
@@ -289,7 +289,12 @@ define lv_q1 char(512)
 		
 			if lv_sc.coltype>255 then
 				let lv_sc.coltype=lv_sc.coltype-256
-				let lv_nn=" NOT NULL"
+				if lv_sc.coltype<255 then
+					let lv_nn=" NOT NULL"
+				else
+					# Its some extended type
+					let lv_sc.coltype=lv_sc.coltype+256
+				end if
 			else
 				let lv_nn=""
 			end if
@@ -324,10 +329,30 @@ define lv_q1 char(512)
 				when 40 let lv_sc.coldesc="CHAR(",10 using "<<<<<<<",")"," ",lv_nn
 				#41=rtnparamtypes (Used in sysprocedures)
 				when 41 let lv_sc.coldesc="CHAR(",10 using "<<<<<<<",")"," ",lv_nn
+
 	#Andrej mod end.			
+
+
 				otherwise
-					DISPLAY "INVALID DATATYPE: ",lv_sc.coltype
-					exit program 1
+
+					initialize lv_sc.coldesc to null
+					#whenever error continue
+					
+				#display " searching for  select name from sysxtdtypes where type=",lv_sc.coltype
+					select name into lv_sc.coldesc from sysxtdtypes , syscolumns
+						where type=lv_sc.coltype and sysxtdtypes.extended_id=syscolumns.extended_id
+						and syscolumns.colno=lv_sc.colno and syscolumns.tabid=lv_st.tabid
+				#display "sqlca.sqlcode=",sqlca.sqlcode, " searching for  select name from sysxtdtypes where type=",lv_sc.coltype
+			
+					#whenever error stop
+					if get_mode()=0 then
+						if  lv_sc.coldesc is null then
+							DISPLAY "INVALID DATATYPE: ",lv_sc.coltype
+							exit program 1
+						end if
+					else
+						let lv_sc.coldesc=" "
+					end if
 			end case
 			let lv_str="   ",lv_sc.colname clipped," ",lv_sc.coldesc
 		end foreach
