@@ -12,11 +12,56 @@
 #include "expr_munging.h"
 
 int yylineno;
-module_definition this_module;
+//module_definition this_module;
+
+#define MAXFUNCTIONS 20000
+char *whitelist[MAXFUNCTIONS];
+int nwhitelist=0;
+
+int added=0;
 
 
 
-int isSystemFunc(char *funcname) {
+static void addToWhitelist(char *s) {
+	whitelist[nwhitelist++]=strdup(s);
+	added++;
+	
+}
+
+static void addAllToWhitelist(module_definition *m) {
+int b;
+      for (b = 0; b < m->module_entries.module_entries_len; b++)
+	{
+	  switch (m->module_entries.module_entries_val[b]->met_type)
+	    {
+	    case E_MET_FUNCTION_DEFINITION:
+		addToWhitelist(m->module_entries.module_entries_val[b]->module_entry_u.function_definition.funcname);
+	      break;
+
+	    case E_MET_REPORT_DEFINITION:
+		addToWhitelist(m->module_entries.module_entries_val[b]->module_entry_u.report_definition.funcname);
+
+	      break;
+
+	    case E_MET_PDF_REPORT_DEFINITION:
+		addToWhitelist(m->module_entries.module_entries_val[b]->module_entry_u.pdf_report_definition.funcname);
+	      break;
+
+		default: break;
+	   }
+        }
+
+}
+
+static int isOnWhiteList(char *s) {
+int a;
+for (a=0;a<nwhitelist;a++) {
+	if (strcmp(whitelist[a],s)==0) return 1;
+}
+return 0;
+}
+
+static int isSystemFunc(char *funcname) {
 
 // Dont return anything
   if (A4GL_aubit_strcasecmp (funcname, "aclfgl_add_keymap") == 0)
@@ -213,7 +258,7 @@ int isSystemFunc(char *funcname) {
   if (A4GL_aubit_strcasecmp (funcname, "sqrt") == 0)
     return 1;
 
-return 0;
+	return 0;
 }
 
 static int chk_is_external(module_definition *m, char *fname) {
@@ -222,6 +267,11 @@ int b;
       if (isSystemFunc(fname)) {
 		return 0;
 	}
+
+	if (isOnWhiteList(fname)) {
+		return 0;
+	}
+
       for (b = 0; b < m->module_entries.module_entries_len; b++)
 	{
 	  switch (m->module_entries.module_entries_val[b]->met_type)
@@ -244,6 +294,7 @@ int b;
 	    case E_MET_PDF_REPORT_DEFINITION:
 		if (strcasecmp(fname, m->module_entries.module_entries_val[b]->module_entry_u.pdf_report_definition.funcname)==0) return 0;
 	      break;
+		default: break;
 	   }
         }
 
@@ -274,7 +325,7 @@ int cnt=0;
 	}
     }
 
-   return 0;
+   return cnt;
 }
 
 
@@ -286,11 +337,15 @@ int bad=0;
 	  switch (mods[a].module_entries.module_entries_val[b]->met_type)
 	    {
 	    case E_MET_MAIN_DEFINITION:
+		return 0; // We dont want to include any "MAINs" in our library - regardless...
+
+		/*
 	      bad+=add_function (&mods[a], a, mods[a].module_name,
 			    mods[a].module_entries.module_entries_val[b]->module_entry_u.function_definition.lineno,
 			    "MAIN", 'F', &mods[a].module_entries.module_entries_val[b]->module_entry_u.function_definition, mods[a].moduleIsInLibrary,
  				&mods[a].module_entries.module_entries_val[b]->module_entry_u.function_definition.call_list
 				);
+		*/
 	      break;
 
 	    case E_MET_FUNCTION_DEFINITION:
@@ -320,19 +375,46 @@ int bad=0;
 				);
 	      break;
 
+
+	default: break;
 	    }
         }
 
-return 0;
+if (bad) {
+	printf("%d external functions \n",bad);
+	return 0;
+}
+return 1;
 }
 
 static void mklib_program(module_definition *m,int a) {
 int n;
+int *processed;
+processed=malloc(sizeof(int)*a);
+
+        for (n=0;n<a;n++) {
+		processed[n]=0;
+	}
+
+	printf("Processing %d modules\n",a);
+
+	while (1) {
+		added=0;
+		for (n=0;n<a;n++) {
+			if (processed[n]==1) continue ; /* Already safe */
+
+			if (all_internal_functions(m,n)) {
+				processed[n]=1;
+				printf("Safe to put into library : %s\n",m[n].module_name);
+				addAllToWhitelist(&m[n]);
+			}
+		}
+		if (!added) break; // No more added - so we're done...
+	}
+
 	for (n=0;n<a;n++) {
-		if (all_internal_functions(m,n)) {
-			printf("Safe to put into library : %s\n",m[a].module_name);
-		} else {
-			printf("Not safe to put into library : %s\n", m[a].module_name);
+		if (processed[n]) {
+			printf(":%s\n",m[n].module_name);
 		}
 	}
 }
@@ -342,13 +424,13 @@ int
 main (int argc, char *argv[])
 {
   module_definition *m;
-  int a;
+  int a=0;
   int b;
 
   A4GL_build_user_resources ();
 
   //ignore_user_function(NULL);
-  m = malloc (sizeof (struct module_definition) * (argc - 1));
+  m = malloc (sizeof (struct module_definition) * (argc ));
 
 
   for (b=1;b<argc;b++) {
@@ -362,7 +444,7 @@ main (int argc, char *argv[])
 	}
       printf ("Loading %s : ", buff);
       fflush (stdout);
-      if (read_module_definition (&m[a - 1], buff))
+      if (read_module_definition (&m[a++], buff))
 	{
 	  printf ("OK...%s\n", argv[b]);
 	}
