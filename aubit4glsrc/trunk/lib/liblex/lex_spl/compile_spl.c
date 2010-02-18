@@ -29,6 +29,7 @@ char *record_headers[100];
 
 struct variable_usage *usage_bottom_level (variable_usage * u);	// parsehelp.c
 struct s_commands *linearise_commands (struct s_commands *master_list, struct s_commands *cmds);
+static char * get_spl_dtype (int dtype);
 expr_str_list *expand_parameters (struct variable_list *var_list, expr_str_list * parameters);
 char *current_stmt_table = 0;
 struct expr_str *input_array_variable = 0;
@@ -757,7 +758,7 @@ print_select (struct s_select *s, char *forUpdate)
 {
   char *str;
   str = get_select (s, forUpdate);
-  printc ("%s", str);
+  printc ("%s;", str);
   free (str);
 }
 
@@ -2316,7 +2317,7 @@ decode_ival_define2 (int n)
  *     * @return The string (static) with the C declaration
  *      */
 static char *
-lexlib_rettype (char *s)
+lexlib_rettype_xx (char *s)
 {
   static char rs[20] = "long";
   int a;
@@ -2373,7 +2374,7 @@ lexlib_rettype (char *s)
 
 
 static char *
-local_rettype_integer (int n)
+local_rettype_integer_xx (int n)
 {
   char s[200];
 
@@ -2383,20 +2384,26 @@ local_rettype_integer (int n)
   A4GL_debug ("rettype_integer : %d\n", n);
 
   SPRINTF1 (s, "%d", n);
-  return lexlib_rettype (s);
+  return lexlib_rettype_xx (s);
 }
 
 
 static char *
-irettype_integer (char *s, int n)
+irettype_integer (char *s, struct simple_variable *v ,char scope)
 {
   static char buff[256];
   if (strlen (s))
     {
-      sprintf (buff, "LIKE %s", s);
-      return buff;
+ 	if (scope!='g' && scope!='G' && scope!='M') {
+      		sprintf (buff, "LIKE %s", s,scope);
+      		return buff;
+	} else {
+		//A4GL_pause_execution();
+		return get_spl_dtype(v->datatype+ ENCODE_SIZE(v->dimensions[0]));
+		 //return local_rettype_integer_xx (n);
+	}
     }
-  return local_rettype_integer (n);
+		return get_spl_dtype(v->datatype+ ENCODE_SIZE(v->dimensions[0]));
 }
 
 
@@ -2752,7 +2759,7 @@ print_variable_new_internal (struct variable *v, enum e_scope scope, int level, 
     {
       char tmpbuff[256] = "";
       char stmpbuff[256] = "";
-      char *s;
+      //char *s;
       int a;
 
       sprintf (stmpbuff, "%s", name);
@@ -2783,7 +2790,10 @@ print_variable_new_internal (struct variable *v, enum e_scope scope, int level, 
 	}
 
 
-      s = irettype_integer (v->defsrc, v->var_data.variable_data_u.v_simple.datatype);
+      strcat(tmpbuff,  " ");
+      strcat(tmpbuff,  irettype_integer (v->defsrc, &v->var_data.variable_data_u.v_simple, scope));
+
+/*
       switch (v->var_data.variable_data_u.v_simple.datatype & DTYPE_MASK)
 	{
 
@@ -2794,8 +2804,7 @@ print_variable_new_internal (struct variable *v, enum e_scope scope, int level, 
 	    }
 	  else
 	    {
-	      sprintf (stmpbuff, " %s(%d,%d)", s, v->var_data.variable_data_u.v_simple.dimensions[0] >> 8,
-		       v->var_data.variable_data_u.v_simple.dimensions[0] & 255);
+	      sprintf (stmpbuff, " %s(%d,%d)", s, v->var_data.variable_data_u.v_simple.dimensions[0] >> 8, v->var_data.variable_data_u.v_simple.dimensions[0] & 255);
 	    }
 	  strcat (tmpbuff, stmpbuff);
 	  break;
@@ -2834,15 +2843,15 @@ print_variable_new_internal (struct variable *v, enum e_scope scope, int level, 
 
 
 	default:
-	  SPRINTF1 (stmpbuff, " %s", irettype_integer (v->defsrc, v->var_data.variable_data_u.v_simple.datatype));
+	  SPRINTF1 (stmpbuff, " %s", irettype_integer (v->defsrc, &v->var_data.variable_data_u.v_simple,scope));
 	  strcat (tmpbuff, stmpbuff);
 	}
+*/
 
-
-
+/*
       if (v->var_data.variable_data_u.v_simple.datatype == DTYPE_CHAR
 	  || v->var_data.variable_data_u.v_simple.datatype == DTYPE_VCHAR)
-	{			/* Its a 'char' (may need varchar & friends too... */
+	{			// Its a 'char' (may need varchar & friends too... 
 
 
 	  if (v->var_data.variable_data_u.v_simple.datatype == DTYPE_CHAR)
@@ -2859,9 +2868,10 @@ print_variable_new_internal (struct variable *v, enum e_scope scope, int level, 
 	}
       else
 	{
-	  print_define (tmpbuff, static_extern_flg, level, vno, scope);
 	}
+*/
 
+	  print_define (tmpbuff, static_extern_flg, level, vno, scope);
       return;
     }
 
@@ -3294,7 +3304,7 @@ get_variable_usage_1 (struct variable_usage *var_usage, int lvl)
     {
       if (strcmp (var_usage->variable_name, "a4gl_status") == 0)
 	{
-	  sprintf (buff, "SQLCODE");
+	  sprintf (buff, "sqlca.sqlcode");
 	}
       else
 	{
@@ -3416,8 +3426,7 @@ dump_cmds (struct s_commands *c, struct command *parent)
 }
 
 
-static char *
-get_spl_dtype (int dtype)
+static char * get_spl_dtype (int dtype)
 {
   int dtype_sz;
   static char buff_dtype[200];
@@ -3450,6 +3459,9 @@ get_spl_dtype (int dtype)
 
     case DTYPE_DECIMAL:
       sprintf (buff_dtype, " DECIMAL(%d,%d)", dtype_sz >> 8, dtype_sz & 255);
+      break;
+    case DTYPE_MONEY:
+      sprintf (buff_dtype, " MONEY(%d,%d)", dtype_sz >> 8, dtype_sz & 255);
       break;
 
     case DTYPE_DTIME:
@@ -3622,11 +3634,13 @@ dump_function (struct s_function_definition *function_definition, int ismain)
 
   if (strlen (returning))
     {
+      printc ("DROP PROCEDURE %s;", function_definition->funcname);
       // It returns somethings
       printc ("CREATE PROCEDURE %s (", function_definition->funcname);
     }
   else
     {
+      printc ("DROP PROCEDURE %s;", function_definition->funcname);
       printc ("CREATE PROCEDURE %s (", function_definition->funcname);
     }
 
@@ -3727,11 +3741,11 @@ dump_function (struct s_function_definition *function_definition, int ismain)
 
   if (strlen (returning))
     {
-      printc ("END PROCEDURE");
+      printc ("END PROCEDURE;");
     }
   else
     {
-      printc ("END PROCEDURE");
+      printc ("END PROCEDURE;");
     }
 
   return 1;
@@ -4630,7 +4644,7 @@ dump_cmd (struct command *r, struct command *parent)
 	}
 
       dump_comments (r->cmd_data.command_data_u.if_cmd.lineno);
-      printc ("END IF");
+      printc ("END IF;");
       need_daylight ();
 
       break;
