@@ -1289,6 +1289,7 @@ if fgl_getenv("VMAKE")!=" " then
 	   #call channel::write("make","phony.globals: $(G_TXX) $(LFILE_DIR)/g_vkopftxv.4gl $(GLOBALS_DEFS)")
 else
 	   call channel::write("make","phony.globals: $(GLOBALS_DEFS)")
+	   call channel::write("make","phony.g_"||lv_prog clipped||": $(LFILE_DIR)/g_"||lv_prog clipped||"txv.4gl")
 end if
 call channel::write("make"," ")
 call channel::write("make","%.glb.dat: %.4gl")
