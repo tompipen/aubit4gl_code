@@ -3304,7 +3304,8 @@ get_variable_usage_1 (struct variable_usage *var_usage, int lvl)
     {
       if (strcmp (var_usage->variable_name, "a4gl_status") == 0)
 	{
-	  sprintf (buff, "sqlca.sqlcode");
+	  sprintf (buff, "SQLCODE"); // Should be in 11.5 
+					// http://www.ibm.com/developerworks/data/library/techarticle/dm-0806mottupalli/index.html
 	}
       else
 	{

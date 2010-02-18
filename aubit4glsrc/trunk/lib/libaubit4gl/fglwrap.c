@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.154 2010-02-16 13:16:27 mikeaubury Exp $
+# $Id: fglwrap.c,v 1.155 2010-02-18 19:09:43 mikeaubury Exp $
 #
 */
 
@@ -1210,8 +1210,9 @@ A4GL_core_dump (void)
       if (A4GL_isyes (acl_getenv ("GDB_ATTACH")))
 	{
 	  char buff[256];
+	int a;
 	  SPRINTF3 (buff, "%s %s %d", acl_getenv ("GDB_EXE"), running_program, getpid ());
-	  system (buff);
+	  a=system (buff);
 	}
 
       if (A4GL_isyes (acl_getenv ("WAIT_FOR_GDB_ATTACH")))
@@ -1515,72 +1516,6 @@ initsig_child ()
   return 1;
 }
 
-#ifdef OLD
-/**
- *
- * @todo Describe function
- */
-void
-A4GL_logsql (int lineno, char *module, char *s)
-{
-  static char logfname[255];
-  static long logfnameset = 0;
-  char *fname;
-  FILE *fout = 0;
-  char buff[256];
-  if (s == 0)
-    return;
-
-  A4GL_debug ("SQL on line %d in %s:%s\n", lineno, module, s);
-  if (logfnameset == -1)
-    return;
-
-  if (logfnameset == 1)
-    {
-      fout = fopen (logfname, "a");
-      if (fout == 0)
-	return;			// should have been able to ... very odd..
-    }
-
-
-  if (logfnameset == 0)
-    {
-      fname = acl_getenv ("LOGSQL");
-      if (fname == 0)
-	{
-	  logfnameset = -1;
-	  return;
-	}
-      if (strlen (fname) == 0)
-	{
-	  logfnameset = -1;
-	  return;
-	}
-
-      // Firstly - MAPSQL should be a directory...
-      SPRINTF3 (buff, "%s/%s_%d.log", fname, A4GL_get_running_program (), getpid ());
-      fout = fopen (buff, "a");
-      if (fout == 0)
-	{			// Maybe - its just a file ?
-	  SPRINTF1 (buff, "%s", fname);
-	  fout = fopen (buff, "a");
-	}
-      logfnameset = 1;
-      strcpy (logfname, buff);
-    }
-
-  if (fout == 0)
-    {
-      logfnameset = -1;
-      return;
-    }
-  // if we've got to here - we've got a file to write to...
-  //
-  FPRINTF (fout, "%s\n", s);
-  fclose (fout);
-
-}
-#endif
 
 
 

@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: rexp2.c,v 1.61 2010-02-16 13:16:34 mikeaubury Exp $
+# $Id: rexp2.c,v 1.62 2010-02-18 19:09:45 mikeaubury Exp $
 #
 */
 
@@ -150,8 +150,6 @@ A4GL_mja_match (char *str1, char *str2, int likeormatch)
   char MULTICHAR, SINGLECHAR, BRACECHAR;
   int error;
 
-  A4GL_trim (str1);
-  A4GL_trim (str2);
 #ifdef DEBUG
   {
     A4GL_debug ("Match '%s' '%s' %c", str1, str2, likeormatch);
@@ -178,10 +176,23 @@ A4GL_mja_match (char *str1, char *str2, int likeormatch)
 #ifdef DEBUG
   A4GL_debug ("A4GL_matche=%d (VALID=%d)\n", error, MATCH_VALID);
 #endif
-  if (error == MATCH_VALID)
+
+
+
+  if (error == MATCH_VALID) {
     return 1;
-  else
+  }
+  else {
+	// Try again - but this time trim the strings..
+  	A4GL_trim (str1);
+  	A4GL_trim (str2);
+  	error = A4GL_matche (str2, str1, MULTICHAR, SINGLECHAR, BRACECHAR);
+	if (error == MATCH_VALID) {
+    		return 1;
+	}
+
     return 0;
+  }
 }
 
 static char *
