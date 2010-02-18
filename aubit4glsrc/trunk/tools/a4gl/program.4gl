@@ -1,5 +1,7 @@
 define mv_lastused char(256)
 define lv_prog_cnt integer
+define lv_dynamically_found_libs array[100] of char(32)
+define lv_dynamically_found_libs_cnt integer
 
 
 ################################################################################
@@ -892,7 +894,9 @@ define lv_buildstr char(256)
 define lv_uses_4gls integer
 define lv_uses_forms integer
 define lv_filetime integer
+define lv_cnt integer
 
+let lv_dynamically_found_libs_cnt=0
 
 let lv_uses_4gls=false
 let lv_uses_forms=false
@@ -948,6 +952,7 @@ end if
 call channel::write("make","FORMS=")
 call channel::write("make","LIBS=")
 call channel::write("make","FGLOBJS=")
+call channel::write("make","MIFS=")
 call channel::write("make","OTHOBJS=")
 call channel::write("make","OBJS_CFORMS=")
 call channel::write("make","GLOBALS=")
@@ -1040,9 +1045,9 @@ if fgl_getenv("VMAKE")!=" "  then
 	#call channel::write("make","G_TXX=$(LFILE_DIR)/g_txx_"||lv_prog clipped)
 	call channel::write("make","G_TXX=$(VMAKE)/g_txx_"||lv_prog clipped)
 	call channel::write("make","export G_TXX")
-   call channel::write("make"," ifeq \"$(COPYDIR)\" \"\"")
-   call channel::write("make"," COPYDIR=/tmp/"||lv_prog clipped)
-   call channel::write("make","endif")
+   	call channel::write("make"," ifeq \"$(COPYDIR)\" \"\"")
+   	call channel::write("make"," COPYDIR=/tmp/"||lv_prog clipped)
+   	call channel::write("make","endif")
 	call channel::write("make","ALL4GLSRC=")
 	call channel::write("make","ALLPERSRC=")
 	call channel::write("make","GLOBALS+=$(LFILE_DIR)/g_"||lv_prog clipped||"txv.4gl")
@@ -1084,10 +1089,10 @@ foreach c_get_modules into lv_type,lv_name,lv_flags
 
 	# Globals         Module       C-Code         ESQL/C code
 	if lv_type="G" or lv_type="M" then 
-      let lv_uses_4gls=true
+      		let lv_uses_4gls=true
 		if lv_type="G" then
 			if lv_flags is not null and lv_flags != " " then
-	         call channel::write("make","ALL4GLSRC+="||lv_flags clipped||"/"||lv_name clipped||".4gl")
+	         		call channel::write("make","ALL4GLSRC+="||lv_flags clipped||"/"||lv_name clipped||".4gl")
 				call channel::write("make","GLOBALS+="  ||lv_flags clipped||"/"||lv_name clipped||".4gl")
 				call channel::write("make","GLOBALS_DEFS+="||lv_flags clipped||"/"||lv_name clipped||".glb.dat")
 			else
@@ -1096,7 +1101,15 @@ foreach c_get_modules into lv_type,lv_name,lv_flags
 				call channel::write("make","GLOBALS_DEFS+="||lv_name clipped||".glb.dat")
 			end if
 		end if
-		call channel::write("make","FGLOBJS+="||lv_buildstr clipped||lv_name clipped||"$(A4GL_OBJ_EXT)")
+
+		if isReplaceByLibrary(lv_fullname) then
+			call channel::write("make","# "||lv_name clipped||" should be in a library instead")
+		else
+			call channel::write("make","# "||lv_name clipped||" not in library - need to use it instead")
+			call channel::write("make","FGLOBJS+="||lv_buildstr clipped||lv_name clipped||"$(A4GL_OBJ_EXT)")
+		end if
+
+		call channel::write("make","MIFS+="||lv_buildstr clipped||lv_name clipped||".mif")
 	end if
 
 	if lv_type="C" or lv_type="E" then
@@ -1133,6 +1146,12 @@ end foreach
 
 
 
+if lv_dynamically_found_libs_cnt then
+	call channel::write("make","LIBS+= -L$(V4GL)/dll")
+	for lv_cnt=1 to lv_dynamically_found_libs_cnt
+		call channel::write("make","LIBS+= -l"||lv_dynamically_found_libs[lv_cnt] clipped)
+	end for
+end if
 
 
 if fgl_getenv("VMAKE")!= " " then
@@ -1145,7 +1164,7 @@ end if
 
 
 
-call channel::write("make","MIFS=$(subst $(A4GL_OBJ_EXT),.mif,${FGLOBJS})")
+#call channel::write("make","MIFS=$(subst $(A4GL_OBJ_EXT),.mif,${FGLOBJS})")
 call channel::write("make"," ")
 
 
@@ -1287,9 +1306,9 @@ end if
 
 if fgl_getenv("VMAKE")!=" " then
 	   #call channel::write("make","phony.globals: $(G_TXX) $(LFILE_DIR)/g_vkopftxv.4gl $(GLOBALS_DEFS)")
+	   call channel::write("make","phony.g_"||lv_prog clipped||": $(LFILE_DIR)/g_"||lv_prog clipped||"txv.4gl")
 else
 	   call channel::write("make","phony.globals: $(GLOBALS_DEFS)")
-	   call channel::write("make","phony.g_"||lv_prog clipped||": $(LFILE_DIR)/g_"||lv_prog clipped||"txv.4gl")
 end if
 call channel::write("make"," ")
 call channel::write("make","%.glb.dat: %.4gl")
@@ -1386,3 +1405,53 @@ define lv_ok integer
 end function
 
 
+
+function isReplaceByLibrary(lv_name)
+define lv_name char(200)
+define lv_libs char(200)
+
+if fgl_getenv("VMAKE")!=" "  then
+	display "Searching for ",lv_name clipped
+
+	select libname into lv_libs from inLibrary where module=lv_name
+	if sqlca.sqlcode =0 then
+		call add_lib(lv_libs)
+		return true
+	end if
+
+	# Is it just missing a .4gl extension ? 
+	if lv_name not matches "*.4gl" then
+		let lv_name=lv_name clipped,".4gl"
+		select libname into lv_libs from inLibrary where module=lv_name
+		if sqlca.sqlcode =0 then
+			call add_lib(lv_libs)
+			return true
+		end if
+	end if
+
+
+
+end if
+return false
+end function
+	
+
+
+# This function maintains a list of libraries which need to be included
+# These are determined dynamically by any modules listed in the 'inlibrary' table
+# this is currently only used for Ventas build...
+function add_lib(lv_libname)
+define lv_libname char(32)
+define a integer
+#Have we already added it ? 
+if lv_dynamically_found_libs_cnt then
+	for a=1 to lv_dynamically_found_libs_cnt
+			if lv_dynamically_found_libs[a]=lv_libname then
+				return
+			end if
+	end for
+end if
+
+let lv_dynamically_found_libs_cnt=lv_dynamically_found_libs_cnt+1
+let lv_dynamically_found_libs[lv_dynamically_found_libs_cnt]=lv_libname
+end function
