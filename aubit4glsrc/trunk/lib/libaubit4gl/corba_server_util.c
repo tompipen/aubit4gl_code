@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: corba_server_util.c,v 1.41 2010-02-16 13:16:27 mikeaubury Exp $
+# $Id: corba_server_util.c,v 1.42 2010-02-19 12:14:55 mikeaubury Exp $
 #
 */
 
@@ -242,7 +242,7 @@ A4GL_strcpy (char *dest, const char *src, char *f, int l, int sd)
   int lsrc;
   char buff[256];
 
-#ifdef OPTIMIZED 
+#ifdef OPTIMIZED
 return strcpy(dest,src);
 #endif
 
@@ -315,7 +315,7 @@ A4GL_strcat (char *dest, const char *src, char *f, int l, int sd)
   int lsrc;
   char buff[256];
 
-#ifdef OPTIMIZED 
+#ifdef OPTIMIZED
 	return strcat(dest,src);
 #endif
 

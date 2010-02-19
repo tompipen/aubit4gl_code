@@ -95,7 +95,7 @@ void *
 acl_malloc_full (long size, char *why, char *f, long line)
 {
   void *p;
-  if (size > 2000000)
+  if (size > 4000000)
     {
       A4GL_assertion (1, "Dubious amount of memory to malloc");
     }
