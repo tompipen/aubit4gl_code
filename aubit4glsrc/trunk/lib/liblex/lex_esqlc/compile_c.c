@@ -24,12 +24,12 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.520 2010-02-17 11:54:41 mikeaubury Exp $
+# $Id: compile_c.c,v 1.521 2010-02-20 09:51:08 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
-static char const module_id[] = "$Id: compile_c.c,v 1.520 2010-02-17 11:54:41 mikeaubury Exp $";
+static char const module_id[] = "$Id: compile_c.c,v 1.521 2010-02-20 09:51:08 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -3898,9 +3898,9 @@ print_define (char *varstring, int isstatic_extern)
 
   if (isstatic_extern == 2)
     {
+	
       strcat (buff, "extern ");
     }
-
 
   printc ("%s%s ; \n", buff, varstring);
 }
@@ -5574,6 +5574,12 @@ print_variable_new (struct variable *v, enum e_scope scope, int level)
     {
       char tmpbuff[256];
       SPRINTF2 (tmpbuff, "%s %s", local_rettype_integer (v->var_data.variable_data_u.v_simple.datatype), name);
+
+	/* Is this an unsed global ? */
+	if (level==0 && v->usage ==0 && v->assigned==0 && scope==E_SCOPE_IMPORTED_GLOBAL && A4GL_isyes(acl_getenv("GLOBALEXCLNOTUSED"))) {
+		return ;
+	}
+
       if (v->arr_subscripts.arr_subscripts_len)
 	{
 	  if (strchr (arrbuff, '-') == 0)
@@ -5614,6 +5620,7 @@ print_variable_new (struct variable *v, enum e_scope scope, int level)
       else
 	{
 
+		
 	  print_define (tmpbuff, static_extern_flg);
 	}
 
