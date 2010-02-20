@@ -34893,68 +34893,38 @@ fi
 		if test $ac_cv_lib_odbc_main = yes; then
 			if test "$AUBIT_SOURCE" = "1" ; then
 				#CPPFLAGS="$CPPFLAGS $TMP_IFLAGS"
-				for ac_header in sql.h
+				for ac_header in sql.h sqlext.h odbcinst.h
 do :
-  ac_fn_c_check_header_mongrel "$LINENO" "sql.h" "ac_cv_header_sql_h" "$ac_includes_default"
-if test "x$ac_cv_header_sql_h" = x""yes; then :
+  as_ac_Header=`$as_echo "ac_cv_header_$ac_header" | $as_tr_sh`
+ac_fn_c_check_header_mongrel "$LINENO" "$ac_header" "$as_ac_Header" "$ac_includes_default"
+eval as_val=\$$as_ac_Header
+   if test "x$as_val" = x""yes; then :
   cat >>confdefs.h <<_ACEOF
-#define HAVE_SQL_H 1
+#define `$as_echo "HAVE_$ac_header" | $as_tr_cpp` 1
 _ACEOF
-
+ HAVE_UNIXODBC_HEADERS=1
+else
+  HAVE_UNIXODBC_HEADERS=0
 fi
 
 done
 
-				TMPxyz=`eval echo '${'$as_ac_Header'}'`
-		        if test "$TMPxyz" = "yes"; then
-					for ac_header in sqlext.h
-do :
-  ac_fn_c_check_header_mongrel "$LINENO" "sqlext.h" "ac_cv_header_sqlext_h" "$ac_includes_default"
-if test "x$ac_cv_header_sqlext_h" = x""yes; then :
-  cat >>confdefs.h <<_ACEOF
-#define HAVE_SQLEXT_H 1
-_ACEOF
-
-fi
-
-done
-
-					TMPxyz=`eval echo '${'$as_ac_Header'}'`
-			        if test "$TMPxyz" = "yes"; then
-						for ac_header in odbcinst.h
-do :
-  ac_fn_c_check_header_mongrel "$LINENO" "odbcinst.h" "ac_cv_header_odbcinst_h" "$ac_includes_default"
-if test "x$ac_cv_header_odbcinst_h" = x""yes; then :
-  cat >>confdefs.h <<_ACEOF
-#define HAVE_ODBCINST_H 1
-_ACEOF
-
-fi
-
-done
-
-						TMPxyz=`eval echo '${'$as_ac_Header'}'`
-				        if test "$TMPxyz" = "yes"; then
-						    HAVE_UNIXODBC_HEADERS=1
-                        fi
-                   	fi
-                fi
 			else
-			    HAVE_UNIXODBC_HEADERS=1
+			    	HAVE_UNIXODBC_HEADERS=1
 			fi
 
 			if test "$HAVE_UNIXODBC_HEADERS" = "1" ; then
 				ODBC_LIB_NAME=odbc
 				HAVE_UNIXODBC=yes
-			    UNIXODBC_INCLUDE=-I$withval/include
-			    UNIXODBC_LFLAGS=-L$withval/lib
-			    UNIXODBC_LIBS=-lodbc
+			    	UNIXODBC_INCLUDE=-I$withval/include
+			    	UNIXODBC_LFLAGS=-L$withval/lib
+			    	UNIXODBC_LIBS=-lodbc
 
-			    ODBC_TYPE=unixODBC
+			    	ODBC_TYPE=unixODBC
 
 $as_echo "#define HAVE_UNIXODBC 1" >>confdefs.h
 
-            else
+            		else
 				if test "$AUBIT_SOURCE" = "1" ; then
 					{ $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: unixODBC libraries present but headers are missing." >&5
 $as_echo "$as_me: WARNING: unixODBC libraries present but headers are missing." >&2;}
@@ -40330,11 +40300,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:40333: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:40303: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:40337: \$? = $ac_status" >&5
+   echo "$as_me:40307: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -40434,11 +40404,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:40437: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:40407: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:40441: \$? = $ac_status" >&5
+   echo "$as_me:40411: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -42805,7 +42775,7 @@ ia64-*-hpux*)
   ;;
 *-*-irix6*)
   # Find out which ABI we are using.
-  echo '#line 42808 "configure"' > conftest.$ac_ext
+  echo '#line 42778 "configure"' > conftest.$ac_ext
   if { { eval echo "\"\$as_me\":${as_lineno-$LINENO}: \"$ac_compile\""; } >&5
   (eval $ac_compile) 2>&5
   ac_status=$?
@@ -43531,7 +43501,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 43534 "configure"
+#line 43504 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -43631,7 +43601,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 43634 "configure"
+#line 43604 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -48457,7 +48427,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure,v 1.444 2010-02-16 13:48:58 mikeaubury Exp $
+| $Id: configure,v 1.445 2010-02-20 09:40:16 mikeaubury Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X
