@@ -1,0 +1,5 @@
+matchesTest: mes = "3 " test OK
+matchesTest: mes = "" test OK
+matchesTest: mes = "  " test OK
+matchesTest: mes = " 2" test OK
+matchesTest: mes = "33" test OK
