@@ -220,6 +220,8 @@ OptionsTab::OptionsTab(QWidget *parent)
        QLabel *fontlabel = new QLabel(tr("Font : "));
        QPushButton *select = new QPushButton("&Select",this);
        QPushButton *reset = new QPushButton("&Reset",this);
+       QPushButton *close = new QPushButton("Save && &Close", this);
+
        fontedit = new QLineEdit;
        fontedit->setReadOnly(true);
 
@@ -240,6 +242,7 @@ OptionsTab::OptionsTab(QWidget *parent)
 
        buttonlayout->addWidget(select);
        buttonlayout->addWidget(reset);
+       buttonlayout->addWidget(close);
        buttonlayout->setSpacing(5);
 
        layoutbox->addLayout(leftlayout);
@@ -254,7 +257,7 @@ OptionsTab::OptionsTab(QWidget *parent)
 
        connect(select,SIGNAL(clicked()), this,SLOT(fontdialog()));
        connect(reset,SIGNAL(clicked()), this,SLOT(reset()));
-
+       connect(close,SIGNAL(clicked()), this,SLOT(close()));
      //LineEdit
 QFont fontload;
 fontload = QApplication::font();
