@@ -17,7 +17,7 @@ static int ui_interface_loadtoolbar(int *objectID, int nparam) {
 	A4GL_trim(a);
 	sprintf(buff,"%s.4tb",a);
 	A4GL_push_char(buff);
-	aclfgl_aclfgl_send_to_ui(1);
+	aclfgl_aclfgl_sendfile_to_ui(1);
 	free(a);
 	return 0;
 }
@@ -34,7 +34,7 @@ static int ui_interface_loadactiondefaults(int *objectID, int nparam) {
 	A4GL_trim(a);
 	sprintf(buff,"%s.4ad",a);
 	A4GL_push_char(buff);
-	aclfgl_aclfgl_send_to_ui(1);
+	aclfgl_aclfgl_sendfile_to_ui(1);
 	free(a);
 	
 	return 0;
@@ -52,7 +52,7 @@ static int ui_interface_loadstyles(int *objectID, int nparam) {
 	A4GL_trim(a);
 	sprintf(buff,"%s.4st",a);
 	A4GL_push_char(buff);
-	aclfgl_aclfgl_send_to_ui(1);
+	aclfgl_aclfgl_sendfile_to_ui(1);
 	free(a);
 	
 	return 0;
