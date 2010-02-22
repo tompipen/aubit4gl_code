@@ -1847,15 +1847,13 @@ void FglForm::createContextMenu(const QPoint &pos)
       ql_actions << p_menu->actions();
    }
 
+/*
    for(int i=0; i<actions().size(); i++){
       //if(Action *action = qobject_cast<Action *> (actions.at(i))){
       if(actions().at(i)->isEnabled() && actions().at(i)->isVisible())
             ql_actions << actions().at(i);
-/*
-         if(action->isEnabled() && action->isVisible() && action->defaultView() != "no"){
-         }
-*/
    }
+*/
 
    contextMenu->addActions(ql_actions);
 
