@@ -316,9 +316,8 @@ void RingMenu::keyPressEvent(QKeyEvent *keyEvent)
             return ;
          }
 
-/*
-   if(event->type() == QEvent::KeyPress){
-      QKeyEvent *key = (QKeyEvent*) event;
+   if(keyEvent->type() == QEvent::KeyPress){
+      QKeyEvent *key = (QKeyEvent*) keyEvent;
 
 
       if(key->key() == Qt::Key_Down ||
@@ -346,19 +345,16 @@ void RingMenu::keyPressEvent(QKeyEvent *keyEvent)
          if(key->key() == Qt::Key_Down){
             if(this->focusWidget() == lastBtn){
                firstBtn->setFocus();
-               return true;
             }
          }
 
          if(key->key() == Qt::Key_Up){
             if(this->focusWidget() == firstBtn){
                lastBtn->setFocus();
-               return true;
             }
          }
       }
    }
-*/
 
    return QGroupBox::keyPressEvent(keyEvent);
 }
