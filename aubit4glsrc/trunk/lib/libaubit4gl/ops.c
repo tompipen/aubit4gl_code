@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.166 2010-01-14 08:08:21 mikeaubury Exp $
+# $Id: ops.c,v 1.167 2010-02-22 15:01:07 mikeaubury Exp $
 #
 */
 
@@ -3815,11 +3815,13 @@ A4GL_in_dt_ops (int op)
   int s2;
   int isneg;
 
-  long dt_days;
+  long dt_days=-1;
   double dt_seconds;
   long in_months;
   //long in_days;
   double in_seconds;
+int fake1;
+int fake2;
 
 
   //void *ptr1;
@@ -3926,10 +3928,12 @@ A4GL_in_dt_ops (int op)
 
 #endif
 
-  if (dtime_data[1]==0) dtime_data[1]=1;
-  if (dtime_data[2]==0) dtime_data[2]=1;
+  fake1=dtime_data[1];
+  if (dtime_data[1]==0) fake1=1;
+  fake2=dtime_data[2];
+  if (dtime_data[2]==0) fake2=1;
 
-  dt_days = A4GL_gen_dateno (dtime_data[2], dtime_data[1], dtime_data[0]);	// As a date....
+  dt_days = A4GL_gen_dateno (fake2, fake1, dtime_data[0]);	// As a date....
 
   //dt_seconds= (double)dtime_data[2]*24.0*60.0*60.0; // Days
   dt_seconds = 0;
@@ -4007,7 +4011,7 @@ A4GL_in_dt_ops (int op)
       if (op == OP_ADD)
 	{
 	  long d;
-	  double dt;
+	  double dt_dbl;
 	  dtime_data[2] = 0;
 	  dtime_data[3] = 0;
 	  dtime_data[4] = 0;
@@ -4016,10 +4020,10 @@ A4GL_in_dt_ops (int op)
 	  ok = 1;
 
 	  dt_seconds += in_seconds;
-	  dt = a4gl_local_trunc (dt_seconds);
-	  d = (long) dt;
+	  dt_dbl = a4gl_local_trunc (dt_seconds);
+	  d = (long) dt_dbl;
 	  dtime_data[5] = d;
-	  dt_seconds -= dt - 0.000005;
+	  dt_seconds -= dt_dbl - 0.000005;
 	  dt_seconds *= 100000;
 	  d = dt_seconds;
 	  dtime_data[6] = d;
@@ -4049,13 +4053,21 @@ A4GL_in_dt_ops (int op)
 
 
 	  // Days
-
-	  dt_days += dtime_data[2];
-
-	  A4GL_get_date (dt_days, &mdy_d, &mdy_m, &mdy_y);
-	  dtime_data[2] = mdy_d;
-	  dtime_data[1] = mdy_m;
-	  dtime_data[0] = mdy_y;
+	if ( dtime_data[2]) {
+		// We've overflowed the hours - and we're into the days...
+		// Was the original datetime up to days ? 
+		if ( dt.stime>=3 ) {  /* less that or equal to HOUR TO ... */
+			// No - it was HOURS or less...
+	  		A4GL_push_null (DTYPE_DTIME, dt.stime * 16 + dt.ltime);
+			return ;
+		} else {
+	  		dt_days += dtime_data[2];
+	  		A4GL_get_date (dt_days, &mdy_d, &mdy_m, &mdy_y);
+	  		dtime_data[2] = mdy_d;
+	  		dtime_data[1] = mdy_m;
+	  		dtime_data[0] = mdy_y;
+		}
+	}
 
 
 	}
