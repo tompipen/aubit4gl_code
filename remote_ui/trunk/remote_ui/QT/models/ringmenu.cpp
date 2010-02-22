@@ -15,6 +15,7 @@
 //
 //------------------------------------------------------------------------------
 #include <QDebug>
+#include <QFile>
 #include <QKeyEvent>
 #include <QSpacerItem>
 
@@ -94,16 +95,23 @@ void RingMenu::createButton(int id, QString text, QString tooltip)
    QString pic = text.toLower();
    QString shortcut = text.at(0);
 
+   QString image = pic + ".png";
+
+   QFile img(QString("pics/%1").arg(image));
+   if (!img.open(QIODevice::ReadOnly))
+         image = "blank.png";
+
    // Create the Button and set Text + ToolTip
    QPushButton *button = new QPushButton(text.trimmed().prepend('&'));
 //   QPushButton *button = new QPushButton(text.trimmed());
-   button->setIcon(QIcon(QString("pics:blank.png")));
+   //button->setIcon(QIcon(QString("pics:blank.png")));
+   button->setIcon(QIcon(QString("pics:%1").arg(image)));
    button->setIconSize(QSize(40,25));
    button->setShortcut(shortcut);
 
    Action *action = new Action(text.toLower(), text, button);
    action->setComment(tooltip);
-   action->setImage("blank.png");
+   action->setImage(image);
    //action->setAcceleratorName(shortcut);
    button->addAction(action);
    connect(button, SIGNAL(clicked()), action, SLOT(trigger()));
