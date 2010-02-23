@@ -266,11 +266,11 @@ void FglForm::setActions(QDomDocument xmlFile)
 void FglForm::initActions()
 {
    Action *acceptA = new Action("accept", tr("Accept"));
-   acceptA->setShortcut(Qt::Key_F12);
+   acceptA->setAcceleratorName("F12");
    addFormAction(acceptA);
 
    Action *cancelA = new Action("cancel", tr("Cancel"));
-   cancelA->setShortcut(Qt::Key_Escape);
+   cancelA->setAcceleratorName("Escape");
    addFormAction(cancelA);
 
    return;
