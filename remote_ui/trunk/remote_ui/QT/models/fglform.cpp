@@ -273,6 +273,25 @@ void FglForm::initActions()
    cancelA->setAcceleratorName("Escape");
    addFormAction(cancelA);
 
+   Action *nextRowA = new Action("nextrow", tr("Next Row"));
+   nextRowA->setAcceleratorName("Tab");
+   nextRowA->setAcceleratorName2("Down");
+   addFormAction(nextRowA);
+
+   Action *prevRowA = new Action("prevrow", tr("Previous Row"));
+   prevRowA->setAcceleratorName("Shift-Tab");
+   prevRowA->setAcceleratorName("Up");
+   addFormAction(prevRowA);
+
+   Action *nextFieldA = new Action("nextfield", tr("Next Field"));
+   nextFieldA->setAcceleratorName("Tab");
+   addFormAction(nextFieldA);
+
+   Action *prevFieldA = new Action("prevfield", tr("Previous Field"));
+   prevFieldA->setAcceleratorName("Shift-Tab");
+   addFormAction(prevFieldA);
+
+
    return;
    Action *interruptAction = new Action(tr("INTERRUPT"));
    interruptAction->setShortcut(Qt::Key_Escape);
