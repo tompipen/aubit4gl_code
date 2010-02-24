@@ -45,6 +45,7 @@ define a,c integer
 define lv_handle integer
 define lv_stat integer
 define lv_builddir, lv_outpath char(lc_strlen)
+define lv_val char(100)
 for c=1 to lc_maxfiles
 	let lv_names[c]= " "
 	let lv_dirs[c]= " "
@@ -146,7 +147,12 @@ display "inserting"
 	delete from program where progname=lv_progname 
 	delete from entity where progname=lv_progname
 	delete from afglsettings where progname=lv_progname
-	insert into afglsettings values(lv_progname, " ","A4GL_C_COMP","ccache gcc")
+	let lv_val=fgl_getenv("A4GL_C_COMP")
+	if lv_val != " " then
+		insert into afglsettings values(lv_progname, " ","A4GL_C_COMP",lv_val)
+	else
+		insert into afglsettings values(lv_progname, " ","A4GL_C_COMP","ccache gcc")
+	end if
 
 	insert into afglsettings values(lv_progname, " ","A4GL_USE_FORMXML","Y")
 
