@@ -610,9 +610,11 @@ QString ProtocolHandler::filterUmlauts(QString text){
             QString rem = text.mid(start,(end-start+1));
             bool ok;
             int num = rem.mid(3,2).toInt(&ok, 16);
-            text.remove(start,(end-start+1));
-            text.insert(start,QChar(num));
-            i--;
+            if(ok){
+               text.remove(start,(end-start+1));
+               text.insert(start,QChar(num));
+               i--;
+            }
          }
       }
    }
