@@ -19,6 +19,7 @@
 #include <QKeySequence>
 
 #include "actions.h"
+#include "include/fgl.h"
 
 Actions::Actions(QWidget *form, QObject *parent) : QObject(parent)
 {
@@ -120,6 +121,7 @@ Action::Action(QString name, QString text, QObject *parent) : QAction(text, pare
 
 void Action::setName(QString name)
 {
+   name = Fgl::stringToKey(name);
    this->qs_name = name;
    this->setObjectName(name);
 }

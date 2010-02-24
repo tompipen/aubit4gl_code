@@ -395,7 +395,7 @@ namespace Fgl {
                return QString::number(2008);
             if(s.toLower() == "prevpage")
                return QString::number(2006);
-            if(s.toLower() == "accept")
+            if(s.toLower() == "enter")
                return QString::number(2016);
             if(s.toLower() == "esc")
                return QString::number(27);
