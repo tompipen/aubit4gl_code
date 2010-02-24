@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: calldll.c,v 1.90 2010-02-16 13:16:27 mikeaubury Exp $
+# $Id: calldll.c,v 1.91 2010-02-24 12:28:28 mikeaubury Exp $
 #
 */
 
@@ -758,7 +758,7 @@ A4GL_call_4gl_dll (char *xfilename, char *function, int args)
   if (strncmp (function, "aclfglclass", 11) != 0)
     {
 
-#if (defined(__MACH__) && defined(__APPLE__))
+#if (defined(__MACH__) && defined(__APPLE__)) && defined(__APPLEFIX__)
       strcpy (nfunc, "aclfgl__");
 #else
       strcpy (nfunc, "aclfgl_");
