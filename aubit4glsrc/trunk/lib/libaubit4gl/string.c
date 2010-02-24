@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: string.c,v 1.36 2010-02-16 13:16:42 mikeaubury Exp $
+# $Id: string.c,v 1.37 2010-02-24 16:25:07 mikeaubury Exp $
 #
 */
 
@@ -273,6 +273,9 @@ A4GL_wordwrap_text (char *in, char *out, int width, int maxsize)
 
   cnt = width;
   memset(buff,0,sizeof(buff));
+#ifdef DEBUG
+  A4GL_debug("Wrapping : %s", in);
+#endif
   strcpy (buff, in);
   A4GL_trim (buff);
 

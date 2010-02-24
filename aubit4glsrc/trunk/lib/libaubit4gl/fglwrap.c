@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.155 2010-02-18 19:09:43 mikeaubury Exp $
+# $Id: fglwrap.c,v 1.156 2010-02-24 16:25:07 mikeaubury Exp $
 #
 */
 
@@ -654,11 +654,11 @@ A4GL_chk_err (int lineno, char *fname)
   errhook = acl_getenv_not_set_as_0 ("CALLERRHOOK");
   if (errhook)
     {
-      A4GL_push_long (lineno);
-      A4GL_push_char (fname);
-      A4GL_push_long (a4gl_status);
-      A4GL_push_char (s);
-      A4GL_call_4gl_dll (errhook, "errlog", 4);
+      	A4GL_push_long (lineno);
+      	A4GL_push_char (fname);
+      	A4GL_push_long (a4gl_status);
+      	A4GL_push_char (s);
+      	A4GL_call_4gl_dll (errhook, "errlog", 4);
     }
 
 
@@ -1176,6 +1176,7 @@ void
 A4GL_core_dump (void)
 {
   static int core_dumping = 0;
+char *errhook;
   core_dumping++;
   if (core_dumping == 1)
     {
@@ -1226,6 +1227,21 @@ A4GL_core_dump (void)
 
       A4GL_close_database ();
       A4GL_close_errorlog_file ();
+
+  		errhook = acl_getenv_not_set_as_0 ("CALLERRHOOK");
+  		if (errhook)
+    		{
+			char *fname;
+			int lineno;
+			A4GLSTK_getCurrentLine (&fname, &lineno);
+
+      		A4GL_push_long (lineno);
+      		A4GL_push_char (fname);
+      		A4GL_push_long (a4gl_status);
+      		A4GL_push_char ("CORE DUMP");
+      		A4GL_call_4gl_dll (errhook, "errlog", 4);
+    		}
+
       A4GL_fgl_die (99);
     }
   else

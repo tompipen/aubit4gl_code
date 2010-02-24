@@ -8,7 +8,7 @@
 #include "formcntrl.h"
 
 #ifndef lint
-static char const module_id[] = "$Id: generic_ui.c,v 1.160 2009-12-16 13:59:41 mikeaubury Exp $";
+static char const module_id[] = "$Id: generic_ui.c,v 1.161 2010-02-24 16:28:35 mikeaubury Exp $";
 #endif
 
 static int A4GL_ll_field_opts_i (void *f);
@@ -1898,6 +1898,7 @@ A4GL_display_field_contents (void *field, int d1, int s1, char *ptr1)
 {
   int field_width;
   int has_format;
+  int has_wordwrap;
   int ignore_formatting = 0;
   struct struct_scr_field *f;
   char *ff;
@@ -1923,6 +1924,8 @@ A4GL_display_field_contents (void *field, int d1, int s1, char *ptr1)
 
   field_width = width;
   has_format = A4GL_has_str_attribute (f, FA_S_FORMAT);
+  has_wordwrap = A4GL_has_bool_attribute (f, FA_B_WORDWRAP);
+
   A4GL_debug ("Has format : %d  ", has_format);
 
 // 'Format' is valid for a lot of datatypes -
@@ -2006,6 +2009,29 @@ A4GL_display_field_contents (void *field, int d1, int s1, char *ptr1)
     }
 
   A4GL_debug ("set_field_contents : '%s'", ff);
+
+
+
+  if (has_wordwrap)
+    {
+        char *tmp;
+
+	if (ll_need_wordwrap_spaces()) {
+          tmp = acl_malloc2 (field_width + 1);
+
+          if (A4GL_wordwrap_text (ff, tmp, A4GL_get_field_width (field), field_width))
+            {
+              free (ff);
+              ff = tmp;
+            }
+          else
+            {
+              free (tmp);
+            }
+	}
+    }
+
+
   A4GL_add_recall_value (f->colname, ff);
   A4GL_mja_set_field_buffer (field, 0, ff, orig);
   if (buff)

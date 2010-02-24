@@ -1022,3 +1022,4 @@ int A4GL_set_field_just(const FIELD *f, int justify)  {
 int A4GL_field_just(const FIELD *f)  {
 	return 0; // Does nothing..
 }
+

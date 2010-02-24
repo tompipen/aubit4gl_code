@@ -22,7 +22,7 @@ int set_intr_win32 (int type);
 
 int ran_gtk_init = 0;
 #ifndef lint
-static char const module_id[] = "$Id: lowlevel_gtk.c,v 1.152 2009-05-01 07:50:05 mikeaubury Exp $";
+static char const module_id[] = "$Id: lowlevel_gtk.c,v 1.153 2010-02-24 16:28:35 mikeaubury Exp $";
 #endif
 
 
@@ -5690,6 +5690,9 @@ LL_ui_fgl_winquestion (char *title, char *text, char *def, char *pos, char *icon
   return "Unknown Key";
 }
 
+int ll_need_wordwrap_spaces(void) {
+return 0;
+}
 
 
 // --------------------------------------------------------------------------------------

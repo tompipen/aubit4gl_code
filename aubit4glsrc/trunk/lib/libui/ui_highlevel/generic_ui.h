@@ -91,4 +91,4 @@ int A4GL_ll_set_field_opts (void *field, int oopt);
 int A4GL_ll_field_opts (void *field);
 
 int local_chk_field (struct s_form_dets *form, void *f);
-
+//int ll_need_wordwrap_spaces(void);

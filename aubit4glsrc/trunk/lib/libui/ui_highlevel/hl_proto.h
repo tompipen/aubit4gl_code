@@ -150,4 +150,4 @@ void A4GL_LL_init_form(void *f);
 int A4GL_gen_field_list_with_orig_fldlist (void ***field_list,  ts_field_name *fldlist, struct s_form_dets *formdets, int max_number, va_list * ap,int replace_0);
 int A4GL_gen_field_chars_ap_with_orig_fldlist (void *field_listv, void *formdetsv,  struct s_field_name *fldlist, va_list * ap,int replace_0);
 char * LL_ui_fgl_winquestion (char *title, char *text, char *def, char *pos, char *icon, int danger, int winbutton);
-
+int ll_need_wordwrap_spaces(void);
