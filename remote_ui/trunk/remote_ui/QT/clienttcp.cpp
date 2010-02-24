@@ -1103,7 +1103,8 @@ void ProtocolHandler::outputTree(QDomNode domNode)
 
    if(childElement.nodeName() == "SETWINDOWTITLE"){
       QString title = childElement.attribute("TEXT");
-      setWindowTitle(title);
+      //setWindowTitle(title);
+      p_currScreenHandler->setInterfaceText(title);
       return;
    }
 
