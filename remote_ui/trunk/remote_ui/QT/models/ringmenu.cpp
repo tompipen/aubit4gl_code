@@ -93,7 +93,18 @@ void RingMenu::createButton(int id, QString text, QString tooltip)
 
    // Make Shortcut for Button
    QString pic = text.toLower();
-   QString shortcut = text.at(0);
+   QString shortcut;
+   QString buttonText;
+   if(text.contains("&")){
+      if(text.length() > text.indexOf("&")){
+         shortcut = text.at(text.indexOf("&")+1);
+         buttonText = text;
+      }
+   }
+   else{
+      buttonText = QString("&%1").arg(text.trimmed());
+      shortcut = text.at(0);
+   }
 
    QString image = pic + ".png";
 
@@ -102,7 +113,7 @@ void RingMenu::createButton(int id, QString text, QString tooltip)
          image = "blank.png";
 
    // Create the Button and set Text + ToolTip
-   QPushButton *button = new QPushButton(text.trimmed().prepend('&'));
+   QPushButton *button = new QPushButton(buttonText);
 //   QPushButton *button = new QPushButton(text.trimmed());
    //button->setIcon(QIcon(QString("pics:blank.png")));
    button->setIcon(QIcon(QString("pics:%1").arg(image)));
@@ -256,7 +267,16 @@ void RingMenu::createAction(int id, QString text)
 
    // Make Shortcut for Button
    QString pic = text.toLower();
-   QString shortcut = text.at(0);
+   //QString shortcut = text.at(0);
+   QString shortcut;
+   if(text.contains("&")){
+      if(text.length() > text.indexOf("&")){
+         shortcut = text.at(text.indexOf("&")+1);
+      }
+   }
+   else{
+      shortcut = text.at(0);
+   }
 
    // Create the Button and set Text + ToolTip
    //QPushButton *button = new QPushButton(text.trimmed().prepend("&"));
