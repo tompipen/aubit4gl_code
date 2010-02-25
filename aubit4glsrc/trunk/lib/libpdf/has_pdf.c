@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: has_pdf.c,v 1.69 2010-02-16 13:48:58 mikeaubury Exp $
+# $Id: has_pdf.c,v 1.70 2010-02-25 21:08:53 mikeaubury Exp $
 #*/
 
 /**
@@ -915,6 +915,98 @@ A4GL_debug("colno (%lf) +=  %lf", p->col_no,(double)x);
 }
 
 
+void
+A4GLPDFREP_A4GL_pdf_image_print (void *vp, char *type, int cr)
+{
+  int n;
+  double sx;
+  double sy;
+  int x, y;
+  double ox;
+  double oy;
+  char *filename;
+  struct pdf_rep_structure *p;
+  p = (struct pdf_rep_structure *)vp;
+
+
+  filename=A4GL_char_pop();
+  A4GL_trim(filename);
+
+  sx = A4GL_pop_double ();
+  sy = A4GL_pop_double ();
+
+  n = PDF_open_image_file ((PDF *)p->pdf_ptr, type, filename, "", 0);
+
+  if (n < 0)
+    {
+      /* exitwith("Unable to open file %s %s",type,blob->filename); */
+      /* An empty blob or invalid type (bmp) is also error,
+         so just ignore and continue */
+      /* A4GL_exitwith ("Unable to open file."); */
+      return;
+    }
+
+  y = PDF_get_value ((PDF *)p->pdf_ptr, "imageheight", n);
+  x = PDF_get_value ((PDF *)p->pdf_ptr, "imagewidth", n);
+
+  ox=(double)x;
+  oy=(double)y;
+  sy=sx;
+  y = (int) ((double) y * sy);
+  x = (int) ((double) x * sx);
+
+// If its just way to large to fit on the page - scale it back...
+// this doesn't care if we're too far down the page etc - thats a different problem :-)
+	while (y > (int)p->page_length) {
+#ifdef DEBUG
+			A4GL_debug("Too high %d %lf",y,p->page_length);
+#endif
+			sx*=0.99;
+			sy*=0.99;
+  			y = (int) (oy * sy);
+  			x = (int) (ox * sx);
+	}
+
+	while (x > (int)p->page_width) {
+#ifdef DEBUG
+			A4GL_debug("Too wide %d %lf",x,p->page_width);
+#endif
+			sx*=0.99;
+			sy*=0.99;
+  			y = (int) (oy * sy);
+  			x = (int) (ox * sx);
+	}
+
+#ifdef DEBUG
+  A4GL_debug ("Placing heght of image =%d col=%f line=%f length=%f scale=%lf", y, p->col_no, p->line_no, p->page_length,sx);
+#endif
+
+  if (p->col_no == 0)
+    {
+      p->col_no += p->left_margin;
+    }
+#ifdef DEBUG
+  A4GL_debug ("x=%lf y=%lf", p->col_no, p->page_length - p->line_no - y);
+#endif
+
+  PDF_place_image ((PDF *)p->pdf_ptr, n, p->col_no, p->page_length - p->line_no - y, sx);
+
+#ifdef DEBUG
+  A4GL_debug ("Closing");
+#endif
+  PDF_close_image ((PDF *)p->pdf_ptr, n);
+
+#ifdef DEBUG
+A4GL_debug("lineno (%lf) +=  %lf", p->line_no,(double)y);
+A4GL_debug("colno (%lf) +=  %lf", p->col_no,(double)x);
+#endif
+
+  p->line_no = p->line_no + (double) y;
+  p->col_no = p->col_no + (double) x;
+  A4GL_push_empty_char ();
+  A4GL_pdf_rep_print (p, 1, cr, 0, -1);
+  return;
+}
 
 int
 A4GLPDFREP_A4GL_pdf_pdffunc_internal (void *vp, char *fname, int nargs)

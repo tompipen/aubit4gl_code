@@ -1101,6 +1101,133 @@ A4GL_debug("colno (%lf) +=  %lf", p->col_no,(double)x);
 }
 
 
+void
+A4GLPDFREP_A4GL_pdf_image_print (void *vp, char *type, int cr)
+{
+  //int n;
+  double sx;
+  double sy;
+  int x, y;
+double ox;
+double oy;
+  struct pdf_rep_structure *p;
+char *filename;
+  HPDF_Image i;
+
+
+  p = vp;
+
+  filename=A4GL_char_pop();
+  sx = A4GL_pop_double ();
+  sy = A4GL_pop_double ();
+#ifdef DEBUG
+  A4GL_debug ("Scaling by %f %f", sx, sy);
+#endif
+
+#ifdef DEBUG
+  A4GL_debug ("Opening blob\n");
+#endif
+
+  i=NULL;
+
+  if (A4GL_has_pointer(filename,HARU_IMAGE)) {
+	i=A4GL_find_pointer(filename,HARU_IMAGE);
+
+  }  
+
+  if (i==NULL) {
+  	if (A4GL_aubit_strcasecmp(type,"PNG")==0) {
+		i=HPDF_LoadPngImageFromFile(DOC(p)->doc,filename);
+  	}
+
+  	if (A4GL_aubit_strcasecmp(type,"JPG")==0 || A4GL_aubit_strcasecmp(type,"JPEG")==0) {
+		i=HPDF_LoadJpegImageFromFile(DOC(p)->doc,filename);
+  	}
+  }
+  if (i) {
+		A4GL_add_pointer(filename,HARU_IMAGE,i);
+  }
+  //n = PDF_open_image_file (p->pdf_ptr, type, blob->filename, "", 0);
+#ifdef DEBUG
+  A4GL_debug ("Image handle=%p\n", i);
+#endif
+
+  if (i==NULL)
+    {
+      /* exitwith("Unable to open file %s %s",type,blob->filename); */
+      /* An empty blob or invalid type (bmp) is also error,
+         so just ignore and continue */
+      /* A4GL_exitwith ("Unable to open file."); */
+      return;
+    }
+  
+   x=HPDF_Image_GetWidth(i);
+   y=HPDF_Image_GetHeight(i);
+
+
+  //y = PDF_get_value (p->pdf_ptr, "imageheight", n);
+  //x = PDF_get_value (p->pdf_ptr, "imagewidth", n);
+
+  ox=(double)x;
+  oy=(double)y;
+  sy=sx;
+  y = (int) ((double) y * sy);
+  x = (int) ((double) x * sx);
+
+// If its just way to large to fit on the page - scale it back...
+// this doesn't care if we're too far down the page etc - thats a different problem :-)
+	while (y > (int)p->page_length) {
+#ifdef DEBUG
+			A4GL_debug("Too high %d %lf",y,p->page_length);
+#endif
+			sx*=0.99;
+			sy*=0.99;
+  			y = (int) (oy * sy);
+  			x = (int) (ox * sx);
+	}
+
+	while (x > (int)p->page_width) {
+#ifdef DEBUG
+			A4GL_debug("Too wide %d %lf",x,p->page_width);
+#endif
+			sx*=0.99;
+			sy*=0.99;
+  			y = (int) (oy * sy);
+  			x = (int) (ox * sx);
+	}
+
+#ifdef DEBUG
+  A4GL_debug ("Placing heght of image =%d col=%f line=%f length=%f scale=%lf", y, p->col_no, p->line_no, p->page_length,sx);
+#endif
+
+  if (p->col_no == 0)
+    {
+      p->col_no += p->left_margin;
+    }
+#ifdef DEBUG
+  A4GL_debug ("x=%lf y=%lf", p->col_no, p->page_length - p->line_no - y);
+#endif
+
+  ClearOldMode(DOC(p), HPDF_GMODE_PATH_OBJECT);
+
+  HPDF_Page_DrawImage (CURRENT_PAGE(p), i, p->col_no, p->page_length - p->line_no - y, HPDF_Image_GetWidth(i)*sx, HPDF_Image_GetHeight(i)*sy);
+
+#ifdef DEBUG
+  A4GL_debug ("Closing");
+#endif
+  //PDF_close_image (p->pdf_ptr, n);
+
+#ifdef DEBUG
+A4GL_debug("lineno (%lf) +=  %lf", p->line_no,(double)y);
+A4GL_debug("colno (%lf) +=  %lf", p->col_no,(double)x);
+#endif
+
+  p->line_no = p->line_no + (double) y;
+  p->col_no = p->col_no + (double) x;
+  A4GL_push_empty_char ();
+  A4GL_pdf_rep_print (p, 1, cr, 0, -1);
+  return;
+}
 
 int
 A4GLPDFREP_A4GL_pdf_pdffunc_internal (void *vp, char *fname, int nargs)

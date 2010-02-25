@@ -643,18 +643,17 @@ print_file_cmd :
 
 
 print_img_cmd : 
-	PRINT_IMAGE blob_var img_types opt_scaling opt_semi_b { 
-	inc_var_usage($<ptr>2);
-	if (!isin_command("REPORT")) {
+	PRINT_IMAGE blob_var_or_char_var_or_char_literal  img_types opt_scaling opt_semi_b { 
+		if (!isin_command("REPORT")) {
                         a4gl_yyerror("PRINT can only be used in a report. Did you mean DISPLAY ?");
                         YYERROR;
-	}
+		}
 
-	$<cmd>$=new_print_img_cmd($<ptr>2,
+		$<cmd>$=new_print_img_cmd($<ptr>2,
 				chk_expr($<pair_expr>4.s2),
 				chk_expr($<pair_expr>4.s1),$<str>3,$<e_boolean>5);
 		
-} 
+	} 
 ;
 
 opt_scaling :
@@ -680,21 +679,31 @@ img_types :
 ;
 
 
-blob_var :  variable_usage_expression {
-			int vtype;
-			char errbuff[256];
-			vtype=get_variable_dtype_from_variable_usage_expression(errbuff,$<ptr>1) ;
-			if (vtype==-1) {
-				a4gl_yyerror(errbuff);
-				YYERROR;
-			} else {
-			vtype=vtype&DTYPE_MASK;
-			if (vtype!=DTYPE_BYTE&&vtype!=DTYPE_TEXT) {
-				a4gl_yyerror("Only Blobs may be printed...");
-				YYERROR;
-			}
-			}
-}
+blob_var_or_char_var_or_char_literal :  variable_usage_expression {
+						int vtype;
+						char errbuff[256];
+						vtype=get_variable_dtype_from_variable_usage_expression(errbuff,$<ptr>1) ;
+						if (vtype==-1) {
+							a4gl_yyerror(errbuff);
+							YYERROR;
+						} else {
+							vtype=vtype&DTYPE_MASK;
+							if (vtype!=DTYPE_BYTE&&vtype!=DTYPE_TEXT && vtype!=DTYPE_CHAR && vtype!=DTYPE_VCHAR) {
+								a4gl_yyerror("Only Blobs and character strings (containing a path) may be printed...");
+								YYERROR;
+							}
+						}
+						$<ptr>$=$<ptr>1;
+						inc_var_usage($<ptr>$);
+				} 
+		|  CHAR_VALUE  {
+                		if (strcmp($<str>1,"\"\"")==0) {
+					a4gl_yyerror("You can't use an empty character string here.");
+					YYERROR;
+                		} else {
+                        		$<ptr>$=A4GL_new_literal_string(A4GL_strip_quotes($<str>1));
+                		}
+        	}
 ;
 
 opt_semi_b : { $<e_boolean>$=EB_FALSE; } | SEMICOLON { $<e_boolean>$=EB_TRUE; };

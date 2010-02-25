@@ -31,4 +31,5 @@ A4GL_pdf_rep_close void* p -> void
 A4GL_pdf_size double f, char c, void* p -> double
 A4GL_pdf_pdffunc_internal void* p, char* fname, int n -> int
 A4GL_pdf_blob_print void* p, void* blob, char* type, int cr -> void
+A4GL_pdf_image_print void* p, char* type, int cr -> void
 

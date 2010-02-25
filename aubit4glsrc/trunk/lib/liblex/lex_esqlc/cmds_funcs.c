@@ -3493,14 +3493,30 @@ int print_print_file_cmd(struct_print_file_cmd *cmd_data) {
 
 /******************************************************************************/
 int print_print_img_cmd(struct_print_img_cmd *cmd_data) {
+int use_blob=0;
   print_cmd_start ();
   print_expr(cmd_data->scale_x);
   print_expr(cmd_data->scale_y);
-	set_nonewlines();
-  printc ("A4GL_pdf_blob_print(&_rep,&");
-  print_variable_usage(cmd_data->var); 
-  printc(",\"%s\",%d);\n",  cmd_data->img_type, cmd_data->semi==EB_TRUE);
-	clr_nonewlines();
+
+  if (cmd_data->var->expr_type==ET_EXPR_VARIABLE_USAGE) {
+		int dtype;
+		dtype=get_binding_dtype(cmd_data->var) & DTYPE_MASK;
+		if (dtype==DTYPE_BYTE || dtype==DTYPE_TEXT) {
+			use_blob=1;
+		}
+  }
+  
+
+  if (use_blob) {
+  	set_nonewlines();
+  	printc ("A4GL_pdf_blob_print(&_rep,&");
+  	print_variable_usage(cmd_data->var); 
+  	printc(",\"%s\",%d);\n",  cmd_data->img_type, cmd_data->semi==EB_TRUE);
+		clr_nonewlines();
+  } else {
+	print_expr(cmd_data->var);
+  	printc ("A4GL_pdf_image_print(&_rep,\"%s\",%d);", cmd_data->img_type, cmd_data->semi==EB_TRUE);
+  }
   print_copy_status_not_sql (0);
   return 1;
 }
