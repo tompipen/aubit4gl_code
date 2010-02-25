@@ -435,10 +435,6 @@ Wed Apr 29 14:35:59 BST 2009
 	
 	Allow load of SQLMETRICS in File mode
 	
-	,
-	
-	,
-	
 	sqlmetrics: Initial support for sqlcode and timestamp
 	
 	Fix UNION with different sized strings returning CHAR(-1) in pg8.c

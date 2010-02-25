@@ -19,8 +19,9 @@ void check_expression (char *module, int lineno, struct expr_str *e);
 static void check_expressions_cmd (struct s_commands *cmds);
 static void check_boolean (char *module_name, int lineno, expr_str * s,
 			   int last_was_sql, int done_true_false);
-static int A4GL_is_just_literal (expr_str * ptr,
-				 int already_done_true_and_false);
+static int A4GL_is_just_literal (expr_str * ptr, int already_done_true_and_false);
+static void add_declare_cursor(char *cursorname, char *module,int lineno) ;
+static void lookForDuplicateCursorDefinitions(void );
 struct s_severities
 {
   char *code;
@@ -136,7 +137,6 @@ static int has_lint_expect (char *c);
 
 static void clr_lint_expect (void);
 
-
 //void log_proto( struct  expr_str *fcall, struct binding_comp_list *ret) ;
 //void dump_prototypes(void) ;
 //static struct s_commands * linearise_commands(struct s_commands *master_list, struct s_commands *cmds) ;
@@ -152,16 +152,14 @@ static void cache_expression_list (struct expr_str_list *list,
 //static int A4GL_is_just_literal (struct expr_str_list *list, expr_str * ptr, int already_done_true_and_false);
 extern module_definition this_module;
 //int expr_datatype (struct expr_str *p);
-static struct module_definition *find_module (module_definition * mods,
-					      int nmodules, char *name);
+static struct module_definition *find_module (module_definition * mods, int nmodules, char *name);
 
 static void scan_functions (char *infuncname, int calltree_entry,
 			    int *calltree, struct s_call_list *f,
 			    struct s_commands *calling_funcs_commands);
 static void set_lint_module (char *s);
 
-static void check_variable_name (char *modname, char *scope,
-				 struct variable *v);
+static void check_variable_name (char *modname, char *scope, struct variable *v);
 static void check_cmds_for_dead_code (struct s_commands *cmds);
 //expr_str * expr_cached (expr_str * l);
 //int has_variable (struct variable_list *v, char *name) ;
@@ -3387,12 +3385,18 @@ check_module (struct module_definition *d)
 		    }
 		}
 
-	      if (all_cmds->cmds.cmds_val[b]->cmd_data.type ==
-		  E_CMD_DECLARE_CMD)
+	      if (all_cmds->cmds.cmds_val[b]->cmd_data.type == E_CMD_DECLARE_CMD)
 		{
+
+
+
+
 		  if (all_cmds->cmds.cmds_val[b]->cmd_data.command_data_u.
 		      declare_cmd.declare_dets->ident == NULL)
 		    continue;
+
+
+
 		  if (A4GL_aubit_strcasecmp
 		      (lint_get_ident_as_string
 		       (d,
@@ -5798,6 +5802,37 @@ check_program (module_definition * mods, int nmodules)
       clr_lint_expect ();
     }
 
+
+
+	  for (a = 0; a < all_cmds->cmds.cmds_len; a++)
+	    {
+		
+	      if (all_cmds->cmds.cmds_val[a]->cmd_data.type == E_CMD_DECLARE_CMD) {
+			char *cname;
+			int b;
+			int c;
+			int found=0;
+			if (all_cmds->cmds.cmds_val[a]->cmd_data.command_data_u.declare_cmd.cursorname->expr_type==ET_EXPR_IDENTIFIER) {
+				cname=all_cmds->cmds.cmds_val[a]->cmd_data.command_data_u.declare_cmd.cursorname->expr_str_u.expr_string;
+			} else {
+				cname=lint_get_ident_as_string(NULL, all_cmds->cmds.cmds_val[a]->cmd_data.command_data_u.declare_cmd.cursorname);
+			}
+
+			for (b=0;b<nmodules;b++) {
+				for (c=0;c<mods[b].clobberings.clobberings_len;c++) {
+					if (strcmp(mods[b].clobberings.clobberings_val[c].newval,cname)==0) {
+						cname=mods[b].clobberings.clobberings_val[c].important;
+						found=1;
+						break;
+					}
+				}
+				if (found) break;
+			}
+
+			add_declare_cursor(cname, all_cmds->cmds.cmds_val[a]->module, all_cmds->cmds.cmds_val[a]->lineno);
+			}
+	}
+   lookForDuplicateCursorDefinitions();
 
   return 1;
 }
@@ -8454,4 +8489,46 @@ int
 get_nlints (void)
 {
   return nlints;
+}
+
+
+
+
+/* 
+ ***************************************************************************************************
+ Look for duplicate cursor definitions..
+
+ ***************************************************************************************************
+ */
+struct cursorDefinition {
+	char *cursorname;
+	char *module;
+	int lineno;
+};
+
+struct cursorDefinition *declaredCursors=NULL;
+int ndeclaredCursors=0;
+
+static void add_declare_cursor(char *cursorname, char *module,int lineno)  {
+	ndeclaredCursors++;
+	declaredCursors=realloc(declaredCursors,sizeof(declaredCursors[0])*ndeclaredCursors);
+	declaredCursors[ndeclaredCursors-1].cursorname=strdup(cursorname);
+	declaredCursors[ndeclaredCursors-1].module=module;
+	declaredCursors[ndeclaredCursors-1].lineno=lineno;
+}
+
+
+static void lookForDuplicateCursorDefinitions(void ) {
+int a;
+int b;
+	if (ndeclaredCursors<=1) return; /* Cant have duplicates if theres only 1 or zero */
+	for (a=0;a<ndeclaredCursors;a++) {
+		for (b=a+1;b<ndeclaredCursors;b++) {
+			if (strcmp(declaredCursors[a].cursorname,declaredCursors[b].cursorname)==0) {
+			  A4GL_lint (declaredCursors[a].module, declaredCursors[a].lineno, "DUPCURSOR", "Cursor name is DECLAREd twice", declaredCursors[b].cursorname);
+			  A4GL_lint (declaredCursors[b].module, declaredCursors[b].lineno, "DUPCURSOR", "Cursor name is DECLAREd twice", declaredCursors[b].cursorname);
+				
+			}
+		}
+	}
 }
