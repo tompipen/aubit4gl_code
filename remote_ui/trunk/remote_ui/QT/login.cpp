@@ -43,7 +43,7 @@ LoginForm::LoginForm(QWidget *parent)
    QStatusBar *statusBar = mainFrame->statusBar();
 
     QSystemTrayIcon *trayIcon = new QSystemTrayIcon(this);
-   trayIcon->setIcon(QIcon("./pics/ventas.png"));
+   trayIcon->setIcon(QIcon("./pics/vdc.png"));
 
    QMenu *menu = new QMenu;
    QAction *showAction = menu->addAction("Show Login Window");
