@@ -1584,8 +1584,10 @@ void FglForm::revertState(Fgl::State state){
 //------------------------------------------------------------------------------
 void FglForm::checkState()
 {
+/*
    if(p_dialog != NULL)
       return;
+*/
 
    Fgl::State state = ql_states.last();
 
@@ -2251,6 +2253,29 @@ void FglForm::checkActions()
                }
             }
          }
+      }
+      if(Dialog *p_dialog = qobject_cast<Dialog *> (dialog())){
+         QList<QAction*> dialogActions = p_dialog->actions();
+
+         for(int i=0; i<dialogActions.count(); i++){
+            if(Action *dAction = qobject_cast<Action *> (dialogActions.at(i))){
+               for(int j=0; j<formActions.count(); j++){
+                  if(Action *fAction = qobject_cast<Action *> (formActions.at(j))){
+                     if(dAction->name() == fAction->name()){
+                        fAction->setEnabled(true);
+                        if(QPushButton *button = qobject_cast<QPushButton *> (dAction->parent())){
+                           if(!fAction->image().isEmpty()){
+                              dAction->setImage(fAction->image());
+                              button->setIcon(QIcon(QString("pics:%1").arg(fAction->image())));
+                           }
+                        }
+                        break;
+                     }
+                  }
+               }
+            }
+         }
+        
       }
    }
 
