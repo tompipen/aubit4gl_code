@@ -56,7 +56,7 @@ int main(int argc, char *argv[])
 
     app.setFont(yavcFont);
 
-    QIcon ventasLogo("./pics/ventas.png");
+    QIcon ventasLogo("./pics/vdc.png");
 
     app.setWindowIcon(ventasLogo);
 
