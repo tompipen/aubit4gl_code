@@ -41,7 +41,7 @@ class RingMenu : public QGroupBox
 
 public:
    RingMenu(QWidget *parent = 0);
-   RingMenu(QString title, QString style = "", QString image = "", QWidget *parent = 0);
+   RingMenu(QString title, QString style = "", QWidget *parent = 0);
 
 
    void createButton(int id = 0, QString text = "", QString desc = "");

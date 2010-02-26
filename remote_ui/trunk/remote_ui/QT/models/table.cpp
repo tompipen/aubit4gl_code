@@ -591,6 +591,8 @@ Qt::ItemFlags TableModel::flags(const QModelIndex &index) const
 
 bool TableModel::insertRows(int position, int rows, const QModelIndex &index)
 {
+   Q_UNUSED(index);
+
    if(this->rows >= 0){
       this->rows += rows;
 
@@ -613,6 +615,7 @@ bool TableModel::insertRows(int position, int rows, const QModelIndex &index)
 
 bool TableModel::removeRows(int position, int rows, const QModelIndex &index)
 {
+   Q_UNUSED(index);
    if(this->rows > 0 && this->fields.count() > position+rows){
 
       beginRemoveRows(QModelIndex(), position, position+rows-1);
@@ -716,6 +719,8 @@ LineEditDelegate::LineEditDelegate(QDomElement formElement, QObject *parent)
 
 QSize LineEditDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
+   Q_UNUSED(option);
+   Q_UNUSED(index);
    /*
    ButtonEdit *editor = new ButtonEdit(icon);
    editor->setFixedWidth((w+5)*5);
@@ -767,11 +772,6 @@ void LineEditDelegate::updateEditorGeometry(QWidget *editor,
     const QStyleOptionViewItem &option, const QModelIndex &/* index */) const
 {
    editor->setGeometry(option.rect);
-}
-
-void LineEditDelegate::sendEvent(QString id)
-{
-   //emit fieldEvent(id);
 }
 
 void LineEditDelegate::setForm(QWidget *form)

@@ -124,10 +124,10 @@ signals:
    void displayMessage(QString);
 
    void createActionMenu();
-   void createActionMenuButton(QString, QString, QString);
+   void createActionMenuButton(QString, QString);
    void debugtext( const QString& );
 
-   void setKeyLabel(int, QString, QString);
+   void setKeyLabel(QString, QString);
    void setCursorPosition(int);
 
    void handleAubitForm(QString, QString, bool);

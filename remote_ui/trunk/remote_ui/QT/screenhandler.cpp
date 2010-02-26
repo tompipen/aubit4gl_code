@@ -298,7 +298,7 @@ void ScreenHandler::createMenu(QString title, QString comment, QString style, QS
    }
 
 
-   RingMenu *ringMenu = new RingMenu(title, style, image);
+   RingMenu *ringMenu = new RingMenu(title, style);
 
    p_fglform->setMenu(ringMenu);
 }
@@ -1305,7 +1305,7 @@ void ScreenHandler::createActionMenu()
    }
 
    if(qh_formActionMenus[i_Frm] == NULL){
-      ActionMenu *actionMenu = new ActionMenu("", "", "");
+      ActionMenu *actionMenu = new ActionMenu("", "");
       qh_formActionMenus[i_Frm] = actionMenu;
       p_fglform->setActionMenu(qh_formActionMenus[i_Frm]);
       p_fglform->setMenuEnabled(false);
@@ -1322,7 +1322,7 @@ void ScreenHandler::createActionMenu()
 // Filename     : screenhandler.cpp
 // Description  : defines and show F-keys buttons
 //------------------------------------------------------------------------------
-void ScreenHandler::createActionMenuButton(QString buttonId, QString text, QString desc)
+void ScreenHandler::createActionMenuButton(QString text, QString desc)
 {
 
   int i_Frm = getCurrForm();
@@ -1336,7 +1336,7 @@ void ScreenHandler::createActionMenuButton(QString buttonId, QString text, QStri
    if(qh_formActionMenus[i_Frm] == NULL)
       return;
 
-   ActionMenu *actionMenu = qh_formActionMenus[i_Frm];
+   //ActionMenu *actionMenu = qh_formActionMenus[i_Frm];
 
    Action *fAction = new Action(Fgl::stringToKey(desc), text);
    fAction->setAcceleratorName(desc);
@@ -1344,35 +1344,6 @@ void ScreenHandler::createActionMenuButton(QString buttonId, QString text, QStri
    fAction->setVisible(false);
    p_fglform->addFormAction(fAction);
 
-//TODO
-/*
-   for(int i=0; i<p_fglform->ql_formEvents.count(); i++){
-      Fgl::Event ev = p_fglform->ql_formEvents.at(i);
-
-      if(ev.type == Fgl::ONKEY_EVENT && ev.attribute == Fgl::stringToKey(desc)){
-         ev.type = Fgl::ONACTION_EVENT;
-
-         p_fglform->ql_formEvents.replace(i, ev);
-      }
-   }
-*/
-   //actionMenu->createButton(fAction->name(), fAction->text(), fAction->comment(), fAction);
-
-
-/*
-   actionMenu->createButton(buttonId, text, desc);
-
-   QAction *action = actionMenu->getAction(text.toLower());
-   connect(action, SIGNAL(triggered()), p_fglform, SLOT(actionTriggered()));
-*/
-
-/*
-   Fgl::Event event;
-   event.type = Fgl::ONACTION_EVENT;
-   event.id = -1;
-   event.attribute = text.toLower(); //Fgl::stringToKey(attribute);
-   p_fglform->addFormEvent(event);
-*/
 }
 
 //------------------------------------------------------------------------------
@@ -1967,7 +1938,7 @@ void ScreenHandler::activeWindow(QString windowName)
 // Filename     : screenhandler.cpp
 // Description  : describe F-keys
 //------------------------------------------------------------------------------
-void ScreenHandler::setKeyLabel(int dialog, QString label, QString text)
+void ScreenHandler::setKeyLabel(QString label, QString text)
 {
    int i_Frm = getCurrForm();
 
@@ -1983,7 +1954,7 @@ void ScreenHandler::setKeyLabel(int dialog, QString label, QString text)
    }
 
 
-   createActionMenuButton(QString::number(dialog), text, label);
+   createActionMenuButton(text, label);
 
 }
 

@@ -53,8 +53,7 @@ ActionMenu::ActionMenu(QWidget *parent) : QGroupBox(parent)
 // Filename     : actionmenu.cpp
 // Description  : Constructs the ActionMenu for the MenuButtons
 //------------------------------------------------------------------------------
-ActionMenu::ActionMenu(QString title, QString style, QString image, 
-                   QWidget *parent) : QGroupBox(title, parent)
+ActionMenu::ActionMenu(QString title, QString style, QWidget *parent) : QGroupBox(title, parent)
 {
 
    this->setAlignment(Qt::AlignRight | Qt::AlignTop);
@@ -89,6 +88,8 @@ ActionMenu::ActionMenu(QString title, QString style, QString image,
 //------------------------------------------------------------------------------
 void ActionMenu::createButton(QString id, QString text, QString shortcut, QAction *action)
 {
+   Q_UNUSED(id);
+
    bool visible = true;
    if(text.isEmpty()){
       visible = false;
@@ -131,16 +132,6 @@ void ActionMenu::createButton(QString id, QString text, QString shortcut, QActio
    }
 
    buttonGroup->addButton(button); //, id);
-}
-
-//------------------------------------------------------------------------------
-// Method       : hideButton()
-// Filename     : actionmenu.cpp
-// Description  : 
-//------------------------------------------------------------------------------
-void ActionMenu::hideButton(int id)
-{
-   //TODO Implement
 }
 
 //------------------------------------------------------------------------------

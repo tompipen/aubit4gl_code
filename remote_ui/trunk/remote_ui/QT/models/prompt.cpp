@@ -41,6 +41,7 @@ Prompt::Prompt(QWidget *parent, Qt::WindowFlags f) : QDialog(parent, f)
 //------------------------------------------------------------------------------
 Prompt::Prompt(QString text, int charMode, QWidget *parent, Qt::WindowFlags f) : QDialog(parent, f)
 {
+  Q_UNUSED(charMode);
   this->setWindowFlags(Qt::Dialog);
 
   //dont let other windows get Focus

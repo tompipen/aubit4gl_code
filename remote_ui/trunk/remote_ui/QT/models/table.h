@@ -175,9 +175,6 @@ protected:
 signals:
    void fieldEvent(Fgl::Event, QWidget*);
 
-public slots:
-   void sendEvent(QString);
-
 private:
    QWidget *p_fglform;
    QDomElement formElement;

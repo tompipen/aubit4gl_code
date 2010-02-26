@@ -69,8 +69,10 @@ public:
    bool touched();
    void setFormat(QString f) { qs_format = f; };
    QString format() { return qs_format; };
+/*
    virtual QString text(int row = 0);
    virtual void setText(QString s = "", int row = 0);
+*/
    QString defaultValue();
    void setDefaultValue(QString);
    void addField(QWidget*);

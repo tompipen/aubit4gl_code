@@ -28,12 +28,11 @@ class ActionMenu : public QGroupBox
 
 public:
    ActionMenu(QWidget *parent = 0);
-   ActionMenu(QString title = "", QString style = "", QString image = "", QWidget *parent = 0);
+   ActionMenu(QString title = "", QString style = "", QWidget *parent = 0);
 
 
    void createButton(QString id = "", QString text = "", QString desc = "", QAction* action=NULL);
    void setAction(QString, QAction*);
-   void hideButton(int);
    void hideButton(QString);
    QList<QPushButton*> buttons();
 

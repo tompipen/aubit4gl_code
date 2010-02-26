@@ -62,6 +62,8 @@ namespace Fgl {
 
    bool fgl_using(QString fmt, QString *value)
    {
+      Q_UNUSED(fmt);
+      Q_UNUSED(value);
       return true;
    }
 
@@ -78,6 +80,9 @@ namespace Fgl {
 
    bool fgl_using_string(QString fmt, QString *value, bool isneg)
    {
+       Q_UNUSED(fmt);
+       Q_UNUSED(value);
+       Q_UNUSED(isneg);
       return true;
    }
 
@@ -366,7 +371,7 @@ namespace Fgl {
               }
 
            default:
-             qFatal(QString("Datatype field checking not handled for %1").arg(datatype).toAscii());
+             qFatal("Datatype field checking not handled");
              return false;
       }
    }

@@ -128,8 +128,8 @@ public slots:
    void setMenuEnabled(bool);
    void setScreenRecordEnabled(QString, bool, bool);
    void createActionMenu();
-   void createActionMenuButton(QString, QString, QString);
-   void setKeyLabel(int, QString, QString);
+   void createActionMenuButton(QString, QString);
+   void setKeyLabel(QString, QString);
    void waitForEvent();
    void processResponse();
    void hideOption(QString);

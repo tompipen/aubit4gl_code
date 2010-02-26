@@ -41,6 +41,8 @@ Dialog::Dialog(QString title, QString comment, QString style, QString image,
                QWidget *parent, Qt::WindowFlags f) : QDialog(parent, f)
 {
 
+   Q_UNUSED(style);
+
    this->setAttribute(Qt::WA_DeleteOnClose);
 
    QVBoxLayout *layout = new QVBoxLayout;
@@ -138,16 +140,6 @@ void Dialog::createAction(int id, QString text)
    buttonLayout->addWidget(button);
 
    buttonGroup->addButton(button, id);
-}
-
-//------------------------------------------------------------------------------
-// Method       : hideButton()
-// Filename     : ringmenu.cpp
-// Description  : 
-//------------------------------------------------------------------------------
-void Dialog::hideButton(int id)
-{
-   //TODO Implement
 }
 
 //------------------------------------------------------------------------------

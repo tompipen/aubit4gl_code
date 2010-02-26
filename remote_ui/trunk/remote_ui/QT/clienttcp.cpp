@@ -250,11 +250,11 @@ ClientSocket::ClientSocket(QObject *parent, QString name, QString pass, QString 
    connect(&ph, SIGNAL(createActionMenu()), 
            p_currScreenHandler, SLOT(createActionMenu()));
    // shows buttons of F-keys
-   connect(&ph, SIGNAL(createActionMenuButton(QString, QString, QString)), 
-           p_currScreenHandler, SLOT(createActionMenuButton(QString, QString, QString)));
+   connect(&ph, SIGNAL(createActionMenuButton(QString, QString)), 
+           p_currScreenHandler, SLOT(createActionMenuButton(QString, QString)));
    // new: replaces createActionMenu() and createActionMenuButton()
-   connect(&ph, SIGNAL(setKeyLabel(int, QString, QString)), 
-           p_currScreenHandler, SLOT(setKeyLabel(int, QString, QString)));
+   connect(&ph, SIGNAL(setKeyLabel(QString, QString)), 
+           p_currScreenHandler, SLOT(setKeyLabel(QString, QString)));
    // set cursor position for editor
    connect(&ph, SIGNAL(setCursorPosition(int)), 
            p_currScreenHandler, SLOT(setCursorPosition(int)));
@@ -1149,11 +1149,11 @@ void ProtocolHandler::outputTree(QDomNode domNode)
 
 
    if(childElement.nodeName() == "SETKEYLABEL"){
-      int dialog = childElement.attribute("DIALOG").toInt();
+      //int dialog = childElement.attribute("DIALOG").toInt();
       QString label = childElement.attribute("LABEL");
       QString text  = childElement.attribute("TEXT").trimmed();
 
-      setKeyLabel(dialog, label, text);
+      setKeyLabel(label, text);
       return;
    }
 

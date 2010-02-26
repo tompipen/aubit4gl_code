@@ -205,6 +205,8 @@ void Context::addScreenRecord(QWidget *screenRec, bool input)
 void Context::screenRecordRowChanged(const QModelIndex & current, const QModelIndex & previous)
 {
 
+   Q_UNUSED(previous);
+
    if(fgl_state != Fgl::INPUTARRAY && fgl_state != Fgl::DISPLAYARRAY)
       return;
 
@@ -244,6 +246,8 @@ void Context::screenRecordRowChanged(const QModelIndex & current, const QModelIn
 
 void Context::screenRecordColumnChanged(const QModelIndex & current, const QModelIndex & previous)
 {
+   Q_UNUSED(previous);
+   Q_UNUSED(current);
 }
 
 QStringList Context::getScreenRecordValues(int row)

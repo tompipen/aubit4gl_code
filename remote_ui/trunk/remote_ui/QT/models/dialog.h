@@ -33,7 +33,6 @@ public:
    
    void createButton(int id = 0, QString text = "", QString desc = "");
    void createAction(int id = 0, QString text = "");
-   void hideButton(int);
    void hideButton(QString);
    void showButton(QString);
    QList<QAction*> actions();

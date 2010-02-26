@@ -50,7 +50,7 @@ RingMenu::RingMenu(QWidget *parent) : QGroupBox(parent)
 // Filename     : ringmenu.cpp
 // Description  : Constructs the RingMenu for the MenuButtons
 //------------------------------------------------------------------------------
-RingMenu::RingMenu(QString title, QString style, QString image, 
+RingMenu::RingMenu(QString title, QString style, 
                    QWidget *parent) : QGroupBox(title, parent)
 {
    b_hideButtons = false;
@@ -445,5 +445,6 @@ QAction* RingMenu::getAction(QString name)
 
 bool RingMenu::isActionButton(QPushButton* button)
 {
+   Q_UNUSED(button);
    return false;
 }

@@ -149,6 +149,7 @@ bool FormField::touched()
    return b_touched;
 }
 
+/*
 QString FormField::text(int row)
 {
    return QString();
@@ -158,6 +159,7 @@ void FormField::setText(QString text, int row)
 {
   
 }
+*/
 
 QString FormField::defaultValue()
 {
@@ -213,7 +215,8 @@ TableColumn::TableColumn(QObject *parent) : FormField(parent)
 
 void TableColumn::setText(QString text, int row)
 {
-  
+   Q_UNUSED(text);
+   Q_UNUSED(row);
 }
 
 //------------------------------------------------------------------------------
@@ -667,6 +670,8 @@ QWidget* WidgetHelper::createFormWidget(const QDomElement& formField, QWidget *p
 
 FormField* WidgetHelper::createFormField(const QDomElement& formField, QWidget *parent)
 {
+   Q_UNUSED(parent);
+
    QString name    = formField.attribute("name");
    QString colName = formField.attribute("colName");
    QString tabName = formField.attribute("sqlTabName");
