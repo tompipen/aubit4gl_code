@@ -392,14 +392,18 @@ namespace AubitDesktop
         bool inEnvelope = false;
        private void tcpStream_DataReceived(object sender, com.thosmos.TcpStream.TcpDataEventArgs e)
        {
+
+           Encoding enc = System.Text.Encoding.GetEncoding(Program.AppSettings.defaultEncoding);
+           
+           
             //bool inEnvelope=false;
                int index;
             //string Envelope="";
 
 
-           cmd+=System.Text.Encoding.ASCII.GetString(e.data);
+           cmd+=enc.GetString(e.data);
 
-          
+
 
                 if (this.sockStyle == AubitNetwork.SocketStyle.SocketStyleLine || this.sockStyle == AubitNetwork.SocketStyle.SocketStyleEnvelope)
                 {
@@ -764,7 +768,14 @@ namespace AubitDesktop
             }
             if (e.Data == "TIMEOUT")
             {
-                MessageBox.Show(appwin,"Timeout...");
+                try
+                {
+                    MessageBox.Show(appwin, "Timeout...");
+                }
+                catch (Exception )
+                {
+
+                }
                 if (appwin.FailedToStart())
                 {
 
