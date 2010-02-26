@@ -149,6 +149,7 @@ namespace AubitDesktop
             this.About.Font = new System.Drawing.Font("Tahoma", 8.25F);
             this.About.Image = ((Gizmox.WebGUI.Common.Resources.ResourceHandle)(resources.GetObject("About.Image")));
             this.About.Name = "About";
+            this.About.Pushed = true;
             this.About.Size = 24;
             this.About.Text = "About";
             this.About.ToolTipText = "About the viewer";
@@ -177,6 +178,7 @@ namespace AubitDesktop
             // 
             // gbWinQuestion
             // 
+            this.gbWinQuestion.BackColor = System.Drawing.SystemColors.Control;
             this.gbWinQuestion.BorderStyle = Gizmox.WebGUI.Forms.BorderStyle.Fixed3D;
             this.gbWinQuestion.Controls.Add(this.buttonBox);
             this.gbWinQuestion.Controls.Add(this.lblText);
