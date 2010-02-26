@@ -70,6 +70,7 @@ int main(int argc, char *argv[])
     MainFrame mainframe;
     mainframe.move(QCursor::pos());
     mainframe.show();
+    mainframe.adjustSize();
     splash->finish(&mainframe);
     mainframe.activateWindow();
     mainframe.raise();

@@ -98,7 +98,8 @@ void ScreenHandler::createWindow(QString windowTitle,QString style, int x, int y
    cnt_form++;
 
    //p_fglform = new FglForm(windowTitle, parentWidget);
-   p_fglform = new FglForm(windowTitle, p_fglform);
+   //p_fglform = new FglForm(windowTitle, p_fglform);
+   p_fglform = new FglForm(windowTitle);
    p_fglform->installEventFilter(this);
 
    p_fglform->setId(id);
