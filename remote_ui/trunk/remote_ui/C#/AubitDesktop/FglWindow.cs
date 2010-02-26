@@ -333,6 +333,11 @@ namespace AubitDesktop
 
             if (isContainable)
             {
+
+		if (f.pixelWidth>0 && f.pixelHeight>0) {
+			 WindowWidget.Height =f.pixelHeight+5+f.thisFormsPanel.Top;
+			 WindowWidget.Width =f.pixelWidth+5+f.thisFormsPanel.Left;
+		} else {
                 if (f.maxcol >= 0 && f.maxline >= 0)
                 {
                     
@@ -348,6 +353,7 @@ namespace AubitDesktop
                 {
                     WindowWidget.AutoSize = true;
                 }
+		}
 
             }
         }
