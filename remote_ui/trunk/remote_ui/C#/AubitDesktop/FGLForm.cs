@@ -41,6 +41,10 @@ namespace AubitDesktop
         
         public int maxcol;
         public int maxline;
+
+   	public int pixelHeight;
+   	public int pixelWidth;
+
         //int n = 0;
         private Panel _thisFormsPanel;
         internal Panel thisFormsPanel
@@ -181,13 +185,30 @@ namespace AubitDesktop
                         gridArray.Columns[0].DataPropertyName = "subscript";                        
                         gridArray.RowsToDisplay = Convert.ToInt32(p.pageSize);
 
-                        if (p.width != null && p.width != "")
+
+ 			if ((p.width != null && p.width != "") || (p.height!=null && p.height!=""))
                         {
-                            gridArray.Width = GuiLayout.get_gui_w(Convert.ToInt32(p.width));
+                            if (p.width != "")
+                            {
+                                gridArray.Width = GuiLayout.get_gui_w(Convert.ToInt32(p.width));
+                            }
+                            else
+                            {
+                                gridArray.Width = parent.Width;
+                            }
+
+                            if (p.height != "")
+                            {
+                                gridArray.Height = GuiLayout.get_gui_h(Convert.ToInt32(p.height));
+                            }
+                            else
+                            {
+                                gridArray.Height = parent.Height;
+                            }
                         }
                         else
                         {
-                            gridArray.AutoSize = true;
+                            gridArray.AutoSize = true; // NOTWEBGUI
                         }
 
                         int minWidth = 50;
@@ -370,15 +391,21 @@ namespace AubitDesktop
                         }
                             #endregion
 
-                        if (showHeaders)
+                        if (p.height == "" || p.height == null)
                         {
-                            gridArray.Height = GuiLayout.get_gui_h(Convert.ToInt32(p.pageSize)+1);  
+			    double factor=1.0; 
+			    //WEBGUI factor=1.5; 
+                            if (showHeaders)
+                            {
+                                gridArray.Height = (int)(GuiLayout.get_gui_h(Convert.ToInt32(p.pageSize) + 1)*factor);
+                            }
+                            else
+                            {
+                                gridArray.Height = (int)(GuiLayout.get_gui_h(Convert.ToInt32(p.pageSize)) *factor);
+                            }
                         }
-                        else
-                        {
-                            gridArray.Height = GuiLayout.get_gui_h(Convert.ToInt32(p.pageSize));  
-                        }
-                        
+
+
                         // Maybe need these visible if we have some titles for them :-)
                         gridArray.ColumnHeadersVisible = showHeaders;
                         gridArray.Visible = true;
@@ -1086,10 +1113,11 @@ namespace AubitDesktop
 
         public FGLForm(XMLFORM f)
         {
-
+	bool forceSize=false;
             fields = new List<FGLWidget>();
 
-            
+            pixelHeight=0;
+            pixelWidth=0;
 
             AubitDesktop.Xml.XMLForm.Form theForm;
             System.Type t;
@@ -1133,17 +1161,35 @@ namespace AubitDesktop
                 this.maxcol = -1;
                 this.maxline = -1;
             }
+
+		forceSize=false;
             tooltips = new ToolTip();
             tooltips.ShowAlways = true;
 
             fields = new List<FGLWidget>();
             thisFormsPanel = new Panel();
+
+		//WEBGUI thisFormsPanel.Left=5; 
+		//WEBGUI thisFormsPanel.Top=5;
+
+	    if (theForm.pixelHeight!="" && theForm.pixelHeight!=null) {
+			forceSize=true;
+			thisFormsPanel.Height=Convert.ToInt32(theForm.pixelHeight);
+			pixelHeight=thisFormsPanel.Height;
+	    }
+	    if (theForm.pixelWidth!="" && theForm.pixelWidth!=null) {
+			forceSize=true;
+			thisFormsPanel.Width=Convert.ToInt32(theForm.pixelWidth);
+			pixelWidth=thisFormsPanel.Width;
+	    }
             thisFormsPanel.SuspendLayout(); 
             thisFormsPanel.Name = "FormPanel" + f.NAME;
             thisFormsPanel.Visible = true;
             
            // thisFormsPanel.BorderStyle = BorderStyle.FixedSingle;
+           if (!forceSize) {
             thisFormsPanel.Dock = DockStyle.Fill;
+		}
             thisFormsPanel.BackColor = SystemColors.Control;
             ScreenRecords = new List<FGLScreenRecord>();
             foreach (object o in theForm.XmlFormItems)
@@ -1185,7 +1231,11 @@ namespace AubitDesktop
 
                 // Program.Show(data, "Not implemented yet");
             }
+
+
+	if (!forceSize) {
                 thisFormsPanel.AutoSize = true;
+	}
                 thisFormsPanel.ResumeLayout();
                 this.thisFormsPanel.LocationChanged += new EventHandler(thisFormsPanel_LocationChanged);
         }
@@ -1225,6 +1275,9 @@ namespace AubitDesktop
             fields = new List<FGLWidget>();
             thisFormsPanel = new Panel();
             thisFormsPanel.Visible = true;
+
+            pixelHeight=0;
+            pixelWidth=0;
             
 
             thisFormsPanel.SuspendLayout(); 
@@ -1856,6 +1909,28 @@ namespace AubitDesktop
                 fld.Attribute = -1;
             }
         }
+
+        int colourCnt = 0;
+        Color getCol() // Used for debugging....
+        {
+            switch (colourCnt)
+            {
+                case 0: return Color.Blue;
+                case 1: return Color.Red;
+                case 2: return Color.Green;
+                case 3: return Color.Yellow;
+                case 4: return Color.Cyan;
+                case 5: return Color.Magenta;
+                case 6: return Color.White;
+                case 7: return Color.Brown;
+                case 8: return Color.Pink;
+                case 9: return Color.Purple;
+                case 10: return Color.Salmon;
+            }
+            return Color.Black;
+        }
+
+
 
         internal bool hasRecordContainingField(string name)
         {
