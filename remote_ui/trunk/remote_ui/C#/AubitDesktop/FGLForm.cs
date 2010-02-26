@@ -101,12 +101,11 @@ namespace AubitDesktop
                         p = (AubitDesktop.Xml.XMLForm.VBox)child;
 
                         FlowLayoutPanel thisLayoutControlsPanel;
-                        p = (AubitDesktop.Xml.XMLForm.VBox)child;
-                        
                         thisLayoutControlsPanel = new FlowLayoutPanel();
                         // Make it big - we'll resize later
                         // WEBGUI thisLayoutControlsPanel.Width = 2000; 
                         // WEBGUI thisLayoutControlsPanel.Height = 2000;
+                        // WEBGUI thisLayoutControlsPanel.AutoSizeMode = AutoSizeMode.GrowAndShrink; 
                         
                         thisLayoutControlsPanel.Name = "VBOX" + thisLayoutControlsPanel.GetHashCode();
                         thisLayoutControlsPanel.SuspendLayout();
@@ -114,10 +113,8 @@ namespace AubitDesktop
                         //thisLayoutControlsPanel.BorderStyle = BorderStyle.Fixed3D;
                         thisLayoutControlsPanel.Top = 5;
                         thisLayoutControlsPanel.Left = 5;
-                        thisLayoutControlsPanel.AutoSize = true;
                         //thisLayoutControlsPanel.BackColor = Color.Purple;
                         thisLayoutControlsPanel.FlowDirection = FlowDirection.TopDown;
-                        parent.Controls.Add(thisLayoutControlsPanel);
                         if (p.border)
                         {
                             thisLayoutControlsPanel.BorderStyle = BorderStyle.Fixed3D;
@@ -126,7 +123,9 @@ namespace AubitDesktop
                         {
                             addLayoutToParentForXmlForm(thisLayoutControlsPanel, a);
                         }
+                        thisLayoutControlsPanel.AutoSize = true; // NOTWEBGUI
                         thisLayoutControlsPanel.ResumeLayout();
+                        parent.Controls.Add(thisLayoutControlsPanel);
                     }
                     break;
                 #endregion
@@ -153,7 +152,6 @@ namespace AubitDesktop
                             thisLayoutControlsPanel.BorderStyle = BorderStyle.Fixed3D;
                         }
                         thisLayoutControlsPanel.FlowDirection = FlowDirection.LeftToRight;
-                        parent.Controls.Add(thisLayoutControlsPanel);
                         thisLayoutControlsPanel.SuspendLayout();
                         foreach (object a in p.Items)
                         {
@@ -161,6 +159,7 @@ namespace AubitDesktop
                         }
                         thisLayoutControlsPanel.ResumeLayout();
                         thisLayoutControlsPanel.AutoSize = true;
+                        parent.Controls.Add(thisLayoutControlsPanel);
                     }
                     break;
                 #endregion
@@ -417,6 +416,8 @@ namespace AubitDesktop
                         
 
                         thisScreensPanel = new Panel();
+
+			thisScreensPanel.SuspendLayout();
                         thisScreensPanel.Name = "PnGrid" + p.GetHashCode();
                         thisScreensPanel.Visible = true;
                         thisScreensPanel.Top = 5;
@@ -461,14 +462,15 @@ namespace AubitDesktop
                             addLayoutToParentForXmlForm(thisScreensPanel, a);
                         }
                         thisScreensPanel.Name = "Grid" + thisScreensPanel.GetHashCode();
-                        parent.Controls.Add(thisScreensPanel);
+
                         if (doAutosize)
                         {
 
                             frmMainAppWindow.ensureSizeWindow(thisScreensPanel, "");
-
                             thisScreensPanel.AutoSize = true;
                         }
+			thisScreensPanel.ResumeLayout();
+                        parent.Controls.Add(thisScreensPanel);
                     }
                     break;
                 #endregion
@@ -476,11 +478,13 @@ namespace AubitDesktop
                 case "AubitDesktop.Xml.XMLForm.Page":
                     {
                         AubitDesktop.Xml.XMLForm.Page p;
+			// p.SuspendLayout();
                         p = (AubitDesktop.Xml.XMLForm.Page)child;
                         foreach (object a in p.Items)
                         {
                             addLayoutToParentForXmlForm(parent, a);
                         }
+			// p.ResumeLayout();
                     }
                     break;
                 #endregion            
@@ -500,7 +504,6 @@ namespace AubitDesktop
                         tb.Top = 0;
                         tb.Left = 0;
 
-                        parent.Controls.Add(tb);
                
                         tb.Size = parent.Size;
                         tb.Dock = DockStyle.Fill;
@@ -542,6 +545,8 @@ namespace AubitDesktop
                         
                             tp.Controls.Add(tpp);
                             tb.TabPages.Add(tp);
+
+                        	parent.Controls.Add(tb);
                         }
                        
                    
@@ -558,18 +563,21 @@ namespace AubitDesktop
                         Panel thisScreensPanel;
                         p = (AubitDesktop.Xml.XMLForm.Screen)child;
 
+			
                         thisScreensPanel = new Panel();
+			thisScreensPanel.SuspendLayout();
                         thisScreensPanel.Name = "Screens" + p.GetHashCode();
                         thisScreensPanel.Visible = true;
                         thisScreensPanel.Top = 0;
                         thisScreensPanel.Left = 0;
-                        thisScreensPanel.AutoSize = true;
-                        parent.Controls.Add(thisScreensPanel);
 
                         foreach (object a in p.Items)
                         {
                             addLayoutToParentForXmlForm(thisScreensPanel, a);
                         }
+			thisScreensPanel.ResumeLayout();
+                        thisScreensPanel.AutoSize = true;
+                        parent.Controls.Add(thisScreensPanel);
                     }
                     break;
                 #endregion
@@ -696,8 +704,8 @@ namespace AubitDesktop
                                 l.Name = "Label" + l.Top + "_" + l.Left;
                                 l.TabIndex = 0;
                                 l.TabStop = false;
-                                parent.Controls.Add(l);
                                 l.AutoSize = true;
+                                parent.Controls.Add(l);
                             }
                         }
                     }
