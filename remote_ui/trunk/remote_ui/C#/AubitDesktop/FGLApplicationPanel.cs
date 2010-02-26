@@ -2004,7 +2004,13 @@ namespace AubitDesktop
                         if (win.isContainable)
                         {
                             this.Controls.Add(win.WindowWidget);
-                          frmMainAppWindow.ensureSizeWindow(win.WindowWidget, "");
+
+                                if (frm.pixelHeight != 0 && frm.pixelWidth != 0)
+                                {
+                                    frmMainAppWindow.ensureSizeWindow(frm.thisFormsPanel, "");
+                                } else {
+                          		frmMainAppWindow.ensureSizeWindow(win.WindowWidget, "");
+				}
                         }
 
                         if (win.isModal && win.WindowFormWidget != null)
@@ -2393,14 +2399,20 @@ namespace AubitDesktop
                 {
                     //string rval;
                     WAITFOREVENT w;
+			bool callClrWaitCursor=true;
                     w = (WAITFOREVENT)a;
                     if (w.CONTEXT == null)
                     {
                         currentContext = immediateContext;
+				
                         // An immediateContext is basically a UIContextMisc which just returns something
                         // Atm - we've got GETKEY and WINQUESTION in this category..
                         immediateContext.ActivateContext(UIContext_EventTriggered, w.VALUES, w.ROWS);
+
                         // We only activate it once - so we can clear it now...
+			if (true) {
+				callClrWaitCursor=false;
+			}
 
                     }
                     else
@@ -2441,7 +2453,7 @@ namespace AubitDesktop
                         }
                     }
                     commands.Remove(a);
-                    this.TopWindow.clrWaitCursor();
+                    if (callClrWaitCursor) this.TopWindow.clrWaitCursor();
                     continue;
                 }
                 #endregion
