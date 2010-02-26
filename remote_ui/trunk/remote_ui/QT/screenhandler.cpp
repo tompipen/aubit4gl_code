@@ -252,7 +252,15 @@ void ScreenHandler::handleXMLActions(QString xmlFileString)
 {
 
    QDomDocument xmlFile;
-   xmlFile.setContent(xmlFileString);
+   QString errorMsg;
+   int errorLine, errorCol;
+   if (!xmlFile.setContent(xmlFileString, &errorMsg, &errorLine, &errorCol)){
+      QString str = errorMsg + "\n" +
+                    "Line:" + QString::number(errorLine) + "\n" +
+                    "Column" + QString::number(errorCol);
+      MsgBox("Protocol Error",str,"Warning","Ok","Ok",0);
+   }
+
 
    formsActions = xmlFile;
 }
