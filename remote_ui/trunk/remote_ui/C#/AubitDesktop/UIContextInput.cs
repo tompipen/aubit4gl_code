@@ -254,14 +254,15 @@ namespace AubitDesktop
         {
             string cfield;
 
-            foreach (FGLFoundField f in activeFields)
-            {
-                if (f.fglField.hasFocus)
-                {
-                    CurrentField = f;
-                    break;
-                }
-            }
+
+            foreach (FGLFoundField f in activeFields) // NOTWEBGUI
+            { // NOTWEBGUI
+                if (f.fglField.hasFocus) // NOTWEBGUI
+                { // NOTWEBGUI
+                    CurrentField = f; // NOTWEBGUI
+                    break; // NOTWEBGUI
+                } // NOTWEBGUI
+            } // NOTWEBGUI
 
             if (CurrentField != null)
             {

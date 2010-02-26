@@ -112,9 +112,6 @@ namespace AubitDesktop.Xml.XMLForm
             [System.Xml.Serialization.XmlAttributeAttribute()]
             public string encoding;
 
-            /// <remarks/>
-            [System.Xml.Serialization.XmlAttributeAttribute()]
-            public string height;
 
             /// <remarks/>
             [System.Xml.Serialization.XmlAttributeAttribute()]
@@ -126,7 +123,19 @@ namespace AubitDesktop.Xml.XMLForm
 
             /// <remarks/>
             [System.Xml.Serialization.XmlAttributeAttribute()]
+            public string height;
+            /// <remarks/>
+            [System.Xml.Serialization.XmlAttributeAttribute()]
             public string width;
+
+
+
+            /// <remarks/>
+            [System.Xml.Serialization.XmlAttributeAttribute()]
+            public string pixelHeight;
+            /// <remarks/>
+            [System.Xml.Serialization.XmlAttributeAttribute()]
+            public string pixelWidth;
 
             /// <remarks/>
             [System.Xml.Serialization.XmlAttributeAttribute()]
@@ -1223,6 +1232,9 @@ namespace AubitDesktop.Xml.XMLForm
 
             [System.Xml.Serialization.XmlAttributeAttribute()]
             public string width;
+
+            [System.Xml.Serialization.XmlAttributeAttribute()]
+            public string height;
 
             /// <remarks/>
             [System.Xml.Serialization.XmlAttributeAttribute()]
