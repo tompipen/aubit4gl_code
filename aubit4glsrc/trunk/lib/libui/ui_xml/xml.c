@@ -1555,6 +1555,7 @@ UILIB_A4GLUI_ui_init (int argc, char **argv)
   char *nm[] = {
     "DBPATH",
     "DBDATE",
+    "DBMONEY",
     0
   };
   if (!connect_ui ())

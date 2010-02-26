@@ -296,6 +296,7 @@ if (use_write) {
 
 		if(errno) {
 			printf("Errno=%d\n",errno); 
+		  	perror ("write");
 #ifdef __WIN32__
 			Sleep(1);
 #else
