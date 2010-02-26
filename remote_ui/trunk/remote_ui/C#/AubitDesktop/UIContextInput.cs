@@ -253,6 +253,16 @@ namespace AubitDesktop
         public string getTriggeredTag(string ID)
         {
             string cfield;
+
+            foreach (FGLFoundField f in activeFields)
+            {
+                if (f.fglField.hasFocus)
+                {
+                    CurrentField = f;
+                    break;
+                }
+            }
+
             if (CurrentField != null)
             {
                 cfield = " INFIELD=\"" + CurrentField.useName + "\"";
