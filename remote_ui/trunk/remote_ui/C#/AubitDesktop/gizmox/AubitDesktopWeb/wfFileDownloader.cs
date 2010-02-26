@@ -155,15 +155,15 @@ namespace AubitDesktop
               
                 case DownloadContentType.MicrosoftWord:
                     return "application/x-msword";
-                    break;
+                   
                 case DownloadContentType.MicrosoftExcel:
                     return "application/x-msexcel";
-                    break;
+                 
                 case DownloadContentType.PlainText:
                     return "text/plain";
                 default:
                     return "application/octet-stream";
-                    break;
+                    
 
             }
         }
