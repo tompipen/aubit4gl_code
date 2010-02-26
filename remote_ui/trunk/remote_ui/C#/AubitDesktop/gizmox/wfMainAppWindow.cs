@@ -155,13 +155,14 @@ namespace AubitDesktop
 
 
             log("Enable timer1");
-            timer1.Interval = 300;
+            timer1.Interval = 100;
             timer1.Enabled = true;
         }
 
         void timer1_Tick(object sender, System.EventArgs e)
         {
 
+            ConsumeEnvelopeHandler();
             
 
             if (fileDownloads != null)
@@ -186,6 +187,10 @@ namespace AubitDesktop
                 log("Stopping timer - as I'm waiting for an event");
                 timer1.Enabled = false;
             }
+
+
+           
+
         }
 
         string exitMsg = "";
@@ -308,21 +313,28 @@ namespace AubitDesktop
 
         internal void setToolbar(List<AubitTSBtn> toolStrip)
         {
+
+            this.topWindowToolStrip.SuspendLayout();
+
+
             while (this.topWindowToolStrip.Buttons.Count > 0)
             {
                 ToolBarButton b = this.topWindowToolStrip.Buttons[0];
-                this.topWindowToolStrip.SuspendLayout();
+                
                 if (b != null)
                 {
                     this.topWindowToolStrip.Buttons.Remove(b);
                 }
-                this.topWindowToolStrip.ResumeLayout();
+                
             }
-            //this.topWindowToolStrip.Buttons.Clear();
+
+
+            
+            this.topWindowToolStrip.Buttons.Clear();
             if (toolStrip.Count > 0)
             {
                // this.topWindowToolStrip.Buttons.AddRange(toolStrip);
-                this.topWindowToolStrip.SuspendLayout();
+                
                 for (int a = 0; a < toolStrip.Count; a++)
                 {
                     
@@ -330,10 +342,11 @@ namespace AubitDesktop
 
 
                 }
-               this.topWindowToolStrip.ResumeLayout();
+            
             }
+            this.topWindowToolStrip.ResumeLayout();
             showOrHideToolbar();
-
+            
         }
 
         private void showOrHideToolbar()
@@ -688,7 +701,7 @@ namespace AubitDesktop
             string userName = "";
             string passWord = "";
             string protocol = "";
-            string cwd = "";
+            //string cwd = "";
 
             bool foundApp = false;
 
@@ -881,7 +894,7 @@ namespace AubitDesktop
             string smbuff;
             int a;
             uint[] key = new uint[4];
-            string rbuff;
+            //string rbuff;
             uint l;
             byte[] outb = new byte[8];
             uint[] lgptr = new uint[2];
@@ -980,12 +993,14 @@ namespace AubitDesktop
         private void frmMainAppWindow_EnvelopeReadyForConsumption(object sender, EventArgs e)
         {
             //MessageBox.Show("Ready for consumption");
-            ConsumeEnvelopeHandler();
+            //  ConsumeEnvelopeHandler();
             //this.ConsumeEnvelopeCommands();
         }
 
+        
         public void ConsumeEnvelopeHandler()
         {
+            
             DateTime s;
             s = System.DateTime.Now;
             //log("CONSUMING: " + System.DateTime.Now);
@@ -1281,6 +1296,8 @@ namespace AubitDesktop
 
         private void timer2_Tick(object sender, EventArgs e)
         {
+
+            ConsumeEnvelopeHandler();
             //log("Timer2Tick");
             if (hasQuit)
             {
