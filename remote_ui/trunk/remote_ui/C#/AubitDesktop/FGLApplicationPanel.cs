@@ -1993,7 +1993,7 @@ namespace AubitDesktop
                              lines[0], lines[1], lines[2], lines[3], lines[4], lines[5],
                             border);
 
-                        win.sizeWindow(frm);
+                        win.sizeWindow(frm, border);
                         win.setForm(frm, false);
 
                         
@@ -2054,7 +2054,7 @@ namespace AubitDesktop
 
                         border);
 
-                    win.sizeWindow(Convert.ToInt32(w.W), Convert.ToInt32(w.H));
+                    win.sizeWindow(Convert.ToInt32(w.W), Convert.ToInt32(w.H), border);
 
                     // Our 'window' might be a proper windows forms window (with title bar etc)
                     // in which case - we dont want to add it to our windows panel - but just 
@@ -2625,7 +2625,9 @@ namespace AubitDesktop
 
         public void SetContext(FGLContextType contextType)
         {
+	    this.SuspendLayout();
             ApplicationWindows.SetContext(contextType);
+	    this.ResumeLayout();
         }
 
         public void SetContext(FGLContextType contextType, List<FGLWidget> pfields, UIContext currContext, List<ONKEY_EVENT> keyList, List<ON_ACTION_EVENT> actionList, UIEventHandler _EventTriggered)
