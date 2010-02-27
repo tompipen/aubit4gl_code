@@ -41,6 +41,10 @@ namespace AubitDesktop
         
         public int maxcol;
         public int maxline;
+
+   	public int pixelHeight;
+   	public int pixelWidth;
+
         //int n = 0;
         private Panel _thisFormsPanel;
         internal Panel thisFormsPanel
@@ -101,12 +105,11 @@ namespace AubitDesktop
                         p = (AubitDesktop.Xml.XMLForm.VBox)child;
 
                         FlowLayoutPanel thisLayoutControlsPanel;
-                        p = (AubitDesktop.Xml.XMLForm.VBox)child;
-                        
                         thisLayoutControlsPanel = new FlowLayoutPanel();
                         // Make it big - we'll resize later
                          thisLayoutControlsPanel.Width = 2000; 
                          thisLayoutControlsPanel.Height = 2000;
+                         thisLayoutControlsPanel.AutoSizeMode = AutoSizeMode.GrowAndShrink; 
                         
                         thisLayoutControlsPanel.Name = "VBOX" + thisLayoutControlsPanel.GetHashCode();
                         thisLayoutControlsPanel.SuspendLayout();
@@ -114,10 +117,8 @@ namespace AubitDesktop
                         //thisLayoutControlsPanel.BorderStyle = BorderStyle.Fixed3D;
                         thisLayoutControlsPanel.Top = 5;
                         thisLayoutControlsPanel.Left = 5;
-                        thisLayoutControlsPanel.AutoSize = true;
                         //thisLayoutControlsPanel.BackColor = Color.Purple;
                         thisLayoutControlsPanel.FlowDirection = FlowDirection.TopDown;
-                        parent.Controls.Add(thisLayoutControlsPanel);
                         if (p.border)
                         {
                             thisLayoutControlsPanel.BorderStyle = BorderStyle.Fixed3D;
@@ -127,6 +128,7 @@ namespace AubitDesktop
                             addLayoutToParentForXmlForm(thisLayoutControlsPanel, a);
                         }
                         thisLayoutControlsPanel.ResumeLayout();
+                        parent.Controls.Add(thisLayoutControlsPanel);
                     }
                     break;
                 #endregion
@@ -153,7 +155,6 @@ namespace AubitDesktop
                             thisLayoutControlsPanel.BorderStyle = BorderStyle.Fixed3D;
                         }
                         thisLayoutControlsPanel.FlowDirection = FlowDirection.LeftToRight;
-                        parent.Controls.Add(thisLayoutControlsPanel);
                         thisLayoutControlsPanel.SuspendLayout();
                         foreach (object a in p.Items)
                         {
@@ -161,6 +162,7 @@ namespace AubitDesktop
                         }
                         thisLayoutControlsPanel.ResumeLayout();
                         thisLayoutControlsPanel.AutoSize = true;
+                        parent.Controls.Add(thisLayoutControlsPanel);
                     }
                     break;
                 #endregion
@@ -182,13 +184,29 @@ namespace AubitDesktop
                         gridArray.Columns[0].DataPropertyName = "subscript";                        
                         gridArray.RowsToDisplay = Convert.ToInt32(p.pageSize);
 
-                        if (p.width != null && p.width != "")
+
+ 			if ((p.width != null && p.width != "") || (p.height!=null && p.height!=""))
                         {
-                            gridArray.Width = GuiLayout.get_gui_w(Convert.ToInt32(p.width));
+                            if (p.width != "")
+                            {
+                                gridArray.Width = GuiLayout.get_gui_w(Convert.ToInt32(p.width));
+                            }
+                            else
+                            {
+                                gridArray.Width = parent.Width;
+                            }
+
+                            if (p.height != "")
+                            {
+                                gridArray.Height = GuiLayout.get_gui_h(Convert.ToInt32(p.height));
+                            }
+                            else
+                            {
+                                gridArray.Height = parent.Height;
+                            }
                         }
                         else
                         {
-                            gridArray.AutoSize = true;
                         }
 
                         int minWidth = 50;
@@ -371,15 +389,21 @@ namespace AubitDesktop
                         }
                             #endregion
 
-                        if (showHeaders)
+                        if (p.height == "" || p.height == null)
                         {
-                            gridArray.Height = GuiLayout.get_gui_h(Convert.ToInt32(p.pageSize)+1);  
+			    double factor=1.0; 
+			     factor=1.5; 
+                            if (showHeaders)
+                            {
+                                gridArray.Height = (int)(GuiLayout.get_gui_h(Convert.ToInt32(p.pageSize) + 1)*factor);
+                            }
+                            else
+                            {
+                                gridArray.Height = (int)(GuiLayout.get_gui_h(Convert.ToInt32(p.pageSize)) *factor);
+                            }
                         }
-                        else
-                        {
-                            gridArray.Height = GuiLayout.get_gui_h(Convert.ToInt32(p.pageSize));  
-                        }
-                        
+
+
                         // Maybe need these visible if we have some titles for them :-)
                         gridArray.ColumnHeadersVisible = showHeaders;
                         gridArray.Visible = true;
@@ -417,6 +441,8 @@ namespace AubitDesktop
                         
 
                         thisScreensPanel = new Panel();
+
+			thisScreensPanel.SuspendLayout();
                         thisScreensPanel.Name = "PnGrid" + p.GetHashCode();
                         thisScreensPanel.Visible = true;
                         thisScreensPanel.Top = 5;
@@ -461,14 +487,15 @@ namespace AubitDesktop
                             addLayoutToParentForXmlForm(thisScreensPanel, a);
                         }
                         thisScreensPanel.Name = "Grid" + thisScreensPanel.GetHashCode();
-                        parent.Controls.Add(thisScreensPanel);
+
                         if (doAutosize)
                         {
 
                             frmMainAppWindow.ensureSizeWindow(thisScreensPanel, "");
-
                             thisScreensPanel.AutoSize = true;
                         }
+			thisScreensPanel.ResumeLayout();
+                        parent.Controls.Add(thisScreensPanel);
                     }
                     break;
                 #endregion
@@ -476,11 +503,13 @@ namespace AubitDesktop
                 case "AubitDesktop.Xml.XMLForm.Page":
                     {
                         AubitDesktop.Xml.XMLForm.Page p;
+			// p.SuspendLayout();
                         p = (AubitDesktop.Xml.XMLForm.Page)child;
                         foreach (object a in p.Items)
                         {
                             addLayoutToParentForXmlForm(parent, a);
                         }
+			// p.ResumeLayout();
                     }
                     break;
                 #endregion            
@@ -500,7 +529,6 @@ namespace AubitDesktop
                         tb.Top = 0;
                         tb.Left = 0;
 
-                        parent.Controls.Add(tb);
                
                         tb.Size = parent.Size;
                         tb.Dock = DockStyle.Fill;
@@ -542,6 +570,8 @@ namespace AubitDesktop
                         
                             tp.Controls.Add(tpp);
                             tb.TabPages.Add(tp);
+
+                        	parent.Controls.Add(tb);
                         }
                        
                    
@@ -558,18 +588,21 @@ namespace AubitDesktop
                         Panel thisScreensPanel;
                         p = (AubitDesktop.Xml.XMLForm.Screen)child;
 
+			
                         thisScreensPanel = new Panel();
+			thisScreensPanel.SuspendLayout();
                         thisScreensPanel.Name = "Screens" + p.GetHashCode();
                         thisScreensPanel.Visible = true;
                         thisScreensPanel.Top = 0;
                         thisScreensPanel.Left = 0;
-                        thisScreensPanel.AutoSize = true;
-                        parent.Controls.Add(thisScreensPanel);
 
                         foreach (object a in p.Items)
                         {
                             addLayoutToParentForXmlForm(thisScreensPanel, a);
                         }
+			thisScreensPanel.ResumeLayout();
+                        thisScreensPanel.AutoSize = true;
+                        parent.Controls.Add(thisScreensPanel);
                     }
                     break;
                 #endregion
@@ -696,8 +729,8 @@ namespace AubitDesktop
                                 l.Name = "Label" + l.Top + "_" + l.Left;
                                 l.TabIndex = 0;
                                 l.TabStop = false;
-                                parent.Controls.Add(l);
                                 l.AutoSize = true;
+                                parent.Controls.Add(l);
                             }
                         }
                     }
@@ -1078,10 +1111,11 @@ namespace AubitDesktop
 
         public FGLForm(XMLFORM f)
         {
-
+	bool forceSize=false;
             fields = new List<FGLWidget>();
 
-            
+            pixelHeight=0;
+            pixelWidth=0;
 
             AubitDesktop.Xml.XMLForm.Form theForm;
             System.Type t;
@@ -1125,16 +1159,34 @@ namespace AubitDesktop
                 this.maxcol = -1;
                 this.maxline = -1;
             }
+
+		forceSize=false;
             tooltips = new ToolTip();
 
             fields = new List<FGLWidget>();
             thisFormsPanel = new Panel();
+
+		 thisFormsPanel.Left=5; 
+		 thisFormsPanel.Top=5;
+
+	    if (theForm.pixelHeight!="" && theForm.pixelHeight!=null) {
+			forceSize=true;
+			thisFormsPanel.Height=Convert.ToInt32(theForm.pixelHeight);
+			pixelHeight=thisFormsPanel.Height;
+	    }
+	    if (theForm.pixelWidth!="" && theForm.pixelWidth!=null) {
+			forceSize=true;
+			thisFormsPanel.Width=Convert.ToInt32(theForm.pixelWidth);
+			pixelWidth=thisFormsPanel.Width;
+	    }
             thisFormsPanel.SuspendLayout(); 
             thisFormsPanel.Name = "FormPanel" + f.NAME;
             thisFormsPanel.Visible = true;
             
            // thisFormsPanel.BorderStyle = BorderStyle.FixedSingle;
+           if (!forceSize) {
             thisFormsPanel.Dock = DockStyle.Fill;
+		}
             thisFormsPanel.BackColor = SystemColors.Control;
             ScreenRecords = new List<FGLScreenRecord>();
             foreach (object o in theForm.XmlFormItems)
@@ -1176,7 +1228,11 @@ namespace AubitDesktop
 
                 // Program.Show(data, "Not implemented yet");
             }
+
+
+	if (!forceSize) {
                 thisFormsPanel.AutoSize = true;
+	}
                 thisFormsPanel.ResumeLayout();
                 this.thisFormsPanel.LocationChanged += new EventHandler(thisFormsPanel_LocationChanged);
         }
@@ -1216,6 +1272,9 @@ namespace AubitDesktop
             fields = new List<FGLWidget>();
             thisFormsPanel = new Panel();
             thisFormsPanel.Visible = true;
+
+            pixelHeight=0;
+            pixelWidth=0;
             
 
             thisFormsPanel.SuspendLayout(); 
@@ -1846,6 +1905,28 @@ namespace AubitDesktop
                 fld.Attribute = -1;
             }
         }
+
+        int colourCnt = 0;
+        Color getCol() // Used for debugging....
+        {
+            switch (colourCnt)
+            {
+                case 0: return Color.Blue;
+                case 1: return Color.Red;
+                case 2: return Color.Green;
+                case 3: return Color.Yellow;
+                case 4: return Color.Cyan;
+                case 5: return Color.Magenta;
+                case 6: return Color.White;
+                case 7: return Color.Brown;
+                case 8: return Color.Pink;
+                case 9: return Color.Purple;
+                case 10: return Color.Salmon;
+            }
+            return Color.Black;
+        }
+
+
 
         internal bool hasRecordContainingField(string name)
         {

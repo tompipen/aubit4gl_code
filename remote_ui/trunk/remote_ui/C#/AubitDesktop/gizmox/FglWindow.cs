@@ -306,15 +306,20 @@ namespace AubitDesktop
         }
 
 
-        public void sizeWindow(int x, int y)
+        public void sizeWindow(int x, int y,bool border)
         {
             LineHeight = y;
             CharWidth = x;
-            WindowWidget.Height = GuiLayout.get_gui_y(y);
-            WindowWidget.Width = GuiLayout.get_gui_x(x);
+	    if (border) {
+            	WindowWidget.Height = GuiLayout.get_gui_y(y+1);
+            	WindowWidget.Width = GuiLayout.get_gui_x(x+1);
+	    } else {
+                WindowWidget.Height = GuiLayout.get_gui_y(y);
+                WindowWidget.Width = GuiLayout.get_gui_x(x);
+	    }
         }
 
-        public void sizeWindow(FGLForm f)
+        public void sizeWindow(FGLForm f, bool border)
         {
             if (form_line != 255)
             {
@@ -328,16 +333,27 @@ namespace AubitDesktop
 
             if (isContainable)
             {
+
+		if (f.pixelWidth>0 && f.pixelHeight>0) {
+			 WindowWidget.Height =f.pixelHeight+5+f.thisFormsPanel.Top;
+			 WindowWidget.Width =f.pixelWidth+5+f.thisFormsPanel.Left;
+		} else {
                 if (f.maxcol >= 0 && f.maxline >= 0)
                 {
                     
-                    WindowWidget.Height = GuiLayout.get_gui_y(f.maxline+form_line-1) + 20;
-                    WindowWidget.Width = GuiLayout.get_gui_x(f.maxcol) + 20;
+			if (border) {
+                    		WindowWidget.Height = GuiLayout.get_gui_y(f.maxline+form_line) ;
+                    		WindowWidget.Width = GuiLayout.get_gui_x(f.maxcol+1) ;
+			} else {
+                    		WindowWidget.Height = GuiLayout.get_gui_y(f.maxline+form_line-1) + 20;
+                    		WindowWidget.Width = GuiLayout.get_gui_x(f.maxcol) + 20;
+			}
                 }
                 else
                 {
                     WindowWidget.AutoSize = true;
                 }
+		}
 
             }
         }

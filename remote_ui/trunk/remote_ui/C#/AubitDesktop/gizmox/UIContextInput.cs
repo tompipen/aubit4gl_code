@@ -253,6 +253,9 @@ namespace AubitDesktop
         public string getTriggeredTag(string ID)
         {
             string cfield;
+
+
+
             if (CurrentField != null)
             {
                 cfield = " INFIELD=\"" + CurrentField.useName + "\"";

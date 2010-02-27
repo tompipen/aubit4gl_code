@@ -638,8 +638,6 @@ namespace AubitDesktop
                 this.MaxLength = columns * rows;
             }
 
-            //t.KeyDown += new KeyEventHandler(t_KeyDown);
-            //t.KeyPress += new KeyPressEventHandler(t_KeyPress);
           
             if (Upshift)
             {
@@ -728,8 +726,8 @@ namespace AubitDesktop
 
            // p.Size = l.Size;
             
-            t.KeyDown += new KeyEventHandler(t_KeyDown);
-            t.KeyPress += new KeyPressEventHandler(t_KeyPress);
+            //t.KeyDown += new KeyEventHandler(t_KeyDown);
+            //t.KeyPress += new KeyPressEventHandler(t_KeyPress);
             t.Enter += new EventHandler(t_GotFocus);
             t.TextChanged += new EventHandler(t_TextChanged);
             if (b != null)
@@ -749,10 +747,6 @@ namespace AubitDesktop
 
         }
 
-        void t_KeyPress(object sender, KeyPressEventArgs e)
-        {
-
-        }
 
 
 
@@ -778,11 +772,6 @@ namespace AubitDesktop
   
         }
 
-        void t_KeyDown(object sender, KeyEventArgs e)
-        {
-
-
-        }
 
         void t_TextChanged(object sender, EventArgs e)
         {

@@ -346,8 +346,8 @@ namespace AubitDesktop
             {
                 foreach (AubitTSBtn o in toolStrip1)
                 {
-                    if (AubitTSBtn.isSystemAction(o.EventID)) continue;
-                    o.EventID = null;
+                    if (AubitTSBtn.isSystemAction(o.ID)) continue;
+                    o.ID = null;
                     
                 }
             }
@@ -364,8 +364,8 @@ namespace AubitDesktop
                 // so we need to remove any that are not in use by making them invisible
                 foreach (AubitTSBtn o in toolStrip1)
                 {
-                        if (AubitTSBtn.isSystemAction(o.EventID)) continue;
-                        o.EventID = null;
+                        if (AubitTSBtn.isSystemAction(o.ID)) continue;
+                        o.ID = null;
                 }
 
                 if (keys != null)
@@ -390,7 +390,7 @@ namespace AubitDesktop
                         }
                         else
                         {
-                            o.EventID = key.ID;
+                            o.ID = key.ID;
                         }
                     }
                 }
@@ -418,7 +418,7 @@ namespace AubitDesktop
                         }
                         else
                         {
-                            o.EventID = action.ID;
+                            o.ID = action.ID;
                         }
                     }
                 }
@@ -847,7 +847,7 @@ namespace AubitDesktop
             this.ErrorText = "";
             o = (AubitTSBtn)sender;
             reply = null;
-            if (o.EventID == null)
+            if (o.ID == null)
             {
                
                 if (o.ActiveKey == "DIE")
@@ -855,7 +855,7 @@ namespace AubitDesktop
                     reply = o.ActiveKey;
                 }
             } else {
-                reply = o.EventID;
+                reply = o.ID;
             }
             if (reply == null) return;
 
@@ -875,7 +875,6 @@ namespace AubitDesktop
 
             if (ke != null)
             {
-               
                 ke.Handled = true;
             }
             
@@ -941,8 +940,8 @@ namespace AubitDesktop
             b.isProgramAdded = false;
             b.ActiveKey = Key;
             b.Text = Text;
-            b.EventID = ID;
-            switch (b.EventID)
+            b.ID = ID;
+            switch (b.ID)
             {
                 case "ACCEPT":
                      b.Image = "Icons.accept.png";
@@ -1926,7 +1925,7 @@ namespace AubitDesktop
                              lines[0], lines[1], lines[2], lines[3], lines[4], lines[5],
                             border);
 
-                        win.sizeWindow(frm);
+                        win.sizeWindow(frm, border);
                         win.setForm(frm, false);
 
                         
@@ -1937,7 +1936,13 @@ namespace AubitDesktop
                         if (win.isContainable)
                         {
                             this.Controls.Add(win.WindowWidget);
-                          frmMainAppWindow.ensureSizeWindow(win.WindowWidget, "");
+
+                                if (frm.pixelHeight != 0 && frm.pixelWidth != 0)
+                                {
+                                    frmMainAppWindow.ensureSizeWindow(frm.thisFormsPanel, "");
+                                } else {
+                          		frmMainAppWindow.ensureSizeWindow(win.WindowWidget, "");
+				}
                         }
 
                         if (win.isModal && win.WindowFormWidget != null)
@@ -1987,7 +1992,7 @@ namespace AubitDesktop
 
                         border);
 
-                    win.sizeWindow(Convert.ToInt32(w.W), Convert.ToInt32(w.H));
+                    win.sizeWindow(Convert.ToInt32(w.W), Convert.ToInt32(w.H), border);
 
                     // Our 'window' might be a proper windows forms window (with title bar etc)
                     // in which case - we dont want to add it to our windows panel - but just 
@@ -2326,14 +2331,20 @@ namespace AubitDesktop
                 {
                     //string rval;
                     WAITFOREVENT w;
+			bool callClrWaitCursor=true;
                     w = (WAITFOREVENT)a;
                     if (w.CONTEXT == null)
                     {
                         currentContext = immediateContext;
+				
                         // An immediateContext is basically a UIContextMisc which just returns something
                         // Atm - we've got GETKEY and WINQUESTION in this category..
                         immediateContext.ActivateContext(UIContext_EventTriggered, w.VALUES, w.ROWS);
+
                         // We only activate it once - so we can clear it now...
+			if (true) {
+				callClrWaitCursor=false;
+			}
 
                     }
                     else
@@ -2374,7 +2385,7 @@ namespace AubitDesktop
                         }
                     }
                     commands.Remove(a);
-                    this.TopWindow.clrWaitCursor();
+                    if (callClrWaitCursor) this.TopWindow.clrWaitCursor();
                     continue;
                 }
                 #endregion
@@ -2558,7 +2569,9 @@ namespace AubitDesktop
 
         public void SetContext(FGLContextType contextType)
         {
+	    this.SuspendLayout();
             ApplicationWindows.SetContext(contextType);
+	    this.ResumeLayout();
         }
 
         public void SetContext(FGLContextType contextType, List<FGLWidget> pfields, UIContext currContext, List<ONKEY_EVENT> keyList, List<ON_ACTION_EVENT> actionList, UIEventHandler _EventTriggered)
@@ -2782,7 +2795,7 @@ namespace AubitDesktop
         internal void setToolBarEnabled(string ID, bool hidden)
         {
             foreach (AubitTSBtn a in toolStrip1) {
-                if (a.EventID == ID)
+                if (a.ID == ID)
                 {
                     if (hidden)
                     {

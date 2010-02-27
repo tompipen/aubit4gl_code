@@ -151,7 +151,10 @@ namespace AubitDesktop
 
 
             networkConnection.SendString(finalString);
-            amWaitingForEvent = true;
+            if (finalString.Contains("ID=\"FRONTCALLRETURN") == false)
+            {
+                amWaitingForEvent = true;
+            }
 
 
             log("Enable timer1");
@@ -161,6 +164,12 @@ namespace AubitDesktop
 
         void timer1_Tick(object sender, System.EventArgs e)
         {
+            if (updating)
+            {
+                timer1.Interval = 100;
+                return;
+            }
+            amWaitingForEvent = false;
 
             ConsumeEnvelopeHandler();
             
@@ -182,14 +191,12 @@ namespace AubitDesktop
             }
 
 
+            
             if (amWaitingForEvent)
             {
                 log("Stopping timer - as I'm waiting for an event");
                 timer1.Enabled = false;
             }
-
-
-           
 
         }
 
@@ -281,7 +288,7 @@ namespace AubitDesktop
         public void setWaitCursor()
         {
             this.Cursor = Cursors.WaitCursor;
-
+            //amWaitingForEvent = false;
             //  timer1.Enabled = false;
         }
 
@@ -609,7 +616,7 @@ namespace AubitDesktop
             Program.AppSettings.Shortcuts = new List<AubitDesktop.Xml.Shortcut>();
             Program.AppSettings.StartMinimized = false;
             Program.AppSettings.WindowPositions = new List<AubitDesktop.Xml.WindowPosition>();
-            Program.AppSettings.xscale = 9;
+            Program.AppSettings.xscale = 10;
             Program.AppSettings.defaultEncoding = "ISO8859-1";
             Program.AppSettings.yscale = 23;
 
@@ -1264,11 +1271,11 @@ namespace AubitDesktop
                     ensureSizeWindow(d, level + " ");
                     if (d.Height + d.Top > maxHeight)
                     {
-                        maxHeight = d.Height + d.Top;
+                        maxHeight = d.Height + d.Top+1;
                     }
                     if (d.Width + d.Left > maxWidth)
                     {
-                        maxWidth = d.Width + d.Left;
+                        maxWidth = d.Width + d.Left+1;
                     }
 
 
@@ -1296,8 +1303,10 @@ namespace AubitDesktop
 
         private void timer2_Tick(object sender, EventArgs e)
         {
-
-            ConsumeEnvelopeHandler();
+            if (timer1.Enabled == false)
+            {
+                ConsumeEnvelopeHandler();
+            }
             //log("Timer2Tick");
             if (hasQuit)
             {
