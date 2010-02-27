@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                          |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.251 2010-02-16 13:16:42 mikeaubury Exp $
+# $Id: stack.c,v 1.252 2010-02-27 10:14:23 mikeaubury Exp $
 #
 */
 
@@ -2924,8 +2924,33 @@ A4GL_params_on_stack (char *_paramnames[], int n)
       A4GL_debug ("Calling conv...");
 #endif
 
-      A4GL_conv (params[a].dtype & DTYPE_MASK, params[a].ptr, 0, buff, sz);
 
+	switch (params[a].dtype & DTYPE_MASK) {
+		case DTYPE_CHAR:
+		case DTYPE_SMINT:
+		case DTYPE_INT:
+		case DTYPE_FLOAT:
+		case DTYPE_SMFLOAT:
+		case DTYPE_DECIMAL:
+		case DTYPE_SERIAL:
+		case DTYPE_DATE:
+		case DTYPE_MONEY:
+		case DTYPE_NULL:
+		case DTYPE_DTIME:
+		case DTYPE_BYTE:
+		case DTYPE_TEXT:
+		case DTYPE_VCHAR:
+		case DTYPE_INTERVAL :
+		case DTYPE_NCHAR:
+		case DTYPE_NVCHAR:
+		case DTYPE_INT8:
+		case DTYPE_SERIAL8:
+      			A4GL_conv (params[a].dtype & DTYPE_MASK, params[a].ptr, 0, buff, sz);
+			break;
+
+		default:
+			sprintf(buff,"Not printable");
+	}
 
 #ifdef DEBUG
       A4GL_debug ("Conv gives us '%s'", A4GL_null_as_null (buff));

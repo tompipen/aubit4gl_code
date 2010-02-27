@@ -3551,7 +3551,11 @@ int rep_type;
 
 
 int print_sort_cmd(struct struct_sort_cmd *c) {
+
+	
+	print_expr(c->limit);
 	set_nonewlines();
+
 	printc("A4GL_qsort(");
 	print_variable_usage(c->variable);
 	printc(",sizeof("); print_variable_usage(c->variable); printc(")");

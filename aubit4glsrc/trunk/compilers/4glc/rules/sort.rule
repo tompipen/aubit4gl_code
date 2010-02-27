@@ -1,5 +1,5 @@
 
-sort_cmd : SORT variable_usage_expression KW_USING identifier {
+sort_cmd : SORT variable_usage_expression KW_USING identifier op_sort_limit {
 		expr_str *callback;
 		expr_str_list *params;
 		if (!check_input_or_display_array_variable($<ptr>2)) {
@@ -7,8 +7,14 @@ sort_cmd : SORT variable_usage_expression KW_USING identifier {
 			$<cmd>$=NULL;
 		} else {
                 	callback=A4GL_new_expr_fcall($<str>4,NULL,infilename,lastlineno, get_namespace($<str>4));
-			$<cmd>$=new_sort_cmd($<ptr>2,callback);
+			$<cmd>$=new_sort_cmd($<ptr>2,callback,$<ptr>5);
 		}
-}
+	}
 ;
+
+op_sort_limit : 
+	{$<ptr>$=A4GL_new_literal_long_long(0);}
+	| KW_LIMIT  fgl_expr_c {$<ptr>$=$<ptr>2;}
+;
+
 

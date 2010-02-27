@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper.c,v 1.88 2010-02-16 13:16:31 mikeaubury Exp $
+# $Id: helper.c,v 1.89 2010-02-27 10:14:23 mikeaubury Exp $
 #
 */
 
@@ -2033,13 +2033,23 @@ return z;
 
 
 int A4GL_qsort(void *array, int tot_sz, int sz_elem,  void *callback) {
+int limit;
+
+limit=A4GL_pop_long();
+if (limit<=0  || limit > (tot_sz/sz_elem)) {
+	limit=tot_sz/sz_elem; // All the array...
+}
+
 A4GL_assertion(qsort_callback!=NULL,"Callback already in use");
 qsort_callback=callback;
 qsort_sz=sz_elem;
 
 a4gl_status=0;
+#ifdef DEBUG
+A4GL_debug("LIMIT=%d\n",limit);
+#endif
 
-qsort(array,tot_sz/sz_elem,sz_elem, qsort_compare);
+qsort(array,limit,sz_elem, qsort_compare);
 qsort_callback=NULL;
 /*
 printf("Status=%d\n",a4gl_status);

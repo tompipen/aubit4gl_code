@@ -200,7 +200,7 @@ struct command *new_spl_while_cmd(expr_str *expr, struct s_spl_block *block );
 struct command *new_spl_fcall_cmd( struct s_spl_execute *proc, str_list *returning);
 struct command *new_spl_block_cmd(struct s_spl_block *block );
 struct command *new_spl_for_cmd(char *vnme, expr_str_list *list, struct s_spl_block *block );
-struct command *new_sort_cmd(expr_str *variable, expr_str *callback);
+struct command *new_sort_cmd(expr_str *variable, expr_str *callback,expr_str *limit);
 struct s_spl_execute * new_spl_execute(char *proc_name, struct expr_str_list* parameters);
 struct command *new_spl_let_cmd(str_list *vars, expr_str_list *vals);
 struct command *new_create_procedure_cmd(expr_str *p_connid, create_proc_data *create_proc) ;

@@ -815,11 +815,12 @@ struct command *c;
 }
 
 
-struct command *new_sort_cmd(expr_str *variable, expr_str *callback) {
+struct command *new_sort_cmd(expr_str *variable, expr_str *callback,expr_str *limit) {
 struct command *c;
 	c=new_command(E_CMD_SORT_CMD);
 	c->cmd_data.command_data_u.sort_cmd.variable=variable;
 	c->cmd_data.command_data_u.sort_cmd.callback=callback;
+	c->cmd_data.command_data_u.sort_cmd.limit=limit;
 	return c;
 }
 

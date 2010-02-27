@@ -1,4 +1,4 @@
-/* $Id: fgl.x,v 1.51 2010-02-12 14:39:39 mikeaubury Exp $ */
+/* $Id: fgl.x,v 1.52 2010-02-27 10:14:22 mikeaubury Exp $ */
 typedef string str<>;
 typedef string sql_ident<>;
 
@@ -286,6 +286,7 @@ struct struct_lint_expect_cmd {
 struct struct_sort_cmd {
 	struct expr_str *variable;
 	struct expr_str *callback;
+	struct expr_str *limit;
 };
 
 
