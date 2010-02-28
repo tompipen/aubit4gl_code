@@ -1,3 +1,4 @@
+
 /*
 # +----------------------------------------------------------------------+
 # | Aubit 4gl Language Compiler Version $.0                              |
@@ -24,7 +25,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.167 2010-02-22 15:01:07 mikeaubury Exp $
+# $Id: ops.c,v 1.168 2010-02-28 09:52:00 mikeaubury Exp $
 #
 */
 
@@ -3929,12 +3930,14 @@ int fake2;
 #endif
 
   fake1=dtime_data[1];
-  if (dtime_data[1]==0) fake1=1;
+  if (dtime_data[1]==0) {fake1=1; }
   fake2=dtime_data[2];
-  if (dtime_data[2]==0) fake2=1;
+  if (dtime_data[2]==0) {fake2=1; }
+
+
 
   dt_days = A4GL_gen_dateno (fake2, fake1, dtime_data[0]);	// As a date....
-
+//printf("%d %d %d\n", fake2, fake1, dtime_data[0]);
   //dt_seconds= (double)dtime_data[2]*24.0*60.0*60.0; // Days
   dt_seconds = 0;
   dt_seconds += (double) dtime_data[3] * 60.0 * 60.0;	// Hours
@@ -4067,8 +4070,13 @@ int fake2;
 	  		dtime_data[1] = mdy_m;
 	  		dtime_data[0] = mdy_y;
 		}
-	}
-
+	} else {
+	  		dt_days += dtime_data[2];
+	  		A4GL_get_date (dt_days, &mdy_d, &mdy_m, &mdy_y);
+	  		dtime_data[2] = mdy_d;
+	  		dtime_data[1] = mdy_m;
+	  		dtime_data[0] = mdy_y;
+}
 
 	}
 
