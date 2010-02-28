@@ -1,0 +1,371 @@
+/*
+=====================================================================
+                        Source: main.rule
+=====================================================================
+*/
+
+
+module : 
+	class_module 
+	| trad_module
+;
+
+class_module: class_definition
+;
+
+trad_module: op_module_header
+	{
+	char b[256];
+	char *ptr;
+		if (glob_only==1) {
+#ifdef DEBUG
+       			A4GL_debug("Read globals section so Im done\n");
+#endif
+       			YYACCEPT;
+		}
+
+	lastlineno=yylineno;
+
+	// Allow a 'default' globals file to be included in all 4gls...
+	// but - we'll only read it - if this isn't a 'GLOBALS' file too...
+	if (!has_globals()) {
+		ptr=acl_getenv_not_set_as_0("DEFAULT_GLOBALS");
+		if (ptr) {
+			strcpy(b,ptr);
+			set_current_variable_scope('G');
+			tr_glob_fname(b);
+#ifdef DEBUG
+			A4GL_debug("Reading globals file %s\n",b);
+#endif
+			rm_quote(b);
+			read_glob(b);
+			add_globals_file_to_this_module(b);
+			set_current_variable_scope('m');
+		}
+	}
+	
+		set_4gl_vars();
+
+		sort_variables_v(&this_module.exported_global_variables);
+		sort_variables_v(&this_module.imported_global_variables);
+		sort_variables_v(&this_module.module_variables);
+
+
+		set_uses_constants(&this_module.exported_global_variables);
+		set_uses_constants(&this_module.imported_global_variables);
+		set_uses_constants(&this_module.module_variables);
+
+		set_current_variable_scope('m');
+	}
+	func_main_def
+;
+
+
+
+op_module_header: | module_header 
+	
+;
+
+module_header	:	module_entry  {
+				add_module_entry($<module_entry>1);
+		}
+		| 	module_header module_entry {
+				add_module_entry($<module_entry>2);
+		}
+;
+
+
+
+	
+
+module_entry : 
+	module_import  			{$<module_entry>$=$<module_entry>1;}
+	| module_code  			{$<module_entry>$=new_module_code_cmd($<cmd>1);}
+	| whenever_cmd 			{$<module_entry>$=new_module_code_cmd($<cmd>1);}
+	| lint_cmd 			{$<module_entry>$=new_module_code_cmd($<cmd>1);}
+	| import_package 		{$<module_entry>$=0;}
+	| module_globals_section  	{$<module_entry>$=0;}
+	| module_define_section   	{$<module_entry>$=0;}
+	| db_section 			{$<module_entry>$=0;}
+	| pragma 			{$<module_entry>$=0;}
+	| KW_DOC4GLCOMMENT		{set_module_comment($<str>1); $<module_entry>$=0;}
+	;
+
+
+
+
+func_main_def	: /* could be empty file */
+                 {strcpy($<str>$,"");}
+                | func_or_main2
+;
+func_or_main2 : func_or_main {
+		add_module_entry($<module_entry>1);
+	}
+	| func_or_main2 func_or_main {
+		add_module_entry($<module_entry>2);
+	}
+	;
+
+at_term_cmd : AT_TERMINATION_CALL  identifier {
+		$<cmd>$=new_at_term_cmd($<str>2);
+	}
+;
+
+func_or_main	:	func_def {$<module_entry>$=$<module_entry>1;}
+		|	main_def {$<module_entry>$=$<module_entry>1;}
+		|	report_def {$<module_entry>$=$<module_entry>1;}
+		|	pdf_report_def {$<module_entry>$=$<module_entry>1;}
+		| 	formhandler_def {$<module_entry>$=$<module_entry>1;}
+		|	code_cmd {$<module_entry>$=new_module_code_cmd($<cmd>1);}
+		| 	import_m {$<module_entry>$=$<module_entry>1;}
+		| 	pragma {$<module_entry>$=0;}
+		|       whenever_cmd {$<module_entry>$=new_module_code_cmd($<cmd>1);}
+		| 	lint_cmd {$<module_entry>$=new_module_code_cmd($<cmd>1);}
+		| 	error 
+		;
+
+module_code : code_cmd   {$<cmd>$=$<cmd>1;}
+;
+
+op_code : {$<cmd>$=0;} | code_cmd  {$<cmd>$=$<cmd>1;} ;
+
+module_define_section : define_set {
+				if ($1) {
+					set_uses_constants($1);
+					merge_variable_list(&this_module.module_variables, $1);
+					sort_variables_v(&this_module.module_variables);
+				}
+			}
+			;
+
+
+
+ldeffunction :  FUNCTION {$<e_boolean>$=EB_FALSE;} | LOCAL_FUNCTION { $<e_boolean>$=EB_TRUE; } 
+;
+
+
+op_doc4gl_comment: 
+	{$<sql_string>$=NULL; }
+	| KW_DOC4GLCOMMENT  {$<sql_string>$=strdup($<str>1); }
+;
+
+/*
+ * Function definition 
+ */
+func_def	: op_doc4gl_comment ldeffunction {
+  				if (class_cnt>1) { 
+					a4gl_yyerror("You've already defined a class - you can't do any more now"); 
+				}
+  				clr_variable(); 
+				lastlineno=yylineno;
+				A4GL_clr_extra_warnings();
+  				clr_function_constants (); 
+				clr_call_list();
+		} identifier  OPEN_BRACKET  op_param_var_list CLOSE_BRACKET  { 
+			if (is_builtin_func($<str>4)&&!compiling_system_4gl) {
+				a4gl_yyerror("You can't use this name - this is the name of a builtin Aubit4GL function");
+			}
+
+
+  			SPRINTF1(curr_func,"%s",$<str>4);
+			map_function_start(curr_func);
+  			ADDMAP_MODULE("Declare Function",curr_func);
+  			cnt=0;
+  			push_blockcommand("FUNC");
+			new_whenever_cmd(-1,0);
+		} atline define_section {
+  			//int c;
+			char errbuff[256];
+                        if (!check_parameters(errbuff,$10, $<ptr_list>6)) {
+                                a4gl_yyerror(errbuff);
+                                YYERROR;
+                        }
+
+
+			inc_var_assigned_from_binding_list(expand_parameters($10,$<ptr_list>6));
+
+
+			lastlineno=yylineno;
+			} 
+			commands_as_list END_FUNCTION {
+				$<module_entry>$=new_function_definition($<str>4,$<e_boolean>2,$<ptr_list>6, $<commands>12,$<integer_val>9,$<sql_string>1);
+				merge_variable_list(&$<module_entry>$->module_entry_u.function_definition.variables, $10);
+				sort_variables_v(&$<module_entry>$->module_entry_u.function_definition.variables);
+
+    				pop_blockcommand("FUNC");
+    				clr_function_constants ();
+    				A4GL_lex_printcomment("/*end function*/\n");
+    				A4GL_chk_and_clr_labels();
+				map_function_end();
+  			}
+;
+
+
+main_def:	
+  op_doc4gl_comment MAIN  atline
+  { 
+				A4GL_clr_extra_warnings();
+    		if (class_cnt>1) { a4gl_yyerror("You've already defined a class - you can't do any more now"); }
+	
+    		lastlineno=token_read_on_line;
+    		//variable_action(-1,$<str>2,"","","add_function"); 
+    		strcpy(curr_func,"MAIN");
+    		clr_variable(); 
+  		clr_function_constants (); 
+		clr_call_list();
+    		push_blockcommand("MAIN"); 
+    		ADDMAP_MODULE("MAIN","MAIN");
+			map_function_start("MAIN");
+			new_whenever_cmd(-1,0);
+  	} 
+  define_section {
+			//struct variable_list v;
+			//char errbuff[256];
+
+		} commands_as_list END_MAIN {
+	pop_blockcommand("MAIN");
+    	A4GL_chk_and_clr_labels();
+	map_function_end();
+	A4GL_lex_printcomment("/*end main */\n");
+	$<module_entry>$=new_main_definition($<commands>7,$<integer_val>3,$<sql_string>1);
+	merge_variable_list(&$<module_entry>$->module_entry_u.function_definition.variables, $5);
+	sort_variables_v(&$<module_entry>$->module_entry_u.function_definition.variables);
+
+
+
+	//set_variables(&$<module_entry>$->module_entry_u.function_definition.variables,'L');
+	/* variable_add_function($<module_entry>$); */
+} 
+;
+
+op_with_resume: /* Only used for SPL target */
+	{$<integer_val>$=0;} 
+	| WITH_RESUME {$<integer_val>$=1;}
+;
+
+return_cmd : KW_RETURN atline op_fgl_expr_ret_list_v2 op_with_resume { 
+    int nreturn;
+    struct expr_str_list *pl;
+
+    pl=$<ptr_list>3;
+
+    if (pl) {
+	pl=A4GL_rationalize_list(pl);
+        nreturn=pl->list.list_len;
+    } else {
+		nreturn=0;
+	}
+    if (nreturn_values!=-1) {
+		if ( nreturn_values!=nreturn) {
+			// There could be trouble ahead....
+			if (A4GL_isyes(acl_getenv("ERROR_ON_NVALS"))) {
+				char buff[256];
+				SPRINTF2(buff,"%d!=%d",nreturn_values,nreturn);
+				set_yytext(buff);
+				a4gl_yyerror("Different number of return values");
+			} else {
+				//A4GL_lint("Different number of return values");
+			}
+		}
+    }
+    nreturn_values=nreturn;
+	set_cmdlineno($<integer_val>2);
+    $<cmd>$=new_return_cmd(make_fgl_expr_list(pl),$<integer_val>4);
+  }
+;
+
+
+db_section	:	  DATABASE dbase_name {
+					add_feature("DATABASE_USED");
+					open_db($<str>2);
+
+					set_module_dbname($<str>2,EB_FALSE);
+
+					lastlineno=yylineno;
+					file_out_nl("1");	
+					
+			}
+		| SCHEMA dbase_name {
+					add_feature("SCHEMA_USED");
+					open_db($<str>2);
+
+					set_module_dbname($<str>2,EB_TRUE);
+					lastlineno=yylineno;
+				file_out_nl("2");
+			}
+;
+
+module_globals_section : actual_globals_section {
+}
+;
+
+actual_globals_section : 
+	xglobals_entry
+	| actual_globals_section xglobals_entry
+;
+
+xglobals_entry : globals_entry 
+;
+
+globals_entry: GLOBALS {
+			strcpy(curr_func,"[Globals]");
+			set_current_variable_scope('g');
+			A4GL_lex_printcomment("/* start of globals */\n");
+		} glob_section  {
+				file_out_nl("3");
+				strcpy(curr_func,"Module");
+		}
+;
+
+glob_section : define_section END_GLOBALS {
+ A4GL_lex_printcomment("/* end of globals */");
+#ifdef DEBUG
+	A4GL_debug("end of globals\n");
+#endif
+	lastlineno=yylineno;
+      set_has_globals();
+	merge_variable_list(&this_module.exported_global_variables,$1);
+	set_current_variable_scope('m');
+}
+| g_file_name {
+	char b[256];
+	lastlineno=yylineno;
+	strcpy(b,$<str>1);
+	set_current_variable_scope('G');
+	tr_glob_fname(b);
+#ifdef DEBUG
+	A4GL_debug("Reading globals file %s\n",b);
+#endif
+	rm_quote(b);
+	read_glob(b);
+	add_globals_file_to_this_module(b);
+	/* print_loaded_globals_file(b);  */
+	set_current_variable_scope('m');
+	
+}
+/* Dont these do anything useful....
+| module_code  
+| db_section
+*/
+;
+
+
+neg_integer : 
+	KW_MINUS INT_VALUE {
+		sprintf($<str>$,"-%s",$<str>2);
+	}
+;
+
+d_int_list: neg_integer {$<cmd_int_list>$=new_cmd_int_list();
+			append_cmd_int_list($<cmd_int_list>$,atol($<str>1));
+			}
+	| d_int_list KW_COMMA neg_integer { append_cmd_int_list($<cmd_int_list>1,atol($<str>3));}
+;
+
+op_ignore_errors:
+	{$<cmd_int_list>$=NULL;}
+	| IGNORE_ERRORS OPEN_BRACKET d_int_list CLOSE_BRACKET KW_FOR {$<cmd_int_list>$=$<cmd_int_list>3;}
+;
+
+
+/* ========================== main.rule ============================= */

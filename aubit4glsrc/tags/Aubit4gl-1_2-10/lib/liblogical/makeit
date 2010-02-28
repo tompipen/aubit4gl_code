@@ -1,0 +1,33 @@
+# This script should be obsoleted.
+# please use "make liblogical" in Aubit source code root
+
+
+if [ "$AUBITDIR" = "" ]
+then
+	echo "AUBITDIR is not set"
+fi
+make=`$AUBITDIR/bin/aubit-config A4GL_MAKE`
+
+
+for a in layout_engine processor report_viewer txt csv pdf html
+do
+if [ $a = csv -o $a = txt -o $a = pdf  -o $a = html ]
+then
+	for b in layout process
+	do
+		echo ""
+		echo ""
+		echo Making $a/$b
+		echo ""
+		cd $AUBITDIR/lib/liblogical/$a/$b
+		$make $@
+	done
+else
+		echo ""
+		echo ""
+	echo Making $a
+	echo ""
+	cd $AUBITDIR/lib/liblogical/$a
+	$make $@
+fi
+done

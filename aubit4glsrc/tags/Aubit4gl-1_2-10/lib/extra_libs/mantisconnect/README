@@ -1,0 +1,30 @@
+This library enables automatic entry of Mantis issues into a mantis bug tracking database
+
+You must enable the error hook processing using either an OPTIONS statement within the 4GL program
+or by setting
+
+
+
+eg. 
+	main
+	options errorhook "errhook_mantis"
+	...
+	end main
+
+or
+
+	$ export A4GL_CALLERRHOOK=errhook_mantis
+
+
+
+
+You *must* set MANTIS_USERNAME, MANTIS_PASSWORD and MANTIS_PROJECT to use this library.
+These are the usernames/passwords for your mantis account - *not* your unix account!
+
+The MANTIS_PROJECT should be the project ID for the project you wish to log the entries into.
+
+You can get the projectID by doing a 'view source' in firefox on your mantis page and reviewing the 
+option values in the project ID dropdown..
+
+You must specify the project number - a project name will * not work *
+

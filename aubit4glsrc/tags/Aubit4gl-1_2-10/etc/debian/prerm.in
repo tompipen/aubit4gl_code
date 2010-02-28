@@ -1,0 +1,51 @@
+#!/bin/sh
+###########################################################################
+#pre-UNinstall script for dpkg
+###########################################################################
+# NOTE: pre-x tasks cant be interactive without having to block dpkg
+
+#----------------------- Source common (globals) file
+export FLAGS="$@"
+if test -f ./global; then
+	. ./global
+else
+	echo "ERROR: cannot locate ./global file"
+	exit 1
+fi
+
+#---------------------- Task specific settings
+A4GL_TASK_MSG="Pre-Uninstall"
+A4GL_TASK_LOG="$RPM_A4GL_RPMDEINSTALL_LOG"
+A4GL_AUBIT_FLAG="--pre-uninstall-rpm --rpm-install-dir=${CURR_A4GL_PREFIX}"
+A4GL_INTERACT_OPTION="--no-interaction >> $A4GL_TASK_LOG"
+A4GL_INTERACT_MSG="non-interactive program"
+
+#---------------------- Perform task actions
+
+	if ! test -d ${CURR_A4GL_PREFIX}; then
+		$RPM_A4GL_ERROR "ERROR: CURR_A4GL_PREFIX (${CURR_A4GL_PREFIX}) is not a directory"
+		${RPM_A4GL_ERROR_EXIT} ${RPM_A4GL_ERROR_EXIT_CODE}
+	fi
+
+	#---------------------------------
+	# Make sure we know where we are
+	cd ${CURR_A4GL_PREFIX}
+
+	#---------------------------------
+	# Start task log file
+	$RPM_A4GL_VERBOSE "NOTE: Logging $A4GL_TASK_MSG tasks to $A4GL_TASK_LOG"
+	date > $A4GL_TASK_LOG
+
+	#---------------------------------
+	# Run task
+	$RPM_A4GL_VERBOSE "Running aubit $A4GL_AUBIT_FLAG as $A4GL_INTERACT_MSG ..." >> $A4GL_TASK_LOG
+	eval ${CURR_A4GL_PREFIX}/bin/aubit $A4GL_AUBIT_FLAG $A4GL_INTERACT_OPTION
+	$RPM_A4GL_VERBOSE "$A4GL_TASK_MSG tasks exited"  >> $A4GL_TASK_LOG
+
+	#---------------------------------
+	# Show to user task summary
+	$RPM_A4GL_VERBOSE "$A4GL_TASK_MSG tasks finished, see $A4GL_TASK_LOG for details."
+
+
+
+#################################### EOF ####################################
