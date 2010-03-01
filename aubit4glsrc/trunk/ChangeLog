@@ -1,4 +1,159 @@
 ---------------------------
+Mon Mar  1 11:56:58 GMT 2010
+---------------------------
+1.2_10 Released
+---------------------------
+	2010-02-28 09:51  mikeaubury
+	
+	2010-02-27 10:14  mikeaubury
+	
+	Add LIMIT to the sort...
+	
+	2010-02-26 12:09  mikeaubury
+	
+	Add DBMONEY to the environment variables sent to the client
+	
+	2010-02-25 21:08  mikeaubury
+	
+	Add support for PRINT IMAGE ["character string" | charactervar] in
+	addition to PRINT IMAGE blobvar in PDF reports
+	
+	2010-02-25 20:53  mikeaubury
+	
+	2010-02-25 19:46  mikeaubury
+	
+	2010-02-24 16:28  mikeaubury
+	
+	2010-02-24 16:25  mikeaubury
+	
+	2010-02-24 12:52  mikeaubury
+	
+	2010-02-24 12:48  mikeaubury
+	
+	2010-02-24 12:28  mikeaubury
+	
+	2010-02-22 15:01  mikeaubury
+	
+	2010-02-22 14:42  dbuettner
+	
+	changed ui commands to act like 4js
+	
+	2010-02-20 11:44  mikeaubury
+	
+	2010-02-20 09:51  mikeaubury
+	
+	2010-02-20 09:38  mikeaubury
+	
+	2010-02-19 12:14  mikeaubury
+	
+	2010-02-18 19:14  mikeaubury
+	
+	2010-02-18 19:09  mikeaubury
+	
+	2010-02-18 15:21  mikeaubury
+	
+	2010-02-18 15:14  mikeaubury
+	
+	2010-02-18 15:08  mikeaubury
+	
+	2010-02-18 14:51  mikeaubury
+	
+	2010-02-17 19:44  mikeaubury
+	
+	2010-02-17 17:55  mikeaubury
+	
+	2010-02-17 16:53  mikeaubury
+	
+	2010-02-17 11:54  mikeaubury
+	
+	2010-02-17 10:59  mikeaubury
+	
+	IDS11.5 fixups for adbschema -sys
+	
+	2010-02-17 09:43  mikeaubury
+	
+	2010-02-16 16:16  mikeaubury
+	
+	2010-02-16 13:48  mikeaubury
+	
+	2010-02-16 13:17  mikeaubury
+	
+	#ifdef DEBUG .. #endif	fixups
+	
+	2010-02-16 13:14  mikeaubury
+	
+	#ifdef DEBUG .. #endif	fixups
+	
+	2010-02-16 13:08  mikeaubury
+	
+	#ifdef DEBUG .. #endif	fixups
+	
+	2010-02-16 10:27  mikeaubury
+	
+	2010-02-16 10:07  mikeaubury
+	
+	2010-02-16 10:03  mikeaubury
+	
+	2010-02-15 16:22  mikeaubury
+	
+	2010-02-15 15:54  mikeaubury
+	
+	2010-02-15 13:40  mikeaubury
+	
+	2010-02-15 13:30  mikeaubury
+	
+	2010-02-15 13:24  mikeaubury
+	
+	2010-02-15 13:21  mikeaubury
+	
+	2010-02-15 13:20  mikeaubury
+	
+	some internal function aliasing for compilers/sql
+	
+	2010-02-15 12:53  mikeaubury
+	
+	2010-02-15 12:36  mikeaubury
+	
+	2010-02-15 12:17  mikeaubury
+	
+	2010-02-15 12:03  mikeaubury
+	
+	2010-02-12 16:28  mikeaubury
+	
+	New Indexed fileschema - for faster compilations
+	
+	2010-02-12 14:39  mikeaubury
+	
+	Some minor fixups to allow (at least partial) compilation with g++
+	some 'const' fixups
+	
+	2010-02-12 14:00  mikeaubury
+	
+	2010-02-12 13:20  mikeaubury
+	
+	2010-02-12 13:17  mikeaubury
+	
+	2010-02-12 13:07  mikeaubury
+	
+	2010-02-10 15:45  fortiz
+	
+	,
+	
+	2010-02-10 14:30  mikeaubury
+	
+	2010-02-10 13:08  mikeaubury
+	
+	2010-02-10 11:43  mikeaubury
+	
+	2010-02-10 10:07  mikeaubury
+	
+	2010-02-10 10:04  mikeaubury
+	
+	2010-02-10 09:57  mikeaubury
+	
+	2010-02-10 09:48  mikeaubury
+	
+---------------------------
 Wed Feb 10 13:06:27 GMT 2010
 ---------------------------
 1.2_9 Released
