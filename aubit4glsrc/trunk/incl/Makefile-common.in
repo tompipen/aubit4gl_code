@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.237 2010-01-08 17:54:36 jcbatalha Exp $
+# $Id: Makefile-common.in,v 1.238 2010-03-01 15:01:33 mikeaubury Exp $
 #
 
 #WARNING: __NEVER__ use environment vatiable called "TMP" - Informix
@@ -309,6 +309,9 @@ ifeq "${GCC_VER}" "3.3"
 	GCC_NEW_STYLE=1
 endif
 ifeq "${GCC_VER}" "3.4"
+	GCC_NEW_STYLE=1
+endif
+ifeq "${GCC_VER}" "4.4"
 	GCC_NEW_STYLE=1
 endif
 
