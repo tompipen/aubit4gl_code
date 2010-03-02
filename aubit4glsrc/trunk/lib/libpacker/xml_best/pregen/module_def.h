@@ -1,5 +1,5 @@
 /* XML processor/application API for module_def.dtd.
- * Generated 2010/02/28 09:32:36.
+ * Generated 2010/03/01 12:07:02.
  *
  * This program was generated with the FleXML XML processor generator.
  * FleXML is Copyright (C) 1999-2005 Kristoffer Rose.  All rights reserved.

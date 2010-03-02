@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.64 2010-02-17 16:53:11 mikeaubury Exp $
+# $Id: Makefile,v 1.65 2010-03-02 15:31:31 mikeaubury Exp $
 #
 
 ROOT		=../..
@@ -417,7 +417,7 @@ sopt: ../../bin/4glc_sopt
 
 fglsplit:../../bin/fglsplit
 
-../../bin/fglsplit:  split.o API_lex.o  lint.o expr_munging.o linearise.o   common.o ../../lib/generated/std_funcs.c  
+../../bin/fglsplit:  split.o API_lex.o  lint.o expr_munging.o linearise.o   common.o ../../lib/generated/std_funcs.c   load_prototypes.o
 	$(CC) $(CFLAGS) -Wall ${RDYNAMIC}  -g -o $@ $^ -L$(AUBITDIR)/lib -laubit4gl
 
 
