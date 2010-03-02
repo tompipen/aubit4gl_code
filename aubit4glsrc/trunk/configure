@@ -22527,7 +22527,7 @@ $as_echo "$REDHAT_NAME ($REDHAT_VER)" >&6; }
 
         #check if we are using MinGW GCC with CygWin:
 		#WARNING: THIS TEST OCCURS ONE MORE TIME, LATER IN THIS FILE!
-		TMP_TMP=`gcc -dumpmachine`
+		TMP_TMP=`gcc -dumpmachine | sed 's///g'`
 		if test "$TMP_TMP" != ""; then
 			if test "$TMP_TMP" = "mingw32" ; then
 				GCC_MINGW=yes
@@ -25316,7 +25316,7 @@ if test "$CC" = "gcc" -o "$CC" = "apgcc"; then
 	{ $as_echo "$as_me:${as_lineno-$LINENO}: checking GCC version" >&5
 $as_echo_n "checking GCC version... " >&6; }
 	#WARNING: THIS TEST OCURS ONE MORE TIME, EARLIER IN THIS FILE
-	TMP_DMACHINE=`gcc -dumpmachine`
+	TMP_DMACHINE=`gcc -dumpmachine | sed 's///g'`
 	TMP_TMP=`gcc --version | head -n 1 | sed -e 's/^gcc//' -e 's/(GCC)//' -e 's/ (prerelease)//' -e 's/(//' -e 's/)//' -e 's/\.exe//' -e 's/\./ /g'`
 	if test "$TMP_TMP" != ""; then
 		set `echo $TMP_TMP`
@@ -48428,7 +48428,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure,v 1.448 2010-03-02 15:31:28 mikeaubury Exp $
+| $Id: configure,v 1.449 2010-03-02 18:33:01 mikeaubury Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X
