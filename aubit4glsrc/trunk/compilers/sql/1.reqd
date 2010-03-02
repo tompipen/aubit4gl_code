@@ -20,12 +20,10 @@ int sqlparse_yylex(int yystate);
 #define SQL_SET_ISOLATION_COMMITTED_READ 7
 
 
-void add_sql_function(char *s);
 #define A4GL_add_feature sqlc_A4GL_add_feature
 #define A4GL_cursor_current sqlc_A4GL_cursor_current
 #define A4GL_warn sqlc_A4GL_warn
 #define add_feature sqlc_A4GL_add_feature
-#define add_sql_function sqlc_add_sql_function
 #define add_sql_function sqlc_add_sql_function
 #define expand_slil sqlc_expand_slil
 #define expand_slil sqlc_expand_slil
@@ -42,6 +40,9 @@ void add_sql_function(char *s);
 #define A4GL_db_used sqlc_A4GL_db_used
 #define map_delete_update sqlc_map_delete_update
 
+void add_sql_function(char *s);
+void map_select_stmt (char *main_statement_type, struct s_select *select);
+void map_create_temp(char *tab, char *src);
 
 void A4GL_add_feature (char *feature);
 
