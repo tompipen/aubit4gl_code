@@ -4826,9 +4826,9 @@ isCalledFromOtherModule (module_definition * mod, char *module,
 		    {
 			if (A4GL_isyes(acl_getenv("LOGSAFEBLOCK"))) {
 				FILE *f;
-				f=fopen("/tmp/saveblock","w");
+				f=fopen("/tmp/saveblock","a");
 				if (f) {
-		      			printf("%s %s %s %s\n", called_from,function, buff1,buff2);
+		      			fprintf(f,"%s %s %s %s\n", called_from,function, buff1,buff2);
 				}
 				fclose(f);
 			}
