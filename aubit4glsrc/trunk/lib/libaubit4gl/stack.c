@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                          |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.252 2010-02-27 10:14:23 mikeaubury Exp $
+# $Id: stack.c,v 1.253 2010-03-02 20:11:05 mikeaubury Exp $
 #
 */
 
@@ -2275,7 +2275,7 @@ A4GL_push_today (void)
 #include <winsock.h>
 #endif
 
-void
+int
 gettimeofday (struct timeval *t, void *timezone)
 {
 #ifndef DOING_CM
@@ -2284,6 +2284,7 @@ gettimeofday (struct timeval *t, void *timezone)
   t->tv_sec = timebuffer.time;
   t->tv_usec = 1000 * timebuffer.millitm;
 #endif
+return 1;
 }
 
 #endif
