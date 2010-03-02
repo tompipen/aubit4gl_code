@@ -1367,6 +1367,10 @@ call channel::write("make","calltree : ${MIFS}")
 call channel::write("make","	A4GL_PACKED_EXT=.mif A4GL_PACKER=PACKED fglcalltree ${MIFS}")
 call channel::write("make","	dot -T pdf -Lg calltree.dot -o"||lv_buildstr clipped||lv_prog clipped||".pdf")
 
+call channel::write("make","calltree_load : ${MIFS}")
+call channel::write("make","	A4GL_PACKED_EXT=.mif A4GL_PACKER=PACKED fglcalltree ${MIFS}")
+call channel::write("make","	load_calltree")
+
 
 
 
@@ -1411,7 +1415,7 @@ define lv_name char(200)
 define lv_libs char(200)
 
 if fgl_getenv("VMAKE")!=" "  then
-	display "Searching for ",lv_name clipped
+	#display "Searching for ",lv_name clipped
 
 	select libname into lv_libs from inLibrary where module=lv_name
 	if sqlca.sqlcode =0 then
