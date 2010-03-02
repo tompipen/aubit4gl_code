@@ -275,7 +275,7 @@ void FglForm::initActions()
 
    Action *nextRowA = new Action("nextrow", tr("Next Row"));
    nextRowA->setAcceleratorName("Tab");
-   nextRowA->setAcceleratorName2("Down");
+//   nextRowA->setAcceleratorName2("Down");
    addFormAction(nextRowA);
 
    Action *prevRowA = new Action("prevrow", tr("Previous Row"));
