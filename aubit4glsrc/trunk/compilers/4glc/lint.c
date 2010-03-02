@@ -4824,7 +4824,14 @@ isCalledFromOtherModule (module_definition * mod, char *module,
 		    }
 		  if (strcmp (buff1, buff2) != 0)
 		    {
-		      //printf("Called %s %s %s %s!\n", called_from,function, buff1,buff2);
+			if (A4GL_isyes(acl_getenv("LOGSAFEBLOCK"))) {
+				FILE *f;
+				f=fopen("/tmp/saveblock","w");
+				if (f) {
+		      			printf("%s %s %s %s\n", called_from,function, buff1,buff2);
+				}
+				fclose(f);
+			}
 		      return 1;
 		    }
 		}
