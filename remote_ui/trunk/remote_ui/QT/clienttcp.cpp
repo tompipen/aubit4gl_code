@@ -821,7 +821,7 @@ void ProtocolHandler::outputTree(QDomNode domNode)
    if(childElement.nodeName() == "FRONTCALL"){
       QString qs_module = childElement.attribute("MODULE");
       QString qs_name = childElement.attribute("NAME");
-//      int expect = childElement.attribute("EXPECT").toInt();
+      int expect = childElement.attribute("EXPECT").toInt();
 
       QDomElement paramsElement = childElement.firstChildElement();
       QString value;
@@ -913,7 +913,7 @@ void ProtocolHandler::outputTree(QDomNode domNode)
          */
       }
 
-//      if(expect > 0){
+      if(expect > 0){
          QDomDocument doc;
          QDomElement triggeredElement = doc.createElement("TRIGGERED");
          triggeredElement.setAttribute("ID", -123);
@@ -929,7 +929,7 @@ void ProtocolHandler::outputTree(QDomNode domNode)
 
          //makeResponse(returnString.trimmed());
          p_currScreenHandler->sendDirect(returnString.trimmed());
-//      }
+      }
       
    }
 
