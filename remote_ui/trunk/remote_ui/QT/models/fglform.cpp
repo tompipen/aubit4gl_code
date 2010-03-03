@@ -293,53 +293,6 @@ void FglForm::initActions()
 
 
    return;
-   Action *interruptAction = new Action(tr("INTERRUPT"));
-   interruptAction->setShortcut(Qt::Key_Escape);
-   interruptAction->setVisible(true);
-   interruptAction->setEnabled(true);
-   connect(interruptAction, SIGNAL(triggered()), this, SLOT(cancelTriggered()));
-   ql_defaultActions << interruptAction;
-
-   Action *acceptAction = new Action(tr("ACCEPT"));
-   acceptAction->setVisible(true);
-   acceptAction->setEnabled(true);
-   acceptAction->setShortcut(Qt::Key_F12);
-   connect(acceptAction, SIGNAL(triggered()), this, SLOT(acceptTriggered()));
-   ql_defaultActions << acceptAction;
-
-   Action *enterAction = new Action(tr("Next Field"));
-   enterAction->setVisible(true);
-   enterAction->setEnabled(true);
-
-   QList<QKeySequence> enterShortcuts;
-   enterShortcuts << Qt::Key_Tab;
-   enterShortcuts << Qt::Key_Return;
-   enterShortcuts << Qt::Key_Enter;
-   enterShortcuts << Qt::Key_Down;
-   enterAction->setShortcuts(enterShortcuts);
-
-   connect(enterAction, SIGNAL(triggered()), this, SLOT(nextfield()));
-   ql_defaultActions << enterAction;
-
-   Action *stabAction = new Action(tr("Previous Field"));
-   stabAction->setVisible(true);
-   stabAction->setEnabled(true);
-
-   QList<QKeySequence> stabShortcuts;
-   stabShortcuts << Qt::Key_Up;
-   stabShortcuts << (Qt::SHIFT|Qt::Key_Tab);
-   stabAction->setShortcuts(stabShortcuts);
-
-   connect(stabAction, SIGNAL(triggered()), this, SLOT(prevfield()));
-   ql_defaultActions << stabAction;
-
-   //this->addActions(ql_defaultActions);
-/*
-   for(int i=0; i<ql_defaultActions.size(); i++){
-      this->addAction(ql_defaultActions.at(i));
-   }
-*/
-
 }
 
 //------------------------------------------------------------------------------
