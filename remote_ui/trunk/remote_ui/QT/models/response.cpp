@@ -19,6 +19,7 @@
 #include "response.h"
 #include "vwidgets.h"
 #include "table.h"
+#include "include/fgl.h"
 
 Response::Response(QString id, FglForm* p_currForm, bool cursorPos) : QDomDocument()
 {
@@ -28,12 +29,26 @@ Response::Response(QString id, FglForm* p_currForm, bool cursorPos) : QDomDocume
    this->showCursorPos = cursorPos;
 
    if(id.isEmpty()){
-      qDebug() << "Error Occured";
+      qFatal("TRIGGERED ID is empty");
       return;
    }
 
-   if(id == "CANCEL" || id == "Esc")
-      id = "INTERRUPT";
+   QList<Fgl::Event> ql_events = p_currForm->ql_contextEvents.last();
+   Fgl::Event currEvent;
+
+   for(int i=0; i<ql_events.size(); i++){
+      Fgl::Event ev = ql_events.at(i);
+      bool ok = false;
+      int i_id = id.toInt(&ok);
+      if(ok){
+         if(ev.id == i_id){
+            currEvent = ev;
+         }
+      }
+      else{
+          break;
+      }
+   }
 
    this->appendChild(responseElement = this->createElement("TRIGGERED"));
    responseElement.setAttribute("ID", id);
@@ -45,13 +60,17 @@ Response::Response(QString id, FglForm* p_currForm, bool cursorPos) : QDomDocume
       responseElement.setAttribute("INFIELD", colName);
    }
 
-   if(p_currForm->input() || p_currForm->construct()){
-      addSyncValues();
-   }
-   else{
-      if(p_currForm->inputArray() || p_currForm->displayArray()){
-         addScreenRecSyncValues();
-      }
+   qDebug() << "EVENT:" << currEvent.id << currEvent.attribute << currEvent.type;
+   if(!(currEvent.type == Fgl::ONKEY_EVENT ||
+      currEvent.type == Fgl::ONACTION_EVENT)){
+         if(p_currForm->input() || p_currForm->construct()){
+            addSyncValues();
+         }
+         else{
+            if(p_currForm->inputArray() || p_currForm->displayArray()){
+               addScreenRecSyncValues();
+            }
+         }
    }
 
    /*

@@ -371,7 +371,7 @@ namespace Fgl {
               }
 
            default:
-             qFatal("Datatype field checking not handled");
+             //qFatal("Datatype field checking not handled");
              return false;
       }
    }

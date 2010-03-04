@@ -541,11 +541,11 @@ void ScreenHandler::createDialogAction(int buttonId, QString text)
 // Filename     : screenhandler.cpp
 // Description  : creates the horizontal ring menu or some other dialog
 //------------------------------------------------------------------------------
-void ScreenHandler::createPrompt(QString text, int charMode, QString style)
+void ScreenHandler::createPrompt(QString text, int charMode, int fieldAttribute, QString style)
 {
    Q_UNUSED(style);
 
-   p_prompt = new Prompt(text, charMode);
+   p_prompt = new Prompt(text, charMode, fieldAttribute);
    p_prompt->activateWindow();
    p_prompt->raise();
    connect(p_prompt, SIGNAL(sendDirect(QString)), this, SLOT(sendDirect(QString)));

@@ -97,7 +97,7 @@ private:
 
 public slots:
    void createWindow(QString, QString = "", int=0, int=0, int = 0, int = 0, QString = "");
-   void createPrompt(QString, int, QString);
+   void createPrompt(QString, int, int, QString);
    void handleAubitForm(QString, QString, bool);
    void handleXMLForm(QString, QString, bool);
    void displayForm(QString);

@@ -1640,6 +1640,36 @@ Label::Label(const QString &text, QWidget *parent)
    w = 0;
 }
 
+void WidgetHelper::setFieldAttribute(QObject* object){
+   Q_UNUSED(object);
+
+/*
+   if(Button *widget = qobject_cast<Button *> (object)){
+      return;
+   }
+
+   if(WebView *widget = qobject_cast<WebView *> (object)){
+      return;
+   }
+
+   if(LineEdit *widget = qobject_cast<LineEdit *> (object)){
+      return;
+   }
+
+   if(TextEdit *widget = qobject_cast<TextEdit *> (object)){
+      return;
+   }
+
+   if(ComboBox *widget = qobject_cast<ComboBox *> (object)){
+      return;
+   }
+
+   if(ProgressBar *widget = qobject_cast<ProgressBar *> (object)){
+      return;
+   }
+*/
+}
+
 Label::Label(QWidget *parent)
     : QLabel(parent)
 {

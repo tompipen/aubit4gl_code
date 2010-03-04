@@ -201,8 +201,8 @@ ClientSocket::ClientSocket(QObject *parent, QString name, QString pass, QString 
    connect(&ph, SIGNAL(createWindow(QString, QString, int, int, int, int, QString)), 
            p_currScreenHandler, SLOT(createWindow(QString, QString, int, int, int, int, QString)));
    // PROMPT
-   connect(&ph, SIGNAL(createPrompt(QString, int, QString)), 
-           p_currScreenHandler, SLOT(createPrompt(QString, int, QString)));
+   connect(&ph, SIGNAL(createPrompt(QString, int, int, QString)), 
+           p_currScreenHandler, SLOT(createPrompt(QString, int, int, QString)));
    // Title line of the screen form
    connect(&ph, SIGNAL(setWindowTitle(QString)), 
            p_currScreenHandler, SLOT(setWindowTitle(QString)));
@@ -1139,10 +1139,12 @@ void ProtocolHandler::outputTree(QDomNode domNode)
       QString text = childElement.attribute("TEXT");
       int charMode = childElement.attribute("CHARMODE").toInt();
       //int helpNo = childElement.attribute("CHARMODE").toInt();
+      int fieldAttribute = childElement.attribute("FIELDATTRIBUTE").toInt();
+      qDebug() << childElement.attribute("FIELDATTRIBUTE") << fieldAttribute;
       QString attributeStyle = childElement.attribute("ATTRIB_STYLE");
       QString attributeText = childElement.attribute("ATTRIB_TEXT");
 
-      createPrompt(text, charMode, attributeStyle);
+      createPrompt(text, charMode, fieldAttribute, attributeStyle);
       return;
    }
 

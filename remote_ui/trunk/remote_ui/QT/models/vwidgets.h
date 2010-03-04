@@ -591,6 +591,7 @@ public:
 
    static void setDefaultFieldText(QObject*);
    static QString defaultFieldText(QObject*);
+   static void setFieldAttribute(QObject*);
 
    static void copy(QObject*);
    static void cut(QObject*);

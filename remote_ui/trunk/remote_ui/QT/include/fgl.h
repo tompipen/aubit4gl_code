@@ -37,6 +37,24 @@ namespace Fgl
 
       QString dbDateToFormat(QString);
       bool isValidForType(DataType, QString, QString);
+
+   enum FieldAttributes { AUBIT_COLOR_BLACK     = 0x00000,
+                          AUBIT_COLOR_RED       = 0x00100,
+                          AUBIT_COLOR_GREEN     = 0x00200,
+                          AUBIT_COLOR_YELLOW    = 0x00300,
+                          AUBIT_COLOR_BLUE      = 0x00400,
+                          AUBIT_COLOR_MAGENTA   = 0x00500,
+                          AUBIT_COLOR_CYAN      = 0x00600,
+                          AUBIT_COLOR_WHITE     = 0x00700,
+                          AUBIT_ATTR_NORMAL     = 0x0,
+                          AUBIT_ATTR_REVERSE    = 0x01000,
+                          AUBIT_ATTR_UNDERLINE  = 0x02000,
+                          AUBIT_ATTR_BOLD       = 0x04000,
+                          AUBIT_ATTR_BLINK      = 0x08000,
+                          AUBIT_ATTR_DIM        = 0x10000,
+                          AUBIT_ATTR_INVISIBLE  = 0x20000,
+                          AUBIT_ATTR_ALTCHARSET = 0x40000,
+                          AUBIT_ATTR_LEFT       = 0x80000 };
 };
 
 #endif

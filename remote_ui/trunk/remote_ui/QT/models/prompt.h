@@ -22,7 +22,7 @@
 #include <QButtonGroup>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
-#include <QLineEdit>
+#include <models/vwidgets.h>
 
 class Prompt : public QDialog
 {
@@ -30,12 +30,12 @@ class Prompt : public QDialog
 
 public:
    Prompt(QWidget* parent = 0, Qt::WindowFlags f=0);
-   Prompt(QString, int, QWidget* parent = 0, Qt::WindowFlags f=0);
+   Prompt(QString, int, int, QWidget* parent = 0, Qt::WindowFlags f=0);
    
 private:
    QLayout* layout;
    QLayout* buttonLayout;
-   QLineEdit *p_lineEdit;
+   LineEdit *p_lineEdit;
 
 protected:
    void keyPressEvent(QKeyEvent *event);

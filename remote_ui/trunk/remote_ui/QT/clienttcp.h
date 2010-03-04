@@ -108,7 +108,7 @@ signals:
    void createWindow(QString, QString, int, int, int, int, QString);
    void setWindowTitle(QString);
 
-   void createPrompt(QString, int, QString);
+   void createPrompt(QString, int, int, QString);
 
    void createMenu(QString, QString, QString, QString);
    void createMenuButton(int, QString, QString, QStringList);

@@ -23,6 +23,7 @@
 #include <QDomNode>
 
 #include "prompt.h"
+#include "include/fgl.h"
 
 //------------------------------------------------------------------------------
 // Method       : Prompt()
@@ -39,7 +40,7 @@ Prompt::Prompt(QWidget *parent, Qt::WindowFlags f) : QDialog(parent, f)
 // Filename     : prompt.cpp
 // Description  : 
 //------------------------------------------------------------------------------
-Prompt::Prompt(QString text, int charMode, QWidget *parent, Qt::WindowFlags f) : QDialog(parent, f)
+Prompt::Prompt(QString text, int charMode, int fieldAttribute, QWidget *parent, Qt::WindowFlags f) : QDialog(parent, f)
 {
   Q_UNUSED(charMode);
   this->setWindowFlags(Qt::Dialog);
@@ -56,7 +57,44 @@ Prompt::Prompt(QString text, int charMode, QWidget *parent, Qt::WindowFlags f) :
   layout->addWidget(p_label);
 
   //create Input Field
-  p_lineEdit = new QLineEdit;
+  p_lineEdit = new LineEdit;
+
+  switch(fieldAttribute) {
+     case Fgl::AUBIT_COLOR_BLACK:
+          break;
+     case Fgl::AUBIT_COLOR_RED:
+          break;
+     case Fgl::AUBIT_COLOR_GREEN:
+          break;
+     case Fgl::AUBIT_COLOR_YELLOW:
+          break;
+     case Fgl::AUBIT_COLOR_BLUE:
+          break;
+     case Fgl::AUBIT_COLOR_MAGENTA:
+          break;
+     case Fgl::AUBIT_COLOR_CYAN:
+          break;
+     case Fgl::AUBIT_COLOR_WHITE:
+          break;
+     case Fgl::AUBIT_ATTR_REVERSE:
+          break;
+     case Fgl::AUBIT_ATTR_UNDERLINE:
+          break;
+     case Fgl::AUBIT_ATTR_BOLD:
+          break;
+     case Fgl::AUBIT_ATTR_BLINK:
+          break;
+     case Fgl::AUBIT_ATTR_DIM:
+          break;
+     case Fgl::AUBIT_ATTR_INVISIBLE:
+          p_lineEdit->setEchoMode(QLineEdit::Password);
+          break;
+     case Fgl::AUBIT_ATTR_ALTCHARSET:
+          break;
+     case Fgl::AUBIT_ATTR_LEFT:
+          break;
+  };
+
   p_lineEdit->setEnabled(true);
   p_lineEdit->setFocus();
   layout->addWidget(p_lineEdit);
