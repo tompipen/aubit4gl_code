@@ -114,6 +114,7 @@ void RingMenu::createButton(int id, QString text, QString tooltip)
 
    // Create the Button and set Text + ToolTip
    QPushButton *button = new QPushButton(buttonText);
+   button->setStyleSheet("QPushButton {text-align:left;}");
 //   QPushButton *button = new QPushButton(text.trimmed());
    //button->setIcon(QIcon(QString("pics:blank.png")));
    button->setIcon(QIcon(QString("pics:%1").arg(image)));
