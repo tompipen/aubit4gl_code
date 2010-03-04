@@ -63,17 +63,19 @@ LoginForm::LoginForm(QWidget *parent)
 
    // MenuBar
 
-   QMenuBar *menuBar = new QMenuBar;
-   QAction *option = new QAction(tr("&Option"), this);
+   QMenuBar *menuBar = mainFrame->menuBar(); //new QMenuBar(0);
+   QAction *font = new QAction(tr("&Font"), this);
    QMenu *admin = new QMenu(tr("&Admin"), this);
    QAction *hosts = new QAction(tr("&Hosts"), this);
+   QMenu *options = new QMenu(tr("&Options"), this);
    toggledebug = new QAction(tr("&Toggle Debug"), this);
    toggledebug->setCheckable(true);
    toggledebug->setChecked(true);
-   option->setStatusTip(tr("Opens the Option Window"));
+   font->setStatusTip(tr("Opens the Font Settings"));
    hosts->setStatusTip(tr("Opens the Hosts Data Settings"));
-   connect(option, SIGNAL(triggered()), this, SLOT(option()));
-   menuBar->addAction(option);
+   connect(font, SIGNAL(triggered()), this, SLOT(font()));
+   options->addAction(font);
+   menuBar->addMenu(options);
    connect(toggledebug, SIGNAL(toggled(bool)), this, SLOT(debugToggle(bool)));
    if (adminMenu == true)
    {
@@ -167,7 +169,7 @@ welcomeBar();
    // setup the labels layout for the form / widget
    //
    QVBoxLayout *loginLayout = new QVBoxLayout;
-   loginLayout->setMenuBar(menuBar);
+ //  loginLayout->setMenuBar(menuBar);
    loginLayout->addWidget(usernameLabel);
    loginLayout->addWidget(usernameLineEdit);
    loginLayout->addWidget(passwordLabel);
@@ -593,11 +595,11 @@ void HostsData::writeHost()
   dia->close();
 
 }
-void LoginForm::option()
+void LoginForm::font()
 {
        OptionsTab *optionsTab = new OptionsTab();
        connect(optionsTab, SIGNAL(showMessage(QString)), this, SLOT(showMessage(QString)));
-       optionsTab->setWindowTitle(tr("VDC - Options"));
+       optionsTab->setWindowTitle(tr("VDC - Font Settings"));
 
        optionsTab->move(QCursor::pos());
        optionsTab->show();

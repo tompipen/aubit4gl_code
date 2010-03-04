@@ -45,7 +45,7 @@ public:
    QAction *toggledebug;
 
 public slots:
-   void option();
+   void font();
    void showMessage(QString m);
    void hosts();
    void welcomeBar();

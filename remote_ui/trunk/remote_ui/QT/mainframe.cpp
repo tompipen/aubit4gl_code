@@ -47,7 +47,6 @@ void MainFrame::ReadSettings()
 MainFrame::MainFrame(QWidget *parent) : QMainWindow(parent)
 {
    ReadSettings();
-
    p_currOpenNetwork=NULL;
    mainFrameToolBar = NULL;
    connectionsTab = NULL;
