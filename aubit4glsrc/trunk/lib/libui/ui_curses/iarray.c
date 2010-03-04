@@ -24,10 +24,10 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.164 2010-02-16 13:17:15 mikeaubury Exp $
+# $Id: iarray.c,v 1.165 2010-03-04 12:36:01 mikeaubury Exp $
 #*/
 #ifndef lint
-static char const module_id[] = "$Id: iarray.c,v 1.164 2010-02-16 13:17:15 mikeaubury Exp $";
+static char const module_id[] = "$Id: iarray.c,v 1.165 2010-03-04 12:36:01 mikeaubury Exp $";
 #endif
 
 /**
@@ -2530,7 +2530,6 @@ process_control_stack_internal (struct s_inp_arr *arr)
 #endif
       A4GL_comments (0);
 
-
       if (arr->fcntrl[a].state == 99)
 	{
 	  if (arr->currentfield)
@@ -2559,7 +2558,7 @@ process_control_stack_internal (struct s_inp_arr *arr)
 #ifdef DEBUG
 		  A4GL_debug ("arr->curr_line_is_new=%d", arr->curr_line_is_new);
 #endif
-		  if (arr->curr_line_is_new == 1)
+		  if (arr->curr_line_is_new == 1 && !A4GL_something_in_entire_row_has_changed (arr, arr->scr_line - 1))
 		    {		// They didn't change anything - so not a real insert...
 		      arr->no_arr--;
 		      A4GL_set_arr_count (arr->no_arr);	// No new lines ...
@@ -2919,7 +2918,6 @@ process_control_stack_internal (struct s_inp_arr *arr)
 	  if (arr->fcntrl[a].extent == A4GLKEY_UP || arr->fcntrl[a].extent == A4GLKEY_PGUP)
 	    {
 
-		//A4GL_pause_execution();
 
 	      // Are we moving away from a newly inserted line - which has not changed ?
 	      // If so - we can just remove that line and theres no AFTER INSERT

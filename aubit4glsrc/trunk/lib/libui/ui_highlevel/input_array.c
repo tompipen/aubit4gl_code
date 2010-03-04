@@ -24,11 +24,11 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: input_array.c,v 1.70 2009-07-10 11:55:54 mikeaubury Exp $
+# $Id: input_array.c,v 1.71 2010-03-04 12:36:03 mikeaubury Exp $
 #*/
 #ifndef lint
 static char const module_id[] =
-  "$Id: input_array.c,v 1.70 2009-07-10 11:55:54 mikeaubury Exp $";
+  "$Id: input_array.c,v 1.71 2010-03-04 12:36:03 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -2000,7 +2000,7 @@ int nv;
 					     arr->currentfield, 0, 0);
 		}
 
-              if (arr->curr_line_is_new==1) { // They didn't change anything - so not a real insert...
+              if (arr->curr_line_is_new==1 &&  !A4GL_something_in_entire_row_has_changed (arr, arr->scr_line - 1)) { // They didn't change anything - so not a real insert...
 		                            arr->no_arr--;
 					                            A4GL_set_arr_count (arr->no_arr);       // No new lines ...
 								                  }

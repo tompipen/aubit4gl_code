@@ -1,7 +1,7 @@
 #include "a4gl_lib_ui_tui_int.h"
 #ifndef lint
 	static char const module_id[] =
-		"$Id: generic_ui.c,v 1.55 2010-02-16 13:17:15 mikeaubury Exp $";
+		"$Id: generic_ui.c,v 1.56 2010-03-04 12:35:59 mikeaubury Exp $";
 #endif
 
 static int A4GL_find_shown (ACL_Menu * menu, int chk, int dir);
@@ -223,7 +223,6 @@ A4GL_find_char (ACL_Menu * menu, int key)
 #ifdef DEBUG
   A4GL_debug ("ZZ : key = %d opt2->optkey=%s\n", key, opt2->optkey);
 #endif
-//A4GL_pause_execution();
 
   if (!opt2->attributes & ACL_MN_HIDE)	// Is it hidden ? 
     {

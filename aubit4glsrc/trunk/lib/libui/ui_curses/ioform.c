@@ -24,10 +24,10 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.237 2010-02-16 13:17:29 mikeaubury Exp $
+# $Id: ioform.c,v 1.238 2010-03-04 12:36:01 mikeaubury Exp $
 #*/
 #ifndef lint
-static char const module_id[] = "$Id: ioform.c,v 1.237 2010-02-16 13:17:29 mikeaubury Exp $";
+static char const module_id[] = "$Id: ioform.c,v 1.238 2010-03-04 12:36:01 mikeaubury Exp $";
 #endif
 
 /**
@@ -5428,7 +5428,6 @@ A4GL_fld_data_ignore_format (struct struct_scr_field *fprop, char *fld_data)
 #endif
 	  strcpy (tmpbuff, fld_data);
 	  mmm_s = get_data_from_formatted_field ("mmm", tmpbuff, format);
-	  //A4GL_pause_execution();
 	  if (mmm_s)
 	    {
 	      int a;
