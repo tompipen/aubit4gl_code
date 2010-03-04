@@ -60,7 +60,6 @@ Response::Response(QString id, FglForm* p_currForm, bool cursorPos) : QDomDocume
       responseElement.setAttribute("INFIELD", colName);
    }
 
-   qDebug() << "EVENT:" << currEvent.id << currEvent.attribute << currEvent.type;
    if(!(currEvent.type == Fgl::ONKEY_EVENT ||
       currEvent.type == Fgl::ONACTION_EVENT)){
          if(p_currForm->input() || p_currForm->construct()){
