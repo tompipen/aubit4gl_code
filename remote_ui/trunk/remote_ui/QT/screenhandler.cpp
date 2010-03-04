@@ -2342,4 +2342,7 @@ bool ScreenHandler::eventFilter(QObject *obj, QEvent *event)
 void ScreenHandler::setInterfaceText(QString text)
 {
    qs_interfaceTitle = text;
+   for(int i=0; i<ql_fglForms.size(); i++){
+       ql_fglForms.at(i)->setWindowTitle(text);
+   }
 }
