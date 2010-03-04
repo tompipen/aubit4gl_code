@@ -5845,6 +5845,40 @@ print_display_array_p1 (expr_str * arrvar, expr_str * srec, char *scroll, attrib
   tmp_ccnt++;
 }
 
+
+static void compress_list (struct s_select_list_item_list *vallist) {
+	A4GL_pause_execution();
+}
+
+static void compress_upd_list(char *tabname, str_list *list) {
+	A4GL_pause_execution();
+}
+
+static int print_list(struct  expr_str_list *list) {
+int a;
+int module_var_used=0;
+	  for (a = 0; a < list->list.list_len; a++)
+	    {
+	      if (a)
+		printc (",");
+
+	      if (tolower (get_var_expr_scope (list->list.list_val[a])) == E_SCOPE_MODULE && A4GL_isyes (acl_getenv ("REMOVEMODVARS")))
+		{
+		  printh ("#REQUIRETEMP %s lv_tmpi_%x_%d %d\n", get_currfuncname (), get_var_expr_dtype (list->list.list_val[a]), a, get_var_expr_dtype (list->list.list_val[a]));
+		  printc ("lv_tmpi_%x_%d", get_var_expr_dtype (list->list.list_val[a]), a);
+		
+		  module_var_used++;
+		}
+	      else
+		{
+		  print_varbind (list->list.list_val[a], 'w', a);
+		}
+	    }
+return module_var_used;
+}
+
+
+
 /**
  * Prints the second part of C generated code to implement the INPUT ARRAY
  * 4gl statement.
@@ -6691,6 +6725,12 @@ dump_cmd (struct command *r, struct command *parent)
     }
   switch (r->cmd_data.type)
     {
+
+    	case E_CMD_FREE_BLOB_CMD:
+	case E_CMD_EXECUTE_PROCEDURE_CMD:
+	A4GL_assertion(1,"Not implemented yet");
+	break;
+
     case E_CMD_STOP_RPC_CMD:
       printc ("STOP ALL EXTERNAL");
       break;
@@ -7253,6 +7293,13 @@ dump_cmd (struct command *r, struct command *parent)
 	case EBC_CASE:
 	  printc ("EXIT CASE");
 	  break;
+
+case EBC_SPL_FOR:
+case EBC_SPL_WHILE:
+case EBC_SPL_FOREACH:
+		A4GL_assertion(1,"shouldn't have these");
+		break;
+
 	}
       break;
 
@@ -7291,6 +7338,11 @@ dump_cmd (struct command *r, struct command *parent)
 	case EBC_CASE:
 	  printc ("CONTINUE CASE");
 	  break;
+case EBC_SPL_FOR:
+case EBC_SPL_WHILE:
+case EBC_SPL_FOREACH:
+		A4GL_assertion(1,"shouldn't have these");
+		break;
 	}
       break;
 
@@ -7461,6 +7513,8 @@ dump_cmd (struct command *r, struct command *parent)
 	    {
 	      set_nonewlines ();
 	      printc (" USING ");
+	print_list( r->cmd_data.command_data_u.foreach_cmd.inputvals);
+	/*
 	      for (a = 0; a < r->cmd_data.command_data_u.foreach_cmd.inputvals->list.list_len; a++)
 		{
 		  if (a)
@@ -7477,6 +7531,7 @@ dump_cmd (struct command *r, struct command *parent)
 		      print_varbind (r->cmd_data.command_data_u.foreach_cmd.inputvals->list.list_val[a], 'r', a);
 		    }
 		}
+	*/
 	      clr_nonewlines ();
 	    }
 	}
@@ -7486,6 +7541,10 @@ dump_cmd (struct command *r, struct command *parent)
 	  int module_var_used = 0;
 	  set_nonewlines ();
 	  printc (" INTO ");
+
+
+	module_var_used+=print_list(r->cmd_data.command_data_u.foreach_cmd.outputvals); 
+/*
 	  for (a = 0; a < r->cmd_data.command_data_u.foreach_cmd.outputvals->list.list_len; a++)
 	    {
 	      if (a)
@@ -7506,6 +7565,7 @@ dump_cmd (struct command *r, struct command *parent)
 		  print_varbind (r->cmd_data.command_data_u.foreach_cmd.outputvals->list.list_val[a], 'w', a);
 		}
 	    }
+*/
 	  clr_nonewlines ();
 
 	  if (module_var_used)
@@ -8173,6 +8233,10 @@ dump_cmd (struct command *r, struct command *parent)
 	  }
 
 	printc ("INITIALIZE ");
+
+	print_list(use_binding);
+
+/*
 	for (a = 0; a < use_binding->list.list_len; a++)
 	  {
 	    int scope;
@@ -8180,6 +8244,8 @@ dump_cmd (struct command *r, struct command *parent)
 	      printc (",");
 
 	    scope = get_var_expr_scope (use_binding->list.list_val[a]);
+
+
 	    if (A4GL_isyes (acl_getenv ("REMOVEMODVARS")) && scope == E_SCOPE_MODULE)
 	      {
 		printh ("#REQUIRETEMP %s lv_tmp_%x_%d %d\n", get_currfuncname (),
@@ -8192,6 +8258,7 @@ dump_cmd (struct command *r, struct command *parent)
 		print_varbind (use_binding->list.list_val[a], 'w', a);
 	      }
 	  }
+*/
 
 
 
@@ -9607,6 +9674,8 @@ dump_cmd (struct command *r, struct command *parent)
 		clr_nonewlines ();
 		set_nonewlines ();
 		printc ("(");
+
+		compress_upd_list(u->table,u->column_list);
 		for (a = 0; a < u->column_list->str_list_entry.str_list_entry_len; a++)
 		  {
 		    if (a)
@@ -9614,6 +9683,9 @@ dump_cmd (struct command *r, struct command *parent)
 		    printc ("%s", u->column_list->str_list_entry.str_list_entry_val[a]);
 		  }
 		printc (")=(");
+
+		compress_list(u->value_list);
+
 		for (a = 0; a < u->value_list->list.list_len; a++)
 		  {
 		    if (a)

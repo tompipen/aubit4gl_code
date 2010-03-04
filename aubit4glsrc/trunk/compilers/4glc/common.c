@@ -183,6 +183,8 @@ expand_parameters (struct variable_list *var_list, expr_str_list * parameters)
   rval = malloc (sizeof (expr_str_list));
   rval->list.list_len = 0;
   rval->list.list_val = 0;
+  rval->unexpanded_list.unexpanded_list_len = 0;
+  rval->unexpanded_list.unexpanded_list_val = 0;
 
   if (!check_parameters (errbuff, var_list, parameters))
     {

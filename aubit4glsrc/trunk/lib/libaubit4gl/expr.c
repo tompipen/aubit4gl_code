@@ -25,7 +25,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: expr.c,v 1.42 2010-02-12 14:39:43 mikeaubury Exp $
+# $Id: expr.c,v 1.43 2010-03-04 09:34:31 mikeaubury Exp $
 #
 */
 
@@ -414,6 +414,10 @@ A4GL_new_ptr_list (struct expr_str *ptr)
   l = malloc (sizeof (struct expr_str_list));
   l->list.list_len = 0;
   l->list.list_val = 0;
+
+  l->unexpanded_list.unexpanded_list_len = 0;
+  l->unexpanded_list.unexpanded_list_val = 0;
+
   //l->nlist=0;
   if (ptr)
     A4GL_new_append_ptr_list (l, ptr);

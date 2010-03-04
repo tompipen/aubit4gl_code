@@ -1373,7 +1373,11 @@ struct s_select_list_item *rval=NULL;
 		elist->list.list_val=malloc(sizeof(expr_str *));
 		elist->list.list_val[0]=e;
 	
+		elist->unexpanded_list.unexpanded_list_val=0;
+		elist->unexpanded_list.unexpanded_list_len=0;
+
 		elist=expand_variables_in_expr_str_list(elist,1,1);
+
 		if (elist==0) return 0;
 				slist=new_select_list_item_list(0);
 
@@ -2084,7 +2088,12 @@ if (parameters==NULL) return parameters;
 
 
 n=A4GL_new_ptr_list(0);
-
+if (parameters->unexpanded_list.unexpanded_list_len) {
+	printf("unexpanded_list is already set...");
+	A4GL_pause_execution();
+}
+parameters->unexpanded_list.unexpanded_list_len=parameters->list.list_len;
+parameters->unexpanded_list.unexpanded_list_val=parameters->list.list_val;
 
 for (param_to_add=0;param_to_add<parameters->list.list_len;param_to_add++) {
 	switch (parameters->list.list_val[param_to_add]->expr_type) {

@@ -1,4 +1,4 @@
-/* $Id: fgl.x,v 1.52 2010-02-27 10:14:22 mikeaubury Exp $ */
+/* $Id: fgl.x,v 1.53 2010-03-04 09:34:15 mikeaubury Exp $ */
 typedef string str<>;
 typedef string sql_ident<>;
 
@@ -783,9 +783,9 @@ struct s_fetch {
 };
 
 struct struct_fetch_cmd {
-	        struct expr_str * connid;
+	struct expr_str * connid;
 	struct s_fetch* fetch;
-	 struct expr_str_list* outbind;
+	struct expr_str_list* outbind;
 };
 
 
@@ -1873,6 +1873,7 @@ struct module_definition {
 
 struct expr_str_list {
           expr_str_ptr list<>;
+          expr_str_ptr unexpanded_list<>;
 };
 
 

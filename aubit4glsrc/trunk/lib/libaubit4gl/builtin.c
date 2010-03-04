@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin.c,v 1.156 2009-12-22 19:49:04 mikeaubury Exp $
+# $Id: builtin.c,v 1.157 2010-03-04 09:34:31 mikeaubury Exp $
 #
 */
 
@@ -1669,11 +1669,33 @@ aclfgl_fgl_getkey_wait (int n)
 }
 
 
+
+int last_err_line=0;
+int last_err_status=0;
+char last_err_filename[2000]="";
+char last_err_msg[2000]="";
+
+
+int aclfgl_aclfgl_get_error_details(int n) {
+    A4GL_push_long (last_err_line);
+    A4GL_push_char (last_err_filename);
+    A4GL_push_long (last_err_status);
+    A4GL_push_char (last_err_msg);
+    return 4;
+}
+
+
 void
 A4GL_log_error (int lineno, char *fname, int mstatus)
 {
   char s[2048];
   A4GL_generateError (s, fname, lineno);
+
+  strcpy(last_err_msg,s);
+  strcpy(last_err_filename, fname);
+  last_err_line=lineno;
+  last_err_status=mstatus;
+
   if (strcmp (fname, "Unknown") != 0 && A4GL_has_errorlog ())
     {
       A4GL_push_char (s);

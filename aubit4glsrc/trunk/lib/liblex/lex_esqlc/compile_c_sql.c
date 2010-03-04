@@ -37,6 +37,8 @@ static void clr_bindings(void) {
 
 	input_bind->list.list_len=0;
 	input_bind->list.list_val=0;
+	input_bind->unexpanded_list.unexpanded_list_len=0;
+	input_bind->unexpanded_list.unexpanded_list_val=0;
 
 	if (output_bind) {
 		if (output_bind->list.list_val) free(output_bind->list.list_val);
@@ -45,6 +47,8 @@ static void clr_bindings(void) {
 	}
 	output_bind->list.list_len=0;
 	output_bind->list.list_val=0;
+	output_bind->unexpanded_list.unexpanded_list_len=0;
+	output_bind->unexpanded_list.unexpanded_list_val=0;
 }
 
 
@@ -1533,6 +1537,8 @@ int sbuffsz;
 		new_input_bind=malloc(sizeof(struct expr_str_list));
 		new_input_bind->list.list_len=0;
 		new_input_bind->list.list_val=0;
+		new_input_bind->unexpanded_list.unexpanded_list_len=0;
+		new_input_bind->unexpanded_list.unexpanded_list_val=0;
 		for (a=0;a<input_bind->list.list_len;a++) {
 			A4GL_new_append_ptr_list(new_input_bind, input_bind->list.list_val[list[a]]); 
 		}

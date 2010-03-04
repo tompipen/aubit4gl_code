@@ -1002,9 +1002,13 @@ int a;
 
    if (p_tablist && p_tablist->str_list_entry.str_list_entry_len)  {
    		c->cmd_data.command_data_u.init_cmd.init_like_exprlist=malloc(sizeof(struct expr_str_list));
+
 		 c->cmd_data.command_data_u.init_cmd.init_like_exprlist->list.list_len=p_tablist->str_list_entry.str_list_entry_len;
 		 c->cmd_data.command_data_u.init_cmd.init_like_exprlist->list.list_val=malloc(sizeof(struct expr_str *)*p_tablist->str_list_entry.str_list_entry_len);
-	
+			
+		c->cmd_data.command_data_u.init_cmd.init_like_exprlist->unexpanded_list.unexpanded_list_len=0;
+		c->cmd_data.command_data_u.init_cmd.init_like_exprlist->unexpanded_list.unexpanded_list_val=0;
+
    	for (a=0;a<p_tablist->str_list_entry.str_list_entry_len;a++) {
 		char buff[200];
 		char *tab;
@@ -2303,6 +2307,8 @@ struct module_entry *c;
    c->module_entry_u.function_definition.variables.variables.variables_val=NULL;
    c->module_entry_u.function_definition.expression_list.list.list_len=0;
    c->module_entry_u.function_definition.expression_list.list.list_val=0;
+   c->module_entry_u.function_definition.expression_list.unexpanded_list.unexpanded_list_len=0;
+   c->module_entry_u.function_definition.expression_list.unexpanded_list.unexpanded_list_val=0;
    c->module_entry_u.function_definition.extra_warnings.extra_warnings_len=0;
    c->module_entry_u.function_definition.extra_warnings.extra_warnings_val=0;
    c->module_entry_u.function_definition.comment=doc4glcomment;
@@ -2312,6 +2318,8 @@ struct module_entry *c;
 		p_parameters=malloc(sizeof(struct expr_str_list));
 		p_parameters->list.list_len=0;
 		p_parameters->list.list_val=0;
+		p_parameters->unexpanded_list.unexpanded_list_len=0;
+		p_parameters->unexpanded_list.unexpanded_list_val=0;
     }
    c->module_entry_u.function_definition.parameters=p_parameters;
 
@@ -2346,6 +2354,8 @@ struct module_entry *c;
    c->module_entry_u.function_definition.lineno=lineno;
    c->module_entry_u.function_definition.expression_list.list.list_len=0;
    c->module_entry_u.function_definition.expression_list.list.list_val=0;
+   c->module_entry_u.function_definition.expression_list.unexpanded_list.unexpanded_list_len=0;
+   c->module_entry_u.function_definition.expression_list.unexpanded_list.unexpanded_list_val=0;
    c->module_entry_u.function_definition.comment=doc4glcomment;
    //c->module_entry_u.function_definition.colno=0;
    c->module_entry_u.function_definition.lastlineno=yylineno;
@@ -2505,6 +2515,8 @@ struct module_entry *c;
 		p_parameters=malloc(sizeof(struct expr_str_list));
 		p_parameters->list.list_len=0;
 		p_parameters->list.list_val=0;
+		p_parameters->unexpanded_list.unexpanded_list_len=0;
+		p_parameters->unexpanded_list.unexpanded_list_val=0;
     }
 
 
@@ -2554,6 +2566,8 @@ struct module_entry *c;
 		p_parameters=malloc(sizeof(struct expr_str_list));
 		p_parameters->list.list_len=0;
 		p_parameters->list.list_val=0;
+		p_parameters->unexpanded_list.unexpanded_list_len=0;
+		p_parameters->unexpanded_list.unexpanded_list_val=0;
     }
    c->module_entry_u.report_definition.parameters=p_parameters;
 
