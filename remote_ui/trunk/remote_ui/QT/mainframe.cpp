@@ -33,20 +33,24 @@
 
 void MainFrame::ReadSettings()
 {
-      QSettings settings("Ventas AG", "Ventas Desktop Client");
+  QSettings settings("Ventas AG", "Ventas Desktop Client");
   QVariant fontsetting = settings.value("font");
   QString fontsetting2;
   fontsetting2 = fontsetting.toString();
   QFont fontsetting3;
   fontsetting3.fromString(fontsetting2);
   QApplication::setFont(fontsetting3);
+  if(fontsetting2 == "")
+  {
+      QApplication::setFont(QFont("Arial", 8));
+  }
 }
 
 
 
 MainFrame::MainFrame(QWidget *parent) : QMainWindow(parent)
 {
-   ReadSettings();
+
    p_currOpenNetwork=NULL;
    mainFrameToolBar = NULL;
    connectionsTab = NULL;
@@ -58,7 +62,7 @@ MainFrame::MainFrame(QWidget *parent) : QMainWindow(parent)
    bool onlyLogin;
 
    adminMenu = true;
-   onlyLogin = true;
+   onlyLogin = false;
    debugModus = false;
  for(int i=0; i<parameter.count(); i++)
   {
@@ -118,6 +122,7 @@ MainFrame::MainFrame(QWidget *parent) : QMainWindow(parent)
 
    // start listening to the network
    //
+   ReadSettings();
    tcpListener();
 }
 void MainFrame::contextMenuEvent ( QContextMenuEvent * event)
