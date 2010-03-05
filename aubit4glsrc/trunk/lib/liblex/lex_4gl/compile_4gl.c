@@ -23,6 +23,7 @@
 static void merge_files (void);
 char *current_stmt_table = 0;
 struct expr_str *input_array_variable = 0;
+static int print_list(struct  expr_str_list *list) ;
 
 
 /* STRUCTURES */
@@ -1416,10 +1417,19 @@ real_print_binding_with_separator (expr_str_list * s, char read_or_write, char *
   int a;
   if (s == 0)
     return;
+  
+
+  if (s->unexpanded_list.unexpanded_list_len) {
+      for (a = 0; a < s->unexpanded_list.unexpanded_list_len; a++) {
+      if (a) printc ("%s", sep);
+		print_varbind (s->unexpanded_list.unexpanded_list_val[a], read_or_write, a);
+	}
+	return;
+  }
+
   for (a = 0; a < s->list.list_len; a++)
     {
-      if (a)
-	printc ("%s", sep);
+      if (a) printc ("%s", sep);
       print_varbind (s->list.list_val[a], read_or_write, a);
     }
 }
@@ -2394,6 +2404,36 @@ local_get_expr_as_string (struct expr_str *ptr)
 
 
     case ET_EXPR_MEMBER_FCALL_NEW:
+	{
+	int b;
+	int params;
+	struct expr_str_list *l=NULL;
+		struct expr_str *objectVar;
+	b = 0;
+
+
+	if (ptr)
+	  {
+	    l = ptr->expr_str_u.expr_member_function_call_n->parameters;
+	    l = A4GL_rationalize_list (l);
+	  }
+	objectVar=ptr->expr_str_u.expr_member_function_call_n->var_usage_ptr;
+
+	 params = A4GL_new_list_get_count (ptr->expr_str_u.expr_member_function_call_n->parameters);
+	if (objectVar) {
+	 sprintf (buff, "%s.%s(%s)", 
+			get_variable_usage (objectVar->expr_str_u.expr_variable_usage),
+				ptr->expr_str_u.expr_member_function_call_n->funcName,
+				 A4GL_get_expr_list_sep (ptr->expr_str_u.expr_member_function_call_n->parameters, ",\n"));
+	} else {
+		// Static member...
+	 sprintf (buff, "%s.%s(%s)", ptr->expr_str_u.expr_member_function_call_n->objectType,
+				ptr->expr_str_u.expr_member_function_call_n->funcName,
+				 A4GL_get_expr_list_sep (ptr->expr_str_u.expr_member_function_call_n->parameters, ",\n"));
+	}
+      }
+      return acl_strdup (buff);
+      break;
       A4GL_assertion (1, "Not implemented");
       break;
 
@@ -2460,7 +2500,19 @@ static void
 real_print_expr_list_with_separator (struct expr_str_list *l, char *s)
 {
   int a;
+
+  if (l->unexpanded_list.unexpanded_list_len) {
+      for (a = 0; a < l->unexpanded_list.unexpanded_list_len; a++) {
+	  if (a)
+	    printc ("%s", s);
+		real_print_expr (l->unexpanded_list.unexpanded_list_val[a]);
+	}
+	return;
+  }
+
+
   l = A4GL_rationalize_list (l);
+
   if (l)
     {
       for (a = 0; a < l->list.list_len; a++)
@@ -2489,6 +2541,21 @@ local_get_expr_as_string_list_with_separator (struct expr_str_list *l, char *sep
   strcpy (buff, "");
 
   int a;
+
+  if (l) {
+  if (l->unexpanded_list.unexpanded_list_len) {
+      for (a = 0; a < l->unexpanded_list.unexpanded_list_len; a++)
+	{
+	  if (a)
+	    strcat (buff, sep);
+	  strcat (buff, local_get_expr_as_string (l->unexpanded_list.unexpanded_list_val[a]));
+	}
+
+	return buff;
+  }
+  }
+
+
   l = A4GL_rationalize_list (l);
   if (l)
     {
@@ -3583,7 +3650,7 @@ print_variable_new_internal (struct variable *v, enum e_scope scope, int level, 
       return;
     }
 
-  if (v->var_data.variable_type == VARIABLE_TYPE_RECORD || v->var_data.variable_type == VARIABLE_TYPE_OBJECT)
+  if (v->var_data.variable_type == VARIABLE_TYPE_RECORD)
     {
       int a;
       if (strcmp (name, "a4gl_sqlca") != 0)
@@ -3620,6 +3687,13 @@ print_variable_new_internal (struct variable *v, enum e_scope scope, int level, 
       return;
     }
 
+  if (v->var_data.variable_type == VARIABLE_TYPE_OBJECT)
+    {
+      int a;
+	  printc("DEFINE %-18s %s", name, v->var_data.variable_data_u.v_object.class_name);
+	  if (vno) printc (",");
+      return;
+    }
   if (v->var_data.variable_type == VARIABLE_TYPE_ASSOC)
     {
       struct variable v2;
@@ -4396,6 +4470,8 @@ dump_cmds (struct s_commands *c, struct command *parent)
 
   command_nest[command_nest_cnt] = parent;
   command_nest_cnt++;
+
+  dump_cmd(NULL,NULL);
 
   for (a = 0; a < c->cmds.cmds_len; a++)
     {
@@ -5458,6 +5534,7 @@ print_input_2 (void *events)
       tmp_ccnt--;
       if (events)
 	{
+      		need_daylight ();
 	  printc ("END INPUT");
 	}
       need_daylight ();		//printc ("#");
@@ -5510,12 +5587,16 @@ print_input_fl_g (int byname, int defs, int helpno, fh_field_list * fldlist_fh, 
 	  printc ("INPUT ");
 	}
 
+
+	print_list(bind); 
+/*
       for (a = 0; a < bind->list.list_len; a++)
 	{
 	  if (a)
 	    printc (",");
 	  print_varbind (bind->list.list_val[a], 'w', a);
 	}
+*/
 
       if (defs)
 	{
@@ -5552,16 +5633,20 @@ print_input_fl_g (int byname, int defs, int helpno, fh_field_list * fldlist_fh, 
       printc ("CASE UILIB_INPUT_LOOP(UILIB_GET_CONTEXT(%s),", last_context[CONTEXT_INPUT]);
       strcpy (input_list, "");
 
+
+	print_list(input_list);
       for (a = 0; a < bind->list.list_len; a++)
 	{
 	  if (a)
 	    {
-	      printc (",");
+	      //printc (",");
 	      strcat (input_list, ", ");
 	    }
-	  print_varbind (bind->list.list_val[a], 'w', a);
+	  //print_varbind (bind->list.list_val[a], 'w', a);
 	  strcat (input_list, get_variable_usage (bind->list.list_val[a]->expr_str_u.expr_variable_usage));
 	}
+
+
       printc (")");
       clr_nonewlines ();;
       tmp_ccnt++;
@@ -5734,11 +5819,12 @@ print_construct_2 (on_events * events)
     }
   else
     {
+      tmp_ccnt--;
       if (events)
 	{
+      		need_daylight ();
 	  printc ("END CONSTRUCT");
 	}
-      tmp_ccnt--;
     }
   strcpy (last_context[CONTEXT_INPUT], "");
   need_daylight ();		//printc ("#");
@@ -5857,6 +5943,19 @@ static void compress_upd_list(char *tabname, str_list *list) {
 static int print_list(struct  expr_str_list *list) {
 int a;
 int module_var_used=0;
+
+if (!A4GL_isyes (acl_getenv ("REMOVEMODVARS"))) {
+	if (list->unexpanded_list.unexpanded_list_len) {
+			for (a=0;a<list->unexpanded_list.unexpanded_list_len;a++) {
+	      if (a)
+		printc (",");
+		  		print_varbind (list->unexpanded_list.unexpanded_list_val[a], 'w', a);
+			}
+		return 0;
+	}
+
+}
+
 	  for (a = 0; a < list->list.list_len; a++)
 	    {
 	      if (a)
@@ -5874,6 +5973,8 @@ int module_var_used=0;
 		  print_varbind (list->list.list_val[a], 'w', a);
 		}
 	    }
+
+
 return module_var_used;
 }
 
@@ -5906,12 +6007,13 @@ print_display_array_p2 (on_events * events)
     }
   else
     {
+      tmp_ccnt--;
       if (events)
 	{
+      	  need_daylight ();
 	  printc ("END DISPLAY");
 
 	}
-      tmp_ccnt--;
     }
   strcpy (last_context[CONTEXT_INPUT], "");
 }
@@ -6691,9 +6793,17 @@ dump_cmd (struct command *r, struct command *parent)
   static int last_command_type = -1;
   static command *last_parent = (void *) -1;
 
+  if (r==NULL && parent==NULL) {
+	last_parent=0;
+	last_command_type=0;
+	return;
+  }
+
   A4GL_assertion (r->module == 0, "No module");
   //printf ("Dumping command type : %d (%s %d)\n", r->cmd_data.type, r->module, r->lineno);
   A4GL_debug ("Dumping command type : %d (%s %d)\n", r->cmd_data.type, r->module, r->lineno);
+
+ 
 
   if (last_parent != parent)
     {
@@ -6703,7 +6813,7 @@ dump_cmd (struct command *r, struct command *parent)
     }
   else
     {
-      if (last_command_type != r->cmd_data.type)
+      if (last_command_type != r->cmd_data.type )
 	{
 	  need_daylight ();
 	  last_command_type = r->cmd_data.type;
@@ -6810,6 +6920,12 @@ dump_cmd (struct command *r, struct command *parent)
 	ptr = r->cmd_data.command_data_u.call_cmd.fcall;
 	switch (r->cmd_data.command_data_u.call_cmd.fcall->expr_type)
 	  {
+
+	case ET_EXPR_MEMBER_FCALL_NEW:
+		printc("%s",local_get_expr_as_string(r->cmd_data.command_data_u.call_cmd.fcall));
+
+	break;
+
 	  case ET_EXPR_FCALL:
 	    if (ptr)
 	      {
@@ -6828,12 +6944,15 @@ dump_cmd (struct command *r, struct command *parent)
 		if (l)
 		  {
 		    int a;
+		print_list(l);
+			/*
 		    for (a = 0; a < l->list.list_len; a++)
 		      {
 			if (a)
 			  printc (",");
 			real_print_expr (l->list.list_val[a]);
 		      }
+			*/
 		  }
 		printc (")");
 
@@ -6869,6 +6988,9 @@ dump_cmd (struct command *r, struct command *parent)
 		printc (" RETURNING ");
 		used_tmp = 0;
 
+		used_tmp=print_list(l); 
+#ifdef X
+
 		/* l=expand_variables_in_expr_str_list(l, 1); */
 		for (a = 0; a < l->list.list_len; a++)
 		  {
@@ -6889,6 +7011,7 @@ dump_cmd (struct command *r, struct command *parent)
 			print_varbind (l->list.list_val[a], 'r', a);
 		      }
 		  }
+#endif
 		clr_nonewlines ();
 		if (used_tmp)
 		  {
@@ -7367,10 +7490,14 @@ case EBC_SPL_FOREACH:
 
 	      if (ui_as_calls ())
 		printc ("CALL UILIB_PROGRAM_EXIT(0)");
-	      set_nonewlines ();
-	      printc ("EXIT PROGRAM ");
-	      real_print_expr (r->cmd_data.command_data_u.exit_prog_cmd.exit_val);
-	      clr_nonewlines ();
+		if (A4GL_is_just_int_literal(r->cmd_data.command_data_u.exit_prog_cmd.exit_val,0)) {
+	      		printc ("EXIT PROGRAM");
+		} else {
+	      		set_nonewlines ();
+	      		printc ("EXIT PROGRAM ");
+	      		real_print_expr (r->cmd_data.command_data_u.exit_prog_cmd.exit_val);
+	      		clr_nonewlines ();
+		}
 	    }
 	  else
 	    {
@@ -7402,10 +7529,14 @@ case EBC_SPL_FOREACH:
 
 	  if (r->cmd_data.command_data_u.exit_prog_cmd.exit_val)
 	    {
-	      set_nonewlines ();
-	      printc ("EXIT PROGRAM ");
-	      real_print_expr (r->cmd_data.command_data_u.exit_prog_cmd.exit_val);
-	      clr_nonewlines ();
+		if (A4GL_is_just_int_literal(r->cmd_data.command_data_u.exit_prog_cmd.exit_val,0)) {
+	      		printc ("EXIT PROGRAM");
+		} else {
+	      		set_nonewlines ();
+	      		printc ("EXIT PROGRAM ");
+	      		real_print_expr (r->cmd_data.command_data_u.exit_prog_cmd.exit_val);
+	      		clr_nonewlines ();
+		}
 	    }
 	  else
 	    {
@@ -7479,6 +7610,9 @@ case EBC_SPL_FOREACH:
       need_daylight ();
       if (r->cmd_data.command_data_u.foreach_cmd.inputvals)
 	{
+		print_list(r->cmd_data.command_data_u.foreach_cmd.inputvals);
+
+#ifdef X
 	  if (r->cmd_data.command_data_u.foreach_cmd.inputvals->list.list_len)
 	    {
 
@@ -7498,6 +7632,7 @@ case EBC_SPL_FOREACH:
 		    }
 		}
 	    }
+#endif
 	}
 
 
@@ -7645,7 +7780,7 @@ case EBC_SPL_FOREACH:
 	  dump_comments (r->cmd_data.command_data_u.if_cmd.else_lineno);
 	  printc ("ELSE");
 	  tmp_ccnt++;
-
+		
 	  if (A4GL_isyes (acl_getenv ("TRACE4GL")))
 	    {
 	      printc ("CALL trace_4gl(\"IF statement is FALSE %s %d (ELSE @ %d)\")", r->module, r->lineno,
@@ -8022,6 +8157,7 @@ case EBC_SPL_FOREACH:
 	if (l)
 	  {
 	    int printed = 0;
+
 	    for (a = 0; a < l->list.list_len; a++)
 	      {
 		if (a)
@@ -8035,6 +8171,7 @@ case EBC_SPL_FOREACH:
 		printed++;
 	      }
 	  }
+
 	if (r->cmd_data.command_data_u.print_cmd.semi == EB_TRUE)
 	  {
 	    printc (";");
@@ -8377,6 +8514,8 @@ case EBC_SPL_FOREACH:
 	  if (r->cmd_data.command_data_u.open_cursor_cmd.using_bind->list.list_len)
 	    {
 	      printc (" USING ");
+		print_list(r->cmd_data.command_data_u.open_cursor_cmd.using_bind);
+/*
 	      for (a = 0; a < r->cmd_data.command_data_u.open_cursor_cmd.using_bind->list.list_len; a++)
 		{
 		  if (a)
@@ -8384,6 +8523,7 @@ case EBC_SPL_FOREACH:
 
 		  print_varbind (r->cmd_data.command_data_u.open_cursor_cmd.using_bind->list.list_val[a], 'r', a);
 		}
+*/
 	    }
 	}
       clr_nonewlines ();
@@ -8453,6 +8593,8 @@ case EBC_SPL_FOREACH:
 	    {
 
 	      printc (" USING ");
+	print_list(r->cmd_data.command_data_u.execute_cmd.inbind);
+/*
 	      for (a = 0; a < r->cmd_data.command_data_u.execute_cmd.inbind->list.list_len; a++)
 		{
 		  if (a)
@@ -8460,6 +8602,7 @@ case EBC_SPL_FOREACH:
 
 		  print_varbind (r->cmd_data.command_data_u.execute_cmd.inbind->list.list_val[a], 'r', a);
 		}
+*/
 	    }
 	}
 
@@ -8470,12 +8613,16 @@ case EBC_SPL_FOREACH:
 	      clr_nonewlines ();
 	      set_nonewlines ();
 	      printc (" INTO ");
+		print_list(r->cmd_data.command_data_u.execute_cmd.outbind);
+
+		/*
 	      for (a = 0; a < r->cmd_data.command_data_u.execute_cmd.outbind->list.list_len; a++)
 		{
 		  if (a)
 		    printc (",");
 		  print_varbind (r->cmd_data.command_data_u.execute_cmd.outbind->list.list_val[a], 'w', a);
 		}
+		*/
 	    }
 	}
       clr_nonewlines ();
@@ -9344,10 +9491,32 @@ case EBC_SPL_FOREACH:
 	    }
 	  else
 	    {
-	      printc ("FETCH RELATIVE ");
-	      real_print_expr (r->cmd_data.command_data_u.fetch_cmd.fetch->fp->fetch_expr);
-	      printc (" ");
-	      print_ident (r->cmd_data.command_data_u.fetch_cmd.fetch->cname);
+		int printed;
+
+		if (A4GL_is_just_int_literal(r->cmd_data.command_data_u.fetch_cmd.fetch->fp->fetch_expr,1)) { // FETCH NEXT - should already have been handled...
+			printed++;
+	      		printc ("FETCH NEXT ");
+	      		print_ident (r->cmd_data.command_data_u.fetch_cmd.fetch->cname);
+		}
+
+		if (A4GL_is_just_int_literal(r->cmd_data.command_data_u.fetch_cmd.fetch->fp->fetch_expr,-1)) { // FETCH PREVIOUS..
+			printed++;
+	      		printc ("FETCH PREVIOUS ");
+	      		print_ident (r->cmd_data.command_data_u.fetch_cmd.fetch->cname);
+		}
+
+		if (A4GL_is_just_int_literal(r->cmd_data.command_data_u.fetch_cmd.fetch->fp->fetch_expr,0)) { // FETCH CURRENT
+			printed++;
+	      		printc ("FETCH CURRENT ");
+	      		print_ident (r->cmd_data.command_data_u.fetch_cmd.fetch->cname);
+		}
+
+		if (!printed) {
+	      		printc ("FETCH RELATIVE ");
+	      		real_print_expr (r->cmd_data.command_data_u.fetch_cmd.fetch->fp->fetch_expr);
+	      		printc (" ");
+	      		print_ident (r->cmd_data.command_data_u.fetch_cmd.fetch->cname);
+		}
 	    }
 	  break;
 
