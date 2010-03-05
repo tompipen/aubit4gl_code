@@ -671,6 +671,13 @@ void ProtocolHandler::outputTree(QDomNode domNode)
 
    if(childElement.nodeName() == "PROGRAMSTARTUP"){
       handleStartup(childElement);
+      QString qs_defaultStyle;
+      QFile file("default.4st");
+      if (file.open(QIODevice::ReadOnly | QIODevice::Text)){
+          qs_defaultStyle = file.readAll();
+          handleXMLStyles(qs_defaultStyle);
+      }
+      
       QString id = childElement.attribute("ID");
       createWindow("screen", "", 0, 0, 100, 100, id);
       return;
