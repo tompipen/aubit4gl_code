@@ -60,6 +60,23 @@ Response::Response(QString id, FglForm* p_currForm, bool cursorPos) : QDomDocume
       responseElement.setAttribute("INFIELD", colName);
    }
 
+   if(p_currForm->inputArray() || p_currForm->displayArray()){
+      int arrCount = p_currForm->context->getOption("ARRCOUNT");
+      if(arrCount <= 0) arrCount = 1;
+
+      responseElement.setAttribute("ARRCOUNT", arrCount);
+
+      int scrLine = p_currForm->context->getOption("SCRLINE")+1;
+      if(scrLine <= 0) scrLine = 1;
+
+      int arrLine = p_currForm->context->getOption("ARRLINE")+1;
+      if(arrLine <= 0) arrLine = 1;
+
+      responseElement.setAttribute("SCRLINE", scrLine);
+
+      responseElement.setAttribute("ARRLINE", arrLine);
+   }
+
    if(!(currEvent.type == Fgl::ONKEY_EVENT ||
       currEvent.type == Fgl::ONACTION_EVENT)){
          if(p_currForm->input() || p_currForm->construct()){
@@ -127,28 +144,6 @@ void Response::addSyncValues()
       syncValuesElement.appendChild(syncValueElement);
 
    }
-   return;
-
-   for(int j=0; j<p_currForm->context->fieldList().count(); j++){
-      for(int i=0; i<p_currForm->ql_formFields.size(); i++){
-         QWidget *widget = (QWidget*) p_currForm->ql_formFields.at(i);
-
-         QDomElement syncValueElement = this->createElement("SYNCVALUE");
-         if(widget == p_currForm->context->fieldList().at(j)){
-            
-            syncValueElement.setAttribute("FIELDNAME", widget->accessibleName());
-//            syncValueElement.setAttribute("TOUCHED", widget->property("touched").toInt());
-            QString text = WidgetHelper::fieldText(widget);
-
-            if(!text.isEmpty()){
-               QDomText domText = this->createTextNode(text);
-               syncValueElement.appendChild(domText);
-            }
-            syncValuesElement.appendChild(syncValueElement);
-         }
-
-      }
-   }
 }
 
 void Response::addScreenRecSyncValues(TableView *p_screenRecord)
@@ -201,7 +196,7 @@ void Response::addScreenRecSyncValues()
    int arrCount = p_currForm->context->getOption("ARRCOUNT");
    if(arrCount <= 0) arrCount = 1;
 
-   responseElement.setAttribute("ARRCOUNT", arrCount);
+   //responseElement.setAttribute("ARRCOUNT", arrCount);
 
    int scrLine = p_currForm->context->getOption("SCRLINE")+1;
    if(scrLine <= 0) scrLine = 1;
@@ -209,9 +204,9 @@ void Response::addScreenRecSyncValues()
    int arrLine = p_currForm->context->getOption("ARRLINE")+1;
    if(arrLine <= 0) arrLine = 1;
 
-   responseElement.setAttribute("SCRLINE", scrLine);
+   //responseElement.setAttribute("SCRLINE", scrLine);
 
-   responseElement.setAttribute("ARRLINE", arrLine);
+   //responseElement.setAttribute("ARRLINE", arrLine);
 
    if(p_currForm->context->state() != Fgl::INPUTARRAY)
       return;
