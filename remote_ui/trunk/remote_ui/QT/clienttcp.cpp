@@ -606,6 +606,7 @@ QString ProtocolHandler::filterUmlauts(QString text){
             }
          }
 
+/*
          if(start >= 0 && end >=0){
             QString rem = text.mid(start,(end-start+1));
             bool ok;
@@ -616,6 +617,7 @@ QString ProtocolHandler::filterUmlauts(QString text){
                i--;
             }
          }
+*/
       }
    }
 
@@ -671,13 +673,53 @@ void ProtocolHandler::outputTree(QDomNode domNode)
 
    if(childElement.nodeName() == "PROGRAMSTARTUP"){
       handleStartup(childElement);
-      QString qs_defaultStyle;
-      QFile file("default.4st");
-      if (file.open(QIODevice::ReadOnly | QIODevice::Text)){
-          qs_defaultStyle = file.readAll();
+      QString programName = childElement.attribute("PROGRAMNAME");
+      QFile stylesFile(QString("%1.4st").arg(programName));
+      if (stylesFile.open(QIODevice::ReadOnly | QIODevice::Text)){
+          QString qs_defaultStyle = stylesFile.readAll();
           handleXMLStyles(qs_defaultStyle);
+          stylesFile.close();
       }
-      
+      else{
+          stylesFile.setFileName("default.4st");
+           if (stylesFile.open(QIODevice::ReadOnly | QIODevice::Text)){
+               QString qs_defaultStyle = stylesFile.readAll();
+               handleXMLStyles(qs_defaultStyle);
+               stylesFile.close();
+           }
+          
+      }
+
+      QFile toolbarFile(QString("%1.4tb").arg(programName));
+      if (toolbarFile.open(QIODevice::ReadOnly | QIODevice::Text)){
+          QString qs_defaultToolbar = toolbarFile.readAll();
+          handleXMLToolBar(qs_defaultToolbar);
+          toolbarFile.close();
+      }
+      else{
+          toolbarFile.setFileName("default.4tb");
+           if (toolbarFile.open(QIODevice::ReadOnly | QIODevice::Text)){
+               QString qs_defaultToolbar = toolbarFile.readAll();
+               handleXMLToolBar(qs_defaultToolbar);
+               toolbarFile.close();
+           }
+          
+      }
+
+      QFile actionsFile(QString("%1.4ad").arg(programName));
+      if (actionsFile.open(QIODevice::ReadOnly | QIODevice::Text)){
+          QString qs_defaultActions = actionsFile.readAll();
+          handleXMLActions(qs_defaultActions);
+      }
+      else{
+          actionsFile.setFileName("default.4ad");
+           if (actionsFile.open(QIODevice::ReadOnly | QIODevice::Text)){
+               QString qs_defaultActions = actionsFile.readAll();
+               handleXMLActions(qs_defaultActions);
+           }
+          
+      }
+
       QString id = childElement.attribute("ID");
       createWindow("screen", "", 0, 0, 100, 100, id);
       return;
