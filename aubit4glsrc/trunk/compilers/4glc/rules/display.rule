@@ -63,11 +63,12 @@ opt_at : {
  	}
 ;
 
-display_b_n_cmd : DISPLAY_BY_NAME expanded_ibind_var_list display_attr {
+display_b_n_cmd : DISPLAY_BY_NAME atline expanded_ibind_var_list display_attr {
 		add_feature("DISPLAY_BY_NAME");
-		
-		$<cmd>$=cmd_display_by_name($<ptr_list>2, $<attrib>3);
-	inc_var_usage_from_binding_list($<ptr_list>2);
+		set_cmdlineno($<integer_val>2);
+
+		$<cmd>$=cmd_display_by_name($<ptr_list>3, $<attrib>4);
+		inc_var_usage_from_binding_list($<ptr_list>3);
 		
 		map_ui("DISPLAYBYNAME");
                 } 

@@ -20,11 +20,21 @@
 #define CONTEXT_PROMPT 3
 
 
+
+
+
+// Configurable parameters : 
+#define LINE_LENGTH 132
+int indent_comments=1;
+
+
+
+
+
 static void merge_files (void);
 char *current_stmt_table = 0;
 struct expr_str *input_array_variable = 0;
 static int print_list(struct  expr_str_list *list) ;
-
 
 /* STRUCTURES */
 struct def
@@ -274,6 +284,9 @@ ensure_func (char *s)
   funcs[nfuncs - 1].ndefine_lines = 0;
   return nfuncs - 1;
 }
+
+
+
 static void
 add_vname (char *f, char *v, int dtype)
 {
@@ -421,7 +434,7 @@ A4GL_internal_lex_printc (char *fmt, va_list * ap)
 	  else
 	    {
 	      ln += strlen (ptr);
-	      if (ln > 80)
+	      if (ln > LINE_LENGTH)
 		{
 		  if (outfile)
 		    FPRINTF (outfile, "\n");
@@ -3432,16 +3445,16 @@ print_Constant_1 (char *name, struct constant_data *c)
   switch (c->consttype)
     {
     case CONST_TYPE_CHAR:
-      printc ("DEFINE %s CONSTANT %s", name, c->constant_data_u.data_c);
+      printc ("DEFINE %-18s CONSTANT %s", name, c->constant_data_u.data_c);
       break;
     case CONST_TYPE_IDENT:
-      printc ("DEFINE %s CONSTANT %s", name, c->constant_data_u.data_ident);
+      printc ("DEFINE %-18s CONSTANT %s", name, c->constant_data_u.data_ident);
       break;
     case CONST_TYPE_INTEGER:
-      printc ("DEFINE %s CONSTANT %d", name, c->constant_data_u.data_i);
+      printc ("DEFINE %-18s CONSTANT %d", name, c->constant_data_u.data_i);
       break;
     case CONST_TYPE_FLOAT:
-      printc ("DEFINE %s CONSTANT %lf", name, c->constant_data_u.data_f);
+      printc ("DEFINE %-18s CONSTANT %lf", name, c->constant_data_u.data_f);
       break;
 
     }
@@ -3659,14 +3672,25 @@ print_variable_new_internal (struct variable *v, enum e_scope scope, int level, 
 //A4GL_pause_execution();
 
 	if (v->defsrc && strlen(v->defsrc) && !A4GL_isno(acl_getenv("FGLRECORDLIKE"))) {
+       		char arrbuff[256];
 		char comma[20]=",";
 		if (vno==0) strcpy(comma,"");
 		else strcpy(comma,",");
-
-		if (level) {
-			printc("   %-18s RECORD LIKE %s%s", name, v->defsrc,comma);
-		} else {
-			printc("DEFINE %-18s RECORD LIKE %s%s", name, v->defsrc,comma);
+      		if (v->arr_subscripts.arr_subscripts_len)
+        		{
+          		make_arr_str (arrbuff, v);
+			if (level) {
+				printc("   %-18s ARRAY[%s] OF RECORD LIKE %s%s", name, arrbuff, v->defsrc,comma);
+			} else {
+				printc("DEFINE %-18s ARRAY[%s] OF RECORD LIKE %s%s", name, arrbuff, v->defsrc,comma);
+			}
+			}
+		else {
+			if (level) {
+				printc("   %-18s RECORD LIKE %s%s", name, v->defsrc,comma);
+			} else {
+				printc("DEFINE %-18s RECORD LIKE %s%s", name, v->defsrc,comma);
+			}
 		}
 	} else {
 	  print_start_record (static_extern_flg, name, v, level);
@@ -4059,8 +4083,12 @@ dump_comments (int n)
 	  p = strdup (ptr);
 	  //A4GL_lrtrim(p);
 	  need_daylight ();	////printc ("#");
-	  if (outfile)
+	  if (outfile) {
+		if (indent_comments) {
+			print_space ();
+		}
 	    FPRINTF (outfile, "{\n");
+	  }
 	  //printc ( "{\n", buff,p);
 	  free (p);
 	}
@@ -4080,8 +4108,12 @@ dump_comments (int n)
 	   */
 
 
-	  if (outfile)
+	  if (outfile) {
+		if (indent_comments) {
+			print_space ();
+		}
 	    FPRINTF (outfile, "%s%s\n", buff, p);
+	 }
 
 	  //printc ("%s%s", buff, p, strlen(buff),buff[0]);
 	  free (p);
@@ -4183,11 +4215,12 @@ print_variable_usage (struct variable_usage *var_usage)
 {
   char *l;
   l = get_variable_usage (var_usage);
-
+/*
   if (strcmp (l, "mc_policy") == 0)
     {
       A4GL_pause_execution ();
     }
+*/
   printc ("%s", l);
 
   free (l);
@@ -4262,7 +4295,7 @@ dump_report (struct s_report_definition *report_definition)
 		printc (",");
 	      param = report_definition->parameters->list.list_val[a];
 	      A4GL_assertion (param->expr_type != ET_EXPR_PARAMETER, "Invalid parameter type");
-	      printc ("%s", report_definition->parameters->list.list_val[a]->expr_str_u.expr_string);
+	      printc ("%s", param->expr_str_u.expr_param.expr_string);
 	    }
 	}
 
@@ -4491,6 +4524,29 @@ dump_pdf_report (struct s_pdf_report_definition *pdf_report_definition)
   return 1;
 }
 
+
+static int is_parameter(struct variable *p, struct s_function_definition *function_definition, int n) {
+int a;
+	if (n<0) {
+		if ( function_definition->parameters) {
+        	for (a = 0; a < function_definition->parameters->list.list_len; a++) {
+			if (strcmp(function_definition->parameters->list.list_val[a]->expr_str_u.expr_param.expr_string, p->names.names.names_val[0].name)==0) {
+				return 1;
+			}
+				
+		}
+		}
+	} else {
+		if (n>=function_definition->parameters->list.list_len) {
+			A4GL_assertion(1,"parameter number out of range");
+		}
+		if (strcmp(function_definition->parameters->list.list_val[n]->expr_str_u.expr_param.expr_string, p->names.names.names_val[0].name)==0) {
+			return 1;
+		}
+	}
+	return 0;
+}
+
 static int
 dump_function (struct s_function_definition *function_definition, int ismain)
 {
@@ -4527,9 +4583,11 @@ dump_function (struct s_function_definition *function_definition, int ismain)
 	      struct expr_str *param;
 	      if (a)
 		printc (",");
+
 	      param = function_definition->parameters->list.list_val[a];
 	      A4GL_assertion (param->expr_type != ET_EXPR_PARAMETER, "Invalid parameter type");
 	      printc ("%s", function_definition->parameters->list.list_val[a]->expr_str_u.expr_param.expr_string);
+
 	    }
 	}
       printc (")");
@@ -4539,14 +4597,47 @@ dump_function (struct s_function_definition *function_definition, int ismain)
 
   printc ("#!!FUNCTION %s", function_definition->funcname);
 // local variables...
+// Lets dump our parameters - in order - first....
+	int p=0;
+  if (function_definition->variables.variables.variables_len)
+    {
+	//A4GL_pause_execution();
 
+	if (function_definition->parameters && function_definition->parameters->list.list_len) {
+		printc("# Parameters");
+		for (p=0;p<function_definition->parameters->list.list_len;p++) {
+      			for (a = 0; a < function_definition->variables.variables.variables_len; a++)
+			{
+		
+			if (is_parameter(function_definition->variables.variables.variables_val[a], function_definition,p)) {
+	  			print_variable_new (function_definition->variables.variables.variables_val[a], 'L', 0);
+			}
+		}
+		}
+	p=1;
+	}
+    }
+
+
+// Now dump anything that isn't a parameter
+// (These should already be in alphabetical order)
   if (function_definition->variables.variables.variables_len)
     {
       for (a = 0; a < function_definition->variables.variables.variables_len; a++)
 	{
-	  print_variable_new (function_definition->variables.variables.variables_val[a], 'L', 0);
+		if (!is_parameter(function_definition->variables.variables.variables_val[a], function_definition,-1)) {
+	if (p) {
+		p=0;
+		need_daylight();
+		printc("# Normal Variables");
+	}
+	  		print_variable_new (function_definition->variables.variables.variables_val[a], 'L', 0);
+		}
 	}
     }
+
+
+
 
   tmp_ccnt++;
 
@@ -7777,9 +7868,9 @@ case EBC_SPL_FOREACH:
 
       if (r->cmd_data.command_data_u.if_cmd.whenfalse)
 	{
-	  dump_comments (r->cmd_data.command_data_u.if_cmd.else_lineno);
 	  printc ("ELSE");
 	  tmp_ccnt++;
+	  dump_comments (r->cmd_data.command_data_u.if_cmd.else_lineno);
 		
 	  if (A4GL_isyes (acl_getenv ("TRACE4GL")))
 	    {
@@ -9006,8 +9097,10 @@ case EBC_SPL_FOREACH:
 	    }
 	  else
 	    {
+		set_nonewlines();
 	      printc ("CLEAR WINDOW ");
 	      print_ident (r->cmd_data.command_data_u.clear_cmd.clr_data.clear_data_u.window);
+		clr_nonewlines();
 	    }
 	  break;
 	case E_CLR_STATUS:

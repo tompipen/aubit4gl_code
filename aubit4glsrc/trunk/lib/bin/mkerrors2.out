@@ -374,3 +374,4 @@
 378|Couldn't open form
 380|Function returned incorrect number of values
 382|No current table
+384|Not an object of type 'STRING' - or not initialized

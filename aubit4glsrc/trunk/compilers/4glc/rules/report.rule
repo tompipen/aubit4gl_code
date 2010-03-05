@@ -295,10 +295,11 @@ output_cmd : OUTPUT_TO_REPORT rep_name op_values  OPEN_BRACKET op_fgl_expr_list_
 		}
 ;
 
-finish_cmd : FINISH_REPORT rep_name rep_conv {
-		ADDMAP("Finish Report",$<str>2);
+finish_cmd : FINISH_REPORT atline rep_name rep_conv {
+		set_cmdlineno($<integer_val>2);
+		ADDMAP("Finish Report",$<str>3);
 		add_feature("USE_REPORT");
-		$<cmd>$=new_finish_cmd($<str>2,$<convert>3);
+		$<cmd>$=new_finish_cmd($<str>3,$<convert>4);
 		}
 ;
 

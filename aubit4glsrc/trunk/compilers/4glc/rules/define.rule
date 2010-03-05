@@ -460,8 +460,11 @@ dtype :
 			$$=new_variable_object("ui.combobox");
 		} 
 	|	STRING {
-			//$$=new_variable_object("STRING");
-			$$=new_simple_variable(NULL,DTYPE_CHAR,1024,0);
+			if (A4GL_isyes(acl_getenv("STRING_AS_OBJECT"))) {
+				$$=new_variable_object("STRING");
+			} else {
+				$$=new_simple_variable(NULL,DTYPE_CHAR,1024,0);
+			}
 		} 
 	|	BASECHANNEL {
 			$$=new_variable_object("base.channel");

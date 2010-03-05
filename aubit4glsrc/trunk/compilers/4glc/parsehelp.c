@@ -2070,6 +2070,15 @@ if (l==0) return l;
 if (l->list.list_len==0) return l;
 
 n=A4GL_new_ptr_list(0);
+if (l->unexpanded_list.unexpanded_list_len) {
+        n->unexpanded_list.unexpanded_list_len = l->unexpanded_list.unexpanded_list_len;
+        n->unexpanded_list.unexpanded_list_val = l->unexpanded_list.unexpanded_list_val;
+} else {
+        n->unexpanded_list.unexpanded_list_len = l->list.list_len;
+        n->unexpanded_list.unexpanded_list_val = l->list.list_val;
+}
+
+
 for (a=0;a<l->list.list_len;a++) {
 	A4GL_new_append_ptr_list_with_expand(n, l->list.list_val[a]);
 }
@@ -2089,11 +2098,16 @@ if (parameters==NULL) return parameters;
 
 n=A4GL_new_ptr_list(0);
 if (parameters->unexpanded_list.unexpanded_list_len) {
-	printf("unexpanded_list is already set...");
-	A4GL_pause_execution();
+
+	// printf("unexpanded_list is already set: %d\n", parameters->unexpanded_list.unexpanded_list_len);
+	// printf("unexpanded_list is already set: %d\n", parameters->list.list_len);
+	n->unexpanded_list.unexpanded_list_len = parameters->unexpanded_list.unexpanded_list_len;
+	n->unexpanded_list.unexpanded_list_val = parameters->unexpanded_list.unexpanded_list_val;
+
+} else {
+	n->unexpanded_list.unexpanded_list_len = parameters->list.list_len;
+	n->unexpanded_list.unexpanded_list_val = parameters->list.list_val;
 }
-parameters->unexpanded_list.unexpanded_list_len=parameters->list.list_len;
-parameters->unexpanded_list.unexpanded_list_val=parameters->list.list_val;
 
 for (param_to_add=0;param_to_add<parameters->list.list_len;param_to_add++) {
 	switch (parameters->list.list_val[param_to_add]->expr_type) {
