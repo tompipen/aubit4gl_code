@@ -62,7 +62,7 @@ MainFrame::MainFrame(QWidget *parent) : QMainWindow(parent)
    bool onlyLogin;
 
    adminMenu = true;
-   onlyLogin = false;
+   onlyLogin = true;
    debugModus = false;
  for(int i=0; i<parameter.count(); i++)
   {
