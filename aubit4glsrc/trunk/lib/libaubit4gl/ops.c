@@ -25,7 +25,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.168 2010-02-28 09:52:00 mikeaubury Exp $
+# $Id: ops.c,v 1.169 2010-03-05 15:13:53 mikeaubury Exp $
 #
 */
 
@@ -146,6 +146,7 @@ a4gl_local_trunc (double d)
 }
 
 
+/*
 static int
 A4GL_dtype_function_dynamic_arr_getlength(char *base, int nparam)
 {
@@ -156,7 +157,7 @@ A4GL_dtype_function_dynamic_arr_getlength(char *base, int nparam)
    A4GL_dynarr_extent(base,1);
 	return 1;
 }
-
+*/
 
 static int
 A4GL_dtype_function_char_getlength (char *base, int nparam)
@@ -234,6 +235,82 @@ A4GL_tostring_decimal (void *p, int size, char *s_in, int n_in)
   return buff_1;
 }
 
+
+// ********************************************************************************/
+// STRING object type handling
+// ********************************************************************************/
+
+
+static void *A4GL_conv_char_to_string(char *type, void *vobjId) {
+        struct sObject *obj;
+	int *objId;
+        char *data;
+	
+	objId=vobjId;
+        obj=new_object("STRING");
+
+        if (obj==NULL) {
+                A4GL_push_objectID(0);
+                return NULL;
+        }
+
+	// Source datatype might be anything we added - so normal integers etc..
+        data=A4GL_char_pop();
+
+        obj->objData=data;
+	*objId=obj->objHeapId;
+
+	return obj;
+}
+
+
+
+static char *A4GL_conv_obj_to_string(void *p, int size, char *s_in, int n_in) {
+	struct sObject *obj;
+	char buff[2000];
+	if (getObject(*(long*)p, &obj)==0) return "";
+ 	char *(*function) (struct sObject *);
+	sprintf(buff,":%s.toString", obj->objType);
+	function=A4GL_get_datatype_function_i(DTYPE_OBJECT,buff);
+	if (function) {
+		return function(obj);
+	} else {
+		return "";
+	}
+	//A4GL_assertion(1,"Not implemented");
+}
+
+
+static char *A4GL_objstring_toString(struct sObject *string) {
+	return string->objData;
+}
+
+static int
+A4GL_dtype_function_string_getlength (long *objectID, int nparam)
+{
+	struct sObject *object;
+        if (!ensureObject("STRING",*objectID,&object)) {
+                A4GL_exitwith("Not an object of type 'STRING' - or not initialized");
+		A4GL_push_int(0);
+                return 1;
+        }
+
+A4GL_push_int(strlen(object->objData));
+return 1;
+}
+
+
+static int
+A4GL_dtype_function_string_substring (long *objectID, int nparam)
+{ 
+	struct sObject *object;
+        if (!ensureObject("STRING",*objectID,&object)) {
+                A4GL_exitwith("Not an object of type 'STRING' - or not initialized");
+		A4GL_push_char("");
+                return 1;
+        }
+	return A4GL_dtype_function_char_substring(object->objData,nparam);
+}
 /******************************************************************************/
 
 void
@@ -7044,6 +7121,9 @@ static int A4GL_conv_char_to_nvchar (int d1, void *p1, int d2, void *p2, int siz
 	return 1;
 }
 
+
+
+
 static void *
 A4GL_conv_copy_nvchar (char *p)
 {
@@ -7094,6 +7174,7 @@ A4GL_conv_copy_nchar (char *p)
   return ptr;
   //A4GL_push_param (ptr, (DTYPE_NCHAR + DTYPE_MALLOCED + ENCODE_SIZE ((int) strlen (p))));
 }
+
 
 
 /**
@@ -7249,6 +7330,32 @@ DTYPE_SERIAL
   A4GL_add_datatype_function_i (DTYPE_CHAR, "CONVTO_16", (void *) A4GL_conv_char_to_nvchar);
   A4GL_add_datatype_function_i (DTYPE_NVCHAR, "CONVTO_0", (void *) A4GL_conv_nvchar_to_char);
   A4GL_add_datatype_function_i (DTYPE_NVCHAR, "COPY", (void *) A4GL_conv_copy_nvchar);
+
+
+
+// STRING object handling....
+
+  A4GL_add_datatype_function_i (DTYPE_OBJECT, "0->STRING", (void *) A4GL_conv_char_to_string);
+  A4GL_add_datatype_function_i (DTYPE_OBJECT, "1->STRING", (void *) A4GL_conv_char_to_string);
+  A4GL_add_datatype_function_i (DTYPE_OBJECT, "2->STRING", (void *) A4GL_conv_char_to_string);
+  A4GL_add_datatype_function_i (DTYPE_OBJECT, "3->STRING", (void *) A4GL_conv_char_to_string);
+  A4GL_add_datatype_function_i (DTYPE_OBJECT, "4->STRING", (void *) A4GL_conv_char_to_string);
+  A4GL_add_datatype_function_i (DTYPE_OBJECT, "5->STRING", (void *) A4GL_conv_char_to_string);
+  A4GL_add_datatype_function_i (DTYPE_OBJECT, "6->STRING", (void *) A4GL_conv_char_to_string);
+  A4GL_add_datatype_function_i (DTYPE_OBJECT, "7->STRING", (void *) A4GL_conv_char_to_string);
+  A4GL_add_datatype_function_i (DTYPE_OBJECT, "8->STRING", (void *) A4GL_conv_char_to_string);
+  A4GL_add_datatype_function_i (DTYPE_OBJECT, "9->STRING", (void *) A4GL_conv_char_to_string);
+  A4GL_add_datatype_function_i (DTYPE_OBJECT, "10->STRING", (void *) A4GL_conv_char_to_string);
+  A4GL_add_datatype_function_i (DTYPE_OBJECT, "11->STRING", (void *) A4GL_conv_char_to_string);
+  A4GL_add_datatype_function_i (DTYPE_OBJECT, "12->STRING", (void *) A4GL_conv_char_to_string);
+  A4GL_add_datatype_function_i (DTYPE_OBJECT, "13->STRING", (void *) A4GL_conv_char_to_string);
+  A4GL_add_datatype_function_i (DTYPE_OBJECT, "14->STRING", (void *) A4GL_conv_char_to_string);
+  A4GL_add_datatype_function_i (DTYPE_OBJECT, "15->STRING", (void *) A4GL_conv_char_to_string);
+  A4GL_add_datatype_function_i (DTYPE_OBJECT, ">STRING", (void *) A4GL_conv_obj_to_string);
+  A4GL_add_datatype_function_i (DTYPE_OBJECT, ":STRING.toString", (void *) A4GL_objstring_toString);
+  A4GL_add_datatype_function_i (DTYPE_OBJECT, ":STRING.getlength", (void *) A4GL_dtype_function_string_getlength);
+  A4GL_add_datatype_function_i (DTYPE_OBJECT, ":STRING.substring", (void *) A4GL_dtype_function_string_substring);
+
 
 
   add_int8_support ();
@@ -7574,7 +7681,7 @@ A4GL_whats_in_a_string (char *s, int *d, int *sz)
       for (b = a; b <= 10; b++)
 	{
 	  char str[256];
-	  int ibuff[30];
+	  //int ibuff[30];
 	  strcpy (str, s);
 
 	  if (a == b)
