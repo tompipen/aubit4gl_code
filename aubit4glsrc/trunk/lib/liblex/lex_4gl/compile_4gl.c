@@ -4087,7 +4087,7 @@ dump_comments (int n)
 		if (indent_comments) {
 			print_space ();
 		}
-	    FPRINTF (outfile, "{\n");
+	    FPRINTF (outfile, "{%s",p);
 	  }
 	  //printc ( "{\n", buff,p);
 	  free (p);
@@ -4598,23 +4598,26 @@ dump_function (struct s_function_definition *function_definition, int ismain)
   printc ("#!!FUNCTION %s", function_definition->funcname);
 // local variables...
 // Lets dump our parameters - in order - first....
-	int p=0;
+  int p = 0;
   if (function_definition->variables.variables.variables_len)
     {
-	//A4GL_pause_execution();
+      //A4GL_pause_execution();
 
-	if (function_definition->parameters && function_definition->parameters->list.list_len) {
-		printc("# Parameters");
-		for (p=0;p<function_definition->parameters->list.list_len;p++) {
-      			for (a = 0; a < function_definition->variables.variables.variables_len; a++)
-			{
-		
-			if (is_parameter(function_definition->variables.variables.variables_val[a], function_definition,p)) {
-	  			print_variable_new (function_definition->variables.variables.variables_val[a], 'L', 0);
-			}
+      if (function_definition->parameters && function_definition->parameters->list.list_len)
+	{
+	  printc ("# Parameters");
+	  for (p = 0; p < function_definition->parameters->list.list_len; p++)
+	    {
+	      for (a = 0; a < function_definition->variables.variables.variables_len; a++)
+		{
+
+		  if (is_parameter (function_definition->variables.variables.variables_val[a], function_definition, p))
+		    {
+		      print_variable_new (function_definition->variables.variables.variables_val[a], 'L', 0);
+		    }
 		}
-		}
-	p=1;
+	    }
+	  p = 1;
 	}
     }
 
@@ -4625,14 +4628,16 @@ dump_function (struct s_function_definition *function_definition, int ismain)
     {
       for (a = 0; a < function_definition->variables.variables.variables_len; a++)
 	{
-		if (!is_parameter(function_definition->variables.variables.variables_val[a], function_definition,-1)) {
-	if (p) {
-		p=0;
-		need_daylight();
-		printc("# Normal Variables");
-	}
-	  		print_variable_new (function_definition->variables.variables.variables_val[a], 'L', 0);
+	  if (!is_parameter (function_definition->variables.variables.variables_val[a], function_definition, -1))
+	    {
+	      if (p)
+		{
+		  p = 0;
+		  need_daylight ();
+		  printc ("# Normal Variables");
 		}
+	      print_variable_new (function_definition->variables.variables.variables_val[a], 'L', 0);
+	    }
 	}
     }
 
@@ -4671,8 +4676,8 @@ dump_function (struct s_function_definition *function_definition, int ismain)
 	}
     }
 
-  dump_comments (function_definition->lastlineno);
 
+  dump_comments (function_definition->lastlineno - 1);
   if (ismain || strcmp (function_definition->funcname, "MAIN") == 0)
     {
       if (ui_as_calls ())
@@ -4702,6 +4707,7 @@ dump_function (struct s_function_definition *function_definition, int ismain)
 	}
       printc ("END FUNCTION");
     }
+  dump_comments (function_definition->lastlineno);
 
   return 1;
 }
@@ -9545,6 +9551,9 @@ case EBC_SPL_FOREACH:
 	      {
 		clr_nonewlines ();
 		tmp_ccnt++;
+
+	//A4GL_pause_execution();
+
 		preprocess_sql_statement (r->cmd_data.command_data_u.declare_cmd.declare_dets->select);
 		search_variables (&r->cmd_data.command_data_u.declare_cmd.declare_dets->select->list_of_items);
 		print_select (r->cmd_data.command_data_u.declare_cmd.declare_dets->select,
