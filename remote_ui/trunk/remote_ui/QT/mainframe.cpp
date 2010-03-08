@@ -585,7 +585,7 @@ void MainFrame::tcpListener()
 
    if(!clientTcp->listen(QHostAddress::Any, 1350)){
       errorMessageMainFrame->showMessage(
-            tr("ERROR: Failed to bind to port"));
+            tr("ERROR: VDC already running"));
    }
 
    if(connectionsTab != NULL){
