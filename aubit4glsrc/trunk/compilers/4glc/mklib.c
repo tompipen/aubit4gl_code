@@ -320,7 +320,7 @@ int cnt=0;
         {
         case ET_EXPR_FCALL:
           fcall = call_list->calls_by_expr.calls_by_expr_val[a]->expr_str_u.expr_function_call;
-          cnt+=chk_is_external (m,fcall->fname);
+          cnt+=chk_is_external (m,fcall->functionname);
           break;
 
 	default:

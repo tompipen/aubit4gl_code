@@ -25,7 +25,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: expr.c,v 1.43 2010-03-04 09:34:31 mikeaubury Exp $
+# $Id: expr.c,v 1.44 2010-03-08 09:43:15 mikeaubury Exp $
 #
 */
 
@@ -946,7 +946,7 @@ A4GL_new_expr_fcall (char *function, struct expr_str_list *params, char *mod, in
   struct expr_str *p2;
   p = malloc (sizeof (struct s_expr_function_call));
   p2 = A4GL_new_expr_simple (ET_EXPR_FCALL);
-  p->fname = acl_strdup (function);
+  p->functionname = acl_strdup (function);
   p->parameters = A4GL_rationalize_list (params);
   p->n_namespace = p_namespace;
   p->module = mod;
@@ -962,7 +962,7 @@ A4GL_new_expr_pdf_fcall (char *function, struct expr_str_list *params, char *mod
   struct expr_str *p2;
   p = malloc (sizeof (struct s_expr_pdf_function_call));
   p2 = A4GL_new_expr_simple (ET_EXPR_PDF_FCALL);
-  p->fname = acl_strdup (function);
+  p->functionname = acl_strdup (function);
   p->parameters = params;
   p->n_namespace = p_namespace;
   p->module = mod;
@@ -1158,7 +1158,7 @@ A4GL_new_expr_bound_fcall (char *lib, char *function, char *mod, int line, expr_
   p = malloc (sizeof (struct s_expr_bound_fcall));
   p2 = A4GL_new_expr_simple (ET_EXPR_BOUND_FCALL);
   p->n_namespace = p_namespace;
-  p->fname = acl_strdup (function);
+  p->functionname = acl_strdup (function);
   p->lib = acl_strdup (lib);
   p->module = mod;
   p->line = line;
@@ -1179,7 +1179,7 @@ A4GL_new_expr_shared_fcall (char *lib, char *function, struct expr_str_list *par
   struct expr_str *p2;
   p = malloc (sizeof (struct s_expr_shared_function_call));
   p2 = A4GL_new_expr_simple (ET_EXPR_SHARED_FCALL);
-  p->fname = acl_strdup (function);
+  p->functionname = acl_strdup (function);
   p->n_namespace = p_namespace;
   p->lib = acl_strdup (lib);
   p->parameters = params;

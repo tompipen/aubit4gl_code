@@ -2014,11 +2014,11 @@ print_pdf_call_cmd (struct_pdf_call_cmd * cmd_data)
   printc ("{int _retvars;A4GL_set_status(0,0);\n");
   if (is_in_report ())
     {
-      printc ("_retvars=A4GL_pdf_pdffunc(&_rep,%s,%d);\n", p->fname, p->parameters->list.list_len);
+      printc ("_retvars=A4GL_pdf_pdffunc(&_rep,%s,%d);\n", p->functionname, p->parameters->list.list_len);
     }
   else
     {
-      printc ("_retvars=A4GL_pdf_pdffunc(0,%s,%d);\n", p->fname, p->parameters->list.list_len);
+      printc ("_retvars=A4GL_pdf_pdffunc(0,%s,%d);\n", p->functionname, p->parameters->list.list_len);
     }
 
   print_returning_g (2, cmd_data->returning, 0);
@@ -3561,7 +3561,7 @@ int print_sort_cmd(struct struct_sort_cmd *c) {
 	printc(",sizeof("); print_variable_usage(c->variable); printc(")");
 	printc(",sizeof("); print_variable_usage(c->variable); printc("[0]),");
 	A4GL_assertion(c->callback->expr_type!=ET_EXPR_FCALL,"Expecting a function call");
-	printc("%s%s", c->callback->expr_str_u.expr_function_call->n_namespace,c->callback->expr_str_u.expr_function_call->fname);
+	printc("%s%s", c->callback->expr_str_u.expr_function_call->n_namespace,c->callback->expr_str_u.expr_function_call->functionname);
 	printc(");");
 	
 	clr_nonewlines();

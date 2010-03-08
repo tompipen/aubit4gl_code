@@ -1101,13 +1101,13 @@ cache_expression (char *sxx, expr_str ** ptr, int mode)
       // Got a function call - add it to the stack..
       if (mode == MODE_BUY)
 	{
-	  if (!system_function (expr->expr_str_u.expr_function_call->fname))
+	  if (!system_function (expr->expr_str_u.expr_function_call->functionname))
 	    {
-		  addNode (currfunc, expr->expr_str_u.expr_function_call->fname,"",expr->expr_str_u.expr_function_call->line,"C");
+		  addNode (currfunc, expr->expr_str_u.expr_function_call->functionname,"",expr->expr_str_u.expr_function_call->line,"C");
 
 
 	      print_indent ();
-	      fprintf (output, "<CALLS FUNCTIONNAME='%s' LINE=\"%d\"/>\n", expr->expr_str_u.expr_function_call->fname,
+	      fprintf (output, "<CALLS FUNCTIONNAME='%s' LINE=\"%d\"/>\n", expr->expr_str_u.expr_function_call->functionname,
 		       expr->expr_str_u.expr_function_call->line);
 	    }
 	}
@@ -1116,7 +1116,7 @@ cache_expression (char *sxx, expr_str ** ptr, int mode)
 	cnt+= cache_expression_list ("", params, mode);
 	}
 
-      if (!system_function (expr->expr_str_u.expr_function_call->fname))
+      if (!system_function (expr->expr_str_u.expr_function_call->functionname))
 	{
 		cnt++;
         }
@@ -2773,7 +2773,7 @@ int cnt=0;
 	{
 	case ET_EXPR_FCALL:
 	  fcall = call_list->calls_by_expr.calls_by_expr_val[a]->expr_str_u.expr_function_call;
-	  cnt+=run_calltree (fcall->fname);
+	  cnt+=run_calltree (fcall->functionname);
 	  break;
 
 	default:

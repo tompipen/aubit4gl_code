@@ -247,7 +247,7 @@ expr_as_string_when_possible (expr_str * e)
 		strcat (buff3, buff2);
 	      }
 	  }
-	sprintf (buff, "%s(%s)", e->expr_str_u.expr_function_call->fname, buff3);
+	sprintf (buff, "%s(%s)", e->expr_str_u.expr_function_call->functionname, buff3);
 	return strdup (buff);
       }
 

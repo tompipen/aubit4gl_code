@@ -1,6 +1,6 @@
 /* XML application for module_def.dtd.
  * Includes actions from module_def.act.
- * Generated 2010/03/05 14:31:07.
+ * Generated 2010/03/08 09:26:36.
  *
  * This program was generated with the FleXML XML processor generator.
  * FleXML is Copyright (C) 1999-2005 Kristoffer Rose.  All rights reserved.
@@ -1833,8 +1833,8 @@ void STag_s_fetch(void)
 t_s_fetch *tmpVar;
 XMLPushOntoStack("s_fetch",  sizeof(t_s_fetch),1,0,1,A_s_fetch_nm);
 tmpVar=(t_s_fetch *)XMLGetTopOfStack();
-/* tmpVar->cname; is_vararray=0 skip=0 */
-tmpVar->cname=0;
+/* tmpVar->cursorname; is_vararray=0 skip=0 */
+tmpVar->cursorname=0;
 /* tmpVar->fp; is_vararray=0 skip=0 */
 tmpVar->fp=0;
 }
@@ -5104,8 +5104,8 @@ void STag_s_expr_function_call(void)
 t_s_expr_function_call *tmpVar;
 XMLPushOntoStack("s_expr_function_call",  sizeof(t_s_expr_function_call),1,0,1,A_s_expr_function_call_nm);
 tmpVar=(t_s_expr_function_call *)XMLGetTopOfStack();
-if (AU_s_expr_function_call_fname) {tmpVar->fname=0;} /* CCC */
-else {tmpVar->fname=strdup(A_s_expr_function_call_fname);}
+if (AU_s_expr_function_call_functionname) {tmpVar->functionname=0;} /* CCC */
+else {tmpVar->functionname=strdup(A_s_expr_function_call_functionname);}
 
 if (AU_s_expr_function_call_n_namespace) {tmpVar->n_namespace=0;} /* CCC */
 else {tmpVar->n_namespace=strdup(A_s_expr_function_call_n_namespace);}
@@ -5132,8 +5132,8 @@ void STag_s_expr_pdf_function_call(void)
 t_s_expr_pdf_function_call *tmpVar;
 XMLPushOntoStack("s_expr_pdf_function_call",  sizeof(t_s_expr_pdf_function_call),1,0,1,A_s_expr_pdf_function_call_nm);
 tmpVar=(t_s_expr_pdf_function_call *)XMLGetTopOfStack();
-if (AU_s_expr_pdf_function_call_fname) {tmpVar->fname=0;} /* CCC */
-else {tmpVar->fname=strdup(A_s_expr_pdf_function_call_fname);}
+if (AU_s_expr_pdf_function_call_functionname) {tmpVar->functionname=0;} /* CCC */
+else {tmpVar->functionname=strdup(A_s_expr_pdf_function_call_functionname);}
 
 if (AU_s_expr_pdf_function_call_n_namespace) {tmpVar->n_namespace=0;} /* CCC */
 else {tmpVar->n_namespace=strdup(A_s_expr_pdf_function_call_n_namespace);}
@@ -5163,8 +5163,8 @@ tmpVar=(t_s_expr_shared_function_call *)XMLGetTopOfStack();
 if (AU_s_expr_shared_function_call_lib) {tmpVar->lib=0;} /* CCC */
 else {tmpVar->lib=strdup(A_s_expr_shared_function_call_lib);}
 
-if (AU_s_expr_shared_function_call_fname) {tmpVar->fname=0;} /* CCC */
-else {tmpVar->fname=strdup(A_s_expr_shared_function_call_fname);}
+if (AU_s_expr_shared_function_call_functionname) {tmpVar->functionname=0;} /* CCC */
+else {tmpVar->functionname=strdup(A_s_expr_shared_function_call_functionname);}
 
 if (AU_s_expr_shared_function_call_n_namespace) {tmpVar->n_namespace=0;} /* CCC */
 else {tmpVar->n_namespace=strdup(A_s_expr_shared_function_call_n_namespace);}
@@ -5595,8 +5595,8 @@ else {tmpVar->lib=strdup(A_s_expr_bound_fcall_lib);}
 if (AU_s_expr_bound_fcall_n_namespace) {tmpVar->n_namespace=0;} /* CCC */
 else {tmpVar->n_namespace=strdup(A_s_expr_bound_fcall_n_namespace);}
 
-if (AU_s_expr_bound_fcall_fname) {tmpVar->fname=0;} /* CCC */
-else {tmpVar->fname=strdup(A_s_expr_bound_fcall_fname);}
+if (AU_s_expr_bound_fcall_functionname) {tmpVar->functionname=0;} /* CCC */
+else {tmpVar->functionname=strdup(A_s_expr_bound_fcall_functionname);}
 
 if (AU_s_expr_bound_fcall_module) {tmpVar->module=0;} /* CCC */
 else {tmpVar->module=strdup(A_s_expr_bound_fcall_module);}
@@ -7051,8 +7051,8 @@ void STag_s_select_list_item_builtin_fcall(void)
 t_s_select_list_item_builtin_fcall *tmpVar;
 XMLPushOntoStack("s_select_list_item_builtin_fcall",  sizeof(t_s_select_list_item_builtin_fcall),1,0,1,A_s_select_list_item_builtin_fcall_nm);
 tmpVar=(t_s_select_list_item_builtin_fcall *)XMLGetTopOfStack();
-if (AU_s_select_list_item_builtin_fcall_fname) {strcpy(tmpVar->fname,"");}
-else {strcpy(tmpVar->fname,A_s_select_list_item_builtin_fcall_fname);}
+if (AU_s_select_list_item_builtin_fcall_functionname) {strcpy(tmpVar->functionname,"");}
+else {strcpy(tmpVar->functionname,A_s_select_list_item_builtin_fcall_functionname);}
 
 /* tmpVar->params; is_vararray=0 skip=0 */
 tmpVar->params=0;
@@ -7070,8 +7070,8 @@ void STag_s_select_list_item_fcall(void)
 t_s_select_list_item_fcall *tmpVar;
 XMLPushOntoStack("s_select_list_item_fcall",  sizeof(t_s_select_list_item_fcall),1,0,1,A_s_select_list_item_fcall_nm);
 tmpVar=(t_s_select_list_item_fcall *)XMLGetTopOfStack();
-if (AU_s_select_list_item_fcall_fname) {strcpy(tmpVar->fname,"");}
-else {strcpy(tmpVar->fname,A_s_select_list_item_fcall_fname);}
+if (AU_s_select_list_item_fcall_functionname) {strcpy(tmpVar->functionname,"");}
+else {strcpy(tmpVar->functionname,A_s_select_list_item_fcall_functionname);}
 
 /* tmpVar->params; is_vararray=0 skip=0 */
 tmpVar->params=0;

@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: others.c,v 1.73 2010-02-16 13:16:31 mikeaubury Exp $
+# $Id: others.c,v 1.74 2010-03-08 09:43:15 mikeaubury Exp $
 #
 */
 
@@ -383,17 +383,25 @@ A4GL_strip_quotes (char *s)
 {
   static char *buff_sq = 0;
 
-  buff_sq = realloc (buff_sq, strlen (s) + 10);
+  int buff_sq_sz=0;
 
-  if ((s[0] == '"' || s[0] == '\'') && s[strlen (s) - 1] == s[0])
+
+  buff_sq_sz= strlen (s) + 10;
+  buff_sq = realloc (buff_sq, buff_sq_sz);
+
+  if ((s[0] == '"' || s[0] == '\'') && s[strlen (s) - 1] == s[0]  && strlen(s)>1)
     {
+	int endpos;
       strcpy (buff_sq, &s[1]);
-      buff_sq[strlen (buff_sq) - 1] = 0;
+	endpos=strlen (buff_sq) - 1;
+	A4GL_assertion((endpos<0 || endpos>=buff_sq_sz),"Invalid strip");
+      buff_sq[endpos] = 0;
     }
   else
     {
       strcpy (buff_sq, s);
     }
+//printf("Converted :%s: to :%s:\n",s,buff_sq);
   return buff_sq;
 }
 

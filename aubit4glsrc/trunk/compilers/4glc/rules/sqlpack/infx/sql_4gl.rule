@@ -25,7 +25,7 @@ fetch_part_f:
 		A4GL_cursor_fetch($<ptr>2,$<s_fetch_place>1);
 		ADDMAP_P("Fetch Cursor",$<ptr>2);
 		$<s_fetch>$=acl_malloc2(sizeof(struct s_fetch));
-		$<s_fetch>$->cname=$<ptr>2;
+		$<s_fetch>$->cursorname=$<ptr>2;
 		$<s_fetch>$->fp=$<s_fetch_place>1;
 	}
         | fetch_cursor_name_p {
@@ -36,7 +36,7 @@ fetch_part_f:
 		A4GL_cursor_fetch($<ptr>1,fp);
 		ADDMAP_P("Fetch Cursor",$<ptr>1);
 		$<s_fetch>$=acl_malloc2(sizeof(struct s_fetch));
-		$<s_fetch>$->cname=$<ptr>1;
+		$<s_fetch>$->cursorname=$<ptr>1;
 		$<s_fetch>$->fp=fp;
 	}
 ;

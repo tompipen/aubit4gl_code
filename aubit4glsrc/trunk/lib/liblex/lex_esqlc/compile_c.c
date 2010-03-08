@@ -24,12 +24,12 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.521 2010-02-20 09:51:08 mikeaubury Exp $
+# $Id: compile_c.c,v 1.522 2010-03-08 09:43:15 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
-static char const module_id[] = "$Id: compile_c.c,v 1.521 2010-02-20 09:51:08 mikeaubury Exp $";
+static char const module_id[] = "$Id: compile_c.c,v 1.522 2010-03-08 09:43:15 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -1567,23 +1567,23 @@ real_print_expr (struct expr_str *ptr)
 	if (A4GL_doing_pcode ())
 	  {
 	    printc ("ECALL(\"%s%s\",%d,%d);",
-		    get_namespace (ptr->expr_str_u.expr_function_call->fname),
-		    ptr->expr_str_u.expr_function_call->fname, ptr->expr_str_u.expr_function_call->line, params);
+		    get_namespace (ptr->expr_str_u.expr_function_call->functionname),
+		    ptr->expr_str_u.expr_function_call->functionname, ptr->expr_str_u.expr_function_call->line, params);
 	  }
 	else
 	  {
-	    if (A4GL_module_has_function (current_module, ptr->expr_str_u.expr_function_call->fname, lib, 0))
+	    if (A4GL_module_has_function (current_module, ptr->expr_str_u.expr_function_call->functionname, lib, 0))
 	      {
 		// Call shared...
 		printc ("{");
 		printc ("int _retvars;");
 		printc ("A4GL_set_status(0,0);");
-		printc ("_retvars=A4GL_call_4gl_dll(%s,\"%s\",%d); ", lib, ptr->expr_str_u.expr_function_call->fname, params);
+		printc ("_retvars=A4GL_call_4gl_dll(%s,\"%s\",%d); ", lib, ptr->expr_str_u.expr_function_call->functionname, params);
 		printc ("if (_retvars!= 1 && a4gl_status==0 ) {");
 		printc ("A4GL_set_status(-3001,0);");
 		printc ("A4GL_chk_err(%d,_module_name);", ptr->expr_str_u.expr_function_call->line);
 		printc ("}");
-		if (strcmp (ptr->expr_str_u.expr_function_call->fname, "set_count") != 0)
+		if (strcmp (ptr->expr_str_u.expr_function_call->functionname, "set_count") != 0)
 		  {
 		    printc ("%s", get_reset_state_after_call (0));
 		  }
@@ -1594,21 +1594,21 @@ real_print_expr (struct expr_str *ptr)
 	      {
 		printc ("{ // FCALL 1");
 		printc ("int _retvars;");
-		printc ("_retvars=%s%s(%d); ", get_namespace (ptr->expr_str_u.expr_function_call->fname),
-			ptr->expr_str_u.expr_function_call->fname, params);
+		printc ("_retvars=%s%s(%d); ", get_namespace (ptr->expr_str_u.expr_function_call->functionname),
+			ptr->expr_str_u.expr_function_call->functionname, params);
 		printc ("{");
 		printc ("if (_retvars!= 1 && a4gl_status==0 ) {");
 		printc ("A4GL_set_status(-3001,0);");
 		printc ("A4GL_chk_err(%d,_module_name);", ptr->expr_str_u.expr_function_call->line);
 		printc ("}");
 		printc ("}");
-		if (strcmp (ptr->expr_str_u.expr_function_call->fname, "set_count") != 0)
+		if (strcmp (ptr->expr_str_u.expr_function_call->functionname, "set_count") != 0)
 		  {
 		    printc ("%s", get_reset_state_after_call (0));
 		  }
 		printc ("} // FCALL 2");
 	      }
-	    add_function_to_header (ptr->expr_str_u.expr_function_call->fname, ptr->expr_str_u.expr_function_call->n_namespace, 1, 0);
+	    add_function_to_header (ptr->expr_str_u.expr_function_call->functionname, ptr->expr_str_u.expr_function_call->n_namespace, 1, 0);
 	  }
 
 	if (is_in_report ())
@@ -1628,11 +1628,11 @@ real_print_expr (struct expr_str *ptr)
 	printc ("{int _retvars;A4GL_set_status(0,0);\n");
 	if (is_in_report ())
 	  {
-	    printc ("_retvars=A4GL_pdf_pdffunc(&_rep,%s,%d);\n", p->fname, p->parameters->list.list_len);
+	    printc ("_retvars=A4GL_pdf_pdffunc(&_rep,%s,%d);\n", p->functionname, p->parameters->list.list_len);
 	  }
 	else
 	  {
-	    printc ("_retvars=A4GL_pdf_pdffunc(0,%s,%d);\n", p->fname, p->parameters->list.list_len);
+	    printc ("_retvars=A4GL_pdf_pdffunc(0,%s,%d);\n", p->functionname, p->parameters->list.list_len);
 	  }
 	printc ("if (_retvars!= 1 && a4gl_status==0 ) {");
 	printc ("A4GL_set_status(-3001,0);");
@@ -1667,7 +1667,7 @@ real_print_expr (struct expr_str *ptr)
 	  }
 	printc ("  {");
 	printc ("  int _retvars;");
-	printc ("  _retvars=A4GL_call_4gl_dll(\"%s\",\"%s\",%d);", p->lib, p->fname, A4GL_new_list_get_count (p->parameters));
+	printc ("  _retvars=A4GL_call_4gl_dll(\"%s\",\"%s\",%d);", p->lib, p->functionname, A4GL_new_list_get_count (p->parameters));
 	printc ("  if (_retvars!=1) {");
 	printc ("      A4GL_set_status(-3001,0);");
 	printc ("      A4GL_chk_err(%d,\"%s\");", p->line, p->module);
@@ -1708,7 +1708,7 @@ real_print_expr (struct expr_str *ptr)
 	   print_bind_set_value_g (f->values,'e');
 	 */
 	printc ("  A4GL_set_status(0,0);");
-	printc ("  if (A4GL_call_4gl_dll_bound_new(%s,%s,%d)!=1 && a4gl_status==0) { ", f->lib, f->fname, i->list.list_len);
+	printc ("  if (A4GL_call_4gl_dll_bound_new(%s,%s,%d)!=1 && a4gl_status==0) { ", f->lib, f->functionname, i->list.list_len);
 	printc ("    A4GL_set_status(-3001,0);");
 	printc ("    A4GL_chk_err(%d,_module_name);", f->line);
 	printc ("  }");
@@ -3159,10 +3159,10 @@ real_print_func_call (t_expr_str * fcall)
 
       real_print_expr_list (p->parameters);
       printc ("/* done print expr */");
-      add_function_to_header (p->fname, p->n_namespace, 1, 0);
+      add_function_to_header (p->functionname, p->n_namespace, 1, 0);
 
 
-      if (A4GL_module_has_function (current_module, p->fname, lib, 0))
+      if (A4GL_module_has_function (current_module, p->functionname, lib, 0))
 	{
 	  printc ("{int _retvars;\n");
 	  if (is_in_report ())
@@ -3177,7 +3177,7 @@ real_print_func_call (t_expr_str * fcall)
 	    {
 	      printc ("A4GLSTK_setCurrentLine(_module_name,%d);", p->line);
 	    }
-	  printc ("A4GL_set_status(0,0);_retvars=A4GL_call_4gl_dll(%s,\"%s\",%d); /* 1 */\n", lib, p->fname, args_cnt);
+	  printc ("A4GL_set_status(0,0);_retvars=A4GL_call_4gl_dll(%s,\"%s\",%d); /* 1 */\n", lib, p->functionname, args_cnt);
 	}
       else
 	{
@@ -3196,18 +3196,18 @@ real_print_func_call (t_expr_str * fcall)
 	    }
 	  if (A4GL_doing_pcode ())
 	    {
-	      printc ("_retvars=%s%s(%d);\n", get_namespace (p->fname), p->fname, args_cnt);
+	      printc ("_retvars=%s%s(%d);\n", get_namespace (p->functionname), p->functionname, args_cnt);
 	    }
 	  else
 	    {
-	      printc ("_retvars=%s%s(%d);\n", get_namespace (p->fname), p->fname, args_cnt);
+	      printc ("_retvars=%s%s(%d);\n", get_namespace (p->functionname), p->functionname, args_cnt);
 	    }
 	}
       if (is_in_report ())
 	{
 	  clr_doing_a_report_call (4);
 	}
-      if (strcmp (p->fname, "set_count") != 0)
+      if (strcmp (p->functionname, "set_count") != 0)
 	{
 	  print_reset_state_after_call (0);
 	}
@@ -3326,7 +3326,7 @@ real_print_func_call (t_expr_str * fcall)
 	{
 	  printc ("A4GLSTK_setCurrentLine(_module_name,%d);", p->line);
 	}
-      printc ("A4GL_set_status(0,0);_retvars=A4GL_call_4gl_dll(\"%s\",\"%s\",%d); /* 2 */\n", p->lib, p->fname, nargs);
+      printc ("A4GL_set_status(0,0);_retvars=A4GL_call_4gl_dll(\"%s\",\"%s\",%d); /* 2 */\n", p->lib, p->functionname, nargs);
       print_reset_state_after_call (0);
       return;
     }
@@ -3406,11 +3406,11 @@ real_print_func_call (t_expr_str * fcall)
       printc ("{int _retvars;A4GL_set_status(0,0);\n");
       if (is_in_report ())
 	{
-	  printc ("_retvars=A4GL_pdf_pdffunc(&_rep,%s,%d);\n", p->fname, p->parameters->list.list_len);
+	  printc ("_retvars=A4GL_pdf_pdffunc(&_rep,%s,%d);\n", p->functionname, p->parameters->list.list_len);
 	}
       else
 	{
-	  printc ("_retvars=A4GL_pdf_pdffunc(NULL,%s,%d);\n", p->fname, p->parameters->list.list_len);
+	  printc ("_retvars=A4GL_pdf_pdffunc(NULL,%s,%d);\n", p->functionname, p->parameters->list.list_len);
 	}
 
       return;
@@ -7627,11 +7627,11 @@ local_expr_as_string (expr_str * s)
 
 	if (fcall->parameters == 0 || (fcall->parameters && fcall->parameters->list.list_len == 0))
 	  {
-	    sprintf (rbuff, "A4GL_get_single_int_returned_from_call(%s%s(0))", fcall->n_namespace, fcall->fname);
+	    sprintf (rbuff, "A4GL_get_single_int_returned_from_call(%s%s(0))", fcall->n_namespace, fcall->functionname);
 	    return rbuff;
 	  }
 
-	if (fcall->parameters && strcmp (fcall->fname, "length") == 0 && fcall->parameters->list.list_len == 1)
+	if (fcall->parameters && strcmp (fcall->functionname, "length") == 0 && fcall->parameters->list.list_len == 1)
 	  {
 	int dtype;
 	    char buff[20000];
@@ -7646,7 +7646,7 @@ local_expr_as_string (expr_str * s)
 	  }
 
 	yylineno = line_for_cmd;
-	set_yytext (fcall->fname);
+	set_yytext (fcall->functionname);
 	a4gl_yyerror ("You can't use a function requiring parameters in this context");
 	return 0;
       }

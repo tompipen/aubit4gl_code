@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlexpr.c,v 1.86 2010-02-16 13:16:42 mikeaubury Exp $
+# $Id: sqlexpr.c,v 1.87 2010-03-08 09:43:15 mikeaubury Exp $
 #
 */
 
@@ -50,7 +50,7 @@
 #endif
 
 
-int nonewline = 0;
+static int nonewline = 0;
 char *get_sli_type (enum e_sli type);
 char *make_sql_string_and_free (char *first, ...);
 char *kw_space = " ";
@@ -462,7 +462,7 @@ new_select_list_item_fcall (char *fname, struct s_select_list_item_list *params)
 {
   struct s_select_list_item *p;
   p = empty_select_list_item (E_SLI_FCALL);
-  strcpy (p->data.s_select_list_item_data_u.fcall.fname, fname);
+  strcpy (p->data.s_select_list_item_data_u.fcall.functionname, fname);
   p->data.s_select_list_item_data_u.fcall.params = params;
   return p;
 }
@@ -762,7 +762,7 @@ get_select_list_item (struct s_select *select, struct s_select_list_item *p)
       rval = make_sql_string_and_free (acl_strdup_With_Context (" -"), rval, NULL);
     }
 
-  if (p->alias)
+  if (p->alias && strlen(p->alias ))
     {
       if (A4GLSQLCV_check_runtime_requirement ("COLUMN_ALIAS_AS"))
 	{
@@ -872,17 +872,18 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
     case E_SLI_OP: 
 		{
 			char *return_str;
-      return_str=
-	make_sql_string_and_free (get_select_list_item
-				  (select, p->data.s_select_list_item_data_u.complex_expr.left),
-				  acl_strdup_With_Context (p->data.s_select_list_item_data_u.complex_expr.op),
-				  get_select_list_item (select,
-							p->data.s_select_list_item_data_u.complex_expr.right), get_nl (), NULL);
+			char *left;
+			char *right;
+			left= get_select_list_item (select, p->data.s_select_list_item_data_u.complex_expr.left);
+			right=get_select_list_item (select, p->data.s_select_list_item_data_u.complex_expr.right);
+			
+      			return_str= make_sql_string_and_free (left, acl_strdup_With_Context (p->data.s_select_list_item_data_u.complex_expr.op), right, get_nl (), NULL);
 
 			if (strcmp(return_str,"(1=1) AND (1=1)\n")==0) {
 					acl_free(return_str);
 					return acl_strdup_With_Context("(1=1)");
 			} else {
+				//printf("left='%s' right='%s'\n",left,right);
 				return return_str;
 			}
 
@@ -1320,7 +1321,7 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
 	char *rval;
 	params = get_select_list_item_list (select, p->data.s_select_list_item_data_u.fcall.params);
 
-	rval = acl_strdup_With_Context (A4GLSQLCV_sql_func (p->data.s_select_list_item_data_u.fcall.fname, params));
+	rval = acl_strdup_With_Context (A4GLSQLCV_sql_func (p->data.s_select_list_item_data_u.fcall.functionname, params));
 	/* free (params); */
 	return rval;
       }
@@ -1379,7 +1380,6 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
 #ifdef DEBUG
 	    A4GL_debug ("returning %s\n", rval);
 #endif
-
 	    //ADDMAP("UseColumn",rval);
 
 	    return rval;
@@ -1464,7 +1464,7 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
 	    A4GL_assertion (p->data.s_select_list_item_data_u.column.colname == 0, "Order by subscript not handled");
 	  }
 
-	if (p->data.s_select_list_item_data_u.column.tabname)
+	if (p->data.s_select_list_item_data_u.column.tabname && strlen(p->data.s_select_list_item_data_u.column.tabname ))
 	  {
 	    char *orig;
 	    orig = find_tabname_for_alias (select, p->data.s_select_list_item_data_u.column.tabname);
@@ -2215,7 +2215,7 @@ make_select_stmt_v2 (char *c_upd_or_del, struct s_select *select, char *into_por
   strcpy (buff, "");
   if (select->sf)
     {
-      if (select->sf->insert_into)
+      if (select->sf->insert_into && strlen(select->sf->insert_into))
 	{
 	  if (!A4GLSQLCV_check_runtime_requirement ("INSERT_INTO_AS_SELECT_INTO"))
 	    {
@@ -2315,7 +2315,7 @@ make_select_stmt_v2 (char *c_upd_or_del, struct s_select *select, char *into_por
 
   if (select->sf)
     {
-      if (select->sf->insert_into)
+      if (select->sf->insert_into && strlen(select->sf->insert_into))
 	{
 	  if (A4GLSQLCV_check_runtime_requirement ("INSERT_INTO_AS_SELECT_INTO"))
 	    {
@@ -2323,7 +2323,7 @@ make_select_stmt_v2 (char *c_upd_or_del, struct s_select *select, char *into_por
 	      strcat (buff, into_temp);
 	    }
 	}
-      if (select->sf->into_temp)
+      if (select->sf->into_temp && strlen(select->sf->into_temp))
 	{
 	  if (A4GLSQLCV_check_runtime_requirement ("SELECT_INTO_TEMP_INTO_TEMP_HASH"))
 	    {
@@ -2440,7 +2440,7 @@ make_select_stmt_v2 (char *c_upd_or_del, struct s_select *select, char *into_por
   if (select->sf)
     {
       strcpy (into_temp, "");
-      if (select->sf->into_temp)
+      if (select->sf->into_temp && strlen(select->sf->into_temp ))
 	{
 	  char *ptr;
 

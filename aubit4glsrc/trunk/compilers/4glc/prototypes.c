@@ -1293,7 +1293,7 @@ run_calltree_for (s_call_list * call_list)
 	{
 	case ET_EXPR_FCALL:
 	  fcall = call_list->calls_by_expr.calls_by_expr_val[a]->expr_str_u.expr_function_call;
-	  run_calltree (fcall->fname);
+	  run_calltree (fcall->functionname);
 	  break;
 	default:
 	  break;

@@ -1934,7 +1934,7 @@ if (p_fcall->expr_type==ET_EXPR_FCALL) {
 	struct s_expr_function_call *fcall;
 	fcall= p_fcall->expr_str_u.expr_function_call;
 	for (a=0;funcs[a].fname;a++) {
-		if (strcmp( funcs[a].fname,fcall->fname)==0) {
+		if (strcmp( funcs[a].fname,fcall->functionname)==0) {
 			int np=0;
 			if (fcall->parameters ) {
 				np=fcall->parameters->list.list_len;

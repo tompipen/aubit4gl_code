@@ -1704,7 +1704,7 @@ print_fetch_cmd (struct_fetch_cmd * cmd_data,int using_obind_dup_not_obind)
 int ll;
 
 
-  if (!check_cursor_defined(cmd_data->fetch->cname)) {
+  if (!check_cursor_defined(cmd_data->fetch->cursorname)) {
 	return 0;
   }
 
@@ -1718,7 +1718,7 @@ int ll;
   printc ("\nEXEC SQL BEGIN DECLARE SECTION;");
   printc ("int _fp;");
 
-  if (cmd_data->fetch->cname->expr_type==ET_EXPR_VARIABLE_IDENTIFIER) {
+  if (cmd_data->fetch->cursorname->expr_type==ET_EXPR_VARIABLE_IDENTIFIER) {
 	printc("char _cname[256];");
   }
   printc ("\nEXEC SQL END DECLARE SECTION;");
@@ -1747,13 +1747,13 @@ int ll;
         }
   }
 
-  if (cmd_data->fetch->cname->expr_type==ET_EXPR_VARIABLE_IDENTIFIER) {
-	print_expr(cmd_data->fetch->cname);
+  if (cmd_data->fetch->cursorname->expr_type==ET_EXPR_VARIABLE_IDENTIFIER) {
+	print_expr(cmd_data->fetch->cursorname);
 	printc("A4GL_char_pop(_cname,255);A4GL_trim(_cname);");
 	sqcname=":_cname";
   	sqcname_no_colon="_cname";
   } else {
-  	sqcname=get_esql_ident_as_string(cmd_data->fetch->cname);
+  	sqcname=get_esql_ident_as_string(cmd_data->fetch->cursorname);
   }
   
 
@@ -1819,13 +1819,13 @@ int ll;
       		print_conversions_g (cmd_data->outbind,'o');
 	}
     }
-  printc ("internal_recopy_%s_o_Dir();", get_esql_ident_as_string_for_function_calls(cmd_data->fetch->cname,0));
+  printc ("internal_recopy_%s_o_Dir();", get_esql_ident_as_string_for_function_calls(cmd_data->fetch->cursorname,0));
 
   printc("}\n");
 
 
   clr_suppress_lines ();
-  A4GL_save_sql (buff, 0,"FETCH",get_esql_ident_as_string_for_function_calls(cmd_data->fetch->cname,0));
+  A4GL_save_sql (buff, 0,"FETCH",get_esql_ident_as_string_for_function_calls(cmd_data->fetch->cursorname,0));
 
 
   print_copy_status_with_sql (0);
@@ -3303,7 +3303,7 @@ printc("/*******************************************************************/");
 	//tmp_ccnt++;
       //local_print_bind_set_value_g(funcbind,0,1);
       //strcpy (f.cname, cname);
-	f.cname=cname;
+	f.cursorname=cname;
  
       f.fp = malloc (sizeof (struct s_fetch_place));
       f.fp->ab_rel = FETCH_RELATIVE;

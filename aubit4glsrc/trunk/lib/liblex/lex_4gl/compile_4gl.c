@@ -24,7 +24,7 @@
 
 
 // Configurable parameters : 
-#define LINE_LENGTH 132
+#define LINE_LENGTH 80
 int indent_comments=1;
 
 
@@ -134,6 +134,13 @@ static void add_to_list (int list, char *s);
 static char *get_orig_from_clobber (char *s);
 
 
+
+static char *local_get_string_without_quotes(char *s) {
+static char buff[200000];
+strcpy(buff,s);
+A4GL_strip_quotes(buff);
+return buff;
+}
 
 /******************************************************************/
 /*                            FUNCTIONS                           */
@@ -1186,7 +1193,9 @@ get_select (struct s_select *s, char *forUpdate)
     forUpdate = "";
   if (s->into)
     {
-      sprintf (into_buff, "\nINTO %s\n", local_get_expr_as_string_list_with_separator (s->into, ","));
+	char *i;
+	i= local_get_expr_as_string_list_with_separator (s->into, ",");
+      sprintf (into_buff, "\nINTO %s\n", i);
     }
   str = make_select_stmt_v2 (0, s, into_buff);
 
@@ -1810,14 +1819,14 @@ local_get_expr_as_string (struct expr_str *ptr)
 	     */
 	  }
 
-	if (strcmp (ptr->expr_str_u.expr_function_call->fname, "fgl_lastkey") == 0 && ui_as_calls ())
+	if (strcmp (ptr->expr_str_u.expr_function_call->functionname, "fgl_lastkey") == 0 && ui_as_calls ())
 	  {
 	    sprintf (buff, "fgl_keyval(UILIB_lastkey())");
 	  }
 	else
 	  {
 	    params = A4GL_new_list_get_count (ptr->expr_str_u.expr_function_call->parameters);
-	    sprintf (buff, "%s(%s)", map_fname (ptr->expr_str_u.expr_function_call->fname),
+	    sprintf (buff, "%s(%s)", map_fname (ptr->expr_str_u.expr_function_call->functionname),
 		     A4GL_get_expr_list_sep (ptr->expr_str_u.expr_function_call->parameters, ",\n"));
 
 	  }
@@ -1842,7 +1851,7 @@ local_get_expr_as_string (struct expr_str *ptr)
     case ET_EXPR_LITERAL_STRING:
       {
 	char buff[60000];
-	sprintf (buff, "\"%s\"", A4GL_strip_quotes (ptr->expr_str_u.expr_string));
+	sprintf (buff, "\"%s\"", local_get_string_without_quotes (ptr->expr_str_u.expr_string));
 	return acl_strdup (buff);
       }
       break;
@@ -2171,7 +2180,7 @@ local_get_expr_as_string (struct expr_str *ptr)
       break;
 
     case ET_EXPR_IVAL_VAL:
-      sprintf (buff, "INTERVAL(%s) %s TO %s", A4GL_strip_quotes (ptr->expr_str_u.expr_interval->intval),
+      sprintf (buff, "INTERVAL(%s) %s TO %s", local_get_string_without_quotes (ptr->expr_str_u.expr_interval->intval),
 	       decode_ival_define1 (ptr->expr_str_u.expr_interval->extend),
 	       decode_ival_define2 (ptr->expr_str_u.expr_interval->extend));
       return acl_strdup (buff);
@@ -2236,12 +2245,12 @@ local_get_expr_as_string (struct expr_str *ptr)
     case ET_EXPR_PDF_FCALL:
       if (ptr->expr_str_u.expr_pdf_function_call->parameters)
 	{
-	  sprintf (buff, "PDF_FUNCTION (%s", ptr->expr_str_u.expr_pdf_function_call->fname);
+	  sprintf (buff, "PDF_FUNCTION (%s", ptr->expr_str_u.expr_pdf_function_call->functionname);
 	  sprintf (buff, ",%s", A4GL_get_expr_list_sep (ptr->expr_str_u.expr_pdf_function_call->parameters, ",\n"));
 	}
       else
 	{
-	  sprintf (buff, "PDF_FUNCTION (%s)", ptr->expr_str_u.expr_pdf_function_call->fname);
+	  sprintf (buff, "PDF_FUNCTION (%s)", ptr->expr_str_u.expr_pdf_function_call->functionname);
 	}
       return acl_strdup (buff);
       break;
@@ -2505,7 +2514,7 @@ real_print_trimmed_str_list_with_separator (str_list * s, char *sep)
     {
       if (a)
 	printc ("%s", sep);
-      printc ("%s", A4GL_strip_quotes (s->str_list_entry.str_list_entry_val[a]));
+      printc ("%s", local_get_string_without_quotes (s->str_list_entry.str_list_entry_val[a]));
     }
 }
 
@@ -2550,7 +2559,7 @@ real_print_expr_list_with_separator (struct expr_str_list *l, char *s)
 static char *
 local_get_expr_as_string_list_with_separator (struct expr_str_list *l, char *sep)
 {
-  char buff[65000] = "";
+  static char buff[65000] = "";
   strcpy (buff, "");
 
   int a;
@@ -2656,15 +2665,15 @@ local_field_name_as_char (char *fname, expr_str * sub)
 	{
 	  if (strchr (fname, '.') == 0)
 	    {
-	      //SPRINTF2 (buff, "%s[%s]", A4GL_strip_quotes (fname), local_get_expr_as_string (sub));
-	      //SPRINTF2 (buff, "\"%s[\"||(%s USING \"<<<<<\")||\"]\"", A4GL_strip_quotes (fname), local_get_expr_as_string (sub));
-	      SPRINTF2 (buff, "\"%s.\"||(%s USING \"<<<<<\")", A4GL_strip_quotes (fname), local_get_expr_as_string (sub));
+	      //SPRINTF2 (buff, "%s[%s]", local_get_string_without_quotes (fname), local_get_expr_as_string (sub));
+	      //SPRINTF2 (buff, "\"%s[\"||(%s USING \"<<<<<\")||\"]\"", local_get_string_without_quotes (fname), local_get_expr_as_string (sub));
+	      SPRINTF2 (buff, "\"%s.\"||(%s USING \"<<<<<\")", local_get_string_without_quotes (fname), local_get_expr_as_string (sub));
 	    }
 	  else
 	    {
 	      char *ptr;
 	      char *ptr2;
-	      ptr = strdup (A4GL_strip_quotes (fname));
+	      ptr = strdup (local_get_string_without_quotes (fname));
 	      ptr2 = strchr (ptr, '.');
 	      *ptr2 = 0;
 	      ptr2++;
@@ -2674,7 +2683,7 @@ local_field_name_as_char (char *fname, expr_str * sub)
 	}
       else
 	{
-	  SPRINTF1 (buff, "\"%s\"", A4GL_strip_quotes (fname));
+	  SPRINTF1 (buff, "\"%s\"", local_get_string_without_quotes (fname));
 	}
     }
   else
@@ -2683,13 +2692,13 @@ local_field_name_as_char (char *fname, expr_str * sub)
 	{
 	  if (strchr (fname, '.') == 0)
 	    {
-	      SPRINTF2 (buff, "%s[%s]", A4GL_strip_quotes (fname), local_get_expr_as_string (sub));
+	      SPRINTF2 (buff, "%s[%s]", local_get_string_without_quotes (fname), local_get_expr_as_string (sub));
 	    }
 	  else
 	    {
 	      char *ptr;
 	      char *ptr2;
-	      ptr = strdup (A4GL_strip_quotes (fname));
+	      ptr = strdup (local_get_string_without_quotes (fname));
 	      ptr2 = strchr (ptr, '.');
 	      *ptr2 = 0;
 	      ptr2++;
@@ -2699,7 +2708,7 @@ local_field_name_as_char (char *fname, expr_str * sub)
 	}
       else
 	{
-	  SPRINTF1 (buff, "%s", A4GL_strip_quotes (fname));
+	  SPRINTF1 (buff, "%s", local_get_string_without_quotes (fname));
 	}
     }
   return buff;
@@ -7005,7 +7014,7 @@ dump_cmd (struct command *r, struct command *parent)
 	    if (A4GL_isyes (acl_getenv ("TRACE4GL")))
 	      {
 		printc ("CALL trace_4gl(\"CALL %s\")",
-			r->cmd_data.command_data_u.call_cmd.fcall->expr_str_u.expr_function_call->fname);
+			r->cmd_data.command_data_u.call_cmd.fcall->expr_str_u.expr_function_call->functionname);
 	      }
 	  }
 	set_nonewlines ();
@@ -7030,14 +7039,14 @@ dump_cmd (struct command *r, struct command *parent)
 		l = A4GL_rationalize_list (l);
 	      }
 
-	    if (strcmp (ptr->expr_str_u.expr_function_call->fname, "fgl_lastkey") == 0 && ui_as_calls ())
+	    if (strcmp (ptr->expr_str_u.expr_function_call->functionname, "fgl_lastkey") == 0 && ui_as_calls ())
 	      {
 		printc ("fgl_keyval(UILIB_lastkey())");
 	      }
 	    else
 	      {
 		//params = A4GL_new_list_get_count (ptr->expr_str_u.expr_function_call->parameters);
-		printc ("%s(", map_fname (ptr->expr_str_u.expr_function_call->fname));
+		printc ("%s(", map_fname (ptr->expr_str_u.expr_function_call->functionname));
 		if (l)
 		  {
 		    int a;
@@ -9589,7 +9598,7 @@ case EBC_SPL_FOREACH:
 	  if (A4GL_is_just_int_literal (r->cmd_data.command_data_u.fetch_cmd.fetch->fp->fetch_expr, 1))
 	    {
 	      printc ("FETCH ");
-	      print_ident (r->cmd_data.command_data_u.fetch_cmd.fetch->cname);
+	      print_ident (r->cmd_data.command_data_u.fetch_cmd.fetch->cursorname);
 	    }
 	  else
 	    {
@@ -9598,26 +9607,26 @@ case EBC_SPL_FOREACH:
 		if (A4GL_is_just_int_literal(r->cmd_data.command_data_u.fetch_cmd.fetch->fp->fetch_expr,1)) { // FETCH NEXT - should already have been handled...
 			printed++;
 	      		printc ("FETCH NEXT ");
-	      		print_ident (r->cmd_data.command_data_u.fetch_cmd.fetch->cname);
+	      		print_ident (r->cmd_data.command_data_u.fetch_cmd.fetch->cursorname);
 		}
 
 		if (A4GL_is_just_int_literal(r->cmd_data.command_data_u.fetch_cmd.fetch->fp->fetch_expr,-1)) { // FETCH PREVIOUS..
 			printed++;
 	      		printc ("FETCH PREVIOUS ");
-	      		print_ident (r->cmd_data.command_data_u.fetch_cmd.fetch->cname);
+	      		print_ident (r->cmd_data.command_data_u.fetch_cmd.fetch->cursorname);
 		}
 
 		if (A4GL_is_just_int_literal(r->cmd_data.command_data_u.fetch_cmd.fetch->fp->fetch_expr,0)) { // FETCH CURRENT
 			printed++;
 	      		printc ("FETCH CURRENT ");
-	      		print_ident (r->cmd_data.command_data_u.fetch_cmd.fetch->cname);
+	      		print_ident (r->cmd_data.command_data_u.fetch_cmd.fetch->cursorname);
 		}
 
 		if (!printed) {
 	      		printc ("FETCH RELATIVE ");
 	      		real_print_expr (r->cmd_data.command_data_u.fetch_cmd.fetch->fp->fetch_expr);
 	      		printc (" ");
-	      		print_ident (r->cmd_data.command_data_u.fetch_cmd.fetch->cname);
+	      		print_ident (r->cmd_data.command_data_u.fetch_cmd.fetch->cursorname);
 		}
 	    }
 	  break;
@@ -9626,28 +9635,28 @@ case EBC_SPL_FOREACH:
 	  if (A4GL_is_just_int_literal (r->cmd_data.command_data_u.fetch_cmd.fetch->fp->fetch_expr, 1))
 	    {
 	      printc ("FETCH FIRST ");
-	      print_ident (r->cmd_data.command_data_u.fetch_cmd.fetch->cname);
+	      print_ident (r->cmd_data.command_data_u.fetch_cmd.fetch->cursorname);
 	      break;
 
 	    }
 	  if (A4GL_is_just_int_literal (r->cmd_data.command_data_u.fetch_cmd.fetch->fp->fetch_expr, -1))
 	    {
 	      printc ("FETCH LAST ");
-	      print_ident (r->cmd_data.command_data_u.fetch_cmd.fetch->cname);
+	      print_ident (r->cmd_data.command_data_u.fetch_cmd.fetch->cursorname);
 	      break;
 	    }
 
 	  if (A4GL_is_just_int_literal (r->cmd_data.command_data_u.fetch_cmd.fetch->fp->fetch_expr, 0))
 	    {
 	      printc ("FETCH CURRENT ");
-	      print_ident (r->cmd_data.command_data_u.fetch_cmd.fetch->cname);
+	      print_ident (r->cmd_data.command_data_u.fetch_cmd.fetch->cursorname);
 	      break;
 	    }
 
 	  printc ("FETCH ABSOLUTE ");
 	  real_print_expr (r->cmd_data.command_data_u.fetch_cmd.fetch->fp->fetch_expr);
 	  printc (" ");
-	  print_ident (r->cmd_data.command_data_u.fetch_cmd.fetch->cname);
+	  print_ident (r->cmd_data.command_data_u.fetch_cmd.fetch->cursorname);
 	  break;
 
 	}

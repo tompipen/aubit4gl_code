@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: extendedmap.c,v 1.11 2009-06-30 18:38:54 mikeaubury Exp $
+# $Id: extendedmap.c,v 1.12 2010-03-08 09:43:15 mikeaubury Exp $
 #*/
 
 
@@ -497,7 +497,7 @@ case E_SLI_VARIABLE_USAGE_LIST:
 
 
     case E_SLI_FCALL:
-      A4GL_add_xmlmap (get_currmapset(), "<SQLCALL NAME=\"%s\" LINENO=\"%d\"/>\n", p->data.s_select_list_item_data_u.fcall.fname, yylineno);
+      A4GL_add_xmlmap (get_currmapset(), "<SQLCALL NAME=\"%s\" LINENO=\"%d\"/>\n", p->data.s_select_list_item_data_u.fcall.functionname, yylineno);
       map_select_list_item_list (stmttype, "PARAMETERS", select,
 				 p->data.s_select_list_item_data_u.fcall.params);
       return;
@@ -683,7 +683,7 @@ map_call (struct expr_str *p)
   int a;
 char *s;
 
-s=p->expr_str_u.expr_function_call->fname;
+s=p->expr_str_u.expr_function_call->functionname;
 
 
   if (crudfile)

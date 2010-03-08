@@ -557,9 +557,9 @@ print_use_session(cmd_data->connid);
   }
 
   if (cmd_data->outbind==0) {
-                printc ("A4GL_fetch_cursor(%s,%ld,%s,0,NULL); /* No bind */", get_ident_as_string(cmd_data->fetch->cname),cmd_data->fetch->fp->ab_rel, buff);
+                printc ("A4GL_fetch_cursor(%s,%ld,%s,0,NULL); /* No bind */", get_ident_as_string(cmd_data->fetch->cursorname),cmd_data->fetch->fp->ab_rel, buff);
   } else {
-                printc ("A4GL_fetch_cursor(%s,%ld,%s,%d,obind);", get_ident_as_string(cmd_data->fetch->cname),cmd_data->fetch->fp->ab_rel, buff,cmd_data->outbind->list.list_len);
+                printc ("A4GL_fetch_cursor(%s,%ld,%s,%d,obind);", get_ident_as_string(cmd_data->fetch->cursorname),cmd_data->fetch->fp->ab_rel, buff,cmd_data->outbind->list.list_len);
   }
 
   if (cmd_data->outbind ) {

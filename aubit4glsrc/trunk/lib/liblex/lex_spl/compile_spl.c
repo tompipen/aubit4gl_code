@@ -1309,7 +1309,7 @@ local_get_expr_as_string (struct expr_str *ptr)
 	  }
 
 	params = A4GL_new_list_get_count (ptr->expr_str_u.expr_function_call->parameters);
-	sprintf (buff, "%s(%s)", map_fname (ptr->expr_str_u.expr_function_call->fname),
+	sprintf (buff, "%s(%s)", map_fname (ptr->expr_str_u.expr_function_call->functionname),
 		 A4GL_get_expr_list_sep (ptr->expr_str_u.expr_function_call->parameters, ",\n"));
 
       }
@@ -4152,7 +4152,7 @@ dump_cmd (struct command *r, struct command *parent)
 	  {
 	    if (A4GL_isyes (acl_getenv ("TRACESPL")))
 	      {
-		printc ("TRACE \"CALL %s\";", r->cmd_data.command_data_u.call_cmd.fcall->expr_str_u.expr_function_call->fname);
+		printc ("TRACE \"CALL %s\";", r->cmd_data.command_data_u.call_cmd.fcall->expr_str_u.expr_function_call->functionname);
 	      }
 	  }
 	set_nonewlines ();
@@ -4172,7 +4172,7 @@ dump_cmd (struct command *r, struct command *parent)
 	      }
 
 	    //params = A4GL_new_list_get_count (ptr->expr_str_u.expr_function_call->parameters);
-	    printc ("%s(", map_fname (ptr->expr_str_u.expr_function_call->fname));
+	    printc ("%s(", map_fname (ptr->expr_str_u.expr_function_call->functionname));
 	    if (l)
 	      {
 		int a;
@@ -5279,14 +5279,14 @@ dump_cmd (struct command *r, struct command *parent)
 	  if (A4GL_is_just_int_literal (r->cmd_data.command_data_u.fetch_cmd.fetch->fp->fetch_expr, 1))
 	    {
 	      printc ("FETCH ");
-	      print_ident (r->cmd_data.command_data_u.fetch_cmd.fetch->cname);
+	      print_ident (r->cmd_data.command_data_u.fetch_cmd.fetch->cursorname);
 	    }
 	  else
 	    {
 	      printc ("FETCH RELATIVE ");
 	      real_print_expr (r->cmd_data.command_data_u.fetch_cmd.fetch->fp->fetch_expr);
 	      printc (" ");
-	      print_ident (r->cmd_data.command_data_u.fetch_cmd.fetch->cname);
+	      print_ident (r->cmd_data.command_data_u.fetch_cmd.fetch->cursorname);
 	    }
 	  break;
 
@@ -5294,28 +5294,28 @@ dump_cmd (struct command *r, struct command *parent)
 	  if (A4GL_is_just_int_literal (r->cmd_data.command_data_u.fetch_cmd.fetch->fp->fetch_expr, 1))
 	    {
 	      printc ("FETCH FIRST ");
-	      print_ident (r->cmd_data.command_data_u.fetch_cmd.fetch->cname);
+	      print_ident (r->cmd_data.command_data_u.fetch_cmd.fetch->cursorname);
 	      break;
 
 	    }
 	  if (A4GL_is_just_int_literal (r->cmd_data.command_data_u.fetch_cmd.fetch->fp->fetch_expr, -1))
 	    {
 	      printc ("FETCH LAST ");
-	      print_ident (r->cmd_data.command_data_u.fetch_cmd.fetch->cname);
+	      print_ident (r->cmd_data.command_data_u.fetch_cmd.fetch->cursorname);
 	      break;
 	    }
 
 	  if (A4GL_is_just_int_literal (r->cmd_data.command_data_u.fetch_cmd.fetch->fp->fetch_expr, 0))
 	    {
 	      printc ("FETCH CURRENT ");
-	      print_ident (r->cmd_data.command_data_u.fetch_cmd.fetch->cname);
+	      print_ident (r->cmd_data.command_data_u.fetch_cmd.fetch->cursorname);
 	      break;
 	    }
 
 	  printc ("FETCH ABSOLUTE ");
 	  real_print_expr (r->cmd_data.command_data_u.fetch_cmd.fetch->fp->fetch_expr);
 	  printc (" ");
-	  print_ident (r->cmd_data.command_data_u.fetch_cmd.fetch->cname);
+	  print_ident (r->cmd_data.command_data_u.fetch_cmd.fetch->cursorname);
 	  break;
 
 	}

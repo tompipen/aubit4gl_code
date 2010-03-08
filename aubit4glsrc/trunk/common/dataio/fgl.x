@@ -1,4 +1,4 @@
-/* $Id: fgl.x,v 1.53 2010-03-04 09:34:15 mikeaubury Exp $ */
+/* $Id: fgl.x,v 1.54 2010-03-08 09:43:15 mikeaubury Exp $ */
 typedef string str<>;
 typedef string sql_ident<>;
 
@@ -778,7 +778,7 @@ struct s_fetch_place {
 };
 
 struct s_fetch {
-        struct expr_str *cname;
+        struct expr_str *cursorname;
         struct s_fetch_place *fp;
 };
 
@@ -1892,7 +1892,7 @@ struct s_spl_block {
 
 
 struct s_expr_function_call {
-        str fname;
+        str functionname;
 	str n_namespace;
         struct expr_str_list *parameters;
         str module;
@@ -1900,7 +1900,7 @@ struct s_expr_function_call {
 };
 
 struct s_expr_pdf_function_call {
-        str fname;
+        str functionname;
 	str n_namespace;
         struct expr_str_list *parameters;
         str module;
@@ -1909,7 +1909,7 @@ struct s_expr_pdf_function_call {
 
 struct s_expr_shared_function_call {
         str lib;
-        str fname;
+        str functionname;
 	str n_namespace;
         struct expr_str_list *parameters;
         str module;
@@ -2038,7 +2038,7 @@ struct s_expr_cast {
 struct s_expr_bound_fcall {
         str lib;
 	str n_namespace;
-        str fname;
+        str functionname;
         str module;
         int line;
 	struct expr_str_list *values;
@@ -2884,12 +2884,12 @@ struct s_select_list_item_agg_expr {
                         struct s_select_list_item *expr;
 };
 struct s_select_list_item_builtin_fcall {
-                        char fname[128];
+                        char functionname[128];
                         struct s_select_list_item_list *params;
 };
 
 struct s_select_list_item_fcall {
-                        char fname[128];
+                        char functionname[128];
                         struct s_select_list_item_list *params;
 };
 

@@ -568,11 +568,11 @@ fix_compare (char *module, int lineno, char *op, struct expr_str *s)
 
       if (le->expr_type == ET_EXPR_FCALL)
 	{
-	  len = le->expr_str_u.expr_function_call->fname;
+	  len = le->expr_str_u.expr_function_call->functionname;
 	}
       if (re->expr_type == ET_EXPR_FCALL)
 	{
-	  ren = re->expr_str_u.expr_function_call->fname;
+	  ren = re->expr_str_u.expr_function_call->functionname;
 	}
       if (len)
 	{
@@ -1082,7 +1082,7 @@ expr_datatype (char *module, int lineno, struct expr_str *p)
     case ET_EXPR_FCALL:
       yylineno = p->expr_str_u.expr_function_call->line;
 
-      return find_function_single_rtype (p->expr_str_u.expr_function_call->fname);
+      return find_function_single_rtype (p->expr_str_u.expr_function_call->functionname);
 
     case ET_EXPR_OP_MOD:
       return DTYPE_INT;

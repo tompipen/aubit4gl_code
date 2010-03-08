@@ -1399,7 +1399,7 @@ check_linearised_commands (char *module_name, s_commands * func_cmds)
 		  if (ptr->expr_type == ET_EXPR_FCALL)
 		    {
 		      if (strcmp
-			  (ptr->expr_str_u.expr_function_call->fname,
+			  (ptr->expr_str_u.expr_function_call->functionname,
 			   "set_count") == 0)
 			{
 			  found_setcount = 1;
@@ -1767,7 +1767,7 @@ check_linearised_commands (char *module_name, s_commands * func_cmds)
 
 	  if (fcall->expr_type == ET_EXPR_FCALL)
 	    {
-	      funcname = fcall->expr_str_u.expr_function_call->fname;
+	      funcname = fcall->expr_str_u.expr_function_call->functionname;
 	    }
 	  else
 	    {
@@ -1776,7 +1776,7 @@ check_linearised_commands (char *module_name, s_commands * func_cmds)
 
 	  if (fcall->expr_type == ET_EXPR_FCALL)
 	    {
-	      b = find_function (fcall->expr_str_u.expr_function_call->fname);
+	      b = find_function (fcall->expr_str_u.expr_function_call->functionname);
 	    }
 
 
@@ -1792,14 +1792,14 @@ check_linearised_commands (char *module_name, s_commands * func_cmds)
 	      if (fcall->expr_type == ET_EXPR_FCALL)
 		{
 		  if (!system_function
-		      (fcall->expr_str_u.expr_function_call->fname)
+		      (fcall->expr_str_u.expr_function_call->functionname)
 		      && is_bolton_function (fcall->expr_str_u.
-					     expr_function_call->fname) == -1)
+					     expr_function_call->functionname) == -1)
 		    {
 		      char buff[200];
 		      sprintf (buff,
 			       "Function %s was called but is not defined",
-			       fcall->expr_str_u.expr_function_call->fname);
+			       fcall->expr_str_u.expr_function_call->functionname);
 		      //A4GL_lint (module_name, r->lineno, "FUNCNOTDEF", "Function was called but is not defined", fcall->expr_str_u.expr_function_call->fname);
 		      log_proto (fcall,
 				 r->cmd_data.command_data_u.call_cmd.
@@ -4223,28 +4223,28 @@ scan_functions (char *infuncname, int calltree_entry, int *calltree,
 
       if (e->expr_type == ET_EXPR_FCALL)
 	{
-	  b = find_function (e->expr_str_u.expr_function_call->fname);
+	  b = find_function (e->expr_str_u.expr_function_call->functionname);
 	  if (b == -1)
 	    {
-	      if (!system_function (e->expr_str_u.expr_function_call->fname)
+	      if (!system_function (e->expr_str_u.expr_function_call->functionname)
 		  && is_bolton_function (e->expr_str_u.expr_function_call->
-					 fname) == -1)
+					 functionname) == -1)
 		{
 		  yylineno = e->expr_str_u.expr_function_call->line;
 		  A4GL_lint (e->expr_str_u.expr_function_call->module, e->expr_str_u.expr_function_call->line, "FUNCNOTDEF",
 			     "Function was called but is not defined",
-			     e->expr_str_u.expr_function_call->fname);
+			     e->expr_str_u.expr_function_call->functionname);
 		  log_proto (e, 0);
 		  continue;
 		}
 
-	      if (is_bolton_function (e->expr_str_u.expr_function_call->fname)
+	      if (is_bolton_function (e->expr_str_u.expr_function_call->functionname)
 		  != -1)
 		{
 		  int bolton_function;
 		  bolton_function =
 		    is_bolton_function (e->expr_str_u.expr_function_call->
-					fname);
+					functionname);
 
 		  // Its a bolton function...
 		  if (e->expr_str_u.expr_function_call->parameters)
@@ -4268,7 +4268,7 @@ scan_functions (char *infuncname, int calltree_entry, int *calltree,
 		      char buff[256];
 		      yylineno = e->expr_str_u.expr_function_call->line;
 		      sprintf (buff, "Function %s expected %d passed %d",
-			       e->expr_str_u.expr_function_call->fname,
+			       e->expr_str_u.expr_function_call->functionname,
 			       get_bolton_nparam (bolton_function), nparam);
 		      A4GL_lint (e->expr_str_u.expr_function_call->module, e->expr_str_u.expr_function_call->line, "FUNCPARMCNT",
 				 "Function called with wrong number of parameters",
@@ -4316,7 +4316,7 @@ scan_functions (char *infuncname, int calltree_entry, int *calltree,
 			      sprintf (buff,
 				       "Function %s expects '%s' got '%s' @ parameter %d",
 				       e->expr_str_u.expr_function_call->
-				       fname, buff1, buff2,
+				       functionname, buff1, buff2,
 				       //etype
 				       ecnt + 1);
 			      if (strlen (smbuff))
@@ -4360,7 +4360,7 @@ scan_functions (char *infuncname, int calltree_entry, int *calltree,
 	      char buff[256];
 	      yylineno = e->expr_str_u.expr_function_call->line;
 	      sprintf (buff, "Function %s expected %d passed %d",
-		       e->expr_str_u.expr_function_call->fname,
+		       e->expr_str_u.expr_function_call->functionname,
 		       fprototypes[b].nparams, nparam);
 	      A4GL_lint (e->expr_str_u.expr_function_call->module, e->expr_str_u.expr_function_call->line, "FUNCPARMCNT",
 			 "Function called with wrong number of parameters",
@@ -4389,7 +4389,7 @@ scan_functions (char *infuncname, int calltree_entry, int *calltree,
 		      int c;
 		      strcpy (smbuff, " ");
 		      strcat (smbuff,
-			      e->expr_str_u.expr_function_call->fname);
+			      e->expr_str_u.expr_function_call->functionname);
 		      strcat (smbuff, "(");
 		      for (c = 0; c < nparam; c++)
 			{
@@ -4403,7 +4403,7 @@ scan_functions (char *infuncname, int calltree_entry, int *calltree,
 #endif
 		      sprintf (buff,
 			       "Function %s expects '%s' got '%s' @ %d parameter",
-			       e->expr_str_u.expr_function_call->fname,
+			       e->expr_str_u.expr_function_call->functionname,
 			       dtype_as_string (fprototypes[b].
 						param_dtypes[ecnt]),
 			       //fprototypes[b].param_dtypes[ecnt], 
@@ -4807,7 +4807,7 @@ isCalledFromOtherModule (module_definition * mod, char *module,
 
 	  if (e->expr_type == ET_EXPR_FCALL)
 	    {
-	      if (strcmp (e->expr_str_u.expr_function_call->fname, function)
+	      if (strcmp (e->expr_str_u.expr_function_call->functionname, function)
 		  == 0)
 		{
 		  char buff1[2000];
@@ -7713,7 +7713,7 @@ log_proto (struct expr_str *fcall, struct expr_str_list *ret)
       struct expr_str_list *l;
       FILE *f;
       f = fopen ("protos.out", "a");
-      fprintf (f, "%s|", fcall->expr_str_u.expr_function_call->fname);
+      fprintf (f, "%s|", fcall->expr_str_u.expr_function_call->functionname);
       l =
 	A4GL_rationalize_list (fcall->expr_str_u.expr_function_call->
 			       parameters);
