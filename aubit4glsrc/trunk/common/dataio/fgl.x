@@ -1,4 +1,4 @@
-/* $Id: fgl.x,v 1.54 2010-03-08 09:43:15 mikeaubury Exp $ */
+/* $Id: fgl.x,v 1.55 2010-03-09 15:34:15 mikeaubury Exp $ */
 typedef string str<>;
 typedef string sql_ident<>;
 
@@ -854,15 +854,16 @@ union report_block_data switch (enum report_blocks rb) {
 
 };
 
-struct s_report_format_section_entry {
+struct report_format_section_entry {
 	report_block_data rb_block;
 	s_commands* rep_sec_commands;
         int lineno;
 	int orderby_var_no;
 };
 
-typedef struct s_report_format_section_entry* report_format_section_entry_ptr;
-struct s_report_format_section {
+typedef struct report_format_section_entry* report_format_section_entry_ptr;
+
+struct report_format_section {
 	report_format_section_entry_ptr entries<>;
         int lines_in_header ;
         int lines_in_first_header ;
@@ -3113,7 +3114,7 @@ struct s_report_definition {
 	struct expr_str_list* parameters;
 	startrep *report_output_section;
 	s_report_orderby_section *report_orderby_section;
-	s_report_format_section *report_format_section;
+	report_format_section *reportFormatSection;
 	struct expr_str_list aggregates;
 	str module;
 	int lineno;
@@ -3135,7 +3136,7 @@ struct s_pdf_report_definition {
 	struct expr_str_list* parameters;
 	pdf_startrep *report_output_section;
 	s_report_orderby_section *report_orderby_section;
-	s_report_format_section *report_format_section;
+	report_format_section *reportFormatSection;
 	struct expr_str_list aggregates;
 	str module;
 	int lineno;

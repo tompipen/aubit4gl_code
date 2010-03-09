@@ -125,7 +125,7 @@ linearise_commands (struct s_commands *master_list, struct s_commands *cmds)
 
 
 struct s_commands *
-linearise_report (struct s_commands *all_cmds, s_report_format_section * report_format_section)
+linearise_report (struct s_commands *all_cmds, report_format_section * report_format_section)
 {
   int b;
   if (all_cmds == 0)
@@ -159,12 +159,12 @@ linearise_module (struct s_commands *all_cmds, module_definition * d)
 
 	case E_MET_REPORT_DEFINITION:
 	  linearise_report (all_cmds,
-			    d->module_entries.module_entries_val[a]->module_entry_u.report_definition.report_format_section);
+			    d->module_entries.module_entries_val[a]->module_entry_u.report_definition.reportFormatSection);
 	  break;
 
 	case E_MET_PDF_REPORT_DEFINITION:
 	  linearise_report (all_cmds,
-			    d->module_entries.module_entries_val[a]->module_entry_u.pdf_report_definition.report_format_section);
+			    d->module_entries.module_entries_val[a]->module_entry_u.pdf_report_definition.reportFormatSection);
 	  break;
 
 	  // We dont need to worry about these commands....

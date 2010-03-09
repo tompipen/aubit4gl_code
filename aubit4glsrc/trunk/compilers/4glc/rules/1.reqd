@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: 1.reqd,v 1.99 2010-02-12 14:39:40 mikeaubury Exp $
+# $Id: 1.reqd,v 1.100 2010-03-09 15:34:24 mikeaubury Exp $
 #
 */
 
@@ -353,8 +353,8 @@ extern struct s_report_orderby_section *current_orderby;
 	on_events *on_events;
 	struct when *when;
 	struct whens *whens;
-	struct s_report_format_section_entry *report_format_section_entry;
-	struct s_report_format_section *report_format_section;
+	struct report_format_section_entry *report_format_section_entry;
+	struct report_format_section *report_format_section;
 	struct s_report_orderby_section *report_orderby_section;
 	struct cons_list *cons_list;
 	struct cons_list_entry *cons_list_entry;

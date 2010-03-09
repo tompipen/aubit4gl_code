@@ -2162,10 +2162,10 @@ struct command *c;
 }
 
 
-struct s_report_format_section_entry* new_report_format_section_entry(report_blocks rb, void *variable, s_commands* cmds, int orderby_var_no,int lineno) {
-	struct s_report_format_section_entry*r;
-	r=malloc(sizeof(struct s_report_format_section_entry));
-	memset(r,0,sizeof(s_report_format_section_entry));
+struct report_format_section_entry* new_report_format_section_entry(report_blocks rb, void *variable, s_commands* cmds, int orderby_var_no,int lineno) {
+	struct report_format_section_entry*r;
+	r=malloc(sizeof(struct report_format_section_entry));
+	memset(r,0,sizeof(report_format_section_entry));
 	r->rb_block.rb=rb;
 	r->orderby_var_no=orderby_var_no;
 	r->lineno=lineno;
@@ -2502,7 +2502,7 @@ struct command *c;
 }
 
 
-struct module_entry *new_pdf_report_definition(char * p_funcname,e_boolean p_isstatic,expr_str_list* p_parameters,pdf_startrep* p_report_output_section,s_report_orderby_section *p_report_orderby_section,s_report_format_section *p_report_format_section,int lineno ,char *doc4glcomment) {
+struct module_entry *new_pdf_report_definition(char * p_funcname,e_boolean p_isstatic,expr_str_list* p_parameters,pdf_startrep* p_report_output_section,s_report_orderby_section *p_report_orderby_section,report_format_section *p_report_format_section,int lineno ,char *doc4glcomment) {
 struct module_entry *c;
    c=new_module_entry(E_MET_PDF_REPORT_DEFINITION);
    c->module_entry_u.pdf_report_definition.funcname=strdup(p_funcname);
@@ -2526,7 +2526,7 @@ struct module_entry *c;
    if (p_report_orderby_section) {
 		expand_variables_in_expr_str_list(p_report_orderby_section->variables,1,1);
    }
-   c->module_entry_u.pdf_report_definition.report_format_section=p_report_format_section;
+   c->module_entry_u.pdf_report_definition.reportFormatSection=p_report_format_section;
    c->module_entry_u.pdf_report_definition.module=A4GL_compiling_module_basename();
    c->module_entry_u.pdf_report_definition.lineno=lineno;
    c->module_entry_u.pdf_report_definition.colno=0;
@@ -2553,7 +2553,7 @@ struct module_entry *c;
 }
 
 
-struct module_entry *new_report_definition(char * p_funcname,e_boolean p_isstatic,expr_str_list* p_parameters,startrep* p_report_output_section,s_report_orderby_section *p_report_orderby_section,s_report_format_section *p_report_format_section,int lineno,char *doc4glcomment) {
+struct module_entry *new_report_definition(char * p_funcname,e_boolean p_isstatic,expr_str_list* p_parameters,startrep* p_report_output_section,s_report_orderby_section *p_report_orderby_section,report_format_section *p_report_format_section,int lineno,char *doc4glcomment) {
 struct module_entry *c;
    c=new_module_entry(E_MET_REPORT_DEFINITION);
    c->module_entry_u.report_definition.funcname=strdup(p_funcname);
@@ -2585,7 +2585,7 @@ struct module_entry *c;
 
    c->module_entry_u.report_definition.report_output_section=p_report_output_section;
    c->module_entry_u.report_definition.report_orderby_section=p_report_orderby_section;
-   c->module_entry_u.report_definition.report_format_section=p_report_format_section;
+   c->module_entry_u.report_definition.reportFormatSection=p_report_format_section;
    c->module_entry_u.report_definition.module=A4GL_compiling_module_basename();
    c->module_entry_u.report_definition.lineno=lineno;
    c->module_entry_u.report_definition.colno=0;

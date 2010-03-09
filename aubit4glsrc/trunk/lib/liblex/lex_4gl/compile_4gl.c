@@ -4454,10 +4454,10 @@ dump_report (struct s_report_definition *report_definition)
   need_daylight ();		//printc ("#");
   printc ("FORMAT");
   tmp_ccnt++;
-  for (a = 0; a < report_definition->report_format_section->entries.entries_len; a++)
+  for (a = 0; a < report_definition->reportFormatSection->entries.entries_len; a++)
     {
-      s_report_format_section_entry *re;
-      re = report_definition->report_format_section->entries.entries_val[a];
+      report_format_section_entry *re;
+      re = report_definition->reportFormatSection->entries.entries_val[a];
       need_daylight ();		//printc ("#");
       switch (re->rb_block.rb)
 	{
@@ -5740,7 +5740,7 @@ print_input_fl_g (int byname, int defs, int helpno, fh_field_list * fldlist_fh, 
       strcpy (input_list, "");
 
 
-	print_list(input_list);
+	print_list(bind);
       for (a = 0; a < bind->list.list_len; a++)
 	{
 	  if (a)
@@ -6902,7 +6902,7 @@ dump_cmd (struct command *r, struct command *parent)
   if (r==NULL && parent==NULL) {
 	last_parent=0;
 	last_command_type=0;
-	return;
+	return 1;
   }
 
   A4GL_assertion (r->module == 0, "No module");

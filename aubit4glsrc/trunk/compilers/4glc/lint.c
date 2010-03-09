@@ -2262,20 +2262,20 @@ check_report (struct module_definition *d, struct s_report_definition *r)
   module_name = r->module;
   check_variables (r->module, d, &r->variables, r->parameters);
 
-  if (r->report_format_section)
+  if (r->reportFormatSection)
     {
-      for (a = 0; a < r->report_format_section->entries.entries_len; a++)
+      for (a = 0; a < r->reportFormatSection->entries.entries_len; a++)
 	{
-	  if (r->report_format_section->entries.entries_val[a]->
+	  if (r->reportFormatSection->entries.entries_val[a]->
 	      rep_sec_commands != NULL)
 	    {
 	      struct s_commands *func_cmds = 0;
-	      check_cmds_for_dead_code (r->report_format_section->entries.
+	      check_cmds_for_dead_code (r->reportFormatSection->entries.
 					entries_val[a]->rep_sec_commands);
 
 	      func_cmds = linearise_commands (0, 0);
 	      linearise_commands (func_cmds,
-				  r->report_format_section->entries.
+				  r->reportFormatSection->entries.
 				  entries_val[a]->rep_sec_commands);
 	      check_linearised_commands (r->module, func_cmds);
 	      check_expressions_cmd (func_cmds);
@@ -2309,20 +2309,20 @@ check_pdf_report (struct module_definition *d,
   module_name = r->module;
   check_variables (r->module, d, &r->variables, r->parameters);
 
-  if (r->report_format_section)
+  if (r->reportFormatSection)
     {
-      for (a = 0; a < r->report_format_section->entries.entries_len; a++)
+      for (a = 0; a < r->reportFormatSection->entries.entries_len; a++)
 	{
-	  if (r->report_format_section->entries.entries_val[a]->
+	  if (r->reportFormatSection->entries.entries_val[a]->
 	      rep_sec_commands != NULL)
 	    {
 	      struct s_commands *func_cmds = 0;
-	      check_cmds_for_dead_code (r->report_format_section->entries.
+	      check_cmds_for_dead_code (r->reportFormatSection->entries.
 					entries_val[a]->rep_sec_commands);
 
 	      func_cmds = linearise_commands (0, 0);
 	      linearise_commands (func_cmds,
-				  r->report_format_section->entries.
+				  r->reportFormatSection->entries.
 				  entries_val[a]->rep_sec_commands);
 	      check_linearised_commands (r->module, func_cmds);
 	      cache_expressions (&r->expression_list, func_cmds);
@@ -2542,7 +2542,7 @@ check_whenever_abuse (module_definition * d)
 	  linearise_report (all_cmds,
 			    d->module_entries.module_entries_val[a]->
 			    module_entry_u.report_definition.
-			    report_format_section);
+			    reportFormatSection);
 
 	  break;
 
@@ -2550,7 +2550,7 @@ check_whenever_abuse (module_definition * d)
 	  linearise_report (all_cmds,
 			    d->module_entries.module_entries_val[a]->
 			    module_entry_u.pdf_report_definition.
-			    report_format_section);
+			    reportFormatSection);
 	  break;
 	case E_MET_FORMHANDLER_DEFINITION:
 	  printf ("Not implemented yet (E_MET_FORMHANDLER_DEFINITION,2) \n");
@@ -3983,7 +3983,7 @@ scan_module_entry (int *calltree, int a)
       rep_commands =
 	linearise_report (0,
 			  m->module_entry_u.pdf_report_definition.
-			  report_format_section);
+			  reportFormatSection);
       scan_functions (m->module_entry_u.report_definition.funcname, a,
 		      calltree,
 		      &m->module_entry_u.report_definition.call_list,
@@ -3995,7 +3995,7 @@ scan_module_entry (int *calltree, int a)
       rep_commands =
 	linearise_report (0,
 			  m->module_entry_u.pdf_report_definition.
-			  report_format_section);
+			  reportFormatSection);
       scan_functions (m->module_entry_u.pdf_report_definition.funcname, a,
 		      calltree,
 		      &m->module_entry_u.pdf_report_definition.call_list,

@@ -7,7 +7,8 @@
 typedef struct command * command_ptr;
 typedef struct expr_str * expr_str_ptr; 
 typedef struct single_option * single_option_ptr;
-typedef struct report_format_section_entry* report_format_section_entry_ptr;
+//typedef struct x_report_format_section_entry* x_report_format_section_entry_ptr;
+typedef struct report_format_section_entry * report_format_section_entry_ptr;
 typedef struct when* when_ptr;
 typedef struct on_event* on_event_ptr;
 typedef struct cons_list_entry* cons_list_entry_ptr;

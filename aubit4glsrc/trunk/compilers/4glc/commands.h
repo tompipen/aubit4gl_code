@@ -134,7 +134,7 @@ struct command *new_prompt_cmd(expr_str_list* p_prompt_str ,struct attrib* p_pro
 struct command *new_menu_cmd(struct expr_str* p_menu_title,struct attrib *p_menu_attrib,struct on_events* p_events,int p_sio ,struct expr_str * menu_attrib_comment,struct expr_str *menu_attrib_style, struct expr_str *menu_attrib_image);
 struct command *new_clear_cmd(e_clear e, void *data ,e_boolean todefaults) ;
 struct command *new_convert_cmd(char * p_repname,struct convert* p_c) ;
-struct s_report_format_section_entry* new_report_format_section_entry(report_blocks rb, void *variable, s_commands* cmds,int orderby_var_no,int lineno);
+struct report_format_section_entry* new_report_format_section_entry(report_blocks rb, void *variable, s_commands* cmds,int orderby_var_no,int lineno);
 struct s_report_orderby_section *new_report_orderby_section(e_report_orderby p_type,expr_str_list* p_variables);
 struct command *new_input_cmd(expr_str_list* p_variables,fh_field_list* p_field_list,struct on_events* p_events,struct attrib *p_attrib,e_boolean p_without_defaults,int p_helpno,int p_sio);
 struct command *new_construct_cmd(e_boolean byname, expr_str* p_constr_var,cons_list* p_columns,fh_field_list* p_list,struct on_events* p_events,struct attrib *p_attrib,e_boolean p_without_defaults,int p_helpno,int p_sio, expr_str *p_callback_function);
@@ -152,8 +152,8 @@ struct module_entry *new_module_code_cmd(struct command *cmd);
 struct module_entry *new_formhandler_definition(char *name, struct str_list *fld_list, on_events *fld_events, on_events *before_events, on_events *after_events );
 
 struct command *new_fetch_cmd(expr_str * p_connid, struct s_fetch* p_fetch,expr_str_list* p_outbind);
-struct module_entry *new_pdf_report_definition(char * p_funcname,e_boolean p_isstatic,expr_str_list* p_parameters,pdf_startrep* p_report_output_section,s_report_orderby_section *p_report_orderby_section,s_report_format_section *p_report_format_section,int lineno ,char* doc4glcomment);
-struct module_entry *new_report_definition(char * p_funcname,e_boolean p_isstatic,expr_str_list* p_parameters,startrep* p_report_output_section,s_report_orderby_section *p_report_orderby_section,s_report_format_section *p_report_format_section,int lineno ,char* doc4glcomment);
+struct module_entry *new_pdf_report_definition(char * p_funcname,e_boolean p_isstatic,expr_str_list* p_parameters,pdf_startrep* p_report_output_section,s_report_orderby_section *p_report_orderby_section,report_format_section *p_report_format_section,int lineno ,char* doc4glcomment);
+struct module_entry *new_report_definition(char * p_funcname,e_boolean p_isstatic,expr_str_list* p_parameters,startrep* p_report_output_section,s_report_orderby_section *p_report_orderby_section,report_format_section *p_report_format_section,int lineno ,char* doc4glcomment);
 int set_cmdlineno(int n) ;
 void add_class_module_entry(void) ;
 void new_class(char *cname, char *pname);

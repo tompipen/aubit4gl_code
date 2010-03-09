@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pack_xml.c,v 1.2 2010-01-11 15:21:31 mikeaubury Exp $
+# $Id: pack_xml.c,v 1.3 2010-03-09 15:34:26 mikeaubury Exp $
 #*/
 
 /**
@@ -46,6 +46,7 @@
 */
 
 #include "fgl.xnew.h"
+#include "a4gl_API_packer_lib.h"
 //#include "a4gl_libaubit4gl.h"
 int A4GL_file_exists(char *fname);
 int A4GL_delete_file(char *fname);

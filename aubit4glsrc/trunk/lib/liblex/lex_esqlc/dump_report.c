@@ -255,7 +255,7 @@ and we have the variable numbers from the before and after groups.
 If we copy the ordbind, then reassemble the ordbind using these - we should be ok again
 */
 
-static void order_by_report_stack (int report_cnt, int rord_type, s_report_format_section *rf, struct s_report_orderby_section *report_orderby_section)
+static void order_by_report_stack (int report_cnt, int rord_type, report_format_section *rf, struct s_report_orderby_section *report_orderby_section)
 {
   //int a;
   static int fiddle = 0;
@@ -296,7 +296,7 @@ static void order_by_report_stack (int report_cnt, int rord_type, s_report_forma
  * Print the C implementation of the current report control block
  */
 static void
-print_report_ctrl (int report_cnt, int rord_type, char *curr_rep_name,int rep_type, s_report_format_section *rf, struct s_report_orderby_section *report_orderby_section, struct expr_str_list *aggregates)
+print_report_ctrl (int report_cnt, int rord_type, char *curr_rep_name,int rep_type, report_format_section *rf, struct s_report_orderby_section *report_orderby_section, struct expr_str_list *aggregates)
 {
   int a;
   int printed_every;
@@ -710,7 +710,7 @@ print_format_every_row (expr_str_list* bind,char *ispdf_str)
 
 
 static void
-print_format_section (s_report_format_section * report_format_section, int report_cnt, int rep_type,expr_str_list *parameters)
+print_format_section (report_format_section * report_format_section, int report_cnt, int rep_type,expr_str_list *parameters)
 {
   int a;
   char *ispdf_str;
@@ -761,7 +761,7 @@ print_format_section (s_report_format_section * report_format_section, int repor
 static int dump_report_generic (char *namespace,char *funcname, int isstatic,int rep_type, 
 expr_str_list *parameters,
 struct variable_list *variables,
-s_report_orderby_section *report_orderby_section, void *report_output_section , s_report_format_section *report_format_section, struct expr_str_list *aggregates
+s_report_orderby_section *report_orderby_section, void *report_output_section , report_format_section *report_format_section, struct expr_str_list *aggregates
 
 ) {
 int a;
@@ -1034,7 +1034,7 @@ parameters=expand_parameters(&report_definition->variables, report_definition->p
 return dump_report_generic (report_definition->n_namespace,report_definition->funcname, report_definition->isstatic==EB_TRUE, REP_TYPE_NORMAL,
 parameters,
  &report_definition->variables,
-report_definition->report_orderby_section, report_definition->report_output_section , report_definition->report_format_section, &report_definition->aggregates
+report_definition->report_orderby_section, report_definition->report_output_section , report_definition->reportFormatSection, &report_definition->aggregates
 
 );
 
@@ -1050,7 +1050,7 @@ return dump_report_generic (
 			report_definition->n_namespace,report_definition->funcname, report_definition->isstatic==EB_TRUE, REP_TYPE_PDF,
 			parameters, &report_definition->variables,
 			report_definition->report_orderby_section, 
-			report_definition->report_output_section , report_definition->report_format_section, &report_definition->aggregates
+			report_definition->report_output_section , report_definition->reportFormatSection, &report_definition->aggregates
 
 );
 

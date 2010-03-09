@@ -17,6 +17,8 @@ int XMLWrite_expr_str_ptr(char *nm, expr_str_ptr p) {
 int XMLWrite_single_option_ptr(char *nm, single_option_ptr p) {
 	return XMLWrite_single_option_std(nm, p);
 }
+
+
 int XMLWrite_report_format_section_entry_ptr(char *nm, report_format_section_entry_ptr p) {
 	return XMLWrite_report_format_section_entry_std(nm, p);
 }

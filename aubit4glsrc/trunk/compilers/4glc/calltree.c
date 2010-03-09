@@ -2395,19 +2395,19 @@ check_program (module_definition * mods, int nmodules)
 	  fprintf (output, "<COMMANDS>\n");
   	  print_whenever (MODE_BUY);
 
-	  for (b = 0; b < r->report_format_section->entries.entries_len; b++)
+	  for (b = 0; b < r->reportFormatSection->entries.entries_len; b++)
 	    {
-	      if (calls_something (r->report_format_section->entries.entries_val[b]->rep_sec_commands))
+	      if (calls_something (r->reportFormatSection->entries.entries_val[b]->rep_sec_commands))
 		{
 		  print_indent ();
 		  fprintf (output, "<SECTION ID=\"%d\" TYPE=\"%s\" LINE=\"%d\">\n", b,
-			   decode_rb (r->report_format_section->entries.entries_val[b]->rb_block.rb),
-			   r->report_format_section->entries.entries_val[b]->lineno);
+			   decode_rb (r->reportFormatSection->entries.entries_val[b]->rb_block.rb),
+			   r->reportFormatSection->entries.entries_val[b]->lineno);
 		  indent++;
 		  print_indent ();
 		  fprintf (output, "<COMMANDS >\n");
 		  indent++;
-		  add_calltree_calls ("", r->report_format_section->entries.entries_val[b]->rep_sec_commands, MODE_BUY);
+		  add_calltree_calls ("", r->reportFormatSection->entries.entries_val[b]->rep_sec_commands, MODE_BUY);
 		  indent--;
 		  print_indent ();
 		  fprintf (output, "</COMMANDS>\n");
