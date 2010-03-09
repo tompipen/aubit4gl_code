@@ -27,6 +27,7 @@ opt_semi:
 
 define_set :
 		DEFINE def_part opt_semi {
+			remap_top_variables_in_list($2);
 			$$=$2;
 		}
 		| DEFINE_NEW_TYPE var_def_name  KW_AS dtype  opt_semi {

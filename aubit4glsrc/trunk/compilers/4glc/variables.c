@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: variables.c,v 1.116 2010-02-16 13:15:23 mikeaubury Exp $
+# $Id: variables.c,v 1.117 2010-03-09 21:40:24 mikeaubury Exp $
 #
 */
 
@@ -55,6 +55,7 @@
 
 extern int token_read_on_line;
 extern char *outputfilename;
+extern int yylineno;
 //#define PRINT_CONSTANTS
 //char scopes[200];
 //int scopes_cnt = 0;
@@ -714,12 +715,38 @@ get_last_class_var (void)
 
 
 
- char *remap_top_level_variables(char *invarname) {
+char *remap_top_level_variables(char *invarname) {
+
 	if (strcmp(invarname,"index")==0) {
 		return "a4gl_index";
 	}
 
 	return 0;
+}
+
+
+
+
+void remap_top_variables_in_list(struct variable_list *vlist) {
+ int a;
+
+ if (vlist==NULL) return;
+
+ for (a=0;a<vlist->variables.variables_len;a++) {
+	char *ptr;
+	ptr= remap_top_level_variables(vlist->variables.variables_val[a]->names.names.names_val[0].name);
+	if (ptr) {
+			char buf[2000];
+			int old_yylineno;
+				old_yylineno=yylineno;
+	                     sprintf(buf,"Remapped variable '%s' to be '%s' to avoid possible conflicts", vlist->variables.variables_val[a]->names.names.names_val[0].name,ptr);
+				// Need to fake the yylineno to point to our variable declaration...
+				yylineno=vlist->variables.variables_val[a]->lineno;
+                             A4GL_warn(buf);
+				yylineno=old_yylineno;
+			vlist->variables.variables_val[a]->names.names.names_val[0].name=ptr;
+	}
+ }
 }
 
 

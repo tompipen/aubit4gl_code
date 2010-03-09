@@ -25,7 +25,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: variables_new.c,v 1.25 2010-02-16 13:15:23 mikeaubury Exp $
+# $Id: variables_new.c,v 1.26 2010-03-09 21:40:26 mikeaubury Exp $
 #
 */
 
@@ -629,6 +629,7 @@ void set_variable_name(struct variable *v, char *name) {
                	v->names.names.names_val=malloc(sizeof(vname));
 
 		/* Do we need to remap a variable name (maybe its a common builtin name */
+	/*
 		mapped_name=remap_top_level_variables(name);
 		if (mapped_name) {
 			char buf[2000];
@@ -636,6 +637,7 @@ void set_variable_name(struct variable *v, char *name) {
 				A4GL_warn(buf);
 				name=mapped_name;
 		}
+	*/
                	v->names.names.names_val[0].name=strdup(name);
                	v->names.names.names_val[0].alias="";
 		if (

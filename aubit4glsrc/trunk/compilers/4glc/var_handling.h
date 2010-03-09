@@ -35,6 +35,7 @@ char *variable_usage_as_string(struct variable_usage *var,int ident);
 //struct num_list *new_num_list_item(char *s);
 //struct num_list *append_num_list(struct num_list *list, struct num_list *next) ;
 struct variable_usage *append_variable_usage (struct variable_usage *old, struct variable_usage *new_usg);
+void remap_top_variables_in_list(struct variable_list *vlist);
 //struct num_list *append_num_list_items(struct num_list *list, struct num_list *next);
 
 
