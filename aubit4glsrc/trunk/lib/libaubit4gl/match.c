@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: match.c,v 1.24 2010-02-16 13:16:31 mikeaubury Exp $
+# $Id: match.c,v 1.25 2010-03-09 07:54:00 mikeaubury Exp $
 #*/
 
 /**
@@ -306,11 +306,10 @@ A4GL_matche (register char *p, register char *t, char multi, char single, char b
   BOOLEAN loop;			/* should I terminate? */
   //char this_char;
 
-
   C_STAR = multi;
   C_QUERY = single;
   C_BRACE = brace;
-
+  char *p_orig;
 
 #ifdef DEBUG
   A4GL_debug ("In matche...");
@@ -356,11 +355,23 @@ A4GL_matche (register char *p, register char *t, char multi, char single, char b
 		  /* check if this is a member A4GL_match or exclusion A4GL_match */
 
 		  invert = FALSE;
+		if (A4GL_isyes(acl_getenv("ALLOWPLINGMATCHESINVERT"))) {
+		// Allow a '!' or a '^' to invert the search..
 		  if (*p == '!' || *p == '^')
 		    {
+			
 		      invert = TRUE;
 		      p++;
 		    }
+		} else {
+			// Only allow '^' to invert the search..
+		  if (*p == '^')
+		    {
+			
+		      invert = TRUE;
+		      p++;
+		    }
+		}
 #ifdef DEBUG
 		  A4GL_debug ("A1");
 #endif
