@@ -24,10 +24,10 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.165 2010-03-04 12:36:01 mikeaubury Exp $
+# $Id: iarray.c,v 1.166 2010-03-10 18:56:38 mikeaubury Exp $
 #*/
 #ifndef lint
-static char const module_id[] = "$Id: iarray.c,v 1.165 2010-03-04 12:36:01 mikeaubury Exp $";
+static char const module_id[] = "$Id: iarray.c,v 1.166 2010-03-10 18:56:38 mikeaubury Exp $";
 #endif
 
 /**
@@ -690,6 +690,11 @@ pop_iarr_var (struct s_form_dets *form, int x_col, int y_row, int elem, struct B
     {
       struct struct_scr_field *fprop;
       fprop = (struct struct_scr_field *) (field_userptr (form->currentfield));
+
+
+	  //A4GL_fprop_flag_clear (arr->currentfield, FLAG_MOVED_IN_FIELD);
+
+
       A4GL_error_nobox (acl_getenv ("FIELD_ERROR_MSG"), 0);
       if (fprop)
 	A4GL_comments (fprop);
@@ -2993,6 +2998,8 @@ process_control_stack_internal (struct s_inp_arr *arr)
 #ifdef DEBUG
 		  A4GL_debug ("Extent check1 %d for currentfield=%p zz9pa", fprop->flags, arr->currentfield);
 #endif
+
+//A4GL_pause_execution();
 
 		  if ((A4GL_fprop_flag_get (arr->currentfield, FLAG_MOVED_IN_FIELD)) == 0)
 		    {

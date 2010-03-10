@@ -24,10 +24,10 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.238 2010-03-04 12:36:01 mikeaubury Exp $
+# $Id: ioform.c,v 1.239 2010-03-10 18:56:46 mikeaubury Exp $
 #*/
 #ifndef lint
-static char const module_id[] = "$Id: ioform.c,v 1.238 2010-03-04 12:36:01 mikeaubury Exp $";
+static char const module_id[] = "$Id: ioform.c,v 1.239 2010-03-10 18:56:46 mikeaubury Exp $";
 #endif
 
 /**
@@ -4283,6 +4283,7 @@ A4GL_copy_field_data (struct s_form_dets *form, int var_dtype)
 			  {
 			    if (A4GL_isyes (acl_getenv ("FIRSTCOL_ONERR")))
 			      {
+				A4GL_fprop_flag_clear (form->currentfield, FLAG_MOVED_IN_FIELD);
 				A4GL_int_form_driver (mform, REQ_BEG_FIELD);
 			      }
 
@@ -5047,6 +5048,7 @@ A4GL_form_field_chk_iarr (struct s_inp_arr *sio, int m)
 			  {
 			    if (A4GL_isyes (acl_getenv ("FIRSTCOL_ONERR")))
 			      {
+				A4GL_fprop_flag_clear (sio->currform->currentfield, FLAG_MOVED_IN_FIELD);
 				A4GL_int_form_driver (mform, REQ_BEG_FIELD);
 			      }
 
