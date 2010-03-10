@@ -50,7 +50,7 @@ arr_expr_e :
 						a=2;
 					}
 				}
-  					if (a!=DTYPE_INT&&a!=DTYPE_SMINT && a!=DTYPE_SERIAL) {
+  					if (a!=DTYPE_INT&&a!=DTYPE_SMINT && a!=DTYPE_SERIAL && a!=90) {
     						a4gl_yyerror("Only INTEGER/SMALLINT variables may be used as subscripts");
     						YYERROR;
     						/* error processing */;

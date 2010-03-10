@@ -1169,11 +1169,21 @@ call channel::write("make"," ")
 
 
 if lv_buildstr != " " then
-	call channel::write("make","prerequisits: $(BUILDDIR)")
+	call channel::write("make","prerequisits: $(BUILDDIR) commonlibs")
 	call channel::write("make","	@if [ ! -d $(BUILDDIR) ] ; then mkdir $(BUILDDIR); chmod 777 $(BUILDDIR); fi")
 else
-	call channel::write("make","prerequisits: ")
+	call channel::write("make","prerequisits: commonlibs")
 end if
+
+if fgl_getenv("VMAKE")!= " " then
+	call channel::write("make","commonlibs: ")
+	call channel::write("make","	make -j1 -C $(V4GL)/dll make_common")
+else
+	call channel::write("make","commonlibs:")
+end if
+
+   
+
 
 # And the second time through
 foreach c_get_modules into lv_type,lv_name,lv_flags
