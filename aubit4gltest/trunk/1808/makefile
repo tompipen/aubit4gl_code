@@ -22,7 +22,7 @@ run: compile ; 	${DEFAULT_DIFF}
 ##                  Test desctiptions
 ## ======================================================================
 
-desc: ; @echo "Agregate function in reports, where clause using varoiables"
+desc: ; @echo "Agregate function in reports, where clause using varoiables MID 1366"
 
 db_test: 				; @echo "0"
 ec_test: 				; @echo "0"
