@@ -11,7 +11,7 @@ int set_ignore_indicators(void);
 struct command * cmd_display_by_name (expr_str_list *l, attrib *attr);
 struct command *print_linked_cmd(int type, struct expr_str *var);
 struct command *set_whenever_from_store_cmd(void);
-struct expr_str *add_report_agg(char t, struct expr_str *s1, struct expr_str *s2, int a, long *n);
+struct expr_str *add_report_agg(char t, struct expr_str *s1, struct expr_str *s2, int a, long *n,int yylineno);
 struct on_events *append_event_list(struct on_events *evtlist, struct on_event *evt);
 struct on_events *new_event_list(on_event *evt);
 void *get_def_mn_file(void);

@@ -11,6 +11,7 @@ extern int nblock_no;
 extern struct s_report_stack report_stack[REPORTSTACKSIZE];
 
 extern int report_stack_cnt;
+extern int yylineno;
 
 extern int lines_printed;
 extern int use_group;
@@ -427,7 +428,7 @@ push_report_block (char *why, char whytype,char *var)
  * @return
  */
 struct expr_str *
-add_report_agg (char t, struct expr_str *s1, struct expr_str *s2, int a, long *n)
+add_report_agg (char t, struct expr_str *s1, struct expr_str *s2, int a, long *n,int p_yylineno)
 {
   //int rval=0;
   struct expr_str *x;
@@ -457,6 +458,17 @@ add_report_agg (char t, struct expr_str *s1, struct expr_str *s2, int a, long *n
 #endif
       sreports[sreports_cnt].rep_where_expr = s2;
     }
+
+  if (isin_command("FOR") || isin_command("FOREACH") | isin_command("WHILE")) {
+		if (s2 && t!='P') {
+				int old_yylineno;
+				old_yylineno=yylineno;
+				yylineno=p_yylineno;
+			//A4GL_pause_execution();
+			A4GL_warn("Use of a report aggregate in a loop may produce unexpected results");
+				yylineno=old_yylineno;
+		}
+  }
 
 
   sreports[sreports_cnt].rep_cond_expr = s1;

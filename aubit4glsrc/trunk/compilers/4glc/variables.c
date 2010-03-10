@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: variables.c,v 1.117 2010-03-09 21:40:24 mikeaubury Exp $
+# $Id: variables.c,v 1.118 2010-03-10 13:45:08 mikeaubury Exp $
 #
 */
 
@@ -719,6 +719,7 @@ char *remap_top_level_variables(char *invarname) {
 
 	if (strcmp(invarname,"index")==0) {
 		return "a4gl_index";
+	
 	}
 
 	return 0;
