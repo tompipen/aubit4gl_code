@@ -155,7 +155,7 @@ void Context::addField(QWidget *field)
                case Fgl::CONSTRUCT:
                   if(LineEdit *lineEdit = qobject_cast<LineEdit *> (field)){
                      lineEdit->setMaxLength(32767);
-                     lineEdit->setValidator(NULL);
+                     //lineEdit->setValidator(NULL);
                      lineEdit->setInputMask(NULL);
                   }
 
