@@ -1,0 +1,14 @@
+Name: libMSG_NATIVE (OBSOLETE)
+Parent: aubit4glsrc
+Description: interfaces to message files
+Functionality: help file reader/writer
+Build:
+Example:
+Depends: None
+Documentation:
+Regressed:
+Maintainer: MA
+Status: 4
+Todo:
+Notes: This has been superceeded by libHELP_...
+

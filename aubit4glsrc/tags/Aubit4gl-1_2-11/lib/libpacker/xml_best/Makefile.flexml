@@ -1,0 +1,18 @@
+FLEXML=flexml -v
+
+
+
+module_def.c : module_def.act  module_def.dtd
+	$(FLEXML) -D -a $^
+	cp module_def.c pregen
+	cp module_def.h pregen
+
+module_def.l module_def.h : module_def.dtd
+	flexml -L module_def.dtd -i pack_xml.h
+	cp module_def.h module_def.l pregen
+
+
+lex.yy.c: module_def.l
+	${AUBITDIR}/compilers/4glc/xml/extflex/bin/flex  -Cem -I -s module_def.l
+	cp lex.yy.c pregen
+

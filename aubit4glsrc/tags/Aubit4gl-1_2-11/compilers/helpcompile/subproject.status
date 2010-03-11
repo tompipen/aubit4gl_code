@@ -1,0 +1,28 @@
+Name: amkmessage
+Parent: aubit4glsrc
+Description: Compiles message/help source files in .msg format into compiled .hlp format for use in 4GL programs
+Functionality: Message and help files compiler
+Build: always built by root makefile
+Example: see --help
+Depends: none
+Documentation:
+Regressed:
+Maintainer: MA
+Status: 4
+Todo: Use HTML or XML output for use in GUI programs
+Notes: mkmess is an old variant; amkmessage uses compiled format compatible with Informix .iem
+
+Name: unmkmessage
+Parent: aubit4glsrc
+Description: Decompiles Informix .iem files back to .msg source format
+Functionality: help file decompiler
+Build:
+Example:
+Depends: None
+Documentation:
+Regressed: none
+Maintainer: MA
+Status: 3
+Todo:
+Notes:
+

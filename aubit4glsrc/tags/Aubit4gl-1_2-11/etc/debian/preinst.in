@@ -1,0 +1,44 @@
+#!/bin/sh
+###########################################################################
+#pre-install script for dpkg
+###########################################################################
+# NOTE: pre-x tasks cant be interactive without having to block dpkg
+
+#----------------------- Source common (globals) file
+export FLAGS="$@"
+if test -f ./global; then
+	. ./global
+else
+	echo "ERROR: cannot locate ./global file"
+	exit 1
+fi
+
+#---------------------- Task specific settings
+A4GL_TASK_MSG="Pre-Install"
+A4GL_TASK_LOG="$RPM_A4GL_RPMINSTALL_LOG"
+A4GL_AUBIT_FLAG="--pre-install-rpm --rpm-install-dir=${CURR_A4GL_PREFIX}"
+A4GL_INTERACT_OPTION="--no-interaction  >> $A4GL_TASK_LOG"
+A4GL_INTERACT_MSG="non-interactive program"
+
+#---------------------- Perform task actions
+	#NOTE that ${CURR_A4GL_PREFIX} does not exist at this point
+
+	#---------------------------------
+	# Start task log file
+	$RPM_A4GL_VERBOSE "NOTE: Logging $A4GL_TASK_MSG tasks to $A4GL_TASK_LOG"
+	date > $A4GL_TASK_LOG
+
+	#---------------------------------
+	# Run task
+	$RPM_A4GL_VERBOSE "Running aubit $A4GL_AUBIT_FLAG as $A4GL_INTERACT_MSG ..." >> $A4GL_TASK_LOG
+	
+	#we may want to do tasks in 'aubit --clean-machine' here ??
+	
+	$RPM_A4GL_VERBOSE "$A4GL_TASK_MSG tasks exited"  >> $A4GL_TASK_LOG
+
+	#---------------------------------
+	# Show to user task summary
+	$RPM_A4GL_VERBOSE "$A4GL_TASK_MSG tasks finished, see $A4GL_TASK_LOG for details."
+
+
+####################################### EOF #################################

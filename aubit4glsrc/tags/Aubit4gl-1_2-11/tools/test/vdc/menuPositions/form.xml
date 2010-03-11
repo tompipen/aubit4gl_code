@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Form name="form.afr" sqlDbName="formonly" width="37" height="6" delimiters="[]|">
+<Screen width="36" height="4" >
+<Label text="Name1" posY="1" posX="0" gridWidth="5"/>
+<Label text="Name2" posY="3" posX="0" gridWidth="5"/>
+<FormField name="formonly.t1" colName="t1" fieldId="0" sqlTabName="formonly"  tabIndex="1" >
+  <ButtonEdit  action="f9" image="open" width="24"  posY="1" posX="12" gridWidth="24"/>
+</FormField>
+<FormField name="formonly.t2" colName="t2" fieldId="1" sqlTabName="formonly"  tabIndex="2" >
+  <Edit width="24"   posY="3" posX="12" gridWidth="24"/>
+</FormField>
+</Screen>
+<RecordView tabName="formonly">
+   <Link colName="t1" fieldIdRef="0"/>
+   <Link colName="t2" fieldIdRef="1"/>
+</RecordView>
+</Form>
