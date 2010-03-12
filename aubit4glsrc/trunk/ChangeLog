@@ -1,4 +1,90 @@
 ---------------------------
+Fri Mar 12 10:13:53 GMT 2010
+---------------------------
+1.2_11 Released
+---------------------------
+	2010-03-11 10:32  mikeaubury
+	
+	2010-03-10 18:56  mikeaubury
+	
+	2010-03-10 13:46  mikeaubury
+	
+	2010-03-10 13:45  mikeaubury
+	
+	Add a warning for MID 1366: Report: Agregate function, where
+	clause: comparing against variable not working
+	
+	2010-03-10 12:24  mikeaubury
+	
+	2010-03-09 21:40  mikeaubury
+	
+	2010-03-09 18:20  mikeaubury
+	
+	2010-03-09 15:50  mikeaubury
+	
+	2010-03-09 15:34  mikeaubury
+	
+	2010-03-09 07:54  mikeaubury
+	
+	Change MATCHES to check "ALLOWPLINGMATCHESINVERT" before allowing a
+	'!' to invert the search on a '[...]' section
+	
+	2010-03-08 09:43  mikeaubury
+	
+	Renamed a couple of internal structure elements (cname ->
+	cursorname, fname -> functionname)
+	
+	2010-03-07 11:59  mikeaubury
+	
+	2010-03-05 20:25  mikeaubury
+	
+	2010-03-05 15:13  mikeaubury
+	
+	2010-03-05 15:06  mikeaubury
+	
+	2010-03-04 12:35  mikeaubury
+	
+	Fix for build test 1733 - problem with a DISPLAY in an INPUT ARRAY
+	not detecting the line as changed
+	
+	2010-03-04 12:31  mikeaubury
+	
+	Fix for build test 1733 - problem with a DISPLAY in an INPUT ARRAY
+	not detecting the line as changed
+	
+	2010-03-04 09:34  mikeaubury
+	
+	2010-03-02 20:11  mikeaubury
+	
+	2010-03-02 19:59  mikeaubury
+	
+	2010-03-02 19:21  mikeaubury
+	
+	2010-03-02 18:49  mikeaubury
+	
+	2010-03-02 18:33  mikeaubury
+	
+	2010-03-02 15:31  mikeaubury
+	
+	2010-03-02 15:23  mikeaubury
+	
+	2010-03-02 14:50  mikeaubury
+	
+	2010-03-02 14:46  mikeaubury
+	
+	2010-03-02 14:44  mikeaubury
+	
+	Add calltree_load target for a4gl built makefiles
+	
+	2010-03-02 14:28  mikeaubury
+	
+	2010-03-01 15:01  mikeaubury
+	
+	2010-03-01 14:29  mikeaubury
+	
+	2010-03-01 11:58  mikeaubury
+	
+---------------------------
 Mon Mar  1 11:56:58 GMT 2010
 ---------------------------
 1.2_10 Released

@@ -1724,7 +1724,7 @@ local_get_expr_as_string (struct expr_str *ptr)
       break;
 
     case ET_EXPR_TODAY:
-      A4GL_warn ("Coding Standards: Use of builtin TODAY variable");
+      //A4GL_warn ("Coding Standards: Use of builtin TODAY variable");
       return acl_strdup ("TODAY");
       break;
 
@@ -2004,7 +2004,7 @@ local_get_expr_as_string (struct expr_str *ptr)
       break;
 
     case ET_EXPR_OP_OR:
-      sprintf (buff, "%s OR %s",
+      sprintf (buff, "%s OR %s\n",
 	       local_get_expr_as_string (ptr->expr_str_u.expr_op->left), local_get_expr_as_string (ptr->expr_str_u.expr_op->right));
       return acl_strdup (buff);
       break;
@@ -7581,13 +7581,13 @@ case EBC_SPL_FOREACH:
 	{
 	  if (current_entry == 0)
 	    {
-	      A4GL_warn ("Coding Standards: EXIT PROGRAM must not be used directly - use CALL exit_prog instead");
+	      //A4GL_warn ("Coding Standards: EXIT PROGRAM must not be used directly - use CALL exit_prog instead");
 	    }
 	  else
 	    {
 	      if (strcmp (get_currfuncname (), "exit_prog") != 0)
 		{
-		  A4GL_warn ("Coding Standards: EXIT PROGRAM must not be used directly - use CALL exit_prog instead");
+		  //A4GL_warn ("Coding Standards: EXIT PROGRAM must not be used directly - use CALL exit_prog instead");
 		}
 	    }
 
@@ -7616,19 +7616,19 @@ case EBC_SPL_FOREACH:
 	{
 	  if (parent != 0)
 	    {
-	      A4GL_warn ("Coding Standards: EXIT PROGRAM must only be in main");
+	      //A4GL_warn ("Coding Standards: EXIT PROGRAM must only be in main");
 	    }
 	  else
 	    {
 	      if (current_entry == 0)
 		{
-		  A4GL_warn ("Coding Standards: EXIT PROGRAM must only be in main");
+		  //A4GL_warn ("Coding Standards: EXIT PROGRAM must only be in main");
 		}
 	      else
 		{
 		  if (strcmp (get_currfuncname (), "MAIN") != 0)
 		    {
-		      A4GL_warn ("Coding Standards: EXIT PROGRAM must only be in main");
+		      //A4GL_warn ("Coding Standards: EXIT PROGRAM must only be in main");
 		    }
 		}
 	    }

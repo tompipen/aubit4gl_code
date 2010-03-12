@@ -601,7 +601,7 @@ typedef union YYSTYPE
 {
 
 /* Line 1676 of yacc.c  */
-#line 143 "sql.yacc"
+#line 144 "sql.yacc"
 
         char    str[8192];
    char *sql_string;

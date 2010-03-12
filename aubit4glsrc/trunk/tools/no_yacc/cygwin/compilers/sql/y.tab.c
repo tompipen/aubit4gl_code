@@ -99,12 +99,10 @@ int sqlparse_yylex(int yystate);
 #define SQL_SET_ISOLATION_COMMITTED_READ 7
 
 
-void add_sql_function(char *s);
 #define A4GL_add_feature sqlc_A4GL_add_feature
 #define A4GL_cursor_current sqlc_A4GL_cursor_current
 #define A4GL_warn sqlc_A4GL_warn
 #define add_feature sqlc_A4GL_add_feature
-#define add_sql_function sqlc_add_sql_function
 #define add_sql_function sqlc_add_sql_function
 #define expand_slil sqlc_expand_slil
 #define expand_slil sqlc_expand_slil
@@ -121,6 +119,9 @@ void add_sql_function(char *s);
 #define A4GL_db_used sqlc_A4GL_db_used
 #define map_delete_update sqlc_map_delete_update
 
+void add_sql_function(char *s);
+void map_select_stmt (char *main_statement_type, struct s_select *select);
+void map_create_temp(char *tab, char *src);
 
 void A4GL_add_feature (char *feature);
 
@@ -219,7 +220,7 @@ int db_used=0;
 
 
 /* Line 189 of yacc.c  */
-#line 223 "y.tab.c"
+#line 224 "y.tab.c"
 
 /* Enabling traces.  */
 #ifndef YYDEBUG
@@ -808,7 +809,7 @@ typedef union YYSTYPE
 {
 
 /* Line 214 of yacc.c  */
-#line 143 "sql.yacc"
+#line 144 "sql.yacc"
 
         char    str[8192];
    char *sql_string;
@@ -834,7 +835,7 @@ typedef union YYSTYPE
 
 
 /* Line 214 of yacc.c  */
-#line 838 "y.tab.c"
+#line 839 "y.tab.c"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
@@ -846,7 +847,7 @@ typedef union YYSTYPE
 
 
 /* Line 264 of yacc.c  */
-#line 850 "y.tab.c"
+#line 851 "y.tab.c"
 
 #ifdef short
 # undef short
@@ -1583,69 +1584,69 @@ static const yytype_int16 yyrhs[] =
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
 static const yytype_uint16 yyrline[] =
 {
-       0,   451,   451,   477,   480,   497,   502,   505,   522,   528,
-     537,   546,   555,   562,   577,   632,   639,   650,   653,   658,
-     665,   682,   699,   720,   729,   732,   740,   743,   751,   752,
-     759,   762,   770,   773,   777,   783,   784,   788,   798,   812,
-     813,   817,   818,   823,   831,   839,   847,   855,   865,   867,
-     867,   870,   871,   875,   882,   889,   896,   905,   909,   916,
-     928,   939,   945,   949,   953,   958,   962,   965,   969,   972,
-     979,   980,   990,   991,   995,   996,  1000,  1009,  1018,  1025,
-    1028,  1034,  1037,  1048,  1052,  1057,  1064,  1067,  1076,  1079,
-    1083,  1087,  1091,  1095,  1099,  1107,  1111,  1119,  1122,  1129,
-    1132,  1139,  1142,  1149,  1150,  1155,  1159,  1162,  1168,  1171,
-    1177,  1184,  1185,  1189,  1197,  1201,  1208,  1210,  1215,  1216,
-    1220,  1222,  1228,  1229,  1232,  1243,  1249,  1249,  1258,  1258,
-    1267,  1292,  1295,  1303,  1306,  1313,  1316,  1324,  1325,  1331,
-    1332,  1340,  1358,  1362,  1367,  1368,  1378,  1387,  1391,  1395,
-    1400,  1404,  1408,  1411,  1418,  1419,  1420,  1424,  1425,  1426,
-    1427,  1428,  1429,  1430,  1438,  1439,  1440,  1441,  1446,  1447,
-    1448,  1451,  1452,  1453,  1457,  1458,  1459,  1463,  1464,  1468,
-    1475,  1476,  1477,  1484,  1485,  1488,  1489,  1494,  1495,  1500,
-    1501,  1506,  1507,  1512,  1519,  1520,  1525,  1526,  1530,  1531,
-    1538,  1546,  1553,  1560,  1564,  1565,  1570,  1571,  1577,  1581,
-    1586,  1593,  1594,  1600,  1603,  1606,  1613,  1614,  1615,  1616,
-    1622,  1645,  1646,  1649,  1651,  1658,  1661,  1667,  1675,  1680,
-    1686,  1691,  1697,  1700,  1705,  1713,  1722,  1727,  1731,  1732,
-    1738,  1741,  1752,  1761,  1768,  1774,  1775,  1778,  1783,  1794,
-    1798,  1805,  1806,  1810,  1814,  1818,  1825,  1830,  1838,  1841,
-    1847,  1850,  1855,  1860,  1873,  1876,  1882,  1885,  1891,  1894,
-    1900,  1903,  1910,  1914,  1925,  1925,  1926,  1926,  1927,  1927,
-    1930,  1935,  1940,  1941,  1946,  1955,  1963,  1966,  1969,  1973,
-    1980,  1983,  1987,  1990,  1993,  1996,  2002,  2009,  2012,  2015,
-    2018,  2019,  2024,  2027,  2030,  2033,  2040,  2041,  2042,  2046,
-    2053,  2054,  2055,  2059,  2073,  2080,  2081,  2082,  2086,  2087,
-    2092,  2093,  2102,  2104,  2113,  2116,  2124,  2134,  2142,  2144,
-    2145,  2146,  2147,  2148,  2149,  2150,  2158,  2159,  2160,  2161,
-    2162,  2163,  2164,  2165,  2166,  2167,  2168,  2178,  2179,  2185,
-    2187,  2188,  2189,  2190,  2194,  2198,  2202,  2209,  2210,  2215,
-    2216,  2220,  2228,  2231,  2238,  2241,  2251,  2254,  2257,  2260,
-    2267,  2274,  2282,  2291,  2298,  2302,  2307,  2308,  2309,  2314,
-    2316,  2325,  2325,  2325,  2325,  2325,  2325,  2325,  2326,  2326,
-    2326,  2326,  2326,  2326,  2326,  2326,  2371,  2372,  2373,  2378,
-    2379,  2382,  2383,  2387,  2394,  2405,  2406,  2419,  2420,  2424,
-    2428,  2429,  2432,  2438,  2442,  2465,  2475,  2478,  2484,  2493,
-    2497,  2504,  2505,  2507,  2512,  2518,  2521,  2527,  2528,  2535,
-    2548,  2558,  2565,  2582,  2589,  2614,  2616,  2614,  2638,  2682,
-    2683,  2697,  2700,  2707,  2717,  2729,  2735,  2748,  2763,  2765,
-    2771,  2772,  2773,  2774,  2784,  2787,  2793,  2796,  2801,  2810,
-    2813,  2817,  2824,  2827,  2830,  2833,  2836,  2839,  2840,  2841,
-    2842,  2843,  2844,  2845,  2846,  2847,  2849,  2853,  2857,  2861,
-    2865,  2869,  2873,  2877,  2880,  2883,  2886,  2889,  2892,  2895,
-    2898,  2901,  2905,  2909,  2913,  2921,  2924,  2933,  2939,  2946,
-    2949,  2977,  2980,  2983,  2986,  2992,  2993,  2994,  2995,  2996,
-    2997,  3002,  3006,  3010,  3014,  3021,  3024,  3029,  3030,  3031,
-    3033,  3039,  3049,  3053,  3057,  3061,  3065,  3069,  3073,  3077,
-    3085,  3095,  3100,  3104,  3108,  3112,  3116,  3121,  3125,  3129,
-    3137,  3140,  3145,  3146,  3147,  3152,  3153,  3154,  3162,  3165,
-    3170,  3171,  3175,  3176,  3181,  3205,  3222,  3223,  3227,  3234,
-    3240,  3250,  3252,  3255,  3256,  3257,  3258,  3260,  3263,  3267,
-    3272,  3276,  3282,  3283,  3286,  3291,  3292,  3295,  3296,  3297,
-    3307,  3308,  3309,  3310,  3311,  3312,  3313,  3314,  3318,  3324,
-    3326,  3345,  3353,  3360,  3361,  3362,  3363,  3368,  3369,  3370,
-    3371,  3372,  3377,  3378,  3394,  3395,  3396,  3397,  3398,  3399,
-    3400,  3401,  3402,  3403,  3405,  3406,  3407,  3408,  3413,  3416,
-    3425,  3426,  3427,  3428,  3429,  3430,  3434,  3435
+       0,   452,   452,   478,   481,   498,   503,   506,   523,   529,
+     538,   547,   556,   563,   578,   633,   640,   651,   654,   659,
+     666,   683,   700,   721,   730,   733,   741,   744,   752,   753,
+     760,   763,   771,   774,   778,   784,   785,   789,   799,   813,
+     814,   818,   819,   824,   832,   840,   848,   856,   866,   868,
+     868,   871,   872,   876,   883,   890,   897,   906,   910,   917,
+     929,   940,   946,   950,   954,   959,   963,   966,   970,   973,
+     980,   981,   991,   992,   996,   997,  1001,  1010,  1019,  1026,
+    1029,  1035,  1038,  1049,  1053,  1058,  1065,  1068,  1077,  1080,
+    1084,  1088,  1092,  1096,  1100,  1108,  1112,  1120,  1123,  1130,
+    1133,  1140,  1143,  1150,  1151,  1156,  1160,  1163,  1169,  1172,
+    1178,  1185,  1186,  1190,  1198,  1202,  1209,  1211,  1216,  1217,
+    1221,  1223,  1229,  1230,  1233,  1244,  1250,  1250,  1259,  1259,
+    1268,  1293,  1296,  1304,  1307,  1314,  1317,  1325,  1326,  1332,
+    1333,  1341,  1359,  1363,  1368,  1369,  1379,  1388,  1392,  1396,
+    1401,  1405,  1409,  1412,  1419,  1420,  1421,  1425,  1426,  1427,
+    1428,  1429,  1430,  1431,  1439,  1440,  1441,  1442,  1447,  1448,
+    1449,  1452,  1453,  1454,  1458,  1459,  1460,  1464,  1465,  1469,
+    1476,  1477,  1478,  1485,  1486,  1489,  1490,  1495,  1496,  1501,
+    1502,  1507,  1508,  1513,  1520,  1521,  1526,  1527,  1531,  1532,
+    1539,  1547,  1554,  1561,  1565,  1566,  1571,  1572,  1578,  1582,
+    1587,  1594,  1595,  1601,  1604,  1607,  1614,  1615,  1616,  1617,
+    1623,  1646,  1647,  1650,  1652,  1659,  1662,  1668,  1676,  1681,
+    1687,  1692,  1698,  1701,  1706,  1714,  1723,  1728,  1732,  1733,
+    1739,  1742,  1753,  1762,  1769,  1775,  1776,  1779,  1784,  1795,
+    1799,  1806,  1807,  1811,  1815,  1819,  1826,  1831,  1839,  1842,
+    1848,  1851,  1856,  1861,  1874,  1877,  1883,  1886,  1892,  1895,
+    1901,  1904,  1911,  1915,  1926,  1926,  1927,  1927,  1928,  1928,
+    1931,  1936,  1941,  1942,  1947,  1956,  1964,  1967,  1970,  1974,
+    1981,  1984,  1988,  1991,  1994,  1997,  2003,  2010,  2013,  2016,
+    2019,  2020,  2025,  2028,  2031,  2034,  2041,  2042,  2043,  2047,
+    2054,  2055,  2056,  2060,  2074,  2081,  2082,  2083,  2087,  2088,
+    2093,  2094,  2103,  2105,  2114,  2117,  2125,  2135,  2143,  2145,
+    2146,  2147,  2148,  2149,  2150,  2151,  2159,  2160,  2161,  2162,
+    2163,  2164,  2165,  2166,  2167,  2168,  2169,  2179,  2180,  2186,
+    2188,  2189,  2190,  2191,  2195,  2199,  2203,  2210,  2211,  2216,
+    2217,  2221,  2229,  2232,  2239,  2242,  2252,  2255,  2258,  2261,
+    2268,  2275,  2283,  2292,  2299,  2303,  2308,  2309,  2310,  2315,
+    2317,  2326,  2326,  2326,  2326,  2326,  2326,  2326,  2327,  2327,
+    2327,  2327,  2327,  2327,  2327,  2327,  2372,  2373,  2374,  2379,
+    2380,  2383,  2384,  2388,  2395,  2406,  2407,  2420,  2421,  2425,
+    2429,  2430,  2433,  2439,  2443,  2466,  2476,  2479,  2485,  2494,
+    2498,  2505,  2506,  2508,  2513,  2519,  2522,  2528,  2529,  2536,
+    2549,  2559,  2566,  2583,  2590,  2615,  2617,  2615,  2639,  2683,
+    2684,  2698,  2701,  2708,  2718,  2730,  2736,  2749,  2764,  2766,
+    2772,  2773,  2774,  2775,  2785,  2788,  2794,  2797,  2802,  2811,
+    2814,  2818,  2825,  2828,  2831,  2834,  2837,  2840,  2841,  2842,
+    2843,  2844,  2845,  2846,  2847,  2848,  2850,  2854,  2858,  2862,
+    2866,  2870,  2874,  2878,  2881,  2884,  2887,  2890,  2893,  2896,
+    2899,  2902,  2906,  2910,  2914,  2922,  2925,  2934,  2940,  2947,
+    2950,  2978,  2981,  2984,  2987,  2993,  2994,  2995,  2996,  2997,
+    2998,  3003,  3007,  3011,  3015,  3022,  3025,  3030,  3031,  3032,
+    3034,  3040,  3050,  3054,  3058,  3062,  3066,  3070,  3074,  3078,
+    3086,  3096,  3101,  3105,  3109,  3113,  3117,  3122,  3126,  3130,
+    3138,  3141,  3146,  3147,  3148,  3153,  3154,  3155,  3163,  3166,
+    3171,  3172,  3176,  3177,  3182,  3206,  3223,  3224,  3228,  3235,
+    3241,  3251,  3253,  3256,  3257,  3258,  3259,  3261,  3264,  3268,
+    3273,  3277,  3283,  3284,  3287,  3292,  3293,  3296,  3297,  3298,
+    3308,  3309,  3310,  3311,  3312,  3313,  3314,  3315,  3319,  3325,
+    3327,  3346,  3354,  3361,  3362,  3363,  3364,  3369,  3370,  3371,
+    3372,  3373,  3378,  3379,  3395,  3396,  3397,  3398,  3399,  3400,
+    3401,  3402,  3403,  3404,  3406,  3407,  3408,  3409,  3414,  3417,
+    3426,  3427,  3428,  3429,  3430,  3431,  3435,  3436
 };
 #endif
 
@@ -3658,7 +3659,7 @@ yyreduce:
         case 2:
 
 /* Line 1455 of yacc.c  */
-#line 451 "sql.yacc"
+#line 452 "sql.yacc"
     {
 		// chk_for_update_on_serial($<str>2);
 		if ((yyvsp[(4) - (4)].ptr)==0) {
@@ -3686,7 +3687,7 @@ yyreduce:
   case 3:
 
 /* Line 1455 of yacc.c  */
-#line 477 "sql.yacc"
+#line 478 "sql.yacc"
     {
 		(yyval.ptr)=0;
 	}
@@ -3695,7 +3696,7 @@ yyreduce:
   case 4:
 
 /* Line 1455 of yacc.c  */
-#line 480 "sql.yacc"
+#line 481 "sql.yacc"
     { 
 		if (A4GLSQLCV_check_requirement("NO_FOR_UPDATE"))  {
 			a4gl_yyerror("Your database cannot seem to handle FOR UPDATE");
@@ -3718,7 +3719,7 @@ yyreduce:
   case 5:
 
 /* Line 1455 of yacc.c  */
-#line 497 "sql.yacc"
+#line 498 "sql.yacc"
     {
 		(yyval.ptr)=A4GL_new_select_list_item_expr((yyvsp[(2) - (2)].s_select_list_item));
 	}
@@ -3727,7 +3728,7 @@ yyreduce:
   case 6:
 
 /* Line 1455 of yacc.c  */
-#line 502 "sql.yacc"
+#line 503 "sql.yacc"
     {
 		(yyval.ptr)=0;
 	}
@@ -3736,7 +3737,7 @@ yyreduce:
   case 7:
 
 /* Line 1455 of yacc.c  */
-#line 505 "sql.yacc"
+#line 506 "sql.yacc"
     { 
 		if (A4GLSQLCV_check_requirement("NO_FOR_UPDATE"))  {
 			a4gl_yyerror("Your database cannot seem to handle FOR UPDATE");
@@ -3759,7 +3760,7 @@ yyreduce:
   case 8:
 
 /* Line 1455 of yacc.c  */
-#line 522 "sql.yacc"
+#line 523 "sql.yacc"
     {
 		 (yyval.ptr)=A4GL_new_select_list_item_expr((yyvsp[(2) - (2)].s_select_list_item));
 	}
@@ -3768,7 +3769,7 @@ yyreduce:
   case 9:
 
 /* Line 1455 of yacc.c  */
-#line 528 "sql.yacc"
+#line 529 "sql.yacc"
     {
 		add_feature("UPDATE_COLUMNLIST_EQ_VALUELIST");
 		(yyval.update_cmd)=malloc(sizeof(struct struct_update_cmd));
@@ -3783,7 +3784,7 @@ yyreduce:
   case 10:
 
 /* Line 1455 of yacc.c  */
-#line 537 "sql.yacc"
+#line 538 "sql.yacc"
     {	
 		(yyval.update_cmd)=malloc(sizeof(struct struct_update_cmd));
 		(yyval.update_cmd)->connid=0;
@@ -3798,7 +3799,7 @@ yyreduce:
   case 11:
 
 /* Line 1455 of yacc.c  */
-#line 546 "sql.yacc"
+#line 547 "sql.yacc"
     {	
 		(yyval.update_cmd)=malloc(sizeof(struct struct_update_cmd));
 		(yyval.update_cmd)->connid=0;
@@ -3813,7 +3814,7 @@ yyreduce:
   case 12:
 
 /* Line 1455 of yacc.c  */
-#line 555 "sql.yacc"
+#line 556 "sql.yacc"
     {
 		(yyval.update_cmd)=(yyvsp[(2) - (2)].update_cmd);
 		add_feature("UPDATE_COLUMN_EQ_VALUE_LIST");
@@ -3823,7 +3824,7 @@ yyreduce:
   case 13:
 
 /* Line 1455 of yacc.c  */
-#line 562 "sql.yacc"
+#line 563 "sql.yacc"
     {
 		char buff[200];
 		SPRINTF1(buff,"%s.*", (yyvsp[(2) - (2)].str));
@@ -3844,7 +3845,7 @@ yyreduce:
   case 14:
 
 /* Line 1455 of yacc.c  */
-#line 577 "sql.yacc"
+#line 578 "sql.yacc"
     {
 		char buff[200];
 		SPRINTF1(buff,"%s.*", (yyvsp[(2) - (2)].str));
@@ -3865,7 +3866,7 @@ yyreduce:
   case 15:
 
 /* Line 1455 of yacc.c  */
-#line 632 "sql.yacc"
+#line 633 "sql.yacc"
     {
 		(yyval.update_cmd)=malloc(sizeof(struct_update_cmd));
 		(yyval.update_cmd)->column_list=new_str_list((yyvsp[(1) - (1)].upd_pair)->column_name);
@@ -3878,7 +3879,7 @@ yyreduce:
   case 16:
 
 /* Line 1455 of yacc.c  */
-#line 639 "sql.yacc"
+#line 640 "sql.yacc"
     {
 		(yyval.update_cmd)=(yyvsp[(1) - (3)].update_cmd);
 		add_str_list((yyval.update_cmd)->column_list, (yyvsp[(3) - (3)].upd_pair)->column_name);
@@ -3889,7 +3890,7 @@ yyreduce:
   case 17:
 
 /* Line 1455 of yacc.c  */
-#line 650 "sql.yacc"
+#line 651 "sql.yacc"
     {
                 strcpy((yyval.str),(yyvsp[(1) - (1)].str));
         }
@@ -3898,7 +3899,7 @@ yyreduce:
   case 18:
 
 /* Line 1455 of yacc.c  */
-#line 653 "sql.yacc"
+#line 654 "sql.yacc"
     {
                 strcpy((yyval.str),(yyvsp[(2) - (2)].str));
         }
@@ -3907,7 +3908,7 @@ yyreduce:
   case 19:
 
 /* Line 1455 of yacc.c  */
-#line 658 "sql.yacc"
+#line 659 "sql.yacc"
     {
                 struct ilist *i;
                 i=&(yyvsp[(2) - (2)].int_list);
@@ -3920,7 +3921,7 @@ yyreduce:
   case 20:
 
 /* Line 1455 of yacc.c  */
-#line 665 "sql.yacc"
+#line 666 "sql.yacc"
     {
                 struct ilist *i;
                 if (strcmp((yyvsp[(3) - (4)].str),"rowid")==0) { add_feature("ROWID"); }
@@ -3943,7 +3944,7 @@ yyreduce:
   case 21:
 
 /* Line 1455 of yacc.c  */
-#line 682 "sql.yacc"
+#line 683 "sql.yacc"
     {
                 struct ilist *i;
                 if (strcmp((yyvsp[(5) - (6)].str),"rowid")==0) { add_feature("ROWID"); }
@@ -3966,7 +3967,7 @@ yyreduce:
   case 22:
 
 /* Line 1455 of yacc.c  */
-#line 699 "sql.yacc"
+#line 700 "sql.yacc"
     {
                 if (A4GLSQLCV_check_requirement("NO_UPDATE_TABLE")) {
                         strcpy((yyval.str),"*");
@@ -3985,7 +3986,7 @@ yyreduce:
   case 23:
 
 /* Line 1455 of yacc.c  */
-#line 720 "sql.yacc"
+#line 721 "sql.yacc"
     {
 		(yyval.upd_pair)=malloc(sizeof(struct s_update_pair));
 		(yyval.upd_pair)->column_name=acl_strdup((yyvsp[(1) - (3)].str));
@@ -3996,7 +3997,7 @@ yyreduce:
   case 24:
 
 /* Line 1455 of yacc.c  */
-#line 729 "sql.yacc"
+#line 730 "sql.yacc"
     {
 			(yyval.str_list)=new_str_list((yyvsp[(1) - (1)].str));
 		}
@@ -4005,7 +4006,7 @@ yyreduce:
   case 25:
 
 /* Line 1455 of yacc.c  */
-#line 732 "sql.yacc"
+#line 733 "sql.yacc"
     {
 			(yyval.str_list)=add_str_list((yyvsp[(1) - (3)].str_list), (yyvsp[(3) - (3)].str));
 		}
@@ -4014,7 +4015,7 @@ yyreduce:
   case 26:
 
 /* Line 1455 of yacc.c  */
-#line 740 "sql.yacc"
+#line 741 "sql.yacc"
     { 
 		(yyval.s_select_list_item_list)=local_new_select_list_item_list((yyvsp[(1) - (1)].s_select_list_item));
 	}
@@ -4023,7 +4024,7 @@ yyreduce:
   case 27:
 
 /* Line 1455 of yacc.c  */
-#line 743 "sql.yacc"
+#line 744 "sql.yacc"
     { 
 		(yyval.s_select_list_item_list)=local_add_select_list_item_list((yyvsp[(1) - (3)].s_select_list_item_list),(yyvsp[(3) - (3)].s_select_list_item));
 	}
@@ -4032,28 +4033,28 @@ yyreduce:
   case 28:
 
 /* Line 1455 of yacc.c  */
-#line 751 "sql.yacc"
+#line 752 "sql.yacc"
     {(yyval.s_select_list_item)=(yyvsp[(1) - (1)].s_select_list_item);}
     break;
 
   case 29:
 
 /* Line 1455 of yacc.c  */
-#line 752 "sql.yacc"
+#line 753 "sql.yacc"
     {(yyval.s_select_list_item)=new_select_list_item_builtin_const(E_SLI_BUILTIN_CONST_NULL); }
     break;
 
   case 30:
 
 /* Line 1455 of yacc.c  */
-#line 759 "sql.yacc"
+#line 760 "sql.yacc"
     { (yyval.sql_string)=make_sql_string_and_free(acl_strdup((yyvsp[(1) - (1)].str)), NULL);}
     break;
 
   case 31:
 
 /* Line 1455 of yacc.c  */
-#line 762 "sql.yacc"
+#line 763 "sql.yacc"
     {
 			if (A4GLSQLCV_check_requirement("ADD_CASCADE")) {
 				SPRINTF1((yyval.str), "DROP TABLE %s CASCADE",(yyvsp[(2) - (2)].str));
@@ -4067,7 +4068,7 @@ yyreduce:
   case 32:
 
 /* Line 1455 of yacc.c  */
-#line 770 "sql.yacc"
+#line 771 "sql.yacc"
     {SPRINTF2((yyval.str),"%s %s ",(yyvsp[(1) - (2)].str),(yyvsp[(2) - (2)].str));
 			add_feature("DROP_VIEW");
 }
@@ -4076,7 +4077,7 @@ yyreduce:
   case 33:
 
 /* Line 1455 of yacc.c  */
-#line 773 "sql.yacc"
+#line 774 "sql.yacc"
     {SPRINTF2((yyval.str),"%s %s",(yyvsp[(1) - (2)].str),(yyvsp[(2) - (2)].str));
 		if (strchr((yyvsp[(2) - (2)].str),'@') || strchr((yyvsp[(2) - (2)].str),':')) add_feature("DROP_INDEX_QUALIFIED_PATH");
 			add_feature("DROP_INDEX");
@@ -4086,7 +4087,7 @@ yyreduce:
   case 34:
 
 /* Line 1455 of yacc.c  */
-#line 777 "sql.yacc"
+#line 778 "sql.yacc"
     {SPRINTF2((yyval.str),"%s %s",(yyvsp[(1) - (2)].str),(yyvsp[(2) - (2)].str));
 			add_feature("DROP_TRIGGER");
 }
@@ -4095,21 +4096,21 @@ yyreduce:
   case 35:
 
 /* Line 1455 of yacc.c  */
-#line 783 "sql.yacc"
+#line 784 "sql.yacc"
     {(yyval.sql_string)=acl_strdup((yyvsp[(1) - (1)].str));}
     break;
 
   case 36:
 
 /* Line 1455 of yacc.c  */
-#line 784 "sql.yacc"
+#line 785 "sql.yacc"
     {(yyval.sql_string)=(yyvsp[(1) - (1)].sql_string);}
     break;
 
   case 37:
 
 /* Line 1455 of yacc.c  */
-#line 788 "sql.yacc"
+#line 789 "sql.yacc"
     {
                 if (A4GLSQLCV_check_requirement ("ADD_WITH_OIDS")) {
                         (yyval.sql_string)=make_sql_string_and_free(acl_strdup((yyvsp[(1) - (6)].str)),kw_space,acl_strdup((yyvsp[(2) - (6)].str)),kw_space,kw_ob,(yyvsp[(4) - (6)].sql_string),kw_cb,acl_strdup(" WITH OIDS "),acl_strdup((yyvsp[(6) - (6)].str)),NULL);
@@ -4124,7 +4125,7 @@ yyreduce:
   case 38:
 
 /* Line 1455 of yacc.c  */
-#line 798 "sql.yacc"
+#line 799 "sql.yacc"
     {
 		char *tstr;
 		tstr="";
@@ -4140,28 +4141,28 @@ yyreduce:
   case 39:
 
 /* Line 1455 of yacc.c  */
-#line 812 "sql.yacc"
+#line 813 "sql.yacc"
     {strcpy((yyval.str),"");}
     break;
 
   case 40:
 
 /* Line 1455 of yacc.c  */
-#line 813 "sql.yacc"
+#line 814 "sql.yacc"
     {strcpy((yyval.str),(yyvsp[(1) - (1)].str));}
     break;
 
   case 42:
 
 /* Line 1455 of yacc.c  */
-#line 818 "sql.yacc"
+#line 819 "sql.yacc"
     {SPRINTF2((yyval.str),"%s%s",(yyvsp[(1) - (2)].str),(yyvsp[(2) - (2)].str)); }
     break;
 
   case 43:
 
 /* Line 1455 of yacc.c  */
-#line 823 "sql.yacc"
+#line 824 "sql.yacc"
     {
 			add_feature("CREATE_TABLE_IN");
                         if (A4GLSQLCV_check_requirement("OMIT_TABLE_IN")) {
@@ -4175,7 +4176,7 @@ yyreduce:
   case 44:
 
 /* Line 1455 of yacc.c  */
-#line 831 "sql.yacc"
+#line 832 "sql.yacc"
     {
 			add_feature("CREATE_TABLE_WITH_EXTENT_SIZE");
                         if (A4GLSQLCV_check_requirement("OMIT_TABLE_EXTENTS")) {
@@ -4189,7 +4190,7 @@ yyreduce:
   case 45:
 
 /* Line 1455 of yacc.c  */
-#line 839 "sql.yacc"
+#line 840 "sql.yacc"
     {
 			add_feature("CREATE_TABLE_WITH_NEXT_EXTENT_SIZE");
                         if (A4GLSQLCV_check_requirement("OMIT_TABLE_EXTENTS")) {
@@ -4203,7 +4204,7 @@ yyreduce:
   case 46:
 
 /* Line 1455 of yacc.c  */
-#line 847 "sql.yacc"
+#line 848 "sql.yacc"
     {
 			add_feature("CREATE_TABLE_LOCK_MODE"); 
                         if (A4GLSQLCV_check_requirement("OMIT_LOCK_MODE")) {
@@ -4217,7 +4218,7 @@ yyreduce:
   case 47:
 
 /* Line 1455 of yacc.c  */
-#line 855 "sql.yacc"
+#line 856 "sql.yacc"
     {
 			add_feature("CREATE_TABLE_LOCK_MODE");
                         if (A4GLSQLCV_check_requirement("OMIT_LOCK_MODE")) {
@@ -4231,28 +4232,28 @@ yyreduce:
   case 49:
 
 /* Line 1455 of yacc.c  */
-#line 867 "sql.yacc"
+#line 868 "sql.yacc"
     {strcpy((yyval.str),"");}
     break;
 
   case 50:
 
 /* Line 1455 of yacc.c  */
-#line 867 "sql.yacc"
+#line 868 "sql.yacc"
     {strcpy((yyval.str),(yyvsp[(1) - (1)].str));}
     break;
 
   case 52:
 
 /* Line 1455 of yacc.c  */
-#line 871 "sql.yacc"
+#line 872 "sql.yacc"
     {SPRINTF2((yyval.str),"%s%s",(yyvsp[(1) - (2)].str),(yyvsp[(2) - (2)].str));}
     break;
 
   case 53:
 
 /* Line 1455 of yacc.c  */
-#line 875 "sql.yacc"
+#line 876 "sql.yacc"
     {
                         if (A4GLSQLCV_check_requirement("OMIT_INDEX_IN")) {
                                 strcpy((yyval.str),"");
@@ -4265,7 +4266,7 @@ yyreduce:
   case 54:
 
 /* Line 1455 of yacc.c  */
-#line 882 "sql.yacc"
+#line 883 "sql.yacc"
     {
                         if (A4GLSQLCV_check_requirement("OMIT_INDEX_FILLFACTOR")) {
                                 strcpy((yyval.str),"");
@@ -4278,7 +4279,7 @@ yyreduce:
   case 55:
 
 /* Line 1455 of yacc.c  */
-#line 889 "sql.yacc"
+#line 890 "sql.yacc"
     {
                         if (A4GLSQLCV_check_requirement("OMIT_INDEX_USING")) {
                                 strcpy((yyval.str),"");
@@ -4291,7 +4292,7 @@ yyreduce:
   case 56:
 
 /* Line 1455 of yacc.c  */
-#line 896 "sql.yacc"
+#line 897 "sql.yacc"
     {
                         if (A4GLSQLCV_check_requirement("OMIT_INDEX_USING")) {
                                 strcpy((yyval.str),"");
@@ -4304,14 +4305,14 @@ yyreduce:
   case 57:
 
 /* Line 1455 of yacc.c  */
-#line 905 "sql.yacc"
+#line 906 "sql.yacc"
     { strcpy(last_tmp_name,(yyvsp[(1) - (1)].str)); }
     break;
 
   case 58:
 
 /* Line 1455 of yacc.c  */
-#line 909 "sql.yacc"
+#line 910 "sql.yacc"
     {SPRINTF7((yyval.str),"CREATE UNIQUE INDEX %s %s %s %s %s %s %s",(yyvsp[(2) - (8)].str),(yyvsp[(3) - (8)].str),(yyvsp[(4) - (8)].str),(yyvsp[(5) - (8)].str),(yyvsp[(6) - (8)].str),(yyvsp[(7) - (8)].str),(yyvsp[(8) - (8)].str));
 		add_feature("CREATE_INDEX");
 		add_feature("CREATE_INDEX_UNIQUE");
@@ -4324,7 +4325,7 @@ yyreduce:
   case 59:
 
 /* Line 1455 of yacc.c  */
-#line 916 "sql.yacc"
+#line 917 "sql.yacc"
     {
 		add_feature("CREATE_INDEX");
 		add_feature("CREATE_INDEX_UNIQUE");
@@ -4342,7 +4343,7 @@ yyreduce:
   case 60:
 
 /* Line 1455 of yacc.c  */
-#line 928 "sql.yacc"
+#line 929 "sql.yacc"
     {
 		add_feature("CREATE_INDEX");
 		add_feature("CLUSTER_INDEX");
@@ -4359,7 +4360,7 @@ yyreduce:
   case 61:
 
 /* Line 1455 of yacc.c  */
-#line 939 "sql.yacc"
+#line 940 "sql.yacc"
     {
 		if (strchr((yyvsp[(2) - (8)].str),'@') || strchr((yyvsp[(2) - (8)].str),':')) add_feature("CREATE_INDEX_QUALIFIED_PATH");
 		if (strchr((yyvsp[(6) - (8)].str),',')) { add_feature("CREATE_INDEX_COMPOSITE"); }
@@ -4371,7 +4372,7 @@ yyreduce:
   case 62:
 
 /* Line 1455 of yacc.c  */
-#line 945 "sql.yacc"
+#line 946 "sql.yacc"
     {
 		add_feature("CREATE_DATABASE");
 		a4gl_yyerror("You cannot create a database from within Aubit4gl - if the target database allows - prepare and execute it manually");
@@ -4381,7 +4382,7 @@ yyreduce:
   case 63:
 
 /* Line 1455 of yacc.c  */
-#line 949 "sql.yacc"
+#line 950 "sql.yacc"
     {
 		add_feature("DROP_DATABASE");
 		a4gl_yyerror("You cannot drop a database from within Aubit4gl - if the target database allows - prepare and execute it manually");
@@ -4391,7 +4392,7 @@ yyreduce:
   case 64:
 
 /* Line 1455 of yacc.c  */
-#line 953 "sql.yacc"
+#line 954 "sql.yacc"
     { 
 		if (strchr((yyvsp[(2) - (4)].str),'@') || strchr((yyvsp[(2) - (4)].str),':')) add_feature("CREATE_SYNONYM_QUALIFIED_PATH");
 			add_feature("CREATE_SYNONYM");
@@ -4402,7 +4403,7 @@ yyreduce:
   case 65:
 
 /* Line 1455 of yacc.c  */
-#line 958 "sql.yacc"
+#line 959 "sql.yacc"
     { 
 		add_feature("CREATE_AUDIT");
 		SPRINTF2((yyval.str),"CREATE AUDIT FOR %s IN '%s'",(yyvsp[(2) - (4)].str),A4GL_strip_quotes((yyvsp[(4) - (4)].str))); 
@@ -4412,7 +4413,7 @@ yyreduce:
   case 66:
 
 /* Line 1455 of yacc.c  */
-#line 962 "sql.yacc"
+#line 963 "sql.yacc"
     { 
 		add_feature("DROP_AUDIT");
 		SPRINTF1((yyval.str),"DROP AUDIT FOR %s",(yyvsp[(2) - (2)].str)); }
@@ -4421,7 +4422,7 @@ yyreduce:
   case 67:
 
 /* Line 1455 of yacc.c  */
-#line 965 "sql.yacc"
+#line 966 "sql.yacc"
     { 
 		if (strchr((yyvsp[(2) - (2)].str),'@') || strchr((yyvsp[(2) - (2)].str),':')) add_feature("DROP_SYNONYM_QUALIFIED_PATH");
 		add_feature("DROP_SYNONYM");
@@ -4431,7 +4432,7 @@ yyreduce:
   case 68:
 
 /* Line 1455 of yacc.c  */
-#line 969 "sql.yacc"
+#line 970 "sql.yacc"
     { 
 		add_feature("RECOVER_TABLE");
 		SPRINTF1((yyval.str),"RECOVER TABLE %s",(yyvsp[(2) - (2)].str)); }
@@ -4440,7 +4441,7 @@ yyreduce:
   case 69:
 
 /* Line 1455 of yacc.c  */
-#line 972 "sql.yacc"
+#line 973 "sql.yacc"
     { 
 		add_feature("ROLLFORWARD_DATABASE");
 		SPRINTF1((yyval.str),"ROLLFORWARD DATABASE %s",(yyvsp[(2) - (2)].str)); }
@@ -4449,14 +4450,14 @@ yyreduce:
   case 70:
 
 /* Line 1455 of yacc.c  */
-#line 979 "sql.yacc"
+#line 980 "sql.yacc"
     {strcpy((yyval.str),"");}
     break;
 
   case 71:
 
 /* Line 1455 of yacc.c  */
-#line 980 "sql.yacc"
+#line 981 "sql.yacc"
     {
 		add_feature("SELECT_INTO_TEMP_WITH_NO_LOG");
 		if (A4GLSQLCV_check_requirement("OMIT_NO_LOG")) {
@@ -4470,28 +4471,28 @@ yyreduce:
   case 72:
 
 /* Line 1455 of yacc.c  */
-#line 990 "sql.yacc"
+#line 991 "sql.yacc"
     {(yyval.integer_val)=0;}
     break;
 
   case 73:
 
 /* Line 1455 of yacc.c  */
-#line 991 "sql.yacc"
+#line 992 "sql.yacc"
     { (yyval.integer_val)=1;}
     break;
 
   case 75:
 
 /* Line 1455 of yacc.c  */
-#line 996 "sql.yacc"
+#line 997 "sql.yacc"
     {SPRINTF2((yyval.str),"%s,%s",(yyvsp[(1) - (3)].str),(yyvsp[(3) - (3)].str));}
     break;
 
   case 76:
 
 /* Line 1455 of yacc.c  */
-#line 1000 "sql.yacc"
+#line 1001 "sql.yacc"
     {
 		add_feature("CREATE_INDEX_ASC");
 		strcpy((yyval.str),A4GL_confirm_colname(last_tmp_name,(yyvsp[(1) - (2)].str)));
@@ -4506,7 +4507,7 @@ yyreduce:
   case 77:
 
 /* Line 1455 of yacc.c  */
-#line 1009 "sql.yacc"
+#line 1010 "sql.yacc"
     {
 		add_feature("CREATE_INDEX_DESC");
 		strcpy((yyval.str),A4GL_confirm_colname(last_tmp_name,(yyvsp[(1) - (2)].str)));
@@ -4521,7 +4522,7 @@ yyreduce:
   case 78:
 
 /* Line 1455 of yacc.c  */
-#line 1018 "sql.yacc"
+#line 1019 "sql.yacc"
     {
 		strcpy((yyval.str),A4GL_confirm_colname(last_tmp_name,(yyvsp[(1) - (1)].str)));
 }
@@ -4530,7 +4531,7 @@ yyreduce:
   case 79:
 
 /* Line 1455 of yacc.c  */
-#line 1025 "sql.yacc"
+#line 1026 "sql.yacc"
     {
 		(yyval.sql_string)=(yyvsp[(1) - (1)].sql_string);
 	}
@@ -4539,7 +4540,7 @@ yyreduce:
   case 80:
 
 /* Line 1455 of yacc.c  */
-#line 1028 "sql.yacc"
+#line 1029 "sql.yacc"
     {
 		(yyval.sql_string)=make_sql_string_and_free((yyvsp[(1) - (3)].sql_string),kw_comma,strdup("\n"),(yyvsp[(3) - (3)].sql_string),NULL);
 	}
@@ -4548,7 +4549,7 @@ yyreduce:
   case 81:
 
 /* Line 1455 of yacc.c  */
-#line 1034 "sql.yacc"
+#line 1035 "sql.yacc"
     {
 		(yyval.sql_string)=make_sql_string_and_free(strdup("   "),(yyvsp[(1) - (1)].sql_string),NULL);
 	}
@@ -4557,7 +4558,7 @@ yyreduce:
   case 82:
 
 /* Line 1455 of yacc.c  */
-#line 1037 "sql.yacc"
+#line 1038 "sql.yacc"
     {
 		(yyval.sql_string)=make_sql_string_and_free(strdup("   "),(yyvsp[(1) - (1)].sql_string),NULL);
 	}
@@ -4566,7 +4567,7 @@ yyreduce:
   case 83:
 
 /* Line 1455 of yacc.c  */
-#line 1048 "sql.yacc"
+#line 1049 "sql.yacc"
     {
 		add_feature("ALTER_TABLE");
 	(yyval.sql_string)=make_sql_string_and_free(acl_strdup((yyvsp[(1) - (3)].str)),kw_space,acl_strdup((yyvsp[(2) - (3)].str)),kw_space,(yyvsp[(3) - (3)].sql_string),NULL);
@@ -4576,7 +4577,7 @@ yyreduce:
   case 84:
 
 /* Line 1455 of yacc.c  */
-#line 1052 "sql.yacc"
+#line 1053 "sql.yacc"
     {
 		add_feature("CLUSTER_INDEX");
 		add_feature("ALTER_INDEX_CLUSTER");
@@ -4587,7 +4588,7 @@ yyreduce:
   case 85:
 
 /* Line 1455 of yacc.c  */
-#line 1057 "sql.yacc"
+#line 1058 "sql.yacc"
     {
 		add_feature("ALTER_INDEX_NOT_CLUSTER");
 		(yyval.sql_string)=make_sql_string_and_free(acl_strdup("ALTER INDEX "),acl_strdup((yyvsp[(2) - (3)].str)),acl_strdup(" TO NOT CLUSTER"),NULL);
@@ -4597,7 +4598,7 @@ yyreduce:
   case 86:
 
 /* Line 1455 of yacc.c  */
-#line 1064 "sql.yacc"
+#line 1065 "sql.yacc"
     {
 		(yyval.sql_string)=(yyvsp[(1) - (1)].sql_string);
 	}
@@ -4606,7 +4607,7 @@ yyreduce:
   case 87:
 
 /* Line 1455 of yacc.c  */
-#line 1067 "sql.yacc"
+#line 1068 "sql.yacc"
     {
 		(yyval.sql_string)=make_sql_string_and_free((yyvsp[(1) - (3)].sql_string),kw_comma,(yyvsp[(3) - (3)].sql_string),NULL);
 	}
@@ -4615,7 +4616,7 @@ yyreduce:
   case 88:
 
 /* Line 1455 of yacc.c  */
-#line 1076 "sql.yacc"
+#line 1077 "sql.yacc"
     {
 		(yyval.sql_string)=(yyvsp[(1) - (1)].sql_string);
 	}
@@ -4624,7 +4625,7 @@ yyreduce:
   case 89:
 
 /* Line 1455 of yacc.c  */
-#line 1079 "sql.yacc"
+#line 1080 "sql.yacc"
     {
 	add_feature("ALTER_TABLE_DROP");
 		(yyval.sql_string)=acl_strdup((yyvsp[(1) - (1)].str));
@@ -4634,7 +4635,7 @@ yyreduce:
   case 90:
 
 /* Line 1455 of yacc.c  */
-#line 1083 "sql.yacc"
+#line 1084 "sql.yacc"
     {
 	add_feature("ALTER_TABLE_MODIFY");
 		(yyval.sql_string)=(yyvsp[(1) - (1)].sql_string);
@@ -4644,7 +4645,7 @@ yyreduce:
   case 91:
 
 /* Line 1455 of yacc.c  */
-#line 1087 "sql.yacc"
+#line 1088 "sql.yacc"
     {
 		add_feature("ALTER_TABLE_ADD_CONSTRAINT");
 		(yyval.sql_string)=acl_strdup((yyvsp[(1) - (1)].str));
@@ -4654,7 +4655,7 @@ yyreduce:
   case 92:
 
 /* Line 1455 of yacc.c  */
-#line 1091 "sql.yacc"
+#line 1092 "sql.yacc"
     {
 		add_feature("ALTER_TABLE_DROP_CONSTRAINT");
 		(yyval.sql_string)=acl_strdup((yyvsp[(1) - (1)].str));
@@ -4664,7 +4665,7 @@ yyreduce:
   case 93:
 
 /* Line 1455 of yacc.c  */
-#line 1095 "sql.yacc"
+#line 1096 "sql.yacc"
     {
 		add_feature("ALTER_TABLE_MODIFY_NEXT");
 		(yyval.sql_string)=acl_strdup((yyvsp[(1) - (1)].str));
@@ -4674,7 +4675,7 @@ yyreduce:
   case 94:
 
 /* Line 1455 of yacc.c  */
-#line 1099 "sql.yacc"
+#line 1100 "sql.yacc"
     {
 		add_feature("ALTER_TABLE_LOCK_MODE");
 		(yyval.sql_string)=acl_strdup((yyvsp[(1) - (1)].str));
@@ -4684,7 +4685,7 @@ yyreduce:
   case 95:
 
 /* Line 1455 of yacc.c  */
-#line 1107 "sql.yacc"
+#line 1108 "sql.yacc"
     {
 		add_feature("ALTER_TABLE_ADD");
 		(yyval.sql_string)=make_sql_string_and_free(acl_strdup("ADD "),(yyvsp[(2) - (2)].sql_string),NULL);
@@ -4694,7 +4695,7 @@ yyreduce:
   case 96:
 
 /* Line 1455 of yacc.c  */
-#line 1111 "sql.yacc"
+#line 1112 "sql.yacc"
     {
 		add_feature("ALTER_TABLE_ADD");
 		(yyval.sql_string)=make_sql_string_and_free(acl_strdup("ADD "),kw_ob,(yyvsp[(3) - (4)].sql_string),kw_cb,NULL);
@@ -4704,7 +4705,7 @@ yyreduce:
   case 97:
 
 /* Line 1455 of yacc.c  */
-#line 1119 "sql.yacc"
+#line 1120 "sql.yacc"
     {
 		(yyval.sql_string)=(yyvsp[(1) - (1)].sql_string);
 	}
@@ -4713,7 +4714,7 @@ yyreduce:
   case 98:
 
 /* Line 1455 of yacc.c  */
-#line 1122 "sql.yacc"
+#line 1123 "sql.yacc"
     {
 		add_feature("ALTER_TABLE_ADD_BEFORE");
 		(yyval.sql_string)=make_sql_string_and_free((yyvsp[(1) - (3)].sql_string),acl_strdup(" BEFORE "),acl_strdup((yyvsp[(3) - (3)].str)),NULL);
@@ -4723,7 +4724,7 @@ yyreduce:
   case 99:
 
 /* Line 1455 of yacc.c  */
-#line 1129 "sql.yacc"
+#line 1130 "sql.yacc"
     {
 		(yyval.sql_string)=(yyvsp[(1) - (1)].sql_string);
 	}
@@ -4732,7 +4733,7 @@ yyreduce:
   case 100:
 
 /* Line 1455 of yacc.c  */
-#line 1132 "sql.yacc"
+#line 1133 "sql.yacc"
     {
 		(yyval.sql_string)=make_sql_string_and_free((yyvsp[(1) - (3)].sql_string),kw_comma,(yyvsp[(3) - (3)].sql_string),NULL);
 	}
@@ -4741,7 +4742,7 @@ yyreduce:
   case 101:
 
 /* Line 1455 of yacc.c  */
-#line 1139 "sql.yacc"
+#line 1140 "sql.yacc"
     {
 		SPRINTF1((yyval.str),"DROP %s",(yyvsp[(2) - (2)].str));
 	}
@@ -4750,7 +4751,7 @@ yyreduce:
   case 102:
 
 /* Line 1455 of yacc.c  */
-#line 1142 "sql.yacc"
+#line 1143 "sql.yacc"
     {
 		SPRINTF1((yyval.str),"DROP (%s)",(yyvsp[(3) - (4)].str));
 	}
@@ -4759,7 +4760,7 @@ yyreduce:
   case 104:
 
 /* Line 1455 of yacc.c  */
-#line 1150 "sql.yacc"
+#line 1151 "sql.yacc"
     {
 		SPRINTF2((yyval.str),"%s,%s",(yyvsp[(1) - (3)].str),(yyvsp[(3) - (3)].str));
 	}
@@ -4768,7 +4769,7 @@ yyreduce:
   case 106:
 
 /* Line 1455 of yacc.c  */
-#line 1159 "sql.yacc"
+#line 1160 "sql.yacc"
     {
 		(yyval.sql_string)=make_sql_string_and_free(acl_strdup("MODIFY "),(yyvsp[(2) - (2)].sql_string),NULL);
 	}
@@ -4777,7 +4778,7 @@ yyreduce:
   case 107:
 
 /* Line 1455 of yacc.c  */
-#line 1162 "sql.yacc"
+#line 1163 "sql.yacc"
     {
 		(yyval.sql_string)=make_sql_string_and_free(acl_strdup("MODIFY "),kw_ob,(yyvsp[(3) - (4)].sql_string),kw_cb,NULL);
 	}
@@ -4786,7 +4787,7 @@ yyreduce:
   case 108:
 
 /* Line 1455 of yacc.c  */
-#line 1168 "sql.yacc"
+#line 1169 "sql.yacc"
     {
 		(yyval.sql_string)=(yyvsp[(1) - (1)].sql_string);
 	}
@@ -4795,7 +4796,7 @@ yyreduce:
   case 109:
 
 /* Line 1455 of yacc.c  */
-#line 1171 "sql.yacc"
+#line 1172 "sql.yacc"
     {
 		(yyval.sql_string)=make_sql_string_and_free((yyvsp[(1) - (3)].sql_string),kw_comma,(yyvsp[(3) - (3)].sql_string),NULL);
 	}
@@ -4804,7 +4805,7 @@ yyreduce:
   case 110:
 
 /* Line 1455 of yacc.c  */
-#line 1177 "sql.yacc"
+#line 1178 "sql.yacc"
     {
 		(yyval.sql_string)=(yyvsp[(1) - (1)].sql_string);
 	}
@@ -4813,21 +4814,21 @@ yyreduce:
   case 111:
 
 /* Line 1455 of yacc.c  */
-#line 1184 "sql.yacc"
+#line 1185 "sql.yacc"
     {strcpy((yyval.str),"LOCK MODE (PAGE)");}
     break;
 
   case 112:
 
 /* Line 1455 of yacc.c  */
-#line 1185 "sql.yacc"
+#line 1186 "sql.yacc"
     {strcpy((yyval.str),"LOCK MODE (ROW)");}
     break;
 
   case 113:
 
 /* Line 1455 of yacc.c  */
-#line 1189 "sql.yacc"
+#line 1190 "sql.yacc"
     {
 		add_feature("DDL_NEXT_SIZE");
 		SPRINTF1((yyval.str),"MODIFY NEXT SIZE %d",atoi((yyvsp[(2) - (2)].str)));
@@ -4837,7 +4838,7 @@ yyreduce:
   case 114:
 
 /* Line 1455 of yacc.c  */
-#line 1197 "sql.yacc"
+#line 1198 "sql.yacc"
     {
 		add_feature("DDL_CONSTRAINT");
 		SPRINTF2((yyval.str),"ADD CONSTRAINT %s%s",(yyvsp[(2) - (3)].sql_string),(yyvsp[(3) - (3)].str));
@@ -4847,7 +4848,7 @@ yyreduce:
   case 115:
 
 /* Line 1455 of yacc.c  */
-#line 1201 "sql.yacc"
+#line 1202 "sql.yacc"
     {
 		add_feature("ADD_CONSTRAINT");
 		SPRINTF1((yyval.str),"ADD CONSTRAINT (%s)",(yyvsp[(3) - (4)].sql_string));
@@ -4857,7 +4858,7 @@ yyreduce:
   case 116:
 
 /* Line 1455 of yacc.c  */
-#line 1208 "sql.yacc"
+#line 1209 "sql.yacc"
     {
 		(yyval.sql_string)=make_sql_string_and_free((yyvsp[(1) - (2)].sql_string),acl_strdup((yyvsp[(2) - (2)].str)),NULL);
 }
@@ -4866,7 +4867,7 @@ yyreduce:
   case 117:
 
 /* Line 1455 of yacc.c  */
-#line 1210 "sql.yacc"
+#line 1211 "sql.yacc"
     {
 	(yyval.sql_string)=make_sql_string_and_free((yyvsp[(1) - (4)].sql_string),kw_comma,(yyvsp[(3) - (4)].sql_string),acl_strdup((yyvsp[(4) - (4)].str)), NULL);
 }
@@ -4875,28 +4876,28 @@ yyreduce:
   case 118:
 
 /* Line 1455 of yacc.c  */
-#line 1215 "sql.yacc"
+#line 1216 "sql.yacc"
     {strcpy((yyval.str),"");}
     break;
 
   case 119:
 
 /* Line 1455 of yacc.c  */
-#line 1216 "sql.yacc"
+#line 1217 "sql.yacc"
     {SPRINTF2((yyval.str)," %s %s",(yyvsp[(1) - (2)].str),(yyvsp[(2) - (2)].str)); add_feature("DDL_CONSTRAINT");}
     break;
 
   case 120:
 
 /* Line 1455 of yacc.c  */
-#line 1221 "sql.yacc"
+#line 1222 "sql.yacc"
     { SPRINTF1((yyval.str),"DROP CONSTRAINT %s",(yyvsp[(2) - (2)].str)); add_feature("DROP_CONSTRAINT"); }
     break;
 
   case 121:
 
 /* Line 1455 of yacc.c  */
-#line 1222 "sql.yacc"
+#line 1223 "sql.yacc"
     {add_feature("DROP_CONSTRAINT");
 		SPRINTF1((yyval.str),"DROP CONSTRAINT (%s)",(yyvsp[(3) - (4)].str));
 	}
@@ -4905,35 +4906,35 @@ yyreduce:
   case 122:
 
 /* Line 1455 of yacc.c  */
-#line 1228 "sql.yacc"
+#line 1229 "sql.yacc"
     {strcpy((yyval.str),(yyvsp[(1) - (1)].str));}
     break;
 
   case 123:
 
 /* Line 1455 of yacc.c  */
-#line 1229 "sql.yacc"
+#line 1230 "sql.yacc"
     {SPRINTF2((yyval.str),"%s,%s",(yyvsp[(1) - (3)].str),(yyvsp[(3) - (3)].str));}
     break;
 
   case 125:
 
 /* Line 1455 of yacc.c  */
-#line 1243 "sql.yacc"
+#line 1244 "sql.yacc"
     {  add_feature("ROLLBACK_WORK"); }
     break;
 
   case 126:
 
 /* Line 1455 of yacc.c  */
-#line 1249 "sql.yacc"
+#line 1250 "sql.yacc"
     { insql=1;}
     break;
 
   case 127:
 
 /* Line 1455 of yacc.c  */
-#line 1249 "sql.yacc"
+#line 1250 "sql.yacc"
     {
 		(yyval.insert_cmd)=(yyvsp[(5) - (5)].insert_cmd);
 		(yyval.insert_cmd)->connid=0;
@@ -4946,14 +4947,14 @@ yyreduce:
   case 128:
 
 /* Line 1455 of yacc.c  */
-#line 1258 "sql.yacc"
+#line 1259 "sql.yacc"
     {insql=1;}
     break;
 
   case 129:
 
 /* Line 1455 of yacc.c  */
-#line 1258 "sql.yacc"
+#line 1259 "sql.yacc"
     { 
 		(yyval.insert_cmd)=malloc(sizeof(struct_insert_cmd));
 		(yyval.insert_cmd)->connid=0;
@@ -4968,7 +4969,7 @@ yyreduce:
   case 130:
 
 /* Line 1455 of yacc.c  */
-#line 1267 "sql.yacc"
+#line 1268 "sql.yacc"
     {
 				if ((yyvsp[(1) - (1)].s_select)->sf==0) {
 				        (yyvsp[(1) - (1)].s_select)->sf=acl_malloc2(sizeof(struct s_select_finish));
@@ -4994,7 +4995,7 @@ yyreduce:
   case 131:
 
 /* Line 1455 of yacc.c  */
-#line 1292 "sql.yacc"
+#line 1293 "sql.yacc"
     {
 			(yyval.str_list)=0;
 	}
@@ -5003,7 +5004,7 @@ yyreduce:
   case 132:
 
 /* Line 1455 of yacc.c  */
-#line 1295 "sql.yacc"
+#line 1296 "sql.yacc"
     {
 			(yyval.str_list)=(yyvsp[(2) - (3)].str_list);
 			 add_feature("INSERT_COLUMNLIST_EQ_VALUELIST");
@@ -5013,7 +5014,7 @@ yyreduce:
   case 133:
 
 /* Line 1455 of yacc.c  */
-#line 1303 "sql.yacc"
+#line 1304 "sql.yacc"
     {
                         (yyval.str_list)=new_str_list((yyvsp[(1) - (1)].str));
 	}
@@ -5022,7 +5023,7 @@ yyreduce:
   case 134:
 
 /* Line 1455 of yacc.c  */
-#line 1306 "sql.yacc"
+#line 1307 "sql.yacc"
     {
                         (yyval.str_list)=add_str_list((yyvsp[(1) - (3)].str_list), (yyvsp[(3) - (3)].str));
 	}
@@ -5031,7 +5032,7 @@ yyreduce:
   case 135:
 
 /* Line 1455 of yacc.c  */
-#line 1313 "sql.yacc"
+#line 1314 "sql.yacc"
     {	
 			strcpy((yyval.str),(yyvsp[(1) - (1)].str));
 	}
@@ -5040,7 +5041,7 @@ yyreduce:
   case 136:
 
 /* Line 1455 of yacc.c  */
-#line 1316 "sql.yacc"
+#line 1317 "sql.yacc"
     { 
 			/* with a table prefix - on an insert ? We'll just silently drop it... */
 			strcpy((yyval.str),(yyvsp[(3) - (3)].str));
@@ -5051,14 +5052,14 @@ yyreduce:
   case 137:
 
 /* Line 1455 of yacc.c  */
-#line 1324 "sql.yacc"
+#line 1325 "sql.yacc"
     { (yyval.s_select_list_item_list)=local_new_select_list_item_list((yyvsp[(1) - (1)].s_select_list_item));}
     break;
 
   case 138:
 
 /* Line 1455 of yacc.c  */
-#line 1325 "sql.yacc"
+#line 1326 "sql.yacc"
     {
 		(yyval.s_select_list_item_list)=local_add_select_list_item_list((yyvsp[(1) - (3)].s_select_list_item_list),(yyvsp[(3) - (3)].s_select_list_item));
 	}
@@ -5067,21 +5068,21 @@ yyreduce:
   case 139:
 
 /* Line 1455 of yacc.c  */
-#line 1331 "sql.yacc"
+#line 1332 "sql.yacc"
     {(yyval.s_select_list_item)=(yyvsp[(1) - (1)].s_select_list_item);}
     break;
 
   case 140:
 
 /* Line 1455 of yacc.c  */
-#line 1332 "sql.yacc"
+#line 1333 "sql.yacc"
     {(yyval.s_select_list_item)=new_select_list_item_builtin_const(E_SLI_BUILTIN_CONST_NULL); }
     break;
 
   case 141:
 
 /* Line 1455 of yacc.c  */
-#line 1340 "sql.yacc"
+#line 1341 "sql.yacc"
     {
 			//A4GL_add_crud("DELETE",$<str>2);
 
@@ -5102,28 +5103,28 @@ yyreduce:
   case 142:
 
 /* Line 1455 of yacc.c  */
-#line 1358 "sql.yacc"
+#line 1359 "sql.yacc"
     { add_feature("BEGIN_WORK"); }
     break;
 
   case 143:
 
 /* Line 1455 of yacc.c  */
-#line 1362 "sql.yacc"
+#line 1363 "sql.yacc"
     { add_feature("COMMIT_WORK"); }
     break;
 
   case 144:
 
 /* Line 1455 of yacc.c  */
-#line 1367 "sql.yacc"
+#line 1368 "sql.yacc"
     {(yyval.e_boolean)=EB_FALSE;}
     break;
 
   case 145:
 
 /* Line 1455 of yacc.c  */
-#line 1368 "sql.yacc"
+#line 1369 "sql.yacc"
     {
 		add_feature("DATABASE_EXCLUSIVE");
 		{(yyval.e_boolean)=EB_TRUE;}
@@ -5133,7 +5134,7 @@ yyreduce:
   case 146:
 
 /* Line 1455 of yacc.c  */
-#line 1378 "sql.yacc"
+#line 1379 "sql.yacc"
     {
 	char buff[256];
 	(yyval.sql_string)=make_sql_string_and_free(acl_strdup((yyvsp[(1) - (1)].str)),NULL);
@@ -5145,7 +5146,7 @@ yyreduce:
   case 147:
 
 /* Line 1455 of yacc.c  */
-#line 1387 "sql.yacc"
+#line 1388 "sql.yacc"
     {
 			add_feature("START_DATABASE_WITH_LOG_MODE_ANSI");
 			sprintf((yyval.str),"START DATABASE %s WITH LOG IN %s MODE ANSI", (yyvsp[(2) - (5)].str),(yyvsp[(4) - (5)].str));
@@ -5155,7 +5156,7 @@ yyreduce:
   case 148:
 
 /* Line 1455 of yacc.c  */
-#line 1391 "sql.yacc"
+#line 1392 "sql.yacc"
     {
 			add_feature("START_DATABASE_WITH_LOG");
 			sprintf((yyval.str),"START DATABASE %s WITH LOG IN %s", (yyvsp[(2) - (4)].str),(yyvsp[(4) - (4)].str));
@@ -5165,7 +5166,7 @@ yyreduce:
   case 149:
 
 /* Line 1455 of yacc.c  */
-#line 1396 "sql.yacc"
+#line 1397 "sql.yacc"
     {
 			add_feature("SET_CONSTRAINTS_ALL_IMMEDIATE");
 			SPRINTF1((yyval.str),"%s",(yyvsp[(1) - (1)].str)); 
@@ -5175,7 +5176,7 @@ yyreduce:
   case 150:
 
 /* Line 1455 of yacc.c  */
-#line 1400 "sql.yacc"
+#line 1401 "sql.yacc"
     {
 		add_feature("SET_BUFFERED_LOG");
 			SPRINTF1((yyval.str),"%s",(yyvsp[(1) - (1)].str)); 
@@ -5185,7 +5186,7 @@ yyreduce:
   case 151:
 
 /* Line 1455 of yacc.c  */
-#line 1404 "sql.yacc"
+#line 1405 "sql.yacc"
     {
 		add_feature("SET_LOG");
 			SPRINTF1((yyval.str),"%s",(yyvsp[(1) - (1)].str)); 
@@ -5195,7 +5196,7 @@ yyreduce:
   case 152:
 
 /* Line 1455 of yacc.c  */
-#line 1408 "sql.yacc"
+#line 1409 "sql.yacc"
     {
 			SPRINTF2((yyval.str),"%s %s",(yyvsp[(1) - (2)].str),(yyvsp[(2) - (2)].str)); add_feature("UPDATE_STATISTICS_TABLE");
 	}
@@ -5204,7 +5205,7 @@ yyreduce:
   case 153:
 
 /* Line 1455 of yacc.c  */
-#line 1411 "sql.yacc"
+#line 1412 "sql.yacc"
     {
 		add_feature("UPDATE_STATISTICS");
 			SPRINTF1((yyval.str),"%s",(yyvsp[(1) - (1)].str)); 
@@ -5214,147 +5215,147 @@ yyreduce:
   case 154:
 
 /* Line 1455 of yacc.c  */
-#line 1418 "sql.yacc"
+#line 1419 "sql.yacc"
     { (yyval.integer_val)=1; }
     break;
 
   case 155:
 
 /* Line 1455 of yacc.c  */
-#line 1419 "sql.yacc"
+#line 1420 "sql.yacc"
     { (yyval.integer_val)=-1; }
     break;
 
   case 156:
 
 /* Line 1455 of yacc.c  */
-#line 1420 "sql.yacc"
+#line 1421 "sql.yacc"
     { (yyval.integer_val)=0; }
     break;
 
   case 157:
 
 /* Line 1455 of yacc.c  */
-#line 1424 "sql.yacc"
+#line 1425 "sql.yacc"
     { (yyval.sql_string)=(yyvsp[(1) - (1)].sql_string); }
     break;
 
   case 158:
 
 /* Line 1455 of yacc.c  */
-#line 1425 "sql.yacc"
+#line 1426 "sql.yacc"
     { (yyval.sql_string)=(yyvsp[(1) - (1)].sql_string); }
     break;
 
   case 159:
 
 /* Line 1455 of yacc.c  */
-#line 1426 "sql.yacc"
+#line 1427 "sql.yacc"
     { (yyval.sql_string)=(yyvsp[(1) - (1)].sql_string); }
     break;
 
   case 160:
 
 /* Line 1455 of yacc.c  */
-#line 1427 "sql.yacc"
+#line 1428 "sql.yacc"
     { (yyval.sql_string)=(yyvsp[(1) - (1)].sql_string); }
     break;
 
   case 161:
 
 /* Line 1455 of yacc.c  */
-#line 1428 "sql.yacc"
+#line 1429 "sql.yacc"
     { (yyval.sql_string)=(yyvsp[(1) - (1)].sql_string); }
     break;
 
   case 162:
 
 /* Line 1455 of yacc.c  */
-#line 1429 "sql.yacc"
+#line 1430 "sql.yacc"
     { (yyval.sql_string)=(yyvsp[(1) - (1)].sql_string); }
     break;
 
   case 163:
 
 /* Line 1455 of yacc.c  */
-#line 1430 "sql.yacc"
+#line 1431 "sql.yacc"
     { (yyval.sql_string)=(yyvsp[(1) - (1)].sql_string); }
     break;
 
   case 164:
 
 /* Line 1455 of yacc.c  */
-#line 1438 "sql.yacc"
+#line 1439 "sql.yacc"
     {SPRINTF7((yyval.str),"%s %s %s %s %s %s %s",(yyvsp[(1) - (7)].str),(yyvsp[(2) - (7)].str),(yyvsp[(3) - (7)].str),(yyvsp[(4) - (7)].str),(yyvsp[(5) - (7)].str),(yyvsp[(6) - (7)].str),(yyvsp[(7) - (7)].str));  add_feature("GRANT"); }
     break;
 
   case 165:
 
 /* Line 1455 of yacc.c  */
-#line 1439 "sql.yacc"
+#line 1440 "sql.yacc"
     {SPRINTF6((yyval.str),"%s %s %s %s %s %s",(yyvsp[(1) - (6)].str),(yyvsp[(2) - (6)].str),(yyvsp[(3) - (6)].str),(yyvsp[(4) - (6)].str),(yyvsp[(5) - (6)].str),(yyvsp[(6) - (6)].str));  add_feature("REVOKE"); }
     break;
 
   case 166:
 
 /* Line 1455 of yacc.c  */
-#line 1440 "sql.yacc"
+#line 1441 "sql.yacc"
     {SPRINTF4((yyval.str),"%s %s %s %s ",(yyvsp[(1) - (4)].str),(yyvsp[(2) - (4)].str),(yyvsp[(3) - (4)].str),(yyvsp[(4) - (4)].str)); add_feature("GRANT"); }
     break;
 
   case 167:
 
 /* Line 1455 of yacc.c  */
-#line 1441 "sql.yacc"
+#line 1442 "sql.yacc"
     {SPRINTF4((yyval.str),"%s %s %s %s ",(yyvsp[(1) - (4)].str),(yyvsp[(2) - (4)].str),(yyvsp[(3) - (4)].str),(yyvsp[(4) - (4)].str));  add_feature("REVOKE"); }
     break;
 
   case 171:
 
 /* Line 1455 of yacc.c  */
-#line 1451 "sql.yacc"
+#line 1452 "sql.yacc"
     {strcpy((yyval.str),"");}
     break;
 
   case 172:
 
 /* Line 1455 of yacc.c  */
-#line 1452 "sql.yacc"
+#line 1453 "sql.yacc"
     {SPRINTF1((yyval.str)," %s ",(yyvsp[(1) - (1)].str));}
     break;
 
   case 173:
 
 /* Line 1455 of yacc.c  */
-#line 1453 "sql.yacc"
+#line 1454 "sql.yacc"
     {SPRINTF2((yyval.str)," %s %s",(yyvsp[(1) - (2)].str),(yyvsp[(2) - (2)].str));}
     break;
 
   case 174:
 
 /* Line 1455 of yacc.c  */
-#line 1457 "sql.yacc"
+#line 1458 "sql.yacc"
     {SPRINTF1((yyval.str)," %s ",(yyvsp[(1) - (1)].str));}
     break;
 
   case 175:
 
 /* Line 1455 of yacc.c  */
-#line 1458 "sql.yacc"
+#line 1459 "sql.yacc"
     {SPRINTF1((yyval.str)," %s ",(yyvsp[(1) - (1)].str));}
     break;
 
   case 178:
 
 /* Line 1455 of yacc.c  */
-#line 1465 "sql.yacc"
+#line 1466 "sql.yacc"
     {SPRINTF3((yyval.str)," %s %s %s",(yyvsp[(1) - (3)].str),(yyvsp[(2) - (3)].str),(yyvsp[(3) - (3)].str));}
     break;
 
   case 179:
 
 /* Line 1455 of yacc.c  */
-#line 1468 "sql.yacc"
+#line 1469 "sql.yacc"
     {
 		if (A4GLSQLCV_check_requirement("SIMPLE_GRANT_SELECT"))  {
 			SPRINTF0((yyval.str)," SELECT");
@@ -5367,7 +5368,7 @@ yyreduce:
   case 182:
 
 /* Line 1455 of yacc.c  */
-#line 1477 "sql.yacc"
+#line 1478 "sql.yacc"
     {
 		if (A4GLSQLCV_check_requirement("SIMPLE_GRANT_UPDATE"))  {
 			SPRINTF0((yyval.str)," UPDATE");
@@ -5380,35 +5381,35 @@ yyreduce:
   case 185:
 
 /* Line 1455 of yacc.c  */
-#line 1488 "sql.yacc"
+#line 1489 "sql.yacc"
     {strcpy((yyval.str),"");}
     break;
 
   case 186:
 
 /* Line 1455 of yacc.c  */
-#line 1490 "sql.yacc"
+#line 1491 "sql.yacc"
     {SPRINTF3((yyval.str)," %s %s %s",(yyvsp[(1) - (3)].str),(yyvsp[(2) - (3)].str),(yyvsp[(3) - (3)].str));}
     break;
 
   case 188:
 
 /* Line 1455 of yacc.c  */
-#line 1496 "sql.yacc"
+#line 1497 "sql.yacc"
     {SPRINTF3((yyval.str)," %s %s %s",(yyvsp[(1) - (3)].str),(yyvsp[(2) - (3)].str),(yyvsp[(3) - (3)].str));}
     break;
 
   case 190:
 
 /* Line 1455 of yacc.c  */
-#line 1502 "sql.yacc"
+#line 1503 "sql.yacc"
     {SPRINTF3((yyval.str)," %s %s %s",(yyvsp[(1) - (3)].str),(yyvsp[(2) - (3)].str),(yyvsp[(3) - (3)].str));}
     break;
 
   case 193:
 
 /* Line 1455 of yacc.c  */
-#line 1512 "sql.yacc"
+#line 1513 "sql.yacc"
     {
 		add_feature("CREATE_VIEW_AS_SELECT");
 		(yyval.sql_string)=make_sql_string_and_free(acl_strdup((yyvsp[(1) - (6)].str)),kw_space,acl_strdup((yyvsp[(2) - (6)].str)),kw_space,acl_strdup((yyvsp[(3) - (6)].str)),kw_space,acl_strdup((yyvsp[(4) - (6)].str)),kw_space,(yyvsp[(5) - (6)].sql_string),kw_space,acl_strdup((yyvsp[(6) - (6)].str)),NULL);
@@ -5419,35 +5420,35 @@ yyreduce:
   case 194:
 
 /* Line 1455 of yacc.c  */
-#line 1519 "sql.yacc"
+#line 1520 "sql.yacc"
     {strcpy((yyval.str),"");}
     break;
 
   case 195:
 
 /* Line 1455 of yacc.c  */
-#line 1521 "sql.yacc"
+#line 1522 "sql.yacc"
     {SPRINTF3((yyval.str)," %s %s %s",(yyvsp[(1) - (3)].str),(yyvsp[(2) - (3)].str),(yyvsp[(3) - (3)].str));}
     break;
 
   case 197:
 
 /* Line 1455 of yacc.c  */
-#line 1527 "sql.yacc"
+#line 1528 "sql.yacc"
     {SPRINTF3((yyval.str)," %s %s %s",(yyvsp[(1) - (3)].str),(yyvsp[(2) - (3)].str),(yyvsp[(3) - (3)].str));}
     break;
 
   case 198:
 
 /* Line 1455 of yacc.c  */
-#line 1530 "sql.yacc"
+#line 1531 "sql.yacc"
     {strcpy((yyval.str),"");}
     break;
 
   case 199:
 
 /* Line 1455 of yacc.c  */
-#line 1531 "sql.yacc"
+#line 1532 "sql.yacc"
     {
 		add_feature("CREATE_VIEW_SELECT_WITH_CHECK");
 	}
@@ -5456,7 +5457,7 @@ yyreduce:
   case 200:
 
 /* Line 1455 of yacc.c  */
-#line 1538 "sql.yacc"
+#line 1539 "sql.yacc"
     {
 		(yyval.sql_string)=make_sql_string_and_free(strdup("CHECK ("),(yyvsp[(3) - (4)].sql_string),kw_cb,NULL);
 		add_feature("DDL_CHECK");
@@ -5466,7 +5467,7 @@ yyreduce:
   case 201:
 
 /* Line 1455 of yacc.c  */
-#line 1547 "sql.yacc"
+#line 1548 "sql.yacc"
     {SPRINTF5((yyval.str)," %s %s %s %s %s",(yyvsp[(1) - (5)].str),(yyvsp[(2) - (5)].str),(yyvsp[(3) - (5)].str),(yyvsp[(4) - (5)].str),(yyvsp[(5) - (5)].str));
 	add_feature("DDL_FOREIGN_KEY");
 }
@@ -5475,7 +5476,7 @@ yyreduce:
   case 202:
 
 /* Line 1455 of yacc.c  */
-#line 1554 "sql.yacc"
+#line 1555 "sql.yacc"
     {SPRINTF2((yyval.str)," %s %s",(yyvsp[(1) - (2)].str),(yyvsp[(2) - (2)].str));
 add_feature("DDL_REFERENCES");
 }
@@ -5484,21 +5485,21 @@ add_feature("DDL_REFERENCES");
   case 205:
 
 /* Line 1455 of yacc.c  */
-#line 1566 "sql.yacc"
+#line 1567 "sql.yacc"
     {SPRINTF4((yyval.str)," %s %s %s %s",(yyvsp[(1) - (4)].str),(yyvsp[(2) - (4)].str),(yyvsp[(3) - (4)].str),(yyvsp[(4) - (4)].str));}
     break;
 
   case 207:
 
 /* Line 1455 of yacc.c  */
-#line 1572 "sql.yacc"
+#line 1573 "sql.yacc"
     {SPRINTF3((yyval.str)," %s %s %s",(yyvsp[(1) - (3)].str),(yyvsp[(2) - (3)].str),(yyvsp[(3) - (3)].str));}
     break;
 
   case 208:
 
 /* Line 1455 of yacc.c  */
-#line 1577 "sql.yacc"
+#line 1578 "sql.yacc"
     {
 		SPRINTF3((yyval.str)," UNIQUE %s %s %s",(yyvsp[(2) - (4)].str),(yyvsp[(3) - (4)].str),(yyvsp[(4) - (4)].str));
 add_feature("DDL_UNIQUE");
@@ -5508,7 +5509,7 @@ add_feature("DDL_UNIQUE");
   case 209:
 
 /* Line 1455 of yacc.c  */
-#line 1581 "sql.yacc"
+#line 1582 "sql.yacc"
     {
 		ansi_violation("Use UNIQUE not DISTINCT",0);
 		SPRINTF3((yyval.str)," UNIQUE %s %s %s",(yyvsp[(2) - (4)].str),(yyvsp[(3) - (4)].str),(yyvsp[(4) - (4)].str));
@@ -5519,7 +5520,7 @@ add_feature("DDL_DISTINCT");
   case 210:
 
 /* Line 1455 of yacc.c  */
-#line 1587 "sql.yacc"
+#line 1588 "sql.yacc"
     {SPRINTF4((yyval.str)," %s %s %s %s",(yyvsp[(1) - (4)].str),(yyvsp[(2) - (4)].str),(yyvsp[(3) - (4)].str),(yyvsp[(4) - (4)].str));
 add_feature("DDL_PRIMARY_KEY");
 }
@@ -5528,14 +5529,14 @@ add_feature("DDL_PRIMARY_KEY");
   case 212:
 
 /* Line 1455 of yacc.c  */
-#line 1595 "sql.yacc"
+#line 1596 "sql.yacc"
     {SPRINTF3((yyval.str)," %s %s %s",(yyvsp[(1) - (3)].str),(yyvsp[(2) - (3)].str),(yyvsp[(3) - (3)].str));}
     break;
 
   case 213:
 
 /* Line 1455 of yacc.c  */
-#line 1600 "sql.yacc"
+#line 1601 "sql.yacc"
     {
 		(yyval.sql_string)=acl_strdup((yyvsp[(1) - (1)].str));
 	}
@@ -5544,7 +5545,7 @@ add_feature("DDL_PRIMARY_KEY");
   case 214:
 
 /* Line 1455 of yacc.c  */
-#line 1603 "sql.yacc"
+#line 1604 "sql.yacc"
     {
 		(yyval.sql_string)=acl_strdup((yyvsp[(1) - (1)].str));
 	}
@@ -5553,7 +5554,7 @@ add_feature("DDL_PRIMARY_KEY");
   case 215:
 
 /* Line 1455 of yacc.c  */
-#line 1606 "sql.yacc"
+#line 1607 "sql.yacc"
     {
 		(yyval.sql_string)=(yyvsp[(1) - (1)].sql_string);
 	}
@@ -5562,35 +5563,35 @@ add_feature("DDL_PRIMARY_KEY");
   case 216:
 
 /* Line 1455 of yacc.c  */
-#line 1613 "sql.yacc"
+#line 1614 "sql.yacc"
     {SPRINTF2((yyval.str)," %s %s",(yyvsp[(1) - (2)].str),(yyvsp[(2) - (2)].str)); add_feature("DDL_DEFAULT_VALUE"); }
     break;
 
   case 217:
 
 /* Line 1455 of yacc.c  */
-#line 1614 "sql.yacc"
+#line 1615 "sql.yacc"
     {SPRINTF1((yyval.str)," DEFAULT %s", A4GLSQLCV_get_sqlconst("USER")); add_feature("DDL_DEFAULT_VALUE"); }
     break;
 
   case 218:
 
 /* Line 1455 of yacc.c  */
-#line 1615 "sql.yacc"
+#line 1616 "sql.yacc"
     {SPRINTF1((yyval.str)," DEFAULT %s", A4GLSQLCV_get_sqlconst("TODAY")); add_feature("DDL_DEFAULT_VALUE"); }
     break;
 
   case 219:
 
 /* Line 1455 of yacc.c  */
-#line 1616 "sql.yacc"
+#line 1617 "sql.yacc"
     { SPRINTF1((yyval.str)," %s",(yyvsp[(1) - (1)].str)); add_feature("DDL_DEFAULT_VALUE"); }
     break;
 
   case 220:
 
 /* Line 1455 of yacc.c  */
-#line 1622 "sql.yacc"
+#line 1623 "sql.yacc"
     {
 
 #ifdef DEBUG
@@ -5617,14 +5618,14 @@ add_feature("DDL_PRIMARY_KEY");
   case 221:
 
 /* Line 1455 of yacc.c  */
-#line 1645 "sql.yacc"
+#line 1646 "sql.yacc"
     {strcpy((yyval.str),"");}
     break;
 
   case 223:
 
 /* Line 1455 of yacc.c  */
-#line 1649 "sql.yacc"
+#line 1650 "sql.yacc"
     {
 		(yyval.sql_string)=acl_strdup("");
 	}
@@ -5633,7 +5634,7 @@ add_feature("DDL_PRIMARY_KEY");
   case 224:
 
 /* Line 1455 of yacc.c  */
-#line 1651 "sql.yacc"
+#line 1652 "sql.yacc"
     {
 		(yyval.sql_string)=(yyvsp[(1) - (1)].sql_string);
 	}
@@ -5642,7 +5643,7 @@ add_feature("DDL_PRIMARY_KEY");
   case 225:
 
 /* Line 1455 of yacc.c  */
-#line 1658 "sql.yacc"
+#line 1659 "sql.yacc"
     {
 		(yyval.sql_string)=(yyvsp[(1) - (1)].sql_string);
 	}
@@ -5651,7 +5652,7 @@ add_feature("DDL_PRIMARY_KEY");
   case 226:
 
 /* Line 1455 of yacc.c  */
-#line 1661 "sql.yacc"
+#line 1662 "sql.yacc"
     {
 		(yyval.sql_string)=make_sql_string_and_free((yyvsp[(1) - (2)].sql_string),kw_space,(yyvsp[(2) - (2)].sql_string),NULL);
 	}
@@ -5660,7 +5661,7 @@ add_feature("DDL_PRIMARY_KEY");
   case 227:
 
 /* Line 1455 of yacc.c  */
-#line 1667 "sql.yacc"
+#line 1668 "sql.yacc"
     {
 		(yyval.sql_string)=make_sql_string_and_free((yyvsp[(1) - (2)].sql_string),acl_strdup((yyvsp[(2) - (2)].str)),NULL);
 	}
@@ -5669,7 +5670,7 @@ add_feature("DDL_PRIMARY_KEY");
   case 228:
 
 /* Line 1455 of yacc.c  */
-#line 1675 "sql.yacc"
+#line 1676 "sql.yacc"
     {
 		SPRINTF1((yyval.str)," %s ",(yyvsp[(1) - (1)].str));
 		(yyval.sql_string)=acl_strdup((yyval.str));
@@ -5680,7 +5681,7 @@ add_feature("DDL_PRIMARY_KEY");
   case 229:
 
 /* Line 1455 of yacc.c  */
-#line 1680 "sql.yacc"
+#line 1681 "sql.yacc"
     {
 		SPRINTF0((yyval.str)," NOT NULL UNIQUE ");
 		(yyval.sql_string)=acl_strdup((yyval.str));
@@ -5692,7 +5693,7 @@ add_feature("DDL_PRIMARY_KEY");
   case 230:
 
 /* Line 1455 of yacc.c  */
-#line 1686 "sql.yacc"
+#line 1687 "sql.yacc"
     {
 		SPRINTF0((yyval.str)," UNIQUE ");
 		(yyval.sql_string)=acl_strdup((yyval.str));
@@ -5703,7 +5704,7 @@ add_feature("DDL_PRIMARY_KEY");
   case 231:
 
 /* Line 1455 of yacc.c  */
-#line 1691 "sql.yacc"
+#line 1692 "sql.yacc"
     {
 		ansi_violation("Use UNIQUE not DISTINCT",0);
 		SPRINTF0((yyval.str)," UNIQUE ");
@@ -5715,7 +5716,7 @@ add_feature("DDL_PRIMARY_KEY");
   case 232:
 
 /* Line 1455 of yacc.c  */
-#line 1697 "sql.yacc"
+#line 1698 "sql.yacc"
     {
 		(yyval.sql_string)=acl_strdup((yyvsp[(1) - (1)].str));
 	}
@@ -5724,7 +5725,7 @@ add_feature("DDL_PRIMARY_KEY");
   case 233:
 
 /* Line 1455 of yacc.c  */
-#line 1700 "sql.yacc"
+#line 1701 "sql.yacc"
     {
 		(yyval.sql_string)=make_sql_string_and_free(acl_strdup("CHECK ("),(yyvsp[(3) - (4)].sql_string),kw_cb,NULL);
 		add_feature("DDL_CHECK");
@@ -5735,7 +5736,7 @@ add_feature("DDL_PRIMARY_KEY");
   case 234:
 
 /* Line 1455 of yacc.c  */
-#line 1705 "sql.yacc"
+#line 1706 "sql.yacc"
     {
 		(yyval.sql_string)=make_sql_string_and_free(acl_strdup(" PRIMARY KEY "),NULL);
 		add_feature("DDL_PRIMARY_KEY");
@@ -5745,7 +5746,7 @@ add_feature("DDL_PRIMARY_KEY");
   case 235:
 
 /* Line 1455 of yacc.c  */
-#line 1714 "sql.yacc"
+#line 1715 "sql.yacc"
     {
 		add_feature("CREATE_SCHEMA");
 
@@ -5756,14 +5757,14 @@ add_feature("DDL_PRIMARY_KEY");
   case 236:
 
 /* Line 1455 of yacc.c  */
-#line 1723 "sql.yacc"
+#line 1724 "sql.yacc"
     {SPRINTF1((yyval.str)," %s",(yyvsp[(1) - (1)].str));}
     break;
 
   case 239:
 
 /* Line 1455 of yacc.c  */
-#line 1732 "sql.yacc"
+#line 1733 "sql.yacc"
     {
 		(yyval.sql_string)=make_sql_string_and_free((yyvsp[(1) - (2)].sql_string),kw_space,(yyvsp[(2) - (2)].sql_string),NULL);
 	}
@@ -5772,7 +5773,7 @@ add_feature("DDL_PRIMARY_KEY");
   case 240:
 
 /* Line 1455 of yacc.c  */
-#line 1738 "sql.yacc"
+#line 1739 "sql.yacc"
     {
 		(yyval.sql_string)=(yyvsp[(1) - (1)].sql_string);
 	}
@@ -5781,7 +5782,7 @@ add_feature("DDL_PRIMARY_KEY");
   case 241:
 
 /* Line 1455 of yacc.c  */
-#line 1741 "sql.yacc"
+#line 1742 "sql.yacc"
     {
 		(yyval.sql_string)=acl_strdup((yyvsp[(1) - (1)].str));
 	}
@@ -5790,7 +5791,7 @@ add_feature("DDL_PRIMARY_KEY");
   case 242:
 
 /* Line 1455 of yacc.c  */
-#line 1752 "sql.yacc"
+#line 1753 "sql.yacc"
     {
 		 add_feature("HAVING"); 
 		(yyval.s_select_list_item)=(yyvsp[(2) - (2)].s_select_list_item);
@@ -5800,7 +5801,7 @@ add_feature("DDL_PRIMARY_KEY");
   case 243:
 
 /* Line 1455 of yacc.c  */
-#line 1761 "sql.yacc"
+#line 1762 "sql.yacc"
     {
 		 (yyval.s_select_list_item)=(yyvsp[(2) - (2)].s_select_list_item);
 	}
@@ -5809,7 +5810,7 @@ add_feature("DDL_PRIMARY_KEY");
   case 244:
 
 /* Line 1455 of yacc.c  */
-#line 1768 "sql.yacc"
+#line 1769 "sql.yacc"
     {
 		(yyval.u_table)=(yyvsp[(2) - (2)].u_table);
 	}
@@ -5818,14 +5819,14 @@ add_feature("DDL_PRIMARY_KEY");
   case 245:
 
 /* Line 1455 of yacc.c  */
-#line 1774 "sql.yacc"
+#line 1775 "sql.yacc"
     {(yyval.u_table)=(yyvsp[(1) - (1)].u_table);}
     break;
 
   case 246:
 
 /* Line 1455 of yacc.c  */
-#line 1775 "sql.yacc"
+#line 1776 "sql.yacc"
     {
 		(yyval.u_table)=A4GLSQLPARSE_append_tablename((yyvsp[(1) - (3)].u_table),(yyvsp[(3) - (3)].u_table),E_OUTER_NONE,NULL);
 	}
@@ -5834,7 +5835,7 @@ add_feature("DDL_PRIMARY_KEY");
   case 247:
 
 /* Line 1455 of yacc.c  */
-#line 1778 "sql.yacc"
+#line 1779 "sql.yacc"
     {
 		(yyval.u_table)=A4GLSQLPARSE_append_tablename((yyvsp[(1) - (4)].u_table),(yyvsp[(4) - (4)].u_table),E_OUTER_NORMAL,NULL);
 		A4GL_warn("OUTER join *may* not be portable to non-informix database");
@@ -5845,7 +5846,7 @@ add_feature("DDL_PRIMARY_KEY");
   case 248:
 
 /* Line 1455 of yacc.c  */
-#line 1783 "sql.yacc"
+#line 1784 "sql.yacc"
     {
 		(yyval.u_table)=A4GLSQLPARSE_append_tablename((yyvsp[(1) - (6)].u_table),(yyvsp[(5) - (6)].u_table),E_OUTER_NORMAL,NULL);
 		A4GL_warn("OUTER join *may* not be portable to non-informix database");
@@ -5856,7 +5857,7 @@ add_feature("DDL_PRIMARY_KEY");
   case 249:
 
 /* Line 1455 of yacc.c  */
-#line 1794 "sql.yacc"
+#line 1795 "sql.yacc"
     {
 		(yyval.u_table)=A4GLSQLPARSE_append_tablename((yyvsp[(1) - (5)].u_table),(yyvsp[(3) - (5)].u_table),E_OUTER_LEFT_OUTER, (yyvsp[(5) - (5)].s_select_list_item));
 		add_feature("SELECT_OUTER");
@@ -5866,7 +5867,7 @@ add_feature("DDL_PRIMARY_KEY");
   case 250:
 
 /* Line 1455 of yacc.c  */
-#line 1798 "sql.yacc"
+#line 1799 "sql.yacc"
     {
 		(yyval.u_table)=A4GLSQLPARSE_append_tablename((yyvsp[(1) - (5)].u_table),(yyvsp[(3) - (5)].u_table),E_INNER, (yyvsp[(5) - (5)].s_select_list_item));
 		add_feature("SELECT_INNER");
@@ -5876,14 +5877,14 @@ add_feature("DDL_PRIMARY_KEY");
   case 252:
 
 /* Line 1455 of yacc.c  */
-#line 1806 "sql.yacc"
+#line 1807 "sql.yacc"
     {(yyval.u_table)=(yyvsp[(2) - (3)].u_table);}
     break;
 
   case 253:
 
 /* Line 1455 of yacc.c  */
-#line 1810 "sql.yacc"
+#line 1811 "sql.yacc"
     { 
 			//A4GL_add_crud("SELECT",$<str>1);
 			(yyval.u_table)=A4GLSQLPARSE_new_tablename((yyvsp[(1) - (1)].str),NULL);
@@ -5893,7 +5894,7 @@ add_feature("DDL_PRIMARY_KEY");
   case 254:
 
 /* Line 1455 of yacc.c  */
-#line 1814 "sql.yacc"
+#line 1815 "sql.yacc"
     { 
 			//A4GL_add_crud("SELECT",$<str>1);
 			(yyval.u_table)=A4GLSQLPARSE_new_tablename((yyvsp[(1) - (2)].str),(yyvsp[(2) - (2)].str));
@@ -5903,7 +5904,7 @@ add_feature("DDL_PRIMARY_KEY");
   case 255:
 
 /* Line 1455 of yacc.c  */
-#line 1818 "sql.yacc"
+#line 1819 "sql.yacc"
     { 
 			//A4GL_add_crud("SELECT",$<str>1);
 			(yyval.u_table)=A4GLSQLPARSE_new_tablename((yyvsp[(1) - (3)].str),(yyvsp[(3) - (3)].str));
@@ -5913,7 +5914,7 @@ add_feature("DDL_PRIMARY_KEY");
   case 256:
 
 /* Line 1455 of yacc.c  */
-#line 1825 "sql.yacc"
+#line 1826 "sql.yacc"
     {
 			/* No from or where etc.. */
 			/* eg.. select user ; */
@@ -5924,7 +5925,7 @@ add_feature("DDL_PRIMARY_KEY");
   case 257:
 
 /* Line 1455 of yacc.c  */
-#line 1830 "sql.yacc"
+#line 1831 "sql.yacc"
     {
 		(yyval.s_select)=(yyvsp[(2) - (2)].s_select);
 		(yyval.s_select)->first=(yyvsp[(1) - (2)].u_table);
@@ -5935,7 +5936,7 @@ add_feature("DDL_PRIMARY_KEY");
   case 258:
 
 /* Line 1455 of yacc.c  */
-#line 1838 "sql.yacc"
+#line 1839 "sql.yacc"
     {
 		(yyval.s_select)=(yyvsp[(1) - (1)].s_select);
 	}
@@ -5944,7 +5945,7 @@ add_feature("DDL_PRIMARY_KEY");
   case 259:
 
 /* Line 1455 of yacc.c  */
-#line 1841 "sql.yacc"
+#line 1842 "sql.yacc"
     {
 		(yyval.s_select)=(yyvsp[(2) - (2)].s_select);
 		(yyval.s_select)->where_clause=(yyvsp[(1) - (2)].s_select_list_item);
@@ -5954,7 +5955,7 @@ add_feature("DDL_PRIMARY_KEY");
   case 260:
 
 /* Line 1455 of yacc.c  */
-#line 1847 "sql.yacc"
+#line 1848 "sql.yacc"
     {
 		(yyval.s_select)=new_empty_select();
 	}
@@ -5963,7 +5964,7 @@ add_feature("DDL_PRIMARY_KEY");
   case 261:
 
 /* Line 1455 of yacc.c  */
-#line 1850 "sql.yacc"
+#line 1851 "sql.yacc"
     {
 		(yyval.s_select)=new_empty_select();
 		(yyval.s_select)->group_by=(yyvsp[(1) - (1)].s_select_list_item_list);
@@ -5974,7 +5975,7 @@ add_feature("DDL_PRIMARY_KEY");
   case 262:
 
 /* Line 1455 of yacc.c  */
-#line 1855 "sql.yacc"
+#line 1856 "sql.yacc"
     {
 		(yyval.s_select)=new_empty_select();
 		(yyval.s_select)->group_by=(yyvsp[(1) - (2)].s_select_list_item_list);
@@ -5985,7 +5986,7 @@ add_feature("DDL_PRIMARY_KEY");
   case 263:
 
 /* Line 1455 of yacc.c  */
-#line 1860 "sql.yacc"
+#line 1861 "sql.yacc"
     {
 		(yyval.s_select)=new_empty_select();
 		(yyval.s_select)->group_by=0;
@@ -5997,7 +5998,7 @@ add_feature("DDL_PRIMARY_KEY");
   case 264:
 
 /* Line 1455 of yacc.c  */
-#line 1873 "sql.yacc"
+#line 1874 "sql.yacc"
     {
 		(yyval.s_select_list_item)=(yyvsp[(1) - (1)].s_select_list_item);
 	}
@@ -6006,7 +6007,7 @@ add_feature("DDL_PRIMARY_KEY");
   case 265:
 
 /* Line 1455 of yacc.c  */
-#line 1876 "sql.yacc"
+#line 1877 "sql.yacc"
     {
 		(yyval.s_select_list_item)=new_select_list_item_op_expr((yyvsp[(1) - (3)].s_select_list_item),(yyvsp[(3) - (3)].s_select_list_item)," OR ");
 	}
@@ -6015,7 +6016,7 @@ add_feature("DDL_PRIMARY_KEY");
   case 266:
 
 /* Line 1455 of yacc.c  */
-#line 1882 "sql.yacc"
+#line 1883 "sql.yacc"
     {
 		(yyval.s_select_list_item)=(yyvsp[(1) - (1)].s_select_list_item);
 	}
@@ -6024,7 +6025,7 @@ add_feature("DDL_PRIMARY_KEY");
   case 267:
 
 /* Line 1455 of yacc.c  */
-#line 1885 "sql.yacc"
+#line 1886 "sql.yacc"
     {
 		(yyval.s_select_list_item)=new_select_list_item_op_expr((yyvsp[(1) - (3)].s_select_list_item),(yyvsp[(3) - (3)].s_select_list_item)," AND ");
 	}
@@ -6033,7 +6034,7 @@ add_feature("DDL_PRIMARY_KEY");
   case 268:
 
 /* Line 1455 of yacc.c  */
-#line 1891 "sql.yacc"
+#line 1892 "sql.yacc"
     {
 		(yyval.s_select_list_item)=(yyvsp[(1) - (1)].s_select_list_item);
 	}
@@ -6042,7 +6043,7 @@ add_feature("DDL_PRIMARY_KEY");
   case 269:
 
 /* Line 1455 of yacc.c  */
-#line 1894 "sql.yacc"
+#line 1895 "sql.yacc"
     {
 		(yyval.s_select_list_item)=new_select_list_item_simple_expr(E_SLI_NOT,(yyvsp[(2) - (2)].s_select_list_item));
 	}
@@ -6051,7 +6052,7 @@ add_feature("DDL_PRIMARY_KEY");
   case 270:
 
 /* Line 1455 of yacc.c  */
-#line 1900 "sql.yacc"
+#line 1901 "sql.yacc"
     {
 		(yyval.s_select_list_item)=(yyvsp[(1) - (1)].s_select_list_item);
 	}
@@ -6060,7 +6061,7 @@ add_feature("DDL_PRIMARY_KEY");
   case 271:
 
 /* Line 1455 of yacc.c  */
-#line 1903 "sql.yacc"
+#line 1904 "sql.yacc"
     {
 		(yyval.s_select_list_item)=new_select_list_item_simple_expr(E_SLI_BRACKET_EXPR,(yyvsp[(2) - (3)].s_select_list_item));
 	}
@@ -6069,7 +6070,7 @@ add_feature("DDL_PRIMARY_KEY");
   case 272:
 
 /* Line 1455 of yacc.c  */
-#line 1910 "sql.yacc"
+#line 1911 "sql.yacc"
     {
 		(yyval.s_select_list_item)=new_select_list_item_sq(E_SQE_EXISTS, (yyvsp[(2) - (2)].s_select_list_item));
 		add_feature("WHERE_EXISTS");
@@ -6079,7 +6080,7 @@ add_feature("DDL_PRIMARY_KEY");
   case 273:
 
 /* Line 1455 of yacc.c  */
-#line 1914 "sql.yacc"
+#line 1915 "sql.yacc"
     {
 		(yyval.s_select_list_item)=new_select_list_item_sq(E_SQE_NOT_EXISTS, (yyvsp[(2) - (2)].s_select_list_item));
 		add_feature("WHERE_EXISTS");
@@ -6089,49 +6090,49 @@ add_feature("DDL_PRIMARY_KEY");
   case 274:
 
 /* Line 1455 of yacc.c  */
-#line 1925 "sql.yacc"
+#line 1926 "sql.yacc"
     {strcpy((yyval.str),"");}
     break;
 
   case 275:
 
 /* Line 1455 of yacc.c  */
-#line 1925 "sql.yacc"
+#line 1926 "sql.yacc"
     {SPRINTF1((yyval.str)," ESCAPE %s",(yyvsp[(2) - (2)].str));add_feature("WHERE_MATCHES_ESCAPE");}
     break;
 
   case 276:
 
 /* Line 1455 of yacc.c  */
-#line 1926 "sql.yacc"
+#line 1927 "sql.yacc"
     {strcpy((yyval.str),"");}
     break;
 
   case 277:
 
 /* Line 1455 of yacc.c  */
-#line 1926 "sql.yacc"
+#line 1927 "sql.yacc"
     {SPRINTF1((yyval.str)," ESCAPE %s",(yyvsp[(2) - (2)].str));add_feature("WHERE_ILIKE_ESCAPE");}
     break;
 
   case 278:
 
 /* Line 1455 of yacc.c  */
-#line 1927 "sql.yacc"
+#line 1928 "sql.yacc"
     {strcpy((yyval.str),"");}
     break;
 
   case 279:
 
 /* Line 1455 of yacc.c  */
-#line 1927 "sql.yacc"
+#line 1928 "sql.yacc"
     {SPRINTF1((yyval.str)," ESCAPE %s",(yyvsp[(2) - (2)].str));add_feature("WHERE_LIKE_ESCAPE");}
     break;
 
   case 280:
 
 /* Line 1455 of yacc.c  */
-#line 1930 "sql.yacc"
+#line 1931 "sql.yacc"
     {
 		 (yyval.s_select_list_item)=(yyvsp[(1) - (1)].s_select_list_item);
 	}
@@ -6140,21 +6141,21 @@ add_feature("DDL_PRIMARY_KEY");
   case 282:
 
 /* Line 1455 of yacc.c  */
-#line 1940 "sql.yacc"
+#line 1941 "sql.yacc"
     {strcpy((yyval.str),"");}
     break;
 
   case 283:
 
 /* Line 1455 of yacc.c  */
-#line 1941 "sql.yacc"
+#line 1942 "sql.yacc"
     {strcpy((yyval.str)," NOT ");}
     break;
 
   case 284:
 
 /* Line 1455 of yacc.c  */
-#line 1946 "sql.yacc"
+#line 1947 "sql.yacc"
     { 
 		if (strlen((yyvsp[(2) - (3)].str))==0) {
 			(yyval.s_select_list_item)=new_select_list_item_simple_expr(E_SLI_ISNULL,(yyvsp[(1) - (3)].s_select_list_item));
@@ -6169,7 +6170,7 @@ add_feature("DDL_PRIMARY_KEY");
   case 285:
 
 /* Line 1455 of yacc.c  */
-#line 1955 "sql.yacc"
+#line 1956 "sql.yacc"
     { 
 		if (strlen((yyvsp[(2) - (3)].str))==0) {
 			(yyval.s_select_list_item)=new_select_list_item_simple_expr(E_SLI_ISNOTNULL,(yyvsp[(1) - (3)].s_select_list_item));
@@ -6183,7 +6184,7 @@ add_feature("DDL_PRIMARY_KEY");
   case 286:
 
 /* Line 1455 of yacc.c  */
-#line 1963 "sql.yacc"
+#line 1964 "sql.yacc"
     { 
 			(yyval.s_select_list_item)=new_select_list_item_op_expr((yyvsp[(1) - (3)].s_select_list_item),(yyvsp[(3) - (3)].s_select_list_item),(yyvsp[(2) - (3)].str));
 	}
@@ -6192,7 +6193,7 @@ add_feature("DDL_PRIMARY_KEY");
   case 287:
 
 /* Line 1455 of yacc.c  */
-#line 1966 "sql.yacc"
+#line 1967 "sql.yacc"
     { 
 			(yyval.s_select_list_item)=new_select_list_item_op_expr((yyvsp[(1) - (3)].s_select_list_item),(yyvsp[(3) - (3)].s_select_list_item),"=");
 	}
@@ -6201,7 +6202,7 @@ add_feature("DDL_PRIMARY_KEY");
   case 288:
 
 /* Line 1455 of yacc.c  */
-#line 1969 "sql.yacc"
+#line 1970 "sql.yacc"
     { 
 			FPRINTF(stderr,"Warning: Corrected =NULL to IS NULL line %d\n",yylineno);
 			(yyval.s_select_list_item)=new_select_list_item_simple_expr(E_SLI_ISNULL,(yyvsp[(1) - (3)].s_select_list_item));
@@ -6211,7 +6212,7 @@ add_feature("DDL_PRIMARY_KEY");
   case 289:
 
 /* Line 1455 of yacc.c  */
-#line 1973 "sql.yacc"
+#line 1974 "sql.yacc"
     { 
 		if (strlen((yyvsp[(2) - (6)].str))) {
 			(yyval.s_select_list_item)=new_select_list_item_op_between((yyvsp[(2) - (6)].str),(yyvsp[(1) - (6)].s_select_list_item),(yyvsp[(4) - (6)].s_select_list_item),(yyvsp[(6) - (6)].s_select_list_item),1);
@@ -6224,7 +6225,7 @@ add_feature("DDL_PRIMARY_KEY");
   case 290:
 
 /* Line 1455 of yacc.c  */
-#line 1980 "sql.yacc"
+#line 1981 "sql.yacc"
     { 
 			(yyval.s_select_list_item)=new_select_list_item_regex(E_SLI_REGEX_LIKE,(yyvsp[(1) - (4)].s_select_list_item),(yyvsp[(3) - (4)].s_select_list_item),(yyvsp[(4) - (4)].str));
 	}
@@ -6233,7 +6234,7 @@ add_feature("DDL_PRIMARY_KEY");
   case 291:
 
 /* Line 1455 of yacc.c  */
-#line 1983 "sql.yacc"
+#line 1984 "sql.yacc"
     { 
 			(yyval.s_select_list_item)=new_select_list_item_regex(E_SLI_REGEX_NOT_LIKE,(yyvsp[(1) - (4)].s_select_list_item),(yyvsp[(3) - (4)].s_select_list_item),(yyvsp[(4) - (4)].str));
 
@@ -6243,7 +6244,7 @@ add_feature("DDL_PRIMARY_KEY");
   case 292:
 
 /* Line 1455 of yacc.c  */
-#line 1987 "sql.yacc"
+#line 1988 "sql.yacc"
     { 
 			(yyval.s_select_list_item)=new_select_list_item_regex(E_SLI_REGEX_ILIKE,(yyvsp[(1) - (4)].s_select_list_item),(yyvsp[(3) - (4)].s_select_list_item),(yyvsp[(4) - (4)].str));
 	}
@@ -6252,7 +6253,7 @@ add_feature("DDL_PRIMARY_KEY");
   case 293:
 
 /* Line 1455 of yacc.c  */
-#line 1990 "sql.yacc"
+#line 1991 "sql.yacc"
     { 
 			(yyval.s_select_list_item)=new_select_list_item_regex(E_SLI_REGEX_NOT_ILIKE,(yyvsp[(1) - (4)].s_select_list_item),(yyvsp[(3) - (4)].s_select_list_item),(yyvsp[(4) - (4)].str));
 	}
@@ -6261,7 +6262,7 @@ add_feature("DDL_PRIMARY_KEY");
   case 294:
 
 /* Line 1455 of yacc.c  */
-#line 1993 "sql.yacc"
+#line 1994 "sql.yacc"
     { 
 			(yyval.s_select_list_item)=new_select_list_item_regex(E_SLI_REGEX_MATCHES,(yyvsp[(1) - (4)].s_select_list_item),(yyvsp[(3) - (4)].s_select_list_item),(yyvsp[(4) - (4)].str));
 	}
@@ -6270,7 +6271,7 @@ add_feature("DDL_PRIMARY_KEY");
   case 295:
 
 /* Line 1455 of yacc.c  */
-#line 1996 "sql.yacc"
+#line 1997 "sql.yacc"
     { 
 			(yyval.s_select_list_item)=new_select_list_item_regex(E_SLI_REGEX_NOT_MATCHES,(yyvsp[(1) - (4)].s_select_list_item),(yyvsp[(3) - (4)].s_select_list_item),(yyvsp[(4) - (4)].str));
 	}
@@ -6279,7 +6280,7 @@ add_feature("DDL_PRIMARY_KEY");
   case 296:
 
 /* Line 1455 of yacc.c  */
-#line 2002 "sql.yacc"
+#line 2003 "sql.yacc"
     {
 			if (A4GLSQLCV_check_requirement("NOT_EQUAL_AS_LESS_GREATER_THAN"))  {
 				strcpy((yyval.str)," <> ");
@@ -6292,7 +6293,7 @@ add_feature("DDL_PRIMARY_KEY");
   case 297:
 
 /* Line 1455 of yacc.c  */
-#line 2009 "sql.yacc"
+#line 2010 "sql.yacc"
     {
 			strcpy((yyval.str)," < ");
 	}
@@ -6301,7 +6302,7 @@ add_feature("DDL_PRIMARY_KEY");
   case 298:
 
 /* Line 1455 of yacc.c  */
-#line 2012 "sql.yacc"
+#line 2013 "sql.yacc"
     {
 			strcpy((yyval.str)," > ");
 	}
@@ -6310,7 +6311,7 @@ add_feature("DDL_PRIMARY_KEY");
   case 299:
 
 /* Line 1455 of yacc.c  */
-#line 2015 "sql.yacc"
+#line 2016 "sql.yacc"
     {
 			strcpy((yyval.str)," ~ ");
 	}
@@ -6319,21 +6320,21 @@ add_feature("DDL_PRIMARY_KEY");
   case 300:
 
 /* Line 1455 of yacc.c  */
-#line 2018 "sql.yacc"
+#line 2019 "sql.yacc"
     {strcpy((yyval.str)," <= ");}
     break;
 
   case 301:
 
 /* Line 1455 of yacc.c  */
-#line 2019 "sql.yacc"
+#line 2020 "sql.yacc"
     {strcpy((yyval.str)," >= ");}
     break;
 
   case 302:
 
 /* Line 1455 of yacc.c  */
-#line 2024 "sql.yacc"
+#line 2025 "sql.yacc"
     {
 		(yyval.s_select_list_item)=(yyvsp[(1) - (1)].s_select_list_item);
 	}
@@ -6342,7 +6343,7 @@ add_feature("DDL_PRIMARY_KEY");
   case 303:
 
 /* Line 1455 of yacc.c  */
-#line 2027 "sql.yacc"
+#line 2028 "sql.yacc"
     {
 		(yyval.s_select_list_item)=(yyvsp[(1) - (1)].s_select_list_item);
 	}
@@ -6351,7 +6352,7 @@ add_feature("DDL_PRIMARY_KEY");
   case 304:
 
 /* Line 1455 of yacc.c  */
-#line 2030 "sql.yacc"
+#line 2031 "sql.yacc"
     {
 		(yyval.s_select_list_item)=(yyvsp[(1) - (1)].s_select_list_item);
 	}
@@ -6360,7 +6361,7 @@ add_feature("DDL_PRIMARY_KEY");
   case 305:
 
 /* Line 1455 of yacc.c  */
-#line 2033 "sql.yacc"
+#line 2034 "sql.yacc"
     {
                  (yyval.s_select_list_item)=(yyvsp[(1) - (1)].s_select_list_item);
         }
@@ -6369,21 +6370,21 @@ add_feature("DDL_PRIMARY_KEY");
   case 306:
 
 /* Line 1455 of yacc.c  */
-#line 2040 "sql.yacc"
+#line 2041 "sql.yacc"
     {strcpy((yyval.str),"");}
     break;
 
   case 307:
 
 /* Line 1455 of yacc.c  */
-#line 2041 "sql.yacc"
+#line 2042 "sql.yacc"
     {strcpy((yyval.str)," ALL "); add_feature("AGG_ALL");}
     break;
 
   case 308:
 
 /* Line 1455 of yacc.c  */
-#line 2042 "sql.yacc"
+#line 2043 "sql.yacc"
     {
 		strcpy((yyval.str)," DISTINCT ");
 		add_feature("AGG_DISTINCT");
@@ -6393,7 +6394,7 @@ add_feature("DDL_PRIMARY_KEY");
   case 309:
 
 /* Line 1455 of yacc.c  */
-#line 2046 "sql.yacc"
+#line 2047 "sql.yacc"
     {
 		ansi_violation("Use DISTINCT not UNIQUE",0);
 		strcpy((yyval.str)," DISTINCT ");
@@ -6404,21 +6405,21 @@ add_feature("DDL_PRIMARY_KEY");
   case 310:
 
 /* Line 1455 of yacc.c  */
-#line 2053 "sql.yacc"
+#line 2054 "sql.yacc"
     {strcpy((yyval.str),"");}
     break;
 
   case 311:
 
 /* Line 1455 of yacc.c  */
-#line 2054 "sql.yacc"
+#line 2055 "sql.yacc"
     {strcpy((yyval.str)," ALL "); add_feature("UNION_ALL");}
     break;
 
   case 312:
 
 /* Line 1455 of yacc.c  */
-#line 2055 "sql.yacc"
+#line 2056 "sql.yacc"
     {
 		strcpy((yyval.str)," DISTINCT ");
 		add_feature("UNION_DISTINCT");
@@ -6428,7 +6429,7 @@ add_feature("DDL_PRIMARY_KEY");
   case 313:
 
 /* Line 1455 of yacc.c  */
-#line 2059 "sql.yacc"
+#line 2060 "sql.yacc"
     {
 		ansi_violation("Use DISTINCT not UNIQUE",0);
 		add_feature("UNION_DISTINCT");
@@ -6439,7 +6440,7 @@ add_feature("DDL_PRIMARY_KEY");
   case 314:
 
 /* Line 1455 of yacc.c  */
-#line 2073 "sql.yacc"
+#line 2074 "sql.yacc"
     {
 		strcpy((yyval.str),A4GLSQLCV_dtype_alias((yyvsp[(1) - (1)].str)));
 	}
@@ -6448,21 +6449,21 @@ add_feature("DDL_PRIMARY_KEY");
   case 319:
 
 /* Line 1455 of yacc.c  */
-#line 2088 "sql.yacc"
+#line 2089 "sql.yacc"
     {SPRINTF4((yyval.str)," %s %s%s%s",(yyvsp[(1) - (4)].str),(yyvsp[(2) - (4)].str),(yyvsp[(3) - (4)].str),(yyvsp[(4) - (4)].str));}
     break;
 
   case 320:
 
 /* Line 1455 of yacc.c  */
-#line 2092 "sql.yacc"
+#line 2093 "sql.yacc"
     {strcpy((yyval.str),"SERIAL"); add_feature("DDL_SERIAL"); }
     break;
 
   case 321:
 
 /* Line 1455 of yacc.c  */
-#line 2093 "sql.yacc"
+#line 2094 "sql.yacc"
     {
 			add_feature("DDL_SERIAL");
 			if (A4GLSQLCV_check_requirement("NO_SERIAL_START_VALUE"))  {
@@ -6476,14 +6477,14 @@ add_feature("DDL_PRIMARY_KEY");
   case 322:
 
 /* Line 1455 of yacc.c  */
-#line 2102 "sql.yacc"
+#line 2103 "sql.yacc"
     {strcpy((yyval.str),"SERIAL8"); add_feature("DDL_SERIAL8"); }
     break;
 
   case 323:
 
 /* Line 1455 of yacc.c  */
-#line 2104 "sql.yacc"
+#line 2105 "sql.yacc"
     {
 			add_feature("DDL_SERIAL8");
 			if (A4GLSQLCV_check_requirement("NO_SERIAL_START_VALUE"))  {
@@ -6497,7 +6498,7 @@ add_feature("DDL_PRIMARY_KEY");
   case 324:
 
 /* Line 1455 of yacc.c  */
-#line 2113 "sql.yacc"
+#line 2114 "sql.yacc"
     {
  			add_feature("DDL_DECIMAL");
 	}
@@ -6506,7 +6507,7 @@ add_feature("DDL_PRIMARY_KEY");
   case 325:
 
 /* Line 1455 of yacc.c  */
-#line 2116 "sql.yacc"
+#line 2117 "sql.yacc"
     {
  			add_feature("DDL_DECIMAL");
 		if (strlen((yyvsp[(4) - (5)].str))) {
@@ -6520,7 +6521,7 @@ add_feature("DDL_PRIMARY_KEY");
   case 326:
 
 /* Line 1455 of yacc.c  */
-#line 2124 "sql.yacc"
+#line 2125 "sql.yacc"
     {
  			add_feature("DDL_MONEY");
 		if (A4GLSQLCV_check_requirement("MONEY_AS_DECIMAL")) {
@@ -6534,7 +6535,7 @@ add_feature("DDL_PRIMARY_KEY");
   case 327:
 
 /* Line 1455 of yacc.c  */
-#line 2134 "sql.yacc"
+#line 2135 "sql.yacc"
     {
  			add_feature("DDL_MONEY");
 		if (A4GLSQLCV_check_requirement ("MONEY_AS_DECIMAL")) {
@@ -6548,7 +6549,7 @@ add_feature("DDL_PRIMARY_KEY");
   case 328:
 
 /* Line 1455 of yacc.c  */
-#line 2142 "sql.yacc"
+#line 2143 "sql.yacc"
     {strcpy((yyval.str),"DATE");
  			add_feature("DDL_DATE"); }
     break;
@@ -6556,49 +6557,49 @@ add_feature("DDL_PRIMARY_KEY");
   case 329:
 
 /* Line 1455 of yacc.c  */
-#line 2144 "sql.yacc"
+#line 2145 "sql.yacc"
     {strcpy((yyval.str),"INTEGER");}
     break;
 
   case 330:
 
 /* Line 1455 of yacc.c  */
-#line 2145 "sql.yacc"
+#line 2146 "sql.yacc"
     {strcpy((yyval.str),"SMALLINT");}
     break;
 
   case 331:
 
 /* Line 1455 of yacc.c  */
-#line 2146 "sql.yacc"
+#line 2147 "sql.yacc"
     {strcpy((yyval.str),"NCHAR"); add_feature("DDL_NCHAR");}
     break;
 
   case 332:
 
 /* Line 1455 of yacc.c  */
-#line 2147 "sql.yacc"
+#line 2148 "sql.yacc"
     {SPRINTF1((yyval.str),"NCHAR(%s)",(yyvsp[(3) - (4)].str)); add_feature("DDL_NCHAR");}
     break;
 
   case 333:
 
 /* Line 1455 of yacc.c  */
-#line 2148 "sql.yacc"
+#line 2149 "sql.yacc"
     {add_feature("DDL_NVARCHAR");}
     break;
 
   case 334:
 
 /* Line 1455 of yacc.c  */
-#line 2149 "sql.yacc"
+#line 2150 "sql.yacc"
     {SPRINTF1((yyval.str),"NVARCHAR(%s)",(yyvsp[(3) - (4)].str)); add_feature("DDL_NVARCHAR");}
     break;
 
   case 335:
 
 /* Line 1455 of yacc.c  */
-#line 2150 "sql.yacc"
+#line 2151 "sql.yacc"
     {
 			add_feature("DDL_NVARCHAR");
 			if (A4GLSQLCV_check_requirement("IGNORE_DTYPE_VARCHAR_MIN"))  {
@@ -6612,77 +6613,77 @@ add_feature("DDL_PRIMARY_KEY");
   case 336:
 
 /* Line 1455 of yacc.c  */
-#line 2158 "sql.yacc"
+#line 2159 "sql.yacc"
     {SPRINTF2((yyval.str),"DATETIME %s TO %s",(yyvsp[(2) - (4)].str),(yyvsp[(4) - (4)].str)); add_feature("DDL_DATETIME");}
     break;
 
   case 337:
 
 /* Line 1455 of yacc.c  */
-#line 2159 "sql.yacc"
+#line 2160 "sql.yacc"
     {add_feature("DDL_DATETIME");}
     break;
 
   case 338:
 
 /* Line 1455 of yacc.c  */
-#line 2160 "sql.yacc"
+#line 2161 "sql.yacc"
     {SPRINTF2((yyval.str),"INTERVAL %s TO %s",(yyvsp[(2) - (4)].str),(yyvsp[(4) - (4)].str)); add_feature("DDL_INTERVAL");}
     break;
 
   case 339:
 
 /* Line 1455 of yacc.c  */
-#line 2161 "sql.yacc"
+#line 2162 "sql.yacc"
     {strcpy((yyval.str),(yyvsp[(1) - (1)].str));}
     break;
 
   case 340:
 
 /* Line 1455 of yacc.c  */
-#line 2162 "sql.yacc"
+#line 2163 "sql.yacc"
     {add_feature("DDL_INTERVAL");}
     break;
 
   case 341:
 
 /* Line 1455 of yacc.c  */
-#line 2163 "sql.yacc"
+#line 2164 "sql.yacc"
     {SPRINTF3((yyval.str),"INTERVAL %s(%s) TO %s",(yyvsp[(2) - (7)].str),(yyvsp[(4) - (7)].str),(yyvsp[(7) - (7)].str)); add_feature("DDL_INTERVAL");}
     break;
 
   case 342:
 
 /* Line 1455 of yacc.c  */
-#line 2164 "sql.yacc"
+#line 2165 "sql.yacc"
     {add_feature("DDL_TEXT");}
     break;
 
   case 343:
 
 /* Line 1455 of yacc.c  */
-#line 2165 "sql.yacc"
+#line 2166 "sql.yacc"
     {add_feature("DDL_BYTE");}
     break;
 
   case 344:
 
 /* Line 1455 of yacc.c  */
-#line 2166 "sql.yacc"
+#line 2167 "sql.yacc"
     {add_feature("DDL_VARCHAR");}
     break;
 
   case 345:
 
 /* Line 1455 of yacc.c  */
-#line 2167 "sql.yacc"
+#line 2168 "sql.yacc"
     {SPRINTF1((yyval.str),"VARCHAR(%s)",(yyvsp[(3) - (4)].str));add_feature("DDL_VARCHAR");}
     break;
 
   case 346:
 
 /* Line 1455 of yacc.c  */
-#line 2168 "sql.yacc"
+#line 2169 "sql.yacc"
     {
 			add_feature("DDL_VARCHAR");
 			if (A4GLSQLCV_check_requirement("IGNORE_DTYPE_VARCHAR_MIN"))  {
@@ -6696,14 +6697,14 @@ add_feature("DDL_PRIMARY_KEY");
   case 347:
 
 /* Line 1455 of yacc.c  */
-#line 2178 "sql.yacc"
+#line 2179 "sql.yacc"
     {strcpy((yyval.str),"");}
     break;
 
   case 348:
 
 /* Line 1455 of yacc.c  */
-#line 2179 "sql.yacc"
+#line 2180 "sql.yacc"
     {
 		SPRINTF1((yyval.str),",%s",(yyvsp[(2) - (2)].str));
 }
@@ -6712,28 +6713,28 @@ add_feature("DDL_PRIMARY_KEY");
   case 349:
 
 /* Line 1455 of yacc.c  */
-#line 2186 "sql.yacc"
+#line 2187 "sql.yacc"
     {SPRINTF4((yyval.str)," %s %s %s %s",(yyvsp[(1) - (4)].str),(yyvsp[(2) - (4)].str),(yyvsp[(3) - (4)].str),(yyvsp[(4) - (4)].str));}
     break;
 
   case 353:
 
 /* Line 1455 of yacc.c  */
-#line 2190 "sql.yacc"
+#line 2191 "sql.yacc"
     {add_feature("DDL_DOUBLE_PRECISION"); SPRINTF1((yyval.str)," %s",(yyvsp[(1) - (1)].str));}
     break;
 
   case 359:
 
 /* Line 1455 of yacc.c  */
-#line 2215 "sql.yacc"
+#line 2216 "sql.yacc"
     {(yyval.int_list.i0)=0;}
     break;
 
   case 360:
 
 /* Line 1455 of yacc.c  */
-#line 2216 "sql.yacc"
+#line 2217 "sql.yacc"
     {
 		(yyval.int_list.i0)=1;
 		(yyval.int_list.i1)=atoi((yyvsp[(2) - (3)].str));
@@ -6743,7 +6744,7 @@ add_feature("DDL_PRIMARY_KEY");
   case 361:
 
 /* Line 1455 of yacc.c  */
-#line 2220 "sql.yacc"
+#line 2221 "sql.yacc"
     {
 		(yyval.int_list.i0)=2;
 		(yyval.int_list.i1)=atoi((yyvsp[(2) - (5)].str));
@@ -6754,7 +6755,7 @@ add_feature("DDL_PRIMARY_KEY");
   case 362:
 
 /* Line 1455 of yacc.c  */
-#line 2228 "sql.yacc"
+#line 2229 "sql.yacc"
     {
 		strcpy((yyval.str),(yyvsp[(1) - (1)].str));
 	}
@@ -6763,7 +6764,7 @@ add_feature("DDL_PRIMARY_KEY");
   case 363:
 
 /* Line 1455 of yacc.c  */
-#line 2231 "sql.yacc"
+#line 2232 "sql.yacc"
     {
 		strcpy((yyval.str),(yyvsp[(2) - (2)].str));
 	}
@@ -6772,7 +6773,7 @@ add_feature("DDL_PRIMARY_KEY");
   case 364:
 
 /* Line 1455 of yacc.c  */
-#line 2238 "sql.yacc"
+#line 2239 "sql.yacc"
     {
 		(yyval.s_select_list_item)= (yyvsp[(1) - (1)].s_select_list_item);
 	}
@@ -6781,7 +6782,7 @@ add_feature("DDL_PRIMARY_KEY");
   case 365:
 
 /* Line 1455 of yacc.c  */
-#line 2241 "sql.yacc"
+#line 2242 "sql.yacc"
     {
 		(yyval.s_select_list_item)= (yyvsp[(2) - (2)].s_select_list_item);
 	}
@@ -6790,7 +6791,7 @@ add_feature("DDL_PRIMARY_KEY");
   case 366:
 
 /* Line 1455 of yacc.c  */
-#line 2251 "sql.yacc"
+#line 2252 "sql.yacc"
     { 
 		(yyval.s_select_list_item)=new_select_list_item_col(0,(yyvsp[(1) - (2)].str),&(yyvsp[(2) - (2)].int_list));
 	}
@@ -6799,7 +6800,7 @@ add_feature("DDL_PRIMARY_KEY");
   case 367:
 
 /* Line 1455 of yacc.c  */
-#line 2254 "sql.yacc"
+#line 2255 "sql.yacc"
     {
 		(yyval.s_select_list_item)=new_select_list_item_col((yyvsp[(1) - (4)].str),(yyvsp[(3) - (4)].str),&(yyvsp[(4) - (4)].int_list));
 	}
@@ -6808,7 +6809,7 @@ add_feature("DDL_PRIMARY_KEY");
   case 368:
 
 /* Line 1455 of yacc.c  */
-#line 2257 "sql.yacc"
+#line 2258 "sql.yacc"
     {
 		(yyval.s_select_list_item)=new_select_list_item_col((yyvsp[(1) - (3)].str),"*",0);
 	}
@@ -6817,7 +6818,7 @@ add_feature("DDL_PRIMARY_KEY");
   case 369:
 
 /* Line 1455 of yacc.c  */
-#line 2260 "sql.yacc"
+#line 2261 "sql.yacc"
     {
 		(yyval.s_select_list_item)=new_select_list_item_col(0,"rowid",0);
 	}
@@ -6826,7 +6827,7 @@ add_feature("DDL_PRIMARY_KEY");
   case 370:
 
 /* Line 1455 of yacc.c  */
-#line 2267 "sql.yacc"
+#line 2268 "sql.yacc"
     { 
 		struct ilist *i;
 		i=&(yyvsp[(2) - (2)].int_list);
@@ -6839,7 +6840,7 @@ add_feature("DDL_PRIMARY_KEY");
   case 371:
 
 /* Line 1455 of yacc.c  */
-#line 2274 "sql.yacc"
+#line 2275 "sql.yacc"
     {
 		struct ilist *i;
 		if (strcmp((yyvsp[(3) - (4)].str),"rowid")==0) { strcpy((yyvsp[(3) - (4)].str), A4GLSQLCV_get_sqlconst ("rowid"));  add_feature("ROWID");}
@@ -6853,7 +6854,7 @@ add_feature("DDL_PRIMARY_KEY");
   case 372:
 
 /* Line 1455 of yacc.c  */
-#line 2282 "sql.yacc"
+#line 2283 "sql.yacc"
     {
 		struct ilist *i;
 		if (strcmp((yyvsp[(3) - (6)].str),"rowid")==0) { strcpy((yyvsp[(3) - (6)].str), A4GLSQLCV_get_sqlconst ("rowid")); add_feature("ROWID"); }
@@ -6868,7 +6869,7 @@ add_feature("DDL_PRIMARY_KEY");
   case 373:
 
 /* Line 1455 of yacc.c  */
-#line 2291 "sql.yacc"
+#line 2292 "sql.yacc"
     {
 		SPRINTF1((yyval.str),"%s",A4GLSQLCV_check_colname((yyvsp[(1) - (3)].str),"*"));
 		ADDMAP("Use Column",(yyval.str));
@@ -6878,7 +6879,7 @@ add_feature("DDL_PRIMARY_KEY");
   case 375:
 
 /* Line 1455 of yacc.c  */
-#line 2302 "sql.yacc"
+#line 2303 "sql.yacc"
     { strcpy((yyval.str),(yyvsp[(1) - (1)].str)); 
 #ifdef DEBUG
 A4GL_debug("Set $<str>$ to %s\n",(yyval.str)); 
@@ -6889,7 +6890,7 @@ A4GL_debug("Set $<str>$ to %s\n",(yyval.str));
   case 379:
 
 /* Line 1455 of yacc.c  */
-#line 2314 "sql.yacc"
+#line 2315 "sql.yacc"
     { strcpy((yyval.str),A4GLSQLCV_generate_current(0,0)); 
 }
     break;
@@ -6897,7 +6898,7 @@ A4GL_debug("Set $<str>$ to %s\n",(yyval.str));
   case 380:
 
 /* Line 1455 of yacc.c  */
-#line 2316 "sql.yacc"
+#line 2317 "sql.yacc"
     {
 		strcpy((yyval.str),A4GLSQLCV_generate_current((yyvsp[(1) - (3)].str),(yyvsp[(3) - (3)].str)));
 	}
@@ -6906,49 +6907,49 @@ A4GL_debug("Set $<str>$ to %s\n",(yyval.str));
   case 395:
 
 /* Line 1455 of yacc.c  */
-#line 2326 "sql.yacc"
+#line 2327 "sql.yacc"
     {SPRINTF1((yyval.str),"FRACTION(%s)",(yyvsp[(3) - (4)].str));}
     break;
 
   case 396:
 
 /* Line 1455 of yacc.c  */
-#line 2371 "sql.yacc"
+#line 2372 "sql.yacc"
     { (yyval.sql_string)=make_sql_string_and_free(acl_strdup((yyvsp[(1) - (1)].str)), NULL);}
     break;
 
   case 397:
 
 /* Line 1455 of yacc.c  */
-#line 2372 "sql.yacc"
+#line 2373 "sql.yacc"
     { (yyval.sql_string)=make_sql_string_and_free(acl_strdup((yyvsp[(1) - (1)].str)), NULL);}
     break;
 
   case 398:
 
 /* Line 1455 of yacc.c  */
-#line 2373 "sql.yacc"
+#line 2374 "sql.yacc"
     { (yyval.sql_string)=make_sql_string_and_free(acl_strdup((yyvsp[(1) - (1)].str)), NULL);}
     break;
 
   case 399:
 
 /* Line 1455 of yacc.c  */
-#line 2378 "sql.yacc"
+#line 2379 "sql.yacc"
     { add_feature("RENAME_TABLE"); strcpy((yyval.str),A4GLSQLCV_rentab((yyvsp[(2) - (4)].str),(yyvsp[(4) - (4)].str))); }
     break;
 
   case 400:
 
 /* Line 1455 of yacc.c  */
-#line 2379 "sql.yacc"
+#line 2380 "sql.yacc"
     { add_feature("RENAME_COLUMN"); strcpy((yyval.str),A4GLSQLCV_rencol((yyvsp[(2) - (6)].str),(yyvsp[(4) - (6)].str),(yyvsp[(6) - (6)].str)) ); }
     break;
 
   case 403:
 
 /* Line 1455 of yacc.c  */
-#line 2387 "sql.yacc"
+#line 2388 "sql.yacc"
     {
 		add_feature("UNLOCK_TABLE");
 		SPRINTF2((yyval.str),"%s %s",(yyvsp[(1) - (2)].str),(yyvsp[(2) - (2)].str));
@@ -6958,7 +6959,7 @@ A4GL_debug("Set $<str>$ to %s\n",(yyval.str));
   case 404:
 
 /* Line 1455 of yacc.c  */
-#line 2394 "sql.yacc"
+#line 2395 "sql.yacc"
     {
 		add_feature("LOCK_TABLE");
 		SPRINTF3((yyval.str),"%s %s %s",
@@ -6972,49 +6973,49 @@ A4GL_debug("Set $<str>$ to %s\n",(yyval.str));
   case 405:
 
 /* Line 1455 of yacc.c  */
-#line 2405 "sql.yacc"
+#line 2406 "sql.yacc"
     { add_feature("LOCK_TABLE_SHARED");}
     break;
 
   case 406:
 
 /* Line 1455 of yacc.c  */
-#line 2406 "sql.yacc"
+#line 2407 "sql.yacc"
     {add_feature("LOCK_TABLE_EXCLUSIVE");}
     break;
 
   case 407:
 
 /* Line 1455 of yacc.c  */
-#line 2419 "sql.yacc"
+#line 2420 "sql.yacc"
     {strcpy((yyval.str),A4GLSQLCV_datetime_value((yyvsp[(1) - (1)].str)));}
     break;
 
   case 408:
 
 /* Line 1455 of yacc.c  */
-#line 2420 "sql.yacc"
+#line 2421 "sql.yacc"
     {strcpy((yyval.str),A4GLSQLCV_make_dtime_extend((yyvsp[(1) - (4)].str),(yyvsp[(2) - (4)].str),(yyvsp[(4) - (4)].str),0));}
     break;
 
   case 409:
 
 /* Line 1455 of yacc.c  */
-#line 2424 "sql.yacc"
+#line 2425 "sql.yacc"
     {strcpy((yyval.str),(yyvsp[(1) - (1)].str));}
     break;
 
   case 410:
 
 /* Line 1455 of yacc.c  */
-#line 2428 "sql.yacc"
+#line 2429 "sql.yacc"
     {strcpy((yyval.str),A4GLSQLCV_interval_value((yyvsp[(1) - (1)].str)));}
     break;
 
   case 411:
 
 /* Line 1455 of yacc.c  */
-#line 2429 "sql.yacc"
+#line 2430 "sql.yacc"
     {
 			strcpy((yyval.str),A4GLSQLCV_make_ival_extend((yyvsp[(1) - (7)].str),(yyvsp[(2) - (7)].str),(yyvsp[(4) - (7)].str),(yyvsp[(7) - (7)].str),0));
 		}
@@ -7023,7 +7024,7 @@ A4GL_debug("Set $<str>$ to %s\n",(yyval.str));
   case 412:
 
 /* Line 1455 of yacc.c  */
-#line 2432 "sql.yacc"
+#line 2433 "sql.yacc"
     {
 		strcpy((yyval.str),A4GLSQLCV_make_ival_extend((yyvsp[(1) - (4)].str),(yyvsp[(2) - (4)].str),(char *)0, (yyvsp[(4) - (4)].str),0));
 	}
@@ -7032,14 +7033,14 @@ A4GL_debug("Set $<str>$ to %s\n",(yyval.str));
   case 413:
 
 /* Line 1455 of yacc.c  */
-#line 2438 "sql.yacc"
+#line 2439 "sql.yacc"
     {SPRINTF1((yyval.str),"%s",(yyvsp[(1) - (1)].str));}
     break;
 
   case 414:
 
 /* Line 1455 of yacc.c  */
-#line 2442 "sql.yacc"
+#line 2443 "sql.yacc"
     {
 	strcpy((yyval.str),(yyvsp[(2) - (2)].str));
 }
@@ -7048,7 +7049,7 @@ A4GL_debug("Set $<str>$ to %s\n",(yyval.str));
   case 415:
 
 /* Line 1455 of yacc.c  */
-#line 2465 "sql.yacc"
+#line 2466 "sql.yacc"
     {
 		(yyval.s_select_list_item_list)=(yyvsp[(3) - (3)].s_select_list_item_list);
 		add_feature("ORDER_BY");
@@ -7058,7 +7059,7 @@ A4GL_debug("Set $<str>$ to %s\n",(yyval.str));
   case 416:
 
 /* Line 1455 of yacc.c  */
-#line 2475 "sql.yacc"
+#line 2476 "sql.yacc"
     {
 			(yyval.s_select_list_item_list)=local_new_select_list_item_list((yyvsp[(1) - (1)].s_select_list_item));
 	}
@@ -7067,7 +7068,7 @@ A4GL_debug("Set $<str>$ to %s\n",(yyval.str));
   case 417:
 
 /* Line 1455 of yacc.c  */
-#line 2478 "sql.yacc"
+#line 2479 "sql.yacc"
     {
 			(yyval.s_select_list_item_list)=local_add_select_list_item_list((yyvsp[(1) - (3)].s_select_list_item_list),(yyvsp[(3) - (3)].s_select_list_item));
 	}
@@ -7076,7 +7077,7 @@ A4GL_debug("Set $<str>$ to %s\n",(yyval.str));
   case 418:
 
 /* Line 1455 of yacc.c  */
-#line 2484 "sql.yacc"
+#line 2485 "sql.yacc"
     {
 		if (strcmp((yyvsp[(2) - (2)].str),"DESC")!=0) {
 			(yyval.s_select_list_item)=new_select_list_item_simple_expr(E_SLI_ASC,(yyvsp[(1) - (2)].s_select_list_item));
@@ -7089,7 +7090,7 @@ A4GL_debug("Set $<str>$ to %s\n",(yyval.str));
   case 419:
 
 /* Line 1455 of yacc.c  */
-#line 2493 "sql.yacc"
+#line 2494 "sql.yacc"
     { 
 		add_feature("ORDER_BY_NUMBER");
 		(yyval.s_select_list_item)=new_select_list_item_literal((yyvsp[(1) - (1)].str));
@@ -7099,7 +7100,7 @@ A4GL_debug("Set $<str>$ to %s\n",(yyval.str));
   case 420:
 
 /* Line 1455 of yacc.c  */
-#line 2497 "sql.yacc"
+#line 2498 "sql.yacc"
     {
 		(yyval.s_select_list_item)=(yyvsp[(1) - (1)].s_select_list_item);
 		(yyval.s_select_list_item)->data.type=E_SLI_COLUMN_ORDERBY;
@@ -7109,28 +7110,28 @@ A4GL_debug("Set $<str>$ to %s\n",(yyval.str));
   case 421:
 
 /* Line 1455 of yacc.c  */
-#line 2504 "sql.yacc"
+#line 2505 "sql.yacc"
     {strcpy((yyval.str),"");}
     break;
 
   case 422:
 
 /* Line 1455 of yacc.c  */
-#line 2506 "sql.yacc"
+#line 2507 "sql.yacc"
     {add_feature("ORDER_BY_ASC"); strcpy((yyval.str),"ASC");}
     break;
 
   case 423:
 
 /* Line 1455 of yacc.c  */
-#line 2508 "sql.yacc"
+#line 2509 "sql.yacc"
     {add_feature("ORDER_BY_DESC"); strcpy((yyval.str),"DESC");}
     break;
 
   case 424:
 
 /* Line 1455 of yacc.c  */
-#line 2512 "sql.yacc"
+#line 2513 "sql.yacc"
     {
 		(yyval.s_select_list_item_list)=(yyvsp[(2) - (2)].s_select_list_item_list);
 	}
@@ -7139,7 +7140,7 @@ A4GL_debug("Set $<str>$ to %s\n",(yyval.str));
   case 425:
 
 /* Line 1455 of yacc.c  */
-#line 2518 "sql.yacc"
+#line 2519 "sql.yacc"
     {
 			(yyval.s_select_list_item_list)=local_new_select_list_item_list((yyvsp[(1) - (1)].s_select_list_item));
 	}
@@ -7148,7 +7149,7 @@ A4GL_debug("Set $<str>$ to %s\n",(yyval.str));
   case 426:
 
 /* Line 1455 of yacc.c  */
-#line 2521 "sql.yacc"
+#line 2522 "sql.yacc"
     {
 			(yyval.s_select_list_item_list)=local_add_select_list_item_list((yyvsp[(1) - (3)].s_select_list_item_list),(yyvsp[(3) - (3)].s_select_list_item));
 	}
@@ -7157,21 +7158,21 @@ A4GL_debug("Set $<str>$ to %s\n",(yyval.str));
   case 427:
 
 /* Line 1455 of yacc.c  */
-#line 2527 "sql.yacc"
+#line 2528 "sql.yacc"
     { (yyval.s_select_list_item)=(yyvsp[(1) - (1)].s_select_list_item); }
     break;
 
   case 428:
 
 /* Line 1455 of yacc.c  */
-#line 2528 "sql.yacc"
+#line 2529 "sql.yacc"
     { (yyval.s_select_list_item)=new_select_list_item_literal((yyvsp[(1) - (1)].str)); }
     break;
 
   case 429:
 
 /* Line 1455 of yacc.c  */
-#line 2535 "sql.yacc"
+#line 2536 "sql.yacc"
     {
 	(yyval.sql_string)=get_select_list_item(0,(yyvsp[(1) - (1)].s_select_list_item));
 }
@@ -7180,7 +7181,7 @@ A4GL_debug("Set $<str>$ to %s\n",(yyval.str));
   case 430:
 
 /* Line 1455 of yacc.c  */
-#line 2548 "sql.yacc"
+#line 2549 "sql.yacc"
     {
 		A4GL_set_sql_lineno(yylineno);
 		(yyval.sql_string)=make_select_stmt_v2(current_upd_table, (yyvsp[(1) - (1)].s_select),"");
@@ -7192,7 +7193,7 @@ A4GL_debug("Set $<str>$ to %s\n",(yyval.str));
   case 431:
 
 /* Line 1455 of yacc.c  */
-#line 2558 "sql.yacc"
+#line 2559 "sql.yacc"
     { 
 	if (A4GLSQLCV_check_requirement("ALLOW_TIME_DATATYPE")) {
        		strcpy((yyval.str),"TIME"); break;
@@ -7205,7 +7206,7 @@ A4GL_debug("Set $<str>$ to %s\n",(yyval.str));
   case 432:
 
 /* Line 1455 of yacc.c  */
-#line 2565 "sql.yacc"
+#line 2566 "sql.yacc"
     {
 	int n;
        	n=atoi((yyvsp[(3) - (4)].str));
@@ -7228,7 +7229,7 @@ A4GL_debug("Set $<str>$ to %s\n",(yyval.str));
   case 433:
 
 /* Line 1455 of yacc.c  */
-#line 2582 "sql.yacc"
+#line 2583 "sql.yacc"
     {
 	if (A4GLSQLCV_check_requirement("ALLOW_TIMESTAMP_DATATYPE")) {
 		strcpy((yyval.str),"TIMESTAMP");
@@ -7241,7 +7242,7 @@ A4GL_debug("Set $<str>$ to %s\n",(yyval.str));
   case 434:
 
 /* Line 1455 of yacc.c  */
-#line 2589 "sql.yacc"
+#line 2590 "sql.yacc"
     {
         int n;
        	n=atoi((yyvsp[(3) - (4)].str));
@@ -7264,7 +7265,7 @@ A4GL_debug("Set $<str>$ to %s\n",(yyval.str));
   case 435:
 
 /* Line 1455 of yacc.c  */
-#line 2614 "sql.yacc"
+#line 2615 "sql.yacc"
     { 
 		//start_bind('i',0);
 		 set_ignore_indicators();}
@@ -7273,14 +7274,14 @@ A4GL_debug("Set $<str>$ to %s\n",(yyval.str));
   case 436:
 
 /* Line 1455 of yacc.c  */
-#line 2616 "sql.yacc"
+#line 2617 "sql.yacc"
     { clr_ignore_indicators();}
     break;
 
   case 437:
 
 /* Line 1455 of yacc.c  */
-#line 2618 "sql.yacc"
+#line 2619 "sql.yacc"
     {
 
 
@@ -7302,7 +7303,7 @@ A4GL_debug("Set $<str>$ to %s\n",(yyval.str));
   case 438:
 
 /* Line 1455 of yacc.c  */
-#line 2639 "sql.yacc"
+#line 2640 "sql.yacc"
     {
 	        (yyval.s_select)=(yyvsp[(5) - (6)].s_select);
                 (yyval.s_select)->modifier=acl_strdup((yyvsp[(3) - (6)].str));
@@ -7320,14 +7321,14 @@ A4GL_debug("Set $<str>$ to %s\n",(yyval.str));
   case 439:
 
 /* Line 1455 of yacc.c  */
-#line 2682 "sql.yacc"
+#line 2683 "sql.yacc"
     { (yyval.s_select)=0;}
     break;
 
   case 440:
 
 /* Line 1455 of yacc.c  */
-#line 2683 "sql.yacc"
+#line 2684 "sql.yacc"
     { 
 		(yyval.s_select)=(yyvsp[(3) - (3)].s_select);
 		(yyval.s_select)->union_op=acl_strdup((yyvsp[(2) - (3)].str));
@@ -7339,7 +7340,7 @@ A4GL_debug("Set $<str>$ to %s\n",(yyval.str));
   case 441:
 
 /* Line 1455 of yacc.c  */
-#line 2697 "sql.yacc"
+#line 2698 "sql.yacc"
     {
 		(yyval.s_select_finish)=0;
 	}
@@ -7348,7 +7349,7 @@ A4GL_debug("Set $<str>$ to %s\n",(yyval.str));
   case 442:
 
 /* Line 1455 of yacc.c  */
-#line 2700 "sql.yacc"
+#line 2701 "sql.yacc"
     {  
 		(yyval.s_select_finish)=acl_malloc2(sizeof(struct s_select_finish));
 		(yyval.s_select_finish)->order_by=(yyvsp[(1) - (1)].s_select_list_item_list);
@@ -7361,7 +7362,7 @@ A4GL_debug("Set $<str>$ to %s\n",(yyval.str));
   case 443:
 
 /* Line 1455 of yacc.c  */
-#line 2707 "sql.yacc"
+#line 2708 "sql.yacc"
     { 
 		(yyval.s_select_finish)=acl_malloc2(sizeof(struct s_select_finish));
 		add_feature("SELECT_INTO_TEMP_ORDER_BY");
@@ -7377,7 +7378,7 @@ A4GL_debug("Set $<str>$ to %s\n",(yyval.str));
   case 444:
 
 /* Line 1455 of yacc.c  */
-#line 2717 "sql.yacc"
+#line 2718 "sql.yacc"
     { 
 		(yyval.s_select_finish)=acl_malloc2(sizeof(struct s_select_finish));
 		add_feature("SELECT_INTO_TEMP");
@@ -7392,7 +7393,7 @@ A4GL_debug("Set $<str>$ to %s\n",(yyval.str));
   case 446:
 
 /* Line 1455 of yacc.c  */
-#line 2735 "sql.yacc"
+#line 2736 "sql.yacc"
     {
 		(yyval.s_select)=(yyvsp[(5) - (5)].s_select);
 		if ((yyvsp[(2) - (5)].integer_val)!=-1) {
@@ -7408,7 +7409,7 @@ A4GL_debug("Set $<str>$ to %s\n",(yyval.str));
   case 447:
 
 /* Line 1455 of yacc.c  */
-#line 2748 "sql.yacc"
+#line 2749 "sql.yacc"
     {
 		(yyval.s_select)=(yyvsp[(6) - (7)].s_select);
 		if ((yyvsp[(3) - (7)].integer_val)!=-1) {
@@ -7425,14 +7426,14 @@ A4GL_debug("Set $<str>$ to %s\n",(yyval.str));
   case 448:
 
 /* Line 1455 of yacc.c  */
-#line 2763 "sql.yacc"
+#line 2764 "sql.yacc"
     {(yyval.integer_val)=-1;}
     break;
 
   case 449:
 
 /* Line 1455 of yacc.c  */
-#line 2765 "sql.yacc"
+#line 2766 "sql.yacc"
     {
 		(yyval.integer_val)=atol((yyvsp[(2) - (2)].str));
 	}
@@ -7441,28 +7442,28 @@ A4GL_debug("Set $<str>$ to %s\n",(yyval.str));
   case 450:
 
 /* Line 1455 of yacc.c  */
-#line 2771 "sql.yacc"
+#line 2772 "sql.yacc"
     {strcpy((yyval.str),"");}
     break;
 
   case 451:
 
 /* Line 1455 of yacc.c  */
-#line 2772 "sql.yacc"
+#line 2773 "sql.yacc"
     {strcpy((yyval.str),"ALL"); add_feature("SELECT_ALL");}
     break;
 
   case 452:
 
 /* Line 1455 of yacc.c  */
-#line 2773 "sql.yacc"
+#line 2774 "sql.yacc"
     {strcpy((yyval.str),"DISTINCT"); add_feature("SELECT_DISTINCT");}
     break;
 
   case 453:
 
 /* Line 1455 of yacc.c  */
-#line 2774 "sql.yacc"
+#line 2775 "sql.yacc"
     {strcpy((yyval.str),"DISTINCT");
 		add_feature("SELECT_UNIQUE");
 		ansi_violation("Use DISTINCT not UNIQUE",0);
@@ -7473,7 +7474,7 @@ A4GL_debug("Set $<str>$ to %s\n",(yyval.str));
   case 454:
 
 /* Line 1455 of yacc.c  */
-#line 2784 "sql.yacc"
+#line 2785 "sql.yacc"
     { 
 		 (yyval.s_select_list_item_list)=local_new_select_list_item_list((yyvsp[(1) - (1)].s_select_list_item));
 	}
@@ -7482,7 +7483,7 @@ A4GL_debug("Set $<str>$ to %s\n",(yyval.str));
   case 455:
 
 /* Line 1455 of yacc.c  */
-#line 2787 "sql.yacc"
+#line 2788 "sql.yacc"
     { 
 		(yyval.s_select_list_item_list)=local_add_select_list_item_list((yyvsp[(1) - (3)].s_select_list_item_list),(yyvsp[(3) - (3)].s_select_list_item));
 	}
@@ -7491,7 +7492,7 @@ A4GL_debug("Set $<str>$ to %s\n",(yyval.str));
   case 456:
 
 /* Line 1455 of yacc.c  */
-#line 2793 "sql.yacc"
+#line 2794 "sql.yacc"
     {
 		(yyval.s_select_list_item)=(yyvsp[(1) - (1)].s_select_list_item);
 	}
@@ -7500,7 +7501,7 @@ A4GL_debug("Set $<str>$ to %s\n",(yyval.str));
   case 457:
 
 /* Line 1455 of yacc.c  */
-#line 2796 "sql.yacc"
+#line 2797 "sql.yacc"
     {
 		(yyval.s_select_list_item)=(yyvsp[(1) - (2)].s_select_list_item);
 		(yyval.s_select_list_item)->alias=acl_strdup((yyvsp[(2) - (2)].str));
@@ -7511,7 +7512,7 @@ A4GL_debug("Set $<str>$ to %s\n",(yyval.str));
   case 458:
 
 /* Line 1455 of yacc.c  */
-#line 2801 "sql.yacc"
+#line 2802 "sql.yacc"
     {
 		(yyval.s_select_list_item)=(yyvsp[(1) - (3)].s_select_list_item);
 		(yyval.s_select_list_item)->alias=acl_strdup((yyvsp[(3) - (3)].str));
@@ -7522,7 +7523,7 @@ A4GL_debug("Set $<str>$ to %s\n",(yyval.str));
   case 459:
 
 /* Line 1455 of yacc.c  */
-#line 2810 "sql.yacc"
+#line 2811 "sql.yacc"
     {
 		(yyval.s_select_list_item)=(yyvsp[(1) - (1)].s_select_list_item); /* A4GLSQLCV_check_expr($<sql_string>1) */
 	}
@@ -7531,7 +7532,7 @@ A4GL_debug("Set $<str>$ to %s\n",(yyval.str));
   case 460:
 
 /* Line 1455 of yacc.c  */
-#line 2813 "sql.yacc"
+#line 2814 "sql.yacc"
     {
 		(yyval.s_select_list_item)=(yyvsp[(2) - (2)].s_select_list_item);
 		(yyval.s_select_list_item)->sign='-';
@@ -7541,7 +7542,7 @@ A4GL_debug("Set $<str>$ to %s\n",(yyval.str));
   case 461:
 
 /* Line 1455 of yacc.c  */
-#line 2817 "sql.yacc"
+#line 2818 "sql.yacc"
     {
 		(yyval.s_select_list_item)=(yyvsp[(2) - (2)].s_select_list_item);
 	}
@@ -7550,7 +7551,7 @@ A4GL_debug("Set $<str>$ to %s\n",(yyval.str));
   case 462:
 
 /* Line 1455 of yacc.c  */
-#line 2824 "sql.yacc"
+#line 2825 "sql.yacc"
     {
 			(yyval.s_select_list_item)=new_select_list_item_op_expr ((yyvsp[(1) - (3)].s_select_list_item), (yyvsp[(3) - (3)].s_select_list_item), "/");
 	}
@@ -7559,7 +7560,7 @@ A4GL_debug("Set $<str>$ to %s\n",(yyval.str));
   case 463:
 
 /* Line 1455 of yacc.c  */
-#line 2827 "sql.yacc"
+#line 2828 "sql.yacc"
     {
 			(yyval.s_select_list_item)=new_select_list_item_simple_expr((enum e_sli)(yyvsp[(2) - (2)].integer_val), (yyvsp[(1) - (2)].s_select_list_item));
 	}
@@ -7568,7 +7569,7 @@ A4GL_debug("Set $<str>$ to %s\n",(yyval.str));
   case 464:
 
 /* Line 1455 of yacc.c  */
-#line 2830 "sql.yacc"
+#line 2831 "sql.yacc"
     {
 			(yyval.s_select_list_item)=new_select_list_item_op_expr ((yyvsp[(1) - (3)].s_select_list_item), (yyvsp[(3) - (3)].s_select_list_item), "*");
 	}
@@ -7577,7 +7578,7 @@ A4GL_debug("Set $<str>$ to %s\n",(yyval.str));
   case 465:
 
 /* Line 1455 of yacc.c  */
-#line 2833 "sql.yacc"
+#line 2834 "sql.yacc"
     {
 			(yyval.s_select_list_item)=new_select_list_item_op_expr ((yyvsp[(1) - (3)].s_select_list_item), (yyvsp[(3) - (3)].s_select_list_item), "+");
 	}
@@ -7586,7 +7587,7 @@ A4GL_debug("Set $<str>$ to %s\n",(yyval.str));
   case 466:
 
 /* Line 1455 of yacc.c  */
-#line 2836 "sql.yacc"
+#line 2837 "sql.yacc"
     {
 			(yyval.s_select_list_item)=new_select_list_item_op_expr ((yyvsp[(1) - (3)].s_select_list_item), (yyvsp[(3) - (3)].s_select_list_item), "-");
 	}
@@ -7595,70 +7596,70 @@ A4GL_debug("Set $<str>$ to %s\n",(yyval.str));
   case 467:
 
 /* Line 1455 of yacc.c  */
-#line 2839 "sql.yacc"
+#line 2840 "sql.yacc"
     { (yyval.s_select_list_item)=new_select_list_item_literal((yyvsp[(1) - (1)].str)); }
     break;
 
   case 468:
 
 /* Line 1455 of yacc.c  */
-#line 2840 "sql.yacc"
+#line 2841 "sql.yacc"
     { (yyval.s_select_list_item)=new_select_list_item_builtin_const(E_SLI_BUILTIN_CONST_TRUE); }
     break;
 
   case 469:
 
 /* Line 1455 of yacc.c  */
-#line 2841 "sql.yacc"
+#line 2842 "sql.yacc"
     { (yyval.s_select_list_item)=new_select_list_item_builtin_const(E_SLI_BUILTIN_CONST_FALSE); }
     break;
 
   case 470:
 
 /* Line 1455 of yacc.c  */
-#line 2842 "sql.yacc"
+#line 2843 "sql.yacc"
     { (yyval.s_select_list_item)=new_select_list_item_builtin_const(E_SLI_BUILTIN_CONST_USER); }
     break;
 
   case 471:
 
 /* Line 1455 of yacc.c  */
-#line 2843 "sql.yacc"
+#line 2844 "sql.yacc"
     { (yyval.s_select_list_item)=new_select_list_item_builtin_const(E_SLI_BUILTIN_CONST_TODAY); }
     break;
 
   case 472:
 
 /* Line 1455 of yacc.c  */
-#line 2844 "sql.yacc"
+#line 2845 "sql.yacc"
     { (yyval.s_select_list_item)=new_select_list_item_builtin_const(E_SLI_BUILTIN_CONST_ROWID); }
     break;
 
   case 473:
 
 /* Line 1455 of yacc.c  */
-#line 2845 "sql.yacc"
+#line 2846 "sql.yacc"
     { (yyval.s_select_list_item)=new_select_list_item_builtin_const(E_SLI_BUILTIN_CONST_TIME); }
     break;
 
   case 474:
 
 /* Line 1455 of yacc.c  */
-#line 2846 "sql.yacc"
+#line 2847 "sql.yacc"
     { (yyval.s_select_list_item)=new_select_list_item_builtin_const(E_SLI_BUILTIN_CONST_STAR); }
     break;
 
   case 475:
 
 /* Line 1455 of yacc.c  */
-#line 2847 "sql.yacc"
+#line 2848 "sql.yacc"
     { (yyval.s_select_list_item)=new_select_list_item_builtin_const(E_SLI_BUILTIN_CONST_COUNT_STAR); }
     break;
 
   case 476:
 
 /* Line 1455 of yacc.c  */
-#line 2849 "sql.yacc"
+#line 2850 "sql.yacc"
     {
 		(yyval.s_select_list_item)=new_select_list_item_agg1(E_SLI_BUILTIN_AGG_AVG,(yyvsp[(3) - (5)].str),(yyvsp[(4) - (5)].s_select_list_item));
 		add_feature("SELECT_AVG");
@@ -7668,7 +7669,7 @@ A4GL_debug("Set $<str>$ to %s\n",(yyval.str));
   case 477:
 
 /* Line 1455 of yacc.c  */
-#line 2853 "sql.yacc"
+#line 2854 "sql.yacc"
     {
 		(yyval.s_select_list_item)=new_select_list_item_agg1(E_SLI_BUILTIN_AGG_MAX,(yyvsp[(3) - (5)].str),(yyvsp[(4) - (5)].s_select_list_item));
 		add_feature("SELECT_MAX");
@@ -7678,7 +7679,7 @@ A4GL_debug("Set $<str>$ to %s\n",(yyval.str));
   case 478:
 
 /* Line 1455 of yacc.c  */
-#line 2857 "sql.yacc"
+#line 2858 "sql.yacc"
     {
 		(yyval.s_select_list_item)=new_select_list_item_agg1(E_SLI_BUILTIN_AGG_MIN,(yyvsp[(3) - (5)].str),(yyvsp[(4) - (5)].s_select_list_item));
 		add_feature("SELECT_MIN");
@@ -7688,7 +7689,7 @@ A4GL_debug("Set $<str>$ to %s\n",(yyval.str));
   case 479:
 
 /* Line 1455 of yacc.c  */
-#line 2861 "sql.yacc"
+#line 2862 "sql.yacc"
     {
 		(yyval.s_select_list_item)=new_select_list_item_agg1(E_SLI_BUILTIN_AGG_SUM,(yyvsp[(3) - (5)].str),(yyvsp[(4) - (5)].s_select_list_item));
 		add_feature("SELECT_SUM");
@@ -7698,7 +7699,7 @@ A4GL_debug("Set $<str>$ to %s\n",(yyval.str));
   case 480:
 
 /* Line 1455 of yacc.c  */
-#line 2865 "sql.yacc"
+#line 2866 "sql.yacc"
     {
 		(yyval.s_select_list_item)=new_select_list_item_agg1(E_SLI_BUILTIN_AGG_COUNT,(yyvsp[(3) - (5)].str),(yyvsp[(4) - (5)].s_select_list_item));
 		add_feature("SELECT_COUNT");
@@ -7708,7 +7709,7 @@ A4GL_debug("Set $<str>$ to %s\n",(yyval.str));
   case 481:
 
 /* Line 1455 of yacc.c  */
-#line 2869 "sql.yacc"
+#line 2870 "sql.yacc"
     {
 		add_sql_function((yyvsp[(1) - (3)].str));
 		(yyval.s_select_list_item)=new_select_list_item_fcall((yyvsp[(1) - (3)].str),0);
@@ -7718,7 +7719,7 @@ A4GL_debug("Set $<str>$ to %s\n",(yyval.str));
   case 482:
 
 /* Line 1455 of yacc.c  */
-#line 2873 "sql.yacc"
+#line 2874 "sql.yacc"
     {
 		add_sql_function((yyvsp[(1) - (4)].str));
 		(yyval.s_select_list_item)=new_select_list_item_fcall((yyvsp[(1) - (4)].str),(yyvsp[(3) - (4)].s_select_list_item_list));
@@ -7728,7 +7729,7 @@ A4GL_debug("Set $<str>$ to %s\n",(yyval.str));
   case 483:
 
 /* Line 1455 of yacc.c  */
-#line 2877 "sql.yacc"
+#line 2878 "sql.yacc"
     {
 		(yyval.s_select_list_item)=new_select_list_item_builtin_fcall(E_SLI_BUILTIN_FUNC_YEAR,(yyvsp[(3) - (4)].s_select_list_item_list));
 	}
@@ -7737,7 +7738,7 @@ A4GL_debug("Set $<str>$ to %s\n",(yyval.str));
   case 484:
 
 /* Line 1455 of yacc.c  */
-#line 2880 "sql.yacc"
+#line 2881 "sql.yacc"
     {
 		(yyval.s_select_list_item)=new_select_list_item_builtin_fcall(E_SLI_BUILTIN_FUNC_MONTH,(yyvsp[(3) - (4)].s_select_list_item_list));
 	}
@@ -7746,7 +7747,7 @@ A4GL_debug("Set $<str>$ to %s\n",(yyval.str));
   case 485:
 
 /* Line 1455 of yacc.c  */
-#line 2883 "sql.yacc"
+#line 2884 "sql.yacc"
     {
 		(yyval.s_select_list_item)=new_select_list_item_builtin_fcall(E_SLI_BUILTIN_FUNC_DAY,(yyvsp[(3) - (4)].s_select_list_item_list));
 	}
@@ -7755,7 +7756,7 @@ A4GL_debug("Set $<str>$ to %s\n",(yyval.str));
   case 486:
 
 /* Line 1455 of yacc.c  */
-#line 2886 "sql.yacc"
+#line 2887 "sql.yacc"
     {
 		(yyval.s_select_list_item)=new_select_list_item_builtin_fcall(E_SLI_BUILTIN_FUNC_MDY,(yyvsp[(3) - (4)].s_select_list_item_list));
 	}
@@ -7764,7 +7765,7 @@ A4GL_debug("Set $<str>$ to %s\n",(yyval.str));
   case 487:
 
 /* Line 1455 of yacc.c  */
-#line 2889 "sql.yacc"
+#line 2890 "sql.yacc"
     {
 		(yyval.s_select_list_item)=new_select_list_item_builtin_fcall(E_SLI_BUILTIN_FUNC_WEEKDAY,(yyvsp[(3) - (4)].s_select_list_item_list));
 	}
@@ -7773,7 +7774,7 @@ A4GL_debug("Set $<str>$ to %s\n",(yyval.str));
   case 488:
 
 /* Line 1455 of yacc.c  */
-#line 2892 "sql.yacc"
+#line 2893 "sql.yacc"
     {
 		(yyval.s_select_list_item)=new_select_list_item_builtin_fcall(E_SLI_BUILTIN_FUNC_DOW,(yyvsp[(3) - (4)].s_select_list_item_list));
 	}
@@ -7782,7 +7783,7 @@ A4GL_debug("Set $<str>$ to %s\n",(yyval.str));
   case 489:
 
 /* Line 1455 of yacc.c  */
-#line 2895 "sql.yacc"
+#line 2896 "sql.yacc"
     {
 		(yyval.s_select_list_item)=new_select_list_item_builtin_fcall(E_SLI_BUILTIN_FUNC_DATE,(yyvsp[(3) - (4)].s_select_list_item_list));
 	}
@@ -7791,7 +7792,7 @@ A4GL_debug("Set $<str>$ to %s\n",(yyval.str));
   case 490:
 
 /* Line 1455 of yacc.c  */
-#line 2898 "sql.yacc"
+#line 2899 "sql.yacc"
     {
 		  (yyval.s_select_list_item)=new_select_list_item_simple_expr(E_SLI_BRACKET_EXPR,(yyvsp[(2) - (3)].s_select_list_item));
 	}
@@ -7800,7 +7801,7 @@ A4GL_debug("Set $<str>$ to %s\n",(yyval.str));
   case 491:
 
 /* Line 1455 of yacc.c  */
-#line 2901 "sql.yacc"
+#line 2902 "sql.yacc"
     { 
 		add_feature("EXTEND"); 
 		(yyval.s_select_list_item)=(yyvsp[(3) - (4)].s_select_list_item);
@@ -7810,7 +7811,7 @@ A4GL_debug("Set $<str>$ to %s\n",(yyval.str));
   case 492:
 
 /* Line 1455 of yacc.c  */
-#line 2905 "sql.yacc"
+#line 2906 "sql.yacc"
     { 
 		(yyval.s_select_list_item)=new_select_list_item_datetime((yyvsp[(1) - (1)].str));
 		add_feature("FUNC_DATETIME");
@@ -7820,7 +7821,7 @@ A4GL_debug("Set $<str>$ to %s\n",(yyval.str));
   case 493:
 
 /* Line 1455 of yacc.c  */
-#line 2909 "sql.yacc"
+#line 2910 "sql.yacc"
     {
 		(yyval.s_select_list_item)=new_select_list_item_interval((yyvsp[(1) - (1)].str));
 		add_feature("FUNC_INTERVAL");
@@ -7830,7 +7831,7 @@ A4GL_debug("Set $<str>$ to %s\n",(yyval.str));
   case 494:
 
 /* Line 1455 of yacc.c  */
-#line 2913 "sql.yacc"
+#line 2914 "sql.yacc"
     {
 		(yyval.s_select_list_item)=(yyvsp[(2) - (3)].s_select_list_item);
 	}
@@ -7839,7 +7840,7 @@ A4GL_debug("Set $<str>$ to %s\n",(yyval.str));
   case 495:
 
 /* Line 1455 of yacc.c  */
-#line 2921 "sql.yacc"
+#line 2922 "sql.yacc"
     {
 		(yyval.s_select_list_item)=new_select_list_item_case((yyvsp[(1) - (1)].s_select_list_item));
 	}
@@ -7848,7 +7849,7 @@ A4GL_debug("Set $<str>$ to %s\n",(yyval.str));
   case 496:
 
 /* Line 1455 of yacc.c  */
-#line 2924 "sql.yacc"
+#line 2925 "sql.yacc"
     {
 		(yyval.s_select_list_item)=append_select_list_item_case(
 							(yyvsp[(1) - (2)].s_select_list_item),
@@ -7859,7 +7860,7 @@ A4GL_debug("Set $<str>$ to %s\n",(yyval.str));
   case 497:
 
 /* Line 1455 of yacc.c  */
-#line 2933 "sql.yacc"
+#line 2934 "sql.yacc"
     {
 		(yyval.s_select_list_item)=new_select_list_item_case_element(
 				(yyvsp[(2) - (4)].s_select_list_item),
@@ -7871,7 +7872,7 @@ A4GL_debug("Set $<str>$ to %s\n",(yyval.str));
   case 498:
 
 /* Line 1455 of yacc.c  */
-#line 2939 "sql.yacc"
+#line 2940 "sql.yacc"
     {
 		(yyval.s_select_list_item)=new_select_list_item_case_element( 0, (yyvsp[(2) - (2)].s_select_list_item));
 	}
@@ -7880,7 +7881,7 @@ A4GL_debug("Set $<str>$ to %s\n",(yyval.str));
   case 499:
 
 /* Line 1455 of yacc.c  */
-#line 2946 "sql.yacc"
+#line 2947 "sql.yacc"
     {
 		(yyval.s_select_list_item_list)=local_new_select_list_item_list((yyvsp[(1) - (1)].s_select_list_item));
 	}
@@ -7889,7 +7890,7 @@ A4GL_debug("Set $<str>$ to %s\n",(yyval.str));
   case 500:
 
 /* Line 1455 of yacc.c  */
-#line 2949 "sql.yacc"
+#line 2950 "sql.yacc"
     {
 			(yyval.s_select_list_item_list)=local_add_select_list_item_list((yyvsp[(1) - (3)].s_select_list_item_list),(yyvsp[(3) - (3)].s_select_list_item));
 	}
@@ -7898,7 +7899,7 @@ A4GL_debug("Set $<str>$ to %s\n",(yyval.str));
   case 501:
 
 /* Line 1455 of yacc.c  */
-#line 2977 "sql.yacc"
+#line 2978 "sql.yacc"
     {
 			(yyval.s_select_list_item)=new_select_list_item_extend(new_select_list_item_builtin_const(E_SLI_BUILTIN_CONST_CURRENT),(yyvsp[(3) - (5)].str),(yyvsp[(5) - (5)].str));
 	}
@@ -7907,7 +7908,7 @@ A4GL_debug("Set $<str>$ to %s\n",(yyval.str));
   case 502:
 
 /* Line 1455 of yacc.c  */
-#line 2980 "sql.yacc"
+#line 2981 "sql.yacc"
     {
 			(yyval.s_select_list_item)=new_select_list_item_extend((yyvsp[(1) - (5)].s_select_list_item),(yyvsp[(3) - (5)].str),(yyvsp[(5) - (5)].str));
 	}
@@ -7916,7 +7917,7 @@ A4GL_debug("Set $<str>$ to %s\n",(yyval.str));
   case 503:
 
 /* Line 1455 of yacc.c  */
-#line 2983 "sql.yacc"
+#line 2984 "sql.yacc"
     {
 			(yyval.s_select_list_item)=new_select_list_item_extend(new_select_list_item_builtin_const(E_SLI_BUILTIN_CONST_CURRENT),(yyvsp[(2) - (4)].str),(yyvsp[(4) - (4)].str));
 	}
@@ -7925,7 +7926,7 @@ A4GL_debug("Set $<str>$ to %s\n",(yyval.str));
   case 504:
 
 /* Line 1455 of yacc.c  */
-#line 2986 "sql.yacc"
+#line 2987 "sql.yacc"
     {
 			(yyval.s_select_list_item)=new_select_list_item_extend((yyvsp[(1) - (5)].s_select_list_item),(yyvsp[(3) - (5)].str),(yyvsp[(5) - (5)].str));
 	}
@@ -7934,49 +7935,49 @@ A4GL_debug("Set $<str>$ to %s\n",(yyval.str));
   case 505:
 
 /* Line 1455 of yacc.c  */
-#line 2992 "sql.yacc"
+#line 2993 "sql.yacc"
     {(yyval.integer_val)=E_SLI_UNITS_YEAR;}
     break;
 
   case 506:
 
 /* Line 1455 of yacc.c  */
-#line 2993 "sql.yacc"
+#line 2994 "sql.yacc"
     {(yyval.integer_val)=E_SLI_UNITS_MONTH;}
     break;
 
   case 507:
 
 /* Line 1455 of yacc.c  */
-#line 2994 "sql.yacc"
+#line 2995 "sql.yacc"
     {(yyval.integer_val)=E_SLI_UNITS_DAY;}
     break;
 
   case 508:
 
 /* Line 1455 of yacc.c  */
-#line 2995 "sql.yacc"
+#line 2996 "sql.yacc"
     {(yyval.integer_val)=E_SLI_UNITS_HOUR;}
     break;
 
   case 509:
 
 /* Line 1455 of yacc.c  */
-#line 2996 "sql.yacc"
+#line 2997 "sql.yacc"
     {(yyval.integer_val)=E_SLI_UNITS_MINUTE;}
     break;
 
   case 510:
 
 /* Line 1455 of yacc.c  */
-#line 2997 "sql.yacc"
+#line 2998 "sql.yacc"
     {(yyval.integer_val)=E_SLI_UNITS_SECOND;}
     break;
 
   case 511:
 
 /* Line 1455 of yacc.c  */
-#line 3002 "sql.yacc"
+#line 3003 "sql.yacc"
     {
 		(yyval.s_select_list_item)=new_select_list_item_op_slil((yyvsp[(1) - (5)].s_select_list_item),(yyvsp[(4) - (5)].s_select_list_item_list),E_SLI_IN_VALUES);
                 add_feature("WHERE_IN");
@@ -7986,7 +7987,7 @@ A4GL_debug("Set $<str>$ to %s\n",(yyval.str));
   case 512:
 
 /* Line 1455 of yacc.c  */
-#line 3006 "sql.yacc"
+#line 3007 "sql.yacc"
     {
 		(yyval.s_select_list_item)=new_select_list_item_op_sli((yyvsp[(1) - (3)].s_select_list_item),(yyvsp[(3) - (3)].s_select_list_item),E_SLI_IN_SELECT);
                 add_feature("WHERE_IN_SELECT");
@@ -7996,7 +7997,7 @@ A4GL_debug("Set $<str>$ to %s\n",(yyval.str));
   case 513:
 
 /* Line 1455 of yacc.c  */
-#line 3010 "sql.yacc"
+#line 3011 "sql.yacc"
     {
 		(yyval.s_select_list_item)=new_select_list_item_op_slil((yyvsp[(1) - (5)].s_select_list_item),(yyvsp[(4) - (5)].s_select_list_item_list),E_SLI_NOT_IN_VALUES);
                 add_feature("WHERE_IN");
@@ -8006,7 +8007,7 @@ A4GL_debug("Set $<str>$ to %s\n",(yyval.str));
   case 514:
 
 /* Line 1455 of yacc.c  */
-#line 3014 "sql.yacc"
+#line 3015 "sql.yacc"
     {
 		(yyval.s_select_list_item)=new_select_list_item_op_sli((yyvsp[(1) - (3)].s_select_list_item),(yyvsp[(3) - (3)].s_select_list_item),E_SLI_NOT_IN_SELECT);
                 add_feature("WHERE_IN_SELECT");
@@ -8016,7 +8017,7 @@ A4GL_debug("Set $<str>$ to %s\n",(yyval.str));
   case 515:
 
 /* Line 1455 of yacc.c  */
-#line 3021 "sql.yacc"
+#line 3022 "sql.yacc"
     {
 		(yyval.s_select_list_item_list)=local_new_select_list_item_list((yyvsp[(1) - (1)].s_select_list_item));
 	}
@@ -8025,7 +8026,7 @@ A4GL_debug("Set $<str>$ to %s\n",(yyval.str));
   case 516:
 
 /* Line 1455 of yacc.c  */
-#line 3024 "sql.yacc"
+#line 3025 "sql.yacc"
     {
                 (yyval.s_select_list_item_list)=local_add_select_list_item_list((yyvsp[(1) - (3)].s_select_list_item_list),(yyvsp[(3) - (3)].s_select_list_item));
 	}
@@ -8034,21 +8035,21 @@ A4GL_debug("Set $<str>$ to %s\n",(yyval.str));
   case 517:
 
 /* Line 1455 of yacc.c  */
-#line 3029 "sql.yacc"
+#line 3030 "sql.yacc"
     { (yyval.s_select_list_item)=(yyvsp[(1) - (1)].s_select_list_item);}
     break;
 
   case 518:
 
 /* Line 1455 of yacc.c  */
-#line 3030 "sql.yacc"
+#line 3031 "sql.yacc"
     { (yyval.s_select_list_item)=new_select_list_item_literal((yyvsp[(1) - (1)].str)); }
     break;
 
   case 519:
 
 /* Line 1455 of yacc.c  */
-#line 3031 "sql.yacc"
+#line 3032 "sql.yacc"
     { 
 		char buff[256]; SPRINTF1(buff," -%s",(yyvsp[(2) - (2)].str)); (yyval.s_select_list_item)=new_select_list_item_literal(buff); }
     break;
@@ -8056,14 +8057,14 @@ A4GL_debug("Set $<str>$ to %s\n",(yyval.str));
   case 520:
 
 /* Line 1455 of yacc.c  */
-#line 3033 "sql.yacc"
+#line 3034 "sql.yacc"
     { char buff[256]; SPRINTF1(buff," -%s",(yyvsp[(2) - (2)].str)); (yyval.s_select_list_item)=new_select_list_item_literal(buff); }
     break;
 
   case 521:
 
 /* Line 1455 of yacc.c  */
-#line 3039 "sql.yacc"
+#line 3040 "sql.yacc"
     {
                 if (strstr((yyvsp[(1) - (1)].str),"systables")!=0) { add_feature("IFX_SYSTABLES"); }
                 if (strstr((yyvsp[(1) - (1)].str),"syscolumns")!=0) { add_feature("IFX_SYSCOLUMNS"); }
@@ -8075,7 +8076,7 @@ A4GL_debug("Set $<str>$ to %s\n",(yyval.str));
   case 522:
 
 /* Line 1455 of yacc.c  */
-#line 3049 "sql.yacc"
+#line 3050 "sql.yacc"
     {
 	     SPRINTF1((yyval.str),"%s", A4GLSQLCV_ownerize_tablename(NULL, A4GL_strip_quotes((yyvsp[(1) - (1)].str))));
              ADDMAP("Use Table",(yyval.str));
@@ -8085,7 +8086,7 @@ A4GL_debug("Set $<str>$ to %s\n",(yyval.str));
   case 523:
 
 /* Line 1455 of yacc.c  */
-#line 3053 "sql.yacc"
+#line 3054 "sql.yacc"
     {
 	     SPRINTF1((yyval.str),"%s", A4GLSQLCV_ownerize_tablename((yyvsp[(1) - (3)].str), (yyvsp[(3) - (3)].str)));
 	     ADDMAP("Use Table",(yyval.str));
@@ -8095,7 +8096,7 @@ A4GL_debug("Set $<str>$ to %s\n",(yyval.str));
   case 524:
 
 /* Line 1455 of yacc.c  */
-#line 3057 "sql.yacc"
+#line 3058 "sql.yacc"
     {
 	     SPRINTF1((yyval.str),"%s", A4GLSQLCV_ownerize_tablename(NULL, (yyvsp[(1) - (1)].str)));
 	     ADDMAP("Use Table",(yyval.str));
@@ -8105,7 +8106,7 @@ A4GL_debug("Set $<str>$ to %s\n",(yyval.str));
   case 525:
 
 /* Line 1455 of yacc.c  */
-#line 3061 "sql.yacc"
+#line 3062 "sql.yacc"
     {
 	     SPRINTF1((yyval.str),"%s", A4GLSQLCV_db_tablename((yyvsp[(1) - (3)].str), NULL, A4GLSQLCV_ownerize_tablename(NULL, (yyvsp[(3) - (3)].str))));
 	     ADDMAP("Use Table",(yyval.str));
@@ -8115,7 +8116,7 @@ A4GL_debug("Set $<str>$ to %s\n",(yyval.str));
   case 526:
 
 /* Line 1455 of yacc.c  */
-#line 3065 "sql.yacc"
+#line 3066 "sql.yacc"
     {
 	     SPRINTF1((yyval.str),"%s", A4GLSQLCV_db_tablename((yyvsp[(1) - (5)].str), NULL, A4GLSQLCV_ownerize_tablename((yyvsp[(3) - (5)].str),(yyvsp[(5) - (5)].str))));
 	     ADDMAP("Use Table",(yyval.str));
@@ -8125,7 +8126,7 @@ A4GL_debug("Set $<str>$ to %s\n",(yyval.str));
   case 527:
 
 /* Line 1455 of yacc.c  */
-#line 3069 "sql.yacc"
+#line 3070 "sql.yacc"
     {
 	     SPRINTF1((yyval.str),"%s", A4GLSQLCV_db_tablename(NULL,(yyvsp[(1) - (3)].str), A4GLSQLCV_ownerize_tablename(NULL, (yyvsp[(3) - (3)].str))));
 	     ADDMAP("Use Table",(yyval.str));
@@ -8135,7 +8136,7 @@ A4GL_debug("Set $<str>$ to %s\n",(yyval.str));
   case 528:
 
 /* Line 1455 of yacc.c  */
-#line 3073 "sql.yacc"
+#line 3074 "sql.yacc"
     {
 	     SPRINTF1((yyval.str),"%s", A4GLSQLCV_db_tablename((yyvsp[(1) - (5)].str), (yyvsp[(3) - (5)].str), A4GLSQLCV_ownerize_tablename(NULL, (yyvsp[(5) - (5)].str))));
 	     ADDMAP("Use Table",(yyval.str));
@@ -8145,7 +8146,7 @@ A4GL_debug("Set $<str>$ to %s\n",(yyval.str));
   case 529:
 
 /* Line 1455 of yacc.c  */
-#line 3077 "sql.yacc"
+#line 3078 "sql.yacc"
     {
 	     SPRINTF1((yyval.str),"%s", A4GLSQLCV_db_tablename((yyvsp[(1) - (7)].str), (yyvsp[(3) - (7)].str), A4GLSQLCV_ownerize_tablename((yyvsp[(5) - (7)].str), (yyvsp[(7) - (7)].str))));
 	     ADDMAP("Use Table",(yyval.str));
@@ -8155,7 +8156,7 @@ A4GL_debug("Set $<str>$ to %s\n",(yyval.str));
   case 530:
 
 /* Line 1455 of yacc.c  */
-#line 3085 "sql.yacc"
+#line 3086 "sql.yacc"
     {
                 if (strstr((yyvsp[(1) - (1)].str),"systables")!=0) { add_feature("IFX_SYSTABLES"); }
                 if (strstr((yyvsp[(1) - (1)].str),"syscolumns")!=0) { add_feature("IFX_SYSCOLUMNS"); }
@@ -8167,7 +8168,7 @@ A4GL_debug("Set $<str>$ to %s\n",(yyval.str));
   case 531:
 
 /* Line 1455 of yacc.c  */
-#line 3095 "sql.yacc"
+#line 3096 "sql.yacc"
     {
 
 	     SPRINTF1((yyval.str),"%s", A4GLSQLCV_ownerize_tablename((yyvsp[(1) - (3)].str), (yyvsp[(3) - (3)].str)));
@@ -8178,7 +8179,7 @@ A4GL_debug("Set $<str>$ to %s\n",(yyval.str));
   case 532:
 
 /* Line 1455 of yacc.c  */
-#line 3100 "sql.yacc"
+#line 3101 "sql.yacc"
     {
 	     SPRINTF1((yyval.str),"%s", A4GLSQLCV_ownerize_tablename((yyvsp[(1) - (3)].str), (yyvsp[(3) - (3)].str)));
 	     ADDMAP("Use Table",(yyval.str));
@@ -8188,7 +8189,7 @@ A4GL_debug("Set $<str>$ to %s\n",(yyval.str));
   case 533:
 
 /* Line 1455 of yacc.c  */
-#line 3104 "sql.yacc"
+#line 3105 "sql.yacc"
     {
 	     SPRINTF1((yyval.str),"%s", A4GLSQLCV_ownerize_tablename(NULL, A4GL_strip_quotes((yyvsp[(1) - (1)].str))));
 	     ADDMAP("Use Table",(yyval.str));
@@ -8198,7 +8199,7 @@ A4GL_debug("Set $<str>$ to %s\n",(yyval.str));
   case 534:
 
 /* Line 1455 of yacc.c  */
-#line 3108 "sql.yacc"
+#line 3109 "sql.yacc"
     {
              SPRINTF1((yyval.str),"%s", A4GLSQLCV_ownerize_tablename(NULL, (yyvsp[(1) - (1)].str)));
 	     ADDMAP("Use Table",(yyval.str));
@@ -8208,7 +8209,7 @@ A4GL_debug("Set $<str>$ to %s\n",(yyval.str));
   case 535:
 
 /* Line 1455 of yacc.c  */
-#line 3112 "sql.yacc"
+#line 3113 "sql.yacc"
     {
              SPRINTF1((yyval.str),"%s", A4GLSQLCV_db_tablename((yyvsp[(1) - (3)].str),NULL, A4GLSQLCV_ownerize_tablename(NULL, (yyvsp[(3) - (3)].str))));
 	     ADDMAP("Use Table",(yyval.str));
@@ -8218,7 +8219,7 @@ A4GL_debug("Set $<str>$ to %s\n",(yyval.str));
   case 536:
 
 /* Line 1455 of yacc.c  */
-#line 3116 "sql.yacc"
+#line 3117 "sql.yacc"
     {
 	     SPRINTF1((yyval.str),"%s", A4GLSQLCV_db_tablename((yyvsp[(1) - (5)].str), NULL,A4GLSQLCV_ownerize_tablename((yyvsp[(3) - (5)].str), (yyvsp[(5) - (5)].str))));
 	     ADDMAP("Use Table",(yyval.str));
@@ -8228,7 +8229,7 @@ A4GL_debug("Set $<str>$ to %s\n",(yyval.str));
   case 537:
 
 /* Line 1455 of yacc.c  */
-#line 3121 "sql.yacc"
+#line 3122 "sql.yacc"
     {
              SPRINTF1((yyval.str),"%s", A4GLSQLCV_db_tablename(NULL, (yyvsp[(1) - (3)].str), A4GLSQLCV_ownerize_tablename(NULL, (yyvsp[(3) - (3)].str))));
 	     ADDMAP("Use Table",(yyval.str));
@@ -8238,7 +8239,7 @@ A4GL_debug("Set $<str>$ to %s\n",(yyval.str));
   case 538:
 
 /* Line 1455 of yacc.c  */
-#line 3125 "sql.yacc"
+#line 3126 "sql.yacc"
     {
             SPRINTF1((yyval.str),"%s", A4GLSQLCV_db_tablename( (yyvsp[(1) - (5)].str), (yyvsp[(3) - (5)].str), A4GLSQLCV_ownerize_tablename(NULL, (yyvsp[(5) - (5)].str))));
 	    ADDMAP("Use Table",(yyval.str));
@@ -8248,7 +8249,7 @@ A4GL_debug("Set $<str>$ to %s\n",(yyval.str));
   case 539:
 
 /* Line 1455 of yacc.c  */
-#line 3129 "sql.yacc"
+#line 3130 "sql.yacc"
     {
 	     SPRINTF1((yyval.str),"%s", A4GLSQLCV_db_tablename((yyvsp[(1) - (7)].str), (yyvsp[(3) - (7)].str), A4GLSQLCV_ownerize_tablename((yyvsp[(5) - (7)].str), (yyvsp[(7) - (7)].str))));
 	     ADDMAP("Use Table",(yyval.str));
@@ -8258,7 +8259,7 @@ A4GL_debug("Set $<str>$ to %s\n",(yyval.str));
   case 540:
 
 /* Line 1455 of yacc.c  */
-#line 3137 "sql.yacc"
+#line 3138 "sql.yacc"
     {
 	     SPRINTF1((yyval.str),"%s", A4GLSQLCV_ownerize_tablename((yyvsp[(1) - (3)].str), (yyvsp[(3) - (3)].str)));
         }
@@ -8267,7 +8268,7 @@ A4GL_debug("Set $<str>$ to %s\n",(yyval.str));
   case 541:
 
 /* Line 1455 of yacc.c  */
-#line 3140 "sql.yacc"
+#line 3141 "sql.yacc"
     {
 	        SPRINTF1((yyval.str),"%s", A4GLSQLCV_ownerize_tablename(NULL, (yyvsp[(1) - (1)].str)));
                 ADDMAP("Use Index",(yyval.str));
@@ -8277,21 +8278,21 @@ A4GL_debug("Set $<str>$ to %s\n",(yyval.str));
   case 542:
 
 /* Line 1455 of yacc.c  */
-#line 3145 "sql.yacc"
+#line 3146 "sql.yacc"
     {strcpy((yyval.str),(yyvsp[(1) - (1)].str)); ADDMAP("Use Index",(yyvsp[(1) - (1)].str)); }
     break;
 
   case 543:
 
 /* Line 1455 of yacc.c  */
-#line 3146 "sql.yacc"
+#line 3147 "sql.yacc"
     { SPRINTF3((yyval.str),"%s%s%s",(yyvsp[(1) - (3)].str),(yyvsp[(2) - (3)].str),(yyvsp[(3) - (3)].str)); ADDMAP("Use Index",(yyval.str)); }
     break;
 
   case 544:
 
 /* Line 1455 of yacc.c  */
-#line 3147 "sql.yacc"
+#line 3148 "sql.yacc"
     {
 	     SPRINTF2((yyval.str),"%s:%s", (yyvsp[(1) - (5)].str), A4GLSQLCV_ownerize_tablename((yyvsp[(3) - (5)].str), (yyvsp[(5) - (5)].str)));
              ADDMAP("Use Index",(yyval.str));
@@ -8301,21 +8302,21 @@ A4GL_debug("Set $<str>$ to %s\n",(yyval.str));
   case 545:
 
 /* Line 1455 of yacc.c  */
-#line 3152 "sql.yacc"
+#line 3153 "sql.yacc"
     {strcpy((yyval.str),(yyvsp[(1) - (3)].str)); ADDMAP("Use Index",(yyvsp[(1) - (3)].str)); }
     break;
 
   case 546:
 
 /* Line 1455 of yacc.c  */
-#line 3153 "sql.yacc"
+#line 3154 "sql.yacc"
     { SPRINTF4((yyval.str),"%s@%s%s%s",(yyvsp[(1) - (5)].str),(yyvsp[(3) - (5)].str),(yyvsp[(4) - (5)].str),(yyvsp[(5) - (5)].str)); ADDMAP("Use Index",(yyval.str)); }
     break;
 
   case 547:
 
 /* Line 1455 of yacc.c  */
-#line 3154 "sql.yacc"
+#line 3155 "sql.yacc"
     {
 	     SPRINTF3((yyval.str),"%s@%s:%s", (yyvsp[(1) - (7)].str), (yyvsp[(3) - (7)].str), A4GLSQLCV_ownerize_tablename((yyvsp[(5) - (7)].str), (yyvsp[(7) - (7)].str)));
              ADDMAP("Use Index",(yyval.str));
@@ -8325,7 +8326,7 @@ A4GL_debug("Set $<str>$ to %s\n",(yyval.str));
   case 549:
 
 /* Line 1455 of yacc.c  */
-#line 3165 "sql.yacc"
+#line 3166 "sql.yacc"
     {
                       (yyval.ptr)=A4GL_new_expr_simple_string(A4GL_get_clobbered_from((yyval.str)), ET_EXPR_IDENTIFIER);
 	}
@@ -8334,21 +8335,21 @@ A4GL_debug("Set $<str>$ to %s\n",(yyval.str));
   case 551:
 
 /* Line 1455 of yacc.c  */
-#line 3171 "sql.yacc"
+#line 3172 "sql.yacc"
     { sprintf((yyval.str),".%s",(yyvsp[(2) - (2)].str)); }
     break;
 
   case 553:
 
 /* Line 1455 of yacc.c  */
-#line 3176 "sql.yacc"
+#line 3177 "sql.yacc"
     {strcpy((yyval.str), A4GL_strip_quotes ((yyvsp[(1) - (1)].str)));}
     break;
 
   case 558:
 
 /* Line 1455 of yacc.c  */
-#line 3227 "sql.yacc"
+#line 3228 "sql.yacc"
     {
 			int converted;
 			(yyval.sql_string)=get_insert_cmd((yyvsp[(1) - (1)].insert_cmd),&converted);
@@ -8361,7 +8362,7 @@ A4GL_debug("Set $<str>$ to %s\n",(yyval.str));
   case 559:
 
 /* Line 1455 of yacc.c  */
-#line 3234 "sql.yacc"
+#line 3235 "sql.yacc"
     {
 			int converted;
 			(yyval.sql_string)=get_update_cmd((yyvsp[(1) - (1)].update_cmd),&converted);
@@ -8373,7 +8374,7 @@ A4GL_debug("Set $<str>$ to %s\n",(yyval.str));
   case 560:
 
 /* Line 1455 of yacc.c  */
-#line 3240 "sql.yacc"
+#line 3241 "sql.yacc"
     {
 			int converted;
 			(yyval.sql_string)=get_delete_cmd((yyvsp[(1) - (1)].delete_cmd),&converted);
@@ -8385,28 +8386,28 @@ A4GL_debug("Set $<str>$ to %s\n",(yyval.str));
   case 563:
 
 /* Line 1455 of yacc.c  */
-#line 3255 "sql.yacc"
+#line 3256 "sql.yacc"
     { print_exec_select((yyvsp[(1) - (1)].sql_string));  }
     break;
 
   case 564:
 
 /* Line 1455 of yacc.c  */
-#line 3256 "sql.yacc"
+#line 3257 "sql.yacc"
     { print_exec_select((yyvsp[(1) - (1)].sql_string));  }
     break;
 
   case 566:
 
 /* Line 1455 of yacc.c  */
-#line 3258 "sql.yacc"
+#line 3259 "sql.yacc"
     { print_exec_select((yyvsp[(1) - (1)].sql_string));  }
     break;
 
   case 567:
 
 /* Line 1455 of yacc.c  */
-#line 3260 "sql.yacc"
+#line 3261 "sql.yacc"
     {
 			print_sql_commit ((yyvsp[(1) - (1)].integer_val));
 	}
@@ -8415,14 +8416,14 @@ A4GL_debug("Set $<str>$ to %s\n",(yyval.str));
   case 568:
 
 /* Line 1455 of yacc.c  */
-#line 3263 "sql.yacc"
+#line 3264 "sql.yacc"
     {print_unable_to_parse();}
     break;
 
   case 569:
 
 /* Line 1455 of yacc.c  */
-#line 3267 "sql.yacc"
+#line 3268 "sql.yacc"
     { (yyval.sql_string)=make_sql_string_and_free((yyvsp[(1) - (2)].sql_string),acl_strdup((yyvsp[(2) - (2)].str)),0);
 }
     break;
@@ -8430,7 +8431,7 @@ A4GL_debug("Set $<str>$ to %s\n",(yyval.str));
   case 571:
 
 /* Line 1455 of yacc.c  */
-#line 3276 "sql.yacc"
+#line 3277 "sql.yacc"
     {
 			(yyval.sql_string)=make_select_stmt_v2("", (yyvsp[(1) - (1)].s_select),"");
 			A4GL_free_select_stmt((yyvsp[(1) - (1)].s_select));
@@ -8440,14 +8441,14 @@ A4GL_debug("Set $<str>$ to %s\n",(yyval.str));
   case 572:
 
 /* Line 1455 of yacc.c  */
-#line 3282 "sql.yacc"
+#line 3283 "sql.yacc"
     {strcpy((yyval.str),"");}
     break;
 
   case 573:
 
 /* Line 1455 of yacc.c  */
-#line 3283 "sql.yacc"
+#line 3284 "sql.yacc"
     {
 			strcpy((yyval.str),A4GLSQLCV_get_forupdate(NULL));
 		}
@@ -8456,7 +8457,7 @@ A4GL_debug("Set $<str>$ to %s\n",(yyval.str));
   case 574:
 
 /* Line 1455 of yacc.c  */
-#line 3286 "sql.yacc"
+#line 3287 "sql.yacc"
     {
 			strcpy((yyval.str),A4GLSQLCV_get_forupdate((yyvsp[(2) - (2)].str)));
 		}
@@ -8465,28 +8466,28 @@ A4GL_debug("Set $<str>$ to %s\n",(yyval.str));
   case 575:
 
 /* Line 1455 of yacc.c  */
-#line 3291 "sql.yacc"
+#line 3292 "sql.yacc"
     { strcpy((yyval.str),(yyvsp[(1) - (1)].str)); }
     break;
 
   case 576:
 
 /* Line 1455 of yacc.c  */
-#line 3292 "sql.yacc"
+#line 3293 "sql.yacc"
     { sprintf((yyval.str),"%s,%s",(yyvsp[(1) - (3)].str),(yyvsp[(3) - (3)].str)); }
     break;
 
   case 578:
 
 /* Line 1455 of yacc.c  */
-#line 3296 "sql.yacc"
+#line 3297 "sql.yacc"
     {sprintf((yyval.str),"%s.%s",A4GLSQLCV_ownerize_tablename(NULL, (yyvsp[(1) - (3)].str)),(yyvsp[(3) - (3)].str));}
     break;
 
   case 579:
 
 /* Line 1455 of yacc.c  */
-#line 3297 "sql.yacc"
+#line 3298 "sql.yacc"
     {
         sprintf((yyval.str),"%s.%s", A4GLSQLCV_ownerize_tablename((yyvsp[(1) - (5)].str), (yyvsp[(3) - (5)].str)), (yyvsp[(5) - (5)].str));
 }
@@ -8495,63 +8496,63 @@ A4GL_debug("Set $<str>$ to %s\n",(yyval.str));
   case 580:
 
 /* Line 1455 of yacc.c  */
-#line 3307 "sql.yacc"
+#line 3308 "sql.yacc"
     { print_exec_sql(acl_strdup((yyvsp[(1) - (1)].str))); }
     break;
 
   case 581:
 
 /* Line 1455 of yacc.c  */
-#line 3308 "sql.yacc"
+#line 3309 "sql.yacc"
     { print_exec_sql(acl_strdup((yyvsp[(1) - (1)].str))); }
     break;
 
   case 582:
 
 /* Line 1455 of yacc.c  */
-#line 3309 "sql.yacc"
+#line 3310 "sql.yacc"
     { sprintf((yyval.str),"%s %s",(yyvsp[(1) - (2)].str),(yyvsp[(2) - (2)].str)); print_exec_sql(acl_strdup((yyval.str))); }
     break;
 
   case 583:
 
 /* Line 1455 of yacc.c  */
-#line 3310 "sql.yacc"
+#line 3311 "sql.yacc"
     { print_exec_sql(acl_strdup((yyvsp[(1) - (1)].str))); }
     break;
 
   case 584:
 
 /* Line 1455 of yacc.c  */
-#line 3311 "sql.yacc"
+#line 3312 "sql.yacc"
     { print_exec_sql(acl_strdup((yyvsp[(1) - (1)].str))); }
     break;
 
   case 585:
 
 /* Line 1455 of yacc.c  */
-#line 3312 "sql.yacc"
+#line 3313 "sql.yacc"
     { print_exec_sql(acl_strdup((yyvsp[(1) - (1)].str))); }
     break;
 
   case 586:
 
 /* Line 1455 of yacc.c  */
-#line 3313 "sql.yacc"
+#line 3314 "sql.yacc"
     { print_exec_sql(acl_strdup((yyvsp[(1) - (1)].str))); }
     break;
 
   case 587:
 
 /* Line 1455 of yacc.c  */
-#line 3314 "sql.yacc"
+#line 3315 "sql.yacc"
     { print_exec_sql(acl_strdup((yyvsp[(1) - (1)].str))); }
     break;
 
   case 588:
 
 /* Line 1455 of yacc.c  */
-#line 3318 "sql.yacc"
+#line 3319 "sql.yacc"
     { 
 	char *s;
 	s=acl_strdup((yyvsp[(1) - (1)].str));
@@ -8563,7 +8564,7 @@ A4GL_debug("Set $<str>$ to %s\n",(yyval.str));
   case 589:
 
 /* Line 1455 of yacc.c  */
-#line 3324 "sql.yacc"
+#line 3325 "sql.yacc"
     {  
 		(yyval.s_select_list_item)=new_select_list_item_builtin_const(E_SLI_QUERY_PLACEHOLDER);}
     break;
@@ -8571,7 +8572,7 @@ A4GL_debug("Set $<str>$ to %s\n",(yyval.str));
   case 590:
 
 /* Line 1455 of yacc.c  */
-#line 3326 "sql.yacc"
+#line 3327 "sql.yacc"
     {
 		(yyval.s_select_list_item)=new_select_list_item_replace_var((yyvsp[(1) - (1)].sql_string));
 	}
@@ -8580,7 +8581,7 @@ A4GL_debug("Set $<str>$ to %s\n",(yyval.str));
   case 591:
 
 /* Line 1455 of yacc.c  */
-#line 3345 "sql.yacc"
+#line 3346 "sql.yacc"
     {
         add_feature("DATABASE_USED");
        conn_db((yyvsp[(2) - (3)].str));
@@ -8590,7 +8591,7 @@ A4GL_debug("Set $<str>$ to %s\n",(yyval.str));
   case 592:
 
 /* Line 1455 of yacc.c  */
-#line 3353 "sql.yacc"
+#line 3354 "sql.yacc"
     {
 		(yyval.sql_string)=acl_strdup((yyvsp[(2) - (3)].str));
 }
@@ -8599,182 +8600,182 @@ A4GL_debug("Set $<str>$ to %s\n",(yyval.str));
   case 593:
 
 /* Line 1455 of yacc.c  */
-#line 3360 "sql.yacc"
+#line 3361 "sql.yacc"
     {sprintf((yyval.str),"(%s)",(yyvsp[(2) - (3)].str));}
     break;
 
   case 594:
 
 /* Line 1455 of yacc.c  */
-#line 3361 "sql.yacc"
+#line 3362 "sql.yacc"
     { sprintf((yyval.str),"%s%s%s",(yyvsp[(1) - (3)].str),(yyvsp[(2) - (3)].str),(yyvsp[(3) - (3)].str));}
     break;
 
   case 595:
 
 /* Line 1455 of yacc.c  */
-#line 3362 "sql.yacc"
+#line 3363 "sql.yacc"
     {sprintf((yyval.str),"%d",atoi((yyvsp[(1) - (1)].str)));}
     break;
 
   case 596:
 
 /* Line 1455 of yacc.c  */
-#line 3363 "sql.yacc"
+#line 3364 "sql.yacc"
     {sprintf((yyval.str),"(%s%s)",(yyvsp[(1) - (2)].str),(yyvsp[(2) - (2)].str));}
     break;
 
   case 597:
 
 /* Line 1455 of yacc.c  */
-#line 3368 "sql.yacc"
+#line 3369 "sql.yacc"
     {strcpy((yyval.str),"+");}
     break;
 
   case 598:
 
 /* Line 1455 of yacc.c  */
-#line 3369 "sql.yacc"
+#line 3370 "sql.yacc"
     {strcpy((yyval.str),"-");}
     break;
 
   case 599:
 
 /* Line 1455 of yacc.c  */
-#line 3370 "sql.yacc"
+#line 3371 "sql.yacc"
     {strcpy((yyval.str),"*");}
     break;
 
   case 600:
 
 /* Line 1455 of yacc.c  */
-#line 3371 "sql.yacc"
+#line 3372 "sql.yacc"
     {strcpy((yyval.str),"/");}
     break;
 
   case 601:
 
 /* Line 1455 of yacc.c  */
-#line 3372 "sql.yacc"
+#line 3373 "sql.yacc"
     {strcpy((yyval.str),"%");}
     break;
 
   case 602:
 
 /* Line 1455 of yacc.c  */
-#line 3377 "sql.yacc"
+#line 3378 "sql.yacc"
     {strcpy((yyval.str),"+");}
     break;
 
   case 603:
 
 /* Line 1455 of yacc.c  */
-#line 3378 "sql.yacc"
+#line 3379 "sql.yacc"
     {strcpy((yyval.str),"-");}
     break;
 
   case 604:
 
 /* Line 1455 of yacc.c  */
-#line 3394 "sql.yacc"
+#line 3395 "sql.yacc"
     {sprintf((yyval.str),"%s", A4GLSQLCV_check_tablename((yyvsp[(1) - (1)].str)));}
     break;
 
   case 605:
 
 /* Line 1455 of yacc.c  */
-#line 3395 "sql.yacc"
+#line 3396 "sql.yacc"
     {sprintf((yyval.str),"%s.*", A4GLSQLCV_ownerize_tablename(NULL,(yyvsp[(1) - (3)].str)));}
     break;
 
   case 606:
 
 /* Line 1455 of yacc.c  */
-#line 3396 "sql.yacc"
+#line 3397 "sql.yacc"
     {sprintf((yyval.str),"%s.%s", (yyvsp[(1) - (3)].str),A4GLSQLCV_get_sqlconst ("rowid"));}
     break;
 
   case 607:
 
 /* Line 1455 of yacc.c  */
-#line 3397 "sql.yacc"
+#line 3398 "sql.yacc"
     {sprintf((yyval.str),"%s.%s", A4GLSQLCV_ownerize_tablename(NULL,(yyvsp[(1) - (3)].str)),(yyvsp[(3) - (3)].str));}
     break;
 
   case 608:
 
 /* Line 1455 of yacc.c  */
-#line 3398 "sql.yacc"
+#line 3399 "sql.yacc"
     {sprintf((yyval.str),"%s.%s", A4GLSQLCV_ownerize_tablename((yyvsp[(1) - (5)].str),(yyvsp[(3) - (5)].str)),(yyvsp[(5) - (5)].str));}
     break;
 
   case 609:
 
 /* Line 1455 of yacc.c  */
-#line 3399 "sql.yacc"
+#line 3400 "sql.yacc"
     {sprintf((yyval.str),"%s.%s", A4GLSQLCV_ownerize_tablename((yyvsp[(1) - (5)].str),(yyvsp[(3) - (5)].str)),(yyvsp[(5) - (5)].str));}
     break;
 
   case 610:
 
 /* Line 1455 of yacc.c  */
-#line 3400 "sql.yacc"
+#line 3401 "sql.yacc"
     {sprintf((yyval.str),"%s", (yyvsp[(1) - (4)].str)); strcpy((yyval.str), A4GLSQLCV_make_substr_s((yyvsp[(1) - (4)].str), 1,(yyvsp[(3) - (4)].str),0));}
     break;
 
   case 611:
 
 /* Line 1455 of yacc.c  */
-#line 3401 "sql.yacc"
+#line 3402 "sql.yacc"
     {char buff[256]; sprintf(buff,"%s.%s", A4GLSQLCV_ownerize_tablename(NULL,(yyvsp[(1) - (6)].str)),(yyvsp[(3) - (6)].str)); strcpy((yyval.str), A4GLSQLCV_make_substr_s(buff,1,(yyvsp[(5) - (6)].str),0));}
     break;
 
   case 612:
 
 /* Line 1455 of yacc.c  */
-#line 3402 "sql.yacc"
+#line 3403 "sql.yacc"
     {char buff[256]; sprintf(buff,"%s.%s", A4GLSQLCV_ownerize_tablename((yyvsp[(1) - (8)].str),(yyvsp[(3) - (8)].str)), (yyvsp[(5) - (8)].str)); strcpy((yyval.str), A4GLSQLCV_make_substr_s(buff,1,(yyvsp[(7) - (8)].str),0));  }
     break;
 
   case 613:
 
 /* Line 1455 of yacc.c  */
-#line 3403 "sql.yacc"
+#line 3404 "sql.yacc"
     {char buff[256]; sprintf(buff,"%s.%s", A4GLSQLCV_ownerize_tablename((yyvsp[(1) - (8)].str),(yyvsp[(3) - (8)].str)), (yyvsp[(5) - (8)].str));  strcpy((yyval.str), A4GLSQLCV_make_substr_s(buff,1,(yyvsp[(7) - (8)].str),0)); }
     break;
 
   case 614:
 
 /* Line 1455 of yacc.c  */
-#line 3405 "sql.yacc"
+#line 3406 "sql.yacc"
     {sprintf((yyval.str),"%s", (yyvsp[(1) - (6)].str)); strcpy((yyval.str), A4GLSQLCV_make_substr_s((yyvsp[(1) - (6)].str), 2,(yyvsp[(3) - (6)].str),(yyvsp[(5) - (6)].str)));}
     break;
 
   case 615:
 
 /* Line 1455 of yacc.c  */
-#line 3406 "sql.yacc"
+#line 3407 "sql.yacc"
     {char buff[256]; sprintf(buff,"%s.%s", A4GLSQLCV_ownerize_tablename(NULL,(yyvsp[(1) - (8)].str)),(yyvsp[(3) - (8)].str)); strcpy((yyval.str), A4GLSQLCV_make_substr_s(buff,2,(yyvsp[(5) - (8)].str),(yyvsp[(7) - (8)].str)));}
     break;
 
   case 616:
 
 /* Line 1455 of yacc.c  */
-#line 3407 "sql.yacc"
+#line 3408 "sql.yacc"
     {char buff[256]; sprintf(buff,"%s.%s", A4GLSQLCV_ownerize_tablename((yyvsp[(1) - (10)].str),(yyvsp[(3) - (10)].str)), (yyvsp[(5) - (10)].str)); strcpy((yyval.str), A4GLSQLCV_make_substr_s(buff,2,(yyvsp[(7) - (10)].str),(yyvsp[(9) - (10)].str)));  }
     break;
 
   case 617:
 
 /* Line 1455 of yacc.c  */
-#line 3408 "sql.yacc"
+#line 3409 "sql.yacc"
     {char buff[256]; sprintf(buff,"%s.%s", A4GLSQLCV_ownerize_tablename((yyvsp[(1) - (10)].str),(yyvsp[(3) - (10)].str)), (yyvsp[(5) - (10)].str));  strcpy((yyval.str), A4GLSQLCV_make_substr_s(buff,2,(yyvsp[(7) - (10)].str),(yyvsp[(9) - (10)].str))); }
     break;
 
   case 618:
 
 /* Line 1455 of yacc.c  */
-#line 3413 "sql.yacc"
+#line 3414 "sql.yacc"
     {
                 (yyval.s_select_list_item)=(yyvsp[(1) - (1)].s_select_list_item);
         }
@@ -8783,7 +8784,7 @@ A4GL_debug("Set $<str>$ to %s\n",(yyval.str));
   case 619:
 
 /* Line 1455 of yacc.c  */
-#line 3416 "sql.yacc"
+#line 3417 "sql.yacc"
     {
                 (yyval.s_select_list_item)=new_select_list_item_cast((yyvsp[(1) - (3)].s_select_list_item), (yyvsp[(3) - (3)].str));
         }
@@ -8792,63 +8793,63 @@ A4GL_debug("Set $<str>$ to %s\n",(yyval.str));
   case 620:
 
 /* Line 1455 of yacc.c  */
-#line 3425 "sql.yacc"
+#line 3426 "sql.yacc"
     { (yyvsp[(1) - (1)].s_select_list_item)=(yyvsp[(1) - (1)].s_select_list_item); }
     break;
 
   case 621:
 
 /* Line 1455 of yacc.c  */
-#line 3426 "sql.yacc"
+#line 3427 "sql.yacc"
     {(yyvsp[(1) - (1)].s_select_list_item)=(yyvsp[(1) - (1)].s_select_list_item);}
     break;
 
   case 622:
 
 /* Line 1455 of yacc.c  */
-#line 3427 "sql.yacc"
+#line 3428 "sql.yacc"
     {  (yyval.s_select_list_item)=new_select_list_item_sq(E_SQE_DONT_CARE,(yyvsp[(1) - (1)].s_select_list_item)); }
     break;
 
   case 623:
 
 /* Line 1455 of yacc.c  */
-#line 3428 "sql.yacc"
+#line 3429 "sql.yacc"
     { (yyval.s_select_list_item)=new_select_list_item_sq(E_SQE_ALL,(yyvsp[(2) - (2)].s_select_list_item)); }
     break;
 
   case 624:
 
 /* Line 1455 of yacc.c  */
-#line 3429 "sql.yacc"
+#line 3430 "sql.yacc"
     { (yyval.s_select_list_item)=new_select_list_item_sq(E_SQE_ANY,(yyvsp[(2) - (2)].s_select_list_item)); }
     break;
 
   case 625:
 
 /* Line 1455 of yacc.c  */
-#line 3430 "sql.yacc"
+#line 3431 "sql.yacc"
     { (yyval.s_select_list_item)=new_select_list_item_sq(E_SQE_SOME,(yyvsp[(2) - (2)].s_select_list_item)); }
     break;
 
   case 626:
 
 /* Line 1455 of yacc.c  */
-#line 3434 "sql.yacc"
+#line 3435 "sql.yacc"
     {strcpy((yyval.str),"");}
     break;
 
   case 627:
 
 /* Line 1455 of yacc.c  */
-#line 3435 "sql.yacc"
+#line 3436 "sql.yacc"
     {strcpy((yyval.str),(yyvsp[(1) - (1)].str));}
     break;
 
 
 
 /* Line 1455 of yacc.c  */
-#line 8852 "y.tab.c"
+#line 8853 "y.tab.c"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);
@@ -9060,7 +9061,7 @@ yyreturn:
 
 
 /* Line 1675 of yacc.c  */
-#line 3441 "sql.yacc"
+#line 3442 "sql.yacc"
 
 
 #if LEX_YY_PREGEN

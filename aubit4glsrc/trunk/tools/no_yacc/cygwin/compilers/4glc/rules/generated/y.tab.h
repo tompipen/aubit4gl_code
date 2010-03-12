@@ -2619,8 +2619,8 @@ typedef union YYSTYPE
 	on_events *on_events;
 	struct when *when;
 	struct whens *whens;
-	struct s_report_format_section_entry *report_format_section_entry;
-	struct s_report_format_section *report_format_section;
+	struct report_format_section_entry *report_format_section_entry;
+	struct report_format_section *report_format_section;
 	struct s_report_orderby_section *report_orderby_section;
 	struct cons_list *cons_list;
 	struct cons_list_entry *cons_list_entry;
