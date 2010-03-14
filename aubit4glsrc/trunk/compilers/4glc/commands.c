@@ -2833,6 +2833,7 @@ void set_variable_default (variable *v, expr_str *defaultValue) {
 struct s_spl_block *new_spl_block(struct variable_list*defines, struct s_commands * commands ) {
 struct s_spl_block *p;
 	p=malloc(sizeof(struct s_spl_block));
+	p->variables.sorted_list=0;
 	if (defines) {
 		p->variables.variables.variables_len=defines->variables.variables_len;
 		p->variables.variables.variables_val=defines->variables.variables_val;

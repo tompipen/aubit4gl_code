@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: variables.c,v 1.118 2010-03-10 13:45:08 mikeaubury Exp $
+# $Id: variables.c,v 1.119 2010-03-14 18:54:59 mikeaubury Exp $
 #
 */
 
@@ -592,12 +592,16 @@ if (u==0) return 0;
 utop=u;
 while (1) {
 	char errbuff[256];
-	enum e_scope scope;
+	enum e_scope scope=-1;
 	struct variable_usage *unext;
 	unext=u->next;
 	u->next=0;
 	v=find_variable_vu_ptr(errbuff,utop,&scope,0);
+
 	if (v) {
+		if (scope==-1) {
+			A4GL_assertion(1,"No scope");
+		}
 		v->usage++;
 		if (!v->assigned) {
 		if (scope==E_SCOPE_LOCAL) { v->flags|=1; }
@@ -916,6 +920,7 @@ struct variable *find_variable_vu_ptr(char *errbuff, struct variable_usage *v, e
 			}
 		}
 	}
+	*scope=E_SCOPE_LOCAL;
 	return ptr;
   }
 

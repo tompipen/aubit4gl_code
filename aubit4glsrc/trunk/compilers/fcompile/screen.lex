@@ -292,6 +292,7 @@ master[ 	]+of 	{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KW_MASTER
 "noncompress"		{if (ign_kw(yystate, NONCOMPRESS)) REJECT;strcpy(yylval.str,yytext); return NONCOMPRESS;}
 "today"		{if (ign_kw(yystate, SQL_VAR)) REJECT;strcpy(yylval.str,"TODAY"); return SQL_VAR;}
 "user"		{if (ign_kw(yystate, SQL_VAR)) REJECT;strcpy(yylval.str,"USER"); return SQL_VAR;}
+"current"		{if (ign_kw(yystate, SQL_VAR)) REJECT;strcpy(yylval.str,"CURRENT"); return SQL_VAR;}
 "to"		{if (ign_kw(yystate,TO)) REJECT;strcpy(yylval.str,yytext); return TO;}
 "as"		{if (ign_kw(yystate,AS)) REJECT;strcpy(yylval.str,yytext); return AS;}
 "noupdate"		{if (ign_kw(yystate, NOUPDATE)) REJECT;strcpy(yylval.str,yytext); return NOUPDATE;}

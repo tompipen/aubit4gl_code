@@ -441,7 +441,7 @@ spl_let_sources:
 		$$=$1;
 	}
 	| OPEN_BRACKET select_statement_ss_select CLOSE_BRACKET {
-		$$=A4GL_new_ptr_list(A4GL_expr_select($<s_select>1));
+		$$=A4GL_new_ptr_list(A4GL_expr_select($<s_select>2));
 	}
 ;
 

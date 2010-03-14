@@ -228,6 +228,9 @@ value_expression_complex_sli :
 	| value_expression_initial_sli KW_MINUS value_expression_sli {
 			$<s_select_list_item>$=new_select_list_item_op_expr ($<s_select_list_item>1, $<s_select_list_item>3, "-");
 	}
+	| value_expression_initial_sli CONCAT_PIPES value_expression_sli {
+			$<s_select_list_item>$=new_select_list_item_op_expr ($<s_select_list_item>1, $<s_select_list_item>3, "||");
+	}
 	| literal 		{ $<s_select_list_item>$=new_select_list_item_literal($<str>1); }
 	| KW_TRUE 		{ $<s_select_list_item>$=new_select_list_item_builtin_const(E_SLI_BUILTIN_CONST_TRUE); }
 	| KW_FALSE 		{ $<s_select_list_item>$=new_select_list_item_builtin_const(E_SLI_BUILTIN_CONST_FALSE); }
