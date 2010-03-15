@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pg8.c,v 1.109 2010-02-08 12:27:36 mikeaubury Exp $
+# $Id: pg8.c,v 1.110 2010-03-15 18:04:26 mikeaubury Exp $
 #*/
 
 
@@ -1743,7 +1743,7 @@ A4GLSQLLIB_A4GLSQL_execute_implicit_sql (void *vsid, int singleton, int ni,
       A4GL_convlower (isInsert);
       if (A4GL_strstartswith (isInsert, "insert ") && use_insert_return == 1)
 	{
-	A4GL_debug("Using insert return");
+		A4GL_debug("Using insert return");
 	  sql = replace_ibind (n->select, n->ni, n->ibind,1);
 	  strcat (sql, " returning *");
 	}
@@ -1772,7 +1772,10 @@ A4GLSQLLIB_A4GLSQL_execute_implicit_sql (void *vsid, int singleton, int ni,
   
 
   res = PQexec (current_con, set_explain(sql));
-	SET_EXPLAIN_FINISHED;
+
+		//A4GL_debug("ERR: %s\n",PQerrorMessage (current_con));
+
+   SET_EXPLAIN_FINISHED;
    pgextra->last_result=res;
 
   A4GL_debug ("::: %s - %d\n", n->select, PQresultStatus (res));
@@ -3364,7 +3367,7 @@ replace_ibind (char *stmt, int ni, struct BINDING *ibind, int type)
 		A4GL_assertion(param<0 || param>ni,"param out of range");
 
 
-	      if (A4GL_isnull (ibind[param].dtype & DTYPE_MASK, ibind[param].ptr))
+	      if (A4GL_isnull (ibind[param].dtype & DTYPE_MASK, ibind[param].ptr) || (ibind[param].dtype==0 && ibind[param].size==0 /* a special case - might be used with a LOAD */ ))
 		{
 
 		  switch (ibind[param].dtype)
