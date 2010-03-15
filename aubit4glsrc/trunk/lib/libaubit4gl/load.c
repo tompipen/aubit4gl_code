@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: load.c,v 1.62 2010-02-16 13:16:31 mikeaubury Exp $
+# $Id: load.c,v 1.63 2010-03-15 18:48:20 mikeaubury Exp $
 #
 */
 
@@ -973,6 +973,7 @@ A4GL_load_data_str (char *fname, char *delims, void *filterfunc, char *sqlstmt_o
   int l;
   int prepared = 0;
   static char *sqlstmt = 0;
+char nullbuff[200];
 
   if (doing_load)
     {
@@ -984,6 +985,9 @@ A4GL_load_data_str (char *fname, char *delims, void *filterfunc, char *sqlstmt_o
     {
       delim = delims[0];
     }
+
+  A4GL_setnull (DTYPE_CHAR, nullbuff, 1);
+
 
   if (sqlstmt)
     free (sqlstmt);
@@ -1134,7 +1138,15 @@ A4GL_load_data_str (char *fname, char *delims, void *filterfunc, char *sqlstmt_o
 #endif
 	  ibind[a].ptr = colptr[a];
 	  ibind[a].dtype = DTYPE_CHAR;
-	  ibind[a].size = strlen (colptr[a]);
+	  if (strlen (colptr[a]) == 0)
+	    {
+	       ibind[a].size = 1;
+		ibind[a].ptr=nullbuff;
+		ibind[a].dtype=DTYPE_CHAR;
+	} else {
+	  	ibind[a].size = strlen (colptr[a]);
+	}
+
 	ibind[a].start_char_subscript=0;
 	ibind[a].end_char_subscript=0;
 	ibind[a].libptr=0;
