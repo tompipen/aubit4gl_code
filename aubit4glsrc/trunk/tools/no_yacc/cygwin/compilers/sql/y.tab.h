@@ -39,25 +39,25 @@
    /* Put the tokens into the symbol table, so that GDB and other debuggers
       know about them.  */
    enum yytokentype {
-     INT_VALUE = 2230,
-     NAMED = 2231,
-     NAMED_GEN = 2232,
-     CHAR_VALUE = 2233,
-     NOT_USED_1 = 2234,
-     NOT_USED_2 = 2235,
-     NOT_USED_3 = 2236,
-     NOT_USED_4 = 2237,
-     NOT_USED_5 = 2238,
-     NOT_USED_6 = 2239,
-     NOT_USED_7 = 2240,
-     NOT_USED_8 = 2241,
-     NUMBER_VALUE = 2242,
-     SEMICOLON = 2243,
-     QUESTION_MARK = 2244,
-     CLINE = 2245,
-     CH = 2246,
-     MARK_VAR = 2247,
-     END_MARK_VAR = 2248,
+     INT_VALUE = 2231,
+     NAMED = 2232,
+     NAMED_GEN = 2233,
+     CHAR_VALUE = 2234,
+     NOT_USED_1 = 2235,
+     NOT_USED_2 = 2236,
+     NOT_USED_3 = 2237,
+     NOT_USED_4 = 2238,
+     NOT_USED_5 = 2239,
+     NOT_USED_6 = 2240,
+     NOT_USED_7 = 2241,
+     NOT_USED_8 = 2242,
+     NUMBER_VALUE = 2243,
+     SEMICOLON = 2244,
+     QUESTION_MARK = 2245,
+     CLINE = 2246,
+     CH = 2247,
+     MARK_VAR = 2248,
+     END_MARK_VAR = 2249,
      WITH_LISTING_IN = 1001,
      SET_CONSTRAINTS_ALL_DEFERRED = 1002,
      KW_LIMIT = 1003,
@@ -94,6 +94,7 @@
      INTERVAL_VALUE = 1100,
      RECOVER_TABLE = 1101,
      ROLLFORWARD_DATABASE = 1102,
+     CONCAT_PIPES = 1116,
      DROP_TRIGGER = 1118,
      DROP_AUDIT_FOR = 1119,
      CREATE_AUDIT_FOR = 1120,
@@ -313,29 +314,30 @@
      COPYBACK = 2225,
      REFERENCES_BLOBTYPE_DEFAULT_NULL = 2226,
      REFERENCES_BLOBTYPE = 2227,
-     SORT = 2228
+     SORT = 2228,
+     KWPIPE = 2229
    };
 #endif
 /* Tokens.  */
-#define INT_VALUE 2230
-#define NAMED 2231
-#define NAMED_GEN 2232
-#define CHAR_VALUE 2233
-#define NOT_USED_1 2234
-#define NOT_USED_2 2235
-#define NOT_USED_3 2236
-#define NOT_USED_4 2237
-#define NOT_USED_5 2238
-#define NOT_USED_6 2239
-#define NOT_USED_7 2240
-#define NOT_USED_8 2241
-#define NUMBER_VALUE 2242
-#define SEMICOLON 2243
-#define QUESTION_MARK 2244
-#define CLINE 2245
-#define CH 2246
-#define MARK_VAR 2247
-#define END_MARK_VAR 2248
+#define INT_VALUE 2231
+#define NAMED 2232
+#define NAMED_GEN 2233
+#define CHAR_VALUE 2234
+#define NOT_USED_1 2235
+#define NOT_USED_2 2236
+#define NOT_USED_3 2237
+#define NOT_USED_4 2238
+#define NOT_USED_5 2239
+#define NOT_USED_6 2240
+#define NOT_USED_7 2241
+#define NOT_USED_8 2242
+#define NUMBER_VALUE 2243
+#define SEMICOLON 2244
+#define QUESTION_MARK 2245
+#define CLINE 2246
+#define CH 2247
+#define MARK_VAR 2248
+#define END_MARK_VAR 2249
 #define WITH_LISTING_IN 1001
 #define SET_CONSTRAINTS_ALL_DEFERRED 1002
 #define KW_LIMIT 1003
@@ -372,6 +374,7 @@
 #define INTERVAL_VALUE 1100
 #define RECOVER_TABLE 1101
 #define ROLLFORWARD_DATABASE 1102
+#define CONCAT_PIPES 1116
 #define DROP_TRIGGER 1118
 #define DROP_AUDIT_FOR 1119
 #define CREATE_AUDIT_FOR 1120
@@ -592,6 +595,7 @@
 #define REFERENCES_BLOBTYPE_DEFAULT_NULL 2226
 #define REFERENCES_BLOBTYPE 2227
 #define SORT 2228
+#define KWPIPE 2229
 
 
 
@@ -627,7 +631,7 @@ typedef union YYSTYPE
 
 
 /* Line 1676 of yacc.c  */
-#line 631 "y.tab.h"
+#line 635 "y.tab.h"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */

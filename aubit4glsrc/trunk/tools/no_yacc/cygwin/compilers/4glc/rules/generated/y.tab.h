@@ -39,7 +39,7 @@
    /* Put the tokens into the symbol table, so that GDB and other debuggers
       know about them.  */
    enum yytokentype {
-     NAME = 2230,
+     NAME = 2231,
      KW_COMMA = 1744,
      KW_WORDWRAP = 1524,
      KW_USING = 1676,
@@ -69,25 +69,25 @@
      KW_DIVIDE = 1690,
      KW_MOD = 1758,
      KW_POWER = 1662,
-     UMINUS = 2231,
+     UMINUS = 2232,
      CLOSE_BRACKET = 1533,
      OPEN_BRACKET = 1575,
-     TYPECAST = 2232,
+     TYPECAST = 2233,
      COMMAND = 1535,
-     NUMBER_VALUE = 2233,
-     CHAR_VALUE = 2234,
-     CHAR_VALUE_TRANSLATED = 2235,
-     INT_VALUE = 2236,
-     NAMED_GEN = 2237,
-     CLINE = 2238,
-     SQLLINE = 2239,
-     KW_CSTART = 2240,
-     KW_CEND = 2241,
-     USER_DTYPE_ORIG = 2242,
-     USER_DTYPE_NEW = 2243,
-     SQL_TEXT = 2244,
-     KW_WHENEVER_SET = 2245,
-     COMMENT = 2246,
+     NUMBER_VALUE = 2234,
+     CHAR_VALUE = 2235,
+     CHAR_VALUE_TRANSLATED = 2236,
+     INT_VALUE = 2237,
+     NAMED_GEN = 2238,
+     CLINE = 2239,
+     SQLLINE = 2240,
+     KW_CSTART = 2241,
+     KW_CEND = 2242,
+     USER_DTYPE_ORIG = 2243,
+     USER_DTYPE_NEW = 2244,
+     SQL_TEXT = 2245,
+     KW_WHENEVER_SET = 2246,
+     COMMENT = 2247,
      KW_DOC4GLCOMMENT = 1000,
      WITH_LISTING_IN = 1001,
      SET_CONSTRAINTS_ALL_DEFERRED = 1002,
@@ -1284,11 +1284,12 @@
      COPYBACK = 2225,
      REFERENCES_BLOBTYPE_DEFAULT_NULL = 2226,
      REFERENCES_BLOBTYPE = 2227,
-     SORT = 2228
+     SORT = 2228,
+     KWPIPE = 2229
    };
 #endif
 /* Tokens.  */
-#define NAME 2230
+#define NAME 2231
 #define KW_COMMA 1744
 #define KW_WORDWRAP 1524
 #define KW_USING 1676
@@ -1318,25 +1319,25 @@
 #define KW_DIVIDE 1690
 #define KW_MOD 1758
 #define KW_POWER 1662
-#define UMINUS 2231
+#define UMINUS 2232
 #define CLOSE_BRACKET 1533
 #define OPEN_BRACKET 1575
-#define TYPECAST 2232
+#define TYPECAST 2233
 #define COMMAND 1535
-#define NUMBER_VALUE 2233
-#define CHAR_VALUE 2234
-#define CHAR_VALUE_TRANSLATED 2235
-#define INT_VALUE 2236
-#define NAMED_GEN 2237
-#define CLINE 2238
-#define SQLLINE 2239
-#define KW_CSTART 2240
-#define KW_CEND 2241
-#define USER_DTYPE_ORIG 2242
-#define USER_DTYPE_NEW 2243
-#define SQL_TEXT 2244
-#define KW_WHENEVER_SET 2245
-#define COMMENT 2246
+#define NUMBER_VALUE 2234
+#define CHAR_VALUE 2235
+#define CHAR_VALUE_TRANSLATED 2236
+#define INT_VALUE 2237
+#define NAMED_GEN 2238
+#define CLINE 2239
+#define SQLLINE 2240
+#define KW_CSTART 2241
+#define KW_CEND 2242
+#define USER_DTYPE_ORIG 2243
+#define USER_DTYPE_NEW 2244
+#define SQL_TEXT 2245
+#define KW_WHENEVER_SET 2246
+#define COMMENT 2247
 #define KW_DOC4GLCOMMENT 1000
 #define WITH_LISTING_IN 1001
 #define SET_CONSTRAINTS_ALL_DEFERRED 1002
@@ -2534,6 +2535,7 @@
 #define REFERENCES_BLOBTYPE_DEFAULT_NULL 2226
 #define REFERENCES_BLOBTYPE 2227
 #define SORT 2228
+#define KWPIPE 2229
 
 
 
@@ -2648,7 +2650,7 @@ typedef union YYSTYPE
 
 
 /* Line 1676 of yacc.c  */
-#line 2652 "y.tab.h"
+#line 2654 "y.tab.h"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
