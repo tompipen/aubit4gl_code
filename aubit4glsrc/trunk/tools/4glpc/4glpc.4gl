@@ -876,6 +876,10 @@ endcode
 
                 END IF
 
+                IF mv_lextype="FGL" THEN
+			LET mv_stage="FGL"
+		END IF
+
                 CONTINUE FOR
 
             WHEN "--lextype"
@@ -1577,6 +1581,11 @@ endcode
 
                 # 4GL -> Stored procedure SQL file
                 CALL run_4glc(lv_fname,lv_new,lv_base)
+
+	    WHEN "FGL"
+
+		CALL run_4glc(lv_fname,lv_new,lv_base)
+
 
             OTHERWISE
                 DISPLAY "Unhandled compilation : FROM=",lv_from," TO=",lv_to," for ",lv_fname
