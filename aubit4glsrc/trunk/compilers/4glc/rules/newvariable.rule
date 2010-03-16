@@ -102,6 +102,7 @@ obind_var_let_list: bind_var_list {
 				a4gl_yyerror(buff);
 				YYERROR;
 		}
+
 		$<ptr_list>$=fully_expand_variables_in_expr_str_list($<ptr_list>1);
 	}
 ;

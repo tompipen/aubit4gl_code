@@ -1411,7 +1411,15 @@ A4GL_debug("dynamic=-1");
 def_val : 
 CHAR_VALUE {strcpy($<str>$,$<str>1);}
 | NUMBER_VALUE  {strcpy($<str>$,$<str>1);}
-| SQL_VAR {sprintf($<str>$,"\n%s",$<str>1);}
+| SQL_VAR {sprintf($<str>$,"\n%s",$<str>1);
+	if (strcasecmp($<str>1,"current")==0) {
+		int a;
+		if (((A4GL_get_fld()->datatype)&DTYPE_MASK)==DTYPE_DTIME) {
+			a=A4GL_get_fld()->dtype_size;
+			sprintf($<str>$,"\n%s%x",$<str>1, a);
+		}
+	}
+}
 ;
 
 

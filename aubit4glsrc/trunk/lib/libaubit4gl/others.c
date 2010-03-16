@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: others.c,v 1.74 2010-03-08 09:43:15 mikeaubury Exp $
+# $Id: others.c,v 1.75 2010-03-16 12:08:23 mikeaubury Exp $
 #
 */
 
@@ -444,6 +444,29 @@ A4GL_replace_sql_var (char *s)
 #endif
       return buff;
     }
+
+
+  if (A4GL_aubit_strcasecmp (buff, "current11") == 0) { A4GL_push_current(1,1); ptr = A4GL_char_pop (); strcpy (buff, ptr); acl_free (ptr); return buff; }
+  if (A4GL_aubit_strcasecmp (buff, "current12") == 0) { A4GL_push_current(1,2); ptr = A4GL_char_pop (); strcpy (buff, ptr); acl_free (ptr); return buff; }
+  if (A4GL_aubit_strcasecmp (buff, "current13") == 0) { A4GL_push_current(1,3); ptr = A4GL_char_pop (); strcpy (buff, ptr); acl_free (ptr); return buff; }
+  if (A4GL_aubit_strcasecmp (buff, "current14") == 0) { A4GL_push_current(1,4); ptr = A4GL_char_pop (); strcpy (buff, ptr); acl_free (ptr); return buff; }
+  if (A4GL_aubit_strcasecmp (buff, "current15") == 0) { A4GL_push_current(1,5); ptr = A4GL_char_pop (); strcpy (buff, ptr); acl_free (ptr); return buff; }
+  if (A4GL_aubit_strcasecmp (buff, "current16") == 0) { A4GL_push_current(1,6); ptr = A4GL_char_pop (); strcpy (buff, ptr); acl_free (ptr); return buff; }
+  if (A4GL_aubit_strcasecmp (buff, "current22") == 0) { A4GL_push_current(2,2); ptr = A4GL_char_pop (); strcpy (buff, ptr); acl_free (ptr); return buff; }
+  if (A4GL_aubit_strcasecmp (buff, "current23") == 0) { A4GL_push_current(2,3); ptr = A4GL_char_pop (); strcpy (buff, ptr); acl_free (ptr); return buff; }
+  if (A4GL_aubit_strcasecmp (buff, "current24") == 0) { A4GL_push_current(2,4); ptr = A4GL_char_pop (); strcpy (buff, ptr); acl_free (ptr); return buff; }
+  if (A4GL_aubit_strcasecmp (buff, "current25") == 0) { A4GL_push_current(2,5); ptr = A4GL_char_pop (); strcpy (buff, ptr); acl_free (ptr); return buff; }
+  if (A4GL_aubit_strcasecmp (buff, "current26") == 0) { A4GL_push_current(2,6); ptr = A4GL_char_pop (); strcpy (buff, ptr); acl_free (ptr); return buff; }
+  if (A4GL_aubit_strcasecmp (buff, "current33") == 0) { A4GL_push_current(3,3); ptr = A4GL_char_pop (); strcpy (buff, ptr); acl_free (ptr); return buff; }
+  if (A4GL_aubit_strcasecmp (buff, "current34") == 0) { A4GL_push_current(3,4); ptr = A4GL_char_pop (); strcpy (buff, ptr); acl_free (ptr); return buff; }
+  if (A4GL_aubit_strcasecmp (buff, "current35") == 0) { A4GL_push_current(3,5); ptr = A4GL_char_pop (); strcpy (buff, ptr); acl_free (ptr); return buff; }
+  if (A4GL_aubit_strcasecmp (buff, "current36") == 0) { A4GL_push_current(3,6); ptr = A4GL_char_pop (); strcpy (buff, ptr); acl_free (ptr); return buff; }
+  if (A4GL_aubit_strcasecmp (buff, "current44") == 0) { A4GL_push_current(4,4); ptr = A4GL_char_pop (); strcpy (buff, ptr); acl_free (ptr); return buff; }
+  if (A4GL_aubit_strcasecmp (buff, "current45") == 0) { A4GL_push_current(4,5); ptr = A4GL_char_pop (); strcpy (buff, ptr); acl_free (ptr); return buff; }
+  if (A4GL_aubit_strcasecmp (buff, "current46") == 0) { A4GL_push_current(4,6); ptr = A4GL_char_pop (); strcpy (buff, ptr); acl_free (ptr); return buff; }
+  if (A4GL_aubit_strcasecmp (buff, "current55") == 0) { A4GL_push_current(5,5); ptr = A4GL_char_pop (); strcpy (buff, ptr); acl_free (ptr); return buff; }
+  if (A4GL_aubit_strcasecmp (buff, "current56") == 0) { A4GL_push_current(5,6); ptr = A4GL_char_pop (); strcpy (buff, ptr); acl_free (ptr); return buff; }
+  if (A4GL_aubit_strcasecmp (buff, "current66") == 0) { A4GL_push_current(6,6); ptr = A4GL_char_pop (); strcpy (buff, ptr); acl_free (ptr); return buff; }
 
   if (A4GL_aubit_strcasecmp (buff, "user") == 0)
     {

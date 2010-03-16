@@ -464,7 +464,6 @@ add_report_agg (char t, struct expr_str *s1, struct expr_str *s2, int a, long *n
 				int old_yylineno;
 				old_yylineno=yylineno;
 				yylineno=p_yylineno;
-			//A4GL_pause_execution();
 			A4GL_warn("Use of a report aggregate in a loop may produce unexpected results");
 				yylineno=old_yylineno;
 		}
@@ -2087,7 +2086,25 @@ if (l->unexpanded_list.unexpanded_list_len) {
         n->unexpanded_list.unexpanded_list_val = l->unexpanded_list.unexpanded_list_val;
 } else {
         n->unexpanded_list.unexpanded_list_len = l->list.list_len;
-        n->unexpanded_list.unexpanded_list_val = l->list.list_val;
+        n->unexpanded_list.unexpanded_list_val = NULL; // l->unexpanded_list.unexpanded_list_val;
+	// Lets make a copy of our dataset so if we manipulate it then we wont mess up the unexpanded list...
+	if (l->list.list_len) {
+		int sz;
+		sz=sizeof(l->list.list_val[0])* n->unexpanded_list.unexpanded_list_len;
+        	n->unexpanded_list.unexpanded_list_val = malloc(sz);
+	
+		for (a=0;a<l->list.list_len;a++) {
+			 n->unexpanded_list.unexpanded_list_val[a]=l->list.list_val[a];
+			if (l->list.list_val[a]->expr_type==ET_EXPR_VARIABLE_USAGE) {
+				void *p;
+				 	p=clone_variable_usage(l->list.list_val[a]->expr_str_u.expr_variable_usage);
+					n->unexpanded_list.unexpanded_list_val[a]=malloc(sizeof(expr_str));   
+					memcpy(n->unexpanded_list.unexpanded_list_val[a], l->list.list_val[a],sizeof(l->list.list_val[a]));
+					n->unexpanded_list.unexpanded_list_val[a]->expr_str_u.expr_variable_usage=p;
+				 //n->unexpanded_list.unexpanded_list_val[a]->expr_str_u.expr_variable_usage=clone_variable_usage(l->list.list_val[a]->expr_str_u.expr_variable_usage);
+			}
+		}
+	}
 }
 
 
