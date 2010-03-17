@@ -754,10 +754,10 @@ simple_expr_datatype (struct expr_str *p)
 
 	// If its a substring - can we find out the extent so we can 'adjust' our 
 	// size we report back as the datatype...
-	if (u->substrings_start)
+	if (u->substrings_start.substrings_start)
 	  {
 	    // substring..
-	    if (u->substrings_end == NULL || u->substrings_end == u->substrings_start)
+	    if (u->substrings_end.substrings_end == NULL || u->substrings_end.substrings_end == u->substrings_start.substrings_start)
 	      {
 		// end is the same as start - so its a single character..
 		if (u->datatype == DTYPE_CHAR || u->datatype == DTYPE_VCHAR)
@@ -769,12 +769,12 @@ simple_expr_datatype (struct expr_str *p)
 	      {
 		// Ok - theres a fair chance we can't work out what it is
 		// but - we can if its just a couple of literals...
-		if (u->substrings_start->expr_type == ET_EXPR_LITERAL_LONG && u->substrings_end->expr_type == ET_EXPR_LITERAL_LONG)
+		if (u->substrings_start.substrings_start->expr_type == ET_EXPR_LITERAL_LONG && u->substrings_end.substrings_end->expr_type == ET_EXPR_LITERAL_LONG)
 		  {
 		    int s;
 		    int e;
-		    s = u->substrings_start->expr_str_u.expr_long;
-		    e = u->substrings_end->expr_str_u.expr_long;
+		    s = u->substrings_start.substrings_start->expr_str_u.expr_long;
+		    e = u->substrings_end.substrings_end->expr_str_u.expr_long;
 		    if (e < s)
 		      e = s;
 		    return (u->datatype & DTYPE_MASK) + ENCODE_SIZE ((e - s + 1));
@@ -998,10 +998,10 @@ expr_datatype (char *module, int lineno, struct expr_str *p)
 
 	// If its a substring - can we find out the extent so we can 'adjust' our 
 	// size we report back as the datatype...
-	if (u->substrings_start)
+	if (u->substrings_start.substrings_start)
 	  {
 	    // substring..
-	    if (u->substrings_end == NULL || u->substrings_end == u->substrings_start)
+	    if (u->substrings_end.substrings_end == NULL || u->substrings_end.substrings_end == u->substrings_start.substrings_start)
 	      {
 		// end is the same as start - so its a single character..
 		if (u->datatype == DTYPE_CHAR || u->datatype == DTYPE_VCHAR)
@@ -1013,12 +1013,12 @@ expr_datatype (char *module, int lineno, struct expr_str *p)
 	      {
 		// Ok - theres a fair chance we can't work out what it is
 		// but - we can if its just a couple of literals...
-		if (u->substrings_start->expr_type == ET_EXPR_LITERAL_LONG && u->substrings_end->expr_type == ET_EXPR_LITERAL_LONG)
+		if (u->substrings_start.substrings_start->expr_type == ET_EXPR_LITERAL_LONG && u->substrings_end.substrings_end->expr_type == ET_EXPR_LITERAL_LONG)
 		  {
 		    int s;
 		    int e;
-		    s = u->substrings_start->expr_str_u.expr_long;
-		    e = u->substrings_end->expr_str_u.expr_long;
+		    s = u->substrings_start.substrings_start->expr_str_u.expr_long;
+		    e = u->substrings_end.substrings_end->expr_str_u.expr_long;
 		    if (e < s)
 		      e = s;
 		    return (u->datatype & DTYPE_MASK) + ENCODE_SIZE ((e - s + 1));

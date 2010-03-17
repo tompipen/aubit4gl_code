@@ -29,6 +29,8 @@ struct s_elements {
 	struct s_element *elements;
 	char *union_switch_on_enum_type;
 	char *union_switch_on_enum_name;
+	int usesAttributes;
+	int usesElements;
 };
 
 

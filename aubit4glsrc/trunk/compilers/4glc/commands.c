@@ -74,12 +74,12 @@ char *cmds_get_variable_usage_as_string (struct variable_usage *var_usage) {
                 }
                 strcat(buff, "]");
         }
-        if (var_usage->substrings_start) {
+        if (var_usage->substrings_start.substrings_start) {
                 strcat(buff, "[");
-                strcat(buff, expr_as_string_when_possible(var_usage->substrings_start));
-                if (var_usage->substrings_end) {
+                strcat(buff, expr_as_string_when_possible(var_usage->substrings_start.substrings_start));
+                if (var_usage->substrings_end.substrings_end) {
                         strcat(buff, ",");
-                        strcat(buff, expr_as_string_when_possible(var_usage->substrings_end));
+                        strcat(buff, expr_as_string_when_possible(var_usage->substrings_end.substrings_end));
                 }
                 strcat(buff, "]");
         }
@@ -1006,8 +1006,8 @@ int a;
 		 c->cmd_data.command_data_u.init_cmd.init_like_exprlist->list.list_len=p_tablist->str_list_entry.str_list_entry_len;
 		 c->cmd_data.command_data_u.init_cmd.init_like_exprlist->list.list_val=malloc(sizeof(struct expr_str *)*p_tablist->str_list_entry.str_list_entry_len);
 			
-		c->cmd_data.command_data_u.init_cmd.init_like_exprlist->unexpanded_list.unexpanded_list_len=0;
-		c->cmd_data.command_data_u.init_cmd.init_like_exprlist->unexpanded_list.unexpanded_list_val=0;
+		c->cmd_data.command_data_u.init_cmd.init_like_exprlist->unexpanded_list.list.list_len=0;
+		c->cmd_data.command_data_u.init_cmd.init_like_exprlist->unexpanded_list.list.list_val=0;
 
    	for (a=0;a<p_tablist->str_list_entry.str_list_entry_len;a++) {
 		char buff[200];
@@ -2061,16 +2061,16 @@ struct on_event *new_event(e_event event_type, void *data, s_commands *cmds,int 
         case EVENT_ON_INTERVAL:		oe->evt_data.event_data_u.interval_n=(int) data; break;
         case EVENT_ON_TIME: 		oe->evt_data.event_data_u.time_n=(int) data; break;
 
-        case EVENT_KEY_PRESS: 		oe->evt_data.event_data_u.key=(str_list *)data; break;
+        case EVENT_KEY_PRESS: 		oe->evt_data.event_data_u.slist=(str_list *)data; break;
         case EVENT_ON_ACTION:	 	oe->evt_data.event_data_u.on_action=(char *)data; break;
 
-        case EVENT_ON:	 	oe->evt_data.event_data_u.on=(str_list *)data; break;
-        case EVENT_BEFORE:	 	oe->evt_data.event_data_u.before=(str_list *)data; break;
-        case EVENT_AFTER:	 	oe->evt_data.event_data_u.after=(str_list *)data; break;
+        case EVENT_ON:	 	oe->evt_data.event_data_u.slist=(str_list *)data; break;
+        case EVENT_BEFORE:	 	oe->evt_data.event_data_u.slist=(str_list *)data; break;
+        case EVENT_AFTER:	 	oe->evt_data.event_data_u.slist=(str_list *)data; break;
 
-        case EVENT_BEFORE_FIELD:	oe->evt_data.event_data_u.before_field=(fh_field_list *)data; break;
-        case EVENT_AFTER_FIELD: 	oe->evt_data.event_data_u.after_field=(fh_field_list *)data; break;
-        case EVENT_ON_CHANGE: 	oe->evt_data.event_data_u.after_field=(fh_field_list *)data; break;
+        case EVENT_BEFORE_FIELD:	oe->evt_data.event_data_u.before_after_field=(fh_field_list *)data; break;
+        case EVENT_AFTER_FIELD: 	oe->evt_data.event_data_u.before_after_field=(fh_field_list *)data; break;
+        case EVENT_ON_CHANGE: 	oe->evt_data.event_data_u.before_after_field=(fh_field_list *)data; break;
         case EVENT_MENU_COMMAND: 	oe->evt_data.event_data_u.mnoption  =(menuoption *)data; break;
 
 	default : A4GL_assertion(1,"Unexpected event");
@@ -2145,9 +2145,9 @@ struct command *c;
 	case E_CLR_SCREEN: break;
 
 	case E_CLR_WINDOW: c->cmd_data.command_data_u.clear_cmd.clr_data.clear_data_u.window=(expr_str *)data; break;
-	case E_CLR_STATUS: c->cmd_data.command_data_u.clear_cmd.clr_data.clear_data_u. statwindow=(expr_str *)data; break;
+	case E_CLR_STATUS: c->cmd_data.command_data_u.clear_cmd.clr_data.clear_data_u.window=(expr_str *)data; break;
 	case E_CLR_FIELDS: c->cmd_data.command_data_u.clear_cmd.clr_data.clear_data_u.fields=data; break;
-	case E_CLR_FIELDS_TO_DEFAULT: c->cmd_data.command_data_u.clear_cmd.clr_data.clear_data_u.deffields=data; break;
+	case E_CLR_FIELDS_TO_DEFAULT: c->cmd_data.command_data_u.clear_cmd.clr_data.clear_data_u.fields=data; break;
    }
 return c;
 }
@@ -2170,10 +2170,10 @@ struct report_format_section_entry* new_report_format_section_entry(report_block
 	r->orderby_var_no=orderby_var_no;
 	r->lineno=lineno;
 	if (rb==RB_BEFORE_GROUP_OF) {
-		r->rb_block.report_block_data_u.bf_variable=variable;
+		r->rb_block.report_block_data_u.f_variable=variable;
 	}
 	if (rb==RB_AFTER_GROUP_OF) {
-		r->rb_block.report_block_data_u.af_variable=variable;
+		r->rb_block.report_block_data_u.f_variable=variable;
 	}
 	if (rb==RB_FORMAT_EVERY_ROW) {
 		r->rb_block.report_block_data_u.variables=variable;
@@ -2307,8 +2307,8 @@ struct module_entry *c;
    c->module_entry_u.function_definition.variables.variables.variables_val=NULL;
    c->module_entry_u.function_definition.expression_list.list.list_len=0;
    c->module_entry_u.function_definition.expression_list.list.list_val=0;
-   c->module_entry_u.function_definition.expression_list.unexpanded_list.unexpanded_list_len=0;
-   c->module_entry_u.function_definition.expression_list.unexpanded_list.unexpanded_list_val=0;
+   c->module_entry_u.function_definition.expression_list.unexpanded_list.list.list_len=0;
+   c->module_entry_u.function_definition.expression_list.unexpanded_list.list.list_val=0;
    c->module_entry_u.function_definition.extra_warnings.extra_warnings_len=0;
    c->module_entry_u.function_definition.extra_warnings.extra_warnings_val=0;
    c->module_entry_u.function_definition.comment=doc4glcomment;
@@ -2318,8 +2318,8 @@ struct module_entry *c;
 		p_parameters=malloc(sizeof(struct expr_str_list));
 		p_parameters->list.list_len=0;
 		p_parameters->list.list_val=0;
-		p_parameters->unexpanded_list.unexpanded_list_len=0;
-		p_parameters->unexpanded_list.unexpanded_list_val=0;
+		p_parameters->unexpanded_list.list.list_len=0;
+		p_parameters->unexpanded_list.list.list_val=0;
     }
    c->module_entry_u.function_definition.parameters=p_parameters;
 
@@ -2354,8 +2354,8 @@ struct module_entry *c;
    c->module_entry_u.function_definition.lineno=lineno;
    c->module_entry_u.function_definition.expression_list.list.list_len=0;
    c->module_entry_u.function_definition.expression_list.list.list_val=0;
-   c->module_entry_u.function_definition.expression_list.unexpanded_list.unexpanded_list_len=0;
-   c->module_entry_u.function_definition.expression_list.unexpanded_list.unexpanded_list_val=0;
+   c->module_entry_u.function_definition.expression_list.unexpanded_list.list.list_len=0;
+   c->module_entry_u.function_definition.expression_list.unexpanded_list.list.list_val=0;
    c->module_entry_u.function_definition.comment=doc4glcomment;
    //c->module_entry_u.function_definition.colno=0;
    c->module_entry_u.function_definition.lastlineno=yylineno;
@@ -2515,8 +2515,8 @@ struct module_entry *c;
 		p_parameters=malloc(sizeof(struct expr_str_list));
 		p_parameters->list.list_len=0;
 		p_parameters->list.list_val=0;
-		p_parameters->unexpanded_list.unexpanded_list_len=0;
-		p_parameters->unexpanded_list.unexpanded_list_val=0;
+		p_parameters->unexpanded_list.list.list_len=0;
+		p_parameters->unexpanded_list.list.list_val=0;
     }
 
 
@@ -2533,19 +2533,19 @@ struct module_entry *c;
    c->module_entry_u.pdf_report_definition.lastlineno=yylineno;
    c->module_entry_u.pdf_report_definition.expression_list.list.list_len=0;
    c->module_entry_u.pdf_report_definition.expression_list.list.list_val=0;
-   c->module_entry_u.pdf_report_definition.expression_list.unexpanded_list.unexpanded_list_len=0;
-   c->module_entry_u.pdf_report_definition.expression_list.unexpanded_list.unexpanded_list_val=0;
+   c->module_entry_u.pdf_report_definition.expression_list.unexpanded_list.list.list_len=0;
+   c->module_entry_u.pdf_report_definition.expression_list.unexpanded_list.list.list_val=0;
 	c->module_entry_u.pdf_report_definition.extra_warnings.extra_warnings_len=0;
 	c->module_entry_u.pdf_report_definition.extra_warnings.extra_warnings_val=0;
   //this_module.expression_list.expression_list_val=0;
    c->module_entry_u.report_definition.aggregates.list.list_len=list_of_aggregates.list.list_len;
    c->module_entry_u.report_definition.aggregates.list.list_val=list_of_aggregates.list.list_val;
-   c->module_entry_u.report_definition.aggregates.unexpanded_list.unexpanded_list_len=list_of_aggregates.unexpanded_list.unexpanded_list_len;
-   c->module_entry_u.report_definition.aggregates.unexpanded_list.unexpanded_list_val=list_of_aggregates.unexpanded_list.unexpanded_list_val;
+   c->module_entry_u.report_definition.aggregates.unexpanded_list.list.list_len=list_of_aggregates.unexpanded_list.list.list_len;
+   c->module_entry_u.report_definition.aggregates.unexpanded_list.list.list_val=list_of_aggregates.unexpanded_list.list.list_val;
 	list_of_aggregates.list.list_len=0;
 	list_of_aggregates.list.list_val=0;
-	list_of_aggregates.unexpanded_list.unexpanded_list_len=0;
-	list_of_aggregates.unexpanded_list.unexpanded_list_val=0;
+	list_of_aggregates.unexpanded_list.list.list_len=0;
+	list_of_aggregates.unexpanded_list.list.list_val=0;
    c->module_entry_u.report_definition.variables.variables.variables_len=0;
    c->module_entry_u.report_definition.variables.variables.variables_val=NULL;
    c->module_entry_u.report_definition.variables.sorted_list=0;
@@ -2572,8 +2572,8 @@ struct module_entry *c;
 		p_parameters=malloc(sizeof(struct expr_str_list));
 		p_parameters->list.list_len=0;
 		p_parameters->list.list_val=0;
-		p_parameters->unexpanded_list.unexpanded_list_len=0;
-		p_parameters->unexpanded_list.unexpanded_list_val=0;
+		p_parameters->unexpanded_list.list.list_len=0;
+		p_parameters->unexpanded_list.list.list_val=0;
     }
    c->module_entry_u.report_definition.parameters=p_parameters;
 
@@ -2588,10 +2588,10 @@ struct module_entry *c;
 
 	list_of_aggregates.list.list_len=0;
 	list_of_aggregates.list.list_val=0;
-   c->module_entry_u.report_definition.aggregates.unexpanded_list.unexpanded_list_len=list_of_aggregates.unexpanded_list.unexpanded_list_len;
-   c->module_entry_u.report_definition.aggregates.unexpanded_list.unexpanded_list_val=list_of_aggregates.unexpanded_list.unexpanded_list_val;
-	list_of_aggregates.unexpanded_list.unexpanded_list_len=0;
-	list_of_aggregates.unexpanded_list.unexpanded_list_val=0;
+   c->module_entry_u.report_definition.aggregates.unexpanded_list.list.list_len=list_of_aggregates.unexpanded_list.list.list_len;
+   c->module_entry_u.report_definition.aggregates.unexpanded_list.list.list_val=list_of_aggregates.unexpanded_list.list.list_val;
+	list_of_aggregates.unexpanded_list.list.list_len=0;
+	list_of_aggregates.unexpanded_list.list.list_val=0;
 
    c->module_entry_u.report_definition.report_output_section=p_report_output_section;
    c->module_entry_u.report_definition.report_orderby_section=p_report_orderby_section;
@@ -2602,8 +2602,8 @@ struct module_entry *c;
    c->module_entry_u.report_definition.lastlineno=yylineno;
    c->module_entry_u.report_definition.expression_list.list.list_len=0;
    c->module_entry_u.report_definition.expression_list.list.list_val=0;
-   c->module_entry_u.report_definition.expression_list.unexpanded_list.unexpanded_list_len=0;
-   c->module_entry_u.report_definition.expression_list.unexpanded_list.unexpanded_list_val=0;
+   c->module_entry_u.report_definition.expression_list.unexpanded_list.list.list_len=0;
+   c->module_entry_u.report_definition.expression_list.unexpanded_list.list.list_val=0;
 	c->module_entry_u.report_definition.extra_warnings.extra_warnings_len=0;
 	c->module_entry_u.report_definition.extra_warnings.extra_warnings_val=0;
    c->module_entry_u.report_definition.variables.variables.variables_len=0;
@@ -2776,18 +2776,18 @@ struct create_proc_data* new_spl_proc(struct variable_list* parameters, struct v
 	cpd=malloc(sizeof(struct create_proc_data));
 	cpd->funcname=NULL;
 
-	cpd->parameters.parameters_len=0;
-	cpd->parameters.parameters_val=NULL;
+	cpd->params.parameters.parameters_len=0;
+	cpd->params.parameters.parameters_val=NULL;
 	if (parameters!=NULL) {
-		cpd->parameters.parameters_len=parameters->variables.variables_len;
-		cpd->parameters.parameters_val=parameters->variables.variables_val;
+		cpd->params.parameters.parameters_len=parameters->variables.variables_len;
+		cpd->params.parameters.parameters_val=parameters->variables.variables_val;
 	}
 
-	cpd->returning.returning_len=0;
-	cpd->returning.returning_val=NULL;
+	cpd->returning.returning.returning_len=0;
+	cpd->returning.returning.returning_val=NULL;
 	if (returning!=NULL) {
-		cpd->returning.returning_len=returning->variables.variables_len;
-		cpd->returning.returning_val=returning->variables.variables_val;
+		cpd->returning.returning.returning_len=returning->variables.variables_len;
+		cpd->returning.returning.returning_val=returning->variables.variables_val;
 	}
 
 	cpd->block=block;

@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: globals.c,v 1.66 2010-02-16 13:14:53 mikeaubury Exp $
+# $Id: globals.c,v 1.67 2010-03-17 19:02:08 mikeaubury Exp $
 #
 */
 
@@ -411,13 +411,13 @@ read_glob (char *s)
       	open_db (dbname);
     }
 
-  if (g.exported_global_variables.variables.variables_len==0) {
+  if (g.exported_global_variables.variables.variables.variables_len==0) {
 		printf("WARNING: No globals variables were read from file %s (Missing GLOBALS.. END GLOBALS?)\n", ii4gl);
   }
   // We need to change the scope on these imported globals - as they'll
   // be marked as 'external globals' in the file that exports them ;-)
-  set_variable_scope_for_variable_list(&g.exported_global_variables,E_SCOPE_IMPORTED_GLOBAL);
-  merge_variable_list(&this_module.imported_global_variables, &g.exported_global_variables);
+  set_variable_scope_for_variable_list(&g.exported_global_variables.variables,E_SCOPE_IMPORTED_GLOBAL);
+  merge_variable_list(&this_module.imported_global_variables.variables, &g.exported_global_variables.variables);
 
   if (XMLBEST) {
 	//printf("Reset\n");
@@ -475,8 +475,8 @@ dump_gvars (void)
   g->external_datatypes.external_datatypes_val=this_module.external_datatypes.external_datatypes_val;
   g->schema_only=this_module.schema_only;
   g->compiled_time=this_module.compiled_time;
-  g->exported_global_variables.variables.variables_len=this_module.exported_global_variables.variables.variables_len;
-  g->exported_global_variables.variables.variables_val=this_module.exported_global_variables.variables.variables_val;
+  g->exported_global_variables.variables.variables.variables_len=this_module.exported_global_variables.variables.variables.variables_len;
+  g->exported_global_variables.variables.variables.variables_val=this_module.exported_global_variables.variables.variables.variables_val;
 
 	if (g->mod_dbname==0) g->mod_dbname="";
 

@@ -131,10 +131,10 @@ A4GL_assertion(fl==0,"No field list...");
 ptr=acl_malloc2(10); /* Set it up initially...*/
 strcpy(ptr,"");
 for (a=0;a<fl->field_list_entries.field_list_entries_len;a++) {
-        if (fl->field_list_entries.field_list_entries_val[a].fieldsub) {
-                ptr_field=local_field_name_as_char(expr_as_string_ident_as_string(fl->field_list_entries.field_list_entries_val[a].field,1), expr_as_string_when_possible(fl->field_list_entries.field_list_entries_val[a].fieldsub));
+        if (fl->field_list_entries.field_list_entries_val[a].fieldsub.fieldsub) {
+                ptr_field=local_field_name_as_char(expr_as_string_ident_as_string(fl->field_list_entries.field_list_entries_val[a].field.field,1), expr_as_string_when_possible(fl->field_list_entries.field_list_entries_val[a].fieldsub.fieldsub));
         } else {
-                ptr_field=expr_as_string_ident_as_string(fl->field_list_entries.field_list_entries_val[a].field,1);
+                ptr_field=expr_as_string_ident_as_string(fl->field_list_entries.field_list_entries_val[a].field.field,1);
 
         }
         ptr=acl_realloc(ptr,strlen(ptr)+strlen(ptr_field)+2);

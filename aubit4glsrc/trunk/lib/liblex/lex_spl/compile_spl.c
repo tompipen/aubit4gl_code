@@ -1666,7 +1666,7 @@ local_get_expr_as_string (struct expr_str *ptr)
       break;
 
     case ET_E_V_OR_LIT_VAR:
-      return acl_strdup (local_get_expr_as_string (ptr->expr_str_u.var));
+      return acl_strdup (local_get_expr_as_string (ptr->expr_str_u.expr_expr));
       break;
 
     case ET_E_V_OR_LIT_INT:
@@ -1808,7 +1808,8 @@ local_get_expr_as_string (struct expr_str *ptr)
     case ET_EXPR_FIELDNAME:
       A4GL_assertion (1, "Not implemented");
       break;
-
+	default:
+		A4GL_assertion(1,"Not implemented");
     }
   A4GL_assertion (1, "Bad..");
   return "..";
@@ -3325,16 +3326,16 @@ get_variable_usage_1 (struct variable_usage *var_usage, int lvl)
       a4gl_yyerror ("Can't use arrays in SPL");
     }
 
-  if (var_usage->substrings_start)
+  if (var_usage->substrings_start.substrings_start)
     {
-      l = local_get_expr_as_string (var_usage->substrings_start);
+      l = local_get_expr_as_string (var_usage->substrings_start.substrings_start);
       strcat (buff, "[");
       strcat (buff, l);
       free (l);
-      if (var_usage->substrings_end)
+      if (var_usage->substrings_end.substrings_end)
 	{
 	  strcat (buff, ",");
-	  l = local_get_expr_as_string (var_usage->substrings_end);
+	  l = local_get_expr_as_string (var_usage->substrings_end.substrings_end);
 	  strcat (buff, l);
 	  free (l);
 	}
@@ -3678,11 +3679,11 @@ dump_function (struct s_function_definition *function_definition, int ismain)
     }
 
 
-  if (curr_module->module_variables.variables.variables_len)
+  if (curr_module->module_variables.variables.variables.variables_len)
     {
-      for (a = 0; a < curr_module->module_variables.variables.variables_len; a++)
+      for (a = 0; a < curr_module->module_variables.variables.variables.variables_len; a++)
 	{
-	  print_variable_new (curr_module->module_variables.variables.variables_val[a], 'M', 0);
+	  print_variable_new (curr_module->module_variables.variables.variables.variables_val[a], 'M', 0);
 	}
     }
 
@@ -3829,28 +3830,28 @@ find_top_var (struct expr_str *se)
 	}
     }
 
-  for (a = 0; a < curr_module->module_variables.variables.variables_len; a++)
+  for (a = 0; a < curr_module->module_variables.variables.variables.variables_len; a++)
     {
-      if (strcmp (buff1, curr_module->module_variables.variables.variables_val[a]->names.names.names_val[0].name) == 0)
+      if (strcmp (buff1, curr_module->module_variables.variables.variables.variables_val[a]->names.names.names_val[0].name) == 0)
 	{			// Found it...
-	  return curr_module->module_variables.variables.variables_val[a];
+	  return curr_module->module_variables.variables.variables.variables_val[a];
 	}
     }
 
-  for (a = 0; a < curr_module->exported_global_variables.variables.variables_len; a++)
+  for (a = 0; a < curr_module->exported_global_variables.variables.variables.variables_len; a++)
     {
-      if (strcmp (buff1, curr_module->exported_global_variables.variables.variables_val[a]->names.names.names_val[0].name) == 0)
+      if (strcmp (buff1, curr_module->exported_global_variables.variables.variables.variables_val[a]->names.names.names_val[0].name) == 0)
 	{			// Found it...
-	  return curr_module->exported_global_variables.variables.variables_val[a];
+	  return curr_module->exported_global_variables.variables.variables.variables_val[a];
 	}
     }
 
 
-  for (a = 0; a < curr_module->imported_global_variables.variables.variables_len; a++)
+  for (a = 0; a < curr_module->imported_global_variables.variables.variables.variables_len; a++)
     {
-      if (strcmp (buff1, curr_module->imported_global_variables.variables.variables_val[a]->names.names.names_val[0].name) == 0)
+      if (strcmp (buff1, curr_module->imported_global_variables.variables.variables.variables_val[a]->names.names.names_val[0].name) == 0)
 	{			// Found it...
-	  return curr_module->imported_global_variables.variables.variables_val[a];
+	  return curr_module->imported_global_variables.variables.variables.variables_val[a];
 	}
     }
 

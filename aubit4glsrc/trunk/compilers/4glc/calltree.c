@@ -1171,7 +1171,7 @@ get_field_list (fh_field_list * list)
     {
       if (a)
 	strcat (buff, ",");
-      strcat (buff, expr_as_string_when_possible (list->field_list_entries.field_list_entries_val[a].field));
+      strcat (buff, expr_as_string_when_possible (list->field_list_entries.field_list_entries_val[a].field.field));
     }
   return buff;
 }
@@ -1371,15 +1371,15 @@ get_event (event_data * a)
       sprintf (buff, "EVENT_TYPE=\"ON ACTION\" DATA=\"%s\"", xml_encode (a->event_data_u.on_action));
       return buff;
     case EVENT_BEFORE:
-      sprintf (buff, "EVENT_TYPE=\"BEFORE\" DATA=\"%s\"", xml_encode (get_str_list (a->event_data_u.before)));
+      sprintf (buff, "EVENT_TYPE=\"BEFORE\" DATA=\"%s\"", xml_encode (get_str_list (a->event_data_u.slist)));
       return buff;
 
     case EVENT_AFTER:
-      sprintf (buff, "EVENT_TYPE=\"AFTER\" DATA=\"%s\"", xml_encode (get_str_list (a->event_data_u.before)));
+      sprintf (buff, "EVENT_TYPE=\"AFTER\" DATA=\"%s\"", xml_encode (get_str_list (a->event_data_u.slist)));
       return buff;
 
     case EVENT_ON:
-      sprintf (buff, "EVENT_TYPE=\"ON\" DATA=\"%s\"", xml_encode (get_str_list (a->event_data_u.before)));
+      sprintf (buff, "EVENT_TYPE=\"ON\" DATA=\"%s\"", xml_encode (get_str_list (a->event_data_u.slist)));
       return buff;
 
     case EVENT_ON_IDLE:
@@ -1390,21 +1390,21 @@ get_event (event_data * a)
       return "EVENT_ON_TIME";
 
     case EVENT_KEY_PRESS:
-      sprintf (buff, "EVENT_TYPE=\"KEY_PRESS\" DATA=\"%s\"", xml_encode (get_str_list (a->event_data_u.key)));
+      sprintf (buff, "EVENT_TYPE=\"KEY_PRESS\" DATA=\"%s\"", xml_encode (get_str_list (a->event_data_u.slist)));
       return buff;
       //case EVENT_ON_ACTION: get_str_list(on_action);
       //case EVENT_ON:                *on;
 
     case EVENT_BEFORE_FIELD:
-      sprintf (buff, "EVENT_TYPE=\"BEFORE_FIELD\" DATA=\"%s\"", xml_encode (get_field_list (a->event_data_u.before_field)));
+      sprintf (buff, "EVENT_TYPE=\"BEFORE_FIELD\" DATA=\"%s\"", xml_encode (get_field_list (a->event_data_u.before_after_field)));
       return buff;
 
     case EVENT_AFTER_FIELD:
-      sprintf (buff, "EVENT_TYPE=\"AFTER_FIELD\" DATA=\"%s\"", xml_encode (get_field_list (a->event_data_u.after_field)));
+      sprintf (buff, "EVENT_TYPE=\"AFTER_FIELD\" DATA=\"%s\"", xml_encode (get_field_list (a->event_data_u.before_after_field)));
       return buff;
 
     case EVENT_ON_CHANGE:
-      sprintf (buff, "EVENT_TYPE=\"ON_CHANGE\" DATA=\"%s\"", xml_encode (get_field_list (a->event_data_u.after_field)));
+      sprintf (buff, "EVENT_TYPE=\"ON_CHANGE\" DATA=\"%s\"", xml_encode (get_field_list (a->event_data_u.before_after_field)));
 	return buff;
     case EVENT_MENU_COMMAND:
       sprintf (buff, "EVENT_TYPE=\"MENU_COMMAND\" %s", get_menu_option (a->event_data_u.mnoption));

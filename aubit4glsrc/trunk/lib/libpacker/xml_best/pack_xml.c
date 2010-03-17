@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pack_xml.c,v 1.3 2010-03-09 15:34:26 mikeaubury Exp $
+# $Id: pack_xml.c,v 1.4 2010-03-17 19:02:38 mikeaubury Exp $
 #*/
 
 /**
@@ -184,8 +184,8 @@ A4GLPacker_A4GL_pack_all (char *name, void *s, char *filename)
 				}
 			}
 			v2->variables.variables_len=b;
-			m->imported_global_variables.variables.variables_val=v2->variables.variables_val;
-			m->imported_global_variables.variables.variables_len=v2->variables.variables_len;
+			m->imported_global_variables.variables.variables.variables_val=v2->variables.variables_val;
+			m->imported_global_variables.variables.variables.variables_len=v2->variables.variables_len;
 			
 			
 			current_module=m;

@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: variables.c,v 1.119 2010-03-14 18:54:59 mikeaubury Exp $
+# $Id: variables.c,v 1.120 2010-03-17 19:02:14 mikeaubury Exp $
 #
 */
 
@@ -144,9 +144,7 @@ enum e_scope variable_scope = E_SCOPE_MODULE;
 
 void set_local_variables(struct variable_list *vlist) {
 	local_variables=vlist;
-	if (local_variables) {
-        	sort_variables_v(local_variables);
-	}
+	//if (local_variables) { sort_variables_v(local_variables); }
 }
 
 void make_constant_available(struct variable *v) {
@@ -385,9 +383,9 @@ struct variable *find_dim (char *name) {
 		v=find_dim_in_variable_list(local_variables,name);
   }
   
-  if (v==NULL) { v=find_dim_in_variable_list(&this_module.module_variables,name); }
-  if (v==NULL) { v=find_dim_in_variable_list(&this_module.exported_global_variables,name); }
-  if (v==NULL) { v=find_dim_in_variable_list(&this_module.imported_global_variables,name); }
+  if (v==NULL) { v=find_dim_in_variable_list(&this_module.module_variables.variables,name); }
+  if (v==NULL) { v=find_dim_in_variable_list(&this_module.exported_global_variables.variables,name); }
+  if (v==NULL) { v=find_dim_in_variable_list(&this_module.imported_global_variables.variables,name); }
 
   if (v==NULL) return NULL;
 
@@ -437,7 +435,6 @@ check_for_constant (char *name, char *buff)
 	 	if (!builtin_Constant_usage) return 0; // none defined - so no point in searching
   }
 
-//A4GL_pause_execution();
 
   strcpy (buff, name);
   A4GL_convlower (buff);
@@ -938,7 +935,7 @@ struct variable *find_variable_vu_ptr(char *errbuff, struct variable_usage *v, e
         return ptr;
     }
 
-  ptr = find_variable_vu_in_list (errbuff, v, &this_module.module_variables, err_if_whole_array,0);
+  ptr = find_variable_vu_in_list (errbuff, v, &this_module.module_variables.variables, err_if_whole_array,0);
   if (ptr)
     {
 	v->escope=E_SCOPE_MODULE;
@@ -949,7 +946,7 @@ struct variable *find_variable_vu_ptr(char *errbuff, struct variable_usage *v, e
       return ptr;
     }
 
-  ptr = find_variable_vu_in_list (errbuff, v, &this_module.exported_global_variables, err_if_whole_array,0);
+  ptr = find_variable_vu_in_list (errbuff, v, &this_module.exported_global_variables.variables, err_if_whole_array,0);
   if (ptr)
     {
 	v->escope=E_SCOPE_EXPORTED_GLOBAL;
@@ -960,7 +957,7 @@ struct variable *find_variable_vu_ptr(char *errbuff, struct variable_usage *v, e
       return ptr;
     }
 
-  ptr = find_variable_vu_in_list (errbuff, v,  &this_module.imported_global_variables, err_if_whole_array,0);
+  ptr = find_variable_vu_in_list (errbuff, v,  &this_module.imported_global_variables.variables, err_if_whole_array,0);
   if (ptr)
     {
 	v->escope=E_SCOPE_IMPORTED_GLOBAL;

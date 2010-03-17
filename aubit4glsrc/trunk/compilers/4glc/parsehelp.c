@@ -712,12 +712,12 @@ void set_variables (variable_list *v,char why) {
  	}
 
 	if (why=='g') {
-		        v->variables.variables_len=this_module.exported_global_variables.variables.variables_len;
+		        v->variables.variables_len=this_module.exported_global_variables.variables.variables.variables_len;
 
 			if ( v->variables.variables_len) {
-                        	v->variables.variables_val=malloc(this_module.exported_global_variables.variables.variables_len*sizeof(struct variable *));
-				sort_variables_v(&this_module.exported_global_variables);
-                        	memcpy(v->variables.variables_val,this_module.exported_global_variables.variables.variables_val, this_module.exported_global_variables.variables.variables_len*sizeof(struct variable *));
+                        	v->variables.variables_val=malloc(this_module.exported_global_variables.variables.variables.variables_len*sizeof(struct variable *));
+				sort_variables_v(&this_module.exported_global_variables.variables);
+                        	memcpy(v->variables.variables_val,this_module.exported_global_variables.variables.variables.variables_val, this_module.exported_global_variables.variables.variables.variables_len*sizeof(struct variable *));
 				sort_variables_v(v);
 			} else {
 			 	v->variables.variables_val=NULL;
@@ -727,19 +727,19 @@ void set_variables (variable_list *v,char why) {
 
 
 	if (why=='G') {
-			sort_variables_v(&this_module.imported_global_variables);
-		       v->variables.variables_len=this_module.imported_global_variables.variables.variables_len;
-                       v->variables.variables_val=malloc(this_module.imported_global_variables.variables.variables_len*sizeof(struct variable *));
-                       memcpy(v->variables.variables_val,this_module.imported_global_variables.variables.variables_val, this_module.imported_global_variables.variables.variables_len*sizeof(struct variable *));
+			sort_variables_v(&this_module.imported_global_variables.variables);
+		       v->variables.variables_len=this_module.imported_global_variables.variables.variables.variables_len;
+                       v->variables.variables_val=malloc(this_module.imported_global_variables.variables.variables.variables_len*sizeof(struct variable *));
+                       memcpy(v->variables.variables_val,this_module.imported_global_variables.variables.variables.variables_val, this_module.imported_global_variables.variables.variables.variables_len*sizeof(struct variable *));
 			sort_variables_v(v);
 		return ;
  	}
 
 	if (why=='m') {
-			sort_variables_v(&this_module.module_variables);
-		       v->variables.variables_len=this_module.module_variables.variables.variables_len;
-                       v->variables.variables_val=malloc(this_module.module_variables.variables.variables_len*sizeof(struct variable *));
-                       memcpy(v->variables.variables_val,this_module.module_variables.variables.variables_val, this_module.module_variables.variables.variables_len*sizeof(struct variable *));
+			sort_variables_v(&this_module.module_variables.variables);
+		       v->variables.variables_len=this_module.module_variables.variables.variables.variables_len;
+                       v->variables.variables_val=malloc(this_module.module_variables.variables.variables.variables_len*sizeof(struct variable *));
+                       memcpy(v->variables.variables_val,this_module.module_variables.variables.variables.variables_val, this_module.module_variables.variables.variables.variables_len*sizeof(struct variable *));
 			sort_variables_v(v);
 		return ;
  	}
@@ -1384,8 +1384,8 @@ struct s_select_list_item *rval=NULL;
 		elist->list.list_val=malloc(sizeof(expr_str *));
 		elist->list.list_val[0]=e;
 	
-		elist->unexpanded_list.unexpanded_list_val=0;
-		elist->unexpanded_list.unexpanded_list_len=0;
+		elist->unexpanded_list.list.list_val=0;
+		elist->unexpanded_list.list.list_len=0;
 
 		elist=expand_variables_in_expr_str_list(elist,1,1);
 
@@ -1531,7 +1531,7 @@ if (v==0) {
  str=expr_as_string_when_possible(ptr);
 
  if (isAutoAddVariable(str)) {
-		add_txx_variable(&this_module.imported_global_variables,str);
+		add_txx_variable(&this_module.imported_global_variables.variables,str);
 		v=find_variable_vu_ptr(errbuff, p,&scope,1);
   }
   }
@@ -1723,7 +1723,7 @@ if (v==0) {
       str=expr_as_string_when_possible(ptr);
 	if (isAutoAddVariable(str)) {
 
-		add_txx_variable(&this_module.imported_global_variables,str);
+		add_txx_variable(&this_module.imported_global_variables.variables,str);
 		v=find_variable_vu_ptr(errbuff, p,&scope,err_if_whole_array);
 		if (v) {
 			return 1;
@@ -1802,8 +1802,8 @@ int a;
 			vu_next->next->variable_name=v->var_data.variable_data_u.v_record.variables.variables_val[a]->names.names.names_val[0].name;
 			vu_next->next->subscripts.subscripts_len=0;
 			vu_next->next->subscripts.subscripts_val=0;
-			vu_next->next->substrings_start=0;
-			vu_next->next->substrings_end=0;
+			vu_next->next->substrings_start.substrings_start=0;
+			vu_next->next->substrings_end.substrings_end=0;
 			vu_next->next->next=0;
 			vu_next->next->datatype=-1;
 			vu_next->next->object_type="";
@@ -2081,26 +2081,26 @@ if (l==0) return l;
 if (l->list.list_len==0) return l;
 
 n=A4GL_new_ptr_list(0);
-if (l->unexpanded_list.unexpanded_list_len) {
-        n->unexpanded_list.unexpanded_list_len = l->unexpanded_list.unexpanded_list_len;
-        n->unexpanded_list.unexpanded_list_val = l->unexpanded_list.unexpanded_list_val;
+if (l->unexpanded_list.list.list_len) {
+        n->unexpanded_list.list.list_len = l->unexpanded_list.list.list_len;
+        n->unexpanded_list.list.list_val = l->unexpanded_list.list.list_val;
 } else {
-        n->unexpanded_list.unexpanded_list_len = l->list.list_len;
-        n->unexpanded_list.unexpanded_list_val = NULL; // l->unexpanded_list.unexpanded_list_val;
+        n->unexpanded_list.list.list_len = l->list.list_len;
+        n->unexpanded_list.list.list_val = NULL; // l->unexpanded_list.unexpanded_list_val;
 	// Lets make a copy of our dataset so if we manipulate it then we wont mess up the unexpanded list...
 	if (l->list.list_len) {
 		int sz;
-		sz=sizeof(l->list.list_val[0])* n->unexpanded_list.unexpanded_list_len;
-        	n->unexpanded_list.unexpanded_list_val = malloc(sz);
+		sz=sizeof(l->list.list_val[0])* n->unexpanded_list.list.list_len;
+        	n->unexpanded_list.list.list_val = malloc(sz);
 	
 		for (a=0;a<l->list.list_len;a++) {
-			 n->unexpanded_list.unexpanded_list_val[a]=l->list.list_val[a];
+			 n->unexpanded_list.list.list_val[a]=l->list.list_val[a];
 			if (l->list.list_val[a]->expr_type==ET_EXPR_VARIABLE_USAGE) {
 				void *p;
 				 	p=clone_variable_usage(l->list.list_val[a]->expr_str_u.expr_variable_usage);
-					n->unexpanded_list.unexpanded_list_val[a]=malloc(sizeof(expr_str));   
-					memcpy(n->unexpanded_list.unexpanded_list_val[a], l->list.list_val[a],sizeof(l->list.list_val[a]));
-					n->unexpanded_list.unexpanded_list_val[a]->expr_str_u.expr_variable_usage=p;
+					n->unexpanded_list.list.list_val[a]=malloc(sizeof(expr_str));   
+					memcpy(n->unexpanded_list.list.list_val[a], l->list.list_val[a],sizeof(l->list.list_val[a]));
+					n->unexpanded_list.list.list_val[a]->expr_str_u.expr_variable_usage=p;
 				 //n->unexpanded_list.unexpanded_list_val[a]->expr_str_u.expr_variable_usage=clone_variable_usage(l->list.list_val[a]->expr_str_u.expr_variable_usage);
 			}
 		}
@@ -2126,16 +2126,16 @@ if (parameters==NULL) return parameters;
 
 
 n=A4GL_new_ptr_list(0);
-if (parameters->unexpanded_list.unexpanded_list_len) {
+if (parameters->unexpanded_list.list.list_len) {
 
 	// printf("unexpanded_list is already set: %d\n", parameters->unexpanded_list.unexpanded_list_len);
 	// printf("unexpanded_list is already set: %d\n", parameters->list.list_len);
-	n->unexpanded_list.unexpanded_list_len = parameters->unexpanded_list.unexpanded_list_len;
-	n->unexpanded_list.unexpanded_list_val = parameters->unexpanded_list.unexpanded_list_val;
+	n->unexpanded_list.list.list_len = parameters->unexpanded_list.list.list_len;
+	n->unexpanded_list.list.list_val = parameters->unexpanded_list.list.list_val;
 
 } else {
-	n->unexpanded_list.unexpanded_list_len = parameters->list.list_len;
-	n->unexpanded_list.unexpanded_list_val = parameters->list.list_val;
+	n->unexpanded_list.list.list_len = parameters->list.list_len;
+	n->unexpanded_list.list.list_val = parameters->list.list_val;
 }
 
 for (param_to_add=0;param_to_add<parameters->list.list_len;param_to_add++) {
@@ -2172,7 +2172,7 @@ for (param_to_add=0;param_to_add<parameters->list.list_len;param_to_add++) {
                str=expr_as_string_when_possible(parameters->list.list_val[param_to_add]);
 
             if (isAutoAddVariable(str)) {
-		         add_txx_variable(&this_module.imported_global_variables,str);
+		         add_txx_variable(&this_module.imported_global_variables.variables,str);
 		         v1=find_variable_vu_ptr(errbuff, vu1,&scope,1);
             }
               } 

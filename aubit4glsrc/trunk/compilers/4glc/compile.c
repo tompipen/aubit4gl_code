@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile.c,v 1.138 2010-02-16 13:14:53 mikeaubury Exp $
+# $Id: compile.c,v 1.139 2010-03-17 19:02:03 mikeaubury Exp $
 #*/
 
 /**
@@ -1320,15 +1320,15 @@ compiled_4gl++;
 
 
 
-  this_module.module_variables.variables.variables_len = 0;
-  this_module.module_variables.variables.variables_val = 0;
+  this_module.module_variables.variables.variables.variables_len = 0;
+  this_module.module_variables.variables.variables.variables_val = 0;
 
-  this_module.exported_global_variables.variables.variables_len = 0;
-  this_module.exported_global_variables.variables.variables_val = 0;
+  this_module.exported_global_variables.variables.variables.variables_len = 0;
+  this_module.exported_global_variables.variables.variables.variables_val = 0;
 
 
-  this_module.imported_global_variables.variables.variables_len = 0;
-  this_module.imported_global_variables.variables.variables_val = 0;
+  this_module.imported_global_variables.variables.variables.variables_len = 0;
+  this_module.imported_global_variables.variables.variables.variables_val = 0;
 
   this_module.external_datatypes.external_datatypes_len = 0;
   this_module.external_datatypes.external_datatypes_val = 0;

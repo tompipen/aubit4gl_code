@@ -44,10 +44,10 @@ A4GL_assertion(fl==0,"No field list...");
 ptr=acl_malloc2(10); /* Set it up initially...*/
 strcpy(ptr,"");
 for (a=0;a<fl->field_list_entries.field_list_entries_len;a++) {
-	if (fl->field_list_entries.field_list_entries_val[a].fieldsub) {
-        	ptr_field=A4GL_field_name_as_char(local_ident_as_string(fl->field_list_entries.field_list_entries_val[a].field,1), local_expr_as_string(fl->field_list_entries.field_list_entries_val[a].fieldsub));
+	if (fl->field_list_entries.field_list_entries_val[a].fieldsub.fieldsub) {
+        	ptr_field=A4GL_field_name_as_char(local_ident_as_string(fl->field_list_entries.field_list_entries_val[a].field.field,1), local_expr_as_string(fl->field_list_entries.field_list_entries_val[a].fieldsub.fieldsub));
 	} else {
-        	ptr_field=A4GL_field_name_as_char(local_ident_as_string(fl->field_list_entries.field_list_entries_val[a].field,1), "0");
+        	ptr_field=A4GL_field_name_as_char(local_ident_as_string(fl->field_list_entries.field_list_entries_val[a].field.field,1), "0");
 
 	}
         ptr=acl_realloc(ptr,strlen(ptr)+strlen(ptr_field)+2);
@@ -72,7 +72,7 @@ print_field_name_list_as_struct (char *name, struct fh_field_list *fl, int decla
       for (a = 0; a < fl->field_list_entries.field_list_entries_len; a++)
 	{
 	  ptr_field =
-	    A4GL_field_name_as_char (local_ident_as_string (fl->field_list_entries.field_list_entries_val[a].field, 1), "1");
+	    A4GL_field_name_as_char (local_ident_as_string (fl->field_list_entries.field_list_entries_val[a].field.field, 1), "1");
 	  printc ("   {%s},", ptr_field);
 	}
       printc ("   {NULL,0}");
@@ -82,10 +82,10 @@ print_field_name_list_as_struct (char *name, struct fh_field_list *fl, int decla
     {
       for (a = 0; a < fl->field_list_entries.field_list_entries_len; a++)
 	{
-	  if (fl->field_list_entries.field_list_entries_val[a].fieldsub)
+	  if (fl->field_list_entries.field_list_entries_val[a].fieldsub.fieldsub)
 	    {
 	      printc ("%s[%d].fpos=%s;\n", name, a,
-		      local_expr_as_string (fl->field_list_entries.field_list_entries_val[a].fieldsub));
+		      local_expr_as_string (fl->field_list_entries.field_list_entries_val[a].fieldsub.fieldsub));
 	    }
 	}
     }
@@ -1836,7 +1836,7 @@ print_clear_cmd (struct_clear_cmd * cmd_data)
     case E_CLR_STATUS:
       set_nonewlines ();
       printc ("A4GL_clr_window(");
-      print_ident (cmd_data->clr_data.clear_data_u.statwindow);
+      print_ident (cmd_data->clr_data.clear_data_u.window);
       printc (");");
       clr_nonewlines ();
       break;
@@ -2238,8 +2238,8 @@ print_display_array_cmd (struct_display_array_cmd * cmd_data)
                         vu_next->next->variable_name=v->var_data.variable_data_u.v_record.variables.variables_val[a]->names.names.names_val[0].name;
                         vu_next->next->subscripts.subscripts_len=0;
                         vu_next->next->subscripts.subscripts_val=0;
-                        vu_next->next->substrings_start=0;
-                        vu_next->next->substrings_end=0;
+                        vu_next->next->substrings_start.substrings_start=0;
+                        vu_next->next->substrings_end.substrings_end=0;
                         vu_next->next->next=0;
                         vu_next->next->object_type="";
 
@@ -2698,8 +2698,8 @@ int inp_flags=0;
                         vu_next->next->variable_name=v->var_data.variable_data_u.v_record.variables.variables_val[a]->names.names.names_val[0].name;
                         vu_next->next->subscripts.subscripts_len=0;
                         vu_next->next->subscripts.subscripts_val=0;
-                        vu_next->next->substrings_start=0;
-                        vu_next->next->substrings_end=0;
+                        vu_next->next->substrings_start.substrings_start=0;
+                        vu_next->next->substrings_end.substrings_end=0;
                         vu_next->next->next=0;
                         vu_next->next->object_type="";
                         vu_next->next->datatype=v2->var_data.variable_data_u.v_simple.datatype;

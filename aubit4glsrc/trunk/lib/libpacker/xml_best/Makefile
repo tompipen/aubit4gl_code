@@ -59,7 +59,12 @@ clean :
 test:
 	echo "HAVE_FLEXML"="$(HAVE_FLEXML)"
 
+module_def.cs: module_def.dtd
+	dtd2xsd module_def.dtd > module_def.xsd
+	xsd  module_def.xsd   /namespace:AubitDesktop /c
+	
 
+	
 
 ifeq "$(USE_PREGEN)" "Y"
 include Makefile.noflexml

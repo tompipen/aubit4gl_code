@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.338 2010-02-16 13:15:18 mikeaubury Exp $
+# $Id: mod.c,v 1.339 2010-03-17 19:02:13 mikeaubury Exp $
 #
 */
 
@@ -764,7 +764,7 @@ struct variable *v_sqlca;
   append_variable_list(vlist, new_simple_variable("aiplib_status",DTYPE_INT,0,0));
 
   // When we've got to here - 'vlist' contains all our system variables...
-  merge_variable_list(&this_module.imported_global_variables,vlist);
+  merge_variable_list(&this_module.imported_global_variables.variables,vlist);
   set_variable_user_system('-');
 
   set_current_variable_scope (E_SCOPE_MODULE);

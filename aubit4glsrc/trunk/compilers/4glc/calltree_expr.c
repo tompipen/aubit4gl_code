@@ -426,12 +426,12 @@ char *expr_get_variable_usage_as_string (struct variable_usage *var_usage) {
                 }
                 strcat(buff, "]");
         }
-        if (var_usage->substrings_start) {
+        if (var_usage->substrings_start.substrings_start) {
                 strcat(buff, "[");
-                strcat(buff, expr_as_string_when_possible(var_usage->substrings_start));
-                if (var_usage->substrings_end) {
+                strcat(buff, expr_as_string_when_possible(var_usage->substrings_start.substrings_start));
+                if (var_usage->substrings_end.substrings_end) {
                         strcat(buff, ",");
-                        strcat(buff, expr_as_string_when_possible(var_usage->substrings_end));
+                        strcat(buff, expr_as_string_when_possible(var_usage->substrings_end.substrings_end));
                 }
                 strcat(buff, "]");
         }

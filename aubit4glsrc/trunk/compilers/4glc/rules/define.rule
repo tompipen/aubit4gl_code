@@ -5,18 +5,22 @@ Source:define.rule
 */
 define_section :
 		 { $$=NULL;set_local_variables(NULL);}
-		| define_multiple { $$=$1; set_local_variables($$);}
+		| define_multiple { 
+				$$=$1; set_local_variables($$);
+			sort_variables_v($$);
+
+		}
 ;
 
 
 define_multiple :
 		define_set {
 			$$=$1;
-			set_local_variables($$);
+			 set_local_variables($$); 
 			}
 	|	define_multiple define_set {
 			$$=merge_variable_list($1,$2);
-			set_local_variables($$);
+			set_local_variables($$);  
 		}
 ;
 

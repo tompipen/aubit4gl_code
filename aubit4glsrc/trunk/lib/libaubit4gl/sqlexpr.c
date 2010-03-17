@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlexpr.c,v 1.87 2010-03-08 09:43:15 mikeaubury Exp $
+# $Id: sqlexpr.c,v 1.88 2010-03-17 19:02:25 mikeaubury Exp $
 #
 */
 
@@ -790,12 +790,12 @@ static char *local_get_variable_usage_as_string (struct variable_usage *var_usag
                 }
                 strcat(buff, "]");
         }
-        if (var_usage->substrings_start) {
+        if (var_usage->substrings_start.substrings_start) {
                 strcat(buff, "[");
-                strcat(buff, local_expr_as_string_when_possible(var_usage->substrings_start));
-                if (var_usage->substrings_end) {
+                strcat(buff, local_expr_as_string_when_possible(var_usage->substrings_start.substrings_start));
+                if (var_usage->substrings_end.substrings_end) {
                         strcat(buff, ",");
-                        strcat(buff, local_expr_as_string_when_possible(var_usage->substrings_end));
+                        strcat(buff, local_expr_as_string_when_possible(var_usage->substrings_end.substrings_end));
                 }
                 strcat(buff, "]");
         }

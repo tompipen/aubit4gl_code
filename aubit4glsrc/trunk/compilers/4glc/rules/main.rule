@@ -46,14 +46,14 @@ trad_module: op_module_header
 	
 		set_4gl_vars();
 
-		sort_variables_v(&this_module.exported_global_variables);
-		sort_variables_v(&this_module.imported_global_variables);
-		sort_variables_v(&this_module.module_variables);
+		sort_variables_v(&this_module.exported_global_variables.variables);
+		sort_variables_v(&this_module.imported_global_variables.variables);
+		sort_variables_v(&this_module.module_variables.variables);
 
 
-		set_uses_constants(&this_module.exported_global_variables);
-		set_uses_constants(&this_module.imported_global_variables);
-		set_uses_constants(&this_module.module_variables);
+		set_uses_constants(&this_module.exported_global_variables.variables);
+		set_uses_constants(&this_module.imported_global_variables.variables);
+		set_uses_constants(&this_module.module_variables.variables);
 
 		set_current_variable_scope('m');
 	}
@@ -132,8 +132,8 @@ op_code : {$<cmd>$=0;} | code_cmd  {$<cmd>$=$<cmd>1;} ;
 module_define_section : define_set {
 				if ($1) {
 					set_uses_constants($1);
-					merge_variable_list(&this_module.module_variables, $1);
-					sort_variables_v(&this_module.module_variables);
+					merge_variable_list(&this_module.module_variables.variables, $1);
+					sort_variables_v(&this_module.module_variables.variables);
 				}
 			}
 			;
@@ -324,7 +324,7 @@ glob_section : define_section END_GLOBALS {
 #endif
 	lastlineno=yylineno;
       set_has_globals();
-	merge_variable_list(&this_module.exported_global_variables,$1);
+	merge_variable_list(&this_module.exported_global_variables.variables,$1);
 	set_current_variable_scope('m');
 }
 | g_file_name {

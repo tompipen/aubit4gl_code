@@ -1444,13 +1444,13 @@ real_print_binding_with_separator (expr_str_list * s, char read_or_write, char *
     return;
 
 
-  if (s->unexpanded_list.unexpanded_list_len)
+  if (s->unexpanded_list.list.list_len)
     {
-      for (a = 0; a < s->unexpanded_list.unexpanded_list_len; a++)
+      for (a = 0; a < s->unexpanded_list.list.list_len; a++)
 	{
 	  if (a)
 	    printc ("%s", sep);
-	  print_varbind (s->unexpanded_list.unexpanded_list_val[a], read_or_write, a);
+	  print_varbind (s->unexpanded_list.list.list_val[a], read_or_write, a);
 	}
       return;
     }
@@ -2305,7 +2305,7 @@ local_get_expr_as_string (struct expr_str *ptr)
       break;
 
     case ET_E_V_OR_LIT_VAR:
-      return acl_strdup (local_get_expr_as_string (ptr->expr_str_u.var));
+      return acl_strdup (local_get_expr_as_string (ptr->expr_str_u.expr_expr));
       break;
 
     case ET_E_V_OR_LIT_INT:
@@ -2533,13 +2533,13 @@ real_print_expr_list_with_separator (struct expr_str_list *l, char *s)
 {
   int a;
 
-  if (l->unexpanded_list.unexpanded_list_len)
+  if (l->unexpanded_list.list.list_len)
     {
-      for (a = 0; a < l->unexpanded_list.unexpanded_list_len; a++)
+      for (a = 0; a < l->unexpanded_list.list.list_len; a++)
 	{
 	  if (a)
 	    printc ("%s", s);
-	  real_print_expr (l->unexpanded_list.unexpanded_list_val[a]);
+	  real_print_expr (l->unexpanded_list.list.list_val[a]);
 	}
       return;
     }
@@ -2578,13 +2578,13 @@ local_get_expr_as_string_list_with_separator (struct expr_str_list *l, char *sep
 
   if (l)
     {
-      if (l->unexpanded_list.unexpanded_list_len)
+      if (l->unexpanded_list.list.list_len)
 	{
-	  for (a = 0; a < l->unexpanded_list.unexpanded_list_len; a++)
+	  for (a = 0; a < l->unexpanded_list.list.list_len; a++)
 	    {
 	      if (a)
 		strcat (buff, sep);
-	      strcat (buff, local_get_expr_as_string (l->unexpanded_list.unexpanded_list_val[a]));
+	      strcat (buff, local_get_expr_as_string (l->unexpanded_list.list.list_val[a]));
 	    }
 
 	  return buff;
@@ -2759,7 +2759,7 @@ xfield_name_as_char (struct fh_field_entry *f)
   char *ptr;
   if (f == 0)
     return "";
-  p = f->field;
+  p = f->field.field;
   strcpy (buff, p->expr_str_u.expr_string);
   ptr = strchr (buff, '.');
 
@@ -2770,10 +2770,10 @@ xfield_name_as_char (struct fh_field_entry *f)
       sprintf (next, ".%s", ptr);
     }
 
-  if (f->fieldsub)
+  if (f->fieldsub.fieldsub)
     {
       strcat (buff, "[");
-      strcat (buff, local_get_expr_as_string (f->fieldsub));
+      strcat (buff, local_get_expr_as_string (f->fieldsub.fieldsub));
       strcat (buff, "]");
     }
 
@@ -3957,13 +3957,13 @@ LEXLIB_A4GL_write_generated_code (struct module_definition *m)
       printc ("GLOBALS \"%s.4gl\"", m->global_files->str_list_entry.str_list_entry_val[a]);
     }
 
-  if (m->exported_global_variables.variables.variables_len)
+  if (m->exported_global_variables.variables.variables.variables_len)
     {
       printc ("GLOBALS");
       tmp_ccnt++;
-      for (a = 0; a < m->exported_global_variables.variables.variables_len; a++)
+      for (a = 0; a < m->exported_global_variables.variables.variables.variables_len; a++)
 	{
-	  print_variable_new (m->exported_global_variables.variables.variables_val[a], 'g', 0);
+	  print_variable_new (m->exported_global_variables.variables.variables.variables_val[a], 'g', 0);
 	}
       tmp_ccnt--;
       printc ("END GLOBALS");
@@ -3974,11 +3974,11 @@ LEXLIB_A4GL_write_generated_code (struct module_definition *m)
     }
   A4GL_debug ("Dump 2");
 
-  if (m->module_variables.variables.variables_len)
+  if (m->module_variables.variables.variables.variables_len)
     {
-      for (a = 0; a < m->module_variables.variables.variables_len; a++)
+      for (a = 0; a < m->module_variables.variables.variables.variables_len; a++)
 	{
-	  print_variable_new (m->module_variables.variables.variables_val[a], 'M', 0);
+	  print_variable_new (m->module_variables.variables.variables.variables_val[a], 'M', 0);
 	}
     }
   A4GL_debug ("Dump 3");
@@ -4224,16 +4224,16 @@ get_variable_usage (struct variable_usage *var_usage)
 	}
       strcat (buff, "]");
     }
-  if (var_usage->substrings_start)
+  if (var_usage->substrings_start.substrings_start)
     {
-      l = local_get_expr_as_string (var_usage->substrings_start);
+      l = local_get_expr_as_string (var_usage->substrings_start.substrings_start);
       strcat (buff, "[");
       strcat (buff, l);
       free (l);
-      if (var_usage->substrings_end)
+      if (var_usage->substrings_end.substrings_end)
 	{
 	  strcat (buff, ",");
-	  l = local_get_expr_as_string (var_usage->substrings_end);
+	  l = local_get_expr_as_string (var_usage->substrings_end.substrings_end);
 	  strcat (buff, l);
 	  free (l);
 	}
@@ -4515,11 +4515,11 @@ dump_report (struct s_report_definition *report_definition)
 
 	case RB_BEFORE_GROUP_OF:
 	  printc ("BEFORE GROUP OF ");
-	  print_varbind (re->rb_block.report_block_data_u.bf_variable, 'r', a);
+	  print_varbind (re->rb_block.report_block_data_u.f_variable, 'r', a);
 	  break;
 	case RB_AFTER_GROUP_OF:
 	  printc ("AFTER GROUP OF ");
-	  print_varbind (re->rb_block.report_block_data_u.bf_variable, 'r', a);
+	  print_varbind (re->rb_block.report_block_data_u.f_variable, 'r', a);
 	  break;
 	}
       tmp_ccnt++;
@@ -4942,10 +4942,10 @@ print_event_list (on_events * e, int isMenu)
 	  break;		// Do nothing - its handled internally
 
 	case EVENT_KEY_PRESS:
-	  for (b = 0; b < ee->evt_data.event_data_u.key->str_list_entry.str_list_entry_len; b++)
+	  for (b = 0; b < ee->evt_data.event_data_u.slist->str_list_entry.str_list_entry_len; b++)
 	    {
 	      printc ("CALL UILIB_EVENT(%d,\"ONKEY\",\"%s\")", an_event + 1,
-		      ee->evt_data.event_data_u.key->str_list_entry.str_list_entry_val[b]);
+		      ee->evt_data.event_data_u.slist->str_list_entry.str_list_entry_val[b]);
 	    }
 	  break;
 
@@ -4965,19 +4965,19 @@ print_event_list (on_events * e, int isMenu)
 	  break;
 
 	case EVENT_BEFORE_FIELD:
-	  for (b = 0; b < ee->evt_data.event_data_u.before_field->field_list_entries.field_list_entries_len; b++)
+	  for (b = 0; b < ee->evt_data.event_data_u.before_after_field->field_list_entries.field_list_entries_len; b++)
 	    {
 	      printc ("CALL UILIB_EVENT(%d,\"%s\",%s)", an_event + 1,
 		      decode_event_id (ee->evt_data.event_type),
-		      xfield_name_as_char (&ee->evt_data.event_data_u.before_field->field_list_entries.field_list_entries_val[b]));
+		      xfield_name_as_char (&ee->evt_data.event_data_u.before_after_field->field_list_entries.field_list_entries_val[b]));
 	    }
 	  break;
 	case EVENT_AFTER_FIELD:
-	  for (b = 0; b < ee->evt_data.event_data_u.after_field->field_list_entries.field_list_entries_len; b++)
+	  for (b = 0; b < ee->evt_data.event_data_u.before_after_field->field_list_entries.field_list_entries_len; b++)
 	    {
 	      printc ("CALL UILIB_EVENT(%d,\"%s\",%s)", an_event + 1,
 		      decode_event_id (ee->evt_data.event_type),
-		      xfield_name_as_char (&ee->evt_data.event_data_u.after_field->field_list_entries.field_list_entries_val[b]));
+		      xfield_name_as_char (&ee->evt_data.event_data_u.before_after_field->field_list_entries.field_list_entries_val[b]));
 	    }
 	  break;
 
@@ -5228,11 +5228,11 @@ print_events_as_4gl (on_events * es, struct command *parent)
 	case EVENT_KEY_PRESS:
 	  set_nonewlines ();
 	  printc (" ON KEY (");
-	  for (a = 0; a < e->evt_data.event_data_u.key->str_list_entry.str_list_entry_len; a++)
+	  for (a = 0; a < e->evt_data.event_data_u.slist->str_list_entry.str_list_entry_len; a++)
 	    {
 	      if (a)
 		printc (",");
-	      printc ("%s", chk_key (e->evt_data.event_data_u.key->str_list_entry.str_list_entry_val[a]));
+	      printc ("%s", chk_key (e->evt_data.event_data_u.slist->str_list_entry.str_list_entry_val[a]));
 	    }
 	  printc (")");
 	  clr_nonewlines ();
@@ -5295,11 +5295,11 @@ print_events_as_4gl (on_events * es, struct command *parent)
 	    int a;
 	    set_nonewlines ();
 	    printc ("BEFORE ");
-	    for (a = 0; a < e->evt_data.event_data_u.before->str_list_entry.str_list_entry_len; a++)
+	    for (a = 0; a < e->evt_data.event_data_u.slist->str_list_entry.str_list_entry_len; a++)
 	      {
 		if (a)
 		  printc (",");
-		printc ("%s", e->evt_data.event_data_u.before->str_list_entry.str_list_entry_val[a]);
+		printc ("%s", e->evt_data.event_data_u.slist->str_list_entry.str_list_entry_val[a]);
 	      }
 	    clr_nonewlines ();
 	  }
@@ -5310,11 +5310,11 @@ print_events_as_4gl (on_events * es, struct command *parent)
 	    int a;
 	    set_nonewlines ();
 	    printc ("AFTER ");
-	    for (a = 0; a < e->evt_data.event_data_u.after->str_list_entry.str_list_entry_len; a++)
+	    for (a = 0; a < e->evt_data.event_data_u.slist->str_list_entry.str_list_entry_len; a++)
 	      {
 		if (a)
 		  printc (",");
-		printc ("%s", e->evt_data.event_data_u.after->str_list_entry.str_list_entry_val[a]);
+		printc ("%s", e->evt_data.event_data_u.slist->str_list_entry.str_list_entry_val[a]);
 	      }
 	    clr_nonewlines ();
 	  }
@@ -5325,11 +5325,11 @@ print_events_as_4gl (on_events * es, struct command *parent)
 	    int a;
 	    set_nonewlines ();
 	    printc ("ON ");
-	    for (a = 0; a < e->evt_data.event_data_u.after->str_list_entry.str_list_entry_len; a++)
+	    for (a = 0; a < e->evt_data.event_data_u.slist->str_list_entry.str_list_entry_len; a++)
 	      {
 		if (a)
 		  printc (",");
-		printc ("%s", e->evt_data.event_data_u.on->str_list_entry.str_list_entry_val[a]);
+		printc ("%s", e->evt_data.event_data_u.slist->str_list_entry.str_list_entry_val[a]);
 	      }
 	    clr_nonewlines ();
 	  }
@@ -5345,14 +5345,14 @@ print_events_as_4gl (on_events * es, struct command *parent)
 	case EVENT_BEFORE_FIELD:
 	  set_nonewlines ();
 	  printc ("BEFORE FIELD ");
-	  real_print_field_list (e->evt_data.event_data_u.before_field);
+	  real_print_field_list (e->evt_data.event_data_u.before_after_field);
 	  clr_nonewlines ();
 	  break;
 
 	case EVENT_AFTER_FIELD:
 	  set_nonewlines ();
 	  printc ("AFTER FIELD ");
-	  real_print_field_list (e->evt_data.event_data_u.before_field);
+	  real_print_field_list (e->evt_data.event_data_u.before_after_field);
 	  clr_nonewlines ();
 	  break;
 
@@ -5470,28 +5470,28 @@ find_top_var (struct expr_str *se)
 	}
     }
 
-  for (a = 0; a < curr_module->module_variables.variables.variables_len; a++)
+  for (a = 0; a < curr_module->module_variables.variables.variables.variables_len; a++)
     {
-      if (strcmp (buff1, curr_module->module_variables.variables.variables_val[a]->names.names.names_val[0].name) == 0)
+      if (strcmp (buff1, curr_module->module_variables.variables.variables.variables_val[a]->names.names.names_val[0].name) == 0)
 	{			// Found it...
-	  return curr_module->module_variables.variables.variables_val[a];
+	  return curr_module->module_variables.variables.variables.variables_val[a];
 	}
     }
 
-  for (a = 0; a < curr_module->exported_global_variables.variables.variables_len; a++)
+  for (a = 0; a < curr_module->exported_global_variables.variables.variables.variables_len; a++)
     {
-      if (strcmp (buff1, curr_module->exported_global_variables.variables.variables_val[a]->names.names.names_val[0].name) == 0)
+      if (strcmp (buff1, curr_module->exported_global_variables.variables.variables.variables_val[a]->names.names.names_val[0].name) == 0)
 	{			// Found it...
-	  return curr_module->exported_global_variables.variables.variables_val[a];
+	  return curr_module->exported_global_variables.variables.variables.variables_val[a];
 	}
     }
 
 
-  for (a = 0; a < curr_module->imported_global_variables.variables.variables_len; a++)
+  for (a = 0; a < curr_module->imported_global_variables.variables.variables.variables_len; a++)
     {
-      if (strcmp (buff1, curr_module->imported_global_variables.variables.variables_val[a]->names.names.names_val[0].name) == 0)
+      if (strcmp (buff1, curr_module->imported_global_variables.variables.variables.variables_val[a]->names.names.names_val[0].name) == 0)
 	{			// Found it...
-	  return curr_module->imported_global_variables.variables.variables_val[a];
+	  return curr_module->imported_global_variables.variables.variables.variables_val[a];
 	}
     }
 
@@ -6104,13 +6104,13 @@ print_list (struct expr_str_list *list)
 
   if (!A4GL_isyes (acl_getenv ("REMOVEMODVARS")))
     {
-      if (list->unexpanded_list.unexpanded_list_len)
+      if (list->unexpanded_list.list.list_len)
 	{
-	  for (a = 0; a < list->unexpanded_list.unexpanded_list_len; a++)
+	  for (a = 0; a < list->unexpanded_list.list.list_len; a++)
 	    {
 	      if (a)
 		printc (",");
-	      print_varbind (list->unexpanded_list.unexpanded_list_val[a], 'w', a);
+	      print_varbind (list->unexpanded_list.list.list_val[a], 'w', a);
 	    }
 	  return 0;
 	}
@@ -6320,23 +6320,23 @@ print_let_manyvars_g (expr_str_list * expr_list, expr_str_list * varlist)
 
   if (expr_list)
     {
-      if (expr_list->unexpanded_list.unexpanded_list_len == 1 && varlist->unexpanded_list.unexpanded_list_len == 1)
+      if (expr_list->unexpanded_list.list.list_len == 1 && varlist->unexpanded_list.list.list_len == 1)
 	{
 	  // LET x.* = y.*
 	  set_nonewlines ();
 	  printc ("LET ");
-	  print_varbind (varlist->unexpanded_list.unexpanded_list_val[0], 'w', a);
+	  print_varbind (varlist->unexpanded_list.list.list_val[0], 'w', a);
 	  printc ("=");
 	  if (expr_list)
 	    {
-	      real_print_expr (expr_list->unexpanded_list.unexpanded_list_val[0]);
+	      real_print_expr (expr_list->unexpanded_list.list.list_val[0]);
 	    }
 	  else
 	    {
 	      printc ("NULL");
 	    }
 	  clr_nonewlines ();
-	  return;
+	  return 1;
 	}
     }
 
@@ -8738,14 +8738,14 @@ dump_cmd (struct command *r, struct command *parent)
 
 
       if (r->cmd_data.command_data_u.prepare_cmd.sql->expr_type == ET_E_V_OR_LIT_VAR
-	  && tolower (get_var_expr_scope (r->cmd_data.command_data_u.prepare_cmd.sql->expr_str_u.var) == E_SCOPE_MODULE)
+	  && tolower (get_var_expr_scope (r->cmd_data.command_data_u.prepare_cmd.sql->expr_str_u.expr_expr) == E_SCOPE_MODULE)
 	  && A4GL_isyes (acl_getenv ("REMOVEMODVARS")))
 	{
-	  printc ("LET lv_tmp_%x=", get_var_expr_dtype (r->cmd_data.command_data_u.prepare_cmd.sql->expr_str_u.var));
-	  print_varbind (r->cmd_data.command_data_u.prepare_cmd.sql->expr_str_u.var, 'R', 0);
+	  printc ("LET lv_tmp_%x=", get_var_expr_dtype (r->cmd_data.command_data_u.prepare_cmd.sql->expr_str_u.expr_expr));
+	  print_varbind (r->cmd_data.command_data_u.prepare_cmd.sql->expr_str_u.expr_expr, 'R', 0);
 	  printh ("#REQUIRETEMP %s lv_tmp_%x %d\n", get_currfuncname (),
-		  get_var_expr_dtype (r->cmd_data.command_data_u.prepare_cmd.sql->expr_str_u.var),
-		  get_var_expr_dtype (r->cmd_data.command_data_u.prepare_cmd.sql->expr_str_u.var));
+		  get_var_expr_dtype (r->cmd_data.command_data_u.prepare_cmd.sql->expr_str_u.expr_expr),
+		  get_var_expr_dtype (r->cmd_data.command_data_u.prepare_cmd.sql->expr_str_u.expr_expr));
 	  set_nonewlines ();
 
 	  if (r->cmd_data.command_data_u.prepare_cmd.connid)
@@ -8754,7 +8754,7 @@ dump_cmd (struct command *r, struct command *parent)
 	    }
 	  printc ("PREPARE");
 	  print_ident (r->cmd_data.command_data_u.prepare_cmd.stmtid);
-	  printc (" FROM lv_tmp_%x", get_var_expr_dtype (r->cmd_data.command_data_u.prepare_cmd.sql->expr_str_u.var));
+	  printc (" FROM lv_tmp_%x", get_var_expr_dtype (r->cmd_data.command_data_u.prepare_cmd.sql->expr_str_u.expr_expr));
 	}
       else
 	{
@@ -9206,7 +9206,7 @@ dump_cmd (struct command *r, struct command *parent)
 	  break;
 	case E_CLR_STATUS:
 	  printc ("CLEAR STATUSBOX ");
-	  print_ident (r->cmd_data.command_data_u.clear_cmd.clr_data.clear_data_u.statwindow);
+	  print_ident (r->cmd_data.command_data_u.clear_cmd.clr_data.clear_data_u.window);
 	  break;
 
 	case E_CLR_FORM:

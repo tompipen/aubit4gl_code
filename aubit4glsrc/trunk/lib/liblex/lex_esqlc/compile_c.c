@@ -24,12 +24,12 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.522 2010-03-08 09:43:15 mikeaubury Exp $
+# $Id: compile_c.c,v 1.523 2010-03-17 19:02:29 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
-static char const module_id[] = "$Id: compile_c.c,v 1.522 2010-03-08 09:43:15 mikeaubury Exp $";
+static char const module_id[] = "$Id: compile_c.c,v 1.523 2010-03-17 19:02:29 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -1206,13 +1206,13 @@ field_name_as_char (fh_field_entry * fh)
 {
   //char a[200];
   //char b[200];
-  if (fh->fieldsub)
+  if (fh->fieldsub.fieldsub)
     {
-      return A4GL_field_name_as_char (local_ident_as_string (fh->field, 1), local_expr_as_string (fh->fieldsub));
+      return A4GL_field_name_as_char (local_ident_as_string (fh->field.field, 1), local_expr_as_string (fh->fieldsub.fieldsub));
     }
   else
     {
-      return A4GL_field_name_as_char (local_ident_as_string (fh->field, 1), "1");
+      return A4GL_field_name_as_char (local_ident_as_string (fh->field.field, 1), "1");
     }
 
 }
@@ -2752,9 +2752,9 @@ get_start_char_subscript (expr_str * e)
 	  return 0;
 	}
       A4GL_assertion (u->datatype < 0, "Invalid datatype");
-      if (u->substrings_start == 0)
+      if (u->substrings_start.substrings_start == 0)
 	return "0";
-      return local_expr_as_string (u->substrings_start);
+      return local_expr_as_string (u->substrings_start.substrings_start);
 
 
     case ET_EXPR_VARIABLE_USAGE:
@@ -2769,9 +2769,9 @@ get_start_char_subscript (expr_str * e)
 	  return 0;
 	}
       A4GL_assertion (u->datatype < 0, "Invalid datatype");
-      if (u->substrings_start == 0)
+      if (u->substrings_start.substrings_start == 0)
 	return "0";
-      strcpy (buff, local_expr_as_string (u->substrings_start));
+      strcpy (buff, local_expr_as_string (u->substrings_start.substrings_start));
       return buff;
 
     case ET_EXPR_NULL:
@@ -2810,9 +2810,9 @@ get_end_char_subscript (expr_str * e)
 	  return 0;
 	}
       A4GL_assertion (u->datatype < 0, "Invalid datatype");
-      if (u->substrings_end == 0)
+      if (u->substrings_end.substrings_end == 0)
 	return "0";
-      return local_expr_as_string (u->substrings_end);
+      return local_expr_as_string (u->substrings_end.substrings_end);
 
     case ET_EXPR_VARIABLE_USAGE:
       // If this assert fails - we've not found the variable previously and
@@ -2826,9 +2826,9 @@ get_end_char_subscript (expr_str * e)
 	  return 0;
 	}
       A4GL_assertion (u->datatype < 0, "Invalid datatype");
-      if (u->substrings_end == 0)
+      if (u->substrings_end.substrings_end == 0)
 	return "0";
-      strcpy (buff, local_expr_as_string (u->substrings_end));
+      strcpy (buff, local_expr_as_string (u->substrings_end.substrings_end));
       return buff;
 
 
@@ -4349,14 +4349,14 @@ print_event_list (struct on_events *events)
 	case EVENT_KEY_PRESS:
 	  {
 	    int c;
-	    for (c = 0; c < evt->evt_data.event_data_u.key->str_list_entry.str_list_entry_len; c++)
+	    for (c = 0; c < evt->evt_data.event_data_u.slist->str_list_entry.str_list_entry_len; c++)
 	      {
-		keys = get_key_codes (evt->evt_data.event_data_u.key->str_list_entry.str_list_entry_val[c]);
+		keys = get_key_codes (evt->evt_data.event_data_u.slist->str_list_entry.str_list_entry_val[c]);
 		for (b = 0; keys[b]; b++)
 		  {
 		    if (keys[b] == -1)
 		      {		// Invalid key code...
-			set_yytext (evt->evt_data.event_data_u.key->str_list_entry.str_list_entry_val[c]);
+			set_yytext (evt->evt_data.event_data_u.slist->str_list_entry.str_list_entry_val[c]);
 			a4gl_yyerror ("Invalid Key");
 		      }
 		    printc ("{%d,%d,%d,NULL},", A4GL_EVENT_KEY_PRESS, a + 1, keys[b]);
@@ -4454,10 +4454,10 @@ print_event_list (struct on_events *events)
 	case EVENT_BEFORE_FIELD:	//struct fh_field_list *before_field;
 	  {
 	    int b;
-	    for (b = 0; b < evt->evt_data.event_data_u.before_field->field_list_entries.field_list_entries_len; b++)
+	    for (b = 0; b < evt->evt_data.event_data_u.before_after_field->field_list_entries.field_list_entries_len; b++)
 	      {
 		printc ("{%d,%d,0,%s},", A4GL_EVENT_BEFORE_FIELD, a + 1,
-			local_expr_as_string (evt->evt_data.event_data_u.before_field->field_list_entries.field_list_entries_val[b].
+			local_expr_as_string (evt->evt_data.event_data_u.before_after_field->field_list_entries.field_list_entries_val[b].field.
 					      field));
 	      }
 	  }
@@ -4465,10 +4465,10 @@ print_event_list (struct on_events *events)
 	case EVENT_AFTER_FIELD:	//struct fh_field_list *after_field;
 	  {
 	    int b;
-	    for (b = 0; b < evt->evt_data.event_data_u.before_field->field_list_entries.field_list_entries_len; b++)
+	    for (b = 0; b < evt->evt_data.event_data_u.before_after_field->field_list_entries.field_list_entries_len; b++)
 	      {
 		printc ("{%d,%d,0,%s},", A4GL_EVENT_AFTER_FIELD, a + 1,
-			local_expr_as_string (evt->evt_data.event_data_u.before_field->field_list_entries.field_list_entries_val[b].
+			local_expr_as_string (evt->evt_data.event_data_u.before_after_field->field_list_entries.field_list_entries_val[b].field.
 					      field));
 	      }
 	  }
@@ -4476,10 +4476,10 @@ print_event_list (struct on_events *events)
 	case EVENT_ON_CHANGE:	//struct fh_field_list *after_field;
 	  {
 	    int b;
-	    for (b = 0; b < evt->evt_data.event_data_u.before_field->field_list_entries.field_list_entries_len; b++)
+	    for (b = 0; b < evt->evt_data.event_data_u.before_after_field->field_list_entries.field_list_entries_len; b++)
 	      {
 		printc ("{%d,%d,0,%s},", A4GL_EVENT_ON_CHANGE, a + 1,
-			local_expr_as_string (evt->evt_data.event_data_u.before_field->field_list_entries.field_list_entries_val[b].
+			local_expr_as_string (evt->evt_data.event_data_u.before_after_field->field_list_entries.field_list_entries_val[b].field.
 					      field));
 	      }
 	  }
@@ -6465,32 +6465,32 @@ LEXLIB_A4GL_write_generated_code (struct module_definition *m)
   }
 
 
-  if (m->imported_global_variables.variables.variables_len)
+  if (m->imported_global_variables.variables.variables.variables_len)
     {
-      for (a = 0; a < m->imported_global_variables.variables.variables_len; a++)
+      for (a = 0; a < m->imported_global_variables.variables.variables.variables_len; a++)
 	{
-	  print_variable_new (m->imported_global_variables.variables.variables_val[a], E_SCOPE_IMPORTED_GLOBAL, 0);
+	  print_variable_new (m->imported_global_variables.variables.variables.variables_val[a], E_SCOPE_IMPORTED_GLOBAL, 0);
 	}
     }
 
-  if (m->exported_global_variables.variables.variables_len)
+  if (m->exported_global_variables.variables.variables.variables_len)
     {
-      for (a = 0; a < m->exported_global_variables.variables.variables_len; a++)
+      for (a = 0; a < m->exported_global_variables.variables.variables.variables_len; a++)
 	{
-	  print_variable_new (m->exported_global_variables.variables.variables_val[a], E_SCOPE_EXPORTED_GLOBAL, 0);
+	  print_variable_new (m->exported_global_variables.variables.variables.variables_val[a], E_SCOPE_EXPORTED_GLOBAL, 0);
 	}
     }
 
-  if (m->module_variables.variables.variables_len)
+  if (m->module_variables.variables.variables.variables_len)
     {
-      for (a = 0; a < m->module_variables.variables.variables_len; a++)
+      for (a = 0; a < m->module_variables.variables.variables.variables_len; a++)
 	{
-	  print_variable_new (m->module_variables.variables.variables_val[a], E_SCOPE_MODULE, 0);
+	  print_variable_new (m->module_variables.variables.variables.variables_val[a], E_SCOPE_MODULE, 0);
 	}
     }
 
 
-  print_module_variable_init (&m->module_variables);
+  print_module_variable_init (&m->module_variables.variables);
 
 
   for (a = 0; a < m->module_entries.module_entries_len; a++)
@@ -6689,10 +6689,10 @@ is_substring_variable_usage (variable_usage * u, expr_str ** s, expr_str ** e)
 	break;
       u = u->next;
     }
-  if (u->substrings_start)
+  if (u->substrings_start.substrings_start)
     {
-      *s = u->substrings_start;
-      *e = u->substrings_end;
+      *s = u->substrings_start.substrings_start;
+      *e = u->substrings_end.substrings_end;
 
       return 1;
     }
@@ -7668,10 +7668,10 @@ void
 print_field (struct fh_field_entry *field)
 {
   set_nonewlines ();
-  print_ident (field->field);
-  if (field->fieldsub)
+  print_ident (field->field.field);
+  if (field->fieldsub.fieldsub)
     {
-      printc (",%s", local_expr_as_string (field->fieldsub));
+      printc (",%s", local_expr_as_string (field->fieldsub.fieldsub));
     }
   else
     {
@@ -7704,9 +7704,9 @@ remove_field_subscripts_from_field_list (struct fh_field_list *flist)
     {
       struct fh_field_entry *field;
       field = &flist->field_list_entries.field_list_entries_val[a];
-      if (field->fieldsub)
+      if (field->fieldsub.fieldsub)
 	{
-	  field->fieldsub = 0;
+	  field->fieldsub.fieldsub = 0;
 	}
     }
 }
@@ -7817,16 +7817,16 @@ local_find_variable_from_usage (struct variable_usage *u)
       v = current_entry_variables->variables.variables_val[u->variable_id];
       break;
     case E_SCOPE_MODULE:	// list_module
-      A4GL_assertion (u->variable_id >= current_module->module_variables.variables.variables_len, "Invalid VARIABLE ID");
-      v = current_module->module_variables.variables.variables_val[u->variable_id];
+      A4GL_assertion (u->variable_id >= current_module->module_variables.variables.variables.variables_len, "Invalid VARIABLE ID");
+      v = current_module->module_variables.variables.variables.variables_val[u->variable_id];
       break;
     case E_SCOPE_EXPORTED_GLOBAL:	// list_globals
-      A4GL_assertion (u->variable_id >= current_module->exported_global_variables.variables.variables_len, "Invalid VARIABLE ID");
-      v = current_module->exported_global_variables.variables.variables_val[u->variable_id];
+      A4GL_assertion (u->variable_id >= current_module->exported_global_variables.variables.variables.variables_len, "Invalid VARIABLE ID");
+      v = current_module->exported_global_variables.variables.variables.variables_val[u->variable_id];
       break;
     case E_SCOPE_IMPORTED_GLOBAL:	// list_imported_global
-      A4GL_assertion (u->variable_id >= current_module->imported_global_variables.variables.variables_len, "Invalid VARIABLE ID");
-      v = current_module->imported_global_variables.variables.variables_val[u->variable_id];
+      A4GL_assertion (u->variable_id >= current_module->imported_global_variables.variables.variables.variables_len, "Invalid VARIABLE ID");
+      v = current_module->imported_global_variables.variables.variables.variables_val[u->variable_id];
       break;
 
 

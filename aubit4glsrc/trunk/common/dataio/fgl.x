@@ -1,4 +1,4 @@
-/* $Id: fgl.x,v 1.55 2010-03-09 15:34:15 mikeaubury Exp $ */
+/* $Id: fgl.x,v 1.56 2010-03-17 19:01:48 mikeaubury Exp $ */
 typedef string str<>;
 typedef string sql_ident<>;
 
@@ -849,8 +849,8 @@ union report_block_data switch (enum report_blocks rb) {
 
 	case RB_FORMAT_EVERY_ROW: 	struct expr_str_list *variables;
 
-	case RB_BEFORE_GROUP_OF: 	struct expr_str *bf_variable;
-	case RB_AFTER_GROUP_OF:  	struct expr_str *af_variable;
+	case RB_BEFORE_GROUP_OF: 	/*! struct expr_str *f_variable; !*/
+	case RB_AFTER_GROUP_OF:  	struct expr_str *f_variable;
 
 };
 
@@ -1007,11 +1007,11 @@ union clear_data switch (enum e_clear clr_type)
 	case E_CLR_FORM_DEFAULTS: void;
 	case E_CLR_FORM: void;
 
-	case E_CLR_WINDOW: struct expr_str * window;
-	case E_CLR_STATUS: struct expr_str * statwindow;
+	case E_CLR_WINDOW: /*! struct expr_str * window; !*/
+	case E_CLR_STATUS: struct expr_str * window;
 
-	case E_CLR_FIELDS: struct fh_field_list *fields;
-	case E_CLR_FIELDS_TO_DEFAULT: struct fh_field_list *deffields;
+	case E_CLR_FIELDS: /*! struct fh_field_list *fields; !*/
+	case E_CLR_FIELDS_TO_DEFAULT: struct fh_field_list *fields;
 };
 
 struct struct_clear_cmd {
@@ -1167,9 +1167,8 @@ union event_data switch (enum e_event event_type) {
 	case EVENT_ON_IDLE: int idle_n;
 	case EVENT_ON_INTERVAL: int interval_n;
 	case EVENT_ON_TIME: int time_n;
-	case EVENT_KEY_PRESS: str_list *key;
+
 	case EVENT_ON_ACTION: str on_action;
-	case EVENT_ON: str_list *on;
 
 	case EVENT_AFTER_INPUT: void;
 	case EVENT_BEFORE_INPUT:  void;
@@ -1181,16 +1180,20 @@ union event_data switch (enum e_event event_type) {
 	case EVENT_BEFORE_MENU:  void;
 
 	case EVENT_BEFORE_EVENT: void;
-	case EVENT_BEFORE_FIELD: struct fh_field_list *before_field;
-	case EVENT_ON_CHANGE: /*! struct fh_field_list *after_field; !*/
-	case EVENT_AFTER_FIELD: struct fh_field_list *after_field;
+	case EVENT_BEFORE_FIELD: /*! struct fh_field_list *before_after_field; !*/
+	case EVENT_ON_CHANGE: /*! struct fh_field_list *before_after_field; !*/
+	case EVENT_AFTER_FIELD: struct fh_field_list *before_after_field;
+
 	case EVENT_MENU_COMMAND : menuoption *mnoption;
 	case EVENT_AFTER_EVENT: void;
 	case EVENT_BEFORE_CLOSE_FORM: void;
 	case EVENT_BEFORE_ANY: void;
 	case EVENT_AFTER_ANY: void;
-	case EVENT_BEFORE: str_list *before;
-	case EVENT_AFTER: str_list *after;
+
+	case EVENT_ON:  /*! str_list *slist; !*/ /* str_list *on; */
+	case EVENT_KEY_PRESS: 	/*! str_list *slist; !*/ /* key; */
+	case EVENT_BEFORE: 	/*! str_list *slist;  !*/   /* before; */
+	case EVENT_AFTER: 	str_list *slist; /* after; */
 };
 
 
@@ -1521,10 +1524,18 @@ struct variable_list {
  Also -  struct s_spl_block  is defined a little later...
 */
 
+struct s_create_proc_data_p {
+	variable_ptr parameters<>;
+};
+struct s_create_proc_data_r {
+	variable_ptr returning<>;
+};
+
+
 struct create_proc_data {
 	str funcname;
-	variable_ptr parameters<>;
-	variable_ptr returning<>;
+	struct s_create_proc_data_p params;
+	struct s_create_proc_data_r returning;
 	struct s_spl_block *block;
 	struct expr_str_list *document;
 	struct expr_str *listing;
@@ -1825,13 +1836,22 @@ struct s_module_entry_ptr_list  {
 	module_entry_ptr module_entry_ptr_list<>; 
 };
 
+struct s_module_variables {
+	variable_list variables;
+};
+struct s_imported_global_variables {
+	variable_list variables;
+};
+struct s_exported_global_variables {
+	variable_list variables;
+};
 
 struct globals_definition {
 	str mod_dbname;
 	str external_datatypes<>;
 	enum e_boolean schema_only;
 	long compiled_time;
-	variable_list exported_global_variables;
+	struct s_exported_global_variables  exported_global_variables;
 };
 
 
@@ -1843,6 +1863,7 @@ struct s_dependant_tables {
 struct s_source_code {
 	str lines<>;
 };
+
 
 struct module_definition {
 	str mod_dbname;
@@ -1860,9 +1881,9 @@ struct module_definition {
 	struct str_list *global_files;
 	struct s_exchange_clobber clobberings<>;
 	struct s_dependant_tables dependant_tables<>;
-	variable_list module_variables;
-	variable_list exported_global_variables;
-	variable_list imported_global_variables;
+	struct s_module_variables module_variables;
+	struct s_imported_global_variables  imported_global_variables;
+	struct s_exported_global_variables  exported_global_variables;
 	module_entry_ptr module_entries<>;
 	str full_path_filename;
 	struct s_source_code source_code;
@@ -1870,11 +1891,14 @@ struct module_definition {
 };
 
 
+struct s_unexpanded_list {
+	 expr_str_ptr list<>;
+};
 
 
 struct expr_str_list {
-          expr_str_ptr list<>;
-          expr_str_ptr unexpanded_list<>;
+        expr_str_ptr list<>;
+   	struct s_unexpanded_list unexpanded_list;
 };
 
 
@@ -2558,9 +2582,12 @@ union expr_str switch ( enum e_expr_type expr_type) {
                 /*! struct expr_str                         *expr_expr; !*/
         case ET_EXPR_PDF_Y:
                 /*! struct expr_str                         *expr_expr; !*/
+	case ET_E_V_OR_LIT_VAR: 		
+                /*! struct expr_str                         *expr_expr; !*/
 
 	case ET_EXPR_NEG:
                 struct expr_str                         *expr_expr;
+
 	case ET_EXPR_VARIABLE_USAGE:
 		/*! struct variable_usage 			*expr_variable_usage; !*/
 	case ET_EXPR_SPL_VARIABLE_USAGE:
@@ -2576,7 +2603,6 @@ union expr_str switch ( enum e_expr_type expr_type) {
 	case ET_EXPR_TAG:
 		struct s_expr_tag	*expr_tag;
 
-	case ET_E_V_OR_LIT_VAR: 		struct expr_str *var;
 	case ET_E_V_OR_LIT_INT: 		int i;
 	case ET_E_V_OR_LIT_STRING: 		str s;
 	case ET_E_V_OR_LIT_VAR_AS_STRING: 	str sv;
@@ -2594,12 +2620,20 @@ union expr_str switch ( enum e_expr_type expr_type) {
 
 
 
+struct s_fh_field_entry_field {
+	struct expr_str *field;
+};
 
+struct s_fh_field_entry_fieldsub {
+	struct expr_str *fieldsub;
+};
 
 
 struct fh_field_entry {
-        struct expr_str *field;
-	struct expr_str *fieldsub;
+	/* Split these out so we can produce nice XML... */
+	/* instead of just using expr_str - which would be ambiguous... */
+        struct s_fh_field_entry_field field;
+	struct s_fh_field_entry_fieldsub fieldsub;
 };
 
 struct fh_field_list {
@@ -2612,11 +2646,19 @@ struct variable_usage_with_asc_desc {
 	char asc_desc;
 };
 
+struct s_substring_start {
+        expr_str *substrings_start;
+};
+
+struct s_substring_end {
+        expr_str *substrings_end;
+};
+
 struct variable_usage {
         str variable_name;
         expr_str_ptr subscripts<>;
-        expr_str *substrings_start;
-        expr_str *substrings_end;
+        struct s_substring_start substrings_start;
+        struct s_substring_end substrings_end;
         int variable_id;
 	str object_type;
 	int datatype;

@@ -41,11 +41,11 @@ set_variable_usage_substr (struct variable_usage *var, int sub, expr_str *val)
     }
 
   if (sub==0) {
-	var->substrings_start=val; 
+	var->substrings_start.substrings_start=val; 
   } 
 
   if (sub==1) {
-	var->substrings_end=val; 
+	var->substrings_end.substrings_end=val; 
   }
 
 }

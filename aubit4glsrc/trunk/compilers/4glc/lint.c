@@ -391,16 +391,16 @@ lint_get_variable_usage_as_string (struct variable_usage *var_usage)
 	}
       strcat (buff, "]");
     }
-  if (var_usage->substrings_start)
+  if (var_usage->substrings_start.substrings_start)
     {
       strcat (buff, "[");
       strcat (buff,
-	      expr_as_string_when_possible (var_usage->substrings_start));
-      if (var_usage->substrings_end)
+	      expr_as_string_when_possible (var_usage->substrings_start.substrings_start));
+      if (var_usage->substrings_end.substrings_end)
 	{
 	  strcat (buff, ",");
 	  strcat (buff,
-		  expr_as_string_when_possible (var_usage->substrings_end));
+		  expr_as_string_when_possible (var_usage->substrings_end.substrings_end));
 	}
       strcat (buff, "]");
     }
@@ -559,7 +559,7 @@ check_cmds_for_bad_keys (struct on_events *evt_list, struct command *cmd)
 	  int b;
 	  int c;
 	  str_list *sl;
-	  sl = evt_list->event.event_val[a]->evt_data.event_data_u.key;
+	  sl = evt_list->event.event_val[a]->evt_data.event_data_u.slist;
 	  if (sl)
 	    {
 	      for (c = 0; c < sl->str_list_entry.str_list_entry_len; c++)
@@ -1014,7 +1014,7 @@ check_variables (char *module_name, struct module_definition *d,
       check_variable_name (module_name, "Local",
 			   variables->variables.variables_val[a]);
 
-      if (has_variable (&d->imported_global_variables, localname))
+      if (has_variable (&d->imported_global_variables.variables, localname))
 	{
 	  A4GL_lint (module_name, variables->variables.variables_val[a]->lineno, "CS.VARHIDE",
 		     "Coding Standards: Local variable hides an imported Global variable",
@@ -1022,14 +1022,14 @@ check_variables (char *module_name, struct module_definition *d,
 		     names_val[0].name);
 	}
 
-      if (has_variable (&d->exported_global_variables, localname))
+      if (has_variable (&d->exported_global_variables.variables, localname))
 	{
 	  A4GL_lint (module_name, variables->variables.variables_val[a]->lineno, "CS.VARHIDE",
 		     "Coding Standards: Local variable hides an exported Global variable",
 		     variables->variables.variables_val[a]->names.names.
 		     names_val[0].name);
 	}
-      if (has_variable (&d->module_variables, localname))
+      if (has_variable (&d->module_variables.variables, localname))
 	{
 	  A4GL_lint (module_name, variables->variables.variables_val[a]->lineno, "CS.VARHIDE",
 		     "Coding Standards: Local variable hides a Module variable",
@@ -2459,12 +2459,12 @@ check_for_globals_abuse (module_definition * d)
 // so - lets go through the files we have..
 //
 // First - lets generate a list of all of the GLOBALS we seem to be using..
-  for (b = 0; b < d->imported_global_variables.variables.variables_len; b++)
+  for (b = 0; b < d->imported_global_variables.variables.variables.variables_len; b++)
     {
       variable_ptr p;
       //static char *lastname = 0;
 
-      p = d->imported_global_variables.variables.variables_val[b];
+      p = d->imported_global_variables.variables.variables.variables_val[b];
       found = 0;
 
       if (p->user_system == 'S')
@@ -3247,78 +3247,78 @@ check_module (struct module_definition *d)
   all_cmds = linearise_commands (0, 0);
   //printf ("Check Module %s\n", d->module_name);
   //fflush (stdout);
-  for (a = 0; a < d->imported_global_variables.variables.variables_len; a++)
+  for (a = 0; a < d->imported_global_variables.variables.variables.variables_len; a++)
     {
       check_variable_name (d->module_name, "ImportedGlobal",
-			   d->imported_global_variables.variables.
+			   d->imported_global_variables.variables.variables.
 			   variables_val[a]);
     }
 
-  for (a = 0; a < d->exported_global_variables.variables.variables_len; a++)
+  for (a = 0; a < d->exported_global_variables.variables.variables.variables_len; a++)
     {
       check_variable_name (d->module_name, "Global",
-			   d->exported_global_variables.variables.
+			   d->exported_global_variables.variables.variables.
 			   variables_val[a]);
       if (has_variable
-	  (&d->imported_global_variables,
-	   d->exported_global_variables.variables.variables_val[a]->names.
+	  (&d->imported_global_variables.variables,
+	   d->exported_global_variables.variables.variables.variables_val[a]->names.
 	   names.names_val[0].name))
 	{
-	  A4GL_lint (0, d->exported_global_variables.variables.variables_val[a]-> lineno, "CS.VARHIDE",
+	  A4GL_lint (0, d->exported_global_variables.variables.variables.variables_val[a]-> lineno, "CS.VARHIDE",
 		     "Global variable hides an imported Global variable",
-		     d->exported_global_variables.variables.variables_val[a]->
+		     d->exported_global_variables.variables.variables.variables_val[a]->
 		     names.names.names_val[0].name);
 	}
     }
 
 
-  for (a = 0; a < d->module_variables.variables.variables_len; a++)
+  for (a = 0; a < d->module_variables.variables.variables.variables_len; a++)
     {
 
       check_variable_name (d->module_name, "Module",
-			   d->module_variables.variables.variables_val[a]);
+			   d->module_variables.variables.variables.variables_val[a]);
 
       if (has_variable
-	  (&d->imported_global_variables,
-	   d->module_variables.variables.variables_val[a]->names.names.
+	  (&d->imported_global_variables.variables,
+	   d->module_variables.variables.variables.variables_val[a]->names.names.
 	   names_val[0].name))
 	{
-	  A4GL_lint (d->module_name, d->module_variables.variables.variables_val[a]->lineno, "CS.VARHIDE",
+	  A4GL_lint (d->module_name, d->module_variables.variables.variables.variables_val[a]->lineno, "CS.VARHIDE",
 		     "Module variable hides an imported Global variable",
-		     d->module_variables.variables.variables_val[a]->names.
+		     d->module_variables.variables.variables.variables_val[a]->names.
 		     names.names_val[0].name);
 	}
 
       if (has_variable
-	  (&d->exported_global_variables,
-	   d->module_variables.variables.variables_val[a]->names.names.
+	  (&d->exported_global_variables.variables,
+	   d->module_variables.variables.variables.variables_val[a]->names.names.
 	   names_val[0].name))
 	{
-	  A4GL_lint (d->module_name, d->module_variables.variables.variables_val[a]->lineno, "CS.VARHIDE",
+	  A4GL_lint (d->module_name, d->module_variables.variables.variables.variables_val[a]->lineno, "CS.VARHIDE",
 		     "Module variable hides an exported Global variable",
-		     d->module_variables.variables.variables_val[a]->names.
+		     d->module_variables.variables.variables.variables_val[a]->names.
 		     names.names_val[0].name);
 	}
 
-      if (d->module_variables.variables.variables_val[a]->usage == 0
-	  && d->module_variables.variables.variables_val[a]->assigned == 0)
+      if (d->module_variables.variables.variables.variables_val[a]->usage == 0
+	  && d->module_variables.variables.variables.variables_val[a]->assigned == 0)
 	{
-	  if (d->module_variables.variables.variables_val[a]->var_data.
+	  if (d->module_variables.variables.variables.variables_val[a]->var_data.
 	      variable_type == VARIABLE_TYPE_CONSTANT)
 	    continue;
 	  yylineno = 1;
-	  A4GL_lint (d->module_name, d->module_variables.variables.variables_val[a]->lineno, "VARNOTUSED", "Module variable is defined but not used",
-		     d->module_variables.variables.variables_val[a]->names.
+	  A4GL_lint (d->module_name, d->module_variables.variables.variables.variables_val[a]->lineno, "VARNOTUSED", "Module variable is defined but not used",
+		     d->module_variables.variables.variables.variables_val[a]->names.
 		     names.names_val[0].name);
 	}
 
-      if (d->module_variables.variables.variables_val[a]->usage == 0
-	  && d->module_variables.variables.variables_val[a]->assigned)
+      if (d->module_variables.variables.variables.variables_val[a]->usage == 0
+	  && d->module_variables.variables.variables.variables_val[a]->assigned)
 	{
 	  yylineno = 1;
-	  A4GL_lint (d->module_name, d->module_variables.variables.variables_val[a]->lineno, "VARASSNOTUSED",
+	  A4GL_lint (d->module_name, d->module_variables.variables.variables.variables_val[a]->lineno, "VARASSNOTUSED",
 		     "Module variable is assigned a value but not used",
-		     d->module_variables.variables.variables_val[a]->names.
+		     d->module_variables.variables.variables.variables_val[a]->names.
 		     names.names_val[0].name);
 	}
 
@@ -5493,7 +5493,7 @@ check_program (module_definition * mods, int nmodules)
 	    {
 	      // Nothing defined in there..
 	      //
-	      if (mods[a].exported_global_variables.variables.variables_len)
+	      if (mods[a].exported_global_variables.variables.variables.variables_len)
 		{
 		  // Its a global variable..
 		}

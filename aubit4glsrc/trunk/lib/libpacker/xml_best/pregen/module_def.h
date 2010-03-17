@@ -1,5 +1,5 @@
 /* XML processor/application API for module_def.dtd.
- * Generated 2010/03/16 10:01:17.
+ * Generated 2010/03/17 18:44:02.
  *
  * This program was generated with the FleXML XML processor generator.
  * FleXML is Copyright (C) 1999-2005 Kristoffer Rose.  All rights reserved.
@@ -155,12 +155,18 @@ extern void STag_s_class_definition(void);
 extern void ETag_s_class_definition(void);
 extern void STag_s_commands(void);
 extern void ETag_s_commands(void);
+extern void STag_s_create_proc_data_p(void);
+extern void ETag_s_create_proc_data_p(void);
+extern void STag_s_create_proc_data_r(void);
+extern void ETag_s_create_proc_data_r(void);
 extern void STag_s_cur_def(void);
 extern void ETag_s_cur_def(void);
 extern void STag_s_dependant_tables(void);
 extern void ETag_s_dependant_tables(void);
 extern void STag_s_exchange_clobber(void);
 extern void ETag_s_exchange_clobber(void);
+extern void STag_s_exported_global_variables(void);
+extern void ETag_s_exported_global_variables(void);
 extern void STag_s_expr_agg(void);
 extern void ETag_s_expr_agg(void);
 extern void STag_s_expr_aligned(void);
@@ -221,6 +227,10 @@ extern void STag_s_fetch(void);
 extern void ETag_s_fetch(void);
 extern void STag_s_fetch_place(void);
 extern void ETag_s_fetch_place(void);
+extern void STag_s_fh_field_entry_field(void);
+extern void ETag_s_fh_field_entry_field(void);
+extern void STag_s_fh_field_entry_fieldsub(void);
+extern void ETag_s_fh_field_entry_fieldsub(void);
 extern void STag_s_formhandler_definition(void);
 extern void ETag_s_formhandler_definition(void);
 extern void STag_s_full_col(void);
@@ -237,10 +247,14 @@ extern void STag_s_import_legacy_definition(void);
 extern void ETag_s_import_legacy_definition(void);
 extern void STag_s_import_package(void);
 extern void ETag_s_import_package(void);
+extern void STag_s_imported_global_variables(void);
+extern void ETag_s_imported_global_variables(void);
 extern void STag_s_limit(void);
 extern void ETag_s_limit(void);
 extern void STag_s_module_entry_ptr_list(void);
 extern void ETag_s_module_entry_ptr_list(void);
+extern void STag_s_module_variables(void);
+extern void ETag_s_module_variables(void);
 extern void STag_s_named_param(void);
 extern void ETag_s_named_param(void);
 extern void STag_s_pdf_report_definition(void);
@@ -295,12 +309,18 @@ extern void STag_s_spl_execute(void);
 extern void ETag_s_spl_execute(void);
 extern void STag_s_spl_for_item(void);
 extern void ETag_s_spl_for_item(void);
+extern void STag_s_substring_end(void);
+extern void ETag_s_substring_end(void);
+extern void STag_s_substring_start(void);
+extern void ETag_s_substring_start(void);
 extern void STag_s_table(void);
 extern void ETag_s_table(void);
 extern void STag_s_table_list(void);
 extern void ETag_s_table_list(void);
 extern void STag_s_table_list_element(void);
 extern void ETag_s_table_list_element(void);
+extern void STag_s_unexpanded_list(void);
+extern void ETag_s_unexpanded_list(void);
 extern void STag_s_update_pair(void);
 extern void ETag_s_update_pair(void);
 extern void STag_s_x_y(void);
@@ -679,6 +699,8 @@ typedef int AT_struct_whenever_cmd_whencode;
 #define AU_struct_whenever_cmd_whencode NULL
 typedef int AT_pdf_startrep_towhat;
 #define AU_pdf_startrep_towhat NULL
+typedef int AT_s_substring_end_nm;
+#define AU_s_substring_end_nm NULL
 typedef int AT_startrep_with_top_margin;
 #define AU_startrep_with_top_margin NULL
 typedef int AT_s_import_function_definition_nparam;
@@ -733,6 +755,8 @@ typedef int AT_s_sli_cast_nm;
 #define AU_s_sli_cast_nm NULL
 typedef int AT_struct_call_shared_cmd_niy;
 #define AU_struct_call_shared_cmd_niy NULL
+typedef int AT_s_create_proc_data_r_nm;
+#define AU_s_create_proc_data_r_nm NULL
 typedef int AT_if_conds_nm;
 #define AU_if_conds_nm NULL
 typedef int AT_single_option_nm;
@@ -803,6 +827,8 @@ typedef int AT_s_table_list_element_alias;
 #define AU_s_table_list_element_alias NULL
 typedef int AT_s_fetch_place_ab_rel;
 #define AU_s_fetch_place_ab_rel NULL
+typedef int AT_s_substring_start_nm;
+#define AU_s_substring_start_nm NULL
 typedef int AT_bluebar_style;
 #define AU_bluebar_style NULL
 typedef int AT_s_expr_current_from;
@@ -853,6 +879,8 @@ typedef int AT_variable_usage_escope;
 #define AU_variable_usage_escope NULL
 typedef int AT_struct_update_cmd_table;
 #define AU_struct_update_cmd_table NULL
+typedef int AT_s_imported_global_variables_nm;
+#define AU_s_imported_global_variables_nm NULL
 typedef int AT_when_lineno;
 #define AU_when_lineno NULL
 typedef int AT_variable_defsrc;
@@ -1019,6 +1047,8 @@ typedef int AT_s_expr_external_call_without_waiting;
 #define AU_s_expr_external_call_without_waiting NULL
 typedef int AT_variable_usage_variable_id;
 #define AU_variable_usage_variable_id NULL
+typedef int AT_s_exported_global_variables_nm;
+#define AU_s_exported_global_variables_nm NULL
 typedef int AT_s_select_list_item_column_nm;
 #define AU_s_select_list_item_column_nm NULL
 typedef int AT_ilist_i2;
@@ -1041,6 +1071,8 @@ typedef int AT_struct_print_img_cmd_semi;
 #define AU_struct_print_img_cmd_semi NULL
 typedef int AT_pdf_startrep_ascii_height;
 #define AU_pdf_startrep_ascii_height NULL
+typedef int AT_s_fh_field_entry_fieldsub_nm;
+#define AU_s_fh_field_entry_fieldsub_nm NULL
 typedef int AT_pdf_startrep_fontname;
 #define AU_pdf_startrep_fontname NULL
 typedef int AT_globals_definition_nm;
@@ -1061,10 +1093,10 @@ typedef int AT_struct_insert_cmd_table;
 #define AU_struct_insert_cmd_table NULL
 typedef int AT_s_select_list_item_fcall_functionname;
 #define AU_s_select_list_item_fcall_functionname NULL
-typedef int AT_s_expr_cast_target_dtype;
-#define AU_s_expr_cast_target_dtype NULL
 typedef int AT_s_expr_member_function_call_n_line;
 #define AU_s_expr_member_function_call_n_line NULL
+typedef int AT_s_expr_cast_target_dtype;
+#define AU_s_expr_cast_target_dtype NULL
 typedef int AT_struct_msg_box_cmd_icon;
 #define AU_struct_msg_box_cmd_icon NULL
 typedef int AT_flist_name;
@@ -1187,6 +1219,8 @@ typedef int AT_variable_usage_datatype_length;
 #define AU_variable_usage_datatype_length NULL
 typedef int AT_s_func_n_namespace;
 #define AU_s_func_n_namespace NULL
+typedef int AT_s_fh_field_entry_field_nm;
+#define AU_s_fh_field_entry_field_nm NULL
 typedef int AT_bluebar_r;
 #define AU_bluebar_r NULL
 typedef int AT_s_expr_interval_nm;
@@ -1315,6 +1349,8 @@ typedef int AT_struct_declare_cmd_nm;
 #define AU_struct_declare_cmd_nm NULL
 typedef int AT_object_variable_class_name;
 #define AU_object_variable_class_name NULL
+typedef int AT_s_create_proc_data_p_nm;
+#define AU_s_create_proc_data_p_nm NULL
 typedef int AT_startrep_with_page_length;
 #define AU_startrep_with_page_length NULL
 typedef int AT_struct_start_cmd_nm;
@@ -1555,6 +1591,8 @@ typedef int AT_event_data_e_event;
 #define AU_event_data_e_event NULL
 typedef int AT_s_function_definition_lastlineno;
 #define AU_s_function_definition_lastlineno NULL
+typedef int AT_s_module_variables_nm;
+#define AU_s_module_variables_nm NULL
 typedef int AT_struct_execute_immediate_cmd_nm;
 #define AU_struct_execute_immediate_cmd_nm NULL
 typedef int AT_module_definition_force_ui;
@@ -1667,12 +1705,12 @@ typedef int AT_s_function_definition_n_namespace;
 #define AU_s_function_definition_n_namespace NULL
 typedef int AT_struct_declare_cmd_isstmt;
 #define AU_struct_declare_cmd_isstmt NULL
+typedef int AT_struct_ext_cmd_nm;
+#define AU_struct_ext_cmd_nm NULL
 typedef int AT_s_function_definition_lineno;
 #define AU_s_function_definition_lineno NULL
 typedef int AT_struct_construct_cmd_sio;
 #define AU_struct_construct_cmd_sio NULL
-typedef int AT_struct_ext_cmd_nm;
-#define AU_struct_ext_cmd_nm NULL
 typedef int AT_struct_hide_cmd_nm;
 #define AU_struct_hide_cmd_nm NULL
 typedef int AT_s_expr_interval_intval;
@@ -1719,10 +1757,10 @@ typedef int AT_s_expr_function_call_line;
 #define AU_s_expr_function_call_line NULL
 typedef int AT_struct_lint_ignore_cmd_nm;
 #define AU_struct_lint_ignore_cmd_nm NULL
-typedef int AT_s_expr_shared_function_call_module;
-#define AU_s_expr_shared_function_call_module NULL
 typedef int AT_struct_flush_cmd_nm;
 #define AU_struct_flush_cmd_nm NULL
+typedef int AT_s_expr_shared_function_call_module;
+#define AU_s_expr_shared_function_call_module NULL
 typedef int AT_attrib_no_new_lines;
 #define AU_attrib_no_new_lines NULL
 typedef int AT_struct_check_menu_cmd_nm;
@@ -1819,6 +1857,8 @@ typedef int AT_struct_spl_if_cmd_nm;
 #define AU_struct_spl_if_cmd_nm NULL
 typedef int AT_s_expr_cached_cache_num;
 #define AU_s_expr_cached_cache_num NULL
+typedef int AT_s_unexpanded_list_nm;
+#define AU_s_unexpanded_list_nm NULL
 typedef int AT_on_event_colno;
 #define AU_on_event_colno NULL
 typedef int AT_s_import_datatype_dtype_name;
@@ -1957,12 +1997,12 @@ typedef int AT_struct_goto_cmd_nm;
 #define AU_struct_goto_cmd_nm NULL
 typedef int AT_int_value;
 #define AU_int_value NULL
+typedef int AT_struct_fetch_cmd_nm;
+#define AU_struct_fetch_cmd_nm NULL
 typedef int AT_s_expr_bound_fcall_n_namespace;
 #define AU_s_expr_bound_fcall_n_namespace NULL
 typedef int AT_struct_disable_cmd_nm;
 #define AU_struct_disable_cmd_nm NULL
-typedef int AT_struct_fetch_cmd_nm;
-#define AU_struct_fetch_cmd_nm NULL
 typedef int AT_variable_assigned;
 #define AU_variable_assigned NULL
 typedef int AT_struct_input_array_cmd_helpno;
@@ -2094,6 +2134,8 @@ extern AT_struct_whenever_cmd_whencode AX_struct_whenever_cmd_whencode;
 #define A_struct_whenever_cmd_whencode (bufferstack + AX_struct_whenever_cmd_whencode)
 extern AT_pdf_startrep_towhat AX_pdf_startrep_towhat;
 #define A_pdf_startrep_towhat (bufferstack + AX_pdf_startrep_towhat)
+extern AT_s_substring_end_nm AX_s_substring_end_nm;
+#define A_s_substring_end_nm (bufferstack + AX_s_substring_end_nm)
 extern AT_startrep_with_top_margin AX_startrep_with_top_margin;
 #define A_startrep_with_top_margin (bufferstack + AX_startrep_with_top_margin)
 extern AT_s_import_function_definition_nparam AX_s_import_function_definition_nparam;
@@ -2148,6 +2190,8 @@ extern AT_s_sli_cast_nm AX_s_sli_cast_nm;
 #define A_s_sli_cast_nm (bufferstack + AX_s_sli_cast_nm)
 extern AT_struct_call_shared_cmd_niy AX_struct_call_shared_cmd_niy;
 #define A_struct_call_shared_cmd_niy (bufferstack + AX_struct_call_shared_cmd_niy)
+extern AT_s_create_proc_data_r_nm AX_s_create_proc_data_r_nm;
+#define A_s_create_proc_data_r_nm (bufferstack + AX_s_create_proc_data_r_nm)
 extern AT_if_conds_nm AX_if_conds_nm;
 #define A_if_conds_nm (bufferstack + AX_if_conds_nm)
 extern AT_single_option_nm AX_single_option_nm;
@@ -2218,6 +2262,8 @@ extern AT_s_table_list_element_alias AX_s_table_list_element_alias;
 #define A_s_table_list_element_alias (bufferstack + AX_s_table_list_element_alias)
 extern AT_s_fetch_place_ab_rel AX_s_fetch_place_ab_rel;
 #define A_s_fetch_place_ab_rel (bufferstack + AX_s_fetch_place_ab_rel)
+extern AT_s_substring_start_nm AX_s_substring_start_nm;
+#define A_s_substring_start_nm (bufferstack + AX_s_substring_start_nm)
 extern AT_bluebar_style AX_bluebar_style;
 #define A_bluebar_style (bufferstack + AX_bluebar_style)
 extern AT_s_expr_current_from AX_s_expr_current_from;
@@ -2268,6 +2314,8 @@ extern AT_variable_usage_escope AX_variable_usage_escope;
 #define A_variable_usage_escope (bufferstack + AX_variable_usage_escope)
 extern AT_struct_update_cmd_table AX_struct_update_cmd_table;
 #define A_struct_update_cmd_table (bufferstack + AX_struct_update_cmd_table)
+extern AT_s_imported_global_variables_nm AX_s_imported_global_variables_nm;
+#define A_s_imported_global_variables_nm (bufferstack + AX_s_imported_global_variables_nm)
 extern AT_when_lineno AX_when_lineno;
 #define A_when_lineno (bufferstack + AX_when_lineno)
 extern AT_variable_defsrc AX_variable_defsrc;
@@ -2434,6 +2482,8 @@ extern AT_s_expr_external_call_without_waiting AX_s_expr_external_call_without_w
 #define A_s_expr_external_call_without_waiting (bufferstack + AX_s_expr_external_call_without_waiting)
 extern AT_variable_usage_variable_id AX_variable_usage_variable_id;
 #define A_variable_usage_variable_id (bufferstack + AX_variable_usage_variable_id)
+extern AT_s_exported_global_variables_nm AX_s_exported_global_variables_nm;
+#define A_s_exported_global_variables_nm (bufferstack + AX_s_exported_global_variables_nm)
 extern AT_s_select_list_item_column_nm AX_s_select_list_item_column_nm;
 #define A_s_select_list_item_column_nm (bufferstack + AX_s_select_list_item_column_nm)
 extern AT_ilist_i2 AX_ilist_i2;
@@ -2456,6 +2506,8 @@ extern AT_struct_print_img_cmd_semi AX_struct_print_img_cmd_semi;
 #define A_struct_print_img_cmd_semi (bufferstack + AX_struct_print_img_cmd_semi)
 extern AT_pdf_startrep_ascii_height AX_pdf_startrep_ascii_height;
 #define A_pdf_startrep_ascii_height (bufferstack + AX_pdf_startrep_ascii_height)
+extern AT_s_fh_field_entry_fieldsub_nm AX_s_fh_field_entry_fieldsub_nm;
+#define A_s_fh_field_entry_fieldsub_nm (bufferstack + AX_s_fh_field_entry_fieldsub_nm)
 extern AT_pdf_startrep_fontname AX_pdf_startrep_fontname;
 #define A_pdf_startrep_fontname (bufferstack + AX_pdf_startrep_fontname)
 extern AT_globals_definition_nm AX_globals_definition_nm;
@@ -2476,10 +2528,10 @@ extern AT_struct_insert_cmd_table AX_struct_insert_cmd_table;
 #define A_struct_insert_cmd_table (bufferstack + AX_struct_insert_cmd_table)
 extern AT_s_select_list_item_fcall_functionname AX_s_select_list_item_fcall_functionname;
 #define A_s_select_list_item_fcall_functionname (bufferstack + AX_s_select_list_item_fcall_functionname)
-extern AT_s_expr_cast_target_dtype AX_s_expr_cast_target_dtype;
-#define A_s_expr_cast_target_dtype (bufferstack + AX_s_expr_cast_target_dtype)
 extern AT_s_expr_member_function_call_n_line AX_s_expr_member_function_call_n_line;
 #define A_s_expr_member_function_call_n_line (bufferstack + AX_s_expr_member_function_call_n_line)
+extern AT_s_expr_cast_target_dtype AX_s_expr_cast_target_dtype;
+#define A_s_expr_cast_target_dtype (bufferstack + AX_s_expr_cast_target_dtype)
 extern AT_struct_msg_box_cmd_icon AX_struct_msg_box_cmd_icon;
 #define A_struct_msg_box_cmd_icon (bufferstack + AX_struct_msg_box_cmd_icon)
 extern AT_flist_name AX_flist_name;
@@ -2602,6 +2654,8 @@ extern AT_variable_usage_datatype_length AX_variable_usage_datatype_length;
 #define A_variable_usage_datatype_length (bufferstack + AX_variable_usage_datatype_length)
 extern AT_s_func_n_namespace AX_s_func_n_namespace;
 #define A_s_func_n_namespace (bufferstack + AX_s_func_n_namespace)
+extern AT_s_fh_field_entry_field_nm AX_s_fh_field_entry_field_nm;
+#define A_s_fh_field_entry_field_nm (bufferstack + AX_s_fh_field_entry_field_nm)
 extern AT_bluebar_r AX_bluebar_r;
 #define A_bluebar_r (bufferstack + AX_bluebar_r)
 extern AT_s_expr_interval_nm AX_s_expr_interval_nm;
@@ -2730,6 +2784,8 @@ extern AT_struct_declare_cmd_nm AX_struct_declare_cmd_nm;
 #define A_struct_declare_cmd_nm (bufferstack + AX_struct_declare_cmd_nm)
 extern AT_object_variable_class_name AX_object_variable_class_name;
 #define A_object_variable_class_name (bufferstack + AX_object_variable_class_name)
+extern AT_s_create_proc_data_p_nm AX_s_create_proc_data_p_nm;
+#define A_s_create_proc_data_p_nm (bufferstack + AX_s_create_proc_data_p_nm)
 extern AT_startrep_with_page_length AX_startrep_with_page_length;
 #define A_startrep_with_page_length (bufferstack + AX_startrep_with_page_length)
 extern AT_struct_start_cmd_nm AX_struct_start_cmd_nm;
@@ -2970,6 +3026,8 @@ extern AT_event_data_e_event AX_event_data_e_event;
 #define A_event_data_e_event (bufferstack + AX_event_data_e_event)
 extern AT_s_function_definition_lastlineno AX_s_function_definition_lastlineno;
 #define A_s_function_definition_lastlineno (bufferstack + AX_s_function_definition_lastlineno)
+extern AT_s_module_variables_nm AX_s_module_variables_nm;
+#define A_s_module_variables_nm (bufferstack + AX_s_module_variables_nm)
 extern AT_struct_execute_immediate_cmd_nm AX_struct_execute_immediate_cmd_nm;
 #define A_struct_execute_immediate_cmd_nm (bufferstack + AX_struct_execute_immediate_cmd_nm)
 extern AT_module_definition_force_ui AX_module_definition_force_ui;
@@ -3082,12 +3140,12 @@ extern AT_s_function_definition_n_namespace AX_s_function_definition_n_namespace
 #define A_s_function_definition_n_namespace (bufferstack + AX_s_function_definition_n_namespace)
 extern AT_struct_declare_cmd_isstmt AX_struct_declare_cmd_isstmt;
 #define A_struct_declare_cmd_isstmt (bufferstack + AX_struct_declare_cmd_isstmt)
+extern AT_struct_ext_cmd_nm AX_struct_ext_cmd_nm;
+#define A_struct_ext_cmd_nm (bufferstack + AX_struct_ext_cmd_nm)
 extern AT_s_function_definition_lineno AX_s_function_definition_lineno;
 #define A_s_function_definition_lineno (bufferstack + AX_s_function_definition_lineno)
 extern AT_struct_construct_cmd_sio AX_struct_construct_cmd_sio;
 #define A_struct_construct_cmd_sio (bufferstack + AX_struct_construct_cmd_sio)
-extern AT_struct_ext_cmd_nm AX_struct_ext_cmd_nm;
-#define A_struct_ext_cmd_nm (bufferstack + AX_struct_ext_cmd_nm)
 extern AT_struct_hide_cmd_nm AX_struct_hide_cmd_nm;
 #define A_struct_hide_cmd_nm (bufferstack + AX_struct_hide_cmd_nm)
 extern AT_s_expr_interval_intval AX_s_expr_interval_intval;
@@ -3134,10 +3192,10 @@ extern AT_s_expr_function_call_line AX_s_expr_function_call_line;
 #define A_s_expr_function_call_line (bufferstack + AX_s_expr_function_call_line)
 extern AT_struct_lint_ignore_cmd_nm AX_struct_lint_ignore_cmd_nm;
 #define A_struct_lint_ignore_cmd_nm (bufferstack + AX_struct_lint_ignore_cmd_nm)
-extern AT_s_expr_shared_function_call_module AX_s_expr_shared_function_call_module;
-#define A_s_expr_shared_function_call_module (bufferstack + AX_s_expr_shared_function_call_module)
 extern AT_struct_flush_cmd_nm AX_struct_flush_cmd_nm;
 #define A_struct_flush_cmd_nm (bufferstack + AX_struct_flush_cmd_nm)
+extern AT_s_expr_shared_function_call_module AX_s_expr_shared_function_call_module;
+#define A_s_expr_shared_function_call_module (bufferstack + AX_s_expr_shared_function_call_module)
 extern AT_attrib_no_new_lines AX_attrib_no_new_lines;
 #define A_attrib_no_new_lines (bufferstack + AX_attrib_no_new_lines)
 extern AT_struct_check_menu_cmd_nm AX_struct_check_menu_cmd_nm;
@@ -3234,6 +3292,8 @@ extern AT_struct_spl_if_cmd_nm AX_struct_spl_if_cmd_nm;
 #define A_struct_spl_if_cmd_nm (bufferstack + AX_struct_spl_if_cmd_nm)
 extern AT_s_expr_cached_cache_num AX_s_expr_cached_cache_num;
 #define A_s_expr_cached_cache_num (bufferstack + AX_s_expr_cached_cache_num)
+extern AT_s_unexpanded_list_nm AX_s_unexpanded_list_nm;
+#define A_s_unexpanded_list_nm (bufferstack + AX_s_unexpanded_list_nm)
 extern AT_on_event_colno AX_on_event_colno;
 #define A_on_event_colno (bufferstack + AX_on_event_colno)
 extern AT_s_import_datatype_dtype_name AX_s_import_datatype_dtype_name;
@@ -3372,12 +3432,12 @@ extern AT_struct_goto_cmd_nm AX_struct_goto_cmd_nm;
 #define A_struct_goto_cmd_nm (bufferstack + AX_struct_goto_cmd_nm)
 extern AT_int_value AX_int_value;
 #define A_int_value (bufferstack + AX_int_value)
+extern AT_struct_fetch_cmd_nm AX_struct_fetch_cmd_nm;
+#define A_struct_fetch_cmd_nm (bufferstack + AX_struct_fetch_cmd_nm)
 extern AT_s_expr_bound_fcall_n_namespace AX_s_expr_bound_fcall_n_namespace;
 #define A_s_expr_bound_fcall_n_namespace (bufferstack + AX_s_expr_bound_fcall_n_namespace)
 extern AT_struct_disable_cmd_nm AX_struct_disable_cmd_nm;
 #define A_struct_disable_cmd_nm (bufferstack + AX_struct_disable_cmd_nm)
-extern AT_struct_fetch_cmd_nm AX_struct_fetch_cmd_nm;
-#define A_struct_fetch_cmd_nm (bufferstack + AX_struct_fetch_cmd_nm)
 extern AT_variable_assigned AX_variable_assigned;
 #define A_variable_assigned (bufferstack + AX_variable_assigned)
 extern AT_struct_input_array_cmd_helpno AX_struct_input_array_cmd_helpno;

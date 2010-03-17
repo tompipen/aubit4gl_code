@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: main.c,v 1.2 2009-12-10 19:19:05 mikeaubury Exp $
+# $Id: main.c,v 1.3 2010-03-17 19:02:22 mikeaubury Exp $
 #*/
 
 /**
@@ -189,95 +189,6 @@ main (int argc, char *argv[])
       yyin = (FILE *) fopen (c, "r");
 
 
-/*
-      strcpy (ofile, outputfilename);
-      strcat (ofile, ".xo.c");
-
-
-      cfo = (FILE *) fopen (ofile, "w");
-      if (cfo == 0)
-	{
-	  printf ("Unable to open output file\n");
-	  exit (1);
-	}
-
-      strcpy (ofile, outputfilename);
-      strcat (ofile, ".dtd");
-      Dtd = (FILE *) fopen (ofile, "w");
-      if (Dtd == 0)
-	{
-	  printf ("Unable to open output file\n");
-	  exit (1);
-	}
-
-      strcpy (ofile, outputfilename);
-      strcat (ofile, ".act");
-      Act = (FILE *) fopen (ofile, "w");
-      if (Act == 0)
-	{
-	  printf ("Unable to open output file\n");
-	  exit (1);
-	}
-
-      strcpy (ofile, outputfilename);
-      strcat (ofile, ".act.h");
-      ActH = (FILE *) fopen (ofile, "w");
-      if (ActH == 0)
-	{
-	  printf ("Unable to open output file\n");
-	  exit (1);
-	}
-
-
-      strcpy (ofile, outputfilename);
-      strcat (ofile, ".xi.c");
-      cfi = (FILE *) fopen (ofile, "w");
-      if (cfi == 0)
-	{
-	  printf ("Unable to open output file\n");
-	  exit (1);
-	}
-
-
-      strcpy (ofile, outputfilename);
-      strcat (ofile, ".xio.c");
-      cfio = (FILE *) fopen (ofile, "w");
-      if (cfi == 0)
-	{
-	  printf ("Unable to open output file\n");
-	  exit (1);
-	}
-
-      strcpy (hfile, outputfilename);
-      strcat (hfile, ".x.h");
-      hf = (FILE *) fopen (hfile, "w");
-      if (hf == 0)
-	{
-	  printf ("Unable to open output file\n");
-	  exit (1);
-	}
-
-      strcpy (hsfile, outputfilename);
-      strcat (hsfile, ".xs.h");
-      hsf = (FILE *) fopen (hsfile, "w");
-      if (hsf == 0)
-	{
-	  printf ("Unable to open output file\n");
-	  exit (1);
-	}
-
-
-      strcpy (ccrfile, outputfilename);
-      strcat (ccrfile, ".xs.h");
-*/
-
-      /* ccrf = (FILE *) fopen (ccrfile, "w"); 
-      if (ccrf == 0)
-	{
-	  printf ("Unable to open output file\n");
-	  exit (1);
-	}
-	*/
     }
 
   else
@@ -301,6 +212,7 @@ main (int argc, char *argv[])
 
   rval = yyparse ();
   dump_structs(outputfilename);
+  dump_xsd(outputfilename);
 
 /*
   fclose (cfo);

@@ -6,21 +6,23 @@
 extern struct s_elements *all_elements;
 extern int nall_elements;
 
+
+
 extern struct s_enum *all_enums;
 extern int nall_enums;
 
 int istypedef(char *s) {
-	if (strcmp(s,"variable_ptr")==0) return 1;
 	if (strcmp(s,"command_ptr")==0) return 1;
-	if (strcmp(s,"expr_str_ptr")==0) return 1;
-	if (strcmp(s,"single_option_ptr")==0) return 1;
-	if (strcmp(s,"report_format_section_entry_ptr")==0) return 1;
-	if (strcmp(s,"when_ptr")==0) return 1;
-	if (strcmp(s,"on_event_ptr")==0) return 1;
 	if (strcmp(s,"cons_list_entry_ptr")==0) return 1;
-	if (strcmp(s,"module_entry_ptr")==0) return 1;
 	if (strcmp(s,"elements_ptr")==0) return 1;
+	if (strcmp(s,"expr_str_ptr")==0) return 1;
+	if (strcmp(s,"module_entry_ptr")==0) return 1;
+	if (strcmp(s,"on_event_ptr")==0) return 1;
+	if (strcmp(s,"report_format_section_entry_ptr")==0) return 1;
 	if (strcmp(s,"s_table_list_element_ptr")==0) return 1;
+	if (strcmp(s,"single_option_ptr")==0) return 1;
+	if (strcmp(s,"variable_ptr")==0) return 1;
+	if (strcmp(s,"when_ptr")==0) return 1;
 	return 0;
 }
 
@@ -47,6 +49,7 @@ findit (struct s_dtype *d)
   int a;
 // Is it an enum ? 
 
+
   for (a = 0; a < nall_enums; a++)
     {
       if (strcmp (all_enums[a].enum_name, d->type) == 0)
@@ -56,6 +59,9 @@ findit (struct s_dtype *d)
 	  return 1;
 	}
     }
+
+
+
 
   for (a = 0; a < nall_elements; a++)
     {
@@ -77,6 +83,60 @@ findit (struct s_dtype *d)
 }
 
 
+int
+findit2 (struct s_dtype *d)
+{
+  int a;
+// Is it an enum ? 
+
+
+  d->isunknown =1;
+  d->isenum =0;
+  d->isstruct=0;
+  d->isunion=0;
+
+  for (a = 0; a < nall_enums; a++)
+    {
+      if (strcmp (all_enums[a].enum_name, d->type) == 0)
+	{
+	  d->isunknown = 0;
+	  d->isenum = 1;
+	  return 1;
+	}
+    }
+
+
+  if (istypedef( d->type) ) {
+	char buff[2000];
+	char *ptr;
+
+	 strcpy(buff,  d->type);
+	ptr=strstr(buff,"_ptr");
+	if (ptr) {
+		*ptr=0;
+		d->type=strdup(buff);
+		//d->isptr=1;
+	}
+  }
+
+  for (a = 0; a < nall_elements; a++)
+    {
+      if (strcmp (all_elements[a].union_or_struct_name, d->type) == 0)
+	{
+	  d->isunknown = 0;
+	  if (strlen (all_elements[a].union_switch_on_enum_type))
+	    {
+	      d->isunion = 1;
+	    }
+	  else
+	    {
+	      d->isstruct = 1;
+	    }
+	  return 1;
+	}
+    }
+  return 0;
+}
 
 char ustr[20000] = "";
 void
@@ -1715,4 +1775,246 @@ dump_structs (char *name)
   dump_write_xml (name);
   dump_write_dtd (name);
   dump_write_parent (name);
+}
+
+static void print_restrictions_enum(FILE *ofile, char *s) {
+int a;
+int b;
+  for (a=0;a<nall_enums;a++) {
+	if (strcmp(s,  all_enums[a].enum_name)==0) {
+		fprintf(ofile,"  <xs:simpleType>\n");
+
+    		fprintf(ofile,"   <xs:restriction base=\"xs:string\">\n");
+		for (b=0;b<all_enums[a].nelements;b++) {
+    			fprintf(ofile,"    <xs:enumeration value=\"%s\"/>\n", all_enums[a].elements[b].element_name);
+		}
+		fprintf(ofile,"   </xs:restriction>\n");
+		fprintf(ofile,"  </xs:simpleType>\n");
+		return;
+	}
+	
+  }
+}
+
+
+
+void dump_xsd(char *name) {
+  FILE *ofile;
+  int a;
+
+  ofile = fopen ("output.xsd", "w");
+  fprintf(ofile,"<?xml version=\"1.0\" encoding=\"us-ascii\"?>\n");
+  fprintf(ofile,"<xs:schema xmlns:xs=\"http://www.w3.org/2001/XMLSchema\">\n");
+
+
+
+
+fprintf(ofile,"<xs:complexType name=\"module_entry_ptr\">\n");
+fprintf(ofile," <xs:complexContent>\n");
+fprintf(ofile,"  <xs:extension  base=\"module_entry\"/>\n");
+fprintf(ofile," </xs:complexContent>\n");
+fprintf(ofile,"</xs:complexType>\n");
+
+
+
+
+
+  for (a = 0; a < nall_elements; a++)
+    {
+  	int b=0;
+	 all_elements[a].usesAttributes=0;
+	 all_elements[a].usesElements=0;
+
+	  if (strlen(all_elements[a].union_switch_on_enum_type)) {
+		all_elements[a].usesAttributes++;
+	  }
+
+      	  for (b = 0; b < all_elements[a].nelements; b++) {	
+	  		struct s_element *e;
+	  		e = &all_elements[a].elements[b];
+	  		findit2 (&e->datatype);
+	  		if (e->datatype.isvoid) continue;
+
+			if (all_elements[a].elements[b].datatype.isstruct) {
+				 all_elements[a].usesElements++;
+				continue;
+			}
+
+			if (all_elements[a].elements[b].datatype.isunion) {
+				 all_elements[a].usesElements++;
+				 continue;
+			}
+
+			all_elements[a].usesAttributes++;
+	  }
+    }
+
+
+
+  // Lets go through and dump a base datatype containing just our attributes...
+  for (a = 0; a < nall_elements; a++)
+    {
+	char last_element[2000]="";
+  	int b=0;
+	char reqd[200]="required";
+	if (!all_elements[a].usesAttributes) continue;
+
+	if (all_elements[a].usesElements) {
+		// We'll derive from this one later...
+  		//fprintf (ofile, "<xs:element name=\"base_attr_%s\">\n", all_elements[a].union_or_struct_name);
+		fprintf(ofile, "<xs:complexType name=\"base_attr_%s\">\n", all_elements[a].union_or_struct_name);
+	} else {
+  		//fprintf (ofile, "<xs:element name=\"%s\">\n", all_elements[a].union_or_struct_name);
+		fprintf(ofile,"<xs:complexType name=\"%s\">\n", all_elements[a].union_or_struct_name);
+	}
+	  	if (strlen(all_elements[a].union_switch_on_enum_type)) {
+				strcpy(reqd,"optional");
+				fprintf(ofile,"  <xs:attribute name=\"%s\" use=\"required\">\n",  all_elements[a].union_switch_on_enum_name);
+				print_restrictions_enum( ofile, all_elements[a].union_switch_on_enum_type);
+				fprintf(ofile,"  </xs:attribute>\n");
+		}
+      	  	for (b = 0; b < all_elements[a].nelements; b++) {	
+	  		struct s_element *e;
+	  		e = &all_elements[a].elements[b];
+	  		findit2 (&e->datatype);
+	  		if (e->datatype.isvoid) continue;
+
+			if (strcmp(last_element, all_elements[a].elements[b].vname.name)==0) {
+				continue;
+			}
+			strcpy(last_element, all_elements[a].elements[b].vname.name);
+	
+
+			if ( all_elements[a].elements[b].datatype.isstruct) {
+				continue;
+			}
+
+			if ( all_elements[a].elements[b].datatype.isunion) {
+				continue;
+			}
+
+			if ( all_elements[a].elements[b].datatype.isenum) {
+				fprintf(ofile,"  <xs:attribute name=\"%s\" use=\"%s\">\n",  all_elements[a].elements[b].vname.name,reqd);
+				print_restrictions_enum( ofile, e->datatype.type);
+				fprintf(ofile,"  </xs:attribute>\n");
+				continue;
+			}
+
+			if (strcmp(all_elements[a].elements[b].datatype.type,"str")==0) {
+				fprintf(ofile,"  <xs:attribute name=\"%s\" use=\"%s\" type=\"xs:string\"/>\n", all_elements[a].elements[b].vname.name,reqd);
+				continue;
+			}
+
+			if (strcmp(all_elements[a].elements[b].datatype.type,"int")==0) {
+				fprintf(ofile,"  <xs:attribute name=\"%s\" use=\"%s\" type=\"xs:int\"/>\n", all_elements[a].elements[b].vname.name,reqd);
+				continue;
+			}
+			if (strcmp(all_elements[a].elements[b].datatype.type,"long")==0) {
+				fprintf(ofile,"  <xs:attribute name=\"%s\" use=\"%s\" type=\"xs:long\"/>\n", all_elements[a].elements[b].vname.name,reqd);
+				continue;
+			}
+			if (strcmp(all_elements[a].elements[b].datatype.type,"char")==0) {
+				fprintf(ofile,"  <xs:attribute name=\"%s\" use=\"%s\" type=\"xs:string\"/>\n", all_elements[a].elements[b].vname.name,reqd);
+				continue;
+			}
+			if (strcmp(all_elements[a].elements[b].datatype.type,"double")==0) {
+				fprintf(ofile,"  <xs:attribute name=\"%s\" use=\"%s\" type=\"xs:double\"/>\n", all_elements[a].elements[b].vname.name,reqd);
+				continue;
+			}
+
+			
+			printf("%s\n", all_elements[a].elements[b].datatype.type);
+
+			//fprintf(ofile,"  <xs:attribute name=\"%s\" use=\"%s\" type=\"%s\"/>\n", all_elements[a].elements[b].vname.name, reqd,all_elements[a].elements[b].datatype.type);
+			continue;
+			
+	}
+	if (all_elements[a].usesElements) {
+		fprintf(ofile,"</xs:complexType>\n\n");
+	} else {
+		fprintf(ofile,"</xs:complexType>\n");
+		//fprintf(ofile,"</xs:element>\n\n");
+	}
+    }
+
+
+
+  for (a = 0; a < nall_elements; a++)
+    {
+	char last_element[2000]="";
+  	int b=0;
+	 if (!all_elements[a].usesElements) continue;
+
+	 if (all_elements[a].usesAttributes) {
+	  	//fprintf(ofile,"<xs:element name=\"%s\">\n", all_elements[a].union_or_struct_name);
+	 	fprintf(ofile," <xs:complexType name=\"%s\">\n", all_elements[a].union_or_struct_name);
+	 	fprintf(ofile,"  <xs:complexContent>\n");
+	  	fprintf(ofile,"   <xs:extension  base=\"base_attr_%s\">\n",all_elements[a].union_or_struct_name);
+	 } else {
+	  	//fprintf(ofile,"<xs:element name=\"%s\">\n", all_elements[a].union_or_struct_name);
+	 	fprintf(ofile," <xs:complexType name=\"%s\">\n", all_elements[a].union_or_struct_name);
+         }
+	
+  	if (strlen(all_elements[a].union_switch_on_enum_type)) {
+	 	fprintf(ofile,"  <xs:choice id=\"choice_%s\">\n", all_elements[a].union_or_struct_name);
+	} else {
+	 	fprintf(ofile,"  <xs:sequence>\n");
+	}
+
+      	  for (b = 0; b < all_elements[a].nelements; b++) {
+			char arrbuff[1000];
+	  		struct s_element *e;
+	  		e = &all_elements[a].elements[b];
+	  		findit2 (&e->datatype);
+	  		if (e->datatype.isvoid) continue;
+			strcpy(arrbuff,"");
+			if (e->vname.is_array || e->vname.is_vararray) {
+				sprintf(arrbuff," minOccurs=\"0\" maxOccurs=\"unbounded\"");
+			}
+			if (strcmp(last_element, all_elements[a].elements[b].vname.name)==0) {
+				continue;
+			}
+			strcpy(last_element, all_elements[a].elements[b].vname.name);
+
+			if ( all_elements[a].elements[b].datatype.isstruct) {
+				fprintf(ofile,"  <xs:element type=\"%s\" name=\"%s\"%s/>\n", e->datatype.type,all_elements[a].elements[b].vname.name, arrbuff);
+				//fprintf(ofile,"  <xs:element type=\"%s\" name=\"%s\"%s/>\n", e->datatype.type,e->datatype.type, arrbuff);
+				continue;
+			}
+
+			if ( all_elements[a].elements[b].datatype.isunion) {
+				fprintf(ofile," <xs:element type=\"%s\" name=\"%s\"%s/>\n",  e->datatype.type,all_elements[a].elements[b].vname.name,arrbuff);
+				//fprintf(ofile," <xs:element type=\"%s\" name=\"%s\"%s/>\n",  e->datatype.type,e->datatype.type,arrbuff);
+				continue;
+			}
+
+			continue;
+
+			//fprintf(ofile,"<xs:element ref=\"%s\"/>\n", all_elements[a].elements[b].vname);
+          }
+
+
+
+
+	  if (strlen(all_elements[a].union_switch_on_enum_type)) {
+			fprintf(ofile," </xs:choice>\n");
+	 if (all_elements[a].usesAttributes) { fprintf (ofile, "</xs:extension>\n</xs:complexContent>\n"); }
+			fprintf(ofile,"</xs:complexType>\n");
+	  } else {
+			fprintf(ofile," </xs:sequence>\n");
+	 if (all_elements[a].usesAttributes) { fprintf (ofile, "</xs:extension>\n</xs:complexContent>\n"); }
+			fprintf(ofile,"</xs:complexType>\n");
+	  }
+	  //fprintf (ofile, "</xs:element>\n\n");
+	
+    }
+fprintf(ofile,"<xs:element name=\"module_definition\" type=\"module_definition\" />\n");
+//fprintf(ofile,"<xs:element type=\"module_definition\" />\n");
+fprintf(ofile,"</xs:schema>\n");
+fclose(ofile);
+}
+
+
+void A4GL_pause_execution() {
+printf("Pause\n");
 }

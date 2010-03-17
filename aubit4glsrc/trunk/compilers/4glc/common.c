@@ -36,6 +36,7 @@ return strcmp(v1->names.names.names_val[0].name,v2->names.names.names_val[0].nam
 void sort_variables_v(struct variable_list *v) {
 int n;
 void *ptr;
+
    if (v==0) return;
            n=v->variables.variables_len;
             if ( v->sorted_list==n) return;
@@ -183,8 +184,8 @@ expand_parameters (struct variable_list *var_list, expr_str_list * parameters)
   rval = malloc (sizeof (expr_str_list));
   rval->list.list_len = 0;
   rval->list.list_val = 0;
-  rval->unexpanded_list.unexpanded_list_len = 0;
-  rval->unexpanded_list.unexpanded_list_val = 0;
+  rval->unexpanded_list.list.list_len = 0;
+  rval->unexpanded_list.list.list_val = 0;
 
   if (!check_parameters (errbuff, var_list, parameters))
     {
@@ -423,8 +424,8 @@ new_variable_usage (struct variable_usage *old, char *partname, char prepend)
     //}
 
   //newv->nsubstrings = 0;
-  newv->substrings_start = 0;
-  newv->substrings_end   = 0;
+  newv->substrings_start.substrings_start = 0;
+  newv->substrings_end.substrings_end   = 0;
 
   newv->variable_id = -1;
   newv->datatype = -1;
@@ -554,17 +555,17 @@ struct variable *find_variable_vu_in_p2(char *errbuff,struct variable *v, char *
 		  if (vu->subscripts.subscripts_len)
 		    {
 		      // Can we move it to be a subscript instead ? 
-		      if (vu->substrings_start == 0)
+		      if (vu->substrings_start.substrings_start == 0)
 			{
 			  if ((v->var_data.variable_data_u.v_simple.datatype & DTYPE_MASK) == DTYPE_CHAR || ((v->var_data.variable_data_u.v_simple.datatype & DTYPE_MASK) == DTYPE_VCHAR)  || ((v->var_data.variable_data_u.v_simple.datatype & DTYPE_MASK) == DTYPE_NCHAR))
 			    {
 			      if (vu->subscripts.subscripts_len <= 2)
 				{
 				  // move our subscripts to be substrings..
-				  vu->substrings_start = vu->subscripts.subscripts_val[0];
+				  vu->substrings_start.substrings_start = vu->subscripts.subscripts_val[0];
 				  if (vu->subscripts.subscripts_len > 1)
 				    {
-				      vu->substrings_end = vu->subscripts.subscripts_val[1];
+				      vu->substrings_end.substrings_end = vu->subscripts.subscripts_val[1];
 				    }
 				  free (vu->subscripts.subscripts_val);
 				  vu->subscripts.subscripts_val = 0;
@@ -931,24 +932,24 @@ int s2;
 
 	s1=-1;
 	s2=-1;
-	if (u1->substrings_start) {
-		A4GL_assertion(u1->substrings_start->expr_type==ET_EXPR_LITERAL_LONG ,"Expecting a ET_EXPR_LITERAL_LONG");
-		s1=u1->substrings_start->expr_str_u.expr_long;
+	if (u1->substrings_start.substrings_start) {
+		A4GL_assertion(u1->substrings_start.substrings_start->expr_type==ET_EXPR_LITERAL_LONG ,"Expecting a ET_EXPR_LITERAL_LONG");
+		s1=u1->substrings_start.substrings_start->expr_str_u.expr_long;
 	}
-	if (u2->substrings_start) {
-		A4GL_assertion(u2->substrings_start->expr_type==ET_EXPR_LITERAL_LONG,"Expecting a ET_EXPR_LITERAL_LONG");
-		s2=u2->substrings_start->expr_str_u.expr_long;
+	if (u2->substrings_start.substrings_start) {
+		A4GL_assertion(u2->substrings_start.substrings_start->expr_type==ET_EXPR_LITERAL_LONG,"Expecting a ET_EXPR_LITERAL_LONG");
+		s2=u2->substrings_start.substrings_start->expr_str_u.expr_long;
 	}
 	if (s1!=s2) return 0; /* different on the substring start.. */
 	s1=-1;
 	s2=-1;
-	if (u1->substrings_end) {
-		A4GL_assertion(u1->substrings_end->expr_type==ET_EXPR_LITERAL_LONG ,"Expecting a ET_EXPR_LITERAL_LONG");
-		s1=u1->substrings_start->expr_str_u.expr_long;
+	if (u1->substrings_end.substrings_end) {
+		A4GL_assertion(u1->substrings_end.substrings_end->expr_type==ET_EXPR_LITERAL_LONG ,"Expecting a ET_EXPR_LITERAL_LONG");
+		s1=u1->substrings_end.substrings_end->expr_str_u.expr_long;
 	}
-	if (u2->substrings_end) {
-		A4GL_assertion(u2->substrings_end->expr_type==ET_EXPR_LITERAL_LONG ,"Expecting a ET_EXPR_LITERAL_LONG");
-		s2=u2->substrings_end->expr_str_u.expr_long;
+	if (u2->substrings_end.substrings_end) {
+		A4GL_assertion(u2->substrings_end.substrings_end->expr_type==ET_EXPR_LITERAL_LONG ,"Expecting a ET_EXPR_LITERAL_LONG");
+		s2=u2->substrings_end.substrings_end->expr_str_u.expr_long;
 	}
 	if (s1!=s2) return 0; /* different on the substring end.. */
 
