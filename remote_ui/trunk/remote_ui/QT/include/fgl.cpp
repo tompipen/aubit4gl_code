@@ -379,7 +379,8 @@ namespace Fgl {
    QString stringToKey(QString s)
    {
       if(s.toLower().startsWith("f")){
-            s.remove(0,1);
+            QString s2 = s;
+            s2.remove(0,1);
             bool ok = false;
             int key = s.toInt(&ok);
             if(ok){
