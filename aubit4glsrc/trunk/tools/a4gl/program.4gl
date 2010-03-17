@@ -1177,7 +1177,7 @@ end if
 
 if fgl_getenv("VMAKE")!= " " then
 	call channel::write("make","commonlibs: ")
-	call channel::write("make","	make -j1 -C $(V4GL)/dll -f make_common")
+	call channel::write("make","	$(MAKE) -C $(V4GL)/dll -f make_common")
 else
 	call channel::write("make","commonlibs:")
 end if
