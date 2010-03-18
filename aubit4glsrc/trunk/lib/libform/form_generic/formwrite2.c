@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formwrite2.c,v 1.53 2010-02-16 13:16:42 mikeaubury Exp $
+# $Id: formwrite2.c,v 1.54 2010-03-18 11:23:06 mikeaubury Exp $
 #*/
 
 /**
@@ -1061,6 +1061,9 @@ int a;
   chk_for_wordwrap();
   translate_form ();
 
+
+  if (isFormErr) return;
+
 #ifdef DEBUG
   A4GL_debug ("Writing to %s\n", fname);
 #endif
@@ -1072,6 +1075,7 @@ int a;
       A4GL_debug ("*** Write FAILED ***\n");
 #endif
       A4GL_error_with ("Unable to write data\n", 0, 0);
+         A4GL_pack_remove_file(fname);
     }
 
 
