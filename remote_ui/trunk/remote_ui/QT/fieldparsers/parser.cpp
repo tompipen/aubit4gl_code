@@ -264,23 +264,23 @@ void Parser::parseElement(const QDomNode& xmlNode)
       }
 
       if(nodeName == "HLine"){
-         //int posX = currentElement.attribute("posX").toInt();
-         //int posY = currentElement.attribute("posY").toInt();
+         int posX = currentElement.attribute("posX").toInt();
+         int posY = currentElement.attribute("posY").toInt();
          int gridWidth = currentElement.attribute("gridWidth").toInt();
          bool hidden = currentElement.attribute("hidden").toInt();
 
 
-         Label *label = new Label;
+         QLabel *label = new QLabel;
 
          label->setFrameShape(QFrame::HLine);
          label->setFrameShadow(QFrame::Sunken);
-         label->setFixedWidth(gridWidth);
+         label->setFixedWidth(gridWidth*10);
          label->setAccessibleName(nodeName);
 
          if(hidden)
             label->setHidden(hidden);
 
-         //addWidgets(label, false, posY, posX, gridWidth);
+         addWidgets(label, false, posY, posX, gridWidth);
       }
 
       if(nodeName == "Label" || nodeName == "RipLABEL"){
