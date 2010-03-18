@@ -1155,9 +1155,11 @@ end if
 
 
 if fgl_getenv("VMAKE")!= " " then
-	call channel::write("make","OTHOBJS+="||lv_buildstr clipped||"g_"||lv_prog clipped||"txv$(A4GL_OBJ_EXT) ")
-	call channel::write("make","GLOBALS_DEFS+=$(LFILE_DIR)/g_"||lv_prog clipped||"txv.glb.dat")
-	call channel::write("make","OTHOBJS+="||lv_buildstr clipped||"t_"||lv_prog clipped||"$(A4GL_OBJ_EXT) ")
+   if not has_lib("common") then
+	   call channel::write("make","OTHOBJS+="||lv_buildstr clipped||"g_"||lv_prog clipped||"txv$(A4GL_OBJ_EXT) ")
+	   call channel::write("make","GLOBALS_DEFS+=$(LFILE_DIR)/g_"||lv_prog clipped||"txv.glb.dat")
+	   call channel::write("make","OTHOBJS+="||lv_buildstr clipped||"t_"||lv_prog clipped||"$(A4GL_OBJ_EXT) ")
+   end if
 end if
 
 
@@ -1177,7 +1179,7 @@ end if
 
 if fgl_getenv("VMAKE")!= " " then
 	call channel::write("make","commonlibs: ")
-	call channel::write("make","	$(MAKE) -C $(V4GL)/dll -f make_common")
+	#call channel::write("make","	$(MAKE) -C $(V4GL)/dll -f make_common")
 else
 	call channel::write("make","commonlibs:")
 end if
