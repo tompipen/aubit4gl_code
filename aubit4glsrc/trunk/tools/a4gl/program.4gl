@@ -1041,19 +1041,6 @@ call channel::write("make","endif")
 
 
 
-if fgl_getenv("VMAKE")!=" "  then
-	#call channel::write("make","G_TXX=$(LFILE_DIR)/g_txx_"||lv_prog clipped)
-	call channel::write("make","G_TXX=$(VMAKE)/g_txx_"||lv_prog clipped)
-	call channel::write("make","export G_TXX")
-   	call channel::write("make"," ifeq \"$(COPYDIR)\" \"\"")
-   	call channel::write("make"," COPYDIR=/tmp/"||lv_prog clipped)
-   	call channel::write("make","endif")
-	call channel::write("make","ALL4GLSRC=")
-	call channel::write("make","ALLPERSRC=")
-	call channel::write("make","GLOBALS+=$(LFILE_DIR)/g_"||lv_prog clipped||"txv.4gl")
-	call channel::write("make","DEFAULT_GLOBALS=$(LFILE_DIR)/g_"||lv_prog clipped||"txv.4gl")
-	call channel::write("make","export DEFAULT_GLOBALS")
-end if
 
 
 
@@ -1144,6 +1131,26 @@ foreach c_get_modules into lv_type,lv_name,lv_flags
 	end if
 end foreach
 
+if fgl_getenv("VMAKE")!=" "  then
+	#call channel::write("make","G_TXX=$(LFILE_DIR)/g_txx_"||lv_prog clipped)
+	call channel::write("make","G_TXX=$(VMAKE)/g_txx_"||lv_prog clipped)
+	call channel::write("make","export G_TXX")
+   	call channel::write("make"," ifeq \"$(COPYDIR)\" \"\"")
+   	call channel::write("make"," COPYDIR=/tmp/"||lv_prog clipped)
+   	call channel::write("make","endif")
+	call channel::write("make","ALL4GLSRC=")
+	call channel::write("make","ALLPERSRC=")
+
+   if not has_lib("common") then
+	   call channel::write("make","GLOBALS+=$(LFILE_DIR)/g_"||lv_prog clipped||"txv.4gl")
+	   call channel::write("make","DEFAULT_GLOBALS=$(LFILE_DIR)/g_"||lv_prog clipped||"txv.4gl")
+   else
+	   call channel::write("make","GLOBALS+=$(V4GL)/dll/g_txv.4gl")
+	   call channel::write("make","DEFAULT_GLOBALS=$(V4GL)/dll/g_txv.4gl")
+   end if
+
+	call channel::write("make","export DEFAULT_GLOBALS")
+end if
 
 
 if lv_dynamically_found_libs_cnt then
