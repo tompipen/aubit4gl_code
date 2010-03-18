@@ -1470,3 +1470,18 @@ end if
 let lv_dynamically_found_libs_cnt=lv_dynamically_found_libs_cnt+1
 let lv_dynamically_found_libs[lv_dynamically_found_libs_cnt]=lv_libname
 end function
+
+
+function has_lib(lv_libname) 
+define lv_libname char(32)
+define a integer
+#Have we already added it ? 
+if lv_dynamically_found_libs_cnt then
+	for a=1 to lv_dynamically_found_libs_cnt
+			if lv_dynamically_found_libs[a]=lv_libname then
+				return true
+			end if
+	end for
+end if
+return false
+end function
