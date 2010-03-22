@@ -50,6 +50,7 @@ class DebugWindow : public QDialog
     public slots:
       void debugOut(QString);
       void forwardsearch();
+      void clear();
       void backwardsearch();
       void closeEvent(QCloseEvent *event);
     signals:
