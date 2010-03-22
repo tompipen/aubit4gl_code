@@ -1,0 +1,5 @@
+Ventas Desktop Client README
+
+You have to set the environment variable LD_LIBRARY_PATH to the path where you extract the VDC. You can set it in your .bashrc in your home directory. 
+For example:
+export LD_LIBRARY_PATH="/home/ventas/VDC/:$LD_LIBRARY_PATH"
