@@ -366,7 +366,8 @@ ButtonEdit::ButtonEdit(QString iconFileName, QWidget *parent)
    if(this->iconFileName != NULL){
       button = new Button(this);
       connect(button, SIGNAL(clicked()), this, SLOT(buttonClicked()));
-      button->setFocusPolicy(Qt::NoFocus);
+      //button->setFocusPolicy(Qt::NoFocus);
+      button->setFocusProxy(this);
       QPixmap pixmap("pics:" + iconFileName);
       button->setIcon(QIcon(pixmap));
       QSize siz(18,18);
