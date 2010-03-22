@@ -950,7 +950,7 @@ void ProtocolHandler::outputTree(QDomNode domNode)
             p_currScreenHandler->setInterfaceText(value);
          }
 
-         /*
+
          if(qs_name == "ui.combobox.additem"){
          }
 
@@ -959,7 +959,31 @@ void ProtocolHandler::outputTree(QDomNode domNode)
 
          if(qs_name == "ui.combobox.forname"){
          }
-         */
+
+         if(qs_name == "ui.menu.showhide"){
+             QHash<QString, bool> qh_menuoptions;
+             QDomElement values = childElement.firstChildElement();
+             QString commandName;
+             for(int i=0; i<values.childNodes().count(); i++){
+                 QDomElement valueElement = values.childNodes().at(i).toElement();
+
+                 if(i%2 == 0){
+                     commandName = valueElement.text();
+                 }
+                 else{
+                     if(valueElement.text() == "Y"){
+                         showOption(commandName);
+                         commandName = "";
+                     }
+                     else{
+                         hideOption(commandName);
+                         commandName = "";
+                     }
+                 }
+
+             }
+         }
+
       }
 
       if(expect > 0){
@@ -1991,7 +2015,6 @@ void ProtocolHandler::handleWaitForEventElement(const QDomNode& domNode)
       changed = currentElement.attribute("CHANGED").toInt();
    }
 
-
    if(currentElement.firstChildElement().nodeName() == "ROWS"){
       handleDisplayArrayElement(currentElement);
    }
@@ -2001,7 +2024,6 @@ void ProtocolHandler::handleWaitForEventElement(const QDomNode& domNode)
          handleDisplayToElement(currentElement, currentElement.nodeName());
       }
    }
-
 
    return;
 }
