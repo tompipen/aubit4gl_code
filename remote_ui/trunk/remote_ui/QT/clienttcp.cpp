@@ -1375,7 +1375,8 @@ void ProtocolHandler::outputTree(QDomNode domNode)
    if(childElement.nodeName() == "PROGRAMSTOP"){
        QString str="";
       int exitCode = childElement.attribute("EXITCODE").toInt();
-
+      qDebug()<<"STOP";
+      qDebug()<<exitCode;
       if(exitCode != 0){
           QString res;
          QFile file("error.log");
@@ -2151,14 +2152,17 @@ DebugWindow::DebugWindow(QWidget *parent) : QDialog(parent)
    search = new QLineEdit();
    QPushButton *backward = new QPushButton(tr("Backward"));
    QPushButton *forward = new QPushButton(tr("Forward"));
+   QPushButton *clear = new QPushButton(tr("Clear"));
    backward->setDefault(true);
    connect(forward,SIGNAL(clicked()), this, SLOT(forwardsearch()));
    connect(backward,SIGNAL(clicked()), this, SLOT(backwardsearch()));
+   connect(clear,SIGNAL(clicked()), this, SLOT(clear()));
    mainLayout->addWidget(edit);
    mainLayout->addLayout(searchline);
    searchline->addWidget(search);
    searchline->addWidget(backward);
    searchline->addWidget(forward);
+   searchline->addWidget(clear);
    setLayout(mainLayout);
 }
 
@@ -2167,7 +2171,10 @@ void DebugWindow::debugOut(QString debugtext)
 //debugfull.append(debugtext);
 edit->append(debugtext);
 }
-
+void DebugWindow::clear()
+{
+    edit->clear();
+}
 void DebugWindow::forwardsearch()
 {
 edit->find(search->text());
