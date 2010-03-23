@@ -1123,8 +1123,13 @@ topLine[511]=0;
 
 
    if (dim<=1) {
-		printf("Unable to get table size\n");
-		exit(2);
+		if (dim<1) {
+			fprintf(stderr, "Unable to get table size\n");
+			exit(2);
+		}  else {
+			fprintf(stderr, "Warning : Table size appears to be '1' for %s\n",scrname);
+			//exit(2);
+		}
    }
 		
 
