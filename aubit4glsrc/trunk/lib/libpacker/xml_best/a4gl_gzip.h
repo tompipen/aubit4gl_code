@@ -17,8 +17,8 @@
 #define gzfwrite(a,b,c,d) fwrite(a,b,c,d)
 #define gzfread(a,b,c,d) fread(a,b,c,d)
 #define gzfprintf fprintf
-#define gzftell(a) tell(a)
-#define gzfseek(a,b,c) seek(a,b,c)
+#define gzftell(a) ftell(a)
+#define gzfseek(a,b,c) fseek(a,b,c)
 #define gzrewind(a) rewind(a)
 #define gzfclose(a) fclose(a)
 #define gzfeof(f) feof(f)

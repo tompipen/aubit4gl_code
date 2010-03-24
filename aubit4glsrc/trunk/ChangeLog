@@ -3,26 +3,10 @@ Fri Mar 12 10:13:53 GMT 2010
 ---------------------------
 1.2_11 Released
 ---------------------------
-	2010-03-11 10:32  mikeaubury
-	
-	2010-03-10 18:56  mikeaubury
-	
-	2010-03-10 13:46  mikeaubury
-	
 	2010-03-10 13:45  mikeaubury
 	
 	Add a warning for MID 1366: Report: Agregate function, where
 	clause: comparing against variable not working
-	
-	2010-03-10 12:24  mikeaubury
-	
-	2010-03-09 21:40  mikeaubury
-	
-	2010-03-09 18:20  mikeaubury
-	
-	2010-03-09 15:50  mikeaubury
-	
-	2010-03-09 15:34  mikeaubury
 	
 	2010-03-09 07:54  mikeaubury
 	
@@ -34,13 +18,6 @@ Fri Mar 12 10:13:53 GMT 2010
 	Renamed a couple of internal structure elements (cname ->
 	cursorname, fname -> functionname)
 	
-	2010-03-07 11:59  mikeaubury
-	
-	2010-03-05 20:25  mikeaubury
-	
-	2010-03-05 15:13  mikeaubury
-	
-	2010-03-05 15:06  mikeaubury
 	
 	2010-03-04 12:35  mikeaubury
 	
@@ -52,35 +29,9 @@ Fri Mar 12 10:13:53 GMT 2010
 	Fix for build test 1733 - problem with a DISPLAY in an INPUT ARRAY
 	not detecting the line as changed
 	
-	2010-03-04 09:34  mikeaubury
-	
-	2010-03-02 20:11  mikeaubury
-	
-	2010-03-02 19:59  mikeaubury
-	
-	2010-03-02 19:21  mikeaubury
-	
-	2010-03-02 18:49  mikeaubury
-	
-	2010-03-02 18:33  mikeaubury
-	
-	2010-03-02 15:31  mikeaubury
-	
-	2010-03-02 15:23  mikeaubury
-	
-	2010-03-02 14:50  mikeaubury
-	
-	2010-03-02 14:46  mikeaubury
-	
 	2010-03-02 14:44  mikeaubury
 	
 	Add calltree_load target for a4gl built makefiles
-	
-	2010-03-02 14:28  mikeaubury
-	
-	2010-03-01 15:01  mikeaubury
-	
-	2010-03-01 14:29  mikeaubury
 	
 	2010-03-01 11:58  mikeaubury
 	
@@ -89,8 +40,6 @@ Mon Mar  1 11:56:58 GMT 2010
 ---------------------------
 1.2_10 Released
 ---------------------------
-	2010-02-28 09:51  mikeaubury
-	
 	2010-02-27 10:14  mikeaubury
 	
 	Add LIMIT to the sort...
@@ -104,63 +53,13 @@ Mon Mar  1 11:56:58 GMT 2010
 	Add support for PRINT IMAGE ["character string" | charactervar] in
 	addition to PRINT IMAGE blobvar in PDF reports
 	
-	2010-02-25 20:53  mikeaubury
-	
-	2010-02-25 19:46  mikeaubury
-	
-	2010-02-24 16:28  mikeaubury
-	
-	2010-02-24 16:25  mikeaubury
-	
-	2010-02-24 12:52  mikeaubury
-	
-	2010-02-24 12:48  mikeaubury
-	
-	2010-02-24 12:28  mikeaubury
-	
-	2010-02-22 15:01  mikeaubury
-	
 	2010-02-22 14:42  dbuettner
 	
 	changed ui commands to act like 4js
 	
-	2010-02-20 11:44  mikeaubury
-	
-	2010-02-20 09:51  mikeaubury
-	
-	2010-02-20 09:38  mikeaubury
-	
-	2010-02-19 12:14  mikeaubury
-	
-	2010-02-18 19:14  mikeaubury
-	
-	2010-02-18 19:09  mikeaubury
-	
-	2010-02-18 15:21  mikeaubury
-	
-	2010-02-18 15:14  mikeaubury
-	
-	2010-02-18 15:08  mikeaubury
-	
-	2010-02-18 14:51  mikeaubury
-	
-	2010-02-17 19:44  mikeaubury
-	
-	2010-02-17 17:55  mikeaubury
-	
-	2010-02-17 16:53  mikeaubury
-	
-	2010-02-17 11:54  mikeaubury
-	
 	2010-02-17 10:59  mikeaubury
 	
 	IDS11.5 fixups for adbschema -sys
-	
-	2010-02-17 09:43  mikeaubury
-	
-	2010-02-16 16:16  mikeaubury
-	
-	2010-02-16 13:48  mikeaubury
 	
 	2010-02-16 13:17  mikeaubury
 	
@@ -174,35 +73,9 @@ Mon Mar  1 11:56:58 GMT 2010
 	
 	#ifdef DEBUG .. #endif	fixups
 	
-	2010-02-16 10:27  mikeaubury
-	
-	2010-02-16 10:07  mikeaubury
-	
-	2010-02-16 10:03  mikeaubury
-	
-	2010-02-15 16:22  mikeaubury
-	
-	2010-02-15 15:54  mikeaubury
-	
-	2010-02-15 13:40  mikeaubury
-	
-	2010-02-15 13:30  mikeaubury
-	
-	2010-02-15 13:24  mikeaubury
-	
-	2010-02-15 13:21  mikeaubury
-	
 	2010-02-15 13:20  mikeaubury
 	
 	some internal function aliasing for compilers/sql
-	
-	2010-02-15 12:53  mikeaubury
-	
-	2010-02-15 12:36  mikeaubury
-	
-	2010-02-15 12:17  mikeaubury
-	
-	2010-02-15 12:03  mikeaubury
 	
 	2010-02-12 16:28  mikeaubury
 	
@@ -212,32 +85,6 @@ Mon Mar  1 11:56:58 GMT 2010
 	
 	Some minor fixups to allow (at least partial) compilation with g++
 	some 'const' fixups
-	
-	2010-02-12 14:00  mikeaubury
-	
-	2010-02-12 13:20  mikeaubury
-	
-	2010-02-12 13:17  mikeaubury
-	
-	2010-02-12 13:07  mikeaubury
-	
-	2010-02-10 15:45  fortiz
-	
-	,
-	
-	2010-02-10 14:30  mikeaubury
-	
-	2010-02-10 13:08  mikeaubury
-	
-	2010-02-10 11:43  mikeaubury
-	
-	2010-02-10 10:07  mikeaubury
-	
-	2010-02-10 10:04  mikeaubury
-	
-	2010-02-10 09:57  mikeaubury
-	
-	2010-02-10 09:48  mikeaubury
 	
 ---------------------------
 Wed Feb 10 13:06:27 GMT 2010

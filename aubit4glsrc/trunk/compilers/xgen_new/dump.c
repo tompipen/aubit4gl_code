@@ -1822,7 +1822,7 @@ fprintf(ofile,"</xs:complexType>\n");
   for (a = 0; a < nall_elements; a++)
     {
   	int b=0;
-	 all_elements[a].usesAttributes=0;
+	 all_elements[a].usesAttributes=1;
 	 all_elements[a].usesElements=0;
 
 	  if (strlen(all_elements[a].union_switch_on_enum_type)) {
@@ -1867,6 +1867,11 @@ fprintf(ofile,"</xs:complexType>\n");
   		//fprintf (ofile, "<xs:element name=\"%s\">\n", all_elements[a].union_or_struct_name);
 		fprintf(ofile,"<xs:complexType name=\"%s\">\n", all_elements[a].union_or_struct_name);
 	}
+
+
+		fprintf(ofile,"  <xs:attribute name=\"orig_xml_type\" use=\"required\" type=\"xs:string\"/>\n");
+
+
 	  	if (strlen(all_elements[a].union_switch_on_enum_type)) {
 				strcpy(reqd,"optional");
 				fprintf(ofile,"  <xs:attribute name=\"%s\" use=\"required\">\n",  all_elements[a].union_switch_on_enum_name);

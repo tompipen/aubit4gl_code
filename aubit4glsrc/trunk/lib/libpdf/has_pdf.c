@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: has_pdf.c,v 1.71 2010-03-24 12:35:25 mikeaubury Exp $
+# $Id: has_pdf.c,v 1.72 2010-03-24 17:51:06 mikeaubury Exp $
 #*/
 
 /**
@@ -357,6 +357,11 @@ A4GLPDFREP_A4GL_pdf_set_column (void *vrep)
 #ifdef DEBUG
   A4GL_debug ("Set column");
 #endif
+
+  A4GL_push_empty_char();
+  A4GL_pdf_rep_print (rep, 1, 1, 0, -2);
+
+
   req = (double) A4GL_pop_double ();
   force_move=0;
   if (req<0) {

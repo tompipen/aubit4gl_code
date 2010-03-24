@@ -24,12 +24,12 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.523 2010-03-17 19:02:29 mikeaubury Exp $
+# $Id: compile_c.c,v 1.524 2010-03-24 17:50:39 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
-static char const module_id[] = "$Id: compile_c.c,v 1.523 2010-03-17 19:02:29 mikeaubury Exp $";
+static char const module_id[] = "$Id: compile_c.c,v 1.524 2010-03-24 17:50:39 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -1802,7 +1802,7 @@ real_print_expr (struct expr_str *ptr)
 	  }
 	printc ("{");
 	printc ("      int _retvars;");
-	    printc ("A4GL_set_status(0,0); _retvars=A4GL_call_dynarr_function_i(&%s,sizeof(struct _dynelem_%s),\"%s\",%d);\n",
+	    printc ("A4GL_set_status(0,0); /*1*/ _retvars=A4GL_call_dynarr_function_i(&%s,sizeof(struct _dynelem_%s),\"%s\",%d);\n",
 		    generation_get_variable_usage_as_string_for_dynarr (p->var_usage_ptr->expr_str_u.expr_variable_usage,1), 
 		    generation_get_variable_usage_as_string_for_dynarr (p->var_usage_ptr->expr_str_u.expr_variable_usage,0), 
 			p->funcName, nparam);
@@ -3298,7 +3298,8 @@ real_print_func_call (t_expr_str * fcall)
       printc ("{");
       printc ("      int _retvars;");
       printc ("A4GLSTK_setCurrentLine(_module_name,%d);", p->line);
-	  printc ("A4GL_set_status(0,0); _retvars=A4GL_call_dynarr_function_i(&%s,sizeof(struct _dynelem_%s),\"%s\",%d);\n",
+A4GL_pause_execution();
+	  printc ("A4GL_set_status(0,0); /*2*/ _retvars=A4GL_call_dynarr_function_i(&%s,sizeof(struct _dynelem_%s),\"%s\",%d);\n",
 		  generation_get_variable_usage_as_string_for_dynarr (p->var_usage_ptr->expr_str_u.expr_variable_usage,1), 
 		  generation_get_variable_usage_as_string_for_dynarr (p->var_usage_ptr->expr_str_u.expr_variable_usage,0), 
 		  p->funcName, nparam);
@@ -7371,6 +7372,9 @@ generation_get_variable_usage_as_string_for_dynarr (struct variable_usage *u, in
 		  if (a < sublen)
 		    {
 		      strcat (buff, expr_as_string_when_possible (u->subscripts.subscripts_val[a]));
+				if (strstr(buff,"DYNARR_FUNCTIONCALL")) {
+						a4gl_yyerror("Too complex - you need to split this line to make the subscript a simple variable");
+				}
 		    }
 		  else
 		    {

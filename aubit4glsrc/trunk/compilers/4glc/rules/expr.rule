@@ -633,6 +633,9 @@ function_call_expr:
 	| REFERENCE OPEN_BRACKET variable_usage_expression CLOSE_BRACKET {
 		$<ptr>$=A4GL_new_expr_reference($<ptr>3); 
 	}
+	| REFERENCE variable_usage_expression  {
+		$<ptr>$=A4GL_new_expr_reference($<ptr>2); 
+	}
 	| GET_FLDBUF OPEN_BRACKET field_name_list_as_struct CLOSE_BRACKET {
 		add_feature("ET_EXPR_GET_FLDBUF");
 		if (!isin_command("INPUT")&&!isin_command("CONSTRUCT")) { 
