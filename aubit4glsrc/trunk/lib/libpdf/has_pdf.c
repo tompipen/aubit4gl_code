@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: has_pdf.c,v 1.70 2010-02-25 21:08:53 mikeaubury Exp $
+# $Id: has_pdf.c,v 1.71 2010-03-24 12:35:25 mikeaubury Exp $
 #*/
 
 /**
@@ -215,7 +215,7 @@ int entry=0;
       if (rep->print_section == SECTION_NORMAL)
         {
           if (rep->line_no >
-              rep->page_length - rep->lines_in_trailer - rep->bottom_margin)
+              rep->page_length -  A4GL_pdf_metric (rep->lines_in_trailer , 'l', rep)   - rep->bottom_margin)
             {
               rep->print_section = SECTION_TRAILER;
               rep->report (0, REPORT_PAGETRAILER);      /* report.c:180: too many arguments to function */
@@ -264,6 +264,7 @@ int entry=0;
 
       A4GLPDFREP_A4GL_pdf_skip_by (rep, 0.0 - rep->top_margin);
       rep->report (0, REPORT_PAGEHEADER);
+     rep->print_section = SECTION_NORMAL;
 	return;
     }
 
@@ -513,9 +514,9 @@ A4GLPDFREP_A4GL_pdf_skip_top_of_page (void *vrep, int n)
 
   /* a = rep->page_length - rep->line_no - rep->bottom_margin - rep->lines_in_trailer; */
 
-  a = rep->page_length - rep->line_no - rep->bottom_margin - rep->lines_in_trailer;
+  a = rep->page_length - rep->line_no - rep->bottom_margin - A4GL_pdf_metric (rep->lines_in_trailer , 'l', rep) ;
 //  ad = rep->page_length - rep->line_no - rep->bottom_margin - rep->lines_in_trailer;
-  ad = rep->page_length - rep->bottom_margin - rep->lines_in_trailer;
+  ad = rep->page_length - rep->bottom_margin - A4GL_pdf_metric (rep->lines_in_trailer , 'l', rep)  ;
 
   if (n != 1 || rep->page_no)
     {
@@ -532,10 +533,10 @@ A4GLPDFREP_A4GL_pdf_skip_top_of_page (void *vrep, int n)
 
   if (a &&0)
     {
-    double b;
+    //double b;
       for (z = 0; z < a; z++)
 	{
-  		b = rep->page_length - rep->line_no - rep->bottom_margin - rep->lines_in_trailer;
+  		//b = rep->page_length - rep->line_no - rep->bottom_margin - rep->lines_in_trailer;
 
 	  A4GL_pdf_rep_print (rep, 0, 0, 0, -4);
 	}
