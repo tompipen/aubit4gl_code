@@ -961,6 +961,8 @@ call channel::write("make","GLOBALS_DEFS=")
 if fgl_getenv("VMAKE")!=" "  then
 	call channel::write("make","A4GL_UI=CONSOLE")
 	call channel::write("make","export A4GL_UI")
+	call channel::write("make","ALL4GLSRC=")
+	call channel::write("make","ALLPERSRC=")
 	#call channel::write("make","A4GL_GENERATE_TXXVARS=Y")
 	#call channel::write("make","export A4GL_GENERATE_TXXVARS")
 end if
@@ -1138,8 +1140,6 @@ if fgl_getenv("VMAKE")!=" "  then
    	call channel::write("make"," ifeq \"$(COPYDIR)\" \"\"")
    	call channel::write("make"," COPYDIR=/tmp/"||lv_prog clipped)
    	call channel::write("make","endif")
-	call channel::write("make","ALL4GLSRC=")
-	call channel::write("make","ALLPERSRC=")
 
    if not has_lib("common") then
 	   call channel::write("make","GLOBALS+=$(LFILE_DIR)/g_"||lv_prog clipped||"txv.4gl")
