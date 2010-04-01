@@ -948,6 +948,8 @@ void ScreenHandler::setFieldFocus(QString fieldName)
    if(i_Frm < 0)
       return;
 
+   clearEvents();
+
    if(p_fglform->focusWidget() != NULL && !p_fglform->screenRecord()){
       p_fglform->focusWidget()->clearFocus();
       clearEvents();
@@ -957,10 +959,8 @@ void ScreenHandler::setFieldFocus(QString fieldName)
       if(p_fglform->currentField() != NULL){
          p_fglform->currentField()->setFocus();
          clearEvents();
-         p_fglform->nextfield();
-      }else{
-         p_fglform->nextfield();
       }
+      p_fglform->nextfield();
       return;
    }
 
