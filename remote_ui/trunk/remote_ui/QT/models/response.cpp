@@ -129,11 +129,11 @@ void Response::addSyncValues()
       if(LineEditDelegate *de = qobject_cast<LineEditDelegate *> (widget)){
          // TODO
          syncValueElement.setAttribute("FIELDNAME", de->objectName());
-         //syncValueElement.setAttribute("TOUCHED", 0);
+         syncValueElement.setAttribute("TOUCHED", 0);
       }
       else{
          syncValueElement.setAttribute("FIELDNAME", widget->objectName());
-         //syncValueElement.setAttribute("TOUCHED", widget->property("touched").toInt());
+         syncValueElement.setAttribute("TOUCHED", widget->property("touched").toInt());
          text = WidgetHelper::fieldText(widget);
       }
 
