@@ -2188,6 +2188,9 @@ void ScreenHandler::freeContext(int i_context)
          QWidget *field = context->fieldList().at(i);
          field->blockSignals(true);
          field->setEnabled(false);
+         if(LineEdit *le = qobject_cast<LineEdit *> (field)){
+             le->setTouchendEnabled(false);
+         }
          field->blockSignals(false);
       }
       delete context;
