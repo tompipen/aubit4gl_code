@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: calldll.c,v 1.92 2010-02-24 16:25:07 mikeaubury Exp $
+# $Id: calldll.c,v 1.93 2010-04-06 19:43:21 mikeaubury Exp $
 #
 */
 
@@ -870,7 +870,7 @@ A4GL_call_4gl_dll (char *xfilename, char *function, int args)
   if (func_ptr == NULL)
     {
 #ifdef DEBUG
-      A4GL_debug ("No function handle");
+      A4GL_debug ("No function handle for %s",nfunc);
 #endif
       A4GL_exitwith ("Unable to load function from shared libary");
       return -1;
