@@ -381,11 +381,13 @@ ButtonEdit::ButtonEdit(QString iconFileName, QWidget *parent)
 void ButtonEdit::setButtonKey(QString bk)
 {
   qs_buttonKey = bk;
+  /*
   Action *keyButton = new Action(bk, bk, this);
   keyButton->setAcceleratorName(bk);
   QKeySequence shortcut(bk);
   connect(keyButton, SIGNAL(triggered()), this, SLOT(buttonClicked()));
   this->addAction(keyButton);
+  */
 }
 
 void ButtonEdit::resizeEvent(QResizeEvent *)
@@ -402,7 +404,7 @@ void ButtonEdit::resizeEvent(QResizeEvent *)
 
 void ButtonEdit::buttonClicked()
 {
-   if(buttonKey().isEmpty())
+    if(buttonKey().isEmpty())
       return;
 
    // For F-Key Events
