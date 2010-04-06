@@ -382,7 +382,7 @@ namespace Fgl {
             QString s2 = s;
             s2.remove(0,1);
             bool ok = false;
-            int key = s.toInt(&ok);
+            int key = s2.toInt(&ok);
             if(ok){
                key += 2999;
                return QString::number(key);
