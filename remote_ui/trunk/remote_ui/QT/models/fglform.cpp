@@ -1231,6 +1231,7 @@ void FglForm::nextfield()
       //  If context option says not to wrap
       //  and input field is the last field in the list
       //  then trigger after "INPUT" event
+
       if(!this->context->getOption("WRAP")){
          if(context->fieldList().count() > 0){
             QWidget* lastField = context->fieldList().last();
@@ -1247,8 +1248,33 @@ void FglForm::nextfield()
             }
          }
       }
-      QWidget *current = currentWidget;
-      focusNextChild();
+
+
+      QWidget *next = NULL;
+      for(int i=0; i<context->fieldList().count()-1; i++){
+          if(context->fieldList().at(i) == currentWidget){
+              next = context->fieldList().at(i+1);
+              break;
+          }
+      }
+
+      if(next == NULL){ //no next field -> go to first field
+          next = context->fieldList().first();
+      }
+
+      QList<QTabWidget*> ql_tabList = formWidget->findChildren<QTabWidget*>();
+      for(int i=0; i<ql_tabList.count(); i++){
+         QTabWidget *tabWidget = ql_tabList.at(i);
+
+         for(int j=0; j<tabWidget->count(); j++){
+             QWidget* tab = tabWidget->widget(j);
+             if(tab->findChild<QWidget*>(next->objectName())){
+                tabWidget->setCurrentIndex(j);
+                break;
+            }
+         }
+      }
+      next->setFocus();
    }
    else{
       for(int i=0; i<context->fieldList().size(); i++){
@@ -1269,7 +1295,31 @@ void FglForm::nextfield()
 void FglForm::prevfield()
 {
    if(!screenRecord()){
-      focusPreviousChild();
+       QWidget *prev = NULL;
+       for(int i=1; i<context->fieldList().count(); i++){
+           if(context->fieldList().at(i) == currentWidget){
+               prev = context->fieldList().at(i-1);
+               break;
+           }
+       }
+
+       if(prev == NULL){ //no next field -> go to first field
+           prev = context->fieldList().last();
+       }
+
+       QList<QTabWidget*> ql_tabList = formWidget->findChildren<QTabWidget*>();
+       for(int i=0; i<ql_tabList.count(); i++){
+          QTabWidget *tabWidget = ql_tabList.at(i);
+
+          for(int j=0; j<tabWidget->count(); j++){
+              QWidget* tab = tabWidget->widget(j);
+              if(tab->findChild<QWidget*>(prev->objectName())){
+                 tabWidget->setCurrentIndex(j);
+                 break;
+             }
+          }
+       }
+       prev->setFocus();
    }
    else{
       //find active screenRecord
