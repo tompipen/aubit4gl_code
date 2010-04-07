@@ -116,7 +116,7 @@ unsigned int  x;
 		atx += littlebar ;
 		}
 	}
-	atx += littlebar ; //# gap between each bar code character
+	//atx += littlebar ; //# gap between each bar code character
 }
 
 
@@ -131,7 +131,7 @@ unsigned int  x;
 			atx +=littlebar;
 		}
 	}
-	atx += littlebar ; //# gap between each bar code character
+	//atx += littlebar ; //# gap between each bar code character
 }
 
 
@@ -708,7 +708,7 @@ if (codetype==13) {
 	atx = 0;
 	char_length1 = 7 * littlebar;
 	i= strlen(str) + 2; //# start, stop, middle delimiters
-	bar_length = char_length1*(i-1) + (i-1) * littlebar;  //(i-1) * littlebar gap between digits
+	bar_length = char_length1*(i-1); //+ (i-1) * littlebar;  //(i-1) * littlebar gap between digits
 	bar_scale = (x) / bar_length;
 	InitBarPDF13(p, xpos,ypos,x,y,font_size,bar_scale);
 	// Create an uppercased version
@@ -728,7 +728,7 @@ if (codetype==8) {
 	atx = 0;
 	char_length1 = 7 * littlebar;
 	i=strlen(str) + 2;    //# delimiters
-	bar_length = char_length1 * (i-1) + i * littlebar ; //i * littlebar gap between digits
+	bar_length = char_length1 * (i-1); // + i * littlebar ; //i * littlebar gap between digits
 	bar_scale = (x) / bar_length;
 	InitBarPDF8(p, xpos,ypos,x,y,font_size,bar_scale);
 	// Create an uppercased version
