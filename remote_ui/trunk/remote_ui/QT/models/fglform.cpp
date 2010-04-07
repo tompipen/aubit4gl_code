@@ -1235,59 +1235,22 @@ void FglForm::nextfield()
          if(context->fieldList().count() > 0){
             QWidget* lastField = context->fieldList().last();
             if(lastField == currentWidget){
-               /*
-               Fgl::Event event;
                switch(state()){
                   case Fgl::INPUT:
-                  case Fgl::INPUTARRAY:
-                     acceptTriggered();
-                     break;
                   case Fgl::CONSTRUCT:
                      acceptTriggered();
                      break;
-                  case Fgl::MENU:
-                  case Fgl::IDLE:
-                  case Fgl::DISPLAYARRAY:
+                  default:
                      break;
                }
-
-               fieldEvent(event);
-               */
-            }
-            else{
-               QWidget *current = currentWidget;
-               focusNextChild();
-               if(current == currentWidget){
-                  Fgl::Event event;
-                  event.type = Fgl::AFTER_FIELD_EVENT;
-                  fieldEvent(event, current);
-               }
+               return;
             }
          }
       }
-      else{
-         QWidget *current = currentWidget;
-         focusNextChild();
-
-         if(current == currentWidget){
-            Fgl::Event event;
-            event.type = Fgl::AFTER_FIELD_EVENT;
-            fieldEvent(event, current);
-         }
-      }
+      QWidget *current = currentWidget;
+      focusNextChild();
    }
    else{
-      /*
-      //find active screenRecord
-      for(int i=0; i<formElements().size(); i++){
-         if(formElements().at(i)->inherits("TableView")){
-            TableView *view = (TableView*) formElements().at(i);
-            if(view->isEnabled()){
-               view->nextfield();
-            }
-         }
-      }
-      */
       for(int i=0; i<context->fieldList().size(); i++){
          if(context->fieldList().at(i)->inherits("TableView")){
             TableView *view = (TableView*) context->fieldList().at(i);
