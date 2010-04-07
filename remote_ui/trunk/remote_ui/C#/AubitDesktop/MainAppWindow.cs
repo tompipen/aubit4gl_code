@@ -209,7 +209,7 @@ namespace AubitDesktop
         {
             AubitTSBtn o;
             o=(AubitTSBtn)sender;
-            stdNetworkConnection.SendString("<TRIGGERED ENVELOPEID=\"" + this.applicationLauncherId + "\" ID=\"" + o.ID + "\"/>");
+            stdNetworkConnection.SendString("<TRIGGERED ENVELOPEID=\"" + this.applicationLauncherId + "\" ID=\"" + o.eventID + "\"/>");
         }
 
 

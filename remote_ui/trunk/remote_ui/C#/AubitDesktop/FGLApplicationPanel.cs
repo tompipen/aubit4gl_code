@@ -347,8 +347,8 @@ namespace AubitDesktop
             {
                 foreach (AubitTSBtn o in toolStrip1)
                 {
-                    if (AubitTSBtn.isSystemAction(o.ID)) continue;
-                    o.ID = null;
+                    if (AubitTSBtn.isSystemAction(o.eventID)) continue;
+                    o.eventID = null;
                     
                 }
             }
@@ -365,8 +365,8 @@ namespace AubitDesktop
                 // so we need to remove any that are not in use by making them invisible
                 foreach (AubitTSBtn o in toolStrip1)
                 {
-                        if (AubitTSBtn.isSystemAction(o.ID)) continue;
-                        o.ID = null;
+                        if (AubitTSBtn.isSystemAction(o.eventID)) continue;
+                        o.eventID = null;
                 }
 
                 if (keys != null)
@@ -391,7 +391,7 @@ namespace AubitDesktop
                         }
                         else
                         {
-                            o.ID = key.ID;
+                            o.eventID = key.ID;
                         }
                     }
                 }
@@ -419,7 +419,7 @@ namespace AubitDesktop
                         }
                         else
                         {
-                            o.ID = action.ID;
+                            o.eventID = action.ID;
                         }
                     }
                 }
@@ -862,7 +862,7 @@ namespace AubitDesktop
             this.ErrorText = "";
             o = (AubitTSBtn)sender;
             reply = null;
-            if (o.ID == null)
+            if (o.eventID == null)
             {
                
                 if (o.ActiveKey == "DIE")
@@ -870,7 +870,7 @@ namespace AubitDesktop
                     reply = o.ActiveKey;
                 }
             } else {
-                reply = o.ID;
+                reply = o.eventID;
             }
             if (reply == null) return;
 
@@ -957,8 +957,8 @@ namespace AubitDesktop
             b.isProgramAdded = false;
             b.ActiveKey = Key;
             b.Text = Text;
-            b.ID = ID;
-            switch (b.ID)
+            b.eventID = ID;
+            switch (b.eventID)
             {
                 case "ACCEPT":
                     b.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
@@ -2863,7 +2863,7 @@ namespace AubitDesktop
         internal void setToolBarEnabled(string ID, bool hidden)
         {
             foreach (AubitTSBtn a in toolStrip1) {
-                if (a.ID == ID)
+                if (a.eventID == ID)
                 {
                     if (hidden)
                     {

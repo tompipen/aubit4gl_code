@@ -371,10 +371,10 @@ namespace AubitDesktop
             UIMenuBarButton a;
             string eventText;
             a = (UIMenuBarButton)sender;
-            eventText = "<TRIGGERED ID=\"" + a.ID + "\"/>";
+            eventText = "<TRIGGERED ID=\"" + a.eventID + "\"/>";
             if (EventTriggered != null)
             {
-                EventTriggered(a, a.ID, eventText,this);
+                EventTriggered(a, a.eventID, eventText,this);
                 //DeactivateContext();
             }
 
@@ -406,7 +406,7 @@ namespace AubitDesktop
                 {
                     UIMenuBarButton uib;
                     uib = (UIMenuBarButton)menuPanel.Controls[a];
-                    setEnabled(uib.ID,uib.Hidden);
+                    setEnabled(uib.eventID,uib.Hidden);
                 }
                 
             }
@@ -465,7 +465,7 @@ namespace AubitDesktop
     {
         string _ID;
 
-        public string ID
+        public string eventID
         {
             get
             {
