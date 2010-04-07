@@ -1461,12 +1461,7 @@ namespace AubitDesktop
         {
         }
 
-        private void topWindowToolStrip_Click_1(object objSource, ToolBarItemEventArgs objArgs)
-        {
-
-
-        }
-
+       
 
         internal static void writeFile(string filename,byte[] bytes) {                   
                         FileStream fs = null;
