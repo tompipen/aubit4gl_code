@@ -25,7 +25,6 @@ double atx,aty;
 int littlebar;
 int bigbar;
 int even_odd=0; // CODE 25 variable..
-char bild[200];
 
 
 static void InitBarPDF39(PDF *p, double xpos, double ypos, double x, double y, double font_size, double barscale) {
@@ -40,9 +39,6 @@ xscale = barscale;
 
 
 static void InitBarPDF13(PDF *p, double xpos, double ypos, double x, double y, double font_size, double barscale) {
-//#
-//# revised by Michael Krauss
-//#
 width = x ;
 height = y;
 x00 = xpos ;
@@ -54,9 +50,6 @@ xscale = barscale  ;
 
 
 static void InitBarPDF8(PDF *p, double xpos, double ypos, double x, double y, double font_size, double barscale) {
-//#
-//# revised by Michael Krauss
-//#
 width = x ;
 height = y;
 x00 = xpos ;
@@ -114,9 +107,6 @@ atx +=  littlebar;       //# gap between each bar code character
 
 
 static void BarCharPDF13(PDF *p, const char *mapstring, float p_page_height) {
-//#
-//# revised by Michael Krauss
-//#
 unsigned int  x;
    for (x=0;x<strlen(mapstring);x++) {
       if (mapstring[x]=='1')  {
@@ -126,14 +116,12 @@ unsigned int  x;
 		atx += littlebar ;
 		}
 	}
+	atx += littlebar ; //# gap between each bar code character
 }
 
 
 
 static void BarCharPDF8(PDF *p, const char *mapstring, float p_page_height) {
-//#
-//# revised by Michael Krauss
-//#
 unsigned int  x;
    for (x=0;x<strlen(mapstring);x++) {
       if (mapstring[x]=='1')  {
@@ -142,8 +130,8 @@ unsigned int  x;
 		} else {
 			atx +=littlebar;
 		}
-	//atx +=littlebar;
 	}
+	atx += littlebar ; //# gap between each bar code character
 }
 
 
@@ -275,9 +263,6 @@ switch (c) {
 
 
 static void PutBarsPDF13(PDF *p, char t, char c,int p_page_height) {
-//#
-//# revised by Michael Krauss
-//#
 	if (t == '0'){
 		switch (c){
 			case 'S': BarCharPDF13(p, "101", p_page_height);break;
@@ -330,10 +315,6 @@ static void PutBarsPDF13(PDF *p, char t, char c,int p_page_height) {
 
 
 static void PutBarsPDF8(PDF *p, char t, char c,int p_page_height) {
-//#
-//# revised by Michael Krauss
-//#
-
 	if (t == '0'){
 		switch (c){
 			case 'S': BarCharPDF8(p, "101", p_page_height);break;
@@ -372,10 +353,6 @@ static void PutBarsPDF8(PDF *p, char t, char c,int p_page_height) {
 
 
 static const char  *PutGrpPDF13(char a){
-//#
-//# revised by Michael Krauss
-//#
-
 	switch (a) {
 		case '0': return "AAAAAACCCCCC";
 		case '1': return "AABABBCCCCCC";
@@ -384,7 +361,7 @@ static const char  *PutGrpPDF13(char a){
 		case '4': return "ABAABBCCCCCC";
 		case '5': return "ABBAABCCCCCC";
 		case '6': return "ABBBAACCCCCC";
-		case '7': return "ABAABACCCCCC";
+		case '7': return "ABABABCCCCCC";
 		case '8': return "ABABBACCCCCC";
 		case '9': return "ABBABACCCCCC";
 	}
@@ -409,9 +386,6 @@ yabs = y00 + height + (fontsize * 12.0);
 
 
 static void PrintCharPDF13(PDF *p, double x, char c, float p_page_height,int incl_text) {
-//#
-//# revised by Michael Krauss
-//#
 double xabs,yabs;
 static char buff[200];
 xabs = x00 + (x * xscale);
@@ -428,15 +402,13 @@ yabs = y00 + height + (fontsize * 12.0);
 
 
 static void PrintCharPDF8(PDF *p, double x, char c, float p_page_height,int incl_text) {
-//#
-//# revised by Michael Krauss
-//#
 double xabs,yabs;
 static char buff[200];
 xabs = x00 + (x * xscale);
 yabs = y00 + height + (fontsize * 12.0);
 	if (incl_text) {
 		SPRINTF1(buff,"%c",c);
+			PDF_set_text_pos (p, xabs, p_page_height-y00- (fontsize ));
         	PDF_show (p, buff);
 	}
 
@@ -459,21 +431,30 @@ PutBarsPDF39(p, '*',p_page_height);   //# ending delimiter
 
 
 static void PrintThisPDF13(PDF *p, char *sorig,float p_page_height,int incl_text) {
-//#
-//# revised by Michael Krauss
-//#
 unsigned int x;
-char s[200]="                                             ";
+char s[200]="              ";                                           
 unsigned int z=0;
 char t[13];
+int a=0;
 
 strcpy(s,sorig);
+if (strlen(s)!=12 && strlen(s)!=13) {
+	A4GL_exitwith("Invalid barcode");
+}
+
+for (a=0;a<13;a++) {
+	
+	if (s[a]==0) { continue; }
+	// Check its a number
+	if (s[a]>='0' && s[a]<='9') continue;
+
+	A4GL_exitwith("Invalid character in barcode");
+	return;
+}
 
 
-
-if (strlen(s)==12) {
-	int a=0;
 	// Compute the checkbit...
+	a=0;
 	a+=(s[11]-'0')*3;
 	a+=(s[10]-'0')*1;
 	a+=(s[9]-'0')*3;
@@ -490,11 +471,10 @@ if (strlen(s)==12) {
 	a=10-a;
 	s[12]=a+'0';
 	s[13]=0;
-} 
-A4GL_pad_string(s,40); 
 
+A4GL_pad_string(s,40);
 
-strcpy(t, PutGrpPDF13(s[0])); 
+strcpy(t, PutGrpPDF13(s[0]));
 
 PrintCharPDF13(p, atx,s[z],p_page_height,incl_text);
 atx += 7*littlebar ;
@@ -519,35 +499,67 @@ for (x=7;x<13;x++) {
 	PrintCharPDF13(p, atx,s[z],p_page_height,incl_text);
 	z++;
 }
-//PrintCharPDF13(p, atx,t[z],p_page_height,incl_text); // Not sure we need this ?!
 z++;
 height+=5;
 PutBarsPDF13(p,'0', 'S',p_page_height-5);   //# ending delimiter
-height-=5;
-//PrintCharPDF13(p, atx,t[z],p_page_height,incl_text); // Not sure we need this ?!
 }
 
 
-static void PrintThisPDF8(PDF *p, char *s,float p_page_height,int incl_text) {
-//#
-//# revised by Michael Krauss
-//#
+static void PrintThisPDF8(PDF *p, char *sorig,float p_page_height,int incl_text) {
 unsigned int x;
+char s[200]="         ";
 char t[9];
+int a;
+
+strcpy(s,sorig);
+
+if (strlen(s)!=7 && strlen(s)!=8) {
+	A4GL_exitwith("Invalid length of barcode");
+}
+
+for (a=0;a<8;a++) {
+	
+	if (s[a]==0) { continue; }
+	// Check its a number
+	if (s[a]>='0' && s[a]<='9') continue;
+
+	A4GL_exitwith("Invalid character in barcode");
+	return;
+}
+
+//if (strlen(s)==7) {
+	// Compute the checkbit...
+a=0;
+	a+=(s[6]-'0')*3;
+	a+=(s[5]-'0')*1;
+	a+=(s[4]-'0')*3;
+	a+=(s[3]-'0')*1;
+	a+=(s[2]-'0')*3;
+	a+=(s[1]-'0')*1;
+	a+=(s[0]-'0')*3;
+	a=10-(a%10);
+	s[7]=a+'0';
+	s[8]=0;
+//}
+A4GL_pad_string(s,40);
+		
 strcpy(t, "AAAACCCC");
-
+height+=5;
 PutBarsPDF8(p,'0', 'S',p_page_height-5); //   # starting delimiter
-
+height-=5;
 for (x=0; x<8;x++) {
 	if (x==4){
+		height+=5;
 		PutBarsPDF8(p,'0','M',p_page_height-5); //  # delimiter in the middle
+		height-=5;
 	}
 
    PrintCharPDF8(p, atx,s[x],p_page_height,incl_text);
 	PutBarsPDF8(p, t[x], s[x], p_page_height);
 }
-
+height+=5;
 PutBarsPDF8(p,'0', 'S',p_page_height-5);   //# ending delimiter
+height-=5;
 }
 
 
@@ -581,19 +593,11 @@ static void TermBarPDF39(PDF *p) {
 
 
 static void TermBarPDF13(PDF *p) {
-//#
-//# revised by Michael Krauss
-//#
-
 // Does nothing..
 }
 
 
 static void TermBarPDF8(PDF *p) {
-//#
-//# revised by Michael Krauss
-//#
-
 // Does nothing..
 }
 
@@ -601,9 +605,6 @@ static void TermBarPDF8(PDF *p) {
 
 
 static void setcodetype(void ) {
-//#
-//# revised by Michael Krauss
-//#
 	if (A4GL_isyes(acl_getenv("BARCODE8"))) {
 		codetype=13;
 	}
@@ -630,10 +631,7 @@ static void setcodetype(void ) {
 
 
 void set_barcode_type(char *s) {
-//#
-//# revised by Michael Krauss
-//#
-	if (A4GL_aubit_strcasecmp(s,"8")==0 || A4GL_aubit_strcasecmp(s,"ean8")==0 || A4GL_aubit_strcasecmp(s,"ean-8")==0 ) {
+	if (A4GL_aubit_strcasecmp(s,"8")==0 ||  A4GL_aubit_strcasecmp(s,"ean8")==0 || A4GL_aubit_strcasecmp(s,"ean-8")==0) {
 		codetype=8;
 		return ;
 	}
@@ -641,7 +639,6 @@ void set_barcode_type(char *s) {
 		codetype=13;
 		return ;
 	}
-
 	if (A4GL_aubit_strcasecmp(s,"39")==0) {
 		codetype=39;
 		return ;
@@ -664,9 +661,6 @@ void set_barcode_type(char *s) {
 // # Author  : Ti Lian Hwang (tilh@sin-co.sg.dhl.com)
 // # Date    : 04 Oct 95
 void generate_barcode(PDF *p, double xpos,double ypos,double x,double y,char *str,float p_page_height,int incl_text) {
-//#
-//# revised by Michael Krauss
-//#
 
 double font_size;
 int char_length1;
@@ -695,7 +689,7 @@ if (codetype==39) {
 	atx = 0;
 	char_length1 = 3 * bigbar + 6 * littlebar;
 	i=strlen(str) + 2;                                  //# delimiters
-	bar_length = char_length1 * i + (i-1) * littlebar;     //# gap
+	bar_length = char_length1 * i + (i-1) * littlebar+ (i-1) * littlebar;     //# gap
 	bar_scale = (x) / bar_length;
 	InitBarPDF39(p, xpos,ypos,x,y,font_size,bar_scale);
 	// Create an uppercased version
@@ -709,13 +703,12 @@ if (codetype==39) {
 
 if (codetype==13) {
 	littlebar=8;             //# these numbers are arbitrary, as long as the ratio
-	//bigbar=20;               //# stays between 2:1 and 3:1
 	font_size = (y/72.0) * 14.4;    //# 2/10 of height of bar
 	aty = (y/72.0) * 14.4;          //# 2/10 of height of bar
 	atx = 0;
 	char_length1 = 7 * littlebar;
 	i= strlen(str) + 2; //# start, stop, middle delimiters
-	bar_length = char_length1*(i-1); 
+	bar_length = char_length1*(i-1) + (i-1) * littlebar;  //(i-1) * littlebar gap between digits
 	bar_scale = (x) / bar_length;
 	InitBarPDF13(p, xpos,ypos,x,y,font_size,bar_scale);
 	// Create an uppercased version
@@ -730,13 +723,12 @@ if (codetype==13) {
 
 if (codetype==8) {
 	littlebar=8;             //# these numbers are arbitrary, as long as the ratio
-	//bigbar=20;               //# stays between 2:1 and 3:1
 	font_size = (y/72.0) * 14.4;    //# 2/10 of height of bar
 	aty = (y/72.0) * 14.4;          //# 2/10 of height of bar
 	atx = 0;
 	char_length1 = 7 * littlebar;
 	i=strlen(str) + 2;    //# delimiters
-	bar_length = char_length1 * (i-1); 
+	bar_length = char_length1 * (i-1) + i * littlebar ; //i * littlebar gap between digits
 	bar_scale = (x) / bar_length;
 	InitBarPDF8(p, xpos,ypos,x,y,font_size,bar_scale);
 	// Create an uppercased version
