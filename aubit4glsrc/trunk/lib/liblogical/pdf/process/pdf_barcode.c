@@ -633,14 +633,15 @@ void set_barcode_type(char *s) {
 //#
 //# revised by Michael Krauss
 //#
-	if (A4GL_aubit_strcasecmp(s,"8")==0) {
+	if (A4GL_aubit_strcasecmp(s,"8")==0 || A4GL_aubit_strcasecmp(s,"ean8")==0 || A4GL_aubit_strcasecmp(s,"ean-8")==0 ) {
 		codetype=8;
 		return ;
 	}
-	if (A4GL_aubit_strcasecmp(s,"13")==0) {
+	if (A4GL_aubit_strcasecmp(s,"13")==0 ||  A4GL_aubit_strcasecmp(s,"ean13")==0 || A4GL_aubit_strcasecmp(s,"ean-13")==0) {
 		codetype=13;
 		return ;
 	}
+
 	if (A4GL_aubit_strcasecmp(s,"39")==0) {
 		codetype=39;
 		return ;
