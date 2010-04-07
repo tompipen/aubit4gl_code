@@ -668,6 +668,7 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
                Fgl::Event event;
                event.type = Fgl::AFTER_FIELD_EVENT;
                fieldEvent(event, widget);
+               currentWidget = NULL;
             }
          }
       }
