@@ -3,9 +3,9 @@
 #include <string.h>
 #include <ctype.h>
 
-#if (defined(__MACH__) && defined(__APPLE__))
+//#if (defined(__MACH__) && defined(__APPLE__))
 #define EXTERN_YYLVAL
-#endif
+//#endif
 
 #include "simple.h"
 #include "a4gl_libaubit4gl.h"
