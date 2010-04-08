@@ -42,7 +42,6 @@ static void InitBarPDF13(PDF *p, double xpos, double ypos, double x, double y, d
 width = x ;
 height = y;
 x00 = xpos ;
-//y00 = ytotal - (ypos * 72.0) - height;
 y00 =  (ypos ) ;
 fontsize = font_size;
 xscale = barscale  ;
@@ -53,7 +52,6 @@ static void InitBarPDF8(PDF *p, double xpos, double ypos, double x, double y, do
 width = x ;
 height = y;
 x00 = xpos ;
-//y00 = ytotal - (ypos * 72.0) - height;
 y00 =  (ypos ) ;
 fontsize = font_size;
 xscale = barscale  ;
@@ -116,7 +114,6 @@ unsigned int  x;
 		atx += littlebar ;
 		}
 	}
-	//atx += littlebar ; //# gap between each bar code character
 }
 
 
@@ -131,7 +128,6 @@ unsigned int  x;
 			atx +=littlebar;
 		}
 	}
-	//atx += littlebar ; //# gap between each bar code character
 }
 
 
@@ -406,6 +402,7 @@ double xabs,yabs;
 static char buff[200];
 xabs = x00 + (x * xscale);
 yabs = y00 + height + (fontsize * 12.0);
+ A4GL_assertion(c==0,"C=null");
 	if (incl_text) {
 		SPRINTF1(buff,"%c",c);
 			PDF_set_text_pos (p, xabs, p_page_height-y00- (fontsize ));
@@ -442,7 +439,7 @@ if (strlen(s)!=12 && strlen(s)!=13) {
 	A4GL_exitwith("Invalid barcode");
 }
 
-for (a=0;a<13;a++) {
+for (a=0;a<12;a++) {
 	
 	if (s[a]==0) { continue; }
 	// Check its a number
@@ -500,7 +497,6 @@ for (x=7;x<13;x++) {
 	PrintCharPDF13(p, atx,s[z],p_page_height,incl_text);
 	z++;
 }
-z++;
 height+=5;
 PutBarsPDF13(p,'0', 'S',p_page_height-5);   //# ending delimiter
 }
@@ -518,7 +514,7 @@ if (strlen(s)!=7 && strlen(s)!=8) {
 	A4GL_exitwith("Invalid length of barcode");
 }
 
-for (a=0;a<8;a++) {
+for (a=0;a<7;a++) {
 	
 	if (s[a]==0) { continue; }
 	// Check its a number
@@ -528,8 +524,7 @@ for (a=0;a<8;a++) {
 	return;
 }
 
-//if (strlen(s)==7) {
-	// Compute the checkbit...
+
 a=0;
 	a+=(s[6]-'0')*3;
 	a+=(s[5]-'0')*1;
@@ -538,12 +533,9 @@ a=0;
 	a+=(s[2]-'0')*3;
 	a+=(s[1]-'0')*1;
 	a+=(s[0]-'0')*3;
-//printf("a=%d\n",a);
 	a=10-(a%10); if (a==10) a=0;
-//printf("a now %d\n",a);
 	s[7]=a+'0';
 	s[8]=0;
-//}
 A4GL_pad_string(s,40);
 		
 strcpy(t, "AAAACCCC");
@@ -562,7 +554,6 @@ for (x=0; x<8;x++) {
 }
 height+=5;
 PutBarsPDF8(p,'0', 'S',p_page_height-5);   //# ending delimiter
-height-=5;
 }
 
 
@@ -711,13 +702,11 @@ if (codetype==13) {
 	atx = 0;
 	char_length1 = 7 * littlebar;
 	i= strlen(str) + 2; //# start, stop, middle delimiters
-	bar_length = char_length1*(i-1); //+ (i-1) * littlebar;  //(i-1) * littlebar gap between digits
+	bar_length = char_length1*(i-1); 
 	bar_scale = (x) / bar_length;
 	InitBarPDF13(p, xpos,ypos,x,y,font_size,bar_scale);
-	// Create an uppercased version
 	S=strdup(str);
-	a4gl_upshift(S);
-	PrintThisPDF13(p, S,p_page_height,incl_text);
+	PrintThisPDF13(p, str,p_page_height,incl_text);
 	free(S);
 	TermBarPDF13(p);
 }
@@ -730,13 +719,11 @@ if (codetype==8) {
 	aty = (y/72.0) * 14.4;          //# 2/10 of height of bar
 	atx = 0;
 	char_length1 = 7 * littlebar;
-	i=strlen(str) + 2;    //# delimiters
-	bar_length = char_length1 * (i-1); // + i * littlebar ; //i * littlebar gap between digits
+	i=strlen(str) + 2;    //# start, stop, middle delimiters
+	bar_length = char_length1 * (i-1); 
 	bar_scale = (x) / bar_length;
 	InitBarPDF8(p, xpos,ypos,x,y,font_size,bar_scale);
-	// Create an uppercased version
 	S=strdup(str);
-	a4gl_upshift(S);
 	PrintThisPDF8(p, S,p_page_height,incl_text);
 	free(S);
 	TermBarPDF8(p);
