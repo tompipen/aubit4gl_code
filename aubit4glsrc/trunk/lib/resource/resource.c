@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.164 2010-02-16 13:17:41 mikeaubury Exp $
+# $Id: resource.c,v 1.165 2010-04-08 11:43:26 mikeaubury Exp $
 #
 */
 
@@ -731,7 +731,7 @@ if (ptr)  {
 #ifdef DEBUG_VARIABLE_USAGE
 		if (fd1) fprintf(fd1,"%s - CACHED (Not set)\n",s);
 #endif
-		if (strcmp(s,"AUBITDIR")!=0) return "";
+		if (strcmp(s,"AUBITDIR")!=0) return an_empty_string;
 	} else {
 
 #ifdef DEBUG_VARIABLE_USAGE

@@ -18,6 +18,7 @@ static int process_module (module_definition *loaded_module_definition) ;
 int main(int argc,char *argv[]) {
 int ok;
 char buff[2000];
+//extern module_definition m;
 	struct module_definition m;
 	if (argc!=2) {
 		int a;
@@ -28,6 +29,8 @@ char buff[2000];
 		}
 		exit(2);
 	}
+
+	set_4gl_vars();
 
 	ok=A4GL_read_data_from_file("module_definition",&m,argv[1]);
 	if (ok)  {

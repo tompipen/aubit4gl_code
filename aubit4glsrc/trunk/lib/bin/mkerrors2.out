@@ -375,3 +375,6 @@
 380|Function returned incorrect number of values
 382|No current table
 384|Not an object of type 'STRING' - or not initialized
+386|Invalid barcode
+387|Invalid character in barcode
+388|Invalid length of barcode

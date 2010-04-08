@@ -111,7 +111,7 @@ unsigned int  x;
 			DoRectanglePDF(p, atx,littlebar,aty , p_page_height);
 			atx += littlebar ;
 		} else { 
-		atx += littlebar ;
+		atx += bigbar ;
 		}
 	}
 }
@@ -261,6 +261,7 @@ switch (c) {
 static void PutBarsPDF13(PDF *p, char t, char c,int p_page_height) {
 	if (t == '0'){
 		switch (c){
+			case 'B': BarCharPDF13(p, "000000", p_page_height);break;
 			case 'S': BarCharPDF13(p, "101", p_page_height);break;
 			case 'M': BarCharPDF13(p, "01010", p_page_height);break;
 		}
@@ -474,6 +475,7 @@ A4GL_pad_string(s,40);
 
 strcpy(t, PutGrpPDF13(s[0]));
 
+PutBarsPDF13(p,'0', 'B',p_page_height);		// Silent zone
 PrintCharPDF13(p, atx,s[z],p_page_height,incl_text);
 atx += 7*littlebar ;
 height+=5;
@@ -498,7 +500,8 @@ for (x=7;x<13;x++) {
 	z++;
 }
 height+=5;
-PutBarsPDF13(p,'0', 'S',p_page_height-5);   //# ending delimiter
+PutBarsPDF13(p,'0', 'S',p_page_height-5);         //# ending delimiter
+PutBarsPDF13(p,'0', 'B',p_page_height);		// Silent zone
 }
 
 
@@ -697,12 +700,13 @@ if (codetype==39) {
 
 if (codetype==13) {
 	littlebar=8;             //# these numbers are arbitrary, as long as the ratio
+	bigbar=12;
 	font_size = (y/72.0) * 14.4;    //# 2/10 of height of bar
 	aty = (y/72.0) * 14.4;          //# 2/10 of height of bar
 	atx = 0;
-	char_length1 = 7 * littlebar;
-	i= strlen(str) + 2; //# start, stop, middle delimiters
-	bar_length = char_length1*(i-1); 
+	char_length1 = 5 * littlebar + 2 * bigbar;;
+	i= 12 + 3; //# start, stop, middle delimiters + silent zone
+	bar_length = char_length1*i;//(i-1); 
 	bar_scale = (x) / bar_length;
 	InitBarPDF13(p, xpos,ypos,x,y,font_size,bar_scale);
 	S=strdup(str);
