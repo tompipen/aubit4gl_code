@@ -117,11 +117,10 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <assembly alias="Gizmox.WebGUI.Common" name="Gizmox.WebGUI.Common, Version=3.0.5701.0, Culture=neutral, PublicKeyToken=263fa4ef694acff6" />
-  <data name="About.Image" type="Gizmox.WebGUI.Common.Resources.IconResourceHandle, Gizmox.WebGUI.Common">
-    <value>Icons.Aubit.ico</value>
+  <data name="About.Image" xml:space="preserve">
+    <value>Aubit.ico</value>
   </data>
-  <data name="iconPB.Image" type="Gizmox.WebGUI.Common.Resources.IconResourceHandle, Gizmox.WebGUI.Common">
-    <value>Icons.Aubit.gif</value>
+  <data name="iconPB.Image" xml:space="preserve">
+    <value>Aubit.gif</value>
   </data>
 </root>

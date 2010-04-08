@@ -675,17 +675,17 @@ namespace AubitDesktop
                 if (bcol > 0)
                 {
                     //reservedButtonWidth = bcol;
-                    b.Width = GuiLayout.get_gui_w(bcol);
+ 			 b.Size = new System.Drawing.Size( GuiLayout.get_gui_w(bcol+1),  GuiLayout.get_gui_h(1));
                 }
                 else
                 {
                     //reservedButtonWidth = 1;
-                    b.Width = GuiLayout.get_gui_w(1);
+ 			 b.Size = new System.Drawing.Size( GuiLayout.get_gui_w(2),  GuiLayout.get_gui_h(1));
                 }
 
                 if (configSettings["IMAGE"] == null)
                 {
-                    b.Image = FGLWebUtils.getImageFromName("zoom");
+                     b.Image = FGLWebUtils.getImageFromName("zoom.png"); 
                 }
                 else
                 {
@@ -694,7 +694,6 @@ namespace AubitDesktop
               
           
 
-                  b.AutoSize = true;
                
                 if (bcol >0 )
                 {

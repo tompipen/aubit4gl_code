@@ -67,6 +67,12 @@ namespace AubitDesktop
             ((System.ComponentModel.ISupportInitialize)(this.sbMessageText)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.sbCommentText)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.btnPanel)).BeginInit();
+            this.mainAppPanel.SuspendLayout();
+            this.gbWinQuestion.SuspendLayout();
+            this.loginPanel.SuspendLayout();
+            this.panel2.SuspendLayout();
+            this.groupBox1.SuspendLayout();
+            this.gbDebugDump.SuspendLayout();
             this.SuspendLayout();
             // 
             // statusBar1
@@ -121,7 +127,7 @@ namespace AubitDesktop
             this.topWindowToolStrip.ButtonSize = new System.Drawing.Size(25, 25);
             this.topWindowToolStrip.Dock = Gizmox.WebGUI.Forms.DockStyle.Top;
             this.topWindowToolStrip.DragHandle = true;
-            this.topWindowToolStrip.DropDownArrows = false;
+            this.topWindowToolStrip.DropDownArrows = true;
             this.topWindowToolStrip.ImageList = null;
             this.topWindowToolStrip.ImageSize = new System.Drawing.Size(16, 16);
             this.topWindowToolStrip.Location = new System.Drawing.Point(0, 0);
@@ -147,7 +153,7 @@ namespace AubitDesktop
             // 
             this.About.CustomStyle = "";
             this.About.Font = new System.Drawing.Font("Tahoma", 8.25F);
-            this.About.Image = ((Gizmox.WebGUI.Common.Resources.ResourceHandle)(resources.GetObject("About.Image")));
+            this.About.Image = new Gizmox.WebGUI.Common.Resources.IconResourceHandle(resources.GetString("About.Image"));
             this.About.Name = "About";
             this.About.Pushed = true;
             this.About.Size = 24;
@@ -269,9 +275,9 @@ namespace AubitDesktop
             // 
             // btnLogin
             // 
-            this.btnLogin.Location = new System.Drawing.Point(142, 82);
+            this.btnLogin.Location = new System.Drawing.Point(165, 82);
             this.btnLogin.Name = "btnLogin";
-            this.btnLogin.Size = new System.Drawing.Size(75, 23);
+            this.btnLogin.Size = new System.Drawing.Size(52, 23);
             this.btnLogin.TabIndex = 4;
             this.btnLogin.Text = "Login";
             this.btnLogin.Click += new System.EventHandler(this.frm_doLoginHandler);
@@ -294,7 +300,6 @@ namespace AubitDesktop
             // 
             // txtUsername
             // 
-            this.txtUsername.BorderStyle = Gizmox.WebGUI.Forms.BorderStyle.Fixed3D;
             this.txtUsername.Location = new System.Drawing.Point(98, 8);
             this.txtUsername.Name = "txtUsername";
             this.txtUsername.Size = new System.Drawing.Size(119, 20);
@@ -302,7 +307,6 @@ namespace AubitDesktop
             // 
             // txtPassword
             // 
-            this.txtPassword.BorderStyle = Gizmox.WebGUI.Forms.BorderStyle.Fixed3D;
             this.txtPassword.Location = new System.Drawing.Point(98, 31);
             this.txtPassword.Name = "txtPassword";
             this.txtPassword.PasswordChar = '*';
@@ -345,7 +349,7 @@ namespace AubitDesktop
             // 
             this.iconPB.Anchor = Gizmox.WebGUI.Forms.AnchorStyles.None;
             this.iconPB.Dock = Gizmox.WebGUI.Forms.DockStyle.Bottom;
-            this.iconPB.Image = ((Gizmox.WebGUI.Common.Resources.ResourceHandle)(resources.GetObject("iconPB.Image")));
+            this.iconPB.Image = new Gizmox.WebGUI.Common.Resources.IconResourceHandle(resources.GetString("iconPB.Image"));
             this.iconPB.Location = new System.Drawing.Point(3, 414);
             this.iconPB.Name = "iconPB";
             this.iconPB.Size = new System.Drawing.Size(150, 95);
@@ -359,7 +363,6 @@ namespace AubitDesktop
             this.MenuBarPanel.BorderStyle = Gizmox.WebGUI.Forms.BorderStyle.Clear;
             this.MenuBarPanel.Dock = Gizmox.WebGUI.Forms.DockStyle.Fill;
             this.MenuBarPanel.Location = new System.Drawing.Point(3, 53);
-            this.MenuBarPanel.MinimumSize = new System.Drawing.Size(167, 449);
             this.MenuBarPanel.Name = "MenuBarPanel";
             this.MenuBarPanel.Size = new System.Drawing.Size(167, 455);
             this.MenuBarPanel.TabIndex = 1;
@@ -388,7 +391,6 @@ namespace AubitDesktop
             // 
             // frmMainAppWindow
             // 
-            this.AcceptButton = this.btnLogin;
             this.AutoScroll = true;
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.mainAppPanel);
@@ -402,6 +404,12 @@ namespace AubitDesktop
             ((System.ComponentModel.ISupportInitialize)(this.sbMessageText)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.sbCommentText)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.btnPanel)).EndInit();
+            this.mainAppPanel.ResumeLayout(false);
+            this.gbWinQuestion.ResumeLayout(false);
+            this.loginPanel.ResumeLayout(false);
+            this.panel2.ResumeLayout(false);
+            this.groupBox1.ResumeLayout(false);
+            this.gbDebugDump.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
