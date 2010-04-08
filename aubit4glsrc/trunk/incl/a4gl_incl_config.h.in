@@ -176,4 +176,8 @@
 		#endif
 	#endif
 
+#ifdef __TINYC__
+	// tcc has 'stat' - but it doesn't seem to be working for me atm 
+	#undef HAVE_SYS_STAT_H
+#endif
 #endif /* #ifndef CONFIG_H_INCL */
