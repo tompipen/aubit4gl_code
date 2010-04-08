@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.397 2010-04-08 12:50:41 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.398 2010-04-08 13:34:26 mikeaubury Exp $
 #
 */
 
@@ -78,6 +78,7 @@
 #if __TINYC__
         // tcc has 'stat' - but it doesn't seem to be working for me atm 
         #undef HAVE_SYS_STAT_H
+	#define __PRETTY_FUNCTION__ "some function"
 #endif
 
 

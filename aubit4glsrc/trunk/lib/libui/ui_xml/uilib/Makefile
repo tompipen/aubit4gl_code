@@ -14,6 +14,8 @@ ifeq "$(HASFLEXML)" ""
 	CFLAGS+=-Ixml/pregenerated -Ixml 
 else
 	TRIGGERS_O=xml/triggers.o xml/triggers_act.o
+	CFLAGS+=-Ixml
+
 endif
 
 USE_AR=${AR}
