@@ -53,6 +53,10 @@ Response::Response(QString id, FglForm* p_currForm, bool cursorPos) : QDomDocume
    this->appendChild(responseElement = this->createElement("TRIGGERED"));
    responseElement.setAttribute("ID", id);
 
+   responseElement.setAttribute("BUFFERTOUCHED", p_currForm->bufferTouched());
+
+   p_currForm->setBufferNotTouched();
+
    QWidget *focusWidget = p_currForm->focusWidget();
    QString colName = WidgetHelper::getWidgetColName(focusWidget);
 

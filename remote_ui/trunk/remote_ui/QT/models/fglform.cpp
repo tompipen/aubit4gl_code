@@ -58,6 +58,7 @@ FglForm::FglForm(QString windowName, QWidget *parent) : QMainWindow(parent){
    p_toolBar = NULL;
    b_denyFocus = false;
    b_allowClose = false;
+   b_bufferTouched = false;
 
    b_menu = false;
    b_input = false;
@@ -645,6 +646,7 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
          if(QWidget *widget = qobject_cast<QWidget *> (obj)){
             if(this->focusWidget() != currentWidget){
                currentWidget = widget;
+               qs_currentFieldBuffer = WidgetHelper::fieldText(widget);
                Fgl::Event fgl_event;
                fgl_event.type = Fgl::BEFORE_FIELD_EVENT;
                fgl_event.attribute = widget->objectName();
@@ -918,6 +920,7 @@ void FglForm::setFormLayout(const QDomDocument& docLayout)
          connect(lineEdit, SIGNAL(nextField()), this, SLOT(nextfield()));
          connect(lineEdit, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(createContextMenu(const QPoint&)));
          connect(lineEdit, SIGNAL(error(const QString&)), this, SLOT(error(const QString&)));
+         connect(lineEdit, SIGNAL(textEdited(QString)), this, SLOT(setBufferTouched()));
          lineEdit->installEventFilter(this);
       }
 
