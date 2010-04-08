@@ -509,6 +509,12 @@ get_event_from_ui ()
 
   //printf("Id=%s\n",attr->id);
   A4GL_set_last_cursor(attr->lastcursor);
+  A4GL_set_buffer_touched(attr->bufferTouched);
+
+
+   //printf("Got bufferTouched=%d\n", attr->bufferTouched);
+
+
   if (attr->id)
     {
       int n = -1;
