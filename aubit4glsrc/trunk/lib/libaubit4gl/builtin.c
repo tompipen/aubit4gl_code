@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin.c,v 1.157 2010-03-04 09:34:31 mikeaubury Exp $
+# $Id: builtin.c,v 1.158 2010-04-08 15:46:03 mikeaubury Exp $
 #
 */
 
@@ -1823,16 +1823,8 @@ aclfgl_fgl_dialog_setbuffer (int n)
   return 0;
 }
 
-int
-aclfgl_fgl_buffertouched (int n)
-{
-// Returns  INTEGER  TRUE if the last field has been modified.
-#ifdef DEBUG
-  A4GL_debug ("WARNING: fgl_buffertouched() not yet implemented!");
-#endif
-  A4GL_push_int (1);
-  return 1;
-}
+
+
 
 
 int
@@ -1858,6 +1850,16 @@ A4GL_direct_to_ui("fgl_dialog_seticon","3");
 return 0;
 }
 
+static int bufferTouched=0;
+
+void A4GL_set_buffer_touched(int n) {
+	bufferTouched=n;
+}
+
+int aclfgl_fgl_buffertouched(int n) {
+	A4GL_push_int(bufferTouched);
+	return 1;
+}
 
 void
 A4GL_set_last_cursor (int n)

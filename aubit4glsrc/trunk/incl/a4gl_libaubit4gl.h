@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.398 2010-04-08 13:34:26 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.399 2010-04-08 15:46:14 mikeaubury Exp $
 #
 */
 
@@ -2922,7 +2922,7 @@ void A4GL_pushIntLt(int a,int b);
 void A4GL_pushIntLE(int a,int b);
 void A4GL_pushIntGE(int a,int b);
 char *A4GL_check_for_tags(char *s) ;
-
+void A4GL_set_buffer_touched(int n);
 int
 A4GL_get_date_from_formatted_date (char *format, char *data);
 
