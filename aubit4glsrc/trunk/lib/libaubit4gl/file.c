@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: file.c,v 1.10 2010-01-14 08:08:21 mikeaubury Exp $
+# $Id: file.c,v 1.11 2010-04-08 12:53:45 mikeaubury Exp $
 #
 */
 
@@ -149,6 +149,7 @@ A4GL_file_exists (char *fname)
       {
 	return 0;
       }
+  }
 #endif
   }
 

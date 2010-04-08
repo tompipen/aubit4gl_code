@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.396 2010-02-16 13:48:58 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.397 2010-04-08 12:50:41 mikeaubury Exp $
 #
 */
 
@@ -73,6 +73,12 @@
      Constants definitions
      =====================================================================
    */
+
+
+#if __TINYC__
+        // tcc has 'stat' - but it doesn't seem to be working for me atm 
+        #undef HAVE_SYS_STAT_H
+#endif
 
 
 #include <limits.h> /* SHRT_MIN SHRT_MAX */
