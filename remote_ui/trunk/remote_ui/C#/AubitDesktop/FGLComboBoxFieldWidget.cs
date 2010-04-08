@@ -430,9 +430,9 @@ namespace AubitDesktop
 
                     //pb.AutoSize = true;
                     pb.Image = i;
-
                     pb.Size = new Size(i.Width + 10, i.Height + 2); //NOTWEBGUI
-                    
+
+                    //WEBGUI pb.AutoSizeMode = AutoSizeMode.GrowAndShrink; pb.AutoSize = true; 
                     fakeKeyId = FGLUtils.getKeyCodeFromKeyName(str[1]);
                 }
   
