@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: file.c,v 1.12 2010-04-08 12:55:33 mikeaubury Exp $
+# $Id: file.c,v 1.13 2010-04-08 12:59:45 mikeaubury Exp $
 #
 */
 
@@ -184,6 +184,7 @@ A4GL_directory_exists (char *fname)
 
   int A4GL_file_is_newer (char *lv_f1, char *lv_f2)
   {
+#if HAVE_SYS_STAT_H
     int lv_t1 = 0;
     int lv_t2 = 0;
     struct stat buf;
@@ -206,6 +207,7 @@ A4GL_directory_exists (char *fname)
 
 	return 1;
       }
+#endif
 
     return 0;
   }
