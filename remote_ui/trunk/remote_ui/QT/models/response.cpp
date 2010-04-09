@@ -55,7 +55,8 @@ Response::Response(QString id, FglForm* p_currForm, bool cursorPos) : QDomDocume
 
    responseElement.setAttribute("BUFFERTOUCHED", p_currForm->bufferTouched());
 
-   p_currForm->setBufferNotTouched();
+   if(currEvent.type == Fgl::AFTER_FIELD_EVENT)
+       p_currForm->setBufferNotTouched();
 
    QWidget *focusWidget = p_currForm->focusWidget();
    QString colName = WidgetHelper::getWidgetColName(focusWidget);
