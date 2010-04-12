@@ -444,7 +444,7 @@ void ScreenHandler::showOption(QString name)
 }
 
 //------------------------------------------------------------------------------
-// Method       : hideOption(QString title, QString FieldValue)
+// Method       : hideOption(QString name)
 // Filename     : screenhandler.cpp
 // Description  : hide menu commands
 //------------------------------------------------------------------------------
@@ -962,6 +962,15 @@ void ScreenHandler::setFieldFocus(QString fieldName)
       }
       p_fglform->nextfield();
       return;
+   }
+
+   if(fieldName == "PREVIOUS"){
+   if(p_fglform->currentField() != NULL){
+      p_fglform->currentField()->setFocus();
+      clearEvents();
+   }
+   p_fglform->prevfield();
+   return;
    }
 
    QWidget *widget = NULL;
