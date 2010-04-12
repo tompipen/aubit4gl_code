@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.39 2010-01-08 17:54:08 jcbatalha Exp $
+# $Id: Makefile,v 1.40 2010-04-12 15:15:33 mikeaubury Exp $
 #
 
 ROOT    =../..
@@ -205,7 +205,7 @@ ${BINROOT}/link_fgl:  $(OBJ_LINKER) npcode.xs.h
 	$(CC) ${CFLAGS_NOWARN} -g -o $@ $(OBJ_LINKER) ${LINKLIBS} 
 
 ${BINROOT}/runner: $(OBJ_RUNNER_C)
-	$(CC) ${CFLAGS_NOWARN} --export-dynamic -o $@ $(OBJ_RUNNER_C) ${RPCLINKLIBS} ${DL_LINK_LIBS} ${EXTRASYSTEMLIBS}
+	$(CC) ${CFLAGS_NOWARN}  $(RDYNAMIC) -o $@ $(OBJ_RUNNER_C) ${RPCLINKLIBS} ${DL_LINK_LIBS} ${EXTRASYSTEMLIBS}
 
 #${BINROOT}/runner_fgl: $(OBJ_RUNNER_A4GL)
 ${BINROOT}/runner_fgl: $(OBJ_RUNNER_A4GL)  npcode.xs.h

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.65 2010-03-02 15:31:31 mikeaubury Exp $
+# $Id: Makefile,v 1.66 2010-04-12 15:15:33 mikeaubury Exp $
 #
 
 ROOT		=../..
@@ -348,7 +348,7 @@ extra: ../../bin/fglreload ../../bin/fgllint ../../bin/fglcalltree
                                 var_handling.c variables.c variables_new.c \
                 		${Y_TAB_C} \
                 		${ROOT}/compilers/4glc/rules/generated/states_optimised.c
-	$(CC) -g $(CFLAGS) -fPIC -I. -I$(AUBITDIR)  -I$(AUBITDIR)/incl $(LD_EXE_FLAGS) -o $@ $^ -L$(AUBITDIR)/lib -laubit4gl  
+	$(CC) -g $(CFLAGS)  -DYYDEBUG  -fPIC -I. -I$(AUBITDIR)  -I$(AUBITDIR)/incl $(LD_EXE_FLAGS) -o $@ $^ -L$(AUBITDIR)/lib -laubit4gl  
 
 fglreload: ../../bin/fglreload
 
