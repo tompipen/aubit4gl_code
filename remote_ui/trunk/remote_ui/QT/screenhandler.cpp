@@ -96,7 +96,10 @@ void ScreenHandler::createWindow(QString windowTitle,QString style, int x, int y
    Q_UNUSED(w);
 
    cnt_form++;
-
+   if(p_fglform != NULL)
+   {
+      p_fglform->menu()->setEnabled(false);
+   }
    //p_fglform = new FglForm(windowTitle, parentWidget);
    //p_fglform = new FglForm(windowTitle, p_fglform);
    p_fglform = new FglForm(windowTitle);
