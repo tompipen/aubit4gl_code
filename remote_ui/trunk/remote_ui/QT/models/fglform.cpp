@@ -1942,6 +1942,7 @@ void FglForm::addFormEvent(Fgl::Event newEvent)
       if(ev.type == newEvent.type &&
          ev.attribute == newEvent.attribute){
          ql_events.replace(i, newEvent);
+         ql_contextEvents.replace(ql_contextEvents.count()-1, ql_events);
          return;
       }
    }
