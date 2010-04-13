@@ -385,7 +385,7 @@ ClientSocket::~ClientSocket(){
 
 void ClientSocket::readClient()
 {
-   QString request;
+   QByteArray request;
 
    // reading in all portions of the first command block
    //
@@ -436,6 +436,9 @@ void ClientTcp::replyWith(QString qs_replyString)
       if(QObject::sender() != NULL && QObject::sender()->inherits("ClientSocket")){
          ClientSocket *cl = static_cast<ClientSocket*>(QObject::sender());
          out.setDevice(cl);
+         if(cl->ph.p_currScreenHandler->qh_env.contains("DB_LOCALE")){
+             out.setCodec(QTextCodec::codecForName("IBM850"));
+         }
 
          qs_replyString+="\n";
 
@@ -457,8 +460,19 @@ void ProtocolHandler::run()
    // request holds the current command from
    // the application server
    //
-   QString qs_protocolCommand = request;
+   QString qs_protocolCommand;
+   if(p_currScreenHandler != NULL &&
+      p_currScreenHandler->qh_env.contains("DB_LOCALE")){
 
+      p_currScreenHandler->qh_env["DB_LOCALE"] = "IBM850";
+      QTextCodec *codec = QTextCodec::codecForName(qPrintable(p_currScreenHandler->qh_env["DB_LOCALE"]));
+      QTextStream in_request(&request);
+      in_request.setCodec(codec);
+      qs_protocolCommand = in_request.readAll();
+   }
+   else{
+      qs_protocolCommand = request;
+   }
 
    if(qs_protocolCommand.trimmed() == "PROTOCOL?")
    {
@@ -541,7 +555,7 @@ void ProtocolHandler::run()
       
    for(int i=0; i<qsl_xmlCommands.size(); i++)
    {
-         QString tmpstring = filterUmlauts(qsl_xmlCommands.takeAt(i));
+         QString tmpstring = qsl_xmlCommands.takeAt(i);
          qsl_xmlCommands.insert(i, tmpstring);
 
       QString errorMsg;
@@ -583,84 +597,6 @@ void ProtocolHandler::run()
    }
 }
 
-//------------------------------------------------------------------------------
-// Method       : filterUmlauts()
-// Filename     : tcpclient.cpp
-// Description  : converts pc8 umlauts to UTF8
-//------------------------------------------------------------------------------
-QString ProtocolHandler::filterUmlauts(QString text){
-
-   // some strings come "html encoded"
-   for(int i=0; i<text.length(); i++){
-      QChar a = text.at(i);
-
-      if(a == QChar('&')){
-         int start = i;
-         int end = -1;
-
-         for(int k=i; k<text.length(); k++){
-            QChar b = text.at(k);
-            if(b == QChar(';')){
-               end = k;
-               break;
-            }
-         }
-
-/*
-         if(start >= 0 && end >=0){
-            QString rem = text.mid(start,(end-start+1));
-            bool ok;
-            int num = rem.mid(3,2).toInt(&ok, 16);
-            if(ok){
-               text.remove(start,(end-start+1));
-               text.insert(start,QChar(num));
-               i--;
-            }
-         }
-*/
-      }
-   }
-
-   {
-   //filter pc8 umlauts
-   text.replace(QChar(132), QString::fromUtf8("ä"));
-   text.replace(QChar(148), QString::fromUtf8("ö"));
-   text.replace(QChar(129), QString::fromUtf8("ü"));
-   text.replace(QChar(225), QString::fromUtf8("ß"));
-   text.replace(QChar(142), QString::fromUtf8("Ä"));
-   text.replace(QChar(153), QString::fromUtf8("Ö"));
-   text.replace(QChar(154), QString::fromUtf8("Ü"));
-   }
-
-   {
-   //filter other umlauts until the real encoding works right
-      text.replace(QString::fromUtf8("~A"), QString::fromUtf8("ü"));
-      text.replace(QString::fromUtf8("~T"), QString::fromUtf8("ö"));
-   }
-
-   return text;
-}
-
-//------------------------------------------------------------------------------
-// Method       : filterUmlauts()
-// Filename     : tcpclient.cpp
-// Description  : converts UTF8 umlauts to pc8
-//------------------------------------------------------------------------------
-QString ProtocolHandler::filterUmlauts2(QString text){
-
-   {
-   //filter pc8 umlauts
-   text.replace( QString::fromUtf8("ä"), QChar(132));
-   text.replace( QString::fromUtf8("ö"), QChar(148));
-   text.replace( QString::fromUtf8("ü"), QChar(129));
-   text.replace( QString::fromUtf8("ß"), QChar(225));
-   text.replace( QString::fromUtf8("Ä"), QChar(142));
-   text.replace( QString::fromUtf8("Ö"), QChar(153));
-   text.replace( QString::fromUtf8("Ü"), QChar(154));
-   }
-
-   return text;
-}
 //------------------------------------------------------------------------------
 // Method       : outputTree(QDomNode domNode)
 // Filename     : tcpclient.cpp
@@ -732,7 +668,6 @@ void ProtocolHandler::outputTree(QDomNode domNode)
       if(fileName.trimmed().endsWith(".4tb")){
          QDomDocument xmlFile = encodeXMLFile(childElement.text());
          QString xmlFileString = xmlFile.toString();
-         xmlFileString = filterUmlauts(xmlFileString);
          handleXMLToolBar(xmlFileString);
          return;
       }
@@ -741,7 +676,6 @@ void ProtocolHandler::outputTree(QDomNode domNode)
       if(fileName.trimmed().endsWith(".4ad")){
          QDomDocument xmlFile = encodeXMLFile(childElement.text());
          QString xmlFileString = xmlFile.toString();
-         xmlFileString = filterUmlauts(xmlFileString);
          handleXMLActions(xmlFileString);
          return;
       }
@@ -750,7 +684,6 @@ void ProtocolHandler::outputTree(QDomNode domNode)
       if(fileName.trimmed().endsWith(".4st")){
          QDomDocument xmlFile = encodeXMLFile(childElement.text());
          QString xmlFileString = xmlFile.toString();
-         xmlFileString = filterUmlauts(xmlFileString);
          handleXMLStyles(xmlFileString);
          return;
       }
@@ -759,7 +692,6 @@ void ProtocolHandler::outputTree(QDomNode domNode)
       if(fileName.trimmed().endsWith(".4sm")){
          QDomDocument xmlFile = encodeXMLFile(childElement.text());
          QString xmlFileString = xmlFile.toString();
-         xmlFileString = filterUmlauts(xmlFileString);
          handleXMLStartMenu(xmlFileString);
          return;
       }
@@ -774,7 +706,6 @@ void ProtocolHandler::outputTree(QDomNode domNode)
       if(fileName.trimmed().endsWith(".4tb")){
          QDomDocument xmlFile = encodeXMLFile(childElement.text());
          QString xmlFileString = xmlFile.toString();
-         xmlFileString = filterUmlauts(xmlFileString);
          handleXMLToolBar(xmlFileString);
          return;
       }
@@ -783,7 +714,6 @@ void ProtocolHandler::outputTree(QDomNode domNode)
       if(fileName.trimmed().endsWith(".4ad")){
          QDomDocument xmlFile = encodeXMLFile(childElement.text());
          QString xmlFileString = xmlFile.toString();
-         xmlFileString = filterUmlauts(xmlFileString);
          handleXMLActions(xmlFileString);
          return;
       }
@@ -792,7 +722,6 @@ void ProtocolHandler::outputTree(QDomNode domNode)
       if(fileName.trimmed().endsWith(".4st")){
          QDomDocument xmlFile = encodeXMLFile(childElement.text());
          QString xmlFileString = xmlFile.toString();
-         xmlFileString = filterUmlauts(xmlFileString);
          handleXMLStyles(xmlFileString);
          return;
       }
@@ -801,7 +730,6 @@ void ProtocolHandler::outputTree(QDomNode domNode)
       if(fileName.trimmed().endsWith(".4sm")){
          QDomDocument xmlFile = encodeXMLFile(childElement.text());
          QString xmlFileString = xmlFile.toString();
-         xmlFileString = filterUmlauts(xmlFileString);
          handleXMLStartMenu(xmlFileString);
          return;
       }
@@ -2043,7 +1971,6 @@ void ProtocolHandler::fglFormResponse(QString qs_id)
    QDomElement triggeredElement = doc.documentElement();
    triggeredElement.setAttribute("ENVELOPEID", pid);
    qs_id = doc.toString();
-   qs_id = filterUmlauts2(qs_id);
    makeResponse(qs_id);
 }
 

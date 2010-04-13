@@ -68,7 +68,7 @@ public:
    void run();
 
    // Holds the XMLProtocolString
-   QString request;
+   QByteArray request;
    DebugWindow *dw;
    ScreenHandler *p_currScreenHandler;
    QString qs_shortCutUser;
@@ -81,9 +81,7 @@ public:
    int id;
 
 private:
-   QString filterUmlauts(QString);
    QString decodeFile(QString);
-   QString filterUmlauts2(QString);
    void outputTree(QDomNode);
 
    QDomDocument encodeXMLFile(QString);
