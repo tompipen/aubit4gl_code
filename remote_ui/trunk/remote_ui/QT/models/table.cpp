@@ -189,6 +189,7 @@ QString TableView::getColumnName(int col)
 
 void TableView::keyPressEvent(QKeyEvent *event)
 {
+/*
     if(event->key() == QKeySequence("Enter") ||
       event->key() == QKeySequence("Return")){
       accept();
@@ -217,6 +218,7 @@ void TableView::keyPressEvent(QKeyEvent *event)
        setScrLine(currentIndex().row()+1);
 
    }
+*/
    return QTableView::keyPressEvent(event);
 }
 
@@ -225,7 +227,12 @@ void TableView::accept()
    QSortFilterProxyModel *proxyModel = static_cast<QSortFilterProxyModel*> (this->model());
    TableModel *table = static_cast<TableModel*> (proxyModel->sourceModel());
    if(!table->b_input){
-      emit accepted();
+      //emit accepted();
+      Fgl::Event ev;
+      ev.type = Fgl::ONACTION_EVENT;
+      ev.attribute = "accept";
+      emit fieldEvent(ev);
+
    }
    else{
       b_ignoreFocus = true;
