@@ -98,7 +98,8 @@ void ScreenHandler::createWindow(QString windowTitle,QString style, int x, int y
    cnt_form++;
    if(p_fglform != NULL)
    {
-      p_fglform->menu()->setEnabled(false);
+      if(p_fglform->menu() != NULL)
+         p_fglform->menu()->setEnabled(false);
    }
    //p_fglform = new FglForm(windowTitle, parentWidget);
    //p_fglform = new FglForm(windowTitle, p_fglform);
@@ -2206,10 +2207,9 @@ void ScreenHandler::freeContext(int i_context)
          field->blockSignals(false);
       }
       delete context;
-      /*
+
       context = getCurrentContext();
       p_fglform->context = context;
-      */
 
       //->deleteLater();
    }
