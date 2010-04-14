@@ -80,7 +80,7 @@ Dialog::Dialog(QString title, QString comment, QString style, QString image,
 
    layout->addLayout(buttonLayout);
 
-   this->setModal(true);
+//   this->setModal(true);
    this->adjustSize();
 }
 

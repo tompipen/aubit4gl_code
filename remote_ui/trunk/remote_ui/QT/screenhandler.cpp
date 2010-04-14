@@ -477,7 +477,8 @@ void ScreenHandler::createDialog(QString title, QString comment, QString style, 
    if(p_fglform == NULL)
       return;
 
-   Dialog *p_dialog = new Dialog(title, comment, style, image, p_fglform);
+   //Dialog *p_dialog = new Dialog(title, comment, style, image, p_fglform);
+   Dialog *p_dialog = new Dialog(title, comment, style, image, NULL);
    p_fglform->setDialog(p_dialog);
 
 }
@@ -1471,6 +1472,7 @@ void ScreenHandler::setFormOpts(QString type, bool value, int i_context)
          if(p_fglform->dialog() != NULL){
             p_fglform->dialog()->close();
             p_fglform->setDialog(NULL);
+            p_fglform->setEnabled(true);
             p_fglform->revertState(Fgl::MENU);
             freeContext(i_context);
             p_fglform->ql_dialogEvents.clear();
