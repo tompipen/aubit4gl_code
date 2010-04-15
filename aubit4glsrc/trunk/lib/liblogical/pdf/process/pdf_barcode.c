@@ -111,7 +111,7 @@ unsigned int  x;
 			DoRectanglePDF(p, atx,littlebar,aty , p_page_height);
 			atx += littlebar ;
 		} else { 
-		atx += bigbar ;
+		atx += littlebar ;
 		}
 	}
 }
@@ -261,7 +261,7 @@ switch (c) {
 static void PutBarsPDF13(PDF *p, char t, char c,int p_page_height) {
 	if (t == '0'){
 		switch (c){
-			case 'B': BarCharPDF13(p, "000000", p_page_height);break;
+			case 'B': BarCharPDF13(p, "00000", p_page_height);break;
 			case 'S': BarCharPDF13(p, "101", p_page_height);break;
 			case 'M': BarCharPDF13(p, "01010", p_page_height);break;
 		}
@@ -700,11 +700,10 @@ if (codetype==39) {
 
 if (codetype==13) {
 	littlebar=8;             //# these numbers are arbitrary, as long as the ratio
-	bigbar=12;
 	font_size = (y/72.0) * 14.4;    //# 2/10 of height of bar
 	aty = (y/72.0) * 14.4;          //# 2/10 of height of bar
 	atx = 0;
-	char_length1 = 5 * littlebar + 2 * bigbar;;
+	char_length1 = 7 * littlebar;
 	i= 12 + 3; //# start, stop, middle delimiters + silent zone
 	bar_length = char_length1*i;//(i-1); 
 	bar_scale = (x) / bar_length;
