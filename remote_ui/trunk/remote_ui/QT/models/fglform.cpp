@@ -1555,8 +1555,10 @@ void FglForm::revertState(Fgl::State state){
 //------------------------------------------------------------------------------
 void FglForm::checkState()
 {
-   if(p_dialog != NULL)
+   if(p_dialog != NULL){
+      checkActions();
       return;
+   }
 
    Fgl::State state = ql_states.last();
 
