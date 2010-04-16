@@ -2490,7 +2490,7 @@ DEFINE lv_status          INTEGER
     IF mv_make_dll THEN
       IF fgl_getenv("TARGET_OS")="darwin" THEN
             # Darwin has two types of "shared" output  bundles and shared libraries
-            IF lv_output matches "*.so" THEN
+            IF lv_output matches "*.so" or lv_output matches "*.dylib" THEN
                LET mv_dll_opts=fgl_getenv("A4GL_DLL_SHARED_OPTS")
             END IF
       END IF
