@@ -1,3 +1,3 @@
 A4GL_DLL_OPTS=-flat_namespace -bundle -undefined suppress
-A4GL_DLL_SHARED_OPTS=-flat_namespace -undefined suppress
+A4GL_DLL_SHARED_OPTS=-flat_namespace -dynamiclib -undefined suppress
 
