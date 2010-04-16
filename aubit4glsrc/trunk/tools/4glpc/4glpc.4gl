@@ -2488,6 +2488,13 @@ DEFINE lv_status          INTEGER
     LET lv_runstr=mv_link
 
     IF mv_make_dll THEN
+      IF fgl_getenv("TARGET_OS")="darwin" THEN
+            # Darwin has two types of "shared" output  bundles and shared libraries
+            IF lv_output matches "*.so" THEN
+               LET mv_dll_opts=fgl_getenv("A4GL_DLL_SHARED_OPTS")
+            END IF
+      END IF
+      
         LET lv_runstr=lv_runstr CLIPPED," ",mv_dll_opts
     END IF
 
