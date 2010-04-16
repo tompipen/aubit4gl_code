@@ -302,5 +302,16 @@ void ActionMenu::setAction(QString name, QAction* action){
          }
       }
    }
-
 }
+void ActionMenu::setOrientation(const Qt::Orientation &o){
+
+   if(QBoxLayout *layout = qobject_cast<QBoxLayout *> (this->layout)){
+      if(o == Qt::Horizontal){
+         layout->setDirection(QBoxLayout::TopToBottom);
+      }
+      else{
+         if(o == Qt::Vertical) layout->setDirection(QBoxLayout::LeftToRight);
+      }
+   }
+}
+
