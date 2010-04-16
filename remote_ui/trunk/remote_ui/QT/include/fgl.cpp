@@ -481,6 +481,11 @@ namespace Fgl {
           return QString("f%1").arg(key-2999);
       }
 
+      if(key < 126 && QChar(key).isPrint()){
+         return QString(QChar(key));
+      }
+      
+
       if(key == 2000)
          return "up";
 
