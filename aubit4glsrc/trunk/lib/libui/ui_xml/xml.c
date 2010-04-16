@@ -1556,6 +1556,8 @@ UILIB_A4GLUI_ui_init (int argc, char **argv)
     "DBPATH",
     "DBDATE",
     "DBMONEY",
+    "DB_LOCALE",
+    "LANG",
     0
   };
   if (!connect_ui ())
