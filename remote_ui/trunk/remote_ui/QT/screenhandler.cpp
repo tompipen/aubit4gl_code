@@ -478,7 +478,7 @@ void ScreenHandler::createDialog(QString title, QString comment, QString style, 
       return;
 
    //Dialog *p_dialog = new Dialog(title, comment, style, image, p_fglform);
-   Dialog *p_dialog = new Dialog(title, comment, style, image, NULL);
+   Dialog *p_dialog = new Dialog(title, comment, style, image, p_fglform);
    p_fglform->setDialog(p_dialog);
 
 }

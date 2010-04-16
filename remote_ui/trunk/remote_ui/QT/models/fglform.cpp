@@ -548,7 +548,7 @@ void FglForm::setDialog(Dialog* dialog)
 {
 
    p_dialog = dialog;
-   this->setEnabled(false);
+//   this->setEnabled(false);
 
 /*
    if(dialog != NULL){
@@ -1555,16 +1555,16 @@ void FglForm::revertState(Fgl::State state){
 //------------------------------------------------------------------------------
 void FglForm::checkState()
 {
-/*
    if(p_dialog != NULL)
       return;
-*/
 
    Fgl::State state = ql_states.last();
 
    bool enable = (state == Fgl::MENU);
+/*
    if(p_dialog != NULL)
       enable = !enable;
+*/
 
    setActionMenuEnabled(!enable);
    setMenuEnabled(enable);
