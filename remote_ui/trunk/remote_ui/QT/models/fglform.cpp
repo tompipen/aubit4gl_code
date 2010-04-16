@@ -152,7 +152,7 @@ void FglForm::addToQueue(QString id)
 }
 
 //------------------------------------------------------------------------------
-// Method       : initActions()
+// Method       : setActions()
 // Filename     : fglform.cpp
 // Description  : init the standard actions (ESC = INTERRUPT, F12 = ACCEPT, etc)
 //                and adds them to the Form
@@ -275,13 +275,13 @@ void FglForm::initActions()
    addFormAction(cancelA);
 
    Action *nextRowA = new Action("nextrow", tr("Next Row"));
-   nextRowA->setAcceleratorName("Tab");
+   nextRowA->setAcceleratorName("Down");
 //   nextRowA->setAcceleratorName2("Down");
    addFormAction(nextRowA);
 
    Action *prevRowA = new Action("prevrow", tr("Previous Row"));
-   prevRowA->setAcceleratorName("Shift-Tab");
    prevRowA->setAcceleratorName("Up");
+//   prevRowA->setAcceleratorName("Up");
    addFormAction(prevRowA);
 
    Action *nextFieldA = new Action("nextfield", tr("Next Field"));
@@ -1098,6 +1098,7 @@ Qt::ToolBarArea FglForm::toolBarPosition()
 //------------------------------------------------------------------------------
 void FglForm::setRingMenuPosition(const QString &sm)
 {
+   sm.toLower();
    if(sm == "top" ||
       sm == "bottom" ||
       sm == "left" ||
@@ -1147,7 +1148,47 @@ void FglForm::setRingMenuPosition(const QString &sm)
 //------------------------------------------------------------------------------
 void FglForm::setActionPanelPosition(const QString &sm)
 {
-   Q_UNUSED(sm);
+
+   sm.toLower();
+   if(sm == "top" ||
+      sm == "bottom" ||
+      sm == "left" ||
+      sm == "right"||
+      sm == "none"){
+      m_actionPanelPosition = sm;
+   }
+   else{
+      return;
+   }
+
+
+   if(QSplitter *p_splitter = qobject_cast<QSplitter *> (centralWidget())){
+      if(sm == "top" ||
+         sm == "bottom"){
+         p_splitter->setOrientation(Qt::Vertical);
+         if(ActionMenu *p_actionMenu = qobject_cast<ActionMenu *> (actionMenu())){
+            p_actionMenu->setOrientation(Qt::Vertical);
+            if(sm == "top") p_splitter->insertWidget(0, p_actionMenu);
+         }
+      }
+      else{
+         //Left - Right
+         if(sm == "left" ||
+            sm == "right"){
+            p_splitter->setOrientation(Qt::Horizontal);
+            if(ActionMenu *p_actionMenu = qobject_cast<ActionMenu *> (actionMenu())){
+               p_actionMenu->setOrientation(Qt::Horizontal);
+               if(sm == "left") p_splitter->insertWidget(0, p_actionMenu);
+            }
+         }
+         // None
+         else{
+            if(ActionMenu *p_actionMenu = qobject_cast<ActionMenu *> (actionMenu())){
+               p_actionMenu->setVisible(false);
+            }
+         }
+      }
+   }
 }
 
 //------------------------------------------------------------------------------
@@ -1563,14 +1604,23 @@ void FglForm::checkState()
    Fgl::State state = ql_states.last();
 
    bool enable = (state == Fgl::MENU);
-/*
-   if(p_dialog != NULL)
-      enable = !enable;
-*/
 
-   setActionMenuEnabled(!enable);
-   setMenuEnabled(enable);
-
+   if(m_actionPanelPosition == "none")
+   {
+      setActionMenuEnabled(false);
+   }
+   else
+   {
+      setActionMenuEnabled(!enable);
+   }
+   if(m_ringMenuPosition == "none")
+   {
+      setMenuEnabled(false);
+   }
+   else
+   {
+      setMenuEnabled(enable);
+   }
 /*
    if(state == Fgl::INPUT ||
       state == Fgl::CONSTRUCT ||
