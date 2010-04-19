@@ -187,9 +187,10 @@ QString TableView::getColumnName(int col)
    return QString();
 }
 
+/*
 void TableView::keyPressEvent(QKeyEvent *event)
 {
-/*
+
     if(event->key() == QKeySequence("Enter") ||
       event->key() == QKeySequence("Return")){
       accept();
@@ -218,10 +219,10 @@ void TableView::keyPressEvent(QKeyEvent *event)
        setScrLine(currentIndex().row()+1);
 
    }
-*/
+
    return QTableView::keyPressEvent(event);
 }
-
+*/
 void TableView::accept()
 {
    QSortFilterProxyModel *proxyModel = static_cast<QSortFilterProxyModel*> (this->model());
