@@ -169,10 +169,15 @@ void Action::checkAccelerators()
 {
    QList<QKeySequence> ql_shortcuts;
    
-   QKeySequence s1(this->qs_acceleratorName);
-   QKeySequence s2(this->qs_acceleratorName2);
-   QKeySequence s3(this->qs_acceleratorName3);
-   QKeySequence s4(this->qs_acceleratorName4);
+   QString acc1 = this->qs_acceleratorName;
+   QString acc2 = this->qs_acceleratorName2;
+   QString acc3 = this->qs_acceleratorName3;
+   QString acc4 = this->qs_acceleratorName4;
+
+   QKeySequence s1(acc1.replace("-", "+"));
+   QKeySequence s2(acc2.replace("-", "+"));
+   QKeySequence s3(acc3.replace("-", "+"));
+   QKeySequence s4(acc4.replace("-", "+"));
 
    if(b_accName1)
       ql_shortcuts << s1;

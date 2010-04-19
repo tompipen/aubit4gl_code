@@ -280,8 +280,8 @@ void FglForm::initActions()
    addFormAction(nextRowA);
 
    Action *prevRowA = new Action("prevrow", tr("Previous Row"));
+   prevRowA->setAcceleratorName("Shift+Tab");
    prevRowA->setAcceleratorName("Up");
-//   prevRowA->setAcceleratorName("Up");
    addFormAction(prevRowA);
 
    Action *nextFieldA = new Action("nextfield", tr("Next Field"));
@@ -289,7 +289,7 @@ void FglForm::initActions()
    addFormAction(nextFieldA);
 
    Action *prevFieldA = new Action("prevfield", tr("Previous Field"));
-   prevFieldA->setAcceleratorName("Shift-Tab");
+   prevFieldA->setAcceleratorName("Shift+Tab");
    addFormAction(prevFieldA);
 
 
@@ -628,11 +628,6 @@ void FglForm::setToolBar(QDomDocument xmlFile)
 bool FglForm::eventFilter(QObject *obj, QEvent *event)
 {
 
-   if(event->type() == QEvent::ShortcutOverride){
-      event->ignore();
-      return true;
-   }
-
    if(event->type() == QEvent::MouseButtonRelease){
       QMouseEvent *mev = (QMouseEvent*) event;
       if(!input() && !construct() && !screenRecord()){
@@ -642,6 +637,20 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
 
    processResponse();
 
+   if(event->type() == QEvent::FocusIn ||
+      event->type() == QEvent::FocusOut){
+      QFocusEvent *fe = (QFocusEvent*) event;
+      if(fe->reason() != Qt::OtherFocusReason &&
+         fe->reason() != Qt::ActiveWindowFocusReason &&
+         fe->reason() != Qt::TabFocusReason){
+         QWidget *w = (QWidget*) obj;
+         w->clearFocus();
+         event->ignore();
+         return true;
+      }
+   }
+
+/*
    if(event->type() == QEvent::FocusIn){
       if(WidgetHelper::isFieldWidget(obj) && (input() || screenRecord() || construct())){
          if(QWidget *widget = qobject_cast<QWidget *> (obj)){
@@ -663,6 +672,7 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
    }
 
    if(event->type() == QEvent::FocusOut){
+      qDebug() << "FOCUS OUT:" << obj;
       if(WidgetHelper::isFieldWidget(obj) && (input() || screenRecord() || construct())){
          if(QWidget *widget = qobject_cast<QWidget *> (obj)){
             QFocusEvent *fe = (QFocusEvent*) event;
@@ -676,6 +686,7 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
          }
       }
    }
+*/
 
    if(event->type() == QEvent::KeyPress){
       QKeyEvent *keyEvent = (QKeyEvent*) event;
@@ -940,6 +951,8 @@ void FglForm::setFormLayout(const QDomDocument& docLayout)
          connect(tableView, SIGNAL(setArrLineSignal(int)), this, SLOT(setScreenRecordArrLine(int)));
          connect(tableView, SIGNAL(accepted()), this, SLOT(acceptTriggered()));
          connect(tableView, SIGNAL(error(const QString&)), this, SLOT(error(const QString&)));
+         connect(tableView, SIGNAL(nextfield()), this, SLOT(nextfield()));
+         connect(tableView, SIGNAL(prevfield()), this, SLOT(prevfield()));
       }
 
       if(LineEditDelegate *delegate = qobject_cast<LineEditDelegate *> (formElements().at(i))){
@@ -1234,6 +1247,61 @@ void FglForm::setWindowType(const QString &sm)
 
 }
 
+void FglForm::setCurrentField(QString fieldName, bool sendEvents)
+{
+      QWidget *wi = currentWidget;
+
+      if(wi != NULL){
+         wi->clearFocus();
+      }
+
+      if(wi != NULL && wi->objectName() != fieldName && sendEvents){
+               Fgl::Event event;
+               event.type = Fgl::AFTER_FIELD_EVENT;
+               event.attribute = wi->objectName();
+               fieldEvent(event);
+      }
+
+      QWidget *next = NULL;
+      if(wi == NULL || (wi != NULL && wi->objectName() != fieldName)){
+         for(int i=0; i<context->fieldList().count(); i++){
+            if(context->fieldList().at(i)->objectName() == fieldName){
+               next = context->fieldList().at(i);
+               break;
+            }
+         }
+      }
+      else{
+         next = wi;
+      }
+
+      if(next != NULL){
+         QList<QTabWidget*> ql_tabList = formWidget->findChildren<QTabWidget*>();
+         for(int i=0; i<ql_tabList.count(); i++){
+            QTabWidget *tabWidget = ql_tabList.at(i);
+
+            for(int j=0; j<tabWidget->count(); j++){
+                QWidget* tab = tabWidget->widget(j);
+                if(tab->findChild<QWidget*>(next->objectName())){
+                   tabWidget->setCurrentIndex(j);
+                   break;
+               }
+            }
+         }
+         Fgl::Event event;
+         event.type = Fgl::BEFORE_FIELD_EVENT;
+         event.attribute = next->objectName();
+         fieldEvent(event);
+
+         next->setFocus(Qt::TabFocusReason);
+         currentWidget = next;
+      }
+      else{
+         //NO FIELD FOUND
+         qDebug() << "NO FIELD FOUND: " << fieldName;
+      }
+}
+
 //------------------------------------------------------------------------------
 // Method       : editcopy()
 // Filename     : fglform.cpp
@@ -1272,6 +1340,10 @@ void FglForm::editpaste()
 //------------------------------------------------------------------------------
 void FglForm::nextfield()
 {
+
+   bool b_sendEvent = (QObject::sender() != NULL); //If called from screenHandler this is NULL
+                                                   // Programatical change (NEXT FIELD NEXT)-> No AFTER_FIELD_EVENT
+
    if(!screenRecord()){
       //  If context option says not to wrap
       //  and input field is the last field in the list
@@ -1307,26 +1379,57 @@ void FglForm::nextfield()
           next = context->fieldList().first();
       }
 
-      QList<QTabWidget*> ql_tabList = formWidget->findChildren<QTabWidget*>();
-      for(int i=0; i<ql_tabList.count(); i++){
-         QTabWidget *tabWidget = ql_tabList.at(i);
-
-         for(int j=0; j<tabWidget->count(); j++){
-             QWidget* tab = tabWidget->widget(j);
-             if(tab->findChild<QWidget*>(next->objectName())){
-                tabWidget->setCurrentIndex(j);
-                break;
-            }
-         }
-      }
-      next->setFocus();
+      setCurrentField(next->objectName(), b_sendEvent);
    }
    else{
       for(int i=0; i<context->fieldList().size(); i++){
          if(context->fieldList().at(i)->inherits("TableView")){
             TableView *view = (TableView*) context->fieldList().at(i);
             if(view->isEnabled()){
-               view->nextfield();
+               //view->nextfield();
+               QSortFilterProxyModel *proxyModel = static_cast<QSortFilterProxyModel*> (view->model());
+               TableModel *table = static_cast<TableModel*> (proxyModel->sourceModel());
+               int row = view->currentIndex().row();
+               int rowCount = table->rowCount(QModelIndex());
+               int column = view->currentIndex().column();
+               int columnCount = table->columnCount(QModelIndex());
+               switch(state()){
+                  case Fgl::INPUTARRAY:
+                  case Fgl::INPUT:
+                        if(column < columnCount-1){
+                           //GO TO NEXT FIELD
+                           QModelIndex tindex = table->index(row, column+1);
+                           QModelIndex index = proxyModel->mapFromSource(tindex);
+
+                           view->setCurrentIndex(index);
+                        }
+                        else{
+                           if(row < rowCount-1){
+                              //CHANGE ROW
+                              QModelIndex tindex = table->index(row+1, 0);
+                              QModelIndex index = proxyModel->mapFromSource(tindex);
+
+                              view->setCurrentIndex(index);
+                           }
+                           else{
+                              //CHANGE TO FIRST ROW
+                              QModelIndex tindex = table->index(0, 0);
+                              QModelIndex index = proxyModel->mapFromSource(tindex);
+
+                              view->setCurrentIndex(index);
+                           }
+                        }
+
+                     break;
+                  case Fgl::DISPLAYARRAY:
+                     if(row <= rowCount){
+                        view->selectRow(row+1);
+                     }
+
+                     break;
+                  default:
+                     return;
+               }
             }
          }
       }
@@ -1339,6 +1442,8 @@ void FglForm::nextfield()
 //------------------------------------------------------------------------------
 void FglForm::prevfield()
 {
+   bool b_sendEvent = (QObject::sender() != NULL); //If called from screenHandler this is NULL
+                                                   // Programatical change (NEXT FIELD PREVIOUS)-> No AFTER_FIELD_EVENT
    if(!screenRecord()){
        QWidget *prev = NULL;
        for(int i=1; i<context->fieldList().count(); i++){
@@ -1352,19 +1457,7 @@ void FglForm::prevfield()
            prev = context->fieldList().last();
        }
 
-       QList<QTabWidget*> ql_tabList = formWidget->findChildren<QTabWidget*>();
-       for(int i=0; i<ql_tabList.count(); i++){
-          QTabWidget *tabWidget = ql_tabList.at(i);
-
-          for(int j=0; j<tabWidget->count(); j++){
-              QWidget* tab = tabWidget->widget(j);
-              if(tab->findChild<QWidget*>(prev->objectName())){
-                 tabWidget->setCurrentIndex(j);
-                 break;
-             }
-          }
-       }
-       prev->setFocus();
+       setCurrentField(prev->objectName(), b_sendEvent);
    }
    else{
       //find active screenRecord
@@ -1382,7 +1475,49 @@ void FglForm::prevfield()
          if(context->fieldList().at(i)->inherits("TableView")){
             TableView *view = (TableView*) context->fieldList().at(i);
             if(view->isEnabled()){
-               view->prevfield();
+               QSortFilterProxyModel *proxyModel = static_cast<QSortFilterProxyModel*> (view->model());
+               TableModel *table = static_cast<TableModel*> (proxyModel->sourceModel());
+               int row = view->currentIndex().row();
+               int rowCount = table->rowCount(QModelIndex());
+               int column = view->currentIndex().column();
+               int columnCount = table->columnCount(QModelIndex());
+               switch(state()){
+                  case Fgl::INPUTARRAY:
+                  case Fgl::INPUT:
+                        if(column > 0){
+                           //GO TO PREV FIELD
+                           QModelIndex tindex = table->index(row, column-1);
+                           QModelIndex index = proxyModel->mapFromSource(tindex);
+
+                           view->setCurrentIndex(index);
+                        }
+                        else{
+                           if(row > 0){
+                              //CHANGE ROW
+                              QModelIndex tindex = table->index(row-1, columnCount-1);
+                              QModelIndex index = proxyModel->mapFromSource(tindex);
+
+                              view->setCurrentIndex(index);
+                           }
+                           else{
+                              //CHANGE TO LAST ROW
+                              QModelIndex tindex = table->index(rowCount-1,columnCount-1);
+                              QModelIndex index = proxyModel->mapFromSource(tindex);
+
+                              view->setCurrentIndex(index);
+                           }
+                        }
+
+                     break;
+                  case Fgl::DISPLAYARRAY:
+                     if(row <= rowCount){
+                        view->selectRow(row+1);
+                     }
+
+                     break;
+                  default:
+                     return;
+               }
             }
          }
       }
@@ -2447,4 +2582,95 @@ void FglForm::checkShortcuts()
           }
        }
     }
+}
+
+bool FglForm::focusNextPrevChild(bool next)
+{
+   return false;
+   QWidget *nextWidget = NULL;
+
+   switch(state()){
+      case Fgl::MENU:
+         if(menu() != NULL){
+            if(next){
+               QList<QPushButton*> ql_buttons = menu()->buttons();
+               QWidget *current = menu()->focusWidget();
+               for(int i=0; i<ql_buttons.count(); i++){
+                  bool found = false;
+                  if(current == ql_buttons.at(i)){
+                     for(int j=i+1; j<ql_buttons.count()-1; j++){
+                        if(ql_buttons.at(j)->isEnabled() &&
+                           ql_buttons.at(j)->isVisible()){
+                           nextWidget = ql_buttons.at(j);
+                           found = true;
+                           break;
+                        }
+                     }
+                     if(found){
+                        break;
+                     }
+                  }
+               }
+
+               if(nextWidget == NULL){
+                  for(int i=0; i<ql_buttons.count(); i++){
+                     if(ql_buttons.at(i)->isEnabled() &&
+                        ql_buttons.at(i)->isVisible()){
+                        nextWidget = ql_buttons.at(i);
+                        break;
+                     }
+                  }
+               }
+
+               nextWidget->setFocus();
+            }
+            else{
+               QList<QPushButton*> ql_buttons = menu()->buttons();
+               QWidget *current = menu()->focusWidget();
+               for(int i=ql_buttons.count()-1; i>=0; i--){
+                  bool found = false;
+                  if(current == ql_buttons.at(i)){
+                     for(int j=i-1; j>=0; j--){
+                        if(ql_buttons.at(j)->isEnabled() &&
+                           ql_buttons.at(j)->isVisible()){
+                           nextWidget = ql_buttons.at(j);
+                           found = true;
+                           break;
+                        }
+                     }
+                     if(found){
+                        break;
+                     }
+                  }
+               }
+
+               if(nextWidget == NULL){
+                  nextWidget = ql_buttons.last();
+                  for(int i=ql_buttons.count()-1; i>=0; i--){
+                     if(ql_buttons.at(i)->isEnabled() &&
+                        ql_buttons.at(i)->isVisible()){
+                        nextWidget = ql_buttons.at(i);
+                        break;
+                     }
+                  }
+               }
+
+               if(nextWidget != NULL){
+                  nextWidget->setFocus();
+               }
+            }
+         }
+         break;
+      case Fgl::INPUT:
+      case Fgl::CONSTRUCT:
+         break;
+
+      case Fgl::DISPLAYARRAY:
+         break;
+      case Fgl::INPUTARRAY:
+         break;
+      default:
+          return false;
+   }
+   return true;
 }

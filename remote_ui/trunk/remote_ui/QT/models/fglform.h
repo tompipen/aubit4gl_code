@@ -108,7 +108,8 @@ public:
    void addFormEvent(Fgl::Event);
    void focusNextField() { this->focusNextChild(); };
    QWidget* currentField() { return currentWidget; };
-   void setCurrentField(QWidget* widget = NULL) { widget->setFocus(); currentWidget = widget; };
+   //void setCurrentField(QWidget* widget = NULL) { widget->setFocus(); currentWidget = widget; };
+   void setCurrentField(QString, bool sendEvents = true);
 
    bool input() { return (ql_states.last() == Fgl::INPUT); };
    bool construct() { return (ql_states.last() == Fgl::CONSTRUCT); };
@@ -278,6 +279,7 @@ protected:
    bool eventFilter(QObject *obj, QEvent *event);
    void closeEvent(QCloseEvent *event);
    void contextMenuEvent(QContextMenuEvent*);
+   bool focusNextPrevChild(bool);
 };
 
 #endif

@@ -114,6 +114,7 @@ void RingMenu::createButton(int id, QString text, QString tooltip)
 
    // Create the Button and set Text + ToolTip
    QPushButton *button = new QPushButton(buttonText);
+   button->installEventFilter(this);
    button->setStyleSheet("QPushButton {text-align:left;}");
 //   QPushButton *button = new QPushButton(text.trimmed());
    //button->setIcon(QIcon(QString("pics:blank.png")));
@@ -321,7 +322,7 @@ void RingMenu::resizeEvent(QResizeEvent *event)
 
 void RingMenu::focusInEvent(QFocusEvent* event)
 {
-   this->focusNextChild();
+   //this->focusNextChild();
    return QGroupBox::focusInEvent(event);
 }
 
@@ -338,42 +339,11 @@ void RingMenu::keyPressEvent(QKeyEvent *keyEvent)
          }
 
    if(keyEvent->type() == QEvent::KeyPress){
-      QKeyEvent *key = (QKeyEvent*) keyEvent;
-
-
-      if(key->key() == Qt::Key_Down ||
-         key->key() == Qt::Key_Up){
-         QPushButton *firstBtn = NULL;
-         QPushButton *lastBtn = NULL;
-
-         for(int i=0; i<buttons().count(); i++){
-            QPushButton *btn = buttons().at(i);
-            if(btn->isVisible() && btn->isEnabled()){
-               firstBtn = btn;
-               break;
-            }
-            
-         }
-
-         for(int i=buttons().count()-1; i>0; i--){
-            QPushButton *btn = buttons().at(i);
-            if(btn->isVisible() && btn->isEnabled()){
-               lastBtn = btn;
-               break;
-            }
-         }
-
-         if(key->key() == Qt::Key_Down){
-            if(this->focusWidget() == lastBtn){
-               firstBtn->setFocus();
-            }
-         }
-
-         if(key->key() == Qt::Key_Up){
-            if(this->focusWidget() == firstBtn){
-               lastBtn->setFocus();
-            }
-         }
+      if(keyEvent->key() == Qt::Key_Down){
+         focusNextChild();
+      }
+      if(keyEvent->key() == Qt::Key_Up){
+         focusPreviousChild();
       }
    }
 

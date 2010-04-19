@@ -34,7 +34,7 @@
 // Filename     : screenhandler.cpp
 // Description  : constructor for the instances
 //------------------------------------------------------------------------------
-ScreenHandler::ScreenHandler(QTcpSocket *parent) : QObject(parent)
+ScreenHandler::ScreenHandler(QObject *parent) : QObject(parent)
 {
 
    cnt_form = 0;
@@ -956,35 +956,28 @@ void ScreenHandler::setFieldFocus(QString fieldName)
    clearEvents();
 
    if(p_fglform->focusWidget() != NULL && !p_fglform->screenRecord()){
-      p_fglform->focusWidget()->clearFocus();
       clearEvents();
    }
 
-   if(fieldName == "NEXT"){
-      if(p_fglform->currentField() != NULL){
-         p_fglform->currentField()->setFocus();
-         clearEvents();
-      }
+   if(fieldName.toUpper() == "NEXT"){
       p_fglform->nextfield();
       return;
    }
 
-   if(fieldName == "PREVIOUS"){
-   if(p_fglform->currentField() != NULL){
-      p_fglform->currentField()->setFocus();
-      clearEvents();
-   }
-   p_fglform->prevfield();
-   return;
+   if(fieldName.toUpper() == "PREVIOUS"){
+      p_fglform->prevfield();
+      return;
    }
 
-   QWidget *widget = NULL;
-
-   if(fieldName == "CURRENT"){
-      widget = p_fglform->currentField();
+   if(fieldName.toUpper() == "CURRENT"){
+      if(p_fglform->currentField() != NULL){
+         p_fglform->setCurrentField(p_fglform->currentField()->objectName(), false);
+      }
    }
    else{
+      p_fglform->setCurrentField(fieldName, false);
 
+/*
       // For fieldlist = table.*
       int index = fieldName.indexOf(".*");
 
@@ -1018,6 +1011,7 @@ void ScreenHandler::setFieldFocus(QString fieldName)
       else{
          widget->setFocus();
       }
+*/
    }
 }
 

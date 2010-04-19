@@ -68,17 +68,23 @@ private:
 public slots:
    void fieldChanged(QModelIndex, QModelIndex);
    void accept();
+/*
    void nextfield();
    void prevfield();
+*/
 
+/*
 protected:
  //  void keyPressEvent(QKeyEvent *event);
+*/
 
 signals:
    void fieldEvent(Fgl::Event);
    void setArrLineSignal(int);
    void accepted();
    void error(QString);
+   void nextfield();
+   void prevfield();
    
 };
 

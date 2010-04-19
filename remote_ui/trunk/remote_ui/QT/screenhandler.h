@@ -18,7 +18,6 @@
 #define SCREENHANDLER_H
 
 #include <QObject>
-#include <QTcpSocket>
 #include <QDomDocument>
 
 #include <models/fglform.h>
@@ -34,7 +33,7 @@ class ScreenHandler : public QObject
 
 public:
 
-   ScreenHandler(QTcpSocket *parent = 0);
+   ScreenHandler(QObject *parent = 0);
    ~ScreenHandler();
    //void handleXMLForm(const QDomDocument&);
    int getCurrForm();

@@ -187,42 +187,6 @@ QString TableView::getColumnName(int col)
    return QString();
 }
 
-/*
-void TableView::keyPressEvent(QKeyEvent *event)
-{
-
-    if(event->key() == QKeySequence("Enter") ||
-      event->key() == QKeySequence("Return")){
-      accept();
-   }
-
-   if(event->key() == QKeySequence("Tab")){
-      QModelIndex current = this->currentIndex();
-
-      QSortFilterProxyModel *proxyModel = static_cast<QSortFilterProxyModel*> (this->model());
-      TableModel *table = static_cast<TableModel*> (proxyModel->sourceModel());
-
-      if(current.row()+1 == table->rowCount(QModelIndex()) &&
-         current.column()+1 == table->columnCount(QModelIndex())){
-         if(i_maxArrSize > table->rowCount(QModelIndex()))
-            table->insertRows(table->rowCount(QModelIndex()), 1, QModelIndex());
-      }
-
-   }
-
-   if(event->key() == QKeySequence("Down")){
-      QModelIndex current = this->currentIndex();
-
-      //QSortFilterProxyModel *proxyModel = static_cast<QSortFilterProxyModel*> (this->model());
-      //TableModel *table = static_cast<TableModel*> (proxyModel->sourceModel());
-
-       setScrLine(currentIndex().row()+1);
-
-   }
-
-   return QTableView::keyPressEvent(event);
-}
-*/
 void TableView::accept()
 {
    QSortFilterProxyModel *proxyModel = static_cast<QSortFilterProxyModel*> (this->model());
@@ -237,10 +201,11 @@ void TableView::accept()
    }
    else{
       b_ignoreFocus = true;
-      nextfield();
+      emit nextfield();
    }
 }
 
+/*
 void TableView::nextfield()
 {
    QSortFilterProxyModel *proxyModel = static_cast<QSortFilterProxyModel*> (this->model());
@@ -292,6 +257,7 @@ void TableView::prevfield()
       }
    }
 }
+*/
 
 void TableView::setInputEnabled(bool enable)
 { 
@@ -387,7 +353,12 @@ void TableView::fieldChanged(QModelIndex current, QModelIndex prev)
       
       // only allow focus for fields that have a focus policy
       if(table->b_input && isReadOnlyColumn(current.column())){
-         this->nextfield();
+         if(current.column() > prev.column()){
+            emit nextfield();
+         }
+         else{
+            emit prevfield();
+         }
       }
 
 
@@ -466,6 +437,7 @@ void TableView::setCurrentColumn(int col)
 void TableView::setCurrentField(int row, int col)
 {
    this->setFocus();
+
    if(QSortFilterProxyModel *proxyModel = qobject_cast<QSortFilterProxyModel *> (this->model())){
 
       if(TableModel *table = qobject_cast<TableModel *> (proxyModel->sourceModel())){
@@ -475,7 +447,7 @@ void TableView::setCurrentField(int row, int col)
          selectionModel()->setCurrentIndex(index, QItemSelectionModel::NoUpdate);
          setCurrentIndex(index);
          if(table->b_input){
-//             edit(index);
+             edit(index);
          }
       }
    }

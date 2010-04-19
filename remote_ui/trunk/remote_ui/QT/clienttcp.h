@@ -23,17 +23,12 @@
 #include <QErrorMessage>
 #include <QObject>
 #include <QThread>
-#include <QMutex>
-#include <QWaitCondition>
 #include <QTextStream>
-#include <QVariant>
 
 #include <QDomNode>
 #include <QDomDocument>
 
 #include "screenhandler.h"
-
-#include <models/fglform.h>
 
 class DebugWindow : public QDialog
 {
