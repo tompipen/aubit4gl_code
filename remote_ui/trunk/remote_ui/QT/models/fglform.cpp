@@ -630,6 +630,18 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
 
    if(event->type() == QEvent::MouseButtonRelease){
       QMouseEvent *mev = (QMouseEvent*) event;
+      if(mev->button() == Qt::LeftButton){
+         mev->ignore();
+         QWidget *w = (QWidget*) obj;
+         if(input() || construct()){
+            if(context->fieldList().contains(w)){
+               while(w != currentWidget){
+                  nextfield();
+               }
+               return true;
+            }
+         }
+      }
       if(!input() && !construct() && !screenRecord()){
          createContextMenu(mev->globalPos());
       }
@@ -637,6 +649,7 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
 
    processResponse();
 
+/*
    if(event->type() == QEvent::FocusIn ||
       event->type() == QEvent::FocusOut){
       QFocusEvent *fe = (QFocusEvent*) event;
@@ -644,11 +657,18 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
          fe->reason() != Qt::ActiveWindowFocusReason &&
          fe->reason() != Qt::TabFocusReason){
          QWidget *w = (QWidget*) obj;
+         if(w != currentWidget){
          w->clearFocus();
          event->ignore();
-         return true;
+            return true;
+         }
+         while(w != currentWidget){
+            nextfield();
+         }
+         return false;
       }
    }
+*/
 
 /*
    if(event->type() == QEvent::FocusIn){
@@ -1338,10 +1358,11 @@ void FglForm::editpaste()
 // Filename     : fglform.cpp
 // Description  : ActionDefaults
 //------------------------------------------------------------------------------
-void FglForm::nextfield()
+void FglForm::nextfield(bool change)
 {
 
    bool b_sendEvent = (QObject::sender() != NULL); //If called from screenHandler this is NULL
+   b_sendEvent = change;
                                                    // Programatical change (NEXT FIELD NEXT)-> No AFTER_FIELD_EVENT
 
    if(!screenRecord()){

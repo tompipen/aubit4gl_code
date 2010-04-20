@@ -198,7 +198,7 @@ public slots:
    void editcopy();
    void editcut();
    void editpaste();
-   void nextfield();
+   void nextfield(bool change=true);
    void prevfield();
    void nextrow();
    void prevrow();

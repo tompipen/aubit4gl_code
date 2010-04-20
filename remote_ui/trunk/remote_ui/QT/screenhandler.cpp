@@ -960,7 +960,7 @@ void ScreenHandler::setFieldFocus(QString fieldName)
    }
 
    if(fieldName.toUpper() == "NEXT"){
-      p_fglform->nextfield();
+      p_fglform->nextfield(false);
       return;
    }
 
