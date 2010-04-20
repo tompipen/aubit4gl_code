@@ -2890,10 +2890,10 @@ char *ptr_b;
     return 0;
   if (b == 0)
     return 0;
-  fprintf (stderr, "Field  name match : '%s' '%s' : ", a, b);
+  UIdebug (5, "Field  name match : '%s' '%s' : ", a, b);
 
   if (strcmp (a, b) == 0) {
-	printf("Match\n");
+	UIdebug(5,"Match\n");
     	return 1;
   }
   ptr_a=strchr(a,'.'); if (ptr_a) ptr_a++; 
@@ -2901,19 +2901,19 @@ char *ptr_b;
   if (ptr_a && ptr_b==0) {
 	// Assume they match - one is missing a table name...
 	if (strcmp(ptr_a,b)==0) {
-	printf("Match\n");
+	UIdebug(5,"Match\n");
 		return 1;
 	}
   }
   if (ptr_a==0 && ptr_b) {
 	// Assume they match - one is missing a table name...
 	if (strcmp(a,ptr_b)==0) {
-	printf("Match\n");
+	UIdebug(5,"Match\n");
 		return 1;
 	}
   }
 
-printf("Not matched\n");
+UIdebug(5,"Not matched\n");
   return 0;
 }
 
