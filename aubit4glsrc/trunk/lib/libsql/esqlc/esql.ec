@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.243 2010-01-12 09:01:48 mikeaubury Exp $
+# $Id: esql.ec,v 1.244 2010-04-23 07:40:09 mikeaubury Exp $
 #
 */
 
@@ -181,7 +181,7 @@ static loc_t *add_blob(struct s_sid *sid, int n, struct s_extra_info *e,fglbyte 
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.243 2010-01-12 09:01:48 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.244 2010-04-23 07:40:09 mikeaubury Exp $";
 #endif
 
 
@@ -3084,7 +3084,12 @@ A4GL_debug("A4GLSQL_fetch_cursor\n");
     EXEC SQL FETCH RELATIVE: position: cursorName USING SQL DESCRIPTOR:descriptorName;
       break;
     case FETCH__ABSOLUTE:
-    EXEC SQL FETCH ABSOLUTE: position: cursorName USING SQL DESCRIPTOR:descriptorName;
+	if (position>0) {
+    		EXEC SQL FETCH ABSOLUTE: position: cursorName USING SQL DESCRIPTOR:descriptorName;
+	} else {
+		// out of range if its <=0
+		sqlca.sqlcode=100;
+        }
       break;
     default:
    	sid->obind=o1; sid->no=o2;
