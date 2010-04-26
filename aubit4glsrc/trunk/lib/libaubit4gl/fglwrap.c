@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.156 2010-02-24 16:25:07 mikeaubury Exp $
+# $Id: fglwrap.c,v 1.157 2010-04-26 10:35:48 mikeaubury Exp $
 #
 */
 
@@ -836,7 +836,11 @@ aclfgl_arg_val (int n)
     }
   else
     {
-      A4GL_push_char (" ");
+	if (A4GL_isyes(acl_getenv("A4GL_NULLBADARGVAL"))) {
+		A4GL_push_null(DTYPE_CHAR,1);
+	} else {
+      		A4GL_push_char (" ");
+	}
     }
   return 1;
 }
