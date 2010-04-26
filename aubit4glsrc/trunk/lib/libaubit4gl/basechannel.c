@@ -169,11 +169,14 @@ static int base_channel_read (int *objectID,  int nParam) {
 
 static int base_channel_write (int *objectID, int nParam) {
         struct channel_data *data;
-	struct BINDING *ibind;
+	struct BINDING *ibind=0;
 	int ni;
 	struct sObject *ptr;
 	int a;
-
+	int d1;
+	int s1;
+	void *ptr1;
+	A4GL_get_top_of_stack (1, &d1, &s1, (void *) &ptr1);
 
 // Setup Object stuff..
 	if (!ensureObject("base.channel",*objectID,&ptr)) {
@@ -189,7 +192,8 @@ static int base_channel_write (int *objectID, int nParam) {
 		A4GL_exitwith("Expected 1 parameter");
 	}
 	
-
+	if ((d1&DTYPE_MASK)==DTYPE_BINDING) {
+	
 // Do the actual write...
 	if (!A4GL_pop_binding_from_stack(&ibind,&ni,'o')) { // Its an output binding when reading...
         	return 0;
@@ -201,9 +205,15 @@ static int base_channel_write (int *objectID, int nParam) {
                 A4GL_push_param(ibind[a].ptr,ibind[a].dtype+ENCODE_SIZE(ibind[a].size));
                 ptrBuff=A4GL_char_pop();
                         A4GL_trim(ptrBuff);
-                fprintf(data->handle,"%s",ptrBuff);
+                	fprintf(data->handle,"%s",ptrBuff);
                         free(ptrBuff);
         }
+	} else {
+		ptr1=A4GL_char_pop();
+                fprintf(data->handle,"%s",(char *)ptr1);
+		free(ptr1);
+		
+	}
         fprintf(data->handle,"\n");
         if (ibind) free(ibind);
 
