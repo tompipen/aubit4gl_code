@@ -72,7 +72,7 @@ public slots:
 private:
    QTabWidget *tabWidget;
    QErrorMessage *errorMessageMainFrame;
-   void tcpListener();
+   void tcpListener(int Port);
    void createStatusBar();
    QAction *exitAction;
    QToolBar *mainFrameToolBar;

@@ -52,6 +52,7 @@ MainFrame::MainFrame(QWidget *parent) : QMainWindow(parent)
 {
 
    p_currOpenNetwork=NULL;
+   int port=1350;
    mainFrameToolBar = NULL;
    connectionsTab = NULL;
 
@@ -70,6 +71,14 @@ MainFrame::MainFrame(QWidget *parent) : QMainWindow(parent)
      {
          onlyLogin = true;
      }
+
+     if (parameter.at(i) == "-p")
+     {
+	 i++;
+         port= parameter.at(i).toInt();
+	qDebug() << "Using non-standard port:"<< port;
+     }
+
      if (parameter.at(i) == "-a")
      {
          adminMenu = true;
@@ -123,7 +132,7 @@ MainFrame::MainFrame(QWidget *parent) : QMainWindow(parent)
    // start listening to the network
    //
    ReadSettings();
-   tcpListener();
+   tcpListener(port);
 }
 void MainFrame::contextMenuEvent ( QContextMenuEvent * event)
 {
@@ -578,12 +587,12 @@ void ShortcutsTab::updateListBox()
 // Description  : listen to network port....
 //------------------------------------------------------------------------------
 
-void MainFrame::tcpListener()
+void MainFrame::tcpListener(int port)
 {
    clientTcp = new ClientTcp(this);
    clientTcp->setDebugModus(debugModus, this);
 
-   if(!clientTcp->listen(QHostAddress::Any, 1350)){
+   if(!clientTcp->listen(QHostAddress::Any, port)){
       errorMessageMainFrame->showMessage(
             tr("ERROR: VDC already running"));
    }
