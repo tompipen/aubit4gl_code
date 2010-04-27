@@ -945,6 +945,8 @@ HASHNOCOMMENT UNKNOWN UNKNOWN
 HIDEEMPTYBUTTONS UNKNOWN UNKNOWN
 KEEPNLONREAD UNKNOWN UNKNOWN
 BINDDATEASINT UNKNOWN UNKNOWN
+A4GL_NULLBADARGVAL RUNTIME Returns NULL instead of " " from ARG_VAL
+	This option returns NULL when ARG_VAL is called with an invalid parameter
 C4GLFUNCRETCOMPAT COMPILE Sets the compiler to ignore any surpluss return values
 =YES|NO
 	The (some versions of the) Informix c4gl silently discards extra return values. 
