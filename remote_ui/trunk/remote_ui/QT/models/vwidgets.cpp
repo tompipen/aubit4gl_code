@@ -767,12 +767,19 @@ WebView* WidgetHelper::createWebView(const QDomElement& formField, QWidget *pare
    bool hidden   = formField.attribute("hidden").toInt();
 
    int w  = browserElement.attribute("width").toInt();
+   int h  = browserElement.attribute("height").toInt();
+   int wPixel  = browserElement.attribute("pixelWidth").toInt();
+   int hPixel  = browserElement.attribute("pixelHeight").toInt();
+
    WebView *browser = new WebView(parent);
    browser->setAccessibleName(name);
    browser->setObjectName(colName);
    browser->name = name;
    browser->colName = colName;
    browser->setDefaultValue(defaultValue);
+
+
+//std::cout "w="<< wPixel << "h=" << hPixel ;
 
    QString comments = browserElement.attribute("comments");
    if(!comments.isEmpty()){
@@ -787,10 +794,24 @@ WebView* WidgetHelper::createWebView(const QDomElement& formField, QWidget *pare
       browser->setVisible(false);
    }
 
-   browser->setFixedHeight(defHeight);
-   QFontMetrics fm = browser->fontMetrics();
-   int width = w*fm.width("W")+10;
-   browser->setFixedWidth(width);
+   if (wPixel>0) {
+   	browser->setFixedWidth(wPixel);
+   } else {
+   	QFontMetrics fm = browser->fontMetrics();
+   	int width = w*fm.width("W")+10;
+   	browser->setFixedWidth(width);
+   }
+   if (hPixel>0) {
+	// Specified a pixel height...
+   	browser->setFixedHeight(hPixel);
+   } else {
+	if (h>0) { 
+		// Specified a Line height...
+   		browser->setFixedHeight(defHeight*h);
+	} else {
+   		browser->setFixedHeight(defHeight);
+	}
+   }
 
    return browser;
 }
