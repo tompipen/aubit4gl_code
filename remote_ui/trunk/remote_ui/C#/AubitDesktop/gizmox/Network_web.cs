@@ -392,69 +392,92 @@ namespace AubitDesktop
         bool inEnvelope = false;
        private void tcpStream_DataReceived(object sender, com.thosmos.TcpStream.TcpDataEventArgs e)
        {
+           Encoding enc=null;
+       //    Console.WriteLine("Got Data");
 
-           Encoding enc = System.Text.Encoding.GetEncoding(Program.AppSettings.defaultEncoding);
-           
-           
+        //   Console.WriteLine("Loading encoding : " + Program.AppSettings.defaultEncoding);
+           try
+           {
+               enc = System.Text.Encoding.GetEncoding(Program.AppSettings.defaultEncoding);
+           }
+           catch (Exception ex)
+           {
+               Console.WriteLine("Unable to load encoding : " + ex.Message);
+           }
+
+      //     Console.WriteLine("Read encoding");
             //bool inEnvelope=false;
                int index;
             //string Envelope="";
+       //        Console.WriteLine("Got Data as:" + e.data);
+
+               if (enc == null)
+               {
+                   cmd += e.data.ToString();
+               }
+               else
+               {
+                   cmd += enc.GetString(e.data);
+               }
+
+      //     Console.WriteLine("Converts to " + cmd);
 
 
-           cmd+=enc.GetString(e.data);
+           if (this.sockStyle == AubitNetwork.SocketStyle.SocketStyleLine || this.sockStyle == AubitNetwork.SocketStyle.SocketStyleEnvelope)
+           {
+            //   Console.WriteLine("Check if 1");
+               index = cmd.IndexOf('\n');
+               while (index >= 0)
+               {
+                   string c;
+
+                   c = cmd.Substring(0, index);
+
+                   if (c.Length > 0)
+                   {
+                       if (c.StartsWith("<ENVELOPE"))
+                       {
+                           Envelope = "";
+                           inEnvelope = true;
+                       }
+                       if (inEnvelope && this.sockStyle == AubitNetwork.SocketStyle.SocketStyleEnvelope)
+                       {
+                           Envelope += (c + "\n");
+                       }
+
+                       if (!inEnvelope)
+                       {
+                           this.OnReceivedFromServer(new ReceivedEventArgs(null, c));
+                       }
+
+                       if (c.StartsWith("</ENVELOPE>"))
+                       {
+
+                           inEnvelope = false;
 
 
+                           this.OnReceivedEnvelopeFromServer(new ReceivedEventArgs(null, Envelope));
 
-                if (this.sockStyle == AubitNetwork.SocketStyle.SocketStyleLine || this.sockStyle == AubitNetwork.SocketStyle.SocketStyleEnvelope)
-                {
-                    index = cmd.IndexOf('\n');
-                    while (index >= 0)
-                    {
-                        string c;
-                        
-                        c = cmd.Substring(0, index);
-                        
-                        if (c.Length > 0)
-                        {
-                            if (c.StartsWith("<ENVELOPE"))
-                            {
-                                Envelope = "";
-                                inEnvelope = true;
-                            }
-                            if (inEnvelope && this.sockStyle == AubitNetwork.SocketStyle.SocketStyleEnvelope)
-                            {
-                                Envelope += (c+"\n");
-                            }
+                           Envelope = "";
+                       }
+                   }
 
-                            if (!inEnvelope)
-                            {
-                                this.OnReceivedFromServer(new ReceivedEventArgs(null, c));
-                            }
-
-                            if (c.StartsWith("</ENVELOPE>"))
-                            {
-                                
-                                inEnvelope = false;
-
-                                
-                                    this.OnReceivedEnvelopeFromServer(new ReceivedEventArgs(null, Envelope));
-                                
-                                Envelope = "";
-                            }
-                        }
-
-                        if (cmd.Length > index)
-                        {
-                            cmd = cmd.Substring(index + 1);
-                            if (cmd == "\n")
-                            {
-                                MessageBox.Show(appwin,"OOps\n");
-                                cmd = "";
-                            }
-                        }
-                        index = cmd.IndexOf('\n');
-                    }
-                }
+                   if (cmd.Length > index)
+                   {
+                       cmd = cmd.Substring(index + 1);
+                       if (cmd == "\n")
+                       {
+                           MessageBox.Show(appwin, "OOps\n");
+                           cmd = "";
+                       }
+                   }
+                   index = cmd.IndexOf('\n');
+               }
+           }
+           else
+           {
+               Console.WriteLine("Check if 2");
+           }
             
         }
   
@@ -705,6 +728,7 @@ namespace AubitDesktop
 
         void n_ReceivedFromServer(object sender, ReceivedEventArgs e)
         {
+        //    Console.WriteLine("Got message:"+e.Data);
             if (e.Data == "PROTOCOL?")
             {
                 ((AubitNetwork)sender).SendString("UIVERSION 1.0");
@@ -815,6 +839,7 @@ namespace com.thosmos
     }
 
     public void BeginRead() {
+       // Console.WriteLine("Begin Read...");
       SocketState state = new SocketState();
       state.stream = stream;
       IAsyncResult ar = stream.BeginRead(state.data, 0, state.data.Length, handleRead, state); 
@@ -856,6 +881,7 @@ namespace com.thosmos
       NetworkStream stream = state.stream;
       int r;
 
+//      Console.WriteLine("handle Read...");
       // check to see if stream has been closed
       if (!stream.CanRead)
         return;
@@ -891,13 +917,22 @@ namespace com.thosmos
 
     void OnData(TcpDataEventArgs args)
     {
+//      Console.WriteLine("onData...");
       EventHandler<TcpDataEventArgs> temp = DataReceived;
       if (temp != null)
-        temp(this, args);
+      {
+//          Console.WriteLine("Calling temp");
+          temp(this, args);
+      }
+      else
+      {
+          Console.WriteLine("Not calling temp - its null");
+      }
     }
 
     void onClose(TcpCloseEventArgs args)
     {
+//        Console.WriteLine("onClose...");
           EventHandler<TcpCloseEventArgs> temp = CloseOccurred;
           if (temp != null)
               temp(this, args);
@@ -906,6 +941,7 @@ namespace com.thosmos
 
     void OnError(TcpErrorEventArgs args)
     {
+//        Console.WriteLine("onError...");
       EventHandler<TcpErrorEventArgs> temp = ErrorOccurred;
       if (temp != null)
         temp(this, args);

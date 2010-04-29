@@ -130,7 +130,7 @@ namespace AubitDesktop
 
             if (Program.AppSettings.defaultEncoding.Trim() == "")
             {
-                Program.AppSettings.defaultEncoding = "ISO8859-1";
+                Program.AppSettings.defaultEncoding = "iso-8859-1";
                 Program.SaveSettings();
             }
 
@@ -617,7 +617,7 @@ namespace AubitDesktop
             Program.AppSettings.StartMinimized = false;
             Program.AppSettings.WindowPositions = new List<AubitDesktop.Xml.WindowPosition>();
             Program.AppSettings.xscale = 10;
-            Program.AppSettings.defaultEncoding = "ISO8859-1";
+            Program.AppSettings.defaultEncoding = "iso-8859-1";
             Program.AppSettings.yscale = 23;
 
             log("Enable timer1");
@@ -651,15 +651,12 @@ namespace AubitDesktop
 
             t = typeof(AubitDesktop.Xml.Authentication.Configuration);
             ser = new XmlSerializer(t);
-            // ser.UnknownAttribute += new XmlAttributeEventHandler(ser_UnknownAttribute);
-            // ser.UnknownElement += new XmlElementEventHandler(ser_UnknownElement);
-            // ser.UnknownNode += new XmlNodeEventHandler(ser_UnknownNode);
+            ser.UnknownAttribute += new XmlAttributeEventHandler(ser_UnknownAttribute);
+            ser.UnknownElement += new XmlElementEventHandler(ser_UnknownElement);
+            ser.UnknownNode += new XmlNodeEventHandler(ser_UnknownNode);
 
             System.IO.StreamReader file =
                     new System.IO.StreamReader(fileName);
-
-
-
 
             try
             {
@@ -671,6 +668,24 @@ namespace AubitDesktop
                 return null;
             }
             return localAppsConfig;
+        }
+
+        void ser_UnknownNode(object sender, XmlNodeEventArgs e)
+        {
+            Console.WriteLine(e.ToString());
+            throw new NotImplementedException();
+        }
+
+        void ser_UnknownElement(object sender, XmlElementEventArgs e)
+        {
+            Console.WriteLine(e.ToString());
+            throw new NotImplementedException();
+        }
+
+        void ser_UnknownAttribute(object sender, XmlAttributeEventArgs e)
+        {
+            Console.WriteLine(e.ToString());
+            throw new NotImplementedException();
         }
 
 
@@ -717,7 +732,7 @@ namespace AubitDesktop
 
             if (cbApplications.Text.Trim() == "") return;
 
-
+            Console.WriteLine("In doLogin");
 
             appName = (string)cbApplications.Text;
 
@@ -819,6 +834,12 @@ namespace AubitDesktop
                 return;
             }
 
+            if (protocol == "")
+            {
+                Program.Show("Invalid Username,Password or Application");
+                return;
+            }
+            Console.WriteLine("In doLogin - set wait cursor");
 
             setWaitCursor();
             networkConnection = new AubitNetwork(AubitNetwork.SocketStyle.SocketStyleLine);
@@ -828,6 +849,7 @@ namespace AubitDesktop
             networkConnection.ConnectionDied += new EventHandler(networkConnection_ConnectionDied);
             EnvelopeReadyForConsumption += new EventHandler(frmMainAppWindow_EnvelopeReadyForConsumption);
 
+            Console.WriteLine("Testing : protocol=" + protocol);
             try
             {
                 networkConnection.NewConnection(host, port, userName, passWord, programName, protocol, this);
@@ -846,6 +868,7 @@ namespace AubitDesktop
             }
             else
             {
+                Console.WriteLine("In doLogin - Connected OK");
                 loginPanel.Visible = false;
                 log("Enable timer1");
                 timer1.Interval = 300;
@@ -991,6 +1014,7 @@ namespace AubitDesktop
 
         void networkConnection_ConnectionDied(object sender, EventArgs e)
         {
+            Console.WriteLine("Connection died");
             this.mainAppPanel.Controls.Clear();
             this.ErrorText = "Connection died";
             hasQuit = true;
@@ -1010,6 +1034,7 @@ namespace AubitDesktop
             
             DateTime s;
             s = System.DateTime.Now;
+           // Console.WriteLine("Consuming...");
             //log("CONSUMING: " + System.DateTime.Now);
             ConsumeEnvelopeCommands();
             log("CONSUMED in " + (System.DateTime.Now - s));
@@ -1041,6 +1066,7 @@ namespace AubitDesktop
 
         void n_DisconnectedFromServer(object sender, EventArgs e)
         {
+            Console.WriteLine("Server disconnect");
             EnvelopeReadyForConsumption(null, null);
             this.MessageText = "Server disconnected";
             //MessageBox.Show("Server disconnect");
