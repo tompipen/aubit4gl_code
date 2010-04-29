@@ -319,7 +319,14 @@ namespace AubitDesktop
                     if (!isOnToolbar)
                     {
                         menuPanel.Controls.Add(btn);
-                        top += btn.Height;
+                        if (btn.Height == 0)
+                        {
+                            top += 30;
+                        }
+                        else
+                        {
+                            top += btn.Height;
+                        }
                     }
                 }
             }
