@@ -243,6 +243,9 @@ namespace AubitDesktop
         public void SetMenuBarButtons(Control a)
         {
             MenuBarPanel.Controls.Clear();
+            
+
+
 
             if (a != null)
             {
