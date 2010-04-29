@@ -1,0 +1,26 @@
+DBG=-O2
+#ZLIB=-DHAVE_ZLIB 
+ZLIB=
+CFLAGS=${DBG} -fPIC -I. -I../../../incl -DA4GL_EXPR_H  $(ZLIB)
+
+
+
+%.o : %c
+	$(CC) -c $<
+
+
+all: libPACKER_XMLBEST.dll reload
+
+
+
+libPACKER_XMLBEST.dll: pack_xml.o cmds.xo.o expr.xo.o overloads.h overloads.o module_def.o lex.yy.o stack.o cmds.setparent.o expr.setparent.o overloads_read.o win32.o
+	$(CC) ${DBG} -shared -fPIC -I../../../incl pack_xml.o cmds.xo.o expr.xo.o overloads.o module_def.o lex.yy.o stack.o cmds.setparent.o expr.setparent.o overloads_read.o win32.o -o libPACKER_XMLBEST.dll -L../.. -laubit4gl-1.00_14
+	cp libPACKER_XMLBEST.dll ../../../plugins-1.00_14
+
+
+reload: reload.c ../../../compilers/4glc/API_lex.c win32.c
+	$(CC) ${DBG} -rdynamic -I../../.. -I../../../incl reload.c ../../../compilers/4glc/API_lex.c win32.c -o reload -L../.. -laubit4gl-1.00_14
+	cp reload.exe ${AUBITDIR}/bin
+
+
+

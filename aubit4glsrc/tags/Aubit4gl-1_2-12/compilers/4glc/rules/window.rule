@@ -1,0 +1,87 @@
+/*
+=====================================================================
+                        Source: window.rule
+=====================================================================
+*/
+
+
+
+
+current_win_cmd	:	CWIS {
+			$<cmd>$=new_current_win_cmd(NULL);
+			add_feature("CURRENT_WINDOW_IS_SCREEN"); 
+			map_ui("CURRENTWINDOWIS");
+}
+		|	CURRENT_WINDOW_IS win_name_p
+{
+		add_feature("CURRENT_WINDOW_IS"); map_ui("CURRENTWINDOWIS");
+			$<cmd>$=new_current_win_cmd($<ptr>2);
+};
+
+window_type	:	fgl_expr_c ROWS KW_COMMA fgl_expr_c COLUMNS {
+				$<wt>$.wintype=EWT_ROWSCOLS;
+				$<wt>$.windowtype_u.rowscols.rows=chk_expr($<ptr>1);
+				$<wt>$.windowtype_u.rowscols.columns=chk_expr($<ptr>4);
+		}
+		|	KWFORM fgl_expr_c { 
+				add_feature("USES_FORM"); 
+				map_open_form($<ptr>2);
+				$<wt>$.wintype=EWT_FORM;
+				$<wt>$.windowtype_u.formfilename=chk_expr($<ptr>2);
+		}
+;
+
+show_cmd : SHOW_WINDOW win_name_p {
+		$<cmd>$=new_show_cmd($<ptr>2);
+		
+		add_feature("SHOW_WINDOW");
+	ADDMAP("Show Window",$<str>2); 
+}
+
+;
+
+
+show_menu_cmd : SHOW_MENU menu_name KW_USING menu_handler op_mnfile {
+	add_feature("SHOW_MENU");
+	$<cmd>$=new_show_menu_cmd($<str>2,$<str>4,chk_expr($<ptr>5));
+	
+
+
+	ADDMAP("Call Menuhandler",$<str>4); 
+}
+;
+
+
+
+op_mnfile : { $<ptr>$=0; } | FROM fgl_expr_c {$<ptr>$=$<ptr>2;}
+;
+
+menu_name: identifier {ADDMAP("Use Menu",$<str>1); }
+;
+
+menu_handler: identifier;
+
+
+hide_cmd : KW_HIDE_WINDOW win_name_p {
+		$<cmd>$=new_hide_cmd($<ptr>2);
+		
+		add_feature("HIDE_WINDOW");
+}
+;
+
+move_cmd : MOVE_WINDOW win_name_p KW_TO fgl_expr_c KW_COMMA fgl_expr_c
+{
+		$<cmd>$=new_move_cmd($<ptr>2,chk_expr($<ptr>6),chk_expr($<ptr>4),EB_FALSE);
+		
+		add_feature("MOVE_WINDOW");
+}
+          |  MOVE_WINDOW win_name_p KW_BY fgl_expr_c KW_COMMA fgl_expr_c
+{
+		add_feature("MOVE_WINDOW");
+		$<cmd>$=new_move_cmd($<ptr>2,chk_expr($<ptr>6),chk_expr($<ptr>4),EB_TRUE);
+		
+}
+;
+
+/* ========================== window.rule ========================= */
+
