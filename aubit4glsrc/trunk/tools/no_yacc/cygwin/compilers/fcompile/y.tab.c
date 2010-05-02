@@ -1186,32 +1186,32 @@ static const yytype_uint16 yyrline[] =
     1365,  1369,  1376,  1377,  1378,  1379,  1380,  1381,  1382,  1383,
     1384,  1385,  1386,  1387,  1388,  1389,  1390,  1391,  1392,  1393,
     1394,  1395,  1396,  1397,  1398,  1400,  1401,  1402,  1403,  1404,
-    1405,  1406,  1412,  1413,  1414,  1418,  1419,  1423,  1424,  1425,
-    1426,  1427,  1428,  1429,  1430,  1432,  1467,  1468,  1469,  1470,
-    1471,  1472,  1473,  1477,  1478,  1481,  1481,  1483,  1483,  1486,
-    1496,  1502,  1502,  1505,  1506,  1507,  1511,  1511,  1513,  1513,
-    1516,  1516,  1518,  1521,  1527,  1530,  1534,  1535,  1539,  1543,
-    1547,  1551,  1555,  1562,  1562,  1566,  1569,  1573,  1573,  1576,
-    1576,  1580,  1581,  1594,  1602,  1602,  1611,  1615,  1619,  1623,
-    1627,  1631,  1635,  1641,  1645,  1649,  1653,  1657,  1661,  1665,
-    1668,  1675,  1675,  1679,  1679,  1684,  1684,  1684,  1688,  1695,
-    1696,  1697,  1698,  1705,  1706,  1709,  1715,  1722,  1723,  1724,
-    1725,  1731,  1734,  1735,  1738,  1739,  1746,  1750,  1757,  1765,
-    1768,  1769,  1770,  1771,  1772,  1773,  1774,  1782,  1784,  1785,
-    1788,  1791,  1795,  1796,  1797,  1798,  1799,  1800,  1801,  1809,
-    1813,  1822,  1822,  1828,  1834,  1835,  1838,  1844,  1845,  1846,
-    1847,  1848,  1849,  1850,  1851,  1852,  1853,  1854,  1855,  1856,
-    1859,  1866,  1867,  1868,  1873,  1876,  1880,  1892,  1895,  1896,
-    1900,  1910,  1917,  1926,  1929,  1941,  1944,  1948,  1955,  1963,
-    1968,  1976,  1980,  1985,  1990,  1995,  2000,  2005,  2014,  2023,
-    2024,  2029,  2032,  2040,  2046,  2052,  2058,  2067,  2072,  2082,
-    2092,  2098,  2104,  2110,  2120,  2132,  2140,  2152,  2160,  2161,
-    2162,  2166,  2167,  2168,  2169,  2170,  2171,  2172,  2175,  2182,
-    2193,  2197,  2204,  2212,  2212,  2230,  2231,  2237,  2243,  2251,
-    2258,  2259,  2264,  2265,  2281,  2283,  2284,  2285,  2286,  2287,
-    2290,  2291,  2292,  2293,  2294,  2295,  2296,  2297,  2298,  2299,
-    2300,  2301,  2302,  2303,  2304,  2305,  2308,  2311,  2312,  2313,
-    2314,  2315,  2318,  2322
+    1405,  1406,  1412,  1413,  1414,  1426,  1427,  1431,  1432,  1433,
+    1434,  1435,  1436,  1437,  1438,  1440,  1475,  1476,  1477,  1478,
+    1479,  1480,  1481,  1485,  1486,  1489,  1489,  1491,  1491,  1494,
+    1504,  1510,  1510,  1513,  1514,  1515,  1519,  1519,  1521,  1521,
+    1524,  1524,  1526,  1529,  1535,  1538,  1542,  1543,  1547,  1551,
+    1555,  1559,  1563,  1570,  1570,  1574,  1577,  1581,  1581,  1584,
+    1584,  1588,  1589,  1602,  1610,  1610,  1619,  1623,  1627,  1631,
+    1635,  1639,  1643,  1649,  1653,  1657,  1661,  1665,  1669,  1673,
+    1676,  1683,  1683,  1687,  1687,  1692,  1692,  1692,  1696,  1703,
+    1704,  1705,  1706,  1713,  1714,  1717,  1723,  1730,  1731,  1732,
+    1733,  1739,  1742,  1743,  1746,  1747,  1754,  1758,  1765,  1773,
+    1776,  1777,  1778,  1779,  1780,  1781,  1782,  1790,  1792,  1793,
+    1796,  1799,  1803,  1804,  1805,  1806,  1807,  1808,  1809,  1817,
+    1821,  1830,  1830,  1836,  1842,  1843,  1846,  1852,  1853,  1854,
+    1855,  1856,  1857,  1858,  1859,  1860,  1861,  1862,  1863,  1864,
+    1867,  1874,  1875,  1876,  1881,  1884,  1888,  1900,  1903,  1904,
+    1908,  1918,  1925,  1934,  1937,  1949,  1952,  1956,  1963,  1971,
+    1976,  1984,  1988,  1993,  1998,  2003,  2008,  2013,  2022,  2031,
+    2032,  2037,  2040,  2048,  2054,  2060,  2066,  2075,  2080,  2090,
+    2100,  2106,  2112,  2118,  2128,  2140,  2148,  2160,  2168,  2169,
+    2170,  2174,  2175,  2176,  2177,  2178,  2179,  2180,  2183,  2190,
+    2201,  2205,  2212,  2220,  2220,  2238,  2239,  2245,  2251,  2259,
+    2266,  2267,  2272,  2273,  2289,  2291,  2292,  2293,  2294,  2295,
+    2298,  2299,  2300,  2301,  2302,  2303,  2304,  2305,  2306,  2307,
+    2308,  2309,  2310,  2311,  2312,  2313,  2316,  2319,  2320,  2321,
+    2322,  2323,  2326,  2330
 };
 #endif
 
@@ -4885,76 +4885,84 @@ A4GL_debug("dynamic=-1");
 
 /* Line 1455 of yacc.c  */
 #line 1414 "screen.yacc"
-    {sprintf((yyval.str),"\n%s",(yyvsp[(1) - (1)].str));}
+    {sprintf((yyval.str),"\n%s",(yyvsp[(1) - (1)].str));
+	if (strcasecmp((yyvsp[(1) - (1)].str),"current")==0) {
+		int a;
+		if (((A4GL_get_fld()->datatype)&DTYPE_MASK)==DTYPE_DTIME) {
+			a=A4GL_get_fld()->dtype_size;
+			sprintf((yyval.str),"\n%s%x",(yyvsp[(1) - (1)].str), a);
+		}
+	}
+}
     break;
 
   case 236:
 
 /* Line 1455 of yacc.c  */
-#line 1419 "screen.yacc"
+#line 1427 "screen.yacc"
     { sprintf((yyval.str),"%d",atoi((yyvsp[(1) - (2)].str))+atoi((yyvsp[(2) - (2)].str))); }
     break;
 
   case 237:
 
 /* Line 1455 of yacc.c  */
-#line 1423 "screen.yacc"
+#line 1431 "screen.yacc"
     { strcpy((yyval.str),"0"); }
     break;
 
   case 238:
 
 /* Line 1455 of yacc.c  */
-#line 1424 "screen.yacc"
+#line 1432 "screen.yacc"
     { strcpy((yyval.str),"4"); }
     break;
 
   case 239:
 
 /* Line 1455 of yacc.c  */
-#line 1425 "screen.yacc"
+#line 1433 "screen.yacc"
     { strcpy((yyval.str),"2"); }
     break;
 
   case 240:
 
 /* Line 1455 of yacc.c  */
-#line 1426 "screen.yacc"
+#line 1434 "screen.yacc"
     { strcpy((yyval.str),"6"); }
     break;
 
   case 241:
 
 /* Line 1455 of yacc.c  */
-#line 1427 "screen.yacc"
+#line 1435 "screen.yacc"
     { strcpy((yyval.str),"1"); }
     break;
 
   case 242:
 
 /* Line 1455 of yacc.c  */
-#line 1428 "screen.yacc"
+#line 1436 "screen.yacc"
     { strcpy((yyval.str),"5"); }
     break;
 
   case 243:
 
 /* Line 1455 of yacc.c  */
-#line 1429 "screen.yacc"
+#line 1437 "screen.yacc"
     { strcpy((yyval.str),"7"); }
     break;
 
   case 244:
 
 /* Line 1455 of yacc.c  */
-#line 1430 "screen.yacc"
+#line 1438 "screen.yacc"
     { strcpy((yyval.str),"3"); }
     break;
 
   case 245:
 
 /* Line 1455 of yacc.c  */
-#line 1432 "screen.yacc"
+#line 1440 "screen.yacc"
     { 
 			char *ptr;
 			
@@ -4994,56 +5002,56 @@ A4GL_debug("dynamic=-1");
   case 246:
 
 /* Line 1455 of yacc.c  */
-#line 1467 "screen.yacc"
+#line 1475 "screen.yacc"
     { sprintf((yyval.str),"%d",A4GL_get_attr_from_string("REVERSE")); }
     break;
 
   case 247:
 
 /* Line 1455 of yacc.c  */
-#line 1468 "screen.yacc"
+#line 1476 "screen.yacc"
     { sprintf((yyval.str),"%d",A4GL_get_attr_from_string("DIM")); }
     break;
 
   case 248:
 
 /* Line 1455 of yacc.c  */
-#line 1469 "screen.yacc"
+#line 1477 "screen.yacc"
     { sprintf((yyval.str),"%d",A4GL_get_attr_from_string("NORMAL")); }
     break;
 
   case 249:
 
 /* Line 1455 of yacc.c  */
-#line 1470 "screen.yacc"
+#line 1478 "screen.yacc"
     { sprintf((yyval.str),"%d",A4GL_get_attr_from_string("LEFT")); }
     break;
 
   case 250:
 
 /* Line 1455 of yacc.c  */
-#line 1471 "screen.yacc"
+#line 1479 "screen.yacc"
     { sprintf((yyval.str),"%d",A4GL_get_attr_from_string("BOLD")); }
     break;
 
   case 251:
 
 /* Line 1455 of yacc.c  */
-#line 1472 "screen.yacc"
+#line 1480 "screen.yacc"
     { sprintf((yyval.str),"%d",A4GL_get_attr_from_string("BLINK")); }
     break;
 
   case 252:
 
 /* Line 1455 of yacc.c  */
-#line 1473 "screen.yacc"
+#line 1481 "screen.yacc"
     { sprintf((yyval.str),"%d",A4GL_get_attr_from_string("UNDERLINE")); }
     break;
 
   case 259:
 
 /* Line 1455 of yacc.c  */
-#line 1486 "screen.yacc"
+#line 1494 "screen.yacc"
     {
 	char buff[4];
 	strcpy(buff,A4GL_char_val((yyvsp[(2) - (2)].str)));
@@ -5059,7 +5067,7 @@ A4GL_debug("dynamic=-1");
   case 260:
 
 /* Line 1455 of yacc.c  */
-#line 1496 "screen.yacc"
+#line 1504 "screen.yacc"
     {
 	the_form.control_blocks.control_blocks_len++;
 	the_form.control_blocks.control_blocks_val= realloc( the_form.control_blocks.control_blocks_val, sizeof(the_form.control_blocks.control_blocks_val[0])*the_form.control_blocks.control_blocks_len);
@@ -5071,7 +5079,7 @@ A4GL_debug("dynamic=-1");
   case 261:
 
 /* Line 1455 of yacc.c  */
-#line 1502 "screen.yacc"
+#line 1510 "screen.yacc"
     {
 A4GL_add_srec();
 }
@@ -5080,21 +5088,21 @@ A4GL_add_srec();
   case 268:
 
 /* Line 1455 of yacc.c  */
-#line 1513 "screen.yacc"
+#line 1521 "screen.yacc"
     {(yyval.intval)=0;}
     break;
 
   case 269:
 
 /* Line 1455 of yacc.c  */
-#line 1513 "screen.yacc"
+#line 1521 "screen.yacc"
     {(yyval.intval)=1;}
     break;
 
   case 272:
 
 /* Line 1455 of yacc.c  */
-#line 1518 "screen.yacc"
+#line 1526 "screen.yacc"
     {
    A4GL_set_dim_srec((yyvsp[(1) - (1)].str),1);
 }
@@ -5103,7 +5111,7 @@ A4GL_add_srec();
   case 273:
 
 /* Line 1455 of yacc.c  */
-#line 1521 "screen.yacc"
+#line 1529 "screen.yacc"
     {
    A4GL_set_dim_srec((yyvsp[(1) - (4)].str),atoi((yyvsp[(3) - (4)].str)));
 }
@@ -5112,7 +5120,7 @@ A4GL_add_srec();
   case 274:
 
 /* Line 1455 of yacc.c  */
-#line 1527 "screen.yacc"
+#line 1535 "screen.yacc"
     {
 	sprintf((yyval.str),"%s",(yyvsp[(1) - (1)].str));
 }
@@ -5121,7 +5129,7 @@ A4GL_add_srec();
   case 275:
 
 /* Line 1455 of yacc.c  */
-#line 1530 "screen.yacc"
+#line 1538 "screen.yacc"
     {
 	sprintf((yyval.str),"%s,%s",(yyvsp[(1) - (3)].str),(yyvsp[(3) - (3)].str));
 }
@@ -5130,7 +5138,7 @@ A4GL_add_srec();
   case 278:
 
 /* Line 1455 of yacc.c  */
-#line 1540 "screen.yacc"
+#line 1548 "screen.yacc"
     {A4GL_add_srec_attribute("",(yyvsp[(1) - (1)].str),"");
 if (A4GL_getFormErr()) {a4gl_form_yyerror(A4GL_get_fcompile_err());}
  }
@@ -5139,7 +5147,7 @@ if (A4GL_getFormErr()) {a4gl_form_yyerror(A4GL_get_fcompile_err());}
   case 279:
 
 /* Line 1455 of yacc.c  */
-#line 1544 "screen.yacc"
+#line 1552 "screen.yacc"
     {A4GL_add_srec_attribute((yyvsp[(1) - (3)].str),(yyvsp[(3) - (3)].str),""); 
 if (A4GL_getFormErr()) {a4gl_form_yyerror(A4GL_get_fcompile_err());}
 }
@@ -5148,7 +5156,7 @@ if (A4GL_getFormErr()) {a4gl_form_yyerror(A4GL_get_fcompile_err());}
   case 280:
 
 /* Line 1455 of yacc.c  */
-#line 1548 "screen.yacc"
+#line 1556 "screen.yacc"
     {A4GL_add_srec_attribute("formonly",(yyvsp[(3) - (3)].str),""); 
 if (A4GL_getFormErr()) {a4gl_form_yyerror(A4GL_get_fcompile_err());}
 }
@@ -5157,7 +5165,7 @@ if (A4GL_getFormErr()) {a4gl_form_yyerror(A4GL_get_fcompile_err());}
   case 281:
 
 /* Line 1455 of yacc.c  */
-#line 1552 "screen.yacc"
+#line 1560 "screen.yacc"
     {A4GL_add_srec_attribute((yyvsp[(1) - (3)].str),"*",""); 
 if (A4GL_getFormErr()) {a4gl_form_yyerror(A4GL_get_fcompile_err());}
 }
@@ -5166,7 +5174,7 @@ if (A4GL_getFormErr()) {a4gl_form_yyerror(A4GL_get_fcompile_err());}
   case 282:
 
 /* Line 1455 of yacc.c  */
-#line 1556 "screen.yacc"
+#line 1564 "screen.yacc"
     {A4GL_add_srec_attribute("formonly","*",""); 
 if (A4GL_getFormErr()) {a4gl_form_yyerror(A4GL_get_fcompile_err());}
 }
@@ -5175,14 +5183,14 @@ if (A4GL_getFormErr()) {a4gl_form_yyerror(A4GL_get_fcompile_err());}
   case 284:
 
 /* Line 1455 of yacc.c  */
-#line 1562 "screen.yacc"
+#line 1570 "screen.yacc"
     {A4GL_add_srec_attribute("","","THROUGH");}
     break;
 
   case 285:
 
 /* Line 1455 of yacc.c  */
-#line 1566 "screen.yacc"
+#line 1574 "screen.yacc"
     {
 	strcpy((yyval.str),(yyvsp[(1) - (1)].str));
 }
@@ -5191,35 +5199,35 @@ if (A4GL_getFormErr()) {a4gl_form_yyerror(A4GL_get_fcompile_err());}
   case 286:
 
 /* Line 1455 of yacc.c  */
-#line 1569 "screen.yacc"
+#line 1577 "screen.yacc"
     { strcpy((yyval.str),(yyvsp[(1) - (1)].str)); }
     break;
 
   case 287:
 
 /* Line 1455 of yacc.c  */
-#line 1573 "screen.yacc"
+#line 1581 "screen.yacc"
     {strcpy((yyval.str),"");}
     break;
 
   case 288:
 
 /* Line 1455 of yacc.c  */
-#line 1573 "screen.yacc"
+#line 1581 "screen.yacc"
     {strcpy((yyval.str),(yyvsp[(1) - (1)].str));}
     break;
 
   case 291:
 
 /* Line 1455 of yacc.c  */
-#line 1580 "screen.yacc"
+#line 1588 "screen.yacc"
     {colno++;}
     break;
 
   case 292:
 
 /* Line 1455 of yacc.c  */
-#line 1581 "screen.yacc"
+#line 1589 "screen.yacc"
     {
 	colno++;
 	while ((colno%8)!=0) {colno++;}
@@ -5233,7 +5241,7 @@ if (A4GL_getFormErr()) {a4gl_form_yyerror(A4GL_get_fcompile_err());}
   case 293:
 
 /* Line 1455 of yacc.c  */
-#line 1594 "screen.yacc"
+#line 1602 "screen.yacc"
     {
 	strcpy((yyval.str),(yyvsp[(1) - (1)].str));
 	A4GL_make_downshift((yyval.str));
@@ -5244,7 +5252,7 @@ if (A4GL_getFormErr()) {a4gl_form_yyerror(A4GL_get_fcompile_err());}
   case 294:
 
 /* Line 1455 of yacc.c  */
-#line 1602 "screen.yacc"
+#line 1610 "screen.yacc"
     {
 	colno+=strlen((yyvsp[(2) - (2)].str));
 }
@@ -5253,7 +5261,7 @@ if (A4GL_getFormErr()) {a4gl_form_yyerror(A4GL_get_fcompile_err());}
   case 295:
 
 /* Line 1455 of yacc.c  */
-#line 1604 "screen.yacc"
+#line 1612 "screen.yacc"
     {
 	strcpy((yyval.str),(yyvsp[(2) - (4)].str));
 	A4GL_make_downshift((yyval.str));
@@ -5263,7 +5271,7 @@ if (A4GL_getFormErr()) {a4gl_form_yyerror(A4GL_get_fcompile_err());}
   case 296:
 
 /* Line 1455 of yacc.c  */
-#line 1611 "screen.yacc"
+#line 1619 "screen.yacc"
     {
 	strcpy((yyval.str),"0");
 	dtype_size=0;
@@ -5273,7 +5281,7 @@ if (A4GL_getFormErr()) {a4gl_form_yyerror(A4GL_get_fcompile_err());}
   case 297:
 
 /* Line 1455 of yacc.c  */
-#line 1615 "screen.yacc"
+#line 1623 "screen.yacc"
     {
 	strcpy((yyval.str),"2");
 	dtype_size=0;
@@ -5283,7 +5291,7 @@ if (A4GL_getFormErr()) {a4gl_form_yyerror(A4GL_get_fcompile_err());}
   case 298:
 
 /* Line 1455 of yacc.c  */
-#line 1619 "screen.yacc"
+#line 1627 "screen.yacc"
     {
 	strcpy((yyval.str),"7");
 	dtype_size=0;
@@ -5293,7 +5301,7 @@ if (A4GL_getFormErr()) {a4gl_form_yyerror(A4GL_get_fcompile_err());}
   case 299:
 
 /* Line 1455 of yacc.c  */
-#line 1623 "screen.yacc"
+#line 1631 "screen.yacc"
     {
 	strcpy((yyval.str),"3");
 	dtype_size=0;
@@ -5303,7 +5311,7 @@ if (A4GL_getFormErr()) {a4gl_form_yyerror(A4GL_get_fcompile_err());}
   case 300:
 
 /* Line 1455 of yacc.c  */
-#line 1627 "screen.yacc"
+#line 1635 "screen.yacc"
     {
 	strcpy((yyval.str),"4");
 	dtype_size=0;
@@ -5313,7 +5321,7 @@ if (A4GL_getFormErr()) {a4gl_form_yyerror(A4GL_get_fcompile_err());}
   case 301:
 
 /* Line 1455 of yacc.c  */
-#line 1631 "screen.yacc"
+#line 1639 "screen.yacc"
     {
 	strcpy((yyval.str),"1");
 	dtype_size=0;
@@ -5323,7 +5331,7 @@ if (A4GL_getFormErr()) {a4gl_form_yyerror(A4GL_get_fcompile_err());}
   case 302:
 
 /* Line 1455 of yacc.c  */
-#line 1635 "screen.yacc"
+#line 1643 "screen.yacc"
     {
 		int i;
 		i=atoi((yyvsp[(2) - (2)].str));
@@ -5335,7 +5343,7 @@ if (A4GL_getFormErr()) {a4gl_form_yyerror(A4GL_get_fcompile_err());}
   case 303:
 
 /* Line 1455 of yacc.c  */
-#line 1641 "screen.yacc"
+#line 1649 "screen.yacc"
     {
 	strcpy((yyval.str),"8");
 	dtype_size=atoi((yyvsp[(2) - (2)].str));
@@ -5345,7 +5353,7 @@ if (A4GL_getFormErr()) {a4gl_form_yyerror(A4GL_get_fcompile_err());}
   case 304:
 
 /* Line 1455 of yacc.c  */
-#line 1645 "screen.yacc"
+#line 1653 "screen.yacc"
     {
 	strcpy((yyval.str),"10");
 	dtype_size=atoi((yyvsp[(2) - (2)].str));
@@ -5355,7 +5363,7 @@ if (A4GL_getFormErr()) {a4gl_form_yyerror(A4GL_get_fcompile_err());}
   case 305:
 
 /* Line 1455 of yacc.c  */
-#line 1649 "screen.yacc"
+#line 1657 "screen.yacc"
     {
 	strcpy((yyval.str),"14");
 	dtype_size=atoi((yyvsp[(2) - (2)].str));
@@ -5365,7 +5373,7 @@ if (A4GL_getFormErr()) {a4gl_form_yyerror(A4GL_get_fcompile_err());}
   case 306:
 
 /* Line 1455 of yacc.c  */
-#line 1653 "screen.yacc"
+#line 1661 "screen.yacc"
     {
 	strcpy((yyval.str),"6");
 	dtype_size=0;
@@ -5375,7 +5383,7 @@ if (A4GL_getFormErr()) {a4gl_form_yyerror(A4GL_get_fcompile_err());}
   case 307:
 
 /* Line 1455 of yacc.c  */
-#line 1657 "screen.yacc"
+#line 1665 "screen.yacc"
     {
 	strcpy((yyval.str),"11");
 	dtype_size=0;
@@ -5385,7 +5393,7 @@ if (A4GL_getFormErr()) {a4gl_form_yyerror(A4GL_get_fcompile_err());}
   case 308:
 
 /* Line 1455 of yacc.c  */
-#line 1661 "screen.yacc"
+#line 1669 "screen.yacc"
     {
 	strcpy((yyval.str),"12");
 	dtype_size=0;
@@ -5395,7 +5403,7 @@ if (A4GL_getFormErr()) {a4gl_form_yyerror(A4GL_get_fcompile_err());}
   case 309:
 
 /* Line 1455 of yacc.c  */
-#line 1665 "screen.yacc"
+#line 1673 "screen.yacc"
     { strcpy((yyval.str),"13");
 	dtype_size=0;
 	}
@@ -5404,7 +5412,7 @@ if (A4GL_getFormErr()) {a4gl_form_yyerror(A4GL_get_fcompile_err());}
   case 310:
 
 /* Line 1455 of yacc.c  */
-#line 1668 "screen.yacc"
+#line 1676 "screen.yacc"
     { strcpy((yyval.str),"90");
 	dtype_size=0;
 	}
@@ -5413,7 +5421,7 @@ if (A4GL_getFormErr()) {a4gl_form_yyerror(A4GL_get_fcompile_err());}
   case 312:
 
 /* Line 1455 of yacc.c  */
-#line 1675 "screen.yacc"
+#line 1683 "screen.yacc"
     {
 	sprintf((yyval.str),"%s\n%s",(yyvsp[(1) - (3)].str),(yyvsp[(3) - (3)].str));
 }
@@ -5422,7 +5430,7 @@ if (A4GL_getFormErr()) {a4gl_form_yyerror(A4GL_get_fcompile_err());}
   case 314:
 
 /* Line 1455 of yacc.c  */
-#line 1679 "screen.yacc"
+#line 1687 "screen.yacc"
     {
 	sprintf((yyval.str),"%s\n%s",(yyvsp[(1) - (3)].str),(yyvsp[(3) - (3)].str));
 }
@@ -5431,14 +5439,14 @@ if (A4GL_getFormErr()) {a4gl_form_yyerror(A4GL_get_fcompile_err());}
   case 317:
 
 /* Line 1455 of yacc.c  */
-#line 1684 "screen.yacc"
+#line 1692 "screen.yacc"
     {sprintf((yyval.str),"-%s",(yyvsp[(2) - (2)].str));}
     break;
 
   case 318:
 
 /* Line 1455 of yacc.c  */
-#line 1688 "screen.yacc"
+#line 1696 "screen.yacc"
     { 
 		if (strlen((yyvsp[(1) - (1)].str))==2) { /* "" */
 			strcpy((yyval.str),"");
@@ -5451,21 +5459,21 @@ if (A4GL_getFormErr()) {a4gl_form_yyerror(A4GL_get_fcompile_err());}
   case 319:
 
 /* Line 1455 of yacc.c  */
-#line 1695 "screen.yacc"
+#line 1703 "screen.yacc"
     {strcpy((yyval.str),(yyvsp[(1) - (1)].str)); }
     break;
 
   case 320:
 
 /* Line 1455 of yacc.c  */
-#line 1696 "screen.yacc"
+#line 1704 "screen.yacc"
     {strcpy((yyval.str),(yyvsp[(1) - (1)].str));}
     break;
 
   case 322:
 
 /* Line 1455 of yacc.c  */
-#line 1698 "screen.yacc"
+#line 1706 "screen.yacc"
     {
 		strcpy((yyval.str),"");
 	}
@@ -5474,7 +5482,7 @@ if (A4GL_getFormErr()) {a4gl_form_yyerror(A4GL_get_fcompile_err());}
   case 324:
 
 /* Line 1455 of yacc.c  */
-#line 1706 "screen.yacc"
+#line 1714 "screen.yacc"
     {
 			sprintf((yyval.str),"%s\t%s",(yyvsp[(1) - (3)].str),(yyvsp[(3) - (3)].str)); 
 	}
@@ -5483,7 +5491,7 @@ if (A4GL_getFormErr()) {a4gl_form_yyerror(A4GL_get_fcompile_err());}
   case 325:
 
 /* Line 1455 of yacc.c  */
-#line 1709 "screen.yacc"
+#line 1717 "screen.yacc"
     {
 			sprintf((yyval.str),"%s\t%s",(yyvsp[(1) - (3)].str),(yyvsp[(3) - (3)].str)); 
 	}
@@ -5492,7 +5500,7 @@ if (A4GL_getFormErr()) {a4gl_form_yyerror(A4GL_get_fcompile_err());}
   case 326:
 
 /* Line 1455 of yacc.c  */
-#line 1715 "screen.yacc"
+#line 1723 "screen.yacc"
     {
 		if (strlen((yyvsp[(1) - (1)].str))==2) {/* "" */
 			sprintf((yyval.str),"NULL");
@@ -5505,35 +5513,35 @@ if (A4GL_getFormErr()) {a4gl_form_yyerror(A4GL_get_fcompile_err());}
   case 327:
 
 /* Line 1455 of yacc.c  */
-#line 1722 "screen.yacc"
+#line 1730 "screen.yacc"
     {strcpy((yyval.str),(yyvsp[(1) - (1)].str));}
     break;
 
   case 328:
 
 /* Line 1455 of yacc.c  */
-#line 1723 "screen.yacc"
+#line 1731 "screen.yacc"
     {strcpy((yyval.str),(yyvsp[(1) - (1)].str));}
     break;
 
   case 329:
 
 /* Line 1455 of yacc.c  */
-#line 1724 "screen.yacc"
+#line 1732 "screen.yacc"
     {strcpy((yyval.str),(yyvsp[(1) - (1)].str));}
     break;
 
   case 330:
 
 /* Line 1455 of yacc.c  */
-#line 1725 "screen.yacc"
+#line 1733 "screen.yacc"
     {strcpy((yyval.str),"NULL");}
     break;
 
   case 331:
 
 /* Line 1455 of yacc.c  */
-#line 1731 "screen.yacc"
+#line 1739 "screen.yacc"
     {
 			sprintf((yyval.str),"0");
 		}
@@ -5542,28 +5550,28 @@ if (A4GL_getFormErr()) {a4gl_form_yyerror(A4GL_get_fcompile_err());}
   case 332:
 
 /* Line 1455 of yacc.c  */
-#line 1734 "screen.yacc"
+#line 1742 "screen.yacc"
     {sprintf((yyval.str),"%d",((atoi((yyvsp[(2) - (3)].str))+2)<<8)+2);}
     break;
 
   case 333:
 
 /* Line 1455 of yacc.c  */
-#line 1735 "screen.yacc"
+#line 1743 "screen.yacc"
     {sprintf((yyval.str),"%d",(atoi((yyvsp[(2) - (5)].str))<<8)+atoi((yyvsp[(4) - (5)].str)));}
     break;
 
   case 334:
 
 /* Line 1455 of yacc.c  */
-#line 1738 "screen.yacc"
+#line 1746 "screen.yacc"
     {strcpy((yyval.str),"");}
     break;
 
   case 335:
 
 /* Line 1455 of yacc.c  */
-#line 1740 "screen.yacc"
+#line 1748 "screen.yacc"
     {
 	sprintf((yyval.str),"%d",(atoi((yyvsp[(1) - (3)].str))*16)+atoi((yyvsp[(3) - (3)].str)));
 	}
@@ -5572,7 +5580,7 @@ if (A4GL_getFormErr()) {a4gl_form_yyerror(A4GL_get_fcompile_err());}
   case 336:
 
 /* Line 1455 of yacc.c  */
-#line 1746 "screen.yacc"
+#line 1754 "screen.yacc"
     {
 #ifdef DEBUG
 A4GL_debug("Nothing in fraction - assume 2");
@@ -5583,7 +5591,7 @@ strcpy((yyval.str),"2");}
   case 337:
 
 /* Line 1455 of yacc.c  */
-#line 1750 "screen.yacc"
+#line 1758 "screen.yacc"
     {
 #ifdef DEBUG
 A4GL_debug("    %s",(yyvsp[(2) - (3)].str));
@@ -5595,7 +5603,7 @@ strcpy((yyval.str),(yyvsp[(2) - (3)].str));
   case 338:
 
 /* Line 1455 of yacc.c  */
-#line 1757 "screen.yacc"
+#line 1765 "screen.yacc"
     {
 if (atoi((yyvsp[(1) - (1)].str))>5) {
 yyerror("Fraction values are between 0 and 5");
@@ -5607,56 +5615,56 @@ YYERROR;
   case 339:
 
 /* Line 1455 of yacc.c  */
-#line 1765 "screen.yacc"
+#line 1773 "screen.yacc"
     {sprintf((yyval.str),"%d",atoi((yyvsp[(2) - (2)].str))*16+atoi((yyvsp[(1) - (2)].str)));}
     break;
 
   case 340:
 
 /* Line 1455 of yacc.c  */
-#line 1768 "screen.yacc"
+#line 1776 "screen.yacc"
     {strcpy((yyval.str),"1");}
     break;
 
   case 341:
 
 /* Line 1455 of yacc.c  */
-#line 1769 "screen.yacc"
+#line 1777 "screen.yacc"
     {strcpy((yyval.str),"2");}
     break;
 
   case 342:
 
 /* Line 1455 of yacc.c  */
-#line 1770 "screen.yacc"
+#line 1778 "screen.yacc"
     {strcpy((yyval.str),"3");}
     break;
 
   case 343:
 
 /* Line 1455 of yacc.c  */
-#line 1771 "screen.yacc"
+#line 1779 "screen.yacc"
     {strcpy((yyval.str),"4");}
     break;
 
   case 344:
 
 /* Line 1455 of yacc.c  */
-#line 1772 "screen.yacc"
+#line 1780 "screen.yacc"
     {strcpy((yyval.str),"5");}
     break;
 
   case 345:
 
 /* Line 1455 of yacc.c  */
-#line 1773 "screen.yacc"
+#line 1781 "screen.yacc"
     {strcpy((yyval.str),"6");}
     break;
 
   case 346:
 
 /* Line 1455 of yacc.c  */
-#line 1775 "screen.yacc"
+#line 1783 "screen.yacc"
     {
 #ifdef DEBUG
   A4GL_debug("opt_frac returns %s",(yyvsp[(2) - (2)].str));
@@ -5667,77 +5675,77 @@ YYERROR;
   case 348:
 
 /* Line 1455 of yacc.c  */
-#line 1784 "screen.yacc"
+#line 1792 "screen.yacc"
     {strcpy((yyval.str),"");}
     break;
 
   case 349:
 
 /* Line 1455 of yacc.c  */
-#line 1785 "screen.yacc"
+#line 1793 "screen.yacc"
     {sprintf((yyval.str),"%d",atoi((yyvsp[(1) - (3)].str))*16+atoi((yyvsp[(3) - (3)].str)));}
     break;
 
   case 350:
 
 /* Line 1455 of yacc.c  */
-#line 1788 "screen.yacc"
+#line 1796 "screen.yacc"
     {strcpy((yyval.str),(yyvsp[(1) - (1)].str));}
     break;
 
   case 351:
 
 /* Line 1455 of yacc.c  */
-#line 1791 "screen.yacc"
+#line 1799 "screen.yacc"
     {strcpy((yyval.str),(yyvsp[(1) - (1)].str));}
     break;
 
   case 352:
 
 /* Line 1455 of yacc.c  */
-#line 1795 "screen.yacc"
+#line 1803 "screen.yacc"
     {strcpy((yyval.str),"1");}
     break;
 
   case 353:
 
 /* Line 1455 of yacc.c  */
-#line 1796 "screen.yacc"
+#line 1804 "screen.yacc"
     {strcpy((yyval.str),"2");}
     break;
 
   case 354:
 
 /* Line 1455 of yacc.c  */
-#line 1797 "screen.yacc"
+#line 1805 "screen.yacc"
     {strcpy((yyval.str),"3");}
     break;
 
   case 355:
 
 /* Line 1455 of yacc.c  */
-#line 1798 "screen.yacc"
+#line 1806 "screen.yacc"
     {strcpy((yyval.str),"4");}
     break;
 
   case 356:
 
 /* Line 1455 of yacc.c  */
-#line 1799 "screen.yacc"
+#line 1807 "screen.yacc"
     {strcpy((yyval.str),"5");}
     break;
 
   case 357:
 
 /* Line 1455 of yacc.c  */
-#line 1800 "screen.yacc"
+#line 1808 "screen.yacc"
     {strcpy((yyval.str),"6");}
     break;
 
   case 358:
 
 /* Line 1455 of yacc.c  */
-#line 1802 "screen.yacc"
+#line 1810 "screen.yacc"
     {
 #ifdef DEBUG
 A4GL_debug("opt_frac returns %s",(yyvsp[(2) - (2)].str));
@@ -5748,7 +5756,7 @@ sprintf((yyval.str),"%d",atoi((yyvsp[(2) - (2)].str))+6); }
   case 359:
 
 /* Line 1455 of yacc.c  */
-#line 1809 "screen.yacc"
+#line 1817 "screen.yacc"
     {
 #ifdef DEBUG
 A4GL_debug("Nothing in fraction - assume 2");
@@ -5759,7 +5767,7 @@ strcpy((yyval.str),"2");}
   case 360:
 
 /* Line 1455 of yacc.c  */
-#line 1813 "screen.yacc"
+#line 1821 "screen.yacc"
     {
 #ifdef DEBUG
 A4GL_debug("Read fraction .. ");
@@ -5772,14 +5780,14 @@ strcpy((yyval.str),(yyvsp[(2) - (3)].str));
   case 361:
 
 /* Line 1455 of yacc.c  */
-#line 1822 "screen.yacc"
+#line 1830 "screen.yacc"
     {(yyval.expr)=0;}
     break;
 
   case 362:
 
 /* Line 1455 of yacc.c  */
-#line 1822 "screen.yacc"
+#line 1830 "screen.yacc"
     {
 (yyval.expr)=(yyvsp[(1) - (1)].expr);
 }
@@ -5788,7 +5796,7 @@ strcpy((yyval.str),(yyvsp[(2) - (3)].str));
   case 363:
 
 /* Line 1455 of yacc.c  */
-#line 1828 "screen.yacc"
+#line 1836 "screen.yacc"
     {
 		(yyval.expr)=(yyvsp[(2) - (2)].expr);
 	}
@@ -5797,7 +5805,7 @@ strcpy((yyval.str),(yyvsp[(2) - (3)].str));
   case 365:
 
 /* Line 1455 of yacc.c  */
-#line 1835 "screen.yacc"
+#line 1843 "screen.yacc"
     {
 		(yyval.expr)=create_expr_comp_expr((yyvsp[(1) - (3)].expr),(yyvsp[(3) - (3)].expr),"AND");  
 	}
@@ -5806,7 +5814,7 @@ strcpy((yyval.str),(yyvsp[(2) - (3)].str));
   case 366:
 
 /* Line 1455 of yacc.c  */
-#line 1838 "screen.yacc"
+#line 1846 "screen.yacc"
     {
 		(yyval.expr)=create_expr_comp_expr((yyvsp[(1) - (3)].expr),(yyvsp[(3) - (3)].expr),"OR");  
 	}
@@ -5815,98 +5823,98 @@ strcpy((yyval.str),(yyvsp[(2) - (3)].str));
   case 367:
 
 /* Line 1455 of yacc.c  */
-#line 1844 "screen.yacc"
+#line 1852 "screen.yacc"
     { (yyval.expr)=create_expr_comp_expr((yyvsp[(1) - (3)].expr),(yyvsp[(3) - (3)].expr),(yyvsp[(2) - (3)].str)); }
     break;
 
   case 368:
 
 /* Line 1455 of yacc.c  */
-#line 1845 "screen.yacc"
+#line 1853 "screen.yacc"
     { (yyval.expr)=create_expr_comp_expr((yyvsp[(1) - (3)].expr),(yyvsp[(3) - (3)].expr),(yyvsp[(2) - (3)].str)); }
     break;
 
   case 369:
 
 /* Line 1455 of yacc.c  */
-#line 1846 "screen.yacc"
+#line 1854 "screen.yacc"
     { (yyval.expr)=create_expr_comp_expr((yyvsp[(1) - (3)].expr),(yyvsp[(3) - (3)].expr),(yyvsp[(2) - (3)].str)); }
     break;
 
   case 370:
 
 /* Line 1455 of yacc.c  */
-#line 1847 "screen.yacc"
+#line 1855 "screen.yacc"
     { (yyval.expr)=create_expr_comp_expr((yyvsp[(1) - (3)].expr),(yyvsp[(3) - (3)].expr),(yyvsp[(2) - (3)].str)); }
     break;
 
   case 371:
 
 /* Line 1455 of yacc.c  */
-#line 1848 "screen.yacc"
+#line 1856 "screen.yacc"
     { (yyval.expr)=create_expr_comp_expr((yyvsp[(1) - (4)].expr),(yyvsp[(4) - (4)].expr),"NOTLIKE"); }
     break;
 
   case 372:
 
 /* Line 1455 of yacc.c  */
-#line 1849 "screen.yacc"
+#line 1857 "screen.yacc"
     { (yyval.expr)=create_expr_comp_expr((yyvsp[(1) - (3)].expr),(yyvsp[(3) - (3)].expr),(yyvsp[(2) - (3)].str)); }
     break;
 
   case 373:
 
 /* Line 1455 of yacc.c  */
-#line 1850 "screen.yacc"
+#line 1858 "screen.yacc"
     { void *p; p=create_char_expr("ISNULL"); (yyval.expr)=create_expr_comp_expr((yyvsp[(1) - (2)].expr),p,"ISNULL"); }
     break;
 
   case 374:
 
 /* Line 1455 of yacc.c  */
-#line 1851 "screen.yacc"
+#line 1859 "screen.yacc"
     { void *p; p=create_char_expr("ISNOTNULL"); (yyval.expr)=create_expr_comp_expr((yyvsp[(1) - (2)].expr),p,"ISNOTNULL"); }
     break;
 
   case 375:
 
 /* Line 1455 of yacc.c  */
-#line 1852 "screen.yacc"
+#line 1860 "screen.yacc"
     { (yyval.expr)=(yyvsp[(1) - (1)].expr); }
     break;
 
   case 376:
 
 /* Line 1455 of yacc.c  */
-#line 1853 "screen.yacc"
+#line 1861 "screen.yacc"
     { (yyval.expr)=create_list_expr(); add_list_expr((yyval.expr),(yyvsp[(3) - (5)].expr)); add_list_expr((yyval.expr),(yyvsp[(5) - (5)].expr)); (yyval.expr)=create_expr_comp_expr((yyvsp[(1) - (5)].expr),(yyval.expr),"BETWEEN"); }
     break;
 
   case 377:
 
 /* Line 1455 of yacc.c  */
-#line 1854 "screen.yacc"
+#line 1862 "screen.yacc"
     { (yyval.expr)=create_expr_comp_expr((yyvsp[(1) - (5)].expr),(yyvsp[(4) - (5)].expr),"IN"); }
     break;
 
   case 378:
 
 /* Line 1455 of yacc.c  */
-#line 1855 "screen.yacc"
+#line 1863 "screen.yacc"
     { (yyval.expr)=create_not_expr((yyvsp[(2) - (2)].expr)); }
     break;
 
   case 379:
 
 /* Line 1455 of yacc.c  */
-#line 1856 "screen.yacc"
+#line 1864 "screen.yacc"
     { (yyval.expr)=(yyvsp[(2) - (3)].expr); }
     break;
 
   case 380:
 
 /* Line 1455 of yacc.c  */
-#line 1859 "screen.yacc"
+#line 1867 "screen.yacc"
     {
 (yyval.expr)=create_field_expr((yyvsp[(1) - (1)].str));
 if (strcasecmp(currftag,(yyvsp[(1) - (1)].str))!=0) {
@@ -5919,21 +5927,21 @@ if (strcasecmp(currftag,(yyvsp[(1) - (1)].str))!=0) {
   case 381:
 
 /* Line 1455 of yacc.c  */
-#line 1866 "screen.yacc"
+#line 1874 "screen.yacc"
     {(yyval.expr)=create_int_expr(atoi((yyvsp[(1) - (1)].str))); printf("NUMBER VALUE : %s\n",(yyvsp[(1) - (1)].str)); }
     break;
 
   case 382:
 
 /* Line 1455 of yacc.c  */
-#line 1867 "screen.yacc"
+#line 1875 "screen.yacc"
     {(yyval.expr)=create_char_expr((yyvsp[(1) - (1)].str));}
     break;
 
   case 383:
 
 /* Line 1455 of yacc.c  */
-#line 1868 "screen.yacc"
+#line 1876 "screen.yacc"
     {
 	(yyval.expr)=create_special_expr((yyvsp[(1) - (1)].str));
 }
@@ -5942,7 +5950,7 @@ if (strcasecmp(currftag,(yyvsp[(1) - (1)].str))!=0) {
   case 385:
 
 /* Line 1455 of yacc.c  */
-#line 1876 "screen.yacc"
+#line 1884 "screen.yacc"
     {
 		(yyval.expr)=create_list_expr();
 		add_list_expr((yyval.expr),(yyvsp[(1) - (1)].expr));
@@ -5952,7 +5960,7 @@ if (strcasecmp(currftag,(yyvsp[(1) - (1)].str))!=0) {
   case 386:
 
 /* Line 1455 of yacc.c  */
-#line 1880 "screen.yacc"
+#line 1888 "screen.yacc"
     {
 		add_list_expr((yyvsp[(1) - (3)].expr),(yyvsp[(3) - (3)].expr));
 		(yyval.expr)=(yyvsp[(1) - (3)].expr);
@@ -5962,7 +5970,7 @@ if (strcasecmp(currftag,(yyvsp[(1) - (1)].str))!=0) {
   case 390:
 
 /* Line 1455 of yacc.c  */
-#line 1900 "screen.yacc"
+#line 1908 "screen.yacc"
     {
 		the_form.composites.composites_len++;
 		the_form.composites.composites_val= realloc(the_form.composites.composites_val, 
@@ -5976,7 +5984,7 @@ if (strcasecmp(currftag,(yyvsp[(1) - (1)].str))!=0) {
   case 391:
 
 /* Line 1455 of yacc.c  */
-#line 1910 "screen.yacc"
+#line 1918 "screen.yacc"
     {
 		(yyval.col_list)=malloc(sizeof(struct s_column_list));
 		(yyval.col_list)->columns.columns_len=1;
@@ -5989,7 +5997,7 @@ if (strcasecmp(currftag,(yyvsp[(1) - (1)].str))!=0) {
   case 392:
 
 /* Line 1455 of yacc.c  */
-#line 1917 "screen.yacc"
+#line 1925 "screen.yacc"
     {
 		(yyval.col_list)=(yyvsp[(1) - (3)].col_list);
 		(yyval.col_list)->columns.columns_len++;
@@ -6002,7 +6010,7 @@ if (strcasecmp(currftag,(yyvsp[(1) - (1)].str))!=0) {
   case 393:
 
 /* Line 1455 of yacc.c  */
-#line 1926 "screen.yacc"
+#line 1934 "screen.yacc"
     {
 	(yyval.column).tabname=strdup((yyvsp[(1) - (3)].str));
 	(yyval.column).colname=strdup((yyvsp[(3) - (3)].str));
@@ -6012,7 +6020,7 @@ if (strcasecmp(currftag,(yyvsp[(1) - (1)].str))!=0) {
   case 394:
 
 /* Line 1455 of yacc.c  */
-#line 1929 "screen.yacc"
+#line 1937 "screen.yacc"
     {
 	int n;
 	char *tabname;
@@ -6027,7 +6035,7 @@ if (strcasecmp(currftag,(yyvsp[(1) - (1)].str))!=0) {
   case 397:
 
 /* Line 1455 of yacc.c  */
-#line 1948 "screen.yacc"
+#line 1956 "screen.yacc"
     {
 		(yyval.control_block)=malloc(sizeof(struct s_control_block));
 		(yyval.control_block)->cbtype=E_CB_BEFORE;
@@ -6040,7 +6048,7 @@ if (strcasecmp(currftag,(yyvsp[(1) - (1)].str))!=0) {
   case 398:
 
 /* Line 1455 of yacc.c  */
-#line 1955 "screen.yacc"
+#line 1963 "screen.yacc"
     {
 		(yyval.control_block)=malloc(sizeof(struct s_control_block));
 		(yyval.control_block)->cbtype=E_CB_AFTER;
@@ -6054,7 +6062,7 @@ if (strcasecmp(currftag,(yyvsp[(1) - (1)].str))!=0) {
   case 399:
 
 /* Line 1455 of yacc.c  */
-#line 1963 "screen.yacc"
+#line 1971 "screen.yacc"
     {
 		(yyval.control_block)=malloc(sizeof(struct s_control_block));
 		(yyval.control_block)->cbtype=E_CB_ONBEGINNING;
@@ -6065,7 +6073,7 @@ if (strcasecmp(currftag,(yyvsp[(1) - (1)].str))!=0) {
   case 400:
 
 /* Line 1455 of yacc.c  */
-#line 1968 "screen.yacc"
+#line 1976 "screen.yacc"
     {
 		(yyval.control_block)=malloc(sizeof(struct s_control_block));
 		(yyval.control_block)->cbtype=E_CB_ONENDING;
@@ -6076,7 +6084,7 @@ if (strcasecmp(currftag,(yyvsp[(1) - (1)].str))!=0) {
   case 401:
 
 /* Line 1455 of yacc.c  */
-#line 1976 "screen.yacc"
+#line 1984 "screen.yacc"
     {
 		(yyval.at_action)=malloc(sizeof(struct u_action));
 		(yyval.at_action)->type=ACTION_TYPE_ABORT;
@@ -6086,7 +6094,7 @@ if (strcasecmp(currftag,(yyvsp[(1) - (1)].str))!=0) {
   case 402:
 
 /* Line 1455 of yacc.c  */
-#line 1980 "screen.yacc"
+#line 1988 "screen.yacc"
     {
 		(yyval.at_action)=malloc(sizeof(struct u_action));
 		(yyval.at_action)->type=ACTION_TYPE_COMMENTS;
@@ -6097,7 +6105,7 @@ if (strcasecmp(currftag,(yyvsp[(1) - (1)].str))!=0) {
   case 403:
 
 /* Line 1455 of yacc.c  */
-#line 1985 "screen.yacc"
+#line 1993 "screen.yacc"
     {
 		(yyval.at_action)=malloc(sizeof(struct u_action));
 		(yyval.at_action)->type=ACTION_TYPE_IF;
@@ -6108,7 +6116,7 @@ if (strcasecmp(currftag,(yyvsp[(1) - (1)].str))!=0) {
   case 404:
 
 /* Line 1455 of yacc.c  */
-#line 1990 "screen.yacc"
+#line 1998 "screen.yacc"
     {
 		(yyval.at_action)=malloc(sizeof(struct u_action));
 		(yyval.at_action)->type=ACTION_TYPE_LET;
@@ -6119,7 +6127,7 @@ if (strcasecmp(currftag,(yyvsp[(1) - (1)].str))!=0) {
   case 405:
 
 /* Line 1455 of yacc.c  */
-#line 1995 "screen.yacc"
+#line 2003 "screen.yacc"
     {
 		(yyval.at_action)=malloc(sizeof(struct u_action));
 		(yyval.at_action)->type=ACTION_TYPE_NEXTFIELD;
@@ -6130,7 +6138,7 @@ if (strcasecmp(currftag,(yyvsp[(1) - (1)].str))!=0) {
   case 406:
 
 /* Line 1455 of yacc.c  */
-#line 2000 "screen.yacc"
+#line 2008 "screen.yacc"
     {
 		(yyval.at_action)=malloc(sizeof(struct u_action));
 		(yyval.at_action)->type=ACTION_TYPE_FUNC_CALL;
@@ -6141,7 +6149,7 @@ if (strcasecmp(currftag,(yyvsp[(1) - (1)].str))!=0) {
   case 407:
 
 /* Line 1455 of yacc.c  */
-#line 2005 "screen.yacc"
+#line 2013 "screen.yacc"
     {
 		(yyval.at_action)=malloc(sizeof(struct u_action));
 		(yyval.at_action)->type=ACTION_TYPE_BLOCK;
@@ -6153,7 +6161,7 @@ if (strcasecmp(currftag,(yyvsp[(1) - (1)].str))!=0) {
   case 408:
 
 /* Line 1455 of yacc.c  */
-#line 2014 "screen.yacc"
+#line 2022 "screen.yacc"
     {
 		(yyval.at_if)=malloc(sizeof(struct s_at_if));
 		(yyval.at_if)->test_condition=(yyvsp[(2) - (5)].expr);
@@ -6165,14 +6173,14 @@ if (strcasecmp(currftag,(yyvsp[(1) - (1)].str))!=0) {
   case 409:
 
 /* Line 1455 of yacc.c  */
-#line 2023 "screen.yacc"
+#line 2031 "screen.yacc"
     {(yyval.at_action)=0;}
     break;
 
   case 410:
 
 /* Line 1455 of yacc.c  */
-#line 2024 "screen.yacc"
+#line 2032 "screen.yacc"
     {	
 		(yyval.at_action)=(yyvsp[(2) - (2)].at_action);
 	}
@@ -6181,7 +6189,7 @@ if (strcasecmp(currftag,(yyvsp[(1) - (1)].str))!=0) {
   case 412:
 
 /* Line 1455 of yacc.c  */
-#line 2033 "screen.yacc"
+#line 2041 "screen.yacc"
     {
 			(yyval.at_let)=malloc(sizeof(struct s_at_let));
 			(yyval.at_let)->field_tag=create_field_expr((yyvsp[(2) - (4)].str));
@@ -6192,7 +6200,7 @@ if (strcasecmp(currftag,(yyvsp[(1) - (1)].str))!=0) {
   case 413:
 
 /* Line 1455 of yacc.c  */
-#line 2041 "screen.yacc"
+#line 2049 "screen.yacc"
     {
 			(yyval.at_nextfield)=malloc(sizeof(struct s_at_nextfield));
 			(yyval.at_nextfield)->field_tag=create_field_expr((yyvsp[(2) - (2)].str));
@@ -6203,7 +6211,7 @@ if (strcasecmp(currftag,(yyvsp[(1) - (1)].str))!=0) {
   case 414:
 
 /* Line 1455 of yacc.c  */
-#line 2047 "screen.yacc"
+#line 2055 "screen.yacc"
     {
 			(yyval.at_nextfield)=malloc(sizeof(struct s_at_nextfield));
 			(yyval.at_nextfield)->field_tag=create_field_expr((yyvsp[(3) - (3)].str));
@@ -6214,7 +6222,7 @@ if (strcasecmp(currftag,(yyvsp[(1) - (1)].str))!=0) {
   case 415:
 
 /* Line 1455 of yacc.c  */
-#line 2053 "screen.yacc"
+#line 2061 "screen.yacc"
     {
 			(yyval.at_nextfield)=malloc(sizeof(struct s_at_nextfield));
 			(yyval.at_nextfield)->field_tag=0;
@@ -6225,7 +6233,7 @@ if (strcasecmp(currftag,(yyvsp[(1) - (1)].str))!=0) {
   case 416:
 
 /* Line 1455 of yacc.c  */
-#line 2059 "screen.yacc"
+#line 2067 "screen.yacc"
     {
 			(yyval.at_nextfield)=malloc(sizeof(struct s_at_nextfield));
 			(yyval.at_nextfield)->field_tag=0;
@@ -6236,7 +6244,7 @@ if (strcasecmp(currftag,(yyvsp[(1) - (1)].str))!=0) {
   case 417:
 
 /* Line 1455 of yacc.c  */
-#line 2067 "screen.yacc"
+#line 2075 "screen.yacc"
     {
 		 (yyval.at_block)= (yyvsp[(2) - (3)].at_block);
 	}
@@ -6245,7 +6253,7 @@ if (strcasecmp(currftag,(yyvsp[(1) - (1)].str))!=0) {
   case 418:
 
 /* Line 1455 of yacc.c  */
-#line 2072 "screen.yacc"
+#line 2080 "screen.yacc"
     {
 		(yyval.at_block)=malloc(sizeof(struct s_at_block));
 		(yyval.at_block)->actions.actions_len=0;
@@ -6261,7 +6269,7 @@ if (strcasecmp(currftag,(yyvsp[(1) - (1)].str))!=0) {
   case 419:
 
 /* Line 1455 of yacc.c  */
-#line 2082 "screen.yacc"
+#line 2090 "screen.yacc"
     {
 		(yyval.at_block)=(yyvsp[(1) - (2)].at_block);
 		(yyval.at_block)->actions.actions_len++;
@@ -6273,7 +6281,7 @@ if (strcasecmp(currftag,(yyvsp[(1) - (1)].str))!=0) {
   case 420:
 
 /* Line 1455 of yacc.c  */
-#line 2092 "screen.yacc"
+#line 2100 "screen.yacc"
     {
 		(yyval.at_comments)=malloc(sizeof(struct s_at_comments));
 		(yyval.at_comments)->comment=strdup(A4GL_strip_quotes((yyvsp[(2) - (2)].str)));
@@ -6285,7 +6293,7 @@ if (strcasecmp(currftag,(yyvsp[(1) - (1)].str))!=0) {
   case 421:
 
 /* Line 1455 of yacc.c  */
-#line 2098 "screen.yacc"
+#line 2106 "screen.yacc"
     {
 		(yyval.at_comments)=malloc(sizeof(struct s_at_comments));
 		(yyval.at_comments)->comment=strdup(A4GL_strip_quotes((yyvsp[(3) - (3)].str)));
@@ -6297,7 +6305,7 @@ if (strcasecmp(currftag,(yyvsp[(1) - (1)].str))!=0) {
   case 422:
 
 /* Line 1455 of yacc.c  */
-#line 2104 "screen.yacc"
+#line 2112 "screen.yacc"
     {
 		(yyval.at_comments)=malloc(sizeof(struct s_at_comments));
 		(yyval.at_comments)->comment=strdup(A4GL_strip_quotes((yyvsp[(3) - (3)].str)));
@@ -6309,7 +6317,7 @@ if (strcasecmp(currftag,(yyvsp[(1) - (1)].str))!=0) {
   case 423:
 
 /* Line 1455 of yacc.c  */
-#line 2110 "screen.yacc"
+#line 2118 "screen.yacc"
     {
 		(yyval.at_comments)=malloc(sizeof(struct s_at_comments));
 		(yyval.at_comments)->comment=strdup(A4GL_strip_quotes((yyvsp[(4) - (4)].str)));
@@ -6321,7 +6329,7 @@ if (strcasecmp(currftag,(yyvsp[(1) - (1)].str))!=0) {
   case 424:
 
 /* Line 1455 of yacc.c  */
-#line 2120 "screen.yacc"
+#line 2128 "screen.yacc"
     {
 		(yyval.befact)=malloc(sizeof(struct s_bef_aft));
 		(yyval.befact)->cmds=0;
@@ -6339,7 +6347,7 @@ if (strcasecmp(currftag,(yyvsp[(1) - (1)].str))!=0) {
   case 425:
 
 /* Line 1455 of yacc.c  */
-#line 2132 "screen.yacc"
+#line 2140 "screen.yacc"
     {
 		(yyval.befact)->befaftlist.befaftlist_len++;
 		(yyval.befact)->befaftlist.befaftlist_val=realloc((yyval.befact)->befaftlist.befaftlist_val, sizeof((yyval.befact)->befaftlist.befaftlist_val[0])*(yyval.befact)->befaftlist.befaftlist_len);
@@ -6350,7 +6358,7 @@ if (strcasecmp(currftag,(yyvsp[(1) - (1)].str))!=0) {
   case 426:
 
 /* Line 1455 of yacc.c  */
-#line 2140 "screen.yacc"
+#line 2148 "screen.yacc"
     {
 		(yyval.befact)=malloc(sizeof(struct s_bef_aft));
 		(yyval.befact)->cmds=0;
@@ -6368,7 +6376,7 @@ if (strcasecmp(currftag,(yyvsp[(1) - (1)].str))!=0) {
   case 427:
 
 /* Line 1455 of yacc.c  */
-#line 2152 "screen.yacc"
+#line 2160 "screen.yacc"
     {
 		(yyval.befact)->befaftlist.befaftlist_len++;
 		(yyval.befact)->befaftlist.befaftlist_val=realloc((yyval.befact)->befaftlist.befaftlist_val, sizeof((yyval.befact)->befaftlist.befaftlist_val[0])*(yyval.befact)->befaftlist.befaftlist_len);
@@ -6379,77 +6387,77 @@ if (strcasecmp(currftag,(yyvsp[(1) - (1)].str))!=0) {
   case 428:
 
 /* Line 1455 of yacc.c  */
-#line 2160 "screen.yacc"
+#line 2168 "screen.yacc"
     {(yyval.intval)=E_BA_EDITADD;}
     break;
 
   case 429:
 
 /* Line 1455 of yacc.c  */
-#line 2161 "screen.yacc"
+#line 2169 "screen.yacc"
     {(yyval.intval)=E_BA_EDITUPDATE;}
     break;
 
   case 430:
 
 /* Line 1455 of yacc.c  */
-#line 2162 "screen.yacc"
+#line 2170 "screen.yacc"
     {(yyval.intval)=E_BA_REMOVE;}
     break;
 
   case 431:
 
 /* Line 1455 of yacc.c  */
-#line 2166 "screen.yacc"
+#line 2174 "screen.yacc"
     {(yyval.intval)=E_BA_EDITADD;}
     break;
 
   case 432:
 
 /* Line 1455 of yacc.c  */
-#line 2167 "screen.yacc"
+#line 2175 "screen.yacc"
     {(yyval.intval)=E_BA_ADD;}
     break;
 
   case 433:
 
 /* Line 1455 of yacc.c  */
-#line 2168 "screen.yacc"
+#line 2176 "screen.yacc"
     {(yyval.intval)=E_BA_UPDATE;}
     break;
 
   case 434:
 
 /* Line 1455 of yacc.c  */
-#line 2169 "screen.yacc"
+#line 2177 "screen.yacc"
     {(yyval.intval)=E_BA_QUERY;}
     break;
 
   case 435:
 
 /* Line 1455 of yacc.c  */
-#line 2170 "screen.yacc"
+#line 2178 "screen.yacc"
     {(yyval.intval)=E_BA_REMOVE;}
     break;
 
   case 436:
 
 /* Line 1455 of yacc.c  */
-#line 2171 "screen.yacc"
+#line 2179 "screen.yacc"
     {(yyval.intval)=E_BA_DISPLAY;}
     break;
 
   case 437:
 
 /* Line 1455 of yacc.c  */
-#line 2172 "screen.yacc"
+#line 2180 "screen.yacc"
     {(yyval.intval)=E_BA_EDITUPDATE;}
     break;
 
   case 438:
 
 /* Line 1455 of yacc.c  */
-#line 2175 "screen.yacc"
+#line 2183 "screen.yacc"
     {
 		(yyval.col_list)=malloc(sizeof(struct s_column_list));
 		(yyval.col_list)->columns.columns_len=1;
@@ -6462,7 +6470,7 @@ if (strcasecmp(currftag,(yyvsp[(1) - (1)].str))!=0) {
   case 439:
 
 /* Line 1455 of yacc.c  */
-#line 2182 "screen.yacc"
+#line 2190 "screen.yacc"
     {
 		(yyval.col_list)=(yyvsp[(1) - (3)].col_list);
 		(yyval.col_list)->columns.columns_len++;
@@ -6475,7 +6483,7 @@ if (strcasecmp(currftag,(yyvsp[(1) - (1)].str))!=0) {
   case 440:
 
 /* Line 1455 of yacc.c  */
-#line 2193 "screen.yacc"
+#line 2201 "screen.yacc"
     {
 		(yyval.column).tabname=strdup((yyvsp[(1) - (3)].str));
 		(yyval.column).colname=strdup((yyvsp[(3) - (3)].str));
@@ -6485,7 +6493,7 @@ if (strcasecmp(currftag,(yyvsp[(1) - (1)].str))!=0) {
   case 441:
 
 /* Line 1455 of yacc.c  */
-#line 2197 "screen.yacc"
+#line 2205 "screen.yacc"
     {
 		(yyval.column).tabname=strdup("");
 		(yyval.column).colname=strdup((yyvsp[(1) - (1)].str));
@@ -6495,7 +6503,7 @@ if (strcasecmp(currftag,(yyvsp[(1) - (1)].str))!=0) {
   case 442:
 
 /* Line 1455 of yacc.c  */
-#line 2204 "screen.yacc"
+#line 2212 "screen.yacc"
     {
 		the_form.master_of.master_of_len++;
 		the_form.master_of.master_of_val=realloc(the_form.master_of.master_of_val, sizeof(the_form.master_of.master_of_val[0])*the_form.master_of.master_of_len);
@@ -6507,7 +6515,7 @@ if (strcasecmp(currftag,(yyvsp[(1) - (1)].str))!=0) {
   case 443:
 
 /* Line 1455 of yacc.c  */
-#line 2212 "screen.yacc"
+#line 2220 "screen.yacc"
     {
 			(yyval.fcall)=malloc(sizeof(struct s_at_call));
 			memset((yyval.fcall),0,sizeof(struct s_at_call));
@@ -6520,7 +6528,7 @@ if (strcasecmp(currftag,(yyvsp[(1) - (1)].str))!=0) {
   case 444:
 
 /* Line 1455 of yacc.c  */
-#line 2218 "screen.yacc"
+#line 2226 "screen.yacc"
     {
 		(yyval.fcall)=(yyvsp[(4) - (6)].fcall);
 		if ((yyvsp[(5) - (6)].el)) {
@@ -6535,14 +6543,14 @@ if (strcasecmp(currftag,(yyvsp[(1) - (1)].str))!=0) {
   case 445:
 
 /* Line 1455 of yacc.c  */
-#line 2230 "screen.yacc"
+#line 2238 "screen.yacc"
     {(yyval.el)=0;}
     break;
 
   case 446:
 
 /* Line 1455 of yacc.c  */
-#line 2231 "screen.yacc"
+#line 2239 "screen.yacc"
     {
 		(yyval.el)=(yyvsp[(1) - (1)].el);
 	}
@@ -6551,7 +6559,7 @@ if (strcasecmp(currftag,(yyvsp[(1) - (1)].str))!=0) {
   case 447:
 
 /* Line 1455 of yacc.c  */
-#line 2237 "screen.yacc"
+#line 2245 "screen.yacc"
     {
 		(yyval.el)=malloc(sizeof(struct local_expr_list));
 		(yyval.el)->nlist=1;
@@ -6563,7 +6571,7 @@ if (strcasecmp(currftag,(yyvsp[(1) - (1)].str))!=0) {
   case 448:
 
 /* Line 1455 of yacc.c  */
-#line 2243 "screen.yacc"
+#line 2251 "screen.yacc"
     {
 		(yyval.el)=(yyvsp[(1) - (3)].el);
 		(yyval.el)->nlist++;
@@ -6575,7 +6583,7 @@ if (strcasecmp(currftag,(yyvsp[(1) - (1)].str))!=0) {
   case 449:
 
 /* Line 1455 of yacc.c  */
-#line 2251 "screen.yacc"
+#line 2259 "screen.yacc"
     {
 		(yyval.expr)=(yyvsp[(1) - (1)].expr);
 	}
@@ -6584,63 +6592,63 @@ if (strcasecmp(currftag,(yyvsp[(1) - (1)].str))!=0) {
   case 451:
 
 /* Line 1455 of yacc.c  */
-#line 2259 "screen.yacc"
+#line 2267 "screen.yacc"
     { (yyval.expr)=create_expr_comp_expr((yyvsp[(1) - (3)].expr),(yyvsp[(3) - (3)].expr),(yyvsp[(2) - (3)].str));}
     break;
 
   case 452:
 
 /* Line 1455 of yacc.c  */
-#line 2264 "screen.yacc"
+#line 2272 "screen.yacc"
     {strcpy((yyval.str),"AND");}
     break;
 
   case 453:
 
 /* Line 1455 of yacc.c  */
-#line 2265 "screen.yacc"
+#line 2273 "screen.yacc"
     {strcpy((yyval.str),"OR");}
     break;
 
   case 454:
 
 /* Line 1455 of yacc.c  */
-#line 2281 "screen.yacc"
+#line 2289 "screen.yacc"
     { void *x; x=create_int_expr(0); (yyval.expr)=create_expr_comp_expr(x,(yyvsp[(2) - (2)].expr),"-"); }
     break;
 
   case 455:
 
 /* Line 1455 of yacc.c  */
-#line 2283 "screen.yacc"
+#line 2291 "screen.yacc"
     { void *x; x=create_int_expr(0); (yyval.expr)=create_expr_comp_expr(x,(yyvsp[(2) - (2)].expr),"+"); }
     break;
 
   case 456:
 
 /* Line 1455 of yacc.c  */
-#line 2284 "screen.yacc"
+#line 2292 "screen.yacc"
     { (yyval.expr)=(yyvsp[(1) - (1)].expr); }
     break;
 
   case 457:
 
 /* Line 1455 of yacc.c  */
-#line 2285 "screen.yacc"
+#line 2293 "screen.yacc"
     { (yyval.expr)=create_not_expr((yyvsp[(2) - (2)].expr)); }
     break;
 
   case 458:
 
 /* Line 1455 of yacc.c  */
-#line 2286 "screen.yacc"
+#line 2294 "screen.yacc"
     { (yyval.expr)=(yyvsp[(2) - (3)].expr); }
     break;
 
   case 459:
 
 /* Line 1455 of yacc.c  */
-#line 2287 "screen.yacc"
+#line 2295 "screen.yacc"
     { 
 			(yyval.expr)=create_fcall((yyvsp[(1) - (4)].str),(yyvsp[(3) - (4)].el));
 	}
@@ -6649,154 +6657,154 @@ if (strcasecmp(currftag,(yyvsp[(1) - (1)].str))!=0) {
   case 460:
 
 /* Line 1455 of yacc.c  */
-#line 2290 "screen.yacc"
+#line 2298 "screen.yacc"
     { (yyval.expr)=create_field_expr((yyvsp[(3) - (3)].str)); }
     break;
 
   case 461:
 
 /* Line 1455 of yacc.c  */
-#line 2291 "screen.yacc"
+#line 2299 "screen.yacc"
     { (yyval.expr)=create_expr_comp_expr((yyvsp[(1) - (3)].expr),(yyvsp[(3) - (3)].expr),(yyvsp[(2) - (3)].str)); }
     break;
 
   case 462:
 
 /* Line 1455 of yacc.c  */
-#line 2292 "screen.yacc"
+#line 2300 "screen.yacc"
     { (yyval.expr)=create_expr_comp_expr((yyvsp[(1) - (3)].expr),(yyvsp[(3) - (3)].expr),(yyvsp[(2) - (3)].str)); }
     break;
 
   case 463:
 
 /* Line 1455 of yacc.c  */
-#line 2293 "screen.yacc"
+#line 2301 "screen.yacc"
     { (yyval.expr)=create_expr_comp_expr((yyvsp[(1) - (3)].expr),(yyvsp[(3) - (3)].expr),(yyvsp[(2) - (3)].str)); }
     break;
 
   case 464:
 
 /* Line 1455 of yacc.c  */
-#line 2294 "screen.yacc"
+#line 2302 "screen.yacc"
     { (yyval.expr)=create_expr_comp_expr((yyvsp[(1) - (3)].expr),(yyvsp[(3) - (3)].expr),(yyvsp[(2) - (3)].str)); }
     break;
 
   case 465:
 
 /* Line 1455 of yacc.c  */
-#line 2295 "screen.yacc"
+#line 2303 "screen.yacc"
     { (yyval.expr)=create_expr_comp_expr((yyvsp[(1) - (3)].expr),(yyvsp[(3) - (3)].expr),(yyvsp[(2) - (3)].str)); }
     break;
 
   case 466:
 
 /* Line 1455 of yacc.c  */
-#line 2296 "screen.yacc"
+#line 2304 "screen.yacc"
     { (yyval.expr)=create_expr_comp_expr((yyvsp[(1) - (3)].expr),(yyvsp[(3) - (3)].expr),(yyvsp[(2) - (3)].str)); }
     break;
 
   case 467:
 
 /* Line 1455 of yacc.c  */
-#line 2297 "screen.yacc"
+#line 2305 "screen.yacc"
     { (yyval.expr)=create_expr_comp_expr((yyvsp[(1) - (3)].expr),(yyvsp[(3) - (3)].expr),(yyvsp[(2) - (3)].str)); }
     break;
 
   case 468:
 
 /* Line 1455 of yacc.c  */
-#line 2298 "screen.yacc"
+#line 2306 "screen.yacc"
     { (yyval.expr)=create_expr_comp_expr((yyvsp[(1) - (3)].expr),(yyvsp[(3) - (3)].expr),(yyvsp[(2) - (3)].str)); }
     break;
 
   case 469:
 
 /* Line 1455 of yacc.c  */
-#line 2299 "screen.yacc"
+#line 2307 "screen.yacc"
     { (yyval.expr)=create_expr_comp_expr((yyvsp[(1) - (4)].expr),(yyvsp[(4) - (4)].expr),"NOTLIKE"); }
     break;
 
   case 470:
 
 /* Line 1455 of yacc.c  */
-#line 2300 "screen.yacc"
+#line 2308 "screen.yacc"
     { (yyval.expr)=create_expr_comp_expr((yyvsp[(1) - (3)].expr),(yyvsp[(3) - (3)].expr),(yyvsp[(2) - (3)].str)); }
     break;
 
   case 471:
 
 /* Line 1455 of yacc.c  */
-#line 2301 "screen.yacc"
+#line 2309 "screen.yacc"
     { void *p; p=create_char_expr("ISNULL"); (yyval.expr)=create_expr_comp_expr((yyvsp[(1) - (2)].expr),p,"ISNULL"); }
     break;
 
   case 472:
 
 /* Line 1455 of yacc.c  */
-#line 2302 "screen.yacc"
+#line 2310 "screen.yacc"
     { void *p; p=create_char_expr("ISNOTNULL"); (yyval.expr)=create_expr_comp_expr((yyvsp[(1) - (2)].expr),p,"ISNOTNULL"); }
     break;
 
   case 473:
 
 /* Line 1455 of yacc.c  */
-#line 2303 "screen.yacc"
+#line 2311 "screen.yacc"
     { (yyval.expr)=create_list_expr(); add_list_expr((yyval.expr),(yyvsp[(3) - (5)].expr)); add_list_expr((yyval.expr),(yyvsp[(5) - (5)].expr)); (yyval.expr)=create_expr_comp_expr((yyvsp[(1) - (5)].expr),(yyval.expr),"BETWEEN"); }
     break;
 
   case 474:
 
 /* Line 1455 of yacc.c  */
-#line 2304 "screen.yacc"
+#line 2312 "screen.yacc"
     { (yyval.expr)=create_expr_comp_expr((yyvsp[(1) - (5)].expr),(yyvsp[(4) - (5)].expr),"IN"); }
     break;
 
   case 475:
 
 /* Line 1455 of yacc.c  */
-#line 2305 "screen.yacc"
+#line 2313 "screen.yacc"
     { (yyval.expr)=create_expr_comp_expr((yyvsp[(1) - (6)].expr),(yyvsp[(5) - (6)].expr),"NOTIN"); }
     break;
 
   case 477:
 
 /* Line 1455 of yacc.c  */
-#line 2311 "screen.yacc"
+#line 2319 "screen.yacc"
     { (yyval.expr)=create_field_expr((yyvsp[(1) - (1)].str)); }
     break;
 
   case 478:
 
 /* Line 1455 of yacc.c  */
-#line 2312 "screen.yacc"
+#line 2320 "screen.yacc"
     {(yyval.expr)=create_int_expr(atoi((yyvsp[(1) - (1)].str))); }
     break;
 
   case 479:
 
 /* Line 1455 of yacc.c  */
-#line 2313 "screen.yacc"
+#line 2321 "screen.yacc"
     {(yyval.expr)=create_char_expr((yyvsp[(1) - (1)].str));}
     break;
 
   case 480:
 
 /* Line 1455 of yacc.c  */
-#line 2314 "screen.yacc"
+#line 2322 "screen.yacc"
     { (yyval.expr)=create_special_expr((yyvsp[(1) - (1)].str)); }
     break;
 
   case 481:
 
 /* Line 1455 of yacc.c  */
-#line 2315 "screen.yacc"
+#line 2323 "screen.yacc"
     { (yyval.expr)=create_special_expr((yyvsp[(1) - (1)].str));}
     break;
 
   case 482:
 
 /* Line 1455 of yacc.c  */
-#line 2318 "screen.yacc"
+#line 2326 "screen.yacc"
     {
 		(yyval.expr)=create_list_expr();
 		add_list_expr((yyval.expr),(yyvsp[(1) - (1)].expr));
@@ -6806,7 +6814,7 @@ if (strcasecmp(currftag,(yyvsp[(1) - (1)].str))!=0) {
   case 483:
 
 /* Line 1455 of yacc.c  */
-#line 2322 "screen.yacc"
+#line 2330 "screen.yacc"
     {
 		add_list_expr((yyvsp[(1) - (3)].expr),(yyvsp[(3) - (3)].expr));
 		(yyval.expr)=(yyvsp[(1) - (3)].expr);
@@ -6816,7 +6824,7 @@ if (strcasecmp(currftag,(yyvsp[(1) - (1)].str))!=0) {
 
 
 /* Line 1455 of yacc.c  */
-#line 6820 "y.tab.c"
+#line 6828 "y.tab.c"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);
@@ -7028,7 +7036,7 @@ yyreturn:
 
 
 /* Line 1675 of yacc.c  */
-#line 2334 "screen.yacc"
+#line 2342 "screen.yacc"
 
 
 
