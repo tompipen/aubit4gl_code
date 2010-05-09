@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                          |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.253 2010-03-02 20:11:05 mikeaubury Exp $
+# $Id: stack.c,v 1.254 2010-05-09 10:45:39 mikeaubury Exp $
 #
 */
 
@@ -1346,7 +1346,7 @@ int r;
 
 	      A4GL_debug ("Using a string for the second part : %s op=%d  ", params[params_cnt - 1].ptr, d);
 #endif
-	      A4GL_whats_in_a_string (params[params_cnt - 1].ptr, &dx, &sx);
+	      A4GL_whats_in_a_string (params[params_cnt - 1].ptr, &dx, &sx,DTYPE_DTIME);
 
 	    }
 

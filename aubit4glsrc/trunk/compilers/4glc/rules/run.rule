@@ -50,7 +50,7 @@ run_cmd : KW_RUN fgl_expr_c  				{
 	| KW_RUN_CLIENT fgl_expr_c {
 			struct expr_str_list *plist;
 			plist=A4GL_new_ptr_list($<ptr>2);
-			$<ptr>$=A4GL_new_expr_fcall("aclfgl_client_execute",plist,infilename,lastlineno,get_namespace("aclfgl_client_execute"));
+			$<ptr>$=A4GL_new_expr_fcall("aclfgl_client_execute",plist,A4GL_compiling_module_basename(),lastlineno,get_namespace("aclfgl_client_execute"));
 			 $<cmd>$=new_call_cmd(chk_expr($<ptr>$),NULL);
 	}
 ;

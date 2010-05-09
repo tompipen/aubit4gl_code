@@ -6,7 +6,7 @@ sort_cmd : SORT variable_usage_expression KW_USING identifier op_sort_limit {
 			a4gl_yyerror("Variable is not a simple array");
 			$<cmd>$=NULL;
 		} else {
-                	callback=A4GL_new_expr_fcall($<str>4,NULL,infilename,lastlineno, get_namespace($<str>4));
+                	callback=A4GL_new_expr_fcall($<str>4,NULL,A4GL_compiling_module_basename(),lastlineno, get_namespace($<str>4));
 			$<cmd>$=new_sort_cmd($<ptr>2,callback,$<ptr>5);
 		}
 	}

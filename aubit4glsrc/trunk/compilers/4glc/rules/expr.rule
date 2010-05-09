@@ -283,7 +283,7 @@ variable_entry :
 		vu_top=$<ptr>1->expr_str_u.expr_variable_usage;
 		v=find_variable_vu_ptr(errbuff, vu_top, &scope,0);
 	
-		$<ptr>$=A4GL_new_expr_member_fcall($<ptr>1,$<ptr_list>3,infilename,lastlineno,get_namespace($<str>1)); 
+		$<ptr>$=A4GL_new_expr_member_fcall($<ptr>1,$<ptr_list>3,A4GL_compiling_module_basename(),lastlineno,get_namespace($<str>1)); 
 		inc_var_usage($<ptr>$);
 	}
 */
@@ -513,9 +513,9 @@ function_call_expr:
 		/* Informix allows this outside of a input/construct... */
 
 		if (isin_command("INPUT")&&!isin_command("CONSTRUCT")) { 
-			$<ptr>$=A4GL_new_expr_infield(get_sio_id("ALL"),$<field_list>3,infilename,lastlineno);
+			$<ptr>$=A4GL_new_expr_infield(get_sio_id("ALL"),$<field_list>3,A4GL_compiling_module_basename(),lastlineno);
 		} else {
-			$<ptr>$=A4GL_new_expr_infield(-1,$<field_list>3,infilename,lastlineno);
+			$<ptr>$=A4GL_new_expr_infield(-1,$<field_list>3,A4GL_compiling_module_basename(),lastlineno);
 		}
 	}
 	| FIELD_TOUCHED OPEN_BRACKET field_name_list_as_struct CLOSE_BRACKET 
@@ -525,7 +525,7 @@ function_call_expr:
    			a4gl_yyerror("field_touched can only be used in an input or construct");
    			YYERROR;
 		}
-		$<ptr>$=A4GL_new_expr_field_touched(get_sio_id("ALL"),$<field_list>3,infilename,lastlineno);
+		$<ptr>$=A4GL_new_expr_field_touched(get_sio_id("ALL"),$<field_list>3,A4GL_compiling_module_basename(),lastlineno);
 	}
 	| NOT_FIELD_TOUCHED OPEN_BRACKET field_name_list_as_struct CLOSE_BRACKET 
 		{ 
@@ -534,7 +534,7 @@ function_call_expr:
    			a4gl_yyerror("field_touched can only be used in an input or construct");
    			YYERROR;
 		}
-			$<ptr>$=A4GL_new_expr_not_field_touched(get_sio_id("ALL"),$<field_list>3,infilename,lastlineno);
+			$<ptr>$=A4GL_new_expr_not_field_touched(get_sio_id("ALL"),$<field_list>3,A4GL_compiling_module_basename(),lastlineno);
 	}
 
 
@@ -547,7 +547,7 @@ function_call_expr:
    			a4gl_yyerror("field_touched can only be used in an input or construct");
    			YYERROR;
 		}
-		$<ptr>$=A4GL_new_expr_field_touched(get_sio_id("ALL"),NULL,infilename,lastlineno);
+		$<ptr>$=A4GL_new_expr_field_touched(get_sio_id("ALL"),NULL,A4GL_compiling_module_basename(),lastlineno);
 	}
 	| NOT_FIELD_TOUCHED_CURRENT OPEN_BRACKET CLOSE_BRACKET 
 		{ 
@@ -556,7 +556,7 @@ function_call_expr:
    			a4gl_yyerror("field_touched can only be used in an input or construct");
    			YYERROR;
 		}
-		$<ptr>$=A4GL_new_expr_not_field_touched(get_sio_id("ALL"),NULL,infilename,lastlineno);
+		$<ptr>$=A4GL_new_expr_not_field_touched(get_sio_id("ALL"),NULL,A4GL_compiling_module_basename(),lastlineno);
 	}
 */
 
@@ -578,7 +578,7 @@ function_call_expr:
 	}
 
 	| KW_CAST OPEN_BRACKET fgl_expr_c KW_AS cast_dtype CLOSE_BRACKET {
-		make_cast(infilename,lastlineno, $<ptr>3,$<integer_val>5,0,1);
+		make_cast(A4GL_compiling_module_basename(),lastlineno, $<ptr>3,$<integer_val>5,0,1);
 		$<ptr>$=$<ptr>3;
 	}
 /*************************************************************************/
@@ -589,7 +589,7 @@ function_call_expr:
  	| identifier OPEN_BRACKET opt_func_call_args CLOSE_BRACKET {
 		char buff[256];
 		ADDMAP("Call",$<str>1);
-		$<ptr>$=A4GL_new_expr_fcall($<str>1,$<ptr_list>3,infilename,lastlineno, get_namespace($<str>1));
+		$<ptr>$=A4GL_new_expr_fcall($<str>1,$<ptr_list>3,A4GL_compiling_module_basename(),lastlineno, get_namespace($<str>1));
 		if (!A4GL_check_fcall_for_builtin_functions($<ptr>$,buff,NULL,0)) {
 			a4gl_yyerror(buff);
 			$<ptr>$=0;
@@ -599,7 +599,7 @@ function_call_expr:
 		}
    	| KW_CHANNEL_READ OPEN_BRACKET func_call_args CLOSE_BRACKET {
 		char errbuff[200];
-	        $<ptr>$=A4GL_new_expr_shared_fcall("channel", "read",$<ptr_list>3,infilename,lastlineno, get_namespace("channel::read"),errbuff);
+	        $<ptr>$=A4GL_new_expr_shared_fcall("channel", "read",$<ptr_list>3,A4GL_compiling_module_basename(),lastlineno, get_namespace("channel::read"),errbuff);
 		
 		if ($<ptr>$==NULL) {
 			a4gl_yyerror(errbuff);
@@ -609,7 +609,7 @@ function_call_expr:
         }
    	| identifier DOUBLE_COLON identifier OPEN_BRACKET opt_func_call_args CLOSE_BRACKET {
 		char errbuff[200];
-		$<ptr>$=A4GL_new_expr_shared_fcall($<str>1,$<str>3,$<ptr_list>5,infilename,lastlineno, get_namespace($<str>1),errbuff); 
+		$<ptr>$=A4GL_new_expr_shared_fcall($<str>1,$<str>3,$<ptr_list>5,A4GL_compiling_module_basename(),lastlineno, get_namespace($<str>1),errbuff); 
 		if ($<ptr>$==NULL) {
 			a4gl_yyerror(errbuff);
 		} else {
@@ -619,7 +619,7 @@ function_call_expr:
 
    	| SHARED identifier KW_IN identifier OPEN_BRACKET opt_func_call_args CLOSE_BRACKET {
 		char errbuff[200];
-		$<ptr>$=A4GL_new_expr_shared_fcall($<str>2,$<str>4,$<ptr_list>6,infilename,lastlineno, get_namespace($<str>2),errbuff); 
+		$<ptr>$=A4GL_new_expr_shared_fcall($<str>2,$<str>4,$<ptr_list>6,A4GL_compiling_module_basename(),lastlineno, get_namespace($<str>2),errbuff); 
 		add_to_call_list_by_expr($<ptr>$);
 	}
 	| CURSOR_NAME_FUNCTION OPEN_BRACKET fgl_expr_c CLOSE_BRACKET {
@@ -643,11 +643,11 @@ function_call_expr:
    			YYERROR;
 		}
 		if (isin_command("INPUT")) {
-			$<ptr>$=A4GL_new_expr_get_fldbuf(get_sio_id("INPUT"),$<field_list>3,infilename,lastlineno);
+			$<ptr>$=A4GL_new_expr_get_fldbuf(get_sio_id("INPUT"),$<field_list>3,A4GL_compiling_module_basename(),lastlineno);
 		} 
 		if (isin_command("CONSTRUCT")) {
 			
-			$<ptr>$=A4GL_new_expr_get_fldbuf(get_sio_id("CONSTRUCT"),$<field_list>3,infilename,lastlineno);
+			$<ptr>$=A4GL_new_expr_get_fldbuf(get_sio_id("CONSTRUCT"),$<field_list>3,A4GL_compiling_module_basename(),lastlineno);
 		} 
 
 	} 
@@ -666,7 +666,7 @@ function_call_expr:
                                 strcat(fname,$<str>4);
                         }
 
-                        $<ptr>$=A4GL_new_expr_call_external($<str>2,$<str>4,$<ptr>6,$<ptr_list>9,$<integer_val>11,infilename,lastlineno,get_namespace($<str>4));
+                        $<ptr>$=A4GL_new_expr_call_external($<str>2,$<str>4,$<ptr>6,$<ptr_list>9,$<integer_val>11,A4GL_compiling_module_basename(),lastlineno,get_namespace($<str>4));
 		add_to_call_list_by_expr($<ptr>$);
 
                 }
@@ -941,7 +941,7 @@ member_fcall:
 		}
 
 
-                $<ptr>$=A4GL_new_expr_member_fcall_n(var,func, objtype, datatype, $<ptr_list>3,infilename,lastlineno,get_namespace("-"));
+                $<ptr>$=A4GL_new_expr_member_fcall_n(var,func, objtype, datatype, $<ptr_list>3,A4GL_compiling_module_basename(),lastlineno,get_namespace("-"));
 		inc_var_usage($<ptr>$);
    }
 ;

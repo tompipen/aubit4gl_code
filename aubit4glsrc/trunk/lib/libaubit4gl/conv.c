@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.179 2009-07-10 09:40:32 mikeaubury Exp $
+# $Id: conv.c,v 1.180 2010-05-09 10:45:39 mikeaubury Exp $
 #
 */
 
@@ -383,6 +383,15 @@ A4GL_inttoint (void *a, void *b, int size)
 #endif
   memset (buff, 0, 256);
 
+  d->i_years=0;
+  d->i_months=0;
+  d->i_days=0;
+  d->i_hours=0;
+  d->i_minutes=0;
+  d->i_seconds=0;
+  d->i_fractions=0;
+  d->is_neg=0;
+
   A4GL_inttoc (a, buff, 60);
   if ((e->stime & 0xf) == e->ltime)
     {
@@ -407,7 +416,11 @@ A4GL_inttoint (void *a, void *b, int size)
 	d->is_neg = 1;
       else
 	d->is_neg = 0;
+    } else {
+	printf("not ok\n");
+	A4GL_debug("Not ok\n");
     }
+
 
   return (ok);
 
@@ -721,6 +734,7 @@ A4GL_ctoint (void *a_char, void *b_int, int size_b)
 #endif
       A4GL_conv_invdatatoc (data, v1, v2, v3, d);
 #ifdef DEBUG
+//printf("---->Y %d M %d D %d H %d M %d S %d\n", data[0],data[1],data[2],data[3],data[4],data[5]);
       A4GL_debug ("CHECK2 :  d->stime=%d d->ltime=%d", d->stime, d->ltime);
 #endif
       return 1;
@@ -4239,6 +4253,7 @@ A4GL_valid_int (char *s, int *data, int size)
 #endif
   cnt = 0;
 
+
   for (a = 1; a < buff_size; a++)
     {
 
@@ -4246,7 +4261,7 @@ A4GL_valid_int (char *s, int *data, int size)
 	{
 	  type[cnt++] = '.';	// C
 	  ptr[cnt] = &buff[a + 1];
-	  buff[a] = 0;
+	  buff[a] = 0 ;
 	  continue;
 	}
 
@@ -4292,6 +4307,7 @@ A4GL_valid_int (char *s, int *data, int size)
 #endif
 
   //debug ("type='%s' size=0x%x\n", type,size);
+//printf("type=%s\n",type);
 
   if (strcmp (type, "") == 0)
     {
@@ -4397,6 +4413,7 @@ A4GL_valid_int (char *s, int *data, int size)
     }
 
 
+
   if (dt_type == -1)
     return 0;
 
@@ -4406,11 +4423,30 @@ A4GL_valid_int (char *s, int *data, int size)
   if (dt_type == 0 && strlen (ptr[0]) == 0)
     return 0;			/* nothing... */
 
+
+  
   b = dt_type & 15;
   a = dt_type >> 4;
+
 #ifdef DEBUG
   A4GL_debug ("a=%d b=%d dt_type=%d cnt=%d\n", a, b, dt_type, cnt);
 #endif
+
+//printf("Check %s '%s' %d %d %d\n", s,type,size_type, a,b);
+if (a==((size >>4)&0xf) && b==(size&0xf) ){
+	; // printf("matches on size...\n");
+} else {
+	int az;
+	az=((size >>4)&0xf);
+	if (a==1 || a==2) {
+		if (az==1 || az==2) ;
+		else { return 0; }
+	} else {
+		if (az==1 || az==2)  return 0;
+	}
+	//printf("not matches on size...\n");
+}
+	
 
   if (b - a != cnt)
     {

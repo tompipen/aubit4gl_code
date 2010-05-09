@@ -1186,7 +1186,7 @@ pdf_functions_expr :
 			} else {
 				// REP_TYPE_PDF or REP_TYPE_NOTSET(a function)
    				ADDMAP("CALL",$<str>3);
-		                $<ptr>$=A4GL_new_expr_pdf_fcall($<str>3,$<ptr_list>5,infilename,lastlineno,get_namespace($<str>3));
+		                $<ptr>$=A4GL_new_expr_pdf_fcall($<str>3,$<ptr_list>5,A4GL_compiling_module_basename(),lastlineno,get_namespace($<str>3));
 			}
    		}
 ;

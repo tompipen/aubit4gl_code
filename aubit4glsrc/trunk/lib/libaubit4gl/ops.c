@@ -25,7 +25,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.169 2010-03-05 15:13:53 mikeaubury Exp $
+# $Id: ops.c,v 1.170 2010-05-09 10:45:39 mikeaubury Exp $
 #
 */
 
@@ -2721,8 +2721,8 @@ A4GL_char_char_ops (int op)
     case OP_POWER:
 
       // Not normal to add two strings...
-      A4GL_whats_in_a_string (a, &dt1, &sz1);
-      A4GL_whats_in_a_string (b, &dt2, &sz2);
+      A4GL_whats_in_a_string (a, &dt1, &sz1,DTYPE_DTIME);
+      A4GL_whats_in_a_string (b, &dt2, &sz2,DTYPE_DTIME);
 
       done1 = 0;
       done2 = 0;
@@ -5024,8 +5024,8 @@ A4GL_in_in_ops (int op)
   //char *ptr;
   int se1;
   int se2;
-  double d_i1;
-  double d_i2;
+  double d_i1=0;
+  double d_i2=0;
   int a;
   for (a = 0; a < 10; a++)
     {
@@ -5198,6 +5198,7 @@ A4GL_in_in_ops (int op)
     }
 
 
+//printf("d_i1=%lf d_i2=%lf\n",d_i1,d_i2);
 
   switch (op)
     {
@@ -5396,7 +5397,7 @@ A4GL_in_char_ops (int op)
 
 
   // Not normal to add two strings...
-  	A4GL_whats_in_a_string (ptr, &d2, &s2);
+  	A4GL_whats_in_a_string (ptr, &d2, &s2,DTYPE_INTERVAL);
 	
   A4GL_push_interval (&in1, s1);
   
@@ -7551,7 +7552,7 @@ returns *d=
 */
 
 void
-A4GL_whats_in_a_string (char *s, int *d, int *sz)
+A4GL_whats_in_a_string (char *s, int *d, int *sz,int dtype_hint)
 {
   int orig_conv_ok = 0;
 //int is_ok;
@@ -7559,7 +7560,7 @@ A4GL_whats_in_a_string (char *s, int *d, int *sz)
   char buff[2000];
   int val;
   int orig_stat;
-
+int t;
 
   if (s == 0)
     return;
@@ -7635,7 +7636,11 @@ A4GL_whats_in_a_string (char *s, int *d, int *sz)
     }
 
 
+for (t=0;t<3;t++) {
 
+
+
+	if ((t==0 && dtype_hint==DTYPE_DTIME) || t==1) {
   a4gl_status = orig_stat;
   A4GL_conversion_ok (orig_conv_ok);
 // Check for a datetime...
@@ -7666,10 +7671,11 @@ A4GL_whats_in_a_string (char *s, int *d, int *sz)
 
 	}
     }
+  }
 
 
 
-
+if ((t==0 && dtype_hint==DTYPE_INTERVAL) || t==2) {
 
 // Lets put right what might have gone wrong..
   a4gl_status = orig_stat;
@@ -7692,6 +7698,7 @@ A4GL_whats_in_a_string (char *s, int *d, int *sz)
 
 	  if (A4GL_valid_int (str, NULL , size_b))
 	    {
+	      //printf ("Possible INTERVAL %d to %d : %s", a, b,str);
 #ifdef DEBUG
 	      A4GL_debug ("Possible INTERVAL %d to %d", a, b);
 #endif
@@ -7705,7 +7712,8 @@ A4GL_whats_in_a_string (char *s, int *d, int *sz)
 
 	}
     }
-
+}
+}
 
   // Lets put right what might have gone wrong..
   a4gl_status = orig_stat;

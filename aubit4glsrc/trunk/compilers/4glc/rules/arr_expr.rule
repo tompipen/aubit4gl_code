@@ -30,7 +30,7 @@ arr_expr_e :
                 vu_top=$<ptr>1->expr_str_u.expr_variable_usage;
 		v=find_variable_vu_ptr(errbuff, vu_top, &scope,0);
 
-                $<ptr>$=A4GL_new_expr_member_fcall($<ptr>1,$<ptr_list>3,infilename,lastlineno,get_namespace($<str>1));
+                $<ptr>$=A4GL_new_expr_member_fcall($<ptr>1,$<ptr_list>3,A4GL_compiling_module_basename(),lastlineno,get_namespace($<str>1));
                 inc_var_usage($<ptr>$);
         }
 */
@@ -46,7 +46,7 @@ arr_expr_e :
 					if (A4GL_isyes(acl_getenv("AUTOCASTSUBSCRIPT"))) { // @env AUTOCAST - Automatically cast Character strings to integers when used as subscripts
 
 					if (a==DTYPE_CHAR) {
-    						make_cast(infilename,lastlineno, $<ptr>1,2,0,1);
+    						make_cast(A4GL_compiling_module_basename(),lastlineno, $<ptr>1,2,0,1);
 						a=2;
 					}
 				}
