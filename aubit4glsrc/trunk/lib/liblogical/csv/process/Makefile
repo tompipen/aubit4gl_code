@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.6 2007-06-19 07:37:28 mikeaubury Exp $
+# $Id: Makefile,v 1.7 2010-05-10 14:17:46 mikeaubury Exp $
 #
 
 ROOT		=../../../..
@@ -36,7 +36,7 @@ include ${ROOT}/incl/Makefile-common
 ##                              Options
 ## ==================================================================
 
-CFLAGS+=-g ${WALL} -I$(ROOT)/incl -I../common -I../../common ${PIC}
+CFLAGS+=-g ${WALL} -I$(ROOT)/incl -I../common -I../../common ${PIC} -DALLOW_ZLIB
 
 OBJS=process_csv.o ../../common/a4gl_lle.o ../common/csv_io.o
 

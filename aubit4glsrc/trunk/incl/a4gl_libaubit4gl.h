@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.400 2010-05-09 10:45:39 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.401 2010-05-10 14:17:46 mikeaubury Exp $
 #
 */
 
@@ -2542,6 +2542,11 @@ void A4GLSQLCV_add_temp_table(char *tabname);
 
 
 #ifndef gzfopen
+
+#ifndef ALLOW_ZLIB
+#undef HAVE_ZLIB
+#endif
+
 #if HAVE_ZLIB
 
 #include <zlib.h>

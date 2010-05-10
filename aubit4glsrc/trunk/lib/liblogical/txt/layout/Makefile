@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.9 2006-07-27 16:03:13 mikeaubury Exp $
+# $Id: Makefile,v 1.10 2010-05-10 14:17:48 mikeaubury Exp $
 #
 
 ROOT		=../../../..
@@ -37,7 +37,7 @@ include ${ROOT}/incl/Makefile-common
 ##                              GTK+ Options
 ## ==================================================================
 
-CFLAGS			+=${GTK_INC_PATH} ${GTK_LIB_PATH}
+CFLAGS			+=${GTK_INC_PATH} ${GTK_LIB_PATH} -DALLOW_ZLIB
 HOSTNAME		:=$(shell echo $$HOSTNAME)
 
 ifeq "${WIN_PATH}" "1"

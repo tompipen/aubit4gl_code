@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.10 2008-09-11 17:45:27 mikeaubury Exp $
+# $Id: Makefile,v 1.11 2010-05-10 14:17:47 mikeaubury Exp $
 #
 
 ROOT		=../../../..
@@ -36,7 +36,7 @@ include ${ROOT}/incl/Makefile-common
 ##                              Options
 ## ==================================================================
 
-CFLAGS+=-g -I$(ROOT)/lib/libaubit4gl -I$(ROOT)/incl  ${PDFLIB_I_FLAGS}
+CFLAGS+=-g -I$(ROOT)/lib/libaubit4gl -I$(ROOT)/incl  ${PDFLIB_I_FLAGS} -DALLOW_ZLIB
 
 ifeq "${PDFBUILD}" "yes"
 	ALL=${PLUGINDIR}/libLOGREPPROC_PDF${SO_EXT}

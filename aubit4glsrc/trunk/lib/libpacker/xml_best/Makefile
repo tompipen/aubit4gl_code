@@ -1,6 +1,6 @@
 include ../../../incl/Makefile-common
 
-ZLIB=-DHAVE_ZLIB 
+ZLIB=-DHAVE_ZLIB  -DALLOW_ZLIB
 CFLAGS+= -I.  -I../../../incl -DA4GL_EXPR_H -Wall $(ZLIB)   
 
 

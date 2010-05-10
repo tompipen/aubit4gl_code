@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.56 2009-12-14 20:52:14 mikeaubury Exp $
+# $Id: Makefile,v 1.57 2010-05-10 14:17:46 mikeaubury Exp $
 #
 
 ROOT    	=../..
@@ -177,6 +177,7 @@ endif
 
 ifeq "${HAVE_ZLIB}" "1"
 	LINK_LIBS		+=-lz
+	CFLAGS+=-DALLOW_ZLIB
 endif
 
 ifeq "${HAVELIBCURL}" "1"
