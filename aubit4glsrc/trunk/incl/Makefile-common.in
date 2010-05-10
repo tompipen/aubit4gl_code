@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.240 2010-05-10 13:36:33 mikeaubury Exp $
+# $Id: Makefile-common.in,v 1.241 2010-05-10 13:40:55 mikeaubury Exp $
 #
 
 #WARNING: __NEVER__ use environment vatiable called "TMP" - Informix
@@ -609,6 +609,15 @@ ifeq "@GETOPT_LONG@" "no"
 	C_IFLAGS 			+=-I$(AUBITDIR)/tools/getopt
 endif
 
+HAVE_ZLIB		=@HAVE_ZLIB@
+ZLIB_INC_PATH		=@ZLIB_INC_PATH@
+ZLIB_LIB_PATH		=@ZLIB_LIB_PATH@
+ifeq "${ZLIB_INC_PATH}" ""
+ZLIB_INC_PATH		=/usr/include
+endif
+ifeq "${ZLIB_LIB_PATH}" ""
+ZLIB_LIB_PATH		=/usr/lib
+endif
 YYDEBUG             =@YYDEBUG@
 C_DFLAGS			+=${DDEBUG} -DHAVE_CONFIG_H ${YYDEBUG}
 CFLAGS				+=${CWARN} ${AUTOCONF_CFLAGS} ${C_DFLAGS} ${C_IFLAGS} 
@@ -1099,15 +1108,6 @@ HAVE_WIDE_NCURSES     	=@HAVE_WIDE_NCURSES@
 CURSES_INC_PATH 	=@CURSES_INC_PATH@
 CURSES_LIB_PATH		=@CURSES_LIB_PATH@
 CURSES_LIB_NAME 	=@CURSES_LIB_NAME@
-HAVE_ZLIB		=@HAVE_ZLIB@
-ZLIB_INC_PATH		=@ZLIB_INC_PATH@
-ZLIB_LIB_PATH		=@ZLIB_LIB_PATH@
-ifeq "${ZLIB_INC_PATH}" ""
-ZLIB_INC_PATH		=/usr/include
-endif
-ifeq "${ZLIB_LIB_PATH}" ""
-ZLIB_LIB_PATH		=/usr/lib
-endif
 HAVE_LIBQRENCODE	=@HAVE_LIBQRENCODE@
 HAVE_LIBDL		=@HAVE_LIBDL@
 USE_LIBDL=	@USE_LIBDL@
