@@ -754,7 +754,7 @@ int rc = 0;
 
 
 
-A4GL_debug("printField");
+//A4GL_debug("printField");
 
 
 
@@ -1029,7 +1029,7 @@ prepare_query_1 (char *s, char type,int *err_at_col)
   EXEC SQL END DECLARE SECTION;
   int qry_type;
 *err_at_col=1;
- A4GL_debug("prepare_query_1");
+ //A4GL_debug("prepare_query_1");
   if (type >= '1' && type <= '9')
     return 255;
 
@@ -1106,7 +1106,7 @@ int save_sqlca_sqlcode;
 
   if (ec_check_and_report_error ())
     {
-      A4GL_debug ("EXEC ERR3");
+      //A4GL_debug ("EXEC ERR3");
       return 0;
     }
 
@@ -1244,7 +1244,7 @@ execute_select_prepare (int *err_at_col,int type, int *hasrows)
 	  *err_at_col = sqlca.sqlerrd[4];
 	  return 0;
 	}
-      A4GL_debug ("Declared - opening");
+      //A4GL_debug ("Declared - opening");
       EXEC SQL open crExec;
       cp_sqlca ();
       if (sqlca.sqlcode < 0)
@@ -1253,7 +1253,7 @@ execute_select_prepare (int *err_at_col,int type, int *hasrows)
 	  return 0;
 	}
 
-      A4GL_debug ("opened");
+      //A4GL_debug ("opened");
 
       if (display_mode != DISPLAY_UNLOAD)
 	{
@@ -1298,7 +1298,7 @@ execute_sql_fetch (int *raffected,int *err_at_col)
 {
   int a;
 
-A4GL_debug("Fetching");
+//A4GL_debug("Fetching");
 /* FETCH1.... */
       prepare_for_fetch_into_descriptor(master_desc,master_qualifiers);
       EXEC SQL FETCH crExec USING DESCRIPTOR master_desc;
@@ -2760,7 +2760,7 @@ if (e->delim) {
       set_sqlcode (-806);
       return 0;
     }
-A4GL_debug("Unload..");
+//A4GL_debug("Unload..");
 
   if (no_buf)
     setvbuf (unlfile, (char *) NULL, _IONBF, 0);
@@ -2781,7 +2781,7 @@ A4GL_debug("Unload..");
   if (has_trans && !is_ansi)
     EXEC SQL BEGIN WORK;
 
-A4GL_debug("opening");
+//A4GL_debug("opening");
   EXEC SQL OPEN usqlcurs;
 A4GL_debug("opened %d",sqlca.sqlcode);
   if (sqlca.sqlcode < 0)
@@ -2984,7 +2984,7 @@ A4GL_debug("dump field %d (sqlcode=%d)",i, sqlca.sqlcode);
 	fprintf(unlfile,"\n");
 	  (*raffected)++;
     }				/* end fetch loop */
-A4GL_debug("All done");
+//A4GL_debug("All done");
   fclose (unlfile);
   if (sqlca.sqlcode && sqlca.sqlcode != SQLNOTFOUND)
     {

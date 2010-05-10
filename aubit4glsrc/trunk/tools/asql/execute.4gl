@@ -1012,7 +1012,7 @@ repeat_query:;
 	      int done_once = 0;
 		int iraffected=0;
 	      char buff[244];
-	      A4GL_debug ("Fetching..");
+	      //A4GL_debug ("Fetching..");
 		iraffected=raffected;
 	      b = execute_sql_fetch (&iraffected, err_at_colptr);
 		raffected=iraffected;
@@ -1060,7 +1060,7 @@ repeat_query:;
 
 	  if (rpaginate == 1)
 	    {
-	      A4GL_debug ("EXEC REPEAT");
+	      //A4GL_debug ("EXEC REPEAT");
 	      if (file_out_result)
 		{
 		  fclose (file_out_result);
@@ -1073,7 +1073,7 @@ repeat_query:;
 
 	  if (rpaginate == 2)
 	    {
-	      A4GL_debug ("EXEC EXIT");
+	      //A4GL_debug ("EXEC EXIT");
 	      return 0;
 	    }
 

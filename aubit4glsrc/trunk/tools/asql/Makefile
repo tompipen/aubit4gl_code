@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.62 2010-05-10 07:10:18 mikeaubury Exp $
+# $Id: Makefile,v 1.63 2010-05-10 14:49:51 mikeaubury Exp $
 #
 
 ROOT    		=../..
@@ -228,7 +228,7 @@ asql_i${A4GL_EXE_EXT}: ${OBJS_IFX}
 	@echo ""
 
 runforms${A4GL_EXE_EXT}: 
-	cd runforms; make; 
+	cd runforms; $(MAKE); 
 	
 
 asql_g${A4GL_EXE_EXT}: ${OBJS_GEN}

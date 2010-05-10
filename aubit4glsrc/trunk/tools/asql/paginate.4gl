@@ -78,7 +78,7 @@ rewind(in);
 while (1) {
 	strcpy(buff,"");
 	if (feof(in)) {
-		A4GL_debug("END OF FILE");
+		//A4GL_debug("END OF FILE");
 		break;
 	}
 	if (lv_cnt>display_lines) break;
@@ -122,7 +122,7 @@ code
 
 		if (lv_action==0) {
 			char nfname[256];
-			A4GL_debug("PAGINATE continue...");
+			//A4GL_debug("PAGINATE continue...");
 			sprintf(nfname,"%s.tmp",outfname);
 			A4GL_debug("nfname = %s",nfname);
 			out2=fopen(nfname,"w");
@@ -140,7 +140,7 @@ code
 			A4GL_debug("rename %s %s",nfname,outfname);
 			unlink(outfname);
 			if (rename(nfname,outfname)!=0) {
-				A4GL_debug("rename failed! %d\n");
+				A4GL_debug("rename failed! %d\n",0);
 			}
 	
 			open_display_file_c();
