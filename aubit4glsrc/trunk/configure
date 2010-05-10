@@ -2104,7 +2104,7 @@ with_httpd
 with_sapdb
 with_esqlc
 with_informix
-with_informic
+with_informixc
 with_pgsqleng
 with_pgsql
 with_ecpg
@@ -23342,9 +23342,9 @@ fi
 
 
 
-# Check whether --with-informic was given.
-if test "${with_informic+set}" = set; then :
-  withval=$with_informic; DEFINFORMIXC="$withval"
+# Check whether --with-informixc was given.
+if test "${with_informixc+set}" = set; then :
+  withval=$with_informixc; DEFINFORMIXC="$withval"
 fi
 
 
@@ -37759,7 +37759,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure,v 1.454 2010-05-10 15:20:57 mikeaubury Exp $
+| $Id: configure,v 1.455 2010-05-10 15:25:57 mikeaubury Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X
