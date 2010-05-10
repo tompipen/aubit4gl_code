@@ -39,7 +39,7 @@ fgl.xo.c fgl.xoh.h fgl.attlist.dtd fgl.setparent.c: fgl.x ${AUBITDIR}/bin/xgen_n
 	${AUBITDIR}/bin/xgen_new fgl.x
 
 module_def.dtd: fgl.attlist.dtd fgl.elements.dtd  default.dtd
-		cat default.dtd fgl.attlist.dtd fgl.elements.dtd | sort -k2 -k1r | awk '(NF) {print }'  > module_def.dtd
+		cat default.dtd fgl.attlist.dtd fgl.elements.dtd | sort -k2 -k1r | grep  "."  > module_def.dtd
 	
 module_def.act: module_def.top.act  fgl.start.act fgl.end.act module_def.tail.act
 	cat $^ > $@

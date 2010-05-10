@@ -12,8 +12,11 @@ int nomain = 0;
 char *decode_cmd_type (enum cmd_type value);
 int A4GL_is_valid_4gl_type (char *s);
 int inc4GL = 1;
+int lint_inited=0;
 int nlints = 0;
 int last_was_sql = 0;
+int bggdat_called=0;
+int warn_global_or_mod_var=0;
 //void check_expression (struct expr_str *e) ;
 void check_expression (char *module, int lineno, struct expr_str *e);
 static void check_expressions_cmd (struct s_commands *cmds);
@@ -34,8 +37,9 @@ struct s_severities
   "CS.VNAME", 0},
   {
   "CS.GOTO", 1},
-  {
-  "CS.EXITDIRECT", 0},
+  { "CS.EXITDIRECT", 0},
+  { "CS.MESSAGE", 0},
+  { "CS.REPTOP", 0},
   {
   "CS.EXITNOTMAIN", 0},
   {
@@ -1094,6 +1098,8 @@ check_linearised_commands (char *module_name, s_commands * func_cmds)
   for (cnt = 0; cnt < func_cmds->cmds.cmds_len; cnt++)
     {
       r = func_cmds->cmds.cmds_val[cnt];
+
+
 
       if (r->cmd_data.type == E_CMD_LINT_EXPECT_CMD)
 	{
@@ -2262,6 +2268,18 @@ check_report (struct module_definition *d, struct s_report_definition *r)
   module_name = r->module;
   check_variables (r->module, d, &r->variables, r->parameters);
 
+  if (r->report_output_section==NULL) {
+	  A4GL_lint (module_name, r->lineno, "CS.REPTOP", "Top of Page ^L not used", NULL);
+  } else {
+	if (r->report_output_section->with_top_of_page==0) {
+	  A4GL_lint (module_name, r->lineno, "CS.REPTOP", "Top of Page ^L not used", NULL);
+	} else {
+		if (strstr(r->report_output_section->with_top_of_page,"^L")==0)  {
+	  		A4GL_lint (module_name, r->lineno, "CS.REPTOP", "Top of Page ^L not used", NULL);
+		}
+	}
+  }
+
   if (r->reportFormatSection)
     {
       for (a = 0; a < r->reportFormatSection->entries.entries_len; a++)
@@ -2278,7 +2296,21 @@ check_report (struct module_definition *d, struct s_report_definition *r)
 				  r->reportFormatSection->entries.
 				  entries_val[a]->rep_sec_commands);
 	      check_linearised_commands (r->module, func_cmds);
+		switch(r->reportFormatSection->entries.entries_val[a]->rb_block.rb) {
+        		case RB_ON_EVERY_ROW:   
+        		case RB_ON_LAST_ROW:            
+        		case RB_FORMAT_EVERY_ROW:    
+        		case RB_BEFORE_GROUP_OF:    
+        		case RB_AFTER_GROUP_OF:    
+ 						warn_global_or_mod_var=1;
+					break;
+			default:
+ 						warn_global_or_mod_var=0;
+				break;
+		}
+
 	      check_expressions_cmd (func_cmds);
+		warn_global_or_mod_var=0;
 	      set_expr_cache (&r->expression_list);
 	      set_expr_cache (0);
 
@@ -2360,7 +2392,7 @@ check_function (struct module_definition *d, struct s_function_definition *f)
 
   currfunc = f->funcname;
 
-  printf ("Checking %s\n", currfunc);
+  //printf ("Checking %s\n", currfunc);
 
   check_variables (f->module, d, &f->variables, f->parameters);
 
@@ -2368,6 +2400,53 @@ check_function (struct module_definition *d, struct s_function_definition *f)
   linearise_commands (func_cmds, f->func_commands);
   check_linearised_commands (f->module, func_cmds);
   check_expressions_cmd (func_cmds);
+
+
+
+
+// Look for UI statements in a batch operation..
+  if (bggdat_called) {
+  struct command *r;
+		int cnt;
+  		for (cnt = 0; cnt < func_cmds->cmds.cmds_len; cnt++)
+    		{
+      		r = func_cmds->cmds.cmds_val[cnt];
+			switch(r->cmd_data.type) {
+
+				case E_CMD_INPUT_CMD:
+				case E_CMD_INPUT_ARRAY_CMD:
+				case E_CMD_CONSTRUCT_CMD:
+				case E_CMD_DISPLAY_FORM_CMD:
+				case E_CMD_CLEAR_CMD:
+				case E_CMD_CLOSE_CMD:
+				case E_CMD_DISPLAY_ARRAY_CMD:
+				case E_CMD_ERROR_CMD:
+				case E_CMD_HIDE_CMD:
+				case E_CMD_HIDE_OPTION_CMD:
+				case E_CMD_MESSAGE_CMD:
+				case E_CMD_MENU_CMD:
+				case E_CMD_NEXT_FIELD_CMD:
+				case E_CMD_NEXT_FORM_CMD:
+				case E_CMD_NEXT_OPTION_CMD:
+				case E_CMD_OPEN_FORM_CMD:
+				case E_CMD_OPEN_WINDOW_CMD:
+				case E_CMD_PAUSE_CMD:
+				case E_CMD_PROMPT_CMD:
+				case E_CMD_SCROLL_CMD:
+	      				yylineno =r->lineno;
+	      				A4GL_lint (r->module, yylineno, "CS.BATCHUI", "Batch mode program is using screen based UI",0);
+					break;
+				
+				case E_CMD_SLEEP_CMD:
+					
+	      				yylineno =r->lineno;
+	      				A4GL_lint (r->module, yylineno, "CS.SLEEP", "Batch mode program is using SLEEP",0);
+					break;
+				default:
+				break;
+			}
+		}
+	}
 
   set_expr_cache (&f->expression_list);
 
@@ -2515,11 +2594,11 @@ check_whenever_abuse (module_definition * d)
   //struct report_format_section *report_format_section;
   char *curr_func = "";
 
-
   for (a = 0; a < d->module_entries.module_entries_len; a++)
     {
       //struct s_function_definition *f;
       all_cmds = 0;
+ int last_line=0;
 
       curr_func = "";
 
@@ -2529,6 +2608,8 @@ check_whenever_abuse (module_definition * d)
 	case E_MET_MAIN_DEFINITION:
 	case E_MET_FUNCTION_DEFINITION:
 	  all_cmds = linearise_commands (0, 0);
+		last_line=d->module_entries.module_entries_val[a]->module_entry_u.function_definition.lastlineno;
+
 	  linearise_commands (all_cmds,
 			      d->module_entries.module_entries_val[a]->
 			      module_entry_u.function_definition.
@@ -2599,6 +2680,12 @@ check_whenever_abuse (module_definition * d)
 
 	      switch (r->cmd_data.type)
 		{
+		case E_CMD_MESSAGE_CMD:
+		      A4GL_lint (d->module_name, r->lineno, "CS.MESSAGE",
+				 "MESSAGE must not be used directly - use CALL display_message instead",
+				 0);
+				break;
+
 		case E_CMD_EXIT_PROG_CMD:
 		  if (A4GL_aubit_strcasecmp (curr_func, "exit_prog") != 0)
 		    {
@@ -2638,7 +2725,8 @@ check_whenever_abuse (module_definition * d)
 				 "Must use 'WHENEVER ERROR CALL error_handler' before using SQL",
 				 0);
 		    }
-		  break;
+		  //break;
+
 
 
 		  switch (r->cmd_data.command_data_u.sql_transact_cmd.trans)
@@ -2701,6 +2789,12 @@ check_whenever_abuse (module_definition * d)
 	      clr_lint_expect ();
 	    }
 	}
+		  if (when_set_to_call == 1 && last_line>0)
+		    {
+		      A4GL_lint (d->module_name, last_line, "CS.CLRGETERRORRECORD",
+				 "'WHENEVER ERROR CALL get_error_record' still in effect at end of function",
+				 0);
+		    }
 
 
     }
@@ -2752,7 +2846,7 @@ check_functions_in_module (int *calltree, module_definition * d)
 
 	  if (calltree[a] != 0 || nomain)
 	    {
-	      //printf ("Check : %s\n", d->module_entries.module_entries_val[a]->module_entry_u.function_definition.funcname);
+	      //printf ("Check : %s %d\n", d->module_entries.module_entries_val[a]->module_entry_u.function_definition.funcname,calltree[a]);
 	      //fflush (stdout);
 	      check_function (d,
 			      &d->module_entries.module_entries_val[a]->
@@ -3794,7 +3888,7 @@ system_function (char *funcname)
 static int
 find_function (char *s)
 {
-  int a;
+  int a=0;
 
   for (a = 0; a < this_module.module_entries.module_entries_len; a++)
     {
@@ -3829,6 +3923,7 @@ find_function (char *s)
 	  break;
 	}
     }
+  
   return -1;
 }
 
@@ -3962,7 +4057,9 @@ scan_module_entry (int *calltree, int a)
   struct module_entry *m;
   struct s_commands *rep_commands = 0;
 
+  A4GL_assertion(a<0, "a should not be <0");
   m = this_module.module_entries.module_entries_val[a];
+  A4GL_assertion(m==0, "M should not be NULL");
 
   switch (m->met_type)
     {
@@ -4513,10 +4610,16 @@ scan_functions (char *infuncname, int calltree_entry, int *calltree,
 	      b =
 		find_function (r->cmd_data.command_data_u.whenever_cmd.
 			       whento);
-	      if (calltree[b] == 0)
-		{
-		  calltree[b]++;
-		  scan_module_entry (calltree, b);
+		if (b>=0) {
+	      		if (calltree[b] == 0)
+				{
+		  		calltree[b]++;
+		  		scan_module_entry (calltree, b);
+				}
+		} else {
+			fprintf(stderr,"WHENEVER function (%s)has not been defined\n", r->cmd_data.command_data_u.whenever_cmd.
+                               whento);
+			exit(2);
 		}
 	    }
 	}
@@ -4843,12 +4946,27 @@ isCalledFromOtherModule (module_definition * mod, char *module,
   return 0;
 }
 
+
+static int calllist_calls(struct s_call_list *call_list, char *functionname) {
+int a;
+for (a=0;a<call_list->calls_by_expr.calls_by_expr_len; a++) {
+	struct expr_str *p;
+	p=call_list->calls_by_expr.calls_by_expr_val[a];
+	if (p->expr_type==ET_EXPR_FCALL) {	
+		if (strcmp(p->expr_str_u.expr_function_call->functionname,functionname)==0) {
+			return 1;
+		}
+	}
+}
+return 0;
+}
+
 int
 check_program (module_definition * mods, int nmodules)
 {
   char *dbname = 0;
   int a;
-  int b;
+  int b=0;
   int *calltree;
   int bad_load = 0;
   int main_cnt = 0;
@@ -4857,7 +4975,6 @@ check_program (module_definition * mods, int nmodules)
   int mcnt;
   int fromLibrary[50000];
   int isCalled = 0;
-
 
   init_lint ();
 
@@ -5092,6 +5209,12 @@ check_program (module_definition * mods, int nmodules)
 	    f = &m->module_entry_u.function_definition;
 	    fprototypes[a].proto_type = PROTO_FUNCTION;
 	    fprototypes[a].pname = f->funcname;
+
+		if (calllist_calls(&f->call_list,"bggdat")) {
+			bggdat_called++;
+		}
+
+
 	    if (f->parameters == 0)
 	      {
 		fprototypes[a].nparams = 0;
@@ -5531,7 +5654,6 @@ check_program (module_definition * mods, int nmodules)
 
 
 
-
   // Look for OPEN FORM but not DISPLAYed...
   for (a = 0; a < all_cmds->cmds.cmds_len; a++)
     {
@@ -5557,8 +5679,7 @@ check_program (module_definition * mods, int nmodules)
 		{
 		  if (A4GL_aubit_strcasecmp
 		      (lint_get_ident_as_string
-		       (find_module
-			(mods, nmodules, all_cmds->cmds.cmds_val[a]->module),
+		       (find_module (mods, nmodules, all_cmds->cmds.cmds_val[a]->module),
 			all_cmds->cmds.cmds_val[a]->cmd_data.command_data_u.
 			open_form_cmd.formname),
 		       lint_get_ident_as_string (find_module
@@ -5835,7 +5956,6 @@ check_program (module_definition * mods, int nmodules)
 				}
 				if (found) break;
 			}
-
 			add_declare_cursor(cname, all_cmds->cmds.cmds_val[a]->module, all_cmds->cmds.cmds_val[a]->lineno);
 			}
 	}
@@ -5856,10 +5976,15 @@ static void
 add_severity (char *s, int n)
 {
   int a;
+  if (strcmp(s,"*")==0) {
+		add_severity("DEFAULT",n);
+  }
   for (a = 0; a < 1000; a++)
     {
+
       if (severities[a].code == 0)
 	{
+		if (strcmp(s,"*")==0) return;
 	  severities[a].code = strdup (s);
 	  severities[a].severity = n;
 	  severities[a + 1].code = 0;
@@ -5873,7 +5998,24 @@ add_severity (char *s, int n)
 	  severities[a].severity = n;
 	  return;
 	}
+
+	if (strcmp(s,"*")==0) {
+		//printf("Setting %s to %d\n", severities[a].code,n);
+	  severities[a].severity = n;
+	}
     }
+}
+
+static void dump_severities() {
+int a;
+for (a=0;a<1000;a++) {
+
+	if (severities[a].code!=0) {
+	printf("%s - %d\n",severities[a].code, severities[a].severity);
+	} else {
+	return;
+	}
+}
 }
 
 static void
@@ -5896,8 +6038,10 @@ add_custom_severities (void)
       return;
     }
   f = fopen (fname, "r");
-  if (f == 0)
+  if (f == 0) {
+	fprintf(stderr,"Unable to open severity file (%s)\n", fname);
     return;
+  }
   while (1)
     {
       strcpy (buff, "");
@@ -5912,34 +6056,99 @@ add_custom_severities (void)
 	}
     }
   fclose (f);
+//dump_severities();
 }
 
 static int
 get_severity (char *code)
 {
   int a;
-
+int default_severity=5;
 
 
   for (a = 0; severities[a].code; a++)
     {
       if (strcmp (code, severities[a].code) == 0)
 	{
-	  //printf("Found severity : %s %d\n", code,severities[a].severity);
 	  return severities[a].severity;
 	}
+
+        if (strcmp (severities[a].code,"DEFAULT") == 0) {
+		default_severity=severities[a].severity;
+	}
     }
-  return 5;
+
+  return default_severity;
 }
 
+
+void find_offset(char *module, int line,char *function,int *offset) {
+char *mod=NULL;
+char *func=NULL;
+int a;
+strcpy(function," ");
+*offset=0;
+
+  for (a = 0; a < this_module.module_entries.module_entries_len; a++)
+    {
+	int fline=-1;
+	int lline=-1;
+
+      switch (this_module.module_entries.module_entries_val[a]->met_type)
+	{
+	case E_MET_FUNCTION_DEFINITION:
+	case E_MET_MAIN_DEFINITION:
+	  if (this_module.module_entries.module_entries_val[a]-> module_entry_u.function_definition.funcname[0] != '!')
+	    {
+		mod= this_module.module_entries.module_entries_val[a]-> module_entry_u.function_definition.module;
+		func= this_module.module_entries.module_entries_val[a]-> module_entry_u.function_definition.funcname;
+		fline= this_module.module_entries.module_entries_val[a]-> module_entry_u.function_definition.lineno;
+		lline= this_module.module_entries.module_entries_val[a]-> module_entry_u.function_definition.lastlineno;
+	    }
+	break;
+
+	case E_MET_REPORT_DEFINITION:
+	  if (this_module.module_entries.module_entries_val[a]-> module_entry_u.report_definition.funcname[0] != '!') {
+		mod= this_module.module_entries.module_entries_val[a]-> module_entry_u.report_definition.module;
+		func= this_module.module_entries.module_entries_val[a]-> module_entry_u.report_definition.funcname;
+		fline= this_module.module_entries.module_entries_val[a]-> module_entry_u.report_definition.lineno;
+		lline= this_module.module_entries.module_entries_val[a]-> module_entry_u.report_definition.lastlineno;
+		}
+	break;
+	default: break;
+	}
+
+	if (fline!=-1 && lline!=-1) {
+		if (line>=fline && line<=lline) {
+			if (strcmp(module,mod)==0) {
+				strcpy(function,func);
+				*offset=line-fline;
+			}
+		}
+	}
+   }
+}
 
 void
 A4GL_lint (char *module_in, int lintline, char *code, char *type, char *extra)
 {
   char buff[256];
   char module[255];
+  char function[255];
   int severity;
   static int minseverity = -1;
+	int offset=-1;
+
+
+if (!lint_inited) {
+	init_lint();
+
+}
+
+
+  find_offset(module_in,lintline,function,&offset);
+
+
   if (minseverity == -1)
     {
       char *s;
@@ -6063,8 +6272,9 @@ A4GL_lint (char *module_in, int lintline, char *code, char *type, char *extra)
 	    extra = " ";
 	  if (lintfile)
 	    {
-	      fprintf (lintfile, "%s|%d|%s|%d|%s|%s|\n", module, lintline,
-		       code, severity, type, extra);
+		if (offset!=0) {
+		}
+	      fprintf (lintfile, "%s|%d|%s|%d|%s|%d|%s|%s|\n", module, lintline, function,offset,code, severity, type, extra);
 	    }
 	  break;
 
@@ -6088,7 +6298,9 @@ open_lintfile (char *s)
   lintfile = fopen (fname, "w");
   if (lintfile == 0)
     {
-      printf ("Unable to open lintfile\n");
+	printf("Error...: %s\n",fname);
+      	perror ("Unable to open lintfile\n");
+	exit(2);
     }
 
   if (get_lint_style () == 2)
@@ -7151,11 +7363,25 @@ check_expression (char *module, int lineno, struct expr_str *e)
       //case ET_EXPR_LITERAL_EMPTY_STRING:
     case ET_EXPR_LITERAL_STRING:
     case ET_EXPR_IDENTIFIER:
-    case ET_EXPR_VARIABLE_USAGE:
     case ET_EXPR_LITERAL_LONG:
     case ET_EXPR_GET_FLDBUF:
     case ET_EXPR_FIELD_TOUCHED:
     case ET_EXPR_NOT_FIELD_TOUCHED:
+      break;
+
+    case ET_EXPR_VARIABLE_USAGE:
+		if (warn_global_or_mod_var) {
+			switch (e->expr_str_u.expr_variable_usage->escope) {
+        			case E_SCOPE_MODULE:
+        			case E_SCOPE_IMPORTED_GLOBAL:
+        			case E_SCOPE_EXPORTED_GLOBAL:
+		  A4GL_lint (module, lineno, "REPMODGLOBVAR",
+			     "Global or Module variable used outside of header or trailer in report",
+			     0);
+				break;
+			default: break;
+			}
+		}
       break;
 
     case ET_EXPR_EXPR_LIST:
@@ -8278,7 +8504,9 @@ char *lint_ignore_list[MAX_NUM_LINT_ERRORS];
 static void
 init_lint (void)
 {
+
   int a;
+lint_inited=1;
   for (a = 0; a < MAX_NUM_LINT_ERRORS; a++)
     {
       lint_expect_list[a] = NULL;
@@ -8520,7 +8748,7 @@ static void add_declare_cursor(char *cursorname, char *module,int lineno)  {
 	ndeclaredCursors++;
 	declaredCursors=realloc(declaredCursors,sizeof(declaredCursors[0])*ndeclaredCursors);
 	declaredCursors[ndeclaredCursors-1].cursorname=strdup(cursorname);
-	declaredCursors[ndeclaredCursors-1].module=module;
+	declaredCursors[ndeclaredCursors-1].module=strdup(module);
 	declaredCursors[ndeclaredCursors-1].lineno=lineno;
 }
 
@@ -8532,7 +8760,7 @@ int b;
 	for (a=0;a<ndeclaredCursors;a++) {
 		for (b=a+1;b<ndeclaredCursors;b++) {
 			if (strcmp(declaredCursors[a].cursorname,declaredCursors[b].cursorname)==0) {
-			  A4GL_lint (declaredCursors[a].module, declaredCursors[a].lineno, "DUPCURSOR", "Cursor name is DECLAREd twice", declaredCursors[b].cursorname);
+			  A4GL_lint (declaredCursors[a].module, declaredCursors[a].lineno, "DUPCURSOR", "Cursor name is DECLAREd twice", declaredCursors[a].cursorname);
 			  A4GL_lint (declaredCursors[b].module, declaredCursors[b].lineno, "DUPCURSOR", "Cursor name is DECLAREd twice", declaredCursors[b].cursorname);
 				
 			}

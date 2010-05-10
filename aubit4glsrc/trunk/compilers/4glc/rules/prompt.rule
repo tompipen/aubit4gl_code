@@ -5,7 +5,7 @@
 */
 
 prompt_cmd	:
-	PROMPT prompt_title opt_attributes KW_FOR opt_char ensured_variable_usage_expression opt_help_no_i opt_attributes {
+	PROMPT atline prompt_title opt_attributes KW_FOR opt_char ensured_variable_usage_expression opt_help_no_i opt_attributes {
 		map_ui_block("PROMPT");
                 push_blockcommand("PROMPT");
 		$<integer_val>$=get_sio_id("PROMPT");
@@ -16,7 +16,8 @@ prompt_cmd	:
                 pop_blockcommand("PROMPT");
 		map_ui_endblock("PROMPT");
                 A4GL_lex_printcomment("/* END OF PROMPT */");
-		$<cmd>$=new_prompt_cmd(make_fgl_expr_list($<ptr_list>2), $<attrib>3,$<attrib>8, $<e_boolean>5, $<ptr>6,$<integer_val>7,$<on_events>10,  $<integer_val>9,blk) ;
+   		set_cmdlineno($<integer_val>2);
+		$<cmd>$=new_prompt_cmd(make_fgl_expr_list($<ptr_list>3), $<attrib>4,$<attrib>9, $<e_boolean>6, $<ptr>7,$<integer_val>8,$<on_events>11,  $<integer_val>10,blk) ;
                 }
 
 ;

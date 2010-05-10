@@ -7,7 +7,7 @@
 #include "parsehelp.h"
 #include "variables_new.h"
 
-extern char infilename[];
+//extern char infilename[];
 extern int yylineno;
 extern int token_read_on_line;
 extern int token_read_on_col;
@@ -2482,7 +2482,7 @@ struct command * new_pdf_specific_cmd (char *p_type, struct expr_str_list *retur
   sprintf(buff,"\"%s\"", p_type);
 
   // Now - create an expression for the function call...
-  function_call_expr = A4GL_new_expr_pdf_fcall (buff,parameters,infilename,yylineno,get_namespace(buff));
+  function_call_expr = A4GL_new_expr_pdf_fcall (buff,parameters,A4GL_compiling_module_basename (),yylineno,get_namespace(buff));
 
   // Now - create the function call itself
   c=new_call_cmd(chk_expr(function_call_expr),return_values);

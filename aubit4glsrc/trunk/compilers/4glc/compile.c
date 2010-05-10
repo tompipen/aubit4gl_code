@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile.c,v 1.139 2010-03-17 19:02:03 mikeaubury Exp $
+# $Id: compile.c,v 1.140 2010-05-10 07:10:17 mikeaubury Exp $
 #*/
 
 /**
@@ -723,7 +723,7 @@ initArguments (int argc, char *argv[])
 //aaaaaa
 //			PRINTF ("all_objects=%s\n", all_objects);
 
-			strcpy (infilename, c);
+			strcpy (infilename,c);
 			#ifdef DEBUG
 				A4GL_debug ("Compiling %s\n", infilename);
 			#endif
@@ -1303,6 +1303,10 @@ compiled_4gl++;
     }
 
   this_module.module_name = strdup (outputfilename);
+
+  if (A4GL_isyes(acl_getenv("SHORTNAMEMODE"))) {
+  	this_module.module_name = strdup (A4GL_compiling_module_basename());
+  }
   this_module.full_path_filename=strdup(A4GL_get_full_filename(fgl_file));
 	//printf("%s\n",this_module.full_path_filename);
 
@@ -2064,10 +2068,16 @@ char *A4GL_compiling_module(void) {
 
 char *A4GL_compiling_module_basename(void) {
 	static char buff[256];
-	if (strrchr(compiling_module_name,'/')==0) return compiling_module_name;
-	else {
-		//sprintf(buff,"F%s", strrchr(compiling_module_name,'/')+1);
-		sprintf(buff,"%s", strrchr(compiling_module_name,'/')+1);
+	if (strrchr(compiling_module_name,'/')==0) {
+		//printf("Returning %s\n", compiling_module_name);
+		return compiling_module_name;
+	} else {
+		if (A4GL_isyes(acl_getenv("A4GL_COMPILING_LIBRARY"))) {
+			sprintf(buff,"F%s", strrchr(compiling_module_name,'/')+1);
+		} else {
+			sprintf(buff,"%s", strrchr(compiling_module_name,'/')+1);
+		}
+
 		return buff;
 		return strrchr(compiling_module_name,'/')+1;
 	}

@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.339 2010-03-17 19:02:13 mikeaubury Exp $
+# $Id: mod.c,v 1.340 2010-05-10 07:10:17 mikeaubury Exp $
 #
 */
 
@@ -1738,7 +1738,7 @@ set_whenever_store (int c, char *p)
 
 	if (c&WHEN_CALL) {
 		if (whentostore_p) {
-			add_to_call_list_by_expr(A4GL_new_expr_fcall(whentostore_p,NULL,infilename,lastlineno, get_namespace(whentostore_p)));
+			add_to_call_list_by_expr(A4GL_new_expr_fcall(whentostore_p,NULL,A4GL_compiling_module_basename (),lastlineno, get_namespace(whentostore_p)));
 		}
 	}
 }

@@ -473,9 +473,8 @@ ensure_bool (char *module, int lineno, struct expr_str *s, int notnull)
 	  if (!fixed)
 	    {
 	      char buff[256];
-	      sprintf (buff, "'%s'!='%s' @ %d", dtype_as_string (l), dtype_as_string (r), yylineno);
+	      sprintf (buff, "'%s'!='%s' @ %d", dtype_as_string (l), dtype_as_string (r), lineno);
 	      A4GL_lint (module, lineno, "DIFFCOMP", "Different types in comparison", buff);
-	      //A4GL_lint(buff );
 	    }
 
 	}

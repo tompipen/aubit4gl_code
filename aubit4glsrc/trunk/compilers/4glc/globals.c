@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: globals.c,v 1.67 2010-03-17 19:02:08 mikeaubury Exp $
+# $Id: globals.c,v 1.68 2010-05-10 07:10:17 mikeaubury Exp $
 #
 */
 
@@ -237,6 +237,8 @@ generate_globals_for (char *s)
   A4GL_debug ("Executing system call: %s\n", buff);
 #endif
       if (fglc_verbosity()) { PRINTF("Executing :%s\n",buff);}
+
+//printf("--->%s\n", buff);
   system (buff);
 #ifdef MSVC
   putenv("A4GL_NOCFILE=Y");
@@ -286,6 +288,8 @@ read_glob (char *s)
 
   s=expand_env_vars_in_cmdline(s,0);
 
+
+//printf("s=%s\n",s);
 
   if (s[0]!='/') {
    char *s2;
@@ -370,10 +374,21 @@ read_glob (char *s)
   	strcat(iiglb,acl_getenv("A4GL_XML_EXT"));
   }
 
-  if (A4GL_file_exists(iiglb) && A4GL_file_is_newer(iiglb,ii4gl)) {
-  	a=A4GL_read_data_from_file_generic("module_definition", "globals_definition",&g,ii);
-	
+  {
+	char *s2;
+	s2=rindex(iiglb,'/');
+	if (s2) {
+		s2++;
+  		a=A4GL_read_data_from_file_generic("module_definition", "globals_definition",&g,s2);
+	}
   }
+
+	if (!a) {
+  		if (A4GL_file_exists(iiglb) && A4GL_file_is_newer(iiglb,ii4gl)) {
+  			a=A4GL_read_data_from_file_generic("module_definition", "globals_definition",&g,ii);
+			
+  		}
+	}
 
 
   aclfgli_clr_err_flg(); A4GL_set_status(0,1);
@@ -381,8 +396,18 @@ read_glob (char *s)
      		generate_globals_for (ii4gl);
   }
 
-
   a=A4GL_read_data_from_file_generic("module_definition", "globals_definition",&g,ii);
+
+ // Finally - just try in the local directory...
+  if (!a) {
+	char *s2;
+	s2=rindex(ii,'/');
+	if (s2) {
+		s2++;
+  		a=A4GL_read_data_from_file_generic("module_definition", "globals_definition",&g,s2);
+	}
+  }
+
 	if (!a) {
 		char iii4gl[2000];
 		char iiiglb[2000];
@@ -396,6 +421,7 @@ read_glob (char *s)
   		a=A4GL_read_data_from_file_generic("module_definition", "globals_definition",&g,iiiglb);
 		aclfgli_clr_err_flg(); A4GL_set_status(0,1);
  }
+
 
  if (!a) {
  	FPRINTF (stderr, "Error: Couldnt open globals file %s, in . and %s\n", ii, currinfile_dirname );

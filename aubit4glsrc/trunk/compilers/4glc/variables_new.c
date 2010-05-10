@@ -25,7 +25,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: variables_new.c,v 1.26 2010-03-09 21:40:26 mikeaubury Exp $
+# $Id: variables_new.c,v 1.27 2010-05-10 07:10:17 mikeaubury Exp $
 #
 */
 
@@ -158,7 +158,7 @@ static struct variable * new_base_variable(char *name) {
 	v->assigned=0;
 	v->flags=0;
   	v->lineno = token_read_on_line;
-	v->src_module = outputfilename;
+	v->src_module = A4GL_compiling_module_basename();
 	v->var_data.variable_type=-1;
 
 	return v;
