@@ -1955,6 +1955,7 @@ A4GL_SQLTYPE_COMPILE_ONLY_DETECTED
 A4GL_SQLTYPE_DETECTED
 A4GL_SQLTYPE
 AUBITETC
+GREP_WORD
 MACHTYPE
 SHORTNAME
 FULLNAME
@@ -7019,7 +7020,7 @@ ia64-*-hpux*)
   ;;
 *-*-irix6*)
   # Find out which ABI we are using.
-  echo '#line 7022 "configure"' > conftest.$ac_ext
+  echo '#line 7023 "configure"' > conftest.$ac_ext
   if { { eval echo "\"\$as_me\":${as_lineno-$LINENO}: \"$ac_compile\""; } >&5
   (eval $ac_compile) 2>&5
   ac_status=$?
@@ -9079,11 +9080,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:9082: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:9083: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:9086: \$? = $ac_status" >&5
+   echo "$as_me:9087: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -9369,11 +9370,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:9372: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:9373: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:9376: \$? = $ac_status" >&5
+   echo "$as_me:9377: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -9473,11 +9474,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:9476: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:9477: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:9480: \$? = $ac_status" >&5
+   echo "$as_me:9481: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -11496,7 +11497,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 11499 "configure"
+#line 11500 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -11596,7 +11597,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 11599 "configure"
+#line 11600 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -13956,11 +13957,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:13959: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:13960: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:13963: \$? = $ac_status" >&5
+   echo "$as_me:13964: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -14060,11 +14061,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:14063: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:14064: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:14067: \$? = $ac_status" >&5
+   echo "$as_me:14068: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -15635,11 +15636,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:15638: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:15639: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:15642: \$? = $ac_status" >&5
+   echo "$as_me:15643: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -15739,11 +15740,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:15742: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:15743: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:15746: \$? = $ac_status" >&5
+   echo "$as_me:15747: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -17893,11 +17894,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:17896: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:17897: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:17900: \$? = $ac_status" >&5
+   echo "$as_me:17901: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -18183,11 +18184,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:18186: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:18187: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:18190: \$? = $ac_status" >&5
+   echo "$as_me:18191: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -18287,11 +18288,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:18290: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:18291: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:18294: \$? = $ac_status" >&5
+   echo "$as_me:18295: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -20914,6 +20915,7 @@ LIBTOOL='$(SHELL) $(top_builddir)/libtool'
 
 
 
+
 #aubitrc:
 
 
@@ -22288,6 +22290,61 @@ $as_echo "-$AUBIT_VERSION.$AUBIT_BUILD-" >&6; }
 		COLLECT_THIRD_PARTY=1
 	fi
 fi
+
+# Extract the first word of "grep", so it can be a program name with args.
+set dummy grep; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if test "${ac_cv_path_GREP+set}" = set; then :
+  $as_echo_n "(cached) " >&6
+else
+  case $GREP in
+  [\\/]* | ?:[\\/]*)
+  ac_cv_path_GREP="$GREP" # Let the user override the test with a path.
+  ;;
+  *)
+  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if { test -f "$as_dir/$ac_word$ac_exec_ext" && $as_test_x "$as_dir/$ac_word$ac_exec_ext"; }; then
+    ac_cv_path_GREP="$as_dir/$ac_word$ac_exec_ext"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+  test -z "$ac_cv_path_GREP" && ac_cv_path_GREP="no"
+  ;;
+esac
+fi
+GREP=$ac_cv_path_GREP
+if test -n "$GREP"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $GREP" >&5
+$as_echo "$GREP" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+
+GREP_WORD="$ac_cv_path_GREP -w"
+export GREP_WORD
+
+echo "Hello" | $ac_cv_path_GREP -w "Hello" > /dev/null
+if test $? = 0
+then
+	GREP_WORD="$ac_cv_path_GREP -w"
+	export GREP_WORD
+else
+	GREP_WORD=$ac_cv_path_GREP
+	export GREP_WORD
+fi
+#sleep 50
 
 #When set to 1, all options that test for it will be disabled
 #regardless of wheater there prerequisistites are found or not. This is usually
@@ -40301,11 +40358,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:40304: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:40361: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:40308: \$? = $ac_status" >&5
+   echo "$as_me:40365: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -40405,11 +40462,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:40408: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:40465: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:40412: \$? = $ac_status" >&5
+   echo "$as_me:40469: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -42776,7 +42833,7 @@ ia64-*-hpux*)
   ;;
 *-*-irix6*)
   # Find out which ABI we are using.
-  echo '#line 42779 "configure"' > conftest.$ac_ext
+  echo '#line 42836 "configure"' > conftest.$ac_ext
   if { { eval echo "\"\$as_me\":${as_lineno-$LINENO}: \"$ac_compile\""; } >&5
   (eval $ac_compile) 2>&5
   ac_status=$?
@@ -43502,7 +43559,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 43505 "configure"
+#line 43562 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -43602,7 +43659,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 43605 "configure"
+#line 43662 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -45537,6 +45594,10 @@ esac
 ## ==================================================================
 
 
+
+
+
+
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: " >&5
 $as_echo "" >&6; }
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: ${T_MD}Seting defaults:${T_ME}" >&5
@@ -45638,7 +45699,7 @@ else
 	########## SAP-DB ESQL/C pre-compiler output #############
 	if test "$SAPDB_ESQLC" != "no"; then
 		A4GL_LEXTYPE=EC
-		if test "`echo $A4GL_LEXTYPE_DETECTED | grep -w EC`" = ""; then
+		if test "`echo $A4GL_LEXTYPE_DETECTED | $GREP_WORD EC`" = ""; then
 			A4GL_LEXTYPE_DETECTED="$A4GL_LEXTYPE_DETECTED $A4GL_LEXTYPE"
 		fi
 		#NOTE - plugin name is  libESQL_SAP.so NOT SAPDB
@@ -45651,7 +45712,7 @@ else
 	######### Ingres ESQL/C compiler ################
 	if test "$HAVE_INGRES_ESQLC" != "no"; then
 		A4GL_LEXTYPE=EC
-		if test "`echo $A4GL_LEXTYPE_DETECTED | grep -w EC`" = ""; then
+		if test "`echo $A4GL_LEXTYPE_DETECTED | $GREP_WORD EC`" = ""; then
 			A4GL_LEXTYPE_DETECTED="$A4GL_LEXTYPE_DETECTED $A4GL_LEXTYPE"
 		fi
 		A4GL_LEXDIALECT=INGRES
@@ -45675,7 +45736,7 @@ else
 	if test "$PG_ESQLC" != "no" ; then
 		if test "$PG_ESQLC_IFXCOMPAT" = "yes"; then
 			A4GL_LEXTYPE=EC
-			if test "`echo $A4GL_LEXTYPE_DETECTED | grep -w EC`" = ""; then
+			if test "`echo $A4GL_LEXTYPE_DETECTED | $GREP_WORD EC`" = ""; then
 				A4GL_LEXTYPE_DETECTED="$A4GL_LEXTYPE_DETECTED $A4GL_LEXTYPE"
 			fi
 			A4GL_LEXDIALECT=POSTGRES
@@ -45692,7 +45753,7 @@ else
     #setting - this will limit Aubit DB connectivity to Informix ONLY.
 	if test "$IFMX_ESQLC" != "no" ; then
 		A4GL_LEXTYPE=EC
-		if test "`echo $A4GL_LEXTYPE_DETECTED | grep -w EC`" = ""; then
+		if test "`echo $A4GL_LEXTYPE_DETECTED | $GREP_WORD EC`" = ""; then
 			A4GL_LEXTYPE_DETECTED="$A4GL_LEXTYPE_DETECTED $A4GL_LEXTYPE"
 		fi
 		A4GL_LEXDIALECT=INFORMIX
@@ -48428,7 +48489,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure,v 1.450 2010-03-02 19:21:25 mikeaubury Exp $
+| $Id: configure,v 1.451 2010-05-10 12:55:46 mikeaubury Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

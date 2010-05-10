@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.417 2010-03-02 18:49:42 mikeaubury Exp $
+dnl # $Id: configure.in,v 1.418 2010-05-10 12:55:47 mikeaubury Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -48,7 +48,7 @@ export LD_LIBRARY_PATH=/lib:$LD_LIBRARY_PATH
 
 #We need autoconf at least version 2.50
 AC_PREREQ(2.50)
-AC_REVISION($Id: configure.in,v 1.417 2010-03-02 18:49:42 mikeaubury Exp $)
+AC_REVISION($Id: configure.in,v 1.418 2010-05-10 12:55:47 mikeaubury Exp $)
 
 #FIXME: Some versions of autoconf are complaining that $AUBIT_VERSION and 
 #$AUBIT_BUILD are not constants. Maybe we should drop stuff in tools/project 
@@ -443,6 +443,7 @@ AC_SUBST(FULLNAME)
 AC_SUBST(SHORTNAME)
 AC_SUBST(MACHTYPE)
 
+AC_SUBST(GREP_WORD)
 #aubitrc:
 AC_SUBST(AUBITETC)
 AC_SUBST(A4GL_SQLTYPE)
@@ -1815,6 +1816,21 @@ if test "$AUBIT_SOURCE" = "1" ; then
 		COLLECT_THIRD_PARTY=1
 	fi
 fi
+
+AC_PATH_PROG(GREP, grep, no)
+GREP_WORD="$ac_cv_path_GREP -w"
+export GREP_WORD
+
+echo "Hello" | $ac_cv_path_GREP -w "Hello" > /dev/null
+if test $? = 0 
+then
+	GREP_WORD="$ac_cv_path_GREP -w"
+	export GREP_WORD
+else
+	GREP_WORD=$ac_cv_path_GREP
+	export GREP_WORD
+fi
+#sleep 50
 
 #When set to 1, all options that test for it will be disabled 
 #regardless of wheater there prerequisistites are found or not. This is usually
@@ -9635,6 +9651,10 @@ esac
 ##            Decide on default SQL driver
 ## ==================================================================
 
+
+
+
+
 PHP_CONFIGURE_PART(Seting defaults:)
 AC_MSG_CHECKING(Default SQL driver)
 
@@ -9731,7 +9751,7 @@ else
 	########## SAP-DB ESQL/C pre-compiler output #############
 	if test "$SAPDB_ESQLC" != "no"; then
 		A4GL_LEXTYPE=EC
-		if test "`echo $A4GL_LEXTYPE_DETECTED | grep -w EC`" = ""; then
+		if test "`echo $A4GL_LEXTYPE_DETECTED | $GREP_WORD EC`" = ""; then
 			A4GL_LEXTYPE_DETECTED="$A4GL_LEXTYPE_DETECTED $A4GL_LEXTYPE"
 		fi
 		#NOTE - plugin name is  libESQL_SAP.so NOT SAPDB
@@ -9744,7 +9764,7 @@ else
 	######### Ingres ESQL/C compiler ################
 	if test "$HAVE_INGRES_ESQLC" != "no"; then
 		A4GL_LEXTYPE=EC
-		if test "`echo $A4GL_LEXTYPE_DETECTED | grep -w EC`" = ""; then		
+		if test "`echo $A4GL_LEXTYPE_DETECTED | $GREP_WORD EC`" = ""; then		
 			A4GL_LEXTYPE_DETECTED="$A4GL_LEXTYPE_DETECTED $A4GL_LEXTYPE"
 		fi
 		A4GL_LEXDIALECT=INGRES
@@ -9768,7 +9788,7 @@ else
 	if test "$PG_ESQLC" != "no" ; then
 		if test "$PG_ESQLC_IFXCOMPAT" = "yes"; then
 			A4GL_LEXTYPE=EC
-			if test "`echo $A4GL_LEXTYPE_DETECTED | grep -w EC`" = ""; then			
+			if test "`echo $A4GL_LEXTYPE_DETECTED | $GREP_WORD EC`" = ""; then			
 				A4GL_LEXTYPE_DETECTED="$A4GL_LEXTYPE_DETECTED $A4GL_LEXTYPE"
 			fi
 			A4GL_LEXDIALECT=POSTGRES
@@ -9785,7 +9805,7 @@ else
     #setting - this will limit Aubit DB connectivity to Informix ONLY.
 	if test "$IFMX_ESQLC" != "no" ; then
 		A4GL_LEXTYPE=EC
-		if test "`echo $A4GL_LEXTYPE_DETECTED | grep -w EC`" = ""; then		
+		if test "`echo $A4GL_LEXTYPE_DETECTED | $GREP_WORD EC`" = ""; then		
 			A4GL_LEXTYPE_DETECTED="$A4GL_LEXTYPE_DETECTED $A4GL_LEXTYPE"
 		fi
 		A4GL_LEXDIALECT=INFORMIX
@@ -11204,7 +11224,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure.in,v 1.417 2010-03-02 18:49:42 mikeaubury Exp $
+| $Id: configure.in,v 1.418 2010-05-10 12:55:47 mikeaubury Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile,v 1.78 2010-01-14 10:04:39 mikeaubury Exp $
+# $Id: Makefile,v 1.79 2010-05-10 12:55:46 mikeaubury Exp $
 #
 
 #Save initial state of system varables, so we can undo changes 
@@ -1975,10 +1975,10 @@ autopackage.stat:
 	done
 	@echo "+--------------------------------------------------------------------+"
 	@echo "AUBITDIR in ${HOME}/.aubit4gl/aubitrc :"
-	@grep -w AUBITDIR ${HOME}/.aubit4gl/aubitrc
+	@${GREP_WORD} AUBITDIR ${HOME}/.aubit4gl/aubitrc
 	@echo "+--------------------------------------------------------------------+"	
 	@echo "AUBITDIR in ${HOME}/.packages/@aubit4gl.sf.net/aubit4gl:${AUBIT_VERSION}.${AUBIT_BUILD}/environment.en :"	
-	@grep -w AUBITDIR ${HOME}/.packages/@aubit4gl.sf.net/aubit4gl:${AUBIT_VERSION}.${AUBIT_BUILD}/environment.en
+	@${GREP_WORD} AUBITDIR ${HOME}/.packages/@aubit4gl.sf.net/aubit4gl:${AUBIT_VERSION}.${AUBIT_BUILD}/environment.en
 	@echo "+--------------------------------------------------------------------+"
 	
 ss:

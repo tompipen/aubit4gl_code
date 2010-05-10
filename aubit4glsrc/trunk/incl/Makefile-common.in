@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.238 2010-03-01 15:01:33 mikeaubury Exp $
+# $Id: Makefile-common.in,v 1.239 2010-05-10 12:55:47 mikeaubury Exp $
 #
 
 #WARNING: __NEVER__ use environment vatiable called "TMP" - Informix
@@ -946,6 +946,8 @@ BIN_INSTALL_LINK=/usr/bin
 #INSTALL_DIR=${PREFIX}/${AUBITNAME}
 INSTALL_DIR=${PREFIX}
 
+GREP_WORD=@GREP_WORD@
+
 #Set AUBITDIR in aubitrc settings:
 	TOREPLACE=^AUBITDIR
 
@@ -958,7 +960,7 @@ INSTALL_DIR=${PREFIX}
 	INFILE:=$(shell ls ${LOOKFOR_INFILE} ${NOERR})
 
 	ifneq "${INFILE}" ""
-		OLDVALUE:=$(shell grep -w "${TOREPLACE}" ${INFILE} | awk '{print $1}' | sed -e "s/\//\\\\\//g")
+		OLDVALUE:=$(shell ${GREP_WORD} "${TOREPLACE}" ${INFILE} | awk '{print $1}' | sed -e "s/\//\\\\\//g")
 		ifeq "${GCC_MINGW}" "yes"
 			NEWVALUE:=$(shell echo "AUBITDIR=${WIN_CYGPATH}$(INSTALL_DIR)" | sed -e "s/\//\\\\\//g")
         else
