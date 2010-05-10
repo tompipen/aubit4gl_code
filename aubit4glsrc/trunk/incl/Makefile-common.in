@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.239 2010-05-10 12:55:47 mikeaubury Exp $
+# $Id: Makefile-common.in,v 1.240 2010-05-10 13:36:33 mikeaubury Exp $
 #
 
 #WARNING: __NEVER__ use environment vatiable called "TMP" - Informix
@@ -611,7 +611,11 @@ endif
 
 YYDEBUG             =@YYDEBUG@
 C_DFLAGS			+=${DDEBUG} -DHAVE_CONFIG_H ${YYDEBUG}
-CFLAGS				+=${CWARN} ${AUTOCONF_CFLAGS} ${C_DFLAGS} ${C_IFLAGS}
+CFLAGS				+=${CWARN} ${AUTOCONF_CFLAGS} ${C_DFLAGS} ${C_IFLAGS} 
+ifneq "${ZLIB_INC_PATH}" ""
+CFLAGS+=-I${ZLIB_INC_PATH}
+endif
+
 #we are overriding LD_LIBRARY_PATH that might existed in environment:
 LD_LIBRARY_PATH		:=${AUBITDIR}/lib:/usr/local/lib:${LD_LIBRARY_PATH}
 
@@ -1096,6 +1100,14 @@ CURSES_INC_PATH 	=@CURSES_INC_PATH@
 CURSES_LIB_PATH		=@CURSES_LIB_PATH@
 CURSES_LIB_NAME 	=@CURSES_LIB_NAME@
 HAVE_ZLIB		=@HAVE_ZLIB@
+ZLIB_INC_PATH		=@ZLIB_INC_PATH@
+ZLIB_LIB_PATH		=@ZLIB_LIB_PATH@
+ifeq "${ZLIB_INC_PATH}" ""
+ZLIB_INC_PATH		=/usr/include
+endif
+ifeq "${ZLIB_LIB_PATH}" ""
+ZLIB_LIB_PATH		=/usr/lib
+endif
 HAVE_LIBQRENCODE	=@HAVE_LIBQRENCODE@
 HAVE_LIBDL		=@HAVE_LIBDL@
 USE_LIBDL=	@USE_LIBDL@
@@ -1228,8 +1240,6 @@ POP_LIB_PATH		=@POP_LIB_PATH@
 SMTP_INC_PATH		=@SMTP_INC_PATH@
 SMTP_LIB_PATH		=@SMTP_LIB_PATH@
 
-ZLIB_INC_PATH		=@ZLIB_INC_PATH@
-ZLIB_LIB_PATH		=@ZLIB_LIB_PATH@
 
 INNO_ROOTDIR		=@INNO_ROOTDIR@
 ISTOOL_ROOTDIR		=@ISTOOL_ROOTDIR@
@@ -1249,12 +1259,6 @@ ifeq "${SMTP_LIB_PATH}" ""
 SMTP_LIB_PATH		=/usr/lib
 endif
 
-ifeq "${ZLIB_INC_PATH}" ""
-ZLIB_INC_PATH		=/usr/include
-endif
-ifeq "${ZLIB_LIB_PATH}" ""
-ZLIB_LIB_PATH		=/usr/lib
-endif
 ## ==================================================================
 ##                      Moved from aubitrc:
 ## ==================================================================
