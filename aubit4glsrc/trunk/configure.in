@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.419 2010-05-10 13:28:25 mikeaubury Exp $
+dnl # $Id: configure.in,v 1.420 2010-05-10 15:02:47 mikeaubury Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -48,7 +48,7 @@ export LD_LIBRARY_PATH=/lib:$LD_LIBRARY_PATH
 
 #We need autoconf at least version 2.50
 AC_PREREQ(2.50)
-AC_REVISION($Id: configure.in,v 1.419 2010-05-10 13:28:25 mikeaubury Exp $)
+AC_REVISION($Id: configure.in,v 1.420 2010-05-10 15:02:47 mikeaubury Exp $)
 
 #FIXME: Some versions of autoconf are complaining that $AUBIT_VERSION and 
 #$AUBIT_BUILD are not constants. Maybe we should drop stuff in tools/project 
@@ -3586,6 +3586,11 @@ else
 		fi
 	fi
 fi
+
+HAS_INT8_DTYPE=0
+AC_SUBST(HAS_LONG_LONG_DTYPE)
+AC_TRY_COMPILE(, [ long long x; ], HAS_LONG_LONG_DTYPE=1)
+
 
 ## ==================================================================
 ##  				   Checks for Standard programs
@@ -11229,7 +11234,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure.in,v 1.419 2010-05-10 13:28:25 mikeaubury Exp $
+| $Id: configure.in,v 1.420 2010-05-10 15:02:47 mikeaubury Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

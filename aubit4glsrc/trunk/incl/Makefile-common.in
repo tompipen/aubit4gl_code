@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.241 2010-05-10 13:40:55 mikeaubury Exp $
+# $Id: Makefile-common.in,v 1.242 2010-05-10 15:02:47 mikeaubury Exp $
 #
 
 #WARNING: __NEVER__ use environment vatiable called "TMP" - Informix
@@ -609,6 +609,7 @@ ifeq "@GETOPT_LONG@" "no"
 	C_IFLAGS 			+=-I$(AUBITDIR)/tools/getopt
 endif
 
+HAS_LONG_LONG_DTYPE=@HAS_LONG_LONG_DTYPE@
 HAVE_ZLIB		=@HAVE_ZLIB@
 ZLIB_INC_PATH		=@ZLIB_INC_PATH@
 ZLIB_LIB_PATH		=@ZLIB_LIB_PATH@

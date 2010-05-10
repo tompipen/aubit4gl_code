@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.401 2010-05-10 14:17:46 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.402 2010-05-10 15:02:47 mikeaubury Exp $
 #
 */
 
@@ -1270,8 +1270,10 @@ enum cmd_types {
   int A4GL_pop_bool (void);
   short A4GL_pop_int (void);
 
+#ifdef HAS_LONG_LONG_DTYPE
   int8 A4GL_pop_int8 (void);
   int A4GL_push_int8 (int8 a);
+#endif
 int A4GL_push_binding_onto_stack(struct BINDING *b, int n);
 int A4GL_pop_binding_from_stack(struct BINDING **b, int *n,char dir) ;
 
