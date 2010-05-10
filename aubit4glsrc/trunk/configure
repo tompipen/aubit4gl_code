@@ -28804,6 +28804,10 @@ if test "${with_zlib+set}" = set; then :
 		if test "$withval" = "yes"; then
 			if test "$COMSPEC" = ""; then
 	    		withval=/usr/local
+			if test -f /usr/local/include/zlib.h
+			then
+				ZLIB_INC_PATH="/usr/local/include"
+			fi
 			else
 				#NOTE: since on CygWin /usr/lib is symling to /usr,
 				#files installed there actually end up in /lib, as far as
@@ -28899,6 +28903,7 @@ done
 
 		{ $as_echo "$as_me:${as_lineno-$LINENO}: checking if we can use zlib" >&5
 $as_echo_n "checking if we can use zlib... " >&6; }
+
 
 		if test "$AUBIT_SOURCE" = "1" ; then
 			if test "$ac_cv_lib_z_gzopen" = "yes" -a "$ac_cv_header_zlib_h" = "yes"; then
@@ -40358,11 +40363,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:40361: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:40366: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:40365: \$? = $ac_status" >&5
+   echo "$as_me:40370: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -40462,11 +40467,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:40465: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:40470: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:40469: \$? = $ac_status" >&5
+   echo "$as_me:40474: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -42833,7 +42838,7 @@ ia64-*-hpux*)
   ;;
 *-*-irix6*)
   # Find out which ABI we are using.
-  echo '#line 42836 "configure"' > conftest.$ac_ext
+  echo '#line 42841 "configure"' > conftest.$ac_ext
   if { { eval echo "\"\$as_me\":${as_lineno-$LINENO}: \"$ac_compile\""; } >&5
   (eval $ac_compile) 2>&5
   ac_status=$?
@@ -43559,7 +43564,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 43562 "configure"
+#line 43567 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -43659,7 +43664,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 43662 "configure"
+#line 43667 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -48489,7 +48494,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure,v 1.451 2010-05-10 12:55:46 mikeaubury Exp $
+| $Id: configure,v 1.452 2010-05-10 13:28:25 mikeaubury Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X
