@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: calldll.c,v 1.93 2010-04-06 19:43:21 mikeaubury Exp $
+# $Id: calldll.c,v 1.94 2010-05-11 09:30:45 mikeaubury Exp $
 #
 */
 
@@ -577,7 +577,7 @@ A4GL_find_func (void *dllhandle, char *func)
       return badfunc;
     }
 #ifdef USE_SHL
-  if (!shl_findsym (&dllhandle, tempbuff, TYPE_PROCEDURE, &func_ptr) == -1)
+  if (!shl_findsym ((shl_t *)&dllhandle, tempbuff, TYPE_PROCEDURE, &func_ptr) == -1)
     {
       func_ptr = 0;
     }
@@ -636,7 +636,7 @@ A4GL_find_func_double (void *dllhandle, char *func)
       return (void *) badfunc;
     }
 #ifdef USE_SHL
-  if (shl_findsym (&dllhandle, tempbuff, TYPE_PROCEDURE, &func_ptr) == -1)
+  if (shl_findsym ((shl_t *)&dllhandle, tempbuff, TYPE_PROCEDURE, &func_ptr) == -1)
     {
       func_ptr = 0;
     }
@@ -685,7 +685,7 @@ A4GL_find_func_allow_missing (void *dllhandle, char *func)
       return (void *) &badfunc;
     }
 #ifdef USE_SHL
-  if (shl_findsym (&dllhandle, tempbuff, TYPE_PROCEDURE, &func_ptr) == -1)
+  if (shl_findsym ((shl_t *)&dllhandle, tempbuff, TYPE_PROCEDURE, &func_ptr) == -1)
     {
       func_ptr = 0;
     }
