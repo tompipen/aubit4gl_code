@@ -29050,11 +29050,11 @@ done
 					;;
 				*)
 					CURSES_LIB_NAME="-lform -lpanel"
-					if test "$ac_cv_lib_curses_main" = "yes"; then
-						CURSES_LIB_NAME="-lcurses $CURSES_LIB_NAME"
-                    else
+					if test "$ac_cv_lib_ncurses_main" = "yes"; then
 						CURSES_LIB_NAME="-lncurses $CURSES_LIB_NAME"
-                    fi
+                    			else
+						CURSES_LIB_NAME="-lcurses $CURSES_LIB_NAME"
+                    			fi
 					;;
 			esac
         else
@@ -37759,7 +37759,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure,v 1.455 2010-05-10 15:25:57 mikeaubury Exp $
+| $Id: configure,v 1.456 2010-05-11 09:18:59 mikeaubury Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X
