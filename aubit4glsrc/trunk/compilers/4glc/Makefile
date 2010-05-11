@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.67 2010-05-10 07:10:17 mikeaubury Exp $
+# $Id: Makefile,v 1.68 2010-05-11 10:41:43 mikeaubury Exp $
 #
 
 ROOT		=../..
@@ -106,7 +106,8 @@ ifneq "${GETOPT_LONG}" "yes"
 	ifeq "${GETOPT_LONG}" "iberty"
 		AUBIT_LIB+=-L/opt/sfw/lib -liberty
     else
-        CMODS   +=${ROOT}/tools/getopt/getopt.c ${ROOT}/tools/getopt/getopt1.c
+        CMODS_GETOPTS=${ROOT}/tools/getopt/getopt.c ${ROOT}/tools/getopt/getopt1.c
+        CMODS   += ${CMODS_GETOPTS}
     endif
 endif
 
@@ -347,7 +348,7 @@ extra: ../../bin/fglreload ../../bin/fgllint ../../bin/fglcalltree
                                 ../../lib/generated/std_funcs.c  \
                                 var_handling.c variables.c variables_new.c \
                 		${Y_TAB_C} \
-                		${ROOT}/compilers/4glc/rules/generated/states_optimised.c
+                		${ROOT}/compilers/4glc/rules/generated/states_optimised.c ${CMODS_GETOPTS}
 	$(CC) -g $(CFLAGS)  -DYYDEBUG  -fPIC -I. -I$(AUBITDIR)  -I$(AUBITDIR)/incl $(LD_EXE_FLAGS) -o $@ $^ -L$(AUBITDIR)/lib -laubit4gl  
 
 fglreload: ../../bin/fglreload
