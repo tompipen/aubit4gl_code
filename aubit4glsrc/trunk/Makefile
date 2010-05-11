@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile,v 1.80 2010-05-11 09:03:20 mikeaubury Exp $
+# $Id: Makefile,v 1.81 2010-05-11 09:05:13 mikeaubury Exp $
 #
 
 #Save initial state of system varables, so we can undo changes 
@@ -147,6 +147,12 @@ default.msg.tmp:
 	@echo "|     export AUBITDIR=${AUBIT_SRC_ROOT}                                 "
 	@echo '|     export PATH=$$PATH:$$AUBITDIR/bin                                   '
 	@echo '|     export DYLD_LIBRARY_PATH=$$DYLD_LIBRARY_PATH:$$AUBITDIR/lib         '
+	@echo "|                                                                      |"
+	@echo "|   For HPUX :                                                         |"
+	@echo "|     export AUBITDIR=${AUBIT_SRC_ROOT}                                 "
+	@echo '|     export PATH=$$PATH:$$AUBITDIR/bin                                   '
+	@echo '|     export SHLIB_PATH=$$SHLIB_PATH:$$AUBITDIR/lib             '
+	@echo "|                                                                      |"
 	@echo "|                                                                      |"
 	@echo "| You may need to add any directories for any used libraries to the    |"
 	@echo "| DYLD_LIBRARY_PATH or LD_LIBRARY_PATH etc (eg. for Informix, MYSQL,   |"
