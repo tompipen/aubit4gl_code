@@ -2398,6 +2398,7 @@ DEFINE lv_status          INTEGER
 
     LET mv_warnfile=lv_base CLIPPED,get_ext("WARN")
     LET mv_errfile=lv_base CLIPPED,get_ext("ERR")
+
     if mv_lexdialect="INFORMIX" then
 	# make sure its set in the environment to what we think 
 	# it should be set to - either internally - or in the aubitrc
@@ -2405,6 +2406,7 @@ DEFINE lv_status          INTEGER
 		call aclfgl_setenv("INFORMIXC",fgl_getenv("INFORMIXC"))
 	end if
     end if
+
     LET lv_runstr=mv_compile_pec CLIPPED," ",mv_compile_pec_opts CLIPPED
 
     IF mv_debug THEN
@@ -2489,6 +2491,14 @@ DEFINE lv_status          INTEGER
         END IF
 
     END IF
+
+    if mv_lexdialect="INFORMIX" then
+	# make sure its set in the environment to what we think 
+	# it should be set to - either internally - or in the aubitrc
+	if fgl_getenv("INFORMIXC")!=" " then
+		call aclfgl_setenv("INFORMIXC",fgl_getenv("INFORMIXC"))
+	end if
+    end if
 
     LET mv_warnfile=lv_output CLIPPED,get_ext("WARN")
     LET mv_errfile=lv_output CLIPPED,get_ext("ERR")
