@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile,v 1.79 2010-05-10 12:55:46 mikeaubury Exp $
+# $Id: Makefile,v 1.80 2010-05-11 09:03:20 mikeaubury Exp $
 #
 
 #Save initial state of system varables, so we can undo changes 
@@ -53,7 +53,7 @@ include incl/Makefile-common
 ALL					=settings api.headers corecompile libfile libstring picklib
 
 ifneq "${enable_minimal}" "yes" 
-	ALL 			+=	liblogical glade aace pcode
+	ALL 			+=	liblogical glade aace 
 endif
 
 ###############################
@@ -2851,7 +2851,7 @@ test.build:
 ########################
 # Create source code metrics and statistical info
 DIRS_TOP=common compilers lib tools glade
-DIRS_COMPILERS=4glc ace fcompile helpcompile menus pcode sql xgen
+DIRS_COMPILERS=4glc ace fcompile helpcompile menus sql xgen
 DIRS_LIB=extra_libs libaubit4gl libesql libexdata libform libhelp liblex \
 		liblogical libmsg libpacker libpdf librpc libsql libsqlparse \
 		libui 
