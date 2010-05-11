@@ -11,7 +11,12 @@
 #include <sys/wait.h>
 #include <signal.h>
 #include <ctype.h>
+
+#ifndef __hpux__
 #include <sys/select.h>
+#endif
+
+
 #include "pipe.h"
 #include "debug.h"
 #include "uilib/xml/attr.h"
@@ -22,6 +27,12 @@
 #ifdef htonl
 #undef htonl
 #endif
+
+#ifdef __hpux__
+#undef htons
+#define htons(x) (x)
+#endif
+
 
 #ifndef USE_WINSOCK
 #define SOCKET int
@@ -1344,3 +1355,14 @@ getMyId (void)
   UIdebug (2, "getMyId is from proxy.c - using -1");
   return -1;
 }
+
+
+#ifdef __hpux__
+
+int setenv(char *s,char *v,int o) {
+    char buff[1024];
+        sprintf (buff, "%s=%s",s,v);
+ putenv (strdup (buff));
+}
+#endif
+
