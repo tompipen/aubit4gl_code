@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.165 2010-04-08 11:43:26 mikeaubury Exp $
+# $Id: resource.c,v 1.166 2010-05-11 06:51:14 mikeaubury Exp $
 #
 */
 
@@ -186,6 +186,7 @@ struct str_resource builtin_resource[] = {
   {"A4GL_MAKE", MAKE,"internal"},
   {"A4GL_NULL_DECIMAL_IF_BAD", "Y","internal"},
   {"ACL_MOUSE", "N","internal"},
+  {"INFORMIXC", INFORMIXC,"internal"},
   {"TARGET", CONFIGURED_TARGET,"internal"},
   {"TARGET_OS", CONFIGURED_TARGET_OS,"internal"},
   {"AUBIT_Y2K", "70","internal"},
