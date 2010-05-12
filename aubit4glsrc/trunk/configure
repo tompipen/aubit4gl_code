@@ -29142,6 +29142,22 @@ done
 				*aix*)
 					CURSES_LIB_NAME="-lform -lpanel -lncurses"
 					;;
+				*hpux*)
+					CURSES_LIB_NAME="-lform -lpanel"
+					if test "$ac_cv_lib_ncurses_main" = "yes"; then
+						CURSES_LIB_NAME="-lncurses $CURSES_LIB_NAME"
+                    			else
+						CURSES_LIB_NAME="-lcurses $CURSES_LIB_NAME"
+                    			fi
+					;;
+				*linux*)
+					CURSES_LIB_NAME="-lform -lpanel"
+					if test "$ac_cv_lib_ncurses_main" = "yes"; then
+						CURSES_LIB_NAME="-lcurses $CURSES_LIB_NAME"
+                    			else
+						CURSES_LIB_NAME="-lncurses $CURSES_LIB_NAME"
+                    			fi
+					;;
 				*)
 					CURSES_LIB_NAME="-lform -lpanel"
 					if test "$ac_cv_lib_ncurses_main" = "yes"; then
@@ -31800,7 +31816,7 @@ test "x$enable_libtool_lock" != xno && enable_libtool_lock=yes
 case $host in
 *-*-irix6*)
   # Find out which ABI we are using.
-  echo '#line 31803 "configure"' > conftest.$ac_ext
+  echo '#line 31819 "configure"' > conftest.$ac_ext
   if { { eval echo "\"\$as_me\":${as_lineno-$LINENO}: \"$ac_compile\""; } >&5
   (eval $ac_compile) 2>&5
   ac_status=$?
@@ -32162,7 +32178,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<_LT_EOF
-#line 32165 "configure"
+#line 32181 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -32258,7 +32274,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<_LT_EOF
-#line 32261 "configure"
+#line 32277 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -32536,13 +32552,13 @@ if test "${lt_cv_nm_interface+set}" = set; then :
 else
   lt_cv_nm_interface="BSD nm"
   echo "int some_variable = 0;" > conftest.$ac_ext
-  (eval echo "\"\$as_me:32539: $ac_compile\"" >&5)
+  (eval echo "\"\$as_me:32555: $ac_compile\"" >&5)
   (eval "$ac_compile" 2>conftest.err)
   cat conftest.err >&5
-  (eval echo "\"\$as_me:32542: $NM \\\"conftest.$ac_objext\\\"\"" >&5)
+  (eval echo "\"\$as_me:32558: $NM \\\"conftest.$ac_objext\\\"\"" >&5)
   (eval "$NM \"conftest.$ac_objext\"" 2>conftest.err > conftest.out)
   cat conftest.err >&5
-  (eval echo "\"\$as_me:32545: output\"" >&5)
+  (eval echo "\"\$as_me:32561: output\"" >&5)
   cat conftest.out >&5
   if $GREP 'External.*some_variable' conftest.out > /dev/null; then
     lt_cv_nm_interface="MS dumpbin"
@@ -37855,7 +37871,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure,v 1.457 2010-05-12 11:02:48 mikeaubury Exp $
+| $Id: configure,v 1.458 2010-05-12 11:24:26 mikeaubury Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X
