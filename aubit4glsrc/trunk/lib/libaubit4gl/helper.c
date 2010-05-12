@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper.c,v 1.89 2010-02-27 10:14:23 mikeaubury Exp $
+# $Id: helper.c,v 1.90 2010-05-12 09:38:07 mikeaubury Exp $
 #
 */
 
@@ -1208,7 +1208,15 @@ A4GL_setenv (char *name, char *value, int overwrite)
 }
 
 
+#if HAVE_SETENV
 
+#else
+#if HAVE_PUTENV
+int unsetenv(char *s) {
+	A4GL_setenv(s,"",1);
+}
+#endif
+#endif
 
 
 // Send some text to the UI
