@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.422 2010-05-11 09:18:59 mikeaubury Exp $
+dnl # $Id: configure.in,v 1.423 2010-05-12 11:02:49 mikeaubury Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -48,7 +48,7 @@ export LD_LIBRARY_PATH=/lib:$LD_LIBRARY_PATH
 
 #We need autoconf at least version 2.50
 AC_PREREQ(2.50)
-AC_REVISION($Id: configure.in,v 1.422 2010-05-11 09:18:59 mikeaubury Exp $)
+AC_REVISION($Id: configure.in,v 1.423 2010-05-12 11:02:49 mikeaubury Exp $)
 
 #FIXME: Some versions of autoconf are complaining that $AUBIT_VERSION and 
 #$AUBIT_BUILD are not constants. Maybe we should drop stuff in tools/project 
@@ -8743,6 +8743,9 @@ AC_ARG_WITH(perl,
 		#First test for New Curses (ncurses)
 		# FIXME: Replace `main' with a function in `-lncurses':
 		AC_CHECK_LIB([ncurses], [main])
+
+		AC_CHECK_LIB([ncurses], [winnstr])
+		AC_CHECK_LIB([curses], [winnstr])
 		if test "$ac_cv_lib_ncurses_main" = "yes"; then
 			#We found "ncurses" library
 			#fixme: check version of curses - how?
@@ -8810,6 +8813,9 @@ AC_ARG_WITH(perl,
 			fi
 		fi
 			AC_DEFINE(HAVE_CURSES)
+
+		echo "ac_cv_lib_ncurses_winnstr=$ac_cv_lib_ncurses_winnstr"
+		echo "ac_cv_lib_curses_winnstr=$ac_cv_lib_curses_winnstr"
 			case $host in
 				*-apple-darwin*)
 					CURSES_LIB_NAME="-lSystem"
@@ -9939,7 +9945,9 @@ AC_MSG_CHECKING(Default compiler output language)
 PCODE_ENABLED="no"
 if test "$with_pcode" = "yes"; then
 	if test "$enable_minimal" != "yes"; then
-		PCODE_ENABLED="yes"
+		# Removed PCODE compilation from build...
+		#PCODE_ENABLED="yes"
+		:
 	fi
 fi
 
@@ -11234,7 +11242,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure.in,v 1.422 2010-05-11 09:18:59 mikeaubury Exp $
+| $Id: configure.in,v 1.423 2010-05-12 11:02:49 mikeaubury Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

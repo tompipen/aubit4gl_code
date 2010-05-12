@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile,v 1.81 2010-05-11 09:05:13 mikeaubury Exp $
+# $Id: Makefile,v 1.82 2010-05-12 11:02:48 mikeaubury Exp $
 #
 
 #Save initial state of system varables, so we can undo changes 
@@ -621,7 +621,7 @@ cleanall: clean.root clean.bin clean.etc clean.incl clean.docs clean.install \
 	$(MAKE) -C compilers/4glc clean || true
 	$(MAKE) -C compilers/sql clean || true
 	${RM} -f bin/formgen_4gl bin/make_binfiles bin/xgen_new bin/fglproto bin/4glc_opt || true
-	$(MAKE) -C compilers/pcode clean || true
+	#$(MAKE) -C compilers/pcode clean || true
 	$(MAKE) -C tools/extras_compile clean || true
 	$(MAKE) -C compilers/fcompile clean || true
 	$(MAKE) -C compilers/menus clean || true
@@ -761,8 +761,8 @@ clean.bin:
     iid${EXE} infmx_tidy${EXE} *.4ae *-strip${EXE} \
 	convertsql${EXE} *.warn unmkmessage${EXE} amkmessage${EXE} default_frm${EXE} afinderr${EXE} \
 	*.afr.dat *.afr.xml configurator${EXE} *.hlp \
-	checker${EXE} runner_fgl${EXE}  asql${EXE} aupscol${EXE} checker_fgl${EXE} c2pcode${EXE} \
-	c2pcode_fgl${EXE} runner${EXE} *~ 4glpc${EXE} \
+	checker${EXE} runner_fgl${EXE}  asql${EXE} aupscol${EXE} \
+	*~ 4glpc${EXE} \
 	)
 
 clean.etc:
