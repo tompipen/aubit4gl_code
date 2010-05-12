@@ -25,7 +25,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.170 2010-05-09 10:45:39 mikeaubury Exp $
+# $Id: ops.c,v 1.171 2010-05-12 08:29:10 mikeaubury Exp $
 #
 */
 
@@ -2703,8 +2703,8 @@ A4GL_char_char_ops (int op)
 #endif
     }
 
-  A4GL_trim (b);
-  A4GL_trim (a);
+  A4GL_trim_not_nl (b);
+  A4GL_trim_not_nl (a);
 
 
 #ifdef DEBUG
