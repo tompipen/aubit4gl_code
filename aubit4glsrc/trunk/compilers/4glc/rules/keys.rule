@@ -48,16 +48,28 @@ key_value_list : key_value | key_value_list KW_COMMA key_value {
 key_value : key_value_1 
 ;
 
-key_value_1 : 	KW_FKEY 
-	| 	KW_CTRL_KEY 
+fkey_keys : KW_FKEY 
+;
+
+control_keys:
+		KW_CTRL_KEY 
+;
+
+single_keys:
+	      KW_SINGLE_KEY {strcpy($<str>$,$<str>1);}
+;
+
+key_value_1 : 
+	fkey_keys
+	| control_keys
+	| single_keys
 	| 	KW_INTERRUPT 
 	| 	KW_ACCEPT 
-	|       KW_SINGLE_KEY {strcpy($<str>$,$<str>1);}
         |       KW_ESCAPE {strcpy($<str>$,"escape");}
         |       KWUP {strcpy($<str>$,"up");}
         |       KW_HELP {strcpy($<str>$,"help");}
         |       KWDOWN {strcpy($<str>$,"down");}
-        |       KW_RETURN {strcpy($<str>$,"return");}
+        |       KW_RETURN_KEY {strcpy($<str>$,"return");}
         |       KW_ENTER {strcpy($<str>$,"return");}  /* Synonym for RETURN */
         |       KW_DELETE {strcpy($<str>$,"delete");}
         |       KW_INSERT {strcpy($<str>$,"insert");}

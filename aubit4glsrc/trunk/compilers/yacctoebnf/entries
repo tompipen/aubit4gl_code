@@ -38,6 +38,16 @@ search_condition_sli	<search_condition_sli>
 op_not	<op_not>
 comparison_predicate_sli	<comparison_predicate_sli>
 value_expression_sli	<value_expression_sli>
+pattern_sli	<pattern_sli>
+op_ilike_escape	<op_ilike_escape>
+op_like_escape	<op_like_escape>
+comp_op	<comparison_operator>
+units_qual_i	<units_qual_i>
+value_expression_complex_sli	<value_expression_complex_sli>
+datetime_value_qualified	<datetime_value_qualified>
+interval_value_qualified	<interval_value_qualified>
+extend_qual_sli	<extend_qual_sli>
+var_ident_vl	<var_ident_vl>
 boolean_term_sli	<boolean_term_sli>
 predicate_sli	<predicate_sli>
 select_list_slil	<select_list_slil>
@@ -65,6 +75,21 @@ callback_function	<Callback function name>
 expanded_ibind_var_list	[variable_list]
 variable_usage	[variable]
 variable_usage_expression	[variable]
+vi_column_name	[column name]
+select_statement_ss_select	<select_statement_ss_select>
+union_select_statement2_ss	<union_select_statement2_ss>
+query_specification_select	<query_specification_select>
+subquery_sli	<subquery_sli>
+table_name_i	<table_name_i>
+table_name_not_for_column_prefix_i	<table_name_not_for_column_prefix_i>
+column_name_sli	<column_name_sli>
+value_expression_initial_sli_nocast	<value_expression_initial_sli_nocast>
+fkey_keys	<function keys>
+control_keys	<control_keys>
+single_keys	<single_keys>
+dtime_fcall_expr	<dtime_fcall_expr>
+op_datetime_qual_i	<op_datetime_qual_i>
+interval_qual	<interval_qual>
 pf_char_or_var	[character-expression]
 NAMED	identifier
 identifier	identifier

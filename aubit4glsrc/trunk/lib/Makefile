@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.27 2010-01-08 19:39:15 mikeaubury Exp $
+# $Id: Makefile,v 1.28 2010-05-14 11:15:17 mikeaubury Exp $
 #
 
 ROOT    =..
@@ -56,6 +56,8 @@ LIBAUBIT4GL_PATH    =libaubit4gl
 LIBSQLODBC_PATH     =libsql/odbc
 
 LIBPACKERPACKED_PATH=libpacker/packed
+LIBPACKERFORMXML_PATH=libpacker/formxml
+
 LIBPACKERMEMPACKED_PATH=libpacker/mempacked
 LIBPACKERPERL_PATH  =libpacker/perl
 LIBPACKERXDR_PATH   =libpacker/xdr
@@ -146,6 +148,9 @@ LIBSQLODBC_DEPS     =$(wildcard ${LIBSQLODBC_PATH}/*.c) $(wildcard ${LIBSQLODBC_
 					$(wildcard ${LIBSQLODBC_PATH}/Makefile) ${ALL_H}
 LIBPACKERPACKED_DEPS=$(wildcard ${LIBPACKERPACKED_PATH}/*.c) $(wildcard ${LIBPACKERPACKED_PATH}/*.h) \
 					$(wildcard ${LIBPACKERPACKED_PATH}/Makefile) ${ALL_H}
+
+LIBPACKERFORMXML_DEPS=$(wildcard ${LIBPACKERFORMXML_PATH}/*.c) $(wildcard ${LIBPACKERFORMXML}/*.h) \
+					$(wildcard ${LIBPACKERFORMXML_PATH}/Makefile) ${ALL_H}
 
 LIBPACKERMEMPACKED_DEPS=$(wildcard ${LIBPACKERMEMPACKED_PATH}/*.c) $(wildcard ${LIBPACKERMEMPACKED_PATH}/*.h) \
 					$(wildcard ${LIBPACKERMEMPACKED_PATH}/Makefile) ${ALL_H}
@@ -359,6 +364,9 @@ ${PLUGINDIR}/libEXREPORT_NOPDF${SO_EXT}: ${LIBEXREPORTPDF_DEPS}
 
 ${PLUGINDIR}/libPACKER_PACKED${SO_EXT}: ${LIBPACKERPACKED_DEPS}
 	${MAKE} -C ${LIBPACKERPACKED_PATH}
+
+${PLUGINDIR}/libPACKER_FORMXML${SO_EXT}: ${LIBPACKERFORMXML_DEPS}
+	${MAKE} -C ${LIBPACKERFORMXML_PATH}
 
 ${PLUGINDIR}/libPACKER_MEMPACKED${SO_EXT}: ${LIBPACKERMEMPACKED_DEPS}
 	${MAKE} -C ${LIBPACKERMEMPACKED_PATH}
@@ -723,6 +731,7 @@ clean.libform:
 
 clean.libpacker:
 	${MAKE} -C ${LIBPACKERPACKED_PATH} clean
+	${MAKE} -C ${LIBPACKERFORMXML_PATH} clean
 	${MAKE} -C ${LIBPACKERMEMPACKED_PATH} clean
 	${MAKE} -C ${LIBPACKERPERL_PATH} clean
 	${MAKE} -C ${LIBPACKERXDR_PATH} clean
@@ -778,6 +787,8 @@ show:
 	@echo "$$HAVE_INGRES_ESQLC"
 	@echo "PLUGINDIR=${PLUGINDIR}"
 	@echo "A4GL_VERSION_STRING=${A4GL_VERSION_STRING}"
+	@echo "ALL_LIBS=${ALL_LIBS}"
+	@echo "LIB_DEFAULT=${LIB_DEFAULT} LIB_OPTIONAL=${LIB_OPTIONAL}"
 
 pluginsdir:
 	if test ! -d ${PLUGINDIR}; then mkdir ${PLUGINDIR} 2> /dev/null; fi

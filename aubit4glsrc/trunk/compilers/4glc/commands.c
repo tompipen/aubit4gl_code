@@ -647,6 +647,9 @@ int sio_id=0;
 	case EBC_CASE:          // Exit CASE
 		block_no=get_exit_loop("CASE");
 		break;
+	case EBC_TODO:          // Exit TODO
+		block_no=get_exit_loop("TODO");
+		break;
 
 	case EBC_SPL_WHILE:
 	case EBC_SPL_FOREACH:
@@ -759,6 +762,9 @@ int block_no=-1;
 	case EBC_CASE:          // Exit CASE
 		block_no=get_exit_loop("CASE");
 		break;
+	case EBC_TODO:          // Exit TODO
+		block_no=get_exit_loop("TODO");
+		break;
 	case EBC_SPL_WHILE:
 	case EBC_SPL_FOREACH:
 	case EBC_SPL_FOR:
@@ -841,6 +847,11 @@ struct command *c;
 }
  
  
+struct command *new_done_cmd(void) { //!
+struct command *c;
+   c=new_command(E_CMD_DONE_CMD);
+   return c;
+}
  
  
 struct command *new_sleep_cmd(expr_str* p_expr) { //!
@@ -1332,6 +1343,17 @@ struct command *c;
    c->cmd_data.command_data_u.case_cmd.whens=p_whens;
    c->cmd_data.command_data_u.case_cmd.otherwise=p_otherwise;
    c->cmd_data.command_data_u.case_cmd.block_id=block_id;
+   return c;
+}
+
+
+struct command *new_todo_cmd(expr_str* p_todo_expr,struct whens *p_whens,s_commands *p_always, int block_id) {
+struct command *c;
+   c=new_command(E_CMD_TODO_CMD);
+   c->cmd_data.command_data_u.todo_cmd.todo_expr=p_todo_expr;
+   c->cmd_data.command_data_u.todo_cmd.whens=p_whens;
+   c->cmd_data.command_data_u.todo_cmd.always=p_always;
+   c->cmd_data.command_data_u.todo_cmd.block_id=block_id;
    return c;
 }
 

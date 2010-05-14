@@ -356,29 +356,9 @@ op_extend_di: {$<integer_val>$=-1;} | dtime_val KW_TO dtime_val {$<integer_val>$
 op_extend_ii: interval_qual_i { $<integer_val>$=$<integer_val>1;}
 ;
 
-function_call_expr:
-	KW_DATE OPEN_BRACKET fgl_expr_c CLOSE_BRACKET {
-		$<ptr>$=A4GL_new_expr_simple_expr($<ptr>3,ET_EXPR_DATE_FUNC);
-	}
-	| TIME OPEN_BRACKET fgl_expr_c CLOSE_BRACKET {
-		$<ptr>$=A4GL_new_expr_simple_expr($<ptr>3,ET_EXPR_TIME_FUNC);
-	}
-	| MONTH OPEN_BRACKET fgl_expr_c CLOSE_BRACKET {
-		$<ptr>$=A4GL_new_expr_simple_expr($<ptr>3,ET_EXPR_MONTH_FUNC);
-	} 
-	| DAY OPEN_BRACKET  fgl_expr_c  CLOSE_BRACKET {
-		$<ptr>$=A4GL_new_expr_simple_expr($<ptr>3,ET_EXPR_DAY_FUNC);
-	} 
-	| YEAR OPEN_BRACKET  fgl_expr_c  CLOSE_BRACKET {
-		$<ptr>$=A4GL_new_expr_simple_expr($<ptr>3,ET_EXPR_YEAR_FUNC);
-	} 
-	| INTERVAL OPEN_BRACKET interval_func_params CLOSE_BRACKET op_extend_ii {
-		$<ptr>$=A4GL_new_interval_expr($<str>3,$<integer_val>5);
-	}
 
-
-
-	| DATETIME OPEN_BRACKET CHAR_VALUE CLOSE_BRACKET op_extend_di {
+dtime_fcall_expr:
+	DATETIME OPEN_BRACKET CHAR_VALUE CLOSE_BRACKET op_extend_di {
 		char buff[256];
 		SPRINTF1(buff,"%s",$<str>3);
 		$<ptr>$=A4GL_new_datetime_expr(buff,$<integer_val>5);
@@ -483,6 +463,33 @@ function_call_expr:
 		SPRINTF5(buff,"\"%s-%s %s:%s:%s\"",$<str>3,$<str>5,$<str>6,$<str>8,$<str>10);
 		$<ptr>$=A4GL_new_datetime_expr(buff,$<integer_val>12);
 	}
+
+;
+
+function_call_expr:
+	KW_DATE OPEN_BRACKET fgl_expr_c CLOSE_BRACKET {
+		$<ptr>$=A4GL_new_expr_simple_expr($<ptr>3,ET_EXPR_DATE_FUNC);
+	}
+	| TIME OPEN_BRACKET fgl_expr_c CLOSE_BRACKET {
+		$<ptr>$=A4GL_new_expr_simple_expr($<ptr>3,ET_EXPR_TIME_FUNC);
+	}
+	| MONTH OPEN_BRACKET fgl_expr_c CLOSE_BRACKET {
+		$<ptr>$=A4GL_new_expr_simple_expr($<ptr>3,ET_EXPR_MONTH_FUNC);
+	} 
+	| DAY OPEN_BRACKET  fgl_expr_c  CLOSE_BRACKET {
+		$<ptr>$=A4GL_new_expr_simple_expr($<ptr>3,ET_EXPR_DAY_FUNC);
+	} 
+	| YEAR OPEN_BRACKET  fgl_expr_c  CLOSE_BRACKET {
+		$<ptr>$=A4GL_new_expr_simple_expr($<ptr>3,ET_EXPR_YEAR_FUNC);
+	} 
+	| INTERVAL OPEN_BRACKET interval_func_params CLOSE_BRACKET op_extend_ii {
+		$<ptr>$=A4GL_new_interval_expr($<str>3,$<integer_val>5);
+	}
+	| dtime_fcall_expr {
+		$<ptr>$=$<ptr>1;
+	}
+
+
 	| FGL_SIZEOF OPEN_BRACKET ensured_variable_possibly_array_usage_expression CLOSE_BRACKET {
 		$<ptr>$=A4GL_new_expr_simple_expr($<ptr>3,ET_EXPR_FGL_SIZEOF);
 	}

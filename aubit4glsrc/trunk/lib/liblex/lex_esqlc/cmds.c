@@ -19,6 +19,8 @@ switch(cd->type) {
    case E_CMD_CALL_CMD             : ok=print_call_cmd(&cd->command_data_u.call_cmd); break;
    case E_CMD_CANCEL_CMD           : ok=print_cancel_cmd(&cd->command_data_u.cancel_cmd); break;
    case E_CMD_CASE_CMD             : ok=print_case_cmd(&cd->command_data_u.case_cmd); break;
+   case E_CMD_TODO_CMD             : ok=print_todo_cmd(&cd->command_data_u.todo_cmd); break;
+   case E_CMD_DONE_CMD      	: ok=print_todo_done_cmd(); break;
    case E_CMD_CLOSE_CMD            : ok=print_close_cmd(&cd->command_data_u.close_cmd); break;
    case E_CMD_CLOSE_SQL_CMD        : ok=print_close_sql_cmd(&cd->command_data_u.close_sql_cmd,0); break;
    case E_CMD_CODE_CMD             : ok=print_code_cmd(&cd->command_data_u.code_cmd); break;

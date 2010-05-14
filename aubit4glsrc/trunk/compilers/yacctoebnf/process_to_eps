@@ -5,6 +5,7 @@ echo "ebnf-eps-directory" | emacs -batch -l setup-ebnf2ps.el  -f "ebnf-eps-direc
 cd ebnf-eps-directory
 for a in *.eps
 do
+	echo $a
 	epstopdf $a 
 done
 

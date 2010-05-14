@@ -1,5 +1,5 @@
 /* XML processor/application API for module_def.dtd.
- * Generated 2010/05/12 09:53:38.
+ * Generated 2010/05/14 11:56:02.
  *
  * This program was generated with the FleXML XML processor generator.
  * FleXML is Copyright (C) 1999-2005 Kristoffer Rose.  All rights reserved.
@@ -583,6 +583,8 @@ extern void STag_struct_start_rpc_cmd(void);
 extern void ETag_struct_start_rpc_cmd(void);
 extern void STag_struct_term_rep_cmd(void);
 extern void ETag_struct_term_rep_cmd(void);
+extern void STag_struct_todo_cmd(void);
+extern void ETag_struct_todo_cmd(void);
 extern void STag_struct_uncheck_menu_cmd(void);
 extern void ETag_struct_uncheck_menu_cmd(void);
 extern void STag_struct_unload_cmd(void);
@@ -1677,6 +1679,8 @@ typedef int AT_expr_str_expr_long;
 #define AU_expr_str_expr_long NULL
 typedef int AT_struct_show_cmd_nm;
 #define AU_struct_show_cmd_nm NULL
+typedef int AT_struct_todo_cmd_nm;
+#define AU_struct_todo_cmd_nm NULL
 typedef int AT_report_format_section_lines_in_first_header;
 #define AU_report_format_section_lines_in_first_header NULL
 typedef int AT_s_table_list_element_tabname;
@@ -1779,6 +1783,8 @@ typedef int AT_s_select_list_item_list_nm;
 #define AU_s_select_list_item_list_nm NULL
 typedef int AT_struct_input_array_cmd_slice;
 #define AU_struct_input_array_cmd_slice NULL
+typedef int AT_struct_todo_cmd_block_id;
+#define AU_struct_todo_cmd_block_id NULL
 typedef int AT_s_expr_infield_sio_id;
 #define AU_s_expr_infield_sio_id NULL
 typedef int AT_struct_declare_cmd_with_hold;
@@ -3112,6 +3118,8 @@ extern AT_expr_str_expr_long AX_expr_str_expr_long;
 #define A_expr_str_expr_long (bufferstack + AX_expr_str_expr_long)
 extern AT_struct_show_cmd_nm AX_struct_show_cmd_nm;
 #define A_struct_show_cmd_nm (bufferstack + AX_struct_show_cmd_nm)
+extern AT_struct_todo_cmd_nm AX_struct_todo_cmd_nm;
+#define A_struct_todo_cmd_nm (bufferstack + AX_struct_todo_cmd_nm)
 extern AT_report_format_section_lines_in_first_header AX_report_format_section_lines_in_first_header;
 #define A_report_format_section_lines_in_first_header (bufferstack + AX_report_format_section_lines_in_first_header)
 extern AT_s_table_list_element_tabname AX_s_table_list_element_tabname;
@@ -3214,6 +3222,8 @@ extern AT_s_select_list_item_list_nm AX_s_select_list_item_list_nm;
 #define A_s_select_list_item_list_nm (bufferstack + AX_s_select_list_item_list_nm)
 extern AT_struct_input_array_cmd_slice AX_struct_input_array_cmd_slice;
 #define A_struct_input_array_cmd_slice (bufferstack + AX_struct_input_array_cmd_slice)
+extern AT_struct_todo_cmd_block_id AX_struct_todo_cmd_block_id;
+#define A_struct_todo_cmd_block_id (bufferstack + AX_struct_todo_cmd_block_id)
 extern AT_s_expr_infield_sio_id AX_s_expr_infield_sio_id;
 #define A_s_expr_infield_sio_id (bufferstack + AX_s_expr_infield_sio_id)
 extern AT_struct_declare_cmd_with_hold AX_struct_declare_cmd_with_hold;

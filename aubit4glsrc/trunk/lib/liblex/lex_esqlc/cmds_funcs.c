@@ -3746,3 +3746,70 @@ char *ptr;
 }
 
 
+int
+print_todo_cmd (struct_todo_cmd * cmd_data)
+{
+  int a;
+
+  print_cmd_start ();
+  printc("{");
+  printc("int _list[%d];",cmd_data->whens->whens.whens_len+1);
+  // Clear down all todo list items...
+  for (a=0;a < cmd_data->whens->whens.whens_len; a++) {
+  	printc("_list[%d]=0;",a);
+  }
+
+  printc("while (1==1) {");
+  tmp_ccnt++;
+  printc("int _allset=1;");
+  printc("CONTINUE_BLOCK_%d:    ; ", cmd_data->block_id);
+  if (cmd_data->todo_expr)
+    {
+      print_expr (cmd_data->todo_expr);
+      printc ("if (!(A4GL_pop_bool())) break;\n");
+    }
+
+  for (a=0;a < cmd_data->whens->whens.whens_len; a++) {
+  	printc("if (_list[%d]==0) {_allset=0;}",a);
+  }
+  printc("if (_allset) break;");
+
+
+  printc("/* ALWAYS ... */");
+  dump_commands (cmd_data->always);
+
+  for (a = 0; a < cmd_data->whens->whens.whens_len; a++)
+    {
+        line_for_cmd=cmd_data->whens->whens.whens_val[a]->lineno;
+        dump_comments (cmd_data->whens->whens.whens_val[a]->lineno);
+ 	printc("if (_list[%d]==0) {",a) ;
+        tmp_ccnt++;
+ 	print_expr(cmd_data->whens->whens.whens_val[a]->when_expr);
+	printc ("if (A4GL_pop_bool()) {\n");
+        tmp_ccnt++;
+	printc("int _current_todo=%d;",a);
+        dump_commands (cmd_data->whens->whens.whens_val[a]->when_commands);
+        tmp_ccnt--;
+        //printc ("continue;"); // Back around the loop...
+	printc("}");
+        tmp_ccnt--;
+	printc("}");
+	
+    }
+
+  //printc ("continue;");
+  tmp_ccnt--;
+  printc ("} /* end of the while for the todo */");
+  printc ("END_BLOCK_%d: ;", cmd_data->block_id);
+
+  printc("}");
+
+
+  print_copy_status_not_sql (0);
+  return 1;
+}
+
+int print_todo_done_cmd(void ) {
+	printc("_list[_current_todo]=1;");
+	return 1;
+}

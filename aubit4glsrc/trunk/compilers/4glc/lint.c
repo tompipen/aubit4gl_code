@@ -700,6 +700,19 @@ check_cmds_for_dead_code (struct s_commands *cmds)
 				    command_data_u.case_cmd.otherwise);
 	  break;
 
+	case E_CMD_TODO_CMD:
+	  for (cnt = 0;
+	       cnt <
+	       cmds->cmds.cmds_val[a]->cmd_data.command_data_u.todo_cmd.
+	       whens->whens.whens_len; cnt++)
+	    {
+	      check_cmds_for_dead_code (cmds->cmds.cmds_val[a]->cmd_data.
+					command_data_u.todo_cmd.whens->whens.
+					whens_val[cnt]->when_commands);
+	    }
+	  check_cmds_for_dead_code (cmds->cmds.cmds_val[a]->cmd_data.
+				    command_data_u.todo_cmd.always);
+	  break;
 
 	case E_CMD_MENU_CMD:
 	  evt_list =
@@ -851,6 +864,7 @@ check_function_for_complexity (struct module_definition *d,
 	case E_CMD_FOR_CMD:
 	case E_CMD_FOREACH_CMD:
 	case E_CMD_CASE_CMD:
+	case E_CMD_TODO_CMD:
 	case E_CMD_IF_CMD:
 	case E_CMD_MENU_CMD:
 	  lines_used[func_cmds->cmds.cmds_val[a]->lineno - f->lineno] = '>';
@@ -1760,6 +1774,13 @@ check_linearised_commands (char *module_name, s_commands * func_cmds)
 	      A4GL_lint (module_name, r->lineno, "CS.NOOTHERWISE", "CASE has no OTHERWISE", 0);
 	    }
 	}
+
+
+
+
+
+
+
       if (r->cmd_data.type == E_CMD_CALL_CMD)
 	{
 	  int cnt1;
@@ -6006,7 +6027,7 @@ add_severity (char *s, int n)
     }
 }
 
-static void dump_severities() {
+static void dump_severities(void) {
 int a;
 for (a=0;a<1000;a++) {
 
@@ -6082,7 +6103,7 @@ int default_severity=5;
 }
 
 
-void find_offset(char *module, int line,char *function,int *offset) {
+static void find_offset(char *module, int line,char *function,int *offset) {
 char *mod=NULL;
 char *func=NULL;
 int a;
@@ -7730,6 +7751,24 @@ check_expressions_cmd (struct s_commands *cmds)
 	  break;
 
 
+	case E_CMD_TODO_CMD:
+	  {
+	    struct struct_todo_cmd *todocmd;
+	    int b;
+	    todocmd = &c->cmd_data.command_data_u.todo_cmd;
+	    check_expression (module, lineno, todocmd->todo_expr);
+
+	    for (b = 0; b < todocmd->whens->whens.whens_len; b++)
+	      {
+		check_expression (module,
+				  todocmd->whens->whens.whens_val[b]->lineno,
+				  todocmd->whens->whens.whens_val[b]->
+				  when_expr);
+	      }
+	  }
+	  break;
+
+
 	case E_CMD_OPEN_WINDOW_CMD:
 	  check_expression (module, lineno,
 			    c->cmd_data.command_data_u.open_window_cmd.x);
@@ -7988,6 +8027,10 @@ decode_cmd_type (enum cmd_type value)
       return "E_CMD_CANCEL_CMD";
     case E_CMD_CASE_CMD:
       return "E_CMD_CASE_CMD";
+    case E_CMD_TODO_CMD:
+      return "E_CMD_TODO_CMD";
+    case E_CMD_DONE_CMD:
+      return "E_CMD_DONE_CMD";
     case E_CMD_CHECK_MENU_CMD:
       return "E_CMD_CHECK_MENU_CMD";
     case E_CMD_CLEAR_CMD:

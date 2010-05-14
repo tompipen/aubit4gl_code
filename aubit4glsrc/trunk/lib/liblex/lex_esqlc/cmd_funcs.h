@@ -4,6 +4,8 @@ int print_at_term_cmd(struct_at_term_cmd *cmd_data);
 int print_call_cmd(struct_call_cmd *cmd_data);
 int print_cancel_cmd(struct_cancel_cmd *cmd_data);
 int print_case_cmd(struct_case_cmd *cmd_data);
+int print_todo_cmd(struct_todo_cmd *cmd_data);
+int print_todo_done_cmd(void);
 int print_check_menu_cmd(struct_check_menu_cmd *cmd_data);
 int print_clear_cmd(struct_clear_cmd *cmd_data);
 int print_close_cmd(struct_close_cmd *cmd_data);

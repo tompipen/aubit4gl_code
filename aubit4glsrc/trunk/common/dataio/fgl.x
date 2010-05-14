@@ -1,4 +1,4 @@
-/* $Id: fgl.x,v 1.56 2010-03-17 19:01:48 mikeaubury Exp $ */
+/* $Id: fgl.x,v 1.57 2010-05-14 11:15:17 mikeaubury Exp $ */
 typedef string str<>;
 typedef string sql_ident<>;
 
@@ -198,6 +198,8 @@ enum cmd_type {
 E_CMD_SPL_RETURN_CMD,
 E_CMD_SPL_BLOCK_CMD,
 E_CMD_EXECUTE_PROCEDURE_CMD,
+E_CMD_TODO_CMD,
+E_CMD_DONE_CMD,
 
 E_CMD_LAST
 };
@@ -372,7 +374,7 @@ struct struct_free_blob_cmd {
 
 /* ***************************************************** */
 enum e_block_cmd {
-	EBC_WHILE, EBC_FOR, EBC_INPUT, EBC_FOREACH, EBC_CONSTRUCT, EBC_DISPLAY, EBC_MENU,EBC_PROMPT, EBC_CASE,
+	EBC_WHILE, EBC_FOR, EBC_INPUT, EBC_FOREACH, EBC_CONSTRUCT, EBC_DISPLAY, EBC_MENU,EBC_PROMPT, EBC_CASE, EBC_TODO,
 	EBC_SPL_FOR, EBC_SPL_WHILE, EBC_SPL_FOREACH
 };
 
@@ -972,6 +974,14 @@ struct struct_case_cmd  {
 	struct expr_str* case_expr;
 	struct whens *whens;
 	s_commands *otherwise;
+	int block_id;
+};
+
+
+struct struct_todo_cmd  {
+	struct expr_str* todo_expr;
+	struct whens *whens;
+	s_commands *always;
 	int block_id;
 };
 
@@ -1651,6 +1661,8 @@ union command_data switch (enum cmd_type type) {
 	case E_CMD_PAUSE_SCREEN_ON_CMD: void;
 	case E_CMD_PAUSE_SCREEN_OFF_CMD: void;
 	case E_CMD_SKIP_TO_TOP_CMD: void;
+	case E_CMD_DONE_CMD: void;
+
 	case E_CMD_LAST: void;
 	
 	case E_CMD_START_RPC_CMD: struct_start_rpc_cmd start_rpc_cmd;
@@ -1781,6 +1793,7 @@ union command_data switch (enum cmd_type type) {
 	case E_CMD_SPL_RETURN_CMD: struct_spl_return_cmd spl_return_cmd ;
 	case E_CMD_SPL_BLOCK_CMD: struct_spl_block_cmd spl_block_cmd ;
 	case E_CMD_EXECUTE_PROCEDURE_CMD: struct_execute_procedure_cmd execute_procedure_cmd ;
+	case E_CMD_TODO_CMD: struct_todo_cmd todo_cmd;
 
 };
 

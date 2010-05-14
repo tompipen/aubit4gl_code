@@ -31,6 +31,7 @@ struct command *new_uncheck_menu_cmd(str_list* p_list);
 struct command *new_goto_cmd(char *p_label);
 struct command *new_label_cmd(char *p_label);
 struct command *new_sleep_cmd(expr_str* p_expr);
+struct command *new_done_cmd(void);
 struct command *new_move_cmd(expr_str *p_windowname, expr_str* p_x, expr_str* p_y, e_boolean relative);
 struct command *new_show_menu_cmd(char *p_menuname, char *p_menuhandler, expr_str* p_mn_file);
 struct command *new_show_cmd(expr_str *p_windowname);
@@ -121,6 +122,7 @@ struct command *new_execute_cmd(expr_str *connid, expr_str_list* p_inbind, expr_
 struct command *new_sql_block_cmd( expr_str *connid, expr_str_list* p_list,int convert);
 struct command *new_let_cmd(expr_str_list* p_vars, expr_str_list *p_vals);
 struct command *new_case_cmd(expr_str* p_case_expr, struct whens *p_whens, s_commands *p_otherwise,int block_id);
+struct command *new_todo_cmd(expr_str* p_todo_expr,struct whens *p_whens,s_commands *p_always, int block_id);
 struct command *new_validate_cmd(expr_str_list* p_list, str_list* p_tablist);
 struct command *new_display_b_n_cmd(expr_str_list* p_vars, attrib *p_attributes);
 struct command *new_foreach_cmd(expr_str *connid, expr_str * p_cursorname, expr_str_list* p_inputvals, expr_str_list* p_outputvals, s_commands *p_cmds);

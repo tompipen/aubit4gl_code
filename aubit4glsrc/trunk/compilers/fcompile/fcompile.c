@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fcompile.c,v 1.72 2010-02-16 13:15:27 mikeaubury Exp $
+# $Id: fcompile.c,v 1.73 2010-05-14 11:15:17 mikeaubury Exp $
 #*/
 
 /**
@@ -70,7 +70,7 @@ extern FILE *yyin;
 extern char *outputfilename;	/* defined in libaubit4gl */
 extern struct struct_scr_field *fld;	/* defined in libaubit4gl */
 dll_import struct struct_form the_form;	/* defined in libaubit4gl */
-
+int asXML=0;
 int silent=0;
 char outputfile[132];
 int perform_mode=0;
@@ -182,6 +182,13 @@ main (int argc, char *argv[])
 	  continue;
 	}
 
+      if (strcmp (argv[cnt], "-xml") == 0)
+	{
+		asXML=1;
+		A4GL_setenv("A4GL_PACKER","FORMXML",1);
+	  	continue;
+	}
+
       if (strcmp (argv[cnt], "-vfull") == 0)
 	{
 	  A4GL_check_and_show_id ("4GL Form Compiler", argv[cnt]);
@@ -250,6 +257,13 @@ main (int argc, char *argv[])
       outputfilename = acl_strdup (d);
     }
 
+    if (asXML) {
+	char buff[2000];
+	if (acl_getenv_not_set_as_0("A4GL_OVERRIDE_PACKER_OUTPUT")==0) {
+		sprintf(buff,"%s.xml",outputfilename);
+		A4GL_setenv("A4GL_OVERRIDE_PACKER_OUTPUT",buff,1);
+	}
+    }
 
   if (!silent) {
   	A4GL_check_and_show_id ("4GL Form Compiler", "");
@@ -473,6 +487,7 @@ usage (char *s)
   printf ("  -s,-q     Silent mode\n\n");
   printf ("  -v,-vfull Display version information\n\n");
   printf ("  -d dbname Use 'dbname' rather than the database name in the form\n\n");
+  printf ("  -xml      Generate a .xml file suitable for use with the XML UIs\n\n");
   printf ("  -perform  Turn on 'Perform' compatibility (SQL forms)\n");
   printf ("               This doesnt implement the SQL functionality\n");
   printf ("               but still stores the data so it can be used by\n");
