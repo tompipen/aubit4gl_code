@@ -7,76 +7,22 @@ Fri May 14 16:25:47 BST 2010
 	
 	Add TODO command
 	
-	2010-05-14 11:48  mikeaubury
-	
-	2010-05-14 11:29  mikeaubury
-	
-	2010-05-12 12:24  mikeaubury
-	
-	2010-05-12 12:02  mikeaubury
-	
-	2010-05-12 10:38  mikeaubury
-	
-	2010-05-12 10:09  mikeaubury
-	
 	2010-05-12 09:29  mikeaubury
 	
 	Fix string comparision issue with newlines
-	
-	2010-05-11 18:17  mikeaubury
-	
-	2010-05-11 14:59  mikeaubury
-	
-	2010-05-11 11:57  mikeaubury
-	
-	2010-05-11 11:41  mikeaubury
-	
-	2010-05-11 10:30  mikeaubury
-	
-	2010-05-11 10:18  mikeaubury
-	
-	2010-05-11 10:05  mikeaubury
 	
 	2010-05-11 10:03  mikeaubury
 	
 	Remove PCODE compilation..  (Can still be done manually - but not
 	by default...)
 	
-	2010-05-11 09:46  mikeaubury
-	
-	2010-05-11 07:51  mikeaubury
-	
-	2010-05-10 16:25  mikeaubury
-	
-	2010-05-10 16:20  mikeaubury
-	
-	2010-05-10 16:02  mikeaubury
-	
-	2010-05-10 15:48  mikeaubury
-	
-	2010-05-10 15:30  mikeaubury
-	
 	2010-05-10 15:17  mikeaubury
 	
 	ZLIB updates
 	
-	2010-05-10 14:40  mikeaubury
-	
-	2010-05-10 14:36  mikeaubury
-	
-	2010-05-10 14:28  mikeaubury
-	
-	2010-05-10 13:55  mikeaubury
-	
-	2010-05-10 08:10  mikeaubury
-	
 	2010-05-09 11:45  mikeaubury
 	
 	Small INTERVAL fixups, small parser updates (for fgllint)
-	
-	2010-05-02 12:38  mikeaubury
-	
-	2010-05-02 12:14  mikeaubury
 	
 ---------------------------
 Sun May  2 12:13:51 BST 2010
