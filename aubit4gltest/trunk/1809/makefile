@@ -16,20 +16,20 @@ ADD_CLEAN=
 
 progname${TARGET_EXT}: ${MODULES} ; ${DEFAULT_LINK}
 compile: progname${TARGET_EXT} ${FORMS} ${HELP}
-run: compile ; ${DEFAULT_RUN}
+run: compile ; ${DEFAULT_DIFF}
 #	${DEFAULT_DIFF} ${DEFAULT_DUMP_DIFF}
 
 ## ======================================================================
 ##                  Test desctiptions
 ## ======================================================================
 
-desc: ; @echo "Tests date detection"
+desc: ; @echo "test of the 'todo' command"
 
 db_test: 				; @echo "0"
 ec_test: 				; @echo "0"
 nosilent_test:			; @echo "0"
 tui_test:				; @echo "0"
-form_test:				; @echo "1"
+form_test:				; @echo "0"
 report_test:			; @echo "0"
 graphic_test:			; @echo "0"
 console_prompt_test:	; @echo "0"
@@ -43,7 +43,7 @@ compile_only:			; @echo "0"
 unknown_test:			; @echo "0"
 need_ifx_version:		; @echo "0"
 transaction:			; @echo "0"
-sql_features_used:		; @echo "DATABASE_USED DEFINE_CHAR DEFINE_VARCHAR DEFINE_INTEGER DDL_VARCHAR CREATE_TEMP_TABLE UI_DISPLAY_LINE_MODE DISPLAY IF EXECUTE_INTO_USING EXECUTE PREPARE CURSOR_SELECT FOREACH "
+sql_features_used:		; @echo "DATABASE_USED DEFINE_CHAR DEFINE_VARCHAR DEFINE_INTEGER DDL_VARCHAR CREATE_TEMP_TABLE UI_DISPLAY_LINE_MODE DISPLAY INSERT_COLUMNLIST_EQ_VALUELIST EXIT_PROGRAM_EXPR IF "
 ansi_sql_compat:		; @echo ""
 runtime_err_check:		; @echo ""
 need_rdbms:				; @echo ""

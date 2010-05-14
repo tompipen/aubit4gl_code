@@ -23,13 +23,13 @@ run: compile ; ${DEFAULT_RUN}
 ##                  Test desctiptions
 ## ======================================================================
 
-desc: ; @echo "Tests date detection"
+desc: ; @echo "This is not a test but a Testing template. Please describe here."
 
 db_test: 				; @echo "0"
 ec_test: 				; @echo "0"
 nosilent_test:			; @echo "0"
 tui_test:				; @echo "0"
-form_test:				; @echo "1"
+form_test:				; @echo "0"
 report_test:			; @echo "0"
 graphic_test:			; @echo "0"
 console_prompt_test:	; @echo "0"

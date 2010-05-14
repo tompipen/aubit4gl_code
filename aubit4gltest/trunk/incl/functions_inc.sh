@@ -1587,7 +1587,7 @@ esac
 set `$MAKE --version | head -n 1 | sed -e 's/^GNU Make version //' -e 's/^GNU Make //' -e 's/, by Richard Stallman and Roland McGrath.//' -e 's/\./ /g'`
 
 make_ver="$1.$2.$3"
-sh_ver=`$SH --version | grep version | awk '{print $4}'`
+sh_ver=`$SH --version | grep version | awk '{if (!printed) {printed++;print $4}}'`
 
 
 dl="|"

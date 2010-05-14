@@ -1,0 +1,36 @@
+DATABASE formonly
+screen size 24 by 80
+{
+-----------------------------------------------------------------------------
+<F2> insert integer1, accept <F12>
+  integer1        char1              integer2
+-----------------------------------------------------------------------------
+[f001          ][f002          ] [f003           ]
+[f001          ][f002          ] [f003           ]
+[f001          ][f002          ] [f003           ]
+[f001          ][f002          ] [f003           ]
+[f001          ][f002          ] [f003           ]
+[f001          ][f002          ] [f003           ]
+[f001          ][f002          ] [f003           ]
+[f001          ][f002          ] [f003           ]
+[f001          ][f002          ] [f003           ]
+[f001          ][f002          ] [f003           ]
+[f001          ][f002          ] [f003           ]
+[f001          ][f002          ] [f003           ]
+[f001          ][f002          ] [f003           ]
+[f001          ][f002          ] [f003           ]
+[f001          ][f002          ] [f003           ]
+
+}
+END
+
+
+ATTRIBUTES
+f001 = formonly.ic_pac type integer;
+f002 = formonly.dat_zaps type char;
+f003 = formonly.vaha type integer;
+END
+
+INSTRUCTIONS
+DELIMITERS " "
+SCREEN RECORD b_s[15] ( formonly.ic_pac, formonly.dat_zaps, formonly.vaha )

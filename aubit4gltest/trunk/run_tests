@@ -5,6 +5,7 @@
 ###########################################################################
 
 START_TIME=`date +%s`
+unset CALLERRHOOK
 
 #Function called when user interupts execution
 function on_abort () {
