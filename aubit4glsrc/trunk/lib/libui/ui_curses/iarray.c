@@ -24,10 +24,10 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.166 2010-03-10 18:56:38 mikeaubury Exp $
+# $Id: iarray.c,v 1.167 2010-05-18 10:52:12 mikeaubury Exp $
 #*/
 #ifndef lint
-static char const module_id[] = "$Id: iarray.c,v 1.166 2010-03-10 18:56:38 mikeaubury Exp $";
+static char const module_id[] = "$Id: iarray.c,v 1.167 2010-05-18 10:52:12 mikeaubury Exp $";
 #endif
 
 /**
@@ -2967,7 +2967,7 @@ process_control_stack_internal (struct s_inp_arr *arr)
       if (arr->fcntrl[a].state == 25)
 	{
 	  struct struct_scr_field *fprop;
-	  int ok;
+	  int ok=0;
 	  int has_picture = 0;
 	  char *picture = 0;
 	  new_state = 10;
@@ -3090,6 +3090,9 @@ process_control_stack_internal (struct s_inp_arr *arr)
 		    {
 		      arr->curr_line_is_new = 2;
 		    }
+#ifdef DEBUG
+		A4GL_debug("Calling A4GL_int_form_driver");
+#endif
 		  A4GL_int_form_driver (arr->currform->form, arr->fcntrl[a].extent);
 		  A4GL_int_form_driver (arr->currform->form, REQ_VALIDATION);
 		}
@@ -3156,6 +3159,7 @@ process_control_stack_internal (struct s_inp_arr *arr)
 #ifdef DEBUG
 	  A4GL_debug ("END KEY PRESS zz9pa %d\n", arr->fcntrl[a].extent);
 #endif
+      //A4GL_mja_refresh (); sleep (3);
 	}
     }
 
@@ -3837,6 +3841,7 @@ UILIB_A4GL_req_field_input_array (void *arrv, char type, va_list * ap)
   int nv;
 
 
+
 #ifdef DEBUG
   A4GL_debug ("req_field_input_array - %c", type);
 #endif
@@ -3922,7 +3927,21 @@ UILIB_A4GL_req_field_input_array (void *arrv, char type, va_list * ap)
 #endif
 	      if (arr->currentfield || type == '!')
 		{
-		  A4GL_init_control_stack (arr, 0);
+			int clr_it=1;
+			if (arr->fcntrl_cnt>=2) {
+		      		if (arr->fcntrl[arr->fcntrl_cnt-1].op == FORMCONTROL_BEFORE_ROW && arr->fcntrl[arr->fcntrl_cnt-1].state==50)  {
+					// We need to finish off the BEFORE ROW - so we cant clear the whole stack..
+					// we'll just move the BEFORE ROW to the top of the stack instead...
+			      		memcpy (&arr->fcntrl[0], &arr->fcntrl[arr->fcntrl_cnt-1], sizeof (arr->fcntrl[0]));
+					arr->fcntrl_cnt=1;
+					clr_it=0;
+				}
+			}
+
+			if (clr_it) {
+		  		A4GL_init_control_stack (arr, 0);
+			}
+		
 		}
 	      else
 		{
