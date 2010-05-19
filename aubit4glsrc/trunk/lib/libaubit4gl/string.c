@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: string.c,v 1.37 2010-02-24 16:25:07 mikeaubury Exp $
+# $Id: string.c,v 1.38 2010-05-19 07:52:35 mikeaubury Exp $
 #
 */
 
@@ -279,7 +279,19 @@ A4GL_wordwrap_text (char *in, char *out, int width, int maxsize)
   strcpy (buff, in);
   A4GL_trim (buff);
 
-
+  for (cnt=0;cnt<strlen(buff);cnt++) {
+	if (buff[cnt]=='\r') {
+			buff[cnt]=' ';
+	}
+	if (buff[cnt]=='\n') {
+		buff[cnt]=' ';
+		while (1) {
+		  cnt++;
+		  if (cnt>=strlen(buff) || (cnt % width)==0) break;
+		  insert_character (buff, cnt, ' ');
+		}
+	}
+  }
 
 
   while (cnt < strlen (buff))
@@ -288,7 +300,7 @@ A4GL_wordwrap_text (char *in, char *out, int width, int maxsize)
       int have_blanked = 0;
       if (buff[cnt - 1] == ' ' || buff[cnt] == ' ')
 	{
-	  cnt += width;
+	  	cnt += width;
 		continue;
 	}
       // Need to pad out...
