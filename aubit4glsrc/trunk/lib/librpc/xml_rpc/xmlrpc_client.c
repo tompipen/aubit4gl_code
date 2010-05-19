@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: xmlrpc_client.c,v 1.15 2009-02-23 17:31:50 mikeaubury Exp $
+# $Id: xmlrpc_client.c,v 1.16 2010-05-19 17:46:05 mikeaubury Exp $
 #*/
 
 
@@ -109,7 +109,7 @@ die_if_fault_occurred (xmlrpc_env * env, int line)
  * @todo Describe function
  */
 int
-A4GLRPC_initlib (void) {
+A4GLRPC_RPC_initlib (void) {
   xmlrpc_client_init (XMLRPC_CLIENT_NO_FLAGS, NAME, VERSION);
   xmlrpc_env_init (&env);
   die_if_fault_occurred (&env);
@@ -362,10 +362,10 @@ A4GLRPC_A4GL_remote_func_call (char *host, int async, char *func, int port, int 
 {
   int a;
   char buff[64];
-
 /* Port is unused in XMLRPC */
 
   A4GL_set_status (0, 0);
+func="evatrRPC";
 
   if (async)
     {
@@ -379,6 +379,7 @@ A4GLRPC_A4GL_remote_func_call (char *host, int async, char *func, int port, int 
 
   A4GL_debug ("Calling host %s function %s on port %ld with %d entries", host, buff,
 	 port, np);
+printf("%s buff=%s np=%d\n", host,buff,np);
   a = A4GL_fgl_rpc_1 (host, buff, np);
   return a;
 }
