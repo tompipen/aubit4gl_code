@@ -250,8 +250,8 @@ namespace AubitDesktop
             
 
             //displayArrayGrid.Rows.Clear();
-           
-            
+
+            displayArrayGrid.allowInsertRow = false;
 
             for (int row = 0; row < p.ROWS.Length; row++)
             {
