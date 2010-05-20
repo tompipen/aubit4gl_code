@@ -1412,6 +1412,7 @@ void WidgetHelper::setFieldText(QObject *object, QString fieldValue)
 {
 
    if(Label *widget = qobject_cast<Label *> (object)){
+      fieldValue = Fgl::fgl_convert_money(fieldValue);
       if(widget->pixmap() == 0){
          widget->setText(fieldValue);
       }
@@ -1440,6 +1441,9 @@ void WidgetHelper::setFieldText(QObject *object, QString fieldValue)
       if(!widget->format().isEmpty()){
          fieldValue = Fgl::usingFunc(widget->format(), fieldValue, widget->dataType());
       }
+      else{
+         fieldValue = Fgl::fgl_convert_money(fieldValue);
+      }
 
       if(fieldValue.trimmed() != widget->text())
          widget->setText(fieldValue.trimmed());
@@ -1447,6 +1451,7 @@ void WidgetHelper::setFieldText(QObject *object, QString fieldValue)
    }
 
    if(TextEdit *widget = qobject_cast<TextEdit *> (object)){
+      fieldValue = Fgl::fgl_convert_money(fieldValue);
       if(fieldValue.trimmed() != widget->toPlainText())
          widget->setPlainText(fieldValue.trimmed());
       return;
