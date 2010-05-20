@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.171 2010-02-16 13:16:38 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.172 2010-05-20 18:00:57 mikeaubury Exp $
 #
 */
 
@@ -4395,19 +4395,36 @@ void
 A4GL_free_select_stmt (struct s_select *s)
 {
   int a;
+#ifdef DEBUG
+A4GL_debug("A4GL_free_select_stmt");
+#endif
   if (s->table_elements.tables.tables_len)
     {
       for (a = 0; a < s->table_elements.tables.tables_len; a++)
 	{
-	  if (s->table_elements.tables.tables_val[a].tabname)
+	  if (s->table_elements.tables.tables_val[a].tabname) {
+#ifdef DEBUG
+		A4GL_debug("Free tabname");
+#endif
 	    free (s->table_elements.tables.tables_val[a].tabname);
-	  if (s->table_elements.tables.tables_val[a].alias)
+	}
+	  if (s->table_elements.tables.tables_val[a].alias) {
+#ifdef DEBUG
+		A4GL_debug("Free alias");
+#endif
 	    free (s->table_elements.tables.tables_val[a].alias);
 	}
+	}
     }
+#ifdef DEBUG
+A4GL_debug("Free tables_val");
+#endif
   free (s->table_elements.tables.tables_val);
   s->table_elements.tables.tables_len = 0;
   s->table_elements.tables.tables_val = 0;
+#ifdef DEBUG
+A4GL_debug("All done");
+#endif
 }
 
 
