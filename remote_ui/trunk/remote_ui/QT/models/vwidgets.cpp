@@ -1437,6 +1437,10 @@ void WidgetHelper::setFieldText(QObject *object, QString fieldValue)
    if(LineEdit *widget = qobject_cast<LineEdit *> (object)){
       //widget->clear();
       //widget->insert(fieldValue);
+      if(!widget->format().isEmpty()){
+         fieldValue = Fgl::usingFunc(widget->format(), fieldValue, widget->dataType());
+      }
+
       if(fieldValue.trimmed() != widget->text())
          widget->setText(fieldValue.trimmed());
       return;
