@@ -2254,8 +2254,23 @@ A4GLSQLLIB_A4GLSQL_fetch_cursor_internal (char *cursor_name, int fetch_mode,
       break;
 
     case FETCH_RELATIVE:
+	if (fetch_when==1 && cid->currpos==cid->nrows) {
+		// Fetch next on last row...
+	      	A4GL_set_a4gl_sqlca_errd (2, 0);
+	      	A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (100);
+		return 0;
+	}
+	if (fetch_when==-1 && cid->currpos==1) {
+	      	// Fetch prev on first row...
+	      	A4GL_set_a4gl_sqlca_errd (2, 0);
+	      	A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (100);
+		return 0;
+	}
+
+
       if (fetch_when != 1)
 	{
+
 	  cid->currpos += fetch_when;
 	  mysql_stmt_data_seek (cid->statement->hstmt, cid->currpos - 1);
 	  if (cid->currpos > cid->nrows || cid->currpos < 0)
@@ -2274,8 +2289,9 @@ A4GLSQLLIB_A4GLSQL_fetch_cursor_internal (char *cursor_name, int fetch_mode,
 
  A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (0);
 
-  fetch_from_mysql_to_aubit (cid->statement->hstmt, &v_for_ptr, obind,
-			     copy_out_n);
+  fetch_from_mysql_to_aubit (cid->statement->hstmt, &v_for_ptr, obind, copy_out_n);
+
+
   A4GL_set_a4gl_sqlca_errd (2, 1);
   A4GL_free_associated_mem (&v_for_ptr);
 
