@@ -1261,6 +1261,7 @@ copy_in_single_mysql_bind (MYSQL_STMT * stmt, void *associated_to,
   double *dptr;
   unsigned long *len;
   int dtype;
+  A4GL_debug("Binding type 0x%x", ibind->dtype);
 
   if (A4GL_isnull (ibind->dtype, ibind->ptr))
     {
@@ -1433,6 +1434,9 @@ copy_in_single_mysql_bind (MYSQL_STMT * stmt, void *associated_to,
       mibind->length = 0;
       break;
 
+   default:
+	A4GL_assertion(1,"Unhandled data type");
+	break;
     }
 }
 
@@ -1451,6 +1455,7 @@ copy_from_aubit_to_mysql (MYSQL_STMT * stmt, void *associated_to,
 
   for (a = 0; a < ni; a++)
     {
+	A4GL_debug("Binding @ position %d of %d", a,ni);
       copy_in_single_mysql_bind (stmt, associated_to, &ibind[a],
 				 &mysql_ibind[a], &indicators[a]);
     }
