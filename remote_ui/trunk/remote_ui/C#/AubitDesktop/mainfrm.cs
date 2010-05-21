@@ -603,8 +603,7 @@ namespace AubitDesktop
 
         private void mainfrm_Resize(object sender, EventArgs e)
         {
-            if (FormWindowState.Minimized == WindowState)
-                Hide();
+          //  if (FormWindowState.Minimized == WindowState)  Hide();
 
         }
 
