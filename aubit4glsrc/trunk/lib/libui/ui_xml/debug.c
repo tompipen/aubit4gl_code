@@ -5,6 +5,7 @@
 #include <time.h>
 #include <string.h>
 #include <sys/time.h>
+#include <stdlib.h>
 
 #include "debug.h"
 
@@ -47,7 +48,20 @@ FILE *dbgfile;
 char buff[200000];
 int a;
 
-if (lvl>99) return;
+int dbglvl=-1;
+
+if (dbglvl==-1) {
+	char *ptr;
+	ptr=getenv("PROXYDBGLVL");
+	if (ptr) {
+		if (strlen(ptr)) {
+			dbglvl=atol(ptr);
+		}
+	}
+}
+
+if (lvl>dbglvl) return;
+
   va_start (args, s);
   vsprintf (buff, s, args);
   for (a=0;a<strlen(buff)-2;a++)  {

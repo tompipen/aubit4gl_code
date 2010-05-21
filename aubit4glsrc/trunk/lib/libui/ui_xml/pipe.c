@@ -50,6 +50,26 @@ void set_envelope_mode() {
 
 int cantflush=0;
 
+
+static int logproxy(void) {
+static int lp=-1;
+
+if (lp==-1) {
+        char *ptr;
+        ptr=getenv("LOGPROXY");
+        if (ptr) {
+		lp=0;
+		if (strcmp(ptr,"Y")==0) lp=1;
+		if (strcmp(ptr,"y")==0) lp=1;
+		if (strcmp(ptr,"1")==0) lp=1;
+        }
+}
+
+return lp;
+}
+
+
+
 void suspend_flush(int a) {
 	UIdebug(4,"Suspend flush called with %d (%d)\n",a,cantflush);
 	cantflush+=a;
@@ -169,13 +189,19 @@ if (use_read) {
 		FPRINTF(stderr, "Partial : %s\n\n\n\n", str);
   		UIdebug (4,"pipe_gets returning \n<<<%s>>>\n", str);
 
-	      	flog = fopen ("logproxy.in", "a"); if (flog) { fprintf(flog,"%s\n",str);  fclose (flog); }
+		if (logproxy())  {
+	      		flog = fopen ("logproxy.in", "a"); if (flog) { fprintf(flog,"%s\n",str);  fclose (flog); }
+		}
+
+
 		return 1;
 	}
     }
   if (count > 0)
     current_position[0] = 0;
-	      	flog = fopen ("logproxy.in", "a"); if (flog) { fprintf(flog,"%s\n",str);  fclose (flog);}
+		if (logproxy())  {
+	      		flog = fopen ("logproxy.in", "a"); if (flog) { fprintf(flog,"%s\n",str);  fclose (flog);}
+		}
   UIdebug (4,"pipe_gets returning \n<<<%s>>>\n", str);
   return 1;
 }
@@ -233,11 +259,13 @@ if (use_read) {
 	  if (bytes_read > 0)
 	    {
 	      FILE *flog;
-	      flog = fopen ("logproxy.in", "a");
-	      if (flog)
-		{
-		  fwrite (borig, bytes_read, 1, flog);
-	      fclose (flog);
+		if (logproxy())  {
+	      		flog = fopen ("logproxy.in", "a");
+	      		if (flog)
+				{
+		  		fwrite (borig, bytes_read, 1, flog);
+	      			fclose (flog);
+				}
 		}
 	    }
 	  return bytes_read;
@@ -277,10 +305,12 @@ pipe_sock_write (int sockfd, char *buf, size_t count)
 	{
 	errno=0;
 	if (1) { // LOG ...
-		flog=fopen("logproxy.out","a");
-		if (flog) {
-			fwrite(buf,count - bytes_sent,1,flog);
-			fclose(flog);
+		if (logproxy())  {
+			flog=fopen("logproxy.out","a");
+			if (flog) {
+				fwrite(buf,count - bytes_sent,1,flog);
+				fclose(flog);
+			}
 		}
 	}
 

@@ -323,7 +323,7 @@ sigterm_handler (int s)
     }
 
   remove_pipes ();
-  UIdebug (0, "PROGRAM QUITING\n");
+  UIdebug (1, "PROGRAM QUITING\n");
   exit (0);
 }
 
@@ -344,7 +344,7 @@ sigintr_handler (int s)
       close (localsocket_in);	// This will close 'in' - only if its not the same as 'out'
     }
   remove_pipes ();
-  UIdebug (0, "MAIN PROGRAM QUITING\n");
+  UIdebug (1, "MAIN PROGRAM QUITING\n");
   exit (0);
 }
 
@@ -711,9 +711,9 @@ maintain_socket (int newfd_orig)
 	  // but we'll not close it if its STDIN or STDOUT
 	}
 
-      UIdebug (0, "Before exec...");
+      UIdebug (1, "Before exec...");
       execv (prg, argv);
-      UIdebug (0, "Failed to start : %s - %d\n", prg, errno);
+      UIdebug (1, "Failed to start : %s - %d\n", prg, errno);
 
       pipe_sock_puts (newfd_write, "FAILED TO START\n");
       pipe_flush (newfd_write);

@@ -315,13 +315,13 @@ if (needyourid) {
 //printf("Get event from ui\n");
   // The first thing we should get back is actually from the
   // proxy should should be a yourId...
-  UIdebug (0, "Waiting for TRIGGERED to set YOURID");
+  UIdebug (1, "Waiting for TRIGGERED to set YOURID");
   a=get_event_from_ui();
   if (a!=ID_SETYOURID) {
 		printf("Expecting trigger to be ID_SETYOURID (SETYOURID) - but got %d -exiting\n",a);
 		exit(2);
 	}
-  UIdebug (0, "Got TRIGGERED setting YOURID...");
+  UIdebug (1, "Got TRIGGERED setting YOURID...");
 }
 //printf("Got event from ui");
   return 1;
