@@ -164,6 +164,21 @@ namespace AubitDesktop
 
             }
 
+            if (remoteEncoding == null)
+            {
+                // Dang - still not loaded...
+                Program.AppSettings.defaultEncoding = "iso-8859-1";
+                Program.SaveSettings();
+                
+                    System.Text.ASCIIEncoding.GetEncoding(Program.AppSettings.defaultEncoding);
+            }
+
+
+            if (remoteEncoding == null)
+            {
+                MessageBox.Show("Unable to load encoding : " + Program.AppSettings.defaultEncoding+"\n"+"Program will not function correctly until the encoding has been set correctly");
+            }
+
 
             
             frmMain = new mainfrm(AllowEdit, Autorun, port, minimised,ListenMode);
