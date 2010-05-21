@@ -603,6 +603,7 @@ A4GLSQLLIB_A4GLSQL_init_connection_internal (char *dbName)
 	  (conn, acl_getenv ("MYSQL_SERVER"), u, p, NULL, 0, NULL, 0))
 	{
 	  strcpy (last_err, (char *) mysql_error (conn));
+		A4GL_debug("Error : %s",last_err);
 	  A4GL_set_errm (dbname);
 	  strcpy (sqlerrm, dbname);
 	  A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (-1);
@@ -620,6 +621,7 @@ A4GLSQLLIB_A4GLSQL_init_connection_internal (char *dbName)
 	  (conn, acl_getenv ("MYSQL_SERVER"), u, p, dbname, 0, NULL, 0))
 	{
 	  strcpy (last_err, (char *) mysql_error (conn));
+		A4GL_debug("Error : %s",last_err);
 	  A4GL_set_errm (dbname);
 	  strcpy (sqlerrm, dbname);
 	  A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (-1);
