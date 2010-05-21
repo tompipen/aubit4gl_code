@@ -21,8 +21,8 @@ int truncated = 0;
 
 #define PHASE_PRE_FETCH 0
 #define PHASE_POST_FETCH 1
-#define STMT_CANT_PREPARE -1
-#define STMT_DATABASE -2
+#define STMT_CANT_PREPARE (void *)-1
+#define STMT_DATABASE (void *)-2
 static MYSQL *conn = NULL;
 int isconnected = 0;
 static char curr_dbname[256] = "";
@@ -2015,15 +2015,15 @@ A4GLSQLLIB_A4GLSQL_execute_implicit_sql (void *vsid, int singleton,int ni,void *
 #endif
 
   if (ni) { 
-  nibind = ni;
-  ibind = binding;
+  	nibind = ni;
+  	ibind = binding;
   } else {
 	nibind=sid->ni;
 	ibind=sid->ibind;
   }
 
 
-  A4GL_debug ("Execute : %s\n", sid->select);
+  A4GL_debug ("Execute : %s with %d parameters\n", sid->select, nibind);
 
   if (sid->hstmt == 0)
     {
