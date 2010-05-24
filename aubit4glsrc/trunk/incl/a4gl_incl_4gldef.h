@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_incl_4gldef.h,v 1.133 2010-01-21 18:19:47 mikeaubury Exp $
+# $Id: a4gl_incl_4gldef.h,v 1.134 2010-05-24 10:06:13 mikeaubury Exp $
 */
 
 /**
@@ -339,7 +339,7 @@ int a_isprint(int a);
   int acli_scroll (void *s, int n,int m);
   void aclfgl_key_callback(void *p, int Keycode);
   void acli_datetime (char *s, int n);
-
+void A4GL_set_program_timeout(long n);
 
   int aclfgl_err_get (int statusnumber);	/* CHECK */
   int aclfgl_err_print (int statusnumber);	/* THESE SHOULD BE PASSED */
@@ -482,6 +482,7 @@ int A4GL_check_version(char *module, char *version, int build );
 
   int aclfgl_load_datatype (int nargs);
 void A4GL_set_report_dim(int with_page_length,int with_left_margin,int with_right_margin,int with_top_margin,int with_bottom_margin,char *with_top_of_page);
+
 
 int A4GL_set_report_dim_int(char *type,int value);
 

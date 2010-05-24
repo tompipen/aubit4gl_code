@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.168 2010-02-16 13:17:11 mikeaubury Exp $
+# $Id: curslib.c,v 1.169 2010-05-24 10:05:23 mikeaubury Exp $
 #*/
 
 /**
@@ -41,7 +41,7 @@
  */
 #ifndef lint
 static char const module_id[] =
-  "$Id: curslib.c,v 1.168 2010-02-16 13:17:11 mikeaubury Exp $";
+  "$Id: curslib.c,v 1.169 2010-05-24 10:05:23 mikeaubury Exp $";
 #endif
 /*
 =====================================================================
@@ -966,15 +966,15 @@ UILIB_A4GL_menu_loop_v2 (void *menuv, void *vevt)
 
       while (1)
 	{
-	  if (menu->evt)
-	    {
+	  //if (menu->evt)
+	    //{
 	      int blk;
 	      blk = A4GL_has_evt_timeout (menu->evt);
 	      if (blk)
 		{
 		  return blk - 1;	// menu options are numbered from 0
 		}
-	    }
+	    //}
 
 	  a = A4GL_menu_getkey (menu);
 		if (a==3006) abort_pressed++;
@@ -988,10 +988,10 @@ UILIB_A4GL_menu_loop_v2 (void *menuv, void *vevt)
 	}
 
 
-      if (menu->evt)
-	{
+      //if (menu->evt)
+	//{
 	  A4GL_evt_not_idle (menu->evt);
-	}
+	//}
 
 
 #ifdef DEBUG

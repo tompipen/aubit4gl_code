@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ui.c,v 1.96 2010-02-16 13:16:42 mikeaubury Exp $
+# $Id: ui.c,v 1.97 2010-05-24 10:06:13 mikeaubury Exp $
 #
 */
 
@@ -109,8 +109,11 @@ struct sKeyCallbacks *KeyCallbacks = 0;
 #define UI_MODE_TEXT    0
 #define UI_MODE_GTK     1
 extern int ui_mode;
+
 int currscrmode = LINE_MODE;
 
+long master_timer=0;
+long program_timeout=-1;
 
 void
 A4GL_set_scrmode (char a)
@@ -1253,6 +1256,10 @@ A4GL_add_dot_star (char *s)
 
 
 
+void A4GL_set_program_timeout(long n) {
+	program_timeout=n;
+}
+
 void
 A4GL_clr_evt_timeouts (struct aclfgl_event_list *evt)
 {
@@ -1285,7 +1292,31 @@ A4GL_has_evt_timeout (struct aclfgl_event_list *evt)
   long now;
   long then;
   long timeout_val;
+
   now = time (0);
+
+
+
+  if (program_timeout>0) {
+  	if (master_timer==0) {
+  		master_timer=now;
+  	} else {
+		int diff;
+		diff=(now-master_timer);
+		if (diff> program_timeout) {
+			// Exit on the timer...
+			A4GL_fgl_end();
+			exit(1);
+		}	
+  	}
+  }
+
+
+
+  if (evt==0) return 0;
+
+
+ 
   for (a = 0; evt[a].event_type; a++)
     {
       if (evt[a].event_type == A4GL_EVENT_ON_IDLE)
@@ -1323,6 +1354,11 @@ A4GL_evt_not_idle (struct aclfgl_event_list *evt)
   int a;
   long now;
   now = time (0);
+  
+
+  master_timer=0;
+
+  if (evt==0) return;
   for (a = 0; evt[a].event_type; a++)
     {
       if (evt[a].event_type == A4GL_EVENT_ON_IDLE)

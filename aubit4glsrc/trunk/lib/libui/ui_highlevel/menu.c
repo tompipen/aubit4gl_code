@@ -9,7 +9,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: menu.c,v 1.54 2009-07-04 18:45:54 mikeaubury Exp $";
+  "$Id: menu.c,v 1.55 2010-05-24 10:05:23 mikeaubury Exp $";
 #endif
 
 static void A4GL_h_disp_more (ACL_Menu * menu, int offset, int y, int pos);
@@ -469,20 +469,20 @@ A4GL_debug("menu_loop not type 1");
 
 
       while (1) {
-	if (menu->evt) {
+	//if (menu->evt) {
 		int blk;
 		blk=A4GL_has_evt_timeout(menu->evt);
 		if (blk) {
 				return blk-1;
 		}
-	}
+	//}
       	a = A4GL_menu_getkey (menu);
 	if (abort_pressed) a=A4GLKEY_INTERRUPT;
 	if (a) break;
       }
-      if (menu->evt) {
+      //if (menu->evt) {
 	      A4GL_evt_not_idle(menu->evt);
-      }
+      //}
       
       A4GL_debug ("menu_getkey returns %d", a);
 

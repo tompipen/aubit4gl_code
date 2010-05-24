@@ -64,6 +64,7 @@ opt_allopts 	: COMMENT_LINE line_no 		{ $<single_option>$=new_option_expr('C',$<
 		| KW_RUN option_run_mode 	{ $<single_option>$=new_option('r',$<str>2,0); map_ui("OPTIONS_RUN");}
 		| KW_PIPE option_pipe_mode 	{ $<single_option>$=new_option('|',$<str>2,0); map_ui("OPTIONS_PIPE");}
 		| ON_CLOSE_APPLICATION_STOP     { $<single_option>$=new_option('~',"1",0);map_ui("OPTIONS_ON_CLOSE_APPLICATION_STOP");}
+		| PROGRAM_TIMEOUT fgl_expr_c 	{ $<single_option>$=new_option_expr('t',$<ptr>2,0); map_ui("OPTIONS_PROGRAM_TIMEOUT");}
 ;
 
 option_run_mode :

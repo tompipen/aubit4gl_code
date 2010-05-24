@@ -1759,6 +1759,13 @@ print_options_cmd (struct_options_cmd * cmd_data)
 		printc("free(_errhook);");
 		printc("}");
 		break;
+	case 't':
+		printc("{long _timeout=0;");
+		print_expr (o->expr);
+		printc("_timeout=A4GL_pop_long();");
+		printc("A4GL_set_program_timeout(_timeout);");
+		printc("}");
+		break;
 
 	case 'C':		//COMMENT_LINE
 	case 'E':		//ERROR_LINE
