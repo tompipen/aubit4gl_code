@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: xmlrpc_client.c,v 1.16 2010-05-19 17:46:05 mikeaubury Exp $
+# $Id: xmlrpc_client.c,v 1.17 2010-05-24 12:32:31 mikeaubury Exp $
 #*/
 
 
@@ -365,7 +365,6 @@ A4GLRPC_A4GL_remote_func_call (char *host, int async, char *func, int port, int 
 /* Port is unused in XMLRPC */
 
   A4GL_set_status (0, 0);
-func="evatrRPC";
 
   if (async)
     {
