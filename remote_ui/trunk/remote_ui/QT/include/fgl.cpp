@@ -516,6 +516,37 @@ namespace Fgl {
       
       return qs_str;
    }
+
+   QString fgl_convert_money(QString value){
+
+      QString prefix;
+      QChar dec;
+      QString suffix;
+      const QString DBMONEY = env["DBMONEY"];
+      bool decFound = false;
+
+      for(int i=0;i<DBMONEY.size(); i++){
+         if(DBMONEY.at(i) == QChar('.') || DBMONEY.at(i) == QChar(',')){
+            decFound = true;
+            dec = DBMONEY.at(i);
+            continue;
+         }
+
+         if(!decFound){
+            prefix += DBMONEY.at(i);
+         }
+         else{
+            suffix += DBMONEY.at(i);
+         }
+      }
+
+      for(int a=value.length()-1; a>=0; a--){
+         if(value.at(a) == '.'){
+            value[a] = dec;
+         }
+      }
+      return value;
+   }
 /*
       QString prefix;
       QChar dec;
