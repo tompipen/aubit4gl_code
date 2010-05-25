@@ -56,9 +56,9 @@ static int lp=-1;
 
 if (lp==-1) {
         char *ptr;
+	lp=0;
         ptr=getenv("LOGPROXY");
         if (ptr) {
-		lp=0;
 		if (strcmp(ptr,"Y")==0) lp=1;
 		if (strcmp(ptr,"y")==0) lp=1;
 		if (strcmp(ptr,"1")==0) lp=1;
