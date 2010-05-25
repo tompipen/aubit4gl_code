@@ -28,12 +28,13 @@ namespace Fgl
 
       extern QHash<QString, QString> env;
       DataType decodeDataType(QString);
-      bool usingFunc(QString, QString*, DataType);
+      QString usingFunc(QString, QString, DataType);
       QDate getDate(QString);
 
-      bool fgl_using(QString, QString*);
-      bool fgl_using_date(QString, QString*);
-      bool fgl_using_string(QString, QString*, bool);
+      QString fgl_using(QString, QString);
+      QString fgl_using_date(QString, QString);
+      QString fgl_using_string(QString, QString, bool);
+      QString fgl_convert_money(QString);
 
       QString dbDateToFormat(QString);
       bool isValidForType(DataType, QString, QString);
