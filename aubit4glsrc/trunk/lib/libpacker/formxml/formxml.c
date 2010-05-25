@@ -1632,7 +1632,19 @@ max_scr=getNumberOfScreens(f);
 A4GL_assertion(max_scr<0,"No screens");
 
 for (scr=1; scr<=max_scr;scr++) {
-	dump_screen(f,scr,SCRMODE_SCREEN,"");
+	char *name;
+	char buff[200];
+	// By default -we stick "Screen #" as the name
+	// so we dont want to send this unless it been changed..
+	sprintf(buff,"Screen %d", scr-1);
+	name=f->snames.snames_val[scr-1].name;
+
+	if (strcmp(name,buff)==0) {
+		dump_screen(f,scr,SCRMODE_SCREEN,"");
+	} else {
+		sprintf(buff,"title=\"%s\"", name);
+		dump_screen(f,scr,SCRMODE_SCREEN,buff);
+	}
 }
 }
 
