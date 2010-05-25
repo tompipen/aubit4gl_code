@@ -1370,7 +1370,7 @@ namespace AubitDesktop
                 case "FIELD_INCL_MSG": s = " This value is not among the valid possibilities "; break;
                 case "FIELD_REQD_MSG": s = " This field required an entered value "; break;
                 case "FIELD_PICTURE_MSG": s = " You cannot use this editing feature because a picture exists "; break;
-                
+                case "FIELD_CONSTR_EXPR": s = " Error in expression "; break; 
                 case "INPARRAY_FULL_MSG": s = " Cannot insert another row - the input array is full "; break;
 
             }

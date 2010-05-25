@@ -66,6 +66,13 @@ namespace AubitDesktop
 
 
         /// <summary>
+        /// Name used by the current CONSTRUCT statement for the column to generate the data for
+        /// This will be "table.column" or ".column"
+        /// </summary>
+        internal string constructName;
+
+
+        /// <summary>
         /// fakeKeyId is set by a KEY=.. in the config - or as part of the definition for a combobox..
         /// </summary>
         internal int fakeKeyId
@@ -760,7 +767,18 @@ namespace AubitDesktop
             bool ign = false;
 
 
+            if (this._ContextType == FGLContextType.ContextConstruct)
+            {
 
+                if (FGLConstruct.getConstructString(constructName, Text, this.datatype, this.datatype_length) == null)
+                {
+                    this.fieldValidationFailed(this, "FIELD_CONSTR_EXPR", out ign);
+                }
+                if (!ign)
+                {
+                    return false;
+                }
+            }
 
             if (this._ContextType == FGLContextType.ContextInput || this._ContextType == FGLContextType.ContextInputArray)
             {
@@ -782,7 +800,7 @@ namespace AubitDesktop
                 }
                 #endregion
                 #region Datatype Check
-                if (!FGLUtils.IsValidForType(this.datatype, Text, this.format))
+                if (!FGLUtils.IsValidForType(this.datatype, Text, this.format,this.datatype_length))
                 {
                     if (this.fieldValidationFailed != null)
                     {

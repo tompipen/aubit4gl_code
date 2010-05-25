@@ -1113,11 +1113,11 @@ namespace AubitDesktop
 
         public FGLForm(XMLFORM f)
         {
-	bool forceSize=false;
+            bool forceSize = false;
             fields = new List<FGLWidget>();
 
-            pixelHeight=0;
-            pixelWidth=0;
+            pixelHeight = 0;
+            pixelWidth = 0;
 
             AubitDesktop.Xml.XMLForm.Form theForm;
             System.Type t;
@@ -1142,7 +1142,7 @@ namespace AubitDesktop
             data = Program.remoteEncoding.GetString(Convert.FromBase64String(f.Text));
 
             TextReader txtr = new StringReader(data);
-          
+
             try
             {
                 theForm = (AubitDesktop.Xml.XMLForm.Form)ser.Deserialize(txtr);
@@ -1162,42 +1162,130 @@ namespace AubitDesktop
                 this.maxline = -1;
             }
 
-		forceSize=false;
+            forceSize = false;
             tooltips = new ToolTip();
             tooltips.ShowAlways = true;
 
             fields = new List<FGLWidget>();
             thisFormsPanel = new Panel();
 
-		//WEBGUI thisFormsPanel.Left=5; 
-		//WEBGUI thisFormsPanel.Top=5;
+            //WEBGUI thisFormsPanel.Left=5; 
+            //WEBGUI thisFormsPanel.Top=5;
 
-	    if (theForm.pixelHeight!="" && theForm.pixelHeight!=null) {
-			forceSize=true;
-			thisFormsPanel.Height=Convert.ToInt32(theForm.pixelHeight);
-			pixelHeight=thisFormsPanel.Height;
-	    }
-	    if (theForm.pixelWidth!="" && theForm.pixelWidth!=null) {
-			forceSize=true;
-			thisFormsPanel.Width=Convert.ToInt32(theForm.pixelWidth);
-			pixelWidth=thisFormsPanel.Width;
-	    }
-            thisFormsPanel.SuspendLayout(); 
+            if (theForm.pixelHeight != "" && theForm.pixelHeight != null)
+            {
+                forceSize = true;
+                thisFormsPanel.Height = Convert.ToInt32(theForm.pixelHeight);
+                pixelHeight = thisFormsPanel.Height;
+            }
+            if (theForm.pixelWidth != "" && theForm.pixelWidth != null)
+            {
+                forceSize = true;
+                thisFormsPanel.Width = Convert.ToInt32(theForm.pixelWidth);
+                pixelWidth = thisFormsPanel.Width;
+            }
+            thisFormsPanel.SuspendLayout();
             thisFormsPanel.Name = "FormPanel" + f.NAME;
             thisFormsPanel.Visible = true;
-            
-           // thisFormsPanel.BorderStyle = BorderStyle.FixedSingle;
-           if (!forceSize) {
-            thisFormsPanel.Dock = DockStyle.Fill;
-		}
+
+            // thisFormsPanel.BorderStyle = BorderStyle.FixedSingle;
+            if (!forceSize)
+            {
+                thisFormsPanel.Dock = DockStyle.Fill;
+            }
+
             thisFormsPanel.BackColor = SystemColors.Control;
             ScreenRecords = new List<FGLScreenRecord>();
+            int topLevelForms = 0;
+            foreach (object o in theForm.XmlFormItems)
+            {
+                if (o.GetType().ToString() == "AubitDesktop.Xml.XMLForm.Screen")
+                {
+                    topLevelForms++;
+                }
+            }
+
+            if (topLevelForms > 1 && false)
+            {
+                // Experimental.....
+                int a = 0;
+      
+                bool addedPage = false;
+                object[] newLayout;
+                AubitDesktop.Xml.XMLForm.Page[] pages = null;
+                pages = new AubitDesktop.Xml.XMLForm.Page[topLevelForms];
+
+
+                // We've got lots of 'SCREENS' - lets put them into separate tabs..
+                // To do this we'll remove all the screens and create instead : 
+                // An array of Pages, Each page will contain a grid, each grid has its 'items' set to those of the Screen
+                newLayout = new object[theForm.XmlFormItems.Length - topLevelForms + 1];
+
+
+                foreach (object o in theForm.XmlFormItems)
+                {
+                    int screenNo = 0;
+                    // We've found a screen...
+                    if (o.GetType().ToString() == "AubitDesktop.Xml.XMLForm.Screen")
+                    {
+                        // When we hit our first screen - we want to scan for all the screens and add them all to 
+                        // a new 'folder'...
+
+                        if (addedPage) continue;
+
+
+
+                        newLayout[a++] = pages;
+                        addedPage = true;
+
+                        AubitDesktop.Xml.XMLForm.Screen scr;
+
+
+
+                        foreach (object o2 in theForm.XmlFormItems)
+                        {
+
+                            if (o2.GetType().ToString() == "AubitDesktop.Xml.XMLForm.Screen")
+                            {
+                                AubitDesktop.Xml.XMLForm.Page p;
+                                AubitDesktop.Xml.XMLForm.Grid g;
+
+                                scr = (AubitDesktop.Xml.XMLForm.Screen)o2;
+
+                                p = new AubitDesktop.Xml.XMLForm.Page();
+                                g = new AubitDesktop.Xml.XMLForm.Grid();
+                                g.autoSize = 1;
+                                g.Items = scr.Items;
+                                p.Items = new object[1];
+                                p.Items[0] = g;
+
+                                if (scr.title != null || scr.title != "")
+                                {
+                                    p.text = scr.title;
+                                }
+                                else
+                                {
+                                    p.text = "Page " + (screenNo + 1);
+                                }
+                                pages[screenNo++] = p;
+                            }
+                        }
+
+                    }
+                    else
+                    {
+                        newLayout[a++] = o;
+                    }
+                }
+                theForm.XmlFormItems = newLayout;
+            }
+
             foreach (object o in theForm.XmlFormItems)
             {
                 string type;
 
-                type=o.GetType().ToString();
-                switch (type) 
+                type = o.GetType().ToString();
+                switch (type)
                 {
                     case "AubitDesktop.Xml.XMLForm.RecordView":
                         {
@@ -1221,7 +1309,7 @@ namespace AubitDesktop
                     case "AubitDesktop.Xml.XMLForm.Page[]": /* Really a Folder... */
                     case "AubitDesktop.Xml.XMLForm.Page":
                     case "AubitDesktop.Xml.XMLForm.Screen":
-                        addLayoutToParentForXmlForm( thisFormsPanel, o);
+                        addLayoutToParentForXmlForm(thisFormsPanel, o);
                         break;
 
 
@@ -1233,11 +1321,12 @@ namespace AubitDesktop
             }
 
 
-	if (!forceSize) {
+            if (!forceSize)
+            {
                 thisFormsPanel.AutoSize = true;
-	}
-                thisFormsPanel.ResumeLayout();
-                this.thisFormsPanel.LocationChanged += new EventHandler(thisFormsPanel_LocationChanged);
+            }
+            thisFormsPanel.ResumeLayout();
+            this.thisFormsPanel.LocationChanged += new EventHandler(thisFormsPanel_LocationChanged);
         }
 
         void thisFormsPanel_LocationChanged(object sender, EventArgs e)

@@ -101,6 +101,7 @@
     <Compile Include="FGLApplicationPanel.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="FGLConstruct.cs" />
     <Compile Include="FglWindow.cs" />
     <Compile Include="FormattedGridView.cs">
       <SubType>Component</SubType>

@@ -26,6 +26,8 @@ using System.Text;
 using System.IO;
 using System.Xml.Serialization;
 using System.Xml;
+using System.Globalization;
+
 
 namespace AubitDesktop
 {
@@ -1351,8 +1353,125 @@ namespace AubitDesktop
 
         };
 
+        static public string formatForDatetime(int from, int to)
+        {
+            switch (from) {
+                case 1: // YEAR ...
+                    return formatForDatetimeFromYear(to);
+                case 2: // MONTH ...
+                    return formatForDatetimeFromMonth(to);
+                case 3: // DAY
+                    return formatForDatetimeFromDay(to);
+                case 4: // HOUR
+                    return formatForDatetimeFromHour(to);
+                case 5: // MINUTE
+                    return formatForDatetimeFromMinute(to);
+                case 6: // SECOND
+                    return formatForDatetimeFromSecond(to);
+            }
+            return "";
+            
+        }
 
-        static public bool IsValidForType(FGLDataTypes datatype, string value, string format)
+        private static string formatForDatetimeFromSecond(int to)
+        {
+            return "s.f";
+        }
+
+        private static string formatForDatetimeFromMinute(int to)
+        {
+            switch (to)
+            {
+                case 5:
+                    return "m";
+                case 6:
+                    return "m s.f";
+            }
+
+            throw new ApplicationException("Invalid Datetime qualifier");
+        }
+
+        private static string formatForDatetimeFromHour(int to)
+        {
+            switch (to)
+            {
+                case 4:
+                    return "hh";
+                case 5:
+                    return "hh:mm";
+                case 6:
+                    return "hh:mm:ss.f";
+            }
+
+            throw new ApplicationException("Invalid Datetime qualifier");
+            
+        }
+
+        private static string formatForDatetimeFromDay(int to)
+        {
+            switch (to)
+            {
+                case 3:
+                    return "dd";
+                case 4:
+                    return "dd hh";
+                case 5:
+                    return "dd hh:mm";
+                case 6:
+                    return "dd hh:mm:ss.f";
+            }
+
+            throw new ApplicationException("Invalid Datetime qualifier");
+            
+        }
+
+        private static string formatForDatetimeFromMonth(int to)
+        {
+            switch (to)
+            {
+
+                case 2:
+                    return "MM";
+                case 3:
+                    return "MM-dd";
+                case 4:
+                    return "MM-dd hh";
+                case 5:
+                    return "MM-dd hh:mm";
+                case 6:
+                    return "MM-dd hh:mm:ss.f";
+            }
+
+            throw new ApplicationException("Invalid Datetime qualifier");
+            
+        }
+
+        private static string formatForDatetimeFromYear(int to)
+        {
+            switch (to)
+            {
+
+                case 1:
+                    return "yyyy";
+                case 2:
+                    return "yyyy-MM";
+                case 3:
+                    return "yyyy-MM-dd";
+                case 4:
+                    return "yyyy-MM-dd hh";
+                case 5:
+                    return "yyyy-MM-dd hh:mm";
+                case 6:
+                    return "yyyy-MM-dd hh:mm:ss.f";
+            }
+
+            throw new ApplicationException("Invalid Datetime qualifier");
+        }
+
+
+
+
+        static public bool IsValidForType(FGLDataTypes datatype, string value, string format,int dtypeLength)
         {
             if (value == null) return true;
             if (value.Trim() == "") return true;
@@ -1370,9 +1489,16 @@ namespace AubitDesktop
 
 
                 case FGLDataTypes.DTYPE_INTERVAL:
-                case FGLDataTypes.DTYPE_DTIME:
                     return true;
+                case FGLDataTypes.DTYPE_DTIME:
+                    {
+                        DateTime dt;
+                 
+                        DateTime.TryParseExact(value, formatForDatetime(dtypeLength >> 4, dtypeLength & 15),  null,
 
+                           DateTimeStyles.None,out dt);
+                        return true;
+                    }
 
                 case FGLDataTypes.DTYPE_DECIMAL:
                 case FGLDataTypes.DTYPE_FLOAT:

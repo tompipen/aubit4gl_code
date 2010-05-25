@@ -54,6 +54,9 @@ namespace AubitDesktop
         private List<BEFORE_FIELD_EVENT> beforeFieldList;
         private List<AFTER_FIELD_EVENT> afterFieldList;
         private List<ON_ACTION_EVENT> onActionList;
+        private COLUMN []constructColumnList ;
+
+
         List<string> PendingEvents;
 
 
@@ -86,6 +89,11 @@ namespace AubitDesktop
 
         public bool externallyTriggeredID(string ID)
         {
+            switch (ID)
+            {
+                case "ACCEPT": toolBarAcceptClicked(); return true;
+                // INTERRUPT can pass through - we dont mind ;-)
+            }
             sendTrigger(ID);
             return true;
         }
@@ -104,6 +112,7 @@ namespace AubitDesktop
             PendingEvents = new List<string>();
             isBeforeInput = true;
 
+           
             foreach (object evt in c.EVENTS)
             {
                 if (evt is ONKEY_EVENT)
@@ -171,6 +180,16 @@ namespace AubitDesktop
             mainWin = f;
 
             activeFields = f.FindFields(c.FIELDLIST);
+            if (activeFields.Count != c.COLUMNS.Length)
+            {
+                Program.Show("Field count mismatch in CONSTRUCT");
+                Application.Exit();
+                constructColumnList = null;
+            }
+            else
+            {
+                constructColumnList = c.COLUMNS;
+            }
             foreach (FGLFoundField fld in activeFields)
             {
                 fld.fglField.Text = "";
@@ -221,7 +240,22 @@ namespace AubitDesktop
 
         private bool fieldsAreAllOk()
         {
+            System.ComponentModel.CancelEventArgs ce;
+            ce = new System.ComponentModel.CancelEventArgs();
+            ce.Cancel = false;
+            foreach (FGLFoundField f in activeFields)
+            {
+                f.fglField.t_Validating(f, ce);
+                if (ce.Cancel)
+                {
+                    CurrentField = f;
+
+                    CurrentField.fglField.setFocus();
+                    return false;
+                }
+            }
             return true;
+      
         }
 
 
@@ -414,12 +448,17 @@ namespace AubitDesktop
 
 
 
-
+            int fieldCnt = 0;
             foreach (FGLFoundField f in activeFields)
             {
+                
                 f.fglField.fieldValidationFailed = inputFieldValidationHandler;
                 f.fglField.onGotFocus = inputGotFocus;
                 f.fglField.onUIEvent = onActionTriggered;
+                if (constructColumnList!=null) {
+                    f.fglField.constructName = constructColumnList[fieldCnt++].NAME;
+                }
+
             }
 
 

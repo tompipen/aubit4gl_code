@@ -694,7 +694,7 @@ namespace AubitDesktop
                 }
                 #endregion
                 #region Datatype Check
-                if (!FGLUtils.IsValidForType(w.datatype, Text, w.format))
+                if (!FGLUtils.IsValidForType(w.datatype, Text, w.format,w.datatype_length))
                 {
                     if (fieldValidationFailed != null)
                     {

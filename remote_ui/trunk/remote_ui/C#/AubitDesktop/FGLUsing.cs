@@ -651,6 +651,10 @@ namespace AubitDesktop
         }
 
 
+        
+
+
+
         private static string a4gl_using(string fmt, string value)
         {
             decimal d;

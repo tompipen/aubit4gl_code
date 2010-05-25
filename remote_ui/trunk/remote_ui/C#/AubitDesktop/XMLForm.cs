@@ -156,6 +156,8 @@ namespace AubitDesktop.Xml.XMLForm
         public class Page
         {
 
+
+
             /// <remarks/>
             [System.Xml.Serialization.XmlAttributeAttribute()]
             public string text;
@@ -1364,6 +1366,10 @@ namespace AubitDesktop.Xml.XMLForm
             /// <remarks/>
             [System.Xml.Serialization.XmlAttributeAttribute()]
             public string width;
+
+            /// <remarks/>
+            [System.Xml.Serialization.XmlAttributeAttribute()]
+            public string title;
 
             /// <remarks/>
             [System.Xml.Serialization.XmlElementAttribute("FormField", Type = typeof(FormField))]
