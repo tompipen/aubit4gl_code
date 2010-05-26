@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formwrite2.c,v 1.54 2009-12-15 14:38:07 mikeaubury Exp $
+# $Id: formwrite2.c,v 1.55 2010-05-26 16:25:43 mikeaubury Exp $
 #*/
 
 /**
@@ -468,6 +468,19 @@ new_metric (int x, int y, int wid, int scr, int delim, char *label)
 
   the_form.metrics.metrics_val[the_form.metrics.metrics_len - 1].w = wid;
   the_form.metrics.metrics_val[the_form.metrics.metrics_len - 1].scr = scr;
+
+  if (A4GL_isyes(acl_getenv("SINGLEFORM")) && scr>1) {
+        int doit=0;
+        if (label==0) doit=1;
+        else {
+                if (strlen(label)==0) {
+                        doit=1;
+                }
+        }
+        if (doit) {
+                the_form.metrics.metrics_val[the_form.metrics.metrics_len - 1].scr = 1;
+        }
+  }
   the_form.metrics.metrics_val[the_form.metrics.metrics_len - 1].delim_code =
     delim;
   the_form.metrics.metrics_val[the_form.metrics.metrics_len - 1].label =

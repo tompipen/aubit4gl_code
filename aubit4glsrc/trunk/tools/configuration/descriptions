@@ -945,6 +945,12 @@ HASHNOCOMMENT UNKNOWN UNKNOWN
 HIDEEMPTYBUTTONS UNKNOWN UNKNOWN
 KEEPNLONREAD UNKNOWN UNKNOWN
 BINDDATEASINT UNKNOWN UNKNOWN
+SINGLEFORM FCOMPILE Use 'single form mode' when compiling
+=YES|NO
+	This option emulates the behaviour of Informix4GL in just overlaying multiple screens
+	over each other. (Normally Aubit4GL will put separate screens on separate screens!)
+	This is needed to emulate a "feature" of Informix4GL which allows displaying of data to
+	fields on the second screen to overwrite the screen displayed for the first (to blank out fields for example)
 A4GL_NULLBADARGVAL RUNTIME Returns NULL instead of ' ' from ARG_VAL
 	This option returns NULL when ARG_VAL is called with an invalid parameter
 C4GLFUNCRETCOMPAT COMPILE Sets the compiler to ignore any surpluss return values

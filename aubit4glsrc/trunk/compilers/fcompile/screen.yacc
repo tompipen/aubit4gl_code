@@ -359,6 +359,8 @@ layout_attribute:
 	| KW_BORDER {
 		add_bool_layout_attrib(FA_B_BORDER);
 	}
+	| KW_PIXELHEIGHT EQUAL NUMBER_VALUE { add_str_layout_attrib(FA_S_PIXELHEIGHT,$<str>3); }
+	| KW_PIXELWIDTH EQUAL NUMBER_VALUE { add_str_layout_attrib(FA_S_PIXELWIDTH,$<str>3); }
 ;
 
 layout_attribute_list:
