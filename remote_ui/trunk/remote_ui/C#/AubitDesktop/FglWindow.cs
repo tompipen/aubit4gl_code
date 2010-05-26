@@ -323,7 +323,7 @@ namespace AubitDesktop
         {
             if (form_line != 255)
             {
-                LineHeight = f.maxline + form_line-1; /* form line is 1 based */
+                LineHeight = f.maxline + form_line - 1; /* form line is 1 based */
             }
             else
             {
@@ -334,28 +334,37 @@ namespace AubitDesktop
             if (isContainable)
             {
 
-		if (f.pixelWidth>0 && f.pixelHeight>0) {
-			 WindowWidget.Height =f.pixelHeight+5+f.thisFormsPanel.Top;
-			 WindowWidget.Width =f.pixelWidth+5+f.thisFormsPanel.Left;
-		} else {
-                if (f.maxcol >= 0 && f.maxline >= 0)
+                if (f.pixelWidth > 0 && f.pixelHeight > 0)
                 {
-                    
-			if (border) {
-                    		WindowWidget.Height = GuiLayout.get_gui_y(f.maxline+form_line) ;
-                    		WindowWidget.Width = GuiLayout.get_gui_x(f.maxcol+1) ;
-			} else {
-                    		WindowWidget.Height = GuiLayout.get_gui_y(f.maxline+form_line-1) + 20;
-                    		WindowWidget.Width = GuiLayout.get_gui_x(f.maxcol) + 20;
-			}
+                    WindowWidget.Height = f.pixelHeight + 5 + f.thisFormsPanel.Top;
+                    WindowWidget.Width = f.pixelWidth + 5 + f.thisFormsPanel.Left;
                 }
                 else
                 {
-                    WindowWidget.AutoSize = true;
+                    if (f.maxcol >= 0 && f.maxline >= 0)
+                    {
+
+                        if (border)
+                        {
+                            WindowWidget.Height = GuiLayout.get_gui_y(f.maxline + form_line);
+                            WindowWidget.Width = GuiLayout.get_gui_x(f.maxcol + 1);
+                        }
+                        else
+                        {
+                            WindowWidget.Height = GuiLayout.get_gui_y(f.maxline + form_line - 1) + 20;
+                            WindowWidget.Width = GuiLayout.get_gui_x(f.maxcol) + 20;
+                        }
+                    }
+                    else
+                    {
+
+                        WindowWidget.AutoSize = true;
+
+                    }
                 }
-		}
 
             }
+
         }
 
         public void sizeWindowToFill()

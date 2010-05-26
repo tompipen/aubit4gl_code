@@ -1948,7 +1948,7 @@ namespace AubitDesktop
                 #region OPENWINDOWWITHFORM
                 if (a is OPENWINDOWWITHFORM)
                 {
-                    FGLForm frm=null;
+                    FGLForm frm = null;
                     FGLWindow win;
                     bool border;
                     OPENWINDOWWITHFORM w;
@@ -1988,15 +1988,17 @@ namespace AubitDesktop
                         if (lines[5] == 255) lines[5] = options.FormLine;
 
                         win = new FGLWindow(w.WINDOW, Convert.ToInt32(w.X), Convert.ToInt32(w.Y),
-                            Convert.ToInt32(w.ATTRIBUTE), w.TEXT, w.STYLE, 
+                            Convert.ToInt32(w.ATTRIBUTE), w.TEXT, w.STYLE,
                             //Convert.ToInt32(w.ERROR_LINE), Convert.ToInt32(w.PROMPT_LINE), Convert.ToInt32(w.MENU_LINE), Convert.ToInt32(w.COMMENT_LINE), Convert.ToInt32(w.MESSAGE_LINE), Convert.ToInt32(w.FORM_LINE),
                              lines[0], lines[1], lines[2], lines[3], lines[4], lines[5],
                             border);
 
                         win.sizeWindow(frm, border);
+
+
                         win.setForm(frm, false);
 
-                        
+
 
                         // Our 'window' might be a proper windows forms window (with title bar etc)
                         // in which case - we dont want to add it to our windows panel - but just 
@@ -2005,12 +2007,16 @@ namespace AubitDesktop
                         {
                             this.Controls.Add(win.WindowWidget);
 
-                                if (frm.pixelHeight != 0 && frm.pixelWidth != 0)
-                                {
-                                    frmMainAppWindow.ensureSizeWindow(frm.thisFormsPanel, "");
-                                } else {
-                          		frmMainAppWindow.ensureSizeWindow(win.WindowWidget, "");
-				}
+                            if (frm.pixelHeight != 0 && frm.pixelWidth != 0)
+                            {
+                                frmMainAppWindow.ensureSizeWindow(frm.thisFormsPanel, "");
+                            }
+                            else
+                            {
+
+                                frmMainAppWindow.ensureSizeWindow(win.WindowWidget, "");
+                                win.WindowWidget.PerformLayout();
+                            }
                         }
 
                         if (win.isModal && win.WindowFormWidget != null)

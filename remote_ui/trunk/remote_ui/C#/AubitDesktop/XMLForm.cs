@@ -142,7 +142,7 @@ namespace AubitDesktop.Xml.XMLForm
             public string text;
 
             /// <remarks/>
-            [System.Xml.Serialization.XmlElementAttribute("Folder", Type = typeof(Page[]))]
+            [System.Xml.Serialization.XmlElementAttribute("Folder", Type = typeof(Folder))]
             [System.Xml.Serialization.XmlElementAttribute("Grid", Type = typeof(Grid))]
             [System.Xml.Serialization.XmlElementAttribute("RecordView", Type = typeof(RecordView))]
             [System.Xml.Serialization.XmlElementAttribute("Screen", Type = typeof(Screen))]
@@ -152,18 +152,45 @@ namespace AubitDesktop.Xml.XMLForm
             public object[] XmlFormItems;
         }
 
+
+
+
+        /// <remarks/>
+        public class Folder
+        {
+
+            /// <remarks/>
+            [System.Xml.Serialization.XmlAttributeAttribute(DataType = "int")]
+            public int pixelHeight;
+
+            /// <remarks/>
+            [System.Xml.Serialization.XmlAttributeAttribute(DataType = "int")]
+            public int pixelWidth;
+
+            /// <remarks/>
+            [System.Xml.Serialization.XmlElementAttribute("Page")]
+            public Page[] Pages;
+        }
+
+
+
         /// <remarks/>
         public class Page
         {
+            /// <remarks/>
+            [System.Xml.Serialization.XmlAttributeAttribute(DataType = "int")]
+            public int pixelHeight;
 
-
+            /// <remarks/>
+            [System.Xml.Serialization.XmlAttributeAttribute(DataType = "int")]
+            public int pixelWidth;
 
             /// <remarks/>
             [System.Xml.Serialization.XmlAttributeAttribute()]
             public string text;
 
             /// <remarks/>
-            [System.Xml.Serialization.XmlElementAttribute("Folder", Type = typeof(Page[]))]
+            [System.Xml.Serialization.XmlElementAttribute("Folder", Type = typeof(Folder))]
             [System.Xml.Serialization.XmlElementAttribute("Grid", Type = typeof(Grid))]
             [System.Xml.Serialization.XmlElementAttribute("Table", Type = typeof(Table))]
             [System.Xml.Serialization.XmlElementAttribute("Screen", Type = typeof(Screen))]
@@ -175,9 +202,17 @@ namespace AubitDesktop.Xml.XMLForm
         /// <remarks/>
         public class VBox
         {
+            /// <remarks/>
+            [System.Xml.Serialization.XmlAttributeAttribute(DataType = "int")]
+            public int pixelHeight;
+
+            /// <remarks/>
+            [System.Xml.Serialization.XmlAttributeAttribute(DataType = "int")]
+            public int pixelWidth;
+
             [System.Xml.Serialization.XmlAttributeAttribute()]
             public bool border;
-            [System.Xml.Serialization.XmlElementAttribute("Folder", Type = typeof(Page[]))]
+            [System.Xml.Serialization.XmlElementAttribute("Folder", Type = typeof(Folder))]
             [System.Xml.Serialization.XmlElementAttribute("Grid", Type = typeof(Grid))]
             [System.Xml.Serialization.XmlElementAttribute("Table", Type = typeof(Table))]
             [System.Xml.Serialization.XmlElementAttribute("Screen", Type = typeof(Screen))]
@@ -189,10 +224,19 @@ namespace AubitDesktop.Xml.XMLForm
         /// <remarks/>
         public class HBox
         {
+            /// <remarks/>
+            [System.Xml.Serialization.XmlAttributeAttribute(DataType = "int")]
+            public int pixelHeight;
+
+            /// <remarks/>
+            [System.Xml.Serialization.XmlAttributeAttribute(DataType = "int")]
+            public int pixelWidth;
+
+
             [System.Xml.Serialization.XmlAttributeAttribute()]
             public bool border;
 
-            [System.Xml.Serialization.XmlElementAttribute("Folder", Type = typeof(Page[]))]
+            [System.Xml.Serialization.XmlElementAttribute("Folder", Type = typeof(Folder))]
             [System.Xml.Serialization.XmlElementAttribute("Grid", Type = typeof(Grid))]
             [System.Xml.Serialization.XmlElementAttribute("Table", Type = typeof(Table))]
             [System.Xml.Serialization.XmlElementAttribute("Screen", Type = typeof(Screen))]
@@ -204,6 +248,14 @@ namespace AubitDesktop.Xml.XMLForm
         /// <remarks/>
         public class Grid
         {
+
+            /// <remarks/>
+            [System.Xml.Serialization.XmlAttributeAttribute(DataType = "int")]
+            public int pixelHeight;
+
+            /// <remarks/>
+            [System.Xml.Serialization.XmlAttributeAttribute(DataType = "int")]
+            public int pixelWidth;
 
             /// <remarks/>
             [System.Xml.Serialization.XmlAttributeAttribute()]
@@ -1229,6 +1281,14 @@ namespace AubitDesktop.Xml.XMLForm
         {
 
             /// <remarks/>
+            [System.Xml.Serialization.XmlAttributeAttribute(DataType = "int")]
+            public int pixelHeight;
+
+            /// <remarks/>
+            [System.Xml.Serialization.XmlAttributeAttribute(DataType = "int")]
+            public int pixelWidth;
+
+            /// <remarks/>
             [System.Xml.Serialization.XmlAttributeAttribute()]
             public string pageSize;
 
@@ -1358,6 +1418,15 @@ namespace AubitDesktop.Xml.XMLForm
         [System.Xml.Serialization.XmlRootAttribute(Namespace = "", IsNullable = true)]
         public class Screen
         {
+
+            /// <remarks/>
+            [System.Xml.Serialization.XmlAttributeAttribute(DataType = "int")]
+            public int pixelHeight;
+
+            /// <remarks/>
+            [System.Xml.Serialization.XmlAttributeAttribute(DataType = "int")]
+            public int pixelWidth;
+
 
             /// <remarks/>
             [System.Xml.Serialization.XmlAttributeAttribute()]
