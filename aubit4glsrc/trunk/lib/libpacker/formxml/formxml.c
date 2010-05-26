@@ -1022,6 +1022,10 @@ strcpy(buff,"");
 	if (A4GL_has_str_attribute(fprop, FA_S_COMMENTS)) { sprintf(smbuff, " comments=\"%s\"", xml_escape(A4GL_get_str_attribute (fprop, FA_S_COMMENTS))); strcat(buff,smbuff);}
 	if (A4GL_has_str_attribute(fprop, FA_S_PICTURE)) { sprintf(smbuff, " picture=\"%s\"", xml_escape(A4GL_get_str_attribute (fprop, FA_S_PICTURE))); strcat(buff,smbuff);}
 	if (A4GL_has_str_attribute(fprop, FA_S_CONFIG)) { sprintf(smbuff, " config=\"%s\"", xml_escape(A4GL_get_str_attribute (fprop, FA_S_CONFIG))); strcat(buff,smbuff);}
+
+	if (A4GL_has_str_attribute(fprop, FA_S_PIXELWIDTH)) { sprintf(smbuff, " pixelWidth=\"%s\"", xml_escape(A4GL_get_str_attribute (fprop, FA_S_PIXELWIDTH))); strcat(buff,smbuff);}
+	if (A4GL_has_str_attribute(fprop, FA_S_PIXELHEIGHT)) { sprintf(smbuff, " pixelHeight=\"%s\"", xml_escape(A4GL_get_str_attribute (fprop, FA_S_PIXELHEIGHT))); strcat(buff,smbuff);}
+
 	if (A4GL_has_bool_attribute(fprop, FA_B_SCROLL)) { strcat(buff, " scroll=\"1\""); }
 	if (A4GL_has_bool_attribute(fprop, FA_B_WANTTABS)) { strcat(buff, " wantTabs=\"1\""); }
 	if (A4GL_has_bool_attribute(fprop, FA_B_WANTNORETURNS)) { strcat(buff, " wantReturns=\"0\""); }
