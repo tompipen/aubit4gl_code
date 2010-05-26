@@ -637,9 +637,18 @@ namespace AubitDesktop
                 int nBytes = tcpStream.EndRead(i);
                 if (nBytes != 0) { processBytes(buffer, nBytes); }
             }
-            catch (Exception )
+            catch (Exception Ex)
             {
+                if (Ex is InvalidOperationException)
+                {
+                    MessageBox.Show( Ex.ToString(),"Exception reading data from server");
+                    Application.Exit();
+                }
+                else
+                {
+                    Console.WriteLine(Ex.Message); // Silently carry on .....
 
+                }
             }
             startStreamAsyncRead();
         }

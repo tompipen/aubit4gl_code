@@ -764,7 +764,7 @@ namespace AubitDesktop
 
         internal bool validateField()
         {
-            bool ign = false;
+            
 
 
             if (this._ContextType == FGLContextType.ContextConstruct)
@@ -772,16 +772,20 @@ namespace AubitDesktop
 
                 if (FGLConstruct.getConstructString(constructName, Text, this.datatype, this.datatype_length) == null)
                 {
+                    bool ign = false;
                     this.fieldValidationFailed(this, "FIELD_CONSTR_EXPR", out ign);
+
+                    if (!ign)
+                    {
+                        return false;
+                    }
                 }
-                if (!ign)
-                {
-                    return false;
-                }
+                return true;
             }
 
             if (this._ContextType == FGLContextType.ContextInput || this._ContextType == FGLContextType.ContextInputArray)
             {
+                bool ign = false;
                 #region REQUIRED CHECK
                 if (this.Required)
                 {

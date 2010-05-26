@@ -21,6 +21,11 @@ namespace AubitDesktop
             allow_range_character = true;
             int inc_quotes = 0;
 
+            if (val == null || val.Trim() == "")
+            {
+                return ""; // Ignore it !
+            }
+
             if (dtype == FGLUtils.FGLDataTypes.DTYPE_CHAR || dtype == FGLUtils.FGLDataTypes.DTYPE_NCHAR || dtype == FGLUtils.FGLDataTypes.DTYPE_VCHAR) inc_quotes = 1;
             if (dtype == FGLUtils.FGLDataTypes.DTYPE_DATE) inc_quotes = 2;
             if (dtype == FGLUtils.FGLDataTypes.DTYPE_DTIME) inc_quotes = 3;
