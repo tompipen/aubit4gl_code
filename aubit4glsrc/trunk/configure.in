@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.426 2010-05-20 18:00:57 mikeaubury Exp $
+dnl # $Id: configure.in,v 1.427 2010-05-28 10:19:46 mikeaubury Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -48,7 +48,7 @@ export LD_LIBRARY_PATH=/lib:$LD_LIBRARY_PATH
 
 #We need autoconf at least version 2.50
 AC_PREREQ(2.50)
-AC_REVISION($Id: configure.in,v 1.426 2010-05-20 18:00:57 mikeaubury Exp $)
+AC_REVISION($Id: configure.in,v 1.427 2010-05-28 10:19:46 mikeaubury Exp $)
 
 #FIXME: Some versions of autoconf are complaining that $AUBIT_VERSION and 
 #$AUBIT_BUILD are not constants. Maybe we should drop stuff in tools/project 
@@ -4061,8 +4061,8 @@ AC_ARG_WITH(mysql,
 		
 		#AC CUMULATES ALL LIBS IT FINDS IN A WAY, SO WE NEED TO RESET THIS
 		#as it may coinflict with msqld
-		LIBS="$old_LIBS"
-		
+		#LIBS="$old_LIBS"
+		LIBS=`mysql_config --libmysqld-libs`
 		#Installed as MySQL RPM to /usr/lib/mysql/libmysqld.a
 		AC_CHECK_LIB([mysqld], [main])
 		
@@ -4112,6 +4112,7 @@ AC_ARG_WITH(mysql,
 			SQL_MYSQL=no
 			SQL_MYSQL_EMB=no
 		fi
+
 
 		AC_MSG_CHECKING(MySQL client support)
 		AC_MSG_RESULT($SQL_MYSQL)
@@ -11258,7 +11259,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure.in,v 1.426 2010-05-20 18:00:57 mikeaubury Exp $
+| $Id: configure.in,v 1.427 2010-05-28 10:19:46 mikeaubury Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

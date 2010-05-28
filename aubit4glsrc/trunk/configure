@@ -19023,8 +19023,8 @@ fi
 
 		#AC CUMULATES ALL LIBS IT FINDS IN A WAY, SO WE NEED TO RESET THIS
 		#as it may coinflict with msqld
-		LIBS="$old_LIBS"
-
+		#LIBS="$old_LIBS"
+		LIBS=`mysql_config --libmysqld-libs`
 		#Installed as MySQL RPM to /usr/lib/mysql/libmysqld.a
 		{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -lmysqld" >&5
 $as_echo_n "checking for main in -lmysqld... " >&6; }
@@ -19127,6 +19127,7 @@ $as_echo "Missing MySQL client library file" >&6; }
 			SQL_MYSQL=no
 			SQL_MYSQL_EMB=no
 		fi
+
 
 		{ $as_echo "$as_me:${as_lineno-$LINENO}: checking MySQL client support" >&5
 $as_echo_n "checking MySQL client support... " >&6; }
@@ -31816,7 +31817,7 @@ test "x$enable_libtool_lock" != xno && enable_libtool_lock=yes
 case $host in
 *-*-irix6*)
   # Find out which ABI we are using.
-  echo '#line 31819 "configure"' > conftest.$ac_ext
+  echo '#line 31820 "configure"' > conftest.$ac_ext
   if { { eval echo "\"\$as_me\":${as_lineno-$LINENO}: \"$ac_compile\""; } >&5
   (eval $ac_compile) 2>&5
   ac_status=$?
@@ -32178,7 +32179,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<_LT_EOF
-#line 32181 "configure"
+#line 32182 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -32274,7 +32275,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<_LT_EOF
-#line 32277 "configure"
+#line 32278 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -32552,13 +32553,13 @@ if test "${lt_cv_nm_interface+set}" = set; then :
 else
   lt_cv_nm_interface="BSD nm"
   echo "int some_variable = 0;" > conftest.$ac_ext
-  (eval echo "\"\$as_me:32555: $ac_compile\"" >&5)
+  (eval echo "\"\$as_me:32556: $ac_compile\"" >&5)
   (eval "$ac_compile" 2>conftest.err)
   cat conftest.err >&5
-  (eval echo "\"\$as_me:32558: $NM \\\"conftest.$ac_objext\\\"\"" >&5)
+  (eval echo "\"\$as_me:32559: $NM \\\"conftest.$ac_objext\\\"\"" >&5)
   (eval "$NM \"conftest.$ac_objext\"" 2>conftest.err > conftest.out)
   cat conftest.err >&5
-  (eval echo "\"\$as_me:32561: output\"" >&5)
+  (eval echo "\"\$as_me:32562: output\"" >&5)
   cat conftest.out >&5
   if $GREP 'External.*some_variable' conftest.out > /dev/null; then
     lt_cv_nm_interface="MS dumpbin"
@@ -37871,7 +37872,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure,v 1.460 2010-05-20 18:00:57 mikeaubury Exp $
+| $Id: configure,v 1.461 2010-05-28 10:19:47 mikeaubury Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X
