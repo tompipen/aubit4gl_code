@@ -549,6 +549,7 @@ namespace AubitDesktop
 
         public bool Disconnect()
         {
+            
             if (useExplicitStreams)
             {
                 return Disconnect_SSH();
@@ -642,7 +643,9 @@ namespace AubitDesktop
                 if (Ex is InvalidOperationException)
                 {
                     MessageBox.Show( Ex.ToString(),"Exception reading data from server");
-                    Application.Exit();
+
+
+                    this.appwin.Close();
                 }
                 else
                 {
