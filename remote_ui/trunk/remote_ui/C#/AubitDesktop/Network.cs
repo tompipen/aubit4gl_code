@@ -642,7 +642,7 @@ namespace AubitDesktop
             {
                 if (Ex is InvalidOperationException)
                 {
-                    MessageBox.Show( Ex.ToString(),"Exception reading data from server");
+                  //  MessageBox.Show( Ex.ToString(),"Exception reading data from server");
 
 
                     this.appwin.Close();
