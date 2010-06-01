@@ -64,6 +64,10 @@ namespace AubitDesktop.Xml
 
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
+        public int isEvent;
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
         public string hotKey;
 
     }

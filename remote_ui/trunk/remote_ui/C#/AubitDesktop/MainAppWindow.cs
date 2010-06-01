@@ -1363,7 +1363,7 @@ namespace AubitDesktop
                     TreeNode cmdNode;
                     AubitDesktop.Xml.StartMenuCommand smc;
                     smc=(AubitDesktop.Xml.StartMenuCommand)o;
-                    cmdNode=new launcherCmdNode(smc.text,smc.exec,smc.disabled,smc.image,smc.waiting,smc.hotKey);
+                    cmdNode = new launcherCmdNode(smc.text, smc.exec, smc.disabled, smc.image, smc.waiting, smc.hotKey, smc.isEvent);
                     node.Nodes.Add(cmdNode);
                     
                     hasCommands = true;
@@ -1391,13 +1391,20 @@ namespace AubitDesktop
                 }
                 else
                 {
-                    if (l.waiting)
+                    if (l.isAction)
                     {
-                        stdNetworkConnection.SendString("<TRIGGERED ENVELOPEID=\"" + this.applicationLauncherId + "\" ID=\"EXECWAIT\" PROGRAMNAME=\"" + System.Security.SecurityElement.Escape(l.cmd) + "\"/>");
+                        stdNetworkConnection.SendString("<TRIGGERED ENVELOPEID=\"" + this.applicationLauncherId + "\" ID=\"APPLAUNCHEREVENT\" TYPE=\""+ System.Security.SecurityElement.Escape(l.cmd) + "\"/>");
                     }
                     else
                     {
-                        stdNetworkConnection.SendString("<TRIGGERED ENVELOPEID=\"" + this.applicationLauncherId + "\" ID=\"EXEC\" PROGRAMNAME=\"" + System.Security.SecurityElement.Escape(l.cmd) + "\"/>");
+                        if (l.waiting)
+                        {
+                            stdNetworkConnection.SendString("<TRIGGERED ENVELOPEID=\"" + this.applicationLauncherId + "\" ID=\"EXECWAIT\" PROGRAMNAME=\"" + System.Security.SecurityElement.Escape(l.cmd) + "\"/>");
+                        }
+                        else
+                        {
+                            stdNetworkConnection.SendString("<TRIGGERED ENVELOPEID=\"" + this.applicationLauncherId + "\" ID=\"EXEC\" PROGRAMNAME=\"" + System.Security.SecurityElement.Escape(l.cmd) + "\"/>");
+                        }
                     }
                 }
             }
@@ -1549,6 +1556,15 @@ namespace AubitDesktop
             }
         }
 
+        private bool _isAction;
+        internal bool isAction
+        {
+            get
+            {
+                return _isAction;
+            }
+        }
+
         public string cmd
         {
             get
@@ -1559,7 +1575,7 @@ namespace AubitDesktop
 
         internal string hotKey;
 
-        public launcherCmdNode(string text, string cmd,int disabled, string image,int waiting, string hotkey): base(text)
+        public launcherCmdNode(string text, string cmd,int disabled, string image,int waiting, string hotkey,int isActionOnly): base(text)
         {
             this._cmd = cmd;
             this.hotKey = hotkey;
@@ -1577,6 +1593,15 @@ namespace AubitDesktop
                 _xmlenabled = true;
             } else {
                 _xmlenabled = false;
+            }
+
+            if (isActionOnly == 0)
+            {
+                _isAction = false;
+            }
+            else
+            {
+                _isAction = true;
             }
 
         }
