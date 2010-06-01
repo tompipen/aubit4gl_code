@@ -787,7 +787,19 @@ namespace AubitDesktop
 
         void t_TextChanged(object sender, EventArgs e)
         {
-            l.Text = t.Text;
+
+            if (t.PasswordChar == '*')
+            {
+                string s;
+                s = new string(t.PasswordChar, t.Text.Length);
+                l.Text = s;
+
+            }
+            else
+            {
+                l.Text = t.Text;
+            }
+            //l.Text = t.Text;
 
         }
 
