@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql_common.c,v 1.95 2010-02-16 13:16:34 mikeaubury Exp $
+# $Id: sql_common.c,v 1.96 2010-06-01 14:28:46 mikeaubury Exp $
 #
 */
 
@@ -2574,7 +2574,7 @@ A4GL_get_syscolatt (char *tabname, char *colname, int seq, char *attr)
   strcpy (syscolatt, acl_getenv ("A4GL_SYSCOL_ATT"));
 
   SPRINTF1 (cname, "chkscatt_%d", cntsql_0++);
-  SPRINTF5 (tmpSql, "select %s.%s from %s WHERE tabname='%s' AND colname='%s' ORDER BY seqno", syscolatt, attr, syscolatt, tabname,
+  SPRINTF5 (tmpSql, "select %s.%s,seqno from %s WHERE tabname='%s' AND colname='%s' ORDER BY seqno", syscolatt, attr, syscolatt, tabname,
 	    colname);
 
   A4GL_declare_cursor (0, (void *) A4GL_prepare_select (NULL, 0, NULL, 0, tmpSql, "__internal_stack", 1, 0, 0), 0, cname);
