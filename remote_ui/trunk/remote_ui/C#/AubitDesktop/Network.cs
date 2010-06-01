@@ -644,8 +644,10 @@ namespace AubitDesktop
                 {
                   //  MessageBox.Show( Ex.ToString(),"Exception reading data from server");
 
-                     
-                    this.appwin.Close();
+                    if (this.appwin != null)
+                    {
+                        this.appwin.Close();
+                    }
                 }
                 else
                 {
