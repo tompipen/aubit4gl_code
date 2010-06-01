@@ -1235,6 +1235,7 @@ namespace AubitDesktop
 
             inputArrayGrid.EndEdit();
             inputArrayGrid.Rows.RemoveAt(inputArrayGrid.CurrentRow.Index);
+            
         }
     }
 
