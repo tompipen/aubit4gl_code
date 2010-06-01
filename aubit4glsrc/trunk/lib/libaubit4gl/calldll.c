@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: calldll.c,v 1.94 2010-05-11 09:30:45 mikeaubury Exp $
+# $Id: calldll.c,v 1.95 2010-06-01 17:40:32 mikeaubury Exp $
 #
 */
 
@@ -1218,4 +1218,59 @@ inc_usage (char *s)
 #endif /* #if (defined(WIN32) && ! defined(__CYGWIN__)) */
 #endif /* CSCC */
 
+
+
+
+int aclfgl_aclfgl_function_in_library(int n) {
+char  buff[200];
+
+
+	char *sharedlibraryname; int d1; int s1;
+	char *functionName; int d2; int s2;
+
+	if (n<2) {
+		A4GL_set_status(-3002,0); A4GL_pop_args(n); return -1;
+	}
+
+
+	A4GL_get_top_of_stack (n, &d1, &s1, (void *) &sharedlibraryname);
+	A4GL_get_top_of_stack (n-1, &d2, &s2, (void *) &functionName);
+
+	A4GL_zap_param(n); n--;
+	A4GL_zap_param(n); n--;
+
+
+	d1=d1&DTYPE_MASK;
+	d2=d2&DTYPE_MASK;
+
+	if (d1==DTYPE_CHAR || d1==DTYPE_VCHAR) ;
+	else {
+		 A4GL_push_char("First parameter to aclfgl_function_in_library must be a character string");
+   		 A4GL_display_error(-1,0);
+		 return 0;
+	}
+
+	if (d2==DTYPE_CHAR || d2==DTYPE_VCHAR) ;
+	else {
+		 A4GL_push_char("Second parameter to aclfgl_function_in_library must be a character string");
+   		 A4GL_display_error(-1,0);
+		 return 0;
+	}
+
+	if (strlen(sharedlibraryname)==0 || strlen(functionName)==0) {
+		 A4GL_push_char("parameters to aclfgl_function_in_library must not be empty");
+   		 A4GL_display_error(-1,0);
+		 return 0;
+	}
+
+
+	A4GL_debug("Calling %s in %s - with %d parameters", functionName,sharedlibraryname,n);
+
+	strcpy(buff,functionName);
+	A4GL_convlower(buff);
+	n=A4GL_call_4gl_dll (sharedlibraryname,buff,n);
+
+	free(functionName);
+	return n;
+}
 /* ============================= EOF ================================== */

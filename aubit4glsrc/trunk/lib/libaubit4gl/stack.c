@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                          |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.254 2010-05-09 10:45:39 mikeaubury Exp $
+# $Id: stack.c,v 1.255 2010-06-01 17:40:32 mikeaubury Exp $
 #
 */
 
@@ -993,6 +993,45 @@ A4GL_pop_param (void *p, int d, int size)
 
   //A4GL_debug("99 return %d",b);
   return b;
+}
+
+
+
+// Remove an item at an arbitrary place in our stack..
+// This is useful for builtin functions has have a set of standard parameters
+// followed by an arbitrary number of other parameters..
+//
+// Eg. 
+//    aclfgl_function_in_library("Bibble","Wibble",999)
+//    aclfgl_function_in_library("Bibble","Wibble",999,"abc123")
+//
+// On the stack this will be set as : 
+//      Bibble
+//      Wibble
+//      999
+//
+// or
+//      Bibble
+//      Wibble
+//      999
+//      abc123
+//
+// so - we want to extra "Bibble" and "Wibble" - which we can do with "A4GL_get_top_of_stack"
+// But having got them - we want to remove them from the stack....
+// 
+void A4GL_zap_param(int n) {
+int a;
+if (n>params_cnt) {
+	A4GL_assertion(1,"param out of range in zap_param");
+}
+// We need to move up the stack 
+n=params_cnt-n;
+for (a=n;a<params_cnt;a++) {
+	memcpy(&params[a],&params[a+1],sizeof(params[a]));
+}
+
+params_cnt--;
+
 }
 
 /**
