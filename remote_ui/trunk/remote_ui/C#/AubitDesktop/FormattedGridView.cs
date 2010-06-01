@@ -841,7 +841,16 @@ namespace AubitDesktop
             for (int  row = 0; row < Convert.ToInt32(table.pageSize); row++)
             {
                 System.Data.DataRow r;
-                r = dt.Rows[row];
+                r = null;
+                try
+                {
+                    r = dt.Rows[row];
+                }
+                catch (Exception Ex)
+                {
+                    //MessageBox.Show(Ex.Message);
+                }
+                if (r == null) continue;
                 if (r.RowState == DataRowState.Deleted) continue;
                 
                 
