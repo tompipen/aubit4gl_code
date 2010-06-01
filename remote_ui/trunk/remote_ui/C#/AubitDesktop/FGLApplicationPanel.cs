@@ -939,7 +939,7 @@ namespace AubitDesktop
         {
             AubitTSBtn b;
 
-            
+
             // Does it already exist ? 
             for (int a = 0; a < toolStrip1.Count; a++)
             {
