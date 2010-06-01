@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.193 2010-02-16 13:16:31 mikeaubury Exp $
+# $Id: report.c,v 1.194 2010-06-01 15:44:56 mikeaubury Exp $
 #
 */
 
@@ -1367,14 +1367,13 @@ A4GL_skip_top_of_page (struct rep_structure *rep, int n)
   int z;
   int a;
 
-
   a = rep->page_length - rep->line_no - rep->bottom_margin - rep->lines_in_trailer + 1;
 
   if (n != 1 || rep->page_no)
     {
       if (rep->header)
 	return;
-      if (rep->line_no == 0)
+      if (rep->line_no == 0 || (rep->line_no==1 && rep->page_length!=1))
 	return;
     }
 
