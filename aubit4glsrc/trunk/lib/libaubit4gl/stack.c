@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                          |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.255 2010-06-01 17:40:32 mikeaubury Exp $
+# $Id: stack.c,v 1.256 2010-06-02 13:26:39 mikeaubury Exp $
 #
 */
 
@@ -4718,11 +4718,27 @@ strcpy(s,buff);
 void A4GL_pop_sized_decimal(fgldecimal *b) {
 //char *s;
 char s[2000];
-//A4GL_pop_var2 (&b, 5, 0x2010);
-//return;
+int d1;
+int s1;
+char *p1;
+
+
   if ((params[params_cnt - 1].dtype & DTYPE_MASK) == DTYPE_MONEY) {
   	params[params_cnt - 1].dtype=params[params_cnt - 1].dtype-DTYPE_MONEY+DTYPE_DECIMAL;
   }
+
+  A4GL_get_top_of_stack (1, &d1, &s1, (void *) &p1);
+
+  if (A4GL_isnull(d1,p1)) {
+  	A4GL_pop_char(s,200);
+	if ((d1&DTYPE_MASK)==DTYPE_DECIMAL || (d1&DTYPE_MASK)==DTYPE_MONEY) {
+		A4GL_setnull(d1,b,s1);
+	} else {
+		A4GL_setnull(DTYPE_DECIMAL,b,0xf01);
+	}
+	return ;
+  }
+
 
   A4GL_pop_char(s,200);
   A4GL_init_dec(b,0,0);
@@ -4757,6 +4773,7 @@ void A4GL_pop_sized_decimal_from_float(fgldecimal *b,int use_sigdig) {
 	}
 
 	A4GL_get_top_of_stack (1, &tos_dtype, &tos_size, (void **) &tos_ptr);
+
 
 
 	d=A4GL_pop_double();

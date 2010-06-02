@@ -52,25 +52,6 @@ A4GL_str_dot_to_dec (char *s, fgldecimal * d)
 
 
 
-#ifdef MOVED
-void A4GL_pop_sized_decimal(fgldecimal *b) {
-char *s;
-//A4GL_pop_var2 (&b, 5, 0x2010);
-//return;
-  if ((params[params_cnt - 1].dtype & DTYPE_MASK) == DTYPE_MONEY) {
-	A4GL_pop_var(b,5,0x2010);
-	A4GL_push_dec_dec(b,0,16);
-  }
-
-
-
-  s=A4GL_char_pop();
-  A4GL_init_dec(b,0,0);
-  A4GL_str_dot_to_dec(s, b);
- 
-  acl_free(s);
-}
-#endif
 
 /**
  * Initialize default/configured decimal formats
