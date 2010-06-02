@@ -804,6 +804,8 @@ op_field_desc
 					A4GL_add_str_attr(fld,FA_S_FORMAT,format);
 				}
 				break;
+			} else {
+				break;
 			}
 		}
 	}
