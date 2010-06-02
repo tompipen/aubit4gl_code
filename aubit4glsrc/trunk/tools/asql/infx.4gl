@@ -398,6 +398,7 @@ DEFINE l_coltype     INTEGER,
 
 CASE
 WHEN l_coltype=0 OR l_coltype=256 LET type_text="CHAR(", l_collength USING "<<<", ")"
+WHEN l_coltype=15 OR l_coltype=271 LET type_text="NCHAR(", l_collength USING "<<<", ")"
 WHEN l_coltype=1 OR l_coltype=257 LET type_text="SMALLINT"
 WHEN l_coltype=2 OR l_coltype=258 LET type_text="INTEGER"
 WHEN l_coltype=3 OR l_coltype=259 LET type_text="FLOAT"
@@ -425,7 +426,7 @@ WHEN l_coltype=14 OR l_coltype=270
     LET type_text="INTERVAL"
     LET type_text = dt_length(l_collength, type_text)
 OTHERWISE
-    LET type_text="????"
+    LET type_text="????", l_coltype using "<<<<<<", ":",l_collength using "<<<<<<<"
 END CASE
 
 ## Now the not nulls
