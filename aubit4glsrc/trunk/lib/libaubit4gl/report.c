@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.194 2010-06-01 15:44:56 mikeaubury Exp $
+# $Id: report.c,v 1.195 2010-06-02 13:26:13 mikeaubury Exp $
 #
 */
 
@@ -1054,44 +1054,6 @@ A4GL_rep_print (struct rep_structure *rep, int no_param, int dontwant_nl, int ri
     }
 
 
-  if (no_param || dontwant_nl == 0 || rep->finishing || entry == -5)
-    {
-      if (rep->print_section == SECTION_NORMAL)
-	{
-	  if (rep->line_no > rep->page_length - rep->lines_in_trailer - rep->bottom_margin)
-	    {
-	      rep->print_section = SECTION_TRAILER;
-	      rep->report (0, REPORT_PAGETRAILER);	/* report.c:180: too many arguments to function */
-	      rep->print_section = SECTION_NORMAL;
-	    }
-
-	  if (rep->line_no > rep->page_length - rep->bottom_margin)
-	    {
-	      if (strlen (rep->top_of_page) == 0)
-		{
-		  for (cnt = 0; cnt < rep->bottom_margin; cnt++)
-		    {
-		      report_print (rep, -1, "\n");
-		      //rep->line_no++;
-		    }
-		}
-	      else
-		{
-		  report_print (rep, -1, top_of_page (rep->top_of_page, "B"));
-		}
-
-	      rep->line_no = 0;
-
-	      if (rep->lines_in_trailer)
-		{
-#ifdef DEBUG
-		  A4GL_debug ("Calling rep_print");
-#endif
-		  A4GL_rep_print (rep, 0, 1, 0, -10);
-		}
-	    }
-	}
-    }
 
 
 
@@ -1207,7 +1169,45 @@ A4GL_rep_print (struct rep_structure *rep, int no_param, int dontwant_nl, int ri
       report_print (rep, -1, "\n");
       rep->line_no++;
 
+  if (no_param || rep->finishing || entry == -5 || 1)
+    {
+      if (rep->print_section == SECTION_NORMAL)
+	{
+	  if (rep->line_no > rep->page_length - rep->lines_in_trailer - rep->bottom_margin)
+	    {
+	      rep->print_section = SECTION_TRAILER;
+	      rep->report (0, REPORT_PAGETRAILER);	/* report.c:180: too many arguments to function */
+	      rep->print_section = SECTION_NORMAL;
+	    }
+
+	  if (rep->line_no > rep->page_length - rep->bottom_margin)
+	    {
+	      if (strlen (rep->top_of_page) == 0)
+		{
+		  for (cnt = 0; cnt < rep->bottom_margin; cnt++)
+		    {
+		      report_print (rep, -1, "\n");
+		      //rep->line_no++;
+		    }
+		}
+	      else
+		{
+		  report_print (rep, -1, top_of_page (rep->top_of_page, "B"));
+		}
+
+	      rep->line_no = 0;
+
+	      if (rep->lines_in_trailer)
+		{
+#ifdef DEBUG
+		  A4GL_debug ("Calling rep_print");
+#endif
+		  A4GL_rep_print (rep, 0, 1, 0, -10);
+		}
+	    }
+	}
     }
+   }
   return;
 }
 
@@ -1215,7 +1215,7 @@ A4GL_rep_print (struct rep_structure *rep, int no_param, int dontwant_nl, int ri
 int
 A4GL_report_lineno (struct rep_structure *rep)
 {
-  if (rep->line_no > rep->page_length - rep->bottom_margin)
+  if (rep->line_no > rep->page_length - rep->bottom_margin || rep->line_no==0)
     {
       return 0;
     }
