@@ -24,11 +24,11 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: input_array.c,v 1.71 2010-03-04 12:36:03 mikeaubury Exp $
+# $Id: input_array.c,v 1.72 2010-06-02 11:25:17 mikeaubury Exp $
 #*/
 #ifndef lint
 static char const module_id[] =
-  "$Id: input_array.c,v 1.71 2010-03-04 12:36:03 mikeaubury Exp $";
+  "$Id: input_array.c,v 1.72 2010-06-02 11:25:17 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -470,6 +470,7 @@ pop_iarr_var (struct s_form_dets *form, int x, int y, int elem,
 {
   char buff[8000];
   int really_ok = 0;
+int var_dtype;
 
   A4GL_debug ("In pop_iarr_var %d %d currentfield=%p", x, y,
 	      form->currentfield);
@@ -478,7 +479,7 @@ pop_iarr_var (struct s_form_dets *form, int x, int y, int elem,
   y--;
 
 
-  if (A4GL_copy_field_data (form))
+  if (A4GL_copy_field_data (form,  b[x].dtype))
     {
       char *ptr;
       ptr = strdup (A4GL_LL_field_buffer (form->currentfield, 0));
@@ -498,6 +499,14 @@ pop_iarr_var (struct s_form_dets *form, int x, int y, int elem,
 	      ptr = strdup (ptr2);
 	    }
 	  A4GL_push_char (ptr);
+     var_dtype = b[x].dtype;
+      if (A4GL_get_convfmts ()->ui_decfmt.decsep != '.'
+          && (A4GL_is_numeric_datatype (fprop->datatype) || A4GL_is_numeric_datatype (var_dtype)))
+        {
+          // its a A4GL_get_convfmts()->ui_decfmt.decsep separator not a '.' - lets convert it
+          A4GL_convert_ui_char_on_stack_decimal_sep ();
+        }
+
 	}
       else
 	{
@@ -3257,7 +3266,7 @@ A4GL_field_name_match (void *f, char *s)
 
 
 int
-A4GL_copy_field_data (struct s_form_dets *form)
+A4GL_copy_field_data (struct s_form_dets *form,int var_dtype)
 {
   char buff[8000] = "";
   char buff2[8000] = "";
@@ -3310,7 +3319,7 @@ A4GL_copy_field_data (struct s_form_dets *form)
 
 		    ppr =
 		      A4GL_check_and_copy_field_to_data_area (form, fprop,
-							      buff2, buff);
+							      buff2, buff,var_dtype);
 
 
 
@@ -3422,6 +3431,8 @@ A4GL_form_field_chk_iarr (struct s_inp_arr *sio, int m)
   //int flg = 0;
   struct s_form_dets *form;
   struct struct_scr_field *fprop;
+int var_dtype = 0;
+
 
   A4GL_debug ("form_field_chk_iarr....");
   mform = sio->currform->form;
@@ -3551,10 +3562,10 @@ A4GL_form_field_chk_iarr (struct s_inp_arr *sio, int m)
 		      }
 
 
-
+ 			var_dtype = sio->binding[sio->curr_attrib].dtype;
 		    pprval =
 		      A4GL_check_and_copy_field_to_data_area (form, fprop,
-							      buff2, buff);
+							      buff2, buff,var_dtype);
 
 		    if (!pprval)
 		      {

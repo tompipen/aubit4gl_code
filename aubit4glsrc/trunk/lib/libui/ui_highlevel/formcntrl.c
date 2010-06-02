@@ -24,10 +24,10 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.80 2009-05-06 10:42:19 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.81 2010-06-02 11:25:17 mikeaubury Exp $
 #*/
 #ifndef lint
-static char const module_id[] = "$Id: formcntrl.c,v 1.80 2009-05-06 10:42:19 mikeaubury Exp $";
+static char const module_id[] = "$Id: formcntrl.c,v 1.81 2010-06-02 11:25:17 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -2593,7 +2593,7 @@ chk_all_fields (struct s_screenio *sio)
       // Might need to do something similar for construct ?
       for (a = 0; a <= sio->nfields; a++)
 	{
-	  if (local_chk_field (sio->currform, sio->field_list[a]) == -4)
+	  if (local_chk_field (sio->currform, sio->field_list[a],  sio->vars[a].dtype) == -4)
 	    {
 	      return a;
 	    }

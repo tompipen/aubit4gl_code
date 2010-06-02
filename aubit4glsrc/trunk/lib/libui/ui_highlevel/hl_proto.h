@@ -1,8 +1,8 @@
 char *A4GL_fld_data_ignore_format(struct struct_scr_field *fprop, char *fld_data);
 char *A4GL_string_width(char *s);
-int A4GL_check_and_copy_field_to_data_area(struct s_form_dets *form, struct struct_scr_field *fprop, char *fld_data, char *data_area);
+int A4GL_check_and_copy_field_to_data_area(struct s_form_dets *form, struct struct_scr_field *fprop, char *fld_data, char *data_area,int var_dtype);
 int A4GL_chkwin(void);
-int A4GL_copy_field_data(struct s_form_dets *form);
+int A4GL_copy_field_data(struct s_form_dets *form,int var_dtype);
 int A4GL_curr_metric_is_used_last_s_screenio(struct s_screenio *s, void *f);
 int A4GL_decode_colour_attr_aubit(int a);
 int A4GL_decode_line(int l);
@@ -132,7 +132,7 @@ int A4GL_get_field_width_with_form (void *fd, void *fld);
 int A4GL_get_field_height_with_form (void *fd, void *fld);
 
 
-int local_chk_field (struct s_form_dets *form, void *f);
+int local_chk_field (struct s_form_dets *form, void *f,int var_dtype);
 void
 A4GL_set_fields_sio (struct s_screenio *sio);
 

@@ -45,7 +45,7 @@ int A4GL_form_field_constr (struct s_screenio *sio, int m);
 int A4GL_get_metric_no (struct s_form_dets *form, void *f);
 int A4GL_get_metric_for (struct s_form_dets *form, void *f);
 char *A4GL_fld_data_ignore_format (struct struct_scr_field *fprop, char *fld_data);
-int A4GL_check_and_copy_field_to_data_area (struct s_form_dets *form,struct struct_scr_field *fprop,char *fld_data, char *data_area);
+int A4GL_check_and_copy_field_to_data_area (struct s_form_dets *form,struct struct_scr_field *fprop,char *fld_data, char *data_area,int var_dtype);
 void A4GL_clr_field (void *f);
 void A4GL_do_after_field (void *f, struct s_screenio *sio);
 int A4GL_find_field_no (void *f, struct s_screenio *sio);
@@ -90,5 +90,5 @@ extern void A4GL_LL_set_carat(void *form) ;
 int A4GL_ll_set_field_opts (void *field, int oopt);
 int A4GL_ll_field_opts (void *field);
 
-int local_chk_field (struct s_form_dets *form, void *f);
+int local_chk_field (struct s_form_dets *form, void *f,int var_dtype);
 //int ll_need_wordwrap_spaces(void);
