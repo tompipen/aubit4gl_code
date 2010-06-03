@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: string.c,v 1.38 2010-05-19 07:52:35 mikeaubury Exp $
+# $Id: string.c,v 1.39 2010-06-03 09:30:23 mikeaubury Exp $
 #
 */
 
@@ -330,8 +330,9 @@ A4GL_wordwrap_text (char *in, char *out, int width, int maxsize)
 #ifdef DEBUG
       A4GL_debug ("Too large to fit... %s (%d) %d", buff, strlen (buff), maxsize);
 #endif
-      strcpy (out, in);
-      return 0;			// We're too long to fit...
+      strncpy (out, buff,maxsize);
+      out[maxsize]=0;
+      return 1;			// We're too long to fit...
     }
 
 #ifdef DEBUG
