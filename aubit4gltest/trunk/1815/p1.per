@@ -1,0 +1,20 @@
+database formonly
+screen
+{
+                                       [g000       ]
+
+
+  FECHA INICIAL[g003       ] FECHA FINAL[g004      ]
+
+   Indique el rango de fechas que desea el listado.
+
+             ESC: Salir     DEL : Abandona
+}
+tables
+ctr02
+attributes
+g000 = formonly.fec_hoy type date, format="mmm/dd/yyyy";
+g003 = formonly.fec_ini type date, format="mmm/dd/yyyy",comments=" Ingrese 
+la fecha inicial (mes.dia.anio)";
+g004 = formonly.fec_fin type date, format="mm/dd/yyyy",comments="Ingrese la 
+fecha final (mes.dia.anio)";
