@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlexpr.c,v 1.89 2010-06-04 12:35:42 mikeaubury Exp $
+# $Id: sqlexpr.c,v 1.90 2010-06-04 18:44:31 mikeaubury Exp $
 #
 */
 
@@ -1366,6 +1366,7 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
       {
 	char *rval;
 	char buff[50] = "";
+
 	if (p->data.s_select_list_item_data_u.column.subscript.i0 >= 1)
 	  {
 	    rval = acl_strdup_With_Context (A4GLSQLCV_make_substr (A4GLSQLCV_check_colname_alias
@@ -1459,19 +1460,31 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
       {
 	//char buff[50] = "";
 	int a;
+//A4GL_pause_execution();
 	if (p->data.s_select_list_item_data_u.column.subscript.i0 >= 1)
 	  {
+		char *rval;
+
 	    A4GL_assertion (p->data.s_select_list_item_data_u.column.colname == 0, "Order by subscript not handled");
+
+
+	    rval = acl_strdup_With_Context (A4GLSQLCV_make_substr (A4GLSQLCV_check_colname_alias
+								   (p->data.s_select_list_item_data_u.column.tabname,
+								    find_tabname_for_alias (select, p->data.s_select_list_item_data_u.column.tabname),
+								    p->data.s_select_list_item_data_u.column.colname),
+								   p->data.s_select_list_item_data_u.column.subscript.i0,
+								   p->data.s_select_list_item_data_u.column.subscript.i1,
+								   p->data.s_select_list_item_data_u.column.subscript.i2));
+
+	return acl_strdup_With_Context(rval);
 	  }
+
 
 	if (p->data.s_select_list_item_data_u.column.tabname && strlen(p->data.s_select_list_item_data_u.column.tabname ))
 	  {
 	    char *orig;
 	    orig = find_tabname_for_alias (select, p->data.s_select_list_item_data_u.column.tabname);
-	    return
-	      acl_strdup_With_Context (A4GLSQLCV_check_colname_alias
-				       (p->data.s_select_list_item_data_u.column.tabname, orig,
-					p->data.s_select_list_item_data_u.column.colname));
+	    return acl_strdup_With_Context (A4GLSQLCV_check_colname_alias (p->data.s_select_list_item_data_u.column.tabname, orig, p->data.s_select_list_item_data_u.column.colname));
 	  }
 	if (select)
 	  {

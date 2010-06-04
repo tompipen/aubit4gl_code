@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dmy.c,v 1.27 2010-06-04 12:35:42 mikeaubury Exp $
+# $Id: dmy.c,v 1.28 2010-06-04 18:44:31 mikeaubury Exp $
 #
 */
 
@@ -289,7 +289,6 @@ char A4GL_get_dbdate_separator(void) {
 	char buff[2000];
 	if (sep==0) {
 		strcpy(buff,acl_getenv("DBDATE"));
-		printf("Buff=%s\n",buff);
 		switch(strlen(buff)) {
 			case 3: sep='/'; break;
 			case 4: sep=buff[3]; break;
