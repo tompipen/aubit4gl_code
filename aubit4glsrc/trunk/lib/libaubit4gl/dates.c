@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dates.c,v 1.28 2010-06-04 12:35:42 mikeaubury Exp $
+# $Id: dates.c,v 1.29 2010-06-04 19:02:21 mikeaubury Exp $
 #
 */
 
@@ -564,6 +564,10 @@ A4GL_get_date_from_formatted_date (char *format, char *data)
   A4GL_trim (data_internal);
   A4GL_trim (fmt_internal);
 
+if (strlen(data)==0) {
+	return 0;
+}
+
   for (a = 0; a < strlen (fmt_internal); a++)
     {
       if (fmt_internal[a] == 'y' && fmt_internal[a + 1] == 'y' && fmt_internal[a + 2] == 'y' && fmt_internal[a + 3] == 'y')
@@ -590,8 +594,15 @@ A4GL_get_date_from_formatted_date (char *format, char *data)
 	  for (mno = 1; mno <= 12; mno++)
 	    {
 	      char *full_month;
+		char buff_srch[200];
+	        char buff_got[200];
 	      full_month = A4GL_find_str_resource_int ("_MON", mno);
-		if (strncmp (full_month, &data_internal[a], strlen (full_month)) == 0)
+		strcpy(buff_srch,full_month);
+		strncpy(buff_got,&data_internal[a], strlen (full_month));
+		buff_got[ strlen (full_month)]=0;
+a4gl_upshift(buff_got);
+a4gl_upshift(buff_srch);
+		if (strcmp (buff_got, buff_srch) == 0)
 		{
 		  m = mno;
 		  break;
@@ -658,7 +669,7 @@ if (m!=-1 && d!=-1 && y!=-1) {
 	// does using this date result in this date string with this format ? 
 	dno= A4GL_gen_dateno(d,m,y);
 	ptr= A4GL_using_date(dno,format);
-	if (strcmp(ptr,data)==0) {
+	if (strcasecmp(ptr,data)==0) {
 		// Cool - we found it!
 			return dno;
 	}
