@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dmy.c,v 1.26 2010-02-16 13:16:27 mikeaubury Exp $
+# $Id: dmy.c,v 1.27 2010-06-04 12:35:42 mikeaubury Exp $
 #
 */
 
@@ -281,6 +281,27 @@ A4GL_dategsub (char *s, char *r, char *p)
   strcat (buff_dategsub, buff2);
   return buff_dategsub;
 }
+
+
+
+char A4GL_get_dbdate_separator(void) {
+	static char sep=0;
+	char buff[2000];
+	if (sep==0) {
+		strcpy(buff,acl_getenv("DBDATE"));
+		printf("Buff=%s\n",buff);
+		switch(strlen(buff)) {
+			case 3: sep='/'; break;
+			case 4: sep=buff[3]; break;
+			case 5: sep=buff[4]; 
+				if (sep=='4' ||sep=='2') {sep=buff[3];}
+				break;
+				
+		}
+	}
+	return sep;
+}
+
 
 /*
  * Converts a DBDATE environment variable style date format string

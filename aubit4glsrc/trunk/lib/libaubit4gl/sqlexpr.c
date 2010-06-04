@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlexpr.c,v 1.88 2010-03-17 19:02:25 mikeaubury Exp $
+# $Id: sqlexpr.c,v 1.89 2010-06-04 12:35:42 mikeaubury Exp $
 #
 */
 
@@ -954,10 +954,10 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
 		char buff[256];
 		if (isdigit (ptr[1]) &&
 		    isdigit (ptr[2]) &&
-		    ptr[3] == '/' &&
+		    ptr[3] == A4GL_get_dbdate_separator() &&
 		    isdigit (ptr[4]) &&
 		    isdigit (ptr[5]) &&
-		    ptr[6] == '/' && isdigit (ptr[7]) && isdigit (ptr[8]) && isdigit (ptr[9]) && isdigit (ptr[10]))
+		    ptr[6] == A4GL_get_dbdate_separator() && isdigit (ptr[7]) && isdigit (ptr[8]) && isdigit (ptr[9]) && isdigit (ptr[10]))
 		  {		// Well - it looks like a date..
 
 
@@ -975,10 +975,10 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
 		char buff[256];
 		if (isdigit (ptr[1]) &&
 		    isdigit (ptr[2]) &&
-		    ptr[3] == '/' &&
+		    ptr[3] == A4GL_get_dbdate_separator() &&
 		    isdigit (ptr[4]) &&
 		    isdigit (ptr[5]) &&
-		    ptr[6] == '/' && isdigit (ptr[7]) && isdigit (ptr[8]) && isdigit (ptr[9]) && isdigit (ptr[10]))
+		    ptr[6] == A4GL_get_dbdate_separator() && isdigit (ptr[7]) && isdigit (ptr[8]) && isdigit (ptr[9]) && isdigit (ptr[10]))
 		  {		// Well - it looks like a date..
 		    char *dbdate;
 		    dbdate = A4GL_get_dbdate ();
@@ -1006,10 +1006,10 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
 		char buff[256];
 		if (isdigit (ptr[1]) &&
 		    isdigit (ptr[2]) &&
-		    ptr[3] == '/' &&
+		    ptr[3] == A4GL_get_dbdate_separator() &&
 		    isdigit (ptr[4]) &&
 		    isdigit (ptr[5]) &&
-		    ptr[6] == '/' && isdigit (ptr[7]) && isdigit (ptr[8]) && isdigit (ptr[9]) && isdigit (ptr[10]))
+		    ptr[6] == A4GL_get_dbdate_separator() && isdigit (ptr[7]) && isdigit (ptr[8]) && isdigit (ptr[9]) && isdigit (ptr[10]))
 		  {		// Well - it looks like a date..
 		    char *dbdate;
 		    dbdate = A4GL_get_dbdate ();

@@ -25,7 +25,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.171 2010-05-12 08:29:10 mikeaubury Exp $
+# $Id: ops.c,v 1.172 2010-06-04 12:35:42 mikeaubury Exp $
 #
 */
 
@@ -1070,6 +1070,8 @@ A4GL_dec_int_ops (int op)
   int d;
   //char *a1;
   //char *a2;
+  
+  
   A4GL_pop_var2 (&b, 5, 0x2000);
   //A4GL_pop_var2 (&a, 5, 0x2010);
   A4GL_pop_sized_decimal(&a);
@@ -7561,6 +7563,7 @@ A4GL_whats_in_a_string (char *s, int *d, int *sz,int dtype_hint)
   int val;
   int orig_stat;
 int t;
+int dot_cnt;
 
   if (s == 0)
     return;
@@ -7573,6 +7576,30 @@ int t;
 	if (strcmp(s,"0-1")==0) { *d=DTYPE_INTERVAL; *sz=0x612; }
 
   orig_conv_ok = A4GL_conversion_ok (-1);
+  dot_cnt=0;
+
+  for (a=0;a<strlen(s);a++) {
+	if (s[a]=='.') dot_cnt++;
+  }
+
+
+  if (dot_cnt==2) {
+	// its a date?
+	// 	11.11.2004;
+      *d = DTYPE_DATE;
+      *sz = 4;
+  	A4GL_conversion_ok (1);
+  	val = A4GL_stod (s, buff, 4);
+
+  	if (!A4GL_conversion_ok (-1)) {
+    		val = 0;
+	}
+  	if (val == 1)
+    	{
+		return ;
+  	}
+   }
+
 
   if (strchr (s, a4gl_convfmts.ui_decfmt.decsep))
     {

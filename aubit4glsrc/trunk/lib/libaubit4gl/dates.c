@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dates.c,v 1.27 2010-02-16 13:16:27 mikeaubury Exp $
+# $Id: dates.c,v 1.28 2010-06-04 12:35:42 mikeaubury Exp $
 #
 */
 
@@ -127,7 +127,7 @@ int A4GL_days_in_month (int m, int y);
 int
 A4GL_date_sep (int z)
 {
-  if (z == '/' || z == '-' || z == '.')
+  if (z == '/' || z == '-' || z == '.' || z==A4GL_get_dbdate_separator())
     return 1;
   return 0;
 }

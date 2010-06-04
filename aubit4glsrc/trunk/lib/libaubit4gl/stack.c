@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                          |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.256 2010-06-02 13:26:39 mikeaubury Exp $
+# $Id: stack.c,v 1.257 2010-06-04 12:35:42 mikeaubury Exp $
 #
 */
 
@@ -2686,7 +2686,8 @@ A4GL_opboolean (void)
       //A4GL_debug ("2 --> %s %lf", z1, a);
     }
 
-  if (a_strchr (z1, '/') && A4GL_stod (z1, &adate, 0) == 1)	// Looks a bit like a date...
+  //printf("A4GL_get_dbdate_separator=%c\n",A4GL_get_dbdate_separator()) -l
+  if (a_strchr (z1, A4GL_get_dbdate_separator()) && A4GL_stod (z1, &adate, 0) == 1)	// Looks a bit like a date...
     {
 
       if (!A4GL_isnull (DTYPE_DATE, (void *) &adate))

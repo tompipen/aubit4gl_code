@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.403 2010-05-11 06:51:13 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.404 2010-06-04 12:35:42 mikeaubury Exp $
 #
 */
 
@@ -2364,10 +2364,17 @@ int A4GL_sprintf (char *f,int l, char *dest,size_t sdest,char *fmt, ...) ;
 #define A4GL_EVENT_AFTER_FIELD_1 	-198
 #define A4GL_EVENT_ON_CHANGE 		-199
 
+#define A4GL_EVENT_ON_APPLAUNCHEREVENT 	-104
+
+void A4GL_zap_param(int n);
 
 void A4GL_free_associated_mem(void *orig);
 void *A4GL_alloc_associated_mem(void *orig,int nbytes);
+void A4GL_set_last_applauncher_event(char *s);
 
+int aclfgl_aclfgl_function_in_library(int n);
+int aclfgl_aclfgl_get_last_applauncher_event(int n);
+int aclfgl_aclfgl_clr_last_applauncher_event(int n);
 int aclfgl_fgl_dialog_setcurrline(int n);
 int aclfgl_fgl_dialog_getfieldname(int n);
 int aclfgl_fgl_dialog_getbuffer(int n);
@@ -2947,7 +2954,7 @@ struct sObject {
 };
 
 
-
+char A4GL_get_dbdate_separator(void);
 void A4GL_set_ignore_error_list(int n, ...) ;
 void A4GL_clr_ignore_error_list(void);
 
