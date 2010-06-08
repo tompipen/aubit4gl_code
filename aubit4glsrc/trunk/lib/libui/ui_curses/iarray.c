@@ -24,10 +24,10 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.167 2010-05-18 10:52:12 mikeaubury Exp $
+# $Id: iarray.c,v 1.168 2010-06-08 16:45:40 mikeaubury Exp $
 #*/
 #ifndef lint
-static char const module_id[] = "$Id: iarray.c,v 1.167 2010-05-18 10:52:12 mikeaubury Exp $";
+static char const module_id[] = "$Id: iarray.c,v 1.168 2010-06-08 16:45:40 mikeaubury Exp $";
 #endif
 
 /**
@@ -3021,6 +3021,7 @@ process_control_stack_internal (struct s_inp_arr *arr)
 			case DTYPE_SMFLOAT:
 			case DTYPE_DECIMAL:
 			case DTYPE_MONEY:
+			case DTYPE_DATE:
 #ifdef DEBUG
 			  A4GL_debug ("MMMM - Clear EOF first pos typing zz9pa curr_line_is_new=%d", arr->curr_line_is_new);
 #endif
