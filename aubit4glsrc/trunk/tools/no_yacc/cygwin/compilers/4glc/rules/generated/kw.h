@@ -1241,3 +1241,4 @@ struct s_kw {
 #define END_TODO 2234
 #define KW_TODO 2235
 #define KW_ALWAYS 2236
+#define PROGRAM_TIMEOUT 2237

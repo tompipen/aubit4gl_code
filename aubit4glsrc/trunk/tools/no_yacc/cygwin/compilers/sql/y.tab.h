@@ -39,25 +39,25 @@
    /* Put the tokens into the symbol table, so that GDB and other debuggers
       know about them.  */
    enum yytokentype {
-     INT_VALUE = 2238,
-     NAMED = 2239,
-     NAMED_GEN = 2240,
-     CHAR_VALUE = 2241,
-     NOT_USED_1 = 2242,
-     NOT_USED_2 = 2243,
-     NOT_USED_3 = 2244,
-     NOT_USED_4 = 2245,
-     NOT_USED_5 = 2246,
-     NOT_USED_6 = 2247,
-     NOT_USED_7 = 2248,
-     NOT_USED_8 = 2249,
-     NUMBER_VALUE = 2250,
-     SEMICOLON = 2251,
-     QUESTION_MARK = 2252,
-     CLINE = 2253,
-     CH = 2254,
-     MARK_VAR = 2255,
-     END_MARK_VAR = 2256,
+     INT_VALUE = 2239,
+     NAMED = 2240,
+     NAMED_GEN = 2241,
+     CHAR_VALUE = 2242,
+     NOT_USED_1 = 2243,
+     NOT_USED_2 = 2244,
+     NOT_USED_3 = 2245,
+     NOT_USED_4 = 2246,
+     NOT_USED_5 = 2247,
+     NOT_USED_6 = 2248,
+     NOT_USED_7 = 2249,
+     NOT_USED_8 = 2250,
+     NUMBER_VALUE = 2251,
+     SEMICOLON = 2252,
+     QUESTION_MARK = 2253,
+     CLINE = 2254,
+     CH = 2255,
+     MARK_VAR = 2256,
+     END_MARK_VAR = 2257,
      WITH_LISTING_IN = 1001,
      SET_CONSTRAINTS_ALL_DEFERRED = 1002,
      KW_LIMIT = 1003,
@@ -322,29 +322,30 @@
      KW_DONE = 2233,
      END_TODO = 2234,
      KW_TODO = 2235,
-     KW_ALWAYS = 2236
+     KW_ALWAYS = 2236,
+     PROGRAM_TIMEOUT = 2237
    };
 #endif
 /* Tokens.  */
-#define INT_VALUE 2238
-#define NAMED 2239
-#define NAMED_GEN 2240
-#define CHAR_VALUE 2241
-#define NOT_USED_1 2242
-#define NOT_USED_2 2243
-#define NOT_USED_3 2244
-#define NOT_USED_4 2245
-#define NOT_USED_5 2246
-#define NOT_USED_6 2247
-#define NOT_USED_7 2248
-#define NOT_USED_8 2249
-#define NUMBER_VALUE 2250
-#define SEMICOLON 2251
-#define QUESTION_MARK 2252
-#define CLINE 2253
-#define CH 2254
-#define MARK_VAR 2255
-#define END_MARK_VAR 2256
+#define INT_VALUE 2239
+#define NAMED 2240
+#define NAMED_GEN 2241
+#define CHAR_VALUE 2242
+#define NOT_USED_1 2243
+#define NOT_USED_2 2244
+#define NOT_USED_3 2245
+#define NOT_USED_4 2246
+#define NOT_USED_5 2247
+#define NOT_USED_6 2248
+#define NOT_USED_7 2249
+#define NOT_USED_8 2250
+#define NUMBER_VALUE 2251
+#define SEMICOLON 2252
+#define QUESTION_MARK 2253
+#define CLINE 2254
+#define CH 2255
+#define MARK_VAR 2256
+#define END_MARK_VAR 2257
 #define WITH_LISTING_IN 1001
 #define SET_CONSTRAINTS_ALL_DEFERRED 1002
 #define KW_LIMIT 1003
@@ -610,6 +611,7 @@
 #define END_TODO 2234
 #define KW_TODO 2235
 #define KW_ALWAYS 2236
+#define PROGRAM_TIMEOUT 2237
 
 
 
@@ -645,7 +647,7 @@ typedef union YYSTYPE
 
 
 /* Line 1676 of yacc.c  */
-#line 649 "y.tab.h"
+#line 651 "y.tab.h"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
