@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.180 2010-05-09 10:45:39 mikeaubury Exp $
+# $Id: conv.c,v 1.181 2010-06-09 06:57:39 mikeaubury Exp $
 #
 */
 
@@ -980,7 +980,7 @@ static int A4GL_dttof (void *a, void *b, int size) {
   	d = a;
 	ok=getdt_as_dbl(d,&val);
 	if (ok) {
-		*(float *)b=(double)val;
+		*(double *)b=(double)val;
 		return 1;
 	}
 	return 0;
