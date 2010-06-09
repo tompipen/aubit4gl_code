@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlexpr.c,v 1.90 2010-06-04 18:44:31 mikeaubury Exp $
+# $Id: sqlexpr.c,v 1.91 2010-06-09 12:40:37 mikeaubury Exp $
 #
 */
 
@@ -688,22 +688,51 @@ get_select_list_item_ob (struct s_select *select, struct s_select_list_item *p)
  * 
 */
 static char *
-like_trim (char *s)
+like_trim (char *s, int isLeft)
 {
-  if (A4GLSQLCV_check_requirement ("TRIMSQLLIKEVAL"))
+
+      if (A4GLSQLCV_check_requirement ("TRIMSQLLIKEVAR") && strcmp(s,"?")==0)
+	{
+	  static char buff[20000];
+	  SPRINTF1 (buff, "TRIM(%s)", s);
+	  return buff;
+	}
+
+      if (A4GLSQLCV_check_requirement ("RTRIMSQLLIKEVAR") && strcmp(s,"?")==0)
+	{
+	  static char buff[20000];
+	  SPRINTF1 (buff, "RTRIM(%s)", s);
+	  return buff;
+	}
+
+
+
+  if (isLeft)
     {
-      static char buff[20000];
-      SPRINTF1 (buff, "TRIM(%s)", s);
-      return buff;
+
+      if (A4GLSQLCV_check_requirement ("TRIMSQLLIKEVAL"))
+	{
+	  static char buff[20000];
+	  SPRINTF1 (buff, "TRIM(%s)", s);
+	  return buff;
+	}
+
+      if (A4GLSQLCV_check_requirement ("RTRIMSQLLIKEVAL"))
+	{
+	  static char buff[20000];
+	  SPRINTF1 (buff, "RTRIM(%s)", s);
+	  return buff;
+	}
+      return s;
     }
 
-  if (A4GLSQLCV_check_requirement ("RTRIMSQLLIKEVAL"))
-    {
-      static char buff[20000];
-      SPRINTF1 (buff, "RTRIM(%s)", s);
-      return buff;
-    }
-  return s;
+
+return s;
+
+    
+
+
+
 }
 
 
@@ -1065,21 +1094,21 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
 	p2 = get_select_list_item (select, p->data.s_select_list_item_data_u.regex.regex);
 	if (p->data.s_select_list_item_data_u.regex.escape && strlen (p->data.s_select_list_item_data_u.regex.escape))
 	  {
-	    return make_sql_string_and_free (acl_strdup_With_Context (like_trim (p1)), strdup (" LIKE "), strdup (p2),
-					     acl_strdup_With_Context (convert_escape_str(p->data.s_select_list_item_data_u.regex.escape)), NULL);
+	    return make_sql_string_and_free (acl_strdup_With_Context (like_trim (p1,1)), strdup (" LIKE "), strdup (p2),
+					     acl_strdup_With_Context (like_trim(convert_escape_str(p->data.s_select_list_item_data_u.regex.escape),0)), NULL);
 	  }
 	else
 	  {
-	    return make_sql_string_and_free (acl_strdup_With_Context (like_trim (p1)), acl_strdup_With_Context (" LIKE "),
-					     acl_strdup_With_Context (p2), NULL);
+	    return make_sql_string_and_free (acl_strdup_With_Context (like_trim (p1,1)), acl_strdup_With_Context (" LIKE "),
+					     acl_strdup_With_Context (like_trim(p2,0)), NULL);
 	  }
       }
     case E_SLI_REGEX_NOT_LIKE:
       {
 	char *p1;
 	char *p2;
-	p1 = acl_strdup_With_Context (like_trim (get_select_list_item (select, p->data.s_select_list_item_data_u.regex.val)));
-	p2 = acl_strdup_With_Context (get_select_list_item (select, p->data.s_select_list_item_data_u.regex.regex));
+	p1 = acl_strdup_With_Context (like_trim (get_select_list_item (select, p->data.s_select_list_item_data_u.regex.val),1));
+	p2 = acl_strdup_With_Context (like_trim (get_select_list_item (select, p->data.s_select_list_item_data_u.regex.regex),0));
 	if (p->data.s_select_list_item_data_u.regex.escape && strlen (p->data.s_select_list_item_data_u.regex.escape))
 	  {
 	    return make_sql_string_and_free (acl_strdup_With_Context (p1), acl_strdup_With_Context (" NOT LIKE "), p2,
@@ -1094,8 +1123,8 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
       {
 	char *p1;
 	char *p2;
-	p1 = acl_strdup_With_Context (like_trim (get_select_list_item (select, p->data.s_select_list_item_data_u.regex.val)));
-	p2 = acl_strdup_With_Context (get_select_list_item (select, p->data.s_select_list_item_data_u.regex.regex));
+	p1 = acl_strdup_With_Context (like_trim (get_select_list_item (select, p->data.s_select_list_item_data_u.regex.val),1));
+	p2 = acl_strdup_With_Context (like_trim(get_select_list_item (select, p->data.s_select_list_item_data_u.regex.regex),0));
 	if (p->data.s_select_list_item_data_u.regex.escape && strlen (p->data.s_select_list_item_data_u.regex.escape))
 	  {
 	    return make_sql_string_and_free (p1, acl_strdup_With_Context (" ILIKE "), p2,
@@ -1110,8 +1139,8 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
       {
 	char *p1;
 	char *p2;
-	p1 = acl_strdup_With_Context (like_trim (get_select_list_item (select, p->data.s_select_list_item_data_u.regex.val)));
-	p2 = acl_strdup_With_Context (get_select_list_item (select, p->data.s_select_list_item_data_u.regex.regex));
+	p1 = acl_strdup_With_Context (like_trim (get_select_list_item (select, p->data.s_select_list_item_data_u.regex.val),1));
+	p2 = acl_strdup_With_Context (like_trim (get_select_list_item (select, p->data.s_select_list_item_data_u.regex.regex),0));
 	if (p->data.s_select_list_item_data_u.regex.escape && strlen (p->data.s_select_list_item_data_u.regex.escape))
 	  {
 	    return make_sql_string_and_free (p1, acl_strdup_With_Context (" NOT ILIKE "), p2,
