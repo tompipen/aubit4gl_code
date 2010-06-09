@@ -363,7 +363,7 @@ declare
         end loop;
 
         if lv_contains_dot_start=1 then
-                lv_rval=lv_rval||'[ ]+$';
+                lv_rval=lv_rval||'[ ]*$';
         end if;
 
         return lv_rval;
