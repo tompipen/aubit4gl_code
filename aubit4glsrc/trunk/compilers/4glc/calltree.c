@@ -66,6 +66,7 @@ static int run_calltree (char *s);
 int inc4GL = 1;			/* Include 4gl in the output */
 int incProg = 1;
 char top_level_function[200]="MAIN";
+int groupByModule=0;
 
 extern module_definition this_module;
 //int expr_datatype (struct expr_str *p);
@@ -260,14 +261,91 @@ if (ptr ==0) {
 return ptr;
 }
 
+
+struct s_group {
+	char *modName;
+	int nFuncs;
+	char **funcnames;
+	char **outstrs;
+};
+
+struct s_group *moduleGroups=0;
+int nmoduleGroups=0;
+
+static void addToGroup(int modNo,char*funcname,char *outstr) {
+	int a;
+	if (moduleGroups[modNo].nFuncs) {
+		for (a=0;a<moduleGroups[modNo].nFuncs;a++)  {
+			if (strcmp(moduleGroups[modNo].funcnames[a],funcname)==0) return; // Already there...
+		}
+	}
+	moduleGroups[modNo].nFuncs++;
+	moduleGroups[modNo].funcnames=realloc(moduleGroups[modNo].funcnames, sizeof(moduleGroups[modNo].funcnames[0])*moduleGroups[modNo].nFuncs);
+	moduleGroups[modNo].funcnames[moduleGroups[modNo].nFuncs-1]=strdup(funcname);
+
+	moduleGroups[modNo].outstrs=realloc(moduleGroups[modNo].outstrs, sizeof(moduleGroups[modNo].outstrs[0])*moduleGroups[modNo].nFuncs);
+	moduleGroups[modNo].outstrs[moduleGroups[modNo].nFuncs-1]=strdup(outstr);
+}
+
+
+static void add_group(char *funcname,char *modname,char *outstr) {
+int a;
+	if (moduleGroups) {
+		for (a=0;a<nmoduleGroups;a++) {
+			if (strcmp(moduleGroups[a].modName,modname)==0) {
+				addToGroup(a,funcname, outstr);
+				return;
+			}
+		}
+	}
+	nmoduleGroups++;
+	moduleGroups=realloc(moduleGroups,sizeof(moduleGroups[0])*nmoduleGroups);
+	moduleGroups[nmoduleGroups-1].modName=strdup(modname);
+	moduleGroups[nmoduleGroups-1].nFuncs=0;
+	moduleGroups[nmoduleGroups-1].funcnames=0;
+	moduleGroups[nmoduleGroups-1].outstrs=0;
+
+	addToGroup(nmoduleGroups-1,funcname,outstr);
+}
+
+
+static void print_groupings(FILE *dot_output) {
+int modNo;
+int funcNo;
+
+
+for (modNo=0;modNo<nmoduleGroups;modNo++) {
+	if (groupByModule) {
+		fprintf(dot_output,"\nsubgraph cluster_%s {\n", moduleGroups[modNo].modName);
+		fprintf(dot_output," label = \"%s.4gl\";\n", moduleGroups[modNo].modName);
+		fprintf(dot_output," style=filled; color = lightgrey;\n");
+	}
+	//fprintf(dot_output," node [style=filled,color=white];", moduleGroups[modNo].modName);
+	for (funcNo=0;funcNo<moduleGroups[modNo].nFuncs;funcNo++) {
+		fprintf(dot_output,"	%s;\n",moduleGroups[modNo].outstrs[funcNo]);
+	}
+
+	if (groupByModule) {
+		fprintf(dot_output,"}\n");
+	}
+}
+fprintf(dot_output,"\n\n");
+
+}
+
+
+
 static void
 printDot (void)
 {
   FILE *dot_output = 0;
-  FILE *unl_output=0;
-  char *mappedModName=0;
-
+  FILE *unl_output = 0;
+  char *mappedModName = 0;
+char outStr[2000];
   int a;
+
+
+
   dot_output = fopen ("calltree.dot", "w");
   unl_output = fopen ("calltree.unl", "w");
 
@@ -277,85 +355,94 @@ printDot (void)
       exit (2);
     }
 
-  fprintf (dot_output, "digraph { // process with 'dot' - eg :   dot -o calltree.gif -Tgif calltree.dot\n");
+  fprintf (dot_output, "digraph G { // process with 'dot' - eg :   dot -o calltree.gif -Tgif calltree.dot\n");
   fprintf (dot_output, "rankdir=LR;\nratio=fill;\nsplines=polyline;\noverlap=vpsc;\n");
 
-  check_for_undefined_functions();
-  check_for_orphaned_functions(top_level_function);
+  check_for_undefined_functions ();
+  check_for_orphaned_functions (top_level_function);
 
 
   for (a = 0; a < nodescnt; a++)
     {
-	int fid;
-	fid=find_function(nodes[a].function);
+      int fid;
+      fid = find_function (nodes[a].function);
 
 
       if (strcmp (nodes[a].calls, NODE_FUNC_DEFINED) == 0)
 	{
 	  // Its our function definition placeholder...
-     //
-            mappedModName=nodes[a].module;
-               if (acl_getenv_not_set_as_0("V4GL")) {
-               if (A4GL_strstartswith(mappedModName,acl_getenv_not_set_as_0("V4GL"))) {
-                     mappedModName+=strlen(acl_getenv_not_set_as_0("V4GL"));
-                          while (mappedModName[0]=='/') mappedModName++;
-                  }
-               }
+	  //
+	  mappedModName = nodes[a].module;
+	  if (acl_getenv_not_set_as_0 ("V4GL"))
+	    {
+	      if (A4GL_strstartswith (mappedModName, acl_getenv_not_set_as_0 ("V4GL")))
+		{
+		  mappedModName += strlen (acl_getenv_not_set_as_0 ("V4GL"));
+		  while (mappedModName[0] == '/')
+		    mappedModName++;
+		}
+	    }
 
-	if (nodes[a].checked==0) {
-		if (strcmp(nodes[a].module,"undefined")!=0)  {
-			fprintf(unl_output,"%s|%s|%d|%s|N\n",get_prog_name(),mappedModName,nodes[a].lineno, nodes[a].function);
-		} else {
+	  if (nodes[a].checked == 0)
+	    {
+	      if (strcmp (nodes[a].module, "undefined") != 0)
+		{
+		  fprintf (unl_output, "%s|%s|%d|%s|N\n", get_prog_name (), mappedModName, nodes[a].lineno, nodes[a].function);
+		}
+	      else
+		{
 
-         		if (strcmp(nodes[a].function,NODE_FUNC_DEFINED)!=0) {
-					//if (is_bolton_function(nodes[a].function)==-1) {
-			   			fprintf(unl_output,"%s|missing|0|%s|M\n",get_prog_name(), nodes[a].function);
-					//}
-         		}
-      		}
-		continue;
-	}
+		  if (strcmp (nodes[a].function, NODE_FUNC_DEFINED) != 0)
+		    {
+		      //if (is_bolton_function(nodes[a].function)==-1) {
+		      fprintf (unl_output, "%s|missing|0|%s|M\n", get_prog_name (), nodes[a].function);
+		      //}
+		    }
+		}
+	      continue;
+	    }
 
-	//if (fid==-1) continue;
-	//if (functions[fid].called==0) continue;
+	  //if (fid==-1) continue;
+	  //if (functions[fid].called==0) continue;
 
-	switch (nodes[a].type) {
-		case 'M': /* Main */
-	      fprintf (dot_output,
-		       "%s [ shape=record, label=< <table border=\"1\"><tr><td colspan=\"2\" bgcolor=\"#30ff30\">%s</td></tr><tr><td>%s</td><td>%d</td></tr></table> > ]\n",
-		       nodes[a].function, nodes[a].function,
-		       nodes[a].module, nodes[a].lineno);
-		fprintf(unl_output,"%s|%s|%d|%s|Y\n",get_prog_name(), mappedModName,nodes[a].lineno, nodes[a].function);
-			break;
+	  switch (nodes[a].type)
+	    {
+	    case 'M':		/* Main */
+	      sprintf (outStr, "\"%s\" [ shape=record, label=< <table border=\"1\"><tr><td colspan=\"2\" bgcolor=\"#30ff30\">%s</td></tr><tr><td>%s</td><td>%d</td></tr></table> > ]\n", nodes[a].function, nodes[a].function, nodes[a].module, nodes[a].lineno);
+	      fprintf (unl_output, "%s|%s|%d|%s|Y\n", get_prog_name (), mappedModName, nodes[a].lineno, nodes[a].function);
+	      add_group( nodes[a].function,  nodes[a].module,outStr);
+	      break;
 
-		case 'F': /* Function */
-	      		fprintf (dot_output,
-		       		"%s [ shape=record, label=< <table border=\"1\"><tr><td colspan=\"2\" bgcolor=\"#c0f0c0\">%s</td></tr><tr><td>%s</td><td>%d</td></tr></table> > ]\n",
-		       		nodes[a].function, nodes[a].function,
-		       		nodes[a].module, nodes[a].lineno);
-		fprintf(unl_output,"%s|%s|%d|%s|Y\n",get_prog_name(),mappedModName,nodes[a].lineno, nodes[a].function);
-			break;
-	
-		case 'R': /* Report */
-	  		fprintf (dot_output,
-		   		"%s [ shape=record, label=< <table border=\"1\"><tr><td colspan=\"2\" bgcolor=\"#c0c0f0\">%s</td></tr><tr><td>%s</td><td>%d</td></tr></table> > ]\n",
-		   		nodes[a].function, nodes[a].function,
-		   		nodes[a].module, nodes[a].lineno);
-		fprintf(unl_output,"%s|%s|%d|%s|Y\n",get_prog_name(),mappedModName,nodes[a].lineno, nodes[a].function);
-					break;
-		case 'U': /* Undefined */
-			if (printAllFuncs) {
-	  			fprintf (dot_output,
-		   			"%s [ shape=record, label=< <table border=\"1\"><tr><td colspan=\"2\" bgcolor=\"#f0f0f0\">%s</td></tr><tr><td>%s</td><td>%d</td></tr></table> > ]\n",
-		   			nodes[a].function, nodes[a].function,
-		   			nodes[a].module, nodes[a].lineno);
-			}
-			   fprintf(unl_output,"%s|missing|0|%s|M\n",get_prog_name(), nodes[a].function);
-			break;
+	    case 'F':		/* Function */
+	      sprintf (outStr,
+		       "\"%s\" [ shape=record, label=< <table border=\"1\"><tr><td colspan=\"2\" bgcolor=\"#c0f0c0\">%s</td></tr><tr><td>%s</td><td>%d</td></tr></table> > ]\n",
+		       nodes[a].function, nodes[a].function, nodes[a].module, nodes[a].lineno);
+			add_group( nodes[a].function,  nodes[a].module,outStr);
+	      fprintf (unl_output, "%s|%s|%d|%s|Y\n", get_prog_name (), mappedModName, nodes[a].lineno, nodes[a].function);
+	      break;
+
+	    case 'R':		/* Report */
+	      sprintf (outStr,
+		       "\"%s\" [ shape=record, label=< <table border=\"1\"><tr><td colspan=\"2\" bgcolor=\"#c0c0f0\">%s</td></tr><tr><td>%s</td><td>%d</td></tr></table> > ]\n",
+		       nodes[a].function, nodes[a].function, nodes[a].module, nodes[a].lineno);
+			add_group( nodes[a].function,  nodes[a].module,outStr);
+	      fprintf (unl_output, "%s|%s|%d|%s|Y\n", get_prog_name (), mappedModName, nodes[a].lineno, nodes[a].function);
+	      break;
+	    case 'U':		/* Undefined */
+	      if (printAllFuncs)
+		{
+		  sprintf (outStr,
+			   "\"%s\" [ shape=record, label=< <table border=\"1\"><tr><td colspan=\"2\" bgcolor=\"#f0f0f0\">%s</td></tr><tr><td>%s</td><td>%d</td></tr></table> > ]\n",
+			   nodes[a].function, nodes[a].function, nodes[a].module, nodes[a].lineno);
+			add_group( nodes[a].function,  "Unknown",outStr);
+		}
+	      fprintf (unl_output, "%s|missing|0|%s|M\n", get_prog_name (), nodes[a].function);
+	      break;
+	    }
 	}
     }
-	}
 
+  print_groupings(dot_output);
 
 
   for (a = 0; a < nodescnt; a++)
@@ -364,26 +451,27 @@ printDot (void)
       if (strcmp (nodes[a].calls, NODE_FUNC_DEFINED) == 0)
 	continue;		// ignore this one - its just a placeholder...
 
-      if (nodes[a].checked==0) continue;
+      if (nodes[a].checked == 0)
+	continue;
 
 
       if (hasNode (nodes[a].calls, NODE_FUNC_DEFINED, -1) || printAllFuncs)
 	{
 
-      if (ignore_user_function(nodes[a].calls)) continue;
+	  if (ignore_user_function (nodes[a].calls))
+	    continue;
 
 	  if (simpleGraph)
 	    {
-	      fprintf (dot_output, "%s -> %s\n", nodes[a].function,
-		       nodes[a].calls);
+	      fprintf (dot_output, "\"%s\" -> \"%s\"\n", nodes[a].function, nodes[a].calls);
 	    }
 	  else
 	    {
-	      fprintf (dot_output, "%s -> %s [ label=\" Line:%d\" ]\n",
-		       nodes[a].function, nodes[a].calls, nodes[a].lineno);
+	      fprintf (dot_output, "\"%s\" -> \"%s\" [ label=\" Line:%d\" ]\n", nodes[a].function, nodes[a].calls, nodes[a].lineno);
 	    }
 	}
     }
+
   fprintf (dot_output, "}\n");
   fclose (dot_output);
   fclose (unl_output);
@@ -2614,6 +2702,7 @@ main (int argc, char *argv[])
       printf (" -S = Simple graph output (excludes line numbers) [default]\n");
       printf (" -p = Print only links to internal functions [default]\n");
       printf (" -P = Also print links to external functions\n");
+      printf (" -G = Group by module in 'dot' output\n");
       printf (" -no4gl = Exclude 4gl sourcecode (required for calltreeviewer)\n");
       printf (" -4gl = Include 4gl sourcecode (required for calltreeviewer) [default]\n");
       printf (" -noProg = Exclude the XML and program tags\n");
@@ -2648,6 +2737,11 @@ main (int argc, char *argv[])
 	{
 	  inc4GL = 0;
 	  continue;
+	}
+      if (strcmp (argv[b], "-G") == 0) 
+	{
+		groupByModule=1;
+		continue;
 	}
 
       if (strcmp (argv[b], "-4gl") == 0)
