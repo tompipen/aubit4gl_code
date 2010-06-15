@@ -7,12 +7,12 @@ define p_date          date,
 
 main
 
-  let p_date = today
-  let p_datetime = current year to year
+  let p_date = mdy(10,14,2000)
+  let p_datetime = "2000-10-14 12:13:14"
   let year1 = year(p_date)
   let year2 = year(p_datetime)
 
-  display p_date
+  display p_date using "dd/mm/yyyy"
   display year1
   display p_datetime
   display year2
