@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlexpr.c,v 1.91 2010-06-09 12:40:37 mikeaubury Exp $
+# $Id: sqlexpr.c,v 1.92 2010-06-15 09:37:37 mikeaubury Exp $
 #
 */
 
@@ -740,20 +740,23 @@ return s;
 
 static char *convert_escape_str(char *ptr) {
 
-       if (ptr[0] == '\"')
+	if (ptr==0) return ptr;
+	if (strlen(ptr)==0) return ptr;
+        if (!A4GLSQLCV_check_requirement ("DOUBLE_TO_SINGLE_QUOTES")) return ptr;
+
+
+       if (ptr[8] == '\"')
           {
 	static char buff[200];
 	char *escape_str;
 		strcpy(buff,ptr);
 		escape_str=&ptr[8];
 		buff[8]=0;
-            if (A4GLSQLCV_check_requirement ("DOUBLE_TO_SINGLE_QUOTES"))
-              {
+
                 escape_str = convstrsql (escape_str);
-              }
 		strcat(buff,escape_str);
-	ptr=buff;
-        }
+		ptr=buff;
+              }
 	return ptr;
 }
 

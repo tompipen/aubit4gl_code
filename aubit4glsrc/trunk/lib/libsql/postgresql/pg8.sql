@@ -23,8 +23,12 @@ $$ LANGUAGE plperl;
 
 
 CREATE OR REPLACE FUNCTION mdy(m integer, d integer, y integer) RETURNS date AS $$
+DECLARE 
+ lv_string char(20);
 BEGIN
-                RETURN to_date(m||' '||d||' '||y, 'MM DD YYYY');
+		lv_string=(m::char(2))||' '||(d::char(2))||' '||(y::char(4));
+	
+                RETURN to_date(lv_string, 'MM DD YYYY');
 END;
 $$ LANGUAGE plpgsql;
 

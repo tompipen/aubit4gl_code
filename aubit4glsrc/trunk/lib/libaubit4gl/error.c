@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: error.c,v 1.57 2010-02-12 14:39:42 mikeaubury Exp $
+# $Id: error.c,v 1.58 2010-06-15 09:37:37 mikeaubury Exp $
 #
 */
 
@@ -81,7 +81,7 @@ char lasterrorstr[1024] = "";
 static int cache_status = 0;
 static char *cache_errmsg = "";
 static int int_err_flg = 0;
-static char sqlerrmessage[256]="";
+static char sqlerrmessage[2560]="";
 //void aclfgli_clr_err_flg (void);
 void aclfgli_set_err_flg (void);
 struct s_err *A4GL_get_errdesc_for_errstr (char *s);
