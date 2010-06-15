@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pg8.c,v 1.110 2010-03-15 18:04:26 mikeaubury Exp $
+# $Id: pg8.c,v 1.111 2010-06-15 08:03:11 mikeaubury Exp $
 #*/
 
 
@@ -1994,6 +1994,22 @@ copy_to_obind (PGresult * res, int no, struct BINDING *obind, int row)
   int nrows;
   int nfields;
   int ok=1;
+  int isMdy=-1;
+
+  if (isMdy) {
+	// figure out if the current datestyle is MDY...
+	// We only do this once - so lets hope the user doesn't change it !
+	PGresult *resmdy;
+	char *val;
+	resmdy=PQexec(current_con, "show datestyle");
+	val=PQgetvalue(resmdy,0,0);
+	isMdy=0;
+
+	if (strstr(val,"mdy") || strstr(val,"MDY")) {
+		isMdy=1;
+	}
+	//printf("isMdy=%d\n",isMdy);
+  }
 
   nrows = PQntuples (res);
   if (row > nrows)
@@ -2033,7 +2049,7 @@ copy_to_obind (PGresult * res, int no, struct BINDING *obind, int row)
 	  s = realloc (s, sl + 2);
 	}
 
-A4GL_debug("COPY DTYPE : %d\n", obind[b].dtype &DTYPE_MASK);
+A4GL_debug("COPY DTYPE : %d %s\n", obind[b].dtype &DTYPE_MASK,ptr);
       switch (obind[b].dtype)
 	{
 
@@ -2053,6 +2069,7 @@ A4GL_debug("COPY DTYPE : %d\n", obind[b].dtype &DTYPE_MASK);
 	      }
 	    else
 	      {
+		// Might need to tweak here if datestyle is different to DBDATE ? 
 		A4GL_push_char (ptr);
 		A4GL_pop_param (obind[b].ptr, obind[b].dtype, obind[b].size);
 	      }
@@ -2111,7 +2128,9 @@ A4GL_debug("COPY DTYPE : %d\n", obind[b].dtype &DTYPE_MASK);
 
 	case DTYPE_DTIME:
 		{
+	A4GL_debug("Here - we've got a DTIME");
 			char buff[2000];
+				//printf("Ptr=%s\n",ptr);
 			if (ptr[2]=='/' && ptr[5]=='/') { // Its datestyle SQL == dd/mm/yy hh:mm:ss
 				strcpy(buff,ptr);
 				// eg : 
@@ -2123,11 +2142,18 @@ A4GL_debug("COPY DTYPE : %d\n", obind[b].dtype &DTYPE_MASK);
 				buff[2]=ptr[8];
 				buff[3]=ptr[9];
 				buff[4]='-';
-				buff[5]=ptr[0];
-				buff[6]=ptr[1];
 				buff[7]='-';
-				buff[8]=ptr[3];
-				buff[9]=ptr[4];
+				if (isMdy) {
+					buff[5]=ptr[0];
+					buff[6]=ptr[1];
+					buff[8]=ptr[3];
+					buff[9]=ptr[4];
+				} else {
+					buff[5]=ptr[3];
+					buff[6]=ptr[4];
+					buff[8]=ptr[0];
+					buff[9]=ptr[1];
+				}
 	  			A4GL_push_char (buff);
 	  			A4GL_pop_param (obind[b].ptr, obind[b].dtype, obind[b].size);
 			} else {
