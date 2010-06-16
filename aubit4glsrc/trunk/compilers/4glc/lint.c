@@ -7268,6 +7268,27 @@ check_expression (char *module, int lineno, struct expr_str *e)
       break;
     }
 
+  if (e->expr_type==ET_EXPR_OP_SPACES) {
+	int dtype;
+	dtype=expr_datatype(module,lineno,e->expr_str_u.expr_expr)&DTYPE_MASK;
+	if (dtype==DTYPE_INT || dtype==DTYPE_SMINT || dtype==DTYPE_INT8 || dtype==DTYPE_SERIAL) {
+      		A4GL_lint (module, lineno, "NONINTSPACES", "Use of non-integer with SPACES", 0);
+			
+	}
+  }
+
+
+
+  if (e->expr_type==ET_EXPR_OP_CLIP) {
+	int dtype;
+	dtype=expr_datatype(module,lineno,e->expr_str_u.expr_expr)&DTYPE_MASK;
+	if (dtype==DTYPE_CHAR || dtype==DTYPE_VCHAR || dtype==DTYPE_NCHAR) ;
+	else {
+      		A4GL_lint (module, lineno, "NONCHARCLIP", "Use of non-character string with CLIPPED", 0);
+	}
+  }
+
+
 
   if (e->expr_type == ET_EXPR_OP_ISNULL
       || e->expr_type == ET_EXPR_OP_ISNOTNULL)

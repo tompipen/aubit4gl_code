@@ -13,6 +13,12 @@ fgl_expr_c :
 	| fgl_expr_c KW_AND fgl_expr_c { $<ptr>$=A4GL_new_op_expr($<ptr>1,$<ptr>3,ET_EXPR_OP_AND,0); }
 	| fgl_expr_c KW_OR fgl_expr_c { $<ptr>$=A4GL_new_op_expr($<ptr>1,$<ptr>3,ET_EXPR_OP_OR,0); }
 	| fgl_expr_c KW_SPACES 			{ 
+			int expr_dtype;
+			expr_dtype=expr_datatype(NULL,yylineno, $<ptr>1) & DTYPE_MASK;
+			if (expr_dtype==DTYPE_INT || expr_dtype==DTYPE_SMINT || expr_dtype==DTYPE_INT8 || expr_dtype==DTYPE_SERIAL) ;
+			else {
+				A4GL_warn("Possible use of non-integer datatype with 'SPACES'");
+			}
 			$<ptr>$=A4GL_new_expr_simple_expr($<ptr>1,ET_EXPR_OP_SPACES);
 			add_feature("ET_EXPR_SPACES"); 
 	}

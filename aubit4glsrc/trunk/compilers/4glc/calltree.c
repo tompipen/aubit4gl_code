@@ -267,6 +267,7 @@ struct s_group {
 	int nFuncs;
 	char **funcnames;
 	char **outstrs;
+	int *used;
 };
 
 struct s_group *moduleGroups=0;
@@ -282,6 +283,9 @@ static void addToGroup(int modNo,char*funcname,char *outstr) {
 	moduleGroups[modNo].nFuncs++;
 	moduleGroups[modNo].funcnames=realloc(moduleGroups[modNo].funcnames, sizeof(moduleGroups[modNo].funcnames[0])*moduleGroups[modNo].nFuncs);
 	moduleGroups[modNo].funcnames[moduleGroups[modNo].nFuncs-1]=strdup(funcname);
+
+	moduleGroups[modNo].used=realloc(moduleGroups[modNo].used, sizeof(moduleGroups[modNo].used[0])*moduleGroups[modNo].nFuncs);
+	moduleGroups[modNo].used[moduleGroups[modNo].nFuncs-1]=0;
 
 	moduleGroups[modNo].outstrs=realloc(moduleGroups[modNo].outstrs, sizeof(moduleGroups[modNo].outstrs[0])*moduleGroups[modNo].nFuncs);
 	moduleGroups[modNo].outstrs[moduleGroups[modNo].nFuncs-1]=strdup(outstr);
@@ -304,10 +308,23 @@ int a;
 	moduleGroups[nmoduleGroups-1].nFuncs=0;
 	moduleGroups[nmoduleGroups-1].funcnames=0;
 	moduleGroups[nmoduleGroups-1].outstrs=0;
+	moduleGroups[nmoduleGroups-1].used=0;
 
 	addToGroup(nmoduleGroups-1,funcname,outstr);
 }
 
+
+static void set_used(char *funcname) {
+int modNo;
+int funcNo;
+for (modNo=0;modNo<nmoduleGroups;modNo++) {
+	for (funcNo=0;funcNo<moduleGroups[modNo].nFuncs;funcNo++) {
+		if (strcmp(funcname,moduleGroups[modNo].funcnames[funcNo])==0) {
+				moduleGroups[modNo].used[funcNo]++;
+		}
+	}
+}
+}
 
 static void print_groupings(FILE *dot_output) {
 int modNo;
@@ -315,15 +332,22 @@ int funcNo;
 
 
 for (modNo=0;modNo<nmoduleGroups;modNo++) {
+
 	if (groupByModule) {
 		fprintf(dot_output,"\nsubgraph cluster_%s {\n", moduleGroups[modNo].modName);
 		fprintf(dot_output," label = \"%s.4gl\";\n", moduleGroups[modNo].modName);
 		fprintf(dot_output," style=filled; color = lightgrey;\n");
 	}
+
+	
 	//fprintf(dot_output," node [style=filled,color=white];", moduleGroups[modNo].modName);
 	for (funcNo=0;funcNo<moduleGroups[modNo].nFuncs;funcNo++) {
+
+		if (moduleGroups[modNo].used[funcNo]==0) continue; // Ignore anything that isn't called - when -Gonly
+
 		fprintf(dot_output,"	%s;\n",moduleGroups[modNo].outstrs[funcNo]);
 	}
+
 
 	if (groupByModule) {
 		fprintf(dot_output,"}\n");
@@ -333,6 +357,29 @@ fprintf(dot_output,"\n\n");
 
 }
 
+
+static int getModuleNo_forFunction(char *s) {
+int modNo;
+int funcNo;
+for (modNo=0;modNo<nmoduleGroups;modNo++) {
+	for (funcNo=0;funcNo<moduleGroups[modNo].nFuncs;funcNo++) {
+		if (strcmp(s,moduleGroups[modNo].funcnames[funcNo])==0) {
+			return modNo;
+		}
+	}
+}
+return -1;
+}
+
+
+static int isSameModule(char *f,char *c) {
+	int mod_func;
+	int mod_calls;
+	mod_func=getModuleNo_forFunction(f);
+	mod_calls=getModuleNo_forFunction(c);
+	if (mod_func==mod_calls) return 1;
+	return 0;
+}
 
 
 static void
@@ -442,6 +489,41 @@ char outStr[2000];
 	}
     }
 
+
+
+
+
+
+  for (a = 0; a < nodescnt; a++)
+    {
+
+      if (strcmp (nodes[a].calls, NODE_FUNC_DEFINED) == 0)
+	continue;		// ignore this one - its just a placeholder...
+
+      if (nodes[a].checked == 0)
+	continue;
+
+
+      if (hasNode (nodes[a].calls, NODE_FUNC_DEFINED, -1) || printAllFuncs)
+	{
+
+	  if (ignore_user_function (nodes[a].calls))
+	    continue;
+
+
+	  if (groupByModule==2) {
+		if (isSameModule(nodes[a].function, nodes[a].calls)) {
+			continue;
+		}
+	  }
+
+	set_used(nodes[a].function);
+	set_used(nodes[a].calls);
+	}
+    }
+
+
+
   print_groupings(dot_output);
 
 
@@ -460,6 +542,13 @@ char outStr[2000];
 
 	  if (ignore_user_function (nodes[a].calls))
 	    continue;
+
+
+	  if (groupByModule==2) {
+		if (isSameModule(nodes[a].function, nodes[a].calls)) {
+			continue;
+		}
+	  }
 
 	  if (simpleGraph)
 	    {
@@ -2703,6 +2792,7 @@ main (int argc, char *argv[])
       printf (" -p = Print only links to internal functions [default]\n");
       printf (" -P = Also print links to external functions\n");
       printf (" -G = Group by module in 'dot' output\n");
+      printf (" -Gonly = Group by module in 'dot' output - only include cross-module calls\n");
       printf (" -no4gl = Exclude 4gl sourcecode (required for calltreeviewer)\n");
       printf (" -4gl = Include 4gl sourcecode (required for calltreeviewer) [default]\n");
       printf (" -noProg = Exclude the XML and program tags\n");
@@ -2741,6 +2831,12 @@ main (int argc, char *argv[])
       if (strcmp (argv[b], "-G") == 0) 
 	{
 		groupByModule=1;
+		continue;
+	}
+
+      if (strcmp (argv[b], "-Gonly") == 0) 
+	{
+		groupByModule=2;
 		continue;
 	}
 
