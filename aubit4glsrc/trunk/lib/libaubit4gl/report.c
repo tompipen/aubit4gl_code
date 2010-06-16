@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.195 2010-06-02 13:26:13 mikeaubury Exp $
+# $Id: report.c,v 1.196 2010-06-16 10:15:17 mikeaubury Exp $
 #
 */
 
@@ -1406,11 +1406,23 @@ A4GL_skip_top_of_page (struct rep_structure *rep, int n)
 void
 A4GL_add_spaces (void)
 {
-  int a;
+  int a=0;
   char str[1000];
   a = A4GL_pop_int ();
+  if (A4GL_isnull (DTYPE_SMINT, (void *)&a)) {
+		A4GL_push_char("");
+		return;
+  }
+
+  if (a<=0) {
+	A4GL_push_char("");
+	return;
+  }
+
+  //A4GL_assertion(a>=sizeof(str), "Attempt to print too many spaces");
   if (a >= 1000)
     a = 999;
+  
   memset (str, ' ', a);
   str[a] = 0;
   A4GL_push_char (str);
