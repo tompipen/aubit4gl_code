@@ -2481,8 +2481,11 @@ namespace AubitDesktop
             {
             }
 
-            // We might get to here if we're waiting for an event - but thats ok - because it will stay in the queue...
-            this.ResumeLayout();
+            if (!this.Disposing)
+            {
+                // We might get to here if we're waiting for an event - but thats ok - because it will stay in the queue...
+                this.ResumeLayout();
+            }
             Console.WriteLine("Consumed:"+(DateTime.Now-stime));
         }
 
