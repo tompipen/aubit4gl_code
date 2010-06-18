@@ -233,7 +233,33 @@ namespace AubitDesktop
                 Data.Rows[subscript][0] = "XXX"; // First column was to hold the subscript - but its currently not used....
                 for (int col = 0; col < rows[row].VALUES.Length; col++)
                 {
-                    Data.Rows[subscript][col + 1] = (string)rows[row].VALUES[col].Text;
+                    object itm;
+                    int trimWidth = -1;
+                    AubitDesktop.Xml.XMLForm.TableColumn tc = inputArrayGrid.table.TableColumn[col];
+                    itm = tc.Item;
+
+                    if (itm is AubitDesktop.Xml.XMLForm.Edit)
+                    {
+                        AubitDesktop.Xml.XMLForm.Edit e;
+                        e = (AubitDesktop.Xml.XMLForm.Edit)itm;
+                        trimWidth = Convert.ToInt32(e.width);
+                    }
+
+                    if (trimWidth > 0)
+                    {
+                        if (rows[row].VALUES[col].Text.Length > trimWidth)
+                        {
+                            Data.Rows[subscript][col + 1] = (string)rows[row].VALUES[col].Text.Substring(0, trimWidth);
+                        }
+                        else
+                        {
+                            Data.Rows[subscript][col + 1] = (string)rows[row].VALUES[col].Text;
+                        }
+                    }
+                    else
+                    {
+                        Data.Rows[subscript][col + 1] = (string)rows[row].VALUES[col].Text;
+                    }
 
                 }
                 // as we've been passed these values in - 
