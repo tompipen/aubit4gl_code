@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin.c,v 1.158 2010-04-08 15:46:03 mikeaubury Exp $
+# $Id: builtin.c,v 1.159 2010-06-18 10:13:43 mikeaubury Exp $
 #
 */
 
@@ -1049,7 +1049,7 @@ int
 aclfgl_showhelp (int helpnumber)
 /* show_help(string, 4glmode, 4gllinenumber) */
 {
-  A4GL_push_long (helpnumber);
+  //A4GL_push_long (helpnumber);
   aclfgli_show_help (1);
 
   return 0;
