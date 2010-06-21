@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.245 2010-04-23 08:06:03 mikeaubury Exp $
+# $Id: esql.ec,v 1.246 2010-06-21 11:16:45 mikeaubury Exp $
 #
 */
 
@@ -91,6 +91,8 @@ WARNING: Since sqlca is used in many places in Aubit code, is this safe?
 #include  <sqltypes.h>
 #include <string.h>
 #include <limits.h>
+#include <ctype.h>
+
 static void copy_sqlca_Stuff(int warnings) ;
 void A4GL_rm_associated_mem (void *orig, void *newbytes);
 
@@ -181,7 +183,7 @@ static loc_t *add_blob(struct s_sid *sid, int n, struct s_extra_info *e,fglbyte 
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.245 2010-04-23 08:06:03 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.246 2010-06-21 11:16:45 mikeaubury Exp $";
 #endif
 
 
@@ -4865,7 +4867,8 @@ charcpy (unsigned char *target, unsigned char *source, long len)
 	  processed++;
 	}
 
-      if (!processed && (*source < ' ' || *source > '~'))
+      if (!processed && !isprint(*source) && !iscntrl(*source))
+      //if (!processed && (*source < ' ' || *source > '~'))
 	{
 	  /*
 	   * Non-printable, convert to hex. 
