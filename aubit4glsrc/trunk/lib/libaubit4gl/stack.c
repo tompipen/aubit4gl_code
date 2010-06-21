@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                          |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.257 2010-06-04 12:35:42 mikeaubury Exp $
+# $Id: stack.c,v 1.258 2010-06-21 18:01:58 mikeaubury Exp $
 #
 */
 
@@ -2900,6 +2900,20 @@ add_to_z (char *z, char *s)
   return z;
 }
 
+
+
+// Is this the sort of variable we'll exclude from the stack trace ? 
+static int isPasswordStyleVariable(char *s) {
+
+	if (strstr(s,"password")) return 1;
+	if (strstr(s,"passwd")) return 1;
+	if (strstr(s,"ckout_num")) return 1;
+	if (strstr(s,"ckin_num")) return 1;
+	if (strstr(s,"card_num")) return 1;
+
+return 0;
+}
+
 /**
  *
  *
@@ -2916,6 +2930,7 @@ A4GL_params_on_stack (char *_paramnames[], int n)
 
   if (n == 0)
     return 0;
+
 
 #ifdef DEBUG
   A4GL_debug ("Generating parameter list n=%d", n);
@@ -2999,6 +3014,13 @@ A4GL_params_on_stack (char *_paramnames[], int n)
 
       buff2 = buff;
       buff2 = A4GL_lrtrim (buff);
+
+
+	if (_paramnames) {
+      		if (isPasswordStyleVariable(_paramnames[a])) {
+			buff2="???";
+      		}
+	}
 #ifdef DEBUG
       A4GL_debug ("buff2=%s\n", buff2);
 #endif
