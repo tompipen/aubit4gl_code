@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.246 2010-06-21 11:16:45 mikeaubury Exp $
+# $Id: esql.ec,v 1.247 2010-06-21 13:17:04 mikeaubury Exp $
 #
 */
 
@@ -91,8 +91,7 @@ WARNING: Since sqlca is used in many places in Aubit code, is this safe?
 #include  <sqltypes.h>
 #include <string.h>
 #include <limits.h>
-#include <ctype.h>
-
+#include <ctype.h> 
 static void copy_sqlca_Stuff(int warnings) ;
 void A4GL_rm_associated_mem (void *orig, void *newbytes);
 
@@ -183,7 +182,7 @@ static loc_t *add_blob(struct s_sid *sid, int n, struct s_extra_info *e,fglbyte 
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.246 2010-06-21 11:16:45 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.247 2010-06-21 13:17:04 mikeaubury Exp $";
 #endif
 
 
@@ -4859,7 +4858,7 @@ charcpy (unsigned char *target, unsigned char *source, long len)
 	}
 
 
-      if (!processed && *source == *delim)
+      if (!processed && ((*source == *delim) || (*source == '\n')) )
 	{
 	  *target++ = '\\';
 	  *target = *source;
@@ -4868,7 +4867,7 @@ charcpy (unsigned char *target, unsigned char *source, long len)
 	}
 
       if (!processed && !isprint(*source) && !iscntrl(*source))
-      //if (!processed && (*source < ' ' || *source > '~'))
+      //if (!processed && (*source < ' ' || *source > '~') )
 	{
 	  /*
 	   * Non-printable, convert to hex. 
@@ -5041,7 +5040,6 @@ static int dumprec (FILE* outputfile, struct sqlda *ldesc,int row)
 		A4GL_exitwith("Invalid Datatype"); return 0;
 	    }
 	}
-
 
       if (FPRINTF (outputfile, "%s%s", string, delim) <= 0)
 	{
