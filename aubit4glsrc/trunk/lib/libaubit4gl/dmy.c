@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dmy.c,v 1.28 2010-06-04 18:44:31 mikeaubury Exp $
+# $Id: dmy.c,v 1.29 2010-06-21 17:56:03 mikeaubury Exp $
 #
 */
 
@@ -189,7 +189,7 @@ A4GL_using_date (int dn, char *us)
     }
 
   A4GL_get_date (dn, &d, &m, &y);
-  if (d == 0 && m == 0 && y == 0)
+  if (d == 0 && m == 0 && y == 0 || m>12 || d>31)
     {
       // SOmethings gone wrong
       return "";

@@ -30,8 +30,13 @@ A4GL_assertion_failed (const char *s)
       *ptr = 0;
       A4GL_chk_err (0, "Unknown");
     }
-  A4GL_gotolinemode ();
-  A4GL_set_lasterrorstr (s);
+  	A4GL_gotolinemode ();
+  	A4GL_set_lasterrorstr (s);
+
+      A4GL_push_char ("\nAssert failed:\n\n");
+      A4GL_push_char ((char*)s);
+      A4GL_push_char ("\n\n");
+      A4GL_errorlog ("Unknown", 0, 3);
   A4GL_exitwith ("Assertion failed");
   FPRINTF (A4GL_get_stderr (), "Assertion failed: %s\n", A4GL_null_as_null (s));
 

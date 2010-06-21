@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dates.c,v 1.29 2010-06-04 19:02:21 mikeaubury Exp $
+# $Id: dates.c,v 1.30 2010-06-21 17:56:03 mikeaubury Exp $
 #
 */
 
@@ -645,6 +645,14 @@ a4gl_upshift(buff_srch);
 	  m = atol (buff);
 	  fmt_internal[a] = ' ';
 	  fmt_internal[a + 1] = ' ';
+	}
+
+     if (A4GL_date_sep(fmt_internal[a]=='.')) {
+		// If we've got any of these - and we've got a number at that position - its not
+		// a match on the format...
+		if (data[a]>='0' && data[a]<='9') {
+			return 0;
+		}
 	}
 
 
