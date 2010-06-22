@@ -24,10 +24,10 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.240 2010-06-02 11:26:08 mikeaubury Exp $
+# $Id: ioform.c,v 1.241 2010-06-22 17:40:24 mikeaubury Exp $
 #*/
 #ifndef lint
-static char const module_id[] = "$Id: ioform.c,v 1.240 2010-06-02 11:26:08 mikeaubury Exp $";
+static char const module_id[] = "$Id: ioform.c,v 1.241 2010-06-22 17:40:24 mikeaubury Exp $";
 #endif
 
 /**
@@ -5466,7 +5466,7 @@ A4GL_fld_data_ignore_format (struct struct_scr_field *fprop, char *fld_data)
 	    {
 	      if (strlen (d) != 4 && strlen (d) != 2)
 		{
-		  return 0;
+		  return fld_data;
 		}
 	      else
 		{
@@ -5488,7 +5488,7 @@ A4GL_fld_data_ignore_format (struct struct_scr_field *fprop, char *fld_data)
 		{
 		  if (strlen (d) != 2)
 		    {
-		      return 0;
+		      return fld_data;
 		    }
 
 		  yy = A4GL_modify_year (atol (d));
