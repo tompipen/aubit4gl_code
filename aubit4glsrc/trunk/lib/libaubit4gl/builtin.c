@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin.c,v 1.159 2010-06-18 10:13:43 mikeaubury Exp $
+# $Id: builtin.c,v 1.160 2010-06-22 09:35:25 mikeaubury Exp $
 #
 */
 
@@ -2112,6 +2112,12 @@ aclfgl_aclfgl_getcwd (int a)
 
 
 
+// CALL aclfgl_replace_start(str,start_string,replace_string)
+// will only replace if 'str' starts with 'start_string' 
+// Eg. 
+// 	aclfgl_replace_start("HelloWorld","Hello","Hi") would return "HiWorld"
+//      aclfgl_replace_start("HelloWorld","Hi","Hello") would return "HelloWorld"
+//
 int
 aclfgl_aclfgl_replace_start (int nargs)
 {

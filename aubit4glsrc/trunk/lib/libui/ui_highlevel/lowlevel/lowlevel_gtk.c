@@ -22,7 +22,7 @@ int set_intr_win32 (int type);
 
 int ran_gtk_init = 0;
 #ifndef lint
-static char const module_id[] = "$Id: lowlevel_gtk.c,v 1.153 2010-02-24 16:28:35 mikeaubury Exp $";
+static char const module_id[] = "$Id: lowlevel_gtk.c,v 1.154 2010-06-22 09:35:26 mikeaubury Exp $";
 #endif
 
 
@@ -5575,8 +5575,9 @@ a4gl_locale_to_utf8 (char *s)
   utf = g_locale_to_utf8 (s, -1, NULL, NULL, &gerr);
   if (gerr)
     {
+	A4GL_debug(gerr->message);
       A4GL_set_errm (gerr->message);
-      A4GL_exitwith ("GTK ERROR (%s)");
+      A4GL_exitwith ("GTK ERROR");
       return 0;
     }
   A4GL_assertion (utf == 0, "Unable to generate UTF8 string");

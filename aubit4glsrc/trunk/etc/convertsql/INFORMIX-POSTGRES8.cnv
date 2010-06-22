@@ -219,6 +219,9 @@ REPLACE_EXPR current second to fraction = to_char(now(),  'SS.MS')
 #REPLACE_COMMAND SET EXPLAIN ON = 
 #REPLACE_COMMAND SET EXPLAIN OFF = 
 
+
+REPLACE_COMMAND SET LOG =
+REPLACE_COMMAND SET BUFFERED LOG =
 # This is about as close as postgres gets to an update statistics...
 # use VACUUM ANALYZE for space recovery as well, or let cron handle that
 REPLACE_COMMAND UPDATE STATISTICS = ANALYZE

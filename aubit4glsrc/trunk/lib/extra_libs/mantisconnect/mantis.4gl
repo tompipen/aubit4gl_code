@@ -242,6 +242,7 @@ soap_init2(&soap, SOAP_IO_DEFAULT, SOAP_XML_TREE);
 
   		if (soap_call_ns1__mc_USCOREissue_USCOREadd(&soap, NULL, NULL, get_username(),get_password(),&issue,&rid)) {
 			printf("Failed to add...\n");
+			A4GL_pause_execution();
 			fflush(stdout);
       			soap_print_fault(&soap, stderr);
 			return 0;

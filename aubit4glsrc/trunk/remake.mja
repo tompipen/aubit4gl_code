@@ -67,6 +67,9 @@ cd /home/aubit4gl/aubit4glsrc/tools/quickguide
 make clean
 make
 
+cd /home/aubit4gl/aubit4glsrc/lib/extra_libs/mantisconnect
+make clean
+make
 
 cd /home/aubit4gl/aubit4glsrc
 cd lib/libsql/esqlc
