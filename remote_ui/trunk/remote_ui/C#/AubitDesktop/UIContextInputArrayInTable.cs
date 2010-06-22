@@ -245,20 +245,17 @@ namespace AubitDesktop
                         trimWidth = Convert.ToInt32(e.width);
                     }
 
+
+                    Data.Rows[subscript][col + 1] = (string)rows[row].VALUES[col].Text;
                     if (trimWidth > 0)
                     {
-                        if (rows[row].VALUES[col].Text.Length > trimWidth)
+                        if (rows[row].VALUES[col].Text != null)
                         {
-                            Data.Rows[subscript][col + 1] = (string)rows[row].VALUES[col].Text.Substring(0, trimWidth);
+                            if (rows[row].VALUES[col].Text.Length > trimWidth)
+                            {
+                                Data.Rows[subscript][col + 1] = (string)rows[row].VALUES[col].Text.Substring(0, trimWidth);
+                            }
                         }
-                        else
-                        {
-                            Data.Rows[subscript][col + 1] = (string)rows[row].VALUES[col].Text;
-                        }
-                    }
-                    else
-                    {
-                        Data.Rows[subscript][col + 1] = (string)rows[row].VALUES[col].Text;
                     }
 
                 }
