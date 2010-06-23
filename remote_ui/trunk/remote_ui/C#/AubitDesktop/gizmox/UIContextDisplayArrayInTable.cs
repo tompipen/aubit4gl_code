@@ -250,8 +250,8 @@ namespace AubitDesktop
             
 
             //displayArrayGrid.Rows.Clear();
-           
-            
+
+            displayArrayGrid.allowInsertRow = false;
 
             for (int row = 0; row < p.ROWS.Length; row++)
             {
@@ -266,7 +266,38 @@ namespace AubitDesktop
 
                 for (int col = 0; col < p.ROWS[row].VALUES.Length;col++ )
                 {
-                    data[col+1]=p.ROWS[row].VALUES[col].Text;
+                    object itm;
+                    int trimWidth = -1;
+                    AubitDesktop.Xml.XMLForm.TableColumn tc = displayArrayGrid.table.TableColumn[col];
+                    itm = tc.Item;
+
+
+                    if (itm is AubitDesktop.Xml.XMLForm.Edit)
+                    {
+                        AubitDesktop.Xml.XMLForm.Edit e;
+                        e = (AubitDesktop.Xml.XMLForm.Edit)itm;
+                        trimWidth = Convert.ToInt32(e.width);
+                    }
+                    if (itm is AubitDesktop.Xml.XMLForm.Widget)
+                    {
+                        AubitDesktop.Xml.XMLForm.Widget e;
+                        e = (AubitDesktop.Xml.XMLForm.Widget)itm;
+                        trimWidth = Convert.ToInt32(e.width);
+                    }
+
+                    data[col + 1] = p.ROWS[row].VALUES[col].Text;
+
+                    if (trimWidth > 0)
+                    {
+                        if (p.ROWS[row].VALUES[col].Text != null)
+                        {
+                            if (p.ROWS[row].VALUES[col].Text.Length > trimWidth)
+                            {
+                                data[col + 1] = p.ROWS[row].VALUES[col].Text.Substring(0, trimWidth);
+                            }
+                        }
+                    }
+                    
                     
                 }
                 dt.Rows.Add(data);

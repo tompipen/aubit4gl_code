@@ -469,7 +469,7 @@ namespace AubitDesktop
         [System.Xml.Serialization.XmlArrayItem(Type = typeof(AFTER_FIELD_EVENT), IsNullable = false)]
         [System.Xml.Serialization.XmlArrayItem(Type = typeof(BEFORE_FIELD_EVENT), IsNullable = false)]
         [System.Xml.Serialization.XmlArrayItem(Type = typeof(ONKEY_EVENT), IsNullable = false)]
-        [System.Xml.Serialization.XmlArrayItem(Type = typeof(AFTER_CONSTRUCT_EVENT), IsNullable = false)]
+        [System.Xml.Serialization.XmlArrayItem(Type = typeof(AFTER_INPUT_EVENT), IsNullable = false)]
         [System.Xml.Serialization.XmlArrayItem(Type = typeof(ON_ACTION_EVENT), IsNullable = false)]
         public object[] EVENTS;
     }
@@ -514,14 +514,7 @@ namespace AubitDesktop
          * */
     }
 
-    /// <remarks/>
-    public class AFTER_CONSTRUCT_EVENT : generic_event
-    {
-        /*
-        /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "NMTOKEN")]
-        public string ID; */
-    }
+
 
 
     /// <remarks/>

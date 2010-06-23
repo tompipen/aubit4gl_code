@@ -693,7 +693,7 @@ namespace AubitDesktop
                 }
                 #endregion
                 #region Datatype Check
-                if (!FGLUtils.IsValidForType(w.datatype, Text, w.format))
+                if (!FGLUtils.IsValidForType(w.datatype, Text, w.format,w.datatype_length))
                 {
                     if (fieldValidationFailed != null)
                     {
@@ -824,42 +824,71 @@ namespace AubitDesktop
         public void copyFromDataset() {
             string value;
             DataTable dt;
+            int rcnt = 0;
             
 
             if (DataSource == defaultData) return;
 
-                    if (!(DataSource is DataTable))    return;
+            if (!(DataSource is DataTable))    return;
 
             dt= (DataTable)DataSource;
-            
+
+            clearDefaultData();
+
             defaultData.BeginLoadData();
             
-            for (int 
-                row = 0; row < Convert.ToInt32(table.pageSize); row++)
+            for (int  row = 0; row < Convert.ToInt32(table.pageSize); row++)
             {
+                System.Data.DataRow r;
+                r = null;
+                try
+                {
+                    r = dt.Rows[row];
+                }
+                catch (Exception Ex)
+                {
+                    //MessageBox.Show(Ex.Message);
+                }
+                if (r == null) continue;
+                if (r.RowState == DataRowState.Deleted) continue;
+                
+                
                 for (int col = 0; col <= table.TableColumn.Length; col++)
                 {
                     value = "";
-            
-            
-                        if (row >= dt.Rows.Count)
+
+
+                    if (row >= dt.Rows.Count)
+                    {
+                        value = "";
+                    }
+                    else
+                    {
+                        
+                        try
                         {
-                            value = "";
-                        }
-                        else
-                        {
-                            if (dt.Rows[row][col] is DBNull)
+                            
+
+
+                            if (r[col] is DBNull)
                             {
                                 value = "";
                             }
                             else
                             {
-                                value = (string)dt.Rows[row][col];
+                                value = (string)r[col];
+
                             }
                         }
+                        catch (Exception Ex)
+                        {
+                            MessageBox.Show("Borked @ " + Ex.Message);
+                        }
+                    }
                     
-                    defaultData.Rows[row][col]=value;
+                    defaultData.Rows[rcnt][col]=value;
                 }
+                rcnt++;
             }
 
             DataSource = null;

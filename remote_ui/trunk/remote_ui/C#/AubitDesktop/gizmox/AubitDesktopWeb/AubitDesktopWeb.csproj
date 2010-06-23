@@ -236,6 +236,9 @@
     <Compile Include="..\FGLComboListBoxFieldWidget.cs">
       <Link>FGLComboListBoxFieldWidget.cs</Link>
     </Compile>
+    <Compile Include="..\FGLConstruct.cs">
+      <Link>FGLConstruct.cs</Link>
+    </Compile>
     <Compile Include="..\FGLDateFieldWidget.cs">
       <Link>FGLDateFieldWidget.cs</Link>
       <SubType>Component</SubType>
