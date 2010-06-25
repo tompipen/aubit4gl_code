@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.247 2010-06-21 13:17:04 mikeaubury Exp $
+# $Id: esql.ec,v 1.248 2010-06-25 15:50:24 mikeaubury Exp $
 #
 */
 
@@ -182,7 +182,7 @@ static loc_t *add_blob(struct s_sid *sid, int n, struct s_extra_info *e,fglbyte 
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.247 2010-06-21 13:17:04 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.248 2010-06-25 15:50:24 mikeaubury Exp $";
 #endif
 
 
@@ -997,6 +997,30 @@ static struct s_sid * newStatement (struct BINDING *ibind, int ni, struct BINDIN
   return sid;
 }
 
+
+static char *tr_nl(char *s) {
+char *ptr;
+char *pch;
+ptr=strdup(s);
+if (!A4GL_isno(acl_getenv("A4GL_RMESQLNL"))) {
+	
+pch=strchr(s,'\n');
+while (pch) {
+	 *pch=' '; 
+	pch=strchr(s,'\n');
+}
+pch=strchr(s,'\r');
+while (pch) {
+	 *pch=' '; 
+	pch=strchr(s,'\r');
+}
+
+
+}
+
+return ptr;
+}
+
 /**
  * Prepare an sql statement acording to the bindings and statement
  *
@@ -1043,7 +1067,11 @@ static struct s_sid * prepareSqlStatement (struct BINDING *ibind, int ni, struct
 
 
   A4GL_debug("Prepare : %s from %s",statementName,statementText);
+  statementText=tr_nl(statementText);
+  
   EXEC SQL PREPARE :statementName FROM:statementText;
+
+  free(statementText);
 
   copy_sqlca_Stuff(1);
 
