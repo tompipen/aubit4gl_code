@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: lexer.c,v 1.138 2010-02-16 13:14:53 mikeaubury Exp $
+# $Id: lexer.c,v 1.139 2010-06-25 13:53:37 mikeaubury Exp $
 #*/
 
 /**
@@ -1023,7 +1023,7 @@ chk_word (FILE * f, char *str)
 
   if ((A4GL_aubit_strcasecmp (trimmed, "--!code") == 0
        || A4GL_aubit_strcasecmp (trimmed, "code") == 0)
-      && (xccode == 0) && (A4GL_mja_strncmp (yyline, p, strlen (p)) == 0))
+      && (xccode == 0) && (A4GL_mja_strncmp (yyline, p, strlen (p)) == 0) && !A4GL_isyes(acl_getenv("A4GL_SUPPRESSCODE"))) //@env A4GL_SUPPRESSCODE ctops the lexer checking for 'code' blocks 
     {
       xccode = 1;
       return KW_CSTART;
