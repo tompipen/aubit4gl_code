@@ -173,6 +173,13 @@ op_ad: {strcpy($<str>$,"");}
 
 
 select_list_slil: 
+	unexpanded_select_list_slil {
+			$<s_select_list_item_list>$=rationalize_select_list_item_list($<s_select_list_item_list>1);
+		}
+;
+
+
+unexpanded_select_list_slil:
 	value_expression_pls_sli  { 
 		 $<s_select_list_item_list>$=local_new_select_list_item_list($<s_select_list_item>1);
 	}
