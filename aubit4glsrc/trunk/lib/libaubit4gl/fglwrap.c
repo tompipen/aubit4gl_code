@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.157 2010-04-26 10:35:48 mikeaubury Exp $
+# $Id: fglwrap.c,v 1.158 2010-06-30 17:34:58 mikeaubury Exp $
 #
 */
 
@@ -152,7 +152,7 @@ A4GL_fgl_end ()
 #endif
   A4GL_close_database ();
 
-  A4GLSTK_program_end();
+  A4GLSTK_program_end(0);
 
 #ifdef DEBUG
   A4GL_debug ("Close errlog");
@@ -713,7 +713,7 @@ A4GL_chk_err (int lineno, char *fname)
     }
 
 
-  A4GLSTK_program_end();
+  A4GLSTK_program_end(s);
 
 #ifdef DEBUG
   A4GL_debug ("Close errlog");

@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: function_call_stack.c,v 1.44 2010-01-13 10:38:04 mikeaubury Exp $
+# $Id: function_call_stack.c,v 1.45 2010-06-30 17:34:58 mikeaubury Exp $
 #*/
 
 /**
@@ -64,6 +64,7 @@
 =====================================================================
 */
 
+static const char * html_escape_int (const char *s);
 
 
 /*
@@ -185,45 +186,84 @@ A4GLSTK_lastSeenLine (void)
 }
 
 
-void A4GLSTK_program_end(void) {
-  if (acl_getenv_not_set_as_0("TRACE4GLEXEC")) {
-	char *fname;
-	fname=acl_getenv_not_set_as_0("TRACE4GLEXEC");
-		
-	if (functionCallPointer>=1) {
-		FILE *execprog;
-		execprog=fopen(fname,"a");
+void
+A4GLSTK_program_end (char*errMsg)
+{
+  if (acl_getenv_not_set_as_0 ("TRACE4GLEXEC"))
+    {
+      char *fname;
+      fname = acl_getenv_not_set_as_0 ("TRACE4GLEXEC");
+
+      if (functionCallPointer >= 1)
+	{
+	  FILE *execprog;
+	  execprog = fopen (fname, "a");
 
 
-		if (execprog) {
-		int a;
-			fprintf(execprog,"node_%d->END [ fontsize=8 label=< <table border=\"0\"><tr><td>Line %d</td></tr></table> > ]\n", functionCallStack[functionCallPointer-1].functionCallCnt,currentFglLineNumber);
+	  if (execprog)
+	    {
+	      int a;
 
+		if (errMsg) {
+	      		fprintf (execprog,
+		       "node_%d->ABEND [ fontsize=8 label=< <table border=\"0\"><tr><td>Line %d</td></tr></table> > ]\n",
+		       functionCallStack[functionCallPointer - 1].functionCallCnt, currentFglLineNumber );
 
-		if (functionCallPointer>1 ) {
-			for (a=functionCallPointer;a>=1;a--) {
-				print_node(execprog, a, 0, NULL);
-
-				if (a>1) {
-		  			fprintf (execprog, "node_%d->node_%d [ fontsize=8 label= <  Line:%d > ]\n",
-			   		functionCallStack[a - 2].functionCallCnt, functionCallStack[a-1].functionCallCnt, functionCallStack[a-1].lineNumber
-					);
-				}
-				}
-			}
-
-
-			fprintf(execprog,"}\n");
-			fclose(execprog);
+	      		fprintf (execprog,
+		       		"ABEND [ fontsize=8 shape=record, label=< <table border=\"0\"><tr><td>ABNORMAL EXIT</td></tr><tr><td>%s</td></tr></table> > ]\n",
+		       		html_escape_int(errMsg) );
+		} else {
+	      	fprintf (execprog,
+		       "node_%d->EXITPROGRAM [ fontsize=8 label=< <table border=\"0\"><tr><td>Line %d</td></tr></table> > ]\n",
+		       functionCallStack[functionCallPointer - 1].functionCallCnt, currentFglLineNumber);
 		}
+
+
+	      if (functionCallPointer > 1)
+		{
+		  for (a = functionCallPointer - 1; a >= 1; a--)
+		    {
+		      print_node (execprog, a, 0, NULL);
+		    }
+
+		  for (a = functionCallPointer; a >= 1; a--)
+		    {
+
+		      if (a > 1)
+			{
+			  fprintf (execprog, "node_%d->node_%d [ fontsize=8 label= <  Line:%d > ]\n",
+				   functionCallStack[a - 2].functionCallCnt, functionCallStack[a - 1].functionCallCnt,
+				   functionCallStack[a - 1].lineNumber);
+			}
+		    }
+		}
+
+
+	      fprintf (execprog, "}\n");
+	      fclose (execprog);
+	    }
 	}
-  }
+      else
+	{
+	  FILE *execprog;
+	  execprog = fopen (fname, "a");
+
+
+	  if (execprog)
+	    {
+	      fprintf (execprog, "node_%d->END [ fontsize=8 label=< <table border=\"0\"><tr><td>Line %d</td></tr></table> > ]\n",
+		       functionCallStack[0].functionCallCnt, currentFglLineNumber);
+
+	      fprintf (execprog, "}\n");
+	      fclose (execprog);
+	    }
+	}
+    }
 }
 
 
 
-static const char *
-html_escape_int (const char *s)
+static const char * html_escape_int (const char *s)
 {
   static char *buff = 0;
   static int last_len = 0;
@@ -496,10 +536,11 @@ A4GLSTK_popFunction_nl (int nrets,int lineno )
 
       char *fname;
       fname = acl_getenv_not_set_as_0 ("TRACE4GLEXEC");
+
       if (fname)
 	{
 
-	  if (functionCallPointer >= 1)
+	  if (functionCallPointer > 1)
 	    {
 	      FILE *execprog;
 	      execprog = fopen (fname, "a");
