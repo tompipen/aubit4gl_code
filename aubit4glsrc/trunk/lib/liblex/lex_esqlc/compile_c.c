@@ -24,12 +24,12 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.524 2010-03-24 17:50:39 mikeaubury Exp $
+# $Id: compile_c.c,v 1.525 2010-06-30 17:36:39 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
-static char const module_id[] = "$Id: compile_c.c,v 1.524 2010-03-24 17:50:39 mikeaubury Exp $";
+static char const module_id[] = "$Id: compile_c.c,v 1.525 2010-06-30 17:36:39 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -6258,6 +6258,7 @@ dump_function (struct s_function_definition *function_definition, int ismain)
 	  tmp_ccnt--;
 	  printc ("}");
 	}
+      printc ("A4GLSTK_popFunction_nl(0, %d);\n", function_definition->lastlineno);
       printc ("A4GL_fgl_end_4gl_0();");
       printc ("return 0;");
       tmp_ccnt--;
