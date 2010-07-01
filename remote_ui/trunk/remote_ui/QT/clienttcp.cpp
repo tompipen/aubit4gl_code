@@ -1141,7 +1141,6 @@ void ProtocolHandler::outputTree(QDomNode domNode)
       int charMode = childElement.attribute("CHARMODE").toInt();
       //int helpNo = childElement.attribute("CHARMODE").toInt();
       int fieldAttribute = childElement.attribute("FIELDATTRIBUTE").toInt();
-      qDebug() << childElement.attribute("FIELDATTRIBUTE") << fieldAttribute;
       QString attributeStyle = childElement.attribute("ATTRIB_STYLE");
       QString attributeText = childElement.attribute("ATTRIB_TEXT");
 

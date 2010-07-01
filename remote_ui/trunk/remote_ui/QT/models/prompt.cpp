@@ -43,7 +43,8 @@ Prompt::Prompt(QWidget *parent, Qt::WindowFlags f) : QDialog(parent, f)
 Prompt::Prompt(QString text, int charMode, int fieldAttribute, QWidget *parent, Qt::WindowFlags f) : QDialog(parent, f)
 {
   Q_UNUSED(charMode);
-  this->setWindowFlags(Qt::Dialog);
+  isAccepted = false;
+  //this->setWindowFlags(Qt::Dialog);
 
   //dont let other windows get Focus
   this->setModal(true);
@@ -57,7 +58,7 @@ Prompt::Prompt(QString text, int charMode, int fieldAttribute, QWidget *parent, 
   layout->addWidget(p_label);
 
   //create Input Field
-  p_lineEdit = new LineEdit;
+  p_lineEdit = new QLineEdit;
 
   switch(fieldAttribute) {
      case Fgl::AUBIT_COLOR_BLACK:
@@ -166,9 +167,9 @@ Prompt::Prompt(QString text, int charMode, int fieldAttribute, QWidget *parent, 
           break;
   };
 
+  layout->addWidget(p_lineEdit);
   p_lineEdit->setEnabled(true);
   p_lineEdit->setFocus();
-  layout->addWidget(p_lineEdit);
 
   //show the Prompt
   this->show();
@@ -183,32 +184,43 @@ Prompt::Prompt(QString text, int charMode, int fieldAttribute, QWidget *parent, 
 void Prompt::keyPressEvent(QKeyEvent *event)
 {
    if(event->key() == Qt::Key_Enter || event->key() == Qt::Key_Return){
-
-      QDomDocument doc;
-      QDomElement triggered = doc.createElement("TRIGGERED");
-      triggered.setAttribute("ID", "ACCEPT");
-      doc.appendChild(triggered);
-
-      QDomElement syncValues = doc.createElement("SYNCVALUES");
-      triggered.appendChild(syncValues);
-
-      QDomElement syncValue = doc.createElement("SYNCVALUE");
-      if(!p_lineEdit->text().isNull()){
-         syncValue.appendChild(doc.createTextNode(p_lineEdit->text()));
-      }
-      syncValues.appendChild(syncValue);
-
-      emit sendDirect(doc.toString());
-
+      isAccepted = true;
+      this->close();
    }
 
    if(event->key() == Qt::Key_Escape){
-      QDomDocument doc;
-      QDomElement triggered = doc.createElement("TRIGGERED");
-      triggered.setAttribute("ID", "INTERRUPT");
-      doc.appendChild(triggered);
-      emit sendDirect(doc.toString());
+      this->close();
    }
 
-   QDialog::keyPressEvent(event);
+   return QDialog::keyPressEvent(event);
+
+}
+
+void Prompt::closeEvent(QCloseEvent *event)
+{
+   if(this->isVisible()){
+      QDomDocument doc;
+      QDomElement triggered = doc.createElement("TRIGGERED");
+      doc.appendChild(triggered);
+
+      if(isAccepted){
+         triggered.setAttribute("ID", "ACCEPT");
+  
+         QDomElement syncValues = doc.createElement("SYNCVALUES");
+         triggered.appendChild(syncValues);
+
+         QDomElement syncValue = doc.createElement("SYNCVALUE");
+         if(!p_lineEdit->text().isNull()){
+            syncValue.appendChild(doc.createTextNode(p_lineEdit->text()));
+         }
+         syncValues.appendChild(syncValue);
+      }
+      else{
+         triggered.setAttribute("ID", "INTERRUPT");
+      }
+
+      emit sendDirect(doc.toString());
+
+    }
+    event->accept();
 }
