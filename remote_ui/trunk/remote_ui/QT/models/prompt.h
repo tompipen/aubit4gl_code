@@ -37,6 +37,7 @@ private:
    QLayout* buttonLayout;
    QLineEdit *p_lineEdit;
    bool isAccepted;
+   bool isCharOnlyMode;
 
 protected:
    void keyPressEvent(QKeyEvent *event);
@@ -44,6 +45,9 @@ protected:
 
 signals:
    void sendDirect(QString);
+
+private slots:
+   void promptLineEditTextChanged(const QString &text);
 
 };
 #endif

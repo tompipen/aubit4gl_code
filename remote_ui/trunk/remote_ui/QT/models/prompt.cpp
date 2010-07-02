@@ -42,12 +42,13 @@ Prompt::Prompt(QWidget *parent, Qt::WindowFlags f) : QDialog(parent, f)
 //------------------------------------------------------------------------------
 Prompt::Prompt(QString text, int charMode, int fieldAttribute, QWidget *parent, Qt::WindowFlags f) : QDialog(parent, f)
 {
-  Q_UNUSED(charMode);
   isAccepted = false;
   //this->setWindowFlags(Qt::Dialog);
 
   //dont let other windows get Focus
   this->setModal(true);
+
+  this->isCharOnlyMode=charMode;
 
   //add a Layout
   this->layout = new QHBoxLayout;
@@ -171,6 +172,15 @@ Prompt::Prompt(QString text, int charMode, int fieldAttribute, QWidget *parent, 
   p_lineEdit->setEnabled(true);
   p_lineEdit->setFocus();
 
+
+
+
+   if (this->isCharOnlyMode) {
+		connect(p_lineEdit, SIGNAL( textChanged( const QString& ) ), this, SLOT( promptLineEditTextChanged( const QString& ) ) );
+   }
+
+
+
   //show the Prompt
   this->show();
 }
@@ -183,6 +193,7 @@ Prompt::Prompt(QString text, int charMode, int fieldAttribute, QWidget *parent, 
 //------------------------------------------------------------------------------
 void Prompt::keyPressEvent(QKeyEvent *event)
 {
+
    if(event->key() == Qt::Key_Enter || event->key() == Qt::Key_Return){
       isAccepted = true;
       this->close();
@@ -192,7 +203,15 @@ void Prompt::keyPressEvent(QKeyEvent *event)
       this->close();
    }
 
+
    return QDialog::keyPressEvent(event);
+
+}
+
+void Prompt::promptLineEditTextChanged(const QString &text) {
+  Q_UNUSED(text);
+      isAccepted = true;
+      this->close();
 
 }
 
