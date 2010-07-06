@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: memfile.c,v 1.47 2010-02-16 13:16:31 mikeaubury Exp $
+# $Id: memfile.c,v 1.48 2010-07-06 14:35:10 mikeaubury Exp $
 #
 */
 
@@ -578,6 +578,10 @@ int escp=0;
 	      else
 		{
 		  no_comment_char = '!';	// aubit non-comment character...
+		}
+
+	        if (A4GL_aubit_strcasecmp (acl_getenv ("HASHNOCOMMENT"), "none")==0) {
+		  no_comment_char =1;	// no non-comment character - chances of getting a \001 in the input are remote :-)
 		}
 	    }
 
