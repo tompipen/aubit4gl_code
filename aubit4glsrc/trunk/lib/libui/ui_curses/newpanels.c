@@ -24,11 +24,11 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.180 2010-02-16 13:17:29 mikeaubury Exp $
+# $Id: newpanels.c,v 1.181 2010-07-06 14:34:17 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: newpanels.c,v 1.180 2010-02-16 13:17:29 mikeaubury Exp $";
+		"$Id: newpanels.c,v 1.181 2010-07-06 14:34:17 mikeaubury Exp $";
 #endif
 
 /**
@@ -133,10 +133,10 @@ A4GL_create_window (char *name, int x, int y, int w, int h,
                int error_line,
                int prompt_line,
                int menu_line,
-               int border, int comment_line, int message_line, int attrib,int with_form);
+               int border, int comment_line, int message_line, int attrib,int with_form,char *style);
 static WINDOW *A4GL_display_form (struct s_form_dets *f,int attr);
 static WINDOW *A4GL_display_form_new_win (char *name, struct s_form_dets *f, int x,
-                              int y,int attr);
+                              int y,int attr,char *style);
 /*
 =====================================================================
                     Functions prototypes
@@ -220,7 +220,7 @@ A4GL_create_blank_window (char *name, int x, int y, int w, int h, int border)
   A4GL_chkwin();
   return A4GL_create_window (name, x, y, w, h, 1, 
 		0xff, 0xff, 0xff, 0xff, border, 0xff, 0xff,
-			0xffff,0);
+			0xffff,0,0);
 }
 
 /**
@@ -234,12 +234,13 @@ A4GL_create_window (char *name, int x, int y, int w, int h,
 	       int error_line,
 	       int prompt_line,
 	       int menu_line,
-	       int border, int comment_line, int message_line, int attrib,int with_form)
+	       int border, int comment_line, int message_line, int attrib,int with_form,char *style)
 {
   WINDOW *win = 0;
   WINDOW *dswin;
   PANEL *pan;
   int a;
+  int reverse_attr;
   A4GL_chkwin ();
  
 #ifdef DEBUG
@@ -253,8 +254,6 @@ if (A4GL_isyes(acl_getenv("ODDOPTIONS"))) {
 		A4GL_set_option_value('d',0);
  }
 }
-
-
 
   if (attrib == 0xffff)
     {
@@ -277,6 +276,103 @@ if (A4GL_isyes(acl_getenv("ODDOPTIONS"))) {
 
     }
 
+
+  if ((attrib & 0xff) == 0 || (attrib & 0xff) == 0xff)
+    {
+      attrib = attrib + ' ';
+#ifdef DEBUG
+      A4GL_debug ("Set pad char to space");
+#endif
+    }
+
+  reverse_attr=A4GL_decode_aubit_attr(attrib,'w');
+  if (reverse_attr & A_REVERSE) {
+	reverse_attr-=A_REVERSE;
+   } else {
+	reverse_attr+=A_REVERSE;
+  }
+
+  if (border && style && A4GL_aubit_strcasecmp(style,"zoom")==0) {
+	int a;
+  	WINDOW *winx = 0;
+	int lw=-1;
+	int lh=-1;
+        for (a=0;a<100;a++) {
+                int iw;
+                int ih;
+                iw=(a*w)/100;
+                ih=(a*h)/100;
+		if (iw ==0 || ih==0) continue;
+		if (lw!=iw || lh!=ih) {
+			lw=iw;
+			lh=ih;
+                	winx = newwin (ih + 2, iw + 2, y - 2, x - 2);
+                	if (A4GL_isyes(acl_getenv("SIMPLE_GRAPHICS")))  {
+                        	wborder (winx, '|', '|', '-', '-', '+','+', '+', '+');
+                	} else {
+                        	wborder (winx, 0, 0, 0, 0, 0, 0, 0, 0);
+                	}
+                	A4GL_mja_wrefresh (winx);
+			UILIB_A4GL_zrefresh();
+                	delwin (winx);
+		}
+		a4gl_usleep(500);
+        }
+	border=1; // Zoom forces border...
+  }
+
+
+  if (style && A4GL_aubit_strcasecmp(style,"ds/")==0) { // drop shadow to lower right - ie. style "1"
+	reverse_attr=reverse_attr>>8;
+	reverse_attr=reverse_attr<<8;
+	reverse_attr+='/';
+	style="ds1";
+  }
+
+  if (style && A4GL_aubit_strcasecmp(style,"ds.")==0) { // drop shadow to lower right - ie. style "1"
+	reverse_attr=reverse_attr>>8;
+	reverse_attr=reverse_attr<<8;
+	reverse_attr+='.';
+	style="ds1";
+  }
+  if (style && A4GL_aubit_strcasecmp(style,"ds#")==0) { // drop shadow to lower right - ie. style "1"
+	reverse_attr=reverse_attr>>8;
+	reverse_attr=reverse_attr<<8;
+	reverse_attr+='#';
+	style="ds1";
+  }
+
+  if (style && A4GL_aubit_strcasecmp(style,"ds1")==0) { // drop shadow to lower right - ie. style "1"
+	if (border) {
+	  dswin = newwin (h + 2, w + 2, y -1, x - 1);
+	  A4GL_add_pointer (name, WINCODE, win);
+	  A4GL_add_pointer (name, DROPSHADOW, dswin);
+	  wbkgd (dswin, reverse_attr);
+	  A4GL_mja_wrefresh (dswin);
+	} else {
+	  dswin = newwin (h,w , y, x );
+	  A4GL_add_pointer (name, DROPSHADOW, dswin);
+	  wbkgd (dswin, reverse_attr);
+	  A4GL_mja_wrefresh (dswin);
+	}
+  }
+
+
+  if (style && A4GL_aubit_strcasecmp(style,"ds2")==0) { // drop shadow all around... ie style "2"
+	if (border) {
+	  dswin = newwin (h+4 , w + 4, y -3, x - 3);
+	  A4GL_add_pointer (name, WINCODE, win);
+	  A4GL_add_pointer (name, DROPSHADOW, dswin);
+	  wbkgd (dswin, reverse_attr);
+	  A4GL_mja_wrefresh (dswin);
+	} else {
+	  dswin = newwin (h+2,w+2 , y-2, x-2 );
+	  A4GL_add_pointer (name, DROPSHADOW, dswin);
+	  wbkgd (dswin, reverse_attr);
+	  A4GL_mja_wrefresh (dswin);
+	}
+
+  }
 
   if (strcmp (name, "screen") == 0)
     {
@@ -313,20 +409,6 @@ if (A4GL_isyes(acl_getenv("ODDOPTIONS"))) {
 	  }
 	}
 
-      if (border == 2)
-	{
-	  dswin = newwin (h + 4, w + 4, y - 2, x - 2);
-	  win = newwin (h + 2, w + 2, y - 2, x - 2);
-	  A4GL_add_pointer (name, WINCODE, win);
-	  A4GL_add_pointer (name, DROPSHADOW, dswin);
-	  A4GL_set_bkg (dswin, '+');
-#ifdef DEBUG
-	  A4GL_debug ("XX3 REVERSE");
-#endif
-	  wbkgdset (dswin, COLOR_RED | A_REVERSE);
-	  A4GL_mja_wrefresh (dswin);
-	}
-
       if (border == 3)
 	{
 	  dswin = newwin (h + 4, w + 4, y - 1, x - 1);
@@ -336,8 +418,10 @@ if (A4GL_isyes(acl_getenv("ODDOPTIONS"))) {
 #ifdef DEBUG
 	  A4GL_debug ("XX4 REVERSE");
 #endif
-	  wbkgdset (dswin, COLOR_RED | A_REVERSE);
+	  wbkgdset (dswin, COLOR_RED | A_REVERSE | '+');
+	  A4GL_mja_wrefresh (win);
 	  A4GL_mja_wrefresh (dswin);
+		sleep(3);
 	}
 
       if (border == 0)
@@ -368,13 +452,7 @@ if (A4GL_isyes(acl_getenv("ODDOPTIONS"))) {
   A4GL_mja_wrefresh (win);
 
 
-  if ((attrib & 0xff) == 0 || (attrib & 0xff) == 0xff)
-    {
-      attrib = attrib + ' ';
-#ifdef DEBUG
-      A4GL_debug ("Set pad char to space");
-#endif
-    }
+
 #ifdef DEBUG
   A4GL_debug ("Setting attribute for window to 0x%x for %s\n", attrib, name);
 #endif
@@ -1284,7 +1362,7 @@ A4GL_display_form (struct s_form_dets *f,int attrib)
  * @todo Describe function
  */
 WINDOW *
-A4GL_display_form_new_win (char *name, struct s_form_dets * f, int x, int y,int attr)
+A4GL_display_form_new_win (char *name, struct s_form_dets * f, int x, int y,int attr,char *style)
 {
   WINDOW *w;
   int nlines;
@@ -1338,7 +1416,7 @@ A4GL_display_form_new_win (char *name, struct s_form_dets * f, int x, int y,int 
 		     f->form_details.menu_line,
 		     f->form_details.border,
 		     f->form_details.comment_line,
-		     f->form_details.message_line, f->form_details.colour,1);
+		     f->form_details.message_line, f->form_details.colour,1,style);
   if (w==0) {
 	return 0;
   }
@@ -2366,7 +2444,7 @@ void *
 		       form_line,
 		       error_line,
 		       prompt_line,
-		       menu_line, border, comment_line, message_line, attrib,0);
+		       menu_line, border, comment_line, message_line, attrib,0,style);
 
   return win;
 }
@@ -2464,7 +2542,7 @@ int
 
   A4GL_add_pointer (name, S_FORMDETSCODE, form);
 
-  win = A4GL_display_form_new_win (name, form, x, y,attrib);
+  win = A4GL_display_form_new_win (name, form, x, y,attrib,style);
   if (win)
     {
       A4GL_add_pointer (name, WINCODE, win);
