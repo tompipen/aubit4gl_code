@@ -60,6 +60,7 @@ DEFINE mv_system4gl       SMALLINT
 DEFINE mv_verbose         SMALLINT
 DEFINE mv_versioned       INTEGER
 DEFINE mv_warnfile        CHAR(256)
+DEFINE mv_compatmode      INTEGER
 
 #skdebug 120607
 #	mv_libs			char(512),
@@ -145,6 +146,7 @@ DEFINE use_indicators     INTEGER
     LET mv_make_globals=0
     LET mv_esql_to_c_first=0
     LET mv_static=0
+    LET mv_compatmode=0
 
     IF fgl_getenv("ESQL_TO_C")="Y" THEN
         LET mv_esql_to_c_first=1
@@ -376,7 +378,9 @@ DEFINE lv_type            CHAR(40)
 
             WHEN "-versioned"
                 LET mv_versioned=1
-
+                CONTINUE FOR
+            WHEN "-compat"
+                LET mv_compatmode=1
                 CONTINUE FOR
 
             WHEN "-notversioned"
@@ -441,6 +445,15 @@ DEFINE lv_type            CHAR(40)
         END CASE
 
     END FOR
+
+    IF mv_compatmode THEN
+        CALL aclfgl_setenv("A4GL_SUPPRESSCODE","Y")
+        CALL aclfgl_setenv("A4GL_OBJ_EXT",".o")
+        CALL aclfgl_setenv("HASHNOCOMMENT","none")
+        LET mv_namespace=" "
+    END IF
+
+
 
     IF mv_verbose>3 THEN
         DISPLAY "(2) mv_output=",mv_output CLIPPED
@@ -733,22 +746,34 @@ endcode
             WHEN "--namespace"
                 LET a=a+1
                 LET mv_namespace=arg_val(a)
+                IF mv_namespace IS NULL THEN
+                    LET mv_namespace=" "
+                END IF
 
                 CONTINUE FOR
 
             WHEN "-namespace"
                 LET a=a+1
                 LET mv_namespace=arg_val(a)
+                IF mv_namespace IS NULL THEN
+                    LET mv_namespace=" "
+                END IF
 
                 CONTINUE FOR
 
             WHEN "-noprefix"
                 LET mv_namespace=" "
+                IF mv_namespace IS NULL THEN
+                    LET mv_namespace=" "
+                END IF
 
                 CONTINUE FOR
 
             WHEN "--noprefix"
                 LET mv_namespace=" "
+                IF mv_namespace IS NULL THEN
+                    LET mv_namespace=" "
+                END IF
 
                 CONTINUE FOR
 
@@ -1010,6 +1035,9 @@ endcode
                 LET mv_versioned=0
 
                 CONTINUE FOR
+            WHEN "-compat"
+                LET mv_namespace=" "
+		CONTINUE FOR
 
             WHEN "-S"
                 LET mv_verbose=0
