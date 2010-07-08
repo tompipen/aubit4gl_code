@@ -24,11 +24,11 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.181 2010-07-06 14:34:17 mikeaubury Exp $
+# $Id: newpanels.c,v 1.182 2010-07-08 12:43:50 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: newpanels.c,v 1.181 2010-07-06 14:34:17 mikeaubury Exp $";
+		"$Id: newpanels.c,v 1.182 2010-07-08 12:43:50 mikeaubury Exp $";
 #endif
 
 /**
@@ -357,6 +357,20 @@ if (A4GL_isyes(acl_getenv("ODDOPTIONS"))) {
 	}
   }
 
+  if (style && A4GL_aubit_strcasecmp(style,"ds3")==0) { // drop shadow to lower right - ie. style "1" - but with 2 characters across
+	if (border) {
+	  dswin = newwin (h + 2, w + 2, y -1, x );
+	  A4GL_add_pointer (name, WINCODE, win);
+	  A4GL_add_pointer (name, DROPSHADOW, dswin);
+	  wbkgd (dswin, reverse_attr);
+	  A4GL_mja_wrefresh (dswin);
+	} else {
+	  dswin = newwin (h,w , y, x+1 );
+	  A4GL_add_pointer (name, DROPSHADOW, dswin);
+	  wbkgd (dswin, reverse_attr);
+	  A4GL_mja_wrefresh (dswin);
+	}
+  }
 
   if (style && A4GL_aubit_strcasecmp(style,"ds2")==0) { // drop shadow all around... ie style "2"
 	if (border) {

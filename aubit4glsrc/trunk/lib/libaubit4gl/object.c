@@ -5,6 +5,9 @@ static int initialized=0;
 
 #define MAXOBJECTS 1000
 
+char **objectNames=0;
+int nObjectNames=0;
+
 struct sObject heapOfObjects[MAXOBJECTS];
 
 static void init_objects(void) {
@@ -18,14 +21,16 @@ static void init_objects(void) {
 // We'll set the value so we dont reused this - as 
 // We dont want to use objectID=0;
 	heapOfObjects[0].objType="RESERVED";
-
 }
+
+
 
 struct sObject *new_object(char *type) {
 	int found=-1;
 	struct sObject *o;
 	int a;
 	init_objects();
+	
 	for (a=0;a<MAXOBJECTS;a++) {
 		if (heapOfObjects[a].objType==NULL) {
 			found=a;
@@ -114,4 +119,24 @@ void A4GL_object_dispose(int objectId) {
 		}
 		heapOfObjects[objectId].objHeapId=0;
 	}
+}
+
+int A4GL_ObjectTypeExists(char *s) {
+int a;
+	if (objectNames==0) return 0;
+	for (a=0;a<nObjectNames;a++) {
+		if (strcmp(s, objectNames[a])==0) {
+			return 1;
+		}
+	}
+	return 0;
+}
+
+void A4GL_add_object_type(char *s) {
+	// has it already been added ? 
+	if (A4GL_ObjectTypeExists(s)) return;
+
+	nObjectNames++;
+	objectNames=realloc(objectNames, nObjectNames*sizeof(objectNames[0]));
+	objectNames[nObjectNames-1]=strdup(s);
 }

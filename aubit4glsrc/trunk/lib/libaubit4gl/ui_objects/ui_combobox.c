@@ -706,6 +706,7 @@ char *name=NULL;
 }
  
 void add_ui_combobox_support(void) {
+A4GL_add_object_type("ui.combobox");
   A4GL_add_datatype_function_i (DTYPE_OBJECT, ":ui.combobox.forname", (void *)  ui_combobox_forname);
   A4GL_add_datatype_function_i (DTYPE_OBJECT, ":ui.combobox.additem", (void *)  ui_combobox_additem);
   A4GL_add_datatype_function_i (DTYPE_OBJECT, ":ui.combobox.clear", (void *)  ui_combobox_clear);

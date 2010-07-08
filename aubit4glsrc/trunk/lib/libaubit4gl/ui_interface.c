@@ -104,6 +104,7 @@ char *text;
 }
 
 void add_ui_interface_support(void) {
+        A4GL_add_object_type("ui.interface");
 	A4GL_add_datatype_function_i (DTYPE_OBJECT, ":ui.interface.loadtoolbar", (void *) ui_interface_loadtoolbar);
 	A4GL_add_datatype_function_i (DTYPE_OBJECT, ":ui.interface.loadactiondefaults", (void *) ui_interface_loadactiondefaults);
 	A4GL_add_datatype_function_i (DTYPE_OBJECT, ":ui.interface.loadstyles", (void *) ui_interface_loadstyles);

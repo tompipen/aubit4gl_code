@@ -205,6 +205,9 @@ static int ui_window_settext(int *objectID, int nParam) {
 }
 
 void add_ui_window_support(void) {
+	A4GL_add_object_type("ui.window");
+	A4GL_add_object_type("ui.form");
+
 	A4GL_add_datatype_function_i (DTYPE_OBJECT, ":ui.window.getcurrent", (void *) ui_window_getcurrent);
 	A4GL_add_datatype_function_i (DTYPE_OBJECT, ":ui.window.settext", (void *) ui_window_settext);
 	A4GL_add_datatype_function_i (DTYPE_OBJECT, ":ui.window.getform", (void *) ui_window_getform);

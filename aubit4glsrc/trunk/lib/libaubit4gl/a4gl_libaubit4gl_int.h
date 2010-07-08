@@ -45,6 +45,7 @@ void add_base_channel_support(void) ;
 void add_ui_interface_support(void) ;
 void add_ui_window_support(void) ;
 void add_ui_combobox_support(void) ;
+void add_ui_curses_support(void);
 void add_dyn_support(void) ;
 
 struct s_save_binding {
@@ -56,6 +57,7 @@ int getObject(int objectId, struct sObject **o) ;
 int ensureObject(char *type,int objectId, struct sObject **o) ;
 void A4GL_push_objectID (long p);
 void A4GL_object_dispose(int objectId);
+void A4GL_add_object_type(char *s);
 void A4GL_set_setdtype (int dtype, void *ptr);
 #endif /* #ifndef _AUBIT_LIB_INCL_INT_ */
 

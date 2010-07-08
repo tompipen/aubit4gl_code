@@ -1,7 +1,7 @@
 #include "a4gl_lib_ui_tui_int.h"
 #ifndef lint
 	static char const module_id[] =
-		"$Id: generic_ui.c,v 1.56 2010-03-04 12:35:59 mikeaubury Exp $";
+		"$Id: generic_ui.c,v 1.57 2010-07-08 12:43:49 mikeaubury Exp $";
 #endif
 
 static int A4GL_find_shown (ACL_Menu * menu, int chk, int dir);
@@ -1350,7 +1350,32 @@ void UILIB_A4GL_ui_cancel(int type){
 	// does nothing for this UI 
 }
 
-void UILIB_A4GL_ui_frontcall(char* module,char* name,void* ibind,int ni,void* obind,int no) {
-
+void UILIB_A4GL_ui_frontcall(char* module,char* name,void* vibind,int ni,void* vobind,int no) {
+struct BINDING *ibind;
+struct BINDING *obind;
+char buff[100000];
+char smbuff[20000];
+obind=vobind;
+ibind=vibind;
+	if (strcmp(module,"INTERNAL")==0 && strcmp(name,"ui.curses.define_key")==0 ) {
+		if (ni==2) {
+			char *keydef;
+			int keycode;
+                	A4GL_push_param (ibind[0].ptr, ibind[0].dtype + ENCODE_SIZE (ibind[0].size));
+                	keydef=A4GL_char_pop();
+                	A4GL_push_param (ibind[1].ptr, ibind[1].dtype + ENCODE_SIZE (ibind[1].size));
+                	keycode=A4GL_pop_long();
+			if (keycode) {
+				define_key(keydef,keycode);
+				//printf("Keyname : %s Keycode %d\n", keydef, keycode);
+			}
+		}  else {
+			A4GL_set_status(-3002,0);
+		}
+	}
 }
+
+
+
+
 

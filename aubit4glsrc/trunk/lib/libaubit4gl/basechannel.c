@@ -266,6 +266,9 @@ static int base_channel_close (int *objectID, int nParam) {
 }
 
 void add_base_channel_support(void) {
+
+	A4GL_add_object_type("base.channel");
+
 	A4GL_add_datatype_function_i (DTYPE_OBJECT, ":base.channel.create", (void *) base_channel_create);
 	A4GL_add_datatype_function_i (DTYPE_OBJECT, ":base.channel.openfile", (void *) base_channel_open);
 	A4GL_add_datatype_function_i (DTYPE_OBJECT, ":base.channel.setdelimiter", (void *) base_channel_setdelimiter);
