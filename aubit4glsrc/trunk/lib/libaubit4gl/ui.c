@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ui.c,v 1.97 2010-05-24 10:06:13 mikeaubury Exp $
+# $Id: ui.c,v 1.98 2010-07-08 14:41:56 mikeaubury Exp $
 #
 */
 
@@ -812,8 +812,10 @@ A4GL_chk_for_screen_print (int a)
 	{
 	  int (*function) (int);
 	  function = KeyCallbacks[cnt].callbackFunction;
-	  function (0);
-	  return;
+	  if (function) {
+	  	function (0);
+	  	return;
+          }
 	}
     }
 
