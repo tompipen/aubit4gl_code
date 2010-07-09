@@ -58,6 +58,25 @@ xscale = barscale  ;
 }
 
 
+static void InitBarPDF5(PDF *p, double xpos, double ypos, double x, double y, double font_size, double barscale) {
+width = x ;
+height = y;
+x00 = xpos ;
+y00 =  (ypos ) ;
+fontsize = font_size;
+xscale = barscale  ;
+}
+
+static void InitBarPDF2(PDF *p, double xpos, double ypos, double x, double y, double font_size, double barscale) {
+width = x ;
+height = y;
+x00 = xpos ;
+y00 =  (ypos ) ;
+fontsize = font_size;
+xscale = barscale  ;
+}
+
+
 static void InitBarPDF25(PDF *p, double xpos, double ypos, double x, double y, double font_size, double barscale) {
 width = x ;
 height = y;
@@ -126,6 +145,33 @@ unsigned int  x;
 			atx +=littlebar;
 		} else {
 			atx +=littlebar;
+		}
+	}
+}
+
+
+static void BarCharPDF5(PDF *p, const char *mapstring, float p_page_height) {
+unsigned int  x;
+   for (x=0;x<strlen(mapstring);x++) {
+      if (mapstring[x]=='1')  {
+			DoRectanglePDF(p, atx,littlebar,aty , p_page_height);
+			atx += littlebar ;
+		} else {
+		atx += littlebar ;
+		}
+	}
+}
+
+
+
+static void BarCharPDF2(PDF *p, const char *mapstring, float p_page_height) {
+unsigned int  x;
+   for (x=0;x<strlen(mapstring);x++) {
+      if (mapstring[x]=='1')  {
+			DoRectanglePDF(p, atx,littlebar,aty , p_page_height);
+			atx += littlebar ;
+		} else {
+		atx += littlebar ;
 		}
 	}
 }
@@ -349,6 +395,86 @@ static void PutBarsPDF8(PDF *p, char t, char c,int p_page_height) {
 }
 
 
+
+static void PutBarsPDF5(PDF *p, char t, char c,int p_page_height) {
+	if (t == '0'){
+		switch (c){
+			case 'B': BarCharPDF5(p, "00000", p_page_height);break;
+			case 'S': BarCharPDF5(p, "01011", p_page_height);break;
+			case 'M': BarCharPDF5(p, "01", p_page_height);break;
+		}
+	}
+	if (t == 'A'){
+		switch (c){
+			case '0': BarCharPDF5(p, "0001101", p_page_height);break;
+			case '1': BarCharPDF5(p, "0011001", p_page_height);break;
+			case '2': BarCharPDF5(p, "0010011", p_page_height);break;
+			case '3': BarCharPDF5(p, "0111101", p_page_height);break;
+			case '4': BarCharPDF5(p, "0100011", p_page_height);break;
+			case '5': BarCharPDF5(p, "0110001", p_page_height);break;
+			case '6': BarCharPDF5(p, "0101111", p_page_height);break;
+			case '7': BarCharPDF5(p, "0111011", p_page_height);break;
+			case '8': BarCharPDF5(p, "0110111", p_page_height);break;
+			case '9': BarCharPDF5(p, "0001011", p_page_height);break;
+		}
+	}
+	if (t == 'B'){
+		switch (c){
+			case '0': BarCharPDF5(p, "0100111", p_page_height);break;
+			case '1': BarCharPDF5(p, "0110011", p_page_height);break;
+			case '2': BarCharPDF5(p, "0011011", p_page_height);break;
+			case '3': BarCharPDF5(p, "0100001", p_page_height);break;
+			case '4': BarCharPDF5(p, "0011101", p_page_height);break;
+			case '5': BarCharPDF5(p, "0111001", p_page_height);break;
+			case '6': BarCharPDF5(p, "0000101", p_page_height);break;
+			case '7': BarCharPDF5(p, "0010001", p_page_height);break;
+			case '8': BarCharPDF5(p, "0001001", p_page_height);break;
+			case '9': BarCharPDF5(p, "0010111", p_page_height);break;
+		}
+	}
+}
+
+
+
+static void PutBarsPDF2(PDF *p, char t, char c,int p_page_height) {
+	if (t == '0'){
+		switch (c){
+			case 'B': BarCharPDF2(p, "00000", p_page_height);break;
+			case 'S': BarCharPDF2(p, "01011", p_page_height);break;
+			case 'M': BarCharPDF2(p, "01", p_page_height);break;
+		}
+	}
+	if (t == 'A'){
+		switch (c){
+			case '0': BarCharPDF2(p, "0001101", p_page_height);break;
+			case '1': BarCharPDF2(p, "0011001", p_page_height);break;
+			case '2': BarCharPDF2(p, "0010011", p_page_height);break;
+			case '3': BarCharPDF2(p, "0111101", p_page_height);break;
+			case '4': BarCharPDF2(p, "0100011", p_page_height);break;
+			case '5': BarCharPDF2(p, "0110001", p_page_height);break;
+			case '6': BarCharPDF2(p, "0101111", p_page_height);break;
+			case '7': BarCharPDF2(p, "0111011", p_page_height);break;
+			case '8': BarCharPDF2(p, "0110111", p_page_height);break;
+			case '9': BarCharPDF2(p, "0001011", p_page_height);break;
+		}
+	}
+	if (t == 'B'){
+		switch (c){
+			case '0': BarCharPDF2(p, "0100111", p_page_height);break;
+			case '1': BarCharPDF2(p, "0110011", p_page_height);break;
+			case '2': BarCharPDF2(p, "0011011", p_page_height);break;
+			case '3': BarCharPDF2(p, "0100001", p_page_height);break;
+			case '4': BarCharPDF2(p, "0011101", p_page_height);break;
+			case '5': BarCharPDF2(p, "0111001", p_page_height);break;
+			case '6': BarCharPDF2(p, "0000101", p_page_height);break;
+			case '7': BarCharPDF2(p, "0010001", p_page_height);break;
+			case '8': BarCharPDF2(p, "0001001", p_page_height);break;
+			case '9': BarCharPDF2(p, "0010111", p_page_height);break;
+		}
+	}
+}
+
+
 static const char  *PutGrpPDF13(char a){
 	switch (a) {
 		case '0': return "AAAAAACCCCCC";
@@ -363,6 +489,34 @@ static const char  *PutGrpPDF13(char a){
 		case '9': return "ABBABACCCCCC";
 	}
 	return "000000000000";
+}
+
+
+static const char  *PutGrpPDF2(char a){
+	switch (a) {
+		case '0': return "AA";
+		case '1': return "AB";
+		case '2': return "BA";
+		case '3': return "BB";
+	}
+	return "00";
+}
+
+
+static const char  *PutGrpPDF5(char a){
+	switch (a) {
+		case '0': return "BBAAA";
+		case '1': return "BABAA";
+		case '2': return "BAABA";
+		case '3': return "BAAAB";
+		case '4': return "ABBAA";
+		case '5': return "AABBA";
+		case '6': return "AAABB";
+		case '7': return "ABABA";
+		case '8': return "ABAAB";
+		case '9': return "AABAB";
+	}
+	return "00000";
 }
 
 
@@ -398,6 +552,8 @@ yabs = y00 + height + (fontsize * 12.0);
 }
 
 
+
+
 static void PrintCharPDF8(PDF *p, double x, char c, float p_page_height,int incl_text) {
 double xabs,yabs;
 static char buff[200];
@@ -412,6 +568,36 @@ yabs = y00 + height + (fontsize * 12.0);
 
 
 }
+
+
+
+static void PrintCharPDF5(PDF *p, double x, char c, float p_page_height,int incl_text) {
+double xabs,yabs;
+static char buff[200];
+xabs = x00 + (x * xscale);
+yabs = y00 + height + (fontsize * 12.0);
+ A4GL_assertion(c==0,"C=null");
+	if (incl_text) {
+		SPRINTF1(buff,"%c",c);
+        	PDF_set_text_pos (p, xabs, p_page_height-y00- (fontsize ));
+        	PDF_show (p, buff);
+	}
+}
+
+
+static void PrintCharPDF2(PDF *p, double x, char c, float p_page_height,int incl_text) {
+double xabs,yabs;
+static char buff[200];
+xabs = x00 + (x * xscale);
+yabs = y00 + height + (fontsize * 12.0);
+ A4GL_assertion(c==0,"C=null");
+	if (incl_text) {
+		SPRINTF1(buff,"%c",c);
+        	PDF_set_text_pos (p, xabs, p_page_height-y00- (fontsize ));
+        	PDF_show (p, buff);
+	}
+}
+
 
 
 static void PrintThisPDF39(PDF *p, char *s,float p_page_height,int incl_text) {
@@ -560,6 +746,104 @@ PutBarsPDF8(p,'0', 'S',p_page_height-5);   //# ending delimiter
 }
 
 
+static void PrintThisPDF5(PDF *p, char *sorig,float p_page_height,int incl_text) {
+unsigned int x;
+char s[100]="        ";
+char t[6]="     ";
+char z[3]="  ";
+int a=0;
+
+strcpy(s,sorig);
+if (strlen(s)!=5) {
+	A4GL_exitwith("Invalid barcode");
+}
+
+for (a=0;a<5;a++) {
+
+	if (s[a]==0) { continue; }
+	// Check its a number
+	if (s[a]>='0' && s[a]<='9') continue;
+
+	A4GL_exitwith("Invalid character in barcode");
+	return;
+}
+
+
+	// Compute the checkbit...
+	a=0;
+	a+=(s[4]-'0')*3;
+	a+=(s[3]-'0')*9;
+	a+=(s[2]-'0')*3;
+	a+=(s[1]-'0')*9;
+	a+=(s[0]-'0')*3;
+	a=a%10;
+   z[0]=a+'0';
+	z[1]=0;
+	
+A4GL_pad_string(s,40);
+
+strcpy(t, PutGrpPDF5(z[0]));
+
+PutBarsPDF5(p,'0', 'B',p_page_height);		// Silent zone
+atx += 1*littlebar ;
+PutBarsPDF5(p,'0', 'S',p_page_height); //   # starting delimiter
+for (x=0; x<5;x++) {
+	
+	PrintCharPDF5(p, atx,s[x],p_page_height,incl_text);
+	PutBarsPDF5(p, t[x], s[x], p_page_height);
+	if (x<4){
+   PutBarsPDF5(p,'0','M',p_page_height); //  # delimiter in the middle
+	}
+}
+}
+
+
+
+static void PrintThisPDF2(PDF *p, char *sorig,float p_page_height,int incl_text) {
+char s[50]="     ";
+char z[3]="  ";
+char t[6]="     ";
+int a=0;
+int b=0;
+
+strcpy(s,sorig);
+if (strlen(s)!=2) {
+	A4GL_exitwith("Invalid barcode");
+}
+
+for (a=0;a<2;a++) {
+
+	if (s[a]==0) { continue; }
+	// Check its a number
+	if (s[a]>='0' && s[a]<='9') continue;
+
+	A4GL_exitwith("Invalid character in barcode");
+	return;
+}
+
+	a=(s[0]-'0');
+	b=a*10;
+	a=(s[1]-'0');
+	b=b+a;
+	b=b%4;
+	z[0]=b+'0';
+	z[1]=0;
+
+A4GL_pad_string(s,40);
+
+strcpy(t, PutGrpPDF2(z[0]));
+
+PutBarsPDF2(p,'0', 'B',p_page_height);		// Silent zone
+atx += 1*littlebar ;
+PutBarsPDF2(p,'0', 'S',p_page_height); //   # starting delimiter
+PrintCharPDF2(p, atx,s[0],p_page_height,incl_text);
+PutBarsPDF2(p, t[0], s[0], p_page_height);
+PutBarsPDF2(p,'0','M',p_page_height); //  # delimiter in the middle
+PrintCharPDF2(p, atx,s[1],p_page_height,incl_text);
+PutBarsPDF2(p, t[1], s[1], p_page_height);
+}
+
+
 
 static void PrintThisPDF25(PDF *p, const char *s,float p_page_height) {
 unsigned int x;
@@ -600,10 +884,25 @@ static void TermBarPDF8(PDF *p) {
 
 
 
+static void TermBarPDF5(PDF *p) {
+// Does nothing..
+}
+
+
+static void TermBarPDF2(PDF *p) {
+// Does nothing..
+}
+
 
 static void setcodetype(void ) {
+	if (A4GL_isyes(acl_getenv("BARCODE2"))) {
+		codetype=2;
+	}
+	if (A4GL_isyes(acl_getenv("BARCODE5"))) {
+		codetype=5;
+	}
 	if (A4GL_isyes(acl_getenv("BARCODE8"))) {
-		codetype=13;
+		codetype=8;
 	}
 	
 	if (A4GL_isyes(acl_getenv("BARCODE13"))) {
@@ -628,6 +927,14 @@ static void setcodetype(void ) {
 
 
 void set_barcode_type(char *s) {
+	if (A4GL_aubit_strcasecmp(s,"2")==0 ||  A4GL_aubit_strcasecmp(s,"ean2")==0 || A4GL_aubit_strcasecmp(s,"ean-2")==0) {
+		codetype=2;
+		return ;
+	}
+	if (A4GL_aubit_strcasecmp(s,"5")==0 ||  A4GL_aubit_strcasecmp(s,"ean5")==0 || A4GL_aubit_strcasecmp(s,"ean-5")==0) {
+		codetype=5;
+		return ;
+	}
 	if (A4GL_aubit_strcasecmp(s,"8")==0 ||  A4GL_aubit_strcasecmp(s,"ean8")==0 || A4GL_aubit_strcasecmp(s,"ean-8")==0) {
 		codetype=8;
 		return ;
@@ -732,6 +1039,41 @@ if (codetype==8) {
 	TermBarPDF8(p);
 }
 
+
+
+if (codetype==5) {
+	littlebar=8;             //# these numbers are arbitrary, as long as the ratio
+	font_size = (y/72.0) * 14.4;    //# 2/10 of height of bar
+	aty = (y/72.0) * 14.4;          //# 2/10 of height of bar
+	atx = 0;
+	char_length1 = 7 * littlebar;
+	i=strlen(str) + 2;    //# start, middle delimiters
+	bar_length = char_length1 * (i-1);
+	bar_scale = (x) / bar_length;
+	InitBarPDF5(p, xpos,ypos,x,y,font_size,bar_scale);
+	S=strdup(str);
+	PrintThisPDF5(p, S,p_page_height,incl_text);
+	free(S);
+	TermBarPDF5(p);
+}
+
+
+
+if (codetype==2) {
+	littlebar=8;             //# these numbers are arbitrary, as long as the ratio
+	font_size = (y/72.0) * 14.4;    //# 2/10 of height of bar
+	aty = (y/72.0) * 14.4;          //# 2/10 of height of bar
+	atx = 0;
+	char_length1 = 7 * littlebar;
+	i=strlen(str) + 1;    //# start, middle delimiters
+	bar_length = char_length1 * (i-1);
+	bar_scale = (x) / bar_length;
+	InitBarPDF2(p, xpos,ypos,x,y,font_size,bar_scale);
+	S=strdup(str);
+	PrintThisPDF2(p, S,p_page_height,incl_text);
+	free(S);
+	TermBarPDF2(p);
+}
 
 if (codetype==25) {
 	littlebar=8;             //# these numbers are arbitrary, as long as the ratio
