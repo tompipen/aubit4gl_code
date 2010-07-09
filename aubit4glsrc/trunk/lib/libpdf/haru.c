@@ -918,6 +918,14 @@ aclpdf (struct pdf_rep_structure *p, char *fname, int n)
       return 0;
     }
 
+  if (strcmp (fname, "set_text_format") == 0)
+    {
+	// Not available in HARU...
+        char *s;
+        s=A4GL_char_pop();
+        //PDF_set_parameter((PDF *)p->pdf_ptr,"textformat",s);
+        return 0;
+    }
 
   if (strcmp (fname, "set_font_size") == 0)
     {

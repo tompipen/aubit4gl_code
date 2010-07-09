@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: has_pdf.c,v 1.72 2010-03-24 17:51:06 mikeaubury Exp $
+# $Id: has_pdf.c,v 1.73 2010-07-09 09:30:22 mikeaubury Exp $
 #*/
 
 /**
@@ -1354,6 +1354,13 @@ A4GLPDFREP_A4GL_pdf_pdffunc_internal (void *vp, char *fname, int nargs)
       return 0;
     }
 
+  if (strcmp (fname, "set_text_format") == 0)
+    {
+	char *s;
+	s=A4GL_char_pop();
+	PDF_set_parameter((PDF *)p->pdf_ptr,"textformat",s);
+        return 0;
+    }
 
   if (strcmp (fname, "set_font_size") == 0)
     {

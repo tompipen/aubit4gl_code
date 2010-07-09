@@ -1099,6 +1099,9 @@ pdf_specific_cmd :
 	| KW_FILL {
 			$<cmd>$=new_pdf_specific_cmd("fill",NULL, NULL);
 	}
+	| SET_TEXT_FORMAT  fgl_expr_c  {
+			$<cmd>$=new_pdf_specific_cmd("set_text_format",NULL, $<ptr>2,NULL);
+	}
 	| SET_FONT_SIZE  fgl_expr_c  {
 			$<cmd>$=new_pdf_specific_cmd("set_font_size",NULL, $<ptr>2,NULL);
 	}

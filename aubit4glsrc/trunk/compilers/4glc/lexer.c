@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: lexer.c,v 1.139 2010-06-25 13:53:37 mikeaubury Exp $
+# $Id: lexer.c,v 1.140 2010-07-09 09:30:22 mikeaubury Exp $
 #*/
 
 /**
@@ -1401,6 +1401,7 @@ a4gl_yylex (void *pyylval, int yystate, void *yys1, void *yys2)
   /*a = NAMED_GEN;*/
 
   if (isin_formhandler) { if (a==KW_INPUT) {a=FINPUT;} }
+
   allow = allow_token_state (yystate, a);
 #ifdef DEBUG
   A4GL_debug ("Allow_token_State = %d state=%d\n", allow, yystate);

@@ -1,10 +1,9 @@
-
-/* A Bison parser, made by GNU Bison 2.4.1.  */
+/* A Bison parser, made by GNU Bison 2.4.2.  */
 
 /* Skeleton implementation for Bison's Yacc-like parsers in C
    
-      Copyright (C) 1984, 1989, 1990, 2000, 2001, 2002, 2003, 2004, 2005, 2006
-   Free Software Foundation, Inc.
+      Copyright (C) 1984, 1989-1990, 2000-2006, 2009-2010 Free Software
+   Foundation, Inc.
    
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -46,7 +45,7 @@
 #define YYBISON 1
 
 /* Bison version.  */
-#define YYBISON_VERSION "2.4.1"
+#define YYBISON_VERSION "2.4.2"
 
 /* Skeleton name.  */
 #define YYSKELETON_NAME "yacc.c"
@@ -147,7 +146,7 @@ set_expr_int(struct expr *e,int a)
 
 
 /* Line 189 of yacc.c  */
-#line 151 "y.tab.c"
+#line 150 "y.tab.c"
 
 /* Enabling traces.  */
 #ifndef YYDEBUG
@@ -535,7 +534,7 @@ typedef union YYSTYPE
 
 
 /* Line 214 of yacc.c  */
-#line 539 "y.tab.c"
+#line 538 "y.tab.c"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
@@ -547,7 +546,7 @@ typedef union YYSTYPE
 
 
 /* Line 264 of yacc.c  */
-#line 551 "y.tab.c"
+#line 550 "y.tab.c"
 
 #ifdef short
 # undef short
@@ -597,7 +596,7 @@ typedef short int yytype_int16;
 #define YYSIZE_MAXIMUM ((YYSIZE_T) -1)
 
 #ifndef YY_
-# if YYENABLE_NLS
+# if defined YYENABLE_NLS && YYENABLE_NLS
 #  if ENABLE_NLS
 #   include <libintl.h> /* INFRINGES ON USER NAME SPACE */
 #   define YY_(msgid) dgettext ("bison-runtime", msgid)
@@ -2414,9 +2413,18 @@ static const yytype_uint16 yystos[] =
 
 /* Like YYERROR except do call yyerror.  This remains here temporarily
    to ease the transition to the new meaning of YYERROR, for GCC.
-   Once GCC version 2 has supplanted version 1, this can go.  */
+   Once GCC version 2 has supplanted version 1, this can go.  However,
+   YYFAIL appears to be in use.  Nevertheless, it is formally deprecated
+   in Bison 2.4.2's NEWS entry, where a plan to phase it out is
+   discussed.  */
 
 #define YYFAIL		goto yyerrlab
+#if defined YYFAIL
+  /* This is here to suppress warnings from the GCC cpp's
+     -Wunused-macros.  Normally we don't worry about that warning, but
+     some users do, and we want to make it easy for users to remove
+     YYFAIL uses, which will produce warnings from Bison 2.5.  */
+#endif
 
 #define YYRECOVERING()  (!!yyerrstatus)
 
@@ -2473,7 +2481,7 @@ while (YYID (0))
    we won't break user code: when these are the locations we know.  */
 
 #ifndef YY_LOCATION_PRINT
-# if YYLTYPE_IS_TRIVIAL
+# if defined YYLTYPE_IS_TRIVIAL && YYLTYPE_IS_TRIVIAL
 #  define YY_LOCATION_PRINT(File, Loc)			\
      fprintf (File, "%d.%d-%d.%d",			\
 	      (Loc).first_line, (Loc).first_column,	\
@@ -3212,7 +3220,7 @@ yyreduce:
     {
         case 3:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 250 "ace.yacc"
     {
 		this_report.dbname=acl_strdup("!!ASCII!!");;
@@ -3221,7 +3229,7 @@ yyreduce:
 
   case 4:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 253 "ace.yacc"
     {
 		this_report.dbname=acl_strdup((yyvsp[(2) - (3)].str));
@@ -3234,7 +3242,7 @@ yyreduce:
 
   case 10:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 277 "ace.yacc"
     {
 		printf("NIY\n");
@@ -3244,7 +3252,7 @@ yyreduce:
 
   case 11:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 281 "ace.yacc"
     {
 		ace_add_variable((yyvsp[(2) - (3)].str),(yyvsp[(3) - (3)].str),CAT_VARIABLE,0,-1,0);
@@ -3253,7 +3261,7 @@ yyreduce:
 
   case 12:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 284 "ace.yacc"
     {
 		ace_add_variable((yyvsp[(5) - (6)].str),(yyvsp[(6) - (6)].str),CAT_PARAM,atoi((yyvsp[(3) - (6)].str)),-1,0);
@@ -3262,7 +3270,7 @@ yyreduce:
 
   case 13:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 287 "ace.yacc"
     {
 		add_function((yyvsp[(2) - (2)].str));
@@ -3271,7 +3279,7 @@ yyreduce:
 
   case 17:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 298 "ace.yacc"
     {
 	char buff[256];
@@ -3286,126 +3294,126 @@ yyreduce:
 
   case 19:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 311 "ace.yacc"
     {strcpy((yyval.str),"INTEGER");}
     break;
 
   case 20:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 312 "ace.yacc"
     {strcpy((yyval.str),"CHAR");}
     break;
 
   case 21:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 313 "ace.yacc"
     {SPRINTF1((yyval.str),"CHAR (%s)",(yyvsp[(3) - (4)].str));}
     break;
 
   case 22:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 314 "ace.yacc"
     {strcpy((yyval.str),"VARCHAR");}
     break;
 
   case 23:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 315 "ace.yacc"
     {SPRINTF1((yyval.str),"VARCHAR (%s)",(yyvsp[(3) - (4)].str));}
     break;
 
   case 24:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 316 "ace.yacc"
     {strcpy((yyval.str),"DATE");}
     break;
 
   case 25:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 317 "ace.yacc"
     {strcpy((yyval.str),"FLOAT");}
     break;
 
   case 26:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 318 "ace.yacc"
     {strcpy((yyval.str),"SMALLFLOAT");}
     break;
 
   case 27:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 319 "ace.yacc"
     {strcpy((yyval.str),"SMALLINT");}
     break;
 
   case 28:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 320 "ace.yacc"
     {strcpy((yyval.str),"DATETIME");}
     break;
 
   case 29:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 321 "ace.yacc"
     {strcpy((yyval.str),"INTERVAL");}
     break;
 
   case 30:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 322 "ace.yacc"
     {strcpy((yyval.str),"MONEY");}
     break;
 
   case 31:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 323 "ace.yacc"
     {SPRINTF1((yyval.str),"MONEY (%s,0)",(yyvsp[(3) - (4)].str));}
     break;
 
   case 32:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 324 "ace.yacc"
     {SPRINTF2((yyval.str),"MONEY (%s,%s)",(yyvsp[(3) - (6)].str),(yyvsp[(5) - (6)].str));}
     break;
 
   case 33:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 325 "ace.yacc"
     {strcpy((yyval.str),"DECIMAL");}
     break;
 
   case 34:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 326 "ace.yacc"
     {SPRINTF1((yyval.str),"DECIMAL (%s,0)",(yyvsp[(3) - (4)].str));}
     break;
 
   case 35:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 327 "ace.yacc"
     {SPRINTF2((yyval.str),"DECIMAL (%s,%s)",(yyvsp[(3) - (6)].str),(yyvsp[(5) - (6)].str));}
     break;
 
   case 41:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 341 "ace.yacc"
     {
 	add_inputs((char *)A4GL_strip_quotes((yyvsp[(5) - (5)].str)),(yyvsp[(3) - (5)].str));
@@ -3414,35 +3422,35 @@ yyreduce:
 
   case 47:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 356 "ace.yacc"
     { this_report.output.report_to_where=2; this_report.output.report_to_filename=acl_strdup((yyvsp[(4) - (4)].str));}
     break;
 
   case 48:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 357 "ace.yacc"
     { this_report.output.report_to_where=1; }
     break;
 
   case 49:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 358 "ace.yacc"
     { this_report.output.report_to_where=3; this_report.output.report_to_filename=acl_strdup((yyvsp[(3) - (3)].str)); }
     break;
 
   case 50:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 359 "ace.yacc"
     { this_report.output.report_to_where=4; this_report.output.report_to_filename=acl_strdup((yyvsp[(4) - (4)].str)); }
     break;
 
   case 51:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 360 "ace.yacc"
     {
 		this_report.output.left_margin=atoi((yyvsp[(3) - (3)].str));
@@ -3451,7 +3459,7 @@ yyreduce:
 
   case 52:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 363 "ace.yacc"
     {
 		this_report.output.bottom_margin=atoi((yyvsp[(3) - (3)].str));
@@ -3460,7 +3468,7 @@ yyreduce:
 
   case 53:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 366 "ace.yacc"
     {
 		this_report.output.top_margin=atoi((yyvsp[(3) - (3)].str));
@@ -3469,7 +3477,7 @@ yyreduce:
 
   case 54:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 369 "ace.yacc"
     {
 		this_report.output.page_length=atoi((yyvsp[(3) - (3)].str));
@@ -3478,7 +3486,7 @@ yyreduce:
 
   case 55:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 372 "ace.yacc"
     {
 		this_report.output.right_margin=atoi((yyvsp[(3) - (3)].str));
@@ -3487,7 +3495,7 @@ yyreduce:
 
   case 56:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 375 "ace.yacc"
     {
 		this_report.output.top_of_page=acl_strdup((yyvsp[(2) - (2)].str));
@@ -3496,28 +3504,28 @@ yyreduce:
 
   case 58:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 382 "ace.yacc"
     { execute_selects(); }
     break;
 
   case 59:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 386 "ace.yacc"
     { add_select((yyvsp[(1) - (1)].str),temp_tab_name); }
     break;
 
   case 60:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 387 "ace.yacc"
     { add_select((yyvsp[(3) - (3)].str),temp_tab_name); }
     break;
 
   case 64:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 398 "ace.yacc"
     {
 		struct acerep_commands cmd;
@@ -3529,7 +3537,7 @@ yyreduce:
 
   case 70:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 417 "ace.yacc"
     {
 		add_fmt(FORMAT_FIRST_PAGE_HEADER,NULL,(yyvsp[(4) - (4)].commands));
@@ -3538,7 +3546,7 @@ yyreduce:
 
   case 71:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 421 "ace.yacc"
     {
 		add_fmt(FORMAT_PAGE_TRAILER,NULL,(yyvsp[(3) - (3)].commands));
@@ -3547,7 +3555,7 @@ yyreduce:
 
   case 72:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 425 "ace.yacc"
     {
 		add_fmt(FORMAT_PAGE_HEADER,NULL,(yyvsp[(3) - (3)].commands));
@@ -3556,7 +3564,7 @@ yyreduce:
 
   case 73:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 429 "ace.yacc"
     {
 		add_fmt(FORMAT_ON_EVERY_ROW,NULL,(yyvsp[(4) - (4)].commands));
@@ -3565,7 +3573,7 @@ yyreduce:
 
   case 74:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 432 "ace.yacc"
     {
 		add_fmt(FORMAT_ON_LAST_ROW,NULL,(yyvsp[(4) - (4)].commands));
@@ -3574,7 +3582,7 @@ yyreduce:
 
   case 75:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 435 "ace.yacc"
     {
 		add_fmt(FORMAT_BEFORE_GROUP,DUP((yyvsp[(4) - (5)].expr)),(yyvsp[(5) - (5)].commands));
@@ -3583,7 +3591,7 @@ yyreduce:
 
   case 76:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 438 "ace.yacc"
     {
 		add_fmt(FORMAT_AFTER_GROUP,DUP((yyvsp[(4) - (5)].expr)),(yyvsp[(5) - (5)].commands));
@@ -3592,7 +3600,7 @@ yyreduce:
 
   case 77:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 445 "ace.yacc"
     {
 		(yyval.var_usage)=malloc(sizeof(struct acerep_var_usage));
@@ -3608,7 +3616,7 @@ yyreduce:
 
   case 78:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 455 "ace.yacc"
     {
 		(yyval.var_usage)=malloc(sizeof(struct acerep_var_usage));
@@ -3624,7 +3632,7 @@ yyreduce:
 
   case 79:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 465 "ace.yacc"
     {
 		
@@ -3641,7 +3649,7 @@ yyreduce:
 
   case 80:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 480 "ace.yacc"
     {
 		(yyval.expr).type=EXPRTYPE_VARIABLE_SUB;
@@ -3651,7 +3659,7 @@ yyreduce:
 
   case 81:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 484 "ace.yacc"
     {
 		(yyval.expr).type=EXPRTYPE_INT;
@@ -3661,21 +3669,21 @@ yyreduce:
 
   case 82:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 492 "ace.yacc"
     {strcpy((yyval.str),"");}
     break;
 
   case 84:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 495 "ace.yacc"
     { ordbycnt=0; }
     break;
 
   case 85:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 495 "ace.yacc"
     {
 	printf("speclist : %s ",(yyvsp[(3) - (3)].str));
@@ -3684,14 +3692,14 @@ yyreduce:
 
   case 86:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 499 "ace.yacc"
     {SPRINTF2((yyval.str),"%s %s",(yyvsp[(1) - (2)].str),(yyvsp[(2) - (2)].str));}
     break;
 
   case 87:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 508 "ace.yacc"
     {
 		SPRINTF1((yyval.str),"\"%s\"",(yyvsp[(1) - (1)].str));
@@ -3700,21 +3708,21 @@ yyreduce:
 
   case 91:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 518 "ace.yacc"
     { ordbycnt=0; }
     break;
 
   case 92:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 518 "ace.yacc"
     { SPRINTF1((yyval.str),"ORDER BY %s",(yyvsp[(3) - (3)].str)); }
     break;
 
   case 94:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 523 "ace.yacc"
     {
 SPRINTF3((yyval.str)," %s %s %s",(yyvsp[(1) - (3)].str),(yyvsp[(2) - (3)].str),(yyvsp[(3) - (3)].str));
@@ -3723,7 +3731,7 @@ SPRINTF3((yyval.str)," %s %s %s",(yyvsp[(1) - (3)].str),(yyvsp[(2) - (3)].str),(
 
   case 95:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 528 "ace.yacc"
     {
 		if (strlen((yyvsp[(2) - (2)].str))) {
@@ -3734,7 +3742,7 @@ SPRINTF3((yyval.str)," %s %s %s",(yyvsp[(1) - (3)].str),(yyvsp[(2) - (3)].str),(
 
   case 96:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 534 "ace.yacc"
     {
 		char buff[256];
@@ -3745,7 +3753,7 @@ SPRINTF3((yyval.str)," %s %s %s",(yyvsp[(1) - (3)].str),(yyvsp[(2) - (3)].str),(
 
   case 97:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 539 "ace.yacc"
     {
 		char buff[256];
@@ -3756,56 +3764,56 @@ SPRINTF3((yyval.str)," %s %s %s",(yyvsp[(1) - (3)].str),(yyvsp[(2) - (3)].str),(
 
   case 98:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 548 "ace.yacc"
     {strcpy((yyval.str),"");}
     break;
 
   case 101:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 556 "ace.yacc"
     {SPRINTF2((yyval.str)," %s %s",(yyvsp[(1) - (2)].str),(yyvsp[(2) - (2)].str));}
     break;
 
   case 102:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 562 "ace.yacc"
     {SPRINTF2((yyval.str)," %s %s",(yyvsp[(1) - (2)].str),(yyvsp[(2) - (2)].str));}
     break;
 
   case 104:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 568 "ace.yacc"
     {SPRINTF3((yyval.str)," %s %s %s",(yyvsp[(1) - (3)].str),(yyvsp[(2) - (3)].str),(yyvsp[(3) - (3)].str));}
     break;
 
   case 105:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 573 "ace.yacc"
     {SPRINTF1((yyval.str),"WHERE \n0 (%s)\n0",(yyvsp[(2) - (2)].str));}
     break;
 
   case 106:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 578 "ace.yacc"
     {SPRINTF2((yyval.str),"%s %s",(yyvsp[(1) - (2)].str),(yyvsp[(2) - (2)].str));}
     break;
 
   case 107:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 582 "ace.yacc"
     {strcpy((yyval.str),(yyvsp[(1) - (1)].str));}
     break;
 
   case 108:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 583 "ace.yacc"
     {
 		SPRINTF2((yyval.str),"%s,%s",(yyvsp[(1) - (3)].str),(yyvsp[(3) - (3)].str));
@@ -3814,7 +3822,7 @@ SPRINTF3((yyval.str)," %s %s %s",(yyvsp[(1) - (3)].str),(yyvsp[(2) - (3)].str),(
 
   case 109:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 586 "ace.yacc"
     {
 		SPRINTF2((yyval.str),"%s, OUTER %s",(yyvsp[(1) - (4)].str),(yyvsp[(4) - (4)].str));
@@ -3823,7 +3831,7 @@ SPRINTF3((yyval.str)," %s %s %s",(yyvsp[(1) - (3)].str),(yyvsp[(2) - (3)].str),(
 
   case 110:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 589 "ace.yacc"
     {
 		SPRINTF2((yyval.str),"%s, OUTER (%s)",(yyvsp[(1) - (6)].str),(yyvsp[(5) - (6)].str));
@@ -3832,7 +3840,7 @@ SPRINTF3((yyval.str)," %s %s %s",(yyvsp[(1) - (3)].str),(yyvsp[(2) - (3)].str),(
 
   case 111:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 592 "ace.yacc"
     {
 		SPRINTF3((yyval.str),"%s LEFT OUTER JOIN %s ON %s",(yyvsp[(1) - (5)].str),(yyvsp[(3) - (5)].str),(yyvsp[(5) - (5)].str));
@@ -3841,7 +3849,7 @@ SPRINTF3((yyval.str)," %s %s %s",(yyvsp[(1) - (3)].str),(yyvsp[(2) - (3)].str),(
 
   case 112:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 595 "ace.yacc"
     {
 		SPRINTF3((yyval.str),"%s INNER JOIN %s ON %s",(yyvsp[(1) - (5)].str),(yyvsp[(3) - (5)].str),(yyvsp[(5) - (5)].str));
@@ -3850,21 +3858,21 @@ SPRINTF3((yyval.str)," %s %s %s",(yyvsp[(1) - (3)].str),(yyvsp[(2) - (3)].str),(
 
   case 113:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 600 "ace.yacc"
     {SPRINTF1((yyval.str),"%s",(yyvsp[(1) - (1)].str)); }
     break;
 
   case 114:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 601 "ace.yacc"
     {SPRINTF1((yyval.str),"(%s)",(yyvsp[(2) - (3)].str)); }
     break;
 
   case 116:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 606 "ace.yacc"
     {
 		SPRINTF2((yyval.str),"%s %s",(yyvsp[(1) - (2)].str),(yyvsp[(2) - (2)].str));
@@ -3874,7 +3882,7 @@ SPRINTF3((yyval.str)," %s %s %s",(yyvsp[(1) - (3)].str),(yyvsp[(2) - (3)].str),(
 
   case 117:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 620 "ace.yacc"
     {
 SPRINTF4((yyval.str),"%s %s %s %s",
@@ -3885,28 +3893,28 @@ SPRINTF4((yyval.str),"%s %s %s %s",
 
   case 118:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 627 "ace.yacc"
     {strcpy((yyval.str),"\n0");}
     break;
 
   case 120:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 631 "ace.yacc"
     {strcpy((yyval.str),"");}
     break;
 
   case 122:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 635 "ace.yacc"
     {strcpy((yyval.str),"");}
     break;
 
   case 125:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 642 "ace.yacc"
     {
 			SPRINTF3((yyval.str),"%s %s %s",(yyvsp[(1) - (3)].str),(yyvsp[(2) - (3)].str),(yyvsp[(3) - (3)].str));
@@ -3915,245 +3923,245 @@ SPRINTF4((yyval.str),"%s %s %s %s",
 
   case 127:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 650 "ace.yacc"
     {SPRINTF3((yyval.str)," %s %s %s",(yyvsp[(1) - (3)].str),(yyvsp[(2) - (3)].str),(yyvsp[(3) - (3)].str));}
     break;
 
   case 129:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 656 "ace.yacc"
     {SPRINTF2((yyval.str)," %s %s",(yyvsp[(1) - (2)].str),(yyvsp[(2) - (2)].str));}
     break;
 
   case 131:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 662 "ace.yacc"
     {SPRINTF3((yyval.str)," %s %s %s",(yyvsp[(1) - (3)].str),(yyvsp[(2) - (3)].str),(yyvsp[(3) - (3)].str));}
     break;
 
   case 132:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 667 "ace.yacc"
     {SPRINTF2((yyval.str)," %s %s",(yyvsp[(1) - (2)].str),(yyvsp[(2) - (2)].str));}
     break;
 
   case 133:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 668 "ace.yacc"
     {SPRINTF2((yyval.str)," %s %s",(yyvsp[(1) - (2)].str),(yyvsp[(2) - (2)].str));}
     break;
 
   case 134:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 674 "ace.yacc"
     {SPRINTF4((yyval.str)," %s %s %s %s",(yyvsp[(1) - (4)].str),(yyvsp[(2) - (4)].str),(yyvsp[(3) - (4)].str),(yyvsp[(4) - (4)].str));}
     break;
 
   case 135:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 676 "ace.yacc"
     {SPRINTF3((yyval.str)," %s %s %s",(yyvsp[(1) - (3)].str),(yyvsp[(2) - (3)].str),(yyvsp[(3) - (3)].str));}
     break;
 
   case 141:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 701 "ace.yacc"
     {SPRINTF5((yyval.str)," %s %s %s %s %s",(yyvsp[(1) - (5)].str),(yyvsp[(2) - (5)].str),(yyvsp[(3) - (5)].str),(yyvsp[(4) - (5)].str),(yyvsp[(5) - (5)].str));}
     break;
 
   case 142:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 703 "ace.yacc"
     {SPRINTF3((yyval.str)," %s %s %s",(yyvsp[(1) - (3)].str),(yyvsp[(2) - (3)].str),(yyvsp[(3) - (3)].str));}
     break;
 
   case 143:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 705 "ace.yacc"
     {SPRINTF5((yyval.str)," %s %s %s %s %s",(yyvsp[(1) - (5)].str),(yyvsp[(2) - (5)].str),(yyvsp[(3) - (5)].str),(yyvsp[(4) - (5)].str),(yyvsp[(5) - (5)].str));}
     break;
 
   case 144:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 707 "ace.yacc"
     {SPRINTF3((yyval.str)," %s %s %s",(yyvsp[(1) - (3)].str),(yyvsp[(2) - (3)].str),(yyvsp[(3) - (3)].str));}
     break;
 
   case 146:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 714 "ace.yacc"
     {SPRINTF3((yyval.str)," %s%s%s",(yyvsp[(1) - (3)].str),(yyvsp[(2) - (3)].str),(yyvsp[(3) - (3)].str));}
     break;
 
   case 147:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 717 "ace.yacc"
     {strcpy((yyval.str),"");}
     break;
 
   case 149:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 724 "ace.yacc"
     {SPRINTF3((yyval.str)," %s %s %s",(yyvsp[(1) - (3)].str),(yyvsp[(2) - (3)].str),(yyvsp[(3) - (3)].str));}
     break;
 
   case 150:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 726 "ace.yacc"
     {SPRINTF3((yyval.str)," %s %s %s",(yyvsp[(1) - (3)].str),(yyvsp[(2) - (3)].str),(yyvsp[(3) - (3)].str));}
     break;
 
   case 151:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 728 "ace.yacc"
     {SPRINTF3((yyval.str)," %s %s %s",(yyvsp[(1) - (3)].str),(yyvsp[(2) - (3)].str),(yyvsp[(3) - (3)].str));}
     break;
 
   case 152:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 730 "ace.yacc"
     {SPRINTF3((yyval.str)," %s %s %s",(yyvsp[(1) - (3)].str),(yyvsp[(2) - (3)].str),(yyvsp[(3) - (3)].str));}
     break;
 
   case 153:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 732 "ace.yacc"
     {SPRINTF6((yyval.str)," %s %s %s %s %s %s",(yyvsp[(1) - (6)].str),(yyvsp[(2) - (6)].str),(yyvsp[(3) - (6)].str),(yyvsp[(4) - (6)].str),(yyvsp[(5) - (6)].str),(yyvsp[(6) - (6)].str));}
     break;
 
   case 163:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 746 "ace.yacc"
     {SPRINTF0((yyval.str),"<=");}
     break;
 
   case 164:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 747 "ace.yacc"
     {SPRINTF0((yyval.str),">=");}
     break;
 
   case 169:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 757 "ace.yacc"
     {strcpy((yyval.str),"");}
     break;
 
   case 173:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 771 "ace.yacc"
     { SPRINTF1((yyval.str)," %s",(char *)A4GL_strip_quotes((yyvsp[(1) - (1)].str))); }
     break;
 
   case 174:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 772 "ace.yacc"
     {SPRINTF0((yyval.str),(yyvsp[(1) - (1)].str)); }
     break;
 
   case 175:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 773 "ace.yacc"
     { SPRINTF3((yyval.str)," %s%s%s",(yyvsp[(1) - (3)].str),(yyvsp[(2) - (3)].str),(yyvsp[(3) - (3)].str));  }
     break;
 
   case 176:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 774 "ace.yacc"
     { SPRINTF3((yyval.str),"\\\"%s\\\"%s%s",(char *)A4GL_strip_quotes((yyvsp[(1) - (3)].str)),(yyvsp[(2) - (3)].str),(yyvsp[(3) - (3)].str));  }
     break;
 
   case 178:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 784 "ace.yacc"
     {SPRINTF0((yyval.str),(yyvsp[(1) - (1)].str));}
     break;
 
   case 179:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 788 "ace.yacc"
     {strcpy((yyval.str),"");}
     break;
 
   case 180:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 789 "ace.yacc"
     {SPRINTF1((yyval.str),"[%s]",(yyvsp[(2) - (3)].str));}
     break;
 
   case 181:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 790 "ace.yacc"
     {SPRINTF2((yyval.str),"[%s,%s]",(yyvsp[(2) - (5)].str),(yyvsp[(4) - (5)].str));}
     break;
 
   case 182:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 793 "ace.yacc"
     { SPRINTF2((yyval.str),"%s%s",(yyvsp[(1) - (2)].str),(yyvsp[(2) - (2)].str)); }
     break;
 
   case 183:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 794 "ace.yacc"
     { SPRINTF3((yyval.str),"%s.%s%s",(yyvsp[(1) - (4)].str),(yyvsp[(3) - (4)].str),(yyvsp[(4) - (4)].str)); }
     break;
 
   case 184:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 795 "ace.yacc"
     { SPRINTF2((yyval.str),"%s.%s",(yyvsp[(1) - (3)].str),(yyvsp[(3) - (3)].str)); }
     break;
 
   case 187:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 806 "ace.yacc"
     {SPRINTF1((yyval.str),"0.%s",(yyvsp[(2) - (2)].str));}
     break;
 
   case 188:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 812 "ace.yacc"
     {reset_sql_stuff();}
     break;
 
   case 189:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 815 "ace.yacc"
     {SPRINTF5((yyval.str),"%s %s %s %s %s",(yyvsp[(1) - (6)].str),(yyvsp[(3) - (6)].str),(yyvsp[(4) - (6)].str),(yyvsp[(5) - (6)].str),(yyvsp[(6) - (6)].str));
 }
@@ -4161,21 +4169,21 @@ SPRINTF4((yyval.str),"%s %s %s %s",
 
   case 191:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 827 "ace.yacc"
     {SPRINTF5((yyval.str),"%s %s %s %s %s", (yyvsp[(1) - (5)].str), (yyvsp[(2) - (5)].str), (yyvsp[(3) - (5)].str), (yyvsp[(4) - (5)].str), (yyvsp[(5) - (5)].str) );}
     break;
 
   case 192:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 831 "ace.yacc"
     {strcpy((yyval.str),"");}
     break;
 
   case 193:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 832 "ace.yacc"
     {
        SPRINTF3((yyval.str),"%s %s %s",(yyvsp[(1) - (3)].str),(yyvsp[(2) - (3)].str),(yyvsp[(3) - (3)].str));
@@ -4184,7 +4192,7 @@ SPRINTF4((yyval.str),"%s %s %s %s",
 
   case 195:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 836 "ace.yacc"
     {
        SPRINTF2((yyval.str),"INTO TEMP %s%s ",(yyvsp[(3) - (4)].str),(yyvsp[(4) - (4)].str));
@@ -4194,7 +4202,7 @@ SPRINTF4((yyval.str),"%s %s %s %s",
 
   case 196:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 840 "ace.yacc"
     {
        SPRINTF3((yyval.str),"%s INTO TEMP %s%s ",(yyvsp[(1) - (5)].str), (yyvsp[(4) - (5)].str),(yyvsp[(5) - (5)].str));
@@ -4204,63 +4212,63 @@ SPRINTF4((yyval.str),"%s %s %s %s",
 
   case 197:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 848 "ace.yacc"
     {strcpy((yyval.str),"");}
     break;
 
   case 198:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 848 "ace.yacc"
     {strcpy((yyval.str)," WITH NO LOG");}
     break;
 
   case 200:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 859 "ace.yacc"
     {SPRINTF6((yyval.str)," %s %s %s %s %s %s",(yyvsp[(1) - (6)].str),(yyvsp[(2) - (6)].str),(yyvsp[(3) - (6)].str),(yyvsp[(4) - (6)].str),(yyvsp[(5) - (6)].str),(yyvsp[(6) - (6)].str));}
     break;
 
   case 201:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 862 "ace.yacc"
     {strcpy((yyval.str),"");}
     break;
 
   case 202:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 863 "ace.yacc"
     {SPRINTF0((yyval.str),"ALL");}
     break;
 
   case 203:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 864 "ace.yacc"
     {SPRINTF0((yyval.str),"DISTINCT");}
     break;
 
   case 204:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 865 "ace.yacc"
     {SPRINTF0((yyval.str),"DISTINCT");}
     break;
 
   case 206:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 870 "ace.yacc"
     { SPRINTF2((yyval.str)," %s,%s",(yyvsp[(1) - (3)].str),(yyvsp[(3) - (3)].str));}
     break;
 
   case 207:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 874 "ace.yacc"
     {
 			if (strcmp((yyvsp[(1) - (1)].str),"rowid")==0) {
@@ -4274,7 +4282,7 @@ SPRINTF4((yyval.str),"%s %s %s %s",
 
   case 208:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 882 "ace.yacc"
     {
 			SPRINTF2((yyval.str)," %s %s",(yyvsp[(1) - (2)].str),(yyvsp[(2) - (2)].str));
@@ -4284,7 +4292,7 @@ SPRINTF4((yyval.str),"%s %s %s %s",
 
   case 209:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 886 "ace.yacc"
     {
 			SPRINTF2((yyval.str)," %s %s",(yyvsp[(1) - (3)].str),(yyvsp[(3) - (3)].str));
@@ -4294,84 +4302,84 @@ SPRINTF4((yyval.str),"%s %s %s %s",
 
   case 211:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 897 "ace.yacc"
     {SPRINTF0((yyval.str),"UNITS YEAR");}
     break;
 
   case 212:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 898 "ace.yacc"
     {SPRINTF0((yyval.str),"UNITS MONTH"); }
     break;
 
   case 213:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 899 "ace.yacc"
     {SPRINTF0((yyval.str),"UNITS DAY);"); }
     break;
 
   case 214:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 900 "ace.yacc"
     {SPRINTF0((yyval.str),"UNITS HOUR);"); }
     break;
 
   case 215:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 901 "ace.yacc"
     {SPRINTF0((yyval.str),"UNITS MINUTE);"); }
     break;
 
   case 216:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 902 "ace.yacc"
     {SPRINTF0((yyval.str),"UNITS SECOND);"); }
     break;
 
   case 217:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 906 "ace.yacc"
     { SPRINTF2((yyval.str),"%s%s", (yyvsp[(1) - (2)].str),(yyvsp[(2) - (2)].str)); }
     break;
 
   case 220:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 909 "ace.yacc"
     {SPRINTF2((yyval.str)," %s[%s]",(yyvsp[(1) - (4)].str),(yyvsp[(3) - (4)].str));}
     break;
 
   case 221:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 910 "ace.yacc"
     {SPRINTF3((yyval.str)," %s[%s,%s]",(yyvsp[(1) - (6)].str),(yyvsp[(3) - (6)].str),(yyvsp[(5) - (6)].str));}
     break;
 
   case 222:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 911 "ace.yacc"
     {SPRINTF3((yyval.str)," %s.%s[%s]",(yyvsp[(1) - (6)].str),(yyvsp[(3) - (6)].str),(yyvsp[(5) - (6)].str));}
     break;
 
   case 223:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 912 "ace.yacc"
     {SPRINTF4((yyval.str)," %s.%s[%s,%s]",(yyvsp[(1) - (8)].str),(yyvsp[(3) - (8)].str),(yyvsp[(5) - (8)].str),(yyvsp[(7) - (8)].str));}
     break;
 
   case 224:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 913 "ace.yacc"
     {
 			if (find_variable((yyvsp[(2) - (2)].str))==-1) { a4gl_ace_yyerror("Error - undefined variable\n"); }
@@ -4381,112 +4389,112 @@ SPRINTF4((yyval.str),"%s %s %s %s",
 
   case 225:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 918 "ace.yacc"
     {SPRINTF3((yyval.str)," %s%s%s",(yyvsp[(1) - (3)].str),(yyvsp[(2) - (3)].str),(yyvsp[(3) - (3)].str));}
     break;
 
   case 226:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 920 "ace.yacc"
     {SPRINTF3((yyval.str)," %s%s%s",(yyvsp[(1) - (3)].str),(yyvsp[(2) - (3)].str),(yyvsp[(3) - (3)].str));}
     break;
 
   case 230:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 924 "ace.yacc"
     {SPRINTF1((yyval.str)," %s ",(yyvsp[(1) - (1)].str));}
     break;
 
   case 231:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 925 "ace.yacc"
     {SPRINTF2((yyval.str)," %s(%s)",(yyvsp[(1) - (4)].str),(yyvsp[(3) - (4)].str));}
     break;
 
   case 232:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 926 "ace.yacc"
     {SPRINTF3((yyval.str)," %s %s %s",(yyvsp[(1) - (3)].str),(yyvsp[(2) - (3)].str),(yyvsp[(3) - (3)].str));}
     break;
 
   case 233:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 927 "ace.yacc"
     {SPRINTF2((yyval.str)," %s(%s)",(yyvsp[(1) - (4)].str),(yyvsp[(3) - (4)].str));}
     break;
 
   case 234:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 928 "ace.yacc"
     {SPRINTF2((yyval.str)," %s(%s)",(yyvsp[(1) - (4)].str),(yyvsp[(3) - (4)].str));}
     break;
 
   case 235:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 929 "ace.yacc"
     {SPRINTF2((yyval.str)," %s(%s)",(yyvsp[(1) - (4)].str),(yyvsp[(3) - (4)].str));}
     break;
 
   case 236:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 930 "ace.yacc"
     {SPRINTF2((yyval.str)," %s(%s)",(yyvsp[(1) - (4)].str),(yyvsp[(3) - (4)].str));}
     break;
 
   case 237:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 931 "ace.yacc"
     {SPRINTF2((yyval.str),"%s(%s)",(yyvsp[(1) - (4)].str),(yyvsp[(3) - (4)].str));}
     break;
 
   case 238:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 933 "ace.yacc"
     {SPRINTF5((yyval.str)," %s %s %s %s %s",(yyvsp[(1) - (5)].str),(yyvsp[(2) - (5)].str),(yyvsp[(3) - (5)].str),(yyvsp[(4) - (5)].str),(yyvsp[(5) - (5)].str));}
     break;
 
   case 239:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 935 "ace.yacc"
     {SPRINTF5((yyval.str)," %s %s %s %s %s",(yyvsp[(1) - (5)].str),(yyvsp[(2) - (5)].str),(yyvsp[(3) - (5)].str),(yyvsp[(4) - (5)].str),(yyvsp[(5) - (5)].str));}
     break;
 
   case 240:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 937 "ace.yacc"
     {SPRINTF5((yyval.str)," %s %s %s %s %s",(yyvsp[(1) - (5)].str),(yyvsp[(2) - (5)].str),(yyvsp[(3) - (5)].str),(yyvsp[(4) - (5)].str),(yyvsp[(5) - (5)].str));}
     break;
 
   case 241:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 939 "ace.yacc"
     {SPRINTF5((yyval.str)," %s %s %s %s %s",(yyvsp[(1) - (5)].str),(yyvsp[(2) - (5)].str),(yyvsp[(3) - (5)].str),(yyvsp[(4) - (5)].str),(yyvsp[(5) - (5)].str));}
     break;
 
   case 242:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 941 "ace.yacc"
     {SPRINTF5((yyval.str)," %s %s %s %s %s",(yyvsp[(1) - (5)].str),(yyvsp[(2) - (5)].str),(yyvsp[(3) - (5)].str),(yyvsp[(4) - (5)].str),(yyvsp[(5) - (5)].str));}
     break;
 
   case 243:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 945 "ace.yacc"
     {
 			SPRINTF2((yyval.str),"CURRENT, %s TO %s",(yyvsp[(3) - (5)].str),(yyvsp[(5) - (5)].str));
@@ -4495,7 +4503,7 @@ SPRINTF4((yyval.str),"%s %s %s %s",
 
   case 244:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 948 "ace.yacc"
     {
 			SPRINTF3((yyval.str),"%s, %s TO %s",(yyvsp[(1) - (5)].str),(yyvsp[(3) - (5)].str),(yyvsp[(5) - (5)].str));
@@ -4504,7 +4512,7 @@ SPRINTF4((yyval.str),"%s %s %s %s",
 
   case 245:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 951 "ace.yacc"
     {
 			SPRINTF3((yyval.str),"%s %s TO %s",(yyvsp[(1) - (4)].str),(yyvsp[(2) - (4)].str),(yyvsp[(4) - (4)].str));
@@ -4513,91 +4521,91 @@ SPRINTF4((yyval.str),"%s %s %s %s",
 
   case 260:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 957 "ace.yacc"
     {SPRINTF1((yyval.str),"FRACTION(%s)",(yyvsp[(3) - (4)].str));}
     break;
 
   case 261:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 963 "ace.yacc"
     {SPRINTF1((yyval.str),"/%s",(yyvsp[(2) - (2)].str));}
     break;
 
   case 262:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 964 "ace.yacc"
     {SPRINTF1((yyval.str)," MOD %s",(yyvsp[(2) - (2)].str));}
     break;
 
   case 263:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 965 "ace.yacc"
     {SPRINTF1((yyval.str)," POW %s",(yyvsp[(2) - (2)].str));}
     break;
 
   case 264:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 966 "ace.yacc"
     {SPRINTF1((yyval.str),"%s",(yyvsp[(1) - (1)].str));}
     break;
 
   case 265:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 967 "ace.yacc"
     {SPRINTF1((yyval.str),"*%s",(yyvsp[(2) - (2)].str));}
     break;
 
   case 266:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 968 "ace.yacc"
     {SPRINTF1((yyval.str),"+%s",(yyvsp[(2) - (2)].str));}
     break;
 
   case 267:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 969 "ace.yacc"
     {SPRINTF1((yyval.str),"-%s",(yyvsp[(2) - (2)].str));}
     break;
 
   case 268:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 972 "ace.yacc"
     { SPRINTF2((yyval.str),"%s%s",(yyvsp[(1) - (2)].str),(yyvsp[(2) - (2)].str));}
     break;
 
   case 269:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 975 "ace.yacc"
     {strcpy((yyval.str),"");}
     break;
 
   case 270:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 976 "ace.yacc"
     {strcpy((yyval.str),"+");}
     break;
 
   case 271:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 977 "ace.yacc"
     {strcpy((yyval.str),"-");}
     break;
 
   case 273:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 982 "ace.yacc"
     {
 	SPRINTF2((yyval.str),"%s,%s",(yyvsp[(1) - (3)].str),(yyvsp[(3) - (3)].str));
@@ -4606,7 +4614,7 @@ SPRINTF4((yyval.str),"%s %s %s %s",
 
   case 275:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 989 "ace.yacc"
     {
                         if (find_variable((yyvsp[(2) - (2)].str))==-1) { a4gl_ace_yyerror("Error - undefined variable\n"); }
@@ -4616,7 +4624,7 @@ SPRINTF4((yyval.str),"%s %s %s %s",
 
   case 276:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 1005 "ace.yacc"
     {
 		(yyval.commands).commands.commands_len=1;
@@ -4627,7 +4635,7 @@ SPRINTF4((yyval.str),"%s %s %s %s",
 
   case 277:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 1010 "ace.yacc"
     {
 		COPY((yyval.commands),(yyvsp[(1) - (2)].commands));
@@ -4641,7 +4649,7 @@ SPRINTF4((yyval.str),"%s %s %s %s",
 
   case 288:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 1032 "ace.yacc"
     {
 		(yyval.cmd).cmd_type=CMD_BLOCK;
@@ -4652,7 +4660,7 @@ SPRINTF4((yyval.str),"%s %s %s %s",
 
   case 289:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 1042 "ace.yacc"
     {
 		(yyval.cmd).cmd_type=CMD_CALL;
@@ -4666,7 +4674,7 @@ SPRINTF4((yyval.str),"%s %s %s %s",
 
   case 295:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 1060 "ace.yacc"
     {
 		(yyval.cmd).cmd_type=CMD_FOR;
@@ -4680,21 +4688,21 @@ SPRINTF4((yyval.str),"%s %s %s %s",
 
   case 296:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 1070 "ace.yacc"
     { (yyval.expr).type=EXPRTYPE_INT; (yyval.expr).expr_u.i=1; }
     break;
 
   case 297:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 1071 "ace.yacc"
     { COPY((yyval.expr),(yyvsp[(1) - (2)].expr));}
     break;
 
   case 298:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 1075 "ace.yacc"
     {
 	(yyval.cmd).cmd_type=CMD_IF;
@@ -4706,7 +4714,7 @@ SPRINTF4((yyval.str),"%s %s %s %s",
 
   case 299:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 1083 "ace.yacc"
     {
 		(yyval.cmd).cmd_type=CMD_NULL;
@@ -4716,14 +4724,14 @@ SPRINTF4((yyval.str),"%s %s %s %s",
 
   case 300:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 1086 "ace.yacc"
     { COPY((yyval.cmd),(yyvsp[(2) - (2)].cmd)); }
     break;
 
   case 301:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 1091 "ace.yacc"
     {
 		int v;
@@ -4738,7 +4746,7 @@ SPRINTF4((yyval.str),"%s %s %s %s",
 
   case 302:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 1102 "ace.yacc"
     {
 		int v;
@@ -4753,7 +4761,7 @@ SPRINTF4((yyval.str),"%s %s %s %s",
 
   case 303:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 1113 "ace.yacc"
     {
 		int v;
@@ -4768,7 +4776,7 @@ SPRINTF4((yyval.str),"%s %s %s %s",
 
   case 304:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 1126 "ace.yacc"
     {
 		(yyval.expr).type=EXPRTYPE_STRING;
@@ -4778,7 +4786,7 @@ SPRINTF4((yyval.str),"%s %s %s %s",
 
   case 307:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 1133 "ace.yacc"
     {
 
@@ -4793,7 +4801,7 @@ SPRINTF4((yyval.str),"%s %s %s %s",
 
   case 308:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 1145 "ace.yacc"
     {
 	(yyval.cmd).cmd_type=CMD_NEED;
@@ -4803,7 +4811,7 @@ SPRINTF4((yyval.str),"%s %s %s %s",
 
   case 309:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 1151 "ace.yacc"
     {
 	(yyval.cmd).cmd_type=CMD_PAUSE;
@@ -4813,7 +4821,7 @@ SPRINTF4((yyval.str),"%s %s %s %s",
 
   case 310:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 1158 "ace.yacc"
     {
 	(yyval.cmd).cmd_type=CMD_PRINT;
@@ -4824,21 +4832,21 @@ SPRINTF4((yyval.str),"%s %s %s %s",
 
   case 311:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 1166 "ace.yacc"
     {strcpy((yyval.str),"1");}
     break;
 
   case 312:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 1166 "ace.yacc"
     {strcpy((yyval.str),"0");}
     break;
 
   case 313:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 1169 "ace.yacc"
     {
 	(yyval.cmd).cmd_type=CMD_PRINTFILE;
@@ -4849,7 +4857,7 @@ SPRINTF4((yyval.str),"%s %s %s %s",
 
   case 314:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 1174 "ace.yacc"
     {
 	(yyval.cmd).cmd_type=CMD_PRINTFILE;
@@ -4860,7 +4868,7 @@ SPRINTF4((yyval.str),"%s %s %s %s",
 
   case 315:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 1182 "ace.yacc"
     {
 		(yyval.cmd).cmd_type=CMD_SKIP;
@@ -4871,7 +4879,7 @@ SPRINTF4((yyval.str),"%s %s %s %s",
 
   case 316:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 1187 "ace.yacc"
     {
 		(yyval.cmd).cmd_type=CMD_SKIP;
@@ -4881,7 +4889,7 @@ SPRINTF4((yyval.str),"%s %s %s %s",
 
   case 317:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 1194 "ace.yacc"
     {
 		(yyval.cmd).cmd_type=CMD_WHILE;
@@ -4892,7 +4900,7 @@ SPRINTF4((yyval.str),"%s %s %s %s",
 
   case 400:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 1302 "ace.yacc"
     {
 			(yyval.exprptr)=0;
@@ -4901,7 +4909,7 @@ SPRINTF4((yyval.str),"%s %s %s %s",
 
   case 401:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 1306 "ace.yacc"
     { 
 			(yyval.exprptr)=DUP((yyvsp[(2) - (2)].expr)); 
@@ -4910,7 +4918,7 @@ SPRINTF4((yyval.str),"%s %s %s %s",
 
   case 402:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 1313 "ace.yacc"
     {
 		COPY((yyval.agg_val),(yyvsp[(1) - (2)].agg_val));
@@ -4920,14 +4928,14 @@ SPRINTF4((yyval.str),"%s %s %s %s",
 
   case 403:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 1321 "ace.yacc"
     { (yyval.exprptr)=DUP((yyvsp[(2) - (2)].expr)); }
     break;
 
   case 404:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 1325 "ace.yacc"
     {
 		(yyval.agg_val).type=AGG_COUNT;
@@ -4939,7 +4947,7 @@ SPRINTF4((yyval.str),"%s %s %s %s",
 
   case 405:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 1331 "ace.yacc"
     {
 		(yyval.agg_val).type=AGG_PERCENT;
@@ -4951,7 +4959,7 @@ SPRINTF4((yyval.str),"%s %s %s %s",
 
   case 406:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 1337 "ace.yacc"
     {
 		(yyval.agg_val).type=AGG_AVG;
@@ -4963,7 +4971,7 @@ SPRINTF4((yyval.str),"%s %s %s %s",
 
   case 407:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 1343 "ace.yacc"
     {
 		(yyval.agg_val).type=AGG_TOTAL;
@@ -4975,7 +4983,7 @@ SPRINTF4((yyval.str),"%s %s %s %s",
 
   case 408:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 1349 "ace.yacc"
     {
 		(yyval.agg_val).type=AGG_AVG;
@@ -4987,7 +4995,7 @@ SPRINTF4((yyval.str),"%s %s %s %s",
 
   case 409:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 1355 "ace.yacc"
     {
 		(yyval.agg_val).type=AGG_MIN;
@@ -4999,7 +5007,7 @@ SPRINTF4((yyval.str),"%s %s %s %s",
 
   case 410:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 1361 "ace.yacc"
     {
 		(yyval.agg_val).type=AGG_MAX;
@@ -5011,7 +5019,7 @@ SPRINTF4((yyval.str),"%s %s %s %s",
 
   case 411:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 1368 "ace.yacc"
     {
 		(yyval.agg_val).type=AGG_COUNT;
@@ -5023,7 +5031,7 @@ SPRINTF4((yyval.str),"%s %s %s %s",
 
   case 412:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 1374 "ace.yacc"
     {
 		(yyval.agg_val).type=AGG_PERCENT;
@@ -5035,7 +5043,7 @@ SPRINTF4((yyval.str),"%s %s %s %s",
 
   case 413:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 1380 "ace.yacc"
     {
 		(yyval.agg_val).type=AGG_AVG;
@@ -5047,7 +5055,7 @@ SPRINTF4((yyval.str),"%s %s %s %s",
 
   case 414:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 1386 "ace.yacc"
     {
 		(yyval.agg_val).type=AGG_TOTAL;
@@ -5059,7 +5067,7 @@ SPRINTF4((yyval.str),"%s %s %s %s",
 
   case 415:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 1392 "ace.yacc"
     {
 		(yyval.agg_val).type=AGG_AVG;
@@ -5071,7 +5079,7 @@ SPRINTF4((yyval.str),"%s %s %s %s",
 
   case 416:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 1398 "ace.yacc"
     {
 		(yyval.agg_val).type=AGG_MIN;
@@ -5083,7 +5091,7 @@ SPRINTF4((yyval.str),"%s %s %s %s",
 
   case 417:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 1404 "ace.yacc"
     {
 		(yyval.agg_val).type=AGG_MAX;
@@ -5095,7 +5103,7 @@ SPRINTF4((yyval.str),"%s %s %s %s",
 
   case 418:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 1414 "ace.yacc"
     {
 		switch ( (yyvsp[(2) - (2)].expr).type) {
@@ -5119,14 +5127,14 @@ SPRINTF4((yyval.str),"%s %s %s %s",
 
   case 419:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 1432 "ace.yacc"
     { COPY((yyval.expr),(yyvsp[(1) - (1)].expr)); }
     break;
 
   case 420:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 1434 "ace.yacc"
     {
 		(yyval.expr).type=EXPRTYPE_INT;
@@ -5136,7 +5144,7 @@ SPRINTF4((yyval.str),"%s %s %s %s",
 
   case 421:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 1438 "ace.yacc"
     {
 		(yyval.expr).type=EXPRTYPE_INT;
@@ -5146,7 +5154,7 @@ SPRINTF4((yyval.str),"%s %s %s %s",
 
   case 422:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 1442 "ace.yacc"
     {
 		(yyval.expr).type=EXPRTYPE_BUILTIN;
@@ -5156,7 +5164,7 @@ SPRINTF4((yyval.str),"%s %s %s %s",
 
   case 423:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 1446 "ace.yacc"
     {
 		int v;
@@ -5171,7 +5179,7 @@ SPRINTF4((yyval.str),"%s %s %s %s",
 
   case 424:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 1455 "ace.yacc"
     {
 		int v;
@@ -5186,7 +5194,7 @@ SPRINTF4((yyval.str),"%s %s %s %s",
 
   case 425:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 1465 "ace.yacc"
     {
 		(yyval.expr).type=EXPRTYPE_FCALL; 
@@ -5198,7 +5206,7 @@ SPRINTF4((yyval.str),"%s %s %s %s",
 
   case 426:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 1472 "ace.yacc"
     {
 		(yyval.expr).type=EXPRTYPE_FCALL; 
@@ -5210,7 +5218,7 @@ SPRINTF4((yyval.str),"%s %s %s %s",
 
   case 427:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 1478 "ace.yacc"
     {
 		(yyval.expr).type=EXPRTYPE_FCALL; 
@@ -5222,7 +5230,7 @@ SPRINTF4((yyval.str),"%s %s %s %s",
 
   case 428:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 1484 "ace.yacc"
     {
 		(yyval.expr).type=EXPRTYPE_FCALL; 
@@ -5234,7 +5242,7 @@ SPRINTF4((yyval.str),"%s %s %s %s",
 
   case 429:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 1491 "ace.yacc"
     {
 		(yyval.expr).type=EXPRTYPE_FCALL; 
@@ -5246,14 +5254,14 @@ SPRINTF4((yyval.str),"%s %s %s %s",
 
   case 430:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 1497 "ace.yacc"
     { COPY((yyval.expr),(yyvsp[(2) - (3)].expr)); }
     break;
 
   case 431:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 1498 "ace.yacc"
     {
 		(yyval.expr).type=EXPRTYPE_VARIABLE_SUB;
@@ -5263,7 +5271,7 @@ SPRINTF4((yyval.str),"%s %s %s %s",
 
   case 432:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 1503 "ace.yacc"
     {
 		struct expr *e1;
@@ -5288,7 +5296,7 @@ SPRINTF4((yyval.str),"%s %s %s %s",
 
   case 433:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 1525 "ace.yacc"
     {
 		switch ( (yyvsp[(2) - (2)].expr).type) {
@@ -5312,14 +5320,14 @@ SPRINTF4((yyval.str),"%s %s %s %s",
 
   case 434:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 1543 "ace.yacc"
     { COPY((yyval.expr),(yyvsp[(1) - (1)].expr)); }
     break;
 
   case 435:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 1545 "ace.yacc"
     {
 		(yyval.expr).type=EXPRTYPE_INT;
@@ -5329,7 +5337,7 @@ SPRINTF4((yyval.str),"%s %s %s %s",
 
   case 436:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 1549 "ace.yacc"
     {
 		(yyval.expr).type=EXPRTYPE_INT;
@@ -5339,7 +5347,7 @@ SPRINTF4((yyval.str),"%s %s %s %s",
 
   case 437:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 1553 "ace.yacc"
     {
 		(yyval.expr).type=EXPRTYPE_BUILTIN;
@@ -5349,7 +5357,7 @@ SPRINTF4((yyval.str),"%s %s %s %s",
 
   case 438:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 1557 "ace.yacc"
     {
 		int v;
@@ -5364,7 +5372,7 @@ SPRINTF4((yyval.str),"%s %s %s %s",
 
   case 439:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 1566 "ace.yacc"
     {
 		int v;
@@ -5379,7 +5387,7 @@ SPRINTF4((yyval.str),"%s %s %s %s",
 
   case 440:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 1576 "ace.yacc"
     {
 		(yyval.expr).type=EXPRTYPE_FCALL; 
@@ -5391,7 +5399,7 @@ SPRINTF4((yyval.str),"%s %s %s %s",
 
   case 441:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 1583 "ace.yacc"
     {
 		(yyval.expr).type=EXPRTYPE_FCALL; 
@@ -5403,7 +5411,7 @@ SPRINTF4((yyval.str),"%s %s %s %s",
 
   case 442:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 1589 "ace.yacc"
     {
 		(yyval.expr).type=EXPRTYPE_FCALL; 
@@ -5415,7 +5423,7 @@ SPRINTF4((yyval.str),"%s %s %s %s",
 
   case 443:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 1595 "ace.yacc"
     {
 		(yyval.expr).type=EXPRTYPE_FCALL; 
@@ -5427,7 +5435,7 @@ SPRINTF4((yyval.str),"%s %s %s %s",
 
   case 444:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 1602 "ace.yacc"
     {
 		(yyval.expr).type=EXPRTYPE_FCALL; 
@@ -5439,14 +5447,14 @@ SPRINTF4((yyval.str),"%s %s %s %s",
 
   case 445:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 1608 "ace.yacc"
     { COPY((yyval.expr),(yyvsp[(2) - (3)].expr)); }
     break;
 
   case 446:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 1609 "ace.yacc"
     {
 		(yyval.expr).type=EXPRTYPE_SIMPLE; 
@@ -5458,7 +5466,7 @@ SPRINTF4((yyval.str),"%s %s %s %s",
 
   case 447:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 1615 "ace.yacc"
     {
 		(yyval.expr).type=EXPRTYPE_SIMPLE; 
@@ -5470,7 +5478,7 @@ SPRINTF4((yyval.str),"%s %s %s %s",
 
   case 448:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 1621 "ace.yacc"
     {
 		(yyval.expr).type=EXPRTYPE_VARIABLE_SUB;
@@ -5480,7 +5488,7 @@ SPRINTF4((yyval.str),"%s %s %s %s",
 
   case 449:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 1626 "ace.yacc"
     {
 		(yyval.expr).type=EXPRTYPE_AGG; 
@@ -5490,7 +5498,7 @@ SPRINTF4((yyval.str),"%s %s %s %s",
 
   case 450:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 1631 "ace.yacc"
     {
 		struct expr *e1;
@@ -5515,7 +5523,7 @@ SPRINTF4((yyval.str),"%s %s %s %s",
 
   case 451:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 1653 "ace.yacc"
     { 
 		(yyval.expr).type=EXPRTYPE_COMPLEX; 
@@ -5528,7 +5536,7 @@ SPRINTF4((yyval.str),"%s %s %s %s",
 
   case 452:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 1661 "ace.yacc"
     { 
 		(yyval.expr).type=EXPRTYPE_COMPLEX; 
@@ -5541,7 +5549,7 @@ SPRINTF4((yyval.str),"%s %s %s %s",
 
   case 453:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 1669 "ace.yacc"
     { 
 		(yyval.expr).type=EXPRTYPE_COMPLEX; (yyval.expr).expr_u.expr=acl_malloc2(sizeof(struct complex_expr)); 
@@ -5553,7 +5561,7 @@ SPRINTF4((yyval.str),"%s %s %s %s",
 
   case 454:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 1677 "ace.yacc"
     { 
 		(yyval.expr).type=EXPRTYPE_COMPLEX; (yyval.expr).expr_u.expr=acl_malloc2(sizeof(struct complex_expr)); 
@@ -5565,7 +5573,7 @@ SPRINTF4((yyval.str),"%s %s %s %s",
 
   case 455:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 1684 "ace.yacc"
     { 
 		(yyval.expr).type=EXPRTYPE_COMPLEX; (yyval.expr).expr_u.expr=acl_malloc2(sizeof(struct complex_expr)); 
@@ -5577,7 +5585,7 @@ SPRINTF4((yyval.str),"%s %s %s %s",
 
   case 456:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 1693 "ace.yacc"
     { 
 		(yyval.expr).type=EXPRTYPE_COMPLEX; (yyval.expr).expr_u.expr=acl_malloc2(sizeof(struct complex_expr)); 
@@ -5589,7 +5597,7 @@ SPRINTF4((yyval.str),"%s %s %s %s",
 
   case 457:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 1699 "ace.yacc"
     { 
 		(yyval.expr).type=EXPRTYPE_COMPLEX; 
@@ -5602,7 +5610,7 @@ SPRINTF4((yyval.str),"%s %s %s %s",
 
   case 458:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 1708 "ace.yacc"
     { 
 		(yyval.expr).type=EXPRTYPE_COMPLEX;
@@ -5615,7 +5623,7 @@ SPRINTF4((yyval.str),"%s %s %s %s",
 
   case 459:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 1715 "ace.yacc"
     {
 		(yyval.expr).type=EXPRTYPE_SIMPLE; 
@@ -5627,7 +5635,7 @@ SPRINTF4((yyval.str),"%s %s %s %s",
 
   case 460:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 1724 "ace.yacc"
     { 
 		(yyval.expr).type=EXPRTYPE_COMPLEX; 
@@ -5640,7 +5648,7 @@ SPRINTF4((yyval.str),"%s %s %s %s",
 
   case 461:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 1732 "ace.yacc"
     { 
 		(yyval.expr).type=EXPRTYPE_COMPLEX; 
@@ -5653,7 +5661,7 @@ SPRINTF4((yyval.str),"%s %s %s %s",
 
   case 462:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 1740 "ace.yacc"
     { 
 		(yyval.expr).type=EXPRTYPE_COMPLEX; (yyval.expr).expr_u.expr=acl_malloc2(sizeof(struct complex_expr)); 
@@ -5665,7 +5673,7 @@ SPRINTF4((yyval.str),"%s %s %s %s",
 
   case 463:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 1748 "ace.yacc"
     { 
 		(yyval.expr).type=EXPRTYPE_COMPLEX; (yyval.expr).expr_u.expr=acl_malloc2(sizeof(struct complex_expr)); 
@@ -5677,7 +5685,7 @@ SPRINTF4((yyval.str),"%s %s %s %s",
 
   case 464:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 1755 "ace.yacc"
     { 
 		(yyval.expr).type=EXPRTYPE_COMPLEX; (yyval.expr).expr_u.expr=acl_malloc2(sizeof(struct complex_expr)); 
@@ -5689,7 +5697,7 @@ SPRINTF4((yyval.str),"%s %s %s %s",
 
   case 465:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 1764 "ace.yacc"
     { 
 		(yyval.expr).type=EXPRTYPE_COMPLEX; (yyval.expr).expr_u.expr=acl_malloc2(sizeof(struct complex_expr)); 
@@ -5701,7 +5709,7 @@ SPRINTF4((yyval.str),"%s %s %s %s",
 
   case 466:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 1770 "ace.yacc"
     { 
 		(yyval.expr).type=EXPRTYPE_COMPLEX; 
@@ -5714,7 +5722,7 @@ SPRINTF4((yyval.str),"%s %s %s %s",
 
   case 467:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 1779 "ace.yacc"
     { 
 		(yyval.expr).type=EXPRTYPE_COMPLEX;
@@ -5727,7 +5735,7 @@ SPRINTF4((yyval.str),"%s %s %s %s",
 
   case 468:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 1786 "ace.yacc"
     { 
 		(yyval.expr).type=EXPRTYPE_COMPLEX;
@@ -5740,7 +5748,7 @@ SPRINTF4((yyval.str),"%s %s %s %s",
 
   case 469:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 1794 "ace.yacc"
     {
 		(yyval.expr).type=EXPRTYPE_COMPARE;
@@ -5752,7 +5760,7 @@ SPRINTF4((yyval.str),"%s %s %s %s",
 
   case 470:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 1800 "ace.yacc"
     {
 		(yyval.expr).type=EXPRTYPE_COMPARE;
@@ -5764,7 +5772,7 @@ SPRINTF4((yyval.str),"%s %s %s %s",
 
   case 471:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 1806 "ace.yacc"
     {
 		(yyval.expr).type=EXPRTYPE_COMPARE;
@@ -5776,7 +5784,7 @@ SPRINTF4((yyval.str),"%s %s %s %s",
 
   case 472:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 1812 "ace.yacc"
     {
 		(yyval.expr).type=EXPRTYPE_COMPARE;
@@ -5788,7 +5796,7 @@ SPRINTF4((yyval.str),"%s %s %s %s",
 
   case 473:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 1818 "ace.yacc"
     {
 		(yyval.expr).type=EXPRTYPE_COMPARE;
@@ -5800,7 +5808,7 @@ SPRINTF4((yyval.str),"%s %s %s %s",
 
   case 474:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 1824 "ace.yacc"
     {
 		(yyval.expr).type=EXPRTYPE_COMPARE;
@@ -5812,7 +5820,7 @@ SPRINTF4((yyval.str),"%s %s %s %s",
 
   case 475:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 1830 "ace.yacc"
     {
 		(yyval.expr).type=EXPRTYPE_COMPARE;
@@ -5824,7 +5832,7 @@ SPRINTF4((yyval.str),"%s %s %s %s",
 
   case 476:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 1836 "ace.yacc"
     {
 		(yyval.expr).type=EXPRTYPE_COMPARE;
@@ -5836,7 +5844,7 @@ SPRINTF4((yyval.str),"%s %s %s %s",
 
   case 477:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 1842 "ace.yacc"
     {
 		(yyval.expr).type=EXPRTYPE_COMPARE;
@@ -5848,7 +5856,7 @@ SPRINTF4((yyval.str),"%s %s %s %s",
 
   case 478:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 1848 "ace.yacc"
     {
 		(yyval.expr).type=EXPRTYPE_COMPARE;
@@ -5860,7 +5868,7 @@ SPRINTF4((yyval.str),"%s %s %s %s",
 
   case 479:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 1854 "ace.yacc"
     {
 		(yyval.expr).type=EXPRTYPE_COMPARE;
@@ -5872,7 +5880,7 @@ SPRINTF4((yyval.str),"%s %s %s %s",
 
   case 480:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 1862 "ace.yacc"
     {
 		(yyval.expr).type=EXPRTYPE_SIMPLE; 
@@ -5884,7 +5892,7 @@ SPRINTF4((yyval.str),"%s %s %s %s",
 
   case 481:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 1869 "ace.yacc"
     {
 		(yyval.expr).type=EXPRTYPE_SIMPLE; 
@@ -5896,7 +5904,7 @@ SPRINTF4((yyval.str),"%s %s %s %s",
 
   case 482:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 1875 "ace.yacc"
     {
 		(yyval.expr).type=EXPRTYPE_SIMPLE; 
@@ -5908,7 +5916,7 @@ SPRINTF4((yyval.str),"%s %s %s %s",
 
   case 483:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 1883 "ace.yacc"
     {
 		(yyval.expr).type=EXPRTYPE_SIMPLE; 
@@ -5920,7 +5928,7 @@ SPRINTF4((yyval.str),"%s %s %s %s",
 
   case 484:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 1893 "ace.yacc"
     {
 		struct expr nullexpr;
@@ -5942,7 +5950,7 @@ SPRINTF4((yyval.str),"%s %s %s %s",
 
   case 485:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 1909 "ace.yacc"
     {
 		COPY((yyval.expr),(yyvsp[(1) - (1)].expr));
@@ -5951,7 +5959,7 @@ SPRINTF4((yyval.str),"%s %s %s %s",
 
   case 486:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 1916 "ace.yacc"
     {
 		(yyval.expr).type=EXPRTYPE_LIST;
@@ -5965,7 +5973,7 @@ SPRINTF4((yyval.str),"%s %s %s %s",
 
   case 487:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 1923 "ace.yacc"
     {
 		COPY((yyval.expr),(yyvsp[(1) - (3)].expr));
@@ -5978,7 +5986,7 @@ SPRINTF4((yyval.str),"%s %s %s %s",
 
   case 488:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 1934 "ace.yacc"
     {
 		(yyval.expr).type=EXPRTYPE_STRING;
@@ -5988,7 +5996,7 @@ SPRINTF4((yyval.str),"%s %s %s %s",
 
   case 489:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 1938 "ace.yacc"
     {
 		(yyval.expr).type=EXPRTYPE_DOUBLE;
@@ -5998,7 +6006,7 @@ SPRINTF4((yyval.str),"%s %s %s %s",
 
   case 490:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 1942 "ace.yacc"
     {
 		(yyval.expr).type=EXPRTYPE_DOUBLE;
@@ -6008,7 +6016,7 @@ SPRINTF4((yyval.str),"%s %s %s %s",
 
   case 491:
 
-/* Line 1455 of yacc.c  */
+/* Line 1464 of yacc.c  */
 #line 1946 "ace.yacc"
     {
 		(yyval.expr).type=EXPRTYPE_INT;
@@ -6018,8 +6026,8 @@ SPRINTF4((yyval.str),"%s %s %s %s",
 
 
 
-/* Line 1455 of yacc.c  */
-#line 6023 "y.tab.c"
+/* Line 1464 of yacc.c  */
+#line 6031 "y.tab.c"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);
@@ -6230,7 +6238,7 @@ yyreturn:
 
 
 
-/* Line 1675 of yacc.c  */
+/* Line 1684 of yacc.c  */
 #line 1954 "ace.yacc"
 
 

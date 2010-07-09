@@ -1,10 +1,9 @@
-
-/* A Bison parser, made by GNU Bison 2.4.1.  */
+/* A Bison parser, made by GNU Bison 2.4.2.  */
 
 /* Skeleton interface for Bison's Yacc-like parsers in C
    
-      Copyright (C) 1984, 1989, 1990, 2000, 2001, 2002, 2003, 2004, 2005, 2006
-   Free Software Foundation, Inc.
+      Copyright (C) 1984, 1989-1990, 2000-2006, 2009-2010 Free Software
+   Foundation, Inc.
    
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -39,7 +38,7 @@
    /* Put the tokens into the symbol table, so that GDB and other debuggers
       know about them.  */
    enum yytokentype {
-     NAME = 2239,
+     NAME = 2240,
      KW_COMMA = 1747,
      KW_WORDWRAP = 1526,
      KW_USING = 1679,
@@ -69,25 +68,25 @@
      KW_DIVIDE = 1693,
      KW_MOD = 1761,
      KW_POWER = 1665,
-     UMINUS = 2240,
+     UMINUS = 2241,
      CLOSE_BRACKET = 1535,
      OPEN_BRACKET = 1577,
-     TYPECAST = 2241,
+     TYPECAST = 2242,
      COMMAND = 1537,
-     NUMBER_VALUE = 2242,
-     CHAR_VALUE = 2243,
-     CHAR_VALUE_TRANSLATED = 2244,
-     INT_VALUE = 2245,
-     NAMED_GEN = 2246,
-     CLINE = 2247,
-     SQLLINE = 2248,
-     KW_CSTART = 2249,
-     KW_CEND = 2250,
-     USER_DTYPE_ORIG = 2251,
-     USER_DTYPE_NEW = 2252,
-     SQL_TEXT = 2253,
-     KW_WHENEVER_SET = 2254,
-     COMMENT = 2255,
+     NUMBER_VALUE = 2243,
+     CHAR_VALUE = 2244,
+     CHAR_VALUE_TRANSLATED = 2245,
+     INT_VALUE = 2246,
+     NAMED_GEN = 2247,
+     CLINE = 2248,
+     SQLLINE = 2249,
+     KW_CSTART = 2250,
+     KW_CEND = 2251,
+     USER_DTYPE_ORIG = 2252,
+     USER_DTYPE_NEW = 2253,
+     SQL_TEXT = 2254,
+     KW_WHENEVER_SET = 2255,
+     COMMENT = 2256,
      KW_DOC4GLCOMMENT = 1000,
      WITH_LISTING_IN = 1001,
      SET_CONSTRAINTS_ALL_DEFERRED = 1002,
@@ -1271,33 +1270,34 @@
      STROKE = 2212,
      LINE_TO = 2213,
      SET_FONT_NAME = 2214,
-     BOOKMARK = 2215,
-     KW_FILL = 2216,
-     KW_WIDTH = 2217,
-     KWLINE = 2218,
-     ERRORHOOK = 2219,
-     KW_CAST = 2220,
-     CURR_FILE_NAME = 2221,
-     CURR_LINE_NO = 2222,
-     RIGHT_ALIGNED = 2223,
-     KW_TAG = 2224,
-     LINTMODULEISLIBRARY = 2225,
-     KW_PUBLIC = 2226,
-     KW_PRIVATE = 2227,
-     COPYBACK = 2228,
-     REFERENCES_BLOBTYPE_DEFAULT_NULL = 2229,
-     REFERENCES_BLOBTYPE = 2230,
-     SORT = 2231,
-     KWPIPE = 2232,
-     KW_DONE = 2233,
-     END_TODO = 2234,
-     KW_TODO = 2235,
-     KW_ALWAYS = 2236,
-     PROGRAM_TIMEOUT = 2237
+     SET_TEXT_FORMAT = 2215,
+     BOOKMARK = 2216,
+     KW_FILL = 2217,
+     KW_WIDTH = 2218,
+     KWLINE = 2219,
+     ERRORHOOK = 2220,
+     KW_CAST = 2221,
+     CURR_FILE_NAME = 2222,
+     CURR_LINE_NO = 2223,
+     RIGHT_ALIGNED = 2224,
+     KW_TAG = 2225,
+     LINTMODULEISLIBRARY = 2226,
+     KW_PUBLIC = 2227,
+     KW_PRIVATE = 2228,
+     COPYBACK = 2229,
+     REFERENCES_BLOBTYPE_DEFAULT_NULL = 2230,
+     REFERENCES_BLOBTYPE = 2231,
+     SORT = 2232,
+     KWPIPE = 2233,
+     KW_DONE = 2234,
+     END_TODO = 2235,
+     KW_TODO = 2236,
+     KW_ALWAYS = 2237,
+     PROGRAM_TIMEOUT = 2238
    };
 #endif
 /* Tokens.  */
-#define NAME 2239
+#define NAME 2240
 #define KW_COMMA 1747
 #define KW_WORDWRAP 1526
 #define KW_USING 1679
@@ -1327,25 +1327,25 @@
 #define KW_DIVIDE 1693
 #define KW_MOD 1761
 #define KW_POWER 1665
-#define UMINUS 2240
+#define UMINUS 2241
 #define CLOSE_BRACKET 1535
 #define OPEN_BRACKET 1577
-#define TYPECAST 2241
+#define TYPECAST 2242
 #define COMMAND 1537
-#define NUMBER_VALUE 2242
-#define CHAR_VALUE 2243
-#define CHAR_VALUE_TRANSLATED 2244
-#define INT_VALUE 2245
-#define NAMED_GEN 2246
-#define CLINE 2247
-#define SQLLINE 2248
-#define KW_CSTART 2249
-#define KW_CEND 2250
-#define USER_DTYPE_ORIG 2251
-#define USER_DTYPE_NEW 2252
-#define SQL_TEXT 2253
-#define KW_WHENEVER_SET 2254
-#define COMMENT 2255
+#define NUMBER_VALUE 2243
+#define CHAR_VALUE 2244
+#define CHAR_VALUE_TRANSLATED 2245
+#define INT_VALUE 2246
+#define NAMED_GEN 2247
+#define CLINE 2248
+#define SQLLINE 2249
+#define KW_CSTART 2250
+#define KW_CEND 2251
+#define USER_DTYPE_ORIG 2252
+#define USER_DTYPE_NEW 2253
+#define SQL_TEXT 2254
+#define KW_WHENEVER_SET 2255
+#define COMMENT 2256
 #define KW_DOC4GLCOMMENT 1000
 #define WITH_LISTING_IN 1001
 #define SET_CONSTRAINTS_ALL_DEFERRED 1002
@@ -2529,29 +2529,30 @@
 #define STROKE 2212
 #define LINE_TO 2213
 #define SET_FONT_NAME 2214
-#define BOOKMARK 2215
-#define KW_FILL 2216
-#define KW_WIDTH 2217
-#define KWLINE 2218
-#define ERRORHOOK 2219
-#define KW_CAST 2220
-#define CURR_FILE_NAME 2221
-#define CURR_LINE_NO 2222
-#define RIGHT_ALIGNED 2223
-#define KW_TAG 2224
-#define LINTMODULEISLIBRARY 2225
-#define KW_PUBLIC 2226
-#define KW_PRIVATE 2227
-#define COPYBACK 2228
-#define REFERENCES_BLOBTYPE_DEFAULT_NULL 2229
-#define REFERENCES_BLOBTYPE 2230
-#define SORT 2231
-#define KWPIPE 2232
-#define KW_DONE 2233
-#define END_TODO 2234
-#define KW_TODO 2235
-#define KW_ALWAYS 2236
-#define PROGRAM_TIMEOUT 2237
+#define SET_TEXT_FORMAT 2215
+#define BOOKMARK 2216
+#define KW_FILL 2217
+#define KW_WIDTH 2218
+#define KWLINE 2219
+#define ERRORHOOK 2220
+#define KW_CAST 2221
+#define CURR_FILE_NAME 2222
+#define CURR_LINE_NO 2223
+#define RIGHT_ALIGNED 2224
+#define KW_TAG 2225
+#define LINTMODULEISLIBRARY 2226
+#define KW_PUBLIC 2227
+#define KW_PRIVATE 2228
+#define COPYBACK 2229
+#define REFERENCES_BLOBTYPE_DEFAULT_NULL 2230
+#define REFERENCES_BLOBTYPE 2231
+#define SORT 2232
+#define KWPIPE 2233
+#define KW_DONE 2234
+#define END_TODO 2235
+#define KW_TODO 2236
+#define KW_ALWAYS 2237
+#define PROGRAM_TIMEOUT 2238
 
 
 
@@ -2560,8 +2561,8 @@
 typedef union YYSTYPE
 {
 
-/* Line 1676 of yacc.c  */
-#line 281 "fgl.infx.yacc"
+/* Line 1685 of yacc.c  */
+#line 282 "fgl.infx.yacc"
 
 
 
@@ -2665,8 +2666,8 @@ typedef union YYSTYPE
 	
 
 
-/* Line 1676 of yacc.c  */
-#line 2670 "y.tab.h"
+/* Line 1685 of yacc.c  */
+#line 2671 "y.tab.h"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */

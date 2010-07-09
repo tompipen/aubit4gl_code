@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: 1.reqd,v 1.100 2010-03-09 15:34:24 mikeaubury Exp $
+# $Id: 1.reqd,v 1.101 2010-07-09 09:30:22 mikeaubury Exp $
 #
 */
 
@@ -124,6 +124,7 @@
 #include "a4gl_gen_stack.h"
 #include "a4gl_API_parse_lib.h"
 #include "parsehelp.h"
+#include "expr_munging.h"
 
 #ifndef ENCODE_SIZE
 #define ENCODE_SIZE(x) (x<<16)S

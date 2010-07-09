@@ -1,10 +1,9 @@
-
-/* A Bison parser, made by GNU Bison 2.4.1.  */
+/* A Bison parser, made by GNU Bison 2.4.2.  */
 
 /* Skeleton interface for Bison's Yacc-like parsers in C
    
-      Copyright (C) 1984, 1989, 1990, 2000, 2001, 2002, 2003, 2004, 2005, 2006
-   Free Software Foundation, Inc.
+      Copyright (C) 1984, 1989-1990, 2000-2006, 2009-2010 Free Software
+   Foundation, Inc.
    
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -39,25 +38,25 @@
    /* Put the tokens into the symbol table, so that GDB and other debuggers
       know about them.  */
    enum yytokentype {
-     INT_VALUE = 2239,
-     NAMED = 2240,
-     NAMED_GEN = 2241,
-     CHAR_VALUE = 2242,
-     NOT_USED_1 = 2243,
-     NOT_USED_2 = 2244,
-     NOT_USED_3 = 2245,
-     NOT_USED_4 = 2246,
-     NOT_USED_5 = 2247,
-     NOT_USED_6 = 2248,
-     NOT_USED_7 = 2249,
-     NOT_USED_8 = 2250,
-     NUMBER_VALUE = 2251,
-     SEMICOLON = 2252,
-     QUESTION_MARK = 2253,
-     CLINE = 2254,
-     CH = 2255,
-     MARK_VAR = 2256,
-     END_MARK_VAR = 2257,
+     INT_VALUE = 2240,
+     NAMED = 2241,
+     NAMED_GEN = 2242,
+     CHAR_VALUE = 2243,
+     NOT_USED_1 = 2244,
+     NOT_USED_2 = 2245,
+     NOT_USED_3 = 2246,
+     NOT_USED_4 = 2247,
+     NOT_USED_5 = 2248,
+     NOT_USED_6 = 2249,
+     NOT_USED_7 = 2250,
+     NOT_USED_8 = 2251,
+     NUMBER_VALUE = 2252,
+     SEMICOLON = 2253,
+     QUESTION_MARK = 2254,
+     CLINE = 2255,
+     CH = 2256,
+     MARK_VAR = 2257,
+     END_MARK_VAR = 2258,
      WITH_LISTING_IN = 1001,
      SET_CONSTRAINTS_ALL_DEFERRED = 1002,
      KW_LIMIT = 1003,
@@ -310,42 +309,43 @@
      KW_TODAY = 1854,
      KW_ROWID = 1855,
      TIMESTAMP = 2203,
-     KW_TAG = 2224,
-     LINTMODULEISLIBRARY = 2225,
-     KW_PUBLIC = 2226,
-     KW_PRIVATE = 2227,
-     COPYBACK = 2228,
-     REFERENCES_BLOBTYPE_DEFAULT_NULL = 2229,
-     REFERENCES_BLOBTYPE = 2230,
-     SORT = 2231,
-     KWPIPE = 2232,
-     KW_DONE = 2233,
-     END_TODO = 2234,
-     KW_TODO = 2235,
-     KW_ALWAYS = 2236,
-     PROGRAM_TIMEOUT = 2237
+     SET_TEXT_FORMAT = 2209,
+     KW_TAG = 2225,
+     LINTMODULEISLIBRARY = 2226,
+     KW_PUBLIC = 2227,
+     KW_PRIVATE = 2228,
+     COPYBACK = 2229,
+     REFERENCES_BLOBTYPE_DEFAULT_NULL = 2230,
+     REFERENCES_BLOBTYPE = 2231,
+     SORT = 2232,
+     KWPIPE = 2233,
+     KW_DONE = 2234,
+     END_TODO = 2235,
+     KW_TODO = 2236,
+     KW_ALWAYS = 2237,
+     PROGRAM_TIMEOUT = 2238
    };
 #endif
 /* Tokens.  */
-#define INT_VALUE 2239
-#define NAMED 2240
-#define NAMED_GEN 2241
-#define CHAR_VALUE 2242
-#define NOT_USED_1 2243
-#define NOT_USED_2 2244
-#define NOT_USED_3 2245
-#define NOT_USED_4 2246
-#define NOT_USED_5 2247
-#define NOT_USED_6 2248
-#define NOT_USED_7 2249
-#define NOT_USED_8 2250
-#define NUMBER_VALUE 2251
-#define SEMICOLON 2252
-#define QUESTION_MARK 2253
-#define CLINE 2254
-#define CH 2255
-#define MARK_VAR 2256
-#define END_MARK_VAR 2257
+#define INT_VALUE 2240
+#define NAMED 2241
+#define NAMED_GEN 2242
+#define CHAR_VALUE 2243
+#define NOT_USED_1 2244
+#define NOT_USED_2 2245
+#define NOT_USED_3 2246
+#define NOT_USED_4 2247
+#define NOT_USED_5 2248
+#define NOT_USED_6 2249
+#define NOT_USED_7 2250
+#define NOT_USED_8 2251
+#define NUMBER_VALUE 2252
+#define SEMICOLON 2253
+#define QUESTION_MARK 2254
+#define CLINE 2255
+#define CH 2256
+#define MARK_VAR 2257
+#define END_MARK_VAR 2258
 #define WITH_LISTING_IN 1001
 #define SET_CONSTRAINTS_ALL_DEFERRED 1002
 #define KW_LIMIT 1003
@@ -598,20 +598,21 @@
 #define KW_TODAY 1854
 #define KW_ROWID 1855
 #define TIMESTAMP 2203
-#define KW_TAG 2224
-#define LINTMODULEISLIBRARY 2225
-#define KW_PUBLIC 2226
-#define KW_PRIVATE 2227
-#define COPYBACK 2228
-#define REFERENCES_BLOBTYPE_DEFAULT_NULL 2229
-#define REFERENCES_BLOBTYPE 2230
-#define SORT 2231
-#define KWPIPE 2232
-#define KW_DONE 2233
-#define END_TODO 2234
-#define KW_TODO 2235
-#define KW_ALWAYS 2236
-#define PROGRAM_TIMEOUT 2237
+#define SET_TEXT_FORMAT 2209
+#define KW_TAG 2225
+#define LINTMODULEISLIBRARY 2226
+#define KW_PUBLIC 2227
+#define KW_PRIVATE 2228
+#define COPYBACK 2229
+#define REFERENCES_BLOBTYPE_DEFAULT_NULL 2230
+#define REFERENCES_BLOBTYPE 2231
+#define SORT 2232
+#define KWPIPE 2233
+#define KW_DONE 2234
+#define END_TODO 2235
+#define KW_TODO 2236
+#define KW_ALWAYS 2237
+#define PROGRAM_TIMEOUT 2238
 
 
 
@@ -620,7 +621,7 @@
 typedef union YYSTYPE
 {
 
-/* Line 1676 of yacc.c  */
+/* Line 1685 of yacc.c  */
 #line 144 "sql.yacc"
 
         char    str[8192];
@@ -646,8 +647,8 @@ typedef union YYSTYPE
 
 
 
-/* Line 1676 of yacc.c  */
-#line 651 "y.tab.h"
+/* Line 1685 of yacc.c  */
+#line 652 "y.tab.h"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
