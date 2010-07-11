@@ -10,6 +10,8 @@ actions	<actions>
 screen_section	<screen_sction>
 layout_section	<layout_sction>
 field_tag	<field_tag>
+field_type	<field type>
+fpart_list	<field_list>
 field_tag_name	<field_tag_name>
 desc	<desc>
 colors	<colors>
