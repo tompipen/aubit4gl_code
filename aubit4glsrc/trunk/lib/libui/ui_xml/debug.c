@@ -52,12 +52,14 @@ int dbglvl=-1;
 
 if (dbglvl==-1) {
 	char *ptr;
+	dbglvl=0;
 	ptr=getenv("PROXYDBGLVL");
 	if (ptr) {
 		if (strlen(ptr)) {
 			dbglvl=atol(ptr);
 		}
 	}
+	
 }
 
 if (lvl>dbglvl) return;
