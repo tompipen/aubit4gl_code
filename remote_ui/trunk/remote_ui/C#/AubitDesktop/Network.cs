@@ -252,6 +252,7 @@ namespace AubitDesktop
             int cnt = 0;
             while (ReceivedEnvelopeFromServer == null)
             {
+               
                 System.Threading.Thread.Sleep(100);
                 cnt++;
                 Application.DoEvents();
