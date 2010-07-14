@@ -14953,7 +14953,7 @@ if test "$enable_minimal" != "yes"; then
 #Note: some of them will still be built, but not installed or packaged
 	COMP_EXE="$COMP_EXE aace generate_aace aace_4gl aace_perl \
 		mcompile mdecompile process_report quick_check_logrep adecompile ide1$A4GL_EXE_EXT \
-		fdecompile unmkmessage default_frm"
+		fdecompile unmkmessage default_frm quickguide$A4GL_EXE_EXT fglproto"
 	RUNTIME_EXE="$RUNTIME_EXE fshow loadmap"
 else
 	echo "*** NOTE: --enable-minimal specified; some targets disabled"
@@ -37872,7 +37872,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure,v 1.461 2010-05-28 10:19:47 mikeaubury Exp $
+| $Id: configure,v 1.462 2010-07-14 13:23:55 mikeaubury Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

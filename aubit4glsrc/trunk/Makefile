@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile,v 1.82 2010-05-12 11:02:48 mikeaubury Exp $
+# $Id: Makefile,v 1.83 2010-07-14 13:23:55 mikeaubury Exp $
 #
 
 #Save initial state of system varables, so we can undo changes 
@@ -293,9 +293,12 @@ corecompile: api.headers
 	$(MAKE) -C tools/convertsql
 	$(MAKE) -C tools/afinderr
 	$(MAKE) -C tools/configuration
+	$(MAKE) -C tools/quickguide
 	$(MAKE) -C tools/asql
 	$(MAKE) -C tools/a4gl
 	$(MAKE) -C tools/adbschema
+	$(MAKE) -C compilers/4glc fglproto
+
 ifneq "${IFMX_ESQLC}" "no"
 	#curently compiles only with ESQL/C
 	$(MAKE) -C tools/aupscol
