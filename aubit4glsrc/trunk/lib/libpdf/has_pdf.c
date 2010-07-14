@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: has_pdf.c,v 1.73 2010-07-09 09:30:22 mikeaubury Exp $
+# $Id: has_pdf.c,v 1.74 2010-07-14 10:57:03 mikeaubury Exp $
 #*/
 
 /**
@@ -265,7 +265,7 @@ int entry=0;
       A4GLPDFREP_A4GL_pdf_skip_by (rep, 0.0 - rep->top_margin);
       rep->report (0, REPORT_PAGEHEADER);
      rep->print_section = SECTION_NORMAL;
-	return;
+	if (a==0) return;
     }
 
 #ifdef DEBUG
