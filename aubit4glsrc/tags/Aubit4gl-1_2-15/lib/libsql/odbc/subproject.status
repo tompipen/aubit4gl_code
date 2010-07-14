@@ -1,0 +1,155 @@
+Name: libSQL_odbc32
+Parent: aubit4glsrc
+Description: Windows only ODBC manager plug-in.  Enables database access via Windows ODBC manager
+Functionality: SQL
+Build:
+Example:
+Depends: None
+Documentation:
+Regressed:
+Maintainer: AF
+Status: 4
+Todo:
+Notes: Windows only
+
+Name: libSQL_iodbc
+Parent: aubit4glsrc
+Description: iODBC manager database access plug-in.  Enables database access via iODBC manager
+Functionality: SQL
+Build:
+Example:
+Depends: iODBC
+Documentation:
+Regressed:
+Maintainer: MA
+Status: 4
+Todo:
+Notes: Using ODBC manger enables use of multiple database connections, even to different databases, but requires separate installation (and configuration) of an ODBC manager
+
+Name: libSQL_unixodbc
+Parent: aubit4glsrc
+Description: Enables database access via UnixODBC manager.  UnixODBC manager database access plug-in
+Functionality:  SQL
+Build:
+Example:
+Depends: UnixODBC
+Documentation:
+Regressed:
+Maintainer: MA
+Status: 4
+Todo:
+Notes: See above
+
+Name: libSQL_ifxodbc
+Parent: aubit4glsrc
+Description: Informix ODBC plug-in.  Enables Informix database access via ODBC API without using ODBC manager
+Functionality: SQL
+Build:
+Example:
+Depends: Informix ODBC library
+Documentation:
+Regressed:
+Maintainer: MA
+Status: 4
+Todo:
+Notes: Be careful when editing ODBC configuration files for Informix ODBC - it is VERY sensitive to trailing spaces and special characters
+
+Name: libSQL_sqliteodbc
+Parent: aubit4glsrc
+Description: Legacy SQLite access plug-in.  Enables access to external SQLite ODBC library
+Functionality: SQL
+Build:
+Example: DATABASE statement name can include full path to SQLite database, otherwise, DBPATH is searched
+Depends: SQLite ODBC library
+Documentation:
+Regressed:
+Maintainer: MA
+Status: 3
+Todo: Need a version of this plug-in for SQLite3
+Notes: Needs SQLite db engine library
+
+Name: libSQL_sqlite
+Parent: aubit4glsrc
+Description: Legacy SQLite access plug-in (integrated with ODBC interface only).Combines Aubit ODBC plug-in code and SQLite ODBC driver in one plug in, enabling access to SQLite database engine library
+Functionality: SQL
+Build:
+Example: A4GL_SQLTYPE
+Depends: None - SQLite ODBC API code is part of Aubit CVS
+Documentation:
+Regressed:
+Maintainer: MA
+Status: 3
+Todo:
+Notes: Needs SQLite db engine library
+
+Name: libSQL_sqliteS
+Parent: aubit4glsrc
+Description: Legacy SQLite access plug-in (integrated with ODBC interface and engine).  Includes Aubit ODBC code, SQLite ODBC code, and SQLite database engine in single plug-in
+Functionality: SQL
+Build:
+Example: see above
+Depends: SQLite engine library
+Documentation:
+Regressed:
+Maintainer: MA
+Status: 3
+Todo:
+Notes: Can be useful to provide database access without installing any additional database components, since it includes SQL engine.
+
+
+Name: libSQL_sqlite3
+Parent: aubit4glsrc
+Description: SQLite access plug-in (integrated with ODBC interface only).  Combines Aubit ODBC plug-in code and SQLite ODBC driver in one plug in, enabling access to SQLite database engine library
+Functionality: SQL
+Build:
+Example: see above
+Depends: None - SQLite3 ODBC API code is part of Aubit CVS
+Documentation:
+Regressed:
+Maintainer: MA
+Status: 3
+Todo:
+Notes: Needs SQLite db engine library
+
+Name: libSQL_sqlite3S
+Parent: aubit4glsrc
+Description: Legacy SQLite access plug-in (integrated with ODBC interface and engine).  Includes Aubit ODBC code, SQLite ODBC code, and SQLite database engine in single plug-in
+Functionality: SQL
+Build:
+Example: see above
+Depends: SQLite3 engine library
+Documentation:
+Regressed:
+Maintainer: MA
+Status: 3
+Todo:
+Notes: Can be useful to provide database access without installing any additional database components, since it includes SQL engine.
+
+Name: libSQL_pgodbc
+Parent: aubit4glsrc
+Description: PostgreSQL ODBC plug-in Enables PostgreSQL database access via ODBC API without using ODBC manager
+Functionality:  SQL
+Build:
+Example:
+Depends: PostgreSQL ODBC library
+Documentation:
+Regressed:
+Maintainer: MA
+Status: 4
+Todo:
+Notes:
+
+Name: libSQL_sapodbc
+Parent: aubit4glsrc
+Description: SAP DB (MySQL MaxDB) ODBC plug-in.  Enables SAP DB (MySQL MaxDB) database access via ODBC API without using ODBC manager
+Functionality:  SQL
+Build:
+Example:
+Depends: SAP DB (MySQL MaxDB) ODBC library
+Documentation:
+Regressed:
+Maintainer: AF
+Status: 3
+Todo:
+Notes:
+

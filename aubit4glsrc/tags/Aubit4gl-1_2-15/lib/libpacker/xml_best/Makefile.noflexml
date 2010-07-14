@@ -1,0 +1,13 @@
+
+module_def.h: pregen/module_def.h
+	cp pregen/module_def.h .
+
+#module_def.l: pregen/module_def.l
+	#cp pregen/module_def.l .
+
+module_def.c : pregen/module_def.c
+	cp pregen/module_def.c .
+
+lex.yy.c: pregen/lex.yy.c
+	cp pregen/lex.yy.c .
+

@@ -1,0 +1,21 @@
+database formonly
+screen
+{Value Search Screen
+
+       Code        Text
+  [k           ][d                                       ]
+  [k           ][d                                       ]
+  [k           ][d                                       ]
+  [k           ][d                                       ]
+  [k           ][d                                       ]
+  [k           ][d                                       ]
+  [k           ][d                                       ]
+}
+attributes
+k=formonly.k_fnd;
+d=formonly.d_fnd;
+
+instructions
+delimiters "  "
+screen record s_array[7] (formonly.k_fnd, formonly.d_fnd)
+

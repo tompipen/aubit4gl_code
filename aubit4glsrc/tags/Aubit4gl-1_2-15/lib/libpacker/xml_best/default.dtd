@@ -1,0 +1,21 @@
+
+<!ELEMENT str EMPTY>
+<!ATTLIST str nm CDATA #IMPLIED>
+<!ATTLIST str value CDATA #IMPLIED>
+
+<!ELEMENT funcname EMPTY>
+<!ATTLIST funcname nm CDATA #IMPLIED>
+<!ATTLIST funcname value CDATA #IMPLIED>
+
+<!ELEMENT short EMPTY>
+<!ATTLIST short nm CDATA #IMPLIED>
+<!ATTLIST short value CDATA #IMPLIED>
+
+<!ELEMENT long EMPTY>
+<!ATTLIST long nm CDATA #IMPLIED>
+<!ATTLIST long value CDATA #IMPLIED>
+
+<!ELEMENT int EMPTY>
+<!ATTLIST int nm CDATA #IMPLIED>
+<!ATTLIST int value CDATA #IMPLIED>
+
