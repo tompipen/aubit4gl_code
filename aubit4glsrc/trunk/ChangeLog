@@ -3,14 +3,6 @@ Wed Jul 14 14:35:50 BST 2010
 ---------------------------
 1.2_15 Released
 ---------------------------
-	2010-07-14 14:23  mikeaubury
-	
-	2010-07-14 11:57  mikeaubury
-	
-	2010-07-11 16:13  mikeaubury
-	
-	2010-07-11 11:10  mikeaubury
-	
 	2010-07-09 10:30  mikeaubury
 	
 	Add SET TEXT FORMAT for PDF reports
@@ -28,8 +20,6 @@ Wed Jul 14 14:35:50 BST 2010
 	It is often used on magazines and periodicals to indicate an issue
 	number."
 	
-	2010-07-08 15:41  mikeaubury
-	
 	2010-07-08 13:47  mikeaubury
 	
 	Add some ui.curses Object functions
@@ -46,8 +36,6 @@ Wed Jul 14 14:35:50 BST 2010
 	
 	2010-07-06 15:35  mikeaubury
 	
-	2010-07-06 15:35  mikeaubury
-	
 	Allow "HASHNOCOMMENT" to be set to "none" for fuller Informix4GL
 	compatibility (no --! or --#)
 	
@@ -56,30 +44,14 @@ Wed Jul 14 14:35:50 BST 2010
 	Add some "styles" for open window - eg. "zoom", "ds1", "ds2" (drop
 	shadow)
 	
-	2010-06-30 18:36  mikeaubury
-	
 	2010-06-30 18:34  mikeaubury
 	
 	Small TRACE4GLEXEC fixup
-	
-	2010-06-25 16:57  mikeaubury
-	
-	2010-06-25 16:50  mikeaubury
 	
 	2010-06-25 16:21  mikeaubury
 	
 	Small fixup to ensure variables are expanded in a SELECT list
 	(which they probably shouldn't be in anyway!)
-	
-	2010-06-25 14:58  mikeaubury
-	
-	2010-06-25 14:53  mikeaubury
-	
-	2010-06-22 18:40  mikeaubury
-	
-	2010-06-22 10:35  mikeaubury
-	
-	2010-06-21 19:01  mikeaubury
 	
 	2010-06-21 18:56  mikeaubury
 	
@@ -102,12 +74,6 @@ Wed Jul 14 14:35:50 BST 2010
 	
 	Compile time check for Integer expression with 'SPACES'
 	
-	2010-06-16 11:15  mikeaubury
-	
-	2010-06-15 10:37  mikeaubury
-	
-	2010-06-15 09:29  mikeaubury
-	
 	2010-06-15 09:03  mikeaubury
 	
 	small 'datestyle' fixup for pg8 driver
@@ -116,13 +82,9 @@ Wed Jul 14 14:35:50 BST 2010
 	
 	Added '-G' option for fglcalltree to group functions into modules
 	
-	2010-06-09 14:08  mikeaubury
-	
 	2010-06-09 13:40  mikeaubury
 	
 	Some minor LIKE sql translation fixups
-	
-	2010-06-09 13:39  mikeaubury
 	
 	2010-06-09 13:36  mikeaubury
 	
@@ -136,12 +98,6 @@ Wed Jul 14 14:35:50 BST 2010
 	
 	Small INPUT fixup + INPUT ARRAY fixup (for clearing date fields on
 	entry)
-	
-	2010-06-08 14:01  mikeaubury
-	
-	2010-06-08 13:56  mikeaubury
-	
-	2010-06-08 13:40  mikeaubury
 	
 ---------------------------
 Tue Jun  8 13:38:17 BST 2010
