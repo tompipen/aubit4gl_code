@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile,v 1.7 2010-07-16 14:55:16 mikeaubury Exp $
+# $Id: Makefile,v 1.8 2010-07-16 14:55:43 mikeaubury Exp $
 #
 
 ROOT    =..
@@ -74,5 +74,5 @@ clean:
 	${RM} ${HLP_FILES} *.bak *~
 
 help_aubit.msg: $(ROOT)/lib/bin/current_errs mkhelp_aubit
-	sh mkhelp_aubit $(ROOT)/lib/bin/current_errs 
+	${SH} mkhelp_aubit $(ROOT)/lib/bin/current_errs 
 
