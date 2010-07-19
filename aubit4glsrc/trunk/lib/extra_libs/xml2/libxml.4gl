@@ -42,6 +42,7 @@ code
 static void
 print_element_names(xmlNode * a_node)
 {
+#ifdef DO_ANOTHER_TIME
     xmlNode *cur_node = NULL;
 
     for (cur_node = a_node; cur_node; cur_node = cur_node->next) {
@@ -51,6 +52,7 @@ print_element_names(xmlNode * a_node)
 
         print_element_names(cur_node->childs);
     }
+#endif
 }
 endcode
 
