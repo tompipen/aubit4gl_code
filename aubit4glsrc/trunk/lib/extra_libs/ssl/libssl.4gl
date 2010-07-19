@@ -1,5 +1,6 @@
 code
 #include <stdio.h>
+#include <errno.h>
 #include <dirent.h>
 #include <unistd.h>
 #include <openssl/rsa.h>
@@ -15,26 +16,19 @@ WHENEVER ERROR CONTINUE
 WHENEVER ANY ERROR CONTINUE
 WHENEVER SQLERROR CONTINUE
 
-
 DEFINE mv_initialized integer
 
 code
-EVP_MD_CTX     md_ctx;
-EVP_PKEY *      pkey;
-X509 *    x509;
-
+EVP_PKEY *     pkey;
 endcode
+
 ####################################
 FUNCTION get_privatekey(p_filename)
 ####################################
 DEFINE p_filename char(256)
-
 call initialize()
-call get_privatekey_with_passphrase(p_filename,NULL)
-
+return get_privatekey_with_passphrase(p_filename,NULL)
 END FUNCTION
-
-
 
 ####################################
 FUNCTION get_privatekey_with_passphrase(p_filename,p_passphrase)
@@ -42,11 +36,13 @@ FUNCTION get_privatekey_with_passphrase(p_filename,p_passphrase)
 DEFINE  p_filename char(256),
 	p_passphrase char(255)
 DEFINE lv_use_passphrase INTEGER
+DEFINE lv_ret INT
 code
- FILE *          fp;
+FILE *          fp;
 endcode
 
 call initialize()
+LET lv_ret = 1
 if p_passphrase is null then
 	let lv_use_passphrase=false
 else 
@@ -57,16 +53,17 @@ code
 	A4GL_trim(p_filename);
 	A4GL_trim(p_passphrase);
     fp = fopen (p_filename, "r");
-    if (fp == NULL) exit (1);
-    pkey = PEM_read_PrivateKey(fp, NULL, NULL, NULL);
-    fclose (fp);
-
-    if (pkey == NULL) {
-       ERR_print_errors_fp (stderr);
-       exit (1);
-     }
-
+    if (fp == NULL) {
+        lv_ret=0;
+    } else {
+        pkey = PEM_read_PrivateKey(fp, NULL, NULL, NULL);
+        fclose (fp);
+        if (pkey == NULL) {
+            lv_ret=0;
+        }
+	}
 endcode
+RETURN lv_ret
 END FUNCTION
 
 ####################################
@@ -78,6 +75,7 @@ define p_algo char(10)
 define lv_algo int
 define sig_buf char(4096)
 define sig_len int
+define lv_err int;
 call initialize()
 CASE p_algo
     WHEN "md"        LET lv_algo = 1
@@ -92,7 +90,7 @@ CASE p_algo
 END CASE
 code
 {
-int err;
+EVP_MD_CTX     md_ctx;
     switch (lv_algo) {
        case 1: EVP_SignInit   (&md_ctx, EVP_md_null()); break;
        case 2: EVP_SignInit   (&md_ctx, EVP_md2()); break;
@@ -105,48 +103,39 @@ int err;
     }
     EVP_SignUpdate (&md_ctx, p_string, p_size);
     sig_len = sizeof(sig_buf);
-    err = EVP_SignFinal (&md_ctx, sig_buf, &sig_len, pkey);
-
-    if (err != 1) {
-       ERR_print_errors_fp(stderr);
-       exit (1);
-    }
+    lv_err = EVP_SignFinal (&md_ctx, sig_buf, &sig_len, pkey);
 
 }
 endcode
-
-return sig_buf, sig_len
-
+RETURN lv_err, sig_buf, sig_len
 END FUNCTION
 
 ####################################
 FUNCTION get_publickey(p_filename)
 ####################################
 define p_filename char(256)
+define lv_ret INT
+LET lv_ret = 1
 call initialize()
 code
     FILE *          fp;
-    /* Read public key */
+    X509 *         x509;
 
 	A4GL_trim(p_filename);
     fp = fopen (p_filename, "r");
-    if (fp == NULL) exit (1);
-    x509 = PEM_read_X509(fp, NULL, NULL, NULL);
-    fclose (fp);
-
-    if (x509 == NULL) {
-        ERR_print_errors_fp (stderr);
-        exit (1);
+    if (fp == NULL) {
+        lv_ret=0;
+    } else {
+        x509 = PEM_read_X509(fp, NULL, NULL, NULL);
+        fclose (fp);
+        if (x509 == NULL) {
+            lv_ret=0;
+        } else {
+            pkey=X509_get_pubkey(x509);
+        }
     }
-
-    /* Get public key - eay */
-    pkey=X509_get_pubkey(x509);
-    if (pkey == NULL) {
-      ERR_print_errors_fp (stderr);
-      exit (1);
-    }
-
 end code
+RETURN lv_ret
 END FUNCTION
 
 ####################################
@@ -159,6 +148,9 @@ define p_size int
 define p_algo char(10)
 define lv_algo int
 define err int
+code
+EVP_MD_CTX     md_ctx;
+end code
 CALL initialize()
 CASE p_algo
     WHEN "md"        LET lv_algo = 1
@@ -194,6 +186,7 @@ FUNCTION print_errors()
 CALL initialize()
 code
   ERR_print_errors_fp(stderr);
+  perror("libssl.4gl");
 end code
 end FUNCTION
 
