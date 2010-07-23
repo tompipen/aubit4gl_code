@@ -101,6 +101,63 @@ RETURN lv_err, sig_buf, sig_len
 END FUNCTION
 
 ####################################
+FUNCTION sign64(p_string, p_size, p_algo)
+####################################
+DEFINE p_string char(30000)
+DEFINE p_size int
+DEFINE p_algo char(10)
+
+DEFINE lv_err int;
+DEFINE lv_base char(2048);
+
+LET lv_err = 1;
+CALL initialize()
+code
+{
+EVP_MD_CTX     md_ctx;
+const EVP_MD *md;
+unsigned char sig_buf[4096];
+unsigned int sig_len;
+
+BIO *bmem, *b64;
+BUF_MEM *bptr;
+
+	A4GL_trim(p_algo);
+    md = EVP_get_digestbyname(p_algo);
+    if (!md) {
+        lv_err = 0;
+    } else {
+        EVP_SignInit   (&md_ctx, md);
+        lv_err = EVP_SignUpdate (&md_ctx, p_string, p_size);
+        if (lv_err == 1) {
+           sig_len = sizeof(sig_buf);
+           lv_err = EVP_SignFinal (&md_ctx, sig_buf, &sig_len, pkey);
+           if (lv_err == 1) {
+               b64 = BIO_new(BIO_f_base64());
+               BIO_set_flags(b64, BIO_FLAGS_BASE64_NO_NL);
+               bmem = BIO_new(BIO_s_mem());
+               b64 = BIO_push(b64, bmem);
+             
+               BIO_write(b64, sig_buf, sig_len);
+               BIO_flush(b64);
+               BIO_get_mem_ptr(b64, &bptr);
+             
+               char *buff = (char *)malloc(bptr->length);
+               memcpy(buff, bptr->data, bptr->length-1);
+               buff[bptr->length-1] = 0;
+           
+               BIO_free_all(b64);
+           
+               strncpy(lv_base, buff, 2047);
+            }
+        }
+    }
+}
+endcode
+RETURN lv_err, lv_base
+END FUNCTION
+
+####################################
 FUNCTION get_publickey(p_filename)
 ####################################
 define p_filename char(256)
@@ -175,6 +232,66 @@ CALL initialize()
 code
   EVP_PKEY_free (pkey);
 end code
+end FUNCTION
+
+####################################
+FUNCTION base64_encode(p_data, p_size)
+####################################
+DEFINE p_data char(4096)
+DEFINE p_size int
+DEFINE lv_buff char(4096)
+DEFINE lv_size int
+CALL initialize()
+code
+  BIO *bmem, *b64;
+  BUF_MEM *bptr;
+
+  b64 = BIO_new(BIO_f_base64());
+  BIO_set_flags(b64, BIO_FLAGS_BASE64_NO_NL);
+  bmem = BIO_new(BIO_s_mem());
+  b64 = BIO_push(b64, bmem);
+
+  BIO_write(b64, p_data, p_size);
+  BIO_flush(b64);
+  BIO_get_mem_ptr(b64, &bptr);
+
+  char *buff = (char *)malloc(bptr->length);
+  memcpy(buff, bptr->data, bptr->length);
+  buff[bptr->length] = 0;
+  lv_size=bptr->length;
+
+  BIO_free_all(b64);
+
+  strncpy(lv_buff, buff, 4095);
+end code
+RETURN lv_buff, lv_size
+end FUNCTION
+
+####################################
+FUNCTION base64_decode(p_data, p_data_size)
+####################################
+DEFINE p_data CHAR(4096)
+DEFINE p_data_size INT
+DEFINE lv_buff CHAR(4096)
+DEFINE lv_size INT
+CALL initialize()
+LET lv_size = 4095;
+code
+  BIO *b64, *bmem;
+
+  memset(lv_buff, 0, lv_size);
+
+  b64 = BIO_new(BIO_f_base64());
+  // BIO_set_flags(b64, BIO_FLAGS_BASE64_NO_NL);
+  bmem = BIO_new_mem_buf(p_data, p_data_size);
+  b64 = BIO_push(b64, bmem);
+
+  lv_size = BIO_read(bmem, lv_buff, lv_size);
+
+  BIO_free_all(bmem);
+
+end code
+RETURN lv_buff, lv_size
 end FUNCTION
 
 ####################################
