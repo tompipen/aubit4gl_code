@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pg8.c,v 1.111 2010-06-15 08:03:11 mikeaubury Exp $
+# $Id: pg8.c,v 1.112 2010-07-23 20:01:10 mikeaubury Exp $
 #*/
 
 
@@ -1044,7 +1044,12 @@ FILE *errd;
   if (strcmp (buff, "numeric") == 0)
     {
       *d = DTYPE_DECIMAL;
-      *s = ((atoi (l1) << 8) + atoi (l2));
+	if (strlen(l1)==0) {
+		// assume 16,2
+		*s=0x1002;
+	} else {
+      		*s = ((atoi (l1) << 8) + atoi (l2));
+	}
     }
 
   if (strcmp (buff, "date") == 0)
