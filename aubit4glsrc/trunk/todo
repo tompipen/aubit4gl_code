@@ -13,11 +13,6 @@ Enhancements
 	This would be both academic and practical - what OO features would be
 	applicable, how would they be wrapped up etc
 
-	2) GUI
-	I'd like to have a native and client/server GUI, we have a sort of former, but
-	not too much of the latter.
-
-
 	3) Alternate/innovative DB (eg. what about one that could read flat files)
 		select uid,username from /etc/password
 
@@ -33,12 +28,6 @@ Enhancements
 	linkages etc. I'd like to extend this, so it could use some data dictionary
 	to work out where clauses, apply validation etc.
 
-	7) isql perform form handling, written in 4GL (and extending libaubit4gl/libui
-	where required)..
-	We've got the ace report handling
-
-
-
 ESQL/C
 ------
 	Other fixes in ESQL/C output driver
@@ -50,20 +39,8 @@ FIXME's (in DoxyGen comments)
     TODO's - Do them (See DoxyGen @todo tags at http://www.falout.com/projects/Aubit4GL/doxy/html/pages.html )
 
 
-GTK
-----
-	Make it work - start with tools/test/gui code
-
-
 Other unimplemented functions
 -----------------------------
-
-
-SQL Parser
-----------
-	Separate SQL parser into different YACC file (to allow for multiple SQL dialects) ** PARTIAL
-	Bind substrings (also used in displays/inputs) ******** PARTIAL (Generates but not coded in library)
-	implement grant and revoke
 
 
 SQL plugins
@@ -79,24 +56,6 @@ SQL plugins
 	fix test 100 (insert cursor/temp table/insert...select) - WORKS ONLY WITH Informix ESQL/C (-eci)
 	SQLite fails on ORDER BY in REPORT block (test 14)
 
-ACE
-----
-	ace now uses xgen - enable Windows make files (this was doen I think?)
-    Integrate ACE in asql
-
-XML-RPC
--------
-	create server part
-
-TUI
-----
-	General cleanups..
-    	Windows TUI uses strange characters
-	find out why on MinGW/Cygwin graphic characters are different (-nographic)
-	fix curses on MinGW
-
-
-
 PERL
 ----
 	fix "make perl"
@@ -107,7 +66,6 @@ CVS
 
 Build system & make files
 -------------------------
-    Create commit and update targets to handle CVS commits and updates
     in Commit:
 		handle update of no_yacc, no_perl...etc files before commit
         handle build number

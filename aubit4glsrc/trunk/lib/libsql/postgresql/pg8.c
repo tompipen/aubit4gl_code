@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pg8.c,v 1.112 2010-07-23 20:01:10 mikeaubury Exp $
+# $Id: pg8.c,v 1.113 2010-08-03 13:17:18 mikeaubury Exp $
 #*/
 
 
@@ -775,6 +775,8 @@ A4GLSQLLIB_A4GLSQL_get_columns (char *tabname, char *colname, int *dtype,
 {
   char buff[2048];
   char tname[256];
+  char schemaname[2000]="";
+  char search_path[2000]="";
   curr_colno = 0;
 
   if (strchr (tabname, ':'))
@@ -784,14 +786,41 @@ A4GLSQLLIB_A4GLSQL_get_columns (char *tabname, char *colname, int *dtype,
     }
 
 
+
   if (A4GL_esql_db_open (-1, 0, 0, ""))
     {
       current_con = A4GL_esql_dbopen_connection ();
     }
+
   if (current_con == 0)
     {
       A4GL_exitwith_sql ("Not connected to database");
       return 0;
+    }
+
+	// are they specifying a 'schema' ?
+  if (strchr (tabname, '.'))
+    {
+	char *ptr;
+	PGresult *res;
+	strcpy(schemaname,tabname);
+	// extract the schema name and add it to the search path
+	// Its not exact - but it will do for now.. 
+	ptr=strchr(schemaname,'.');
+	if (ptr) {
+		*ptr=0;
+	}
+	
+	res=PQexec(current_con, "show search_path");
+	strcpy(search_path,PQgetvalue(res,0,0));
+	PQclear(res);
+      	strcpy (tname, strchr (tabname, '.') + 1);
+      	tabname = tname;
+	SPRINTF2(buff,"set search_path TO %s, %s", schemaname, search_path);
+	//printf ("Executin : %s\n", buff);
+	res=PQexec(current_con, buff);
+	//printf("tabname=%s\n",tabname);
+	PQclear(res);
     }
 
 // This is nicked from psql ...
@@ -822,6 +851,14 @@ A4GLSQLLIB_A4GLSQL_get_columns (char *tabname, char *colname, int *dtype,
       A4GL_exitwith_sql ("Unexpected postgres return code1\n");
       return 0;
     }
+
+	if (strlen(search_path)) {
+		PGresult *res;
+	SPRINTF1(buff,"set search_path TO %s", search_path);
+	res=PQexec(current_con, buff);
+	PQclear(res);
+	}
+
   A4GL_set_errm (tabname);
   A4GL_exitwith_sql ("Table not found\n");
   return 0;
