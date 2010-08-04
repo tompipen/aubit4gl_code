@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlexpr.c,v 1.92 2010-06-15 09:37:37 mikeaubury Exp $
+# $Id: sqlexpr.c,v 1.93 2010-08-04 23:24:08 mikeaubury Exp $
 #
 */
 
@@ -313,10 +313,19 @@ new_select_list_item_datetime (char *s)
 }
 
 struct s_select_list_item *
-new_select_list_item_extend (struct s_select_list_item *dt_expr, char *from, char *to)
+new_select_list_item_extend (struct s_select_list_item *dt_expr, str_list *l) 
 {
   struct s_select_list_item *p;
+  char *from=NULL; 
+  char *to=NULL;
   p = empty_select_list_item (E_SLI_EXTEND);
+  if (l) { 
+		A4GL_assertion(l->str_list_entry.str_list_entry_len!=2,"Invalid str_list length");
+		from=l->str_list_entry.str_list_entry_val[0];
+		to=l->str_list_entry.str_list_entry_val[0];
+  }
+  if (from==NULL) from="YEAR";
+  if (to==NULL) to="FRACTION(3)";
   strcpy (p->data.s_select_list_item_data_u.extend.from, from);
   strcpy (p->data.s_select_list_item_data_u.extend.to, to);
   p->data.s_select_list_item_data_u.extend.expr = dt_expr;

@@ -371,22 +371,18 @@ value_expr_list_slil :
 
 
 
-
-
-
+op_extend_from_to: 
+ 	{$<str_list>$=NULL;}
+	| KW_COMMA s_curr KW_TO e_curr  { $<str_list>$=new_str_list($<str>2);  add_str_list($<str_list>$,$<str>4);}
+	| s_curr KW_TO e_curr  { $<str_list>$=new_str_list($<str>1);  add_str_list($<str_list>$,$<str>3);} 
+;
 
 extend_qual_sli:
-        KW_CURRENT KW_COMMA s_curr KW_TO e_curr {
-			$<s_select_list_item>$=new_select_list_item_extend(new_select_list_item_builtin_const(E_SLI_BUILTIN_CONST_CURRENT),$<str>3,$<str>5);
+        | var_ident_ibind_sli op_extend_from_to {
+			$<s_select_list_item>$=new_select_list_item_extend($<s_select_list_item>1,$<str_list>2);
 	}
-        | var_ident_ibind_sli KW_COMMA s_curr KW_TO e_curr {
-			$<s_select_list_item>$=new_select_list_item_extend($<s_select_list_item>1,$<str>3,$<str>5);
-	}
-        | KW_CURRENT s_curr KW_TO e_curr {
-			$<s_select_list_item>$=new_select_list_item_extend(new_select_list_item_builtin_const(E_SLI_BUILTIN_CONST_CURRENT),$<str>2,$<str>4);
-	}
-	| value_expression_sli KW_COMMA s_curr KW_TO e_curr {
-			$<s_select_list_item>$=new_select_list_item_extend($<s_select_list_item>1,$<str>3,$<str>5);
+	| value_expression_sli op_extend_from_to {
+			$<s_select_list_item>$=new_select_list_item_extend($<s_select_list_item>1,$<str_list>2);
 	}
 ;
 

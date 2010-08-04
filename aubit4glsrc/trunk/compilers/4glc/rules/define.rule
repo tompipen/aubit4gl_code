@@ -602,6 +602,9 @@ op_prec :		{$<integer_val>$=0;}
 			|	OPEN_BRACKET INT_VALUE CLOSE_BRACKET {
 					$<integer_val>$=atoi($<str>2);
 			}
+			|	OPEN_BRACKET INT_VALUE KW_COMMA INT_VALUE CLOSE_BRACKET {
+					$<integer_val>$=atoi($<str>2);
+			}
 ;
 
 

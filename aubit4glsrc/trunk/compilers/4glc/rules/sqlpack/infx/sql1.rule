@@ -1076,8 +1076,7 @@ A4GL_debug("Set $<str>$ to %s\n",$<str>$);
 ;
 
 
-cur_part: { strcpy($<str>$,A4GLSQLCV_generate_current(0,0)); 
-}
+cur_part: { strcpy($<str>$,A4GLSQLCV_generate_current(0,0)); }
 	| s_curr KW_TO e_curr {
 		strcpy($<str>$,A4GLSQLCV_generate_current($<str>1,$<str>3));
 	}

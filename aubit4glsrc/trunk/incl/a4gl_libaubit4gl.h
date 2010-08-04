@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.406 2010-07-08 12:47:39 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.407 2010-08-04 23:24:08 mikeaubury Exp $
 #
 */
 
@@ -2657,7 +2657,8 @@ struct s_select_list_item *new_select_list_item_char (char *s) ;
 struct s_select_list_item *new_select_list_item_literal (char *s) ;
 struct s_select_list_item *new_select_list_item_datetime (char *s) ;
 struct s_select_list_item * new_select_list_query (struct s_select *s);
-struct s_select_list_item *new_select_list_item_extend (struct s_select_list_item *dt_expr, char *from,char *to) ;
+struct s_select_list_item *new_select_list_item_extend (struct s_select_list_item *dt_expr, str_list *l);
+
 struct s_select_list_item *new_select_list_item_interval (char *s) ;
 struct s_select_list_item *new_select_list_item_col (char *t,char *c,struct ilist *subscripts);
 struct s_select_list_item *new_select_list_item_sq (enum sq_expression_type type, struct s_select_list_item *s) ;
