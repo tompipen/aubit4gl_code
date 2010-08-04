@@ -15,6 +15,18 @@ pragma_entry: SYSTEM_4GL 				{ compiling_system_4gl=1; }
         | ALWAYSSQLCLOBBER 				{ A4GL_setenv("A4GL_NOSQLCLOBBER","N",1); }
         | ALWAYSCLOBBER 				{ A4GL_setenv("A4GL_NOCLOBBER","N",1); }
         | LINTMODULEISLIBRARY 				{ setIsLibraryModule(1); }
+	| SET_POSTGRESQL_SEARCH_PATH CHAR_VALUE	{
+				char buff[3000];
+
+				sprintf(buff,"set search_path to %s",A4GL_strip_quotes($<str>2));
+  				A4GL_add_prepare("A4GLssp",
+					(void *)A4GL_prepare_select(0,0,0,0,buff,"compiler",2,1,1));
+   				A4GL_execute_sql("A4GLssp",0,0);
+				  A4GLSQL_set_sqlca_sqlcode (0);
+
+	
+		}
+
 ;
 
 
