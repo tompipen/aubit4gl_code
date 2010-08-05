@@ -24,12 +24,12 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.525 2010-06-30 17:36:39 mikeaubury Exp $
+# $Id: compile_c.c,v 1.526 2010-08-05 20:28:58 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
-static char const module_id[] = "$Id: compile_c.c,v 1.525 2010-06-30 17:36:39 mikeaubury Exp $";
+static char const module_id[] = "$Id: compile_c.c,v 1.526 2010-08-05 20:28:58 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -8623,6 +8623,13 @@ escape_quotes_and_remove_nl (char *s)
     }
   for (a = 0; a < strlen (s); a++)
     {
+      if (s[a] == '\\'  && s[a+1]=='"')
+       {
+	  	buffer[b++] = '"';
+	  	buffer[b++] = '"';	
+		a++;
+		continue;
+	}
       if (s[a] == '"')
 	{
 	  buffer[b++] = '\\';

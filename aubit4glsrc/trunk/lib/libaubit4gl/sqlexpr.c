@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlexpr.c,v 1.93 2010-08-04 23:24:08 mikeaubury Exp $
+# $Id: sqlexpr.c,v 1.94 2010-08-05 20:28:58 mikeaubury Exp $
 #
 */
 
@@ -322,7 +322,7 @@ new_select_list_item_extend (struct s_select_list_item *dt_expr, str_list *l)
   if (l) { 
 		A4GL_assertion(l->str_list_entry.str_list_entry_len!=2,"Invalid str_list length");
 		from=l->str_list_entry.str_list_entry_val[0];
-		to=l->str_list_entry.str_list_entry_val[0];
+		to=l->str_list_entry.str_list_entry_val[1];
   }
   if (from==NULL) from="YEAR";
   if (to==NULL) to="FRACTION(3)";

@@ -258,16 +258,13 @@ number_value_arr :
 
 
 define_table_name :
-		define_ident
-	|	define_ident COLON define_ident {
+		identifier
+	|	identifier COLON identifier {
 		     SPRINTF2($<str>$,"%s:%s",$<str>1,$<str>3);
 		   
 		} 
-	|	define_ident ATSIGN define_ident COLON define_ident {
+	|	identifier ATSIGN identifier COLON identifier {
 		     SPRINTF3($<str>$,"%s@%s:%s",$<str>1,$<str>3,$<str>5);
-	} 
-	|	define_ident KW_DOT define_ident  {
-		     SPRINTF2($<str>$,"%s.%s",$<str>1,$<str>3);
 	} 
 ;
 
@@ -276,6 +273,17 @@ record_variable :
 		RECORD def_part END_RECORD  {
 			$$=new_variable_record(NULL, $2);
 		}
+	|	RECORD_LIKE  define_table_name KW_DOT define_ident KW_DOT KW_MULTIPLY {
+		/* Postgresql SCHEMA :   schema.table.* */
+		char buff[200];
+			add_feature("DEFINE_LIKE");
+			sprintf(buff,"%s.%s",$<str>2,$<str>4);
+			add_dependant_table(buff);
+#ifdef DEBUG
+			A4GL_debug("Link Table : %s\n",buff);
+#endif
+			$$=new_variable_pushLikeAllTableColumns(buff,NULL);
+		} 
 	|	RECORD_LIKE  define_table_name KW_DOT KW_MULTIPLY {
 			add_feature("DEFINE_LIKE");
 			add_dependant_table($<str>2);
@@ -611,12 +619,30 @@ op_prec :		{$<integer_val>$=0;}
 
 
 like_var :
-		LIKE define_table_name KW_DOT col_name {
+
+		LIKE identifier KW_DOT identifier KW_DOT identifier {
+			char buff[200];
+			SPRINTF2(buff,"%s.%s", $<str>2,$<str>4);
 			add_feature("DEFINE_LIKE");
-		   SPRINTF2($<str>$,"%s.%s",$<str>2,$<str>4);
+		   	SPRINTF2($<str>$,"%s.%s",buff,$<str>6);
+			add_dependant_table(buff);
+		} 
+		|  LIKE identifier KW_DOT col_name  {
+			char buff[200];
+		     SPRINTF2($<str>$,"%s.%s",$<str>2,$<str>4);
 			add_dependant_table($<str>2);
-		    A4GL_lex_printcomment ("/*set col...(ZZZ)\n*/");
-		   
+		}
+		| LIKE identifier COLON identifier KW_DOT col_name {
+			char buff[200];
+		     	SPRINTF2(buff,"%s:%s",$<str>2,$<str>4);
+			add_dependant_table(buff);
+		     	SPRINTF2($<str>$,"%s.%s",buff,$<str>6);
+		}
+		| LIKE identifier ATSIGN identifier COLON identifier KW_DOT col_name{
+			char buff[200];
+		     	SPRINTF3(buff,"%s@%s:%s.%s",$<str>2,$<str>4,$<str>6);
+			add_dependant_table(buff);
+		     	SPRINTF2($<str>$,"%s.%s",buff,$<str>6);
 		} 
 		| LIKE CHAR_VALUE KW_DOT define_table_name KW_DOT col_name {
 			add_dependant_table($<str>4);

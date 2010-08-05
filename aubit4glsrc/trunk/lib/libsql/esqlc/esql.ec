@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.249 2010-06-25 15:57:28 mikeaubury Exp $
+# $Id: esql.ec,v 1.250 2010-08-05 20:28:59 mikeaubury Exp $
 #
 */
 
@@ -182,7 +182,7 @@ static loc_t *add_blob(struct s_sid *sid, int n, struct s_extra_info *e,fglbyte 
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.249 2010-06-25 15:57:28 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.250 2010-08-05 20:28:59 mikeaubury Exp $";
 #endif
 
 
@@ -1007,13 +1007,13 @@ if (!A4GL_isno(acl_getenv("A4GL_RMESQLNL"))) {
 pch=strchr(ptr,'\\');
 while (pch) {
 	if (pch[1]=='n' || pch[1]=='r') {
-	 pch[0]=' '; 
-	 pch[1]=' '; 
+	 	pch[0]=' '; 
+	 	pch[1]=' '; 
 	}
-	pch=strchr(ptr,'\\');
+	pch=strchr(pch+1,'\\');
 }
 }
-
+//printf("%s\n",ptr);
 return ptr;
 }
 
