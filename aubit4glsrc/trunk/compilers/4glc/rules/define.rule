@@ -265,8 +265,10 @@ define_table_name :
 		} 
 	|	define_ident ATSIGN define_ident COLON define_ident {
 		     SPRINTF3($<str>$,"%s@%s:%s",$<str>1,$<str>3,$<str>5);
-		   
-		} 
+	} 
+	|	define_ident KW_DOT define_ident  {
+		     SPRINTF2($<str>$,"%s.%s",$<str>1,$<str>3);
+	} 
 ;
 
 

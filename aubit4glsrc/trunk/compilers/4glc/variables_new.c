@@ -25,7 +25,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: variables_new.c,v 1.27 2010-05-10 07:10:17 mikeaubury Exp $
+# $Id: variables_new.c,v 1.28 2010-08-05 14:37:22 mikeaubury Exp $
 #
 */
 
@@ -590,6 +590,7 @@ struct variable *new_variable_like(char *tabcol) {
   char buff[300];
   char *tableName;
   char *columnName;
+  char *lastName;
   char t[256];
 
   if (A4GL_db_used () == 0)
@@ -605,6 +606,13 @@ struct variable *new_variable_like(char *tabcol) {
 
   tableName = strtok (buff, ".");       /* table name */
   columnName = strtok (0, "."); /* column name */
+  lastName = strtok (0, "."); /* column name */
+  if (lastName) {
+		static char buff2[2000];
+		sprintf(buff2,"%s.%s",tableName,columnName);
+		columnName=lastName;
+		tableName=buff2;
+  }
 #ifdef DEBUG
   A4GL_debug ("a='%s' b='%s'", A4GL_null_as_null (tableName), A4GL_null_as_null (columnName));
 #endif
