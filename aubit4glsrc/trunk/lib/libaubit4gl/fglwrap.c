@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.158 2010-06-30 17:34:58 mikeaubury Exp $
+# $Id: fglwrap.c,v 1.159 2010-08-06 07:51:23 mikeaubury Exp $
 #
 */
 
@@ -650,8 +650,11 @@ A4GL_chk_err (int lineno, char *fname)
   A4GL_generateError (s, fname, lineno);
 
 
-
-  errhook = acl_getenv_not_set_as_0 ("CALLERRHOOK");
+  errhook = acl_getenv_not_set_as_0 ("A4GL_ERRHOOK");
+  if (!errhook) {
+		// Use the old name....
+  	errhook = acl_getenv_not_set_as_0 ("CALLERRHOOK");
+  }
   if (errhook)
     {
       	A4GL_push_long (lineno);
@@ -1232,7 +1235,11 @@ char *errhook;
       A4GL_close_database ();
       A4GL_close_errorlog_file ();
 
-  		errhook = acl_getenv_not_set_as_0 ("CALLERRHOOK");
+  		errhook = acl_getenv_not_set_as_0 ("A4GL_ERRHOOK");
+		if (!errhook) {
+			// Use the old name....
+  			errhook = acl_getenv_not_set_as_0 ("CALLERRHOOK");
+		}
   		if (errhook)
     		{
 			char *fname;
