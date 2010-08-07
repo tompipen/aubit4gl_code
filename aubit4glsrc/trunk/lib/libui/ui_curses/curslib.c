@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.169 2010-05-24 10:05:23 mikeaubury Exp $
+# $Id: curslib.c,v 1.170 2010-08-07 15:59:38 mikeaubury Exp $
 #*/
 
 /**
@@ -41,7 +41,7 @@
  */
 #ifndef lint
 static char const module_id[] =
-  "$Id: curslib.c,v 1.169 2010-05-24 10:05:23 mikeaubury Exp $";
+  "$Id: curslib.c,v 1.170 2010-08-07 15:59:38 mikeaubury Exp $";
 #endif
 /*
 =====================================================================
@@ -2001,6 +2001,7 @@ A4GL_comments (struct struct_scr_field *fprop)
     }
   cline = A4GL_getcomment_line ();
 
+  //printf("CLINE = %d\n",cline); fflush(stdout);
 
   if (cline==0) { 	// Comment line off...
 	  return;
@@ -2011,10 +2012,8 @@ A4GL_comments (struct struct_scr_field *fprop)
 #ifdef DEBUG
   A4GL_debug ("MJA COMMENTS 1,%d,%s", cline, buff);
 #endif
-  if (cline > UILIB_A4GL_get_curr_height ())
-    {
-      cline = UILIB_A4GL_get_curr_height ();
-    }
+  //if (cline > UILIB_A4GL_get_curr_height ()) { cline = UILIB_A4GL_get_curr_height (); }
+  
   attr = A4GL_local_get_curr_window_attr ();
   if (!attr)
     {
@@ -2028,7 +2027,6 @@ A4GL_comments (struct struct_scr_field *fprop)
     {
       attr = A4GL_determine_attribute (FGL_CMD_DISPLAY_CMD, 0, 0, 0);
     }
-
   UILIB_A4GL_display_internal (1, cline, buff, attr, 1);
   UILIB_A4GL_zrefresh ();
 }

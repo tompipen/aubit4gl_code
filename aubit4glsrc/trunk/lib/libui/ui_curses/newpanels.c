@@ -24,11 +24,11 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.182 2010-07-08 12:43:50 mikeaubury Exp $
+# $Id: newpanels.c,v 1.183 2010-08-07 15:59:38 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: newpanels.c,v 1.182 2010-07-08 12:43:50 mikeaubury Exp $";
+		"$Id: newpanels.c,v 1.183 2010-08-07 15:59:38 mikeaubury Exp $";
 #endif
 
 /**
@@ -2041,7 +2041,10 @@ A4GL_decode_line (int l)
 int
 A4GL_decode_line_ib (int l)
 {
+int ch;
 
+ch=windows[currwinno].h;
+if (currwinno==0) ch++;
   if (l==0) return 0;
 
 
@@ -2052,12 +2055,12 @@ A4GL_decode_line_ib (int l)
 #ifdef DEBUG
 	  A4GL_debug ("Decoded (1) line %d to %d (because of border)", l, l - 1);
 #endif
-	  while (l>UILIB_A4GL_get_curr_height()) l--;
+	  while (l>ch) l--;
 	  return l ;
 	}
       else
 	{
-	  while (l>UILIB_A4GL_get_curr_height()) l--;
+	  while (l>ch) l--;
 #ifdef DEBUG
 	  A4GL_debug ("Decoded (2) line %d to %d", l, l);
 #endif
@@ -2077,7 +2080,7 @@ A4GL_decode_line_ib (int l)
 #endif
 	  l=0-l;
 	  l--;
-	  return UILIB_A4GL_get_curr_height () - l;
+	  return ch - l;
     }
   else
     {
@@ -2086,7 +2089,7 @@ A4GL_decode_line_ib (int l)
 #ifdef DEBUG
 	  A4GL_debug ("Decoded (4) line %d to %d ", l, UILIB_A4GL_get_curr_height ());
 #endif
-	  return UILIB_A4GL_get_curr_height () - l ;
+	  return ch - l ;
     }
 
 
@@ -3290,6 +3293,7 @@ A4GL_getcomment_line (void)
 {
 int default_comment_line;
 
+
 #ifdef DEBUG
 A4GL_debug("Comment line for currwin=%d std_dbscr=%d",windows[currwinno].winattr.comment_line,A4GL_get_dbscr_commentline());
 #endif
@@ -3307,6 +3311,7 @@ if (A4GL_get_dbscr_commentline()==0xff) {
   if (windows[currwinno].winattr.comment_line!=0xff) {
 	return A4GL_decode_line_ib (windows[currwinno].winattr.comment_line);
   }
+
 
   return A4GL_decode_line_ib (default_comment_line);
 }
