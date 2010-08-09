@@ -1,3 +1,4 @@
+
 This is a sample error hook function
 
 The function takes 4 parameters 
@@ -10,16 +11,26 @@ The function takes 4 parameters
 Usage
 -----
 
-You need to set the environment variable CALLERRHOOK to be the name of the library that holds a function called 'errlog'.
-That function is called when a program dies because of an error (it isn't called for a core dump, or an EXIT PROGRAM etc)
+You need to set the environment variable ERRHOOK (or the older CALLERRHOOK)
+to be the name of the library that holds a function called 'errlog'.
+
+That function is called when a program dies because of an error
+(it isn't called for a core dump, or an EXIT PROGRAM etc)
 
 eg: 
 	
     cd lib/extra_libs/errhook
-    make
-    export CALLERRHOOK=errhook_sample
 
-(you dont need the 'lib' or the '.so')
+IF AUBIT HAS BEEN COMPILED FROM SOURCE, THEN:
+    make
+    export ERRHOOK=errhook_sample			# or CALLERRHOOK
+
+IF AUBIT HAS BEEN DOWNLOADED AS BINARY FILES, THEN:	
+    4glc --as-dll sample.4gl -o YOUR_LIBRARY_NAME.so	# choose a convenient name for the *so file
+    # AND MOVE THE SHARED OBJECT FILE TO A POSITION WHERE IT WILL BE FOUND USING LD_LIBRARY_PATH OR ldconfig
+    export ERRHOOK=YOUR_LIBRARY_NAME
+
+NOTE:  You dont need a leading 'lib', or the '.so'
 
 
 
