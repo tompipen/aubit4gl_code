@@ -31,7 +31,7 @@ public:
    Dialog(QString, QString, QString, QString, QWidget* parent = 0, Qt::WindowFlags f=0);
    Dialog(QWidget* parent = 0, Qt::WindowFlags f=0);
    
-   void createButton(int id = 0, QString text = "", QString desc = "");
+   void createButton(int id = 0, QString text = "", QString desc = "", QString icon = "");
    void createAction(int id = 0, QString text = "");
    void hideButton(QString);
    void showButton(QString);
@@ -49,7 +49,7 @@ protected:
 signals:
    void dialogButtonPressed(QString);
 
-private slots:
+public slots:
    void buttonClicked(int);
 };
 #endif

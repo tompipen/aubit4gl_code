@@ -1758,7 +1758,7 @@ void ScreenHandler::free(QString type)
 //------------------------------------------------------------------------------
 // Method       : displayError(QString text)
 // Filename     : screenhandler.cpp
-// Description  : displays error in message line
+// Description  : displays error in message line and in a Dialog Box
 //------------------------------------------------------------------------------
 void ScreenHandler::displayError(QString text)
 {
@@ -1769,6 +1769,12 @@ void ScreenHandler::displayError(QString text)
    StatusBar *statusBar = (StatusBar*) p_fglform->statusBar();
 
    statusBar->displayError(text);
+   Dialog *errorDialog = new Dialog(tr("Error"), text, "dialog", "stop", p_fglform);
+   errorDialog->setModal(true);
+   errorDialog->createButton(1, "OK", "OK", "ok.png");
+   connect(errorDialog->getAction("OK"), SIGNAL(triggered()), errorDialog, SLOT(close())); 
+   errorDialog->show();
+ 
 }
 
 //------------------------------------------------------------------------------

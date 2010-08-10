@@ -1,6 +1,6 @@
 //--------------------------------------------------------- (C) VENTAS AG 2009 -
 // Project      : VENTAS Desktop Client for A4gl
-// Filename     : ringmenu.cpp
+// Filename     : dialog.cpp
 // Description  : contains class definition for the RingMenu
 //------------------------------------------------------------------------------
 //
@@ -63,7 +63,6 @@ Dialog::Dialog(QString title, QString comment, QString style, QString image,
    this->setWindowTitle(title);
 
    QHBoxLayout *pixLayout = new QHBoxLayout;
-
    QLabel *p_label    = new QLabel(comment);
    QLabel *p_pixLabel = new QLabel();
    QString filename   = "pics:";
@@ -80,7 +79,7 @@ Dialog::Dialog(QString title, QString comment, QString style, QString image,
 
    layout->addLayout(buttonLayout);
 
-//   this->setModal(true);
+  // this->setModal(true);
    this->adjustSize();
 }
 
@@ -89,7 +88,7 @@ Dialog::Dialog(QString title, QString comment, QString style, QString image,
 // Filename     : dialog.cpp
 // Description  : creates the Buttons and adds them to the RingMenu
 //------------------------------------------------------------------------------
-void Dialog::createButton(int id, QString text, QString tooltip)
+void Dialog::createButton(int id, QString text, QString tooltip, QString icon)
 {
 
    // Make Shortcut for Button
@@ -99,12 +98,27 @@ void Dialog::createButton(int id, QString text, QString tooltip)
    // Create the Button and set Text + ToolTip
    QPushButton *button = new QPushButton(text.trimmed());
    button->setShortcut(shortcut);
-   button->setIcon(QIcon(QString("pics:blank.png")));
-   button->setIconSize(QSize(40,25));
+   if(icon == "")
+   {
+      button->setIcon(QIcon(QString("pics:blank.png")));
+      button->setIconSize(QSize(40,25));
+   }
+   else
+   {
+      button->setIcon(QIcon(QString("pics:" + icon)));
+      button->setIconSize(QSize(40,25));
+   }
 
    Action *action = new Action(text.toLower(), text, button);
    action->setComment(tooltip);
-   action->setImage("blank.png");
+   if(icon == "")
+   {
+      action->setImage("pics:blank.png");
+   }
+   else
+   {
+      action->setImage("pics:" + icon);
+   }
    button->addAction(action);
    connect(button, SIGNAL(clicked()), action, SLOT(trigger()));
 
@@ -151,7 +165,10 @@ void Dialog::hideButton(QString name)
 {
    for(int i=0; i<buttonGroup->buttons().size(); i++){
       QPushButton *button = (QPushButton*) buttonGroup->buttons().at(i);
-      QString text = button->text().remove(0,1);
+      QString text = button->text(); //.remove(0,1);
+      if(text.startsWith("&")){
+         text = text.remove(0,1);
+      }
 
       if(text == name)
          button->setVisible(false);
@@ -184,7 +201,6 @@ void Dialog::showButton(QString name)
 void Dialog::buttonClicked(int id)
 {
 
-   qDebug() << "BUTTON CLICKED!!!";
    emit dialogButtonPressed(QString::number(id));
 
 }
@@ -231,11 +247,11 @@ QAction* Dialog::getAction(QString name)
 
    for(int i=0; i<buttonGroup->buttons().size(); i++){
       if(QPushButton *button = qobject_cast<QPushButton *> (buttonGroup->buttons().at(i))){
-         if(button->text().toLower() == name){
+         if(button->text().toLower() == name.toLower()){
             QList<QAction*> actions = button->actions();
             for(int j=0; j<actions.count(); j++){
                if(Action *action = qobject_cast<Action *> (actions.at(j))){
-                  if(action->name() == name)
+                  if(action->name().toLower() == name.toLower())
                      return action;
                }
             }

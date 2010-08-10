@@ -210,7 +210,7 @@ TableColumn::TableColumn(QObject *parent) : FormField(parent)
    i_fieldId = -1;
    i_tabIndex = -1;
    p_field = NULL;
-   
+
 }
 
 void TableColumn::setText(QString text, int row)
@@ -222,11 +222,13 @@ void TableColumn::setText(QString text, int row)
 //------------------------------------------------------------------------------
 // Method       : Button()
 // Filename     : xml2form.cpp
-// Description  : 
+// Description  :
 //------------------------------------------------------------------------------
 Button::Button(QWidget *parent)
     : QPushButton(parent)
 {
+   // Set enabled as long as Protocol says to enable it
+   this->setEnabled(false);
 
    setProperty("touched", false);
    if(parent == NULL){
@@ -293,7 +295,7 @@ void LineEdit::check()
 }
 
 void LineEdit::setNoEntry(bool ro)
-{ 
+{
    if(ro){
       this->setFocusPolicy(Qt::NoFocus);
    }
@@ -364,9 +366,9 @@ ButtonEdit::ButtonEdit(QString iconFileName, QWidget *parent)
 
    this->iconFileName = iconFileName;
    if(this->iconFileName != NULL){
-      button = new Button(this);
+      button = new QPushButton(this);
       connect(button, SIGNAL(clicked()), this, SLOT(buttonClicked()));
-      //button->setFocusPolicy(Qt::NoFocus);
+  //    button->setFocusPolicy(Qt::NoFocus);
       button->setFocusProxy(this);
       QPixmap pixmap("pics:" + iconFileName);
       button->setIcon(QIcon(pixmap));
@@ -427,7 +429,7 @@ DateEdit::DateEdit(QWidget *parent)
    this->setEnabled(false);
 
    this->iconFileName = "calendar";
-   button = new Button(this);
+   button = new QPushButton(this);
    connect(button, SIGNAL(clicked()), this, SLOT(buttonClicked()));
    button->setFocusPolicy(Qt::NoFocus);
    QPixmap pixmap("pics:" + iconFileName);

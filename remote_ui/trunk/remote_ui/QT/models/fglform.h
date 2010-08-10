@@ -36,7 +36,7 @@
 
 class FglForm : public QMainWindow
 {
-   Q_OBJECT
+   Q_OBJECT;
 
    Q_PROPERTY(QString windowType
               READ getWindowType

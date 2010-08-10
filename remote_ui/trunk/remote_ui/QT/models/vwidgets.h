@@ -227,7 +227,7 @@ public:
     QString buttonKey() { return qs_buttonKey; };
 
 private:
-    Button *button;
+    QPushButton *button;
     QString iconFileName;
     QString qs_buttonKey;
     
@@ -293,7 +293,7 @@ protected:
    void resizeEvent(QResizeEvent *);
 
 private:
-    Button *button;
+    QPushButton *button;
     QString iconFileName;
     
 private slots:

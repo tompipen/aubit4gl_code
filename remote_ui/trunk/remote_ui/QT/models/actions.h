@@ -70,6 +70,9 @@ private:
    bool b_accName3;
    bool b_accName4;
    QString qs_defaultView;
+
+public slots:
+
 };
 
 class Actions : public QObject
@@ -90,6 +93,7 @@ public:
 
 private:
    QWidget *p_fglform;
+
 };
 
 #endif
