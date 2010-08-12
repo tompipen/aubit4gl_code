@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.69 2010-05-11 10:57:58 mikeaubury Exp $
+# $Id: Makefile,v 1.70 2010-08-12 12:13:02 mikeaubury Exp $
 #
 
 ROOT		=../..
@@ -71,7 +71,7 @@ CMODS_LIB       =\
 				compile.c class.c clobber.c \
 				dim.c \
 				field_handling.c \
-				globals.c \
+				globals.c pragma.c \
 				import.c labels.c insert_curs.c fix_insert.c load_prototypes.c \
 				linearise.c \
 				rules/generated/kw.c \
@@ -87,7 +87,7 @@ CMODS_LIB_OPT       =\
 				compile.c class.c clobber.c \
 				dim.c \
 				field_handling.c \
-				globals.c \
+				globals.c pragma.c \
 				import.c labels.c insert_curs.c fix_insert.c load_prototypes.c \
 				linearise.c \
 				rules/generated/kw.c \
@@ -339,7 +339,7 @@ extra: ../../bin/fglreload ../../bin/fgllint ../../bin/fglcalltree
 				compile.c class.c clobber.c \
 				dim.c \
 				field_handling.c \
-				globals.c \
+				globals.c pragma.c \
 				import.c labels.c insert_curs.c fix_insert.c load_prototypes.c \
 				linearise.c \
 				rules/generated/kw.c \

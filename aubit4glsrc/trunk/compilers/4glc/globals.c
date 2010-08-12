@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: globals.c,v 1.68 2010-05-10 07:10:17 mikeaubury Exp $
+# $Id: globals.c,v 1.69 2010-08-12 12:13:02 mikeaubury Exp $
 #
 */
 
@@ -431,6 +431,43 @@ read_glob (char *s)
   dbname=g.mod_dbname;
   schemaonly=g.schema_only;
 
+  if (g.pragmas.pragmas_len) {
+	int a;
+	for (a=0;a<g.pragmas.pragmas_len;a++) {
+		char *val1=NULL;
+		char *val2=NULL;
+
+		switch (g.pragmas.pragmas_val[a].pragma_type) {
+        		case E_PRAGMA_SYSTEM_4GL:   
+        		case E_PRAGMA_NOSQLCLOBBER: 
+        		case E_PRAGMA_NOCLOBBER:  
+        		case E_PRAGMA_ALWAYSSQLCLOBBER:  
+        		case E_PRAGMA_ALWAYSCLOBBER:  
+        		case E_PRAGMA_LINTMODULEISLIBRARY: 
+				val1=NULL; val2=NULL;
+				break;
+
+        		case E_PRAGMA_SQL_FEATURE: 
+        		case E_PRAGMA_EMULATE_INSERT_CURSOR_FOR: 
+        		case E_PRAGMA_STOP_REPLACE_STRING: 
+        		case E_PRAGMA_IGNORE_FUNCTION: 
+        		case E_PRAGMA_FORCE_UI: 
+        		case E_PRAGMA_DEBUG_FILE: 
+        		case E_PRAGMA_SET_POSTGRESQL_SEARCH_PATH: 
+				val1=g.pragmas.pragmas_val[a].u_pragmas_u.string_value;
+				val2=NULL;
+				break;
+
+        		case E_PRAGMA_REPLACE_STRING: 
+        		case E_PRAGMA_COLUMN_IS_SERIAL:  
+				val1=g.pragmas.pragmas_val[a].u_pragmas_u.two_string_value.string1;
+				val1=g.pragmas.pragmas_val[a].u_pragmas_u.two_string_value.string2;
+				break;
+		} 
+		A4GL_set_pragma (&this_module, g.pragmas.pragmas_val[a].pragma_type, val1, val2,1);
+	}
+  }
+
   if (strlen (dbname) > 0)
     {
 	set_module_dbname(dbname, schemaonly);
@@ -503,6 +540,8 @@ dump_gvars (void)
   g->compiled_time=this_module.compiled_time;
   g->exported_global_variables.variables.variables.variables_len=this_module.exported_global_variables.variables.variables.variables_len;
   g->exported_global_variables.variables.variables.variables_val=this_module.exported_global_variables.variables.variables.variables_val;
+	g->pragmas.pragmas_len=this_module.pragmas.pragmas_len;
+	g->pragmas.pragmas_val=this_module.pragmas.pragmas_val;
 
 	if (g->mod_dbname==0) g->mod_dbname="";
 

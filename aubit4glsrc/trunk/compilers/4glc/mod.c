@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.340 2010-05-10 07:10:17 mikeaubury Exp $
+# $Id: mod.c,v 1.341 2010-08-12 12:13:02 mikeaubury Exp $
 #
 */
 
@@ -2849,12 +2849,20 @@ get_for_default_step (void)
 char *get_debug_filename(void) {
 	return debug_filename;
 }
+char *set_debug_filename(char *s) {
+	strcpy(debug_filename,s);
+	return debug_filename;
+}
 
 
 char *get_force_ui(void) {
 	return force_ui;
 }
 
+char *set_force_ui(char *s) {
+	strcpy(force_ui,s);
+	return force_ui;
+}
 
 void init_blk(void) {
 	int a;

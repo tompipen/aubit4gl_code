@@ -1,31 +1,25 @@
 pragma: PRAGMA pragma_entry;
 
 
-pragma_entry: SYSTEM_4GL 				{ compiling_system_4gl=1; }
-	| SQL_FEATURE NAMED 				{ add_feature(upshift($<str>2));}
-	| EMULATE_INSERT_CURSOR_FOR NAMED 		{ emulate_insert(&this_module, $<str>2); }
-	| COLUMN NAMED KW_DOT NAMED IS_SERIAL 		{ add_serial_column($<str>2,$<str>4); }
-	| REPLACE_STRING CHAR_VALUE WITH CHAR_VALUE 	{ add_replace($<str>2,$<str>4); }
-	| STOP_REPLACE_STRING CHAR_VALUE  		{ drop_replace($<str>2); }
-	| IGNORE_FUNCTION  NAMED 			{ A4GL_add_pointer ($<str>2, FUNCTION_IGNORE, (void *)1); }
-	| FORCE_UI CHAR_VALUE 				{ strcpy(force_ui,A4GL_strip_quotes($<str>2)); }
-	| DEBUG_FILE CHAR_VALUE 			{ strcpy(debug_filename,A4GL_strip_quotes($<str>2)); }
-	| NOSQLCLOBBER 					{ A4GL_setenv("A4GL_NOSQLCLOBBER","Y",1); }
-        | NOCLOBBER 					{ A4GL_setenv("A4GL_NOCLOBBER","Y",1); }
-        | ALWAYSSQLCLOBBER 				{ A4GL_setenv("A4GL_NOSQLCLOBBER","N",1); }
-        | ALWAYSCLOBBER 				{ A4GL_setenv("A4GL_NOCLOBBER","N",1); }
-        | LINTMODULEISLIBRARY 				{ setIsLibraryModule(1); }
-	| SET_POSTGRESQL_SEARCH_PATH CHAR_VALUE	{
-				char buff[3000];
+pragma_entry: SYSTEM_4GL 				{  A4GL_set_pragma(&this_module, E_PRAGMA_SYSTEM_4GL,NULL,NULL,0); }
+	| SQL_FEATURE NAMED 				{  A4GL_set_pragma(&this_module, E_PRAGMA_SQL_FEATURE,$<str>2,NULL,0); }
+	| EMULATE_INSERT_CURSOR_FOR NAMED 		{  A4GL_set_pragma(&this_module, E_PRAGMA_EMULATE_INSERT_CURSOR_FOR,$<str>2,NULL,0); }
 
-				sprintf(buff,"set search_path to %s",A4GL_strip_quotes($<str>2));
-  				A4GL_add_prepare("A4GLssp",
-					(void *)A4GL_prepare_select(0,0,0,0,buff,"compiler",2,1,1));
-   				A4GL_execute_sql("A4GLssp",0,0);
-				  A4GLSQL_set_sqlca_sqlcode (0);
+	| COLUMN NAMED KW_DOT NAMED IS_SERIAL 		{  A4GL_set_pragma(&this_module, E_PRAGMA_COLUMN_IS_SERIAL,$<str>2,$<str>4,0); }
+	| REPLACE_STRING CHAR_VALUE WITH CHAR_VALUE 	{  A4GL_set_pragma(&this_module, E_PRAGMA_REPLACE_STRING,$<str>2,$<str>4,0); }
+	| STOP_REPLACE_STRING CHAR_VALUE  		{  A4GL_set_pragma(&this_module, E_PRAGMA_STOP_REPLACE_STRING,$<str>2,NULL,0); }
 
-	
-		}
+	| IGNORE_FUNCTION  NAMED 			{  A4GL_set_pragma(&this_module, E_PRAGMA_IGNORE_FUNCTION,$<str>2,NULL,0); }
+	| FORCE_UI CHAR_VALUE 				{  A4GL_set_pragma(&this_module, E_PRAGMA_FORCE_UI,$<str>2,NULL,0); }
+	| DEBUG_FILE CHAR_VALUE 			{  A4GL_set_pragma(&this_module, E_PRAGMA_DEBUG_FILE,$<str>2,NULL,0); }
+
+	| NOSQLCLOBBER 					{  A4GL_set_pragma(&this_module, E_PRAGMA_NOSQLCLOBBER,NULL,NULL,0); }
+        | NOCLOBBER 					{  A4GL_set_pragma(&this_module, E_PRAGMA_NOCLOBBER,NULL,NULL,0); }
+        | ALWAYSSQLCLOBBER 				{  A4GL_set_pragma(&this_module, E_PRAGMA_ALWAYSSQLCLOBBER,NULL,NULL,0); }
+
+        | ALWAYSCLOBBER 				{  A4GL_set_pragma(&this_module, E_PRAGMA_ALWAYSCLOBBER,NULL,NULL,0); }
+        | LINTMODULEISLIBRARY 				{  A4GL_set_pragma(&this_module, E_PRAGMA_LINTMODULEISLIBRARY,NULL,NULL,0); }
+	| SET_POSTGRESQL_SEARCH_PATH CHAR_VALUE		{  A4GL_set_pragma(&this_module, E_PRAGMA_SET_POSTGRESQL_SEARCH_PATH,$<str>2,NULL,0); }
 
 ;
 

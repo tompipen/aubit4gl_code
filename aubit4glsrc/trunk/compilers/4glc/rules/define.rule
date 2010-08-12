@@ -258,7 +258,9 @@ number_value_arr :
 
 
 define_table_name :
-		identifier
+		identifier {
+		     SPRINTF1($<str>$,"%s",$<str>1);
+	}
 	|	identifier COLON identifier {
 		     SPRINTF2($<str>$,"%s:%s",$<str>1,$<str>3);
 		   

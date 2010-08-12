@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile.c,v 1.140 2010-05-10 07:10:17 mikeaubury Exp $
+# $Id: compile.c,v 1.141 2010-08-12 12:13:02 mikeaubury Exp $
 #*/
 
 /**
@@ -1336,6 +1336,9 @@ compiled_4gl++;
 
   this_module.external_datatypes.external_datatypes_len = 0;
   this_module.external_datatypes.external_datatypes_val = 0;
+
+  this_module.pragmas.pragmas_len=0;
+  this_module.pragmas.pragmas_val=0;
 
 	this_module.dependant_tables.dependant_tables_len=0;
 	this_module.dependant_tables.dependant_tables_val=0;

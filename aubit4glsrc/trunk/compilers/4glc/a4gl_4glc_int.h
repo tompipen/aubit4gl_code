@@ -779,6 +779,9 @@ int get_bolton_nparam(int a);
 int get_bolton_param(int a,int param) ;
 void load_protos(void);
 int is_bolton_function (char *funcname);
+char *set_force_ui(char *s);
+char *set_debug_filename(char *s);
+void A4GL_set_pragma (module_definition *this_module, enum e_pragmas pragma_type, char *str_value, char *str_value2,int set_from_globals);
 
 expr_str * expr_cached (expr_str * l);
 
