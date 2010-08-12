@@ -1,4 +1,4 @@
-/* $Id: fgl.x,v 1.57 2010-05-14 11:15:17 mikeaubury Exp $ */
+/* $Id: fgl.x,v 1.58 2010-08-12 11:41:29 mikeaubury Exp $ */
 typedef string str<>;
 typedef string sql_ident<>;
 
@@ -1859,12 +1859,63 @@ struct s_exported_global_variables {
 	variable_list variables;
 };
 
+
+struct s_two_strings {
+	str string1;
+	str string2;
+};
+
+enum e_pragmas {
+	E_PRAGMA_SYSTEM_4GL,
+	E_PRAGMA_SQL_FEATURE,
+	E_PRAGMA_EMULATE_INSERT_CURSOR_FOR,
+	E_PRAGMA_COLUMN_IS_SERIAL,
+	E_PRAGMA_REPLACE_STRING,
+	E_PRAGMA_STOP_REPLACE_STRING,
+	E_PRAGMA_IGNORE_FUNCTION,
+	E_PRAGMA_FORCE_UI,
+	E_PRAGMA_DEBUG_FILE,
+	E_PRAGMA_NOSQLCLOBBER,
+	E_PRAGMA_NOCLOBBER,
+	E_PRAGMA_ALWAYSSQLCLOBBER,
+	E_PRAGMA_ALWAYSCLOBBER,
+	E_PRAGMA_LINTMODULEISLIBRARY,
+	E_PRAGMA_SET_POSTGRESQL_SEARCH_PATH
+};
+
+
+union u_pragmas switch (enum e_pragmas pragma_type) {
+        case E_PRAGMA_SYSTEM_4GL:  /*! void; !*/
+        case E_PRAGMA_NOSQLCLOBBER:  /*! void; !*/
+        case E_PRAGMA_NOCLOBBER:  /*! void; !*/
+        case E_PRAGMA_ALWAYSSQLCLOBBER:  /*! void; !*/
+        case E_PRAGMA_ALWAYSCLOBBER:  /*! void; !*/
+        case E_PRAGMA_LINTMODULEISLIBRARY: void;
+
+        case E_PRAGMA_SQL_FEATURE: /*! str string_value; !*/
+        case E_PRAGMA_EMULATE_INSERT_CURSOR_FOR: /*! str string_value; !*/
+        case E_PRAGMA_STOP_REPLACE_STRING: /*! str string_value; !*/
+        case E_PRAGMA_IGNORE_FUNCTION: /*! str string_value; !*/
+        case E_PRAGMA_FORCE_UI: /*! str string_value; !*/
+        case E_PRAGMA_DEBUG_FILE: /*! str string_value; !*/
+        case E_PRAGMA_SET_POSTGRESQL_SEARCH_PATH: str string_value;
+
+        case E_PRAGMA_REPLACE_STRING: /*! struct s_two_strings string_value; !*/
+        case E_PRAGMA_COLUMN_IS_SERIAL:  struct s_two_strings two_string_value; 
+		
+};
+
+
+
 struct globals_definition {
 	str mod_dbname;
 	str external_datatypes<>;
+	u_pragmas pragmas<>;
+
 	enum e_boolean schema_only;
 	long compiled_time;
 	struct s_exported_global_variables  exported_global_variables;
+	
 };
 
 
@@ -1885,6 +1936,7 @@ struct module_definition {
 	str debug_filename;
 	str external_datatypes<>;
 	str compile_time_sqltype;
+	u_pragmas pragmas<>;
 	struct fgl_comment comment_list<>;
 	struct file_description imported_files<>;
 	enum e_boolean schema_only;

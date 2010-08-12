@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile,v 1.13 2010-01-08 19:39:11 mikeaubury Exp $
+# $Id: Makefile,v 1.14 2010-08-12 11:43:12 mikeaubury Exp $
 #
 
 ROOT        =../..
@@ -254,7 +254,7 @@ lclint: $(CMODS)
 	${CAT} ${LCLINTLOG} >> ${ROOT}/${LCLINT_GLOBAL_LOG}
 	@echo "see ${LCLINTLOG} for results"
 
-x_versions:  fgl.x form_x.x menu_x.x npcode.x report.x
+x_versions refresh.x_versions:  fgl.x form_x.x menu_x.x npcode.x report.x
 	AWK=$(AWK) sh mkversion
 
 pluginsdir:
