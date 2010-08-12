@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: clobber.c,v 1.11 2010-07-30 08:29:17 mikeaubury Exp $
+# $Id: clobber.c,v 1.12 2010-08-12 10:13:06 mikeaubury Exp $
 #
 */
 
@@ -144,7 +144,7 @@ add_clobber (module_definition *mod, char *buff_orig, char *important)
 
   strcpy (b1, important);
   b1[9] = 0;
-  SPRINTF3 (buff_new, "a%03d%s%05d", p++, b1,time(0)%10000);
+  SPRINTF3 (buff_new, "a%03d%s%05d", p++, b1,getpid() %10000);
   mod->clobberings.clobberings_val[mod->clobberings.clobberings_len - 1].origval = acl_strdup (buff_orig);
   mod->clobberings.clobberings_val[mod->clobberings.clobberings_len - 1].newval = acl_strdup (buff_new);
   mod->clobberings.clobberings_val[mod->clobberings.clobberings_len - 1].important = acl_strdup (important);

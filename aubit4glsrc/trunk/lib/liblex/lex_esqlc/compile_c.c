@@ -24,12 +24,12 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.526 2010-08-05 20:28:58 mikeaubury Exp $
+# $Id: compile_c.c,v 1.527 2010-08-12 10:13:07 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
-static char const module_id[] = "$Id: compile_c.c,v 1.526 2010-08-05 20:28:58 mikeaubury Exp $";
+static char const module_id[] = "$Id: compile_c.c,v 1.527 2010-08-12 10:13:07 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -7753,13 +7753,37 @@ print_ident (struct expr_str *ptr)
 }
 
 
+
+static char *
+get_orig_from_clobber (char *s)
+{
+  int a;
+  for (a = 0; a < current_module->clobberings.clobberings_len; a++) {
+      if (strcmp (current_module->clobberings.clobberings_val[a].newval, s) == 0)
+        {
+          return current_module->clobberings.clobberings_val[a].important;
+        }
+    }
+  return s;
+}
+
+
+
 char *
-get_ident_as_string (struct expr_str *ptr)
+get_ident_as_string (struct expr_str *ptr,char type) /* type ='G' for some global usage, 'M' for only module scope */
 {
   static char buff[2000];
+  char *orig;
   if (ptr->expr_type == ET_EXPR_IDENTIFIER)
     {
-      sprintf (buff, "\"%s\"", ptr->expr_str_u.expr_string);
+	orig= get_orig_from_clobber(ptr->expr_str_u.expr_string);
+	if (type=='M') {
+      		sprintf (buff, "A4GL_get_ident(\"%s\",\"%s\",\"%s\")", current_module->module_name,orig,ptr->expr_str_u.expr_string);
+
+	} else {
+      		sprintf (buff, "\"%s\"", ptr->expr_str_u.expr_string);
+	}
+	
       return buff;
     }
 

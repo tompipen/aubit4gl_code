@@ -144,7 +144,7 @@ print_use_session (expr_str * con)
     return;
   printc ("{char _sav_cur_conn[32];\n");
   printc ("strcpy(_sav_cur_conn,A4GLSQL_get_curr_conn());\n");
-  printc ("A4GL_set_conn(%s);\n", get_ident_as_string (con));
+  printc ("A4GL_set_conn(%s);\n", get_ident_as_string (con,'M'));
 }
 
 /******************************************************************************/
@@ -274,7 +274,7 @@ print_put_cmd (struct_put_cmd * cmd_data)
 // ---- 
   print_cmd_start ();
   print_use_session (cmd_data->connid);
-  printc ("A4GL_push_char(%s);", get_ident_as_string (cmd_data->cursorname));
+  printc ("A4GL_push_char(%s);", get_ident_as_string (cmd_data->cursorname,'M'));
   if (cmd_data->values)
     {
       printc ("{\n");
@@ -307,10 +307,10 @@ print_close_sql_cmd (struct_close_sql_cmd * cmd_data, int already_in_command)
       printc ("A4GL_close_database();\n");
       break;
     case E_CT_SESSION:
-      printc ("A4GLSQL_close_session(%s);\n", get_ident_as_string (cmd_data->ident));
+      printc ("A4GLSQL_close_session(%s);\n", get_ident_as_string (cmd_data->ident,'M'));
       break;
     case E_CT_CURS_OR_PREP:
-      printc ("A4GL_close_cursor(%s,1);\n", get_ident_as_string (cmd_data->ident));
+      printc ("A4GL_close_cursor(%s,1);\n", get_ident_as_string (cmd_data->ident,'M'));
       break;
     }
 
@@ -331,7 +331,7 @@ print_set_session_cmd (struct_set_session_cmd * cmd_data)
 
   if (strcmp (cmd_data->session_type, "session") == 0)
     {
-      printc ("A4GL_set_conn(%s);\n", get_ident_as_string (cmd_data->s1));
+      printc ("A4GL_set_conn(%s);\n", get_ident_as_string (cmd_data->s1,'M'));
     }
   else
     {
@@ -438,7 +438,7 @@ print_flush_cmd (struct_flush_cmd * cmd_data)
 
   print_cmd_start ();
   print_use_session (cmd_data->connid);
-  printc ("A4GL_flush_cursor(%s);\n\n", get_ident_as_string (cmd_data->cursorname));
+  printc ("A4GL_flush_cursor(%s);\n\n", get_ident_as_string (cmd_data->cursorname,'M'));
   print_copy_status_with_sql (0);
   print_undo_use (cmd_data->connid);
   return 1;
@@ -461,7 +461,7 @@ print_prepare_cmd (struct_prepare_cmd * cmd_data, int already_doing_command)
   print_expr (cmd_data->sql);
   printc ("_sql=A4GL_char_pop();");
   printc ("A4GL_add_prepare(%s,(void *)A4GL_prepare_select(0,0,0,0,_sql,_module_name,%d,0,0));\n",
-	  get_ident_as_string (cmd_data->stmtid), line_for_cmd);
+	  get_ident_as_string (cmd_data->stmtid,'M'), line_for_cmd);
   printc ("free(_sql);");
   printc ("}");
 
@@ -529,7 +529,7 @@ print_free_cmd (struct_free_cmd * cmd_data)
   //struct expr_str *cursorname;
   print_cmd_start ();
   print_use_session (cmd_data->connid);
-  printc ("A4GL_free_cursor (%s,0);\n", get_ident_as_string (cmd_data->cursorname));
+  printc ("A4GL_free_cursor (%s,0);\n", get_ident_as_string (cmd_data->cursorname,'M'));
   print_copy_status_with_sql (0);
   print_undo_use (cmd_data->connid);
   return 1;
@@ -580,7 +580,7 @@ print_connect_cmd (struct_connect_cmd * cmd_data)
     }
   else
     {
-      printc ("A4GL_init_session(%s,", get_ident_as_string (cmd_data->conn_name));
+      printc ("A4GL_init_session(%s,", get_ident_as_string (cmd_data->conn_name,'M'));
     }
 
   print_ident (cmd_data->conn_dbname);
@@ -642,12 +642,12 @@ print_fetch_cmd (struct_fetch_cmd * cmd_data, int using_obind_dup)
 
   if (cmd_data->outbind == 0)
     {
-      printc ("A4GL_fetch_cursor(%s,%ld,%s,0,NULL); /* No bind */", get_ident_as_string (cmd_data->fetch->cursorname),
+      printc ("A4GL_fetch_cursor(%s,%ld,%s,0,NULL); /* No bind */", get_ident_as_string (cmd_data->fetch->cursorname,'M'),
 	      cmd_data->fetch->fp->ab_rel, buff);
     }
   else
     {
-      printc ("A4GL_fetch_cursor(%s,%ld,%s,%d,obind);", get_ident_as_string (cmd_data->fetch->cursorname),
+      printc ("A4GL_fetch_cursor(%s,%ld,%s,%d,obind);", get_ident_as_string (cmd_data->fetch->cursorname,'M'),
 	      cmd_data->fetch->fp->ab_rel, buff, cmd_data->outbind->list.list_len);
     }
 
@@ -1212,7 +1212,7 @@ generate_sid_string_for_declare (struct s_cur_def *declare_dets, int *forUpdate)
 
   if (declare_dets->ident)
     {
-      sprintf (buff, "A4GL_find_prepare(%s)", get_ident_as_string (declare_dets->ident));
+      sprintf (buff, "A4GL_find_prepare(%s)", get_ident_as_string (declare_dets->ident,'M'));
       return buff;
     }
 
@@ -1324,7 +1324,7 @@ print_declare_cmd (struct_declare_cmd * cmd_data)
     }
 
   printc ("A4GL_declare_cursor(%d,%s,%d,%s);", upd_hold, sid_string, cmd_data->scroll == EB_TRUE,
-	  get_ident_as_string (cmd_data->cursorname));
+	  get_ident_as_string (cmd_data->cursorname,'M'));
   printc ("}");
   print_copy_status_with_sql (0);
   print_undo_use (cmd_data->connid);
@@ -1358,7 +1358,7 @@ print_execute_cmd (struct_execute_cmd * cmd_data, int already_doing_command)
 
   if (using == 0)
     {
-      printc ("A4GL_execute_sql(%s,0,0);\n", get_ident_as_string (cmd_data->sql_stmtid));
+      printc ("A4GL_execute_sql(%s,0,0);\n", get_ident_as_string (cmd_data->sql_stmtid,'M'));
     }
 
   if (using == 1)
@@ -1366,7 +1366,7 @@ print_execute_cmd (struct_execute_cmd * cmd_data, int already_doing_command)
       printc ("{\n");
       ni = print_bind_definition_g (cmd_data->inbind, 'i');
       print_bind_set_value_g (cmd_data->inbind, 'i');
-      printc ("A4GL_execute_sql(%s,%d,ibind);\n", get_ident_as_string (cmd_data->sql_stmtid), ni);
+      printc ("A4GL_execute_sql(%s,%d,ibind);\n", get_ident_as_string (cmd_data->sql_stmtid,'M'), ni);
       printc ("}\n");
     }
 
@@ -1377,10 +1377,10 @@ print_execute_cmd (struct_execute_cmd * cmd_data, int already_doing_command)
       printc ("int   _save_bind_cnt;");
       no = print_bind_definition_g (cmd_data->outbind, 'o');
       print_bind_set_value_g (cmd_data->outbind, 'o');
-      printc ("A4GL_swap_bind_stmt(%s,'o',&_save_bind_ptr,&_save_bind_cnt,obind,%d);", get_ident_as_string (cmd_data->sql_stmtid),
+      printc ("A4GL_swap_bind_stmt(%s,'o',&_save_bind_ptr,&_save_bind_cnt,obind,%d);", get_ident_as_string (cmd_data->sql_stmtid,'M'),
 	      no);
-      printc ("A4GL_execute_implicit_select(A4GL_find_prepare(%s),0); /* 2 */\n", get_ident_as_string (cmd_data->sql_stmtid));
-      printc ("A4GL_swap_bind_stmt(%s,'o',0,0,_save_bind_ptr,_save_bind_cnt);", get_ident_as_string (cmd_data->sql_stmtid));
+      printc ("A4GL_execute_implicit_select(A4GL_find_prepare(%s),0); /* 2 */\n", get_ident_as_string (cmd_data->sql_stmtid,'M'));
+      printc ("A4GL_swap_bind_stmt(%s,'o',0,0,_save_bind_ptr,_save_bind_cnt);", get_ident_as_string (cmd_data->sql_stmtid,'M'));
       printc ("}\n");
     }
 
@@ -1395,13 +1395,13 @@ print_execute_cmd (struct_execute_cmd * cmd_data, int already_doing_command)
       ni = print_bind_definition_g (cmd_data->inbind, 'i');
       print_bind_set_value_g (cmd_data->outbind, 'o');
       print_bind_set_value_g (cmd_data->inbind, 'i');
-      printc ("A4GL_swap_bind_stmt(%s,'o',&_osave_bind_ptr,&_osave_bind_cnt,obind,%d);", get_ident_as_string (cmd_data->sql_stmtid),
+      printc ("A4GL_swap_bind_stmt(%s,'o',&_osave_bind_ptr,&_osave_bind_cnt,obind,%d);", get_ident_as_string (cmd_data->sql_stmtid,'M'),
 	      no);
-      printc ("A4GL_swap_bind_stmt(%s,'i',&_isave_bind_ptr,&_isave_bind_cnt,ibind,%d);", get_ident_as_string (cmd_data->sql_stmtid),
+      printc ("A4GL_swap_bind_stmt(%s,'i',&_isave_bind_ptr,&_isave_bind_cnt,ibind,%d);", get_ident_as_string (cmd_data->sql_stmtid,'M'),
 	      ni);
-      printc ("A4GL_execute_implicit_select(A4GL_find_prepare(%s),0); /* 3 */\n", get_ident_as_string (cmd_data->sql_stmtid));
-      printc ("A4GL_swap_bind_stmt(%s,'o',0,0,_osave_bind_ptr,_osave_bind_cnt);", get_ident_as_string (cmd_data->sql_stmtid));
-      printc ("A4GL_swap_bind_stmt(%s,'i',0,0,_isave_bind_ptr,_isave_bind_cnt);", get_ident_as_string (cmd_data->sql_stmtid));
+      printc ("A4GL_execute_implicit_select(A4GL_find_prepare(%s),0); /* 3 */\n", get_ident_as_string (cmd_data->sql_stmtid,'M'));
+      printc ("A4GL_swap_bind_stmt(%s,'o',0,0,_osave_bind_ptr,_osave_bind_cnt);", get_ident_as_string (cmd_data->sql_stmtid,'M'));
+      printc ("A4GL_swap_bind_stmt(%s,'i',0,0,_isave_bind_ptr,_isave_bind_cnt);", get_ident_as_string (cmd_data->sql_stmtid,'M'));
       printc ("}\n");
     }
 
@@ -1494,12 +1494,12 @@ print_foreach_cmd (struct_foreach_cmd * cmd_data)
     {
       ni = print_bind_definition_g (cmd_data->outputvals, 'o');
       print_bind_set_value_g (cmd_data->outputvals, 'o');
-      printc ("A4GL_fetch_cursor(%s,%d,1,%d,obind); /* Foreach next */\n", get_ident_as_string (cmd_data->cursorname),
+      printc ("A4GL_fetch_cursor(%s,%d,1,%d,obind); /* Foreach next */\n", get_ident_as_string (cmd_data->cursorname,'M'),
 	      FETCH_RELATIVE, ni);
     }
   else
     {
-      printc ("A4GL_fetch_cursor(%s,%d,1,0,NULL); /* Foreach next */\n", get_ident_as_string (cmd_data->cursorname),
+      printc ("A4GL_fetch_cursor(%s,%d,1,0,NULL); /* Foreach next */\n", get_ident_as_string (cmd_data->cursorname,'M'),
 	      FETCH_RELATIVE);
     }
 
@@ -1519,7 +1519,7 @@ print_foreach_cmd (struct_foreach_cmd * cmd_data)
   printc ("if (_cursoropen) {");
   tmp_ccnt++;
   print_use_session (cmd_data->connid);
-  printc ("A4GL_close_cursor(%s,1);\n", get_ident_as_string (cmd_data->cursorname));
+  printc ("A4GL_close_cursor(%s,1);\n", get_ident_as_string (cmd_data->cursorname,'M'));
   printc ("if (a4gl_status == 0) { if (_fetcherr) {A4GL_set_status(_fetcherr,1);}}");
   printc
     ("if (a4gl_status == 100) { if (_fetcherr) {a4gl_sqlca.sqlcode = a4gl_status=_fetcherr;} else {a4gl_sqlca.sqlcode = a4gl_status = 0; }}");
@@ -1553,12 +1553,12 @@ print_open_cursor_cmd (struct_open_cursor_cmd * cmd_data)
       printc ("{\n");
       ni = print_bind_definition_g (cmd_data->using_bind, 'i');
       print_bind_set_value_g (cmd_data->using_bind, 'i');
-      printc ("A4GL_open_cursor(%s,%d,ibind);\n", get_ident_as_string (cmd_data->cursorname), ni);
+      printc ("A4GL_open_cursor(%s,%d,ibind);\n", get_ident_as_string (cmd_data->cursorname,'M'), ni);
       printc ("}");
     }
   else
     {
-      printc ("A4GL_open_cursor(%s,0,0);\n", get_ident_as_string (cmd_data->cursorname));
+      printc ("A4GL_open_cursor(%s,0,0);\n", get_ident_as_string (cmd_data->cursorname,'M'));
     }
 
   print_copy_status_with_sql (0);

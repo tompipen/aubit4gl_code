@@ -1406,9 +1406,9 @@ print_open_form_gui_cmd (struct_open_form_gui_cmd * cmd_data)
   print_cmd_start ();
 set_nonewlines();
   printc ("A4GL_open_gui_form(&");
-  printc("%s",A4GL_strip_quotes(get_ident_as_string (cmd_data->form)));
+  printc("%s",A4GL_strip_quotes(get_ident_as_string (cmd_data->form,'G')));
   printc (",");
-  printc("%s",get_ident_as_string (cmd_data->form));
+  printc("%s",get_ident_as_string (cmd_data->form,'G'));
   printc (",");
 	if (cmd_data->x) {
   		print_expr (cmd_data->x);

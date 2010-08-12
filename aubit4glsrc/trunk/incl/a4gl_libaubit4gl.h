@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.407 2010-08-04 23:24:08 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.408 2010-08-12 10:13:06 mikeaubury Exp $
 #
 */
 
@@ -2646,7 +2646,7 @@ struct BINDING * bind_recopy (struct BINDING *b, int n, struct BINDING *c);
 #endif
 
 
-
+char *A4GL_get_ident(char *module,char *identifier, char *original_clobbered_name);
 char *A4GLSQLCV_make_case(struct s_select *select,struct s_sli_case *i);
 void set_sli_variable_usage_as_string(int n);
 void A4GL_free_select_stmt(struct s_select *s);

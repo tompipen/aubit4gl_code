@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql_common.c,v 1.96 2010-06-01 14:28:46 mikeaubury Exp $
+# $Id: sql_common.c,v 1.97 2010-08-12 10:13:07 mikeaubury Exp $
 #
 */
 
@@ -2665,6 +2665,110 @@ for (a=0;a<=10;a++)  {
 		
    	}
    }
+}
+
+
+
+
+// identifier handling...
+//
+// There was an issue with our clobbering - when the results were a long name.
+// Previously - these might clash over modules if the start of the module name and the start of the identifier name
+// were the same.
+//
+// The 'quick fix' was to randomise the clobbered names using the time or PID - but again - this isn't ideal..
+//
+//So - now - we pass in the module and original identifier - along with our original best guess
+//and ensure that they really are unique
+// this should really be a last gasp effort - it *should* be fairly unique already
+// this is just belt + braces..
+//
+// The only downside to this is where we do something like UPDATE .. WHERE CURRENT OF ..
+// as the cursor name will have been mapped when we do the DECLARE, OPEN etc - but *not* on the
+// UPDATE.
+//
+// Still - this should not happen very frequently at all - so can probably be safely ignored...
+
+// Structure for storing our identifiers
+struct s_idents {
+	char *module;   // Module where the identifier is store - should be ok to be a pointer as it 
+			// will normally be a literal string in the C code
+	char *identifier; // Original identifier 
+	char newClobber[19];  // Clobbered version..
+};
+
+struct s_idents *identifiers=0;
+int n_indentifiers=0;
+
+
+
+static int hasClobberInIdentifiers(char *clobberedName) {
+	
+	if (n_indentifiers) {
+		int a;
+		for (a=0;a<n_indentifiers;a++) {
+			if (strcmp(clobberedName, identifiers[a].newClobber)==0) {
+				return 1;
+			}
+		}
+	}
+	
+	return 0;
+}
+
+
+static char * add_ident(char *module,char *identifier,char *preferredName) {
+// Dont call directly - use 'new_ident' - which tries to find out if it already exists first..
+//
+n_indentifiers++;
+identifiers=realloc(identifiers, sizeof(identifiers[0])*n_indentifiers);
+identifiers[n_indentifiers-1].module=module;
+identifiers[n_indentifiers-1].identifier=identifier;
+strcpy(identifiers[n_indentifiers-1].newClobber,preferredName);
+return identifiers[n_indentifiers-1].newClobber;
+}
+
+
+static char * new_ident(char *module,char *identifier,char *preferredName) {
+static int new_ident_cnt=0;
+	if (n_indentifiers) {
+		int a;
+		for (a=0;a<n_indentifiers;a++) {
+			if (strcmp(module, identifiers[a].module)==0) {
+				if (strcmp(identifier, identifiers[a].identifier)==0) {
+					// We've already added this one..
+					return  identifiers[a].newClobber;
+				}
+			}
+		}
+	}
+	// So - we've not already added it - we need to create a new one..
+	if (!hasClobberInIdentifiers(preferredName)) {
+		return add_ident(module,identifier,preferredName);
+	}
+
+	while (1) {
+		static char buff[20];
+		sprintf(buff,"a4glg%013d",new_ident_cnt++);
+
+		A4GL_debug("Cursor issue : %s is already used", preferredName);
+
+		preferredName=buff;
+		if (!hasClobberInIdentifiers(preferredName)) {		
+			A4GL_debug("Using %s instead for %s in %s.4gl", preferredName, identifier ,module);
+			return add_ident(module,identifier,preferredName);
+		}
+	}
+}
+
+
+
+
+char *A4GL_get_ident(char *module,char *identifier, char *original_clobbered_name) {
+//if (strlen(original_clobbered_name)<=18)  { return original_clobbered_name; }
+
+return new_ident(module,identifier,original_clobbered_name);
+
 }
 
 // ================================ EOF ================================

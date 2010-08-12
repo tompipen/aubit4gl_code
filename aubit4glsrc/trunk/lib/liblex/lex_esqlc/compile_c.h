@@ -246,7 +246,7 @@ char *local_field_name_list_as_char(struct fh_field_list *fl) ;
 char *get_sql_into_buff(struct expr_str_list *into);
 char * get_insert_cmd (struct struct_insert_cmd *insertCmd,int *converted);
 
-char * get_ident_as_string (struct expr_str *ptr);
+char * get_ident_as_string (struct expr_str *ptr,char type);
 void print_variable_usage(expr_str *v);
 char * get_delete_cmd (struct struct_delete_cmd *deleteCmd, int *converted);
 char * get_select (struct s_select *s, char *forUpdate);

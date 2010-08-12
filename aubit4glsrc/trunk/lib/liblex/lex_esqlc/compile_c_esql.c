@@ -1262,7 +1262,7 @@ print_set_session_cmd (struct_set_session_cmd * cmd_data)
   print_cmd_start ();
 
   if (strcmp(cmd_data->session_type,"session")==0) {
-	printc ("A4GLSQL_set_conn(%s);\n", get_ident_as_string(cmd_data->s1));
+	printc ("A4GLSQL_set_conn(%s);\n", get_ident_as_string(cmd_data->s1,'M'));
   } else {
 	printc("{ char *_s1; char *_s2;char *_s3;");
 	print_expr(cmd_data->s1);
