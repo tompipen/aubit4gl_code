@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.408 2010-08-12 10:13:06 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.409 2010-08-13 08:47:51 mikeaubury Exp $
 #
 */
 
@@ -348,6 +348,7 @@
 
 #define CURSOR_DEFINED 		'3'
 #define CURSOR_DEFINED_MOD             'c'
+#define DLOPENLIB_CACHE '-'
 
 
 //
@@ -1668,6 +1669,7 @@ void A4GL_push_decimal_str(char *p);
 
   /* ============================ calldll.c ============================== */
   void *A4GL_dl_openlibrary (char *type, char *name);
+  void *A4GL_dl_openlibrary_cached (char *type, char *name);
   int A4GL_dl_has_library (char *type, char *p);
 
   void *A4GL_find_func_allow_missing (void *dllhandle, char *func);

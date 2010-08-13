@@ -72,6 +72,7 @@ enum e_cursor_state
   //int A4GLSQL_init_connection (char *dbName);
   int A4GL_get_status (void);
   int A4GL_init_session (char *sessname, char *dsn, char *usr, char *pwd);
+  int A4GL_init_session_with_sqltype (char *sessname, char *dsn, char *usr, char *pwd,char *sqltype);
   int A4GL_set_conn (char *sessname);
   void A4GL_set_dialect (char *dialect);
   int A4GL_close_session (char *sessname);

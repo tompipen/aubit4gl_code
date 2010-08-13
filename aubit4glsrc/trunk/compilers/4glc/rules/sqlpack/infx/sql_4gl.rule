@@ -349,9 +349,9 @@ in_select_statement: select_statement_ss_select {
 ;
 
 set_database_cmd :
-       DATABASE var_ident_qchar_e op_db_exclusive {
+       DATABASE var_ident_qchar_e op_db_exclusive  op_using_sqltype {
         add_feature("DATABASE_USED");
-        $<cmd>$=new_set_database_cmd(chk_expr($<ptr>2),$<e_boolean>3);
+        $<cmd>$=new_set_database_cmd(chk_expr($<ptr>2),$<e_boolean>3,$<ptr>4);
 }
 ;
 

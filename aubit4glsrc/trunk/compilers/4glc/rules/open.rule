@@ -81,10 +81,10 @@ op_absolute: {$<e_boolean>$=0;}
 	| KW_ABSOLUTE {$<e_boolean>$=1;}
 ;
 
-open_session_cmd : OPEN_SESSION conn_id_p TO_DATABASE var_ident_qchar_e user_details {
+open_session_cmd : OPEN_SESSION conn_id_p TO_DATABASE var_ident_qchar_e user_details  op_using_sqltype {
 				add_feature("OPEN_SESSION");
 				if ($<user_details>5) {
-					$<cmd>$=new_connect_cmd($<ptr>4,$<ptr>2,$<user_details>5->username, $<user_details>5->password);
+					$<cmd>$=new_connect_cmd($<ptr>4,$<ptr>2,$<user_details>5->username, $<user_details>5->password, $<ptr>6);
 				}
 		}
 ;
@@ -141,9 +141,9 @@ op_disable : 	{strcpy($<str>$,"0");}
 
 
 connect_cmd :
-CONNECT KW_TO var_ident_vl op_connect_as_p con_user_details {
+CONNECT KW_TO var_ident_vl op_connect_as_p con_user_details op_using_sqltype {
 	add_feature("CONNECT");
-	$<cmd>$=new_connect_cmd($<ptr>3,$<ptr>4,$<pair>5.s1,$<pair>5.s2);
+	$<cmd>$=new_connect_cmd($<ptr>3,$<ptr>4,$<pair>5.s1,$<pair>5.s2,$<ptr>6);
 }
 ;
 
@@ -168,6 +168,14 @@ con_user_details :
 					$<pair>$.s2=$<ptr>4;
 		}
 ;
+
+op_using_sqltype : 
+	{$<ptr>$=NULL;}
+	| USING_SQLTYPE char_or_var_vl {
+		$<ptr>$=$<ptr>2;
+	}
+;
+
 
 /* ======================= open.rule =========================== */
 

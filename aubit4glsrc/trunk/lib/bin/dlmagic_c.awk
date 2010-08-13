@@ -73,8 +73,13 @@ print "void A4GL" xlib "_clrlibptr (void) {"
 if (selfonly) {
 	print "libptr=(void *)0;"
 } else {
-	print "    if (libptr) {dlclose(libptr);}"
-	print "    libptr=0;"
+	if (multiload_library) {
+		#print "    if (libptr) {dlclose(libptr);}" 
+		print "    libptr=0;"
+        } else {
+		print "    if (libptr) {dlclose(libptr);}"
+		print "    libptr=0;"
+	}
 	print "    clrcachedptrs();"
 }
 print "}"
@@ -89,7 +94,13 @@ if (selfonly) {
         print "   char *newlib;"
 	print "   newlib=acl_getenv(\"" env "\");"
         print "   if (strcmp(newlib,currentLib)!=0) {A4GL" xlib "_clrlibptr ();}"
-	print "   libptr=(void *)A4GL_dl_openlibrary(\"" xlib "\",newlib);"
+
+	if (multiload_library) {
+		print "   libptr=(void *)A4GL_dl_openlibrary_cached(\"" xlib "\",newlib);"
+	} else {
+		print "   libptr=(void *)A4GL_dl_openlibrary(\"" xlib "\",newlib);"
+	}
+
 	print "   if (libptr==0) {"
 	print "      A4GL_exitwith(\"Unable to open " xlib " library...\");"
 	print "      return 0;"
@@ -111,6 +122,8 @@ print ""
 /^HEADER_FILE / {next}
 /^API_PREFIX / {next}
 /^LIB_PREFIX / {next}
+/^MULTILOAD_LIBRARY/ {next}
+
 /MAP / { map[$2]=$3; next}
 /^#/ {print
 	next

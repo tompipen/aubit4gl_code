@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: calldll.c,v 1.95 2010-06-01 17:40:32 mikeaubury Exp $
+# $Id: calldll.c,v 1.96 2010-08-13 08:47:52 mikeaubury Exp $
 #
 */
 
@@ -290,6 +290,22 @@ A4GL_isnullfunc (void *ptr)
     return 1;
   else
     return 0;
+}
+
+
+void *A4GL_dl_openlibrary_cached(char *type, char *p) {
+char buff[3000];
+void *ptr;
+
+sprintf(buff,"%s_%s",type,p);
+
+if (A4GL_has_pointer(buff,DLOPENLIB_CACHE)) {
+	return A4GL_find_pointer(buff,DLOPENLIB_CACHE);
+}
+
+ptr=A4GL_dl_openlibrary(type,p);
+A4GL_add_pointer(buff,DLOPENLIB_CACHE,ptr);
+return ptr;
 }
 
 /**

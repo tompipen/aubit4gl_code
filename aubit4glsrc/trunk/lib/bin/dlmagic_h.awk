@@ -53,6 +53,7 @@ BEGIN {
 /^LIBRARY / 	{next}
 /^VARIABLE / 	{next}
 /^HEADER_FILE / {next}
+/^MULTILOAD_LIBRARY/ {next}
 /^API_PREFIX / 	{next}
 /^LIB_PREFIX / 	{next}
 /^MAP / 	{map[$2]=$3; next}

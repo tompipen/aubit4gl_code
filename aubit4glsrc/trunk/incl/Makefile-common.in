@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.243 2010-05-11 17:17:04 mikeaubury Exp $
+# $Id: Makefile-common.in,v 1.244 2010-08-13 08:47:51 mikeaubury Exp $
 #
 
 #WARNING: __NEVER__ use environment vatiable called "TMP" - Informix
@@ -1366,6 +1366,7 @@ AMAKE_BIN_SCRIPTS=@AMAKE_SH@
 AMAKE_BIN_EXE=@AMAKE_BIN_EXE@
 RUNTIME_EXE=@RUNTIME_EXE@
 BIN_SCRIPTS=@ALL_SH@
+BIN_PERL_MODULES=$(SOURCE)/compilers/ace/perl_runner/report.pm $(SOURCE)/compilers/ace/perl_runner/using.pm
 RUNTIME_RESOURCE=@RUNTIME_RESOURCE@
 COMP_EXE=@COMP_EXE@
 PCODE_ENABLED=@PCODE_ENABLED@
@@ -1528,7 +1529,7 @@ ROOT_ALLWAYSCLEAN=libtool
 ## ==================================================================
 
 #installation files with paths:
-TOBIN		=$(addprefix $(BIN_DIR)/,		$(BIN_FILES))
+TOBIN		=$(addprefix $(BIN_DIR)/,		$(BIN_FILES)) 
 #TOLIB		=$(addprefix $(LIB_DIR)/,		$(LIB_FILES))
 TOLIB		=$(LIB_FILES)
 TOPLUGIN	=$(addprefix $(PLUGIN_DIR)/,	$(PLUGIN_FILES))
@@ -1552,6 +1553,7 @@ ifneq "${COMSPEC}" ""
 endif
 
 TOBIN		+=@EXTRAFILE_2@
+TOBIN		+=$(BIN_PERL_MODULES)
 
 #deinstallation files with paths:
 FROMBIN		=$(addprefix $(BIN_DEST)/,	$(BIN_FILES)) \

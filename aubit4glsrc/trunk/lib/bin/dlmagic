@@ -118,6 +118,13 @@ if grep "^HEADER_FILE " $specfile > /dev/null ; then
 	HEADER_FILE=`$AWK '/^HEADER_FILE /{print $2}' $specfile`
 fi
 
+
+MULTILOAD_LIBRARY=0
+if grep "^MULTILOAD_LIBRARY" $specfile > /dev/null ; then
+	MULTILOAD_LIBRARY=1
+fi
+
+
 if [ "$selfonly" = 1 -a "$lib_prefix" = "" ]
 then
 	echo "You cannot use self mode without specifying a lib_prefix"
@@ -155,7 +162,7 @@ if [ "$MAKE_HEADER" = "1" -o "$MAKE_HEADER" = "2" ]; then
 		
 	fi
 
-	$AWK -v use_prefix=$use_prefix -v lib="$lib" -v env="$env" -v lib_prefix="$lib_prefix" -v api_prefix="$api_prefix" -v HEADER_FILE="$HEADER_FILE" -f $AUBITDIR/lib/bin/dlmagic_h.awk < $specfile
+	$AWK -v use_prefix=$use_prefix -v lib="$lib" -v multiload_library="$MULTILOAD_LIBRARY" -v env="$env" -v lib_prefix="$lib_prefix" -v api_prefix="$api_prefix" -v HEADER_FILE="$HEADER_FILE" -f $AUBITDIR/lib/bin/dlmagic_h.awk < $specfile
 
 	echo "#ifdef __cplusplus"
 	echo "}"
@@ -183,7 +190,7 @@ fi # "$MAKE_HEADER" = "1" -o "$MAKE_HEADER" = "2"
 		env="not-set"
 	fi
 
-	$AWK -v xlib="$lib" -v env="$env" -v lib_prefix="$lib_prefix" -v api_prefix="$api_prefix" -v HEADER_FILE="$HEADER_FILE" -v selfonly="$selfonly" -f $AUBITDIR/lib/bin/dlmagic_c.awk < $specfile > dlm.1
+	$AWK -v xlib="$lib" -v multiload_library="$MULTILOAD_LIBRARY" -v env="$env" -v lib_prefix="$lib_prefix" -v api_prefix="$api_prefix" -v HEADER_FILE="$HEADER_FILE" -v selfonly="$selfonly" -f $AUBITDIR/lib/bin/dlmagic_c.awk < $specfile > dlm.1
 
 	if [ "$selfonly" = 1 ]
 	then

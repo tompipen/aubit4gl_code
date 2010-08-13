@@ -2,6 +2,8 @@ LIBRARY SQL
 * Name of the variable which will have second part of library name to load:
 VARIABLE A4GL_SQLTYPE
 LIB_PREFIX A4GLSQLLIB_
+MULTILOAD_LIBRARY
+
 #define structexpr_str_list  struct expr_str_list*
 * Driver data
 A4GLSQL_dbms_dialect -> char*

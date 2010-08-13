@@ -59,7 +59,7 @@ struct command *new_open_form_cmd(struct expr_str *p_formname, expr_str* p_filen
 struct command *new_open_form_gui_cmd(struct expr_str *p_form, struct expr_str *p_y, struct expr_str *p_x, struct expr_str *p_like, int p_disable, char* formhandler);
 struct command *new_unload_cmd(expr_str *connid, expr_str * p_sql, struct expr_str *p_filename, struct expr_str *p_delimiter);
 struct command *new_load_cmd(expr_str *connid, struct expr_str *p_filename, struct expr_str *p_delimiter, struct expr_str *p_sqlvar, char *p_tabname, str_list* p_collist);
-struct command *new_connect_cmd(struct expr_str *p_dbname, struct expr_str *p_conn_name, struct expr_str *p_username, struct expr_str *p_password);
+struct command *new_connect_cmd(struct expr_str *p_dbname, struct expr_str *p_conn_name, struct expr_str *p_username, struct expr_str *p_password,struct expr_str *using_sqltype);
 struct command *new_open_cursor_cmd(expr_str *connid, struct expr_str *p_cursorname, struct expr_str_list *p_using_bind);
 struct command *new_declare_cmd(expr_str *p_connid,expr_str *p_cursorname, struct s_cur_def *declare_dets, e_boolean p_with_hold,e_boolean p_scroll,e_boolean p_isstmt) ;
 
@@ -75,7 +75,7 @@ int get_variable_dtype_from_variable_usage_expression(char *errbuff, expr_str *v
 /*struct command *new_sql_bound_cmd(expr_str *p_connid,char *p_sql); */
 struct command *new_select_cmd(expr_str *p_connid, struct s_select * p_sql,char *forupdate);
 struct command *new_sql_transact_cmd(expr_str *p_connid, int p_trans);
-struct command *new_set_database_cmd(expr_str* p_dbname,e_boolean p_exclusive);
+struct command *new_set_database_cmd(expr_str* p_dbname,e_boolean p_exclusive,struct expr_str *using_sqltype);
 struct command *new_whenever_cmd(int p_whencode, char *p_whento);
 struct command *new_skip_cmd(struct expr_str *p_lines);
 struct command *new_skip_by_cmd(struct expr_str *p_lines);

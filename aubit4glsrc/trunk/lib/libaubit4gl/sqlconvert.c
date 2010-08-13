@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.172 2010-05-20 18:00:57 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.173 2010-08-13 08:47:52 mikeaubury Exp $
 #
 */
 
@@ -4515,6 +4515,12 @@ int b;
 
 return n;
 
+}
+
+
+void A4GL_clear_current_conversion_rules(void) {
+	current_conversion_rules=0;
+	current_conversion_rules_cnt=0;
 }
 
 // call with string, repl, with

@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql_common.c,v 1.97 2010-08-12 10:13:07 mikeaubury Exp $
+# $Id: sql_common.c,v 1.98 2010-08-13 08:47:52 mikeaubury Exp $
 #
 */
 
@@ -48,6 +48,7 @@ struct sess
 {
   char sessname[64];
   char dbms_dialect[64];
+  char sqltype[64];
   struct sess *next;
 };
 struct sess *curr_sess = NULL;
@@ -124,12 +125,13 @@ char *A4GL_global_A4GLSQL_get_sqlerrm (void);
 extern void aclfgli_set_err_flg (void);
 
 char *A4GL_apisql_strdup (char *sql);
-void A4GL_apisql_add_sess (char *sessname);
-void A4GL_apisql_set_sess (char *sessname);
-void A4GL_apisql_drop_sess (char *sessname);
+static void A4GL_apisql_add_sess (char *sessname,char *sqltype);
+static void A4GL_apisql_set_sess (char *sessname);
+static void A4GL_apisql_drop_sess (char *sessname);
 char *A4GL_apisql_dflt_dialect (void);
 void A4GL_apisql_must_convert (void);
 int A4GLSQL_loadConnector (char *name);
+static void A4GL_apisql_set_sqltype (char *sessname) ;
 
 void A4GL_global_A4GLSQL_set_sqlcode (int n);
 void A4GLSQL_set_sqlerrm (char *m, char *p);
@@ -402,6 +404,28 @@ A4GL_xset_status (int a)
   A4GL_set_status (a, 0);
 }
 
+
+static void setSqltype(char *sqltype) {
+
+  if (!sqltype) return;
+  if (strlen(sqltype)==0) return;
+
+  if (strcmp(acl_getenv("A4GL_SQLTYPE"), sqltype)!=0) {
+	// Its changing...
+	A4GL_setenv("A4GL_SQLTYPE",sqltype,1);
+	A4GL_clear_current_conversion_rules();
+	A4GLSQL_initlib();
+  }
+
+
+}
+
+
+
+
+int A4GL_init_connection (char *dbName) {
+	return A4GL_init_connection_with_sqltype(dbName,NULL);
+}
 /**
  * Initialize a connection to the database.
  * This is the same as init_session("default", ... )
@@ -411,14 +435,16 @@ A4GL_xset_status (int a)
  * @param dbName The database name.
  * @return
  */
-int
-A4GL_init_connection (char *dbName)
+int A4GL_init_connection_with_sqltype (char *dbName,char *sqltype)
 {
   int rc;
+
+  setSqltype(sqltype);
+
   rc = A4GLSQL_init_connection_internal (dbName);
   A4GL_setenv ("USING_ESQLC", "N", 1);
   if (rc == 0) {
-    	A4GL_apisql_add_sess ("default");
+    	A4GL_apisql_add_sess ("default",sqltype);
 	run_default_sql();
   }
   return rc;
@@ -513,6 +539,9 @@ A4GL_global_A4GLSQL_set_sqlcode (int n)
 
 
 
+int A4GL_init_session (char *sessname, char *dsn,  char *usr, char *pwd) {
+	return A4GL_init_session_with_sqltype(sessname,dsn,usr,pwd,NULL);
+}
 
 /**
  * Init a new connection to the database and associate with an explicit 
@@ -524,12 +553,15 @@ A4GL_global_A4GLSQL_set_sqlcode (int n)
  * @param pwd The password of the user to set the connection.
  */
 int
-A4GL_init_session (char *sessname, char *dsn,  char *usr, char *pwd)
+A4GL_init_session_with_sqltype (char *sessname, char *dsn,  char *usr, char *pwd,char *sqltype)
 {
   int rc;
+
+  setSqltype(sqltype);
+
   rc = A4GLSQL_init_session_internal (sessname, dsn, usr, pwd);
   if (rc == 0) {
-    A4GL_apisql_add_sess (sessname);
+    A4GL_apisql_add_sess (sessname,sqltype);
 	run_default_sql();
   }
   return rc;
@@ -544,6 +576,10 @@ int
 A4GL_set_conn (char *sessname)
 {
   int rc;
+
+
+  A4GL_apisql_set_sqltype(sessname);
+
   rc = A4GLSQL_set_conn_internal (sessname);
   if (rc)
     A4GL_apisql_set_sess (sessname);
@@ -2330,8 +2366,8 @@ A4GL_apisql_strdup (char *sql)
  * 
  * @param	session name
  */
-void
-A4GL_apisql_add_sess (char *sessname)
+static void
+A4GL_apisql_add_sess (char *sessname,char *sqltype)
 {
   struct sess *next;
   next = curr_sess;
@@ -2341,10 +2377,36 @@ A4GL_apisql_add_sess (char *sessname)
   curr_sess = (struct sess *) acl_malloc2 (sizeof (struct sess));
   strcpy (curr_sess->sessname, sessname);
   strcpy (curr_sess->dbms_dialect, A4GLSQL_dbms_dialect ());
+  if (sqltype)  {
+  	strcpy (curr_sess->sqltype, sqltype);
+  } else {
+  	strcpy (curr_sess->sqltype, "");
+  }
   curr_sess->next = next;
   A4GL_apisql_must_convert ();
 }
 
+
+static void A4GL_apisql_set_sqltype (char *sessname) {
+  struct sess *p;
+  struct sess *p2 = NULL;
+  p2 = NULL;
+  p = curr_sess;
+  while (p != NULL)
+    {
+
+      if (strcmp (p->sessname, sessname) != 0)
+	{
+	  p2 = p;
+	  p = p->next;
+	  continue;
+	}
+	setSqltype( p->sqltype);
+	return ;
+    }
+  return ;
+
+}
 
 int
 A4GL_apisql_has_sess (char *sessname)
@@ -2658,7 +2720,6 @@ for (a=0;a<=10;a++)  {
 	char *ptr;
 	ptr=A4GLSQLCV_default_sql(a);
 	if (ptr) {
-		//printf("Execute : %s\n", ptr);
    		A4GL_add_prepare("a4gl_initsql",(void *)A4GL_prepare_select(0,0,0,0,ptr,"internal_initsql",a,0,1));
    		A4GL_execute_sql("a4gl_initsql",0,0);
 		A4GL_free_cursor("a4gl_initsql",1);
@@ -2749,7 +2810,7 @@ static int new_ident_cnt=0;
 
 	while (1) {
 		static char buff[20];
-		sprintf(buff,"a4glg%013d",new_ident_cnt++);
+		SPRINTF1(buff,"a4glg%013d",new_ident_cnt++);
 
 		A4GL_debug("Cursor issue : %s is already used", preferredName);
 

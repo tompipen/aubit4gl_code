@@ -1402,13 +1402,14 @@ struct command *c;
    return c;
 }
 
-struct command *new_connect_cmd(struct expr_str *p_dbname,struct expr_str *p_conn_name,struct expr_str *p_username,struct expr_str *p_password) {
+struct command *new_connect_cmd(struct expr_str *p_dbname,struct expr_str *p_conn_name,struct expr_str *p_username,struct expr_str *p_password,struct expr_str *p_sqltype) {
 struct command *c;
    c=new_command(E_CMD_CONNECT_CMD);
    c->cmd_data.command_data_u.connect_cmd.conn_dbname=p_dbname;
    c->cmd_data.command_data_u.connect_cmd.conn_name=p_conn_name;
    c->cmd_data.command_data_u.connect_cmd.username=p_username;
    c->cmd_data.command_data_u.connect_cmd.password=p_password;
+   c->cmd_data.command_data_u.connect_cmd.sqltype=p_sqltype;
    return c;
 }
 
@@ -1596,11 +1597,12 @@ struct command *c;
    return c;
 }
  
-struct command *new_set_database_cmd(expr_str* p_dbname,e_boolean p_exclusive) {
+struct command *new_set_database_cmd(expr_str* p_dbname,e_boolean p_exclusive,struct expr_str *p_sqltype) {
 struct command *c;
    c=new_command(E_CMD_SET_DATABASE_CMD);
    c->cmd_data.command_data_u.set_database_cmd.set_dbname=p_dbname;
    c->cmd_data.command_data_u.set_database_cmd.exclusive_mode=p_exclusive;
+   c->cmd_data.command_data_u.set_database_cmd.sqltype=p_sqltype;
    return c;
 }
  

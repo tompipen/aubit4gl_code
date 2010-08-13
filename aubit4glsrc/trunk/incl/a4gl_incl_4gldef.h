@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_incl_4gldef.h,v 1.134 2010-05-24 10:06:13 mikeaubury Exp $
+# $Id: a4gl_incl_4gldef.h,v 1.135 2010-08-13 08:47:51 mikeaubury Exp $
 */
 
 /**
@@ -353,6 +353,7 @@ int A4GL_fgl_error (int a, char *s, int err, int stat);
 
 
 int A4GL_init_connection (char *dbName);
+int A4GL_init_connection_with_sqltype (char *dbName,char *sqltype);
 
 
 

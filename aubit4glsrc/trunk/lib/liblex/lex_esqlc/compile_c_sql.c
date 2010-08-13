@@ -545,11 +545,17 @@ print_set_database_cmd (struct_set_database_cmd * cmd_data)
   print_cmd_start ();
   //struct expr_str* set_dbname;
   //enum e_boolean exclusive_mode;
-  printc ("{char *_s; ");
+  printc ("{char *_s; char *_sqltype=NULL;");
   print_expr (cmd_data->set_dbname);
   printc ("_s=A4GL_char_pop();A4GL_trim(_s);");
-  printc ("A4GL_init_connection(_s);");
-  printc ("free(_s);}\n");
+  if (cmd_data->sqltype) {
+  	print_expr (cmd_data->sqltype);
+  	printc ("_sqltype=A4GL_char_pop();A4GL_trim(_sqltype);");
+  }
+  printc ("A4GL_init_connection_with_sqltype(_s, _sqltype);");
+  printc ("free(_s);\n");
+  printc ("if (_sqltype) free(_sqltype);\n");
+  printc ("}");
 
 
   print_copy_status_with_sql (0);
@@ -563,10 +569,16 @@ int
 print_connect_cmd (struct_connect_cmd * cmd_data)
 {
   print_cmd_start ();
+  printc ("{");
+  printc ("char *_sqltype=NULL;");
+  if (cmd_data->sqltype) {
+      print_expr (cmd_data->sqltype);
+      printc ("_sqltype=A4GL_char_pop();");
+  }
 
   if (cmd_data->username)
     {
-      printc ("{char *_u; char *_p;");
+      printc ("char *_u; char *_p;");
       print_expr (cmd_data->username);
       printc ("_u=A4GL_char_pop();");
       print_expr (cmd_data->password);
@@ -576,30 +588,31 @@ print_connect_cmd (struct_connect_cmd * cmd_data)
 
   if (cmd_data->conn_name == 0)
     {
-      printc ("A4GL_init_session(\"default_conn\",");
+      printc ("A4GL_init_session_with_sqltype(\"default_conn\",");
     }
   else
     {
-      printc ("A4GL_init_session(%s,", get_ident_as_string (cmd_data->conn_name,'M'));
+      printc ("A4GL_init_session_with_sqltype(%s,", get_ident_as_string (cmd_data->conn_name,'M'));
     }
 
   print_ident (cmd_data->conn_dbname);
 
   if (cmd_data->username)
     {
-      printc (",_u,_p);");
+      printc (",_u,_p, _sqltype);");
     }
   else
     {
-      printc (",NULL,NULL);\n");
+      printc (",NULL,NULL, _sqltype);\n");
     }
   clr_nonewlines ();
 
   if (cmd_data->username)
     {
-      printc ("free(_u); free(_p);}");
+      printc ("free(_u); free(_p);");
     }
-
+  printc("if (_sqltype) {free(_sqltype);}");
+  printc ("}");
   print_copy_status_with_sql (0);
   return 1;
 }

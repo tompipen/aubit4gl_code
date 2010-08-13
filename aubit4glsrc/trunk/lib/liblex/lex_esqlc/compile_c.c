@@ -24,12 +24,12 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.527 2010-08-12 10:13:07 mikeaubury Exp $
+# $Id: compile_c.c,v 1.528 2010-08-13 08:47:52 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
-static char const module_id[] = "$Id: compile_c.c,v 1.527 2010-08-12 10:13:07 mikeaubury Exp $";
+static char const module_id[] = "$Id: compile_c.c,v 1.528 2010-08-13 08:47:52 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -7997,6 +7997,7 @@ print_fgllib_start (char *db, int is_schema, char *force_ui, char *debug_filenam
 	  struct_set_database_cmd dbcmd;
 	  dbcmd.set_dbname = A4GL_new_literal_string (db);
 	  dbcmd.exclusive_mode = 0;
+	dbcmd.sqltype=0;
 	  print_set_database_cmd (&dbcmd);
 
 	  //print_init_conn (A4GL_new_literal_string(db),"");
