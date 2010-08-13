@@ -1,4 +1,4 @@
-/* $Id: fgl.x,v 1.58 2010-08-12 11:41:29 mikeaubury Exp $ */
+/* $Id: fgl.x,v 1.59 2010-08-13 05:42:59 mikeaubury Exp $ */
 typedef string str<>;
 typedef string sql_ident<>;
 
@@ -829,6 +829,7 @@ struct struct_connect_cmd {
 	struct expr_str *conn_name;
 	struct expr_str *username;
 	struct expr_str *password;
+	struct expr_str *sqltype;
 };
 	
 enum report_blocks {
@@ -1067,6 +1068,7 @@ struct struct_sql_transact_cmd {
 struct struct_set_database_cmd {
 	struct expr_str* set_dbname;
 	enum e_boolean exclusive_mode;
+	struct expr_str *sqltype;
 };
 
 struct struct_whenever_cmd {
