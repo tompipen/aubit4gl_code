@@ -5,15 +5,6 @@
 # 
 # (c) 2002 Aubit Computing Ltd
 #
-# NOTE : This code is not covered by the GPL and is not part of the core 
-#        Aubit4gl system or maintained by the Aubit4GL team.
-# 
-#        If you wish to use this code the following condition applies :
-# 
-#             You must NOT use this code in any commercial application
-#             without prior consent of Aubit Computing Ltd 
-#
-# For full details of the licensing terms - please contact Aubit Computing Ltd
 #
 use strict;
 use DBI;
