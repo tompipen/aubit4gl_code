@@ -38,7 +38,7 @@
    /* Put the tokens into the symbol table, so that GDB and other debuggers
       know about them.  */
    enum yytokentype {
-     NAME = 2241,
+     NAME = 2242,
      KW_COMMA = 1748,
      KW_WORDWRAP = 1527,
      KW_USING = 1680,
@@ -68,25 +68,25 @@
      KW_DIVIDE = 1694,
      KW_MOD = 1762,
      KW_POWER = 1666,
-     UMINUS = 2242,
+     UMINUS = 2243,
      CLOSE_BRACKET = 1536,
      OPEN_BRACKET = 1578,
-     TYPECAST = 2243,
+     TYPECAST = 2244,
      COMMAND = 1538,
-     NUMBER_VALUE = 2244,
-     CHAR_VALUE = 2245,
-     CHAR_VALUE_TRANSLATED = 2246,
-     INT_VALUE = 2247,
-     NAMED_GEN = 2248,
-     CLINE = 2249,
-     SQLLINE = 2250,
-     KW_CSTART = 2251,
-     KW_CEND = 2252,
-     USER_DTYPE_ORIG = 2253,
-     USER_DTYPE_NEW = 2254,
-     SQL_TEXT = 2255,
-     KW_WHENEVER_SET = 2256,
-     COMMENT = 2257,
+     NUMBER_VALUE = 2245,
+     CHAR_VALUE = 2246,
+     CHAR_VALUE_TRANSLATED = 2247,
+     INT_VALUE = 2248,
+     NAMED_GEN = 2249,
+     CLINE = 2250,
+     SQLLINE = 2251,
+     KW_CSTART = 2252,
+     KW_CEND = 2253,
+     USER_DTYPE_ORIG = 2254,
+     USER_DTYPE_NEW = 2255,
+     SQL_TEXT = 2256,
+     KW_WHENEVER_SET = 2257,
+     COMMENT = 2258,
      KW_DOC4GLCOMMENT = 1000,
      WITH_LISTING_IN = 1001,
      SET_POSTGRESQL_SEARCH_PATH = 1002,
@@ -1294,11 +1294,12 @@
      END_TODO = 2236,
      KW_TODO = 2237,
      KW_ALWAYS = 2238,
-     PROGRAM_TIMEOUT = 2239
+     PROGRAM_TIMEOUT = 2239,
+     USING_SQLTYPE = 2240
    };
 #endif
 /* Tokens.  */
-#define NAME 2241
+#define NAME 2242
 #define KW_COMMA 1748
 #define KW_WORDWRAP 1527
 #define KW_USING 1680
@@ -1328,25 +1329,25 @@
 #define KW_DIVIDE 1694
 #define KW_MOD 1762
 #define KW_POWER 1666
-#define UMINUS 2242
+#define UMINUS 2243
 #define CLOSE_BRACKET 1536
 #define OPEN_BRACKET 1578
-#define TYPECAST 2243
+#define TYPECAST 2244
 #define COMMAND 1538
-#define NUMBER_VALUE 2244
-#define CHAR_VALUE 2245
-#define CHAR_VALUE_TRANSLATED 2246
-#define INT_VALUE 2247
-#define NAMED_GEN 2248
-#define CLINE 2249
-#define SQLLINE 2250
-#define KW_CSTART 2251
-#define KW_CEND 2252
-#define USER_DTYPE_ORIG 2253
-#define USER_DTYPE_NEW 2254
-#define SQL_TEXT 2255
-#define KW_WHENEVER_SET 2256
-#define COMMENT 2257
+#define NUMBER_VALUE 2245
+#define CHAR_VALUE 2246
+#define CHAR_VALUE_TRANSLATED 2247
+#define INT_VALUE 2248
+#define NAMED_GEN 2249
+#define CLINE 2250
+#define SQLLINE 2251
+#define KW_CSTART 2252
+#define KW_CEND 2253
+#define USER_DTYPE_ORIG 2254
+#define USER_DTYPE_NEW 2255
+#define SQL_TEXT 2256
+#define KW_WHENEVER_SET 2257
+#define COMMENT 2258
 #define KW_DOC4GLCOMMENT 1000
 #define WITH_LISTING_IN 1001
 #define SET_POSTGRESQL_SEARCH_PATH 1002
@@ -2555,6 +2556,7 @@
 #define KW_TODO 2237
 #define KW_ALWAYS 2238
 #define PROGRAM_TIMEOUT 2239
+#define USING_SQLTYPE 2240
 
 
 
@@ -2669,7 +2671,7 @@ typedef union YYSTYPE
 
 
 /* Line 1685 of yacc.c  */
-#line 2673 "y.tab.h"
+#line 2675 "y.tab.h"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */

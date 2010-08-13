@@ -1244,3 +1244,4 @@ struct s_kw {
 #define KW_TODO 2237
 #define KW_ALWAYS 2238
 #define PROGRAM_TIMEOUT 2239
+#define USING_SQLTYPE 2240
