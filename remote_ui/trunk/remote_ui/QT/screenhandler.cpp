@@ -644,7 +644,7 @@ void ScreenHandler::setFieldBuffer(int fieldNo, QString fieldValue)
    if(context == NULL)
       return;
 
-   
+
    if(context->fieldList().count()-1 >= fieldNo){
       QWidget *widget = context->fieldList().at(fieldNo);
 
@@ -1769,7 +1769,7 @@ void ScreenHandler::displayError(QString text)
    StatusBar *statusBar = (StatusBar*) p_fglform->statusBar();
 
    statusBar->displayError(text);
-   Dialog *errorDialog = new Dialog(tr("Error"), text, "dialog", "stop", p_fglform);
+   Dialog *errorDialog = new Dialog(tr("Error"), text, "dialog", "exclamation", p_fglform);
    errorDialog->setModal(true);
    errorDialog->createButton(1, "OK", "OK", "ok.png");
    connect(errorDialog->getAction("OK"), SIGNAL(triggered()), errorDialog, SLOT(close())); 
