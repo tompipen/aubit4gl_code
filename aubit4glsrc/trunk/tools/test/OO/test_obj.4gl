@@ -3,7 +3,6 @@ define m object(math)
 define f object(fglobject)
 
 	let m= math.new()
-	let m= math.new()
 
 	display "OBjectname=", m.getobjectname()
 
