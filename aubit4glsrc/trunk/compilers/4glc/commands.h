@@ -148,14 +148,14 @@ struct command *new_set_session_cmd(char * p_type,expr_str* p_s1,expr_str * p_s2
 struct module_entry *new_import_legacy_definition(char * p_funcname,int lineno);
 struct module_entry *new_import_function_definition(char * p_funcname,int p_nparam,int lineno);
 struct module_entry *new_module_entry(enum module_entry_type met_type);
-struct module_entry *new_function_definition(char * p_funcname,e_boolean p_isstatic,expr_str_list* p_parameters,s_commands* p_commands,int lineno,char *doc4glcomment);
+struct module_entry *new_function_definition(char * p_funcname,e_function_type p_function_type,expr_str_list* p_parameters,s_commands* p_commands,int lineno,char *doc4glcomment);
 struct module_entry *new_main_definition(s_commands* p_commands,int lineno,char *doc4glcomment);
 struct module_entry *new_module_code_cmd(struct command *cmd);
 struct module_entry *new_formhandler_definition(char *name, struct str_list *fld_list, on_events *fld_events, on_events *before_events, on_events *after_events );
 
 struct command *new_fetch_cmd(expr_str * p_connid, struct s_fetch* p_fetch,expr_str_list* p_outbind);
-struct module_entry *new_pdf_report_definition(char * p_funcname,e_boolean p_isstatic,expr_str_list* p_parameters,pdf_startrep* p_report_output_section,s_report_orderby_section *p_report_orderby_section,report_format_section *p_report_format_section,int lineno ,char* doc4glcomment);
-struct module_entry *new_report_definition(char * p_funcname,e_boolean p_isstatic,expr_str_list* p_parameters,startrep* p_report_output_section,s_report_orderby_section *p_report_orderby_section,report_format_section *p_report_format_section,int lineno ,char* doc4glcomment);
+struct module_entry *new_pdf_report_definition(char * p_funcname,e_function_type p_function_type,expr_str_list* p_parameters,pdf_startrep* p_report_output_section,s_report_orderby_section *p_report_orderby_section,report_format_section *p_report_format_section,int lineno ,char* doc4glcomment);
+struct module_entry *new_report_definition(char * p_funcname,e_function_type p_function_type,expr_str_list* p_parameters,startrep* p_report_output_section,s_report_orderby_section *p_report_orderby_section,report_format_section *p_report_format_section,int lineno ,char* doc4glcomment);
 int set_cmdlineno(int n) ;
 void add_class_module_entry(void) ;
 void new_class(char *cname, char *pname);

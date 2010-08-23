@@ -170,7 +170,7 @@ char *A4GL_set_var_sql(int doing_declare, int n, char *current_upd_table);
 //enum e_dialect esql_type(void);
 void A4GL_lex_parsed_fgl(void);
 void print_import_legacy(char *s);
-void add_function_to_header(char *identifier, char *namespace, int params, int is_static);
+void add_function_to_header(char *identifier, char *namespace, int params, enum e_function_type function_type);
 void add_class_function_to_header(char *identifier, int params, char *is_static);
 void print_foreach_close(char *cname);
 int A4GL_doing_pcode(void);
@@ -279,3 +279,6 @@ int chk_ibind_select(struct s_select *s);
 void dump_objdata(struct variable_list *variables);
 int is_user_dtype(int n) ;
 char *get_user_dtype_string(int n);
+
+void print_function_variable_init (variable_list * fvars);
+

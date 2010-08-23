@@ -5,13 +5,9 @@
 */
 
 
-module : 
-	class_module 
-	| trad_module
+module : trad_module
 ;
 
-class_module: class_definition
-;
 
 trad_module: op_module_header
 	{
@@ -25,7 +21,6 @@ trad_module: op_module_header
 		}
 
 	lastlineno=yylineno;
-
 	// Allow a 'default' globals file to be included in all 4gls...
 	// but - we'll only read it - if this isn't a 'GLOBALS' file too...
 	if (!has_globals()) {
@@ -97,7 +92,11 @@ module_entry :
 func_main_def	: /* could be empty file */
                  {strcpy($<str>$,"");}
                 | func_or_main2
+		| class_definition {
+			add_module_entry($<module_entry>1);
+		}
 ;
+
 func_or_main2 : func_or_main {
 		add_module_entry($<module_entry>1);
 	}
@@ -140,7 +139,15 @@ module_define_section : define_set {
 
 
 
-ldeffunction :  FUNCTION {$<e_boolean>$=EB_FALSE;} | LOCAL_FUNCTION { $<e_boolean>$=EB_TRUE; } 
+ldeffunction :  FUNCTION {$<function_type>$=E_FTYPE_NORMAL;
+			set_allow_class_lookup(1);
+			} | LOCAL_FUNCTION { $<function_type>$=E_FTYPE_STATIC; 
+			set_allow_class_lookup(1);
+			}  |
+		OBJECT_FUNCTION  { 
+			$<function_type>$=E_FTYPE_OBJECT; 
+			set_allow_class_lookup(0);
+		}
 ;
 
 
@@ -153,9 +160,7 @@ op_doc4gl_comment:
  * Function definition 
  */
 func_def	: op_doc4gl_comment ldeffunction {
-  				if (class_cnt>1) { 
-					a4gl_yyerror("You've already defined a class - you can't do any more now"); 
-				}
+  				//if (class_cnt>1) { a4gl_yyerror("You've already defined a class - you can't do any more now"); }
   				clr_variable(); 
 				lastlineno=yylineno;
 				A4GL_clr_extra_warnings();
@@ -188,7 +193,7 @@ func_def	: op_doc4gl_comment ldeffunction {
 			lastlineno=yylineno;
 			} 
 			commands_as_list END_FUNCTION {
-				$<module_entry>$=new_function_definition($<str>4,$<e_boolean>2,$<ptr_list>6, $<commands>12,$<integer_val>9,$<sql_string>1);
+				$<module_entry>$=new_function_definition($<str>4,$<function_type>2,$<ptr_list>6, $<commands>12,$<integer_val>9,$<sql_string>1);
 				merge_variable_list(&$<module_entry>$->module_entry_u.function_definition.variables, $10);
 				sort_variables_v(&$<module_entry>$->module_entry_u.function_definition.variables);
 
@@ -204,8 +209,8 @@ func_def	: op_doc4gl_comment ldeffunction {
 main_def:	
   op_doc4gl_comment MAIN  atline
   { 
-				A4GL_clr_extra_warnings();
-    		if (class_cnt>1) { a4gl_yyerror("You've already defined a class - you can't do any more now"); }
+		A4GL_clr_extra_warnings();
+    		//if (class_cnt>1) { a4gl_yyerror("You've already defined a class - you can't do any more now"); }
 	
     		lastlineno=token_read_on_line;
     		//variable_action(-1,$<str>2,"","","add_function"); 

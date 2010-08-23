@@ -52,7 +52,11 @@ int aclfgl_aclfgl_ui_interface_loadtoolbar(int n) ;
 int aclfgl_aclfgl_ui_interface_loadactiondefauts(int n) ;
 int aclfgl_aclfgl_ui_interface_loadstyles(int n) ;
 
-
+int aclfgl_aclfgl_indexof(int n);
+int aclfgl_aclfgl_tea_string_encipher(int n);
+int aclfgl_aclfgl_tea_string_decipher(int n);
+int aclfgl_fgl_dialog_seticon(int n);
+int aclfgl_aclfgl_get_error_details(int n);
 
 
 

@@ -54,7 +54,8 @@ set_variable_usage_substr (struct variable_usage *var, int sub, expr_str *val)
 
 
 int A4GL_check_isobject_name(char *s) {
-
+// If adding more objects - be sure to check in 
+// isBuiltinObjectType(..) in  variables.c
   if (strcasecmp (s, "base.channel") == 0)
     return DTYPE_OBJECT;
   if (strcasecmp (s, "ui.window") == 0)

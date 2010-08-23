@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: corba_server_util.c,v 1.42 2010-02-19 12:14:55 mikeaubury Exp $
+# $Id: corba_server_util.c,v 1.43 2010-08-23 17:23:22 mikeaubury Exp $
 #
 */
 
@@ -398,6 +398,9 @@ We can end up with problems with overlapping - eg
     {				// We do this one...
       va_start (args, fmt);
 	if (sdest>lastc_size) {
+		if (c) {
+			acl_free(c);
+		}
       		c = acl_malloc2 (sdest);
 		lastc_size=sdest;
 	}

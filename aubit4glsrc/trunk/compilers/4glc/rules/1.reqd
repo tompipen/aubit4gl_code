@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: 1.reqd,v 1.101 2010-07-09 09:30:22 mikeaubury Exp $
+# $Id: 1.reqd,v 1.102 2010-08-23 17:23:21 mikeaubury Exp $
 #
 */
 
@@ -164,7 +164,7 @@ extern int 		menu_cnt;
 extern int 		chk4var;
 extern int 		menu_cmd_cnt[MAXMENUOPTS] ; //={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 extern int 		menu_blk[MAXMENU]         ; //={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
-extern int 		class_cnt ;
+//extern int 		class_cnt ;
 extern char *kw_comma;
 extern char *kw_space;
 extern char *kw_ob;
@@ -350,6 +350,7 @@ extern struct s_report_orderby_section *current_orderby;
 	/* variable_or_literal_list *vorl_list; */
 	user_details *user_details;
 	int e_boolean;
+	e_function_type function_type;
 	on_event *on_event;
 	on_events *on_events;
 	struct when *when;

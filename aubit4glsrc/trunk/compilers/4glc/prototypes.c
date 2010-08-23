@@ -887,7 +887,7 @@ proto_program (module_definition * mods, int nmodules)
 			    mods[a].module_entries.module_entries_val[b]->module_entry_u.function_definition.parameters,
 			    &mods[a].module_entries.module_entries_val[b]->module_entry_u.function_definition.call_list,
 			    mods[a].moduleIsInLibrary,
-			    mods[a].module_entries.module_entries_val[b]->module_entry_u.function_definition.isstatic);
+			    mods[a].module_entries.module_entries_val[b]->module_entry_u.function_definition.function_type==E_FTYPE_STATIC);
 	      break;
 
 	    case E_MET_REPORT_DEFINITION:

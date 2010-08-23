@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: class.c,v 1.20 2009-07-17 16:24:48 mikeaubury Exp $
+# $Id: class.c,v 1.21 2010-08-23 17:23:21 mikeaubury Exp $
 #
 */
 
@@ -261,8 +261,8 @@ void add_class_entry(struct module_entry *e) {
 
 void new_class(char *cname, char *pname) {
 	this_class=malloc(sizeof(struct s_class_definition));
-	/* this_class->classname=strdup(cname);
-	this_class->parentname=strdup(pname); */
+	this_class->classname=strdup(cname);
+	this_class->parentname=strdup(pname);
 	//this_class->public_variables.variables.variables_len=0;
 	this_class->private_variables.variables.variables_len=0;
 	this_class->class_entries.class_entries_len=0;

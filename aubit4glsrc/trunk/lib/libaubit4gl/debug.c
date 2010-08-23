@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: debug.c,v 1.70 2010-02-16 13:48:58 mikeaubury Exp $
+# $Id: debug.c,v 1.71 2010-08-23 17:23:22 mikeaubury Exp $
 #
 */
 
@@ -49,6 +49,9 @@
 #include <sys/time.h>
 #endif
 extern sqlca_struct a4gl_sqlca;
+
+
+
 
 /*
 =====================================================================

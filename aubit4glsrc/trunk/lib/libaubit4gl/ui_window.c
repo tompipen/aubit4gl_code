@@ -11,7 +11,7 @@ struct ui_form_data {
 };
 
 
-static int ui_window_getcurrent(int *objectID, int nparam) {
+static int ui_window_getcurrent(long *objectID, int nparam) {
         struct sObject *obj;
         struct ui_window_data *data;
 	struct BINDING obind[]= {
@@ -39,7 +39,7 @@ static int ui_window_getcurrent(int *objectID, int nparam) {
 }
 
 
-static int ui_window_getform(int *objectID, int nParam) {
+static int ui_window_getform(long *objectID, int nParam) {
         struct ui_window_data *data;
         struct sObject *ptr;
 	char formID[33];
@@ -95,7 +95,7 @@ static int new_ui_form(char *formID) {
 
 
 
-static int ui_form_setelementhidden(int *objectID, int nParam) {
+static int ui_form_setelementhidden(long *objectID, int nParam) {
         struct ui_form_data *data;
         struct sObject *ptr;
 	int vis;
@@ -130,7 +130,7 @@ static int ui_form_setelementhidden(int *objectID, int nParam) {
 	return 0;
 }
 
-static int ui_form_setfieldhidden(int *objectID, int nParam) {
+static int ui_form_setfieldhidden(long *objectID, int nParam) {
         struct ui_form_data *data;
         struct sObject *ptr;
 	int vis;
@@ -166,7 +166,7 @@ static int ui_form_setfieldhidden(int *objectID, int nParam) {
 }
 
 
-static int ui_window_settext(int *objectID, int nParam) {
+static int ui_window_settext(long *objectID, int nParam) {
         struct ui_window_data *data;
 	char *text;
         struct sObject *ptr;

@@ -8,7 +8,7 @@ struct channel_data {
 };
 
 
-static int base_channel_create(int *objectID, int nparam) {
+static int base_channel_create(long *objectID, int nparam) {
 	struct sObject *obj;
 	struct channel_data *data;
 
@@ -29,7 +29,7 @@ static int base_channel_create(int *objectID, int nparam) {
 	return 1;
 }
 
-static int base_channel_setdelimiter(int *objectID, int nParam) {
+static int base_channel_setdelimiter(long *objectID, int nParam) {
 	char *delim;
 	struct channel_data *data;
 	struct sObject *ptr;
@@ -51,7 +51,7 @@ static int base_channel_setdelimiter(int *objectID, int nParam) {
 }
 
 
-static int base_channel_open(int *objectID, int nParam) {
+static int base_channel_open(long *objectID, int nParam) {
 	char *dir;
 	char *filename;
 	struct channel_data *data;
@@ -83,7 +83,7 @@ static int base_channel_open(int *objectID, int nParam) {
 	return 0;
 }
 
-static int base_channel_read (int *objectID,  int nParam) {
+static int base_channel_read (long *objectID,  int nParam) {
         struct channel_data *data;
 	struct BINDING *obind=NULL;
 	struct sObject *ptr;
@@ -167,7 +167,7 @@ static int base_channel_read (int *objectID,  int nParam) {
 }
 
 
-static int base_channel_write (int *objectID, int nParam) {
+static int base_channel_write (long *objectID, int nParam) {
         struct channel_data *data;
 	struct BINDING *ibind=0;
 	int ni;
@@ -221,7 +221,7 @@ static int base_channel_write (int *objectID, int nParam) {
 }
 
 
-static void base_channel_destructor(int *objectID) {
+static void base_channel_destructor(long *objectID) {
 	struct sObject *ptr=0;
         struct channel_data *data;
 	if (!ensureObject("base.channel",*objectID,&ptr)) {
@@ -245,7 +245,7 @@ static void base_channel_destructor(int *objectID) {
 }
 
 
-static int base_channel_close (int *objectID, int nParam) {
+static int base_channel_close (long *objectID, int nParam) {
         struct channel_data *data;
 	struct sObject *ptr;
 

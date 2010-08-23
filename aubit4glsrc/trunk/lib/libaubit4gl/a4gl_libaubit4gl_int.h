@@ -53,10 +53,10 @@ struct s_save_binding {
         int nbind;
 };
 struct sObject *new_object(char *type) ;
-int getObject(int objectId, struct sObject **o) ;
-int ensureObject(char *type,int objectId, struct sObject **o) ;
+int getObject(long objectId, struct sObject **o,char *preferredObjectType) ;
+int ensureObject(char *type,long objectId, struct sObject **o) ;
 void A4GL_push_objectID (long p);
-void A4GL_object_dispose(int objectId);
+void A4GL_object_dispose(long objectId);
 void A4GL_add_object_type(char *s);
 void A4GL_set_setdtype (int dtype, void *ptr);
 void A4GL_clear_current_conversion_rules(void);

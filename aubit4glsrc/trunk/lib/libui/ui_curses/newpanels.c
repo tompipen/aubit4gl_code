@@ -24,11 +24,11 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.183 2010-08-07 15:59:38 mikeaubury Exp $
+# $Id: newpanels.c,v 1.184 2010-08-23 17:23:23 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: newpanels.c,v 1.183 2010-08-07 15:59:38 mikeaubury Exp $";
+		"$Id: newpanels.c,v 1.184 2010-08-23 17:23:23 mikeaubury Exp $";
 #endif
 
 /**
@@ -65,6 +65,7 @@ dll_import sqlca_struct sqlca;
 #endif
 
 
+static int find_window_number_for_window_name(char *win_name) ;
 void A4GL_monitor_key_pressed(int a) ;
 int monitoring=-1;
 WINDOW * A4GL_window_on_top_ign_menu (void);
@@ -114,6 +115,9 @@ struct s_windows
   int x, y, w, h;
   PANEL *pan;
   WINDOW *win;
+
+  WINDOW *dswin; // Drop shadow window
+  PANEL *dspan;  // drop shadow panel
   char name[100];
   struct s_form_dets *form;
   struct s_form_attr winattr;
@@ -237,8 +241,9 @@ A4GL_create_window (char *name, int x, int y, int w, int h,
 	       int border, int comment_line, int message_line, int attrib,int with_form,char *style)
 {
   WINDOW *win = 0;
-  WINDOW *dswin;
+  WINDOW *dswin=NULL;
   PANEL *pan;
+  PANEL *dspan=NULL;
   int a;
   int reverse_attr;
   A4GL_chkwin ();
@@ -346,12 +351,12 @@ if (A4GL_isyes(acl_getenv("ODDOPTIONS"))) {
 	if (border) {
 	  dswin = newwin (h + 2, w + 2, y -1, x - 1);
 	  A4GL_add_pointer (name, WINCODE, win);
-	  A4GL_add_pointer (name, DROPSHADOW, dswin);
+	  //A4GL_add_pointer (name, DROPSHADOW, dswin);
 	  wbkgd (dswin, reverse_attr);
 	  A4GL_mja_wrefresh (dswin);
 	} else {
 	  dswin = newwin (h,w , y, x );
-	  A4GL_add_pointer (name, DROPSHADOW, dswin);
+	  //A4GL_add_pointer (name, DROPSHADOW, dswin);
 	  wbkgd (dswin, reverse_attr);
 	  A4GL_mja_wrefresh (dswin);
 	}
@@ -361,12 +366,12 @@ if (A4GL_isyes(acl_getenv("ODDOPTIONS"))) {
 	if (border) {
 	  dswin = newwin (h + 2, w + 2, y -1, x );
 	  A4GL_add_pointer (name, WINCODE, win);
-	  A4GL_add_pointer (name, DROPSHADOW, dswin);
+	  //A4GL_add_pointer (name, DROPSHADOW, dswin);
 	  wbkgd (dswin, reverse_attr);
 	  A4GL_mja_wrefresh (dswin);
 	} else {
 	  dswin = newwin (h,w , y, x+1 );
-	  A4GL_add_pointer (name, DROPSHADOW, dswin);
+	  //A4GL_add_pointer (name, DROPSHADOW, dswin);
 	  wbkgd (dswin, reverse_attr);
 	  A4GL_mja_wrefresh (dswin);
 	}
@@ -376,12 +381,12 @@ if (A4GL_isyes(acl_getenv("ODDOPTIONS"))) {
 	if (border) {
 	  dswin = newwin (h+4 , w + 4, y -3, x - 3);
 	  A4GL_add_pointer (name, WINCODE, win);
-	  A4GL_add_pointer (name, DROPSHADOW, dswin);
+	  //A4GL_add_pointer (name, DROPSHADOW, dswin);
 	  wbkgd (dswin, reverse_attr);
 	  A4GL_mja_wrefresh (dswin);
 	} else {
 	  dswin = newwin (h+2,w+2 , y-2, x-2 );
-	  A4GL_add_pointer (name, DROPSHADOW, dswin);
+	  //A4GL_add_pointer (name, DROPSHADOW, dswin);
 	  wbkgd (dswin, reverse_attr);
 	  A4GL_mja_wrefresh (dswin);
 	}
@@ -428,7 +433,7 @@ if (A4GL_isyes(acl_getenv("ODDOPTIONS"))) {
 	  dswin = newwin (h + 4, w + 4, y - 1, x - 1);
 	  win = newwin (h, w, y - 2, x - 2);
 	  A4GL_add_pointer (name, WINCODE, win);
-	  A4GL_add_pointer (name, DROPSHADOW, dswin);
+	  //A4GL_add_pointer (name, DROPSHADOW, dswin);
 #ifdef DEBUG
 	  A4GL_debug ("XX4 REVERSE");
 #endif
@@ -494,7 +499,11 @@ if (A4GL_isyes(acl_getenv("ODDOPTIONS"))) {
 #ifdef DEBUG
   A4GL_debug("new_panel %p",win);
 #endif
+  if (dswin) {
+	dspan=new_panel(dswin);
+  }
   pan = new_panel (win);
+
 #ifdef DEBUG
   A4GL_debug("New panel %p for window %p name '%s'  ",pan,win,name);
 #endif
@@ -525,6 +534,8 @@ if (A4GL_isyes(acl_getenv("ODDOPTIONS"))) {
 	  strcpy (windows[a].name, name);
 	  A4GL_add_pointer (name, S_WINDOWSCODE, &windows[a]);
 	  windows[a].pan = pan;
+	  windows[a].dspan = dspan;
+	  windows[a].dswin = dswin;
 	  windows[a].form = 0;
 	  windows[a].winattr.comment_line = comment_line;
 	  windows[a].winattr.menu_line = menu_line;
@@ -645,6 +656,19 @@ void
 
 
 
+static int find_window_number_for_window_name(char *win_name) {
+int a;
+  for (a = 0; a < MAXWIN; a++)
+    {
+      if (strcmp (windows[a].name, win_name) == 0)
+	{
+	return a;
+	  break;
+	}
+    }
+return -1;
+}
+
 /**
  * 4GL CALL
  * @todo Describe function
@@ -697,6 +721,13 @@ char buff[256]="";
 	  }
 #endif
 
+	if (windows[a].dspan) {
+		del_panel(windows[a].dspan);
+	}
+
+	if (windows[a].dswin) {
+		delwin(windows[a].dswin);
+	}
 
 	free((void *)panel_userptr(panel));
 
@@ -707,6 +738,9 @@ char buff[256]="";
 	  }
 #endif
 	  delwin (win);
+
+
+
 #ifdef DEBUG
 	 A4GL_debug("delwin : %p",win);
 	  {
@@ -872,7 +906,7 @@ A4GL_debug("Couldn't free field");
  * @todo Describe function
  */
 int
-A4GL_int_current_window (char *win_name)
+xxA4GL_int_current_window (char *win_name)
 {
   PANEL *p;
   WINDOW *w;
@@ -886,6 +920,7 @@ A4GL_int_current_window (char *win_name)
       A4GL_set_errm (win_name);
       return 0;
     }
+  
   top_panel (p);
 
   if (UILIB_A4GL_screen_mode (-1))
@@ -904,6 +939,7 @@ A4GL_int_current_window (char *win_name)
 int
  UILIB_A4GL_current_window (char *win_name)
 {
+int a;
   PANEL *p;
   WINDOW *w;
 #ifdef DEBUG
@@ -926,6 +962,13 @@ int
       A4GL_set_errm (win_name);
       return 0;
     }
+
+	a=find_window_number_for_window_name(win_name);
+	if (a>=0) {
+		if (windows[a].dspan) {
+			top_panel(windows[a].dspan);
+		}
+	}
   top_panel (p);
   A4GL_change_currwin (panel_window (p), "Marker 5");
   A4GL_change_currwinno (A4GL_find_win (p), "Marker 6");
@@ -3117,7 +3160,7 @@ A4GL_change_currwinno (int a, char *s)
  * @todo Describe function
  */
 int
-A4GL_top_win (PANEL * p)
+A4GL_top_win (PANEL * p_xx)
 {
   int a;
   PANEL *z;
@@ -3197,12 +3240,24 @@ LIBEXPORT void
 {
   PANEL *p;
   int a;
+
   p = A4GL_find_pointer (winname, PANCODE);
 #ifdef DEBUG
   {
     A4GL_debug ("hiding window %s %p", winname, p);
   }
 #endif
+
+  A4GL_top_win (0);
+
+
+	a=find_window_number_for_window_name(winname);
+	if (a>=0) {
+		if (windows[a].dspan) {
+			hide_panel(windows[a].dspan);
+		}
+	}
+
   if (p)
     {
       a = hide_panel (p);
@@ -3213,7 +3268,7 @@ LIBEXPORT void
 #endif
     }
   A4GL_do_update_panels ();
-  A4GL_top_win (0);
+
 }
 
 /**
@@ -3224,16 +3279,26 @@ LIBEXPORT void
  UILIB_A4GL_show_window (char *winname)
 {
   PANEL *p;
+int a;
   p = A4GL_find_pointer (winname, PANCODE);
 #ifdef DEBUG
   {
     A4GL_debug ("showing window %s %p", winname, p);
   }
 #endif
-  if (p)
-    show_panel (p);
-  A4GL_do_update_panels ();
   A4GL_top_win (0);
+
+	a=find_window_number_for_window_name(winname);
+	if (a>=0) {
+		if (windows[a].dspan) {
+			hide_panel(windows[a].dspan);
+		}
+	}
+
+  if (p) {
+    show_panel (p);
+  }
+  A4GL_do_update_panels ();
 }
 
 /**

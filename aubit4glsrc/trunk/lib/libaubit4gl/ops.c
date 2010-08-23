@@ -25,7 +25,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.173 2010-07-08 12:47:04 mikeaubury Exp $
+# $Id: ops.c,v 1.174 2010-08-23 17:23:22 mikeaubury Exp $
 #
 */
 
@@ -243,7 +243,7 @@ A4GL_tostring_decimal (void *p, int size, char *s_in, int n_in)
 
 static void *A4GL_conv_char_to_string(char *type, void *vobjId) {
         struct sObject *obj;
-	int *objId;
+	long *objId;
         char *data;
 	
 	objId=vobjId;
@@ -268,7 +268,7 @@ static void *A4GL_conv_char_to_string(char *type, void *vobjId) {
 static char *A4GL_conv_obj_to_string(void *p, int size, char *s_in, int n_in) {
 	struct sObject *obj;
 	char buff[2000];
-	if (getObject(*(long*)p, &obj)==0) return "";
+	if (getObject(*(long*)p, &obj,NULL)==0) return "";
  	char *(*function) (struct sObject *);
 	sprintf(buff,":%s.toString", obj->objType);
 	function=A4GL_get_datatype_function_i(DTYPE_OBJECT,buff);

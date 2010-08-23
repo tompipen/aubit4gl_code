@@ -95,13 +95,6 @@ MISC
     fix Splint (lclint) warnings and extend to all libraries
     check that "make extra" works
     check code in tools/test/regression
-    Review & clean bugs in bugs database on SourceForge
-    create 4gl program to create .schema files from systables data as 4gl report
-		[table1]
-		column datatype size
-		column datatype size
-		[table2]
-		column datatype size
 
     remove lib/liblex/lex_c from CVS
 

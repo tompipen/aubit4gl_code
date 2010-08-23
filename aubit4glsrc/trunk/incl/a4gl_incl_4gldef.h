@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_incl_4gldef.h,v 1.135 2010-08-13 08:47:51 mikeaubury Exp $
+# $Id: a4gl_incl_4gldef.h,v 1.136 2010-08-23 17:23:22 mikeaubury Exp $
 */
 
 /**
@@ -496,6 +496,14 @@ void A4GL_check_dependant_tables(char *module_name, const char *CompileTimeSQLTy
 
 
 
+struct sObject { // Also in libaubit4gl.h
+        char *objType;
+        int objHeapId;
+        int refCnt;
+        void *objData;
+};
+
+
 
 int A4GL_get_user_dtype(char *name) ;
 void A4GL_push_user_dtype(char *type, void *data, int dtype_length);
@@ -530,6 +538,11 @@ void A4GL_push_dynamic_array(void *p, int sz);
 char *A4GL_get_target_dialect(char *lex_default,char *lex_compile_time_target);
 
 int A4GL_pdf_push_report_section (struct pdf_rep_structure *rep, char *mod, char *repname, int lineno, char where, char *why, int rb) ;
+
+int A4GL_create_object(char *type, int nparam) ;
+int A4GL_destroy_object(char *type, long objectID) ;
+
+
 #  if __WORDSIZE == 64
 #define int8 long 
 #define serial8 long 

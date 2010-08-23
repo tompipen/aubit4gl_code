@@ -2319,13 +2319,13 @@ struct module_entry *c;
 }
 
 
-struct module_entry *new_function_definition(char * p_funcname,e_boolean p_isstatic,expr_str_list* p_parameters,s_commands* p_commands,int lineno,char *doc4glcomment) {
+struct module_entry *new_function_definition(char * p_funcname,e_function_type p_type,expr_str_list* p_parameters,s_commands* p_commands,int lineno,char *doc4glcomment) {
 struct module_entry *c;
 //int a;
    c=new_module_entry(E_MET_FUNCTION_DEFINITION);
    c->module_entry_u.function_definition.funcname=strdup(p_funcname);
    c->module_entry_u.function_definition.n_namespace=strdup(get_namespace(p_funcname));
-   c->module_entry_u.function_definition.isstatic=p_isstatic;
+   c->module_entry_u.function_definition.function_type=p_type;
    c->module_entry_u.function_definition.variables.variables.variables_len=0;
    c->module_entry_u.function_definition.variables.sorted_list=0;
    c->module_entry_u.function_definition.variables.variables.variables_val=NULL;
@@ -2368,7 +2368,7 @@ struct module_entry *c;
    c=new_module_entry(E_MET_MAIN_DEFINITION);
    c->module_entry_u.function_definition.funcname=strdup("MAIN");
    c->module_entry_u.function_definition.n_namespace=strdup(get_namespace("MAIN"));
-   c->module_entry_u.function_definition.isstatic=EB_FALSE;
+   c->module_entry_u.function_definition.function_type=E_FTYPE_NORMAL;
    c->module_entry_u.function_definition.variables.variables.variables_len=0;
    c->module_entry_u.function_definition.variables.variables.variables_val=NULL;
    c->module_entry_u.function_definition.variables.sorted_list=0;
@@ -2526,12 +2526,12 @@ struct command *c;
 }
 
 
-struct module_entry *new_pdf_report_definition(char * p_funcname,e_boolean p_isstatic,expr_str_list* p_parameters,pdf_startrep* p_report_output_section,s_report_orderby_section *p_report_orderby_section,report_format_section *p_report_format_section,int lineno ,char *doc4glcomment) {
+struct module_entry *new_pdf_report_definition(char * p_funcname,e_function_type p_function_type,expr_str_list* p_parameters,pdf_startrep* p_report_output_section,s_report_orderby_section *p_report_orderby_section,report_format_section *p_report_format_section,int lineno ,char *doc4glcomment) {
 struct module_entry *c;
    c=new_module_entry(E_MET_PDF_REPORT_DEFINITION);
    c->module_entry_u.pdf_report_definition.funcname=strdup(p_funcname);
    c->module_entry_u.pdf_report_definition.n_namespace=strdup(get_namespace(p_funcname));
-   c->module_entry_u.pdf_report_definition.isstatic=p_isstatic;
+   c->module_entry_u.pdf_report_definition.function_type=p_function_type;
    c->module_entry_u.pdf_report_definition.comment=doc4glcomment;
 
    A4GL_ensure_dtype_variables(p_parameters);
@@ -2583,12 +2583,12 @@ struct module_entry *c;
 }
 
 
-struct module_entry *new_report_definition(char * p_funcname,e_boolean p_isstatic,expr_str_list* p_parameters,startrep* p_report_output_section,s_report_orderby_section *p_report_orderby_section,report_format_section *p_report_format_section,int lineno,char *doc4glcomment) {
+struct module_entry *new_report_definition(char * p_funcname,e_function_type p_function_type,expr_str_list* p_parameters,startrep* p_report_output_section,s_report_orderby_section *p_report_orderby_section,report_format_section *p_report_format_section,int lineno,char *doc4glcomment) {
 struct module_entry *c;
    c=new_module_entry(E_MET_REPORT_DEFINITION);
    c->module_entry_u.report_definition.funcname=strdup(p_funcname);
    c->module_entry_u.report_definition.n_namespace=strdup(get_namespace(p_funcname));
-   c->module_entry_u.report_definition.isstatic=p_isstatic;
+   c->module_entry_u.report_definition.function_type=p_function_type;
    c->module_entry_u.report_definition.comment=doc4glcomment;
 
    A4GL_ensure_dtype_variables(p_parameters);

@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: globals.c,v 1.69 2010-08-12 12:13:02 mikeaubury Exp $
+# $Id: globals.c,v 1.70 2010-08-23 17:23:21 mikeaubury Exp $
 #
 */
 
@@ -430,6 +430,13 @@ read_glob (char *s)
   A4GL_set_status(0,0);
   dbname=g.mod_dbname;
   schemaonly=g.schema_only;
+
+  if (g.used_object_types.used_object_types_len) {
+	int a;
+	for (a=0;a<g.used_object_types.used_object_types_len;a++) {
+			A4GL_used_object_type(&this_module, g.used_object_types.used_object_types_val[a]);
+	}
+  }
 
   if (g.pragmas.pragmas_len) {
 	int a;

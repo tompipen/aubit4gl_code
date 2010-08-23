@@ -942,7 +942,7 @@ report_def : op_doc4gl_comment   rep_or_localrep
 	{ 
 		add_feature("USE_REPORT");
 		A4GL_clr_extra_warnings();
-    		if (class_cnt>1) { a4gl_yyerror("You've already defined a class - you can't do any more now"); }
+    		//if (class_cnt>1) { a4gl_yyerror("You've already defined a class - you can't do any more now"); }
 		rep_type=REP_TYPE_NORMAL; 
 		clr_function_constants (); 
 		clr_variable(); 
@@ -1132,7 +1132,7 @@ pdf_rep_or_localrep:  PDF_REPORT {$<e_boolean>$=EB_FALSE;} | LOCAL_PDF_REPORT {$
 
 pdf_report_def : op_doc4gl_comment  pdf_rep_or_localrep {
 				A4GL_clr_extra_warnings();
-    	if (class_cnt>1) { a4gl_yyerror("You've already defined a class - you can't do any more now"); }
+    	//if (class_cnt>1) { a4gl_yyerror("You've already defined a class - you can't do any more now"); }
 		rep_type=REP_TYPE_PDF;
 		clr_function_constants();
 		clr_variable(); 

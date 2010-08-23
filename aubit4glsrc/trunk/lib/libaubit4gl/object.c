@@ -24,6 +24,20 @@ static void init_objects(void) {
 }
 
 
+static void  dump_objects(void) {
+	int a;
+
+return ;
+
+	printf("Current objects\n");
+	printf("---------------\n");
+	for (a=0;a<MAXOBJECTS;a++) {
+		if (heapOfObjects[a].objType) {
+			printf("%d %s - %d\n", a, heapOfObjects[a].objType, heapOfObjects[a].refCnt);
+		}
+	}
+	printf("\n");
+}
 
 struct sObject *new_object(char *type) {
 	int found=-1;
@@ -48,20 +62,64 @@ struct sObject *new_object(char *type) {
 	o->objHeapId=numObjs++;
 	o->objData=NULL;
 	o->refCnt=1;
+
+
+
+	dump_objects();
+
+
+	//printf("found = %d\n",found);
 	return o;
 }
 
-int getObject(int objectId, struct sObject **o) {
+int getObject(long objectId, struct sObject **o, char *preferredObjectType) {
 
 	init_objects();
 
 	if (objectId==0) return 0;
 	if (heapOfObjects[objectId].objType==NULL ) return 0;
+
 	*o=&heapOfObjects[objectId];
+	if (preferredObjectType &&  (*o)->objType) {
+		if (strcmp(preferredObjectType, (*o)->objType)==0) {
+			return 1;
+		} else {
+			char buff[3000];
+			int a;
+			// Should search down the parentage to find this clsss...
+			SPRINTF1(buff,"%s.castTo", (*o)->objType);
+			A4GL_push_char(preferredObjectType);
+			a=A4GL_call_datatype_function_i(&objectId,99,buff,1);
+			if (a==0) {
+				// Cant be cast..
+				//a4gl_yyerror("Unable to cast to the requested object type");
+				return 0;
+			} else {
+				int b;
+#ifdef DEBUG
+					A4GL_debug("Got 'a' as %d\n",a);
+#endif
+				for (b=0;b<MAXOBJECTS;b++) {
+#ifdef DEBUG
+					A4GL_debug(" comparing to object at %d - which is %d\n",b, heapOfObjects[b].objHeapId);
+#endif
+					if (heapOfObjects[b].objHeapId==a) {
+#ifdef DEBUG
+							A4GL_debug("Found it !\n");
+#endif
+							*o=&heapOfObjects[b];
+							return 1;
+					}
+				}
+				return 0;
+			}
+			
+		}
+	}
 	return 1;
 }
 
-int ensureObject(char *type,int objectId, struct sObject **o) {
+int ensureObject(char *type,long objectId, struct sObject **o) {
 	init_objects();
 
 	if (objectId==0) return 0;
@@ -76,9 +134,9 @@ int ensureObject(char *type,int objectId, struct sObject **o) {
 }
 
 
-static void A4GL_call_object_destructor(int objectID) 
+static void A4GL_call_object_destructor(long objectID) 
 {
-  int (*ptr) (int *);
+  int (*ptr) (long *,int nparam);
   char buff[256];
   struct sObject *obj;
   if (objectID<=0) {
@@ -98,11 +156,11 @@ static void A4GL_call_object_destructor(int objectID)
       return ;
     }
 
-  ptr (&objectID);
+  ptr (&objectID,0);
 
 }
 
-void A4GL_object_dispose(int objectId) {
+void A4GL_object_dispose(long objectId) {
 	
 	if (heapOfObjects[objectId].objType!=NULL) {
 
@@ -114,7 +172,9 @@ void A4GL_object_dispose(int objectId) {
 		A4GL_call_object_destructor(objectId);
 		heapOfObjects[objectId].objType=NULL;
 		if (  heapOfObjects[objectId].objData) {
-			free(heapOfObjects[objectId].objData);
+			if (heapOfObjects[objectId].objData) {
+				free(heapOfObjects[objectId].objData);
+			}
 			heapOfObjects[objectId].objData=NULL;
 		}
 		heapOfObjects[objectId].objHeapId=0;

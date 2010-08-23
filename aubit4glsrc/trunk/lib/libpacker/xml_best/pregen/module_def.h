@@ -1,5 +1,5 @@
 /* XML processor/application API for module_def.dtd.
- * Generated 2010/08/13 09:26:53.
+ * Generated 2010/08/19 10:20:08.
  *
  * This program was generated with the FleXML XML processor generator.
  * FleXML is Copyright (C) 1999-2005 Kristoffer Rose.  All rights reserved.
@@ -691,8 +691,6 @@ typedef int AT_s_sli_cast_datatype;
 #define AU_s_sli_cast_datatype NULL
 typedef int AT_struct_return_cmd_with_resume;
 #define AU_struct_return_cmd_with_resume NULL
-typedef int AT_s_report_definition_isstatic;
-#define AU_s_report_definition_isstatic NULL
 typedef int AT_int_nm;
 #define AU_int_nm NULL
 typedef int AT_assoc_subscript_subscript_string;
@@ -833,6 +831,8 @@ typedef int AT_variable_data_e_variable_type;
 #define AU_variable_data_e_variable_type NULL
 typedef int AT_s_table_list_element_alias;
 #define AU_s_table_list_element_alias NULL
+typedef int AT_s_function_definition_function_type;
+#define AU_s_function_definition_function_type NULL
 typedef int AT_s_fetch_place_ab_rel;
 #define AU_s_fetch_place_ab_rel NULL
 typedef int AT_s_substring_start_nm;
@@ -841,8 +841,6 @@ typedef int AT_bluebar_style;
 #define AU_bluebar_style NULL
 typedef int AT_s_expr_current_from;
 #define AU_s_expr_current_from NULL
-typedef int AT_s_pdf_report_definition_isstatic;
-#define AU_s_pdf_report_definition_isstatic NULL
 typedef int AT_field_nm;
 #define AU_field_nm NULL
 typedef int AT_create_proc_data_isDBA;
@@ -1143,6 +1141,8 @@ typedef int AT_struct_run_cmd_run_mode;
 #define AU_struct_run_cmd_run_mode NULL
 typedef int AT_pdf_startrep_firstpageheadersize;
 #define AU_pdf_startrep_firstpageheadersize NULL
+typedef int AT_s_report_definition_function_type;
+#define AU_s_report_definition_function_type NULL
 typedef int AT_struct_continue_cmd_what;
 #define AU_struct_continue_cmd_what NULL
 typedef int AT_flist_nm;
@@ -1151,6 +1151,8 @@ typedef int AT_struct_display_array_cmd_slice;
 #define AU_struct_display_array_cmd_slice NULL
 typedef int AT_struct_set_database_cmd_exclusive_mode;
 #define AU_struct_set_database_cmd_exclusive_mode NULL
+typedef int AT_s_pdf_report_definition_function_type;
+#define AU_s_pdf_report_definition_function_type NULL
 typedef int AT_s_expr_parameter_isReference;
 #define AU_s_expr_parameter_isReference NULL
 typedef int AT_struct_next_option_cmd_nm;
@@ -1531,8 +1533,6 @@ typedef int AT_struct_spl_block_cmd_nm;
 #define AU_struct_spl_block_cmd_nm NULL
 typedef int AT_report_format_section_lines_in_trailer;
 #define AU_report_format_section_lines_in_trailer NULL
-typedef int AT_s_function_definition_isstatic;
-#define AU_s_function_definition_isstatic NULL
 typedef int AT_s_limit_start;
 #define AU_s_limit_start NULL
 typedef int AT_s_spl_for_item_nm;
@@ -2142,8 +2142,6 @@ extern AT_s_sli_cast_datatype AX_s_sli_cast_datatype;
 #define A_s_sli_cast_datatype (bufferstack + AX_s_sli_cast_datatype)
 extern AT_struct_return_cmd_with_resume AX_struct_return_cmd_with_resume;
 #define A_struct_return_cmd_with_resume (bufferstack + AX_struct_return_cmd_with_resume)
-extern AT_s_report_definition_isstatic AX_s_report_definition_isstatic;
-#define A_s_report_definition_isstatic (bufferstack + AX_s_report_definition_isstatic)
 extern AT_int_nm AX_int_nm;
 #define A_int_nm (bufferstack + AX_int_nm)
 extern AT_assoc_subscript_subscript_string AX_assoc_subscript_subscript_string;
@@ -2284,6 +2282,8 @@ extern AT_variable_data_e_variable_type AX_variable_data_e_variable_type;
 #define A_variable_data_e_variable_type (bufferstack + AX_variable_data_e_variable_type)
 extern AT_s_table_list_element_alias AX_s_table_list_element_alias;
 #define A_s_table_list_element_alias (bufferstack + AX_s_table_list_element_alias)
+extern AT_s_function_definition_function_type AX_s_function_definition_function_type;
+#define A_s_function_definition_function_type (bufferstack + AX_s_function_definition_function_type)
 extern AT_s_fetch_place_ab_rel AX_s_fetch_place_ab_rel;
 #define A_s_fetch_place_ab_rel (bufferstack + AX_s_fetch_place_ab_rel)
 extern AT_s_substring_start_nm AX_s_substring_start_nm;
@@ -2292,8 +2292,6 @@ extern AT_bluebar_style AX_bluebar_style;
 #define A_bluebar_style (bufferstack + AX_bluebar_style)
 extern AT_s_expr_current_from AX_s_expr_current_from;
 #define A_s_expr_current_from (bufferstack + AX_s_expr_current_from)
-extern AT_s_pdf_report_definition_isstatic AX_s_pdf_report_definition_isstatic;
-#define A_s_pdf_report_definition_isstatic (bufferstack + AX_s_pdf_report_definition_isstatic)
 extern AT_field_nm AX_field_nm;
 #define A_field_nm (bufferstack + AX_field_nm)
 extern AT_create_proc_data_isDBA AX_create_proc_data_isDBA;
@@ -2594,6 +2592,8 @@ extern AT_struct_run_cmd_run_mode AX_struct_run_cmd_run_mode;
 #define A_struct_run_cmd_run_mode (bufferstack + AX_struct_run_cmd_run_mode)
 extern AT_pdf_startrep_firstpageheadersize AX_pdf_startrep_firstpageheadersize;
 #define A_pdf_startrep_firstpageheadersize (bufferstack + AX_pdf_startrep_firstpageheadersize)
+extern AT_s_report_definition_function_type AX_s_report_definition_function_type;
+#define A_s_report_definition_function_type (bufferstack + AX_s_report_definition_function_type)
 extern AT_struct_continue_cmd_what AX_struct_continue_cmd_what;
 #define A_struct_continue_cmd_what (bufferstack + AX_struct_continue_cmd_what)
 extern AT_flist_nm AX_flist_nm;
@@ -2602,6 +2602,8 @@ extern AT_struct_display_array_cmd_slice AX_struct_display_array_cmd_slice;
 #define A_struct_display_array_cmd_slice (bufferstack + AX_struct_display_array_cmd_slice)
 extern AT_struct_set_database_cmd_exclusive_mode AX_struct_set_database_cmd_exclusive_mode;
 #define A_struct_set_database_cmd_exclusive_mode (bufferstack + AX_struct_set_database_cmd_exclusive_mode)
+extern AT_s_pdf_report_definition_function_type AX_s_pdf_report_definition_function_type;
+#define A_s_pdf_report_definition_function_type (bufferstack + AX_s_pdf_report_definition_function_type)
 extern AT_s_expr_parameter_isReference AX_s_expr_parameter_isReference;
 #define A_s_expr_parameter_isReference (bufferstack + AX_s_expr_parameter_isReference)
 extern AT_struct_next_option_cmd_nm AX_struct_next_option_cmd_nm;
@@ -2982,8 +2984,6 @@ extern AT_struct_spl_block_cmd_nm AX_struct_spl_block_cmd_nm;
 #define A_struct_spl_block_cmd_nm (bufferstack + AX_struct_spl_block_cmd_nm)
 extern AT_report_format_section_lines_in_trailer AX_report_format_section_lines_in_trailer;
 #define A_report_format_section_lines_in_trailer (bufferstack + AX_report_format_section_lines_in_trailer)
-extern AT_s_function_definition_isstatic AX_s_function_definition_isstatic;
-#define A_s_function_definition_isstatic (bufferstack + AX_s_function_definition_isstatic)
 extern AT_s_limit_start AX_s_limit_start;
 #define A_s_limit_start (bufferstack + AX_s_limit_start)
 extern AT_s_spl_for_item_nm AX_s_spl_for_item_nm;

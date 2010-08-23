@@ -57,6 +57,8 @@ struct variable *find_variable_vu_ptr(char *errbuff, struct variable_usage *v, e
 struct variable_usage *check_var_usage (struct variable_usage *v);
 struct variable * find_variable_vu_in (char *errbuff, struct variable_usage *vu, struct variable **list, int cnt,int err_if_whole_array,int lvl,struct variable_list *vlist);
 void set_local_variables(struct variable_list *vlist);
+void set_allow_class_lookup(int n);
+struct variable_list * set_class_variables(struct variable_list *vlist,char* thisclassname, char*parentclassname);
 struct variable * find_variable_vu_in_list(char *errbuff, struct variable_usage *v, struct variable_list *vlist, int err_if_while_array,int level);
 void set_uses_constants(struct variable_list *v);
 void make_constant_available(struct variable *v) ;

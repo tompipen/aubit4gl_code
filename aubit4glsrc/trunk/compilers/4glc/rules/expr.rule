@@ -917,7 +917,6 @@ member_fcall:
         	func = vu->variable_name;
 
 
-
 		/* Can we find a variable with the name ? */
                 v=find_variable_vu_ptr(errbuff, vu_top, &scope,0);
         	vu_bottom = usage_bottom_level (vu_top);
@@ -945,7 +944,7 @@ member_fcall:
 			} else {
 				/* Nope - cant use it */
 				set_yytext(s);
-				a4gl_yyerror("is not an object type");
+				a4gl_yyerror("Is not an object type, or variable does not exist");
 			}
 		} else { 
 			/* Its a straightforward variable */

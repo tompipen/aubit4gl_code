@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: datatypes.c,v 1.42 2010-02-16 13:16:27 mikeaubury Exp $
+# $Id: datatypes.c,v 1.43 2010-08-23 17:23:22 mikeaubury Exp $
 #
 */
 
@@ -397,7 +397,7 @@ A4GL_call_datatype_function_i (void *obj, int dtype, char *funcname, int nparam)
 {
   int (*ptr) (void *, int);
   char buff[256];
-  int nret;
+int nret;
 
 #ifdef DEBUG
   A4GL_debug ("in call_datatype_function obj=%p dtype=%d funcname=%s nparam=%d", obj, dtype, A4GL_null_as_null (funcname), nparam);
@@ -416,8 +416,49 @@ A4GL_call_datatype_function_i (void *obj, int dtype, char *funcname, int nparam)
     }
   if (ptr == 0)
     {
-      A4GL_set_err_txt(buff);
-      A4GL_exitwith ("Unable to find function (%s)");
+	//RouteToParent
+	if (dtype==DTYPE_OBJECT) {
+		//int rval;
+		char buff[2000];
+		char orig_function[2000];
+		char *xptr;
+  		int (*router_ptr) (void *, char *,int);
+		// We need to pass to a base object ?
+		sprintf(buff,":%s",funcname);
+		xptr=strrchr(buff,'.');
+		if (xptr) {
+			*xptr=0;
+			xptr++;
+			strcpy(orig_function, xptr);
+			strcat(buff,".RouteToParent");
+			A4GL_debug("Not found in object - lets check the base object : %s",buff);
+			router_ptr=A4GL_get_datatype_function_i(dtype, buff);
+			if (router_ptr) {
+				int _rval;
+				A4GL_debug("Object supports 'RouteToParent'");
+
+				_rval=router_ptr(obj,orig_function,nparam);
+				A4GL_debug("Got %d from RouteToParent - -1 indicates not handled at all");
+				if (_rval==-1) {
+					A4GL_debug("Thats not good...");
+					A4GL_pop_args(nparam);
+      					A4GL_set_err_txt(buff);
+      					A4GL_exitwith ("Unable to find function (%s)");
+					//fprintf(stderr,"Unable to find function : %s\n", buff);
+				} else {
+					A4GL_debug("Happy days...");
+					return _rval;
+				}
+			} else {
+				A4GL_debug("Object does not support 'RouteToParent'");
+			}
+		}
+	}
+
+	// Dump any remining parameters...
+	A4GL_pop_args(nparam);
+      	A4GL_set_err_txt(buff);
+      	A4GL_exitwith ("Unable to find function (%s)");
 	fprintf(stderr,"Unable to find function : %s\n", buff);
       return 0;
     }

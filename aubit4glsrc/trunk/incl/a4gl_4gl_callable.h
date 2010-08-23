@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_4gl_callable.h,v 1.70 2010-08-12 10:13:06 mikeaubury Exp $
+# $Id: a4gl_4gl_callable.h,v 1.71 2010-08-23 17:23:22 mikeaubury Exp $
 */
 
 /**
@@ -229,6 +229,16 @@ void A4GL_dec_refcount(void **obj);
 char *A4GL_get_ident(char *module,char *identifier, char *original_clobbered_name);
 void A4GL_set_ignore_error_list(int n, ...) ;
 void A4GL_clr_ignore_error_list(void);
+struct sObject *new_object(char *type);
+//long A4GL_create_object(char *s,int nparam);
+int ensureObject(char *type,long objectId, struct sObject **o);
+void A4GL_push_objectID (long p);
+void A4GL_add_object_type(char *s);
+int
+A4GL_add_datatype_function_i (int a, char *funcname, void *func);
+
+
+
 //void A4GL_copyback(void *varptr,int sz, struct BINDING *binding, int n);
 
 //int A4GL_fgl_infield (void *inp,char itype,...);

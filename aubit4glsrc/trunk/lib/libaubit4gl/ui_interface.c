@@ -5,7 +5,7 @@ struct ui_interface_data {
 };
 
 
-static int ui_interface_loadtoolbar(int *objectID, int nparam) {
+static int ui_interface_loadtoolbar(long *objectID, int nparam) {
 	char *a;
 	char buff[2000];
 	if (nparam!=1) {
@@ -22,7 +22,7 @@ static int ui_interface_loadtoolbar(int *objectID, int nparam) {
 	return 0;
 }
 
-static int ui_interface_loadactiondefaults(int *objectID, int nparam) {
+static int ui_interface_loadactiondefaults(long *objectID, int nparam) {
 	char *a;
 	char buff[2000];
 	if (nparam!=1) {
@@ -40,7 +40,7 @@ static int ui_interface_loadactiondefaults(int *objectID, int nparam) {
 	return 0;
 }
 
-static int ui_interface_loadstyles(int *objectID, int nparam) {
+static int ui_interface_loadstyles(long *objectID, int nparam) {
 	char *a;
 	char buff[2000];
 	if (nparam!=1) {
@@ -58,7 +58,7 @@ static int ui_interface_loadstyles(int *objectID, int nparam) {
 	return 0;
 }
 
-static int ui_interface_frontcall(int *objectID, int nparam) {
+static int ui_interface_frontcall(long *objectID, int nparam) {
 	struct BINDING *obind;
 	int no;
 	struct BINDING *ibind;
@@ -82,13 +82,13 @@ static int ui_interface_frontcall(int *objectID, int nparam) {
 	return 0;
 }
 
-static int ui_interface_refresh(int *objectID,int nparam) {
+static int ui_interface_refresh(long *objectID,int nparam) {
 	A4GL_ui_frontcall("INTERNAL","ui.interface.refresh", 0,0,0,0);
 	
 	return 0;
 }
 
-static int ui_interface_settext(int *objectID,int nparam) {
+static int ui_interface_settext(long *objectID,int nparam) {
 char *text;
         struct BINDING ibind[]= {
                 {NULL,0,500,0,0,0}

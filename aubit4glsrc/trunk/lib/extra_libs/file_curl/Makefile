@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.1 2010-05-19 17:46:05 mikeaubury Exp $
+# $Id: Makefile,v 1.2 2010-08-23 17:23:22 mikeaubury Exp $
 #
 
 ROOT    =../../..
@@ -44,7 +44,7 @@ ALL     =${PLUGINDIR}/libA4GL_urlfile${SO_EXT}
 ## ==================================================================
 
 #FIXME: use amake
-${ALL}: libfile.c
+${ALL}: libfile.c 
 	${LD} ${SO_LDFLAGS} ${CFLAGS} -o $@ $^ -L${ROOT}/lib -l${AUBITLIBFULL}
 	@echo "File library sucesfully compiled."
 

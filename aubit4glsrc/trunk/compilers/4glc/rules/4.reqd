@@ -32,6 +32,7 @@
 %token USER_DTYPE_NEW
 %token SQL_TEXT
 %token KW_WHENEVER_SET
+%token KW_LOADED_OBJECT_NAME
 %token COMMENT
 
 %type <variable_list_ptr> define_multiple define_section def_part define_set def_part2 op_private_define_section  spl_define_stmt spl_define_stmts spl_op_define_stmts spl_return_dtype_list spl_opt_returning  define_global_spl_stmt  define_spl_stmt  spl_parameters spl_parameter  op_spl_parameters spl_returning
@@ -42,7 +43,7 @@
 %type <integer_val> datetime_qual interval_qual interval_qual_i dtime_start dtime_val dtime_end opt_frac opt_unit_size dtfrac int_start int_start_unit int_end number_arr_assoc ranking number_value_arr   op_spl_with_resume spl_neg_int_value spl_opt_with_hold
 %type <module_entry> class_entry
 %type <module_entry_list> class_entries
-%type <class_definition> class_definition
+%type <module_entry> class_definition
 %type <ptr> spl_condition spl_op_default op_spl_listing  spl_execute_procedure_param  spl_expression spl_for_list_val spl_for_list_val_loop
  
 %type <ptr_list> op_spl_document expanded_fgl_expr_list_ptr spl_execute_procedure_param_list spl_expression_list spl_let_sources spl_for_list   spl_call_parameters

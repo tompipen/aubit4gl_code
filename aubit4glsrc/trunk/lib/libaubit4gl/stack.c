@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                          |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.258 2010-06-21 18:01:58 mikeaubury Exp $
+# $Id: stack.c,v 1.259 2010-08-23 17:23:22 mikeaubury Exp $
 #
 */
 
@@ -467,24 +467,35 @@ void A4GL_pop_object(char *objtype,void *obj,int dtype,int size) {
 	char buff[200];
 	int s0;
 	char *pi;
+
+int oldObjectId;
+
+oldObjectId=*(long*)obj;
+
+if (oldObjectId) {
+	A4GL_object_dispose(oldObjectId);
+}
+
 	A4GL_get_top_of_stack (1, &d0, &s0, (void *) &pi);
 
 // Is the thing on the stack an object ? 
 
 	if ((d0&DTYPE_MASK)==DTYPE_OBJECT) {
 		struct sObject *o;
-		int objId;
+		long objId;
 	// Get the object ID
 		objId=*(long*) pi;
 		// Now find the object itself
-		if (getObject(objId,&o)) {
+		if (getObject(objId,&o, objtype)) {
 			// Is it the same type ?
 			if (strcmp(o->objType,objtype)==0) {
-				memcpy(obj,pi,sizeof(long));
+				*(long *)obj=o->objHeapId;
+				//memcpy(obj,o->objData,sizeof(long));
 				A4GL_drop_param();
 				return ;
+			} else {
+				A4GL_assertion(1,"Could not cast to the required object type");
 			}
-			A4GL_assertion(1,"Dont have any casting abilities yet");
 		} else {
 			A4GL_assertion(1,"Unable to get object details");
 			A4GL_drop_param();

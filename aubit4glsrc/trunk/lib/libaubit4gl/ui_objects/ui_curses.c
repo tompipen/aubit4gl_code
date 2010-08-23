@@ -3,6 +3,8 @@ struct _data {
 	char data[256];
 };
  
+
+#ifdef XXX
 static int new_obj(char *newData) {
 struct sObject *obj;
 struct _data *data;
@@ -18,11 +20,12 @@ A4GL_push_objectID(obj->objHeapId);
 return 1;
  
 }
+#endif
  
  
  
  
-static int ui_curses_define_key(int *objectID_IgnoredAsAlways0,int n) {
+static int ui_curses_define_key(long *objectID_IgnoredAsAlways0,int n) {
 int okToProcess=1;
 int _ni=2;
 struct BINDING _ibind[2]={

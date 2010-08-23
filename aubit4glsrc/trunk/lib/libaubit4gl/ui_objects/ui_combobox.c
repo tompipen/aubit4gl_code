@@ -22,7 +22,7 @@ return 1;
  
  
  
-static int ui_combobox_forname(int *objectID_IgnoredAsAlways0,int n) {
+static int ui_combobox_forname(long *objectID_IgnoredAsAlways0,int n) {
 int okToProcess=1;
 int _ni=1;
 struct BINDING _ibind[1]={
@@ -81,7 +81,7 @@ char *fieldname=NULL;
  
  
  
-static int ui_combobox_additem(int *objectID,int n) {
+static int ui_combobox_additem(long *objectID,int n) {
 int okToProcess=1;
 struct _data *data;
 struct sObject *ptr;
@@ -139,7 +139,7 @@ char *text=NULL;
  
  
  
-static int ui_combobox_clear(int *objectID,int n) {
+static int ui_combobox_clear(long *objectID,int n) {
 int okToProcess=1;
 struct _data *data;
 struct sObject *ptr;
@@ -179,7 +179,7 @@ struct BINDING _ibind[1]={
  
  
  
-static int ui_combobox_getcolumnname(int *objectID,int n) {
+static int ui_combobox_getcolumnname(long *objectID,int n) {
 int okToProcess=1;
 struct _data *data;
 struct sObject *ptr;
@@ -235,7 +235,7 @@ char rval_0[512];
  
  
  
-static int ui_combobox_getindexof(int *objectID,int n) {
+static int ui_combobox_getindexof(long *objectID,int n) {
 int okToProcess=1;
 struct _data *data;
 struct sObject *ptr;
@@ -300,7 +300,7 @@ char *name=NULL;
  
  
  
-static int ui_combobox_getitemcount(int *objectID,int n) {
+static int ui_combobox_getitemcount(long *objectID,int n) {
 int okToProcess=1;
 struct _data *data;
 struct sObject *ptr;
@@ -356,7 +356,7 @@ int rval_0;
  
  
  
-static int ui_combobox_getitemname(int *objectID,int n) {
+static int ui_combobox_getitemname(long *objectID,int n) {
 int okToProcess=1;
 struct _data *data;
 struct sObject *ptr;
@@ -419,7 +419,7 @@ int index;
  
  
  
-static int ui_combobox_getitemtext(int *objectID,int n) {
+static int ui_combobox_getitemtext(long *objectID,int n) {
 int okToProcess=1;
 struct _data *data;
 struct sObject *ptr;
@@ -482,7 +482,7 @@ int index;
  
  
  
-static int ui_combobox_gettablename(int *objectID,int n) {
+static int ui_combobox_gettablename(long *objectID,int n) {
 int okToProcess=1;
 struct _data *data;
 struct sObject *ptr;
@@ -538,7 +538,7 @@ char rval_0[512];
  
  
  
-static int ui_combobox_gettag(int *objectID,int n) {
+static int ui_combobox_gettag(long *objectID,int n) {
 int okToProcess=1;
 struct _data *data;
 struct sObject *ptr;
@@ -594,7 +594,7 @@ char rval_0[512];
  
  
  
-static int ui_combobox_gettextof(int *objectID,int n) {
+static int ui_combobox_gettextof(long *objectID,int n) {
 int okToProcess=1;
 struct _data *data;
 struct sObject *ptr;
@@ -659,7 +659,7 @@ char *name=NULL;
  
  
  
-static int ui_combobox_removeitem(int *objectID,int n) {
+static int ui_combobox_removeitem(long *objectID,int n) {
 int okToProcess=1;
 struct _data *data;
 struct sObject *ptr;

@@ -99,9 +99,9 @@ BEGIN {
 
 	# Now generate the C code...
 	if (isClassMethod) {
-		funcname=type "_" nm "(int *objectID_IgnoredAsAlways0,int n)"
+		funcname=type "_" nm "(long *objectID_IgnoredAsAlways0,int n)"
 	} else {
-		funcname=type "_" nm "(int *objectID,int n)"
+		funcname=type "_" nm "(long *objectID,int n)"
 	}
 	gsub("[.]","_",funcname)
 	print "static int " funcname " {"

@@ -1,4 +1,4 @@
-/* $Id: fgl.x,v 1.59 2010-08-13 05:42:59 mikeaubury Exp $ */
+/* $Id: fgl.x,v 1.60 2010-08-23 17:23:21 mikeaubury Exp $ */
 typedef string str<>;
 typedef string sql_ident<>;
 
@@ -1913,7 +1913,7 @@ struct globals_definition {
 	str mod_dbname;
 	str external_datatypes<>;
 	u_pragmas pragmas<>;
-
+	str used_object_types<>;
 	enum e_boolean schema_only;
 	long compiled_time;
 	struct s_exported_global_variables  exported_global_variables;
@@ -1939,6 +1939,7 @@ struct module_definition {
 	str external_datatypes<>;
 	str compile_time_sqltype;
 	u_pragmas pragmas<>;
+	str used_object_types<>;
 	struct fgl_comment comment_list<>;
 	struct file_description imported_files<>;
 	enum e_boolean schema_only;
@@ -3196,10 +3197,16 @@ struct s_select_list_item {
         int sign;
 };
 
+enum e_function_type {
+	E_FTYPE_NORMAL,
+	E_FTYPE_STATIC,
+	E_FTYPE_OBJECT
+};
+
 struct s_function_definition {
 	str funcname;
 	str n_namespace;
-	enum e_boolean isstatic;
+	enum e_function_type function_type;
 	struct expr_str_list expression_list;
 	struct expr_str_list* parameters;
 	str module;
@@ -3217,7 +3224,7 @@ struct s_function_definition {
 struct s_report_definition {
 	str funcname;
 	str n_namespace;
-	enum e_boolean isstatic;
+	enum e_function_type function_type;
 	struct expr_str_list expression_list;
 	variable_list variables;
 	struct expr_str_list* parameters;
@@ -3239,7 +3246,7 @@ struct s_report_definition {
 struct s_pdf_report_definition {
 	str funcname;
 	str n_namespace;
-	enum e_boolean isstatic;
+	enum e_function_type function_type;
 	struct expr_str_list expression_list;
 	variable_list variables;
 	struct expr_str_list* parameters;

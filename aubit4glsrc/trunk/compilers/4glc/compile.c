@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile.c,v 1.141 2010-08-12 12:13:02 mikeaubury Exp $
+# $Id: compile.c,v 1.142 2010-08-23 17:23:21 mikeaubury Exp $
 #*/
 
 /**
@@ -1340,6 +1340,10 @@ compiled_4gl++;
   this_module.pragmas.pragmas_len=0;
   this_module.pragmas.pragmas_val=0;
 
+  this_module.used_object_types.used_object_types_val=0;
+  this_module.used_object_types.used_object_types_len=0;
+
+//this_module.isClass=EB_FALSE;
 	this_module.dependant_tables.dependant_tables_len=0;
 	this_module.dependant_tables.dependant_tables_val=0;
 

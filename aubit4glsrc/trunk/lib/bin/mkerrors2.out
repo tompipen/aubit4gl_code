@@ -379,3 +379,6 @@
 387|Invalid character in barcode
 388|Invalid length of barcode
 390|GTK ERROR
+392|Not an object of type not initialized
+393|Not an object of the correct type or not initialized
+394|Not an object of the correct type, or not initialized

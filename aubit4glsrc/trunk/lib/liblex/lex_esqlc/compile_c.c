@@ -24,12 +24,12 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.528 2010-08-13 08:47:52 mikeaubury Exp $
+# $Id: compile_c.c,v 1.529 2010-08-23 17:23:22 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
-static char const module_id[] = "$Id: compile_c.c,v 1.528 2010-08-13 08:47:52 mikeaubury Exp $";
+static char const module_id[] = "$Id: compile_c.c,v 1.529 2010-08-23 17:23:22 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -87,6 +87,20 @@ char *local_rettype (char *s);
 //static int print_bind_expr_portion (void *ptr, char i, int portion);
 //
 int tmp_ccnt = 0;
+
+
+
+// determines if we are in a normal function (-1) or a class function (1) or an object class function (2)
+// We need this to determine if the user is using a 'this' or 'parent' (implicitly or explicitly)
+// An 'object' function does not have reference to any of the objects data
+//
+// so calling 'parent' or 'this' would make no sense in this context...
+//
+// Mostly - this should be picked up by the compiler at compile time - but heyho etc..
+//
+static int object_function=-1;  
+		
+			
 static int is_char_dtype (int dtype);
 
 int set_dont_use_indicators = 0;
@@ -106,7 +120,7 @@ char *last_print_bind_dir_definition_g_rval[255];
 //void A4GL_set_compile_time_convert(int a);
 
 //char *get_debug_filename(void);
-int class_cnt = 0;
+//int class_cnt = 0;
 int need_cursorname = 0;
 struct module_definition *current_module;
 int assoc_write = 0;
@@ -150,6 +164,7 @@ struct module_entry *current_entry = 0;
 
 
 struct variable_list *current_entry_variables = 0;
+struct variable_list *current_class_variables = 0;
 
 //char *generate_ispdf(void) ;
 
@@ -218,7 +233,7 @@ extern int get_rep_no_orderby (void);
 //static int gen_ord (char *s);
 //int is_substring_variable_usage_in_expr(expr_str *v, expr_str **s, expr_str **e) ;
 void print_variable_usage_for_bind (expr_str * v);
-static void print_function_variable_init (variable_list * fvars);
+//static void print_function_variable_init (variable_list * fvars);
 int chk_ibind_select_internal (struct s_select *s);
 static char *get_objectTypeAsStringForBind (expr_str * bindvar);
 //char *get_variable_usage_as_string(struct variable_usage *u ) ;
@@ -1608,7 +1623,7 @@ real_print_expr (struct expr_str *ptr)
 		  }
 		printc ("} // FCALL 2");
 	      }
-	    add_function_to_header (ptr->expr_str_u.expr_function_call->functionname, ptr->expr_str_u.expr_function_call->n_namespace, 1, 0);
+	    add_function_to_header (ptr->expr_str_u.expr_function_call->functionname, ptr->expr_str_u.expr_function_call->n_namespace, 1, E_FTYPE_NORMAL);
 	  }
 
 	if (is_in_report ())
@@ -3159,7 +3174,7 @@ real_print_func_call (t_expr_str * fcall)
 
       real_print_expr_list (p->parameters);
       printc ("/* done print expr */");
-      add_function_to_header (p->functionname, p->n_namespace, 1, 0);
+      add_function_to_header (p->functionname, p->n_namespace, 1, E_FTYPE_NORMAL);
 
 
       if (A4GL_module_has_function (current_module, p->functionname, lib, 0))
@@ -3518,20 +3533,24 @@ print_init_var (struct variable *v, char *prefix, int alvl, int explicit, int Pr
 {
   char buff[1000];
   char prefix2[1000];
-  strcpy (buff, prefix);
-  if (PrefixIncludesName)
-    {
-      sprintf (prefix2, "%s", prefix);
-    }
-  else
-    {
-      sprintf (prefix2, "%s%s", prefix, v->names.names.names_val[0].name);
-    }
-
   int d1;
   int size;
   int a;
   char buff_id[200];
+
+
+  strcpy (buff, prefix);
+
+
+
+  	if (PrefixIncludesName)
+    	{
+      		sprintf (prefix2, "%s", prefix);
+    	}
+  	else
+    	{
+      		sprintf (prefix2, "%s%s", prefix, v->names.names.names_val[0].name);
+    	}
 
 
   if (v->arr_subscripts.arr_subscripts_len && expand_array)
@@ -3778,10 +3797,10 @@ printDeclareFunctionStack (char *_functionName)
 #ifdef FGL_PLUS_PLUS
 
 
-  if (class_cnt)
-    {
-      CLASS_add_method (_functionName, "");
-    }
+  //if (class_cnt)
+    //{
+      //CLASS_add_method (_functionName, "");
+    //}
 
 #endif
   if (local_isGenStackInfo ())
@@ -4124,7 +4143,7 @@ print_import_legacy (char *s)
 
 
 void
-add_function_to_header (char *identifier, char *namespace, int params, int is_static)
+add_function_to_header (char *identifier, char *namespace, int params, e_function_type ftype)
 {
 
   if (is_builtin_func (identifier))
@@ -4137,15 +4156,18 @@ add_function_to_header (char *identifier, char *namespace, int params, int is_st
 
       if (params == 1)		/* Normal Function */
 	{
-	  printh ("A4GL_FUNCTION%s int %s%s (int n);\n", is_static ? " static" : "", namespace, identifier);
-
+	  printh ("A4GL_FUNCTION%s int %s%s (int n);\n", (ftype==E_FTYPE_STATIC) ? " static" : "", namespace, identifier);
 	}
 
       if (params == 2)		/* Report... */
-	printh ("A4GL_REPORT%s void %s%s (int n,int a);\n", is_static ? " static" : "", namespace, identifier);
+	printh ("A4GL_REPORT%s void %s%s (int n,int a);\n", (ftype==E_FTYPE_STATIC) ? " static" : "", namespace, identifier);
     }
 
 
+}
+
+void set_object_function(int n) {
+	object_function=n;
 }
 
 int
@@ -5126,7 +5148,7 @@ print_reset_state_after_call (int n)
 void
 print_convert_report_via (char *repname, char *fname)
 {
-  add_function_to_header (fname, "namespace", 1, 0);
+  add_function_to_header (fname, "namespace", 1, E_FTYPE_NORMAL);
   printc ("A4GL_via_functionname(\"%s\",&%s%s,&%s%s);", repname, get_namespace (repname), repname, get_namespace (fname), fname);
 }
 
@@ -5264,19 +5286,16 @@ print_nullify (char type, variable_list * v)
       char *name;
       //int print = 0;
       name = v->variables.variables_val[a]->names.names.names_val[0].name;
-
-      //if (v->variables.variables_val[a]->var_data.variable_type == VARIABLE_TYPE_SIMPLE)
-      //{
-      print_init_var (v->variables.variables_val[a], "", 0, 0, 0, 1, 1);
-      //continue;
-      //}
-
-      //if (v->variables.variables_val[a]->var_data.variable_type == VARIABLE_TYPE_RECORD)
-      //{
-      //print_init_record (name, v->variables.variables_val[a]);
-      //
-      //}
-
+	if (type==E_SCOPE_CLASS && strcmp(name,"base")==0) continue;
+	if (type==E_SCOPE_CLASS && strcmp(name,"this")==0) continue;
+	if (type==E_SCOPE_CLASS) {
+		if (v->variables.variables_val[a]->escope==E_SCOPE_MODULE) {
+			v->variables.variables_val[a]->escope=E_SCOPE_CLASS;
+		}
+      		print_init_var (v->variables.variables_val[a], "objData->", 0, 0, 0, 1, 1);
+	} else {
+      		print_init_var (v->variables.variables_val[a], "", 0, 0, 0, 1, 1);
+	}
     }
 
 }
@@ -5447,6 +5466,12 @@ print_variable_new (struct variable *v, enum e_scope scope, int level)
     }
 
   strcpy (name, v->names.names.names_val[0].name);
+
+  if (level == 0 && v->escope==E_SCOPE_CLASS) {
+	SPRINTF1(name,"objData->%s", v->names.names.names_val[0].name);
+  }
+
+
   if (level == 0 && (A4GL_isyes (acl_getenv ("MARK_SCOPE")) || A4GL_isyes (acl_getenv ("MARK_SCOPE_MODULE"))))
     {
       /*printf("%s %c %c %c\n",name,v->user_system,v->scope,scope); */
@@ -6056,8 +6081,9 @@ merge_files (void)
 
 
 static void
-print_module_variable_init (variable_list * mvars)
+print_module_variable_init (module_definition *m, variable_list * mvars)
 {
+int a;
   set_suppress_lines ();
   if (!A4GL_doing_pcode ())
     {
@@ -6073,6 +6099,10 @@ print_module_variable_init (variable_list * mvars)
       print_load_datatypes();
       print_nullify (E_SCOPE_MODULE, mvars);
       tmp_ccnt--;
+  	for (a=0;a<m->used_object_types.used_object_types_len;a++) {
+			printh("void Object_%s(void);\n", m->used_object_types.used_object_types_val[a]);
+			printc("Object_%s();\n", m->used_object_types.used_object_types_val[a]);
+  	}
       printc ("}");
       printc ("#");
     }
@@ -6169,9 +6199,8 @@ dump_function (struct s_function_definition *function_definition, int ismain)
     }
   else
     {
-      //set_nonewlines ();
       printc ("\nA4GL_FUNCTION %sint %s%s (int _nargs){ \n",
-	      function_definition->isstatic == EB_TRUE ? "static " : "", function_definition->n_namespace,
+	      function_definition->function_type == E_FTYPE_STATIC ? "static " : "", function_definition->n_namespace,
 	      function_definition->funcname);
       printc ("void *_blobdata=0;");
 
@@ -6180,7 +6209,7 @@ dump_function (struct s_function_definition *function_definition, int ismain)
       //clr_nonewlines ();
       printDeclareFunctionStack (function_definition->funcname);
       add_function_to_header (function_definition->funcname, function_definition->n_namespace, 1,
-			      function_definition->isstatic == EB_TRUE);
+			      function_definition->function_type);
 
 // local variables...
 //
@@ -6362,19 +6391,19 @@ dump_function_prototypes (module_definition * m)
 	case E_MET_IMPORT_FUNCTION_DEFINITION:
 	  add_function_to_header (m->module_entries.module_entries_val[a]->module_entry_u.import_function_definition.funcname,
 				  get_namespace (m->module_entries.module_entries_val[a]->module_entry_u.import_function_definition.
-						 funcname), 1, 0);
+						 funcname), 1, E_FTYPE_NORMAL);
 	  break;
 
 	case E_MET_IMPORT_LEGACY_DEFINITION:
 	  add_function_to_header (m->module_entries.module_entries_val[a]->module_entry_u.import_legacy_definition.funcname,
 				  get_namespace (m->module_entries.module_entries_val[a]->module_entry_u.import_legacy_definition.
-						 funcname), 1, 0);
+						 funcname), 1, E_FTYPE_NORMAL);
 	  break;
 
 	case E_MET_REPORT_DEFINITION:
 	  add_function_to_header (m->module_entries.module_entries_val[a]->module_entry_u.report_definition.funcname,
 				  m->module_entries.module_entries_val[a]->module_entry_u.report_definition.n_namespace,
-				  2, m->module_entries.module_entries_val[a]->module_entry_u.report_definition.isstatic == EB_TRUE);
+				  2, m->module_entries.module_entries_val[a]->module_entry_u.report_definition.function_type);
 
 	  break;
 
@@ -6382,8 +6411,7 @@ dump_function_prototypes (module_definition * m)
 	  add_function_to_header (m->module_entries.module_entries_val[a]->module_entry_u.pdf_report_definition.funcname,
 				  m->module_entries.module_entries_val[a]->module_entry_u.pdf_report_definition.n_namespace,
 				  2,
-				  m->module_entries.module_entries_val[a]->module_entry_u.pdf_report_definition.isstatic ==
-				  EB_TRUE);
+				  m->module_entries.module_entries_val[a]->module_entry_u.pdf_report_definition.function_type);
 	  break;
 
 
@@ -6395,14 +6423,16 @@ dump_function_prototypes (module_definition * m)
 	  add_function_to_header (m->module_entries.module_entries_val[a]->module_entry_u.function_definition.funcname,
 				  m->module_entries.module_entries_val[a]->module_entry_u.function_definition.n_namespace,
 				  1,
-				  m->module_entries.module_entries_val[a]->module_entry_u.function_definition.isstatic == EB_TRUE);
+				  m->module_entries.module_entries_val[a]->module_entry_u.function_definition.function_type);
 	  break;
 
+
+	case E_MET_CLASS_DEFINITION:
+		break;
 
 	  // We can ignore all of these...
 	case E_MET_CMD:
 	case E_MET_FORMHANDLER_DEFINITION:
-	case E_MET_CLASS_DEFINITION:
 	case E_MET_IMPORT_DATATYPE:
 	case E_MET_IMPORT_PACKAGE:
 	  break;
@@ -6492,7 +6522,7 @@ LEXLIB_A4GL_write_generated_code (struct module_definition *m)
     }
 
 
-  print_module_variable_init (&m->module_variables.variables);
+  print_module_variable_init (m,&m->module_variables.variables);
 
 
   for (a = 0; a < m->module_entries.module_entries_len; a++)
@@ -6571,7 +6601,9 @@ LEXLIB_A4GL_write_generated_code (struct module_definition *m)
 	  break;
 
 	case E_MET_CLASS_DEFINITION:
-	  A4GL_assertion (1, "Not implemented yet");
+	  current_class_variables=&m->module_entries.module_entries_val[a]->module_entry_u.class_definition.private_variables;
+	  ok = dump_class_definition (&m->module_entries.module_entries_val[a]->module_entry_u.class_definition);
+	  //A4GL_assertion (1, "Not implemented yet");
 	  break;
 
 	}
@@ -6887,6 +6919,7 @@ print_pop_usage (expr_str * v)
   expr_str *substring_start;
   expr_str *substring_end;
   struct variable *sgs_topvar;
+int level=0;
 
   u = v->expr_str_u.expr_variable_usage;
   A4GL_assertion (get_binding_dtype (v) == -1, "Usage not ensured...");
@@ -6933,6 +6966,10 @@ print_pop_usage (expr_str * v)
   while (u)
     {
 
+	if (level==0 && u->escope==E_SCOPE_CLASS) {
+		printc("objData->");
+	}
+	level++;
       if (u->subscripts.subscripts_len && u->subscripts.subscripts_val[0]->expr_type == ET_EXPR_ASSOC)
 	{
 	  assoc_write = 1;
@@ -7045,6 +7082,7 @@ print_variable_usage_gen (expr_str * v, int err_if_substring)
   expr_str *substring_start;
   expr_str *substring_end;
   struct variable *sgs_topvar;
+int level=0;
   if (v->expr_type == ET_EXPR_LINENO)
     {
       printc ("lineno");
@@ -7081,6 +7119,9 @@ print_variable_usage_gen (expr_str * v, int err_if_substring)
   sgs_topvar = set_get_subscript_as_string_top (u);
   while (u)
     {
+	if (level==0 && u->escope==E_SCOPE_CLASS) {
+		printc("objData->");
+	}
       if (u->subscripts.subscripts_len && u->subscripts.subscripts_val[0]->expr_type == ET_EXPR_ASSOC)
 	{
 	  assoc_write = 1;
@@ -7285,10 +7326,15 @@ print_push_variable_usage (expr_str * ptr)
   else
     {
       struct variable *sgs_topvar;
+	int level=0;
       sgs_topvar = set_get_subscript_as_string_top (u);
       printc ("A4GL_push_substr(");
       while (u)
 	{
+	if (level==0 && u->escope==E_SCOPE_CLASS) {
+			printc("objData->");
+		}
+		level++;
 	  printc ("%s", u->variable_name);
 	  if (u->subscripts.subscripts_len)
 	    {
@@ -7340,6 +7386,7 @@ generation_get_variable_usage_as_string_for_dynarr (struct variable_usage *u, in
   expr_str *substring_start;
   expr_str *substring_end;
   struct variable *sgs_topvar;
+int level=0;
 
   struct variable_usage *ub;
   ub = usage_bottom_level (u);
@@ -7355,9 +7402,17 @@ generation_get_variable_usage_as_string_for_dynarr (struct variable_usage *u, in
 
   strcpy (buff, "");
   sgs_topvar = set_get_subscript_as_string_top (u);
+
   while (u)
     {
-      strcat (buff, u->variable_name);
+	char name[2000];
+	
+      strcpy (name, u->variable_name);
+      if (level == 0 && u->escope==E_SCOPE_CLASS) {
+	SPRINTF1(name,"objData->%s", u->variable_name);
+      }
+	level++;
+      strcat (buff, name);
 
       if (u == ub)
 	{
@@ -7426,6 +7481,7 @@ generation_get_variable_usage_as_string (struct variable_usage *u)
   static char rbuff[2000];
   int substring = 0;
   char buff[2000];
+int level=0;
   expr_str *substring_start;
   expr_str *substring_end;
   struct variable *sgs_topvar;
@@ -7441,7 +7497,16 @@ generation_get_variable_usage_as_string (struct variable_usage *u)
   sgs_topvar = set_get_subscript_as_string_top (u);
   while (u)
     {
-      strcat (buff, u->variable_name);
+	char name[2000];
+	
+      strcpy (name, u->variable_name);
+
+      if (level == 0 && u->escope==E_SCOPE_CLASS) {
+		SPRINTF1(name,"objData->%s", u->variable_name);
+      }
+	level++;
+      strcat (buff, name);
+
       if (u->subscripts.subscripts_len)
 	{
 	  int a;
@@ -7778,10 +7843,10 @@ get_ident_as_string (struct expr_str *ptr,char type) /* type ='G' for some globa
     {
 	orig= get_orig_from_clobber(ptr->expr_str_u.expr_string);
 	if (type=='M') {
-      		sprintf (buff, "A4GL_get_ident(\"%s\",\"%s\",\"%s\")", current_module->module_name,orig,ptr->expr_str_u.expr_string);
+      		SPRINTF (buff, "A4GL_get_ident(\"%s\",\"%s\",\"%s\")", current_module->module_name,orig,ptr->expr_str_u.expr_string);
 
 	} else {
-      		sprintf (buff, "\"%s\"", ptr->expr_str_u.expr_string);
+      		SPRINTF (buff, "\"%s\"", ptr->expr_str_u.expr_string);
 	}
 	
       return buff;
@@ -7789,14 +7854,14 @@ get_ident_as_string (struct expr_str *ptr,char type) /* type ='G' for some globa
 
   if (ptr->expr_type == ET_EXPR_LITERAL_STRING)
     {
-      sprintf (buff, "\"%s\"", ptr->expr_str_u.expr_string);
+      SPRINTF (buff, "\"%s\"", ptr->expr_str_u.expr_string);
       return buff;
     }
 
   if (ptr->expr_type == ET_EXPR_VARIABLE_IDENTIFIER)	// a _VARIABLE
     {
       static char buff[2000];
-      sprintf (buff, "aclfgli_str_to_id(%s)", local_expr_as_string (ptr->expr_str_u.expr_expr));
+      SPRINTF (buff, "aclfgli_str_to_id(%s)", local_expr_as_string (ptr->expr_str_u.expr_expr));
       return buff;
     }
 
@@ -7856,6 +7921,10 @@ local_find_variable_from_usage (struct variable_usage *u)
     case E_SCOPE_IMPORTED_GLOBAL:	// list_imported_global
       A4GL_assertion (u->variable_id >= current_module->imported_global_variables.variables.variables.variables_len, "Invalid VARIABLE ID");
       v = current_module->imported_global_variables.variables.variables.variables_val[u->variable_id];
+      break;
+    case E_SCOPE_CLASS:	// list_imported_global
+      A4GL_assertion (u->variable_id >= current_class_variables->variables.variables_len, "Invalid VARIABLE ID");
+      v = current_class_variables->variables.variables_val[u->variable_id];
       break;
 
 
@@ -7929,7 +7998,7 @@ get_str_list_as_string (str_list * list, char *sep)
 
 
 
-static void
+ void
 print_function_variable_init (variable_list * fvars)
 {
   if (!A4GL_doing_pcode ())

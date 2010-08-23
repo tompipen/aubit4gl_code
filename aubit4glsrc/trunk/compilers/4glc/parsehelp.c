@@ -696,7 +696,7 @@ return ptr;
 }
 
 
-void set_variables (variable_list *v,char why) {
+void xxxset_variables (variable_list *v,char why) {
 	if (why=='L') {
 			if (local_variables==NULL) {
 				v->variables.variables_val=NULL;

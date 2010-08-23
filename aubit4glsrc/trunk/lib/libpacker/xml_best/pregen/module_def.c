@@ -1,6 +1,6 @@
 /* XML application for module_def.dtd.
  * Includes actions from module_def.act.
- * Generated 2010/08/13 09:26:54.
+ * Generated 2010/08/19 10:20:09.
  *
  * This program was generated with the FleXML XML processor generator.
  * FleXML is Copyright (C) 1999-2005 Kristoffer Rose.  All rights reserved.
@@ -7767,8 +7767,8 @@ else {tmpVar->funcname=strdup(A_s_function_definition_funcname);}
 if (AU_s_function_definition_n_namespace) {tmpVar->n_namespace=0;} /* CCC */
 else {tmpVar->n_namespace=strdup(A_s_function_definition_n_namespace);}
 
-if (AU_s_function_definition_isstatic) {tmpVar->isstatic=0;}/* EEE */
-else {tmpVar->isstatic=xmlbest_reader__decode_e_boolean(A_s_function_definition_isstatic);}
+if (AU_s_function_definition_function_type) {tmpVar->function_type=0;}/* EEE */
+else {tmpVar->function_type=xmlbest_reader__decode_e_function_type(A_s_function_definition_function_type);}
 
 /* tmpVar->expression_list; is_vararray=0 skip=0 */
 memset(&tmpVar->expression_list,0,sizeof(tmpVar->expression_list));
@@ -7815,8 +7815,8 @@ else {tmpVar->funcname=strdup(A_s_report_definition_funcname);}
 if (AU_s_report_definition_n_namespace) {tmpVar->n_namespace=0;} /* CCC */
 else {tmpVar->n_namespace=strdup(A_s_report_definition_n_namespace);}
 
-if (AU_s_report_definition_isstatic) {tmpVar->isstatic=0;}/* EEE */
-else {tmpVar->isstatic=xmlbest_reader__decode_e_boolean(A_s_report_definition_isstatic);}
+if (AU_s_report_definition_function_type) {tmpVar->function_type=0;}/* EEE */
+else {tmpVar->function_type=xmlbest_reader__decode_e_function_type(A_s_report_definition_function_type);}
 
 /* tmpVar->expression_list; is_vararray=0 skip=0 */
 memset(&tmpVar->expression_list,0,sizeof(tmpVar->expression_list));
@@ -7872,8 +7872,8 @@ else {tmpVar->funcname=strdup(A_s_pdf_report_definition_funcname);}
 if (AU_s_pdf_report_definition_n_namespace) {tmpVar->n_namespace=0;} /* CCC */
 else {tmpVar->n_namespace=strdup(A_s_pdf_report_definition_n_namespace);}
 
-if (AU_s_pdf_report_definition_isstatic) {tmpVar->isstatic=0;}/* EEE */
-else {tmpVar->isstatic=xmlbest_reader__decode_e_boolean(A_s_pdf_report_definition_isstatic);}
+if (AU_s_pdf_report_definition_function_type) {tmpVar->function_type=0;}/* EEE */
+else {tmpVar->function_type=xmlbest_reader__decode_e_function_type(A_s_pdf_report_definition_function_type);}
 
 /* tmpVar->expression_list; is_vararray=0 skip=0 */
 memset(&tmpVar->expression_list,0,sizeof(tmpVar->expression_list));

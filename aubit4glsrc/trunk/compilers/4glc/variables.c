@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: variables.c,v 1.120 2010-03-17 19:02:14 mikeaubury Exp $
+# $Id: variables.c,v 1.121 2010-08-23 17:23:21 mikeaubury Exp $
 #
 */
 
@@ -62,7 +62,7 @@ extern int yylineno;
 //int has_fbind(char *s) ;
 
 
-int class_cnt = 0;
+//int class_cnt = 0;
 extern module_definition this_module;
 
 int mv_uses_constants=0; /* No of constants in module/globals */
@@ -137,9 +137,44 @@ extern int in_define;
 
 
 struct variable_list *local_variables=NULL;
+struct variable_list *class_variables=NULL;
 enum e_scope variable_scope = E_SCOPE_MODULE;
 
 
+// We need to be able to turn off the lookup on class variables
+// when we are dealing with a OBJECT function.
+//
+// That is a function which does *not* take an object as a parameter - which is just like
+// a 'static' function in a C++/C# class etc..
+//
+int allow_class_lookup=0;
+
+
+void set_allow_class_lookup(int n) {
+allow_class_lookup=n;
+}
+
+struct variable_list * set_class_variables(struct variable_list *vlist,char *thisclassname, char*parentclassname) {
+	if (thisclassname) {
+		struct variable_list *vlist_new_this=0;
+		struct variable_list *vlist_new_parent=0;
+		struct variable *v;
+		v=new_variable_object(thisclassname);
+		vlist_new_this=create_variable_list(new_str_list("this"),v);
+		if (parentclassname && strlen(parentclassname)) {
+			v=new_variable_object(parentclassname);
+			vlist_new_parent=create_variable_list(new_str_list("base"),v);
+
+		}
+		vlist=merge_variable_list(vlist,vlist_new_this);
+		if (vlist_new_parent) {
+			vlist=merge_variable_list(vlist,vlist_new_parent);
+		}
+	}
+	class_variables=vlist;
+	sort_variables_v(vlist);
+return vlist;
+}
 
 
 void set_local_variables(struct variable_list *vlist) {
@@ -378,9 +413,12 @@ struct variable *find_dim (char *name) {
 
   // look to see if we've define it locally
   if (local_variables) {
-
 		strcpy(errbuff,"");
 		v=find_dim_in_variable_list(local_variables,name);
+  }
+  if (class_variables && allow_class_lookup) {
+		strcpy(errbuff,"");
+		v=find_dim_in_variable_list(class_variables,name);
   }
   
   if (v==NULL) { v=find_dim_in_variable_list(&this_module.module_variables.variables,name); }
@@ -446,6 +484,10 @@ vu = make_variable_usage_from_string(buff);
   if (local_variables) {
 		strcpy(errbuff,"");
 		v=find_variable_vu_in_list (errbuff, vu, local_variables, 1,0);
+  }
+  if (class_variables && allow_class_lookup) {
+		strcpy(errbuff,"");
+		v=find_variable_vu_in_list (errbuff, vu,class_variables, 1,0);
   }
 
   
@@ -935,6 +977,15 @@ struct variable *find_variable_vu_ptr(char *errbuff, struct variable_usage *v, e
         return ptr;
     }
 
+  if (class_variables && allow_class_lookup) {
+  	ptr = find_variable_vu_in_list (errbuff, v, class_variables, err_if_whole_array,0);
+  	if (ptr) {
+		v->escope=E_SCOPE_CLASS;
+		*scope=E_SCOPE_CLASS;
+        	return ptr;
+        }
+  }
+
   ptr = find_variable_vu_in_list (errbuff, v, &this_module.module_variables.variables, err_if_whole_array,0);
   if (ptr)
     {
@@ -1006,3 +1057,44 @@ void pop_spl_block_variables(struct variable_list *p) {
 	procVariableListCnt--;
 }
 
+
+
+static int isBuiltinObjectType(char *s) {
+  if (strcasecmp (s, "base.channel") == 0) return 1;
+  if (strcasecmp (s, "ui.window") == 0) return 1;
+  if (strcasecmp (s, "ui.form") == 0) return 1;
+  if (strcasecmp (s, "ui.interface") == 0) return 1;
+  if (strcasecmp (s, "ui.combobox") == 0) return 1;
+
+
+  return 0;
+}
+
+void A4GL_used_object_type(module_definition *m, char *objtype) {
+
+if (isBuiltinObjectType(objtype)) {
+	return;
+}
+
+if (m->used_object_types.used_object_types_len) {
+	int a;
+	for (a=0;a<m->used_object_types.used_object_types_len;a++) {
+		if (strcmp(objtype, m->used_object_types.used_object_types_val[a])==0) {
+			// already there...
+			return;
+		}
+	}
+}
+m->used_object_types.used_object_types_len++;
+//printf("Setting len to %d\n",m->used_object_types.used_object_types_len);
+m->used_object_types.used_object_types_val=realloc(m->used_object_types.used_object_types_val, sizeof(m->used_object_types.used_object_types_val[0])*m->used_object_types.used_object_types_len);
+m->used_object_types.used_object_types_val[m->used_object_types.used_object_types_len-1]=strdup(objtype);
+A4GL_add_object_type(objtype);
+//printf("->%s\n", m->used_object_types.used_object_types_val[m->used_object_types.used_object_types_len-1]);
+}
+
+
+
+int has_loaded_object (char *s) {
+return 0;
+}

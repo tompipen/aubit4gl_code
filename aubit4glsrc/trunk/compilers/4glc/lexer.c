@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: lexer.c,v 1.140 2010-07-09 09:30:22 mikeaubury Exp $
+# $Id: lexer.c,v 1.141 2010-08-23 17:23:21 mikeaubury Exp $
 #*/
 
 /**
@@ -1435,6 +1435,12 @@ a4gl_yylex (void *pyylval, int yystate, void *yys1, void *yys2)
 	    }
 	}
 
+      if (allow_token_state (yystate, KW_LOADED_OBJECT_NAME) && a == NAMED_GEN)
+	{
+	    if (has_loaded_object (downshift (buff))) {
+	      	a = KW_LOADED_OBJECT_NAME;
+	    }
+	}
 
       if (allow_token_state (yystate, USER_DTYPE_ORIG) && a == NAMED_GEN) {
 	  if (A4GL_find_datatype(upshift(buff))!=-1) {
