@@ -24,12 +24,12 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.529 2010-08-23 17:23:22 mikeaubury Exp $
+# $Id: compile_c.c,v 1.530 2010-08-23 17:29:28 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
-static char const module_id[] = "$Id: compile_c.c,v 1.529 2010-08-23 17:23:22 mikeaubury Exp $";
+static char const module_id[] = "$Id: compile_c.c,v 1.530 2010-08-23 17:29:28 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -7843,10 +7843,10 @@ get_ident_as_string (struct expr_str *ptr,char type) /* type ='G' for some globa
     {
 	orig= get_orig_from_clobber(ptr->expr_str_u.expr_string);
 	if (type=='M') {
-      		SPRINTF (buff, "A4GL_get_ident(\"%s\",\"%s\",\"%s\")", current_module->module_name,orig,ptr->expr_str_u.expr_string);
+      		SPRINTF3 (buff, "A4GL_get_ident(\"%s\",\"%s\",\"%s\")", current_module->module_name,orig,ptr->expr_str_u.expr_string);
 
 	} else {
-      		SPRINTF (buff, "\"%s\"", ptr->expr_str_u.expr_string);
+      		SPRINTF1 (buff, "\"%s\"", ptr->expr_str_u.expr_string);
 	}
 	
       return buff;
@@ -7854,14 +7854,14 @@ get_ident_as_string (struct expr_str *ptr,char type) /* type ='G' for some globa
 
   if (ptr->expr_type == ET_EXPR_LITERAL_STRING)
     {
-      SPRINTF (buff, "\"%s\"", ptr->expr_str_u.expr_string);
+      SPRINTF1 (buff, "\"%s\"", ptr->expr_str_u.expr_string);
       return buff;
     }
 
   if (ptr->expr_type == ET_EXPR_VARIABLE_IDENTIFIER)	// a _VARIABLE
     {
       static char buff[2000];
-      SPRINTF (buff, "aclfgli_str_to_id(%s)", local_expr_as_string (ptr->expr_str_u.expr_expr));
+      SPRINTF1 (buff, "aclfgli_str_to_id(%s)", local_expr_as_string (ptr->expr_str_u.expr_expr));
       return buff;
     }
 
