@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: lexer.c,v 1.141 2010-08-23 17:23:21 mikeaubury Exp $
+# $Id: lexer.c,v 1.142 2010-08-23 20:26:07 mikeaubury Exp $
 #*/
 
 /**
@@ -1021,6 +1021,8 @@ chk_word (FILE * f, char *str)
    * and ends with the word 'endcode'.
    */
 
+
+if (allow_token_state (current_yylex_state,KW_CSTART) ) {
   if ((A4GL_aubit_strcasecmp (trimmed, "--!code") == 0
        || A4GL_aubit_strcasecmp (trimmed, "code") == 0)
       && (xccode == 0) && (A4GL_mja_strncmp (yyline, p, strlen (p)) == 0) && !A4GL_isyes(acl_getenv("A4GL_SUPPRESSCODE"))) //@env A4GL_SUPPRESSCODE ctops the lexer checking for 'code' blocks 
@@ -1028,6 +1030,7 @@ chk_word (FILE * f, char *str)
       xccode = 1;
       return KW_CSTART;
     }
+}
 
   if (strcmp (p, "a4gl_start_sql_code") == 0 && xccode == 0)
     {
