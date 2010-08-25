@@ -1,8 +1,8 @@
 
 MAIN
 define a record
-	name char(50),
 	card_details char(19),
+	name char(50),
 	some_other_details char(50)
 end record
 define lv_carddata char(19)
@@ -23,9 +23,18 @@ define lv_dir char(1)
 		end if
 	
 		call magreader::scan_card() returning lv_carddata
-		if lv_carddata is not null then
-			let a.card_details=lv_carddata
-		end if
+
+
+            IF lv_carddata IS NOT NULL THEN
+                LET a.card_details=lv_carddata
+
+                IF a.name IS NULL THEN
+                    CALL magreader::get_lastcard_surname() RETURNING a.name
+                END IF
+
+                DISPLAY BY NAME a.name,a.card_details
+            END IF
+
 		if lv_dir="P" then
 			next field previous
 		else
