@@ -83,7 +83,7 @@ private:
    void handleStartup(const QDomNode&);
    void handleDisplayToElement(const QDomNode&, QString parentNodeName = NULL);
    void handleDisplayArrayElement(const QDomNode&, QString parentNodeName = NULL);
-   void handleInputElement(const QDomNode&);
+   void handleInputElement(const QDomNode&, int attribute = 0);
    void handleConstructElement(const QDomNode&);
    void handleWaitForEventElement(const QDomNode&);
    void handleMenuElement(const QDomNode&);
@@ -134,12 +134,12 @@ signals:
    void handleXMLStyles(QString);
 
 
-   void setFieldBuffer(QStringList, QStringList);
-   void setFieldBuffer(int, QString);
+   void setFieldBuffer(QStringList, QStringList, int);
+   void setFieldBuffer(int, QString, int);
    void setArrayBuffer(int, QString, QStringList);
    void setArrayBuffer(int, QStringList);
    void clearFieldBuffer(QString);
-   void setFieldEnabled(QString, bool, bool);
+   void setFieldEnabled(QString, bool, bool, int);
    void setFieldFocus(QString);
    void setFieldHidden(QString, bool);
    void setElementHidden(QString, bool);

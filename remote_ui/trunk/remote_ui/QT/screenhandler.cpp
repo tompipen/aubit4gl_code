@@ -561,7 +561,7 @@ void ScreenHandler::createPrompt(QString text, int charMode, int fieldAttribute,
 // Filename     : screenhandler.cpp
 // Description  : sets the Text for the Field
 //------------------------------------------------------------------------------
-void ScreenHandler::setFieldBuffer(QStringList fieldNames, QStringList fieldValues)
+void ScreenHandler::setFieldBuffer(QStringList fieldNames, QStringList fieldValues, int attr)
 {
    int value_cnt = 0;
    if(p_fglform == NULL)
@@ -586,12 +586,13 @@ void ScreenHandler::setFieldBuffer(QStringList fieldNames, QStringList fieldValu
             else{
                row = 0;
             }
-
+            WidgetHelper::setDisplayAttributes(attr, widget);
             QStringList values;
             values << fieldValues.at(i);
             setArrayBuffer(row, fieldName, values);
          }
          else{
+            WidgetHelper::setDisplayAttributes(attr, widget);
             WidgetHelper::setFieldText(widget, fieldValues.at(i));
          }
       }
@@ -616,11 +617,13 @@ void ScreenHandler::setFieldBuffer(QStringList fieldNames, QStringList fieldValu
                for(int k=0; k<ql_fields.count(); k++){
                   values << fieldValues.at(value_cnt+k);
                }
+               WidgetHelper::setDisplayAttributes(attr, widget);
                setArrayBuffer(row, fieldName, values);
                value_cnt = ql_fields.count();
                break;
             }
             else{
+               WidgetHelper::setDisplayAttributes(attr, widget);
                WidgetHelper::setFieldText(widget, fieldValues.at(value_cnt));
                value_cnt++;
             }
@@ -634,7 +637,7 @@ void ScreenHandler::setFieldBuffer(QStringList fieldNames, QStringList fieldValu
 // Filename     : screenhandler.cpp
 // Description  : sets the Text for the Field
 //------------------------------------------------------------------------------
-void ScreenHandler::setFieldBuffer(int fieldNo, QString fieldValue)
+void ScreenHandler::setFieldBuffer(int fieldNo, QString fieldValue, int attr)
 {
    int i_Frm = getCurrForm();
    if(i_Frm < 0)
@@ -652,7 +655,9 @@ void ScreenHandler::setFieldBuffer(int fieldNo, QString fieldValue)
          Q_UNUSED(de);
       }
       else{
-         WidgetHelper::setFieldText(widget, fieldValue);
+              WidgetHelper::setDisplayAttributes(attr, widget);
+              WidgetHelper::setFieldText(widget, fieldValue);
+
       }
       return;
    }
@@ -689,7 +694,9 @@ void ScreenHandler::setFieldBuffer(int fieldNo, QString fieldValue)
       setArrayBuffer(row, fieldName, values);
    }
    else{
+      WidgetHelper::setDisplayAttributes(attr, widget);
       WidgetHelper::setFieldText(widget, fieldValue);
+
    }
 }
 
@@ -898,7 +905,7 @@ void ScreenHandler::loadArrayValues(QStringList qsl_arrayValues)
 // Filename     : screenhandler.cpp
 // Description  : enables or disables the Field
 //------------------------------------------------------------------------------
-void ScreenHandler::setFieldEnabled(QString fieldName, bool enable, bool focus)
+void ScreenHandler::setFieldEnabled(QString fieldName, bool enable, bool focus, int attr)
 {
    Q_UNUSED(focus);
 
@@ -922,6 +929,7 @@ void ScreenHandler::setFieldEnabled(QString fieldName, bool enable, bool focus)
          //widget->setEnabled(enable);
          if(enable) {
             context->addField(widget);
+            WidgetHelper::setDisplayAttributes(attr, widget);
          }
       }
    }
@@ -933,10 +941,12 @@ void ScreenHandler::setFieldEnabled(QString fieldName, bool enable, bool focus)
             //widget->setEnabled(enable);
             if(enable) {
                context->addField(widget);
+               WidgetHelper::setDisplayAttributes(attr, widget);
             }
          }
       }
    }
+
 }
 
 //------------------------------------------------------------------------------

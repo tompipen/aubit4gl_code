@@ -105,10 +105,10 @@ public slots:
    void handleXMLActions(QString);
    void handleXMLStyles(QString);
    //void setFieldBuffer(QString, QString);
-   void setFieldBuffer(int, QString);
+   void setFieldBuffer(int, QString, int);
    void clearFieldBuffer(QString);
    //void setFieldBuffer(QString, QStringList);
-   void setFieldBuffer(QStringList, QStringList);
+   void setFieldBuffer(QStringList, QStringList, int);
    void setArrayBuffer(QWidget*, QString, QString);
    void setArrayBuffer(int, QString, QStringList);
    void setArrayBuffer(int, QStringList);
@@ -116,7 +116,7 @@ public slots:
    void loadArrayValues(QStringList);
    void setArrLine(int);
    void setScrLine(int);
-   void setFieldEnabled(QString, bool, bool);
+   void setFieldEnabled(QString, bool, bool, int = 0);
    void setFieldFocus(QString);
    void setFieldHidden(QString, bool);
    void setElementHidden(QString, bool);

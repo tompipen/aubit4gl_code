@@ -39,8 +39,7 @@ Parser::Parser(QWidget *p_fglform) : QWidget()
    // create dummy label to detect the used colors 
    // 
    QLabel colorDummyLabel;
-   qcol_BaseColor =
-   colorDummyLabel.palette().color(QPalette::Background);
+   qcol_BaseColor = colorDummyLabel.palette().color(QPalette::Background);
 
 }
 

@@ -264,11 +264,11 @@ ClientSocket::ClientSocket(QObject *parent, QString name, QString pass, QString 
    connect(&ph, SIGNAL(setFormOpts(QString, QString, int)), 
            p_currScreenHandler, SLOT(setFormOpts(QString, QString, int)));
    // DISPLAY variable TO field (for example)
-   connect(&ph, SIGNAL(setFieldBuffer(int, QString)), 
-           p_currScreenHandler, SLOT(setFieldBuffer(int, QString)));
+   connect(&ph, SIGNAL(setFieldBuffer(int, QString, int)),
+           p_currScreenHandler, SLOT(setFieldBuffer(int, QString, int)));
    // DISPLAY variable TO field (for example)
-   connect(&ph, SIGNAL(setFieldBuffer(QStringList, QStringList)), 
-           p_currScreenHandler, SLOT(setFieldBuffer(QStringList, QStringList)));
+   connect(&ph, SIGNAL(setFieldBuffer(QStringList, QStringList, int)),
+           p_currScreenHandler, SLOT(setFieldBuffer(QStringList, QStringList, int)));
    // CLEAR variable TO field (for example)
    connect(&ph, SIGNAL(clearFieldBuffer(QString)), 
            p_currScreenHandler, SLOT(clearFieldBuffer(QString)));
@@ -282,8 +282,8 @@ ClientSocket::ClientSocket(QObject *parent, QString name, QString pass, QString 
    connect(&ph, SIGNAL(setFieldOrder(QStringList)), 
            p_currScreenHandler, SLOT(setFieldOrder(QStringList)));
    // field is in input and not hidden in form, then activate it
-   connect(&ph, SIGNAL(setFieldEnabled(QString,bool, bool)), 
-           p_currScreenHandler, SLOT(setFieldEnabled(QString, bool, bool)));
+   connect(&ph, SIGNAL(setFieldEnabled(QString,bool, bool, int)),
+           p_currScreenHandler, SLOT(setFieldEnabled(QString, bool, bool, int)));
    // cursor on a field
    connect(&ph, SIGNAL(setFieldFocus(QString)), 
            p_currScreenHandler, SLOT(setFieldFocus(QString)));
@@ -1460,6 +1460,8 @@ void ProtocolHandler::handleDisplayToElement(const QDomNode& domNode, QString pa
    if(displayToElement.nodeName() == "DISPLAYTO"){
       attribute = displayToElement.attribute("ATTRIBUTE").toInt();
    }
+
+
  
    QDomElement currentElement = domNode.firstChild().toElement();
 
@@ -1513,11 +1515,11 @@ void ProtocolHandler::handleDisplayToElement(const QDomNode& domNode, QString pa
    }
 
    if(qsl_fieldNames.count() > 0){
-      setFieldBuffer(qsl_fieldNames, qsl_fieldValues);
+      setFieldBuffer(qsl_fieldNames, qsl_fieldValues, attribute);
    }
    else{
       for(int i=0; i<qsl_fieldValues.count(); i++){
-         setFieldBuffer(i,qsl_fieldValues.at(i));
+         setFieldBuffer(i,qsl_fieldValues.at(i), attribute);
       }
    }
 }
@@ -1659,19 +1661,17 @@ void ProtocolHandler::handleDisplayArrayElement(const QDomNode& domNode, QString
 // Filename     : tcpclient.cpp
 // Description  : handles the INPUT command and activates the Fields
 //------------------------------------------------------------------------------
-void ProtocolHandler::handleInputElement(const QDomNode& domNode)
+void ProtocolHandler::handleInputElement(const QDomNode& domNode, int attribute)
 {
    QDomElement currentElement = domNode.toElement();
    QString nodeName = currentElement.nodeName();
-   
    if(nodeName == "INPUT"){
       int withoutDefaults = currentElement.attribute("WITHOUT_DEFAULTS").toInt();
       int wrap = currentElement.attribute("WRAP").toInt();
-      int attribute = currentElement.attribute("ATTRIBUTE").toInt();
+      attribute = currentElement.attribute("ATTRIBUTE").toInt();
       setFormOpts(nodeName, QString("WITHOUT_DEFAULTS"), withoutDefaults);
       setFormOpts(nodeName, QString("WRAP"), wrap);
       setFormOpts(nodeName, QString("ATTRIBUTE"), attribute);
-
       createActionMenu();
 /*
       createActionMenuButton("ACCEPT", "ACCEPT", "");
@@ -1703,10 +1703,10 @@ void ProtocolHandler::handleInputElement(const QDomNode& domNode)
 
          QString field = currentElement.attribute("NAME");
          qsl_fieldList << field;
-         setFieldEnabled(field, true, false);
+         setFieldEnabled(field, true, false, attribute);
       }
 
-      handleInputElement(currentElement);
+      handleInputElement(currentElement, attribute);
    }
 }
 
@@ -1719,10 +1719,10 @@ void ProtocolHandler::handleConstructElement(const QDomNode& domNode)
 {
    QDomElement currentElement = domNode.toElement();
    QString nodeName = currentElement.nodeName();
-   
+   int attribute = 0;
    if(nodeName == "CONSTRUCT"){
       int wrap = currentElement.attribute("WRAP").toInt();
-      int attribute = currentElement.attribute("ATTRIBUTE").toInt();
+      attribute = currentElement.attribute("ATTRIBUTE").toInt();
       setFormOpts(nodeName, QString("WRAP"), wrap);
       setFormOpts(nodeName, QString("ATTRIBUTE"), attribute);
    }
@@ -1751,7 +1751,7 @@ void ProtocolHandler::handleConstructElement(const QDomNode& domNode)
 
          QString field = currentElement.attribute("NAME");
          qsl_fieldList << field;
-         setFieldEnabled(field, true, focus);
+         setFieldEnabled(field, true, focus, attribute);
       }
 
       /*

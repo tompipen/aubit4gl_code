@@ -748,9 +748,9 @@ Label* WidgetHelper::createLabel(const QDomElement& formField, QWidget *parent)
    }
 
 
-   QPalette p = label->palette();
-   p.setColor(QPalette::Foreground, Qt::blue);
-   label->setPalette(p);
+  // QPalette p = label->palette();
+  // p.setColor(QPalette::Foreground, Qt::blue);
+ //  label->setPalette(p);
    label->setFixedHeight(defHeight);
 
    return label;
@@ -968,6 +968,210 @@ ButtonEdit* WidgetHelper::createButtonEdit(const QDomElement& formField,QWidget 
 
    return lineEdit;
 }
+
+bool WidgetHelper::setDisplayAttributes(int fieldAttribute, QWidget *widget)
+   {
+         int col_int = (fieldAttribute & 0xf00);
+         if(fieldAttribute == -1)
+            fieldAttribute = 0;
+
+         if(Label *la = qobject_cast<Label *> (widget))
+         {
+            Q_UNUSED(la);
+            QLabel dummy;
+            dummy.setEnabled(widget->isEnabled());
+            QColor dummycol = dummy.palette().color(QPalette::Foreground);
+            QPalette p = widget->palette();
+            QColor col(dummycol.red(), dummycol.green(), dummycol.blue());
+            p.setColor(QPalette::Foreground, col);
+            widget->setPalette(p);
+            widget->setFont(dummy.font());
+         }
+         else
+         {
+            QLineEdit dummy;
+            dummy.setEnabled(widget->isEnabled());
+            QColor dummycol = dummy.palette().color(QPalette::Text);
+            QPalette p = widget->palette();
+            QColor col(dummycol.red()-10, dummycol.green()-10, dummycol.blue()-10);
+            p.setColor(QPalette::Text, col);
+            widget->setPalette(p);
+            widget->setFont(dummy.font());
+         }
+
+
+         switch(col_int) {
+            case Fgl::AUBIT_COLOR_BLACK:
+                {
+                   QPalette p = widget->palette();
+                   QColor col("black");
+                   if(Label *la = qobject_cast<Label *> (widget))
+                   {
+                      Q_UNUSED(la);
+                      p.setColor(QPalette::Foreground, col);
+                   }
+                   else
+                   {
+                       p.setColor(QPalette::Text, col);
+                   }
+                   widget->setPalette(p);
+                }
+             break;
+             case Fgl::AUBIT_COLOR_RED:
+                {
+                   QPalette p = widget->palette();
+                   QColor col("red");
+                   if(Label *la = qobject_cast<Label *> (widget))
+                   {
+                       Q_UNUSED(la);
+                       p.setColor(QPalette::Foreground, col);
+                   }
+                   else
+                   {
+                       p.setColor(QPalette::Text, col);
+                   }
+                   widget->setPalette(p);
+                }
+                break;
+                case Fgl::AUBIT_COLOR_GREEN:
+                {
+                   QPalette p = widget->palette();
+                   QColor col("green");
+                   if(Label *la = qobject_cast<Label *> (widget))
+                   {
+                      Q_UNUSED(la);
+                      p.setColor(QPalette::Foreground, col);
+                   }
+                   else
+                   {
+                       p.setColor(QPalette::Text, col);
+                   }
+                   widget->setPalette(p);
+                }
+                break;
+                case Fgl::AUBIT_COLOR_YELLOW:
+                {
+                   QPalette p = widget->palette();
+                   QColor col("yellow");
+                   if(Label *la = qobject_cast<Label *> (widget))
+                   {
+                      Q_UNUSED(la);
+                      p.setColor(QPalette::Foreground, col);
+                   }
+                   else
+                   {
+                       p.setColor(QPalette::Text, col);
+                   }
+                   widget->setPalette(p);
+                }
+                break;
+                case Fgl::AUBIT_COLOR_BLUE:
+                {
+                   QPalette p = widget->palette();
+                   QColor col("blue");
+                   if(Label *la = qobject_cast<Label *> (widget))
+                   {
+                      Q_UNUSED(la);
+                      p.setColor(QPalette::Foreground, col);
+                   }
+                   else
+                   {
+                       p.setColor(QPalette::Text, col);
+                   }
+                    widget->setPalette(p);
+                }
+                break;
+                case Fgl::AUBIT_COLOR_MAGENTA:
+                {
+                   QPalette p = widget->palette();
+                   QColor col("magenta");
+                   if(Label *la = qobject_cast<Label *> (widget))
+                   {
+                      Q_UNUSED(la);
+                      p.setColor(QPalette::Foreground, col);
+                   }
+                   else
+                   {
+                       p.setColor(QPalette::Text, col);
+                   }
+                   widget->setPalette(p);
+                }
+                break;
+                case Fgl::AUBIT_COLOR_CYAN:
+                {
+                   QPalette p = widget->palette();
+                   QColor col("cyan");
+                   if(Label *la = qobject_cast<Label *> (widget))
+                   {
+                      Q_UNUSED(la);
+                      p.setColor(QPalette::Foreground, col);
+                   }
+                   else
+                   {
+                       p.setColor(QPalette::Text, col);
+                   }
+                   widget->setPalette(p);
+                }
+                break;
+                case Fgl::AUBIT_COLOR_WHITE:
+                {
+                   QPalette p = widget->palette();
+                   QColor col("white");
+                   if(Label *la = qobject_cast<Label *> (widget))
+                   {
+                      Q_UNUSED(la);
+                      p.setColor(QPalette::Foreground, col);
+                   }
+                   else
+                   {
+                       p.setColor(QPalette::Text, col);
+                   }
+                   widget->setPalette(p);
+                }
+                break;
+        };
+
+        if (fieldAttribute & Fgl::AUBIT_ATTR_REVERSE)
+        {
+        }
+        if (fieldAttribute & Fgl::AUBIT_ATTR_UNDERLINE)
+           {
+              QFont font = widget->font();
+              font.setUnderline(true);
+              widget->setFont(font);
+           }
+
+         if (fieldAttribute & Fgl::AUBIT_ATTR_BOLD)
+            {
+               QFont font = widget->font();
+               font.setBold(true);
+               widget->setFont(font);
+            }
+
+         if (fieldAttribute & Fgl::AUBIT_ATTR_BLINK)
+            {
+            }
+
+         if (fieldAttribute & Fgl::AUBIT_ATTR_DIM)
+            {
+               QFont font = widget->font();
+               font.setBold(true);
+               widget->setFont(font);
+            }
+
+         if (fieldAttribute & Fgl::AUBIT_ATTR_INVISIBLE)
+   //widget->setEchoMode(QLineEdit::Password);
+
+         if (fieldAttribute & Fgl::AUBIT_ATTR_ALTCHARSET)
+            {
+            }
+         if (fieldAttribute & Fgl::AUBIT_ATTR_LEFT)
+             {
+             }
+
+     return true;
+   }
+
 
 DateEdit* WidgetHelper::createDateEdit(const QDomElement& formField,QWidget *parent)
 {

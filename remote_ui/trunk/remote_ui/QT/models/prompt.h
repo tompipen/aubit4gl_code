@@ -23,7 +23,7 @@
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QLineEdit>
-
+#include "models/vwidgets.h"
 class Prompt : public QDialog
 {
    Q_OBJECT
@@ -35,7 +35,7 @@ public:
 private:
    QLayout* layout;
    QLayout* buttonLayout;
-   QLineEdit *p_lineEdit;
+   LineEdit *p_lineEdit;
    bool isAccepted;
    bool isCharOnlyMode;
 

@@ -567,6 +567,7 @@ class WidgetHelper
 {
 
 public:
+   static bool setDisplayAttributes(int, QWidget*);
    static int getLengthBySqlType(const QString& sqlType);
    static QString getWidgetName(QObject*);
    static QString getWidgetColName(QObject*);

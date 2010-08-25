@@ -25,6 +25,7 @@
 #include "prompt.h"
 #include "include/fgl.h"
 
+
 //------------------------------------------------------------------------------
 // Method       : Prompt()
 // Filename     : prompt.cpp
@@ -59,114 +60,10 @@ Prompt::Prompt(QString text, int charMode, int fieldAttribute, QWidget *parent, 
   layout->addWidget(p_label);
 
   //create Input Field
-  p_lineEdit = new QLineEdit;
+  p_lineEdit = new LineEdit;
 
-  switch(fieldAttribute) {
-     case Fgl::AUBIT_COLOR_BLACK:
-          {
-          QPalette p = p_lineEdit->palette();
-          QColor col("black");
-          p.setColor(QPalette::Active, QPalette::Text, col);
-          p_lineEdit->setPalette(p);
-          }
-          break;
-     case Fgl::AUBIT_COLOR_RED:
-          {
-          QPalette p = p_lineEdit->palette();
-          QColor col("red");
-          p.setColor(QPalette::Active, QPalette::Text, col);
-          p_lineEdit->setPalette(p);
-          }
-          break;
-     case Fgl::AUBIT_COLOR_GREEN:
-          {
-          QPalette p = p_lineEdit->palette();
-          QColor col("green");
-          p.setColor(QPalette::Active, QPalette::Text, col);
-          p_lineEdit->setPalette(p);
-          }
-          break;
-     case Fgl::AUBIT_COLOR_YELLOW:
-          {
-          QPalette p = p_lineEdit->palette();
-          QColor col("yellow");
-          p.setColor(QPalette::Active, QPalette::Text, col);
-          p_lineEdit->setPalette(p);
-          }
-          break;
-     case Fgl::AUBIT_COLOR_BLUE:
-          {
-          QPalette p = p_lineEdit->palette();
-          QColor col("blue");
-          p.setColor(QPalette::Active, QPalette::Text, col);
-          p_lineEdit->setPalette(p);
-          }
-          break;
-     case Fgl::AUBIT_COLOR_MAGENTA:
-          {
-          QPalette p = p_lineEdit->palette();
-          QColor col("magenta");
-          p.setColor(QPalette::Active, QPalette::Text, col);
-          p_lineEdit->setPalette(p);
-          }
-          break;
-     case Fgl::AUBIT_COLOR_CYAN:
-          {
-          QPalette p = p_lineEdit->palette();
-          QColor col("cyan");
-          p.setColor(QPalette::Active, QPalette::Text, col);
-          p_lineEdit->setPalette(p);
-          }
-          break;
-     case Fgl::AUBIT_COLOR_WHITE:
-          {
-          QPalette p = p_lineEdit->palette();
-          QColor col("white");
-          p.setColor(QPalette::Active, QPalette::Text, col);
-          p_lineEdit->setPalette(p);
-          }
-          break;
-     case Fgl::AUBIT_ATTR_REVERSE:
-          {
-          }
-          break;
-     case Fgl::AUBIT_ATTR_UNDERLINE:
-          {
-          QFont font = p_lineEdit->font();
-          font.setUnderline(true);
-          p_lineEdit->setFont(font);
-          }
-          break;
-     case Fgl::AUBIT_ATTR_BOLD:
-          {
-          QFont font = p_lineEdit->font();
-          font.setBold(true);
-          p_lineEdit->setFont(font);
-          }
-          break;
-     case Fgl::AUBIT_ATTR_BLINK:
-          {
-          }
-          break;
-     case Fgl::AUBIT_ATTR_DIM:
-          {
-          QFont font = p_lineEdit->font();
-          font.setBold(true);
-          p_lineEdit->setFont(font);
-          }
-          break;
-     case Fgl::AUBIT_ATTR_INVISIBLE:
-          p_lineEdit->setEchoMode(QLineEdit::Password);
-          break;
-     case Fgl::AUBIT_ATTR_ALTCHARSET:
-          {
-          }
-          break;
-     case Fgl::AUBIT_ATTR_LEFT:
-          {
-          }
-          break;
-  };
+  WidgetHelper::setDisplayAttributes(fieldAttribute, p_lineEdit);
+
 
   layout->addWidget(p_lineEdit);
   p_lineEdit->setEnabled(true);
