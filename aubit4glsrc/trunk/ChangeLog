@@ -1,4 +1,147 @@
 ---------------------------
+Wed Aug 25 14:01:58 BST 2010
+---------------------------
+1.2_16 Released
+---------------------------
+	2010-08-25 12:33  mikeaubury
+	
+	2010-08-25 12:23  mikeaubury
+	
+	added some magnetic card scanner code
+	
+	2010-08-25 12:13  mikeaubury
+	
+	Add fgl_setsize function
+	
+	2010-08-23 21:26  mikeaubury
+	
+	Restrict detection of the 'CODE' to just where it can be used...
+	
+	2010-08-23 19:16  mikeaubury
+	
+	2010-08-23 18:29  mikeaubury
+	
+	2010-08-23 18:23  mikeaubury
+	
+	Some new OO functionality
+	
+	2010-08-23 12:34  mikeaubury
+	
+	2010-08-23 12:24  mikeaubury
+	
+	2010-08-13 10:20  mikeaubury
+	
+	2010-08-13 09:49  mikeaubury
+	
+	2010-08-13 09:47  mikeaubury
+	
+	Add initial Multi-SQLTYPE capability (ie - can connect to different
+	database types at the same time)
+	
+	2010-08-13 09:09  mikeaubury
+	
+	Remove usage restrictions on the Perl ace runner
+	
+	2010-08-13 06:42  mikeaubury
+	
+	2010-08-12 13:13  mikeaubury
+	
+	Put PRAGMAs into globals headers too - when you read the GLOBALs -
+	it sets the pragmas for the module you're compiling as well
+	
+	2010-08-12 12:41  mikeaubury
+	
+	2010-08-12 11:13  mikeaubury
+	
+	2010-08-11 08:18  mikeaubury
+	
+	2010-08-09 21:42  mikeaubury
+	
+	2010-08-07 16:59  mikeaubury
+	
+	2010-08-06 08:51  mikeaubury
+	
+	2010-08-05 21:28  mikeaubury
+	
+	2010-08-05 15:37  mikeaubury
+	
+	Allow DEFINE .. RECORD LIKE schema.table.*  and DEFINE	.. LIKE
+	schema.table.column
+	
+	2010-08-05 00:41  mikeaubury
+	
+	Add  'pragma set postgresql search_path "..."'	to aid compilation
+	with postgresql schemas...
+	
+	Eg.  database test1 pragma set postgresql search_path
+	"public,blah"
+	
+	main	# Where bibble_in_blah is a table in the 'blah'
+	schema	       define a record like bibble_in_blah.* end main
+	
+	2010-08-05 00:24  mikeaubury
+	
+	Couple of minor parser fixups for Joe Vigil
+	
+	2010-08-03 14:17  mikeaubury
+	
+	Add some more schema support for postgresql
+	
+	2010-07-30 09:29  mikeaubury
+	
+	Small cursor name mapping fixup
+	
+	2010-07-23 21:01  mikeaubury
+	
+	Add default of 16,2 for numeric
+	
+	2010-07-23 19:36  fortiz
+	
+	added sign64: openssl dgst -md5 -sign and openssl enc -base64 -A
+	
+	2010-07-19 15:32  mikeaubury
+	
+	2010-07-19 14:38  fortiz
+	
+	,
+	
+	2010-07-19 14:09  fortiz
+	
+	,
+	
+	2010-07-19 14:08  fortiz
+	
+	Added error handling to openssl extension
+	
+	2010-07-19 14:05  fortiz
+	
+	,
+	
+	2010-07-16 18:34  fortiz
+	
+	First example of A4GL_ssl:: functions
+	
+	2010-07-16 18:31  fortiz
+	
+	A4GL_ssl::Functions taken from sign.c demo from openssl source
+	
+	2010-07-16 16:04  mikeaubury
+	
+	2010-07-16 15:55  mikeaubury
+	
+	2010-07-15 21:21  mikeaubury
+	
+	2010-07-15 21:15  mikeaubury
+	
+	2010-07-14 14:43  mikeaubury
+	
+	2010-07-14 14:36  mikeaubury
+	
+	2010-07-14 14:23  mikeaubury
+	
+	2010-07-14 11:57  mikeaubury
+	
+---------------------------
 Wed Jul 14 14:35:50 BST 2010
 ---------------------------
 1.2_15 Released
