@@ -1,0 +1,77 @@
+# Tcl4gl.doc                                                      -*- Text -*-
+#
+#  Copyright (C) 1993 BALTIMORE RH TYPING Laboratory, Inc. All Rights Reserved
+#
+# Program   :    Tcl4gl library
+# File      :    Description of the Tcl4gl interface
+#
+# Written   :    Bradley M. Kuhn        Computer Systems Development, Inc.
+#   By                                  5916 Glenoak Ave.
+#                                       Baltimore, MD 21214-2009
+#                                       410-254-7060
+#
+# Written   :    BALTIMORE RH TYPING Laboratory, Inc.
+#   For          400 West Franklin Street
+#                Baltimore, MD 21201
+#                410-225-9595
+#
+# RCS        :
+# $Source: /opt/klaustem/aubit-test/cvs-backup/aubit4gl-backup/aubit4glsrc/tools/Tcl4gl/Tcl4gl.doc,v $
+# $Revision: 1.1 $
+# $Date: 2002-11-28 06:40:46 $
+#
+# $Log: not supported by cvs2svn $
+# Revision 0.2  1993/10/28  19:44:41  bkuhn
+# *** empty log message ***
+#
+# Revision 0.1  1993/08/23  18:49:12  bkuhn
+#   # initial version
+#
+
+This library was designed to provide an interface between INFORMIX-4gl and Tcl.
+It basically provides a subset of the functionality that C has to Tcl.
+
+The functions from C/Tcl are:
+   Tcl_CreateInterp
+   Tcl_DeleteInterp
+   Tcl_Eval
+   Tcl_EvalFile
+   Tcl_GlobalEval
+   Tcl_Startup
+
+These are described on Section 28.2, page 264 of ``An Introduction to Tcl and
+Tk'' (draft of 16 April 1993) by John K. Ousterhout.  Except for Tcl_Startup,
+which is an extended tcl command.
+
+The 4gl function provided are as follows:
+   define
+      tclInterpID int,
+      fileName    char(256),   # string can be shorter but not longer
+      script      char(512),   # string can be shorter but not longer
+      tclCode     int,
+      tclResult   char(???)    # there is no set length of this string
+
+Tcl4gl_CreateInterp() returning tclInterpID
+     creates an interpreter that will be referenced by tclInterpID
+
+Tcl4gl_DeleteInterp(tclInterpID)
+     deletes the interpreter tclInterpID
+
+Tcl4gl_Eval(tclInterpID, script) returning tclCode, tclResult
+     evaluates script inside the interpreter referenced by tclInterpID
+     returns the tclCode (0 iff. successful, similar to sqlca.sqlcode),
+     and the string result of the interpreter
+
+Tcl4gl_EvalFile(tclInterpID, fileName) returning tclCode, tclResult
+     evaluates the file, fileName, inside interpreter ref'ed by tclInterpID.
+     returns the tclCode (0 iff. successful, similar to sqlca.sqlcode),
+     and the string result of the interpreter
+
+Tcl4gl_GlobalEval(tclInterpID, script) returing tclCode, tclResult
+     same as Tcl4gl_Eval but evaluates at a global level 
+       instead of current local level.
+
+Tcl4gl_Startup(tclInterpID, arg0, arg1, arg2, arg3, ..., argN)
+     this is an extended Tcl function.  It creates an interactive interpreter
+     (command loop) right in the middle of your 4gl program.  This is intended
+     for use when debugging.
