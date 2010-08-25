@@ -10,6 +10,7 @@ unset DEBUG
 
 export FGLLOGTXT="Aubit Computing Ltd Binary Build"
 
+echo "[8;25;80t"
 
 rm /usr/lib/libaubit4gl.so
 
