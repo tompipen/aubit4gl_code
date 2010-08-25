@@ -24,11 +24,11 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.184 2010-08-23 17:23:23 mikeaubury Exp $
+# $Id: newpanels.c,v 1.185 2010-08-25 11:13:20 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: newpanels.c,v 1.184 2010-08-23 17:23:23 mikeaubury Exp $";
+		"$Id: newpanels.c,v 1.185 2010-08-25 11:13:20 mikeaubury Exp $";
 #endif
 
 /**
@@ -901,36 +901,6 @@ A4GL_debug("Couldn't free field");
 
 }
 
-/**
- *
- * @todo Describe function
- */
-int
-xxA4GL_int_current_window (char *win_name)
-{
-  PANEL *p;
-  WINDOW *w;
-  A4GL_chkwin ();
-  p = A4GL_find_pointer (win_name, PANCODE);
-  w = A4GL_find_pointer (win_name, WINCODE);
-  if (!(p))
-    {
-      A4GL_set_error ("%s", win_name);
-      A4GL_exitwith ("Window not found");
-      A4GL_set_errm (win_name);
-      return 0;
-    }
-  
-  top_panel (p);
-
-  if (UILIB_A4GL_screen_mode (-1))
-    {
-      update_panels ();
-      doupdate ();
-    }
-  UILIB_A4GL_zrefresh ();
-  return 0;
-}
 
 /**
  * 4GL CALL
@@ -4092,6 +4062,14 @@ if (COLOR_PAIRS>8) {
 	yes=0;
 }
 return yes;
+}
+
+
+void resize_screen_window(int w,int h) {
+		if (windows[0].w==w && windows[0].h==h) return; // There already...
+                        windows[0].w=w;
+                        windows[0].h=h;
+                        wresize(windows[0].win,h,w);
 }
 
 

@@ -51,7 +51,8 @@ int aclfgl_aclfgl_delete_file(int n);
 int aclfgl_aclfgl_ui_interface_loadtoolbar(int n) ;
 int aclfgl_aclfgl_ui_interface_loadactiondefauts(int n) ;
 int aclfgl_aclfgl_ui_interface_loadstyles(int n) ;
-
+int aclfgl_fgl_setsize(int n);
+int aclfgl_aclfgl_dump_objects(int n);
 int aclfgl_aclfgl_indexof(int n);
 int aclfgl_aclfgl_tea_string_encipher(int n);
 int aclfgl_aclfgl_tea_string_decipher(int n);

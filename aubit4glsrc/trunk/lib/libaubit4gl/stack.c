@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                          |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.259 2010-08-23 17:23:22 mikeaubury Exp $
+# $Id: stack.c,v 1.260 2010-08-25 11:13:19 mikeaubury Exp $
 #
 */
 
@@ -5061,11 +5061,13 @@ void A4GL_pushIntGE (int a, int b)
 
 void A4GL_dec_refcount( void **objects) {
 	int a;
+	long objId;
 
 	if (objects==NULL) return;
 
 	for (a=0;objects[a];a++) {
-
+		objId=*(long *)objects[a];
+		A4GL_object_dispose(objId);
 	}
 
 }

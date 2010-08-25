@@ -1,7 +1,7 @@
 #include "a4gl_lib_ui_tui_int.h"
 #ifndef lint
 	static char const module_id[] =
-		"$Id: generic_ui.c,v 1.57 2010-07-08 12:43:49 mikeaubury Exp $";
+		"$Id: generic_ui.c,v 1.58 2010-08-25 11:13:20 mikeaubury Exp $";
 #endif
 
 static int A4GL_find_shown (ACL_Menu * menu, int chk, int dir);
@@ -1353,10 +1353,34 @@ void UILIB_A4GL_ui_cancel(int type){
 void UILIB_A4GL_ui_frontcall(char* module,char* name,void* vibind,int ni,void* vobind,int no) {
 struct BINDING *ibind;
 struct BINDING *obind;
-char buff[100000];
-char smbuff[20000];
+//char buff[100000];
+//char smbuff[20000];
 obind=vobind;
 ibind=vibind;
+	if (strcmp(module,"INTERNAL")==0 && strcmp(name,"ui.curses.fgl_setsize")==0 ) {
+			int w;
+			int h;
+		if (ni==2) {
+			// fgl_setsize(h,w);
+                	A4GL_push_param (ibind[0].ptr, ibind[0].dtype + ENCODE_SIZE (ibind[0].size));
+                	h=A4GL_pop_long();
+                	A4GL_push_param (ibind[1].ptr, ibind[1].dtype + ENCODE_SIZE (ibind[1].size));
+                	w=A4GL_pop_long();
+			// Control codes to resize the screen
+			printf("\x1b[8;%d;%dt", h, w); fflush(stdout);
+			resize_screen_window(w,h);
+
+
+			//windows[0].w=w;
+			//windows[0].h=h;
+			//wresize(windows[0].win,h,w);
+			//A4GL_pause_execution();
+
+		}  else {
+			A4GL_set_status(-3002,0);
+		}
+	}
+
 	if (strcmp(module,"INTERNAL")==0 && strcmp(name,"ui.curses.define_key")==0 ) {
 		if (ni==2) {
 			char *keydef;

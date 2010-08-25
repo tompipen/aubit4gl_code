@@ -9,6 +9,7 @@ char **objectNames=0;
 int nObjectNames=0;
 
 struct sObject heapOfObjects[MAXOBJECTS];
+static int find_head_slot_forobject_id(long objectId) ;
 
 static void init_objects(void) {
 	int a;
@@ -23,20 +24,40 @@ static void init_objects(void) {
 	heapOfObjects[0].objType="RESERVED";
 }
 
+int find_head_slot_forobject_id(long objectId) {
+int a;
+for (a=0;a<MAXOBJECTS;a++) {
+        for (a=0;a<MAXOBJECTS;a++) {
+                if (heapOfObjects[a].objHeapId==objectId) {
+			return a;
+		}
+	}
+}
+return 0;
+}
+
+
 
 static void  dump_objects(void) {
 	int a;
 
-return ;
 
 	printf("Current objects\n");
 	printf("---------------\n");
 	for (a=0;a<MAXOBJECTS;a++) {
-		if (heapOfObjects[a].objType) {
-			printf("%d %s - %d\n", a, heapOfObjects[a].objType, heapOfObjects[a].refCnt);
+		if (heapOfObjects[a].objType && heapOfObjects[a].objHeapId) {
+			printf("%d ObjectId=%d Type=%s - reference count=%d\n", a, heapOfObjects[a].objHeapId, heapOfObjects[a].objType, heapOfObjects[a].refCnt);
 		}
 	}
 	printf("\n");
+}
+
+
+
+int aclfgl_aclfgl_dump_objects(int n) {
+	dump_objects();
+
+return 0;
 }
 
 struct sObject *new_object(char *type) {
@@ -65,7 +86,7 @@ struct sObject *new_object(char *type) {
 
 
 
-	dump_objects();
+	//dump_objects();
 
 
 	//printf("found = %d\n",found);
@@ -161,12 +182,13 @@ static void A4GL_call_object_destructor(long objectID)
 }
 
 void A4GL_object_dispose(long objectId) {
-	
-	if (heapOfObjects[objectId].objType!=NULL) {
+	int slot;
+	slot=find_head_slot_forobject_id(objectId);
+	if (heapOfObjects[slot].objType!=NULL) {
 
-		heapOfObjects[objectId].refCnt--;
+		heapOfObjects[slot].refCnt--;
 		// Is it still in use ? 
-		if ( heapOfObjects[objectId].refCnt) return;
+		if ( heapOfObjects[slot].refCnt) return;
 
 
 		A4GL_call_object_destructor(objectId);
@@ -178,6 +200,7 @@ void A4GL_object_dispose(long objectId) {
 			heapOfObjects[objectId].objData=NULL;
 		}
 		heapOfObjects[objectId].objHeapId=0;
+		heapOfObjects[objectId].objType=NULL;
 	}
 }
 

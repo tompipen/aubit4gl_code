@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ui.c,v 1.98 2010-07-08 14:41:56 mikeaubury Exp $
+# $Id: ui.c,v 1.99 2010-08-25 11:13:19 mikeaubury Exp $
 #
 */
 
@@ -2258,6 +2258,17 @@ int aclfgl_fgl_exitfm(int n) {
 	A4GL_gotolinemode();
 	return 0;
 }
+
+
+
+
+int aclfgl_fgl_setsize(int nparam) {
+   if (strstr(acl_getenv("A4GL_UI"),"TUI")) {
+   	return A4GL_call_datatype_function_i(NULL,0x63,"ui.curses.fgl_setsize",nparam);
+   }
+	return 0;
+}
+
 
 
 #define TYPE_CHAR 1

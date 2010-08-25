@@ -1,4 +1,9 @@
 main
+call test_objects()
+call aclfgl_dump_objects()
+end main
+
+function test_objects()
 define m object(math)
 define f object(fglobject)
 
@@ -19,4 +24,4 @@ define f object(fglobject)
 	display f.sub(2,1)
 
 
-end main
+end function

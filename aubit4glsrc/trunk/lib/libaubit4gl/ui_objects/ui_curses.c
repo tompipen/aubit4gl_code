@@ -3,8 +3,6 @@ struct _data {
 	char data[256];
 };
  
-
-#ifdef XXX
 static int new_obj(char *newData) {
 struct sObject *obj;
 struct _data *data;
@@ -20,7 +18,6 @@ A4GL_push_objectID(obj->objHeapId);
 return 1;
  
 }
-#endif
  
  
  
@@ -67,7 +64,51 @@ int keycode;
   return 0;
 }
  
+ 
+ 
+ 
+static int ui_curses_fgl_setsize(long *objectID_IgnoredAsAlways0,int n) {
+int okToProcess=1;
+int _ni=2;
+struct BINDING _ibind[2]={
+    {NULL,0,0,0,0,0,NULL},
+    {NULL,0,0,0,0,0,NULL}
+};
+int height;
+int width;
+ 
+/* END OF DEFINE SECTION */
+ 
+ 
+  if (n!=2) { 
+    A4GL_pop_args(n);
+    okToProcess=0;
+  }
+ 
+  // Set up input binding for our parameters
+  if (okToProcess) {
+ 
+    width=A4GL_pop_int();
+    _ibind[1].ptr=&width;
+    _ibind[1].size=4;
+    _ibind[1].dtype=DTYPE_INT;
+    height=A4GL_pop_int();
+    _ibind[0].ptr=&height;
+    _ibind[0].size=4;
+    _ibind[0].dtype=DTYPE_INT;
+  }
+ 
+  if (okToProcess) {
+      A4GL_ui_frontcall("INTERNAL","ui.curses.fgl_setsize",_ibind,_ni,NULL,0 );
+  }
+ 
+ 
+  // Set up output binding for our parameters
+  return 0;
+}
+ 
 void add_ui_curses_support(void) {
 A4GL_add_object_type("ui.curses");
   A4GL_add_datatype_function_i (DTYPE_OBJECT, ":ui.curses.define_key", (void *)  ui_curses_define_key);
+  A4GL_add_datatype_function_i (DTYPE_OBJECT, ":ui.curses.fgl_setsize", (void *)  ui_curses_fgl_setsize);
 }

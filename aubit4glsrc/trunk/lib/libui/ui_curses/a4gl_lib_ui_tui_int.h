@@ -212,6 +212,7 @@ void A4GL_refresh_error_window(void);
 
 
     /* =======================  in newpanels.c  ======================= */
+void resize_screen_window(int w,int h);
 void A4GL_mja_refresh (void);
 void A4GL_mja_wrefresh (WINDOW * w);
 int A4GL_getch_win (void);

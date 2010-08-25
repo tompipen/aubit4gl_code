@@ -1,1 +1,2 @@
 +define_key (keyName DTYPE_CHAR keyCode DTYPE_INT )
++fgl_setsize (height DTYPE_INT, width DTYPE_INT )
