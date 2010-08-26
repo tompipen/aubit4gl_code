@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: data.c,v 1.46 2010-08-26 19:20:39 mikeaubury Exp $
+# $Id: data.c,v 1.47 2010-08-26 20:33:20 mikeaubury Exp $
 #*/
 
 /**
@@ -728,7 +728,14 @@ execute_selects (void)
 	translated= A4GL_translate_sql (nstatement);
 	//printf("%s\n", translated);
       A4GL_debug ("%s", translated);
+
+
+ if (A4GL_isyes(acl_getenv("USEOLDACEDATA"))) {
       psql = (void *) A4GL_prepare_select (dif_get_bind (xi), xic, dif_get_bind (xo), 0, translated, "__internal_data", 1, 0, 0);
+  } else  {
+      psql = (void *) A4GL_prepare_select (NULL, 0, dif_get_bind (xo), 0, translated, "__internal_data", 1, 0, 0);
+  }
+
       a4gl_status = 0;
       if (psql == 0)
 	{
