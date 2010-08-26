@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: data.c,v 1.45 2009-02-23 17:31:49 mikeaubury Exp $
+# $Id: data.c,v 1.46 2010-08-26 19:20:39 mikeaubury Exp $
 #*/
 
 /**
@@ -548,7 +548,7 @@ add_zero_rows_where (struct select_stmts *ptr)
   char *buff1;
   buff = acl_malloc2 (strlen (ptr->statement) + 200);	/* We need a little extra space...*/
 
-  return ptr->statement;
+  //return ptr->statement;
   if (ptr->has_where == 0)
     {
       /* There is no where clause currently */
@@ -564,9 +564,14 @@ add_zero_rows_where (struct select_stmts *ptr)
       buff1 = acl_strdup (&ptr->statement[ptr->wherepos1]);
       strncpy (buff, ptr->statement, ptr->wherepos1);
       buff[ptr->wherepos1] = 0;
-      strcat (buff, " (1=0) AND ");
-      strcat (buff, buff1);
-      free (buff1);
+	if (A4GL_isyes(acl_getenv("USEOLDACEDATA"))) {
+      		strcat (buff, " (1=0) AND ");
+      		strcat (buff, buff1);
+      		free (buff1);
+	} else {
+      		strcat (buff, " (1=0) ");
+	}
+
 
     }
   return buff;
