@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.410 2010-08-23 17:23:22 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.411 2010-08-26 19:39:14 mikeaubury Exp $
 #
 */
 
@@ -2949,6 +2949,7 @@ int A4GL_fgl_fieldtouched_current(void *sio, char itype);
 char *A4GL_get_end_tag(char *tag_type) ;
 char *A4GL_get_start_tag(char *tag_type) ;
 void A4GL_dec_refcount(void **obj);
+char *getDatatypeSig(int dtype,int size,char *objectType) ;
 
 #ifdef MOVED
 struct sObject { // Also in a4gl_incl_4gldef.h

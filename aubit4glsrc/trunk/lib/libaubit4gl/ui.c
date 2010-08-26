@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ui.c,v 1.99 2010-08-25 11:13:19 mikeaubury Exp $
+# $Id: ui.c,v 1.100 2010-08-26 19:39:26 mikeaubury Exp $
 #
 */
 
@@ -2043,6 +2043,13 @@ A4GL_ensure_current_window_is (char *s)
   if (strcmp (A4GL_get_currwin_name (), s) == 0)
     return;
   A4GL_current_window (s);
+}
+
+
+
+int aclfgl_aclfgl_get_current_window_name(int n) {
+	A4GL_push_char(A4GL_get_currwin_name());
+	return 1;
 }
 
 
