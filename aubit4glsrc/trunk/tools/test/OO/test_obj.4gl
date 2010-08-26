@@ -23,5 +23,9 @@ define f object(fglobject)
 	display f.add(2,1)
 	display f.sub(2,1)
 
+	display "Polymorphism..."
+	display "Numeric parameters:", f.poly_Add(1,2)
+	display "String parameters :",f.poly_Add("1","2")
+	
 
 end function

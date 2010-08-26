@@ -223,3 +223,67 @@ void A4GL_add_object_type(char *s) {
 	objectNames=realloc(objectNames, nObjectNames*sizeof(objectNames[0]));
 	objectNames[nObjectNames-1]=strdup(s);
 }
+
+char *getSigForTopOfStack(int numberOfObjectsOnStack) {
+int a;
+static char buff[3000]="";
+int d1;
+int s1;
+long objId;
+	
+strcpy(buff,"");
+
+for (a=0;a<numberOfObjectsOnStack;a++) {
+	A4GL_get_top_of_stack (a+1 , &d1, &s1, (void *) &objId);
+        if ((d1&DTYPE_MASK)==DTYPE_OBJECT) {
+                struct sObject *o;
+                if (getObject(objId,&o, NULL)) {
+			strcat(buff,"P");
+			strcat(buff,getDatatypeSig(d1,s1,o->objType));
+		} else {
+			strcat(buff,"PO");
+			strcat(buff,getDatatypeSig(d1,s1,NULL));
+		}
+	} else {
+		strcat(buff,"P");
+		strcat(buff,getDatatypeSig(d1,s1,NULL));
+	}
+}
+return buff;
+}
+
+
+char *getDatatypeSig(int dtype,int size,char *objectType) {
+	switch (dtype & DTYPE_MASK) {
+		case DTYPE_INT: 
+		case DTYPE_SMINT: 
+		case DTYPE_FLOAT: 
+		case DTYPE_DECIMAL: 
+		case DTYPE_INT8:
+		case DTYPE_MONEY:
+		case DTYPE_SERIAL:
+		case DTYPE_SERIAL8:
+		case DTYPE_SMFLOAT: return "N";
+
+		case DTYPE_DATE: return "D";
+		case DTYPE_DTIME: return "T";
+		case DTYPE_INTERVAL: return "I";
+		
+		case DTYPE_BYTE  :
+		case DTYPE_TEXT  :  return "B";
+		
+		case DTYPE_STRING   :
+		case DTYPE_VCHAR  :
+		case DTYPE_NCHAR  :
+		case DTYPE_NVCHAR :
+		case DTYPE_CHAR  : return "S";
+		
+		case DTYPE_OBJECT  : 
+			if (objectType) {
+				return objectType;
+			} else {
+				return "O";
+			}
+	}
+return "O";
+}

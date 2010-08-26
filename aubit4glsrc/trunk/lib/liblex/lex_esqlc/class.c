@@ -45,16 +45,7 @@ get_sig_dtype (struct expr_str *parameter)
     }
 
   p = parameter->expr_str_u.expr_variable_usage;
-  if (p->datatype == DTYPE_OBJECT)
-    {
-      return p->object_type;
-    }
-  else
-    {
-      static char buff[100];
-      sprintf (buff, "%d", p->datatype);
-      return buff;
-    }
+  return getDatatypeSig(p->datatype&DTYPE_MASK, p->datatype>>17, p->object_type);
 
 }
 

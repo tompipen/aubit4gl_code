@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: datatypes.c,v 1.43 2010-08-23 17:23:22 mikeaubury Exp $
+# $Id: datatypes.c,v 1.44 2010-08-26 20:23:25 mikeaubury Exp $
 #
 */
 
@@ -397,6 +397,7 @@ A4GL_call_datatype_function_i (void *obj, int dtype, char *funcname, int nparam)
 {
   int (*ptr) (void *, int);
   char buff[256];
+  char polymorphicFunctionSignature[2000];
 int nret;
 
 #ifdef DEBUG
@@ -408,12 +409,20 @@ int nret;
     A4GL_init_datatypes ();
 
 
-  ptr = A4GL_get_datatype_function_i (dtype, buff);
 
-  if (ptr == 0)
-    {
-      ptr = A4GL_get_datatype_function_i (dtype & DTYPE_MASK, buff);
-    }
+  sprintf(polymorphicFunctionSignature, ":%s_%d%s", funcname,nparam,getSigForTopOfStack(nparam));
+  
+A4GL_debug("Polymorphic sig = %s", polymorphicFunctionSignature);
+//printf("Polymorphic sig = %s alt=%s\n", polymorphicFunctionSignature,buff);
+
+  ptr = A4GL_get_datatype_function_i (dtype, polymorphicFunctionSignature);
+
+  if (ptr == 0) { ptr = A4GL_get_datatype_function_i (dtype & DTYPE_MASK, polymorphicFunctionSignature); }
+  if (ptr == 0) {ptr = A4GL_get_datatype_function_i (dtype, buff);}
+  if (ptr == 0) { ptr = A4GL_get_datatype_function_i (dtype & DTYPE_MASK, buff); }
+
+//printf("ptr=%p\n",ptr);
+
   if (ptr == 0)
     {
 	//RouteToParent
