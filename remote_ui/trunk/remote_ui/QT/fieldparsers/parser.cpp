@@ -110,6 +110,7 @@ void Parser::parseElement(const QDomNode& xmlNode)
       QString nodeName = currentElement.nodeName();
 
 
+/*
       if(nodeName == "Screen"){
          QGridLayout *layout = new QGridLayout;
          layout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
@@ -129,8 +130,10 @@ void Parser::parseElement(const QDomNode& xmlNode)
             this->hidden = true;
          }
       }
+*/
 
-      if(nodeName == "Grid"){
+      if(nodeName == "Grid" ||
+         nodeName == "Screen"){
          QGridLayout *layout = new QGridLayout;
          layout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
          layout->setSpacing(0);
