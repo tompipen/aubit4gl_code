@@ -574,6 +574,10 @@ void ScreenHandler::setFieldBuffer(QStringList fieldNames, QStringList fieldValu
 
       if(index < 0){
          QWidget *widget = p_fglform->findFieldByName(fieldName);
+         if(widget == NULL){
+            return;
+         }
+
          if(qobject_cast<LineEditDelegate *> (widget)){
             int index2 = fieldName.indexOf("[");
             int index3 = fieldName.indexOf("]")+1;
