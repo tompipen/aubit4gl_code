@@ -590,13 +590,13 @@ void ScreenHandler::setFieldBuffer(QStringList fieldNames, QStringList fieldValu
             else{
                row = 0;
             }
-            WidgetHelper::setDisplayAttributes(attr, widget);
+            //WidgetHelper::setDisplayAttributes(attr, widget);
             QStringList values;
             values << fieldValues.at(i);
             setArrayBuffer(row, fieldName, values);
          }
          else{
-            WidgetHelper::setDisplayAttributes(attr, widget);
+        //    WidgetHelper::setDisplayAttributes(attr, widget);
             WidgetHelper::setFieldText(widget, fieldValues.at(i));
          }
       }
@@ -621,13 +621,13 @@ void ScreenHandler::setFieldBuffer(QStringList fieldNames, QStringList fieldValu
                for(int k=0; k<ql_fields.count(); k++){
                   values << fieldValues.at(value_cnt+k);
                }
-               WidgetHelper::setDisplayAttributes(attr, widget);
+          //     WidgetHelper::setDisplayAttributes(attr, widget);
                setArrayBuffer(row, fieldName, values);
                value_cnt = ql_fields.count();
                break;
             }
             else{
-               WidgetHelper::setDisplayAttributes(attr, widget);
+            //   WidgetHelper::setDisplayAttributes(attr, widget);
                WidgetHelper::setFieldText(widget, fieldValues.at(value_cnt));
                value_cnt++;
             }
