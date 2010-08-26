@@ -987,6 +987,10 @@ bool WidgetHelper::setDisplayAttributes(int fieldAttribute, QWidget *widget)
             widget->setPalette(p);
             widget->setFont(dummy.font());
          }
+         else if(LineEditDelegate *led = qobject_cast<LineEditDelegate *> (widget))
+         {
+             Q_UNUSED(led);
+         }
          else
          {
             QLineEdit dummy;
