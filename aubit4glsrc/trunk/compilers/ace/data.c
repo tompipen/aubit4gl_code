@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: data.c,v 1.48 2010-08-27 08:16:46 mikeaubury Exp $
+# $Id: data.c,v 1.49 2010-08-27 16:25:31 mikeaubury Exp $
 #*/
 
 /**
@@ -76,7 +76,7 @@ void dif_add_bind_int (void *list, long a);
 char *A4GL_decode_datatype (int dtype, int dim);
 void yyerror_sql (char *s);
 void print_variables (char *s);
-char *add_zero_rows_where (struct select_stmts *ptr);
+char *add_zero_rows_where (struct select_stmts *ptr,int *varsLeft);
 void add_fmt (int cat, struct expr *col, struct acerep_commands commands);
 int decode_dtype (char *s);
 void dif_add_bind (void *list, void *dptr, int dtype, int size);
@@ -543,10 +543,11 @@ wherepos2 = End if where clause
  * @todo Describe function
  */
 char *
-add_zero_rows_where (struct select_stmts *ptr)
+add_zero_rows_where (struct select_stmts *ptr,int *varsLeft)
 {
   char *buff;
   char *buff1;
+  *varsLeft=0; // how many variables do we have...
   buff = acl_malloc2 (strlen (ptr->orig_statement) + 200);	/* We need a little extra space... */
 
   //return ptr->statement;
@@ -563,9 +564,11 @@ add_zero_rows_where (struct select_stmts *ptr)
   else
     {
       char *srch;
+	int a;
       srch = strdup (ptr->orig_statement);
+		
 
-
+	//printf("srch='%s'\n statement='%s'",srch, ptr->statement);
 
 
       if (A4GL_isyes (acl_getenv ("USEOLDACEDATA")))
@@ -605,6 +608,21 @@ add_zero_rows_where (struct select_stmts *ptr)
 	      ptr1[3] = '0';
 	      ptr1[4] = ')';
 	    }
+	for (a=0;a<strlen(srch);a++) {
+
+		if (srch[a]=='\n' && srch[a+1]=='2') {
+			srch[a++]=' ';
+			srch[a++]=' ';
+			srch[a++]=' ';
+			srch[a++]='?';
+			while (srch[a]!=')') {
+				srch[a++]=' ';
+			}
+			srch[a]=' ';
+			(*varsLeft)++;
+			
+		}
+	}
 	  return srch;
 	}
 
@@ -709,6 +727,7 @@ execute_selects (void)
   for (a = 0; a <= mx; a++)
     {
 	char *translated;
+	int varsLeft;
       xic = 0;
       xoc = 0;
       ptr = &this_report.getdata.get_data_u.selects.selects_val[a];
@@ -751,7 +770,7 @@ execute_selects (void)
 	  xic++;
 
 	}
-      strcpy (nstatement, add_zero_rows_where (ptr));
+      strcpy (nstatement, add_zero_rows_where (ptr,&varsLeft));
 
 //printf("EXECUTING %s\n", nstatement);
       if (a == mx && columns_method == COLUMNS_METHOD_INTO_TEMP)
@@ -770,7 +789,7 @@ execute_selects (void)
  if (A4GL_isyes(acl_getenv("USEOLDACEDATA"))) {
       psql = (void *) A4GL_prepare_select (dif_get_bind (xi), xic, dif_get_bind (xo), 0, translated, "__internal_data", 1, 0, 0);
   } else  {
-      psql = (void *) A4GL_prepare_select (NULL, 0, dif_get_bind (xo), 0, translated, "__internal_data", 1, 0, 0);
+      psql = (void *) A4GL_prepare_select (dif_get_bind (xi),varsLeft, dif_get_bind (xo), 0, translated, "__internal_data", 1, 0, 0);
   }
 
       a4gl_status = 0;
