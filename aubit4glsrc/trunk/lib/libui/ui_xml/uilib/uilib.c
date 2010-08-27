@@ -2616,13 +2616,22 @@ uilib_getfldbuf (int nargs)
   int nfields;
   char **fields;
   int a;
+  int b;
 
   nfields = nargs - 1;
   fields = malloc (sizeof (char *) * nfields);
+  b=nfields-1;
   for (a = 0; a < nfields; a++)
     {
-      fields[a] = charpop ();
+      fields[b--] = charpop ();
     }
+
+/*
+  for (a = 0; a < nfields; a++)
+  {
+		printf("%d %s\n",a,fields[a]);
+  }
+*/
   context = POPint ();
 
   if (context>=0)
