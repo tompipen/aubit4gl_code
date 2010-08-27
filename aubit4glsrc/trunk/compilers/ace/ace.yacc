@@ -383,8 +383,8 @@ select_section:
 ;
 
 sec_select_list:
-	select_statement 			 { add_select($<str>1,temp_tab_name); }
-	| sec_select_list SEMICOLON select_statement { add_select($<str>3,temp_tab_name); }
+	select_statement 			 
+	| sec_select_list SEMICOLON select_statement 
 ;
 
 read_list: 
@@ -805,18 +805,25 @@ real_number :
 
 
 select_statement:
-	SELECT {reset_sql_stuff();} op_ad sq_select_list 
-	table_expression
-        sel_p2 
-	{SPRINTF5($<str>$,"%s %s %s %s %s",$<str>1,$<str>3,$<str>4,$<str>5,$<str>6);
-}
+	SELECT {reset_sql_stuff();} op_ad sq_select_list from_clause op_where_clause op_group_by_clause op_having_clause sel_p2  op_into_temp
+	{
+		char buff[100000];
+		SPRINTF7(buff,"%s %s %s %s %s %s %s",$<str>1,$<str>3,$<str>4,$<str>5,$<str>7,$<str>9,$<str>10);
+		SPRINTF9($<str>$,"%s %s %s %s %s %s %s %s %s",$<str>1,$<str>3,$<str>4,$<str>5,$<str>6,$<str>7,$<str>8,$<str>9,$<str>10);
+ 		add_select($<str>$,buff, temp_tab_name); 
+	}
 ;
 
+op_into_temp: 
+		{strcpy($<str>$,"");}
+	| 
+ 		INTO TEMP tmp_tabname op_no_log {
+       		SPRINTF2($<str>$,"INTO TEMP %s%s ",$<str>3,$<str>4);
+		strcpy(temp_tab_name,$<str>3);
+	}
+;
 
 select_statement2:
-	select_statement2_1  ;
-
-select_statement2_1:
 	SELECT op_ad sq_select_list 
 	table_expression 
         sel_p2
@@ -825,14 +832,8 @@ select_statement2_1:
 
 
 sel_p2 : {strcpy($<str>$,"");}
-| UNION op_all select_statement2 {
-       SPRINTF3($<str>$,"%s %s %s",$<str>1,$<str>2,$<str>3);
-       }
+| UNION op_all select_statement2 { SPRINTF3($<str>$,"%s %s %s",$<str>1,$<str>2,$<str>3); }
 | order_by_clause 
-| INTO TEMP tmp_tabname op_no_log {
-       SPRINTF2($<str>$,"INTO TEMP %s%s ",$<str>3,$<str>4);
-	strcpy(temp_tab_name,$<str>3);
-}
 | order_by_clause INTO TEMP tmp_tabname op_no_log {
        SPRINTF3($<str>$,"%s INTO TEMP %s%s ",$<str>1, $<str>4,$<str>5);
 	strcpy(temp_tab_name,$<str>3);

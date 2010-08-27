@@ -23,7 +23,7 @@ void ace_add_variable (char *name, char *dstring, int category, int pno,
 		       int dtype, int dim);
 void add_inputs (char *prompt, char *variable);
 void add_function (char *name);
-void add_select (char *sql, char *temptabname);
+void add_select (char *sql, char *sql_no_where, char *temptabname);
 void execute_selects (void);
 void print_lexpr (struct expr_list *l);
 int find_variable (char *name);

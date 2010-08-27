@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: data.c,v 1.49 2010-08-27 16:25:31 mikeaubury Exp $
+# $Id: data.c,v 1.50 2010-08-27 21:38:22 mikeaubury Exp $
 #*/
 
 /**
@@ -339,7 +339,7 @@ add_agg (struct agg_val agg)
  * @todo Describe function
  */
 void
-add_select (char *sql, char *temptabname)
+add_select (char *sql, char *sql_no_where, char *temptabname)
 {
   struct select_stmts *ptr;
   char *buff;
@@ -386,7 +386,7 @@ add_select (char *sql, char *temptabname)
   ptr->wherepos1 = 0;
   ptr->wherepos2 = 0;
 
-  ptr->orig_statement=acl_strdup(sql);
+  ptr->orig_statement=acl_strdup(sql_no_where);
   buff = acl_strdup (sql);
 
   c = 0;
@@ -567,7 +567,7 @@ add_zero_rows_where (struct select_stmts *ptr,int *varsLeft)
 	int a;
       srch = strdup (ptr->orig_statement);
 		
-
+//printf("srch=%s\n",srch);
 	//printf("srch='%s'\n statement='%s'",srch, ptr->statement);
 
 
