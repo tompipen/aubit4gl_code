@@ -713,6 +713,33 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
       StatusBar *status = (StatusBar*) statusBar();
       QString keyEventString;
       keyEventString = keyEvent->text();
+      if(keyEvent->key() == Qt::Key_Tab)
+      {
+          if(TextEdit *te = qobject_cast<TextEdit *> (obj))
+          {
+             if(!te->wantTabs())
+             {
+                 event->ignore();
+                 nextfield();
+                 return true;
+             }
+          }
+      }
+
+
+      if((keyEvent->modifiers() == 0 ) && (keyEvent->key() == Qt::Key_Return || keyEvent->key() == Qt::Key_Enter))
+      {
+          if(TextEdit *te = qobject_cast<TextEdit *> (obj))
+          {
+             if(!te->wantReturns())
+             {
+                 event->ignore();
+                 nextfield();
+                 return true;
+             }
+          }
+      }
+
       if(keyEvent->key() == Qt::Key_Insert){
          status->toggleOverwriteMode();
          return true;
