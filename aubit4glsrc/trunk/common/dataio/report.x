@@ -1,7 +1,7 @@
 
 /* 
 Data definitions for a report 
- $Id: report.x,v 1.12 2009-04-20 10:54:30 mikeaubury Exp $ 
+ $Id: report.x,v 1.13 2010-08-27 08:17:01 mikeaubury Exp $ 
 
 */
  
@@ -178,6 +178,7 @@ struct output {
 
 
 struct select_stmts {
+	string orig_statement<>;
 	string statement<>;
 	int has_where;
 	int wherepos1;

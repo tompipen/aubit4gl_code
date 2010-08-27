@@ -613,15 +613,11 @@ tname: table_name
 
 
 table_expression:
-	from_clause
-	op_where_clause
-	op_group_by_clause
-	op_having_clause 
-{
-SPRINTF4($<str>$,"%s %s %s %s",
-$<str>1,$<str>2,
-$<str>3,$<str>4);
-}
+	from_clause op_where_clause op_group_by_clause op_having_clause {
+			SPRINTF4($<str>$,"%s %s %s %s",
+			$<str>1,$<str>2,
+			$<str>3,$<str>4);
+			}
 	;
 
 op_where_clause: /* empty */ {strcpy($<str>$,"\n0");}

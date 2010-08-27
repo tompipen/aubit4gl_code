@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: data.c,v 1.47 2010-08-26 20:33:20 mikeaubury Exp $
+# $Id: data.c,v 1.48 2010-08-27 08:16:46 mikeaubury Exp $
 #*/
 
 /**
@@ -386,6 +386,7 @@ add_select (char *sql, char *temptabname)
   ptr->wherepos1 = 0;
   ptr->wherepos2 = 0;
 
+  ptr->orig_statement=acl_strdup(sql);
   buff = acl_strdup (sql);
 
   c = 0;
@@ -546,13 +547,13 @@ add_zero_rows_where (struct select_stmts *ptr)
 {
   char *buff;
   char *buff1;
-  buff = acl_malloc2 (strlen (ptr->statement) + 200);	/* We need a little extra space...*/
+  buff = acl_malloc2 (strlen (ptr->orig_statement) + 200);	/* We need a little extra space... */
 
   //return ptr->statement;
   if (ptr->has_where == 0)
     {
       /* There is no where clause currently */
-      /*printf("statement=\n%s\nwherepos1=%d\n",ptr->statement,ptr->wherepos1);*/
+      /*printf("statement=\n%s\nwherepos1=%d\n",ptr->statement,ptr->wherepos1); */
 
       strncpy (buff, ptr->statement, ptr->wherepos1);
       buff[ptr->wherepos1] = 0;
@@ -561,15 +562,50 @@ add_zero_rows_where (struct select_stmts *ptr)
     }
   else
     {
-      buff1 = acl_strdup (&ptr->statement[ptr->wherepos1]);
-      strncpy (buff, ptr->statement, ptr->wherepos1);
-      buff[ptr->wherepos1] = 0;
-	if (A4GL_isyes(acl_getenv("USEOLDACEDATA"))) {
-      		strcat (buff, " (1=0) AND ");
-      		strcat (buff, buff1);
-      		free (buff1);
-	} else {
-      		strcat (buff, " (1=0) ");
+      char *srch;
+      srch = strdup (ptr->orig_statement);
+
+
+
+
+      if (A4GL_isyes (acl_getenv ("USEOLDACEDATA")))
+	{
+	  buff1 = acl_strdup (&ptr->statement[ptr->wherepos1]);
+	  strncpy (buff, ptr->statement, ptr->wherepos1);
+	  buff[ptr->wherepos1] = 0;
+	  strcat (buff, " (1=0) AND ");
+	  strcat (buff, buff1);
+	  free (buff1);
+	}
+      else
+	{
+	  char *p;
+	  while (1)
+	    {
+	      char *ptr1;
+	      char *ptr2;
+
+	      ptr1 = strstr (srch, "\n0");
+	      if (ptr1 == 0)
+		break;
+
+	      ptr2 = strstr (ptr1 + 1, "\n0");
+	      if (ptr2 == 0)
+		break;
+	      ptr2++;		// to include the '0'..
+	      for (p = ptr1; p <= ptr2; p++)
+		{
+		  *p = ' ';
+		}
+
+
+	      ptr1[0] = '(';
+	      ptr1[1] = '1';
+	      ptr1[2] = '=';
+	      ptr1[3] = '0';
+	      ptr1[4] = ')';
+	    }
+	  return srch;
 	}
 
 
@@ -717,6 +753,7 @@ execute_selects (void)
 	}
       strcpy (nstatement, add_zero_rows_where (ptr));
 
+//printf("EXECUTING %s\n", nstatement);
       if (a == mx && columns_method == COLUMNS_METHOD_INTO_TEMP)
 	{
 	  strcat (nstatement, " INTO TEMP a4gl_drep1234");
