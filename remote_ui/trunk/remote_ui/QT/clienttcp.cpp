@@ -1943,11 +1943,11 @@ void ProtocolHandler::handleWaitForEventElement(const QDomNode& domNode)
       changed = currentElement.attribute("CHANGED").toInt();
    }
 
-   /* currently not used 
+   // currently not used
    if(currentElement.firstChildElement().nodeName() == "ROWS"){
       handleDisplayArrayElement(currentElement);
    }
-   */
+
 
    if(currentElement.firstChildElement().nodeName() == "VALUES"){
       if(changed > 0){
