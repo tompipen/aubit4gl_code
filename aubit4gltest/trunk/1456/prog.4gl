@@ -2,7 +2,7 @@
 
 main
 
-open window win1 at 2,3 with 24 rows, 70 columns
+open window win1 at 2,3 with 20 rows, 70 columns
    attribute (border, red)
 options delete key control-b
 open form test2 from "test2"
@@ -42,7 +42,7 @@ before row
 
 after row
    message "after row"
-   open window win3 at 2,3 with 22 rows, 74 columns
+   open window win3 at 2,3 with 20 rows, 70 columns
    message "new window 2"
    close window win3
 

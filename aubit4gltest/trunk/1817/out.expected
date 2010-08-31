@@ -1,0 +1,24 @@
+LINE1:   1-SRC  2-MOD  3-ENT  4-X                                               
+LINE2 <ESC> search <F9> cancel <F1>..<F6> skip                                  
+line 3 NR:[      ]                                                              
+4                                                                               
+5                                                                               
+6                                                                               
+                                                                                
+                                                                                
+                                                                                
+10                                                                              
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+15                                                                              
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+20                                                                              
+                                                                                
+line 22 Mike, line 23 shoud display in 80x24 but it doesn't, see form           
+line 23  LO:[          ]                                                        
+pktnr                                                                           

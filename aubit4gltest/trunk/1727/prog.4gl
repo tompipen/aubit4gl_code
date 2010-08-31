@@ -1,6 +1,6 @@
 main
 
-open window win1 at 2,3 with 24 rows, 80 columns
+open window win1 at 2,3 with 22 rows, 70 columns
    attribute (border, red)
 open form test62 from "test62"
 display form test62

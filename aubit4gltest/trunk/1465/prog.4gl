@@ -11,7 +11,7 @@ define
 	end record,
    query_s  char(200)
 
-open window win1 at 2,3 with 24 rows, 80 columns
+open window win1 at 2,3 with 20 rows, 70 columns
    attribute (border, red)
 open form test32 from "test32b"
 display form test32

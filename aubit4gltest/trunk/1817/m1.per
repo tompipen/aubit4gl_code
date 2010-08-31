@@ -1,0 +1,41 @@
+database daten
+{ver 08.01.2010 }
+screen 
+{
+line 3 NR:[f000  ]
+4
+5
+6
+
+
+
+10
+
+
+
+
+15
+
+
+
+
+20
+
+line 22 Mike, line 23 shoud display in 80x24 but it doesn't, see form
+line 23  LO:[f044      ] 
+}
+end
+
+TABLES
+pkt
+
+ATTRIBUTES
+f000 = formonly.pktnr,comments="pktnr"; 
+f044 = formonly.lastorder,comments="lastorder";
+
+instructions
+
+screen record scr_pkt (formonly.pktnr,
+                       formonly.lastorder)
+end
+

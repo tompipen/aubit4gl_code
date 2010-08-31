@@ -1,0 +1,17 @@
+OBjectname=math
+IN math.add
+          3
+In fglObject sub
+          1
+Now cast to fglobject
+Object name now = fglobject
+In fglObject add
+          3
+In fglObject sub
+          1
+Polymorphism...
+Numeric parameters:          3
+String parameters :1 2
+Current objects
+---------------
+
