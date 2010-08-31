@@ -94,13 +94,16 @@ struct sObject *new_object(char *type) {
 }
 
 int getObject(long objectId, struct sObject **o, char *preferredObjectType) {
-
+long objectSlotId;
 	init_objects();
 
 	if (objectId==0) return 0;
-	if (heapOfObjects[objectId].objType==NULL ) return 0;
+	objectSlotId=find_head_slot_forobject_id(objectId);
+	if (heapOfObjects[objectSlotId].objType==NULL ) return 0;
 
-	*o=&heapOfObjects[objectId];
+	*o=&heapOfObjects[objectSlotId];
+
+
 	if (preferredObjectType &&  (*o)->objType) {
 		if (strcmp(preferredObjectType, (*o)->objType)==0) {
 			return 1;
@@ -117,40 +120,35 @@ int getObject(long objectId, struct sObject **o, char *preferredObjectType) {
 				return 0;
 			} else {
 				int b;
-#ifdef DEBUG
-					A4GL_debug("Got 'a' as %d\n",a);
-#endif
-				for (b=0;b<MAXOBJECTS;b++) {
-#ifdef DEBUG
-					A4GL_debug(" comparing to object at %d - which is %d\n",b, heapOfObjects[b].objHeapId);
-#endif
-					if (heapOfObjects[b].objHeapId==a) {
-#ifdef DEBUG
-							A4GL_debug("Found it !\n");
-#endif
-							*o=&heapOfObjects[b];
-							return 1;
-					}
-				}
+				b=find_head_slot_forobject_id(a);
+				if (b>0) {
+					*o=&heapOfObjects[b];
+					return 1;
+				} else {
 				return 0;
+				}
 			}
 			
 		}
+		return 0;
 	}
 	return 1;
 }
 
 int ensureObject(char *type,long objectId, struct sObject **o) {
+long objectSlotId;
 	init_objects();
 
-	if (objectId==0) return 0;
-	if (heapOfObjects[objectId].objType==NULL ) return 0;
-	if (type) {
-		if (strcmp(heapOfObjects[objectId].objType,type)!=0) return 0;
-	}
-	if (heapOfObjects[objectId].objData==NULL ) return 0;
+	objectSlotId=find_head_slot_forobject_id(objectId);
 
-	*o=&heapOfObjects[objectId];
+	if (objectId==0) return 0;
+	if (heapOfObjects[objectSlotId].objType==NULL ) return 0;
+	if (type) {
+		if (strcmp(heapOfObjects[objectSlotId].objType,type)!=0) return 0;
+	}
+	if (heapOfObjects[objectSlotId].objData==NULL ) return 0;
+
+	*o=&heapOfObjects[objectSlotId];
 	return 1;
 }
 
@@ -160,13 +158,16 @@ static void A4GL_call_object_destructor(long objectID)
   int (*ptr) (long *,int nparam);
   char buff[256];
   struct sObject *obj;
+long objectSlotId;
   if (objectID<=0) {
 	return;
   }
 
-  obj=&heapOfObjects[objectID];
-  if (heapOfObjects[objectID].objType==NULL) return ;
-  if (heapOfObjects[objectID].objData==NULL) return ;
+	objectSlotId=find_head_slot_forobject_id(objectID);
+
+  obj=&heapOfObjects[objectSlotId];
+  if (heapOfObjects[objectSlotId].objType==NULL) return ;
+  if (heapOfObjects[objectSlotId].objData==NULL) return ;
 
   SPRINTF1 (buff, ":%s.~", A4GL_null_as_null (obj->objType));
 
@@ -192,15 +193,15 @@ void A4GL_object_dispose(long objectId) {
 
 
 		A4GL_call_object_destructor(objectId);
-		heapOfObjects[objectId].objType=NULL;
-		if (  heapOfObjects[objectId].objData) {
-			if (heapOfObjects[objectId].objData) {
-				free(heapOfObjects[objectId].objData);
+		heapOfObjects[slot].objType=NULL;
+		if (  heapOfObjects[slot].objData) {
+			if (heapOfObjects[slot].objData) {
+				free(heapOfObjects[slot].objData);
 			}
-			heapOfObjects[objectId].objData=NULL;
+			heapOfObjects[slot].objData=NULL;
 		}
-		heapOfObjects[objectId].objHeapId=0;
-		heapOfObjects[objectId].objType=NULL;
+		heapOfObjects[slot].objHeapId=0;
+		heapOfObjects[slot].objType=NULL;
 	}
 }
 

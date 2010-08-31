@@ -248,11 +248,15 @@ void
 pushquote (char *s, int n)
 {
   char *ptr;
-  ptr = acl_malloc2 (n + 1);
-  strncpy (ptr, s, n);
-  ptr[n] = 0;
-  A4GL_push_char (ptr);
-  free (ptr);
+  if (n) {
+  	ptr = acl_malloc2 (n + 10);
+  	strncpy (ptr, s, n);
+  	ptr[n] = 0;
+  	A4GL_push_char (ptr);
+  	free (ptr);
+  } else {
+	A4GL_push_empty_char();
+  }
 }
 
 
