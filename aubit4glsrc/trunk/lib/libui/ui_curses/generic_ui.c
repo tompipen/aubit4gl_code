@@ -1,7 +1,7 @@
 #include "a4gl_lib_ui_tui_int.h"
 #ifndef lint
 	static char const module_id[] =
-		"$Id: generic_ui.c,v 1.58 2010-08-25 11:13:20 mikeaubury Exp $";
+		"$Id: generic_ui.c,v 1.59 2010-09-01 13:59:38 mikeaubury Exp $";
 #endif
 
 static int A4GL_find_shown (ACL_Menu * menu, int chk, int dir);
@@ -1390,7 +1390,11 @@ ibind=vibind;
                 	A4GL_push_param (ibind[1].ptr, ibind[1].dtype + ENCODE_SIZE (ibind[1].size));
                 	keycode=A4GL_pop_long();
 			if (keycode) {
+#ifdef NO_DEFINE_KEY
+		A4GL_assertion(1,"No 'define_key' on windows...");
+#else
 				define_key(keydef,keycode);
+#endif
 				//printf("Keyname : %s Keycode %d\n", keydef, keycode);
 			}
 		}  else {
