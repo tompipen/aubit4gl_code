@@ -512,6 +512,12 @@ void ProtocolHandler::run()
       return;
    }
 
+   if(qs_protocolCommand.trimmed() == "AUTHFAILED"){
+      MsgBox("Authentication failed","Wrong Username or Password","Warning","Ok","Ok",0);
+      request.clear();
+      return;
+   }
+
    if(b_read){
       // Read Commands from File
       QFile file(fileName);
