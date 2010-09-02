@@ -1613,6 +1613,8 @@ void ScreenHandler::waitForEvent()
       connect(p_fglform->context, SIGNAL(fieldEvent(Fgl::Event)), p_fglform, SLOT(fieldEvent(Fgl::Event)));
    }
 
+   p_fglform->checkState();
+
    if(b_newForm && p_fglform->dialog () == NULL && p_fglform->state() != Fgl::IDLE){
       b_newForm = false;
       p_fglform->show();
@@ -1630,7 +1632,7 @@ void ScreenHandler::waitForEvent()
 
    p_fglform->raise();
 
-   p_fglform->checkState();
+   //p_fglform->checkState();
    p_fglform->b_getch_swin = true;
    processResponse();
 }
