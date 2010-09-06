@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                          |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.261 2010-09-06 10:53:33 mikeaubury Exp $
+# $Id: stack.c,v 1.262 2010-09-06 13:11:00 mikeaubury Exp $
 #
 */
 
@@ -380,7 +380,8 @@ int A4GL_pop_binding_from_stack(struct BINDING **b, int *n,char dir) {
 
 
 	A4GL_get_top_of_stack (1, &d0, &s0, (void *) &pi);
-	if (d0==DTYPE_REFERENCE) {
+	d0=d0&DTYPE_MASK;
+	if (d0==DTYPE_BINDING) {
   		A4GL_pop_param (&ptr, DTYPE_BINDING, 0);
 		*b=ptr.b;
 		*n=ptr.nbind;
