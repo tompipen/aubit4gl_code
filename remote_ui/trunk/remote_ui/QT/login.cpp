@@ -150,6 +150,11 @@ welcomeBar();
    cancelAction->setShortcuts(ql_shortcuts);
    connect(cancelAction, SIGNAL(triggered()), this, SLOT(cancelPressed()));
 
+   usernameLineEdit->addAction(okAction);
+   passwordLineEdit->addAction(okAction);
+   serverLineEdit->addAction(okAction);
+   applicationLineEdit->addAction(okAction);
+
 
    // instantiating the buttons
    //
