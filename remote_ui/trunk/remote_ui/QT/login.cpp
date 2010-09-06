@@ -136,27 +136,35 @@ welcomeBar();
    loadSettings();
 
 
-   QAction *action = new QAction("Connect", NULL);
    QList<QKeySequence> ql_shortcuts;
    ql_shortcuts << QKeySequence("Return");
    ql_shortcuts << QKeySequence("Enter");
-   action->setShortcuts(ql_shortcuts);
-   connect(action, SIGNAL(triggered()), this, SLOT(okPressed()));
+
+   QAction *okAction = new QAction("Connect", NULL);
+   okAction->setShortcutContext(Qt::WidgetShortcut);
+   okAction->setShortcuts(ql_shortcuts);
+   connect(okAction, SIGNAL(triggered()), this, SLOT(okPressed()));
+
+   QAction *cancelAction = new QAction("Cancel", NULL);
+   cancelAction->setShortcutContext(Qt::WidgetShortcut);
+   cancelAction->setShortcuts(ql_shortcuts);
+   connect(cancelAction, SIGNAL(triggered()), this, SLOT(cancelPressed()));
 
 
    // instantiating the buttons
    //
    QPushButton *okButton     = new QPushButton(tr("OK"));
-   okButton->addAction(action);
+   okButton->addAction(okAction);
    QPushButton *cancelButton = new QPushButton(tr("Cancel"));
+   cancelButton->addAction(cancelAction);
    
    
    // functionalize the buttons by using connect
    // accept and reject are predefined by qt, so we can use them
    // without declaration
    //
-   connect(okButton, SIGNAL(clicked()), this, SLOT(okPressed()));
-   connect(cancelButton, SIGNAL(clicked()), this, SLOT(cancelPressed()));
+   connect(okButton, SIGNAL(pressed()), this, SLOT(okPressed()));
+   connect(cancelButton, SIGNAL(pressed()), this, SLOT(cancelPressed()));
 
    // setup the buttons layout for the form / widget
    //
