@@ -45,14 +45,8 @@ Other unimplemented functions
 
 SQL plugins
 -----------
-    unixODBC bug (see bug db on SF)
-    Finish native PostgreSQL plugin (Sergio), create SAP DB native
-    show error when SQLUID/SQLPWD is not set on DEFINE ... LIKE
     Handle DSN-less connections (should be able to connect using CONNECT stmt, even without explicit DSN in odbc.ini)
-    Before using SQLUID and SQLPWD, odbc.ini should be examined for default username/password (?!!! - are you sure ?! - Yes I am, see example in SQLite ODBC code)
 	fix SQLite on MinGW (core dump) (-nodb)
-	fix/finish pg native driver
-	add SQL conversion for SAPODBC
 	fix test 100 (insert cursor/temp table/insert...select) - WORKS ONLY WITH Informix ESQL/C (-eci)
 	SQLite fails on ORDER BY in REPORT block (test 14)
 

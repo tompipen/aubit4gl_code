@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.196 2010-06-16 10:15:17 mikeaubury Exp $
+# $Id: report.c,v 1.197 2010-09-06 20:39:46 mikeaubury Exp $
 #
 */
 
@@ -1844,7 +1844,11 @@ A4GL_init_report_table (struct BINDING *b, int n, struct BINDING *o, int no, str
   *reread = A4GL_duplicate_binding (b, n);
 
 
+if (no) {
   SPRINTF1 (buff, "select * from %s order by ", gen_rep_tab_name (b, 0));
+} else {
+  SPRINTF1 (buff, "select * from %s", gen_rep_tab_name (b, 0));
+}
 
   A4GL_unload_report_table (b);	// This is useful for debugging....
 
@@ -1892,7 +1896,6 @@ A4GL_init_report_table (struct BINDING *b, int n, struct BINDING *o, int no, str
 #ifdef DEBUG
   A4GL_debug ("Got select statement as : %s\n", buff);
 #endif
-
 
 
 

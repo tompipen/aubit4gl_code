@@ -952,6 +952,16 @@ member_fcall:
 			objtype=vu_top->object_type;
 		}
 
+  if (strcmp(objtype,"base.channel")==0 && strcmp(func,"read")==0) {
+        if ( $<ptr_list>3) {
+                if ( $<ptr_list>3->list.list_len==1) {
+                        if ( $<ptr_list>3->list.list_val[0]->expr_type==ET_EXPR_VARIABLE_USAGE) {
+                                 $<ptr_list>3->list.list_val[0]=A4GL_new_expr_binding(expand_variables_in_expr_str_list(A4GL_new_ptr_list( $<ptr_list>3->list.list_val[0]),0,0));
+                        }
+                }
+        }
+  }
+
 
                 $<ptr>$=A4GL_new_expr_member_fcall_n(var,func, objtype, datatype, $<ptr_list>3,A4GL_compiling_module_basename(),lastlineno,get_namespace("-"));
 		inc_var_usage($<ptr>$);

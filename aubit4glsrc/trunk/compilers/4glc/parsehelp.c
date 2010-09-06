@@ -476,7 +476,7 @@ add_report_agg (char t, struct expr_str *s1, struct expr_str *s2, int a, long *n
 
   //rval = print_agg_defines (t, a);
   *n = 1;
-  x = A4GL_new_expr_agg (t, a, s1,s2, use_group, sreports[sreports_cnt].in_b );
+  x = A4GL_new_expr_agg (t, a, s1,s2, use_group, sreports[sreports_cnt].in_b ,  report_stack_cnt-1,p_yylineno);
   use_group = 0;
   A4GL_new_append_ptr_list(&list_of_aggregates, x);
   sreports_cnt++;

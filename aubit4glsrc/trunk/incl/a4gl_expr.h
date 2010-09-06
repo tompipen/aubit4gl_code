@@ -8,7 +8,7 @@ struct expr_str *A4GL_new_op_expr(struct expr_str *left, struct expr_str *right,
 struct expr_str *A4GL_new_expr_call_external(char *host,char *func,expr_str *port,struct expr_str_list *params,int nowait,char *mod,int line,char *namespace);
 struct expr_str *A4GL_new_datetime_expr(char *str, int extent);
 struct expr_str *A4GL_new_interval_expr(char *str, int extent);
-struct expr_str *A4GL_new_expr_agg (char type,int nagg, expr_str *s1, expr_str *s2, int in_group, int blockid);
+struct expr_str *A4GL_new_expr_agg (char type,int nagg, expr_str *s1, expr_str *s2, int in_group, int blockid_grp, int blockid_always,int lineno);
 struct expr_str *A4GL_new_literal_double_str (char *value);
 struct expr_str *A4GL_new_expr_field_touched(int sid, struct fh_field_list *fl,char *mod,int line);
 struct expr_str *A4GL_new_expr_not_field_touched(int sid, struct fh_field_list *fl,char *mod,int line);

@@ -25,7 +25,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: expr.c,v 1.47 2010-09-06 12:36:20 mikeaubury Exp $
+# $Id: expr.c,v 1.48 2010-09-06 20:39:46 mikeaubury Exp $
 #
 */
 
@@ -675,7 +675,7 @@ A4GL_new_literal_long_str (char *value)
 
 
 struct expr_str *
-A4GL_new_expr_agg (char type, int nagg, expr_str * s1, expr_str * s2, int in_group, int blockid)
+A4GL_new_expr_agg (char type, int nagg, expr_str * s1, expr_str * s2, int in_group, int blockid_grp, int blockid_always,int lineno)
 {
   struct expr_str *ptr;
   ptr = A4GL_new_expr_simple (ET_EXPR_AGGREGATE);
@@ -685,7 +685,9 @@ A4GL_new_expr_agg (char type, int nagg, expr_str * s1, expr_str * s2, int in_gro
   ptr->expr_str_u.expr_agg->in_group = in_group;
   ptr->expr_str_u.expr_agg->agg_expr = s1;
   ptr->expr_str_u.expr_agg->expr_where = s2;
-  ptr->expr_str_u.expr_agg->blockid = blockid;
+  ptr->expr_str_u.expr_agg->blockid = blockid_grp; // Only set if in a group...
+  ptr->expr_str_u.expr_agg->blockid_always = blockid_always; // always set 
+  ptr->expr_str_u.expr_agg->lineno=lineno;
   return ptr;
 }
 

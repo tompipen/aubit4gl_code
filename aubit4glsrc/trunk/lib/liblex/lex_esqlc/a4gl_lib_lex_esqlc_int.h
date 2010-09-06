@@ -42,3 +42,4 @@ struct command *get_last_cmd(void );
 void dump_command_list(struct command **clist, int nvals);
 int local_bad_identifiers(char *s);
 int dump_class_definition(struct s_class_definition *class_def);
+void set_object_function(int n);

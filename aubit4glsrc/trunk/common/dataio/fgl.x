@@ -1,4 +1,4 @@
-/* $Id: fgl.x,v 1.60 2010-08-23 17:23:21 mikeaubury Exp $ */
+/* $Id: fgl.x,v 1.61 2010-09-06 20:39:45 mikeaubury Exp $ */
 typedef string str<>;
 typedef string sql_ident<>;
 
@@ -2144,6 +2144,8 @@ struct s_expr_agg {
 	struct expr_str *agg_expr;
 	struct expr_str *expr_where;
 	int blockid;
+	int blockid_always;
+	int lineno;
 };
 
 struct s_expr_dynarr_extent {

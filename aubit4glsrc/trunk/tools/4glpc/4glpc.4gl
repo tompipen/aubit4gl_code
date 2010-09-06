@@ -397,6 +397,14 @@ DEFINE lv_type            CHAR(40)
                 LET a=a+1
                 LET mv_lextype=arg_val(a)
 
+		IF mv_lextype="CSNEW" THEN
+			CALL aclfgl_setenv("A4GL_NOSQLCLOBBER","Y")
+			CALL aclfgl_setenv("A4GL_MARK_SCOPE_MODULE","Y")
+		END IF
+		IF mv_lextype="XML" THEN
+			CALL aclfgl_setenv("A4GL_PACKER","XMLBEST")
+			LET mv_lextype="WRITE"
+		END IF
                 CALL aclfgl_setenv("A4GL_LEXTYPE",mv_lextype CLIPPED)
 
                 CONTINUE FOR
@@ -890,6 +898,9 @@ endcode
             WHEN "-t"
                 LET a=a+1
                 LET mv_lextype=arg_val(a)
+		IF mv_lextype="XML" THEN
+			LET mv_lextype="WRITE"
+		END IF
 
                 IF mv_lextype="WRITE" THEN
 

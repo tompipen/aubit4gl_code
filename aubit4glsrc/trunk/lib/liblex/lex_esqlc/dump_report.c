@@ -7,6 +7,7 @@ extern int tmp_ccnt;
 static int report_cnt=0;
 static int *ordbyfields = 0;
 static int ordbyfieldscnt = 0;
+extern int yylineno;
 
 
 
@@ -368,10 +369,10 @@ print_report_ctrl (int report_cnt, int rord_type, char *curr_rep_name,int rep_ty
     }
 
 
-  printc ("    if (acl_ctrl==REPORT_AFTERDATA ) {\n");
-  pr_report_agg (aggregates);
-  printc ("    return;");
-  printc ("    }\n");
+  	printc ("    if (acl_ctrl==REPORT_AFTERDATA ) {\n");
+  	pr_report_agg (aggregates);
+  	printc ("    return;");
+  	printc ("    }\n");
 
 
   printed_every=0;
@@ -769,8 +770,31 @@ int cnt;
 int order_by_type=0;
 char *asc_desc=NULL;
 char namespaced_report_name[256];
+int force_two_pass=0;
 
 
+
+if (aggregates) {
+	// Scan the aggregates and see if we need to force a two pass report
+	// to calculate aggregates in the first pass - for display in the second.
+	// This only applies to report wide (ie - non GROUP) aggregates..
+	// when used anywhere except the "ON LAST ROW"
+	//
+	for (a=0;a< aggregates->list.list_len; a++) {
+        struct s_expr_agg *agg;
+        char t;
+        //int a;
+        A4GL_assertion(aggregates->list.list_val[a]->expr_type!=ET_EXPR_AGGREGATE,"Expecting an aggregate");
+        agg=aggregates->list.list_val[a]->expr_str_u.expr_agg;
+
+	if (agg->in_group) continue;
+	A4GL_assertion(agg->blockid_always <0 || agg->blockid_always>=report_format_section->entries.entries_len,"Invalid blockid");
+	if (report_format_section->entries.entries_val[agg->blockid_always]->rb_block.rb==RB_ON_LAST_ROW) continue;
+	force_two_pass=1;
+	yylineno=agg->lineno;
+	A4GL_warn("Use of non-group aggregate outside of ON LAST ROW block is not compatible");
+	}
+}
 
 
 report_cnt++;
@@ -806,6 +830,7 @@ report_cnt++;
   }
 
 
+
   switch ( report_orderby_section->rord_type ) {
         case REPORT_ORDERBY_IMPLICIT: 	
   printc ("static int acl_rep_ordcnt=%d; // 1\n",a);
@@ -817,6 +842,7 @@ report_cnt++;
   printc ("static int acl_rep_ordcnt=%d; // 3\n",a);
 					order_by_type=1; break;
   }
+
   
 
 
@@ -872,12 +898,15 @@ report_cnt++;
 	     a, a);
 	}
         printc ("A4GL_pop_params_and_save_blobs(_rbind,%d,&_blobdata);", cnt);
+	if (report_orderby_section->variables) {
 	asc_desc=malloc(report_orderby_section->variables->list.list_len+1);
 	for (a=0;a<report_orderby_section->variables->list.list_len;a++) {
 		asc_desc[a]=report_orderby_section->variables->list.list_val[a]->expr_str_u.expr_variable_usage_with_asc_desc->asc_desc;
 	}
 	asc_desc[a]=0;
-
+	} else {
+		asc_desc="";
+	}
       print_report_table (funcname , 'R', cnt,asc_desc,parameters,report_orderby_section->variables);
       printc("A4GL_dec_refcount(_objData);");
 	printc("A4GL_copy_back_blobs(_blobdata,0);");
@@ -1002,6 +1031,7 @@ int z;
         agg=aggregates->list.list_val[z]->expr_str_u.expr_agg;
       	a = agg->expr_num;
       	t = agg->agg_type;
+	
 	 local_print_agg_defines(t,a);
   }
 }

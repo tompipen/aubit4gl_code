@@ -24,3 +24,6 @@ value_list	<value_list>
 layout_attributes	<layout_attributes>
 screen_layout	<screen_layout>
 layout_container	Layout Container
+incl_entry	include value
+items_entry	item
+def_val	default	value

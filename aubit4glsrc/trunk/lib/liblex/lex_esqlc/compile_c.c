@@ -24,12 +24,12 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.530 2010-08-23 17:29:28 mikeaubury Exp $
+# $Id: compile_c.c,v 1.531 2010-09-06 20:39:46 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
-static char const module_id[] = "$Id: compile_c.c,v 1.530 2010-08-23 17:29:28 mikeaubury Exp $";
+static char const module_id[] = "$Id: compile_c.c,v 1.531 2010-09-06 20:39:46 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -3313,7 +3313,8 @@ real_print_func_call (t_expr_str * fcall)
       printc ("{");
       printc ("      int _retvars;");
       printc ("A4GLSTK_setCurrentLine(_module_name,%d);", p->line);
-A4GL_pause_execution();
+
+
 	  printc ("A4GL_set_status(0,0); /*2*/ _retvars=A4GL_call_dynarr_function_i(&%s,sizeof(struct _dynelem_%s),\"%s\",%d);\n",
 		  generation_get_variable_usage_as_string_for_dynarr (p->var_usage_ptr->expr_str_u.expr_variable_usage,1), 
 		  generation_get_variable_usage_as_string_for_dynarr (p->var_usage_ptr->expr_str_u.expr_variable_usage,0), 

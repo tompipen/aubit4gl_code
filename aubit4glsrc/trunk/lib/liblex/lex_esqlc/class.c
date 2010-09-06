@@ -144,7 +144,7 @@ dump_class_definition (struct s_class_definition *class_def)
   printc ("obj->objData=objData;");
   if (class_def->parentname && strlen (class_def->parentname))
     {
-      printc ("objData->base.objectid=parentObjectId;", class_def->parentname);
+      printc ("objData->base.objectid=parentObjectId;");
     }
   printc ("A4GL_push_objectID(obj->objHeapId);");
   print_nullify (E_SCOPE_CLASS, &class_def->private_variables);
@@ -247,6 +247,35 @@ dump_class_definition (struct s_class_definition *class_def)
     }
   printc ("#");
 
+
+  printc("static char *memberFunctions[]={");
+  for (a = 0; a < class_def->class_entries.class_entries_len; a++)
+    {
+
+      if (class_def->class_entries.class_entries_val[a]->met_type == E_MET_FUNCTION_DEFINITION)
+	{
+              struct s_function_definition *fdef;
+              int b;
+		  expr_str_list *expanded_params;
+		char *fname;
+		char sig_fname[2000]="";
+
+              	fdef = &class_def->class_entries.class_entries_val[a]->module_entry_u.function_definition;
+		  expanded_params = expand_parameters (&fdef->variables, fdef->parameters);
+                  for (b = 0; b < expanded_params->list.list_len; b++)
+                    {
+                      char tbuff[2300];
+                      sprintf (tbuff, "%s", get_sig_dtype (expanded_params->list.list_val[b]));
+		      strcat (sig_fname, tbuff);
+		    }
+
+	  	fname = class_def->class_entries.class_entries_val[a]->module_entry_u.function_definition.funcname;
+		printc("\"%s\",\"%s\",", fname,sig_fname);
+	}
+    }
+  printc("0};");
+  printc("#");
+
   printc ("static void init_object(void) {");
   printc ("static int inited=0;");
   printc ("  if (inited) return;");
@@ -336,9 +365,9 @@ dump_class_definition (struct s_class_definition *class_def)
 
 
   printc ("  A4GL_add_datatype_function_i (%d, \":%s.new\", (void *) class_%s_new);", DTYPE_OBJECT, class_def->classname,
-	  cleaned_class (class_def->classname), cleaned_class (class_def->classname));
+	  cleaned_class (class_def->classname));
   printc ("  A4GL_add_datatype_function_i (%d, \":%s.~\", (void *) class_%s_delete);", DTYPE_OBJECT, class_def->classname,
-	  cleaned_class (class_def->classname), cleaned_class (class_def->classname));
+	  cleaned_class (class_def->classname)); //, cleaned_class (class_def->classname));
 
   printc ("}");
 
@@ -351,20 +380,16 @@ dump_class_definition (struct s_class_definition *class_def)
   if (!has_constructor)
     {
       printc ("#");
-      printh ("static int class_%s_new(long *objId, int nparam);\n", cleaned_class (class_def->classname),
-	      cleaned_class (class_def->classname));
-      printc ("static int class_%s_new(long *objId,int n) {", cleaned_class (class_def->classname),
-	      cleaned_class (class_def->classname));
+      printh ("static int class_%s_new(long *objId, int nparam);\n", cleaned_class (class_def->classname));
+      printc ("static int class_%s_new(long *objId,int n) {", cleaned_class (class_def->classname));
       printc ("init_module_variables();");
       printc ("return new_obj(n);");
       printc ("}");
     }
 
   printc ("#");
-  printh ("static int class_%s_delete(long *objId, int nparam);\n", cleaned_class (class_def->classname),
-	  cleaned_class (class_def->classname));
-  printc ("static int class_%s_delete(long *objId,int n) {", cleaned_class (class_def->classname),
-	  cleaned_class (class_def->classname));
+  printh ("static int class_%s_delete(long *objId, int nparam);\n", cleaned_class (class_def->classname));
+  printc ("static int class_%s_delete(long *objId,int n) {", cleaned_class (class_def->classname));
   printc ("init_module_variables();");
   printc ("del_obj(objId, n);");
   printc ("return 0;");
