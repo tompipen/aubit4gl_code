@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                          |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.260 2010-08-25 11:13:19 mikeaubury Exp $
+# $Id: stack.c,v 1.261 2010-09-06 10:53:33 mikeaubury Exp $
 #
 */
 
@@ -372,13 +372,23 @@ struct s_save_binding *ptr;
 
 int A4GL_pop_binding_from_stack(struct BINDING **b, int *n,char dir) {
 	struct s_save_binding ptr;
+	int d0;
+	int s0;
+	void *pi;
 	ptr.b=0;
 	ptr.nbind=0;
 
-  	A4GL_pop_param (&ptr, DTYPE_BINDING, 0);
 
-	*b=ptr.b;
-	*n=ptr.nbind;
+	A4GL_get_top_of_stack (1, &d0, &s0, (void *) &pi);
+	if (d0==DTYPE_REFERENCE) {
+  		A4GL_pop_param (&ptr, DTYPE_BINDING, 0);
+		*b=ptr.b;
+		*n=ptr.nbind;
+        } else {
+		A4GL_drop_param();
+		//A4GL_exitwith("Parameter is not a reference");
+		return 0;
+	}
 
 	return 1;
 }

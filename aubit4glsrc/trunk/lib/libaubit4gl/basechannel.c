@@ -227,7 +227,6 @@ static int base_channel_write (long *objectID, int nParam) {
 static void base_channel_destructor(long *objectID) {
 	struct sObject *ptr=0;
         struct channel_data *data;
-printf("DESTRUCT!\n");
 	if (!ensureObject("base.channel",*objectID,&ptr)) {
                 return ;
         }

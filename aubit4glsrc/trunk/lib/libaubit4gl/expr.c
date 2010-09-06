@@ -25,7 +25,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: expr.c,v 1.45 2010-03-17 19:02:22 mikeaubury Exp $
+# $Id: expr.c,v 1.46 2010-09-06 10:53:33 mikeaubury Exp $
 #
 */
 
@@ -1116,6 +1116,16 @@ A4GL_new_expr_member_fcall_n (struct expr_str *var_usage_ptr, char *funcname, ch
 		return A4GL_new_expr_dynarr_fcall_n (var_usage_ptr, funcname, params, mod, line, p_namespace) ;
 	}
 	
+  if (strcmp(objtype,"base.channel")==0 && strcmp(funcname,"read")==0) {
+	if (params) {
+		if (params->list.list_len==1) {
+			if (params->list.list_val[0]->expr_type==ET_EXPR_VARIABLE_USAGE) {
+				params->list.list_val[0]=A4GL_new_expr_binding(expand_variables_in_expr_str_list(A4GL_new_ptr_list(params->list.list_val[0]),0,0));
+			}
+		}
+	}
+  }
+
   p = malloc (sizeof (struct s_expr_member_function_call_n));
   p2 = A4GL_new_expr_simple (ET_EXPR_MEMBER_FCALL_NEW);
   p->var_usage_ptr = var_usage_ptr;
