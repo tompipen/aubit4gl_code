@@ -77,6 +77,7 @@ static int base_channel_open(long *objectID, int nParam) {
 	strcpy(data->filename,filename);
 	data->handle=fopen(data->filename,dir);
 
+A4GL_debug("opened %p",data->handle);
 	free(dir);
 	free(filename);
 
@@ -84,12 +85,12 @@ static int base_channel_open(long *objectID, int nParam) {
 }
 
 static int base_channel_read (long *objectID,  int nParam) {
-        struct channel_data *data;
+        struct channel_data *data=NULL;
 	struct BINDING *obind=NULL;
-	struct sObject *ptr;
-	int no;
+	struct sObject *ptr=NULL;
+	int no=0;
 	char buff[20000];
-	char *ptrBuff;
+	char *ptrBuff=NULL;
 
 	if (!ensureObject("base.channel",*objectID,&ptr)) {
                 A4GL_exitwith("Not an object of type base.channel - or not initialized");
@@ -107,10 +108,12 @@ static int base_channel_read (long *objectID,  int nParam) {
 
 
 	if (!A4GL_pop_binding_from_stack(&obind,&no,'o')) { // Its an output binding when reading...
-        	A4GL_push_int(0);
-        	return 1;
+        	//A4GL_push_int(0);
+		  A4GL_exitwith("Parameter is not a reference");
+        	return 0;
 	}
 
+	A4GL_debug("Reading from %p",data->handle);
 
         if (!fgets(buff,19998,data->handle)) {
                 int a;
@@ -224,6 +227,7 @@ static int base_channel_write (long *objectID, int nParam) {
 static void base_channel_destructor(long *objectID) {
 	struct sObject *ptr=0;
         struct channel_data *data;
+printf("DESTRUCT!\n");
 	if (!ensureObject("base.channel",*objectID,&ptr)) {
                 return ;
         }
@@ -262,6 +266,7 @@ static int base_channel_close (long *objectID, int nParam) {
 	}
 
 	fclose(data->handle);
+	data->handle=NULL;
 	return 0;
 }
 
