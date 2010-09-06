@@ -25,7 +25,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: expr.c,v 1.46 2010-09-06 10:53:33 mikeaubury Exp $
+# $Id: expr.c,v 1.47 2010-09-06 12:36:20 mikeaubury Exp $
 #
 */
 
@@ -1116,6 +1116,7 @@ A4GL_new_expr_member_fcall_n (struct expr_str *var_usage_ptr, char *funcname, ch
 		return A4GL_new_expr_dynarr_fcall_n (var_usage_ptr, funcname, params, mod, line, p_namespace) ;
 	}
 	
+/*
   if (strcmp(objtype,"base.channel")==0 && strcmp(funcname,"read")==0) {
 	if (params) {
 		if (params->list.list_len==1) {
@@ -1125,6 +1126,7 @@ A4GL_new_expr_member_fcall_n (struct expr_str *var_usage_ptr, char *funcname, ch
 		}
 	}
   }
+*/
 
   p = malloc (sizeof (struct s_expr_member_function_call_n));
   p2 = A4GL_new_expr_simple (ET_EXPR_MEMBER_FCALL_NEW);
