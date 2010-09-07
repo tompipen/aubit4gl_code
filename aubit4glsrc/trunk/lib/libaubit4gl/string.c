@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: string.c,v 1.39 2010-06-03 09:30:23 mikeaubury Exp $
+# $Id: string.c,v 1.40 2010-09-07 07:45:04 mikeaubury Exp $
 #
 */
 
@@ -290,6 +290,7 @@ A4GL_wordwrap_text (char *in, char *out, int width, int maxsize)
 		  if (cnt>=strlen(buff) || (cnt % width)==0) break;
 		  insert_character (buff, cnt, ' ');
 		}
+		cnt--;
 	}
   }
 
