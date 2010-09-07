@@ -783,6 +783,7 @@ char *set_force_ui(char *s);
 char *set_debug_filename(char *s);
 void A4GL_set_pragma (module_definition *this_module, enum e_pragmas pragma_type, char *str_value, char *str_value2,int set_from_globals);
 void A4GL_used_object_type(module_definition *this_module, char *s);
+int has_loaded_object (char *s);
 
 expr_str * expr_cached (expr_str * l);
 

@@ -24,11 +24,11 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.163 2010-06-08 16:45:40 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.164 2010-09-07 09:26:38 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: formcntrl.c,v 1.163 2010-06-08 16:45:40 mikeaubury Exp $";
+		"$Id: formcntrl.c,v 1.164 2010-09-07 09:26:38 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -79,6 +79,8 @@ int A4GL_do_after_field (FIELD * f, struct s_screenio *sio);
 void A4GL_clr_field (FIELD * f);
 void A4GL_make_window_with_this_form_current(void *form);
 int A4GL_field_is_noentry(int doing_construct, struct struct_scr_field *f);
+static int getFieldInDir(void **field_list, int curr_attrib, char dir) ;
+static int getNextAttribute(void **field_list, int curr_attrib, char dir) ;
 
 //int A4GL_get_curr_field_col(FORM *mform) ;
 /*
@@ -1261,8 +1263,7 @@ process_control_stack_internal (struct s_screenio *sio,struct aclfgl_event_list 
 	{
 	int really_ok=0;
 	  new_state = 0;
-	  fprop =
-	    (struct struct_scr_field *) (field_userptr (sio->currentfield));
+	  fprop = (struct struct_scr_field *) (field_userptr (sio->currentfield));
 	  if (sio->mode != MODE_CONSTRUCT)
 	    {
 	      char *picture;
@@ -1918,7 +1919,8 @@ do_key_move_fc (char lr, struct s_screenio *s, int some_a, int has_picture,
     {
       if (at_first)
 	{
-	      A4GL_newMovement (s, s->curr_attrib - 1);	//  go to previous field
+	      //A4GL_newMovement (s, s->curr_attrib - 1);	//  go to previous field
+		      A4GL_newMovement (s,getNextAttribute(s->field_list,  s->curr_attrib , 'L'));
 	      return;
 
 	}
@@ -1945,7 +1947,8 @@ do_key_move_fc (char lr, struct s_screenio *s, int some_a, int has_picture,
 	    }
 	  else
 	    {
-	      A4GL_newMovement (s, s->curr_attrib + 1);
+		//getNextAttribute(
+	      A4GL_newMovement (s, getNextAttribute( s->field_list, s->curr_attrib ,'R'));
 	      return;
 	    }
 	}
@@ -2251,7 +2254,8 @@ A4GL_proc_key_input (int a, FORM * mform, struct s_screenio *s)
       A4GL_debug ("MJA Try to move to previous field : %d\n",
 		  s->curr_attrib - 1);
 #endif
-      A4GL_newMovement (s, s->curr_attrib - 1);
+      //A4GL_newMovement (s, s->curr_attrib - 1);
+		      A4GL_newMovement (s,getNextAttribute(s->field_list,  s->curr_attrib , 'U'));
       break;
 
     case 2:
@@ -2315,7 +2319,9 @@ A4GL_proc_key_input (int a, FORM * mform, struct s_screenio *s)
 		      A4GL_debug ("MJA Try to move to next field : %d\n",
 				  s->curr_attrib + 1);
 #endif
-		      A4GL_newMovement (s, s->curr_attrib + 1);
+
+			
+		      A4GL_newMovement (s,getNextAttribute(s->field_list,  s->curr_attrib , 'R'));
 		    }
 		}
 	    }
@@ -2346,7 +2352,8 @@ A4GL_proc_key_input (int a, FORM * mform, struct s_screenio *s)
 	  A4GL_debug ("MJA Try to move to next field : %d\n",
 		      s->curr_attrib + 1);
 #endif
-	  A4GL_newMovement (s, s->curr_attrib + 1);
+	  //A4GL_newMovement (s, s->curr_attrib + 1);
+		      A4GL_newMovement (s,getNextAttribute(s->field_list,  s->curr_attrib , 'R'));
 	}
       break;
 
@@ -2365,7 +2372,8 @@ A4GL_proc_key_input (int a, FORM * mform, struct s_screenio *s)
 #ifdef DEBUG
       A4GL_debug ("MJA Try to move to next field : %d\n", s->curr_attrib + 1);
 #endif
-      A4GL_newMovement (s, s->curr_attrib + 1);
+      //A4GL_newMovement (s, s->curr_attrib + 1);
+		      A4GL_newMovement (s,getNextAttribute(s->field_list,  s->curr_attrib , 'R'));
       break;
 
 
@@ -2393,7 +2401,8 @@ A4GL_proc_key_input (int a, FORM * mform, struct s_screenio *s)
 #ifdef DEBUG
       		A4GL_debug ("MJA Try to move to next field : %d\n", s->curr_attrib + 1);
 #endif
-      		A4GL_newMovement (s, s->curr_attrib + 1);
+      		//A4GL_newMovement (s, s->curr_attrib + 1);
+		      A4GL_newMovement (s,getNextAttribute(s->field_list,  s->curr_attrib , 'R'));
 	}
       break;
 
@@ -2434,7 +2443,8 @@ A4GL_proc_key_input (int a, FORM * mform, struct s_screenio *s)
 #ifdef DEBUG
       A4GL_debug ("MJA Try to move to next field : %d\n", s->curr_attrib + 1);
 #endif
-      A4GL_newMovement (s, s->curr_attrib + 1);
+      //A4GL_newMovement (s, s->curr_attrib + 1);
+		      A4GL_newMovement (s,getNextAttribute(s->field_list,  s->curr_attrib , 'D'));
       break;
 
     case A4GLKEY_HOME:
@@ -2967,4 +2977,92 @@ int A4GL_get_curr_field_col(FORM *mform) {
 int UILIB_aclfgl_aclfgl_set_application_xml (int nargs) {
 	A4GL_drop_param();
 	return 0;
+}
+
+
+
+
+int getFieldInDir(void **field_list, int curr_attrib, char dir) {
+	//struct struct_scr_field *fprop;
+	//struct struct_scr_field *fprop_srch;
+	int best_diff=-1;
+	int best_attrib=-1;
+	int diff;
+	int a;
+
+	int h1,w1,y1,x1,nr1,nb1;
+	int h2,w2,y2,x2,nr2,nb2;
+
+	field_info((FIELD *)field_list[curr_attrib], &h1,&w1,&y1,&x1,&nr1,&nb1);
+
+
+
+	for (a=0;field_list[a];a++) {
+
+		if (a==curr_attrib) continue;
+
+		field_info(field_list[a], &h2,&w2,&y2,&x2,&nr2,&nb2);
+
+
+		if (dir=='U' && y2>=y1) continue;
+		if (dir=='D' && y2<=y1) continue;
+
+		if (dir=='L' && x2>=x1) continue;
+		if (dir=='R' && x2<=x1) continue;
+
+
+		if (dir=='L' || dir=='R') {
+			// Must be on the same line
+			if (y2!=y1) continue;
+			best_diff=x1-x2; if (diff<0) diff=0-diff;
+			if (diff<best_diff || best_diff==-1)  {
+				best_diff=diff;
+				best_attrib=a;
+			}
+		}
+
+
+		if (dir=='U' || dir=='D') {
+			int field_start;
+			int field_end;
+			int field_start2;
+			int field_end2;
+
+			// Must overlap horizontally...
+			field_start=x1;
+			field_end=x1+w1;
+			field_start2=x2;
+			field_end2=x2+w2;
+
+			if ((field_start2>=field_start && field_start2<=field_end) || (field_end2>=field_start && field_end2<=field_end))  {
+				diff=y2-y1; if (diff<0) diff=0-diff;
+				if (diff<best_diff || best_diff==-1)  {
+					best_diff=diff;
+					best_attrib=a;
+				}
+			}
+			
+		}
+	}
+	
+return best_attrib;
+}
+
+
+static int getNextAttribute(void **field_list, int curr_attrib, char dir) {
+int attrib;
+
+	if (A4GL_get_option_value('f')==0) {
+			if (dir=='L' || dir=='U') return curr_attrib-1;
+			return curr_attrib+1;
+	}
+
+	attrib=getFieldInDir(field_list,curr_attrib,dir);
+	if (attrib!=-1) return attrib;
+	if (dir=='L') return curr_attrib-1;
+	if (dir=='U') return curr_attrib-1;
+	if (dir=='D') return curr_attrib+1;
+	if (dir=='R') return curr_attrib+1;
+	A4GL_assertion(1,"Invalid direction");
+	return -1;
 }

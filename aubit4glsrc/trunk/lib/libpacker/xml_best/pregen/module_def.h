@@ -1,5 +1,5 @@
 /* XML processor/application API for module_def.dtd.
- * Generated 2010/08/27 09:21:18.
+ * Generated 2010/09/07 10:03:38.
  *
  * This program was generated with the FleXML XML processor generator.
  * FleXML is Copyright (C) 1999-2005 Kristoffer Rose.  All rights reserved.
@@ -1437,6 +1437,8 @@ typedef int AT_report_block_data_nm;
 #define AU_report_block_data_nm NULL
 typedef int AT_s_pdf_report_definition_colno;
 #define AU_s_pdf_report_definition_colno NULL
+typedef int AT_s_expr_agg_blockid_always;
+#define AU_s_expr_agg_blockid_always NULL
 typedef int AT_attrib_color;
 #define AU_attrib_color NULL
 typedef int AT_s_select_finish_insert_into;
@@ -1753,10 +1755,10 @@ typedef int AT_s_select_list_item_alias;
 #define AU_s_select_list_item_alias NULL
 typedef int AT_s_report_definition_lastlineno;
 #define AU_s_report_definition_lastlineno NULL
-typedef int AT_s_select_list_item_between_expr_nm;
-#define AU_s_select_list_item_between_expr_nm NULL
 typedef int AT_struct_execute_cmd_nm;
 #define AU_struct_execute_cmd_nm NULL
+typedef int AT_s_select_list_item_between_expr_nm;
+#define AU_s_select_list_item_between_expr_nm NULL
 typedef int AT_pdf_startrep_isdefault;
 #define AU_pdf_startrep_isdefault NULL
 typedef int AT_s_expr_dynarr_function_call_n_module;
@@ -1925,6 +1927,8 @@ typedef int AT_s_import_datatype_module;
 #define AU_s_import_datatype_module NULL
 typedef int AT_struct_display_b_n_cmd_nm;
 #define AU_struct_display_b_n_cmd_nm NULL
+typedef int AT_s_expr_agg_lineno;
+#define AU_s_expr_agg_lineno NULL
 typedef int AT_funcname_list_nm;
 #define AU_funcname_list_nm NULL
 typedef int AT_globals_definition_compiled_time;
@@ -2888,6 +2892,8 @@ extern AT_report_block_data_nm AX_report_block_data_nm;
 #define A_report_block_data_nm (bufferstack + AX_report_block_data_nm)
 extern AT_s_pdf_report_definition_colno AX_s_pdf_report_definition_colno;
 #define A_s_pdf_report_definition_colno (bufferstack + AX_s_pdf_report_definition_colno)
+extern AT_s_expr_agg_blockid_always AX_s_expr_agg_blockid_always;
+#define A_s_expr_agg_blockid_always (bufferstack + AX_s_expr_agg_blockid_always)
 extern AT_attrib_color AX_attrib_color;
 #define A_attrib_color (bufferstack + AX_attrib_color)
 extern AT_s_select_finish_insert_into AX_s_select_finish_insert_into;
@@ -3204,10 +3210,10 @@ extern AT_s_select_list_item_alias AX_s_select_list_item_alias;
 #define A_s_select_list_item_alias (bufferstack + AX_s_select_list_item_alias)
 extern AT_s_report_definition_lastlineno AX_s_report_definition_lastlineno;
 #define A_s_report_definition_lastlineno (bufferstack + AX_s_report_definition_lastlineno)
-extern AT_s_select_list_item_between_expr_nm AX_s_select_list_item_between_expr_nm;
-#define A_s_select_list_item_between_expr_nm (bufferstack + AX_s_select_list_item_between_expr_nm)
 extern AT_struct_execute_cmd_nm AX_struct_execute_cmd_nm;
 #define A_struct_execute_cmd_nm (bufferstack + AX_struct_execute_cmd_nm)
+extern AT_s_select_list_item_between_expr_nm AX_s_select_list_item_between_expr_nm;
+#define A_s_select_list_item_between_expr_nm (bufferstack + AX_s_select_list_item_between_expr_nm)
 extern AT_pdf_startrep_isdefault AX_pdf_startrep_isdefault;
 #define A_pdf_startrep_isdefault (bufferstack + AX_pdf_startrep_isdefault)
 extern AT_s_expr_dynarr_function_call_n_module AX_s_expr_dynarr_function_call_n_module;
@@ -3376,6 +3382,8 @@ extern AT_s_import_datatype_module AX_s_import_datatype_module;
 #define A_s_import_datatype_module (bufferstack + AX_s_import_datatype_module)
 extern AT_struct_display_b_n_cmd_nm AX_struct_display_b_n_cmd_nm;
 #define A_struct_display_b_n_cmd_nm (bufferstack + AX_struct_display_b_n_cmd_nm)
+extern AT_s_expr_agg_lineno AX_s_expr_agg_lineno;
+#define A_s_expr_agg_lineno (bufferstack + AX_s_expr_agg_lineno)
 extern AT_funcname_list_nm AX_funcname_list_nm;
 #define A_funcname_list_nm (bufferstack + AX_funcname_list_nm)
 extern AT_globals_definition_compiled_time AX_globals_definition_compiled_time;
