@@ -18,7 +18,7 @@
 #include "pipe.h"
 #include "debug.h"
 
-int stream_buff_size=500000;
+int stream_buff_size=1000000;
 
 //#define stream_buff_size 50000
 char **sock_buff=0;
