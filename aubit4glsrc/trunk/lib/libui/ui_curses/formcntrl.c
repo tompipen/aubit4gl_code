@@ -24,11 +24,11 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.165 2010-09-08 11:53:13 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.166 2010-09-09 12:31:19 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: formcntrl.c,v 1.165 2010-09-08 11:53:13 mikeaubury Exp $";
+		"$Id: formcntrl.c,v 1.166 2010-09-09 12:31:19 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -1689,6 +1689,11 @@ UILIB_A4GL_form_loop_v2 (void *vs, int init, void *vevt)
 
   while (1)
     {
+
+	if (A4GL_isyes(acl_getenv("RESETARRVARS"))) { /* Fixup for Pavel Navrkal */
+		A4GL_set_arr_curr(1);
+		A4GL_set_scr_line(1);
+	}
 
       a = internal_A4GL_form_loop_v2 (vs, init, vevt);
       if (init || a != -1)
