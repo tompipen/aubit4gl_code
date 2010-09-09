@@ -609,7 +609,20 @@ namespace AubitDesktop
 
         static internal int decode_datatype_size(string p)
         {
-
+            if (p.Contains("("))
+            {
+                p = p.Substring(p.IndexOf("(") + 1);
+                p=p.Replace(')', ' ');
+                string []s=p.Split(',');
+                if (s.Length == 1)
+                {
+                    return Convert.ToInt32(s[0]);
+                }
+                else
+                {
+                    return (Convert.ToInt32(s[0]) <<16) + Convert.ToInt32(s[1]);
+                }
+            } 
             return 0;
         }
 

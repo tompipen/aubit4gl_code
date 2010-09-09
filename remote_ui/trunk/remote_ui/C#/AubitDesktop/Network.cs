@@ -661,7 +661,7 @@ namespace AubitDesktop
 
         private void startStreamAsyncRead()
         {
-            byte[] buffer = new byte[100000];
+            byte[] buffer = new byte[1000000];
 
             if (this.isConnected() == false)
             {
@@ -684,7 +684,7 @@ namespace AubitDesktop
                 AsyncCallback networkReadCallback = new AsyncCallback(dataReceived);
                 try
                 {
-                    tcpStream.BeginRead(buffer, 0, 100000, networkReadCallback, buffer);
+                    tcpStream.BeginRead(buffer, 0, 1000000, networkReadCallback, buffer);
                 }
                 catch (Exception )
                 {
