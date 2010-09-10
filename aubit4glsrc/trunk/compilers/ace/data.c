@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: data.c,v 1.50 2010-08-27 21:38:22 mikeaubury Exp $
+# $Id: data.c,v 1.51 2010-09-10 18:49:03 mikeaubury Exp $
 #*/
 
 /**
@@ -339,7 +339,7 @@ add_agg (struct agg_val agg)
  * @todo Describe function
  */
 void
-add_select (char *sql, char *sql_no_where, char *temptabname)
+add_select (char *sql, char *sql_no_where, char *temptabname, char*into_portion)
 {
   struct select_stmts *ptr;
   char *buff;
@@ -386,7 +386,8 @@ add_select (char *sql, char *sql_no_where, char *temptabname)
   ptr->wherepos1 = 0;
   ptr->wherepos2 = 0;
 
-  ptr->orig_statement=acl_strdup(sql_no_where);
+  ptr->whereless_statement.select_portion=acl_strdup(sql_no_where);
+  ptr->whereless_statement.into_portion=acl_strdup(into_portion);
   buff = acl_strdup (sql);
 
   c = 0;
@@ -547,9 +548,30 @@ add_zero_rows_where (struct select_stmts *ptr,int *varsLeft)
 {
   char *buff;
   char *buff1;
+int a;
   *varsLeft=0; // how many variables do we have...
-  buff = acl_malloc2 (strlen (ptr->orig_statement) + 200);	/* We need a little extra space... */
+  
 
+  buff = acl_malloc2 (strlen (ptr->whereless_statement.select_portion) + 200);	/* We need a little extra space... */
+  sprintf(buff,"%s WHERE (1=0) %s", ptr->whereless_statement.select_portion, ptr->whereless_statement.into_portion);
+	for (a=0;a<strlen(buff);a++) {
+
+		if (buff[a]=='\n' && buff[a+1]=='2') {
+			buff[a++]=' ';
+			buff[a++]=' ';
+			buff[a++]=' ';
+			buff[a++]='?';
+			while (buff[a]!=')') {
+				buff[a++]=' ';
+			}
+			buff[a]=' ';
+			(*varsLeft)++;
+			
+		}
+	}
+return buff;
+
+#ifdef OLD
   //return ptr->statement;
   if (ptr->has_where == 0)
     {
@@ -629,6 +651,7 @@ add_zero_rows_where (struct select_stmts *ptr,int *varsLeft)
 
     }
   return buff;
+#endif
 }
 
 
@@ -773,6 +796,7 @@ execute_selects (void)
       strcpy (nstatement, add_zero_rows_where (ptr,&varsLeft));
 
 //printf("EXECUTING %s\n", nstatement);
+//
       if (a == mx && columns_method == COLUMNS_METHOD_INTO_TEMP)
 	{
 	  strcat (nstatement, " INTO TEMP a4gl_drep1234");

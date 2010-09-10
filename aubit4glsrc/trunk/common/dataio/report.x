@@ -1,7 +1,7 @@
 
 /* 
 Data definitions for a report 
- $Id: report.x,v 1.13 2010-08-27 08:17:01 mikeaubury Exp $ 
+ $Id: report.x,v 1.14 2010-09-10 18:49:08 mikeaubury Exp $ 
 
 */
  
@@ -176,9 +176,13 @@ struct output {
 	string report_to_filename<>;
 };
 
+struct whereless_select {
+	string select_portion<>;
+	string into_portion<>;
+};
 
 struct select_stmts {
-	string orig_statement<>;
+	whereless_select whereless_statement;
 	string statement<>;
 	int has_where;
 	int wherepos1;

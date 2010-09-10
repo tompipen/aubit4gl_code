@@ -806,9 +806,9 @@ select_statement:
 	SELECT {reset_sql_stuff();} op_ad sq_select_list from_clause op_where_clause op_group_by_clause op_having_clause sel_p2  op_into_temp
 	{
 		char buff[100000];
-		SPRINTF7(buff,"%s %s %s %s %s %s %s",$<str>1,$<str>3,$<str>4,$<str>5,$<str>7,$<str>9,$<str>10);
+		SPRINTF5(buff,"%s %s %s %s %s",$<str>1,$<str>3,$<str>4,$<str>5,$<str>7);
 		SPRINTF9($<str>$,"%s %s %s %s %s %s %s %s %s",$<str>1,$<str>3,$<str>4,$<str>5,$<str>6,$<str>7,$<str>8,$<str>9,$<str>10);
- 		add_select($<str>$,buff, temp_tab_name); 
+ 		add_select($<str>$,buff, temp_tab_name,$<str>10); 
 	}
 ;
 
