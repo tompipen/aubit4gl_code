@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin.c,v 1.160 2010-06-22 09:35:25 mikeaubury Exp $
+# $Id: builtin.c,v 1.161 2010-09-10 10:00:30 mikeaubury Exp $
 #
 */
 
@@ -53,11 +53,11 @@ void A4GL_generateError (char *str, char *fileName, int lineno);
 =====================================================================
 */
 
-int mv_arr_count = 0;
-int mv_arr_curr = 0;
-int mv_scr_line = 0;
+static int mv_arr_count = 0;
+static int mv_arr_curr = 1;
+static int mv_scr_line = 1;
 FILE *error_log_file = 0;
-int mLastCursor = 0;
+static int mLastCursor = 0;
 /*
 =====================================================================
                     Functions prototypes

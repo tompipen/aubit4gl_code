@@ -125,3 +125,4 @@ spl_dtype_with_reference	<spl datatype with reference>
 spl_vname	<spl variable>
 win_attributes	<windows attribute>
 spl_dtype	<spl datatype>
+var_ident_qchar_e	<variable_or_identifier>
