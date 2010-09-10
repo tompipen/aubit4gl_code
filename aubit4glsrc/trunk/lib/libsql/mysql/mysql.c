@@ -281,7 +281,16 @@ int np;
       break;
     case MYSQL_TYPE_DATETIME:
       *fgldtype = DTYPE_DTIME;
-      *fglprc = 0x46;
+
+	if (A4GLSQLCV_check_requirement("DBDATETIMEASH2S")) {
+      		*fglprc = 0x46;
+	} else {
+		if (A4GLSQLCV_check_requirement("DBDATETIMEASY2S")) {
+      			*fglprc = 0x16;
+		} else {
+      			*fglprc = 0x16;
+		}
+	}
       break;
     case MYSQL_TYPE_YEAR:
       *fgldtype = DTYPE_SMINT;
