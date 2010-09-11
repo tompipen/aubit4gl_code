@@ -1473,6 +1473,9 @@ namespace AubitDesktop
 
         static public bool IsValidForType(FGLDataTypes datatype, string value, string format,int dtypeLength)
         {
+            CultureInfo culture = new CultureInfo("en-GB");
+            NumberStyles style = NumberStyles.Any;
+
             if (value == null) return true;
             if (value.Trim() == "") return true;
             
@@ -1509,7 +1512,7 @@ namespace AubitDesktop
                         Double d;
                         
 
-                        if (Double.TryParse(value, out d))
+                        if (Double.TryParse(value,style, culture,  out d))
                         {
                             if (format != null && format.Length > 0)
                             {
@@ -1542,7 +1545,7 @@ namespace AubitDesktop
                 case FGLDataTypes.DTYPE_SMFLOAT:
                     {
                         Double d;
-                        if (Double.TryParse(value, out d))
+                        if (Double.TryParse(value, style,culture, out d))
                         {
                             if (format != null && format.Length>0)
                             {
@@ -1594,7 +1597,7 @@ namespace AubitDesktop
                 case FGLUtils.FGLDataTypes.DTYPE_INT:
                     {
                         Int32 n;
-                        if (Int32.TryParse(value, out n))
+                        if (Int32.TryParse(value, NumberStyles.Integer|NumberStyles.AllowThousands, culture, out n))
                         {
                             if (format != null && format.Length > 0)
                             {
@@ -1615,7 +1618,7 @@ namespace AubitDesktop
                 case FGLDataTypes.DTYPE_INT8:
                     {
                         Int64 n;
-                        if (Int64.TryParse(value, out n))
+                        if (Int64.TryParse(value,NumberStyles.Integer|NumberStyles.AllowThousands, culture, out n))
                         {
                             
                             if (format != null && format.Length > 0)
@@ -1638,7 +1641,7 @@ namespace AubitDesktop
                 case FGLUtils.FGLDataTypes.DTYPE_SMINT:
                     {
                         Int16 n;
-                        if (Int16.TryParse(value, out n))
+                        if (Int16.TryParse(value,NumberStyles.Integer|NumberStyles.AllowThousands,culture, out n))
                         {
                             if (format != null && format.Length > 0)
                             {
