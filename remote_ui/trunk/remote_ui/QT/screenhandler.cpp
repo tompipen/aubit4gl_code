@@ -938,6 +938,9 @@ void ScreenHandler::setFieldEnabled(QString fieldName, bool enable, bool focus, 
             WidgetHelper::setDisplayAttributes(attr, widget);
          }
       }
+      else{
+         qFatal("No such Field %s", qPrintable(fieldName));
+      }
    }
    else{
       QList<QWidget*> ql_fields = p_fglform->findFieldsByName(fieldName);
@@ -949,6 +952,9 @@ void ScreenHandler::setFieldEnabled(QString fieldName, bool enable, bool focus, 
                context->addField(widget);
                WidgetHelper::setDisplayAttributes(attr, widget);
             }
+         }
+         else{
+            qFatal("No such Field %s", qPrintable(fieldName));
          }
       }
    }
