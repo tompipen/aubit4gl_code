@@ -19,12 +19,28 @@ QRcode *QRcode_encodeMask(QRinput *input, int mask);
 
 int width;
 int height;
+int l;
 double x00;
 double y00,fontsize,xscale;
 double atx,aty;
+double bar_scale,bar_length;
+int char_length1;
 int littlebar;
 int bigbar;
 int even_odd=0; // CODE 25 variable..
+
+
+
+static void InitBarPDF128(PDF *p, double xpos, double ypos, double x, double y, double font_size, double barscale) {
+width = x ;
+height = y;
+x00 = xpos ;
+y00 =  (ypos ) ;
+fontsize = font_size;
+xscale = barscale  ;
+}
+
+
 
 
 static void InitBarPDF39(PDF *p, double xpos, double ypos, double x, double y, double font_size, double barscale) {
@@ -102,6 +118,20 @@ PDF_rect (p, xabs, p_page_height-yabs, xabs2,height); //xabs2-xabs,p_page_height
 PDF_fill_stroke (p);
 
 
+}
+
+
+
+static void BarCharPDF128(PDF *p, const char *mapstring, float p_page_height) {
+unsigned int  x;
+   for (x=0;x<strlen(mapstring);x++) {
+      if (mapstring[x]=='1')  {
+			DoRectanglePDF(p, atx,littlebar,aty , p_page_height);
+			atx += littlebar ;
+		} else {
+		atx += littlebar ;
+		}
+	}
 }
 
 
@@ -248,6 +278,122 @@ if (c2!=' ') {
 }
 
 BarChar_25(p, t,p_page_height);
+}
+
+
+
+
+static void PutBarsPDF128(PDF *p, int c,int p_page_height) {
+		switch (c){
+			case  0: BarCharPDF128(p,"11011001100", p_page_height);break;   //ascii032, ' '
+			case  1: BarCharPDF128(p,"11001101100", p_page_height);break;   //ascii033, '!'
+			case  2: BarCharPDF128(p,"11001100110", p_page_height);break;   //ascii034, '"'
+			case  3: BarCharPDF128(p,"10010011000", p_page_height);break;   //ascii035, '#'
+			case  4: BarCharPDF128(p,"10010001100", p_page_height);break;   //ascii036, '$'
+			case  5: BarCharPDF128(p,"10001001100", p_page_height);break;   //ascii037, '%'
+			case  6: BarCharPDF128(p,"10011001000", p_page_height);break;   //ascii038, '&'
+			case  7: BarCharPDF128(p,"10011000100", p_page_height);break;   //ascii039, '´'
+			case  8: BarCharPDF128(p,"10001100100", p_page_height);break;   //ascii040, '('
+			case  9: BarCharPDF128(p,"11001001000", p_page_height);break;   //ascii041, ')'
+			case  10: BarCharPDF128(p,"11001000100", p_page_height);break;  //ascii042, '*'
+			case  11: BarCharPDF128(p,"11000100100", p_page_height);break;  //ascii043, '+'
+			case  12: BarCharPDF128(p,"10110011100", p_page_height);break;  //ascii044, ','
+			case  13: BarCharPDF128(p,"10011011100", p_page_height);break;  //ascii045, '-'
+			case  14: BarCharPDF128(p,"10011001110", p_page_height);break;  //ascii046, '.'
+			case  15: BarCharPDF128(p,"10111001100", p_page_height);break;  //ascii047, '/'
+			case  16: BarCharPDF128(p,"10011101100", p_page_height);break;  //ascii048, '0'
+			case  17: BarCharPDF128(p,"10011100110", p_page_height);break;  //ascii049, '1'
+			case  18: BarCharPDF128(p,"11001110010", p_page_height);break;  //ascii050, '2'
+			case  19: BarCharPDF128(p,"11001011100", p_page_height);break;  //ascii051, '3'
+			case  20: BarCharPDF128(p,"11001001110", p_page_height);break;  //ascii052, '4'
+			case  21: BarCharPDF128(p,"11011100100", p_page_height);break;  //ascii053, '5'
+			case  22: BarCharPDF128(p,"11001110100", p_page_height);break;  //ascii054, '6'
+			case  23: BarCharPDF128(p,"11101101110", p_page_height);break;  //ascii055, '7'
+			case  24: BarCharPDF128(p,"11101001100", p_page_height);break;  //ascii056, '8'
+			case  25: BarCharPDF128(p,"11100101100", p_page_height);break;  //ascii057, '9'
+			case  26: BarCharPDF128(p,"11100100110", p_page_height);break;  //ascii058, ':'
+			case  27: BarCharPDF128(p,"11101100100", p_page_height);break;  //ascii059, ';'
+			case  28: BarCharPDF128(p,"11100110100", p_page_height);break;  //ascii060, '<'
+			case  29: BarCharPDF128(p,"11100110010", p_page_height);break;  //ascii061, '='
+			case  30: BarCharPDF128(p,"11011011000", p_page_height);break;  //ascii062, '>'
+			case  31: BarCharPDF128(p,"11011000110", p_page_height);break;  //ascii063, '?'
+			case  32: BarCharPDF128(p,"11000110110", p_page_height);break;  //ascii064, '@'
+			case  33: BarCharPDF128(p,"10100011000", p_page_height);break;  //ascii065, 'A'
+			case  34: BarCharPDF128(p,"10001011000", p_page_height);break;  //ascii066, 'B'
+			case  35: BarCharPDF128(p,"10001000110", p_page_height);break;  //ascii067, 'C'
+			case  36: BarCharPDF128(p,"10110001000", p_page_height);break;  //ascii068, 'D'
+			case  37: BarCharPDF128(p,"10001101000", p_page_height);break;  //ascii069, 'E'
+			case  38: BarCharPDF128(p,"10001100010", p_page_height);break;  //ascii070, 'F'
+			case  39: BarCharPDF128(p,"11010001000", p_page_height);break;  //ascii071, 'G'
+			case  40: BarCharPDF128(p,"11000101000", p_page_height);break;  //ascii072, 'H'
+			case  41: BarCharPDF128(p,"11000100010", p_page_height);break;  //ascii073, 'I'
+			case  42: BarCharPDF128(p,"10110111000", p_page_height);break;  //ascii074, 'J'
+			case  43: BarCharPDF128(p,"10110001110", p_page_height);break;  //ascii075, 'K'
+			case  44: BarCharPDF128(p,"10001101110", p_page_height);break;  //ascii076, 'L'
+			case  45: BarCharPDF128(p,"10111011000", p_page_height);break;  //ascii077, 'M'
+			case  46: BarCharPDF128(p,"10111000110", p_page_height);break;  //ascii078, 'N'
+			case  47: BarCharPDF128(p,"10001110110", p_page_height);break;  //ascii079, 'O'
+			case  48: BarCharPDF128(p,"11101110110", p_page_height);break;  //ascii080, 'P'
+			case  49: BarCharPDF128(p,"11010001110", p_page_height);break;  //ascii081, 'Q'
+			case  50: BarCharPDF128(p,"11000101110", p_page_height);break;  //ascii082, 'R'
+			case  51: BarCharPDF128(p,"11011101000", p_page_height);break;  //ascii083, 'S'
+			case  52: BarCharPDF128(p,"11011100010", p_page_height);break;  //ascii084, 'T'
+			case  53: BarCharPDF128(p,"11011101110", p_page_height);break;  //ascii085, 'U'
+			case  54: BarCharPDF128(p,"11101011000", p_page_height);break;  //ascii086, 'V'
+			case  55: BarCharPDF128(p,"11101000110", p_page_height);break;  //ascii087, 'W'
+			case  56: BarCharPDF128(p,"11100010110", p_page_height);break;  //ascii088, 'X'
+			case  57: BarCharPDF128(p,"11101101000", p_page_height);break;  //ascii089, 'Y'
+			case  58: BarCharPDF128(p,"11101100010", p_page_height);break;  //ascii090, 'Z'
+			case  59: BarCharPDF128(p,"11100011010", p_page_height);break;  //ascii091, '['
+			case  60: BarCharPDF128(p,"11101111010", p_page_height);break;  //ascii092, '\'
+			case  61: BarCharPDF128(p,"11001000010", p_page_height);break;  //ascii093, ']'
+			case  62: BarCharPDF128(p,"11110001010", p_page_height);break;  //ascii094, '^'
+			case  63: BarCharPDF128(p,"10100110000", p_page_height);break;  //ascii095, '_'
+			case  64: BarCharPDF128(p,"10100001100", p_page_height);break;  //ascii096, '`'
+			case  65: BarCharPDF128(p,"10010110000", p_page_height);break;  //ascii097, 'a'
+			case  66: BarCharPDF128(p,"10010000110", p_page_height);break;  //ascii098, 'b'
+			case  67: BarCharPDF128(p,"10000101100", p_page_height);break;  //ascii099, 'c'
+			case  68: BarCharPDF128(p,"10000100110", p_page_height);break;  //ascii100, 'd'
+			case  69: BarCharPDF128(p,"10110010000", p_page_height);break;  //ascii101, 'e'
+			case  70: BarCharPDF128(p,"10110000100", p_page_height);break;  //ascii102, 'f'
+			case  71: BarCharPDF128(p,"10011010000", p_page_height);break;  //ascii103, 'g'
+			case  72: BarCharPDF128(p,"10011000010", p_page_height);break;  //ascii104, 'h'
+			case  73: BarCharPDF128(p,"10000110100", p_page_height);break;  //ascii105, 'i'
+			case  74: BarCharPDF128(p,"10000110010", p_page_height);break;  //ascii106, 'j'
+			case  75: BarCharPDF128(p,"11000010010", p_page_height);break;  //ascii107, 'k'
+			case  76: BarCharPDF128(p,"11001010000", p_page_height);break;  //ascii108, 'l'
+			case  77: BarCharPDF128(p,"11110111010", p_page_height);break;  //ascii109, 'm'
+			case  78: BarCharPDF128(p,"11000010100", p_page_height);break;  //ascii110, 'n'
+			case  79: BarCharPDF128(p,"10001111010", p_page_height);break;  //ascii111, 'p'
+			case  80: BarCharPDF128(p,"10100111100", p_page_height);break;  //ascii112, 'p'
+			case  81: BarCharPDF128(p,"10010111100", p_page_height);break;  //ascii113, 'q'
+			case  82: BarCharPDF128(p,"10010011110", p_page_height);break;  //ascii114, 'r'
+			case  83: BarCharPDF128(p,"10111100100", p_page_height);break;  //ascii115, 's'
+			case  84: BarCharPDF128(p,"10011110100", p_page_height);break;  //ascii116, 't'
+			case  85: BarCharPDF128(p,"10011110010", p_page_height);break;  //ascii117, 'u'
+			case  86: BarCharPDF128(p,"11110100100", p_page_height);break;  //ascii118, 'v'
+			case  87: BarCharPDF128(p,"11110010100", p_page_height);break;  //ascii119, 'w'
+			case  88: BarCharPDF128(p,"11110010010", p_page_height);break;  //ascii120, 'x'
+			case  89: BarCharPDF128(p,"11011011110", p_page_height);break;  //ascii121, 'y'
+			case  90: BarCharPDF128(p,"11011110110", p_page_height);break;  //ascii122, 'z'
+			case  91: BarCharPDF128(p,"11110110110", p_page_height);break;  //ascii123, '{'
+			case  92: BarCharPDF128(p,"10101111000", p_page_height);break;  //ascii124, '|'
+			case  93: BarCharPDF128(p,"10100011110", p_page_height);break;  //ascii125, '}'
+			case  94: BarCharPDF128(p,"10001011110", p_page_height);break;  //ascii126, '~'
+			case  95: BarCharPDF128(p,"10111101000", p_page_height);break;  //ascii200, del
+			case  96: BarCharPDF128(p,"10111100010", p_page_height);break;  //ascii201, Fnc 3
+			case  97: BarCharPDF128(p,"11110101000", p_page_height);break;  //ascii202, Fnc 2
+			case  98: BarCharPDF128(p,"11110100010", p_page_height);break;  //ascii203, Shift
+			case  99: BarCharPDF128(p,"10111011110", p_page_height);break;  //ascii204, Code C
+			case 100: BarCharPDF128(p,"10111101110", p_page_height);break;  //ascii205  Code B
+			case 101: BarCharPDF128(p,"11101011110", p_page_height);break;  //ascii206, Code A
+			case 102: BarCharPDF128(p,"11110101110", p_page_height);break;  //ascii207, Fnc 1
+			case 103: BarCharPDF128(p,"11010000100", p_page_height);break;  //Start, Code A
+			case 104: BarCharPDF128(p,"11010010000", p_page_height);break;  //Start, Code B
+			case 105: BarCharPDF128(p,"11010011100", p_page_height);break;  //Start, Code C
+			case 106: BarCharPDF128(p,"1100011101011", p_page_height);break;//Stop, Code A,B,C
+			case 107: BarCharPDF128(p,"00000", p_page_height);break;        //silent zone
+		}
 }
 
 
@@ -520,6 +666,22 @@ static const char  *PutGrpPDF5(char a){
 }
 
 
+static void PrintCharPDF128(PDF *p, double x, char c, float p_page_height,int incl_text) {
+double xabs,yabs;
+static char buff[200];
+xabs = x00 + (x * xscale);
+yabs = y00 + height + (fontsize * 12.0);
+A4GL_assertion(c==0,"C=null");
+	if (incl_text) {
+		SPRINTF1(buff,"%c",c);
+        	PDF_set_text_pos (p, xabs, p_page_height-y00- (fontsize ));
+        	PDF_show (p, buff);
+	}
+
+}
+
+
+
 
 static void PrintCharPDF39(PDF *p, double x, char c, float p_page_height,int incl_text) {
 double xabs,yabs;
@@ -596,6 +758,986 @@ yabs = y00 + height + (fontsize * 12.0);
         	PDF_set_text_pos (p, xabs, p_page_height-y00- (fontsize ));
         	PDF_show (p, buff);
 	}
+}
+
+
+
+static void PrintThisPDF128A(PDF *p, char *sorig,float p_page_height,int incl_text) {
+int i;
+int x;
+int y;
+int z;
+int s[200];
+int s2[200];
+char si[200]="                                                     ";
+char t[200]="                                                      ";
+int a=0;
+int b=0;
+int d=0;
+int f=0;
+int g=0;
+int res;
+double atz=0;
+
+	strcpy(si,sorig);
+
+	if (l>48) {
+		A4GL_exitwith("Invalid barcode");
+		return;
+	}
+
+	for (a=0;a<l;a++) {
+
+		if (si[a]==0) { continue; }
+			// Check sign
+		if (si[a]>=' ' && si[a]<='~') { continue; }
+		  A4GL_exitwith("Invalid character in barcode");
+		return;
+	}
+
+
+	i=0;
+	x=0;
+	while (i < l){
+		if(si[i]=='~'){
+			s[x]=0;
+			s[x]+= (si[++i]-'0')*100;
+			s[x]+= (si[++i]-'0')*10;
+			s[x]+= (si[++i]-'0');
+			i++;
+			x++;
+		}
+		else{
+			s[x]=si[i];
+			d++;
+			i++;
+			x++;
+		}
+	}
+
+
+	i=0;
+	z=0;
+	y=0;
+	while(i<x){
+		switch(s[i]){
+			case 200:{i++; z++;} break;   //del, ascii200
+			case 201:{i++; z++;} break;   //Fnc3, ascii201
+			case 202:{i++; z++;} break;   //Fnc2, ascii202
+			case 203:{i++; z++;} break;   //Shift, ascii203
+			case 204:{i++; z++;} break;   //Code C ascii204
+			case 205:{i++; z++;} break;   //Code B, ascii205
+			case 206:{i++; z++;} break;   //Code A, ascii206
+			case 207:{i++; z++;} break;   //Fnc 1, ascii207
+			case 212:{t[y] = '(';         //~212
+								y++;
+								i++;
+								for(z=0;z<2;z++){
+									t[y]=(char)s[i];
+									y++;
+									i++;
+								}
+								t[y] = ')';
+								y++;
+							 } break;
+			case 213:{t[y] = '(';         //~213
+								y++;
+								i++;
+								for(z=0;z<3;z++){
+									t[y]=(char)s[i];
+									y++;
+									i++;
+								}
+								t[y] = ')';
+								y++;
+							 } break;
+			case 214:{t[y] = '(';         //~214
+								y++;
+								i++;
+								for(z=0;z<4;z++){
+									t[y]=(char)s[i];
+									y++;
+									i++;
+								}
+								t[y] = ')';
+								y++;
+							 } break;
+			case 215:{t[y] = '(';         //~215
+								y++;
+								i++;
+								for(z=0;z<5;z++){
+									t[y]=(char)s[i];
+									y++;
+									i++;
+								}
+								t[y] = ')';
+								y++;
+							 } break;
+			default: {t[y]=(char)s[i];
+								y++;
+								i++;
+							 } break;
+		}
+	}
+	f=y;
+
+	res = 1;
+	for(a=0;a<=x;a++){
+		switch(s[a]){
+			case 205:res = 2; break;
+			case 204:res = 3; break;
+			default: break;
+		}
+	}
+	switch(res){
+		case 1:{i=0;                                 // code a
+						x=0;
+						while (i < l){
+							if(si[i]=='~'){
+								s2[x]=0;
+								s2[x]+=(si[++i]-'0')*100;
+								s2[x]+=(si[++i]-'0')*10;
+								s2[x]+=((si[++i]-'0') - 105);
+								if(s2[x] > 106){
+									switch(s2[x - 1]){
+										case 99: {x--;
+															s2[x]=102;
+															x++;
+															s2[x]=99;
+														 } break;
+										case 100:{x--;
+															s2[x]=102;
+															x++;
+															s2[x]=100;
+														 } break;
+										case 101:{x--;
+															s2[x]=102;
+															x++;
+															s2[x]=101;
+														 } break;
+									}
+								}
+								i++;
+								x++;
+								}
+								else{
+									if(si[i]<=95){
+										s2[x]=(si[i] - 32);
+										i++;
+									x++;
+									}
+									else{
+										s2[x]=(si[i] - 64);
+										i++;
+										x++;
+									}
+								}
+						}
+						b=x;
+				  } break;
+
+		case 2:{i=0;                                 //code b
+						x=0;
+						while (i < l){
+							if(si[i]=='~'){
+								s2[x]=0;
+								s2[x]+=(si[++i]-'0')*100;
+								s2[x]+=(si[++i]-'0')*10;
+								s2[x]+=((si[++i]-'0') - 105);
+								if(s2[x] > 106){
+									switch(s2[x - 1]){
+										case 99: {x--;
+															s2[x]=102;
+															x++;
+															s2[x]=99;
+														 } break;
+										case 100:{x--;
+															s2[x]=102;
+															x++;
+															s2[x]=100;
+														 } break;
+										case 101:{x--;
+															s2[x]=102;
+															x++;
+															s2[x]=101;
+														 } break;
+									}
+								}
+								i++;
+								x++;
+							}
+							else{
+								s2[x]=si[i] - 32;
+								i++;
+								x++;
+							}
+						}
+						b=x;
+					} break;
+
+		case 3: {i=0;                                //code c
+							bar_length = char_length1*i/2;
+							bar_scale = (x) / bar_length;
+							x=0;
+							if((d%2)==1){
+								strcat(si,"0");
+							}
+							while (i < l){
+								if(si[i]=='~'){
+									s2[x]=0;
+									s2[x]+=(si[++i]-'0')*100;
+									s2[x]+=(si[++i]-'0')*10;
+									s2[x]+=((si[++i]-'0') - 105);
+									if(s2[x] > 106){
+										switch(s2[x - 1]){
+											case 99: {x--;
+																s2[x]=102;
+																x++;
+																s2[x]=99;
+															 } break;
+											case 100:{x--;
+																s2[x]=102;
+																x++;
+																s2[x]=100;
+															 } break;
+											case 101:{x--;
+																s2[x]=102;
+																x++;
+																s2[x]=101;
+															 } break;
+										}
+									}
+									i++;
+									x++;
+								}
+								else{
+									s2[x]=0;
+									s2[x]+=(si[i]-'0')*10;
+									s2[x]+=(si[++i]-'0');
+									i++;
+									x++;
+								}
+						}
+						b=x;
+				  } break;
+	}
+
+
+	// Compute the checkbit...
+	a=0;
+	for (i=0; i<x; ++i){
+		a+=(s2[i])*(i+1);
+	}
+
+	s2[x]=(a+103)%103;
+
+
+	A4GL_pad_string(t,60);
+	g=(int)((bar_length / f) / 11);
+
+	if(g>11){
+		g=11;
+	}
+	if(res==3){
+		g=5;
+	}
+
+	PutBarsPDF128(p, 107, p_page_height);     // Silent zone
+	PutBarsPDF128(p, 103, p_page_height);     // Start, Code A
+	atz+=11*littlebar;
+	if(b>=f){
+		for (i=0; i<=b;i++) {
+			if(t[i]=='('){
+				atz+=4*littlebar;
+			}
+			PrintCharPDF128(p, atz,t[i],p_page_height,incl_text);
+			if(t[i]==')'){
+				atz+=4*littlebar;
+			}
+			atz+=g*littlebar;
+			PutBarsPDF128(p, s2[i], p_page_height);
+		}
+	}
+	else{
+		for (i=0; i<=f;i++) {
+			if (b>=i){
+				if(t[i]=='('){
+					atz+=4*littlebar;
+				}
+				PrintCharPDF128(p, atz,t[i],p_page_height,incl_text);
+				if(t[i]==')'){
+					atz+=4*littlebar;
+				}
+				atz+=g*littlebar;
+				PutBarsPDF128(p, s2[i], p_page_height);
+			}
+			if (b<i){
+				if(t[i]=='('){
+					atz+=4*littlebar;
+				}
+				PrintCharPDF128(p, atz,t[i],p_page_height,incl_text);
+				if(t[i]==')'){
+					atz+=4*littlebar;
+				}
+				atz+=g*littlebar;
+			}
+		}
+	}
+	PutBarsPDF128(p, 106, p_page_height);   // Stop
+	PutBarsPDF128(p, 107, p_page_height);   // Silent zone
+}
+
+
+
+static void PrintThisPDF128B(PDF *p, char *sorig,float p_page_height,int incl_text) {
+int i;
+int x;
+int y;
+int z;
+int s[200];
+int s2[200];
+char si[200]="                                                     ";
+char t[200]="                                                      ";
+int a=0;
+int b=0;
+int d=0;
+int f=0;
+int g=0;
+int res;
+double atz=0;
+
+	strcpy(si,sorig);
+	
+	if (l>48) {
+		A4GL_exitwith("Invalid barcode");
+		return;
+	}
+
+	for (a=0;a<l;a++) {
+
+		if (si[a]==0) { continue; }
+			// Check sign
+		if (si[a]>=' ' && si[a]<='~') { continue; }
+		  A4GL_exitwith("Invalid character in barcode");
+		return;
+	}
+
+
+	i=0;
+	x=0;
+	while (i < l){
+		if(si[i]=='~'){
+			s[x]=0;
+			s[x]+= (si[++i]-'0')*100;
+			s[x]+= (si[++i]-'0')*10;
+			s[x]+= (si[++i]-'0');
+			i++;
+			x++;
+		}
+		else{
+			s[x]=si[i];
+			d++;
+			i++;
+			x++;
+		}
+	}
+
+
+	i=0;
+	z=0;
+	y=0;
+	while(i<x){
+		switch(s[i]){
+			case 200:{i++; z++;} break;   //del, ascii200
+			case 201:{i++; z++;} break;   //Fnc3, ascii201
+			case 202:{i++; z++;} break;   //Fnc2, ascii202
+			case 203:{i++; z++;} break;   //Shift, ascii203
+			case 204:{i++; z++;} break;   //Code C ascii204
+			case 205:{i++; z++;} break;   //Code B, ascii205
+			case 206:{i++; z++;} break;   //Code A, ascii206
+			case 207:{i++; z++;} break;   //Fnc 1, ascii207
+			case 212:{t[y] = '(';         //~212
+								y++;
+								i++;
+								for(z=0;z<2;z++){
+									t[y]=(char)s[i];
+									y++;
+									i++;
+								}
+								t[y] = ')';
+								y++;
+							 } break;
+			case 213:{t[y] = '(';         //~213
+								y++;
+								i++;
+								for(z=0;z<3;z++){
+									t[y]=(char)s[i];
+									y++;
+									i++;
+								}
+								t[y] = ')';
+								y++;
+							 } break;
+			case 214:{t[y] = '(';         //~214
+								y++;
+								i++;
+								for(z=0;z<4;z++){
+									t[y]=(char)s[i];
+									y++;
+									i++;
+								}
+								t[y] = ')';
+								y++;
+							 } break;
+			case 215:{t[y] = '(';         //~215
+								y++;
+								i++;
+								for(z=0;z<5;z++){
+									t[y]=(char)s[i];
+									y++;
+									i++;
+								}
+								t[y] = ')';
+								y++;
+							 } break;
+			default: {t[y]=(char)s[i];
+								y++;
+								i++;
+							 } break;
+		}
+	}
+	f=y;
+
+	res = 2;
+	for(a=0;a<=x;a++){
+		switch(s[a]){
+			case 206:res = 1; break;
+			case 204:res = 3; break;
+			default: break;
+		}
+	}
+	switch(res){
+		case 1:{i=0;                                 // code a
+						x=0;
+						while (i < l){
+							if(si[i]=='~'){
+								s2[x]=0;
+								s2[x]+=(si[++i]-'0')*100;
+								s2[x]+=(si[++i]-'0')*10;
+								s2[x]+=((si[++i]-'0') - 105);
+								if(s2[x] > 106){
+									switch(s2[x - 1]){
+										case 99: {x--;
+															s2[x]=102;
+															x++;
+															s2[x]=99;
+														 } break;
+										case 100:{x--;
+															s2[x]=102;
+															x++;
+															s2[x]=100;
+														 } break;
+										case 101:{x--;
+															s2[x]=102;
+															x++;
+															s2[x]=101;
+														 } break;
+									}
+								}
+								i++;
+								x++;
+								}
+								else{
+									if(si[i]<=95){
+										s2[x]=(si[i] - 32);
+										i++;
+									x++;
+									}
+									else{
+										s2[x]=(si[i] - 64);
+										i++;
+										x++;
+									}
+								}
+						}
+						b=x;
+				  } break;
+
+		case 2:{i=0;                                 //code b
+						x=0;
+						while (i < l){
+							if(si[i]=='~'){
+								s2[x]=0;
+								s2[x]+=(si[++i]-'0')*100;
+								s2[x]+=(si[++i]-'0')*10;
+								s2[x]+=((si[++i]-'0') - 105);
+								if(s2[x] > 106){
+									switch(s2[x - 1]){
+										case 99: {x--;
+															s2[x]=102;
+															x++;
+															s2[x]=99;
+														 } break;
+										case 100:{x--;
+															s2[x]=102;
+															x++;
+															s2[x]=100;
+														 } break;
+										case 101:{x--;
+															s2[x]=102;
+															x++;
+															s2[x]=101;
+														 } break;
+									}
+								}
+								i++;
+								x++;
+							}
+							else{
+								s2[x]=si[i] - 32;
+								i++;
+								x++;
+							}
+						}
+						b=x;
+					} break;
+
+		case 3: {i=0;                                //code c
+							bar_length = char_length1*i/2;
+							bar_scale = (x) / bar_length;
+							x=0;
+							if((d%2)==1){
+								strcat(si,"0");
+							}
+							while (i < l){
+								if(si[i]=='~'){
+									s2[x]=0;
+									s2[x]+=(si[++i]-'0')*100;
+									s2[x]+=(si[++i]-'0')*10;
+									s2[x]+=((si[++i]-'0') - 105);
+									if(s2[x] > 106){
+										switch(s2[x - 1]){
+											case 99: {x--;
+																s2[x]=102;
+																x++;
+																s2[x]=99;
+															 } break;
+											case 100:{x--;
+																s2[x]=102;
+																x++;
+																s2[x]=100;
+															 } break;
+											case 101:{x--;
+																s2[x]=102;
+																x++;
+																s2[x]=101;
+															 } break;
+										}
+									}
+									i++;
+									x++;
+								}
+								else{
+									s2[x]=0;
+									s2[x]+=(si[i]-'0')*10;
+									s2[x]+=(si[++i]-'0');
+									i++;
+									x++;
+								}
+						}
+						b=x;
+				  } break;
+	}
+
+
+	// Compute the checkbit...
+	a=0;
+	for (i=0; i<x; ++i){
+		a+=(s2[i])*(i+1);
+	}
+	
+	s2[x]=(a+104)%103;
+
+
+	A4GL_pad_string(t,60);
+	g=(int)((bar_length / f) / 11);
+
+	if(g>11){
+		g=11;
+	}
+	if(res==3){
+		g=5;
+	}
+
+	PutBarsPDF128(p, 107, p_page_height);     // Silent zone
+	PutBarsPDF128(p, 104, p_page_height);     // Start, Code B
+	atz+=11*littlebar;
+	if(b>=f){
+		for (i=0; i<=b;i++) {
+			if(t[i]=='('){
+				atz+=4*littlebar;
+			}
+			PrintCharPDF128(p, atz,t[i],p_page_height,incl_text);
+			if(t[i]==')'){
+				atz+=4*littlebar;
+			}
+			atz+=g*littlebar;
+			PutBarsPDF128(p, s2[i], p_page_height);
+		}
+	}
+	else{
+		for (i=0; i<=f;i++) {
+			if (b>=i){
+				if(t[i]=='('){
+					atz+=4*littlebar;
+				}
+				PrintCharPDF128(p, atz,t[i],p_page_height,incl_text);
+				if(t[i]==')'){
+					atz+=4*littlebar;
+				}
+				atz+=g*littlebar;
+				PutBarsPDF128(p, s2[i], p_page_height);
+			}
+			if (b<i){
+				if(t[i]=='('){
+					atz+=4*littlebar;
+				}
+				PrintCharPDF128(p, atz,t[i],p_page_height,incl_text);
+				if(t[i]==')'){
+					atz+=4*littlebar;
+				}
+				atz+=g*littlebar;
+			}
+		}
+	}
+	PutBarsPDF128(p, 106, p_page_height);   // Stop
+	PutBarsPDF128(p, 107, p_page_height);   // Silent zone
+}
+
+
+static void PrintThisPDF128C(PDF *p, char *sorig,float p_page_height,int incl_text) {
+int i;
+int x;
+int y;
+int z;
+int s[200];
+int s2[200];
+char si[200]="                                                     ";
+char t[200]="                                                      ";
+int a=0;
+int b=0;
+int d=0;
+int f=0;
+int g=0;
+int res;
+double atz=0;
+
+	strcpy(si,sorig);
+
+	if (l>48) {
+		A4GL_exitwith("Invalid barcode");
+		return;
+	}
+
+	for (a=0;a<l;a++) {
+
+		if (si[a]==0) { continue; }
+			// Check sign
+		if (si[a]>=' ' && si[a]<='~') { continue; }
+		  A4GL_exitwith("Invalid character in barcode");
+		return;
+	}
+
+
+	i=0;
+	x=0;
+	while (i < l){
+		if(si[i]=='~'){
+			s[x]=0;
+			s[x]+= (si[++i]-'0')*100;
+			s[x]+= (si[++i]-'0')*10;
+			s[x]+= (si[++i]-'0');
+			i++;
+			x++;
+		}
+		else{
+			s[x]=si[i];
+			d++;
+			i++;
+			x++;
+		}
+	}
+
+
+	i=0;
+	z=0;
+	y=0;
+	while(i<x){
+		switch(s[i]){
+			case 200:{i++; z++;} break;   //del, ascii200
+			case 201:{i++; z++;} break;   //Fnc3, ascii201
+			case 202:{i++; z++;} break;   //Fnc2, ascii202
+			case 203:{i++; z++;} break;   //Shift, ascii203
+			case 204:{i++; z++;} break;   //Code C ascii204
+			case 205:{i++; z++;} break;   //Code B, ascii205
+			case 206:{i++; z++;} break;   //Code A, ascii206
+			case 207:{i++; z++;} break;   //Fnc 1, ascii207
+			case 212:{t[y] = '(';         //~212
+								y++;
+								i++;
+								for(z=0;z<2;z++){
+									t[y]=(char)s[i];
+									y++;
+									i++;
+								}
+								t[y] = ')';
+								y++;
+							 } break;
+			case 213:{t[y] = '(';         //~213
+								y++;
+								i++;
+								for(z=0;z<3;z++){
+									t[y]=(char)s[i];
+									y++;
+									i++;
+								}
+								t[y] = ')';
+								y++;
+							 } break;
+			case 214:{t[y] = '(';         //~214
+								y++;
+								i++;
+								for(z=0;z<4;z++){
+									t[y]=(char)s[i];
+									y++;
+									i++;
+								}
+								t[y] = ')';
+								y++;
+							 } break;
+			case 215:{t[y] = '(';         //~215
+								y++;
+								i++;
+								for(z=0;z<5;z++){
+									t[y]=(char)s[i];
+									y++;
+									i++;
+								}
+								t[y] = ')';
+								y++;
+							 } break;
+			default: {t[y]=(char)s[i];
+								y++;
+								i++;
+							 } break;
+		}
+	}
+	f=y;
+
+	res = 3;
+	for(a=0;a<=x;a++){
+		switch(s[a]){
+			case 206:res = 1; break;
+			case 205:res = 2; break;
+			default: break;
+		}
+	}
+	switch(res){
+		case 1:{i=0;                                 // code a
+						x=0;
+						while (i < l){
+							if(si[i]=='~'){
+								s2[x]=0;
+								s2[x]+=(si[++i]-'0')*100;
+								s2[x]+=(si[++i]-'0')*10;
+								s2[x]+=((si[++i]-'0') - 105);
+								if(s2[x] > 106){
+									switch(s2[x - 1]){
+										case 99: {x--;
+															s2[x]=102;
+															x++;
+															s2[x]=99;
+														 } break;
+										case 100:{x--;
+															s2[x]=102;
+															x++;
+															s2[x]=100;
+														 } break;
+										case 101:{x--;
+															s2[x]=102;
+															x++;
+															s2[x]=101;
+														 } break;
+									}
+								}
+								i++;
+								x++;
+								}
+								else{
+									if(si[i]<=95){
+										s2[x]=(si[i] - 32);
+										i++;
+									x++;
+									}
+									else{
+										s2[x]=(si[i] - 64);
+										i++;
+										x++;
+									}
+								}
+						}
+						b=x;
+				  } break;
+
+		case 2:{i=0;                                 //code b
+						x=0;
+						while (i < l){
+							if(si[i]=='~'){
+								s2[x]=0;
+								s2[x]+=(si[++i]-'0')*100;
+								s2[x]+=(si[++i]-'0')*10;
+								s2[x]+=((si[++i]-'0') - 105);
+								if(s2[x] > 106){
+									switch(s2[x - 1]){
+										case 99: {x--;
+															s2[x]=102;
+															x++;
+															s2[x]=99;
+														 } break;
+										case 100:{x--;
+															s2[x]=102;
+															x++;
+															s2[x]=100;
+														 } break;
+										case 101:{x--;
+															s2[x]=102;
+															x++;
+															s2[x]=101;
+														 } break;
+									}
+								}
+								i++;
+								x++;
+							}
+							else{
+								s2[x]=si[i] - 32;
+								i++;
+								x++;
+							}
+						}
+						b=x;
+					} break;
+
+		case 3: {i=0;                                //code c
+							bar_length = char_length1*i/2;
+							bar_scale = (x) / bar_length;
+							x=0;
+							if((d%2)==1){
+								strcat(si,"0");
+							}
+							while (i < l){
+								if(si[i]=='~'){
+									s2[x]=0;
+									s2[x]+=(si[++i]-'0')*100;
+									s2[x]+=(si[++i]-'0')*10;
+									s2[x]+=((si[++i]-'0') - 105);
+									if(s2[x] > 106){
+										switch(s2[x - 1]){
+											case 99: {x--;
+																s2[x]=102;
+																x++;
+																s2[x]=99;
+															 } break;
+											case 100:{x--;
+																s2[x]=102;
+																x++;
+																s2[x]=100;
+															 } break;
+											case 101:{x--;
+																s2[x]=102;
+																x++;
+																s2[x]=101;
+															 } break;
+										}
+									}
+									i++;
+									x++;
+								}
+								else{
+									s2[x]=0;
+									s2[x]+=(si[i]-'0')*10;
+									s2[x]+=(si[++i]-'0');
+									i++;
+									x++;
+								}
+						}
+						b=x;
+				  } break;
+	}
+
+
+	// Compute the checkbit...
+	a=0;
+	for (i=0; i<x; ++i){
+		a+=(s2[i])*(i+1);
+	}
+
+	s2[x]=(a+105)%103;
+  
+
+	A4GL_pad_string(t,60);
+	g=(int)((bar_length / f) / 11);
+
+	if(g>11){
+		g=11;
+	}
+	if(res==3){
+		g=5;
+	}
+
+	PutBarsPDF128(p, 107, p_page_height);     // Silent zone
+	PutBarsPDF128(p, 105, p_page_height);     // Start, Code C
+	atz+=11*littlebar;
+	if(b>=f){
+		for (i=0; i<=b;i++) {
+			if(t[i]=='('){
+				atz+=4*littlebar;
+			}
+			PrintCharPDF128(p, atz,t[i],p_page_height,incl_text);
+			if(t[i]==')'){
+				atz+=4*littlebar;
+			}
+			atz+=g*littlebar;
+			PutBarsPDF128(p, s2[i], p_page_height);
+		}
+	}
+	else{
+		for (i=0; i<=f;i++) {
+			if (b>=i){
+				if(t[i]=='('){
+					atz+=4*littlebar;
+				}
+				PrintCharPDF128(p, atz,t[i],p_page_height,incl_text);
+				if(t[i]==')'){
+					atz+=4*littlebar;
+				}
+				atz+=g*littlebar;
+				PutBarsPDF128(p, s2[i], p_page_height);
+			}
+			if (b<i){
+				if(t[i]=='('){
+					atz+=4*littlebar;
+				}
+				PrintCharPDF128(p, atz,t[i],p_page_height,incl_text);
+				if(t[i]==')'){
+					atz+=4*littlebar;
+				}
+				atz+=g*littlebar;
+			}
+		}
+	}
+	PutBarsPDF128(p, 106, p_page_height);   // Stop
+	PutBarsPDF128(p, 107, p_page_height);   // Silent zone
 }
 
 
@@ -862,13 +2004,25 @@ PutBarsPDF25(p, ')',0,p_page_height);   //# ending delimiter
 
 
 
+static void TermBarPDF128A(PDF *p) {
+// Does nothing..
+}
 
-static void TermBarPDF25(PDF *p) {
-	// Does nothing..
+
+static void TermBarPDF128B(PDF *p) {
+// Does nothing..
+}
+
+static void TermBarPDF128C(PDF *p) {
+// Does nothing..
 }
 
 
 static void TermBarPDF39(PDF *p) {
+	// Does nothing..
+}
+
+static void TermBarPDF25(PDF *p) {
 	// Does nothing..
 }
 
@@ -916,6 +2070,18 @@ static void setcodetype(void ) {
 	if (A4GL_isyes(acl_getenv("BARCODE39"))) {
 		codetype=39;
 	}
+
+	if (A4GL_isyes(acl_getenv("BARCODE128A"))) {
+		codetype=128;
+	}
+	
+	if (A4GL_isyes(acl_getenv("BARCODE128B"))) {
+		codetype=129;
+	}
+
+	if (A4GL_isyes(acl_getenv("BARCODE128C"))) {
+		codetype=130;
+	}
 	
 	if (A4GL_isyes(acl_getenv("BARCODEQR"))) {
 		codetype=99;
@@ -947,6 +2113,25 @@ void set_barcode_type(char *s) {
 		codetype=39;
 		return ;
 	}
+	
+	if (A4GL_aubit_strcasecmp(s,"128A")==0 || A4GL_aubit_strcasecmp(s,"ean128A")==0 ||   		 	A4GL_aubit_strcasecmp(s,"ean-128A")==0) 
+		{
+		codetype=128;
+		return ;
+	}
+	
+	if (A4GL_aubit_strcasecmp(s,"128B")==0 || A4GL_aubit_strcasecmp(s,"ean128B")==0 ||A4GL_aubit_strcasecmp(s,"ean-128B")==0) 
+	{
+		codetype=129;
+		return ;
+	}
+	
+	if (A4GL_aubit_strcasecmp(s,"128C")==0 || A4GL_aubit_strcasecmp(s,"ean128C")==0 ||  A4GL_aubit_strcasecmp(s,"ean-128C")==0)
+		{
+		codetype=130;
+		return ;
+	}
+	
 	if (A4GL_aubit_strcasecmp(s,"25")==0) {
 		codetype=25;
 		return ;
@@ -967,9 +2152,7 @@ void set_barcode_type(char *s) {
 void generate_barcode(PDF *p, double xpos,double ypos,double x,double y,char *str,float p_page_height,int incl_text) {
 
 double font_size;
-int char_length1;
 int i;
-double bar_length, bar_scale;
 char *S;
 
 if (codetype==-1) {
@@ -982,6 +2165,52 @@ if (codetype==-1) {
 if (codetype==99) {
 	generate_qrcode(p,str, xpos, ypos,x ,y, p_page_height) ;
 	return ;
+}
+
+if (codetype==128) {
+	littlebar=8;             //# these numbers are arbitrary, as long as the ratio
+	font_size = (y/72.0) * 14.4;    //# 2/10 of height of bar
+	aty = (y/72.0) * 14.4;          //# 2/10 of height of bar
+	atx = 0;
+	l = strlen(str);
+	char_length1 = 11 * littlebar;
+	i= l + 4; //# start, checkdigit, stop, silent zone
+	bar_length = char_length1*i;
+	bar_scale = (x) / bar_length;
+	InitBarPDF128(p, xpos,ypos,x,y,font_size,bar_scale);
+	PrintThisPDF128A(p, str,p_page_height,incl_text);
+	TermBarPDF128A(p);
+}
+
+if (codetype==129) {
+	littlebar=8;                    //# these numbers are arbitrary, as long as the ratio
+	font_size = (y/72.0) * 14.4;    //# 2/10 of height of bar
+	aty = (y/72.0) * 14.4;          //# 2/10 of height of bar
+	atx = 0;
+	l = strlen(str);
+	char_length1 = 11 * littlebar;
+	i= l + 4;                       //#start, checkdigit, stop, silent zone
+	bar_length = char_length1*i;
+	bar_scale = (x) / bar_length;
+	InitBarPDF128(p, xpos,ypos,x,y,font_size,bar_scale);
+	PrintThisPDF128B(p, str,p_page_height,incl_text);
+	TermBarPDF128B(p);
+}
+
+
+if (codetype==130) {
+	littlebar=8;                    //# these numbers are arbitrary, as long as the ratio
+	font_size = (y/72.0) * 14.4;    //# 2/10 of height of bar
+	aty = (y/72.0) * 14.4;          //# 2/10 of height of bar
+	atx = 0;
+	l = strlen(str);
+	char_length1 = 11 * littlebar;
+	i= l + 4;                      //# start, checkdigit, stop, silent zone
+	bar_length = char_length1*i;
+	bar_scale = (x) / bar_length;
+	InitBarPDF128(p, xpos,ypos,x,y,font_size,bar_scale);
+	PrintThisPDF128C(p, str,p_page_height,incl_text);
+	TermBarPDF128C(p);
 }
 
 
