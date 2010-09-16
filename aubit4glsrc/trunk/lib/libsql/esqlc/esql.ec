@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.250 2010-08-05 20:28:59 mikeaubury Exp $
+# $Id: esql.ec,v 1.251 2010-09-16 19:54:16 mikeaubury Exp $
 #
 */
 
@@ -182,7 +182,7 @@ static loc_t *add_blob(struct s_sid *sid, int n, struct s_extra_info *e,fglbyte 
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.250 2010-08-05 20:28:59 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.251 2010-09-16 19:54:16 mikeaubury Exp $";
 #endif
 
 
@@ -1244,6 +1244,7 @@ bindInputValue (char *descName, int idx, struct BINDING *bind)
   dtime_t dtime_var;
 int d_scale=0;
 int d_prec=0;
+int infxWantsCommaForDecimal=-1;
   intrvl_t interval_var;
   byte byte_var;
   /*
@@ -1276,6 +1277,27 @@ int d_prec=0;
   dataType = getIfmxDataType (bind[idx].dtype);
   length = bind[idx].size;	/* unfix_length... */
   A4GL_debug ("In binding - %d %d ptr=%p", dataType, length, bind[idx].ptr);
+
+
+// If DBMONEY is set to ',' then we need to pass in a ',' instead of a '.'
+// when inserting a decimal number...
+if (infxWantsCommaForDecimal==-1) {
+	char b_dot[20]="2.0";
+	char b_comma[20]="2,0";
+	char result[200];
+	int rval;
+
+	infxWantsCommaForDecimal=0;
+	rval=deccvasc (b_dot, strlen (b_dot), &decimal_var);
+	rfmtdec(&decimal_var, "&&", result);
+
+	if (strcmp(result,"02")==0) { // 
+		infxWantsCommaForDecimal=0;
+	} else {
+		infxWantsCommaForDecimal=1;
+	}
+
+}
 
 
 
@@ -1333,11 +1355,18 @@ int d_prec=0;
       {
 	char *b;
 	int rval;
+	char *dotPtr;
 	vptr = (void *) bind[idx].ptr;
 	fgl_decimal = (fgldecimal *) vptr;
 	b = A4GL_dec_to_str (fgl_decimal, 0);
 	A4GL_debug("dec_to_str returnings %s",b);
 	get_scale(b, &d_prec, &d_scale);
+	dotPtr=strchr(b,'.');
+
+	if (infxWantsCommaForDecimal && dotPtr) {
+		// Swap it from a '.' to a ','
+		*dotPtr=',';
+        } 
 	rval=deccvasc (b, strlen (b), &decimal_var);
 
 	if (rval)
