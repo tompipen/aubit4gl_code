@@ -1473,6 +1473,9 @@ namespace AubitDesktop
 
         static public bool IsValidForType(FGLDataTypes datatype, string value, string format,int dtypeLength)
         {
+            CultureInfo culture = new CultureInfo("en-GB");
+            NumberStyles style = NumberStyles.Any;
+
             if (value == null) return true;
             if (value.Trim() == "") return true;
             
@@ -1500,14 +1503,58 @@ namespace AubitDesktop
                         return true;
                     }
 
-                case FGLDataTypes.DTYPE_DECIMAL:
-                case FGLDataTypes.DTYPE_FLOAT:
-                case FGLDataTypes.DTYPE_SMFLOAT:
+                case FGLDataTypes.DTYPE_DECIMAL:                
                 case FGLDataTypes.DTYPE_MONEY:
                     {
+                        int digits;
+                        int decimals;
+                        int int_part;
                         Double d;
-                        if (Double.TryParse(value, out d))
+                        
+
+                        if (Double.TryParse(value,style, culture,  out d))
                         {
+                            if (format != null && format.Length > 0)
+                            {
+                                string s = FGLUsing.A4GL_func_using(format, value, datatype);
+                                if (s.Substring(1, 1) == "*") return false;
+                                if (s == null) return false;
+                                if (s.Trim().Length == 0) return false;
+                            }
+                            if (dtypeLength > 0)
+                            {
+                                decimals = dtypeLength & 0xffff;
+                                digits = dtypeLength >> 16;
+                                int_part = digits - decimals;
+                                long n = Convert.ToInt32(d);
+                                if (n.ToString().Length > int_part)
+                                {
+                                    return false;
+                                }
+                            }
+
+                            return true;
+                        }
+                        else
+                        {
+                            return false;
+                        }
+                    }
+
+                case FGLDataTypes.DTYPE_FLOAT:
+                case FGLDataTypes.DTYPE_SMFLOAT:
+                    {
+                        Double d;
+                        if (Double.TryParse(value, style,culture, out d))
+                        {
+                            if (format != null && format.Length>0)
+                            {
+                                string s=FGLUsing.A4GL_func_using(format, value, datatype);
+                                if (s.Substring(1, 1) == "*") return false;
+                                if (s == null) return false;
+                                if (s.Trim().Length == 0) return false;
+                            }
+
                             return true;
                         }
                         else
@@ -1550,8 +1597,15 @@ namespace AubitDesktop
                 case FGLUtils.FGLDataTypes.DTYPE_INT:
                     {
                         Int32 n;
-                        if (Int32.TryParse(value, out n))
+                        if (Int32.TryParse(value, NumberStyles.Integer|NumberStyles.AllowThousands, culture, out n))
                         {
+                            if (format != null && format.Length > 0)
+                            {
+                                string s = FGLUsing.A4GL_func_using(format, value, datatype);
+                                if (s.Substring(1, 1) == "*") return false;
+                                if (s == null) return false;
+                                if (s.Trim().Length == 0) return false;
+                            }
                             return true;
                         }
                         else
@@ -1564,8 +1618,16 @@ namespace AubitDesktop
                 case FGLDataTypes.DTYPE_INT8:
                     {
                         Int64 n;
-                        if (Int64.TryParse(value, out n))
+                        if (Int64.TryParse(value,NumberStyles.Integer|NumberStyles.AllowThousands, culture, out n))
                         {
+                            
+                            if (format != null && format.Length > 0)
+                            {
+                                string s = FGLUsing.A4GL_func_using(format, value, datatype);
+                                if (s.Substring(1, 1) == "*") return false;
+                                if (s == null) return false;
+                                if (s.Trim().Length == 0) return false;
+                            }
                             return true;
                         }
                         else
@@ -1579,8 +1641,15 @@ namespace AubitDesktop
                 case FGLUtils.FGLDataTypes.DTYPE_SMINT:
                     {
                         Int16 n;
-                        if (Int16.TryParse(value, out n))
+                        if (Int16.TryParse(value,NumberStyles.Integer|NumberStyles.AllowThousands,culture, out n))
                         {
+                            if (format != null && format.Length > 0)
+                            {
+                                string s = FGLUsing.A4GL_func_using(format, value, datatype);
+                                if (s.Substring(1, 1) == "*") return false;
+                                if (s == null) return false;
+                                if (s.Trim().Length == 0) return false;
+                            }
                             return true;
                         }
                         else
