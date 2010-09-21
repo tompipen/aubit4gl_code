@@ -1,7 +1,7 @@
 
 /* 
 Data definitions for a report 
- $Id: report.x,v 1.14 2010-09-10 18:49:08 mikeaubury Exp $ 
+ $Id: report.x,v 1.15 2010-09-21 06:28:36 mikeaubury Exp $ 
 
 */
  
@@ -179,6 +179,8 @@ struct output {
 struct whereless_select {
 	string select_portion<>;
 	string into_portion<>;
+	string group_by_portion<>;
+
 };
 
 struct select_stmts {

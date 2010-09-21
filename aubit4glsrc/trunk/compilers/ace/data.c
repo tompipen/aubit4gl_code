@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: data.c,v 1.51 2010-09-10 18:49:03 mikeaubury Exp $
+# $Id: data.c,v 1.52 2010-09-21 06:28:36 mikeaubury Exp $
 #*/
 
 /**
@@ -339,7 +339,7 @@ add_agg (struct agg_val agg)
  * @todo Describe function
  */
 void
-add_select (char *sql, char *sql_no_where, char *temptabname, char*into_portion)
+add_select (char *sql, char *sql_no_where, char *temptabname, char*into_portion,char *group_by_portion)
 {
   struct select_stmts *ptr;
   char *buff;
@@ -388,6 +388,7 @@ add_select (char *sql, char *sql_no_where, char *temptabname, char*into_portion)
 
   ptr->whereless_statement.select_portion=acl_strdup(sql_no_where);
   ptr->whereless_statement.into_portion=acl_strdup(into_portion);
+  ptr->whereless_statement.group_by_portion=acl_strdup(group_by_portion);
   buff = acl_strdup (sql);
 
   c = 0;
@@ -553,7 +554,7 @@ int a;
   
 
   buff = acl_malloc2 (strlen (ptr->whereless_statement.select_portion) + 200);	/* We need a little extra space... */
-  sprintf(buff,"%s WHERE (1=0) %s", ptr->whereless_statement.select_portion, ptr->whereless_statement.into_portion);
+  sprintf(buff,"%s WHERE (1=0) %s %s", ptr->whereless_statement.select_portion,  ptr->whereless_statement.group_by_portion,  ptr->whereless_statement.into_portion);
 	for (a=0;a<strlen(buff);a++) {
 
 		if (buff[a]=='\n' && buff[a+1]=='2') {
