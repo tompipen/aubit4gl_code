@@ -832,10 +832,13 @@ select_statement2:
 sel_p2 : {strcpy($<str>$,"");}
 | UNION op_all select_statement2 { SPRINTF3($<str>$,"%s %s %s",$<str>1,$<str>2,$<str>3); }
 | order_by_clause 
+/*
 | order_by_clause INTO TEMP tmp_tabname op_no_log {
        SPRINTF3($<str>$,"%s INTO TEMP %s%s ",$<str>1, $<str>4,$<str>5);
 	strcpy(temp_tab_name,$<str>3);
 }
+*/
+
 
 ;
 

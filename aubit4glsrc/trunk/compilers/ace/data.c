@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: data.c,v 1.52 2010-09-21 06:28:36 mikeaubury Exp $
+# $Id: data.c,v 1.53 2010-09-21 16:58:04 mikeaubury Exp $
 #*/
 
 /**
@@ -389,6 +389,9 @@ add_select (char *sql, char *sql_no_where, char *temptabname, char*into_portion,
   ptr->whereless_statement.select_portion=acl_strdup(sql_no_where);
   ptr->whereless_statement.into_portion=acl_strdup(into_portion);
   ptr->whereless_statement.group_by_portion=acl_strdup(group_by_portion);
+
+
+//printf ("Sql_no_where=%s\ntemptabname=%s\ninto_portion=%s\ngroup_by_portion=%s\n", sql_no_where,temptabname, into_portion,group_by_portion);
   buff = acl_strdup (sql);
 
   c = 0;
@@ -807,7 +810,7 @@ execute_selects (void)
       A4GL_debug ("Executing select..");
       A4GL_debug ("%s", nstatement);
 	translated= A4GL_translate_sql (nstatement);
-	//printf("%s\n", translated);
+	///printf("%s\n", translated);
       A4GL_debug ("%s", translated);
 
 
@@ -832,7 +835,7 @@ execute_selects (void)
 
 
 	if ( columns_method == COLUMNS_METHOD_INTO_TEMP || a != mx) {
-      		/* printf("Executing... %s",nstatement); */
+      		//printf("Executing... %s",nstatement); 
       		A4GLSQL_execute_implicit_select (psql, 1);
 		if (A4GL_get_status()  < 0)
 			{
