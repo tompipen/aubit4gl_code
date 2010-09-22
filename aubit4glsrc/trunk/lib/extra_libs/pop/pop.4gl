@@ -1,5 +1,6 @@
 # This module required libspopc
-# http://brouits.free.fr/libspopc/
+# http://herewe.servebeer.com/libspopc/
+# (Used to be : http://brouits.free.fr/libspopc/ - but it redirects to the above address now)
 
 code
 #include "libspopc.h"
