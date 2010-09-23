@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: calldll.c,v 1.96 2010-08-13 08:47:52 mikeaubury Exp $
+# $Id: calldll.c,v 1.97 2010-09-23 11:48:31 mikeaubury Exp $
 #
 */
 
@@ -1280,7 +1280,9 @@ char  buff[200];
 	}
 
 
+#ifdef DEBUG
 	A4GL_debug("Calling %s in %s - with %d parameters", functionName,sharedlibraryname,n);
+#endif
 
 	strcpy(buff,functionName);
 	A4GL_convlower(buff);

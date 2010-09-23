@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: datatypes.c,v 1.44 2010-08-26 20:23:25 mikeaubury Exp $
+# $Id: datatypes.c,v 1.45 2010-09-23 11:48:31 mikeaubury Exp $
 #
 */
 
@@ -412,7 +412,9 @@ int nret;
 
   sprintf(polymorphicFunctionSignature, ":%s_%d%s", funcname,nparam,getSigForTopOfStack(nparam));
   
+#ifdef DEBUG
 A4GL_debug("Polymorphic sig = %s", polymorphicFunctionSignature);
+#endif
 //printf("Polymorphic sig = %s alt=%s\n", polymorphicFunctionSignature,buff);
 
   ptr = A4GL_get_datatype_function_i (dtype, polymorphicFunctionSignature);
@@ -440,26 +442,38 @@ A4GL_debug("Polymorphic sig = %s", polymorphicFunctionSignature);
 			xptr++;
 			strcpy(orig_function, xptr);
 			strcat(buff,".RouteToParent");
+#ifdef DEBUG
 			A4GL_debug("Not found in object - lets check the base object : %s",buff);
+#endif
 			router_ptr=A4GL_get_datatype_function_i(dtype, buff);
 			if (router_ptr) {
 				int _rval;
+#ifdef DEBUG
 				A4GL_debug("Object supports 'RouteToParent'");
+#endif
 
 				_rval=router_ptr(obj,orig_function,nparam);
+#ifdef DEBUG
 				A4GL_debug("Got %d from RouteToParent - -1 indicates not handled at all");
+#endif
 				if (_rval==-1) {
+#ifdef DEBUG
 					A4GL_debug("Thats not good...");
+#endif
 					A4GL_pop_args(nparam);
       					A4GL_set_err_txt(buff);
       					A4GL_exitwith ("Unable to find function (%s)");
 					//fprintf(stderr,"Unable to find function : %s\n", buff);
 				} else {
+#ifdef DEBUG
 					A4GL_debug("Happy days...");
+#endif
 					return _rval;
 				}
 			} else {
+#ifdef DEBUG
 				A4GL_debug("Object does not support 'RouteToParent'");
+#endif
 			}
 		}
 	}

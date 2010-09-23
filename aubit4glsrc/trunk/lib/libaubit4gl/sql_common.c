@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql_common.c,v 1.98 2010-08-13 08:47:52 mikeaubury Exp $
+# $Id: sql_common.c,v 1.99 2010-09-23 11:48:31 mikeaubury Exp $
 #
 */
 
@@ -2812,11 +2812,15 @@ static int new_ident_cnt=0;
 		static char buff[20];
 		SPRINTF1(buff,"a4glg%013d",new_ident_cnt++);
 
+#ifdef DEBUG
 		A4GL_debug("Cursor issue : %s is already used", preferredName);
+#endif
 
 		preferredName=buff;
 		if (!hasClobberInIdentifiers(preferredName)) {		
+#ifdef DEBUG
 			A4GL_debug("Using %s instead for %s in %s.4gl", preferredName, identifier ,module);
+#endif
 			return add_ident(module,identifier,preferredName);
 		}
 	}

@@ -77,7 +77,9 @@ static int base_channel_open(long *objectID, int nParam) {
 	strcpy(data->filename,filename);
 	data->handle=fopen(data->filename,dir);
 
+#ifdef DEBUG
 A4GL_debug("opened %p",data->handle);
+#endif
 	free(dir);
 	free(filename);
 
@@ -113,7 +115,9 @@ static int base_channel_read (long *objectID,  int nParam) {
         	return 0;
 	}
 
+#ifdef DEBUG
 	A4GL_debug("Reading from %p",data->handle);
+#endif
 
         if (!fgets(buff,19998,data->handle)) {
                 int a;

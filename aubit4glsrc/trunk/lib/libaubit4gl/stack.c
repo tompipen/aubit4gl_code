@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                          |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.262 2010-09-06 13:11:00 mikeaubury Exp $
+# $Id: stack.c,v 1.263 2010-09-23 11:48:31 mikeaubury Exp $
 #
 */
 
@@ -323,17 +323,21 @@ A4GL_pop_bool (void)
  *
  * @return The value poped.
  */
-short
-A4GL_pop_int (void)
+short  A4GL_pop_int (void)
 {
+union  {
   short ptr;
+  long pp;
+} xx;
+
   int b;
-  b = A4GL_pop_param (&ptr, DTYPE_SMINT, 0);
+  b = A4GL_pop_param (&xx.ptr, DTYPE_SMINT, 0);
+
 #ifdef DEBUG
   A4GL_debug ("8 pop_int b=%d\n", b);
 #endif
-  ptr = ptr & 0xffff;
-  return ptr;
+  xx.ptr = xx.ptr & 0xffff;
+  return xx.ptr;
 }
 
 /**
@@ -1544,7 +1548,7 @@ int r;
       char cname[256];
       char tmpvar[256];
       struct BINDING ibind[] = {
-	{&tmpvar, 0, 255, 0, 0, 0}
+	{&tmpvar, 0, 255, 0, 0, 0,0}
       };			/* end of binding */
       SPRINTF1 (cname, "chkin_%d", cntsql_0++);
 
@@ -1554,7 +1558,7 @@ int r;
       {
 	int n;
 	struct BINDING *ibind;
-	struct BINDING obind[] = { {0, 0, 0, 0, 0, 0} };	/* end of binding */
+	struct BINDING obind[] = { {0, 0, 0, 0, 0, 0,0} };	/* end of binding */
 	ibind = A4GL_pop_binding (&n);
 	A4GL_declare_cursor (0, (void *) A4GL_prepare_select (ibind, n, obind, 0, s, "__internal_stack", 1, 0, 0), 0, cname);
       }
@@ -1601,8 +1605,8 @@ int r;
       static int cntsql_1 = 0;
       char cname[256];
 
-      struct BINDING ibind[] = { {&tmpvar, 0, 255, 0, 0, 0} };	/* end of binding */
-      struct BINDING obind[] = { {0, 0, 0, 0, 0, 0} };	/* end of binding */
+      struct BINDING ibind[] = { {&tmpvar, 0, 255, 0, 0, 0,0} };	/* end of binding */
+      struct BINDING obind[] = { {0, 0, 0, 0, 0, 0,0} };	/* end of binding */
       struct BINDING *dbind;
       void *prep;
 
@@ -2399,6 +2403,7 @@ A4GL_push_reference (void *x, int l)
   ptr->nbytes = l;
   A4GL_push_param (ptr, DTYPE_REFERENCE + DTYPE_MALLOCED);
 }
+
 
 /**
  *
@@ -3656,7 +3661,7 @@ A4GL_locate_var (struct fgl_int_loc *p, char where, char *filename)
   A4GL_debug ("20 locate_var p=%p %c", p, p->where);
 #endif
 
-  if (p->where == 'M' && p->ptr > 0)
+  if (p->where == 'M' && p->ptr !=NULL)
     {
 #ifdef DEBUG
       A4GL_debug ("20 Freeing\n");
@@ -4028,6 +4033,10 @@ A4GL_get_top_of_stack (int a, int *d, int *s, void **ptr)
     *ptr = params[params_cnt - a].ptr;
 }
 
+
+
+
+#ifdef MOVED
 /**
  *
  *
@@ -4147,6 +4156,9 @@ A4GL_push_binding (void *ptr, int num)
 
   return 0;
 }
+
+
+
 
 /**
  *
@@ -4462,7 +4474,7 @@ dif_pop_bind_money (struct bound_list *list)
   return (int) (long) list->ptr[list->popped].ptr;
 }
 
-
+#endif
 
 
 char *

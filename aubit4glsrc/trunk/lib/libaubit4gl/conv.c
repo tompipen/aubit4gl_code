@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.181 2010-06-09 06:57:39 mikeaubury Exp $
+# $Id: conv.c,v 1.182 2010-09-23 11:48:31 mikeaubury Exp $
 #
 */
 
@@ -418,7 +418,9 @@ A4GL_inttoint (void *a, void *b, int size)
 	d->is_neg = 0;
     } else {
 	printf("not ok\n");
+#ifdef DEBUG
 	A4GL_debug("Not ok\n");
+#endif
     }
 
 
@@ -3702,7 +3704,9 @@ A4GL_valid_dt (char *s, int *data, int size)
   int i = 0;
   int cnt = 0;
   int buff_size = 0;
+#ifdef DEBUG
   char *codes[] = { "", "YEAR", "MONTH", "DAY", "HOUR", "MINUTE", "SECOND", "FRACTION1", "FRACTION2", "FRACTION3", "FRACTION4", "FRACTION5", 0 }; // Used for DEBUGGING
+#endif
   for (a = 0; a < 255; a++)
     {
       ptr[a] = 0;
@@ -4191,10 +4195,12 @@ A4GL_valid_int (char *s, int *data, int size)
   int has_rest = 0;
   int buff_size;
   int size_type;
+#ifdef DEBUG
   char *codes[] = { "", "YEAR", "MONTH", "DAY", "HOUR", "MINUTE",
     "SECOND", "FRACTION1", "FRACTION2", "FRACTION3", "FRACTION4", "FRACTION5",
     0
   };
+#endif
 
   //if (strcmp(s,"0-1")==0) { return 1; }
 
