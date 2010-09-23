@@ -37,7 +37,7 @@ public:
    int maxArrSize() { return i_maxArrSize; };
    int arrLine() { return i_arrLine; };
    int scrLine() { return i_scrLine; };
-   void resize();
+//   void resize();
 
     void setInputEnabled(bool);
     void setColumnLabel(int, Label*);
@@ -54,6 +54,7 @@ public:
     void setCurrentColumn(int);
     void setCurrentField(int, int);
     void setText(QString, int, int);
+    virtual QSize sizeHint () const;
 
 private:
     int i_arrCount;

@@ -61,12 +61,49 @@ TableView::TableView(QWidget *parent) : QTableView(parent)
    this->setEnabled(false);
 }
 
+/*
 void TableView::resize()
 {
    if(QSortFilterProxyModel *proxyModel = qobject_cast<QSortFilterProxyModel *> (this->model())){
       if(TableModel *table = qobject_cast<TableModel *> (proxyModel->sourceModel())){
          int height = 0;
          int width = 4;
+
+         if(!this->verticalHeader()->isHidden()){
+            width += this->verticalHeader()->width();
+         }
+
+         for(int i=0; i<table->rowCount(QModelIndex());i++){
+            height += this->rowHeight(i);
+         }
+
+         for(int j=0; j<table->columnCount(QModelIndex()); j++){
+            width += this->columnWidth(j);
+         }
+
+         if(!this->horizontalScrollBar()->isHidden()){
+            height+= this->horizontalScrollBar()->height();
+         }
+
+         if(!this->verticalScrollBar()->isHidden()){
+            width+= this->verticalScrollBar()->width();
+         }
+
+//         this->setFixedSize(width, height);
+         this->setMinimumSize(width+5, height);
+//         this->setFixedWidth(width);
+      }
+   }
+}
+*/
+
+QSize TableView::sizeHint() const
+{
+   int height = 0;
+   int width = 0;
+
+   if(QSortFilterProxyModel *proxyModel = qobject_cast<QSortFilterProxyModel *> (this->model())){
+      if(TableModel *table = qobject_cast<TableModel *> (proxyModel->sourceModel())){
 
          /*
          if(this->horizontalHeader()->isVisible())
@@ -94,10 +131,11 @@ void TableView::resize()
          }
 
 //         this->setFixedSize(width, height);
-         this->setMinimumSize(width+5, height);
+//         this->setMinimumSize(width+5, height);
 //         this->setFixedWidth(width);
       }
    }
+   return QSize(width+12, height);
 }
 
 
