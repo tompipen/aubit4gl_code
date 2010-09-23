@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                          |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.263 2010-09-23 11:48:31 mikeaubury Exp $
+# $Id: stack.c,v 1.264 2010-09-23 12:26:34 mikeaubury Exp $
 #
 */
 
@@ -4036,7 +4036,6 @@ A4GL_get_top_of_stack (int a, int *d, int *s, void **ptr)
 
 
 
-#ifdef MOVED
 /**
  *
  *
@@ -4474,7 +4473,6 @@ dif_pop_bind_money (struct bound_list *list)
   return (int) (long) list->ptr[list->popped].ptr;
 }
 
-#endif
 
 
 char *
