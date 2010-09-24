@@ -455,7 +455,7 @@ void Parser::handleTableColumn(const QDomNode& xmlNode){
    }
  
    //p_screenRecord->setFixedSize(recordWidth, recordHeight);
-   p_screenRecord->resize();
+   //p_screenRecord->resize();
  
    addWidgets(p_screenRecord);
  
