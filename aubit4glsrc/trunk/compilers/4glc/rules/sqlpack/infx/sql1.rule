@@ -180,9 +180,22 @@ misc_infx_stmt_str:
 ;
 
 sql_transact_commands:
-         commit_statement       { $<integer_val>$=1; set_cmdlineno(token_read_on_line);}
-        | begin_statement       { $<integer_val>$=-1; set_cmdlineno(token_read_on_line);}
-        | rollback_statement    { $<integer_val>$=0; set_cmdlineno(token_read_on_line);}
+         commit_statement       { $<integer_val>$=1; 
+#ifndef  SQLCOMPILER
+				set_cmdlineno(token_read_on_line);
+#endif
+
+}
+        | begin_statement       { $<integer_val>$=-1; 
+#ifndef  SQLCOMPILER
+set_cmdlineno(token_read_on_line);
+#endif
+}
+        | rollback_statement    { $<integer_val>$=0; 
+#ifndef  SQLCOMPILER
+set_cmdlineno(token_read_on_line);
+#endif
+}
 ;
 
 sql_commands :
