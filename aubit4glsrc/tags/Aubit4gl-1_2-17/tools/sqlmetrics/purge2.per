@@ -1,0 +1,21 @@
+database formonly
+screen 
+{
+
+Tha SQLMetrics table contains [qty   ] rows
+with elapsed time from [min            ]sec
+                    to [max            ]sec
+
+   delete rows with execution time less than?
+                 [time           ]sec
+
+}
+end
+attributes
+qty = formonly.lv_qty,noentry;
+min = formonly.lv_a_min type float,noentry,format="###&.&&&&&&&&&&";
+max = formonly.lv_a_max type float,noentry,format="###&.&&&&&&&&&&";
+time = formonly.lv_elatime type float,autonext,format="###&.&&&&&&&&&&";
+
+instructions
+delimiters " " 

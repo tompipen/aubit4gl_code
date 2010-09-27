@@ -1,0 +1,89 @@
+'\" @(#)$Id: tmac.esee,v 1.1 2002-11-28 06:40:47 afalout Exp $
+'\" @(#)Examples facility .eS/.eE
+'\" -------------------------------------------------------------------------
+'\" The example start/end macros .eS/.eE are used to embed constant-width
+'\" font, unfilled text (such as program source code) into a document.
+'\" They are fairly robust; the preserve the current state very carefully
+'\" and reset it on exit.  .eS may be given a argument S which will use
+'\" 8-point constant-width font instead of 10-point.
+'\" The strings iS/iE and bS/bE are for use inside .eS/.eE and start/end
+'\" italic text and bold text respectively.
+'\" -------------------------------------------------------------------------
+'\" Resources used:
+'\" Number Registers:   @F @f @S @s @V @v @E
+'\" Macros:             eS eE
+'\" Strings:            iS iE bS bE
+'\" -------------------------------------------------------------------------
+.if t \{ .ds iS \\&\\s\\n(@E\\fI
+.ds iE \\&\\s0\\fP
+.ds bS \\&\\s\\n(@E\\fB
+.ds bE \\&\\s0\\fP
+.ds C \\&\\f(CB\\s10
+.ds D \\s0\\fP\\&
+.ds c \\&\\f(CR\\s10
+.ds d \\s0\\fP\\&
+.ds f \\&\\f(CR\\s8
+.ds g \\s0\\fP\\& \}
+.if n \{ .ds iS \\&\\fI
+.ds iE \\&\\fP
+.ds bS \\&\\fB
+.ds bE \\&\\fP
+.ds C \\&
+.ds D \\&
+.ds c \\&
+.ds d \\&
+.ds f \\&
+.ds g \\& \}
+'\"
+.de eS              \" START EXAMPLE
+.br                 \" Break
+.ne 4               \" Need at least four lines
+.sp 0.5v            \" Half-line space
+.nr @F \\n(.f       \" Save the current font
+.ft                 \" Change to previous font
+.nr @f \\n(.f       \" And the previous font
+.nr @S \\n(.s       \" Save the current point size
+.ps                 \" Change to previous point size
+.nr @s \\n(.s       \" And the previous point size
+.nr @V \\n(.v       \" Save the current vertical spacing
+.vs                 \" Change to previous vertical spacing
+.nr @v \\n(.v       \" And the previous vertical spacing
+.ie !'\\$1'S' \{ \
+.if t \{ .ft CR     \" Constant width font
+.ft CR \}           \" Constant width font
+.if n \{ .ft R      \" Roman
+.ft R \}            \" Roman
+.nr @E 12           \" Font size for use in embedded italic/bold
+.vs 12              \" Vertical spacing 12 points
+.vs 12              \" Vertical spacing 12 points
+.ps 10              \" Point size 10 for constant width font
+.ps 10 \}           \" Point size 10 for constant width font
+.el \{ \
+.if t \{ .ft CR     \" Constant width line printer font
+.ft CR \}           \" Constant width line printer font
+.if n \{ .ft R      \" Roman
+.ft R \}            \" Roman
+.nr @E 10           \" Font size for use in embedded italic/bold
+.vs 10              \" Vertical spacing 10 points
+.vs 10              \" Vertical spacing 10 points
+.ps 8               \" Point size 8 for constant width line printer font
+.ps 8  \}           \" Point size 8 for constant width line printer font
+.nf                 \" No filling
+'\" Tabs should be set by the MM package, but do so again for safety
+.ta 0.5i 1.0i 1.5i 2.0i 2.5i 3.0i 3.5i 4.0i 4.5i 5.0i 5.5i 6.0i
+..
+'\"
+.de eE              \" FINISH EXAMPLE
+.br                 \" Break
+.ft \\n(@f          \" Restore original previous font
+.ft \\n(@F          \" Restore original current font
+.ps \\n(@s          \" Restore original previous font size
+.ps \\n(@S          \" Restore original current font size
+.vs \\n(@vu         \" Restore original previous vertical spacing
+.vs \\n(@Vu         \" Restore original current vertical spacing
+.fi                 \" Restore filling
+.ne 4               \" Need at least four lines
+.sp 0.5v            \" Half-line space
+..
+'\" End of example facility
+'\" -------------------------------------------------------------------------

@@ -1,0 +1,11 @@
+rm ebnf-eps-directory/*.eps
+rm ebnf-eps-directory/*.pdf
+
+echo "ebnf-eps-directory" | emacs -batch -l setup-ebnf2ps.el  -f "ebnf-eps-directory"
+cd ebnf-eps-directory
+for a in *.eps
+do
+	echo $a
+	epstopdf $a 
+done
+
