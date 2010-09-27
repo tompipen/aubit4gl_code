@@ -599,19 +599,21 @@ opt_print_at : | KW_AT nval {
 }
 ;
 
-print_cmd : PRINT opt_rep_expr_list opt_semi_b {
+print_cmd : PRINT atline opt_rep_expr_list opt_semi_b {
 	char wt;
 	doing_a_print=0;
 
+	set_cmdlineno($<integer_val>2);
 
-	$<cmd>$=new_print_cmd(	make_fgl_expr_list($<ptr_list>2), $<e_boolean>3);
+
+	$<cmd>$=new_print_cmd(	make_fgl_expr_list($<ptr_list>3), $<e_boolean>4);
 
 	if (!isin_command("REPORT")) {
                         a4gl_yyerror("PRINT can only be used in a report. Did you mean DISPLAY ?");
                         YYERROR;
 	}
 	wt=get_curr_report_stack_whytype_1();
-	if ($<e_boolean>3==0) {
+	if ($<e_boolean>4==0) {
 		if (wt=='P'||wt=='p'||wt=='T') { /* Page header or trailer */
 			if (isin_command("WHILE")||isin_command("FOR")) {
 				a4gl_yyerror("You can't print within a loop in a PAGE HEADER or PAGE TRAILER");

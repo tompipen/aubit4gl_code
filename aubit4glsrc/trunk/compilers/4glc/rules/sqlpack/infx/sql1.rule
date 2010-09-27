@@ -180,9 +180,9 @@ misc_infx_stmt_str:
 ;
 
 sql_transact_commands:
-         commit_statement       { $<integer_val>$=1; }
-        | begin_statement       { $<integer_val>$=-1; }
-        | rollback_statement    { $<integer_val>$=0; }
+         commit_statement       { $<integer_val>$=1; set_cmdlineno(token_read_on_line);}
+        | begin_statement       { $<integer_val>$=-1; set_cmdlineno(token_read_on_line);}
+        | rollback_statement    { $<integer_val>$=0; set_cmdlineno(token_read_on_line);}
 ;
 
 sql_commands :

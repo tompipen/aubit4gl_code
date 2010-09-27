@@ -1201,6 +1201,28 @@ check_linearised_commands (char *module_name, s_commands * func_cmds)
 	}
 
 
+      if (r->cmd_data.type == E_CMD_SKIP_CMD) {
+		int dtype;
+	dtype=expr_datatype(module_name,r->lineno,r->cmd_data.command_data_u.skip_cmd.skip_amt) & DTYPE_MASK;
+	if (dtype==DTYPE_INT || dtype==DTYPE_SMINT || dtype==DTYPE_INT8 || dtype==DTYPE_SERIAL) ;
+	else {
+		//A4GL_pause_execution();
+		//printf("dtype=%d\n",dtype);
+      		A4GL_lint (module_name, r->lineno, "NONINTSKIP", "Use of non-integer with SKIP", 0);
+	}
+      }
+
+
+      if (r->cmd_data.type == E_CMD_NEED_CMD) {
+		int dtype;
+	dtype=expr_datatype(module_name,r->lineno,r->cmd_data.command_data_u.need_cmd.expr) & DTYPE_MASK;
+	if (dtype==DTYPE_INT || dtype==DTYPE_SMINT || dtype==DTYPE_INT8 || dtype==DTYPE_SERIAL) ;
+	else {
+		//A4GL_pause_execution();
+		//printf("dtype=%d\n",dtype);
+      		A4GL_lint (module_name, r->lineno, "NONINTNEED", "Use of non-integer with NEED", 0);
+	}
+      }
 
       if (r->cmd_data.type == E_CMD_WHENEVER_CMD)
 	{
@@ -4328,6 +4350,9 @@ scan_functions (char *infuncname, int calltree_entry, int *calltree,
       expr_str *e;
       int nparam;
       e = f->calls_by_expr.calls_by_expr_val[a];
+       while (e->expr_type==ET_EXPR_CAST) {
+			e=e->expr_str_u.expr_cast->expr;
+       }
 
       if (e->expr_type == ET_EXPR_SHARED_FCALL)
 	{
@@ -7271,9 +7296,11 @@ check_expression (char *module, int lineno, struct expr_str *e)
   if (e->expr_type==ET_EXPR_OP_SPACES) {
 	int dtype;
 	dtype=expr_datatype(module,lineno,e->expr_str_u.expr_expr)&DTYPE_MASK;
-	if (dtype==DTYPE_INT || dtype==DTYPE_SMINT || dtype==DTYPE_INT8 || dtype==DTYPE_SERIAL) {
+	if (dtype==DTYPE_INT || dtype==DTYPE_SMINT || dtype==DTYPE_INT8 || dtype==DTYPE_SERIAL) ;
+	else {
+		//A4GL_pause_execution();
+		//printf("dtype=%d\n",dtype);
       		A4GL_lint (module, lineno, "NONINTSPACES", "Use of non-integer with SPACES", 0);
-			
 	}
   }
 
