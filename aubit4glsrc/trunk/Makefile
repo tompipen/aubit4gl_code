@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile,v 1.83 2010-07-14 13:23:55 mikeaubury Exp $
+# $Id: Makefile,v 1.84 2010-09-27 15:27:41 mikeaubury Exp $
 #
 
 #Save initial state of system varables, so we can undo changes 
@@ -648,6 +648,7 @@ cleanall: clean.root clean.bin clean.etc clean.incl clean.docs clean.install \
 	$(MAKE) -C help clean || true
 	$(MAKE) -C glade/ide clean || true
 	$(MAKE) -C lib/extra_libs/errhook clean || true
+	$(MAKE) -C compilers/wsdl2fgl clean || true
 	@echo " "	
 	
 	@echo "+--------------------------------------------------------------------+"
