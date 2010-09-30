@@ -285,6 +285,7 @@ void LineEdit::check()
 
    //Set textformat if format given
    if(Fgl::isValidForType(dt_dataType, text, qs_format)){
+      text = Fgl::usingFunc(qs_format, text, dt_dataType);
       this->setText(text);
    }
    else{

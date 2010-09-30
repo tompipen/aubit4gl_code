@@ -37,6 +37,7 @@ namespace Fgl
       QString fgl_convert_money(QString);
 
       QString dbDateToFormat(QString);
+      QChar getDBDateSeperator(QString);
       bool isValidForType(DataType, QString, QString);
 
    enum FieldAttributes { AUBIT_COLOR_BLACK     = 0x00000,

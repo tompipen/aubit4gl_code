@@ -480,6 +480,7 @@ void ScreenHandler::createDialog(QString title, QString comment, QString style, 
    //Dialog *p_dialog = new Dialog(title, comment, style, image, p_fglform);
    Dialog *p_dialog = new Dialog(title, comment, style, image, p_fglform);
    p_fglform->setDialog(p_dialog);
+   clearEvents();
 
 }
 

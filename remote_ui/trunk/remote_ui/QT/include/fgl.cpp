@@ -85,7 +85,12 @@ namespace Fgl {
       fmt = fmt.replace("mmmm", "MMMM");
       fmt = fmt.replace("mmm", "MMM");
       fmt = fmt.replace("mm", "MM");
-      value = d.toString(fmt);
+      if(fmt.isEmpty()){
+         value = d.toString(dbDateToFormat(env["DBDATE"]));
+      }
+      else{
+         value = d.toString(fmt);
+      }
 
       return value;
    }
@@ -601,162 +606,170 @@ namespace Fgl {
 
    QDate getDate(QString value)
    {
-      QStringList arr_mdy;
-      QString sep;
+      QString dbdate = env["DBDATE"];
+      QChar dbdate_sep = getDBDateSeperator(dbdate);
+      QChar sep;
       if(value.contains("/"))
       {
-         sep = "/";
+         sep = '/';
       }
       if(value.contains("-"))
       {
-         sep = "-";
+         sep = '-';
       }
       if(value.contains("."))
       {
-         sep = ".";
+         sep = '.';
       }
 
-      if(sep.isEmpty()){
+      if(sep.isNull()){
          //TODO: error
-      }
+         switch(value.length()){
+            case 6: //010110
+               value.insert(2, "/");
+               value.insert(5, "/");
+               sep = '/';
 
-      arr_mdy = value.split(sep);
-
-      if(arr_mdy.count() <= 0){
-         // TODO: error
-      }
-
-      if (arr_mdy[0].length() == 1) arr_mdy[0] = "0" + arr_mdy[0];
-      if (arr_mdy[1].length() == 1) arr_mdy[1] = "0" + arr_mdy[1];
-
-      if(dbDateToFormat(env["DBDATE"]).contains("yyyy")){
-         if (arr_mdy[2].length() == 2)
-         {  
-            bool ok = true;
-            int year = arr_mdy[2].toInt(&ok);
-            if (ok && year > 50)
-            {
-               arr_mdy[2] = "19" + arr_mdy[2];
-            }
-            else
-            {
-               arr_mdy[2] = "20" + arr_mdy[2];
-            }
+               for(int i=0; i<dbdate.length()-1; i++){
+                  if(dbdate.at(i) == 'Y'){
+                     int year = QDate::currentDate().year() / 100; //to get the first 2 digits
+                     if(i < dbdate.length()-1){
+                        switch(i){
+                           case 0:
+                              value.insert(0,QString::number(year));
+                              break;
+                           case 1:
+                              value.insert(3,QString::number(year));
+                              break;
+                           case 2:
+                              value.insert(6,QString::number(year));
+                              break;
+                        }
+                     }
+                  }
+               }
+               break;
+            case 8: //01012010
+               for(int i=0; i<dbdate.length()-1; i++){
+                  if(dbdate.at(i) == 'Y'){
+                     switch(i){
+                        case 0:
+                           //YDM
+                           value.insert(4, "/");
+                           value.insert(7, "/");
+                           sep = '/';
+                           break;
+                        case 1:
+                           //MYD
+                           value.insert(2, "/");
+                           value.insert(7, "/");
+                           sep = '/';
+                           break;
+                        case 2:
+                           //MDY
+                           value.insert(2, "/");
+                           value.insert(5, "/");
+                           sep = '/';
+                           break;
+                        default:
+                           break;
+                           //ERROR
+                     }
+                  }
+               }
+               break;
          }
       }
-      if (arr_mdy.count() > 0)
-      {
-         value = arr_mdy[0] + sep + arr_mdy[1] + sep + arr_mdy[2];
+
+      QStringList arr_mdy;
+      arr_mdy = value.split(sep);
+
+      int year = -1;
+      int month = -1;
+      int day = -1;
+
+      QString tmp_dbdate = dbdate;
+      tmp_dbdate.remove("4");
+      tmp_dbdate.remove("2");
+      tmp_dbdate.remove(dbdate_sep);
+
+      for(int i=0; i<tmp_dbdate.length(); i++){
+         if(tmp_dbdate.at(i) == 'D'){
+            day = arr_mdy.at(i).toInt();
+         }
+
+         if(tmp_dbdate.at(i) == 'M'){
+            month = arr_mdy.at(i).toInt();
+         }
+
+         if(tmp_dbdate.at(i) == 'Y'){
+            year = arr_mdy.at(i).toInt();
+         }
       }
 
-      return QDate::fromString(value,  dbDateToFormat(env["DBDATE"]));
-   }
-
-   QDate getDate(QString value, QString fmt)
-   {
-      fmt = fmt.replace("mmmm", "MMMM");
-      fmt = fmt.replace("mmm", "MMM");
-      fmt = fmt.replace("mm", "MM");
-      return QDate::fromString(value,  fmt);
+      QDate date(year, month, day);
+      return date;
    }
 
    QString dbDateToFormat(QString dbdate){
       QString fmt;
-      QString sep = "/"; 
+      QChar sep = getDBDateSeperator(dbdate);
       int cnt = 4;
-      switch(dbdate.length()){
-         case 5: // DMY4/
-            sep = dbdate.mid(dbdate.length()-1, 1);
-            dbdate.remove(dbdate.length()-1, 1);
-            cnt = dbdate.mid(dbdate.length()-1, 1).toInt();
-            dbdate.remove(dbdate.length()-1, 1);
 
-            for(int i=0; i<dbdate.length(); i++){
-               bool found = false;
-               if(dbdate.at(i) == 'D'){
-                  fmt += "dd";
-                  found = true;
+      if(dbdate.right(1) == sep){
+         dbdate.remove(dbdate.length()-1,1);
+      }
+
+      for(int i=0; i<dbdate.length(); i++){
+         bool found = false;
+         if(dbdate.at(i) == 'D'){
+            fmt += "dd";
+            found = true;
+         }
+
+         if(dbdate.at(i) == 'M'){
+            fmt += "MM";
+            found = true;
+         }
+
+         if(dbdate.at(i) == 'Y'){
+            if(i < dbdate.length()-1){
+               int k = dbdate.at(i+1).digitValue();
+
+               if(k > -1){
+                  i++;
+                  cnt = k;
                }
 
-               if(dbdate.at(i) == 'M'){
-                  fmt += "MM";
-                  found = true;
-               }
-
-               if(dbdate.at(i) == 'Y'){
-                  for(int k=0; k<cnt; k++){
-                     fmt += "y";
-                  }
-                  found = true;
-               }
-
-               if(found && i < dbdate.length()-1){
-                  fmt += sep;
-                  found = false;
-               }
-            }
-            break;
-
-         case 4: // DMY4
-            cnt = dbdate.remove(dbdate.length()-1, 1).toInt();
-            for(int i=0; i<dbdate.length(); i++){
-               bool found = false;
-               if(dbdate.at(i) == 'D'){
-                  fmt += "dd";
-                  found = true;
-               }
-
-               if(dbdate.at(i) == 'M'){
-                  fmt += "MM";
-                  found = true;
-               }
-
-               if(dbdate.at(i) == 'Y'){
-                  for(int k=0; k<cnt; k++){
-                     fmt += "y";
-                  }
-                  found = true;
-               }
-
-               if(found && i < dbdate.length()){
-                  fmt += sep;
-                  found = false;
+               for(k=0; k<cnt; k++){
+                  fmt += "y";
                }
             }
-            break;
+            found = true;
+         }
 
-         case 3: // DMY
-            for(int i=0; i<dbdate.length(); i++){
-               bool found = false;
-               if(dbdate.at(i) == 'D'){
-                  fmt += "dd";
-                  found = true;
-               }
+         if(found && i < dbdate.length()-1){
+            fmt += sep;
+            found = false;
+         }
+      }
 
-               if(dbdate.at(i) == 'M'){
-                  fmt += "MM";
-                  found = true;
-               }
-
-               if(dbdate.at(i) == 'Y'){
-                  for(int k=0; k<cnt; k++){
-                     fmt += "y";
-                  }
-                  found = true;
-               }
-
-               if(found && i < dbdate.length()){
-                  fmt += sep;
-                  found = false;
-               }
-            }
-            break;
-
-         default:
-            qWarning("Unhandled DBDATE Format");
-            return "";
-      } 
       return fmt;
+   }
+
+   QChar getDBDateSeperator(QString dbdate){
+
+      QChar sep = '/';
+      if(dbdate.right(1) == "/" ||
+         dbdate.right(1) == "." ||
+         dbdate.right(1) == "-" ||
+         dbdate.right(1) == "0"){
+         sep = dbdate.at(dbdate.length()-1);
+         dbdate.remove(dbdate.length()-1,1);
+      }
+
+      return sep;
+   
    }
 
    bool isValidForType(DataType datatype, QString value, QString format)
@@ -803,7 +816,8 @@ namespace Fgl {
                  bool ok = false;
                  if (!format.isEmpty())
                  {
-                    dt = getDate(value, format);
+                    QString qs_dt = fgl_using_date(value, format);
+                    dt = QDate::fromString(qs_dt, format);
                     if(dt.isValid())
                        ok = true;
                  }
