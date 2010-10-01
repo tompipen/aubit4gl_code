@@ -43,10 +43,8 @@ Response::Response(QString id, FglForm* p_currForm, bool cursorPos) : QDomDocume
       if(ok){
          if(ev.id == i_id){
             currEvent = ev;
+            break;
          }
-      }
-      else{
-          break;
       }
    }
 

@@ -881,7 +881,8 @@ void FglForm::fieldEvent(Fgl::Event type, QWidget* widget)
                  event.type == Fgl::MENUACTION_EVENT) && 
                  event.attribute.toLower() == type.attribute.toLower()){
 */
-              if(event.attribute.toLower() == type.attribute.toLower()){
+              if(event.attribute.toLower() == type.attribute.toLower() ||
+                 Fgl::keyToString(event.attribute).toLower() == type.attribute.toLower()){
                  if(event.id >= 0){
                     addToQueue(QString::number(event.id));
                     return;
