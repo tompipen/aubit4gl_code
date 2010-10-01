@@ -56,7 +56,9 @@ namespace Fgl {
             }
             else
             {
-                return fgl_using(fmt, value);
+                if(!fmt.isEmpty()){
+                   return fgl_using(fmt, value);
+                }
             }
       }
       return value;
@@ -64,9 +66,6 @@ namespace Fgl {
 
    QString fgl_using(QString fmt, QString value)
    {
-      Q_UNUSED(fmt);
-      Q_UNUSED(value);
-
       bool isNeg = false;
       bool ok = false;
       qreal dec = value.toDouble(&ok);
