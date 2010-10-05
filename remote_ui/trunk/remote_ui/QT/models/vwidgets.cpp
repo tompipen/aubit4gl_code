@@ -1263,7 +1263,10 @@ TextEdit* WidgetHelper::createTextEdit(const QDomElement& formField, QWidget *pa
    QString stretch = textEditElement.attribute("stretch");
 
    bool wantTabs = textEditElement.attribute("wantTabs").toInt();
-   bool wantReturns = textEditElement.attribute("wantReturns").toInt();
+   bool wantReturns = true;
+   if(!textEditElement.attribute("wantReturns").isEmpty()){
+      wantReturns = textEditElement.attribute("wantReturns").toInt();
+   }
 
    TextEdit *textEdit = new TextEdit(parent);
    textEdit->setAccessibleName(name);

@@ -131,7 +131,7 @@ welcomeBar();
 
    applicationLabel    = new QLabel(tr("Application"));
    applicationLineEdit = new QLineEdit;
-   applicationLineEdit->setText("p_master.4ae");
+   applicationLineEdit->setText("");
 
    loadSettings();
 
@@ -701,11 +701,13 @@ void LoginForm::okPressed()
    //hideLogin();
    QSettings settings;
    QString server = serverLineEdit->text();
-   QString user = usernameLineEdit->text();
-   QString pass = passwordLineEdit->text();
+   QString user   = usernameLineEdit->text();
+   QString pass   = passwordLineEdit->text();
+   QString app    = applicationLineEdit->text();
    settings.setValue("server", server);
    settings.setValue("user", user);
    settings.setValue("password", pass);
+   settings.setValue("application", app);
    settings.sync();
 
    ClientSocket *socket = new ClientSocket(0, user, pass, applicationLineEdit->text());
@@ -747,6 +749,7 @@ void LoginForm::loadSettings()
    QString server = settings.value("server").toString();
    QString user = settings.value("user").toString();
    QString pass = settings.value("password").toString();
+   QString app = settings.value("application").toString();
 
    if(!server.isEmpty()){
       serverLineEdit->setText(server);
@@ -756,6 +759,10 @@ void LoginForm::loadSettings()
    }
    if(!pass.isEmpty()){
       passwordLineEdit->setText(pass);
+   }
+
+   if(!app.isEmpty()){
+      applicationLineEdit->setText(app);
    }
 }
 void LoginForm::debugCheck()

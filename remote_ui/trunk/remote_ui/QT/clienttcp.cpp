@@ -585,7 +585,7 @@ void ProtocolHandler::run()
       out << qsl_xmlCommands.at(i);
    }
 
-   emit debugtext(qsl_xmlCommands.at(i));
+   emit debugtext(QString("<< " + qsl_xmlCommands.at(i)));
 
          QDomElement envelope = doc.documentElement();
          pid = envelope.attribute("ID").toInt();
@@ -1308,8 +1308,6 @@ void ProtocolHandler::outputTree(QDomNode domNode)
    if(childElement.nodeName() == "PROGRAMSTOP"){
        QString str="";
       int exitCode = childElement.attribute("EXITCODE").toInt();
-      qDebug()<<"STOP";
-      qDebug()<<exitCode;
       if(exitCode != 0){
           QString res;
          QFile file("error.log");
@@ -1978,6 +1976,7 @@ void ProtocolHandler::fglFormResponse(QString qs_id)
    triggeredElement.setAttribute("ENVELOPEID", pid);
    qs_id = doc.toString();
    makeResponse(qs_id);
+   emit debugtext(QString(">> " + qs_id));
 }
 
 //------------------------------------------------------------------------------
