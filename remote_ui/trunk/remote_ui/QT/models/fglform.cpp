@@ -982,7 +982,7 @@ void FglForm::setFormLayout(const QDomDocument& docLayout)
          connect(lineEdit, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(createContextMenu(const QPoint&)));
          connect(lineEdit, SIGNAL(error(const QString&)), this, SLOT(error(const QString&)));
          connect(lineEdit, SIGNAL(textEdited(QString)), this, SLOT(setBufferTouched()));
-         connect(lineEdit, SIGNAL(cursorPositionChanged(int)), this, SLOT(setLastCursor(int, int)));
+         connect(lineEdit, SIGNAL(cursorPositionChanged(int, int)), this, SLOT(setLastCursor(int, int)));
          lineEdit->installEventFilter(this);
       }
 
