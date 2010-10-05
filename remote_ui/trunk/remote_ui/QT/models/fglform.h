@@ -118,6 +118,7 @@ public:
    bool inputArray() { return (ql_states.last() == Fgl::INPUTARRAY); };
 
    bool bufferTouched() { return b_bufferTouched; };
+   int lastCursor() { return i_lastCursor; };
 
    /*
    void setConstructEnabled(bool enable ) { b_construct = enable; };
@@ -186,6 +187,8 @@ public slots:
    void buttonClicked(QString);
    void fieldEvent(Fgl::Event, QWidget* = NULL);
    void setBufferTouched() { b_bufferTouched = true; };
+   void setLastCursor(int,int);
+   void setLastCursor();
    void setBufferNotTouched() { b_bufferTouched = false; };
 
    //action defaults
@@ -262,6 +265,7 @@ private:
    QWidget *fieldsContainer;
    int i_id;
    bool b_bufferTouched;
+   int i_lastCursor;
    QString qs_currentFieldBuffer;
 
 private slots:

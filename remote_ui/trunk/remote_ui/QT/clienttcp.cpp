@@ -1167,7 +1167,7 @@ void ProtocolHandler::outputTree(QDomNode domNode)
 
    if(childElement.nodeName() == "SETCURSOR"){
       int position = childElement.attribute("POSITION").toInt();
-      setCursorPosition(position);
+      setCursorPosition(position-1);
       return;
    }
 

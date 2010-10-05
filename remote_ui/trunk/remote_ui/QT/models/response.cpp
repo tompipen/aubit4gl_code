@@ -52,6 +52,7 @@ Response::Response(QString id, FglForm* p_currForm, bool cursorPos) : QDomDocume
    responseElement.setAttribute("ID", id);
 
    responseElement.setAttribute("BUFFERTOUCHED", p_currForm->bufferTouched());
+   responseElement.setAttribute("LASTCURSOR", p_currForm->lastCursor());
 
    if(currEvent.type == Fgl::AFTER_FIELD_EVENT)
        p_currForm->setBufferNotTouched();

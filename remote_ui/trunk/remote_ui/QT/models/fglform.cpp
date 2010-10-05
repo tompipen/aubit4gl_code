@@ -59,6 +59,7 @@ FglForm::FglForm(QString windowName, QWidget *parent) : QMainWindow(parent){
    b_denyFocus = false;
    b_allowClose = false;
    b_bufferTouched = false;
+   i_lastCursor = 1;
 
    b_menu = false;
    b_input = false;
@@ -981,6 +982,7 @@ void FglForm::setFormLayout(const QDomDocument& docLayout)
          connect(lineEdit, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(createContextMenu(const QPoint&)));
          connect(lineEdit, SIGNAL(error(const QString&)), this, SLOT(error(const QString&)));
          connect(lineEdit, SIGNAL(textEdited(QString)), this, SLOT(setBufferTouched()));
+         connect(lineEdit, SIGNAL(cursorPositionChanged(int)), this, SLOT(setLastCursor(int, int)));
          lineEdit->installEventFilter(this);
       }
 
@@ -991,6 +993,7 @@ void FglForm::setFormLayout(const QDomDocument& docLayout)
 
       if(TextEdit *textEdit = qobject_cast<TextEdit *> (formElements().at(i))){
        //  connect(textEdit, SIGNAL(returnPressed()), this, SLOT(nextfield()));
+         connect(textEdit, SIGNAL(cursorPositionChanged()), this, SLOT(setLastCursor()));
          textEdit->installEventFilter(this);
       }
 
@@ -2722,4 +2725,20 @@ bool FglForm::focusNextPrevChild(bool next)
           return false;
    }
    return true;
+}
+
+void FglForm::setLastCursor(int i_old, int i_new)
+{
+   Q_UNUSED(i_old);
+   this->i_lastCursor = i_new+1;
+}
+
+void FglForm::setLastCursor()
+{
+    QObject *obj = QObject::sender();
+
+    if(TextEdit *textedit = qobject_cast<TextEdit *> (obj)){
+       QTextCursor cursor = textedit->textCursor();
+       this->i_lastCursor = cursor.position()+1;
+    }
 }
