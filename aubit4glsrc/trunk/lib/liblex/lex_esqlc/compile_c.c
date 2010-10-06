@@ -24,12 +24,12 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.533 2010-10-06 13:16:21 mikeaubury Exp $
+# $Id: compile_c.c,v 1.534 2010-10-06 13:51:03 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
-static char const module_id[] = "$Id: compile_c.c,v 1.533 2010-10-06 13:16:21 mikeaubury Exp $";
+static char const module_id[] = "$Id: compile_c.c,v 1.534 2010-10-06 13:51:03 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -3584,9 +3584,9 @@ print_init_var (struct variable *v, char *prefix, int alvl, int explicit, int Pr
 	{
 	  SPRINTF2 (buff_id, "_fglcnt_%d_%d", alvl, a);
 	  if ( v->arr_subscripts.arr_subscripts_val[a]==-1) {
-	  	printc("A4GL_push_int(1);A4GL_call_dynarr_function_i(&%s,0,0,0,sizeof(struct _dynelem_da_test),\"getlength\",1); %s_sz_1=A4GL_pop_long();",prefix2, buff_id);
-	  	printc("A4GL_push_int(2);A4GL_call_dynarr_function_i(&%s,0,0,0,sizeof(struct _dynelem_da_test),\"getlength\",1); %s_sz_2=A4GL_pop_long();",prefix2, buff_id);
-	  	printc("A4GL_push_int(3);A4GL_call_dynarr_function_i(&%s,0,0,0,sizeof(struct _dynelem_da_test),\"getlength\",1); %s_sz_3=A4GL_pop_long();",prefix2, buff_id);
+	  	printc("A4GL_push_int(1);A4GL_call_dynarr_function_i(&%s,0,0,0,sizeof(struct _dynelem_%s),\"getlength\",1); %s_sz_1=A4GL_pop_long();",prefix2, prefix2,buff_id);
+	  	printc("A4GL_push_int(2);A4GL_call_dynarr_function_i(&%s,0,0,0,sizeof(struct _dynelem_%s),\"getlength\",1); %s_sz_2=A4GL_pop_long();",prefix2, prefix2,buff_id);
+	  	printc("A4GL_push_int(3);A4GL_call_dynarr_function_i(&%s,0,0,0,sizeof(struct _dynelem_%s),\"getlength\",1); %s_sz_3=A4GL_pop_long();",prefix2, prefix2,buff_id);
 		printc("if (%s_sz_1) {", buff_id);
 		printc("if (%s_sz_2==0) %s_sz_2=1;", buff_id,buff_id);
 		printc("if (%s_sz_3==0) %s_sz_3=1;", buff_id,buff_id);
