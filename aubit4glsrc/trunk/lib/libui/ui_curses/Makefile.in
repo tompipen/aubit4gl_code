@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.24 2009-12-17 12:56:05 mikeaubury Exp $
+# $Id: Makefile.in,v 1.25 2010-10-06 10:46:59 mikeaubury Exp $
 #
 
 ##########################################################################
@@ -100,7 +100,7 @@ all : ${ALL}
 %.o:%.c
 	$(CC) $(CFLAGS) -o $@ -c $<
 W%.o:%.c
-	$(CC) $(CFLAGS_W) -o $@ -c $<
+	$(CC) -DWIDEMODE $(CFLAGS_W) -o $@ -c $<
 
 core: ${PLUGINDIR}/libUI_TUI${SO_EXT}
 

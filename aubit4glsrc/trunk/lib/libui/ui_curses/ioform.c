@@ -24,10 +24,10 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.241 2010-06-22 17:40:24 mikeaubury Exp $
+# $Id: ioform.c,v 1.242 2010-10-06 10:46:59 mikeaubury Exp $
 #*/
 #ifndef lint
-static char const module_id[] = "$Id: ioform.c,v 1.241 2010-06-22 17:40:24 mikeaubury Exp $";
+static char const module_id[] = "$Id: ioform.c,v 1.242 2010-10-06 10:46:59 mikeaubury Exp $";
 #endif
 
 /**
@@ -3122,7 +3122,19 @@ A4GL_display_field_contents (FIELD * field, int d1_ptr, int s1, char *ptr1, int 
   if (f->dynamic == 0)
     {
       A4GL_replace_tab_with_spaces_on_stack ();
+#ifdef WIDEMODE
+	{
+	char tmp[50000];
+	//char *ptr;
+	free(ff);
+	A4GL_pop_var2(&tmp,DTYPE_NCHAR,field_width);
+	ff=strdup(tmp);
+	}
+#else
       A4GL_pop_char (ff, field_width);
+#endif
+
+	A4GL_debug("Popped : %s\n",ff);
     }
   else
     {
@@ -3394,7 +3406,14 @@ A4GL_mja_set_field_buffer (FIELD * field, int nbuff, char *buff)
       A4GL_assertion (1, "Buffer too small");
     }
   strcpy (buff2, buff);
+
+#ifdef WIDEMODE
+  a = nchar_strlen (buff2);
+#else
   a = strlen (buff2);
+#endif
+
+
   b = A4GL_get_field_width_w (field, 1);
 #ifdef DEBUG
   A4GL_debug ("mja_set_field_buffer buff='%s' buff2='%s' (%d,%d) ", buff, buff2, a, b);
@@ -3407,7 +3426,13 @@ A4GL_mja_set_field_buffer (FIELD * field, int nbuff, char *buff)
 #ifdef DEBUG
       A4GL_debug ("Adding padding");
 #endif
+
+#ifdef WIDEMODE
+      A4GL_pad_nstring (buff2, A4GL_get_field_width_w (field, 1));
+#else
       A4GL_pad_string (buff2, A4GL_get_field_width_w (field, 1));
+#endif
+
     }
   else
     {
@@ -3441,8 +3466,21 @@ A4GL_mja_set_field_buffer (FIELD * field, int nbuff, char *buff)
 
   if (local_field_opts (field) & O_STATIC)
     {
+A4GL_debug("Before trim:%s",buff2);
       // Trim to size...
+#ifdef WIDEMODE
+       {
+       char tmp[50000];
+	int sl;
+	A4GL_push_char(buff2);
+        A4GL_pop_var2(&tmp,DTYPE_NCHAR,b);
+	sl=strlen(tmp);
+      	buff2[sl] = 0;
+        }
+#else
       buff2[b] = 0;
+#endif
+A4GL_debug("after trim:%s",buff2);
     }
 
 
