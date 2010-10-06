@@ -289,7 +289,6 @@ void LineEdit::check()
       this->setText(text);
    }
    else{
-      //TODO: send error to messagebar
       emit error("ERROR in Character conversion");
       this->setText("");
    }
@@ -451,7 +450,7 @@ void DateEdit::resizeEvent(QResizeEvent *)
 
 void DateEdit::buttonClicked()
 {
-   PopupCalendar *calendar = new PopupCalendar(QDate::fromString(this->text(), "d.M.yyyy"),
+    PopupCalendar *calendar = new PopupCalendar(QDate::fromString(this->text(), Fgl::dbDateToFormat(Fgl::env["DBDATE"])),
                                  this->mapToGlobal(QPoint(0, this->height()-3))
                                  ,0,this);
    calendar->show();
@@ -1951,6 +1950,7 @@ PopupCalendar::PopupCalendar(QDate day, QPoint pos,
 
     setFixedSize(calendar->sizeHint());
     resize(calendar->sizeHint());
+    calendar->setDay();
 }
 
 
@@ -1979,7 +1979,7 @@ Calendar::Calendar(QWidget *parent, QLineEdit *sender)
 
 void Calendar::setDay(){
   day = this->selectedDate(); 
-  dateEdit->setText(day.toString("dd.MM.yyyy"));
+  dateEdit->setText(day.toString(Fgl::dbDateToFormat(Fgl::env["DBDATE"])));
 }
 
 ProgressBar::ProgressBar(QWidget *parent) : QProgressBar(parent)
