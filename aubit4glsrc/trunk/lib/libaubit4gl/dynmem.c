@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dynmem.c,v 1.11 2009-10-07 12:41:43 mikeaubury Exp $
+# $Id: dynmem.c,v 1.12 2010-10-06 13:16:43 mikeaubury Exp $
 #
 */
 
@@ -107,12 +107,13 @@ A4GL_alloc_dynarr (void *var_ptr, void *old_ptr, int dim1, int dim2, int dim3, i
     {
       newPtr = acl_malloc2 (total_bytes);
     }
-
   a->dims[1] = dim1;
   a->dims[2] = dim2;
   a->dims[3] = dim3;
   a->dims[4] = dim4;
   //a->dims[5] = dim5;
+  //
+  //printf("%d %d %d totalbytes=%d\n", dim1,dim2,dim3, total_bytes);
 
   a->total_mem = total_bytes;
   a->var_ptr = var_ptr;
@@ -211,9 +212,9 @@ int A4GL_call_dynarr_function_i(void *arr, int d1,int d2,int d3, int sz,char *fu
 	struct s_arr arr_ptr;
 	arr_ptr.ptr=arr;
 	arr_ptr.size=sz;
-	if (d1==0) d1=1;
-	if (d2==0) d2=1;
-	if (d3==0) d3=1;
+	//if (d1==0) d1=1;
+	//if (d2==0) d2=1;
+	//if (d3==0) d3=1;
 	arr_ptr.d1=d1;
 	arr_ptr.d2=d2;
 	arr_ptr.d3=d3;
@@ -221,11 +222,51 @@ int A4GL_call_dynarr_function_i(void *arr, int d1,int d2,int d3, int sz,char *fu
 }
 
 
+static int dsize(int a1,int a2,int a3) {
+	if (a1==0) a1=1;
+	if (a2==0) a2=1;
+	if (a3==0) a3=1;
+	return a1*a2*a3;
+}
+
+
 static int dynamic_array_appendelement(void *arr, int n) {
 	struct s_arr *a;
 	void *ptr;
+	int d1;
+	int d2;
+	int d3;
 	a=arr;
-	ptr=A4GL_alloc_dynarr(a->ptr,*a->ptr,a->d1,a->d2,a->d3,0,0,(a->d1*a->d2*a->d3) * a->size,2);
+
+	A4GL_dynarr_extent (a->ptr, 1); d1=A4GL_pop_long();
+	A4GL_dynarr_extent (a->ptr, 2); d2=A4GL_pop_long();
+	A4GL_dynarr_extent (a->ptr, 3); d3=A4GL_pop_long();
+
+	if (n==0) {
+		d1++;
+	} else {
+		int l;
+		l=A4GL_pop_int();
+		switch (l) {
+			case 1: d1++;
+			case 2: d2++;
+			case 3: d3++;
+		}
+	}
+
+	ptr=A4GL_alloc_dynarr(a->ptr,*a->ptr,d1,d2,d3,0,0,dsize(d1,d2,d3) * a->size,2);
+	*a->ptr=ptr;
+	return 0;
+}
+
+
+static int dynamic_array_clear(void *arr, int n) {
+	struct s_arr *a;
+	void *ptr;
+	a=arr;
+
+
+	ptr=A4GL_alloc_dynarr(a->ptr,*a->ptr,0,0,0,0,0,0,2);
 	*a->ptr=ptr;
 	return 0;
 }
@@ -240,13 +281,13 @@ static void dynamic_array_deleteelement(void *arr, int n) {
 static void dynamic_array_insertelement(void *arr, int n) {
 	struct s_arr *a;
 	a=arr;
-
+	
 	A4GL_assertion(1,"Not implemented");
 }
 
 
 static int dynamic_array_getlength(void *arr, int n) {
-int p=0;
+	int p=1;
 	struct s_arr *a;
 	a=arr;
 
@@ -271,6 +312,7 @@ void add_dyn_support(void) {
 	A4GL_add_datatype_function_i (DTYPE_DYNAMIC_ARRAY, ":appendelement", (void *) dynamic_array_appendelement);
 	A4GL_add_datatype_function_i (DTYPE_DYNAMIC_ARRAY, ":insertelement", (void *) dynamic_array_insertelement);
 	A4GL_add_datatype_function_i (DTYPE_DYNAMIC_ARRAY, ":deleteelement", (void *) dynamic_array_deleteelement);
+	A4GL_add_datatype_function_i (DTYPE_DYNAMIC_ARRAY, ":clear", (void *) dynamic_array_clear);
 }
 
 
