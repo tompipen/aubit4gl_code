@@ -24,12 +24,12 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.532 2010-10-06 11:45:03 mikeaubury Exp $
+# $Id: compile_c.c,v 1.533 2010-10-06 13:16:21 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
-static char const module_id[] = "$Id: compile_c.c,v 1.532 2010-10-06 11:45:03 mikeaubury Exp $";
+static char const module_id[] = "$Id: compile_c.c,v 1.533 2010-10-06 13:16:21 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -3564,21 +3564,49 @@ print_init_var (struct variable *v, char *prefix, int alvl, int explicit, int Pr
 	}
 
       printc ("{");
+
       for (a = 0; a < v->arr_subscripts.arr_subscripts_len; a++)
 	{
-
 	  SPRINTF2 (buff_id, "_fglcnt_%d_%d", alvl, a);
-	  printc ("int %s;\n", buff_id);
+	  if ( v->arr_subscripts.arr_subscripts_val[a]==-1) {
+	  		printc ("int %s_sz_1;\n", buff_id);
+	  		printc ("int %s_sz_2;\n", buff_id);
+	  		printc ("int %s_sz_3;\n", buff_id);
+	  		printc ("int %s_1;\n", buff_id);
+	  		printc ("int %s_2;\n", buff_id);
+	  		printc ("int %s_3;\n", buff_id);
+	  } else {
+	  	printc ("int %s;\n", buff_id);
+	  }
 	}
 
       for (a = 0; a < v->arr_subscripts.arr_subscripts_len; a++)
 	{
 	  SPRINTF2 (buff_id, "_fglcnt_%d_%d", alvl, a);
+	  if ( v->arr_subscripts.arr_subscripts_val[a]==-1) {
+	  	printc("A4GL_push_int(1);A4GL_call_dynarr_function_i(&%s,0,0,0,sizeof(struct _dynelem_da_test),\"getlength\",1); %s_sz_1=A4GL_pop_long();",prefix2, buff_id);
+	  	printc("A4GL_push_int(2);A4GL_call_dynarr_function_i(&%s,0,0,0,sizeof(struct _dynelem_da_test),\"getlength\",1); %s_sz_2=A4GL_pop_long();",prefix2, buff_id);
+	  	printc("A4GL_push_int(3);A4GL_call_dynarr_function_i(&%s,0,0,0,sizeof(struct _dynelem_da_test),\"getlength\",1); %s_sz_3=A4GL_pop_long();",prefix2, buff_id);
+		printc("if (%s_sz_1) {", buff_id);
+		printc("if (%s_sz_2==0) %s_sz_2=1;", buff_id,buff_id);
+		printc("if (%s_sz_3==0) %s_sz_3=1;", buff_id,buff_id);
+	  	printc ("for (%s_1=0;%s_1<%s_sz_1;%s_1++) {", buff_id, buff_id, buff_id, buff_id);
+	  	printc ("for (%s_2=0;%s_2<%s_sz_2;%s_2++) {", buff_id, buff_id, buff_id, buff_id);
+	  	printc ("for (%s_3=0;%s_3<%s_sz_3;%s_3++) {", buff_id, buff_id, buff_id, buff_id);
+	  	strcat (prefix2, "[");
+	  	strcat (prefix2, buff_id); strcat(prefix2,"_1,");
+	  	strcat (prefix2, buff_id); strcat(prefix2,"_2,");
+	  	strcat (prefix2, buff_id); strcat(prefix2,"_3");
+	  	strcat (prefix2, "]");
+			//printc("printf(\"%%d %%d %%d\\n\", %s_1,%s_2,%s_3);",buff_id,buff_id,buff_id);
+	  } else {
+	  	printc ("for (%s=0;%s<%d;%s++) {", buff_id, buff_id, v->arr_subscripts.arr_subscripts_val[a], buff_id);
+	  	strcat (prefix2, "[");
+	  	strcat (prefix2, buff_id);
+	  	strcat (prefix2, "]");
+	  }
 
-	  printc ("for (%s=0;%s<%d;%s++) {", buff_id, buff_id, v->arr_subscripts.arr_subscripts_val[a], buff_id);
-	  strcat (prefix2, "[");
-	  strcat (prefix2, buff_id);
-	  strcat (prefix2, "]");
+	
 	  tmp_ccnt++;
 	}
       alvl++;
@@ -3717,11 +3745,21 @@ print_init_var (struct variable *v, char *prefix, int alvl, int explicit, int Pr
 
   if (v->arr_subscripts.arr_subscripts_len && expand_array)
     {
+
       for (a = 0; a < v->arr_subscripts.arr_subscripts_len; a++)
 	{
+	if ( v->arr_subscripts.arr_subscripts_val[a]==-1) {
+	  tmp_ccnt--;
+	  printc ("}\n");
+	  printc ("}\n");
+	  printc ("}\n");
+	  printc ("}\n");
+	  alvl--;
+	} else {
 	  tmp_ccnt--;
 	  printc ("}\n");
 	  alvl--;
+	  }
 	}
       printc ("}\n");
     }
