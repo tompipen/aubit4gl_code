@@ -25,7 +25,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.175 2010-10-06 11:42:47 mikeaubury Exp $
+# $Id: ops.c,v 1.176 2010-10-06 14:49:11 dbuettner Exp $
 #
 */
 
@@ -191,6 +191,25 @@ A4GL_dtype_function_char_substring (char *base, int nparam)
 }
 
 static int
+A4GL_dtype_function_char_getcharat (char *base, int nparam)
+{
+  int s=-1;
+  int e=-1;
+  if (nparam==1) {
+	s=A4GL_pop_long();
+	e=s;
+  }
+
+  if (nparam==2) {
+	e=A4GL_pop_long();
+	s=A4GL_pop_long();
+  }
+  if (s<0 || e<0) return 0;
+  A4GL_push_substr(base,strlen(base)<<16,s,e,0);
+  return 1;
+}
+
+static int
 A4GL_dtype_function_nchar_getlength (char *base, int nparam)
 {
   if (nparam != 0)
@@ -318,6 +337,7 @@ static char *A4GL_objstring_toString(struct sObject *string) {
 static int
 A4GL_dtype_function_string_getlength (long *objectID, int nparam)
 {
+        printf("Hui");
 	struct sObject *object;
         if (!ensureObject("STRING",*objectID,&object)) {
                 A4GL_exitwith("Not an object of type 'STRING' - or not initialized");
@@ -341,6 +361,7 @@ A4GL_dtype_function_string_substring (long *objectID, int nparam)
         }
 	return A4GL_dtype_function_char_substring(object->objData,nparam);
 }
+
 /******************************************************************************/
 
 void
@@ -7382,6 +7403,7 @@ DTYPE_SERIAL
 
   A4GL_add_datatype_function_i (DTYPE_CHAR, ":getlength", (void *) A4GL_dtype_function_char_getlength);
   A4GL_add_datatype_function_i (DTYPE_CHAR, ":substring", (void *) A4GL_dtype_function_char_substring);
+  A4GL_add_datatype_function_i (DTYPE_CHAR, ":getcharat", (void *) A4GL_dtype_function_char_getcharat);
   A4GL_add_datatype_function_i (DTYPE_VCHAR, ":getlength", (void *) A4GL_dtype_function_char_getlength);
   A4GL_add_datatype_function_i (DTYPE_VCHAR, ":substring", (void *) A4GL_dtype_function_char_substring);
 
@@ -7432,6 +7454,7 @@ DTYPE_SERIAL
   A4GL_add_datatype_function_i (DTYPE_OBJECT, ":STRING.toString", (void *) A4GL_objstring_toString);
   A4GL_add_datatype_function_i (DTYPE_OBJECT, ":STRING.getlength", (void *) A4GL_dtype_function_string_getlength);
   A4GL_add_datatype_function_i (DTYPE_OBJECT, ":STRING.substring", (void *) A4GL_dtype_function_string_substring);
+  A4GL_add_datatype_function_i (DTYPE_OBJECT, ":STRING.getcharat", (void *) A4GL_dtype_function_string_substring);
 
 
 
