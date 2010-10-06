@@ -24,12 +24,12 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.531 2010-09-06 20:39:46 mikeaubury Exp $
+# $Id: compile_c.c,v 1.532 2010-10-06 11:45:03 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
-static char const module_id[] = "$Id: compile_c.c,v 1.531 2010-09-06 20:39:46 mikeaubury Exp $";
+static char const module_id[] = "$Id: compile_c.c,v 1.532 2010-10-06 11:45:03 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -5628,20 +5628,13 @@ print_variable_new (struct variable *v, enum e_scope scope, int level)
 	{			/* Its a 'char' (may need varchar & friends too... */
 
 
-	  if (v->var_data.variable_data_u.v_simple.datatype == DTYPE_NCHAR)
+	  if (v->var_data.variable_data_u.v_simple.datatype == DTYPE_NCHAR || v->var_data.variable_data_u.v_simple.datatype == DTYPE_NVCHAR)
 	    {
-	      print_define_char (tmpbuff, v->var_data.variable_data_u.v_simple.dimensions[0] * 4, static_extern_flg);
+	      		print_define_char (tmpbuff, v->var_data.variable_data_u.v_simple.dimensions[0] * 4, static_extern_flg);
 	    }
 	  else
 	    {
-	      if (v->var_data.variable_data_u.v_simple.datatype == 0)
-		{
-		  print_define_char (tmpbuff, v->var_data.variable_data_u.v_simple.dimensions[0], static_extern_flg);
-		}
-	      else
-		{
-		  print_define_char (tmpbuff, v->var_data.variable_data_u.v_simple.dimensions[0], static_extern_flg);	// Allow extra space to store the size...
-		}
+		  	print_define_char (tmpbuff, v->var_data.variable_data_u.v_simple.dimensions[0], static_extern_flg);
 	    }
 	}
       else

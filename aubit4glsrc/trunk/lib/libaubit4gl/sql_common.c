@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql_common.c,v 1.99 2010-09-23 11:48:31 mikeaubury Exp $
+# $Id: sql_common.c,v 1.100 2010-10-06 11:42:47 mikeaubury Exp $
 #
 */
 
@@ -1553,10 +1553,18 @@ A4GL_read_columns (char *tabname, char *xcolname, int *dtype, int *size)
       A4GLSQL_end_get_columns ();
     }
 
-  // NCHAR ? 
-  if (*dtype == DTYPE_NCHAR || *dtype == DTYPE_NVCHAR ) {
-    *dtype = DTYPE_CHAR;
+  if (A4GL_isyes(acl_getenv("A4GL_USENCHAR"))) ;
+  else {
+  	// NCHAR ? 
+  	if (*dtype == DTYPE_NCHAR ) {
+    		*dtype = DTYPE_CHAR;
+  	}
+  	if (*dtype ==  DTYPE_NVCHAR ) {
+    		*dtype = DTYPE_VCHAR;
+  	}
   }
+
+
   return rval;
 }
 

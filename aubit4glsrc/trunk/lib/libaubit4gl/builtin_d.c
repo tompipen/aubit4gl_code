@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin_d.c,v 1.111 2010-01-25 21:12:07 mikeaubury Exp $
+# $Id: builtin_d.c,v 1.112 2010-10-06 11:42:47 mikeaubury Exp $
 #
 */
 
@@ -575,6 +575,36 @@ A4GL_push_char (char *p)
   A4GL_push_param (ptr, (DTYPE_CHAR + DTYPE_MALLOCED + ENCODE_SIZE ((int) strlen (p))));
 }
 
+void
+A4GL_push_nchar (char *p)
+{
+  char *ptr;
+  last_was_empty = 0;
+  A4GL_assertion (p == 0, "pointer was 0 in A4GL_push_char");
+#ifdef DEBUG
+  A4GL_debug ("Push char...'%s' (%p)", p, p);
+#endif
+  if (p[0] == 0 && p[1] != 0)
+    {
+#ifdef DEBUG
+      A4GL_debug ("blank first not second ('%s')", p);
+#endif
+      ptr = (char *) A4GL_new_string_set ((int) strlen (p) + 1, p);
+      ptr[0] = 0;
+      ptr[1] = 1;
+    }
+  else
+    {
+#ifdef DEBUG
+      A4GL_debug ("not (blank first not second) '%s'", p);
+#endif
+      ptr = (char *) A4GL_new_string_set ((int) strlen (p), p);
+    }
+#ifdef DEBUG
+  A4GL_debug ("Created ptr=%p", ptr);
+#endif
+  A4GL_push_param (ptr, (DTYPE_NCHAR + DTYPE_MALLOCED + ENCODE_SIZE ((int) nchar_strlen (p))));
+}
 /**
  * Pop(s) the year, day and month from the stack, convert it into julian
  * and pushes this value to the stack.
@@ -1437,12 +1467,12 @@ int dtype_masked;
     {
 
     case DTYPE_NCHAR:
-    case DTYPE_NVCHAR:
     case DTYPE_CHAR:
       A4GL_push_char (ptr);
       return;
 
     case DTYPE_VCHAR:
+    case DTYPE_NVCHAR:
       A4GL_push_char (ptr);
       return;
     case 1:

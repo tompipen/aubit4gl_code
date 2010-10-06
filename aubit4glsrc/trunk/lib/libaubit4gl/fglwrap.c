@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.159 2010-08-06 07:51:23 mikeaubury Exp $
+# $Id: fglwrap.c,v 1.160 2010-10-06 11:42:47 mikeaubury Exp $
 #
 */
 
@@ -210,8 +210,13 @@ A4GL_fgl_start (int nargs, char *argv[])
     }
 
 
-  if (!A4GL_isyes (acl_getenv ("IGNORELOCALE")))
-    setlocale (LC_ALL, "");
+  if (!A4GL_isyes (acl_getenv ("IGNORELOCALE"))) {
+	char *rstr;
+    rstr=setlocale (LC_ALL, "");
+	if (!rstr) {
+		A4GL_assertion(1,"Unable to set locale");
+	}
+   }
 
   A4GL_init_default_formats ();
 

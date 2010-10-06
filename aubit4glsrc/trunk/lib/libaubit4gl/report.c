@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.197 2010-09-06 20:39:46 mikeaubury Exp $
+# $Id: report.c,v 1.198 2010-10-06 11:42:47 mikeaubury Exp $
 #
 */
 
@@ -1574,6 +1574,8 @@ sz (int d, int s)
 
     case DTYPE_CHAR:
     case DTYPE_VCHAR:
+    case DTYPE_NCHAR:
+    case DTYPE_NVCHAR:
       SPRINTF1 (buff_1, "(%d)", s);
       return buff_1;
 
@@ -2001,6 +2003,7 @@ A4GL_duplicate_binding (struct BINDING *b, int n)
       switch (b[a].dtype)
 	{
 	case 0:
+	case DTYPE_NCHAR:
 	  sz = b[a].size + 1;
 	  break;
 
@@ -2027,6 +2030,7 @@ A4GL_duplicate_binding (struct BINDING *b, int n)
 	  sz = sizeof (fgltext);
 	  break;
 	case DTYPE_VCHAR:
+	case DTYPE_NVCHAR:
 	  	sz = b[a].size + 1;
 		if (sz<256) sz = 256;
 	  break;
@@ -2238,7 +2242,26 @@ A4GL_report_char_pop (void)
 	  free (ptr);
 	  ptr = b;
 	}
+
+      if ((tos_dtype & DTYPE_MASK) == DTYPE_NCHAR && nchar_strlen (ptr) < tos_size)
+	{
+	  // probably null - we still need it padding..
+	  char *b;
+	  b = malloc (tos_size + 1);
+	  strcpy (b, ptr);
+	  A4GL_pad_nstring (b, tos_size);
+	  free (ptr);
+	  ptr = b;
+	}
+
+
       if ((tos_dtype & DTYPE_MASK) == DTYPE_VCHAR && strlen (ptr) == 0)
+	{
+	  free (ptr);
+	  ptr = strdup (" ");
+	}
+
+      if ((tos_dtype & DTYPE_MASK) == DTYPE_NVCHAR && nchar_strlen (ptr) == 0)
 	{
 	  free (ptr);
 	  ptr = strdup (" ");
@@ -3047,6 +3070,11 @@ A4GL_set_agg (char type, long *agg_type, void **aggptr, long *aggused)
 	case DTYPE_VCHAR:
 	  agg = malloc (s1 + 1);
 	  break;
+
+	case DTYPE_NCHAR:
+	case DTYPE_NVCHAR:
+	  agg = malloc ((s1*4) + 1);
+	break;
 
 	case DTYPE_SERIAL:
 	case DTYPE_DATE:

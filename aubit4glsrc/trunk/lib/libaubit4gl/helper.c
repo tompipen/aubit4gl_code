@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper.c,v 1.91 2010-08-23 17:23:22 mikeaubury Exp $
+# $Id: helper.c,v 1.92 2010-10-06 11:42:47 mikeaubury Exp $
 #
 */
 
@@ -1918,6 +1918,8 @@ static int
 get_inc_quotes (int a)
 {
   if ((a & DTYPE_MASK) == DTYPE_CHAR || (a & DTYPE_MASK) == DTYPE_VCHAR)
+    return 1;
+  if ((a & DTYPE_MASK) == DTYPE_NCHAR || (a & DTYPE_MASK) == DTYPE_NVCHAR)
     return 1;
   if ((a & DTYPE_MASK) == DTYPE_DATE)
     return 2;

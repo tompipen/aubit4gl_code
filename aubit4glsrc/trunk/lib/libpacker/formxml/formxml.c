@@ -2065,8 +2065,14 @@ static char * get_sql_dtype ( int dtype)
         case DTYPE_CHAR:
               sprintf (buff_dtype, "CHAR(%d)", dtype_sz);
                     break;
+        case DTYPE_NCHAR:
+              sprintf (buff_dtype, "NCHAR(%d)", dtype_sz);
+                    break;
                         case DTYPE_VCHAR:
                               sprintf (buff_dtype, "VARCHAR(%d)", dtype_sz);
+                                    break;
+                        case DTYPE_NVCHAR:
+                              sprintf (buff_dtype, "NVARCHAR(%d)", dtype_sz);
                                     break;
 
     case DTYPE_INT:

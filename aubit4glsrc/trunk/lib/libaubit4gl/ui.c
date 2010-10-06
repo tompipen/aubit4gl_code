@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ui.c,v 1.100 2010-08-26 19:39:26 mikeaubury Exp $
+# $Id: ui.c,v 1.101 2010-10-06 11:42:47 mikeaubury Exp $
 #
 */
 
@@ -310,7 +310,7 @@ A4GL_display_at (int n, int a)
   A4GL_set_status (0, 0);
   A4GL_get_top_of_stack (1, &tos_dtype, &tos_size, (void **) &tos_ptr);
 #ifdef DEBUG
-  A4GL_debug ("TOP1 = %d %x %p\n", tos_dtype & 0xff, tos_size, tos_ptr);
+  A4GL_debug ("TOP1 = %d %x %p\n", tos_dtype & DTYPE_MASK, tos_size, tos_ptr);
 #endif
   //A4GL_assertion(tos_ptr==0,"Invalid pointer passed to display_at");
   if ((tos_dtype & 0xff) == 0 && tos_size == 0)
@@ -395,7 +395,7 @@ A4GL_display_at (int n, int a)
     }
   else
     {
-      if (clr_end_of_line && A4GL_was_last_empty () && n == 1 && (tos_dtype & 0xff) == 0 && tos_size == 0)
+      if (clr_end_of_line && A4GL_was_last_empty () && n == 1 && (tos_dtype & DTYPE_MASK) == DTYPE_CHAR && tos_size == 0)
 	{
 	  if (x >= 0 && y >= 0)
 	    A4GL_display_internal (x, y, " ", a, clr_end_of_line);	// Screen mode
@@ -1871,7 +1871,7 @@ A4GL_include_range_check (char *ss, char *ptr, int dtype)
 #endif
     }
 
-  if (dtype != DTYPE_CHAR)
+  if (dtype != DTYPE_CHAR && dtype != DTYPE_VCHAR &&  dtype != DTYPE_NCHAR   &&dtype != DTYPE_NVCHAR )
     {
       int dim = 0;
 

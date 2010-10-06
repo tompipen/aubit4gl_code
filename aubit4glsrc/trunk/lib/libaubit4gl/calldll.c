@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: calldll.c,v 1.97 2010-09-23 11:48:31 mikeaubury Exp $
+# $Id: calldll.c,v 1.98 2010-10-06 11:42:47 mikeaubury Exp $
 #
 */
 
@@ -1259,14 +1259,14 @@ char  buff[200];
 	d1=d1&DTYPE_MASK;
 	d2=d2&DTYPE_MASK;
 
-	if (d1==DTYPE_CHAR || d1==DTYPE_VCHAR) ;
+	if (d1==DTYPE_CHAR || d1==DTYPE_VCHAR || d1==DTYPE_NCHAR || d1==DTYPE_NVCHAR) ;
 	else {
 		 A4GL_push_char("First parameter to aclfgl_function_in_library must be a character string");
    		 A4GL_display_error(-1,0);
 		 return 0;
 	}
 
-	if (d2==DTYPE_CHAR || d2==DTYPE_VCHAR) ;
+	if (d2==DTYPE_CHAR || d2==DTYPE_VCHAR  || d1==DTYPE_NCHAR || d1==DTYPE_NVCHAR) ;
 	else {
 		 A4GL_push_char("Second parameter to aclfgl_function_in_library must be a character string");
    		 A4GL_display_error(-1,0);

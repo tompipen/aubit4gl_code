@@ -1229,6 +1229,9 @@ A4GL_conv_int8 (int d1, void *p1, int d2, void *p2, int size)
 	    //A4GL_pop_param (p2, d2, size);
 	    return 1;
 	  }
+	case DTYPE_NCHAR:
+	case DTYPE_NVCHAR:
+	case DTYPE_VCHAR:
 	case DTYPE_CHAR:
 	  {
 	    char buff[2000];
@@ -1288,6 +1291,9 @@ A4GL_conv_int8 (int d1, void *p1, int d2, void *p2, int size)
 #endif
 	  }
 	  return 1;
+	case DTYPE_NCHAR:
+	case DTYPE_NVCHAR:
+	case DTYPE_VCHAR:
 	case DTYPE_CHAR:
 	  sscanf (p1, "%lld", (int8 *) p2);
 #ifdef DEBUG
@@ -1324,6 +1330,9 @@ add_int8_support (void)
   A4GL_add_datatype_function_i (DTYPE_SMINT, "CONVTO_17", (void *) A4GL_conv_int8);
   A4GL_add_datatype_function_i (DTYPE_SMFLOAT, "CONVTO_17", (void *) A4GL_conv_int8);
   A4GL_add_datatype_function_i (DTYPE_CHAR, "CONVTO_17", (void *) A4GL_conv_int8);
+  A4GL_add_datatype_function_i (DTYPE_VCHAR, "CONVTO_17", (void *) A4GL_conv_int8);
+  A4GL_add_datatype_function_i (DTYPE_NVCHAR, "CONVTO_17", (void *) A4GL_conv_int8);
+  A4GL_add_datatype_function_i (DTYPE_NCHAR, "CONVTO_17", (void *) A4GL_conv_int8);
 
 
   A4GL_add_datatype_function_i (DTYPE_INT8, "CONVTO_5", (void *) A4GL_conv_int8);

@@ -25,7 +25,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: expr.c,v 1.48 2010-09-06 20:39:46 mikeaubury Exp $
+# $Id: expr.c,v 1.49 2010-10-06 11:42:47 mikeaubury Exp $
 #
 */
 
@@ -1644,27 +1644,6 @@ A4GL_expr_starts_with_single_string (struct expr_str_list *ptr)
 	  // If we're using variables here - we really ought to store them somewhere
 	  // as we're replacing them with a '?'
 	  return 0;
-	  if ((p->expr_str_u.expr_variable_usage->datatype & DTYPE_MASK) == DTYPE_CHAR)
-	    {			// Its a character strings
-	      int sz;
-	      sz = p->expr_str_u.expr_variable_usage->datatype >> 16;
-	      if (sz > 10)
-		{
-
-		  //printf("DTYPE : %x\n",p->expr_str_u.expr_variable_usage->datatype);
-		  return 0;
-		}
-	    }
-	  if (buff)
-	    {
-	      buff = realloc (buff, (strlen (buff) + 1 + 1));
-	      strcat (buff, "`");
-	    }
-	  else
-	    {
-	      buff = strdup ("`");
-	    }
-	  continue;
 	}
 
       //printf("Nope - %d. %d %s\n",a,p->expr_type,expr_name(p->expr_type));
@@ -1735,27 +1714,6 @@ A4GL_expr_is_single_string (struct expr_str_list *ptr)
 	  // If we're using variables here - we really ought to store them somewhere
 	  // as we're replacing them with a '?'
 	  return 0;
-	  if ((p->expr_str_u.expr_variable_usage->datatype & DTYPE_MASK) == DTYPE_CHAR)
-	    {			// Its a character strings
-	      int sz;
-	      sz = p->expr_str_u.expr_variable_usage->datatype >> 16;
-	      if (sz > 10)
-		{
-
-		  //printf("DTYPE : %x\n",p->expr_str_u.expr_variable_usage->datatype);
-		  return 0;
-		}
-	    }
-	  if (buff)
-	    {
-	      buff = realloc (buff, (strlen (buff) + 1 + 1));
-	      strcat (buff, "`");
-	    }
-	  else
-	    {
-	      buff = strdup ("`");
-	    }
-	  continue;
 	}
 
       //printf("Nope - %d. %d %s\n",a,p->expr_type,expr_name(p->expr_type));

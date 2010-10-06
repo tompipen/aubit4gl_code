@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                          |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.264 2010-09-23 12:26:34 mikeaubury Exp $
+# $Id: stack.c,v 1.265 2010-10-06 11:42:47 mikeaubury Exp $
 #
 */
 
@@ -643,7 +643,7 @@ A4GL_pop_var2 (void *p, int d, int s)
   //A4GL_debug ("8 pop_var2 : ptr=%p dtype=%d size=%d", p, d, s);
 #endif
 
-  if (d == DTYPE_CHAR || d==DTYPE_NCHAR )
+  if (d == DTYPE_CHAR)
     {
       pl = A4GL_new_string (s);
       z = A4GL_pop_param (pl, d, s);
@@ -677,6 +677,33 @@ A4GL_pop_var2 (void *p, int d, int s)
       pl[s] = 0;		/* changed from s+1 to s */
       return z;
     }
+
+  if (d==DTYPE_NCHAR )
+    {
+      int sl;
+	int ll;
+      pl = A4GL_new_string (s*4);
+      z = A4GL_pop_param (pl, d, s);
+      strncpy ((char *) p, pl, s*4);
+      free (pl);
+      pl = (char *) p;
+
+	sl=mbstowcs(NULL,pl,0); // character length...
+	ll=strlen(pl); // byte length
+
+
+        if (sl!=-1)  { // Not utf8
+      	while ((sl>s && sl>0) || sl==-1) { 
+		pl[ll--]=0;
+		if (ll==0) break;
+		sl=mbstowcs(NULL,pl,0); // character length...
+		if (sl==-1) continue;
+	}
+	}
+      return z;
+    }
+
+
 
   z = A4GL_pop_param (p, d, s);
   if (z != 1)
@@ -773,7 +800,7 @@ A4GL_char_pop_size (int *sz)
       A4GL_fgl_die (1);
     }
 
-  if ((params[params_cnt - 1].dtype & DTYPE_MASK) != DTYPE_CHAR)
+  if ((params[params_cnt - 1].dtype & DTYPE_MASK) != DTYPE_CHAR && (params[params_cnt - 1].dtype & DTYPE_MASK) != DTYPE_NCHAR )
     {
       f = params[params_cnt - 1].dtype & DTYPE_MASK;
 
@@ -842,8 +869,25 @@ A4GL_char_pop_size (int *sz)
 		    {
 		      d = params[params_cnt - 1].size;
 		    }
-
 		}
+
+	      if (f == DTYPE_NVCHAR)
+		{
+		  if (params[params_cnt - 1].ptr)
+		    {
+		      d = strlen (params[params_cnt - 1].ptr);
+		    }
+		  else
+		    {
+		      d = 1;
+		    }
+		  if (d > params[params_cnt - 1].size)
+		    {
+		      d = params[params_cnt - 1].size;
+		    }
+		}
+
+
 	      A4GL_pop_char (s2, d);
 	    }
 
@@ -868,8 +912,12 @@ A4GL_char_pop_size (int *sz)
 #ifdef DEBUG
       A4GL_debug ("Looks like it was a string..'%s'", A4GL_null_as_null (params[params_cnt - 1].ptr));
 #endif
+
+
       if (params[params_cnt - 1].ptr)
 	params[params_cnt - 1].size = strlen (params[params_cnt - 1].ptr);
+
+
     }
 
 
@@ -5148,7 +5196,7 @@ dtype_orig=dtype_orig>>16;
 dtype=A4GL_get_user_dtype(type);
 
 /* Was it found ? 0 is normally a CHAR - but here - we know its not a USER_DTYPE - so its a fail */
-if (dtype==0) {
+if (dtype==0) { // @IGN_CHECK_FOR_DTYPE_CHAR
 	A4GL_push_null(DTYPE_INT,0);
 	return;
 }
@@ -5165,7 +5213,7 @@ int dtype;
 dtype=A4GL_get_user_dtype(type);
 
 /* Was it found ? 0 is normally a CHAR - but here - we know its not a USER_DTYPE - so its a fail */
-if (dtype==0) {
+if (dtype==0) { // @IGN_CHECK_FOR_DTYPE_CHAR
 	return;
 }
 
@@ -5176,7 +5224,7 @@ A4GL_setnull(dtype,data,0);
 void A4GL_pop_user_dtype(char *type, void *data, int dtype, int dtype_length) {
 	dtype=A4GL_get_user_dtype(type);
 /* Was it found ? 0 is normally a CHAR - but here - we know its not a USER_DTYPE - so its a fail */
-if (dtype==0) {
+if (dtype==0) { // @IGN_CHECK_FOR_DTYPE_CHAR
 	A4GL_drop_param();
         return;
 }

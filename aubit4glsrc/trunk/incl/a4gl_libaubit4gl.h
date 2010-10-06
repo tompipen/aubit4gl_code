@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.411 2010-08-26 19:39:14 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.412 2010-10-06 11:45:03 mikeaubury Exp $
 #
 */
 
@@ -1567,6 +1567,13 @@ void A4GL_push_decimal_str(char *p);
   /* void A4GL_trim (char *p); */
   void A4GL_bnamexxx (char *str, char *str1, char *str2);
   void A4GL_pad_string (char *ptr, int size);
+  void A4GL_pad_nstring (char *ptr, int size); /* NCHAR padding routing - pads to size *characters* - not bytes */
+  int nchar_strlen(char *ptr); /* Length of an NCHAR in characters - not bytes */
+
+  int A4GL_push_nchar_substr (char *ca, int dtype, int a, int b, ...);
+
+void A4GL_push_nchar (char *p);
+
   void acl_free_With_Context(void *ptr);
   void *acl_malloc2_With_Context(long size);
   char *acl_strdup_With_Context(void *a);

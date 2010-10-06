@@ -209,6 +209,20 @@ conv_sqldtype (int dt, int len, int prec, int flags, int *fgldtype, int *fglprc)
 {
 int nd;
 int np;
+static int isUTF8=-1;
+
+	if (isUTF8==-1) {
+		if (A4GL_isyes(acl_getenv("A4GL_MYSQLUTF8CHECK"))) {
+		if (strcasecmp("utf8", mysql_character_set_name(conn))==0) {
+			isUTF8=1;
+		} else {
+			isUTF8=0;
+		} 
+		} else {
+			isUTF8=0;
+		}
+	}
+
   *fgldtype = 0;
   *fglprc = 0;
 
@@ -323,8 +337,13 @@ int np;
 */
 
     case MYSQL_TYPE_VAR_STRING:
-      *fgldtype = DTYPE_VCHAR;
-      *fglprc = len;
+	if (isUTF8) {
+      		*fgldtype = DTYPE_NVCHAR;
+      		*fglprc = len/3;
+	} else {
+      		*fgldtype = DTYPE_VCHAR;
+      		*fglprc = len;
+	}
       break;
 
     case MYSQL_TYPE_BLOB:
@@ -333,8 +352,13 @@ int np;
       break;
 
     case MYSQL_TYPE_STRING:
-      *fgldtype = DTYPE_CHAR;
-      *fglprc = len;
+	if (isUTF8) {
+      		*fgldtype = DTYPE_NCHAR;
+      		*fglprc = len/3;
+	} else {
+      		*fgldtype = DTYPE_CHAR;
+      		*fglprc = len;
+	}
       break;			// Odd - I get len=30 when length is actually 10....
     case MYSQL_TYPE_GEOMETRY:
       niy_dtype (dt);
@@ -618,7 +642,7 @@ A4GLSQLLIB_A4GLSQL_init_connection_internal (char *dbName)
 	  A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (-1);
 	  A4GL_exitwith ("Could not connect to database");
 	  isconnected = 0;
-	  return 0;
+	  return 1;
 	}
       has_connect = 1;
       isconnected = 0;
@@ -637,7 +661,7 @@ A4GLSQLLIB_A4GLSQL_init_connection_internal (char *dbName)
 	  A4GL_exitwith ("Could not connect to database");
 	  has_connect = 0;
 	  isconnected = 0;
-	  return 0;
+	  return 1;
 	}
     }
 
@@ -1287,6 +1311,8 @@ copy_in_single_mysql_bind (MYSQL_STMT * stmt, void *associated_to,
     {
     case DTYPE_VCHAR:
     case DTYPE_CHAR:
+    case DTYPE_NVCHAR:
+    case DTYPE_NCHAR:
       mibind->buffer_type = MYSQL_TYPE_STRING;
       mibind->buffer = ibind->ptr;
       mibind->is_null = ind;
@@ -1501,6 +1527,8 @@ copy_out_single_mysql_bind (MYSQL_STMT * stmt, void *associated_to,
     {
     case DTYPE_VCHAR:
     case DTYPE_CHAR:
+    case DTYPE_NVCHAR:
+    case DTYPE_NCHAR:
       if (phase == PHASE_PRE_FETCH)
 	{
 	  mobind->buffer_type = MYSQL_TYPE_STRING;
@@ -1518,10 +1546,10 @@ copy_out_single_mysql_bind (MYSQL_STMT * stmt, void *associated_to,
 	    	{
 	      	truncated++;
 	    	}
-	  	if ((obind->dtype & DTYPE_MASK) == DTYPE_CHAR)
-	    	{
-	      	A4GL_pad_string (obind->ptr, obind->size);
-	    	}
+
+	  	if ((obind->dtype & DTYPE_MASK) == DTYPE_CHAR) { A4GL_pad_string (obind->ptr, obind->size); }
+	  	if ((obind->dtype & DTYPE_MASK) == DTYPE_NCHAR) { A4GL_pad_nstring (obind->ptr, obind->size); }
+
 		}
       break;
 
@@ -2514,11 +2542,13 @@ A4GLSQLLIB_A4GLSQL_unload_data_internal (char *fname, char *delims,
 
 	      switch (dtype & DTYPE_MASK)
 		{
+		case DTYPE_NCHAR:
 		case DTYPE_CHAR:
 		  sz = field->length + 1;
 		  buffs[a] = malloc (field->length + 1);
 		  dtypes[a] = 0;
 		  break;
+		case DTYPE_NVCHAR:
 		case DTYPE_VCHAR:
 		  sz = field->length + 1;
 		  buffs[a] = malloc (field->length + 1);

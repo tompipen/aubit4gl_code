@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin.c,v 1.161 2010-09-10 10:00:30 mikeaubury Exp $
+# $Id: builtin.c,v 1.162 2010-10-06 11:42:47 mikeaubury Exp $
 #
 */
 
@@ -385,6 +385,61 @@ A4GL_push_substr (char *ca, int dtype, int a, int b, ...)
     }
   return 1;
 }
+
+
+static char * a4gl_nchar_substr (char *ca, int dtype, int a, int b, ...) {
+	A4GL_assertion(1,"Not implemented yet");
+	return NULL;
+}
+
+int
+A4GL_push_nchar_substr (char *ca, int dtype, int a, int b, ...)
+{
+  char *p;
+
+  if (a>nchar_strlen(ca)) {
+		char *c;
+		if (b==0) b=a;
+		if ((b-a)>0) {
+      			c = malloc ( b-a+2);
+			memset(c,' ',b-a+2);
+			c[b-a+1]=0;
+      			A4GL_push_param (c, DTYPE_MALLOCED +  DTYPE_CHAR + (ENCODE_SIZE (strlen(c))));
+		} else {
+      			c = malloc ( 2);
+			strcpy(c," ");
+      			A4GL_push_param (c,  DTYPE_MALLOCED + DTYPE_CHAR + (ENCODE_SIZE (1)) );
+		}
+		return 1;
+  }
+
+  p = a4gl_nchar_substr (ca, dtype, a, b);
+
+  if (strlen (p))
+    {
+      if (b == 0)
+	b = a;
+      A4GL_push_param (strdup (p), DTYPE_NCHAR + (ENCODE_SIZE ((b - a + 1))) + DTYPE_MALLOCED);
+    }
+  else
+    {
+      char *c;
+      if (b == 0)
+	b = a;
+	if ((b-a)<0) {
+		A4GL_push_null(DTYPE_CHAR,1);
+		return 1;
+	}
+      c = malloc (b - a + 2);
+
+      memset (c, ' ', b - a + 2);
+      c[b - a + 1] = 0;
+      A4GL_push_param (c, DTYPE_CHAR + (ENCODE_SIZE ((b - a + 1))) + DTYPE_MALLOCED);
+    }
+  return 1;
+}
+
+
 
 /**
  * Make a substring acording to the data type.
@@ -1133,7 +1188,7 @@ aclfgli_extend (void)
 	  A4GL_push_dtime (&c);
 	  return;
 	}
-      if ((d2 & DTYPE_MASK) == DTYPE_CHAR)
+      if ((d2 & DTYPE_MASK) == DTYPE_CHAR  || (d2 & DTYPE_MASK) == DTYPE_VCHAR  || (d2 & DTYPE_MASK) == DTYPE_NCHAR  || (d2 & DTYPE_MASK) == DTYPE_NVCHAR )
 	{
 	  // Can't extend a non-datetime!
 	  pi = 0;

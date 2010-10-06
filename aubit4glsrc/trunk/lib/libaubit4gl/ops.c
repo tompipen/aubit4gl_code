@@ -25,7 +25,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.174 2010-08-23 17:23:22 mikeaubury Exp $
+# $Id: ops.c,v 1.175 2010-10-06 11:42:47 mikeaubury Exp $
 #
 */
 
@@ -190,6 +190,36 @@ A4GL_dtype_function_char_substring (char *base, int nparam)
   return 1;
 }
 
+static int
+A4GL_dtype_function_nchar_getlength (char *base, int nparam)
+{
+  if (nparam != 0)
+    {
+      return 0;
+    }
+  A4GL_push_nchar (base);
+  return aclfgl_length (1);
+}
+
+
+static int
+A4GL_dtype_function_nchar_substring (char *base, int nparam)
+{ 
+  int s=-1;
+  int e=-1;
+  if (nparam==1) {
+	s=A4GL_pop_long();
+	e=s;
+  }
+
+  if (nparam==2) {
+	e=A4GL_pop_long();
+	s=A4GL_pop_long();
+  }
+  if (s<0 || e<0) return 0;
+  A4GL_push_nchar_substr(base,nchar_strlen(base)<<16,s,e,0);
+  return 1;
+}
 
 char *
 A4GL_tostring_decimal (void *p, int size, char *s_in, int n_in)
@@ -7105,9 +7135,34 @@ static int A4GL_conv_int_to_object (int d1, void *p1, int d2, void *p2, int size
 
 
 static int A4GL_conv_char_to_nchar (int d1, void *p1, int d2, void *p2, int size) {
-	  A4GL_string_set (p2, p1, size);
+static char *buff=0;
+int sl;
+int ll;
+	if (buff) free(buff);
+	buff=malloc(size*4+1);
+	strcpy(buff,p1);
 
-	//A4GL_assertion(1,"NOt implemented");
+
+        sl=mbstowcs(NULL,buff,0); // character length...
+        ll=strlen(buff); // byte length
+
+	if (sl==-1)  { // Not utf8
+		strncpy(p2,buff,size);
+		((char *)p2)[size]=0;
+	} else {
+
+        while ((sl>size && sl>0) || sl==-1) {
+		//printf(" in loop Char length=%d byte length=%d\n", sl,ll);
+                buff[ll--]=0;
+		//printf(" buff now : %s\n", buff);
+                if (ll==0) break;
+                sl=mbstowcs(NULL,buff,0); // character length...
+                if (sl==-1) continue;
+        }
+
+	strcpy(p2,buff);
+	}
+
 	return 1;
 }
 
@@ -7203,7 +7258,16 @@ DTYPE_SERIAL
   A4GL_add_op_function (DTYPE_SMFLOAT, DTYPE_SMFLOAT, OP_MATH, A4GL_smfloat_smfloat_ops);
   A4GL_add_op_function (DTYPE_CHAR, DTYPE_CHAR, OP_MATH, A4GL_char_char_ops);
 
+
+  A4GL_add_op_function (DTYPE_NCHAR, DTYPE_NCHAR, OP_MATH, A4GL_char_char_ops);
+  A4GL_add_op_function (DTYPE_CHAR, DTYPE_NCHAR, OP_MATH, A4GL_char_char_ops);
+  A4GL_add_op_function (DTYPE_NCHAR, DTYPE_CHAR, OP_MATH, A4GL_char_char_ops);
+
+
+
   A4GL_add_op_function (DTYPE_INTERVAL, DTYPE_CHAR, OP_MATH, A4GL_in_char_ops);
+
+  A4GL_add_op_function (DTYPE_INTERVAL, DTYPE_NCHAR, OP_MATH, A4GL_in_char_ops);
 
   A4GL_add_op_function (DTYPE_SMFLOAT, DTYPE_FLOAT, OP_MATH, A4GL_smfloat_float_ops);
   A4GL_add_op_function (DTYPE_FLOAT, DTYPE_SMFLOAT, OP_MATH, A4GL_float_smfloat_ops);
@@ -7233,6 +7297,7 @@ DTYPE_SERIAL
 
 
   A4GL_add_op_function (DTYPE_DATE, DTYPE_CHAR, OP_MATH, A4GL_date_char_ops);
+  A4GL_add_op_function (DTYPE_DATE, DTYPE_NCHAR, OP_MATH, A4GL_date_char_ops);
 
   A4GL_add_op_function (DTYPE_INTERVAL, DTYPE_INTERVAL, OP_MATH, A4GL_in_in_ops);
   A4GL_add_op_function (DTYPE_INTERVAL, DTYPE_DTIME, OP_MATH, A4GL_dt_in_ops);
@@ -7260,6 +7325,8 @@ DTYPE_SERIAL
   A4GL_add_op_function (DTYPE_CHAR, DTYPE_DTIME, OP_MATH, A4GL_char_dt_ops);
   A4GL_add_op_function (DTYPE_DTIME, DTYPE_CHAR, OP_MATH, A4GL_dt_char_ops);
 
+  A4GL_add_op_function (DTYPE_NCHAR, DTYPE_DTIME, OP_MATH, A4GL_char_dt_ops);
+  A4GL_add_op_function (DTYPE_DTIME, DTYPE_NCHAR, OP_MATH, A4GL_dt_char_ops);
 
   A4GL_add_op_function (DTYPE_DECIMAL, DTYPE_DECIMAL, OP_MATH, A4GL_dec_dec_ops);
   A4GL_add_op_function (DTYPE_DECIMAL, DTYPE_SMINT, OP_MATH, A4GL_dec_sm_ops);
@@ -7314,8 +7381,15 @@ DTYPE_SERIAL
   A4GL_add_datatype_function_i (DTYPE_TEXT, "DISPLAY", (void *) A4GL_display_text);
 
   A4GL_add_datatype_function_i (DTYPE_CHAR, ":getlength", (void *) A4GL_dtype_function_char_getlength);
-  //A4GL_add_datatype_function_i (DTYPE_DYNAMIC_ARRAY, ":getlength", (void *) A4GL_dtype_function_dynamic_arr_getlength);
   A4GL_add_datatype_function_i (DTYPE_CHAR, ":substring", (void *) A4GL_dtype_function_char_substring);
+  A4GL_add_datatype_function_i (DTYPE_VCHAR, ":getlength", (void *) A4GL_dtype_function_char_getlength);
+  A4GL_add_datatype_function_i (DTYPE_VCHAR, ":substring", (void *) A4GL_dtype_function_char_substring);
+
+
+  A4GL_add_datatype_function_i (DTYPE_NCHAR, ":getlength", (void *) A4GL_dtype_function_nchar_getlength);
+  A4GL_add_datatype_function_i (DTYPE_NCHAR, ":substring", (void *) A4GL_dtype_function_nchar_substring);
+  A4GL_add_datatype_function_i (DTYPE_NVCHAR, ":getlength", (void *) A4GL_dtype_function_nchar_getlength);
+  A4GL_add_datatype_function_i (DTYPE_NVCHAR, ":substring", (void *) A4GL_dtype_function_nchar_substring);
 
   A4GL_add_datatype_function_i (DTYPE_BINDING, "CONVTO_95", (void *) A4GL_conv_binding_to_binding);
   A4GL_add_datatype_function_i (DTYPE_OBJECT, "CONVTO_99", (void *) A4GL_conv_object_to_object);

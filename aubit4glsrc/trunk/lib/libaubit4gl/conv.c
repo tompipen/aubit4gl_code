@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.182 2010-09-23 11:48:31 mikeaubury Exp $
+# $Id: conv.c,v 1.183 2010-10-06 11:42:47 mikeaubury Exp $
 #
 */
 
@@ -3510,8 +3510,8 @@ A4GL_conv (int dtype1, void *p1, int dtype2, void *p2, int size)
 static int set_slots=0;
 int slot;
 #define MAX_CONV_SLOTS 20
-static void *slots[MAX_CONV_SLOTS];
-static int have_slots[MAX_CONV_SLOTS];
+static void *slots[MAX_CONV_SLOTS][MAX_CONV_SLOTS];
+static int have_slots[MAX_CONV_SLOTS][MAX_CONV_SLOTS];
       int (*call_function) (int, void *, int, void *, int);
   int (*ptr) (void *ptr1, void *ptr2, int size);
   int rval;
@@ -3522,10 +3522,13 @@ static int have_slots[MAX_CONV_SLOTS];
 
  if (!set_slots) {
 	int a;
+	int b;
 	set_slots=1;
 	for (a=0;a<MAX_CONV_SLOTS;a++) {
-		slots[a]=NULL;
-		have_slots[a]=0;
+	for (b=0;b<MAX_CONV_SLOTS;b++) {
+		slots[a][b]=NULL;
+		have_slots[a][b]=0;
+	}
 	}
  }
 
@@ -3540,7 +3543,7 @@ static int have_slots[MAX_CONV_SLOTS];
       return 1;
     }
 
-  if (dtype1 == DTYPE_CHAR && (dtype2 != DTYPE_CHAR && dtype2 != DTYPE_VCHAR))
+  if (dtype1 == DTYPE_CHAR && (dtype2 != DTYPE_CHAR && dtype2 != DTYPE_VCHAR && dtype2 != DTYPE_NCHAR && dtype2 != DTYPE_NVCHAR ))
     {
       A4GL_trim (p1);
       if (strlen (p1) == 0)
@@ -3584,10 +3587,6 @@ static int have_slots[MAX_CONV_SLOTS];
 
 
   size_of_operand = DECODE_SIZE (dtype1);
-#ifdef DEBUG
-  {				/* A4GL_debug ("convert %d %p %d %p\n", dtype1, p1, dtype2, p2); */
-  }
-#endif
   call_function=NULL;
   A4GL_conversion_ok (1);
 
@@ -3615,22 +3614,23 @@ static int have_slots[MAX_CONV_SLOTS];
   }
 
   call_function=NULL;
-
-  if (slot>=0) {
+//printf("Buff=%s\n",buff);
+  if (slot>=0 && (dtype1&DTYPE_MASK)< MAX_CONV_SLOTS &&  (dtype2&DTYPE_MASK)< MAX_CONV_SLOTS) {
 	// We might potentially have a cached value...
 	// so - do we have a cached value ? 
-	if (have_slots[slot]) {
+	if (have_slots[dtype1&DTYPE_MASK][dtype2&DTYPE_MASK]) {
 		// Yes - dont need to do anything else...
-		call_function=slots[slot];
+		call_function=slots[dtype1&DTYPE_MASK][dtype2&DTYPE_MASK] ;
 	}  else {
      		if (A4GL_has_datatype_function_i (dtype1 & DTYPE_MASK, buff)) {
       			call_function = A4GL_get_datatype_function_i (dtype1 & DTYPE_MASK, buff);
      		}
 		
-		slots[slot]=call_function;
+		slots[dtype1&DTYPE_MASK][dtype2&DTYPE_MASK]=call_function;
 		// Regardless of whether we've got a function - we have looked for one
 		// so - we need to mark that...
-		have_slots[slot]=1;
+	//printf("Marked slot : %d\n",slot);
+		have_slots[dtype1&DTYPE_MASK][dtype2&DTYPE_MASK]=1;
 	}
   } else {
 	// No cached value possible...

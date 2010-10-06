@@ -69,22 +69,6 @@ define mv_use_form CHAR(1)
 define mv_fields_per_screen integer
 define mv_form_values array[200] of integer
 define mv_current_form char(32)
-code
-static int compare_str (const void *vs1, const void *vs2);
-char **m_names = 0;
-
-static int
-compare_str (const void *vs1, const void *vs2)
-{
-  char *s1;
-  char *s2;
-  s1 = (char *) vs1;
-  s2 = (char *) vs2;
-  return strcmp (s1, s2);
-}
-
-endcode
-
 
 ################################################################################
 local function size_picklist() 
@@ -410,10 +394,27 @@ let mv_cnt=lv_cnt
 let mv_curr_option=1
 end function
 
+
+function compare_arrstr(copyof lv_str1,copyof lv_str2)
+define lv_str1, lv_str2 char(128)
+if lv_str1>lv_str2 then
+	return 1
+end if
+if lv_str1 =lv_str2 or (lv_str1 is null and lv_str2 is null) then
+	return 0
+end if
+return -1
+
+end function
+
 function sort_pick()
-code
-qsort (&mv_arr[0], mv_cnt, sizeof (mv_arr[0]), compare_str);
-endcode
+
+sort mv_arr using compare_arrstr limit mv_cnt
+
+---code
+---qsort (&mv_arr[0], mv_cnt, sizeof (mv_arr[0]), compare_str);
+---endcode
+---}
 end function
 
 ################################################################################

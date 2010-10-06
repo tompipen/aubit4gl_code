@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fcompile.c,v 1.73 2010-05-14 11:15:17 mikeaubury Exp $
+# $Id: fcompile.c,v 1.74 2010-10-06 11:45:03 mikeaubury Exp $
 #*/
 
 /**
@@ -506,16 +506,20 @@ usage (char *s)
 int
 A4GLF_open_db (char *s)
 {
-
+int rval=0;
   opened_db=1;
   if (default_database == 0)
     {
-      return A4GL_init_connection (s);
+      rval=A4GL_init_connection (s);
     }
   else
     {
-      return A4GL_init_connection (default_database);
+      rval=A4GL_init_connection (default_database);
     }
+
+//printf("%d\n",rval);
+  return rval;
+
 }
 
 
