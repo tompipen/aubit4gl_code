@@ -35,7 +35,12 @@ namespace Fgl {
          case DTYPE_SERIAL:
          case DTYPE_SMFLOAT:
          case DTYPE_FLOAT:
-            return fgl_using(fmt, value);
+            if(!fmt.isEmpty()){
+               return fgl_using(fmt, value);
+            }
+            else{
+                return fgl_convert_money(value);
+            }
             break;
 
          case DTYPE_DATE:
@@ -194,7 +199,7 @@ namespace Fgl {
       value.toDouble(&ok);
 
       if(!ok)
-         return "";
+         return value;
 
       int num_places = 0;
       QString fm1;
@@ -596,8 +601,8 @@ namespace Fgl {
       if(type == "SERIAL")            return DTYPE_SERIAL;
       if(type == "SMALLINT")          return DTYPE_SMINT;
       if(type == "INTEGER")           return DTYPE_INT;
-      if(type == "FLOAT")             return DTYPE_SERIAL;
-      if(type == "SMALLFLOAT")        return DTYPE_SERIAL;
+      if(type == "FLOAT")             return DTYPE_FLOAT;
+      if(type == "SMALLFLOAT")        return DTYPE_SMFLOAT;
       if(type == "MONEY")             return DTYPE_MONEY;
 
       return DTYPE_CHAR;

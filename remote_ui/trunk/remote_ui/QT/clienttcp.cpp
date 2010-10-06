@@ -892,6 +892,7 @@ void ProtocolHandler::outputTree(QDomNode domNode)
          }
 
          if(qs_name == "ui.combobox.forname"){
+            value = QString::number(1);
          }
 
          if(qs_name == "ui.menu.showhide"){
