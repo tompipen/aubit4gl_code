@@ -925,7 +925,7 @@ member_fcall:
 			
 		if (v) {
 			if (v->arr_subscripts.arr_subscripts_len) { 
-				if (v->arr_subscripts.arr_subscripts_val[0]<0) {
+				if (v->arr_subscripts.arr_subscripts_val[0]<0 && isDynamicFunction(func)) {
 					datatype=DTYPE_DYNAMIC_ARRAY;
 				}
 			}

@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.341 2010-08-12 12:13:02 mikeaubury Exp $
+# $Id: mod.c,v 1.342 2010-10-07 08:56:45 mikeaubury Exp $
 #
 */
 
@@ -3438,6 +3438,14 @@ A4GL_check_lines_for_prints (struct s_commands *cmds, int *lineno, char *err)
   return nprints;
 }
 
+int isDynamicFunction(char *s) {
+	char buff[200];
+	sprintf(buff,":%s",s);
+	if (A4GL_has_datatype_function_i(DTYPE_DYNAMIC_ARRAY, buff)) {
+		return 1;
+	} 
+	return 0;
 
+}
 
 /* ================================= EOF ============================= */
