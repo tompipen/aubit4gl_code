@@ -291,7 +291,7 @@ void Parser::parseElement(const QDomNode& xmlNode)
          int posY = currentElement.attribute("posY").toInt();
          int gridWidth = currentElement.attribute("gridWidth").toInt();
 
-         if(text == ":")
+         if(text == ":" || text.startsWith("----"))
             continue;
 
          QLabel *label = new QLabel(text);
