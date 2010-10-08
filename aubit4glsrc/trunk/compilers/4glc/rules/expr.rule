@@ -586,6 +586,10 @@ function_call_expr:
 			add_feature("ET_EXPR_ASCII");
  			$<ptr>$=A4GL_new_expr_simple_expr($<ptr>2,ET_EXPR_ASCII);
 	}
+	| 	KW_ASCII_OPEN_BRACKET fgl_expr_c CLOSE_BRACKET { 
+			add_feature("ET_EXPR_ASCII");
+ 			$<ptr>$=A4GL_new_expr_simple_expr($<ptr>2,ET_EXPR_ASCII);
+	}
 	| 	EXTEND OPEN_BRACKET fgl_expr_c op_datetime_qual_i CLOSE_BRACKET {
  			$<ptr>$=A4GL_new_expr_extend($<ptr>3,$<integer_val>4);
 	}
