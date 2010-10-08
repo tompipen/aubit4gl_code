@@ -24,12 +24,12 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.534 2010-10-06 13:51:03 mikeaubury Exp $
+# $Id: compile_c.c,v 1.535 2010-10-08 11:38:35 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
-static char const module_id[] = "$Id: compile_c.c,v 1.534 2010-10-06 13:51:03 mikeaubury Exp $";
+static char const module_id[] = "$Id: compile_c.c,v 1.535 2010-10-08 11:38:35 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -1817,7 +1817,7 @@ real_print_expr (struct expr_str *ptr)
 	  }
 	printc ("{");
 	printc ("      int _retvars;");
-	    printc ("A4GL_set_status(0,0); /*1*/ _retvars=A4GL_call_dynarr_function_i(&%s,sizeof(struct _dynelem_%s),\"%s\",%d);\n",
+	    printc ("A4GL_set_status(0,0); /*1*/ _retvars=A4GL_call_dynarr_function_i(&%s,sizeof(_dynelem_%s),\"%s\",%d);\n",
 		    generation_get_variable_usage_as_string_for_dynarr (p->var_usage_ptr->expr_str_u.expr_variable_usage,1), 
 		    generation_get_variable_usage_as_string_for_dynarr (p->var_usage_ptr->expr_str_u.expr_variable_usage,0), 
 			p->funcName, nparam);
@@ -2995,7 +2995,7 @@ print_param_g (char i, char *fname, struct expr_str_list *bind)
 	  if ((dtype & DTYPE_MASK) == DTYPE_DYNAMIC_ARRAY)
 	    {
 	      set_nonewlines ();
-	      printc ("_rbind[%d].size= sizeof(struct _dynelem_%s);", a, get_bottom_level_variable_name (bind->list.list_val[a]));
+	      printc ("_rbind[%d].size= sizeof(_dynelem_%s);", a, get_bottom_level_variable_name (bind->list.list_val[a]));
 	      clr_nonewlines ();
 	    }
 	}
@@ -3019,7 +3019,7 @@ print_param_g (char i, char *fname, struct expr_str_list *bind)
 	  if ((dtype & DTYPE_MASK) == DTYPE_DYNAMIC_ARRAY)
 	    {
 	      set_nonewlines ();
-	      printc ("_fbind[%d].size= sizeof(struct _dynelem_%s);", a, get_bottom_level_variable_name (bind->list.list_val[a]));
+	      printc ("_fbind[%d].size= sizeof(_dynelem_%s);", a, get_bottom_level_variable_name (bind->list.list_val[a]));
 	      clr_nonewlines ();
 	    }
 
@@ -3315,7 +3315,7 @@ real_print_func_call (t_expr_str * fcall)
       printc ("A4GLSTK_setCurrentLine(_module_name,%d);", p->line);
 
 
-	  printc ("A4GL_set_status(0,0); /*2*/ _retvars=A4GL_call_dynarr_function_i(&%s,sizeof(struct _dynelem_%s),\"%s\",%d);\n",
+	  printc ("A4GL_set_status(0,0); /*2*/ _retvars=A4GL_call_dynarr_function_i(&%s,sizeof(_dynelem_%s),\"%s\",%d);\n",
 		  generation_get_variable_usage_as_string_for_dynarr (p->var_usage_ptr->expr_str_u.expr_variable_usage,1), 
 		  generation_get_variable_usage_as_string_for_dynarr (p->var_usage_ptr->expr_str_u.expr_variable_usage,0), 
 		  p->funcName, nparam);
@@ -3584,9 +3584,9 @@ print_init_var (struct variable *v, char *prefix, int alvl, int explicit, int Pr
 	{
 	  SPRINTF2 (buff_id, "_fglcnt_%d_%d", alvl, a);
 	  if ( v->arr_subscripts.arr_subscripts_val[a]==-1) {
-	  	printc("A4GL_push_int(1);A4GL_call_dynarr_function_i(&%s,0,0,0,sizeof(struct _dynelem_%s),\"getlength\",1); %s_sz_1=A4GL_pop_long();",prefix2, prefix2,buff_id);
-	  	printc("A4GL_push_int(2);A4GL_call_dynarr_function_i(&%s,0,0,0,sizeof(struct _dynelem_%s),\"getlength\",1); %s_sz_2=A4GL_pop_long();",prefix2, prefix2,buff_id);
-	  	printc("A4GL_push_int(3);A4GL_call_dynarr_function_i(&%s,0,0,0,sizeof(struct _dynelem_%s),\"getlength\",1); %s_sz_3=A4GL_pop_long();",prefix2, prefix2,buff_id);
+	  	printc("A4GL_push_int(1);A4GL_call_dynarr_function_i(&%s,0,0,0,sizeof(_dynelem_%s),\"getlength\",1); %s_sz_1=A4GL_pop_long();",prefix2, prefix2,buff_id);
+	  	printc("A4GL_push_int(2);A4GL_call_dynarr_function_i(&%s,0,0,0,sizeof(_dynelem_%s),\"getlength\",1); %s_sz_2=A4GL_pop_long();",prefix2, prefix2,buff_id);
+	  	printc("A4GL_push_int(3);A4GL_call_dynarr_function_i(&%s,0,0,0,sizeof( _dynelem_%s),\"getlength\",1); %s_sz_3=A4GL_pop_long();",prefix2, prefix2,buff_id);
 		printc("if (%s_sz_1) {", buff_id);
 		printc("if (%s_sz_2==0) %s_sz_2=1;", buff_id,buff_id);
 		printc("if (%s_sz_3==0) %s_sz_3=1;", buff_id,buff_id);
@@ -4282,7 +4282,7 @@ print_realloc_arr (char *s, char *d)
       dim[0] = 1;
     }
   l = dim[0] * dim[1] * dim[2] * dim[3] * dim[4];
-  printc ("%s=A4GL_alloc_dynarr(&%s,%s,%d,%d,%d,%d,%d,%d * sizeof(struct _dynelem_%s),1);", s, s, s, dim[0], dim[1], dim[2], dim[3], dim[4], l,
+  printc ("%s=A4GL_alloc_dynarr(&%s,%s,%d,%d,%d,%d,%d,%d * sizeof( _dynelem_%s),1);", s, s, s, dim[0], dim[1], dim[2], dim[3], dim[4], l,
 	  s);
 }
 
@@ -5560,8 +5560,8 @@ print_variable_new (struct variable *v, enum e_scope scope, int level)
 		  || nv->var_data.variable_data_u.v_simple.datatype == DTYPE_NCHAR
 		  || nv->var_data.variable_data_u.v_simple.datatype == DTYPE_NVCHAR)
 		{
-		  printc ("struct _dynelem_%s { char dummyname[%d];};", name,
-			  nv->var_data.variable_data_u.v_simple.dimensions[0] + 1);
+		  //printc ("struct _dynelem_%s { char dummyname[%d];};", name, nv->var_data.variable_data_u.v_simple.dimensions[0] + 1);
+		  printc ("typedef char _dynelem_%s[%d];", name, nv->var_data.variable_data_u.v_simple.dimensions[0] + 1);
 		  if (static_extern_flg == 1)
 		    {
 		      printc ("static ");
@@ -5569,21 +5569,22 @@ print_variable_new (struct variable *v, enum e_scope scope, int level)
 
 		  if (static_extern_flg == 2)
 		    {
-		      printc ("extern char **%s;", name);
+		      //printc ("extern char **%s;", name);
+		      printc ("extern _dynelem_%s *%s;",  name, name, nv->var_data.variable_data_u.v_simple.dimensions[0]+1);
 		    }
 		  else
 		    {
-		      printc ("char **%s=0;", name);
+		      printc ("_dynelem_%s *%s=0;",  name, name, nv->var_data.variable_data_u.v_simple.dimensions[0]+1);
 		    }
 		}
 	      else
 		{
 		  if (static_extern_flg == 2) {
-		  	printc ("struct _dynelem_%s { %s dummyname;};", name, local_rettype_integer (nv->var_data.variable_data_u.v_simple.datatype));
+		  	printc ("typedef struct _dynelem_%s { %s dummyname;};", name, local_rettype_integer (nv->var_data.variable_data_u.v_simple.datatype));
 		  	printc ("extern %s *%s;", local_rettype_integer (nv->var_data.variable_data_u.v_simple.datatype), name);
 			
 		  } else {
-		  	printc ("struct _dynelem_%s { %s dummyname;};", name, local_rettype_integer (nv->var_data.variable_data_u.v_simple.datatype));
+		  	printc ("typedef struct _dynelem_%s { %s dummyname;};", name, local_rettype_integer (nv->var_data.variable_data_u.v_simple.datatype));
 		  	printc ("%s *%s=0;", local_rettype_integer (nv->var_data.variable_data_u.v_simple.datatype), name);
 			}
 		}
@@ -5592,7 +5593,7 @@ print_variable_new (struct variable *v, enum e_scope scope, int level)
 	    case VARIABLE_TYPE_RECORD:
 	      {
 		int a;
-		printc ("struct _dynelem_%s {", name);
+		printc ("typedef struct _dynelem_%s {", name);
 		for (a = 0; a < nv->var_data.variable_data_u.v_record.variables.variables_len; a++)
 		  {
 		    struct variable *next_v;
@@ -5603,9 +5604,9 @@ print_variable_new (struct variable *v, enum e_scope scope, int level)
 		  }
 		printc ("};");
 		  if (static_extern_flg == 2) {
-		printc ("extern struct _dynelem_%s *%s;", name, name);
+		printc ("extern  _dynelem_%s *%s;", name, name);
 		} else {
-		printc ("struct _dynelem_%s *%s=0;", name, name);
+		printc ("_dynelem_%s *%s=0;", name, name);
 		}
 	      }
 	      break;
@@ -7332,7 +7333,7 @@ print_push_variable_usage (expr_str * ptr)
 	case DTYPE_DYNAMIC_ARRAY:
 	  printc ("A4GL_push_dynamic_array(");
 	  print_variable_usage (ptr);
-	  printc (",sizeof(struct _dynelem_%s)", generation_get_variable_usage_as_string (ptr->expr_str_u.expr_variable_usage));
+	  printc (",sizeof(_dynelem_%s)", generation_get_variable_usage_as_string (ptr->expr_str_u.expr_variable_usage));
 	  printc (");");
 	  break;
 
@@ -7713,7 +7714,7 @@ local_expr_as_string (expr_str * s)
 	int nparam = 0;
 	struct expr_str_list *l;
 		p = s->expr_str_u.expr_dynarr_function_call_n;
-	    	sprintf (rbuff, "A4GL_call_dynarr_function_i_as_int(&%s,sizeof(struct _dynelem_%s),\"%s\",0)\n",
+	    	sprintf (rbuff, "A4GL_call_dynarr_function_i_as_int(&%s,sizeof(_dynelem_%s),\"%s\",0)\n",
 		     generation_get_variable_usage_as_string_for_dynarr (p->var_usage_ptr->expr_str_u.expr_variable_usage,1),  
 		     generation_get_variable_usage_as_string_for_dynarr (p->var_usage_ptr->expr_str_u.expr_variable_usage,0),  
 			p->funcName);
