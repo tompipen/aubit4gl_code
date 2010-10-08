@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dynmem.c,v 1.12 2010-10-06 13:16:43 mikeaubury Exp $
+# $Id: dynmem.c,v 1.13 2010-10-08 09:36:08 dbuettner Exp $
 #
 */
 
@@ -278,11 +278,67 @@ static void dynamic_array_deleteelement(void *arr, int n) {
 	A4GL_assertion(1,"Not implemented");
 }
 
-static void dynamic_array_insertelement(void *arr, int n) {
+static int dynamic_array_insertelement(void *arr, int n) {
 	struct s_arr *a;
+	void *ptr;
+	void *ptr2;
+	int d1;
+	int d2;
+	int d3;
 	a=arr;
-	
-	A4GL_assertion(1,"Not implemented");
+
+	A4GL_dynarr_extent (a->ptr, 1); d1=A4GL_pop_long();
+	A4GL_dynarr_extent (a->ptr, 2); d2=A4GL_pop_long();
+	A4GL_dynarr_extent (a->ptr, 3); d3=A4GL_pop_long();
+
+   int old_size = dsize(d1,d2,d3) * a->size;
+   int d1_old = d1;
+   ptr2 = malloc(old_size);
+   memcpy(ptr2, *a->ptr, old_size);
+
+   int p;
+	if (n==0) {
+		d1++;
+      p=d1;
+	} else {
+      if(n==1) {
+         p = A4GL_pop_int();
+         if(p>d1) {
+            d1=p;
+         }
+         else {
+            d1++;
+         }
+      } else {
+   		int l;
+   		l=A4GL_pop_int();
+         p = A4GL_pop_int();
+   		switch (l) {
+   			case 1: d1++;
+   			case 2: d2++;
+   			case 3: d3++;
+   		}
+	   }
+   }
+
+
+	ptr=A4GL_alloc_dynarr(a->ptr,*a->ptr,d1,d2,d3,0,0,dsize(d1,d2,d3) * a->size,2);
+	*a->ptr=ptr;
+
+   int i = 0;
+   int cnt = 0;
+   int cnt2 = 0;
+   for(i=0; i<d1_old; i++){
+      if(i!=p-1){
+         memcpy(*a->ptr+(cnt*a->size), ptr2+(cnt2*a->size), a->size);
+         cnt2++;
+      }
+      cnt++;
+   }
+   
+   free(ptr2);
+
+	return 0;
 }
 
 
