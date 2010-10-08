@@ -25,7 +25,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.178 2010-10-08 11:00:47 mikeaubury Exp $
+# $Id: ops.c,v 1.179 2010-10-08 16:18:44 mikeaubury Exp $
 #
 */
 
@@ -119,6 +119,18 @@ void A4GL_double_in_ops (int op);
 =====================================================================
 
 */
+
+
+int A4GL_return_0_on_null_compare(void ) {
+	static int return_0=-1;
+	if (return_0==-1) {
+		return_0=0;
+		if (A4GL_isyes(acl_getenv("RET0NULLCMP"))) { // @ENVVAR "RET0NULLCMP" - historic aubit4gl behaviour - return 0 when comparing NULLs - Informix returns NULL
+			return_0=1;
+		} 
+	}
+	return return_0;
+}
 
 static int
 isCompare (int op)
@@ -459,7 +471,7 @@ A4GL_dec_dec_ops (int op)
   res_dig += res_dec;
   if (A4GL_isnull (DTYPE_DECIMAL, (void *) &a) || A4GL_isnull (DTYPE_DECIMAL, (void *) &b))
     {
-      if (isCompare (op))
+      if (isCompare (op) && A4GL_return_0_on_null_compare())
 	{
 	  A4GL_push_int (0);
 	  return;
@@ -607,7 +619,7 @@ A4GL_mon_dec_ops (int op)
 
   if (A4GL_isnull (DTYPE_MONEY, (void *) &a) || A4GL_isnull (DTYPE_MONEY, (void *) &b))
     {
-      if (isCompare (op))
+      if (isCompare (op)  && A4GL_return_0_on_null_compare())
 	{
 	  A4GL_push_int (0);
 	  return;
@@ -709,7 +721,7 @@ A4GL_dec_mon_ops (int op)
 
   if (A4GL_isnull (DTYPE_MONEY, (void *) &a) || A4GL_isnull (DTYPE_MONEY, (void *) &b))
     {
-      if (isCompare (op))
+      if (isCompare (op)  && A4GL_return_0_on_null_compare())
 	{
 	  A4GL_push_int (0);
 	  return;
@@ -815,7 +827,7 @@ A4GL_mon_mon_ops (int op)
 
   if (A4GL_isnull (DTYPE_MONEY, (void *) &a) || A4GL_isnull (DTYPE_MONEY, (void *) &b))
     {
-      if (isCompare (op))
+      if (isCompare (op)  && A4GL_return_0_on_null_compare())
 	{
 	  A4GL_push_int (0);
 	  return;
@@ -917,7 +929,7 @@ A4GL_dec_sm_ops (int op)
 
   if (A4GL_isnull (DTYPE_DECIMAL, (void *) &a) || A4GL_isnull (DTYPE_DECIMAL, (void *) &b))
     {
-      if (isCompare (op))
+      if (isCompare (op)  && A4GL_return_0_on_null_compare())
 	{
 	  A4GL_push_int (0);
 	  return;
@@ -1022,7 +1034,7 @@ A4GL_mon_sm_ops (int op)
 
   if (A4GL_isnull (DTYPE_MONEY, (void *) &a) || A4GL_isnull (DTYPE_MONEY, (void *) &b))
     {
-      if (isCompare (op))
+      if (isCompare (op)  && A4GL_return_0_on_null_compare())
 	{
 	  A4GL_push_int (0);
 	  return;
@@ -1129,7 +1141,7 @@ A4GL_dec_int_ops (int op)
 
   if (A4GL_isnull (DTYPE_DECIMAL, (void *) &a) || A4GL_isnull (DTYPE_DECIMAL, (void *) &b))
     {
-      if (isCompare (op))
+      if (isCompare (op)  && A4GL_return_0_on_null_compare())
 	{
 	  A4GL_push_int (0);
 	  return;
@@ -1235,7 +1247,7 @@ A4GL_mon_int_ops (int op)
 
   if (A4GL_isnull (DTYPE_MONEY, (void *) &a) || A4GL_isnull (DTYPE_MONEY, (void *) &b))
     {
-      if (isCompare (op))
+      if (isCompare (op)  && A4GL_return_0_on_null_compare())
 	{
 	  A4GL_push_int (0);
 	  return;
@@ -1340,7 +1352,7 @@ A4GL_dec_float_ops (int op)
 
   if (A4GL_isnull (DTYPE_DECIMAL, (void *) &a) || A4GL_isnull (DTYPE_DECIMAL, (void *) &b))
     {
-      if (isCompare (op))
+      if (isCompare (op)  && A4GL_return_0_on_null_compare())
 	{
 	  A4GL_push_int (0);
 	  return;
@@ -1443,7 +1455,7 @@ A4GL_dec_smfloat_ops (int op)
 
   if (A4GL_isnull (DTYPE_DECIMAL, (void *) &a) || A4GL_isnull (DTYPE_DECIMAL, (void *) &b))
     {
-      if (isCompare (op))
+      if (isCompare (op)  && A4GL_return_0_on_null_compare())
 	{
 	  A4GL_push_int (0);
 	  return;
@@ -1545,7 +1557,7 @@ A4GL_mon_float_ops (int op)
   A4GL_pop_sized_decimal(&a);
   if (A4GL_isnull (DTYPE_MONEY, (void *) &a) || A4GL_isnull (DTYPE_MONEY, (void *) &b))
     {
-      if (isCompare (op))
+      if (isCompare (op)  && A4GL_return_0_on_null_compare())
 	{
 	  A4GL_push_int (0);
 	  return;
@@ -1649,7 +1661,7 @@ A4GL_mon_smfloat_ops (int op)
 
   if (A4GL_isnull (DTYPE_MONEY, (void *) &a) || A4GL_isnull (DTYPE_MONEY, (void *) &b))
     {
-      if (isCompare (op))
+      if (isCompare (op)  && A4GL_return_0_on_null_compare())
 	{
 	  A4GL_push_int (0);
 	  return;
@@ -1752,7 +1764,7 @@ A4GL_sm_dec_ops (int op)
 
   if (A4GL_isnull (DTYPE_DECIMAL, (void *) &a) || A4GL_isnull (DTYPE_DECIMAL, (void *) &b))
     {
-      if (isCompare (op))
+      if (isCompare (op)  && A4GL_return_0_on_null_compare())
 	{
 	  A4GL_push_int (0);
 	  return;
@@ -1857,7 +1869,7 @@ A4GL_int_dec_ops (int op)
 
   if (A4GL_isnull (DTYPE_DECIMAL, (void *) &a) || A4GL_isnull (DTYPE_DECIMAL, (void *) &b))
     {
-      if (isCompare (op))
+      if (isCompare (op)  && A4GL_return_0_on_null_compare())
 	{
 	  A4GL_push_int (0);
 	  return;
@@ -1961,7 +1973,7 @@ A4GL_float_dec_ops (int op)
 
   if (A4GL_isnull (DTYPE_DECIMAL, (void *) &a) || A4GL_isnull (DTYPE_DECIMAL, (void *) &b))
     {
-      if (isCompare (op))
+      if (isCompare (op)  && A4GL_return_0_on_null_compare())
 	{
 	  A4GL_push_int (0);
 	  return;
@@ -2073,7 +2085,7 @@ A4GL_smfloat_dec_ops (int op)
 
   if (A4GL_isnull (DTYPE_DECIMAL, (void *) &a) || A4GL_isnull (DTYPE_DECIMAL, (void *) &b))
     {
-      if (isCompare (op))
+      if (isCompare (op)  && A4GL_return_0_on_null_compare())
 	{
 	  A4GL_push_int (0);
 	  return;
@@ -2179,7 +2191,7 @@ A4GL_sm_mon_ops (int op)
 
   if (A4GL_isnull (DTYPE_MONEY, (void *) &a) || A4GL_isnull (DTYPE_MONEY, (void *) &b))
     {
-      if (isCompare (op))
+      if (isCompare (op)  && A4GL_return_0_on_null_compare())
 	{
 	  A4GL_push_int (0);
 	  return;
@@ -2284,7 +2296,7 @@ A4GL_int_mon_ops (int op)
 
   if (A4GL_isnull (DTYPE_MONEY, (void *) &a) || A4GL_isnull (DTYPE_MONEY, (void *) &b))
     {
-      if (isCompare (op))
+      if (isCompare (op)  && A4GL_return_0_on_null_compare())
 	{
 	  A4GL_push_int (0);
 	  return;
@@ -2386,7 +2398,7 @@ A4GL_pop_sized_decimal_from_float(&a,9);
 
   if (A4GL_isnull (DTYPE_MONEY, (void *) &a) || A4GL_isnull (DTYPE_MONEY, (void *) &b))
     {
-      if (isCompare (op))
+      if (isCompare (op)  && A4GL_return_0_on_null_compare())
 	{
 	  A4GL_push_int (0);
 	  return;
@@ -2489,7 +2501,7 @@ A4GL_smfloat_mon_ops (int op)
 
   if (A4GL_isnull (DTYPE_MONEY, (void *) &a) || A4GL_isnull (DTYPE_MONEY, (void *) &b))
     {
-      if (isCompare (op))
+      if (isCompare (op)  && A4GL_return_0_on_null_compare())
 	{
 	  A4GL_push_int (0);
 	  return;
@@ -2601,7 +2613,7 @@ A4GL_smfloat_smfloat_ops (int op)
 #ifdef DEBUG
       A4GL_debug ("smflot_smfloat- one is null");
 #endif
-      if (isCompare (op))
+      if (isCompare (op)  && A4GL_return_0_on_null_compare())
 	{
 	  A4GL_push_int (0);
 	  return;
@@ -2701,13 +2713,16 @@ d=A4GL_pop_double();
 p=A4GL_char_pop();
 
 if (A4GL_isnull (DTYPE_CHAR, (void *) p) || A4GL_isnull (DTYPE_FLOAT, (void *) &d) ) {
-      A4GL_push_null (DTYPE_SMFLOAT, 0);
+	free(p);
+	if (isCompare(op)  && A4GL_return_0_on_null_compare()) { A4GL_push_int (0); return; }
+      	A4GL_push_null (DTYPE_SMFLOAT, 0);
 	return ;
 }
 
 A4GL_whats_in_a_string(p,&dtype_string,&sl,0);
 
 if (dtype_string==0) { 
+	free(p);
 	// Its not a nimber - so it must be null...
    	A4GL_push_null (DTYPE_SMFLOAT, 0);
 	return;
@@ -2734,13 +2749,16 @@ p=A4GL_char_pop();
 d=A4GL_pop_double();
 
 if (A4GL_isnull (DTYPE_CHAR, (void *) p) || A4GL_isnull (DTYPE_FLOAT, (void *) &d) ) {
-      A4GL_push_null (DTYPE_SMFLOAT, 0);
+	free(p);
+	if (isCompare(op)  && A4GL_return_0_on_null_compare()) { A4GL_push_int (0); return; }
+        A4GL_push_null (DTYPE_SMFLOAT, 0);
 	return ;
 }
 
 A4GL_whats_in_a_string(p,&dtype_string,&sl,0);
 
 if (dtype_string==0) { 
+	free(p);
 	// Its not a nimber - so it must be null...
    	A4GL_push_null (DTYPE_SMFLOAT, 0);
 	return;
@@ -2761,8 +2779,8 @@ A4GL_pushop(op);
 static void
 A4GL_char_char_ops (int op)
 {
-  char *a;
-  char *b;
+  char *a=NULL;
+  char *b=NULL;
   //double d1;
   //double d2;
   //double dc;
@@ -2802,16 +2820,17 @@ A4GL_char_char_ops (int op)
 #ifdef DEBUG
       A4GL_debug ("One of them is null...");
 #endif
-      if (isCompare (op))
-	{
 	  free (a);
 	  free (b);
+      if (isCompare (op)  && A4GL_return_0_on_null_compare())
+	{
 	  A4GL_push_int (0);
 	  return;
 	}
       else
 	{
 	  A4GL_push_null (DTYPE_CHAR, 0);
+	return;
 	}
     }
 
@@ -3000,7 +3019,7 @@ A4GL_float_smfloat_ops (int op)
 #ifdef DEBUG
       A4GL_debug ("float_smallflt - one is null");
 #endif
-      if (isCompare (op))
+      if (isCompare (op)  && A4GL_return_0_on_null_compare())
 	{
 	  A4GL_push_int (0);
 	  return;
@@ -3113,7 +3132,7 @@ A4GL_smfloat_float_ops (int op)
 #ifdef DEBUG
       A4GL_debug ("smfloat_float - one is null");
 #endif
-      if (isCompare (op))
+      if (isCompare (op)  && A4GL_return_0_on_null_compare())
 	{
 	  A4GL_push_int (0);
 	  return;
@@ -4496,7 +4515,7 @@ A4GL_int_int_ops (int op)
 #ifdef DEBUG
       A4GL_debug ("int_int - one is null");
 #endif
-      if (isCompare (op))
+      if (isCompare (op)  && A4GL_return_0_on_null_compare())
 	{
 	  A4GL_push_int (0);
 	  return;
@@ -4631,7 +4650,7 @@ A4GL_date_date_ops (int op)
 #ifdef DEBUG
       A4GL_debug ("date_date - one is null");
 #endif
-      if (isCompare (op))
+      if (isCompare (op)  && A4GL_return_0_on_null_compare())
 	{
 	  A4GL_push_int (0);
 	  return;
@@ -4754,7 +4773,7 @@ A4GL_date_char_ops (int op)
 #ifdef DEBUG
       A4GL_debug ("int_date - one is null");
 #endif
-      if (isCompare (op))
+      if (isCompare (op)  && A4GL_return_0_on_null_compare())
 	{
 	  A4GL_push_int (0);
 	  return;
@@ -4900,7 +4919,7 @@ A4GL_date_int_ops (int op)
 #ifdef DEBUG
       A4GL_debug ("int_date - one is null");
 #endif
-      if (isCompare (op))
+      if (isCompare (op)  && A4GL_return_0_on_null_compare())
 	{
 	  A4GL_push_int (0);
 	  return;
@@ -5021,7 +5040,7 @@ A4GL_int_date_ops (int op)
 #ifdef DEBUG
       A4GL_debug ("int_int - one is null");
 #endif
-      if (isCompare (op))
+      if (isCompare (op)  && A4GL_return_0_on_null_compare())
 	{
 	  A4GL_push_int (0);
 	  return;

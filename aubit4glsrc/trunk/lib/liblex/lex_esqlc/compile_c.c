@@ -24,12 +24,12 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.535 2010-10-08 11:38:35 mikeaubury Exp $
+# $Id: compile_c.c,v 1.536 2010-10-08 16:18:45 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
-static char const module_id[] = "$Id: compile_c.c,v 1.535 2010-10-08 11:38:35 mikeaubury Exp $";
+static char const module_id[] = "$Id: compile_c.c,v 1.536 2010-10-08 16:18:45 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -5570,22 +5570,22 @@ print_variable_new (struct variable *v, enum e_scope scope, int level)
 		  if (static_extern_flg == 2)
 		    {
 		      //printc ("extern char **%s;", name);
-		      printc ("extern _dynelem_%s *%s;",  name, name, nv->var_data.variable_data_u.v_simple.dimensions[0]+1);
+		      printc ("extern _dynelem_%s *%s;",  name, name); //, nv->var_data.variable_data_u.v_simple.dimensions[0]+1);
 		    }
 		  else
 		    {
-		      printc ("_dynelem_%s *%s=0;",  name, name, nv->var_data.variable_data_u.v_simple.dimensions[0]+1);
+		      printc ("_dynelem_%s *%s=0;",  name, name); // , nv->var_data.variable_data_u.v_simple.dimensions[0]+1);
 		    }
 		}
 	      else
 		{
+	  	printc ("typedef %s _dynelem_%s;", local_rettype_integer (nv->var_data.variable_data_u.v_simple.datatype),name);
 		  if (static_extern_flg == 2) {
-		  	printc ("typedef struct _dynelem_%s { %s dummyname;};", name, local_rettype_integer (nv->var_data.variable_data_u.v_simple.datatype));
-		  	printc ("extern %s *%s;", local_rettype_integer (nv->var_data.variable_data_u.v_simple.datatype), name);
+		  	printc ("extern _dynelem_%s *%s;", name, name); //local_rettype_integer (nv->var_data.variable_data_u.v_simple.datatype), name);
 			
 		  } else {
-		  	printc ("typedef struct _dynelem_%s { %s dummyname;};", name, local_rettype_integer (nv->var_data.variable_data_u.v_simple.datatype));
-		  	printc ("%s *%s=0;", local_rettype_integer (nv->var_data.variable_data_u.v_simple.datatype), name);
+		  	//printc ("typedef struct _dynelem_%s { %s dummyname;};", name, local_rettype_integer (nv->var_data.variable_data_u.v_simple.datatype));
+		  	printc ("_dynelem_%s *%s=0;", name, name ); // local_rettype_integer (nv->var_data.variable_data_u.v_simple.datatype), name);
 			}
 		}
 	      break;
@@ -5593,7 +5593,7 @@ print_variable_new (struct variable *v, enum e_scope scope, int level)
 	    case VARIABLE_TYPE_RECORD:
 	      {
 		int a;
-		printc ("typedef struct _dynelem_%s {", name);
+		printc ("struct S_dynelem_%s {", name);
 		for (a = 0; a < nv->var_data.variable_data_u.v_record.variables.variables_len; a++)
 		  {
 		    struct variable *next_v;
@@ -5603,6 +5603,7 @@ print_variable_new (struct variable *v, enum e_scope scope, int level)
 		    tmp_ccnt--;
 		  }
 		printc ("};");
+		printc ("typedef struct S_dynelem_%s _dynelem_%s;", name,name);
 		  if (static_extern_flg == 2) {
 		printc ("extern  _dynelem_%s *%s;", name, name);
 		} else {

@@ -1736,7 +1736,7 @@ local_get_expr_as_string (struct expr_str *ptr)
       break;
 
     case ET_EXPR_ASCII:
-      sprintf (buff, "ASCII %s", local_get_expr_as_string (ptr->expr_str_u.expr_expr));
+      sprintf (buff, "ASCII(%s)", local_get_expr_as_string (ptr->expr_str_u.expr_expr));
       return acl_strdup (buff);
       break;
 
@@ -2011,7 +2011,7 @@ local_get_expr_as_string (struct expr_str *ptr)
       break;
 
     case ET_EXPR_OP_OR:
-      sprintf (buff, "%s OR %s\n",
+      sprintf (buff, "%s OR %sn",
 	       local_get_expr_as_string (ptr->expr_str_u.expr_op->left), local_get_expr_as_string (ptr->expr_str_u.expr_op->right));
       return acl_strdup (buff);
       break;

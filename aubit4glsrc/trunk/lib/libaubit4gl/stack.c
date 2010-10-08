@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                          |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.266 2010-10-08 10:58:37 mikeaubury Exp $
+# $Id: stack.c,v 1.267 2010-10-08 16:18:44 mikeaubury Exp $
 #
 */
 
@@ -1934,8 +1934,15 @@ int r;
     case OP_NOT:
       if (A4GL_chknull (1, n1, n2, dn1, dn2))
 	{
-	  i1 = A4GL_pop_int ();
-	  A4GL_push_int (0);
+	  	i1 = A4GL_pop_int ();
+	
+		if (A4GL_return_0_on_null_compare()) { 
+			A4GL_push_int (0); 
+		} else {
+	  		A4GL_push_null (DTYPE_INT, 0);
+		}
+
+	  //A4GL_push_int (0);
 	  call_list--;
 	  return;
 	}
@@ -4120,7 +4127,13 @@ A4GL_chknull_boolean (int n, int n1, int n2, int d1, int d2)
     {
       A4GL_drop_param ();
       A4GL_drop_param ();
-      A4GL_push_int (0);
+
+	if (A4GL_return_0_on_null_compare()) {
+      		A4GL_push_int (0);
+	} else {
+		A4GL_push_null (DTYPE_INT, 0);
+	}
+
       return 1;
     }
   return 0;
@@ -5064,7 +5077,16 @@ void A4GL_pushIntEq (int a, int b)
     }
   if (a == nvalint || b == nvalint)
     { /* if either is null - the result is false.. */
-      A4GL_push_int (0); return;
+
+		if (A4GL_return_0_on_null_compare()) {
+			A4GL_push_int (0); 
+		} else {
+			A4GL_push_null (DTYPE_INT, 0);	
+		}
+
+
+		return;
+
     }
   if (a == b) { A4GL_push_int (1); } else { A4GL_push_int (0); }
 }

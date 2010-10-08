@@ -9,6 +9,7 @@ export A4GL_DUMP_CORE=Y
 unset DEBUG
 
 export FGLLOGTXT="Aubit Computing Ltd Binary Build"
+unset CALLERRHOOK
 
 echo "[8;25;80t"
 
