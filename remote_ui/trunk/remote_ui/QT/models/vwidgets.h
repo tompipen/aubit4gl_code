@@ -574,6 +574,7 @@ public:
    static Edit* createEdit(const QDomElement&, QWidget *parent = NULL);
    static FormField* createFormField(const QDomElement&, QWidget *parent = NULL);
    static Label* createLabel(const QDomElement&, QWidget *parent = NULL);
+   static Label* createImage(const QDomElement&, QWidget *parent = NULL);
    static Button* createButton(const QDomElement&, QWidget *parent = NULL);
    static QWidget* createFormWidget(const QDomElement&, QWidget *parent = NULL);
    static ButtonEdit* createButtonEdit(const QDomElement&, QWidget *parent = NULL);

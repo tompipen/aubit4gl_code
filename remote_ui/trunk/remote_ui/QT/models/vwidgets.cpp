@@ -638,9 +638,7 @@ QWidget* WidgetHelper::createFormWidget(const QDomElement& formField, QWidget *p
 
    
    if(lineEditElement.nodeName() == "Image"){
-      Label *label = createLabel(formField, parent);
-      QPixmap pixmap("");
-      label->setPixmap(pixmap);
+      Label *label = createImage(formField, parent);
       label->setEnabled(true);
       return label;
    }
@@ -752,6 +750,53 @@ Label* WidgetHelper::createLabel(const QDomElement& formField, QWidget *parent)
   // p.setColor(QPalette::Foreground, Qt::blue);
  //  label->setPalette(p);
    label->setFixedHeight(defHeight);
+
+   return label;
+}
+
+Label* WidgetHelper::createImage(const QDomElement& formField, QWidget *parent)
+{   
+   QDomElement labelElement = formField.firstChild().toElement();
+
+   QString name    = formField.attribute("name");
+   QString colName = formField.attribute("colName");
+   QString tabName = formField.attribute("sqlTabName");
+   QString sqlType = formField.attribute("sqlType");
+
+   bool hidden   = formField.attribute("hidden").toInt();
+
+   int w  = labelElement.attribute("pixelWidth").toInt();
+   int h  = labelElement.attribute("pixelHeight").toInt();
+
+   bool autoScale  = labelElement.attribute("autoScale").toInt();
+   QString image  = labelElement.attribute("image");
+   image.prepend("pics:");
+
+   Label *label = new Label(parent);
+   label->setAccessibleName(name);
+   label->setObjectName(colName);
+   label->name = name;
+   label->colName = colName;
+   label->sqlTabName = tabName;
+   label->w = w;
+
+   QString comments = labelElement.attribute("comments");
+   if(!comments.isEmpty()){
+      label->setToolTip(comments);
+   }
+
+   if(hidden){
+      label->setVisible(false);
+   }
+
+   QPixmap pixmap("");
+   label->setPixmap(pixmap);
+
+
+  // QPalette p = label->palette();
+  // p.setColor(QPalette::Foreground, Qt::blue);
+ //  label->setPalette(p);
+   //label->setFixedSize(defHeight);
 
    return label;
 }
@@ -1632,6 +1677,7 @@ void WidgetHelper::setFieldText(QObject *object, QString fieldValue)
       else{
          QPixmap pixmap(fieldValue);
          widget->setPixmap(pixmap);
+         widget->setFixedSize(pixmap.size());
       }
       return;
    }
