@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dynmem.c,v 1.13 2010-10-08 09:36:08 dbuettner Exp $
+# $Id: dynmem.c,v 1.14 2010-10-08 11:03:19 dbuettner Exp $
 #
 */
 
@@ -325,17 +325,19 @@ static int dynamic_array_insertelement(void *arr, int n) {
 	ptr=A4GL_alloc_dynarr(a->ptr,*a->ptr,d1,d2,d3,0,0,dsize(d1,d2,d3) * a->size,2);
 	*a->ptr=ptr;
 
-   int i = 0;
-   int cnt = 0;
-   int cnt2 = 0;
+   void *dest_ptr=*a->ptr;
+   void *src_ptr=ptr2;
+
+   int i=0;
    for(i=0; i<d1_old; i++){
-      if(i!=p-1){
-         memcpy(*a->ptr+(cnt*a->size), ptr2+(cnt2*a->size), a->size);
-         cnt2++;
+      if(i==p-1){
+        memset(dest_ptr,0,a->size); // Clear down the area..
+        dest_ptr+=a->size;
       }
-      cnt++;
+      memcpy(dest_ptr,src_ptr,a->size);
+      dest_ptr+=a->size;
+      src_ptr+=a->size;
    }
-   
    free(ptr2);
 
 	return 0;
