@@ -25,7 +25,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.177 2010-10-08 10:58:37 mikeaubury Exp $
+# $Id: ops.c,v 1.178 2010-10-08 11:00:47 mikeaubury Exp $
 #
 */
 
@@ -7345,10 +7345,14 @@ DTYPE_SERIAL
   A4GL_add_op_function (DTYPE_SMFLOAT, DTYPE_SMFLOAT, OP_MATH, A4GL_smfloat_smfloat_ops);
 
 
+
+
+
   A4GL_add_op_function (DTYPE_CHAR, DTYPE_INT, OP_MATH, A4GL_char_num_ops);
   A4GL_add_op_function (DTYPE_CHAR, DTYPE_SERIAL, OP_MATH, A4GL_char_num_ops);
   A4GL_add_op_function (DTYPE_CHAR, DTYPE_SMINT, OP_MATH, A4GL_char_num_ops);
   A4GL_add_op_function (DTYPE_CHAR, DTYPE_FLOAT, OP_MATH, A4GL_char_num_ops);
+
   A4GL_add_op_function (DTYPE_CHAR, DTYPE_SMFLOAT, OP_MATH, A4GL_char_num_ops);
   A4GL_add_op_function (DTYPE_CHAR, DTYPE_DECIMAL, OP_MATH, A4GL_char_num_ops);
   A4GL_add_op_function (DTYPE_CHAR, DTYPE_MONEY, OP_MATH, A4GL_char_num_ops);
@@ -7358,9 +7362,73 @@ DTYPE_SERIAL
   A4GL_add_op_function (DTYPE_SERIAL,DTYPE_CHAR,  OP_MATH, A4GL_num_char_ops);
   A4GL_add_op_function (DTYPE_SMINT,DTYPE_CHAR,  OP_MATH, A4GL_num_char_ops);
   A4GL_add_op_function (DTYPE_FLOAT, DTYPE_CHAR, OP_MATH, A4GL_num_char_ops);
+
   A4GL_add_op_function (DTYPE_SMFLOAT, DTYPE_CHAR, OP_MATH, A4GL_num_char_ops);
   A4GL_add_op_function (DTYPE_DECIMAL, DTYPE_CHAR, OP_MATH, A4GL_num_char_ops);
   A4GL_add_op_function (DTYPE_MONEY, DTYPE_CHAR, OP_MATH, A4GL_num_char_ops);
+
+
+
+  A4GL_add_op_function (DTYPE_VCHAR, DTYPE_INT, OP_MATH, A4GL_char_num_ops);
+  A4GL_add_op_function (DTYPE_VCHAR, DTYPE_SERIAL, OP_MATH, A4GL_char_num_ops);
+  A4GL_add_op_function (DTYPE_VCHAR, DTYPE_SMINT, OP_MATH, A4GL_char_num_ops);
+  A4GL_add_op_function (DTYPE_VCHAR, DTYPE_FLOAT, OP_MATH, A4GL_char_num_ops);
+
+  A4GL_add_op_function (DTYPE_VCHAR, DTYPE_SMFLOAT, OP_MATH, A4GL_char_num_ops);
+  A4GL_add_op_function (DTYPE_VCHAR, DTYPE_DECIMAL, OP_MATH, A4GL_char_num_ops);
+  A4GL_add_op_function (DTYPE_VCHAR, DTYPE_MONEY, OP_MATH, A4GL_char_num_ops);
+
+
+  A4GL_add_op_function (DTYPE_INT,	DTYPE_VCHAR,  OP_MATH, A4GL_num_char_ops);
+  A4GL_add_op_function (DTYPE_SERIAL,	DTYPE_VCHAR,  OP_MATH, A4GL_num_char_ops);
+  A4GL_add_op_function (DTYPE_SMINT,	DTYPE_VCHAR,  OP_MATH, A4GL_num_char_ops);
+  A4GL_add_op_function (DTYPE_FLOAT, 	DTYPE_VCHAR, OP_MATH, A4GL_num_char_ops);
+
+  A4GL_add_op_function (DTYPE_SMFLOAT, 	DTYPE_VCHAR, OP_MATH, A4GL_num_char_ops);
+  A4GL_add_op_function (DTYPE_DECIMAL, 	DTYPE_VCHAR, OP_MATH, A4GL_num_char_ops);
+  A4GL_add_op_function (DTYPE_MONEY, 	DTYPE_VCHAR, OP_MATH, A4GL_num_char_ops);
+
+
+  A4GL_add_op_function (DTYPE_NCHAR, DTYPE_INT, OP_MATH, A4GL_char_num_ops);
+  A4GL_add_op_function (DTYPE_NCHAR, DTYPE_SERIAL, OP_MATH, A4GL_char_num_ops);
+  A4GL_add_op_function (DTYPE_NCHAR, DTYPE_SMINT, OP_MATH, A4GL_char_num_ops);
+  A4GL_add_op_function (DTYPE_NCHAR, DTYPE_FLOAT, OP_MATH, A4GL_char_num_ops);
+
+  A4GL_add_op_function (DTYPE_NCHAR, DTYPE_SMFLOAT, OP_MATH, A4GL_char_num_ops);
+  A4GL_add_op_function (DTYPE_NCHAR, DTYPE_DECIMAL, OP_MATH, A4GL_char_num_ops);
+  A4GL_add_op_function (DTYPE_NCHAR, DTYPE_MONEY, OP_MATH, A4GL_char_num_ops);
+
+
+  A4GL_add_op_function (DTYPE_INT,	DTYPE_NCHAR,  OP_MATH, A4GL_num_char_ops);
+  A4GL_add_op_function (DTYPE_SERIAL,	DTYPE_NCHAR,  OP_MATH, A4GL_num_char_ops);
+  A4GL_add_op_function (DTYPE_SMINT,	DTYPE_NCHAR,  OP_MATH, A4GL_num_char_ops);
+  A4GL_add_op_function (DTYPE_FLOAT, 	DTYPE_NCHAR, OP_MATH, A4GL_num_char_ops);
+
+  A4GL_add_op_function (DTYPE_SMFLOAT, 	DTYPE_NCHAR, OP_MATH, A4GL_num_char_ops);
+  A4GL_add_op_function (DTYPE_DECIMAL, 	DTYPE_NCHAR, OP_MATH, A4GL_num_char_ops);
+  A4GL_add_op_function (DTYPE_MONEY, 	DTYPE_NCHAR, OP_MATH, A4GL_num_char_ops);
+
+
+  A4GL_add_op_function (DTYPE_NVCHAR, DTYPE_INT, OP_MATH, A4GL_char_num_ops);
+  A4GL_add_op_function (DTYPE_NVCHAR, DTYPE_SERIAL, OP_MATH, A4GL_char_num_ops);
+  A4GL_add_op_function (DTYPE_NVCHAR, DTYPE_SMINT, OP_MATH, A4GL_char_num_ops);
+  A4GL_add_op_function (DTYPE_NVCHAR, DTYPE_FLOAT, OP_MATH, A4GL_char_num_ops);
+
+  A4GL_add_op_function (DTYPE_NVCHAR, DTYPE_SMFLOAT, OP_MATH, A4GL_char_num_ops);
+  A4GL_add_op_function (DTYPE_NVCHAR, DTYPE_DECIMAL, OP_MATH, A4GL_char_num_ops);
+  A4GL_add_op_function (DTYPE_NVCHAR, DTYPE_MONEY, OP_MATH, A4GL_char_num_ops);
+
+
+  A4GL_add_op_function (DTYPE_INT,	DTYPE_NVCHAR,  OP_MATH, A4GL_num_char_ops);
+  A4GL_add_op_function (DTYPE_SERIAL,	DTYPE_NVCHAR,  OP_MATH, A4GL_num_char_ops);
+  A4GL_add_op_function (DTYPE_SMINT,	DTYPE_NVCHAR,  OP_MATH, A4GL_num_char_ops);
+  A4GL_add_op_function (DTYPE_FLOAT, 	DTYPE_NVCHAR, OP_MATH, A4GL_num_char_ops);
+
+  A4GL_add_op_function (DTYPE_SMFLOAT, 	DTYPE_NVCHAR, OP_MATH, A4GL_num_char_ops);
+  A4GL_add_op_function (DTYPE_DECIMAL, 	DTYPE_NVCHAR, OP_MATH, A4GL_num_char_ops);
+  A4GL_add_op_function (DTYPE_MONEY, 	DTYPE_NVCHAR, OP_MATH, A4GL_num_char_ops);
+
+
 
 
   A4GL_add_op_function (DTYPE_NCHAR, DTYPE_NCHAR, OP_MATH, A4GL_char_char_ops);
