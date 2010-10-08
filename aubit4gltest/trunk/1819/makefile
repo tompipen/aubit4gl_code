@@ -16,13 +16,14 @@ ADD_CLEAN=
 
 progname${TARGET_EXT}: ${MODULES} ; ${DEFAULT_LINK}
 compile: progname${TARGET_EXT} ${FORMS} ${HELP}
-run: compile ; ${DEFAULT_DUMP_DIFF}
+run: compile ; ${DEFAULT_DIFF}
+#	${DEFAULT_DIFF} ${DEFAULT_DUMP_DIFF}
 
 ## ======================================================================
 ##                  Test desctiptions
 ## ======================================================================
 
-desc: ; @echo "This is not a test but a Testing template. Please describe here."
+desc: ; @echo "Test integer/string comparisons and expressions"
 
 db_test: 				; @echo "0"
 ec_test: 				; @echo "0"
@@ -42,7 +43,7 @@ compile_only:			; @echo "0"
 unknown_test:			; @echo "0"
 need_ifx_version:		; @echo "0"
 transaction:			; @echo "0"
-sql_features_used:		; @echo "DATABASE_USED DEFINE_CHAR DEFINE_VARCHAR DEFINE_INTEGER DDL_VARCHAR CREATE_TEMP_TABLE UI_DISPLAY_LINE_MODE DISPLAY INSERT_COLUMNLIST_EQ_VALUELIST EXIT_PROGRAM_EXPR IF "
+sql_features_used:		; @echo ""
 ansi_sql_compat:		; @echo ""
 runtime_err_check:		; @echo ""
 need_rdbms:				; @echo ""
