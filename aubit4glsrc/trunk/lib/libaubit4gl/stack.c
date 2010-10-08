@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                          |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.265 2010-10-06 11:42:47 mikeaubury Exp $
+# $Id: stack.c,v 1.266 2010-10-08 10:58:37 mikeaubury Exp $
 #
 */
 
@@ -2737,16 +2737,40 @@ A4GL_opboolean (void)
     }
   else
     {
+	int looksLikeAFloat=0;
       first = 0;
+	
 #ifdef DEBUG
       A4GL_debug ("second is string");
 #endif
+
+
       a = A4GL_pop_double ();
       z1 = A4GL_char_pop ();
+	looksLikeAFloat=A4GL_stof (z1, &b, 0);
+
+	if (b==0 && looksLikeAFloat) {
+		// We got a value of '0' - but is it really a '0' ? 
+		// it depends on a ALLOWDBLCRUD setting - so we'll double check here...
+		char *eptr;
+		char buff[2000];
+      			b = strtod (z1, &eptr);
+			if (eptr==z1) {
+				looksLikeAFloat=0;
+			} else {
+				strcpy(buff,eptr);
+				A4GL_trim(buff);
+				if (strlen(buff)) {
+					looksLikeAFloat=0;
+				}
+			}
+	}
+
+
       //b = strtod (z1,&ptr);
-      if (A4GL_stof (z1, &b, 0))
+      if (looksLikeAFloat)
 	{
-	  //A4GL_debug("OK as a float..");
+
 #ifdef DEBUG
 	  A4GL_debug ("looks like a float");
 #endif
@@ -2756,7 +2780,7 @@ A4GL_opboolean (void)
 #ifdef DEBUG
 	  A4GL_debug ("Doesn't look much like a float to me (%s)", A4GL_null_as_null (z1));
 #endif
-	  return -2;
+	  return -1;
 	}
       //A4GL_debug ("2 --> %s %lf", z1, a);
     }
