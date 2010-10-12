@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                          |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.267 2010-10-08 16:18:44 mikeaubury Exp $
+# $Id: stack.c,v 1.268 2010-10-12 09:40:00 mikeaubury Exp $
 #
 */
 
@@ -1915,20 +1915,19 @@ int r;
 
 
     case OP_AND:
-      if (A4GL_chknull (2, n1, n2, dn1, dn2))
-	{
-	  call_list--;
-	  return;
-	}
-#ifdef DEBUG
-      A4GL_debug ("OP_AND");
-#endif
+	
       i1 = A4GL_pop_int ();
       i2 = A4GL_pop_int ();
-#ifdef DEBUG
-      A4GL_debug (" OP_AND : %d %d", i1, i2);
-#endif
-      A4GL_push_int (i1 && i2);
+
+	if (i1==0 || i2==0) {
+		// Can't be true...
+		A4GL_push_int(0);
+	}
+
+	if (A4GL_isnull(DTYPE_INT,(void *)&i1) || A4GL_isnull(DTYPE_INT,(void *)&i2) ) {
+	  		A4GL_push_null (DTYPE_INT, 0);
+	}
+	A4GL_push_int(i1 && i2);
       break;
 
     case OP_NOT:
