@@ -736,6 +736,20 @@ void ProtocolHandler::outputTree(QDomNode domNode)
       if(fileName.trimmed().endsWith(".4sm")){
          QDomDocument xmlFile = encodeXMLFile(childElement.text());
          QString xmlFileString = xmlFile.toString();
+/*
+         p_currScreenHandler->qh_env["DB_LOCALE"] = "IBM850";
+         QTextCodec *codec = QTextCodec::codecForName(qPrintable(p_currScreenHandler->qh_env["DB_LOCALE"]));
+         QFile file("T1.txt");
+         if (!file.open(QIODevice::WriteOnly | QIODevice::Text)){
+            return;
+         }
+         QByteArray ba = xmlFileString.toAscii();
+         QTextStream in_request(&ba);
+         in_request.setCodec(codec);
+         in_request << xmlFileString;
+         xmlFileString = in_request.readAll();
+*/
+
          handleXMLStartMenu(xmlFileString);
          return;
       }
@@ -1976,6 +1990,7 @@ void ProtocolHandler::fglFormResponse(QString qs_id)
    QDomElement triggeredElement = doc.documentElement();
    triggeredElement.setAttribute("ENVELOPEID", pid);
    qs_id = doc.toString();
+   qs_id = qs_id.replace("&amp;#x0A;", "&#x0A;");
    makeResponse(qs_id);
    emit debugtext(QString(">> " + qs_id));
 }
