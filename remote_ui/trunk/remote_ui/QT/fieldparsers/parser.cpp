@@ -291,7 +291,7 @@ void Parser::parseElement(const QDomNode& xmlNode)
          int posY = currentElement.attribute("posY").toInt();
          int gridWidth = currentElement.attribute("gridWidth").toInt();
 
-         if(text == ":" || text.startsWith("----"))
+         if(text == ":")
             continue;
 
          QLabel *label = new QLabel(text);
@@ -408,12 +408,14 @@ void Parser::handleTableColumn(const QDomNode& xmlNode){
       //int fieldCount = ql_formFields.count();
  
       int fieldAt = ql_formFields.count() - children.count();
+
+      for(int k=fieldAt; k<= ql_formFields.size(); k++){
  
  
       if(colText.isEmpty()){
-         if(fieldAt >= 0 && fieldAt <= ql_formFields.size()-1){
-            if(Label *wi = qobject_cast<Label *> (ql_formFields.at(fieldAt))){
-               if(wi->w == formW){ 
+         if(k >= 0 && k <= ql_formFields.size()-1){
+            if(Label *wi = qobject_cast<Label *> (ql_formFields.at(k))){
+               if(wi->w == formW && p_screenRecord->getColumnLabel(i) == NULL){ 
                   p_screenRecord->setColumnLabel(i, wi);
                   wi->setVisible(false);
                }
@@ -424,6 +426,7 @@ void Parser::handleTableColumn(const QDomNode& xmlNode){
          Label *label = new Label;
          label->setText(colText);
          p_screenRecord->setColumnLabel(i, label);
+      }
       }
  
  
