@@ -3047,6 +3047,8 @@ int has_own_using;
 
   dump_commands(cmd_data->foreach_commands);
   printc("CONTINUE_BLOCK_%d:;",cmd_data->block_id );
+  printc ("\n\naclfgli_clr_err_flg();");
+
   tmp_ccnt--;
   printc ("}");
   printc("END_BLOCK_%d:;",cmd_data->block_id );
@@ -3057,7 +3059,6 @@ int has_own_using;
   printc("if (a4gl_status == 100) { if (_fetcherr) {a4gl_sqlca.sqlcode = a4gl_status=_fetcherr;} else {a4gl_sqlca.sqlcode = a4gl_status = 0; }}");
   tmp_ccnt--;
   printc("}");
-
 tmp_ccnt--;
   printc("}");
   printcomment ("/* end of foreach while loop */\n");
