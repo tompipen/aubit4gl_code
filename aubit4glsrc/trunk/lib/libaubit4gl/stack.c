@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                          |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.268 2010-10-12 09:40:00 mikeaubury Exp $
+# $Id: stack.c,v 1.269 2010-10-13 08:37:12 mikeaubury Exp $
 #
 */
 
@@ -1922,12 +1922,15 @@ int r;
 	if (i1==0 || i2==0) {
 		// Can't be true...
 		A4GL_push_int(0);
-	}
+		break;
+	} 
 
 	if (A4GL_isnull(DTYPE_INT,(void *)&i1) || A4GL_isnull(DTYPE_INT,(void *)&i2) ) {
-	  		A4GL_push_null (DTYPE_INT, 0);
+	 	A4GL_push_null (DTYPE_INT, 0);
+		break;
 	}
 	A4GL_push_int(i1 && i2);
+	
       break;
 
     case OP_NOT:
