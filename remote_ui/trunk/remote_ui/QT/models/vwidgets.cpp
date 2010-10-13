@@ -310,7 +310,10 @@ void LineEdit::setNoEntry(bool ro)
 void LineEdit::setSqlType(QString sqlType)
 { 
    Fgl::DataType dataType = Fgl::decodeDataType(sqlType);
-
+   int left = 0;
+   int right = 0;
+   int top = 0;
+   int bottom = 0;
 
    dt_dataType = dataType;
 
@@ -321,6 +324,11 @@ void LineEdit::setSqlType(QString sqlType)
        case Fgl::DTYPE_FLOAT:
        case Fgl::DTYPE_DECIMAL:
           this->setAlignment(Qt::AlignRight);
+          if(ButtonEdit *edit = qobject_cast<ButtonEdit *> (this))
+          {
+              edit->getTextMargins(&left,&top,&right,&bottom);
+              edit->setTextMargins(left,top,right+18,bottom);
+          }
           break;
 
        default:
@@ -515,6 +523,8 @@ void TextEdit::setWantReturns(bool wr)
   b_wantReturns = wr;
 
 }
+
+
 
 void TextEdit::keyPressEvent(QKeyEvent *ev)
 {
