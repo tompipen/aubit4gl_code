@@ -81,8 +81,8 @@ Response::Response(QString id, FglForm* p_currForm, bool cursorPos) : QDomDocume
       responseElement.setAttribute("ARRLINE", arrLine);
    }
 
-   if(!(currEvent.type == Fgl::ONKEY_EVENT ||
-      currEvent.type == Fgl::ONACTION_EVENT)){
+   //if(!(currEvent.type == Fgl::ONKEY_EVENT ||
+   //   currEvent.type == Fgl::ONACTION_EVENT)){
          if(p_currForm->input() || p_currForm->construct()){
             addSyncValues();
          }
@@ -91,7 +91,7 @@ Response::Response(QString id, FglForm* p_currForm, bool cursorPos) : QDomDocume
                addScreenRecSyncValues();
             }
          }
-   }
+   //}
 
    /*
    if(p_currForm->dialog() == NULL && 
@@ -142,6 +142,7 @@ void Response::addSyncValues()
       }
 
       if(!text.isEmpty()){
+         text.replace("\n", "&#x0A;");
          QDomText domText = this->createTextNode(text);
          syncValueElement.appendChild(domText);
       }
