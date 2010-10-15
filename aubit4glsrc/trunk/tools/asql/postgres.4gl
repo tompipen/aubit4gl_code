@@ -528,7 +528,8 @@ printField (FILE * outputFile, int idx, char *descName)
   char buffer[32000]="";
   int length;
   int COUNT;
-  int INTVAR, BOOLVAR;
+  long INTVAR, BOOLVAR;
+  char nvar[100];
   int INDICATOR;
   int TYPE,LENGTH,OCTET_LENGTH,PRECISION,SCALE,NULLABLE,RETURNED_OCTET_LENGTH;
   int DATETIME_INTERVAL_CODE;
@@ -572,13 +573,13 @@ A4GL_debug("Getting details for index %d",index);
            case SQL3_NUMERIC:
            case SQL3_DECIMAL:
                 if (SCALE==0)
-                {  exec sql get descriptor descExec value :index :INTVAR=data;cp_sqlca();
+                {  exec sql get descriptor descExec value :index :nvar=data;cp_sqlca();
                 	if (display_mode==DISPLAY_DOWN) {
-                        	sprintf (buffer, "%d", INTVAR);
+				A4GL_trim(nvar);
+                        	sprintf (buffer, "%s", nvar);
                 	} else {
-                        	sprintf (buffer, "%*d", columnWidths[idx-1],INTVAR);
+                        	sprintf (buffer, "%*.0lf", columnWidths[idx-1],atof(nvar));
                 	}
-                   //sprintf(buffer,"%-10d",INTVAR);
   			if (display_mode==DISPLAY_UNLOAD) ltrim(buffer);
                 }
                 else
