@@ -310,10 +310,7 @@ void LineEdit::setNoEntry(bool ro)
 void LineEdit::setSqlType(QString sqlType)
 { 
    Fgl::DataType dataType = Fgl::decodeDataType(sqlType);
-   int left = 0;
-   int right = 0;
-   int top = 0;
-   int bottom = 0;
+
 
    dt_dataType = dataType;
 
@@ -326,8 +323,13 @@ void LineEdit::setSqlType(QString sqlType)
           this->setAlignment(Qt::AlignRight);
           if(ButtonEdit *edit = qobject_cast<ButtonEdit *> (this))
           {
+              int left = 0;
+              int right = 0;
+              int top = 0;
+              int bottom = 0;
+              right = edit->getButtonObj()->width();
               edit->getTextMargins(&left,&top,&right,&bottom);
-              edit->setTextMargins(left,top,right+18,bottom);
+              edit->setTextMargins(left,top,right,bottom);
           }
           break;
 
@@ -398,6 +400,11 @@ void ButtonEdit::setButtonKey(QString bk)
   connect(keyButton, SIGNAL(triggered()), this, SLOT(buttonClicked()));
   this->addAction(keyButton);
   */
+}
+
+QPushButton* ButtonEdit::getButtonObj()
+{
+    return this->button;
 }
 
 void ButtonEdit::resizeEvent(QResizeEvent *)

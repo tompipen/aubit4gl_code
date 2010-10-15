@@ -225,6 +225,7 @@ public:
     ButtonEdit(QString iconFileName = NULL, QWidget *parent = 0);
     void setButtonKey(QString bk);
     QString buttonKey() { return qs_buttonKey; };
+    QPushButton* getButtonObj();
 
 private:
     QPushButton *button;
