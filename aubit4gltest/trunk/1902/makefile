@@ -23,7 +23,7 @@ run: compile ; ${DEFAULT_DIFF}
 ##                  Test desctiptions
 ## ======================================================================
 
-desc: ; @echo "Test for ASCII(10) AND ASCII(32)"
+desc: ; @echo "Test if insertElement in dynamic array works"
 
 db_test: 				; @echo "0"
 ec_test: 				; @echo "0"
