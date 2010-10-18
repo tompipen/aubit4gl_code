@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                          |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.269 2010-10-13 08:37:12 mikeaubury Exp $
+# $Id: stack.c,v 1.270 2010-10-18 12:45:39 mikeaubury Exp $
 #
 */
 
@@ -1456,10 +1456,12 @@ int r;
 	      int dx;
 	      int sx;
 #ifdef DEBUG
-
 	      A4GL_debug ("Using a string for the second part : %s op=%d  ", params[params_cnt - 1].ptr, d);
 #endif
 	      A4GL_whats_in_a_string (params[params_cnt - 1].ptr, &dx, &sx,DTYPE_DTIME);
+#ifdef DEBUG
+	      A4GL_debug ("Using a string for the second part : %s op=%d  ", params[params_cnt - 1].ptr, d);
+#endif
 
 	    }
 
@@ -2319,6 +2321,7 @@ A4GL_push_ascii ()
     {
       last_push_was_ascii_null = 1;
     }
+A4GL_debug("Pushing : %s %d\n",buff,last_push_was_ascii_null);
 }
 
 
@@ -2633,10 +2636,13 @@ A4GL_opboolean (void)
     {
       if (d1 == DTYPE_CHAR && d2 == DTYPE_CHAR)
 	{
+
+	  A4GL_debug ("String Compare (stack): '%s' and '%s'",  params[params_cnt - 1].ptr, params[params_cnt - 2].ptr);
+
 	  z1 = A4GL_char_pop ();
-	  A4GL_trim (z1);
+	  A4GL_trim_not_nl (z1);
 	  z2 = A4GL_char_pop ();
-	  A4GL_trim (z2);
+	  A4GL_trim_not_nl (z2);
 #ifdef DEBUG
 	  /* {DEBUG} */ A4GL_debug ("String Compare : '%s' and '%s'", A4GL_null_as_null (z1), A4GL_null_as_null (z2));
 	  /* {DEBUG} */ A4GL_debug (" = %d\n", strcmp (z1, z2));
@@ -2663,8 +2669,8 @@ A4GL_opboolean (void)
 	      z2 = A4GL_char_pop ();
 	      if (d1 == DTYPE_CHAR || d2 == DTYPE_CHAR)
 		{
-		  A4GL_trim (z1);
-		  A4GL_trim (z2);
+		  A4GL_trim_not_nl (z1);
+		  A4GL_trim_not_nl (z2);
 		}
 	      cmp = strcmp (z1, z2) * -1;
 	      if (cmp < 0)
@@ -3384,7 +3390,7 @@ A4GL_setnull (int type, void *vbuff, int size)
 
 
 #ifdef DEBUG
-  A4GL_debug ("Set nulli %d %p %d", type, vbuff, size);
+  //A4GL_debug ("Set nulli %d %p %d", type, vbuff, size);
 #endif
   buff = (char *) vbuff;
 
@@ -3417,7 +3423,7 @@ A4GL_setnull (int type, void *vbuff, int size)
     {
       struct A4GLSQL_dtime *i;
 #ifdef DEBUG
-      A4GL_debug ("Setting : %p", buff);
+      //A4GL_debug ("Setting : %p", buff);
 #endif
       i = (struct A4GLSQL_dtime *) buff;
       i->data[0] = 0;

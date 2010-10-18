@@ -25,7 +25,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.179 2010-10-08 16:18:44 mikeaubury Exp $
+# $Id: ops.c,v 1.180 2010-10-18 12:45:39 mikeaubury Exp $
 #
 */
 
@@ -7822,7 +7822,7 @@ returns *d=
 */
 
 void
-A4GL_whats_in_a_string (char *s, int *d, int *sz,int dtype_hint)
+A4GL_whats_in_a_string (char *sorig, int *d, int *sz,int dtype_hint)
 {
   int orig_conv_ok = 0;
 //int is_ok;
@@ -7832,9 +7832,14 @@ A4GL_whats_in_a_string (char *s, int *d, int *sz,int dtype_hint)
   int orig_stat;
 int t;
 int dot_cnt;
+static char *s=NULL;
 
-  if (s == 0)
+if (s) {free(s) ; s=NULL;}
+
+  if (sorig == 0)
     return;
+
+s=strdup(sorig);
   orig_stat = a4gl_status;
 
   *d = DTYPE_CHAR;

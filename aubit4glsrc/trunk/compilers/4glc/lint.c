@@ -25,6 +25,7 @@ static void check_boolean (char *module_name, int lineno, expr_str * s,
 static int A4GL_is_just_literal (expr_str * ptr, int already_done_true_and_false);
 static void add_declare_cursor(char *cursorname, char *module,int lineno) ;
 static void lookForDuplicateCursorDefinitions(void );
+static int isReport(int b) ;
 struct s_severities
 {
   char *code;
@@ -1863,13 +1864,16 @@ check_linearised_commands (char *module_name, s_commands * func_cmds)
 		{
 		  int a;
 		  int listlen = 0;
+
+
+
+
 		  a = is_bolton_function (funcname);
 
 		  if (get_bolton_nrets (a) > 0
 		      && r->cmd_data.command_data_u.call_cmd.returning == 0)
 		    {
-		      A4GL_lint (module_name, r->lineno, "FUNCRETCNT", "Function returns too many values ",
-				 funcname);
+		      A4GL_lint (module_name, r->lineno, "FUNCRETCNT", "Function returns too many values ", funcname);
 		      continue;
 		    }
 
@@ -1902,6 +1906,9 @@ check_linearised_commands (char *module_name, s_commands * func_cmds)
 	      else
 		{
 		  cnt1 = fprototypes[b].nreturns;
+			if (isReport(b)) {
+		      		A4GL_lint (module_name, r->lineno, "CALLREPORT", "A CALL has been used - but the target is a REPORT", funcname);
+			}
 		  if (r->cmd_data.command_data_u.call_cmd.returning)
 		    {
 		      cnt2 =
@@ -3926,6 +3933,13 @@ system_function (char *funcname)
 }
 
 
+static int isReport(int b) {
+	if (b<0|| b>this_module.module_entries.module_entries_len) return 0;
+if ( this_module.module_entries.module_entries_val[b]->met_type==E_MET_REPORT_DEFINITION) return 1;
+if ( this_module.module_entries.module_entries_val[b]->met_type==E_MET_PDF_REPORT_DEFINITION) return 1;
+return 0;
+}
+
 
 /********************************************************************************/
 static int
@@ -4681,6 +4695,9 @@ scan_functions (char *infuncname, int calltree_entry, int *calltree,
 			 r->cmd_data.command_data_u.output_cmd.repname);
 	      continue;
 	    }
+			if (!isReport(b)) {
+		      		A4GL_lint (r->module, r->lineno, "OUTPUTNOTREPORT", "An OUTPUT has been used - but the target is not a REPORT", r->cmd_data.command_data_u.output_cmd.repname);
+			}
 	  A4GL_assertion (b < 0, "Couldnt find report");
 	  if (calltree[b] == 0)
 	    {
