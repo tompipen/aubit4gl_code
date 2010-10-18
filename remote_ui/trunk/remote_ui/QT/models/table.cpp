@@ -663,7 +663,12 @@ QVariant TableModel::headerData ( int section, Qt::Orientation orientation, int 
    if ( orientation == Qt::Horizontal )
    {
       if(qh_colLabels[section] != NULL){
-         return qh_colLabels[section]->text();
+         if(!qh_colLabels[section]->text().isEmpty()){
+            return qh_colLabels[section]->text();
+         }
+         else{
+            return qh_colLabels[section]->accessibleName();
+         }
       }
    }
    else{
