@@ -501,8 +501,6 @@ A4GL_debug("filename=%s",filename);
 
 endcode
 
-    #call form_is_compiled(a4gl_xxhelp,"MEMPACKED","GENERIC");
-    #with form "a4gl_xxhelp"
     OPEN WINDOW a4gl_helpw1 AT 1,1 WITH 24 ROWS, 80 COLUMNS
 
     CALL aclfgl_openiem(filename,n)
