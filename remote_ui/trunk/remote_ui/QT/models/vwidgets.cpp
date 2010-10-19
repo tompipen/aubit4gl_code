@@ -327,8 +327,8 @@ void LineEdit::setSqlType(QString sqlType)
               int right = 0;
               int top = 0;
               int bottom = 0;
-              right = edit->getButtonObj()->width();
               edit->getTextMargins(&left,&top,&right,&bottom);
+              right = edit->getButtonObj()->width();
               edit->setTextMargins(left,top,right,bottom);
           }
           break;
