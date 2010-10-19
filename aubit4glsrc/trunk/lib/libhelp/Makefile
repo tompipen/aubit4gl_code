@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.30 2006-10-13 11:29:00 afalout Exp $
+# $Id: Makefile,v 1.31 2010-10-19 18:56:27 mikeaubury Exp $
 #
 
 ROOT    	=../..
@@ -47,7 +47,7 @@ CFLAGS+= -DPORTABLE
 ##                              Targets
 ## ==================================================================
 
-${PLUGINDIR}/libHELP_std${SO_EXT}: helplib.o a4gl_xxhelp.afr.o
+${PLUGINDIR}/libHELP_std${SO_EXT}: helplib.o 
 	${LD} ${SO_LDFLAGS} -g -DPORTABLE -o $@ $^ -I${ROOT}/incl -L${ROOT}/lib -l${AUBITLIBFULL}
 	@echo "Help library sucesfully compiled."
 
@@ -69,10 +69,10 @@ dbghelplib.${FGLC_OUTPUT_EXT}: helplib.4gl
 	gdb --args ${4GLC} --namespace "HELPLIB_aclfgl_" $^
 	
 	
-a4gl_xxhelp.afr.c: a4gl_xxhelp.per
-	(export A4GL_PACKER=PACKED; export A4GL_FORMTYPE=GENERIC; \
-	export A4GL_SQLTYPE=nosql; export DEBUG=ALL;\
-	${FCOMPILE} -c $^)
+#a4gl_xxhelp.afr.c: a4gl_xxhelp.per
+#	(export A4GL_PACKER=PACKED; export A4GL_FORMTYPE=GENERIC; \
+#	export A4GL_SQLTYPE=nosql; export DEBUG=ALL;\
+#	${FCOMPILE} -c $^)
 
 show:
 	@echo "PLUGINDIR=${PLUGINDIR}"

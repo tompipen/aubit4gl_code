@@ -1,5 +1,5 @@
-{---------------------------------------------------------------------
-help.4gl	Aubit4GL help routines (work with Informix .iem files)
+
+{---------------------------------------------------------------------help.4gl	Aubit4GL help routines (work with Informix .iem files)
 
 2003-4-2	John O'Gorman john.ogorman@zombie.co.nz +64 (9) 521-0336
 
@@ -7,6 +7,28 @@ help.4gl	Aubit4GL help routines (work with Informix .iem files)
 
 		Note: Uses inline C code for I/O
 }
+---------   Module (static) Vars  ------------------------------------
+#define no integer	-- message no we are seeking
+-- message no found (while looping thru index)
+-- length of full message (while looping)
+-- length of full message (when found)
+-- count of messages in helpfile
+--current count of chars read from message
+DEFINE charcount          INTEGER
+DEFINE filenotfound       INTEGER
+DEFINE helpmaxlen         CONSTANT 256
+DEFINE len                INTEGER
+DEFINE msgcount           INTEGER
+DEFINE msgerrcnt          INTEGER
+
+DEFINE msgerror ARRAY[17] OF RECORD
+       errline            CHAR(256)
+END RECORD
+
+DEFINE msglen             INTEGER
+DEFINE msgline            CHAR(255)
+DEFINE msgno              SMALLINT
+
 code
 #include "a4gl_API_help_lib.h"
 	#include <errno.h>
@@ -49,21 +71,9 @@ code
 
 	static void myseterr( char *s);
 	static void fileerror(FILE *f, char *s);
+
 endcode
 
-define constant HELPMAXLEN 256
----------   Module (static) Vars  ------------------------------------
-#define no integer	-- message no we are seeking
-define msgno smallint	-- message no found (while looping thru index)
-define len integer	-- length of full message (while looping)
-define msglen integer	-- length of full message (when found)
-define msgcount integer -- count of messages in helpfile
-define charcount integer --current count of chars read from message
-define filenotfound integer
-define msgline char(255)
-
-define msgerror array[17] of record errline char(HELPMAXLEN) end record
-define msgerrcnt integer
 
 code
 
@@ -71,7 +81,11 @@ int  HELPLIB_HELP_initlib(void) {
 // Does nothing - required by the API
 return 1;
 }
+
 endcode
+
+
+
 
 ----------------------------------------------------------------------
 {  main section: comment this out when linking into libaubit  }
@@ -95,15 +109,10 @@ main
 	end while
 end main
 }
-
-
-
-
 {---------------------------------------------------------------------
-
 	aclfgl_fetchiem()	Read next line from .iem message
 		returns charcount, msgline
-	Side effects static vars: 
+	Side effects static vars:
 		charcount: No of chars read from message
 		msgerrcnt: Incremented if error
 		msgerror:  Error message if error
@@ -114,16 +123,16 @@ end main
 	Each call to fetchiem increases the static var charcount by the
 	length of the line read from the message.
 }
+FUNCTION local_aclfgl_fetchiem ()
+DEFINE ok                 INTEGER
+
+    LET ok=TRUE
+
+    IF charcount>=msglen THEN
+        RETURN 0,"End of help message"
+    END IF
 
 
-
-function local_aclfgl_fetchiem()
-	define ok integer
-	
-	let ok = true
-	if charcount >= msglen then
-		return 0, "End of help message"
-	end if
 code
 {
 	/*char *s = 0; */
@@ -131,9 +140,9 @@ code
 	if(msglen < 1 || charcount >= msglen) ok = 0;
 	if(infile == NULL) ok = 0;
 	if(ok && feof(infile) ) ok = 0;
-	if(ok && (charcount < msglen) ) 
+	if(ok && (charcount < msglen) )
 	{
-		fgets(msgline, 255, infile); 
+		fgets(msgline, 255, infile);
 		msgline[HELPMAXLEN-1] = 0;
 		A4GL_debug(">>>%s<<<",msgline); fflush(stdout);
 	}
@@ -148,94 +157,140 @@ code
 		//fprintf(stderr,"fetchiem()file error:\n");
 	}
 }
+
 endcode
-	if not ok then let charcount = 0 end if
-	let msgline = msgline clipped
-	return charcount, msgline[1,80]
-end function {fetchiem}
+
+    IF NOT(ok) THEN
+        LET charcount=0
+    END IF
+
+    LET msgline=msgline CLIPPED
+
+    RETURN charcount,msgline[1,80]
+
+END FUNCTION
+
+{fetchiem}
+
 
 
 {-------------------------------------------------------------------------
-
 	myshowerrors()	display errors (if any) in lines of help form
 
 }
+LOCAL FUNCTION myshowerrors ()
+DEFINE i                  INTEGER
+DEFINE l_msg              CHAR(36)
 
-local function myshowerrors()
-	define i integer
-	define l_msg char(36)
-	#clear form
-	set pause mode on
-	let i = 1
-	let msgerror[1].errline = msgerror[1].errline clipped
-	display msgerror[1].errline at 3,1     # to s_help[1].helpline
-	while true
-		let i = i + 1
-		if i > msgerrcnt then exit while end if
-		if i > 16 then exit while end if
-		let msgerror[i].errline = msgerror[i].errline clipped
-		display msgerror[i].errline,""  at i+3,1 # to s_help[i].helpline
-	end while
-	while i <= 17
-		display " ","" at i+3,1 # to s_help[i].helpline
-		let i = i + 1
-	end while
-	set pause mode off
-end function
-	
+    #clear form
+    SET PAUSE MODE ON
 
+    LET i=1
+    LET msgerror[1].errline=msgerror[1].errline CLIPPED
 
+    # to s_help[1].helpline
+    DISPLAY msgerror[1].errline AT 3,1
+
+    WHILE TRUE
+        LET i=i+1
+
+        IF i>msgerrcnt THEN
+            EXIT WHILE
+        END IF
+
+        IF i>16 THEN
+            EXIT WHILE
+        END IF
+
+        LET msgerror[i].errline=msgerror[i].errline CLIPPED
+
+        # to s_help[i].helpline
+        DISPLAY msgerror[i].errline,"" AT i+3,1
+    END WHILE
+
+    WHILE i<=17
+
+        # to s_help[i].helpline
+        DISPLAY " ","" AT i+3,1
+
+        LET i=i+1
+    END WHILE
+
+    SET PAUSE MODE OFF
+
+END FUNCTION
 
 
 
 {----------------------------------------------------------
 
-
 	mynextpage()	Display up to 16 lines of help on form
-		
+
 }
+LOCAL FUNCTION mynextpage (l_count,l_msg)
+# Parameters
+DEFINE l_count            INTEGER
+DEFINE l_msg              CHAR(256)
 
-local function mynextpage(l_count, l_msg)
-	define l_count integer
-	define l_msg char(HELPMAXLEN)
+# Normal Variables
+DEFINE i                  INTEGER
 
-	define i integer
+    SET PAUSE MODE ON
 
-	set pause mode on
-	let i = 0
-	while true
-		let i = i + 1
-		if msgerrcnt then
-			call myshowerrors()
-			return
-			exit while
-		end if
-		if i = 1 then # Put last line of previous page on 1st line
-			display msgline,""  at i+3,1 # to s_help[i].helpline
-		else
-			display l_msg,""  at i+3,1 # to s_help[i].helpline
-		end if
-		if l_count >= msglen or i >= 16 then
-			exit while
-		end if
-		call aclfgl_fetchiem() returning l_count, l_msg
-	end while
-	while i < 16
-		let i = i + 1
-		#clear s_help[i].helpline -- doesn't work?
-		display " ","" at i+3,1 #to s_help[i].helpline
-	end while
-	if charcount >= msglen then
-		display "(End of help message)" at 20,1 # to s_help[17].helpline
-	end if
-	set pause mode off
-end function
+    LET i=0
 
+    WHILE TRUE
+        LET i=i+1
+
+        IF msgerrcnt THEN
+            CALL myshowerrors()
+
+            RETURN
+
+            EXIT WHILE
+        END IF
+
+        # Put last line of previous page on 1st line
+        IF i=1 THEN
+
+            # to s_help[i].helpline
+            DISPLAY msgline,"" AT i+3,1
+        ELSE
+
+            # to s_help[i].helpline
+            DISPLAY l_msg,"" AT i+3,1
+        END IF
+
+        IF l_count>=msglen OR i>=16 THEN
+            EXIT WHILE
+        END IF
+
+        CALL aclfgl_fetchiem()
+         RETURNING l_count,l_msg
+
+    END WHILE
+
+    WHILE i<16
+        LET i=i+1
+
+        #clear s_help[i].helpline -- doesn't work?
+        #to s_help[i].helpline
+        DISPLAY " ","" AT i+3,1
+    END WHILE
+
+    IF charcount>=msglen THEN
+
+        # to s_help[17].helpline
+        DISPLAY "(End of help message)" AT 20,1
+    END IF
+
+    SET PAUSE MODE OFF
+
+END FUNCTION
 
 
 
 {---------------------------------------------------------------
-
 	aclfgl_openiem(filename, n) Open an iem (Informix error msg) file
 		1. Open the file
 		2. Check header 0xfe68 and len = no of messages
@@ -255,18 +310,22 @@ end function
 	Note the file I/O is done in code ... endcode blocks
 -------------------------------------------------------------------------
 }
-function local_aclfgl_openiem( filename, n )
-	define filename char(128)
-	define n integer
+FUNCTION local_aclfgl_openiem (filename,n)
+# Parameters
+DEFINE filename           CHAR(128)
+DEFINE n                  INTEGER
 
-	define i integer
-	define offset integer
-	define ok integer
-	define msgnotfound integer
+# Normal Variables
+DEFINE i                  INTEGER
+DEFINE msgnotfound        INTEGER
+DEFINE offset             INTEGER
+DEFINE ok                 INTEGER
 
-	let msgerrcnt = 0
-	let filenotfound = 0
-	let msgnotfound = 0
+    LET msgerrcnt=0
+    LET filenotfound=0
+    LET msgnotfound=0
+
+
 code
 {
 	static unsigned char header[4];
@@ -274,25 +333,25 @@ code
 
 	ok = 1;
 	A4GL_trim(filename);
-		
+
 	if (strlen(filename)) {
-		infile = fopen( filename, "rb" );  
+		infile = fopen( filename, "rb" );
 	} else {
 		infile = NULL;
 	}
 
-	if(infile == NULL ) 
+	if(infile == NULL )
 	{
 		ok = 0;
 		filenotfound = 1;
 
 		snprintf(errmsg, HELPMAXLEN-1,"Cannot open %s \n", filename);
 		myseterr(errmsg);
-		
+
 	}
-		
+
 	if(ok)
-	{  
+	{
 		if((len = fread(header,1,4, infile))< 4)
 		{
 			ok = 0;
@@ -304,15 +363,15 @@ code
 			//fprintf(stderr, "read header %d bytes\n", len);
 		}
 	}
-	
+
 	if(ok)
-	{ 
+	{
 		if(header[0] != (unsigned char)'\xFE' || header[1] != '\x68')
 		{
 			snprintf(errmsg, HELPMAXLEN-1,
 				"%s:Bad magic: %02X %02X Should be FE 68\n",
-				filename, 
-				header[0], 
+				filename,
+				header[0],
 				header[1]);
 			myseterr(errmsg);
 			ok = 0;
@@ -327,7 +386,7 @@ code
 	{
 		msgcount = header[2] * 256 + header[3];
 		A4GL_debug("Count=%d",msgcount);
-		//fprintf(stderr, "Count = %d\nNow reading index block\n", 
+		//fprintf(stderr, "Count = %d\nNow reading index block\n",
 		//	msgcount );
 		for(i=0; i<msgcount; i++)
 		{
@@ -344,7 +403,7 @@ indexrec[5],
 indexrec[6],
 indexrec[7]);
 
-	
+
                                 memcpy(&msgno,&indexrec[0],2);
 				A4GL_debug("now msgno=%d (n=%d)",msgno,n);
                                 msgno=ntohs(msgno);
@@ -391,7 +450,7 @@ indexrec[7]);
 	}
 	if(ok)
 	{
-		fgets(msgline, 255, infile); 
+		fgets(msgline, 255, infile);
 		msgline[HELPMAXLEN-1] = 0;
 		charcount = strlen(msgline);
 	}
@@ -403,89 +462,117 @@ indexrec[7]);
 	}
 //	fprintf(stderr, "At end of aclfgl_openiem, msgline = \n %s;", msgline);
 }
+
 endcode
-	let msgline = msgline clipped
-	return charcount, msgline
-end function {aclfgl_openiem}
 
+    LET msgline=msgline CLIPPED
 
+    RETURN charcount,msgline
 
+END FUNCTION
+
+{aclfgl_openiem}
 
 
 
 {---------------------------------------------------------------------
-
 	myshowhelp(f, n)  use this to implement 4GL showhelp(n)
 
 }
+FUNCTION local_libhelp_showhelp (filename,n)
+# Parameters
+DEFINE filename           CHAR(128)
+DEFINE n                  INTEGER
 
-function local_libhelp_showhelp(filename, n)
-	define filename char(128)
-	define n integer
+# Normal Variables
+DEFINE i                  INTEGER
+DEFINE l_count            INTEGER
+DEFINE l_msg              CHAR(256)
 
-	define l_count integer
-	define l_msg char(HELPMAXLEN)
-	define i integer
-	#define c char(1)
+    #define c char(1)
+    LET msgerrcnt=0
+    LET filename=filename CLIPPED
 
-	let msgerrcnt = 0
-	let filename = filename clipped
+
 code
 A4GL_debug("filename=%s",filename);
 	A4GL_trim(filename);
-	A4GL_debug("compiled_form_a4gl_xxhelp=%p",&compiled_form_a4gl_xxhelp);
+	/* A4GL_debug("compiled_form_a4gl_xxhelp=%p",&compiled_form_a4gl_xxhelp); */
+
 endcode
 
-	call form_is_compiled(a4gl_xxhelp,"MEMPACKED","GENERIC");
+    #call form_is_compiled(a4gl_xxhelp,"MEMPACKED","GENERIC");
+    #with form "a4gl_xxhelp"
+    OPEN WINDOW a4gl_helpw1 AT 1,1 WITH 24 ROWS, 80 COLUMNS
 
-	open window w1 at 1,1 with 24 rows,80 columns #with form "a4gl_xxhelp"
+    CALL aclfgl_openiem(filename,n)
+     RETURNING l_count,l_msg
 
-	call aclfgl_openiem(filename, n ) returning l_count, l_msg
+    IF filenotfound OR msgerrcnt>0 THEN
+        CALL myshowerrors()
+    ELSE
+        CALL mynextpage(l_count,l_msg)
 
-	if filenotfound or msgerrcnt > 0 then
-		call myshowerrors()
-	else
-		call mynextpage(l_count, l_msg)
-		if msgerrcnt > 0 then
-			call myshowerrors()
-		end if
-	end if
-	set pause mode off
-	menu "Help"
-			
-		command "Screen" "Displays next page of help"
-			if charcount >= msglen then
-				next option "Resume"
-				continue menu
-			else
-				call mynextpage(l_count, l_msg)
-			end if
-			if msgerrcnt > 0 then
-				call myshowerrors()
-				next option "Resume"
-			end if
-			if charcount >= msglen then
-				next option "Resume"
-			end if
-		command "Resume" "Ends this help session"
-			exit menu
-	end menu
-	close window w1
-end function
+        IF msgerrcnt>0 THEN
+            CALL myshowerrors()
+        END IF
+
+    END IF
+
+    SET PAUSE MODE OFF
+
+    MENU "Help"
+
+        COMMAND "Screen" "Displays next page of help"
+
+            IF charcount>=msglen THEN
+                NEXT OPTION "Resume"
+
+                CONTINUE MENU
+            ELSE
+                CALL mynextpage(l_count,l_msg)
+            END IF
+
+            IF msgerrcnt>0 THEN
+                CALL myshowerrors()
+
+                NEXT OPTION "Resume"
+            END IF
+
+            IF charcount>=msglen THEN
+                NEXT OPTION "Resume"
+            END IF
+
+        COMMAND "Resume" "Ends this help session"
+            EXIT MENU
+
+    END MENU
+
+    CLOSE WINDOW a4gl_helpw1
+
+END FUNCTION
 
 
-function local_aclfgl_closeiem()
-	let msgno = 0
-	let msgcount = 0
-	let msglen = 0
-	let charcount = 0
+
+FUNCTION local_aclfgl_closeiem ()
+
+    LET msgno=0
+    LET msgcount=0
+    LET msglen=0
+    LET charcount=0
+
+
 code
 	if( infile != NULL )
 		fclose(infile);
-endcode
-	return 0
-end function {closeiem}
 
+endcode
+
+    RETURN 0
+
+END FUNCTION
+
+{closeiem}
 {-------------------------------------------------------------------}
 
 code
@@ -493,7 +580,7 @@ code
 static void
 fileerror(FILE *f, char *s)
 {
-	int e; 
+	int e;
 
 	myseterr( s );
 	if( f == NULL )
@@ -530,7 +617,7 @@ myseterr( char *s)
  *
  * trim(char *s, int n) trim filenames at 1st blank
  *	replace 1st blank with a null char
- *	Also put a null char at s[n] to ensure termination 
+ *	Also put a null char at s[n] to ensure termination
  *
  *	Need this while "let name = name clipped" does not work
  */
@@ -538,7 +625,7 @@ static int
 xx_dont_need_thistrim(char *s, int len)
 {
 	int i=0;
-	
+
 	while(i<len)
 	{
 		if(s[i] == ' ')
@@ -570,4 +657,6 @@ int HELPLIB_aclfgl_aclfgl_fetchiem(int n) {
 	return HELPLIB_aclfgl_local_aclfgl_fetchiem(n);
 }
 
+
 endcode
+
