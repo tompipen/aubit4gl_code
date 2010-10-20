@@ -2011,7 +2011,7 @@ local_get_expr_as_string (struct expr_str *ptr)
       break;
 
     case ET_EXPR_OP_OR:
-      sprintf (buff, "%s OR %sn",
+      sprintf (buff, "%s OR %s",
 	       local_get_expr_as_string (ptr->expr_str_u.expr_op->left), local_get_expr_as_string (ptr->expr_str_u.expr_op->right));
       return acl_strdup (buff);
       break;
@@ -4627,7 +4627,11 @@ dump_function (struct s_function_definition *function_definition, int ismain)
   else
     {
       set_nonewlines ();
-      printc ("FUNCTION %s (", function_definition->funcname);
+	if (function_definition->function_type==E_FTYPE_STATIC) {
+      		printc ("LOCAL FUNCTION %s (", function_definition->funcname);
+	} else {
+      		printc ("FUNCTION %s (", function_definition->funcname);
+	}
 
       if (function_definition->parameters)
 	{
@@ -8148,7 +8152,7 @@ dump_cmd (struct command *r, struct command *parent)
 	{
 	  set_nonewlines ();
 	  printc ("NEXT OPTION ");
-	  real_print_expr (r->cmd_data.command_data_u.next_option_cmd.menuoption);
+	  print_menu_option (r->cmd_data.command_data_u.next_option_cmd.menuoption);
 	  clr_nonewlines ();
 	}
       break;
