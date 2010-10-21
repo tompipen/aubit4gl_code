@@ -2372,8 +2372,15 @@ bool ScreenHandler::eventFilter(QObject *obj, QEvent *event)
 
    if(event->type() == QEvent::WindowActivate){
       if(obj != p_fglform){
-         p_fglform->raise();
-         p_fglform->activateWindow();
+         if(p_fglform != NULL){
+            if(p_fglform->dialog() == NULL){
+               p_fglform->raise();
+               p_fglform->activateWindow();
+            }
+            else{
+               p_fglform->dialog()->raise();
+            }
+         }
       }
    }
 

@@ -814,6 +814,7 @@ Label* WidgetHelper::createImage(const QDomElement& formField, QWidget *parent)
   // p.setColor(QPalette::Foreground, Qt::blue);
  //  label->setPalette(p);
    //label->setFixedSize(defHeight);
+   label->setFixedSize(w,h);
 
    return label;
 }
@@ -1694,7 +1695,7 @@ void WidgetHelper::setFieldText(QObject *object, QString fieldValue)
       else{
          QPixmap pixmap(fieldValue);
          widget->setPixmap(pixmap);
-         widget->setFixedSize(pixmap.size());
+         //widget->setFixedSize(pixmap.size());
       }
       return;
    }
