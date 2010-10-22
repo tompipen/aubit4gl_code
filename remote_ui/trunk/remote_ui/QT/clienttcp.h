@@ -90,6 +90,7 @@ private:
    void handleEventsElement(const QDomNode&);
    bool sendFile(QString name);
    bool saveFile(const QDomNode&, QString fileName = NULL);
+   QString filterUmlauts(QString);
 
    QStringList qsl_fieldList, qsl_arrayTabNames, qsl_arrayValues, qsl_receivedFiles;
 
