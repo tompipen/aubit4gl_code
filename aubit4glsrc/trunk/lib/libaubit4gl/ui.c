@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ui.c,v 1.101 2010-10-06 11:42:47 mikeaubury Exp $
+# $Id: ui.c,v 1.102 2010-10-22 15:54:42 mikeaubury Exp $
 #
 */
 
@@ -938,7 +938,14 @@ aclfgl_aclfgl_add_keymap (int n)
 }
 
 
+int A4GL_get_event_type( struct aclfgl_event_list *evt, int n) {
+int a;
+for (a=0;evt[a].event_type;a++) {
+	if (evt[a].block==n) return evt[a].event_type;
+}
+return -1;
 
+}
 
 int
 A4GL_has_event (int a, struct aclfgl_event_list *evt)

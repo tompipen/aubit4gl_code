@@ -24,13 +24,13 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: array.c,v 1.62 2010-02-16 13:17:11 mikeaubury Exp $
+# $Id: array.c,v 1.63 2010-10-22 15:54:43 mikeaubury Exp $
 #*/
 
 
 #ifndef lint
 	static char const module_id[] =
-		"$Id: array.c,v 1.62 2010-02-16 13:17:11 mikeaubury Exp $";
+		"$Id: array.c,v 1.63 2010-10-22 15:54:43 mikeaubury Exp $";
 #endif
 
 
@@ -481,7 +481,19 @@ draw_arr (arr, -1, arr->arr_line);
 	a=act_as;
     }
 
-
+#ifdef DISPLAY_ARRAY_HAS_NO_HELPNO
+          if (!A4GL_has_event_for_keypress (a, evt) && A4GL_is_special_key (a, A4GLKEY_HELP))
+            {
+              if (arr->help_no)
+                {
+                  int hlp;
+                  hlp = arr->help_no;
+                  A4GL_push_int (hlp);
+                  aclfgli_show_help (1);
+                }
+		return 0;
+            }
+#endif
 
 
   switch (act_as)

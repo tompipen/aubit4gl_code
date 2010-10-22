@@ -2470,7 +2470,8 @@ struct expr_str_list *li;
 
   printc("A4GL_ensure_current_window_is(_curr_win);");
   printc ("_exec_block = A4GL_form_loop_v2(&_sio_%d,_forminit,_sio_evt);_forminit=0;\n", sio_id);
-  printc("if (_exec_block>0) _fld_dr=_sio_evt[_exec_block-1].event_type; else _fld_dr= -1;");
+  //printc("if (_exec_block>0) _fld_dr=_sio_evt[_exec_block-1].event_type; else _fld_dr= -1;");
+  printc("if (_exec_block>0) _fld_dr=A4GL_get_event_type(_sio_evt,_exec_block); else _fld_dr= -1;");
   printc("CONTINUE_BLOCK_%d:    ;   /* add_continue */",cmd_data->blockid);
  tmp_ccnt--;
   printc ("\n}\n");
@@ -2580,7 +2581,11 @@ print_event_actions ("_exec_block", cmd_data->events);
   printc("A4GL_ensure_current_window_is(_curr_win);");
   printc ("_exec_block=A4GL_form_loop_v2(&_sio_%d,_forminit,_sio_evt);_forminit=0;\n",sio_id);
 
-  printc("if (_exec_block>0) _fld_dr=_sio_evt[_exec_block-1].event_type; else _fld_dr= -1;");
+
+// Why ?
+  printc("if (_exec_block>0) _fld_dr=A4GL_get_event_type(_sio_evt,_exec_block); else _fld_dr= -1;");
+
+  //printc("if (_exec_block>0) _fld_dr=_sio_evt[_exec_block-1].event_type; else _fld_dr= -1;");
 
 printc("CONTINUE_BLOCK_%d:    ;   /* add_continue */",cmd_data->blockid);
   tmp_ccnt--;
@@ -2878,7 +2883,8 @@ clr_nonewlines();
 
 
 
-  printc("if (_exec_block>0) _fld_dr=_sio_evt[_exec_block-1].event_type; else _fld_dr= -1;");
+  //printc("if (_exec_block>0) _fld_dr=_sio_evt[_exec_block-1].event_type; else _fld_dr= -1;");
+  printc("if (_exec_block>0) _fld_dr=A4GL_get_event_type(_sio_evt,_exec_block); else _fld_dr= -1;");
 
 printc("CONTINUE_BLOCK_%d:    ;   /* add_continue */",cmd_data->blockid);
   tmp_ccnt--;

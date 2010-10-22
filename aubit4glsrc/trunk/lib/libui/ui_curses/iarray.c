@@ -24,10 +24,10 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.168 2010-06-08 16:45:40 mikeaubury Exp $
+# $Id: iarray.c,v 1.169 2010-10-22 15:54:43 mikeaubury Exp $
 #*/
 #ifndef lint
-static char const module_id[] = "$Id: iarray.c,v 1.168 2010-06-08 16:45:40 mikeaubury Exp $";
+static char const module_id[] = "$Id: iarray.c,v 1.169 2010-10-22 15:54:43 mikeaubury Exp $";
 #endif
 
 /**
@@ -96,7 +96,7 @@ static int last_key_code;
 */
 int A4GL_field_name_match (FIELD * f, char *s);
 
-static int process_control_stack_internal (struct s_inp_arr *arr);
+static int process_control_stack_internal (struct s_inp_arr *arr,  struct aclfgl_event_list *evt);
 static int process_control_stack (struct s_inp_arr *sio, struct aclfgl_event_list *evt);
 void A4GL_set_infield_from_parameter (long a);
 void A4GL_set_field_attr_with_attr_already_determined (FIELD * field, int attr, int cmd_type);
@@ -2465,7 +2465,7 @@ A4GL_newMovement (struct s_inp_arr *arr, int scr_line, int arr_line, int attrib,
 *
 */
 static int
-process_control_stack_internal (struct s_inp_arr *arr)
+process_control_stack_internal (struct s_inp_arr *arr,  struct aclfgl_event_list *evt)
 {
   int a;
   int rval;
@@ -2912,9 +2912,25 @@ process_control_stack_internal (struct s_inp_arr *arr)
 #endif
       if (arr->fcntrl[a].state == 99)
 	{
-	  new_state = 50;
-	  last_key_code = arr->fcntrl[a].extent;
-	  rval = A4GL_EVENT_KEY_PRESS;
+
+          if (!A4GL_has_event_for_keypress (arr->fcntrl[a].extent, evt)
+              && A4GL_is_special_key (arr->fcntrl[a].extent, A4GLKEY_HELP))
+            {
+              if (arr->help_no)
+                {
+                  int hlp;
+                  hlp = arr->help_no;
+                  A4GL_push_int (hlp);
+                  aclfgli_show_help (1);
+                }
+
+              rval = -1;
+              new_state = 0;
+            } else {
+	  		new_state = 50;
+	  		last_key_code = arr->fcntrl[a].extent;
+	  		rval = A4GL_EVENT_KEY_PRESS;
+	}
 	}
 
 
@@ -3603,7 +3619,7 @@ static int
 process_control_stack (struct s_inp_arr *sio, struct aclfgl_event_list *evt)
 {
   int rval;
-  rval = process_control_stack_internal (sio);
+  rval = process_control_stack_internal (sio,evt);
 #ifdef DEBUG
   A4GL_debug ("Got rval as : %d", rval);
 #endif
