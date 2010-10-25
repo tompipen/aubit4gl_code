@@ -1441,34 +1441,43 @@ void FglForm::nextfield(bool change)
                //view->nextfield();
                QSortFilterProxyModel *proxyModel = static_cast<QSortFilterProxyModel*> (view->model());
                TableModel *table = static_cast<TableModel*> (proxyModel->sourceModel());
-               int row = view->currentIndex().row();
+               int row = view->currentIndex().row()+1;
                int rowCount = table->rowCount(QModelIndex());
-               int column = view->currentIndex().column();
+               int column = view->currentIndex().column()+1;
                int columnCount = table->columnCount(QModelIndex());
                switch(state()){
                   case Fgl::INPUTARRAY:
                   case Fgl::INPUT:
-                        if(column < columnCount-1){
+                        if(column < columnCount){
                            //GO TO NEXT FIELD
+/*
                            QModelIndex tindex = table->index(row, column+1);
                            QModelIndex index = proxyModel->mapFromSource(tindex);
 
                            view->setCurrentIndex(index);
+*/
+                           view->setCurrentField(row, column+1);
+                           return;
                         }
                         else{
-                           if(row < rowCount-1){
+                           if(row < rowCount){
                               //CHANGE ROW
+/*
                               QModelIndex tindex = table->index(row+1, 0);
                               QModelIndex index = proxyModel->mapFromSource(tindex);
 
                               view->setCurrentIndex(index);
+*/
+                              view->setCurrentField(row+1, column);
                            }
                            else{
                               //CHANGE TO FIRST ROW
+/*
                               QModelIndex tindex = table->index(0, 0);
                               QModelIndex index = proxyModel->mapFromSource(tindex);
 
                               view->setCurrentIndex(index);
+*/
                            }
                         }
 

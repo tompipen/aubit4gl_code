@@ -482,7 +482,7 @@ void TableView::setCurrentField(int row, int col)
          QModelIndex tindex = table->index(row-1, col-1);
          QModelIndex index = proxyModel->mapFromSource(tindex);
 
-         selectionModel()->setCurrentIndex(index, QItemSelectionModel::NoUpdate);
+         //selectionModel()->setCurrentIndex(index, QItemSelectionModel::NoUpdate);
          setCurrentIndex(index);
          if(table->b_input){
              edit(index);
