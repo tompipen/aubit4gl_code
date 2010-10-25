@@ -784,10 +784,19 @@ void ProtocolHandler::outputTree(QDomNode domNode)
    if(childElement.nodeName() == "EXECUTE"){
       QString fileName = childElement.text();
       QFileInfo fileInfo(fileName);
-      QUrl url = QUrl::fromLocalFile(fileInfo.absoluteFilePath());
-      if(!QDesktopServices::openUrl(url)){
-         qDebug() << "FEHLER:" << url;
-      }
+      qDebug() << fileInfo.absoluteFilePath();
+
+      /* Lnx only atm */
+
+      QString prog = "xdg-open";
+      QStringList args;
+      args << fileInfo.absoluteFilePath();
+      /*
+      QProcess::startDetached(prog, args);
+      */
+      QProcess process;
+      process.execute(prog, args);
+      sleep(3);
       return;
    }
 
@@ -1354,6 +1363,7 @@ void ProtocolHandler::outputTree(QDomNode domNode)
       }
 
       for(int j=0; j<qsl_receivedFiles.count(); j++){
+         qDebug() << "REMOVE FILE:" << qsl_receivedFiles.at(j);
          QFile::remove(qsl_receivedFiles.at(j));
       }
       return;
@@ -2077,6 +2087,7 @@ bool ProtocolHandler::saveFile(const QDomNode &domNode, QString fileName)
       ba.append(currentElement.text());
       QByteArray ba2 = QByteArray::fromBase64(ba);
 
+      qDebug() << "WRITE FILE:" << fileName;
       QFile file(fileName);
       if (!file.open(QIODevice::WriteOnly)){
          QString str = "Filename: " + fileName;
@@ -2085,6 +2096,9 @@ bool ProtocolHandler::saveFile(const QDomNode &domNode, QString fileName)
       }
 
       file.write(ba2);
+      file.close();
+
+      qDebug() << "WROTE FILE:";
       qsl_receivedFiles << fileName;
       return true;
    }
