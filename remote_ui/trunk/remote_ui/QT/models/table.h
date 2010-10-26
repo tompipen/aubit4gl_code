@@ -175,6 +175,7 @@ public:
    void setColumn(int c) { i_column = c; };
    int column() { return i_column; } ;
    bool readOnly() { return b_readOnly; };
+   QWidget *qw_editor;
 
 protected:
    bool eventFilter(QObject *editor, QEvent *event);

@@ -1300,6 +1300,7 @@ void FglForm::setWindowType(const QString &sm)
 
 void FglForm::setCurrentField(QString fieldName, bool sendEvents)
 {
+   if(!screenRecord()){
       QWidget *wi = currentWidget;
 
       if(wi != NULL){
@@ -1351,6 +1352,45 @@ void FglForm::setCurrentField(QString fieldName, bool sendEvents)
          //NO FIELD FOUND
          qDebug() << "NO FIELD FOUND: " << fieldName;
       }
+   }
+   else{
+      for(int i=0; i<context->fieldList().size(); i++){
+         if(context->fieldList().at(i)->inherits("TableView")){
+            TableView *view = (TableView*) context->fieldList().at(i);
+            if(view->isEnabled()){
+               QSortFilterProxyModel *proxyModel = static_cast<QSortFilterProxyModel*> (view->model());
+               TableModel *table = static_cast<TableModel*> (proxyModel->sourceModel());
+               int row = view->currentIndex().row()+1;
+               int column = -1;
+               int columnCount = table->columnCount(QModelIndex());
+
+               for(int i=0; i<columnCount; i++){
+                  if(view->getColumnName(i) == fieldName){
+                     column = i+1;
+                     break;
+                  }
+               }
+
+               if(column == -1){
+                  //NO FIELD FOUND
+                  qDebug() << "NO FIELD FOUND: " << fieldName;
+                  return;
+               }
+
+               switch(state()){
+                  case Fgl::INPUTARRAY:
+                  case Fgl::INPUT:
+                     view->setCurrentField(row, column);
+                     break;
+                  case Fgl::DISPLAYARRAY:
+                     break;
+                  default:
+                     return;
+               }
+            }
+         }
+      }
+   }
 }
 
 //------------------------------------------------------------------------------
@@ -1598,9 +1638,15 @@ void FglForm::nextrow()
          TableView *view = (TableView*) formElements().at(i);
          if(view->isEnabled()){
             QModelIndex currentIndex = view->currentIndex();
-            int currentRow = currentIndex.row();
-            if(currentRow <= view->model()->rowCount()){
-               view->selectRow(currentRow+1);
+            int currentRow = currentIndex.row()+1;
+            int currentColumn = currentIndex.column()+1;
+            if(!inputArray()){
+               if(currentRow <= view->model()->rowCount()){
+                  view->selectRow(currentRow+1);
+               }
+            }
+            else{
+               view->setCurrentField(currentRow+1, currentColumn);
             }
          }
       }
@@ -1614,14 +1660,21 @@ void FglForm::nextrow()
 //------------------------------------------------------------------------------
 void FglForm::prevrow()
 {
+   //find active screenRecord
    for(int i=0; i<formElements().size(); i++){
       if(formElements().at(i)->inherits("TableView")){
          TableView *view = (TableView*) formElements().at(i);
          if(view->isEnabled()){
             QModelIndex currentIndex = view->currentIndex();
-            int currentRow = currentIndex.row();
-            if(currentRow <= view->model()->rowCount()){
-               view->selectRow(currentRow-1);
+            int currentRow = currentIndex.row()+1;
+            int currentColumn = currentIndex.column()+1;
+            if(!inputArray()){
+               if(currentRow <= view->model()->rowCount()){
+                  view->selectRow(currentRow-1);
+               }
+            }
+            else{
+               view->setCurrentField(currentRow-1, currentColumn);
             }
          }
       }
@@ -1629,22 +1682,45 @@ void FglForm::prevrow()
 };
 void FglForm::firstrow()
 {
+   //find active screenRecord
    for(int i=0; i<formElements().size(); i++){
       if(formElements().at(i)->inherits("TableView")){
          TableView *view = (TableView*) formElements().at(i);
          if(view->isEnabled()){
-            view->selectRow(0);
+            QModelIndex currentIndex = view->currentIndex();
+            int currentRow = currentIndex.row()+1;
+            int currentColumn = currentIndex.column()+1;
+            if(!inputArray()){
+               if(currentRow <= view->model()->rowCount()){
+                  view->selectRow(0);
+               }
+            }
+            else{
+               view->setCurrentField(1, currentColumn);
+            }
          }
       }
    }
 };
 void FglForm::lastrow()
 {
+   //find active screenRecord
    for(int i=0; i<formElements().size(); i++){
       if(formElements().at(i)->inherits("TableView")){
          TableView *view = (TableView*) formElements().at(i);
          if(view->isEnabled()){
-            view->selectRow(view->model()->rowCount()-1);
+            QModelIndex currentIndex = view->currentIndex();
+            int currentRow = currentIndex.row()+1;
+            int currentColumn = currentIndex.column()+1;
+            int rowCount = view->model()->rowCount(QModelIndex());
+            if(!inputArray()){
+               if(currentRow <= view->model()->rowCount()){
+                  view->selectRow(0);
+               }
+            }
+            else{
+               view->setCurrentField(rowCount, currentColumn);
+            }
          }
       }
    }

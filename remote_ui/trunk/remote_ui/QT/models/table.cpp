@@ -482,8 +482,8 @@ void TableView::setCurrentField(int row, int col)
          QModelIndex tindex = table->index(row-1, col-1);
          QModelIndex index = proxyModel->mapFromSource(tindex);
 
-         //selectionModel()->setCurrentIndex(index, QItemSelectionModel::NoUpdate);
-         setCurrentIndex(index);
+         selectionModel()->setCurrentIndex(index, QItemSelectionModel::NoUpdate);
+         //setCurrentIndex(index);
          if(table->b_input){
              edit(index);
          }
@@ -495,13 +495,15 @@ void TableView::setCurrentField(int row, int col)
 void TableView::setText(QString text, int row, int col)
 {
    if(QSortFilterProxyModel *proxyModel = qobject_cast<QSortFilterProxyModel *> (this->model())){
-
-      //if(TableModel *table = qobject_cast<TableModel *> (proxyModel->sourceModel())){
          QModelIndex modelIndex = proxyModel->index(row, col, QModelIndex());
-         //modelIndex = proxyModel->mapFromSource(modelIndex);
-         model()->setData(modelIndex, text);
-      //}
+         if(LineEditDelegate *dele = qobject_cast<LineEditDelegate *> (this->itemDelegateForColumn(col))){
+            if(LineEdit *widget = qobject_cast<LineEdit *> (dele->qw_editor)){
+               text = Fgl::usingFunc(widget->format(), text, widget->dataType());
+            }
+         }
+       
 
+         model()->setData(modelIndex, text);
    }
 }
 
@@ -598,7 +600,7 @@ bool TableModel::setData(const QModelIndex &index, const QVariant &value, int ro
 
 Qt::ItemFlags TableModel::flags(const QModelIndex &index) const
 {
-   Qt::ItemFlags f = QAbstractTableModel::flags(index);
+   Qt::ItemFlags f; // = QAbstractTableModel::flags(index);
    if (index.isValid()){
       f = Qt::ItemIsEnabled;
       f |= b_input ? Qt::ItemIsEditable : Qt::ItemIsSelectable;
@@ -733,9 +735,9 @@ LineEditDelegate::LineEditDelegate(QDomElement formElement, QObject *parent)
    this->p_fglform = NULL;
    this->formElement = formElement;
 
-   QWidget *editor = WidgetHelper::createFormWidget(this->formElement);
+   qw_editor = WidgetHelper::createFormWidget(this->formElement);
 
-   if(LineEdit *le = qobject_cast<LineEdit *> (editor)){
+   if(LineEdit *le = qobject_cast<LineEdit *> (qw_editor)){
       b_readOnly = le->noEntry();
    }
 }
