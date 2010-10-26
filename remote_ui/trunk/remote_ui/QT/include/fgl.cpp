@@ -24,7 +24,13 @@ namespace Fgl {
                p[a] = ' ';
             }
 
-            return fgl_using_string(fmt, value, isneg);
+            if(!fmt.isEmpty()){
+               return fgl_using(fmt, value);
+            }
+            else{
+                return fgl_convert_money(value);
+            }
+            
 
             
             }
@@ -592,18 +598,19 @@ namespace Fgl {
 
    DataType decodeDataType(QString type)
    {
-      if(type.startsWith("DECIMAL"))  return DTYPE_DECIMAL;
-      if(type.startsWith("CHAR"))     return DTYPE_CHAR;
-      if(type.startsWith("VARCHAR"))  return DTYPE_VCHAR;
-      if(type.startsWith("DATE"))     return DTYPE_DATE;
-      if(type.startsWith("DATETIME")) return DTYPE_DTIME;
-      if(type.startsWith("INTERVAL")) return DTYPE_INTERVAL;
+      if(type.trimmed().startsWith("DECIMAL"))  return DTYPE_DECIMAL;
+      if(type.trimmed().startsWith("CHAR"))     return DTYPE_CHAR;
+      if(type.trimmed().startsWith("VARCHAR"))  return DTYPE_VCHAR;
+      if(type.trimmed().startsWith("DATE"))     return DTYPE_DATE;
+      if(type.trimmed().startsWith("DATETIME")) return DTYPE_DTIME;
+      if(type.trimmed().startsWith("INTERVAL")) return DTYPE_INTERVAL;
       if(type == "SERIAL")            return DTYPE_SERIAL;
       if(type == "SMALLINT")          return DTYPE_SMINT;
       if(type == "INTEGER")           return DTYPE_INT;
       if(type == "FLOAT")             return DTYPE_FLOAT;
       if(type == "SMALLFLOAT")        return DTYPE_SMFLOAT;
       if(type == "MONEY")             return DTYPE_MONEY;
+
 
       return DTYPE_CHAR;
    }
