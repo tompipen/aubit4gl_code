@@ -25,7 +25,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.180 2010-10-18 12:45:39 mikeaubury Exp $
+# $Id: ops.c,v 1.181 2010-10-26 13:27:51 mikeaubury Exp $
 #
 */
 
@@ -78,6 +78,7 @@ void A4GL_in_dt_ops (int op);
 void A4GL_dt_char_ops (int op);
 void A4GL_dt_dt_ops (int op);
 
+static void A4GL_char_char_ops (int op);
 
 char *A4GL_display_int (void *ptr, int size, int string_sz, struct struct_scr_field *field_details, int display_type);
 char *A4GL_display_smint (void *ptr, int size, int string_sz, struct struct_scr_field *field_details, int display_type);
@@ -2721,10 +2722,26 @@ if (A4GL_isnull (DTYPE_CHAR, (void *) p) || A4GL_isnull (DTYPE_FLOAT, (void *) &
 
 A4GL_whats_in_a_string(p,&dtype_string,&sl,0);
 
+if (dtype_string==DTYPE_DTIME || dtype_string==DTYPE_INTERVAL) {
+	dtype_string=0;
+}
+
 if (dtype_string==0) { 
+	char buff[30000];
+	strcpy(buff,p);
+	A4GL_trim(buff);
+	if (strlen(buff)) {
+   		A4GL_push_null (DTYPE_SMFLOAT, 0);
+		return;
+	}
+	sprintf(buff,"%lf",d);
+	A4GL_push_char(p);
+	A4GL_push_char(buff);
 	free(p);
+	A4GL_char_char_ops(op);
+
 	// Its not a nimber - so it must be null...
-   	A4GL_push_null (DTYPE_SMFLOAT, 0);
+   	//A4GL_push_null (DTYPE_SMFLOAT, 0);
 	return;
 } 
 
@@ -2756,11 +2773,26 @@ if (A4GL_isnull (DTYPE_CHAR, (void *) p) || A4GL_isnull (DTYPE_FLOAT, (void *) &
 }
 
 A4GL_whats_in_a_string(p,&dtype_string,&sl,0);
+if (dtype_string==DTYPE_DTIME || dtype_string==DTYPE_INTERVAL) {
+	dtype_string=0;
+}
 
 if (dtype_string==0) { 
+	char buff[30000];
+	strcpy(buff,p);
+	A4GL_trim(buff);
+	if (strlen(buff)) {
+   		A4GL_push_null (DTYPE_SMFLOAT, 0);
+		return;
+	}
+	sprintf(buff,"%lf",d);
+	A4GL_push_char(p);
+	A4GL_push_char(buff);
 	free(p);
+	A4GL_char_char_ops(op);
+	return;
 	// Its not a nimber - so it must be null...
-   	A4GL_push_null (DTYPE_SMFLOAT, 0);
+   	//A4GL_push_null (DTYPE_SMFLOAT, 0);
 	return;
 } 
 
@@ -2776,8 +2808,7 @@ A4GL_pushop(op);
 }
 
 
-static void
-A4GL_char_char_ops (int op)
+static void A4GL_char_char_ops (int op)
 {
   char *a=NULL;
   char *b=NULL;
@@ -7976,7 +8007,6 @@ for (t=0;t<3;t++) {
 
 
 if ((t==0 && dtype_hint==DTYPE_INTERVAL) || t==2) {
-
 // Lets put right what might have gone wrong..
   a4gl_status = orig_stat;
   A4GL_conversion_ok (orig_conv_ok);

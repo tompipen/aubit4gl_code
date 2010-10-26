@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.183 2010-10-06 11:42:47 mikeaubury Exp $
+# $Id: conv.c,v 1.184 2010-10-26 13:27:51 mikeaubury Exp $
 #
 */
 
@@ -3713,7 +3713,7 @@ A4GL_valid_dt (char *s, int *data, int size)
     }
   memset (buff, 0, sizeof (buff));
 #ifdef DEBUG
-  A4GL_debug ("In valid_dt\n");
+  //A4GL_debug ("In valid_dt\n");
 #endif
   
   if (strlen (s) >= 255)
@@ -3774,7 +3774,7 @@ A4GL_valid_dt (char *s, int *data, int size)
 
   ptr[0] = &buff[0];
 #ifdef DEBUG
-  A4GL_debug ("Splitting '%s' size=%d\n", A4GL_null_as_null (s), size);
+  //A4GL_debug ("Splitting '%s' size=%d\n", A4GL_null_as_null (s), size);
 #endif
   cnt = 0;
   buff_size = strlen (buff);
@@ -3827,8 +3827,8 @@ A4GL_valid_dt (char *s, int *data, int size)
   type[cnt] = 0;
   dt_type = -1;
 #ifdef DEBUG
-  A4GL_debug ("cnt=%d\n", cnt);
-  A4GL_debug ("type=%s\n", A4GL_null_as_null (type));
+  //A4GL_debug ("cnt=%d\n", cnt);
+  //A4GL_debug ("type=%s\n", A4GL_null_as_null (type));
 #endif
 
   if (strcmp (type, "") == 0)
