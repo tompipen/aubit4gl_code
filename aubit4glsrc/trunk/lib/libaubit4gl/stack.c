@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                          |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.270 2010-10-18 12:45:39 mikeaubury Exp $
+# $Id: stack.c,v 1.271 2010-10-26 15:40:47 mikeaubury Exp $
 #
 */
 
@@ -1918,8 +1918,8 @@ int r;
 
     case OP_AND:
 	
-      i1 = A4GL_pop_int ();
-      i2 = A4GL_pop_int ();
+      i1 = A4GL_pop_long ();
+      i2 = A4GL_pop_long ();
 
 	if (i1==0 || i2==0) {
 		// Can't be true...
