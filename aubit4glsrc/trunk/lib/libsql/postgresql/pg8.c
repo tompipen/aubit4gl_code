@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pg8.c,v 1.113 2010-08-03 13:17:18 mikeaubury Exp $
+# $Id: pg8.c,v 1.114 2010-10-26 15:06:27 mikeaubury Exp $
 #*/
 
 
@@ -2038,7 +2038,7 @@ copy_to_obind (PGresult * res, int no, struct BINDING *obind, int row)
   int ok=1;
   int isMdy=-1;
 
-  if (isMdy) {
+  if (isMdy==-1) {
 	// figure out if the current datestyle is MDY...
 	// We only do this once - so lets hope the user doesn't change it !
 	PGresult *resmdy;
@@ -2050,6 +2050,7 @@ copy_to_obind (PGresult * res, int no, struct BINDING *obind, int row)
 	if (strstr(val,"mdy") || strstr(val,"MDY")) {
 		isMdy=1;
 	}
+	PQclear(resmdy);
 	//printf("isMdy=%d\n",isMdy);
   }
 
