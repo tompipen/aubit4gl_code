@@ -601,8 +601,8 @@ namespace Fgl {
       if(type.trimmed().startsWith("DECIMAL"))  return DTYPE_DECIMAL;
       if(type.trimmed().startsWith("CHAR"))     return DTYPE_CHAR;
       if(type.trimmed().startsWith("VARCHAR"))  return DTYPE_VCHAR;
-      if(type.trimmed().startsWith("DATE"))     return DTYPE_DATE;
       if(type.trimmed().startsWith("DATETIME")) return DTYPE_DTIME;
+      if(type.trimmed().startsWith("DATE"))     return DTYPE_DATE;
       if(type.trimmed().startsWith("INTERVAL")) return DTYPE_INTERVAL;
       if(type == "SERIAL")            return DTYPE_SERIAL;
       if(type == "SMALLINT")          return DTYPE_SMINT;
@@ -705,6 +705,7 @@ namespace Fgl {
       tmp_dbdate.remove(dbdate_sep);
 
       for(int i=0; i<tmp_dbdate.length(); i++){
+
          if(tmp_dbdate.at(i) == 'D'){
             day = arr_mdy.at(i).toInt();
          }
