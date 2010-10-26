@@ -1642,7 +1642,7 @@ void FglForm::nextrow()
             int currentColumn = currentIndex.column()+1;
             if(!inputArray()){
                if(currentRow <= view->model()->rowCount()){
-                  view->selectRow(currentRow+1);
+                  view->selectRow(currentRow);
                }
             }
             else{
@@ -1670,7 +1670,7 @@ void FglForm::prevrow()
             int currentColumn = currentIndex.column()+1;
             if(!inputArray()){
                if(currentRow <= view->model()->rowCount()){
-                  view->selectRow(currentRow-1);
+                  view->selectRow(currentRow-2);
                }
             }
             else{
