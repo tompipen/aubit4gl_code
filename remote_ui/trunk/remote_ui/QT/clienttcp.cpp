@@ -798,7 +798,7 @@ void ProtocolHandler::outputTree(QDomNode domNode)
       */
       QProcess process;
       process.execute(prog, args);
-      sleep(3);
+      //sleep(3);
       return;
    }
 
