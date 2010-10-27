@@ -274,7 +274,7 @@ LineEdit::LineEdit(QWidget *parent)
    this->setEnabled(false);
 
    connect(this, SIGNAL(textChanged(const QString)), this, SLOT(isTouched()));
-   connect(this, SIGNAL(editingFinished()), this, SLOT(check()));
+//   connect(this, SIGNAL(editingFinished()), this, SLOT(check()));
 //   connect(this, SIGNAL(textChanged(const QString)), this, SLOT(checkNext(const QString)));
 }
 

@@ -146,6 +146,7 @@ public:
     QString picture() { return qs_picture; };
     void setFormat(QString f) { qs_format = f; };
     QString format() { return qs_format; };
+    void check();
 
     bool b_denyFocus;
 
@@ -168,7 +169,6 @@ private:
 
 public slots:
     void isTouched() { setProperty("touched", true); };
-    void check();
     void checkNext(const QString&);
 
 signals:

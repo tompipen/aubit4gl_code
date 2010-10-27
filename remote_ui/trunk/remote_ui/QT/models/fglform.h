@@ -226,6 +226,7 @@ public slots:
    void createContextMenu(const QPoint&);
    void setScreenRecordArrLine(int);
    void error(const QString&);
+   void checkField();
 
 
 private:

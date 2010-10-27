@@ -982,6 +982,7 @@ void FglForm::setFormLayout(const QDomDocument& docLayout)
          connect(lineEdit, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(createContextMenu(const QPoint&)));
          connect(lineEdit, SIGNAL(error(const QString&)), this, SLOT(error(const QString&)));
          connect(lineEdit, SIGNAL(textEdited(QString)), this, SLOT(setBufferTouched()));
+         connect(lineEdit, SIGNAL(editingFinished()), this, SLOT(checkField()));
          connect(lineEdit, SIGNAL(cursorPositionChanged(int, int)), this, SLOT(setLastCursor(int, int)));
          lineEdit->installEventFilter(this);
       }
@@ -2826,4 +2827,16 @@ void FglForm::setLastCursor()
        QTextCursor cursor = textedit->textCursor();
        this->i_lastCursor = cursor.position()+1;
     }
+}
+
+void FglForm::checkField()
+{
+
+   QObject *obj = QObject::sender();
+   if(LineEdit *widget = qobject_cast<LineEdit *> (obj)){
+      if(state() != Fgl::IDLE &&
+         state() != Fgl::CONSTRUCT){
+         widget->check();
+      }
+   }
 }

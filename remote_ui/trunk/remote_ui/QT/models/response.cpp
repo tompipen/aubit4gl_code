@@ -216,6 +216,7 @@ void Response::addScreenRecSyncValues()
    if(p_currForm->context->state() != Fgl::INPUTARRAY)
       return;
 
+
    QDomElement syncRowsElement = this->createElement("SYNCROWS");
    responseElement.appendChild(syncRowsElement);
 
