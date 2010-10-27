@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.412 2010-10-06 11:45:03 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.413 2010-10-27 19:42:02 mikeaubury Exp $
 #
 */
 
@@ -2375,6 +2375,7 @@ int A4GL_sprintf (char *f,int l, char *dest,size_t sdest,char *fmt, ...) ;
 #define A4GL_EVENT_ON_CHANGE 		-199
 
 #define A4GL_EVENT_ON_APPLAUNCHEREVENT 	-104
+#define A4GL_EVENT_ANYKEY_PRESS 	-89
 
 void A4GL_zap_param(int n);
 
@@ -2485,6 +2486,7 @@ void A4GL_evt_not_idle(struct aclfgl_event_list *evt) ;
 int A4GL_has_event_for_field(int cat,char *a,struct aclfgl_event_list *evt) ;
 int A4GL_has_event_for_action(char *a,struct aclfgl_event_list *evt);
 int A4GL_has_event_for_keypress(int a,struct aclfgl_event_list *evt);
+int A4GL_check_event_list_for_any_key(struct aclfgl_event_list *evt) ;
 int A4GL_has_event(int a,struct aclfgl_event_list *evt);
 ///
 

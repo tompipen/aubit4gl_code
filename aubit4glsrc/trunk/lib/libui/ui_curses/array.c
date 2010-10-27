@@ -24,13 +24,13 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: array.c,v 1.63 2010-10-22 15:54:43 mikeaubury Exp $
+# $Id: array.c,v 1.64 2010-10-27 19:39:47 mikeaubury Exp $
 #*/
 
 
 #ifndef lint
 	static char const module_id[] =
-		"$Id: array.c,v 1.63 2010-10-22 15:54:43 mikeaubury Exp $";
+		"$Id: array.c,v 1.64 2010-10-27 19:39:47 mikeaubury Exp $";
 #endif
 
 
@@ -334,7 +334,7 @@ static int
 disp_loop_internal (struct s_disp_arr *arr,struct aclfgl_event_list *evt)
 {
   struct s_form_dets *form;
-  int a;
+  int a=0;
   int redisp;
   //int acckey;
   FORM *mform;
@@ -695,6 +695,11 @@ if ( (arr->arr_line+arr->srec->dim  -arr->scr_line-1<= arr->no_arr) || ( (arr->a
     case 26:			/* control-z */
       return 0;
     }
+
+    if (a>'\t' && a<255 && A4GL_check_event_list_for_any_key(evt)) {
+               return A4GL_has_event(A4GL_EVENT_ANYKEY_PRESS,evt);
+    }
+
   return -1;
 }
 

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.10 2008-11-06 13:30:19 mikeaubury Exp $
+# $Id: Makefile,v 1.11 2010-10-27 19:42:03 mikeaubury Exp $
 #
 
 ROOT		=../../..
@@ -526,8 +526,9 @@ CLIENT_corba_server_util.o: ${LIBROOT}/libaubit4gl/corba_server_util.c
 #CAPI_corba_server_util.o: ${LIBROOT}/libaubit4gl/corba_server_util.c
 #	${CC} ${CFLAGS} -c $^ -o $@ -D__CAPI__
 
-${DLOPEN_SUPPORT} ${LIBROOT}/libaubit4gl/API_%.o :
-	${MAKE} -C ${LIBROOT}/libaubit4gl
+
+#${DLOPEN_SUPPORT} ${LIBROOT}/libaubit4gl/API_%.o :
+	#${MAKE} -C ${LIBROOT}/libaubit4gl
 	
 ####################################
 #Create C function call wraper for CORBA client, from Aubit API .spec file

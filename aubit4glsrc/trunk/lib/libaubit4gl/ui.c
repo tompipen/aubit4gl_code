@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ui.c,v 1.102 2010-10-22 15:54:42 mikeaubury Exp $
+# $Id: ui.c,v 1.103 2010-10-27 19:42:02 mikeaubury Exp $
 #
 */
 
@@ -2236,6 +2236,15 @@ void A4GL_ensure_numeric_prompt_var(int dtype)
 }
 
 
+int A4GL_check_event_list_for_any_key(struct aclfgl_event_list *evt) {
+  int n;
+  for (n = 0; evt[n].event_type; n++)
+    {
+      if (evt[n].event_type == A4GL_EVENT_ANYKEY_PRESS )
+	return evt[n].block;
+    } 
+return 0;
+}
 
 int A4GL_check_event_list_for_special_key(struct aclfgl_event_list *evt, int last_key_code) {
                                 if (A4GL_is_special_key (last_key_code, A4GLKEY_INSERT) && A4GL_has_event_for_keypress(A4GLKEY_INSERT,evt)) {

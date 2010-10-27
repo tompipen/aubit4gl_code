@@ -24,10 +24,10 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.169 2010-10-22 15:54:43 mikeaubury Exp $
+# $Id: iarray.c,v 1.170 2010-10-27 19:39:47 mikeaubury Exp $
 #*/
 #ifndef lint
-static char const module_id[] = "$Id: iarray.c,v 1.169 2010-10-22 15:54:43 mikeaubury Exp $";
+static char const module_id[] = "$Id: iarray.c,v 1.170 2010-10-27 19:39:47 mikeaubury Exp $";
 #endif
 
 /**
@@ -2951,10 +2951,11 @@ process_control_stack_internal (struct s_inp_arr *arr,  struct aclfgl_event_list
 		  A4GL_set_arr_count (arr->no_arr);	// No new lines ...
 		}
 	    }
-	}
+	   }
 
 
 	  new_state = 25;
+	  rval = -1;
 	  if (arr->processed_onkey != 0)
 	    {
 #ifdef DEBUG
@@ -2967,6 +2968,11 @@ process_control_stack_internal (struct s_inp_arr *arr,  struct aclfgl_event_list
 #endif
 		}
 	      process_key_press (arr, arr->fcntrl[a].extent);
+
+                if (A4GL_check_event_list_for_any_key(evt)) {
+                        rval=A4GL_EVENT_ANYKEY_PRESS;
+                }
+
 	    }
 	  else
 	    {
@@ -2975,7 +2981,6 @@ process_control_stack_internal (struct s_inp_arr *arr,  struct aclfgl_event_list
 #endif
 	    }
 
-	  rval = -1;
 	}
 
 
@@ -3655,6 +3660,11 @@ process_control_stack (struct s_inp_arr *sio, struct aclfgl_event_list *evt)
 	}
 
 
+      rval = -1;
+      break;
+    case A4GL_EVENT_ANYKEY_PRESS:
+      if (A4GL_has_event (A4GL_EVENT_ANYKEY_PRESS, evt))
+	return A4GL_has_event (A4GL_EVENT_ANYKEY_PRESS, evt);
       rval = -1;
       break;
     case A4GL_EVENT_BEFORE_INP:

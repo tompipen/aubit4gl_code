@@ -24,11 +24,11 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: prompt.c,v 1.80 2010-02-16 13:17:41 mikeaubury Exp $
+# $Id: prompt.c,v 1.81 2010-10-27 19:39:47 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: prompt.c,v 1.80 2010-02-16 13:17:41 mikeaubury Exp $";
+		"$Id: prompt.c,v 1.81 2010-10-27 19:39:47 mikeaubury Exp $";
 #endif
 
 /**
@@ -500,9 +500,13 @@ int was_aborted=0;
   	prompt->lastkey = A4GL_get_lastkey ();
 
 	rblock=A4GL_has_event_for_keypress(a,evt);
-  if (!rblock) {
-        rblock=A4GL_check_event_list_for_special_key(evt, a);
-  }
+  	if (!rblock) {
+        	rblock=A4GL_check_event_list_for_special_key(evt, a);
+  	}
+
+  	if (!rblock) {
+        	rblock=A4GL_check_event_list_for_any_key(evt);
+  	}
 
 
 	if (rblock|| abort_pressed) {
@@ -514,7 +518,7 @@ int was_aborted=0;
 #endif
       		A4GL_clear_prompt (prompt);
 		return rblock;
-	}
+	} 
 #ifdef DEBUG
 	A4GL_debug("No lastkey..");
 #endif

@@ -24,12 +24,12 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.536 2010-10-08 16:18:45 mikeaubury Exp $
+# $Id: compile_c.c,v 1.537 2010-10-27 19:42:02 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
-static char const module_id[] = "$Id: compile_c.c,v 1.536 2010-10-08 16:18:45 mikeaubury Exp $";
+static char const module_id[] = "$Id: compile_c.c,v 1.537 2010-10-27 19:42:02 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -4424,6 +4424,12 @@ print_event_list (struct on_events *events)
 		    printc ("{%d,%d,%d,NULL},", A4GL_EVENT_KEY_PRESS, a + 1, keys[b]);
 		  }
 	      }
+	  }
+	  break;
+
+	case EVENT_ANYKEY_PRESS:
+	  {
+		    printc ("{%d,%d,0,NULL},", A4GL_EVENT_ANYKEY_PRESS, a + 1);
 	  }
 	  break;
 
