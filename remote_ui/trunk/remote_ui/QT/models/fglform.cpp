@@ -2836,7 +2836,18 @@ void FglForm::checkField()
    if(LineEdit *widget = qobject_cast<LineEdit *> (obj)){
       if(state() != Fgl::IDLE &&
          state() != Fgl::CONSTRUCT){
-         widget->check();
+         //widget->check();
+         QString text = widget->text();
+
+         //Set textformat if format given
+         if(Fgl::isValidForType(widget->dataType(), text, widget->format())){
+            text = Fgl::usingFunc(widget->format(), text, widget->dataType());
+            widget->setText(text);
+         }
+         else{
+            emit error("ERROR in Character conversion");
+            widget->setText("");
+         }
       }
    }
 }
