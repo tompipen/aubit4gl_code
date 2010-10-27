@@ -469,6 +469,7 @@ void ProtocolHandler::run()
       QTextStream in_request(&request);
       in_request.setCodec(codec);
       qs_protocolCommand = in_request.readAll();
+      qs_protocolCommand = filterUmlauts(qs_protocolCommand);
    }
    else{
       qs_protocolCommand = request;
@@ -783,6 +784,7 @@ void ProtocolHandler::outputTree(QDomNode domNode)
    
    if(childElement.nodeName() == "EXECUTE"){
       QString fileName = childElement.text();
+      fileName = QDir::tempPath() + "/" + fileName;
       QFileInfo fileInfo(fileName);
       qDebug() << fileInfo.absoluteFilePath();
 
@@ -1363,7 +1365,6 @@ void ProtocolHandler::outputTree(QDomNode domNode)
       }
 
       for(int j=0; j<qsl_receivedFiles.count(); j++){
-         qDebug() << "REMOVE FILE:" << qsl_receivedFiles.at(j);
          QFile::remove(qsl_receivedFiles.at(j));
       }
       return;
@@ -2082,12 +2083,12 @@ bool ProtocolHandler::saveFile(const QDomNode &domNode, QString fileName)
       if(fileName.isEmpty()){
          QFileInfo fi(currentElement.attribute("NAME").trimmed());
          fileName = fi.fileName();
+         fileName = QDir::tempPath() + "/" + fileName;
       }
       QByteArray ba;
       ba.append(currentElement.text());
       QByteArray ba2 = QByteArray::fromBase64(ba);
 
-      qDebug() << "WRITE FILE:" << fileName;
       QFile file(fileName);
       if (!file.open(QIODevice::WriteOnly)){
          QString str = "Filename: " + fileName;
@@ -2098,8 +2099,7 @@ bool ProtocolHandler::saveFile(const QDomNode &domNode, QString fileName)
       file.write(ba2);
       file.close();
 
-      qDebug() << "WROTE FILE:";
-      qsl_receivedFiles << fileName;
+      //qsl_receivedFiles << fileName;
       return true;
    }
 
