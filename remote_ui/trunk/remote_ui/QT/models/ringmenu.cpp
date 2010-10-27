@@ -93,6 +93,12 @@ void RingMenu::createButton(int id, QString text, QString tooltip)
 
    // Make Shortcut for Button
    QString pic = text.toLower();
+
+   pic.replace(QString::fromUtf8("ö"), "oe");
+   pic.replace(QString::fromUtf8("ü"), "ue");
+   pic.replace(QString::fromUtf8("ä"), "ae");
+   pic.replace(QString::fromUtf8("ß"), "ss");
+
    QString shortcut;
    QString buttonText;
    if(text.contains("&")){
