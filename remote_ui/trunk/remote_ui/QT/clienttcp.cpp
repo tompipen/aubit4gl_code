@@ -969,7 +969,8 @@ void ProtocolHandler::outputTree(QDomNode domNode)
 
 
    if(childElement.nodeName() == "CREATEWINDOW"){
-      QString window = childElement.attribute("WINDOW");
+      // Window Title
+      QString window = childElement.attribute("NAME");
       QString id = childElement.attribute("ID");
       
       // Position X
@@ -977,12 +978,9 @@ void ProtocolHandler::outputTree(QDomNode domNode)
       
       // Position Y
       int y = childElement.attribute("Y").toInt();
-      
-      // height 
-      int h = childElement.attribute("H").toInt()*10;
-      
-      // width
-      int w = childElement.attribute("W").toInt()*10;
+
+      int h = childElement.attribute("H").toInt();
+      int w = childElement.attribute("W").toInt();
 
       // ATTRIBUTE - not used atm
       QString attribute = childElement.attribute("ATTRIBUTE");
@@ -996,7 +994,7 @@ void ProtocolHandler::outputTree(QDomNode domNode)
       // STYLE - window Style
       QString style = childElement.attribute("STYLE");
       
-      /* maybe in the future...
+      /* maybe in the furue... 
       // ERROR_LINE  - not used atm
       int error_line = childElement.attribute("ERROR_LINE").toInt();
       
