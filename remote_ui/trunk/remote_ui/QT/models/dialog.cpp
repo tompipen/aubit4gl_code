@@ -234,7 +234,7 @@ QList<QAction*> Dialog::actions()
    QList<QAction*> ql_actions;
    for(int i=0; i<buttonGroup->buttons().size(); i++){
       if(QPushButton *button = qobject_cast<QPushButton *> (buttonGroup->buttons().at(i))){
-         if(button->isVisible() && button->isEnabled())
+         if(button->isEnabled())
             ql_actions << button->actions();
       }
    }
