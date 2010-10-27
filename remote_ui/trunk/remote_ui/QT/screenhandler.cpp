@@ -1798,6 +1798,7 @@ void ScreenHandler::displayError(QString text)
    errorDialog->setModal(true);
    errorDialog->createButton(1, "OK", "OK", "ok.png");
    connect(errorDialog->getAction("OK"), SIGNAL(triggered()), errorDialog, SLOT(close())); 
+   p_fglform->setDialog(errorDialog);
    errorDialog->show();
  
 }
