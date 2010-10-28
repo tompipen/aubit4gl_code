@@ -788,16 +788,16 @@ void ProtocolHandler::outputTree(QDomNode domNode)
       QFileInfo fileInfo(fileName);
       qDebug() << fileInfo.absoluteFilePath();
 
+/*
       //QString prog = "xdg-open";
       QString prog = "finder";
       QStringList args;
       args << fileInfo.absoluteFilePath();
-      /*
-      QProcess::startDetached(prog, args);
-      */
       QProcess process;
       qDebug() << "RUN: " << prog << args;
       process.execute(prog, args);
+*/
+      QDesktopServices::openUrl(QUrl(QString("file://" + fileInfo.absoluteFilePath())));
       //sleep(3);
       return;
    }
