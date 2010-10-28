@@ -788,15 +788,15 @@ void ProtocolHandler::outputTree(QDomNode domNode)
       QFileInfo fileInfo(fileName);
       qDebug() << fileInfo.absoluteFilePath();
 
-      /* Lnx only atm */
-
-      QString prog = "xdg-open";
+      //QString prog = "xdg-open";
+      QString prog = "finder";
       QStringList args;
       args << fileInfo.absoluteFilePath();
       /*
       QProcess::startDetached(prog, args);
       */
       QProcess process;
+      qDebug() << "RUN: " << prog << args;
       process.execute(prog, args);
       //sleep(3);
       return;
