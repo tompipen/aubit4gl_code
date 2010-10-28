@@ -29,7 +29,7 @@ char *record_headers[100];
 char mainbuff[200000];
 static char * get_spl_dtype (int dtype);
 struct variable_usage *usage_bottom_level (variable_usage * u);	// parsehelp.c
-struct commands *linearise_commands (struct commands *master_list, struct commands *cmds);
+struct s_commands *linearise_commands (struct s_commands *master_list, struct s_commands *cmds);
 expr_str_list *expand_parameters (struct variable_list *var_list, expr_str_list * parameters);
 char *current_stmt_table = 0;
 struct expr_str *input_array_variable = 0;
@@ -97,7 +97,7 @@ static char *decode_ival_define2 (int n);
 static void print_varbind (expr_str * var_usage, char dir, int no);
 static char *local_has_comment (int n, int c, char *type);
 static int dump_report (struct s_report_definition *report_definition);
-static int dump_cmds (struct commands *c, struct command *parent);
+static int dump_cmds ( s_commands *c, struct command *parent);
 static int dump_pdf_report (struct s_pdf_report_definition *pdf_report_definition);
 static int dump_cmd (struct command *r, struct command *parent);
 static int dump_function (struct s_function_definition *function_definition, int ismain);
@@ -787,7 +787,7 @@ static char buff_vars[20000];
 char buff_vars2[20000];
 strcpy(buff_vars,"");
   if (l == 0)
-    return;
+    return "";
   for (a = 0; a < l->list.list_len; a++)
     {
       if (l->list.list_val[a]->data.type == E_SLI_VARIABLE_USAGE)
@@ -1161,7 +1161,7 @@ static char* get_ident (struct expr_str *ptr)
 
   if (ptr->expr_type == ET_EXPR_VARIABLE_IDENTIFIER)
     {
-	char buff[23000];
+	static char buff[23000];
 	sprintf(buff,"_VARIABLE(%s)", local_get_expr_as_string (ptr->expr_str_u.expr_expr));
       	return buff;
     }
@@ -1439,7 +1439,7 @@ local_get_expr_as_string (struct expr_str *ptr)
 	  }
 
 	params = A4GL_new_list_get_count (ptr->expr_str_u.expr_function_call->parameters);
-	sprintf (buff, "%s(%s)", map_fname (ptr->expr_str_u.expr_function_call->fname),
+	sprintf (buff, "%s(%s)", map_fname (ptr->expr_str_u.expr_function_call->functionname),
 		 A4GL_get_expr_list_sep (ptr->expr_str_u.expr_function_call->parameters, ",\n"));
 
       }
@@ -1796,7 +1796,8 @@ local_get_expr_as_string (struct expr_str *ptr)
       break;
 
     case ET_E_V_OR_LIT_VAR:
-      return acl_strdup (local_get_expr_as_string (ptr->expr_str_u.var));
+ 	return acl_strdup (local_get_expr_as_string (ptr->expr_str_u.expr_expr));
+      //return acl_strdup (local_get_expr_as_string (ptr->expr_str_u.var));
       break;
 
     case ET_E_V_OR_LIT_INT:
@@ -3432,19 +3433,26 @@ get_variable_usage_1 (struct variable_usage *var_usage, int lvl)
       free (p);
     }
 
-  if (var_usage->substrings_start)
+  if (var_usage->subscripts.subscripts_len)
+    {
+      int a;
+      a4gl_yyerror ("Can't use arrays in SPL");
+    }
+
+
+  if (var_usage->substrings_start.substrings_start)
     {
 	char smbuff[20000];
-	if (var_usage->substrings_end) {
+	if (var_usage->substrings_end.substrings_end) {
 			char *le;
 			char *ls;
-	  		le = local_get_expr_as_string (var_usage->substrings_end);
-      			ls = local_get_expr_as_string (var_usage->substrings_start);
+	  		le = local_get_expr_as_string (var_usage->substrings_end.substrings_end);
+      			ls = local_get_expr_as_string (var_usage->substrings_start.substrings_start);
 			sprintf(smbuff,"substr(%s,%s,%s-%s+1)",buff,ls,le,ls);
       			strcpy (buff, smbuff);
 	}  else {
 			char *ls;
-      			ls = local_get_expr_as_string (var_usage->substrings_start);
+      			ls = local_get_expr_as_string (var_usage->substrings_start.substrings_start);
 			sprintf(smbuff,"substr(%s,%s,1)",buff,ls);
       			strcpy (buff, smbuff);
 	}
@@ -3494,7 +3502,7 @@ print_varbind (expr_str * var_usage, char dir, int no)
 
 
 static int
-dump_cmds (struct commands *c, struct command *parent)
+dump_cmds (struct s_commands *c, struct command *parent)
 {
   int a;
   if (c == 0)
@@ -3595,7 +3603,7 @@ print_spl_dtype (int dtype)
 static char *
 get_dump_function_returning (struct s_function_definition *function_definition)
 {
-  struct commands *func_cmds = 0;
+  struct s_commands *func_cmds = 0;
   struct command *r;
   int dtypes_new[MAX_RETURN_VALUES];
   int dtypes_cur[MAX_RETURN_VALUES];
@@ -3796,11 +3804,11 @@ dump_function (struct s_function_definition *function_definition, int ismain)
     }
 
 
-  if (curr_module->module_variables.variables.variables_len)
+  if (curr_module->module_variables.variables.variables.variables_len)
     {
-      for (a = 0; a < curr_module->module_variables.variables.variables_len; a++)
+      for (a = 0; a < curr_module->module_variables.variables.variables.variables_len; a++)
 	{
-	  print_variable_new (curr_module->module_variables.variables.variables_val[a], 'M', 0);
+	  print_variable_new (curr_module->module_variables.variables.variables.variables_val[a], 'M', 0);
 	}
     }
 
@@ -3938,28 +3946,28 @@ find_top_var (struct expr_str *se)
 	}
     }
 
-  for (a = 0; a < curr_module->module_variables.variables.variables_len; a++)
+  for (a = 0; a < curr_module->module_variables.variables.variables.variables_len; a++)
     {
-      if (strcmp (buff1, curr_module->module_variables.variables.variables_val[a]->names.names.names_val[0].name) == 0)
+      if (strcmp (buff1, curr_module->module_variables.variables.variables.variables_val[a]->names.names.names_val[0].name) == 0)
 	{			// Found it...
-	  return curr_module->module_variables.variables.variables_val[a];
+	  return curr_module->module_variables.variables.variables.variables_val[a];
 	}
     }
 
-  for (a = 0; a < curr_module->exported_global_variables.variables.variables_len; a++)
+  for (a = 0; a < curr_module->exported_global_variables.variables.variables.variables_len; a++)
     {
-      if (strcmp (buff1, curr_module->exported_global_variables.variables.variables_val[a]->names.names.names_val[0].name) == 0)
+      if (strcmp (buff1, curr_module->exported_global_variables.variables.variables.variables_val[a]->names.names.names_val[0].name) == 0)
 	{			// Found it...
-	  return curr_module->exported_global_variables.variables.variables_val[a];
+	  return curr_module->exported_global_variables.variables.variables.variables_val[a];
 	}
     }
 
 
-  for (a = 0; a < curr_module->imported_global_variables.variables.variables_len; a++)
+  for (a = 0; a < curr_module->imported_global_variables.variables.variables.variables_len; a++)
     {
-      if (strcmp (buff1, curr_module->imported_global_variables.variables.variables_val[a]->names.names.names_val[0].name) == 0)
+      if (strcmp (buff1, curr_module->imported_global_variables.variables.variables.variables_val[a]->names.names.names_val[0].name) == 0)
 	{			// Found it...
-	  return curr_module->imported_global_variables.variables.variables_val[a];
+	  return curr_module->imported_global_variables.variables.variables.variables_val[a];
 	}
     }
 
@@ -4395,7 +4403,7 @@ dump_cmd (struct command *r, struct command *parent)
 	  {
 	    if (A4GL_isyes (acl_getenv ("TRACESPL")))
 	      {
-		printc ("TRACE \"CALL %s\";", r->cmd_data.command_data_u.call_cmd.fcall->expr_str_u.expr_function_call->fname);
+		printc ("TRACE \"CALL %s\";", r->cmd_data.command_data_u.call_cmd.fcall->expr_str_u.expr_function_call->functionname);
 	      }
 	  }
 	set_nonewlines ();
@@ -4415,7 +4423,7 @@ dump_cmd (struct command *r, struct command *parent)
 	      }
 
 	    //params = A4GL_new_list_get_count (ptr->expr_str_u.expr_function_call->parameters);
-	    printc ("%s(", map_fname (ptr->expr_str_u.expr_function_call->fname));
+	    printc ("%s(", map_fname (ptr->expr_str_u.expr_function_call->functionname));
 	    if (l)
 	      {
 		int a;
@@ -5340,7 +5348,7 @@ dump_cmd (struct command *r, struct command *parent)
 	}
       else
 	{
-	  printc ("%s", r->cmd_data.command_data_u.load_cmd.sqlvar);
+	  printc ("%s", local_get_expr_as_string(r->cmd_data.command_data_u.load_cmd.sqlvar));
 	}
       printc (";");
       clr_nonewlines ();
@@ -5508,14 +5516,14 @@ dump_cmd (struct command *r, struct command *parent)
 	  if (A4GL_is_just_int_literal (r->cmd_data.command_data_u.fetch_cmd.fetch->fp->fetch_expr, 1))
 	    {
 	      printc ("%s cur_", fetchcmd);
-	      print_ident (r->cmd_data.command_data_u.fetch_cmd.fetch->cname);
+	      print_ident (r->cmd_data.command_data_u.fetch_cmd.fetch->cursorname);
 	    }
 	  else
 	    {
 	      printc ("%s RELATIVE ", fetchcmd);
 	      real_print_expr (r->cmd_data.command_data_u.fetch_cmd.fetch->fp->fetch_expr);
 	      printc (" cur_");
-	      print_ident (r->cmd_data.command_data_u.fetch_cmd.fetch->cname);
+	      print_ident (r->cmd_data.command_data_u.fetch_cmd.fetch->cursorname);
 	    }
 	  break;
 
@@ -5523,28 +5531,28 @@ dump_cmd (struct command *r, struct command *parent)
 	  if (A4GL_is_just_int_literal (r->cmd_data.command_data_u.fetch_cmd.fetch->fp->fetch_expr, 1))
 	    {
 	      printc ("%s FIRST cur_", fetchcmd);
-	      print_ident (r->cmd_data.command_data_u.fetch_cmd.fetch->cname);
+	      print_ident (r->cmd_data.command_data_u.fetch_cmd.fetch->cursorname);
 	      break;
 
 	    }
 	  if (A4GL_is_just_int_literal (r->cmd_data.command_data_u.fetch_cmd.fetch->fp->fetch_expr, -1))
 	    {
 	      printc ("%s LAST cur_",fetchcmd);
-	      print_ident (r->cmd_data.command_data_u.fetch_cmd.fetch->cname);
+	      print_ident (r->cmd_data.command_data_u.fetch_cmd.fetch->cursorname);
 	      break;
 	    }
 
 	  if (A4GL_is_just_int_literal (r->cmd_data.command_data_u.fetch_cmd.fetch->fp->fetch_expr, 0))
 	    {
 	      printc ("%s CURRENT cur_", fetchcmd);
-	      print_ident (r->cmd_data.command_data_u.fetch_cmd.fetch->cname);
+	      print_ident (r->cmd_data.command_data_u.fetch_cmd.fetch->cursorname);
 	      break;
 	    }
 
 	  printc ("%s ABSOLUTE cur_",fetchcmd);
 	  real_print_expr (r->cmd_data.command_data_u.fetch_cmd.fetch->fp->fetch_expr);
 	  printc (" ");
-	  print_ident (r->cmd_data.command_data_u.fetch_cmd.fetch->cname);
+	  print_ident (r->cmd_data.command_data_u.fetch_cmd.fetch->cursorname);
 	  break;
 
 	}

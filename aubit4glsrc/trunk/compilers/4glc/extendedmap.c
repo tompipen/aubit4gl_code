@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: extendedmap.c,v 1.12 2010-03-08 09:43:15 mikeaubury Exp $
+# $Id: extendedmap.c,v 1.13 2010-10-28 20:34:44 mikeaubury Exp $
 #*/
 
 
@@ -1025,6 +1025,10 @@ char *into_temp=0;
 	if (select->table_elements.tables.tables_len>10000) {
 		A4GL_assertion(1,"Dubious number of tables!");
 	}
+
+
+  A4GLSQLPARSE_from_clause_collect_tables (select, select->first, &select->table_elements);
+
   for (a = 0; a < select->table_elements.tables.tables_len; a++)
     {
       char *tabname;

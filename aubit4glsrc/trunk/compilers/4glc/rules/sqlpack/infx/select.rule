@@ -65,8 +65,8 @@ uu_select_statement21_select:
 		s1->sf=sf;
 		A4GL_set_associated_mem(s1,s1->sf);
 		A4GL_set_sql_lineno(yylineno);
-		map_select_stmt("SELECT",$<s_select>$);
 		$<ptr>$=A4GL_new_select_list_item_expr(new_select_list_query(s1));
+		map_select_stmt("SELECT",$<s_select>$);
 }
 ;
 
