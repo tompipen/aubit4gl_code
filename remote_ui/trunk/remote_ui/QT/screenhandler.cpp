@@ -98,8 +98,11 @@ void ScreenHandler::createWindow(QString windowTitle,QString style, int x, int y
    cnt_form++;
    if(p_fglform != NULL)
    {
+      p_fglform->setEnabled(false);
+/*
       if(p_fglform->menu() != NULL)
          p_fglform->menu()->setEnabled(false);
+*/
    }
    //p_fglform = new FglForm(windowTitle, parentWidget);
    //p_fglform = new FglForm(windowTitle, p_fglform);
@@ -1947,6 +1950,7 @@ void ScreenHandler::closeWindow(QString windowName)
 
          if(i_Frm > -1){
             p_fglform = ql_fglForms.at(i_Frm);
+            p_fglform->setEnabled(true);
          }
          else{
             p_fglform = NULL;
