@@ -854,7 +854,7 @@ print_select (struct s_select *s, char *forUpdate)
 {
   char *str;
   str = get_select (s, forUpdate);
-  printc ("%s", str);
+  printc ("%s;", str);
   free (str);
 }
 
