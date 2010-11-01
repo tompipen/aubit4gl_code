@@ -24,11 +24,10 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.3 2009-04-24 10:03:23 mikeaubury Exp $
+# $Id: Makefile,v 1.4 2010-11-01 09:18:56 mikeaubury Exp $
 #
 
 ROOT    =../..
-LIBROOT =${ROOT}/lib
 
 #All stuff common to more then one Aubit compiler make file is there:
 include ../../incl/Makefile-common
@@ -74,8 +73,8 @@ simple_html.sf:
 	@echo "simple_html sh script created"
 
 dll: libA4GL_HTML${SO_EXT}
-libA4GL_HTML${SO_EXT}: ${LIBROOT}/libA4GL_HTML${SO_EXT}
-${LIBROOT}/libA4GL_HTML${SO_EXT}: libahtmllib.c
+libA4GL_HTML${SO_EXT}: ${PLUGINDIR}/libA4GL_HTML${SO_EXT}
+${PLUGINDIR}/libA4GL_HTML${SO_EXT}: libahtmllib.c
 #	${FGLPCEXEC} ${AS_DLL} $^ -o $@
 #FIXME: how are we going to link with this on Windows without .dll.a file ?
 #fix 4glpc --as-dll to create .a file, and migrate everything to 4glc...
