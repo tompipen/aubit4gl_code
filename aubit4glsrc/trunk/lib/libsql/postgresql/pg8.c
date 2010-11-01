@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pg8.c,v 1.115 2010-10-26 20:14:14 mikeaubury Exp $
+# $Id: pg8.c,v 1.116 2010-11-01 15:03:25 mikeaubury Exp $
 #*/
 
 
@@ -1434,6 +1434,8 @@ A4GLSQLLIB_A4GLSQL_unload_data_internal (char *fname_o, char *delims,
 	      static int sl = -1;
 	      int nsl;
 	      char *ptr;
+		char dtype;
+		dtype=PQftype(res2, b);
 
 	        ptr = PQgetvalue (res2, a, b);
 
@@ -1466,12 +1468,17 @@ A4GLSQLLIB_A4GLSQL_unload_data_internal (char *fname_o, char *delims,
 				ptr=buff;
 		}
 
+		if (dtype==dtype_varcharoid || dtype==dtype_textoid) ; 
+		else { A4GL_trim (ptr);} // Standard CHAR..
 	      nsl = strlen (ptr);
 	      if (nsl >= sl)
 		{
 		  sl = nsl;
 		  s = realloc (s, sl*2 + 2);
 		}
+
+
+
 	      charcpy ((unsigned char *)s, (unsigned char *)ptr,nsl,delims[0]);
 	      A4GL_trim (s);
 		
