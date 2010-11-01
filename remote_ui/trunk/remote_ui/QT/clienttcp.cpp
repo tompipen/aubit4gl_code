@@ -513,6 +513,12 @@ void ProtocolHandler::run()
       return;
    }
 
+   if(qs_protocolCommand.trimmed() == "FAILED TO START"){
+      MsgBox("FAILED TO START","Program not found","Error","Ok","Ok",0);
+      request.clear();
+      return;
+   }
+
    if(qs_protocolCommand.trimmed() == "AUTHFAILED"){
       MsgBox("Authentication failed","Wrong Username or Password","Warning","Ok","Ok",0);
       request.clear();
