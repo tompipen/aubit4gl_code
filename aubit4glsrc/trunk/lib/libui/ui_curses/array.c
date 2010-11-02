@@ -24,13 +24,13 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: array.c,v 1.64 2010-10-27 19:39:47 mikeaubury Exp $
+# $Id: array.c,v 1.65 2010-11-02 18:19:57 mikeaubury Exp $
 #*/
 
 
 #ifndef lint
 	static char const module_id[] =
-		"$Id: array.c,v 1.64 2010-10-27 19:39:47 mikeaubury Exp $";
+		"$Id: array.c,v 1.65 2010-11-02 18:19:57 mikeaubury Exp $";
 #endif
 
 
@@ -728,8 +728,9 @@ int
  UILIB_A4GL_disp_arr_v2 (
 void *dispv, void *ptr, char *srecname, int attrib, char  *scrollf,int scrollw,void *vevt)
 {
-  int a;
+int a;
 struct s_disp_arr *disp;
+static int doingInit=0;
 struct aclfgl_event_list *evt;
 int nv;
 //int blk;
@@ -754,6 +755,8 @@ evt=vevt;
 	  A4GL_exitwith ("Screen record not found");
 	  return 0;
 	}
+
+
 
       disp->currform = UILIB_A4GL_get_curr_form (1);
 #ifdef DEBUG
@@ -782,6 +785,18 @@ evt=vevt;
       A4GL_debug ("disparr3");
 #endif
  
+
+doingInit=1;
+     if (A4GL_has_event (A4GL_EVENT_BEFORE_INP, evt)) {
+        return A4GL_has_event (A4GL_EVENT_BEFORE_INP, evt);
+     }
+}
+
+    if (doingInit) {
+		doingInit=0;
+
+
+
      nv=disp->nbind;
      if (disp->start_slice!=-1) {nv=disp->end_slice - disp->start_slice +1;}
 

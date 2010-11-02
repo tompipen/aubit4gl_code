@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fcompile.c,v 1.74 2010-10-06 11:45:03 mikeaubury Exp $
+# $Id: fcompile.c,v 1.75 2010-11-02 18:19:55 mikeaubury Exp $
 #*/
 
 /**
@@ -71,6 +71,7 @@ extern char *outputfilename;	/* defined in libaubit4gl */
 extern struct struct_scr_field *fld;	/* defined in libaubit4gl */
 dll_import struct struct_form the_form;	/* defined in libaubit4gl */
 int asXML=0;
+int asXAML=0;
 int silent=0;
 char outputfile[132];
 int perform_mode=0;
@@ -189,6 +190,13 @@ main (int argc, char *argv[])
 	  	continue;
 	}
 
+      if (strcmp (argv[cnt], "-xaml") == 0)
+	{
+		asXAML=1;
+		A4GL_setenv("A4GL_PACKER","FORMXAML",1);
+	  	continue;
+	}
+
       if (strcmp (argv[cnt], "-vfull") == 0)
 	{
 	  A4GL_check_and_show_id ("4GL Form Compiler", argv[cnt]);
@@ -257,10 +265,14 @@ main (int argc, char *argv[])
       outputfilename = acl_strdup (d);
     }
 
-    if (asXML) {
+    if (asXML || asXAML) {
 	char buff[2000];
 	if (acl_getenv_not_set_as_0("A4GL_OVERRIDE_PACKER_OUTPUT")==0) {
-		sprintf(buff,"%s.xml",outputfilename);
+		if (asXML) {
+			sprintf(buff,"%s.xml",outputfilename);
+		} else {
+			sprintf(buff,"%s.xaml",outputfilename);
+		}
 		A4GL_setenv("A4GL_OVERRIDE_PACKER_OUTPUT",buff,1);
 	}
     }
