@@ -458,7 +458,7 @@ void ClientTcp::replyWith(QString qs_replyString)
 void ProtocolHandler::run()
 {
    // request holds the current command from
-   // the application server
+   // the application server(proxy)
    //
    QString qs_protocolCommand;
    if(p_currScreenHandler != NULL &&
@@ -504,6 +504,7 @@ void ProtocolHandler::run()
    }
    if(qs_protocolCommand.trimmed() == "TIMEOUT"){
       makeResponse("100");
+      MsgBox("Timeout","Connection Timeout","Error","Ok","Ok",0);
       request.clear();
       return;
    }
@@ -514,7 +515,7 @@ void ProtocolHandler::run()
    }
 
    if(qs_protocolCommand.trimmed() == "FAILED TO START"){
-      MsgBox("FAILED TO START","Program not found","Error","Ok","Ok",0);
+      MsgBox("Start failed","Program not found","Error","Ok","Ok",0);
       request.clear();
       return;
    }
