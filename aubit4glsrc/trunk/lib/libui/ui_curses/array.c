@@ -24,13 +24,13 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: array.c,v 1.66 2010-11-02 19:29:33 mikeaubury Exp $
+# $Id: array.c,v 1.67 2010-11-03 10:36:15 mikeaubury Exp $
 #*/
 
 
 #ifndef lint
 	static char const module_id[] =
-		"$Id: array.c,v 1.66 2010-11-02 19:29:33 mikeaubury Exp $";
+		"$Id: array.c,v 1.67 2010-11-03 10:36:15 mikeaubury Exp $";
 #endif
 
 
@@ -786,15 +786,8 @@ evt=vevt;
 #endif
  
 
-doingInit=1;
-     if (A4GL_has_event (A4GL_EVENT_BEFORE_INP, evt)) {
-  	A4GL_set_array_mode ('D');
-        return A4GL_has_event (A4GL_EVENT_BEFORE_INP, evt);
-     }
-}
 
-    if (doingInit) {
-		doingInit=0;
+
 
 
 
@@ -861,6 +854,17 @@ doingInit=1;
       A4GL_set_arr_curr (disp->arr_line);
       A4GL_set_scr_line (disp->scr_line);
       A4GL_mja_wrefresh (currwin);
+	doingInit=1;
+     if (A4GL_has_event (A4GL_EVENT_BEFORE_INP, evt)) {
+        return A4GL_has_event (A4GL_EVENT_BEFORE_INP, evt);
+     }
+}
+
+
+
+
+    if (doingInit) {
+		doingInit=0;
       if (A4GL_has_event(A4GL_EVENT_BEF_ROW,evt)) return A4GL_has_event(A4GL_EVENT_BEF_ROW,evt);
     }
 #ifdef DEBUG
