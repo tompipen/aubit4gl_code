@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.238 2010-01-18 14:33:27 mikeaubury Exp $
+# $Id: sql.c,v 1.239 2010-11-05 16:07:21 mikeaubury Exp $
 #
 */
 
@@ -1432,6 +1432,8 @@ A4GLSQLLIB_A4GLSQL_execute_implicit_sql (void *vsid, int singleton, int ni, void
 	if (sid_get_owns_bindings(sid))
 	{
 	    if (sid->ibind) {
+	//printf("Free2\n");
+		A4GL_free_associated_mem(sid->ibind);
 		acl_free (sid->ibind);
 		sid->ibind=0;
 	    }
@@ -3290,10 +3292,16 @@ static SQLRETURN sql_free_sid(struct s_sid **sid)
     }
     if (sid_get_owns_bindings(*sid))
     {
-	if ((*sid)->ibind)
-	    acl_free ((*sid)->ibind);
-	if ((*sid)->obind)
+	if ((*sid)->ibind) {
+	//printf("Free1\n");
+		A4GL_free_associated_mem((*sid)->ibind);
+	    	acl_free ((*sid)->ibind);
+		
+		}
+	if ((*sid)->obind) {
+		A4GL_free_associated_mem((*sid)->obind);
 	    acl_free ((*sid)->obind);
+	}
 	(*sid)->ibind=0; (*sid)->obind=0;
     }
 
