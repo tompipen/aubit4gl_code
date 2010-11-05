@@ -2135,6 +2135,8 @@ QString ProtocolHandler::filterUmlauts(QString qs_text)
    qs_text.replace(QChar(150), QString::fromUtf8("û")); 
    qs_text.replace(QChar(225), QString::fromUtf8("ß")); 
 
+   qs_text.replace(QChar(245), QString::fromUtf8("ä")); 
+
    return qs_text;
 }
 
