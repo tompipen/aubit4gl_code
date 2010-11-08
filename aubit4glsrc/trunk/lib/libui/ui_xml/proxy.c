@@ -696,8 +696,18 @@ maintain_socket (int newfd_orig)
 	  ptr = strchr (prg, ' ');
 	  *ptr = 0;
 	  ptr++;
-	  argv[1] = ptr;
-	  argv[2] = 0;
+     char *ptr2;
+     if (strchr (ptr, ' ')){
+        ptr2 = strchr (ptr, ' ');
+        *ptr2 = 0;
+	     ptr2++;
+	     argv[1] = ptr;
+	     argv[2] = ptr2;
+     }
+     else{
+	     argv[1] = ptr;
+	     argv[2] = 0;
+     }
 	}
       argv[0] = prg;
       UIdebug (2, "SPAWN argv[0]=%s argv[1]=%s\n", argv[0], argv[1]);
