@@ -332,7 +332,9 @@ if (use_write) {
 #else
 			sleep(1);
 #endif
-			if (errno==32) {
+
+			if (errno==32 || errno==29) {
+            remove_pipes();
 				exit(1);
 			}
 
