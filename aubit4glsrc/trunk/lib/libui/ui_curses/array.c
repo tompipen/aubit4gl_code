@@ -24,13 +24,13 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: array.c,v 1.67 2010-11-03 10:36:15 mikeaubury Exp $
+# $Id: array.c,v 1.68 2010-11-08 18:39:07 mikeaubury Exp $
 #*/
 
 
 #ifndef lint
 	static char const module_id[] =
-		"$Id: array.c,v 1.67 2010-11-03 10:36:15 mikeaubury Exp $";
+		"$Id: array.c,v 1.68 2010-11-08 18:39:07 mikeaubury Exp $";
 #endif
 
 
@@ -737,6 +737,7 @@ int nv;
 disp=dispv;
 evt=vevt;
 
+	A4GL_set_array_mode ('D');
   A4GL_chkwin();
   curr_arr_disp = disp;
 #ifdef DEBUG
