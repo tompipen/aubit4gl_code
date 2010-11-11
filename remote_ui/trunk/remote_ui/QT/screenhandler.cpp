@@ -2313,6 +2313,7 @@ sep = QChar(':');
 
    QStringList dbPaths;
 
+/*
    if(!qh_env["DBPATH"].isEmpty()){
       QString fullDBPath = qh_env["DBPATH"];
 
@@ -2327,6 +2328,7 @@ sep = QChar(':');
          dbPaths << qh_env["DBPATH"];
       }
    }
+*/
 
    QDir current = QDir::current();
    if(current.cd("pics")){
