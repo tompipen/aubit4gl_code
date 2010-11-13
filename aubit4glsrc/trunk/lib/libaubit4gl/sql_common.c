@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql_common.c,v 1.100 2010-10-06 11:42:47 mikeaubury Exp $
+# $Id: sql_common.c,v 1.101 2010-11-13 06:51:58 mikeaubury Exp $
 #
 */
 
@@ -747,7 +747,10 @@ A4GL_prepare_select (struct BINDING *ibind, int ni, struct BINDING *obind, int n
 	}
     }
 
-  A4GL_addPreparedStatement ("ANON", new_uniqId, sid, NULL);
+  if (sid!=0) {
+  	A4GL_addPreparedStatement ("ANON", new_uniqId, sid, NULL);
+  }
+
   return (struct s_sid *) sid;
 }
 
