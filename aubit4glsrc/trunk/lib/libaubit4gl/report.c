@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.198 2010-10-06 11:42:47 mikeaubury Exp $
+# $Id: report.c,v 1.199 2010-11-14 19:54:41 mikeaubury Exp $
 #
 */
 
@@ -2596,7 +2596,7 @@ void
 A4GL_get_current_pdf_x (struct pdf_rep_structure *rep)
 {
   double d;
-  d = rep->col_no + rep->left_margin;
+  d = rep->col_no; //  + rep->left_margin;
   A4GL_push_double (d);
 }
 
