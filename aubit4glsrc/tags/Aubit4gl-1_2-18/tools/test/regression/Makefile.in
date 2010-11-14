@@ -1,0 +1,91 @@
+# +----------------------------------------------------------------------+
+# | Aubit 4gl Language Compiler Version $.0                              |
+# +----------------------------------------------------------------------+
+# | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
+# +----------------------------------------------------------------------+
+# | This program is free software; you can redistribute it and/or modify |
+# | it under the terms of one of the following licenses:                 |
+# |                                                                      |
+# |  A) the GNU General Public License as published by the Free Software |
+# |     Foundation; either version 2 of the License, or (at your option) |
+# |     any later version.                                               |
+# |                                                                      |
+# |  B) the Aubit License as published by the Aubit Development Team and |
+# |     included in the distribution in the file: LICENSE                |
+# |                                                                      |
+# | This program is distributed in the hope that it will be useful,      |
+# | but WITHOUT ANY WARRANTY; without even the implied warranty of       |
+# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        |
+# | GNU General Public License for more details.                         |
+# |                                                                      |
+# | You should have received a copy of both licenses referred to here.   |
+# | If you did not, or have any questions about Aubit licensing, please  |
+# | contact afalout@ihug.co.nz                                           |
+# +----------------------------------------------------------------------+
+#
+# $Id: Makefile.in,v 1.7 2003-03-09 07:06:18 afalout Exp $
+#
+
+ROOT	=../../..
+
+#All stuff common to more then one Aubit compiler make file is there:
+include ${ROOT}/incl/Makefile-common
+
+#Rules for making 4gl stuff:
+include $(wildcard $(ROOT)/incl/?4gl.mk)
+
+## ==================================================================
+##                              Options
+## ==================================================================
+
+#By default, we will compile only code that _should_ compile, and only with Aubit:
+DEFAULT=regression-test-4gl.ao regression-test-per.afr.xml
+
+## ==================================================================
+##                        Source files
+## ==================================================================
+
+4GLSRC	=$(wildcard *.4gl)
+PERSRC  =$(wildcard *.per)
+
+4GLSRCA	=${4GLSRC:.4gl=${A4GL_OBJ_EXT}}
+4GLSRCQ	=${4GLSRC:.4gl=${Q4GL_OBJ_EXT}}
+4GLSRCD	=${4GLSRC:.4gl=${D4GL_OBJ_EXT}}
+4GLSRCI	=${4GLSRC:.4gl=${I4GL_OBJ_EXT}}
+
+PERSRCA	=${PERSRC:.per=${A4GL_FRM_EXT}}
+PERSRCQ	=${PERSRC:.per=${Q4GL_FRM_EXT}}
+PERSRCD	=${PERSRC:.per=${D4GL_FRM_EXT}}
+PERSRCI	=${PERSRC:.per=${I4GL_FRM_EXT}}
+
+## ==================================================================
+##                              Targets
+## ==================================================================
+
+default: ${DEFAULT}
+	@echo default targets successfully compiled
+
+all: all.querix all.i4gl-pcode all.d4gl-pcode all.aubit
+
+all.aubit:      ${4GLSRCA} ${PERSRCA}
+all.querix:     ${4GLSRCQ} ${PERSRCQ}
+#Can't compile forms with Informix: The form name "regression-fails-per" exceeds the maximum length of 10
+#all.i4gl-pcode: ${4GLSRCI} ${PERSRCI}
+all.i4gl-pcode: ${4GLSRCI}
+all.d4gl-pcode: ${4GLSRCD} ${PERSRCD}
+
+## ==================================================================
+##                           Clean targets
+## ==================================================================
+
+
+clean:
+	$(RM) *.BAK *.bak core *~ *.ln *.output *.out *.frm *.h *.o *.4ae \
+	hello hello2 hello_db test_build filetest *.hlp *.exe \
+	*.stackdump *.exe *.err *.c *.ao *.qo *.42m *.afr.xml *.pic *.42f \
+	torturetest4glcomp *.tmp *.42m *.glb regression-test-4gl \
+	*.42r gui/*.err pdf_report rr1.pdf gui/*.glb *.4go \
+	*.ao *.log *.4ge *.pl *.pm test_build.c .\#* .*.bak
+
+
+# ============================= EOF =================================

@@ -1,0 +1,185 @@
+%{
+#define YYLEX_PARAM yystate
+#define YY_DECL int yylex(int yystate)
+int sqlparse_yylex(int yystate);
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include "a4gl_libaubit4gl.h"
+#include "dataio/fgl.xs.h"
+#include "a4gl_expr.h"
+#include "alias.h"
+//#include "sqlcompiler.h"
+
+#define SQL_SET_EXPLAIN_OFF 1
+#define SQL_SET_LOCK_MODE_WAIT_N 2
+#define SQL_SET_LOCK_MODE_NOT_WAIT 3
+#define SQL_SET_ISOLATION_DIRTY_READ 4
+#define SQL_SET_ISOLATION_REPEATABLE_READ 5
+#define SQL_SET_ISOLATION_CURSOR_STABILITY 6 
+#define SQL_SET_ISOLATION_COMMITTED_READ 7
+
+
+#define A4GL_add_feature sqlc_A4GL_add_feature
+#define A4GL_cursor_current sqlc_A4GL_cursor_current
+#define A4GL_warn sqlc_A4GL_warn
+#define add_feature sqlc_A4GL_add_feature
+#define add_sql_function sqlc_add_sql_function
+#define expand_slil sqlc_expand_slil
+#define expand_slil sqlc_expand_slil
+#define generate_update_column_list_for sqlc_generate_update_column_list_for
+#define generate_update_column_list_for sqlc_generate_update_column_list_for
+#define local_add_select_list_item_list sqlc_local_add_select_list_item_list
+#define local_add_select_list_item_list sqlc_local_add_select_list_item_list
+#define set_ignore_indicators sqlc_set_ignore_indicators
+#define clr_ignore_indicators sqlc_clr_ignore_indicators
+#define local_new_select_list_item_list sqlc_local_new_select_list_item_list
+#define addmap sqlc_addmap
+#define map_select_stmt sqlc_map_select_stmt
+#define map_create_temp sqlc_map_create_temp
+#define A4GL_db_used sqlc_A4GL_db_used
+#define map_delete_update sqlc_map_delete_update
+
+void add_sql_function(char *s);
+void map_select_stmt (char *main_statement_type, struct s_select *select);
+void map_create_temp(char *tab, char *src);
+
+void A4GL_add_feature (char *feature);
+
+
+int A4GL_cursor_current(expr_str *s);
+struct s_select_list_item_list *expand_slil(struct s_select_list_item_list *l);
+char *get_insert_cmd (struct struct_insert_cmd *insertCmd,int *converted);
+char *get_update_cmd(struct struct_update_cmd *updateCmd, int *converted) ;
+char * get_delete_cmd (struct struct_delete_cmd *deleteCmd, int *converted) ;
+
+str_list *generate_update_column_list_for(char *tabname,struct s_select_list_item_list *valuelist);
+extern int place_holder_cnt;
+void A4GL_warn(char *s);
+
+extern char *kw_space;
+extern char *kw_comma;
+extern char *kw_ob;
+extern char *kw_cb;
+
+#define insql c_sql_insql
+int c_sql_insql=0;
+static char *make_sql_string_and_free(char *,...);
+char last_tmp_name[256];
+#define ADDMAP(x,y) addmap_runtime(x,y)
+#define ADDMAP_MODULE(x,y) addmap_runtime(x,y)
+
+int yylineno;
+//int table_cnt=0;
+//char* curr_func="";
+//char *infilename="";
+static int doing_declare=0;
+#define YY_NEVER_INTERACTIVE 1
+
+char current_upd_table[256];
+char current_del_table[256];
+#define DEFINED_INS_TABLE
+char current_ins_table[256];
+
+#define a4gl_yyerror sqlparse_yyerror
+
+
+static void print_sql_commit (int n) ;
+static void print_exec_sql (char *s) ;
+static void print_exec_select (char *s)    ;
+static void conn_db (char *s) ;
+static void print_unable_to_parse(void) ;
+static int A4GLSQLCV_process(void);
+static int sqlparse_yyerror(char *s) ;
+int A4GL_4glc_push_gen_expand(int n,char *v);
+
+
+
+static void ansi_violation(char *s,int n);
+static void addmap_runtime (char *s,char *f);
+
+#include <stdio.h>
+#include <string.h>
+#include <stdarg.h>
+#include <stdlib.h>
+#ifdef SIMPLIFIED
+#include "y_tab.h"
+#else
+#include "y.tab.h"
+#endif
+struct s_select_list_item_list * local_new_select_list_item_list(  struct s_select_list_item *i) ;
+struct s_select_list_item_list * local_add_select_list_item_list( struct s_select_list_item_list *p, struct s_select_list_item *i);
+
+#define GEN_STACK_HERE
+#include "a4gl_gen_stack.h"
+
+int sql_string_cnt=0;
+int this_sql_start=0;
+char *Sql=0;
+FILE *Sql_file;
+int input_from_file=0;
+extern char* yytext;
+
+extern FILE *yyin;
+extern int sqlparse_yydebug;
+int process(void) ;
+char *sql_string;
+int sql_type;
+int was_ok=0;
+/*
+struct sql_stmt {
+        int type;
+        char *val;
+};
+
+struct sql_stmt *stmts=0;
+*/
+
+int db_used=0;
+//char *acl_getenv(char *s);
+
+%}
+%name-prefix="sqlparse_yy"
+%start sql_statement
+%union    {
+        char    str[8192];
+   char *sql_string;
+	struct  ilist int_list;
+	struct s_table *u_table;
+	struct s_select_finish *s_select_finish;
+        struct s_select_list_item_list *s_select_list_item_list;
+        struct s_select_list_item *s_select_list_item;
+        struct s_select *s_select;
+        int     integer_val;
+        float   float_val;
+	enum e_boolean e_boolean;
+	 struct expr_str_list *ptr_list;
+	        struct struct_update_cmd *update_cmd;
+        struct struct_insert_cmd *insert_cmd;
+        struct struct_delete_cmd *delete_cmd;
+        struct s_update_pair *upd_pair;
+        struct expr_str *ptr;
+        struct str_list *str_list;
+
+
+}
+//%expect 175
+%token INT_VALUE
+%token NAMED
+%token NAMED_GEN
+%token CHAR_VALUE
+%token NOT_USED_1
+%token NOT_USED_2
+%token NOT_USED_3
+%token NOT_USED_4
+%token NOT_USED_5
+%token NOT_USED_6
+%token NOT_USED_7
+%token NOT_USED_8
+%token NUMBER_VALUE
+%token SEMICOLON
+%token QUESTION_MARK
+%token CLINE
+%token CH
+%token MARK_VAR
+%token END_MARK_VAR
