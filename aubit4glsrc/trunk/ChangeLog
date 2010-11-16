@@ -3,25 +3,13 @@ Tue Nov 16 18:53:22 GMT 2010
 ---------------------------
 1.2_18 Released
 ---------------------------
-	2010-11-14 19:54  mikeaubury
-	
-	2010-11-13 06:51  mikeaubury
-	
-	2010-11-08 18:39  mikeaubury
-	
 	2010-11-08 16:15  siverly
 	
 	ms: Fixed the Borken pipe Bug
 	
 	2010-11-08 12:12  siverly
 	
-	pass another parameter to the program
-	
-	2010-11-05 16:07  mikeaubury
-	
-	2010-11-03 10:36  mikeaubury
-	
-	2010-11-02 19:29  mikeaubury
+	pass another parameter to the program (XML proxy)
 	
 	2010-11-02 18:19  mikeaubury
 	
@@ -32,55 +20,17 @@ Tue Nov 16 18:53:22 GMT 2010
 	Fix unload of CHAR in PG8 when using ' ' as the delimiter (to
 	remove trailing blanks)
 	
-	2010-11-01 09:18  mikeaubury
-	
-	2010-10-29 08:52  mikeaubury
-	
-	2010-10-28 21:34  mikeaubury
-	
 	2010-10-27 20:39  mikeaubury
 	
 	Add some ON ANY KEY functionality back in
-	
-	2010-10-26 21:14  mikeaubury
-	
-	2010-10-26 16:40  mikeaubury
 	
 	2010-10-26 16:06  mikeaubury
 	
 	Fixup to the MDY handling - so its not done *every* time
 	
-	2010-10-26 14:27  mikeaubury
-	
-	2010-10-22 16:58  mikeaubury
-	
-	2010-10-22 16:54  mikeaubury
-	
-	2010-10-20 09:53  mikeaubury
-	
-	2010-10-19 19:56  mikeaubury
-	
-	2010-10-18 13:45  mikeaubury
-	
-	2010-10-15 19:38  mikeaubury
-	
-	2010-10-13 09:37  mikeaubury
-	
-	2010-10-13 09:31  mikeaubury
-	
-	2010-10-12 10:40  mikeaubury
-	
-	2010-10-08 17:18  mikeaubury
-	
-	2010-10-08 13:30  mikeaubury
-	
-	2010-10-08 12:38  mikeaubury
-	
 	2010-10-08 12:03  dbuettner
 	
 	still insertElement
-	
-	2010-10-08 12:00  mikeaubury
 	
 	2010-10-08 11:58  mikeaubury
 	
@@ -99,27 +49,13 @@ Tue Nov 16 18:53:22 GMT 2010
 	Added the getcharat function for chars and strings (that are not
 	objects (STRING_AS_OBJECT=N)
 	
-	2010-10-06 14:51  mikeaubury
-	
-	2010-10-06 14:16  mikeaubury
-	
 	2010-10-06 14:16  mikeaubury
 	
 	Dynamic array fixups
 	
-	2010-10-06 12:42  mikeaubury
-	
 	2010-10-06 11:46  mikeaubury
 	
 	TUI_wide fixup
-	
-	2010-09-27 16:34  mikeaubury
-	
-	2010-09-27 16:27  mikeaubury
-	
-	2010-09-27 13:43  mikeaubury
-	
-	2010-09-27 13:22  mikeaubury
 	
 	2010-09-27 13:13  mikeaubury
 	

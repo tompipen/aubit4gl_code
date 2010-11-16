@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.239 2010-11-05 16:07:21 mikeaubury Exp $
+# $Id: sql.c,v 1.240 2010-11-16 18:56:00 mikeaubury Exp $
 #
 */
 
@@ -434,12 +434,12 @@ static int do_fake_transactions (void);
                       Function prototypes
 =====================================================================
 */
-void *A4GL_bind_decimal (struct BINDING *bind, void *ptr_to_decimal);
 //int A4GL_dttoc (void *a, void *b, int size);
 int A4GLSQL_make_connection (char *server, char *uid_p, char *pwd_p);
-void *A4GL_bind_datetime (struct BINDING *bind, void *ptr_to_dtime_var);
-void *A4GL_bind_interval (struct BINDING *bind, void *ptr_to_ival);
-void *A4GL_bind_date (struct BINDING *bind, long *ptr_to_date_var);
+void *A4GL_bind_datetime (void *parent, void *ptr_to_dtime_var);
+void *A4GL_bind_interval (void *parent, void *ptr_to_ival);
+void *A4GL_bind_date (void *parent, long *ptr_to_date_var);
+void *A4GL_bind_decimal (void *parent, void *ptr_to_decimal);
 
 //void A4GL_decode_datetime (struct A4GLSQL_dtime *d, int *data);
 int A4GL_inttoc (void *a1, void *b, int size);
@@ -1157,6 +1157,9 @@ A4GLSQLLIB_A4GLSQL_prepare_select_internal (void *vibind, int ni,
 	    sql_free_sid(&sid);
 	    free(sid);
 	} else {
+		if (sid->select) {
+			free(sid->select);
+		}
 	    A4GL_free_hstmt(&sid->hstmt);
 	    free(sid);
 	}
@@ -2712,7 +2715,7 @@ A4GL_obind_column (int pos, struct BINDING *bind, HSTMT hstmt)
 {
   static SQLRETURN rc;
   void *ptr_to_use;
-SQLSMALLINT     nrc;
+  SQLSMALLINT     nrc;
   A4GL_debug ("In A4GL_obind_column, pos=%i, bind=%p hstmt=%p)", pos, bind, hstmt);
   A4GL_trc   ("dtype=%d size=%d ptr=%p", bind->dtype, bind->size, bind->ptr);
   ptr_to_use = bind->ptr;
@@ -2736,25 +2739,25 @@ SQLSMALLINT     nrc;
   bind->libptr =0;
   if (bind->dtype == DTYPE_DATE)
     {
-      bind->libptr = A4GL_bind_date (bind, (long *) bind->ptr);
+      bind->libptr = A4GL_bind_date (hstmt, (long *) bind->ptr);
       ptr_to_use = bind->libptr;
     }
 
   if (bind->dtype == DTYPE_DTIME)
     {
-      bind->libptr = A4GL_bind_datetime (bind, (void *) bind->ptr);
+      bind->libptr = A4GL_bind_datetime (hstmt, (void *) bind->ptr);
       ptr_to_use = bind->libptr;
     }
 
   if (bind->dtype == DTYPE_INTERVAL)
     {
-      bind->libptr = A4GL_bind_interval (bind, (void *) bind->ptr);
+      bind->libptr = A4GL_bind_interval (hstmt, (void *) bind->ptr);
       ptr_to_use = bind->libptr;
     }
 
   if (bind->dtype == DTYPE_DECIMAL || bind->dtype == DTYPE_MONEY)
     {
-      bind->libptr = A4GL_bind_decimal (bind, (void *) bind->ptr);
+      bind->libptr = A4GL_bind_decimal (hstmt, (void *) bind->ptr);
       ptr_to_use = bind->libptr;
     }
 
@@ -2882,7 +2885,7 @@ A4GL_ibind_column (int pos, struct BINDING *bind, HSTMT hstmt)
         int d, m, y;
         A4GL_dbg ("Binding Date original pointer=%p", bind->ptr);
         ptr = bind->ptr;
-        p = (ACLDATE *) A4GL_bind_date (bind,(long *) ptr);
+        p = (ACLDATE *) A4GL_bind_date (hstmt,(long *) ptr);
         A4GL_get_date (*(int *) ptr, &d, &m, &y);
 
         ensure_as_char ();
@@ -2929,7 +2932,7 @@ A4GL_ibind_column (int pos, struct BINDING *bind, HSTMT hstmt)
         ptr = bind->ptr;
         ensure_as_char ();
 
-        p = (ACLDTIME *) A4GL_bind_datetime (bind, ptr);
+        p = (ACLDTIME *) A4GL_bind_datetime (hstmt, ptr);
         if (dtime_as_char)
         {
             char buff[50];
@@ -3281,14 +3284,18 @@ static SQLRETURN sql_free_sid(struct s_sid **sid)
     A4GL_trc("In sql_free_sid sid=%p &sid=%p", *sid, sid);
 
 
-    if ((*sid)->hstmt==0) return 1;
-    ignore_next_sql_error = 1;
-    rc = A4GL_free_hstmt(&((*sid)->hstmt));
+    if ((*sid)->hstmt) {
+    		ignore_next_sql_error = 1;
+		A4GL_free_associated_mem((*sid)->hstmt);
+    		rc = A4GL_free_hstmt(&((*sid)->hstmt));
+	}
 
     if (sid_get_owns_sqlstr(*sid))
     {
-	acl_free((*sid)->select);
-	(*sid)->select = NULL;
+	if ((*sid)->select) {
+		acl_free((*sid)->select);
+		(*sid)->select = NULL;
+	}
     }
     if (sid_get_owns_bindings(*sid))
     {
@@ -3303,6 +3310,10 @@ static SQLRETURN sql_free_sid(struct s_sid **sid)
 	    acl_free ((*sid)->obind);
 	}
 	(*sid)->ibind=0; (*sid)->obind=0;
+    } else {
+#ifdef DEBUG
+	A4GL_debug("Dont own binding\n");
+#endif
     }
 
 /*
@@ -4357,12 +4368,12 @@ A4GLSQLLIB_A4GLSQL_close_session_internal (char *sessname)
  * @param
  */
 void *
-A4GL_bind_date (struct BINDING *bind, long *ptr_to_date_var)
+A4GL_bind_date (void *parent, long *ptr_to_date_var)
 {
     ACLDATE *ptr;
 
     A4GL_trc ("Binding date for %p", ptr_to_date_var);
-    ptr = A4GL_alloc_associated_mem (bind, sizeof (ACLDATE));
+    ptr = A4GL_alloc_associated_mem (parent, sizeof (ACLDATE));
     ptr->ptr = ptr_to_date_var;
     ensure_as_char ();
     if (date_as_char)
@@ -4381,12 +4392,12 @@ A4GL_bind_date (struct BINDING *bind, long *ptr_to_date_var)
 
 
 void *
-A4GL_bind_datetime (struct BINDING *bind, void *ptr_to_dtime_var)
+A4GL_bind_datetime (void *parent, void *ptr_to_dtime_var)
 {
     ACLDTIME *ptr;
 
     A4GL_trc ("Binding datetime for %p", ptr_to_dtime_var);
-    ptr = A4GL_alloc_associated_mem (bind, sizeof (ACLDTIME));
+    ptr = A4GL_alloc_associated_mem (parent, sizeof (ACLDTIME));
 
     ensure_as_char ();
     if (dtime_as_char)
@@ -4410,12 +4421,12 @@ A4GL_bind_datetime (struct BINDING *bind, void *ptr_to_dtime_var)
 
 
 void *
-A4GL_bind_interval (struct BINDING *bind, void *ptr_to_ival)
+A4GL_bind_interval (void *parent, void *ptr_to_ival)
 {
     ACLIVAL *ptr;
 
     A4GL_trc ("Binding interval for %p", ptr_to_ival);
-    ptr = A4GL_alloc_associated_mem (bind, sizeof (ACLIVAL));
+    ptr = A4GL_alloc_associated_mem (parent, sizeof (ACLIVAL));
     strcpy (ptr->ival_u.ival_c, "");
     ptr->ptr = ptr_to_ival;
     return (void *) ptr;
@@ -4423,11 +4434,11 @@ A4GL_bind_interval (struct BINDING *bind, void *ptr_to_ival)
 
 
 void *
-A4GL_bind_decimal (struct BINDING *bind, void *ptr_to_decimal)
+A4GL_bind_decimal (void *parent, void *ptr_to_decimal)
 {
     double *ptr;
     A4GL_trc ("Binding interval for %p", ptr_to_decimal);
-    ptr = A4GL_alloc_associated_mem (bind, sizeof (double));
+    ptr = A4GL_alloc_associated_mem (parent, sizeof (double));
     return (void *) ptr;
 }
 

@@ -144,6 +144,7 @@ static void load_default_boltons(void) {
       add_bolton ("fgl_winquestion","0,0,0,0,0,2", "0");
       add_bolton ("aclfgl_add_to_toolbar","0,0,0,0,0,2", "");
       add_bolton ("fgl_drawbox","2,2,2,2", "");
+      add_bolton ("err_get","2", "0");
 }
 
 static void

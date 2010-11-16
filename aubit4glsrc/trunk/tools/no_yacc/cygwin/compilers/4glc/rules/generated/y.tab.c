@@ -1,9 +1,9 @@
-/* A Bison parser, made by GNU Bison 2.4.2.  */
+/* A Bison parser, made by GNU Bison 2.4.3.  */
 
 /* Skeleton implementation for Bison's Yacc-like parsers in C
    
-      Copyright (C) 1984, 1989-1990, 2000-2006, 2009-2010 Free Software
-   Foundation, Inc.
+      Copyright (C) 1984, 1989, 1990, 2000, 2001, 2002, 2003, 2004, 2005, 2006,
+   2009, 2010 Free Software Foundation, Inc.
    
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -45,7 +45,7 @@
 #define YYBISON 1
 
 /* Bison version.  */
-#define YYBISON_VERSION "2.4.2"
+#define YYBISON_VERSION "2.4.3"
 
 /* Skeleton name.  */
 #define YYSKELETON_NAME "yacc.c"
@@ -27573,8 +27573,8 @@ A4GL_debug("Left margin=%s\n",(yyvsp[(2) - (2)].str));
 		s1->sf=sf;
 		A4GL_set_associated_mem(s1,s1->sf);
 		A4GL_set_sql_lineno(yylineno);
-		map_select_stmt("SELECT",(yyval.s_select));
 		(yyval.ptr)=A4GL_new_select_list_item_expr(new_select_list_query(s1));
+		map_select_stmt("SELECT",(yyval.s_select));
 }
     break;
 
