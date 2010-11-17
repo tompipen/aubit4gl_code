@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.240 2010-11-16 18:56:00 mikeaubury Exp $
+# $Id: sql.c,v 1.241 2010-11-17 19:35:40 mikeaubury Exp $
 #
 */
 
@@ -614,6 +614,7 @@ prettyprint_sql (char *sql, struct BINDING *ibind, int nibind, char *fromwhere)
     int a;
     char buff[20000];
     char sbuff[20000];
+    char fname[2000];
     int b;
     static int log_sql = -1;
 #ifdef __WIN32__
@@ -623,8 +624,21 @@ prettyprint_sql (char *sql, struct BINDING *ibind, int nibind, char *fromwhere)
 #endif
     static int first_open = 1;
 
-    if (log_sql == -1)
-        log_sql = A4GL_isyes (acl_getenv ("LOGODBCSQL"));
+
+	
+    if (log_sql == -1) {
+	strcpy(fname, log_sql_file);
+        log_sql = A4GL_isyes (acl_getenv ("LOGODBCSQL")); // @ENV  LOGODBCSQL - Y/N if logging is enabled
+	if (strlen(acl_getenv ("LOGODBCSQLFILE"))) {
+		strcpy(fname, acl_getenv ("LOGODBCSQLFILE")); // @ENV LOGODBCSQLFILE filename to use (if not /tmp/log.sql)
+	}
+    }
+
+	if ( A4GL_isyes (acl_getenv ("LOGODBCSQLPID"))) { // @ENV  LOGODBCSQLPID - Y/N - append the process ID to the filename 
+		char smbuff[200];
+		sprintf(smbuff,".%d",getpid());
+		strcat(fname,smbuff);
+	}
 
     if (!log_sql)
         return;
@@ -635,11 +649,11 @@ prettyprint_sql (char *sql, struct BINDING *ibind, int nibind, char *fromwhere)
     if (first_open)
     {
         first_open = 0;
-        f = fopen (log_sql_file, "w");
+        f = fopen (fname, "w");
     }
     else
     {
-        f = fopen (log_sql_file, "a");
+        f = fopen (fname, "a");
     }
 
     if (f == NULL)
