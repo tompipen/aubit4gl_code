@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.170 2010-08-07 15:59:38 mikeaubury Exp $
+# $Id: curslib.c,v 1.171 2010-11-17 14:10:21 mikeaubury Exp $
 #*/
 
 /**
@@ -41,7 +41,7 @@
  */
 #ifndef lint
 static char const module_id[] =
-  "$Id: curslib.c,v 1.170 2010-08-07 15:59:38 mikeaubury Exp $";
+  "$Id: curslib.c,v 1.171 2010-11-17 14:10:21 mikeaubury Exp $";
 #endif
 /*
 =====================================================================
@@ -947,8 +947,7 @@ UILIB_A4GL_menu_loop_v2 (void *menuv, void *vevt)
     {
       old_option = (ACL_Menu_Opts *) menu->curr_option;
       abort_pressed = FALSE;
-      A4GL_h_disp_opt (menu, menu->curr_option, menu->menu_offset,
-		       menu->mn_offset, INVERT);
+      A4GL_h_disp_opt (menu, menu->curr_option, menu->menu_offset, menu->mn_offset, INVERT);
       A4GL_menu_setcolor (menu, NORMAL_TEXT);
 
 
@@ -966,19 +965,15 @@ UILIB_A4GL_menu_loop_v2 (void *menuv, void *vevt)
 
       while (1)
 	{
-	  //if (menu->evt)
-	    //{
 	      int blk;
 	      blk = A4GL_has_evt_timeout (menu->evt);
 	      if (blk)
 		{
 		  return blk - 1;	// menu options are numbered from 0
 		}
-	    //}
 
 	  a = A4GL_menu_getkey (menu);
 		if (a==3006) abort_pressed++;
-		//printf("%d\n",a);
 	  if (abort_pressed) {
 		int_flag=1;
 		a=A4GLKEY_INTERRUPT;
@@ -988,10 +983,7 @@ UILIB_A4GL_menu_loop_v2 (void *menuv, void *vevt)
 	}
 
 
-      //if (menu->evt)
-	//{
 	  A4GL_evt_not_idle (menu->evt);
-	//}
 
 
 #ifdef DEBUG
@@ -1049,17 +1041,6 @@ UILIB_A4GL_menu_loop_v2 (void *menuv, void *vevt)
   A4GL_menu_setcolor (menu, NORMAL_TEXT);
 
 
-  //A4GL_refresh_menu_window (menu->window_name, 0);
-  //A4GL_refresh_menu_window (menu->window_name, 1);
-
-
-
-
-  /*
-     ptr = A4GL_find_pointer (name, PANCODE);
-     A4GL_debug ("refresh menu with pointer to %p", ptr);
-     rc = top_panel (ptr);
-   */
 
   if (abort_pressed)
     {
@@ -1068,11 +1049,14 @@ UILIB_A4GL_menu_loop_v2 (void *menuv, void *vevt)
 #endif
       return menu->num_opts + 1;
     }
-  if (strcmp (menu->curr_option->optkey, "EMPTY") != 0)
+
+  if (strlen (menu->curr_option->opt_title) == 0)
     {
       int opt_no;
+	
       opt_no = menu->curr_option->opt_no;
       menu->curr_option = old_option;	// We don't want to change option to a non-printing option
+      menu->curr_page = old_option->page;	// We don't want to change option to a non-printing option
       return opt_no;
 
     }
