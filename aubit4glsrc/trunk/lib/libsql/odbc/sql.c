@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.241 2010-11-17 19:35:40 mikeaubury Exp $
+# $Id: sql.c,v 1.242 2010-11-17 19:37:03 mikeaubury Exp $
 #
 */
 
@@ -629,7 +629,9 @@ prettyprint_sql (char *sql, struct BINDING *ibind, int nibind, char *fromwhere)
     if (log_sql == -1) {
 	strcpy(fname, log_sql_file);
         log_sql = A4GL_isyes (acl_getenv ("LOGODBCSQL")); // @ENV  LOGODBCSQL - Y/N if logging is enabled
+	
 	if (strlen(acl_getenv ("LOGODBCSQLFILE"))) {
+		log_sql=1;
 		strcpy(fname, acl_getenv ("LOGODBCSQLFILE")); // @ENV LOGODBCSQLFILE filename to use (if not /tmp/log.sql)
 	}
     }
