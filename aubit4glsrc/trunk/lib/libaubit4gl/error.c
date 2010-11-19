@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: error.c,v 1.58 2010-06-15 09:37:37 mikeaubury Exp $
+# $Id: error.c,v 1.59 2010-11-19 15:15:02 mikeaubury Exp $
 #
 */
 
@@ -197,7 +197,7 @@ A4GL_exitwith_sql_detail (char *s,char *detail) {
 char buff[20000];
 A4GL_exitwith_sql(s);
 sprintf(buff,"%s:%s",s,detail);
-buff[sizeof(sqlerrmessage)]=0;
+buff[sizeof(sqlerrmessage)-1]=0;
 strcpy(sqlerrmessage,buff);
 A4GL_trim(sqlerrmessage);
 }
@@ -205,7 +205,7 @@ A4GL_trim(sqlerrmessage);
 void A4GL_set_sqlerrmessage(char *s) {
 char buff[20000];
 strcpy(buff,s);
-buff[sizeof(sqlerrmessage)]=0;
+buff[sizeof(sqlerrmessage)-1]=0;
 strcpy(sqlerrmessage,buff);
 A4GL_trim(sqlerrmessage);
 }
