@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pg8.c,v 1.116 2010-11-01 15:03:25 mikeaubury Exp $
+# $Id: pg8.c,v 1.117 2010-11-22 15:50:35 mikeaubury Exp $
 #*/
 
 
@@ -3526,27 +3526,29 @@ A4GL_debug("COPY DTYPE : %d\n", ibind[param].dtype &DTYPE_MASK);
 		      A4GL_push_param (ibind[param].ptr, DTYPE_DECIMAL + ENCODE_SIZE (ibind[param].size));
 		      str = A4GL_char_pop ();
 		      A4GL_lrtrim (str);
+			strcat(buff2,"(");
 		      strcat (buff2, pgescape_str (str, strlen (str)));
+			strcat(buff2,")");
 		      free (str);
 		      break;
 
 		    case DTYPE_SMFLOAT:
-		      SPRINTF1 (buff3, "%16.8f", *(float *) ibind[param].ptr);
+		      SPRINTF1 (buff3, "(%16.8f)", *(float *) ibind[param].ptr);
 		      strcat (buff2, buff3);
 		      break;
 
 		    case DTYPE_FLOAT:
-		      SPRINTF1 (buff3, "%16.8lf", *(double *) ibind[param].ptr);
+		      SPRINTF1 (buff3, "(%16.8lf)", *(double *) ibind[param].ptr);
 		      strcat (buff2, buff3);
 		      break;
 
 		    case DTYPE_INT:
-		      SPRINTF1 (buff3, "%d", *(int *) ibind[param].ptr);
+		      SPRINTF1 (buff3, "(%d)", *(int *) ibind[param].ptr);
 		      strcat (buff2, buff3);
 			break;
 
 		    case DTYPE_SMINT:
-		      SPRINTF1 (buff3, "%d", *(short *) ibind[param].ptr);
+		      SPRINTF1 (buff3, "(%d)", *(short *) ibind[param].ptr);
 		      strcat (buff2, buff3);
 			break;
 
