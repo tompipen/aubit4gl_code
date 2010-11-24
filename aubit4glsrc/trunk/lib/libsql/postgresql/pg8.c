@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pg8.c,v 1.117 2010-11-22 15:50:35 mikeaubury Exp $
+# $Id: pg8.c,v 1.118 2010-11-24 20:46:25 mikeaubury Exp $
 #*/
 
 
@@ -2694,6 +2694,10 @@ A4GL_fill_array_columns (int mx, char *arr1, int szarr1, char *arr2,
   int nrows;
   int a;
   PGresult *res;
+
+  char schemaname[2000]="";
+  char search_path[2000]="";
+
   curr_colno = 0;
 
 
@@ -2714,6 +2718,34 @@ A4GL_fill_array_columns (int mx, char *arr1, int szarr1, char *arr2,
       return 0;
     }
   A4GL_trim (tabname);
+
+        // are they specifying a 'schema' ?
+  if (strchr (tabname, '.'))
+    {
+        char *ptr;
+        PGresult *res;
+        strcpy(schemaname,tabname);
+        // extract the schema name and add it to the search path
+        // Its not exact - but it will do for now..
+        ptr=strchr(schemaname,'.');
+        if (ptr) {
+                *ptr=0;
+        }
+
+        res=PQexec(current_con, "show search_path");
+        strcpy(search_path,PQgetvalue(res,0,0));
+        PQclear(res);
+        strcpy (tname, strchr (tabname, '.') + 1);
+        tabname = tname;
+        SPRINTF2(buff,"set search_path TO %s, %s", schemaname, search_path);
+        //printf ("Executin : %s\n", buff);
+        res=PQexec(current_con, buff);
+        //printf("tabname=%s\n",tabname);
+        PQclear(res);
+    }
+
+
+
 
   SPRINTF1 (buff,
 	    "SELECT a.attname, pg_catalog.format_type(a.atttypid, a.atttypmod), a.attnotnull, a.atthasdef, a.attnum , a.atttypid, a.atttypmod, (SELECT substring(pg_catalog.pg_get_expr(d.adbin, d.adrelid) for 128) FROM pg_catalog.pg_attrdef d WHERE d.adrelid = a.attrelid AND d.adnum = a.attnum AND a.atthasdef)   FROM pg_catalog.pg_attribute a,pg_class b WHERE a.attrelid = b.oid AND a.attnum > 0 AND NOT a.attisdropped AND b.relname='%s' and pg_table_is_visible(b.oid) ORDER BY a.attnum",
@@ -2765,6 +2797,14 @@ A4GL_fill_array_columns (int mx, char *arr1, int szarr1, char *arr2,
 	}
 
     }
+
+
+        if (strlen(search_path)) {
+                PGresult *res;
+        SPRINTF1(buff,"set search_path TO %s", search_path);
+        res=PQexec(current_con, buff);
+        PQclear(res);
+        }
 
   return nrows;
 }
