@@ -2,4 +2,5 @@
 struct s_commands *linearise_commands(struct s_commands *master_list, struct s_commands *cmds);
 struct s_commands *linearise_report(struct s_commands *all_cmds, report_format_section *report_format_section);
 void linearise_module(struct s_commands *all_cmds, module_definition *d);
+void linearise_expressions_in_commands(struct s_commands *cmds, expr_str_list *list);
 

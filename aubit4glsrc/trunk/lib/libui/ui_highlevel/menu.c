@@ -9,7 +9,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: menu.c,v 1.55 2010-05-24 10:05:23 mikeaubury Exp $";
+  "$Id: menu.c,v 1.56 2010-11-24 21:33:26 mikeaubury Exp $";
 #endif
 
 static void A4GL_h_disp_more (ACL_Menu * menu, int offset, int y, int pos);
@@ -541,7 +541,7 @@ A4GL_debug("menu_loop not type 1");
       A4GL_debug ("Returning aborted");
       return menu->num_opts + 1;
     }
-  if (strcmp (menu->curr_option->optkey, "EMPTY") != 0)
+  if (strlen (menu->curr_option->opt_title) == 0)
     {
       int opt_no;
       opt_no = menu->curr_option->opt_no;

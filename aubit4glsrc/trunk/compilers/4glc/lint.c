@@ -7582,6 +7582,13 @@ check_expression (char *module, int lineno, struct expr_str *e)
       check_expression (module, lineno, e->expr_str_u.expr_expr);
       break;
 
+        case ET_EXPR_OP_IN:
+        case ET_EXPR_OP_NOT_IN:
+                check_expression(module,lineno,  e->expr_str_u.expr_in->expr);
+                check_expression_list(module,lineno,  e->expr_str_u.expr_in->elist);
+                break;
+
+
     case ET_EXPR_TODAY:
     case ET_EXPR_DATE_EXPR:
     case ET_EXPR_CURRENT:

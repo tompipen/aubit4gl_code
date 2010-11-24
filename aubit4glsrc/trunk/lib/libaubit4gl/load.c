@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: load.c,v 1.63 2010-03-15 18:48:20 mikeaubury Exp $
+# $Id: load.c,v 1.64 2010-11-24 21:33:26 mikeaubury Exp $
 #
 */
 
@@ -317,8 +317,24 @@ A4GL_load_data (char *fname, char *delims, void *filterfunc, char *tabname, ...)
   char buff[255];
 char nullbuff[200];
   int a;
-//printf("%d %s\n",doing_load,fname);
 
+
+if (strstr(tabname,"\".")) {
+	char buff[200];
+	char *ptr;
+	strcpy(buff,tabname);
+	ptr=strstr(buff,"\".");
+	if (ptr) {
+		ptr++;
+		*ptr=0;
+		ptr++;
+		//printf("%s %s\n", buff,ptr);
+		tabname=A4GLSQLCV_ownerize_tablename(buff,ptr);
+	}
+	
+}
+
+//printf("%s\n",tabname);
   if (doing_load)
     {
       A4GL_exitwith ("Cant do a load within a load...");

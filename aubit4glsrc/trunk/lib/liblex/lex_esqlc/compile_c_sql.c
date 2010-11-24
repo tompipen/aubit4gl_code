@@ -954,7 +954,7 @@ print_load_cmd (struct_load_cmd * cmd_data)
     {
       int a;
       set_nonewlines ();
-      printc ("A4GL_load_data(_filename,_delimiter,_filterfunc, \"%s\"\n", cmd_data->tabname);
+      printc ("A4GL_load_data(_filename,_delimiter,_filterfunc, \"%s\"\n", escape_quotes_and_remove_nl(cmd_data->tabname));
       if (cmd_data->collist)
 	{
 	  for (a = 0; a < cmd_data->collist->str_list_entry.str_list_entry_len; a++)
