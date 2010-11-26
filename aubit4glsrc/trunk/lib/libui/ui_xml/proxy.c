@@ -355,7 +355,10 @@ sigintr_handler (int s)
 
 void proxy_daemon(void)
 {
+   FILE *pidfile;
+   char filepath[1000];
    pid_t pid;
+
    //Fork the Proxyprocess
    if((pid = fork()) != CHILD)
    {
@@ -364,13 +367,11 @@ void proxy_daemon(void)
    //Check for Errors
    if(setsid() == ERROR)
    {
-      printf("Error at setsid");
+      fprintf(stderr, "Error at setsid\n");
       exit(0);
    }
    
    pid = getpid();
-   FILE *pidfile;
-   char filepath[1000];
    //Set the Pidfilepath & open it
    sprintf(filepath, "%s/%s", getenv("PIPEDIR"), "a4glproxy.pid");
    pidfile = fopen(filepath, "w");
@@ -394,7 +395,7 @@ void daemon_stop(void)
    //Kill the Proxy
    if(kill(pid, SIGINT) != 0)
    {
-      printf("Error while closing Proxy. Proxy didnt run?");
+      fprintf(stderr, "Error while closing Proxy. Proxy didnt run?\n");
    }
 }
 //
