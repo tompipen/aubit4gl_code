@@ -11,11 +11,9 @@
 #include <sys/wait.h>
 #include <signal.h>
 #include <ctype.h>
-
 #ifndef __hpux__
 #include <sys/select.h>
 #endif
-
 
 #include "pipe.h"
 #include "debug.h"
@@ -49,7 +47,13 @@
 
 #define BACKLOG 10		// how many pending connections queue will hold
 
+#define CHILD 0     //needed for Daemon
+#define ERROR -1    //needed for Daemon
+
 int getMyId (void);		// This is normally from 'pipe.c' - by we need one in here so it will link...
+void proxy_daemon (void); // daemon function
+void daemon_stop  (void); // daemon function
+void* getSHM(void);
 
 //#define STREAM_BUFF_SIZE 10000
 //char sock_buff[20000];
@@ -308,7 +312,6 @@ sigchld_handler (int s)
 static void
 sigterm_handler (int s)
 {
-
   if (localsocket_out)
     {
       pipe_sock_puts (localsocket_out, "FAILED\n");
@@ -348,6 +351,53 @@ sigintr_handler (int s)
   exit (0);
 }
 
+//Function to start the proxy as daemon. Only for testing atm.
+
+void proxy_daemon(void)
+{
+   pid_t pid;
+   //Fork the Proxyprocess
+   if((pid = fork()) != CHILD)
+   {
+      exit(0);
+   }
+   //Check for Errors
+   if(setsid() == ERROR)
+   {
+      printf("Error at setsid");
+      exit(0);
+   }
+   
+   pid = getpid();
+   FILE *pidfile;
+   char filepath[1000];
+   //Set the Pidfilepath & open it
+   sprintf(filepath, "%s/%s", getenv("PIPEDIR"), "a4glproxy.pid");
+   pidfile = fopen(filepath, "w");
+   //Write the Pid in the File
+   fprintf(pidfile, "%i",pid);
+   fclose(pidfile);
+   //Change the directory otherwise the proxy cant open programs
+   chdir(getenv("BASEPROGRAMS"));
+   umask(0);
+   printf("Proxy started...\n");
+}
+void daemon_stop(void)
+{
+   FILE *pidfile;
+   pid_t pid;
+   char filepath[1000];
+   //set path for pid file & open it 
+   sprintf(filepath, "%s/%s", getenv("PIPEDIR"), "a4glproxy.pid");
+   pidfile = fopen(filepath, "r");
+   fscanf(pidfile, "%i", &pid);
+   //Kill the Proxy
+   if(kill(pid, SIGINT) != 0)
+   {
+      printf("Error while closing Proxy. Proxy didnt run?");
+   }
+}
+//
 /* 
  * UI PROXY
  *
@@ -393,14 +443,28 @@ main (int argc, char *argv[])
       printf ("WARNING:\nAFGLSERVER is set - this is probably *not* what you want when using the proxy\n");
       exit (2);
     }
-
-  if (argc > 1)
-    {
-      printf ("STANDALONE MODE\n");
-      maintain_socket (0);
-      exit (1);
-    }
-
+  //Parameter for Daemon
+  int i = 0;
+  for(i=1; i < argc; i++)
+  {
+     if(strcmp(argv[i],"-restart") == 0)
+     {
+        daemon_stop();
+        proxy_daemon();
+        
+     }
+     if(strcmp(argv[i],"-stop") == 0)
+     {
+        daemon_stop();  
+        exit(0);
+     }
+     if (strcmp(argv[i],"-sa") == 0)
+     {
+        printf ("STANDALONE MODE\n");
+        maintain_socket (0);
+        exit (1);
+     }
+  }
 // Create our network socket to listen for client connections
   if ((sockfd = socket (PF_INET, SOCK_STREAM, 0)) == -1)
     {
@@ -418,7 +482,6 @@ main (int argc, char *argv[])
   my_addr.sin_port = htons (MYPORT);	// short, network byte order
   my_addr.sin_addr.s_addr = INADDR_ANY;	// automatically fill with my IP
   memset (&(my_addr.sin_zero), '\0', 8);	// zero the rest of the struct
-
   if (bind (sockfd, (struct sockaddr *) &my_addr, sizeof (struct sockaddr)) == -1)
     {
       perror ("bind");
@@ -454,6 +517,14 @@ main (int argc, char *argv[])
       perror ("sigaction");
       exit (1);
     }
+  //Parameter for Start(Must be here because the bind check to avoid double starting proxy.)
+  for(i=1; i < argc; i++)
+  {
+     if(strcmp(argv[i],"-start") == 0)
+     {
+        proxy_daemon();
+     }
+  }
   while (1)
     {				// main accept() loop
       sin_size = sizeof (struct sockaddr_in);
