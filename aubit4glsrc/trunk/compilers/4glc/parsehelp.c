@@ -1947,6 +1947,12 @@ enum e_scope scope;
 		nsubscripts_expected=1;
 	} else {
 		nsubscripts_expected=v_top->arr_subscripts.arr_subscripts_len;
+		if (nsubscripts_expected) {
+			// Check for dynamic array..
+			if (v_top->arr_subscripts.arr_subscripts_val[0]<0) {
+				nsubscripts_expected=0-v_top->arr_subscripts.arr_subscripts_val[0];
+			}
+		}
 	}
 	nsubscripts_got=vu_last->subscripts.subscripts_len;
 
