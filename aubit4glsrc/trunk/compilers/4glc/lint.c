@@ -5909,12 +5909,18 @@ check_program (module_definition * mods, int nmodules)
 
       if (all_cmds->cmds.cmds_val[a]->cmd_data.type == E_CMD_CURRENT_WIN_CMD)
 	{
-	  if (A4GL_aubit_strcasecmp
-	      (lint_get_ident_as_string
-	       (find_module
-		(mods, nmodules, all_cmds->cmds.cmds_val[a]->module),
-		all_cmds->cmds.cmds_val[a]->cmd_data.command_data_u.
-		current_win_cmd.windowname), "screen") != 0)
+	expr_str *win;
+	int isScr=1;
+	win=all_cmds->cmds.cmds_val[a]->cmd_data.command_data_u.current_win_cmd.windowname;
+		if (win) {
+			isScr=0;
+	  		if (A4GL_aubit_strcasecmp (lint_get_ident_as_string (find_module (mods, nmodules, all_cmds->cmds.cmds_val[a]->module), win), "screen") == 0) {
+				isScr=1;
+			}
+		} else {
+			isScr=1;
+		}
+	  if (!isScr) 
 	    {
 	      // CURRENT WINDOW IS SCREEN should always be ok :-)
 	      found_something++;
@@ -5927,7 +5933,9 @@ check_program (module_definition * mods, int nmodules)
 					  cmd_data.command_data_u.
 					  current_win_cmd.windowname);
 	      action = "has been made CURRENT";
-	    }
+	    } else {
+		cwindow="screen";
+		}
 	}
       if (all_cmds->cmds.cmds_val[a]->cmd_data.type == E_CMD_CLOSE_CMD)
 	{
