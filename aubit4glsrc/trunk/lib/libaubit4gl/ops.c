@@ -25,7 +25,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.181 2010-10-26 13:27:51 mikeaubury Exp $
+# $Id: ops.c,v 1.182 2010-12-06 18:21:03 mikeaubury Exp $
 #
 */
 
@@ -8016,7 +8016,7 @@ if ((t==0 && dtype_hint==DTYPE_INTERVAL) || t==2) {
       int size_b=0;
       for (b = a; b <= 10; b++)
 	{
-	  char str[256];
+	  char str[2560];
 	  //int ibuff[30];
 	  strcpy (str, s);
 

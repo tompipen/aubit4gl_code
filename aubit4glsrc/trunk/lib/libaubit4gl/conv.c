@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.184 2010-10-26 13:27:51 mikeaubury Exp $
+# $Id: conv.c,v 1.185 2010-12-06 18:21:03 mikeaubury Exp $
 #
 */
 
@@ -1629,7 +1629,7 @@ A4GL_stodec (void *a, void *z, int size)
 #endif
       if (a4gl_convfmts.printf_decfmt.decsep != a4gl_convfmts.posix_decfmt.decsep)
 	{
-	  char buff[300];
+	  char buff[2000];
 	  strcpy (buff, a);
 	  A4GL_decstr_convert (buff, a4gl_convfmts.printf_decfmt, a4gl_convfmts.posix_decfmt, 0, 0, 32);
 	  eptr = A4GL_str_to_dec (buff, z);
