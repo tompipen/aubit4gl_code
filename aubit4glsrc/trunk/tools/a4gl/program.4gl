@@ -40,7 +40,7 @@ menu "PROGRAM"
 		call program_remove()
 
 	command "Exit" "Return to the main menu"
-		if get_db()=="syspgma4gl" then
+		if get_db()==get_syspgma4gl_dbname() then
 			close database
 			call set_curr_db("")
 		end if
@@ -223,17 +223,19 @@ end function
 # Try to make sure that syspgma4gl is our current database
 ################################################################################
 function ensure_syspgma4gl()
+define lv_name char(1000)
+	let lv_name=get_syspgma4gl_dbname()
 	if has_db()  then
-		if get_db()!="syspgma4gl" then
+		if get_db()!=get_syspgma4gl_dbname() then
 			whenever error continue
 			close database
 			whenever error stop
-			database syspgma4gl
-			call set_curr_db("syspgma4gl")
+			database lv_name
+			call set_curr_db(lv_name)
 		end if
 	else
-			database syspgma4gl
-			call set_curr_db("syspgma4gl")
+			database lv_name
+			call set_curr_db(lv_name)
 	end if
 end function
 
@@ -1494,3 +1496,14 @@ if lv_dynamically_found_libs_cnt then
 end if
 return false
 end function
+
+
+function get_syspgma4gl_dbname()
+if length(fgl_getenv("SYSPGMA4GL"))>0 then
+	return fgl_getenv("SYSPGMA4GL") 
+else
+	return "syspgma4gl"
+end if
+end function
+
+

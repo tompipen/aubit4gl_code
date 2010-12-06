@@ -4,6 +4,8 @@ define mc_version constant 0.8
 main
 define lv_dialect char(20)
 define lv_makefile char(512) # Used for $ a4gl -p {programname}
+define lv_dbname char(256)
+define lv_dbsql char(512)
 defer interrupt
 
 	#if fgl_getenv("A4GL_UI")="HL_GTK" or fgl_getenv("A4GL_UI")="XML" or fgl_getenv("A4GL_USE_FORMS")="Y" then
@@ -34,8 +36,9 @@ defer interrupt
 	options input wrap
 
 	whenever error continue
-	database syspgma4gl
-	call set_pick_db("syspgma4gl")
+	let lv_dbname=get_syspgma4gl_dbname()
+	database lv_dbname
+	call set_pick_db(lv_dbname)
 	whenever error stop
 
 	if sqlca.sqlcode!=0 then
@@ -46,17 +49,19 @@ defer interrupt
 		if lv_dialect[1,8] = "POSTGRES" then
 			database template1
 		end if
-		execute immediate "create database syspgma4gl"
-		database syspgma4gl
-		call set_pick_db("syspgma4gl")
+		
+		let lv_dbsql= "create database ",lv_dbname
+		execute immediate lv_dbsql
+		database lv_dbname
+		call set_pick_db(lv_dbname)
 		whenever error stop
 
 		if sqlca.sqlcode!=0 then
 			display "Error:"
-			display "   Unable to connect to or create the syspgma4gl database"
+			display "   Unable to connect to or create the syspgma4gl (",lv_dbname clipped,") database"
 			display "   ------------------------------------------------------"
 			display " "
-			display "Please manually create a database called 'syspgma4gl'"
+			display "Please manually create a database called '",lv_dbname clipped,"'"
 			display "and create the tables as in $AUBITDIR/tools/a4gl/create_tables.sql."
 			display " "
 			display "If the database exists then ensure you have permission to connect to it"
@@ -64,7 +69,7 @@ defer interrupt
 		end if
 
 		call createtables()
-		message "syspgma4gl database created" sleep 1
+		message lv_dbname clipped," database created" sleep 1
 		message " "
 	end if
 		

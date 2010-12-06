@@ -1,4 +1,4 @@
-database syspgma4gl
+#database syspgma4gl
 
 define lc_maxfiles constant 2000
 define lc_strlen constant 256
@@ -12,7 +12,10 @@ define lv_str char(lc_strlen)
 define c integer
 define lv_deffile char(lc_strlen)
 define lv_runstr char(lc_strlen)
+define lv_dbname char(256)
 
+let lv_dbname=get_syspgma4gl_dbname()
+database lv_dbname
 # Get the name of the program from the last portion of the current directory
 let lv_str=basename(aclfgl_getcwd())
 

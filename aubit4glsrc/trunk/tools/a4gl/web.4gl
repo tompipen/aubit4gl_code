@@ -1,9 +1,13 @@
-database syspgma4gl
+
+#database syspgma4gl
 
 define lc_max_password_length constant 48
 
 main
+char lv_dbname(64)
 defer interrupt
+let lv_dbname=get_syspgma4gl_dbname()
+database lv_dbname
 #options form line 5
 options message line last
 

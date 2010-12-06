@@ -1,7 +1,12 @@
-database syspgma4gl
+#database syspgma4gl
 
 main
 define lv_name char(64)
+define lv_dbname char(64)
+
+let lv_dbname=get_syspgma4gl_dbname()
+database lv_dbname
+
 whenever error continue
    select count(*) from  z_functioncount
 
