@@ -24,10 +24,10 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.170 2010-10-27 19:39:47 mikeaubury Exp $
+# $Id: iarray.c,v 1.171 2010-12-07 10:24:42 mikeaubury Exp $
 #*/
 #ifndef lint
-static char const module_id[] = "$Id: iarray.c,v 1.170 2010-10-27 19:39:47 mikeaubury Exp $";
+static char const module_id[] = "$Id: iarray.c,v 1.171 2010-12-07 10:24:42 mikeaubury Exp $";
 #endif
 
 /**
@@ -2032,6 +2032,25 @@ void *memdup(void *ptr,int size) {
 
 
 
+static int allFieldsAreNoEntry(struct s_inp_arr *arr) {
+void *next_field;
+int gotAnEnterableField=0;
+struct struct_scr_field *f;
+int a;
+
+for (a=0;a<arr->srec->attribs.attribs_len;a++) {
+  next_field = arr->field_list[0][a];
+  f = (struct struct_scr_field *) (field_userptr (next_field));
+  if (A4GL_has_bool_attribute (f, FA_B_NOENTRY) 
+		|| (f->datatype == DTYPE_SERIAL)) ;
+	else {
+		gotAnEnterableField=1;
+	}
+}
+return gotAnEnterableField==0;
+}
+
+
 /*
  *  Set up a record for a desired movement...
  */
@@ -2044,6 +2063,10 @@ A4GL_newMovement (struct s_inp_arr *arr, int scr_line, int arr_line, int attrib,
 #ifdef DEBUG
   A4GL_debug ("newMovement %d %d %d", scr_line, arr_line, attrib);
 #endif
+
+if (allFieldsAreNoEntry(arr)) { arr->arr_line=1; arr->scr_line=1; arr->curr_attrib=1; return; } 
+
+
   if (arr_line > 800000)
     {
       char *ptr = 0;
@@ -2232,6 +2255,7 @@ A4GL_newMovement (struct s_inp_arr *arr, int scr_line, int arr_line, int attrib,
 
   if (A4GL_has_bool_attribute (f, FA_B_NOENTRY) || (f->datatype == DTYPE_SERIAL))
     {
+	if (allFieldsAreNoEntry(arr)) { arr->arr_line=1; arr->scr_line=1; arr->curr_attrib=1; return; }
 #ifdef DEBUG
       A4GL_debug ("Requested field is noentry attrib=%d curr_attrib=%d", attrib, arr->curr_attrib);
 #endif
@@ -2331,6 +2355,7 @@ A4GL_newMovement (struct s_inp_arr *arr, int scr_line, int arr_line, int attrib,
 #ifdef DEBUG
 	      A4GL_debug ("Found somewhere free... %d %d %d", scr_line, arr_line, attrib);
 	      A4GL_debug ("Calling newmovement");
+	if (allFieldsAreNoEntry(arr)) { arr->arr_line=1; arr->scr_line=1; arr->curr_attrib=1; return; }
 #endif
 	      A4GL_newMovement (arr, scr_line, arr_line, attrib, why);	// So keep going...
 	      return;
