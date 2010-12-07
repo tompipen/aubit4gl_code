@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: io.c,v 1.41 2009-05-27 12:57:19 mikeaubury Exp $
+# $Id: io.c,v 1.42 2010-12-07 10:38:29 mikeaubury Exp $
 #
 */
 
@@ -386,7 +386,7 @@ A4GL_fullpath_xpath (char *fname, char *path)
   static char str_path[2048], str_path2[2048];
   int cnt, cnt2;
   char *ptr = 0;
-  char *ptr2 = 0;
+  static char ptr2[2000];
   int str_len;			//, curr_str_len;
 
   memset (str_path, 0, 2048);

@@ -186,7 +186,7 @@ if (use_read) {
 	}
       if (total_count >= count) {
     		current_position[0] = 0;
-		FPRINTF(stderr, "Partial : %s\n\n\n\n", str);
+		//FPRINTF(stderr, "Partial : %s\n\n\n\n", str);
   		UIdebug (4,"pipe_gets returning \n<<<%s>>>\n", str);
 
 		if (logproxy())  {
