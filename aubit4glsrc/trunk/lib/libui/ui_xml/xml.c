@@ -3149,8 +3149,8 @@ generate_construct_result (struct s_screenio *s)
 
       // @@ FIXME - use the proper details from the construct structure in uilib/uilib.c
       ptr = A4GL_construct (s->constr[a].tabname, s->constr[a].colname,
-			    last_attr->sync.vals[a].value, get_inc_quotes (last_attr->sync.vals[0].fieldtype),
-			    last_attr->sync.vals[0].fieldtype & DTYPE_MASK, last_attr->sync.vals[0].fieldtype >> 16, s->callback_function);
+			    last_attr->sync.vals[a].value, get_inc_quotes (last_attr->sync.vals[a].fieldtype),
+			    last_attr->sync.vals[a].fieldtype & DTYPE_MASK, last_attr->sync.vals[a].fieldtype >> 16, s->callback_function);
       if (ptr == 0)
 	{			/* Some error... */
 	  if (buff)
