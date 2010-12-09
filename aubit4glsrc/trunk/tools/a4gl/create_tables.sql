@@ -35,3 +35,8 @@ create table program
   );
 
 
+create table inlibrary
+  (
+    module char(256),
+    libname char(256)
+  );

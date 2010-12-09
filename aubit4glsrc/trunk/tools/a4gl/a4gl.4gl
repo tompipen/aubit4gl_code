@@ -168,6 +168,16 @@ if sqlca.sqlcode<0 then
 	call err_createtables()
 end if
 
+create table inlibrary
+  (
+    module char(256),
+    libname char(256)
+  );
+
+if sqlca.sqlcode<0 then
+	call err_createtables()
+end if
+
 if dbms_dialect()  MATCHES "*POSTGRES*" then
 
 	# Create the trigger to handle the SERIAL on 'entity'
