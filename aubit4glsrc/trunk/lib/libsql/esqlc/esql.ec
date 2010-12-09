@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.251 2010-09-16 19:54:16 mikeaubury Exp $
+# $Id: esql.ec,v 1.252 2010-12-09 16:41:57 siverly Exp $
 #
 */
 
@@ -101,7 +101,11 @@ $include sqlca;
 #include "a4gl_incl_4gldef.h"
 #include "a4gl_expr.h"
 char unloadBuffer[BUFSIZ];
+#if (defined(__MACH__) && defined(__APPLE__))
+extern sqlca_struct a4gl_sqlca;
+#else
 dll_export sqlca_struct a4gl_sqlca;
+#endif
 
 void A4GL_sql_copy_blob(loc_t *infx,  struct fgl_int_loc *a4gl,short * p_indicat,int size,char mode,int dtype) ;
 static void internal_free_cursor (char *s,int reset_Sqlca);
@@ -182,7 +186,7 @@ static loc_t *add_blob(struct s_sid *sid, int n, struct s_extra_info *e,fglbyte 
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.251 2010-09-16 19:54:16 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.252 2010-12-09 16:41:57 siverly Exp $";
 #endif
 
 
