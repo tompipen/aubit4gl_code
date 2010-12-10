@@ -1509,7 +1509,7 @@ void FglForm::nextfield(bool change)
 
                               view->setCurrentIndex(index);
 */
-                              view->setCurrentField(row+1, column);
+                              view->setCurrentField(row+1, 1);
                            }
                            else{
                               //CHANGE TO FIRST ROW
