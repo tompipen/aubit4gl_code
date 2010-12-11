@@ -47,6 +47,8 @@
 #define MODE_TRY 0
 #define MODE_BUY 1
 
+char *last_mod="<not set>";
+int last_line=0;
 static int indent = 0;
 char currfunc[2000]="";
 char currmod[2000]="";
@@ -67,6 +69,8 @@ int inc4GL = 1;			/* Include 4gl in the output */
 int incProg = 1;
 char top_level_function[200]="MAIN";
 int groupByModule=0;
+static void add_symbol(char *name,char*mod,int line,char *type,char *operation) ;
+static void add_variable(expr_str *v, char *module, int lineno, char *operation) ;
 
 extern module_definition this_module;
 //int expr_datatype (struct expr_str *p);
@@ -76,6 +80,7 @@ extern module_definition this_module;
 #define PROTO_REPORT 		2
 #define PROTO_PDF_REPORT 	3
 
+struct module_definition *current_mod;
 struct s_function_prototype
 {
   int proto_type;
@@ -128,6 +133,7 @@ struct function
   int whenever_any_error_func_line;
   int whenever_sql_error_func_line;
   s_call_list *call_list;
+  variable_list *local_variables;
 
 };
 
@@ -1093,7 +1099,7 @@ system_function (char *funcname)
 
 
 static void
-add_function (int module_no, char *module, int line, char *fname, char forr, void *ptr,int isInLibrary,  s_call_list * call_list)
+add_function (int module_no, char *module, int line, char *fname, char forr, void *ptr,int isInLibrary,  s_call_list * call_list, variable_list *vlist)
 {
   functions_cnt++;
   functions = realloc (functions, sizeof (struct function) * functions_cnt);
@@ -1108,6 +1114,7 @@ add_function (int module_no, char *module, int line, char *fname, char forr, voi
   functions[functions_cnt - 1].callsEndTarget = 0;
   functions[functions_cnt - 1].isInLibrary=isInLibrary;
   functions[functions_cnt - 1].call_list = call_list;
+  functions[functions_cnt-1].local_variables=vlist;
 
 
 
@@ -1265,6 +1272,11 @@ cache_expression (char *sxx, expr_str ** ptr, int mode)
     case ET_EXPR_OP_CONCAT:
       return cache_expression ("", &expr->expr_str_u.expr_op->left, mode) + cache_expression ("", &expr->expr_str_u.expr_op->right,
 											      mode);
+
+    case ET_EXPR_VARIABLE_USAGE:
+	add_variable(expr,last_mod,last_line,"USE");
+	break;
+
     default:
       break;
 
@@ -1687,12 +1699,154 @@ print_whenever (int mode)
 }
 
 
+struct s_symbol_table {
+	char *name;
+	char *module;
+	int line;
+	char *type;
+	char *operation;
+	char *scope;
+};
+
+struct s_symbol_table *symbol_table=0;
+int nsymbols=0;
+
+static void add_symbol_with_scope(char *name,char*mod,int line,char *type,char *operation,char *scope) {
+int a;
+	
+	for (a=0;a<nsymbols;a++) {
+		if (strcmp(symbol_table[a].name,name)==0 &&
+		 	strcmp(symbol_table[a].module,mod)==0 &&
+		 	strcmp(symbol_table[a].type,type)==0 &&
+		 	strcmp(symbol_table[a].operation,operation)==0 &&
+		 	strcmp(symbol_table[a].scope,scope)==0 &&
+		 	symbol_table[a].line==line) {
+				return;
+		}
+	}
+	nsymbols++;
+
+
+	symbol_table=realloc(symbol_table, nsymbols*sizeof(symbol_table[0]));
+	symbol_table[nsymbols-1].name=strdup(name);
+	symbol_table[nsymbols-1].module=strdup(mod);
+	symbol_table[nsymbols-1].line=line;
+	symbol_table[nsymbols-1].type=strdup(type);
+	symbol_table[nsymbols-1].operation=strdup(operation);
+	symbol_table[nsymbols-1].scope=strdup(scope);
+}
+
+
+static void dump_symbols(void) {
+int a;
+	fprintf(output,"<SYMBOLS>\n");
+	for (a=0;a<nsymbols;a++) {
+		fprintf(output," <SYMBOL NAME=\"%s\" MODULE=\"%s\" LINE=\"%d\" TYPE=\"%s\" OPERATION=\"%s\" SCOPE=\"%s\"/>\n",
+				symbol_table[a].name,
+				symbol_table[a].module,
+				symbol_table[a].line,
+				symbol_table[a].type,
+				symbol_table[a].operation,
+				symbol_table[a].scope
+			);
+	}
+	fprintf(output,"</SYMBOLS>\n");
+}
+
+
+static void add_symbol(char *name,char*mod,int line,char *type,char *operation) {
+	add_symbol_with_scope(name,mod,line,type,operation,"G");
+	//printf("Add symbol : %s (%s:%d) %s %s\n", name,mod,line,type,operation);
+}
+
+static void add_variable(expr_str *v, char *module, int lineno, char *operation) {
+char *scope="G";
+if (v->expr_type==ET_EXPR_VARIABLE_USAGE) {
+	struct variable_usage *u;
+	u=v->expr_str_u.expr_variable_usage;
+	switch (u->escope) {	
+		case E_SCOPE_MODULE:
+			scope="M"; break;
+
+		case E_SCOPE_LOCAL:
+		case E_SCOPE_REPORT_LOCAL:
+			scope="L"; break;
+		case E_SCOPE_IMPORTED_GLOBAL:
+		case E_SCOPE_EXPORTED_GLOBAL:
+			scope="G"; break;
+		default: break;
+	}
+}
+	add_symbol_with_scope(expr_as_string_when_possible(v),module,lineno,"VARIABLE",operation,scope);
+}
+
+static void add_symbol_assign_single(expr_str *l,char *module,int lineno) {
+	add_variable(l,module,lineno,"ASSIGN");
+}
+
+static void add_symbol_assign(expr_str_list *l,char *module,int lineno) {
+int a;
+if (l==0) return;
+
+for (a=0;a<l->list.list_len;a++) {
+	add_symbol_assign_single(l->list.list_val[a],module,lineno);
+}
+
+}
 
 
 static int
 calls_something (s_commands * func_commands)
 {
   return add_calltree_calls ("", func_commands, MODE_TRY);
+}
+
+
+
+
+static char *
+get_orig_from_clobber (struct module_definition *mod, char *s)
+{
+  int a;
+
+  if (mod == NULL)
+    return s;
+
+  for (a = 0; a < mod->clobberings.clobberings_len; a++)
+    {
+      if (strcmp (mod->clobberings.clobberings_val[a].newval, s) == 0)
+        {
+          return mod->clobberings.clobberings_val[a].important;
+        }
+    }
+  return s;
+}
+
+
+static char *calltree_get_ident(struct expr_str *ptr) {
+ static char buff[2000];
+  if (ptr->expr_type == ET_EXPR_IDENTIFIER)
+    {
+      sprintf (buff, "%s", get_orig_from_clobber (current_mod, ptr->expr_str_u.expr_string));
+      return strdup (buff);
+    }
+
+  if (ptr->expr_type == ET_EXPR_VARIABLE_IDENTIFIER)    // a _VARIABLE
+    {
+      return
+        strdup (expr_as_string_when_possible (ptr->expr_str_u.expr_expr));
+    }
+
+  if (ptr->expr_type == ET_EXPR_VARIABLE_USAGE)
+    {
+      return expr_as_string_when_possible(ptr);
+    }
+
+
+  A4GL_assertion (1,
+                  "lint_get_ident_as_string not implemented for this expression type yet");
+  return 0;
+
 }
 
 static int
@@ -1713,8 +1867,33 @@ add_calltree_calls (char *s, s_commands * func_commands, int mode)
   for (a = 0; a < func_commands->cmds.cmds_len; a++)
     {
 
+	last_mod=func_commands->cmds.cmds_val[a]->module;
+	last_line=func_commands->cmds.cmds_val[a]->lineno;
+
       switch (func_commands->cmds.cmds_val[a]->cmd_data.type)
 	{
+
+
+
+	case E_CMD_INIT_CMD:
+		add_symbol_assign(func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.init_cmd.varlist,last_mod,last_line);
+		break;
+
+	case E_CMD_SELECT_CMD:
+		add_symbol_assign(func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.select_cmd.sql->into,last_mod,last_line);
+		break;
+
+	case E_CMD_EXECUTE_CMD:
+		add_symbol(calltree_get_ident(func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.execute_cmd.sql_stmtid),last_mod,last_line,"STMT","EXECUTE");
+		add_symbol_assign(func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.execute_cmd.outbind,last_mod,last_line);
+		break;
+
+	case E_CMD_LOCATE_CMD:
+		add_symbol_assign(func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.locate_cmd.variables,last_mod,last_line);
+		break;
+
+
+
 
 	case E_CMD_WHENEVER_CMD:
 	  set_whenever (func_commands->cmds.cmds_val[a]);
@@ -1860,6 +2039,9 @@ add_calltree_calls (char *s, s_commands * func_commands, int mode)
 	  break;
 
 	case E_CMD_FOREACH_CMD:
+		add_symbol_assign(func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.foreach_cmd.outputvals,last_mod,last_line);
+		add_symbol(calltree_get_ident(func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.foreach_cmd.cursorname),last_mod,last_line,"CURSOR","FETCH");
+
 	  if (calls_something (func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.foreach_cmd.foreach_commands))
 	    {
 	      call_cnt++;
@@ -2139,9 +2321,11 @@ add_calltree_calls (char *s, s_commands * func_commands, int mode)
 	  }
 	  break;
 
+
 	case E_CMD_INPUT_CMD:
 	  {
 	    int does_call;
+		add_symbol_assign(func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.input_cmd.variables,last_mod,last_line);
 	    evt_list = func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.input_cmd.events;
 	    does_call = add_calltree_calls_from_events ("", evt_list, MODE_TRY);
 	    if (does_call)
@@ -2170,6 +2354,7 @@ add_calltree_calls (char *s, s_commands * func_commands, int mode)
 	case E_CMD_INPUT_ARRAY_CMD:
 	  {
 	    int does_call;
+		add_symbol_assign_single(func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.input_array_cmd.arrayname,last_mod,last_line);
 	    evt_list = func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.input_array_cmd.events;
 	    does_call = add_calltree_calls_from_events ("", evt_list, MODE_TRY);
 	    if (does_call)
@@ -2198,6 +2383,7 @@ add_calltree_calls (char *s, s_commands * func_commands, int mode)
 	case E_CMD_CONSTRUCT_CMD:
 	  {
 	    int does_call;
+		add_symbol_assign_single(func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.construct_cmd.constr_var,last_mod,last_line);
 	    evt_list = func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.construct_cmd.events;
 	    does_call = add_calltree_calls_from_events ("", evt_list, MODE_TRY);
 	    if (does_call)
@@ -2248,6 +2434,7 @@ add_calltree_calls (char *s, s_commands * func_commands, int mode)
 	  break;
 
 	case E_CMD_MOVE_CMD:
+		add_symbol(calltree_get_ident(func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.move_cmd.windowname),last_mod,last_line,"WINDOW","MOVE");
 	  call_cnt += cache_expression ("", &func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.move_cmd.x, mode);
 	  call_cnt += cache_expression ("", &func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.move_cmd.y, mode);
 	  break;
@@ -2285,6 +2472,7 @@ add_calltree_calls (char *s, s_commands * func_commands, int mode)
 
 
 	case E_CMD_CALL_CMD:
+		add_symbol_assign(func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.call_cmd.returning,last_mod,last_line);
 	  call_cnt += cache_expression ("", &func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.call_cmd.fcall, mode);
 	  break;
 
@@ -2293,11 +2481,58 @@ add_calltree_calls (char *s, s_commands * func_commands, int mode)
 	  break;
 
 	case E_CMD_LET_CMD:
+		add_symbol_assign(func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.let_cmd.vars,last_mod,last_line);
 	  call_cnt += cache_expression_list ("", func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.let_cmd.vals, mode);
 	  break;
 
+	case E_CMD_DECLARE_CMD:
+		add_symbol(calltree_get_ident(func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.declare_cmd.cursorname),last_mod,last_line,"CURSOR","DECLARE");
+		if (func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.declare_cmd.declare_dets->ident) {
+			add_symbol(calltree_get_ident(func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.declare_cmd.declare_dets->ident),last_mod,last_line,"STMT","USE");
+		}
+		break;
+
+	case E_CMD_PREPARE_CMD:
+		add_symbol(calltree_get_ident(func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.prepare_cmd.stmtid),last_mod,last_line,"STMT","PREPARE");
+		break;
+
+	case E_CMD_OPEN_CURSOR_CMD:
+		add_symbol(calltree_get_ident(func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.open_cursor_cmd.cursorname),last_mod,last_line,"CURSOR","OPEN");
+		break;
+
+	case E_CMD_CLOSE_CMD:
+		if (func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.close_cmd.cl_type==E_CT_WINDOW) {
+			add_symbol(calltree_get_ident(func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.close_cmd.ident),last_mod,last_line,"WINDOW","CLOSE");
+		} 
+
+		if (func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.close_cmd.cl_type==E_CT_FORM) {
+			add_symbol(calltree_get_ident(func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.close_cmd.ident),last_mod,last_line,"FORM","CLOSE");
+		} 
+		break;
+
+	case E_CMD_CLOSE_SQL_CMD:
+		if (func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.close_sql_cmd.cl_type==E_CT_CURS_OR_PREP) {
+			// We dont know which - so add them both and let the calltree viewer sort it out..
+			add_symbol(calltree_get_ident(func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.close_sql_cmd.ident),last_mod,last_line,"CURSOR","CLOSE");
+			//add_symbol(calltree_get_ident(func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.close_sql_cmd.ident),last_mod,last_line,"STMT","CLOSE");
+		}
+		break;
+
+	case E_CMD_CURRENT_WIN_CMD:
+		if (func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.current_win_cmd.windowname) {
+			add_symbol(calltree_get_ident(func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.current_win_cmd.windowname),last_mod,last_line,"WINDOW","CURRENT");
+		}
+		break;
+
+	case E_CMD_HIDE_CMD:
+		add_symbol(calltree_get_ident(func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.hide_cmd.windowname),last_mod,last_line,"WINDOW","HIDE");
+		break;
+	case E_CMD_SHOW_CMD:
+		add_symbol(calltree_get_ident(func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.show_cmd.windowname),last_mod,last_line,"WINDOW","SHOW");
+		break;
 
 	case E_CMD_OPEN_WINDOW_CMD:
+		add_symbol(calltree_get_ident(func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.open_window_cmd.windowname),last_mod,last_line,"WINDOW","OPEN");
 	  call_cnt += cache_expression ("", &func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.open_window_cmd.x, mode);
 	  call_cnt += cache_expression ("", &func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.open_window_cmd.y, mode);
 	  if (func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.open_window_cmd.wt.wintype == EWT_FORM)
@@ -2308,7 +2543,21 @@ add_calltree_calls (char *s, s_commands * func_commands, int mode)
 	    }
 	  break;
 
+	case E_CMD_PUT_CMD:
+		add_symbol(calltree_get_ident(func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.put_cmd.cursorname),last_mod,last_line,"CURSOR","PUT");
+		break;
+
+	case E_CMD_FREE_CMD:
+		add_symbol(calltree_get_ident(func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.free_cmd.cursorname),last_mod,last_line,"CURSOR","FREE");
+		break;
+	case E_CMD_FLUSH_CMD:
+		add_symbol(calltree_get_ident(func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.flush_cmd.cursorname),last_mod,last_line,"CURSOR","FLUSH");
+		break;
+
 	case E_CMD_FETCH_CMD:
+	add_symbol_assign(func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.fetch_cmd.outbind,last_mod,last_line);
+
+	add_symbol(calltree_get_ident(func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.fetch_cmd.fetch->cursorname),last_mod,last_line,"CURSOR","FETCH");
 	  if (func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.fetch_cmd.fetch)
 	    {
 	      if (func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.fetch_cmd.fetch->fp)
@@ -2320,7 +2569,11 @@ add_calltree_calls (char *s, s_commands * func_commands, int mode)
 	    }
 	  break;
 
+	case E_CMD_DISPLAY_FORM_CMD:
+		add_symbol(calltree_get_ident(func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.display_form_cmd.formname),last_mod,last_line,"FORM","DISPLAY");
+	break;
 	case E_CMD_OPEN_FORM_CMD:
+		add_symbol(calltree_get_ident(func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.open_form_cmd.formname),last_mod,last_line,"FORM","OPEN");
 	  call_cnt +=
 	    cache_expression ("", &func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.open_form_cmd.form_filename, mode);
 	  break;
@@ -2358,6 +2611,18 @@ add_calltree_calls (char *s, s_commands * func_commands, int mode)
 
 
 
+static void dump_variables (variable_list *list, char *type) {
+int a;
+if (list==0) return;
+if (list->variables.variables_len==0) return;
+
+fprintf (output, "<%s_VARIABLES>\n",type);
+for (a=0;a<list->variables.variables_len;a++) {
+	fprintf(output,"<VARIABLE NAME=\"%s\" LINE=\"%d\"/>\n", list->variables.variables_val[a]->names.names.names_val[0].name, list->variables.variables_val[a]->lineno);
+}
+fprintf (output, "</%s_VARIABLES>\n",type);
+}
+
 
 int
 check_program (module_definition * mods, int nmodules)
@@ -2372,6 +2637,7 @@ check_program (module_definition * mods, int nmodules)
   //int mid;
 
   //load_protos();
+
 
   fname = acl_getenv_not_set_as_0 ("CFUNCSFILE");
   if (fname)
@@ -2389,9 +2655,12 @@ check_program (module_definition * mods, int nmodules)
 
       init_whenever ();
 
+      current_mod=&mods[a];
+
       printf ("Module : %s.4gl\n", mods[a].module_name);
       for (b = 0; b < mods[a].module_entries.module_entries_len; b++)
 	{
+
 	  switch (mods[a].module_entries.module_entries_val[b]->met_type)
 	    {
 
@@ -2399,7 +2668,9 @@ check_program (module_definition * mods, int nmodules)
 	      add_function (a, mods[a].module_name,
 			    mods[a].module_entries.module_entries_val[b]->module_entry_u.function_definition.lineno,
 			    "MAIN", 'F', &mods[a].module_entries.module_entries_val[b]->module_entry_u.function_definition, mods[a].moduleIsInLibrary,
- 				&mods[a].module_entries.module_entries_val[b]->module_entry_u.function_definition.call_list
+ 				&mods[a].module_entries.module_entries_val[b]->module_entry_u.function_definition.call_list,
+ 				&mods[a].module_entries.module_entries_val[b]->module_entry_u.function_definition.variables
+
 				);
 	      break;
 
@@ -2408,7 +2679,8 @@ check_program (module_definition * mods, int nmodules)
 			    mods[a].module_entries.module_entries_val[b]->module_entry_u.function_definition.lineno,
 			    mods[a].module_entries.module_entries_val[b]->module_entry_u.function_definition.funcname,
 			    'F', &mods[a].module_entries.module_entries_val[b]->module_entry_u.function_definition, mods[a].moduleIsInLibrary,
- 				&mods[a].module_entries.module_entries_val[b]->module_entry_u.function_definition.call_list
+ 				&mods[a].module_entries.module_entries_val[b]->module_entry_u.function_definition.call_list,
+ 				&mods[a].module_entries.module_entries_val[b]->module_entry_u.function_definition.variables
 				);
 	      break;
 
@@ -2417,7 +2689,8 @@ check_program (module_definition * mods, int nmodules)
 			    mods[a].module_entries.module_entries_val[b]->module_entry_u.report_definition.lineno,
 			    mods[a].module_entries.module_entries_val[b]->module_entry_u.report_definition.funcname,
 			    'R', &mods[a].module_entries.module_entries_val[b]->module_entry_u.report_definition, mods[a].moduleIsInLibrary,
- 				&mods[a].module_entries.module_entries_val[b]->module_entry_u.report_definition.call_list
+ 				&mods[a].module_entries.module_entries_val[b]->module_entry_u.report_definition.call_list,
+ 				&mods[a].module_entries.module_entries_val[b]->module_entry_u.function_definition.variables
 		);
 	      break;
 
@@ -2426,7 +2699,8 @@ check_program (module_definition * mods, int nmodules)
 			    mods[a].module_entries.module_entries_val[b]->module_entry_u.pdf_report_definition.lineno,
 			    mods[a].module_entries.module_entries_val[b]->module_entry_u.pdf_report_definition.funcname,
 			    'P', &mods[a].module_entries.module_entries_val[b]->module_entry_u.pdf_report_definition, mods[a].moduleIsInLibrary,
- 				&mods[a].module_entries.module_entries_val[b]->module_entry_u.pdf_report_definition.call_list
+ 				&mods[a].module_entries.module_entries_val[b]->module_entry_u.pdf_report_definition.call_list,
+ 				&mods[a].module_entries.module_entries_val[b]->module_entry_u.function_definition.variables
 				);
 	      break;
 
@@ -2488,8 +2762,14 @@ check_program (module_definition * mods, int nmodules)
       for (a = 0; a < nmodules; a++)
 	{
 	  int line;
-	  fprintf (output, "<MODULE NAME=\"%s\" MODULENO=\"%d\" FULLNAME=\"%s\" LIBRARY=\"%ld\">\n", mods[a].module_name, a,
-		   xml_encode (mods[a].full_path_filename), mods[a].moduleIsInLibrary);
+	  fprintf (output, "<MODULE NAME=\"%s\" MODULENO=\"%d\" FULLNAME=\"%s\" LIBRARY=\"%ld\">\n", mods[a].module_name, a, xml_encode (mods[a].full_path_filename), mods[a].moduleIsInLibrary);
+
+	  dump_variables(&mods[a].exported_global_variables.variables,"GLOBAL");
+	  dump_variables(&mods[a].module_variables.variables,"MODULE");
+
+	  // DUMP EXPORTED MODULE VARIABLES
+	  // DUMP MODULE VARIABLES
+
 	  for (line = 0; line < mods[a].source_code.lines.lines_len; line++)
 	    {
 	      fprintf (output, "<LINE>%s</LINE>\n", xml_encode (mods[a].source_code.lines.lines_val[line]));
@@ -2533,6 +2813,7 @@ check_program (module_definition * mods, int nmodules)
 
 
 	  fprintf (output, "<FUNCTION NAME=\"%s\" TYPE=\"NORMAL\" MODULE=\"%s\"  MODULENO=\"%d\" LINE=\"%d\">\n", functions[a].function, functions[a].module, functions[a].module_no, functions[a].line);
+	dump_variables(functions[a].local_variables,"LOCAL");
 	  f = functions[a].ptr;
 	  indent++;
 	  print_indent ();
@@ -2612,6 +2893,7 @@ check_program (module_definition * mods, int nmodules)
 
   if (incProg)
     {
+	dump_symbols();
       fprintf (output, "</PROGRAM>\n");
     }
 

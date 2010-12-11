@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlexpr.c,v 1.94 2010-08-05 20:28:58 mikeaubury Exp $
+# $Id: sqlexpr.c,v 1.95 2010-12-11 13:30:14 mikeaubury Exp $
 #
 */
 
@@ -1826,6 +1826,26 @@ rationalize_select_list_item_list (s_select_list_item_list * old)
   return n;
 }
 
+
+
+static char *guess_table(struct s_select * select, struct s_select_list_item *col) {
+int a;
+char *colname;
+	colname=get_select_list_item(select, col);
+//printf("Guessing for %s\n",colname);
+	      if (select->table_elements.tables.tables_len == 1)
+		{
+		  return select->table_elements.tables.tables_val[0].tabname;
+		}
+
+	for (a=0;a< select->table_elements.tables.tables_len;a++) {
+		//printf("Looking in %s for %s\n", select->table_elements.tables.tables_val[a].tabname,colname);
+		if (A4GL_has_column( select->table_elements.tables.tables_val[a].tabname, colname)) return  select->table_elements.tables.tables_val[a].tabname;
+	}
+return "";
+}
+
+
 void
 preprocess_sql_statement (struct s_select *select)
 {
@@ -2181,10 +2201,45 @@ preprocess_sql_statement (struct s_select *select)
 
 		  lt = find_table (select, l);
 		  rt = find_table (select, r);
+		if (A4GL_isyes(acl_getenv("LOGJOINS"))) {
+		if (strlen(lt)==0) {
+			lt=guess_table(select,l);
+		}
+		if (strlen(rt)==0) {
+			rt=guess_table(select,r);
+		}
 
+		if (strlen(lt) && strlen(rt)) {
+			FILE *f;
+			f=fopen("/tmp/joins","a");
+			if (f) {
+			char *lc;
+			char *rc;
+			rc=get_select_list_item (select, p->data.s_select_list_item_data_u.complex_expr.right);
+			lc=get_select_list_item (select, p->data.s_select_list_item_data_u.complex_expr.left);
 
+			if (strcmp(lt,rt)) {
+				if (strchr(rc,'.')) {
+					rc=strchr(rc,'.')+1;
+				}
+					fprintf(f,"%s|%s|", rt, rc);
 
+				if (strchr(lc,'.')) { 
+					lc=strchr(lc,'.')+1;
+				}
+				fprintf(f,"%s|%s\n", lt, lc);
+			
+			} else {
+				if (strchr(rc,'.')) { rc=strchr(rc,'.')+1; }
+				if (strchr(lc,'.')) { rc=strchr(lc,'.')+1; }
+				fprintf(f,"%s|%s|", lt, lc);
+				fprintf(f,"%s|%s\n", rt, rc);
+			}
+			fclose(f);
+			}
+		}
 
+		}
 		}
 	    }
 	}
@@ -3122,7 +3177,7 @@ A4GL_has_column (char *t, char *c)
   int sold;
 
   has_columns_cnt = 0;
-
+/*
   if (strcmp (acl_getenv ("SQLTYPE"), "nosql") == 0)
     {
       return 0;
@@ -3137,6 +3192,8 @@ A4GL_has_column (char *t, char *c)
     {
       return 0;
     }
+*/
+//printf("Looking...\n");
 
   sold = A4GL_get_a4gl_sqlca_sqlcode ();
   rc = A4GLSQL_get_columns (t, "", &dtype, &size);
@@ -3155,6 +3212,7 @@ A4GL_has_column (char *t, char *c)
       has_columns_cnt = 1;
       s = acl_strdup_With_Context (cptr);
       A4GL_trim (s);
+//printf("---->%s\n",s);
       if (A4GL_aubit_strcasecmp (s, c) == 0)
 	{
 	  acl_free_With_Context (s);

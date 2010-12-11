@@ -40,11 +40,12 @@ struct s_severities
   "CS.GOTO", 1},
   { "CS.EXITDIRECT", 0},
   { "CS.MESSAGE", 0},
+  { "CS.DIRECTTRANS", 0},
   { "CS.REPTOP", 0},
   {
   "CS.EXITNOTMAIN", 0},
   {
-  "CS.GETERRORRECORD", 1},
+  "CS.GETERRORRECORD", 0},
   {
   "CS.ERRORHANDLER", 0},
   {

@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fcompile.c,v 1.75 2010-11-02 18:19:55 mikeaubury Exp $
+# $Id: fcompile.c,v 1.76 2010-12-11 13:30:14 mikeaubury Exp $
 #*/
 
 /**
@@ -750,6 +750,20 @@ void new_layout_attribs(void) {
 }
 
 
+
+char * fcompile_find_table(char *s) {
+int a;
+	if (the_form.tables.tables_len==0) {
+		return 0;
+	}
+
+	for (a=0;a<the_form.tables.tables_len;a++) {
+		if (A4GL_has_column(the_form.tables.tables_val[a].tabname,s)) {
+			return the_form.tables.tables_val[a].tabname;
+		}
+	}
+	return 0;
+}
 
 
 //********************************************************************************

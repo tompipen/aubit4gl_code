@@ -784,6 +784,7 @@ op_field_desc
 		    dtype!=DTYPE_DATE  &&
 		    dtype!=DTYPE_DECIMAL  &&
 		    dtype!=DTYPE_MONEY) {
+		printf("dtype=%d col=%s\n",dtype,fld->colname);
 	        		yyerror("A FORMAT cannot be applied to this fields because of the datatype");
 	        		YYERROR;
 		}
@@ -1166,10 +1167,17 @@ field_type : FORMONLY DOT field_name field_datatype_null {
 | named_or_kw_any {
 	struct struct_scr_field *fld;
 	fld=A4GL_get_fld();
-	fld->tabname=acl_strdup("-");
+	fld->tabname=strdup(fcompile_find_table($<str>1));
 	fld->colname=acl_strdup($<str>1);
-        fld->datatype=DTYPE_CHAR ;
-        fld->dtype_size=0;
+	if (fld->tabname!=0) {
+		fld->not_null=0;
+        	fld->datatype=A4GLF_getdatatype_fcompile(fld->colname,fld->tabname);
+        	fld->dtype_size=A4GL_get_dtype_size();
+	} else {
+		fld->tabname=acl_strdup("-");
+        	fld->dtype_size=1;
+		fld->datatype=DTYPE_CHAR;
+	}
 }
 
 | STAR named_or_kw_any DOT named_or_kw_any {

@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.70 2010-08-12 12:13:02 mikeaubury Exp $
+# $Id: Makefile,v 1.71 2010-12-11 13:30:14 mikeaubury Exp $
 #
 
 ROOT		=../..
@@ -185,7 +185,7 @@ core: ${ROOT}/bin/4glc
 a4gl_4glc_int.h: API_lex.c API_parse.c
 
 ${ROOT}/bin/4glc: ${4GLCAOBJ} 
-	${LD_EXE} ${LD_EXE_FLAGS} -L${ROOT}/lib -o $@ $^ ${AUBIT_LIB} ${4GL_LIB} ${EXTRASYSTEMLIBS}
+	${LD_EXE} ${LD_EXE_FLAGS} -L${ROOT}/lib -o $@ $^ ${AUBIT_LIB} ${4GL_LIB} ${EXTRASYSTEMLIBS} -lpthread
 ifeq "${STRIP_EXECUTABLES}" "yes"
 	${CP}  $@${EXEEXT} $@-strip${EXEEXT}
 	${STRIP} ${STRIPFLAGS} $@-strip${EXEEXT}
@@ -359,7 +359,7 @@ fglreload_static:  ../../bin/fglreload_static
 	$(CC) -g -fPIC -I. -I$(AUBITDIR)  -I$(AUBITDIR)/incl $(LD_EXE_FLAGS) reload.c API_lex_self.c common.c ../../lib/generated/std_funcs.c  -o ../../bin/fglreload_static -L$(AUBITDIR)/lib -laubit4gl  -L`aubit-config DEFAULT_PLUGINDIR` -lLEX_C
 
 ../../bin/fgllint: lint_main.o API_lex.o  lint.o expr_munging.o linearise.o   common.o ../../lib/generated/std_funcs.o   load_prototypes.o
-	$(CC) ${CFLAGS} ${RDYNAMIC} -g -o $@ $^ -L$(AUBITDIR)/lib -laubit4gl 
+	$(CC) ${CFLAGS} ${RDYNAMIC} -g -o $@ $^ -L$(AUBITDIR)/lib -laubit4gl  -lpthread
 	#cp fgllint $(AUBITDIR)/bin
 
 mkglobals: ../../bin/mkglobals
