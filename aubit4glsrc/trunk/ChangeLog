@@ -3,13 +3,6 @@ Sat Dec 11 14:42:51 GMT 2010
 ---------------------------
 1.2_19 Released
 ---------------------------
-	2010-12-11 13:45  mikeaubury
-	
-	2010-12-11 13:34  mikeaubury
-	
-	2010-12-11 13:30  mikeaubury
-	
-	2010-12-11 13:09  mikeaubury
 	
 	2010-12-11 13:08  mikeaubury
 	
@@ -34,8 +27,6 @@ Sat Dec 11 14:42:51 GMT 2010
 	
 	Construct Issue with UI=XML
 	
-	2010-12-07 10:38  mikeaubury
-	
 	2010-12-07 10:24  mikeaubury
 	
 	Small fixup for INPUT ARRAY where no fields are editable
@@ -48,8 +39,6 @@ Sat Dec 11 14:42:51 GMT 2010
 	allows you to specify an alternate name for the syspgma4gl
 	database name
 	
-	2010-12-06 18:21  mikeaubury
-	
 	2010-12-04 15:46  mikeaubury
 	
 	fgllint fixup for "CURRENT WINDOW IS SCREEN"  (causes segfault)
@@ -58,34 +47,18 @@ Sat Dec 11 14:42:51 GMT 2010
 	
 	Multidimensional dynamic array fixup
 	
-	2010-11-27 14:06  mikeaubury
-	
-	2010-11-26 11:01  mikeaubury
-	
 	2010-11-26 09:49  siverly
 	
 	ms: Added a daemon functionality. Parameters : (-start, -stop,
 	-restart)
 	
-	2010-11-24 21:33  mikeaubury
-	
 	2010-11-24 20:46  mikeaubury
 	
 	Add "schema". for PG8 unload
 	
-	2010-11-22 15:50  mikeaubury
-	
-	2010-11-19 15:15  mikeaubury
-	
-	2010-11-17 19:37  mikeaubury
-	
 	2010-11-17 19:35  mikeaubury
 	
 	Add LOGODBCSQLFILE and LOGODBCSQLPID settings
-	
-	2010-11-17 14:10  mikeaubury
-	
-	2010-11-16 18:56  mikeaubury
 	
 ---------------------------
 Tue Nov 16 18:53:22 GMT 2010
