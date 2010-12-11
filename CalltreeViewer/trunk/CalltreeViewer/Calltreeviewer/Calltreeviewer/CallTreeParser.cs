@@ -371,6 +371,38 @@ namespace AubitCalltreeViewer
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute()]
         public FUNCTION[] FUNCTION;
+
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlArrayItem(IsNullable = false)]
+        public SYMBOL[] SYMBOLS;
+    }
+
+    [System.Xml.Serialization.XmlRootAttribute(Namespace = "", IsNullable = true)]
+    public class SYMBOL
+    {
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string NAME;
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string  MODULE;
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public int LINE;
+
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string TYPE;
+
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string OPERATION;
+
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string SCOPE;
+        
     }
 
     /// <remarks/>
@@ -390,9 +422,23 @@ namespace AubitCalltreeViewer
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string FULLNAME;
 
+         [System.Xml.Serialization.XmlArrayItem(IsNullable = false)]
+        public VARIABLE[] GLOBAL_VARIABLES;
+
+         [System.Xml.Serialization.XmlArrayItem(IsNullable = false)]
+        public VARIABLE[] MODULE_VARIABLES;
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute()]
         public LINE[] LINE;
+    }
+
+    [System.Xml.Serialization.XmlRootAttribute(Namespace = "", IsNullable = true)]
+    public class VARIABLE
+    {
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string NAME;
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public int LINE;
     }
 
     /// <remarks/>
@@ -418,6 +464,9 @@ namespace AubitCalltreeViewer
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute(DataType = "NMTOKEN")]
         public string NAME;
+
+        [System.Xml.Serialization.XmlArrayItem(IsNullable = false)]
+        public VARIABLE[] LOCAL_VARIABLES;
 
         /// <remarks/>
         public COMMANDS COMMANDS;

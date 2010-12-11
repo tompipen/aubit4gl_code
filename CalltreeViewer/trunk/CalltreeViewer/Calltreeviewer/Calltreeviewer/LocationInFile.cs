@@ -83,10 +83,15 @@ namespace Calltreeviewer
             string path;
             //oldPathSep=t.TreeView.PathSeparator;
             //t.TreeView.PathSeparator = "-->";
+            if (t==null) return "";
+            try {
             path=t.FullPath;
             path=path.Replace("\\","-->");
             //t.TreeView.PathSeparator = oldPathSep;
             return path;
+            } catch (Exception e) {
+                return "";
+            }
         }
     }
 
@@ -136,7 +141,7 @@ namespace Calltreeviewer
 
 
 
-    class LocationInFile
+    public class LocationInFile
     {
         private int lineNumber;
         private int module;

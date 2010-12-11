@@ -7,6 +7,7 @@ using System.Text;
 using System.Windows.Forms;
 using System.IO;
 using System.Xml.Serialization;
+using SearchableControls;
 
 namespace Calltreeviewer
 {
@@ -21,6 +22,14 @@ namespace Calltreeviewer
         private bool loading;
         private TreeNode lastSelectedNode=null;
         private int spinCnt = 0;
+        private string loadFile = null;
+        int currentFunctionStart=-1;
+        int currentFunctionEnd=-1;
+
+
+        private List<AubitCalltreeViewer.SYMBOL> current_global_variables = null;
+        private List<AubitCalltreeViewer.SYMBOL> current_module_variables = null;
+        private List<AubitCalltreeViewer.SYMBOL> current_local_variables = null;
 
         private enum TreeStyle
         {
@@ -29,73 +38,107 @@ namespace Calltreeviewer
             TreeStyleMain
         };
 
-        public MainCalltreeWindow()
+        public MainCalltreeWindow(string[] args)
         {
             InitializeComponent();
+
+
+            if (args.Length>0) {
+                loadFile = args[0];
+            
+            }
+            
         }
 
 
 
         private void mnLoad_Click(object sender, EventArgs e)
         {
-            loadXMLFile(TreeStyle.TreeStyleNormal);
+            loadXMLFile(TreeStyle.TreeStyleNormal,null);
         }
 
-        private void loadXMLFile(TreeStyle style)
+        private void loadXMLFile(TreeStyle style, string fileName)
         {
-            OpenFileDialog f = new OpenFileDialog();
+
             loading = true;
-            // Set up the dialog box..
-            f.DefaultExt = "xml";
-            f.AddExtension = true;
-            f.CheckFileExists = true;
-            f.CheckPathExists = true;
-            f.Filter = "Calltree file|*.xml";
 
-            // Show the dialog box - and check the OK button was
-            // clicked...
-            if (f.ShowDialog() == DialogResult.OK)
+            if (fileName == null)
             {
-                curr_program = null;
+                OpenFileDialog f = new OpenFileDialog();
 
-                // Get the filename from the dialog box..
-                if (f.FileName != null)
+                // Set up the dialog box..
+                f.DefaultExt = "xml";
+                f.AddExtension = true;
+                f.CheckFileExists = true;
+                f.CheckPathExists = true;
+                f.Filter = "Calltree file|*.xml";
+
+                // Show the dialog box - and check the OK button was
+                // clicked...
+                if (f.ShowDialog() == DialogResult.OK)
                 {
-                    string fileXML = null;
-                    
-                    
-                    AubitCalltreeViewer.PROGRAM p;
-                    try
+                    curr_program = null;
+
+                    // Get the filename from the dialog box..
+                    if (f.FileName != null)
                     {
-                      
-                     
-                        this.Cursor = Cursors.WaitCursor;
-                        // We've got the filename - so use it
-                        // with our XML deserializer to get a PROGRAM
-                        //
-                        fileXML = File.ReadAllText(f.FileName);
-                        System.Type t;
-                        t = typeof(AubitCalltreeViewer.PROGRAM);
-                        XmlSerializer ser;
-                        ser = new XmlSerializer(t);
 
-                        TextReader r = new StringReader(fileXML);
-
-                        p = (AubitCalltreeViewer.PROGRAM)ser.Deserialize(r);
-                        curr_program = p;
-                        
-
-                        // Now - show the tree..
-                        loadTree(p, style);
-                        this.Cursor = Cursors.Default;
-                    }
-                    catch (Exception ex)
-                    {
-                        // Something went wrong - tell the user
-                        // and dont worry about it...
-                        MessageBox.Show(ex.ToString());
+                        fileName = f.FileName;
                     }
                 }
+            }
+
+
+
+
+            if (fileName != null)
+            {
+                string fileXML = null;
+
+
+                AubitCalltreeViewer.PROGRAM p;
+                try
+                {
+
+
+                    this.Cursor = Cursors.WaitCursor;
+                    // We've got the filename - so use it
+                    // with our XML deserializer to get a PROGRAM
+                    //
+                    fileXML = File.ReadAllText(fileName);
+                    System.Type t;
+                    t = typeof(AubitCalltreeViewer.PROGRAM);
+                    XmlSerializer ser;
+                    ser = new XmlSerializer(t);
+
+                    TextReader r = new StringReader(fileXML);
+
+                    p = (AubitCalltreeViewer.PROGRAM)ser.Deserialize(r);
+                    curr_program = p;
+
+
+                    current_global_variables = new List<AubitCalltreeViewer.SYMBOL>();
+                    for (int module_no = 0; module_no < curr_program.MODULES.Length; module_no++)
+                    {
+                        if (curr_program.MODULES[module_no].GLOBAL_VARIABLES != null)
+                        {
+                            appendVariables(current_global_variables, curr_program.MODULES[module_no].NAME, curr_program.MODULES[module_no].GLOBAL_VARIABLES); 
+                        }
+                    }
+
+
+                    // Now - show the tree..
+                    loadTree(p, style);
+                    this.Cursor = Cursors.Default;
+                    this.Text = "Calltree for " + fileName;
+                }
+                catch (Exception ex)
+                {
+                    // Something went wrong - tell the user
+                    // and dont worry about it...
+                    MessageBox.Show(ex.ToString());
+                }
+
             }
             lblLoaded.Text = "";
             loading = false;
@@ -339,15 +382,24 @@ namespace Calltreeviewer
 
         private void loadModule(int module_no)
         {
-  
-            
+
+
+            currentFunctionStart = -1;
+            currentFunctionEnd = -1;
 
             if (module_no == currentModuleNo)
             {
                 return;
             }
 
-           
+
+            current_module_variables = new List<AubitCalltreeViewer.SYMBOL>();
+            if (curr_program.MODULES[module_no].MODULE_VARIABLES!=null)
+            {
+                appendVariables(current_module_variables, curr_program.MODULES[module_no].NAME, curr_program.MODULES[module_no].MODULE_VARIABLES); 
+                //current_module_variables.AddRange(curr_program.MODULES[module_no].MODULE_VARIABLES);
+            }
+
             string line;
             lastHighlightedLine = -1;
             line = "";
@@ -372,6 +424,22 @@ namespace Calltreeviewer
             textBox1.SelectionLength = 0;
             textBox1.SelectionStart = 0;
             Application.DoEvents();
+        }
+
+        private void appendVariables(List<AubitCalltreeViewer.SYMBOL> variables, string moduleName, AubitCalltreeViewer.VARIABLE[] vARIABLE)
+        {
+            for (int a = 0; a < vARIABLE.Length; a++)
+            {
+                AubitCalltreeViewer.SYMBOL s;
+                s = new AubitCalltreeViewer.SYMBOL();
+                s.LINE = vARIABLE[a].LINE;
+                s.MODULE = moduleName;
+                s.NAME = vARIABLE[a].NAME;
+                s.OPERATION = "DEFINE";
+                s.TYPE = "VARIABLE";
+                s.SCOPE = "-";
+                variables.Add(s);
+            }
         }
 
         private void treeView1_AfterSelect(object sender, TreeViewEventArgs e)
@@ -901,7 +969,7 @@ namespace Calltreeviewer
 
         private void loadXmlFileMain(object sender, EventArgs e)
         {
-            loadXMLFile(TreeStyle.TreeStyleMain);
+            loadXMLFile(TreeStyle.TreeStyleMain,null);
         }
 
 
@@ -1064,6 +1132,11 @@ namespace Calltreeviewer
             lblListbox.Text = "";
             tsLblSearching.Text = "";
             lblLoaded.Text = "";
+            Application.DoEvents();
+            if (loadFile!=null)
+            {
+                loadXMLFile(TreeStyle.TreeStyleMainRecurse, loadFile);
+            }
         }
 
         private void findFunctionToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1174,7 +1247,7 @@ namespace Calltreeviewer
         private void loadXmlMainRecursive(object sender, EventArgs e)
         {
 
-            loadXMLFile(TreeStyle.TreeStyleMainRecurse);
+            loadXMLFile(TreeStyle.TreeStyleMainRecurse,null);
         }
 
 
@@ -1343,6 +1416,447 @@ namespace Calltreeviewer
             if (!loading)
             {
                 selectNode(null);
+            }
+        }
+
+        private void findWordToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            
+        }
+
+
+        string remove_subscripts(string s)
+        {
+            int bracket=0;
+            string snew = "";
+            for (int a = 0; a < s.Length; a++)
+            {
+                if (s[a] == '[') { bracket++; continue; }
+                if (s[a] == ']') { bracket--; continue; }
+                if (bracket == 0) { snew += s[a]; }
+            }
+            return snew;
+        }
+
+        bool name_match(string symbol_name, string srch_name, string type)
+        {
+            symbol_name = symbol_name.ToLower();
+            srch_name = srch_name.ToLower();
+            if (type == "VARIABLE")
+            {
+
+                
+
+
+                // Special case for variables to remove any array subscripts and check for records etc..
+                symbol_name=remove_subscripts(symbol_name);
+                srch_name = remove_subscripts(srch_name);
+
+                symbol_name=symbol_name.Replace(".*","");
+                srch_name = srch_name.Replace(".*", "");
+
+                if (symbol_name.Contains("."))
+                {
+                    // Must be looking for a specific portion of the symbol - eg mv_rec.b
+                    if (srch_name.Contains("."))
+                    {
+                        // Must match completely
+                        return srch_name == symbol_name;
+                    }
+                    else
+                    {
+                        // Remove the .xxxx from the symbol_name...
+                        symbol_name = symbol_name.Substring(0, symbol_name.IndexOf('.') );
+                        return symbol_name == srch_name;
+                    }
+                }
+                else
+                {
+                    if (srch_name.Contains("."))
+                    {
+                        srch_name = srch_name.Substring(0, srch_name.IndexOf('.') );
+                        return srch_name == symbol_name;
+                    }
+                    else
+                    {
+                        return srch_name == symbol_name;
+                    }
+                }               
+            }
+            return symbol_name == srch_name;
+        }
+
+
+
+
+        private void textBox1_searchStarted(string searchTerm)
+        {
+            for(int a=0;a<tscbFindFunction.Items.Count;a++) {
+                string term = (string)tscbFindFunction.Items[a];
+                if (term == searchTerm)
+                {
+                    textBox1.setContextDialog(null);
+                    tscbFindFunction.SelectedIndex = a;
+                    // Look for functions...
+                    for (int ax = 0; ax < curr_program.FUNCTION.Length; ax++)
+                    {
+                        if (curr_program.FUNCTION[ax].NAME == searchTerm)
+                        {
+                            SearchableControls.symbolFunction sfunc = new SearchableControls.symbolFunction();
+
+                            // Found it..
+                            sfunc.hasDefinition = true;
+                            sfunc.symbolName = searchTerm.ToLower();
+                            tslSrchText.Text = searchTerm.ToLower() ;
+
+                            SymbolLocation sl=new SymbolLocation(curr_program.FUNCTION[ax].MODULE, curr_program.FUNCTION[ax].LINE, "FUNCTION", "DEFINITION", get_line(curr_program.FUNCTION[ax].MODULE, curr_program.FUNCTION[ax].LINE));
+                            if (!sl.InList(sfunc))
+                            {
+                                sfunc.symbols.Add(sl);
+                            }
+                            textBox1.setContextDialog(sfunc);
+                            break;
+                        }
+                    }
+                    return;
+                }
+            //tscbFindFunction.Items
+            }
+
+
+            setCurrentFunction(textBox1.currentLineNo);
+            
+            // Not in the functions - maybe its a symbol or variable..
+            SearchableControls.baseSymbolType type=null;
+            SearchableControls.symbolCursor sc = new SearchableControls.symbolCursor();
+            SearchableControls.symbolVariable sv = new SearchableControls.symbolVariable();
+            SearchableControls.symbolForm sf = new SearchableControls.symbolForm();
+            SearchableControls.symbolStatement ss = new SearchableControls.symbolStatement();
+            SearchableControls.symbolWindow sw = new SearchableControls.symbolWindow();
+            
+
+            searchTerm = searchTerm.Trim();
+            /*
+            if (searchTerm.Contains("["))
+            {
+                searchTerm = searchTerm.Substring(0, searchTerm.IndexOf("[")-1);
+            }
+
+            if (searchTerm.Contains("."))
+            {
+                searchTerm = searchTerm.Substring(0, searchTerm.IndexOf(".") - 1);
+            }
+             * */
+            tslSrchText.Text = searchTerm.ToLower();
+
+
+            for (int a = 0; a < curr_program.SYMBOLS.Length; a++)
+            {
+                if (name_match(curr_program.SYMBOLS[a].NAME.ToLower(), searchTerm.ToLower(), curr_program.SYMBOLS[a].TYPE))
+                {
+                    SymbolLocation sl;
+                    if (inScope(curr_program.SYMBOLS[a].SCOPE, curr_program.SYMBOLS[a].MODULE, curr_program.SYMBOLS[a].LINE))
+                    {
+
+                        switch (curr_program.SYMBOLS[a].TYPE)
+                        {
+                            case "CURSOR":
+                                sc.symbolName = searchTerm.ToLower();
+                                type = sc;
+                                sl = new SymbolLocation(curr_program.SYMBOLS[a].MODULE, curr_program.SYMBOLS[a].LINE, curr_program.SYMBOLS[a].TYPE, curr_program.SYMBOLS[a].OPERATION, get_line(curr_program.SYMBOLS[a].MODULE, curr_program.SYMBOLS[a].LINE));
+
+                                if (!sl.InList(type))
+                                {
+                                    type.symbols.Add(sl);
+
+                                }
+                                switch (curr_program.SYMBOLS[a].OPERATION)
+                                {
+                                    case "DECLARE": sc.hasDeclare = true; break;
+                                    case "CLOSE": sc.hasClose = true; break;
+                                    case "FETCH": sc.hasFetch = true; break;
+                                    case "OPEN": sc.hasOpen = true; break;
+                                }
+                                break;
+
+                            case "VARIABLE":
+                                {
+                                    sv.symbolName = searchTerm.ToLower();
+                                    type = sv;
+                                    int line = curr_program.SYMBOLS[a].LINE;
+                                    
+                                    sl = new SymbolLocation(curr_program.SYMBOLS[a].MODULE, line, curr_program.SYMBOLS[a].TYPE, curr_program.SYMBOLS[a].OPERATION, get_line(curr_program.SYMBOLS[a].MODULE, line));
+                                    if (!sl.InList(type))
+                                    {
+                                        type.symbols.Add(sl);
+                                    }
+                                    switch (curr_program.SYMBOLS[a].OPERATION)
+                                    {
+                                        case "ASSIGN": sv.hasAssign = true; break;
+                                        case "USE": sv.hasRead = true; break;
+                                    }
+                                }
+                                break;
+
+                            case "WINDOW":
+                                sw.symbolName = searchTerm.ToLower();
+                                type = sw;
+                                sl = new SymbolLocation(curr_program.SYMBOLS[a].MODULE, curr_program.SYMBOLS[a].LINE, curr_program.SYMBOLS[a].TYPE, curr_program.SYMBOLS[a].OPERATION, get_line(curr_program.SYMBOLS[a].MODULE, curr_program.SYMBOLS[a].LINE));
+                                if (!sl.InList(type))
+                                {
+                                    type.symbols.Add(sl);
+                                }
+                                switch (curr_program.SYMBOLS[a].OPERATION)
+                                {
+                                    case "CLOSE": sw.hasClose = true; break;
+                                    case "HIDE": sw.hasHide = true; break;
+                                    case "MOVE": sw.hasMove = true; break;
+                                    case "OPEN": sw.hasOpen = true; break;
+                                    case "SHOW": sw.hasShow = true; break;
+                                }
+                                break;
+
+                            case "FORM":
+                                sf.symbolName = searchTerm.ToLower();
+                                type = sf;
+                                sl = new SymbolLocation(curr_program.SYMBOLS[a].MODULE, curr_program.SYMBOLS[a].LINE, curr_program.SYMBOLS[a].TYPE, curr_program.SYMBOLS[a].OPERATION, get_line(curr_program.SYMBOLS[a].MODULE, curr_program.SYMBOLS[a].LINE));
+                                if (!sl.InList(type))
+                                {
+                                    type.symbols.Add(sl);
+                                }
+                                switch (curr_program.SYMBOLS[a].OPERATION)
+                                {
+                                    case "CLOSE": sf.hasClose = true; break;
+                                    case "DISPLAY": sf.hasDisplay = true; break;
+                                    case "OPEN": sf.hasOpen = true; break;
+                                }
+                                break;
+
+                            case "STMT":
+                                if (curr_program.SYMBOLS[a].OPERATION == "CLOSE") break;
+                                ss.symbolName = searchTerm.ToLower();
+                                type = ss;
+                                sl = new SymbolLocation(curr_program.SYMBOLS[a].MODULE, curr_program.SYMBOLS[a].LINE, curr_program.SYMBOLS[a].TYPE, curr_program.SYMBOLS[a].OPERATION, get_line(curr_program.SYMBOLS[a].MODULE, curr_program.SYMBOLS[a].LINE));
+                                if (!sl.InList(type))
+                                {
+                                    type.symbols.Add(sl);
+                                }
+                                switch (curr_program.SYMBOLS[a].OPERATION)
+                                {
+                                    case "USE": ss.hasPrepare = true; break;
+                                    case "DECLARE": ss.hasDeclare = true; break;
+                                    case "EXECUTE": ss.hasExecute = true; break;
+                                }
+                                break;
+                        }
+
+                    }
+                }
+            }
+
+
+
+
+            #region Look for variables...
+            if (type == null || type==sv)
+            {
+
+                bool processed = false;
+                if (current_local_variables != null)
+                {
+                    // Maybe we're on a DEFINE ? 
+                    for (int a = 0; a < current_local_variables.Count; a++)
+                    {
+                        if (name_match(current_local_variables[a].NAME,searchTerm,"VARIABLE"))
+                        {
+                            processed = true;
+                            type = sv;
+                            type.symbolName = searchTerm.ToLower();
+
+                            sv.hasDefine = true;
+                            SymbolLocation sl = new SymbolLocation(current_local_variables[a].MODULE, current_local_variables[a].LINE, current_local_variables[a].TYPE, current_local_variables[a].OPERATION, get_line(current_local_variables[a].MODULE, current_local_variables[a].LINE));
+                            if (!sl.InList(type))
+                            {
+                                type.symbols.Add(sl);
+                            }
+                            break;
+                        }
+                    }
+                }
+
+
+                if (!processed)
+                {
+                    for (int a = 0; a < current_module_variables.Count; a++)
+                    {
+                        if (name_match(current_module_variables[a].NAME, searchTerm,"VARIABLE"))
+                        {
+                            processed = true;
+                            type = sv;
+                            type.symbolName = searchTerm.ToLower();
+
+                            sv.hasDefine = true;
+                            SymbolLocation sl = new SymbolLocation(current_module_variables[a].MODULE, current_module_variables[a].LINE, current_module_variables[a].TYPE, current_module_variables[a].OPERATION, get_line(current_module_variables[a].MODULE, current_module_variables[a].LINE));
+                            if (!sl.InList(type))
+                            {
+                                type.symbols.Add(sl);
+                            }
+                                break;
+                        }
+                    }
+                }
+
+                if (!processed)
+                {
+                    for (int a = 0; a < current_global_variables.Count; a++)
+                    {
+                        if (name_match(current_global_variables[a].NAME,searchTerm,"VARIABLE"))
+                        {
+                            processed = true;
+                            type = sv;
+                            type.symbolName = searchTerm.ToLower();
+                            sv.hasDefine = true;
+                            SymbolLocation sl = new SymbolLocation(current_global_variables[a].MODULE, current_global_variables[a].LINE, current_global_variables[a].TYPE, current_global_variables[a].OPERATION, get_line(current_global_variables[a].MODULE, current_global_variables[a].LINE));
+                            if (!sl.InList(type))
+                            {
+                                type.symbols.Add(sl);
+                            }
+                            break;
+                        }
+                    }
+                }
+
+
+
+            }
+            #endregion
+
+            
+
+
+            if (type != null)
+            {
+                textBox1.setContextDialog(type);
+            }
+            else
+            {
+                textBox1.setContextDialog(null);
+            }
+        }
+
+        private string get_line(string module, int line)
+        {
+            for (int a = 0; a < curr_program.MODULES.Length; a++)
+            {
+                if (curr_program.MODULES[a].NAME == module)
+                {
+                    string s = curr_program.MODULES[a].LINE[line-1].Text;
+                    if (s != null) return s.Trim();
+                    return "";
+                    
+                }
+            }
+            return "";
+        }
+
+        private void setCurrentFunction(int p)
+        {
+            AubitCalltreeViewer.FUNCTION f=null;
+            //currentFunctionEnd = 10000000;
+            int lastLine = -1;
+            int minNextLine = 10000000;
+
+            for (int a = 0; a < curr_program.FUNCTION.Length; a++)
+            {
+                if (curr_program.FUNCTION[a].MODULE == curr_program.MODULES[currentModuleNo].NAME)
+                {
+
+                    if (curr_program.FUNCTION[a].LINE < p && curr_program.FUNCTION[a].LINE>lastLine)
+                    {
+                        lastLine = curr_program.FUNCTION[a].LINE;
+                        f = curr_program.FUNCTION[a];
+                        //break;
+                    }
+                    if (curr_program.FUNCTION[a].LINE > p && curr_program.FUNCTION[a].LINE < minNextLine)
+                    {
+                        minNextLine = curr_program.FUNCTION[a].LINE - 1;
+                    }
+                }
+            }
+
+            if (f != null)
+            {
+                currentFunctionStart = f.LINE;
+                currentFunctionEnd = minNextLine;
+                current_local_variables = new List<AubitCalltreeViewer.SYMBOL>();
+                if (f.LOCAL_VARIABLES != null)
+                {
+                    appendVariables(current_local_variables, curr_program.MODULES[currentModuleNo].NAME, f.LOCAL_VARIABLES); 
+                }
+            }
+        }
+
+        private bool inScope(string scope, string module, int line)
+        {
+            if (scope == "G" || scope=="-") return true;
+
+            if (currentModuleNo>=0) {
+                if (scope == "M" && curr_program.MODULES[currentModuleNo].NAME == module) return true;
+
+                if (scope == "L" && curr_program.MODULES[currentModuleNo].NAME == module) 
+                {
+                    if (line >= currentFunctionStart && line <= currentFunctionEnd)
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        private void textBox1_DoubleClick(object sender, EventArgs e)
+        {
+            if (textBox1.SelectedText != null)
+            {
+                textBox1_searchStarted(textBox1.SelectedText);
+            }
+        }
+
+        private void textBox1_clickContext(object sender, EventArgs e)
+        {
+            SearchableControls.ContextSearchItem c;
+            if (sender is SearchableControls.ContextSearchItem)
+            {
+                c = (SearchableControls.ContextSearchItem)sender;
+
+                if (loadModule(c.sl.moduleName))
+                {
+                    setModuleLine(c.sl.lineNo);
+                    actioningUserInteraction = false;
+                    return;
+                }
+ 
+            }
+        }
+
+        private bool loadModule(string p)
+        {
+            for (int a = 0; a < curr_program.MODULES.Length; a++)
+            {
+                if (p == curr_program.MODULES[a].NAME)
+                {
+                    loadModule(a);
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        private void textBox1_searchForFunctionCall()
+        {
+            if (tscbFindFunction.Text != null)
+            {
+                invertTree(tscbFindFunction.Text);
             }
         }
     }

@@ -34,7 +34,6 @@ namespace Calltreeviewer
             this.panel1 = new System.Windows.Forms.Panel();
             this.lblTreeView = new System.Windows.Forms.Label();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
-            this.textBox1 = new System.Windows.Forms.TextBox();
             this.listBox1 = new System.Windows.Forms.ListBox();
             this.panel2 = new System.Windows.Forms.Panel();
             this.lblListbox = new System.Windows.Forms.Label();
@@ -66,6 +65,8 @@ namespace Calltreeviewer
             this.lblNoOfLines = new System.Windows.Forms.ToolStripStatusLabel();
             this.tsLblSearching = new System.Windows.Forms.ToolStripStatusLabel();
             this.lblLoaded = new System.Windows.Forms.ToolStripStatusLabel();
+            this.textBox1 = new SearchableControls.SearchableTextBox();
+            this.tslSrchText = new System.Windows.Forms.ToolStripStatusLabel();
             this.mainSplitPanel.Panel1.SuspendLayout();
             this.mainSplitPanel.Panel2.SuspendLayout();
             this.mainSplitPanel.SuspendLayout();
@@ -84,7 +85,7 @@ namespace Calltreeviewer
             // mainSplitPanel
             // 
             this.mainSplitPanel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.mainSplitPanel.Location = new System.Drawing.Point(0, 25);
+            this.mainSplitPanel.Location = new System.Drawing.Point(0, 27);
             this.mainSplitPanel.Name = "mainSplitPanel";
             this.mainSplitPanel.Orientation = System.Windows.Forms.Orientation.Horizontal;
             // 
@@ -96,8 +97,8 @@ namespace Calltreeviewer
             // 
             this.mainSplitPanel.Panel2.Controls.Add(this.groupBox1);
             this.mainSplitPanel.Panel2.Padding = new System.Windows.Forms.Padding(2);
-            this.mainSplitPanel.Size = new System.Drawing.Size(1082, 509);
-            this.mainSplitPanel.SplitterDistance = 470;
+            this.mainSplitPanel.Size = new System.Drawing.Size(1082, 507);
+            this.mainSplitPanel.SplitterDistance = 468;
             this.mainSplitPanel.TabIndex = 1;
             // 
             // splitContainer1
@@ -115,7 +116,7 @@ namespace Calltreeviewer
             // 
             this.splitContainer1.Panel2.Controls.Add(this.splitContainer2);
             this.splitContainer1.Panel2.Controls.Add(this.panel2);
-            this.splitContainer1.Size = new System.Drawing.Size(1082, 470);
+            this.splitContainer1.Size = new System.Drawing.Size(1082, 468);
             this.splitContainer1.SplitterDistance = 159;
             this.splitContainer1.TabIndex = 1;
             // 
@@ -125,12 +126,12 @@ namespace Calltreeviewer
             this.treeView1.HideSelection = false;
             this.treeView1.Location = new System.Drawing.Point(0, 23);
             this.treeView1.Name = "treeView1";
-            this.treeView1.Size = new System.Drawing.Size(159, 447);
+            this.treeView1.Size = new System.Drawing.Size(159, 445);
             this.treeView1.TabIndex = 0;
-            this.treeView1.DoubleClick += new System.EventHandler(this.treeView1_DoubleClick);
-            this.treeView1.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeView1_AfterSelect);
-            this.treeView1.MouseMove += new System.Windows.Forms.MouseEventHandler(this.treeView1_MouseMove);
             this.treeView1.BeforeSelect += new System.Windows.Forms.TreeViewCancelEventHandler(this.treeView1_BeforeSelect);
+            this.treeView1.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeView1_AfterSelect);
+            this.treeView1.DoubleClick += new System.EventHandler(this.treeView1_DoubleClick);
+            this.treeView1.MouseMove += new System.Windows.Forms.MouseEventHandler(this.treeView1_MouseMove);
             // 
             // panel1
             // 
@@ -165,24 +166,9 @@ namespace Calltreeviewer
             // splitContainer2.Panel2
             // 
             this.splitContainer2.Panel2.Controls.Add(this.listBox1);
-            this.splitContainer2.Size = new System.Drawing.Size(919, 447);
-            this.splitContainer2.SplitterDistance = 329;
+            this.splitContainer2.Size = new System.Drawing.Size(919, 445);
+            this.splitContainer2.SplitterDistance = 327;
             this.splitContainer2.TabIndex = 4;
-            // 
-            // textBox1
-            // 
-            this.textBox1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.textBox1.Font = new System.Drawing.Font("Courier New", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textBox1.HideSelection = false;
-            this.textBox1.Location = new System.Drawing.Point(0, 0);
-            this.textBox1.Multiline = true;
-            this.textBox1.Name = "textBox1";
-            this.textBox1.ReadOnly = true;
-            this.textBox1.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.textBox1.Size = new System.Drawing.Size(919, 329);
-            this.textBox1.TabIndex = 3;
-            this.textBox1.WordWrap = false;
-            this.textBox1.MouseMove += new System.Windows.Forms.MouseEventHandler(this.textBox1_MouseMove);
             // 
             // listBox1
             // 
@@ -192,7 +178,7 @@ namespace Calltreeviewer
             this.listBox1.HorizontalScrollbar = true;
             this.listBox1.Location = new System.Drawing.Point(0, 0);
             this.listBox1.Name = "listBox1";
-            this.listBox1.Size = new System.Drawing.Size(919, 108);
+            this.listBox1.Size = new System.Drawing.Size(919, 114);
             this.listBox1.TabIndex = 4;
             this.listBox1.DoubleClick += new System.EventHandler(this.dblClickListbox);
             this.listBox1.MouseMove += new System.Windows.Forms.MouseEventHandler(this.listBox1_MouseMove);
@@ -238,7 +224,7 @@ namespace Calltreeviewer
             this.cbModules});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(1082, 25);
+            this.menuStrip1.Size = new System.Drawing.Size(1082, 27);
             this.menuStrip1.TabIndex = 2;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -250,34 +236,34 @@ namespace Calltreeviewer
             this.tsFileLoadMain,
             this.mnExit});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
-            this.fileToolStripMenuItem.Size = new System.Drawing.Size(35, 21);
+            this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 23);
             this.fileToolStripMenuItem.Text = "&File";
             // 
             // mnLoad
             // 
             this.mnLoad.Name = "mnLoad";
-            this.mnLoad.Size = new System.Drawing.Size(210, 22);
+            this.mnLoad.Size = new System.Drawing.Size(214, 22);
             this.mnLoad.Text = "Load";
             this.mnLoad.Click += new System.EventHandler(this.mnLoad_Click);
             // 
             // tsFileLoadMainRecursive
             // 
             this.tsFileLoadMainRecursive.Name = "tsFileLoadMainRecursive";
-            this.tsFileLoadMainRecursive.Size = new System.Drawing.Size(210, 22);
+            this.tsFileLoadMainRecursive.Size = new System.Drawing.Size(214, 22);
             this.tsFileLoadMainRecursive.Text = "Load MAIN (recursively)";
             this.tsFileLoadMainRecursive.Click += new System.EventHandler(this.loadXmlMainRecursive);
             // 
             // tsFileLoadMain
             // 
             this.tsFileLoadMain.Name = "tsFileLoadMain";
-            this.tsFileLoadMain.Size = new System.Drawing.Size(210, 22);
+            this.tsFileLoadMain.Size = new System.Drawing.Size(214, 22);
             this.tsFileLoadMain.Text = "Load Main (non-recursive)";
             this.tsFileLoadMain.Click += new System.EventHandler(this.loadXmlFileMain);
             // 
             // mnExit
             // 
             this.mnExit.Name = "mnExit";
-            this.mnExit.Size = new System.Drawing.Size(210, 22);
+            this.mnExit.Size = new System.Drawing.Size(214, 22);
             this.mnExit.Text = "E&xit";
             this.mnExit.Click += new System.EventHandler(this.mnExit_Click);
             // 
@@ -290,34 +276,34 @@ namespace Calltreeviewer
             this.expandCurrentNodeShowToolStripMenuItem,
             this.simpleModeToolStripMenuItem});
             this.treeToolStripMenuItem.Name = "treeToolStripMenuItem";
-            this.treeToolStripMenuItem.Size = new System.Drawing.Size(41, 21);
+            this.treeToolStripMenuItem.Size = new System.Drawing.Size(42, 23);
             this.treeToolStripMenuItem.Text = "Tree";
             // 
             // collapseToolStripMenuItem
             // 
             this.collapseToolStripMenuItem.Name = "collapseToolStripMenuItem";
-            this.collapseToolStripMenuItem.Size = new System.Drawing.Size(228, 22);
+            this.collapseToolStripMenuItem.Size = new System.Drawing.Size(232, 22);
             this.collapseToolStripMenuItem.Text = "Collapse";
             this.collapseToolStripMenuItem.Click += new System.EventHandler(this.collapseToolStripMenuItem_Click);
             // 
             // showAllToolStripMenuItem
             // 
             this.showAllToolStripMenuItem.Name = "showAllToolStripMenuItem";
-            this.showAllToolStripMenuItem.Size = new System.Drawing.Size(228, 22);
+            this.showAllToolStripMenuItem.Size = new System.Drawing.Size(232, 22);
             this.showAllToolStripMenuItem.Text = "Show All";
             this.showAllToolStripMenuItem.Click += new System.EventHandler(this.showAllToolStripMenuItem_Click);
             // 
             // expandShowAllToolStripMenuItem
             // 
             this.expandShowAllToolStripMenuItem.Name = "expandShowAllToolStripMenuItem";
-            this.expandShowAllToolStripMenuItem.Size = new System.Drawing.Size(228, 22);
+            this.expandShowAllToolStripMenuItem.Size = new System.Drawing.Size(232, 22);
             this.expandShowAllToolStripMenuItem.Text = "Expand All Nodes && Show";
             this.expandShowAllToolStripMenuItem.Click += new System.EventHandler(this.expandShowAllToolStripMenuItem_Click);
             // 
             // expandCurrentNodeShowToolStripMenuItem
             // 
             this.expandCurrentNodeShowToolStripMenuItem.Name = "expandCurrentNodeShowToolStripMenuItem";
-            this.expandCurrentNodeShowToolStripMenuItem.Size = new System.Drawing.Size(228, 22);
+            this.expandCurrentNodeShowToolStripMenuItem.Size = new System.Drawing.Size(232, 22);
             this.expandCurrentNodeShowToolStripMenuItem.Text = "Expand Current Node && Show";
             this.expandCurrentNodeShowToolStripMenuItem.Click += new System.EventHandler(this.expandCurrentNodeShowToolStripMenuItem_Click);
             // 
@@ -325,7 +311,7 @@ namespace Calltreeviewer
             // 
             this.simpleModeToolStripMenuItem.CheckOnClick = true;
             this.simpleModeToolStripMenuItem.Name = "simpleModeToolStripMenuItem";
-            this.simpleModeToolStripMenuItem.Size = new System.Drawing.Size(228, 22);
+            this.simpleModeToolStripMenuItem.Size = new System.Drawing.Size(232, 22);
             this.simpleModeToolStripMenuItem.Text = "Simple Mode";
             // 
             // findFunctionToolStripMenuItem
@@ -335,20 +321,20 @@ namespace Calltreeviewer
             this.functionToolStripMenuItem1,
             this.referencesToolStripMenuItem});
             this.findFunctionToolStripMenuItem.Name = "findFunctionToolStripMenuItem";
-            this.findFunctionToolStripMenuItem.Size = new System.Drawing.Size(39, 21);
+            this.findFunctionToolStripMenuItem.Size = new System.Drawing.Size(42, 23);
             this.findFunctionToolStripMenuItem.Text = "Find";
             // 
             // functionToolStripMenuItem1
             // 
             this.functionToolStripMenuItem1.Name = "functionToolStripMenuItem1";
-            this.functionToolStripMenuItem1.Size = new System.Drawing.Size(140, 22);
+            this.functionToolStripMenuItem1.Size = new System.Drawing.Size(131, 22);
             this.functionToolStripMenuItem1.Text = "Function";
             this.functionToolStripMenuItem1.Click += new System.EventHandler(this.functionToolStripMenuItem1_Click);
             // 
             // referencesToolStripMenuItem
             // 
             this.referencesToolStripMenuItem.Name = "referencesToolStripMenuItem";
-            this.referencesToolStripMenuItem.Size = new System.Drawing.Size(140, 22);
+            this.referencesToolStripMenuItem.Size = new System.Drawing.Size(131, 22);
             this.referencesToolStripMenuItem.Text = "References";
             this.referencesToolStripMenuItem.Click += new System.EventHandler(this.referencesToolStripMenuItem_Click);
             // 
@@ -362,7 +348,7 @@ namespace Calltreeviewer
             "                                                                                 " +
                 "               "});
             this.tscbFindFunction.Name = "tscbFindFunction";
-            this.tscbFindFunction.Size = new System.Drawing.Size(121, 21);
+            this.tscbFindFunction.Size = new System.Drawing.Size(121, 23);
             this.tscbFindFunction.Sorted = true;
             this.tscbFindFunction.Text = "<function>";
             // 
@@ -373,14 +359,14 @@ namespace Calltreeviewer
             this.findExternalReferencesForThisModuleToolStripMenuItem,
             this.findFunctionsThatAreNotCalledToolStripMenuItem});
             this.referencesToolStripMenuItem1.Name = "referencesToolStripMenuItem1";
-            this.referencesToolStripMenuItem1.Size = new System.Drawing.Size(74, 21);
+            this.referencesToolStripMenuItem1.Size = new System.Drawing.Size(76, 23);
             this.referencesToolStripMenuItem1.Text = "References";
             // 
             // findAllExternalReferencesToolStripMenuItem
             // 
             this.findAllExternalReferencesToolStripMenuItem.Enabled = false;
             this.findAllExternalReferencesToolStripMenuItem.Name = "findAllExternalReferencesToolStripMenuItem";
-            this.findAllExternalReferencesToolStripMenuItem.Size = new System.Drawing.Size(295, 22);
+            this.findAllExternalReferencesToolStripMenuItem.Size = new System.Drawing.Size(301, 22);
             this.findAllExternalReferencesToolStripMenuItem.Text = "Find all external references";
             this.findAllExternalReferencesToolStripMenuItem.Click += new System.EventHandler(this.findAllExternalReferencesToolStripMenuItem_Click);
             // 
@@ -388,14 +374,14 @@ namespace Calltreeviewer
             // 
             this.findExternalReferencesForThisModuleToolStripMenuItem.Enabled = false;
             this.findExternalReferencesForThisModuleToolStripMenuItem.Name = "findExternalReferencesForThisModuleToolStripMenuItem";
-            this.findExternalReferencesForThisModuleToolStripMenuItem.Size = new System.Drawing.Size(295, 22);
+            this.findExternalReferencesForThisModuleToolStripMenuItem.Size = new System.Drawing.Size(301, 22);
             this.findExternalReferencesForThisModuleToolStripMenuItem.Text = "Find external references for current module";
             // 
             // findFunctionsThatAreNotCalledToolStripMenuItem
             // 
             this.findFunctionsThatAreNotCalledToolStripMenuItem.Enabled = false;
             this.findFunctionsThatAreNotCalledToolStripMenuItem.Name = "findFunctionsThatAreNotCalledToolStripMenuItem";
-            this.findFunctionsThatAreNotCalledToolStripMenuItem.Size = new System.Drawing.Size(295, 22);
+            this.findFunctionsThatAreNotCalledToolStripMenuItem.Size = new System.Drawing.Size(301, 22);
             this.findFunctionsThatAreNotCalledToolStripMenuItem.Text = "Find functions that are not called";
             this.findFunctionsThatAreNotCalledToolStripMenuItem.Click += new System.EventHandler(this.findFunctionsThatAreNotCalledToolStripMenuItem_Click);
             // 
@@ -403,7 +389,7 @@ namespace Calltreeviewer
             // 
             this.toolStripMenuItem1.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
             this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(79, 21);
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(89, 23);
             this.toolStripMenuItem1.Text = "Load Module";
             this.toolStripMenuItem1.Click += new System.EventHandler(this.toolStripMenuItem1_Click);
             // 
@@ -412,7 +398,7 @@ namespace Calltreeviewer
             this.cbModules.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
             this.cbModules.BackColor = System.Drawing.SystemColors.Menu;
             this.cbModules.Name = "cbModules";
-            this.cbModules.Size = new System.Drawing.Size(121, 21);
+            this.cbModules.Size = new System.Drawing.Size(121, 23);
             this.cbModules.Sorted = true;
             this.cbModules.Text = "<module>";
             this.cbModules.SelectedIndexChanged += new System.EventHandler(this.cbModules_SelectedIndexChanged);
@@ -423,7 +409,8 @@ namespace Calltreeviewer
             this.tslblLine,
             this.lblNoOfLines,
             this.tsLblSearching,
-            this.lblLoaded});
+            this.lblLoaded,
+            this.tslSrchText});
             this.statusStrip1.Location = new System.Drawing.Point(0, 534);
             this.statusStrip1.Name = "statusStrip1";
             this.statusStrip1.Size = new System.Drawing.Size(1082, 22);
@@ -455,7 +442,7 @@ namespace Calltreeviewer
             // tsLblSearching
             // 
             this.tsLblSearching.Name = "tsLblSearching";
-            this.tsLblSearching.Size = new System.Drawing.Size(76, 17);
+            this.tsLblSearching.Size = new System.Drawing.Size(84, 17);
             this.tsLblSearching.Text = "tsLblSearching";
             this.tsLblSearching.Visible = false;
             // 
@@ -469,6 +456,31 @@ namespace Calltreeviewer
             this.lblLoaded.Name = "lblLoaded";
             this.lblLoaded.Size = new System.Drawing.Size(300, 17);
             this.lblLoaded.Text = "-";
+            // 
+            // textBox1
+            // 
+            this.textBox1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.textBox1.Font = new System.Drawing.Font("Courier New", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.textBox1.HideSelection = false;
+            this.textBox1.Location = new System.Drawing.Point(0, 0);
+            this.textBox1.Multiline = true;
+            this.textBox1.Name = "textBox1";
+            this.textBox1.ReadOnly = true;
+            this.textBox1.ScrollBars = System.Windows.Forms.ScrollBars.Both;
+            this.textBox1.Size = new System.Drawing.Size(919, 327);
+            this.textBox1.TabIndex = 3;
+            this.textBox1.WordWrap = false;
+            this.textBox1.searchStarted += new SearchableControls.SearchableTextBox.searchStartedArgs(this.textBox1_searchStarted);
+            this.textBox1.searchForFunctionCall += new SearchableControls.SearchableTextBox.searchForFunctionCallArgs(this.textBox1_searchForFunctionCall);
+            this.textBox1.clickContext += new System.EventHandler(this.textBox1_clickContext);
+            this.textBox1.DoubleClick += new System.EventHandler(this.textBox1_DoubleClick);
+            this.textBox1.MouseMove += new System.Windows.Forms.MouseEventHandler(this.textBox1_MouseMove);
+            // 
+            // tslSrchText
+            // 
+            this.tslSrchText.Name = "tslSrchText";
+            this.tslSrchText.Size = new System.Drawing.Size(12, 17);
+            this.tslSrchText.Text = "_";
             // 
             // MainCalltreeWindow
             // 
@@ -527,7 +539,7 @@ namespace Calltreeviewer
         private System.Windows.Forms.ToolStripMenuItem showAllToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem expandShowAllToolStripMenuItem;
         private System.Windows.Forms.SplitContainer splitContainer2;
-        private System.Windows.Forms.TextBox textBox1;
+        private SearchableControls.SearchableTextBox textBox1;
         private System.Windows.Forms.ListBox listBox1;
         private System.Windows.Forms.ToolStripStatusLabel lblNoOfLines;
         private System.Windows.Forms.ToolStripMenuItem findFunctionToolStripMenuItem;
@@ -543,6 +555,7 @@ namespace Calltreeviewer
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem simpleModeToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem findFunctionsThatAreNotCalledToolStripMenuItem;
+        private System.Windows.Forms.ToolStripStatusLabel tslSrchText;
     }
 }
 
