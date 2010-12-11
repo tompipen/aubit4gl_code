@@ -3070,12 +3070,14 @@ print_menu_cmd (struct_menu_cmd * cmd_data)
     }
   printc ("_mntitle=A4GL_char_pop(); /* ... */");
 
-  if (cmd_data->menu_attrib_comment || cmd_data->menu_attrib_style || cmd_data->menu_attrib_image)
+  if (cmd_data->menu_attrib_comment || cmd_data->menu_attrib_style || cmd_data->menu_attrib_image || cmd_data->menu_attrib_normal || cmd_data->menu_attrib_highlight)
     {
       printc ("{");
       printc ("char *_comment;");
       printc ("char *_style;");
       printc ("char *_image;");
+      printc ("char *_normal;");
+      printc ("char *_highlight;");
       if (cmd_data->menu_attrib_comment)
 	{
 	  print_expr (cmd_data->menu_attrib_comment);
@@ -3096,6 +3098,8 @@ print_menu_cmd (struct_menu_cmd * cmd_data)
 	}
       printc ("_style=A4GL_char_pop();");
 
+
+
       if (cmd_data->menu_attrib_image)
 	{
 	  print_expr (cmd_data->menu_attrib_image);
@@ -3105,7 +3109,28 @@ print_menu_cmd (struct_menu_cmd * cmd_data)
 	  printc ("A4GL_push_char(\"\");");
 	}
       printc ("_image=A4GL_char_pop();");
-      printc ("m_%d=(void *)A4GL_new_menu_create_with_attr(_mntitle,1,1,%d,0,_comment, _style,_image);", menu_no, 2);
+
+      if (cmd_data->menu_attrib_normal)
+	{
+	  print_expr (cmd_data->menu_attrib_normal);
+	}
+      else
+	{
+	  printc ("A4GL_push_char(\"\");");
+	}
+      printc ("_normal=A4GL_char_pop();");
+      if (cmd_data->menu_attrib_highlight)
+	{
+	  print_expr (cmd_data->menu_attrib_highlight);
+	}
+      else
+	{
+	  printc ("A4GL_push_char(\"\");");
+	}
+      printc ("_highlight=A4GL_char_pop();");
+
+
+      printc ("m_%d=(void *)A4GL_new_menu_create_with_attr(_mntitle,1,1,%d,0,_comment, _style,_image,_normal,_highlight);", menu_no, 2);
       printc ("free(_comment);");
       printc ("free(_style);");
       printc ("free(_image);");
@@ -3114,7 +3139,7 @@ print_menu_cmd (struct_menu_cmd * cmd_data)
     }
   else
     {
-      printc ("m_%d=(void *)A4GL_new_menu_create_with_attr(_mntitle,1,1,%d,0,\"\",\"\",\"\");\n", menu_no, 2);
+      printc ("m_%d=(void *)A4GL_new_menu_create_with_attr(_mntitle,1,1,%d,0,\"\",\"\",\"\",\"\",\"\");\n", menu_no, 2);
       printc ("free(_mntitle);");
     }
 

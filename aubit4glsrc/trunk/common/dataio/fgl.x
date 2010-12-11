@@ -1,4 +1,4 @@
-/* $Id: fgl.x,v 1.61 2010-09-06 20:39:45 mikeaubury Exp $ */
+/* $Id: fgl.x,v 1.62 2010-12-11 13:09:34 mikeaubury Exp $ */
 typedef string str<>;
 typedef string sql_ident<>;
 
@@ -1232,6 +1232,8 @@ struct struct_menu_cmd {
 	struct expr_str *menu_attrib_comment;
 	struct expr_str *menu_attrib_style;
 	struct expr_str *menu_attrib_image;
+	struct expr_str *menu_attrib_normal;
+	struct expr_str *menu_attrib_highlight;
 };
 
 

@@ -8,7 +8,7 @@
 #include "formcntrl.h"
 
 #ifndef lint
-static char const module_id[] = "$Id: generic_ui.c,v 1.162 2010-06-02 11:25:17 mikeaubury Exp $";
+static char const module_id[] = "$Id: generic_ui.c,v 1.163 2010-12-11 13:09:34 mikeaubury Exp $";
 #endif
 
 static int A4GL_ll_field_opts_i (void *f);
@@ -821,7 +821,7 @@ A4GL_size_menu (ACL_Menu * menu)
 
 void *
 UILIB_A4GL_new_menu_create_with_attr (char *title, int x, int y, int mn_type,
-				      int help_no, char *mn_comment, char *mn_style, char *mn_image)
+				      int help_no, char *mn_comment, char *mn_style, char *mn_image, char *mn_normal, char*mn_highlight)
 {
   char buff[256];
   ACL_Menu *menu;

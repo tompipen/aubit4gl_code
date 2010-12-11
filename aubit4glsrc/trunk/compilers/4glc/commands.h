@@ -133,7 +133,7 @@ struct command *new_pdf_specific_cmd (char *p_type, struct expr_str_list *return
 struct on_event *new_event(e_event event_type, void *data, s_commands *cmds,int lineno);
 struct menuoption *new_menu_option(str_list  *keys, struct expr_str *mnoption, struct expr_str *mndescription, int helpno);
 struct command *new_prompt_cmd(expr_str_list* p_prompt_str ,struct attrib* p_prompt_str_attrib,struct attrib* p_prompt_fld_attrib,e_boolean p_for_char,expr_str* p_promptvar,int p_helpno,struct on_events* p_events,int p_sio,int p_blk);
-struct command *new_menu_cmd(struct expr_str* p_menu_title,struct attrib *p_menu_attrib,struct on_events* p_events,int p_sio ,struct expr_str * menu_attrib_comment,struct expr_str *menu_attrib_style, struct expr_str *menu_attrib_image);
+struct command *new_menu_cmd(struct expr_str* p_menu_title,struct attrib *p_menu_attrib,struct on_events* p_events,int p_sio ,struct expr_str * menu_attrib_comment,struct expr_str *menu_attrib_style, struct expr_str *menu_attrib_image, struct expr_str *menu_attrib_normal, struct expr_str *menu_attrib_highlight);
 struct command *new_clear_cmd(e_clear e, void *data ,e_boolean todefaults) ;
 struct command *new_convert_cmd(char * p_repname,struct convert* p_c) ;
 struct report_format_section_entry* new_report_format_section_entry(report_blocks rb, void *variable, s_commands* cmds,int orderby_var_no,int lineno);

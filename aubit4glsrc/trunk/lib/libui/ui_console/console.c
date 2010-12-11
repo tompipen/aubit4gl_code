@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: console.c,v 1.54 2010-02-16 13:17:11 mikeaubury Exp $
+# $Id: console.c,v 1.55 2010-12-11 13:09:34 mikeaubury Exp $
 #*/
 
 /**
@@ -181,7 +181,7 @@ void
  * @todo Describe function
  */
 void *
- UILIB_A4GL_new_menu_create_with_attr (char *title, int x, int y, int mn_type, int help_no,char *mn_comment, char*mn_style, char *mn_image)
+ UILIB_A4GL_new_menu_create_with_attr (char *title, int x, int y, int mn_type, int help_no,char *mn_comment, char*mn_style, char *mn_image,char *mn_normal, char*mn_highlight)
 {
   char buff[256];
   ACL_Menu *menu;

@@ -582,7 +582,7 @@ UILIB_aclfgl_fgl_drawbox (int n)
 
 
 void *
-UILIB_A4GL_new_menu_create_with_attr (char *title, int x, int y, int mn_type, int help_no, char *comment, char *style, char *image)
+UILIB_A4GL_new_menu_create_with_attr (char *title, int x, int y, int mn_type, int help_no, char *comment, char *style, char *image,char *normal, char *highlight)
 {
   static char mn[20] = "XML";
   static long ln = 0;

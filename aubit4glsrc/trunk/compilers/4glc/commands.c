@@ -2138,7 +2138,9 @@ char errbuff[256];
 }
 
 struct command *new_menu_cmd(struct expr_str* p_menu_title,struct attrib *p_menu_attrib,struct on_events* p_events,int p_sio,
-struct expr_str * menu_attrib_comment,struct expr_str *menu_attrib_style, struct expr_str *menu_attrib_image
+struct expr_str * menu_attrib_comment,struct expr_str *menu_attrib_style, struct expr_str *menu_attrib_image,
+struct expr_str *menu_attrib_normal,
+struct expr_str *menu_attrib_highlight
 ) {
 struct command *c;
    c=new_command(E_CMD_MENU_CMD);
@@ -2148,6 +2150,8 @@ struct command *c;
    c->cmd_data.command_data_u.menu_cmd.menu_attrib_comment=menu_attrib_comment;
    c->cmd_data.command_data_u.menu_cmd.menu_attrib_style=menu_attrib_style;
    c->cmd_data.command_data_u.menu_cmd.menu_attrib_image=menu_attrib_image;
+   c->cmd_data.command_data_u.menu_cmd.menu_attrib_normal=menu_attrib_normal;
+   c->cmd_data.command_data_u.menu_cmd.menu_attrib_highlight=menu_attrib_highlight;
 	
    c->cmd_data.command_data_u.menu_cmd.events=p_events;
    c->cmd_data.command_data_u.menu_cmd.sio=p_sio;

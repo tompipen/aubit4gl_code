@@ -17,7 +17,9 @@ menu_cmd	:	MENU atline {
 				$<cmd>$=new_menu_cmd($<ptr>4,0 /* $<attrib>5 */,$<on_events>6, $<integer_val>3, 
                   $<menu_attrib>5->menu_attrib_comment,
                   $<menu_attrib>5->menu_attrib_style, 
-                     $<menu_attrib>5->menu_attrib_image
+                     $<menu_attrib>5->menu_attrib_image,
+                     $<menu_attrib>5->menu_attrib_normal,
+                     $<menu_attrib>5->menu_attrib_highlight
                      );
    				pop_blockcommand("MENU");
 				}
@@ -29,6 +31,8 @@ op_menu_attribs:  {
          $<menu_attrib>$->menu_attrib_comment=0;
          $<menu_attrib>$->menu_attrib_style=0;
          $<menu_attrib>$->menu_attrib_image=0;
+         $<menu_attrib>$->menu_attrib_normal=0;
+         $<menu_attrib>$->menu_attrib_highlight=0;
 }
 	| ATTRIBUTES OPEN_BRACKET menu_attribs CLOSE_BRACKET {	
 			$<menu_attrib>$=malloc(sizeof(struct menu_attrib));
@@ -36,6 +40,8 @@ op_menu_attribs:  {
          $<menu_attrib>$->menu_attrib_comment=get_menu_attrib('C');
          $<menu_attrib>$->menu_attrib_style=get_menu_attrib('S');
          $<menu_attrib>$->menu_attrib_image=get_menu_attrib('I');
+         $<menu_attrib>$->menu_attrib_normal=get_menu_attrib('N');
+         $<menu_attrib>$->menu_attrib_highlight=get_menu_attrib('H');
 		}
 ;
 	
@@ -48,6 +54,8 @@ menu_attrib :
 	KW_STYLE   EQUAL fgl_expr_c { set_menu_attrib('S',$<ptr>3); }
 | 	KW_COMMENT EQUAL fgl_expr_c { set_menu_attrib('C',$<ptr>3); }
 | 	KW_IMAGE EQUAL fgl_expr_c   { set_menu_attrib('I',$<ptr>3); }
+| 	KW_HIGHLIGHT EQUAL fgl_expr_c   { set_menu_attrib('H',$<ptr>3); }
+| 	KW_NORMAL EQUAL fgl_expr_c   { set_menu_attrib('N',$<ptr>3); }
 
 ;
 

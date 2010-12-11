@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_incl_4gldef.h,v 1.137 2010-10-22 15:58:50 mikeaubury Exp $
+# $Id: a4gl_incl_4gldef.h,v 1.138 2010-12-11 13:09:34 mikeaubury Exp $
 */
 
 /**
@@ -269,6 +269,8 @@ struct s_constr_list {char *tabname;char *colname;char *value;char*fldbuf;};
     char *mnstyle;
     char *mncomment;
     char *mnimage;
+    char *mnnormal;
+    char *mnhighlight;
   }
   ACL_Menu;
 

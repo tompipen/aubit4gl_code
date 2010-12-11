@@ -749,6 +749,8 @@ struct menu_attrib {
            struct expr_str *menu_attrib_comment;
            struct expr_str *menu_attrib_style;
            struct expr_str *menu_attrib_image;
+           struct expr_str *menu_attrib_normal;
+           struct expr_str *menu_attrib_highlight;
 };
 void add_dependant_table(char *s);
 void sort_variables_v(struct variable_list *vlist);

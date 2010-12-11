@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.342 2010-10-07 08:56:45 mikeaubury Exp $
+# $Id: mod.c,v 1.343 2010-12-11 13:09:34 mikeaubury Exp $
 #
 */
 
@@ -207,6 +207,8 @@ char current_ins_table[256]="";
 struct expr_str *menu_attrib_comment=0;
 struct expr_str *menu_attrib_style=0;
 struct expr_str *menu_attrib_image=0;
+struct expr_str *menu_attrib_normal=0;
+struct expr_str *menu_attrib_highlight=0;
 
 /*static int    const_cnt = 0;*/
 
@@ -2889,6 +2891,12 @@ struct expr_str * get_menu_attrib(char type) {
         if (type=='I') {
                 return menu_attrib_image;
         }
+        if (type=='N') {
+                return menu_attrib_normal;
+        }
+        if (type=='H') {
+                return menu_attrib_highlight;
+        }
 	return NULL;
 }
 
@@ -2902,6 +2910,12 @@ void set_menu_attrib(char type, struct expr_str *value) {
 	}
 	if (type=='I') {
 		menu_attrib_image=value;
+	}
+	if (type=='N') {
+		menu_attrib_normal=value;
+	}
+	if (type=='H') {
+		menu_attrib_highlight=value;
 	}
 }
 
