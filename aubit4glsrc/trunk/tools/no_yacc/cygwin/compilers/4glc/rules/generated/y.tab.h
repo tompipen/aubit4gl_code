@@ -38,7 +38,7 @@
    /* Put the tokens into the symbol table, so that GDB and other debuggers
       know about them.  */
    enum yytokentype {
-     NAME = 2245,
+     NAME = 2247,
      KW_COMMA = 1750,
      KW_WORDWRAP = 1529,
      KW_USING = 1682,
@@ -68,26 +68,26 @@
      KW_DIVIDE = 1696,
      KW_MOD = 1764,
      KW_POWER = 1668,
-     UMINUS = 2246,
+     UMINUS = 2248,
      CLOSE_BRACKET = 1538,
      OPEN_BRACKET = 1580,
-     TYPECAST = 2247,
+     TYPECAST = 2249,
      COMMAND = 1540,
-     NUMBER_VALUE = 2248,
-     CHAR_VALUE = 2249,
-     CHAR_VALUE_TRANSLATED = 2250,
-     INT_VALUE = 2251,
-     NAMED_GEN = 2252,
-     CLINE = 2253,
-     SQLLINE = 2254,
-     KW_CSTART = 2255,
-     KW_CEND = 2256,
-     USER_DTYPE_ORIG = 2257,
-     USER_DTYPE_NEW = 2258,
-     SQL_TEXT = 2259,
-     KW_WHENEVER_SET = 2260,
-     KW_LOADED_OBJECT_NAME = 2261,
-     COMMENT = 2262,
+     NUMBER_VALUE = 2250,
+     CHAR_VALUE = 2251,
+     CHAR_VALUE_TRANSLATED = 2252,
+     INT_VALUE = 2253,
+     NAMED_GEN = 2254,
+     CLINE = 2255,
+     SQLLINE = 2256,
+     KW_CSTART = 2257,
+     KW_CEND = 2258,
+     USER_DTYPE_ORIG = 2259,
+     USER_DTYPE_NEW = 2260,
+     SQL_TEXT = 2261,
+     KW_WHENEVER_SET = 2262,
+     KW_LOADED_OBJECT_NAME = 2263,
+     COMMENT = 2264,
      KW_DOC4GLCOMMENT = 1000,
      WITH_LISTING_IN = 1001,
      SET_POSTGRESQL_SEARCH_PATH = 1002,
@@ -1299,11 +1299,13 @@
      KW_ALWAYS = 2240,
      PROGRAM_TIMEOUT = 2241,
      USING_SQLTYPE = 2242,
-     KW_OBJECT = 2243
+     KW_OBJECT = 2243,
+     KW_NORMAL = 2244,
+     KW_HIGHLIGHT = 2245
    };
 #endif
 /* Tokens.  */
-#define NAME 2245
+#define NAME 2247
 #define KW_COMMA 1750
 #define KW_WORDWRAP 1529
 #define KW_USING 1682
@@ -1333,26 +1335,26 @@
 #define KW_DIVIDE 1696
 #define KW_MOD 1764
 #define KW_POWER 1668
-#define UMINUS 2246
+#define UMINUS 2248
 #define CLOSE_BRACKET 1538
 #define OPEN_BRACKET 1580
-#define TYPECAST 2247
+#define TYPECAST 2249
 #define COMMAND 1540
-#define NUMBER_VALUE 2248
-#define CHAR_VALUE 2249
-#define CHAR_VALUE_TRANSLATED 2250
-#define INT_VALUE 2251
-#define NAMED_GEN 2252
-#define CLINE 2253
-#define SQLLINE 2254
-#define KW_CSTART 2255
-#define KW_CEND 2256
-#define USER_DTYPE_ORIG 2257
-#define USER_DTYPE_NEW 2258
-#define SQL_TEXT 2259
-#define KW_WHENEVER_SET 2260
-#define KW_LOADED_OBJECT_NAME 2261
-#define COMMENT 2262
+#define NUMBER_VALUE 2250
+#define CHAR_VALUE 2251
+#define CHAR_VALUE_TRANSLATED 2252
+#define INT_VALUE 2253
+#define NAMED_GEN 2254
+#define CLINE 2255
+#define SQLLINE 2256
+#define KW_CSTART 2257
+#define KW_CEND 2258
+#define USER_DTYPE_ORIG 2259
+#define USER_DTYPE_NEW 2260
+#define SQL_TEXT 2261
+#define KW_WHENEVER_SET 2262
+#define KW_LOADED_OBJECT_NAME 2263
+#define COMMENT 2264
 #define KW_DOC4GLCOMMENT 1000
 #define WITH_LISTING_IN 1001
 #define SET_POSTGRESQL_SEARCH_PATH 1002
@@ -2565,6 +2567,8 @@
 #define PROGRAM_TIMEOUT 2241
 #define USING_SQLTYPE 2242
 #define KW_OBJECT 2243
+#define KW_NORMAL 2244
+#define KW_HIGHLIGHT 2245
 
 
 
@@ -2680,7 +2684,7 @@ typedef union YYSTYPE
 
 
 /* Line 1685 of yacc.c  */
-#line 2684 "y.tab.h"
+#line 2688 "y.tab.h"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */

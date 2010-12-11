@@ -1,4 +1,93 @@
 ---------------------------
+Sat Dec 11 14:42:51 GMT 2010
+---------------------------
+1.2_19 Released
+---------------------------
+	2010-12-11 13:45  mikeaubury
+	
+	2010-12-11 13:34  mikeaubury
+	
+	2010-12-11 13:30  mikeaubury
+	
+	2010-12-11 13:09  mikeaubury
+	
+	2010-12-11 13:08  mikeaubury
+	
+	Added MENU .. ATTRIBUTES(NORMAL="...", HIGHLIGHT="...") where
+	NORMAL and HIGHTLIGHT specify the attributes as strings for the
+	normal and highlighted menu options.  Eg.
+	
+	main menu "Select" attributes(normal="BLUE",
+	highlight="GREEN,REVERSE")	   command "Yes"
+	message "Yes"	      command "No"		   message "No"
+	command "Exit"		   exit menu end menu end main
+	
+	2010-12-09 16:41  siverly
+	
+	fix for mac sqlerrd
+	
+	2010-12-09 14:58  dbuettner
+	
+	added inlibrary table to the create table list
+	
+	2010-12-07 10:44  mikeaubury
+	
+	Construct Issue with UI=XML
+	
+	2010-12-07 10:38  mikeaubury
+	
+	2010-12-07 10:24  mikeaubury
+	
+	Small fixup for INPUT ARRAY where no fields are editable
+	
+	2010-12-06 18:24  mikeaubury
+	
+	Add the "syspgma4gl" database configuration parameter eg
+	A4GL_SYSPGMA4GL=mikesa4gl
+	
+	allows you to specify an alternate name for the syspgma4gl
+	database name
+	
+	2010-12-06 18:21  mikeaubury
+	
+	2010-12-04 15:46  mikeaubury
+	
+	fgllint fixup for "CURRENT WINDOW IS SCREEN"  (causes segfault)
+	
+	2010-11-29 09:40  mikeaubury
+	
+	Multidimensional dynamic array fixup
+	
+	2010-11-27 14:06  mikeaubury
+	
+	2010-11-26 11:01  mikeaubury
+	
+	2010-11-26 09:49  siverly
+	
+	ms: Added a daemon functionality. Parameters : (-start, -stop,
+	-restart)
+	
+	2010-11-24 21:33  mikeaubury
+	
+	2010-11-24 20:46  mikeaubury
+	
+	Add "schema". for PG8 unload
+	
+	2010-11-22 15:50  mikeaubury
+	
+	2010-11-19 15:15  mikeaubury
+	
+	2010-11-17 19:37  mikeaubury
+	
+	2010-11-17 19:35  mikeaubury
+	
+	Add LOGODBCSQLFILE and LOGODBCSQLPID settings
+	
+	2010-11-17 14:10  mikeaubury
+	
+	2010-11-16 18:56  mikeaubury
+	
+---------------------------
 Tue Nov 16 18:53:22 GMT 2010
 ---------------------------
 1.2_18 Released

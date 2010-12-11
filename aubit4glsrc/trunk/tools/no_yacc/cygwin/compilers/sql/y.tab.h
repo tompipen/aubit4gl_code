@@ -38,25 +38,25 @@
    /* Put the tokens into the symbol table, so that GDB and other debuggers
       know about them.  */
    enum yytokentype {
-     INT_VALUE = 2245,
-     NAMED = 2246,
-     NAMED_GEN = 2247,
-     CHAR_VALUE = 2248,
-     NOT_USED_1 = 2249,
-     NOT_USED_2 = 2250,
-     NOT_USED_3 = 2251,
-     NOT_USED_4 = 2252,
-     NOT_USED_5 = 2253,
-     NOT_USED_6 = 2254,
-     NOT_USED_7 = 2255,
-     NOT_USED_8 = 2256,
-     NUMBER_VALUE = 2257,
-     SEMICOLON = 2258,
-     QUESTION_MARK = 2259,
-     CLINE = 2260,
-     CH = 2261,
-     MARK_VAR = 2262,
-     END_MARK_VAR = 2263,
+     INT_VALUE = 2247,
+     NAMED = 2248,
+     NAMED_GEN = 2249,
+     CHAR_VALUE = 2250,
+     NOT_USED_1 = 2251,
+     NOT_USED_2 = 2252,
+     NOT_USED_3 = 2253,
+     NOT_USED_4 = 2254,
+     NOT_USED_5 = 2255,
+     NOT_USED_6 = 2256,
+     NOT_USED_7 = 2257,
+     NOT_USED_8 = 2258,
+     NUMBER_VALUE = 2259,
+     SEMICOLON = 2260,
+     QUESTION_MARK = 2261,
+     CLINE = 2262,
+     CH = 2263,
+     MARK_VAR = 2264,
+     END_MARK_VAR = 2265,
      WITH_LISTING_IN = 1001,
      SET_POSTGRESQL_SEARCH_PATH = 1002,
      SET_CONSTRAINTS_ALL_DEFERRED = 1003,
@@ -328,29 +328,31 @@
      KW_ALWAYS = 2240,
      PROGRAM_TIMEOUT = 2241,
      USING_SQLTYPE = 2242,
-     KW_OBJECT = 2243
+     KW_OBJECT = 2243,
+     KW_NORMAL = 2244,
+     KW_HIGHLIGHT = 2245
    };
 #endif
 /* Tokens.  */
-#define INT_VALUE 2245
-#define NAMED 2246
-#define NAMED_GEN 2247
-#define CHAR_VALUE 2248
-#define NOT_USED_1 2249
-#define NOT_USED_2 2250
-#define NOT_USED_3 2251
-#define NOT_USED_4 2252
-#define NOT_USED_5 2253
-#define NOT_USED_6 2254
-#define NOT_USED_7 2255
-#define NOT_USED_8 2256
-#define NUMBER_VALUE 2257
-#define SEMICOLON 2258
-#define QUESTION_MARK 2259
-#define CLINE 2260
-#define CH 2261
-#define MARK_VAR 2262
-#define END_MARK_VAR 2263
+#define INT_VALUE 2247
+#define NAMED 2248
+#define NAMED_GEN 2249
+#define CHAR_VALUE 2250
+#define NOT_USED_1 2251
+#define NOT_USED_2 2252
+#define NOT_USED_3 2253
+#define NOT_USED_4 2254
+#define NOT_USED_5 2255
+#define NOT_USED_6 2256
+#define NOT_USED_7 2257
+#define NOT_USED_8 2258
+#define NUMBER_VALUE 2259
+#define SEMICOLON 2260
+#define QUESTION_MARK 2261
+#define CLINE 2262
+#define CH 2263
+#define MARK_VAR 2264
+#define END_MARK_VAR 2265
 #define WITH_LISTING_IN 1001
 #define SET_POSTGRESQL_SEARCH_PATH 1002
 #define SET_CONSTRAINTS_ALL_DEFERRED 1003
@@ -623,6 +625,8 @@
 #define PROGRAM_TIMEOUT 2241
 #define USING_SQLTYPE 2242
 #define KW_OBJECT 2243
+#define KW_NORMAL 2244
+#define KW_HIGHLIGHT 2245
 
 
 
@@ -658,7 +662,7 @@ typedef union YYSTYPE
 
 
 /* Line 1685 of yacc.c  */
-#line 662 "y.tab.h"
+#line 666 "y.tab.h"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
