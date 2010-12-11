@@ -1,9 +1,10 @@
-/* A Bison parser, made by GNU Bison 2.4.3.  */
+
+/* A Bison parser, made by GNU Bison 2.4.1.  */
 
 /* Skeleton implementation for Bison's Yacc-like parsers in C
    
-      Copyright (C) 1984, 1989, 1990, 2000, 2001, 2002, 2003, 2004, 2005, 2006,
-   2009, 2010 Free Software Foundation, Inc.
+      Copyright (C) 1984, 1989, 1990, 2000, 2001, 2002, 2003, 2004, 2005, 2006
+   Free Software Foundation, Inc.
    
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -45,7 +46,7 @@
 #define YYBISON 1
 
 /* Bison version.  */
-#define YYBISON_VERSION "2.4.3"
+#define YYBISON_VERSION "2.4.1"
 
 /* Skeleton name.  */
 #define YYSKELETON_NAME "yacc.c"
@@ -115,7 +116,7 @@ struct filedef *m_filedef=0;
 
 
 /* Line 189 of yacc.c  */
-#line 119 "adbload2_parse.tab.c"
+#line 120 "adbload2_parse.tab.c"
 
 /* Enabling traces.  */
 #ifndef YYDEBUG
@@ -185,7 +186,7 @@ typedef union YYSTYPE
 
 
 /* Line 214 of yacc.c  */
-#line 189 "adbload2_parse.tab.c"
+#line 190 "adbload2_parse.tab.c"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
@@ -197,7 +198,7 @@ typedef union YYSTYPE
 
 
 /* Line 264 of yacc.c  */
-#line 201 "adbload2_parse.tab.c"
+#line 202 "adbload2_parse.tab.c"
 
 #ifdef short
 # undef short
@@ -247,7 +248,7 @@ typedef short int yytype_int16;
 #define YYSIZE_MAXIMUM ((YYSIZE_T) -1)
 
 #ifndef YY_
-# if defined YYENABLE_NLS && YYENABLE_NLS
+# if YYENABLE_NLS
 #  if ENABLE_NLS
 #   include <libintl.h> /* INFRINGES ON USER NAME SPACE */
 #   define YY_(msgid) dgettext ("bison-runtime", msgid)
@@ -639,18 +640,9 @@ static const yytype_uint8 yystos[] =
 
 /* Like YYERROR except do call yyerror.  This remains here temporarily
    to ease the transition to the new meaning of YYERROR, for GCC.
-   Once GCC version 2 has supplanted version 1, this can go.  However,
-   YYFAIL appears to be in use.  Nevertheless, it is formally deprecated
-   in Bison 2.4.2's NEWS entry, where a plan to phase it out is
-   discussed.  */
+   Once GCC version 2 has supplanted version 1, this can go.  */
 
 #define YYFAIL		goto yyerrlab
-#if defined YYFAIL
-  /* This is here to suppress warnings from the GCC cpp's
-     -Wunused-macros.  Normally we don't worry about that warning, but
-     some users do, and we want to make it easy for users to remove
-     YYFAIL uses, which will produce warnings from Bison 2.5.  */
-#endif
 
 #define YYRECOVERING()  (!!yyerrstatus)
 
@@ -707,7 +699,7 @@ while (YYID (0))
    we won't break user code: when these are the locations we know.  */
 
 #ifndef YY_LOCATION_PRINT
-# if defined YYLTYPE_IS_TRIVIAL && YYLTYPE_IS_TRIVIAL
+# if YYLTYPE_IS_TRIVIAL
 #  define YY_LOCATION_PRINT(File, Loc)			\
      fprintf (File, "%d.%d-%d.%d",			\
 	      (Loc).first_line, (Loc).first_column,	\
@@ -1446,14 +1438,14 @@ yyreduce:
     {
         case 4:
 
-/* Line 1464 of yacc.c  */
+/* Line 1455 of yacc.c  */
 #line 69 "adbload2_parse.y"
     { m_filedef=(yyvsp[(1) - (1)].fileelem); ;}
     break;
 
   case 6:
 
-/* Line 1464 of yacc.c  */
+/* Line 1455 of yacc.c  */
 #line 73 "adbload2_parse.y"
     {
 		(yyval.dbload)=malloc(sizeof(struct s_dbloadline));
@@ -1465,7 +1457,7 @@ yyreduce:
 
   case 7:
 
-/* Line 1464 of yacc.c  */
+/* Line 1455 of yacc.c  */
 #line 79 "adbload2_parse.y"
     {
 	                (yyval.dbload)=malloc(sizeof(struct s_dbloadline));
@@ -1477,7 +1469,7 @@ yyreduce:
 
   case 8:
 
-/* Line 1464 of yacc.c  */
+/* Line 1455 of yacc.c  */
 #line 89 "adbload2_parse.y"
     {
 		(yyval.fileelem)=malloc(sizeof(struct filedef));
@@ -1491,7 +1483,7 @@ yyreduce:
 
   case 9:
 
-/* Line 1464 of yacc.c  */
+/* Line 1455 of yacc.c  */
 #line 97 "adbload2_parse.y"
     {
 		(yyval.fileelem)=malloc(sizeof(struct filedef));
@@ -1505,7 +1497,7 @@ yyreduce:
 
   case 10:
 
-/* Line 1464 of yacc.c  */
+/* Line 1455 of yacc.c  */
 #line 108 "adbload2_parse.y"
     {
 		(yyval.field_pos_list)=malloc(sizeof(struct s_field_pos_list));
@@ -1517,7 +1509,7 @@ yyreduce:
 
   case 11:
 
-/* Line 1464 of yacc.c  */
+/* Line 1455 of yacc.c  */
 #line 114 "adbload2_parse.y"
     {
 		(yyval.field_pos_list)=(yyvsp[(1) - (3)].field_pos_list);
@@ -1529,7 +1521,7 @@ yyreduce:
 
   case 12:
 
-/* Line 1464 of yacc.c  */
+/* Line 1455 of yacc.c  */
 #line 124 "adbload2_parse.y"
     {
 		(yyval.field_pos)=malloc(sizeof(struct s_field_pos));
@@ -1541,14 +1533,14 @@ yyreduce:
 
   case 13:
 
-/* Line 1464 of yacc.c  */
+/* Line 1455 of yacc.c  */
 #line 132 "adbload2_parse.y"
     { (yyval.ptr)=0; ;}
     break;
 
   case 14:
 
-/* Line 1464 of yacc.c  */
+/* Line 1455 of yacc.c  */
 #line 133 "adbload2_parse.y"
     {
 			(yyval.ptr)=strdup(A4GL_strip_quotes((yyvsp[(3) - (3)].str)));
@@ -1557,7 +1549,7 @@ yyreduce:
 
   case 15:
 
-/* Line 1464 of yacc.c  */
+/* Line 1455 of yacc.c  */
 #line 139 "adbload2_parse.y"
     {
 	strcpy((yyval.str),(yyvsp[(1) - (1)].str));
@@ -1566,7 +1558,7 @@ yyreduce:
 
   case 16:
 
-/* Line 1464 of yacc.c  */
+/* Line 1455 of yacc.c  */
 #line 146 "adbload2_parse.y"
     {
 		(yyval.nposlist)=malloc(sizeof(struct s_nposlist));
@@ -1579,7 +1571,7 @@ yyreduce:
 
   case 17:
 
-/* Line 1464 of yacc.c  */
+/* Line 1455 of yacc.c  */
 #line 153 "adbload2_parse.y"
     {
 		(yyvsp[(1) - (3)].nposlist)->npos++;
@@ -1592,7 +1584,7 @@ yyreduce:
 
   case 18:
 
-/* Line 1464 of yacc.c  */
+/* Line 1455 of yacc.c  */
 #line 163 "adbload2_parse.y"
     {
 		(yyval.pos_list)=malloc(sizeof(struct s_pos_list));
@@ -1604,7 +1596,7 @@ yyreduce:
 
   case 19:
 
-/* Line 1464 of yacc.c  */
+/* Line 1455 of yacc.c  */
 #line 169 "adbload2_parse.y"
     {
 		(yyval.pos_list)=malloc(sizeof(struct s_pos_list));
@@ -1616,7 +1608,7 @@ yyreduce:
 
   case 20:
 
-/* Line 1464 of yacc.c  */
+/* Line 1455 of yacc.c  */
 #line 181 "adbload2_parse.y"
     {
 		strcpy((yyval.str),(yyvsp[(1) - (1)].str));
@@ -1625,7 +1617,7 @@ yyreduce:
 
   case 21:
 
-/* Line 1464 of yacc.c  */
+/* Line 1455 of yacc.c  */
 #line 184 "adbload2_parse.y"
     {
 		strcpy((yyval.str),(yyvsp[(1) - (1)].str));
@@ -1634,7 +1626,7 @@ yyreduce:
 
   case 22:
 
-/* Line 1464 of yacc.c  */
+/* Line 1455 of yacc.c  */
 #line 187 "adbload2_parse.y"
     {
 			strcpy((yyval.str),A4GL_strip_quotes((yyvsp[(1) - (1)].str)));
@@ -1643,7 +1635,7 @@ yyreduce:
 
   case 23:
 
-/* Line 1464 of yacc.c  */
+/* Line 1455 of yacc.c  */
 #line 193 "adbload2_parse.y"
     {
 			(yyval.insertexpr)=malloc(sizeof(struct insert));
@@ -1654,14 +1646,14 @@ yyreduce:
 
   case 24:
 
-/* Line 1464 of yacc.c  */
+/* Line 1455 of yacc.c  */
 #line 200 "adbload2_parse.y"
     { strcpy((yyval.str),""); ;}
     break;
 
   case 25:
 
-/* Line 1464 of yacc.c  */
+/* Line 1455 of yacc.c  */
 #line 201 "adbload2_parse.y"
     {
 			sprintf((yyval.str),"(%s) VALUES (%s)",(yyvsp[(2) - (7)].str),(yyvsp[(6) - (7)].str));
@@ -1670,7 +1662,7 @@ yyreduce:
 
   case 26:
 
-/* Line 1464 of yacc.c  */
+/* Line 1455 of yacc.c  */
 #line 204 "adbload2_parse.y"
     {
 			sprintf((yyval.str),"VALUES (%s)",(yyvsp[(3) - (4)].str));
@@ -1679,7 +1671,7 @@ yyreduce:
 
   case 27:
 
-/* Line 1464 of yacc.c  */
+/* Line 1455 of yacc.c  */
 #line 210 "adbload2_parse.y"
     {
 		strcpy((yyval.str),(yyvsp[(1) - (1)].str));
@@ -1688,7 +1680,7 @@ yyreduce:
 
   case 28:
 
-/* Line 1464 of yacc.c  */
+/* Line 1455 of yacc.c  */
 #line 213 "adbload2_parse.y"
     {
 		sprintf((yyval.str),"%s,%s",(yyvsp[(1) - (3)].str),(yyvsp[(3) - (3)].str));
@@ -1697,7 +1689,7 @@ yyreduce:
 
   case 29:
 
-/* Line 1464 of yacc.c  */
+/* Line 1455 of yacc.c  */
 #line 218 "adbload2_parse.y"
     {
 	if (is_column_name((yyvsp[(1) - (1)].str))) {
@@ -1713,7 +1705,7 @@ yyreduce:
 
   case 31:
 
-/* Line 1464 of yacc.c  */
+/* Line 1455 of yacc.c  */
 #line 234 "adbload2_parse.y"
     {
 		strcpy((yyval.str),(yyvsp[(1) - (1)].str));
@@ -1722,7 +1714,7 @@ yyreduce:
 
   case 32:
 
-/* Line 1464 of yacc.c  */
+/* Line 1455 of yacc.c  */
 #line 237 "adbload2_parse.y"
     {
 		sprintf((yyval.str),"%s,%s",(yyvsp[(1) - (3)].str),(yyvsp[(3) - (3)].str));
@@ -1731,7 +1723,7 @@ yyreduce:
 
   case 33:
 
-/* Line 1464 of yacc.c  */
+/* Line 1455 of yacc.c  */
 #line 243 "adbload2_parse.y"
     {
 			sprintf((yyval.str),"\"%s\"",(yyvsp[(1) - (1)].str));
@@ -1740,7 +1732,7 @@ yyreduce:
 
   case 36:
 
-/* Line 1464 of yacc.c  */
+/* Line 1455 of yacc.c  */
 #line 248 "adbload2_parse.y"
     {
 	        if (is_column_name((yyvsp[(1) - (1)].str))) {
@@ -1756,8 +1748,8 @@ yyreduce:
 
 
 
-/* Line 1464 of yacc.c  */
-#line 1761 "adbload2_parse.tab.c"
+/* Line 1455 of yacc.c  */
+#line 1753 "adbload2_parse.tab.c"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);
@@ -1968,7 +1960,7 @@ yyreturn:
 
 
 
-/* Line 1684 of yacc.c  */
+/* Line 1675 of yacc.c  */
 #line 260 "adbload2_parse.y"
 
 

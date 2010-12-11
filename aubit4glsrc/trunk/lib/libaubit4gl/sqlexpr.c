@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlexpr.c,v 1.95 2010-12-11 13:30:14 mikeaubury Exp $
+# $Id: sqlexpr.c,v 1.96 2010-12-11 13:34:26 mikeaubury Exp $
 #
 */
 
@@ -3177,7 +3177,7 @@ A4GL_has_column (char *t, char *c)
   int sold;
 
   has_columns_cnt = 0;
-/*
+
   if (strcmp (acl_getenv ("SQLTYPE"), "nosql") == 0)
     {
       return 0;
@@ -3192,7 +3192,7 @@ A4GL_has_column (char *t, char *c)
     {
       return 0;
     }
-*/
+
 //printf("Looking...\n");
 
   sold = A4GL_get_a4gl_sqlca_sqlcode ();
