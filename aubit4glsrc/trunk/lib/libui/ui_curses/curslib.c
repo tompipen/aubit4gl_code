@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.171 2010-11-17 14:10:21 mikeaubury Exp $
+# $Id: curslib.c,v 1.172 2010-12-11 13:08:56 mikeaubury Exp $
 #*/
 
 /**
@@ -41,7 +41,7 @@
  */
 #ifndef lint
 static char const module_id[] =
-  "$Id: curslib.c,v 1.171 2010-11-17 14:10:21 mikeaubury Exp $";
+  "$Id: curslib.c,v 1.172 2010-12-11 13:08:56 mikeaubury Exp $";
 #endif
 /*
 =====================================================================
@@ -1679,6 +1679,7 @@ A4GL_menu_setcolor (ACL_Menu * menu, int typ)
   //if (attr & 255) attr = attr - (attr & 255);
 
 
+
   /* wbkgd(menu->menu_win,0); */
 
 #ifdef DEBUG
@@ -1691,13 +1692,24 @@ A4GL_menu_setcolor (ACL_Menu * menu, int typ)
       attr = A_NORMAL + (attr & 0xff);
     }
 
-  if ((attr & 0xff) == 0)
-    {
-#ifdef DEBUG
-      A4GL_debug ("Nothing specified for the background..");
-#endif
-      //attr += ' ';
-    }
+
+
+	if (typ==NORMAL_TEXT || typ==NORMAL_MENU) {
+		if (strlen(menu->mnnormal)) {
+			attr=A4GL_decode_aubit_attr(A4GL_strattr_to_num(menu->mnnormal),'f');
+      			wattrset (currwin, attr);
+			return;
+		}
+	} else {
+		if (strlen(menu->mnhighlight)) {
+			attr=A4GL_decode_aubit_attr(A4GL_strattr_to_num(menu->mnhighlight),'f');
+      			wattrset (currwin, attr);
+			return;
+		}
+	}
+
+
+
 
 #ifdef DEBUG
   A4GL_debug ("Subwin - setcolor - attr=%x", attr);
