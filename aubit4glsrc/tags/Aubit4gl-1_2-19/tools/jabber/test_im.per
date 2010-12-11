@@ -1,0 +1,38 @@
+database formonly
+screen
+{
+ On-Line:
+[f001       ] [f002                                                     ]
+[f001       ]
+[f001       ] [f003                                                     ]
+[f001       ] [f003                                                     ]
+[f001       ] [f003                                                     ]
+[f001       ] [f003                                                     ]
+[f001       ] [f003                                                     ]
+[f001       ] [f003                                                     ]
+[f001       ] [f003                                                     ]
+[f001       ] [f003                                                     ]
+[f001       ]
+[f001       ] [f004                                                     ]
+[f001       ] [f004                                                     ]
+[f001       ] [f004                                                     ]
+}
+end
+
+
+attributes
+
+f001 = formonly.online;
+f002 = formonly.msg_to;
+f003 = formonly.receive;
+f004 = formonly.send;
+end
+
+
+INSTRUCTIONS
+
+SCREEN RECORD s_online[14] (online)
+SCREEN RECORD s_receive[8] (receive)
+SCREEN RECORD s_send[3] (send)
+
+

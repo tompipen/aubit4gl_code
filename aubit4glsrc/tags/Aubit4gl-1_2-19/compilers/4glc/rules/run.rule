@@ -1,0 +1,88 @@
+run_cmd : KW_RUN atline fgl_expr_c  				{ 
+    set_cmdlineno($<integer_val>2);
+			$<cmd>$=new_run_cmd(chk_expr($<ptr>3),EB_TRUE, ERM_NOT_SET, NULL);
+
+			map_run($<ptr>3); 
+			add_feature("RUN");} 
+	| KW_RUN atline fgl_expr_c run_mode 			{ 
+    set_cmdlineno($<integer_val>2);
+			map_run($<ptr>3); 
+			$<cmd>$=new_run_cmd(chk_expr($<ptr>3),EB_TRUE, $<integer_val>4, NULL);
+			
+			add_feature("RUN");} 
+	| KW_RUN atline fgl_expr_c RETURNING ensured_variable_usage_expression 		{ 
+			map_run($<ptr>3); 
+    set_cmdlineno($<integer_val>2);
+			$<cmd>$=new_run_cmd(chk_expr($<ptr>3),EB_TRUE, ERM_NOT_SET, $<ptr>5);
+			
+			add_feature("RUN");} 
+	| KW_RUN atline fgl_expr_c WITHOUT_WAITING 		{ 
+			map_run($<ptr>3); 
+    set_cmdlineno($<integer_val>2);
+			$<cmd>$=new_run_cmd(chk_expr($<ptr>3),EB_FALSE, ERM_NOT_SET, NULL);
+			
+			add_feature("RUN");}
+	| KW_RUN atline fgl_expr_c run_mode RETURNING ensured_variable_usage_expression { 
+    set_cmdlineno($<integer_val>2);
+			map_run($<ptr>3); 
+			$<cmd>$=new_run_cmd(chk_expr($<ptr>3),EB_TRUE, $<integer_val>4, $<ptr>6);
+			
+			add_feature("RUN");} 
+	| KW_RUN atline fgl_expr_c run_mode WITHOUT_WAITING 	{ 
+    set_cmdlineno($<integer_val>2);
+			map_run($<ptr>3); 
+			$<cmd>$=new_run_cmd(chk_expr($<ptr>3),EB_FALSE, $<integer_val>4, NULL);
+			
+			add_feature("RUN");
+	}
+	| KW_RUN atline fgl_expr_c WAIT 			{ 
+    set_cmdlineno($<integer_val>2);
+			map_run($<ptr>3); 
+			$<cmd>$=new_run_cmd(chk_expr($<ptr>3),EB_FALSE,ERM_NOT_SET, NULL);
+			
+			add_feature("RUN");
+	}
+	| KW_RUN atline fgl_expr_c EXIT 			{ 
+    set_cmdlineno($<integer_val>2);
+			map_run($<ptr>3); 
+			$<cmd>$=new_run_cmd(chk_expr($<ptr>3),EB_FALSE,ERM_NOT_SET, NULL);
+			add_feature("RUN");
+	}
+	| KW_RUN atline fgl_expr_c WAITING KW_FOR fgl_expr_c op_by WITH run_saying fgl_expr_c {
+    set_cmdlineno($<integer_val>2);
+			map_run($<ptr>3); 
+			$<cmd>$=new_run_waiting_for_cmd(chk_expr($<ptr>3), $<ptr>6, $<ptr>7, $<integer_val>9,$<ptr>10);
+			add_feature("RUN");
+	}
+	| KW_RUN_CLIENT atline fgl_expr_c {
+    set_cmdlineno($<integer_val>2);
+			struct expr_str_list *plist;
+			plist=A4GL_new_ptr_list($<ptr>3);
+			$<ptr>$=A4GL_new_expr_fcall("aclfgl_client_execute",plist,A4GL_compiling_module_basename(),lastlineno,get_namespace("aclfgl_client_execute"));
+			 $<cmd>$=new_call_cmd(chk_expr($<ptr>$),NULL);
+	}
+;
+
+
+
+
+op_by: 
+	{$<ptr>$=NULL;}
+	| KW_BY fgl_expr_c {$<ptr>$=$<ptr>2;}
+;
+
+run_saying: 
+	KWMESSAGE {$<integer_val>$=0;}
+	| KW_ERROR {$<integer_val>$=1;}
+;
+
+
+run_mode : 
+	 IN_FORM_MODE {
+			$<integer_val>$=ERM_FORM_MODE;
+	}
+	| IN_LINE_MODE {
+			$<integer_val>$=ERM_LINE_MODE;
+	}
+;
+	

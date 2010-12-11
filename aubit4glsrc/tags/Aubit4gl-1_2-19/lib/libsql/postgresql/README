@@ -1,0 +1,117 @@
+
+
+Notes
+-----
+
+In order to get informix style serial numbers (where you can insert a 0 etc) we need a trigger and a trigger function.
+
+
+
+Try installing the following postgresql function :
+
+
+	CREATE OR REPLACE FUNCTION next_seq_id() RETURNS trigger AS $$
+
+    	my ($col,$seq)=@_;
+    	my($newval);
+    	$newval=$_TD->{new}{$col};
+    	if ($newval==0) {
+        	$rv=spi_exec_query('SELECT nextval(\''.$seq.'\') as nextval', 1);
+        	$_TD->{new}{$col}= $rv->{rows}[0]->{nextval};
+        	return "MODIFY";  # modify row and execute INSERT/UPDATE command
+    	} else {
+        	if ($newval>0) {
+	
+                	$rv=spi_exec_query('SELECT setval(\''.$seq.'\','.($newval).') ', 1);
+        	}
+    	}
+	END;
+    	return;
+	$$ LANGUAGE plperl;
+
+
+You'll need to ensure you've got plperl installed as part of your postgres installation - and you may need to install it 
+into your database : 
+
+$ createlang -d somedb  plperl
+
+$ psql somedb
+somedb=# CREATE LANGUAGE plperl;
+
+
+(This is probably *not* compiled up by default. - you may need to reconfigure postgres with '--with-perl' )
+
+
+You'll need to enable this procedure on your tables with something like : 
+
+	CREATE SEQUENCE tabname_sercol_seq;
+	CREATE TRIGGER sometrigname BEFORE INSERT ON tabname FOR EACH ROW EXECUTE PROCEDURE  next_seq_id('sercol','tabname_sercol_seq');
+
+
+		where sercol is the name of the serial column in your table
+		and tabname_sercol_seq is the name of the sequence generated for the serial column
+		This is normally called 'tablename_columnname_seq'
+
+You'll need to create one of these triggers for all the tables with a serial column, but the function should work for all of them as we are passing in the column and sequence names..
+
+
+
+
+
+----------------------------------------------------------------------------------------------
+**************************** If you can't use plperl for some reason *************************
+----------------------------------------------------------------------------------------------
+
+You can create a trigger and customised trigger function per serial column :
+
+Assuming a table 'blah_tab' with a serial column 'blahser' :
+
+	test1=# create table blah_tab (blah_ser serial);
+	NOTICE:  CREATE TABLE will create implicit sequence "blah_tab_blah_ser_seq" for serial column "blah_tab.blah_ser"
+	CREATE TABLE
+
+
+
+	create or replace function get_next_blah() returns trigger as $$
+	BEGIN
+	
+	IF NEW.blah_ser = 0 then
+        	SELECT nextval('blah_tab_blah_ser_seq') into NEW.blah_ser;
+		ELSE
+        	IF NEW.blah_ser > 0 THEN
+                	PERFORM setval('blah_tab_blah_ser_seq',NEW.blah_ser);
+        	END IF;
+	END IF;
+	RETURN NEW;
+	END;
+	$$ LANGUAGE plpgsql;
+
+	create trigger sometrig before insert on blah_tab for each row execute procedure get_next_blah();
+
+
+
+This is because we can't write a generalised (parameterised) function in plpgsql....
+
+
+
+
+
+Sample MDY function:
+
+	CREATE OR REPLACE FUNCTION mdy(m integer, d integer, y integer) RETURNS date AS $$
+	BEGIN
+		RETURN to_date(m||' '||d||' '||y, 'MM DD YYYY');
+	END;
+	$$ LANGUAGE plpgsql;
+
+
+You'll need to ensure you've got plpgsql installed as part of your postgres installation - and you may need to install it 
+into your database : 
+
+$ createlang -d somedb  plpgsql
+$ psql somedb
+somedb=# CREATE LANGUAGE plpgsql;
+
+
+
+

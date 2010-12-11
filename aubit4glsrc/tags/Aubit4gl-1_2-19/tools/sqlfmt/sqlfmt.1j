@@ -1,0 +1,101 @@
+.\" @(#)$Id: sqlfmt.1j,v 1.1 2002-11-28 06:40:47 afalout Exp $
+'\" @(#)Manual page: SQLFMT/FGLFMT/ESQLFMT -- ISQL, I4GL, ESQL/C reformatting
+.so tmac.esee
+.ds fC "Version: $Revision: 1.1 $ ($Date: 2002-11-28 06:40:47 $)
+.TH SQLFMT 1J "JLSS Informix Tools"
+.SH NAME
+sqlfmt \(em reformat Informix-SQL keywords
+.br
+fglfmt \(em reformat Informix-4GL keywords
+.br
+esqlfmt \(em reformat Informix-ESQL/C keywords
+.SH SYNOPSIS
+\fBsqlfmt\fP [-LUVlpu] [-f keywordfile] [file ...]
+.br
+\fBfglfmt\fP [-LUVlpu] [-f keywordfile] [file ...]
+.br
+\fBesqlfmt\fP [-LUVlpu] [-f keywordfile] [file ...]
+.SH DESCRIPTION
+\fBsqlfmt\fP reads one or more files of Informix-SQL statements
+(or standard input) and converts
+any keywords which are not inside a comment to upper-case.
+This is appropriate for use on plain SQL scripts, or on Perform forms,
+or on ACE reports.
+.P
+\fBfglfmt\fP is another name for the same program, but it uses a different
+key word list to do the same job.
+It is appropriate for use on 4GL source code or 4GL-compatible forms.
+.P
+\fBesqlfmt\fP is similar to \fBsqlfmt\fP but it operates on ESQL/C programs
+which have a different set of comment structures.
+It converts keywords within the scope of EXEC SQL statements (or in $-marked
+SQL statements).
+.P
+The `\*c-V\*d' option prints the program version number.
+.P
+The `\*c-f\*d' option allows you to specify a separate file of
+keywords instead of the built-in set of keywords.
+This file should consist of one keyword per line (with no trailing
+or leading blanks), and it should be in case-insensitive sorted order.
+.P
+The `\*c-p\*d' option prints the current set of keywords.
+If the `\*c-f\*d' option is in effect,
+then it prints the keywords in that file.
+Otherwise, it prints the built-in keywords.
+.P
+The `\*c-L\*d' option forces keywords into lower case;
+the `\*c-U\*d' option forces keywords into upper case.
+The `\*c-l\*d' option forces non-keywords into lower case;
+the `\*c-u\*d' option forces non-keywords into upper case.
+Neither strings nor comments are affected by any of these flags.
+If both `\*cL\*d' and `\*cU\*d' are set, the last one in the list
+takes precedence, and similarly for `\*cl\*d' and `\*cu\*d'.
+.SH FILES
+\fBsqlfmt\fP and \fBfglfmt\fP should be installed as links to the
+same file.
+.SH "SEE ALSO"
+i4glxref(1J)
+.SH DIAGNOSTICS
+Only for unreadable files.
+.SH BUGS
+The keyword lists are suitable for 7.2x engines and tools,
+probably.
+The ESQL/C keywords, in particular, could do with checking.
+There is partial support for version 9 (IUS Universal Server,
+IDS/UDO) keywords in the SQL and ESQL/C keywords; this is unlikely to be complete.
+.P
+The keywords include the Version 9.14 system catalogues spelt with
+a capital S and mixed-case letters for the rest of the word.
+These could be removed.
+.P
+There should be a program to format SPL (Stored Procedure
+Language) statements.
+Or should those keywords be built into \fBsqlfmt\fP?
+Or should a list of SPL keywords be supplied?
+And if so, should there be separate sets of keywords for ACE and
+Perform and I4GL forms?
+These issues haven't been addressed recently; the original
+all-encompassing sets of key-words seemed appropriate in 1987,
+but the languages have grown since then, and the definition of a key-word
+has been relaxed too.
+.P
+\fBfglfmt\fP must be called \fIfglfmt\fP; if it isn't, it thinks
+it is \fBsqlfmt\fP.
+Maybe there should be an option such as `\*c-i\*d' which takes a
+case-insensitive argument to denote the type of operation to be done.
+This would then allow for arguments such as \fIsql\fP, \fI4gl\fP,
+\fIace\fP, \fIperform\fP, \fIform4gl\fP, \fIspl\fP, etc.
+Combining \fBsqlfmt\fP and \fBesqlfmt\fP would be more difficult because the
+lexical analysers needed are quite different, and multiple \fBlex\fP(1)
+analysers cannot easily be combined into one program.
+(If the alternative analyser \fBflex\fP(1) were used, this would be easier!)
+.P
+Maybe \fBesqlfmt\fP should have options to convert $-marked statements into
+EXEC SQL statements, and vice-versa.
+This option would have to worry about translating colons and dollars too.
+.SH AUTHOR
+Jonathan Leffler
+.br
+JLSS
+.br
+4th November 1998

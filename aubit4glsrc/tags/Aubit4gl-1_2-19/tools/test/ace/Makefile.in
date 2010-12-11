@@ -1,0 +1,80 @@
+# +----------------------------------------------------------------------+
+# | Aubit 4gl Language Compiler Version $.0                              |
+# +----------------------------------------------------------------------+
+# | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
+# +----------------------------------------------------------------------+
+# | This program is free software; you can redistribute it and/or modify |
+# | it under the terms of one of the following licenses:                 |
+# |                                                                      |
+# |  A) the GNU General Public License as published by the Free Software |
+# |     Foundation; either version 2 of the License, or (at your option) |
+# |     any later version.                                               |
+# |                                                                      |
+# |  B) the Aubit License as published by the Aubit Development Team and |
+# |     included in the distribution in the file: LICENSE                |
+# |                                                                      |
+# | This program is distributed in the hope that it will be useful,      |
+# | but WITHOUT ANY WARRANTY; without even the implied warranty of       |
+# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        |
+# | GNU General Public License for more details.                         |
+# |                                                                      |
+# | You should have received a copy of both licenses referred to here.   |
+# | If you did not, or have any questions about Aubit licensing, please  |
+# | contact afalout@ihug.co.nz                                           |
+# +----------------------------------------------------------------------+
+#
+# $Id: Makefile.in,v 1.3 2003-08-23 00:42:59 afalout Exp $
+#
+
+ROOT    =../../..
+
+#All stuff common to more then one Aubit compiler make file is there:
+include ${ROOT}/incl/Makefile-common
+
+#rules for making targets:
+include ${ROOT}/incl/?4gl.mk
+
+## ==================================================================
+##                              Options
+## ==================================================================
+
+ACE_SRC=perms
+
+DEFAULT	=${ACE_SRC}${A4GL_ACERC_EXT} ${ACE_SRC}${A4GL_EXE_EXT}
+
+.PHONY: default all help clean
+
+## ==================================================================
+##                              Targets
+## ==================================================================
+
+default: ${DEFAULT}
+	@echo " "
+	@echo "+--------------------------------------------------------------------+"
+	@echo "| Default Ace simple demo targets successfully compiled              |"
+	@echo "+--------------------------------------------------------------------+"
+	@echo " "
+	@echo "Thank you for using Aubit 4gl compiler"
+	@echo " "
+
+## ==================================================================
+##                          Help
+## ==================================================================
+
+help:
+	@echo "use 'make' to compile examples"
+
+## ==================================================================
+##                      Clean targets
+## ==================================================================
+
+
+clean:
+	$(RM) *.BAK *.bak core *~ *.ln *.output *.out *.h *.o *.4ae \
+	*.hlp *.exe *.stackdump *.err *.c *.tmp *.42m *.glb \
+	*.42r rr1.pdf *.ao *.log *.4ge *.pl *.pm \
+	test_build.c ${FILES.4gl:.4gl=.h} assoc file *.aso .\#* \
+	.*.frm.xml *.afr.xml *.mnu.xml *.aox *.warn *.aarc.xml ${ACE_SRC}.4gl
+
+
+# ============================== EOF ================================
