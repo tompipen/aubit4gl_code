@@ -789,7 +789,10 @@ int has_loaded_object (char *s);
 int isDynamicFunction(char *s);
 
 expr_str * expr_cached (expr_str * l);
-
+void set_try_to_get_values(void);
+void clr_try_to_get_values(void);
+char *variable_value(variable_usage *v) ;
+int has_variable_value(variable_usage *v) ;
 
 //int FGLPARSE_allow_token_state(int yystate,int yytoken);
 #ifndef DEFINED_SET_CLOBBER

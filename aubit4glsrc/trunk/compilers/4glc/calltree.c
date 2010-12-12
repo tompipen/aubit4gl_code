@@ -56,21 +56,26 @@ static int cache_expression (char *s, expr_str ** ptr, int mode);
 static int cache_expression_list (char *s, struct expr_str_list *srclist, int mode);
 extern int yylineno;
 char *lint_module = 0;
+int inIf=0;
 static void load_boltons (char *fname);
 static int add_calltree_calls (char *s, s_commands * func_commands, int mode);
+static void clr_variable_values(void) ;
 static int find_function (char *s);
 char *decode_rb (enum report_blocks a);
 char *endTarget=0;
 static int ignore_user_function(char *name) ;
 int ignLibFunc=1;
 static int run_calltree (char *s);
+static void add_variable_value(variable_usage *u, expr_str *val) ;
+static char * evaluate_expr (expr_str * e);
 
 int inc4GL = 1;			/* Include 4gl in the output */
 int incProg = 1;
 char top_level_function[200]="MAIN";
 int groupByModule=0;
+
 static void add_symbol(char *name,char*mod,int line,char *type,char *operation) ;
-static void add_variable(expr_str *v, char *module, int lineno, char *operation) ;
+static void add_variable(expr_str *v, char *module, int lineno, char *operation,expr_str *value) ;
 
 extern module_definition this_module;
 //int expr_datatype (struct expr_str *p);
@@ -768,9 +773,14 @@ local_is_valid_vname (struct variable *v, enum e_scope scope)
 	    return 0;
 	  else
 	    return 1;
+
 	}
       // No specific rule - so must be ok...
       return 1;
+
+
+	case VARIABLE_TYPE_USERDTYPE:
+		return 1;
 
     case VARIABLE_TYPE_RECORD:
       if (nm[1] != 'r')
@@ -1202,6 +1212,7 @@ print_indent (void)
     }
 }
 
+/*
 static int is_end_target(char *s) {
 	// If nothing is set - it must be the end target...
 	if (endTarget==0) return 1;
@@ -1214,6 +1225,7 @@ static int is_end_target(char *s) {
 	printf("No\n");
 	return 0;
 }
+*/
 
 static int
 cache_expression (char *sxx, expr_str ** ptr, int mode)
@@ -1274,7 +1286,7 @@ cache_expression (char *sxx, expr_str ** ptr, int mode)
 											      mode);
 
     case ET_EXPR_VARIABLE_USAGE:
-	add_variable(expr,last_mod,last_line,"USE");
+	add_variable(expr,last_mod,last_line,"USE",NULL);
 	break;
 
     default:
@@ -1759,7 +1771,7 @@ static void add_symbol(char *name,char*mod,int line,char *type,char *operation) 
 	//printf("Add symbol : %s (%s:%d) %s %s\n", name,mod,line,type,operation);
 }
 
-static void add_variable(expr_str *v, char *module, int lineno, char *operation) {
+static void add_variable(expr_str *v, char *module, int lineno, char *operation,expr_str *value) {
 char *scope="G";
 if (v->expr_type==ET_EXPR_VARIABLE_USAGE) {
 	struct variable_usage *u;
@@ -1776,20 +1788,47 @@ if (v->expr_type==ET_EXPR_VARIABLE_USAGE) {
 			scope="G"; break;
 		default: break;
 	}
+	if (value) { add_variable_value(v->expr_str_u.expr_variable_usage, value ); }
 }
 	add_symbol_with_scope(expr_as_string_when_possible(v),module,lineno,"VARIABLE",operation,scope);
 }
 
-static void add_symbol_assign_single(expr_str *l,char *module,int lineno) {
-	add_variable(l,module,lineno,"ASSIGN");
+static void add_symbol_assign_single(expr_str *l,char *module,int lineno,expr_str *value) {
+	add_variable(l,module,lineno,"ASSIGN",value);
 }
 
-static void add_symbol_assign(expr_str_list *l,char *module,int lineno) {
+
+static void add_symbol_assign_single_expr(expr_str_list *l,char *module,int lineno,expr_str *value) {
 int a;
 if (l==0) return;
 
 for (a=0;a<l->list.list_len;a++) {
-	add_symbol_assign_single(l->list.list_val[a],module,lineno);
+		add_symbol_assign_single(l->list.list_val[a],module,lineno, value);
+}
+
+}
+
+static void add_symbol_assign(expr_str_list *l,char *module,int lineno,expr_str_list *values) {
+int a;
+if (l==0) return;
+
+for (a=0;a<l->list.list_len;a++) {
+	if (values!=NULL) {
+		// Do we have 1 variable but lots of values ? 
+		// This is a concatenation ...
+		if (l->list.list_len==1 && values->list.list_len>1) {
+		int b;
+			char buff[120000]="";
+			for (b=0;b< values->list.list_len;b++) {
+				strcat(buff, evaluate_expr( values->list.list_val[b]));
+			}
+			add_symbol_assign_single(l->list.list_val[a],module,lineno, A4GL_new_literal_string(buff));
+		} else {
+			add_symbol_assign_single(l->list.list_val[a],module,lineno, values->list.list_val[a]);
+		}
+	} else {
+		add_symbol_assign_single(l->list.list_val[a],module,lineno,NULL);
+	}
 }
 
 }
@@ -1849,6 +1888,14 @@ static char *calltree_get_ident(struct expr_str *ptr) {
 
 }
 
+
+static char * guess_sql_stmt(struct struct_prepare_cmd *p) {
+static char buff[200000];
+	strcpy(buff,evaluate_expr(p->sql));
+	printf("PREPARE : %s\n",buff);
+	return buff;
+}
+
 static int
 add_calltree_calls (char *s, s_commands * func_commands, int mode)
 {
@@ -1876,20 +1923,20 @@ add_calltree_calls (char *s, s_commands * func_commands, int mode)
 
 
 	case E_CMD_INIT_CMD:
-		add_symbol_assign(func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.init_cmd.varlist,last_mod,last_line);
+		add_symbol_assign_single_expr(func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.init_cmd.varlist,last_mod,last_line,A4GL_new_expr_simple(ET_EXPR_NULL));
 		break;
 
 	case E_CMD_SELECT_CMD:
-		add_symbol_assign(func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.select_cmd.sql->into,last_mod,last_line);
+		add_symbol_assign(func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.select_cmd.sql->into,last_mod,last_line,NULL);
 		break;
 
 	case E_CMD_EXECUTE_CMD:
 		add_symbol(calltree_get_ident(func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.execute_cmd.sql_stmtid),last_mod,last_line,"STMT","EXECUTE");
-		add_symbol_assign(func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.execute_cmd.outbind,last_mod,last_line);
+		add_symbol_assign(func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.execute_cmd.outbind,last_mod,last_line,NULL);
 		break;
 
 	case E_CMD_LOCATE_CMD:
-		add_symbol_assign(func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.locate_cmd.variables,last_mod,last_line);
+		add_symbol_assign(func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.locate_cmd.variables,last_mod,last_line,NULL);
 		break;
 
 
@@ -1956,6 +2003,7 @@ add_calltree_calls (char *s, s_commands * func_commands, int mode)
 	    for (xcnt = 0; xcnt < func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.if_cmd.truths.conditions.conditions_len;
 		 xcnt++)
 	      {
+			inIf++;
 		if (calls_something
 		    (func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.if_cmd.truths.conditions.conditions_val[xcnt].
 		     whentrue))
@@ -1991,10 +2039,12 @@ add_calltree_calls (char *s, s_commands * func_commands, int mode)
 			indent--;
 		      }
 		  }
+			inIf--;
 	      }
 
 	    if (func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.if_cmd.whenfalse)
 	      {
+			inIf++;
 		if (calls_something (func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.if_cmd.whenfalse))
 		  {
 		    call_cnt++;
@@ -2028,6 +2078,7 @@ add_calltree_calls (char *s, s_commands * func_commands, int mode)
 		      }
 
 		  }
+			inIf--;
 
 	      }
 	    if (printed_if)
@@ -2039,7 +2090,7 @@ add_calltree_calls (char *s, s_commands * func_commands, int mode)
 	  break;
 
 	case E_CMD_FOREACH_CMD:
-		add_symbol_assign(func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.foreach_cmd.outputvals,last_mod,last_line);
+		add_symbol_assign(func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.foreach_cmd.outputvals,last_mod,last_line,NULL);
 		add_symbol(calltree_get_ident(func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.foreach_cmd.cursorname),last_mod,last_line,"CURSOR","FETCH");
 
 	  if (calls_something (func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.foreach_cmd.foreach_commands))
@@ -2325,7 +2376,7 @@ add_calltree_calls (char *s, s_commands * func_commands, int mode)
 	case E_CMD_INPUT_CMD:
 	  {
 	    int does_call;
-		add_symbol_assign(func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.input_cmd.variables,last_mod,last_line);
+		add_symbol_assign(func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.input_cmd.variables,last_mod,last_line,NULL);
 	    evt_list = func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.input_cmd.events;
 	    does_call = add_calltree_calls_from_events ("", evt_list, MODE_TRY);
 	    if (does_call)
@@ -2354,7 +2405,7 @@ add_calltree_calls (char *s, s_commands * func_commands, int mode)
 	case E_CMD_INPUT_ARRAY_CMD:
 	  {
 	    int does_call;
-		add_symbol_assign_single(func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.input_array_cmd.arrayname,last_mod,last_line);
+		add_symbol_assign_single(func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.input_array_cmd.arrayname,last_mod,last_line,NULL);
 	    evt_list = func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.input_array_cmd.events;
 	    does_call = add_calltree_calls_from_events ("", evt_list, MODE_TRY);
 	    if (does_call)
@@ -2383,7 +2434,7 @@ add_calltree_calls (char *s, s_commands * func_commands, int mode)
 	case E_CMD_CONSTRUCT_CMD:
 	  {
 	    int does_call;
-		add_symbol_assign_single(func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.construct_cmd.constr_var,last_mod,last_line);
+		add_symbol_assign_single(func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.construct_cmd.constr_var,last_mod,last_line,NULL);
 	    evt_list = func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.construct_cmd.events;
 	    does_call = add_calltree_calls_from_events ("", evt_list, MODE_TRY);
 	    if (does_call)
@@ -2472,7 +2523,7 @@ add_calltree_calls (char *s, s_commands * func_commands, int mode)
 
 
 	case E_CMD_CALL_CMD:
-		add_symbol_assign(func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.call_cmd.returning,last_mod,last_line);
+		add_symbol_assign(func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.call_cmd.returning,last_mod,last_line,NULL);
 	  call_cnt += cache_expression ("", &func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.call_cmd.fcall, mode);
 	  break;
 
@@ -2481,7 +2532,7 @@ add_calltree_calls (char *s, s_commands * func_commands, int mode)
 	  break;
 
 	case E_CMD_LET_CMD:
-		add_symbol_assign(func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.let_cmd.vars,last_mod,last_line);
+		add_symbol_assign(func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.let_cmd.vars,last_mod,last_line, func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.let_cmd.vals );
 	  call_cnt += cache_expression_list ("", func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.let_cmd.vals, mode);
 	  break;
 
@@ -2494,6 +2545,7 @@ add_calltree_calls (char *s, s_commands * func_commands, int mode)
 
 	case E_CMD_PREPARE_CMD:
 		add_symbol(calltree_get_ident(func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.prepare_cmd.stmtid),last_mod,last_line,"STMT","PREPARE");
+		guess_sql_stmt(&func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.prepare_cmd);
 		break;
 
 	case E_CMD_OPEN_CURSOR_CMD:
@@ -2555,7 +2607,7 @@ add_calltree_calls (char *s, s_commands * func_commands, int mode)
 		break;
 
 	case E_CMD_FETCH_CMD:
-	add_symbol_assign(func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.fetch_cmd.outbind,last_mod,last_line);
+	add_symbol_assign(func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.fetch_cmd.outbind,last_mod,last_line,NULL);
 
 	add_symbol(calltree_get_ident(func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.fetch_cmd.fetch->cursorname),last_mod,last_line,"CURSOR","FETCH");
 	  if (func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.fetch_cmd.fetch)
@@ -2820,6 +2872,7 @@ check_program (module_definition * mods, int nmodules)
 	  fprintf (output, "<COMMANDS >\n");
 	  indent++;
   	  print_whenever (MODE_BUY);
+	clr_variable_values();
 	  add_calltree_calls ("", f->func_commands, MODE_BUY);
 	  indent--;
 	  print_indent ();
@@ -3294,6 +3347,306 @@ static int run_calltree (char *s)
 	}
     }
   return 0;
+}
+
+
+
+static char * evaluate_variable_usage_as_string(variable_usage *var_usage) {
+        char buff[2000];
+
+
+        sprintf(buff, "%s",var_usage->variable_name);
+        if (var_usage->subscripts.subscripts_len) {
+                int a;
+                strcat(buff, "[");
+                for (a=0;a<var_usage->subscripts.subscripts_len;a++) {
+                        if(a) strcat(buff, ",");
+                        strcat(buff, evaluate_expr(var_usage->subscripts.subscripts_val[a]));
+                }
+                strcat(buff, "]");
+        }
+        if (var_usage->substrings_start.substrings_start) {
+                strcat(buff, "[");
+                strcat(buff, evaluate_expr(var_usage->substrings_start.substrings_start));
+                if (var_usage->substrings_end.substrings_end) {
+                        strcat(buff, ",");
+                        strcat(buff, evaluate_expr(var_usage->substrings_end.substrings_end));
+                }
+                strcat(buff, "]");
+        }
+        if (var_usage->next) {
+                char *ptr;
+                strcat(buff,".");
+                ptr=evaluate_variable_usage_as_string(var_usage->next);
+                strcat(buff, ptr);
+                free(ptr);
+        }
+
+        return strdup(buff);
+}
+
+
+struct variable_values {
+	char *name;
+	char *value;
+	int nassignments;
+} *variable_values=0;
+int nvariable_values=0;
+
+
+static void clr_variable_values(void) {
+	int a;
+	for (a=0;a<nvariable_values;a++) {
+		free(variable_values[a].name);
+		free(variable_values[a].value);
+	}
+	free(variable_values);
+	variable_values=0;
+	nvariable_values=0;
+}
+
+
+static void add_variable_value(variable_usage *u, expr_str *val) {
+	char *value;
+	char *var;
+	int a;
+	var=evaluate_variable_usage_as_string(u);
+
+	if (u->escope!=E_SCOPE_LOCAL) {
+		//fprintf(stderr, "Ignoring nonlocal variable .. %s\n",var);
+		return;
+	}
+
+	value=evaluate_expr(val);
+
+  	if (inIf) {
+		static char buff[10000];
+		sprintf(buff,"[%s:%d]",value,inIf);
+		value=buff;
+	}
+	
+
+	for (a=0;a<nvariable_values;a++) {
+		if (strcmp(variable_values[a].name,var)==0) {
+			free(variable_values[a].value);
+			variable_values[a].value=strdup(value);
+			variable_values[a].nassignments++;
+			return ;
+		}
+	}
+	 nvariable_values++;
+	variable_values=realloc(variable_values, sizeof(variable_values[0])*nvariable_values);
+	 variable_values[nvariable_values-1].name=strdup(var);
+	 variable_values[nvariable_values-1].value=strdup(value);
+			variable_values[nvariable_values-1].nassignments=1;
+	
+	//printf("var=%s ",var);
+	//printf("value=%s\n",value);
+}
+
+
+char *variable_value(variable_usage *u) {
+	char *var;
+	int a;
+	var=evaluate_variable_usage_as_string(u);
+	for (a=0;a<nvariable_values;a++) {
+		if (strcmp(variable_values[a].name, var)==0) {
+			return variable_values[a].value;
+		}
+	}
+	//printf("Looking for value for %s faled\n", u->variable_name);
+	return "?";
+}
+
+
+int has_variable_value(variable_usage *u) {
+	if (variable_value(u)) return TRUE;
+	return FALSE;
+}
+
+
+
+
+
+char * evaluate_expr (expr_str * e)
+{
+
+  switch (e->expr_type)
+    {
+    case ET_EXPR_LITERAL_EMPTY_STRING:
+      return "";
+      //case ET_EXPR_SUBSTRING: return "?1?";
+    case ET_EXPR_LITERAL_STRING:
+      {
+	char buff[23000];
+	sprintf (buff, "%s", e->expr_str_u.expr_string);
+	return strdup (buff);
+      }
+      break;
+
+
+    case ET_EXPR_VARIABLE_USAGE:
+      return strdup(variable_value (e->expr_str_u.expr_variable_usage));
+      break;
+
+    case ET_EXPR_BRACKET:
+      {
+	char *ptr;
+	ptr = strdup (evaluate_expr (e->expr_str_u.expr_expr));
+	return strdup(ptr);
+      }
+      break;
+
+
+    case ET_EXPR_SQLERRMESSAGE:
+	return strdup("SQLERRMESSAGE");
+	break;
+
+    case ET_EXPR_LITERAL_LONG:
+
+      {
+	static char smbuff[200];
+	sprintf (smbuff, "%ld", e->expr_str_u.expr_long);
+	return strdup(smbuff);
+      }
+      break;
+
+    case ET_EXPR_OP_CLIP:
+
+      {
+	char *p;
+	p = strdup (evaluate_expr (e->expr_str_u.expr_expr));
+	A4GL_trim (p);
+	return p;
+      }
+      break;
+
+
+    case ET_EXPR_FALSE:
+      return "0";
+
+    case ET_EXPR_TRUE:
+      return "1";
+
+
+
+
+
+
+
+    case ET_EXPR_GET_FLDBUF:
+      return "<GET_FLDBUF>";
+      
+
+
+
+
+
+    case ET_EXPR_ASCII:
+         {
+         char buff[20000];
+         char *ptr;
+               ptr=strdup(evaluate_expr(e->expr_str_u.expr_expr));
+		if (strcmp(ptr,"?")) {
+			return "?";
+		}
+	
+               sprintf(buff,"%d",ptr[0]);
+               free(ptr);
+               return strdup(buff);
+         }
+
+    case ET_EXPR_OP_CONCAT:
+      {
+	char buff[20000];
+	//printf("CONCAT %s\n",evaluate_expr (e->expr_str_u.expr_op->left));
+	//printf(" +  %s\n",evaluate_expr (e->expr_str_u.expr_op->right));
+	sprintf (buff, "%s%s", evaluate_expr (e->expr_str_u.expr_op->left), evaluate_expr (e->expr_str_u.expr_op->right));
+	return strdup (buff);
+     }
+
+    case ET_EXPR_OP_USING:
+      {
+	char buff[20000];
+	a4gl_using_from_string(buff,sizeof(buff),evaluate_expr(e->expr_str_u.expr_op->right), evaluate_expr(e->expr_str_u.expr_op->left),0);
+	return strdup (buff);
+      }
+      break;
+
+    case ET_EXPR_NOT:
+      {
+		if (atol(evaluate_expr(e->expr_str_u.expr_expr))) {
+			return strdup("0");
+		} else {
+			return strdup("1");
+		}
+      }
+      break;
+    case ET_EXPR_LITERAL_DOUBLE_STR:
+      {
+	char buff[256];
+	sprintf (buff, "%s", e->expr_str_u.expr_string);
+	return strdup (buff);
+      }
+
+    case ET_EXPR_TIME_EXPR:
+      return "TIME";
+    case ET_EXPR_TODAY:
+      return "TODAY";
+
+
+    case ET_EXPR_DAY_FUNC:
+      {
+	char buff[256];
+	sprintf (buff, "DAY(%s)", evaluate_expr (e->expr_str_u.expr_expr));
+	return strdup (buff);
+      }
+      break;
+
+    case ET_EXPR_YEAR_FUNC:
+
+      {
+	char buff[256];
+	sprintf (buff, "YEAR(%s)", evaluate_expr (e->expr_str_u.expr_expr));
+	return strdup (buff);
+      }
+      break;
+
+    case ET_EXPR_UPSHIFT:
+
+      {
+	char *p;
+	p = strdup (evaluate_expr (e->expr_str_u.expr_expr));
+	upshift (p);
+	return p;
+      }
+      break;
+
+    case ET_EXPR_DOWNSHIFT:
+      {
+	char *p;
+	p = strdup (evaluate_expr (e->expr_str_u.expr_expr));
+	downshift (p);
+	return p;
+      }
+      break;
+
+	case ET_EXPR_CAST:
+	{
+		char buff[20000];
+		sprintf(buff,"%s", evaluate_expr(e->expr_str_u.expr_cast->expr));
+		return strdup(buff);
+	}
+	break;
+
+
+
+default:
+	return "?";
+
+
+      }
+ 
 }
 
 

@@ -259,15 +259,14 @@ expr_as_string_when_possible (expr_str * e)
 
     case ET_EXPR_OP_CONCAT:
       {
-	char buff[2000];
-	sprintf (buff, "%s,%s", expr_as_string_when_possible (e->expr_str_u.expr_op->left),
-		 expr_as_string_when_possible (e->expr_str_u.expr_op->right));
+	char buff[20000];
+	sprintf (buff, "%s,%s", expr_as_string_when_possible (e->expr_str_u.expr_op->left), expr_as_string_when_possible (e->expr_str_u.expr_op->right));
 	return strdup (buff);
       }
       break;
     case ET_EXPR_OP_USING:
       {
-	char buff[2000];
+	char buff[20000];
 	sprintf (buff, "%s USING %s", expr_as_string_when_possible (e->expr_str_u.expr_op->left),
 		 expr_as_string_when_possible (e->expr_str_u.expr_op->right));
 	return strdup (buff);
@@ -277,7 +276,7 @@ expr_as_string_when_possible (expr_str * e)
 
     case ET_EXPR_NOT:
       {
-	char buff[2000];
+	char buff[20000];
 	sprintf (buff, "NOT(%s)", expr_as_string_when_possible (e->expr_str_u.expr_expr));
 	return strdup (buff);
       }
