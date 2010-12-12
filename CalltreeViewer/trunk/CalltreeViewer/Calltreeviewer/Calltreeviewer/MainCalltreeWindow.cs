@@ -1859,5 +1859,36 @@ namespace Calltreeviewer
                 invertTree(tscbFindFunction.Text);
             }
         }
+
+        private void MainCalltreeWindow_DragDrop(object sender, DragEventArgs e)
+        {
+
+            // Handle FileDrop data.
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            {
+                // Assign the file names to a string array, in 
+                // case the user has selected multiple files.
+                string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
+                try
+                {
+
+                    loadXMLFile(TreeStyle.TreeStyleMainRecurse, files[0]);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                    return;
+                }
+            }
+
+        }
+
+        private void MainCalltreeWindow_DragEnter(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            {
+                e.Effect = DragDropEffects.Copy;
+            }
+        }
     }
 }
