@@ -59,8 +59,15 @@ char *lint_module = 0;
 int inIf=0;
 static void load_boltons (char *fname);
 static int add_calltree_calls (char *s, s_commands * func_commands, int mode);
+static void calltree_map_insert_delete_update(char *main_statement, char *table, struct expr_str *where_clause, char *module, int line) ;
+static void calltree_map_select_stmt(char *main_statement, struct s_select *select,  char *module, int line) ;
+static void calltree_map_value_list(char *main_statement,struct s_select_list_item_list *list, char*module, int line) ;
+static void calltree_map_value(char *main_statement,struct s_select_list_item *item, char*module, int line) ;
+static char * guess_sql_stmt(struct struct_prepare_cmd *p,char *module, int line) ;
 static void clr_variable_values(void) ;
+static void ensure_crud(void) ;
 static int find_function (char *s);
+static void close_crud(void) ;
 char *decode_rb (enum report_blocks a);
 char *endTarget=0;
 static int ignore_user_function(char *name) ;
@@ -1889,12 +1896,6 @@ static char *calltree_get_ident(struct expr_str *ptr) {
 }
 
 
-static char * guess_sql_stmt(struct struct_prepare_cmd *p) {
-static char buff[200000];
-	strcpy(buff,evaluate_expr(p->sql));
-	printf("PREPARE : %s\n",buff);
-	return buff;
-}
 
 static int
 add_calltree_calls (char *s, s_commands * func_commands, int mode)
@@ -1926,7 +1927,31 @@ add_calltree_calls (char *s, s_commands * func_commands, int mode)
 		add_symbol_assign_single_expr(func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.init_cmd.varlist,last_mod,last_line,A4GL_new_expr_simple(ET_EXPR_NULL));
 		break;
 
+
+	case E_CMD_DELETE_CMD:
+		calltree_map_insert_delete_update("DELETE", func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.delete_cmd.table, 
+				func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.delete_cmd.where_clause, last_mod,last_line);
+		
+		break;
+
+	case E_CMD_INSERT_CMD:
+		calltree_map_insert_delete_update("INSERT", func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.insert_cmd.table, NULL, last_mod,last_line);
+		if (func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.insert_cmd.subselect) {
+			calltree_map_select_stmt("INSERT", func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.insert_cmd.subselect, last_mod,last_line);
+		}
+		if (func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.insert_cmd.value_list) {
+			calltree_map_value_list("INSERT", func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.insert_cmd.value_list, last_mod,last_line);
+		}
+		break;
+
+	case E_CMD_UPDATE_CMD:
+		calltree_map_insert_delete_update("UPDATE", func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.update_cmd.table, 
+				func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.update_cmd.where_clause, last_mod,last_line);
+		calltree_map_value_list("UPDATE", func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.update_cmd.value_list, last_mod,last_line);
+		break;
+
 	case E_CMD_SELECT_CMD:
+		 calltree_map_select_stmt("SELECT", func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.select_cmd.sql, last_mod,last_line);
 		add_symbol_assign(func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.select_cmd.sql->into,last_mod,last_line,NULL);
 		break;
 
@@ -2545,7 +2570,8 @@ add_calltree_calls (char *s, s_commands * func_commands, int mode)
 
 	case E_CMD_PREPARE_CMD:
 		add_symbol(calltree_get_ident(func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.prepare_cmd.stmtid),last_mod,last_line,"STMT","PREPARE");
-		guess_sql_stmt(&func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.prepare_cmd);
+			guess_sql_stmt(&func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.prepare_cmd, last_mod,last_line);
+		
 		break;
 
 	case E_CMD_OPEN_CURSOR_CMD:
@@ -3250,6 +3276,7 @@ main (int argc, char *argv[])
     }
 
   check_program (m, a);
+close_crud();
   return 0;
 }
 
@@ -3421,7 +3448,7 @@ static void add_variable_value(variable_usage *u, expr_str *val) {
 
   	if (inIf) {
 		static char buff[10000];
-		sprintf(buff,"[%s:%d]",value,inIf);
+		sprintf(buff,"[%s]",value);
 		value=buff;
 	}
 	
@@ -3468,7 +3495,8 @@ int has_variable_value(variable_usage *u) {
 
 
 
-char * evaluate_expr (expr_str * e)
+char *
+evaluate_expr (expr_str * e)
 {
 
   switch (e->expr_type)
@@ -3486,28 +3514,28 @@ char * evaluate_expr (expr_str * e)
 
 
     case ET_EXPR_VARIABLE_USAGE:
-      return strdup(variable_value (e->expr_str_u.expr_variable_usage));
+      return strdup (variable_value (e->expr_str_u.expr_variable_usage));
       break;
 
     case ET_EXPR_BRACKET:
       {
 	char *ptr;
 	ptr = strdup (evaluate_expr (e->expr_str_u.expr_expr));
-	return strdup(ptr);
+	return strdup (ptr);
       }
       break;
 
 
     case ET_EXPR_SQLERRMESSAGE:
-	return strdup("SQLERRMESSAGE");
-	break;
+      return strdup ("SQLERRMESSAGE");
+      break;
 
     case ET_EXPR_LITERAL_LONG:
 
       {
 	static char smbuff[200];
 	sprintf (smbuff, "%ld", e->expr_str_u.expr_long);
-	return strdup(smbuff);
+	return strdup (smbuff);
       }
       break;
 
@@ -3528,33 +3556,23 @@ char * evaluate_expr (expr_str * e)
     case ET_EXPR_TRUE:
       return "1";
 
-
-
-
-
-
-
     case ET_EXPR_GET_FLDBUF:
       return "<GET_FLDBUF>";
-      
-
-
-
-
 
     case ET_EXPR_ASCII:
-         {
-         char buff[20000];
-         char *ptr;
-               ptr=strdup(evaluate_expr(e->expr_str_u.expr_expr));
-		if (strcmp(ptr,"?")) {
-			return "?";
-		}
-	
-               sprintf(buff,"%d",ptr[0]);
-               free(ptr);
-               return strdup(buff);
-         }
+      {
+	char buff[20000];
+	char *ptr;
+	ptr = strdup (evaluate_expr (e->expr_str_u.expr_expr));
+	if (strcmp (ptr, "?"))
+	  {
+	    return "?";
+	  }
+
+	sprintf (buff, "%d", ptr[0]);
+	free (ptr);
+	return strdup (buff);
+      }
 
     case ET_EXPR_OP_CONCAT:
       {
@@ -3563,25 +3581,33 @@ char * evaluate_expr (expr_str * e)
 	//printf(" +  %s\n",evaluate_expr (e->expr_str_u.expr_op->right));
 	sprintf (buff, "%s%s", evaluate_expr (e->expr_str_u.expr_op->left), evaluate_expr (e->expr_str_u.expr_op->right));
 	return strdup (buff);
-     }
+      }
 
     case ET_EXPR_OP_USING:
       {
 	char buff[20000];
-	a4gl_using_from_string(buff,sizeof(buff),evaluate_expr(e->expr_str_u.expr_op->right), evaluate_expr(e->expr_str_u.expr_op->left),0);
+	a4gl_using_from_string (buff, sizeof (buff), evaluate_expr (e->expr_str_u.expr_op->right),
+				evaluate_expr (e->expr_str_u.expr_op->left), 0);
 	return strdup (buff);
       }
       break;
 
     case ET_EXPR_NOT:
       {
-		if (atol(evaluate_expr(e->expr_str_u.expr_expr))) {
-			return strdup("0");
-		} else {
-			return strdup("1");
-		}
+	if (atol (evaluate_expr (e->expr_str_u.expr_expr)))
+	  {
+	    return strdup ("0");
+	  }
+	else
+	  {
+	    return strdup ("1");
+	  }
       }
       break;
+
+    case ET_EXPR_NULL:
+      return strdup ("");
+
     case ET_EXPR_LITERAL_DOUBLE_STR:
       {
 	char buff[256];
@@ -3591,6 +3617,7 @@ char * evaluate_expr (expr_str * e)
 
     case ET_EXPR_TIME_EXPR:
       return "TIME";
+
     case ET_EXPR_TODAY:
       return "TODAY";
 
@@ -3604,7 +3631,6 @@ char * evaluate_expr (expr_str * e)
       break;
 
     case ET_EXPR_YEAR_FUNC:
-
       {
 	char buff[256];
 	sprintf (buff, "YEAR(%s)", evaluate_expr (e->expr_str_u.expr_expr));
@@ -3613,7 +3639,6 @@ char * evaluate_expr (expr_str * e)
       break;
 
     case ET_EXPR_UPSHIFT:
-
       {
 	char *p;
 	p = strdup (evaluate_expr (e->expr_str_u.expr_expr));
@@ -3631,23 +3656,267 @@ char * evaluate_expr (expr_str * e)
       }
       break;
 
-	case ET_EXPR_CAST:
-	{
-		char buff[20000];
-		sprintf(buff,"%s", evaluate_expr(e->expr_str_u.expr_cast->expr));
-		return strdup(buff);
-	}
-	break;
-
-
-
-default:
-	return "?";
-
-
+    case ET_EXPR_CAST:
+      {
+	char buff[20000];
+	sprintf (buff, "%s", evaluate_expr (e->expr_str_u.expr_cast->expr));
+	return strdup (buff);
       }
- 
+      break;
+
+    case ET_E_V_OR_LIT_STRING:
+      return strdup (e->expr_str_u.expr_string);
+
+    default:
+      A4GL_pause_execution ();
+      return "?";
+
+    }
+
+}
+
+
+FILE *crudfile=0;
+
+
+static void ensure_crud(void) {
+if (crudfile==0) {
+	crudfile=fopen("crud.out","w");
+}
+}
+
+
+static void add_table_action(char *mainaction, char *tabname, char *action,char *module,int line) {
+ensure_crud();
+fprintf(crudfile, "<STATEMENT TABLE=\"%s\" ACTION=\"%s\" MODULE=\"%s\" LINE=\"%d\" MAINACTION=\"%s\"/>\n",tabname,action,module,line, mainaction);
 }
 
 
 
+void
+calltree_map_select_stmt (char *main_statement_type, struct s_select *select, char *module, int line)
+{
+  
+    int a;
+    //char *into_temp = 0;
+
+    if (select->table_elements.tables.tables_len > 10000)
+      {
+	A4GL_assertion (1, "Dubious number of tables!");
+      }
+
+
+    A4GLSQLPARSE_from_clause_collect_tables (select, select->first, &select->table_elements);
+
+    for (a = 0; a < select->table_elements.tables.tables_len; a++)
+      {
+	char *tabname;
+	char *alias;
+	tabname = strdup (select->table_elements.tables.tables_val[a].tabname);
+	alias = select->table_elements.tables.tables_val[a].alias;
+	if (alias == 0)
+	  {
+	    alias = tabname;
+	  }
+	else
+	  {
+	    alias = strdup (alias);
+	    A4GL_trim (alias);
+	  }
+	A4GL_trim (tabname);
+	add_table_action(main_statement_type, tabname,"SELECT",module,line);
+      }
+
+
+    calltree_map_value_list (main_statement_type, select->select_list, module, line);
+	if (select->where_clause) {
+    		calltree_map_value (main_statement_type, select->where_clause, module, line);
+	}
+    if (select->next)
+      {
+	calltree_map_select_stmt (main_statement_type, select->next,module,line);
+      }
+
+}
+
+static void calltree_map_value(char *main_statement,struct s_select_list_item *item, char*module, int line) {
+	switch (item->data.type) {
+        case E_SLI_IBIND:
+        case E_SLI_VARIABLE:
+        case E_SLI_DATETIME:
+        case E_SLI_INTERVAL:
+        case E_SLI_COLUMN_NOT_TRANSFORMED:
+        case E_SLI_LITERAL:
+        case E_SLI_CHAR: 
+        case E_SLI_VAR_REPLACE:
+        case E_SLI_COLUMN:
+        case E_SLI_COLUMN_ORDERBY:
+        case E_SLI_VARIABLE_USAGE_IN_SELECT_LIST :
+        case E_SLI_VARIABLE_USAGE :
+        case E_SLI_VARIABLE_USAGE_LIST:
+		break;
+
+        case E_SLI_BUILTIN_CONST_COUNT_STAR:
+        case E_SLI_BUILTIN_CONST_CURRENT:
+        case E_SLI_BUILTIN_CONST_FALSE:
+        case E_SLI_BUILTIN_CONST_ROWID:
+        case E_SLI_BUILTIN_CONST_STAR:
+        case E_SLI_BUILTIN_CONST_TIME:
+        case E_SLI_BUILTIN_CONST_TODAY:
+        case E_SLI_BUILTIN_CONST_TRUE:
+        case E_SLI_BUILTIN_CONST_USER:
+        case E_SLI_BUILTIN_CONST_NULL:
+        case E_SLI_QUERY_PLACEHOLDER:
+		break;
+
+
+        case E_SLI_CAST_EXPR:
+		calltree_map_value(main_statement, item->data.s_select_list_item_data_u.casting.expr,module,line);
+		break;
+
+        case E_SLI_ASC:
+        case E_SLI_DESC:
+        case E_SLI_NOT:
+        case E_SLI_BRACKET_EXPR:
+        case E_SLI_UNITS_YEAR:
+        case E_SLI_UNITS_DAY:
+        case E_SLI_UNITS_HOUR:
+        case E_SLI_UNITS_MINUTE:
+        case E_SLI_UNITS_MONTH:
+        case E_SLI_UNITS_SECOND:
+        case E_SLI_ISNOTNULL:
+        case E_SLI_ISNULL:
+		calltree_map_value(main_statement, item->data.s_select_list_item_data_u.expr,module,line);
+		break;
+
+
+      	case E_SLI_BUILTIN_FUNC_DATE:
+        case E_SLI_BUILTIN_FUNC_DAY:
+        case E_SLI_BUILTIN_FUNC_DOW:
+        case E_SLI_BUILTIN_FUNC_MDY:
+        case E_SLI_BUILTIN_FUNC_MONTH:
+        case E_SLI_BUILTIN_FUNC_WEEKDAY:
+        case E_SLI_BUILTIN_FUNC_YEAR:
+		calltree_map_value_list(main_statement,item->data.s_select_list_item_data_u.builtin_fcall.params,module,line);
+		break;
+
+        case E_SLI_BUILTIN_AGG_AVG:
+        case E_SLI_BUILTIN_AGG_COUNT:
+        case E_SLI_BUILTIN_AGG_MAX:
+        case E_SLI_BUILTIN_AGG_MIN:
+        case E_SLI_BUILTIN_AGG_SUM:
+		calltree_map_value(main_statement,item->data.s_select_list_item_data_u.agg_expr.expr,module,line);
+		break;
+
+        case E_SLI_EXTEND:
+		calltree_map_value(main_statement,item->data.s_select_list_item_data_u.extend.expr,module,line);
+		break;
+
+       case E_SLI_FCALL:
+		calltree_map_value_list(main_statement,item->data.s_select_list_item_data_u.fcall.params,module,line);
+		break;
+
+        case E_SLI_CASE:
+		{
+			int a;
+			for (a=0;a<item->data.s_select_list_item_data_u.sqlcase.elements.elements_len;a++) {
+				calltree_map_value(main_statement,item->data.s_select_list_item_data_u.sqlcase.elements.elements_val[a],module,line);
+			}
+		}
+		break;
+
+        case E_SLI_REGEX_ILIKE:
+        case E_SLI_REGEX_LIKE:
+        case E_SLI_REGEX_MATCHES:
+        case E_SLI_REGEX_NOT_ILIKE:
+        case E_SLI_REGEX_NOT_LIKE:
+        case E_SLI_REGEX_NOT_MATCHES:
+		calltree_map_value(main_statement,item->data.s_select_list_item_data_u.regex.val,module,line);
+		calltree_map_value(main_statement,item->data.s_select_list_item_data_u.regex.regex,module,line);
+	break;
+
+        case E_SLI_BETWEEN:
+        case E_SLI_NOT_BETWEEN:
+		calltree_map_value(main_statement,item->data.s_select_list_item_data_u.between_expr.val,module,line);
+		calltree_map_value(main_statement,item->data.s_select_list_item_data_u.between_expr.from,module,line);
+		calltree_map_value(main_statement,item->data.s_select_list_item_data_u.between_expr.to,module,line);
+	break;
+
+        case E_SLI_CASE_ELEMENT:
+		calltree_map_value(main_statement,item->data.s_select_list_item_data_u.sqlcaseelement.condition,module,line);
+		calltree_map_value(main_statement,item->data.s_select_list_item_data_u.sqlcaseelement.response,module,line);
+		break;
+
+        case E_SLI_JOIN:
+        case E_SLI_OP:
+		calltree_map_value(main_statement,item->data.s_select_list_item_data_u.complex_expr.left,module,line);
+		calltree_map_value(main_statement,item->data.s_select_list_item_data_u.complex_expr.right,module,line);
+		
+		break;
+
+        case E_SLI_IN_SELECT:
+        case E_SLI_NOT_IN_SELECT:
+		calltree_map_value(main_statement,item->data.s_select_list_item_data_u.sli_expr.left,module,line);
+		calltree_map_value(main_statement,item->data.s_select_list_item_data_u.sli_expr.right,module,line);
+		break;
+
+
+        case E_SLI_IN_VALUES:
+        case E_SLI_NOT_IN_VALUES:
+		calltree_map_value(main_statement,item->data.s_select_list_item_data_u.slil_expr.left,module,line);
+		calltree_map_value_list(main_statement,item->data.s_select_list_item_data_u.slil_expr.right_list,module,line);
+		break;
+
+        case E_SLI_QUERY:
+        case E_SLI_SUBQUERY:
+		calltree_map_select_stmt(main_statement, item->data.s_select_list_item_data_u.subquery, module,line);
+		break;
+
+        case E_SLI_SUBQUERY_EXPRESSION:
+		calltree_map_value(main_statement,item->data.s_select_list_item_data_u.sq_expression.sq,module,line);
+		break;
+
+
+	}
+
+}
+
+void calltree_map_value_list(char *main_statement,struct s_select_list_item_list *list, char*module, int line) {
+int a;
+if (list==0) return;
+for (a=0;a<list->list.list_len;a++) {
+	struct s_select_list_item *si;
+	si=list->list.list_val[a];
+	calltree_map_value(main_statement,si,module,line);
+}
+
+}
+
+
+void calltree_map_insert_delete_update(char *main_statement, char *table, struct expr_str *where_clause, char *module, int line) {
+	add_table_action(main_statement, table,main_statement,module,line);
+	if (where_clause) {
+		if (where_clause->expr_type==ET_EXPR_SELECT_LIST_ITEM) {
+		struct s_select_list_item *sl;
+		sl=where_clause->expr_str_u.sl_item;
+		calltree_map_value(main_statement,sl,module,line);
+		} else {
+			A4GL_assertion(1,"Unexpected WHERE CLAUSE expression type");
+		}
+	}
+}
+
+static void close_crud() {
+if (crudfile) {
+fclose(crudfile);
+}
+}
+
+
+static char * guess_sql_stmt(struct struct_prepare_cmd *p,char *module, int line) {
+static char buff[200000];
+	ensure_crud();
+	strcpy(buff,evaluate_expr(p->sql));
+	fprintf(crudfile, "<PREPARE MODULE=\"%s\" LINE=\"%d\">%s</PREPARE>\n",module,line, buff);
+	return buff;
+}
