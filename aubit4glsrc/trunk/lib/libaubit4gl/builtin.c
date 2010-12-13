@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin.c,v 1.162 2010-10-06 11:42:47 mikeaubury Exp $
+# $Id: builtin.c,v 1.163 2010-12-13 17:59:38 mikeaubury Exp $
 #
 */
 
@@ -1976,10 +1976,14 @@ aclfgl_fgl_compare (int n)
   for (a = n - 1; a >= 0; a--)
     {
       compares[a] = A4GL_char_pop ();
+	//A4GL_trim(compares[a]);
     }
   ok = 1;
   for (a = 0; a < half; a++)
     {
+	// If they are both null....
+	if (A4GL_isnull(DTYPE_CHAR, compares[a]) && A4GL_isnull(DTYPE_CHAR, compares[a + half])) continue;
+
       A4GL_push_char (compares[a]);
       A4GL_push_char (compares[a + half]);
       A4GL_pushop (OP_EQUAL);
