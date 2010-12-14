@@ -762,11 +762,14 @@ Label* WidgetHelper::createLabel(const QDomElement& formField, QWidget *parent)
       label->setVisible(false);
    }
 
+   QFontMetrics fm = label->fontMetrics();
+   w = w*fm.width("a");
 
   // QPalette p = label->palette();
   // p.setColor(QPalette::Foreground, Qt::blue);
  //  label->setPalette(p);
    label->setFixedHeight(defHeight);
+   label->setFixedWidth(w);
 
    return label;
 }
