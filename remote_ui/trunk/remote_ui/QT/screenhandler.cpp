@@ -2377,6 +2377,7 @@ void ScreenHandler::setEnv(QString name, QString env)
 bool ScreenHandler::eventFilter(QObject *obj, QEvent *event)
 {
 
+/*
    if(event->type() == QEvent::WindowActivate){
       if(obj != p_fglform){
          if(p_fglform != NULL){
@@ -2390,6 +2391,7 @@ bool ScreenHandler::eventFilter(QObject *obj, QEvent *event)
          }
       }
    }
+*/
 
    return QObject::eventFilter(obj, event);
 

@@ -42,6 +42,7 @@ Dialog::Dialog(QString title, QString comment, QString style, QString image,
 {
 
    Q_UNUSED(style);
+   this->setWindowModality(Qt::WindowModal);
 
    this->setAttribute(Qt::WA_DeleteOnClose);
 
@@ -109,16 +110,20 @@ void Dialog::createButton(int id, QString text, QString tooltip, QString icon)
       button->setIconSize(QSize(40,25));
    }
 
-   Action *action = new Action(text.toLower(), text, button);
-   action->setComment(tooltip);
-   if(icon == "")
-   {
-      action->setImage("pics:blank.png");
+   Action *action = (Action*) this->getAction(text);
+   if(action->text() != text){
+      action = new Action(text.toLower(), text, button);
+      action->setComment(tooltip);
+      if(icon == "")
+      {
+         action->setImage("pics:blank.png");
+      }
+      else
+      {
+         action->setImage("pics:" + icon);
+      }
    }
-   else
-   {
-      action->setImage("pics:" + icon);
-   }
+   
    button->addAction(action);
    connect(button, SIGNAL(clicked()), action, SLOT(trigger()));
 
@@ -170,10 +175,12 @@ void Dialog::hideButton(QString name)
          text = text.remove(0,1);
       }
 
-      if(text == name)
+      if(text == name){
          button->setVisible(false);
+         this->adjustSize();
+         return;
+      }
    }
-   this->adjustSize();
 }
 
 //------------------------------------------------------------------------------
