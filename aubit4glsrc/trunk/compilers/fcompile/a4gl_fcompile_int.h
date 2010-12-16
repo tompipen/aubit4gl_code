@@ -64,4 +64,5 @@ void add_child(struct s_layout *parent, struct s_layout *child);
 void add_bool_layout_attrib(enum FIELD_ATTRIBUTES_BOOL attrib);
 void add_str_layout_attrib(enum FA_ATTRIBUTES_STRING attrib, char *value);
 struct s_layout_attributes *get_layout_attrib(void );
+char *fcompile_find_table(char*tabname);
 char *process_include(char *s) ;

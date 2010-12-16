@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: util.c,v 1.76 2010-02-16 13:16:22 mikeaubury Exp $
+# $Id: util.c,v 1.77 2010-12-16 21:23:47 mikeaubury Exp $
 #
 */
 
@@ -111,23 +111,6 @@ dummy_prevent_sqlparse_warnings_dummy (void)
 }
 
 
-#ifdef MOVED
-/**
- *
- * @todo Describe function
- */
-static char *
-pop_gen (int a)
-{
-  /*printf ("Popgen called\n"); */
-  /*printf ("UPDVAL2 cnt = %d\n", gen_stack_cnt[UPDVAL2]); */
-  /*dump_updvals(); */
-  gen_stack_cnt[a]--;
-  return gen_stack[a][gen_stack_cnt[a]];
-
-}
-
-#endif
 
 /**
  *
@@ -196,89 +179,6 @@ make_sql_string_and_free (char *first, ...)
 }
 
 
-#ifdef MOVED
-
-/**
- *
- * @todo Describe function
- */
-void
-push_gen (int a, char *s)
-{
-#ifdef DEBUG
-  A4GL_debug ("Push %d %s - %d\n", a, A4GL_null_as_null (s),
-#endif
-	      gen_stack_cnt[a]);
-  /*printf ("Push %d %s - %d\n", a, s,gen_stack_cnt[a]); */
-  if (gen_stack_cnt[a] >= GEN_STACK_SIZE)
-    {
-      printf ("Out of stack!\n");
-      exit (77);
-    }
-  strcpy (gen_stack[a][gen_stack_cnt[a]++], s);
-}
-
-/**
- *
- * @todo Describe function
- */
-void
-copy_gen (int a, int b)
-{
-  int c;
-
-
-  if (gen_stack_cnt[a] && gen_stack[a][gen_stack_cnt[a] - 1][0] == '(')
-    {
-      /*printf ("POP\n"); */
-      pop_gen (a);
-    }
-
-
-  for (c = 0; c < gen_stack_cnt[b]; c++)
-    {
-      A4GL_4glc_push_gen (a, gen_stack[b][c]);
-    }
-  gen_stack_cnt[b] = 0;
-}
-
-
-
-
-/**
- *
- * @todo Describe function
- */
-static int
-gen_cnt (int a)
-{
-  return gen_stack_cnt[a];
-}
-
-/**
- *
- * @todo Describe function
- */
-void
-pop_all_gen (int a, char *s)
-{
-  int z;
-  for (z = 0; z < gen_stack_cnt[a]; z++)
-    {
-      if (z > 0) {
-#ifdef DEBUG
-	A4GL_debug ("%s ", A4GL_null_as_null (s));
-#endif
-	}
-
-#ifdef DEBUG
-      A4GL_debug ("%s", A4GL_null_as_null (gen_stack[a][z]));
-#endif
-    }
-  gen_stack_cnt[a] = 0;
-}
-
-#endif
 
 static void
 ansi_violation (char *s, int n)
@@ -286,121 +186,6 @@ ansi_violation (char *s, int n)
 }
 
 
-#ifdef OLD
-/**
- *
- * @todo Describe function
- */
-static char *
-fix_update_expr (int mode)
-{
-  static char big_buff[20000];
-  int a;
-  int rval;
-  int isize = 0;
-  int idtype = 0;
-  char colname[256] = "";
-  /*char csize[20]; */
-  /*char cdtype[20]; */
-  char buff[1000];
-  char *ccol;
-  strcpy (big_buff, "SET ");
-
-
-  if (mode == 1)
-    {
-      /* It will only be a '*' anyway.... */
-      if (db_used == 0 && !A4GL_apisql_has_sess("default"))
-	{
-	printf("No db\n");
-	  sprintf (buff,
-		   "You cannot use update * =  without specifying a database");
-	  sqlparse_yyerror (buff);
-	  return 0;
-	}
-
-      A4GL_4glc_clr_gen (UPDCOL);
-      strcpy (colname, "");
-      rval =
-	A4GLSQL_get_columns (current_upd_table, colname, &idtype, &isize);
-      if (rval == 0)
-	{
-	  sqlparse_yyerror ("Table is not in the database");
-	  A4GLSQL_end_get_columns ();
-	  return 0;
-	}
-
-
-      while (1)
-	{
-	  colname[0] = 0;
-	  rval = A4GLSQL_next_column (&ccol, &idtype, &isize);
-	  strcpy (colname, ccol);
-	  if (rval == 0)
-	    break;
-	  trim_spaces (colname);
-	  A4GL_4glc_push_gen (UPDCOL, colname);
-	}
-      A4GLSQL_end_get_columns ();
-    }
-
-  if (A4GL_4glc_gen_cnt (UPDCOL) != A4GL_4glc_gen_cnt (UPDVAL))
-    {
-      //dump_updvals();
-      printf ("%d!=%d\n", A4GL_4glc_gen_cnt (UPDCOL),
-	      A4GL_4glc_gen_cnt (UPDVAL));
-      sqlparse_yyerror
-	("Number of columns in update not the same as number of values");
-    }
-
-  for (a = 0; a < A4GL_4glc_gen_cnt (UPDCOL); a++)
-    {
-      if (strcmp (A4GL_4glc_get_gen (UPDVAL, a), "?") == 0)
-	{
-	  A4GL_assertion (1, "Failed");
-	}
-      if (a)
-	strcat (big_buff, ",");
-      sprintf (buff, "%s=%s ", A4GL_4glc_get_gen (UPDCOL, a),
-	       A4GL_4glc_get_gen (UPDVAL, a));
-      strcat (big_buff, buff);
-    }
-
-  return big_buff;
-}
-
-
-
-
-/**
- *
- * @todo Describe function
- */
-static char *
-A4GL_get_into_part (int a, int b)
-{
-  return 0;
-}
-
-/**
- *
- * @todo Describe function
- */
-static char *
-A4GL_get_undo_use (void)
-{
-  return 0;
-}
-
-/**
- *
- * @todo Describe function
- */
-static void
-A4GL_lex_printcomment (char *fmt, ...)
-{
-}
-#endif
 
 /**
  *
@@ -415,61 +200,6 @@ addmap_runtime (char *s, char *f)
   A4GL_log_sql_prepared_map (buff);
 }
 
-#ifdef REDUNDANT
-/**
- *
- * @todo Describe function
- */
-static int
-get_bind_cnt (char i)
-{
-  return 0;
-}
-
-/**
- *
- * @todo Describe function
- */
-static int
-scan_variable (char *S)
-{
-// Can't be a variable - we don't have 'em
-  return 0;
-}
-
-/**
- *
- * @todo Describe function
- */
-static int
-start_bind (char c, int n)
-{
-  return 0;
-}
-
-/**
- *
- * @todo Describe function
- */
-static void
-rm_quotes (char *s)
-{
-  char buff[256];
-  int a;
-  int b = 0;
-  buff[0] = 0;
-  for (a = 0; a <= strlen (s); a++)
-    {
-      if (s[a] != '"')
-	{
-	  buff[b++] = s[a];
-	  buff[b] = 0;
-	}
-    }
-  strcpy (s, buff);
-}
-
-#endif
 
 /**
  *
@@ -647,70 +377,8 @@ sqlparse_yyerror (char *s)
 }
 
 
-#ifdef REDUNDANT
-/**
- *
- * @todo Describe function
- */
-static char *
-convstrsql (char *s)
-{
-  if (s[0] == '\'')
-    return s;
-  return convstr_dbl_to_single (s);
-}
-#endif
 
 
-#ifdef REDUNDANT
-/**
- *
- * @todo Describe function
- */
-static char *
-convstr_dbl_to_single (char *s)
-{
-  static char buff[1024];
-  int a;
-  int b = 0;
-#ifdef DEBUG
-  A4GL_debug ("Convstrsql ... %s", s);
-#endif
-  for (a = 0; a <= strlen (s); a++)
-    {
-      if (s[a] == '"')
-	{
-	  if (a == 0 || (s[a]=='"' && a == strlen (s) - 1))
-	    {
-	      buff[b++] = '\'';
-	    }
-	  else
-	    {
-	      if (s[a - 1] != '\\')
-		{
-		  buff[b++] = '\'';
-		}
-	      else
-		{
-		  buff[b++] = '"';
-		}
-	    }
-
-	  continue;
-	}
-
-      if (s[a] == '\'' && a && a != strlen (s) - 1)
-	{
-	  buff[b++] = '\'';
-	  buff[b++] = '\'';
-	  continue;
-	}
-      buff[b++] = s[a];
-
-    }
-  return buff;
-}
-#endif
 
 
 /**
@@ -732,43 +400,6 @@ static void a4gl_char_cpy(char *dest,char *src,int dbl) {
 */
 
 
-#ifdef REDUNDANT
-
-/**
- *
- * @todo Describe function
- */
-static void
-A4GL_CV_print_exec_sql (char *s)
-{
-  sql_type = 1;
-  if (sql_string)
-    sql_string = 0;
-  sql_string = acl_strdup (s);
-  add_sql (sql_type, sql_string);
-if (A4GL_get_malloc_context()==NULL ) {
-acl_free(s);
-}
-}
-
-
-/**
- *
- * @todo Describe function
- */
-static void
-A4GL_CV_print_exec_sql_bound (char *s)
-{
-  sql_type = 2;
-  if (sql_string)
-    sql_string = 0;
-  sql_string = acl_strdup (s);
-  add_sql (sql_type, sql_string);
-if (A4GL_get_malloc_context()==NULL ) {
-	acl_free(s); 
-}
-}
-#endif
 
 /* andrej 
 static void print_exec_sql_bound (char *s) {
@@ -798,27 +429,6 @@ char s[256];
 */
 
 
-#ifdef REDUNDANT
-/**
- *
- * @todo Describe function
- */
-static void
-print_load (char *fname, char *delim, char *tab, char *cols)
-{
-  printf ("Load can't be prepared...");
-}
-
-/**
- *
- * @todo Describe function
- */
-static void
-print_load_str (char *fname, char *delim, char *sql)
-{
-  printf ("Invalid syntax for a prepare statement");
-}
-#endif
 
 /**
  *
@@ -887,37 +497,6 @@ print_exec_select (char *s)
 
 
 
-#ifdef REDUNDAN
-/**
- *
- * @todo Describe function
- */
-static void
-print_undo_use (char *s)
-{
-  printf ("Invalid in prepare");
-}
-
-
-/**
- *
- * @todo Describe function
- */
-static void
-print_unload_g (char *f, char *d, char *sql,void *binding)
-{
-}
-
-/**
- *
- * @todo Describe function
- */
-static void
-print_use_session (char *s)
-{
-}
-
-#endif
 
 /**
  *
@@ -1319,39 +898,6 @@ A4GLPARSE_SQLPARSE_initlib (void)
 
 
 
-#ifdef OLD
-/**
- *
- * @todo Describe function
- */
-char *
-A4GLSQLCV_generate_ins_string (char *current_ins_table, char *s, int is_select_into)
-{
-  char buff[40000];
-  if (A4GLSQLCV_check_requirement ("FULL_INSERT") && !is_select_into)
-    {
-      char *p;
-      if (strstr (s, " VALUES "))
-	{
-	  p = fix_insert_expr (1);
-	  if (p)
-	    {
-	      sprintf (buff, "INSERT INTO %s %s", current_ins_table, p);
-	      acl_free (s);
-	    }
-	  else
-	    {
-	      sprintf (buff, "%s", s);
-	      //free (s);
-	    }
-	  return acl_strdup (buff);
-	}
-    }
-
-  return s;
-
-}
-#endif
 
 
 
@@ -1421,11 +967,6 @@ map_delete_update (char *main_statement_type, char *table, struct s_select_list_
 }
 
 
-#ifdef REDUNDANT
-void *copy_togenbind(char c) {
-	return 0;
-}
-#endif
 
 void fail_on_select_ibind(void) {
 }

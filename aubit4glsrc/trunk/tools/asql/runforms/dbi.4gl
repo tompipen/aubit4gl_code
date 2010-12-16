@@ -214,9 +214,9 @@ define lv_sql char(10000)
 code
         A4GL_trim(lv_sql);
 	do_execute_sql(obind_u,obind_u_cnt,lv_sql);
-        if (a4gl_sqlca.sqlcode<0)  {
-                        A4GL_chk_err(0,_module_name);
-        }
+        //if (a4gl_sqlca.sqlcode<0)  {
+                        //A4GL_chk_err(0,_module_name);
+        //}
 endcode
 
 if sqlca.sqlcode<0 then

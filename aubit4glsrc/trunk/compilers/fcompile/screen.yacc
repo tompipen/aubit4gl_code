@@ -1201,7 +1201,15 @@ field_type : FORMONLY DOT field_name field_datatype_null {
 ;
 
 
-
+op_lu_ft_eq_c: {
+		$<lookups>$=malloc(sizeof(s_lookups));
+		$<lookups>$->lookups.lookups_len=0;
+		$<lookups>$->lookups.lookups_val=0;
+	}
+	| lu_ft_eq_c {
+		$<lookups>$=$<lookups>1;
+		}
+;
 
 lu_ft_eq_c:
 	lu_ft_eq_c_i {
@@ -1310,7 +1318,7 @@ A4GL_add_bool_attr(fld,FA_B_AUTONEXT); }
 
 
 }
-| LOOKUP  lu_ft_eq_c lu_join lu_joincol  {
+| LOOKUP  op_lu_ft_eq_c lu_join lu_joincol  {
 				struct struct_scr_field *fld;
 				fld=A4GL_get_fld();
 	$<lookups>2->joincol=strdup($<str>4);
