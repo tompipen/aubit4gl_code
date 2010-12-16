@@ -3988,7 +3988,7 @@ find_function (char *s)
 
 
 int
-find_function_single_rtype (char *funcname)
+find_function_single_rtype (char *funcname,char *module,int lineno)
 {
   int calltree_entry;
   static int callstack = 0;
@@ -4008,7 +4008,7 @@ find_function_single_rtype (char *funcname)
 
       if (get_bolton_nrets (a) > 1)
 	{
-	  A4GL_lint (0, 0, "FUNCRETMANY",
+	  A4GL_lint (module, lineno, "FUNCRETMANY",
 		     "Function returns more than one value but is being used where it should return only one",
 		     funcname);
 	  return -1;
@@ -4016,7 +4016,7 @@ find_function_single_rtype (char *funcname)
 
       if (get_bolton_nrets (a) < 1)
 	{
-	  A4GL_lint (0, 0, "FUNCNOTRET",
+	  A4GL_lint (module, lineno, "FUNCNOTRET",
 		     "Function does not return a value but is being used where it should return a value",
 		     funcname);
 	  return -1;
@@ -4086,7 +4086,7 @@ find_function_single_rtype (char *funcname)
       //char buff[256];
       //sprintf (buff, "Function %s does not return a value but is being used where it should return a value", funcname);
 
-      A4GL_lint (0, 0, "FUNCNOTRET",
+      A4GL_lint (module, lineno, "FUNCNOTRET",
 		 "Function does not return a value but is being used where it should return a value",
 		 funcname);
       //A4GL_lint (buff);
@@ -4095,7 +4095,7 @@ find_function_single_rtype (char *funcname)
 
   if (fprototypes[calltree_entry].nreturns != 1)
     {
-      A4GL_lint (0, 0, "FUNCRETMANY",
+      A4GL_lint (module, lineno, "FUNCRETMANY",
 		 "Function returns more than one value but is being used where it should return only one",
 		 funcname);
       return -1;

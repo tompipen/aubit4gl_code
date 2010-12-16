@@ -1081,7 +1081,7 @@ expr_datatype (char *module, int lineno, struct expr_str *p)
     case ET_EXPR_FCALL:
       yylineno = p->expr_str_u.expr_function_call->line;
 
-      return find_function_single_rtype (p->expr_str_u.expr_function_call->functionname);
+      return find_function_single_rtype (p->expr_str_u.expr_function_call->functionname,module,lineno);
 
     case ET_EXPR_OP_MOD:
       return DTYPE_INT;

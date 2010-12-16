@@ -47,6 +47,7 @@
 #define MODE_TRY 0
 #define MODE_BUY 1
 
+FILE *output = 0;
 char *last_mod="<not set>";
 int last_line=0;
 static int indent = 0;
@@ -57,7 +58,10 @@ static int cache_expression_list (char *s, struct expr_str_list *srclist, int mo
 extern int yylineno;
 char *lint_module = 0;
 int inIf=0;
+//static void dump_crud(void) ;
+static void calltree_map_sql(char *buff,char *module, int line) ;
 static void load_boltons (char *fname);
+//static void calltree_addmap(int type, char *data);
 static int add_calltree_calls (char *s, s_commands * func_commands, int mode);
 static void calltree_map_insert_delete_update(char *main_statement, char *table, struct expr_str *where_clause, char *module, int line) ;
 static void calltree_map_select_stmt(char *main_statement, struct s_select *select,  char *module, int line) ;
@@ -65,9 +69,7 @@ static void calltree_map_value_list(char *main_statement,struct s_select_list_it
 static void calltree_map_value(char *main_statement,struct s_select_list_item *item, char*module, int line) ;
 static char * guess_sql_stmt(struct struct_prepare_cmd *p,char *module, int line) ;
 static void clr_variable_values(void) ;
-static void ensure_crud(void) ;
 static int find_function (char *s);
-static void close_crud(void) ;
 char *decode_rb (enum report_blocks a);
 char *endTarget=0;
 static int ignore_user_function(char *name) ;
@@ -83,6 +85,102 @@ int groupByModule=0;
 
 static void add_symbol(char *name,char*mod,int line,char *type,char *operation) ;
 static void add_variable(expr_str *v, char *module, int lineno, char *operation,expr_str *value) ;
+
+enum e_mapset {
+        MAPSET_NONE=0,
+        MAPSET_CRUD_SELECT,
+        MAPSET_CRUD_UPDATE,
+        MAPSET_CRUD_DELETE,
+        MAPSET_CRUD_INSERT,
+        MAPSET_CRUD_DYNAMIC,
+        MAPSET_CRUD_OTHER,
+        MAPSET_ENV,
+
+
+        MAPSET_LAST
+};
+
+
+struct {
+        char **lines;
+        int nlines;
+} map_crud[100];
+
+static void calltree_addmap (enum e_mapset mapset, char *fmt, ...) ;
+struct s_select *subq_stmts[2000];
+//struct selects *subq_selects[2000];
+int stmts_cnt=0;
+
+enum e_mapset curr_mapset[100];
+int curr_mapset_cnt=0;
+
+
+static void init_mapsets(void) {
+int a;
+        for (a=0;a<100;a++) {
+                map_crud[a].lines=0;
+                map_crud[a].nlines=0;
+        }
+}
+
+
+
+static void dump_mapset_to_crud(char *tag, enum e_mapset e) {
+int a;
+        FPRINTF(output,"      <%s>\n",tag);
+
+        for (a=0;a<map_crud[e].nlines;a++) {
+                FPRINTF(output,"         %s",map_crud[e].lines[a]);
+                free(map_crud[e].lines[a]);
+        }
+
+        FPRINTF(output,"      </%s>\n",tag);
+
+        free(map_crud[e].lines);
+        map_crud[e].lines=0;
+        map_crud[e].nlines=0;
+}
+
+
+static void dump_mapset(enum e_mapset e) {
+
+
+        switch (e) {
+                case MAPSET_NONE :              dump_mapset_to_crud("Impossibles",e); break;
+                //case MAPSET_UI:                 dump_mapset_to_crud("UIs",e); break;
+                //case MAPSET_RUN:                dump_mapset_to_crud("RUNS",e); break;
+                case MAPSET_CRUD_SELECT:        dump_mapset_to_crud("SELECTS",e); break;
+                case MAPSET_CRUD_UPDATE:        dump_mapset_to_crud("UPDATES",e); break;
+                case MAPSET_CRUD_DELETE:        dump_mapset_to_crud("DELETES",e); break;
+                case MAPSET_CRUD_INSERT:        dump_mapset_to_crud("INSERTS",e); break;
+                //case MAPSET_CRUD_CREATE_TEMP:   dump_mapset_to_crud("TEMPTABLES",e); break;
+                case MAPSET_CRUD_OTHER:         dump_mapset_to_crud("OTHERSQLS",e); break;
+                //case MAPSET_OTHER:         dump_mapset_to_crud("OTHERSQLS",e); break;
+                case MAPSET_CRUD_DYNAMIC:       dump_mapset_to_crud("DYNAMICSQLS",e); break;
+                //case MAPSET_UI_OPENFORM:        dump_mapset_to_crud("FORMS",e); break;
+                //case MAPSET_CALL:               dump_mapset_to_crud("CALLS",e); break;
+                //case MAPSET_EVENTS:             dump_mapset_to_crud("EVENTS",e); break;
+                //case MAPSET_DISPLAY_AT:       dump_mapset_to_crud("DISPLATATS",e); break;
+                //case MAPSET_LIBCALL_WORKFLOW:   dump_mapset_to_crud("WORKFLOWCALLS",e); break;
+                //case MAPSET_LIBCALL_CORR:       dump_mapset_to_crud("CORRESPONDANCECALLS",e); break;
+                //case MAPSET_LIBCALL_AWB:        dump_mapset_to_crud("AWBCALLS",e); break;
+                //case MAPSET_LIBCALL:            dump_mapset_to_crud("OTHERLIBCALLS",e); break;
+                case MAPSET_ENV:                dump_mapset_to_crud("ENVIRONMENTVARS",e); break;
+                case MAPSET_LAST: break;
+                //default :       A4GL_assertion(1,"Unexpected");
+        }
+}
+
+static void dump_mapsets(void) {
+int a;
+        for (a=0;a<100;a++) {
+                if (map_crud[a].nlines) {
+                        dump_mapset(a);
+                }
+        }
+
+}
+
 
 extern module_definition this_module;
 //int expr_datatype (struct expr_str *p);
@@ -130,6 +228,7 @@ struct function
   char *module;
   int module_no;
   int line;
+  int lastline;
   char *function;
   char f_or_r;
   struct function_calls *calls;
@@ -154,7 +253,6 @@ struct function
 struct function *functions = 0;
 int functions_cnt = 0;
 
-FILE *output = 0;
 
 
 
@@ -189,7 +287,7 @@ hasNode (char *fname, char *calls,int lineno)
 
 
 static void
-addNode (char *fname, char *calls,char *module, int line,char *type)
+addNode (char *fname, char *calls,char *module, int line,int lastLine, char *type)
 {
 
   if (endTarget) {
@@ -215,10 +313,10 @@ addNode (char *fname, char *calls,char *module, int line,char *type)
 #define NODE_FUNC_DEFINED "**DEFINED**"
 
 static void
-addFunction (char *fname, char *module, int line,char *type)
+addFunction (char *fname, char *module, int line,int lastline, char *type)
 
 {
-  addNode (fname, NODE_FUNC_DEFINED,module,line,type);
+  addNode (fname, NODE_FUNC_DEFINED,module,line,lastline,type);
 }
 
 
@@ -231,7 +329,7 @@ static void check_for_undefined_functions(void) {
 	int a;
 	for (a=0;a<nodescnt;a++) {
       		if (!hasNode (nodes[a].calls, NODE_FUNC_DEFINED, -1) || printAllFuncs) {
-			addNode (nodes[a].calls, NODE_FUNC_DEFINED,"undefined",0,"U");
+			addNode (nodes[a].calls, NODE_FUNC_DEFINED,"undefined",0,0,"U");
 		}
 	}
 }
@@ -1063,7 +1161,12 @@ if (name==NULL) { // load it up..
      names[n++]=strdup("suchen_case_total");
      names[n++]=strdup("let_textvar_kunde");
   }
-	f=fopen("calltree.ignore","r");
+
+char *calltree_ignore="calltree.ignore";
+if (acl_getenv_not_set_as_0("CALLTREEIGNORE")) {
+	calltree_ignore=acl_getenv_not_set_as_0("CALLTREEIGNORE");
+}
+	f=fopen(calltree_ignore,"r");
 	if (f) {
 		char buff[256];
 		while (1) {
@@ -1116,13 +1219,14 @@ system_function (char *funcname)
 
 
 static void
-add_function (int module_no, char *module, int line, char *fname, char forr, void *ptr,int isInLibrary,  s_call_list * call_list, variable_list *vlist)
+add_function (int module_no, char *module, int line, int lastline, char *fname, char forr, void *ptr,int isInLibrary,  s_call_list * call_list, variable_list *vlist)
 {
   functions_cnt++;
   functions = realloc (functions, sizeof (struct function) * functions_cnt);
   functions[functions_cnt - 1].module = module;
   functions[functions_cnt - 1].module_no = module_no;
   functions[functions_cnt - 1].line = line;
+  functions[functions_cnt - 1].lastline = lastline;
   functions[functions_cnt - 1].function = fname;
   functions[functions_cnt - 1].f_or_r = forr;
   functions[functions_cnt - 1].calls = 0;
@@ -1309,9 +1413,17 @@ cache_expression (char *sxx, expr_str ** ptr, int mode)
       // Got a function call - add it to the stack..
       if (mode == MODE_BUY)
 	{
+	
+	  if (strcmp(expr->expr_str_u.expr_function_call->functionname,"fgl_getenv")==0) {
+		char buff[2000];
+		sprintf(buff,"<ENV NAME=\"%s\" MODULE=\"%s\" LINE=\"%d\" />\n", evaluate_expr(expr->expr_str_u.expr_function_call->parameters->list.list_val[0]), last_mod,last_line);
+		calltree_addmap(MAPSET_ENV ,buff);
+
+		}
 	  if (!system_function (expr->expr_str_u.expr_function_call->functionname))
 	    {
-		  addNode (currfunc, expr->expr_str_u.expr_function_call->functionname,"",expr->expr_str_u.expr_function_call->line,"C");
+		  addNode (currfunc, expr->expr_str_u.expr_function_call->functionname,"",expr->expr_str_u.expr_function_call->line,0,
+"C");
 
 
 	      print_indent ();
@@ -1419,8 +1531,7 @@ get_var_lit (expr_str * x)
 static char *
 xml_encode (char *s)
 {
-  static char *buff = 0;
-  static int last_len = 0;
+  static char buff [1000000];
   int c;
   int a;
   int l;
@@ -1436,6 +1547,14 @@ xml_encode (char *s)
     c++;
   if (strchr (s, '\''))
     c++;
+  if (strchr (s, '\n'))
+    c++;
+  if (strchr (s, '\r'))
+    c++;
+  if (strchr (s, '\t'))
+    c++;
+  if (strchr (s, '\\'))
+    c++;
 
   if (c == 0)
     {
@@ -1443,12 +1562,6 @@ xml_encode (char *s)
     }
 
   l = strlen (s);
-  if (l > last_len)
-    {
-      buff = realloc (buff, l * 5 + 1);
-      last_len = l;
-    }
-
   b = 0;
   for (a = 0; a < l; a++)
     {
@@ -1460,6 +1573,16 @@ xml_encode (char *s)
 	  buff[b++] = ';';
 	  continue;
 	}
+
+      if (s[a] == '\n') {
+		buff[b++]=' '; 
+		continue;
+	}
+      if (s[a] == '\r') {
+		continue;
+	}
+      if (s[a] == '\\' && s[a+1]=='t') { buff[b++]=' '; a++; continue; }
+
       if (s[a] == '"')
 	{
 	  buff[b++] = '&';
@@ -1488,6 +1611,19 @@ xml_encode (char *s)
 	  buff[b++] = ';';
 	  continue;
 	}
+
+      if (s[a] == '\\' && s[a+1]=='"')
+	{
+	  buff[b++] = '&';
+	  buff[b++] = 'q';
+	  buff[b++] = 'u';
+	  buff[b++] = 'o';
+	  buff[b++] = 't';
+	  buff[b++] = ';';
+	  a++;
+	  continue;
+	}
+
       if (s[a] == '&')
 	{
 	  buff[b++] = '&';
@@ -1688,7 +1824,7 @@ print_whenever (int mode)
 	  fprintf (output, "<WHENEVER TYPE=\"ERROR\">");
 	  fprintf (output, "<CALLS FUNCTIONNAME='%s' LINE=\"%d\"/>", whenever_error_func, whenever_error_func_line);
 	  fprintf (output, "</WHENEVER>\n");
-	      addNode (currfunc, whenever_error_func, "",whenever_error_func_line,"C");
+	      addNode (currfunc, whenever_error_func, "",whenever_error_func_line,0, "C");
 	}
       cnt++;
     }
@@ -1847,6 +1983,32 @@ calls_something (s_commands * func_commands)
   return add_calltree_calls ("", func_commands, MODE_TRY);
 }
 
+struct module_definition cum_clobber;
+static void add_clobberings (module_definition * mods, int nmodules) {
+int a;
+int b;
+cum_clobber.clobberings.clobberings_len=0;
+cum_clobber.clobberings.clobberings_val=0;
+for (a=0;a<nmodules;a++) {
+	for (b=0;b< mods[a].clobberings.clobberings_len;b++) {
+		cum_clobber.clobberings.clobberings_len++;
+
+		cum_clobber.clobberings.clobberings_val=realloc(
+		cum_clobber.clobberings.clobberings_val,
+		sizeof(cum_clobber.clobberings.clobberings_val[0])*
+		cum_clobber.clobberings.clobberings_len);
+
+		cum_clobber.clobberings.clobberings_val[
+
+		cum_clobber.clobberings.clobberings_len-1].newval=
+			mods[a].clobberings.clobberings_val[b].newval;
+
+		cum_clobber.clobberings.clobberings_val[
+		cum_clobber.clobberings.clobberings_len-1].important=
+			mods[a].clobberings.clobberings_val[b].important;
+	}
+}
+}
 
 
 
@@ -1865,6 +2027,7 @@ get_orig_from_clobber (struct module_definition *mod, char *s)
           return mod->clobberings.clobberings_val[a].important;
         }
     }
+
   return s;
 }
 
@@ -1873,7 +2036,7 @@ static char *calltree_get_ident(struct expr_str *ptr) {
  static char buff[2000];
   if (ptr->expr_type == ET_EXPR_IDENTIFIER)
     {
-      sprintf (buff, "%s", get_orig_from_clobber (current_mod, ptr->expr_str_u.expr_string));
+      sprintf (buff, "%s", get_orig_from_clobber (&cum_clobber, ptr->expr_str_u.expr_string));
       return strdup (buff);
     }
 
@@ -1929,29 +2092,42 @@ add_calltree_calls (char *s, s_commands * func_commands, int mode)
 
 
 	case E_CMD_DELETE_CMD:
+		if (mode==MODE_BUY) {
 		calltree_map_insert_delete_update("DELETE", func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.delete_cmd.table, 
 				func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.delete_cmd.where_clause, last_mod,last_line);
-		
+		}
 		break;
 
+	case E_CMD_SQL_CMD:
+		if (mode==MODE_BUY) {
+			calltree_map_sql(func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.sql_cmd.sql,last_mod,last_line);
+		}
+		break;
 	case E_CMD_INSERT_CMD:
+		if (mode==MODE_BUY) {
 		calltree_map_insert_delete_update("INSERT", func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.insert_cmd.table, NULL, last_mod,last_line);
+
 		if (func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.insert_cmd.subselect) {
 			calltree_map_select_stmt("INSERT", func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.insert_cmd.subselect, last_mod,last_line);
 		}
 		if (func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.insert_cmd.value_list) {
 			calltree_map_value_list("INSERT", func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.insert_cmd.value_list, last_mod,last_line);
 		}
+		}
 		break;
 
 	case E_CMD_UPDATE_CMD:
+		if (mode==MODE_BUY) {
 		calltree_map_insert_delete_update("UPDATE", func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.update_cmd.table, 
 				func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.update_cmd.where_clause, last_mod,last_line);
 		calltree_map_value_list("UPDATE", func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.update_cmd.value_list, last_mod,last_line);
+		}
 		break;
 
 	case E_CMD_SELECT_CMD:
-		 calltree_map_select_stmt("SELECT", func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.select_cmd.sql, last_mod,last_line);
+		if (mode==MODE_BUY) {
+		 	calltree_map_select_stmt("SELECT", func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.select_cmd.sql, last_mod,last_line);
+		}
 		add_symbol_assign(func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.select_cmd.sql->into,last_mod,last_line,NULL);
 		break;
 
@@ -2282,7 +2458,7 @@ add_calltree_calls (char *s, s_commands * func_commands, int mode)
 	      fprintf (output, "<START REPORT=\"%s\" LINE=\"%d\"/>\n",
 		       func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.start_cmd.repname,
 		       func_commands->cmds.cmds_val[a]->lineno);
-	      addNode (currfunc, func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.start_cmd.repname, "",func_commands->cmds.cmds_val[a]->lineno,"C");
+	      addNode (currfunc, func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.start_cmd.repname, "",func_commands->cmds.cmds_val[a]->lineno,0,"C");
 	    }
 	  call_cnt++;
 	  break;
@@ -2294,7 +2470,7 @@ add_calltree_calls (char *s, s_commands * func_commands, int mode)
 	      fprintf (output, "<FINISH REPORT=\"%s\" LINE=\"%d\"/>\n",
 		       func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.finish_cmd.repname,
 		       func_commands->cmds.cmds_val[a]->lineno);
-	      addNode (currfunc, func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.finish_cmd.repname, "",func_commands->cmds.cmds_val[a]->lineno,"C");
+	      addNode (currfunc, func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.finish_cmd.repname, "",func_commands->cmds.cmds_val[a]->lineno,0,"C");
 	    }
 	  call_cnt++;
 	  break;
@@ -2307,7 +2483,7 @@ add_calltree_calls (char *s, s_commands * func_commands, int mode)
 	      fprintf (output, "<OUTPUT REPORT=\"%s\" LINE=\"%d\"/>\n",
 		       func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.output_cmd.repname,
 		       func_commands->cmds.cmds_val[a]->lineno);
-	      addNode (currfunc, func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.output_cmd.repname, "",func_commands->cmds.cmds_val[a]->lineno,"C");
+	      addNode (currfunc, func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.output_cmd.repname, "",func_commands->cmds.cmds_val[a]->lineno,0, "C");
 	    }
 	  call_cnt++;
 	  break;
@@ -2564,13 +2740,14 @@ add_calltree_calls (char *s, s_commands * func_commands, int mode)
 	case E_CMD_DECLARE_CMD:
 		add_symbol(calltree_get_ident(func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.declare_cmd.cursorname),last_mod,last_line,"CURSOR","DECLARE");
 		if (func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.declare_cmd.declare_dets->ident) {
-			add_symbol(calltree_get_ident(func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.declare_cmd.declare_dets->ident),last_mod,last_line,"STMT","USE");
+			add_symbol(calltree_get_ident(func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.declare_cmd.declare_dets->ident),last_mod,last_line,"STMT","DECLARE");
 		}
 		break;
 
 	case E_CMD_PREPARE_CMD:
 		add_symbol(calltree_get_ident(func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.prepare_cmd.stmtid),last_mod,last_line,"STMT","PREPARE");
-			guess_sql_stmt(&func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.prepare_cmd, last_mod,last_line);
+			guess_sql_stmt( 
+&func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.prepare_cmd, last_mod,last_line);
 		
 		break;
 
@@ -2727,6 +2904,7 @@ check_program (module_definition * mods, int nmodules)
       printf ("WARNING - not CFUNCSFILE file specified\n");
     }
 
+add_clobberings (mods, nmodules) ;
 
   for (a = 0; a < nmodules; a++)
     {
@@ -2745,6 +2923,7 @@ check_program (module_definition * mods, int nmodules)
 	    case E_MET_MAIN_DEFINITION:
 	      add_function (a, mods[a].module_name,
 			    mods[a].module_entries.module_entries_val[b]->module_entry_u.function_definition.lineno,
+			    mods[a].module_entries.module_entries_val[b]->module_entry_u.function_definition.lastlineno,
 			    "MAIN", 'F', &mods[a].module_entries.module_entries_val[b]->module_entry_u.function_definition, mods[a].moduleIsInLibrary,
  				&mods[a].module_entries.module_entries_val[b]->module_entry_u.function_definition.call_list,
  				&mods[a].module_entries.module_entries_val[b]->module_entry_u.function_definition.variables
@@ -2755,6 +2934,7 @@ check_program (module_definition * mods, int nmodules)
 	    case E_MET_FUNCTION_DEFINITION:
 	      add_function (a, mods[a].module_name,
 			    mods[a].module_entries.module_entries_val[b]->module_entry_u.function_definition.lineno,
+			    mods[a].module_entries.module_entries_val[b]->module_entry_u.function_definition.lastlineno,
 			    mods[a].module_entries.module_entries_val[b]->module_entry_u.function_definition.funcname,
 			    'F', &mods[a].module_entries.module_entries_val[b]->module_entry_u.function_definition, mods[a].moduleIsInLibrary,
  				&mods[a].module_entries.module_entries_val[b]->module_entry_u.function_definition.call_list,
@@ -2765,6 +2945,7 @@ check_program (module_definition * mods, int nmodules)
 	    case E_MET_REPORT_DEFINITION:
 	      add_function (a, mods[a].module_name,
 			    mods[a].module_entries.module_entries_val[b]->module_entry_u.report_definition.lineno,
+			    mods[a].module_entries.module_entries_val[b]->module_entry_u.report_definition.lastlineno,
 			    mods[a].module_entries.module_entries_val[b]->module_entry_u.report_definition.funcname,
 			    'R', &mods[a].module_entries.module_entries_val[b]->module_entry_u.report_definition, mods[a].moduleIsInLibrary,
  				&mods[a].module_entries.module_entries_val[b]->module_entry_u.report_definition.call_list,
@@ -2775,6 +2956,7 @@ check_program (module_definition * mods, int nmodules)
 	    case E_MET_PDF_REPORT_DEFINITION:
 	      add_function (a, mods[a].module_name,
 			    mods[a].module_entries.module_entries_val[b]->module_entry_u.pdf_report_definition.lineno,
+			    mods[a].module_entries.module_entries_val[b]->module_entry_u.pdf_report_definition.lastlineno,
 			    mods[a].module_entries.module_entries_val[b]->module_entry_u.pdf_report_definition.funcname,
 			    'P', &mods[a].module_entries.module_entries_val[b]->module_entry_u.pdf_report_definition, mods[a].moduleIsInLibrary,
  				&mods[a].module_entries.module_entries_val[b]->module_entry_u.pdf_report_definition.call_list,
@@ -2802,7 +2984,7 @@ check_program (module_definition * mods, int nmodules)
     }
 
 
-  if (endTarget) {
+  if (endTarget || 1) {
 	printf("Running calltree...");
 	run_calltree(top_level_function);
   }
@@ -2884,13 +3066,14 @@ check_program (module_definition * mods, int nmodules)
 	//printf("Set currfunc to %s\n",currfunc);
 
 	  if (strcmp (functions[a].function, "MAIN") == 0) {
-	   	addFunction (currfunc, functions[a].module, functions[a].line,"M");
+	   	addFunction (currfunc, functions[a].module, functions[a].line,functions[a].lastline, "M");
 	  } else {
-	        addFunction (currfunc, functions[a].module, functions[a].line,"F");
+	        addFunction (currfunc, functions[a].module, functions[a].line,functions[a].lastline, "F");
 	  }
 
 
-	  fprintf (output, "<FUNCTION NAME=\"%s\" TYPE=\"NORMAL\" MODULE=\"%s\"  MODULENO=\"%d\" LINE=\"%d\">\n", functions[a].function, functions[a].module, functions[a].module_no, functions[a].line);
+	  fprintf (output, "<FUNCTION NAME=\"%s\" TYPE=\"NORMAL\" MODULE=\"%s\"  MODULENO=\"%d\" LINE=\"%d\" LASTLINE=\"%d\" CALLED=\"%d\">\n", 
+			functions[a].function, functions[a].module, functions[a].module_no, functions[a].line, functions[a].lastline,functions[a].called);
 	dump_variables(functions[a].local_variables,"LOCAL");
 	  f = functions[a].ptr;
 	  indent++;
@@ -2910,7 +3093,7 @@ check_program (module_definition * mods, int nmodules)
 	  int b;
 	  struct s_report_definition *r;
 	  strcpy (currfunc, functions[a].function);
-	  addFunction (currfunc,  functions[a].module, functions[a].line, "R");
+	  addFunction (currfunc,  functions[a].module, functions[a].line, functions[a].lastline,"R");
 	  strcpy (currmod, functions[a].module);
 
 
@@ -2973,6 +3156,7 @@ check_program (module_definition * mods, int nmodules)
   if (incProg)
     {
 	dump_symbols();
+  	dump_mapsets();
       fprintf (output, "</PROGRAM>\n");
     }
 
@@ -3144,6 +3328,7 @@ main (int argc, char *argv[])
   module_definition *m;
   int a;
   int b;
+init_mapsets();
 
   if (argc < 2)
     {
@@ -3276,7 +3461,8 @@ main (int argc, char *argv[])
     }
 
   check_program (m, a);
-close_crud();
+  dump_mapsets();
+
   return 0;
 }
 
@@ -3498,7 +3684,10 @@ int has_variable_value(variable_usage *u) {
 char *
 evaluate_expr (expr_str * e)
 {
+if (e==0) return "";
 
+//printf("e->expr_type=%d\n",e->expr_type);
+//fflush(stdout);
   switch (e->expr_type)
     {
     case ET_EXPR_LITERAL_EMPTY_STRING:
@@ -3506,9 +3695,11 @@ evaluate_expr (expr_str * e)
       //case ET_EXPR_SUBSTRING: return "?1?";
     case ET_EXPR_LITERAL_STRING:
       {
-	char buff[23000];
-	sprintf (buff, "%s", e->expr_str_u.expr_string);
-	return strdup (buff);
+	if ( e->expr_str_u.expr_string) {
+		return strdup(e->expr_str_u.expr_string);
+	} else {
+		return "";
+		}
       }
       break;
 
@@ -3585,10 +3776,11 @@ evaluate_expr (expr_str * e)
 
     case ET_EXPR_OP_USING:
       {
-	char buff[20000];
-	a4gl_using_from_string (buff, sizeof (buff), evaluate_expr (e->expr_str_u.expr_op->right),
-				evaluate_expr (e->expr_str_u.expr_op->left), 0);
-	return strdup (buff);
+	//char buff[20000];
+	//char fmt[2000];
+	//char left[2000];
+		
+	return strdup ("USING");
       }
       break;
 
@@ -3668,7 +3860,7 @@ evaluate_expr (expr_str * e)
       return strdup (e->expr_str_u.expr_string);
 
     default:
-      A4GL_pause_execution ();
+      //A4GL_pause_execution ();
       return "?";
 
     }
@@ -3676,6 +3868,7 @@ evaluate_expr (expr_str * e)
 }
 
 
+/*
 FILE *crudfile=0;
 
 
@@ -3684,11 +3877,35 @@ if (crudfile==0) {
 	crudfile=fopen("crud.out","w");
 }
 }
+*/
 
 
 static void add_table_action(char *mainaction, char *tabname, char *action,char *module,int line) {
-ensure_crud();
-fprintf(crudfile, "<STATEMENT TABLE=\"%s\" ACTION=\"%s\" MODULE=\"%s\" LINE=\"%d\" MAINACTION=\"%s\"/>\n",tabname,action,module,line, mainaction);
+char buff[200000];
+
+if (strstr(action,"SELECT")) {
+sprintf(buff,"<SELECT_STMT TABLE=\"%s\" MODULE=\"%s\" LINE=\"%d\" MAINACTION=\"%s\"/>\n",tabname,module,line, mainaction);
+	calltree_addmap(MAPSET_CRUD_SELECT, buff);
+	return;
+}
+if (strstr(action,"UPDATE")) {
+sprintf(buff,"<UPDATE_STMT TABLE=\"%s\" MODULE=\"%s\" LINE=\"%d\" MAINACTION=\"%s\"/>\n",tabname,module,line, mainaction);
+	calltree_addmap(MAPSET_CRUD_UPDATE, buff);
+	return;
+}
+if (strstr(action,"INSERT")) {
+sprintf(buff,"<INSERT_STMT TABLE=\"%s\" MODULE=\"%s\" LINE=\"%d\" MAINACTION=\"%s\"/>\n",tabname,module,line, mainaction);
+	calltree_addmap(MAPSET_CRUD_INSERT, buff);
+	return;
+}
+if (strstr(action,"DELETE")) {
+sprintf(buff,"<DELETE_STMT TABLE=\"%s\" MODULE=\"%s\" LINE=\"%d\" MAINACTION=\"%s\"/>\n",tabname,module,line, mainaction);
+	calltree_addmap(MAPSET_CRUD_DELETE, buff);
+	return;
+}
+sprintf(buff,"<STATEMENT TABLE=\"%s\" ACTION=\"%s\" MODULE=\"%s\" LINE=\"%d\" MAINACTION=\"%s\"/>\n",tabname,action,module,line, mainaction);
+
+calltree_addmap(MAPSET_CRUD_OTHER, buff);
 }
 
 
@@ -3896,27 +4113,59 @@ for (a=0;a<list->list.list_len;a++) {
 void calltree_map_insert_delete_update(char *main_statement, char *table, struct expr_str *where_clause, char *module, int line) {
 	add_table_action(main_statement, table,main_statement,module,line);
 	if (where_clause) {
-		if (where_clause->expr_type==ET_EXPR_SELECT_LIST_ITEM) {
-		struct s_select_list_item *sl;
-		sl=where_clause->expr_str_u.sl_item;
-		calltree_map_value(main_statement,sl,module,line);
-		} else {
-			A4GL_assertion(1,"Unexpected WHERE CLAUSE expression type");
-		}
+		switch (where_clause->expr_type) {
+			case ET_EXPR_SELECT_LIST_ITEM:
+				{
+				struct s_select_list_item *sl;
+				sl=where_clause->expr_str_u.sl_item;
+				calltree_map_value(main_statement,sl,module,line);
+				} 
+			break;
+
+			case ET_EXPR_WHERE_CURRENT_OF:
+				return;
+
+			default:
+				A4GL_assertion(1,"Unexpected WHERE CLAUSE expression type");
+			}
 	}
 }
 
-static void close_crud() {
-if (crudfile) {
-fclose(crudfile);
-}
-}
 
+
+
+static void calltree_map_sql(char *buff,char *module, int line) {
+	char buffx[200000];
+	sprintf(buffx, "<SQL MODULE=\"%s\" LINE=\"%d\" STMT=\"%s\" />\n",module,line, xml_encode(buff));
+	calltree_addmap(MAPSET_CRUD_OTHER, buffx);
+}
 
 static char * guess_sql_stmt(struct struct_prepare_cmd *p,char *module, int line) {
 static char buff[200000];
-	ensure_crud();
+static char buff2[200000];
+char *ptr;
 	strcpy(buff,evaluate_expr(p->sql));
-	fprintf(crudfile, "<PREPARE MODULE=\"%s\" LINE=\"%d\">%s</PREPARE>\n",module,line, buff);
+
+	ptr=calltree_get_ident(p->stmtid), 
+
+	sprintf(buff2, "<PREPARE STMTID=\"%s\" MODULE=\"%s\" LINE=\"%d\" STMT=\"%s\" />\n",ptr, module,line, xml_encode(buff));
+	calltree_addmap(MAPSET_CRUD_DYNAMIC, buff2);
 	return buff;
 }
+
+
+
+
+static void calltree_addmap (enum e_mapset mapset, char *fmt, ...) {
+va_list args;
+char buff[10025];
+va_start (args, fmt);
+
+vsprintf (buff, fmt, args);
+A4GL_assertion(strlen(buff)>=sizeof(buff),"Buffer too small");
+map_crud[mapset].nlines++;
+map_crud[mapset].lines=realloc(map_crud[mapset].lines,map_crud[mapset].nlines*sizeof(char *));
+map_crud[mapset].lines[map_crud[mapset].nlines-1]=strdup(buff);
+}
+
+

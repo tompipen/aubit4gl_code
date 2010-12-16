@@ -16,7 +16,7 @@ int local_is_valid_vname(struct variable *v, enum e_scope scope);
 //void check_variable_name(char *modname, char *scope, struct variable *v);
 int has_variable(struct variable_list *v, char *name);
 void check_module(struct module_definition *d);
-int find_function_single_rtype(char *funcname);
+int find_function_single_rtype(char *funcname,char *module,int lineno);
 int check_program(module_definition *mods, int nmodules);
 //void set_lint_module(char *s);
 void A4GL_lint(char *module_in, int lintline, char *code, char *type, char *extra);
