@@ -54,8 +54,14 @@ namespace SearchableControls
             //deleteToolStripMenuItem.Click += new EventHandler(deleteToolStripMenuItem_Click);
             //selectAllToolStripMenuItem.Click += new EventHandler(selectAllToolStripMenuItem_Click);
             findToolStripMenuItem.Click += new EventHandler(findToolStripMenuItem_Click);
+            miStatementSQL.Click += new EventHandler(miStatementSQL_Click);
             //replaceToolStripMenuItem.Click += new EventHandler(replaceToolStripMenuItem_Click);
 
+        }
+
+        void miStatementSQL_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show(miStatementSQL.Text);
         }
 
 
@@ -557,6 +563,7 @@ namespace SearchableControls
                 setSymbols(miStatementExecute, s.symbols, "EXECUTE");
                 miStatementPrepare.Visible = s.hasPrepare;
                 setSymbols(miStatementPrepare, s.symbols, "PREPARE");
+                miStatementSQL.Text = s.likelySQL;
             }
 
             if (type is symbolVariable)
@@ -668,6 +675,11 @@ namespace SearchableControls
        }
     }
 
+    public class symbolCRUD : baseSymbolType
+    {
+
+    }
+
     public class symbolFunction : baseSymbolType
     {
         public bool hasCall;
@@ -695,6 +707,7 @@ namespace SearchableControls
         public bool hasPrepare;
         public bool hasExecute;
         public bool hasDeclare;
+        public string likelySQL;
     }
 
     public class symbolForm : baseSymbolType
@@ -720,8 +733,8 @@ namespace SearchableControls
     {
         public string moduleName;
         public int lineNo;
-        internal string Type;
-        internal string Operation;
+        public string Type;
+        public string Operation;
         public string lineText;
 
         public SymbolLocation(string module, int line, string type, string op,string linetext)

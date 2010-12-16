@@ -61,12 +61,20 @@ namespace Calltreeviewer
             this.findFunctionsThatAreNotCalledToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.cbModules = new System.Windows.Forms.ToolStripComboBox();
+            this.cRUDToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.updatesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.deleteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.insertToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.selectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.dEFINELIKEToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.eXECUTEPROCEDUREToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.tslblLine = new System.Windows.Forms.ToolStripStatusLabel();
             this.lblNoOfLines = new System.Windows.Forms.ToolStripStatusLabel();
             this.tsLblSearching = new System.Windows.Forms.ToolStripStatusLabel();
             this.lblLoaded = new System.Windows.Forms.ToolStripStatusLabel();
             this.tslSrchText = new System.Windows.Forms.ToolStripStatusLabel();
+            this.environmentVariablesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mainSplitPanel.Panel1.SuspendLayout();
             this.mainSplitPanel.Panel2.SuspendLayout();
             this.mainSplitPanel.SuspendLayout();
@@ -240,7 +248,8 @@ namespace Calltreeviewer
             this.tscbFindFunction,
             this.referencesToolStripMenuItem1,
             this.toolStripMenuItem1,
-            this.cbModules});
+            this.cbModules,
+            this.cRUDToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(1082, 27);
@@ -263,6 +272,7 @@ namespace Calltreeviewer
             this.mnLoad.Name = "mnLoad";
             this.mnLoad.Size = new System.Drawing.Size(214, 22);
             this.mnLoad.Text = "Load";
+            this.mnLoad.Visible = false;
             this.mnLoad.Click += new System.EventHandler(this.mnLoad_Click);
             // 
             // tsFileLoadMainRecursive
@@ -277,6 +287,7 @@ namespace Calltreeviewer
             this.tsFileLoadMain.Name = "tsFileLoadMain";
             this.tsFileLoadMain.Size = new System.Drawing.Size(214, 22);
             this.tsFileLoadMain.Text = "Load Main (non-recursive)";
+            this.tsFileLoadMain.Visible = false;
             this.tsFileLoadMain.Click += new System.EventHandler(this.loadXmlFileMain);
             // 
             // mnExit
@@ -332,6 +343,7 @@ namespace Calltreeviewer
             this.simpleModeToolStripMenuItem.Name = "simpleModeToolStripMenuItem";
             this.simpleModeToolStripMenuItem.Size = new System.Drawing.Size(232, 22);
             this.simpleModeToolStripMenuItem.Text = "Simple Mode";
+            this.simpleModeToolStripMenuItem.ToolTipText = "Show only CALLs if enabled";
             // 
             // findFunctionToolStripMenuItem
             // 
@@ -422,6 +434,58 @@ namespace Calltreeviewer
             this.cbModules.Text = "<module>";
             this.cbModules.SelectedIndexChanged += new System.EventHandler(this.cbModules_SelectedIndexChanged);
             // 
+            // cRUDToolStripMenuItem
+            // 
+            this.cRUDToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.updatesToolStripMenuItem,
+            this.deleteToolStripMenuItem,
+            this.insertToolStripMenuItem,
+            this.selectToolStripMenuItem,
+            this.dEFINELIKEToolStripMenuItem,
+            this.eXECUTEPROCEDUREToolStripMenuItem,
+            this.environmentVariablesToolStripMenuItem});
+            this.cRUDToolStripMenuItem.Name = "cRUDToolStripMenuItem";
+            this.cRUDToolStripMenuItem.Size = new System.Drawing.Size(50, 23);
+            this.cRUDToolStripMenuItem.Text = "CRUD";
+            this.cRUDToolStripMenuItem.Visible = false;
+            // 
+            // updatesToolStripMenuItem
+            // 
+            this.updatesToolStripMenuItem.Name = "updatesToolStripMenuItem";
+            this.updatesToolStripMenuItem.Size = new System.Drawing.Size(192, 22);
+            this.updatesToolStripMenuItem.Text = "Updates";
+            // 
+            // deleteToolStripMenuItem
+            // 
+            this.deleteToolStripMenuItem.Name = "deleteToolStripMenuItem";
+            this.deleteToolStripMenuItem.Size = new System.Drawing.Size(192, 22);
+            this.deleteToolStripMenuItem.Text = "Delete";
+            // 
+            // insertToolStripMenuItem
+            // 
+            this.insertToolStripMenuItem.Name = "insertToolStripMenuItem";
+            this.insertToolStripMenuItem.Size = new System.Drawing.Size(192, 22);
+            this.insertToolStripMenuItem.Text = "Insert";
+            // 
+            // selectToolStripMenuItem
+            // 
+            this.selectToolStripMenuItem.Name = "selectToolStripMenuItem";
+            this.selectToolStripMenuItem.Size = new System.Drawing.Size(192, 22);
+            this.selectToolStripMenuItem.Text = "Select";
+            // 
+            // dEFINELIKEToolStripMenuItem
+            // 
+            this.dEFINELIKEToolStripMenuItem.Name = "dEFINELIKEToolStripMenuItem";
+            this.dEFINELIKEToolStripMenuItem.Size = new System.Drawing.Size(192, 22);
+            this.dEFINELIKEToolStripMenuItem.Text = "DEFINE .. LIKE";
+            this.dEFINELIKEToolStripMenuItem.Visible = false;
+            // 
+            // eXECUTEPROCEDUREToolStripMenuItem
+            // 
+            this.eXECUTEPROCEDUREToolStripMenuItem.Name = "eXECUTEPROCEDUREToolStripMenuItem";
+            this.eXECUTEPROCEDUREToolStripMenuItem.Size = new System.Drawing.Size(192, 22);
+            this.eXECUTEPROCEDUREToolStripMenuItem.Text = "EXECUTE PROCEDURE";
+            // 
             // statusStrip1
             // 
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -481,6 +545,12 @@ namespace Calltreeviewer
             this.tslSrchText.Name = "tslSrchText";
             this.tslSrchText.Size = new System.Drawing.Size(12, 17);
             this.tslSrchText.Text = "_";
+            // 
+            // environmentVariablesToolStripMenuItem
+            // 
+            this.environmentVariablesToolStripMenuItem.Name = "environmentVariablesToolStripMenuItem";
+            this.environmentVariablesToolStripMenuItem.Size = new System.Drawing.Size(192, 22);
+            this.environmentVariablesToolStripMenuItem.Text = "Environment Variables";
             // 
             // MainCalltreeWindow
             // 
@@ -559,6 +629,14 @@ namespace Calltreeviewer
         private System.Windows.Forms.ToolStripMenuItem simpleModeToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem findFunctionsThatAreNotCalledToolStripMenuItem;
         private System.Windows.Forms.ToolStripStatusLabel tslSrchText;
+        private System.Windows.Forms.ToolStripMenuItem cRUDToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem updatesToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem deleteToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem insertToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem selectToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem dEFINELIKEToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem eXECUTEPROCEDUREToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem environmentVariablesToolStripMenuItem;
     }
 }
 

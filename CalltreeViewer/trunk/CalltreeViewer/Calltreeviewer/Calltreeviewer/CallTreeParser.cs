@@ -376,6 +376,43 @@ namespace AubitCalltreeViewer
         /// <remarks/>
         [System.Xml.Serialization.XmlArrayItem(IsNullable = false)]
         public SYMBOL[] SYMBOLS;
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlArrayItem(IsNullable = false)]
+        public ENV[] ENVIRONMENTVARS;
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlArrayItem(IsNullable = false)]
+        public SQL[] OTHERSQLS;
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlArrayItem(IsNullable = false)]
+        public PREPARE[] DYNAMICSQLS;
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlArrayItem(IsNullable = false)]
+        public INSERT_STMT[] INSERTS;
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlArrayItem(IsNullable = false)]
+        public DELETE_STMT[] DELETES;
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlArrayItem(IsNullable = false)]
+        public UPDATE_STMT[] UPDATES;
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlArrayItem(IsNullable = false)]
+        public SELECT_STMT[] SELECTS;
+
+
+
+
+
+
+
+
+
     }
 
     [System.Xml.Serialization.XmlRootAttribute(Namespace = "", IsNullable = true)]
@@ -405,6 +442,141 @@ namespace AubitCalltreeViewer
         
     }
 
+    public class SELECT_STMT
+    {
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string TABLE;
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string MODULE;
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public int LINE;
+
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string MAINACTION;
+    }
+
+    public class INSERT_STMT
+    {
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string TABLE;
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string MODULE;
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public int LINE;
+
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string MAINACTION;
+    }
+
+    public class UPDATE_STMT
+    {
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string TABLE;
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string MODULE;
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public int LINE;
+
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string MAINACTION;
+    }
+
+
+    public class PREPARE
+    {
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string STMTID;
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string STMT;
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string MODULE;
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public int LINE;
+
+    }
+
+    public class SQL
+    {
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string STMT;
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string MODULE;
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public int LINE;
+
+    }
+
+
+    public class ENV
+    {
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string NAME;
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string MODULE;
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public int LINE;
+
+    }
+
+
+
+    public class DELETE_STMT
+    {
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string TABLE;
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string MODULE;
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public int LINE;
+
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string MAINACTION;
+    }
+
     /// <remarks/>
     [System.Xml.Serialization.XmlRootAttribute(Namespace = "", IsNullable = true)]
     public class MODULE
@@ -417,6 +589,10 @@ namespace AubitCalltreeViewer
         /// Relative filename for the file<remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string NAME;
+
+        /// Relative filename for the file<remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public int LIBRARY;
 
                 /// <remarks>Full filename for the code</remarks>
         [System.Xml.Serialization.XmlAttributeAttribute()]
@@ -450,6 +626,14 @@ namespace AubitCalltreeViewer
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public int LINE;
 
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public int LASTLINE;
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public bool CALLED;
+
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string TYPE;
 
@@ -470,6 +654,8 @@ namespace AubitCalltreeViewer
 
         /// <remarks/>
         public COMMANDS COMMANDS;
+
+ 
     }
 }
 

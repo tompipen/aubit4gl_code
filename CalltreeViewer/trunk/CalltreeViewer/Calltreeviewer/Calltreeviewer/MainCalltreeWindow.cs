@@ -27,7 +27,7 @@ namespace Calltreeviewer
         int currentFunctionEnd=-1;
 
 
-        private List<AubitCalltreeViewer.SYMBOL> current_global_variables = null;
+         private List<AubitCalltreeViewer.SYMBOL> current_global_variables = null;
         private List<AubitCalltreeViewer.SYMBOL> current_module_variables = null;
         private List<AubitCalltreeViewer.SYMBOL> current_local_variables = null;
 
@@ -99,7 +99,7 @@ namespace Calltreeviewer
                 AubitCalltreeViewer.PROGRAM p;
                 try
                 {
-
+                    textBox1.Text = "Please wait - loading file";
 
                     this.Cursor = Cursors.WaitCursor;
                     // We've got the filename - so use it
@@ -116,7 +116,7 @@ namespace Calltreeviewer
                     p = (AubitCalltreeViewer.PROGRAM)ser.Deserialize(r);
                     curr_program = p;
 
-
+                    
                     current_global_variables = new List<AubitCalltreeViewer.SYMBOL>();
                     for (int module_no = 0; module_no < curr_program.MODULES.Length; module_no++)
                     {
@@ -125,7 +125,7 @@ namespace Calltreeviewer
                             appendVariables(current_global_variables, curr_program.MODULES[module_no].NAME, curr_program.MODULES[module_no].GLOBAL_VARIABLES); 
                         }
                     }
-
+                    setCRUD();
 
                     // Now - show the tree..
                     loadTree(p, style);
@@ -134,6 +134,7 @@ namespace Calltreeviewer
                 }
                 catch (Exception ex)
                 {
+                    textBox1.Text = "";
                     // Something went wrong - tell the user
                     // and dont worry about it...
                     MessageBox.Show(ex.ToString());
@@ -159,6 +160,7 @@ namespace Calltreeviewer
             cbModules.Items.Clear();
             listBox1.Items.Clear();
             listBox1.Sorted = false;
+            cRUDToolStripMenuItem.Visible = false;
 
             if (style == TreeStyle.TreeStyleNormal || style == TreeStyle.TreeStyleMainRecurse || style == TreeStyle.TreeStyleMain)
             {
@@ -174,6 +176,7 @@ namespace Calltreeviewer
                 findAllExternalReferencesToolStripMenuItem.Enabled = true;
                 findExternalReferencesForThisModuleToolStripMenuItem.Enabled = true;
                 findFunctionsThatAreNotCalledToolStripMenuItem.Enabled = true;
+                cRUDToolStripMenuItem.Visible = true;
             }
             else
             {
@@ -181,6 +184,7 @@ namespace Calltreeviewer
                 findAllExternalReferencesToolStripMenuItem.Enabled = false;
                 findExternalReferencesForThisModuleToolStripMenuItem.Enabled = false;
                 findFunctionsThatAreNotCalledToolStripMenuItem.Enabled = false;
+                cRUDToolStripMenuItem.Visible = false;
             }
 
 
@@ -198,6 +202,9 @@ namespace Calltreeviewer
             for (int a = 0; a < p.FUNCTION.Length; a++)
             {
                 TreeNode newNode = null;
+
+                if (!p.FUNCTION[a].CALLED) continue;
+
                 tscbFindFunction.Items.Add(p.FUNCTION[a].NAME);
 
                 if (style == TreeStyle.TreeStyleNormal)
@@ -327,8 +334,11 @@ namespace Calltreeviewer
             int index;
             string b4;
 
-            
 
+            if (textBox1.Text.StartsWith("Please wait"))
+            {
+                return;
+            }
             // Scroll back to the top - so we always scroll down to
             // our selected line...
             textBox1.Select(0,1);
@@ -1133,6 +1143,7 @@ namespace Calltreeviewer
             tsLblSearching.Text = "";
             lblLoaded.Text = "";
             Application.DoEvents();
+            textBox1.setContextDialog(null);
             if (loadFile!=null)
             {
                 loadXMLFile(TreeStyle.TreeStyleMainRecurse, loadFile);
@@ -1395,7 +1406,14 @@ namespace Calltreeviewer
                 {
                     if (curr_program.FUNCTION[b].NAME != "MAIN")
                     {
-                        listBox1.Items.Add(new functionForList(curr_program.FUNCTION[b].NAME,curr_program.FUNCTION[b].MODULENO,curr_program.FUNCTION[b].LINE));
+                        if (curr_program.MODULES[curr_program.FUNCTION[b].MODULENO].LIBRARY == 0)
+                        {
+                            listBox1.Items.Add(new functionForList(curr_program.FUNCTION[b].NAME, curr_program.FUNCTION[b].MODULENO, curr_program.FUNCTION[b].LINE));
+                        }
+                        else
+                        {
+                           // MessageBox.Show("Ignore..");
+                        }
                     }
                 }
             }
@@ -1533,9 +1551,12 @@ namespace Calltreeviewer
             SearchableControls.symbolForm sf = new SearchableControls.symbolForm();
             SearchableControls.symbolStatement ss = new SearchableControls.symbolStatement();
             SearchableControls.symbolWindow sw = new SearchableControls.symbolWindow();
-            
+
+            if (searchTerm == null) return;
 
             searchTerm = searchTerm.Trim();
+            if (searchTerm == "") return;
+
             /*
             if (searchTerm.Contains("["))
             {
@@ -1555,6 +1576,12 @@ namespace Calltreeviewer
                 if (name_match(curr_program.SYMBOLS[a].NAME.ToLower(), searchTerm.ToLower(), curr_program.SYMBOLS[a].TYPE))
                 {
                     SymbolLocation sl;
+
+                    if (!canBeCalled(curr_program.SYMBOLS[a].MODULE, curr_program.SYMBOLS[a].LINE))
+                    {
+                        continue;
+                    }
+
                     if (inScope(curr_program.SYMBOLS[a].SCOPE, curr_program.SYMBOLS[a].MODULE, curr_program.SYMBOLS[a].LINE))
                     {
 
@@ -1643,10 +1670,13 @@ namespace Calltreeviewer
                                 }
                                 switch (curr_program.SYMBOLS[a].OPERATION)
                                 {
-                                    case "USE": ss.hasPrepare = true; break;
+                                    case "PREPARE": ss.hasPrepare = true;
+                                        ss.likelySQL = find_sql(curr_program, ss.symbolName, curr_program.SYMBOLS[a].LINE);
+                                            break;
                                     case "DECLARE": ss.hasDeclare = true; break;
                                     case "EXECUTE": ss.hasExecute = true; break;
                                 }
+
                                 break;
                         }
 
@@ -1744,6 +1774,19 @@ namespace Calltreeviewer
             }
         }
 
+        private string find_sql(AubitCalltreeViewer.PROGRAM curr_program, string p,int lineno)
+        {
+            string sql="???";
+            for (int a = 0; a < curr_program.DYNAMICSQLS.Length; a++)
+            {
+                if (p == curr_program.DYNAMICSQLS[a].STMTID && curr_program.DYNAMICSQLS[a].LINE<=lineno)
+                {
+                    sql=curr_program.DYNAMICSQLS[a].STMT;                   
+                }
+            }
+            return sql;
+        }
+
         private string get_line(string module, int line)
         {
             for (int a = 0; a < curr_program.MODULES.Length; a++)
@@ -1761,39 +1804,35 @@ namespace Calltreeviewer
 
         private void setCurrentFunction(int p)
         {
-            AubitCalltreeViewer.FUNCTION f=null;
-            //currentFunctionEnd = 10000000;
-            int lastLine = -1;
-            int minNextLine = 10000000;
+           
+
+
+            current_local_variables = new List<AubitCalltreeViewer.SYMBOL>();
 
             for (int a = 0; a < curr_program.FUNCTION.Length; a++)
             {
                 if (curr_program.FUNCTION[a].MODULE == curr_program.MODULES[currentModuleNo].NAME)
                 {
 
-                    if (curr_program.FUNCTION[a].LINE < p && curr_program.FUNCTION[a].LINE>lastLine)
+                    if (curr_program.FUNCTION[a].LINE <= p && p<=curr_program.FUNCTION[a].LASTLINE)
                     {
-                        lastLine = curr_program.FUNCTION[a].LINE;
+                        AubitCalltreeViewer.FUNCTION f = null;                    
+                        currentFunctionStart = curr_program.FUNCTION[a].LINE;
+                        currentFunctionEnd = curr_program.FUNCTION[a].LASTLINE;
                         f = curr_program.FUNCTION[a];
-                        //break;
+                       
+                        if (f.LOCAL_VARIABLES != null)
+                        {
+                            appendVariables(current_local_variables, curr_program.MODULES[currentModuleNo].NAME, f.LOCAL_VARIABLES);
+                        }
+                        return;
+              
                     }
-                    if (curr_program.FUNCTION[a].LINE > p && curr_program.FUNCTION[a].LINE < minNextLine)
-                    {
-                        minNextLine = curr_program.FUNCTION[a].LINE - 1;
-                    }
+                    
                 }
             }
 
-            if (f != null)
-            {
-                currentFunctionStart = f.LINE;
-                currentFunctionEnd = minNextLine;
-                current_local_variables = new List<AubitCalltreeViewer.SYMBOL>();
-                if (f.LOCAL_VARIABLES != null)
-                {
-                    appendVariables(current_local_variables, curr_program.MODULES[currentModuleNo].NAME, f.LOCAL_VARIABLES); 
-                }
-            }
+
         }
 
         private bool inScope(string scope, string module, int line)
@@ -1832,7 +1871,7 @@ namespace Calltreeviewer
                 if (loadModule(c.sl.moduleName))
                 {
                     setModuleLine(c.sl.lineNo);
-                    actioningUserInteraction = false;
+                   // actioningUserInteraction = false;
                     return;
                 }
  
@@ -1888,6 +1927,388 @@ namespace Calltreeviewer
             if (e.Data.GetDataPresent(DataFormats.FileDrop))
             {
                 e.Effect = DragDropEffects.Copy;
+            }
+        }
+
+
+
+
+
+        /// <summary>
+        /// CRUD handling...
+        /// </summary>
+        private void setCRUD() {
+            List<string> Tables;
+            List<SymbolLocation> sl;
+
+
+            // Generate the menu options for the UPDATE statements...
+            #region find updates
+            Tables =new List<string>();
+            sl = new List<SymbolLocation>();
+            for (int a = 0; a < curr_program.UPDATES.Length; a++)
+            {
+                if (!Tables.Contains(curr_program.UPDATES[a].TABLE)) {
+                    Tables.Add(curr_program.UPDATES[a].TABLE);
+                }
+
+                sl.Add(new SymbolLocation(curr_program.UPDATES[a].MODULE, curr_program.UPDATES[a].LINE, "UPDATE", curr_program.UPDATES[a].TABLE, get_line(curr_program.UPDATES[a].MODULE, curr_program.UPDATES[a].LINE)));
+            }
+
+            for (int a = 0; a < curr_program.DYNAMICSQLS.Length; a++)
+            {
+                string[] tabnames=extractTables("UPDATE",curr_program.DYNAMICSQLS[a].STMT);
+                if (tabnames!=null) {
+                    for (int b=0;b<tabnames.Length;b++) {
+
+                if (!Tables.Contains(tabnames[b]))
+                {
+                    Tables.Add(tabnames[b]);
+                }
+
+                sl.Add(new SymbolLocation(curr_program.DYNAMICSQLS[a].MODULE, curr_program.DYNAMICSQLS[a].LINE, "UPDATE", tabnames[b], get_line(curr_program.DYNAMICSQLS[a].MODULE, curr_program.DYNAMICSQLS[a].LINE)));
+                }
+                }
+            }
+
+            setMenuItems(updatesToolStripMenuItem, Tables,sl );
+#endregion
+            #region inserts
+            Tables = new List<string>();
+            sl = new List<SymbolLocation>();
+            for (int a = 0; a < curr_program.INSERTS.Length; a++)
+            {
+                if (!Tables.Contains(curr_program.INSERTS[a].TABLE))
+                {
+                    Tables.Add(curr_program.INSERTS[a].TABLE);
+                }
+
+                sl.Add(new SymbolLocation(curr_program.INSERTS[a].MODULE, curr_program.INSERTS[a].LINE, "INSERTS", curr_program.INSERTS[a].TABLE, get_line(curr_program.INSERTS[a].MODULE, curr_program.INSERTS[a].LINE)));
+            }
+
+            for (int a = 0; a < curr_program.DYNAMICSQLS.Length; a++)
+            {
+                string[] tabnames = extractTables("INSERT", curr_program.DYNAMICSQLS[a].STMT);
+                if (tabnames != null)
+                {
+                    for (int b = 0; b < tabnames.Length; b++)
+                    {
+
+                        if (!Tables.Contains(tabnames[b]))
+                        {
+                            Tables.Add(tabnames[b]);
+                        }
+
+                        sl.Add(new SymbolLocation(curr_program.DYNAMICSQLS[a].MODULE, curr_program.DYNAMICSQLS[a].LINE, "INSERT", tabnames[b], get_line(curr_program.DYNAMICSQLS[a].MODULE, curr_program.DYNAMICSQLS[a].LINE)));
+                    }
+                }
+            }
+
+            setMenuItems(insertToolStripMenuItem, Tables, sl);
+            #endregion
+
+
+            #region deletes
+            Tables = new List<string>();
+            sl = new List<SymbolLocation>();
+            for (int a = 0; a < curr_program.DELETES.Length; a++)
+            {
+                if (!Tables.Contains(curr_program.DELETES[a].TABLE))
+                {
+                    Tables.Add(curr_program.DELETES[a].TABLE);
+                }
+
+                sl.Add(new SymbolLocation(curr_program.DELETES[a].MODULE, curr_program.DELETES[a].LINE, "DELETES", curr_program.DELETES[a].TABLE, get_line(curr_program.DELETES[a].MODULE, curr_program.DELETES[a].LINE)));
+            }
+
+            for (int a = 0; a < curr_program.DYNAMICSQLS.Length; a++)
+            {
+                string[] tabnames = extractTables("DELETE", curr_program.DYNAMICSQLS[a].STMT);
+                if (tabnames != null)
+                {
+                    for (int b = 0; b < tabnames.Length; b++)
+                    {
+
+                        if (!Tables.Contains(tabnames[b]))
+                        {
+                            Tables.Add(tabnames[b]);
+                        }
+
+                        sl.Add(new SymbolLocation(curr_program.DYNAMICSQLS[a].MODULE, curr_program.DYNAMICSQLS[a].LINE, "DELETE", tabnames[b], get_line(curr_program.DYNAMICSQLS[a].MODULE, curr_program.DYNAMICSQLS[a].LINE)));
+                    }
+                }
+            }
+
+            setMenuItems(deleteToolStripMenuItem, Tables, sl);
+            #endregion
+
+
+            #region selects
+            Tables = new List<string>();
+            sl = new List<SymbolLocation>();
+            for (int a = 0; a < curr_program.SELECTS.Length; a++)
+            {
+                if (!Tables.Contains(curr_program.SELECTS[a].TABLE))
+                {
+                    Tables.Add(curr_program.SELECTS[a].TABLE);
+                }
+
+                sl.Add(new SymbolLocation(curr_program.SELECTS[a].MODULE, curr_program.SELECTS[a].LINE, "SELECT", curr_program.SELECTS[a].TABLE, get_line(curr_program.SELECTS[a].MODULE, curr_program.SELECTS[a].LINE)));
+            }
+
+            for (int a = 0; a < curr_program.DYNAMICSQLS.Length; a++)
+            {
+                string[] tabnames = extractTables("SELECT", curr_program.DYNAMICSQLS[a].STMT);
+                if (tabnames != null)
+                {
+                    for (int b = 0; b < tabnames.Length; b++)
+                    {
+
+                        if (!Tables.Contains(tabnames[b]))
+                        {
+                            Tables.Add(tabnames[b]);
+                        }
+
+                        sl.Add(new SymbolLocation(curr_program.DYNAMICSQLS[a].MODULE, curr_program.DYNAMICSQLS[a].LINE, "SELECT", tabnames[b], get_line(curr_program.DYNAMICSQLS[a].MODULE, curr_program.DYNAMICSQLS[a].LINE)));
+                    }
+                }
+            }
+
+            setMenuItems(selectToolStripMenuItem, Tables, sl);
+            #endregion
+
+            #region EXECUTE
+            Tables = new List<string>();
+            sl = new List<SymbolLocation>();
+
+
+            for (int a = 0; a < curr_program.OTHERSQLS.Length; a++)
+            {
+                string[] tabnames = extractTables("EXECUTE", curr_program.OTHERSQLS[a].STMT);
+                if (tabnames != null)
+                {
+                    for (int b = 0; b < tabnames.Length; b++)
+                    {
+
+                        if (!Tables.Contains(tabnames[b]))
+                        {
+                            Tables.Add(tabnames[b]);
+                        }
+
+                        sl.Add(new SymbolLocation(curr_program.DYNAMICSQLS[a].MODULE, curr_program.DYNAMICSQLS[a].LINE, "EXECUTE", tabnames[b], get_line(curr_program.DYNAMICSQLS[a].MODULE, curr_program.DYNAMICSQLS[a].LINE)));
+                    }
+                }
+            }
+
+            for (int a = 0; a < curr_program.DYNAMICSQLS.Length; a++)
+            {
+                string[] tabnames = extractTables("EXECUTE", curr_program.DYNAMICSQLS[a].STMT);
+                if (tabnames != null)
+                {
+                    for (int b = 0; b < tabnames.Length; b++)
+                    {
+
+                        if (!Tables.Contains(tabnames[b]))
+                        {
+                            Tables.Add(tabnames[b]);
+                        }
+
+                        sl.Add(new SymbolLocation(curr_program.DYNAMICSQLS[a].MODULE, curr_program.DYNAMICSQLS[a].LINE, "EXECUTE", tabnames[b], get_line(curr_program.DYNAMICSQLS[a].MODULE, curr_program.DYNAMICSQLS[a].LINE)));
+                    }
+                }
+            }
+
+            setMenuItems(eXECUTEPROCEDUREToolStripMenuItem, Tables, sl);
+            #endregion
+
+            #region Environment variables
+            Tables = new List<string>();
+            sl = new List<SymbolLocation>();
+            for (int a = 0; a < curr_program.ENVIRONMENTVARS.Length; a++)
+            {
+                if (!Tables.Contains(curr_program.ENVIRONMENTVARS[a].NAME))
+                {
+                    Tables.Add(curr_program.ENVIRONMENTVARS[a].NAME);
+                }
+
+                sl.Add(new SymbolLocation(curr_program.ENVIRONMENTVARS[a].MODULE, curr_program.ENVIRONMENTVARS[a].LINE, "ENV", curr_program.ENVIRONMENTVARS[a].NAME, get_line(curr_program.ENVIRONMENTVARS[a].MODULE, curr_program.ENVIRONMENTVARS[a].LINE)));
+            }
+
+            setMenuItems(environmentVariablesToolStripMenuItem, Tables, sl);
+            #endregion
+
+
+        }
+
+
+        /// <summary>
+        /// Try to determine the tables involved in an SQL statement..
+        /// </summary>
+        /// <param name="operation">Type of statement we're looking for...</param>
+        /// <param name="sqlStatement"></param>
+        /// <returns></returns>
+        private string[] extractTables(string operation, string sqlStatement)
+        {
+            sqlStatement = sqlStatement.ToLower();
+
+            try
+            {
+                switch (operation)
+                {
+                    case "UPDATE":
+                        if (!sqlStatement.Contains("update ")) return null;
+                        if (sqlStatement.IndexOf(" set ") == -1) return null;
+
+                        sqlStatement = sqlStatement.Remove(sqlStatement.IndexOf(" set ")).Replace("update", "");
+                        break;
+
+                    case "DELETE":
+                        if (!sqlStatement.Contains("delete ")) return null;
+                        if (sqlStatement.IndexOf(" from ") == -1) return null;
+                        sqlStatement = sqlStatement.Remove(sqlStatement.IndexOf("where")).Replace("delete", "").Replace("from", "");
+                        break;
+
+                    case "INSERT":
+                        if (!sqlStatement.Contains("insert ")) return null;
+                        if (sqlStatement.IndexOf(" into ") == -1) return null;
+                        if (sqlStatement.IndexOf("select ") >= 0)
+                        {
+                            sqlStatement = sqlStatement.Remove(sqlStatement.IndexOf("select")).Replace("insert", "").Replace("values", "").Replace("into", "");
+                        }
+
+
+                        if (sqlStatement.IndexOf("(")>=0)
+                        {
+                            
+                            sqlStatement = sqlStatement.Remove(sqlStatement.IndexOf("(")).Replace("insert", "").Replace("values", "").Replace("into", "");
+
+                        }
+                        break;
+
+
+                    case "EXECUTE":
+                        if (!sqlStatement.Contains("execute ")) return null;
+                        if (sqlStatement.IndexOf("(") == -1) return null;
+                        sqlStatement = sqlStatement.Remove(sqlStatement.IndexOf("(")).Replace("execute", "").Replace("procedure", "");
+                        break;
+
+                    case "SELECT":
+                        if (!sqlStatement.Contains("select ")) return null;
+                        if (sqlStatement.IndexOf(" where ") > 0)
+                        {
+                            sqlStatement = sqlStatement.Remove(sqlStatement.IndexOf(" where "));
+                        }
+                        if (sqlStatement.IndexOf(" order ") > 0)
+                        {
+                            sqlStatement = sqlStatement.Remove(sqlStatement.IndexOf(" order "));
+                        }
+                        if (sqlStatement.IndexOf(" group ") > 0)
+                        {
+                            sqlStatement = sqlStatement.Remove(sqlStatement.IndexOf(" group "));
+                        }
+                        if (sqlStatement.IndexOf(" having ") > 0)
+                        {
+                            sqlStatement = sqlStatement.Remove(sqlStatement.IndexOf(" having "));
+                        }
+
+                        if (sqlStatement.IndexOf(" from ") > 0)
+                        {
+                            sqlStatement = sqlStatement.Substring(sqlStatement.IndexOf(" from ") + 5);
+                        }
+                        else
+                        {
+                            return null;
+                        }
+                        break;
+
+                    default:
+                        throw new ApplicationException("Not implemented");
+                }
+            }
+            catch (Exception Ex)
+            {
+                MessageBox.Show(Ex.Message);
+            }
+
+           sqlStatement= sqlStatement.Replace(",", " ");
+           sqlStatement = sqlStatement.Replace("[", " ");
+           sqlStatement = sqlStatement.Replace("]", " ");
+            // If we get to gere - sqlStatement should just be a list of tabnames with the option of a possible "outer" for a select..
+
+            string[] tabnames = sqlStatement.Split(' ');
+            List<string> tnames;
+            tnames=new List<string>();
+            for (int a = 0; a < tabnames.Length; a++)
+            {
+                if (tabnames[a] == "outer") continue;
+                if (tabnames[a].Trim() == "") continue;
+                tnames.Add(tabnames[a]);
+               
+            }
+            if (tnames.Count > 0)
+            {
+                return tnames.ToArray();
+            }
+
+
+            return null;
+        }
+
+        private void setMenuItems(ToolStripMenuItem tsMain, List<string> Tables, List<SymbolLocation> sl)
+        {
+            tsMain.DropDownItems.Clear();
+            Tables.Sort();
+            for (int a = 0; a < Tables.Count; a++)
+            {
+                ToolStripMenuItem ts;
+                ts = new ToolStripMenuItem(Tables[a]);
+                tsMain.DropDownItems.Add(ts);
+                for (int b = 0; b < sl.Count; b++)
+                {
+                    if (sl[b].Operation == Tables[a] && canBeCalled(sl[b].moduleName,sl[b].lineNo))
+                    {
+                        ContextSearchItem csi = new ContextSearchItem(sl[b]);
+                        csi.Click += new EventHandler(csi_Click);
+                        ts.DropDownItems.Add(csi);
+                    }
+                }
+                if (ts.DropDownItems.Count == 0)
+                {
+                    ts.Visible = false;
+                }
+            }
+        }
+
+        private bool canBeCalled(string moduleName, int lineNo)
+        {
+
+
+            for (int a = 0; a < curr_program.FUNCTION.Length; a++)
+            {
+                if (curr_program.FUNCTION[a].MODULE == moduleName)
+                {
+
+                    if (curr_program.FUNCTION[a].LINE <= lineNo && lineNo <= curr_program.FUNCTION[a].LASTLINE)
+                    {
+                        return curr_program.FUNCTION[a].CALLED;
+                    }
+                }
+            }
+
+            return false;
+         //   throw new NotImplementedException();
+        }
+
+
+
+        void csi_Click(object sender, EventArgs e)
+        {
+            SearchableControls.ContextSearchItem c = (SearchableControls.ContextSearchItem)sender;
+
+            if (loadModule(c.sl.moduleName))
+            {
+                setModuleLine(c.sl.lineNo);
+                return;
             }
         }
     }
