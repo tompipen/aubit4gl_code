@@ -106,7 +106,7 @@ code
 endcode
 
 if sqlca.sqlcode<0 then
-	error "Some error fetching cursor"
+	error "Some error fetching cursor:",sqlca.sqlcode
 end if
 
 if sqlca.sqlcode=100 then
@@ -241,6 +241,7 @@ code
 
 
 static void do_actual_fetch(char *lv_c, int x,int y,int nf,struct BINDING *ibind) {
+A4GL_trim(lv_c);
 	A4GL_fetch_cursor(lv_c, 2,1,gv_fields,ibind);
 }
 
