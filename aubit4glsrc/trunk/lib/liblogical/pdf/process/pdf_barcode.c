@@ -2351,9 +2351,9 @@ generate_qrcode (PDF * p, char *str, double xpos, double ypos, double pdfwidth, 
   QRinput_setVersion (input, version);
   QRinput_setErrorCorrectionLevel (input, level);
 #ifdef HAVE_LIBQRENCODE_ENCODEMASK
-  qrcode = QRcode_encodeMask (input, mask);
+	qrcode = QRcode_encodeInput (input);
 #else
-  qrcode = QRcode_encodeInput (input);
+	qrcode = QRcode_encodeMask (input, mask);
 #endif
 
   if (qrcode == NULL)
