@@ -1,0 +1,193 @@
+end_input : 
+| field_commands END_INPUT ;
+
+opt_defs : {sprintf($<str>$,"0");} | WITHOUT_DEFAULTS {sprintf($<str>$,"1");} ;
+
+field_commands : field_command | field_commands field_command;
+
+field_command :  
+	  BEFFIELD bef_field_list 
+		{printc("if (%s) {\n",$<str>2);} commands {printc("}\n");}
+	| AFTFIELD aft_field_list
+		{printc("if (%s) {\n",$<str>2);} commands {printc("}\n");}
+	| AFTROW {
+		printcomment("/* after row */ \n");
+		printc("if (AFT_ROW) {\n");} commands {printc("}\n");}
+	| BEFROW {
+		printcomment("/* before row */ \n");
+		printc("if (BEF_ROW) {\n");} commands {printc("}\n");
+		}
+	| on_key_command {printc("/* on key */ \n ON_KEY(\"%s\") {\n",$<str>1);} commands {printc("}\n");}
+	| AFTINP {printc("/* after input */ \nif (AFTER_INP) {\n");} commands {printc("}\n");}
+	| BEFINP {printc("/* before input */ \nif (BEFORE_INP) {\n");} commands {printc("}\n");}
+	| BEFORE b_ins_or_delete_row {printcomment("/* before insert/delete */ \n");
+		printc("\nif (%s) {\n",$<str>2);} commands {printc("}\n");}
+	| AFTER  a_ins_or_delete_row {
+		printcomment("/* after insert/delete */\n");
+		printc("\nif (%s) {\n",$<str>2);} commands {printc("}\n");}
+;
+
+a_ins_or_delete_row :
+	a_ins_or_delete {sprintf($<str>$,"(%s)",$<str>1);} 
+	| a_ins_or_delete_row COMMA a_ins_or_delete {
+		sprintf($<str>$,"%s||(%s)",$<str>1,$<str>3); }
+;
+
+a_ins_or_delete:
+	INSERT {strcpy($<str>$,"AFT_INSERT");}
+	| DELETE {strcpy($<str>$,"AFT_DELETE");}
+;
+
+
+b_ins_or_delete_row :
+	b_ins_or_delete {sprintf($<str>$,"(%s)",$<str>1);} 
+	| b_ins_or_delete_row COMMA b_ins_or_delete {
+		sprintf($<str>$,"%s||(%s)",$<str>1,$<str>3); }
+;
+
+b_ins_or_delete:
+	INSERT {strcpy($<str>$,"BEF_INSERT");}
+	| DELETE {strcpy($<str>$,"BEF_DELETE");}
+;
+
+
+
+
+bef_field_list :
+	field_name {sprintf($<str>$,"BEF_FIELD_CHK(%s)",$<str>1);}
+	| bef_field_list COMMA field_name {
+	  sprintf($<str>$,"%s||BEF_FIELD_CHK(%s)",$<str>1,$<str>3);
+	}
+;
+
+aft_field_list :
+	field_name {sprintf($<str>$,"AFT_FIELD_CHK(%s)",$<str>1);}
+	|aft_field_list COMMA field_name {
+	  sprintf($<str>$,"%s||AFT_FIELD_CHK(%s)",$<str>1,$<str>3);
+	}
+;
+
+
+
+next_field_cmd : NEXTFIELD next_field {
+   printc("req_field(&_inp_io,%s);\n",$<str>2);
+}
+;
+
+next_field	:	NEXT {sprintf($<str>$,"\"+\",0");}
+		| 	PREVIOUS {sprintf($<str>$,"\"-\",0");}
+		| 	field_name 
+;
+
+input_cmd	:	INPUT inp_rest
+{printc("} /* end of initialization */\n");} end_input 
+{
+printc("if (_fld_dr==-95) {/* after input */\n");
+printc("   break;\n}\n");
+printc("if (_fld_dr==-98) {/* before field */\n");
+printc("   fldname=char_pop(); _fld_dr=-97;continue;\n}\n");
+printc("_fld_dr=%s;_forminit=0;\n",$<str>2);
+printc("if (_fld_dr==-1) {/* after field */\n");
+printc("   fldname=char_pop(); _fld_dr=-98;continue;\n}\n");
+printc("if (_fld_dr==0) { /* after input 2 */\n");
+printc("   _fld_dr=-95;continue;\n}\n");
+add_continue_blockcommand ("INPUT");  
+printc("debug(\"form_loop=%%d\",_fld_dr);");
+printc("\n}\n");
+pop_blockcommand("INPUT");
+printc("}\n");
+};
+
+
+inp_rest:
+BY_NAME ibind_var_list opt_defs opt_help_no opt_attributes inp_print
+{
+int ccc;
+printc("/*");
+push_blockcommand("INPUT");
+printc("*/");
+printc("/* input by name */");
+ccc=print_bind('i');
+printc("SET(\"s_screenio\",_inp_io,\"currform\",get_curr_form());\n");
+printc("if (GET(\"s_screenio\",_inp_io,\"currform\")==0) break;\n");
+printc("SET(\"s_screenio\",_inp_io,\"vars\",ibind);\n");
+printc("SET(\"s_screenio\",_inp_io,\"novars\",%d);\n",ccc);
+printc("SET(\"s_screenio\",_inp_io,\"help_no\",%s);\n",$<str>4);
+printc("SET(\"s_screenio\",_inp_io,\"currentfield\",0);\n");
+printc("SET(\"s_screenio\",_inp_io,\"currentmetrics\",0);\n");
+printc("SET(\"s_screenio\",_inp_io,\"mode\",%d+%s);\n",MODE_INPUT, $<str>3);
+printc("SET(\"s_screenio\",_inp_io,\"nfields\",gen_field_chars(GETPTR(\"s_screenio\",_inp_io,\"field_list\"),GET(\"s_screenio\",_inp_io,\"currform\"),");
+print_field_bind(ccc);
+printc(",0)); if (GET(\"s_screenio\",_inp_io,\"nfields\")==-1) break;\n");
+printc("{int _sf; _sf=set_fields(&_inp_io); debug(\"_sf=%d\",_sf);if(_sf==0) break;\n}\n");
+printc("_fld_dr=-99;\n");
+sprintf($<str>$,"form_loop(&_inp_io,_forminit)");
+}
+| ibind_var_list opt_defs FROM fld_list  opt_help_no opt_attributes inp_print
+{
+int ccc;
+printc("/*");
+push_blockcommand("INPUT");
+printc("*/");
+ccc=print_bind('i');
+printc("SET(\"s_screenio\",_inp_io,\"vars\",ibind);\n");
+printc("SET(\"s_screenio\",_inp_io,\"novars\",%d);\n",ccc);
+printc("SET(\"s_screenio\",_inp_io,\"help_no\",%s);\n",$<str>5);
+printc("SET(\"s_screenio\",_inp_io,\"currform\",get_curr_form());\n");
+printc("if (GET(\"s_screenio\",_inp_io,\"currform\")==0) break;\n");
+
+printc("SET(\"s_screenio\",_inp_io,\"currentfield\",0);\n");
+printc("SET(\"s_screenio\",_inp_io,\"currentmetrics\",0);\n");
+printc("SET(\"s_screenio\",_inp_io,\"mode\",%d+%s);\n",MODE_INPUT,$<str>2);
+printc("SET(\"s_screenio\",_inp_io,\"nfields\",gen_field_chars(GETPTR(\"s_screenio\",_inp_io,\"field_list\"),GET(\"s_screenio\",_inp_io,\"currform\"),%s,0));\n",$<str>4);
+printc("if (GET(\"s_screenio\",_inp_io,\"nfields\")==-1) break;\n");
+printc("{int _sf; _sf=set_fields(&_inp_io); debug(\"_sf=%d\",_sf);if(_sf==0) break;\n}\n");
+printc("_fld_dr=-99;\n");
+sprintf($<str>$,"form_loop(&_inp_io,_forminit)");
+}
+| ARRAY use_arr_var opt_defs FROM identifier DOT MULTIPLY opt_help_no {inp_flags=0;} opt_attributes
+{
+int ccc;
+char buff[132];
+int cnt;
+printc("/*");
+push_blockcommand("INPUT");
+printc("*/");
+printcomment("/* input */\n");
+printc("{int _fld_dr=-100;\nchar *fldname;\nint _forminit;");
+printc("char _inp_io[%d];\n",sizeof(struct s_inp_arr));
+cnt=print_arr_bind('o');
+printc("while (_fld_dr!=0) {\n");
+printc("if (_fld_dr==-100) {\n");
+printc("SET(\"s_inp_arr\",_inp_io,\"no_arr\",get_count());\n");
+printc("SET(\"s_inp_arr\",_inp_io,\"binding\",obind);\n");
+printc("SET(\"s_inp_arr\",_inp_io,\"nbind\",%d);\n",cnt);
+printc("SET(\"s_inp_arr\",_inp_io,\"srec\",0);\n");
+printc("SET(\"s_inp_arr\",_inp_io,\"inp_flags\",%d);\n",inp_flags);  
+printc("SET(\"s_inp_arr\",_inp_io,\"help_no\",%s);\n",$<str>8);
+printc("SET(\"s_inp_arr\",_inp_io,\"arr_elemsize\",sizeof(%s[0]));\n",$<str>2);
+printc("SET(\"s_inp_arr\",_inp_io,\"arr_size\",sizeof(%s)/sizeof(%s[0]));\n",$<str>2,$<str>2);  
+printc("SET(\"s_inp_arr\",_inp_io,\"currform\",get_curr_form());\n");
+printc("if (GET(\"s_inp_arr\",_inp_io,\"currform\")==0) break;\n");
+printc("SET(\"s_inp_arr\",_inp_io,\"currentfield\",0);\n");
+printc("SET(\"s_inp_arr\",_inp_io,\"currentmetrics\",0);\n");
+printc("SET(\"s_inp_arr\",_inp_io,\"mode\",%d+%s);\n",MODE_INPUT,$<str>3);
+printc("SET(\"s_inp_arr\",_inp_io,\"nfields\",gen_field_chars(GETPTR(\"s_inp_arr\",_inp_io,\"field_list\"),GET(\"s_inp_arr\",_inp_io,\"currform\"),\"%s.*\",0,0));\n",$<str>5);
+printc("_fld_dr=-1;continue;\n");
+
+sprintf($<str>$,"inp_arr(&_inp_io,%s,\"%s\",%s);\n",$<str>3,$<str>5,$<str>10);
+}
+;
+
+inp_print : {
+printc("{int _fld_dr=-100;char *fldname;char _inp_io[%d];",
+		sizeof(struct s_screenio));
+printc("int _forminit=1;\n");
+printc("while(_fld_dr!=0){\n");
+printc("if (_fld_dr==-100) {\n");
+}
+
+;
+
+
+

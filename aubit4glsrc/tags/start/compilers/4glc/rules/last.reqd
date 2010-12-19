@@ -1,0 +1,22 @@
+;
+%%
+/* programmer routines */
+//# include "lex.yy.c"
+//# include "lexify.c"
+
+set_clobber(char *c) {
+strcpy(clobber,c);
+}
+
+char *get_hdrdbname() {
+	return hdr_dbname;
+}
+
+set_hdrdbname(char *s){
+	strcpy(hdr_dbname,s);
+}
+set_str(char *s) {
+strcpy(yylval.str,s);
+}
+
+

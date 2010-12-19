@@ -1,0 +1,25 @@
+set_cmd :
+SQLSEON
+| SQLSEOFF
+| SQLSLMW fgl_expr
+| SQLSLMW 
+| SQLSLMNW 
+| SQLSIDR
+| SQLSIRR
+| SQLSICS
+| SQLSICR
+| SET_SESSION_TO conn_id { printc("set_conn(%s);\n",$<str>2); }
+| SET_SESSION op_conn_id OPTION char_or_var TO char_or_var {
+      printc("set_conn_options(%s,%s,%s);\n",$<str>2,$<str>4,$<str>6);
+}
+| SET_CURSOR cursor_name OPTION char_or_var TO char_or_var {
+      printc("set_stmt_options(%s,%s,%s);\n",$<str>3,$<str>5,$<str>7);
+}
+;
+
+op_conn_id : 
+{strcpy($<str>$,"\"default\"");} | conn_id;
+
+
+
+

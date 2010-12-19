@@ -1,0 +1,387 @@
+Aubit 4gl
+Change log
+
+---------------------------------------------------------------------------
+
+In general, this file is obsolete. Please use CVS. However, this file may
+still be used to provide usefull information about some bug fixes.
+
+###########################################################################
+
+Data entered:
+
+14/07/2000
+31/07/2000
+19/06/2001
+
+
+###########################################################################
+
+31/07/2000-----------------------------------------------------------------
+
+
+.\compilers\4glc\lexer.c
+.\compilers\4glc\makefile
+.\compilers\4glc\mod.c
+.\compilers\4glc\rules\1.reqd
+.\compilers\4glc\rules\call.rule
+.\compilers\4glc\rules\error.rule
+.\compilers\4glc\rules\expr.rule
+.\compilers\4glc\rules\keys.rule
+.\compilers\4glc\rules\main.rule
+.\compilers\4glc\rules\makefile
+.\compilers\4glc\rules\report.rule
+.\compilers\4glc\rules\schema.rule
+.\compilers\4glc\rules\sql1.rule
+.\compilers\4glc\rules\whenever.rule
+.\compilers\4glc\rules\data\kwords
+.\compilers\fcompile\makefile
+.\compilers\fcompile\screen.lex
+.\compilers\fcompile\screen.yacc
+.\incl\4glhdr.h
+.\lib\curslib.c
+.\lib\makefile
+.\lib\newpanels.c
+.\lib\pdf_report.c
+.\lib\libincl\report.h
+
+-- 24 files listed
+
+
+
+14/07/2000-----------------------------------------------------------------
+
+*	Added basic Input array functionality - cannot add or remove lines
+	yet, still very experimental.
+
+*	Added some more experimental stuff - not saying what until its fully
+	tested... (templates and OO)
+
+*	Added lots of bug fixes (some really stupid ones...)
+
+*	Changed the way that forms are compiled, you will need to recompile
+	all previous forms as the .frm is a different format...
+
+	NEW : You can now compile forms into 'C' code :
+
+		$ fcompile -c myform_file.per
+
+		test.4gl
+			MAIN
+				CALL form_is_compiled(myform_file)
+
+				OPEN FORM f_myform FROM "myform_file"
+				DISPLAY f_myform
+
+				.
+				.
+				OPEN WINDOW w1 AT 2,2 WITH FORM "myform_file"
+
+			END MAIN
+
+		$ 4glpc myform_file.c test.4gl -o test_form
+				- No longer needs the .per's!!!
+
+
+	1) precompile forms to .c
+	2) compile 4gl and include this forms .c files
+	3) Once on top of the program call function "form_is_compiled" with
+	   names of all forms included in program in this way.
+
+
+> > Is it possible to do the step 3 automatically? Like, if linker see
+> > that forms are linked in executable, add calls to form_is_compiled
+> > automatically?
+> >
+> No - it needs to register the fact that the form is in code rather than in
+> the file, short of building up a table containing a list of the forms via
+> the compiler, this is the only way. I don't really want to have
+> to scan the
+> files and build up a table at all. The only other way I could think of was
+> compiling to forms to shared libraries, but this isn't
+> particularly portable
+> and it still involves using a separate file so theres no benefit anyway...
+
+
+*****************************************************************************
+Modified File : /compilers/4glc/mod.c
+-----------------------------------------------------------------------------
+small bug in record handling trapped
+*****************************************************************************
+
+*****************************************************************************
+New File : /compilers/4glc/list.c
+	DESCRIPTION : list handling code for templates (new feature)
+*****************************************************************************
+
+*****************************************************************************
+Modified File : /compilers/fcompile/fcompile.c
+-----------------------------------------------------------------------------
+form writing update
+*****************************************************************************
+
+*****************************************************************************
+Modified File : /compilers/fcompile/formwrite.c
+-----------------------------------------------------------------------------
+form writing update
+*****************************************************************************
+
+*****************************************************************************
+New File : /compilers/fcompile/form_xdr.c
+	DESCRIPTION: new form writing code using XDR representation
+*****************************************************************************
+
+
+*****************************************************************************
+New File : /compilers/fcompile/form_x_xdr.c
+	DESCRIPTION: new form writing code using XDR representation
+*****************************************************************************
+
+
+*****************************************************************************
+New File : /compilers/fcompile/formwrite2.c
+	DESCRIPTION: new form writing code using XDR representation
+*****************************************************************************
+
+*****************************************************************************
+New File : /compilers/fcompile/decompile.c
+	form decompiler code (!!)
+*****************************************************************************
+
+
+*****************************************************************************
+New File : /compilers/fcompile/form_x.h
+form writing update
+*****************************************************************************
+
+
+*****************************************************************************
+New File : /compilers/fcompile/dump.c
+	DESCRIPTION: helper module for decompiler..
+*****************************************************************************
+
+
+*****************************************************************************
+New File : /compilers/fcompile/form.c
+	DESCRIPTION: new form writing code using XDR representation
+*****************************************************************************
+
+
+*****************************************************************************
+Modified File : /lib/array.c
+-----------------------------------------------------------------------------
+Display array bug fix..
+*****************************************************************************
+
+*****************************************************************************
+Modified File : /lib/curslib.c
+-----------------------------------------------------------------------------
+Attempt to get '!' to work with menues...
+Fixed some key handling bugs (OPTIONS ACCEPT KEY type things) **more to do
+Menu handling fix for hidden/shown options
+*****************************************************************************
+
+*****************************************************************************
+Modified File : /lib/fglwrap.c
+-----------------------------------------------------------------------------
+Not a lot.
+*****************************************************************************
+
+*****************************************************************************
+Modified File : /lib/helper.c
+-----------------------------------------------------------------------------
+Part of form writing update..
+*****************************************************************************
+
+*****************************************************************************
+Modified File : /lib/iarray.c
+-----------------------------------------------------------------------------
+Start of input array functionality..
+*****************************************************************************
+
+*****************************************************************************
+Modified File : /lib/io.c
+-----------------------------------------------------------------------------
+allow forms to be read a c code
+*****************************************************************************
+
+*****************************************************************************
+Modified File : /lib/newpanels.c
+-----------------------------------------------------------------------------
+form update again
+*****************************************************************************
+
+*****************************************************************************
+Modified File : /lib/readforms.c
+-----------------------------------------------------------------------------
+more form updates
+*****************************************************************************
+
+*****************************************************************************
+Modified File : /lib/sql.c
+-----------------------------------------------------------------------------
+minor bug fixed, trying to reduce the number of compile time warnings..
+*****************************************************************************
+
+*****************************************************************************
+Modified File : /lib/stack.c
+-----------------------------------------------------------------------------
+blob storage update.. Still buggy, doesnt know if a blob hasn't been initialized properly..
+*****************************************************************************
+
+*****************************************************************************
+Modified File : /lib/libincl/dbform.h
+-----------------------------------------------------------------------------
+form updates
+*****************************************************************************
+
+*****************************************************************************
+Modified File : /lib/libincl/debug.h
+-----------------------------------------------------------------------------
+minor updates for reducing compile time warnings.
+*****************************************************************************
+
+*****************************************************************************
+Modified File : /lib/libincl/pointers.h
+-----------------------------------------------------------------------------
+Added new pointer type for compiled-in forms
+*****************************************************************************
+
+*****************************************************************************
+Modified File : /lib/libincl/screen.h
+-----------------------------------------------------------------------------
+more form changes..
+*****************************************************************************
+
+*****************************************************************************
+Modified File : /lib/libincl/stack.h
+-----------------------------------------------------------------------------
+compile time warnings...
+*****************************************************************************
+
+*****************************************************************************
+New File : /lib/libincl/form_x.h
+	DESCRIPTION: new form handling
+*****************************************************************************
+
+*****************************************************************************
+New File : /lib/form_x_xdr.c
+	DESCRIPTION: new form handling
+*****************************************************************************
+
+
+###########################################################################
+
+19/06/2001-----------------------------------------------------------------
+
+
+First of all - I notice quite a few errors with datetime/interval datatypes -
+these are still experimental. '+ 2 units months' is not currently supported.
+(It will be - its just not yet)
+
+I don't think insert cursors are coded either - so PUT won't work yet either.
+(Fancy coding them for me ?!)
+
+Can you give me more of cpartwind.4gl/.err - I can only see attribute (cyan) -
+but can't see in what context.. I've done some mods in this area - so try again
+anyway (yes - again!)
+
+GO TO - fixed (only had GOTO defined)
+
+ON KEY(F10) - fixed (error in state processing)
+
+LET variable = -something - known problem - no fix yet.
+	workaround : LET variable = 0 - something
+
+SELECT ... WHERE something = USER  - fixed (USER wasn't defined as valid here)
+
+UPDATE ... SET * = ... - fixed (* wasn't defined as valid here!!)
+
+COMMAND KEY(Q,F9) - fixed (Only 'A' was defined as 'SINGLE_KEY' - added others
+(A-Z, 0-9)
+
+ON KEY(TAB) - fixed (Tab not defined as a valid key value).
+
+
+WHERE NOT IN (...) - fixed, NOT_IN defined -
+but sql1.rule was still using 'NOT IN' (two tokens)
+
+problems using 'pr_cal_available_flag' & 'glob_time_last_checked' - fixed (Max
+variable name size was 19 characters [but this isn't checked] - increased to 64)
+
+pinfowind.err - if pa_prodinfo[idx].info_ind not matches'[1234]' -
+needs a space between matches and '[..]'
+
+I've just CVS'd these back in...
+
+There are some more issues that this throws up for the library - but most of it
+should compile now !!!
+
+
+My test file :
+
+#
+# This used to cause loads of bugs...
+# DO NOT ATTEMPT TO RUN THIS!!!
+# This is to pick up compiler errors only!
+#
+define f1 integer
+define f2 record
+	a integer,
+	a1 integer
+end record
+define f3 char(20)
+
+define pr_cal_available_flag integer
+
+main
+
+let f1=1
+
+prompt "Hello" attribute(cyan) for f1 attribute(red)
+on key(f1) display "f1"
+on key(f2) display "f2"
+on key(f10) display "f10"
+on key(f11,f12,f14) display "f10+"
+on key(tab) display "Tab"
+end prompt
+
+select * from systables where tabname=user
+
+update maxreport set * = f2.*
+
+menu "m1"
+	command "Test0"
+	command key(f1)  "Test1"
+		display "Hello"
+	command key(f2,Q)  "Test1"
+		display "Hello"
+end menu
+
+
+select * from mytab where status_ind not in ("4","c")
+
+display "Hello"
+go to lab1
+display "Sun"
+label lab1
+display "World"
+
+display pr_cal_available_flag
+
+if f3 not matches "[1234]" then
+	display "OK"
+end if
+end main
+
+--------------------------------------------------------------------
+
+
+
+
+
+
+########################### EOF ####################################
+
+
+

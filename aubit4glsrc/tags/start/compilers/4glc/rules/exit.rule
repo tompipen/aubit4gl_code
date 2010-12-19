@@ -1,0 +1,44 @@
+ext_cmd : EXIT_WHILE 
+        { if (in_command("WHILE")) { exit_loop("WHILE"); } else { YYERROR;} }
+	| EXIT_INPUT
+        { if (in_command("INPUT")) { printc("break;\n"); } else { YYERROR;} }
+	| EXIT_FOREACH
+        { if (in_command("FOREACH")) { printc("break;\n"); } else { YYERROR;} }
+	| EXIT_FOR
+        { if (in_command("FOR")) { exit_loop("FOR"); } else { YYERROR;} }
+	| EXIT_CONSTRUCT
+        { if (in_command("CONSTRUCT")) { printc("break;\n"); } else { YYERROR;} }
+	| EXIT_DISPLAY
+        { if (in_command("DISPLAY")) { printc("break;\n"); } else { YYERROR;} }
+	| EXIT_MENU  {
+	if (in_command("MENU")) {printc("cmd_no=-3;continue;\n");} 
+              else YYERROR;}
+	| EXIT_CASE
+        { if (in_command("CASE")) { exit_loop("CASE"); } else { YYERROR;} }
+	| EXIT_PROMPT
+        { if (in_command("PROMPT")) { printc("_p.mode=1;\n"); } else { YYERROR;} }
+;
+
+continue_cmd : CONTINUE_WHILE 
+        { if (in_command("WHILE")) { continue_loop("WHILE");  } else { YYERROR;} }
+	| CONTINUE_INPUT
+        { if (in_command("INPUT")) { printc("continue;\n"); } else { YYERROR;} }
+	| CONTINUE_FOREACH
+        { if (in_command("FOREACH")) { printc("continue;\n"); } else { YYERROR;} }
+	| CONTINUE_FOR 
+        { if (in_command("FOR")) { continue_loop("FOR"); } else { YYERROR;} }
+	| CONTINUE_CONSTRUCT
+        { if (in_command("CONSTRUCT")) { printc("continue;\n"); } else { YYERROR;} }
+	| CONTINUE_DISPLAY
+        { if (in_command("DISPLAY")) { printc("continue;\n"); } else { YYERROR;} }
+	| CONTINUE_MENU
+        { if (in_command("MENU")) {  continue_loop("MENU");  } else { YYERROR;} }
+
+// There is no continue case...
+	//| CONTINUE_CASE
+        //{ if (in_command("CASE")) { continue_loop("CASE");  } else { YYERROR;} }
+	| CONTINUE_PROMPT
+        { if (in_command("PROMPT")) { continue_loop("PROMPT"); } else { YYERROR;} }
+;
+
+

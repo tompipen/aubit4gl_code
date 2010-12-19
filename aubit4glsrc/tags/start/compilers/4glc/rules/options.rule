@@ -1,0 +1,32 @@
+options_cmd : OPTIONS opt_options;
+
+opt_options : opt_allopts
+	| opt_options COMMA opt_allopts;
+
+opt_allopts 	: COMMENT_LINE line_no {printc("set_option_value('C',%s);\n",$<str>2);}
+		| ERROR_LINE line_no {printc("set_option_value('E',%s);\n",$<str>2);}
+		| FORM_LINE line_no {printc("set_option_value('F',%s);\n",$<str>2);}
+		| MENU_LINE line_no {printc("set_option_value('M',%s);\n",$<str>2);}
+		| MSG_LINE line_no {printc("set_option_value('m',%s);\n",$<str>2);}
+		| PROMPT_LINE line_no {printc("set_option_value('P',%s);\n",$<str>2);}
+		| accept_key {printc("set_option_value('A',%s);\n",$<str>1);iskey=0;}
+		| DELETE single_key_val {printc("set_option_value('D',%s);\n",$<str>2);iskey=0;}
+		| INSERT single_key_val {printc("set_option_value('I',%s);\n",$<str>2);iskey=0;}
+		| NEXT single_key_val {printc("set_option_value('N',%s);\n",$<str>2);}
+		| PREVIOUS single_key_val {printc("set_option_value('p',%s);\n",$<str>2);iskey=0;}
+		| HELP single_key_val {printc("set_option_value('H',%s);\n",$<str>2);}
+		| HELP KW_FILE file_name {printc("set_help_file(%s);\n",$<str>3);}
+		| DISPLAY attributes_def {printc("set_option_value('d',%s);\n",$<str>2);}
+		| INPUT attributes_def {printc("set_option_value('i',%s);\n",$<str>2);}
+		| INPUT_WRAP {printc("set_option_value('W',1);\n");}
+		| INPUT_NO_WRAP {printc("set_option_value('W',0);\n");}
+		| FOCONSTR {printc("set_option_value('f',1);\n");}
+		| FOUNCONSTR {printc("set_option_value('f',0);\n");}
+		| SQL_INTERRUPT_ON  {printc("set_option_value('S',1);\n");}
+		| SQL_INTERRUPT_OFF {printc("set_option_value('S',0);\n");}
+;
+
+
+
+
+

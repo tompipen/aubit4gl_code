@@ -1,0 +1,6 @@
+goto_cmd : GOTO label_goto {
+	printc("goto %s;\n",$<str>2);
+}
+;
+
+

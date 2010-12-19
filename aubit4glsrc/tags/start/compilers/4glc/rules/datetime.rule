@@ -1,0 +1,10 @@
+interval_expr:
+	UNITS_YEAR {sprintf($<str>$,"pushop(OP_YEAR);");}
+	| UNITS_MONTH {sprintf($<str>$,"pushop(OP_MONTH);"); }
+	| UNITS_DAY {sprintf($<str>$,"pushop(OP_DAY);"); }
+	| UNITS_HOUR {sprintf($<str>$,"pushop(OP_HOUR);"); }
+	| UNITS_MINUTE {sprintf($<str>$,"pushop(OP_MINUTE);"); }
+	| UNITS_SECOND {sprintf($<str>$,"pushop(OP_SECOND);"); }
+;
+
+

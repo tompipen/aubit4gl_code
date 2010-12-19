@@ -1,0 +1,67 @@
+opt_at : {printc("push_int(-1);push_int(-1);\n");strcpy($<str>$,"display_at(%s,%s);\n");} 
+	| AT display_coords {strcpy($<str>$,"display_at(%s,%s);");}
+	| TO fld_list {sprintf($<str>$,"disp_fields(%%s,%%s,%s,0);\n",$<str>2);}
+;
+
+display_cmd : DISPLAY_BY_NAME reset_cnt ibind_var_list display_attr 
+		{
+		int a;
+          	printc("{\n");
+		a=print_bind('i');
+		 printc("push_disp_bind(&ibind,%d);\n",a);
+                 printc("disp_fields(%d,%s,",a,$<str>4);
+                 print_field_bind(a);
+                 printc(",0);\n"); 
+		printc("}\n");
+                } 
+
+	| DISPLAY reset_cnt fgl_expr_list opt_at display_attr 
+		{ 
+if (strncmp($<str>4,"disp_fie",5)!=0) {
+printc($<str>4,$<str>3,$<str>5); 
+} else {
+printc($<str>4,$<str>3,$<str>5);
+}
+} 
+	| DISPLAY_FORM form_name display_attr {printc("disp_form(%s,%s);\n",$<str>2,$<str>3);}
+	| DISPLAY_ARRAY {push_blockcommand("DISPLAY");} use_arr_var TO identifier DOT MULTIPLY opt_attributes 
+{
+int cnt;
+printcomment("/* Display array */\n");
+printc("{int _fld_dr;\nchar _dispio[%d];\n",sizeof(struct s_disp_arr)+10);
+cnt=print_arr_bind('o');
+printc("SET(\"s_disp_arr\",_dispio,\"no_arr\",get_count());\n");
+printc("SET(\"s_disp_arr\",_dispio,\"binding\",obind);\n");
+printc("SET(\"s_disp_arr\",_dispio,\"nbind\",%d);\n",cnt);
+printc("SET(\"s_disp_arr\",_dispio,\"srec\",0);\n");
+printc("SET(\"s_disp_arr\",_dispio,\"arr_elemsize\",sizeof(%s[0]));\n",$<str>3);
+printc("_fld_dr=-1;\n");
+printc("while (_fld_dr!=0) {\n");
+printc("_fld_dr=disp_arr(&_dispio,%s,\"%s\",%s);\n",$<str>3,$<str>5,$<str>8);
+}
+disp_rest {
+add_continue_blockcommand ("DISPLAY");  
+printc("}\n}\n");
+printcomment("/* end display */\n");
+//printc("}");
+pop_blockcommand("DISPLAY");
+}
+;
+
+
+display_attr	:	opt_attributes {sprintf($<str>$,"0x%lx",atol($<str>1));}
+		;
+
+disp_rest : | disp_field_commands END_DISPLAY;
+
+
+
+disp_field_commands : disp_field_command | disp_field_commands disp_field_command;
+
+disp_field_command :  
+	AFTROW {printcomment("/* after row */ \n");printc("if (AFT_ROW) {\n");} commands {printc("}\n");}
+	| BEFROW {printcomment("/* before row */");printc("if (BEF_ROW) \n{\n");} commands {printc("}\n");}
+	| on_key_command {printcomment("/* on key */ \n ");printc("ON_KEY(\"%s\") {\n",$<str>1);} commands {printc("}\n");}
+;
+
+

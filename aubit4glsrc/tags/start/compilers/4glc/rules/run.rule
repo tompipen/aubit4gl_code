@@ -1,0 +1,5 @@
+run_cmd : RUN fgl_expr {printc("system_run(0);");} | RUN fgl_expr RETURNING variable {printc("system_run(1);pop_var(&%s,%d);\n",$<str>4,scan_variable($<str>4));} | 
+RUN fgl_expr WITHOUT_WAITING {printc("system_run(2);");}
+;
+
+

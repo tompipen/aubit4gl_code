@@ -1,0 +1,100 @@
+menu_cmd	:	MENU {
+   	menu_cnt=npush_menu();
+   	menu_cmd_cnt[menu_cnt]=1;
+   	push_blockcommand("MENU");
+   	printc("{void *m;\n\nint cmd_no=-1;\n");
+   	printc("while (cmd_no!=-3) {\n switch(cmd_no)  {\n");
+	} 
+	menu_title menu_commands end_menu_command;
+
+end_menu_command  : END_MENU {
+   printc("\n}");
+   printcomment(" /*end switch */\n");
+   printc("if (cmd_no==-1) {\n");
+   print_menu(menu_cnt);
+   printc("}\n");
+   add_continue_blockcommand ("MENU");
+   printc("cmd_no=menu_loop(m);\n}free_menu(m);\n");
+   printcomment("/* end cwhile */\n");
+   printcomment("/* end menu */\n \n");
+   printc("}\n");
+   pop_blockcommand("MENU");
+   pop_menu();
+}
+;
+
+menu_block_command : 
+	BEFORE_MENU 
+		{ printcomment("/* Block%d_m2 (Before menu) */",menu_cnt);
+                  printc(" case -2: \n"); 
+                  }  
+	commands {printc("break;\n");}
+| COMMAND 
+        opt_key 
+        menu_opt_name 
+        menu_optional_desc 
+	opt_help_no
+		{
+debug("Menu=%d menu cnt=%d",menu_cnt,menu_cmd_cnt[menu_cnt]);
+		push_command(menu_cnt,menu_cmd_cnt[menu_cnt],$<str>2,$<str>3,$<str>4,$<str>5);
+		printcomment("/* Block%d_%d */",menu_cnt,menu_cmd_cnt[menu_cnt]-1);
+                printc("case %d : /* Menu %d */\n   ", menu_cmd_cnt[menu_cnt]-1,menu_cnt);
+		menu_cmd_cnt[menu_cnt]++;
+		} 
+	commands {printc("break;\n");}
+| COMMAND 
+        opt_key 
+		{
+		push_command(menu_cnt,menu_cmd_cnt[menu_cnt],$<str>2,"\"\"","\"\"",0);
+		printc("/* Block%d_%d */\ncase %d :\n   ",
+			menu_cnt,menu_cmd_cnt[menu_cnt]-1,menu_cmd_cnt[menu_cnt]-1);
+		menu_cmd_cnt[menu_cnt]++;
+		} 
+	commands {printc("break;\n");}
+;
+
+menu_commands : menu_block_command | menu_commands menu_block_command;
+
+opt_key	:	{strcpy($<str>$,"\"EMPTY\"");}
+	|	key_val {sprintf($<str>$,"\"%s\"",$<str>1);};
+
+menu_opt_name	:	CHAR_VALUE {strcpy($<str>$,$<str>1); }
+| variable {strcpy($<str>$,$<str>1);}
+;
+
+menu_optional_desc	:      {strcpy($<str>$,"\"\"");}
+                        | variable {strcpy($<str>$,$<str>1);}
+                        | CHAR_VALUE {strcpy($<str>$,$<str>1);};
+
+next_option_cmd : NEXT_OPTION opt_name {
+printc("next_option(m,%s);\n",$<str>2);
+}
+;
+
+show_option_cmd : SHOW_OPTION opt_name_list {
+printc("menu_show(m,%s,0);\n",$<str>2);}
+;
+
+hide_option_cmd : HIDE_OPTION opt_name_list {
+printc("menu_hide(m,%s,0);\n",$<str>2);
+}
+;
+
+opt_name	:	 
+ALL 
+{sprintf($<str>$,"MENU_ALL");}
+| CHAR_VALUE 
+| variable 
+;
+
+opt_name_list	:	opt_name
+		| 	opt_name_list COMMA opt_name 
+			{sprintf($<str>$,"%s,%s",$<str>1,$<str>3);};
+
+menu_title 	:	variable {strcpy($<str>$,$<str>1);  
+push_menu_title($<str>$);} | 
+                        CHAR_VALUE{strcpy($<str>$,$<str>1); 
+push_menu_title($<str>$);} 
+;
+
+

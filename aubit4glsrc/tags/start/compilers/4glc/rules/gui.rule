@@ -1,0 +1,79 @@
+
+check_menu_cmd : CHECK_MENUITEM menu_item_list
+{printc("check_menuitems(%s,0);\n",$<str>2);}
+;
+
+menu_item_list:
+        menu_item | menu_item_list COMMA menu_item
+                {sprintf($<str>$,"%s,%s",$<str>1,$<str>3);}
+;
+
+menu_item:  identifier {
+        sprintf($<str>$,"\"%s\"",$<str>1);
+}
+;
+
+uncheck_menu_cmd : UNCHECK_MENUITEM menu_item_list
+{printc("uncheck_menuitems(%s,0);\n",$<str>2);}
+;
+
+disable_cmd : DISABLE_MENUITEMS menu_item_list
+{printc("endis_menuitems(0,%s,0);\n",$<str>2);}
+        | DISABLE fld_list
+{printc("endis_fields(0,%s,0);\n",$<str>2);}
+        | DISABLE_FORM form_name KWFIELD fld_list
+{printc("endis_form(0,%s,%s,0);\n",$<str>2,$<str>4);}
+;
+
+enable_cmd : ENABLE_MENUITEMS menu_item_list
+{printc("endis_menuitems(1,%s,0);\n",$<str>2);}
+        | ENABLE fld_list
+{printc("endis_fields(1,%s,0);\n",$<str>2);}
+        | ENABLE_FORM form_name KWFIELD fld_list
+{printc("endis_form(1,%s,%s,0);\n",$<str>2,$<str>4);}
+;
+
+msg_box_cmd : MESSAGEBOX fgl_expr_list
+        op_caption
+        op_icon
+        op_buttons
+        op_disable_msg
+        op_returning_msg
+;
+
+op_disable_msg :
+| DISABLE_PROGRAM | DISABLE_ALL
+;
+
+op_returning_msg :
+        | RETURNING variable
+;
+
+op_caption : | CAPTION fgl_expr_list ;
+
+op_icon : | ICON fgl_expr ;
+
+op_buttons : | BUTTONS but_list op_def_but;
+
+op_def_but : DEFAULT but_val;
+
+but_list :
+        BUTTONS_OK
+| BUTTONS_OK_CANCEL
+| BUTTONS_RETRY_CANCEL
+| BUTTONS_ABORT_RETRY_IGNORE
+| BUTTONS_YES_NO
+| BUTTONS_YES_NO_CANCEL
+;
+but_val :
+        BUTTON_OK
+        | BUTTON_CANCEL
+        | BUTTON_ABORT
+        | BUTTON_RETRY
+        | BUTTON_IGNORE
+        | BUTTON_YES
+        | BUTTON_NO
+;
+
+
+

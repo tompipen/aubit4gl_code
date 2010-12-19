@@ -1,0 +1,55 @@
+#!/bin/sh
+
+############################################################
+#
+#   Aubit 4gl compiler - make system
+#genmake - utillity script to create Aubit-style makefiles
+#from typical existing 4gl makefiles
+#
+############################################################
+
+#you are not supposed to run this script mannualy; it will be called from
+#makefiles created with "prepmake" script.
+
+FILENAME=$1.mk
+
+	echo include header.mki > $FILENAME
+	echo >> $FILENAME
+    #echo "#-------------------------------------" >> $FILENAME
+	#echo >> $FILENAME
+	echo "PROG		= $1"  >> $FILENAME
+	echo >> $FILENAME
+	echo "GLOBALS.4gl	= $2" >> $FILENAME
+	echo >> $FILENAME
+	echo 'FILES.4gl	= \' >> $FILENAME
+	echo '		${GLOBALS.4gl} \' >> $FILENAME
+	###########
+	for a in $@
+    ###########
+	do
+        if ! [ "$1" = $a ]
+        then
+	        if ! [ "$2" = $a ]
+            then
+                echo "		$a \\" >> $FILENAME
+            fi
+        fi
+    ####
+	done
+    ####
+
+	echo >> $FILENAME
+	echo 'FILES.per	= ${ALLFORMS.per}' >> $FILENAME
+	echo >> $FILENAME
+    #echo "#-------------------------------------" >> $FILENAME
+	#echo >> $FILENAME
+	echo include footer.mki >> $FILENAME
+	echo >> $FILENAME
+	echo
+
+
+
+
+ 
+
+

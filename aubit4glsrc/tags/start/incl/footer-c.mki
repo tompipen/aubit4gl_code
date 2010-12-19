@@ -1,0 +1,243 @@
+# @(#)$Id: footer-c.mki,v 1.1.1.1 2001-08-20 02:36:00 afalout Exp $
+# Product: Aubit 4gl IDE $
+# Based on "INFORMIX D4GL Programmer's Environment Version 2.00.UC2"
+# FIXME: add Querix compiler GUI and Oracle targets
+#
+# This is include file thate defines targets for all 4gl compiler types.
+# Note that this file don't define any source files; they should all
+# be defined in Makefile that includes this file.
+#
+# Under normal circumstances, you should not need to edit this file
+
+
+## ------------------------------------------------------------------
+##         Compiler-specific source file extensions assignment
+## ------------------------------------------------------------------
+
+DBASE.sch = ${DBASE}.sch
+
+FILES.sh  = ${FILES}.sh
+FILES.4ge = ${FILES:=.4ge}
+FILES.4ae = ${FILES:=.4ae}
+FILES.4qe = ${FILES:=.4qe}
+FILES.o   = ${FILES.4gl:.4gl=.o} ${CFILE1.c:.c=.o}
+FILES.ao   = ${FILES.4gl:.4gl=.ao} ${FILES.aubit.4gl:.4gl=.ao}
+FILES.qo   = ${FILES.4gl:.4gl=.qo} ${CFILE1.c:.c=.qo}
+FILES.4ec = ${FILES.4gl:.4gl=.4ec}
+FILES.ec  = ${FILES.4gl:.4gl=.ec}
+FILES.c   = ${FILES.4gl:.4gl=.c}
+FILES.4ge = ${FILES}.4ge
+FILES.iem = ${FILES.msg:.msg=.iem}
+FILES.hlp = ${FILES.msg:.msg=.hlp}
+FILES.qms = ${FILES.msg:.msg=.qms}
+FILES.4gi = ${FILES.4ge:.4ge=.4gi}
+FILES.4go = ${FILES.4gl:.4gl=.4go}
+CFILE3.o  = ${CFILE3.c:.c=.o}
+ICFILES.c = ${CFILE1.c}
+DCFILES.c = ${CFILE3.c} ${CFILE2.c}
+ICFILES.o = ${ICFILES.c:.c=.o}
+DCFILES.o = ${DCFILES.c:.c=.o}
+FGIUSR.o  = ${FGIUSR.c:.c=.o}
+FGLEXT.o  = ${FGLEXT.c:.c=.o}
+
+FILES.afr = ${FILES.per:.per=.afr}
+FILES.pic = ${FILES.per:.per=.pic}
+FILES.frm = ${FILES.per:.per=.frm}
+FILES.42f = ${FILES.per:.per=.42f}
+
+#Aubit makes .c when compiling forms:
+ADDITIONAL_CLEAN1 = ${FILES.afr:.afr=.c}
+
+FILES.42c = ${FILES.4gl:.4gl=.42c}
+FILES.42g = ${FILES.4gl:.4gl=.42g}
+FILES.42e = ${FILES.4ge:.4ge=.42e}
+FILES.42m = ${FILES.4gl:.4gl=.42m}
+FILES.42o = ${FILES.4gl:.4gl=.42o}
+FILES.42r = ${FILES.4ge:.4ge=.42r}
+FILES.42h = ${FILES.msg:.msg=.42h}
+
+## ------------------------------------------------------------------
+##                       Command definitions
+## ------------------------------------------------------------------
+
+LN            = ln
+CC            = gcc
+RM            = rm -f
+CFGLGO_CMD    = cfglgo
+FGLRUN    	  = fglrun
+FGLGO         = fglgo
+CFGLGO        = ${I4GL_CC_ENV} ${CFGLGO_CMD}
+D4GL_RC_FLAGS = -DFOURJS -I${FGLDIR}/include
+I4GL_CC_ENV   = INFORMIXC="${CC} -fwritable-strings"
+INSTALL_CMD   = install
+INSTALL       = ${INSTALL_CMD} -c -o ${D4GL_USR} -g ${D4GL_GRP}
+MKPATH        = mkdir -p
+CFLAGS        = -O -I${INFORMIXDIR}/incl/tools -I${QUERIXDIR}/incl -I${AUBITDIR}/incl
+
+
+## ------------------------------------------------------------------
+##                       Main Targets
+## ------------------------------------------------------------------
+
+default: aubit
+
+all:	d4gl-pcode d4gl-ccode i4gl-pcode i4gl-ccode aubit querix
+
+aubit:				  ${FILES} ${FILES.4ae} ${FILES.afr} ${FILES.hlp}
+querix:				  ${FILES} ${FILES.4qe} ${FILES.pic} ${FILES.qms}
+d4gl-pcode: ${FGLRUN} ${FILES} ${FILES.42r} ${FILES.42f} ${FILES.42h}
+d4gl-ccode:	          ${FILES} ${FILES.42e} ${FILES.42f} ${FILES.42h}
+i4gl-ccode:	          ${FILES} ${FILES.4ge} ${FILES.frm} ${FILES.iem}
+i4gl-pcode:           ${FILES} ${FILES.4gi} ${FILES.frm} ${FILES.iem} ${FGLGO}
+
+log:
+	@echo "make default is logging to make.log..."
+	@make default > make.log 2>&1
+	@echo "Finished, make log is in make.log"
+
+help:
+	@echo "Targets:"
+	@echo "	aubit (default)"
+	@echo "	querix"
+	@echo "	d4gl-ccode"
+	@echo "	i4gl-pcode"
+	@echo "	i4gl-ccode"
+	@echo "	d4gl-pcode"
+	@echo "	all (all above)"
+	@echo "	install"
+	@echo "	clean"
+	@echo "	log"
+
+## ------------------------------------------------------------------
+##                       Sub Targets
+## ------------------------------------------------------------------
+
+${FILES}:	d4gl.sh
+	${RM} $@
+#	sed -e "s%:D4GL_DIR:%${D4GL_DIR}%g" $? > $@
+	sed -e "s%:D4GL_DIR:%${D4GL_D4GL}%g" $? > $@
+	chmod a+x $@
+
+${CFILE3.c}:	${CFILE1.c}
+	${RM} $@
+	${LN} $? $@
+
+${CFILE3.o}:	${CFILE3.c}
+	${CC} ${CFLAGS} ${D4GL_RC_FLAGS} -c $?
+
+${FILES.42e}:	${DBASE.sch} ${FILES.42o} ${DCFILES.o}
+	${D4GL_CC} ${D4GL_CC_FLAGS} -o $@ ${FILES.42o} ${DCFILES.o} ${LDFLAGS}
+
+${FILES.42r}:	${DBASE.sch} ${FGLRUN} ${FILES.42m}
+	FGLRUN=./${FGLRUN} ${D4GL_PC} ${D4GL_PC_FLAGS} -o $@ ${FILES.42m}
+
+${FGLRUN}:	${DCFILES.c} ${FGLEXT.c}
+	${D4GL_RC} ${D4GL_RC_FLAGS} -o $@ ${DCFILES.c} ${FGLEXT.c}
+
+${FILES.4ge}:	${FILES.o} ${LIBS.a}
+	${I4GL_CC} -o $@ ${FILES.o} ${I4GL_CC_LDFLAGS}
+
+${FILES.4ae}:	${FILES.ao} ${LIBS.a}
+	${A4GL_CC} -o $@ ${FILES.ao} ${A4GL_CC_LDFLAGS}
+
+${FILES.4qe}:	${FILES.qo} ${LIBS.a}
+	${Q4GL_CL} -o $@ ${FILES.qo} ${QX_LIBS} ${Q4GL_CC_LDFLAGS}
+
+${FILES.4gi}:	${FILES.4go}
+	${I4GL_PL} -o $@ ${FILES.4go}
+
+${FGLGO}:	${ICFILES.c} ${FGIUSR.c}
+	${CFGLGO} -o $@ ${ICFILES.c} ${FGIUSR.c}
+
+# Object file dependencies
+${FILES.o}:     ${GLOBALS.4gl}
+${FILES.ao}:    ${GLOBALS.4gl}
+${FILES.qo}:    ${GLOBALS.4gl}
+${FILES.4go}:   ${GLOBALS.4gl}
+${FILES.42o}:   ${GLOBALS.4gl}
+${FILES.42m}:   ${GLOBALS.4gl}
+
+## ------------------------------------------------------------------
+##                       Install Targets
+## ------------------------------------------------------------------
+
+install:
+	@echo "To install, specify one (or more) of these targets:"
+	@echo "	install.all"
+	@echo "	install.aubit"
+	@echo "	install.querix"
+	@echo "	install.d4gl-pcode"
+	@echo "	install.d4gl-ccode"
+	@echo "	install.i4gl-pcode"
+	@echo "	install.i4gl-ccode"
+
+install.all: install.aubit install.querix install.d4gl-ccode install.d4gl-pcode install.i4gl-ccode install.i4gl-pcode
+
+install.aubit:  aubit
+	${MKPATH} ${D4GL_BIN} ${D4GL_D4GL}
+	${INSTALL} -m 755    ${FILES}     ${D4GL_BIN}
+	${INSTALL} -m 755 -s ${FILES.4ae} ${D4GL_D4GL}
+#FIXME: it should be like this:
+#	${INSTALL} -m 644    ${FILES.afr} ${D4GL_D4GL}
+	${INSTALL} -m 644    ${FILES.frm} ${D4GL_D4GL}
+	${INSTALL} -m 644    ${FILES.iem} ${D4GL_D4GL}
+
+install.querix:  querix
+	${MKPATH} ${D4GL_BIN} ${D4GL_D4GL}
+	${INSTALL} -m 755    ${FILES}     ${D4GL_BIN}
+	${INSTALL} -m 755 -s ${FILES.4ge} ${D4GL_D4GL}
+	${INSTALL} -m 644    ${FILE1.pic} ${D4GL_D4GL}
+	${INSTALL} -m 644    ${FILE2.pic} ${D4GL_D4GL}
+	${INSTALL} -m 644    ${FILES.iem} ${D4GL_D4GL}
+
+install.i4gl-ccode:	i4gl-ccode
+	${MKPATH} ${D4GL_BIN} ${D4GL_D4GL}
+	${INSTALL} -m 755    ${FILES}     ${D4GL_BIN}
+	${INSTALL} -m 755 -s ${FILES.4ge} ${D4GL_D4GL}
+	${INSTALL} -m 644    ${FILE1.frm} ${D4GL_D4GL}
+	${INSTALL} -m 644    ${FILE2.frm} ${D4GL_D4GL}
+	${INSTALL} -m 644    ${FILES.iem} ${D4GL_D4GL}
+
+install.i4gl-pcode:	i4gl-pcode
+	${MKPATH} ${D4GL_BIN} ${D4GL_D4GL}
+	${INSTALL} -m 755    ${FILES}     ${D4GL_BIN}
+	${INSTALL} -m 755 -s ${FGLGO}     ${D4GL_D4GL}
+	${INSTALL} -m 755    ${FILES.4gi} ${D4GL_D4GL}
+	${INSTALL} -m 644    ${FILE1.frm} ${D4GL_D4GL}
+	${INSTALL} -m 644    ${FILE2.frm} ${D4GL_D4GL}
+	${INSTALL} -m 644    ${FILES.iem} ${D4GL_D4GL}
+
+install.d4gl-ccode:	d4gl-ccode
+	${MKPATH} ${D4GL_BIN} ${D4GL_D4GL}
+	${INSTALL} -m 755    ${FILES}     ${D4GL_BIN}
+	${INSTALL} -m 755 -s ${FILES.42e} ${D4GL_D4GL}
+	${INSTALL} -m 644    ${FILE1.42f} ${D4GL_D4GL}
+	${INSTALL} -m 644    ${FILE2.42f} ${D4GL_D4GL}
+	${INSTALL} -m 644    ${FILES.42h} ${D4GL_D4GL}
+
+install.d4gl-pcode:	d4gl-pcode
+	${MKPATH} ${D4GL_BIN} ${D4GL_D4GL}
+	${INSTALL} -m 755    ${FILES}     ${D4GL_BIN}
+	${INSTALL} -m 755 -s ${FGLRUN}    ${D4GL_D4GL}
+	${INSTALL} -m 755    ${FILES.42r} ${D4GL_D4GL}
+	@for file in ${FILES.42m}; do (set -x; ${INSTALL} -m 644 $$file ${D4GL_D4GL} ) done
+	${INSTALL} -m 644    ${FILE1.42f} ${D4GL_D4GL}
+	${INSTALL} -m 644    ${FILE2.42f} ${D4GL_D4GL}
+	${INSTALL} -m 644    ${FILES.42h} ${D4GL_D4GL}
+
+## ------------------------------------------------------------------
+##                       Clean Targets
+## ------------------------------------------------------------------
+
+clean:
+	${RM} ${FILES.frm} ${FILES} ${FILES.4ge} ${FILES.o} ${FILES.iem}
+	${RM} ${FILES.4ec} ${FILES.ec} ${FILES.c}
+	${RM} ${FILES.42e} ${FILES.42r} ${FILES.42m} ${FILES.42c} ${FILES.42o}
+	${RM} ${DCFILES.o} ${FGLEXT.o} ${FILES.42f} ${FILES.42g}
+	${RM} ${FILES.4go} ${FILES.4gi}
+	${RM} ${FGLRUN} ${FGLGO} ${FILES.42h} ${CFILE3.c} ${CFILE3.o}
+	${RM} $(A4GL_CLEAN_FLAGS) ${ADDITIONAL_CLEAN} ${ADDITIONAL_CLEAN1}
+	${RM} $(Q4GL_CLEAN_FLAGS) *.tmp ${FILES.aubit.4gl:.4gl=.c}
+#---------------------------- EOF -----------------------------------
+
+

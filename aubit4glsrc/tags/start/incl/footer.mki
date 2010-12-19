@@ -1,0 +1,87 @@
+#########################
+#footer for all .mk files
+#########################
+
+#do not put ANY hard coded names here!!!!!
+
+
+DBASE.sch = ${FGLDBPATH}/${DBASE}.sch
+PROG.42r  = ${PROG}.42r
+PROG.42e  = ${PROG}.42e
+PROG.4ge  = ${PROG}.4ge
+PROG.4gi  = ${PROG}.4gi
+PROG.4ae  = ${PROG}.4ae
+
+FILES.42m = ${FILES.4gl:.4gl=.42m}
+FILES.42f = ${FILES.per:.per=.42f}
+FILES.42h = ${FILES.msg:.msg=.42h}
+FILES.4go = ${FILES.4gl:.4gl=.4go}
+FILES.frm = ${FILES.per:.per=.frm}
+FILES.iem = ${FILES.msg:.msg=.iem}
+FILES.ao = ${FILES.4gl:.4gl=.ao}
+FILES.afr = ${FILES.per:.per=.afr}
+FILES.hlp = ${FILES.msg:.msg=.hlp}
+
+
+DEBRIS.prog = ${PROG.42r} ${PROG.42e} ${PROG.4ge} ${PROG.4gi} ${PROG.4ae}
+DEBRIS.d4gl = ${FILES.42m} ${FILES.42f} ${FILES.42h}
+DEBRIS.i4gl = ${FILES.4go} ${FILES.frm} ${FILES.iem}
+DEBRIS.aubit = ${FILES.ao} ${FILES.afr} ${FILES.hlp} ${FILES.4gl:.4gl=.c} ${FILES.4gl:.4gl=.h} ${FILES.per:.per=.c} ${GLOBALS.4gl:.4gl=.glb}
+
+default:	d4gl-pcode
+#	@echo "To compile with the Dynamic 4GL p-code compiler, make d4gl-pcode"
+#	@echo "To compile with the Dynamic 4GL c-code compiler, make d4gl-ccode"
+#	@echo "To compile with the Classic 4GL p-code compiler, make i4gl-pcode"
+#	@echo "To compile with the Classic 4GL c-code compiler, make i4gl-ccode"
+
+all:	d4gl-pcode d4gl-ccode i4gl-pcode i4gl-ccode
+
+${DBASE.sch}:
+#	@echo ${D4GL_SC} ${D4GL_SC_FLAGS} ${DBASE} ${DBASE.sch}
+	${D4GL_SC} ${D4GL_SC_FLAGS} ${DBASE}
+
+clean:
+	${RM} ${DEBRIS.prog}
+	${RM} ${DEBRIS.i4gl}
+	${RM} ${DEBRIS.d4gl}
+	${RM} ${DEBRIS.aubit}
+
+aubit	  :	${PROG.4ae} ${FILES.afr} ${FILES.hlp}
+d4gl-pcode:	${PROG.42r} ${FILES.42f} ${FILES.42h}
+d4gl-ccode:	${PROG.42e} ${FILES.42f} ${FILES.42h}
+i4gl-pcode:	${PROG.4gi} ${FILES.frm} ${FILES.iem}
+i4gl-ccode:	${PROG.4ge} ${FILES.frm} ${FILES.iem}
+
+aubitforms: ${FILES.afr}
+
+${PROG.42r}:	${DBASE.sch} ${FILES.42m}
+#	${D4GL_PL} -o $@ ${FILES.42m} ${D4GL_PL_LDFLAGS}
+#using VPATH:
+	${D4GL_PL} -o $@ $^ ${D4GL_PL_LDFLAGS}
+
+${PROG.4ae}:	${FILES.ao}
+	${A4GL_CC} -o $@ $^ ${A4GL_CC_LDFLAGS}
+
+${PROG.42e}:	${DBASE.sch} ${FILES.42o}
+	${D4GL_CL} -o $@ ${FILES.42o} ${D4GL_CL_LDFLAGS}
+
+${PROG.4gi}:	${FILES.4go}
+	${I4GL_PL} -o $@ ${FILES.4go} ${I4GL_PL_LDFLAGS}
+
+${PROG.4ge}:	${FILES.o}
+	${I4GL_CC} -o $@ ${FILES.o}   ${I4GL_CC_LDFLAGS}
+
+# Object file dependencies
+${FILES.42m}:	${GLOBALS.4gl}
+${FILES.42o}:	${GLOBALS.4gl}
+${FILES.4go}:	${GLOBALS.4gl}
+${FILES.o}:		${GLOBALS.4gl}
+
+
+install: ${FILES.42m} ${PROG.42r} ${FILES.42f} ${FILES.42h}
+	mv ${FILES.42m} ${PROG.42r} ${MAXDIR}/gprog
+	-mv ${FILES.42h} ${MAXDIR}/gprog
+	-mv ${FILES.42f} ${MAXDIR}/gform
+
+
+#------------------------ EOF ------------------------------

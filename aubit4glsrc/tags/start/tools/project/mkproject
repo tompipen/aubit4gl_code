@@ -1,0 +1,62 @@
+#!/bin/sh
+#set -x
+
+#cd $HOME
+
+build=`cat project/build`
+build=`expr $build + 1`
+echo $build > project/build
+version=`cat project/version`
+
+cd lib
+
+echo "
+
+/******************************************************************************
+* (c) 1997-1998 Aubit Computing Ltd.
+*               project definition - automatically generated - do not modify 
+*
+* \$Id\$
+*
+* Project : Part Of Aubit 4GL Library Functions
+*
+* Change History :
+*	\$Log\$
+*
+*******************************************************************************/
+
+int internal_build() {
+	return $build;
+}
+
+char *internal_version() {
+	return \"$version\";
+}
+
+
+" > generated/project.c
+
+#grep "\$Id" *.c | nawk '
+grep "\$Id" *.c | awk '
+BEGIN {
+print "struct s_ver_modules { char module[32]; char id[132];} internal_versions[]={"
+}
+{
+mname=substr($0,1,index($0,":")-1)
+
+id=substr($0,index($0,"Id"));
+if (id!="Id$") printf("{\"%s\",\"%s\"},\n",mname,id);
+}
+END {
+print "{\"\",0}"
+print "};"
+
+print "set_version(int a,char *m,char *id) {"
+print "strcpy(m,internal_versions[a].module);"
+print "strcpy(id,internal_versions[a].id);"
+print "}"
+}
+' >> project.c
+
+
+

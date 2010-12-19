@@ -1,0 +1,21 @@
+################################################################################
+# states file
+# default = called at beginning
+#
+#           * Only need to enable and disable single word definitions *
+#
+################################################################################
+
+
+attribute:
+RED CYAN MAGENTA BLUE GREEN WHITE BLACK YELLOW BOLD DIM REVERSE BORDER
+
+keymode:
+FKEY CTRL_KEY SINGLE_KEY DOWN UP LEFT RIGHT  TAB
+
+#message: CAPTION
+
+#skip:
+#KWLINE
+
+

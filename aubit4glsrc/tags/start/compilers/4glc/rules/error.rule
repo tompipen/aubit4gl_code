@@ -1,0 +1,8 @@
+error_cmd	: ERROR reset_cnt fgl_expr_concat opt_attributes 
+			{ printc("display_error(%s,0);\n",$<str>4);}
+	| ERROR reset_cnt fgl_expr_concat opt_attributes  WAIT_FOR_KEY
+			{ printc("display_error(%s,1);\n",$<str>4);}
+;
+
+
+

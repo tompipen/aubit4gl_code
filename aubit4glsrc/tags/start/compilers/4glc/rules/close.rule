@@ -1,0 +1,10 @@
+close_cmd	:	CLOSE_FORM form_name { printc("close_form(%s);\n",$<str>2); }
+		|	CLOSE_WINDOW win_name {printc("remove_window(%s);\n",$<str>2);}
+		|	CLOSE_DATABASE {printc("close_database();\n");}
+		|	CLOSE_SESSION conn_id {printc("close_session(%s);\n",$<str>2);}
+		|	CLOSE fetch_cursor_name { printc("close_cursor(%s);\n",$<str>2); }
+
+;
+
+
+

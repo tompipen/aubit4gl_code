@@ -1,0 +1,31 @@
+arr_expr : 
+OPEN_BRACKET arr_expr CLOSE_BRACKET  {sprintf($<str>$,"(%s)",$<str>2);}
+| arr_expr arr_next {sprintf($<str>$,"%s %s",$<str>1,$<str>2);}
+| INT_VALUE {sprintf($<str>$,"%s",$<str>1);}
+| arr_int_sign INT_VALUE {sprintf($<str>$,"(%s%s)",$<str>1,$<str>2);}
+| variable {
+  int a;
+  a=scan_variable($<str>1);
+  if (a!=1&&a!=2) {
+    yyerror("Only INTEGER/SMALLINT variables may be used as subscripts");
+    YYERROR;
+    /* error processing */;
+  }
+  sprintf($<str>$,"%s",$<str>1);
+}
+;
+
+
+arr_next:
+PLUS arr_expr {sprintf($<str>$,"+ %s",$<str>2);} 
+| MINUS arr_expr {sprintf($<str>$,"- %s",$<str>2);}
+| MULTIPLY arr_expr {sprintf($<str>$,"* %s",$<str>2);}
+| DIVIDE  arr_expr {sprintf($<str>$,"/ %s",$<str>2);}
+| MOD arr_expr {sprintf($<str>$,"%% %s",$<str>2);}
+;
+
+arr_int_sign	: PLUS {strcpy($<str>$,"+");}
+		| MINUS {strcpy($<str>$,"-");}
+;
+
+

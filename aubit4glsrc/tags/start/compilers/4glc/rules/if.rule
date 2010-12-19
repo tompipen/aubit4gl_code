@@ -1,0 +1,13 @@
+if_cmd	: 
+	IF 
+	fgl_expr 
+	THEN  {printc("if (pop_bool()) {\n");}
+		commands
+	op_else
+	END_IF {printc("} /* END OF IF */\n");}
+;
+
+op_else : | ELSE {printc("} else {\n");} commands ;
+
+
+

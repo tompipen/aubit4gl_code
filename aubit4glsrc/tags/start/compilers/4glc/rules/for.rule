@@ -1,0 +1,20 @@
+for_cmd	:	FOR variable EQUAL fgl_expr TO fgl_expr for_step 
+{
+printc("\n{int _s,_e,_step;\n_step=pop_int();_e=pop_int();_s=pop_int();\n");
+printc("for (%s=_s;%s<=_e;%s+=_step) {\n",$<str>2,$<str>2,$<str>2);
+push_blockcommand("FOR");
+}
+commands {debug("For_cmds\n");} 
+
+END FOR {
+
+pop_blockcommand("FOR");
+printc("}\n");
+printcomment(" /*END FOR*/\n");}
+;
+
+for_step :	{printc("push_int(1);\n");}
+	|	STEP fgl_expr
+;
+
+

@@ -1,0 +1,43 @@
+awk '
+BEGIN {
+errcnt=1;
+FS="|"
+
+while (getline < "data/errs") {
+if($0=="") break;
+errno=$1
+if (errno>errcnt) errcnt=errno+1
+errmsg=$2
+errors[errmsg]=errno
+}
+
+FS="|"
+close("data/errs")
+
+print "static struct s_err {"
+	print "char *errmsg;"
+	print "int errno;"
+        print "} errors[]={"
+}
+
+/IGNOREEXITWITH/ {next}
+/exitwith/ {
+b=substr($0,index($0,":")-1)
+a=substr($0,index($0,"exitwith")+9)
+a=substr(a,index(a,"\"")+1)
+a=substr(a,1,index(a,"\"")-1)
+errno=errors[a]
+if (errno==0&&done[a]==0) errno=errcnt++
+if (done[a]==0) {
+print "{\"" a "\"," errno " },"
+done[a]=1
+print errno "|" a > "generated/errdefs"
+}
+}
+END {
+print "{0,0}"
+print "};"
+}
+' *.c > generated/tmperrs.h
+
+

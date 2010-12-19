@@ -1,0 +1,105 @@
+
+formhandler_def :
+        FORMHANDLER identifier {
+        printc("void hnd_e_%s(GtkWidget *widget,GdkEvent *event,gpointer data) {\n",$<str>2);
+        printc("  hnd_%s(widget,1,event,data);\n",$<str>2);
+        printc("}\n");
+        printc("int hnd_c_%s(GtkWidget *widget,gpointer data) {\n",$<str>2);
+        printc("  return hnd_%s(widget,0,0,data);\n",$<str>2);
+        printc("}\n");
+        printc("int hnd_%s (GtkWidget *widget, int isevent,GdkEvent *event,gpointer data) {\n",$<str>2);
+        }
+        define_section
+        op_bef_ev_list
+        op_input_section
+        op_aft_ev_list
+        END_FORMHANDLER {printc("}\n");}
+;
+
+op_input_section : | input_section;
+
+op_bef_ev_list :
+        | bef_ev_list
+;
+
+bef_ev_list :
+        bef_ev | bef_ev_list bef_ev
+;
+
+bef_ev :
+        BEFORE_EVENT {
+                printc("if (BEFORE_EVENT) {\n");
+        }  commands {
+                printc("}\n");
+        }
+        | BEFORE_OPEN_FORM {
+                printc("if (BEFORE_OPEN_FORM) {\n");
+        } commands {
+                printc("}\n");
+        }
+;
+
+op_aft_ev_list :
+        | aft_ev_list
+;
+
+aft_ev_list :
+        aft_ev | aft_ev_list aft_ev
+;
+
+aft_ev :
+         AFTER_EVENT {
+                printc("if (AFTER_EVENT) {\n");
+        }  commands {
+                printc("}\n");
+        }
+        | BEFORE_CLOSE_FORM {
+                printc("if (BEFORE_CLOSE_FORM) {\n");
+        } commands {
+                printc("}\n");
+        }
+;
+
+
+input_section : input_sub_section field_ops END_INPUT
+;
+
+input_sub_section :
+        INPUT
+        | INPUT in_variable_list FROM in_id_list
+        | INPUT BY_NAME in_bn_variable_list
+;
+
+
+in_variable_list :
+        variable | in_variable_list COMMA variable
+;
+
+in_id_list : identifier | in_id_list COMMA identifier
+;
+
+in_bn_variable_list :
+        variable | in_bn_variable_list COMMA variable
+;
+
+field_ops :
+        field_op | field_ops field_op
+;
+
+field_op :
+        BEFORE_ANY { printc("if (BEFORE_ANY) {\n"); } commands {
+printc("}\n");
+}
+        | AFTER_ANY { printc("if (AFTER_ANY) {\n"); } commands {
+printc("}\n");
+}
+        | BEFORE in_id_list { printc("if (BEFORE_FIELD(%s)) {\n",$<str>2); }
+commands { printc("}\n"); }
+        | AFTER in_id_list { printc("if (AFTER_FIELD(%s)) {\n",$<str>2); }
+commands { printc("}\n"); }
+        | ON in_id_list { printc("if (ON_FIELD(%s)) {\n",$<str>2); }
+commands { printc("}\n"); }
+
+;
+
+
