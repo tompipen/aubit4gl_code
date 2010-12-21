@@ -21266,7 +21266,7 @@ fi
 
 
 HAVE_LIBQRENCODE=0
-if test "$chk_qrencoder" != "no"
+if test "$chk_qrencoder" != "xno"
 then
 	{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for QRinput_new in -lqrencode" >&5
 $as_echo_n "checking for QRinput_new in -lqrencode... " >&6; }
@@ -21367,7 +21367,12 @@ fi
 		$as_echo "#define HAVE_LIBQRENCODE 1" >>confdefs.h
 
 		$as_echo "#define HAVE_LIBQRENCODE_ENCODEMASK 1" >>confdefs.h
+  else
+    HAVE_LIBQRENCODE=1
+		HAVE_LIBQRENCODE_ENCODEMASK=0
+		$as_echo "#define HAVE_LIBQRENCODE 1" >>confdefs.h
 
+		$as_echo "#define HAVE_LIBQRENCODE_ENCODEMASK 1" >>confdefs.h
 	 fi
 
 fi
@@ -38098,7 +38103,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure,v 1.464 2010-12-20 11:58:30 mikeaubury Exp $
+| $Id: configure,v 1.465 2010-12-21 15:52:40 mike-no Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X
