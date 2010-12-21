@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.26 2010-06-22 09:35:26 mikeaubury Exp $
+# $Id: Makefile.in,v 1.27 2010-12-21 11:03:18 mike-no Exp $
 #
 
 ROOT        =../..
@@ -35,6 +35,10 @@ include ${ROOT}/incl/Makefile-common
 ##                              Options
 ## ==================================================================
 
+ifneq "$HAVE_PDFLIB8"  "1" 
+  CC=g++
+endif
+  
 CFLAGS			+=-I${LIBROOT}/libincl -I${ROOT}/compilers/fcompile \
 				@PDFLIB_I_FLAGS@ @PDFLIB_L_FLAGS@
 
