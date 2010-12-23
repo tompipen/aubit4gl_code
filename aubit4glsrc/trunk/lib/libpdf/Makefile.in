@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.27 2010-12-21 11:03:18 mike-no Exp $
+# $Id: Makefile.in,v 1.28 2010-12-23 14:31:11 mikeaubury Exp $
 #
 
 ROOT        =../..
@@ -35,8 +35,10 @@ include ${ROOT}/incl/Makefile-common
 ##                              Options
 ## ==================================================================
 
-ifneq "$HAVE_PDFLIB8"  "1" 
-  CC=g++
+ifneq "${HAVE_PDFLIB8}"  "1" 
+  CC_GO=g++
+else
+  CC_GO=$(CC)
 endif
   
 CFLAGS			+=-I${LIBROOT}/libincl -I${ROOT}/compilers/fcompile \
@@ -58,7 +60,7 @@ else
 endif
 
 OBJECTS_NOPDF	=nopdf.o
-OBJECTS_PDF		=has_pdf.o ../liblogical/pdf/process/pdf_barcode.o
+OBJECTS_PDF		=has_pdf.go ../liblogical/pdf/process/pdf_barcode.go
 OBJECTS_HARU          =haru.o ../liblogical/pdf/process/pdf_barcode.o
 HARU_L_FLAGS=-L/usr/local/lib -lhpdf
 
@@ -67,6 +69,10 @@ HARU_L_FLAGS=-L/usr/local/lib -lhpdf
 ## ==================================================================
 
 all: ${ALL}
+
+
+%.go:%.c
+	$(CC_GO) $(CFLAGS) -c -o$@ $< 
 
 ${PLUGINDIR}/libEXREPORT_PDF${SO_EXT}: ${OBJECTS_PDF}
 #WARNING: On Windows libs must be et the end
