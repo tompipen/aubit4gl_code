@@ -1593,6 +1593,7 @@ INCLINES
 AIX_OBJECT_MODE
 YYDEBUG
 DEBUG_BISON
+HAVE_PDFLIB8
 HAVE_LIBQRENCODE
 XCURSES_LIBS
 XCURSES_CFLAGS
@@ -1963,6 +1964,7 @@ with_smtp
 with_zlib
 with_pdf
 with_qrencoder
+with_pdflib
 with_cint
 with_fourj
 with_hydra
@@ -2708,6 +2710,7 @@ Optional Packages:
   --with-pdf=DIR          Include PDF support.  DIR is the PDFlib
                           install directory, defaults to /usr/local.
 --with-qrencoder
+--with-pdflib
   --with-cint=DIR         Include CINT support.  DIR is the Cint base
                           install directory, defaults to /usr/local.
   --with-fourj=DIR        Include 4Js compiler support.  DIR is the 4Js base
@@ -19175,54 +19178,78 @@ if test "${with_mysql+set}" = set; then :
 			echo "CPPFLAGS=$CPPFLAGS"
 		fi
 
-		{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -lmysqlclient" >&5
-$as_echo_n "checking for main in -lmysqlclient... " >&6; }
-if ${ac_cv_lib_mysqlclient_main+:} false; then :
+		{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for mysql_stmt_close in shared version of -lmysqlclient" >&5
+$as_echo_n "checking for mysql_stmt_close in shared version of -lmysqlclient... " >&6; }
+if ${lt_ac_cv_shlib_mysqlclient_mysql_stmt_close+:} false; then :
   $as_echo_n "(cached) " >&6
 else
-  ac_check_lib_save_LIBS=$LIBS
+  lt_ac_check_shlib_save_LIBS=$LIBS
 LIBS="-lmysqlclient  $LIBS"
 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 
-
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char mysql_stmt_close ();
 int
 main ()
 {
-return main ();
+return mysql_stmt_close ();
   ;
   return 0;
 }
 _ACEOF
-if ac_fn_c_try_link "$LINENO"; then :
-  ac_cv_lib_mysqlclient_main=yes
+rm -rf $objdir
+rm -f conftest.$ac_objext conftest.la
+ac_ltcompile='./libtool --mode=compile $CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext -o conftest.lo >&5'
+ac_ltlink_la='./libtool --mode=link $CC -rpath `pwd` $CFLAGS $LDFLAGS -o libconftest.la conftest.lo $LIBS >&5'
+if { { eval echo "\"\$as_me\":${as_lineno-$LINENO}: \"$ac_ltcompile\""; } >&5
+  (eval $ac_ltcompile) 2>&5
+  ac_status=$?
+  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; } &&
+{ { eval echo "\"\$as_me\":${as_lineno-$LINENO}: \"$ac_ltlink_la\""; } >&5
+  (eval $ac_ltlink_la) 2>&5
+  ac_status=$?
+  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; } &&
+{ ac_try='test -s libconftest.la'
+  { { eval echo "\"\$as_me\":${as_lineno-$LINENO}: \"$ac_try\""; } >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; }; }; then :
+  lt_ac_cv_shlib_mysqlclient_mysql_stmt_close=yes
 else
-  ac_cv_lib_mysqlclient_main=no
+  $as_echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+lt_ac_cv_shlib_mysqlclient_mysql_stmt_close=no
+firm -rf $objdir
+rm -f conftest* libconftest*
+LIBS=$lt_ac_check_shlib_save_LIBS
 fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_mysqlclient_main" >&5
-$as_echo "$ac_cv_lib_mysqlclient_main" >&6; }
-if test "x$ac_cv_lib_mysqlclient_main" = xyes; then :
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $lt_ac_cv_shlib_mysqlclient_mysql_stmt_close" >&5
+$as_echo "$lt_ac_cv_shlib_mysqlclient_mysql_stmt_close" >&6; }
+if test $lt_ac_cv_shlib_mysqlclient_mysql_stmt_close = yes; then :
   cat >>confdefs.h <<_ACEOF
-#define HAVE_LIBMYSQLCLIENT 1
+#define HAVE_SHLIBMYSQLCLIENT 1
 _ACEOF
 
-  LIBS="-lmysqlclient $LIBS"
-
 fi
-
 
 		#AC CUMULATES ALL LIBS IT FINDS IN A WAY, SO WE NEED TO RESET THIS
 		#as it may coinflict with msqld
 		#LIBS="$old_LIBS"
 		LIBS=`mysql_config --libmysqld-libs`
 		#Installed as MySQL RPM to /usr/lib/mysql/libmysqld.a
-		{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -lmysqld" >&5
-$as_echo_n "checking for main in -lmysqld... " >&6; }
-if ${ac_cv_lib_mysqld_main+:} false; then :
+		{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for mysql_stmt_close in -lmysqld" >&5
+$as_echo_n "checking for mysql_stmt_close in -lmysqld... " >&6; }
+if ${ac_cv_lib_mysqld_mysql_stmt_close+:} false; then :
   $as_echo_n "(cached) " >&6
 else
   ac_check_lib_save_LIBS=$LIBS
@@ -19230,27 +19257,33 @@ LIBS="-lmysqld  $LIBS"
 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 
-
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char mysql_stmt_close ();
 int
 main ()
 {
-return main ();
+return mysql_stmt_close ();
   ;
   return 0;
 }
 _ACEOF
 if ac_fn_c_try_link "$LINENO"; then :
-  ac_cv_lib_mysqld_main=yes
+  ac_cv_lib_mysqld_mysql_stmt_close=yes
 else
-  ac_cv_lib_mysqld_main=no
+  ac_cv_lib_mysqld_mysql_stmt_close=no
 fi
 rm -f core conftest.err conftest.$ac_objext \
     conftest$ac_exeext conftest.$ac_ext
 LIBS=$ac_check_lib_save_LIBS
 fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_mysqld_main" >&5
-$as_echo "$ac_cv_lib_mysqld_main" >&6; }
-if test "x$ac_cv_lib_mysqld_main" = xyes; then :
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_mysqld_mysql_stmt_close" >&5
+$as_echo "$ac_cv_lib_mysqld_mysql_stmt_close" >&6; }
+if test "x$ac_cv_lib_mysqld_mysql_stmt_close" = xyes; then :
   cat >>confdefs.h <<_ACEOF
 #define HAVE_LIBMYSQLD 1
 _ACEOF
@@ -21266,11 +21299,11 @@ fi
 
 
 HAVE_LIBQRENCODE=0
-if test "$chk_qrencoder" != "xno"
+if test "$chk_qrencoder" != "no"
 then
-	{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for QRinput_new in -lqrencode" >&5
-$as_echo_n "checking for QRinput_new in -lqrencode... " >&6; }
-if ${ac_cv_lib_qrencode_QRinput_new+:} false; then :
+	{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for QRinput_new2 in -lqrencode" >&5
+$as_echo_n "checking for QRinput_new2 in -lqrencode... " >&6; }
+if ${ac_cv_lib_qrencode_QRinput_new2+:} false; then :
   $as_echo_n "(cached) " >&6
 else
   ac_check_lib_save_LIBS=$LIBS
@@ -21284,27 +21317,27 @@ cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 #ifdef __cplusplus
 extern "C"
 #endif
-char QRinput_new ();
+char QRinput_new2 ();
 int
 main ()
 {
-return QRinput_new ();
+return QRinput_new2 ();
   ;
   return 0;
 }
 _ACEOF
 if ac_fn_c_try_link "$LINENO"; then :
-  ac_cv_lib_qrencode_QRinput_new=yes
+  ac_cv_lib_qrencode_QRinput_new2=yes
 else
-  ac_cv_lib_qrencode_QRinput_new=no
+  ac_cv_lib_qrencode_QRinput_new2=no
 fi
 rm -f core conftest.err conftest.$ac_objext \
     conftest$ac_exeext conftest.$ac_ext
 LIBS=$ac_check_lib_save_LIBS
 fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_qrencode_QRinput_new" >&5
-$as_echo "$ac_cv_lib_qrencode_QRinput_new" >&6; }
-if test "x$ac_cv_lib_qrencode_QRinput_new" = xyes; then :
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_qrencode_QRinput_new2" >&5
+$as_echo "$ac_cv_lib_qrencode_QRinput_new2" >&6; }
+if test "x$ac_cv_lib_qrencode_QRinput_new2" = xyes; then :
   cat >>confdefs.h <<_ACEOF
 #define HAVE_LIBQRENCODE 1
 _ACEOF
@@ -21367,12 +21400,14 @@ fi
 		$as_echo "#define HAVE_LIBQRENCODE 1" >>confdefs.h
 
 		$as_echo "#define HAVE_LIBQRENCODE_ENCODEMASK 1" >>confdefs.h
-  else
+
+   else
     HAVE_LIBQRENCODE=1
 		HAVE_LIBQRENCODE_ENCODEMASK=0
 		$as_echo "#define HAVE_LIBQRENCODE 1" >>confdefs.h
 
 		$as_echo "#define HAVE_LIBQRENCODE_ENCODEMASK 1" >>confdefs.h
+
 	 fi
 
 fi
@@ -21383,6 +21418,95 @@ if test "$enable_stop_qrencode" = "yes" ; then
 fi
 
 LIBS="$save_LIBS"
+
+
+
+## ============================================
+##                 Checks for PDFlib8 support
+## ============================================
+
+
+
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: " >&5
+$as_echo "" >&6; }
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: ${T_MD}Checking for PDFLIB8 support:${T_ME}" >&5
+$as_echo "${T_MD}Checking for PDFLIB8 support:${T_ME}" >&6; }
+
+save_LIBS="$LIBS"
+
+# Check whether --with-pdflib was given.
+if test "${with_pdflib+set}" = set; then :
+  withval=$with_pdflib; chk_pdflib=x$withval
+else
+  chk_pdflib=notset
+fi
+
+
+HAVE_PDFLIB8=0
+if test "$chk_pdflib" != "no"
+then
+	{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for PDFLIB_MAJORVERSION	8 in -lpdflib" >&5
+$as_echo_n "checking for PDFLIB_MAJORVERSION	8 in -lpdflib... " >&6; }
+if ${ac_cv_lib_pdflib_PDFLIB_MAJORVERSION_8+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lpdflib  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char PDFLIB_MAJORVERSION	8 ();
+int
+main ()
+{
+return PDFLIB_MAJORVERSION	8 ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_lib_pdflib_PDFLIB_MAJORVERSION_8=yes
+else
+  ac_cv_lib_pdflib_PDFLIB_MAJORVERSION_8=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_pdflib_PDFLIB_MAJORVERSION_8" >&5
+$as_echo "$ac_cv_lib_pdflib_PDFLIB_MAJORVERSION_8" >&6; }
+if test "x$ac_cv_lib_pdflib_PDFLIB_MAJORVERSION_8" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_LIBPDFLIB 1
+_ACEOF
+
+  LIBS="-lpdflib $LIBS"
+
+fi
+
+
+
+	 if test "$ac_cv_lib_pdflib_PDFLIB_MAJORVERSION	8]" = "yes";
+	then
+		HAVE_PDFLIB8=1
+	 fi
+
+fi
+
+
+if test "$enable_stop_qrencode" = "yes" ; then
+	exit
+fi
+
+LIBS="$save_LIBS"
+
+
 
 
 ## ==================================================================
@@ -31970,7 +32094,7 @@ test "x$enable_libtool_lock" != xno && enable_libtool_lock=yes
 case $host in
 *-*-irix6*)
   # Find out which ABI we are using.
-  echo '#line 31968 "configure"' > conftest.$ac_ext
+  echo '#line 32097 "configure"' > conftest.$ac_ext
   if { { eval echo "\"\$as_me\":${as_lineno-$LINENO}: \"$ac_compile\""; } >&5
   (eval $ac_compile) 2>&5
   ac_status=$?
@@ -38103,7 +38227,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure,v 1.465 2010-12-21 15:52:40 mike-no Exp $
+| $Id: configure,v 1.466 2011-01-04 18:05:46 mikeaubury Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X
