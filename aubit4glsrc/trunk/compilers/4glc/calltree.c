@@ -106,7 +106,7 @@ struct {
         int nlines;
 } map_crud[100];
 
-static void calltree_addmap (enum e_mapset mapset, char *fmt, ...) ;
+static void calltree_addmap (enum e_mapset mapset, char *fmt, char *module,int line) ;
 struct s_select *subq_stmts[2000];
 //struct selects *subq_selects[2000];
 int stmts_cnt=0;
@@ -1355,6 +1355,7 @@ cache_expression (char *sxx, expr_str ** ptr, int mode)
     {
     case ET_EXPR_NOT:
     case ET_EXPR_NEG:
+    case ET_EXPR_OP_CLIP:
     case ET_EXPR_UPSHIFT:
     case ET_EXPR_DOWNSHIFT:
     case ET_EXPR_ASCII:
@@ -1417,7 +1418,7 @@ cache_expression (char *sxx, expr_str ** ptr, int mode)
 	  if (strcmp(expr->expr_str_u.expr_function_call->functionname,"fgl_getenv")==0) {
 		char buff[2000];
 		sprintf(buff,"<ENV NAME=\"%s\" MODULE=\"%s\" LINE=\"%d\" />\n", evaluate_expr(expr->expr_str_u.expr_function_call->parameters->list.list_val[0]), last_mod,last_line);
-		calltree_addmap(MAPSET_ENV ,buff);
+		calltree_addmap(MAPSET_ENV ,buff,last_mod,last_line);
 
 		}
 	  if (!system_function (expr->expr_str_u.expr_function_call->functionname))
@@ -1897,7 +1898,8 @@ int a;
 	fprintf(output,"<SYMBOLS>\n");
 	for (a=0;a<nsymbols;a++) {
 		fprintf(output," <SYMBOL NAME=\"%s\" MODULE=\"%s\" LINE=\"%d\" TYPE=\"%s\" OPERATION=\"%s\" SCOPE=\"%s\"/>\n",
-				symbol_table[a].name,
+			A4GL_strip_quotes(
+				symbol_table[a].name),
 				symbol_table[a].module,
 				symbol_table[a].line,
 				symbol_table[a].type,
@@ -2092,19 +2094,15 @@ add_calltree_calls (char *s, s_commands * func_commands, int mode)
 
 
 	case E_CMD_DELETE_CMD:
-		if (mode==MODE_BUY) {
 		calltree_map_insert_delete_update("DELETE", func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.delete_cmd.table, 
 				func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.delete_cmd.where_clause, last_mod,last_line);
-		}
 		break;
 
 	case E_CMD_SQL_CMD:
-		if (mode==MODE_BUY) {
 			calltree_map_sql(func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.sql_cmd.sql,last_mod,last_line);
-		}
 		break;
+
 	case E_CMD_INSERT_CMD:
-		if (mode==MODE_BUY) {
 		calltree_map_insert_delete_update("INSERT", func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.insert_cmd.table, NULL, last_mod,last_line);
 
 		if (func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.insert_cmd.subselect) {
@@ -2113,19 +2111,20 @@ add_calltree_calls (char *s, s_commands * func_commands, int mode)
 		if (func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.insert_cmd.value_list) {
 			calltree_map_value_list("INSERT", func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.insert_cmd.value_list, last_mod,last_line);
 		}
+		if (mode==MODE_BUY) {
 		}
 		break;
 
 	case E_CMD_UPDATE_CMD:
-		if (mode==MODE_BUY) {
 		calltree_map_insert_delete_update("UPDATE", func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.update_cmd.table, 
 				func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.update_cmd.where_clause, last_mod,last_line);
 		calltree_map_value_list("UPDATE", func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.update_cmd.value_list, last_mod,last_line);
+		if (mode==MODE_BUY) {
 		}
 		break;
 
 	case E_CMD_SELECT_CMD:
-		if (mode==MODE_BUY) {
+		if (mode==MODE_BUY || 1) {
 		 	calltree_map_select_stmt("SELECT", func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.select_cmd.sql, last_mod,last_line);
 		}
 		add_symbol_assign(func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.select_cmd.sql->into,last_mod,last_line,NULL);
@@ -2199,6 +2198,7 @@ add_calltree_calls (char *s, s_commands * func_commands, int mode)
 
 	      }
 
+	//printf("%d\n",call_cnt);
 
 
 	    for (xcnt = 0; xcnt < func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.if_cmd.truths.conditions.conditions_len;
@@ -3625,7 +3625,7 @@ static void add_variable_value(variable_usage *u, expr_str *val) {
 	int a;
 	var=evaluate_variable_usage_as_string(u);
 
-	if (u->escope!=E_SCOPE_LOCAL) {
+	if (u->escope!=E_SCOPE_LOCAL && u->escope!=E_SCOPE_MODULE) {
 		//fprintf(stderr, "Ignoring nonlocal variable .. %s\n",var);
 		return;
 	}
@@ -3885,27 +3885,27 @@ char buff[200000];
 
 if (strstr(action,"SELECT")) {
 sprintf(buff,"<SELECT_STMT TABLE=\"%s\" MODULE=\"%s\" LINE=\"%d\" MAINACTION=\"%s\"/>\n",tabname,module,line, mainaction);
-	calltree_addmap(MAPSET_CRUD_SELECT, buff);
+	calltree_addmap(MAPSET_CRUD_SELECT, buff,module,line);
 	return;
 }
 if (strstr(action,"UPDATE")) {
 sprintf(buff,"<UPDATE_STMT TABLE=\"%s\" MODULE=\"%s\" LINE=\"%d\" MAINACTION=\"%s\"/>\n",tabname,module,line, mainaction);
-	calltree_addmap(MAPSET_CRUD_UPDATE, buff);
+	calltree_addmap(MAPSET_CRUD_UPDATE, buff,module,line);
 	return;
 }
 if (strstr(action,"INSERT")) {
 sprintf(buff,"<INSERT_STMT TABLE=\"%s\" MODULE=\"%s\" LINE=\"%d\" MAINACTION=\"%s\"/>\n",tabname,module,line, mainaction);
-	calltree_addmap(MAPSET_CRUD_INSERT, buff);
+	calltree_addmap(MAPSET_CRUD_INSERT, buff,module,line);
 	return;
 }
 if (strstr(action,"DELETE")) {
 sprintf(buff,"<DELETE_STMT TABLE=\"%s\" MODULE=\"%s\" LINE=\"%d\" MAINACTION=\"%s\"/>\n",tabname,module,line, mainaction);
-	calltree_addmap(MAPSET_CRUD_DELETE, buff);
+	calltree_addmap(MAPSET_CRUD_DELETE, buff,module,line);
 	return;
 }
 sprintf(buff,"<STATEMENT TABLE=\"%s\" ACTION=\"%s\" MODULE=\"%s\" LINE=\"%d\" MAINACTION=\"%s\"/>\n",tabname,action,module,line, mainaction);
 
-calltree_addmap(MAPSET_CRUD_OTHER, buff);
+calltree_addmap(MAPSET_CRUD_OTHER, buff,module,line);
 }
 
 
@@ -3957,6 +3957,7 @@ calltree_map_select_stmt (char *main_statement_type, struct s_select *select, ch
 }
 
 static void calltree_map_value(char *main_statement,struct s_select_list_item *item, char*module, int line) {
+//printf("In calltree_map_value : %s %d\n",main_statement, item->data.type);
 	switch (item->data.type) {
         case E_SLI_IBIND:
         case E_SLI_VARIABLE:
@@ -3969,8 +3970,27 @@ static void calltree_map_value(char *main_statement,struct s_select_list_item *i
         case E_SLI_COLUMN:
         case E_SLI_COLUMN_ORDERBY:
         case E_SLI_VARIABLE_USAGE_IN_SELECT_LIST :
-        case E_SLI_VARIABLE_USAGE :
+		break;
+
+
         case E_SLI_VARIABLE_USAGE_LIST:
+		{
+		int a;
+		struct s_select_list_item_list *vl;
+		vl=item->data.s_select_list_item_data_u.var_usage_list;
+		for (a=0;a<vl->list.list_len;a++)  {
+			calltree_map_value(main_statement,vl->list.list_val[a], module, line);
+		}
+		}
+		break;
+
+        case E_SLI_VARIABLE_USAGE:
+		{
+		struct expr_str e;
+		e.expr_type=ET_EXPR_VARIABLE_USAGE;	
+		e.expr_str_u.expr_variable_usage=item->data.s_select_list_item_data_u.var_usage;
+		add_variable(&e,module,line,"USE",NULL);
+		}
 		break;
 
         case E_SLI_BUILTIN_CONST_COUNT_STAR:
@@ -4041,6 +4061,8 @@ static void calltree_map_value(char *main_statement,struct s_select_list_item *i
 			}
 		}
 		break;
+
+
 
         case E_SLI_REGEX_ILIKE:
         case E_SLI_REGEX_LIKE:
@@ -4137,7 +4159,7 @@ void calltree_map_insert_delete_update(char *main_statement, char *table, struct
 static void calltree_map_sql(char *buff,char *module, int line) {
 	char buffx[200000];
 	sprintf(buffx, "<SQL MODULE=\"%s\" LINE=\"%d\" STMT=\"%s\" />\n",module,line, xml_encode(buff));
-	calltree_addmap(MAPSET_CRUD_OTHER, buffx);
+	calltree_addmap(MAPSET_CRUD_OTHER, buffx,module,line);
 }
 
 static char * guess_sql_stmt(struct struct_prepare_cmd *p,char *module, int line) {
@@ -4149,23 +4171,48 @@ char *ptr;
 	ptr=calltree_get_ident(p->stmtid), 
 
 	sprintf(buff2, "<PREPARE STMTID=\"%s\" MODULE=\"%s\" LINE=\"%d\" STMT=\"%s\" />\n",ptr, module,line, xml_encode(buff));
-	calltree_addmap(MAPSET_CRUD_DYNAMIC, buff2);
+	calltree_addmap(MAPSET_CRUD_DYNAMIC,buff2,module,line);
 	return buff;
 }
 
 
 
 
-static void calltree_addmap (enum e_mapset mapset, char *fmt, ...) {
-va_list args;
-char buff[10025];
-va_start (args, fmt);
+static void calltree_addmap (enum e_mapset mapset, char *fmt, char *module, int line) {
+int a;
+//va_list args;
+//char buff[200025];
+//va_start (args, fmt);
 
-vsprintf (buff, fmt, args);
-A4GL_assertion(strlen(buff)>=sizeof(buff),"Buffer too small");
-map_crud[mapset].nlines++;
-map_crud[mapset].lines=realloc(map_crud[mapset].lines,map_crud[mapset].nlines*sizeof(char *));
-map_crud[mapset].lines[map_crud[mapset].nlines-1]=strdup(buff);
+//vsprintf (buff, fmt, args);
+//A4GL_assertion(strlen(buff)>=sizeof(buff),"Buffer too small");
+
+for (a=0;a<map_crud[mapset].nlines;a++) {
+	if (strcmp(map_crud[mapset].lines[a],fmt)==0) {
+		return ;
+	}
+}
+
+if (isLineCalled(module,line)) {
+	map_crud[mapset].nlines++;
+	map_crud[mapset].lines=realloc(map_crud[mapset].lines,map_crud[mapset].nlines*sizeof(char *));
+	map_crud[mapset].lines[map_crud[mapset].nlines-1]=strdup(fmt);
+}
 }
 
 
+
+int isLineCalled(char *module, int line) {
+	int a;
+	for (a=0;a<functions_cnt;a++) {
+		if (strcmp(functions[a].module, module)==0) {
+			if (functions[a].line<=line && functions[a].lastline>=line) {
+				if (functions[a].called) {
+					return 1;
+				}
+			}
+		}
+	}
+printf("Line %s - %d is not called\n",module,line);
+return 0;
+}

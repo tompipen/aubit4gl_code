@@ -55,16 +55,17 @@ next_field_cmd :
 
 
 
-input_cmd	:	KW_INPUT inp_rest {
+input_cmd	:	KW_INPUT atline {
+					set_cmdlineno($<integer_val>2); 
+			} inp_rest {
   					A4GL_new_events();
 					push_blockcommand ("INPUT");
-			
-			} atline { set_cmdlineno($<integer_val>4); }
+			}
  			end_input { 
 				int sio;
 				int blk;
 					blk=get_sio_ids("INPUT");
-					$<cmd>$=$<cmd>2;
+					$<cmd>$=$<cmd>4;
 					sio=get_sio_id("INPUT");
 					$<cmd>$->cmd_data.command_data_u.input_cmd.sio=sio;
 					$<cmd>$->cmd_data.command_data_u.input_cmd.blockid=blk;
