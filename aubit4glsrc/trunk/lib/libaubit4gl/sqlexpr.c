@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlexpr.c,v 1.97 2010-12-11 13:45:47 mikeaubury Exp $
+# $Id: sqlexpr.c,v 1.98 2011-01-06 19:46:18 mikeaubury Exp $
 #
 */
 
@@ -1445,7 +1445,7 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
 	  }
 
 
-	if (select)
+	if (select && A4GLSQLCV_check_runtime_requirement("SETTABLEFORCOL"))
 	  {
 	    if (select->table_elements.tables.tables_len == 1)
 	      {
@@ -1854,6 +1854,7 @@ preprocess_sql_statement (struct s_select *select)
   struct s_select_list_item *pnew;
   struct s_select_list_item_list *n;
   int expand_many;
+int setTableNamesIfMissing=0;
 //
 // Lets collect all our expressions in one place....
 //
@@ -1863,10 +1864,15 @@ preprocess_sql_statement (struct s_select *select)
       A4GLSQLPARSE_from_clause_collect_tables (select, select->first, &select->table_elements);
     }
 
+  if (A4GLSQLCV_check_runtime_requirement("SETTABLEFORCOL")) { //@ENV SETTABLEFORCOL - set the table for a column where possible
+		setTableNamesIfMissing=1;
+	}
+
 
   if (A4GLSQLCV_check_runtime_requirement ("EXPAND_COLUMNS") || A4GL_isyes(acl_getenv("EXPAND_COLUMNS")) || A4GL_isyes (acl_getenv ("MAP4GL")))
     {
       expand_many = 0;
+		
       for (a = 0; a < select->select_list->list.list_len; a++)
 	{
 	  p = select->select_list->list.list_val[a];
@@ -1956,7 +1962,9 @@ preprocess_sql_statement (struct s_select *select)
 			}
 		      if (select->table_elements.tables.tables_len == 1 && !dont_set_for_single_table)	// A
 			{
-			  p->data.s_select_list_item_data_u.column.tabname = select->table_elements.tables.tables_val[0].tabname;
+			  if (setTableNamesIfMissing) {
+			  	p->data.s_select_list_item_data_u.column.tabname = select->table_elements.tables.tables_val[0].tabname;
+			 }
 			}
 		    }
 
@@ -2047,7 +2055,7 @@ preprocess_sql_statement (struct s_select *select)
       if (p->data.type == E_SLI_COLUMN)
 	{
 	  int b;
-	  if (p->data.s_select_list_item_data_u.column.tabname == 0)
+	  if (p->data.s_select_list_item_data_u.column.tabname == 0 && setTableNamesIfMissing)
 	    {
 	      int nelements;
 	      char *t = 0;
@@ -2114,7 +2122,9 @@ preprocess_sql_statement (struct s_select *select)
 #ifdef DEBUG
 		  A4GL_debug ("Setting to %s\n", t);
 #endif
+		if (setTableNamesIfMissing) {
 		  p->data.s_select_list_item_data_u.column.tabname = acl_strdup_With_Context (t);
+		}
 		  break;
 		}
 	      else
@@ -2153,8 +2163,12 @@ preprocess_sql_statement (struct s_select *select)
 	  else
 	    {
 #ifdef DEBUG
+	if (p->data.s_select_list_item_data_u.column.tabname!=0) {
 	      A4GL_debug ("<%s>.<%s>", p->data.s_select_list_item_data_u.column.tabname,
 			  p->data.s_select_list_item_data_u.column.colname);
+	} else {
+	      A4GL_debug ("<NULL>.<%s>", p->data.s_select_list_item_data_u.column.colname);
+	}
 #endif
 	    }
 	}
@@ -2245,6 +2259,8 @@ preprocess_sql_statement (struct s_select *select)
 	}
     }
 }
+
+
 
 char *
 find_tabname_for_alias (struct s_select *select, char *alias)
