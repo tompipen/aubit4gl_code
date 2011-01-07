@@ -1431,6 +1431,7 @@ A4GL_debug("dynamic=-1");
 def_val : 
 CHAR_VALUE {strcpy($<str>$,$<str>1);}
 | NUMBER_VALUE  {strcpy($<str>$,$<str>1);}
+| NAMED  {sprintf($<str>$,"\"%s\"",$<str>1);}
 | SQL_VAR {sprintf($<str>$,"\n%s",$<str>1);
 	if (strcasecmp($<str>1,"current")==0) {
 		int a;

@@ -21,7 +21,7 @@ void print_display_only(struct_form *f, FILE *fout, int s, int lvl);
 void print_control_block(struct_form *f, FILE *fout);
 void print_validation(struct_form *f, FILE *fout, int t, int s, int beaf, int lvl);
 void dump_attr_lookup(struct_form *f, FILE *fout);
-int split_table_field(char *fullname, char *tablename, char *fieldname);
+int split_table_field(struct_form *f, char *fullname, char *tablename, char *fieldname);
 void dump_global_4gl(void);
 void dump_common_4gl(void);
 char *cname(char *s);

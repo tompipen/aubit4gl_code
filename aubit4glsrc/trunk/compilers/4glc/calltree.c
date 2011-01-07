@@ -4232,10 +4232,12 @@ static int isLineCalled(char *module, int line) {
 			if (functions[a].line<=line && functions[a].lastline>=line) {
 				if (functions[a].called) {
 					return 1;
+				} else {
+					return 0;
 				}
 			}
 		}
 	}
-printf("Line %s - %d is not called\n",module,line);
+	printf("Line %s - %d is not called\n",module,line);
 return 0;
 }

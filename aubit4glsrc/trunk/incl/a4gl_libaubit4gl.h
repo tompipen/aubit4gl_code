@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.413 2010-10-27 19:42:02 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.414 2011-01-07 12:11:15 mikeaubury Exp $
 #
 */
 
@@ -2506,6 +2506,7 @@ void A4GLSQLCV_add_temp_table(char *tabname);
 #include "a4gl_exdata.h"	
 #include "a4gl_API_exreport.h"
 #include "a4gl_API_sqlparse.h"
+//#include "a4gl_API_sqlparsecmd.h"
 #include "a4gl_API_rpc.h"	
 #include "a4gl_API_esql.h"
 

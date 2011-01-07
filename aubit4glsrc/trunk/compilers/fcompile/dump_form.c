@@ -25,7 +25,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dump_form.c,v 1.25 2010-01-14 07:41:44 mikeaubury Exp $
+# $Id: dump_form.c,v 1.26 2011-01-07 12:15:54 mikeaubury Exp $
 #*/
 
 /**
@@ -63,6 +63,7 @@ static int print_zooms(struct_form * f,int tableNo,int screenNo,FILE *fout,char 
 =====================================================================
 */
 
+static char *guess_table(struct_form *f,char *colname) ;
 char *columns_codes[1000]; // for generate-records
 int columns_codes_cnt=0; // for generate-records
 
@@ -1039,20 +1040,20 @@ printf("now in display_record\n");
 			struct s_lookup *p2;
 			p2=p->lookups.lookups_val[cnt1];
 			if (strcmp(p2->fieldtag,"<<FROM>>")!=0) {
-			    char tablename[32], fieldname[32];
+			    char tablename[32]="<notset6>", fieldname[32]="<notset7>";
 			    int star;
 			    if (!attr_found) {
 			        fprintf(fout, "        LET gv_attribute = set_delimiter(0,0)\n");
 			        attr_found++;
 			    }
-			    star = split_table_field(p2->tabcol, tablename, fieldname);
+			    star = split_table_field(f,p2->tabcol, tablename, fieldname);
 fprintf(fout,"# LOOKUP %s DISPLAY %s\n", p->joincol, p2->tabcol);
 			    fprintf(fout,"        IF gr_%s.%s IS NOT NULL THEN\n",
 			        f->attributes.attributes_val[a].tabname,
 			        f->attributes.attributes_val[a].colname);
 			    fprintf(fout,"          SELECT %s INTO gr_display.%s FROM %s\n",
 			        fieldname, p2->fieldtag, tablename);
-			    star = split_table_field(p->joincol, tablename, fieldname);
+			    star = split_table_field(f,p->joincol, tablename, fieldname);
 			    fprintf(fout,"            WHERE %s = gr_%s.%s\n",
 			        fieldname, f->attributes.attributes_val[a].tabname,
 			        f->attributes.attributes_val[a].colname);
@@ -1772,7 +1773,7 @@ printf("now in input_record\n");
 		    for (cnt1=0;cnt1<p->lookups.lookups_len;cnt1++) {
 			char tablename[32], fieldname[32];
 			int star;
-			star = split_table_field(p->joincol, tablename, fieldname);
+			star = split_table_field(f,p->joincol, tablename, fieldname);
 			struct s_lookup *p2;
 			p2=p->lookups.lookups_val[cnt1];
 			fprintf(fout,"{ LOOKUP=%s JOINCOL=%s STAR=%d }",
@@ -2630,11 +2631,11 @@ fprintf(fout,"#  cb[%d] ba[%d] column[%d] action[%d]\n",c,b,d,g);
 		struct s_lookup *p2;
 		p2=p->lookups.lookups_val[cnt1];
 fprintf(fout,"# LOOKUP %s DISPLAY %s\n", p->joincol, p2->tabcol);
-		char look_tablename[32], look_fieldname[32];
-		char disp_tablename[32], disp_fieldname[32];
+		char look_tablename[32]="<notset1>", look_fieldname[32]="<notset2>";
+		char disp_tablename[32]="<notset3>", disp_fieldname[32]="<notset4>";
 		int star;
-		star = split_table_field(p->joincol, look_tablename, look_fieldname);
-		star = split_table_field(p2->tabcol, disp_tablename, disp_fieldname);
+		star = split_table_field(f,p->joincol, look_tablename, look_fieldname);
+		star = split_table_field(f,p2->tabcol, disp_tablename, disp_fieldname);
 		fprintf(fout,"            AFTER FIELD %s\n",
 		    f->attributes.attributes_val[a].colname);
 		fprintf(fout,"              IF gr_%s.%s IS NOT NULL THEN\n",
@@ -2701,9 +2702,13 @@ void dump_attr_lookup(struct_form * f, FILE *fout) {
   }
 }
 
-int split_table_field(char *fullname, char *tablename, char *fieldname) {
+int split_table_field(struct_form *f, char *fullname, char *tablename, char *fieldname) {
     int i, idx=0, infield=0;
     int star = 0;
+if (strchr(fullname,'.')==0) {
+	fullname=guess_table(f,fullname);
+}
+printf("Split table_table : %s\n",fullname);
     for (i=0;i<strlen(fullname);i++) {
 	if (fullname[i]=='*') {
 	    star = 1;
@@ -3162,6 +3167,57 @@ return printed;
 void set_single_file_mode(void) {
 	single_file_mode=1;
 }
+
+
+
+static int open_db (char *s)
+{
+int rval;
+      rval=A4GL_init_connection (s);
+	
+  return !rval;
+
+}
+
+
+char *A4GL_has_column(char *tabname, char *colname);
+
+static char *guess_table(struct_form *f, char *colname) {
+int a;
+static int connectedToDb=-1;
+static char buff[3000];
+
+if (strcasecmp(f->dbname,"formonly")==0) {
+	sprintf(buff,"formonly.%s",colname);
+	return buff;
+}
+
+if (connectedToDb==-1) {
+	connectedToDb=open_db(f->dbname);
+	printf("Connecting to %s gave %d\n", f->dbname,connectedToDb);
+	if (!connectedToDb) {
+		fprintf(stderr,"Unable to connect to database %s\n", f->dbname);
+		exit(2);
+	}
+}
+if (!connectedToDb) {
+	return colname;
+}
+
+        for (a=0;a< f->tables.tables_len;a++) {
+	printf("Looking for %s in %s\n",colname, f->tables.tables_val[a].tabname);
+                //printf("Looking in %s for %s\n", select->table_elements.tables.tables_val[a].tabname,colname);
+                if (A4GL_has_column( f->tables.tables_val[a].tabname, colname)) {
+			sprintf(buff,"%s.%s", f->tables.tables_val[a].tabname, colname);
+			printf("Found it..\n");
+			return strdup(buff);
+		}
+        }
+	printf("Not found for %s\n",colname);
+	return colname;
+
+}
+
 
 
 /* ================================ EOF ============================= */

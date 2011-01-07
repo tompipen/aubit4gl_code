@@ -17,7 +17,8 @@ var_ident_qchar : NAMED
 ;
 
 
-opt_into_sel: ;
+opt_into_sel: {$<ptr_list>$=0;}
+;
 
 
 char_or_var : CHAR_VALUE 

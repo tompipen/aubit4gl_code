@@ -11,5 +11,5 @@ fdecompile_4gl : dump_4gl.c decompile.o
 	gcc -g -I$(AUBITDIR)/incl -L$(AUBITDIR)/lib $^ -o $@ -laubit4gl
 
 formgen_4gl : dump_form.c decompile.o 
-	gcc -g -I$(AUBITDIR)/incl -L$(AUBITDIR)/lib $^ -o $@ -laubit4gl
+	gcc -g -I$(AUBITDIR)/incl -L$(AUBITDIR)/lib $^ -o $@ -laubit4gl -lpthread
 
