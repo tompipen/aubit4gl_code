@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.60 2010-10-06 11:42:47 mikeaubury Exp $
+# $Id: Makefile,v 1.61 2011-01-07 11:18:36 mikeaubury Exp $
 #
 
 ROOT    	=../..
@@ -42,7 +42,7 @@ CMODS_PROJECT	=project.c
 #List of API specification files used to generate .c/.h pair
 #created headers are included via a4gl_libaubit4gl_int.h
 API_SPEC    =API_esql.spec API_help.spec API_menu.spec API_packer.spec \
-			API_form.spec  API_ui.spec  API_sqlparse.spec \
+			API_form.spec  API_ui.spec  API_sqlparsecmd.spec API_sqlparse.spec \
 			API_sql.spec API_rpc.spec API_exreport.spec
 
 #List of all Aubit API interfaces source files, part of libaubit4gl,
@@ -400,7 +400,7 @@ clean.api:
 	${OBJS_API} $(addprefix ${INCL_PATH}/a4gl_,${API_SPEC:.spec=_lib.h}) \
 	API_esql_self.c API_exreport_self.c API_form_self.c API_help_self.c \
 	API_menu_self.c API_packer_self.c API_rpc_self.c API_sql_self.c \
-	API_sqlparse_self.c API_ui_self.c
+	API_sqlparse_self.c API_ui_self.c API_sqlparsecmd_self.c
 
 #----------------------------------- EOF -------------------------------
 

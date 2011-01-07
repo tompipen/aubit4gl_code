@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.166 2010-05-11 06:51:14 mikeaubury Exp $
+# $Id: resource.c,v 1.167 2011-01-07 11:18:37 mikeaubury Exp $
 #
 */
 
@@ -179,6 +179,7 @@ struct str_resource builtin_resource[] = {
   {"DBMONEY", "#.","internal"},
   {"DBPATH", ".","internal"},
   {"FREE_SQL_MEM", "Y","internal"},
+  {"A4GL_PARSECMD","INFORMIX"}, // Internal dialect to process for CALLTREE PREPARE statement handling
   {"PLATFORM", "DEFAULT","internal"},
   {"A4GL_NO_CONV_ERR","Y","internal"},
   {"DBPRINT", "lp","internal"},
