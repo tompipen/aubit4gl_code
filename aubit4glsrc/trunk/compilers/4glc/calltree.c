@@ -69,7 +69,7 @@ static void calltree_map_insert_delete_update(char *main_statement, char *table,
 static void calltree_map_select_stmt(char *main_statement, struct s_select *select,  char *module, int line) ;
 static void calltree_map_value_list(char *main_statement,struct s_select_list_item_list *list, char*module, int line) ;
 static void calltree_map_value(char *main_statement,struct s_select_list_item *item, char*module, int line) ;
-static char * guess_sql_stmt(struct struct_prepare_cmd *p,char *module, int line) ;
+static char * guess_sql_stmt(struct struct_prepare_cmd *p,char *module, int line,int processed) ;
 static void clr_variable_values(void) ;
 static int find_function (char *s);
 char *decode_rb (enum report_blocks a);
@@ -2065,6 +2065,32 @@ static char *calltree_get_ident(struct expr_str *ptr) {
 
 
 
+char *A4GL_strip_quotes_1(char *s) {
+static char ptr[200000];
+	int a;
+int b=0;
+s=A4GL_strip_quotes(s);
+for (a=0;a<strlen(s);a++) {
+
+	if (s[a]=='\t') {
+		ptr[b++]=' '; continue;
+	}
+
+	if (s[a]=='\\' && s[a+1]=='t') {
+		a++;
+		ptr[b++]=' '; continue;
+	}
+	if (s[a]=='\\' && s[a+1]=='"') {
+		a++;
+		ptr[b++]=s[a];
+	} else {
+		ptr[b++]=s[a];
+	}
+}
+ptr[b]=0;
+return ptr;
+}
+
 static int
 add_calltree_calls (char *s, s_commands * func_commands, int mode)
 {
@@ -2760,18 +2786,17 @@ static int process_cmd(struct command *cmd,int mode) {
 		struct command *c;
 		char *str;
 		str=evaluate_expr(cmd->cmd_data.command_data_u.prepare_cmd.sql);
-		str=A4GL_strip_quotes(str);
+		str=A4GL_strip_quotes_1(str);
+		add_symbol(calltree_get_ident(cmd->cmd_data.command_data_u.prepare_cmd.stmtid),last_mod,last_line,"STMT","PREPARE");
 		c=processSQL(str);
-		if (c==0) {
-	
-			add_symbol(calltree_get_ident(cmd->cmd_data.command_data_u.prepare_cmd.stmtid),last_mod,last_line,"STMT","PREPARE");
-			guess_sql_stmt(&cmd->cmd_data.command_data_u.prepare_cmd, last_mod,last_line);
-		} else {
-			printf("str=%s\n",str);
-			printf("Got a prepare as a command !\n");
+
+		if (c!=0) {
 			c->lineno=last_line;
 			c->module=last_mod;
 			process_cmd(c,mode);
+			guess_sql_stmt(&cmd->cmd_data.command_data_u.prepare_cmd, last_mod,last_line,1);
+		} else {
+			guess_sql_stmt(&cmd->cmd_data.command_data_u.prepare_cmd, last_mod,last_line,0);
 		}
 		
 		break;
@@ -3954,17 +3979,20 @@ calltree_map_select_stmt (char *main_statement_type, struct s_select *select, ch
 	char *alias;
 	tabname = strdup (select->table_elements.tables.tables_val[a].tabname);
 	alias = select->table_elements.tables.tables_val[a].alias;
-	if (alias == 0)
+	
+	if (alias == 0 )
 	  {
 	    alias = tabname;
 	  }
-	else
-	  {
-	    alias = strdup (alias);
-	    A4GL_trim (alias);
-	  }
+
+	if (strlen(alias)==0) {
+	    alias = tabname;
+	}
+        alias = strdup (alias);
+        A4GL_trim (alias);
+	
 	A4GL_trim (tabname);
-	add_table_action(main_statement_type, tabname,"SELECT",module,line);
+	add_table_action(main_statement_type, alias, "SELECT",module,line);
       }
 
 
@@ -3980,7 +4008,9 @@ calltree_map_select_stmt (char *main_statement_type, struct s_select *select, ch
 }
 
 static void calltree_map_value(char *main_statement,struct s_select_list_item *item, char*module, int line) {
+	if (item==0) return;
 //printf("In calltree_map_value : %s %d\n",main_statement, item->data.type);
+
 	switch (item->data.type) {
         case E_SLI_IBIND:
         case E_SLI_VARIABLE:
@@ -4185,15 +4215,15 @@ static void calltree_map_sql(char *buff,char *module, int line) {
 	calltree_addmap(MAPSET_CRUD_OTHER, buffx,module,line);
 }
 
-static char * guess_sql_stmt(struct struct_prepare_cmd *p,char *module, int line) {
+static char * guess_sql_stmt(struct struct_prepare_cmd *p,char *module, int line,int processed) {
 static char buff[200000];
 static char buff2[200000];
 char *ptr;
 	strcpy(buff,evaluate_expr(p->sql));
 
-	ptr=calltree_get_ident(p->stmtid), 
+	ptr=calltree_get_ident(p->stmtid); 
 
-	sprintf(buff2, "<PREPARE STMTID=\"%s\" MODULE=\"%s\" LINE=\"%d\" STMT=\"%s\" />\n",ptr, module,line, xml_encode(buff));
+	sprintf(buff2, "<PREPARE STMTID=\"%s\" MODULE=\"%s\" LINE=\"%d\" STMT=\"%s\" PROCESSED=\"%d\"/>\n",ptr, module,line, xml_encode(buff), processed);
 	calltree_addmap(MAPSET_CRUD_DYNAMIC,buff2,module,line);
 	return buff;
 }

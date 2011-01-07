@@ -1,4 +1,5 @@
 identifier: NAMED 
+	| QUESTION_MARK
 ;
 
 fetch_cursor_name_p: NAMED {
@@ -13,6 +14,7 @@ real_number : NUMBER_VALUE
 
 var_ident_qchar : NAMED
 	| CHAR_VALUE {strcpy($<str>$, A4GL_strip_quotes ($<str>1));}
+	| QUESTION_MARK 
 
 ;
 
@@ -23,6 +25,7 @@ opt_into_sel: {$<ptr_list>$=0;}
 
 char_or_var : CHAR_VALUE 
 	| variable { if ((scan_variable($<str>1)&15)!=0) {a4gl_yyerror("Variable must be of type charr..");YYERROR;} }
+	| QUESTION_MARK 
 ;
 
 opt_use : {strcpy($<str>$,"");} 
@@ -138,7 +141,7 @@ var_ident_ibind_sli :  column_name_x {
 	$<s_select_list_item>$=new_select_list_item_column_from_transform(s);
 	acl_free(s);
 	}
-	 | QUESTION_MARK {  
+	| QUESTION_MARK {  
 		$<s_select_list_item>$=new_select_list_item_builtin_const(E_SLI_QUERY_PLACEHOLDER);}
 	| replace_with_variable {
 		$<s_select_list_item>$=new_select_list_item_replace_var($<sql_string>1);

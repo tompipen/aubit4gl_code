@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: util.c,v 1.1 2011-01-07 11:43:21 mikeaubury Exp $
+# $Id: util.c,v 1.2 2011-01-07 14:34:00 mikeaubury Exp $
 #
 */
 
@@ -116,6 +116,8 @@ A4GLSQLCV_setbuffer (char *s)
 struct command *A4GLPARSECMD_processSQL (char *sql)
 {
   lastCmd=0;
+
+//yydebug=1;
   A4GLSQLCV_setbuffer (sql);
   sqlparse_yyparse ();
   return lastCmd;
@@ -125,6 +127,7 @@ struct command *A4GLPARSECMD_processSQL (char *sql)
 int
 sqlparse_yyerror (char *s)
 {
+printf("\nTrying to decode PREPARE statement - can't parse\n----> %s in\n%s\n",s, Sql);
 return 0;
 }
 

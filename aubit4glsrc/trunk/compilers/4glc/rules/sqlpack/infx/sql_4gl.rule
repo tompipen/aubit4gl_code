@@ -291,9 +291,9 @@ value_expression_initial_sli:
 
 
 value_expression_initial_sli_nocast :
-	value_expression_complex_sli 	{ $<s_select_list_item>1=$<s_select_list_item>1; }
+	subquery_sli       		{ $<s_select_list_item>$=new_select_list_item_sq(E_SQE_DONT_CARE,$<s_select_list_item>1); }
+	| value_expression_complex_sli 	{ $<s_select_list_item>1=$<s_select_list_item>1; }
 	| var_ident_ibind_sli 		{ $<s_select_list_item>1=$<s_select_list_item>1; }
-	| subquery_sli       		{ $<s_select_list_item>$=new_select_list_item_sq(E_SQE_DONT_CARE,$<s_select_list_item>1); }
 	| ALL subquery_sli   		{ $<s_select_list_item>$=new_select_list_item_sq(E_SQE_ALL,$<s_select_list_item>2); }
 	| ANY subquery_sli   		{ $<s_select_list_item>$=new_select_list_item_sq(E_SQE_ANY,$<s_select_list_item>2); }
 	| SOME subquery_sli  		{ $<s_select_list_item>$=new_select_list_item_sq(E_SQE_SOME,$<s_select_list_item>2); }

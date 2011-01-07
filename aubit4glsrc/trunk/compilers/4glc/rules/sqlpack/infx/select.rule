@@ -137,15 +137,15 @@ query_specification_select:
 ;
 
 subquery_sli:
-	OPEN_BRACKET KW_SELECT op_first op_ad select_list_slil table_expression_2_select CLOSE_BRACKET {
-		$<s_select>$=$<s_select>6;
-		if ($<integer_val>3!=-1) {
+	OPEN_BRACKET_SELECT op_first op_ad select_list_slil table_expression_2_select CLOSE_BRACKET {
+		$<s_select>$=$<s_select>5;
+		if ($<integer_val>2!=-1) {
 			$<s_select>$->limit.start=1;
-			$<s_select>$->limit.end=$<integer_val>3;
+			$<s_select>$->limit.end=$<integer_val>2;
 		}
-		$<s_select>$->modifier=acl_strdup($<str>4);
+		$<s_select>$->modifier=acl_strdup($<str>3);
 		A4GL_set_associated_mem($<s_select>$, $<s_select>$->modifier);
-		$<s_select>$->select_list=$<s_select_list_item_list>5;
+		$<s_select>$->select_list=$<s_select_list_item_list>4;
 		$<s_select_list_item>$=new_select_list_subquery($<s_select>$);
 	}
 ;
