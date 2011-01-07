@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.435 2011-01-07 12:11:15 mikeaubury Exp $
+dnl # $Id: configure.in,v 1.436 2011-01-07 12:36:22 mikeaubury Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -48,7 +48,7 @@ export LD_LIBRARY_PATH=/lib:$LD_LIBRARY_PATH
 
 #We need autoconf at least version 2.50
 AC_PREREQ(2.50)
-AC_REVISION($Id: configure.in,v 1.435 2011-01-07 12:11:15 mikeaubury Exp $)
+AC_REVISION($Id: configure.in,v 1.436 2011-01-07 12:36:22 mikeaubury Exp $)
 
 #FIXME: Some versions of autoconf are complaining that $AUBIT_VERSION and 
 #$AUBIT_BUILD are not constants. Maybe we should drop stuff in tools/project 
@@ -4027,15 +4027,15 @@ AC_ARG_WITH(mysql,
 	if test "$withval" != "no"; then
 
 		if test "$withval" = "yes"; then
-    		withval=/usr/local
-		    CUSTOM_WITHVAL=0
+    			withval=/usr/local
+		    	CUSTOM_WITHVAL=0
 		else
 			#user specified custom withval
-		    CUSTOM_WITHVAL=1
+		    	CUSTOM_WITHVAL=1
 			WARN_LD_LIBRARY_REASON="$WARN_LD_LIBRARY_REASON MySQL"
 			WARN_LD_LIBRARY_PATH=1
 			ADD_LD_LIBRARY_PATH="$withval$A4GL_PATH_SEP$ADD_LD_LIBRARY_PATH"
-	    fi
+	    	fi
 
 		old_CFLAGS="$CFLAGS"
 		old_LIBS="$LIBS"
@@ -4060,7 +4060,8 @@ AC_ARG_WITH(mysql,
 			echo "CPPFLAGS=$CPPFLAGS"
 		fi
 
-		LT_AC_CHECK_SHLIB([mysqlclient], [mysql_stmt_close])
+		AC_CHECK_LIB([mysqlclient], [mysql_stmt_close])
+		#LT_AC_CHECK_SHLIB([mysqlclient], [mysql_stmt_close],[isShared=1],[isShared=0])
 		
 		#AC CUMULATES ALL LIBS IT FINDS IN A WAY, SO WE NEED TO RESET THIS
 		#as it may coinflict with msqld
@@ -11303,7 +11304,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure.in,v 1.435 2011-01-07 12:11:15 mikeaubury Exp $
+| $Id: configure.in,v 1.436 2011-01-07 12:36:22 mikeaubury Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

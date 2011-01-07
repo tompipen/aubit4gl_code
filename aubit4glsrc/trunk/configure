@@ -19145,15 +19145,15 @@ if test "${with_mysql+set}" = set; then :
 	if test "$withval" != "no"; then
 
 		if test "$withval" = "yes"; then
-    		withval=/usr/local
-		    CUSTOM_WITHVAL=0
+    			withval=/usr/local
+		    	CUSTOM_WITHVAL=0
 		else
 			#user specified custom withval
-		    CUSTOM_WITHVAL=1
+		    	CUSTOM_WITHVAL=1
 			WARN_LD_LIBRARY_REASON="$WARN_LD_LIBRARY_REASON MySQL"
 			WARN_LD_LIBRARY_PATH=1
 			ADD_LD_LIBRARY_PATH="$withval$A4GL_PATH_SEP$ADD_LD_LIBRARY_PATH"
-	    fi
+	    	fi
 
 		old_CFLAGS="$CFLAGS"
 		old_LIBS="$LIBS"
@@ -19178,12 +19178,12 @@ if test "${with_mysql+set}" = set; then :
 			echo "CPPFLAGS=$CPPFLAGS"
 		fi
 
-		{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for mysql_stmt_close in shared version of -lmysqlclient" >&5
-$as_echo_n "checking for mysql_stmt_close in shared version of -lmysqlclient... " >&6; }
-if ${lt_ac_cv_shlib_mysqlclient_mysql_stmt_close+:} false; then :
+		{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for mysql_stmt_close in -lmysqlclient" >&5
+$as_echo_n "checking for mysql_stmt_close in -lmysqlclient... " >&6; }
+if ${ac_cv_lib_mysqlclient_mysql_stmt_close+:} false; then :
   $as_echo_n "(cached) " >&6
 else
-  lt_ac_check_shlib_save_LIBS=$LIBS
+  ac_check_lib_save_LIBS=$LIBS
 LIBS="-lmysqlclient  $LIBS"
 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
@@ -19203,44 +19203,27 @@ return mysql_stmt_close ();
   return 0;
 }
 _ACEOF
-rm -rf $objdir
-rm -f conftest.$ac_objext conftest.la
-ac_ltcompile='./libtool --mode=compile $CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext -o conftest.lo >&5'
-ac_ltlink_la='./libtool --mode=link $CC -rpath `pwd` $CFLAGS $LDFLAGS -o libconftest.la conftest.lo $LIBS >&5'
-if { { eval echo "\"\$as_me\":${as_lineno-$LINENO}: \"$ac_ltcompile\""; } >&5
-  (eval $ac_ltcompile) 2>&5
-  ac_status=$?
-  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
-  test $ac_status = 0; } &&
-{ { eval echo "\"\$as_me\":${as_lineno-$LINENO}: \"$ac_ltlink_la\""; } >&5
-  (eval $ac_ltlink_la) 2>&5
-  ac_status=$?
-  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
-  test $ac_status = 0; } &&
-{ ac_try='test -s libconftest.la'
-  { { eval echo "\"\$as_me\":${as_lineno-$LINENO}: \"$ac_try\""; } >&5
-  (eval $ac_try) 2>&5
-  ac_status=$?
-  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
-  test $ac_status = 0; }; }; then :
-  lt_ac_cv_shlib_mysqlclient_mysql_stmt_close=yes
+if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_lib_mysqlclient_mysql_stmt_close=yes
 else
-  $as_echo "$as_me: failed program was:" >&5
-sed 's/^/| /' conftest.$ac_ext >&5
-
-lt_ac_cv_shlib_mysqlclient_mysql_stmt_close=no
-firm -rf $objdir
-rm -f conftest* libconftest*
-LIBS=$lt_ac_check_shlib_save_LIBS
+  ac_cv_lib_mysqlclient_mysql_stmt_close=no
 fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $lt_ac_cv_shlib_mysqlclient_mysql_stmt_close" >&5
-$as_echo "$lt_ac_cv_shlib_mysqlclient_mysql_stmt_close" >&6; }
-if test $lt_ac_cv_shlib_mysqlclient_mysql_stmt_close = yes; then :
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_mysqlclient_mysql_stmt_close" >&5
+$as_echo "$ac_cv_lib_mysqlclient_mysql_stmt_close" >&6; }
+if test "x$ac_cv_lib_mysqlclient_mysql_stmt_close" = xyes; then :
   cat >>confdefs.h <<_ACEOF
-#define HAVE_SHLIBMYSQLCLIENT 1
+#define HAVE_LIBMYSQLCLIENT 1
 _ACEOF
 
+  LIBS="-lmysqlclient $LIBS"
+
 fi
+
+		#LT_AC_CHECK_SHLIB([mysqlclient], [mysql_stmt_close],[isShared=1],[isShared=0])
 
 		#AC CUMULATES ALL LIBS IT FINDS IN A WAY, SO WE NEED TO RESET THIS
 		#as it may coinflict with msqld
@@ -30084,9 +30067,9 @@ $as_echo "HP-UX has dlopen in standard libraries." >&6; }
 			#function as such in standard libraries first.
 
 			old_LIBS="$LIBS"
-			{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -ldl" >&5
-$as_echo_n "checking for main in -ldl... " >&6; }
-if ${ac_cv_lib_dl_main+:} false; then :
+			{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for dlopen in -ldl" >&5
+$as_echo_n "checking for dlopen in -ldl... " >&6; }
+if ${ac_cv_lib_dl_dlopen+:} false; then :
   $as_echo_n "(cached) " >&6
 else
   ac_check_lib_save_LIBS=$LIBS
@@ -30094,27 +30077,33 @@ LIBS="-ldl  $LIBS"
 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 
-
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char dlopen ();
 int
 main ()
 {
-return main ();
+return dlopen ();
   ;
   return 0;
 }
 _ACEOF
 if ac_fn_c_try_link "$LINENO"; then :
-  ac_cv_lib_dl_main=yes
+  ac_cv_lib_dl_dlopen=yes
 else
-  ac_cv_lib_dl_main=no
+  ac_cv_lib_dl_dlopen=no
 fi
 rm -f core conftest.err conftest.$ac_objext \
     conftest$ac_exeext conftest.$ac_ext
 LIBS=$ac_check_lib_save_LIBS
 fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_dl_main" >&5
-$as_echo "$ac_cv_lib_dl_main" >&6; }
-if test "x$ac_cv_lib_dl_main" = xyes; then :
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_dl_dlopen" >&5
+$as_echo "$ac_cv_lib_dl_dlopen" >&6; }
+if test "x$ac_cv_lib_dl_dlopen" = xyes; then :
   cat >>confdefs.h <<_ACEOF
 #define HAVE_LIBDL 1
 _ACEOF
@@ -32094,7 +32083,7 @@ test "x$enable_libtool_lock" != xno && enable_libtool_lock=yes
 case $host in
 *-*-irix6*)
   # Find out which ABI we are using.
-  echo '#line 32097 "configure"' > conftest.$ac_ext
+  echo '#line 32086 "configure"' > conftest.$ac_ext
   if { { eval echo "\"\$as_me\":${as_lineno-$LINENO}: \"$ac_compile\""; } >&5
   (eval $ac_compile) 2>&5
   ac_status=$?
@@ -38227,7 +38216,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure,v 1.466 2011-01-04 18:05:46 mikeaubury Exp $
+| $Id: configure,v 1.467 2011-01-07 12:36:22 mikeaubury Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X
