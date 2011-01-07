@@ -43,6 +43,7 @@
 #include "lint.h"
 #include "linearise.h"
 #include "expr_munging.h"
+#include "a4gl_API_sqlparsecmd.h"
 
 #define MODE_TRY 0
 #define MODE_BUY 1
@@ -58,6 +59,7 @@ static int cache_expression_list (char *s, struct expr_str_list *srclist, int mo
 extern int yylineno;
 char *lint_module = 0;
 int inIf=0;
+static int isLineCalled(char *module, int line) ;
 //static void dump_crud(void) ;
 static void calltree_map_sql(char *buff,char *module, int line) ;
 static void load_boltons (char *fname);
@@ -77,6 +79,7 @@ int ignLibFunc=1;
 static int run_calltree (char *s);
 static void add_variable_value(variable_usage *u, expr_str *val) ;
 static char * evaluate_expr (expr_str * e);
+static int process_cmd(struct command *cmd,int mode) ;
 
 int inc4GL = 1;			/* Include 4gl in the output */
 int incProg = 1;
@@ -2066,8 +2069,6 @@ static int
 add_calltree_calls (char *s, s_commands * func_commands, int mode)
 {
   int a;
-  struct on_events *evt_list;
-  struct struct_display_cmd *disp;
   int call_cnt = 0;
 
   if (func_commands == 0)
@@ -2079,81 +2080,91 @@ add_calltree_calls (char *s, s_commands * func_commands, int mode)
 
   for (a = 0; a < func_commands->cmds.cmds_len; a++)
     {
+		call_cnt+=process_cmd(func_commands->cmds.cmds_val[a],mode);
+    }
 
-	last_mod=func_commands->cmds.cmds_val[a]->module;
-	last_line=func_commands->cmds.cmds_val[a]->lineno;
+  return call_cnt;
+}
 
-      switch (func_commands->cmds.cmds_val[a]->cmd_data.type)
+
+static int process_cmd(struct command *cmd,int mode) {
+	int call_cnt=0;
+  struct on_events *evt_list;
+  struct struct_display_cmd *disp;
+	last_mod=cmd->module;
+	last_line=cmd->lineno;
+
+      switch (cmd->cmd_data.type)
 	{
 
 
 
 	case E_CMD_INIT_CMD:
-		add_symbol_assign_single_expr(func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.init_cmd.varlist,last_mod,last_line,A4GL_new_expr_simple(ET_EXPR_NULL));
+		add_symbol_assign_single_expr(cmd->cmd_data.command_data_u.init_cmd.varlist,last_mod,last_line,A4GL_new_expr_simple(ET_EXPR_NULL));
 		break;
 
 
 	case E_CMD_DELETE_CMD:
-		calltree_map_insert_delete_update("DELETE", func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.delete_cmd.table, 
-				func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.delete_cmd.where_clause, last_mod,last_line);
+		calltree_map_insert_delete_update("DELETE", cmd->cmd_data.command_data_u.delete_cmd.table, 
+				cmd->cmd_data.command_data_u.delete_cmd.where_clause, last_mod,last_line);
 		break;
 
 	case E_CMD_SQL_CMD:
-			calltree_map_sql(func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.sql_cmd.sql,last_mod,last_line);
+			calltree_map_sql(cmd->cmd_data.command_data_u.sql_cmd.sql,last_mod,last_line);
 		break;
 
 	case E_CMD_INSERT_CMD:
-		calltree_map_insert_delete_update("INSERT", func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.insert_cmd.table, NULL, last_mod,last_line);
+		calltree_map_insert_delete_update("INSERT", cmd->cmd_data.command_data_u.insert_cmd.table, NULL, last_mod,last_line);
 
-		if (func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.insert_cmd.subselect) {
-			calltree_map_select_stmt("INSERT", func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.insert_cmd.subselect, last_mod,last_line);
+		if (cmd->cmd_data.command_data_u.insert_cmd.subselect) {
+			calltree_map_select_stmt("INSERT", cmd->cmd_data.command_data_u.insert_cmd.subselect, last_mod,last_line);
 		}
-		if (func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.insert_cmd.value_list) {
-			calltree_map_value_list("INSERT", func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.insert_cmd.value_list, last_mod,last_line);
+		if (cmd->cmd_data.command_data_u.insert_cmd.value_list) {
+			calltree_map_value_list("INSERT", cmd->cmd_data.command_data_u.insert_cmd.value_list, last_mod,last_line);
 		}
 		if (mode==MODE_BUY) {
 		}
 		break;
 
 	case E_CMD_UPDATE_CMD:
-		calltree_map_insert_delete_update("UPDATE", func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.update_cmd.table, 
-				func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.update_cmd.where_clause, last_mod,last_line);
-		calltree_map_value_list("UPDATE", func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.update_cmd.value_list, last_mod,last_line);
+		calltree_map_insert_delete_update("UPDATE", cmd->cmd_data.command_data_u.update_cmd.table, 
+				cmd->cmd_data.command_data_u.update_cmd.where_clause, last_mod,last_line);
+		calltree_map_value_list("UPDATE", cmd->cmd_data.command_data_u.update_cmd.value_list, last_mod,last_line);
 		if (mode==MODE_BUY) {
 		}
 		break;
 
 	case E_CMD_SELECT_CMD:
 		if (mode==MODE_BUY || 1) {
-		 	calltree_map_select_stmt("SELECT", func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.select_cmd.sql, last_mod,last_line);
+		 	calltree_map_select_stmt("SELECT", cmd->cmd_data.command_data_u.select_cmd.sql, last_mod,last_line);
 		}
-		add_symbol_assign(func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.select_cmd.sql->into,last_mod,last_line,NULL);
+		add_symbol_assign(cmd->cmd_data.command_data_u.select_cmd.sql->into,last_mod,last_line,NULL);
 		break;
 
 	case E_CMD_EXECUTE_CMD:
-		add_symbol(calltree_get_ident(func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.execute_cmd.sql_stmtid),last_mod,last_line,"STMT","EXECUTE");
-		add_symbol_assign(func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.execute_cmd.outbind,last_mod,last_line,NULL);
+		add_symbol(calltree_get_ident(cmd->cmd_data.command_data_u.execute_cmd.sql_stmtid),last_mod,last_line,"STMT","EXECUTE");
+		add_symbol_assign(cmd->cmd_data.command_data_u.execute_cmd.outbind,last_mod,last_line,NULL);
 		break;
 
 	case E_CMD_LOCATE_CMD:
-		add_symbol_assign(func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.locate_cmd.variables,last_mod,last_line,NULL);
+		add_symbol_assign(cmd->cmd_data.command_data_u.locate_cmd.variables,last_mod,last_line,NULL);
 		break;
 
 
 
 
 	case E_CMD_WHENEVER_CMD:
-	  set_whenever (func_commands->cmds.cmds_val[a]);
+	  set_whenever (cmd);
 	  call_cnt += print_whenever (mode);
 	  break;
 
 	case E_CMD_FOR_CMD:
 
-	  call_cnt += cache_expression ("", &func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.for_cmd.start, mode);
-	  call_cnt += cache_expression ("", &func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.for_cmd.end, mode);
-	  call_cnt += cache_expression ("", &func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.for_cmd.step, mode);
+	  call_cnt += cache_expression ("", &cmd->cmd_data.command_data_u.for_cmd.start, mode);
+	  call_cnt += cache_expression ("", &cmd->cmd_data.command_data_u.for_cmd.end, mode);
+	  call_cnt += cache_expression ("", &cmd->cmd_data.command_data_u.for_cmd.step, mode);
 
-	  if (calls_something (func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.for_cmd.for_commands))
+	  if (calls_something (cmd->cmd_data.command_data_u.for_cmd.for_commands))
 	    {
 	      call_cnt++;
 	      if (mode == MODE_BUY)
@@ -2161,19 +2172,19 @@ add_calltree_calls (char *s, s_commands * func_commands, int mode)
 		  print_indent ();
 		  fprintf (output, "<FOR START=\"%s\"",
 			   xml_encode (expr_as_string_when_possible
-				       (func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.for_cmd.start)));
+				       (cmd->cmd_data.command_data_u.for_cmd.start)));
 		  fprintf (output, " END=\"%s\"",
 			   xml_encode (expr_as_string_when_possible
-				       (func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.for_cmd.end)));
+				       (cmd->cmd_data.command_data_u.for_cmd.end)));
 		  fprintf (output, " STEP=\"%s\" LINE=\"%d\">\n",
 			   xml_encode (expr_as_string_when_possible
-				       (func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.for_cmd.step)),
-			   func_commands->cmds.cmds_val[a]->lineno);
+				       (cmd->cmd_data.command_data_u.for_cmd.step)),
+			   cmd->lineno);
 		  indent++;
 		  print_indent ();
 		  fprintf (output, "<COMMANDS >\n");
 		  indent++;
-		  add_calltree_calls ("", func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.for_cmd.for_commands, mode);
+		  add_calltree_calls ("", cmd->cmd_data.command_data_u.for_cmd.for_commands, mode);
 		  indent--;
 		  print_indent ();
 		  fprintf (output, "</COMMANDS>\n");
@@ -2190,7 +2201,7 @@ add_calltree_calls (char *s, s_commands * func_commands, int mode)
 	    int xcnt;
 	    int printed_if = 0;
 
-	    ifcmd = &func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.if_cmd;
+	    ifcmd = &cmd->cmd_data.command_data_u.if_cmd;
 
 	    for (xcnt = 0; xcnt < ifcmd->truths.conditions.conditions_len; xcnt++)
 	      {
@@ -2201,12 +2212,12 @@ add_calltree_calls (char *s, s_commands * func_commands, int mode)
 	//printf("%d\n",call_cnt);
 
 
-	    for (xcnt = 0; xcnt < func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.if_cmd.truths.conditions.conditions_len;
+	    for (xcnt = 0; xcnt < cmd->cmd_data.command_data_u.if_cmd.truths.conditions.conditions_len;
 		 xcnt++)
 	      {
 			inIf++;
 		if (calls_something
-		    (func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.if_cmd.truths.conditions.conditions_val[xcnt].
+		    (cmd->cmd_data.command_data_u.if_cmd.truths.conditions.conditions_val[xcnt].
 		     whentrue))
 		  {
 		    call_cnt++;
@@ -2219,7 +2230,7 @@ add_calltree_calls (char *s, s_commands * func_commands, int mode)
 			    fprintf (output, "<IF CONDITION=\"%s\" LINE=\"%d\">\n",
 				     xml_encode (expr_as_string_when_possible
 						 (ifcmd->truths.conditions.conditions_val[xcnt].test_expr)),
-				     func_commands->cmds.cmds_val[a]->lineno);
+				     cmd->lineno);
 			  }
 			indent++;
 			print_indent ();
@@ -2229,7 +2240,7 @@ add_calltree_calls (char *s, s_commands * func_commands, int mode)
 			fprintf (output, "<COMMANDS >\n");
 			indent++;
 			add_calltree_calls ("",
-					    func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.if_cmd.truths.conditions.
+					    cmd->cmd_data.command_data_u.if_cmd.truths.conditions.
 					    conditions_val[xcnt].whentrue, mode);
 			indent--;
 			print_indent ();
@@ -2243,10 +2254,10 @@ add_calltree_calls (char *s, s_commands * func_commands, int mode)
 			inIf--;
 	      }
 
-	    if (func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.if_cmd.whenfalse)
+	    if (cmd->cmd_data.command_data_u.if_cmd.whenfalse)
 	      {
 			inIf++;
-		if (calls_something (func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.if_cmd.whenfalse))
+		if (calls_something (cmd->cmd_data.command_data_u.if_cmd.whenfalse))
 		  {
 		    call_cnt++;
 		    if (mode == MODE_BUY)
@@ -2258,17 +2269,17 @@ add_calltree_calls (char *s, s_commands * func_commands, int mode)
 			    fprintf (output, "<IF CONDITION=\"%s\" LINE=\"%d\">\n",
 				     xml_encode (expr_as_string_when_possible
 						 (ifcmd->truths.conditions.conditions_val[0].test_expr)),
-				     func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.if_cmd.lineno);
+				     cmd->cmd_data.command_data_u.if_cmd.lineno);
 			  }
 			indent++;
 			print_indent ();
 			fprintf (output, "<ONFALSE LINE=\"%d\">\n",
-				 func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.if_cmd.else_lineno);
+				 cmd->cmd_data.command_data_u.if_cmd.else_lineno);
 			indent++;
 			print_indent ();
 			fprintf (output, "<COMMANDS >\n");
 			indent++;
-			add_calltree_calls ("", func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.if_cmd.whenfalse, mode);
+			add_calltree_calls ("", cmd->cmd_data.command_data_u.if_cmd.whenfalse, mode);
 			indent--;
 			print_indent ();
 			fprintf (output, "</COMMANDS>\n");
@@ -2291,21 +2302,21 @@ add_calltree_calls (char *s, s_commands * func_commands, int mode)
 	  break;
 
 	case E_CMD_FOREACH_CMD:
-		add_symbol_assign(func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.foreach_cmd.outputvals,last_mod,last_line,NULL);
-		add_symbol(calltree_get_ident(func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.foreach_cmd.cursorname),last_mod,last_line,"CURSOR","FETCH");
+		add_symbol_assign(cmd->cmd_data.command_data_u.foreach_cmd.outputvals,last_mod,last_line,NULL);
+		add_symbol(calltree_get_ident(cmd->cmd_data.command_data_u.foreach_cmd.cursorname),last_mod,last_line,"CURSOR","FETCH");
 
-	  if (calls_something (func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.foreach_cmd.foreach_commands))
+	  if (calls_something (cmd->cmd_data.command_data_u.foreach_cmd.foreach_commands))
 	    {
 	      call_cnt++;
 	      if (mode == MODE_BUY)
 		{
 		  print_indent ();
-		  fprintf (output, "<FOREACH LINE=\"%d\">\n", func_commands->cmds.cmds_val[a]->lineno);
+		  fprintf (output, "<FOREACH LINE=\"%d\">\n", cmd->lineno);
 		  indent++;
 		  print_indent ();
 		  fprintf (output, "<COMMANDS >\n");
 		  indent++;
-		  add_calltree_calls ("", func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.foreach_cmd.foreach_commands,
+		  add_calltree_calls ("", cmd->cmd_data.command_data_u.foreach_cmd.foreach_commands,
 				      mode);
 		  indent--;
 		  print_indent ();
@@ -2318,8 +2329,8 @@ add_calltree_calls (char *s, s_commands * func_commands, int mode)
 	  break;
 
 	case E_CMD_WHILE_CMD:
-	  call_cnt += cache_expression ("", &func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.while_cmd.while_expr, mode);
-	  if (calls_something (func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.while_cmd.while_commands))
+	  call_cnt += cache_expression ("", &cmd->cmd_data.command_data_u.while_cmd.while_expr, mode);
+	  if (calls_something (cmd->cmd_data.command_data_u.while_cmd.while_commands))
 	    {
 	      call_cnt++;
 
@@ -2328,13 +2339,13 @@ add_calltree_calls (char *s, s_commands * func_commands, int mode)
 		  print_indent ();
 		  fprintf (output, "<WHILE CONDITION=\"%s\" LINE=\"%d\">\n",
 			   xml_encode (expr_as_string_when_possible
-				       (func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.while_cmd.while_expr)),
-			   func_commands->cmds.cmds_val[a]->lineno);
+				       (cmd->cmd_data.command_data_u.while_cmd.while_expr)),
+			   cmd->lineno);
 		  indent++;
 		  print_indent ();
 		  fprintf (output, "<COMMANDS >\n");
 		  indent++;
-		  add_calltree_calls ("", func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.while_cmd.while_commands, mode);
+		  add_calltree_calls ("", cmd->cmd_data.command_data_u.while_cmd.while_commands, mode);
 		  indent--;
 		  print_indent ();
 		  fprintf (output, "</COMMANDS>\n");
@@ -2352,17 +2363,17 @@ add_calltree_calls (char *s, s_commands * func_commands, int mode)
 	    int printed_case = 0;
 	    int xcnt;
 
-	    casecmd = &func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.case_cmd;
+	    casecmd = &cmd->cmd_data.command_data_u.case_cmd;
 
 	    cache_expression ("", &casecmd->case_expr, mode);
 
-	    for (xcnt = 0; xcnt < func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.case_cmd.whens->whens.whens_len; xcnt++)
+	    for (xcnt = 0; xcnt < cmd->cmd_data.command_data_u.case_cmd.whens->whens.whens_len; xcnt++)
 	      {
 
 		call_cnt += cache_expression ("", &casecmd->whens->whens.whens_val[xcnt]->when_expr, mode);
 
 		if (calls_something
-		    (func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.case_cmd.whens->whens.whens_val[xcnt]->when_commands))
+		    (cmd->cmd_data.command_data_u.case_cmd.whens->whens.whens_val[xcnt]->when_commands))
 		  {
 		    call_cnt++;
 		    if (mode == MODE_BUY)
@@ -2374,14 +2385,14 @@ add_calltree_calls (char *s, s_commands * func_commands, int mode)
 				print_indent ();
 				fprintf (output, "<CASE TESTAGAINST=\"%s\" LINE=\"%d\">\n",
 					 xml_encode (expr_as_string_when_possible (casecmd->case_expr)),
-					 func_commands->cmds.cmds_val[a]->lineno);
+					 cmd->lineno);
 				printed_case = 1;
 				indent++;
 			      }
 			    else
 			      {
 				print_indent ();
-				fprintf (output, "<CASE  LINE=\"%d\">\n", func_commands->cmds.cmds_val[a]->lineno);
+				fprintf (output, "<CASE  LINE=\"%d\">\n", cmd->lineno);
 				printed_case = 1;
 				indent++;
 			      }
@@ -2395,7 +2406,7 @@ add_calltree_calls (char *s, s_commands * func_commands, int mode)
 			fprintf (output, "<COMMANDS >\n");
 			indent++;
 			add_calltree_calls ("",
-					    func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.case_cmd.whens->whens.
+					    cmd->cmd_data.command_data_u.case_cmd.whens->whens.
 					    whens_val[xcnt]->when_commands, mode);
 			indent--;
 			print_indent ();
@@ -2408,9 +2419,9 @@ add_calltree_calls (char *s, s_commands * func_commands, int mode)
 	      }
 
 
-	    if (func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.case_cmd.otherwise)
+	    if (cmd->cmd_data.command_data_u.case_cmd.otherwise)
 	      {
-		if (calls_something (func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.case_cmd.otherwise))
+		if (calls_something (cmd->cmd_data.command_data_u.case_cmd.otherwise))
 		  {
 		    call_cnt++;
 		    if (mode == MODE_BUY)
@@ -2418,7 +2429,7 @@ add_calltree_calls (char *s, s_commands * func_commands, int mode)
 			if (!printed_case)
 			  {
 			    print_indent ();
-			    fprintf (output, "<CASE LINE=\"%d\">\n", func_commands->cmds.cmds_val[a]->lineno);
+			    fprintf (output, "<CASE LINE=\"%d\">\n", cmd->lineno);
 			    printed_case = 1;
 			    indent++;
 			  }
@@ -2428,7 +2439,7 @@ add_calltree_calls (char *s, s_commands * func_commands, int mode)
 			print_indent ();
 			fprintf (output, "<COMMANDS >\n");
 			indent++;
-			add_calltree_calls ("", func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.case_cmd.otherwise, mode);
+			add_calltree_calls ("", cmd->cmd_data.command_data_u.case_cmd.otherwise, mode);
 			indent--;
 			print_indent ();
 			fprintf (output, "</COMMANDS>\n");
@@ -2456,9 +2467,9 @@ add_calltree_calls (char *s, s_commands * func_commands, int mode)
 	    {
 	      print_indent ();
 	      fprintf (output, "<START REPORT=\"%s\" LINE=\"%d\"/>\n",
-		       func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.start_cmd.repname,
-		       func_commands->cmds.cmds_val[a]->lineno);
-	      addNode (currfunc, func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.start_cmd.repname, "",func_commands->cmds.cmds_val[a]->lineno,0,"C");
+		       cmd->cmd_data.command_data_u.start_cmd.repname,
+		       cmd->lineno);
+	      addNode (currfunc, cmd->cmd_data.command_data_u.start_cmd.repname, "",cmd->lineno,0,"C");
 	    }
 	  call_cnt++;
 	  break;
@@ -2468,22 +2479,22 @@ add_calltree_calls (char *s, s_commands * func_commands, int mode)
 	    {
 	      print_indent ();
 	      fprintf (output, "<FINISH REPORT=\"%s\" LINE=\"%d\"/>\n",
-		       func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.finish_cmd.repname,
-		       func_commands->cmds.cmds_val[a]->lineno);
-	      addNode (currfunc, func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.finish_cmd.repname, "",func_commands->cmds.cmds_val[a]->lineno,0,"C");
+		       cmd->cmd_data.command_data_u.finish_cmd.repname,
+		       cmd->lineno);
+	      addNode (currfunc, cmd->cmd_data.command_data_u.finish_cmd.repname, "",cmd->lineno,0,"C");
 	    }
 	  call_cnt++;
 	  break;
 
 	case E_CMD_OUTPUT_CMD:
-	  cache_expression_list ("", func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.output_cmd.expressions, mode);
+	  cache_expression_list ("", cmd->cmd_data.command_data_u.output_cmd.expressions, mode);
 	  if (mode == MODE_BUY)
 	    {
 	      print_indent ();
 	      fprintf (output, "<OUTPUT REPORT=\"%s\" LINE=\"%d\"/>\n",
-		       func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.output_cmd.repname,
-		       func_commands->cmds.cmds_val[a]->lineno);
-	      addNode (currfunc, func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.output_cmd.repname, "",func_commands->cmds.cmds_val[a]->lineno,0, "C");
+		       cmd->cmd_data.command_data_u.output_cmd.repname,
+		       cmd->lineno);
+	      addNode (currfunc, cmd->cmd_data.command_data_u.output_cmd.repname, "",cmd->lineno,0, "C");
 	    }
 	  call_cnt++;
 	  break;
@@ -2492,7 +2503,7 @@ add_calltree_calls (char *s, s_commands * func_commands, int mode)
 	case E_CMD_MENU_CMD:
 	  {
 	    int does_call;
-	    evt_list = func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.menu_cmd.events;
+	    evt_list = cmd->cmd_data.command_data_u.menu_cmd.events;
 	    does_call = add_calltree_calls_from_events ("", evt_list, MODE_TRY);
 	    if (does_call)
 	      {
@@ -2500,7 +2511,7 @@ add_calltree_calls (char *s, s_commands * func_commands, int mode)
 		if (mode == MODE_BUY)
 		  {
 		    print_indent ();
-		    fprintf (output, "<MENU LINE=\"%d\">\n", func_commands->cmds.cmds_val[a]->lineno);
+		    fprintf (output, "<MENU LINE=\"%d\">\n", cmd->lineno);
 		    indent++;
 		    print_indent ();
 		    fprintf (output, "<EVENTS>\n");
@@ -2520,7 +2531,7 @@ add_calltree_calls (char *s, s_commands * func_commands, int mode)
 	case E_CMD_PROMPT_CMD:
 	  {
 	    int does_call;
-	    evt_list = func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.prompt_cmd.events;
+	    evt_list = cmd->cmd_data.command_data_u.prompt_cmd.events;
 	    does_call = add_calltree_calls_from_events ("", evt_list, MODE_TRY);
 	    if (does_call)
 	      {
@@ -2528,7 +2539,7 @@ add_calltree_calls (char *s, s_commands * func_commands, int mode)
 		if (mode == MODE_BUY)
 		  {
 		    print_indent ();
-		    fprintf (output, "<PROMPT LINE=\"%d\">\n", func_commands->cmds.cmds_val[a]->lineno);
+		    fprintf (output, "<PROMPT LINE=\"%d\">\n", cmd->lineno);
 		    indent++;
 		    print_indent ();
 		    fprintf (output, "<EVENTS>\n");
@@ -2548,7 +2559,7 @@ add_calltree_calls (char *s, s_commands * func_commands, int mode)
 	case E_CMD_DISPLAY_ARRAY_CMD:
 	  {
 	    int does_call;
-	    evt_list = func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.display_array_cmd.events;
+	    evt_list = cmd->cmd_data.command_data_u.display_array_cmd.events;
 	    does_call = add_calltree_calls_from_events ("", evt_list, MODE_TRY);
 	    if (does_call)
 	      {
@@ -2556,7 +2567,7 @@ add_calltree_calls (char *s, s_commands * func_commands, int mode)
 		if (mode == MODE_BUY)
 		  {
 		    print_indent ();
-		    fprintf (output, "<DISPLAYARRAY LINE=\"%d\">\n", func_commands->cmds.cmds_val[a]->lineno);
+		    fprintf (output, "<DISPLAYARRAY LINE=\"%d\">\n", cmd->lineno);
 		    indent++;
 		    print_indent ();
 		    fprintf (output, "<EVENTS>\n");
@@ -2577,8 +2588,8 @@ add_calltree_calls (char *s, s_commands * func_commands, int mode)
 	case E_CMD_INPUT_CMD:
 	  {
 	    int does_call;
-		add_symbol_assign(func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.input_cmd.variables,last_mod,last_line,NULL);
-	    evt_list = func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.input_cmd.events;
+		add_symbol_assign(cmd->cmd_data.command_data_u.input_cmd.variables,last_mod,last_line,NULL);
+	    evt_list = cmd->cmd_data.command_data_u.input_cmd.events;
 	    does_call = add_calltree_calls_from_events ("", evt_list, MODE_TRY);
 	    if (does_call)
 	      {
@@ -2586,7 +2597,7 @@ add_calltree_calls (char *s, s_commands * func_commands, int mode)
 		if (mode == MODE_BUY)
 		  {
 		    print_indent ();
-		    fprintf (output, "<INPUT LINE=\"%d\">\n", func_commands->cmds.cmds_val[a]->lineno);
+		    fprintf (output, "<INPUT LINE=\"%d\">\n", cmd->lineno);
 		    indent++;
 		    print_indent ();
 		    fprintf (output, "<EVENTS>\n");
@@ -2606,8 +2617,8 @@ add_calltree_calls (char *s, s_commands * func_commands, int mode)
 	case E_CMD_INPUT_ARRAY_CMD:
 	  {
 	    int does_call;
-		add_symbol_assign_single(func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.input_array_cmd.arrayname,last_mod,last_line,NULL);
-	    evt_list = func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.input_array_cmd.events;
+		add_symbol_assign_single(cmd->cmd_data.command_data_u.input_array_cmd.arrayname,last_mod,last_line,NULL);
+	    evt_list = cmd->cmd_data.command_data_u.input_array_cmd.events;
 	    does_call = add_calltree_calls_from_events ("", evt_list, MODE_TRY);
 	    if (does_call)
 	      {
@@ -2615,7 +2626,7 @@ add_calltree_calls (char *s, s_commands * func_commands, int mode)
 		if (mode == MODE_BUY)
 		  {
 		    print_indent ();
-		    fprintf (output, "<INPUTARRAY LINE=\"%d\">\n", func_commands->cmds.cmds_val[a]->lineno);
+		    fprintf (output, "<INPUTARRAY LINE=\"%d\">\n", cmd->lineno);
 		    indent++;
 		    print_indent ();
 		    fprintf (output, "<EVENTS>\n");
@@ -2635,8 +2646,8 @@ add_calltree_calls (char *s, s_commands * func_commands, int mode)
 	case E_CMD_CONSTRUCT_CMD:
 	  {
 	    int does_call;
-		add_symbol_assign_single(func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.construct_cmd.constr_var,last_mod,last_line,NULL);
-	    evt_list = func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.construct_cmd.events;
+		add_symbol_assign_single(cmd->cmd_data.command_data_u.construct_cmd.constr_var,last_mod,last_line,NULL);
+	    evt_list = cmd->cmd_data.command_data_u.construct_cmd.events;
 	    does_call = add_calltree_calls_from_events ("", evt_list, MODE_TRY);
 	    if (does_call)
 	      {
@@ -2644,7 +2655,7 @@ add_calltree_calls (char *s, s_commands * func_commands, int mode)
 		if (mode == MODE_BUY)
 		  {
 		    print_indent ();
-		    fprintf (output, "<CONSTRUCT LINE=\"%d\">\n", func_commands->cmds.cmds_val[a]->lineno);
+		    fprintf (output, "<CONSTRUCT LINE=\"%d\">\n", cmd->lineno);
 		    indent++;
 		    print_indent ();
 		    fprintf (output, "<EVENTS>\n");
@@ -2666,7 +2677,7 @@ add_calltree_calls (char *s, s_commands * func_commands, int mode)
 
 
 	case E_CMD_DISPLAY_CMD:
-	  disp = &func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.display_cmd;
+	  disp = &cmd->cmd_data.command_data_u.display_cmd;
 	  call_cnt += cache_expression_list ("", disp->exprs, mode);
 	  if (disp->where->dttype == DT_DISPLAY_TYPE_AT)
 	    {
@@ -2678,179 +2689,193 @@ add_calltree_calls (char *s, s_commands * func_commands, int mode)
 
 	case E_CMD_ERROR_CMD:
 	  call_cnt +=
-	    cache_expression_list ("", func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.error_cmd.expr_list, mode);
+	    cache_expression_list ("", cmd->cmd_data.command_data_u.error_cmd.expr_list, mode);
 	  break;
 
 	case E_CMD_SLEEP_CMD:
-	  call_cnt += cache_expression ("", &func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.sleep_cmd.sleep_expr, mode);
+	  call_cnt += cache_expression ("", &cmd->cmd_data.command_data_u.sleep_cmd.sleep_expr, mode);
 	  break;
 
 	case E_CMD_MOVE_CMD:
-		add_symbol(calltree_get_ident(func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.move_cmd.windowname),last_mod,last_line,"WINDOW","MOVE");
-	  call_cnt += cache_expression ("", &func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.move_cmd.x, mode);
-	  call_cnt += cache_expression ("", &func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.move_cmd.y, mode);
+		add_symbol(calltree_get_ident(cmd->cmd_data.command_data_u.move_cmd.windowname),last_mod,last_line,"WINDOW","MOVE");
+	  call_cnt += cache_expression ("", &cmd->cmd_data.command_data_u.move_cmd.x, mode);
+	  call_cnt += cache_expression ("", &cmd->cmd_data.command_data_u.move_cmd.y, mode);
 	  break;
 
 	case E_CMD_SHOW_MENU_CMD:
-	  call_cnt += cache_expression ("", &func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.show_menu_cmd.mn_file, mode);
+	  call_cnt += cache_expression ("", &cmd->cmd_data.command_data_u.show_menu_cmd.mn_file, mode);
 	  break;
 
 	case E_CMD_RUN_CMD:
-	  call_cnt += cache_expression ("", &func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.run_cmd.run_string, mode);
+	  call_cnt += cache_expression ("", &cmd->cmd_data.command_data_u.run_cmd.run_string, mode);
 	  break;
 
 	case E_CMD_RUN_WAITING_FOR_CMD:
-	  call_cnt += cache_expression ("", &func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.run_waiting_for_cmd.run_string, mode);
-	  call_cnt += cache_expression ("", &func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.run_waiting_for_cmd.sleep, mode);
-	  call_cnt += cache_expression ("", &func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.run_waiting_for_cmd.msg_repeat_every, mode);
-	  call_cnt += cache_expression ("", &func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.run_waiting_for_cmd.msg_text, mode);
+	  call_cnt += cache_expression ("", &cmd->cmd_data.command_data_u.run_waiting_for_cmd.run_string, mode);
+	  call_cnt += cache_expression ("", &cmd->cmd_data.command_data_u.run_waiting_for_cmd.sleep, mode);
+	  call_cnt += cache_expression ("", &cmd->cmd_data.command_data_u.run_waiting_for_cmd.msg_repeat_every, mode);
+	  call_cnt += cache_expression ("", &cmd->cmd_data.command_data_u.run_waiting_for_cmd.msg_text, mode);
 	  break;
 
 	case E_CMD_SCROLL_CMD:
-	  call_cnt += cache_expression ("", &func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.scroll_cmd.val, mode);
+	  call_cnt += cache_expression ("", &cmd->cmd_data.command_data_u.scroll_cmd.val, mode);
 	  break;
 	case E_CMD_EXIT_PROG_CMD:
-	  call_cnt += cache_expression ("", &func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.exit_prog_cmd.exit_val, mode);
+	  call_cnt += cache_expression ("", &cmd->cmd_data.command_data_u.exit_prog_cmd.exit_val, mode);
 	  break;
 
 	case E_CMD_RETURN_CMD:
-	  call_cnt += cache_expression_list ("", func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.return_cmd.retvals, mode);
+	  call_cnt += cache_expression_list ("", cmd->cmd_data.command_data_u.return_cmd.retvals, mode);
 	  break;
 
 	case E_CMD_MESSAGE_CMD:
 	  call_cnt +=
-	    cache_expression_list ("", func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.message_cmd.message_expr, mode);
+	    cache_expression_list ("", cmd->cmd_data.command_data_u.message_cmd.message_expr, mode);
 	  break;
 
 
 	case E_CMD_CALL_CMD:
-		add_symbol_assign(func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.call_cmd.returning,last_mod,last_line,NULL);
-	  call_cnt += cache_expression ("", &func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.call_cmd.fcall, mode);
+		add_symbol_assign(cmd->cmd_data.command_data_u.call_cmd.returning,last_mod,last_line,NULL);
+	  call_cnt += cache_expression ("", &cmd->cmd_data.command_data_u.call_cmd.fcall, mode);
 	  break;
 
 	case E_CMD_PDF_CALL_CMD:
-	  call_cnt += cache_expression ("", &func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.pdf_call_cmd.fcall, mode);
+	  call_cnt += cache_expression ("", &cmd->cmd_data.command_data_u.pdf_call_cmd.fcall, mode);
 	  break;
 
 	case E_CMD_LET_CMD:
-		add_symbol_assign(func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.let_cmd.vars,last_mod,last_line, func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.let_cmd.vals );
-	  call_cnt += cache_expression_list ("", func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.let_cmd.vals, mode);
+		add_symbol_assign(cmd->cmd_data.command_data_u.let_cmd.vars,last_mod,last_line, cmd->cmd_data.command_data_u.let_cmd.vals );
+	  call_cnt += cache_expression_list ("", cmd->cmd_data.command_data_u.let_cmd.vals, mode);
 	  break;
 
 	case E_CMD_DECLARE_CMD:
-		add_symbol(calltree_get_ident(func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.declare_cmd.cursorname),last_mod,last_line,"CURSOR","DECLARE");
-		if (func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.declare_cmd.declare_dets->ident) {
-			add_symbol(calltree_get_ident(func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.declare_cmd.declare_dets->ident),last_mod,last_line,"STMT","DECLARE");
+		add_symbol(calltree_get_ident(cmd->cmd_data.command_data_u.declare_cmd.cursorname),last_mod,last_line,"CURSOR","DECLARE");
+		if (cmd->cmd_data.command_data_u.declare_cmd.declare_dets->ident) {
+			add_symbol(calltree_get_ident(cmd->cmd_data.command_data_u.declare_cmd.declare_dets->ident),last_mod,last_line,"STMT","DECLARE");
 		}
 		break;
 
 	case E_CMD_PREPARE_CMD:
-		add_symbol(calltree_get_ident(func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.prepare_cmd.stmtid),last_mod,last_line,"STMT","PREPARE");
-			guess_sql_stmt( 
-&func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.prepare_cmd, last_mod,last_line);
+		{
+		struct command *c;
+		char *str;
+		str=evaluate_expr(cmd->cmd_data.command_data_u.prepare_cmd.sql);
+		str=A4GL_strip_quotes(str);
+		c=processSQL(str);
+		if (c==0) {
+	
+			add_symbol(calltree_get_ident(cmd->cmd_data.command_data_u.prepare_cmd.stmtid),last_mod,last_line,"STMT","PREPARE");
+			guess_sql_stmt(&cmd->cmd_data.command_data_u.prepare_cmd, last_mod,last_line);
+		} else {
+			printf("str=%s\n",str);
+			printf("Got a prepare as a command !\n");
+			c->lineno=last_line;
+			c->module=last_mod;
+			process_cmd(c,mode);
+		}
 		
 		break;
 
 	case E_CMD_OPEN_CURSOR_CMD:
-		add_symbol(calltree_get_ident(func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.open_cursor_cmd.cursorname),last_mod,last_line,"CURSOR","OPEN");
+		add_symbol(calltree_get_ident(cmd->cmd_data.command_data_u.open_cursor_cmd.cursorname),last_mod,last_line,"CURSOR","OPEN");
 		break;
 
 	case E_CMD_CLOSE_CMD:
-		if (func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.close_cmd.cl_type==E_CT_WINDOW) {
-			add_symbol(calltree_get_ident(func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.close_cmd.ident),last_mod,last_line,"WINDOW","CLOSE");
+		if (cmd->cmd_data.command_data_u.close_cmd.cl_type==E_CT_WINDOW) {
+			add_symbol(calltree_get_ident(cmd->cmd_data.command_data_u.close_cmd.ident),last_mod,last_line,"WINDOW","CLOSE");
 		} 
 
-		if (func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.close_cmd.cl_type==E_CT_FORM) {
-			add_symbol(calltree_get_ident(func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.close_cmd.ident),last_mod,last_line,"FORM","CLOSE");
+		if (cmd->cmd_data.command_data_u.close_cmd.cl_type==E_CT_FORM) {
+			add_symbol(calltree_get_ident(cmd->cmd_data.command_data_u.close_cmd.ident),last_mod,last_line,"FORM","CLOSE");
 		} 
 		break;
 
 	case E_CMD_CLOSE_SQL_CMD:
-		if (func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.close_sql_cmd.cl_type==E_CT_CURS_OR_PREP) {
+		if (cmd->cmd_data.command_data_u.close_sql_cmd.cl_type==E_CT_CURS_OR_PREP) {
 			// We dont know which - so add them both and let the calltree viewer sort it out..
-			add_symbol(calltree_get_ident(func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.close_sql_cmd.ident),last_mod,last_line,"CURSOR","CLOSE");
-			//add_symbol(calltree_get_ident(func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.close_sql_cmd.ident),last_mod,last_line,"STMT","CLOSE");
+			add_symbol(calltree_get_ident(cmd->cmd_data.command_data_u.close_sql_cmd.ident),last_mod,last_line,"CURSOR","CLOSE");
+			//add_symbol(calltree_get_ident(cmd->cmd_data.command_data_u.close_sql_cmd.ident),last_mod,last_line,"STMT","CLOSE");
 		}
 		break;
 
 	case E_CMD_CURRENT_WIN_CMD:
-		if (func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.current_win_cmd.windowname) {
-			add_symbol(calltree_get_ident(func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.current_win_cmd.windowname),last_mod,last_line,"WINDOW","CURRENT");
+		if (cmd->cmd_data.command_data_u.current_win_cmd.windowname) {
+			add_symbol(calltree_get_ident(cmd->cmd_data.command_data_u.current_win_cmd.windowname),last_mod,last_line,"WINDOW","CURRENT");
 		}
 		break;
 
 	case E_CMD_HIDE_CMD:
-		add_symbol(calltree_get_ident(func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.hide_cmd.windowname),last_mod,last_line,"WINDOW","HIDE");
+		add_symbol(calltree_get_ident(cmd->cmd_data.command_data_u.hide_cmd.windowname),last_mod,last_line,"WINDOW","HIDE");
 		break;
 	case E_CMD_SHOW_CMD:
-		add_symbol(calltree_get_ident(func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.show_cmd.windowname),last_mod,last_line,"WINDOW","SHOW");
+		add_symbol(calltree_get_ident(cmd->cmd_data.command_data_u.show_cmd.windowname),last_mod,last_line,"WINDOW","SHOW");
 		break;
 
 	case E_CMD_OPEN_WINDOW_CMD:
-		add_symbol(calltree_get_ident(func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.open_window_cmd.windowname),last_mod,last_line,"WINDOW","OPEN");
-	  call_cnt += cache_expression ("", &func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.open_window_cmd.x, mode);
-	  call_cnt += cache_expression ("", &func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.open_window_cmd.y, mode);
-	  if (func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.open_window_cmd.wt.wintype == EWT_FORM)
+		add_symbol(calltree_get_ident(cmd->cmd_data.command_data_u.open_window_cmd.windowname),last_mod,last_line,"WINDOW","OPEN");
+	  call_cnt += cache_expression ("", &cmd->cmd_data.command_data_u.open_window_cmd.x, mode);
+	  call_cnt += cache_expression ("", &cmd->cmd_data.command_data_u.open_window_cmd.y, mode);
+	  if (cmd->cmd_data.command_data_u.open_window_cmd.wt.wintype == EWT_FORM)
 	    {
 	      call_cnt += cache_expression ("",
-					    &func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.open_window_cmd.wt.
+					    &cmd->cmd_data.command_data_u.open_window_cmd.wt.
 					    windowtype_u.formfilename, mode);
 	    }
 	  break;
 
 	case E_CMD_PUT_CMD:
-		add_symbol(calltree_get_ident(func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.put_cmd.cursorname),last_mod,last_line,"CURSOR","PUT");
+		add_symbol(calltree_get_ident(cmd->cmd_data.command_data_u.put_cmd.cursorname),last_mod,last_line,"CURSOR","PUT");
 		break;
 
 	case E_CMD_FREE_CMD:
-		add_symbol(calltree_get_ident(func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.free_cmd.cursorname),last_mod,last_line,"CURSOR","FREE");
+		add_symbol(calltree_get_ident(cmd->cmd_data.command_data_u.free_cmd.cursorname),last_mod,last_line,"CURSOR","FREE");
 		break;
 	case E_CMD_FLUSH_CMD:
-		add_symbol(calltree_get_ident(func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.flush_cmd.cursorname),last_mod,last_line,"CURSOR","FLUSH");
+		add_symbol(calltree_get_ident(cmd->cmd_data.command_data_u.flush_cmd.cursorname),last_mod,last_line,"CURSOR","FLUSH");
 		break;
 
 	case E_CMD_FETCH_CMD:
-	add_symbol_assign(func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.fetch_cmd.outbind,last_mod,last_line,NULL);
+	add_symbol_assign(cmd->cmd_data.command_data_u.fetch_cmd.outbind,last_mod,last_line,NULL);
 
-	add_symbol(calltree_get_ident(func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.fetch_cmd.fetch->cursorname),last_mod,last_line,"CURSOR","FETCH");
-	  if (func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.fetch_cmd.fetch)
+	add_symbol(calltree_get_ident(cmd->cmd_data.command_data_u.fetch_cmd.fetch->cursorname),last_mod,last_line,"CURSOR","FETCH");
+	  if (cmd->cmd_data.command_data_u.fetch_cmd.fetch)
 	    {
-	      if (func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.fetch_cmd.fetch->fp)
+	      if (cmd->cmd_data.command_data_u.fetch_cmd.fetch->fp)
 		{
 		  call_cnt +=
-		    cache_expression ("", &func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.fetch_cmd.fetch->fp->fetch_expr,
+		    cache_expression ("", &cmd->cmd_data.command_data_u.fetch_cmd.fetch->fp->fetch_expr,
 				      mode);
 		}
 	    }
 	  break;
 
 	case E_CMD_DISPLAY_FORM_CMD:
-		add_symbol(calltree_get_ident(func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.display_form_cmd.formname),last_mod,last_line,"FORM","DISPLAY");
+		add_symbol(calltree_get_ident(cmd->cmd_data.command_data_u.display_form_cmd.formname),last_mod,last_line,"FORM","DISPLAY");
 	break;
 	case E_CMD_OPEN_FORM_CMD:
-		add_symbol(calltree_get_ident(func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.open_form_cmd.formname),last_mod,last_line,"FORM","OPEN");
+		add_symbol(calltree_get_ident(cmd->cmd_data.command_data_u.open_form_cmd.formname),last_mod,last_line,"FORM","OPEN");
 	  call_cnt +=
-	    cache_expression ("", &func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.open_form_cmd.form_filename, mode);
+	    cache_expression ("", &cmd->cmd_data.command_data_u.open_form_cmd.form_filename, mode);
 	  break;
 
 
 
 	case E_CMD_SET_DATABASE_CMD:
 	  call_cnt +=
-	    cache_expression ("", &func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.set_database_cmd.set_dbname, mode);
+	    cache_expression ("", &cmd->cmd_data.command_data_u.set_database_cmd.set_dbname, mode);
 	  break;
 
 	case E_CMD_NEED_CMD:
-	  call_cnt += cache_expression ("", &func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.need_cmd.expr, mode);
+	  call_cnt += cache_expression ("", &cmd->cmd_data.command_data_u.need_cmd.expr, mode);
 	  break;
 	case E_CMD_PRINT_CMD:
 	  call_cnt +=
-	    cache_expression_list ("", func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.print_cmd.print_expr, mode);
+	    cache_expression_list ("", cmd->cmd_data.command_data_u.print_cmd.print_expr, mode);
 	  break;
 
 	case E_CMD_PRINT_IMG_CMD:
-	  call_cnt += cache_expression ("", &func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.print_img_cmd.scale_x, mode);
-	  call_cnt += cache_expression ("", &func_commands->cmds.cmds_val[a]->cmd_data.command_data_u.print_img_cmd.scale_y, mode);
+	  call_cnt += cache_expression ("", &cmd->cmd_data.command_data_u.print_img_cmd.scale_x, mode);
+	  call_cnt += cache_expression ("", &cmd->cmd_data.command_data_u.print_img_cmd.scale_y, mode);
 	  break;
 
 
@@ -2860,10 +2885,8 @@ add_calltree_calls (char *s, s_commands * func_commands, int mode)
 	  break;
 	}
     }
-
-  return call_cnt;
+return call_cnt;
 }
-
 
 
 static void dump_variables (variable_list *list, char *type) {
@@ -4202,7 +4225,7 @@ if (isLineCalled(module,line)) {
 
 
 
-int isLineCalled(char *module, int line) {
+static int isLineCalled(char *module, int line) {
 	int a;
 	for (a=0;a<functions_cnt;a++) {
 		if (strcmp(functions[a].module, module)==0) {
