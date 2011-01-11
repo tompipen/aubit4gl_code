@@ -54,6 +54,7 @@ int last_line=0;
 static int indent = 0;
 char currfunc[2000]="";
 char currmod[2000]="";
+static void add_assignments_for_parameters(expr_str_list *params,char *module,int lineno) ;
 static int cache_expression (char *s, expr_str ** ptr, int mode);
 static int cache_expression_list (char *s, struct expr_str_list *srclist, int mode);
 extern int yylineno;
@@ -1950,6 +1951,10 @@ static void add_symbol_assign_single_expr(expr_str_list *l,char *module,int line
 int a;
 if (l==0) return;
 
+if (l->list.list_len>2000) {
+	printf("Too many values in assignment to add a value for each\n");
+	return ;
+}
 for (a=0;a<l->list.list_len;a++) {
 		add_symbol_assign_single(l->list.list_val[a],module,lineno, value);
 }
@@ -2980,6 +2985,12 @@ add_clobberings (mods, nmodules) ;
 	      break;
 
 	    case E_MET_FUNCTION_DEFINITION:
+
+	      add_assignments_for_parameters(mods[a].module_entries.module_entries_val[b]->module_entry_u.function_definition.expanded_parameters, 
+				mods[a].module_name,
+                            	mods[a].module_entries.module_entries_val[b]->module_entry_u.function_definition.lineno
+			);
+
 	      add_function (a, mods[a].module_name,
 			    mods[a].module_entries.module_entries_val[b]->module_entry_u.function_definition.lineno,
 			    mods[a].module_entries.module_entries_val[b]->module_entry_u.function_definition.lastlineno,
@@ -2991,6 +3002,11 @@ add_clobberings (mods, nmodules) ;
 	      break;
 
 	    case E_MET_REPORT_DEFINITION:
+	      add_assignments_for_parameters(mods[a].module_entries.module_entries_val[b]->module_entry_u.report_definition.expanded_parameters,
+				mods[a].module_name,
+                            	mods[a].module_entries.module_entries_val[b]->module_entry_u.report_definition.lineno
+		);
+
 	      add_function (a, mods[a].module_name,
 			    mods[a].module_entries.module_entries_val[b]->module_entry_u.report_definition.lineno,
 			    mods[a].module_entries.module_entries_val[b]->module_entry_u.report_definition.lastlineno,
@@ -3002,6 +3018,10 @@ add_clobberings (mods, nmodules) ;
 	      break;
 
 	    case E_MET_PDF_REPORT_DEFINITION:
+	      add_assignments_for_parameters(mods[a].module_entries.module_entries_val[b]->module_entry_u.pdf_report_definition.expanded_parameters,
+				mods[a].module_name,
+                            	mods[a].module_entries.module_entries_val[b]->module_entry_u.pdf_report_definition.lineno
+		);
 	      add_function (a, mods[a].module_name,
 			    mods[a].module_entries.module_entries_val[b]->module_entry_u.pdf_report_definition.lineno,
 			    mods[a].module_entries.module_entries_val[b]->module_entry_u.pdf_report_definition.lastlineno,
@@ -4270,4 +4290,13 @@ static int isLineCalled(char *module, int line) {
 	}
 	printf("Line %s - %d is not called\n",module,line);
 return 0;
+}
+
+
+static void add_assignments_for_parameters(expr_str_list *params,char *module,int lineno) {
+int a;
+if (params==0) return;
+for (a=0;a<params->list.list_len;a++) {
+	add_variable(params->list.list_val[a],module,lineno,"ASSIGN",NULL);
+}
 }

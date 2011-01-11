@@ -2350,6 +2350,7 @@ struct module_entry *c;
 		p_parameters->unexpanded_list.list.list_val=0;
     }
    c->module_entry_u.function_definition.parameters=p_parameters;
+   c->module_entry_u.function_definition.expanded_parameters=0;
 
    c->module_entry_u.function_definition.func_commands=p_commands;
    c->module_entry_u.function_definition.module=A4GL_compiling_module_basename();

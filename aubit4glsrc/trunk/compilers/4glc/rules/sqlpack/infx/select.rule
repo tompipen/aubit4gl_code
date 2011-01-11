@@ -315,6 +315,10 @@ value_expression_complex_sli :
 	| CASE sql_case_stmt END {
 		$<s_select_list_item>$=$<s_select_list_item>2;
 	}
+	| CASE search_condition_sli sql_case_stmt END {
+		$<s_select_list_item>3->data.s_select_list_item_data_u.sqlcase.master_condition=$<s_select_list_item>2;
+		$<s_select_list_item>$=$<s_select_list_item>3;
+	}
 ;
 
 

@@ -197,6 +197,9 @@ func_def	: op_doc4gl_comment ldeffunction {
 				merge_variable_list(&$<module_entry>$->module_entry_u.function_definition.variables, $10);
 				sort_variables_v(&$<module_entry>$->module_entry_u.function_definition.variables);
 
+	
+				$<module_entry>$->module_entry_u.function_definition.expanded_parameters=expand_parameters( &$<module_entry>$->module_entry_u.function_definition.variables, $<module_entry>$->module_entry_u.function_definition.parameters);
+
     				pop_blockcommand("FUNC");
     				clr_function_constants ();
     				A4GL_lex_printcomment("/*end function*/\n");

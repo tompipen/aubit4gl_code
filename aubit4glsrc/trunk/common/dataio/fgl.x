@@ -1,4 +1,4 @@
-/* $Id: fgl.x,v 1.62 2010-12-11 13:09:34 mikeaubury Exp $ */
+/* $Id: fgl.x,v 1.63 2011-01-11 13:04:25 mikeaubury Exp $ */
 typedef string str<>;
 typedef string sql_ident<>;
 
@@ -2842,6 +2842,7 @@ struct s_select_list_item_list  {
 };
 
 struct s_sli_case {
+        struct s_select_list_item *master_condition;
 	elements_ptr elements<>;
 };
 
@@ -3213,6 +3214,7 @@ struct s_function_definition {
 	enum e_function_type function_type;
 	struct expr_str_list expression_list;
 	struct expr_str_list* parameters;
+	struct expr_str_list* expanded_parameters;
 	str module;
 	int lineno;
 	int lastlineno;
@@ -3232,6 +3234,7 @@ struct s_report_definition {
 	struct expr_str_list expression_list;
 	variable_list variables;
 	struct expr_str_list* parameters;
+	struct expr_str_list* expanded_parameters;
 	startrep *report_output_section;
 	s_report_orderby_section *report_orderby_section;
 	report_format_section *reportFormatSection;
@@ -3254,6 +3257,7 @@ struct s_pdf_report_definition {
 	struct expr_str_list expression_list;
 	variable_list variables;
 	struct expr_str_list* parameters;
+	struct expr_str_list* expanded_parameters;
 	pdf_startrep *report_output_section;
 	s_report_orderby_section *report_orderby_section;
 	report_format_section *reportFormatSection;
