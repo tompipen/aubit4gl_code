@@ -414,6 +414,7 @@ function compile_optionals()
 	call run("SQLMetrics", "cd tools/sqlmetrics; make",0)
 	call run("FORMXML Packer", "cd lib/libpacker/formxml; make",0)
 	call run("Optimised 4glc", "cd compilers/4glc; make opt",0)
+	call run("SQL Command parser", "cd compilers/sqlcmd; make ",0)
 
 
 end function
