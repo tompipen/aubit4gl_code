@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.173 2010-08-13 08:47:52 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.174 2011-01-11 13:00:26 mikeaubury Exp $
 #
 */
 
@@ -3021,12 +3021,17 @@ char *
 A4GLSQLCV_make_case (struct s_select *select, struct s_sli_case *i)
 {
   struct s_sli_case_element *ii;
-  static char buff[10000];
+  static char buffx[5][100000];
+  static int case_cnt=0;
   char small_buff1[1000];
   char small_buff2[1000];
   //char small_buff3[1000];
   struct s_select_list_item *p;
   int a;
+ char *buff;
+
+  buff=buffx[case_cnt++];
+
   if (A4GLSQLCV_check_requirement ("CASE_AS_PROCEDURE"))
     {
       if (i->elements.elements_len == 2)
@@ -3045,6 +3050,7 @@ A4GLSQLCV_make_case (struct s_select *select, struct s_sli_case *i)
 					      sqlcaseelement.response),
 			get_select_list_item (select,
 					      i->elements.elements_val[1]->data.s_select_list_item_data_u.sqlcaseelement.response));
+		case_cnt--;
 	      return buff;
 	    }
 	}
@@ -3054,6 +3060,12 @@ A4GLSQLCV_make_case (struct s_select *select, struct s_sli_case *i)
   else
     {
       strcpy (buff, "CASE");
+
+	if (i->master_condition) {
+		strcat(buff," ");
+		strcat(buff,get_select_list_item(select,i->master_condition));
+	}
+
       for (a = 0; a < i->elements.elements_len; a++)
 	{
 	  p = i->elements.elements_val[a];
@@ -3073,6 +3085,7 @@ A4GLSQLCV_make_case (struct s_select *select, struct s_sli_case *i)
       strcat (buff, " END");
     }
 
+		case_cnt--;
   return buff;
 }
 

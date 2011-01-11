@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlexpr.c,v 1.98 2011-01-06 19:46:18 mikeaubury Exp $
+# $Id: sqlexpr.c,v 1.99 2011-01-11 13:00:26 mikeaubury Exp $
 #
 */
 
@@ -181,6 +181,7 @@ new_select_list_item_case (struct s_select_list_item *i)
 {
   struct s_select_list_item *p;
   p = empty_select_list_item (E_SLI_CASE);
+  p->data.s_select_list_item_data_u.sqlcase.master_condition = 0;
   p->data.s_select_list_item_data_u.sqlcase.elements.elements_len = 0;
   p->data.s_select_list_item_data_u.sqlcase.elements.elements_val = 0;
   return append_select_list_item_case (p, i);
