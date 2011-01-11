@@ -2378,6 +2378,7 @@ struct module_entry *c;
    c->module_entry_u.function_definition.variables.variables.variables_val=NULL;
    c->module_entry_u.function_definition.variables.sorted_list=0;
    c->module_entry_u.function_definition.parameters=0;
+   c->module_entry_u.function_definition.expanded_parameters=0;
    c->module_entry_u.function_definition.func_commands=p_commands;
    c->module_entry_u.function_definition.module=A4GL_compiling_module_basename();
    c->module_entry_u.function_definition.lineno=lineno;
