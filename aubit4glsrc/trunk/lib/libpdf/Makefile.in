@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.29 2011-01-08 13:01:07 mikeaubury Exp $
+# $Id: Makefile.in,v 1.30 2011-01-12 14:43:14 mikeaubury Exp $
 #
 
 ROOT        =../..
@@ -68,13 +68,18 @@ HARU_L_FLAGS=-L/usr/local/lib -lhpdf
 
 all: ${ALL}
 
+ifeq "${HAVE_STDCPP}" "0"
+STDCPP=
+else
+STDCPP=-lstdc++
+endif
 
 %.go:%.c
 	$(CC_GO) $(CFLAGS) -c -o$@ $< 
 
 ${PLUGINDIR}/libEXREPORT_PDF${SO_EXT}: ${OBJECTS_PDF}
 #WARNING: On Windows libs must be et the end
-	${LD} @PDFLIB_L_FLAGS@ $(SO_LDFLAGS) ${OBJECTS_PDF} -o $@ ${LINKLIBS} -lpdf ${QRLIB} -lstdc++
+	${LD} @PDFLIB_L_FLAGS@ $(SO_LDFLAGS) ${OBJECTS_PDF} -o $@ ${LINKLIBS} -lpdf ${QRLIB} ${STDCPP}
 
 ${PLUGINDIR}/libEXREPORT_NOPDF${SO_EXT}: ${OBJECTS_NOPDF}
 	${LD} $(SO_LDFLAGS) ${OBJECTS_NOPDF} -o $@ ${LINKLIBS}
