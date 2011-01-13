@@ -7134,7 +7134,9 @@ dump_cmd (struct command *r, struct command *parent)
 		if (l)
 		  {
 		    int a;
-		    print_list (l);
+		    real_print_expr_list_with_separator (l,",");
+
+	//printc("BLAHBLAHBLAH");
 		    /*
 		       for (a = 0; a < l->list.list_len; a++)
 		       {
