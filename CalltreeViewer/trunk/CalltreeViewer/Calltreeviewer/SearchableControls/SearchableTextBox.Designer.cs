@@ -54,11 +54,12 @@ namespace SearchableControls
             this.miStatementPrepare = new System.Windows.Forms.ToolStripMenuItem();
             this.miStatementExecute = new System.Windows.Forms.ToolStripMenuItem();
             this.miStatementDeclare = new System.Windows.Forms.ToolStripMenuItem();
+            this.miStatementSQL = new System.Windows.Forms.ToolStripMenuItem();
             this.miFindFunction = new System.Windows.Forms.ToolStripMenuItem();
             this.miFunctionDefine = new System.Windows.Forms.ToolStripMenuItem();
             this.miFunctionCalled = new System.Windows.Forms.ToolStripMenuItem();
+            this.miVariableValue = new System.Windows.Forms.ToolStripMenuItem();
             this.findDialog1 = new SearchableControls.FindDialog();
-            this.miStatementSQL = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuStrip.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -75,13 +76,13 @@ namespace SearchableControls
             this.contextMenuStrip.Name = "contextMenuStrip1";
             this.contextMenuStrip.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
             this.contextMenuStrip.ShowImageMargin = false;
-            this.contextMenuStrip.Size = new System.Drawing.Size(156, 180);
+            this.contextMenuStrip.Size = new System.Drawing.Size(104, 158);
             this.contextMenuStrip.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuStrip1_Opening);
             // 
             // findToolStripMenuItem
             // 
             this.findToolStripMenuItem.Name = "findToolStripMenuItem";
-            this.findToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
+            this.findToolStripMenuItem.Size = new System.Drawing.Size(103, 22);
             this.findToolStripMenuItem.Text = "&Find";
             // 
             // miFindCursor
@@ -92,7 +93,7 @@ namespace SearchableControls
             this.miCursorFetch,
             this.miCursorClose});
             this.miFindCursor.Name = "miFindCursor";
-            this.miFindCursor.Size = new System.Drawing.Size(155, 22);
+            this.miFindCursor.Size = new System.Drawing.Size(103, 22);
             this.miFindCursor.Text = "Cursor";
             // 
             // miCursorDeclare
@@ -128,7 +129,7 @@ namespace SearchableControls
             this.miWindowHide,
             this.miWindowMove});
             this.miFindWindow.Name = "miFindWindow";
-            this.miFindWindow.Size = new System.Drawing.Size(155, 22);
+            this.miFindWindow.Size = new System.Drawing.Size(103, 22);
             this.miFindWindow.Text = "Window";
             // 
             // miWindowOpen
@@ -166,27 +167,28 @@ namespace SearchableControls
             this.miFindVariable.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.miVariableDefinition,
             this.miVariableAssign,
-            this.miVariableRead});
+            this.miVariableRead,
+            this.miVariableValue});
             this.miFindVariable.Name = "miFindVariable";
-            this.miFindVariable.Size = new System.Drawing.Size(155, 22);
+            this.miFindVariable.Size = new System.Drawing.Size(103, 22);
             this.miFindVariable.Text = "Variable";
             // 
             // miVariableDefinition
             // 
             this.miVariableDefinition.Name = "miVariableDefinition";
-            this.miVariableDefinition.Size = new System.Drawing.Size(109, 22);
+            this.miVariableDefinition.Size = new System.Drawing.Size(180, 22);
             this.miVariableDefinition.Text = "Define";
             // 
             // miVariableAssign
             // 
             this.miVariableAssign.Name = "miVariableAssign";
-            this.miVariableAssign.Size = new System.Drawing.Size(109, 22);
+            this.miVariableAssign.Size = new System.Drawing.Size(180, 22);
             this.miVariableAssign.Text = "Assign";
             // 
             // miVariableRead
             // 
             this.miVariableRead.Name = "miVariableRead";
-            this.miVariableRead.Size = new System.Drawing.Size(109, 22);
+            this.miVariableRead.Size = new System.Drawing.Size(180, 22);
             this.miVariableRead.Text = "Read";
             // 
             // miFindForm
@@ -196,7 +198,7 @@ namespace SearchableControls
             this.miFormDisplay,
             this.miFormClose});
             this.miFindForm.Name = "miFindForm";
-            this.miFindForm.Size = new System.Drawing.Size(155, 22);
+            this.miFindForm.Size = new System.Drawing.Size(103, 22);
             this.miFindForm.Text = "Form";
             // 
             // miFormOpen
@@ -225,7 +227,7 @@ namespace SearchableControls
             this.miStatementDeclare,
             this.miStatementSQL});
             this.miFindStatement.Name = "miFindStatement";
-            this.miFindStatement.Size = new System.Drawing.Size(155, 22);
+            this.miFindStatement.Size = new System.Drawing.Size(103, 22);
             this.miFindStatement.Text = "Statement";
             // 
             // miStatementPrepare
@@ -246,13 +248,19 @@ namespace SearchableControls
             this.miStatementDeclare.Size = new System.Drawing.Size(114, 22);
             this.miStatementDeclare.Text = "Declare";
             // 
+            // miStatementSQL
+            // 
+            this.miStatementSQL.Name = "miStatementSQL";
+            this.miStatementSQL.Size = new System.Drawing.Size(114, 22);
+            this.miStatementSQL.Text = "<>";
+            // 
             // miFindFunction
             // 
             this.miFindFunction.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.miFunctionDefine,
             this.miFunctionCalled});
             this.miFindFunction.Name = "miFindFunction";
-            this.miFindFunction.Size = new System.Drawing.Size(155, 22);
+            this.miFindFunction.Size = new System.Drawing.Size(103, 22);
             this.miFindFunction.Text = "Function";
             // 
             // miFunctionDefine
@@ -267,18 +275,19 @@ namespace SearchableControls
             this.miFunctionCalled.Size = new System.Drawing.Size(126, 22);
             this.miFunctionCalled.Text = "Find Calls";
             // 
+            // miVariableValue
+            // 
+            this.miVariableValue.Name = "miVariableValue";
+            this.miVariableValue.Size = new System.Drawing.Size(180, 22);
+            this.miVariableValue.Text = "toolStripMenuItem1";
+            this.miVariableValue.ToolTipText = "Possible value";
+            // 
             // findDialog1
             // 
             this.findDialog1.ParentControl = this;
             this.findDialog1.ReplaceAvailable = false;
             this.findDialog1.SearchRegularExpression = null;
             this.findDialog1.SearchRequested += new SearchableControls.SearchEventHandler(this.findDialog1_SearchRequested);
-            // 
-            // miStatementSQL
-            // 
-            this.miStatementSQL.Name = "miStatementSQL";
-            this.miStatementSQL.Size = new System.Drawing.Size(114, 22);
-            this.miStatementSQL.Text = "<>";
             // 
             // SearchableTextBox
             // 
@@ -322,5 +331,6 @@ namespace SearchableControls
         private System.Windows.Forms.ToolStripMenuItem miFunctionDefine;
         private System.Windows.Forms.ToolStripMenuItem miFunctionCalled;
         private System.Windows.Forms.ToolStripMenuItem miStatementSQL;
+        private System.Windows.Forms.ToolStripMenuItem miVariableValue;
     }
 }

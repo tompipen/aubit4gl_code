@@ -576,6 +576,18 @@ namespace SearchableControls
                 setSymbols(miVariableDefinition, s.symbols, "DEFINE");
                 miVariableRead.Visible = s.hasRead;
                 setSymbols(miVariableRead, s.symbols, "USE");
+
+                if (s.possibleValue.Length < 60)
+                {
+                    miVariableValue.Text = s.possibleValue;
+                    miVariableValue.ToolTipText = "Possible Value";
+                }
+                else
+                {
+                    miVariableValue.Text = s.possibleValue.Substring(0, 60)+"...";
+                    miVariableValue.ToolTipText = "Possible Value:"+ s.possibleValue;
+                }
+              
             }
 
             if (type is symbolWindow)
@@ -615,7 +627,7 @@ namespace SearchableControls
                 if (list[a].Operation == operation)
                 {
                     ContextSearchItem c = new ContextSearchItem(list[a]);
-                    c.Click += new EventHandler(c_Click);
+                    c.WhenClicked = new EventHandler(c_Click);
                     nlist.Add(c);
                 }
             }
@@ -700,6 +712,7 @@ namespace SearchableControls
         public bool hasDefine;
         public bool hasAssign;
         public bool hasRead;
+        public string possibleValue;
     }
 
     public class symbolStatement : baseSymbolType
@@ -737,6 +750,8 @@ namespace SearchableControls
         public string Operation;
         public string lineText;
 
+        public string Description;
+
         public SymbolLocation(string module, int line, string type, string op,string linetext)
         {
             // TODO: Complete member initialization
@@ -745,6 +760,26 @@ namespace SearchableControls
             this.Type = type;
             this.Operation =op;
             this.lineText = linetext;
+            Description = null;
+        }
+
+        public SymbolLocation(string module, int line, string type, string op, string linetext, string desc)
+        {
+            // TODO: Complete member initialization
+            this.moduleName = module;
+            this.lineNo = line;
+            this.Type = type;
+            this.Operation = op;
+            this.lineText = linetext;
+
+            if (desc.Trim().Length > 0)
+            {
+                Description = desc;
+            }
+            else
+            {
+                Description = null;
+            }
         }
 
         public bool InList(baseSymbolType symbols)
@@ -767,11 +802,23 @@ namespace SearchableControls
     public class ContextSearchItem : ToolStripMenuItem
     {
         public SymbolLocation sl;
+        ToolStripMenuItem ts2 = null;
 
         public ContextSearchItem(SymbolLocation s)
         {
             sl = s;
+            if (s.Description != null)
+            {
+                
+                ts2 = new ToolStripMenuItem(s.Description);
+                this.DropDownItems.Add(ts2);
+                ts2.Font = new System.Drawing.Font(System.Drawing.FontFamily.GenericMonospace, 8);
+               // ts2.Click +=new EventHandler(ts2_Click);
+            }
         }
+
+
+     
 
         public override string Text
         {
@@ -786,6 +833,28 @@ namespace SearchableControls
                 }
 
             }
+        }
+
+        private EventHandler _WhenClicked;
+
+        public  EventHandler WhenClicked {
+            set
+            {
+                _WhenClicked = value;
+                base.Click -= value;
+                base.Click += value;
+                if (ts2 != null)
+                {
+                    ts2.Click -= new EventHandler(ts2_Click);
+                    ts2.Click+=new EventHandler(ts2_Click);
+                }
+            }
+        }
+
+        void ts2_Click(object sender, EventArgs e)
+        {
+            _WhenClicked(this, e);
+         
         }
     }
     
