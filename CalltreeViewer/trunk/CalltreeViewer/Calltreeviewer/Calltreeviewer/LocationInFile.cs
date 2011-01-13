@@ -158,6 +158,13 @@ namespace Calltreeviewer
             lineNumber = Convert.ToInt32(arr[1]);
         }
 
+
+        public LocationInFile(int mno,int l)
+        {
+
+            module = mno;
+            lineNumber = l;
+        }
         
 
         public static string getString(int mod,int ln) {

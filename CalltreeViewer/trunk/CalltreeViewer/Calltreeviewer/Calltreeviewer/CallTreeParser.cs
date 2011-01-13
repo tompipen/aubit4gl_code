@@ -406,14 +406,21 @@ namespace AubitCalltreeViewer
         public SELECT_STMT[] SELECTS;
 
 
+        /// <remarks/>
+        [System.Xml.Serialization.XmlArrayItem(IsNullable = false)]
+        public RUN_STMT[] RUN;
 
+        /// <remarks/>
+        [System.Xml.Serialization.XmlArrayItem(IsNullable = false)]
+        public FORM[] FORMS;
 
-
-
-
-
+        /// <remarks/>
+        [System.Xml.Serialization.XmlArrayItem(IsNullable = false)]
+        public FILE[] FILES;
 
     }
+
+
 
     [System.Xml.Serialization.XmlRootAttribute(Namespace = "", IsNullable = true)]
     public class SYMBOL
@@ -439,7 +446,72 @@ namespace AubitCalltreeViewer
 
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string SCOPE;
+
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string VALUE;
         
+    }
+
+
+    public class FORM
+    {
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string SOURCE;
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string MODULE;
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public int LINE;
+
+        [System.Xml.Serialization.XmlTextAttribute()]
+        public string Text;   
+
+    }
+
+
+    public class FILE
+    {
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string OPERATION;
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string FILENAME;
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string MODULE;
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public int LINE;
+
+
+    }
+
+
+    public class RUN_STMT
+    {
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string CMD;
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string MODULE;
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public int LINE;
+
     }
 
     public class SELECT_STMT
@@ -518,6 +590,10 @@ namespace AubitCalltreeViewer
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public int LINE;
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public int PROCESSED;
 
     }
 

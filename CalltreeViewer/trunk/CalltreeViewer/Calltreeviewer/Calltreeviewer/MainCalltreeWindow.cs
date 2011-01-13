@@ -26,10 +26,14 @@ namespace Calltreeviewer
         int currentFunctionStart=-1;
         int currentFunctionEnd=-1;
 
+        List<LocationInFile> previousLocations = new List<LocationInFile>();
+        int previousLocationIndicator = 0;
 
-         private List<AubitCalltreeViewer.SYMBOL> current_global_variables = null;
+
+        private List<AubitCalltreeViewer.SYMBOL> current_global_variables = null;
         private List<AubitCalltreeViewer.SYMBOL> current_module_variables = null;
         private List<AubitCalltreeViewer.SYMBOL> current_local_variables = null;
+
 
         private enum TreeStyle
         {
@@ -59,8 +63,11 @@ namespace Calltreeviewer
 
         private void loadXMLFile(TreeStyle style, string fileName)
         {
-
+            TreeNode mainNode = null;
             loading = true;
+
+            currentModuleNo = -1;
+
 
             if (fileName == null)
             {
@@ -89,7 +96,7 @@ namespace Calltreeviewer
             }
 
 
-
+            treeView1.Enabled = false;
 
             if (fileName != null)
             {
@@ -128,7 +135,7 @@ namespace Calltreeviewer
                     setCRUD();
 
                     // Now - show the tree..
-                    loadTree(p, style);
+                    mainNode=loadTree(p, style);
                     this.Cursor = Cursors.Default;
                     this.Text = "Calltree for " + fileName;
                 }
@@ -142,10 +149,24 @@ namespace Calltreeviewer
 
             }
             lblLoaded.Text = "";
+            treeView1.Enabled = true;
+            
+            previousLocations.Clear();
+            previousLocationIndicator = 0;
+            textBox1.Text = "";
+            loading = false;
+
+            if (mainNode!=null)
+            {
+                treeView1.CollapseAll();
+                selectNode(mainNode);
+                
+                displayModuleForSelectedNode();
+            }
             loading = false;
         }
 
-        private void loadTree(AubitCalltreeViewer.PROGRAM p, TreeStyle style)
+        private TreeNode loadTree(AubitCalltreeViewer.PROGRAM p, TreeStyle style)
         {
             TreeNode mainNode = null;
 //            fullyExpandedTree = null;
@@ -236,15 +257,15 @@ namespace Calltreeviewer
             tscbFindFunction.Sorted = true;
 
 
-            if (mainNode != null)
+            if (mainNode != null && false)
             {
                 treeView1.CollapseAll();
                 selectNode(mainNode);
-                //treeView1.SelectedNode = mainNode;
                 displayModuleForSelectedNode();
             }
             
             treeView1.EndUpdate();
+            return mainNode;
         }
 
         private void selectNode(TreeNode node)
@@ -301,8 +322,9 @@ namespace Calltreeviewer
                 if (lif != null)
                 {
                     lblLoaded.Text=lif.ModuleNo+" "+lif.LineNo+" "+curr_program.MODULES[lif.ModuleNo].FULLNAME;
-                    loadModule(lif.ModuleNo);
-                    setModuleLine(lif.LineNo);
+
+
+                    loadModuleLine(lif.ModuleNo, lif.LineNo,true);
                     return;
                 }
                 // does nothing...
@@ -316,8 +338,7 @@ namespace Calltreeviewer
 
             // must be a function...
             int findex = Convert.ToInt32(treeView1.SelectedNode.Name);
-            loadModule(curr_program.FUNCTION[findex].MODULENO);
-            setModuleLine(curr_program.FUNCTION[findex].LINE);
+            loadModuleLine(curr_program.FUNCTION[findex].MODULENO,curr_program.FUNCTION[findex].LINE,true);
         }
 
         private void displayCall(string p)
@@ -325,9 +346,56 @@ namespace Calltreeviewer
             int functionNo;
             functionNo = findFunctionNo(p);
             if (functionNo == -1) return;
-            loadModule(curr_program.FUNCTION[functionNo].MODULENO);
-            setModuleLine(curr_program.FUNCTION[functionNo].LINE);
+            loadModuleLine(curr_program.FUNCTION[functionNo].MODULENO,curr_program.FUNCTION[functionNo].LINE,true);
         }
+
+
+        private void loadModuleLine(int moduleNo, int line,bool saveMove)
+        {
+            if (loadModule(moduleNo))
+            {
+                setModuleLine(line);
+            }
+
+            LocationInFile l = new LocationInFile(moduleNo, line);
+            //previousLocations.Add(l);
+            if (saveMove) addLocation(l);
+        }
+
+
+        private void addLocation(LocationInFile l)
+        {
+            if (previousLocations.Count > 0 && previousLocations.Count-1 == previousLocationIndicator)
+            {
+                if (previousLocations[previousLocationIndicator].ModuleNo == l.ModuleNo && previousLocations[previousLocationIndicator].LineNo == l.LineNo) return;
+            }
+            while (previousLocations.Count > previousLocationIndicator+1)
+            {
+                previousLocations.RemoveAt(previousLocations.Count-1);
+            }
+            previousLocations.Add(l);
+            previousLocationIndicator = previousLocations.Count - 1;
+
+            EnableLocationButtons();
+        }
+
+        private void loadModuleLine(string module, int line,bool saveMove)
+        {
+            
+                for (int a = 0; a < curr_program.MODULES.Length; a++)
+                {
+                    if (module == curr_program.MODULES[a].NAME)
+                    {
+                        loadModuleLine(a, line,saveMove);
+                        return;
+                    }
+                }
+                MessageBox.Show("Unable to find module:" + module);
+            
+        }
+
+
+
 
         private void setModuleLine(int line)
         {
@@ -390,7 +458,7 @@ namespace Calltreeviewer
             }
         }
 
-        private void loadModule(int module_no)
+        private bool loadModule(int module_no)
         {
 
 
@@ -399,7 +467,7 @@ namespace Calltreeviewer
 
             if (module_no == currentModuleNo)
             {
-                return;
+                return true;
             }
 
 
@@ -434,6 +502,7 @@ namespace Calltreeviewer
             textBox1.SelectionLength = 0;
             textBox1.SelectionStart = 0;
             Application.DoEvents();
+            return true;
         }
 
         private void appendVariables(List<AubitCalltreeViewer.SYMBOL> variables, string moduleName, AubitCalltreeViewer.VARIABLE[] vARIABLE)
@@ -458,6 +527,10 @@ namespace Calltreeviewer
             {
                 displayModuleForSelectedNode();
                 selectNode(treeView1.SelectedNode);
+            }
+            else
+            {
+                MessageBox.Show("The program has not finished loading yet!");
             }
         }
 
@@ -1012,8 +1085,9 @@ namespace Calltreeviewer
                 {
                     functionForList f;
                     f=(functionForList)listBox1.SelectedItem;
-                    loadModule(f.ModuleNo);
-                    setModuleLine(f.LineNo);
+                    loadModuleLine(f.ModuleNo, f.LineNo,true);
+                 //   loadModule(f.ModuleNo);
+                 //   setModuleLine(f.LineNo);
                     actioningUserInteraction = false;
                         return;
                 }
@@ -1138,6 +1212,7 @@ namespace Calltreeviewer
 
         private void MainCalltreeWindow_Load(object sender, EventArgs e)
         {
+            EnableLocationButtons();
             lblNoOfLines.Text = "";
             lblListbox.Text = "";
             tsLblSearching.Text = "";
@@ -1460,6 +1535,16 @@ namespace Calltreeviewer
         {
             symbol_name = symbol_name.ToLower();
             srch_name = srch_name.ToLower();
+
+            if (symbol_name.EndsWith("."))
+            {
+                symbol_name = symbol_name.Substring(0, symbol_name.Length - 1);
+            }
+
+            if (srch_name.EndsWith("."))
+            {
+                srch_name = srch_name.Substring(0, srch_name.Length - 1);
+            }
             if (type == "VARIABLE")
             {
 
@@ -1548,6 +1633,7 @@ namespace Calltreeviewer
             SearchableControls.baseSymbolType type=null;
             SearchableControls.symbolCursor sc = new SearchableControls.symbolCursor();
             SearchableControls.symbolVariable sv = new SearchableControls.symbolVariable();
+            sv.possibleValue = null;
             SearchableControls.symbolForm sf = new SearchableControls.symbolForm();
             SearchableControls.symbolStatement ss = new SearchableControls.symbolStatement();
             SearchableControls.symbolWindow sw = new SearchableControls.symbolWindow();
@@ -1617,10 +1703,22 @@ namespace Calltreeviewer
                                     {
                                         type.symbols.Add(sl);
                                     }
+
                                     switch (curr_program.SYMBOLS[a].OPERATION)
                                     {
-                                        case "ASSIGN": sv.hasAssign = true; break;
-                                        case "USE": sv.hasRead = true; break;
+                                        case "ASSIGN": sv.hasAssign = true; 
+                                           if (textBox1.currentLineNo == line && curr_program.MODULES[currentModuleNo].NAME == curr_program.SYMBOLS[a].MODULE)
+                                            {
+                                                sv.possibleValue = curr_program.SYMBOLS[a].VALUE;
+                                            }
+                                            
+                                            break;
+                                        case "USE": sv.hasRead = true;
+                                            if (textBox1.currentLineNo == line && curr_program.MODULES[currentModuleNo].NAME == curr_program.SYMBOLS[a].MODULE)
+                                            {
+                                                sv.possibleValue = curr_program.SYMBOLS[a].VALUE;
+                                            }
+                                            break;
                                     }
                                 }
                                 break;
@@ -1868,28 +1966,12 @@ namespace Calltreeviewer
             {
                 c = (SearchableControls.ContextSearchItem)sender;
 
-                if (loadModule(c.sl.moduleName))
-                {
-                    setModuleLine(c.sl.lineNo);
-                   // actioningUserInteraction = false;
-                    return;
-                }
- 
+
+                loadModuleLine(c.sl.moduleName, c.sl.lineNo,true); 
             }
         }
 
-        private bool loadModule(string p)
-        {
-            for (int a = 0; a < curr_program.MODULES.Length; a++)
-            {
-                if (p == curr_program.MODULES[a].NAME)
-                {
-                    loadModule(a);
-                    return true;
-                }
-            }
-            return false;
-        }
+
 
         private void textBox1_searchForFunctionCall()
         {
@@ -1946,28 +2028,40 @@ namespace Calltreeviewer
             #region find updates
             Tables =new List<string>();
             sl = new List<SymbolLocation>();
-            for (int a = 0; a < curr_program.UPDATES.Length; a++)
-            {
-                if (!Tables.Contains(curr_program.UPDATES[a].TABLE)) {
-                    Tables.Add(curr_program.UPDATES[a].TABLE);
-                }
 
-                sl.Add(new SymbolLocation(curr_program.UPDATES[a].MODULE, curr_program.UPDATES[a].LINE, "UPDATE", curr_program.UPDATES[a].TABLE, get_line(curr_program.UPDATES[a].MODULE, curr_program.UPDATES[a].LINE)));
+            if (curr_program.UPDATES != null)
+            {
+                for (int a = 0; a < curr_program.UPDATES.Length; a++)
+                {
+                    if (!Tables.Contains(curr_program.UPDATES[a].TABLE))
+                    {
+                        Tables.Add(curr_program.UPDATES[a].TABLE);
+                    }
+
+                    sl.Add(new SymbolLocation(curr_program.UPDATES[a].MODULE, curr_program.UPDATES[a].LINE, "UPDATE", curr_program.UPDATES[a].TABLE, get_line(curr_program.UPDATES[a].MODULE, curr_program.UPDATES[a].LINE)));
+                }
             }
 
-            for (int a = 0; a < curr_program.DYNAMICSQLS.Length; a++)
+            if (curr_program.DYNAMICSQLS != null)
             {
-                string[] tabnames=extractTables("UPDATE",curr_program.DYNAMICSQLS[a].STMT);
-                if (tabnames!=null) {
-                    for (int b=0;b<tabnames.Length;b++) {
-
-                if (!Tables.Contains(tabnames[b]))
+                for (int a = 0; a < curr_program.DYNAMICSQLS.Length; a++)
                 {
-                    Tables.Add(tabnames[b]);
-                }
+                    if (curr_program.DYNAMICSQLS[a].PROCESSED ==1) continue;
 
-                sl.Add(new SymbolLocation(curr_program.DYNAMICSQLS[a].MODULE, curr_program.DYNAMICSQLS[a].LINE, "UPDATE", tabnames[b], get_line(curr_program.DYNAMICSQLS[a].MODULE, curr_program.DYNAMICSQLS[a].LINE)));
-                }
+                    string[] tabnames = extractTables("UPDATE", curr_program.DYNAMICSQLS[a].STMT);
+                    if (tabnames != null)
+                    {
+                        for (int b = 0; b < tabnames.Length; b++)
+                        {
+
+                            if (!Tables.Contains(tabnames[b]))
+                            {
+                                Tables.Add(tabnames[b]);
+                            }
+
+                            sl.Add(new SymbolLocation(curr_program.DYNAMICSQLS[a].MODULE, curr_program.DYNAMICSQLS[a].LINE, "UPDATE", tabnames[b], get_line(curr_program.DYNAMICSQLS[a].MODULE, curr_program.DYNAMICSQLS[a].LINE)));
+                        }
+                    }
                 }
             }
 
@@ -1976,30 +2070,37 @@ namespace Calltreeviewer
             #region inserts
             Tables = new List<string>();
             sl = new List<SymbolLocation>();
-            for (int a = 0; a < curr_program.INSERTS.Length; a++)
+            if (curr_program.INSERTS != null)
             {
-                if (!Tables.Contains(curr_program.INSERTS[a].TABLE))
+                for (int a = 0; a < curr_program.INSERTS.Length; a++)
                 {
-                    Tables.Add(curr_program.INSERTS[a].TABLE);
-                }
+                    if (!Tables.Contains(curr_program.INSERTS[a].TABLE))
+                    {
+                        Tables.Add(curr_program.INSERTS[a].TABLE);
+                    }
 
-                sl.Add(new SymbolLocation(curr_program.INSERTS[a].MODULE, curr_program.INSERTS[a].LINE, "INSERTS", curr_program.INSERTS[a].TABLE, get_line(curr_program.INSERTS[a].MODULE, curr_program.INSERTS[a].LINE)));
+                    sl.Add(new SymbolLocation(curr_program.INSERTS[a].MODULE, curr_program.INSERTS[a].LINE, "INSERTS", curr_program.INSERTS[a].TABLE, get_line(curr_program.INSERTS[a].MODULE, curr_program.INSERTS[a].LINE)));
+                }
             }
 
-            for (int a = 0; a < curr_program.DYNAMICSQLS.Length; a++)
+            if (curr_program.DYNAMICSQLS != null)
             {
-                string[] tabnames = extractTables("INSERT", curr_program.DYNAMICSQLS[a].STMT);
-                if (tabnames != null)
+                for (int a = 0; a < curr_program.DYNAMICSQLS.Length; a++)
                 {
-                    for (int b = 0; b < tabnames.Length; b++)
+                    if (curr_program.DYNAMICSQLS[a].PROCESSED == 1) continue;
+                    string[] tabnames = extractTables("INSERT", curr_program.DYNAMICSQLS[a].STMT);
+                    if (tabnames != null)
                     {
-
-                        if (!Tables.Contains(tabnames[b]))
+                        for (int b = 0; b < tabnames.Length; b++)
                         {
-                            Tables.Add(tabnames[b]);
-                        }
 
-                        sl.Add(new SymbolLocation(curr_program.DYNAMICSQLS[a].MODULE, curr_program.DYNAMICSQLS[a].LINE, "INSERT", tabnames[b], get_line(curr_program.DYNAMICSQLS[a].MODULE, curr_program.DYNAMICSQLS[a].LINE)));
+                            if (!Tables.Contains(tabnames[b]))
+                            {
+                                Tables.Add(tabnames[b]);
+                            }
+
+                            sl.Add(new SymbolLocation(curr_program.DYNAMICSQLS[a].MODULE, curr_program.DYNAMICSQLS[a].LINE, "INSERT", tabnames[b], get_line(curr_program.DYNAMICSQLS[a].MODULE, curr_program.DYNAMICSQLS[a].LINE)));
+                        }
                     }
                 }
             }
@@ -2011,30 +2112,37 @@ namespace Calltreeviewer
             #region deletes
             Tables = new List<string>();
             sl = new List<SymbolLocation>();
-            for (int a = 0; a < curr_program.DELETES.Length; a++)
+            if (curr_program.DELETES != null)
             {
-                if (!Tables.Contains(curr_program.DELETES[a].TABLE))
+                for (int a = 0; a < curr_program.DELETES.Length; a++)
                 {
-                    Tables.Add(curr_program.DELETES[a].TABLE);
-                }
+                    if (!Tables.Contains(curr_program.DELETES[a].TABLE))
+                    {
+                        Tables.Add(curr_program.DELETES[a].TABLE);
+                    }
 
-                sl.Add(new SymbolLocation(curr_program.DELETES[a].MODULE, curr_program.DELETES[a].LINE, "DELETES", curr_program.DELETES[a].TABLE, get_line(curr_program.DELETES[a].MODULE, curr_program.DELETES[a].LINE)));
+                    sl.Add(new SymbolLocation(curr_program.DELETES[a].MODULE, curr_program.DELETES[a].LINE, "DELETES", curr_program.DELETES[a].TABLE, get_line(curr_program.DELETES[a].MODULE, curr_program.DELETES[a].LINE)));
+                }
             }
 
-            for (int a = 0; a < curr_program.DYNAMICSQLS.Length; a++)
+            if (curr_program.DYNAMICSQLS != null)
             {
-                string[] tabnames = extractTables("DELETE", curr_program.DYNAMICSQLS[a].STMT);
-                if (tabnames != null)
+                for (int a = 0; a < curr_program.DYNAMICSQLS.Length; a++)
                 {
-                    for (int b = 0; b < tabnames.Length; b++)
+                    if (curr_program.DYNAMICSQLS[a].PROCESSED == 1) continue;
+                    string[] tabnames = extractTables("DELETE", curr_program.DYNAMICSQLS[a].STMT);
+                    if (tabnames != null)
                     {
-
-                        if (!Tables.Contains(tabnames[b]))
+                        for (int b = 0; b < tabnames.Length; b++)
                         {
-                            Tables.Add(tabnames[b]);
-                        }
 
-                        sl.Add(new SymbolLocation(curr_program.DYNAMICSQLS[a].MODULE, curr_program.DYNAMICSQLS[a].LINE, "DELETE", tabnames[b], get_line(curr_program.DYNAMICSQLS[a].MODULE, curr_program.DYNAMICSQLS[a].LINE)));
+                            if (!Tables.Contains(tabnames[b]))
+                            {
+                                Tables.Add(tabnames[b]);
+                            }
+
+                            sl.Add(new SymbolLocation(curr_program.DYNAMICSQLS[a].MODULE, curr_program.DYNAMICSQLS[a].LINE, "DELETE", tabnames[b], get_line(curr_program.DYNAMICSQLS[a].MODULE, curr_program.DYNAMICSQLS[a].LINE)));
+                        }
                     }
                 }
             }
@@ -2046,30 +2154,37 @@ namespace Calltreeviewer
             #region selects
             Tables = new List<string>();
             sl = new List<SymbolLocation>();
-            for (int a = 0; a < curr_program.SELECTS.Length; a++)
+            if (curr_program.SELECTS != null)
             {
-                if (!Tables.Contains(curr_program.SELECTS[a].TABLE))
+                for (int a = 0; a < curr_program.SELECTS.Length; a++)
                 {
-                    Tables.Add(curr_program.SELECTS[a].TABLE);
-                }
+                    if (!Tables.Contains(curr_program.SELECTS[a].TABLE))
+                    {
+                        Tables.Add(curr_program.SELECTS[a].TABLE);
+                    }
 
-                sl.Add(new SymbolLocation(curr_program.SELECTS[a].MODULE, curr_program.SELECTS[a].LINE, "SELECT", curr_program.SELECTS[a].TABLE, get_line(curr_program.SELECTS[a].MODULE, curr_program.SELECTS[a].LINE)));
+                    sl.Add(new SymbolLocation(curr_program.SELECTS[a].MODULE, curr_program.SELECTS[a].LINE, "SELECT", curr_program.SELECTS[a].TABLE, get_line(curr_program.SELECTS[a].MODULE, curr_program.SELECTS[a].LINE)));
+                }
             }
 
-            for (int a = 0; a < curr_program.DYNAMICSQLS.Length; a++)
+            if (curr_program.DYNAMICSQLS != null)
             {
-                string[] tabnames = extractTables("SELECT", curr_program.DYNAMICSQLS[a].STMT);
-                if (tabnames != null)
+                for (int a = 0; a < curr_program.DYNAMICSQLS.Length; a++)
                 {
-                    for (int b = 0; b < tabnames.Length; b++)
+                    if (curr_program.DYNAMICSQLS[a].PROCESSED == 1) continue;
+                    string[] tabnames = extractTables("SELECT", curr_program.DYNAMICSQLS[a].STMT);
+                    if (tabnames != null)
                     {
-
-                        if (!Tables.Contains(tabnames[b]))
+                        for (int b = 0; b < tabnames.Length; b++)
                         {
-                            Tables.Add(tabnames[b]);
-                        }
 
-                        sl.Add(new SymbolLocation(curr_program.DYNAMICSQLS[a].MODULE, curr_program.DYNAMICSQLS[a].LINE, "SELECT", tabnames[b], get_line(curr_program.DYNAMICSQLS[a].MODULE, curr_program.DYNAMICSQLS[a].LINE)));
+                            if (!Tables.Contains(tabnames[b]))
+                            {
+                                Tables.Add(tabnames[b]);
+                            }
+
+                            sl.Add(new SymbolLocation(curr_program.DYNAMICSQLS[a].MODULE, curr_program.DYNAMICSQLS[a].LINE, "SELECT", tabnames[b], get_line(curr_program.DYNAMICSQLS[a].MODULE, curr_program.DYNAMICSQLS[a].LINE)));
+                        }
                     }
                 }
             }
@@ -2081,39 +2196,45 @@ namespace Calltreeviewer
             Tables = new List<string>();
             sl = new List<SymbolLocation>();
 
-
-            for (int a = 0; a < curr_program.OTHERSQLS.Length; a++)
+            if (curr_program.OTHERSQLS != null)
             {
-                string[] tabnames = extractTables("EXECUTE", curr_program.OTHERSQLS[a].STMT);
-                if (tabnames != null)
+                for (int a = 0; a < curr_program.OTHERSQLS.Length; a++)
                 {
-                    for (int b = 0; b < tabnames.Length; b++)
+                    string[] tabnames = extractTables("EXECUTE", curr_program.OTHERSQLS[a].STMT);
+                    if (tabnames != null)
                     {
-
-                        if (!Tables.Contains(tabnames[b]))
+                        for (int b = 0; b < tabnames.Length; b++)
                         {
-                            Tables.Add(tabnames[b]);
-                        }
 
-                        sl.Add(new SymbolLocation(curr_program.DYNAMICSQLS[a].MODULE, curr_program.DYNAMICSQLS[a].LINE, "EXECUTE", tabnames[b], get_line(curr_program.DYNAMICSQLS[a].MODULE, curr_program.DYNAMICSQLS[a].LINE)));
+                            if (!Tables.Contains(tabnames[b]))
+                            {
+                                Tables.Add(tabnames[b]);
+                            }
+
+                            sl.Add(new SymbolLocation(curr_program.DYNAMICSQLS[a].MODULE, curr_program.DYNAMICSQLS[a].LINE, "EXECUTE", tabnames[b], get_line(curr_program.DYNAMICSQLS[a].MODULE, curr_program.DYNAMICSQLS[a].LINE)));
+                        }
                     }
                 }
             }
 
-            for (int a = 0; a < curr_program.DYNAMICSQLS.Length; a++)
+
+            if (curr_program.DYNAMICSQLS != null)
             {
-                string[] tabnames = extractTables("EXECUTE", curr_program.DYNAMICSQLS[a].STMT);
-                if (tabnames != null)
+                for (int a = 0; a < curr_program.DYNAMICSQLS.Length; a++)
                 {
-                    for (int b = 0; b < tabnames.Length; b++)
+                    string[] tabnames = extractTables("EXECUTE", curr_program.DYNAMICSQLS[a].STMT);
+                    if (tabnames != null)
                     {
-
-                        if (!Tables.Contains(tabnames[b]))
+                        for (int b = 0; b < tabnames.Length; b++)
                         {
-                            Tables.Add(tabnames[b]);
-                        }
 
-                        sl.Add(new SymbolLocation(curr_program.DYNAMICSQLS[a].MODULE, curr_program.DYNAMICSQLS[a].LINE, "EXECUTE", tabnames[b], get_line(curr_program.DYNAMICSQLS[a].MODULE, curr_program.DYNAMICSQLS[a].LINE)));
+                            if (!Tables.Contains(tabnames[b]))
+                            {
+                                Tables.Add(tabnames[b]);
+                            }
+
+                            sl.Add(new SymbolLocation(curr_program.DYNAMICSQLS[a].MODULE, curr_program.DYNAMICSQLS[a].LINE, "EXECUTE", tabnames[b], get_line(curr_program.DYNAMICSQLS[a].MODULE, curr_program.DYNAMICSQLS[a].LINE)));
+                        }
                     }
                 }
             }
@@ -2124,17 +2245,102 @@ namespace Calltreeviewer
             #region Environment variables
             Tables = new List<string>();
             sl = new List<SymbolLocation>();
-            for (int a = 0; a < curr_program.ENVIRONMENTVARS.Length; a++)
+            if (curr_program.ENVIRONMENTVARS != null)
             {
-                if (!Tables.Contains(curr_program.ENVIRONMENTVARS[a].NAME))
+                for (int a = 0; a < curr_program.ENVIRONMENTVARS.Length; a++)
                 {
-                    Tables.Add(curr_program.ENVIRONMENTVARS[a].NAME);
-                }
+                    if (!Tables.Contains(curr_program.ENVIRONMENTVARS[a].NAME))
+                    {
+                        Tables.Add(curr_program.ENVIRONMENTVARS[a].NAME);
+                    }
 
-                sl.Add(new SymbolLocation(curr_program.ENVIRONMENTVARS[a].MODULE, curr_program.ENVIRONMENTVARS[a].LINE, "ENV", curr_program.ENVIRONMENTVARS[a].NAME, get_line(curr_program.ENVIRONMENTVARS[a].MODULE, curr_program.ENVIRONMENTVARS[a].LINE)));
+                    sl.Add(new SymbolLocation(curr_program.ENVIRONMENTVARS[a].MODULE, curr_program.ENVIRONMENTVARS[a].LINE, "ENV", curr_program.ENVIRONMENTVARS[a].NAME, get_line(curr_program.ENVIRONMENTVARS[a].MODULE, curr_program.ENVIRONMENTVARS[a].LINE)));
+                }
             }
 
             setMenuItems(environmentVariablesToolStripMenuItem, Tables, sl);
+            #endregion
+
+            #region RUN statements
+            Tables = new List<string>();
+            sl = new List<SymbolLocation>();
+            if (curr_program.RUN != null)
+            {
+
+                for (int a = 0; a < curr_program.RUN.Length; a++)
+                {
+                    if (!Tables.Contains(curr_program.RUN[a].CMD))
+                    {
+                        Tables.Add(curr_program.RUN[a].CMD);
+                    }
+
+                    sl.Add(new SymbolLocation(curr_program.RUN[a].MODULE, curr_program.RUN[a].LINE, "RUN",  curr_program.RUN[a].CMD, get_line(curr_program.RUN[a].MODULE, curr_program.RUN[a].LINE)));
+                }
+            }
+
+            setMenuItems(RunsToolStripMenuItem, Tables, sl);
+            #endregion
+
+            #region FORM statements
+            Tables = new List<string>();
+            sl = new List<SymbolLocation>();
+            if (curr_program.FORMS != null)
+            {
+
+                for (int a = 0; a < curr_program.FORMS.Length; a++)
+                {
+                    if (!Tables.Contains(curr_program.FORMS[a].SOURCE))
+                    {
+                        Tables.Add(curr_program.FORMS[a].SOURCE);
+                    }
+
+
+                        sl.Add(
+                            new SymbolLocation(
+                                    curr_program.FORMS[a].MODULE,
+                                    curr_program.FORMS[a].LINE,
+                                    "FORM",
+                                    curr_program.FORMS[a].SOURCE,
+                                    get_line(curr_program.FORMS[a].MODULE, curr_program.FORMS[a].LINE),
+                                    curr_program.FORMS[a].Text
+                            ));
+
+                }
+            }
+
+            setMenuItems(formsToolStripMenuItem, Tables, sl);
+            #endregion
+
+
+            #region FILES usages...
+            Tables = new List<string>();
+            sl = new List<SymbolLocation>();
+            if (curr_program.FILES != null)
+            {
+
+                for (int a = 0; a < curr_program.FILES.Length; a++)
+                {
+                    if (!Tables.Contains(curr_program.FILES[a].FILENAME))
+                    {
+                        Tables.Add(curr_program.FILES[a].FILENAME);
+                    }
+
+
+                    sl.Add(
+                        new SymbolLocation(
+                                curr_program.FILES[a].MODULE,
+                                curr_program.FILES[a].LINE,
+                                "FILE",
+                                curr_program.FILES[a].FILENAME,
+                                get_line(curr_program.FILES[a].MODULE, curr_program.FILES[a].LINE)
+                                
+                                    // , curr_program.FILES[a].OPERATION
+                        ));
+
+                }
+            }
+
+            setMenuItems(filesToolStripMenuItem, Tables, sl);
             #endregion
 
 
@@ -2257,25 +2463,61 @@ namespace Calltreeviewer
         private void setMenuItems(ToolStripMenuItem tsMain, List<string> Tables, List<SymbolLocation> sl)
         {
             tsMain.DropDownItems.Clear();
-            Tables.Sort();
-            for (int a = 0; a < Tables.Count; a++)
+            if (Tables != null)
             {
-                ToolStripMenuItem ts;
-                ts = new ToolStripMenuItem(Tables[a]);
-                tsMain.DropDownItems.Add(ts);
-                for (int b = 0; b < sl.Count; b++)
+                Tables.Sort();
+                for (int a = 0; a < Tables.Count; a++)
                 {
-                    if (sl[b].Operation == Tables[a] && canBeCalled(sl[b].moduleName,sl[b].lineNo))
+                    ToolStripMenuItem ts;
+                    ts = new ToolStripMenuItem(Tables[a]);
+                    tsMain.DropDownItems.Add(ts);
+                    for (int b = 0; b < sl.Count; b++)
                     {
-                        ContextSearchItem csi = new ContextSearchItem(sl[b]);
-                        csi.Click += new EventHandler(csi_Click);
-                        ts.DropDownItems.Add(csi);
+                        if (sl[b].Operation == Tables[a] && canBeCalled(sl[b].moduleName, sl[b].lineNo))
+                        {
+                            ContextSearchItem csi = new ContextSearchItem(sl[b]);
+                            csi.WhenClicked = new EventHandler(csi_Click);
+                            ts.DropDownItems.Add(csi);
+/*
+                            if (sl[b].Description != null)
+                            {
+                                ToolStripMenuItem ts2;
+                                ts2 = new ToolStripMenuItem(sl[b].Description);
+                                ts.DropDownItems.Add(ts2);
+                            }
+ * */
+                        }
+                    }
+                    if (ts.DropDownItems.Count == 0)
+                    {
+                        ts.Visible = false;
                     }
                 }
-                if (ts.DropDownItems.Count == 0)
+            }
+            else
+            {
+                for (int b = 0; b < sl.Count; b++)
                 {
-                    ts.Visible = false;
+                    if (canBeCalled(sl[b].moduleName, sl[b].lineNo))
+                    {
+                        ContextSearchItem csi = new ContextSearchItem(sl[b]);
+                        csi.WhenClicked = new EventHandler(csi_Click);
+                        tsMain.DropDownItems.Add(csi);
+
+                       // ToolStripMenuItem ts1;
+                       // ts1=new ToolStripMenuItem(sl
+                    }
                 }
+
+            }
+
+            if (tsMain.DropDownItems.Count == 0)
+            {
+                tsMain.Visible = false;
+            }
+            else
+            {
+                tsMain.Visible = true;
             }
         }
 
@@ -2305,11 +2547,53 @@ namespace Calltreeviewer
         {
             SearchableControls.ContextSearchItem c = (SearchableControls.ContextSearchItem)sender;
 
-            if (loadModule(c.sl.moduleName))
-            {
-                setModuleLine(c.sl.lineNo);
-                return;
-            }
+            loadModuleLine(c.sl.moduleName, c.sl.lineNo,true);
+
         }
+
+
+
+        private void mnLocationBack_Click(object sender, EventArgs e)
+        {
+
+            previousLocationIndicator--;
+            loadModuleLine(previousLocations[previousLocationIndicator].ModuleNo, previousLocations[previousLocationIndicator].LineNo, false);
+            EnableLocationButtons();
+
+        }
+
+        private void EnableLocationButtons()
+        {
+
+           // mnLocationBack.Text="< "+(previousLocationIndicator+1)+" of "+previousLocations.Count;
+            if (previousLocations.Count > (previousLocationIndicator+1))
+            {
+                mnLocationForward.Enabled = true;
+            }
+            else
+            {
+                mnLocationForward.Enabled = false;
+            }
+
+            if (previousLocationIndicator > 0)
+            {
+                mnLocationBack.Enabled = true;
+            }
+            else
+            {
+                mnLocationBack.Enabled = false;
+            }
+            
+        }
+
+        private void mnLocationForward_Click(object sender, EventArgs e)
+        {
+            previousLocationIndicator++;
+            loadModuleLine(previousLocations[previousLocationIndicator].ModuleNo, previousLocations[previousLocationIndicator].LineNo, false);
+            
+            EnableLocationButtons();
+        }
+
+
     }
 }

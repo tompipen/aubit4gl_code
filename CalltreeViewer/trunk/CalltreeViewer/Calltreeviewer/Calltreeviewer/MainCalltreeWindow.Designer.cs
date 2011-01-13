@@ -68,13 +68,18 @@ namespace Calltreeviewer
             this.selectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.dEFINELIKEToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.eXECUTEPROCEDUREToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.environmentVariablesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.RunsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.formsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.filesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.mnLocationBack = new System.Windows.Forms.ToolStripMenuItem();
+            this.mnLocationForward = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.tslblLine = new System.Windows.Forms.ToolStripStatusLabel();
             this.lblNoOfLines = new System.Windows.Forms.ToolStripStatusLabel();
             this.tsLblSearching = new System.Windows.Forms.ToolStripStatusLabel();
             this.lblLoaded = new System.Windows.Forms.ToolStripStatusLabel();
             this.tslSrchText = new System.Windows.Forms.ToolStripStatusLabel();
-            this.environmentVariablesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mainSplitPanel.Panel1.SuspendLayout();
             this.mainSplitPanel.Panel2.SuspendLayout();
             this.mainSplitPanel.SuspendLayout();
@@ -249,7 +254,9 @@ namespace Calltreeviewer
             this.referencesToolStripMenuItem1,
             this.toolStripMenuItem1,
             this.cbModules,
-            this.cRUDToolStripMenuItem});
+            this.cRUDToolStripMenuItem,
+            this.mnLocationBack,
+            this.mnLocationForward});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(1082, 27);
@@ -443,10 +450,13 @@ namespace Calltreeviewer
             this.selectToolStripMenuItem,
             this.dEFINELIKEToolStripMenuItem,
             this.eXECUTEPROCEDUREToolStripMenuItem,
-            this.environmentVariablesToolStripMenuItem});
+            this.environmentVariablesToolStripMenuItem,
+            this.RunsToolStripMenuItem,
+            this.formsToolStripMenuItem,
+            this.filesToolStripMenuItem});
             this.cRUDToolStripMenuItem.Name = "cRUDToolStripMenuItem";
-            this.cRUDToolStripMenuItem.Size = new System.Drawing.Size(50, 23);
-            this.cRUDToolStripMenuItem.Text = "CRUD";
+            this.cRUDToolStripMenuItem.Size = new System.Drawing.Size(93, 23);
+            this.cRUDToolStripMenuItem.Text = "Symbols/Data";
             this.cRUDToolStripMenuItem.Visible = false;
             // 
             // updatesToolStripMenuItem
@@ -485,6 +495,44 @@ namespace Calltreeviewer
             this.eXECUTEPROCEDUREToolStripMenuItem.Name = "eXECUTEPROCEDUREToolStripMenuItem";
             this.eXECUTEPROCEDUREToolStripMenuItem.Size = new System.Drawing.Size(192, 22);
             this.eXECUTEPROCEDUREToolStripMenuItem.Text = "EXECUTE PROCEDURE";
+            // 
+            // environmentVariablesToolStripMenuItem
+            // 
+            this.environmentVariablesToolStripMenuItem.Name = "environmentVariablesToolStripMenuItem";
+            this.environmentVariablesToolStripMenuItem.Size = new System.Drawing.Size(192, 22);
+            this.environmentVariablesToolStripMenuItem.Text = "Environment Variables";
+            // 
+            // RunsToolStripMenuItem
+            // 
+            this.RunsToolStripMenuItem.Name = "RunsToolStripMenuItem";
+            this.RunsToolStripMenuItem.Size = new System.Drawing.Size(192, 22);
+            this.RunsToolStripMenuItem.Text = "RUNs";
+            // 
+            // formsToolStripMenuItem
+            // 
+            this.formsToolStripMenuItem.Name = "formsToolStripMenuItem";
+            this.formsToolStripMenuItem.Size = new System.Drawing.Size(192, 22);
+            this.formsToolStripMenuItem.Text = "Forms";
+            // 
+            // filesToolStripMenuItem
+            // 
+            this.filesToolStripMenuItem.Name = "filesToolStripMenuItem";
+            this.filesToolStripMenuItem.Size = new System.Drawing.Size(192, 22);
+            this.filesToolStripMenuItem.Text = "Files";
+            // 
+            // mnLocationBack
+            // 
+            this.mnLocationBack.Name = "mnLocationBack";
+            this.mnLocationBack.Size = new System.Drawing.Size(27, 23);
+            this.mnLocationBack.Text = "<";
+            this.mnLocationBack.Click += new System.EventHandler(this.mnLocationBack_Click);
+            // 
+            // mnLocationForward
+            // 
+            this.mnLocationForward.Name = "mnLocationForward";
+            this.mnLocationForward.Size = new System.Drawing.Size(27, 23);
+            this.mnLocationForward.Text = ">";
+            this.mnLocationForward.Click += new System.EventHandler(this.mnLocationForward_Click);
             // 
             // statusStrip1
             // 
@@ -545,12 +593,6 @@ namespace Calltreeviewer
             this.tslSrchText.Name = "tslSrchText";
             this.tslSrchText.Size = new System.Drawing.Size(12, 17);
             this.tslSrchText.Text = "_";
-            // 
-            // environmentVariablesToolStripMenuItem
-            // 
-            this.environmentVariablesToolStripMenuItem.Name = "environmentVariablesToolStripMenuItem";
-            this.environmentVariablesToolStripMenuItem.Size = new System.Drawing.Size(192, 22);
-            this.environmentVariablesToolStripMenuItem.Text = "Environment Variables";
             // 
             // MainCalltreeWindow
             // 
@@ -637,6 +679,11 @@ namespace Calltreeviewer
         private System.Windows.Forms.ToolStripMenuItem dEFINELIKEToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem eXECUTEPROCEDUREToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem environmentVariablesToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem mnLocationBack;
+        private System.Windows.Forms.ToolStripMenuItem mnLocationForward;
+        private System.Windows.Forms.ToolStripMenuItem RunsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem formsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem filesToolStripMenuItem;
     }
 }
 
