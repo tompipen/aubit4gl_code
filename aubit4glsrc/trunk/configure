@@ -1593,6 +1593,7 @@ INCLINES
 AIX_OBJECT_MODE
 YYDEBUG
 DEBUG_BISON
+HAVE_STDCPP
 HAVE_PDFLIB8
 HAVE_LIBQRENCODE
 XCURSES_LIBS
@@ -13237,6 +13238,7 @@ CC="$lt_save_CC"
 
 
 
+
 #debug
 
 
@@ -21265,6 +21267,43 @@ fi
 ## ==================================================================
 
 
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -lstdc++" >&5
+$as_echo_n "checking for main in -lstdc++... " >&6; }
+if ${ac_cv_lib_stdcpp_main+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lstdc++  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+
+int
+main ()
+{
+return main ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_lib_stdcpp_main=yes
+else
+  ac_cv_lib_stdcpp_main=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_stdcpp_main" >&5
+$as_echo "$ac_cv_lib_stdcpp_main" >&6; }
+if test "x$ac_cv_lib_stdcpp_main" = xyes; then :
+  HAVE_STDCPP="1"
+else
+  HAVE_STDCPP="0"
+fi
+
+
 
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: " >&5
 $as_echo "" >&6; }
@@ -21376,6 +21415,8 @@ fi
 
 
 
+	 if test "$ac_cv_lib_qrencode_QRcode_encodemask" = "yes";
+	then
 	 if test "$ac_cv_lib_qrencode_QRinput_new2" = "yes";
 	then
 		HAVE_LIBQRENCODE=1
@@ -21392,6 +21433,7 @@ fi
 		$as_echo "#define HAVE_LIBQRENCODE_ENCODEMASK 1" >>confdefs.h
 
 	 fi
+	fi
 
 fi
 
@@ -32083,7 +32125,7 @@ test "x$enable_libtool_lock" != xno && enable_libtool_lock=yes
 case $host in
 *-*-irix6*)
   # Find out which ABI we are using.
-  echo '#line 32086 "configure"' > conftest.$ac_ext
+  echo '#line 32128 "configure"' > conftest.$ac_ext
   if { { eval echo "\"\$as_me\":${as_lineno-$LINENO}: \"$ac_compile\""; } >&5
   (eval $ac_compile) 2>&5
   ac_status=$?
@@ -38216,7 +38258,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure,v 1.467 2011-01-07 12:36:22 mikeaubury Exp $
+| $Id: configure,v 1.468 2011-01-13 07:58:19 mikeaubury Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X
