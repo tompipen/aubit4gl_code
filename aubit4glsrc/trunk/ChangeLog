@@ -1,4 +1,125 @@
 ---------------------------
+Sun Jan 16 13:10:06 GMT 2011
+---------------------------
+1.2_20 Released
+---------------------------
+	2011-01-16 12:42  mikeaubury
+	
+	2011-01-16 12:39  mikeaubury
+	
+	2011-01-13 16:25  mikeaubury
+	
+	2011-01-13 07:58  mikeaubury
+	
+	2011-01-12 14:43  mikeaubury
+	
+	2011-01-11 18:19  mikeaubury
+	
+	2011-01-11 13:48  mikeaubury
+	
+	2011-01-11 13:04  mikeaubury
+	
+	Fixup for CASE in SELECT
+	
+	2011-01-11 13:00  mikeaubury
+	
+	2011-01-11 12:53  mikeaubury
+	
+	2011-01-08 13:01  mikeaubury
+	
+	2011-01-07 14:31  mikeaubury
+	
+	2011-01-07 12:36  mikeaubury
+	
+	2011-01-07 12:15  mikeaubury
+	
+	2011-01-07 12:11  mikeaubury
+	
+	2011-01-07 11:58  mikeaubury
+	
+	Add sql parsing to PREPARE statements
+	
+	2011-01-07 11:43  mikeaubury
+	
+	2011-01-07 11:18  mikeaubury
+	
+	2011-01-06 19:46  mikeaubury
+	
+	Stop column name transformations unless they are needed in SQL
+	translation
+	
+	2011-01-05 14:42  mikeaubury
+	
+	Calltree updates
+	
+	2011-01-04 18:05  mikeaubury
+	
+	2010-12-23 14:31  mikeaubury
+	
+	Changed to just use g++ for pdflib - not haru too...
+	
+	2010-12-21 15:52  mike-no
+	
+	qrencode updated
+	
+	2010-12-21 11:02  mike-no
+	
+	Use of pdflib8
+	
+	2010-12-20 11:58  mikeaubury
+	
+	2010-12-20 03:02  mike-no
+	
+	pdf updates
+	
+	2010-12-19 17:09  mike-no
+	
+	2010-12-19 16:50  mike-no
+	
+	Initial revision
+	
+	2010-12-19 16:50  mike-no
+	
+	2010-12-16 21:22  mikeaubury
+	
+	Calltree updates
+	
+	2010-12-16 21:21  mikeaubury
+	
+	2010-12-16 10:53  mikeaubury
+	
+	2010-12-13 17:59  mikeaubury
+	
+	2010-12-12 22:09  mikeaubury
+	
+	2010-12-12 12:55  mikeaubury
+	
+	fglcalltree enhancements
+	
+	2010-12-11 15:09  mikeaubury
+	
+	2010-12-11 14:45  mikeaubury
+	
+	2010-12-11 13:45  mikeaubury
+	
+	2010-12-11 13:34  mikeaubury
+	
+	2010-12-11 13:30  mikeaubury
+	
+	2010-12-11 13:09  mikeaubury
+	
+	2010-12-11 13:08  mikeaubury
+	
+	Added MENU .. ATTRIBUTES(NORMAL="...", HIGHLIGHT="...") where
+	NORMAL and HIGHTLIGHT specify the attributes as strings for the
+	normal and highlighted menu options.  Eg.
+	
+	main menu "Select" attributes(normal="BLUE",
+	highlight="GREEN,REVERSE")	   command "Yes"
+	message "Yes"	      command "No"		   message "No"
+	command "Exit"		   exit menu end menu end main
+	
+---------------------------
 Sat Dec 11 14:42:51 GMT 2010
 ---------------------------
 1.2_19 Released
