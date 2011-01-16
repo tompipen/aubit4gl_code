@@ -67,10 +67,13 @@ static void load_boltons (char *fname);
 //static void calltree_addmap(int type, char *data);
 static int add_calltree_calls (char *s, s_commands * func_commands, int mode);
 static void calltree_map_insert_delete_update(char *main_statement, char *table, struct expr_str *where_clause, char *module, int line) ;
+static void add_file_operation(char *operation, expr_str *file, char *module,int line) ;
 static void calltree_map_select_stmt(char *main_statement, struct s_select *select,  char *module, int line) ;
+static char *variable_value_string (char *var,int useName) ;
 static void calltree_map_value_list(char *main_statement,struct s_select_list_item_list *list, char*module, int line) ;
 static void calltree_map_value(char *main_statement,struct s_select_list_item *item, char*module, int line) ;
 static char * guess_sql_stmt(struct struct_prepare_cmd *p,char *module, int line,int processed) ;
+static void add_variable_value_strings (char *var, char *value) ;
 static void clr_variable_values(void) ;
 static int find_function (char *s);
 char *decode_rb (enum report_blocks a);
@@ -79,9 +82,11 @@ static int ignore_user_function(char *name) ;
 int ignLibFunc=1;
 static int run_calltree (char *s);
 static void add_variable_value(variable_usage *u, expr_str *val) ;
-static char * evaluate_expr (expr_str * e);
+static char * evaluate_expr (expr_str * e,int useName);
 static int process_cmd(struct command *cmd,int mode) ;
-
+static void dec_inIf(void) ;
+static void inc_inIf(void) ;
+int ifBlocks[100];
 int inc4GL = 1;			/* Include 4gl in the output */
 int incProg = 1;
 char top_level_function[200]="MAIN";
@@ -89,6 +94,9 @@ int groupByModule=0;
 
 static void add_symbol(char *name,char*mod,int line,char *type,char *operation) ;
 static void add_variable(expr_str *v, char *module, int lineno, char *operation,expr_str *value) ;
+static char *get_form_display(char *s);
+
+static void log_special_calls(struct s_expr_function_call *fcall);
 
 enum e_mapset {
         MAPSET_NONE=0,
@@ -99,6 +107,9 @@ enum e_mapset {
         MAPSET_CRUD_DYNAMIC,
         MAPSET_CRUD_OTHER,
         MAPSET_ENV,
+        MAPSET_RUN,
+        MAPSET_FORM,
+        MAPSET_FILES,
 
 
         MAPSET_LAST
@@ -170,6 +181,10 @@ static void dump_mapset(enum e_mapset e) {
                 //case MAPSET_LIBCALL_AWB:        dump_mapset_to_crud("AWBCALLS",e); break;
                 //case MAPSET_LIBCALL:            dump_mapset_to_crud("OTHERLIBCALLS",e); break;
                 case MAPSET_ENV:                dump_mapset_to_crud("ENVIRONMENTVARS",e); break;
+                case MAPSET_RUN:                dump_mapset_to_crud("RUN",e); break;
+                case MAPSET_FORM:               dump_mapset_to_crud("FORMS",e); break;
+                case MAPSET_FILES:              dump_mapset_to_crud("FILES",e); break;
+
                 case MAPSET_LAST: break;
                 //default :       A4GL_assertion(1,"Unexpected");
         }
@@ -369,7 +384,7 @@ static void check_for_orphaned_functions(char *topfuncname) {
 			check_for_orphaned_functions(nodes[a].calls);
 		}
 	}
-printf("Done Checking for orphaned functions from :%s\n", topfuncname);
+//printf("Done Checking for orphaned functions from :%s\n", topfuncname);
 }
 
 static char *get_prog_name(void) {
@@ -1250,7 +1265,7 @@ add_function (int module_no, char *module, int line, int lastline, char *fname, 
   functions[functions_cnt - 1].whenever_any_error_func_line = whenever_any_error_func_line;
   functions[functions_cnt - 1].whenever_sql_error_func_line = whenever_sql_error_func_line;
 
-  printf ("Added %s in %s.%d\n", fname, module, line);
+  //printf ("Added %s in %s.%d\n", fname, module, line);
 }
 
 int callstack_cnt = 0;
@@ -1402,7 +1417,7 @@ cache_expression (char *sxx, expr_str ** ptr, int mode)
 											      mode);
 
     case ET_EXPR_VARIABLE_USAGE:
-	add_variable(expr,last_mod,last_line,"USE",NULL);
+	add_variable(expr,last_mod,last_line,"USE",expr);
 	break;
 
     default:
@@ -1421,10 +1436,14 @@ cache_expression (char *sxx, expr_str ** ptr, int mode)
 	
 	  if (strcmp(expr->expr_str_u.expr_function_call->functionname,"fgl_getenv")==0) {
 		char buff[2000];
-		sprintf(buff,"<ENV NAME=\"%s\" MODULE=\"%s\" LINE=\"%d\" />\n", evaluate_expr(expr->expr_str_u.expr_function_call->parameters->list.list_val[0]), last_mod,last_line);
+		sprintf(buff,"<ENV NAME=\"%s\" MODULE=\"%s\" LINE=\"%d\" />\n", evaluate_expr(expr->expr_str_u.expr_function_call->parameters->list.list_val[0],1), last_mod,last_line);
 		calltree_addmap(MAPSET_ENV ,buff,last_mod,last_line);
 
 		}
+
+	  log_special_calls(expr->expr_str_u.expr_function_call);
+	
+
 	  if (!system_function (expr->expr_str_u.expr_function_call->functionname))
 	    {
 		  addNode (currfunc, expr->expr_str_u.expr_function_call->functionname,"",expr->expr_str_u.expr_function_call->line,0,
@@ -1866,12 +1885,13 @@ struct s_symbol_table {
 	char *type;
 	char *operation;
 	char *scope;
+	char *value;
 };
 
 struct s_symbol_table *symbol_table=0;
 int nsymbols=0;
 
-static void add_symbol_with_scope(char *name,char*mod,int line,char *type,char *operation,char *scope) {
+static void add_symbol_with_scope(char *name,char*mod,int line,char *type,char *operation,char *scope,char *value) {
 int a;
 	
 	for (a=0;a<nsymbols;a++) {
@@ -1894,6 +1914,11 @@ int a;
 	symbol_table[nsymbols-1].type=strdup(type);
 	symbol_table[nsymbols-1].operation=strdup(operation);
 	symbol_table[nsymbols-1].scope=strdup(scope);
+	if (value) {
+	symbol_table[nsymbols-1].value=strdup(value);
+	} else {
+	symbol_table[nsymbols-1].value="";
+	}
 }
 
 
@@ -1901,14 +1926,15 @@ static void dump_symbols(void) {
 int a;
 	fprintf(output,"<SYMBOLS>\n");
 	for (a=0;a<nsymbols;a++) {
-		fprintf(output," <SYMBOL NAME=\"%s\" MODULE=\"%s\" LINE=\"%d\" TYPE=\"%s\" OPERATION=\"%s\" SCOPE=\"%s\"/>\n",
+		fprintf(output," <SYMBOL NAME=\"%s\" MODULE=\"%s\" LINE=\"%d\" TYPE=\"%s\" OPERATION=\"%s\" SCOPE=\"%s\" VALUE=\"%s\"/>\n",
 			A4GL_strip_quotes(
 				symbol_table[a].name),
 				symbol_table[a].module,
 				symbol_table[a].line,
 				symbol_table[a].type,
 				symbol_table[a].operation,
-				symbol_table[a].scope
+				symbol_table[a].scope,
+				xml_encode(symbol_table[a].value)
 			);
 	}
 	fprintf(output,"</SYMBOLS>\n");
@@ -1916,7 +1942,7 @@ int a;
 
 
 static void add_symbol(char *name,char*mod,int line,char *type,char *operation) {
-	add_symbol_with_scope(name,mod,line,type,operation,"G");
+	add_symbol_with_scope(name,mod,line,type,operation,"G",0);
 	//printf("Add symbol : %s (%s:%d) %s %s\n", name,mod,line,type,operation);
 }
 
@@ -1937,9 +1963,13 @@ if (v->expr_type==ET_EXPR_VARIABLE_USAGE) {
 			scope="G"; break;
 		default: break;
 	}
-	if (value) { add_variable_value(v->expr_str_u.expr_variable_usage, value ); }
+
+	add_symbol_with_scope(expr_as_string_when_possible(v),module,lineno,"VARIABLE",operation,scope,evaluate_expr(value,1));
+
+	if (value && strcmp(operation,"ASSIGN")==0) { 
+			add_variable_value(v->expr_str_u.expr_variable_usage, value ); 
+	}
 }
-	add_symbol_with_scope(expr_as_string_when_possible(v),module,lineno,"VARIABLE",operation,scope);
 }
 
 static void add_symbol_assign_single(expr_str *l,char *module,int lineno,expr_str *value) {
@@ -1973,7 +2003,7 @@ for (a=0;a<l->list.list_len;a++) {
 		int b;
 			char buff[120000]="";
 			for (b=0;b< values->list.list_len;b++) {
-				strcat(buff, evaluate_expr( values->list.list_val[b]));
+				strcat(buff, evaluate_expr( values->list.list_val[b],1));
 			}
 			add_symbol_assign_single(l->list.list_val[a],module,lineno, A4GL_new_literal_string(buff));
 		} else {
@@ -2070,26 +2100,59 @@ static char *calltree_get_ident(struct expr_str *ptr) {
 
 
 
-char *A4GL_strip_quotes_1(char *s) {
+static char *A4GL_strip_quotes_1(char *s) {
 static char ptr[200000];
 	int a;
 int b=0;
-s=A4GL_strip_quotes(s);
-for (a=0;a<strlen(s);a++) {
+if (s[0]=='\"') {
+	s=A4GL_strip_quotes(s);
+	for (a=0;a<strlen(s);a++) {
+	
+		if (s[a]=='\t') {
+			ptr[b++]=' '; continue;
+		}
 
-	if (s[a]=='\t') {
-		ptr[b++]=' '; continue;
+		if (s[a]=='\\' && s[a+1]=='t') {
+			a++;
+			ptr[b++]=' '; continue;
+		}
+	
+		if (s[a]=='\\' && s[a+1]=='\\' && s[a+2]=='t') {
+			a+=2;
+			ptr[b++]=' '; continue;
+		}
+		if (s[a]=='\\' && s[a+1]=='\\' && s[a+2]=='n') {
+			a+=2;
+			ptr[b++]=' '; continue;
+		}
+		if (s[a]=='\\' && s[a+1]=='\\' && s[a+2]=='"') {
+			a+=2;
+			ptr[b++]=s[a];
+		} else {
+			ptr[b++]=s[a];
+		}
 	}
-
-	if (s[a]=='\\' && s[a+1]=='t') {
-		a++;
-		ptr[b++]=' '; continue;
-	}
-	if (s[a]=='\\' && s[a+1]=='"') {
-		a++;
-		ptr[b++]=s[a];
-	} else {
-		ptr[b++]=s[a];
+}  else {
+	for (a=0;a<strlen(s);a++) {
+	
+		if (s[a]=='\t') {
+			ptr[b++]=' '; continue;
+		}
+	
+		if (s[a]=='\\' && s[a+1]=='t') {
+			a++;
+			ptr[b++]=' '; continue;
+		}
+		if (s[a]=='\\' && s[a+1]=='n') {
+			a++;
+			ptr[b++]=' '; continue;
+		}
+		if (s[a]=='\\' && s[a+1]=='"') {
+			a++;
+			ptr[b++]=s[a];
+		} else {
+			ptr[b++]=s[a];
+		}
 	}
 }
 ptr[b]=0;
@@ -2232,6 +2295,8 @@ static int process_cmd(struct command *cmd,int mode) {
 	    int xcnt;
 	    int printed_if = 0;
 
+	    inc_inIf();
+
 	    ifcmd = &cmd->cmd_data.command_data_u.if_cmd;
 
 	    for (xcnt = 0; xcnt < ifcmd->truths.conditions.conditions_len; xcnt++)
@@ -2246,7 +2311,9 @@ static int process_cmd(struct command *cmd,int mode) {
 	    for (xcnt = 0; xcnt < cmd->cmd_data.command_data_u.if_cmd.truths.conditions.conditions_len;
 		 xcnt++)
 	      {
-			inIf++;
+
+		ifBlocks[inIf]++;
+
 		if (calls_something
 		    (cmd->cmd_data.command_data_u.if_cmd.truths.conditions.conditions_val[xcnt].
 		     whentrue))
@@ -2282,12 +2349,11 @@ static int process_cmd(struct command *cmd,int mode) {
 			indent--;
 		      }
 		  }
-			inIf--;
 	      }
 
 	    if (cmd->cmd_data.command_data_u.if_cmd.whenfalse)
 	      {
-			inIf++;
+		ifBlocks[inIf]++;
 		if (calls_something (cmd->cmd_data.command_data_u.if_cmd.whenfalse))
 		  {
 		    call_cnt++;
@@ -2321,7 +2387,6 @@ static int process_cmd(struct command *cmd,int mode) {
 		      }
 
 		  }
-			inIf--;
 
 	      }
 	    if (printed_if)
@@ -2329,6 +2394,7 @@ static int process_cmd(struct command *cmd,int mode) {
 		print_indent ();
 		fprintf (output, "</IF>\n");
 	      }
+		dec_inIf();
 	  }
 	  break;
 
@@ -2394,7 +2460,10 @@ static int process_cmd(struct command *cmd,int mode) {
 	    int printed_case = 0;
 	    int xcnt;
 
+   	    inc_inIf();
+
 	    casecmd = &cmd->cmd_data.command_data_u.case_cmd;
+
 
 	    cache_expression ("", &casecmd->case_expr, mode);
 
@@ -2403,9 +2472,11 @@ static int process_cmd(struct command *cmd,int mode) {
 
 		call_cnt += cache_expression ("", &casecmd->whens->whens.whens_val[xcnt]->when_expr, mode);
 
+
 		if (calls_something
 		    (cmd->cmd_data.command_data_u.case_cmd.whens->whens.whens_val[xcnt]->when_commands))
 		  {
+			ifBlocks[inIf]++;
 		    call_cnt++;
 		    if (mode == MODE_BUY)
 		      {
@@ -2454,6 +2525,7 @@ static int process_cmd(struct command *cmd,int mode) {
 	      {
 		if (calls_something (cmd->cmd_data.command_data_u.case_cmd.otherwise))
 		  {
+			ifBlocks[inIf]++;
 		    call_cnt++;
 		    if (mode == MODE_BUY)
 		      {
@@ -2480,16 +2552,36 @@ static int process_cmd(struct command *cmd,int mode) {
 		      }
 		  }
 	      }
+
 	    if (printed_case && mode == MODE_BUY)
 	      {
 		indent--;
 		print_indent ();
 		fprintf (output, "</CASE>\n");
 	      }
+		dec_inIf();
 	  }
 
 	  break;
 
+
+	case E_CMD_LOAD_CMD:
+	{
+	  if (mode == MODE_BUY)
+	    {
+			add_file_operation("LOAD",cmd->cmd_data.command_data_u.load_cmd.filename,last_mod,cmd->lineno);
+	    }
+	}
+	break;
+
+	case E_CMD_UNLOAD_CMD:
+	{
+	  if (mode == MODE_BUY)
+	    {
+			add_file_operation("UNLOAD",cmd->cmd_data.command_data_u.unload_cmd.filename,last_mod,cmd->lineno);
+	    }
+	}
+	break;
 
 
 	case E_CMD_START_CMD:
@@ -2501,6 +2593,11 @@ static int process_cmd(struct command *cmd,int mode) {
 		       cmd->cmd_data.command_data_u.start_cmd.repname,
 		       cmd->lineno);
 	      addNode (currfunc, cmd->cmd_data.command_data_u.start_cmd.repname, "",cmd->lineno,0,"C");
+	      if (cmd->cmd_data.command_data_u.start_cmd.sc_c->towhat=='F') {
+			add_file_operation("STARTREP",cmd->cmd_data.command_data_u.start_cmd.sc_c->s1,last_mod,cmd->lineno);
+//static void add_file_operation(char *operation, expr_str *file, char *module,int line) {
+		}
+
 	    }
 	  call_cnt++;
 	  break;
@@ -2738,7 +2835,12 @@ static int process_cmd(struct command *cmd,int mode) {
 	  break;
 
 	case E_CMD_RUN_CMD:
+	{
+		char buff[20000];
+		sprintf(buff,"<RUN_STMT CMD=\"%s\" MODULE=\"%s\" LINE=\"%d\"/>\n",xml_encode(evaluate_expr(cmd->cmd_data.command_data_u.run_cmd.run_string,1)),last_mod,last_line);
+		calltree_addmap(MAPSET_RUN ,buff,last_mod,last_line);
 	  call_cnt += cache_expression ("", &cmd->cmd_data.command_data_u.run_cmd.run_string, mode);
+	}
 	  break;
 
 	case E_CMD_RUN_WAITING_FOR_CMD:
@@ -2786,13 +2888,15 @@ static int process_cmd(struct command *cmd,int mode) {
 		}
 		break;
 
+
 	case E_CMD_PREPARE_CMD:
 		{
 		struct command *c;
 		char *str;
-		str=evaluate_expr(cmd->cmd_data.command_data_u.prepare_cmd.sql);
+		str=evaluate_expr(cmd->cmd_data.command_data_u.prepare_cmd.sql,0);
 		str=A4GL_strip_quotes_1(str);
 		add_symbol(calltree_get_ident(cmd->cmd_data.command_data_u.prepare_cmd.stmtid),last_mod,last_line,"STMT","PREPARE");
+
 		c=processSQL(str);
 
 		if (c!=0) {
@@ -2801,6 +2905,7 @@ static int process_cmd(struct command *cmd,int mode) {
 			process_cmd(c,mode);
 			guess_sql_stmt(&cmd->cmd_data.command_data_u.prepare_cmd, last_mod,last_line,1);
 		} else {
+			printf("Prepare @ %s:%d not handled\n", last_mod,last_line);
 			guess_sql_stmt(&cmd->cmd_data.command_data_u.prepare_cmd, last_mod,last_line,0);
 		}
 		
@@ -2847,9 +2952,16 @@ static int process_cmd(struct command *cmd,int mode) {
 	  call_cnt += cache_expression ("", &cmd->cmd_data.command_data_u.open_window_cmd.y, mode);
 	  if (cmd->cmd_data.command_data_u.open_window_cmd.wt.wintype == EWT_FORM)
 	    {
+		char buff[20000];
 	      call_cnt += cache_expression ("",
 					    &cmd->cmd_data.command_data_u.open_window_cmd.wt.
 					    windowtype_u.formfilename, mode);
+		sprintf(buff,"<FORM SOURCE=\"%s\" MODULE=\"%s\" LINE=\"%d\">%s</FORM>\n",xml_encode(evaluate_expr(
+			cmd->cmd_data.command_data_u.open_window_cmd.wt.windowtype_u.formfilename,1)) ,
+			last_mod,last_line,get_form_display(evaluate_expr(
+                        cmd->cmd_data.command_data_u.open_window_cmd.wt.windowtype_u.formfilename,1)));
+
+		calltree_addmap(MAPSET_FORM ,buff,last_mod,last_line);
 	    }
 	  break;
 
@@ -2883,9 +2995,24 @@ static int process_cmd(struct command *cmd,int mode) {
 		add_symbol(calltree_get_ident(cmd->cmd_data.command_data_u.display_form_cmd.formname),last_mod,last_line,"FORM","DISPLAY");
 	break;
 	case E_CMD_OPEN_FORM_CMD:
+		{
+		char buff[20000];
 		add_symbol(calltree_get_ident(cmd->cmd_data.command_data_u.open_form_cmd.formname),last_mod,last_line,"FORM","OPEN");
 	  call_cnt +=
 	    cache_expression ("", &cmd->cmd_data.command_data_u.open_form_cmd.form_filename, mode);
+
+
+		sprintf(buff,"<FORM SOURCE=\"%s\" MODULE=\"%s\" LINE=\"%d\">%s</FORM>\n",xml_encode(evaluate_expr(
+		cmd->cmd_data.command_data_u.open_form_cmd.form_filename,1
+			)) ,
+			last_mod,last_line,
+			get_form_display( evaluate_expr( cmd->cmd_data.command_data_u.open_form_cmd.form_filename,1))
+);
+
+
+		calltree_addmap(MAPSET_FORM ,buff,last_mod,last_line);
+		
+		}
 	  break;
 
 
@@ -3601,7 +3728,7 @@ static int run_calltree (char *s)
 
   if (endTarget) {
 	if (strcmp(s,endTarget)==0) {
-		printf("Run_calltree for %s is endTarget\n",s);
+		//printf("Run_calltree for %s is endTarget\n",s);
 		cnt++;
 	}
   }
@@ -3623,7 +3750,7 @@ static int run_calltree (char *s)
 			functions[a].callsEndTarget=1;
 		}
 	    }
-	  printf("Run_calltree for %s returns %d\n", s, cnt);
+	  //printf("Run_calltree for %s returns %d\n", s, cnt);
 	  return cnt;
 	}
     }
@@ -3642,16 +3769,16 @@ static char * evaluate_variable_usage_as_string(variable_usage *var_usage) {
                 strcat(buff, "[");
                 for (a=0;a<var_usage->subscripts.subscripts_len;a++) {
                         if(a) strcat(buff, ",");
-                        strcat(buff, evaluate_expr(var_usage->subscripts.subscripts_val[a]));
+                        strcat(buff, evaluate_expr(var_usage->subscripts.subscripts_val[a],1));
                 }
                 strcat(buff, "]");
         }
         if (var_usage->substrings_start.substrings_start) {
                 strcat(buff, "[");
-                strcat(buff, evaluate_expr(var_usage->substrings_start.substrings_start));
+                strcat(buff, evaluate_expr(var_usage->substrings_start.substrings_start,1));
                 if (var_usage->substrings_end.substrings_end) {
                         strcat(buff, ",");
-                        strcat(buff, evaluate_expr(var_usage->substrings_end.substrings_end));
+                        strcat(buff, evaluate_expr(var_usage->substrings_end.substrings_end,1));
                 }
                 strcat(buff, "]");
         }
@@ -3678,8 +3805,8 @@ int nvariable_values=0;
 static void clr_variable_values(void) {
 	int a;
 	for (a=0;a<nvariable_values;a++) {
-		free(variable_values[a].name);
-		free(variable_values[a].value);
+		if (variable_values[a].name) free(variable_values[a].name);
+		if (variable_values[a].value) free(variable_values[a].value);
 	}
 	free(variable_values);
 	variable_values=0;
@@ -3687,10 +3814,43 @@ static void clr_variable_values(void) {
 }
 
 
+
+static void inc_inIf(void) {
+	inIf++;
+	ifBlocks[inIf]=0;
+}
+
+static void dec_inIf(void) {
+/*
+	char mybuff[200000]="";
+	int a;
+	char *ptr;
+
+	for (a=0;a<nvariable_values;a++) {
+		char varbuff[2000];
+		sprintf(varbuff,"IF_%d_",inIf);
+		if (A4GL_strstartswith(variable_values[a].name,varbuff)) {
+			variable_values[a].name=0;
+			if (strlen(mybuff)==0) {
+				sprintf(mybuff,"[%s", variable_values[a].value);
+			} else {
+				strcat(mybuff,"|");
+				strcat(mybuff, variable_values[a].value);
+			}
+			free(variable_values[a].value);
+			variable_values[a].value=0;
+		}
+	}
+*/
+
+	inIf--;
+}
+
+
 static void add_variable_value(variable_usage *u, expr_str *val) {
 	char *value;
 	char *var;
-	int a;
+	//int a;
 	var=evaluate_variable_usage_as_string(u);
 
 	if (u->escope!=E_SCOPE_LOCAL && u->escope!=E_SCOPE_MODULE) {
@@ -3698,16 +3858,34 @@ static void add_variable_value(variable_usage *u, expr_str *val) {
 		return;
 	}
 
-	value=evaluate_expr(val);
-
+	value=evaluate_expr(val,0);
+/*
   	if (inIf) {
 		static char buff[10000];
-		sprintf(buff,"[%s]",value);
+		static char varbuff[10000];
+		sprintf(buff,"{%s}",value);
 		value=buff;
+		sprintf(varbuff,"IF_%d_%s",inIf,var);
+		var=varbuff;
 	}
-	
+*/
+	add_variable_value_strings(var,value);
+}
 
+
+
+static void add_variable_value_strings (char *var, char *value) {
+int a;
+	int gap=-1;
+
+
+//printf("%s=%s Ifcnt=%d\n",var,value,inIf);
 	for (a=0;a<nvariable_values;a++) {
+
+		if (variable_values[a].name==0) {
+			if (gap==-1) gap=a;
+			continue;
+		}
 		if (strcmp(variable_values[a].name,var)==0) {
 			free(variable_values[a].value);
 			variable_values[a].value=strdup(value);
@@ -3715,33 +3893,69 @@ static void add_variable_value(variable_usage *u, expr_str *val) {
 			return ;
 		}
 	}
-	 nvariable_values++;
-	variable_values=realloc(variable_values, sizeof(variable_values[0])*nvariable_values);
-	 variable_values[nvariable_values-1].name=strdup(var);
-	 variable_values[nvariable_values-1].value=strdup(value);
-			variable_values[nvariable_values-1].nassignments=1;
+
+
+	if (gap==-1) {
+	 	nvariable_values++;
+
+		variable_values=realloc(variable_values, sizeof(variable_values[0])*nvariable_values);
+	 	variable_values[nvariable_values-1].name=strdup(var);
+	 	variable_values[nvariable_values-1].value=strdup(value);
+		variable_values[nvariable_values-1].nassignments=1;
+	} else {
+ 		variable_values[gap].name=strdup(var);
+ 		variable_values[gap].value=strdup(value);
+		variable_values[gap].nassignments=1;
+	}
 	
 	//printf("var=%s ",var);
 	//printf("value=%s\n",value);
 }
 
 
-char *variable_value(variable_usage *u) {
-	char *var;
+static char *variable_value_string (char *var,int useName) {
 	int a;
-	var=evaluate_variable_usage_as_string(u);
 	for (a=0;a<nvariable_values;a++) {
+		if (variable_values[a].name==0) continue;
 		if (strcmp(variable_values[a].name, var)==0) {
 			return variable_values[a].value;
 		}
 	}
-	//printf("Looking for value for %s faled\n", u->variable_name);
-	return "?";
+
+	if (strcmp(var,"gfrmdir")==0) { return "$FGLFORM"; }
+
+        if (strcmp(var,"glogname")==0) {return "$LOGNAME";}
+        if (strcmp(var,"gytty")==0) { return "$YTTY";}
+        if (strcmp(var,"g4gldir")==0) { return "$FGLDIR";}
+        if (strcmp(var,"gfrmdir")==0) { return "$FGLFORM";}
+
+        if (strcmp(var,"gpid")==0) { return "$PID";}
+
+        if (strcmp(var,"gtempfile")==0) { return "$FGLTMP/temp$YTTY";}
+        if (strcmp(var,"greportfile")==0) { return "$FGLTMP/report$YTTY";}
+        if (strcmp(var,"gtemptable")==0) { return "temp$YTTY";}
+
+	if (useName) {
+		static char buff[200];
+		sprintf(buff,"{%s}",var);
+		return buff;
+	} else {
+		return "?";
+	}
 }
 
 
-int has_variable_value(variable_usage *u) {
-	if (variable_value(u)) return TRUE;
+
+static char *variable_value(variable_usage *u,int useName) {
+	char *var;
+	var=evaluate_variable_usage_as_string(u);
+	
+	return variable_value_string(var,useName);
+}
+
+
+static int has_variable_value(variable_usage *u) {
+	if (variable_value(u,0)) return TRUE;
 	return FALSE;
 }
 
@@ -3749,8 +3963,9 @@ int has_variable_value(variable_usage *u) {
 
 
 
+/* UseName == Use variable name if no value is known - otherwise - use ? */
 char *
-evaluate_expr (expr_str * e)
+evaluate_expr (expr_str * e,int useName)
 {
 if (e==0) return "";
 
@@ -3773,13 +3988,13 @@ if (e==0) return "";
 
 
     case ET_EXPR_VARIABLE_USAGE:
-      return strdup (variable_value (e->expr_str_u.expr_variable_usage));
+      return strdup (variable_value (e->expr_str_u.expr_variable_usage,useName));
       break;
 
     case ET_EXPR_BRACKET:
       {
 	char *ptr;
-	ptr = strdup (evaluate_expr (e->expr_str_u.expr_expr));
+	ptr = strdup (evaluate_expr (e->expr_str_u.expr_expr,useName));
 	return strdup (ptr);
       }
       break;
@@ -3802,7 +4017,7 @@ if (e==0) return "";
 
       {
 	char *p;
-	p = strdup (evaluate_expr (e->expr_str_u.expr_expr));
+	p = strdup (evaluate_expr (e->expr_str_u.expr_expr,useName));
 	A4GL_trim (p);
 	return p;
       }
@@ -3822,7 +4037,7 @@ if (e==0) return "";
       {
 	char buff[20000];
 	char *ptr;
-	ptr = strdup (evaluate_expr (e->expr_str_u.expr_expr));
+	ptr = strdup (evaluate_expr (e->expr_str_u.expr_expr,useName));
 	if (strcmp (ptr, "?"))
 	  {
 	    return "?";
@@ -3838,7 +4053,7 @@ if (e==0) return "";
 	char buff[20000];
 	//printf("CONCAT %s\n",evaluate_expr (e->expr_str_u.expr_op->left));
 	//printf(" +  %s\n",evaluate_expr (e->expr_str_u.expr_op->right));
-	sprintf (buff, "%s%s", evaluate_expr (e->expr_str_u.expr_op->left), evaluate_expr (e->expr_str_u.expr_op->right));
+	sprintf (buff, "%s%s", evaluate_expr (e->expr_str_u.expr_op->left,useName), evaluate_expr (e->expr_str_u.expr_op->right,useName));
 	return strdup (buff);
       }
 
@@ -3848,13 +4063,23 @@ if (e==0) return "";
 	//char fmt[2000];
 	//char left[2000];
 		
-	return strdup ("USING");
+		return evaluate_expr (e->expr_str_u.expr_op->left,1);
+
+	/*
+	if (strcmp(evaluate_expr (e->expr_str_u.expr_op->left,0),"?")==0) {
+		char buff[2000];
+		sprintf(buff,"%s",expr_as_string_when_possible(e->expr_str_u.expr_op->left),  evaluate_expr (e->expr_str_u.expr_op->right,0));
+		return strdup(buff);
+	} else {
+	}
+		*/
+	//return strdup ("USING");
       }
       break;
 
     case ET_EXPR_NOT:
       {
-	if (atol (evaluate_expr (e->expr_str_u.expr_expr)))
+	if (atol (evaluate_expr (e->expr_str_u.expr_expr,useName)))
 	  {
 	    return strdup ("0");
 	  }
@@ -3885,7 +4110,7 @@ if (e==0) return "";
     case ET_EXPR_DAY_FUNC:
       {
 	char buff[256];
-	sprintf (buff, "DAY(%s)", evaluate_expr (e->expr_str_u.expr_expr));
+	sprintf (buff, "DAY(%s)", evaluate_expr (e->expr_str_u.expr_expr,useName));
 	return strdup (buff);
       }
       break;
@@ -3893,7 +4118,7 @@ if (e==0) return "";
     case ET_EXPR_YEAR_FUNC:
       {
 	char buff[256];
-	sprintf (buff, "YEAR(%s)", evaluate_expr (e->expr_str_u.expr_expr));
+	sprintf (buff, "YEAR(%s)", evaluate_expr (e->expr_str_u.expr_expr,useName));
 	return strdup (buff);
       }
       break;
@@ -3901,7 +4126,7 @@ if (e==0) return "";
     case ET_EXPR_UPSHIFT:
       {
 	char *p;
-	p = strdup (evaluate_expr (e->expr_str_u.expr_expr));
+	p = strdup (evaluate_expr (e->expr_str_u.expr_expr,useName));
 	upshift (p);
 	return p;
       }
@@ -3910,7 +4135,7 @@ if (e==0) return "";
     case ET_EXPR_DOWNSHIFT:
       {
 	char *p;
-	p = strdup (evaluate_expr (e->expr_str_u.expr_expr));
+	p = strdup (evaluate_expr (e->expr_str_u.expr_expr,useName));
 	downshift (p);
 	return p;
       }
@@ -3919,13 +4144,31 @@ if (e==0) return "";
     case ET_EXPR_CAST:
       {
 	char buff[20000];
-	sprintf (buff, "%s", evaluate_expr (e->expr_str_u.expr_cast->expr));
+	sprintf (buff, "%s", evaluate_expr (e->expr_str_u.expr_cast->expr,useName));
 	return strdup (buff);
       }
       break;
 
     case ET_E_V_OR_LIT_STRING:
       return strdup (e->expr_str_u.expr_string);
+
+  case ET_EXPR_FCALL:
+    
+	  if (strcmp(e->expr_str_u.expr_function_call->functionname,"fgl_getenv")==0) {
+		char buff[2000];
+		char *ptr;
+		ptr=evaluate_expr(e->expr_str_u.expr_function_call->parameters->list.list_val[0],useName);
+		//printf("ptr=%s\n",ptr);
+		if (acl_getenv_not_set_as_0(ptr)) {
+			return strdup(acl_getenv_not_set_as_0(ptr));
+		}
+		sprintf(buff,"$%s",ptr);
+		return strdup(buff);
+	  } else {
+	  	return "?";
+	  }
+	  break;
+	
 
     default:
       //A4GL_pause_execution ();
@@ -4239,7 +4482,7 @@ static char * guess_sql_stmt(struct struct_prepare_cmd *p,char *module, int line
 static char buff[200000];
 static char buff2[200000];
 char *ptr;
-	strcpy(buff,evaluate_expr(p->sql));
+	strcpy(buff,evaluate_expr(p->sql,0));
 
 	ptr=calltree_get_ident(p->stmtid); 
 
@@ -4288,10 +4531,11 @@ static int isLineCalled(char *module, int line) {
 			}
 		}
 	}
-	printf("Line %s - %d is not called\n",module,line);
+	//printf("Line %s - %d is not called\n",module,line);
 return 0;
 }
 
+char *expand_env_vars_in_cmdline(char *str,int show_errors);
 
 static void add_assignments_for_parameters(expr_str_list *params,char *module,int lineno) {
 int a;
@@ -4300,3 +4544,94 @@ for (a=0;a<params->list.list_len;a++) {
 	add_variable(params->list.list_val[a],module,lineno,"ASSIGN",NULL);
 }
 }
+
+
+static char *get_form_display(char *s) {
+	// This function returns what a form looks like
+	// this should be in a file with the parameter ".out" 
+	// eg. if a form is called 'bibble' - we try to load 'bibble.out'
+	// If the file is not found - we just return ""
+	//
+	// This file should normally be just the 'screen' section.
+	// You can generate one using the "fdecompile_scr" command.
+	// This is not compiled by default - you'll need to compile it
+	// in compilers/fcompile
+	//
+char *ptr;
+static char buff[20000];
+char strbuff[2000];
+FILE *f;
+sprintf(buff,"%s.out",expand_env_vars_in_cmdline(s,0));
+printf("Looking for form : %s\n",buff);
+f=(FILE *) A4GL_open_file_dbpath (buff);
+if (f==0) {
+	//printf("Not found\n");
+	return "";
+}
+//printf("FOund!!\n");
+strcpy(buff,"<![CDATA[\n");
+while (1) {
+	fgets(strbuff,255,f);
+		if (feof(f)) break;
+	strcat(buff,strbuff);
+}
+strcat(buff,"\n]]>");
+//printf("buff=%s\n",buff);
+return buff;
+}
+
+
+
+static void  dump_parameters(struct s_expr_function_call *fcall,int filenameParamNo) {
+char buff[3000];
+/*
+	printf("%s(",fcall->functionname);
+	if (fcall->parameters) {
+		int a;
+		for (a=0;a<fcall->parameters->list.list_len;a++) {
+			if (a) printf(",");
+			printf("%s",evaluate_expr(fcall->parameters->list.list_val[a]));
+		}
+	}
+	printf(") @%s.%d\n",fcall->module,fcall->line);
+*/
+
+	add_file_operation( fcall->functionname, fcall->parameters->list.list_val[filenameParamNo], fcall->module,fcall->line);
+
+}
+
+
+static void add_file_operation(char *operation, expr_str *file, char *module,int line) {
+		char buff[2000];
+
+		sprintf(buff,"<FILE OPERATION=\"%s\" FILENAME=\"%s\" MODULE=\"%s\" LINE=\"%d\"/>\n",
+			operation,
+			xml_encode(evaluate_expr(file,1)), module,line);
+
+		calltree_addmap(MAPSET_FILES ,buff,module,line);
+}
+
+//
+// A place to log calls to specific application specific functions - 
+// this will depend on the site...
+//
+static void log_special_calls(struct s_expr_function_call *fcall) {
+char *Fname;
+Fname=fcall->functionname;
+
+if (strcmp(Fname,"fgl_file_exist")==0) {  dump_parameters(fcall,0); }
+if (strcmp(Fname,"fgl_write_str")==0) {  dump_parameters(fcall,1);}
+if (strcmp(Fname,"fgl_directory_exist")==0) {  dump_parameters(fcall,0); }
+if (strcmp(Fname,"fgl_open_write")==0) {  dump_parameters(fcall,0); }
+if (strcmp(Fname,"fgl_get_file_size")==0) {  dump_parameters(fcall,0); }
+//if (strcmp(Fname,"fgl_write_line")==0) {  dump_parameters(fcall); }
+//if (strcmp(Fname,"write_cdf_file")==0) {  dump_parameters(fcall); }
+
+if (strcmp(Fname,"fgl_open_read")==0) {  dump_parameters(fcall,0); }
+if (strcmp(Fname,"fgl_write_fixed_str")==0) {  dump_parameters(fcall,1); }
+if (strcmp(Fname,"fgl_delete_file")==0) {  dump_parameters(fcall,0); }
+if (strcmp(Fname,"fgl_write_list_str")==0) {  dump_parameters(fcall,1); }
+
+
+}
+

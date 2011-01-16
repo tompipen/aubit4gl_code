@@ -1115,7 +1115,7 @@ simple_column_name : identifier {
 
 
 execute_procedure_cmd :
-	opt_use2_p EXECUTE_PROCEDURE identifier OPEN_BRACKET CLOSE_BRACKET {
+	opt_use2_p EXECUTE_PROCEDURE spl_proc_name OPEN_BRACKET CLOSE_BRACKET {
 		insql=0;
 		add_sql_function($<str>3);
 		$<cmd>$=new_execute_procedure_cmd($<ptr>1,$<str>3,NULL);
@@ -1128,7 +1128,7 @@ execute_procedure_cmd :
 		}
 		*/
 	}
-	| opt_use2_p EXECUTE_PROCEDURE identifier OPEN_BRACKET value_expr_list_slil CLOSE_BRACKET {
+	| opt_use2_p EXECUTE_PROCEDURE spl_proc_name OPEN_BRACKET value_expr_list_slil CLOSE_BRACKET {
 		insql=0;
 		add_sql_function($<str>4);
 		$<cmd>$=new_execute_procedure_cmd($<ptr>1,$<str>3,$<s_select_list_item_list>5);

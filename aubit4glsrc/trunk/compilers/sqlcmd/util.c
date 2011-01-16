@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: util.c,v 1.2 2011-01-07 14:34:00 mikeaubury Exp $
+# $Id: util.c,v 1.3 2011-01-16 12:42:14 mikeaubury Exp $
 #
 */
 
@@ -115,11 +115,45 @@ A4GLSQLCV_setbuffer (char *s)
 
 struct command *A4GLPARSECMD_processSQL (char *sql)
 {
+int sl;
+char *sql2;
+char *sql_free;
   lastCmd=0;
 
 //yydebug=1;
   A4GLSQLCV_setbuffer (sql);
   sqlparse_yyparse ();
+
+  sql2=strdup(sql);
+  sql_free=sql2;
+  sl=strlen(sql2);
+
+
+  if (lastCmd==0) {
+		if (sql2[0]=='{' && sql2[sl-1]=='}') {
+			sql2++;
+			sql2[sl-2]=0;
+  			A4GLSQLCV_setbuffer (sql2);
+  			sqlparse_yyparse ();
+		}
+  }
+
+  if (lastCmd==0 && strchr(sql2,'{')) {
+	int a;
+	int cnt_curly=0;
+  	sl=strlen(sql2);
+	for (a=0;a<sl;a++) {
+		if (sql2[a]=='{') cnt_curly++;
+		if (cnt_curly) sql2[a]=' ';
+		if (sql2[a]=='}') cnt_curly--;
+		
+	}
+	A4GLSQLCV_setbuffer (sql2);
+	printf("Trying again with %s\n", sql2);
+  	sqlparse_yyparse ();
+  }
+
+  free(sql_free);
   return lastCmd;
 }
 

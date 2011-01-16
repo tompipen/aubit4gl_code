@@ -1811,6 +1811,9 @@ FUNCTION runit (lv_str)
 # Parameters
 DEFINE lv_str             CHAR(32000)
 
+if mv_echomode then
+	DISPLAY lv_str clipped
+end if
     RUN lv_str CLIPPED
 
 END FUNCTION
@@ -1959,6 +1962,9 @@ DEFINE lv_status          INTEGER
 
     LET lv_runstr=aclfgl_expand_env_vars_in_cmdline(lv_runstr)
 
+    IF mv_echomode THEN
+		DISPLAY lv_runstr CLIPPED
+    END IF
     RUN lv_runstr CLIPPED RETURNING lv_status
 
     CALL check_exit_status(lv_status,lv_fname,lv_runstr)
@@ -2062,6 +2068,9 @@ DEFINE lv_status          INTEGER
 
     LET lv_runstr=aclfgl_expand_env_vars_in_cmdline(lv_runstr)
 
+    IF mv_echomode THEN
+		DISPLAY lv_runstr CLIPPED
+    END IF
     RUN lv_runstr CLIPPED RETURNING lv_status
 
     CALL check_exit_status(lv_status,lv_fname,lv_runstr)
@@ -2163,6 +2172,9 @@ DEFINE lv_status          INTEGER
 
     LET lv_runstr=aclfgl_expand_env_vars_in_cmdline(lv_runstr)
 
+    IF mv_echomode THEN
+		DISPLAY lv_runstr CLIPPED
+    END IF
     RUN lv_runstr CLIPPED RETURNING lv_status
 
     CALL check_exit_status(lv_status,lv_fname,lv_runstr)
@@ -2316,6 +2328,9 @@ DEFINE lv_status          INTEGER
 
     LET lv_runstr=aclfgl_expand_env_vars_in_cmdline(lv_runstr)
 
+    IF mv_echomode THEN
+		DISPLAY lv_runstr CLIPPED
+    END IF
     RUN lv_runstr CLIPPED RETURNING lv_status
 
     CALL check_exit_status(lv_status,lv_fname,lv_runstr)
@@ -2391,6 +2406,9 @@ DEFINE lv_status          INTEGER
         DISPLAY "Running : ",lv_runstr CLIPPED
     END IF
 
+    IF mv_echomode THEN
+		DISPLAY lv_runstr CLIPPED
+    END IF
     RUN lv_runstr CLIPPED RETURNING lv_status
 
     CALL check_exit_status(lv_status,lv_fname,lv_runstr)
@@ -2465,6 +2483,9 @@ DEFINE lv_status          INTEGER
 
     LET lv_runstr=aclfgl_expand_env_vars_in_cmdline(lv_runstr)
 
+    IF mv_echomode THEN
+		DISPLAY lv_runstr CLIPPED
+    END IF
     RUN lv_runstr CLIPPED RETURNING lv_status
 
     CALL check_exit_status(lv_status,lv_fname,lv_runstr)
@@ -2496,6 +2517,9 @@ DEFINE lv_status          INTEGER
 
     LET lv_runstr=aclfgl_expand_env_vars_in_cmdline(lv_runstr)
 
+    IF mv_echomode THEN
+		DISPLAY lv_runstr CLIPPED
+    END IF
     RUN lv_runstr CLIPPED RETURNING lv_status
 
     CALL check_exit_status(lv_status,lv_fname,lv_runstr)
@@ -2589,6 +2613,9 @@ DEFINE lv_status          INTEGER
 
     LET lv_runstr=aclfgl_expand_env_vars_in_cmdline(lv_runstr)
 
+    IF mv_echomode THEN
+		DISPLAY lv_runstr CLIPPED
+    END IF
     RUN lv_runstr CLIPPED RETURNING lv_status
 
     IF file_exists(mv_errfile) AND fgl_getenv("DISPLAYLINKERRFILE")="Y" THEN
@@ -2665,6 +2692,9 @@ DEFINE lv_status          INTEGER
 
     LET lv_runstr=aclfgl_expand_env_vars_in_cmdline(lv_runstr)
 
+    IF mv_echomode THEN
+		DISPLAY lv_runstr CLIPPED
+    END IF
     RUN lv_runstr CLIPPED RETURNING lv_status
 
     IF mv_verbose>=5 THEN
@@ -2680,6 +2710,9 @@ DEFINE lv_status          INTEGER
         DISPLAY lv_runstr CLIPPED
     END IF
 
+    IF mv_echomode THEN
+		DISPLAY lv_runstr CLIPPED
+    END IF
     RUN lv_runstr CLIPPED RETURNING lv_status
 
     IF mv_verbose>=5 THEN

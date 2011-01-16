@@ -5,16 +5,18 @@
 */
 
 open_window_cmd :
-	OPEN_WINDOW open_win_name_p KW_AT fgl_expr_c KW_COMMA fgl_expr_c WITH window_type win_attributes  {
+	OPEN_WINDOW open_win_name_p atline KW_AT fgl_expr_c KW_COMMA fgl_expr_c WITH window_type win_attributes  {
+		set_cmdlineno($<integer_val>3);
 
-			$<cmd>$=new_open_window_cmd($<ptr>2,chk_expr($<ptr>6),chk_expr($<ptr>4),&$<wt>8,$<attrib>9);
+			$<cmd>$=new_open_window_cmd($<ptr>2,chk_expr($<ptr>7),chk_expr($<ptr>5),&$<wt>9,$<attrib>10);
 			add_feature("UI_OPEN_WINDOW");
 			map_ui("OPENWINDOW");
 			}
 	|
-	OPEN_WINDOW open_win_name_p WITH window_type win_attributes  {
+	OPEN_WINDOW open_win_name_p atline WITH window_type win_attributes  {
+		set_cmdlineno($<integer_val>3);
 
-			$<cmd>$=new_open_window_cmd($<ptr>2,A4GL_new_literal_long_long(1),A4GL_new_literal_long_long(1),&$<wt>4,$<attrib>5);
+			$<cmd>$=new_open_window_cmd($<ptr>2,A4GL_new_literal_long_long(1),A4GL_new_literal_long_long(1),&$<wt>5,$<attrib>6);
 			add_feature("UI_OPEN_WINDOW");
 			map_ui("OPENWINDOW");
 			}
