@@ -14595,8 +14595,7 @@ $as_echo "$REDHAT_NAME ($REDHAT_VER)" >&6; }
 
         #check if we are using MinGW GCC with CygWin:
 		#WARNING: THIS TEST OCCURS ONE MORE TIME, LATER IN THIS FILE!
-		TMP_TMP=`gcc -dumpmachine | sed 's/
-//g'`
+		TMP_TMP=`gcc -dumpmachine | sed 's///g'`
 		if test "$TMP_TMP" != ""; then
 			if test "$TMP_TMP" = "mingw32" ; then
 				GCC_MINGW=yes
@@ -17385,8 +17384,7 @@ if test "$CC" = "gcc" -o "$CC" = "apgcc"; then
 	{ $as_echo "$as_me:${as_lineno-$LINENO}: checking GCC version" >&5
 $as_echo_n "checking GCC version... " >&6; }
 	#WARNING: THIS TEST OCURS ONE MORE TIME, EARLIER IN THIS FILE
-	TMP_DMACHINE=`gcc -dumpmachine | sed 's/
-//g'`
+	TMP_DMACHINE=`gcc -dumpmachine | sed 's///g'`
 	TMP_TMP=`gcc --version | head -n 1 | sed -e 's/^gcc//' -e 's/(GCC)//' -e 's/ (prerelease)//' -e 's/(//' -e 's/)//' -e 's/\.exe//' -e 's/\./ /g'`
 	if test "$TMP_TMP" != ""; then
 		set `echo $TMP_TMP`
@@ -32125,7 +32123,7 @@ test "x$enable_libtool_lock" != xno && enable_libtool_lock=yes
 case $host in
 *-*-irix6*)
   # Find out which ABI we are using.
-  echo '#line 32128 "configure"' > conftest.$ac_ext
+  echo '#line 32126 "configure"' > conftest.$ac_ext
   if { { eval echo "\"\$as_me\":${as_lineno-$LINENO}: \"$ac_compile\""; } >&5
   (eval $ac_compile) 2>&5
   ac_status=$?
@@ -38258,7 +38256,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure,v 1.468 2011-01-13 07:58:19 mikeaubury Exp $
+| $Id: configure,v 1.469 2011-01-16 16:28:27 mikeaubury Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X
