@@ -20,5 +20,9 @@ DEFINE lv_formname CHAR(256)
 	OPEN FORM f1 FROM lv_formname
 	DISPLAY FORM f1
         OPTIONS PROMPT LINE LAST
-        PROMPT "PRESS ANY KEY " FOR CHAR lv_formname
+	if fgl_getenv("NOFSHOWPROMPT")="Y" Then
+		# ....
+	else
+        	PROMPT "PRESS ANY KEY " FOR CHAR lv_formname
+	end if
 END MAIN

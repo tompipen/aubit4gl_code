@@ -443,3 +443,13 @@ struct command *c;
    return c;
 }
 
+
+struct command *new_execute_procedure_cmd(expr_str *p_connid, char *nm, s_select_list_item_list *parameters) { //!
+struct command *c;
+   c=new_command(E_CMD_EXECUTE_PROCEDURE_CMD);
+   c->cmd_data.command_data_u.execute_procedure_cmd.connid=p_connid;
+   c->cmd_data.command_data_u.execute_procedure_cmd.funcname=strdup(nm);
+   c->cmd_data.command_data_u.execute_procedure_cmd.parameters=parameters;
+   return c;
+}
+

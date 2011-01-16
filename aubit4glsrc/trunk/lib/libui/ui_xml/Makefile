@@ -24,7 +24,7 @@ ${PLUGINDIR}/libUI_XML${SO_EXT}: xml.o uilib/libuilib.a  $(ROOT)/lib/libpacker/f
 	${CC} -c -o $@ ${CFLAGS} -I./uilib/xml ./uilib/xml/pregenerated/triggers_act.c
 
 proxy: proxy.o pipe.o debug.o uilib/xml/pregenerated/triggers_act.o uilib/xml/attr.c ./uilib/xml/pregenerated/triggers.o 
-	${CC} ${CFLAGS} -g -o proxy proxy.o pipe.o debug.o uilib/xml/pregenerated/triggers_act.o uilib/xml/attr.c ./uilib/xml/pregenerated/triggers.o
+	${CC} ${CFLAGS} -DCOMPILING_PROXY -g -o proxy proxy.o pipe.c debug.o uilib/xml/pregenerated/triggers_act.o uilib/xml/attr.c ./uilib/xml/pregenerated/triggers.o
 
 noproxy: noproxy.o pipe.o debug.o
 	${CC} ${CFLAGS} -g -o noproxy noproxy.o pipe.o debug.o

@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.199 2010-11-14 19:54:41 mikeaubury Exp $
+# $Id: report.c,v 1.200 2011-01-16 12:41:24 mikeaubury Exp $
 #
 */
 
@@ -2146,26 +2146,39 @@ A4GL_rep_file_print (struct rep_structure *rep, char *fname_x, int opt_semi)
 void
 pdf_A4GL_rep_file_print (struct pdf_rep_structure *rep, char *fname_x, int opt_semi)
 {
-  FILE *f;
   char buff[10000];
-  char *fname;
+  static char *fname=0;
+  int lineno=0;
   int has_cr;
+  long colno;
 
+FILE *f;
+
+  if (fname) free(fname);
   fname = strdup (fname_x);
   A4GL_trim (fname);
   f = fopen (fname, "r");
-  free (fname);
-  fname = 0;
+
+  colno=rep->col_no;
+
 
   if (f == 0)
     {
       A4GL_exitwith ("Unable to open PRINT FILE file");
       return;
     }
-  while (!feof (f))
+//printf("%p\n",f);
+
+  while (1) 
     {
       char *a;
-      memset (buff, 0, sizeof (buff));
+
+//printf("..%p\n",f);
+	if (feof (f))  {
+		break;
+	}
+	buff[0]=0;
+      //memset (buff, 0, sizeof (buff));
       a = fgets (buff, sizeof (buff) - 1, f);
       if (!a)
 	break;
@@ -2182,13 +2195,23 @@ pdf_A4GL_rep_file_print (struct pdf_rep_structure *rep, char *fname_x, int opt_s
 	      buff[c - 1] = 0;
 	    }
 	}
+
+	if (lineno && rep->col_no!=colno) { rep->col_no=colno; }
+
       A4GL_push_char (buff);
       if (has_cr)
 	A4GL_pdf_rep_print (rep, 1, 0, 0, -1);
       else
 	A4GL_pdf_rep_print (rep, 1, 1, 0, -1);
+
+
+     //A4GL_pdf_rep_print(rep,0,1,0,-1);
+
+
+      lineno++;
     }
   fclose (f);
+ f=0;
 }
 
 /**

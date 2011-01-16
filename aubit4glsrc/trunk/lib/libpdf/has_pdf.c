@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: has_pdf.c,v 1.74 2010-07-14 10:57:03 mikeaubury Exp $
+# $Id: has_pdf.c,v 1.75 2011-01-16 12:40:29 mikeaubury Exp $
 #*/
 
 /**
@@ -728,11 +728,13 @@ A4GLPDFREP_A4GL_pdf_rep_close (void *vp)
       A4GL_debug ("A");
 #endif
       PDF_end_page ((PDF *)p->pdf_ptr);
-#ifdef DEBUG
-      A4GL_debug ("A");
-#endif
+
       PDF_close ((PDF *)p->pdf_ptr);
+      //PDF_end_document ((PDF *)p->pdf_ptr,"");
+     
     }
+
+
       p->pdf_ptr=0;
 #ifdef DEBUG
   A4GL_debug ("All done...");

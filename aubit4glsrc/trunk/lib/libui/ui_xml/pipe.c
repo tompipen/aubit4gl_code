@@ -334,7 +334,9 @@ if (use_write) {
 #endif
 
 			if (errno==32 || errno==29) {
+#ifdef COMPILING_PROXY
             remove_pipes();
+#endif
 				exit(1);
 			}
 

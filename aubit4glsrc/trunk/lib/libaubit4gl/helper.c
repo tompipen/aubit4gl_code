@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper.c,v 1.92 2010-10-06 11:42:47 mikeaubury Exp $
+# $Id: helper.c,v 1.93 2011-01-16 12:41:24 mikeaubury Exp $
 #
 */
 
@@ -1186,7 +1186,7 @@ A4GL_setenv (char *name, char *value, int overwrite)
     {
       A4GL_del_pointer (prefixed_name, STR_RESOURCE_VAL);
     }
-
+//printf("%s=%s\n",name,value);
 /* DO NOT USE A4GL_DEBUG IN THIS FUNCTION !!! */
 #if HAVE_SETENV
   ret = setenv (name, value, overwrite);
