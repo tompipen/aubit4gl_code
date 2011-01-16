@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: simple.c,v 1.46 2010-01-12 09:01:49 mikeaubury Exp $
+# $Id: simple.c,v 1.47 2011-01-16 18:24:30 mikeaubury Exp $
 #*/
 
 
@@ -37,7 +37,7 @@
 #include "a4gl_lib_sql_int.h"
 #include "a4gl_expr.h"
 #include "libpq-fe.h"
-#include "sql3types.h"
+///#include "sql3types.h"
 #define DTYPE_CHAR      0
 #define DTYPE_SMINT     1
 #define DTYPE_INT       2
