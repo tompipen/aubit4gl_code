@@ -2237,7 +2237,12 @@ static int process_cmd(struct command *cmd,int mode) {
 
 	case E_CMD_EXECUTE_CMD:
 		add_symbol(calltree_get_ident(cmd->cmd_data.command_data_u.execute_cmd.sql_stmtid),last_mod,last_line,"STMT","EXECUTE");
+		//add_symbol_use(cmd->cmd_data.command_data_u.execute_cmd.outbind,last_mod,last_line,NULL);
+
 		add_symbol_assign(cmd->cmd_data.command_data_u.execute_cmd.outbind,last_mod,last_line,NULL);
+	  	call_cnt += cache_expression_list ("", cmd->cmd_data.command_data_u.execute_cmd.inbind, mode);
+
+	break;
 		break;
 
 	case E_CMD_LOCATE_CMD:
@@ -2251,6 +2256,7 @@ static int process_cmd(struct command *cmd,int mode) {
 	  set_whenever (cmd);
 	  call_cnt += print_whenever (mode);
 	  break;
+
 
 	case E_CMD_FOR_CMD:
 
@@ -2886,6 +2892,24 @@ static int process_cmd(struct command *cmd,int mode) {
 		if (cmd->cmd_data.command_data_u.declare_cmd.declare_dets->ident) {
 			add_symbol(calltree_get_ident(cmd->cmd_data.command_data_u.declare_cmd.declare_dets->ident),last_mod,last_line,"STMT","DECLARE");
 		}
+
+		if (cmd->cmd_data.command_data_u.declare_cmd.declare_dets->select) {
+			if (mode==MODE_BUY || 1) {
+		 		calltree_map_select_stmt("SELECT", cmd->cmd_data.command_data_u.declare_cmd.declare_dets->select, last_mod,last_line);
+			}
+			add_symbol_assign(cmd->cmd_data.command_data_u.declare_cmd.declare_dets->select->into,last_mod,last_line,NULL);
+		}
+		if (cmd->cmd_data.command_data_u.declare_cmd.declare_dets->insert_cmd) {
+			calltree_map_insert_delete_update("INSERT", cmd->cmd_data.command_data_u.declare_cmd.declare_dets->insert_cmd->table, NULL, last_mod,last_line);
+
+			if (cmd->cmd_data.command_data_u.insert_cmd.subselect) {
+				calltree_map_select_stmt("INSERT", cmd->cmd_data.command_data_u.declare_cmd.declare_dets->insert_cmd->subselect, last_mod,last_line);
+			}
+			if (cmd->cmd_data.command_data_u.insert_cmd.value_list) {
+				calltree_map_value_list("INSERT", cmd->cmd_data.command_data_u.declare_cmd.declare_dets->insert_cmd->value_list, last_mod,last_line);
+		}
+		}
+
 		break;
 
 
@@ -3859,16 +3883,16 @@ static void add_variable_value(variable_usage *u, expr_str *val) {
 	}
 
 	value=evaluate_expr(val,0);
-/*
+
   	if (inIf) {
 		static char buff[10000];
 		static char varbuff[10000];
 		sprintf(buff,"{%s}",value);
 		value=buff;
-		sprintf(varbuff,"IF_%d_%s",inIf,var);
-		var=varbuff;
+		//sprintf(varbuff,"IF_%d_%s",inIf,var);
+		//var=varbuff;
 	}
-*/
+
 	add_variable_value_strings(var,value);
 }
 
