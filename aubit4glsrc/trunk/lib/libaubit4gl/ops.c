@@ -25,7 +25,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.182 2010-12-06 18:21:03 mikeaubury Exp $
+# $Id: ops.c,v 1.183 2011-01-18 15:07:24 mikeaubury Exp $
 #
 */
 
@@ -7485,6 +7485,9 @@ DTYPE_SERIAL
   A4GL_add_op_function (DTYPE_CHAR, DTYPE_NCHAR, OP_MATH, A4GL_char_char_ops);
   A4GL_add_op_function (DTYPE_NCHAR, DTYPE_CHAR, OP_MATH, A4GL_char_char_ops);
 
+  A4GL_add_op_function (DTYPE_NCHAR, DTYPE_VCHAR, OP_MATH, A4GL_char_char_ops);
+  A4GL_add_op_function (DTYPE_VCHAR, DTYPE_NCHAR, OP_MATH, A4GL_char_char_ops);
+
 
 
   A4GL_add_op_function (DTYPE_INTERVAL, DTYPE_CHAR, OP_MATH, A4GL_in_char_ops);
@@ -7617,6 +7620,7 @@ DTYPE_SERIAL
   A4GL_add_datatype_function_i (DTYPE_BINDING, "CONVTO_95", (void *) A4GL_conv_binding_to_binding);
   A4GL_add_datatype_function_i (DTYPE_OBJECT, "CONVTO_99", (void *) A4GL_conv_object_to_object);
   A4GL_add_datatype_function_i (DTYPE_CHAR, "CONVTO_15", (void *) A4GL_conv_char_to_nchar);
+  A4GL_add_datatype_function_i (DTYPE_VCHAR, "CONVTO_15", (void *) A4GL_conv_char_to_nchar);
 
 
   A4GL_add_datatype_function_i (DTYPE_CHAR, "CONVTO_99", (void *) A4GL_conv_char_to_object);
