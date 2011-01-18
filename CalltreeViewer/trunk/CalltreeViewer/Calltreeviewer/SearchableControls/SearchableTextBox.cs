@@ -61,6 +61,14 @@ namespace SearchableControls
 
         void miStatementSQL_Click(object sender, EventArgs e)
         {
+            if (miStatementSQL.Text != null && miStatementSQL.Text.Length > 0)
+            {
+                try
+                {
+                    Clipboard.SetText(miStatementSQL.Text);
+                }
+                catch { }
+            }
             MessageBox.Show(miStatementSQL.Text);
         }
 
@@ -577,15 +585,24 @@ namespace SearchableControls
                 miVariableRead.Visible = s.hasRead;
                 setSymbols(miVariableRead, s.symbols, "USE");
 
-                if (s.possibleValue.Length < 60)
+                miVariableValue.Click -= new EventHandler(miVariableValue_Click);
+                miVariableValue.Click += new EventHandler(miVariableValue_Click);
+
+                if (s.possibleValue == null)
                 {
-                    miVariableValue.Text = s.possibleValue;
-                    miVariableValue.ToolTipText = "Possible Value";
-                }
-                else
-                {
-                    miVariableValue.Text = s.possibleValue.Substring(0, 60)+"...";
-                    miVariableValue.ToolTipText = "Possible Value:"+ s.possibleValue;
+                    miVariableValue.Text = "";
+                    miVariableValue.ToolTipText = "No Values Detected";
+                } else {
+                    if (s.possibleValue.Length < 60)
+                    {
+                        miVariableValue.Text = s.possibleValue;
+                        miVariableValue.ToolTipText = "Possible Value";
+                    }
+                    else
+                    {
+                        miVariableValue.Text = s.possibleValue.Substring(0, 60) + "...";
+                        miVariableValue.ToolTipText = "Possible Value:" + s.possibleValue;
+                    }
                 }
               
             }
@@ -605,6 +622,30 @@ namespace SearchableControls
                 miWindowOpen.Visible = s.hasOpen;
                 miWindowShow.Visible = s.hasShow;
             }
+        }
+
+        void miVariableValue_Click(object sender, EventArgs e)
+        {
+            string s;
+            s = ((ToolStripMenuItem)sender).Text;
+            if (s == null) return;
+
+            try
+            {
+                if (s.EndsWith("..."))
+                {
+                    Clipboard.SetText(((ToolStripMenuItem)sender).ToolTipText);
+                }
+                else
+                {
+                    if (s.Length > 0)
+                    {
+                        Clipboard.SetText(s);
+
+                    }
+                }
+            }
+            catch { } 
         }
 
 
@@ -771,14 +812,21 @@ namespace SearchableControls
             this.Type = type;
             this.Operation = op;
             this.lineText = linetext;
-
-            if (desc.Trim().Length > 0)
+            if (desc == null)
             {
-                Description = desc;
+                Description = null;
             }
             else
             {
-                Description = null;
+
+                if (desc.Trim().Length > 0)
+                {
+                    Description = desc;
+                }
+                else
+                {
+                    Description = null;
+                }
             }
         }
 
