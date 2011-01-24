@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.439 2011-01-24 07:42:12 mikeaubury Exp $
+dnl # $Id: configure.in,v 1.440 2011-01-24 18:55:07 mikeaubury Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -48,7 +48,7 @@ export LD_LIBRARY_PATH=/lib:$LD_LIBRARY_PATH
 
 #We need autoconf at least version 2.50
 AC_PREREQ(2.50)
-AC_REVISION($Id: configure.in,v 1.439 2011-01-24 07:42:12 mikeaubury Exp $)
+AC_REVISION($Id: configure.in,v 1.440 2011-01-24 18:55:07 mikeaubury Exp $)
 
 #FIXME: Some versions of autoconf are complaining that $AUBIT_VERSION and 
 #$AUBIT_BUILD are not constants. Maybe we should drop stuff in tools/project 
@@ -9323,6 +9323,17 @@ if test "$ac_cv_lib_dl_dlopen" = "yes"; then
 	USE_LIBDL=1
 fi
 
+AC_CHECK_LIB([dl], [dlopen])
+AC_CHECK_LIB([z], [gzopen])
+AC_SUBST(EXTRALIBS)
+EXTRALIBS=
+
+if test "$ac_cv_lib_dl_dlopen" = "yes"; then
+	EXTRALIBS+=" -ldl "
+fi
+if test "$ac_cv_lib_z_gzopen" = "yes"; then
+	EXTRALIBS+=" -lz "
+fi
 
 # FIXME: Replace `main' with a function in `-lc':
 old_LIBS="$LIBS"
@@ -11308,7 +11319,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure.in,v 1.439 2011-01-24 07:42:12 mikeaubury Exp $
+| $Id: configure.in,v 1.440 2011-01-24 18:55:07 mikeaubury Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X
