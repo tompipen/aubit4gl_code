@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.245 2011-01-12 14:43:29 mikeaubury Exp $
+# $Id: Makefile-common.in,v 1.246 2011-01-24 19:22:45 mikeaubury Exp $
 #
 
 #WARNING: __NEVER__ use environment vatiable called "TMP" - Informix
@@ -537,7 +537,7 @@ endif
 #LD Command to use for linking executables:
 LD_EXE              =${CC} ${RDYNAMIC} ${CFLAGS}
 
-EXTRASYSTEMLIBS =
+EXTRASYSTEMLIBS = @EXTRALIBS@
 ifeq "${TARGET_OS}" "solaris"
 	#LD_EXE         =ld
 	LD_EXE		= ${CC} ${RDYNAMIC} ${CFLAGS}
