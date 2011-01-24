@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.438 2011-01-16 16:28:28 mikeaubury Exp $
+dnl # $Id: configure.in,v 1.439 2011-01-24 07:42:12 mikeaubury Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -48,7 +48,7 @@ export LD_LIBRARY_PATH=/lib:$LD_LIBRARY_PATH
 
 #We need autoconf at least version 2.50
 AC_PREREQ(2.50)
-AC_REVISION($Id: configure.in,v 1.438 2011-01-16 16:28:28 mikeaubury Exp $)
+AC_REVISION($Id: configure.in,v 1.439 2011-01-24 07:42:12 mikeaubury Exp $)
 
 #FIXME: Some versions of autoconf are complaining that $AUBIT_VERSION and 
 #$AUBIT_BUILD are not constants. Maybe we should drop stuff in tools/project 
@@ -4069,17 +4069,17 @@ AC_ARG_WITH(mysql,
 		#Installed as MySQL RPM to /usr/lib/mysql/libmysqld.a
 		AC_CHECK_LIB([mysqld], [mysql_stmt_close])
 		
-		if test "$ac_cv_lib_mysqlclient_main" = "yes" -o "$ac_cv_lib_mysqld_main" = "yes"; then
+		if test "$ac_cv_lib_mysqlclient_mysql_stmt_close" = "yes" -o "$ac_cv_lib_mysqld_mysql_stmt_close" = "yes"; then
 			if test "$AUBIT_SOURCE" = "1" ; then
 				AC_CHECK_HEADERS([ mysql.h ])
 
 				if test "$ac_cv_header_mysql_h" = "yes"  ; then
-					if test "$ac_cv_lib_mysqlclient_main" = "yes"; then	
+					if test "$ac_cv_lib_mysqlclient_mysql_stmt_close" = "yes"; then	
 						SQL_MYSQL=yes
 					else
 						SQL_MYSQL=no
 					fi
-					if test "$ac_cv_lib_mysqld_main" = "yes"; then
+					if test "$ac_cv_lib_mysqld_mysql_stmt_close" = "yes"; then
 						SQL_MYSQL_EMB=yes
 					else
 						SQL_MYSQL_EMB=no
@@ -4099,12 +4099,12 @@ AC_ARG_WITH(mysql,
 					SQL_MYSQL_EMB=no
 		        fi
 		    else
-				if test "$ac_cv_lib_mysqlclient_main" = "yes"; then	
+				if test "$ac_cv_lib_mysqlclient_mysql_stmt_close" = "yes"; then	
 					SQL_MYSQL=yes
 				else
 					SQL_MYSQL=no
 				fi
-				if test "$ac_cv_lib_mysqld_main" = "yes"; then
+				if test "$ac_cv_lib_mysqld_mysql_stmt_close" = "yes"; then
 					SQL_MYSQL_EMB=yes
 				else
 					SQL_MYSQL_EMB=no
@@ -11308,7 +11308,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure.in,v 1.438 2011-01-16 16:28:28 mikeaubury Exp $
+| $Id: configure.in,v 1.439 2011-01-24 07:42:12 mikeaubury Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

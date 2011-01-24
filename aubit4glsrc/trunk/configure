@@ -19276,7 +19276,7 @@ _ACEOF
 fi
 
 
-		if test "$ac_cv_lib_mysqlclient_main" = "yes" -o "$ac_cv_lib_mysqld_main" = "yes"; then
+		if test "$ac_cv_lib_mysqlclient_mysql_stmt_close" = "yes" -o "$ac_cv_lib_mysqld_mysql_stmt_close" = "yes"; then
 			if test "$AUBIT_SOURCE" = "1" ; then
 				for ac_header in  mysql.h
 do :
@@ -19293,12 +19293,12 @@ done
 
 
 				if test "$ac_cv_header_mysql_h" = "yes"  ; then
-					if test "$ac_cv_lib_mysqlclient_main" = "yes"; then
+					if test "$ac_cv_lib_mysqlclient_mysql_stmt_close" = "yes"; then
 						SQL_MYSQL=yes
 					else
 						SQL_MYSQL=no
 					fi
-					if test "$ac_cv_lib_mysqld_main" = "yes"; then
+					if test "$ac_cv_lib_mysqld_mysql_stmt_close" = "yes"; then
 						SQL_MYSQL_EMB=yes
 					else
 						SQL_MYSQL_EMB=no
@@ -19319,12 +19319,12 @@ $as_echo "Missing header file" >&6; }
 					SQL_MYSQL_EMB=no
 		        fi
 		    else
-				if test "$ac_cv_lib_mysqlclient_main" = "yes"; then
+				if test "$ac_cv_lib_mysqlclient_mysql_stmt_close" = "yes"; then
 					SQL_MYSQL=yes
 				else
 					SQL_MYSQL=no
 				fi
-				if test "$ac_cv_lib_mysqld_main" = "yes"; then
+				if test "$ac_cv_lib_mysqld_mysql_stmt_close" = "yes"; then
 					SQL_MYSQL_EMB=yes
 				else
 					SQL_MYSQL_EMB=no
@@ -38256,7 +38256,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure,v 1.469 2011-01-16 16:28:27 mikeaubury Exp $
+| $Id: configure,v 1.470 2011-01-24 07:42:11 mikeaubury Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X
