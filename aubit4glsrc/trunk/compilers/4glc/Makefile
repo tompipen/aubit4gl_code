@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.71 2010-12-11 13:30:14 mikeaubury Exp $
+# $Id: Makefile,v 1.72 2011-01-25 18:09:54 mikeaubury Exp $
 #
 
 ROOT		=../..
@@ -349,35 +349,37 @@ extra: ../../bin/fglreload ../../bin/fgllint ../../bin/fglcalltree
                                 var_handling.c variables.c variables_new.c \
                 		${Y_TAB_C} \
                 		${ROOT}/compilers/4glc/rules/generated/states_optimised.c ${CMODS_GETOPTS}
-	$(CC) -g $(CFLAGS)  -DYYDEBUG  -fPIC -I. -I$(AUBITDIR)  -I$(AUBITDIR)/incl $(LD_EXE_FLAGS) -o $@ $^ -L$(AUBITDIR)/lib -laubit4gl  ${AUBIT_LIB}
+	$(CC) -g $(CFLAGS)  -DYYDEBUG  -fPIC -I. -I$(AUBITDIR)  -I$(AUBITDIR)/incl $(LD_EXE_FLAGS) -o $@ $^ -L$(AUBITDIR)/lib -laubit4gl  ${AUBIT_LIB} ${EXTRASYSTEMLIBS}
 
 fglreload: ../../bin/fglreload
 
 fglreload_static:  ../../bin/fglreload_static
 
 ../../bin/fglreload_static : reload.c API_lex_self.c common.c ../../lib/generated/std_funcs.c mod.c
-	$(CC) -g -fPIC -I. -I$(AUBITDIR)  -I$(AUBITDIR)/incl $(LD_EXE_FLAGS) reload.c API_lex_self.c common.c ../../lib/generated/std_funcs.c  -o ../../bin/fglreload_static -L$(AUBITDIR)/lib -laubit4gl  -L`aubit-config DEFAULT_PLUGINDIR` -lLEX_C
+	$(CC) -g -fPIC -I. -I$(AUBITDIR)  -I$(AUBITDIR)/incl $(LD_EXE_FLAGS) reload.c API_lex_self.c common.c ../../lib/generated/std_funcs.c  -o ../../bin/fglreload_static -L$(AUBITDIR)/lib -laubit4gl  -L`aubit-config DEFAULT_PLUGINDIR` -lLEX_C ${EXTRASYSTEMLIBS}
 
 ../../bin/fgllint: lint_main.o API_lex.o  lint.o expr_munging.o linearise.o   common.o ../../lib/generated/std_funcs.o   load_prototypes.o
-	$(CC) ${CFLAGS} ${RDYNAMIC} -g -o $@ $^ -L$(AUBITDIR)/lib -laubit4gl  -lpthread
+	$(CC) ${CFLAGS} ${RDYNAMIC} -g -o $@ $^ -L$(AUBITDIR)/lib -laubit4gl  ${EXTRASYSTEMLIBS}
 	#cp fgllint $(AUBITDIR)/bin
 
 mkglobals: ../../bin/mkglobals
 ../../bin/mkglobals: mk_globals.o API_lex_self.o  lint.o expr_munging.o linearise.o   common.o ../../lib/generated/std_funcs.c  $(ROOT)/lib/liblex/lex_4gl/compile_4gl.c   $(ROOT)/lib/liblex/lex_4gl/common.o  $(ROOT)/lib/liblex/lex_4gl/binding.o  $(ROOT)/lib/liblex/lex_4gl/init.o   $(ROOT)/lib/liblex/lex_4gl/class.o
+	$(LD_EXE) ${RDYNAMIC} -g -o $@ $^ -L$(AUBITDIR)/lib -laubit4gl  ${EXTRASYSTEMLIBS}
 
-	$(LD_EXE) ${RDYNAMIC} -g -o $@ $^ -L$(AUBITDIR)/lib -laubit4gl 
 
 
 calltree_expr.o: expr_as_string_when_possible.c
 
 fglcalltree:../../bin/fglcalltree
 ../../bin/fglcalltree: calltree.o API_lex.o  linearise.o calltree_expr.o module_def.o 
-	$(CC) ${CFLAGS} ${RDYNAMIC}  -g -o $@ $^ -L$(AUBITDIR)/lib -laubit4gl
+	$(CC) ${CFLAGS} ${RDYNAMIC}  -g -o $@ $^ -L$(AUBITDIR)/lib -laubit4gl ${EXTRASYSTEMLIBS}
+
 	#cp fglcalltree $(AUBITDIR)/bin
 
 fglmklib:../../bin/fglmklib
 ../../bin/fglmklib: mklib.o API_lex.o  linearise.o calltree_expr.o module_def.o 
-	$(CC) ${CFLAGS} ${RDYNAMIC}  -g -o $@ $^ -L$(AUBITDIR)/lib -laubit4gl
+	$(CC) ${CFLAGS} ${RDYNAMIC}  -g -o $@ $^ -L$(AUBITDIR)/lib -laubit4gl ${EXTRASYSTEMLIBS}
+
 
 
 #fglsplit: split.o API_lex.o  linearise.o
@@ -385,7 +387,8 @@ fglmklib:../../bin/fglmklib
 	#cp $@ $(AUBITDIR)/bin
 
 fgllink: fgllink.o API_lex.o expr_munging.o linearise.o common.o ../../lib/generated/std_funcs.c
-	$(CC)  -I$(ROOT)/incl ${RDYNAMIC} -g -o $@ $^ -L$(AUBITDIR)/lib -laubit4gl
+	$(CC)  -I$(ROOT)/incl ${RDYNAMIC} -g -o $@ $^ -L$(AUBITDIR)/lib -laubit4gl ${EXTRASYSTEMLIBS}
+
 	cp fgllink $(AUBITDIR)/bin
 
 
@@ -414,12 +417,12 @@ sopt: ../../bin/4glc_sopt
 	echo ${AUBIT_LIB}
 	echo ${4GL_LIB}
 	echo  ${EXTRASYSTEMLIBS}
-	${LD}  ${CFLAGS} ${RDYNAMIC} -L${ROOT}/lib -o $@ $^  -L$(ROOT)/lib/libaubit4gl -laubit4gl_static -lm -lz -ldl
+	${LD}  ${CFLAGS} ${RDYNAMIC} -L${ROOT}/lib -o $@ $^  -L$(ROOT)/lib/libaubit4gl -laubit4gl_static -lm -lz -ldl ${EXTRASYSTEMLIBS}
 
 fglsplit:../../bin/fglsplit
 
 ../../bin/fglsplit:  split.o API_lex.o  lint.o expr_munging.o linearise.o   common.o ../../lib/generated/std_funcs.c   load_prototypes.o
-	$(CC) $(CFLAGS) -Wall ${RDYNAMIC}  -g -o $@ $^ -L$(AUBITDIR)/lib -laubit4gl
+	$(CC) $(CFLAGS) -Wall ${RDYNAMIC}  -g -o $@ $^ -L$(AUBITDIR)/lib -laubit4gl ${EXTRASYSTEMLIBS}
 
 
 expr_munging_proto.o: expr_munging.c
@@ -427,7 +430,8 @@ expr_munging_proto.o: expr_munging.c
 
 fglproto: ../../bin/fglproto
 ../../bin/fglproto:  prototypes.o API_lex.o  lint.o expr_munging_proto.o linearise.o   common.o ../../lib/generated/std_funcs.c   load_prototypes.o
-	$(CC) ${CFLAGS} -Wall ${RDYNAMIC}  -g -o $@ $^ -L$(AUBITDIR)/lib -laubit4gl
+	$(CC) ${CFLAGS} -Wall ${RDYNAMIC}  -g -o $@ $^ -L$(AUBITDIR)/lib -laubit4gl ${EXTRASYSTEMLIBS}
+
 
 
 # --------------------------------- EOF -----------------------------
