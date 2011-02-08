@@ -1387,7 +1387,7 @@ ComboBox* WidgetHelper::createComboBox(const QDomElement& formField, QWidget *pa
    QString colName = formField.attribute("colName");
    QString tabName = formField.attribute("sqlTabName");
    QString sqlType = formField.attribute("sqlType");
-   //bool hidden   = formField.attribute("hidden").toInt();
+   bool hidden   = formField.attribute("hidden").toInt();
    QString defaultValue = formField.attribute("defaultValue");
 
    //bool required = formField.attribute("required").toInt();
@@ -1439,6 +1439,9 @@ ComboBox* WidgetHelper::createComboBox(const QDomElement& formField, QWidget *pa
       }
    }
 
+   if(hidden)
+      comboBox->setVisible(false);
+
    QFontMetrics fm = comboBox->fontMetrics();
    int width = w*fm.width("W")+10;
    comboBox->setFixedWidth(width);
@@ -1464,7 +1467,7 @@ CheckBox* WidgetHelper::createCheckBox(const QDomElement& formField, QWidget *pa
    QString colName = formField.attribute("colName");
    QString tabName = formField.attribute("sqlTabName");
    QString sqlType = formField.attribute("sqlType");
-   //bool hidden   = formField.attribute("hidden").toInt();
+   bool hidden   = formField.attribute("hidden").toInt();
    QString defaultValue = formField.attribute("defaultValue");
 
    //bool required = formField.attribute("required").toInt();
@@ -1544,7 +1547,7 @@ ProgressBar* WidgetHelper::createProgressBar(const QDomElement& formField, QWidg
    QString colName = formField.attribute("colName");
    QString tabName = formField.attribute("sqlTabName");
    QString sqlType = formField.attribute("sqlType");
-   //bool hidden   = formField.attribute("hidden").toInt();
+   bool hidden   = formField.attribute("hidden").toInt();
    QString defaultValue = formField.attribute("defaultValue");
 
    //bool required = formField.attribute("required").toInt();
@@ -1582,6 +1585,9 @@ ProgressBar* WidgetHelper::createProgressBar(const QDomElement& formField, QWidg
    if(!comments.isEmpty()){
       progressBar->setToolTip(comments);
    }
+
+   if(hidden)
+      progressBar->setVisible(false);
    
 
    QFontMetrics fm = progressBar->fontMetrics();
