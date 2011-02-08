@@ -1,6 +1,8 @@
 #include <include/fgl.h>
 #include <QStringList>
 #include <QDebug>
+#include <QProcessEnvironment>
+#include <cstdlib>
 
 namespace Fgl {
    QHash<QString, QString> env;
@@ -991,6 +993,18 @@ namespace Fgl {
       }
 
 
+   QString getValueFromEnv(QString envname)
+   {
+       QStringList env = QProcess::systemEnvironment();
+       for(int i = 0; i < env.size(); i++)
+       {
+           if(env.at(i).split(QRegExp("[=]")).at(0) == envname)
+           {
+               return env.at(i).split(QRegExp("[=]")).at(1);
+           }
+       }
+       return NULL;
+   }
 
    QString keyToString(QString s)
    {

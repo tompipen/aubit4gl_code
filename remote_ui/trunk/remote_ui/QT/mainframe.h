@@ -30,6 +30,7 @@
 #include <QTableWidget>
 
 #include "clienttcp.h"
+#include "include/fgl.h"
 #include "confwin.h"
 
 class ConnectionsTab : public QWidget
@@ -63,7 +64,8 @@ public:
    QProcess *p_currOpenNetwork;
    ClientTcp *clientTcp;
    bool adminMenu;
-   bool debugModus;
+   static bool b_debugmodus;
+   static void vdcdebug(QString, QString, QString);
 
 public slots:
    void cleanUp();

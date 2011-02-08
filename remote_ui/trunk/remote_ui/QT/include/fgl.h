@@ -4,7 +4,6 @@
 #include <QHash>
 #include <QDate>
 
-
 namespace Fgl
 {
 
@@ -36,6 +35,7 @@ namespace Fgl
       QString fgl_using_string(QString, QString, bool);
       QString fgl_convert_money(QString);
 
+      QString getValueFromEnv(QString);
       QString dbDateToFormat(QString);
       QChar getDBDateSeperator(QString);
       bool isValidForType(DataType, QString, QString);

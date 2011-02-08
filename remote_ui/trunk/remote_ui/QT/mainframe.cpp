@@ -46,16 +46,14 @@ void MainFrame::ReadSettings()
   }
 }
 
-
+bool MainFrame::b_debugmodus = true;
 
 MainFrame::MainFrame(QWidget *parent) : QMainWindow(parent)
 {
-
    p_currOpenNetwork=NULL;
    int port=1350;
    mainFrameToolBar = NULL;
    connectionsTab = NULL;
-
 
    errorMessageMainFrame = new QErrorMessage(this);
   QStringList parameter;
@@ -64,7 +62,6 @@ MainFrame::MainFrame(QWidget *parent) : QMainWindow(parent)
 
    adminMenu = true;
    onlyLogin = true;
-   debugModus = false;
  for(int i=0; i<parameter.count(); i++)
   {
      if (parameter.at(i) == "-l")
@@ -85,7 +82,7 @@ MainFrame::MainFrame(QWidget *parent) : QMainWindow(parent)
      }
           if (parameter.at(i) == "-D")
      {
-         debugModus = true;
+         MainFrame::b_debugmodus = true;
      }
  }
 
@@ -143,6 +140,14 @@ void MainFrame::contextMenuEvent ( QContextMenuEvent * event)
   contextMenu.exec(event->globalPos());
 }
 
+}
+
+void MainFrame::vdcdebug(QString obj, QString funk, QString uebergabe)
+{
+    if(MainFrame::b_debugmodus)
+    {
+       qDebug() << obj + "::" + funk + "(" + uebergabe + ")";
+    }
 }
 
 
@@ -590,7 +595,7 @@ void ShortcutsTab::updateListBox()
 void MainFrame::tcpListener(int port)
 {
    clientTcp = new ClientTcp(this);
-   clientTcp->setDebugModus(debugModus, this);
+   clientTcp->setDebugModus(MainFrame::b_debugmodus, this);
 
    if(!clientTcp->listen(QHostAddress::Any, port)){
       errorMessageMainFrame->showMessage(

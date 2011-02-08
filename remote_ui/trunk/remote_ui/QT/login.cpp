@@ -38,7 +38,6 @@ LoginForm::LoginForm(QWidget *parent)
     : QWidget(parent)
 {
    MainFrame *mainFrame = (MainFrame*) parent;
-
    bool adminMenu = mainFrame->adminMenu;
    QStatusBar *statusBar = mainFrame->statusBar();
 
@@ -87,11 +86,11 @@ LoginForm::LoginForm(QWidget *parent)
    admin->addAction(hosts);
    connect(hosts, SIGNAL(triggered()), this, SLOT(hosts()));
    }
-   if (mainFrame->debugModus && adminMenu)
+   if (MainFrame::b_debugmodus && adminMenu)
    {
        admin->addAction(toggledebug);
    }
-   if (mainFrame->debugModus && !adminMenu)
+   if (MainFrame::b_debugmodus && !adminMenu)
    {
        menuBar->addAction(toggledebug);
    }
