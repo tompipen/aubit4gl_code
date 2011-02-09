@@ -29,6 +29,7 @@
 
 XML2Fields::XML2Fields() : QWidget()
 {
+MainFrame::vdcdebug("XML2Fields","XML2Fields", "");
    // create dummy label to detect the used colors 
    // 
    QLabel colorDummyLabel;
@@ -38,22 +39,26 @@ XML2Fields::XML2Fields() : QWidget()
 
 QObject* XML2Fields::getLayout()
 {
+MainFrame::vdcdebug("XML2Fields","getLayout", "");
    return layout;
 }
 
 QList<QObject*> XML2Fields::getFieldList()
 {
+MainFrame::vdcdebug("XML2Fields","getFieldList", "");
    return ql_formFields;
 }
 
 void XML2Fields::parseForm(QDomDocument xmlForm)
 {
+MainFrame::vdcdebug("XML2Fields","parseForm", "QDomDocument xmlForm");
    QDomElement formElement = xmlForm.documentElement(); // <Form>
    parseElement(formElement);
 }
 
 void XML2Fields::parseElement(QDomNode xmlNode)
 {
+MainFrame::vdcdebug("XML2Fields","parseElement", "QDomNode xmlNode");
    QDomNodeList children = xmlNode.childNodes();
    for(int i=0; i<children.count(); ++i){
 
@@ -202,6 +207,7 @@ void XML2Fields::parseElement(QDomNode xmlNode)
 
 void XML2Fields::addToForm(QObject* obj, bool add, int x, int y, int w)
 {
+MainFrame::vdcdebug("XML2Fields","addToForm", "QObject* obj, bool add, int x, int y, int w");
 // TODO: Find a way to determine if obj will be currObject in the end
 
    QLayout *layout = NULL;
@@ -267,6 +273,7 @@ void XML2Fields::addToForm(QObject* obj, bool add, int x, int y, int w)
 
 void XML2Fields::handleField(const QDomNode& domNode)
 {
+MainFrame::vdcdebug("XML2Fields","handleField", "const QDomNode& domNode");
    QDomElement xmlField = domNode.toElement();
    QString nodeName = domNode.nodeName();
 
@@ -321,6 +328,7 @@ void XML2Fields::handleField(const QDomNode& domNode)
 
 void XML2Fields::handleFormField(const QDomNode& domNode)
 {
+MainFrame::vdcdebug("XML2Fields","handleFormField", "const QDomNode& domNode");
 
    QDomElement xmlFormField = domNode.toElement();
    QDomElement xmlField = xmlFormField.firstChild().toElement();
@@ -415,6 +423,7 @@ void XML2Fields::handleFormField(const QDomNode& domNode)
 
 void XML2Fields::handleTableColumn(const QDomNode& domNode)
 {
+MainFrame::vdcdebug("XML2Fields","handleTableColumn", "const QDomNode& domNode");
 
    QDomElement currentElement = domNode.toElement();
 

@@ -21,6 +21,7 @@
 
 #include "dialog.h"
 #include "actions.h"
+#include "mainframe.h"
 
 //------------------------------------------------------------------------------
 // Method       : Dialog()
@@ -29,6 +30,7 @@
 //------------------------------------------------------------------------------
 Dialog::Dialog(QWidget *parent, Qt::WindowFlags f) : QDialog(parent, f)
 {
+MainFrame::vdcdebug("Dialog","Dialog", "QWidget *parent, Qt");
 
 }
 
@@ -40,6 +42,7 @@ Dialog::Dialog(QWidget *parent, Qt::WindowFlags f) : QDialog(parent, f)
 Dialog::Dialog(QString title, QString comment, QString style, QString image,
                QWidget *parent, Qt::WindowFlags f) : QDialog(parent, f)
 {
+MainFrame::vdcdebug("*parent,","WindowFlags f)", """");
 
    Q_UNUSED(style);
    this->setWindowModality(Qt::WindowModal);
@@ -91,6 +94,7 @@ Dialog::Dialog(QString title, QString comment, QString style, QString image,
 //------------------------------------------------------------------------------
 void Dialog::createButton(int id, QString text, QString tooltip, QString icon)
 {
+MainFrame::vdcdebug("Dialog","createButton", "int id, QString text, QString tooltip, QString icon");
 
    // Make Shortcut for Button
    QString pic = text.toLower();
@@ -139,6 +143,7 @@ void Dialog::createButton(int id, QString text, QString tooltip, QString icon)
 //------------------------------------------------------------------------------
 void Dialog::createAction(int id, QString text)
 {
+MainFrame::vdcdebug("Dialog","createAction", "int id, QString text");
    // Make Shortcut for Button
    QString pic = text.toLower();
    QString shortcut = text.at(0);
@@ -168,6 +173,7 @@ void Dialog::createAction(int id, QString text)
 //------------------------------------------------------------------------------
 void Dialog::hideButton(QString name)
 {
+MainFrame::vdcdebug("Dialog","hideButton", "QString name");
    for(int i=0; i<buttonGroup->buttons().size(); i++){
       QPushButton *button = (QPushButton*) buttonGroup->buttons().at(i);
       QString text = button->text(); //.remove(0,1);
@@ -190,6 +196,7 @@ void Dialog::hideButton(QString name)
 //------------------------------------------------------------------------------
 void Dialog::showButton(QString name)
 {
+MainFrame::vdcdebug("Dialog","showButton", "QString name");
    for(int i=0; i<buttonGroup->buttons().size(); i++){
       QPushButton *button = (QPushButton*) buttonGroup->buttons().at(i);
       QString text = button->text().remove(0,1);
@@ -207,6 +214,7 @@ void Dialog::showButton(QString name)
 //------------------------------------------------------------------------------
 void Dialog::buttonClicked(int id)
 {
+MainFrame::vdcdebug("Dialog","buttonClicked", "int id");
 
    emit dialogButtonPressed(QString::number(id));
 
@@ -220,6 +228,7 @@ void Dialog::buttonClicked(int id)
 //------------------------------------------------------------------------------
 void Dialog::keyPressEvent(QKeyEvent *event)
 {
+MainFrame::vdcdebug("Dialog","keyPressEvent", "QKeyEvent *event");
    if(event->key() == Qt::Key_Enter || event->key() == Qt::Key_Return){
       QWidget *widget = this->focusWidget();
       if(QPushButton *button = qobject_cast<QPushButton *> (widget)){
@@ -237,6 +246,7 @@ void Dialog::keyPressEvent(QKeyEvent *event)
 
 QList<QAction*> Dialog::actions()
 {
+MainFrame::vdcdebug("Dialog","actions", "");
 
    QList<QAction*> ql_actions;
    for(int i=0; i<buttonGroup->buttons().size(); i++){
@@ -251,6 +261,7 @@ QList<QAction*> Dialog::actions()
 
 QAction* Dialog::getAction(QString name)
 {
+MainFrame::vdcdebug("Dialog","getAction", "QString name");
 
    for(int i=0; i<buttonGroup->buttons().size(); i++){
       if(QPushButton *button = qobject_cast<QPushButton *> (buttonGroup->buttons().at(i))){

@@ -19,9 +19,11 @@
 #include <QTimer>
 
 #include "statusbar.h"
+#include "mainframe.h"
 
 StatusBar::StatusBar(QWidget *parent) : QStatusBar(parent)
 {
+MainFrame::vdcdebug("StatusBar","StatusBar", "QWidget *parent");
    setObjectName("StatusBar");
    setSizePolicy(QSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding));
 
@@ -44,24 +46,28 @@ StatusBar::StatusBar(QWidget *parent) : QStatusBar(parent)
 
 void StatusBar::displayComment(QString text)
 {
+MainFrame::vdcdebug("StatusBar","displayComment", "QString text");
    commentLabel->setText(text);
    QTimer::singleShot(5000, commentLabel, SLOT(clear()));
 }
 
 void StatusBar::displayMessage(QString text)
 {
+MainFrame::vdcdebug("StatusBar","displayMessage", "QString text");
    errorLabel->setText(text);
    QTimer::singleShot(5000, errorLabel, SLOT(clear()));
 }
 
 void StatusBar::displayError(QString text)
 {
+MainFrame::vdcdebug("StatusBar","displayError", "QString text");
    errorLabel->setText(text);
    QTimer::singleShot(5000, errorLabel, SLOT(clear()));
 }
 
 void StatusBar::toggleOverwriteMode()
 {
+MainFrame::vdcdebug("StatusBar","toggleOverwriteMode", "");
    b_overwrite = !b_overwrite;
    writeModeLabel->setEnabled(b_overwrite);
 }

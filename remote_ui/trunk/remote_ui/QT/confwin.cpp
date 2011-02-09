@@ -19,6 +19,7 @@
 #include <QHBoxLayout>
 #include <QSettings>
 #include "confwin.h"
+#include "mainframe.h"
 
 
 //------------------------------------------------------------------------------
@@ -202,6 +203,7 @@ ConfWin::ConfWin(const QString &fname, QWidget *parent)
 
 void ConfWin::writeFile(QString qs_filename)
 {
+MainFrame::vdcdebug("ConfWin","writeFile", "QString qs_filename");
    // instantiating from class QFile to handle a data stream
    //
    QFile file(qs_filename);
@@ -251,6 +253,7 @@ void ConfWin::writeFile(QString qs_filename)
 
 void ConfWin::readEditFile(QString fname)
 {
+MainFrame::vdcdebug("ConfWin","readEditFile", "QString fname");
    quint32 n;
    QFile file(fname);
 

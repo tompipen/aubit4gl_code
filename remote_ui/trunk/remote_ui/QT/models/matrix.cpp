@@ -29,6 +29,7 @@
 //------------------------------------------------------------------------------
 Matrix::Matrix(QWidget *parent) : QGroupBox(parent)
 {
+MainFrame::vdcdebug("Matrix","Matrix", "QWidget *parent");
    b_input = false;
    this->setAlignment(Qt::AlignTop);
    // disable widget until it it gets called
@@ -79,23 +80,27 @@ Matrix::Matrix(QString title, QString style, QString image,
 
 void Matrix::addWidget(QWidget* widget)
 {
+MainFrame::vdcdebug("Matrix","addWidget", "QWidget* widget");
    ql_fields << widget;
    layout->addWidget(widget);
 }
 
 void Matrix::focusInEvent(QFocusEvent* event)
 {
+MainFrame::vdcdebug("Matrix","focusInEvent", "QFocusEvent* event");
    this->focusNextChild();
    return QGroupBox::focusInEvent(event);
 }
 
 bool Matrix::eventFilter(QObject *obj, QEvent *event)
 {
+MainFrame::vdcdebug("Matrix","eventFilter", "QObject *obj, QEvent *event");
    return QGroupBox::eventFilter(obj, event);
 }
 
 void Matrix::setMenuStyle(const QString &ms)
 {
+MainFrame::vdcdebug("Matrix","setMenuStyle", "const QString &ms");
    if(ms == "none"){
       this->setVisible(false);
    }
@@ -115,6 +120,7 @@ void Matrix::setOrientation(const Qt::Orientation &o){
 
 void Matrix::setEnabled(bool enable)
 {
+MainFrame::vdcdebug("Matrix","setEnabled", "bool enable");
 
    if(b_input){
       for(int i=0; i<ql_fields.count(); i++){
@@ -127,6 +133,7 @@ void Matrix::setEnabled(bool enable)
 
 void Matrix::setText(int row, QString value)
 {
+MainFrame::vdcdebug("Matrix","setText", "int row, QString value");
 
    if(ql_fields.count() < row) 
       return;
@@ -137,6 +144,7 @@ void Matrix::setText(int row, QString value)
 
 QString Matrix::text(int row)
 {
+MainFrame::vdcdebug("Matrix","text", "int row");
 
    if(ql_fields.count() < row) 
       return "";

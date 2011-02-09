@@ -24,6 +24,7 @@
 #include <QUrl>
 #include <QMessageBox>
 #include "clienttcp.h"
+#include "mainframe.h"
 
 //------------------------------------------------------------------------------
 // Method       : ClientTcp()
@@ -34,6 +35,7 @@
 ClientTcp::ClientTcp(QObject *parent)
     : QTcpServer(parent)
 {
+   MainFrame::vdcdebug("ClientTcp", "ClientTcp", "QObject *parent");
    cnt_replied=0;
    i_cnt_socket=0;
 
@@ -62,6 +64,7 @@ ClientTcp::~ClientTcp(){
 
 void ClientTcp::socketDisconnected(){
    socket = NULL;
+   MainFrame::vdcdebug("ClientTcp", "socketDisconnected", "");
 }
 
 
@@ -73,6 +76,7 @@ void ClientTcp::socketDisconnected(){
 
 void ClientTcp::incomingConnection(int socketID)
 {
+MainFrame::vdcdebug("ClientTcp","incomingConnection", "int socketID");
 //   qDebug("incomingConnection - open socket with id: %d", socketID);
 
    // creates a QTcpSocket child for the QTcpServer parent
@@ -147,11 +151,13 @@ void ClientTcp::incomingConnection(int socketID)
 
 void ClientTcp::newSocket()
 {
+MainFrame::vdcdebug("ClientTcp","newSocket", "");
    setMaxPendingConnections(16);
 }
 
 void ClientTcp::setDebugModus(bool debugModus, QWidget *parent)
 {
+MainFrame::vdcdebug("ClientTcp","setDebugModus", "bool debugModus, QWidget *parent");
    dw = new DebugWindow(parent);
    connect(dw , SIGNAL(debugClose()), parent, SLOT(debugClose()));
 
@@ -172,6 +178,7 @@ void ClientTcp::setDebugModus(bool debugModus, QWidget *parent)
 ClientSocket::ClientSocket(QObject *parent, QString name, QString pass, QString program)
     : QTcpSocket(parent)
 {
+   MainFrame::vdcdebug("ClientSocket", "ClientSocket", "QObject *parent, QString name, QString pass, QString program");
    ph.qs_shortCutUser = name;
    ph.qs_shortCutPass = pass;
    ph.qs_shortCutProgram = program;
@@ -339,6 +346,7 @@ ClientSocket::ClientSocket(QObject *parent, QString name, QString pass, QString 
 
 void ClientSocket::makeOwnResponse(QString qs_replyString)
 {
+MainFrame::vdcdebug("ClientSocket","makeOwnResponse", "QString qs_replyString");
    QTextStream out;
    out.setDevice(this);
    
@@ -385,6 +393,7 @@ ClientSocket::~ClientSocket(){
 
 void ClientSocket::readClient()
 {
+MainFrame::vdcdebug("ClientSocket","readClient", "");
    QByteArray request;
 
    // reading in all portions of the first command block
@@ -416,6 +425,7 @@ void ClientSocket::readClient()
 
 void ClientTcp::clientReturn(QString qs_returnString)
 {
+MainFrame::vdcdebug("ClientTcp","clientReturn", "QString qs_returnString");
    replyWith(qs_returnString);
 
    cnt_replied++;
@@ -430,6 +440,7 @@ void ClientTcp::clientReturn(QString qs_returnString)
 
 void ClientTcp::replyWith(QString qs_replyString)
 {
+MainFrame::vdcdebug("ClientTcp","replyWith", "QString qs_replyString");
       QTextStream out;
       //dbu Job 18058: if sender is ClientSocket we dont need the array
       //               we can talk directly to this socket
@@ -457,6 +468,7 @@ void ClientTcp::replyWith(QString qs_replyString)
 
 void ProtocolHandler::run()
 {
+MainFrame::vdcdebug("ProtocolHandler","run", "");
    // request holds the current command from
    // the application server(proxy)
    //
@@ -619,6 +631,7 @@ void ProtocolHandler::run()
 //------------------------------------------------------------------------------
 void ProtocolHandler::outputTree(QDomNode domNode)
 {
+MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
    QDomElement childElement = domNode.toElement();
 
    if(childElement.nodeName() == "PROGRAMSTARTUP"){
@@ -1142,6 +1155,12 @@ void ProtocolHandler::outputTree(QDomNode domNode)
       return;
    }
 
+   if(childElement.nodeName() == "OPTIONS"){
+      QString type = childElement.attribute("TYPE");
+      QString value = childElement.attribute("VALUE");
+      return;
+   }
+
    if(childElement.nodeName() == "SETWINDOWTITLE"){
       QString title = childElement.attribute("TEXT");
       //setWindowTitle(title);
@@ -1384,6 +1403,7 @@ void ProtocolHandler::outputTree(QDomNode domNode)
 //------------------------------------------------------------------------------
 QDomDocument ProtocolHandler::encodeXMLFile(QString xmlString)
 {
+MainFrame::vdcdebug("ProtocolHandler","encodeXMLFile", "QString xmlString");
    QString textBuffer;
    QByteArray ba;
    ba.append(xmlString);
@@ -1449,6 +1469,7 @@ QDomDocument ProtocolHandler::encodeXMLFile(QString xmlString)
 //------------------------------------------------------------------------------
 void ProtocolHandler::handleStartup(const QDomNode& domNode)
 {
+MainFrame::vdcdebug("ProtocolHandler","handleStartup", "const QDomNode& domNode");
    QDomElement startupElement = domNode.toElement();
 
    QDomElement currentElement = domNode.firstChild().toElement();
@@ -1484,6 +1505,7 @@ void ProtocolHandler::handleStartup(const QDomNode& domNode)
 //------------------------------------------------------------------------------
 void ProtocolHandler::handleDisplayToElement(const QDomNode& domNode, QString parentNodeName)
 {
+MainFrame::vdcdebug("ProtocolHandler","handleDisplayToElement", "const QDomNode& domNode, QString parentNodeName");
    //maybe we need this in the future
    Q_UNUSED(parentNodeName);
 
@@ -1568,6 +1590,7 @@ void ProtocolHandler::handleDisplayToElement(const QDomNode& domNode, QString pa
 //------------------------------------------------------------------------------
 void ProtocolHandler::handleDisplayArrayElement(const QDomNode& domNode, QString parentNodeName)
 {
+MainFrame::vdcdebug("ProtocolHandler","handleDisplayArrayElement", "const QDomNode& domNode, QString parentNodeName");
 
    Q_UNUSED(parentNodeName);
 
@@ -1699,6 +1722,7 @@ void ProtocolHandler::handleDisplayArrayElement(const QDomNode& domNode, QString
 //------------------------------------------------------------------------------
 void ProtocolHandler::handleInputElement(const QDomNode& domNode, int attribute)
 {
+MainFrame::vdcdebug("ProtocolHandler","handleInputElement", "const QDomNode& domNode, int attribute");
    QDomElement currentElement = domNode.toElement();
    QString nodeName = currentElement.nodeName();
    if(nodeName == "INPUT"){
@@ -1753,6 +1777,7 @@ void ProtocolHandler::handleInputElement(const QDomNode& domNode, int attribute)
 //------------------------------------------------------------------------------
 void ProtocolHandler::handleConstructElement(const QDomNode& domNode)
 {
+MainFrame::vdcdebug("ProtocolHandler","handleConstructElement", "const QDomNode& domNode");
    QDomElement currentElement = domNode.toElement();
    QString nodeName = currentElement.nodeName();
    int attribute = 0;
@@ -1819,6 +1844,7 @@ void ProtocolHandler::handleConstructElement(const QDomNode& domNode)
 //------------------------------------------------------------------------------
 void ProtocolHandler::handleMenuElement(const QDomNode& domNode)
 {
+MainFrame::vdcdebug("ProtocolHandler","handleMenuElement", "const QDomNode& domNode");
 
    QDomElement currentElement = domNode.toElement();
    QString nodeName = currentElement.nodeName();
@@ -1907,6 +1933,7 @@ void ProtocolHandler::handleMenuElement(const QDomNode& domNode)
 //------------------------------------------------------------------------------
 void ProtocolHandler::handleEventsElement(const QDomNode& domNode)
 {
+MainFrame::vdcdebug("ProtocolHandler","handleEventsElement", "const QDomNode& domNode");
    QDomElement currentElement = domNode.toElement();
    QString nodeName = currentElement.nodeName();
    
@@ -1971,6 +1998,7 @@ void ProtocolHandler::handleEventsElement(const QDomNode& domNode)
 
 void ProtocolHandler::handleWaitForEventElement(const QDomNode& domNode)
 {
+MainFrame::vdcdebug("ProtocolHandler","handleWaitForEventElement", "const QDomNode& domNode");
    QDomElement currentElement = domNode.toElement();
    QString nodeName = currentElement.nodeName();
    
@@ -2002,6 +2030,7 @@ void ProtocolHandler::handleWaitForEventElement(const QDomNode& domNode)
 //------------------------------------------------------------------------------
 void ProtocolHandler::fglFormResponse(QString qs_id)
 {
+MainFrame::vdcdebug("ProtocolHandler","fglFormResponse", "QString qs_id");
    QDomDocument doc;
    doc.setContent(qs_id);
    QDomElement triggeredElement = doc.documentElement();
@@ -2019,11 +2048,13 @@ void ProtocolHandler::fglFormResponse(QString qs_id)
 //------------------------------------------------------------------------------
 ProtocolHandler::~ProtocolHandler()
 {
+MainFrame::vdcdebug("ProtocolHandler","~ProtocolHandler", "");
 
 }
 
 ProtocolHandler::ProtocolHandler(QObject *parent) : QThread(parent)
 {
+MainFrame::vdcdebug("ProtocolHandler","ProtocolHandler", "QObject *parent");
 
    b_read = false;
    b_write = false;
@@ -2031,6 +2062,7 @@ ProtocolHandler::ProtocolHandler(QObject *parent) : QThread(parent)
 
 bool ProtocolHandler::sendFile(QString name)
 {
+MainFrame::vdcdebug("ProtocolHandler","sendFile", "QString name");
    QDomDocument doc;
 
    
@@ -2082,6 +2114,7 @@ bool ProtocolHandler::sendFile(QString name)
 
 bool ProtocolHandler::saveFile(const QDomNode &domNode, QString fileName)
 {
+MainFrame::vdcdebug("ProtocolHandler","saveFile", "const QDomNode &domNode, QString fileName");
    QDomElement currentElement = domNode.toElement();
 
    if(currentElement.nodeName() == "FILE"){
@@ -2114,6 +2147,7 @@ bool ProtocolHandler::saveFile(const QDomNode &domNode, QString fileName)
 
 QString ProtocolHandler::filterUmlauts(QString qs_text)
 {
+MainFrame::vdcdebug("ProtocolHandler","filterUmlauts", "QString qs_text");
    qs_text.replace(QChar(129), QString::fromUtf8("ü")); 
    qs_text.replace(QChar(130), QString::fromUtf8("é")); 
    qs_text.replace(QChar(131), QString::fromUtf8("â")); 
@@ -2142,6 +2176,7 @@ QString ProtocolHandler::filterUmlauts(QString qs_text)
 
 DebugWindow::DebugWindow(QWidget *parent) : QDialog(parent)
 {
+MainFrame::vdcdebug("DebugWindow","DebugWindow", "QWidget *parent");
    mainLayout = new QVBoxLayout;
    QHBoxLayout *searchline = new QHBoxLayout;
    edit = new QTextEdit();
@@ -2165,15 +2200,18 @@ DebugWindow::DebugWindow(QWidget *parent) : QDialog(parent)
 
 void DebugWindow::debugOut(QString debugtext)
 {
+MainFrame::vdcdebug("DebugWindow","debugOut", "QString debugtext");
 //debugfull.append(debugtext);
 edit->append(debugtext);
 }
 void DebugWindow::clear()
 {
+MainFrame::vdcdebug("DebugWindow","clear", "");
     edit->clear();
 }
 void DebugWindow::forwardsearch()
 {
+MainFrame::vdcdebug("DebugWindow","forwardsearch", "");
 edit->find(search->text());
 
 if (!edit->find(search->text()))
@@ -2186,6 +2224,7 @@ edit->find(search->text());
 
 void DebugWindow::backwardsearch()
 {
+MainFrame::vdcdebug("DebugWindow","backwardsearch", "");
 edit->find(search->text(), QTextDocument::FindBackward);
 
 if (!edit->find(search->text(), QTextDocument::FindBackward))
@@ -2197,6 +2236,7 @@ edit->find(search->text(), QTextDocument::FindBackward);
 }
 void DebugWindow::closeEvent(QCloseEvent *event)
 {
+MainFrame::vdcdebug("DebugWindow","closeEvent", "QCloseEvent *event");
    Q_UNUSED(event);
    emit debugClose();
 }

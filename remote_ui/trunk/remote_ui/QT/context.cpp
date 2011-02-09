@@ -2,9 +2,11 @@
 #include <context.h>
 #include <models/vwidgets.h>
 #include <models/table.h>
+#include <mainframe.h>
 
 Context::Context(QObject *parent) : QObject(parent)
 {
+MainFrame::vdcdebug("Context","Context", "QObject *parent");
    this->rowChangedCnt = 0;
    this->fgl_state = Fgl::IDLE;
 
@@ -13,6 +15,7 @@ Context::Context(QObject *parent) : QObject(parent)
 
 Context::Context(Fgl::State state, QObject *parent) : QObject(parent)
 {
+MainFrame::vdcdebug("Context","Context", "Fgl");
    this->rowChangedCnt = 0;
    this->fgl_state = state;
 
@@ -21,6 +24,7 @@ Context::Context(Fgl::State state, QObject *parent) : QObject(parent)
 
 Context::~Context()
 {
+MainFrame::vdcdebug("Context","~Context", "");
    return;
    for(int i=0; i<ql_fieldList.count(); i++){
       QWidget *field = ql_fieldList.at(i);
@@ -56,6 +60,7 @@ Context::~Context()
 
 void Context::sendBeforeEvent()
 {
+MainFrame::vdcdebug("Context","sendBeforeEvent", "");
 
    Fgl::Event event;
 
@@ -89,6 +94,7 @@ void Context::sendBeforeEvent()
 
 void Context::sendAfterEvent()
 {
+MainFrame::vdcdebug("Context","sendAfterEvent", "");
    return;
 
    Fgl::Event event;
@@ -121,6 +127,7 @@ void Context::sendAfterEvent()
 
 void Context::addField(QWidget *field)
 {
+MainFrame::vdcdebug("Context","addField", "QWidget *field");
 
    if(!ql_fieldList.contains(field)){
       ql_fieldList << field;
@@ -170,6 +177,7 @@ void Context::addField(QWidget *field)
 
 void Context::addScreenRecord(QWidget *screenRec, bool input)
 {
+MainFrame::vdcdebug("Context","addScreenRecord", "QWidget *screenRec, bool input");
 
    if(!ql_fieldList.contains(screenRec)){
       ql_fieldList << screenRec;
@@ -204,6 +212,7 @@ void Context::addScreenRecord(QWidget *screenRec, bool input)
 
 void Context::screenRecordRowChanged(const QModelIndex & current, const QModelIndex & previous)
 {
+MainFrame::vdcdebug("Context","screenRecordRowChanged", "const QModelIndex & current, const QModelIndex & previous");
 
    Q_UNUSED(previous);
 
@@ -246,12 +255,14 @@ void Context::screenRecordRowChanged(const QModelIndex & current, const QModelIn
 
 void Context::screenRecordColumnChanged(const QModelIndex & current, const QModelIndex & previous)
 {
+MainFrame::vdcdebug("Context","screenRecordColumnChanged", "const QModelIndex & current, const QModelIndex & previous");
    Q_UNUSED(previous);
    Q_UNUSED(current);
 }
 
 QStringList Context::getScreenRecordValues(int row)
 {
+MainFrame::vdcdebug("Context","getScreenRecordValues", "int row");
    QStringList fieldValues;
 
    for(int i=0; i<ql_fieldList.count(); i++){
@@ -272,6 +283,7 @@ QStringList Context::getScreenRecordValues(int row)
 
 void Context::setRowChanged()
 {
+MainFrame::vdcdebug("Context","setRowChanged", "");
 
    rowChangedCnt++;
    if(rowChangedCnt == ql_fieldList.count()){
@@ -286,17 +298,20 @@ void Context::setRowChanged()
 
 QList<QWidget*> Context::fieldList()
 {
+MainFrame::vdcdebug("Context","fieldList", "");
    return ql_fieldList;
 }
 
 void Context::setOption(QString name, int value)
 {
+MainFrame::vdcdebug("Context","setOption", "QString name, int value");
    qh_options[name] = value;
    checkOptions();
 }
 
 void Context::checkOptions()
 {
+MainFrame::vdcdebug("Context","checkOptions", "");
 
    QStringList qsl_keys = qh_options.keys();
 

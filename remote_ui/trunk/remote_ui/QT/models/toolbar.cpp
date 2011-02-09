@@ -20,9 +20,11 @@
 
 #include "toolbar.h"
 #include "actions.h"
+#include "mainframe.h"
 
 ToolBar::ToolBar(QWidget *parent) : QToolBar(parent)
 {
+MainFrame::vdcdebug("ToolBar","ToolBar", "QWidget *parent");
    setObjectName("ToolBar");
    setSizePolicy(QSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding));
    setIconSize(QSize(15,15));
@@ -30,12 +32,14 @@ ToolBar::ToolBar(QWidget *parent) : QToolBar(parent)
 
 void ToolBar::parseFile(QDomDocument xmlToolBar)
 {
+MainFrame::vdcdebug("ToolBar","parseFile", "QDomDocument xmlToolBar");
    QDomElement toolBarElement = xmlToolBar.documentElement();
    parseElement(toolBarElement);
 }
 
 void ToolBar::parseElement(QDomNode xmlNode)
 {
+MainFrame::vdcdebug("ToolBar","parseElement", "QDomNode xmlNode");
    // Start parsing the first element
    QDomElement currentElement = xmlNode.toElement();
    QString nodeName = currentElement.nodeName();
@@ -128,6 +132,7 @@ void ToolBar::parseElement(QDomNode xmlNode)
 
 void ToolBar::checkActions(QList<QString> menuActions, bool input)
 {
+MainFrame::vdcdebug("ToolBar","checkActions", "QList<QString> menuActions, bool input");
    bool ok = true;
 
    QList<QAction* > toolBarActions = this->actions();

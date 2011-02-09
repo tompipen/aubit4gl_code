@@ -31,6 +31,7 @@
 
 XML2Menu::XML2Menu(QLayout *layout, QString startMenuPosition) : QWidget()
 {
+MainFrame::vdcdebug("XML2Menu","XML2Menu", "QLayout *layout, QString startMenuPosition");
    i_cnt = 0;
    i_cntTopLevel = 0;
    i_cntGroup = 0;
@@ -81,6 +82,7 @@ XML2Menu::~XML2Menu(){
 
 void XML2Menu::outputTree(const QDomNode& domNode)
 {
+MainFrame::vdcdebug("XML2Menu","outputTree", "const QDomNode& domNode");
    QDomNodeList children = domNode.childNodes();
 
    // checking domNodes childNodes for relevant form elements
@@ -231,6 +233,7 @@ void XML2Menu::outputTree(const QDomNode& domNode)
 
 int XML2Menu::readXML(const QDomDocument& doc)
 {
+MainFrame::vdcdebug("XML2Menu","readXML", "const QDomDocument& doc");
 
    QString err;
    int i_err;
@@ -254,6 +257,7 @@ int XML2Menu::readXML(const QDomDocument& doc)
 //------------------------------------------------------------------------------
 void XML2Menu::execAction()
 {
+MainFrame::vdcdebug("XML2Menu","execAction", "");
    QObject *widget = QObject::sender();
    if (widget->inherits("QAction")) {
       QAction *item = static_cast<QAction*>(widget);

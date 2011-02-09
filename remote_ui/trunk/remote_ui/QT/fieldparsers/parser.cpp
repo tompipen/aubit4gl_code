@@ -21,9 +21,11 @@
 #include <models/matrix.h>
 #include <models/table.h>
 #include <models/fglform.h>
+#include "mainframe.h"
 
 Parser::Parser(QWidget *p_fglform) : QWidget()
 {
+MainFrame::vdcdebug("Parser","Parser", "QWidget *p_fglform");
    this->setFocusPolicy(Qt::NoFocus);
    this->p_fglform = p_fglform;
 
@@ -45,16 +47,19 @@ Parser::Parser(QWidget *p_fglform) : QWidget()
 
 QWidget* Parser::getFormWidget()
 {
+MainFrame::vdcdebug("Parser","getFormWidget", "");
    return this;
 }
 
 QList<QWidget*> Parser::getFieldList()
 {
+MainFrame::vdcdebug("Parser","getFieldList", "");
    return ql_formFields;
 }
 
 void Parser::parseForm(QDomDocument xmlForm)
 {
+MainFrame::vdcdebug("Parser","parseForm", "QDomDocument xmlForm");
    // get first element of XML form and start parsing
    QDomElement formElement = xmlForm.documentElement();
    parseElement(formElement);
@@ -89,6 +94,7 @@ void Parser::parseForm(QDomDocument xmlForm)
 
 void Parser::parseElement(const QDomNode& xmlNode)
 {
+MainFrame::vdcdebug("Parser","parseElement", "const QDomNode& xmlNode");
    // start parsing specific nodes
    QDomElement xmlFormElement = xmlNode.toElement();
 
@@ -545,6 +551,7 @@ void Parser::handleMatrixColumn(const QDomNode& xmlNode){
 
 void Parser::addWidgets(QWidget *widget, bool add, int x, int y, int gridWidth, int span)
 {
+MainFrame::vdcdebug("Parser","addWidgets", "QWidget *widget, bool add, int x, int y, int gridWidth, int span");
    if(currentLayout == NULL)
       return;
 
@@ -578,6 +585,7 @@ void Parser::addWidgets(QWidget *widget, bool add, int x, int y, int gridWidth, 
 
 void Parser::addLayout(QLayout *newLayout)
 {
+MainFrame::vdcdebug("Parser","addLayout", "QLayout *newLayout");
    if(currentLayout == NULL)
       return;
 
@@ -598,6 +606,7 @@ void Parser::addLayout(QLayout *newLayout)
 
 void Parser::handleRecordView(const QDomNode& xmlNode)
 {
+MainFrame::vdcdebug("Parser","handleRecordView", "const QDomNode& xmlNode");
    QString tabName = xmlNode.toElement().attribute("tabName");
 
    FglForm *form = (FglForm*) p_fglform;

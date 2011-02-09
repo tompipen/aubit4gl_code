@@ -23,6 +23,7 @@
 #include <QFileDialog>
 
 #include "screenhandler.h"
+#include "mainframe.h"
 #include "models/response.h"
 #include "models/statusbar.h"
 #include "models/table.h"
@@ -36,6 +37,7 @@
 //------------------------------------------------------------------------------
 ScreenHandler::ScreenHandler(QObject *parent) : QObject(parent)
 {
+MainFrame::vdcdebug("ScreenHandler","ScreenHandler", "QObject *parent");
 
    cnt_form = 0;
    b_menuEnabled = false;
@@ -54,6 +56,7 @@ ScreenHandler::ScreenHandler(QObject *parent) : QObject(parent)
 //------------------------------------------------------------------------------
 ScreenHandler::~ScreenHandler()
 {
+MainFrame::vdcdebug("ScreenHandler","~ScreenHandler", "");
     QApplication::processEvents();
 }
 
@@ -64,6 +67,7 @@ ScreenHandler::~ScreenHandler()
 //------------------------------------------------------------------------------
 void ScreenHandler::initForm(int i_Frm)
 {
+MainFrame::vdcdebug("ScreenHandler","initForm", "int i_Frm");
    qh_formFields.remove(i_Frm);
    qh_formActionMenus.remove(i_Frm);
 }
@@ -75,11 +79,13 @@ void ScreenHandler::initForm(int i_Frm)
 //------------------------------------------------------------------------------
 int ScreenHandler::getCurrForm()
 {
+MainFrame::vdcdebug("ScreenHandler","getCurrForm", "");
    return cnt_form-1;
 }
 
 int ScreenHandler::getCurrWindow()
 {
+MainFrame::vdcdebug("ScreenHandler","getCurrWindow", "");
    return cnt_form-1;
 }
 
@@ -90,6 +96,7 @@ int ScreenHandler::getCurrWindow()
 //------------------------------------------------------------------------------
 void ScreenHandler::createWindow(QString windowTitle,QString style, int x, int y, int h, int w, QString id)
 {
+MainFrame::vdcdebug("ScreenHandler","createWindow", "QString windowTitle,QString style, int x, int y, int h, int w, QString id");
    Q_UNUSED(x);
    Q_UNUSED(y);
    Q_UNUSED(h);
@@ -151,6 +158,7 @@ void ScreenHandler::createWindow(QString windowTitle,QString style, int x, int y
 
 FglForm* ScreenHandler::currForm()
 {
+MainFrame::vdcdebug("ScreenHandler","currForm", "");
    return p_fglform;
 }
 
@@ -162,6 +170,7 @@ FglForm* ScreenHandler::currForm()
 //------------------------------------------------------------------------------
 void ScreenHandler::handleXMLForm(QString formName, QString xmlFormString, bool openWindow)
 {
+MainFrame::vdcdebug("ScreenHandler","handleXMLForm", "QString formName, QString xmlFormString, bool openWindow");
    qh_formFiles[formName] = xmlFormString;
 
    if(openWindow){
@@ -180,6 +189,7 @@ void ScreenHandler::handleXMLForm(QString formName, QString xmlFormString, bool 
 //------------------------------------------------------------------------------
 void ScreenHandler::handleAubitForm(QString formName, QString xmlFormString, bool openWindow)
 {
+MainFrame::vdcdebug("ScreenHandler","handleAubitForm", "QString formName, QString xmlFormString, bool openWindow");
 
    qh_formFiles[formName] = xmlFormString;
 
@@ -200,6 +210,7 @@ void ScreenHandler::handleAubitForm(QString formName, QString xmlFormString, boo
 //------------------------------------------------------------------------------
 void ScreenHandler::displayForm(QString formName)
 {
+MainFrame::vdcdebug("ScreenHandler","displayForm", "QString formName");
    QString xmlFormString = qh_formFiles[formName];
 
    if(!xmlFormString.isEmpty()){
@@ -223,6 +234,7 @@ void ScreenHandler::displayForm(QString formName)
 //------------------------------------------------------------------------------
 void ScreenHandler::handleXMLToolBar(QString xmlFileString)
 {
+MainFrame::vdcdebug("ScreenHandler","handleXMLToolBar", "QString xmlFileString");
 
    QDomDocument xmlFile;
    xmlFile.setContent(xmlFileString);
@@ -237,6 +249,7 @@ void ScreenHandler::handleXMLToolBar(QString xmlFileString)
 //------------------------------------------------------------------------------
 void ScreenHandler::handleXMLStartMenu(QString xmlFileString)
 {
+MainFrame::vdcdebug("ScreenHandler","handleXMLStartMenu", "QString xmlFileString");
 
    QDomDocument xmlFile;
    if(!xmlFile.setContent(xmlFileString)){
@@ -258,6 +271,7 @@ void ScreenHandler::handleXMLStartMenu(QString xmlFileString)
 //------------------------------------------------------------------------------
 void ScreenHandler::handleXMLActions(QString xmlFileString)
 {
+MainFrame::vdcdebug("ScreenHandler","handleXMLActions", "QString xmlFileString");
 
    QDomDocument xmlFile;
    QString errorMsg;
@@ -280,6 +294,7 @@ void ScreenHandler::handleXMLActions(QString xmlFileString)
 //------------------------------------------------------------------------------
 void ScreenHandler::handleXMLStyles(QString xmlFileString)
 {
+MainFrame::vdcdebug("ScreenHandler","handleXMLStyles", "QString xmlFileString");
 
    QDomDocument xmlFile;
    xmlFile.setContent(xmlFileString);
@@ -294,6 +309,7 @@ void ScreenHandler::handleXMLStyles(QString xmlFileString)
 //------------------------------------------------------------------------------
 void ScreenHandler::createMenu(QString title, QString comment, QString style, QString image)
 {
+MainFrame::vdcdebug("ScreenHandler","createMenu", "QString title, QString comment, QString style, QString image");
    int i_Frm = getCurrForm();
 
    if(i_Frm < 0)
@@ -318,6 +334,7 @@ void ScreenHandler::createMenu(QString title, QString comment, QString style, QS
 //------------------------------------------------------------------------------
 void ScreenHandler::createMenuButton(int buttonId, QString text, QString desc, QStringList keys)
 {
+MainFrame::vdcdebug("ScreenHandler","createMenuButton", "int buttonId, QString text, QString desc, QStringList keys");
 
   Q_UNUSED(keys);
 
@@ -358,6 +375,7 @@ void ScreenHandler::createMenuButton(int buttonId, QString text, QString desc, Q
 //------------------------------------------------------------------------------
 void ScreenHandler::createMenuAction(int buttonId, QString text)
 {
+MainFrame::vdcdebug("ScreenHandler","createMenuAction", "int buttonId, QString text");
 
   int i_Frm = getCurrForm();
 
@@ -397,6 +415,7 @@ void ScreenHandler::createMenuAction(int buttonId, QString text)
 //------------------------------------------------------------------------------
 void ScreenHandler::setMenuEnabled(bool enable)
 {
+MainFrame::vdcdebug("ScreenHandler","setMenuEnabled", "bool enable");
   int i_Frm = getCurrForm();
 
    if(i_Frm < 0)
@@ -415,6 +434,7 @@ void ScreenHandler::setMenuEnabled(bool enable)
 //------------------------------------------------------------------------------
 void ScreenHandler::hideOption(QString name)
 {
+MainFrame::vdcdebug("ScreenHandler","hideOption", "QString name");
    if(p_fglform == NULL)
       return;
 
@@ -436,6 +456,7 @@ void ScreenHandler::hideOption(QString name)
 //------------------------------------------------------------------------------
 void ScreenHandler::showOption(QString name)
 {
+MainFrame::vdcdebug("ScreenHandler","showOption", "QString name");
    if(p_fglform == NULL)
       return;
 
@@ -457,6 +478,7 @@ void ScreenHandler::showOption(QString name)
 //------------------------------------------------------------------------------
 void ScreenHandler::nextOption(QString name)
 {
+MainFrame::vdcdebug("ScreenHandler","nextOption", "QString name");
    if(p_fglform == NULL)
       return;
 
@@ -477,6 +499,7 @@ void ScreenHandler::nextOption(QString name)
 //------------------------------------------------------------------------------
 void ScreenHandler::createDialog(QString title, QString comment, QString style, QString image)
 {
+MainFrame::vdcdebug("ScreenHandler","createDialog", "QString title, QString comment, QString style, QString image");
    if(p_fglform == NULL)
       return;
 
@@ -494,6 +517,7 @@ void ScreenHandler::createDialog(QString title, QString comment, QString style, 
 //------------------------------------------------------------------------------
 void ScreenHandler::createDialogButton(int buttonId, QString text, QString desc)
 {
+MainFrame::vdcdebug("ScreenHandler","createDialogButton", "int buttonId, QString text, QString desc");
 
   int i_Frm = getCurrForm();
 
@@ -523,6 +547,7 @@ void ScreenHandler::createDialogButton(int buttonId, QString text, QString desc)
 //------------------------------------------------------------------------------
 void ScreenHandler::createDialogAction(int buttonId, QString text)
 {
+MainFrame::vdcdebug("ScreenHandler","createDialogAction", "int buttonId, QString text");
 
   int i_Frm = getCurrForm();
 
@@ -552,6 +577,7 @@ void ScreenHandler::createDialogAction(int buttonId, QString text)
 //------------------------------------------------------------------------------
 void ScreenHandler::createPrompt(QString text, int charMode, int fieldAttribute, QString style)
 {
+MainFrame::vdcdebug("ScreenHandler","createPrompt", "QString text, int charMode, int fieldAttribute, QString style");
    Q_UNUSED(style);
 
    p_prompt = new Prompt(text, charMode, fieldAttribute);
@@ -567,6 +593,7 @@ void ScreenHandler::createPrompt(QString text, int charMode, int fieldAttribute,
 //------------------------------------------------------------------------------
 void ScreenHandler::setFieldBuffer(QStringList fieldNames, QStringList fieldValues, int attr)
 {
+MainFrame::vdcdebug("ScreenHandler","setFieldBuffer", "QStringList fieldNames, QStringList fieldValues, int attr");
    int value_cnt = 0;
    if(p_fglform == NULL)
       return;
@@ -647,6 +674,7 @@ void ScreenHandler::setFieldBuffer(QStringList fieldNames, QStringList fieldValu
 //------------------------------------------------------------------------------
 void ScreenHandler::setFieldBuffer(int fieldNo, QString fieldValue, int attr)
 {
+MainFrame::vdcdebug("ScreenHandler","setFieldBuffer", "int fieldNo, QString fieldValue, int attr");
    int i_Frm = getCurrForm();
    if(i_Frm < 0)
       return;
@@ -717,6 +745,7 @@ void ScreenHandler::setFieldBuffer(int fieldNo, QString fieldValue, int attr)
 //------------------------------------------------------------------------------
 void ScreenHandler::clearFieldBuffer(QString fieldName)
 {
+MainFrame::vdcdebug("ScreenHandler","clearFieldBuffer", "QString fieldName");
    int index = fieldName.indexOf(".*");
 
    if(index < 0){
@@ -759,6 +788,7 @@ void ScreenHandler::clearFieldBuffer(QString fieldName)
 //------------------------------------------------------------------------------
 void ScreenHandler::setArrayBuffer(QWidget* tableView, QString fieldName, QString fieldValue)
 {
+MainFrame::vdcdebug("ScreenHandler","setArrayBuffer", "QWidget* tableView, QString fieldName, QString fieldValue");
    TableView *screenRecord = qobject_cast<TableView *> (tableView);
    if(screenRecord == NULL){
       return;
@@ -796,6 +826,7 @@ void ScreenHandler::setArrayBuffer(QWidget* tableView, QString fieldName, QStrin
 
 void ScreenHandler::setArrayBuffer(int row, QString tabName, QStringList fieldValues)
 {
+MainFrame::vdcdebug("ScreenHandler","setArrayBuffer", "int row, QString tabName, QStringList fieldValues");
    int index = tabName.indexOf(".*");
    int cnt_values = 0;
    if(index < 0){
@@ -842,6 +873,7 @@ void ScreenHandler::setArrayBuffer(int row, QString tabName, QStringList fieldVa
 
 void ScreenHandler::setArrayBuffer(int row, QStringList fieldValues)
 {
+MainFrame::vdcdebug("ScreenHandler","setArrayBuffer", "int row, QStringList fieldValues");
    Context *context = getCurrentContext();
 
    for(int i=0; i<context->fieldList().count(); i++){
@@ -870,6 +902,7 @@ void ScreenHandler::setArrayBuffer(int row, QStringList fieldValues)
 //------------------------------------------------------------------------------
 void ScreenHandler::loadArrayValues(QStringList qsl_arrayValues)
 {
+MainFrame::vdcdebug("ScreenHandler","loadArrayValues", "QStringList qsl_arrayValues");
    if(p_fglform == NULL)
       return;
 
@@ -917,6 +950,7 @@ void ScreenHandler::loadArrayValues(QStringList qsl_arrayValues)
 //------------------------------------------------------------------------------
 void ScreenHandler::setFieldEnabled(QString fieldName, bool enable, bool focus, int attr)
 {
+MainFrame::vdcdebug("ScreenHandler","setFieldEnabled", "QString fieldName, bool enable, bool focus, int attr");
    Q_UNUSED(focus);
 
    fieldName = fieldName.trimmed();
@@ -972,6 +1006,7 @@ void ScreenHandler::setFieldEnabled(QString fieldName, bool enable, bool focus, 
 //------------------------------------------------------------------------------
 void ScreenHandler::setFieldFocus(QString fieldName)
 {
+MainFrame::vdcdebug("ScreenHandler","setFieldFocus", "QString fieldName");
    fieldName = fieldName.trimmed();
 
    int i_Frm = getCurrForm();
@@ -1048,6 +1083,7 @@ void ScreenHandler::setFieldFocus(QString fieldName)
 //------------------------------------------------------------------------------
 void ScreenHandler::setFieldHidden(QString fieldName, bool hidden)
 {
+MainFrame::vdcdebug("ScreenHandler","setFieldHidden", "QString fieldName, bool hidden");
    fieldName = fieldName.trimmed();
 
    int i_Frm = getCurrForm();
@@ -1068,6 +1104,7 @@ void ScreenHandler::setFieldHidden(QString fieldName, bool hidden)
 //------------------------------------------------------------------------------
 void ScreenHandler::setElementHidden(QString fieldName, bool hidden)
 {
+MainFrame::vdcdebug("ScreenHandler","setElementHidden", "QString fieldName, bool hidden");
    fieldName = fieldName.trimmed();
 
    int i_Frm = getCurrForm();
@@ -1140,6 +1177,7 @@ void ScreenHandler::setArrayFocus(QWidget *tableView, QString fieldName){
 //------------------------------------------------------------------------------
 void ScreenHandler::clearEvents()
 {
+MainFrame::vdcdebug("ScreenHandler","clearEvents", "");
    if(p_fglform == NULL)
       return;
 
@@ -1157,6 +1195,7 @@ void ScreenHandler::clearEvents()
 //------------------------------------------------------------------------------
 void ScreenHandler::setEvent(QString event, QString attribute, int id)
 {
+MainFrame::vdcdebug("ScreenHandler","setEvent", "QString event, QString attribute, int id");
    if(event == "BEFORE_MENU_EVENT"){
       Fgl::Event event;
       event.type = Fgl::BEFORE_INPUT_EVENT;
@@ -1330,6 +1369,7 @@ void ScreenHandler::setEvent(QString event, QString attribute, int id)
 //------------------------------------------------------------------------------
 void ScreenHandler::createActionMenu()
 {
+MainFrame::vdcdebug("ScreenHandler","createActionMenu", "");
    int i_Frm = getCurrForm();
 
    if(i_Frm < 0)
@@ -1359,6 +1399,7 @@ void ScreenHandler::createActionMenu()
 //------------------------------------------------------------------------------
 void ScreenHandler::createActionMenuButton(QString text, QString desc)
 {
+MainFrame::vdcdebug("ScreenHandler","createActionMenuButton", "QString text, QString desc");
 
   int i_Frm = getCurrForm();
 
@@ -1388,6 +1429,7 @@ void ScreenHandler::createActionMenuButton(QString text, QString desc)
 //------------------------------------------------------------------------------
 void ScreenHandler::setFormOpts(QString type, bool value, int i_context)
 {
+MainFrame::vdcdebug("ScreenHandler","setFormOpts", "QString type, bool value, int i_context");
 
    if(!value){
       if(p_prompt != NULL && type == "PROMPT"){
@@ -1596,6 +1638,7 @@ void ScreenHandler::setFormOpts(QString type, bool value, int i_context)
 //------------------------------------------------------------------------------
 void ScreenHandler::setFormOpts(QString type, QString attribute, int value)
 {
+MainFrame::vdcdebug("ScreenHandler","setFormOpts", "QString type, QString attribute, int value");
    Q_UNUSED(type);
    if(value < 0)
       return;
@@ -1614,6 +1657,7 @@ void ScreenHandler::setFormOpts(QString type, QString attribute, int value)
 //------------------------------------------------------------------------------
 void ScreenHandler::waitForEvent()
 {
+MainFrame::vdcdebug("ScreenHandler","waitForEvent", "");
    if(p_fglform == NULL)
       return;
 
@@ -1654,6 +1698,7 @@ void ScreenHandler::waitForEvent()
 //------------------------------------------------------------------------------
 void ScreenHandler::processResponse()
 {
+//MainFrame::vdcdebug("ScreenHandler","processResponse", "");
    if(p_fglform == NULL)
       return;
 
@@ -1682,6 +1727,7 @@ void ScreenHandler::processResponse()
 
 void ScreenHandler::sendDirect(QString cmd)
 {
+MainFrame::vdcdebug("ScreenHandler","sendDirect", "QString cmd");
    fglFormResponse(cmd);
    if(p_fglform != NULL)
       p_fglform->b_getch_swin = false;
@@ -1694,6 +1740,7 @@ void ScreenHandler::sendDirect(QString cmd)
 //------------------------------------------------------------------------------
 void ScreenHandler::free(QString type)
 {
+MainFrame::vdcdebug("ScreenHandler","free", "QString type");
 
    if(p_prompt != NULL && type == "PROMPT"){
       p_prompt->setVisible(false);
@@ -1790,6 +1837,7 @@ void ScreenHandler::free(QString type)
 //------------------------------------------------------------------------------
 void ScreenHandler::displayError(QString text)
 {
+MainFrame::vdcdebug("ScreenHandler","displayError", "QString text");
 
    if(p_fglform == NULL)
       return;
@@ -1813,6 +1861,7 @@ void ScreenHandler::displayError(QString text)
 //------------------------------------------------------------------------------
 void ScreenHandler::displayMessage(QString text)
 {
+MainFrame::vdcdebug("ScreenHandler","displayMessage", "QString text");
 
    if(p_fglform == NULL)
       return;
@@ -1828,6 +1877,7 @@ void ScreenHandler::displayMessage(QString text)
 //------------------------------------------------------------------------------
 void ScreenHandler::setWindowTitle(QString title)
 {
+MainFrame::vdcdebug("ScreenHandler","setWindowTitle", "QString title");
    if(p_fglform == NULL)
       return;
 
@@ -1838,6 +1888,7 @@ void ScreenHandler::setWindowTitle(QString title)
 
 void ScreenHandler::MsgBox (QString title, QString text, QString logo, QString buttons, QString defButton,int reply)
 {
+MainFrame::vdcdebug("ScreenHandler","MsgBox ", "QString title, QString text, QString logo, QString buttons, QString defButton,int reply");
    QString rstr = "NotSet";
    QMessageBox::StandardButtons btns = 0;
    QMessageBox::StandardButton defBtn = QMessageBox::NoButton;
@@ -1933,6 +1984,7 @@ void ScreenHandler::MsgBox (QString title, QString text, QString logo, QString b
 //------------------------------------------------------------------------------
 void ScreenHandler::closeWindow(QString windowName)
 {
+MainFrame::vdcdebug("ScreenHandler","closeWindow", "QString windowName");
 
    for(int i=0; i<ql_fglForms.size(); i++){
       FglForm *form = ql_fglForms.at(i);
@@ -1967,6 +2019,7 @@ void ScreenHandler::closeWindow(QString windowName)
 //------------------------------------------------------------------------------
 void ScreenHandler::activeWindow(QString windowName)
 {
+MainFrame::vdcdebug("ScreenHandler","activeWindow", "QString windowName");
 
    for(int i=0; i<ql_fglForms.size(); i++){
       FglForm *form = ql_fglForms.at(i);
@@ -1986,6 +2039,7 @@ void ScreenHandler::activeWindow(QString windowName)
 //------------------------------------------------------------------------------
 void ScreenHandler::setKeyLabel(QString label, QString text)
 {
+MainFrame::vdcdebug("ScreenHandler","setKeyLabel", "QString label, QString text");
    int i_Frm = getCurrForm();
 
    if(i_Frm < 0)
@@ -2011,6 +2065,7 @@ void ScreenHandler::setKeyLabel(QString label, QString text)
 //------------------------------------------------------------------------------
 void ScreenHandler::setScreenRecordEnabled(QString fieldName, bool enable, bool input)
 {
+MainFrame::vdcdebug("ScreenHandler","setScreenRecordEnabled", "QString fieldName, bool enable, bool input");
    Q_UNUSED(enable);
    Context *context = getCurrentContext();
 
@@ -2035,6 +2090,7 @@ void ScreenHandler::setScreenRecordEnabled(QString fieldName, bool enable, bool 
 //------------------------------------------------------------------------------
 void ScreenHandler::loadArrayValues(QStringList qsl_tabNames, QStringList qsl_arrayValues)
 {
+MainFrame::vdcdebug("ScreenHandler","loadArrayValues", "QStringList qsl_tabNames, QStringList qsl_arrayValues");
    for(int i=0; i<qsl_tabNames.size(); i++){
       QString fieldName = qsl_tabNames.at(i);
 
@@ -2088,6 +2144,7 @@ void ScreenHandler::loadArrayValues(QStringList qsl_tabNames, QStringList qsl_ar
 //------------------------------------------------------------------------------
 void ScreenHandler::setFieldOrder(QStringList qsl_fields)
 {
+MainFrame::vdcdebug("ScreenHandler","setFieldOrder", "QStringList qsl_fields");
    QWidget *widget = NULL;
    QWidget *firstWidget = NULL;
    QWidget *nextWidget = NULL;
@@ -2136,6 +2193,7 @@ void ScreenHandler::setFieldOrder(QStringList qsl_fields)
 
 void ScreenHandler::setCursorPosition(int pos)
 {
+MainFrame::vdcdebug("ScreenHandler","setCursorPosition", "int pos");
 
 //   QList<QWidget*> ql_fields = p_fglform->formElements();
    QList<QWidget*> ql_fields = p_fglform->ql_formFields;
@@ -2152,6 +2210,7 @@ void ScreenHandler::setCursorPosition(int pos)
 
 void ScreenHandler::setInputFields(QStringList qsl_fields)
 {
+MainFrame::vdcdebug("ScreenHandler","setInputFields", "QStringList qsl_fields");
 
    int i_Frm = getCurrForm();
 
@@ -2167,11 +2226,13 @@ void ScreenHandler::setInputFields(QStringList qsl_fields)
 
 void ScreenHandler::setClearEvents()
 {
+MainFrame::vdcdebug("ScreenHandler","setClearEvents", "");
    clearFieldEvents = true;
 }
 
 void ScreenHandler::setArrLine(int line)
 {
+MainFrame::vdcdebug("ScreenHandler","setArrLine", "int line");
    if(p_fglform == NULL)
       return;
 
@@ -2189,6 +2250,7 @@ void ScreenHandler::setArrLine(int line)
 
 void ScreenHandler::setScrLine(int line)
 {
+MainFrame::vdcdebug("ScreenHandler","setScrLine", "int line");
    if(p_fglform == NULL)
       return;
 
@@ -2203,6 +2265,7 @@ void ScreenHandler::setScrLine(int line)
 
 Context* ScreenHandler::getContext(int i_context)
 {
+MainFrame::vdcdebug("ScreenHandler","getContext", "int i_context");
    int contextCount = contexts.count()-1;
 
    for(int i=contextCount; i<i_context; i++){
@@ -2216,6 +2279,7 @@ Context* ScreenHandler::getContext(int i_context)
 
 Context* ScreenHandler::getCurrentContext()
 {
+MainFrame::vdcdebug("ScreenHandler","getCurrentContext", "");
    if(contexts.count() > 0){
       return contexts.at(contexts.count()-1);
    }
@@ -2226,6 +2290,7 @@ Context* ScreenHandler::getCurrentContext()
 
 void ScreenHandler::freeContext(int i_context)
 {
+MainFrame::vdcdebug("ScreenHandler","freeContext", "int i_context");
    int contextCount = contexts.count()-1;
    if(contextCount >= i_context){
       Context *context = contexts.takeAt(i_context);
@@ -2251,6 +2316,7 @@ void ScreenHandler::freeContext(int i_context)
 
 void ScreenHandler::fileBrowser(QString function, QString defPath, QString fileNames, QString fileTypes, QString caption)
 {
+MainFrame::vdcdebug("ScreenHandler","fileBrowser", "QString function, QString defPath, QString fileNames, QString fileTypes, QString caption");
    QString fileName;
    if(function == "opendir"){
       if(caption.isEmpty()){
@@ -2303,6 +2369,7 @@ void ScreenHandler::fileBrowser(QString function, QString defPath, QString fileN
 
 void ScreenHandler::setSearchPaths()
 {
+MainFrame::vdcdebug("ScreenHandler","setSearchPaths", "");
    //set the separator depending on the OS
    QChar sep;
 #ifdef __WIN32__
@@ -2348,6 +2415,7 @@ sep = QChar(':');
 
 void ScreenHandler::checkFields()
 {
+MainFrame::vdcdebug("ScreenHandler","checkFields", "");
    return;
    if(p_fglform == NULL)
       return;
@@ -2359,6 +2427,7 @@ void ScreenHandler::checkFields()
 
 void ScreenHandler::setUpdatesEnabled(bool en)
 {
+MainFrame::vdcdebug("ScreenHandler","setUpdatesEnabled", "bool en");
    for(int i=0; i<ql_fglForms.size(); i++){
          FglForm *form = ql_fglForms.at(i);
 
@@ -2370,12 +2439,14 @@ void ScreenHandler::setUpdatesEnabled(bool en)
 
 void ScreenHandler::setEnv(QString name, QString env)
 {
+MainFrame::vdcdebug("ScreenHandler","setEnv", "QString name, QString env");
    Fgl::env[name] = env;
 }
 
 
 bool ScreenHandler::eventFilter(QObject *obj, QEvent *event)
 {
+//MainFrame::vdcdebug("ScreenHandler","eventFilter", "QObject *obj, QEvent *event");
 
 /*
    if(event->type() == QEvent::WindowActivate){
@@ -2399,6 +2470,7 @@ bool ScreenHandler::eventFilter(QObject *obj, QEvent *event)
 
 void ScreenHandler::setInterfaceText(QString text)
 {
+MainFrame::vdcdebug("ScreenHandler","setInterfaceText", "QString text");
    qs_interfaceTitle = text;
    for(int i=0; i<ql_fglForms.size(); i++){
        ql_fglForms.at(i)->setWindowTitle(text);

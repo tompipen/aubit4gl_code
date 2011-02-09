@@ -24,6 +24,7 @@
 
 #include "prompt.h"
 #include "include/fgl.h"
+#include "mainframe.h"
 
 
 //------------------------------------------------------------------------------
@@ -33,6 +34,7 @@
 //------------------------------------------------------------------------------
 Prompt::Prompt(QWidget *parent, Qt::WindowFlags f) : QDialog(parent, f)
 {
+MainFrame::vdcdebug("Prompt","Prompt", "QWidget *parent, Qt");
 
 }
 
@@ -43,6 +45,7 @@ Prompt::Prompt(QWidget *parent, Qt::WindowFlags f) : QDialog(parent, f)
 //------------------------------------------------------------------------------
 Prompt::Prompt(QString text, int charMode, int fieldAttribute, QWidget *parent, Qt::WindowFlags f) : QDialog(parent, f)
 {
+MainFrame::vdcdebug("Prompt","Prompt", "QString text, int charMode, int fieldAttribute, QWidget *parent, Qt");
   isAccepted = false;
   //this->setWindowFlags(Qt::Dialog);
 
@@ -90,6 +93,7 @@ Prompt::Prompt(QString text, int charMode, int fieldAttribute, QWidget *parent, 
 //------------------------------------------------------------------------------
 void Prompt::keyPressEvent(QKeyEvent *event)
 {
+MainFrame::vdcdebug("Prompt","keyPressEvent", "QKeyEvent *event");
 
    if(event->key() == Qt::Key_Enter || event->key() == Qt::Key_Return){
       isAccepted = true;
@@ -114,6 +118,7 @@ void Prompt::promptLineEditTextChanged(const QString &text) {
 
 void Prompt::closeEvent(QCloseEvent *event)
 {
+MainFrame::vdcdebug("Prompt","closeEvent", "QCloseEvent *event");
    if(this->isVisible()){
       QDomDocument doc;
       QDomElement triggered = doc.createElement("TRIGGERED");

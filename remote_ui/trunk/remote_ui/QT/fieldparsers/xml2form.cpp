@@ -37,6 +37,7 @@
  
 XML2Form::XML2Form() : QWidget() 
 { 
+MainFrame::vdcdebug("XML2Form","XML2Form", "");
    i_cnt= 0; 
    tableV = NULL; 
    xmlformLayout = new QGridLayout; 
@@ -96,6 +97,7 @@ XML2Form::~XML2Form(){
  
 void XML2Form::outputTree(const QDomNode& domNode, QLayout* parent) 
 { 
+MainFrame::vdcdebug("XML2Form","outputTree", "const QDomNode& domNode, QLayout* parent");
    QDomNodeList children = domNode.childNodes(); 
    tableWidget = new TableView(); 
  
@@ -263,6 +265,7 @@ void XML2Form::outputTree(const QDomNode& domNode, QLayout* parent)
  
 void XML2Form::parseForm(QDomDocument formFile) 
 { 
+MainFrame::vdcdebug("XML2Form","parseForm", "QDomDocument formFile");
    this->formLayout = new QVBoxLayout; 
  
    outputTree(formFile, formLayout); 
@@ -277,6 +280,7 @@ void XML2Form::parseForm(QDomDocument formFile)
  
 bool XML2Form::handleFormField(const QDomElement& childElement, QLayout* parent) 
 { 
+MainFrame::vdcdebug("XML2Form","handleFormField", "const QDomElement& childElement, QLayout* parent");
  
    QDomElement formFieldType = childElement.firstChild().toElement(); 
    //QWidget* childWidget = 0; 
@@ -881,6 +885,7 @@ bool XML2Form::handleFormField(const QDomElement& childElement, QLayout* parent)
  
 bool XML2Form::handleTableColumn(const QDomElement& childElement, QLayout* parent) 
 { 
+MainFrame::vdcdebug("XML2Form","handleTableColumn", "const QDomElement& childElement, QLayout* parent");
    QString firstNodeName = childElement.nodeName(); 
  
    if(firstNodeName == "Table"){ 
@@ -1061,6 +1066,7 @@ bool XML2Form::handleTableColumn(const QDomElement& childElement, QLayout* paren
  
 bool XML2Form::handleTableColumn2(const QDomElement& childElement, QLayout* parent) 
 { 
+MainFrame::vdcdebug("XML2Form","handleTableColumn2", "const QDomElement& childElement, QLayout* parent");
    QDomElement formTableType = childElement.firstChild().toElement(); 
    childWidget    = NULL; 
  
@@ -1169,6 +1175,7 @@ bool XML2Form::handleTableColumn2(const QDomElement& childElement, QLayout* pare
  
 int XML2Form::getLengthBySqlType(const QString& sqlType) 
 { 
+MainFrame::vdcdebug("XML2Form","getLengthBySqlType", "const QString& sqlType");
    // jobnr: 18037  
    // reading the type size from the xml file 
    // it's an element attribute of this form e.g.: 
@@ -1198,6 +1205,7 @@ int XML2Form::getLengthBySqlType(const QString& sqlType)
  
 PageTab::PageTab() : QWidget() 
 { 
+MainFrame::vdcdebug("PageTab","PageTab", "");
    QGridLayout *tabLayout = new QGridLayout; 
 //   tabLayout->setSpacing(1); 
  

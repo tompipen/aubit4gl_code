@@ -22,6 +22,7 @@
 
 Aubit2Fields::Aubit2Fields() : QWidget()
 {
+MainFrame::vdcdebug("Aubit2Fields","Aubit2Fields", "");
    layout = new QVBoxLayout;
    layout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
    layout->setSpacing(0);
@@ -32,16 +33,19 @@ Aubit2Fields::Aubit2Fields() : QWidget()
 
 QLayout* Aubit2Fields::getLayout()
 {
+MainFrame::vdcdebug("Aubit2Fields","getLayout", "");
    return layout;
 }
 
 QList<QWidget*> Aubit2Fields::getFieldList()
 {
+MainFrame::vdcdebug("Aubit2Fields","getFieldList", "");
    return ql_formFields;
 }
 
 void Aubit2Fields::parseForm(QDomDocument xmlForm)
 {
+MainFrame::vdcdebug("Aubit2Fields","parseForm", "QDomDocument xmlForm");
 
    QDomElement formElement = xmlForm.documentElement(); // <Form>
    parseElement(formElement);
@@ -50,6 +54,7 @@ void Aubit2Fields::parseForm(QDomDocument xmlForm)
 
 void Aubit2Fields::parseElement(QDomNode xmlNode)
 {
+MainFrame::vdcdebug("Aubit2Fields","parseElement", "QDomNode xmlNode");
    QDomNodeList children = xmlNode.childNodes();
    for(int i=0; i<children.count(); ++i){
 
@@ -104,6 +109,7 @@ void Aubit2Fields::parseElement(QDomNode xmlNode)
 
 void Aubit2Fields::addToForm(QObject* obj, bool add, int x, int y, int w)
 {
+MainFrame::vdcdebug("Aubit2Fields","addToForm", "QObject* obj, bool add, int x, int y, int w");
 // TODO: Find a way to determine if obj will be currObject in the end
 
    QLayout *layout = NULL;
@@ -161,6 +167,7 @@ void Aubit2Fields::addToForm(QObject* obj, bool add, int x, int y, int w)
 
 void Aubit2Fields::handleField(const QDomNode& domNode)
 {
+MainFrame::vdcdebug("Aubit2Fields","handleField", "const QDomNode& domNode");
    QDomElement xmlField = domNode.toElement();
    QString nodeName = domNode.nodeName();
 
@@ -209,6 +216,7 @@ void Aubit2Fields::handleField(const QDomNode& domNode)
 
 void Aubit2Fields::handleFormField(const QDomNode& domNode)
 {
+MainFrame::vdcdebug("Aubit2Fields","handleFormField", "const QDomNode& domNode");
    QDomElement xmlFormField = domNode.toElement();
    QDomElement xmlField = xmlFormField.firstChild().toElement();
    QString nodeName = xmlField.nodeName();

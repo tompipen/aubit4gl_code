@@ -20,9 +20,11 @@
 
 #include "actions.h"
 #include "include/fgl.h"
+#include "mainframe.h"
 
 Actions::Actions(QWidget *form, QObject *parent) : QObject(parent)
 {
+MainFrame::vdcdebug("Actions","Actions", "QWidget *form, QObject *parent");
 
    this->p_fglform = form;
 
@@ -30,12 +32,14 @@ Actions::Actions(QWidget *form, QObject *parent) : QObject(parent)
 
 void Actions::parseFile(QDomDocument xmlActions)
 {
+MainFrame::vdcdebug("Actions","parseFile", "QDomDocument xmlActions");
    QDomElement actionsElement = xmlActions.documentElement();
    parseElement(actionsElement);
 }
 
 void Actions::parseElement(QDomNode xmlNode)
 {
+MainFrame::vdcdebug("Actions","parseElement", "QDomNode xmlNode");
    QDomNodeList children = xmlNode.childNodes();
    for(int i=0; i<children.count(); ++i){
 
@@ -100,6 +104,7 @@ void Actions::parseElement(QDomNode xmlNode)
 
 Action::Action(QObject *parent) : QAction(parent)
 {
+MainFrame::vdcdebug("Action","Action", "QObject *parent");
    this->setDefaultView("auto");
    this->setEnabled(false);
    this->setVisible(false);
@@ -111,6 +116,7 @@ Action::Action(QObject *parent) : QAction(parent)
 
 Action::Action(QString name, QString text, QObject *parent) : QAction(text, parent)
 {
+MainFrame::vdcdebug("Action","Action", "QString name, QString text, QObject *parent");
    this->setDefaultView("auto");
    this->setName(name);
    this->b_accName1 = false;
@@ -121,6 +127,7 @@ Action::Action(QString name, QString text, QObject *parent) : QAction(text, pare
 
 void Action::setName(QString name)
 {
+MainFrame::vdcdebug("Action","setName", "QString name");
    name = Fgl::stringToKey(name);
    this->qs_name = name;
    this->setObjectName(name);
@@ -128,17 +135,20 @@ void Action::setName(QString name)
 
 void Action::setComment(QString comment)
 {
+MainFrame::vdcdebug("Action","setComment", "QString comment");
    this->setToolTip(comment);
 }
 
 void Action::setImage(QString image)
 {
+MainFrame::vdcdebug("Action","setImage", "QString image");
    this->setIcon(QIcon(QString("pics:%1").arg(image)));
    qs_image = image;
 }
 
 void Action::setAcceleratorName(QString ac)
 {
+MainFrame::vdcdebug("Action","setAcceleratorName", "QString ac");
    this->qs_acceleratorName = ac;
    b_accName1 = true;
    checkAccelerators();
@@ -146,6 +156,7 @@ void Action::setAcceleratorName(QString ac)
 
 void Action::setAcceleratorName2(QString ac)
 {
+MainFrame::vdcdebug("Action","setAcceleratorName2", "QString ac");
    this->qs_acceleratorName2 = ac;
    b_accName2 = true;
    checkAccelerators();
@@ -153,6 +164,7 @@ void Action::setAcceleratorName2(QString ac)
 
 void Action::setAcceleratorName3(QString ac)
 {
+MainFrame::vdcdebug("Action","setAcceleratorName3", "QString ac");
    this->qs_acceleratorName3 = ac;
    b_accName3 = true;
    checkAccelerators();
@@ -160,6 +172,7 @@ void Action::setAcceleratorName3(QString ac)
 
 void Action::setAcceleratorName4(QString ac)
 {
+MainFrame::vdcdebug("Action","setAcceleratorName4", "QString ac");
    this->qs_acceleratorName4 = ac;
    b_accName4 = true;
    checkAccelerators();
@@ -167,6 +180,7 @@ void Action::setAcceleratorName4(QString ac)
 
 void Action::checkAccelerators()
 {
+MainFrame::vdcdebug("Action","checkAccelerators", "");
    QList<QKeySequence> ql_shortcuts;
    
    QString acc1 = this->qs_acceleratorName;
@@ -197,5 +211,6 @@ void Action::checkAccelerators()
 
 void Action::setDefaultView(QString dv)
 {
+MainFrame::vdcdebug("Action","setDefaultView", "QString dv");
    this->qs_defaultView = dv;
 }

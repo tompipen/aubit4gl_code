@@ -17,12 +17,14 @@
 #include <QModelIndex>
 
 #include "response.h"
+#include "mainframe.h"
 #include "vwidgets.h"
 #include "table.h"
 #include "include/fgl.h"
 
 Response::Response(QString id, FglForm* p_currForm, bool cursorPos) : QDomDocument()
 {
+MainFrame::vdcdebug("Response","Response", "QString id, FglForm* p_currForm, bool cursorPos");
   
    this->p_currForm = p_currForm;
 
@@ -121,6 +123,7 @@ Response::Response(QString id, FglForm* p_currForm, bool cursorPos) : QDomDocume
 
 void Response::addSyncValues()
 {
+MainFrame::vdcdebug("Response","addSyncValues", "");
 
    QDomElement syncValuesElement = this->createElement("SYNCVALUES");
    responseElement.appendChild(syncValuesElement);
@@ -153,6 +156,7 @@ void Response::addSyncValues()
 
 void Response::addScreenRecSyncValues(TableView *p_screenRecord)
 {
+MainFrame::vdcdebug("Response","addScreenRecSyncValues", "TableView *p_screenRecord");
 
 
    QSortFilterProxyModel *proxyModel = static_cast<QSortFilterProxyModel*> (p_screenRecord->model());
@@ -197,6 +201,7 @@ void Response::addScreenRecSyncValues(TableView *p_screenRecord)
 
 void Response::addScreenRecSyncValues()
 {
+MainFrame::vdcdebug("Response","addScreenRecSyncValues", "");
 
    int arrCount = p_currForm->context->getOption("ARRCOUNT");
    if(arrCount <= 0) arrCount = 1;

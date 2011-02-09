@@ -21,6 +21,7 @@
 
 #include "ringmenu.h"
 #include "actions.h"
+#include "mainframe.h"
 
 
 //------------------------------------------------------------------------------
@@ -30,6 +31,7 @@
 //------------------------------------------------------------------------------
 RingMenu::RingMenu(QWidget *parent) : QGroupBox(parent)
 {
+MainFrame::vdcdebug("RingMenu","RingMenu", "QWidget *parent");
    b_hideButtons = false;
    this->setAlignment(Qt::AlignTop);
    // disable widget until it it gets called
@@ -90,6 +92,7 @@ RingMenu::RingMenu(QString title, QString style,
 //------------------------------------------------------------------------------
 void RingMenu::createButton(int id, QString text, QString tooltip)
 {
+MainFrame::vdcdebug("RingMenu","createButton", "int id, QString text, QString tooltip");
 
    // Make Shortcut for Button
    QString pic = text.toLower();
@@ -155,6 +158,7 @@ void RingMenu::createButton(int id, QString text, QString tooltip)
 //------------------------------------------------------------------------------
 void RingMenu::hideButton(int id)
 {
+MainFrame::vdcdebug("RingMenu","hideButton", "int id");
    if(QPushButton *button = qobject_cast<QPushButton *> (buttonGroup->buttons().at(id))){
       if(b_hideButtons){
          button->setVisible(false);
@@ -172,6 +176,7 @@ void RingMenu::hideButton(int id)
 //------------------------------------------------------------------------------
 void RingMenu::hideButton(QString name)
 {
+MainFrame::vdcdebug("RingMenu","hideButton", "QString name");
    for(int i=0; i<buttonGroup->buttons().size(); i++){
       if(QPushButton *button = qobject_cast<QPushButton *> (buttonGroup->buttons().at(i))){
          QString text = button->text();
@@ -199,6 +204,7 @@ void RingMenu::hideButton(QString name)
 //------------------------------------------------------------------------------
 void RingMenu::showButton(QString name)
 {
+MainFrame::vdcdebug("RingMenu","showButton", "QString name");
    for(int i=0; i<buttonGroup->buttons().size(); i++){
       if(QPushButton *button = qobject_cast<QPushButton *> (buttonGroup->buttons().at(i))){
          QString text = button->text();
@@ -225,6 +231,7 @@ void RingMenu::showButton(QString name)
 //------------------------------------------------------------------------------
 void RingMenu::selectButton(QString name)
 {
+MainFrame::vdcdebug("RingMenu","selectButton", "QString name");
    name.prepend("&");
    for(int i=0; i<buttonGroup->buttons().size(); i++){
       if(QPushButton *button = qobject_cast<QPushButton *> (buttonGroup->buttons().at(i))){
@@ -244,6 +251,7 @@ void RingMenu::selectButton(QString name)
 //------------------------------------------------------------------------------
 QList<QPushButton*> RingMenu::buttons()
 {
+MainFrame::vdcdebug("RingMenu","buttons", "");
    QList<QPushButton*> buttons;
    for(int i=0; i<buttonGroup->buttons().size(); i++){
       if(QPushButton *button = qobject_cast<QPushButton *> (buttonGroup->buttons().at(i))){
@@ -261,6 +269,7 @@ QList<QPushButton*> RingMenu::buttons()
 //------------------------------------------------------------------------------
 void RingMenu::buttonClicked(int id)
 {
+MainFrame::vdcdebug("RingMenu","buttonClicked", "int id");
 
    emit menuButtonPressed(QString::number(id));
 
@@ -273,6 +282,7 @@ void RingMenu::buttonClicked(int id)
 //------------------------------------------------------------------------------
 void RingMenu::createAction(int id, QString text)
 {
+MainFrame::vdcdebug("RingMenu","createAction", "int id, QString text");
 
    // Make Shortcut for Button
    QString pic = text.toLower();
@@ -324,17 +334,20 @@ void RingMenu::createAction(int id, QString text)
 //------------------------------------------------------------------------------
 void RingMenu::resizeEvent(QResizeEvent *event)
 {
+MainFrame::vdcdebug("RingMenu","resizeEvent", "QResizeEvent *event");
    return QGroupBox::resizeEvent(event);
 }
 
 void RingMenu::focusInEvent(QFocusEvent* event)
 {
+MainFrame::vdcdebug("RingMenu","focusInEvent", "QFocusEvent* event");
    //this->focusNextChild();
    return QGroupBox::focusInEvent(event);
 }
 
 void RingMenu::keyPressEvent(QKeyEvent *keyEvent)
 {
+MainFrame::vdcdebug("RingMenu","keyPressEvent", "QKeyEvent *keyEvent");
          if(keyEvent->key() == Qt::Key_Enter ||
             keyEvent->key() == Qt::Key_Return){
 
@@ -359,6 +372,7 @@ void RingMenu::keyPressEvent(QKeyEvent *keyEvent)
 
 void RingMenu::setMenuStyle(const QString &ms)
 {
+MainFrame::vdcdebug("RingMenu","setMenuStyle", "const QString &ms");
    if(ms == "none"){
       this->setVisible(false);
    }
@@ -366,6 +380,7 @@ void RingMenu::setMenuStyle(const QString &ms)
 
 void RingMenu::setHideButtons(const QString &ms)
 {
+MainFrame::vdcdebug("RingMenu","setHideButtons", "const QString &ms");
 
    if(ms == "disable"){
       b_hideButtons = false;
@@ -389,6 +404,7 @@ void RingMenu::setOrientation(const Qt::Orientation &o){
 
 QList<QAction*> RingMenu::actions()
 {
+MainFrame::vdcdebug("RingMenu","actions", "");
 
    QList<QAction*> ql_actions;
    for(int i=0; i<buttonGroup->buttons().size(); i++){
@@ -403,6 +419,7 @@ QList<QAction*> RingMenu::actions()
 
 QAction* RingMenu::getAction(QString name)
 {
+MainFrame::vdcdebug("RingMenu","getAction", "QString name");
 
    for(int i=0; i<buttonGroup->buttons().size(); i++){
       if(QPushButton *button = qobject_cast<QPushButton *> (buttonGroup->buttons().at(i))){
@@ -423,6 +440,7 @@ QAction* RingMenu::getAction(QString name)
 
 bool RingMenu::isActionButton(QPushButton* button)
 {
+MainFrame::vdcdebug("RingMenu","isActionButton", "QPushButton* button");
    Q_UNUSED(button);
    return false;
 }

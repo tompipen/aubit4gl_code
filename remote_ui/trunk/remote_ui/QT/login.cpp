@@ -208,6 +208,7 @@ welcomeBar();
 void LoginForm::debugToggle(bool checked)
 {
     MainFrame *mainFrame = (MainFrame*) parent();
+MainFrame::vdcdebug("LoginForm","debugToggle", "bool checked");
     if(checked)
     {
         mainFrame->clientTcp->dw->setVisible(true);
@@ -223,6 +224,7 @@ void LoginForm::debugToggle(bool checked)
 void LoginForm::welcomeBar()
 {
 showMessage("Welcome!");
+MainFrame::vdcdebug("LoginForm","welcomeBar", "");
 
 }
 //Hosts Settings
@@ -230,6 +232,7 @@ showMessage("Welcome!");
 void LoginForm::hosts()
 {
    HostsData *hosts = new HostsData(this);
+MainFrame::vdcdebug("LoginForm","hosts", "");
    hosts->show();
 }
 
@@ -240,6 +243,7 @@ void LoginForm::hosts()
 HostsData::HostsData(QWidget *parent) : QDialog(parent)
 {
        hostspath = checkOS();
+MainFrame::vdcdebug("HostsData","HostsData", "QWidget *parent");
        if (!hostspath.at(0).isNumber())
           {
           QLabel *description = new QLabel(tr("<h2>Host Data</h2>"));
@@ -286,6 +290,7 @@ HostsData::HostsData(QWidget *parent) : QDialog(parent)
 QString HostsData::checkOS()
 {
    QString pfad;
+MainFrame::vdcdebug("HostsData","checkOS", "");
    pfad = "";
    #ifdef Q_WS_WIN
    int windows = QSysInfo::WindowsVersion;
@@ -334,6 +339,7 @@ QString HostsData::checkOS()
 void HostsData::readHost()
 {
      QFile file(hostspath);
+MainFrame::vdcdebug("HostsData","readHost", "");
      if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
          return;
 
@@ -416,6 +422,7 @@ for(int i=0; i < dateiarray.count(); i++)
 void HostsData::saveHost()
 {
    QFile file(hostspath);
+MainFrame::vdcdebug("HostsData","saveHost", "");
    if (!file.open(QIODevice::WriteOnly))
    return;
 
@@ -446,6 +453,7 @@ void HostsData::saveHost()
 void HostsData::addHost()
 {
         QDialog *hostsAdd = new QDialog(this);
+MainFrame::vdcdebug("HostsData","addHost", "");
         QVBoxLayout *mainLayoutAdd = new QVBoxLayout;
         QHBoxLayout *ipfeld = new QHBoxLayout;
         QHBoxLayout *ipfeldv4 = new QHBoxLayout;
@@ -548,6 +556,7 @@ void HostsData::addHost()
 void HostsData::checkipv6()
 {
 ipcheck = false;
+MainFrame::vdcdebug("HostsData","checkipv6", "");
 ipv4->hide();
 ipv6->show();
     }
@@ -555,6 +564,7 @@ ipv6->show();
 void HostsData::checkipv4()
 {
 ipcheck = true;
+MainFrame::vdcdebug("HostsData","checkipv4", "");
 ipv6->hide();
 ipv4->show();
 }
@@ -562,6 +572,7 @@ ipv4->show();
 void HostsData::writeHost()
 {
    QString entry;
+MainFrame::vdcdebug("HostsData","writeHost", "");
    QFile file(hostspath);
    if (!file.open(QIODevice::WriteOnly | QIODevice::Append))
    return;
@@ -610,6 +621,7 @@ void HostsData::writeHost()
 void LoginForm::font()
 {
        OptionsTab *optionsTab = new OptionsTab();
+MainFrame::vdcdebug("LoginForm","font", "");
        connect(optionsTab, SIGNAL(showMessage(QString)), this, SLOT(showMessage(QString)));
        optionsTab->setWindowTitle(tr("VDC - Font Settings"));
 
@@ -623,6 +635,7 @@ void LoginForm::font()
 void LoginForm::showMessage(QString m)
 {
    MainFrame *mf = (MainFrame*) this->parent();
+MainFrame::vdcdebug("LoginForm","showMessage", "QString m");
 
    if(mf != NULL){
       mf->statusBar()->showMessage(m, 2000);
@@ -638,6 +651,7 @@ void LoginForm::showMessage(QString m)
 void LoginForm::writeFile(QString qs_filename)
 {
    // instantiating from class QFile to handle a data stream
+MainFrame::vdcdebug("LoginForm","writeFile", "QString qs_filename");
    //
    QFile file(qs_filename);
 
@@ -666,6 +680,7 @@ void LoginForm::writeFile(QString qs_filename)
 void LoginForm::readEditFile(QString fname)
 {
    QFile file(fname);
+MainFrame::vdcdebug("LoginForm","readEditFile", "QString fname");
 
    // open the file for next procedure
    //
@@ -698,6 +713,7 @@ void LoginForm::saveEdits(){
 void LoginForm::okPressed()
 {
    //hideLogin();
+MainFrame::vdcdebug("LoginForm","okPressed", "");
    QSettings settings;
    QString server = serverLineEdit->text();
    QString user   = usernameLineEdit->text();
@@ -726,11 +742,13 @@ void LoginForm::okPressed()
 void LoginForm::cancelPressed()
 {
    exit(0);
+MainFrame::vdcdebug("LoginForm","cancelPressed", "");
 }
 
 void LoginForm::showLogin()
 {
    if(QWidget *mainWin = qobject_cast<QWidget *> (parent())){
+MainFrame::vdcdebug("LoginForm","showLogin", "");
       mainWin->setHidden(false);
    }
 }
@@ -738,6 +756,7 @@ void LoginForm::showLogin()
 void LoginForm::hideLogin()
 {
    if(QWidget *mainWin = qobject_cast<QWidget *> (parent())){
+MainFrame::vdcdebug("LoginForm","hideLogin", "");
       mainWin->setHidden(true);
    }
 }
@@ -745,6 +764,7 @@ void LoginForm::hideLogin()
 void LoginForm::loadSettings()
 {
    QSettings settings;
+MainFrame::vdcdebug("LoginForm","loadSettings", "");
    QString server = settings.value("server").toString();
    QString user = settings.value("user").toString();
    QString pass = settings.value("password").toString();
@@ -767,4 +787,5 @@ void LoginForm::loadSettings()
 void LoginForm::debugCheck()
 {
    toggledebug->setChecked(false);
+MainFrame::vdcdebug("LoginForm","debugCheck", "");
 }

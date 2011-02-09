@@ -33,6 +33,7 @@
 
 void MainFrame::ReadSettings()
 {
+MainFrame::vdcdebug("MainFrame","ReadSettings", "");
   QSettings settings("Ventas AG", "Ventas Desktop Client");
   QVariant fontsetting = settings.value("font");
   QString fontsetting2;
@@ -46,10 +47,11 @@ void MainFrame::ReadSettings()
   }
 }
 
-bool MainFrame::b_debugmodus = true;
+bool MainFrame::b_debugmodus = false;
 
 MainFrame::MainFrame(QWidget *parent) : QMainWindow(parent)
 {
+MainFrame::vdcdebug("MainFrame","MainFrame", "QWidget *parent");
    p_currOpenNetwork=NULL;
    int port=1350;
    mainFrameToolBar = NULL;
@@ -136,6 +138,7 @@ void MainFrame::contextMenuEvent ( QContextMenuEvent * event)
   if(mainFrameToolBar != NULL)
     {
   QMenu contextMenu(this);
+MainFrame::vdcdebug("MainFrame","contextMenuEvent ", " QContextMenuEvent * event");
   contextMenu.addAction(mainFrameToolBar->toggleViewAction());
   contextMenu.exec(event->globalPos());
 }
@@ -159,6 +162,7 @@ void MainFrame::vdcdebug(QString obj, QString funk, QString uebergabe)
 
 void MainFrame::createStatusBar()
 {
+MainFrame::vdcdebug("MainFrame","createStatusBar", "");
    statusBar()->showMessage(tr("Welcome..."));
 }
 
@@ -190,6 +194,7 @@ ConnectionsTab::ConnectionsTab(QWidget *parent)
 
     layout->addWidget(connectionLabel);
     layout->addWidget(tableWidget);
+MainFrame::vdcdebug("ConnectionsTab","addConnection", "");
     setLayout(layout);
 }
 
@@ -208,6 +213,7 @@ void ConnectionsTab::addConnection()
     tableWidget->setItem(listpruef.count(), 0, new QTableWidgetItem(portshow));
     listpruef << port;
     tableWidget->resizeColumnsToContents();
+MainFrame::vdcdebug("ConnectionsTab","delConnection", "");
     tableWidget->horizontalHeader()->setStretchLastSection(true);
 }
 
@@ -307,6 +313,7 @@ fonteingabe = "";
 
 void OptionsTab::reset()
 {
+MainFrame::vdcdebug("OptionsTab","reset", "");
 fontedit->clear();
 QFont base = QFont("Arial", 8);
 QApplication::setFont(base);
@@ -320,6 +327,7 @@ writeSettings();
 
 void OptionsTab::fontdialog()
 {
+MainFrame::vdcdebug("OptionsTab","fontdialog", "");
  bool ok;
  QFont font = QFontDialog::getFont(&ok, QApplication::font(), this);
  if (ok) {
@@ -353,6 +361,7 @@ writeSettings();
 }
 void OptionsTab::writeSettings()
 {
+MainFrame::vdcdebug("OptionsTab","writeSettings", "");
    QSettings settings("Ventas AG", "Ventas Desktop Client");
    //int status = settings.status();
    QString fontsettingwrite;
@@ -428,6 +437,7 @@ QWidget *parent) : QWidget(parent)
 
 void ShortcutsTab::editConfwin(QListWidgetItem *p_currWidgetItem)
 {
+MainFrame::vdcdebug("ShortcutsTab","editConfwin", "QListWidgetItem *p_currWidgetItem");
 
    // instantiating configuration window to edit shortcuts
    //    - we've to check for null pointer exceptions before
@@ -456,6 +466,7 @@ void ShortcutsTab::editConfwin(QListWidgetItem *p_currWidgetItem)
 
 void ShortcutsTab::addConfwin()
 {
+MainFrame::vdcdebug("ShortcutsTab","addConfwin", "");
    bool ok;
    QString fname = QInputDialog::getText(this, tr("Add Shortcut"),
                                         tr("Filename:"), QLineEdit::Normal,
@@ -482,6 +493,7 @@ void ShortcutsTab::addConfwin()
 
 void ShortcutsTab::delConfwin()
 {
+MainFrame::vdcdebug("ShortcutsTab","delConfwin", "");
    QListWidgetItem *p_currWidgetItem = shortcutsListBox->currentItem();
 
    // checking which entry is selected for being deleted
@@ -511,6 +523,7 @@ void ShortcutsTab::delConfwin()
 
 bool ShortcutsTab::delFile(QString p_cFilename)
 {
+MainFrame::vdcdebug("ShortcutsTab","delFile", "QString p_cFilename");
    QFile file(p_cFilename);
 
    if (!file.remove()){
@@ -531,6 +544,7 @@ bool ShortcutsTab::delFile(QString p_cFilename)
 
 bool ShortcutsTab::readFile(QString p_cFilename, int i)
 {
+MainFrame::vdcdebug("ShortcutsTab","readFile", "QString p_cFilename, int i");
    quint32 n;
    QFile file(p_cFilename);
 
@@ -567,6 +581,7 @@ bool ShortcutsTab::readFile(QString p_cFilename, int i)
 
 void ShortcutsTab::updateListBox()
 {
+MainFrame::vdcdebug("ShortcutsTab","updateListBox", "");
    QString fname;
    QStringList shortcutsList;
 
@@ -594,6 +609,7 @@ void ShortcutsTab::updateListBox()
 
 void MainFrame::tcpListener(int port)
 {
+MainFrame::vdcdebug("MainFrame","tcpListener", "int port");
    clientTcp = new ClientTcp(this);
    clientTcp->setDebugModus(MainFrame::b_debugmodus, this);
 
@@ -616,6 +632,7 @@ void MainFrame::tcpListener(int port)
 
 void ShortcutsTab::requestApplication()
 {
+MainFrame::vdcdebug("ShortcutsTab","requestApplication", "");
    QListWidgetItem *p_currWidgetItem = shortcutsListBox->currentItem();
 
    if(p_currWidgetItem==NULL){
@@ -703,6 +720,7 @@ void ShortcutsTab::processFin(int i_exitCode, QProcess::ExitStatus exitStatus){
 
 void ShortcutsTab::lookupForIP()
 {
+MainFrame::vdcdebug("ShortcutsTab","lookupForIP", "");
    QHostInfo::lookupHost(QHostInfo::localHostName(), 
                          this, SLOT(ipLookupResults(QHostInfo)));
 
@@ -717,6 +735,7 @@ void ShortcutsTab::lookupForIP()
 
 void ShortcutsTab::ipLookupResults(const QHostInfo& host)
 {
+MainFrame::vdcdebug("ShortcutsTab","ipLookupResults", "const QHostInfo& host");
 
   qs_ipAddress.clear();
 
@@ -738,6 +757,7 @@ void ShortcutsTab::ipLookupResults(const QHostInfo& host)
 
 void MainFrame::cleanUp()
 {
+MainFrame::vdcdebug("MainFrame","cleanUp", "");
    // close the ssh connection if established
    //
 
@@ -762,6 +782,7 @@ void MainFrame::cleanUp()
 //------------------------------------------------------------------------------
 void MainFrame::closeEvent(QCloseEvent *event)
 {
+MainFrame::vdcdebug("MainFrame","closeEvent", "QCloseEvent *event");
    event->ignore();
    QMessageBox *messagebox = new QMessageBox();
    int quit = 0;
@@ -784,5 +805,6 @@ void MainFrame::closeEvent(QCloseEvent *event)
 }
 void MainFrame::debugClose()
 {
+MainFrame::vdcdebug("MainFrame","debugClose", "");
     emit debugSignal();
 }

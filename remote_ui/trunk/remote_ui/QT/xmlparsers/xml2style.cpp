@@ -15,6 +15,7 @@
 //
 //------------------------------------------------------------------------------
 #include "xml2style.h"
+#include "mainframe.h"
 
 
 //------------------------------------------------------------------------------
@@ -25,6 +26,7 @@
 
 XML2Style::XML2Style(FglForm *p_currForm) : QWidget()
 {
+MainFrame::vdcdebug("XML2Style","XML2Style", "FglForm *p_currForm");
 
    this->p_currForm = p_currForm;
 }
@@ -49,6 +51,7 @@ XML2Style::~XML2Style(){
 
 void XML2Style::outputTree(const QDomNode& domNode)
 {
+MainFrame::vdcdebug("XML2Style","outputTree", "const QDomNode& domNode");
    QDomNodeList children = domNode.childNodes();
 
    // checking domNodes childNodes for relevant form elements
@@ -176,6 +179,7 @@ void XML2Style::outputTree(const QDomNode& domNode)
 
 int XML2Style::readXML(const QDomDocument& doc)
 {
+MainFrame::vdcdebug("XML2Style","readXML", "const QDomDocument& doc");
 
 
    // first call of outputTree

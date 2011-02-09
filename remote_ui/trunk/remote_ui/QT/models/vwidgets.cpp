@@ -24,6 +24,7 @@
 #include <QRegExpValidator>
 #include <QDomElement>
 
+#include "mainframe.h"
 #include "vwidgets.h"
 #include "table.h"
 #include "actions.h"
@@ -32,6 +33,7 @@ int defHeight = 21;
 
 FormField::FormField(QObject *parent) : QObject(parent)
 {
+MainFrame::vdcdebug("FormField","FormField", "QObject *parent");
    b_noEntry =  false;
    b_notNull = false;
    b_required = false;
@@ -46,139 +48,166 @@ FormField::FormField(QObject *parent) : QObject(parent)
 
 QString FormField::name()
 {
+MainFrame::vdcdebug("FormField","name", "");
    return qs_name;
 }
 
 void FormField::setName(QString name)
 {
+MainFrame::vdcdebug("FormField","setName", "QString name");
    qs_name = name;
 }
 
 QString FormField::colName()
 {
+MainFrame::vdcdebug("FormField","colName", "");
    return qs_colName;
 }
 
 void FormField::setColName(QString colName)
 {
+MainFrame::vdcdebug("FormField","setColName", "QString colName");
    qs_colName = colName;
 }
 
 QString FormField::sqlTabName()
 {
+MainFrame::vdcdebug("FormField","sqlTabName", "");
    return qs_sqlTabName;
 }
 
 void FormField::setSqlTabName(QString tabName)
 {
+MainFrame::vdcdebug("FormField","setSqlTabName", "QString tabName");
    qs_sqlTabName = tabName;
 }
 
 QString FormField::sqlType()
 {
+MainFrame::vdcdebug("FormField","sqlType", "");
    return qs_sqlType;
 }
 
 void FormField::setSqlType(QString sqlType)
 {
+MainFrame::vdcdebug("FormField","setSqlType", "QString sqlType");
    qs_sqlType = sqlType;
 }
 
 bool FormField::noEntry()
 {
+MainFrame::vdcdebug("FormField","noEntry", "");
    return b_noEntry;
 }
 
 void FormField::setNoEntry(bool noEntry)
 {
+MainFrame::vdcdebug("FormField","setNoEntry", "bool noEntry");
    b_noEntry = noEntry;
 }
 
 bool FormField::notNull()
 {
+MainFrame::vdcdebug("FormField","notNull", "");
    return b_notNull;
 }
 
 void FormField::setNotNull(bool notNull)
 {
+MainFrame::vdcdebug("FormField","setNotNull", "bool notNull");
    b_notNull = notNull;
 }
 
 bool FormField::hidden()
 {
+MainFrame::vdcdebug("FormField","hidden", "");
    return b_hidden;
 }
 
 void FormField::setHidden(bool hidden)
 {
+MainFrame::vdcdebug("FormField","setHidden", "bool hidden");
    b_hidden = hidden;
 }
 
 bool FormField::required()
 {
+MainFrame::vdcdebug("FormField","required", "");
    return b_required;
 }
 
 void FormField::setRequired(bool req)
 {
+MainFrame::vdcdebug("FormField","setRequired", "bool req");
    b_required = req;
 }
 
 int FormField::fieldId()
 {
+MainFrame::vdcdebug("FormField","fieldId", "");
    return i_fieldId;
 }
 
 void FormField::setFieldId(int id)
 {
+MainFrame::vdcdebug("FormField","setFieldId", "int id");
    i_fieldId = id;
 }
 
 int FormField::tabIndex()
 {
+MainFrame::vdcdebug("FormField","tabIndex", "");
    return i_tabIndex;
 }
 
 void FormField::setTabIndex(int ti)
 {
+MainFrame::vdcdebug("FormField","setTabIndex", "int ti");
    i_tabIndex = ti;
 }
 
 bool FormField::touched()
 {
+MainFrame::vdcdebug("FormField","touched", "");
    return b_touched;
 }
 
 /*
 QString FormField::text(int row)
 {
+MainFrame::vdcdebug("FormField","text", "int row");
    return QString();
 }
 
 void FormField::setText(QString text, int row)
 {
+MainFrame::vdcdebug("FormField","setText", "QString text, int row");
   
 }
 */
 
 QString FormField::defaultValue()
 {
+MainFrame::vdcdebug("FormField","defaultValue", "");
    return qs_defaultValue;
 }
 
 void FormField::setDefaultValue(QString val)
 {
+MainFrame::vdcdebug("FormField","setDefaultValue", "QString val");
    qs_defaultValue = val;
 }
 
 void FormField::addField(QWidget *widget)
 {
+MainFrame::vdcdebug("FormField","addField", "QWidget *widget");
 //   widget->setParent(this);
     p_field = widget;
 }
 
 QDomDocument FormField::toXML()
 {
+MainFrame::vdcdebug("FormField","toXML", "");
    QDomDocument doc("");
 
    QString cName = QString(this->metaObject()->className());
@@ -202,6 +231,7 @@ QDomDocument FormField::toXML()
 
 TableColumn::TableColumn(QObject *parent) : FormField(parent)
 {
+MainFrame::vdcdebug("TableColumn","TableColumn", "QObject *parent");
    b_noEntry =  false;
    b_notNull = false;
    b_required = false;
@@ -215,6 +245,7 @@ TableColumn::TableColumn(QObject *parent) : FormField(parent)
 
 void TableColumn::setText(QString text, int row)
 {
+MainFrame::vdcdebug("TableColumn","setText", "QString text, int row");
    Q_UNUSED(text);
    Q_UNUSED(row);
 }
@@ -239,6 +270,7 @@ Button::Button(QWidget *parent)
 
 void Button::buttonClicked()
 {
+MainFrame::vdcdebug("Button","buttonClicked", "");
    Fgl::Event event;
    //event.type = Fgl::ONKEY_EVENT;
    event.type = Fgl::ONACTION_EVENT;
@@ -280,6 +312,7 @@ LineEdit::LineEdit(QWidget *parent)
 
 void LineEdit::check()
 {
+MainFrame::vdcdebug("LineEdit","check", "");
 
    QString text = this->text();
 
@@ -296,6 +329,7 @@ void LineEdit::check()
 
 void LineEdit::setNoEntry(bool ro)
 {
+MainFrame::vdcdebug("LineEdit","setNoEntry", "bool ro");
    if(ro){
       this->setFocusPolicy(Qt::NoFocus);
    }
@@ -309,6 +343,7 @@ void LineEdit::setNoEntry(bool ro)
 
 void LineEdit::setSqlType(QString sqlType)
 { 
+MainFrame::vdcdebug("LineEdit","setSqlType", "QString sqlType");
    Fgl::DataType dataType = Fgl::decodeDataType(sqlType);
 
 
@@ -392,6 +427,7 @@ ButtonEdit::ButtonEdit(QString iconFileName, QWidget *parent)
 
 void ButtonEdit::setButtonKey(QString bk)
 {
+MainFrame::vdcdebug("ButtonEdit","setButtonKey", "QString bk");
   qs_buttonKey = bk;
   /*
   Action *keyButton = new Action(bk, bk, this);
@@ -404,11 +440,13 @@ void ButtonEdit::setButtonKey(QString bk)
 
 QPushButton* ButtonEdit::getButtonObj()
 {
+MainFrame::vdcdebug("ButtonEdit","getButtonObj", "");
     return this->button;
 }
 
 void ButtonEdit::resizeEvent(QResizeEvent *)
 {
+MainFrame::vdcdebug("ButtonEdit","resizeEvent", "QResizeEvent *");
     if(this->iconFileName == NULL){
       return;
     }
@@ -421,6 +459,7 @@ void ButtonEdit::resizeEvent(QResizeEvent *)
 
 void ButtonEdit::buttonClicked()
 {
+MainFrame::vdcdebug("ButtonEdit","buttonClicked", "");
     if(buttonKey().isEmpty())
       return;
 
@@ -458,6 +497,7 @@ DateEdit::DateEdit(QWidget *parent)
 
 void DateEdit::resizeEvent(QResizeEvent *)
 {
+MainFrame::vdcdebug("DateEdit","resizeEvent", "QResizeEvent *");
     QSize sz = button->size();
     button->move(rect().right() - sz.width(),
                       (rect().bottom() + 1 - sz.height())/2);
@@ -465,6 +505,7 @@ void DateEdit::resizeEvent(QResizeEvent *)
 
 void DateEdit::buttonClicked()
 {
+MainFrame::vdcdebug("DateEdit","buttonClicked", "");
     PopupCalendar *calendar = new PopupCalendar(QDate::fromString(this->text(), Fgl::dbDateToFormat(Fgl::env["DBDATE"])),
                                  this->mapToGlobal(QPoint(0, this->height()-3))
                                  ,0,this);
@@ -508,6 +549,7 @@ int TextEdit::getIndex (const QTextCursor &crQTextCursor ){
 
 void TextEdit::setSqlType(QString sqlType)
 { 
+MainFrame::vdcdebug("TextEdit","setSqlType", "QString sqlType");
    this->qs_sqlType = sqlType;
    WidgetHelper::setValidator(this);
 
@@ -516,6 +558,7 @@ void TextEdit::setSqlType(QString sqlType)
 
 void TextEdit::setWantTabs(bool wt)
 {
+MainFrame::vdcdebug("TextEdit","setWantTabs", "bool wt");
   // tabulators can be used in the textedit to format text
   //
   this->setTabChangesFocus(!wt) ;
@@ -525,6 +568,7 @@ void TextEdit::setWantTabs(bool wt)
 
 void TextEdit::setWantReturns(bool wr)
 {
+MainFrame::vdcdebug("TextEdit","setWantReturns", "bool wr");
   // return can be used in the textedit to format text
   //
   b_wantReturns = wr;
@@ -535,6 +579,7 @@ void TextEdit::setWantReturns(bool wr)
 
 void TextEdit::keyPressEvent(QKeyEvent *ev)
 {
+MainFrame::vdcdebug("TextEdit","keyPressEvent", "QKeyEvent *ev");
  //comment out because shift+enter in don't work
 
  //  if(!wantReturns()){
@@ -551,6 +596,7 @@ void TextEdit::keyPressEvent(QKeyEvent *ev)
 
 void TextEdit::setNoEntry(bool ro)
 { 
+MainFrame::vdcdebug("TextEdit","setNoEntry", "bool ro");
    if(ro){
       this->setFocusPolicy(Qt::NoFocus);
    }
@@ -565,6 +611,7 @@ void TextEdit::setNoEntry(bool ro)
 
 int WidgetHelper::getLengthBySqlType(const QString& sqlType)
 {
+MainFrame::vdcdebug("WidgetHelper","getLengthBySqlType", "const QString& sqlType");
    // jobnr: 18037 
    // reading the type size from the xml file
    // it's an element attribute of this form e.g.:
@@ -587,6 +634,7 @@ int WidgetHelper::getLengthBySqlType(const QString& sqlType)
 
 QString WidgetHelper::getWidgetName(QObject* widget)
 {
+MainFrame::vdcdebug("WidgetHelper","getWidgetName", "QObject* widget");
    QString widgetName;
 
    if(Label *label = qobject_cast<Label *> (widget)){
@@ -607,6 +655,7 @@ QString WidgetHelper::getWidgetName(QObject* widget)
 
 QString WidgetHelper::getWidgetColName(QObject* widget)
 {
+MainFrame::vdcdebug("WidgetHelper","getWidgetColName", "QObject* widget");
    QString widgetColName;
 
    if(Label *label = qobject_cast<Label *> (widget)){
@@ -630,6 +679,7 @@ QString WidgetHelper::getWidgetColName(QObject* widget)
 
 QWidget* WidgetHelper::createFormWidget(const QDomElement& formField, QWidget *parent)
 {
+MainFrame::vdcdebug("WidgetHelper","createFormWidget", "const QDomElement& formField, QWidget *parent");
    QDomElement lineEditElement = formField.firstChild().toElement();
 
 
@@ -690,6 +740,7 @@ QWidget* WidgetHelper::createFormWidget(const QDomElement& formField, QWidget *p
 
 FormField* WidgetHelper::createFormField(const QDomElement& formField, QWidget *parent)
 {
+MainFrame::vdcdebug("WidgetHelper","createFormField", "const QDomElement& formField, QWidget *parent");
    Q_UNUSED(parent);
 
    QString name    = formField.attribute("name");
@@ -729,6 +780,7 @@ FormField* WidgetHelper::createFormField(const QDomElement& formField, QWidget *
 
 Label* WidgetHelper::createLabel(const QDomElement& formField, QWidget *parent)
 {   
+MainFrame::vdcdebug("WidgetHelper","createLabel", "const QDomElement& formField, QWidget *parent");
    QDomElement labelElement = formField.firstChild().toElement();
 
    QString name    = formField.attribute("name");
@@ -776,6 +828,7 @@ Label* WidgetHelper::createLabel(const QDomElement& formField, QWidget *parent)
 
 Label* WidgetHelper::createImage(const QDomElement& formField, QWidget *parent)
 {   
+MainFrame::vdcdebug("WidgetHelper","createImage", "const QDomElement& formField, QWidget *parent");
    QDomElement labelElement = formField.firstChild().toElement();
 
    QString name    = formField.attribute("name");
@@ -824,6 +877,7 @@ Label* WidgetHelper::createImage(const QDomElement& formField, QWidget *parent)
 
 WebView* WidgetHelper::createWebView(const QDomElement& formField, QWidget *parent)
 {   
+MainFrame::vdcdebug("WidgetHelper","createWebView", "const QDomElement& formField, QWidget *parent");
    QDomElement browserElement = formField.firstChild().toElement();
 
    QString name    = formField.attribute("name");
@@ -886,6 +940,7 @@ WebView* WidgetHelper::createWebView(const QDomElement& formField, QWidget *pare
 
 Button* WidgetHelper::createButton(const QDomElement& formField, QWidget *parent)
 {
+MainFrame::vdcdebug("WidgetHelper","createButton", "const QDomElement& formField, QWidget *parent");
    QDomElement buttonElement = formField.firstChild().toElement();
 
    QString name    = formField.attribute("name");
@@ -928,6 +983,7 @@ Button* WidgetHelper::createButton(const QDomElement& formField, QWidget *parent
 
 Edit* WidgetHelper::createEdit(const QDomElement& formField, QWidget *parent)
 {   
+MainFrame::vdcdebug("WidgetHelper","createEdit", "const QDomElement& formField, QWidget *parent");
    QDomElement lineEditElement = formField.firstChild().toElement();
 
    QString name    = formField.attribute("name");
@@ -984,6 +1040,7 @@ Edit* WidgetHelper::createEdit(const QDomElement& formField, QWidget *parent)
 
 ButtonEdit* WidgetHelper::createButtonEdit(const QDomElement& formField,QWidget *parent)
 {   
+MainFrame::vdcdebug("WidgetHelper","createButtonEdit", "const QDomElement& formField,QWidget *parent");
    QDomElement lineEditElement = formField.firstChild().toElement();
 
    QString name    = formField.attribute("name");
@@ -1245,6 +1302,7 @@ bool WidgetHelper::setDisplayAttributes(int fieldAttribute, QWidget *widget)
 
 DateEdit* WidgetHelper::createDateEdit(const QDomElement& formField,QWidget *parent)
 {
+MainFrame::vdcdebug("WidgetHelper","createDateEdit", "const QDomElement& formField,QWidget *parent");
    QDomElement lineEditElement = formField.firstChild().toElement();
 
    QString name    = formField.attribute("name");
@@ -1296,6 +1354,7 @@ DateEdit* WidgetHelper::createDateEdit(const QDomElement& formField,QWidget *par
 
 TextEdit* WidgetHelper::createTextEdit(const QDomElement& formField, QWidget *parent)
 {   
+MainFrame::vdcdebug("WidgetHelper","createTextEdit", "const QDomElement& formField, QWidget *parent");
    QDomElement textEditElement = formField.firstChild().toElement();
 
    QString name    = formField.attribute("name");
@@ -1381,6 +1440,7 @@ TextEdit* WidgetHelper::createTextEdit(const QDomElement& formField, QWidget *pa
 
 ComboBox* WidgetHelper::createComboBox(const QDomElement& formField, QWidget *parent)
 {   
+MainFrame::vdcdebug("WidgetHelper","createComboBox", "const QDomElement& formField, QWidget *parent");
    QDomElement comboBoxElement = formField.firstChild().toElement();
 
    QString name    = formField.attribute("name");
@@ -1461,6 +1521,7 @@ ComboBox* WidgetHelper::createComboBox(const QDomElement& formField, QWidget *pa
 
 CheckBox* WidgetHelper::createCheckBox(const QDomElement& formField, QWidget *parent)
 {   
+MainFrame::vdcdebug("WidgetHelper","createCheckBox", "const QDomElement& formField, QWidget *parent");
    QDomElement checkBoxElement = formField.firstChild().toElement();
 
    QString name    = formField.attribute("name");
@@ -1541,6 +1602,7 @@ CheckBox* WidgetHelper::createCheckBox(const QDomElement& formField, QWidget *pa
 
 ProgressBar* WidgetHelper::createProgressBar(const QDomElement& formField, QWidget *parent)
 {   
+MainFrame::vdcdebug("WidgetHelper","createProgressBar", "const QDomElement& formField, QWidget *parent");
    QDomElement progressBarElement = formField.firstChild().toElement();
 
    QString name    = formField.attribute("name");
@@ -1609,6 +1671,7 @@ ProgressBar* WidgetHelper::createProgressBar(const QDomElement& formField, QWidg
 
 bool WidgetHelper::isFieldWidget(QObject *object)
 {
+MainFrame::vdcdebug("WidgetHelper","isFieldWidget", "QObject *object");
 
    if(object->inherits("LineEdit") ||
       object->inherits("TextEdit") ||
@@ -1625,6 +1688,7 @@ bool WidgetHelper::isFieldWidget(QObject *object)
 
 bool WidgetHelper::isFieldWidget(QObject *object, QString fieldName)
 {
+MainFrame::vdcdebug("WidgetHelper","isFieldWidget", "QObject *object, QString fieldName");
 
    if(Label *widget = qobject_cast<Label *> (object)){
       if(widget->name == fieldName || widget->colName == fieldName){
@@ -1662,6 +1726,7 @@ bool WidgetHelper::isFieldWidget(QObject *object, QString fieldName)
 
 void WidgetHelper::copy(QObject* object)
 {
+MainFrame::vdcdebug("WidgetHelper","copy", "QObject* object");
    if(LineEdit *widget = qobject_cast<LineEdit *> (object)){
       widget->copy();
    }
@@ -1673,6 +1738,7 @@ void WidgetHelper::copy(QObject* object)
 
 void WidgetHelper::cut(QObject* object)
 {
+MainFrame::vdcdebug("WidgetHelper","cut", "QObject* object");
    if(LineEdit *widget = qobject_cast<LineEdit *> (object)){
       widget->cut();
    }
@@ -1684,6 +1750,7 @@ void WidgetHelper::cut(QObject* object)
 
 void WidgetHelper::paste(QObject* object)
 {
+MainFrame::vdcdebug("WidgetHelper","paste", "QObject* object");
    if(LineEdit *widget = qobject_cast<LineEdit *> (object)){
       widget->paste();
    }
@@ -1695,6 +1762,7 @@ void WidgetHelper::paste(QObject* object)
 
 void WidgetHelper::setFieldText(QObject *object, QString fieldValue)
 {
+MainFrame::vdcdebug("WidgetHelper","setFieldText", "QObject *object, QString fieldValue");
 
    if(Label *widget = qobject_cast<Label *> (object)){
       if(widget->pixmap() == 0){
@@ -1749,6 +1817,7 @@ void WidgetHelper::setFieldText(QObject *object, QString fieldValue)
 
 QString WidgetHelper::fieldText(QObject *object)
 {
+MainFrame::vdcdebug("WidgetHelper","fieldText", "QObject *object");
 
    if(Label *widget = qobject_cast<Label *> (object)){
       return widget->text();
@@ -1798,6 +1867,7 @@ QString WidgetHelper::fieldText(QObject *object)
 
 void WidgetHelper::setDefaultFieldText(QObject *object)
 {
+MainFrame::vdcdebug("WidgetHelper","setDefaultFieldText", "QObject *object");
 
    if(Button *widget = qobject_cast<Button *> (object)){
       QString fieldValue = widget->defaultValue();
@@ -1842,6 +1912,7 @@ void WidgetHelper::setDefaultFieldText(QObject *object)
 
 QString WidgetHelper::defaultFieldText(QObject *object)
 {
+MainFrame::vdcdebug("WidgetHelper","defaultFieldText", "QObject *object");
 
    if(Button *widget = qobject_cast<Button *> (object)){
       return widget->defaultValue();
@@ -2023,6 +2094,7 @@ PopupCalendar::PopupCalendar(QDate day, QPoint pos,
 
 bool PopupCalendar::eventFilter(QObject *obj, QEvent *ev)
 {
+MainFrame::vdcdebug("PopupCalendar","eventFilter", "QObject *obj, QEvent *ev");
 
    if (ev->type() == QEvent::WindowDeactivate)
    {
@@ -2049,17 +2121,20 @@ void Calendar::setDay(){
 
 ProgressBar::ProgressBar(QWidget *parent) : QProgressBar(parent)
 {
+MainFrame::vdcdebug("ProgressBar","ProgressBar", "QWidget *parent");
    setProperty("touched", false);
    setTextVisible(false);
 }
 
 WebView::WebView(QWidget *parent) : QWebView(parent)
 {
+MainFrame::vdcdebug("WebView","WebView", "QWidget *parent");
    
 }
 
 ComboBox::ComboBox(QWidget *parent) : QComboBox(parent)
 {
+MainFrame::vdcdebug("ComboBox","ComboBox", "QWidget *parent");
    setProperty("touched", false);
    setEnabled(false);
    setEditable(false);
@@ -2067,6 +2142,7 @@ ComboBox::ComboBox(QWidget *parent) : QComboBox(parent)
 
 CheckBox::CheckBox(QWidget *parent) : QCheckBox(parent)
 {
+MainFrame::vdcdebug("CheckBox","CheckBox", "QWidget *parent");
    setProperty("touched", false);
    setValueChecked(QString::number(1));
    setValueUnchecked(QString::number(0));
@@ -2076,6 +2152,7 @@ CheckBox::CheckBox(QWidget *parent) : QCheckBox(parent)
 
 CheckBox::CheckBox(QString text, QWidget *parent) : QCheckBox(text, parent)
 {
+MainFrame::vdcdebug("CheckBox","CheckBox", "QString text, QWidget *parent");
    setProperty("touched", false);
    setValueChecked(QString::number(1));
    setValueUnchecked(QString::number(0));
@@ -2085,4 +2162,5 @@ CheckBox::CheckBox(QString text, QWidget *parent) : QCheckBox(text, parent)
 
 TabWidget::TabWidget(QWidget *parent) : QTabWidget(parent)
 {
+MainFrame::vdcdebug("TabWidget","TabWidget", "QWidget *parent");
 }

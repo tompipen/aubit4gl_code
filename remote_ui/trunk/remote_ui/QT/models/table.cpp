@@ -23,9 +23,11 @@
 #include <QScrollBar>
 
 #include "table.h"
+#include "mainframe.h"
 
 TableView::TableView(QWidget *parent) : QTableView(parent)
 {
+MainFrame::vdcdebug("TableView","TableView", "QWidget *parent");
    this->setFocusPolicy(Qt::NoFocus);
    //this->installEventFilter(this);
    i_arrCount = 0;
@@ -64,6 +66,7 @@ TableView::TableView(QWidget *parent) : QTableView(parent)
 /*
 void TableView::resize()
 {
+MainFrame::vdcdebug("TableView","resize", "");
    if(QSortFilterProxyModel *proxyModel = qobject_cast<QSortFilterProxyModel *> (this->model())){
       if(TableModel *table = qobject_cast<TableModel *> (proxyModel->sourceModel())){
          int height = 0;
@@ -99,6 +102,7 @@ void TableView::resize()
 
 QSize TableView::sizeHint() const
 {
+MainFrame::vdcdebug("TableView","sizeHint", " const");
    int height = 0;
    int width = 0;
 
@@ -141,6 +145,7 @@ QSize TableView::sizeHint() const
 
 void TableView::setArrCount(int cnt)
 {
+MainFrame::vdcdebug("TableView","setArrCount", "int cnt");
 
    i_arrCount = cnt;
 
@@ -165,6 +170,7 @@ void TableView::setArrCount(int cnt)
 
 void TableView::setMaxArrSize(int cnt)
 {
+MainFrame::vdcdebug("TableView","setMaxArrSize", "int cnt");
 
    i_maxArrSize = cnt;
 
@@ -184,6 +190,7 @@ void TableView::setMaxArrSize(int cnt)
 
 void TableView::setColumnLabel(int col, Label *label)
 {
+MainFrame::vdcdebug("TableView","setColumnLabel", "int col, Label *label");
 
    QSortFilterProxyModel *proxyModel = static_cast<QSortFilterProxyModel*> (this->model());
    TableModel *table = static_cast<TableModel*> (proxyModel->sourceModel());
@@ -193,6 +200,7 @@ void TableView::setColumnLabel(int col, Label *label)
 
 QLabel* TableView::getColumnLabel(int col)
 {
+MainFrame::vdcdebug("TableView","getColumnLabel", "int col");
 
    QSortFilterProxyModel *proxyModel = static_cast<QSortFilterProxyModel*> (this->model());
    TableModel *table = static_cast<TableModel*> (proxyModel->sourceModel());
@@ -202,6 +210,7 @@ QLabel* TableView::getColumnLabel(int col)
 
 void TableView::setColumnName(int col, QString name)
 {
+MainFrame::vdcdebug("TableView","setColumnName", "int col, QString name");
 
    QSortFilterProxyModel *proxyModel = static_cast<QSortFilterProxyModel*> (this->model());
    TableModel *table = static_cast<TableModel*> (proxyModel->sourceModel());
@@ -214,6 +223,7 @@ void TableView::setColumnName(int col, QString name)
 
 QString TableView::getColumnName(int col)
 {
+MainFrame::vdcdebug("TableView","getColumnName", "int col");
 
    QSortFilterProxyModel *proxyModel = static_cast<QSortFilterProxyModel*> (this->model());
    TableModel *table = static_cast<TableModel*> (proxyModel->sourceModel());
@@ -227,6 +237,7 @@ QString TableView::getColumnName(int col)
 
 void TableView::accept()
 {
+MainFrame::vdcdebug("TableView","accept", "");
    QSortFilterProxyModel *proxyModel = static_cast<QSortFilterProxyModel*> (this->model());
    TableModel *table = static_cast<TableModel*> (proxyModel->sourceModel());
    if(!table->b_input){
@@ -246,6 +257,7 @@ void TableView::accept()
 /*
 void TableView::nextfield()
 {
+MainFrame::vdcdebug("TableView","nextfield", "");
    QSortFilterProxyModel *proxyModel = static_cast<QSortFilterProxyModel*> (this->model());
    TableModel *table = static_cast<TableModel*> (proxyModel->sourceModel());
 
@@ -281,6 +293,7 @@ void TableView::nextfield()
 
 void TableView::prevfield()
 {
+MainFrame::vdcdebug("TableView","prevfield", "");
    QSortFilterProxyModel *proxyModel = static_cast<QSortFilterProxyModel*> (this->model());
    TableModel *table = static_cast<TableModel*> (proxyModel->sourceModel());
 
@@ -299,6 +312,7 @@ void TableView::prevfield()
 
 void TableView::setInputEnabled(bool enable)
 { 
+MainFrame::vdcdebug("TableView","setInputEnabled", "bool enable");
    if(enable){
       this->setSelectionBehavior(QAbstractItemView::SelectItems);
       this->setSelectionMode(QAbstractItemView::NoSelection);
@@ -332,13 +346,19 @@ void TableView::setInputEnabled(bool enable)
 
 void TableView::fieldChanged(QModelIndex current, QModelIndex prev)
 {
+MainFrame::vdcdebug("TableView","fieldChanged", "QModelIndex current, QModelIndex prev");
    QSortFilterProxyModel *proxyModel = static_cast<QSortFilterProxyModel*> (this->model());
    TableModel *table = static_cast<TableModel*> (proxyModel->sourceModel());
 
    if(!checkBounds(current)){
-      QModelIndex tindex = table->index(i_maxArrSize-1,current.column());
-      QModelIndex index = proxyModel->mapFromSource(tindex);
+      //QModelIndex tindex = table->index(i_maxArrSize-1,current.column());
+      //QModelIndex index = proxyModel->mapFromSource(tindex);
 
+
+      //setCurrentIndex(index);
+
+      QModelIndex tindex = table->index(prev.row(),prev.column());
+      QModelIndex index = proxyModel->mapFromSource(tindex);
       setCurrentIndex(index);
 
       emit error(QString("There are no more Rows in this direction"));
@@ -428,6 +448,7 @@ void TableView::fieldChanged(QModelIndex current, QModelIndex prev)
 
 bool TableView::isReadOnlyColumn(int col)
 {
+MainFrame::vdcdebug("TableView","isReadOnlyColumn", "int col");
    if(LineEditDelegate *dele = qobject_cast<LineEditDelegate *> (this->itemDelegateForColumn(col))){
       return dele->readOnly();
    }
@@ -436,6 +457,7 @@ bool TableView::isReadOnlyColumn(int col)
 
 void TableView::setScrLine(int line)
 {
+MainFrame::vdcdebug("TableView","setScrLine", "int line");
    if(QSortFilterProxyModel *proxyModel = qobject_cast<QSortFilterProxyModel *> (this->model())){
 
       //if(TableModel *table = qobject_cast<TableModel *> (proxyModel->sourceModel())){
@@ -448,6 +470,7 @@ void TableView::setScrLine(int line)
 
 void TableView::setArrLine(int line)
 {
+MainFrame::vdcdebug("TableView","setArrLine", "int line");
    return;
    if(QSortFilterProxyModel *proxyModel = qobject_cast<QSortFilterProxyModel *> (this->model())){
 
@@ -462,6 +485,7 @@ void TableView::setArrLine(int line)
 
 void TableView::setCurrentColumn(int col)
 {
+MainFrame::vdcdebug("TableView","setCurrentColumn", "int col");
    if(QSortFilterProxyModel *proxyModel = qobject_cast<QSortFilterProxyModel *> (this->model())){
 
       //if(TableModel *table = qobject_cast<TableModel *> (proxyModel->sourceModel())){
@@ -474,6 +498,7 @@ void TableView::setCurrentColumn(int col)
 
 void TableView::setCurrentField(int row, int col)
 {
+MainFrame::vdcdebug("TableView","setCurrentField", "int row, int col");
    this->setFocus();
 
    if(QSortFilterProxyModel *proxyModel = qobject_cast<QSortFilterProxyModel *> (this->model())){
@@ -484,7 +509,7 @@ void TableView::setCurrentField(int row, int col)
 
          selectionModel()->setCurrentIndex(index, QItemSelectionModel::NoUpdate);
          //setCurrentIndex(index);
-         if(table->b_input){
+         if(table->b_input && (currentIndex().row() == 0 && currentIndex().column() == 0)){
              edit(index);
          }
       }
@@ -494,6 +519,7 @@ void TableView::setCurrentField(int row, int col)
 
 void TableView::setText(QString text, int row, int col)
 {
+MainFrame::vdcdebug("TableView","setText", "QString text, int row, int col");
    if(QSortFilterProxyModel *proxyModel = qobject_cast<QSortFilterProxyModel *> (this->model())){
          QModelIndex modelIndex = proxyModel->index(row, col, QModelIndex());
          if(LineEditDelegate *dele = qobject_cast<LineEditDelegate *> (this->itemDelegateForColumn(col))){
@@ -509,7 +535,7 @@ void TableView::setText(QString text, int row, int col)
 
 bool TableView::checkBounds(const QModelIndex current){
 
-   if(i_maxArrSize > 0 && current.row() > i_maxArrSize-1){
+   if((i_maxArrSize > 0 && current.row() > i_maxArrSize-1) || current.row() < 0){
       return false;
    }
 
@@ -518,6 +544,7 @@ bool TableView::checkBounds(const QModelIndex current){
 
 TableModel::TableModel(int rows, int columns, QObject *parent) : QAbstractTableModel(parent), columns(columns)
 {
+MainFrame::vdcdebug("TableModel","TableModel", "int rows, int columns, QObject *parent");
    this->rows = 0;
    for(int i=0; i<rows; i++){
       insertRows(i, 1, QModelIndex());
@@ -528,6 +555,7 @@ TableModel::TableModel(int rows, int columns, QObject *parent) : QAbstractTableM
 
 TableModel::TableModel(QObject *parent) : QAbstractTableModel(parent)
 {
+MainFrame::vdcdebug("TableModel","TableModel", "QObject *parent");
    b_input = true;
    this->columns = 0;
 }
@@ -538,6 +566,7 @@ int TableModel::columnCount(const QModelIndex&) const { return columns; }
 
 QVariant TableModel::data(const QModelIndex &index, int role) const
 {
+//MainFrame::vdcdebug("TableModel","data", "const QModelIndex &index, int role const");
    int row = index.row();
    int column = index.column();
 
@@ -585,6 +614,7 @@ QVariant TableModel::data(const QModelIndex &index, int role) const
 
 bool TableModel::setData(const QModelIndex &index, const QVariant &value, int role)
 {
+MainFrame::vdcdebug("TableModel","setData", "const QModelIndex &index, const QVariant &value, int role");
     if(index.isValid() && ( role == Qt::EditRole || role == Qt::DisplayRole ))
     {
        int row = index.row();
@@ -600,6 +630,7 @@ bool TableModel::setData(const QModelIndex &index, const QVariant &value, int ro
 
 Qt::ItemFlags TableModel::flags(const QModelIndex &index) const
 {
+//MainFrame::vdcdebug("TableModel","ItemFlags TableModel", """");
    Qt::ItemFlags f; // = QAbstractTableModel::flags(index);
    if (index.isValid()){
       f = Qt::ItemIsEnabled;
@@ -611,6 +642,7 @@ Qt::ItemFlags TableModel::flags(const QModelIndex &index) const
 
 bool TableModel::insertRows(int position, int rows, const QModelIndex &index)
 {
+MainFrame::vdcdebug("TableModel","insertRows", "int position, int rows, const QModelIndex &index");
    Q_UNUSED(index);
 
    if(this->rows >= 0){
@@ -635,6 +667,7 @@ bool TableModel::insertRows(int position, int rows, const QModelIndex &index)
 
 bool TableModel::removeRows(int position, int rows, const QModelIndex &index)
 {
+MainFrame::vdcdebug("TableModel","removeRows", "int position, int rows, const QModelIndex &index");
    Q_UNUSED(index);
    if(this->rows > 0 && this->fields.count() > position+rows){
 
@@ -659,6 +692,7 @@ bool TableModel::removeRows(int position, int rows, const QModelIndex &index)
 
 QVariant TableModel::headerData ( int section, Qt::Orientation orientation, int role ) const
 {
+//MainFrame::vdcdebug("TableModel","headerData ", " int section, Qt");
    if ( role != Qt::DisplayRole )
       return QVariant();
 
@@ -682,6 +716,7 @@ QVariant TableModel::headerData ( int section, Qt::Orientation orientation, int 
 
 bool MyFilter::lessThan(const QModelIndex &left, const QModelIndex &right) const
 {
+MainFrame::vdcdebug("MyFilter","lessThan", "const QModelIndex &left, const QModelIndex &right const");
    int column = left.column();
    if (column == 9)
    {
@@ -744,6 +779,7 @@ LineEditDelegate::LineEditDelegate(QDomElement formElement, QObject *parent)
 
 QSize LineEditDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
+MainFrame::vdcdebug("LineEditDelegate","sizeHint", "const QStyleOptionViewItem &option, const QModelIndex &index const");
    Q_UNUSED(option);
    Q_UNUSED(index);
    /*
@@ -804,12 +840,14 @@ void LineEditDelegate::updateEditorGeometry(QWidget *editor,
 
 void LineEditDelegate::setForm(QWidget *form)
 {
+MainFrame::vdcdebug("LineEditDelegate","setForm", "QWidget *form");
    p_fglform = form;
    //connect(this, SIGNAL(fieldEvent(Fgl::Event, QWidget*)), p_fglform, SLOT(fieldEvent(Fgl::Event, QWidget*)));
 }
 
 bool LineEditDelegate::eventFilter(QObject *object, QEvent *event)
 {
+//MainFrame::vdcdebug("LineEditDelegate","eventFilter", "QObject *object, QEvent *event");
    if(event->type() == QEvent::FocusOut){
       QFocusEvent *fe = (QFocusEvent*) event;
       if(fe->reason() == Qt::ActiveWindowFocusReason ||

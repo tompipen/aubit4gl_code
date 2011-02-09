@@ -18,6 +18,7 @@
 #include <QDomDocument>
 #include <QSplitter>
 
+#include <mainframe.h>
 #include <models/fglform.h>
 #include <models/statusbar.h>
 #include <models/toolbar.h>
@@ -91,6 +92,7 @@ FglForm::FglForm(QString windowName, QWidget *parent) : QMainWindow(parent){
 
 FglForm::~FglForm()
 {
+MainFrame::vdcdebug("FglForm","~FglForm", "");
    writeSettingsLocal();
 }
 
@@ -101,6 +103,7 @@ FglForm::~FglForm()
 //------------------------------------------------------------------------------
 void FglForm::createStatusBar()
 {
+MainFrame::vdcdebug("FglForm","createStatusBar", "");
    StatusBar *status = new StatusBar;
    setStatusBar(status);
 }
@@ -113,6 +116,7 @@ void FglForm::createStatusBar()
 //------------------------------------------------------------------------------
 void FglForm::buttonClicked(QString id)
 {
+MainFrame::vdcdebug("FglForm","buttonClicked", "QString id");
    Q_UNUSED(id);
 /*
       bool ok = false;
@@ -139,6 +143,7 @@ void FglForm::buttonClicked(QString id)
 //------------------------------------------------------------------------------
 void FglForm::addToQueue(QString id)
 {
+MainFrame::vdcdebug("FglForm","addToQueue", "QString id");
 /*
       for(int i=0; i<ql_formEvents.count(); i++){
          Fgl::Event event = ql_formEvents.at(i);
@@ -160,6 +165,7 @@ void FglForm::addToQueue(QString id)
 //------------------------------------------------------------------------------
 void FglForm::setActions(QDomDocument xmlFile)
 {
+MainFrame::vdcdebug("FglForm","setActions", "QDomDocument xmlFile");
    for(int i=0; i<defActions().size(); i++){
       removeAction(defActions().at(i));
    }
@@ -267,6 +273,7 @@ void FglForm::setActions(QDomDocument xmlFile)
 //------------------------------------------------------------------------------
 void FglForm::initActions()
 {
+MainFrame::vdcdebug("FglForm","initActions", "");
    Action *acceptA = new Action("accept", tr("Accept"));
    acceptA->setAcceleratorName("F12");
    addFormAction(acceptA);
@@ -304,6 +311,7 @@ void FglForm::initActions()
 //------------------------------------------------------------------------------
 void FglForm::setMenu(RingMenu* p_menu)
 {
+MainFrame::vdcdebug("FglForm","setMenu", "RingMenu* p_menu");
 
    if(p_menu == NULL)
       return;
@@ -336,6 +344,7 @@ void FglForm::setMenu(RingMenu* p_menu)
 //------------------------------------------------------------------------------
 void FglForm::removeMenu()
 {
+MainFrame::vdcdebug("FglForm","removeMenu", "");
 
    // if count bigger than 1 set the old menu = act. menu
    if(ql_menus.count() > 1){
@@ -357,6 +366,7 @@ void FglForm::removeMenu()
 //------------------------------------------------------------------------------
 void FglForm::setMenuEnabled(bool enable)
 {
+MainFrame::vdcdebug("FglForm","setMenuEnabled", "bool enable");
 
    RingMenu *p_menu = menu();
    if(p_menu == NULL)
@@ -401,6 +411,7 @@ void FglForm::setMenuEnabled(bool enable)
 //------------------------------------------------------------------------------
 void FglForm::setActionMenu(ActionMenu* menu)
 {
+MainFrame::vdcdebug("FglForm","setActionMenu", "ActionMenu* menu");
 
    if(menu == NULL || p_actionMenu == menu)
       return;
@@ -429,6 +440,7 @@ void FglForm::setActionMenu(ActionMenu* menu)
 //------------------------------------------------------------------------------
 void FglForm::setActionMenuEnabled(bool enable)
 {
+MainFrame::vdcdebug("FglForm","setActionMenuEnabled", "bool enable");
 
 
    if(p_actionMenu == NULL)
@@ -448,6 +460,7 @@ void FglForm::setActionMenuEnabled(bool enable)
 //------------------------------------------------------------------------------
 void FglForm::actionTriggered()
 {
+MainFrame::vdcdebug("FglForm","actionTriggered", "");
    QObject *obj = QObject::sender();
 
 //   qDebug() << "ACTION TRIGGERED!" << obj;
@@ -472,6 +485,7 @@ void FglForm::actionTriggered()
 /*
 void FglForm::actionTriggered()
 {
+MainFrame::vdcdebug("FglForm","actionTriggered", "");
    QObject *obj = QObject::sender();
 
    if(QAction *action = qobject_cast<QAction *> (obj)){
@@ -512,6 +526,7 @@ void FglForm::actionTriggered()
 //------------------------------------------------------------------------------
 void FglForm::toolBarActionTriggered()
 {
+MainFrame::vdcdebug("FglForm","toolBarActionTriggered", "");
    QObject *obj = QObject::sender();
    if(menu() != NULL && menu()->isEnabled()){
       if(QAction *action = qobject_cast<QAction *> (obj)){
@@ -547,6 +562,7 @@ void FglForm::toolBarActionTriggered()
 //------------------------------------------------------------------------------
 void FglForm::setDialog(Dialog* dialog)
 {
+MainFrame::vdcdebug("FglForm","setDialog", "Dialog* dialog");
 
    p_dialog = dialog;
 //   this->setEnabled(false);
@@ -567,6 +583,7 @@ void FglForm::setDialog(Dialog* dialog)
 //------------------------------------------------------------------------------
 void FglForm::setToolBar(ToolBar *toolBar)
 {
+MainFrame::vdcdebug("FglForm","setToolBar", "ToolBar *toolBar");
 
    this->p_toolBar = toolBar;
 
@@ -597,6 +614,7 @@ void FglForm::setToolBar(ToolBar *toolBar)
 //------------------------------------------------------------------------------
 void FglForm::setToolBar(QDomDocument xmlFile)
 {
+MainFrame::vdcdebug("FglForm","setToolBar", "QDomDocument xmlFile");
    QSize currSize = this->sizeHint();
 
    this->p_toolBar = new ToolBar;
@@ -628,6 +646,7 @@ void FglForm::setToolBar(QDomDocument xmlFile)
 //------------------------------------------------------------------------------
 bool FglForm::eventFilter(QObject *obj, QEvent *event)
 {
+//MainFrame::vdcdebug("FglForm","eventFilter", "QObject *obj, QEvent *event");
 
    if(event->type() == QEvent::MouseButtonRelease){
       QMouseEvent *mev = (QMouseEvent*) event;
@@ -802,6 +821,7 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
 //------------------------------------------------------------------------------
 void FglForm::fieldEvent(Fgl::Event type, QWidget* widget)
 {
+MainFrame::vdcdebug("FglForm","fieldEvent", "Fgl");
    //type.attribute = Fgl::stringToKey(type.attribute);
 
    QList<Fgl::Event> ql_events = ql_contextEvents.last();
@@ -912,6 +932,7 @@ void FglForm::fieldEvent(Fgl::Event type, QWidget* widget)
 //------------------------------------------------------------------------------
 void FglForm::closeEvent(QCloseEvent *event)
 {
+MainFrame::vdcdebug("FglForm","closeEvent", "QCloseEvent *event");
    if(b_allowClose){
       event->accept();
       return QMainWindow::closeEvent(event);
@@ -940,6 +961,7 @@ void FglForm::closeEvent(QCloseEvent *event)
 //------------------------------------------------------------------------------
 void FglForm::sendMenuCommand(QString cmd)
 {
+MainFrame::vdcdebug("FglForm","sendMenuCommand", "QString cmd");
 
    QString trigger = "<TRIGGERED ID=\"EXEC\" PROGRAMNAME=\"";
    trigger.append(cmd);
@@ -956,6 +978,7 @@ void FglForm::sendMenuCommand(QString cmd)
 //------------------------------------------------------------------------------
 void FglForm::setFormLayout(const QDomDocument& docLayout)
 {
+MainFrame::vdcdebug("FglForm","setFormLayout", "const QDomDocument& docLayout");
    Parser *formParser = new Parser(this);
    formParser->parseForm(docLayout);
    formWidget = formParser->getFormWidget();
@@ -1015,6 +1038,7 @@ void FglForm::setFormLayout(const QDomDocument& docLayout)
 
 QList<QWidget*> FglForm::formElements()
 {
+MainFrame::vdcdebug("FglForm","formElements", "");
    return formWidget == NULL ? QList<QWidget*>() : formWidget->findChildren<QWidget*>();
 }
 
@@ -1026,6 +1050,7 @@ QList<QWidget*> FglForm::formElements()
 //------------------------------------------------------------------------------
 void FglForm::clearCurrentFocus()
 {
+MainFrame::vdcdebug("FglForm","clearCurrentFocus", "");
    if(this->focusWidget() != NULL){
       this->focusWidget()->clearFocus();
    }
@@ -1039,6 +1064,7 @@ void FglForm::clearCurrentFocus()
 //------------------------------------------------------------------------------
 void FglForm::acceptTriggered()
 {
+MainFrame::vdcdebug("FglForm","acceptTriggered", "");
    addToQueue("ACCEPT");
 }
 
@@ -1050,6 +1076,7 @@ void FglForm::acceptTriggered()
 //------------------------------------------------------------------------------
 void FglForm::cancelTriggered()
 {
+MainFrame::vdcdebug("FglForm","cancelTriggered", "");
    addToQueue("INTERRUPT");
 }
 
@@ -1061,6 +1088,7 @@ void FglForm::cancelTriggered()
 //------------------------------------------------------------------------------
 void FglForm::accept()
 {
+MainFrame::vdcdebug("FglForm","accept", "");
    //setClearEvents();
    //validateFields();
    clearCurrentFocus();
@@ -1075,6 +1103,7 @@ void FglForm::accept()
 //------------------------------------------------------------------------------
 void FglForm::interrupt()
 {
+MainFrame::vdcdebug("FglForm","interrupt", "");
 }
 
 //------------------------------------------------------------------------------
@@ -1085,6 +1114,7 @@ void FglForm::interrupt()
 //------------------------------------------------------------------------------
 void FglForm::setStartMenu(const QDomDocument &doc)
 {
+MainFrame::vdcdebug("FglForm","setStartMenu", "const QDomDocument &doc");
    if(doc.childNodes().count() <= 0)
       return;
 
@@ -1110,6 +1140,7 @@ void FglForm::setStartMenu(const QDomDocument &doc)
 //------------------------------------------------------------------------------
 void FglForm::setStyles(const QDomDocument& doc)
 {
+MainFrame::vdcdebug("FglForm","setStyles", "const QDomDocument& doc");
    XML2Style *xml2Style = new XML2Style(this);
    xml2Style->readXML(doc);
    this->setStyleSheet(xml2Style->getStyleSheet());
@@ -1123,6 +1154,7 @@ void FglForm::setStyles(const QDomDocument& doc)
 //------------------------------------------------------------------------------
 void FglForm::setToolBarPosition(const QString &sm)
 {
+MainFrame::vdcdebug("FglForm","setToolBarPosition", "const QString &sm");
 
    m_toolBarPosition = sm;
 
@@ -1134,6 +1166,7 @@ void FglForm::setToolBarPosition(const QString &sm)
 
 Qt::ToolBarArea FglForm::toolBarPosition()
 {
+MainFrame::vdcdebug("FglForm","ToolBarArea FglForm", """");
    QString toolBarPosition = getToolBarPosition();
    if(toolBarPosition == "left"){
       return Qt::LeftToolBarArea;
@@ -1163,6 +1196,7 @@ Qt::ToolBarArea FglForm::toolBarPosition()
 //------------------------------------------------------------------------------
 void FglForm::setRingMenuPosition(const QString &sm)
 {
+MainFrame::vdcdebug("FglForm","setRingMenuPosition", "const QString &sm");
    sm.toLower();
    if(sm == "top" ||
       sm == "bottom" ||
@@ -1213,6 +1247,7 @@ void FglForm::setRingMenuPosition(const QString &sm)
 //------------------------------------------------------------------------------
 void FglForm::setActionPanelPosition(const QString &sm)
 {
+MainFrame::vdcdebug("FglForm","setActionPanelPosition", "const QString &sm");
 
    sm.toLower();
    if(sm == "top" ||
@@ -1264,6 +1299,7 @@ void FglForm::setActionPanelPosition(const QString &sm)
 //------------------------------------------------------------------------------
 void FglForm::setSizable(const QString &sm)
 {
+MainFrame::vdcdebug("FglForm","setSizable", "const QString &sm");
    Q_UNUSED(sm);
 }
 
@@ -1275,6 +1311,7 @@ void FglForm::setSizable(const QString &sm)
 //------------------------------------------------------------------------------
 void FglForm::setDefaultStatusBar(const bool &sm)
 {
+MainFrame::vdcdebug("FglForm","setDefaultStatusBar", "const bool &sm");
    Q_UNUSED(sm);
 }
 
@@ -1286,6 +1323,7 @@ void FglForm::setDefaultStatusBar(const bool &sm)
 //------------------------------------------------------------------------------
 void FglForm::setWindowType(const QString &sm)
 {
+MainFrame::vdcdebug("FglForm","setWindowType", "const QString &sm");
    //TODO
    return;
 
@@ -1301,6 +1339,7 @@ void FglForm::setWindowType(const QString &sm)
 
 void FglForm::setCurrentField(QString fieldName, bool sendEvents)
 {
+MainFrame::vdcdebug("FglForm","setCurrentField", "QString fieldName, bool sendEvents");
    if(!screenRecord()){
       QWidget *wi = currentWidget;
 
@@ -1401,6 +1440,7 @@ void FglForm::setCurrentField(QString fieldName, bool sendEvents)
 //------------------------------------------------------------------------------
 void FglForm::editcopy()
 {
+MainFrame::vdcdebug("FglForm","editcopy", "");
 
    if(WidgetHelper::isFieldWidget(this->focusWidget())){
       WidgetHelper::copy(this->focusWidget());
@@ -1415,6 +1455,7 @@ void FglForm::editcopy()
 //------------------------------------------------------------------------------
 void FglForm::editcut()
 {
+MainFrame::vdcdebug("FglForm","editcut", "");
 }
 
 //------------------------------------------------------------------------------
@@ -1424,6 +1465,7 @@ void FglForm::editcut()
 //------------------------------------------------------------------------------
 void FglForm::editpaste()
 {
+MainFrame::vdcdebug("FglForm","editpaste", "");
 }
 //------------------------------------------------------------------------------
 // Method       : nextfield()
@@ -1432,6 +1474,7 @@ void FglForm::editpaste()
 //------------------------------------------------------------------------------
 void FglForm::nextfield(bool change)
 {
+MainFrame::vdcdebug("FglForm","nextfield", "bool change");
 
    bool b_sendEvent = (QObject::sender() != NULL); //If called from screenHandler this is NULL
    b_sendEvent = change;
@@ -1544,6 +1587,7 @@ void FglForm::nextfield(bool change)
 //------------------------------------------------------------------------------
 void FglForm::prevfield()
 {
+MainFrame::vdcdebug("FglForm","prevfield", "");
    bool b_sendEvent = (QObject::sender() != NULL); //If called from screenHandler this is NULL
                                                    // Programatical change (NEXT FIELD PREVIOUS)-> No AFTER_FIELD_EVENT
    if(!screenRecord()){
@@ -1633,6 +1677,7 @@ void FglForm::prevfield()
 //------------------------------------------------------------------------------
 void FglForm::nextrow()
 {
+MainFrame::vdcdebug("FglForm","nextrow", "");
    //find active screenRecord
    for(int i=0; i<formElements().size(); i++){
       if(formElements().at(i)->inherits("TableView")){
@@ -1661,6 +1706,7 @@ void FglForm::nextrow()
 //------------------------------------------------------------------------------
 void FglForm::prevrow()
 {
+MainFrame::vdcdebug("FglForm","prevrow", "");
    //find active screenRecord
    for(int i=0; i<formElements().size(); i++){
       if(formElements().at(i)->inherits("TableView")){
@@ -1683,6 +1729,7 @@ void FglForm::prevrow()
 };
 void FglForm::firstrow()
 {
+MainFrame::vdcdebug("FglForm","firstrow", "");
    //find active screenRecord
    for(int i=0; i<formElements().size(); i++){
       if(formElements().at(i)->inherits("TableView")){
@@ -1705,6 +1752,7 @@ void FglForm::firstrow()
 };
 void FglForm::lastrow()
 {
+MainFrame::vdcdebug("FglForm","lastrow", "");
    //find active screenRecord
    for(int i=0; i<formElements().size(); i++){
       if(formElements().at(i)->inherits("TableView")){
@@ -1730,6 +1778,7 @@ void FglForm::nextpage(){};
 void FglForm::prevpage(){};
 void FglForm::nexttab()
 {
+MainFrame::vdcdebug("FglForm","nexttab", "");
    for(int i=0; i<formWidget->children().size(); i++){
       if(QTabWidget *p_tabWidget = qobject_cast<QTabWidget *> (formWidget->children().at(i))){
          if(p_tabWidget->isEnabled()){
@@ -1742,6 +1791,7 @@ void FglForm::nexttab()
 };
 void FglForm::prevtab()
 {
+MainFrame::vdcdebug("FglForm","prevtab", "");
    for(int i=0; i<formWidget->children().size(); i++){
       if(QTabWidget *p_tabWidget = qobject_cast<QTabWidget *> (formWidget->children().at(i))){
          if(p_tabWidget->isEnabled()){
@@ -1760,6 +1810,7 @@ void FglForm::prevtab()
 //------------------------------------------------------------------------------
 void FglForm::validateFields()
 {
+MainFrame::vdcdebug("FglForm","validateFields", "");
    int start=0;
 
    for(int k=0; k<qsl_fieldOrder.size(); k++){
@@ -1789,6 +1840,7 @@ void FglForm::validateFields()
 /*
 void FglForm::checkToolBar()
 {
+MainFrame::vdcdebug("FglForm","checkToolBar", "");
    if(ToolBar *p_toolBar = qobject_cast<ToolBar *> (toolBar())){
 
       QList<QAction*> toolBarActions = p_toolBar->actions();
@@ -1869,6 +1921,7 @@ void FglForm::revertState(Fgl::State state){
 //------------------------------------------------------------------------------
 void FglForm::checkState()
 {
+MainFrame::vdcdebug("FglForm","checkState", "");
    if(p_dialog != NULL){
       checkActions();
       return;
@@ -1918,6 +1971,7 @@ void FglForm::checkState()
 //------------------------------------------------------------------------------
 void FglForm::writeSettingsLocal()
 {
+MainFrame::vdcdebug("FglForm","writeSettingsLocal", "");
    QSettings settings;
 
    settings.beginGroup(windowName);
@@ -1932,6 +1986,7 @@ void FglForm::writeSettingsLocal()
 //------------------------------------------------------------------------------
 void FglForm::readSettingsLocal()
 {
+MainFrame::vdcdebug("FglForm","readSettingsLocal", "");
    QSettings settings;
                     
 
@@ -1950,11 +2005,13 @@ void FglForm::readSettingsLocal()
 //------------------------------------------------------------------------------
 void FglForm::contextMenuEvent(QContextMenuEvent *ev)
 {
+MainFrame::vdcdebug("FglForm","contextMenuEvent", "QContextMenuEvent *ev");
    createContextMenu(ev->globalPos());
    
 }
 void FglForm::createContextMenu(const QPoint &pos)
 {
+MainFrame::vdcdebug("FglForm","createContextMenu", "const QPoint &pos");
    QMenu* contextMenu = new QMenu(this);
 /*
    contextMenu->setStyleSheet("QMenu { background-color: blue;}  \
@@ -2074,6 +2131,7 @@ void FglForm::createContextMenu(const QPoint &pos)
 
 QWidget* FglForm::findFieldByName(QString fieldName)
 {
+MainFrame::vdcdebug("FglForm","findFieldByName", "QString fieldName");
    QList<QWidget*> ql_fields = ql_formFields;
 
    int index = fieldName.indexOf(".");
@@ -2116,6 +2174,7 @@ QWidget* FglForm::findFieldByName(QString fieldName)
 
 QList<QWidget*> FglForm::findFieldsByName(QString fieldName)
 {
+MainFrame::vdcdebug("FglForm","findFieldsByName", "QString fieldName");
 
    QList<QWidget*> ql_foundFields;
 
@@ -2136,6 +2195,7 @@ QList<QWidget*> FglForm::findFieldsByName(QString fieldName)
 
 void FglForm::setScreenRecordArrLine(int line)
 {
+MainFrame::vdcdebug("FglForm","setScreenRecordArrLine", "int line");
 
    setArrLine(line);
 
@@ -2149,6 +2209,7 @@ void FglForm::error(const QString& text){
 
 void FglForm::addFormAction(QAction *qaction)
 {
+MainFrame::vdcdebug("FglForm","addFormAction", "QAction *qaction");
    QList<QAction*> formActions = this->actions();
    bool createAction = true;
 
@@ -2200,6 +2261,7 @@ void FglForm::addFormAction(QAction *qaction)
 
 void FglForm::addFormAction(QString name, QString text, QString comment, QString image, QString accName, QString accName2, QString accName3, QString accName4, QString defaultView)
 {
+MainFrame::vdcdebug("FglForm","addFormAction", "QString name, QString text, QString comment, QString image, QString accName, QString accName2, QString accName3, QString accName4, QString defaultView");
    QList<QAction*> formActions = this->actions();
    bool createAction = true;
 
@@ -2250,6 +2312,7 @@ void FglForm::addFormAction(QString name, QString text, QString comment, QString
 
 void FglForm::addFormEvent(Fgl::Event newEvent)
 {
+MainFrame::vdcdebug("FglForm","addFormEvent", "Fgl");
    QList<Fgl::Event> ql_events = ql_contextEvents.last();
 
 //old
@@ -2283,6 +2346,7 @@ void FglForm::addFormEvent(Fgl::Event newEvent)
 
 void FglForm::checkToolBar()
 {
+MainFrame::vdcdebug("FglForm","checkToolBar", "");
    if(this->toolBar() == NULL)
       return;
 
@@ -2337,6 +2401,7 @@ void FglForm::checkToolBar()
 
 void FglForm::checkActions()
 {
+MainFrame::vdcdebug("FglForm","checkActions", "");
    QList<QAction*> formActions = this->actions();
    for(int i=0; i<formActions.count(); i++){
       formActions.at(i)->setEnabled(false);
@@ -2452,6 +2517,7 @@ void FglForm::checkActions()
 
 void FglForm::checkGuiActions()
 {
+MainFrame::vdcdebug("FglForm","checkGuiActions", "");
    QList<QAction*> formActions = this->actions();
    for(int i=0; i<formActions.count(); i++){
       
@@ -2518,12 +2584,14 @@ void FglForm::checkGuiActions()
 
 void FglForm::checkMenu()
 {
+MainFrame::vdcdebug("FglForm","checkMenu", "");
 
    
 }
 
 bool FglForm::handleGuiAction(Action* fAction)
 {
+MainFrame::vdcdebug("FglForm","handleGuiAction", "Action* fAction");
    for(int j=0; j<ql_contextEvents.last().count(); j++){
       Fgl::Event ev = ql_contextEvents.last().at(j);
       if(ev.type == Fgl::ONACTION_EVENT){
@@ -2624,6 +2692,7 @@ bool FglForm::handleGuiAction(Action* fAction)
 
 void FglForm::checkShortcuts()
 {
+MainFrame::vdcdebug("FglForm","checkShortcuts", "");
 
     QList<QAction*> actions = this->actions();
     for(int i=0; i<actions.count(); i++){
@@ -2724,6 +2793,7 @@ void FglForm::checkShortcuts()
 
 bool FglForm::focusNextPrevChild(bool next)
 {
+MainFrame::vdcdebug("FglForm","focusNextPrevChild", "bool next");
    return false;
    QWidget *nextWidget = NULL;
 
@@ -2815,12 +2885,14 @@ bool FglForm::focusNextPrevChild(bool next)
 
 void FglForm::setLastCursor(int i_old, int i_new)
 {
+MainFrame::vdcdebug("FglForm","setLastCursor", "int i_old, int i_new");
    Q_UNUSED(i_old);
    this->i_lastCursor = i_new+1;
 }
 
 void FglForm::setLastCursor()
 {
+MainFrame::vdcdebug("FglForm","setLastCursor", "");
     QObject *obj = QObject::sender();
 
     if(TextEdit *textedit = qobject_cast<TextEdit *> (obj)){
@@ -2831,6 +2903,7 @@ void FglForm::setLastCursor()
 
 void FglForm::checkField()
 {
+MainFrame::vdcdebug("FglForm","checkField", "");
 
    QObject *obj = QObject::sender();
    if(LineEdit *widget = qobject_cast<LineEdit *> (obj)){

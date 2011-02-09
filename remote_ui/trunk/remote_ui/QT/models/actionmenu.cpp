@@ -19,6 +19,7 @@
 
 #include "actionmenu.h"
 #include "actions.h"
+#include "mainframe.h"
 
 //------------------------------------------------------------------------------
 // Method       : ActionMenu()
@@ -27,6 +28,7 @@
 //------------------------------------------------------------------------------
 ActionMenu::ActionMenu(QWidget *parent) : QGroupBox(parent)
 {
+MainFrame::vdcdebug("ActionMenu","ActionMenu", "QWidget *parent");
 
    this->setFocusPolicy(Qt::NoFocus);
    this->setAlignment(Qt::AlignTop);
@@ -55,6 +57,7 @@ ActionMenu::ActionMenu(QWidget *parent) : QGroupBox(parent)
 //------------------------------------------------------------------------------
 ActionMenu::ActionMenu(QString title, QString style, QWidget *parent) : QGroupBox(title, parent)
 {
+MainFrame::vdcdebug("ActionMenu","ActionMenu", "QString title, QString style, QWidget *parent");
 
    this->setAlignment(Qt::AlignRight | Qt::AlignTop);
    // disable widget until it it gets called
@@ -88,6 +91,7 @@ ActionMenu::ActionMenu(QString title, QString style, QWidget *parent) : QGroupBo
 //------------------------------------------------------------------------------
 void ActionMenu::createButton(QString id, QString text, QString shortcut, QAction *action)
 {
+MainFrame::vdcdebug("ActionMenu","createButton", "QString id, QString text, QString shortcut, QAction *action");
    Q_UNUSED(id);
 
    bool visible = true;
@@ -141,6 +145,7 @@ void ActionMenu::createButton(QString id, QString text, QString shortcut, QActio
 //------------------------------------------------------------------------------
 void ActionMenu::hideButton(QString name)
 {
+MainFrame::vdcdebug("ActionMenu","hideButton", "QString name");
    for(int i=0; i<buttonGroup->buttons().size(); i++){
       if(QPushButton *button = qobject_cast<QPushButton *> (buttonGroup->buttons().at(i))){
          if(button->text() == name)
@@ -157,6 +162,7 @@ void ActionMenu::hideButton(QString name)
 //------------------------------------------------------------------------------
 QList<QPushButton*> ActionMenu::buttons()
 {
+MainFrame::vdcdebug("ActionMenu","buttons", "");
    QList<QPushButton*> buttons;
    for(int i=0; i<buttonGroup->buttons().size(); i++){
       if(QPushButton *button = qobject_cast<QPushButton *> (buttonGroup->buttons().at(i))){
@@ -174,6 +180,7 @@ QList<QPushButton*> ActionMenu::buttons()
 //------------------------------------------------------------------------------
 void ActionMenu::buttonClicked(int id)
 {
+MainFrame::vdcdebug("ActionMenu","buttonClicked", "int id");
    emit menuButtonPressed(QString::number(id));
 }
 
@@ -184,6 +191,7 @@ void ActionMenu::buttonClicked(int id)
 //------------------------------------------------------------------------------
 void ActionMenu::buttonClicked(QAbstractButton * button )
 {
+MainFrame::vdcdebug("ActionMenu","buttonClicked", "QAbstractButton * button ");
       QString text = button->text();
       if(text == "INTERRUPT" ||
          text == "ACCEPT" ||
@@ -213,6 +221,7 @@ void ActionMenu::buttonClicked(QAbstractButton * button )
 //------------------------------------------------------------------------------
 void ActionMenu::resizeEvent(QResizeEvent *event)
 {
+MainFrame::vdcdebug("ActionMenu","resizeEvent", "QResizeEvent *event");
 
    //TODO: IMPLEMENT resize and show UP and DOWN Buttons
    QGroupBox::resizeEvent(event);
@@ -226,6 +235,7 @@ void ActionMenu::resizeEvent(QResizeEvent *event)
 //------------------------------------------------------------------------------
 void ActionMenu::keyPressEvent(QKeyEvent *event)
 {
+MainFrame::vdcdebug("ActionMenu","keyPressEvent", "QKeyEvent *event");
    if(event->key() == Qt::Key_Enter || event->key() == Qt::Key_Return){
       QWidget *widget = this->focusWidget();
       if(QPushButton *button = qobject_cast<QPushButton *> (widget)){
@@ -238,6 +248,7 @@ void ActionMenu::keyPressEvent(QKeyEvent *event)
 
 void ActionMenu::removeButtons()
 {
+MainFrame::vdcdebug("ActionMenu","removeButtons", "");
 
    QList<QPushButton*> buttons;
    for(int i=0; i<buttonGroup->buttons().size(); i++){
@@ -250,6 +261,7 @@ void ActionMenu::removeButtons()
 
 void ActionMenu::hideButtons(bool hide)
 {
+MainFrame::vdcdebug("ActionMenu","hideButtons", "bool hide");
 
    QList<QPushButton*> buttons;
    for(int i=0; i<buttonGroup->buttons().size(); i++){
@@ -262,6 +274,7 @@ void ActionMenu::hideButtons(bool hide)
 
 QList<QAction*> ActionMenu::actions()
 {
+MainFrame::vdcdebug("ActionMenu","actions", "");
 
    QList<QAction*> ql_actions;
    for(int i=0; i<buttonGroup->buttons().size(); i++){
@@ -276,6 +289,7 @@ QList<QAction*> ActionMenu::actions()
 
 QAction* ActionMenu::getAction(QString name)
 {
+MainFrame::vdcdebug("ActionMenu","getAction", "QString name");
    for(int i=0; i<buttonGroup->buttons().size(); i++){
       if(QPushButton *button = qobject_cast<QPushButton *> (buttonGroup->buttons().at(i))){
          //if(button->text().toLower() == QString("%1").arg(name)){
