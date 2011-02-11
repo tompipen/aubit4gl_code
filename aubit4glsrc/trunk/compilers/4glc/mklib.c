@@ -128,8 +128,12 @@ static int isSystemFunc(char *funcname) {
     return 1;
   if (A4GL_aubit_strcasecmp (funcname, "err_quit") == 0)
     return 1;
+ if (A4GL_isyes(acl_getenv("IGNORE_ERRLOG"))) ;
+  else {
+
   if (A4GL_aubit_strcasecmp (funcname, "errorlog") == 0)
     return 1;
+}
   if (A4GL_aubit_strcasecmp (funcname, "fgl_dialog_setbuffer") == 0)
     return 1;
   if (A4GL_aubit_strcasecmp (funcname, "fgl_dialog_setcurrline") == 0)
@@ -154,8 +158,12 @@ static int isSystemFunc(char *funcname) {
     return 1;
   if (A4GL_aubit_strcasecmp (funcname, "showhelp") == 0)
     return 1;
+ if (A4GL_isyes(acl_getenv("IGNORE_ERRLOG"))) ;
+  else {
+
   if (A4GL_aubit_strcasecmp (funcname, "startlog") == 0)
     return 1;
+}
   if (A4GL_aubit_strcasecmp (funcname, "aclfgl_send_to_ui") == 0)
     return 1;
   if (A4GL_aubit_strcasecmp (funcname, "fgl_settitle") == 0)

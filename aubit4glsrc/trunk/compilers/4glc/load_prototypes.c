@@ -132,8 +132,11 @@ add_bolton (char *fname, char *vparams, char *vrets)
 
 
 static void load_default_boltons(void) {
+ if (A4GL_isyes(acl_getenv("IGNORE_ERRLOG"))) ;
+  else {
       add_bolton ("startlog","0", "");
       add_bolton ("errorlog","0", "");
+}
       add_bolton ("set_count","2", "");
       add_bolton ("arr_count","", "2");
       add_bolton ("arr_curr","", "2");

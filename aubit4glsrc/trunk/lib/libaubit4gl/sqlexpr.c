@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlexpr.c,v 1.99 2011-01-11 13:00:26 mikeaubury Exp $
+# $Id: sqlexpr.c,v 1.100 2011-02-11 16:42:44 mikeaubury Exp $
 #
 */
 
@@ -1843,6 +1843,37 @@ char *colname;
 		//printf("Looking in %s for %s\n", select->table_elements.tables.tables_val[a].tabname,colname);
 		if (A4GL_has_column( select->table_elements.tables.tables_val[a].tabname, colname)) return  select->table_elements.tables.tables_val[a].tabname;
 	}
+
+if (acl_getenv_not_set_as_0("SYSCOLFILE")) {
+	FILE *f;
+	char *tabname;
+	f=fopen(acl_getenv_not_set_as_0("SYSCOLFILE"),"r");
+	if (f)  {
+		static char buff[300];
+
+		while (1) {
+			char *ptr;
+			if (feof(f)) break;
+			fgets(buff,200,f);
+			ptr=strchr(buff,'|');
+
+			if (ptr) {
+				char *p2;
+				*ptr=0;
+				ptr++;
+				p2=strchr(ptr,'|');
+				if (p2) *p2=0;
+				if (strcmp(ptr,colname)==0) {
+			printf("--->%s\n",buff);
+					fclose(f);
+					return buff;
+				}
+			}
+		}
+
+		fclose(f);
+	}
+}
 return "";
 }
 
@@ -2219,11 +2250,14 @@ int setTableNamesIfMissing=0;
 		if (A4GL_isyes(acl_getenv("LOGJOINS"))) {
 		if (strlen(lt)==0) {
 			lt=guess_table(select,l);
+			if (strlen(lt)==0) { lt="unknown"; }
 		}
 		if (strlen(rt)==0) {
 			rt=guess_table(select,r);
+			if (strlen(rt)==0) { rt="unknown"; }
 		}
 
+A4GL_pause_execution();
 		if (strlen(lt) && strlen(rt)) {
 			FILE *f;
 			f=fopen("/tmp/joins","a");
