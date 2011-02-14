@@ -1,3 +1,5 @@
+require=AUBITOOLS
+require=INFORMIXDIR
 # AIX esql informix script must be hacked to work with gcc.
 # We point to hacked esql script located under $AUBITOOLS
 A4GL_EC_EXT=.ec

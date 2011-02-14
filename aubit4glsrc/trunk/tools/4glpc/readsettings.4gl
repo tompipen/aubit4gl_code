@@ -92,6 +92,12 @@ if (fin!=0) {
 			printf("Setting : '%s' = '%s'\n",buff,ptr);
 		}
 
+		if (A4GL_aubit_strcasecmp(buff, "require")==0) {
+			if (strlen(acl_getenv(ptr))==0) {
+				fprintf(stderr,"Error : Required setting ('%s') has not been set\n", ptr);
+			}
+			continue;
+		}
 		//if (!getenv(buff)) {
 			A4GL_setenv(buff, ptr, 1);
 		//}
