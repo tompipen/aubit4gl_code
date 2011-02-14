@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.172 2010-12-11 13:08:56 mikeaubury Exp $
+# $Id: curslib.c,v 1.173 2011-02-14 19:57:57 mikeaubury Exp $
 #*/
 
 /**
@@ -41,7 +41,7 @@
  */
 #ifndef lint
 static char const module_id[] =
-  "$Id: curslib.c,v 1.172 2010-12-11 13:08:56 mikeaubury Exp $";
+  "$Id: curslib.c,v 1.173 2011-02-14 19:57:57 mikeaubury Exp $";
 #endif
 /*
 =====================================================================
@@ -809,6 +809,16 @@ UILIB_A4GL_free_menu (void *menuv)
     A4GL_debug ("Freeing menu");
   }
 #endif
+
+if (A4GL_isyes(acl_getenv("CLRMENUONEXIT")) ) {
+	char buff[2000];
+	memset(buff,' ',1000);
+	buff[menu->w-1]=0;
+  A4GL_mja_gotoxy (1, 1 + menu->menu_line);
+  A4GL_menu_setcolor (menu, NORMAL_MENU);
+  A4GL_tui_printr (0, buff);
+}
+
   opt1 = (ACL_Menu_Opts *) menu->first;
   while (opt1 != 0)
     {

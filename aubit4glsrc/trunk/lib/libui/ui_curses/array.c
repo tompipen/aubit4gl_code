@@ -24,13 +24,13 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: array.c,v 1.68 2010-11-08 18:39:07 mikeaubury Exp $
+# $Id: array.c,v 1.69 2011-02-14 19:57:57 mikeaubury Exp $
 #*/
 
 
 #ifndef lint
 	static char const module_id[] =
-		"$Id: array.c,v 1.68 2010-11-08 18:39:07 mikeaubury Exp $";
+		"$Id: array.c,v 1.69 2011-02-14 19:57:57 mikeaubury Exp $";
 #endif
 
 
@@ -1036,6 +1036,7 @@ int orig_set=0;
 			A4GL_debug(" disp->binding[a].dtype=%d", disp->binding[bno].dtype);
 			A4GL_debug("ENCODE_SIZE(disp->binding[a].size)=%d",ENCODE_SIZE(disp->binding[bno].size));
 #endif
+		//A4GL_pause_execution();
              		A4GL_push_param (cptr, disp->binding[bno].dtype+ENCODE_SIZE(disp->binding[bno].size));
     	} else {
 #ifdef DEBUG

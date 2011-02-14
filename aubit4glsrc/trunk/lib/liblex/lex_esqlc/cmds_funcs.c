@@ -16,6 +16,7 @@ extern int parent_stack_cnt;
 extern command *parent_stack[];
 static int rep_print_entry=0;
 
+static void print_finish_screenio(int sio,int block,int isExit); //int sio,int block,int isExit) ;
 
 static struct command *find_in_command_stack(enum cmd_type e) {
 int z;
@@ -483,6 +484,9 @@ int
 print_ext_cmd (struct_ext_cmd * cmd_data)
 {
 
+
+  //print_finish_screenio( -1, cmd_data->block_id,1);
+
   if (cmd_data->what == EBC_MENU)
     {
       printc ("cmd_no_%d= -3;goto MENU_START_%d;\n", cmd_data->block_id, cmd_data->block_id);
@@ -515,8 +519,8 @@ print_ext_cmd (struct_ext_cmd * cmd_data)
 int
 print_continue_cmd (struct_continue_cmd * cmd_data)
 {
-  //enum e_block_cmd what;
-  //int block_id;
+  //print_finish_screenio(cmd_data->sio_id, cmd_data->block_id,0);
+
   if (cmd_data->what == EBC_INPUT || cmd_data->what == EBC_CONSTRUCT)
     {
       printc ("if (_fld_dr==-95) {A4GL_req_field(&_sio_%d,_inp_io_type,'0',\"0\",NULL,0);} /* re-enter INPUT if we're in an AFTER INPUT */ \n", cmd_data->sio_id);
@@ -1073,6 +1077,63 @@ print_at_term_cmd (struct_at_term_cmd * cmd_data)
 }
 
 
+void print_finish_screenio(int sio,int block, int isExit) {
+int z;
+  for (z = 0; z < parent_stack_cnt; z++)
+    {
+      // If we're returning - we need to close out any outstanding screen IO
+      switch (parent_stack[z]->cmd_data.type)
+	{
+	case E_CMD_INPUT_ARRAY_CMD:
+		// Ignore it..
+		if (sio==parent_stack[z]->cmd_data.command_data_u.input_array_cmd.sio && isExit==0) continue;
+	  printc ("A4GL_finish_screenio(&_sio_%d,_sio_kw_%d);",
+		  parent_stack[z]->cmd_data.command_data_u.input_array_cmd.sio,
+		  parent_stack[z]->cmd_data.command_data_u.input_array_cmd.sio);
+	  break;
+
+	case E_CMD_INPUT_CMD:
+		// Ignore it..
+		if (sio==parent_stack[z]->cmd_data.command_data_u.input_array_cmd.sio && isExit==0) continue;
+//A4GL_pause_execution();
+	  printc ("A4GL_finish_screenio(&_sio_%d,_sio_kw_%d);",
+		  parent_stack[z]->cmd_data.command_data_u.input_cmd.sio,
+		  parent_stack[z]->cmd_data.command_data_u.input_cmd.sio);
+	  break;
+
+	case E_CMD_CONSTRUCT_CMD:
+		if (sio== parent_stack[z]->cmd_data.command_data_u.construct_cmd.sio && isExit==0) continue;
+	  printc ("A4GL_finish_screenio(&_sio_%d,_sio_kw_%d);",
+		  parent_stack[z]->cmd_data.command_data_u.construct_cmd.sio,
+		  parent_stack[z]->cmd_data.command_data_u.construct_cmd.sio);
+		break;
+
+	case E_CMD_DISPLAY_ARRAY_CMD:
+		if (sio== parent_stack[z]->cmd_data.command_data_u.display_array_cmd.sio && isExit==0) continue;
+	  printc ("A4GL_finish_screenio(&_sio_%d,_sio_kw_%d);",
+		  parent_stack[z]->cmd_data.command_data_u.display_array_cmd.sio,
+		  parent_stack[z]->cmd_data.command_data_u.display_array_cmd.sio);
+		break;
+
+
+	case E_CMD_PROMPT_CMD:
+		if (sio== parent_stack[z]->cmd_data.command_data_u.prompt_cmd.sio && isExit==0) continue;
+	  printc ("A4GL_finish_screenio(&_sio_%d,_sio_kw_%d);",
+		  parent_stack[z]->cmd_data.command_data_u.prompt_cmd.sio, parent_stack[z]->cmd_data.command_data_u.prompt_cmd.sio);
+		break;
+
+	case E_CMD_MENU_CMD:
+		if (block== parent_stack[z]->cmd_data.command_data_u.menu_cmd.blockid && isExit==0) continue;
+	  printc ("A4GL_free_menu(m_%d);", parent_stack[z]->cmd_data.command_data_u.menu_cmd.blockid);
+	  break;
+
+	default:
+		// We dont care about other commands
+		break;
+	}
+    }
+}
+
 /******************************************************************************/
 int
 print_return_cmd (struct_return_cmd * cmd_data)
@@ -1094,6 +1155,10 @@ print_return_cmd (struct_return_cmd * cmd_data)
   real_print_expr_list (expr);
 
   printPopFunction(n, line_for_cmd);
+
+  print_finish_screenio(-1,-1,-1); // -1,-1,-1);
+
+/*
 
   for (z = 0; z < parent_stack_cnt; z++)
     {
@@ -1132,6 +1197,7 @@ print_return_cmd (struct_return_cmd * cmd_data)
 		break;
 	}
     }
+*/
 
 
   printc("A4GL_dec_refcount(_objData);");
