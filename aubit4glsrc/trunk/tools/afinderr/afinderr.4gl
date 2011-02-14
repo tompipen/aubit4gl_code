@@ -98,19 +98,30 @@ define
 	n, lv_char integer,
 	lv_msgline char(256)
 
+
 	call aclfgl_openiem(filename,n) returning lv_char,lv_msgline
 	
 	if lv_char then
 		display filename clipped,":"
-		display lv_msgline
+		if n<0 then
+			display n using "-<<<<<<&"," ",lv_msgline
+		else
+			display n using "<<<<<<&"," ",lv_msgline
+		end if
 	
 		while lv_char!=0
 			call aclfgl_fetchiem() returning lv_char,lv_msgline
-			if lv_char!=0 then
-				display lv_char," ",lv_msgline
-			end if
 		
+			if lv_char!=0 then
+				let lv_msgline=aclfgl_trim_nl(lv_msgline)
+				display lv_msgline clipped
+			end if
 		end while
+		return
+	end if
+
+	if n>0 then
+		call newshowhelp(filename,0-n)
 	end if
 
 end function

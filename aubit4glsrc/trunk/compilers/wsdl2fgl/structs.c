@@ -812,9 +812,9 @@ print_4gl_push (char *old_prefix, struct variable_element *param,int isSingleton
 	  fprintf (getOuputFile (), "   A4GL_push_single_char(%s);\n", name);
 	  return 1;
 	}
-      if (strcasecmp (param->dtype, "char*") || strcasecmp (param->dtype, "xml" ) == 0)
+      if (strcasecmp (param->dtype, "char*") ==0 || strcasecmp (param->dtype, "xml" ) == 0)
 	{
-	  fprintf (getOuputFile (), "   A4GL_push_char(%s);\n", name);
+	  fprintf (getOuputFile (), "   A4GL_push_char(%s); //%s\n", name, param->dtype);
 	  return 1;
 	}
       if (strcasecmp (param->dtype, "double") == 0)
@@ -830,6 +830,11 @@ print_4gl_push (char *old_prefix, struct variable_element *param,int isSingleton
       if (strcasecmp (param->dtype, "long") == 0)
 	{
 	  fprintf (getOuputFile (), "   A4GL_push_long(%s);", name);
+	  return 1;
+	}
+      if (strcasecmp (param->dtype, "long*") == 0)
+	{
+	  fprintf (getOuputFile (), "   A4GL_push_long(*%s);", name);
 	  return 1;
 	}
       if (strcasecmp (param->dtype, "longlong") == 0)
@@ -867,6 +872,9 @@ print_4gl_push (char *old_prefix, struct variable_element *param,int isSingleton
 	  fprintf (getOuputFile (), "   A4GL_push_long(%s);", name);
 	  return 1;
 	}
+
+	  fprintf (getOuputFile (), "   UNHANDLED : %s", param->dtype);
+
     
   return 1;
 }
