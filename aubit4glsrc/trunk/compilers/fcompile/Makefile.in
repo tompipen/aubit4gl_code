@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.82 2010-01-20 13:29:12 mikeaubury Exp $
+# $Id: Makefile.in,v 1.83 2011-02-15 09:52:20 mikeaubury Exp $
 #
 
 ROOT        =../..
@@ -42,7 +42,7 @@ CFLAGS 			+=${C_LOCAL_IFLAGS}  @CURSES_INC_PATH@ @RPCLIB_INCLUDE@
 LCLINT_CFLAGS   =${C_IFLAGS} ${C_LOCAL_IFLAGS}
 EXE_CFLAGS      +=-I${ROOT}/lib/libincl -I. ${C_IFLAGS}
 
-ALL	 			=${ROOT}/bin/fcompile ${ROOT}/bin/fdecompile ${ROOT}/bin/fshow ${ROOT}/bin/default_frm ${ROOT}/bin/formgen_4gl
+ALL	 			=${ROOT}/bin/fcompile ${ROOT}/bin/fdecompile ${ROOT}/bin/fshow ${ROOT}/bin/default_frm ${ROOT}/bin/formgen_4gl ${ROOT}/bin/fdecompile_scr
 
 ifeq "$(OUTPUTLANG)" "java"
 	ALL		 	+=${ROOT}/bin/fdecompile-j
@@ -69,6 +69,7 @@ SOURCES.lex 	=screen.lex
 TARGETS.c 		=y.tab.c
 DUMP_C          =dump.c
 OBJS_DUMP_C		=$(DUMP_C:%.c=%.o)
+OBJS_DUMP_SCR		=dump_scr.o
 #FIXME: dump_java.c was never commited into CVS
 DUMP_JAVA       =dump_java.c
 OBJS_DUMP_JAVA	=$(DUMP_JAVA:%.c=%.o)
@@ -117,6 +118,9 @@ ${ROOT}/bin/fdecompile-j : ${OBJS_DECOMPILE} ${OBJS_DUMP_JAVA}
 	${LD_EXE} -L${ROOT}/lib $^ -o $@ ${AUBIT_LIB} ${EXTRASYSTEMLIBS}
 
 ${ROOT}/bin/fdecompile : ${OBJS_DECOMPILE} ${OBJS_DUMP_C}
+	${LD_EXE} -L${ROOT}/lib $^ -o $@ ${AUBIT_LIB} ${EXTRASYSTEMLIBS}
+
+${ROOT}/bin/fdecompile_scr : ${OBJS_DECOMPILE} ${OBJS_DUMP_SCR}
 	${LD_EXE} -L${ROOT}/lib $^ -o $@ ${AUBIT_LIB} ${EXTRASYSTEMLIBS}
 
 #fshow : clean.fshow ${ROOT}/bin/fshow
