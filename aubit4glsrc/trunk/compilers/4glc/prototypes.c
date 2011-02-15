@@ -8,6 +8,7 @@
 #include "expr_munging.h"
 static char fglservername[2000]="fglserver";
 static char default_url[2000]="http://localhost:9090/";
+char *funcprefix="aclfgl_";
 
 #define MODE_TRY 0
 #define MODE_BUY 1
@@ -117,7 +118,17 @@ get_cached_expr_datatype (int n)
 
 
 
+static char *get_rval_name(int b, char *valname) {
 
+	static char buff[2000];
+	if (strchr(valname,'.') && !strchr(valname,'[') ) {
+			strcpy(buff,strrchr(valname,'.')+1);
+			return buff;
+			
+	}
+	sprintf(buff,"rval_%d",b);
+	return buff;
+}
 
 static char *
 local_xml_escape (char *s)
@@ -1440,8 +1451,10 @@ dump_soap (void)
   int a;
   char return_string[1000][200];
   char return_string_client[1000][200];
+FILE *output_functionmapping;
 //char fbuff[200];
 //char freebuff[20000]="";
+  output_functionmapping=fopen("prototypes_map.h","w");
   output_soap = fopen ("prototypes.h", "w");
   fprintf (output_soap, "//gsoap ns service name: %s\n",fglservername);
   fprintf (output_soap, "//gsoap ns service port: %s\n",default_url);
@@ -1460,7 +1473,7 @@ dump_soap (void)
 	{
 	  continue;
 	}
-      fprintf (output_soap, "//gsoap ns service documentation:  %s from %s %d\n", functions[a].function, functions[a].module,
+      fprintf (output_soap, "/* gsoap ns service documentation:  %s from %s %d */\n", functions[a].function, functions[a].module,
 	       functions[a].line);
 
 
@@ -1468,7 +1481,7 @@ dump_soap (void)
       if (functions[a].return_datatypes && functions[a].return_datatypes[0]->nreturns > 1)
 	{
 	  int b;
-	  fprintf (output_soap, "struct s_ret_%s {\n", functions[a].function);
+	  fprintf (output_soap, "struct ns__s_ret_%s {\n", functions[a].function);
 	  // We'll assume the first RETURN is the same as the rest of them
 	  // if its not - it'll cause problems - but we can put that in as a check after (maybe)
 	  nrets = functions[a].return_datatypes[0]->nreturns;
@@ -1514,7 +1527,8 @@ dump_soap (void)
 		default:
 		  A4GL_assertion (1, "Unhandled datatype");
 		}
-	      fprintf (output_soap, "rval_%d;\n", b);
+	      fprintf (output_soap, "%s;\n", get_rval_name(b, functions[a].return_datatypes[0]->retexprs[b]));
+	      //fprintf (output_soap, "rval_%d; /* %s */\n", b, functions[a].return_datatypes[0]->retexprs[b]);
 	    }
 	  fprintf (output_soap, "};\n");
 	}
@@ -1614,6 +1628,7 @@ dump_soap (void)
 		  sprintf (return_string[a], "char **ret");
 		  sprintf (return_string_client[a], "char *ret");
 		  break;
+		case 90:
 		case DTYPE_SMINT:
 		  fprintf (output_soap, "short *");
 		  sprintf (return_string[a], "short *ret");
@@ -1645,7 +1660,9 @@ dump_soap (void)
 		  fprintf (output_soap, " byte ");	// <- wont compile for now
 		  break;
 
+		break;
 		default:
+		printf("%d\n",dtype);
 		  A4GL_assertion (1, "Unhandled datatype");
 		}
 	      fprintf (output_soap, "ret");
@@ -1661,9 +1678,9 @@ dump_soap (void)
 		  printed_soap++;
 		}
 
-	      sprintf (return_string[a], "struct s_ret_%s  *ret", functions[a].function);
-	      sprintf (return_string_client[a], "struct s_ret_%s  ret", functions[a].function);
-	      fprintf (output_soap, "  struct s_ret_%s  *ret", functions[a].function);
+	      sprintf (return_string[a], "struct ns__s_ret_%s  *ret", functions[a].function);
+	      sprintf (return_string_client[a], "struct ns__s_ret_%s  ret", functions[a].function);
+	      fprintf (output_soap, "  struct ns__s_ret_%s  *ret", functions[a].function);
 
 	    }
 	}
@@ -1695,8 +1712,10 @@ dump_soap (void)
   fprintf (output_soap, "#include \"soapH.h\"\n");
   fprintf (output_soap, "#include \"a4gl_incl_4glhdr.h\"\n");
   fprintf (output_soap, "extern long a4gl_status;\n");
+  fprintf (output_soap, "/*\n");
   fprintf (output_soap, "//GSOAP marshalling code\n");
   fprintf (output_soap, "//This code was automatically generated\n");
+  fprintf (output_soap, "*/\n");
 
 
   for (a = 0; a < functions_cnt; a++)
@@ -1710,7 +1729,7 @@ dump_soap (void)
 	{
 	  continue;
 	}
-      fprintf (output_soap, "//gsoap ns service documentation:  %s from %s %d\n", functions[a].function, functions[a].module,
+      fprintf (output_soap, "/* gsoap ns service documentation:  %s from %s %d */\n", functions[a].function, functions[a].module,
 	       functions[a].line);
       fprintf (output_soap, "int ns__%s( struct soap *soap ", functions[a].function);
 
@@ -1834,7 +1853,7 @@ dump_soap (void)
 	}
 
       fprintf (output_soap, "   a4gl_status=0;\n");
-      fprintf (output_soap, "   n=aclfgl_%s(%d);\n", functions[a].function, functions[a].nparameters);
+      fprintf (output_soap, "   n=%s%s(%d);\n", funcprefix, functions[a].function, functions[a].nparameters);
       fprintf (output_soap,
 	       "   if (n!=%d) {\n      A4GL_pop_args(n); return  soap_sender_fault(soap,\"%s\",\"Wrong number of values returned from function\");\n   }\n",
 	       nrets, functions[a].function);
@@ -1862,7 +1881,7 @@ dump_soap (void)
 		}
 	      else
 		{
-		  fprintf (output_soap, "   ret->rval_%d=", b);
+		  fprintf (output_soap, "   ret->%s=", get_rval_name(b, functions[a].return_datatypes[0]->retexprs[b]));
 		}
 	      switch (dtype)
 		{
@@ -1898,6 +1917,10 @@ dump_soap (void)
 		case DTYPE_TEXT:
 		case DTYPE_BYTE:
 		  fprintf (output_soap, "A4GL_pop_soap_byte();");	// <- wont compile for now
+		  break;
+
+		case 90:
+		  fprintf (output_soap, "A4GL_pop_int();");
 		  break;
 
 		default:
@@ -1944,7 +1967,8 @@ dump_soap (void)
 	{
 	  continue;
 	}
-      fprintf (output_soap, "int aclfgl_%s(int nparam) {\n", functions[a].function);
+	fprintf(output_functionmapping,"#define %s%s %s\n",funcprefix, functions[a].function,functions[a].function);
+      fprintf (output_soap, "int %s%s(int nparam) {\n", funcprefix,functions[a].function);
       fprintf (output_soap, "char *url=NULL;\n");
 
       if (functions[a].nparameters)
@@ -1965,6 +1989,7 @@ dump_soap (void)
 		  fprintf (output_soap, "char *");
 		  break;
 		case DTYPE_SMINT:
+		case 90:
 		  fprintf (output_soap, "short ");
 		  break;
 
@@ -2016,6 +2041,7 @@ dump_soap (void)
 		  fprintf (output_soap, "char *r_%d=\"\";\n", b);
 		  break;
 		case DTYPE_SMINT:
+		case 90:
 		  fprintf (output_soap, "short r_%d=0;\n", b);
 		  break;
 
@@ -2076,6 +2102,7 @@ dump_soap (void)
 		  //sprintf(fbuff,"free(rval_%d);"); strcat(freebuff,fbuff);
 		  break;
 		case DTYPE_SMINT:
+		case 90:
 		  fprintf (output_soap, "A4GL_pop_int();");
 		  break;
 
@@ -2168,6 +2195,7 @@ dump_soap (void)
 		case DTYPE_SMINT:
 		case DTYPE_SERIAL:
 		case DTYPE_INT:
+		case 90:
 		  fprintf (output_soap, "A4GL_push_long(ret);\n");
 		  break;
 
@@ -2207,34 +2235,35 @@ dump_soap (void)
 		    case DTYPE_INTERVAL:
 		    case DTYPE_NCHAR:
 		    case DTYPE_NVCHAR:
-		      fprintf (output_soap, "A4GL_push_char(ret.rval_%d); // free(r_%d);\n", b, b);
+		      fprintf (output_soap, "A4GL_push_char(ret.%s);\n", get_rval_name(b, functions[a].return_datatypes[0]->retexprs[b]));
 		      break;
 		    case DTYPE_DATE:
-		      fprintf (output_soap, "A4GL_push_date_in_char(ret.rval_%d);\n", b);
+		      fprintf (output_soap, "A4GL_push_date_in_char(ret.%s);\n", get_rval_name(b, functions[a].return_datatypes[0]->retexprs[b]));
 		      break;
 		    case DTYPE_DTIME:
-		      fprintf (output_soap, "A4GL_push_datetime_in_char(ret.rval_%d);\n", b);
+		      fprintf (output_soap, "A4GL_push_datetime_in_char(ret.%s);\n", get_rval_name(b, functions[a].return_datatypes[0]->retexprs[b]));
 		      break;
 
 		    case DTYPE_SMINT:
 		    case DTYPE_SERIAL:
 		    case DTYPE_INT:
-		      fprintf (output_soap, "A4GL_push_long(ret.rval_%d);\n", b);
+		    case 90:
+		      fprintf (output_soap, "A4GL_push_long(ret.%s);\n", get_rval_name(b, functions[a].return_datatypes[0]->retexprs[b]));
 		      break;
 
 
 		    case DTYPE_FLOAT:
 		    case DTYPE_DECIMAL:
 		    case DTYPE_MONEY:
-		      fprintf (output_soap, "A4GL_push_double(ret.rval_%d);\n", b);
+		      fprintf (output_soap, "A4GL_push_double(ret.%s);\n", get_rval_name(b, functions[a].return_datatypes[0]->retexprs[b]));
 		      break;
 
 		    case DTYPE_SMFLOAT:
-		      fprintf (output_soap, "A4GL_push_float(ret.rval_%d);\n", b);
+		      fprintf (output_soap, "A4GL_push_float(ret.%s);\n", get_rval_name(b, functions[a].return_datatypes[0]->retexprs[b]));
 		      break;
 		    case DTYPE_TEXT:
 		    case DTYPE_BYTE:
-		      fprintf (output_soap, "A4GL_push_soap_byte(ret.rval_%d);\n", b);	// <- wont compile for now
+		      fprintf (output_soap, "A4GL_push_soap_byte(ret.%s);\n", get_rval_name(b, functions[a].return_datatypes[0]->retexprs[b]));	// <- wont compile for now
 		      break;
 
 		    default:
@@ -2255,5 +2284,6 @@ dump_soap (void)
 
 
   fclose (output_soap);
+  fclose(output_functionmapping);
 
 }

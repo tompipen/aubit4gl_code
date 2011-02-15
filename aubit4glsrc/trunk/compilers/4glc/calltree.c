@@ -1028,8 +1028,12 @@ system_function_dtype (char *funcname)
     return -1;
   if (A4GL_aubit_strcasecmp (funcname, "err_quit") == 0)
     return -1;
-  if (A4GL_aubit_strcasecmp (funcname, "errorlog") == 0)
-    return -1;
+
+  if (A4GL_isyes(acl_getenv("IGNORE_ERRLOG"))) ;
+  else {
+  	if (A4GL_aubit_strcasecmp (funcname, "errorlog") == 0) return -1;
+	}
+
   if (A4GL_aubit_strcasecmp (funcname, "fgl_dialog_setbuffer") == 0)
     return -1;
   if (A4GL_aubit_strcasecmp (funcname, "fgl_dialog_setcurrline") == 0)
@@ -1054,8 +1058,13 @@ system_function_dtype (char *funcname)
     return -1;
   if (A4GL_aubit_strcasecmp (funcname, "showhelp") == 0)
     return -1;
-  if (A4GL_aubit_strcasecmp (funcname, "startlog") == 0)
-    return -1;
+
+  if (A4GL_isyes(acl_getenv("IGNORE_ERRLOG"))) ;
+  else {
+  	if (A4GL_aubit_strcasecmp (funcname, "startlog") == 0) return -1;
+	}
+
+
   if (A4GL_aubit_strcasecmp (funcname, "aclfgl_send_to_ui") == 0)
     return -1;
   if (A4GL_aubit_strcasecmp (funcname, "fgl_settitle") == 0)
@@ -2233,6 +2242,9 @@ static int process_cmd(struct command *cmd,int mode) {
 		 	calltree_map_select_stmt("SELECT", cmd->cmd_data.command_data_u.select_cmd.sql, last_mod,last_line);
 		}
 		add_symbol_assign(cmd->cmd_data.command_data_u.select_cmd.sql->into,last_mod,last_line,NULL);
+		if (A4GL_isyes(acl_getenv("LOGJOINS"))) {
+			preprocess_sql_statement ( cmd->cmd_data.command_data_u.select_cmd.sql);
+		}
 		break;
 
 	case E_CMD_EXECUTE_CMD:
@@ -2898,7 +2910,11 @@ static int process_cmd(struct command *cmd,int mode) {
 		 		calltree_map_select_stmt("SELECT", cmd->cmd_data.command_data_u.declare_cmd.declare_dets->select, last_mod,last_line);
 			}
 			add_symbol_assign(cmd->cmd_data.command_data_u.declare_cmd.declare_dets->select->into,last_mod,last_line,NULL);
+			if (A4GL_isyes(acl_getenv("LOGJOINS"))) {
+				preprocess_sql_statement (cmd->cmd_data.command_data_u.declare_cmd.declare_dets->select);
+			}
 		}
+
 		if (cmd->cmd_data.command_data_u.declare_cmd.declare_dets->insert_cmd) {
 			calltree_map_insert_delete_update("INSERT", cmd->cmd_data.command_data_u.declare_cmd.declare_dets->insert_cmd->table, NULL, last_mod,last_line);
 
@@ -2928,6 +2944,11 @@ static int process_cmd(struct command *cmd,int mode) {
 			c->module=last_mod;
 			process_cmd(c,mode);
 			guess_sql_stmt(&cmd->cmd_data.command_data_u.prepare_cmd, last_mod,last_line,1);
+			if (c->cmd_data.type==E_CMD_SELECT_CMD ) {
+				if (A4GL_isyes(acl_getenv("LOGJOINS"))) {
+					preprocess_sql_statement ( c->cmd_data.command_data_u.select_cmd.sql);
+				}
+			}
 		} else {
 			printf("Prepare @ %s:%d not handled\n", last_mod,last_line);
 			guess_sql_stmt(&cmd->cmd_data.command_data_u.prepare_cmd, last_mod,last_line,0);
@@ -3568,6 +3589,11 @@ init_mapsets();
     }
 
   A4GL_build_user_resources ();
+if (A4GL_isyes(acl_getenv("LOGJOINS"))) {
+	A4GL_setenv("ALWAYS_CONVERT","Y",1);
+	A4GL_setenv("SETTABLEFORCOL","Y",1);
+}
+
 
   ignore_user_function(NULL);
   m = malloc (sizeof (struct module_definition) * (argc - 1));
@@ -3887,7 +3913,7 @@ static void add_variable_value(variable_usage *u, expr_str *val) {
   	if (inIf) {
 		static char buff[10000];
 		static char varbuff[10000];
-		sprintf(buff,"{%s}",value);
+		sprintf(buff,"(%s)",value);
 		value=buff;
 		//sprintf(varbuff,"IF_%d_%s",inIf,var);
 		//var=varbuff;
