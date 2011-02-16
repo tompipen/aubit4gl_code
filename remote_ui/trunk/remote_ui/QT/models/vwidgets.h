@@ -38,6 +38,7 @@
 #include <QTabWidget>
 #include <QTextBlock>
 #include <QTextCursor>
+#include <QDropEvent>
 #include <include/fgl.h>
 
 class FormField : public QObject
@@ -152,6 +153,7 @@ public:
 
 protected:
    bool eventFilter(QEvent*, QObject*);
+   void dropEvent(QDropEvent*);
 
 private:
     // Attributes to know wich Validators to use

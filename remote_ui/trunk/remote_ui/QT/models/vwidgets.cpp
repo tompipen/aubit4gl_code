@@ -384,6 +384,17 @@ void LineEdit::checkNext(const QString &textr){
       emit nextField();
 }
 
+void LineEdit::dropEvent(QDropEvent *e)
+{
+   //Handle drop for files and directories (paste path into the field (without file://)
+   if(e->mimeData()->hasText()){
+      QString text = e->mimeData()->text();
+      this->setText(text.replace("file://","").trimmed());
+   }
+    
+
+}
+
 //------------------------------------------------------------------------------
 // Method       : Edit()
 // Filename     : xml2form.cpp
