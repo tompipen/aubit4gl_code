@@ -133,7 +133,7 @@ public slots:
    void processResponse();
    void hideOption(QString);
    void showOption(QString);
-   void nextOption(QString);
+   void nextOption(QString, int);
    void free(QString);
    void MsgBox(QString,QString,QString,QString,QString,int);
    void closeWindow(QString);

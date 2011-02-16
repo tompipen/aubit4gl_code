@@ -245,8 +245,8 @@ ClientSocket::ClientSocket(QObject *parent, QString name, QString pass, QString 
    connect(&ph, SIGNAL(showOption(QString)), 
            p_currScreenHandler, SLOT(showOption(QString)));
    // select next command of the ring menu
-   connect(&ph, SIGNAL(nextOption(QString)), 
-           p_currScreenHandler, SLOT(nextOption(QString)));
+   connect(&ph, SIGNAL(nextOption(QString, int)), 
+           p_currScreenHandler, SLOT(nextOption(QString, int)));
    // display errors in message line
    connect(&ph, SIGNAL(displayError(QString)), 
            p_currScreenHandler, SLOT(displayError(QString)));
@@ -1185,8 +1185,9 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
 
    if(childElement.nodeName() == "NEXTOPTION"){
       //TODO
+      int context = childElement.attribute("CONTEXT").toInt();
       QString name = childElement.attribute("OPTION");
-      nextOption(name);
+      nextOption(name, context);
       return;
    }
 

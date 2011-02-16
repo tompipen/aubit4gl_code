@@ -476,9 +476,18 @@ MainFrame::vdcdebug("ScreenHandler","showOption", "QString name");
 // Filename     : screenhandler.cpp
 // Description  : hide menu commands
 //------------------------------------------------------------------------------
-void ScreenHandler::nextOption(QString name)
+void ScreenHandler::nextOption(QString name, int i_context)
 {
-MainFrame::vdcdebug("ScreenHandler","nextOption", "QString name");
+MainFrame::vdcdebug("ScreenHandler","nextOption", "QString name, int context");
+
+   Context *context = this->getContext(i_context);
+
+   for(int i=0; i<ql_fglForms.size(); i++){
+      if(ql_fglForms.at(i)->context == context){
+         this->activeWindow(ql_fglForms.at(i)->windowName);
+      }
+   }
+
    if(p_fglform == NULL)
       return;
 

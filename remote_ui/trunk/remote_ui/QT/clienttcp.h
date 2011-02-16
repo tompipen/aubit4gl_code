@@ -112,7 +112,7 @@ signals:
    void hideOption(int);
    void hideOption(QString);
    void showOption(QString);
-   void nextOption(QString);
+   void nextOption(QString, int context);
 
 
    void displayError(QString);
