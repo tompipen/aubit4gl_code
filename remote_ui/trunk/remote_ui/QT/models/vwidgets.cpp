@@ -416,7 +416,6 @@ Edit::Edit(QWidget *parent)
 ButtonEdit::ButtonEdit(QString iconFileName, QWidget *parent)
     : LineEdit(parent)
 {
-   
    // Set enabled as long as Protocol says to enable it
    this->setEnabled(false);
 
@@ -426,6 +425,10 @@ ButtonEdit::ButtonEdit(QString iconFileName, QWidget *parent)
       connect(button, SIGNAL(clicked()), this, SLOT(buttonClicked()));
   //    button->setFocusPolicy(Qt::NoFocus);
       button->setFocusProxy(this);
+      if(!iconFileName.contains("."))
+      {
+          iconFileName.append(".png");
+      }
       QPixmap pixmap("pics:" + iconFileName);
       button->setIcon(QIcon(pixmap));
       QSize siz(18,18);
