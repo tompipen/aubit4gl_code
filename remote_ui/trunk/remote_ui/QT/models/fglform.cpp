@@ -37,7 +37,7 @@
 FglForm::FglForm(QString windowName, QWidget *parent) : QMainWindow(parent){
 
    context = NULL;
-
+   this->b_newForm = true;
    if(parent != NULL){
       setWindowModality(Qt::WindowModal);
    }

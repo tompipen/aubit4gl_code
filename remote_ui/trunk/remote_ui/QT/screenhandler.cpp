@@ -152,7 +152,6 @@ MainFrame::vdcdebug("ScreenHandler","createWindow", "QString windowTitle,QString
       p_fglform->setActions(formsActions);
    }
 
-   b_newForm = true;
 
 }
 
@@ -1667,28 +1666,35 @@ MainFrame::vdcdebug("ScreenHandler","setFormOpts", "QString type, QString attrib
 void ScreenHandler::waitForEvent()
 {
 MainFrame::vdcdebug("ScreenHandler","waitForEvent", "");
+   FglForm *saveactive = p_fglform;
+
    if(p_fglform == NULL)
       return;
-
 
    if(p_fglform->context != getCurrentContext()){
       p_fglform->context = getCurrentContext();
       connect(p_fglform->context, SIGNAL(fieldEvent(Fgl::Event)), p_fglform, SLOT(fieldEvent(Fgl::Event)));
    }
 
-   p_fglform->checkState();
 
-   if(b_newForm && p_fglform->dialog () == NULL && p_fglform->state() != Fgl::IDLE){
-      b_newForm = false;
-      p_fglform->show();
-   }
-   else{
-      if(p_fglform->dialog() != NULL){
-         p_fglform->dialog()->show();
-         p_fglform->dialog()->adjustSize();
+   for(int i= 0; i < this->ql_fglForms.count(); i++)
+   {
+      p_fglform = ql_fglForms.at(i);
+
+      p_fglform->checkState();
+
+      if(p_fglform->b_newForm && p_fglform->dialog () == NULL){ // && p_fglform->state() != Fgl::IDLE){
+         p_fglform->b_newForm = false;
+         p_fglform->show();
+      }
+      else{
+         if(p_fglform->dialog() != NULL){
+            p_fglform->dialog()->show();
+            p_fglform->dialog()->adjustSize();
+         }
       }
    }
-
+   p_fglform = saveactive;
    checkFields();
    if(p_fglform->context != NULL)
       p_fglform->context->checkOptions();
@@ -1697,6 +1703,7 @@ MainFrame::vdcdebug("ScreenHandler","waitForEvent", "");
 
    //p_fglform->checkState();
    p_fglform->b_getch_swin = true;
+
    processResponse();
 }
 

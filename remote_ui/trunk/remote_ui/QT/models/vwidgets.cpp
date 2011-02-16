@@ -495,7 +495,6 @@ DateEdit::DateEdit(QWidget *parent)
 {
    // Set enabled as long as Protocol says to enable it
    this->setEnabled(false);
-
    this->iconFileName = "calendar";
    button = new QPushButton(this);
    connect(button, SIGNAL(clicked()), this, SLOT(buttonClicked()));

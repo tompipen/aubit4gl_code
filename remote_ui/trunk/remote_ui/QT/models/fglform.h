@@ -130,7 +130,7 @@ public:
    QHash<QString, QList<Fgl::Link> > recordView;
    
    void initActions();
-
+   bool b_newForm;
    bool b_denyFocus;
 
    //TableView *p_screenRecord;
