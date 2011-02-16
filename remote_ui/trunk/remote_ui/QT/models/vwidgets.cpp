@@ -500,6 +500,10 @@ DateEdit::DateEdit(QWidget *parent)
    button = new QPushButton(this);
    connect(button, SIGNAL(clicked()), this, SLOT(buttonClicked()));
    button->setFocusPolicy(Qt::NoFocus);
+   if(!iconFileName.contains("."))
+   {
+       iconFileName.append(".png");
+   }
    QPixmap pixmap("pics:" + iconFileName);
    button->setIcon(QIcon(pixmap));
    QSize siz(18,18);
