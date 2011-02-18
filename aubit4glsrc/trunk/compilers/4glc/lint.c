@@ -32,8 +32,10 @@ struct s_severities
   int severity;
 } severities[1000] =
 {
-  {
-  "DEAD", 5},
+  { "DEAD", 4},
+  { "DIFFCOMP", 4},
+  { "DBDIFF", 4},
+  { "REPMODGLOBVAR", 4},
   {
   "CS.VNAME", 0},
   {

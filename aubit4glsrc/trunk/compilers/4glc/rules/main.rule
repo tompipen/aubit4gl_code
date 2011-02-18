@@ -283,7 +283,7 @@ return_cmd : KW_RETURN atline op_fgl_expr_ret_list_v2 op_with_resume {
 ;
 
 
-db_section	:	  DATABASE dbase_name {
+db_section	:	  DATABASE dbase_name opt_semi {
 					add_feature("DATABASE_USED");
 					open_db($<str>2);
 

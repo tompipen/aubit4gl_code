@@ -1973,6 +1973,10 @@ if (v->expr_type==ET_EXPR_VARIABLE_USAGE) {
 		default: break;
 	}
 
+	if (strcmp(operation,"PARAM")==0) {
+			operation="ASSIGN";
+				scope="L";
+		}
 	add_symbol_with_scope(expr_as_string_when_possible(v),module,lineno,"VARIABLE",operation,scope,evaluate_expr(value,1));
 
 	if (value && strcmp(operation,"ASSIGN")==0) { 
@@ -4591,7 +4595,7 @@ static void add_assignments_for_parameters(expr_str_list *params,char *module,in
 int a;
 if (params==0) return;
 for (a=0;a<params->list.list_len;a++) {
-	add_variable(params->list.list_val[a],module,lineno,"ASSIGN",NULL);
+	add_variable(params->list.list_val[a],module,lineno,"PARAM",NULL);
 }
 }
 
