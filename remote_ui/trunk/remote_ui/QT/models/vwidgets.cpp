@@ -1786,6 +1786,10 @@ MainFrame::vdcdebug("WidgetHelper","setFieldText", "QObject *object, QString fie
          widget->setText(fieldValue);
       }
       else{
+         if(!QFile::exists(fieldValue))
+         {
+             fieldValue.prepend(QDir::tempPath().append("/"));
+         }
          QPixmap pixmap(fieldValue);
          widget->setPixmap(pixmap);
          //widget->setFixedSize(pixmap.size());
