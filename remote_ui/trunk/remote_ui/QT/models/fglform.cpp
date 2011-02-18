@@ -2182,6 +2182,15 @@ MainFrame::vdcdebug("FglForm","findFieldsByName", "QString fieldName");
 
    int index = fieldName.indexOf(".*");
 
+   int index2 = fieldName.indexOf("[");
+
+   if(index2 > 0){
+
+      int index3 = fieldName.indexOf("]")+1;
+      fieldName.remove(index2, index3-index2);
+      index = fieldName.indexOf(".*");
+   }
+
    QString tabName = fieldName.left(index);
 
    QList<Fgl::Link> links = recordView[tabName];
