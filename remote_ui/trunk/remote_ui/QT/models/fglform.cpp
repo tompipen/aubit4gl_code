@@ -2594,7 +2594,7 @@ bool FglForm::handleGuiAction(Action* fAction)
 MainFrame::vdcdebug("FglForm","handleGuiAction", "Action* fAction");
    for(int j=0; j<ql_contextEvents.last().count(); j++){
       Fgl::Event ev = ql_contextEvents.last().at(j);
-      if(ev.type == Fgl::ONACTION_EVENT){
+      if(ev.type == Fgl::ONACTION_EVENT || ev.type == Fgl::ONKEY_EVENT || ev.type == Fgl::MENUACTION_EVENT){
          if(ev.attribute == fAction->name())
             return false;
       }
