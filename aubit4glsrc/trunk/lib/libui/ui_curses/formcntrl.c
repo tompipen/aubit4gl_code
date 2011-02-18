@@ -24,10 +24,10 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.168 2010-10-27 19:39:47 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.169 2011-02-18 21:08:38 mikeaubury Exp $
 #*/
 #ifndef lint
-static char const module_id[] = "$Id: formcntrl.c,v 1.168 2010-10-27 19:39:47 mikeaubury Exp $";
+static char const module_id[] = "$Id: formcntrl.c,v 1.169 2011-02-18 21:08:38 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -1744,7 +1744,28 @@ UILIB_A4GL_req_field_input (void *sv, char type, va_list * ap)
     {				// Next field previous
       A4GL_init_control_stack (s, 0);
       s->currform->currentfield = 0;
-      A4GL_newMovement (s, s->curr_attrib - 1);
+	
+	if (s->curr_attrib==0)  {
+		// We're on the first field and they want an NEXT FIELD PREVIOUS....
+		int nextfield=s->nfields;
+  		while (1) {
+			FIELD *next_field;
+			struct struct_scr_field *f;
+	  		next_field = s->field_list[nextfield];
+	  		f = (struct struct_scr_field *) (field_userptr (next_field));
+
+			// Find the first editable field ...
+			if (!A4GL_field_is_noentry ((s->mode == MODE_CONSTRUCT), f) || (f->datatype == DTYPE_SERIAL && s->mode != MODE_CONSTRUCT)) {
+				break;
+			}
+			nextfield--;
+			if (nextfield==0) break; // Looped all the way..
+		}
+
+      		A4GL_newMovement (s, nextfield);
+	} else {
+      		A4GL_newMovement (s, s->curr_attrib - 1);
+	}
       return 1;
     }
 
