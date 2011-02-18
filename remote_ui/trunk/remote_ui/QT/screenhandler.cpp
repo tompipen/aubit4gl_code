@@ -2039,11 +2039,16 @@ void ScreenHandler::activeWindow(QString windowName)
 {
 MainFrame::vdcdebug("ScreenHandler","activeWindow", "QString windowName");
 
+   if(p_fglform == NULL)
+      return;
+   
+   p_fglform->setEnabled(false);
    for(int i=0; i<ql_fglForms.size(); i++){
       FglForm *form = ql_fglForms.at(i);
 
       if(form->windowName == windowName){
          p_fglform = form;
+         form->setEnabled(true);
          form->raise();
       }
    }
