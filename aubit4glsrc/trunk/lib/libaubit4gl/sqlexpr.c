@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlexpr.c,v 1.100 2011-02-11 16:42:44 mikeaubury Exp $
+# $Id: sqlexpr.c,v 1.101 2011-02-19 14:46:48 mikeaubury Exp $
 #
 */
 
@@ -822,7 +822,7 @@ get_select_list_item (struct s_select *select, struct s_select_list_item *p)
 static char *local_get_variable_usage_as_string (struct variable_usage *var_usage) {
         char buff[2000];
 
-        sprintf(buff, "%s",var_usage->variable_name);
+        //sprintf(buff, "%s",var_usage->variable_name);
         if (var_usage->subscripts.subscripts_len) {
                 int a;
                 strcat(buff, "[");
