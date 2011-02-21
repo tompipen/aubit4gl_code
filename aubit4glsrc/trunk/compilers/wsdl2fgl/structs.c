@@ -832,11 +832,19 @@ print_4gl_push (char *old_prefix, struct variable_element *param,int isSingleton
 	  fprintf (getOuputFile (), "   A4GL_push_long(%s);", name);
 	  return 1;
 	}
+
       if (strcasecmp (param->dtype, "long*") == 0)
 	{
 	  fprintf (getOuputFile (), "   A4GL_push_long(*%s);", name);
 	  return 1;
 	}
+
+      if (strcasecmp (param->dtype, "ENUM:xsd__boolean*") == 0)
+	{
+	  fprintf (getOuputFile (), "   A4GL_push_int(*%s);", name);
+	  return 1;
+	}
+
       if (strcasecmp (param->dtype, "longlong") == 0)
 	{
 	  fprintf (getOuputFile (), "   A4GL_push_long(%s);", name);
@@ -1029,7 +1037,7 @@ fprintf(getOuputFile(),"}\n\n");
 
 fprintf(getOuputFile(),"// An extra URL parameter can optionally be passed in first\n");
 nparams=set_4gl_pop( "",&params->var_val[0],0);
-fprintf(getOuputFile(),"if (nparam!=%d && nparam!=%d) {\n", nparams, nparams+1);
+fprintf(getOuputFile(),"\n\nif (nparam!=%d && nparam!=%d) {\n", nparams, nparams+1);
 fprintf(getOuputFile(),"   A4GL_pop_args(nparam); A4GL_set_status(-3002,0);return 0;\n");
 fprintf(getOuputFile(),"}\n");
 fprintf(getOuputFile(),"\n");
@@ -1049,7 +1057,8 @@ fprintf(getOuputFile(),"\n") ;
 
 
 fprintf(getOuputFile(),"soap = soap_new();\n");
-fprintf(getOuputFile(),"if (soap_call_%s(soap,url,\"%s\",", s,called_name);
+//fprintf(getOuputFile(),"if (soap_call_%s(soap,url,\"%s\",", s,called_name);
+fprintf(getOuputFile(),"if (soap_call_%s(soap,url,NULL,", s);
 for (a=0;a<params->var_len;a++) {
 	if (a) fprintf( getOuputFile(),",");
 	fprintf(getOuputFile(),"%s",  params->var_val[a].name );
