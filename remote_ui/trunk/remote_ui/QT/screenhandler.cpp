@@ -2077,7 +2077,26 @@ MainFrame::vdcdebug("ScreenHandler","setKeyLabel", "QString label, QString text"
    }
 
 
-   createActionMenuButton(text, label);
+   // If Key has a Text then show it
+   if(!text.isEmpty()){
+      createActionMenuButton(text, label);
+   }
+   else{ // else hide the button
+      QList<QAction*> ql_actions = p_fglform->actions();
+      for(int i=0; i<ql_actions.size(); i++){
+         if(Action *a = qobject_cast<Action *> (ql_actions.at(i))){
+            if(a->name() == Fgl::stringToKey(label)){
+               if(ActionMenu *aMenu = qobject_cast<ActionMenu *> (p_fglform->actionMenu())){
+                  if(aMenu->getAction(a->text())){
+                     aMenu->removeButton(a->text());
+                     a->setDefaultView("no");
+                     break;
+                  }
+               }
+            }
+         }
+      }
+   }
 
 }
 

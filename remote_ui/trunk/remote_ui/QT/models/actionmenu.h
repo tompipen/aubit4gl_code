@@ -36,6 +36,7 @@ public:
    void hideButton(QString);
    QList<QPushButton*> buttons();
    void setOrientation(const Qt::Orientation &o);
+   void removeButton(QString);
    void removeButtons();
    void hideButtons(bool);
    QList<QAction*> actions();

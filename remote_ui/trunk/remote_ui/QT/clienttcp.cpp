@@ -806,7 +806,6 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
       QString fileName = childElement.text();
       fileName = QDir::tempPath() + "/" + fileName;
       QFileInfo fileInfo(fileName);
-      qDebug() << fileInfo.absoluteFilePath();
 
 /*
       //QString prog = "xdg-open";

@@ -2466,7 +2466,6 @@ MainFrame::vdcdebug("FglForm","checkActions", "");
                }
             }
          }
-        
       }
    }
 

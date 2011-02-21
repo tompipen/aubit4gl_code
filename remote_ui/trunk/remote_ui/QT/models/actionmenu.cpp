@@ -246,6 +246,22 @@ MainFrame::vdcdebug("ActionMenu","keyPressEvent", "QKeyEvent *event");
    QGroupBox::keyPressEvent(event);
 }
 
+void ActionMenu::removeButton(QString name)
+{
+
+MainFrame::vdcdebug("ActionMenu","removeButton", "QString name");
+   for(int i=0; i<buttonGroup->buttons().size(); i++){
+      if(QPushButton *button = qobject_cast<QPushButton *> (buttonGroup->buttons().at(i))){
+         if(button->text() == name){
+            buttonGroup->removeButton(button);
+            button->deleteLater();
+            break;
+         }
+      }
+   }
+
+}
+
 void ActionMenu::removeButtons()
 {
 MainFrame::vdcdebug("ActionMenu","removeButtons", "");
