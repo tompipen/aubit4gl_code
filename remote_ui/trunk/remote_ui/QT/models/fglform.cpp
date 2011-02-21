@@ -93,7 +93,6 @@ FglForm::FglForm(QString windowName, QWidget *parent) : QMainWindow(parent){
 FglForm::~FglForm()
 {
 MainFrame::vdcdebug("FglForm","~FglForm", "");
-   writeSettingsLocal();
 }
 
 //------------------------------------------------------------------------------
@@ -1977,6 +1976,7 @@ MainFrame::vdcdebug("FglForm","writeSettingsLocal", "");
    settings.beginGroup(windowName);
    settings.setValue("pos", pos());
    settings.endGroup();
+   settings.sync();
 }
 
 //------------------------------------------------------------------------------
@@ -1988,6 +1988,7 @@ void FglForm::readSettingsLocal()
 {
 MainFrame::vdcdebug("FglForm","readSettingsLocal", "");
    QSettings settings;
+   settings.sync();
                     
 
     settings.beginGroup(windowName);

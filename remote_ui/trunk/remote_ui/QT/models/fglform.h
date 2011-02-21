@@ -227,6 +227,8 @@ public slots:
    void setScreenRecordArrLine(int);
    void error(const QString&);
    void checkField();
+   void writeSettingsLocal();
+   void readSettingsLocal();
 
 
 private:
@@ -242,8 +244,6 @@ private:
    QList<Action*> ql_actionDefaults;
    void addToQueue(QString);
    void createStatusBar();
-   void writeSettingsLocal();
-   void readSettingsLocal();
 
    bool b_menu;
    bool b_input;
