@@ -81,15 +81,15 @@ private:
 
    QDomDocument encodeXMLFile(QString);
    void handleStartup(const QDomNode&);
-   void handleDisplayToElement(const QDomNode&, QString parentNodeName = NULL);
-   void handleDisplayArrayElement(const QDomNode&, QString parentNodeName = NULL);
+   void handleDisplayToElement(const QDomNode&, QString parentNodeName = "");
+   void handleDisplayArrayElement(const QDomNode&, QString parentNodeName = "");
    void handleInputElement(const QDomNode&, int attribute = 0);
    void handleConstructElement(const QDomNode&);
    void handleWaitForEventElement(const QDomNode&);
    void handleMenuElement(const QDomNode&);
    void handleEventsElement(const QDomNode&);
    bool sendFile(QString name);
-   bool saveFile(const QDomNode&, QString fileName = NULL);
+   bool saveFile(const QDomNode&, QString fileName = "");
    QString filterUmlauts(QString);
 
    QStringList qsl_fieldList, qsl_arrayTabNames, qsl_arrayValues, qsl_receivedFiles;
