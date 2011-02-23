@@ -374,14 +374,10 @@ ClientSocket::~ClientSocket(){
       p_currScreenHandler->p_prompt->close();
       p_currScreenHandler->p_prompt->deleteLater();
    }
-   for(int i=0; i<p_currScreenHandler->ql_fglForms.size(); i++){
-/*
-      if(p_currScreenHandler->ql_fglForms.at(i)->dialog() != NULL)
-         p_currScreenHandler->ql_fglForms.at(i)->dialog()->close();
-         p_currScreenHandler->ql_fglForms.at(i)->b_allowClose = true;
-         p_currScreenHandler->ql_fglForms.at(i)->close();
-*/
-      p_currScreenHandler->closeWindow(p_currScreenHandler->ql_fglForms.at(i)->windowName);
+
+   QList<FglForm*> ql_forms = p_currScreenHandler->ql_fglForms;
+   for(int i=0; i<ql_forms.size(); i++){
+      p_currScreenHandler->closeWindow(ql_forms.at(i)->windowName);
    }
 
   delete p_currScreenHandler;
