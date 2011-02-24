@@ -74,6 +74,7 @@ end_block (int rb, struct s_rbx *rbx)
   int last;
   struct csv_blocks *block;
   struct csv_entry *centry;
+  int printed = 0;
 
 // First - we need to find our block to print...
   for (a = 0; a < layout->nblocks; a++)
@@ -87,7 +88,7 @@ end_block (int rb, struct s_rbx *rbx)
       for (y = 0; y < block->nrows; y++)
 	{
 	  centry = block->matrix[y];
-	  last = 0;
+	  last = -1;
 
 	  // First - find out how many cells are actually used...
 	  for (x = 0; x < block->ncols; x++)
@@ -99,24 +100,35 @@ end_block (int rb, struct s_rbx *rbx)
 		}
 	    }
 
-	  // Print all of these cells...
-	  for (x = 0; x <= last; x++)
+	  if (last != -1)
 	    {
-	      if (x || y) {
-		fprintf (rep_fout, ",");
-		}
-	      if (centry[x].special && strlen (centry[x].special) && centry[x].rb >= 0 && centry[x].entry >= 0)
+	      // Print all of these cells...
+	      for (x = 0; x <= last; x++)
 		{
-		  fprintf (rep_fout, "\"%s\"", centry[x].special);
-		}
-	      else
-		{
-		  fprintf (rep_fout, "\"\"");
+
+		  if (x || y)
+		    {
+		      fprintf (rep_fout, ",");
+		    }
+
+		  if (centry[x].special && strlen (centry[x].special) && centry[x].rb >= 0 && centry[x].entry >= 0)
+		    {
+		      fprintf (rep_fout, "\"%s\"", centry[x].special);
+		      printed++;
+		    }
+		  else
+		    {
+		      fprintf (rep_fout, "\"\"");
+		      printed++;
+		    }
 		}
 	    }
 	}
     }
+  if (printed)
+    {
       fprintf (rep_fout, "\n");
+    }
 
 }
 
