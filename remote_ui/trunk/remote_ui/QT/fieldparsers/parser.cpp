@@ -282,7 +282,7 @@ MainFrame::vdcdebug("Parser","parseElement", "const QDomNode& xmlNode");
 
          label->setFrameShape(QFrame::HLine);
          label->setFrameShadow(QFrame::Sunken);
-         label->setFixedWidth(gridWidth*10);
+         label->setFixedWidth((gridWidth*10)+4);
          label->setAccessibleName(nodeName);
 
          if(hidden)
