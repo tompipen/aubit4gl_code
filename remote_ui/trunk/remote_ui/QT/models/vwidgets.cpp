@@ -1074,7 +1074,7 @@ MainFrame::vdcdebug("WidgetHelper","createButtonEdit", "const QDomElement& formF
    QString image  = lineEditElement.attribute("image");
 
    bool autoNext = lineEditElement.attribute("autoNext").toInt();
-   bool noEntry  = lineEditElement.attribute("noEntry").toInt();
+   bool noEntry  = formField.attribute("noEntry").toInt();
 
    ButtonEdit *lineEdit = new ButtonEdit(image, parent);
    lineEdit->setAccessibleName(name);
