@@ -8,9 +8,9 @@ let zip="XX123"
 
 
 if NOT (pid=id and pzip=zip) then
-	display "Blah"
-else
 	exit program 1
+else
+	display "Blah"
 end if
 
 

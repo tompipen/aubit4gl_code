@@ -23,7 +23,7 @@ run: compile ; ${DEFAULT_DIFF}
 ##                  Test desctiptions
 ## ======================================================================
 
-desc: ; @echo "test some basic ASCII ... functionality";
+desc: ; @echo "Another string<->integer comparison test"
 
 db_test: 				; @echo "0"
 ec_test: 				; @echo "0"
