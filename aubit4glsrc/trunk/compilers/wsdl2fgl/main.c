@@ -50,6 +50,7 @@ char stub[2000];
 FILE *soap_in;
 
 
+//add_named_struct("xsd__duration");
 yydebug_flag=getenv("YYDEBUG");
 if (yydebug_flag) {
 	if (strcmp(yydebug_flag,"Y")==0) {
@@ -82,6 +83,7 @@ for (a=1;a<argc;a++) {
 		fileName=argv[a];
 
 		sprintf(buff,"wsdl2h  -x -c %s", fileName);
+		printf("Running %s\n",buff);
 		exitStatus=system(buff);
 		exitStatus=WEXITSTATUS(exitStatus);
 		if (exitStatus!=0) {
@@ -121,7 +123,8 @@ if (wsdlMode) {
 }
 
 
-sprintf(buff,"soapcpp2 -n -w -x -c -C %s", fileName);
+//sprintf(buff,"soapcpp2  -n -w -x -c -C %s", fileName);
+sprintf(buff,"soapcpp2 -n -x -c -C %s", fileName);
 printf("Running %s\n",buff);
 exitStatus=system(buff);
 exitStatus=WEXITSTATUS(exitStatus);
@@ -132,6 +135,7 @@ if (exitStatus!=0) {
 
 
 
+printf("Parsing %s\n",fileName);
 yyin=fopen(fileName,"r");
 
 if (yyin==NULL) {
@@ -169,8 +173,9 @@ while (1) {
 	fprintf(fOut,"%s",buff);
 }
 fclose(soap_in);
-
+printf("Here1\n");
 wsdl2fgl_yyparse();
+printf("Here2\n");
 fclose(fOut);
 return 0;
 }
@@ -187,7 +192,7 @@ static int wexitstatus(int x) {
 
 
 void wsdl2fgl_yyerror(char *s) {
-	fprintf(stderr,"%s - Line %d\n",s,yylineno);
+	fprintf(stderr,"WSDL2FGL : %s - Line %d\n",s,yylineno);
 	exit(2);
 
 }

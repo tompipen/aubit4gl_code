@@ -69,11 +69,9 @@ typedef_decl:
 			//printf("Added '%s'\n",$<str>3);
 	}
 	| STRUCT IDENTIFIER  '{' has_struct_entry '}' {
-		//printf("Adding struct %s\n",$<str>2);
 		make_named_struct ($<str>2, $4,0);
 	}
 	| STRUCT TYPE_NAME  '{' has_struct_entry '}' {
-		//printf("Adding struct %s\n",$<str>2);
 		replace_named_struct ($<str>2, $4);
 	}
 	| ENUM IDENTIFIER '{' enum_elements '}' {
@@ -201,7 +199,7 @@ struct_def_type_and_name: /* Used to define the contents of a struct element */
 				A4GL_assertion(1,"No datatype ?");
 			} else {
 				
-				printf("%s\n",$<str>2);
+				printf("struct_def_type_and_name: %s\n",$<str>2);
 				$$->name=strdup($<str>2); 
 			}
 			}
@@ -240,6 +238,13 @@ struct_def_type_and_name: /* Used to define the contents of a struct element */
 
 id_element: 
 	starlist IDENTIFIER {
+		if (strlen($<str>1)) {
+		sprintf($<str>$,"%s %s",$<str>1,$<str>2);
+		} else {
+		strcpy($<str>$,$<str>2);
+		}
+	}
+	| starlist IDENTIFIER STRING_LITERAL {
 		if (strlen($<str>1)) {
 		sprintf($<str>$,"%s %s",$<str>1,$<str>2);
 		} else {
