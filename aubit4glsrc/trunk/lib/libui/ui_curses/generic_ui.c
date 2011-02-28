@@ -1,7 +1,7 @@
 #include "a4gl_lib_ui_tui_int.h"
 #ifndef lint
 	static char const module_id[] =
-		"$Id: generic_ui.c,v 1.61 2011-02-28 18:07:54 mikeaubury Exp $";
+		"$Id: generic_ui.c,v 1.62 2011-02-28 18:10:27 mikeaubury Exp $";
 #endif
 
 static int A4GL_find_shown (ACL_Menu * menu, int chk, int dir);
@@ -868,6 +868,44 @@ A4GL_size_menu (ACL_Menu * menu)
 
 	  int menu_width_chk=5;
 	  if (A4GL_isyes(acl_getenv("MENUOFFSET4"))) {
+		// This seems to be how it was since 2007 - but 
+		// latest test seems to need '5' 
+		// If this causes a problem - we can revert to old behaviour using MENUOFFSET4=Y and take a look again...
+		/*
+		MAIN
+		
+ 		OPEN WINDOW w AT 2,2  with 2 rows, 78 columns ATTRIBUTE (MENU LINE 8,
+		BORDER)
+		
+ 			MENU "MAIN MENU"
+				
+ 				BEFORE MENU
+   					HIDE OPTION "Spojeni"  -- !!!!!!!!!!!!!!!!!!!!!! BUG "..."
+				
+ 				COMMAND "Uloz"   "Ulozeni noveeho zaznamu"
+ 				COMMAND "Hledej" "Vyhleda zaznamu"
+ 				COMMAND "Oprav"  "Oprava vybraneho zaznamu"
+ 				COMMAND "Zrus"   "Zruseni vybraneho zaznamu"
+ 				COMMAND KEY("B") "odBornost" "Odbornost lekare"
+ 				COMMAND KEY("I") "Icl" "ICL lekare"
+ 				COMMAND KEY("K") "Konfig" "Nastaveni konfigurace, pristupu k lab.vysl."
+ 				COMMAND KEY("A") "Atributy" "Nastaveni atributu uzivatele"
+ 				COMMAND KEY("S") "Spojeni" "Telefonni cisla"
+ 				COMMAND KEY("D") "Druhppv" "Pracovne-pravni vztah"
+ 				COMMAND KEY("P") "Postaveni" "Postaveni zamestnance"
+ 				COMMAND KEY("T") "Tisky" "Tisk formularu"
+ 				COMMAND "Vyber"  "Vyber aktualniho radku"
+   				EXIT MENU
+ 				COMMAND "Navrat" "Navrat do nabidky ============================ EXIT ="
+   				EXIT MENU
+
+ 		END MENU
+
+ 		CLOSE WINDOW  w
+
+		END MAIN
+		*/
+
 	   	menu_width_chk=4;
 	  }
 
