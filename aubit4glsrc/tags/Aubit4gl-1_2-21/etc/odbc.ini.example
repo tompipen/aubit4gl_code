@@ -1,0 +1,55 @@
+[ODBC Data Sources]
+ptest	  		= PostgreSQL andtest
+maindb	  		= Informix maindb
+
+[ptest]
+Description = ODBC to PostgreSQL andtest
+Servername = localhost
+Database = andtest
+Username = postgres
+Password = pg
+Driver = /usr/lib/libpsqlodbc.so
+Port = 5432
+;ServerType      = PostgreSQL
+ReadOnly = 0
+;Debug = 1
+;CommLog = 1
+;Trace = ON
+;TraceFile 		= stderr
+;TraceFile 		= stdout
+;TraceFile = /tmp/odbc.log4
+
+[maindb]
+;UserName        = root
+UserName        = informix
+Password        = ifmx
+Description     = ODBC to IDS Maximise maindb db
+Options         = aptiva_sh
+;ServerOptions   =
+;ConnectOptions  =
+Host            = localhost
+ServerType      = Informix 7.2
+Protocol        = TCP/IP
+Driver          = /usr/openlink/lib/oplodbc.so.1
+Database        = maindb
+ReadOnly        = No
+FetchBufferSize = 99
+LastUser        = informix
+NoLoginBox      = No
+
+
+[Default]
+Driver 			= /usr/lib/libpsqlodbc.so
+Servername 		= aptiva
+Server 			= aptiva
+Host			= localhost
+Port 			= 5432
+ServerType      = PostgreSQL
+FetchBufferSize = 99
+;ServerOptions   =
+;ConnectOptions  =
+;Options         =
+;ReadOnly        = no
+
+
+

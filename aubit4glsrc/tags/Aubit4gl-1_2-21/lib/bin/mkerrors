@@ -1,0 +1,49 @@
+#This script is invoked from lib/libaubit4gl/Makefile
+#It creates lib/generated/tmperrs.h file used by lib/libaubit4gl/error.c
+#WARNIG: errno renamed to a4gl_errno because of the conflict in errno.h
+#exitwith renamed to A4GL_exitwith - do we need to change it here?
+
+#Get settings
+
+if [ "$LIBROOT" = "" ]
+then
+	LIBROOT=$AUBITDIR
+fi
+. $LIBROOT/etc/aubitrc
+cd $LIBROOT/lib/bin
+
+#Why not use find here?
+#a="*.c ../libsql/odbc/*.c ../libsql/esqlc/*.ec ../libsql/nosql/nosql.c"
+#b="../libform/form_xdr/*.c ../libui/ui_gtk/*.c ../libmenu/menu_xdr/*.c ../libmsg/msg_native/*.c"
+#c="../libpdf/*.c ../librpc/sun_rpc/*.c ../librpc/xml_rpc/*.c ../libui/ui_console/*.c ../libui/ui_curses/*.c"
+#SOURCES="$a $b $c"
+
+
+sh mkerrors2_alt
+
+$AWK '
+BEGIN {
+errcnt=1;
+FS="|"
+
+print "#define A4GL_ERR_BASE 30000"
+print "static struct s_err {"
+	print "char *errmsg;"
+	print "int a4gl_errno;"
+        print "} errors[]={"
+
+}
+
+
+{
+a4gl_errno=$1
+errmsg=$2
+print "{\"" errmsg "\"," a4gl_errno " },"
+}
+
+END {
+print "{0,0}"
+print "};"
+}
+' mkerrors2.out  > $LIBROOT/lib/generated/tmperrs.h
+
