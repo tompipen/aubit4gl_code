@@ -25,7 +25,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.183 2011-01-18 15:07:24 mikeaubury Exp $
+# $Id: ops.c,v 1.184 2011-03-05 14:57:02 mikeaubury Exp $
 #
 */
 
@@ -7275,9 +7275,21 @@ static int A4GL_conv_char_to_nchar (int d1, void *p1, int d2, void *p2, int size
 static char *buff=0;
 int sl;
 int ll;
+int sz;
+int szp1;
+
 	if (buff) free(buff);
-	buff=malloc(size*4+1);
-	strcpy(buff,p1);
+	szp1=strlen(p1);
+	if (size>szp1) {
+		sz=(size*4)+1;
+	} else {
+		sz=(szp1*4)+1;
+	}
+
+	//A4GL_assertion(sz<=strlen(p1),"not enough space for A4GL_conv_char_to_nchar") ;
+	
+	buff=malloc(sz);
+	strncpy(buff,p1,sz-1);
 
 
         sl=mbstowcs(NULL,buff,0); // character length...
