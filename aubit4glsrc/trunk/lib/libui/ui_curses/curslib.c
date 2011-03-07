@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.173 2011-02-14 19:57:57 mikeaubury Exp $
+# $Id: curslib.c,v 1.174 2011-03-07 07:30:40 mikeaubury Exp $
 #*/
 
 /**
@@ -41,7 +41,7 @@
  */
 #ifndef lint
 static char const module_id[] =
-  "$Id: curslib.c,v 1.173 2011-02-14 19:57:57 mikeaubury Exp $";
+  "$Id: curslib.c,v 1.174 2011-03-07 07:30:40 mikeaubury Exp $";
 #endif
 /*
 =====================================================================
@@ -1190,8 +1190,8 @@ A4GL_display_menu (ACL_Menu * menu)
 		    }
 		}
 	    }
-	}
       prev_opt = (ACL_Menu_Opts *) opt1;
+	}
       opt1 = (ACL_Menu_Opts *) opt1->next_option;
     }
 #ifdef DEBUG
