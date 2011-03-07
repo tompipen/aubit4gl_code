@@ -1,7 +1,7 @@
 #include "a4gl_lib_ui_tui_int.h"
 #ifndef lint
 	static char const module_id[] =
-		"$Id: generic_ui.c,v 1.63 2011-03-07 07:30:40 mikeaubury Exp $";
+		"$Id: generic_ui.c,v 1.64 2011-03-07 19:58:41 mikeaubury Exp $";
 #endif
 
 static int A4GL_find_shown (ACL_Menu * menu, int chk, int dir);
@@ -15,7 +15,7 @@ A4GL_string_width (char *s)
   int a;
   static char buff2[10024];
 
-  a = UILIB_A4GL_get_curr_width () - 2;
+  a = UILIB_A4GL_get_curr_width () ;
 #ifdef DEBUG
   A4GL_debug("String width=%d",a);
 #endif
@@ -866,7 +866,7 @@ A4GL_size_menu (ACL_Menu * menu)
 	  something_else_printable=0;
 	  s_off=0;
 
-          if ((disp_cnt2 + menu->menu_offset + s_length  + 4) > menu->w) { 
+          if ((disp_cnt2 + menu->menu_offset + s_length  + 5) > menu->w) { 
   		ACL_Menu_Opts *po;
       		po = (ACL_Menu_Opts *) opt1->next_option;
 		while(po!=0) {
