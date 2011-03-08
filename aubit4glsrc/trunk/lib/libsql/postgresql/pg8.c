@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pg8.c,v 1.118 2010-11-24 20:46:25 mikeaubury Exp $
+# $Id: pg8.c,v 1.119 2011-03-08 09:31:21 mikeaubury Exp $
 #*/
 
 
@@ -777,6 +777,7 @@ A4GLSQLLIB_A4GLSQL_get_columns (char *tabname, char *colname, int *dtype,
   char tname[256];
   char schemaname[2000]="";
   char search_path[2000]="";
+  int rval;
   curr_colno = 0;
 
   if (strchr (tabname, ':'))
@@ -831,15 +832,16 @@ A4GLSQLLIB_A4GLSQL_get_columns (char *tabname, char *colname, int *dtype,
   resGC = PQexec (current_con, buff);
 
 
-
+  rval=-1;
   switch (PQresultStatus (resGC))
     {
     case PGRES_COMMAND_OK:
     case PGRES_TUPLES_OK:
       nfieldsForGetColumns = PQntuples (resGC);
       A4GL_debug ("Returns %d fields", nfieldsForGetColumns);
-      if (nfieldsForGetColumns)
-	return 1;
+      if (nfieldsForGetColumns) {
+			rval=1; break;
+		}
 
     case PGRES_EMPTY_QUERY:
     case PGRES_COPY_OUT:
@@ -849,19 +851,23 @@ A4GLSQLLIB_A4GLSQL_get_columns (char *tabname, char *colname, int *dtype,
     case PGRES_FATAL_ERROR:
       A4GL_set_errm (tabname);
       A4GL_exitwith_sql ("Unexpected postgres return code1\n");
-      return 0;
+      rval=0; break;
     }
 
 	if (strlen(search_path)) {
 		PGresult *res;
-	SPRINTF1(buff,"set search_path TO %s", search_path);
-	res=PQexec(current_con, buff);
-	PQclear(res);
+		SPRINTF1(buff,"set search_path TO %s", search_path);
+		res=PQexec(current_con, buff);
+		PQclear(res);
 	}
 
-  A4GL_set_errm (tabname);
-  A4GL_exitwith_sql ("Table not found\n");
-  return 0;
+	if (rval==-1) {
+  		A4GL_set_errm (tabname);
+  		A4GL_exitwith_sql ("Table not found\n");
+  		return 0;
+  	}
+
+  return rval;
 }
 
 
