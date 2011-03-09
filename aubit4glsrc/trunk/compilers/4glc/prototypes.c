@@ -1801,7 +1801,8 @@ FILE *output_functionmapping;
       if (functions[a].nparameters)
 	{
 	  int b;
-	  for (b = functions[a].nparameters - 1; b >= 0; b--)
+	  //for (b = functions[a].nparameters - 1; b >= 0; b--)
+	  for (b = 0;b<functions[a].nparameters ;b++) 
 	    {
 	      int dtype;
 	      fprintf (output_soap, "   ");
