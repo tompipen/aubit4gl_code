@@ -24,11 +24,11 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.185 2010-08-25 11:13:20 mikeaubury Exp $
+# $Id: newpanels.c,v 1.186 2011-03-11 07:37:19 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: newpanels.c,v 1.185 2010-08-25 11:13:20 mikeaubury Exp $";
+		"$Id: newpanels.c,v 1.186 2011-03-11 07:37:19 mikeaubury Exp $";
 #endif
 
 /**
@@ -1208,7 +1208,8 @@ A4GL_display_form (struct s_form_dets *f,int attrib)
 #ifdef DEBUG
   A4GL_debug ("Form line=%d", fl);
   A4GL_debug ("Scale form returns %d %d", rows, cols);
-  A4GL_debug ("Current window %d %d", windows[currwinno].h, windows[currwinno].w);
+  A4GL_debug ("Current window[%d] %d %d", currwinno, windows[currwinno].h, windows[currwinno].w);
+
 #endif
 
   if (windows[currwinno].winattr.border)
@@ -4066,6 +4067,8 @@ return yes;
 
 
 void resize_screen_window(int w,int h) {
+		A4GL_chkwin();
+		A4GL_debug("In resize_screen_window : %d %d\n", w,h);
 		if (windows[0].w==w && windows[0].h==h) return; // There already...
                         windows[0].w=w;
                         windows[0].h=h;
