@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ui.c,v 1.103 2010-10-27 19:42:02 mikeaubury Exp $
+# $Id: ui.c,v 1.104 2011-03-11 20:09:35 mikeaubury Exp $
 #
 */
 
@@ -862,12 +862,6 @@ A4GL_chk_for_screen_print (int a)
   aclfgl_aclfgl_dump_screen (0);
 
 }
-
-/*
-void *A4GL_make_pixmap(char *filename) {
-	return A4GL_make_pixmap_gw(filename);
-}
-*/
 
 
 

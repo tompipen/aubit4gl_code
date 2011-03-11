@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pack_mempacked.c,v 1.17 2010-02-16 13:16:58 mikeaubury Exp $
+# $Id: pack_mempacked.c,v 1.18 2011-03-11 20:09:02 mikeaubury Exp $
 #*/
 
 /**
@@ -353,24 +353,38 @@ A4GLPacker_input_enum (char *name, char *en,  int *d)
  * @todo Describe function
  */
 int
-A4GLPacker_A4GL_open_packer (char *basename, char dir,char *packname,char *version)
+A4GLPacker_A4GL_open_packer (char *basename_o, char dir,char *packname,char *version)
 {
   //char buff[256];
   char *ptr = 0;
+  char basename[20000];
+  strcpy(basename,basename_o);
+
+
 #ifdef DEBUG
   A4GL_debug ("MEMPACKER : basename=%s\n", basename);
 #endif
   ptr = strchr (basename, '.');
   *ptr = 0;
 
+
+  ptr=0;
   if (A4GL_has_pointer (basename, COMPILED_FORM))
     {
       ptr = A4GL_find_pointer_val (basename, COMPILED_FORM);
-    }
+    } 
+  if (!ptr) {
+  	A4GL_make_downshift(basename);
+  	if (A4GL_has_pointer (basename, COMPILED_FORM))
+    	{
+      	ptr = A4GL_find_pointer_val (basename, COMPILED_FORM);
+    	} 
+  }
 
   if (ptr == 0)
     {
       A4GL_exitwith ("Unable to open form in memory");
+	return 0;
     }
 
   if (toupper (dir) == 'I')

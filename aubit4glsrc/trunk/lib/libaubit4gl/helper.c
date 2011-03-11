@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper.c,v 1.93 2011-01-16 12:41:24 mikeaubury Exp $
+# $Id: helper.c,v 1.94 2011-03-11 20:09:35 mikeaubury Exp $
 #
 */
 
@@ -1068,11 +1068,16 @@ A4GL_read_form (char *s, char *p)
   char formpath[256];
   int found = 0;
   FILE *f;
+  char sDownShift[2000];
+
+
+  strcpy(sDownShift,s);
+  A4GL_make_downshift(sDownShift);
 
 #ifdef DEBUG
   A4GL_debug ("read_form %s %s", s, p);
 #endif
-  if (A4GL_has_pointer (s, COMPILED_FORM))
+  if (A4GL_has_pointer (sDownShift, COMPILED_FORM))
     {
       char *formtype;
       char *packer;
@@ -1086,8 +1091,8 @@ A4GL_read_form (char *s, char *p)
 #endif
       A4GLFORM_clrlibptr ();
       A4GLPACKER_clrlibptr ();
-      formtype = A4GL_find_pointer_val (s, COMPILED_FORM_FORMTYPE);
-      packer = A4GL_find_pointer_val (s, COMPILED_FORM_PACKER);
+      formtype = A4GL_find_pointer_val (sDownShift, COMPILED_FORM_FORMTYPE);
+      packer = A4GL_find_pointer_val (sDownShift, COMPILED_FORM_PACKER);
       A4GL_setenv ("A4GL_FORMTYPE", formtype, 1);
       A4GL_setenv ("A4GL_PACKER", packer, 1);
     }
@@ -1148,7 +1153,7 @@ A4GL_read_form (char *s, char *p)
 
 
 
-  if (A4GL_has_pointer (s, COMPILED_FORM))
+  if (A4GL_has_pointer (sDownShift, COMPILED_FORM))
     {
 #ifdef DEBUG
       A4GL_debug ("Restoring old packer & formtype");
