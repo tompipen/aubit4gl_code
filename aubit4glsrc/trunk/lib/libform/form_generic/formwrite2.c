@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formwrite2.c,v 1.56 2010-05-26 16:25:43 mikeaubury Exp $
+# $Id: formwrite2.c,v 1.57 2011-03-11 17:38:30 mikeaubury Exp $
 #*/
 
 /**
@@ -1037,7 +1037,10 @@ int a;
 
 }
 
-static char *cleaned_fname(char *s) {
+static char *cleaned_fname(char *s_orig) {
+static char s[3000];
+strcpy(s,s_orig);
+A4GL_make_downshift(s);
 #ifdef __WIN32__
 	if (strchr(s,'\\')) {
 		return rindex(s,'\\')+1;
