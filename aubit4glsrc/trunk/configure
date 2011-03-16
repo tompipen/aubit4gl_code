@@ -21414,26 +21414,18 @@ fi
 
 
 
-	 if test "$ac_cv_lib_qrencode_QRcode_encodemask" = "yes";
-	then
-	 if test "$ac_cv_lib_qrencode_QRinput_new2" = "yes";
-	then
+	if test "$ac_cv_lib_qrencode_QRinput_new2" = "yes"; then
 		HAVE_LIBQRENCODE=1
-		HAVE_LIBQRENCODE_ENCODEMASK=1
 		$as_echo "#define HAVE_LIBQRENCODE 1" >>confdefs.h
 
 		$as_echo "#define HAVE_LIBQRENCODE_ENCODEMASK 1" >>confdefs.h
 
-   else
-    HAVE_LIBQRENCODE=1
-		HAVE_LIBQRENCODE_ENCODEMASK=0
-		$as_echo "#define HAVE_LIBQRENCODE 1" >>confdefs.h
-
-		$as_echo "#define HAVE_LIBQRENCODE_ENCODEMASK 1" >>confdefs.h
-
-	 fi
+		if test "$ac_cv_lib_qrencode_QRcode_encodemask" = "yes"; then
+			HAVE_LIBQRENCODE_ENCODEMASK=1
+   		else
+			HAVE_LIBQRENCODE_ENCODEMASK=0
+		fi
 	fi
-
 fi
 
 
@@ -32223,7 +32215,7 @@ test "x$enable_libtool_lock" != xno && enable_libtool_lock=yes
 case $host in
 *-*-irix6*)
   # Find out which ABI we are using.
-  echo '#line 32226 "configure"' > conftest.$ac_ext
+  echo '#line 32218 "configure"' > conftest.$ac_ext
   if { { eval echo "\"\$as_me\":${as_lineno-$LINENO}: \"$ac_compile\""; } >&5
   (eval $ac_compile) 2>&5
   ac_status=$?
@@ -38356,7 +38348,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure,v 1.471 2011-01-24 19:22:45 mikeaubury Exp $
+| $Id: configure,v 1.472 2011-03-16 18:28:13 mikeaubury Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X
