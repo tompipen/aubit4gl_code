@@ -1709,6 +1709,10 @@ FILE *output_functionmapping;
 /* *********************************************************************************/
 
   output_soap = fopen ("prototypes_server.c", "w");
+  if (output_soap==0) {
+  	fprintf(stderr,"Unable to open prototypes_server.c\n");
+		exit(2);
+  }
   fprintf (output_soap, "#include \"soapH.h\"\n");
   fprintf (output_soap, "#include \"a4gl_incl_4glhdr.h\"\n");
   fprintf (output_soap, "extern long a4gl_status;\n");

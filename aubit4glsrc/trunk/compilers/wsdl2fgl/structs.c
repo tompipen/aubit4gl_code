@@ -711,11 +711,20 @@ char buff[400];
 
       if (strcasecmp (param->dtype, "long*") == 0)
 	{
-	  sprintf (buff, "{static int plong;plong=A4GL_pop_long();%s=&plong;}", name);
+	  sprintf (buff, "{static int plong;plong=A4GL_pop_long();if (A4GL_isnull(2,&plong)) %s=0; else %s=&plong;}", name,name);
 		pop_param_buff[npop_param++]=strdup(buff);
 			fprintf(getOuputFile()," INTEGER */\n");
 	  return 1;
 	}
+      if (strcasecmp (param->dtype, "short*") == 0)
+	{
+	  sprintf (buff, "{static int pshort;pshort=A4GL_pop_int();if (A4GL_isnull(1,&plong)) %s=0; %s=&pshort;}", name,name);
+		pop_param_buff[npop_param++]=strdup(buff);
+			fprintf(getOuputFile()," SMALLINT */\n");
+	  return 1;
+	}
+
+
       if (strcasecmp (param->dtype, "ulonglong") == 0)
 	{
 	  sprintf (buff, "%s=A4GL_pop_long();", name);
