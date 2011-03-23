@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: console.c,v 1.55 2010-12-11 13:09:34 mikeaubury Exp $
+# $Id: console.c,v 1.56 2011-03-23 20:29:28 mikeaubury Exp $
 #*/
 
 /**
@@ -656,7 +656,7 @@ A4GL_menu_attrib (void* menuv, int attr, va_list ap)
  * @todo Describe function
  */
 int
- UILIB_A4GL_start_prompt (void *vprompt, int ap, int c, int h, int af,char *text, char *style)
+ UILIB_A4GL_start_prompt (void *vprompt, int ap, int c, int h, int af,char *text, char *style,int dtype_hint)
 {
   char *promptstr;
   //int width=0;

@@ -843,6 +843,9 @@ uilib_prompt_start (int n)
   char *mod;
   int helpno;
   int charmode;
+int dtype;
+
+  dtype=POPint();
 
   style = charpop ();
   text = charpop ();
@@ -860,8 +863,8 @@ uilib_prompt_start (int n)
   contexts[cprompt].ui.prompt.promptresult = 0;
   suspend_flush (1);
   send_to_ui
-    ("<PROMPT CONTEXT=\"%d\" PROMPTATTRIBUTE=\"%s\" FIELDATTRIBUTE=\"%s\" TEXT=\"%s\" CHARMODE=\"%d\" HELPNO=\"%d\" ATTRIB_STYLE=\"%s\" ATTRIB_TEXT=\"%s\">",
-     cprompt, prompt_attr, field_attr, xml_escape(promptstr), charmode, helpno, xml_escape(style), xml_escape(text));
+    ("<PROMPT CONTEXT=\"%d\" PROMPTATTRIBUTE=\"%s\" FIELDATTRIBUTE=\"%s\" TEXT=\"%s\" CHARMODE=\"%d\" HELPNO=\"%d\" ATTRIB_STYLE=\"%s\" ATTRIB_TEXT=\"%s\" DTYPE_HINT=\"%d\">",
+     cprompt, prompt_attr, field_attr, xml_escape(promptstr), charmode, helpno, xml_escape(style), xml_escape(text), dtype);
   free (field_attr);
   free (prompt_attr);
   free (promptstr);

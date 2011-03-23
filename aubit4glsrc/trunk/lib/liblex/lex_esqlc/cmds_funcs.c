@@ -3032,7 +3032,11 @@ if (cmd_data->prompt_fld_attrib) {
 	text="\"\"";
 }
 
-  printc ("if (A4GL_start_prompt(&_sio_%d,_attr_prompt,%d,%d,_attr_field,%s,_style)) {\n", cmd_data->sio,  cmd_data->for_char==EB_TRUE, cmd_data->helpno, text);
+  printc("int _dtype_hint=0;");
+  if (cmd_data->promptvar->expr_type==ET_EXPR_VARIABLE_USAGE) {
+	printc("_dtype_hint=%d;\n",cmd_data->promptvar->expr_str_u.expr_variable_usage->datatype);
+  }
+  printc ("if (A4GL_start_prompt(&_sio_%d,_attr_prompt,%d,%d,_attr_field,%s,_style,_dtype_hint)) {\n", cmd_data->sio,  cmd_data->for_char==EB_TRUE, cmd_data->helpno, text);
   tmp_ccnt++;
   printc ("while (1) {");
   tmp_ccnt++;

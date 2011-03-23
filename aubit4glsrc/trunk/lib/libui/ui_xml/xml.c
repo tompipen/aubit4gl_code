@@ -2530,7 +2530,7 @@ UILIB_A4GL_prompt_loop_v2 (void *vprompt, int timeout, void *evt_list)
 }
 
 int
-UILIB_A4GL_start_prompt (void *vprompt, int ap, int c, int h, int af,char *text,char *style)
+UILIB_A4GL_start_prompt (void *vprompt, int ap, int c, int h, int af,char *text,char *style,int dtype_hint)
 {
   int rval=0;
   char *promptstr;
@@ -2558,8 +2558,9 @@ UILIB_A4GL_start_prompt (void *vprompt, int ap, int c, int h, int af,char *text,
   A4GL_push_long (h);
   A4GL_push_char(text);
   A4GL_push_char(style);
+  A4GL_push_long(dtype_hint);
   startingPrompt++;
-  uilib_prompt_start (9);
+  uilib_prompt_start (10);
 
   rval = 1;
   return rval;

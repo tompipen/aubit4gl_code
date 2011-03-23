@@ -8,7 +8,7 @@
 #include "lowlevel.h"
 #ifndef lint
 static char const module_id[] =
-  "$Id: misc.c,v 1.74 2009-07-10 11:55:54 mikeaubury Exp $";
+  "$Id: misc.c,v 1.75 2011-03-23 20:29:28 mikeaubury Exp $";
 #endif
 
 //void *UILIB_A4GL_get_curr_form (int n);
@@ -1537,7 +1537,7 @@ A4GL_ask_cmdline (char *prompt, char *s, int a)
   {
     char _p[36];
     int _fld_dr;
-    UILIB_A4GL_start_prompt (&_p, 0, 0, 0, 0,"","");
+    UILIB_A4GL_start_prompt (&_p, 0, 0, 0, 0,"","",0xff0000);
     while (GET_AS_INT ("s_prompt", _p, "mode") != 2)
       {
         static struct aclfgl_event_list _sio_evt[] = { {0} };

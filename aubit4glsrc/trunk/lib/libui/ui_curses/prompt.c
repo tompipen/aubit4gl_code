@@ -24,11 +24,11 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: prompt.c,v 1.81 2010-10-27 19:39:47 mikeaubury Exp $
+# $Id: prompt.c,v 1.82 2011-03-23 20:29:28 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: prompt.c,v 1.81 2010-10-27 19:39:47 mikeaubury Exp $";
+		"$Id: prompt.c,v 1.82 2011-03-23 20:29:28 mikeaubury Exp $";
 #endif
 
 /**
@@ -76,7 +76,7 @@ static int A4GL_proc_key_prompt (int a, FORM * mform, struct s_prompt *prompt);
  * @todo Describe function
  */
 int
- UILIB_A4GL_start_prompt (void *vprompt, int ap, int c, int h_helpno, int af,char *text, char *style)
+ UILIB_A4GL_start_prompt (void *vprompt, int ap, int c, int h_helpno, int af,char *text, char *style,int dtype_hint)
 {
   char *promptstr;
   int promptline;

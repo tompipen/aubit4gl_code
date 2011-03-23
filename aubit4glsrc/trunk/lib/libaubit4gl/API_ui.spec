@@ -61,7 +61,7 @@ A4GL_remove_window char* win_name -> void
 A4GL_disp_arr_v2 void* disp void* ptr char* srecname int attrib char* scrollf int scrollw void* evt  -> int
 A4GL_inp_arr_v2 void* disp int defs char* srecname int attrib int init void* evt -> int
 A4GL_prompt_loop_v2 void* prompt,int timeout void* evt_list -> int
-A4GL_start_prompt void* prompt int ap int c int h int af char* text, char* style -> int
+A4GL_start_prompt void* prompt int ap int c int h int af char* text, char* style int dtype_hint -> int
 A4GL_endis_fields_ap int en_dis va_list* ap -> int
 A4GL_clr_form int to_defaults -> void
 A4GL_clr_form_fields int to_defaults char* defs -> void

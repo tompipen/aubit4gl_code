@@ -8,7 +8,7 @@
 #include "formcntrl.h"
 
 #ifndef lint
-static char const module_id[] = "$Id: generic_ui.c,v 1.163 2010-12-11 13:09:34 mikeaubury Exp $";
+static char const module_id[] = "$Id: generic_ui.c,v 1.164 2011-03-23 20:29:28 mikeaubury Exp $";
 #endif
 
 static int A4GL_ll_field_opts_i (void *f);
@@ -3548,7 +3548,7 @@ A4GL_prompt_loop_v2_int (void *vprompt, int timeout, void *evt)
 }
 
 int
-UILIB_A4GL_start_prompt (void *vprompt, int ap, int c, int h, int af, char *text, char *style)
+UILIB_A4GL_start_prompt (void *vprompt, int ap, int c, int h, int af, char *text, char *style,int dtype_hint)
 {
   char *promptstr;
   struct s_prompt *promptx;

@@ -39,6 +39,7 @@
 
 #define ID_SETYOURID -122
 
+void A4GL_set_buffer_touched(int n);
 int _myId=-1; 	// myId may be set from the Proxy to tell us what descriptor its using
 		// if its set - then we'll use this as our envelope ID..
 
