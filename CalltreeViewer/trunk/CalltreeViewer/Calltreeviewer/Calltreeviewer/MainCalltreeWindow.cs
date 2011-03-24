@@ -1364,9 +1364,13 @@ namespace Calltreeviewer
 
         private void textBox1_MouseMove(object sender, MouseEventArgs e)
         {
-            if (!textBox1.Focused)
+            if (textBox1.FindDialog != null && textBox1.FindDialog.Visible) { } 
+            else
             {
-                textBox1.Focus();
+                if (!textBox1.Focused)
+                {
+                    textBox1.Focus();
+                }
             }
         }
 
@@ -1375,7 +1379,11 @@ namespace Calltreeviewer
             
             if (!treeView1.Focused)
             {
-                treeView1.Focus();
+                if (textBox1.FindDialog != null && textBox1.FindDialog.Visible) { } 
+                else
+                {
+                    treeView1.Focus();
+                }
             }
         }
 
@@ -1456,9 +1464,13 @@ namespace Calltreeviewer
 
         private void listBox1_MouseMove(object sender, MouseEventArgs e)
         {
-            if (!listBox1.Focused)
+            if (textBox1.FindDialog != null && textBox1.FindDialog.Visible) { }
+            else
             {
-                listBox1.Focus();
+                if (!listBox1.Focused)
+                {
+                    listBox1.Focus();
+                }
             }
         }
 
