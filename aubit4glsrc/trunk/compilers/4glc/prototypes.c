@@ -2167,6 +2167,7 @@ FILE *output_functionmapping;
       fprintf (output_soap, "\n        ,&ret) == SOAP_OK) {\n");
       fprintf (output_soap, "   } else  { // an error occurred\n");
       fprintf (output_soap, "      soap_print_fault(soap, stderr); // display the SOAP fault on the stderr stream\n");
+      fprintf (output_soap, "      return 0;\n");
       fprintf (output_soap, "   }\n");
 
 

@@ -1107,7 +1107,7 @@ rvals=print_4gl_push( "", &params->var_val[params->var_len-1],0);
 fprintf(getOuputFile(),"   return %d;\n",rvals);
 fprintf(getOuputFile(),"}\n");
 
-fprintf(getOuputFile(),"else {soap_print_fault(soap,stderr);}\n");
+fprintf(getOuputFile(),"else {soap_print_fault(soap,stderr); return 0;}\n");
 
 /*
 
