@@ -25,7 +25,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.184 2011-03-05 14:57:02 mikeaubury Exp $
+# $Id: ops.c,v 1.185 2011-03-24 12:57:32 mikeaubury Exp $
 #
 */
 
@@ -6147,7 +6147,12 @@ A4GL_display_int (void *ptr, int size, int string_sz, struct struct_scr_field *f
     {
       if (sizeof (long) > 4)
 	{
-	  value_in_ptr = (*(long *) ptr) & 0xffffffff;
+		long *iptr;
+		int p;
+		iptr=ptr;
+		p=(*iptr); 
+	   value_in_ptr =p; //& 0xffffffff;
+
 	}
       else
 	{
