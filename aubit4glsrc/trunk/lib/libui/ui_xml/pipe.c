@@ -19,7 +19,7 @@
 #include "debug.h"
 
 int stream_buff_size=1000000;
-
+void remove_pipes (void);
 //#define stream_buff_size 50000
 char **sock_buff=0;
 int nsock=0;
@@ -333,7 +333,10 @@ if (use_write) {
 			sleep(1);
 #endif
 
-			if (errno==32 || errno==29) {
+			if (errno==32 || errno==29 || errno==5) {
+				if(errno==5) {
+					printf("I/O Error\n");
+				}
 #ifdef COMPILING_PROXY
             remove_pipes();
 #endif
@@ -341,9 +344,9 @@ if (use_write) {
 			}
 
 #ifdef EBADR
-			if (errno==EBADF || errno==EBADR) {
+			if (errno==EBADF || errno==EBADR ) {
 #else
-			if (errno==EBADF) {
+			if (errno==EBADF ) {
 #endif
 				// something wrong - so die..
 				break;
