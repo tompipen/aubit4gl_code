@@ -1487,10 +1487,15 @@ MainFrame::vdcdebug("FglForm","nextfield", "bool change");
       if(!this->context->getOption("WRAP")){
          if(context->fieldList().count() > 0){
             QWidget* lastField = context->fieldList().last();
+            Fgl::Event event;
             if(lastField == currentWidget){
                switch(state()){
                   case Fgl::INPUT:
                   case Fgl::CONSTRUCT:
+                     //If its the last field in the construct, call the AFTER FIELD EVENT and then the ACCEPT EVENT
+                     event.type = Fgl::AFTER_FIELD_EVENT;
+                     event.attribute = currentWidget->objectName();
+                     fieldEvent(event);
                      acceptTriggered();
                      break;
                   default:
