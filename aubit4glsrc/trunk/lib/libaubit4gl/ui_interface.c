@@ -84,7 +84,12 @@ static int ui_interface_frontcall(long *objectID, int nparam) {
 
 static int ui_interface_refresh(long *objectID,int nparam) {
 	A4GL_ui_frontcall("INTERNAL","ui.interface.refresh", 0,0,0,0);
-	
+	return 0;
+}
+
+static int ui_interface_close(long *objectID,int nparam) {
+	A4GL_ui_frontcall("INTERNAL","ui.interface.close", 0,0,0,0);
+ 	A4GL_direct_to_ui ("FLUSH", "");
 	return 0;
 }
 
@@ -103,6 +108,8 @@ char *text;
 	return 0;
 }
 
+
+
 void add_ui_interface_support(void) {
         A4GL_add_object_type("ui.interface");
 	A4GL_add_datatype_function_i (DTYPE_OBJECT, ":ui.interface.loadtoolbar", (void *) ui_interface_loadtoolbar);
@@ -111,5 +118,6 @@ void add_ui_interface_support(void) {
 	A4GL_add_datatype_function_i (DTYPE_OBJECT, ":ui.interface.frontcall", (void *) ui_interface_frontcall);
 	A4GL_add_datatype_function_i (DTYPE_OBJECT, ":ui.interface.refresh", (void *) ui_interface_refresh);
 	A4GL_add_datatype_function_i (DTYPE_OBJECT, ":ui.interface.settext", (void *) ui_interface_settext);
+	A4GL_add_datatype_function_i (DTYPE_OBJECT, ":ui.interface.close", (void *) ui_interface_close);
 		//ui.interface.getrootnode
 }
