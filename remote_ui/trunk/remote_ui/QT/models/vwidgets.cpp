@@ -23,6 +23,7 @@
 #include <QRegExp>
 #include <QRegExpValidator>
 #include <QDomElement>
+#include <QDragEnterEvent>
 
 #include "mainframe.h"
 #include "vwidgets.h"
@@ -289,11 +290,10 @@ LineEdit::LineEdit(QWidget *parent)
    setProperty("touched", false);
    this->setFixedHeight(defHeight);
    setContextMenuPolicy(Qt::CustomContextMenu);
-
    QFont textFont;
    textFont.setPixelSize(12);
    QFontMetrics fm(textFont);
-
+   //this->installEventFilter(this);
    b_denyFocus = false;
    b_noEntry = false;
    b_autoNext = false;
@@ -304,6 +304,7 @@ LineEdit::LineEdit(QWidget *parent)
 
    // Set enabled as long as Protocol says to enable it
    this->setEnabled(false);
+   this->setAcceptDrops(true);
 
    connect(this, SIGNAL(textChanged(const QString)), this, SLOT(isTouched()));
 //   connect(this, SIGNAL(editingFinished()), this, SLOT(check()));
@@ -384,16 +385,42 @@ void LineEdit::checkNext(const QString &textr){
       emit nextField();
 }
 
-void LineEdit::dropEvent(QDropEvent *e)
+void LineEdit::dragEnterEvent(QDragEnterEvent *e)
 {
-   //Handle drop for files and directories (paste path into the field (without file://)
-   if(e->mimeData()->hasText()){
-      QString text = e->mimeData()->text();
-      this->setText(text.replace("file://","").trimmed());
-   }
-    
+   //Accept Events for dropEvent
+   e->acceptProposedAction();
+}
+
+bool LineEdit::eventFilter(QEvent *e, QObject *o)
+{
+    if(e->type() == QEvent::Drop)
+    {
+        qDebug()<<"Alter was solln der schrott";
+    }
 
 }
+//DropEvent for Drop files into a ButtonEdit/LineEdit
+void LineEdit::dropEvent(QDropEvent *e)
+{
+    //Handle drop for files and directories (paste path into the field (without file://)
+    if(e->mimeData()->hasUrls() || e->mimeData()->hasText() ){
+        QString text;
+        if (e->mimeData()->hasUrls() )
+        {
+           QList<QUrl> listUrls = e->mimeData()->urls();
+           qDebug() << listUrls.count();
+           //some fancy stuff in here for a list of URLs maybe?
+           text = QString(listUrls[0].toString());
+        }
+        else
+        {
+           text =  e->mimeData()->text();
+        }
+        text = text.replace("file://","").trimmed();
+        this->setText(text);
+    }
+}
+
 
 //------------------------------------------------------------------------------
 // Method       : Edit()
