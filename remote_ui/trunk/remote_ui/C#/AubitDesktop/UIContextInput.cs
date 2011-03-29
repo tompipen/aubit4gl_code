@@ -479,8 +479,9 @@ namespace AubitDesktop
             {
                 
                 CurrentField = setCurrentField;
-                
+                careAboutFocus = true;
                 CurrentField.fglField.setFocus();
+                careAboutFocus = false;
                 setCurrentField = null;
 
             }
