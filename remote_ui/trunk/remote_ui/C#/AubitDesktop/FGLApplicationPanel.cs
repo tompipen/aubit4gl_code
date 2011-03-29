@@ -30,7 +30,7 @@ using System.IO;
 
 namespace AubitDesktop
 {
-    public class FGLApplicationPanel  : Panel
+    public class FGLApplicationPanel   : Panel
     {
         private FGLOptions options;
         public int ApplicationEnvelopeID;
@@ -227,7 +227,7 @@ namespace AubitDesktop
 
 
 
-        void UIContext_EventTriggered(object source, string ID, string TriggeredText,UIContext u)
+        void UIContext_EventTriggered(object sourcex, string ID, string TriggeredText,UIContext u)
         {
             if (u == null) u = currentContext;
 
@@ -2484,7 +2484,13 @@ namespace AubitDesktop
             if (!this.Disposing)
             {
                 // We might get to here if we're waiting for an event - but thats ok - because it will stay in the queue...
-                this.ResumeLayout();
+                try
+                {
+                    this.ResumeLayout();
+                }
+                catch { 
+                    // Should only fail if its disposing or disposed...
+                }
             }
             Console.WriteLine("Consumed:"+(DateTime.Now-stime));
         }
