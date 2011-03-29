@@ -406,6 +406,12 @@ namespace AubitDesktop
                         ui_combo_frontcall(appPanel, call.NAME, call.VALUES, null);
                         return;
                     }
+                
+                    if (call.NAME=="ui.interface.close")
+                    {
+                        Application.Exit();
+                        return;
+                    }
                     
                     MessageBox.Show("Unhandled INTERNAL frontcall : " + call.NAME);
                     break;
