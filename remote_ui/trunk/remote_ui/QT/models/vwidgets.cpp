@@ -391,26 +391,18 @@ void LineEdit::dragEnterEvent(QDragEnterEvent *e)
    e->acceptProposedAction();
 }
 
-bool LineEdit::eventFilter(QEvent *e, QObject *o)
-{
-    if(e->type() == QEvent::Drop)
-    {
-        qDebug()<<"Alter was solln der schrott";
-    }
-
-}
 //DropEvent for Drop files into a ButtonEdit/LineEdit
 void LineEdit::dropEvent(QDropEvent *e)
 {
+    qDebug()<<e->mimeData()->data("text/html");
     //Handle drop for files and directories (paste path into the field (without file://)
     if(e->mimeData()->hasUrls() || e->mimeData()->hasText() ){
         QString text;
         if (e->mimeData()->hasUrls() )
         {
            QList<QUrl> listUrls = e->mimeData()->urls();
-           qDebug() << listUrls.count();
            //some fancy stuff in here for a list of URLs maybe?
-           text = QString(listUrls[0].toString());
+           text = QString(listUrls[0].toLocalFile());
         }
         else
         {
