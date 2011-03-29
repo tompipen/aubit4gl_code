@@ -152,8 +152,8 @@ public:
     bool b_denyFocus;
 
 protected:
-   bool eventFilter(QEvent*, QObject*);
    void dropEvent(QDropEvent*);
+   void dragEnterEvent(QDragEnterEvent*);
 
 private:
     // Attributes to know wich Validators to use
