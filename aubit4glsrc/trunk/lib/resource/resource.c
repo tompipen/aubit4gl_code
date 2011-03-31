@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.167 2011-01-07 11:18:37 mikeaubury Exp $
+# $Id: resource.c,v 1.168 2011-03-31 11:41:26 mikeaubury Exp $
 #
 */
 
@@ -190,6 +190,8 @@ struct str_resource builtin_resource[] = {
   {"INFORMIXC", INFORMIXC,"internal"},
   {"TARGET", CONFIGURED_TARGET,"internal"},
   {"TARGET_OS", CONFIGURED_TARGET_OS,"internal"},
+  {"A4GL_TARGET", CONFIGURED_TARGET,"internal"},
+  {"A4GL_TARGET_OS", CONFIGURED_TARGET_OS,"internal"},
   {"AUBIT_Y2K", "70","internal"},
   {"A4GL_MAP4GL", "N","internal"},
   {"SCROLLBACKTO1","Y","internal"}, // Allow Display Array to move back to srec[1] when scr_line>1
