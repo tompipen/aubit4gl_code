@@ -1122,6 +1122,10 @@ namespace AubitDesktop
         public string ATTRIB_TEXT;
 
         /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public int DTYPE_HINT;
+
+        /// <remarks/>
         [System.Xml.Serialization.XmlArrayItem(Type = typeof(ONKEY_EVENT), IsNullable = false)]
         [System.Xml.Serialization.XmlArrayItem(Type = typeof(ON_ACTION_EVENT), IsNullable = false)]
         public object[] EVENTS;
