@@ -5204,9 +5204,10 @@ function check_bash () {
 
 
 	BASH_VER=`bash --version | head -1 | awk '{print $4}'`
+	DASH_VER=`dash --version > /dev/null | head -1 | awk '{print $4}'`
 	SH_VER=`sh --version < /dev/null | head -1 | awk '{print $4}'`
 	
-	if test "$BASH_VER" != "$SH_VER"; then
+	if test "$BASH_VER" != "$SH_VER" -a "$DASH_VER" != "$SH_VER" ; then
 		warning "Your 'sh' executable is NOT the same as 'bash'. This may cause problems"
 	fi
 

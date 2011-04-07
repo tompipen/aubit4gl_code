@@ -17891,9 +17891,10 @@ else
 #aaamingwxxx
 
 	BASH_VER=`bash --version | head -1 | awk '{print $4}'`
+	DASH_VER=`bash --version | head -1 | awk '{print $4}'`
 	SH_VER=`sh --version | head -1 | awk '{print $4}'`
 
-	if test "$BASH_VER" != "$SH_VER"; then
+	if test "$BASH_VER" != "$SH_VER" -a "$DASH_VER" != "$SH_VER"; then
 		{ $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: Your 'sh' executable is NOT the same as 'bash'. This may cause problems" >&5
 $as_echo "$as_me: WARNING: Your 'sh' executable is NOT the same as 'bash'. This may cause problems" >&2;}
 	fi
@@ -32215,7 +32216,7 @@ test "x$enable_libtool_lock" != xno && enable_libtool_lock=yes
 case $host in
 *-*-irix6*)
   # Find out which ABI we are using.
-  echo '#line 32218 "configure"' > conftest.$ac_ext
+  echo '#line 32219 "configure"' > conftest.$ac_ext
   if { { eval echo "\"\$as_me\":${as_lineno-$LINENO}: \"$ac_compile\""; } >&5
   (eval $ac_compile) 2>&5
   ac_status=$?
@@ -38348,7 +38349,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure,v 1.472 2011-03-16 18:28:13 mikeaubury Exp $
+| $Id: configure,v 1.473 2011-04-07 17:56:54 mikeaubury Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

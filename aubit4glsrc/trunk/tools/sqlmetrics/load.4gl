@@ -115,12 +115,30 @@ define lr record
 	sql_code int, --	 sqlca.sqlcode
 	curtime datetime year to fraction(3) --	 timestamp
     end record
+if lv_path !=" " then
+	let lv_filename = lv_path clipped, "/", lv_file clipped, ".log"
+else
+	let lv_filename =  lv_file clipped, ".log"
+end if
+
+if not aclfgl_file_exists(lv_filename) THEN
 
 if lv_path !=" " then
 	let lv_filename = lv_path clipped, "/", lv_file clipped, ".log"
 else
 	let lv_filename =  lv_file clipped, ".log"
 end if
+END IF
+
+if not aclfgl_file_exists(lv_filename) THEN
+	ERROR "Unable to open input file:", lv_filename clipped
+	RETURN 
+END IF
+
+
+
+
+
 display "loading ... ", lv_filename clipped
 call channel::open_file("log",lv_filename,"r")
 call channel::set_delimiter("log","|")

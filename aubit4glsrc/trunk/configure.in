@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.441 2011-03-16 18:28:14 mikeaubury Exp $
+dnl # $Id: configure.in,v 1.442 2011-04-07 17:56:55 mikeaubury Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -48,7 +48,7 @@ export LD_LIBRARY_PATH=/lib:$LD_LIBRARY_PATH
 
 #We need autoconf at least version 2.50
 AC_PREREQ(2.50)
-AC_REVISION($Id: configure.in,v 1.441 2011-03-16 18:28:14 mikeaubury Exp $)
+AC_REVISION($Id: configure.in,v 1.442 2011-04-07 17:56:55 mikeaubury Exp $)
 
 #FIXME: Some versions of autoconf are complaining that $AUBIT_VERSION and 
 #$AUBIT_BUILD are not constants. Maybe we should drop stuff in tools/project 
@@ -3646,9 +3646,10 @@ else
 #aaamingwxxx
 
 	BASH_VER=`bash --version | head -1 | awk '{print $4}'`
+	DASH_VER=`bash --version | head -1 | awk '{print $4}'`
 	SH_VER=`sh --version | head -1 | awk '{print $4}'`
 	
-	if test "$BASH_VER" != "$SH_VER"; then
+	if test "$BASH_VER" != "$SH_VER" -a "$DASH_VER" != "$SH_VER"; then
 		AC_MSG_WARN(Your 'sh' executable is NOT the same as 'bash'. This may cause problems)
 	fi
 
@@ -11313,7 +11314,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure.in,v 1.441 2011-03-16 18:28:14 mikeaubury Exp $
+| $Id: configure.in,v 1.442 2011-04-07 17:56:55 mikeaubury Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X
