@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.185 2010-12-06 18:21:03 mikeaubury Exp $
+# $Id: conv.c,v 1.186 2011-04-14 16:57:30 mikeaubury Exp $
 #
 */
 
@@ -4170,6 +4170,88 @@ A4GL_valid_dt (char *s, int *data, int size)
   return 1;
 }
 
+
+/**
+ *  * Check if a value is a valid date or datetime.
+ *   * @param s
+ *    * @param data
+ *     * @param size
+ *      * @return The result of the validation:
+ *       *   - 0 : The value is not a valid date or datetime.
+ *        *   - 1 : The value is a valid datetime.
+ *         */
+
+static int decodePostgresqlInterval(char *s, int *i_years, int *i_months, int *i_days, int *i_hours, int *i_minutes, int *i_second, int *i_fraction) {
+int l;
+char buff[2000];
+char *ptrs[100];
+int ptrs_cnt=0;
+int a;
+*i_years=0;
+*i_months=0;
+*i_days=0;
+*i_hours=0;
+*i_minutes=0;
+*i_second=0;
+*i_fraction=0;
+
+	// Split the string into component parts..
+	strcpy(buff,s);
+	ptrs[0]=&buff[0];
+
+	l=strlen(s);
+	for (a=0;a<l;a++) {
+		if (buff[a]==' ') {
+			buff[a]=0;
+			ptrs[ptrs_cnt]=&buff[a+1];
+			while (*ptrs[ptrs_cnt]==' ') ptrs[ptrs_cnt]++;
+			ptrs_cnt++;
+		}
+	}
+
+//printf("Here\n");
+	for (a=1;a<ptrs_cnt;a++) {
+		A4GL_lrtrim(ptrs[a]);
+		if (strcmp(ptrs[a],"@")==0) continue;
+		//printf("..%s\n",ptrs[a]);
+		A4GL_make_downshift(ptrs[a]);
+		if (strstr(ptrs[a],"yea") ) { *i_years=atol(ptrs[a-1]); }
+		if (strstr(ptrs[a],"mon") ) { *i_months=atol(ptrs[a-1]); }
+		if (strstr(ptrs[a],"day") ) { *i_days=atol(ptrs[a-1]); }
+		if (strstr(ptrs[a],"hour") ) { *i_hours=atol(ptrs[a-1]); }
+		if (strstr(ptrs[a],"min") ) { *i_minutes=atol(ptrs[a-1]); }
+		if (strstr(ptrs[a],"sec") ) { 
+			char *dot;
+			dot=strchr(ptrs[a-1],'.');
+			if (dot) {
+				*dot=0; dot++;
+				*i_second=atol(ptrs[a-1]); 
+				*i_fraction=atol(dot); 
+				
+			} else {
+				*i_second=atol(ptrs[a-1]); 
+			}
+		}
+	}
+	//printf("Y:%d M:%d D:%d H:%d M:%d S:%d F:%d\n", *i_years, *i_months, *i_days, *i_hours, *i_minutes, *i_second, *i_fraction);
+
+return 1;
+}
+
+
+int isValidPgStyleInterval(char *s, int *data, int size) {
+int ivals[7];
+struct ival i;
+if (data==NULL) data=ivals;
+if (decodePostgresqlInterval(s,&data[0],&data[1],&data[2],&data[3],&data[4],&data[5],&data[6])) {
+if (A4GL_conv_invdatatoc (data,0,0,0,&i)) {
+	return 1;
+}
+}
+return 0;
+
+}
+
 /**
  * Check if a value is a valid date or datetime.
  * @param s
@@ -4206,6 +4288,11 @@ A4GL_valid_int (char *s, int *data, int size)
 
   if (strlen (s) == 0)
     return 0;
+
+
+  if (s[0]=='@') { // Postgresql style integer
+		return isValidPgStyleInterval(s,data,size);
+  }
 
   if (data==NULL) {
 		data=data_z;
