@@ -1,0 +1,35 @@
+I wanted this to go in the Informix Archive because a lot of work went
+into making this code work with Informix. In some cases it was improved
+over what was originally posted on purdue.edu.
+
+This posting in the archive of Tcl stuff was not meant to be a "compile
+and go" for anybody you wanted to use it. We don't have the time or
+desire to do that. This stuff has been tested in a complicated production
+environment and it works for us. You should get the Tcl Informix
+code from purdue.edu and look at it.
+
+The "Makefile" is custom to our installation. Trying to include all of
+it so it will work on your system is too much work. If you are interested
+enough to be using Informix/TcL interface then should have no trouble
+figuring out how to compile this stuff.
+
+How we used it. . .
+
+We used Tcl/Informix in the following way:
+
+We needed to do statistical calculations envolving blood typing/DNA analysis
+for establishing paternity. The method of doing this required a lot of
+list comparison. From the Informix database we created temporary tables
+that had sets of data that the calculation would work on.
+
+The Tcl code did the calculation work by reading data from the temp tables
+and putting data back into temp tables. 
+
+This was done in 4GL by creating a Tcl Interpreter and calling it
+with the filename of the Tcl code. Since Tcl was linked with esql/c
+and because it is part of the same process you get an "imbeddable language"
+into 4GL that works just the way Tcl was intended.
+
+Mike Kuhn  mkuhn@rhlab.com, csd@clark.net
+
+Brad Kuhn  bkuhn@acm.org

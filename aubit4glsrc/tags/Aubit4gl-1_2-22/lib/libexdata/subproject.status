@@ -1,0 +1,13 @@
+Name: libEXDTYPE_mpz
+Parent: aubit4glsrc
+Description: Demonstrates the way to dynamically load custom data types at run-time.
+Functionality: Dynamic data support library
+Build:
+Example:
+Depends: libgmp
+Documentation:
+Regressed: 
+Maintainer: MA
+Status: 4
+Todo:
+Notes: Currently supports only large integers (MPZ - libgmp).

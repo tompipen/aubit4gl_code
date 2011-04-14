@@ -1,0 +1,27 @@
+Name: 4glc
+Parent: aubit4glsrc
+Description: Parses .4gl files and generates compiled output using one of plug-ins
+Functionality: 4GL compiler - core
+Build: always created by root makefile
+Example: see aubit4gltest regression tests source code tree for many examples AUBITDIR, A4GL_SQLTYPE when x4GL code contains Define ... LIKE statements
+Depends: 
+Documentation: Aubit Manual
+Regressed: 4
+Maintainer:  MA
+Status:  5
+Todo: OO extensions; language bindings for extension  components that do not have them
+Notes: 4glc can output (translate) into several formats, using plug-ins. See status of each LEX_ plug-in.
+
+Name: lib4glc.dll
+Parent: aubit4glsrc
+Description: Contains most functionality of 4glc executable on Windows platform, but packaged as dll
+Functionality: Windows only library
+Build: always created by root makefile (on Windows)
+Example: see 4glc
+Depends:  see 4glc
+Documentation: see 4glc
+Regressed: see 4glc
+Maintainer: see 4glc
+Status: 5
+Todo: see 4glc
+Notes: Needed because of limitations on Windows platform. Otherwise functionally the same as 4glc executable.

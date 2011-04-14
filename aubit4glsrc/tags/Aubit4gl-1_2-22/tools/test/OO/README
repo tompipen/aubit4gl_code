@@ -1,0 +1,85 @@
+OO - Some random notes on OO implementation in Aubit4GL..
+---------------------------------------------------------
+
+* There are only private variables in objects - you cannot see them outside of the object (not in parent, children or where you 
+actually use an instance of an object.  This is enforced in the syntax as the keyword 'private' must appear before the define section in a class.
+
+	class  ObjectName [ extends baseobjectType ]
+
+		private
+			define cv_var integer
+		.....
+	end class
+
+You can still use global and module level variables - and these will be shared across *all* of the objects...
+(Obviously - you can use local variables in functions)
+
+
+
+
+
+* You use an object by using the DEFINE keyword : 
+
+	DEFINE myobject OBJECT(objectType)
+
+The object is *not* checked at all at compile time....
+You create a new object using the 'new' method, which is an 'object function' - eg. if the object class name is 'complex' then 
+
+	define my_complex_var object(complex)
+		let my_complex_var=complex.new()
+
+Some object types might have other functions that return an object - which are not called 'new' - but all objects *should* have a 'new'
+
+
+
+
+* At the minute - you *cannot* use reports within classes....
+
+
+
+Internally - objects are stored in a large array (our "object heap")- only the pointer to this array is passed around..
+(So - its fairly efficient to pass objects around - its just passing a single 'long')
+
+* There are 2 special variables - "this" and "base" - refering to this object and the parent object
+If the object does not extend another object - there is no 'base' variable..
+
+
+
+* You can define an 'OBJECT FUNCTION' - this is a function which does not need an instance of an object - and is called with the objectname.methodname
+
+        object function sub(a,b)
+        define a,b integer
+                return a-b
+        end function
+
+
+
+* All methods must be called using an object - eg
+
+	this.method()
+	myobject.method()
+	base.method()
+
+This means that even if a function is a member function of the same class - you must still use "this.method()"
+(The reason for this is our 'weak' linkage - a member function might come from a base class - but the contents of that base 
+class are not known at compile time).
+
+
+* "local" functions make no sense in the context of a class and are therefore not allowed...
+
+
+
+TODO 
+----
+
+* There *will* be polymorphism - based on datatypes used for parameters - but this will only be used if two or more functions share the same name.
+Also - because of the promotion of certain types of variable types - we dont recognised int,smallint, float, smallfloat, or decimal as separate types
+Likewise - char and varchar would use the same signature.
+Internally - when calling a function - a search will be made for a function matching the signature - if that isn't found the generic function is called instead.
+
+Need to check the reference counting - especially at the end of a function to ensure that all objects are correctly disposed of.
+
+Possibly - "Properties" to allow access to some of the variables using get/set functions..
+The only issue with this is parsing the 4gl "someobject.someproperty"...
+
+

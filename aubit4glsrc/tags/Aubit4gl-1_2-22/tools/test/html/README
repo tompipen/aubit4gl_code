@@ -1,0 +1,37 @@
+From the URL you can execute a .4ae program without problem unless 
+it connects to database an requires environment variables set.
+
+So the usual method is to call a shell launcher.
+
+html_report
+
+    Generate a simple list of table sof the test1 database, read from
+    systables columns tabid and tabname.
+
+List of files:
+
+    html_report.4gl  The main program of the aplication
+
+    ahtmllib.4gl     The library of reusable functions
+
+    html_report.mk   amake specification file
+
+    html_report      The shell called in the URL. This simple set the
+                     environment and executes htl_report.4ae
+
+How to test
+
+$ lf
+CVS/  README  ahtmllib.4gl  html_report*  html_report.4gl  html_report.mk
+$ amake
+Amake: aMaking html_report.mk in /opt/aubit/aubit4glsrc/tools/test/html
+/bin/sh aubit 4glc ahtmllib.4gl -c -o ahtmllib.ao
+/bin/sh aubit 4glc html_report.4gl -c -o html_report.ao
+/bin/sh aubit 4glc ahtmllib.ao html_report.ao -o html_report.4ae
+$ cp html_report.4ae html_report /var/www/cgi-bin/
+cp: overwrite `/var/www/cgi-bin/html_report.4ae'? y
+cp: overwrite `/var/www/cgi-bin/html_report'? y
+
+In a web browser go to http://localhost/cgi-bin/html_report
+
+Chose the output format you want and click on 'report'
