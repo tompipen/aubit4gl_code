@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.242 2010-11-17 19:37:03 mikeaubury Exp $
+# $Id: sql.c,v 1.243 2011-04-14 17:00:47 mikeaubury Exp $
 #
 */
 
@@ -435,7 +435,7 @@ static int do_fake_transactions (void);
 =====================================================================
 */
 //int A4GL_dttoc (void *a, void *b, int size);
-int A4GLSQL_make_connection (char *server, char *uid_p, char *pwd_p);
+static int A4GLSQL_make_connection (char *server, char *uid_p, char *pwd_p);
 void *A4GL_bind_datetime (void *parent, void *ptr_to_dtime_var);
 void *A4GL_bind_interval (void *parent, void *ptr_to_ival);
 void *A4GL_bind_date (void *parent, long *ptr_to_date_var);
@@ -1971,6 +1971,7 @@ A4GLSQLLIB_A4GLSQL_init_connection_internal (char *dbName_f)
     SQLRETURN rc = 0;
     char uname_acl[256];
     char passwd_acl[256];
+    char dsn_acl[256]="";
 
 
     A4GL_clear_sqlca();
@@ -2063,7 +2064,7 @@ cannot find a specified SQLite database file in DBPATH.
     }
 
 
-    if (A4GL_sqlid_from_aclfile (dbName, uname_acl, passwd_acl))
+    if (A4GL_sqlid_from_aclfile (dbName, uname_acl, passwd_acl, dsn_acl))
     {
         A4GL_dbg ("Found in ACL File...");
         u = 0;
@@ -2122,10 +2123,10 @@ before we just override it ?
             p = empty;
     }
 
-    A4GL_trc ("user=%s pass=%s", u, p);
+    A4GL_trc ("user=%s pass=%s dsn=%s", u, p,dsn_acl);
 
 
-    if (A4GLSQL_make_connection (dbName, u, p))
+    if (A4GLSQL_make_connection (dsn_acl, u, p))
     {
         /* do we have an existing pointer to default */
         hh = A4GL_find_pointer_val ("default", SESSCODE);
@@ -4191,6 +4192,7 @@ A4GLSQLLIB_A4GLSQL_init_session_internal (char *sessname, char *dsn,
     char *u, *p = 0;
     char uname_acl[256];
     char passwd_acl[256];
+    char dsn_acl[256];
     HDBC *hh;
 
     A4GL_clear_sqlca();
@@ -4211,7 +4213,7 @@ A4GLSQLLIB_A4GLSQL_init_session_internal (char *sessname, char *dsn,
     if (strcmp (sessname, sess_name) == 0)
         return 0;
 
-    if (A4GL_sqlid_from_aclfile (dsn, uname_acl, passwd_acl))
+    if (A4GL_sqlid_from_aclfile (dsn, uname_acl, passwd_acl,dsn_acl))
     {
         // If we've got a match - it must be explicitly overridden by the environment
         // so we'll use getenv rather than acl_getenv....

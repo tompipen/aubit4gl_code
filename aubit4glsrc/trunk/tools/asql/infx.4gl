@@ -3216,7 +3216,7 @@ if (inited) {
 	lv_hasacl=0;
 } else {
 	inited++;
-	lv_hasacl=A4GL_sqlid_from_aclfile("default",lv_uname,lv_passwd);
+	lv_hasacl=A4GL_sqlid_from_aclfile("default",lv_uname,lv_passwd,NULL);
 }
 endcode
 

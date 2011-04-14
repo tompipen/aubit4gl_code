@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pg8.c,v 1.119 2011-03-08 09:31:21 mikeaubury Exp $
+# $Id: pg8.c,v 1.120 2011-04-14 17:00:47 mikeaubury Exp $
 #*/
 
 
@@ -466,7 +466,7 @@ char *ptr;
 
 
 
-    if (A4GL_sqlid_from_aclfile (dbName, uname_acl, passwd_acl))
+    if (A4GL_sqlid_from_aclfile (dbName, uname_acl, passwd_acl,NULL))
     {
 	/* 
          * Here we only want to overwrite the Username and password
@@ -652,7 +652,7 @@ char *p;
 
   A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (0);
 
-    if (A4GL_sqlid_from_aclfile (dsn, uname_acl, passwd_acl))
+    if (A4GL_sqlid_from_aclfile (dsn, uname_acl, passwd_acl,NULL))
     {
         A4GL_dbg ("Found in ACL File...");
         u = 0;
@@ -2182,6 +2182,7 @@ A4GL_debug("COPY DTYPE : %d %s\n", obind[b].dtype &DTYPE_MASK,ptr);
 	  }
 
 
+
 	case DTYPE_DTIME:
 		{
 	A4GL_debug("Here - we've got a DTIME");
@@ -2248,6 +2249,15 @@ A4GL_debug("COPY DTYPE : %d %s\n", obind[b].dtype &DTYPE_MASK,ptr);
 	}
 		break;
 
+	case DTYPE_INTERVAL:
+	{
+	  	A4GL_push_char (ptr);
+	  	ok=A4GL_pop_param (obind[b].ptr, obind[b].dtype, obind[b].size);
+		
+	}
+
+		//@ fixme
+		break;
 
 	default:
 	  A4GL_push_char (ptr);

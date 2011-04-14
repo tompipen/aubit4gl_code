@@ -578,7 +578,7 @@ A4GLSQLLIB_A4GLSQL_init_connection_internal (char *dbName)
   strcpy (dbname, dbName);
   A4GL_trim (dbname);
 
-  if (A4GL_sqlid_from_aclfile (dbname, uname_acl, passwd_acl))
+  if (A4GL_sqlid_from_aclfile (dbname, uname_acl, passwd_acl,NULL))
     {
       A4GL_debug ("Found in ACL File...");
       u = 0;

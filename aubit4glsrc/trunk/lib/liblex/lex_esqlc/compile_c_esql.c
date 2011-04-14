@@ -671,7 +671,7 @@ int using_username=0;
 
 
    if (using_username==0) {
-   	printc("if (A4GL_sqlid_from_aclfile (_d, _uAcl, _pAcl)) {");
+   	printc("if (A4GL_sqlid_from_aclfile (_d, _uAcl, _pAcl,NULL)) {");
 	tmp_ccnt++;
 	printc("strcpy(_u, _uAcl); strcpy(_p,_pAcl);");
    		set_nonewlines();
@@ -1567,7 +1567,7 @@ print_set_database_cmd (struct_set_database_cmd * cmd_data)
 	  printc ("}");
     	  print_expr(cmd_data->set_dbname);
 	  printc ("_s=A4GL_char_pop();A4GL_trim(_s);\n");
-  	  printc("if (A4GL_sqlid_from_aclfile (_s, _uAcl, _pAcl)) {");
+  	  printc("if (A4GL_sqlid_from_aclfile (_s, _uAcl, _pAcl,NULL)) {");
 
    		set_nonewlines();
 	  switch (esql_type ())

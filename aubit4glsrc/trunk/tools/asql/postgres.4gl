@@ -1070,7 +1070,7 @@ let lv_pass	=get_password()
 
 IF lv_uname IS NULL OR lv_uname MATCHES " " THEN
 code
-	A4GL_sqlid_from_aclfile("template1", lv_uname, lv_pass);
+	A4GL_sqlid_from_aclfile("template1", lv_uname, lv_pass,NULL);
 endcode
 end if
 
@@ -1116,7 +1116,7 @@ let lv_pass	=get_password()
 IF lv_uname IS NULL OR lv_uname MATCHES " " THEN
 code
 	A4GL_trim(lv_dbname);
-	A4GL_sqlid_from_aclfile(lv_dbname, lv_uname, lv_pass);
+	A4GL_sqlid_from_aclfile(lv_dbname, lv_uname, lv_pass,NULL);
 endcode
 END IF
 
@@ -1866,7 +1866,7 @@ if (inited) {
         lv_hasacl=0;
 } else {
         inited++;
-        lv_hasacl=A4GL_sqlid_from_aclfile("default",lv_uname,lv_passwd);
+        lv_hasacl=A4GL_sqlid_from_aclfile("default",lv_uname,lv_passwd,NULL);
 }
 endcode
 
@@ -2011,7 +2011,7 @@ while (1) {
 		if (strlen(lv_username)==0 && strlen(lv_password)==0) {
 			// We might have the username/password in the aclfile..
 			A4GL_trim(lv_server);
-			A4GL_sqlid_from_aclfile(lv_server, lv_username, lv_password);
+			A4GL_sqlid_from_aclfile(lv_server, lv_username, lv_password,NULL);
 		}
 
 		strcpy(lv_records[lv_cnt].lv_server, lv_server);

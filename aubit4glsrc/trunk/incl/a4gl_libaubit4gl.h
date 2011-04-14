@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.414 2011-01-07 12:11:15 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.415 2011-04-14 17:00:47 mikeaubury Exp $
 #
 */
 
@@ -2606,7 +2606,7 @@ void * A4GL_new_expr (char *value);
 void A4GL_add_recall_value(char *field_name,char *value);
 void A4GL_debug_dump_recall(char *field_name);
 char *A4GL_recall_field(char *t,char *c,int x,int y,int show);
-int A4GL_sqlid_from_aclfile(char *dbname,char *uname,char *passwd);
+int A4GL_sqlid_from_aclfile(char *dbname,char *uname,char *passwd,char *dsn);
 
 void A4GL_set_connection_username(char *u) ;
 char * A4GL_get_connection_username(void) ;
