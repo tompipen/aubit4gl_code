@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql_common.c,v 1.101 2010-11-13 06:51:58 mikeaubury Exp $
+# $Id: sql_common.c,v 1.102 2011-04-14 16:57:13 mikeaubury Exp $
 #
 */
 
@@ -1574,15 +1574,21 @@ A4GL_read_columns (char *tabname, char *xcolname, int *dtype, int *size)
 
 
 int
-A4GL_sqlid_from_aclfile (char *dbname, char *uname, char *passwd)
+A4GL_sqlid_from_aclfile (char *dbname, char *uname, char *passwd,char *dsn)
 {
   FILE *f;
   char fname[256];
   char buff[300];
-  char *ptr_fields[3];
+  char *ptr_fields[4];
   char *ptr;
   char *ptr_next;
 
+// With ODBC - there may be a DSN in the aclfile
+// In most cases - DSN will be passed in as a NULL pointer 
+// If its not - copy in the dbname - and we'll overwrite it later if required
+  if (dsn!=NULL) {
+  	strcpy(dsn,dbname);
+  }
 
   // First off - lets make sure the file is encrypted...
   A4GL_sqlid_encrypt ();
@@ -1674,6 +1680,7 @@ A4GL_debug("Reading : %s\n",fname);
       ptr_fields[0] = 0;
       ptr_fields[1] = 0;
       ptr_fields[2] = 0;
+      ptr_fields[3] = 0;
 
       ptr_fields[0] = &buff[0];
       if (ptr_next != 0)
@@ -1699,20 +1706,31 @@ A4GL_debug("Reading : %s\n",fname);
 	      ptr = ptr_next + 1;
 	      ptr_fields[2] = ptr;
 
-	      ptr_next = strchr (ptr, ':');	// chances are this isn't there...
+	      ptr_next = strchr (ptr, ':');	// chances are this isn't there unless its a DSN
 
 	      if (ptr_next != 0)
 		{
 		  *ptr_next = 0;
 		  ptr = ptr_next + 1;
+	      		ptr_fields[3] = ptr;
+	      		ptr_next = strchr (ptr, ':');	// chances are this isn't there unless its a trailing :
+	      		if (ptr_next != 0)
+				{
+				*ptr_next=0;
+				}
 		}
-
 	      // if we've got to here - we've got the username as password..
 #ifdef DEBUG
 	      A4GL_debug ("uname=%s passwd=%s", ptr_fields[1], ptr_fields[2]);
 #endif
 	      strcpy (uname, ptr_fields[1]);
 	      strcpy (passwd, ptr_fields[2]);
+
+		if (ptr_fields[3] && strlen(ptr_fields[3]) && dsn!=0) {
+			// We've got a DSN - copy it across ..
+			strcpy(dsn,ptr_fields[3]);
+		}
+
 	      if (passwd[0] == '!')
 		{
 		  char buff[256];
@@ -1767,7 +1785,7 @@ A4GL_sqlid_encrypt (void)
   char fname[256]="";
   char buff[300]="";
   char buff_orig[300]="";
-  char *ptr_fields[3];
+  char *ptr_fields[4];
   char *ptr;
   char *ptr_next;
   int printed = 0;
@@ -1874,6 +1892,7 @@ A4GL_debug("Reading : %s\n",fname);
       ptr_fields[0] = 0;
       ptr_fields[1] = 0;
       ptr_fields[2] = 0;
+      ptr_fields[3] = 0;
 
       ptr_fields[0] = &buff[0];
 
@@ -1897,6 +1916,7 @@ A4GL_debug("Reading : %s\n",fname);
 		{
 		  *ptr_next = 0;
 		  ptr = ptr_next + 1;
+			ptr_fields[3]=ptr;
 		}
 
 	      // if we've got to here - we've got the username as password..
@@ -1912,7 +1932,11 @@ A4GL_debug("Reading : %s\n",fname);
 		  SPRINTF1 (passwd, "!%s", buff);
 		}
 	      printed = 1;
-	      FPRINTF (fout, "%s:%s:%s\n", ptr_fields[0], uname, passwd);
+		if (ptr_fields[3]) {
+	      		FPRINTF (fout, "%s:%s:%s:%s\n", ptr_fields[0], uname, passwd, ptr_fields[3]);
+		} else {
+	      		FPRINTF (fout, "%s:%s:%s\n", ptr_fields[0], uname, passwd);
+		}
 	    }
 	}
 
