@@ -1,0 +1,38 @@
+#! /usr/bin/awk -f
+#	rebuild_list - builds a list of documented files from the documentation
+#
+#	Marco Greco (marcog@ctonline.it), Catania, Italy
+#
+#	Initial release: Sep 97
+#	Current release: Oct 97
+#
+#				NOTICE
+# 	Permission to use, copy, modify and redistribute this software and
+#	its documentation is hereby granted without fee provided that
+#
+#	- all copies of the software and related documentation contain this
+#	  notice and authorship information, UNMODIFIED
+#
+#	- no fee is charged for the physical act of redistributing this
+#	  software or modified copies thereof
+# 
+#	THE SOFTWARE IS PROVIDED "AS-IS" AND WITHOUT WARRANTY OF ANY KIND,
+#	EXPRESS, IMPLIED OR OTHERWISE, INCLUDING WITHOUT LIMITATION, ANY
+#	WARRANTY OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.
+#
+#	IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, INCIDENTAL,
+#	INDIRECT OR CONSEQUENTIAL DAMAGES OF ANY KIND, OR ANY DAMAGES WHATSOEVER
+#	RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER OR NOT ADVISED
+#	OF THE POSSIBILITY OF DAMAGE, AND ON ANY THEORY OF LIABILITY, ARISING
+#	OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+# 
+#	ALL RISKS CONNECTED TO THE USE OF THIS SOFTWARE OR IMPOSSIBILITY 
+#	THEREOF LIE SOLELY ON YOU.
+#	USE OF THIS SOFTWARE CONSTITUES AGREEMENT WITH THE ABOVE TERMS 
+#	AND CONDITIONS.
+#
+#set record separator
+BEGIN		{ FS="\"" }
+
+#scan for function names
+/^<P><A NAME/	{ print $2 }
