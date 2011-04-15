@@ -317,5 +317,5 @@ IF DBDATE MATCHES "[Mm][Dd][Yy]*"
 DEFAULT_SQL 0 = SET DATESTYLE=SQL,MDY
 ENDIF
 IF A4GL_PGVERSION ge 80400
-DEFAULT_SQL 1 =  ISET intervalstyle TO 'postgres_verbose';
+DEFAULT_SQL 1 = SET intervalstyle TO 'postgres_verbose';
 ENDIF
