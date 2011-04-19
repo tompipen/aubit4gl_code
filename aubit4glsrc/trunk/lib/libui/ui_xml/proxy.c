@@ -43,7 +43,8 @@
 #endif
 
 
-#define MYPORT 3490		// the port users will be connecting to
+int MYPORT=3490;
+//#define MYPORT 3490		// the port users will be connecting to
 
 #define BACKLOG 10		// how many pending connections queue will hold
 
@@ -459,6 +460,14 @@ main (int argc, char *argv[])
         daemon_stop();  
         exit(0);
      }
+
+     if(strcmp(argv[i],"-port") == 0)
+     {
+		i++;
+		MYPORT=atol(argv[i]);
+		printf("Listening on proxy port : %d\n",MYPORT);
+     }
+
      if (strcmp(argv[i],"-sa") == 0)
      {
         printf ("STANDALONE MODE\n");
