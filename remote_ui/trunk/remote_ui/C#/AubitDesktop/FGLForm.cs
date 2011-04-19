@@ -432,7 +432,7 @@ namespace AubitDesktop
                         gridArray.RowHeadersVisible = false;
                        
                         if (this.grids == null) this.grids = new Hashtable();
-                        this.grids.Add( p.tabName,gridArray);
+                        this.grids.Add( p.tabName.ToLower(),gridArray);
 
                         gridArray.Name = "TABLE" + gridArray.GetHashCode();
                         if (gridArray.Width < minWidth)
@@ -2084,6 +2084,7 @@ namespace AubitDesktop
         {
             string fld;
             fld = fIELD[0].NAME;
+            fld = fld.ToLower();
             if (grids == null) return null;
             if (grids.ContainsKey(fld))
             {

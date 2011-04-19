@@ -469,6 +469,12 @@ namespace AubitDesktop
         private void displayAtLabel(int x, int y, string s, int attr)
         {
             Label l;
+
+
+            return;
+
+
+
             if (s == null)
             {
                 if (backgroundLabels[x - 1, y - 1] != null)

@@ -29,7 +29,18 @@ namespace AubitDesktop
 
         public static string A4GL_func_using(string fmt, string value, FGLUtils.FGLDataTypes dt)
         {
+            string longStr = "                                                                                    ";
 
+            if (value == null)
+            {
+                fmt = longStr.Substring(0, fmt.Length);
+                return fmt;
+            }
+            if (value.Trim().Length == 0)
+            {
+                fmt = longStr.Substring(0, fmt.Length);
+                return fmt;
+            }
 
             switch (dt)
             {
@@ -620,7 +631,19 @@ namespace AubitDesktop
         private static string a4gl_using_date(string fmt, string value)
         {
             DateTime d;
-            
+            string longStr="                                               ";
+
+            if (value == null)
+            {
+                fmt = longStr.Substring(0, fmt.Length);
+                return fmt;
+            }
+            if (value.Trim().Length == 0)
+            {
+                fmt = longStr.Substring(0, fmt.Length);
+                return fmt;
+            }
+
             // Value should always be in DBDATE format..
             d = FGLUtils.getDate(value);
             fmt = fmt.Replace("mmmm", "MMMM");

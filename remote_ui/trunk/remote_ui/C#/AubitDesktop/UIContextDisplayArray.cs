@@ -611,7 +611,11 @@ namespace AubitDesktop
                 }
             }
 
-            screenRecord[scrLine-1,0].fglField.setFocus();
+            try
+            {
+                screenRecord[scrLine - 1, 0].fglField.setFocus();
+            }
+            catch { }
         }
 
         public void setNextField(string fieldName)

@@ -900,7 +900,14 @@ namespace AubitDesktop
         public FormattedGridView(Xml.XMLForm.Table t)
         {
             int len;
+            if (t.TableColumn == null)
+            {
+                MessageBox.Show("Internal error : " + t.tabName + " is not in the XML form");
+                Application.Exit();
+                return;
+            }
             len = t.TableColumn.Length;
+            
             this.table = t;
             //            this.ReadOnly = true;
             //          this.Enabled = false;
