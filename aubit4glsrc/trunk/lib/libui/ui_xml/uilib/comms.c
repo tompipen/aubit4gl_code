@@ -390,6 +390,7 @@ get_event_from_ui ()
   char buff[25600];
   char *localbuff = 0;
   int l = 0;
+int containsslashTriggered=0;
   struct s_attr *attr = 0;
 
   last_attr = 0;
@@ -409,8 +410,7 @@ get_event_from_ui ()
 	  cleanup();
 	  exit (0);
 	}
-
-
+containsslashTriggered=0;
       if (localbuff == 0)
 	{
 	  // This is our first line- is it a single line 'TRIGGERED' ? 
@@ -445,12 +445,15 @@ get_event_from_ui ()
 	    {
 	      localbuff = strdup (buff);
 	      A4GL_trim (localbuff);
-
+      		if (strstr (localbuff, "</TRIGGERED>")) {
+			containsslashTriggered=1;
+		}
 	      if (strlen (buff) == 0)
 		{
 		  free (localbuff);
 		  localbuff = 0;
 		}
+
 	    }
 	  if (localbuff == 0)
 	    continue;
@@ -469,10 +472,13 @@ get_event_from_ui ()
 	      cleanup();
 	      exit (1);
 	    }
+		if (strstr(buff,"</TRIGGERED>")) {
+			containsslashTriggered=1;
+		}
 	  strcat (localbuff, buff);
 	}
 
-      if (strstr (localbuff, "</TRIGGERED>"))
+      if (containsslashTriggered) 
 	{
 
 		/*
