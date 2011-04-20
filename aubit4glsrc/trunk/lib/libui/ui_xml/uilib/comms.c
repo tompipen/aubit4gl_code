@@ -390,6 +390,8 @@ get_event_from_ui ()
   char buff[25600];
   char *localbuff = 0;
   int l = 0;
+  int localbuff_sz=0;
+
 int containsslashTriggered=0;
   struct s_attr *attr = 0;
 
@@ -457,11 +459,16 @@ containsslashTriggered=0;
 	    }
 	  if (localbuff == 0)
 	    continue;
+
+
+	  localbuff_sz=strlen(localbuff);
+
 	}
       else
 	{
 	  //UIdebug (5, "l=%d localbuff=%p '%s' buff='%s'\n", l, localbuff, localbuff, buff);
-	  l = strlen (localbuff);
+	  //l = strlen (localbuff);
+	  l=localbuff_sz;
 	  l += strlen (buff);
 	  //UIdebug (5, "l=%d localbuff=%p\n", l, localbuff);
 
@@ -475,7 +482,12 @@ containsslashTriggered=0;
 		if (strstr(buff,"</TRIGGERED>")) {
 			containsslashTriggered=1;
 		}
-	  strcat (localbuff, buff);
+	  if (localbuff_sz) {
+		strcat(&localbuff[localbuff_sz-1],buff);
+		localbuff_sz=l;
+	  } else {
+	  	strcat (localbuff, buff);
+		}
 	}
 
       if (containsslashTriggered) 

@@ -390,6 +390,9 @@ new_context (enum uitype ui, char *module, int lineno)
 }
 
 
+
+char *A4GL_char_pop();
+
 /*
  *******************************************************************************
  */
@@ -397,6 +400,8 @@ static char *
 charpop (void)
 {
   char s[1024];
+  return A4GL_char_pop();
+
   popstring (s, 1023);
   local_trim (s);
   return strdup (s);
@@ -1476,13 +1481,13 @@ UIdebug(5, "init=%d changed=%d\n", init, changed);
       send_to_ui ("<WAITFOREVENT CONTEXT=\"%d\" CHANGED=\"%d\">", context,changed);
 	
       // Changed data...
-      send_to_ui (" <VALUES>");
+      send_to_ui (" <VS>");
       for (a = 0; a < contexts[context].ui.input.nfields; a++)
 	{
-	  send_to_ui ("  <VALUE CHANGED=\"%d\">%s</VALUE>",
+	  send_to_ui ("  <V CHANGED=\"%d\">%s</VALUE>",
 		      contexts[context].ui.input.changed[a], xml_escape (contexts[context].ui.input.variable_data[a]));
 	}
-      send_to_ui (" </VALUES>");
+      send_to_ui (" </VS>");
       if (contexts[context].ui.input.setfield)
 	{
 	  send_to_ui ("<SETFIELD FIELD=\"%s\"/>", contexts[context].ui.input.setfield);
@@ -2156,12 +2161,12 @@ uilib_display_array_line (int nargs)
   args = get_args (nargs - 1);
   row = POPint ();
   send_to_ui (" <ROW SUBSCRIPT=\"%d\">", row);
-  send_to_ui ("  <VALUES>");
+  send_to_ui ("  <VS>");
   for (a = 0; a < nargs - 1; a++)
     {
-      send_to_ui ("   <VALUE>%s</VALUE>", xml_escape (args[a]));
+      send_to_ui ("   <V>%s</V>", xml_escape (args[a]));
     }
-  send_to_ui ("  </VALUES>");
+  send_to_ui ("  </VS>");
   send_to_ui (" </ROW>");
   free_args (args);
   return 0;
@@ -2321,12 +2326,12 @@ send_input_array_change (int ci)
       if (!contexts[ci].ui.inputarray.changed_rows[a])
 	continue;
       send_to_ui (" <ROW SUBSCRIPT=\"%d\">", a + 1);
-      send_to_ui ("  <VALUES>");
+      send_to_ui ("  <VS>");
       for (b = 0; b < contexts[ci].ui.inputarray.nvals; b++)
 	{
-	  send_to_ui ("   <VALUE>%s</VALUE>", xml_escape (contexts[ci].ui.inputarray.variable_data[a][b]));
+	  send_to_ui ("   <V>%s</V>", xml_escape (contexts[ci].ui.inputarray.variable_data[a][b]));
 	}
-      send_to_ui ("  </VALUES>");
+      send_to_ui ("  </VS>");
       send_to_ui (" </ROW>");
       contexts[ci].ui.inputarray.changed_rows[a] = 0;
     }

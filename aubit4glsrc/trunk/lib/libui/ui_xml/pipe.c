@@ -22,6 +22,7 @@ int stream_buff_size=1000000;
 void remove_pipes (void);
 //#define stream_buff_size 50000
 char **sock_buff=0;
+int *sock_buff_sz=0;
 int nsock=0;
 int startedenvelope=0;
 int handshaking=1;
@@ -91,15 +92,18 @@ int a;
 
 if (n>=nsock) {
 	sock_buff=realloc(sock_buff,sizeof(char *)*(n+1));
+	sock_buff_sz=realloc(sock_buff_sz,sizeof(int)*(n+1));
 }
 
 if (nsock==0) {
 	for (a=nsock;a<=n;a++) {
 		sock_buff[a]=0;
+		sock_buff_sz[a]=0;
 	}
 } else {
 	for (a=nsock+1;a<=n;a++) {
 		sock_buff[a]=0;
+		sock_buff_sz[a]=0;
 	}
 }
 nsock=n;
@@ -107,7 +111,8 @@ nsock=n;
 if ( sock_buff[n]==0) {
 		sock_buff[n]=malloc(stream_buff_size+40);
 		
-			strcpy(sock_buff[n],get_leadin(n));
+		strcpy(sock_buff[n],get_leadin(n));
+		sock_buff_sz[n]=strlen( sock_buff[n]);
 }
 
 }
@@ -417,7 +422,8 @@ pipe_clear (void) {
 		cantflush=0;
 
 		for (sockfd=0;sockfd<=nsock;sockfd++) {
-		sock_buff[sockfd]=0;
+			sock_buff[sockfd]=0;
+			sock_buff_sz[sockfd]=0;
 		}
 	}
 }
@@ -455,6 +461,7 @@ pipe_flush (int sockfd)
    }
 
 	strcpy(sock_buff[sockfd],get_leadin(sockfd));
+	sock_buff_sz[sockfd]=strlen(sock_buff[sockfd]);
 }
 
 /**
@@ -470,6 +477,7 @@ pipe_sock_puts (int sockfd, char *str)
   int sz_str = 0;
   int ok = 1;
   static int lastsock = -1;
+
 
   if (str==0) {
 		FPRINTF(stderr, "PIPE_SOCK_PUTS called with str=0");
@@ -488,11 +496,12 @@ pipe_sock_puts (int sockfd, char *str)
   lastsock = sockfd;
 
 
-  sz_buff = strlen (sock_buff[sockfd]);
+  sz_buff = sock_buff_sz[sockfd];
   if (str)
     {
       sz_str = strlen (str);
     }
+
 
   // Do we need to send what we've got ? 
   if (sz_buff > stream_buff_size || sz_str + sz_buff > stream_buff_size || sz_str > stream_buff_size )
@@ -512,7 +521,6 @@ pipe_sock_puts (int sockfd, char *str)
     }
 
 
-
   if (str == 0)
     {
       return 1;
@@ -525,13 +533,20 @@ pipe_sock_puts (int sockfd, char *str)
       // Its too large to cache...
       if (ok)
 	{
-	  ok = pipe_sock_write (sockfd, str, strlen (str));
+	  ok = pipe_sock_write (sockfd, str, sz_str);
 	}
       return ok;
 
     }
+
+char *p;
+p=sock_buff[sockfd];
+//printf("sock_buff[sockfd] before set %s\n", sock_buff[sockfd]);
+strcat(&p[sock_buff_sz[sockfd]-1],str);
+sock_buff_sz[sockfd]+=sz_str;
+//printf("sock_buff[sockfd] now set to %s\n", sock_buff[sockfd]);
   UIdebug (3,"ADDING TO CACHE : '%s' (%d)\n", str,sockfd);
-  strcat (sock_buff[sockfd], str);
+  //strcat (sock_buff[sockfd], str);
   //UIdebug ("--->%s\n", sock_buff[sockfd]);
 
   return ok;

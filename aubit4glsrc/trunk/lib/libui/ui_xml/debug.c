@@ -48,7 +48,7 @@ FILE *dbgfile;
 char buff[200000];
 int a;
 
-int dbglvl=-1;
+static int dbglvl=-1;
 
 if (dbglvl==-1) {
 	char *ptr;
