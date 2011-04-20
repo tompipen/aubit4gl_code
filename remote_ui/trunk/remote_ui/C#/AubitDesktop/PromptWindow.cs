@@ -124,7 +124,7 @@ namespace AubitDesktop
 
                 if (EventTriggered != null)
                 {
-                    EventTriggered(this, "ACCEPT", "<TRIGGERED ID=\"ACCEPT\" LASTKEY=\"ACCEPT\"><SYNCVALUES><SYNCVALUE>" + System.Security.SecurityElement.Escape(getPromptResult()) + "</SYNCVALUE></SYNCVALUES></TRIGGERED>",promptContext);
+                    EventTriggered(this, "ACCEPT", "<TRIGGERED ID=\"ACCEPT\" LASTKEY=\"ACCEPT\"><SVS><SV>" + System.Security.SecurityElement.Escape(getPromptResult()) + "</SV></SVS></TRIGGERED>",promptContext);
                 }
             }
         }
@@ -139,7 +139,7 @@ namespace AubitDesktop
             {
                 if (k.isKey(key))
                 {
-                    EventTriggered(this, k.ID.ToString(), "<TRIGGERED ID=\"" + k.ID.ToString() + "\"><SYNCVALUES><SYNCVALUE>" + System.Security.SecurityElement.Escape(getPromptResult()) + "</SYNCVALUE></SYNCVALUES></TRIGGERED>",promptContext);
+                    EventTriggered(this, k.ID.ToString(), "<TRIGGERED ID=\"" + k.ID.ToString() + "\"><SVS><SV>" + System.Security.SecurityElement.Escape(getPromptResult()) + "</SV></SVS></TRIGGERED>",promptContext);
                     return;
                 }
             }
