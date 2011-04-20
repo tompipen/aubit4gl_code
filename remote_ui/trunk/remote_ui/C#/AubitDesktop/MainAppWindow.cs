@@ -539,10 +539,17 @@ namespace AubitDesktop
             if (e.Data == "") return;
             updating = true;
 
-            
-            
 
-            enew = EnvReader.ReadFromXml(e.Data);
+            enew = null;
+            try
+            {
+                enew = EnvReader.ReadFromXml(e.Data);
+            }
+            catch (Exception E)
+            {
+                MessageBox.Show("Internal Error\nInvalid XML in data sent from 4gl" + e.Data+"\n"+E.Message);
+            }
+            if (enew == null) return;
             ID = Convert.ToInt32(enew.ID);
             
             foreach (FGLApplicationPanel p in RunningApplications) {
