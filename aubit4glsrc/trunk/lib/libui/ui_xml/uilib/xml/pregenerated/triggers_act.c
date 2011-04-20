@@ -1,6 +1,6 @@
 /* XML application for triggers.dtd.
  * Includes actions from triggers_act.act.
- * Generated 2010/05/21 14:26:28.
+ * Generated 2011/04/20 16:16:52.
  *
  * This program was generated with the FleXML XML processor generator.
  * FleXML is Copyright (C) 1999-2005 Kristoffer Rose.  All rights reserved.
@@ -220,7 +220,7 @@ void ETag_TRIGGERED(void)
 
 } /* ETag_TRIGGERED */
 
-void STag_SYNCVALUES(void)
+void STag_SVS(void)
 {
 #line 165 "triggers_act.act"
 
@@ -240,9 +240,9 @@ void STag_SYNCVALUES(void)
 	}
 	
 
-} /* STag_SYNCVALUES */
+} /* STag_SVS */
 
-void ETag_SYNCVALUES(void)
+void ETag_SVS(void)
 {
 #line 183 "triggers_act.act"
 
@@ -252,9 +252,9 @@ void ETag_SYNCVALUES(void)
 	}
 	
 
-} /* ETag_SYNCVALUES */
+} /* ETag_SVS */
 
-void ETag_SYNCVALUE(void)
+void ETag_SV(void)
 {
 #line 191 "triggers_act.act"
 
@@ -263,20 +263,20 @@ void ETag_SYNCVALUE(void)
 		sync.nvalues++;
 		sync.vals=realloc(sync.vals, sizeof(struct s_syncvalue)*sync.nvalues) ;
 
-                if (A_SYNCVALUE_FIELDTYPE) {
-                        sync.vals[sync.nvalues-1].fieldtype=atoi(A_SYNCVALUE_FIELDTYPE);
+                if (A_SV_FT) {
+                        sync.vals[sync.nvalues-1].fieldtype=atoi(A_SV_FT);
                 } else {
                         sync.vals[sync.nvalues-1].fieldtype=-1;
                 }
 
-		sync.vals[sync.nvalues-1].fieldname=strdup(A_SYNCVALUE_FIELDNAME);
+		sync.vals[sync.nvalues-1].fieldname=strdup(A_SV_FN);
 		sync.vals[sync.nvalues-1].value=strdup(pcdata);
-		sync.vals[sync.nvalues-1].touched=atoi(A_SYNCVALUE_TOUCHED);
+		sync.vals[sync.nvalues-1].touched=atoi(A_SV_T);
 
 	}
 	
 
-} /* ETag_SYNCVALUE */
+} /* ETag_SV */
 
 void STag_SYNCROWS(void)
 {
@@ -335,4 +335,4 @@ void ETag_ROW(void)
 
 /* XML application entry points. */
 void ETag_SYNCROWS(void) {}
-void STag_SYNCVALUE(void) {}
+void STag_SV(void) {}

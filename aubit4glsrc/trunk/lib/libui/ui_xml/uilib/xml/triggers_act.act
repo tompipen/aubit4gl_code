@@ -162,7 +162,7 @@ return n;
 	]]>
 </end>
 
-<start tag='SYNCVALUES'>
+<start tag='SVS'>
 	<![CDATA[ 
 	{
 		/* Just to be sure these are cleared down... */
@@ -180,7 +180,7 @@ return n;
 	]]>
 </start>
 
-<end tag='SYNCVALUES'>
+<end tag='SVS'>
 	<![CDATA[ 
 	{
 		memcpy(&lexed_attr.sync,&sync,sizeof(sync));
@@ -188,21 +188,21 @@ return n;
 	]]>
 </end>
 
-<end tag='SYNCVALUE'>
+<end tag='SV'>
 	<![CDATA[ 
 	{
 		sync.nvalues++;
 		sync.vals=realloc(sync.vals, sizeof(struct s_syncvalue)*sync.nvalues) ;
 
-                if ({FIELDTYPE}) {
-                        sync.vals[sync.nvalues-1].fieldtype=atoi({FIELDTYPE});
+                if ({FT}) {
+                        sync.vals[sync.nvalues-1].fieldtype=atoi({FT});
                 } else {
                         sync.vals[sync.nvalues-1].fieldtype=-1;
                 }
 
-		sync.vals[sync.nvalues-1].fieldname=strdup({FIELDNAME});
+		sync.vals[sync.nvalues-1].fieldname=strdup({FN});
 		sync.vals[sync.nvalues-1].value=strdup(pcdata);
-		sync.vals[sync.nvalues-1].touched=atoi({TOUCHED});
+		sync.vals[sync.nvalues-1].touched=atoi({T});
 
 	}
 	]]>

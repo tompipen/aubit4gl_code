@@ -461,7 +461,7 @@ UILIB_A4GL_disp_fields_ap (int n, int attr, va_list * ap)
     }
   send_to_ui ("</FIELDLIST>");
 
-  send_to_ui ("<VALUES>", attr, field_list);
+  send_to_ui ("<VS>", attr, field_list);
   for (a = n - 1; a >= 0; a--)
     {
 		if (arg_types[a]==DTYPE_BYTE || arg_types[a]==DTYPE_TEXT) {
@@ -494,7 +494,7 @@ UILIB_A4GL_disp_fields_ap (int n, int attr, va_list * ap)
   free (args);
   free (arg_types);
 
-  send_to_ui ("</VALUES></DISPLAYTO>");
+  send_to_ui ("</VS></DISPLAYTO>");
   return rval;
 }
 
@@ -3941,17 +3941,17 @@ ibind=vibind;
 sprintf(buff,"<FRONTCALL MODULE=\"%s\" NAME=\"%s\" EXPECT=\"%d\">",uilib_xml_escape(module),uilib_xml_escape(name),no);
 if (ni) {
 	int a;
-	strcat(buff,"<VALUES>");
+	strcat(buff,"<VS>");
 	for (a=0;a<ni;a++) {
 		char *ptr;
 		 A4GL_push_param (ibind[a].ptr, ibind[a].dtype + ENCODE_SIZE (ibind[a].size));
 		ptr=A4GL_char_pop();
 		A4GL_trim(ptr);
-		sprintf(smbuff,"<VALUE>%s</VALUE>",uilib_xml_escape(ptr));
+		sprintf(smbuff,"<V>%s</V>",uilib_xml_escape(ptr));
 		strcat(buff,smbuff);
 		free(ptr);
 	}
-	strcat(buff,"</VALUES>");
+	strcat(buff,"</VS>");
 }
 strcat(buff,"</FRONTCALL>");
 if (uilib_do_frontcall(buff,no)) {
