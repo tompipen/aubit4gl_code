@@ -850,13 +850,10 @@ libfile.c: In function `aclfgl_feof':
 libfile.c:703: invalid type argument of `->'
 */
 
-				#ifdef __CYGWIN__
-			        printf("FIXME: don't know what to do with feof() on CygWin\n");
-                    break;
-				#else
-					if (feof(p_field)) break;
-                	fgets(tmpbuf,200,p_field); break;
-                #endif
+FILE *fp_field;
+fp_field=(FILE *)p_field;
+		if (feof(fp_field)) break;
+                	fgets(tmpbuf,200,fp_field); break;
                 }
 
 endcode
