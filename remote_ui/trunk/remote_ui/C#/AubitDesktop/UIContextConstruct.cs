@@ -213,12 +213,12 @@ namespace AubitDesktop
         public string getSyncValues()
         {
             string s;
-            s = "<SYNCVALUES>";
+            s = "<SVS>";
             foreach (FGLFoundField i in activeFields)
             {
-                s += "<SYNCVALUE FIELDNAME=\"" + i.useName + "\""+ " FIELDTYPE=\""+(int)i.fglField.datatype+"\">" + System.Security.SecurityElement.Escape(i.fglField.Text) + "</SYNCVALUE>";
+                s += "<SV FN=\"" + i.useName + "\""+ " FT=\""+(int)i.fglField.datatype+"\">" + System.Security.SecurityElement.Escape(i.fglField.Text) + "</SV>";
             }
-            s += "</SYNCVALUES>";
+            s += "</SVS>";
             return s;
         }
 
@@ -392,7 +392,7 @@ namespace AubitDesktop
 
 
 
-        public void ActivateContext(UIEventHandler UIInputContext_EventTriggered, VALUE[] values, ROW[] rows)
+        public void ActivateContext(UIEventHandler UIInputContext_EventTriggered, V[] values, ROW[] rows)
         {
             int cnt = 0;
             int tstop = 0;

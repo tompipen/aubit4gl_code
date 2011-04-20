@@ -1812,9 +1812,9 @@ namespace AubitDesktop
                         if (fileContents != null)
                         {
                             s = "<TRIGGERED ENVELOPEID=\"" + this.ApplicationEnvelopeID + "\" ID=\"FILEREQUEST\" FILEID=\"" + System.Security.SecurityElement.Escape(fileID) + "\" FILELEN=\"" + flen + "\">";
-                            s += "<SYNCVALUES><SYNCVALUE>";
+                            s += "<SVS><SV>";
                             s += Convert.ToBase64String(fileContents);
-                            s += "</SYNCVALUE></SYNCVALUES>";
+                            s += "</SV></SVS>";
                             s += "</TRIGGERED>";
                             TopWindow.SendString(s,true);
                         }
@@ -2413,7 +2413,7 @@ namespace AubitDesktop
 				
                         // An immediateContext is basically a UIContextMisc which just returns something
                         // Atm - we've got GETKEY and WINQUESTION in this category..
-                        immediateContext.ActivateContext(UIContext_EventTriggered, w.VALUES, w.ROWS);
+                        immediateContext.ActivateContext(UIContext_EventTriggered, w.VS, w.ROWS);
 
                         // We only activate it once - so we can clear it now...
 			if (true) {
@@ -2439,7 +2439,7 @@ namespace AubitDesktop
                                         currentContext = contexts[idx];
                                         //Console.WriteLine("Cumtime before ActivateContext: " + (System.DateTime.Now - stime));
                                         this.TopWindow.setActiveTab(this);
-                                        contexts[idx].ActivateContext(UIContext_EventTriggered, w.VALUES, w.ROWS);
+                                        contexts[idx].ActivateContext(UIContext_EventTriggered, w.VS, w.ROWS);
                                        // Console.WriteLine("Cumtime after ActivateContext: " + (System.DateTime.Now - stime));
                                     }
                                     else

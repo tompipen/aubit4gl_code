@@ -130,7 +130,7 @@ namespace AubitDesktop
 
 
 
-        private string doFrontCall(string module, string name, VALUE[] values, string expectReturn)
+        private string doFrontCall(string module, string name, V[] values, string expectReturn)
         {
             int numberOfReturnValues = 0; // total number of return values expected
             string[] retStrings = null;        // string array to store the return values
@@ -187,12 +187,12 @@ namespace AubitDesktop
             rval = "<TRIGGERED ID=\"FRONTCALLRETURN\">";
             if (numberOfReturnValues > 0 && retStrings != null)
             {
-                rval += "<SYNCVALUES>";
+                rval += "<SVS>";
                 for (int a = 0; a < numberOfReturnValues; a++)
                 {
-                    rval += "<SYNCVALUE>" + retStrings[a] + "</SYNCVALUE>";
+                    rval += "<SV>" + retStrings[a] + "</SV>";
                 }
-                rval += "</SYNCVALUES>";
+                rval += "</SVS>";
             }
             rval += "</TRIGGERED>";
             return rval;
@@ -203,7 +203,7 @@ namespace AubitDesktop
 
 
 
-        public void ActivateContext(UIEventHandler UIContext_EventTriggered, VALUE[] values, ROW[] rows)
+        public void ActivateContext(UIEventHandler UIContext_EventTriggered, V[] values, ROW[] rows)
         {
             EventTriggered = UIContext_EventTriggered;
             if (!_contextIsActive)
@@ -215,7 +215,7 @@ namespace AubitDesktop
             {
                 case MiscContextType.MiscContextFrontCall:
                     {
-                        string rval = doFrontCall(frontCall.MODULE, frontCall.NAME, frontCall.VALUES, frontCall.EXPECT);
+                        string rval = doFrontCall(frontCall.MODULE, frontCall.NAME, frontCall.VS, frontCall.EXPECT);
                         this.EventTriggered(null, "FRONTCALLRETURN", rval, this);
                     }
                     break;
@@ -277,7 +277,7 @@ namespace AubitDesktop
 
         #region FRONTCALLS
 
-        private static string[] ui_combo_frontcall(FGLApplicationPanel appPanel, string name, VALUE[] values, string[] retStrings)
+        private static string[] ui_combo_frontcall(FGLApplicationPanel appPanel, string name, V[] values, string[] retStrings)
         {
             switch (name)
             {
@@ -403,7 +403,7 @@ namespace AubitDesktop
                 case "INTERNAL":
                     if (call.NAME.StartsWith("ui.combobox."))
                     {
-                        ui_combo_frontcall(appPanel, call.NAME, call.VALUES, null);
+                        ui_combo_frontcall(appPanel, call.NAME, call.VS, null);
                         return;
                     }
                 

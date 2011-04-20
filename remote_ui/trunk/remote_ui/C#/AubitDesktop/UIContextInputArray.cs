@@ -919,16 +919,16 @@ namespace AubitDesktop
                 if (rowDataChanged[row])
                 {
                     s += "<ROW SUBSCRIPT=\"" + (row + 1) + "\">";
-                    s += "<SYNCVALUES>";
+                    s += "<SVS>";
 
                     for (int col = 0; col < this.nCols; col++)
                     {
                         FGLFoundField i;
                         i = activeFields[col]; // we can just use the first set of fields - should be duplicated for the subsequent rows...
-                        s += "<SYNCVALUE FIELDNAME=\"" + i.useName + "\">" + System.Security.SecurityElement.Escape(Data[row, col]) + "</SYNCVALUE>";
+                        s += "<SV FN=\"" + i.useName + "\">" + System.Security.SecurityElement.Escape(Data[row, col]) + "</SV>";
 
                     }
-                    s += "</SYNCVALUES>";
+                    s += "</SVS>";
                     s += "</ROW>";
                 }
             }
@@ -951,7 +951,7 @@ namespace AubitDesktop
             //this.EventTriggered(source, ID, TriggeredText,this);
         }
 
-        public void ActivateContext(UIEventHandler UInputArrayContext_EventTriggered, VALUE[] val, ROW[] rows)
+        public void ActivateContext(UIEventHandler UInputArrayContext_EventTriggered, V[] val, ROW[] rows)
         {
           ActivateStime = DateTime.Now;
             Console.WriteLine("Activate Context..");
@@ -977,7 +977,7 @@ namespace AubitDesktop
                         }
                         else
                         {
-                            Data[Convert.ToInt32(rows[row].SUBSCRIPT) - 1, a] = rows[row].VALUES[a].Text;
+                            Data[Convert.ToInt32(rows[row].SUBSCRIPT) - 1, a] = rows[row].VS[a].Text;
                         }
                         activeFields[a].fglField.Text = Data[Convert.ToInt32(rows[row].SUBSCRIPT) - 1, a];
                         needRedisplay = true;

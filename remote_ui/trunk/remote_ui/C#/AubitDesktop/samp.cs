@@ -72,7 +72,7 @@ namespace AubitDesktop
         public string EXPECT;
 
         [System.Xml.Serialization.XmlArrayItem(IsNullable = true)]
-        public VALUE[] VALUES;
+        public V[] VS;
 
     }
     /// <remarks/>
@@ -285,7 +285,7 @@ namespace AubitDesktop
     }
 
     /// <remarks/>
-    public class VALUE
+    public class V
     {
 
         /// <remarks/>
@@ -1177,8 +1177,8 @@ namespace AubitDesktop
         [System.Xml.Serialization.XmlArrayItem(Type = typeof(BEFORE_ROW_EVENT), IsNullable = false)]
         
          */
-        [System.Xml.Serialization.XmlArrayItem(Type = typeof(VALUE), IsNullable = false)]
-        public VALUE[] VALUES;
+        [System.Xml.Serialization.XmlArrayItem(Type = typeof(V), IsNullable = false)]
+        public V[] VS;
 
         /// <remarks/>
         [System.Xml.Serialization.XmlArrayItem(IsNullable = false)]
@@ -1648,7 +1648,7 @@ namespace AubitDesktop
 
         /// <remarks/>
         [System.Xml.Serialization.XmlArrayItem(IsNullable = false)]
-        public VALUE[] VALUES;
+        public V[] VS;
     }
 
 

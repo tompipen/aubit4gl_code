@@ -243,7 +243,7 @@ namespace AubitDesktop
             dt = new DataTable();
 
             dt.Columns.Add("subscript");
-            for (int cols = 1; cols <= p.ROWS[0].VALUES.Length; cols++)
+            for (int cols = 1; cols <= p.ROWS[0].VS.Length; cols++)
             {
                 dt.Columns.Add("col" + (cols));
             }
@@ -257,14 +257,14 @@ namespace AubitDesktop
             {
                 DataGridViewRow r;
                 string[] data;
-                data=new string[p.ROWS[row].VALUES.Length+1];
+                data=new string[p.ROWS[row].VS.Length+1];
                 r = new DataGridViewRow();
                 
                 // We'll use the first column to store the index
                 // for the current row...
                 data[0] = "" + (row+1);
 
-                for (int col = 0; col < p.ROWS[row].VALUES.Length;col++ )
+                for (int col = 0; col < p.ROWS[row].VS.Length;col++ )
                 {
                     object itm;
                     int trimWidth = -1;
@@ -285,15 +285,15 @@ namespace AubitDesktop
                         trimWidth = Convert.ToInt32(e.width);
                     }
 
-                    data[col + 1] = p.ROWS[row].VALUES[col].Text;
+                    data[col + 1] = p.ROWS[row].VS[col].Text;
 
                     if (trimWidth > 0)
                     {
-                        if (p.ROWS[row].VALUES[col].Text != null)
+                        if (p.ROWS[row].VS[col].Text != null)
                         {
-                            if (p.ROWS[row].VALUES[col].Text.Length > trimWidth)
+                            if (p.ROWS[row].VS[col].Text.Length > trimWidth)
                             {
-                                data[col + 1] = p.ROWS[row].VALUES[col].Text.Substring(0, trimWidth);
+                                data[col + 1] = p.ROWS[row].VS[col].Text.Substring(0, trimWidth);
                             }
                         }
                     }
@@ -317,7 +317,7 @@ namespace AubitDesktop
             {
                 displayArrayGrid.AutoResizeRow(row);
 
-                for (int col = 0; col < p.ROWS[row].VALUES.Length; col++)
+                for (int col = 0; col < p.ROWS[row].VS.Length; col++)
                 {
                     displayArrayGrid.AutoResizeColumn(col);
                 }
@@ -370,7 +370,7 @@ namespace AubitDesktop
 
         
 
-        public void ActivateContext(UIEventHandler UIDisplayArrayContext_EventTriggered, VALUE[] values, ROW[] rows)
+        public void ActivateContext(UIEventHandler UIDisplayArrayContext_EventTriggered, V[] values, ROW[] rows)
         {
             
             foreach (ON_ACTION_EVENT e in onActionList)

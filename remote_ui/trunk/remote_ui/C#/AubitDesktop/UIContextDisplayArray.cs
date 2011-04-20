@@ -553,7 +553,7 @@ namespace AubitDesktop
             scr_line = lineno - topline + 1;
             for (int a = 0; a < nCols; a++)
             {
-                screenRecord[scr_line-1,a].fglField.Text=this.Data[lineno-1].VALUES[a].Text;
+                screenRecord[scr_line-1,a].fglField.Text=this.Data[lineno-1].VS[a].Text;
             }
             
         }
@@ -650,7 +650,7 @@ namespace AubitDesktop
             this.EventTriggered(source, ID, TriggeredText,this);
         }
 
-        public void ActivateContext(UIEventHandler UIDisplayArrayContext_EventTriggered, VALUE[] values, ROW[] rows)
+        public void ActivateContext(UIEventHandler UIDisplayArrayContext_EventTriggered, V[] values, ROW[] rows)
         {
             
             //mainWin.SetContext(FGLContextType.ContextNone);

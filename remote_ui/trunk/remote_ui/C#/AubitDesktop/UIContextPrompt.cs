@@ -134,7 +134,7 @@ namespace AubitDesktop
 
 
 
-            public void ActivateContext(UIEventHandler UIPromptContext_EventTriggered, VALUE[] values, ROW[] rows)
+            public void ActivateContext(UIEventHandler UIPromptContext_EventTriggered, V[] values, ROW[] rows)
             {
                 promptForm.EventTriggered += new UIEventHandler(UIPromptContext_EventTriggered);
                 promptForm.SetPromptFocus();

@@ -231,7 +231,7 @@ namespace AubitDesktop
 
 
                 Data.Rows[subscript][0] = "XXX"; // First column was to hold the subscript - but its currently not used....
-                for (int col = 0; col < rows[row].VALUES.Length; col++)
+                for (int col = 0; col < rows[row].VS.Length; col++)
                 {
                     object itm;
                     int trimWidth = -1;
@@ -246,14 +246,14 @@ namespace AubitDesktop
                     }
 
 
-                    Data.Rows[subscript][col + 1] = (string)rows[row].VALUES[col].Text;
+                    Data.Rows[subscript][col + 1] = (string)rows[row].VS[col].Text;
                     if (trimWidth > 0)
                     {
-                        if (rows[row].VALUES[col].Text != null)
+                        if (rows[row].VS[col].Text != null)
                         {
-                            if (rows[row].VALUES[col].Text.Length > trimWidth)
+                            if (rows[row].VS[col].Text.Length > trimWidth)
                             {
-                                Data.Rows[subscript][col + 1] = (string)rows[row].VALUES[col].Text.Substring(0, trimWidth);
+                                Data.Rows[subscript][col + 1] = (string)rows[row].VS[col].Text.Substring(0, trimWidth);
                             }
                         }
                     }
@@ -659,7 +659,7 @@ namespace AubitDesktop
                 if (row >= maxRows) continue;
 
                 rowData = " <ROW SUBSCRIPT=\"" +subscript_string + "\">\n";
-                rowData += "  <SYNCVALUES>\n";
+                rowData += "  <SVS>\n";
 
                 for (int col = 0; col < this.nCols; col++)
                 {
@@ -672,10 +672,10 @@ namespace AubitDesktop
                     }
                     
 
-                    rowData += "   <SYNCVALUE FIELDNAME=\"" + inputArrayGrid.getFieldName(col) + "\">" + System.Security.SecurityElement.Escape(rval) + "</SYNCVALUE>\n";
+                    rowData += "   <SV FN=\"" + inputArrayGrid.getFieldName(col) + "\">" + System.Security.SecurityElement.Escape(rval) + "</SV>\n";
                 }
 
-                rowData += "  </SYNCVALUES>\n";
+                rowData += "  </SVS>\n";
                 rowData += " </ROW>\n";
                 if (lastRowData[row] != rowData)
                 { // Is it different to last time ? 
@@ -699,7 +699,7 @@ namespace AubitDesktop
 
 
 
-        public void ActivateContext(UIEventHandler UIInputArrayContext_EventTriggered, VALUE[] values, ROW[] rows)
+        public void ActivateContext(UIEventHandler UIInputArrayContext_EventTriggered, V[] values, ROW[] rows)
         {
             this.EventTriggered = UIInputArrayContext_EventTriggered;
 
