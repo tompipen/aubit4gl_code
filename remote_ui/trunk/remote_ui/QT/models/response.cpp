@@ -125,22 +125,22 @@ void Response::addSyncValues()
 {
 MainFrame::vdcdebug("Response","addSyncValues", "");
 
-   QDomElement syncValuesElement = this->createElement("SYNCVALUES");
+   QDomElement syncValuesElement = this->createElement("SVS");
    responseElement.appendChild(syncValuesElement);
 
    for(int i=0; i<p_currForm->context->fieldList().count(); i++){
-      QDomElement syncValueElement = this->createElement("SYNCVALUE");
+      QDomElement syncValueElement = this->createElement("SV");
       QWidget *widget = p_currForm->context->fieldList().at(i);
 
       QString text;
       if(LineEditDelegate *de = qobject_cast<LineEditDelegate *> (widget)){
          // TODO
-         syncValueElement.setAttribute("FIELDNAME", de->objectName());
-         syncValueElement.setAttribute("TOUCHED", 0);
+         syncValueElement.setAttribute("FN", de->objectName());
+         syncValueElement.setAttribute("T", 0);
       }
       else{
-         syncValueElement.setAttribute("FIELDNAME", widget->objectName());
-         syncValueElement.setAttribute("TOUCHED", widget->property("touched").toInt());
+         syncValueElement.setAttribute("FN", widget->objectName());
+         syncValueElement.setAttribute("T", widget->property("touched").toInt());
          text = WidgetHelper::fieldText(widget);
       }
 
@@ -184,11 +184,11 @@ MainFrame::vdcdebug("Response","addScreenRecSyncValues", "TableView *p_screenRec
       QDomElement syncRowElement = this->createElement("ROW");
       syncRowElement.setAttribute("SUBSCRIPT", QString::number(i+1));
       syncRowsElement.appendChild(syncRowElement);
-      QDomElement syncValuesElement = this->createElement("SYNCVALUES");
+      QDomElement syncValuesElement = this->createElement("SYS");
       syncRowElement.appendChild(syncValuesElement);
       for(int j=0; j<p_screenRecord->model()->columnCount(); j++){
          QModelIndex currIndex = p_screenRecord->model()->index(i, j);
-         QDomElement syncValueElement = this->createElement("SYNCVALUE");
+         QDomElement syncValueElement = this->createElement("SV");
          QString text = p_screenRecord->model()->data(currIndex).toString();
          if(!text.isEmpty()){
             QDomText syncValueText = this->createTextNode(text);
@@ -229,11 +229,11 @@ MainFrame::vdcdebug("Response","addScreenRecSyncValues", "");
       QDomElement syncRowElement = this->createElement("ROW");
       syncRowElement.setAttribute("SUBSCRIPT", QString::number(i+1));
       syncRowsElement.appendChild(syncRowElement);
-      QDomElement syncValuesElement = this->createElement("SYNCVALUES");
+      QDomElement syncValuesElement = this->createElement("SVS");
       syncRowElement.appendChild(syncValuesElement);
       QStringList values = p_currForm->context->getScreenRecordValues(i);
       for(int j=0; j<values.count(); j++){
-         QDomElement syncValueElement = this->createElement("SYNCVALUE");
+         QDomElement syncValueElement = this->createElement("SV");
          QString text = values.at(j);
          if(!text.isEmpty()){
             QDomText syncValueText = this->createTextNode(text);

@@ -299,6 +299,7 @@ LineEdit::LineEdit(QWidget *parent)
    b_autoNext = false;
    b_required = false;
    b_compress = false;
+   this->setDragEnabled(true);
    w = 0;
    valid = NULL;
 
@@ -424,6 +425,8 @@ Edit::Edit(QWidget *parent)
 {
    // Set enabled as long as Protocol says to enable it
    this->setEnabled(false);
+   qDebug()<<"tjojo";
+   this->setDragEnabled(true);
 
 }
 

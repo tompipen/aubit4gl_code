@@ -399,7 +399,7 @@ MainFrame::vdcdebug("FglForm","setMenuEnabled", "bool enable");
       }
    }
 */
-
+   this->checkActions();
    b_menu = enable;
 }
 

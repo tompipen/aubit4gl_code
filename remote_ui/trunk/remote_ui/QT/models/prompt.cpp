@@ -127,10 +127,10 @@ MainFrame::vdcdebug("Prompt","closeEvent", "QCloseEvent *event");
       if(isAccepted){
          triggered.setAttribute("ID", "ACCEPT");
   
-         QDomElement syncValues = doc.createElement("SYNCVALUES");
+         QDomElement syncValues = doc.createElement("SVS");
          triggered.appendChild(syncValues);
 
-         QDomElement syncValue = doc.createElement("SYNCVALUE");
+         QDomElement syncValue = doc.createElement("SV");
          if(!p_lineEdit->text().isNull()){
             syncValue.appendChild(doc.createTextNode(p_lineEdit->text()));
          }
