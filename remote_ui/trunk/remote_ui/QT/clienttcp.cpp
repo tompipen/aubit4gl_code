@@ -22,6 +22,7 @@
 #include <QDesktopServices>
 #include <QFileInfo>
 #include <QUrl>
+#include <QDebug>
 #include <QMessageBox>
 #include "clienttcp.h"
 #include "mainframe.h"
@@ -485,7 +486,6 @@ MainFrame::vdcdebug("ProtocolHandler","run", "");
    else{
       qs_protocolCommand = request;
    }
-
    if(qs_protocolCommand.trimmed() == "PROTOCOL?")
    {
       makeResponse(QString("UIVERSION %1").arg("1.0"));
@@ -582,7 +582,6 @@ MainFrame::vdcdebug("ProtocolHandler","run", "");
    {
          QString tmpstring = qsl_xmlCommands.takeAt(i);
          qsl_xmlCommands.insert(i, tmpstring);
-
       QString errorMsg;
       int errorLine, errorCol;
       if (!doc.setContent(qsl_xmlCommands.at(i), &errorMsg, &errorLine, &errorCol)){
@@ -632,7 +631,6 @@ void ProtocolHandler::outputTree(QDomNode domNode)
 {
 MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
    QDomElement childElement = domNode.toElement();
-
    if(childElement.nodeName() == "PROGRAMSTARTUP"){
       handleStartup(childElement);
       QString programName = childElement.attribute("PROGRAMNAME");
@@ -681,7 +679,6 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
            }
           
       }
-
       QString id = childElement.attribute("ID");
       createWindow("screen", "", 0, 0, 100, 100, id);
       return;
@@ -971,9 +968,9 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
          triggeredElement.setAttribute("ID", -123);
          doc.appendChild(triggeredElement);
 
-         QDomElement syncValuesElement = doc.createElement("SYNCVALUES");
+         QDomElement syncValuesElement = doc.createElement("SVS");
          triggeredElement.appendChild(syncValuesElement);
-         QDomElement syncValueElement = doc.createElement("SYNCVALUE");
+         QDomElement syncValueElement = doc.createElement("SV");
          syncValuesElement.appendChild(syncValueElement);
          QDomText text = doc.createTextNode(value);
          syncValueElement.appendChild(text);
@@ -1544,7 +1541,7 @@ MainFrame::vdcdebug("ProtocolHandler","handleDisplayToElement", "const QDomNode&
          }
       }
 
-      if(nodeName == "VALUES"){
+      if(nodeName == "VS"){
          QDomNodeList children = currentElement.childNodes();
          for(int i=0; i<children.count(); ++i){
             QDomNode child = children.at(i);
@@ -1561,7 +1558,7 @@ MainFrame::vdcdebug("ProtocolHandler","handleDisplayToElement", "const QDomNode&
             }
 
             //WAITFOREVENT
-            if(textElement.nodeName() == "VALUE"){
+            if(textElement.nodeName() == "V"){
                qsl_fieldValues << textElement.text();
 
             }
@@ -1685,7 +1682,7 @@ MainFrame::vdcdebug("ProtocolHandler","handleDisplayArrayElement", "const QDomNo
 
                   QDomElement valueElement = child.toElement();
 
-                  if(valueElement.nodeName() == "VALUE"){
+                  if(valueElement.nodeName() == "V"){
                      qsl_arrayValues << valueElement.text();
                   }
                }
@@ -2012,7 +2009,7 @@ MainFrame::vdcdebug("ProtocolHandler","handleWaitForEventElement", "const QDomNo
    }
 
 
-   if(currentElement.firstChildElement().nodeName() == "VALUES"){
+   if(currentElement.firstChildElement().nodeName() == "VS"){
       if(changed > 0){
          handleDisplayToElement(currentElement, currentElement.nodeName());
       }
@@ -2083,9 +2080,9 @@ MainFrame::vdcdebug("ProtocolHandler","sendFile", "QString name");
    triggeredElement.setAttribute("FILELEN", fileSize);
    doc.appendChild(triggeredElement);
 
-   QDomElement syncValuesElement = doc.createElement("SYNCVALUES");
+   QDomElement syncValuesElement = doc.createElement("SVS");
    triggeredElement.appendChild(syncValuesElement);
-   QDomElement syncValueElement = doc.createElement("SYNCVALUE");
+   QDomElement syncValueElement = doc.createElement("SV");
    syncValuesElement.appendChild(syncValueElement);
 
    QByteArray data;
@@ -2102,9 +2099,9 @@ MainFrame::vdcdebug("ProtocolHandler","sendFile", "QString name");
    returnString.append("FILELEN=\"");
    returnString.append(QString::number(fileSize));
    returnString.append("\">");
-   returnString.append("<SYNCVALUES><SYNCVALUE>");
+   returnString.append("<SVS><SV>");
    returnString.append(data);
-   returnString.append("</SYNCVALUE></SYNCVALUES></TRIGGERED>");
+   returnString.append("</SV></SVS></TRIGGERED>");
 
    makeResponse(returnString.trimmed());
 

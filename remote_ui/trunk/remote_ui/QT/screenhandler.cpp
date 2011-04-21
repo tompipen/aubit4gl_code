@@ -101,7 +101,6 @@ MainFrame::vdcdebug("ScreenHandler","createWindow", "QString windowTitle,QString
    Q_UNUSED(y);
    Q_UNUSED(h);
    Q_UNUSED(w);
-
    cnt_form++;
    if(p_fglform != NULL)
    {
@@ -151,7 +150,6 @@ MainFrame::vdcdebug("ScreenHandler","createWindow", "QString windowTitle,QString
    if(formsActions.hasChildNodes()){
       p_fglform->setActions(formsActions);
    }
-
 
 }
 
@@ -226,7 +224,7 @@ MainFrame::vdcdebug("ScreenHandler","displayForm", "QString formName");
    p_fglform->show();
 }
 
-//------------------------------------------------------------------------------
+//-------------------------------------------------------       -----------------------
 // Method       : handleXMLToolBar(QString xmlFile)
 // Filename     : screenhandler.cpp
 // Description  : creates the ToolBar (4tb file)
@@ -2396,10 +2394,10 @@ MainFrame::vdcdebug("ScreenHandler","fileBrowser", "QString function, QString de
 
    docElement.setAttribute("ID", "RETURN");
 
-   QDomElement syncValuesElement = doc.createElement("SYNCVALUES");
+   QDomElement syncValuesElement = doc.createElement("SVS");
    docElement.appendChild(syncValuesElement);
 
-   QDomElement paramElement = doc.createElement("SYNCVALUE");
+   QDomElement paramElement = doc.createElement("SV");
    QDomText param = doc.createTextNode(fileName);
    paramElement.appendChild(param);
 
