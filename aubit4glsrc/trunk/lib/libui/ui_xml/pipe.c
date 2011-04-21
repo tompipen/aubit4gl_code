@@ -541,8 +541,12 @@ pipe_sock_puts (int sockfd, char *str)
 
 char *p;
 p=sock_buff[sockfd];
-//printf("sock_buff[sockfd] before set %s\n", sock_buff[sockfd]);
-strcat(&p[sock_buff_sz[sockfd]-1],str);
+//printf("sock_buff[sockfd] before set '%s' : %d, '%s'\n", sock_buff[sockfd],sock_buff_sz[sockfd],str);
+if (sock_buff_sz[sockfd]==0) {
+	strcpy(sock_buff[sockfd],str);
+} else {
+	strcat(&p[sock_buff_sz[sockfd]-1],str);
+}
 sock_buff_sz[sockfd]+=sz_str;
 //printf("sock_buff[sockfd] now set to %s\n", sock_buff[sockfd]);
   UIdebug (3,"ADDING TO CACHE : '%s' (%d)\n", str,sockfd);
