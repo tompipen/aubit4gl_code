@@ -1484,7 +1484,7 @@ UIdebug(5, "init=%d changed=%d\n", init, changed);
       send_to_ui (" <VS>");
       for (a = 0; a < contexts[context].ui.input.nfields; a++)
 	{
-	  send_to_ui ("  <V CHANGED=\"%d\">%s</VALUE>",
+	  send_to_ui ("  <V CHANGED=\"%d\">%s</V>",
 		      contexts[context].ui.input.changed[a], xml_escape (contexts[context].ui.input.variable_data[a]));
 	}
       send_to_ui (" </VS>");
