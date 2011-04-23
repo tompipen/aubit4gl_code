@@ -1816,13 +1816,13 @@ namespace AubitDesktop
             if (dgCells != null)
             {
                
-                if (d.VALUES.Length !=dgCells.Count)
+                if (d.VS.Length !=dgCells.Count)
                 {
                     Program.Show("Wrong number of fields");
                 }
                 else
                 {
-                    for (int a = 0; a < d.VALUES.Length; a++)
+                    for (int a = 0; a < d.VS.Length; a++)
                     {
                         if (dgCells[a].DataGridView.DataSource == null)
                         {
@@ -1832,7 +1832,7 @@ namespace AubitDesktop
                             fg.DataSource = fg.defaultData;
 
                         }
-                        FGLUtils.setCellValue(dgCells[a], d.VALUES[a].Text,Convert.ToInt32(d.ATTRIBUTE));
+                        FGLUtils.setCellValue(dgCells[a], d.VS[a].Text,Convert.ToInt32(d.ATTRIBUTE));
 
                             //dgCells[a].Value = d.VALUES[a].Text;
                             //fldlist[a].fglField.Attribute = Convert.ToInt32(d.ATTRIBUTE);
@@ -1845,20 +1845,20 @@ namespace AubitDesktop
             {
                 List<FGLFoundField> fldlist;
                 fldlist = FindFields(d.FIELDLIST);
-                if (d.VALUES.Length != fldlist.Count)
+                if (d.VS.Length != fldlist.Count)
                 {
                     Program.Show("Wrong number of fields");
                 }
                 else
                 {
-                    for (int a = 0; a < d.VALUES.Length; a++)
+                    for (int a = 0; a < d.VS.Length; a++)
                     {
                         if (fldlist[a].fglField.format != null)
                         {
                             string s = "";
                             try
                             {
-                                s = FGLUsing.A4GL_func_using(fldlist[a].fglField.format, d.VALUES[a].Text, fldlist[a].fglField.datatype);
+                                s = FGLUsing.A4GL_func_using(fldlist[a].fglField.format, d.VS[a].Text, fldlist[a].fglField.datatype);
                             }
                             catch (Exception)
                             {
@@ -1870,7 +1870,7 @@ namespace AubitDesktop
                         else
                         {
                             fldlist[a].fglField.Attribute = Convert.ToInt32(d.ATTRIBUTE);
-                            fldlist[a].fglField.Text = d.VALUES[a].Text;
+                            fldlist[a].fglField.Text = d.VS[a].Text;
                         }
                     }
                 }
