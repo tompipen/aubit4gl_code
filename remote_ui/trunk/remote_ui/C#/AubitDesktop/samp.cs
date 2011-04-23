@@ -256,7 +256,7 @@ namespace AubitDesktop
         /// <remarks/>
         [System.Xml.Serialization.XmlArrayItem(Type = typeof(TEXT), IsNullable = false)]
         //[System.Xml.Serialization.XmlArrayItem(Type = typeof(VALUE), IsNullable = false)]
-        public TEXT[] VALUES;
+        public TEXT[] VS;
     }
 
     /// <remarks/>
