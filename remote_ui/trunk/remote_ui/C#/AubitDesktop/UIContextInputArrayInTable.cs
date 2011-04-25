@@ -198,9 +198,28 @@ namespace AubitDesktop
         public void setUpData(ROW[] rows)
         {
             DataGridViewCell c;
+            DataGridViewCell orig_c;
+
+            orig_c = inputArrayGrid.CurrentCell;
+            Data.AcceptChanges();
             c = inputArrayGrid.CurrentCell;
 
 
+            // row may be been deleted..
+            // try selecting the same row anyway..
+            if (c == null && orig_c != null)
+            {
+                
+                try
+                {
+                    c = inputArrayGrid.Rows[orig_c.RowIndex].Cells[orig_c.ColumnIndex];
+                }
+                catch (Exception ex)
+                {
+                    // if c is still null - nothing lost...
+
+                } 
+            }
             Data.BeginLoadData();
             
             
@@ -641,8 +660,8 @@ namespace AubitDesktop
 
 
 
-            
-            
+
+          //  Data.AcceptChanges();
 
             // Originally - I used the DataTable - but that just doesn't sync properly
             // I'm only using that at all because otherwise the autoinsert new row
@@ -657,7 +676,7 @@ namespace AubitDesktop
                 string rowData;
                 subscript_string = "" + (row + 1);
                 if (row >= maxRows) continue;
-
+                
                 rowData = " <ROW SUBSCRIPT=\"" +subscript_string + "\">\n";
                 rowData += "  <SVS>\n";
 
