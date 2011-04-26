@@ -1130,6 +1130,10 @@ uilib_menu_add (int nargs)
   keys = charpop ();
   mn = charpop ();
   id = POPint ();
+
+  A4GL_trim(mn);
+  A4GL_trim(desc);
+
   context = POPint ();
   send_to_ui
     ("<MENUCOMMAND CONTEXT=\"%d\" KEYS=\"%s\" ID=\"%d\" TEXT=\"%s\" DESCRIPTION=\"%s\" HELPNO=\"%d\"/>",
@@ -2325,13 +2329,13 @@ send_input_array_change (int ci)
     {
       if (!contexts[ci].ui.inputarray.changed_rows[a])
 	continue;
-      send_to_ui (" <ROW SUBSCRIPT=\"%d\">", a + 1);
-      send_to_ui ("  <VS>");
+      send_to_ui ("<ROW SUBSCRIPT=\"%d\">", a + 1);
+      send_to_ui ("<VS>");
       for (b = 0; b < contexts[ci].ui.inputarray.nvals; b++)
 	{
-	  send_to_ui ("   <V>%s</V>", xml_escape (contexts[ci].ui.inputarray.variable_data[a][b]));
+	  send_to_ui (" <V>%s</V>", xml_escape (contexts[ci].ui.inputarray.variable_data[a][b]));
 	}
-      send_to_ui ("  </VS>");
+      send_to_ui ("</VS>");
       send_to_ui (" </ROW>");
       contexts[ci].ui.inputarray.changed_rows[a] = 0;
     }
