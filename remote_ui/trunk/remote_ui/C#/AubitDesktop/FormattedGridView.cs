@@ -8,6 +8,10 @@ using System.Xml.Serialization;
 using System.Xml;
 using System.Data;
 using System.ComponentModel;
+using ComponentFactory.Krypton.Toolkit;
+using ComponentFactory.Krypton.Navigator;
+using ComponentFactory.Krypton.Workspace;
+using ComponentFactory.Krypton.Docking;
 
 namespace AubitDesktop
 {
@@ -38,6 +42,7 @@ namespace AubitDesktop
             comments = "";
             isPassword = false;
             readOnly = false;
+          
         }
 
     }
@@ -51,6 +56,8 @@ namespace AubitDesktop
         private EventHandler _onDblClick;
         internal bool addedNewRowBelow = false;
         internal DataTable defaultData;
+        internal bool bolhareadOnly;
+
         //internal int enteredCellColumn = -1;
         //internal int enteredCellRow = -1;
         //internal int enteredRow = -1;
@@ -277,6 +284,7 @@ namespace AubitDesktop
             CellValidating +=new DataGridViewCellValidatingEventHandler(FormattedGridView_CellValidating);
             this.RowEnter += new DataGridViewCellEventHandler(FormattedGridView_RowEnter);
             this.CausesValidation = true;
+            UserAddedRow += new System.Windows.Forms.DataGridViewRowEventHandler(displayArrayGrid_DoubleClick2);
             CellEnter += new DataGridViewCellEventHandler(FormattedGridView_CellEnter);
             CellFormatting += new DataGridViewCellFormattingEventHandler(FormattedGridView_CellFormatting);
             EditingControlShowing += new DataGridViewEditingControlShowingEventHandler(FormattedGridView_EditingControlShowing);
@@ -629,7 +637,18 @@ namespace AubitDesktop
         {
            // setAllowUserToAddRows();
             cellMoved(e.RowIndex, e.ColumnIndex);
+           // cellMoved(e.RowIndex, 1);
         }
+
+        void displayArrayGrid_DoubleClick2(object sender, DataGridViewRowEventArgs e)
+        {
+           // setAllowUserToAddRows();
+            processDown();
+            cellMoved(e.Row.Index-1, 1);
+           
+ 
+        }
+        
 
 
         
@@ -972,7 +991,7 @@ namespace AubitDesktop
             AutoGenerateColumns = false;
             setUpHandlers();
             //setAllowUserToAddRows();
-            this.Enabled = false;
+            this.Enabled = true;
             //DataSource = defaultData;
         }
 
@@ -1180,6 +1199,12 @@ namespace AubitDesktop
         internal void setActiveFocus()
         {
             bool incMovingCellsInternally = false;
+
+         
+
+           
+
+
             if (currentColId == -1 && currentRowId == -1)
             {
                // first move - need to trigger the before fields/rows... 
@@ -1237,13 +1262,98 @@ namespace AubitDesktop
                 }
             }
 
-            if (CurrentCell != null)
-            {
-                this.CurrentCell.Selected = true;
+            try {
+                if (widgetSettings[currentColId - 1].readOnly)
+                {
+                    //  e.Cancel = true;
+                    // Rows[e.RowIndex].Cells[e.ColumnIndex].ReadOnly = true;
+                    bolhareadOnly = true;
+
+                    GetNextCell2(this.CurrentCell);
+                    if (bolhareadOnly == false)
+                    {
+                        try
+                        {
+                            this.CurrentCell = Rows[currentRowId + 1].Cells[1];
+
+                            if (widgetSettings[currentColId - 1].readOnly)
+                            {
+                                this.CurrentCell = GetNextCell(this.CurrentCell);
+                            }
+                        }
+                        catch
+                        {
+
+                        }
+                    }
+                    else
+                    {
+                        this.CurrentCell = GetNextCell(this.CurrentCell);
+
+                    }
+
+
+
+
+
+
+              
+             
             }
+
+            }
+            catch { }
+
+        
+            //if (CurrentCell != null)
+           // {
+             //   this.CurrentCell.Selected = true;
+                // this.table.
+           // }
+
+            
+           
+
+
 
         }
 
+        private DataGridViewCell GetNextCell(DataGridViewCell currentCell) { 
+
+            int i = 0;         
+            DataGridViewCell nextCell = currentCell;
+              do
+                {
+                    int nextCellIndex = (nextCell.ColumnIndex + 1) % this.ColumnCount;
+                    int nextRowIndex = nextCellIndex == 0 ? (nextCell.RowIndex + 1) % this.RowCount : nextCell.RowIndex;
+                    nextCell = this.Rows[nextRowIndex].Cells[nextCellIndex]; i++;
+                } while (i < this.RowCount * this.ColumnCount && widgetSettings[nextCell.ColumnIndex - 1].readOnly); return nextCell;
+            
+        }
+
+
+
+
+        private DataGridViewCell GetNextCell2(DataGridViewCell currentCell)
+        {
+
+            int i = 0;
+            DataGridViewCell nextCell = currentCell;
+            try
+           {
+                do
+                {
+                    int nextCellIndex = (nextCell.ColumnIndex + 1) % this.ColumnCount;
+                    int nextRowIndex = nextCellIndex == 0 ? (nextCell.RowIndex + 1) % this.RowCount : nextCell.RowIndex;
+                    nextCell = this.Rows[nextRowIndex].Cells[nextCellIndex]; i++;
+                } while (i < this.RowCount * this.ColumnCount && widgetSettings[nextCell.ColumnIndex - 1].readOnly); return nextCell;
+            }
+            catch
+            {
+                bolhareadOnly = false;
+                   return nextCell;
+            }
+        } 
 
 
 
