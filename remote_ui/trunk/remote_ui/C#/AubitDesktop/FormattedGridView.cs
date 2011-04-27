@@ -8,10 +8,6 @@ using System.Xml.Serialization;
 using System.Xml;
 using System.Data;
 using System.ComponentModel;
-using ComponentFactory.Krypton.Toolkit;
-using ComponentFactory.Krypton.Navigator;
-using ComponentFactory.Krypton.Workspace;
-using ComponentFactory.Krypton.Docking;
 
 namespace AubitDesktop
 {
