@@ -1,13 +1,9 @@
 using System;
 using System.Collections.Generic;
-using System.Collections;
 using System.Windows.Forms;
-using System.Text;
-using System.IO;
-using System.Xml.Serialization;
-using System.Xml;
 using System.Data;
 using System.ComponentModel;
+
 
 namespace AubitDesktop
 {
