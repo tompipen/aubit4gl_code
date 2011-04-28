@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.186 2011-04-14 16:57:30 mikeaubury Exp $
+# $Id: conv.c,v 1.187 2011-04-28 16:19:00 mikeaubury Exp $
 #
 */
 
@@ -1728,6 +1728,8 @@ A4GL_mdectos (void *z, void *w, int size)
 #ifdef DEBUG
   A4GL_debug ("w = %s\n", A4GL_null_as_null (w));
 #endif
+
+
   return 1;
 }
 
@@ -2928,8 +2930,9 @@ A4GL_ftoc (void *aa, void *zz, int c)
     }
   else
     {
-      strcpy (z, buff);
+      strcpy (z, A4GL_decstr_convert (buff, a4gl_convfmts.printf_decfmt, a4gl_convfmts.using_decfmt, 0, 0, -1));
     }
+
 
   free (buff);
   return 1;
@@ -3094,7 +3097,8 @@ A4GL_sftoc (void *aa, void *zz, int c)
     }
   else
     {
-      strcpy (z, buff);
+      //strcpy (z, buff);
+      strcpy (z, A4GL_decstr_convert (buff, a4gl_convfmts.printf_decfmt, a4gl_convfmts.using_decfmt, 0, 0, -1));
     }
 
 

@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin_d.c,v 1.113 2011-02-11 16:42:44 mikeaubury Exp $
+# $Id: builtin_d.c,v 1.114 2011-04-28 16:19:00 mikeaubury Exp $
 #
 */
 
@@ -414,8 +414,10 @@ A4GL_push_double_str (char *p)
   double *ptr;
   char *cp;
   char *pdot;
+
   A4GL_push_decimal_str (p);	// push a decimal instead..
   return;
+
   pdot = strchr (p, '.');
   if (pdot == 0)
     {

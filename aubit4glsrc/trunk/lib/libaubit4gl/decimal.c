@@ -493,6 +493,9 @@ dec->dec_data[1]=size&0xff;
  *
  * @param str The string to be converted.
  * @param dec A pointer to the decimal where the value will be inserted.
+ * The string should be in posix format - ie with a '.' as the decimal separator
+ * using the A4GL_decstr_convert prior ro calling this function if you want to pass 
+ * something different..
  */
 fgldecimal *
 A4GL_str_to_dec (char *str_orig, fgldecimal * dec)
@@ -521,6 +524,19 @@ A4GL_str_to_dec (char *str_orig, fgldecimal * dec)
 #ifdef DEBUG
   A4GL_debug ("XYXY str to dec : '%s'", str);
 #endif
+
+
+  if (strchr(str,',')) {
+		// Check we have a posix style decimal...
+		char *pcomma=strchr(str,',');
+		char *pdot=strchr(str,'.');
+		if (pdot==0) { A4GL_assertion(1,"A4GL_str_to_dec called with a non posix decimal string"); }
+		else {
+			if (pdot<pcomma) { 
+				A4GL_assertion(1,"A4GL_str_to_dec called with a non posix decimal string"); 
+			}
+		}
+  }
 
   digits = dec->dec_data[0] & 127;
   decimals = dec->dec_data[1];
