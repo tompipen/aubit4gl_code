@@ -20,6 +20,7 @@
 #include <QIcon>
 #include <QMenu>
 #include <QAction>
+#include <QLineEdit>
 #if QT_VERSION >= 0x040600
 #include <QProcessEnvironment>
 #endif
