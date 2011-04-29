@@ -627,7 +627,8 @@ MainFrame::vdcdebug("ScreenHandler","setFieldBuffer", "QStringList fieldNames, Q
             else{
                row = 0;
             }
-            WidgetHelper::setDisplayAttributes(attr, widget);
+    //Deactive because Segmentationfaults on Screenarrays. For Ventas currently not needed, but planed for the feature.
+    //        WidgetHelper::setDisplayAttributes(attr, widget);
             QStringList values;
             values << fieldValues.at(i);
             setArrayBuffer(row, fieldName, values);
