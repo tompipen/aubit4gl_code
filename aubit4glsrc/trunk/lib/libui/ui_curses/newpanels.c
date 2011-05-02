@@ -24,11 +24,11 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.189 2011-05-02 19:37:00 mikeaubury Exp $
+# $Id: newpanels.c,v 1.190 2011-05-02 19:42:26 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: newpanels.c,v 1.189 2011-05-02 19:37:00 mikeaubury Exp $";
+		"$Id: newpanels.c,v 1.190 2011-05-02 19:42:26 mikeaubury Exp $";
 #endif
 
 /**
@@ -1896,18 +1896,20 @@ A4GL_real_getch_swin (WINDOW * window_ptr)
 
 		if (feof(stdin)) {
 			A4GL_exitwith("Unable to read character");
+			exit(3);
 			return KEY_CANCEL;
 		}
 
 		a = wgetch (window_ptr);
 
-/*
+
 		if (a==0) {
 			// Unable to read the file
 			A4GL_exitwith("Unable to read character");
+			exit(4);
 			return 0;
 		}
-*/
+
 #ifdef DEBUG
 		A4GL_debug("WGETCH : %d",a);
 #endif
