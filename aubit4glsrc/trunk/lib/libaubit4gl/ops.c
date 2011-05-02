@@ -25,7 +25,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.186 2011-04-28 16:19:00 mikeaubury Exp $
+# $Id: ops.c,v 1.187 2011-05-02 11:23:07 mikeaubury Exp $
 #
 */
 
@@ -7891,6 +7891,7 @@ A4GL_whats_in_a_string (char *sorig, int *d, int *sz,int dtype_hint)
   int orig_stat;
 int t;
 int dot_cnt;
+int sl;
 static char *s=NULL;
 
 if (s) {free(s) ; s=NULL;}
@@ -7910,7 +7911,10 @@ s=strdup(sorig);
   orig_conv_ok = A4GL_conversion_ok (-1);
   dot_cnt=0;
 
-  for (a=0;a<strlen(s);a++) {
+
+  sl=strlen(s);
+
+  for (a=0;a<sl;a++) {
 	if (s[a]=='.') dot_cnt++;
   }
 
