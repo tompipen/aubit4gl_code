@@ -525,7 +525,7 @@ A4GL_str_to_dec (char *str_orig, fgldecimal * dec)
   A4GL_debug ("XYXY str to dec : '%s'", str);
 #endif
 
-
+#ifdef NUMCHECK
   if (strchr(str,',')) {
 		// Check we have a posix style decimal...
 		char *pcomma=strchr(str,',');
@@ -537,6 +537,7 @@ A4GL_str_to_dec (char *str_orig, fgldecimal * dec)
 			}
 		}
   }
+#endif
 
   digits = dec->dec_data[0] & 127;
   decimals = dec->dec_data[1];
