@@ -24,11 +24,11 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.190 2011-05-02 19:42:26 mikeaubury Exp $
+# $Id: newpanels.c,v 1.191 2011-05-03 21:08:40 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: newpanels.c,v 1.190 2011-05-02 19:42:26 mikeaubury Exp $";
+		"$Id: newpanels.c,v 1.191 2011-05-03 21:08:40 mikeaubury Exp $";
 #endif
 
 /**
@@ -1854,6 +1854,8 @@ A4GL_real_getch_swin (WINDOW * window_ptr)
 {
   int a;
   static int no_delay=-1;
+  static int erredReturns=0;
+  static time_t lastSuccess=-1;
 
 #ifdef DEBUG
   A4GL_debug ("Reading from keyboard on window %p", window_ptr);
@@ -1894,20 +1896,38 @@ A4GL_real_getch_swin (WINDOW * window_ptr)
 		A4GL_debug("WGETCH\n");
 #endif
 
-		if (feof(stdin)) {
-			A4GL_exitwith("Unable to read character");
-			exit(3);
-			return KEY_CANCEL;
-		}
-
 		a = wgetch (window_ptr);
 
-
-		if (a==0) {
-			// Unable to read the file
-			A4GL_exitwith("Unable to read character");
-			exit(4);
-			return 0;
+		// Did we get an error reading ? 
+		if (a!=-1) {
+			// Nope - its fine..
+			erredReturns=0;
+			lastSuccess=-1;
+		} else {
+			// Yes - there are 2 possiblities
+			//  1) It was a timeout
+			//  2) it was an error because the standard input was closed
+			if (lastSuccess==-1) {
+				lastSuccess=time(0);
+				erredReturns=0;
+			} else {
+				time_t this_fail;
+				this_fail=time(0);
+				if ((this_fail-lastSuccess>=2) && (this_fail-lastSuccess)<=3) {
+					// At least 2 seconds has passed- at most we could have 200 
+					// interations...
+					if (erredReturns>300) {
+						A4GL_debug("Unable to read from input %d>300 in %d seconds", erredReturns, this_fail-lastSuccess);
+						fprintf(stderr,"Unable to read from input");
+						exit(2);
+					} else {
+						// reset and try again..
+						lastSuccess=-1;
+						erredReturns=0;
+					}
+				}
+			}
+			erredReturns++;
 		}
 
 #ifdef DEBUG
