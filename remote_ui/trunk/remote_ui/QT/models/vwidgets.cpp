@@ -395,7 +395,6 @@ void LineEdit::dragEnterEvent(QDragEnterEvent *e)
 //DropEvent for Drop files into a ButtonEdit/LineEdit
 void LineEdit::dropEvent(QDropEvent *e)
 {
-    qDebug()<<e->mimeData()->data("text/html");
     //Handle drop for files and directories (paste path into the field (without file://)
     if(e->mimeData()->hasUrls() || e->mimeData()->hasText() ){
         QString text;
@@ -425,7 +424,6 @@ Edit::Edit(QWidget *parent)
 {
    // Set enabled as long as Protocol says to enable it
    this->setEnabled(false);
-   qDebug()<<"tjojo";
    this->setDragEnabled(true);
 
 }
@@ -1875,10 +1873,41 @@ MainFrame::vdcdebug("WidgetHelper","fieldText", "QObject *object");
    }
 
    if(LineEdit *widget = qobject_cast<LineEdit *> (object)){
+      if(widget->sqlType().contains("CHAR(17)") && widget->sqlTabName == "formonly")
+      {
+         int cnt_comma = 0;
+         for(int i = 0; i<widget->text().size(); i++)
+          {
+             QString zeichen = widget->text().at(i);
+             if(zeichen == ",")
+             {
+                 cnt_comma++;
+                 if(cnt_comma > 1)
+                 {
+                     return widget->text();
+                 }
+                 continue;
+             }
+             if(!zeichen.at(0).isNumber())
+             {
+                 return widget->text();
+             }
+         }
+         return widget->text().replace(",",".");
+
+      }
+      if(widget->sqlType().contains("FLOAT") || widget->sqlType().contains("DECIMAL"))
+      {
+         return widget->text().replace(",",".");
+      }
       return widget->text();
    }
 
    if(TextEdit *widget = qobject_cast<TextEdit *> (object)){
+       if(widget->sqlType().contains("FLOAT") || widget->sqlType().contains("DECIMAL"))
+       {
+          return widget->toPlainText().replace(",",".");
+       }
       return widget->toPlainText();
    }
 

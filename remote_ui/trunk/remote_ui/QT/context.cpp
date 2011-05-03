@@ -270,7 +270,19 @@ MainFrame::vdcdebug("Context","getScreenRecordValues", "int row");
       if(TableView *tableView = qobject_cast<TableView *> (ql_fieldList.at(i))){
          for(int j=0; j<tableView->model()->columnCount(); j++){
             QModelIndex currIndex = tableView->model()->index(row, j);
-            fieldValues << tableView->model()->data(currIndex).toString();
+            if(LineEditDelegate *dele = qobject_cast<LineEditDelegate *> (tableView->itemDelegateForColumn(j))){
+               if(LineEdit *widget = qobject_cast<LineEdit *> (dele->qw_editor)){
+                  if(widget->sqlType().contains("FLOAT") || widget->sqlType().contains("DECIMAL"))
+                   {
+                      fieldValues << tableView->model()->data(currIndex).toString().replace(",",".");
+                  }
+                  else
+                  {
+                      fieldValues << tableView->model()->data(currIndex).toString();
+                  }
+               }
+            }
+
          }
       }
       else{
