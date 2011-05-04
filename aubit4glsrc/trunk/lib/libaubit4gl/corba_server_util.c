@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: corba_server_util.c,v 1.43 2010-08-23 17:23:22 mikeaubury Exp $
+# $Id: corba_server_util.c,v 1.44 2011-05-04 11:41:27 mikeaubury Exp $
 #
 */
 
@@ -374,7 +374,7 @@ A4GL_sprintf (char *f, int l, char *dest, size_t sdest, char *fmt, ...)
   static char *c=0;
   static int  lastc_size=0;
   va_list args;
-  char xbuff[20000];
+  char xbuff[65000];
 
 
 // DO NOT CALL A4GL_debug from this function!!!!
