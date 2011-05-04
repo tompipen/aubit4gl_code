@@ -1873,7 +1873,7 @@ MainFrame::vdcdebug("WidgetHelper","fieldText", "QObject *object");
    }
 
    if(LineEdit *widget = qobject_cast<LineEdit *> (object)){
-      if(widget->sqlType().contains("CHAR(17)") && widget->sqlTabName == "formonly")
+      if(widget->sqlTabName == "formonly")
       {
          int cnt_comma = 0;
          for(int i = 0; i<widget->text().size(); i++)
