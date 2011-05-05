@@ -285,13 +285,14 @@ op_fgl_expr_list_ptr:  {$<ptr_list>$=0;}
 ;
 
 
-output_cmd : OUTPUT_TO_REPORT rep_name op_values  OPEN_BRACKET op_fgl_expr_list_ptr CLOSE_BRACKET {
+output_cmd : OUTPUT_TO_REPORT atline rep_name op_values  OPEN_BRACKET op_fgl_expr_list_ptr CLOSE_BRACKET {
 		struct expr_str_list *l;	
-		l=expand_variables_in_expr_str_list($<ptr_list>5,0,1);
-		$<cmd>$=new_output_cmd($<str>2,l);
+		set_cmdlineno($<integer_val>2);
+		l=expand_variables_in_expr_str_list($<ptr_list>6,0,1);
+		$<cmd>$=new_output_cmd($<str>3,l);
 		add_feature("USE_REPORT");
-		output_to_report_definition($<str>2, l);
-		ADDMAP("Output to report",$<str>2);
+		output_to_report_definition($<str>3, l);
+		ADDMAP("Output to report",$<str>3);
 		}
 ;
 

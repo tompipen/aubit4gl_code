@@ -1131,6 +1131,9 @@ struct command *c;
    c->cmd_data.command_data_u.finish_cmd.repname=strdup(p_repname);
    c->cmd_data.command_data_u.finish_cmd.n_namespace=strdup(get_namespace(p_repname));
    c->cmd_data.command_data_u.finish_cmd.conv_c=p_c;
+
+   		add_to_call_list_by_call(c);
+
    return c;
 }
  
@@ -1140,6 +1143,9 @@ struct command *c;
    c->cmd_data.command_data_u.start_cmd.repname=strdup(p_repname);
    c->cmd_data.command_data_u.start_cmd.n_namespace=strdup(get_namespace(p_repname));
    c->cmd_data.command_data_u.start_cmd.sc_c=p_c;
+
+   		add_to_call_list_by_call(c);
+
    return c;
 }
  
@@ -2217,6 +2223,9 @@ struct command *c;
    c->cmd_data.command_data_u.output_cmd.repname=strdup(p_reportname);
    c->cmd_data.command_data_u.output_cmd.n_namespace=strdup(get_namespace(p_reportname));
    c->cmd_data.command_data_u.output_cmd.expressions=p_expressions;
+
+   		add_to_call_list_by_call(c);
+
    return c;
 }
 

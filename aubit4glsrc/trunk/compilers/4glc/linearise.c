@@ -40,6 +40,8 @@ linearise_commands (struct s_commands *master_list, struct s_commands *cmds)
       master_list = malloc (sizeof (struct s_commands));
       master_list->cmds.cmds_val = 0;
       master_list->cmds.cmds_len = 0;
+			master_list->first_lineno=0;
+			master_list->last_lineno=0;
     }
   if (cmds == 0)
     return master_list;

@@ -17,6 +17,8 @@ commands_as_list_something :
                 $<commands>$->cmds.cmds_len=1;
                 $<commands>$->cmds.cmds_val=malloc(sizeof($<commands>$->cmds.cmds_val[0]) * $<commands>$->cmds.cmds_len);
                 $<commands>$->cmds.cmds_val[$<commands>$->cmds.cmds_len-1]=$<cmd>1;
+					 $<commands>$->first_lineno=yylineno;
+					 $<commands>$->last_lineno=yylineno;
                 lastlineno=yylineno;
 
         }
@@ -26,6 +28,7 @@ commands_as_list_something :
                 $<commands>$->cmds.cmds_val=realloc($<commands>1->cmds.cmds_val, sizeof($<commands>$->cmds.cmds_val[0]) * $<commands>$->cmds.cmds_len);
                 $<commands>$->cmds.cmds_val[$<commands>$->cmds.cmds_len-1]=$<cmd>2;
                 lastlineno=yylineno;
+					 $<commands>$->last_lineno=yylineno;
         }
 ;
 

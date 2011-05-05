@@ -1,4 +1,4 @@
-/* $Id: fgl.x,v 1.63 2011-01-11 13:04:25 mikeaubury Exp $ */
+/* $Id: fgl.x,v 1.64 2011-05-05 09:02:16 mikeaubury Exp $ */
 typedef string str<>;
 typedef string sql_ident<>;
 
@@ -520,6 +520,8 @@ typedef struct command * command_ptr;
 
 struct s_commands {
 	command_ptr cmds<>;
+	int first_lineno;
+	int last_lineno;
 };
 
 struct struct_return_cmd {

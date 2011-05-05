@@ -3344,13 +3344,13 @@ add_clobberings (mods, nmodules) ;
 
 	  if (functions[a].f_or_r == 'P')
 	    {
-	      fprintf (output, "<FUNCTION NAME=\"%s\" TYPE=\"PDFREPORT\" MODULE=\"%s\" MODULENO=\"%d\" LINE=\"%d\">\n",
-		       functions[a].function, functions[a].module, functions[a].module_no, functions[a].line);
+	      fprintf (output, "<FUNCTION NAME=\"%s\" TYPE=\"PDFREPORT\" MODULE=\"%s\" MODULENO=\"%d\" LINE=\"%d\" LASTLINE=\"%d\" CALLED=\"%d\">\n",
+		       functions[a].function, functions[a].module, functions[a].module_no, functions[a].line,functions[a].lastline,functions[a].called);
 	    }
 	  else
 	    {
-	      fprintf (output, "<FUNCTION NAME=\"%s\" TYPE=\"REPORT\" MODULE=\"%s\" MODULENO=\"%d\" LINE=\"%d\">\n",
-		       functions[a].function, functions[a].module, functions[a].module_no, functions[a].line);
+	      fprintf (output, "<FUNCTION NAME=\"%s\" TYPE=\"REPORT\" MODULE=\"%s\" MODULENO=\"%d\" LINE=\"%d\" LASTLINE=\"%d\" CALLED=\"%d\">\n",
+		       functions[a].function, functions[a].module, functions[a].module_no, functions[a].line, functions[a].lastline,functions[a].called);
 	    }
 	  r = functions[a].ptr;
 	  indent++;
@@ -3751,7 +3751,7 @@ static int
 run_calltree_for (s_call_list * call_list)
 {
   int a;
-int cnt=0;
+  int cnt = 0;
   struct s_expr_function_call *fcall;
 
   for (a = 0; a < call_list->calls_by_expr.calls_by_expr_len; a++)
@@ -3759,14 +3759,42 @@ int cnt=0;
       switch (call_list->calls_by_expr.calls_by_expr_val[a]->expr_type)
 	{
 	case ET_EXPR_FCALL:
-	  fcall = call_list->calls_by_expr.calls_by_expr_val[a]->expr_str_u.expr_function_call;
-	  cnt+=run_calltree (fcall->functionname);
+	  fcall = call_list->calls_by_expr.calls_by_expr_val[a]->expr_str_u.  expr_function_call;
+	  cnt += run_calltree (fcall->functionname);
 	  break;
 
 	default:
 	  break;
 	}
     }
+
+  for (a = 0; a < call_list->calls_by_call.calls_by_call_len; a++)
+    {
+					command_ptr cmd=call_list->calls_by_call.calls_by_call_val[a];
+      switch ( cmd->cmd_data.type) {
+			case E_CMD_CALL_CMD: // Should be covered by the expression in the call above..
+					break;
+
+			case E_CMD_START_CMD: 
+	  			cnt += run_calltree (cmd->cmd_data.command_data_u.start_cmd.repname);
+				break;
+
+			case E_CMD_OUTPUT_CMD: 
+	  			cnt += run_calltree (cmd->cmd_data.command_data_u.output_cmd.repname);
+				break;
+
+			case E_CMD_FINISH_CMD: 
+	  			cnt += run_calltree (cmd->cmd_data.command_data_u.finish_cmd.repname);
+				break;
+						
+			default :
+					printf("Unexpected command in calls_by_call list");
+					break;
+
+	  break;
+	}
+	}
+
 
   return cnt;
 }
@@ -4614,8 +4642,18 @@ static char *get_form_display(char *s) {
 char *ptr;
 static char buff[20000];
 char strbuff[2000];
+char bp[2000];
+char *b;
 FILE *f;
-sprintf(buff,"%s.out",expand_env_vars_in_cmdline(s,0));
+
+
+b=buff;
+strcpy(b,expand_env_vars_in_cmdline(s,0));
+if (b[0]=='(') {
+	b++;
+	b[strlen(b)-1]=0;
+}
+sprintf(buff,"%s.out",b);
 printf("Looking for form : %s\n",buff);
 f=(FILE *) A4GL_open_file_dbpath (buff);
 if (f==0) {
