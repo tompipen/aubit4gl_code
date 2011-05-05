@@ -963,48 +963,49 @@ namespace AubitDesktop
             int arrLine;
             int scrLine;
 
-            if (inputArrayGrid.RowCount == 0) 
-            {
-                InsertkeyPressed();
-            }
-            if (rowIndex>=0)
+            try
             {
 
-                arrLine = rowIndex+1;
-                scrLine = arrLine;
-            }
-            else
-            {
-                if (inputArrayGrid.CurrentRow != null)
+                if (rowIndex >= 0)
                 {
-                    arrLine = inputArrayGrid.CurrentRow.Index + 1;
-                    lastArrLine = arrLine;
+
+                    arrLine = rowIndex + 1;
+                    scrLine = arrLine;
                 }
                 else
                 {
-                    arrLine = lastArrLine;
+                    if (inputArrayGrid.CurrentRow != null)
+                    {
+                        arrLine = inputArrayGrid.CurrentRow.Index + 1;
+                        lastArrLine = arrLine;
+                    }
+                    else
+                    {
+                        arrLine = lastArrLine;
+                    }
+                    scrLine = arrLine;
                 }
-                scrLine = arrLine;
-            }
 
 
-            if (arrLine == 0)
-            {
-                throw new ApplicationException("a row was found with no valid subscript");
-            }
+                if (arrLine == 0)
+                {
+                    throw new ApplicationException("a row was found with no valid subscript");
+                }
 
-            if (this.EventTriggered != null)
-            {
-                UIEventHandler EventTriggeredSave;
-                EventTriggeredSave=this.EventTriggered;
-                this.EventTriggered = null;
-                EventTriggeredSave(null, ID, getTriggeredTag(ID,arrLine,scrLine), this);
+                if (this.EventTriggered != null)
+                {
+                    UIEventHandler EventTriggeredSave;
+                    EventTriggeredSave = this.EventTriggered;
+                    this.EventTriggered = null;
+                    EventTriggeredSave(null, ID, getTriggeredTag(ID, arrLine, scrLine), this);
+                }
+                else
+                {
+                    Console.WriteLine("Adding pending event to " + arrLine + " " + scrLine);
+                    PendingEvents.Add(new s_pending(ID, scrLine, arrLine));
+                }
             }
-            else
-            {
-                Console.WriteLine("Adding pending event to " + arrLine + " " + scrLine);
-                PendingEvents.Add(new s_pending(ID, scrLine, arrLine));
-            }
+            catch { }
         }
 
 
