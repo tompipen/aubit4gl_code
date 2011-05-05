@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: function_call_stack.c,v 1.45 2010-06-30 17:34:58 mikeaubury Exp $
+# $Id: function_call_stack.c,v 1.46 2011-05-05 20:36:46 mikeaubury Exp $
 #*/
 
 /**
@@ -85,6 +85,7 @@ typedef struct FunctionCall
   const char *functionName; /**< The name of the function called */
   const char *params;	    /**< a list of parameters passed to the function */
   int functionCallCnt;
+  int started;
 }
 FunctionCall;
 
@@ -404,6 +405,15 @@ return rval;
 static void print_node(FILE *execprog, int cnt ,int lineno, char *rets) {
 char funcname[60000];
 
+char totalTime[2000];
+int nsec;
+
+nsec=time(NULL)-functionCallStack[cnt].started;
+if (nsec>1) {
+	sprintf(totalTime,"<tr><td>Time: %d</tr></td>",nsec);
+} else {
+	strcpy(totalTime,"");
+}
 	if (execprog) {
 			char *color;
 			if (cnt==0) { // MAIN
@@ -415,21 +425,21 @@ char funcname[60000];
 			}
 
 			if (rets) {
-				fprintf(execprog,"node_%d [  fontsize=8 shape=record, label=< <table border=\"0\"  ><tr><td bgcolor=\"%s\">%s</td></tr><tr><td align=\"left\">%s:%d</td></tr><tr><td align=\"left\">Returns Line %d</td></tr><tr><td align=\"left\">%s</td></tr></table> > ]\n",
+				fprintf(execprog,"node_%d [  fontsize=8 shape=record, label=< <table border=\"0\"  ><tr><td bgcolor=\"%s\">%s</td></tr><tr><td align=\"left\">%s:%d</td></tr><tr><td align=\"left\">Returns Line %d</td></tr><tr><td align=\"left\">%s</td></tr>%s</table> > ]\n",
 				functionCallStack[cnt].functionCallCnt,
 				color,
 				funcname,
 				functionCallStack[cnt].funcModuleName,
 				functionCallStack[cnt].funcLineNumber,
-				lineno,rets
+				lineno,rets,totalTime
 				);
 			} else {
-			fprintf(execprog,"node_%d [  fontsize=8 shape=record, label=< <table border=\"0\" ><tr><td bgcolor=\"%s\">%s</td></tr><tr><td align=\"left\">%s:%d</td></tr></table> > ]\n",
+			fprintf(execprog,"node_%d [  fontsize=8 shape=record, label=< <table border=\"0\" ><tr><td bgcolor=\"%s\">%s</td></tr><tr><td align=\"left\">%s:%d</td></tr>%s</table> > ]\n",
 				functionCallStack[cnt].functionCallCnt,
 				color,
 				funcname,
 				functionCallStack[cnt].funcModuleName,
-				functionCallStack[cnt].funcLineNumber);
+				functionCallStack[cnt].funcLineNumber, totalTime);
 			}
 	}
 				
@@ -486,6 +496,7 @@ A4GLSTK_pushFunction (const char *functionName, char *params[], int n,char *this
   functionCallStack[functionCallPointer].moduleName = currentModuleName;
   functionCallStack[functionCallPointer].lineNumber = currentFglLineNumber;
   functionCallStack[functionCallPointer].functionCallCnt = currFunctionCallCnt;
+  functionCallStack[functionCallPointer].started =time(NULL);
 
 
 
