@@ -101,7 +101,7 @@ namespace AubitDesktop
                 if (_maxRows != value)
                 {
                     _maxRows = value;
-                    setAllowUserToAddRows();
+                   // setAllowUserToAddRows();
                 }
 
             }
@@ -121,7 +121,7 @@ namespace AubitDesktop
             set
             {
                 _allowInsertRow = value;
-                setAllowUserToAddRows();
+              //  setAllowUserToAddRows();
             }
         }
 
@@ -635,8 +635,7 @@ namespace AubitDesktop
         void displayArrayGrid_DoubleClick2(object sender, DataGridViewRowEventArgs e)
         {
            // setAllowUserToAddRows();
-            processDown();
-            cellMoved(e.Row.Index-1, 1);
+            this.AllowUserToAddRows = false;
            
  
         }
@@ -1022,6 +1021,8 @@ namespace AubitDesktop
                 DataSource = defaultData;
             }
 
+            this.AllowUserToAddRows = false;
+
         }
 
         /// <summary>
@@ -1185,18 +1186,14 @@ namespace AubitDesktop
             if (CurrentCell!=null) {
                 return validateField(CurrentCell.RowIndex, CurrentCell.ColumnIndex,GetStringToValidate(CurrentCell));
             }
+            
             return true;
         }
 
         internal void setActiveFocus()
         {
             bool incMovingCellsInternally = false;
-
-         
-
-           
-
-
+            
             if (currentColId == -1 && currentRowId == -1)
             {
                // first move - need to trigger the before fields/rows... 
@@ -1275,7 +1272,7 @@ namespace AubitDesktop
                         }
                         catch
                         {
-
+                            this.CurrentCell = Rows[currentRowId].Cells[currentColId-1];
                         }
                     }
                     else
