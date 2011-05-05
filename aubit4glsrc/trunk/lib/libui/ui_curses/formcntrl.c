@@ -24,10 +24,10 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.169 2011-02-18 21:08:38 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.170 2011-05-05 21:16:53 mikeaubury Exp $
 #*/
 #ifndef lint
-static char const module_id[] = "$Id: formcntrl.c,v 1.169 2011-02-18 21:08:38 mikeaubury Exp $";
+static char const module_id[] = "$Id: formcntrl.c,v 1.170 2011-05-05 21:16:53 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -2910,7 +2910,7 @@ A4GL_construct_large (char *orig, struct aclfgl_event_list *evt, int init_key, i
 
       if (A4GL_has_event_for_keypress (a, evt))
 	{
-	  if (a == A4GLKEY_ACCEPT)
+	  if (a == A4GLKEY_ACCEPT || 1)
 	    {
 	      // still need to copy in the value..
 	      A4GL_int_form_driver (f, REQ_VALIDATION);
