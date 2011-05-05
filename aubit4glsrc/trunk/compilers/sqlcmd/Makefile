@@ -1,5 +1,5 @@
 #
-# $Id: Makefile,v 1.2 2011-03-24 09:20:37 mikeaubury Exp $
+# $Id: Makefile,v 1.3 2011-05-05 09:20:37 mikeaubury Exp $
 #
 
 ROOT		=../..
@@ -88,7 +88,7 @@ sql.yacc: 1.reqd 2.reqd 10.reqd ${SQLPACK_IFX_PATH}/update.rule \
 	80.reqd 99.reqd
 	${CAT} $^ > $@
 	
-${Y_TAB_C}: sql.yacc
+${Y_TAB_C}: sql.yacc lex.yy.c mk_sstates.c
 ifneq "${YACC}" "no"
 	${YACC} -p sqlparse -r all -v -t -d $<
 else
