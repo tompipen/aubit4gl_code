@@ -154,6 +154,12 @@ namespace AubitDesktop
 
         public void toolBarAcceptClicked()
         {
+            if (inputArrayGrid.RowCount == 0)
+            {
+
+                InsertkeyPressed();
+            }
+
             if (inputArrayGrid.okToMove())
             {
                 lastKey = "ACCEPT";
@@ -201,7 +207,7 @@ namespace AubitDesktop
             DataGridViewCell orig_c;
 
             orig_c = inputArrayGrid.CurrentCell;
-            Data.AcceptChanges();
+          //  Data.AcceptChanges();
             c = inputArrayGrid.CurrentCell;
 
 
@@ -221,70 +227,73 @@ namespace AubitDesktop
                 } 
             }
             Data.BeginLoadData();
-            
-            
 
-            for (int row = 0; row < rows.Length; row++)
+
+            try
             {
-                int subscript = Convert.ToInt32(rows[row].SUBSCRIPT) - 1;
-                while (subscript >= Data.Rows.Count)
+                for (int row = 0; row < rows.Length; row++)
                 {
-                    string[] newData;
-                    newData = new string[nCols + 1];
-                    for (int cnt = 0; cnt <= nCols; cnt++)
+                    int subscript = Convert.ToInt32(rows[row].SUBSCRIPT) - 1;
+                    while (subscript >= Data.Rows.Count)
                     {
-                        newData[cnt] = null;
-                    }
-                    Data.Rows.Add(newData);
-
-                }
-            }
-
-
-            for (int row = 0; row < rows.Length; row++)
-            {
-                int subscript = Convert.ToInt32(rows[row].SUBSCRIPT) - 1;
-
-                // We'll use the first column to store the index
-                // for the current row...
-
-
-                Data.Rows[subscript][0] = "XXX"; // First column was to hold the subscript - but its currently not used....
-                for (int col = 0; col < rows[row].VS.Length; col++)
-                {
-                    object itm;
-                    int trimWidth = -1;
-                    AubitDesktop.Xml.XMLForm.TableColumn tc = inputArrayGrid.table.TableColumn[col];
-                    itm = tc.Item;
-
-                    if (itm is AubitDesktop.Xml.XMLForm.Edit)
-                    {
-                        AubitDesktop.Xml.XMLForm.Edit e;
-                        e = (AubitDesktop.Xml.XMLForm.Edit)itm;
-                        trimWidth = Convert.ToInt32(e.width);
-                    }
-
-
-                    Data.Rows[subscript][col + 1] = (string)rows[row].VS[col].Text;
-                    if (trimWidth > 0)
-                    {
-                        if (rows[row].VS[col].Text != null)
+                        string[] newData;
+                        newData = new string[nCols + 1];
+                        for (int cnt = 0; cnt <= nCols; cnt++)
                         {
-                            if (rows[row].VS[col].Text.Length > trimWidth)
+                            newData[cnt] = null;
+                        }
+                        Data.Rows.Add(newData);
+
+                    }
+                }
+
+
+                for (int row = 0; row < rows.Length; row++)
+                {
+                    int subscript = Convert.ToInt32(rows[row].SUBSCRIPT) - 1;
+
+                    // We'll use the first column to store the index
+                    // for the current row...
+
+
+                    Data.Rows[subscript][0] = "XXX"; // First column was to hold the subscript - but its currently not used....
+                    for (int col = 0; col < rows[row].VS.Length; col++)
+                    {
+                        object itm;
+                        int trimWidth = -1;
+                        AubitDesktop.Xml.XMLForm.TableColumn tc = inputArrayGrid.table.TableColumn[col];
+                        itm = tc.Item;
+
+                        if (itm is AubitDesktop.Xml.XMLForm.Edit)
+                        {
+                            AubitDesktop.Xml.XMLForm.Edit e;
+                            e = (AubitDesktop.Xml.XMLForm.Edit)itm;
+                            trimWidth = Convert.ToInt32(e.width);
+                        }
+
+
+                        Data.Rows[subscript][col + 1] = (string)rows[row].VS[col].Text;
+                        if (trimWidth > 0)
+                        {
+                            if (rows[row].VS[col].Text != null)
                             {
-                                Data.Rows[subscript][col + 1] = (string)rows[row].VS[col].Text.Substring(0, trimWidth);
+                                if (rows[row].VS[col].Text.Length > trimWidth)
+                                {
+                                    Data.Rows[subscript][col + 1] = (string)rows[row].VS[col].Text.Substring(0, trimWidth);
+                                }
                             }
                         }
+
                     }
+                    // as we've been passed these values in - 
+                    // it makes sense not to send them back straight away again
+                    // so we call 'AcceptChanges' to mark the rows as 'unchanged' after we've just
+                    // changed them ;-)
+                    Data.Rows[subscript].AcceptChanges();
+                }
+            } catch {
 
                 }
-                // as we've been passed these values in - 
-                // it makes sense not to send them back straight away again
-                // so we call 'AcceptChanges' to mark the rows as 'unchanged' after we've just
-                // changed them ;-)
-                Data.Rows[subscript].AcceptChanges();
-            }
-
 
             inputArrayGrid.CurrentCell = c;
             Data.EndLoadData();
@@ -603,14 +612,6 @@ namespace AubitDesktop
         }
 
 
-
-
-
-
-
-
-
-
         private void setFocusToCurrentRow()
         {
             Program.Show("Fixme");
@@ -772,7 +773,8 @@ namespace AubitDesktop
             }
 
 
-           
+        
+        
            
             if (inputArrayGrid.DataSource != Data)
             {
@@ -1203,9 +1205,21 @@ namespace AubitDesktop
                 {
                     if (inputArrayGrid.Rows.Count < maxRows)
                     {
-                        int r = inputArrayGrid.CurrentRow.Index;
-                        doInsertRow();
-                        setField(r + 1, null);
+                        int r = 0;
+                        try
+                        {
+                            r = inputArrayGrid.CurrentRow.Index;
+                            doInsertRow();
+                            setField(r + 1, null);
+                        }
+                        catch
+                        {
+                            r = 0;
+                            doInsertRow();
+                            setField(r , null);
+                        }
+                       
+                        
                     }
                     else
                     {
@@ -1213,6 +1227,13 @@ namespace AubitDesktop
                     }
                 }
             }
+            try
+            {
+                inputArrayGrid.CurrentCell = inputArrayGrid.Rows[inputArrayGrid.CurrentCell.RowIndex + 1].Cells[1];
+            }
+            catch { inputArrayGrid.CurrentCell = inputArrayGrid.Rows[inputArrayGrid.CurrentCell.RowIndex].Cells[1];
+            } 
+
         }
 
 
@@ -1222,28 +1243,57 @@ namespace AubitDesktop
             int r;
             
             DataRow newRow;
-            r = inputArrayGrid.CurrentRow.Index;
-            
-            newRow = Data.NewRow();
-
-            newRow[0] = "XXX"; // First column was to hold the subscript - but its currently not used....
-
-            
-            for (int a = 0; a < inputArrayGrid. table.TableColumn.Length; a++)
+            try
             {
-                if (inputArrayGrid.table.TableColumn[a].defaultValue != null && inputArrayGrid.table.TableColumn[a].defaultValue != "")
+                r = inputArrayGrid.CurrentRow.Index;
+
+                newRow = Data.NewRow();
+
+                newRow[0] = "XXX"; // First column was to hold the subscript - but its currently not used....
+
+
+                for (int a = 0; a < inputArrayGrid.table.TableColumn.Length; a++)
                 {
-                    newRow[a+1]= inputArrayGrid.table.TableColumn[a].defaultValue;
-                    //e.Row.Cells[a+1].Value=table.TableColumn[a].defaultValue;
+                    if (inputArrayGrid.table.TableColumn[a].defaultValue != null && inputArrayGrid.table.TableColumn[a].defaultValue != "")
+                    {
+                        newRow[a + 1] = inputArrayGrid.table.TableColumn[a].defaultValue;
+                        //e.Row.Cells[a+1].Value=table.TableColumn[a].defaultValue;
+                    }
+                    else
+                    {
+                        newRow[a + 1] = "";
+                    }
                 }
-                else
+
+
+                Data.Rows.InsertAt(newRow, r + 1);
+            }
+            catch
+            {
+
+                newRow = Data.NewRow();
+
+                newRow[0] = "XXX"; // First column was to hold the subscript - but its currently not used....
+
+
+                for (int a = 0; a < inputArrayGrid.table.TableColumn.Length; a++)
                 {
-                    newRow[a+1] = "";
+                    if (inputArrayGrid.table.TableColumn[a].defaultValue != null && inputArrayGrid.table.TableColumn[a].defaultValue != "")
+                    {
+                        newRow[a + 1] = inputArrayGrid.table.TableColumn[a].defaultValue;
+                        //e.Row.Cells[a+1].Value=table.TableColumn[a].defaultValue;
+                    }
+                    else
+                    {
+                        newRow[a + 1] = "";
+                    }
                 }
+
+
+                Data.Rows.InsertAt(newRow, 0);
+
             }
             
-          
-            Data.Rows.InsertAt(newRow, r);
             
 
             
@@ -1255,13 +1305,36 @@ namespace AubitDesktop
             {
                 if (!allowDelete) return;
 
+
                 try
                 {
+
                     doDeleteRow();
+                    Data.AcceptChanges();
+                    inputArrayGrid.CurrentCell = inputArrayGrid.Rows[inputArrayGrid.CurrentCell.RowIndex].Cells[1];
+                    
                 }
-                catch (Exception e)
+                catch 
                 {
-                    MessageBox.Show(e.Message);
+
+                    InsertkeyPressed();
+                 //   InsertkeyPressed();
+                    
+                    
+                  //  Data.AcceptChanges();
+                    try
+                    {
+                        inputArrayGrid.CurrentCell = inputArrayGrid.Rows[inputArrayGrid.CurrentCell.RowIndex + 1].Cells[1];
+                    }
+                    catch {
+                        inputArrayGrid.CurrentCell = inputArrayGrid.Rows[inputArrayGrid.CurrentCell.RowIndex ].Cells[1];
+                    }
+
+                   // inputArrayGrid.EndEdit();
+                  //  inputArrayGrid.Rows.RemoveAt(0);
+                    Data.Clear();
+                   // InsertkeyPressed();
+                  //  DeletekeyPressed();
                 }
 
             }
@@ -1277,6 +1350,7 @@ namespace AubitDesktop
 
             inputArrayGrid.EndEdit();
             inputArrayGrid.Rows.RemoveAt(inputArrayGrid.CurrentRow.Index);
+            Data.AcceptChanges();
             
         }
     }
