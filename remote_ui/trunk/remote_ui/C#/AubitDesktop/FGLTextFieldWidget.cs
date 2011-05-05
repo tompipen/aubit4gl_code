@@ -737,10 +737,13 @@ namespace AubitDesktop
             
             t.CausesValidation = true;
             //t.KeyDown += new KeyEventHandler(t_KeyDown);
-            //t.KeyPress += new KeyPressEventHandler(t_KeyPress);
+            t.KeyPress += new KeyPressEventHandler(t_KeyPress);
             t.Validating +=new System.ComponentModel.CancelEventHandler(t_Validating);
             t.Enter += new EventHandler(t_GotFocus);
             t.TextChanged += new EventHandler(t_TextChanged);
+
+           // EventHandler moveNext = new EventHandler(TheMethod);
+
             //t.Validating += new System.ComponentModel.CancelEventHandler(t_Validating);
             if (b != null)
             {
@@ -762,6 +765,8 @@ namespace AubitDesktop
 
 
 
+      
+        
         public override void gotFocus()
         {
             
@@ -776,7 +781,7 @@ namespace AubitDesktop
                             t.SelectionStart = 0;
                             t.SelectionLength = t.Text.Length;
                         }
-                        
+
                     }
                 }
             }
@@ -799,8 +804,26 @@ namespace AubitDesktop
             {
                 l.Text = t.Text;
             }
-            //l.Text = t.Text;
 
+            if (this.AutoNext)
+            {
+                if (t.Text.Length == t.MaxLength && t.SelectionStart == t.MaxLength && t.SelectionLength == 0)
+                {
+                    SendKeys.Send("{TAB}");
+                }
+            }
+
+        }
+
+
+        void t_KeyPress(object sender, KeyPressEventArgs e)
+        {
+
+            if (e.KeyChar == (char)Keys.Enter)
+            {
+                SendKeys.Send("{TAB}");
+                 }
+           // 
         }
 
 

@@ -33,6 +33,7 @@ namespace AubitDesktop
         private FGLFoundField _currentField;
         private bool careAboutFocus;
         private bool isBeforeInput;
+        private string isInput;
 
         private FGLFoundField CurrentField
         {
@@ -449,6 +450,7 @@ namespace AubitDesktop
                 f.fglField.afterFieldID = "";
                 f.fglField.beforeFieldID = "";
                 f.fglField.onActionID = "";
+                 
             }
 
             this.EventTriggered = UIInputContext_EventTriggered;
@@ -571,14 +573,19 @@ namespace AubitDesktop
 
 
 
+            if (isInput == CurrentField.fglField.beforeFieldID)
+            {
+                isBeforeInput = false;
+            }
             
             if (isBeforeInput )
             {
                 if (CurrentField.fglField.beforeFieldID!="") { 
                                         sendTrigger(CurrentField.fglField.beforeFieldID);
+                                        isInput = CurrentField.fglField.beforeFieldID;
                     }
 
-                isBeforeInput = false;
+              //  isBeforeInput = false;
             }
 
                 careAboutFocus = true;
