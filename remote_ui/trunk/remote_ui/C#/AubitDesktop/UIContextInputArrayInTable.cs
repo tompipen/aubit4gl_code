@@ -963,7 +963,10 @@ namespace AubitDesktop
             int arrLine;
             int scrLine;
 
-
+            if (inputArrayGrid.RowCount == 0) 
+            {
+                InsertkeyPressed();
+            }
             if (rowIndex>=0)
             {
 
