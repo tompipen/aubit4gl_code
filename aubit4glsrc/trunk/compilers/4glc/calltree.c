@@ -48,6 +48,8 @@
 #define MODE_TRY 0
 #define MODE_BUY 1
 
+static int get_first_lineno(struct s_commands *c) ;
+static int get_last_lineno(struct s_commands *c) ;
 FILE *output = 0;
 char *last_mod="<not set>";
 int last_line=0;
@@ -89,6 +91,7 @@ static void inc_inIf(void) ;
 int ifBlocks[100];
 int inc4GL = 1;			/* Include 4gl in the output */
 int incProg = 1;
+int AlwaysIncludeAllConditionals=1;
 char top_level_function[200]="MAIN";
 int groupByModule=0;
 
@@ -1800,13 +1803,25 @@ add_calltree_calls_from_events (char *s, struct on_events *evt_list, int mode)
   int a;
   int cnt = 0;
   int xcnt = 0;
-  if (evt_list == 0)
+  if (evt_list == 0) {
+  	if (mode==MODE_TRY) {
+  			if (cnt==0 && AlwaysIncludeAllConditionals) {
+					return 1;
+			}
+  	}
     return 0;
+  }
   for (a = 0; a < evt_list->event.event_len; a++)
     {
 
       xcnt = add_calltree_calls (s, evt_list->event.event_val[a]->on_event_commands, MODE_TRY);
       cnt += xcnt;
+
+  			if (xcnt==0 && AlwaysIncludeAllConditionals && mode==MODE_BUY) {
+					xcnt++;
+					
+				}
+
       if (xcnt)
 	{
 	  if (mode == MODE_BUY)
@@ -1820,7 +1835,10 @@ add_calltree_calls_from_events (char *s, struct on_events *evt_list, int mode)
 	  if (mode == MODE_BUY)
 	    {
 	      print_indent ();
-	      fprintf (output, "<COMMANDS>\n");
+	      fprintf (output, "<COMMANDS LINE=\"%d\" LASTLINE=\"%d\">\n",
+					get_first_lineno(evt_list->event.event_val[a]->on_event_commands ),
+					get_last_lineno( evt_list->event.event_val[a]->on_event_commands)
+			);
 	      indent++;
 	    }
 	  add_calltree_calls (s, evt_list->event.event_val[a]->on_event_commands, mode);
@@ -1841,6 +1859,11 @@ add_calltree_calls_from_events (char *s, struct on_events *evt_list, int mode)
 	}
     }
 
+  if (mode==MODE_TRY) {
+  		if (cnt==0 && AlwaysIncludeAllConditionals) {
+				return 1;
+		}
+  }
   return cnt;
 }
 
@@ -2033,7 +2056,12 @@ for (a=0;a<l->list.list_len;a++) {
 static int
 calls_something (s_commands * func_commands)
 {
-  return add_calltree_calls ("", func_commands, MODE_TRY);
+int cnt;
+ cnt=add_calltree_calls ("", func_commands, MODE_TRY);
+  		if (cnt==0 && AlwaysIncludeAllConditionals) {
+				return 1;
+		}
+  return cnt;
 }
 
 struct module_definition cum_clobber;
@@ -2178,6 +2206,9 @@ add_calltree_calls (char *s, s_commands * func_commands, int mode)
   int a;
   int call_cnt = 0;
 
+
+
+
   if (func_commands == 0)
     return 0;
 
@@ -2298,7 +2329,10 @@ static int process_cmd(struct command *cmd,int mode) {
 			   cmd->lineno);
 		  indent++;
 		  print_indent ();
-		  fprintf (output, "<COMMANDS >\n");
+		  fprintf (output, "<COMMANDS LINE=\"%d\" LASTLINE=\"%d\">\n",  
+		  			get_first_lineno(cmd->cmd_data.command_data_u.for_cmd.for_commands),
+		  			get_last_lineno(cmd->cmd_data.command_data_u.for_cmd.for_commands)
+		  );
 		  indent++;
 		  add_calltree_calls ("", cmd->cmd_data.command_data_u.for_cmd.for_commands, mode);
 		  indent--;
@@ -2350,14 +2384,18 @@ static int process_cmd(struct command *cmd,int mode) {
 			    fprintf (output, "<IF CONDITION=\"%s\" LINE=\"%d\">\n",
 				     xml_encode (expr_as_string_when_possible
 						 (ifcmd->truths.conditions.conditions_val[xcnt].test_expr)),
-				     cmd->lineno);
+						 cmd->lineno
+					  	);
 			  }
 			indent++;
 			print_indent ();
 			fprintf (output, "<ONTRUE>\n");
 			indent++;
 			print_indent ();
-			fprintf (output, "<COMMANDS >\n");
+			fprintf (output, "<COMMANDS LINE=\"%d\" LASTLINE=\"%d\">\n", 
+									get_first_lineno(cmd->cmd_data.command_data_u.if_cmd.truths.conditions.  conditions_val[xcnt].whentrue),
+									get_last_lineno(cmd->cmd_data.command_data_u.if_cmd.truths.conditions.  conditions_val[xcnt].whentrue)
+									 	);
 			indent++;
 			add_calltree_calls ("",
 					    cmd->cmd_data.command_data_u.if_cmd.truths.conditions.
@@ -2396,7 +2434,9 @@ static int process_cmd(struct command *cmd,int mode) {
 				 cmd->cmd_data.command_data_u.if_cmd.else_lineno);
 			indent++;
 			print_indent ();
-			fprintf (output, "<COMMANDS >\n");
+			fprintf (output, "<COMMANDS LINE=\"%d\" LASTLINE=\"%d\">\n", 
+						get_first_lineno(cmd->cmd_data.command_data_u.if_cmd.whenfalse),
+						get_last_lineno(cmd->cmd_data.command_data_u.if_cmd.whenfalse));
 			indent++;
 			add_calltree_calls ("", cmd->cmd_data.command_data_u.if_cmd.whenfalse, mode);
 			indent--;
@@ -2433,7 +2473,9 @@ static int process_cmd(struct command *cmd,int mode) {
 		  fprintf (output, "<FOREACH LINE=\"%d\">\n", cmd->lineno);
 		  indent++;
 		  print_indent ();
-		  fprintf (output, "<COMMANDS >\n");
+		  fprintf (output, "<COMMANDS LINE=\"%d\" LASTLINE=\"%d\">\n", 
+		  				get_first_lineno(cmd->cmd_data.command_data_u.foreach_cmd.foreach_commands),
+		  				get_last_lineno(cmd->cmd_data.command_data_u.foreach_cmd.foreach_commands));
 		  indent++;
 		  add_calltree_calls ("", cmd->cmd_data.command_data_u.foreach_cmd.foreach_commands,
 				      mode);
@@ -2462,7 +2504,10 @@ static int process_cmd(struct command *cmd,int mode) {
 			   cmd->lineno);
 		  indent++;
 		  print_indent ();
-		  fprintf (output, "<COMMANDS >\n");
+		  fprintf (output, "<COMMANDS LINE=\"%d\" LASTLINE=\"%d\">\n",
+		  			get_first_lineno(cmd->cmd_data.command_data_u.while_cmd.while_commands),
+						get_last_lineno(cmd->cmd_data.command_data_u.while_cmd.while_commands)
+		  		);
 		  indent++;
 		  add_calltree_calls ("", cmd->cmd_data.command_data_u.while_cmd.while_commands, mode);
 		  indent--;
@@ -2527,7 +2572,12 @@ static int process_cmd(struct command *cmd,int mode) {
 				 casecmd->whens->whens.whens_val[xcnt]->lineno);
 			indent++;
 			print_indent ();
-			fprintf (output, "<COMMANDS >\n");
+			fprintf (output, "<COMMANDS LINE=\"%d\" LASTLINE=\"%d\">\n",
+					get_first_lineno(cmd->cmd_data.command_data_u.case_cmd.whens->whens.
+					                   whens_val[xcnt]->when_commands),
+					get_last_lineno(cmd->cmd_data.command_data_u.case_cmd.whens->whens.
+					                   whens_val[xcnt]->when_commands)
+				);
 			indent++;
 			add_calltree_calls ("",
 					    cmd->cmd_data.command_data_u.case_cmd.whens->whens.
@@ -2562,7 +2612,9 @@ static int process_cmd(struct command *cmd,int mode) {
 			print_indent ();
 			fprintf (output, "<OTHERWISE>\n");
 			print_indent ();
-			fprintf (output, "<COMMANDS >\n");
+			fprintf (output, "<COMMANDS LINE=\"%d\" LASTLINE=\"%d\">\n",
+					get_first_lineno(cmd->cmd_data.command_data_u.case_cmd.otherwise ),
+					get_last_lineno( cmd->cmd_data.command_data_u.case_cmd.otherwise));
 			indent++;
 			add_calltree_calls ("", cmd->cmd_data.command_data_u.case_cmd.otherwise, mode);
 			indent--;
@@ -3234,14 +3286,6 @@ add_clobberings (mods, nmodules) ;
   }
 
   printf ("Program\n");
-/*
-  mid = find_function (top_level_function);
-  if (mid < 0)
-    {
-      //printf ("No main...\n");
-      //exit (2);
-    }
-*/
 
   output = fopen ("calltree.xml", "w");
 
@@ -3322,7 +3366,10 @@ add_clobberings (mods, nmodules) ;
 	  f = functions[a].ptr;
 	  indent++;
 	  print_indent ();
-	  fprintf (output, "<COMMANDS >\n");
+	  fprintf (output, "<COMMANDS LINE=\"%d\" LASTLINE=\"%d\">\n",
+					get_first_lineno(f->func_commands ),
+					get_last_lineno(f->func_commands )
+	  );
 	  indent++;
   	  print_whenever (MODE_BUY);
 	clr_variable_values();
@@ -3356,7 +3403,7 @@ add_clobberings (mods, nmodules) ;
 	  indent++;
 
 	  print_indent ();
-	  fprintf (output, "<COMMANDS>\n");
+	  fprintf (output, "<COMMANDS LINE=\"%d\" LASTLINE=\"%d\">\n", functions[a].line, functions[a].lastline) ;
   	  print_whenever (MODE_BUY);
 
 	  for (b = 0; b < r->reportFormatSection->entries.entries_len; b++)
@@ -3369,7 +3416,10 @@ add_clobberings (mods, nmodules) ;
 			   r->reportFormatSection->entries.entries_val[b]->lineno);
 		  indent++;
 		  print_indent ();
-		  fprintf (output, "<COMMANDS >\n");
+		  fprintf (output, "<COMMANDS LINE=\"%d\" LASTLINE=\"%d\">\n",
+					get_first_lineno(r->reportFormatSection->entries.entries_val[b]->rep_sec_commands ),
+					get_last_lineno(r->reportFormatSection->entries.entries_val[b]->rep_sec_commands )
+		  );
 		  indent++;
 		  add_calltree_calls ("", r->reportFormatSection->entries.entries_val[b]->rep_sec_commands, MODE_BUY);
 		  indent--;
@@ -3585,6 +3635,8 @@ init_mapsets();
       printf (" -Gonly = Group by module in 'dot' output - only include cross-module calls\n");
       printf (" -no4gl = Exclude 4gl sourcecode (required for calltreeviewer)\n");
       printf (" -4gl = Include 4gl sourcecode (required for calltreeviewer) [default]\n");
+      printf (" -All = Include all conditionals - whether they call functions or not [default]\n");
+      printf (" -NoAll = Exclude conditionals when no calls are made\n");
       printf (" -noProg = Exclude the XML and program tags\n");
       printf (" -Prog = Include the XML and program tags\n");
       printf (" -start funcname = Run calltree from 'funcname'\n");
@@ -3610,6 +3662,16 @@ if (A4GL_isyes(acl_getenv("LOGJOINS"))) {
       if (strcmp (argv[b], "-S") == 0)
 	{
 	  simpleGraph = 1;
+	  continue;
+	}
+      if (strcmp (argv[b], "-All") == 0)
+	{
+	  AlwaysIncludeAllConditionals = 1;
+	  continue;
+	}
+      if (strcmp (argv[b], "-NoAll") == 0)
+	{
+	  AlwaysIncludeAllConditionals = 0;
 	  continue;
 	}
 
@@ -3944,7 +4006,7 @@ static void add_variable_value(variable_usage *u, expr_str *val) {
 
   	if (inIf) {
 		static char buff[10000];
-		static char varbuff[10000];
+		//static char varbuff[10000];
 		sprintf(buff,"(%s)",value);
 		value=buff;
 		//sprintf(varbuff,"IF_%d_%s",inIf,var);
@@ -4036,10 +4098,12 @@ static char *variable_value(variable_usage *u,int useName) {
 }
 
 
+
+/*
 static int has_variable_value(variable_usage *u) {
 	if (variable_value(u,0)) return TRUE;
 	return FALSE;
-}
+}*/
 
 
 
@@ -4639,10 +4703,10 @@ static char *get_form_display(char *s) {
 	// This is not compiled by default - you'll need to compile it
 	// in compilers/fcompile
 	//
-char *ptr;
+//char *ptr;
 static char buff[20000];
 char strbuff[2000];
-char bp[2000];
+//char bp[2000];
 char *b;
 FILE *f;
 
@@ -4675,7 +4739,7 @@ return buff;
 
 
 static void  dump_parameters(struct s_expr_function_call *fcall,int filenameParamNo) {
-char buff[3000];
+//char buff[3000];
 /*
 	printf("%s(",fcall->functionname);
 	if (fcall->parameters) {
@@ -4727,3 +4791,19 @@ if (strcmp(Fname,"fgl_write_list_str")==0) {  dump_parameters(fcall,1); }
 
 }
 
+
+
+
+static int get_first_lineno(struct s_commands *c) {
+	if (c) {
+		return c->first_lineno;
+	} 
+	return -1;
+}
+
+static int get_last_lineno(struct s_commands *c) {
+	if (c) {
+		return c->last_lineno;
+	} 
+	return -1;
+}
