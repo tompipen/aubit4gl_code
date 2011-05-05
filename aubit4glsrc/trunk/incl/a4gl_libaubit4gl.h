@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.415 2011-04-14 17:00:47 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.416 2011-05-05 20:35:46 mikeaubury Exp $
 #
 */
 
@@ -2974,7 +2974,7 @@ struct sObject { // Also in a4gl_incl_4gldef.h
 char A4GL_get_dbdate_separator(void);
 void A4GL_set_ignore_error_list(int n, ...) ;
 void A4GL_clr_ignore_error_list(void);
-
+int A4GL_return_0_on_null_compare(void );
 //
 #include "a4gl_builtin_funcs.h"
 
