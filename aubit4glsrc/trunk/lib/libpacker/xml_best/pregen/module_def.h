@@ -1,5 +1,5 @@
 /* XML processor/application API for module_def.dtd.
- * Generated 2011/05/02 12:49:10.
+ * Generated 2011/05/05 10:11:28.
  *
  * This program was generated with the FleXML XML processor generator.
  * FleXML is Copyright (C) 1999-2005 Kristoffer Rose.  All rights reserved.
@@ -869,6 +869,8 @@ typedef int AT_s_table_outer_type;
 #define AU_s_table_outer_type NULL
 typedef int AT_struct_start_cmd_n_namespace;
 #define AU_struct_start_cmd_n_namespace NULL
+typedef int AT_s_commands_last_lineno;
+#define AU_s_commands_last_lineno NULL
 typedef int AT_struct_uncheck_menu_cmd_nm;
 #define AU_struct_uncheck_menu_cmd_nm NULL
 typedef int AT_struct_spl_foreach_execute_cmd_nm;
@@ -991,6 +993,8 @@ typedef int AT_s_expr_get_fldbuf_nm;
 #define AU_s_expr_get_fldbuf_nm NULL
 typedef int AT_form_field_nm;
 #define AU_form_field_nm NULL
+typedef int AT_s_commands_first_lineno;
+#define AU_s_commands_first_lineno NULL
 typedef int AT_s_expr_bound_fcall_module;
 #define AU_s_expr_bound_fcall_module NULL
 typedef int AT_s_expr_extend_to;
@@ -1235,10 +1239,10 @@ typedef int AT_s_func_n_namespace;
 #define AU_s_func_n_namespace NULL
 typedef int AT_s_fh_field_entry_field_nm;
 #define AU_s_fh_field_entry_field_nm NULL
-typedef int AT_bluebar_r;
-#define AU_bluebar_r NULL
 typedef int AT_s_expr_interval_nm;
 #define AU_s_expr_interval_nm NULL
+typedef int AT_bluebar_r;
+#define AU_bluebar_r NULL
 typedef int AT_s_import_legacy_definition_colno;
 #define AU_s_import_legacy_definition_colno NULL
 typedef int AT_s_limit_offset;
@@ -2324,6 +2328,8 @@ extern AT_s_table_outer_type AX_s_table_outer_type;
 #define A_s_table_outer_type (bufferstack + AX_s_table_outer_type)
 extern AT_struct_start_cmd_n_namespace AX_struct_start_cmd_n_namespace;
 #define A_struct_start_cmd_n_namespace (bufferstack + AX_struct_start_cmd_n_namespace)
+extern AT_s_commands_last_lineno AX_s_commands_last_lineno;
+#define A_s_commands_last_lineno (bufferstack + AX_s_commands_last_lineno)
 extern AT_struct_uncheck_menu_cmd_nm AX_struct_uncheck_menu_cmd_nm;
 #define A_struct_uncheck_menu_cmd_nm (bufferstack + AX_struct_uncheck_menu_cmd_nm)
 extern AT_struct_spl_foreach_execute_cmd_nm AX_struct_spl_foreach_execute_cmd_nm;
@@ -2446,6 +2452,8 @@ extern AT_s_expr_get_fldbuf_nm AX_s_expr_get_fldbuf_nm;
 #define A_s_expr_get_fldbuf_nm (bufferstack + AX_s_expr_get_fldbuf_nm)
 extern AT_form_field_nm AX_form_field_nm;
 #define A_form_field_nm (bufferstack + AX_form_field_nm)
+extern AT_s_commands_first_lineno AX_s_commands_first_lineno;
+#define A_s_commands_first_lineno (bufferstack + AX_s_commands_first_lineno)
 extern AT_s_expr_bound_fcall_module AX_s_expr_bound_fcall_module;
 #define A_s_expr_bound_fcall_module (bufferstack + AX_s_expr_bound_fcall_module)
 extern AT_s_expr_extend_to AX_s_expr_extend_to;
@@ -2690,10 +2698,10 @@ extern AT_s_func_n_namespace AX_s_func_n_namespace;
 #define A_s_func_n_namespace (bufferstack + AX_s_func_n_namespace)
 extern AT_s_fh_field_entry_field_nm AX_s_fh_field_entry_field_nm;
 #define A_s_fh_field_entry_field_nm (bufferstack + AX_s_fh_field_entry_field_nm)
-extern AT_bluebar_r AX_bluebar_r;
-#define A_bluebar_r (bufferstack + AX_bluebar_r)
 extern AT_s_expr_interval_nm AX_s_expr_interval_nm;
 #define A_s_expr_interval_nm (bufferstack + AX_s_expr_interval_nm)
+extern AT_bluebar_r AX_bluebar_r;
+#define A_bluebar_r (bufferstack + AX_bluebar_r)
 extern AT_s_import_legacy_definition_colno AX_s_import_legacy_definition_colno;
 #define A_s_import_legacy_definition_colno (bufferstack + AX_s_import_legacy_definition_colno)
 extern AT_s_limit_offset AX_s_limit_offset;
