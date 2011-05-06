@@ -595,11 +595,13 @@ MainFrame::vdcdebug("Parser","addLayout", "QLayout *newLayout");
    if(QVBoxLayout *layout = qobject_cast<QVBoxLayout *> (currentLayout)){
       layout->addLayout(newLayout);
       currentLayout = newLayout;
+      return;
    }
 
    if(QHBoxLayout *layout = qobject_cast<QHBoxLayout *> (currentLayout)){
       layout->addLayout(newLayout);
       currentLayout = newLayout;
+      return;
    }
 
 }
