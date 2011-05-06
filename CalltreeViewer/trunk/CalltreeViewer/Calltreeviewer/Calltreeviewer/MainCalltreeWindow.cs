@@ -1,13 +1,11 @@
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
 using System.IO;
 using System.Xml.Serialization;
 using SearchableControls;
+using System.IO.Compression;
+using System.Text;
 
 namespace Calltreeviewer
 {
@@ -26,7 +24,11 @@ namespace Calltreeviewer
         int currentFunctionStart=-1;
         int currentFunctionEnd=-1;
 
-        List<LocationInFile> previousLocations = new List<LocationInFile>();
+
+        List<symbolFunction> allFunctions = new List<symbolFunction>();
+        //List<SymbolLocation> allCalls = new List<SymbolLocation>();
+
+        List<NLocationInFile> previousLocations = new List<NLocationInFile>();
         int previousLocationIndicator = 0;
 
 
@@ -78,7 +80,7 @@ namespace Calltreeviewer
                 f.AddExtension = true;
                 f.CheckFileExists = true;
                 f.CheckPathExists = true;
-                f.Filter = "Calltree file|*.xml";
+                f.Filter = "Calltree file|*.xml|Compressed Calltree file|*.calltree.xml.gz|Other Files|*.*";
 
                 // Show the dialog box - and check the OK button was
                 // clicked...
@@ -111,8 +113,39 @@ namespace Calltreeviewer
                     this.Cursor = Cursors.WaitCursor;
                     // We've got the filename - so use it
                     // with our XML deserializer to get a PROGRAM
-                    //
-                    fileXML = File.ReadAllText(fileName);
+
+                    if (fileName.EndsWith(".gz"))
+                    {
+                        byte[] gzBuffer = File.ReadAllBytes(fileName);
+                        StringBuilder stringBuilder = new StringBuilder();
+
+                        using (MemoryStream ms = new MemoryStream())
+                        {
+                            int gzlen;
+                            gzlen = gzBuffer.Length;
+                            //int msgLength = BitConverter.ToInt32(gzBuffer, 0);
+                            ms.Write(gzBuffer, 0, gzlen);
+                            ms.Position = 0;
+                            byte[] byteArray = new byte[1024];
+                            using (GZipStream zip = new GZipStream(ms, CompressionMode.Decompress))
+                            {
+                                int readBytes;
+                                while ((readBytes = zip.Read(byteArray, 0, byteArray.Length)) != 0)
+                                {
+                                    for (int i = 0; i < readBytes; i++)
+                                        stringBuilder.Append((char)byteArray[i]);
+                                }
+                            }
+
+                            fileXML =  stringBuilder.ToString();
+
+                        }
+                    }
+                    else
+                    {
+                        fileXML = File.ReadAllText(fileName);
+                    }
+                    
                     System.Type t;
                     t = typeof(AubitCalltreeViewer.PROGRAM);
                     XmlSerializer ser;
@@ -122,6 +155,10 @@ namespace Calltreeviewer
 
                     p = (AubitCalltreeViewer.PROGRAM)ser.Deserialize(r);
                     curr_program = p;
+
+
+                    allFunctions.Clear();
+                    
 
                     
                     current_global_variables = new List<AubitCalltreeViewer.SYMBOL>();
@@ -165,6 +202,10 @@ namespace Calltreeviewer
             }
             loading = false;
         }
+
+
+
+
 
         private TreeNode loadTree(AubitCalltreeViewer.PROGRAM p, TreeStyle style)
         {
@@ -231,10 +272,13 @@ namespace Calltreeviewer
                 if (style == TreeStyle.TreeStyleNormal)
                 {
                     newNode = treeView1.Nodes.Add(a.ToString(), p.FUNCTION[a].NAME);
+                    //newNode = new MyLocationNode(p.FUNCTION[a].MODULENO, a, p.FUNCTION[a].LINE, get_line(p.FUNCTION[a].MODULE, p.FUNCTION[a].LINE), p.FUNCTION[a].LINE, p.FUNCTION[a].LASTLINE);
                 }
 
                 if ((style==TreeStyle.TreeStyleMain || style==TreeStyle.TreeStyleMainRecurse) && p.FUNCTION[a].NAME == "MAIN" && mainNode == null) {
                     newNode = treeView1.Nodes.Add(a.ToString(), p.FUNCTION[a].NAME);
+                    //newNode = new MyLocationNode(p.FUNCTION[a].MODULENO, a, p.FUNCTION[a].LINE, get_line(p.FUNCTION[a].MODULE, p.FUNCTION[a].LINE), p.FUNCTION[a].LINE, p.FUNCTION[a].LASTLINE);
+
                     if (style == TreeStyle.TreeStyleMainRecurse)
                     {
                         expandNode(newNode, true);
@@ -310,21 +354,23 @@ namespace Calltreeviewer
 
             tsLblSearching.Text = "tsLblSearching:  "+treeView1.SelectedNode.Name;
 
-            if (treeView1.SelectedNode.Name.StartsWith("->"))
+            if (treeView1.SelectedNode is MyCallNode)
             {
-                displayCall(treeView1.SelectedNode.Name);
+                displayCall((MyCallNode)treeView1.SelectedNode);
                 return;
             }
 
-            if (treeView1.SelectedNode.Name.StartsWith(":"))
+            if (treeView1.SelectedNode is MyLocationNode)
             {
-                LocationInFile lif = new LocationInFile(treeView1.SelectedNode.Name.Substring(1));
-                if (lif != null)
+                MyLocationNode lnode = treeView1.SelectedNode as MyLocationNode;
+
+                
+                if (lnode != null)
                 {
-                    lblLoaded.Text=lif.ModuleNo+" "+lif.LineNo+" "+curr_program.MODULES[lif.ModuleNo].FULLNAME;
+                    lblLoaded.Text = lnode.Module + " " + lnode.LineNumber + " " + curr_program.MODULES[lnode.Module].FULLNAME;
 
 
-                    loadModuleLine(lif.ModuleNo, lif.LineNo,true);
+                    loadModuleLine(lnode.Module, lnode.LineNumber, true);
                     return;
                 }
                 // does nothing...
@@ -341,7 +387,7 @@ namespace Calltreeviewer
             loadModuleLine(curr_program.FUNCTION[findex].MODULENO,curr_program.FUNCTION[findex].LINE,true);
         }
 
-        private void displayCall(string p)
+        private void displayCall(MyCallNode p)
         {
             int functionNo;
             functionNo = findFunctionNo(p);
@@ -357,13 +403,13 @@ namespace Calltreeviewer
                 setModuleLine(line);
             }
 
-            LocationInFile l = new LocationInFile(moduleNo, line);
+            NLocationInFile l = new NLocationInFile(moduleNo, line);
             //previousLocations.Add(l);
             if (saveMove) addLocation(l);
         }
 
 
-        private void addLocation(LocationInFile l)
+        private void addLocation(NLocationInFile l)
         {
             if (previousLocations.Count > 0 && previousLocations.Count-1 == previousLocationIndicator)
             {
@@ -402,7 +448,11 @@ namespace Calltreeviewer
             int index;
             string b4;
 
-
+            if (line == 0)
+            {
+                MessageBox.Show("Invalid line passed in");
+                return;
+            }
             if (textBox1.Text.StartsWith("Please wait"))
             {
                 return;
@@ -433,28 +483,32 @@ namespace Calltreeviewer
             }
 
             Application.DoEvents();
-            // Highlight our current row..
-            index = textBox1.GetFirstCharIndexFromLine(line - 1);
-
-            if (index >= 0)
+            if (line > 0)
             {
-                textBox1.Select(index, textBox1.Lines[line - 1].Length);
-                b4 = textBox1.SelectedText;
+                // Highlight our current row..
+                index = textBox1.GetFirstCharIndexFromLine(line - 1);
 
-                // The 'select' doesn't always work (if we select from the tree for example)
-                // so add a '-->' to point to our line...
-                textBox1.SelectedText = textBox1.Lines[line - 1].Substring(0, 5) + " --> " + textBox1.Lines[line - 1].Substring(10);
-                lastHighlightedLine = line - 1;
-                textBox1.Select(index, textBox1.Lines[line - 1].Length);
-                textBox1.ScrollToCaret();
+                if (index >= 0)
+                {
+                    textBox1.Select(index, textBox1.Lines[line - 1].Length);
+                    b4 = textBox1.SelectedText;
 
-                textBox1.Focus();
+                    // The 'select' doesn't always work (if we select from the tree for example)
+                    // so add a '-->' to point to our line...
+                    textBox1.SelectedText = textBox1.Lines[line - 1].Substring(0, 5) + " --> " + textBox1.Lines[line - 1].Substring(10);
+                    lastHighlightedLine = line - 1;
+                    textBox1.Select(index, textBox1.Lines[line - 1].Length);
+                    textBox1.ScrollToCaret();
 
-                Application.DoEvents();
-            }
-            else
-            {
-                MessageBox.Show("Unable to go to line " + line + " of " + textBox1.Lines.Length);
+                    textBox1.Focus();
+
+                    Application.DoEvents();
+                }
+                else
+                {
+                    MessageBox.Show("Unable to go to line " + line + " of " + textBox1.Lines.Length);
+
+                }
             }
         }
 
@@ -548,7 +602,7 @@ namespace Calltreeviewer
             if (selectedNode.Name == null) { actioningUserInteraction = false; return; }
             if (selectedNode.Name == "") { actioningUserInteraction = false; return; }
             
-            if (selectedNode.Name.StartsWith(":")) { actioningUserInteraction = false; return; }
+            if (selectedNode is MyLocationNode) { actioningUserInteraction = false; return; }
 
             expandNode(selectedNode, false);
 
@@ -557,35 +611,41 @@ namespace Calltreeviewer
         }
 
 
-        private int findFunctionNo(string name)
+
+
+        private int findFunctionNo(MyCallNode mycall)
         {
             int functionNo = -1;
-            if (name.StartsWith(":"))
-            {
-                return -1;
-            }
          
-            if (name.StartsWith("->"))
-            {
+            
                 for (int a = 0; a < curr_program.FUNCTION.Length; a++)
                 {
-                    if (curr_program.FUNCTION[a].NAME == name.Substring(2))
+                    if (curr_program.FUNCTION[a].NAME == mycall.functionName)
                     {
                         functionNo = a;
                         break;
                     }
                 }
-            }
-            else
-            {
-                functionNo = Convert.ToInt32(name);
-            }
+            
+            
             return functionNo;
         }
 
+
+
+
         private void expandNode(TreeNode selectedNode,bool recurse)
         {
-            int functionNo = findFunctionNo(selectedNode.Name);
+            int functionNo=-1;
+            if (selectedNode is MyCallNode)
+            {
+                functionNo = findFunctionNo((MyCallNode)selectedNode);
+            }
+            if (selectedNode.Text == "MAIN")
+            {
+                functionNo = findFunctionNo(new MyCallNode("MAIN"));
+            }
+
             Application.DoEvents();
             selectedNode.Nodes.Clear();
             treeView1.SuspendLayout();
@@ -597,20 +657,32 @@ namespace Calltreeviewer
             {
                 for (int a = 0; a < curr_program.FUNCTION[functionNo].COMMANDS.Items.Length; a++)
                 {
-                    //toolStripProgressBar.Maximum = treeView1.GetNodeCount(true);
-                    //toolStripProgressBar.Value = selectedNode.Index;
 
-                    buildNodes(curr_program.FUNCTION[functionNo].MODULENO, selectedNode, curr_program.FUNCTION[functionNo].COMMANDS.Items[a], recurse,simpleModeToolStripMenuItem.Checked);
+                    
+                    buildNodes(curr_program.FUNCTION[functionNo].MODULENO, functionNo, selectedNode, curr_program.FUNCTION[functionNo].COMMANDS.Items[a], recurse, simpleModeToolStripMenuItem.Checked, true);
                     Application.DoEvents();
                 }
             }
             treeView1.ResumeLayout();
         }
 
-        private void buildNodes(int moduleNo, TreeNode selectedNode, object o, bool recurse, bool callsOnly)
+
+        /// <summary>
+        /// Generate TreeView nodes
+        /// </summary>
+        /// <param name="moduleNo">Mode to generate for</param>
+        /// <param name="functionNo">Function number which contains these nodes</param>
+        /// <param name="selectedNode">Nodes to append to</param>
+        /// <param name="o">'command' to add to treenode</param>
+        /// <param name="recurse">Recursively process ? </param>
+        /// <param name="callsOnly">Include on the calls ? (no coniditionals)</param>
+        /// <param name="fullExpansion">Include conditionals where there are no subsequent calls ? </param>
+        private void buildNodes(int moduleNo, int functionNo, TreeNode selectedNode, object o, bool recurse, bool callsOnly, bool fullExpansion)
         {
             TreeNode newNode;
+            MyLocationNode newLocationNode;
             TreeNode rNode;
+            MyCallNode callNode;
             string type;
             Application.DoEvents();
             AubitCalltreeViewer.CALLS callcmd;
@@ -630,25 +702,48 @@ namespace Calltreeviewer
             AubitCalltreeViewer.WHILE whilecmd;
             AubitCalltreeViewer.COMMANDS cmds;
             AubitCalltreeViewer.WHENEVER whenever;
+            AubitCalltreeViewer.SECTION section;
             //AubitCalltreeViewer.EVENT events;
+           
 
+            SymbolLocation sl;
 
             spin();
 
             type = o.GetType().ToString();
+
+            newLocationNode = null;
             switch (type)
             {
 
                 case "AubitCalltreeViewer.CALLS":
-                    callcmd = (AubitCalltreeViewer.CALLS)o;
-                    
-                    newNode = selectedNode.Nodes.Add(":" + LocationInFile.getString(moduleNo, callcmd.LINE), "CALLS " + callcmd.FUNCTIONNAME);
-                    rNode = newNode.Nodes.Add("->" + callcmd.FUNCTIONNAME, callcmd.FUNCTIONNAME);
-                    if (!isRecursing(selectedNode, callcmd.FUNCTIONNAME) && recurse)
                     {
-                        expandNode(rNode, true);
+                        callcmd = (AubitCalltreeViewer.CALLS)o;
+                        sl = generateSymbolLocation(callcmd, curr_program.MODULES[moduleNo].NAME);
+
+                        symbolFunction sf = getAllFunctionsEntryFor(callcmd.FUNCTIONNAME);
+
+                        if (!sl.InList(sf))
+                        {
+                            sf.symbols.Add(sl);
+                        }
+
+                        newLocationNode = new MyLocationNode(moduleNo, functionNo, callcmd.LINE, "CALLS " + callcmd.FUNCTIONNAME);
+
+                        selectedNode.Nodes.Add(newLocationNode);
+
+
+                        callNode = new MyCallNode(callcmd.FUNCTIONNAME);
+                        newLocationNode.Nodes.Add(callNode);
+                        if (!isRecursing(selectedNode, callcmd.FUNCTIONNAME) && recurse)
+                        {
+                            expandNode(callNode, true);
+                        }
                     }
                     break;
+
+
+
 
                 case "AubitCalltreeViewer.COMMANDS":
                     cmds = (AubitCalltreeViewer.COMMANDS)o;
@@ -656,16 +751,49 @@ namespace Calltreeviewer
                     {
                         for (int a = 0; a < cmds.Items.Length; a++)
                         {
-                            buildNodes(moduleNo, selectedNode, cmds.Items[a], recurse, callsOnly);
+                            buildNodes(moduleNo,functionNo, selectedNode, cmds.Items[a], recurse, callsOnly, fullExpansion);
+                        }
+                    }
+                    if (selectedNode is MyLocationNode)
+                    {
+                        MyLocationNode mln = selectedNode as MyLocationNode;
+                        mln.ensureLines(functionNo, cmds.LINE, cmds.LASTLINE);
+                    }
+                    break;
+
+
+                case "AubitCalltreeViewer.SECTION":
+                    section = (AubitCalltreeViewer.SECTION)o;
+                    newLocationNode = new MyLocationNode(moduleNo, functionNo, section.LINE, section.TYPE.Replace("_", " "));
+                    selectedNode.Nodes.Add(newLocationNode);
+
+                    if (section.TYPE != null)
+                    {
+                        MyLocationNode mln = selectedNode as MyLocationNode;
+                        if (mln != null && section.COMMANDS != null)
+                        {
+                            mln.ensureLines(functionNo, section.COMMANDS.LINE, section.COMMANDS.LASTLINE);
+                        }
+
+                        if (section.COMMANDS.Items != null)
+                        {
+                            for (int a = 0; a < section.COMMANDS.Items.Length; a++)
+                            {
+                                buildNodes(moduleNo, functionNo, newLocationNode, section.COMMANDS.Items[a], recurse, callsOnly, fullExpansion);
+                            }
+                            
                         }
                     }
                     break;
+
 
                 case "AubitCalltreeViewer.CASE":
                     casecmd = (AubitCalltreeViewer.CASE)o;
                     if (!callsOnly)
                     {
-                        newNode = selectedNode.Nodes.Add(":" + LocationInFile.getString(moduleNo, casecmd.LINE), "CASE " + casecmd.TESTAGAINST);
+                        newLocationNode = new MyLocationNode(moduleNo, functionNo, casecmd.LINE, "CASE " + casecmd.TESTAGAINST);
+                        selectedNode.Nodes.Add(newLocationNode);
+                        newNode = newLocationNode;
                     }
                     else
                     {
@@ -679,13 +807,14 @@ namespace Calltreeviewer
                             TreeNode whenNode;
                             if (!callsOnly)
                             {
-                                whenNode = newNode.Nodes.Add(":" + LocationInFile.getString(moduleNo, casecmd.WHEN[a].LINE), "WHEN " + casecmd.WHEN[a].CONDITION);
+                                whenNode = new MyLocationNode(moduleNo, functionNo, casecmd.WHEN[a].LINE, "WHEN " + casecmd.WHEN[a].CONDITION);
+                                newNode.Nodes.Add(whenNode);
                             }
                             else
                             {
                                 whenNode = selectedNode;
                             }
-                            buildNodes(moduleNo, whenNode, casecmd.WHEN[a].COMMANDS, recurse, callsOnly);
+                            buildNodes(moduleNo, functionNo, whenNode, casecmd.WHEN[a].COMMANDS, recurse, callsOnly, fullExpansion);
                         }
                     }
                     break;
@@ -694,21 +823,35 @@ namespace Calltreeviewer
                     whilecmd = (AubitCalltreeViewer.WHILE)o;
                     if (!callsOnly)
                     {
-                        newNode = selectedNode.Nodes.Add(":" + LocationInFile.getString(moduleNo, whilecmd.LINE), "WHILE " + whilecmd.CONDITION);
+                        newLocationNode = new MyLocationNode(moduleNo, functionNo, whilecmd.LINE, "WHILE " + whilecmd.CONDITION, whilecmd.COMMANDS.LINE,whilecmd.COMMANDS.LASTLINE);
+                        selectedNode.Nodes.Add(newLocationNode);
+                        newNode = newLocationNode;
                     }
                     else
                     {
                         newNode = selectedNode;
                     }
 
-                    buildNodes(moduleNo, newNode, whilecmd.COMMANDS, recurse, callsOnly);
+                    buildNodes(moduleNo,functionNo, newNode, whilecmd.COMMANDS, recurse, callsOnly, fullExpansion);
+
+
+                    if (!callsOnly && newNode.Nodes.Count == 0 && !fullExpansion)
+                    {
+                        newNode.Remove();
+                    }
+                
+
                     break;
 
                 case "AubitCalltreeViewer.IF":
                     ifcmd = (AubitCalltreeViewer.IF)o;
+
+
                     if (!callsOnly)
                     {
-                        newNode = selectedNode.Nodes.Add(":" + LocationInFile.getString(moduleNo, ifcmd.LINE), "IF " + ifcmd.CONDITION);
+                        newLocationNode = new MyLocationNode(moduleNo, functionNo, ifcmd.LINE, "IF " + ifcmd.CONDITION);
+                        selectedNode.Nodes.Add(newLocationNode);
+                        newNode = newLocationNode;
                     }
                     else
                     {
@@ -721,9 +864,9 @@ namespace Calltreeviewer
                         onew = ifcmd.Items[a];
                         if (onew.GetType().ToString() == "AubitCalltreeViewer.ONTRUE")
                         {
-                            //TreeNode ontrue;
-                            //ontrue=newNode.Nodes.Add("TRUE");
-                            buildNodes(moduleNo, newNode, ((AubitCalltreeViewer.ONTRUE)ifcmd.Items[a]).COMMANDS, recurse, callsOnly);
+                           
+                             buildNodes(moduleNo, functionNo, newNode, ((AubitCalltreeViewer.ONTRUE)ifcmd.Items[a]).COMMANDS, recurse, callsOnly, fullExpansion);
+
                             continue;
                         }
                         if (onew.GetType().ToString() == "AubitCalltreeViewer.ONFALSE")
@@ -733,17 +876,35 @@ namespace Calltreeviewer
                             of = (AubitCalltreeViewer.ONFALSE)onew;
                             if (!callsOnly)
                             {
-                                onfalse = newNode.Nodes.Add(":" + LocationInFile.getString(moduleNo, of.LINE), "ELSE");
+                                onfalse = new MyLocationNode(moduleNo, functionNo, of.LINE, "ELSE");
+                                newNode.Nodes.Add(onfalse);
                             }
                             else
                             {
                                 onfalse = selectedNode;
                             }
-                            buildNodes(moduleNo, onfalse, ((AubitCalltreeViewer.ONFALSE)ifcmd.Items[a]).COMMANDS, recurse, callsOnly);
+
+                            buildNodes(moduleNo, functionNo, onfalse, ((AubitCalltreeViewer.ONFALSE)ifcmd.Items[a]).COMMANDS, recurse, callsOnly, fullExpansion);
+
+                            // Dont include an empty "ELSE"
+                            if (!callsOnly && onfalse.Nodes.Count == 0 && !fullExpansion)
+                            {
+                                onfalse.Remove();
+                            }
+                            else
+                            {
+
+                            }
                             continue;
                         }
                         MessageBox.Show("Unexpected IF contents..");
                         //buildNodes(newNode, ifcmd.Items[a]);
+                    }
+
+                    if (!callsOnly && newNode.Nodes.Count == 0 && !fullExpansion)
+                    {
+                        // Dont show it if theres nothing under it..
+                        newNode.Remove();
                     }
                     break;
 
@@ -751,59 +912,129 @@ namespace Calltreeviewer
                     forcmd = (AubitCalltreeViewer.FOR)o;
                     if (!callsOnly)
                     {
-                        newNode = selectedNode.Nodes.Add(":" + LocationInFile.getString(moduleNo, forcmd.LINE), "FOR " + forcmd.START + " " + forcmd.END + " STEP " + forcmd.STEP);
+                        newLocationNode = new MyLocationNode(moduleNo, functionNo, forcmd.LINE, "FOR " + forcmd.START + " " + forcmd.END + " STEP " + forcmd.STEP);
+                        newNode = newLocationNode;
+                        selectedNode.Nodes.Add(newNode);
                     }
                     else
                     {
                         newNode = selectedNode;
                     }
-                    buildNodes(moduleNo, newNode, forcmd.COMMANDS, recurse, callsOnly);
+                    buildNodes(moduleNo, functionNo, newNode, forcmd.COMMANDS, recurse, callsOnly, fullExpansion);
+                    if (!callsOnly && newNode.Nodes.Count == 0 && !fullExpansion)
+                    {
+                        newNode.Remove();
+                    }
+
                     break;
+
+
 
                 case "AubitCalltreeViewer.FOREACH":
                     foreachcmd = (AubitCalltreeViewer.FOREACH)o;
                     if (!callsOnly)
                     {
-                        newNode = selectedNode.Nodes.Add(":" + LocationInFile.getString(moduleNo, foreachcmd.LINE), "FOREACH ");
+                        newLocationNode = new MyLocationNode(moduleNo, functionNo, foreachcmd.LINE, "FOREACH ");
+                        newNode = newLocationNode;
+                        selectedNode.Nodes.Add(newNode);
                     }
                     else
                     {
                         newNode = selectedNode;
                     }
-                    buildNodes(moduleNo, newNode, foreachcmd.COMMANDS, recurse, callsOnly);
+                    buildNodes(moduleNo, functionNo, newNode, foreachcmd.COMMANDS, recurse, callsOnly, fullExpansion);
+
+                    if (!callsOnly && newNode.Nodes.Count == 0 && !fullExpansion)
+                    {
+                        newNode.Remove();
+                    }
+
                     break;
 
 
                 case "AubitCalltreeViewer.FINISH":
-                    finishcmd = (AubitCalltreeViewer.FINISH)o;
-                    newNode = selectedNode.Nodes.Add("->" + finishcmd.REPORT, "FINISH REPORT " + finishcmd.REPORT);
-                    rNode = newNode.Nodes.Add("->" + finishcmd.REPORT, finishcmd.REPORT);
-                    if (!isRecursing(selectedNode, finishcmd.REPORT) && recurse)
                     {
-                        expandNode(rNode, true);
+                        finishcmd = (AubitCalltreeViewer.FINISH)o;
+
+                        sl = generateSymbolLocation(finishcmd, curr_program.MODULES[moduleNo].NAME);
+
+                        symbolFunction sf = getAllFunctionsEntryFor(finishcmd.REPORT);
+
+                        if (!sl.InList(sf))
+                        {
+                            sf.symbols.Add(sl);
+                        }
+
+                        newLocationNode = new MyLocationNode(moduleNo, functionNo, finishcmd.LINE, "FINISH REPORT " + finishcmd.REPORT);
+                        newNode = newLocationNode;
+
+                        selectedNode.Nodes.Add(newNode);
+                        rNode = new MyCallNode(finishcmd.REPORT);
+                        newNode.Nodes.Add(rNode);
+
+                        if (!isRecursing(selectedNode, finishcmd.REPORT) && recurse)
+                        {
+                            expandNode(rNode, true);
+                        }
+
                     }
                     break;
 
                 case "AubitCalltreeViewer.START":
-                    startcmd = (AubitCalltreeViewer.START)o;
-                    newNode = selectedNode.Nodes.Add("->" + startcmd.REPORT, "START REPORT " + startcmd.REPORT);
-
-                    rNode = newNode.Nodes.Add("->" + startcmd.REPORT, startcmd.REPORT);
-                    if (!isRecursing(selectedNode, startcmd.REPORT) && recurse)
                     {
-                        expandNode(rNode, true);
-                    }
+                        startcmd = (AubitCalltreeViewer.START)o;
+                        sl = generateSymbolLocation(startcmd, curr_program.MODULES[moduleNo].NAME);
 
+                        symbolFunction sf = getAllFunctionsEntryFor(startcmd.REPORT);
+
+                        if (!sl.InList(sf))
+                        {
+                            sf.symbols.Add(sl);
+                        }
+                        newLocationNode = new MyLocationNode(moduleNo, functionNo, startcmd.LINE, "START REPORT " + startcmd.REPORT);
+                        newNode = newLocationNode;
+                        selectedNode.Nodes.Add(newNode);
+
+
+                        rNode = new MyCallNode(startcmd.REPORT);
+
+                        newNode.Nodes.Add(rNode);
+
+                        if (!isRecursing(selectedNode, startcmd.REPORT) && recurse)
+                        {
+                            expandNode(rNode, true);
+                        }
+
+
+
+                    }
                     break;
 
                 case "AubitCalltreeViewer.OUTPUT":
-                    outputcmd = (AubitCalltreeViewer.OUTPUT)o;
-                    newNode = selectedNode.Nodes.Add("->" + outputcmd.REPORT, "OUTPUT TO REPORT " + outputcmd.REPORT);
-
-                    rNode = newNode.Nodes.Add("->" + outputcmd.REPORT, outputcmd.REPORT);
-                    if (!isRecursing(selectedNode, outputcmd.REPORT) && recurse)
                     {
-                        expandNode(rNode, true);
+                        outputcmd = (AubitCalltreeViewer.OUTPUT)o;
+                        sl = generateSymbolLocation(outputcmd, curr_program.MODULES[moduleNo].NAME);
+
+                        symbolFunction sf = getAllFunctionsEntryFor(outputcmd.REPORT);
+
+                        if (!sl.InList(sf))
+                        {
+                            sf.symbols.Add(sl);
+                        }
+
+                        newLocationNode = new MyLocationNode(moduleNo, functionNo, outputcmd.LINE, "OUTPUT TO REPORT " + outputcmd.REPORT);
+                        newNode = newLocationNode;
+                        selectedNode.Nodes.Add(newNode);
+
+                        rNode =new MyCallNode(outputcmd.REPORT);
+                        newNode.Nodes.Add(rNode);
+
+                        if (!isRecursing(selectedNode, outputcmd.REPORT) && recurse)
+                        {
+                            expandNode(rNode, true);
+                        }
+
+
                     }
                     break;
 
@@ -812,13 +1043,16 @@ namespace Calltreeviewer
                     constructcmd = (AubitCalltreeViewer.CONSTRUCT)o;
                     if (!callsOnly)
                     {
-                        newNode = selectedNode.Nodes.Add(":" + LocationInFile.getString(moduleNo, constructcmd.LINE), "CONSTRUCT");
+                        newLocationNode = new MyLocationNode(moduleNo, functionNo, constructcmd.LINE, "CONSTRUCT");
+                        newNode = newLocationNode;
+                        selectedNode.Nodes.Add(newNode);
                     }
                     else
                     {
                         newNode = selectedNode;
                     }
-                    buildNodes(moduleNo, newNode, constructcmd.EVENTS, recurse, callsOnly);
+                    buildNodes(moduleNo, functionNo, newNode, constructcmd.EVENTS, recurse, callsOnly, fullExpansion);
+
                     break;
 
 
@@ -826,13 +1060,16 @@ namespace Calltreeviewer
                     inputcmd = (AubitCalltreeViewer.INPUT)o;
                     if (!callsOnly)
                     {
-                        newNode = selectedNode.Nodes.Add(":" + LocationInFile.getString(moduleNo, inputcmd.LINE), "INPUT");
+                        newLocationNode = new MyLocationNode(moduleNo, functionNo, inputcmd.LINE, "INPUT");
+                        newNode = newLocationNode;
+                        selectedNode.Nodes.Add(newNode);
                     }
                     else
                     {
                         newNode = selectedNode;
                     }
-                    buildNodes(moduleNo, newNode, inputcmd.EVENTS, recurse, callsOnly);
+                    buildNodes(moduleNo, functionNo, newNode, inputcmd.EVENTS, recurse, callsOnly, fullExpansion);
+
                     break;
 
 
@@ -841,13 +1078,17 @@ namespace Calltreeviewer
                     inputarraycmd = (AubitCalltreeViewer.INPUTARRAY)o;
                     if (!callsOnly)
                     {
-                        newNode = selectedNode.Nodes.Add(":" + LocationInFile.getString(moduleNo, inputarraycmd.LINE), "INPUTARRAY");
+
+                        newLocationNode = new MyLocationNode(moduleNo, functionNo, inputarraycmd.LINE, "INPUTARRAY");
+                        newNode = newLocationNode;
+                            selectedNode.Nodes.Add(newNode);
                     }
                     else
                     {
                         newNode = selectedNode;
                     }
-                    buildNodes(moduleNo, newNode, inputarraycmd.EVENTS, recurse, callsOnly);
+                    buildNodes(moduleNo, functionNo, newNode, inputarraycmd.EVENTS, recurse, callsOnly, fullExpansion);
+
                     break;
 
                 case "AubitCalltreeViewer.DISPLAYARRAY":
@@ -855,39 +1096,52 @@ namespace Calltreeviewer
                     displayarraycmd = (AubitCalltreeViewer.DISPLAYARRAY)o;
                     if (!callsOnly)
                     {
-                        newNode = selectedNode.Nodes.Add(":" + LocationInFile.getString(moduleNo, displayarraycmd.LINE), "DISPLAYARRAY");
+                        newLocationNode = new MyLocationNode(moduleNo, functionNo, displayarraycmd.LINE, "DISPLAYARRAY");
+
+                        newNode = newLocationNode;
+                        selectedNode.Nodes.Add(newNode);
                     }
                     else
                     {
                         newNode = selectedNode;
                     }
-                    buildNodes(moduleNo, newNode, displayarraycmd.EVENTS, recurse, callsOnly);
+
+                    buildNodes(moduleNo, functionNo, newNode, displayarraycmd.EVENTS, recurse, callsOnly, fullExpansion);
+
                     break;
 
                 case "AubitCalltreeViewer.MENU":
                     menucmd = (AubitCalltreeViewer.MENU)o;
                     if (!callsOnly)
                     {
-                        newNode = selectedNode.Nodes.Add(":" + LocationInFile.getString(moduleNo, menucmd.LINE), "MENU");
+                        newLocationNode = new MyLocationNode(moduleNo, functionNo, menucmd.LINE, "MENU");
+                        newLocationNode.ensureLines(functionNo, menucmd.LINE);
+                        newNode = newLocationNode;
+                        selectedNode.Nodes.Add(newNode);
                     }
                     else
                     {
                         newNode = selectedNode;
                     }
-                    buildNodes(moduleNo, newNode, menucmd.EVENTS, recurse, callsOnly);
+
+                    buildNodes(moduleNo, functionNo, newNode, menucmd.EVENTS, recurse, callsOnly, fullExpansion);
+
                     break;
 
                 case "AubitCalltreeViewer.PROMPT":
                     promptcmd = (AubitCalltreeViewer.PROMPT)o;
                     if (!callsOnly)
                     {
-                        newNode = selectedNode.Nodes.Add(":" + LocationInFile.getString(moduleNo, promptcmd.LINE), "PROMPT");
+                        newLocationNode = new MyLocationNode(moduleNo, functionNo, promptcmd.LINE, "PROMPT");
+                        newNode = newLocationNode;
+                        selectedNode.Nodes.Add(newNode);
                     }
                     else
                     {
                         newNode = selectedNode;
                     }
-                    buildNodes(moduleNo, newNode, promptcmd.EVENTS, recurse, callsOnly);
+                    buildNodes(moduleNo, functionNo, newNode, promptcmd.EVENTS, recurse, callsOnly, fullExpansion);
+
                     break;
 
                 case "AubitCalltreeViewer.EVENT[]":
@@ -917,13 +1171,16 @@ namespace Calltreeviewer
                             }
                             if (!callsOnly)
                             {
-                                newNode = selectedNode.Nodes.Add(":" + LocationInFile.getString(moduleNo, e.LINE), nodeText);
+                                newLocationNode = new MyLocationNode(moduleNo, functionNo, e.LINE, nodeText);
+                                newNode = newLocationNode;
+                                selectedNode.Nodes.Add(newNode);
                             }
                             else
                             {
                                 newNode = selectedNode;
                             }
-                            buildNodes(moduleNo, newNode, e.COMMANDS, recurse, callsOnly);
+                            buildNodes(moduleNo, functionNo, newNode, e.COMMANDS, recurse, callsOnly, fullExpansion);
+
                         }
                     }
 
@@ -933,13 +1190,17 @@ namespace Calltreeviewer
                     whenever = (AubitCalltreeViewer.WHENEVER)o;
                     if (!callsOnly)
                     {
-                        newNode = selectedNode.Nodes.Add(":" + LocationInFile.getString(moduleNo, whenever.CALLS.LINE), "WHENEVER ERROR");
+
+                        newLocationNode = new MyLocationNode(moduleNo, functionNo, whenever.CALLS.LINE, "WHENEVER ERROR");
+                        newNode = newLocationNode;
+                        selectedNode.Nodes.Add(newNode);
                     }
                     else
                     {
                         newNode = selectedNode;
                     }
-                    buildNodes(moduleNo, newNode, whenever.CALLS, recurse, callsOnly);
+                    buildNodes(moduleNo, functionNo, newNode, whenever.CALLS, recurse, callsOnly, fullExpansion);
+
                     break;
 
                 default:
@@ -948,7 +1209,75 @@ namespace Calltreeviewer
 
             }
             selectedNode.ExpandAll();
+         
         }
+
+        private symbolFunction getAllFunctionsEntryFor(string p)
+        {
+            foreach (symbolFunction sf in allFunctions) {
+                if (sf.symbolName == p) return sf;
+            }
+
+            symbolFunction sf_new = new symbolFunction();
+            sf_new.symbolName = p;
+            sf_new.symbols = new List<SymbolLocation>();
+            sf_new.hasCall = false;
+            sf_new.hasDefinition = false;
+            allFunctions.Add(sf_new);
+            return sf_new;
+        }
+
+        private SymbolLocation generateSymbolLocation( object cmd, string moduleName)
+        {
+            SymbolLocation sl;
+            if (cmd is AubitCalltreeViewer.CALLS)
+            {
+                AubitCalltreeViewer.CALLS c=cmd as AubitCalltreeViewer.CALLS;
+                sl= new SymbolLocation(moduleName, c.LINE,"FUNCTION","CALLS",get_line(moduleName,c.LINE));
+                return sl;
+            }
+
+            if (cmd is AubitCalltreeViewer.START)
+            {
+                AubitCalltreeViewer.START c = cmd as AubitCalltreeViewer.START;
+                sl= new SymbolLocation(moduleName, c.LINE, "FUNCTION", "CALLS", get_line(moduleName, c.LINE));                
+                return sl;
+            }
+
+            if (cmd is AubitCalltreeViewer.FINISH)
+            {
+                AubitCalltreeViewer.FINISH c = cmd as AubitCalltreeViewer.FINISH;
+                sl= new SymbolLocation(moduleName, c.LINE, "FUNCTION", "CALLS", get_line(moduleName, c.LINE));
+                return sl;
+            }
+
+            if (cmd is AubitCalltreeViewer.OUTPUT)
+            {
+                AubitCalltreeViewer.OUTPUT c = cmd as AubitCalltreeViewer.OUTPUT;
+                sl= new SymbolLocation(moduleName, c.LINE, "FUNCTION", "CALLS", get_line(moduleName, c.LINE));
+                return sl;
+            }
+
+            throw new NotImplementedException();
+        }
+
+
+
+        /*
+        private bool hasCall(List<SymbolLocation> allCalls, SymbolLocation sl)
+        {
+            foreach (SymbolLocation l in allCalls)
+            {
+                if (l.lineNo == sl.lineNo && l.moduleName == sl.moduleName && l.lineText == sl.lineText && l.Operation==sl.Operation)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+        */
+
+
 
         private void spin()
         {
@@ -980,49 +1309,14 @@ namespace Calltreeviewer
         /// <param name="selectedNode">node to invert</param>
         private void invertTree(string name)
         {
-            /*
-            TreeView v;
-            string fnName;
-            int functionNo;
-            functionNo=findFunctionNo(name);
-
-            if (functionNo == -1)  {
-                            MessageBox.Show("Only looking for functions atm...");
-                return;
-            }
-
-            fnName = curr_program.FUNCTION[functionNo].NAME;
-            
-            if (fullyExpandedTree == null)
-            {
-                fullyExpandedTree = new TreeNode();
-                for (int a = 0; a < curr_program.FUNCTION.Length; a++)
-                {
-                    
-
-                    if (curr_program.FUNCTION[a].NAME == "MAIN")
-                    {
-                        TreeNode newNode=fullyExpandedTree.Nodes.Add(a.ToString(),"MAIN");
-                        
-                        //newNode.Nodes.Add(a.ToString(), p.FUNCTION[a].NAME);
-                        expandNode(fullyExpandedTree.Nodes[0], true);
-                        break;
-                    }
-                }
-            }
-            v = new TreeView();
-            v.Nodes.Clear();
-            v.Nodes.Add(fullyExpandedTree);
-            v.PathSeparator = "-->";
-            */
 
             // Firstly  - lets find all occurences in our current tree
-            TreeNode[] callees = treeView1.Nodes.Find("->"+name, true);
+            TreeNode[] callees = treeView1.Nodes.Find(MyCallNode.generateKey(name), true);
             listBox1.Sorted = false;
             listBox1.Items.Clear();
             for (int a = 0; a < callees.Length; a++)
             {
-                listBox1.Items.Add( new treeNodeForList( callees[a]));
+                listBox1.Items.Add( new treeNodeForList( callees[a].Parent));
             }
 
             if (callees.Length == 0)
@@ -1030,6 +1324,136 @@ namespace Calltreeviewer
                 MessageBox.Show("That function does not appear to be directly or indirectly called from 'MAIN'");
             } 
 
+
+        }
+
+
+        /// <summary>
+        /// invert the tree to see all the callers of a function
+        /// </summary>
+        /// <param name="selectedNode">node to invert</param>
+        private void findModuleLineInTree(string module, int lineno)
+        {
+            string curr_fname = null;
+
+            int moduleNo=-1;
+            int functionNo=-1;
+
+            for (int a = 0; a < curr_program.MODULES.Length; a++)
+            {
+                if (curr_program.MODULES[a].NAME == module)
+                {
+                    moduleNo = a;
+                    break;
+                }
+            }
+
+
+            for (int a = 0; a < curr_program.FUNCTION.Length; a++)
+            {
+                if (curr_program.FUNCTION[a].MODULENO == moduleNo)
+                {
+                    if (curr_program.FUNCTION[a].LINE <= lineno && curr_program.FUNCTION[a].LASTLINE >= lineno)
+                    {
+                        functionNo = a;
+                    }
+                }
+            }
+
+            if (moduleNo == -1)
+            {
+                MessageBox.Show("Unable to find module");
+                return;
+            }
+
+            if (functionNo == -1)
+            {
+                MessageBox.Show("Unable to find Function");
+                return;
+            }
+
+            MyLocationNode  max = null;
+            max = bestNode(treeView1.Nodes, max, moduleNo, functionNo, lineno);
+
+
+            TreeNode[] callees;
+            if (max != null)
+            {
+                // We've got something inside the function...
+                callees = treeView1.Nodes.Find(max.Name, true);
+            }
+            else
+            {
+                // Just point to the start of the function...
+                callees = treeView1.Nodes.Find(MyCallNode.generateKey(curr_program.FUNCTION[functionNo].NAME), true);
+            }
+      
+            TreeNode baseNode=new TreeNode();
+            
+
+
+            listBox1.Sorted = false;
+            listBox1.Items.Clear();
+            for (int a = 0; a < callees.Length; a++)
+            {
+                listBox1.Items.Add(new offsetTreeNodeForList(functionNo, callees[a], lineno, get_line(module, lineno)));
+            }
+        }
+
+
+
+
+        /// <summary>
+        ///  Look for a node in our tree before some arbitrary line number...
+        /// </summary>
+        /// <param name="treeNodeCollection"></param>
+        /// <param name="max"></param>
+        /// <param name="moduleNo"></param>
+        /// <param name="functionNo"></param>
+        /// <param name="lineno"></param>
+        /// <returns></returns>
+        private MyLocationNode bestNode(TreeNodeCollection treeNodeCollection, MyLocationNode max, int moduleNo,int functionNo, int lineno)
+        {
+
+            foreach (TreeNode n in treeNodeCollection)
+            {
+
+                if (n.Nodes.Count > 0)
+                {
+                    max = bestNode(n.Nodes, max, moduleNo, functionNo,lineno);
+                    //continue;
+                }
+
+                if (n is MyLocationNode)
+                {
+                    MyLocationNode mnode;
+                    mnode = n as MyLocationNode;
+
+
+
+                    if (mnode.Module != moduleNo) continue; // Its the wrong module...
+                    if (mnode.FunctionNo != functionNo) continue;
+                    if (!mnode.LineIsInBlock(functionNo, lineno)) continue;
+
+
+                    if (max == null)
+                    {
+                        max = mnode;
+                        continue;
+                    }
+
+                    // Is 'max' better than what we're trying ? 
+
+                    if (max.LineNumber > mnode.LineNumber)
+                    {
+                        continue;
+                    }
+
+
+                    max = mnode;
+                }
+            }
+            return max;
 
         }
 
@@ -1086,12 +1510,21 @@ namespace Calltreeviewer
                     functionForList f;
                     f=(functionForList)listBox1.SelectedItem;
                     loadModuleLine(f.ModuleNo, f.LineNo,true);
-                 //   loadModule(f.ModuleNo);
-                 //   setModuleLine(f.LineNo);
                     actioningUserInteraction = false;
                         return;
                 }
 
+                if (listBox1.Items[listBox1.SelectedIndex].GetType() == typeof(offsetTreeNodeForList))
+                {
+                    offsetTreeNodeForList tnl;
+                    tnl = (offsetTreeNodeForList)listBox1.SelectedItem;
+
+                    selectNode(tnl.getNodeForSelection());
+                    setModuleLine(tnl.LineNumber);
+                   
+                    actioningUserInteraction = false;
+                    return;
+                }
 
                 if (listBox1.Items[listBox1.SelectedIndex].GetType() == typeof(treeNodeForList))
                 {
@@ -1117,7 +1550,7 @@ namespace Calltreeviewer
                             
                             //treeView1.SelectedNode = null;
 
-                            if (foundTreeNode.Text.StartsWith("CALLS"))
+                            if (foundTreeNode.Text.StartsWith("CALLS") || foundTreeNode.Text.StartsWith("OUTPUT TO REPORT") || foundTreeNode.Text.StartsWith("START REPORT") || foundTreeNode.Text.StartsWith("FINISH REPORT"))
                             {
                                 selectNode(foundTreeNode);
                                 //treeView1.SelectedNode = foundTreeNode;
@@ -1236,7 +1669,9 @@ namespace Calltreeviewer
         {
             int functionNo;
             if (tscbFindFunction.Text == null || tscbFindFunction.Text=="" || tscbFindFunction.Text=="<function>") return;
-            functionNo = findFunctionNo("->"+tscbFindFunction.Text);
+
+            functionNo = findFunctionNo( new MyCallNode(tscbFindFunction.Text));
+
             if (functionNo == -1) return;
 
             if (tscbFindFunction.SelectedItem != null)
@@ -1256,7 +1691,7 @@ namespace Calltreeviewer
                     int currentIndex;
                     TreeNode cnode = treeView1.SelectedNode;
                     currentIndex=cnode.Index;
-                    nodes = treeView1.Nodes.Find("->" + tscbFindFunction.Text, true);
+                    nodes = treeView1.Nodes.Find(MyCallNode.generateKey(tscbFindFunction.Text), true);
 
                     for (int a = 0; a < nodes.Length; a++)
                     {
@@ -1449,7 +1884,7 @@ namespace Calltreeviewer
                 }
             }
 
-            if (srchnode.Text.StartsWith("CALLS"))
+            if (srchnode.Text.StartsWith("CALLS") || srchnode.Text.StartsWith("OUTPUT TO REPORT") || srchnode.Text.StartsWith("START REPORT") || srchnode.Text.StartsWith("FINISH REPORT"))
             {
                 List<TreeNode> nodes;
                 nodes=(List<TreeNode>)listOfFunctionsCalled[srchnode.Text.Substring(6)];
@@ -1617,6 +2052,7 @@ namespace Calltreeviewer
                     {
                         if (curr_program.FUNCTION[ax].NAME == searchTerm)
                         {
+
                             SearchableControls.symbolFunction sfunc = new SearchableControls.symbolFunction();
 
                             // Found it..
@@ -1629,6 +2065,10 @@ namespace Calltreeviewer
                             {
                                 sfunc.symbols.Add(sl);
                             }
+
+                            symbolFunction sfunc_calls=getAllFunctionsEntryFor(sfunc.symbolName);
+                            
+                            sfunc.symbols.AddRange(sfunc_calls.symbols);
                             textBox1.setContextDialog(sfunc);
                             break;
                         }
@@ -2604,6 +3044,16 @@ namespace Calltreeviewer
             loadModuleLine(previousLocations[previousLocationIndicator].ModuleNo, previousLocations[previousLocationIndicator].LineNo, false);
             
             EnableLocationButtons();
+        }
+
+        private void test1ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            findModuleLineInTree("hsRFcomT06", 1966);
+        }
+
+        private void textBox1_searchRelated(int lineno)
+        {
+            findModuleLineInTree(curr_program.MODULES[currentModuleNo].NAME, lineno);
         }
 
 

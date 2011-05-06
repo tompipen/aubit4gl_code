@@ -28,16 +28,6 @@ namespace Calltreeviewer
         /// </summary>
         private void InitializeComponent()
         {
-            this.mainSplitPanel = new System.Windows.Forms.SplitContainer();
-            this.splitContainer1 = new System.Windows.Forms.SplitContainer();
-            this.treeView1 = new System.Windows.Forms.TreeView();
-            this.panel1 = new System.Windows.Forms.Panel();
-            this.lblTreeView = new System.Windows.Forms.Label();
-            this.splitContainer2 = new System.Windows.Forms.SplitContainer();
-            this.listBox1 = new System.Windows.Forms.ListBox();
-            this.panel2 = new System.Windows.Forms.Panel();
-            this.lblListbox = new System.Windows.Forms.Label();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mnLoad = new System.Windows.Forms.ToolStripMenuItem();
@@ -73,16 +63,26 @@ namespace Calltreeviewer
             this.filesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mnLocationBack = new System.Windows.Forms.ToolStripMenuItem();
             this.mnLocationForward = new System.Windows.Forms.ToolStripMenuItem();
+            this.test1ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.tslblLine = new System.Windows.Forms.ToolStripStatusLabel();
             this.lblNoOfLines = new System.Windows.Forms.ToolStripStatusLabel();
             this.tsLblSearching = new System.Windows.Forms.ToolStripStatusLabel();
             this.lblLoaded = new System.Windows.Forms.ToolStripStatusLabel();
             this.tslSrchText = new System.Windows.Forms.ToolStripStatusLabel();
+            this.panel3 = new System.Windows.Forms.Panel();
+            this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.treeView1 = new System.Windows.Forms.TreeView();
+            this.panel1 = new System.Windows.Forms.Panel();
+            this.lblTreeView = new System.Windows.Forms.Label();
+            this.splitContainer2 = new System.Windows.Forms.SplitContainer();
+            this.listBox1 = new System.Windows.Forms.ListBox();
+            this.panel2 = new System.Windows.Forms.Panel();
+            this.lblListbox = new System.Windows.Forms.Label();
             this.textBox1 = new SearchableControls.SearchableTextBox();
-            this.mainSplitPanel.Panel1.SuspendLayout();
-            this.mainSplitPanel.Panel2.SuspendLayout();
-            this.mainSplitPanel.SuspendLayout();
+            this.menuStrip1.SuspendLayout();
+            this.statusStrip1.SuspendLayout();
+            this.panel3.SuspendLayout();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
@@ -91,139 +91,7 @@ namespace Calltreeviewer
             this.splitContainer2.Panel2.SuspendLayout();
             this.splitContainer2.SuspendLayout();
             this.panel2.SuspendLayout();
-            this.menuStrip1.SuspendLayout();
-            this.statusStrip1.SuspendLayout();
             this.SuspendLayout();
-            // 
-            // mainSplitPanel
-            // 
-            this.mainSplitPanel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.mainSplitPanel.Location = new System.Drawing.Point(0, 27);
-            this.mainSplitPanel.Name = "mainSplitPanel";
-            this.mainSplitPanel.Orientation = System.Windows.Forms.Orientation.Horizontal;
-            // 
-            // mainSplitPanel.Panel1
-            // 
-            this.mainSplitPanel.Panel1.Controls.Add(this.splitContainer1);
-            // 
-            // mainSplitPanel.Panel2
-            // 
-            this.mainSplitPanel.Panel2.Controls.Add(this.groupBox1);
-            this.mainSplitPanel.Panel2.Padding = new System.Windows.Forms.Padding(2);
-            this.mainSplitPanel.Size = new System.Drawing.Size(1082, 507);
-            this.mainSplitPanel.SplitterDistance = 468;
-            this.mainSplitPanel.TabIndex = 1;
-            // 
-            // splitContainer1
-            // 
-            this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.splitContainer1.Location = new System.Drawing.Point(0, 0);
-            this.splitContainer1.Name = "splitContainer1";
-            // 
-            // splitContainer1.Panel1
-            // 
-            this.splitContainer1.Panel1.Controls.Add(this.treeView1);
-            this.splitContainer1.Panel1.Controls.Add(this.panel1);
-            // 
-            // splitContainer1.Panel2
-            // 
-            this.splitContainer1.Panel2.Controls.Add(this.splitContainer2);
-            this.splitContainer1.Panel2.Controls.Add(this.panel2);
-            this.splitContainer1.Size = new System.Drawing.Size(1082, 468);
-            this.splitContainer1.SplitterDistance = 159;
-            this.splitContainer1.TabIndex = 1;
-            // 
-            // treeView1
-            // 
-            this.treeView1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.treeView1.HideSelection = false;
-            this.treeView1.Location = new System.Drawing.Point(0, 23);
-            this.treeView1.Name = "treeView1";
-            this.treeView1.Size = new System.Drawing.Size(159, 445);
-            this.treeView1.TabIndex = 0;
-            this.treeView1.BeforeSelect += new System.Windows.Forms.TreeViewCancelEventHandler(this.treeView1_BeforeSelect);
-            this.treeView1.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeView1_AfterSelect);
-            this.treeView1.DoubleClick += new System.EventHandler(this.treeView1_DoubleClick);
-            this.treeView1.MouseMove += new System.Windows.Forms.MouseEventHandler(this.treeView1_MouseMove);
-            // 
-            // panel1
-            // 
-            this.panel1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.panel1.Controls.Add(this.lblTreeView);
-            this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panel1.Location = new System.Drawing.Point(0, 0);
-            this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(159, 23);
-            this.panel1.TabIndex = 1;
-            // 
-            // lblTreeView
-            // 
-            this.lblTreeView.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lblTreeView.Location = new System.Drawing.Point(0, 0);
-            this.lblTreeView.Name = "lblTreeView";
-            this.lblTreeView.Size = new System.Drawing.Size(155, 19);
-            this.lblTreeView.TabIndex = 0;
-            this.lblTreeView.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // splitContainer2
-            // 
-            this.splitContainer2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.splitContainer2.Location = new System.Drawing.Point(0, 23);
-            this.splitContainer2.Name = "splitContainer2";
-            this.splitContainer2.Orientation = System.Windows.Forms.Orientation.Horizontal;
-            // 
-            // splitContainer2.Panel1
-            // 
-            this.splitContainer2.Panel1.Controls.Add(this.textBox1);
-            // 
-            // splitContainer2.Panel2
-            // 
-            this.splitContainer2.Panel2.Controls.Add(this.listBox1);
-            this.splitContainer2.Size = new System.Drawing.Size(919, 445);
-            this.splitContainer2.SplitterDistance = 327;
-            this.splitContainer2.TabIndex = 4;
-            // 
-            // listBox1
-            // 
-            this.listBox1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.listBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.listBox1.FormattingEnabled = true;
-            this.listBox1.HorizontalScrollbar = true;
-            this.listBox1.Location = new System.Drawing.Point(0, 0);
-            this.listBox1.Name = "listBox1";
-            this.listBox1.Size = new System.Drawing.Size(919, 114);
-            this.listBox1.TabIndex = 4;
-            this.listBox1.DoubleClick += new System.EventHandler(this.dblClickListbox);
-            this.listBox1.MouseMove += new System.Windows.Forms.MouseEventHandler(this.listBox1_MouseMove);
-            // 
-            // panel2
-            // 
-            this.panel2.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.panel2.Controls.Add(this.lblListbox);
-            this.panel2.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panel2.Location = new System.Drawing.Point(0, 0);
-            this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(919, 23);
-            this.panel2.TabIndex = 1;
-            // 
-            // lblListbox
-            // 
-            this.lblListbox.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lblListbox.Location = new System.Drawing.Point(0, 0);
-            this.lblListbox.Name = "lblListbox";
-            this.lblListbox.Size = new System.Drawing.Size(915, 19);
-            this.lblListbox.TabIndex = 0;
-            this.lblListbox.Text = "______";
-            this.lblListbox.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // groupBox1
-            // 
-            this.groupBox1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.groupBox1.Location = new System.Drawing.Point(2, 2);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(1078, 31);
-            this.groupBox1.TabIndex = 0;
-            this.groupBox1.TabStop = false;
             // 
             // menuStrip1
             // 
@@ -237,10 +105,11 @@ namespace Calltreeviewer
             this.cbModules,
             this.cRUDToolStripMenuItem,
             this.mnLocationBack,
-            this.mnLocationForward});
+            this.mnLocationForward,
+            this.test1ToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(1082, 27);
+            this.menuStrip1.Size = new System.Drawing.Size(1186, 27);
             this.menuStrip1.TabIndex = 2;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -515,6 +384,13 @@ namespace Calltreeviewer
             this.mnLocationForward.Text = ">";
             this.mnLocationForward.Click += new System.EventHandler(this.mnLocationForward_Click);
             // 
+            // test1ToolStripMenuItem
+            // 
+            this.test1ToolStripMenuItem.Name = "test1ToolStripMenuItem";
+            this.test1ToolStripMenuItem.Size = new System.Drawing.Size(47, 23);
+            this.test1ToolStripMenuItem.Text = "Test1";
+            this.test1ToolStripMenuItem.Click += new System.EventHandler(this.test1ToolStripMenuItem_Click);
+            // 
             // statusStrip1
             // 
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -523,9 +399,9 @@ namespace Calltreeviewer
             this.tsLblSearching,
             this.lblLoaded,
             this.tslSrchText});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 534);
+            this.statusStrip1.Location = new System.Drawing.Point(0, 585);
             this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Size = new System.Drawing.Size(1082, 22);
+            this.statusStrip1.Size = new System.Drawing.Size(1186, 22);
             this.statusStrip1.TabIndex = 3;
             this.statusStrip1.Text = "statusStrip1";
             // 
@@ -575,6 +451,119 @@ namespace Calltreeviewer
             this.tslSrchText.Size = new System.Drawing.Size(12, 17);
             this.tslSrchText.Text = "_";
             // 
+            // panel3
+            // 
+            this.panel3.Controls.Add(this.splitContainer1);
+            this.panel3.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel3.Location = new System.Drawing.Point(0, 27);
+            this.panel3.Name = "panel3";
+            this.panel3.Size = new System.Drawing.Size(1186, 558);
+            this.panel3.TabIndex = 4;
+            // 
+            // splitContainer1
+            // 
+            this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.splitContainer1.Location = new System.Drawing.Point(0, 0);
+            this.splitContainer1.Name = "splitContainer1";
+            // 
+            // splitContainer1.Panel1
+            // 
+            this.splitContainer1.Panel1.Controls.Add(this.treeView1);
+            this.splitContainer1.Panel1.Controls.Add(this.panel1);
+            // 
+            // splitContainer1.Panel2
+            // 
+            this.splitContainer1.Panel2.Controls.Add(this.splitContainer2);
+            this.splitContainer1.Panel2.Controls.Add(this.panel2);
+            this.splitContainer1.Size = new System.Drawing.Size(1186, 558);
+            this.splitContainer1.SplitterDistance = 174;
+            this.splitContainer1.TabIndex = 2;
+            // 
+            // treeView1
+            // 
+            this.treeView1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.treeView1.HideSelection = false;
+            this.treeView1.Location = new System.Drawing.Point(0, 23);
+            this.treeView1.Name = "treeView1";
+            this.treeView1.Size = new System.Drawing.Size(174, 535);
+            this.treeView1.TabIndex = 0;
+            this.treeView1.BeforeSelect += new System.Windows.Forms.TreeViewCancelEventHandler(this.treeView1_BeforeSelect);
+            this.treeView1.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeView1_AfterSelect);
+            this.treeView1.Click += new System.EventHandler(this.treeView1_Click);
+            this.treeView1.DoubleClick += new System.EventHandler(this.treeView1_DoubleClick);
+            this.treeView1.MouseMove += new System.Windows.Forms.MouseEventHandler(this.treeView1_MouseMove);
+            // 
+            // panel1
+            // 
+            this.panel1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.panel1.Controls.Add(this.lblTreeView);
+            this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panel1.Location = new System.Drawing.Point(0, 0);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(174, 23);
+            this.panel1.TabIndex = 1;
+            // 
+            // lblTreeView
+            // 
+            this.lblTreeView.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lblTreeView.Location = new System.Drawing.Point(0, 0);
+            this.lblTreeView.Name = "lblTreeView";
+            this.lblTreeView.Size = new System.Drawing.Size(170, 19);
+            this.lblTreeView.TabIndex = 0;
+            this.lblTreeView.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // splitContainer2
+            // 
+            this.splitContainer2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.splitContainer2.Location = new System.Drawing.Point(0, 23);
+            this.splitContainer2.Name = "splitContainer2";
+            this.splitContainer2.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            // 
+            // splitContainer2.Panel1
+            // 
+            this.splitContainer2.Panel1.Controls.Add(this.textBox1);
+            // 
+            // splitContainer2.Panel2
+            // 
+            this.splitContainer2.Panel2.Controls.Add(this.listBox1);
+            this.splitContainer2.Size = new System.Drawing.Size(1008, 535);
+            this.splitContainer2.SplitterDistance = 391;
+            this.splitContainer2.TabIndex = 4;
+            // 
+            // listBox1
+            // 
+            this.listBox1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.listBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.listBox1.FormattingEnabled = true;
+            this.listBox1.HorizontalScrollbar = true;
+            this.listBox1.Location = new System.Drawing.Point(0, 0);
+            this.listBox1.Name = "listBox1";
+            this.listBox1.Size = new System.Drawing.Size(1008, 140);
+            this.listBox1.TabIndex = 4;
+            this.listBox1.SelectedIndexChanged += new System.EventHandler(this.listBox1_SelectedIndexChanged);
+            this.listBox1.DoubleClick += new System.EventHandler(this.dblClickListbox);
+            this.listBox1.MouseMove += new System.Windows.Forms.MouseEventHandler(this.listBox1_MouseMove);
+            // 
+            // panel2
+            // 
+            this.panel2.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.panel2.Controls.Add(this.lblListbox);
+            this.panel2.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panel2.Location = new System.Drawing.Point(0, 0);
+            this.panel2.Name = "panel2";
+            this.panel2.Size = new System.Drawing.Size(1008, 23);
+            this.panel2.TabIndex = 1;
+            // 
+            // lblListbox
+            // 
+            this.lblListbox.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lblListbox.Location = new System.Drawing.Point(0, 0);
+            this.lblListbox.Name = "lblListbox";
+            this.lblListbox.Size = new System.Drawing.Size(1004, 19);
+            this.lblListbox.TabIndex = 0;
+            this.lblListbox.Text = "______";
+            this.lblListbox.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
             // textBox1
             // 
             this.textBox1.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -585,10 +574,11 @@ namespace Calltreeviewer
             this.textBox1.Name = "textBox1";
             this.textBox1.ReadOnly = true;
             this.textBox1.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.textBox1.Size = new System.Drawing.Size(919, 327);
+            this.textBox1.Size = new System.Drawing.Size(1008, 391);
             this.textBox1.TabIndex = 3;
             this.textBox1.WordWrap = false;
             this.textBox1.searchStarted += new SearchableControls.SearchableTextBox.searchStartedArgs(this.textBox1_searchStarted);
+            this.textBox1.searchRelated += new SearchableControls.SearchableTextBox.searchForLineArgs(this.textBox1_searchRelated);
             this.textBox1.searchForFunctionCall += new SearchableControls.SearchableTextBox.searchForFunctionCallArgs(this.textBox1_searchForFunctionCall);
             this.textBox1.clickContext += new System.EventHandler(this.textBox1_clickContext);
             this.textBox1.DoubleClick += new System.EventHandler(this.textBox1_DoubleClick);
@@ -599,8 +589,8 @@ namespace Calltreeviewer
             this.AllowDrop = true;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1082, 556);
-            this.Controls.Add(this.mainSplitPanel);
+            this.ClientSize = new System.Drawing.Size(1186, 607);
+            this.Controls.Add(this.panel3);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.menuStrip1);
             this.MainMenuStrip = this.menuStrip1;
@@ -609,9 +599,11 @@ namespace Calltreeviewer
             this.Load += new System.EventHandler(this.MainCalltreeWindow_Load);
             this.DragDrop += new System.Windows.Forms.DragEventHandler(this.MainCalltreeWindow_DragDrop);
             this.DragEnter += new System.Windows.Forms.DragEventHandler(this.MainCalltreeWindow_DragEnter);
-            this.mainSplitPanel.Panel1.ResumeLayout(false);
-            this.mainSplitPanel.Panel2.ResumeLayout(false);
-            this.mainSplitPanel.ResumeLayout(false);
+            this.menuStrip1.ResumeLayout(false);
+            this.menuStrip1.PerformLayout();
+            this.statusStrip1.ResumeLayout(false);
+            this.statusStrip1.PerformLayout();
+            this.panel3.ResumeLayout(false);
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel2.ResumeLayout(false);
             this.splitContainer1.ResumeLayout(false);
@@ -621,10 +613,6 @@ namespace Calltreeviewer
             this.splitContainer2.Panel2.ResumeLayout(false);
             this.splitContainer2.ResumeLayout(false);
             this.panel2.ResumeLayout(false);
-            this.menuStrip1.ResumeLayout(false);
-            this.menuStrip1.PerformLayout();
-            this.statusStrip1.ResumeLayout(false);
-            this.statusStrip1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -632,18 +620,10 @@ namespace Calltreeviewer
 
         #endregion
 
-        private System.Windows.Forms.SplitContainer mainSplitPanel;
-        private System.Windows.Forms.SplitContainer splitContainer1;
-        private System.Windows.Forms.TreeView treeView1;
-        private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.MenuStrip menuStrip1;
         private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem mnLoad;
         private System.Windows.Forms.ToolStripMenuItem mnExit;
-        private System.Windows.Forms.Panel panel1;
-        private System.Windows.Forms.Label lblTreeView;
-        private System.Windows.Forms.Panel panel2;
-        private System.Windows.Forms.Label lblListbox;
         private System.Windows.Forms.StatusStrip statusStrip1;
         private System.Windows.Forms.ToolStripStatusLabel tslblLine;
         private System.Windows.Forms.ToolStripStatusLabel lblLoaded;
@@ -653,9 +633,6 @@ namespace Calltreeviewer
         private System.Windows.Forms.ToolStripMenuItem collapseToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem showAllToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem expandShowAllToolStripMenuItem;
-        private System.Windows.Forms.SplitContainer splitContainer2;
-        private SearchableControls.SearchableTextBox textBox1;
-        private System.Windows.Forms.ListBox listBox1;
         private System.Windows.Forms.ToolStripStatusLabel lblNoOfLines;
         private System.Windows.Forms.ToolStripMenuItem findFunctionToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem functionToolStripMenuItem1;
@@ -684,6 +661,17 @@ namespace Calltreeviewer
         private System.Windows.Forms.ToolStripMenuItem RunsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem formsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem filesToolStripMenuItem;
+        private System.Windows.Forms.Panel panel3;
+        private System.Windows.Forms.SplitContainer splitContainer1;
+        private System.Windows.Forms.TreeView treeView1;
+        private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.Label lblTreeView;
+        private System.Windows.Forms.SplitContainer splitContainer2;
+        private SearchableControls.SearchableTextBox textBox1;
+        private System.Windows.Forms.ListBox listBox1;
+        private System.Windows.Forms.Panel panel2;
+        private System.Windows.Forms.Label lblListbox;
+        private System.Windows.Forms.ToolStripMenuItem test1ToolStripMenuItem;
     }
 }
 
