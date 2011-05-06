@@ -76,10 +76,10 @@ namespace Calltreeviewer
             this.panel1 = new System.Windows.Forms.Panel();
             this.lblTreeView = new System.Windows.Forms.Label();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
+            this.textBox1 = new SearchableControls.SearchableTextBox();
             this.listBox1 = new System.Windows.Forms.ListBox();
             this.panel2 = new System.Windows.Forms.Panel();
             this.lblListbox = new System.Windows.Forms.Label();
-            this.textBox1 = new SearchableControls.SearchableTextBox();
             this.menuStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.panel3.SuspendLayout();
@@ -530,6 +530,27 @@ namespace Calltreeviewer
             this.splitContainer2.SplitterDistance = 391;
             this.splitContainer2.TabIndex = 4;
             // 
+            // textBox1
+            // 
+            this.textBox1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.textBox1.Font = new System.Drawing.Font("Courier New", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.textBox1.HideSelection = false;
+            this.textBox1.Location = new System.Drawing.Point(0, 0);
+            this.textBox1.Multiline = true;
+            this.textBox1.Name = "textBox1";
+            this.textBox1.ReadOnly = true;
+            this.textBox1.ScrollBars = System.Windows.Forms.ScrollBars.Both;
+            this.textBox1.Size = new System.Drawing.Size(1008, 391);
+            this.textBox1.TabIndex = 3;
+            this.textBox1.WordWrap = false;
+            this.textBox1.searchStarted += new SearchableControls.SearchableTextBox.searchStartedArgs(this.textBox1_searchStarted);
+            this.textBox1.searchRelated += new SearchableControls.SearchableTextBox.searchForLineArgs(this.textBox1_searchRelated);
+            this.textBox1.searchForFunctionCall += new SearchableControls.SearchableTextBox.searchForFunctionCallArgs(this.textBox1_searchForFunctionCall);
+            this.textBox1.clickContext += new System.EventHandler(this.textBox1_clickContext);
+            this.textBox1.DoubleClick += new System.EventHandler(this.textBox1_DoubleClick);
+            this.textBox1.MouseMove += new System.Windows.Forms.MouseEventHandler(this.textBox1_MouseMove);
+            this.textBox1.MouseUp += new System.Windows.Forms.MouseEventHandler(this.textBox1_MouseUp);
+            // 
             // listBox1
             // 
             this.listBox1.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -563,26 +584,6 @@ namespace Calltreeviewer
             this.lblListbox.TabIndex = 0;
             this.lblListbox.Text = "______";
             this.lblListbox.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // textBox1
-            // 
-            this.textBox1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.textBox1.Font = new System.Drawing.Font("Courier New", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textBox1.HideSelection = false;
-            this.textBox1.Location = new System.Drawing.Point(0, 0);
-            this.textBox1.Multiline = true;
-            this.textBox1.Name = "textBox1";
-            this.textBox1.ReadOnly = true;
-            this.textBox1.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.textBox1.Size = new System.Drawing.Size(1008, 391);
-            this.textBox1.TabIndex = 3;
-            this.textBox1.WordWrap = false;
-            this.textBox1.searchStarted += new SearchableControls.SearchableTextBox.searchStartedArgs(this.textBox1_searchStarted);
-            this.textBox1.searchRelated += new SearchableControls.SearchableTextBox.searchForLineArgs(this.textBox1_searchRelated);
-            this.textBox1.searchForFunctionCall += new SearchableControls.SearchableTextBox.searchForFunctionCallArgs(this.textBox1_searchForFunctionCall);
-            this.textBox1.clickContext += new System.EventHandler(this.textBox1_clickContext);
-            this.textBox1.DoubleClick += new System.EventHandler(this.textBox1_DoubleClick);
-            this.textBox1.MouseMove += new System.Windows.Forms.MouseEventHandler(this.textBox1_MouseMove);
             // 
             // MainCalltreeWindow
             // 

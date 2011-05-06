@@ -271,14 +271,15 @@ namespace Calltreeviewer
 
                 if (style == TreeStyle.TreeStyleNormal)
                 {
-                    newNode = treeView1.Nodes.Add(a.ToString(), p.FUNCTION[a].NAME);
-                    //newNode = new MyLocationNode(p.FUNCTION[a].MODULENO, a, p.FUNCTION[a].LINE, get_line(p.FUNCTION[a].MODULE, p.FUNCTION[a].LINE), p.FUNCTION[a].LINE, p.FUNCTION[a].LASTLINE);
+                    //newNode = treeView1.Nodes.Add(a.ToString(), p.FUNCTION[a].NAME);
+                    newNode = new MyFunctionNode(p.FUNCTION[a].NAME,p.FUNCTION[a].MODULENO, a, p.FUNCTION[a].LINE, get_line(p.FUNCTION[a].MODULE, p.FUNCTION[a].LINE), p.FUNCTION[a].LINE, p.FUNCTION[a].LASTLINE);
+                    treeView1.Nodes.Add(newNode);
                 }
 
                 if ((style==TreeStyle.TreeStyleMain || style==TreeStyle.TreeStyleMainRecurse) && p.FUNCTION[a].NAME == "MAIN" && mainNode == null) {
-                    newNode = treeView1.Nodes.Add(a.ToString(), p.FUNCTION[a].NAME);
-                    //newNode = new MyLocationNode(p.FUNCTION[a].MODULENO, a, p.FUNCTION[a].LINE, get_line(p.FUNCTION[a].MODULE, p.FUNCTION[a].LINE), p.FUNCTION[a].LINE, p.FUNCTION[a].LASTLINE);
-
+                   // newNode = treeView1.Nodes.Add(a.ToString(), p.FUNCTION[a].NAME);
+                    newNode = new MyFunctionNode(p.FUNCTION[a].NAME, p.FUNCTION[a].MODULENO, a, p.FUNCTION[a].LINE, get_line(p.FUNCTION[a].MODULE, p.FUNCTION[a].LINE), p.FUNCTION[a].LINE, p.FUNCTION[a].LASTLINE);
+                    treeView1.Nodes.Add(newNode);
                     if (style == TreeStyle.TreeStyleMainRecurse)
                     {
                         expandNode(newNode, true);
@@ -641,9 +642,15 @@ namespace Calltreeviewer
             {
                 functionNo = findFunctionNo((MyCallNode)selectedNode);
             }
-            if (selectedNode.Text == "MAIN")
+
+
+            if (selectedNode is MyFunctionNode)
             {
-                functionNo = findFunctionNo(new MyCallNode("MAIN"));
+                MyFunctionNode mfn = selectedNode as MyFunctionNode;
+                if (mfn.FunctionName == "MAIN")
+                {
+                    functionNo = findFunctionNo(new MyCallNode("MAIN"));
+                }
             }
 
             Application.DoEvents();
@@ -3054,6 +3061,23 @@ namespace Calltreeviewer
         private void textBox1_searchRelated(int lineno)
         {
             findModuleLineInTree(curr_program.MODULES[currentModuleNo].NAME, lineno);
+        }
+
+        private void textBox1_MouseUp(object sender, MouseEventArgs e)
+        {
+
+    if (e.Button == MouseButtons.Right)
+    {
+        int charpos;
+        SearchableTextBox box = (SearchableTextBox)sender;
+        charpos= box.GetCharIndexFromPosition(e.Location);
+        if (charpos < box.SelectionStart || charpos > box.SelectionStart + box.SelectionLength)
+        {
+            box.SelectionStart = charpos;
+            box.SelectionLength = 0;
+        }
+    }
+
         }
 
 
