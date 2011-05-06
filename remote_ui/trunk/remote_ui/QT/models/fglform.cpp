@@ -2208,6 +2208,50 @@ MainFrame::vdcdebug("FglForm","findFieldsByName", "QString fieldName");
    return ql_foundFields;
 }
 
+int FglForm::findFieldIdByName(QString fieldName)
+{
+MainFrame::vdcdebug("FglForm","findFieldIdByName", "QString fieldName");
+   QList<QWidget*> ql_fields = ql_formFields;
+
+   int index = fieldName.indexOf(".");
+   int index2 = fieldName.indexOf("[");
+
+   if(index2 > 0){
+      int index3 = fieldName.indexOf("]")+1;
+
+      fieldName.remove(index2, index3-index2);
+      index = fieldName.indexOf(".");
+   }
+
+   if(index < 0){
+      // DISPLAY BY NAME
+      QList<QString> keys = recordView.keys();
+      for(int i=0; i<keys.count(); i++){
+         QList<Fgl::Link> links = recordView[keys.at(i)];
+         for(int j=0; j<links.count(); j++){
+            Fgl::Link link = links.at(j);
+            if(link.colName == fieldName){
+               return link.fieldIdRef;
+            }
+         }
+      }
+   }
+   else{
+     QString tabName = fieldName.mid(0,index);
+     fieldName = fieldName.mid(index+1,fieldName.length()-index-1);
+      // DISPLAY TO
+     QList<Fgl::Link> links = recordView[tabName];
+     for(int i=0; i<links.count(); i++){
+        Fgl::Link link = links.at(i);
+        if(link.colName == fieldName){
+           return link.fieldIdRef;
+        }
+     }
+   }
+
+   return -1;
+}
+
 void FglForm::setScreenRecordArrLine(int line)
 {
 MainFrame::vdcdebug("FglForm","setScreenRecordArrLine", "int line");

@@ -933,7 +933,10 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
          }
 
          if(qs_name == "ui.combobox.forname"){
-            value = QString::number(1);
+            QDomElement values = childElement.firstChildElement();
+            QDomElement valueElement = values.firstChildElement();
+            value = valueElement.text();
+            value = QString::number(p_currScreenHandler->currForm()->findFieldIdByName(value));
          }
 
          if(qs_name == "ui.menu.showhide"){
