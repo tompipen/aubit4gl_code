@@ -59,7 +59,11 @@ namespace AubitCalltreeViewer
     public class COMMANDS
     {
 
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public int LINE;
 
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public int LASTLINE;
 
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute("CALLS", Type = typeof(CALLS))]
@@ -78,8 +82,27 @@ namespace AubitCalltreeViewer
         [System.Xml.Serialization.XmlElementAttribute("PROMPT", Type = typeof(PROMPT))]
         [System.Xml.Serialization.XmlElementAttribute("START", Type = typeof(START))]
         [System.Xml.Serialization.XmlElementAttribute("WHILE", Type = typeof(WHILE))]
+        [System.Xml.Serialization.XmlElementAttribute("SECTION", Type = typeof(SECTION))]
         public object[] Items;
     }
+
+
+    [System.Xml.Serialization.XmlRootAttribute(Namespace = "", IsNullable = true)]
+    public class SECTION
+    {
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public int ID;
+
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string TYPE;
+
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public int LINE;
+
+        /// <remarks/>
+        public COMMANDS COMMANDS;
+    }
+
 
     /// <remarks/>
     [System.Xml.Serialization.XmlRootAttribute(Namespace = "", IsNullable = true)]
