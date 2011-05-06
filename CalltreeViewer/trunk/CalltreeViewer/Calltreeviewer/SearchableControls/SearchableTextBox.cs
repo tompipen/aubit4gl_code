@@ -37,6 +37,9 @@ namespace SearchableControls
         /// </summary>
         public event searchStartedArgs searchStarted;
 
+        public delegate void searchForLineArgs(int lineno);
+        public event searchForLineArgs searchRelated;
+
         /// <summary>
         /// Construct a SearchableTextBox textbox
         /// </summary>
@@ -54,9 +57,18 @@ namespace SearchableControls
             //deleteToolStripMenuItem.Click += new EventHandler(deleteToolStripMenuItem_Click);
             //selectAllToolStripMenuItem.Click += new EventHandler(selectAllToolStripMenuItem_Click);
             findToolStripMenuItem.Click += new EventHandler(findToolStripMenuItem_Click);
+            miFindReferencesToLine.Click += new EventHandler(miFindReferencesToLine_Click);
             miStatementSQL.Click += new EventHandler(miStatementSQL_Click);
             //replaceToolStripMenuItem.Click += new EventHandler(replaceToolStripMenuItem_Click);
 
+        }
+
+        void miFindReferencesToLine_Click(object sender, EventArgs e)
+        {
+            if (searchRelated != null)
+            {
+                searchRelated(currentLineNo);
+            }
         }
 
         void miStatementSQL_Click(object sender, EventArgs e)
@@ -541,11 +553,30 @@ namespace SearchableControls
                 miFindFunction.Visible = true;
                 miFunctionCalled.Visible = true;
 
+
+                // Look in the calltree for all routes that this function can be called
                 miFunctionCalled.Click -= new EventHandler(miFunctionCalled_Click);
                 miFunctionCalled.Click += new EventHandler(miFunctionCalled_Click);
 
+                // Just look for the immediate callers - dont worry about the calltree...
+                miFunctionCall.Click -= new EventHandler(miFunctionCall_Click);
+                miFunctionCall.Click += new EventHandler(miFunctionCall_Click);
+
                 miFunctionDefine.Visible = f.hasDefinition;
+
                 setSymbols(miFunctionDefine, f.symbols, "DEFINITION");
+                setSymbols(miFunctionCall, f.symbols, "CALLS");
+                if (miFunctionCall.DropDownItems.Count > 0)
+                {
+                    miFunctionCall.Visible = true;
+                    miFunctionCall.Enabled = true;
+                }
+                else
+                {
+                    // SHould be visible - but for now .....
+                    miFunctionCall.Enabled = false;
+                }
+
             }
 
             if (type is symbolForm)
@@ -622,6 +653,11 @@ namespace SearchableControls
                 miWindowOpen.Visible = s.hasOpen;
                 miWindowShow.Visible = s.hasShow;
             }
+        }
+
+        void miFunctionCall_Click(object sender, EventArgs e)
+        {
+            throw new NotImplementedException();
         }
 
         void miVariableValue_Click(object sender, EventArgs e)
@@ -793,6 +829,8 @@ namespace SearchableControls
 
         public string Description;
 
+
+
         public SymbolLocation(string module, int line, string type, string op,string linetext)
         {
             // TODO: Complete member initialization
@@ -830,9 +868,27 @@ namespace SearchableControls
             }
         }
 
+        public bool InList(List <SymbolLocation> symbols)
+        {
+            if (symbols == null) return false;
+            for (int a = 0; a < symbols.Count; a++)
+            {
+                if (symbols[a].lineNo == this.lineNo &&
+                        symbols[a].moduleName == this.moduleName &&
+                    symbols[a].Operation == this.Operation &&
+                    symbols[a].Type == this.Type)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
         public bool InList(baseSymbolType symbols)
         {
             if (symbols == null) return false;
+            return InList(symbols.symbols);
+            /*
             for (int a = 0; a < symbols.symbols.Count; a++)
             {
                 if (symbols.symbols[a].lineNo == this.lineNo &&
@@ -844,6 +900,7 @@ namespace SearchableControls
                 }
             }
             return false;
+             * */
         }
     }
 
