@@ -80,6 +80,7 @@ namespace Calltreeviewer
             this.listBox1 = new System.Windows.Forms.ListBox();
             this.panel2 = new System.Windows.Forms.Panel();
             this.lblListbox = new System.Windows.Forms.Label();
+            this.unparsedDynamicSQLToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.panel3.SuspendLayout();
@@ -303,7 +304,8 @@ namespace Calltreeviewer
             this.environmentVariablesToolStripMenuItem,
             this.RunsToolStripMenuItem,
             this.formsToolStripMenuItem,
-            this.filesToolStripMenuItem});
+            this.filesToolStripMenuItem,
+            this.unparsedDynamicSQLToolStripMenuItem});
             this.cRUDToolStripMenuItem.Name = "cRUDToolStripMenuItem";
             this.cRUDToolStripMenuItem.Size = new System.Drawing.Size(93, 23);
             this.cRUDToolStripMenuItem.Text = "Symbols/Data";
@@ -312,62 +314,62 @@ namespace Calltreeviewer
             // updatesToolStripMenuItem
             // 
             this.updatesToolStripMenuItem.Name = "updatesToolStripMenuItem";
-            this.updatesToolStripMenuItem.Size = new System.Drawing.Size(192, 22);
+            this.updatesToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
             this.updatesToolStripMenuItem.Text = "Updates";
             // 
             // deleteToolStripMenuItem
             // 
             this.deleteToolStripMenuItem.Name = "deleteToolStripMenuItem";
-            this.deleteToolStripMenuItem.Size = new System.Drawing.Size(192, 22);
+            this.deleteToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
             this.deleteToolStripMenuItem.Text = "Delete";
             // 
             // insertToolStripMenuItem
             // 
             this.insertToolStripMenuItem.Name = "insertToolStripMenuItem";
-            this.insertToolStripMenuItem.Size = new System.Drawing.Size(192, 22);
+            this.insertToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
             this.insertToolStripMenuItem.Text = "Insert";
             // 
             // selectToolStripMenuItem
             // 
             this.selectToolStripMenuItem.Name = "selectToolStripMenuItem";
-            this.selectToolStripMenuItem.Size = new System.Drawing.Size(192, 22);
+            this.selectToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
             this.selectToolStripMenuItem.Text = "Select";
             // 
             // dEFINELIKEToolStripMenuItem
             // 
             this.dEFINELIKEToolStripMenuItem.Name = "dEFINELIKEToolStripMenuItem";
-            this.dEFINELIKEToolStripMenuItem.Size = new System.Drawing.Size(192, 22);
+            this.dEFINELIKEToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
             this.dEFINELIKEToolStripMenuItem.Text = "DEFINE .. LIKE";
             this.dEFINELIKEToolStripMenuItem.Visible = false;
             // 
             // eXECUTEPROCEDUREToolStripMenuItem
             // 
             this.eXECUTEPROCEDUREToolStripMenuItem.Name = "eXECUTEPROCEDUREToolStripMenuItem";
-            this.eXECUTEPROCEDUREToolStripMenuItem.Size = new System.Drawing.Size(192, 22);
+            this.eXECUTEPROCEDUREToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
             this.eXECUTEPROCEDUREToolStripMenuItem.Text = "EXECUTE PROCEDURE";
             // 
             // environmentVariablesToolStripMenuItem
             // 
             this.environmentVariablesToolStripMenuItem.Name = "environmentVariablesToolStripMenuItem";
-            this.environmentVariablesToolStripMenuItem.Size = new System.Drawing.Size(192, 22);
+            this.environmentVariablesToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
             this.environmentVariablesToolStripMenuItem.Text = "Environment Variables";
             // 
             // RunsToolStripMenuItem
             // 
             this.RunsToolStripMenuItem.Name = "RunsToolStripMenuItem";
-            this.RunsToolStripMenuItem.Size = new System.Drawing.Size(192, 22);
+            this.RunsToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
             this.RunsToolStripMenuItem.Text = "RUNs";
             // 
             // formsToolStripMenuItem
             // 
             this.formsToolStripMenuItem.Name = "formsToolStripMenuItem";
-            this.formsToolStripMenuItem.Size = new System.Drawing.Size(192, 22);
+            this.formsToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
             this.formsToolStripMenuItem.Text = "Forms";
             // 
             // filesToolStripMenuItem
             // 
             this.filesToolStripMenuItem.Name = "filesToolStripMenuItem";
-            this.filesToolStripMenuItem.Size = new System.Drawing.Size(192, 22);
+            this.filesToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
             this.filesToolStripMenuItem.Text = "Files";
             // 
             // mnLocationBack
@@ -389,6 +391,7 @@ namespace Calltreeviewer
             this.test1ToolStripMenuItem.Name = "test1ToolStripMenuItem";
             this.test1ToolStripMenuItem.Size = new System.Drawing.Size(47, 23);
             this.test1ToolStripMenuItem.Text = "Test1";
+            this.test1ToolStripMenuItem.Visible = false;
             this.test1ToolStripMenuItem.Click += new System.EventHandler(this.test1ToolStripMenuItem_Click);
             // 
             // statusStrip1
@@ -585,6 +588,12 @@ namespace Calltreeviewer
             this.lblListbox.Text = "______";
             this.lblListbox.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
+            // unparsedDynamicSQLToolStripMenuItem
+            // 
+            this.unparsedDynamicSQLToolStripMenuItem.Name = "unparsedDynamicSQLToolStripMenuItem";
+            this.unparsedDynamicSQLToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
+            this.unparsedDynamicSQLToolStripMenuItem.Text = "Unparsed Dynamic SQL";
+            // 
             // MainCalltreeWindow
             // 
             this.AllowDrop = true;
@@ -673,6 +682,7 @@ namespace Calltreeviewer
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.Label lblListbox;
         private System.Windows.Forms.ToolStripMenuItem test1ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem unparsedDynamicSQLToolStripMenuItem;
     }
 }
 

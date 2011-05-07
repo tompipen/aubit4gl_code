@@ -781,6 +781,7 @@ namespace Calltreeviewer
                         {
                             mln.ensureLines(functionNo, section.COMMANDS.LINE, section.COMMANDS.LASTLINE);
                         }
+                        newLocationNode.ensureLines(functionNo, section.COMMANDS.LINE, section.COMMANDS.LASTLINE);
 
                         if (section.COMMANDS.Items != null)
                         {
@@ -1891,7 +1892,7 @@ namespace Calltreeviewer
                 }
             }
 
-            if (srchnode.Text.StartsWith("CALLS") || srchnode.Text.StartsWith("OUTPUT TO REPORT") || srchnode.Text.StartsWith("START REPORT") || srchnode.Text.StartsWith("FINISH REPORT"))
+            if (srchnode.Text.StartsWith("CALLS"))
             {
                 List<TreeNode> nodes;
                 nodes=(List<TreeNode>)listOfFunctionsCalled[srchnode.Text.Substring(6)];
@@ -1902,6 +1903,33 @@ namespace Calltreeviewer
                 }
                 nodes.Add(srchnode);
             }
+
+            if (srchnode.Text.StartsWith("OUTPUT TO REPORT") || srchnode.Text.StartsWith("START REPORT") || srchnode.Text.StartsWith("FINISH REPORT"))
+            {
+                List<TreeNode> nodes;
+                string ReportName = "<notset>";
+                if (srchnode.Text.StartsWith("OUTPUT TO REPORT"))
+                {
+                    ReportName = srchnode.Text.Substring(17);
+                }
+                if (srchnode.Text.StartsWith("START REPORT"))
+                {
+                    ReportName = srchnode.Text.Substring(13);
+                }
+                if (srchnode.Text.StartsWith("FINISH REPORT"))
+                {
+                    ReportName = srchnode.Text.Substring(14);
+                }
+                nodes = (List<TreeNode>)listOfFunctionsCalled[ReportName];
+
+                if (nodes == null)
+                {
+                    nodes = new List<TreeNode>();
+                    listOfFunctionsCalled[ReportName] = nodes;
+                }
+                nodes.Add(srchnode);
+            }
+
         }
 
         private void listBox1_MouseMove(object sender, MouseEventArgs e)
@@ -2481,8 +2509,6 @@ namespace Calltreeviewer
         private void setCRUD() {
             List<string> Tables;
             List<SymbolLocation> sl;
-
-
             // Generate the menu options for the UPDATE statements...
             #region find updates
             Tables =new List<string>();
@@ -2510,6 +2536,7 @@ namespace Calltreeviewer
                     string[] tabnames = extractTables("UPDATE", curr_program.DYNAMICSQLS[a].STMT);
                     if (tabnames != null)
                     {
+                        curr_program.DYNAMICSQLS[a].PROCESSED = 1;
                         for (int b = 0; b < tabnames.Length; b++)
                         {
 
@@ -2550,6 +2577,7 @@ namespace Calltreeviewer
                     string[] tabnames = extractTables("INSERT", curr_program.DYNAMICSQLS[a].STMT);
                     if (tabnames != null)
                     {
+                        curr_program.DYNAMICSQLS[a].PROCESSED = 1;
                         for (int b = 0; b < tabnames.Length; b++)
                         {
 
@@ -2566,8 +2594,6 @@ namespace Calltreeviewer
 
             setMenuItems(insertToolStripMenuItem, Tables, sl);
             #endregion
-
-
             #region deletes
             Tables = new List<string>();
             sl = new List<SymbolLocation>();
@@ -2592,6 +2618,7 @@ namespace Calltreeviewer
                     string[] tabnames = extractTables("DELETE", curr_program.DYNAMICSQLS[a].STMT);
                     if (tabnames != null)
                     {
+                        curr_program.DYNAMICSQLS[a].PROCESSED = 1;
                         for (int b = 0; b < tabnames.Length; b++)
                         {
 
@@ -2632,8 +2659,10 @@ namespace Calltreeviewer
                 {
                     if (curr_program.DYNAMICSQLS[a].PROCESSED == 1) continue;
                     string[] tabnames = extractTables("SELECT", curr_program.DYNAMICSQLS[a].STMT);
+                    
                     if (tabnames != null)
                     {
+                        curr_program.DYNAMICSQLS[a].PROCESSED = 1;
                         for (int b = 0; b < tabnames.Length; b++)
                         {
 
@@ -2662,6 +2691,7 @@ namespace Calltreeviewer
                     string[] tabnames = extractTables("EXECUTE", curr_program.OTHERSQLS[a].STMT);
                     if (tabnames != null)
                     {
+                        curr_program.DYNAMICSQLS[a].PROCESSED = 1;
                         for (int b = 0; b < tabnames.Length; b++)
                         {
 
@@ -2686,7 +2716,7 @@ namespace Calltreeviewer
                     {
                         for (int b = 0; b < tabnames.Length; b++)
                         {
-
+                            curr_program.DYNAMICSQLS[a].PROCESSED = 1;
                             if (!Tables.Contains(tabnames[b]))
                             {
                                 Tables.Add(tabnames[b]);
@@ -2700,7 +2730,6 @@ namespace Calltreeviewer
 
             setMenuItems(eXECUTEPROCEDUREToolStripMenuItem, Tables, sl);
             #endregion
-
             #region Environment variables
             Tables = new List<string>();
             sl = new List<SymbolLocation>();
@@ -2736,8 +2765,26 @@ namespace Calltreeviewer
                     sl.Add(new SymbolLocation(curr_program.RUN[a].MODULE, curr_program.RUN[a].LINE, "RUN",  curr_program.RUN[a].CMD, get_line(curr_program.RUN[a].MODULE, curr_program.RUN[a].LINE)));
                 }
             }
-
             setMenuItems(RunsToolStripMenuItem, Tables, sl);
+            #endregion
+
+            #region Dynamic SQL statements
+            Tables = new List<string>();
+            sl = new List<SymbolLocation>();
+            if (curr_program.DYNAMICSQLS != null)
+            {
+                for (int a = 0; a < curr_program.DYNAMICSQLS.Length; a++) {
+                    if (curr_program.DYNAMICSQLS[a].PROCESSED == 1) continue;
+
+                    if (!Tables.Contains(curr_program.DYNAMICSQLS[a].STMTID))
+                    {
+                        Tables.Add(curr_program.DYNAMICSQLS[a].STMTID);
+                    }
+
+                    sl.Add(new SymbolLocation(curr_program.DYNAMICSQLS[a].MODULE, curr_program.DYNAMICSQLS[a].LINE, "DYNAMIC", curr_program.DYNAMICSQLS[a].STMTID, get_line(curr_program.DYNAMICSQLS[a].MODULE, curr_program.DYNAMICSQLS[a].LINE)));
+                }
+            }
+            setMenuItems(unparsedDynamicSQLToolStripMenuItem, Tables, sl);
             #endregion
 
             #region FORM statements
@@ -2769,8 +2816,6 @@ namespace Calltreeviewer
 
             setMenuItems(formsToolStripMenuItem, Tables, sl);
             #endregion
-
-
             #region FILES usages...
             Tables = new List<string>();
             sl = new List<SymbolLocation>();

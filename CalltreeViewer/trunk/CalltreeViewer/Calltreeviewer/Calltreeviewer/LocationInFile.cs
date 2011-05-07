@@ -387,8 +387,8 @@ namespace Calltreeviewer
 
         public override string ToString()
         {
-            
-            return base.ToString() + " (" + _block_start_lineno + " " + _block_end_lineno + ")";
+
+            return base.ToString(); // +" (" + _block_start_lineno + " " + _block_end_lineno + ")";
         }
         /// <summary>
         /// 
@@ -523,7 +523,7 @@ namespace Calltreeviewer
                 throw new ApplicationException("start > last");
             }
 
-            this.Text = _text  +" (" + _functionNo+":"+ _block_start_lineno + "," + _block_end_lineno + ")";
+            this.Text = _text; // +" (" + _functionNo + ":" + _block_start_lineno + "," + _block_end_lineno + ")";
 
             TreeNode _parent;
             _parent = this.Parent;
