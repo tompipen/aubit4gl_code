@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/">
+        <file>font/LiberationMono-Regular.ttf</file>
+        <file>pics/VENTAS_9_splashscreen.png</file>
+        <file>pics/blank.png</file>
+    </qresource>
+</RCC>
