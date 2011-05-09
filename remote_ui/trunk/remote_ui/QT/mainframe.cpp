@@ -40,10 +40,11 @@ MainFrame::vdcdebug("MainFrame","ReadSettings", "");
   fontsetting2 = fontsetting.toString();
   QFont fontsetting3;
   fontsetting3.fromString(fontsetting2);
+
   QApplication::setFont(fontsetting3);
   if(fontsetting2 == "")
   {
-      QApplication::setFont(QFont("Arial", 8));
+      QApplication::setFont(QFont("Liberation Mono", 8));
   }
 }
 
@@ -293,7 +294,7 @@ QString fonteingabe;
 fonteingabe.append(splitlist[0]);
 fonteingabe.append(",");
 fonteingabe.append(splitlist[1]);
-if (fonteingabe == "Arial,8")
+if (fonteingabe == "Liberation Mono,8")
 {
 fonteingabe.append("(Default)");
 fontedit->insert(fonteingabe);
@@ -315,9 +316,9 @@ void OptionsTab::reset()
 {
 MainFrame::vdcdebug("OptionsTab","reset", "");
 fontedit->clear();
-QFont base = QFont("Arial", 8);
+QFont base = QFont("Liberation Mono", 8);
 QApplication::setFont(base);
-fonteingabe = "Arial,8(Default)";
+fonteingabe = "Liberation Mono,8(Default)";
 fontedit->insert(fonteingabe);
 fonteingabe = "";
 showMessage("Font set to Default");
@@ -339,7 +340,7 @@ splitlist = fontconv.split(",");
 fonteingabe.append(splitlist[0]);
 fonteingabe.append(",");
 fonteingabe.append(splitlist[1]);
-if (fonteingabe == "Arial,8")
+if (fonteingabe == "Liberation Mono,8")
 {
 fonteingabe.append("(Default)");
 fontedit->insert(fonteingabe);

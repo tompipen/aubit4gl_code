@@ -18,6 +18,7 @@
 #include <QDebug>
 #include <QLineEdit>
 #include <QSplashScreen>
+#include <QFontDatabase>
 #include "confwin.h"
 #include "mainframe.h"
 #include "login.h"
@@ -51,7 +52,8 @@ int main(int argc, char *argv[])
 //       QString(argv[1]) == "-l")
 //       loginForm = true;
 
-    QFont yavcFont("Arial", 8);
+    QFontDatabase::addApplicationFont(":/font/LiberationMono-Regular.ttf");
+    QFont yavcFont("Liberation Mono", 8);
     yavcFont.setFixedPitch(true);
 
     app.setFont(yavcFont);
