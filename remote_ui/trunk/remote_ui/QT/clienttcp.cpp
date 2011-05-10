@@ -979,15 +979,63 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
          }
 
          if(qs_name == "ui.combobox.getcolumnname"){
+            QDomElement values = childElement.firstChildElement();
+            QDomElement valueElement = values.firstChildElement();
+            int id = valueElement.text().toInt();
+            value = WidgetHelper::getWidgetColName(p_currScreenHandler->currForm()->findFieldById(id));
          }
 
          if(qs_name == "ui.combobox.getitemname"){
+            int id = -1;
+            int pos = -1;
+            for(int k=0; k<paramsElement.childNodes().count(); k++){
+               QDomElement valuesElement = paramsElement.childNodes().at(k).toElement();
+               if(k == 0){
+                  id = valuesElement.text().toInt();
+               }
+
+               if(k == 1){
+                  pos = valuesElement.text().toInt();
+               }
+            }
+            if(ComboBox *cb = qobject_cast<ComboBox *> (p_currScreenHandler->currForm()->findFieldById(id))){
+               value = cb->itemData(pos-1).toString();
+            }
+         }
+
+         if(qs_name == "ui.combobox.getitemcount"){
+            QDomElement values = childElement.firstChildElement();
+            QDomElement valueElement = values.firstChildElement();
+            int id = valueElement.text().toInt();
+            if(ComboBox *cb = qobject_cast<ComboBox *> (p_currScreenHandler->currForm()->findFieldById(id))){
+               value = QString::number(cb->count());
+            }
          }
 
          if(qs_name == "ui.combobox.getitemtext"){
+            int id = -1;
+            int pos = -1;
+            for(int k=0; k<paramsElement.childNodes().count(); k++){
+               QDomElement valuesElement = paramsElement.childNodes().at(k).toElement();
+               if(k == 0){
+                  id = valuesElement.text().toInt();
+               }
+
+               if(k == 1){
+                  pos = valuesElement.text().toInt();
+               }
+            }
+            qDebug() << "NAME:" << id << pos << p_currScreenHandler->currForm()->findFieldById(id);
+            if(ComboBox *cb = qobject_cast<ComboBox *> (p_currScreenHandler->currForm()->findFieldById(id))){
+               value = cb->itemText(pos-1);
+            }
          }
 
          if(qs_name == "ui.combobox.gettablename"){
+            QDomElement values = childElement.firstChildElement();
+            QDomElement valueElement = values.firstChildElement();
+            int id = valueElement.text().toInt();
+            value = WidgetHelper::getWidgetTabName(p_currScreenHandler->currForm()->findFieldById(id));
          }
 
          if(qs_name == "ui.combobox.gettag"){

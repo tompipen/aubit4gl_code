@@ -254,6 +254,7 @@ public:
    void setDefaultValue(QString def) { qs_default = def; };
    QString defaultValue() { return qs_default; };
    QString colName;
+   QString sqlTabName;
 
 private:
    QString qs_default;
@@ -575,6 +576,7 @@ public:
    static int getLengthBySqlType(const QString& sqlType);
    static QString getWidgetName(QObject*);
    static QString getWidgetColName(QObject*);
+   static QString getWidgetTabName(QObject*);
    static Edit* createEdit(const QDomElement&, QWidget *parent = NULL);
    static FormField* createFormField(const QDomElement&, QWidget *parent = NULL);
    static Label* createLabel(const QDomElement&, QWidget *parent = NULL);

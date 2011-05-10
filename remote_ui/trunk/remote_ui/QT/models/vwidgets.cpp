@@ -718,6 +718,30 @@ MainFrame::vdcdebug("WidgetHelper","getWidgetColName", "QObject* widget");
    return widgetColName;
 }
 
+QString WidgetHelper::getWidgetTabName(QObject* widget)
+{
+MainFrame::vdcdebug("WidgetHelper","getWidgetColName", "QObject* widget");
+   QString widgetTabName;
+
+   if(Label *label = qobject_cast<Label *> (widget)){
+      return label->sqlTabName;
+   }
+
+   if(LineEdit *lineEdit = qobject_cast<LineEdit *> (widget)){
+         return lineEdit->sqlTabName;
+   }
+
+   if(TextEdit *textEdit = qobject_cast<TextEdit *> (widget)){
+      return textEdit->sqlTabName;
+   }
+
+   if(ComboBox *comboBox = qobject_cast<ComboBox *> (widget)){
+      return comboBox->sqlTabName;
+   }
+
+   return widgetTabName;
+}
+
 QWidget* WidgetHelper::createFormWidget(const QDomElement& formField, QWidget *parent)
 {
 MainFrame::vdcdebug("WidgetHelper","createFormWidget", "const QDomElement& formField, QWidget *parent");
@@ -1515,6 +1539,7 @@ MainFrame::vdcdebug("WidgetHelper","createComboBox", "const QDomElement& formFie
 
    ComboBox *comboBox = new ComboBox(parent);
    comboBox->colName = colName;
+   comboBox->sqlTabName = tabName;
    comboBox->setAccessibleName(name);
    comboBox->setObjectName(colName);
    comboBox->setDefaultValue(defaultValue);
