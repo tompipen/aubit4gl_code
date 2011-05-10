@@ -707,6 +707,10 @@ MainFrame::vdcdebug("WidgetHelper","getWidgetColName", "QObject* widget");
       return textEdit->colName;
    }
 
+   if(ComboBox *comboBox = qobject_cast<ComboBox *> (widget)){
+      return comboBox->colName;
+   }
+
    if(TableView *table = qobject_cast<TableView *> (widget)){
       return table->getColumnName(table->currentIndex().column());
    }
@@ -1510,6 +1514,7 @@ MainFrame::vdcdebug("WidgetHelper","createComboBox", "const QDomElement& formFie
    QString stretch = comboBoxElement.attribute("stretch");
 
    ComboBox *comboBox = new ComboBox(parent);
+   comboBox->colName = colName;
    comboBox->setAccessibleName(name);
    comboBox->setObjectName(colName);
    comboBox->setDefaultValue(defaultValue);

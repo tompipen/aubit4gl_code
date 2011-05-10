@@ -253,6 +253,7 @@ public:
    ComboBox(QWidget *parent = 0);
    void setDefaultValue(QString def) { qs_default = def; };
    QString defaultValue() { return qs_default; };
+   QString colName;
 
 private:
    QString qs_default;
