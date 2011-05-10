@@ -2526,9 +2526,22 @@ void ScreenHandler::addComboBoxItem(int id, QString text, QString value)
    }
 }
 
+void ScreenHandler::removeComboBoxItem(int id, QString text)
+{
+   if(ComboBox *cb = qobject_cast<ComboBox *> (p_fglform->findFieldById(id))){
+      for(int i=0; i<cb->count(); i++){
+         if(cb->itemText(i) == text){
+            cb->removeItem(i);
+            break;
+         }
+      }
+   }
+}
+
 void ScreenHandler::clearComboBox(int id)
 {
    if(ComboBox *cb = qobject_cast<ComboBox *> (p_fglform->findFieldById(id))){
       cb->clear();
+      cb->clearEditText();
    }
 }

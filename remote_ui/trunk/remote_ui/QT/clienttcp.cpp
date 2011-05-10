@@ -947,6 +947,23 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
             p_currScreenHandler->addComboBoxItem(id, text, value);
          }
 
+         if(qs_name == "ui.combobox.removeitem"){
+            int id = -1;
+            QString text;
+            QString value;
+            for(int k=0; k<paramsElement.childNodes().count(); k++){
+               QDomElement valuesElement = paramsElement.childNodes().at(k).toElement();
+               if(k == 0){
+                  id = valuesElement.text().toInt();
+               }
+
+               if(k == 1){
+                  text = valuesElement.text();
+               }
+            }
+            p_currScreenHandler->removeComboBoxItem(id, text);
+         }
+
          if(qs_name == "ui.combobox.clear"){
             QDomElement values = childElement.firstChildElement();
             QDomElement valueElement = values.firstChildElement();
@@ -959,6 +976,21 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
             QDomElement valueElement = values.firstChildElement();
             value = valueElement.text();
             value = QString::number(p_currScreenHandler->currForm()->findFieldIdByName(value));
+         }
+
+         if(qs_name == "ui.combobox.getcolumnname"){
+         }
+
+         if(qs_name == "ui.combobox.getitemname"){
+         }
+
+         if(qs_name == "ui.combobox.getitemtext"){
+         }
+
+         if(qs_name == "ui.combobox.gettablename"){
+         }
+
+         if(qs_name == "ui.combobox.gettag"){
          }
 
          if(qs_name == "ui.menu.showhide"){

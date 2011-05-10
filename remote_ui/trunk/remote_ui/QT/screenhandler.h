@@ -59,6 +59,7 @@ public:
    void setInterfaceText(QString);
 
    void addComboBoxItem(int, QString, QString);
+   void removeComboBoxItem(int, QString);
    void clearComboBox(int);
 
 protected:
