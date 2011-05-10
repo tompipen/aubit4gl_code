@@ -2518,3 +2518,17 @@ MainFrame::vdcdebug("ScreenHandler","setInterfaceText", "QString text");
        ql_fglForms.at(i)->setWindowTitle(text);
    }
 }
+
+void ScreenHandler::addComboBoxItem(int id, QString text, QString value)
+{
+   if(ComboBox *cb = qobject_cast<ComboBox *> (p_fglform->findFieldById(id))){
+      cb->addItem(value, text);
+   }
+}
+
+void ScreenHandler::clearComboBox(int id)
+{
+   if(ComboBox *cb = qobject_cast<ComboBox *> (p_fglform->findFieldById(id))){
+      cb->clear();
+   }
+}

@@ -2252,6 +2252,13 @@ MainFrame::vdcdebug("FglForm","findFieldIdByName", "QString fieldName");
    return -1;
 }
 
+QWidget* FglForm::findFieldById(int id)
+{
+   QList<QWidget*> ql_fields = ql_formFields;
+   return ql_fields.at(id);
+      
+}
+
 void FglForm::setScreenRecordArrLine(int line)
 {
 MainFrame::vdcdebug("FglForm","setScreenRecordArrLine", "int line");

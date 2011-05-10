@@ -58,6 +58,9 @@ public:
    void setEnv(QString, QString);
    void setInterfaceText(QString);
 
+   void addComboBoxItem(int, QString, QString);
+   void clearComboBox(int);
+
 protected:
    bool eventFilter(QObject *obj, QEvent *ev);
 
@@ -153,6 +156,7 @@ public slots:
    void fileBrowser(QString, QString, QString, QString, QString);
 
    void setUpdatesEnabled(bool);
+
 
 signals:
    void fglFormResponse(QString);

@@ -927,9 +927,31 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
 
 
          if(qs_name == "ui.combobox.additem"){
+            int id = -1;
+            QString text;
+            QString value;
+            for(int k=0; k<paramsElement.childNodes().count(); k++){
+               QDomElement valuesElement = paramsElement.childNodes().at(k).toElement();
+               if(k == 0){
+                  id = valuesElement.text().toInt();
+               }
+
+               if(k == 1){
+                  text = valuesElement.text();
+               }
+
+               if(k == 2){
+                  value = valuesElement.text();
+               }
+            }
+            p_currScreenHandler->addComboBoxItem(id, text, value);
          }
 
          if(qs_name == "ui.combobox.clear"){
+            QDomElement values = childElement.firstChildElement();
+            QDomElement valueElement = values.firstChildElement();
+            id = valueElement.text().toInt();
+            p_currScreenHandler->clearComboBox(id);
          }
 
          if(qs_name == "ui.combobox.forname"){

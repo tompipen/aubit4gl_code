@@ -180,6 +180,7 @@ public:
    QWidget* findFieldByName(QString);
    QList<QWidget*> findFieldsByName(QString);
    int findFieldIdByName(QString);
+   QWidget* findFieldById(int);
    void setId(QString id) { i_id = id.toInt(); };
    int id() { return i_id; };
 
