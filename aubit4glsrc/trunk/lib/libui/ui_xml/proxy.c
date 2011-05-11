@@ -9,8 +9,6 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <sys/wait.h>
-#include <sys/stat.h>
-
 #include <signal.h>
 #include <ctype.h>
 #ifndef __hpux__
@@ -98,13 +96,12 @@ hex_digit (int n)
 }
 
 
-/*
+
 static int
 A4GL_strstartswith (char *s, char *w)
 {
   return (strncmp (s, w, strlen (w)) == 0);
 }
-*/
 
 
 static char *
@@ -688,6 +685,8 @@ maintain_socket (int newfd_orig)
 
   send_expect (newfd_read, newfd_write, "PROTOCOL?\n", "UIVERSION 1.0");
 
+
+
   //
   // If we've got to here - we've got an active client - we need to be able to start a single "startup" 
   // 4gl program - so we need to know what thats called.
@@ -841,7 +840,7 @@ maintain_socket (int newfd_orig)
 
 
 
-
+/*
 static char *
 small (char *s)
 {
@@ -859,7 +858,7 @@ small (char *s)
       }
   return buff;
 }
-
+*/
 
 void
 wait_for_some_action (int clientui_read, int clientui_write, int listen_fgl)
@@ -982,18 +981,16 @@ wait_for_some_action (int clientui_read, int clientui_write, int listen_fgl)
 	{
 	  static char *mainbuff = 0;	// a place holder to add all our strings onto...
   	  int latest_ui = 0;
-	  char buff[26000];
-	  static int mainbuff_sz=0;
+	  char buff[260];
 	  int nb;
 	  //int new_id;
-	  //int z;
+	  int z;
 	  int usable = 0;
 	  char *eptr;
           int is_full_tag = 0;
-		char *endTrggered=0;
 	  memset (buff, 0, sizeof (buff));
 
-	  nb = read (clientui_read, buff, 25000);
+	  nb = read (clientui_read, buff, 250);
 
 	  if (nb <= 0)
 	    {
@@ -1006,32 +1003,22 @@ wait_for_some_action (int clientui_read, int clientui_write, int listen_fgl)
 	    
 	      if (mainbuff)
 		{
-		  char *ptr;
-		  ptr=mainbuff;
-		  
-		  mainbuff = realloc (mainbuff, mainbuff_sz + nb  + 1);
-			if (mainbuff_sz>0) {
-		  		strcat (&mainbuff[mainbuff_sz-1], buff);
-		  	} else {
-		  		strcpy(mainbuff, buff);
-			}
-		  mainbuff_sz+=nb;
+		  mainbuff = realloc (mainbuff, strlen (mainbuff) + strlen (buff) + 1);
+		  strcat (mainbuff, buff);
 		}
 	      else
 		{
 		  mainbuff = strdup (buff);
-		  mainbuff_sz=nb;
 		}
 
-  		endTrggered=strstr (mainbuff, "</TRIGGERED>");
-
 	      UIdebug (3,"set mainbuff\n");
-	      UIdebug (3,"String now (first 100 characters) :---------------------------------------------\n%s\n----------------------------------\n", small(mainbuff));
+	      UIdebug (3,"String now :---------------------------------------------\n%s\n----------------------------------\n", mainbuff);
 
-	      if (endTrggered)
+
+	      if (strstr (mainbuff, "</TRIGGERED>"))
 		{
 		  is_full_tag = 1;
-		  eptr=endTrggered+strlen("</TRIGGERED>");
+		  eptr=strstr(mainbuff,"</TRIGGERED>")+strlen("</TRIGGERED>");
 		}
 
 	      if (!is_full_tag && strstr (mainbuff, "<TRIGGERED"))
@@ -1074,7 +1061,7 @@ wait_for_some_action (int clientui_read, int clientui_write, int listen_fgl)
 	      if (is_full_tag)
 		{
 		struct s_attr *attr;
-		//char *ptr;
+		char *ptr;
 
 
 		  attr = xml_parse (mainbuff);
