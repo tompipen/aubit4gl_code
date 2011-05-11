@@ -25,6 +25,8 @@ namespace Calltreeviewer
         int currentFunctionEnd=-1;
 
 
+
+
         List<symbolFunction> allFunctions = new List<symbolFunction>();
         //List<SymbolLocation> allCalls = new List<SymbolLocation>();
 
@@ -80,7 +82,7 @@ namespace Calltreeviewer
                 f.AddExtension = true;
                 f.CheckFileExists = true;
                 f.CheckPathExists = true;
-                f.Filter = "Calltree file|*.xml|Compressed Calltree file|*.calltree.xml.gz|Other Files|*.*";
+                f.Filter = "Calltree file|*.xml|Compressed Calltree file|*.calltree.xml.gz;calltree.xml.gz|Other Files|*.*";
 
                 // Show the dialog box - and check the OK button was
                 // clicked...
@@ -282,7 +284,11 @@ namespace Calltreeviewer
                     treeView1.Nodes.Add(newNode);
                     if (style == TreeStyle.TreeStyleMainRecurse)
                     {
+                        treeView1.SuspendLayout();
+                        treeView1.BeginUpdate();
                         expandNode(newNode, true);
+                        treeView1.EndUpdate();
+                        treeView1.ResumeLayout();
                     }
                 }
                 
@@ -310,6 +316,7 @@ namespace Calltreeviewer
             }
             
             treeView1.EndUpdate();
+            //selectedNode.ExpandAll();
             return mainNode;
         }
 
@@ -653,24 +660,31 @@ namespace Calltreeviewer
                 }
             }
 
-            Application.DoEvents();
+
+            
+            
             selectedNode.Nodes.Clear();
-            treeView1.SuspendLayout();
+            //treeView1.SuspendLayout();
 
             spin();
+            //spin(selectedNode.FullPath);
+            //tslSrchText.Text = "Expanding : " + selectedNode.FullPath;
+            //Application.DoEvents();
+            //tslblLine.Text = "Expanding : "+selectedNode.FullPath;
             if (functionNo == -1) return;
 
-            if (curr_program.FUNCTION[functionNo].COMMANDS.Items != null)
-            {
-                for (int a = 0; a < curr_program.FUNCTION[functionNo].COMMANDS.Items.Length; a++)
+
+
+                if (curr_program.FUNCTION[functionNo].COMMANDS.Items != null && curr_program.FUNCTION[functionNo].CALLED)
                 {
 
-                    
-                    buildNodes(curr_program.FUNCTION[functionNo].MODULENO, functionNo, selectedNode, curr_program.FUNCTION[functionNo].COMMANDS.Items[a], recurse, simpleModeToolStripMenuItem.Checked, true);
-                    Application.DoEvents();
+                    for (int a = 0; a < curr_program.FUNCTION[functionNo].COMMANDS.Items.Length; a++)
+                    {
+                        buildNodes(curr_program.FUNCTION[functionNo].MODULENO, functionNo, selectedNode, curr_program.FUNCTION[functionNo].COMMANDS.Items[a], recurse, simpleModeToolStripMenuItem.Checked, true);
+                        //        Application.DoEvents();
+                    }
                 }
-            }
-            treeView1.ResumeLayout();
+            
         }
 
 
@@ -686,13 +700,17 @@ namespace Calltreeviewer
         /// <param name="fullExpansion">Include conditionals where there are no subsequent calls ? </param>
         private void buildNodes(int moduleNo, int functionNo, TreeNode selectedNode, object o, bool recurse, bool callsOnly, bool fullExpansion)
         {
-            TreeNode newNode;
-            MyLocationNode newLocationNode;
-            TreeNode rNode;
-            MyCallNode callNode;
             string type;
-            Application.DoEvents();
-            AubitCalltreeViewer.CALLS callcmd;
+
+            /*
+            TreeNode newNode;
+            
+            TreeNode rNode;
+            
+            string type;
+
+
+            
             AubitCalltreeViewer.IF ifcmd;
             AubitCalltreeViewer.CASE casecmd;
             AubitCalltreeViewer.CONSTRUCT constructcmd;
@@ -707,24 +725,29 @@ namespace Calltreeviewer
             AubitCalltreeViewer.OUTPUT outputcmd;
             AubitCalltreeViewer.PROMPT promptcmd;
             AubitCalltreeViewer.WHILE whilecmd;
-            AubitCalltreeViewer.COMMANDS cmds;
+            
             AubitCalltreeViewer.WHENEVER whenever;
-            AubitCalltreeViewer.SECTION section;
+            
             //AubitCalltreeViewer.EVENT events;
            
 
-            SymbolLocation sl;
-
-            spin();
+            
+            */
+            //spin();
 
             type = o.GetType().ToString();
 
-            newLocationNode = null;
+            //newLocationNode = null;
             switch (type)
             {
 
                 case "AubitCalltreeViewer.CALLS":
                     {
+                        AubitCalltreeViewer.CALLS callcmd;
+                        SymbolLocation sl;
+                        MyLocationNode newLocationNode;
+                        MyCallNode callNode;
+
                         callcmd = (AubitCalltreeViewer.CALLS)o;
                         sl = generateSymbolLocation(callcmd, curr_program.MODULES[moduleNo].NAME);
 
@@ -753,215 +776,252 @@ namespace Calltreeviewer
 
 
                 case "AubitCalltreeViewer.COMMANDS":
-                    cmds = (AubitCalltreeViewer.COMMANDS)o;
-                    if (cmds.Items != null)
                     {
-                        for (int a = 0; a < cmds.Items.Length; a++)
+                        AubitCalltreeViewer.COMMANDS cmds;
+                        cmds = (AubitCalltreeViewer.COMMANDS)o;
+                        if (cmds.Items != null)
                         {
-                            buildNodes(moduleNo,functionNo, selectedNode, cmds.Items[a], recurse, callsOnly, fullExpansion);
+                            for (int a = 0; a < cmds.Items.Length; a++)
+                            {
+                                buildNodes(moduleNo, functionNo, selectedNode, cmds.Items[a], recurse, callsOnly, fullExpansion);
+                            }
                         }
-                    }
-                    if (selectedNode is MyLocationNode)
-                    {
-                        MyLocationNode mln = selectedNode as MyLocationNode;
-                        mln.ensureLines(functionNo, cmds.LINE, cmds.LASTLINE);
+                        if (selectedNode is MyLocationNode)
+                        {
+                            MyLocationNode mln = selectedNode as MyLocationNode;
+                            mln.ensureLines(functionNo, cmds.LINE, cmds.LASTLINE);
+                        }
                     }
                     break;
 
 
                 case "AubitCalltreeViewer.SECTION":
-                    section = (AubitCalltreeViewer.SECTION)o;
-                    newLocationNode = new MyLocationNode(moduleNo, functionNo, section.LINE, section.TYPE.Replace("_", " "));
-                    selectedNode.Nodes.Add(newLocationNode);
-
-                    if (section.TYPE != null)
                     {
-                        MyLocationNode mln = selectedNode as MyLocationNode;
-                        if (mln != null && section.COMMANDS != null)
-                        {
-                            mln.ensureLines(functionNo, section.COMMANDS.LINE, section.COMMANDS.LASTLINE);
-                        }
-                        newLocationNode.ensureLines(functionNo, section.COMMANDS.LINE, section.COMMANDS.LASTLINE);
+                        MyLocationNode newLocationNode;
+                        AubitCalltreeViewer.SECTION section;
+                        section = (AubitCalltreeViewer.SECTION)o;
+                        newLocationNode = new MyLocationNode(moduleNo, functionNo, section.LINE, section.TYPE.Replace("_", " "));
+                        selectedNode.Nodes.Add(newLocationNode);
 
-                        if (section.COMMANDS.Items != null)
+                        if (section.TYPE != null)
                         {
-                            for (int a = 0; a < section.COMMANDS.Items.Length; a++)
+                            MyLocationNode mln = selectedNode as MyLocationNode;
+                            if (mln != null && section.COMMANDS != null)
                             {
-                                buildNodes(moduleNo, functionNo, newLocationNode, section.COMMANDS.Items[a], recurse, callsOnly, fullExpansion);
+                                mln.ensureLines(functionNo, section.COMMANDS.LINE, section.COMMANDS.LASTLINE);
                             }
-                            
+                            newLocationNode.ensureLines(functionNo, section.COMMANDS.LINE, section.COMMANDS.LASTLINE);
+
+                            if (section.COMMANDS.Items != null)
+                            {
+                                for (int a = 0; a < section.COMMANDS.Items.Length; a++)
+                                {
+                                    buildNodes(moduleNo, functionNo, newLocationNode, section.COMMANDS.Items[a], recurse, callsOnly, fullExpansion);
+                                }
+
+                            }
                         }
                     }
                     break;
 
 
                 case "AubitCalltreeViewer.CASE":
-                    casecmd = (AubitCalltreeViewer.CASE)o;
-                    if (!callsOnly)
                     {
-                        newLocationNode = new MyLocationNode(moduleNo, functionNo, casecmd.LINE, "CASE " + casecmd.TESTAGAINST);
-                        selectedNode.Nodes.Add(newLocationNode);
-                        newNode = newLocationNode;
-                    }
-                    else
-                    {
-                        newNode = selectedNode;
-                    }
-
-                    if (casecmd.WHEN != null)
-                    {
-                        for (int a = 0; a < casecmd.WHEN.Length; a++)
+                        MyLocationNode newLocationNode;
+                        AubitCalltreeViewer.CASE casecmd;
+                        TreeNode newNode;
+                        casecmd = (AubitCalltreeViewer.CASE)o;
+                        if (!callsOnly)
                         {
-                            TreeNode whenNode;
-                            if (!callsOnly)
+                            newLocationNode = new MyLocationNode(moduleNo, functionNo, casecmd.LINE, "CASE " + casecmd.TESTAGAINST);
+                            selectedNode.Nodes.Add(newLocationNode);
+                            newNode = newLocationNode;
+                        }
+                        else
+                        {
+                            newNode = selectedNode;
+                        }
+
+                        if (casecmd.WHEN != null)
+                        {
+                            for (int a = 0; a < casecmd.WHEN.Length; a++)
                             {
-                                whenNode = new MyLocationNode(moduleNo, functionNo, casecmd.WHEN[a].LINE, "WHEN " + casecmd.WHEN[a].CONDITION);
-                                newNode.Nodes.Add(whenNode);
+                                TreeNode whenNode;
+                                if (!callsOnly)
+                                {
+                                    whenNode = new MyLocationNode(moduleNo, functionNo, casecmd.WHEN[a].LINE, "WHEN " + casecmd.WHEN[a].CONDITION);
+                                    newNode.Nodes.Add(whenNode);
+                                }
+                                else
+                                {
+                                    whenNode = selectedNode;
+                                }
+                                buildNodes(moduleNo, functionNo, whenNode, casecmd.WHEN[a].COMMANDS, recurse, callsOnly, fullExpansion);
                             }
-                            else
-                            {
-                                whenNode = selectedNode;
-                            }
-                            buildNodes(moduleNo, functionNo, whenNode, casecmd.WHEN[a].COMMANDS, recurse, callsOnly, fullExpansion);
                         }
                     }
                     break;
 
                 case "AubitCalltreeViewer.WHILE":
-                    whilecmd = (AubitCalltreeViewer.WHILE)o;
-                    if (!callsOnly)
                     {
-                        newLocationNode = new MyLocationNode(moduleNo, functionNo, whilecmd.LINE, "WHILE " + whilecmd.CONDITION, whilecmd.COMMANDS.LINE,whilecmd.COMMANDS.LASTLINE);
-                        selectedNode.Nodes.Add(newLocationNode);
-                        newNode = newLocationNode;
-                    }
-                    else
-                    {
-                        newNode = selectedNode;
-                    }
+                        MyLocationNode newLocationNode;
+                        AubitCalltreeViewer.WHILE whilecmd;
+                        TreeNode newNode;
+                         whilecmd = (AubitCalltreeViewer.WHILE)o;
+                        if (!callsOnly)
+                        {
+                            newLocationNode = new MyLocationNode(moduleNo, functionNo, whilecmd.LINE, "WHILE " + whilecmd.CONDITION, whilecmd.COMMANDS.LINE, whilecmd.COMMANDS.LASTLINE);
+                            selectedNode.Nodes.Add(newLocationNode);
+                            newNode = newLocationNode;
+                        }
+                        else
+                        {
+                            newNode = selectedNode;
+                        }
 
-                    buildNodes(moduleNo,functionNo, newNode, whilecmd.COMMANDS, recurse, callsOnly, fullExpansion);
+                        buildNodes(moduleNo, functionNo, newNode, whilecmd.COMMANDS, recurse, callsOnly, fullExpansion);
 
 
-                    if (!callsOnly && newNode.Nodes.Count == 0 && !fullExpansion)
-                    {
-                        newNode.Remove();
+                        if (!callsOnly && newNode.Nodes.Count == 0 && !fullExpansion)
+                        {
+                            newNode.Remove();
+                        }
                     }
-                
 
                     break;
 
                 case "AubitCalltreeViewer.IF":
-                    ifcmd = (AubitCalltreeViewer.IF)o;
-
-
-                    if (!callsOnly)
                     {
-                        newLocationNode = new MyLocationNode(moduleNo, functionNo, ifcmd.LINE, "IF " + ifcmd.CONDITION);
-                        selectedNode.Nodes.Add(newLocationNode);
-                        newNode = newLocationNode;
-                    }
-                    else
-                    {
-                        newNode = selectedNode;
-                    }
+                        MyLocationNode newLocationNode;
+                        AubitCalltreeViewer.IF ifcmd;
 
-                    for (int a = 0; a < ifcmd.Items.Length; a++)
-                    {
-                        object onew;
-                        onew = ifcmd.Items[a];
-                        if (onew.GetType().ToString() == "AubitCalltreeViewer.ONTRUE")
+                        ifcmd = (AubitCalltreeViewer.IF)o;
+                        TreeNode newNode;
+
+                        if (!callsOnly)
                         {
-                           
-                             buildNodes(moduleNo, functionNo, newNode, ((AubitCalltreeViewer.ONTRUE)ifcmd.Items[a]).COMMANDS, recurse, callsOnly, fullExpansion);
-
-                            continue;
+                            newLocationNode = new MyLocationNode(moduleNo, functionNo, ifcmd.LINE, "IF " + ifcmd.CONDITION);
+                            selectedNode.Nodes.Add(newLocationNode);
+                            newNode = newLocationNode;
                         }
-                        if (onew.GetType().ToString() == "AubitCalltreeViewer.ONFALSE")
+                        else
                         {
-                            AubitCalltreeViewer.ONFALSE of;
-                            TreeNode onfalse;
-                            of = (AubitCalltreeViewer.ONFALSE)onew;
-                            if (!callsOnly)
-                            {
-                                onfalse = new MyLocationNode(moduleNo, functionNo, of.LINE, "ELSE");
-                                newNode.Nodes.Add(onfalse);
-                            }
-                            else
-                            {
-                                onfalse = selectedNode;
-                            }
-
-                            buildNodes(moduleNo, functionNo, onfalse, ((AubitCalltreeViewer.ONFALSE)ifcmd.Items[a]).COMMANDS, recurse, callsOnly, fullExpansion);
-
-                            // Dont include an empty "ELSE"
-                            if (!callsOnly && onfalse.Nodes.Count == 0 && !fullExpansion)
-                            {
-                                onfalse.Remove();
-                            }
-                            else
-                            {
-
-                            }
-                            continue;
+                            newNode = selectedNode;
                         }
-                        MessageBox.Show("Unexpected IF contents..");
-                        //buildNodes(newNode, ifcmd.Items[a]);
-                    }
 
-                    if (!callsOnly && newNode.Nodes.Count == 0 && !fullExpansion)
-                    {
-                        // Dont show it if theres nothing under it..
-                        newNode.Remove();
+                        for (int a = 0; a < ifcmd.Items.Length; a++)
+                        {
+                            object onew;
+                            onew = ifcmd.Items[a];
+                            if (onew.GetType().ToString() == "AubitCalltreeViewer.ONTRUE")
+                            {
+
+                                buildNodes(moduleNo, functionNo, newNode, ((AubitCalltreeViewer.ONTRUE)ifcmd.Items[a]).COMMANDS, recurse, callsOnly, fullExpansion);
+
+                                continue;
+                            }
+                            if (onew.GetType().ToString() == "AubitCalltreeViewer.ONFALSE")
+                            {
+                                AubitCalltreeViewer.ONFALSE of;
+                                TreeNode onfalse;
+                                of = (AubitCalltreeViewer.ONFALSE)onew;
+                                if (!callsOnly)
+                                {
+                                    onfalse = new MyLocationNode(moduleNo, functionNo, of.LINE, "ELSE");
+                                    newNode.Nodes.Add(onfalse);
+                                }
+                                else
+                                {
+                                    onfalse = selectedNode;
+                                }
+
+                                buildNodes(moduleNo, functionNo, onfalse, ((AubitCalltreeViewer.ONFALSE)ifcmd.Items[a]).COMMANDS, recurse, callsOnly, fullExpansion);
+
+                                // Dont include an empty "ELSE"
+                                if (!callsOnly && onfalse.Nodes.Count == 0 && !fullExpansion)
+                                {
+                                    onfalse.Remove();
+                                }
+                                else
+                                {
+
+                                }
+                                continue;
+                            }
+                            MessageBox.Show("Unexpected IF contents..");
+                            //buildNodes(newNode, ifcmd.Items[a]);
+                        }
+
+                        if (!callsOnly && newNode.Nodes.Count == 0 && !fullExpansion)
+                        {
+                            // Dont show it if theres nothing under it..
+                            newNode.Remove();
+                        }
                     }
                     break;
 
                 case "AubitCalltreeViewer.FOR":
-                    forcmd = (AubitCalltreeViewer.FOR)o;
-                    if (!callsOnly)
                     {
-                        newLocationNode = new MyLocationNode(moduleNo, functionNo, forcmd.LINE, "FOR " + forcmd.START + " " + forcmd.END + " STEP " + forcmd.STEP);
-                        newNode = newLocationNode;
-                        selectedNode.Nodes.Add(newNode);
-                    }
-                    else
-                    {
-                        newNode = selectedNode;
-                    }
-                    buildNodes(moduleNo, functionNo, newNode, forcmd.COMMANDS, recurse, callsOnly, fullExpansion);
-                    if (!callsOnly && newNode.Nodes.Count == 0 && !fullExpansion)
-                    {
-                        newNode.Remove();
-                    }
+                        TreeNode newNode;
+                        AubitCalltreeViewer.FOR forcmd;
+                        MyLocationNode newLocationNode;
 
+                        forcmd = (AubitCalltreeViewer.FOR)o;
+                        if (!callsOnly)
+                        {
+                            newLocationNode = new MyLocationNode(moduleNo, functionNo, forcmd.LINE, "FOR " + forcmd.START + " " + forcmd.END + " STEP " + forcmd.STEP);
+                            newNode = newLocationNode;
+                            selectedNode.Nodes.Add(newNode);
+                        }
+                        else
+                        {
+                            newNode = selectedNode;
+                        }
+                        buildNodes(moduleNo, functionNo, newNode, forcmd.COMMANDS, recurse, callsOnly, fullExpansion);
+                        if (!callsOnly && newNode.Nodes.Count == 0 && !fullExpansion)
+                        {
+                            newNode.Remove();
+                        }
+                    }
                     break;
 
 
 
                 case "AubitCalltreeViewer.FOREACH":
-                    foreachcmd = (AubitCalltreeViewer.FOREACH)o;
-                    if (!callsOnly)
                     {
-                        newLocationNode = new MyLocationNode(moduleNo, functionNo, foreachcmd.LINE, "FOREACH ");
-                        newNode = newLocationNode;
-                        selectedNode.Nodes.Add(newNode);
-                    }
-                    else
-                    {
-                        newNode = selectedNode;
-                    }
-                    buildNodes(moduleNo, functionNo, newNode, foreachcmd.COMMANDS, recurse, callsOnly, fullExpansion);
+                        MyLocationNode newLocationNode;
+                        TreeNode newNode;
+                        AubitCalltreeViewer.FOREACH foreachcmd;
 
-                    if (!callsOnly && newNode.Nodes.Count == 0 && !fullExpansion)
-                    {
-                        newNode.Remove();
-                    }
+                        foreachcmd = (AubitCalltreeViewer.FOREACH)o;
+                        if (!callsOnly)
+                        {
+                            newLocationNode = new MyLocationNode(moduleNo, functionNo, foreachcmd.LINE, "FOREACH ");
+                            newNode = newLocationNode;
+                            selectedNode.Nodes.Add(newNode);
+                        }
+                        else
+                        {
+                            newNode = selectedNode;
+                        }
+                        buildNodes(moduleNo, functionNo, newNode, foreachcmd.COMMANDS, recurse, callsOnly, fullExpansion);
 
+                        if (!callsOnly && newNode.Nodes.Count == 0 && !fullExpansion)
+                        {
+                            newNode.Remove();
+                        }
+                    }
                     break;
 
 
                 case "AubitCalltreeViewer.FINISH":
                     {
+                        MyLocationNode newLocationNode;
+                        TreeNode newNode;
+                        SymbolLocation sl;
+                        TreeNode rNode;
+                        AubitCalltreeViewer.FINISH finishcmd;
+
                         finishcmd = (AubitCalltreeViewer.FINISH)o;
 
                         sl = generateSymbolLocation(finishcmd, curr_program.MODULES[moduleNo].NAME);
@@ -990,6 +1050,12 @@ namespace Calltreeviewer
 
                 case "AubitCalltreeViewer.START":
                     {
+                        MyLocationNode newLocationNode;
+                        TreeNode newNode;
+                        SymbolLocation sl;
+                        TreeNode rNode;
+                        AubitCalltreeViewer.START startcmd;
+
                         startcmd = (AubitCalltreeViewer.START)o;
                         sl = generateSymbolLocation(startcmd, curr_program.MODULES[moduleNo].NAME);
 
@@ -1020,6 +1086,12 @@ namespace Calltreeviewer
 
                 case "AubitCalltreeViewer.OUTPUT":
                     {
+                        MyLocationNode newLocationNode;
+                        TreeNode newNode;
+                        SymbolLocation sl;
+                        TreeNode rNode;
+                        AubitCalltreeViewer.OUTPUT outputcmd;
+
                         outputcmd = (AubitCalltreeViewer.OUTPUT)o;
                         sl = generateSymbolLocation(outputcmd, curr_program.MODULES[moduleNo].NAME);
 
@@ -1048,167 +1120,202 @@ namespace Calltreeviewer
 
 
                 case "AubitCalltreeViewer.CONSTRUCT":
-                    constructcmd = (AubitCalltreeViewer.CONSTRUCT)o;
-                    if (!callsOnly)
                     {
-                        newLocationNode = new MyLocationNode(moduleNo, functionNo, constructcmd.LINE, "CONSTRUCT");
-                        newNode = newLocationNode;
-                        selectedNode.Nodes.Add(newNode);
+                        MyLocationNode newLocationNode;
+                        TreeNode newNode;
+                        AubitCalltreeViewer.CONSTRUCT constructcmd;
+                        constructcmd = (AubitCalltreeViewer.CONSTRUCT)o;
+                        if (!callsOnly)
+                        {
+                            newLocationNode = new MyLocationNode(moduleNo, functionNo, constructcmd.LINE, "CONSTRUCT");
+                            newNode = newLocationNode;
+                            selectedNode.Nodes.Add(newNode);
+                        }
+                        else
+                        {
+                            newNode = selectedNode;
+                        }
+                        buildNodes(moduleNo, functionNo, newNode, constructcmd.EVENTS, recurse, callsOnly, fullExpansion);
                     }
-                    else
-                    {
-                        newNode = selectedNode;
-                    }
-                    buildNodes(moduleNo, functionNo, newNode, constructcmd.EVENTS, recurse, callsOnly, fullExpansion);
-
                     break;
 
 
                 case "AubitCalltreeViewer.INPUT":
-                    inputcmd = (AubitCalltreeViewer.INPUT)o;
-                    if (!callsOnly)
                     {
-                        newLocationNode = new MyLocationNode(moduleNo, functionNo, inputcmd.LINE, "INPUT");
-                        newNode = newLocationNode;
-                        selectedNode.Nodes.Add(newNode);
+                        MyLocationNode newLocationNode;
+                        TreeNode newNode;
+                        AubitCalltreeViewer.INPUT inputcmd;
+                        inputcmd = (AubitCalltreeViewer.INPUT)o;
+                        if (!callsOnly)
+                        {
+                            newLocationNode = new MyLocationNode(moduleNo, functionNo, inputcmd.LINE, "INPUT");
+                            newNode = newLocationNode;
+                            selectedNode.Nodes.Add(newNode);
+                        }
+                        else
+                        {
+                            newNode = selectedNode;
+                        }
+                        buildNodes(moduleNo, functionNo, newNode, inputcmd.EVENTS, recurse, callsOnly, fullExpansion);
                     }
-                    else
-                    {
-                        newNode = selectedNode;
-                    }
-                    buildNodes(moduleNo, functionNo, newNode, inputcmd.EVENTS, recurse, callsOnly, fullExpansion);
-
                     break;
 
 
 
                 case "AubitCalltreeViewer.INPUTARRAY":
-                    inputarraycmd = (AubitCalltreeViewer.INPUTARRAY)o;
-                    if (!callsOnly)
                     {
+                        MyLocationNode newLocationNode;
+                        TreeNode newNode;
+                        AubitCalltreeViewer.INPUTARRAY inputarraycmd;
+                        inputarraycmd = (AubitCalltreeViewer.INPUTARRAY)o;
+                        if (!callsOnly)
+                        {
 
-                        newLocationNode = new MyLocationNode(moduleNo, functionNo, inputarraycmd.LINE, "INPUTARRAY");
-                        newNode = newLocationNode;
+                            newLocationNode = new MyLocationNode(moduleNo, functionNo, inputarraycmd.LINE, "INPUTARRAY");
+                            newNode = newLocationNode;
                             selectedNode.Nodes.Add(newNode);
+                        }
+                        else
+                        {
+                            newNode = selectedNode;
+                        }
+                        buildNodes(moduleNo, functionNo, newNode, inputarraycmd.EVENTS, recurse, callsOnly, fullExpansion);
                     }
-                    else
-                    {
-                        newNode = selectedNode;
-                    }
-                    buildNodes(moduleNo, functionNo, newNode, inputarraycmd.EVENTS, recurse, callsOnly, fullExpansion);
-
                     break;
 
                 case "AubitCalltreeViewer.DISPLAYARRAY":
-
-                    displayarraycmd = (AubitCalltreeViewer.DISPLAYARRAY)o;
-                    if (!callsOnly)
                     {
-                        newLocationNode = new MyLocationNode(moduleNo, functionNo, displayarraycmd.LINE, "DISPLAYARRAY");
+                        MyLocationNode newLocationNode;
+                        TreeNode newNode;
+                        AubitCalltreeViewer.DISPLAYARRAY displayarraycmd;
 
-                        newNode = newLocationNode;
-                        selectedNode.Nodes.Add(newNode);
+                        displayarraycmd = (AubitCalltreeViewer.DISPLAYARRAY)o;
+                        if (!callsOnly)
+                        {
+                            newLocationNode = new MyLocationNode(moduleNo, functionNo, displayarraycmd.LINE, "DISPLAYARRAY");
+
+                            newNode = newLocationNode;
+                            selectedNode.Nodes.Add(newNode);
+                        }
+                        else
+                        {
+                            newNode = selectedNode;
+                        }
+
+                        buildNodes(moduleNo, functionNo, newNode, displayarraycmd.EVENTS, recurse, callsOnly, fullExpansion);
                     }
-                    else
-                    {
-                        newNode = selectedNode;
-                    }
-
-                    buildNodes(moduleNo, functionNo, newNode, displayarraycmd.EVENTS, recurse, callsOnly, fullExpansion);
-
                     break;
 
                 case "AubitCalltreeViewer.MENU":
-                    menucmd = (AubitCalltreeViewer.MENU)o;
-                    if (!callsOnly)
                     {
-                        newLocationNode = new MyLocationNode(moduleNo, functionNo, menucmd.LINE, "MENU");
-                        newLocationNode.ensureLines(functionNo, menucmd.LINE);
-                        newNode = newLocationNode;
-                        selectedNode.Nodes.Add(newNode);
-                    }
-                    else
-                    {
-                        newNode = selectedNode;
-                    }
+                        MyLocationNode newLocationNode;
+                        TreeNode newNode;
+                        AubitCalltreeViewer.MENU menucmd;
+                        menucmd = (AubitCalltreeViewer.MENU)o;
+                        if (!callsOnly)
+                        {
+                            newLocationNode = new MyLocationNode(moduleNo, functionNo, menucmd.LINE, "MENU");
+                            newLocationNode.ensureLines(functionNo, menucmd.LINE);
+                            newNode = newLocationNode;
+                            selectedNode.Nodes.Add(newNode);
+                        }
+                        else
+                        {
+                            newNode = selectedNode;
+                        }
 
-                    buildNodes(moduleNo, functionNo, newNode, menucmd.EVENTS, recurse, callsOnly, fullExpansion);
-
+                        buildNodes(moduleNo, functionNo, newNode, menucmd.EVENTS, recurse, callsOnly, fullExpansion);
+                    }
                     break;
 
                 case "AubitCalltreeViewer.PROMPT":
-                    promptcmd = (AubitCalltreeViewer.PROMPT)o;
-                    if (!callsOnly)
                     {
-                        newLocationNode = new MyLocationNode(moduleNo, functionNo, promptcmd.LINE, "PROMPT");
-                        newNode = newLocationNode;
-                        selectedNode.Nodes.Add(newNode);
+                        MyLocationNode newLocationNode;
+                        TreeNode newNode;
+                        AubitCalltreeViewer.PROMPT promptcmd;
+                        promptcmd = (AubitCalltreeViewer.PROMPT)o;
+                        if (!callsOnly)
+                        {
+                            newLocationNode = new MyLocationNode(moduleNo, functionNo, promptcmd.LINE, "PROMPT");
+                            newNode = newLocationNode;
+                            selectedNode.Nodes.Add(newNode);
+                        }
+                        else
+                        {
+                            newNode = selectedNode;
+                        }
+                        buildNodes(moduleNo, functionNo, newNode, promptcmd.EVENTS, recurse, callsOnly, fullExpansion);
                     }
-                    else
-                    {
-                        newNode = selectedNode;
-                    }
-                    buildNodes(moduleNo, functionNo, newNode, promptcmd.EVENTS, recurse, callsOnly, fullExpansion);
-
                     break;
 
                 case "AubitCalltreeViewer.EVENT[]":
-                    AubitCalltreeViewer.EVENT[] events;
-                    events = (AubitCalltreeViewer.EVENT[])o;
-                    if (events != null)
                     {
-                        for (int a = 0; a < events.Length; a++)
+                        MyLocationNode newLocationNode;
+                        AubitCalltreeViewer.EVENT[] events;
+                        events = (AubitCalltreeViewer.EVENT[])o;
+                        TreeNode newNode;
+                        if (events != null)
                         {
-                            string nodeText;
-                            AubitCalltreeViewer.EVENT e;
-                            e = events[a];
-                            if (e.EVENT_TYPE == "MENU_COMMAND")
+                            for (int a = 0; a < events.Length; a++)
                             {
-                                if (e.SHORT != null && e.SHORT != "")
+                                string nodeText;
+                                AubitCalltreeViewer.EVENT e;
+                                e = events[a];
+                                if (e.EVENT_TYPE == "MENU_COMMAND")
                                 {
-                                    nodeText = e.SHORT;
+                                    if (e.SHORT != null && e.SHORT != "")
+                                    {
+                                        nodeText = e.SHORT;
+                                    }
+                                    else
+                                    {
+                                        nodeText = "Key(" + e.KEYS + ")";
+                                    }
                                 }
                                 else
                                 {
-                                    nodeText = "Key(" + e.KEYS + ")";
+                                    nodeText = e.EVENT_TYPE + " " + e.DATA;
                                 }
-                            }
-                            else
-                            {
-                                nodeText = e.EVENT_TYPE + " " + e.DATA;
-                            }
-                            if (!callsOnly)
-                            {
-                                newLocationNode = new MyLocationNode(moduleNo, functionNo, e.LINE, nodeText);
-                                newNode = newLocationNode;
-                                selectedNode.Nodes.Add(newNode);
-                            }
-                            else
-                            {
-                                newNode = selectedNode;
-                            }
-                            buildNodes(moduleNo, functionNo, newNode, e.COMMANDS, recurse, callsOnly, fullExpansion);
+                                if (!callsOnly)
+                                {
+                                    newLocationNode = new MyLocationNode(moduleNo, functionNo, e.LINE, nodeText);
+                                    newNode = newLocationNode;
+                                    selectedNode.Nodes.Add(newNode);
+                                }
+                                else
+                                {
+                                    newNode = selectedNode;
+                                }
+                                buildNodes(moduleNo, functionNo, newNode, e.COMMANDS, recurse, callsOnly, fullExpansion);
 
+                            }
                         }
                     }
-
                     break;
 
                 case "AubitCalltreeViewer.WHENEVER":
-                    whenever = (AubitCalltreeViewer.WHENEVER)o;
-                    if (!callsOnly)
                     {
+                        MyLocationNode newLocationNode;
+                        TreeNode newNode;
+                        AubitCalltreeViewer.WHENEVER whenever;
+                        // Ignore WHENEVER calls...
+                        break;
 
-                        newLocationNode = new MyLocationNode(moduleNo, functionNo, whenever.CALLS.LINE, "WHENEVER ERROR");
-                        newNode = newLocationNode;
-                        selectedNode.Nodes.Add(newNode);
-                    }
-                    else
-                    {
-                        newNode = selectedNode;
-                    }
-                    buildNodes(moduleNo, functionNo, newNode, whenever.CALLS, recurse, callsOnly, fullExpansion);
 
+                        whenever = (AubitCalltreeViewer.WHENEVER)o;
+                        if (!callsOnly)
+                        {
+
+                            newLocationNode = new MyLocationNode(moduleNo, functionNo, whenever.CALLS.LINE, "WHENEVER ERROR");
+                            newNode = newLocationNode;
+                            selectedNode.Nodes.Add(newNode);
+                        }
+                        else
+                        {
+                            newNode = selectedNode;
+                        }
+                        buildNodes(moduleNo, functionNo, newNode, whenever.CALLS, recurse, callsOnly, fullExpansion);
+                    }
                     break;
 
                 default:
@@ -1216,8 +1323,7 @@ namespace Calltreeviewer
                     break;
 
             }
-            selectedNode.ExpandAll();
-         
+           // selectedNode.ExpandAll();         
         }
 
         private symbolFunction getAllFunctionsEntryFor(string p)
@@ -1286,6 +1392,14 @@ namespace Calltreeviewer
         */
 
 
+        private void spin(string s)
+        {
+
+
+
+            Console.WriteLine(s);
+            lblLoaded.Text = s;
+        }
 
         private void spin()
         {
