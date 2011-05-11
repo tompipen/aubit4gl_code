@@ -2734,6 +2734,10 @@ static int process_cmd(struct command *cmd,int mode) {
 	  {
 	    int does_call;
 	    evt_list = cmd->cmd_data.command_data_u.prompt_cmd.events;
+
+
+	add_symbol_assign_single(cmd->cmd_data.command_data_u.prompt_cmd.promptvar,last_mod,last_line,NULL);
+
 	    does_call = add_calltree_calls_from_events ("", evt_list, MODE_TRY);
 	    if (does_call)
 	      {
@@ -2992,6 +2996,7 @@ static int process_cmd(struct command *cmd,int mode) {
 		str=evaluate_expr(cmd->cmd_data.command_data_u.prepare_cmd.sql,0);
 		str=A4GL_strip_quotes_1(str);
 		add_symbol(calltree_get_ident(cmd->cmd_data.command_data_u.prepare_cmd.stmtid),last_mod,last_line,"STMT","PREPARE");
+	  	call_cnt += cache_expression ("", &cmd->cmd_data.command_data_u.prepare_cmd.sql, mode);
 
 		c=processSQL(str);
 
@@ -4401,7 +4406,8 @@ calltree_map_select_stmt (char *main_statement_type, struct s_select *select, ch
         A4GL_trim (alias);
 	
 	A4GL_trim (tabname);
-	add_table_action(main_statement_type, alias, "SELECT",module,line);
+	//add_table_action(main_statement_type, alias, "SELECT",module,line);
+	add_table_action(main_statement_type, tabname, "SELECT",module,line);
       }
 
 

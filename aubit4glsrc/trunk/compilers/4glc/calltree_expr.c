@@ -54,8 +54,11 @@ downshift (char *a)
 char *expr_get_variable_usage_as_string (struct variable_usage *var_usage) {
         char buff[2000];
 
-
-        sprintf(buff, "%s",var_usage->variable_name);
+	if (strcmp(var_usage->variable_name,"a4gl_status")==0 || strcmp(var_usage->variable_name,"a4gl_sqlca")==0 ) {
+        	sprintf(buff, "%s",&var_usage->variable_name[5]);
+	}  else {
+        	sprintf(buff, "%s",var_usage->variable_name);
+	}
         if (var_usage->subscripts.subscripts_len) {
                 int a;
                 strcat(buff, "[");

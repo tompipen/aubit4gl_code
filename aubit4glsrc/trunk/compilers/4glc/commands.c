@@ -954,6 +954,7 @@ new_prepare_cmd (expr_str *connid, expr_str *p_stmtid, expr_str * p_sql)
 	case ET_EXPR_VARIABLE_USAGE:
     case ET_E_V_OR_LIT_VAR:
       {
+		inc_var_usage(p_sql);
 		/* //@FIXME - map_prepare...
 	if (A4GL_has_pointer (p_sql->expr_str_u.var->varname, LAST_STRING_EXPR))
 	  {
