@@ -305,6 +305,9 @@ namespace Calltreeviewer
 
     public class MyCallNode : TreeNode
     {
+
+
+
         public string functionName;
 
         public MyCallNode(string pFunctionName)
@@ -329,6 +332,9 @@ namespace Calltreeviewer
             get { return _functionName; }
             set { _functionName = value; }
         }
+
+
+        
         
         public MyFunctionNode(string functionName, int mod, int pfunctionNo, int line, string text, int firstline, int lastline)
             : base(mod, pfunctionNo, line, text, firstline, lastline)
@@ -353,8 +359,8 @@ namespace Calltreeviewer
         private int _functionNo=-1;
         private string _text;
 
-        private int _block_start_lineno;
-        private int _block_end_lineno;
+        internal int _block_start_lineno;
+        internal int _block_end_lineno;
 
 
 
@@ -390,6 +396,13 @@ namespace Calltreeviewer
 
             return base.ToString(); // +" (" + _block_start_lineno + " " + _block_end_lineno + ")";
         }
+
+
+
+
+
+
+
         /// <summary>
         /// 
         /// </summary>
