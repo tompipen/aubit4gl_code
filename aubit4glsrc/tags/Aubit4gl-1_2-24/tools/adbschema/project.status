@@ -1,0 +1,6 @@
+Name: adbschema
+Description: Replacement for Informix dbschema. Re-creates SQL statements needed to re-create an existing database. Also creates schema files for "schema-in-file" plug-in and can help in porting database data by creating data export-import scripts
+Maintainer: MA
+Status: 4
+Todo: 
+Notes: 
