@@ -67,7 +67,22 @@ namespace AubitDesktop
             }
         }
 
+        public delegate void pcArgs();
 
+        public void pleaseClose()
+        {
+
+            if (this.InvokeRequired)
+            {
+                //object[] p=new object[];
+                this.BeginInvoke(new pcArgs(pleaseClose));
+            }
+            else
+            {
+                this.Close();
+            }
+
+        }
 
         public Control getCurrentControl()
         {
@@ -746,7 +761,22 @@ namespace AubitDesktop
 
         internal void AddTextToConsole(string p)
         {
-            Program.myConsole.AddText(p);
+            try
+            {
+                if (Program.myConsole != null && !Program.myConsole.IsDisposed)
+                {
+                    Program.myConsole.AddText(p);
+                }
+                else
+                {
+                    Program.myConsole = new frmConsole();
+                    Program.myConsole.AddText(p);
+                }
+            }
+            catch (Exception ex)
+            {
+                //
+            }
         }
 
         private void tabControl1_SelectedIndexChanged(object sender, EventArgs e)
