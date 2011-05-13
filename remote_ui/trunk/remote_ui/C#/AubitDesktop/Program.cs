@@ -21,6 +21,7 @@
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
+using System.Diagnostics;
 
 namespace AubitDesktop
 {
@@ -184,7 +185,14 @@ namespace AubitDesktop
             frmMain = new mainfrm(AllowEdit, Autorun, port, minimised,ListenMode);
             if (frmMain!=null && !frmMain.IsDisposed)
             {
+               // try
+                //{
                     Application.Run(frmMain);
+                //}
+                //catch (Exception ex)
+               // {
+                //    Debug.WriteLine("Exception:"+ex.Message);
+               // }
             }
         }
 
