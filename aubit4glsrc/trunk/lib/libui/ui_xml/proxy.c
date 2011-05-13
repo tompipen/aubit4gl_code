@@ -981,16 +981,18 @@ wait_for_some_action (int clientui_read, int clientui_write, int listen_fgl)
 	{
 	  static char *mainbuff = 0;	// a place holder to add all our strings onto...
   	  int latest_ui = 0;
-	  char buff[260];
+	  char buff[100001];
 	  int nb;
 	  //int new_id;
 	  int z;
+	char *startTriggered;
 	  int usable = 0;
 	  char *eptr;
           int is_full_tag = 0;
 	  memset (buff, 0, sizeof (buff));
 
-	  nb = read (clientui_read, buff, 250);
+	  nb = read (clientui_read, buff, sizeof(buff)-1);
+
 
 	  if (nb <= 0)
 	    {
@@ -1021,7 +1023,10 @@ wait_for_some_action (int clientui_read, int clientui_write, int listen_fgl)
 		  eptr=strstr(mainbuff,"</TRIGGERED>")+strlen("</TRIGGERED>");
 		}
 
-	      if (!is_full_tag && strstr (mainbuff, "<TRIGGERED"))
+
+	      startTriggered=strstr (mainbuff, "<TRIGGERED");
+
+	      if (!is_full_tag && startTriggered)
 		{
 		  int l;
 		//printf("Might be a single tag\n");
