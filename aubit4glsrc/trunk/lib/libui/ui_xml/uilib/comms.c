@@ -412,7 +412,9 @@ int containsslashTriggered=0;
 	  cleanup();
 	  exit (0);
 	}
-containsslashTriggered=0;
+	containsslashTriggered=0;
+	UIdebug(9,"Got %s", buff);
+
       if (localbuff == 0)
 	{
 	  // This is our first line- is it a single line 'TRIGGERED' ? 

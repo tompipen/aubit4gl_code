@@ -2430,7 +2430,9 @@ uilib_input_array_loop (int n)
 
 	  if (last_attr->rows.row[a].sync.nvalues != contexts[context].ui.inputarray.nvals)
 	    {			// Doesn't look like it matches!
-	      UIdebug (0, "CRITICAL - Number of values is not the same as the number in the array");
+	      UIdebug (0, "CRITICAL - Number of values is not the same as the number in the array (%d!=%d)",
+	last_attr->rows.row[a].sync.nvalues , contexts[context].ui.inputarray.nvals
+);
 	      continue;
 	    }
 	  for (b = 0; b < contexts[context].ui.inputarray.nvals; b++)
