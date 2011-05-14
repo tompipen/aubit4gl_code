@@ -1,4 +1,97 @@
 ---------------------------
+Sat May 14 09:32:56 BST 2011
+---------------------------
+1.2_24 Released
+---------------------------
+	2011-05-13 17:56  mikeaubury
+	
+	2011-05-13 13:23  mikeaubury
+	
+	2011-05-11 20:43  mikeaubury
+	
+	2011-05-11 20:07  mikeaubury
+	
+	2011-05-11 19:38  mikeaubury
+	
+	2011-05-11 19:07  mikeaubury
+	
+	2011-05-11 07:39  mikeaubury
+	
+	Small calltree fixups
+	
+	2011-05-05 22:16  mikeaubury
+	
+	Small construct fixup (fix the setting of the buffer when returning
+	from the 'large' construct field, when using an ON KEY event)
+	
+	2011-05-05 21:40  mikeaubury
+	
+	2011-05-05 21:36  mikeaubury
+	
+	Add function elasped time to TRACE4GLEXEC output
+	
+	2011-05-05 21:32  mikeaubury
+	
+	2011-05-05 21:32  mikeaubury
+	
+	Calltree fixups
+	
+	2011-05-05 10:20  mikeaubury
+	
+	2011-05-05 10:13  mikeaubury
+	
+	2011-05-05 10:09  mikeaubury
+	
+	2011-05-05 10:02  mikeaubury
+	
+	2011-05-04 12:41  mikeaubury
+	
+	2011-05-03 22:08  mikeaubury
+	
+	2011-05-02 20:42  mikeaubury
+	
+	2011-05-02 20:37  mikeaubury
+	
+	2011-05-02 20:33  mikeaubury
+	
+	2011-05-02 13:16  mikeaubury
+	
+	2011-05-02 12:23  mikeaubury
+	
+	Performance improvement
+	
+	2011-04-28 17:19  mikeaubury
+	
+	2011-04-26 12:31  mikeaubury
+	
+	Trim trailing spaces from menu options
+	
+	2011-04-21 14:56  mikeaubury
+	
+	2011-04-21 10:01  mikeaubury
+	
+	2011-04-20 19:36  mikeaubury
+	
+	2011-04-20 16:44  mikeaubury
+	
+	Create smaller XML packets by reducing the size of some of the XML
+	tags (UI=XML)
+	
+	2011-04-20 07:48  mikeaubury
+	
+	Small win32fixup
+	
+	2011-04-19 18:28  mikeaubury
+	
+	Allow "-port ###" as parameter to XML GUI proxy
+	
+	2011-04-19 18:17  mikeaubury
+	
+	2011-04-15 21:36  mikeaubury
+	
+	2011-04-15 21:14  mikeaubury
+	
+---------------------------
 Fri Apr 15 21:11:24 BST 2011
 ---------------------------
 1.2_23 Released

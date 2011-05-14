@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.175 2011-03-23 20:29:28 mikeaubury Exp $
+# $Id: curslib.c,v 1.176 2011-05-14 08:35:51 mikeaubury Exp $
 #*/
 
 /**
@@ -41,7 +41,7 @@
  */
 #ifndef lint
 static char const module_id[] =
-  "$Id: curslib.c,v 1.175 2011-03-23 20:29:28 mikeaubury Exp $";
+  "$Id: curslib.c,v 1.176 2011-05-14 08:35:51 mikeaubury Exp $";
 #endif
 /*
 =====================================================================
@@ -2021,6 +2021,7 @@ A4GL_comments (struct struct_scr_field *fprop)
   //if (cline > UILIB_A4GL_get_curr_height ()) { cline = UILIB_A4GL_get_curr_height (); }
   
   attr = A4GL_local_get_curr_window_attr ();
+
   if (!attr)
     {
       attr = A4GL_determine_attribute (FGL_CMD_INPUT, 0, 0, 0);
@@ -2035,6 +2036,7 @@ A4GL_comments (struct struct_scr_field *fprop)
     }
   UILIB_A4GL_display_internal (1, cline, buff, attr, 1);
   UILIB_A4GL_zrefresh ();
+  //A4GL_mja_refresh ();
 }
 
 #ifdef NDEF

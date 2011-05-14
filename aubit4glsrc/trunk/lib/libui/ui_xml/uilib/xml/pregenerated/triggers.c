@@ -8942,7 +8942,7 @@ int xml_yy_flex_debug = 0;
 char *xml_yytext;
 #line 1 "triggers.l"
 /* Validating XML processor for triggers.dtd.
- * Generated 2011/04/20 16:16:52.
+ * Generated 2011/05/03 19:23:59.
  *
  * This program was generated with the FleXML XML processor generator.
  * FleXML is Copyright (C) 1999-2005 Kristoffer Rose.  All rights reserved.
@@ -9088,11 +9088,11 @@ static int fail(const char*, ...);
 
 enum {flexml_max_err_msg_size = 512};
 static char flexml_err_msg[flexml_max_err_msg_size];
-const char * parse_err_msg()
+const char * parse_err_msg(void)
 {
     return flexml_err_msg;
 }
-static void reset_parse_err_msg()
+static void reset_parse_err_msg(void)
 {
     flexml_err_msg[0] = '\0';
 }
@@ -9117,7 +9117,7 @@ static int inext = 1;
 #define BUFFERLITERAL(C, P) bufferliteral(C, &(P), xml_yytext)
 
 /* after this is called, there are at least 2 slots left in the stack */
-static int ck_blimit()
+static int ck_blimit(void)
 {
      if (bnext >= blimit) {
 	 blimit += FLEXML_BUFFERSTACKSIZE + 2;
@@ -9131,7 +9131,7 @@ static int ck_blimit()
 }
 
 /* after this is called, there are at least 2 slots left in the stack */
-static int ck_ilimit()
+static int ck_ilimit(void)
 {
      if (inext >= ilimit) {
 	 ilimit += FLEXML_INDEXSTACKSIZE + 2;
