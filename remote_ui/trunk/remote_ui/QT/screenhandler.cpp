@@ -1682,7 +1682,7 @@ MainFrame::vdcdebug("ScreenHandler","waitForEvent", "");
 
       p_fglform->checkState();
 
-      if(p_fglform->b_newForm && p_fglform->dialog () == NULL){ // && p_fglform->state() != Fgl::IDLE){
+      if(p_fglform->b_newForm && p_fglform->dialog () == NULL && saveactive->state() != Fgl::IDLE){
          p_fglform->b_newForm = false;
          p_fglform->show();
       }
