@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.162 2011-01-16 18:11:16 mikeaubury Exp $
+# $Id: fglwrap.c,v 1.163 2011-05-17 17:26:12 mikeaubury Exp $
 #
 */
 
@@ -1821,4 +1821,30 @@ A4GL_check_dependant_tables (char *module_name, const char *CompileTimeSQLType, 
 
 }
 
+
+
+
+int aclfgl_acl_copy(int n) {
+int d1;
+int s1;
+struct s_pass_reference *snew;
+struct s_pass_reference *sorig;
+
+A4GL_get_top_of_stack (1, &d1, &s1, (void **) &sorig);
+A4GL_get_top_of_stack (2, &d1, &s1, (void **) &snew);
+
+if (sorig->nbytes!=snew->nbytes) {
+	A4GL_exitwith("Cannot copy to a record/array of a different size");
+	A4GL_push_int(1);
+	A4GL_drop_param();
+	A4GL_drop_param();
+	return 1;
+}
+//printf("Copying %d bytes",sorig->nbytes);
+memcpy(sorig->bytes,snew->bytes,sorig->nbytes);
+	A4GL_drop_param();
+	A4GL_drop_param();
+
+return 0;
+}
 /* ================================= EOF ============================= */
