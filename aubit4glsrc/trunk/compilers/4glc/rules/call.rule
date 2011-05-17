@@ -61,6 +61,13 @@ call_ext: function_call_expr opt_return {
 		
         }
 
+   | FGL_COPY OPEN_BRACKET ensured_variable_usage_expression KW_COMMA ensured_variable_usage_expression  CLOSE_BRACKET {
+		$<ptr_list>$=A4GL_new_ptr_list(A4GL_new_expr_reference($<ptr>3));
+		$<ptr_list>$=A4GL_new_append_ptr_list($<ptr_list>$,A4GL_new_expr_reference($<ptr>5));
+		$<ptr>$=A4GL_new_expr_fcall("acl_copy",$<ptr_list>$,A4GL_compiling_module_basename(),lastlineno,get_namespace("fgl_dialog_setcurrline"));
+   		$<cmd>$=new_call_cmd(chk_expr($<ptr>$),NULL);
+		 //$<cmd>$=new_call_cmd(NULL,NULL);
+   }
 
 ;
 

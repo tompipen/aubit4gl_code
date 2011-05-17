@@ -6,7 +6,6 @@
 
 
 let_cmd : KW_LET atline obind_var_let_list EQUAL op_expr_null {
-//int to_vars;
 		set_cmdlineno($<integer_val>2);
 		$<cmd>$=new_let_cmd($<ptr_list>3,$<ptr_list>5);
 }
