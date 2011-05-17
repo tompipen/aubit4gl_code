@@ -240,12 +240,14 @@ MainFrame::vdcdebug("Context","screenRecordRowChanged", "const QModelIndex & cur
                tableView->setCurrentIndex(index);
             }
             */
+/*
             if(current.row()+1 > tableView->arrCount()){
                setOption("ARRCOUNT", current.row()+1);
             }
             else{
                setOption("ARRCOUNT", tableView->arrCount());
             }
+*/
          }
       }
    }
@@ -335,6 +337,7 @@ MainFrame::vdcdebug("Context","checkOptions", "");
          for(int i=0; i<ql_fieldList.count(); i++){
             if(TableView *tableView = qobject_cast<TableView *> (ql_fieldList.at(i))){
                tableView->setArrCount(qh_options[key]);
+/*
                QSortFilterProxyModel *proxyModel = static_cast<QSortFilterProxyModel*> (tableView->model());
                TableModel *table = static_cast<TableModel*> (proxyModel->sourceModel());
 
@@ -343,6 +346,7 @@ MainFrame::vdcdebug("Context","checkOptions", "");
 
                if(qh_options[key] < table->rowCount(QModelIndex()))
                   table->removeRows(table->rowCount(QModelIndex()), (table->rowCount(QModelIndex())-qh_options[key]), QModelIndex());
+*/
             }
          }
       }
