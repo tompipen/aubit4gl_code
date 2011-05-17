@@ -1685,6 +1685,7 @@ MainFrame::vdcdebug("ScreenHandler","waitForEvent", "");
       if(p_fglform->b_newForm && p_fglform->dialog () == NULL && saveactive->state() != Fgl::IDLE){
          p_fglform->b_newForm = false;
          p_fglform->show();
+         p_fglform->adjustSize();
       }
       else{
          if(p_fglform->dialog() != NULL){
