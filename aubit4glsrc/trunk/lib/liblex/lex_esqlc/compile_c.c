@@ -24,12 +24,12 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.537 2010-10-27 19:42:02 mikeaubury Exp $
+# $Id: compile_c.c,v 1.538 2011-05-18 17:29:50 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
-static char const module_id[] = "$Id: compile_c.c,v 1.537 2010-10-27 19:42:02 mikeaubury Exp $";
+static char const module_id[] = "$Id: compile_c.c,v 1.538 2011-05-18 17:29:50 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -6172,7 +6172,12 @@ dump_commands (s_commands * c)
 
   for (a = 0; a < c->cmds.cmds_len; a++)
     {
-      dump_cmd (c->cmds.cmds_val[a],0);
+	struct command *c_command;
+	// Save the current_cmd in case we drill down some more levels..
+	c_command=current_cmd;
+      	dump_cmd (c->cmds.cmds_val[a],0);
+	// Make sure we've reset the current command..
+	current_cmd=c_command;
       last_cmd = c->cmds.cmds_val[a];
     }
 
