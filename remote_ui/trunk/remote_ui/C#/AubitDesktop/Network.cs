@@ -28,10 +28,14 @@ using System.Windows.Forms;
 using Tamir.SharpSsh;
 using Tamir.SharpSsh.jsch;
 using System.IO.Compression;
+using System.IO;
+using System.Diagnostics;
 
 
 namespace AubitDesktop
 {
+
+
 
     public delegate void ServerDisconnectedEventHandler(object sender, ServerEventArgs e);
     public delegate void ConnectingFailedEventHandler(object sender, EventArgs e);
@@ -106,10 +110,13 @@ namespace AubitDesktop
         private frmMainAppWindow appwin;
 
 
-        bool inEnvelope = false;
-        string cmd="";
+        static bool useGzipRead = false;
+        static bool useGzipWrite = false;
 
-        string Envelope = "";
+        bool inEnvelope = false;
+        string cmd = "";
+
+        StringBuilder Envelope = new StringBuilder("");
 
 
 
@@ -119,7 +126,12 @@ namespace AubitDesktop
         private System.IO.Stream sshStreamWrite;
 
         private IPAddress ipAddress;
-        private NetworkStream tcpStream;
+        private Stream tcpStream;
+
+        private GZipStream tcpStreamGzipRead = null;
+      //  private GZipStream tcpStreamGzipWrite=null;
+
+
         // private BackgroundWorker bwReceiver;
         private bool useExplicitStreams;
 
@@ -131,7 +143,7 @@ namespace AubitDesktop
         };
         AubitNetwork.SocketStyle sockStyle;
 
-        string[] unprocessedLines = null;
+      
 
         // Transport agnostic methods : 
         #region TRANSPORT AGNOSTIC ROUTINES
@@ -358,9 +370,13 @@ namespace AubitDesktop
 
 
             tcpStream = tcpClient.GetStream();
+            
 
+            if (useGzipRead)
+            {
+                tcpStreamGzipRead = new GZipStream(tcpStream, CompressionMode.Decompress);
+            }
 
-            // startNetworkReceive();
         }
 
         public void SendString(string s)
@@ -394,16 +410,47 @@ namespace AubitDesktop
             Console.WriteLine("Sent Message to server:" + DateTime.Now);
         }
 
-        private void streamWrite(byte[] msg, int p, int p_3)
+        private void streamWrite(byte[] msg, int offset, int count)
         {
             if (useExplicitStreams)
             {
 
-                sshStreamWrite.Write(msg, p, p_3);
+                sshStreamWrite.Write(msg, offset, count);
             }
             else
+
             {
-                tcpStream.Write(msg, p, p_3);
+
+
+                if (useGzipWrite)
+                {
+                    string buff;
+                    byte[] gzipped;
+                    using (MemoryStream s = new MemoryStream())
+                    {
+                        using (GZipStream tcpStreamGzipWrite = new GZipStream(s, CompressionMode.Compress, false))
+                        {
+                            // Compress to a memory stream - then write that to the tcp stream
+
+                            tcpStreamGzipWrite.Write(msg, offset, count);
+                            tcpStreamGzipWrite.Close();
+                        }
+                        gzipped = s.GetBuffer();
+                    }
+
+
+                    buff = "" + (gzipped.Length) + "," + count + "\n";
+                    byte[] msgLength = Program.remoteEncoding.GetBytes(buff);
+
+                    tcpStream.Write(msgLength, 0, msgLength.Length);
+                    tcpStream.Write(gzipped, 0, gzipped.Length);
+                    tcpStream.Flush();
+
+                }
+                else
+                {
+                    tcpStream.Write(msg, offset, count);
+                }
             }
         }
 
@@ -418,118 +465,7 @@ namespace AubitDesktop
 
 
 
-
-        private void xxxbwReceiver_doWork(object sender, DoWorkEventArgs e)
-        {
-            bool inEnvelope = false;
-            string cmd = "";
-            string Envelope = "";
-
-            e.Result = true;
-
-            while (true)
-            {
-                int index;
-
-                //Read the command's Type.
-                //System.Diagnostics.Debug.WriteLine("In loop...");
-                byte[] buffer = new byte[100000];
-                if (this.isConnected() == false)
-                {
-                    System.Diagnostics.Debug.WriteLine("Connection dropped");
-                    break;
-                }
-
-
-
-                try
-                {
-                    int readBytes = streamRead(buffer, 0, buffer.Length);
-
-                    if (readBytes > 0)
-                    {
-
-                        cmd += Program.getLocalisedString(buffer, readBytes);
-                    }
-                    else
-                    {
-                        // break;
-                    }
-                }
-                catch (Exception)
-                {
-                    System.Diagnostics.Debug.WriteLine("Exceptioned..");
-                    if (this.ConnectionDied != null)
-                    {
-                        this.ConnectionDied(sender, new EventArgs());
-                    }
-                }
-
-
-
-                if (this.sockStyle == AubitNetwork.SocketStyle.SocketStyleLine || this.sockStyle == AubitNetwork.SocketStyle.SocketStyleEnvelope)
-                {
-
-                    index = cmd.IndexOf('\n');
-                    while (index >= 0)
-                    {
-                        string c;
-
-                        c = cmd.Substring(0, index);
-
-                        if (c.Length > 0)
-                        {
-                            if (c.StartsWith("<ENVELOPE"))
-                            {
-                                Envelope = "";
-                                inEnvelope = true;
-                            }
-                            if (inEnvelope && this.sockStyle == AubitNetwork.SocketStyle.SocketStyleEnvelope)
-                            {
-                                Envelope += (c + "\n");
-                            }
-
-                            if (!inEnvelope)
-                            {
-                                this.OnReceivedFromServer(new ReceivedEventArgs(null, c));
-                            }
-
-                            if (c.StartsWith("</ENVELOPE>"))
-                            {
-
-                                inEnvelope = false;
-
-
-                                this.OnReceivedEnvelopeFromServer(new ReceivedEventArgs(null, Envelope));
-
-                                Envelope = "";
-                            }
-                        }
-
-                        if (cmd.Length > index)
-                        {
-                            cmd = cmd.Substring(index + 1);
-                            if (cmd == "\n")
-                            {
-                                Program.Show("OOps\n");
-                                cmd = "";
-                            }
-                        }
-                        index = cmd.IndexOf('\n');
-                    }
-                }
-            }
-
-            if (this.isConnected() == false)
-            {
-                System.Diagnostics.Debug.WriteLine("isconnected is false");
-                this.OnServerDisconnected(new ServerEventArgs(this.tcpClient));
-                this.Disconnect();
-            }
-        }
-
-
-
+       
 
         public void setEnvelopeMode()
         {
@@ -566,11 +502,18 @@ namespace AubitDesktop
         }
 
 
+        bool useGzip = false;
+
         void processBytes(byte[] bytes, int nBytes)
         {
 
+            if (useGzip)
+            {
+                uncompress(ref bytes, ref nBytes);
+            }
 
-            cmd += Program.getLocalisedString(bytes, nBytes);
+            cmd+=Program.getLocalisedString(bytes, nBytes);
+            
 
             if (this.sockStyle == AubitNetwork.SocketStyle.SocketStyleLine || this.sockStyle == AubitNetwork.SocketStyle.SocketStyleEnvelope)
             {
@@ -600,13 +543,13 @@ namespace AubitDesktop
 
                     if (c.StartsWith("<ENVELOPE"))
                     {
-                        Envelope = "";
+                        Envelope = new StringBuilder("");
                         inEnvelope = true;
                     }
 
                     if (inEnvelope && this.sockStyle == AubitNetwork.SocketStyle.SocketStyleEnvelope)
                     {
-                        Envelope += (c + "\n");
+                        Envelope.Append (c + "\n");
                     }
 
                     if (!inEnvelope)
@@ -618,13 +561,50 @@ namespace AubitDesktop
                     if (c.StartsWith("</ENVELOPE>"))
                     {
                         inEnvelope = false;
-                        this.OnReceivedEnvelopeFromServer(new ReceivedEventArgs(null, Envelope));
-                        Envelope = "";
+                        this.OnReceivedEnvelopeFromServer(new ReceivedEventArgs(null, Envelope.ToString()));
+                        Envelope = new StringBuilder("");
                     }
                 }
             }
 
 
+        }
+
+        private void uncompress(ref byte[] bytes, ref int nBytes)
+        {
+           
+            int totalLength = 0;
+            MemoryStream output = new MemoryStream();
+
+            using (MemoryStream ms = new MemoryStream())
+            {
+              
+                ms.Write(bytes, 0, nBytes);
+                byte[] buff = new byte[1024];
+                ms.Position = 0;
+
+                using (GZipStream zip = new GZipStream(ms, CompressionMode.Decompress))
+                {
+                    int r;
+                    while (true)
+                    {
+                        r = zip.Read(buff, 0, buff.Length);
+                        if (r > 0)
+                        {
+                            totalLength += r;
+                            output.Write(buff, 0, r);
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }                    
+                }
+                
+            }
+
+            bytes = output.GetBuffer();
+            nBytes = totalLength;
         }
 
         void dataReceivedSsh(IAsyncResult i)
@@ -641,10 +621,18 @@ namespace AubitDesktop
         void dataReceived(IAsyncResult i)
         {
             byte[] buffer = (byte[])i.AsyncState;
-
+            int nBytes = 0;
             try
             {
-                int nBytes = tcpStream.EndRead(i);
+                
+                if (tcpStreamGzipRead != null)
+                {
+                    nBytes = tcpStreamGzipRead.EndRead(i);
+                }
+                else
+                {
+                    nBytes = tcpStream.EndRead(i);
+                }
                 if (nBytes != 0) { processBytes(buffer, nBytes); }
             }
             catch (Exception Ex)
@@ -655,7 +643,7 @@ namespace AubitDesktop
 
                     if (this.appwin != null)
                     {
-                        this.appwin.Close();
+                        this.appwin.pleaseClose();
                     }
                 }
                 else
@@ -692,7 +680,14 @@ namespace AubitDesktop
                 AsyncCallback networkReadCallback = new AsyncCallback(dataReceived);
                 try
                 {
-                    tcpStream.BeginRead(buffer, 0, 1000000, networkReadCallback, buffer);
+                    if (tcpStreamGzipRead != null)
+                    {
+                        tcpStreamGzipRead.BeginRead(buffer, 0, 1000000, networkReadCallback, buffer);
+                    }
+                    else
+                    {
+                        tcpStream.BeginRead(buffer, 0, 1000000, networkReadCallback, buffer);
+                    }
                 }
                 catch (Exception)
                 {
@@ -725,11 +720,16 @@ namespace AubitDesktop
             else
             {
                 int n = 0;
-                // tcpStream.ReadTimeout = 100000000;
                 try
                 {
-                    n =
-                     tcpStream.Read(buffer, p, p_3);
+                    if (tcpStreamGzipRead != null)
+                    {
+                        n = tcpStreamGzipRead.Read(buffer, p, p_3);
+                    }
+                    else
+                    {
+                        n = tcpStream.Read(buffer, p, p_3);
+                    }
                 }
                 catch (Exception e)
                 {
@@ -808,6 +808,8 @@ namespace AubitDesktop
             {
                 Program.Show(ex.Message);
                 tcpStream = null;
+                tcpStreamGzipRead = null;
+                //tcpStreamGzipWrite = null;
                 return;
             }
             /*
@@ -826,6 +828,16 @@ namespace AubitDesktop
             {
                 tcpStream = tcpClient.GetStream();
 
+                if (useGzipRead)
+                {
+                    tcpStreamGzipRead = new GZipStream(tcpStream, CompressionMode.Decompress);
+                }
+
+                //if (useGzipWrite)
+                //{
+                //      tcpStreamGzipWrite = new GZipStream(tcpStream, CompressionMode.Compress);
+                //}
+
                 //this.bwReceiver = new BackgroundWorker();
                 this.ReceivedFromServer += new ReceivedEventHandler(n_ReceivedFromServer);
                 //bwReceiver.DoWork += new DoWorkEventHandler(bwReceiver_doWork);
@@ -838,6 +850,8 @@ namespace AubitDesktop
             else
             {
                 tcpStream = null;
+                tcpStreamGzipRead = null;
+                //tcpStreamGzipWrite = null;
             }
         }
         #endregion
@@ -1007,4 +1021,33 @@ namespace AubitDesktop
             Program.Show(e.Data);
         }
     }
+
+
+
+
+    public class Adler32Computer
+    {
+        private int a = 1;
+        private int b = 0;
+
+        public int Checksum
+        {
+            get
+            {
+                return ((b * 65536) + a);
+            }
+        }
+
+        private static readonly int Modulus = 65521;
+
+        public void Update(byte[] data, int offset, int length)
+        {
+            for (int counter = 0; counter < length; ++counter)
+            {
+                a = (a + (data[offset + counter])) % Modulus;
+                b = (b + a) % Modulus;
+            }
+        }
+    }
+
 }
