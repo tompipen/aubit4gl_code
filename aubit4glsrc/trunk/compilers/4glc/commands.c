@@ -52,6 +52,9 @@ struct command *new_command (enum cmd_type ct) {
 		c->lineno=token_read_on_line;
 		c->colno=token_read_on_col;
 	}
+	if (A4GL_isyes(acl_getenv("LOGCOMMANDS"))) {
+		printf("Command @ line : %d\n",c->lineno);
+	}
 	c->module=A4GL_compiling_module_basename();
 	c->comment=A4GL_get_current_comments(c->lineno, c->colno);
 
@@ -1011,6 +1014,12 @@ int a;
    c->cmd_data.command_data_u.init_cmd.varlist=p_varlist;
    c->cmd_data.command_data_u.init_cmd.init_like_exprlist=0;
    c->cmd_data.command_data_u.init_cmd.tonull=tonull;
+
+   if (p_varlist->list.list_len>5000) {
+	char buff[3000];
+	sprintf(buff, "Large INITIALIZE in 4gl code (%d entries)\nIf initializing an array - consider doing the subscriptions explicitly", p_varlist->list.list_len);
+	A4GL_warn(buff);
+   }
 
    if (p_tablist && p_tablist->str_list_entry.str_list_entry_len)  {
    		c->cmd_data.command_data_u.init_cmd.init_like_exprlist=malloc(sizeof(struct expr_str_list));
