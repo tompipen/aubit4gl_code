@@ -240,19 +240,23 @@ MainFrame::vdcdebug("Context","screenRecordRowChanged", "const QModelIndex & cur
                tableView->setCurrentIndex(index);
             }
             */
-/*
-            if(current.row()+1 > tableView->arrCount()){
-               setOption("ARRCOUNT", current.row()+1);
+
+            if(this->state() == Fgl::INPUTARRAY){
+               if(current.row()+1 > tableView->arrCount()){
+                  setOption("ARRCOUNT", current.row()+1);
+               }
+               /*
+               else{
+                  setOption("ARRCOUNT", tableView->arrCount());
+               }
+               */
             }
-            else{
-               setOption("ARRCOUNT", tableView->arrCount());
-            }
-*/
+
          }
       }
    }
 
-   setRowChanged();
+   //setRowChanged();
 }
 
 void Context::screenRecordColumnChanged(const QModelIndex & current, const QModelIndex & previous)
@@ -274,7 +278,7 @@ MainFrame::vdcdebug("Context","getScreenRecordValues", "int row");
             QModelIndex currIndex = tableView->model()->index(row, j);
             if(LineEditDelegate *dele = qobject_cast<LineEditDelegate *> (tableView->itemDelegateForColumn(j))){
                if(LineEdit *widget = qobject_cast<LineEdit *> (dele->qw_editor)){
-                  if(widget->sqlType().contains("FLOAT") || widget->sqlType().contains("DECIMAL"))
+                   if(widget->sqlType().contains("FLOAT") || widget->sqlType().contains("DECIMAL"))
                    {
                       fieldValues << tableView->model()->data(currIndex).toString().replace(",",".");
                   }
@@ -299,15 +303,14 @@ void Context::setRowChanged()
 {
 MainFrame::vdcdebug("Context","setRowChanged", "");
 
-   rowChangedCnt++;
-   if(rowChangedCnt == ql_fieldList.count()){
-      
-      Fgl::Event event;
-      event.type = Fgl::AFTER_ROW_EVENT;
-      //emit fieldEvent(event);
-      rowChangedCnt=0;
-   }
+   if(this->state() == Fgl::INPUTARRAY){
 
+      for(int i=0; i<ql_fieldList.count(); i++){
+         if(TableView *tableView = qobject_cast<TableView *> (ql_fieldList.at(i))){
+             this->setOption("ARRCOUNT", tableView->arrCount());
+         }
+      }
+   }
 }
 
 QList<QWidget*> Context::fieldList()
@@ -337,16 +340,6 @@ MainFrame::vdcdebug("Context","checkOptions", "");
          for(int i=0; i<ql_fieldList.count(); i++){
             if(TableView *tableView = qobject_cast<TableView *> (ql_fieldList.at(i))){
                tableView->setArrCount(qh_options[key]);
-/*
-               QSortFilterProxyModel *proxyModel = static_cast<QSortFilterProxyModel*> (tableView->model());
-               TableModel *table = static_cast<TableModel*> (proxyModel->sourceModel());
-
-               if(qh_options[key] > table->rowCount(QModelIndex()))
-                  table->insertRows(table->rowCount(QModelIndex()), (qh_options[key]-table->rowCount(QModelIndex())), QModelIndex());
-
-               if(qh_options[key] < table->rowCount(QModelIndex()))
-                  table->removeRows(table->rowCount(QModelIndex()), (table->rowCount(QModelIndex())-qh_options[key]), QModelIndex());
-*/
             }
          }
       }

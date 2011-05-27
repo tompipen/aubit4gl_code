@@ -1008,7 +1008,8 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
             QDomElement valueElement = values.firstChildElement();
             int id = valueElement.text().toInt();
             if(ComboBox *cb = qobject_cast<ComboBox *> (p_currScreenHandler->currForm()->findFieldById(id))){
-               value = QString::number(cb->count());
+
+                value = QString::number(cb->count());
             }
          }
 
@@ -1025,7 +1026,6 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
                   pos = valuesElement.text().toInt();
                }
             }
-            qDebug() << "NAME:" << id << pos << p_currScreenHandler->currForm()->findFieldById(id);
             if(ComboBox *cb = qobject_cast<ComboBox *> (p_currScreenHandler->currForm()->findFieldById(id))){
                value = cb->itemText(pos-1);
             }

@@ -998,6 +998,7 @@ MainFrame::vdcdebug("FglForm","setFormLayout", "const QDomDocument& docLayout");
    this->ql_formFields << formParser->getFieldList();
 
    for(int i=0; i<formElements().size(); i++){
+      formElements().at(i)->installEventFilter(this);
       if(LineEdit *lineEdit = qobject_cast<LineEdit *> (formElements().at(i))){
          connect(lineEdit, SIGNAL(fieldEvent(Fgl::Event)), this, SLOT(fieldEvent(Fgl::Event)));
          connect(lineEdit, SIGNAL(nextField()), this, SLOT(nextfield()));
@@ -1006,7 +1007,7 @@ MainFrame::vdcdebug("FglForm","setFormLayout", "const QDomDocument& docLayout");
          connect(lineEdit, SIGNAL(textEdited(QString)), this, SLOT(setBufferTouched()));
          connect(lineEdit, SIGNAL(editingFinished()), this, SLOT(checkField()));
          connect(lineEdit, SIGNAL(cursorPositionChanged(int, int)), this, SLOT(setLastCursor(int, int)));
-         lineEdit->installEventFilter(this);
+
       }
 
       if(Button *button = qobject_cast<Button *> (formElements().at(i))){

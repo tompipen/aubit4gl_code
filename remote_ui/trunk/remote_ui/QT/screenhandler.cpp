@@ -1696,8 +1696,11 @@ MainFrame::vdcdebug("ScreenHandler","waitForEvent", "");
    }
    p_fglform = saveactive;
    checkFields();
+
+/*
    if(p_fglform->context != NULL)
       p_fglform->context->checkOptions();
+*/
 
    p_fglform->raise();
 
@@ -1797,7 +1800,9 @@ MainFrame::vdcdebug("ScreenHandler","free", "QString type");
 
             if(widget->isEnabled()){
                if(TableView *tableView = qobject_cast<TableView *> (ql_fields.at(i))){
-                  tableView->setEnabled(false);
+                   QModelIndex current = tableView->currentIndex();
+                   tableView->closePersistentEditor(current);
+                   tableView->setEnabled(false);
                }
             }
          }
@@ -2341,6 +2346,10 @@ MainFrame::vdcdebug("ScreenHandler","freeContext", "int i_context");
          QWidget *field = context->fieldList().at(i);
          field->blockSignals(true);
          field->setEnabled(false);
+         if(TableView *tableView = qobject_cast<TableView *> (field)){
+             QModelIndex current = tableView->currentIndex();
+             tableView->closePersistentEditor(current);
+         }
          if(LineEdit *le = qobject_cast<LineEdit *> (field)){
              le->setTouchendEnabled(false);
          }

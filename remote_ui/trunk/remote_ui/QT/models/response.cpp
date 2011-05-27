@@ -204,7 +204,7 @@ void Response::addScreenRecSyncValues()
 MainFrame::vdcdebug("Response","addScreenRecSyncValues", "");
 
    int arrCount = p_currForm->context->getOption("ARRCOUNT");
-   if(arrCount <= 0) arrCount = 1;
+   //if(arrCount <= 0) arrCount = 1;
 
    //responseElement.setAttribute("ARRCOUNT", arrCount);
 
@@ -220,7 +220,6 @@ MainFrame::vdcdebug("Response","addScreenRecSyncValues", "");
 
    if(p_currForm->context->state() != Fgl::INPUTARRAY)
       return;
-
 
    QDomElement syncRowsElement = this->createElement("SYNCROWS");
    responseElement.appendChild(syncRowsElement);

@@ -381,7 +381,7 @@ MainFrame::vdcdebug("TableView","fieldChanged", "QModelIndex current, QModelInde
    }
 
    if(current.row() != prev.row()){
-      if(prev.row() > -1){
+       if(prev.row() > -1){
          if(!b_ignoreRowChange){
             emit setArrLineSignal(current.row()+1);
             event.type = Fgl::AFTER_ROW_EVENT;
@@ -389,7 +389,10 @@ MainFrame::vdcdebug("TableView","fieldChanged", "QModelIndex current, QModelInde
          }
 
          if(current.row()+1 > i_arrCount){
-            i_arrCount = current.row()+1;
+
+             i_arrCount = current.row()+1;
+
+            //this->setArrCount(current.row()+1);
          }
       }
 
