@@ -1420,14 +1420,26 @@ UILIB_A4GL_form_loop_v2 (void *s, int init, void *evt)
 	  A4GL_push_int (Context);
 	  uilib_input_get_values (1);
 	//printf("Popping values\n");
-	  for (b = sreal->novars - 1; b >= 0; b--)
+	  for (b= sreal->novars - 1; b >= 0; b--)
 	    {
 	      A4GL_pop_var2 (sreal->vars[b].ptr, sreal->vars[b].dtype, sreal->vars[b].size);
 	    }
 	}
 
+      if (last_attr->sync.nvalues)
+	{
+	  set_construct_clause (Context, generate_construct_result (sreal));
+	}
+      else
+	{
+	  set_construct_clause (Context, strdup (sreal->vars[0].ptr));
+	}
+
+
+
       if (a == -100)
 	{			// Accept...
+		/*
 	  if (sreal->mode == MODE_CONSTRUCT)
 	    {
 	      if (last_attr->sync.nvalues)
@@ -1439,6 +1451,7 @@ UILIB_A4GL_form_loop_v2 (void *s, int init, void *evt)
 		  set_construct_clause (Context, strdup (sreal->vars[0].ptr));
 		}
 	    }
+		*/
 
 	  if (A4GL_has_event (A4GL_EVENT_AFTER_INP, evt))
 	    {
@@ -1455,10 +1468,12 @@ UILIB_A4GL_form_loop_v2 (void *s, int init, void *evt)
       if (a == -101)
 	{			// Interrupt
 	  int_flag = 1;
+		/*
 	  if (sreal->mode == MODE_CONSTRUCT)
 	    {
 	      set_construct_clause (Context, strdup (sreal->vars[0].ptr));
 	    }
+		*/
 
 	  if (A4GL_has_event (A4GL_EVENT_AFTER_INP, evt))
 	    {
