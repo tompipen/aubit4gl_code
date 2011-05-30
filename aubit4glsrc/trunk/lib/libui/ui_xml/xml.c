@@ -416,7 +416,9 @@ UILIB_A4GL_disp_fields_ap (int n, int attr, va_list * ap)
 		arg_types[a]=d1;
 		if ((d1&DTYPE_MASK)==DTYPE_BYTE || (d1&DTYPE_MASK)==DTYPE_TEXT) {
 			args[a] =malloc(sizeof(fglbyte));
-			A4GL_pop_var2(args[a],11,0);
+			memcpy(args[a],ptr1,sizeof(fglbyte));
+			A4GL_drop_param();
+				
 		} else {
       			args[a] = A4GL_char_pop ();
 			switch (d1&DTYPE_MASK) {
@@ -466,8 +468,10 @@ UILIB_A4GL_disp_fields_ap (int n, int attr, va_list * ap)
     {
 		if (arg_types[a]==DTYPE_BYTE || arg_types[a]==DTYPE_TEXT) {
 			fglbyte *b;
+			fglbyte **bp;
 			char *ptr;
 			b=(fglbyte *)args[a];
+			bp=(fglbyte **)args[a];
 			ptr=A4GL_byte_as_base64(b);
 			if (ptr) {
 				int l;
