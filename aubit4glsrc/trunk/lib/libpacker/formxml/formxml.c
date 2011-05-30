@@ -2084,6 +2084,12 @@ static char * get_sql_dtype ( int dtype)
     case DTYPE_DATE:
       sprintf (buff_dtype, "DATE");
       break;
+    case DTYPE_TEXT:
+      sprintf (buff_dtype, "TEXT");
+      break;
+    case DTYPE_BYTE:
+      sprintf (buff_dtype, "BYTE");
+      break;
     case DTYPE_FLOAT:
       sprintf (buff_dtype, "FLOAT");
       break;
