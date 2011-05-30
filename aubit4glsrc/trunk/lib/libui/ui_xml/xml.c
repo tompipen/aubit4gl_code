@@ -1426,6 +1426,7 @@ UILIB_A4GL_form_loop_v2 (void *s, int init, void *evt)
 	    }
 	}
 
+      if (sreal->mode == MODE_CONSTRUCT ) {
       if (last_attr->sync.nvalues)
 	{
 	  set_construct_clause (Context, generate_construct_result (sreal));
@@ -1434,7 +1435,7 @@ UILIB_A4GL_form_loop_v2 (void *s, int init, void *evt)
 	{
 	  set_construct_clause (Context, strdup (sreal->vars[0].ptr));
 	}
-
+	}
 
 
       if (a == -100)
