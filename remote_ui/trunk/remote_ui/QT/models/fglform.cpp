@@ -1485,18 +1485,20 @@ MainFrame::vdcdebug("FglForm","nextfield", "bool change");
       //  and input field is the last field in the list
       //  then trigger after "INPUT" event
 
-      if(!this->context->getOption("WRAP")){
+       if(!this->context->getOption("WRAP")){
+         qDebug()<<"ja du sack hier mache ich streit";
          if(context->fieldList().count() > 0){
             QWidget* lastField = context->fieldList().last();
+            qDebug()<<"cnt fields "<<context->fieldList().count();
             Fgl::Event event;
             if(lastField == currentWidget){
                switch(state()){
                   case Fgl::INPUT:
                   case Fgl::CONSTRUCT:
                      //If its the last field in the construct, call the AFTER FIELD EVENT and then the ACCEPT EVENT
-                     event.type = Fgl::AFTER_FIELD_EVENT;
-                     event.attribute = currentWidget->objectName();
-                     fieldEvent(event);
+           //          event.type = Fgl::AFTER_FIELD_EVENT;
+           //          event.attribute = currentWidget->objectName();
+           //          fieldEvent(event);
                      acceptTriggered();
                      break;
                   default:
@@ -2475,12 +2477,11 @@ MainFrame::vdcdebug("FglForm","checkActions", "");
    }
 
    checkGuiActions();
-
-   if(state() == Fgl::MENU){
+//Comment out because the 4ad is not loaded.
+  // if(state() == Fgl::MENU){
       //checkMenu();
       if(RingMenu *p_menu = qobject_cast<RingMenu *> (menu())){
          QList<QAction*> menuActions = p_menu->actions();
-
          for(int i=0; i<menuActions.count(); i++){
             if(Action *mAction = qobject_cast<Action *> (menuActions.at(i))){
                for(int j=0; j<formActions.count(); j++){
@@ -2502,7 +2503,7 @@ MainFrame::vdcdebug("FglForm","checkActions", "");
                }
             }
          }
-      }
+   //   }
       if(Dialog *p_dialog = qobject_cast<Dialog *> (dialog())){
          QList<QAction*> dialogActions = p_dialog->actions();
 

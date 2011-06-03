@@ -1681,14 +1681,17 @@ MainFrame::vdcdebug("ScreenHandler","waitForEvent", "");
       p_fglform = ql_fglForms.at(i);
 
       p_fglform->checkState();
-
+     //Hier evt abfragen ob IDLE und das Menu gesetzt ist. Es sollte aufjedenfall machbarsein ...
       if(p_fglform->b_newForm && p_fglform->dialog () == NULL && saveactive->state() != Fgl::IDLE){
          p_fglform->b_newForm = false;
+         //Load the Actions again, before display the form
+         p_fglform->checkActions();
          p_fglform->show();
          p_fglform->adjustSize();
       }
       else{
          if(p_fglform->dialog() != NULL){
+            p_fglform->checkActions();
             p_fglform->dialog()->show();
             p_fglform->dialog()->adjustSize();
          }
@@ -1722,11 +1725,14 @@ void ScreenHandler::processResponse()
       return;
 
    if(!p_fglform->b_getch_swin)
+   {
       return;
+  }
 
    if(p_fglform->ql_responseQueue.size() <= 0)
-      return;
-
+   {
+       return;
+   }
 
    QString id = p_fglform->ql_responseQueue.takeFirst();
    Response resp(id, p_fglform, cursorPos);
