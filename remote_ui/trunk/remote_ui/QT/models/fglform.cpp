@@ -1488,7 +1488,6 @@ MainFrame::vdcdebug("FglForm","nextfield", "bool change");
        if(!this->context->getOption("WRAP")){
          if(context->fieldList().count() > 0){
             QWidget* lastField = context->fieldList().last();
-            qDebug()<<"cnt fields "<<context->fieldList().count();
             Fgl::Event event;
             if(lastField == currentWidget){
                switch(state()){

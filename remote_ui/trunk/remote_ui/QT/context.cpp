@@ -289,6 +289,9 @@ MainFrame::vdcdebug("Context","getScreenRecordValues", "int row");
                       fieldValues << tableView->model()->data(currIndex).toString();
                   }
                }
+               else{
+                   fieldValues << WidgetHelper::fieldText(dele->qw_editor);
+               }
             }
 
          }
@@ -360,6 +363,16 @@ MainFrame::vdcdebug("Context","checkOptions", "");
                tableView->setMaxArrSize(qh_options[key]);
             }
          }
+      }
+
+      if(key == "ARRCOUNT" && this->state() == Fgl::DISPLAYARRAY){
+         //return;
+         for(int i=0; i<ql_fieldList.count(); i++){
+            if(TableView *tableView = qobject_cast<TableView *> (ql_fieldList.at(i))){
+               tableView->setArrCount(qh_options[key]);
+            }
+         }
+         return;
       }
    }
 
