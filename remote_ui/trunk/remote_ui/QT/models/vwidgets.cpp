@@ -25,6 +25,7 @@
 #include <QDomElement>
 #include <QDragEnterEvent>
 
+#include "fglform.h"
 #include "mainframe.h"
 #include "vwidgets.h"
 #include "table.h"
@@ -392,9 +393,25 @@ void LineEdit::dragEnterEvent(QDragEnterEvent *e)
    e->acceptProposedAction();
 }
 
+//void LineEdit::
+
 //DropEvent for Drop files into a ButtonEdit/LineEdit
 void LineEdit::dropEvent(QDropEvent *e)
 {
+    TableView *tv = NULL;
+    if(TableView *tv1 = qobject_cast<TableView*> (e->source()))
+    {
+       tv = tv1;
+    }
+
+
+    if(FglForm *p_fglform = qobject_cast<FglForm*> (tv->p_fglform))
+    {
+       connect(this, SIGNAL(dropSuccess()), p_fglform, SLOT(dragSuccess()));
+    }
+
+
+
     //Handle drop for files and directories (paste path into the field (without file://)
     if(e->mimeData()->hasUrls() || e->mimeData()->hasText() ){
         QString text;
@@ -410,6 +427,11 @@ void LineEdit::dropEvent(QDropEvent *e)
         }
         text = text.replace("file://","").trimmed();
         this->setText(text);
+        Fgl::Event event;
+        event.type = Fgl::AFTER_FIELD_EVENT;
+        event.attribute = this->objectName();
+        emit fieldEvent(event);
+        emit dropSuccess();
     }
 }
 
@@ -887,7 +909,6 @@ MainFrame::vdcdebug("WidgetHelper","createLabel", "const QDomElement& formField,
  //  label->setPalette(p);
    label->setFixedHeight(defHeight);
    label->setFixedWidth(w);
-
    return label;
 }
 

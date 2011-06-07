@@ -199,7 +199,7 @@ public slots:
 
    void accept();
    void interrupt();
-
+   void dragSuccess();
    void editcopy();
    void editcut();
    void editpaste();

@@ -47,6 +47,7 @@ FglForm::FglForm(QString windowName, QWidget *parent) : QMainWindow(parent){
    }
 
 
+   this->setAccessibleName("FGLFORM");
    QSplitter *formSplitter = new QSplitter;
    formSplitter->setChildrenCollapsible(false);
    setCentralWidget(formSplitter);
@@ -639,15 +640,14 @@ MainFrame::vdcdebug("FglForm","setToolBar", "QDomDocument xmlFile");
 
 //------------------------------------------------------------------------------
 // Method       : eventFilter()
-// Filename     : fglform.cpp
-// Description  : 
-//               
+    // Filename     : fglform.cpp
+    // Description  :
+    //
 //------------------------------------------------------------------------------
 bool FglForm::eventFilter(QObject *obj, QEvent *event)
 {
 //MainFrame::vdcdebug("FglForm","eventFilter", "QObject *obj, QEvent *event");
-
-   if(event->type() == QEvent::MouseButtonRelease){
+    if(event->type() == QEvent::MouseButtonRelease){
       QMouseEvent *mev = (QMouseEvent*) event;
       if(mev->button() == Qt::LeftButton){
          mev->ignore();
@@ -924,11 +924,28 @@ MainFrame::vdcdebug("FglForm","fieldEvent", "Fgl");
 }
 
 //------------------------------------------------------------------------------
-// Method       : closeEvent()
+// Method       : dragSuccess()
 // Filename     : fglform.cpp
 // Description  : 
 //               
 //------------------------------------------------------------------------------
+
+void FglForm::dragSuccess()
+{
+    Fgl::Event ev;
+    ev.type = Fgl::ONACTION_EVENT;
+    ev.attribute = "drag";
+    emit fieldEvent(ev);
+}
+
+
+//------------------------------------------------------------------------------
+// Method       : closeEvent()
+// Filename     : fglform.cpp
+// Description  :
+//
+//------------------------------------------------------------------------------
+
 void FglForm::closeEvent(QCloseEvent *event)
 {
 MainFrame::vdcdebug("FglForm","closeEvent", "QCloseEvent *event");

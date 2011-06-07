@@ -178,6 +178,7 @@ signals:
    void nextField();
    void fieldEvent(Fgl::Event);
    void error(QString);
+   void dropSuccess();
 };
 
 class Edit : public LineEdit

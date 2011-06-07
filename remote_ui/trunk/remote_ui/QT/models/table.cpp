@@ -22,26 +22,32 @@
 #include <QFontMetrics>
 #include <QScrollBar>
 
-#include "table.h"
 #include "mainframe.h"
+#include "table.h"
 
 TableView::TableView(QWidget *parent) : QTableView(parent)
 {
 MainFrame::vdcdebug("TableView","TableView", "QWidget *parent");
+
    this->setFocusPolicy(Qt::NoFocus);
    //this->installEventFilter(this);
+   this->p_fglform = parent;
    i_arrCount = 0;
    i_arrLine = 0;
    i_scrLine = 0;
    i_maxArrSize = 1;
+   /*
+   this->setCurrMouseColumn(0);
+   this->setCurrMouseRow(0);
+   */
    b_ignoreFocus = false;
    b_ignoreRowChange = false;
-
+   this->setMouseTracking(true);
    const int rowHeight = fontMetrics().height() + 2;
    verticalHeader()->setDefaultSectionSize(rowHeight);
    verticalHeader()->setFocusPolicy(Qt::NoFocus);
    horizontalHeader()->setFocusPolicy(Qt::NoFocus);
-
+   this->setDragEnabled(true);
    setTabKeyNavigation(true);
    this->verticalHeader()->hide();
    QHeaderView *header = this->horizontalHeader();
@@ -51,7 +57,7 @@ MainFrame::vdcdebug("TableView","TableView", "QWidget *parent");
    header->setSortIndicator(0, Qt::AscendingOrder);
 
    connect(this, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(accept()));
-
+   connect(this, SIGNAL(entered(QModelIndex)), this, SLOT(setMousePos(QModelIndex)));
    QObject::connect(header, SIGNAL(sectionClicked(int)),
                     this, SLOT(sortByColumn(int)));
 
@@ -99,6 +105,44 @@ MainFrame::vdcdebug("TableView","resize", "");
    }
 }
 */
+//Getter+Setter to save the MousePos(Needed for Drag&Drop
+void TableView::setCurrMouseRow(int row)
+{
+    this->i_currrowmouse = row;
+}
+
+int TableView::getCurrMouseRow()
+{
+    return this->i_currrowmouse;
+}
+
+void TableView::setCurrMouseColumn(int col)
+{
+    this->i_currcolumnmouse = col;
+}
+
+int TableView::getCurrMouseColumn()
+{
+    return this->i_currcolumnmouse;
+}
+
+
+void TableView::setMouseModelIndex(QModelIndex mouse)
+{
+    this->mouseindex = mouse;
+}
+
+QModelIndex TableView::getMouseModelIndex()
+{
+    return this->mouseindex;
+}
+
+void TableView::setMousePos(QModelIndex mousepos)
+{
+   this->setMouseModelIndex(mousepos);
+}
+
+
 
 QSize TableView::sizeHint() const
 {
@@ -308,6 +352,12 @@ MainFrame::vdcdebug("TableView","prevfield", "");
    }
 }
 */
+
+void TableView::dragSuccess()
+{
+    qDebug()<<"Done";
+}
+
 
 void TableView::setInputEnabled(bool enable)
 { 
@@ -635,12 +685,42 @@ Qt::ItemFlags TableModel::flags(const QModelIndex &index) const
 //MainFrame::vdcdebug("TableModel","ItemFlags TableModel", """");
    Qt::ItemFlags f; // = QAbstractTableModel::flags(index);
    if (index.isValid()){
-      f = Qt::ItemIsEnabled;
+       f = Qt::ItemIsEnabled ;
       f |= b_input ? Qt::ItemIsEditable : Qt::ItemIsSelectable;
    }
-
+   f |= Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled;
    return f;
 }
+
+QStringList TableModel::mimeTypes() const
+{
+   QStringList types;
+   types << "text/plain";
+   return types;
+}
+
+QMimeData* TableModel::mimeData(const QModelIndexList &indexes) const
+{
+   QMimeData *mimeData = new QMimeData();
+  // QByteArray encodedData;
+  // encodedData.clear();
+  // QDataStream stream(&encodedData, QIODevice::WriteOnly);
+   QModelIndex index;
+   if(TableView *tv = qobject_cast<TableView *> (getTableView()))
+   {
+       index = tv->getMouseModelIndex();
+   }
+   QString text;
+   if (index.isValid())
+   {
+
+           text = data(index, Qt::DisplayRole).toString().trimmed();
+   }
+
+   mimeData->setText(text);
+   return mimeData;
+}
+
 
 bool TableModel::insertRows(int position, int rows, const QModelIndex &index)
 {
@@ -688,9 +768,10 @@ MainFrame::vdcdebug("TableModel","removeRows", "int position, int rows, const QM
    return false;
 
 }
-
-
-
+void TableModel::setTableView(TableView *tv)
+{
+    this->mytv = tv;
+}
 
 QVariant TableModel::headerData ( int section, Qt::Orientation orientation, int role ) const
 {
@@ -776,6 +857,7 @@ LineEditDelegate::LineEditDelegate(QDomElement formElement, QObject *parent)
 
    if(LineEdit *le = qobject_cast<LineEdit *> (qw_editor)){
       b_readOnly = le->noEntry();
+      le->setDragEnabled(true);
    }
 }
 

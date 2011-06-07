@@ -21,7 +21,7 @@
 #include <QStyledItemDelegate>
 #include <QDate>
 #include <QDomElement>
-
+#include <models/fglform.h>
 #include "vwidgets.h"
 #include <include/fgl.h>
 
@@ -37,6 +37,7 @@ public:
    int maxArrSize() { return i_maxArrSize; };
    int arrLine() { return i_arrLine; };
    int scrLine() { return i_scrLine; };
+   QWidget *p_fglform;
 //   void resize();
 
     void setInputEnabled(bool);
@@ -56,6 +57,14 @@ public:
     void setText(QString, int, int);
     virtual QSize sizeHint () const;
 
+    void setCurrMouseRow(int);
+    int getCurrMouseRow();
+    void setCurrMouseColumn(int);
+    int getCurrMouseColumn();
+    void setMouseModelIndex(QModelIndex);
+    QModelIndex getMouseModelIndex();
+
+
 private:
     int i_arrCount;
     int i_arrLine;
@@ -65,10 +74,17 @@ private:
     bool b_ignoreRowChange;
     bool isReadOnlyColumn(int);
     bool checkBounds(const QModelIndex);
+    int i_currrowmouse;
+    int i_currcolumnmouse;
 
 public slots:
    void fieldChanged(QModelIndex, QModelIndex);
    void accept();
+   void setMousePos(QModelIndex);
+   void dragSuccess();
+
+protected:
+   QModelIndex mouseindex;
 /*
    void nextfield();
    void prevfield();
@@ -102,7 +118,8 @@ public:
     int columnCount(const QModelIndex&) const;
     
     QVariant data(const QModelIndex &index, int role) const;
-    
+    QStringList mimeTypes() const;
+    QMimeData* mimeData(const QModelIndexList &indexes) const;
     bool setData(const QModelIndex &index, const QVariant &value, int role);
 
     Qt::ItemFlags flags(const QModelIndex &index) const;
@@ -113,12 +130,14 @@ public:
     QStringList qsl_colTitleNames;
     QStringList qsl_colTitleTabNames;
     QVector<QString> v_colTabNames;
+    TableView* getTableView() const{return mytv;}
+    void setTableView(TableView*);
 
     bool insertRows(int position, int rows, const QModelIndex &index=QModelIndex());
     bool removeRows(int position, int rows, const QModelIndex &index=QModelIndex());
     //bool removeRows(int position, int rows, const QModelIndex &index=QModelIndex());
 
-
+    TableView *mytv;
     //defines if its an input array or an display array
     bool b_input;
     QString qs_tabName;
@@ -128,6 +147,7 @@ public:
 private:
     int columns;
     int rows;
+
     //QHash<QModelIndex,QVariant> displayValues;
     QVector< QVector<QString> >fields;
     QVector< QVector<QString> >fields5;
