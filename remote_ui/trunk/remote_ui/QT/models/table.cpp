@@ -171,7 +171,6 @@ MainFrame::vdcdebug("TableView","setArrCount", "int cnt");
 void TableView::setMaxArrSize(int cnt)
 {
 MainFrame::vdcdebug("TableView","setMaxArrSize", "int cnt");
-
    i_maxArrSize = cnt;
 
    return;
@@ -347,10 +346,11 @@ MainFrame::vdcdebug("TableView","setInputEnabled", "bool enable");
 void TableView::fieldChanged(QModelIndex current, QModelIndex prev)
 {
 MainFrame::vdcdebug("TableView","fieldChanged", "QModelIndex current, QModelIndex prev");
+
    QSortFilterProxyModel *proxyModel = static_cast<QSortFilterProxyModel*> (this->model());
    TableModel *table = static_cast<TableModel*> (proxyModel->sourceModel());
 
-   if(!checkBounds(current)){
+   if(table->b_input && !checkBounds(current)){
       //QModelIndex tindex = table->index(i_maxArrSize-1,current.column());
       //QModelIndex index = proxyModel->mapFromSource(tindex);
 
@@ -386,13 +386,6 @@ MainFrame::vdcdebug("TableView","fieldChanged", "QModelIndex current, QModelInde
             emit setArrLineSignal(current.row()+1);
             event.type = Fgl::AFTER_ROW_EVENT;
             emit fieldEvent(event);
-         }
-
-         if(current.row()+1 > i_arrCount){
-
-             i_arrCount = current.row()+1;
-
-            //this->setArrCount(current.row()+1);
          }
       }
 

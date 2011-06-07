@@ -184,6 +184,12 @@ MainFrame::vdcdebug("Context","addScreenRecord", "QWidget *screenRec, bool input
 
       if(TableView *tableView = qobject_cast<TableView *> (screenRec)){
 
+          connect(tableView->selectionModel(), SIGNAL(currentRowChanged (const QModelIndex&, const QModelIndex&)),
+                  this, SLOT(screenRecordRowChanged(const QModelIndex&, const QModelIndex&)));
+
+          connect(tableView->selectionModel(), SIGNAL(currentColumnChanged ( const QModelIndex&, const QModelIndex&)),
+                  this, SLOT(screenRecordColumnChanged(const QModelIndex&, const QModelIndex&)));
+
          tableView->setInputEnabled(input);
          tableView->setEnabled(true);
          if(ql_fieldList.count() == 1){
@@ -198,11 +204,7 @@ MainFrame::vdcdebug("Context","addScreenRecord", "QWidget *screenRec, bool input
          setOption("ARRLINE", 0);
          setOption("SCRLINE", 0);
 
-         connect(tableView->selectionModel(), SIGNAL(currentRowChanged (const QModelIndex&, const QModelIndex&)), 
-                 this, SLOT(screenRecordRowChanged(const QModelIndex&, const QModelIndex&)));
 
-         connect(tableView->selectionModel(), SIGNAL(currentColumnChanged ( const QModelIndex&, const QModelIndex&)), 
-                 this, SLOT(screenRecordColumnChanged(const QModelIndex&, const QModelIndex&)));
 
          QStringList qsl_keys = qh_options.keys();
 
@@ -242,7 +244,7 @@ MainFrame::vdcdebug("Context","screenRecordRowChanged", "const QModelIndex & cur
             */
 
             if(this->state() == Fgl::INPUTARRAY){
-               if(current.row()+1 > tableView->arrCount()){
+               if(current.row()+1 > tableView->arrCount() || (previous.row() < 0 && current.row() == 0)){
                   setOption("ARRCOUNT", current.row()+1);
                }
                /*
@@ -324,6 +326,23 @@ void Context::setOption(QString name, int value)
 MainFrame::vdcdebug("Context","setOption", "QString name, int value");
    qh_options[name] = value;
    checkOptions();
+
+   if(name == "ARRCOUNT"){
+      //return;
+      for(int i=0; i<ql_fieldList.count(); i++){
+         if(TableView *tableView = qobject_cast<TableView *> (ql_fieldList.at(i))){
+            tableView->setArrCount(qh_options[name]);
+         }
+      }
+      return;
+   }
+   if(name == "MAXARRSIZE"){
+      for(int i=0; i<ql_fieldList.count(); i++){
+         if(TableView *tableView = qobject_cast<TableView *> (ql_fieldList.at(i))){
+            tableView->setMaxArrSize(qh_options[name]);
+         }
+      }
+   }
 }
 
 void Context::checkOptions()
@@ -334,15 +353,6 @@ MainFrame::vdcdebug("Context","checkOptions", "");
 
    for(int i=0; i<qsl_keys.count(); i++){
       QString key = qsl_keys.at(i);
-
-      if(key == "ARRCOUNT"){
-         //return;
-         for(int i=0; i<ql_fieldList.count(); i++){
-            if(TableView *tableView = qobject_cast<TableView *> (ql_fieldList.at(i))){
-               tableView->setArrCount(qh_options[key]);
-            }
-         }
-      }
 
       if(key == "MAXARRSIZE"){
          for(int i=0; i<ql_fieldList.count(); i++){
