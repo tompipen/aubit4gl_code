@@ -28,7 +28,7 @@ Parser::Parser(QWidget *p_fglform) : QWidget()
 MainFrame::vdcdebug("Parser","Parser", "QWidget *p_fglform");
    this->setFocusPolicy(Qt::NoFocus);
    this->p_fglform = p_fglform;
-
+   qDebug()<<p_fglform;
    layout = new QHBoxLayout;
    layout->setSpacing(0);
    this->setLayout(layout);
@@ -357,7 +357,12 @@ void Parser::handleTableColumn(const QDomNode& xmlNode){
 
    TableModel *model = new TableModel(pageSize, colCount);
 
-   TableView *p_screenRecord = new TableView;
+   TableView *p_screenRecord = new TableView(p_fglform);
+   qDebug() << "FGLFO" << this->p_fglform;
+   qDebug() << "FGLFO2" << p_screenRecord->parent();
+   p_screenRecord->setParent(this->p_fglform);
+   qDebug() << "FGLFO3" << p_screenRecord->parent();
+
    p_screenRecord->tabName = name;
    p_screenRecord->setAccessibleName(name);
    p_screenRecord->setObjectName(name);
@@ -367,6 +372,7 @@ void Parser::handleTableColumn(const QDomNode& xmlNode){
    proxy->setSourceModel(model);
 
    p_screenRecord->setModel(proxy);
+   model->setTableView(p_screenRecord);
 
    connect(p_screenRecord->selectionModel(), SIGNAL(currentChanged(QModelIndex,QModelIndex)), p_screenRecord, SLOT(fieldChanged(QModelIndex, QModelIndex))); 
 
@@ -480,7 +486,7 @@ void Parser::handleMatrixColumn(const QDomNode& xmlNode){
 
    TableModel *model = new TableModel(pageSize, 1);
 
-   TableView *p_screenRecord = new TableView;
+   TableView *p_screenRecord = new TableView(p_fglform);
    p_screenRecord->tabName = name;
    p_screenRecord->setAccessibleName(name);
    p_screenRecord->setObjectName(name);
