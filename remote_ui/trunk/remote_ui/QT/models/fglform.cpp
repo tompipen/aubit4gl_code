@@ -67,6 +67,7 @@ FglForm::FglForm(QString windowName, QWidget *parent) : QMainWindow(parent){
    b_input = false;
    b_screenRecord = false;
    p_dialog = NULL;
+   p_pulldown = NULL;
    formWidget = NULL;
 
    currentWidget = NULL;
@@ -575,6 +576,15 @@ MainFrame::vdcdebug("FglForm","setDialog", "Dialog* dialog");
 */
 
 }
+//------------------------------------------------------------------------------
+// Method       : setPulldown()
+// Filename     : fglform.cpp
+// Description  :
+//------------------------------------------------------------------------------
+void FglForm::setPulldown(Pulldown* pulldown)
+{
+    p_pulldown = pulldown;
+}
 
 //------------------------------------------------------------------------------
 // Method       : setToolBar()
@@ -938,6 +948,20 @@ void FglForm::dragSuccess()
     emit fieldEvent(ev);
 }
 
+//------------------------------------------------------------------------------
+// Method       : exitMenu()
+// Filename     : fglform.cpp
+// Description  :
+//
+//------------------------------------------------------------------------------
+
+void FglForm::exitMenu()
+{
+    Fgl::Event ev;
+    ev.type = Fgl::MENUACTION_EVENT;
+    ev.attribute = "fgl_exit_menu";
+    emit fieldEvent(ev);
+}
 
 //------------------------------------------------------------------------------
 // Method       : closeEvent()
@@ -950,9 +974,14 @@ void FglForm::closeEvent(QCloseEvent *event)
 {
 MainFrame::vdcdebug("FglForm","closeEvent", "QCloseEvent *event");
    if(b_allowClose){
+      if(QObject::sender() == NULL)
+      {
+          //emit closeAction();
+      }
       event->accept();
       return QMainWindow::closeEvent(event);
    }
+
    event->ignore();
 
    if(menu() != NULL && menu()->isEnabled()){
@@ -1944,7 +1973,7 @@ void FglForm::revertState(Fgl::State state){
 void FglForm::checkState()
 {
 MainFrame::vdcdebug("FglForm","checkState", "");
-   if(p_dialog != NULL){
+   if(p_dialog != NULL || p_pulldown != NULL){
       checkActions();
       return;
    }
@@ -2030,9 +2059,10 @@ MainFrame::vdcdebug("FglForm","readSettingsLocal", "");
 void FglForm::contextMenuEvent(QContextMenuEvent *ev)
 {
 MainFrame::vdcdebug("FglForm","contextMenuEvent", "QContextMenuEvent *ev");
-   createContextMenu(ev->globalPos());
+createContextMenu(ev->globalPos());
    
 }
+
 void FglForm::createContextMenu(const QPoint &pos)
 {
 MainFrame::vdcdebug("FglForm","createContextMenu", "const QPoint &pos");
@@ -2113,7 +2143,7 @@ MainFrame::vdcdebug("FglForm","createContextMenu", "const QPoint &pos");
                }
             }
          }
-         
+
          break;
 
       case Fgl::INPUT:
@@ -2129,7 +2159,7 @@ MainFrame::vdcdebug("FglForm","createContextMenu", "const QPoint &pos");
                connect(action, SIGNAL(triggered()), formAction, SLOT(trigger()));
             }
          }
-         
+
          //Add all active actions from actionmenu to the contextmenu
          if(ActionMenu *p_menu = qobject_cast<ActionMenu *> (actionMenu())){
             if(p_menu->isVisible()){
@@ -2146,7 +2176,7 @@ MainFrame::vdcdebug("FglForm","createContextMenu", "const QPoint &pos");
          }
          break;
    }
-         
+
    if(contextMenu->actions().count() > 0){
       contextMenu->exec(menuPos);
    }
@@ -2518,7 +2548,7 @@ MainFrame::vdcdebug("FglForm","checkActions", "");
                }
             }
          }
-   //   }
+      }
       if(Dialog *p_dialog = qobject_cast<Dialog *> (dialog())){
          QList<QAction*> dialogActions = p_dialog->actions();
 
@@ -2541,7 +2571,29 @@ MainFrame::vdcdebug("FglForm","checkActions", "");
             }
          }
       }
-   }
+
+      if(Pulldown *pc_pulldown = qobject_cast<Pulldown *> (pulldown())){
+         QList<QAction*> pulldownActions = pc_pulldown->actions();
+
+         for(int i=0; i<pulldownActions.count(); i++){
+            if(Action *pAction = qobject_cast<Action *> (pulldownActions.at(i))){
+               for(int j=0; j<formActions.count(); j++){
+                  if(Action *fAction = qobject_cast<Action *> (formActions.at(j))){
+                     if(pAction->name() == fAction->name()){
+                        fAction->setEnabled(true);
+                           if(!fAction->image().isEmpty()){
+                              pAction->setIcon(QIcon(QString("pics:%1").arg(fAction->image())));
+                              pc_pulldown->refresh();
+                           }
+                        }
+                        break;
+                     }
+                  }
+               }
+            }
+         }
+
+
 
    if(input() || construct() || screenRecord()){
       for(int i=0; i<formActions.count(); i++){

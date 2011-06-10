@@ -28,6 +28,7 @@ HEADERS += confwin.h \
     models/prompt.h \
     models/response.h \
     models/table.h \
+    models/pulldown.h \
     context.h \ # fieldparsers/aubit2fields.h \
 # fieldparsers/xml2fields.h \
 # fieldparsers/xml2form.h \
@@ -51,6 +52,7 @@ SOURCES += confwin.cpp \
     models/prompt.cpp \
     models/response.cpp \
     models/table.cpp \
+    models/pulldown.cpp \
     context.cpp \ # fieldparsers/aubit2fields.cpp \
 # fieldparsers/xml2fields.cpp \
 # fieldparsers/xml2form.cpp \

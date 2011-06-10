@@ -29,6 +29,7 @@
 #include "actionmenu.h"
 #include "actions.h"
 #include "toolbar.h"
+#include "pulldown.h"
 #include "dialog.h"
 #include "table.h"
 #include <include/fgl.h>
@@ -88,7 +89,9 @@ public:
    void setActionMenu(ActionMenu*);
    ActionMenu* actionMenu(){ return p_actionMenu; };
    void setDialog(Dialog*);
+   void setPulldown(Pulldown*);
    Dialog* dialog(){ return p_dialog; };
+   Pulldown* pulldown() { return p_pulldown;};
    void setToolBar(ToolBar*);
    void setToolBar(QDomDocument);
    void checkToolBar();
@@ -140,6 +143,7 @@ public:
 
    QList<Fgl::Event> ql_menuEvents;
    QList<Fgl::Event> ql_dialogEvents;
+   QList<Fgl::Event> ql_pulldownEvents;
    QList<Fgl::Event> ql_formEvents;
    QList< QList<Fgl::Event> > ql_contextEvents;
    QList<QWidget*> ql_formFields;
@@ -213,6 +217,7 @@ public slots:
    void prevpage();
    void nexttab();
    void prevtab();
+   void exitMenu();
 
    void validateFields();
 
@@ -240,6 +245,7 @@ private:
    QList<RingMenu*> ql_menus;
    ActionMenu *p_actionMenu;
    Dialog *p_dialog;
+   Pulldown *p_pulldown;
    ToolBar *p_toolBar;
    QList<Action*> ql_formActions;
    QList<Action*> ql_defaultActions;
@@ -281,6 +287,7 @@ signals:
    void accepted();
    void setClearEvents();
    void setArrLine(int);
+   void closeAction();
 
 protected:
    bool eventFilter(QObject *obj, QEvent *event);

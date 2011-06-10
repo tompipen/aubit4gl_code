@@ -86,6 +86,8 @@ private:
 
    void createDialog(QString, QString, QString, QString);
    void createDialogButton(int, QString, QString);
+   void createPulldown(QString, QString, QString, QString);
+   void createPulldownButton(int, QString, QString);
    void createDialogAction(int, QString);
    void checkFields();
    bool b_newForm;
@@ -152,7 +154,7 @@ public slots:
    void sendDirect(QString);
    void setFieldOrder(QStringList);
    void setCursorPosition(int);
-
+   void closeProgramm();
    void setClearEvents();
    void fileBrowser(QString, QString, QString, QString, QString);
 
