@@ -358,10 +358,7 @@ void Parser::handleTableColumn(const QDomNode& xmlNode){
    TableModel *model = new TableModel(pageSize, colCount);
 
    TableView *p_screenRecord = new TableView(p_fglform);
-   qDebug() << "FGLFO" << this->p_fglform;
-   qDebug() << "FGLFO2" << p_screenRecord->parent();
    p_screenRecord->setParent(this->p_fglform);
-   qDebug() << "FGLFO3" << p_screenRecord->parent();
 
    p_screenRecord->tabName = name;
    p_screenRecord->setAccessibleName(name);
