@@ -62,9 +62,10 @@ MainFrame::vdcdebug("Pulldown","createAction", "int id, QString text");
    QFile img(QString("pics/%1").arg(image));
    if (!img.open(QIODevice::ReadOnly))
          image = "blank.png";
-
+qDebug()<<QString("pics:%1").arg(image);
    Action *action = new Action(text.toLower(), text);
-   action->setIcon(QIcon(QString("pics:%1").arg(image)));
+   action->setIcon(QIcon(QString("pics/%1").arg(image)));
+   action->setIconVisibleInMenu(true);
  //  action->setImage(QString("pics:%1").arg(image));
    //Hide the default close action.(Calls fgl_exit_menu action)
    if(text.toLower().trimmed() == "fgl_exit_menu")
