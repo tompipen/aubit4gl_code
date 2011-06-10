@@ -976,7 +976,8 @@ MainFrame::vdcdebug("FglForm","closeEvent", "QCloseEvent *event");
    if(b_allowClose){
       if(QObject::sender() == NULL)
       {
-          //emit closeAction();
+         connect(this, SIGNAL(closeAction()), this, SLOT(exitMenu()));
+          emit closeAction();
       }
       event->accept();
       return QMainWindow::closeEvent(event);

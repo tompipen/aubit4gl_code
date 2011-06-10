@@ -121,7 +121,7 @@ MainFrame::vdcdebug("ScreenHandler","createWindow", "QString windowTitle,QString
    connect(p_fglform, SIGNAL(sendDirect(QString)), this, SLOT(sendDirect(QString)));
    connect(p_fglform, SIGNAL(setClearEvents()), this, SLOT(setClearEvents()));
    connect(p_fglform, SIGNAL(setArrLine(int)), this, SLOT(setArrLine(int)));
-   connect(p_fglform, SIGNAL(closeAction()), this, SLOT(closeProgramm()));
+ //  connect(p_fglform, SIGNAL(closeAction()), this, SLOT(closeProgramm()));
 
    if(!qs_interfaceTitle.isNull())
       p_fglform->setWindowTitle(qs_interfaceTitle);
