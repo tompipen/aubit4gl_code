@@ -484,6 +484,8 @@ namespace Calltreeviewer
         {
             bool neededToUpdate = false;
 
+
+ 
             if (this._functionNo != functionNo)
             {
 
