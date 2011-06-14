@@ -2462,6 +2462,7 @@ static int process_cmd(struct command *cmd,int mode) {
 
 	case E_CMD_FOREACH_CMD:
 		add_symbol_assign(cmd->cmd_data.command_data_u.foreach_cmd.outputvals,last_mod,last_line,NULL);
+		call_cnt+=cache_expression_list( "", cmd->cmd_data.command_data_u.foreach_cmd.inputvals, mode);
 		add_symbol(calltree_get_ident(cmd->cmd_data.command_data_u.foreach_cmd.cursorname),last_mod,last_line,"CURSOR","FETCH");
 
 	  if (calls_something (cmd->cmd_data.command_data_u.foreach_cmd.foreach_commands))
@@ -3018,6 +3019,7 @@ static int process_cmd(struct command *cmd,int mode) {
 		break;
 
 	case E_CMD_OPEN_CURSOR_CMD:
+		call_cnt+=cache_expression_list( "", cmd->cmd_data.command_data_u.open_cursor_cmd.using_bind, mode);
 		add_symbol(calltree_get_ident(cmd->cmd_data.command_data_u.open_cursor_cmd.cursorname),last_mod,last_line,"CURSOR","OPEN");
 		break;
 
