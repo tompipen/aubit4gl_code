@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Windows.Forms;
 
 
 namespace AubitCalltreeViewer
@@ -134,6 +135,9 @@ namespace AubitCalltreeViewer
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute()]
         public WHEN[] WHEN;
+
+        [System.Xml.Serialization.XmlElementAttribute()]
+        public WHEN OTHERWISE;
     }
 
     /// <remarks/>
@@ -753,6 +757,8 @@ namespace AubitCalltreeViewer
 
         /// <remarks/>
         public COMMANDS COMMANDS;
+
+
 
  
     }
