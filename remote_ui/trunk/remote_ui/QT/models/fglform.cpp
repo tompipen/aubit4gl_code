@@ -2104,14 +2104,21 @@ MainFrame::vdcdebug("FglForm","createContextMenu", "const QPoint &pos");
    }
 */
 
-   contextMenu->addActions(ql_actions);
+   foreach(QAction *action, ql_actions)
+   {
+       if(action->text().toLower().trimmed() == "fgl_exit_menu")
+       {
+           action->setVisible(false);
+       }
+       contextMenu->addAction(action);
+   }
+//   contextMenu->addActions(ql_actions);
 
    if(contextMenu->actions().count() > 0){
       contextMenu->exec(menuPos);
    }
    delete contextMenu;
    return;
-
    switch(state())
    {
       case Fgl::IDLE:
@@ -2138,6 +2145,10 @@ MainFrame::vdcdebug("FglForm","createContextMenu", "const QPoint &pos");
                   QAction *formAction = actions().at(i);
                   if(formAction->isEnabled() || formAction->isVisible()){
                      QAction *action = new QAction(formAction->text(), this);
+                     if(action->text().trimmed().toLower() == "fgl_exit_menu")
+                     {
+                         action->setVisible(false);
+                     }
                      contextMenu->addAction(action);
                      connect(action, SIGNAL(triggered()), formAction, SLOT(trigger()));
                   }
