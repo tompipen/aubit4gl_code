@@ -858,6 +858,22 @@ namespace Calltreeviewer
                                 }
                                 buildNodes(moduleNo, functionNo, whenNode, casecmd.WHEN[a].COMMANDS, recurse, callsOnly, fullExpansion);
                             }
+
+
+                            if (casecmd.OTHERWISE!=null)
+                            {
+                                TreeNode whenNode;
+                                if (!callsOnly)
+                                {
+                                    whenNode = new MyLocationNode(moduleNo, functionNo, casecmd.OTHERWISE.LINE, "OTHERWISE " + casecmd.OTHERWISE.CONDITION);
+                                    newNode.Nodes.Add(whenNode);
+                                }
+                                else
+                                {
+                                    whenNode = selectedNode;
+                                }
+                                buildNodes(moduleNo, functionNo, whenNode, casecmd.OTHERWISE.COMMANDS, recurse, callsOnly, fullExpansion);
+                            }
                         }
                     }
                     break;

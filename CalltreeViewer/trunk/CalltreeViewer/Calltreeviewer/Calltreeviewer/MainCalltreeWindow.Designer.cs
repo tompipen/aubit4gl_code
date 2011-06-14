@@ -62,6 +62,7 @@ namespace Calltreeviewer
             this.RunsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.formsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.filesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.unparsedDynamicSQLToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mnLocationBack = new System.Windows.Forms.ToolStripMenuItem();
             this.mnLocationForward = new System.Windows.Forms.ToolStripMenuItem();
             this.test1ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -77,11 +78,10 @@ namespace Calltreeviewer
             this.panel1 = new System.Windows.Forms.Panel();
             this.lblTreeView = new System.Windows.Forms.Label();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
+            this.textBox1 = new SearchableControls.SearchableTextBox();
             this.listBox1 = new System.Windows.Forms.ListBox();
             this.panel2 = new System.Windows.Forms.Panel();
             this.lblListbox = new System.Windows.Forms.Label();
-            this.unparsedDynamicSQLToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.textBox1 = new SearchableControls.SearchableTextBox();
             this.menuStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.panel3.SuspendLayout();
@@ -373,6 +373,12 @@ namespace Calltreeviewer
             this.filesToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
             this.filesToolStripMenuItem.Text = "Files";
             // 
+            // unparsedDynamicSQLToolStripMenuItem
+            // 
+            this.unparsedDynamicSQLToolStripMenuItem.Name = "unparsedDynamicSQLToolStripMenuItem";
+            this.unparsedDynamicSQLToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
+            this.unparsedDynamicSQLToolStripMenuItem.Text = "Unparsed Dynamic SQL";
+            // 
             // mnLocationBack
             // 
             this.mnLocationBack.Name = "mnLocationBack";
@@ -532,8 +538,29 @@ namespace Calltreeviewer
             // 
             this.splitContainer2.Panel2.Controls.Add(this.listBox1);
             this.splitContainer2.Size = new System.Drawing.Size(1331, 533);
-            this.splitContainer2.SplitterDistance = 389;
+            this.splitContainer2.SplitterDistance = 388;
             this.splitContainer2.TabIndex = 4;
+            // 
+            // textBox1
+            // 
+            this.textBox1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.textBox1.Font = new System.Drawing.Font("Courier New", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.textBox1.HideSelection = false;
+            this.textBox1.Location = new System.Drawing.Point(0, 0);
+            this.textBox1.Multiline = true;
+            this.textBox1.Name = "textBox1";
+            this.textBox1.ReadOnly = true;
+            this.textBox1.ScrollBars = System.Windows.Forms.ScrollBars.Both;
+            this.textBox1.Size = new System.Drawing.Size(1331, 388);
+            this.textBox1.TabIndex = 3;
+            this.textBox1.WordWrap = false;
+            this.textBox1.searchStarted += new SearchableControls.SearchableTextBox.searchStartedArgs(this.textBox1_searchStarted);
+            this.textBox1.searchRelated += new SearchableControls.SearchableTextBox.searchForLineArgs(this.textBox1_searchRelated);
+            this.textBox1.searchForFunctionCall += new SearchableControls.SearchableTextBox.searchForFunctionCallArgs(this.textBox1_searchForFunctionCall);
+            this.textBox1.clickContext += new System.EventHandler(this.textBox1_clickContext);
+            this.textBox1.DoubleClick += new System.EventHandler(this.textBox1_DoubleClick);
+            this.textBox1.MouseMove += new System.Windows.Forms.MouseEventHandler(this.textBox1_MouseMove);
+            this.textBox1.MouseUp += new System.Windows.Forms.MouseEventHandler(this.textBox1_MouseUp);
             // 
             // listBox1
             // 
@@ -543,7 +570,7 @@ namespace Calltreeviewer
             this.listBox1.HorizontalScrollbar = true;
             this.listBox1.Location = new System.Drawing.Point(0, 0);
             this.listBox1.Name = "listBox1";
-            this.listBox1.Size = new System.Drawing.Size(1331, 140);
+            this.listBox1.Size = new System.Drawing.Size(1331, 141);
             this.listBox1.TabIndex = 4;
             this.listBox1.SelectedIndexChanged += new System.EventHandler(this.listBox1_SelectedIndexChanged);
             this.listBox1.DoubleClick += new System.EventHandler(this.dblClickListbox);
@@ -568,33 +595,6 @@ namespace Calltreeviewer
             this.lblListbox.TabIndex = 0;
             this.lblListbox.Text = "______";
             this.lblListbox.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // unparsedDynamicSQLToolStripMenuItem
-            // 
-            this.unparsedDynamicSQLToolStripMenuItem.Name = "unparsedDynamicSQLToolStripMenuItem";
-            this.unparsedDynamicSQLToolStripMenuItem.Size = new System.Drawing.Size(198, 22);
-            this.unparsedDynamicSQLToolStripMenuItem.Text = "Unparsed Dynamic SQL";
-            // 
-            // textBox1
-            // 
-            this.textBox1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.textBox1.Font = new System.Drawing.Font("Courier New", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textBox1.HideSelection = false;
-            this.textBox1.Location = new System.Drawing.Point(0, 0);
-            this.textBox1.Multiline = true;
-            this.textBox1.Name = "textBox1";
-            this.textBox1.ReadOnly = true;
-            this.textBox1.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.textBox1.Size = new System.Drawing.Size(1331, 389);
-            this.textBox1.TabIndex = 3;
-            this.textBox1.WordWrap = false;
-            this.textBox1.searchStarted += new SearchableControls.SearchableTextBox.searchStartedArgs(this.textBox1_searchStarted);
-            this.textBox1.searchRelated += new SearchableControls.SearchableTextBox.searchForLineArgs(this.textBox1_searchRelated);
-            this.textBox1.searchForFunctionCall += new SearchableControls.SearchableTextBox.searchForFunctionCallArgs(this.textBox1_searchForFunctionCall);
-            this.textBox1.clickContext += new System.EventHandler(this.textBox1_clickContext);
-            this.textBox1.DoubleClick += new System.EventHandler(this.textBox1_DoubleClick);
-            this.textBox1.MouseMove += new System.Windows.Forms.MouseEventHandler(this.textBox1_MouseMove);
-            this.textBox1.MouseUp += new System.Windows.Forms.MouseEventHandler(this.textBox1_MouseUp);
             // 
             // MainCalltreeWindow
             // 
