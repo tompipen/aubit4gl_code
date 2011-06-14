@@ -373,6 +373,12 @@ class TextEdit : public QTextEdit
 {
    Q_OBJECT
 
+
+   Q_PROPERTY(QString style
+              READ getStyleProb
+              WRITE setStyleProb
+              DESIGNABLE true)
+
 public:
    TextEdit(QWidget *parent = 0);
    QString qs_sqlType;
@@ -383,7 +389,9 @@ public:
    int x;
    int y;
    int w;
-
+   void setStyleProb(const QString s){ s_style = s; }
+   QString getStyleProb() const { return s_style; }
+   QString s_style;
    void setNoEntry(bool ro);
    bool noEntry() { return b_noEntry; };
    void setAutoNext(bool ro) { b_autoNext = ro; };

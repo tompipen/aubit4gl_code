@@ -1481,6 +1481,7 @@ MainFrame::vdcdebug("WidgetHelper","createTextEdit", "const QDomElement& formFie
    TextEdit *textEdit = new TextEdit(parent);
    textEdit->setAccessibleName(name);
    textEdit->setObjectName(colName);
+   textEdit->setProperty("style", style);
    textEdit->name = name;
    textEdit->colName = colName;
    textEdit->sqlTabName = tabName;
