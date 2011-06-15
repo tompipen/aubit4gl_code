@@ -1041,6 +1041,24 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
          if(qs_name == "ui.combobox.gettag"){
          }
 
+         if(qs_name == "ui.combobox.getindexof"){
+             int id = -1;
+             QString text;
+             for(int k=0; k<paramsElement.childNodes().count(); k++){
+                QDomElement valuesElement = paramsElement.childNodes().at(k).toElement();
+                if(k == 0){
+                   id = valuesElement.text().toInt();
+                }
+
+                if(k == 1){
+                   text = valuesElement.text();
+                }
+             }
+             if(ComboBox *cb = qobject_cast<ComboBox *> (p_currScreenHandler->currForm()->findFieldById(id))){
+                 value = QString::number(cb->findText(text));
+             }
+         }
+
          if(qs_name == "ui.menu.showhide"){
              QHash<QString, bool> qh_menuoptions;
              QDomElement values = childElement.firstChildElement();
