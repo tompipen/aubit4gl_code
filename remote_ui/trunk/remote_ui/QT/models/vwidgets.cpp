@@ -402,14 +402,12 @@ void LineEdit::dropEvent(QDropEvent *e)
     if(TableView *tv1 = qobject_cast<TableView*> (e->source()))
     {
        tv = tv1;
+       if(FglForm *p_fglform = qobject_cast<FglForm*> (tv->p_fglform))
+       {
+          connect(this, SIGNAL(dropSuccess()), p_fglform, SLOT(dragSuccess()));
+       }
+
     }
-
-
-    if(FglForm *p_fglform = qobject_cast<FglForm*> (tv->p_fglform))
-    {
-       connect(this, SIGNAL(dropSuccess()), p_fglform, SLOT(dragSuccess()));
-    }
-
 
 
     //Handle drop for files and directories (paste path into the field (without file://)
