@@ -2060,6 +2060,8 @@ MainFrame::vdcdebug("FglForm","readSettingsLocal", "");
 void FglForm::contextMenuEvent(QContextMenuEvent *ev)
 {
 MainFrame::vdcdebug("FglForm","contextMenuEvent", "QContextMenuEvent *ev");
+ev->accept();
+return;
 createContextMenu(ev->globalPos());
    
 }
@@ -2067,6 +2069,7 @@ createContextMenu(ev->globalPos());
 void FglForm::createContextMenu(const QPoint &pos)
 {
 MainFrame::vdcdebug("FglForm","createContextMenu", "const QPoint &pos");
+return;
    QMenu* contextMenu = new QMenu(this);
 /*
    contextMenu->setStyleSheet("QMenu { background-color: blue;}  \
