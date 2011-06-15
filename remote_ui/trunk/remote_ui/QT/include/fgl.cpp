@@ -237,7 +237,7 @@ namespace Fgl {
 
       bool decFound = false;
       for(int i=0; i<value.length(); i++){
-         if(value.at(i) == '.'){
+         if(value.at(i) == ','){
             decFound = true;
             continue;
          }
@@ -489,6 +489,7 @@ namespace Fgl {
 
       QString prefix;
       QChar dec;
+      QChar tdel;
       QString suffix;
       const QString DBMONEY = env["DBMONEY"];
       decFound = false;
@@ -507,9 +508,24 @@ namespace Fgl {
          }
       }
 
+      if(dec == '.'){
+          tdel = ',';
+      }
+      else{
+          tdel = '.';
+      }
+
       for(int a=qs_str.length()-1; a>=0; a--){
-         if(qs_str.at(a) == '.'){
+          if(qs_str.at(a) == ','){
+              qs_str[a] = tdel;
+          }
+      }
+
+      for(int a=qs_str.length()-1; a>=0; a--){
+          if(qs_str.at(a) == '.'){
+            //only find first (decimal) delimiter
             qs_str[a] = dec;
+            break;
          }
       }
 
@@ -813,6 +829,37 @@ namespace Fgl {
          case DTYPE_MONEY:
             {
                bool ok;
+               QString prefix;
+               QChar dec;
+               QChar tdel;
+               QString suffix;
+               const QString DBMONEY = env["DBMONEY"];
+               bool decFound = false;
+               for(int i=0;i<DBMONEY.size(); i++){
+                  if(DBMONEY.at(i) == QChar('.') || DBMONEY.at(i) == QChar(',')){
+                     decFound = true;
+                     dec = DBMONEY.at(i);
+                     continue;
+                  }
+
+                  if(!decFound){
+                     prefix += DBMONEY.at(i);
+                  }
+                  else{
+                     suffix += DBMONEY.at(i);
+                  }
+               }
+
+               if(dec == '.'){
+                   tdel = ',';
+               }
+               else{
+                   tdel = '.';
+               }
+
+               //remove tdelimiter
+               value.replace(tdel, "");
+
                value.toDouble(&ok);
                if(ok)
                {

@@ -1880,7 +1880,7 @@ MainFrame::vdcdebug("WidgetHelper","setFieldText", "QObject *object, QString fie
    }
 
    if(LineEdit *widget = qobject_cast<LineEdit *> (object)){
-      fieldValue = Fgl::usingFunc(widget->format(), fieldValue, widget->dataType());
+       fieldValue = Fgl::usingFunc(widget->format(), fieldValue, widget->dataType());
 
       if(fieldValue.trimmed() != widget->text())
          widget->setText(fieldValue.trimmed());
@@ -1925,32 +1925,33 @@ MainFrame::vdcdebug("WidgetHelper","fieldText", "QObject *object");
    }
 
    if(LineEdit *widget = qobject_cast<LineEdit *> (object)){
+      QString text = widget->text();
       if(widget->sqlTabName == "formonly")
       {
          int cnt_comma = 0;
-         for(int i = 0; i<widget->text().size(); i++)
+         for(int i = 0; i<text.size(); i++)
           {
-             QString zeichen = widget->text().at(i);
+             QString zeichen = text.at(i);
              if(zeichen == ",")
              {
                  cnt_comma++;
                  if(cnt_comma > 1)
                  {
-                     return widget->text();
+                     return text;
                  }
                  continue;
              }
              if(!zeichen.at(0).isNumber())
              {
-                 return widget->text();
+                 return text;
              }
          }
-         return widget->text().replace(",",".");
+         return text.replace(",",".");
 
       }
       if(widget->sqlType().contains("FLOAT") || widget->sqlType().contains("DECIMAL"))
       {
-         return widget->text().replace(",",".");
+         return text.replace(",",".");
       }
       return widget->text();
    }

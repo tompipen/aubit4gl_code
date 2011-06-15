@@ -205,7 +205,7 @@ MainFrame::vdcdebug("TableView","setArrCount", "int cnt");
    }
    else{
       if(i_arrCount < table->rowCount(QModelIndex()) && i_arrCount > 0){
-          int newRows = table->rowCount(QModelIndex()) - i_arrCount;
+         int newRows = table->rowCount(QModelIndex()) - i_arrCount;
          //table->removeRows(i_arrCount-1, newRows, QModelIndex());
       }
    }
