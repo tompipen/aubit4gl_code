@@ -409,7 +409,7 @@ void LineEdit::dropEvent(QDropEvent *e)
 
     }
 
-
+    connect(this, SIGNAL(dropSuccess()), parent(), SLOT(dropSuccess()));
     //Handle drop for files and directories (paste path into the field (without file://)
     if(e->mimeData()->hasUrls() || e->mimeData()->hasText() ){
         QString text;
@@ -428,8 +428,13 @@ void LineEdit::dropEvent(QDropEvent *e)
         Fgl::Event event;
         event.type = Fgl::AFTER_FIELD_EVENT;
         event.attribute = this->objectName();
+        if(FglForm *p_fglform = qobject_cast<FglForm*> (parent()))
+        {
+            p_fglform->raise();
+        }
         emit fieldEvent(event);
         emit dropSuccess();
+
     }
 }
 
@@ -1929,6 +1934,7 @@ MainFrame::vdcdebug("WidgetHelper","fieldText", "QObject *object");
       if(widget->sqlTabName == "formonly")
       {
          int cnt_comma = 0;
+//  text.replace(".","");
          for(int i = 0; i<text.size(); i++)
           {
              QString zeichen = text.at(i);

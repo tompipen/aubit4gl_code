@@ -949,6 +949,21 @@ void FglForm::dragSuccess()
 }
 
 //------------------------------------------------------------------------------
+// Method       : dropSuccess()
+// Filename     : fglform.cpp
+// Description  :
+//
+//------------------------------------------------------------------------------
+
+void FglForm::dropSuccess()
+{
+    Fgl::Event ev;
+    ev.type = Fgl::ONACTION_EVENT;
+    ev.attribute = "drop";
+    emit fieldEvent(ev);
+}
+
+//------------------------------------------------------------------------------
 // Method       : exitMenu()
 // Filename     : fglform.cpp
 // Description  :

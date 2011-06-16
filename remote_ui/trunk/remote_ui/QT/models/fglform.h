@@ -203,7 +203,6 @@ public slots:
 
    void accept();
    void interrupt();
-   void dragSuccess();
    void editcopy();
    void editcut();
    void editpaste();
@@ -218,7 +217,8 @@ public slots:
    void nexttab();
    void prevtab();
    void exitMenu();
-
+   void dropSuccess();
+   void dragSuccess();
    void validateFields();
 
    void clearCurrentFocus();
