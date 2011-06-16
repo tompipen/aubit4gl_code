@@ -349,6 +349,7 @@ int rval_0;
   if (!okToProcess) {
     A4GL_push_null(DTYPE_INT,0);
   } else {
+    A4GL_push_long(rval_0);
   }
   return 1;
 }
