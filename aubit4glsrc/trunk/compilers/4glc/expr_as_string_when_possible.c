@@ -404,7 +404,7 @@ expr_as_string_when_possible (expr_str * e)
     case ET_EXPR_OP_OR:
       {
 	char buff[2000];
-	sprintf (buff, "%s AND %s", expr_as_string_when_possible (e->expr_str_u.expr_op->left),
+	sprintf (buff, "%s OR %s", expr_as_string_when_possible (e->expr_str_u.expr_op->left),
 		 expr_as_string_when_possible (e->expr_str_u.expr_op->right));
 	return strdup (buff);
       }
