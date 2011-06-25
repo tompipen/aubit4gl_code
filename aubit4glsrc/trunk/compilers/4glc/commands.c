@@ -1006,7 +1006,11 @@ char errbuff[256];
 int a;
    c=new_command(E_CMD_INIT_CMD);
 //printf("p_varlist->list.list_len=%d\n", p_varlist->list.list_len);
-	p_varlist=expand_variables_in_expr_str_list(p_varlist,1,0);
+//
+//
+	
+
+p_varlist=expand_variables_in_expr_str_list(p_varlist,1,0);
 
 	for (a=0;a<p_varlist->list.list_len;a++) {
 			ensure_variable(errbuff, p_varlist->list.list_val[a],0);
@@ -1351,6 +1355,19 @@ struct command *c;
 
    return c;
 }
+
+
+struct command *new_mlet_cmd(expr_str_list* p_vars,expr_str *p_val) {
+struct command *c;
+   	c=new_command(E_CMD_MLET_CMD);
+   	c->cmd_data.command_data_u.mlet_cmd.vars=p_vars;
+   	c->cmd_data.command_data_u.mlet_cmd.val=p_val;
+
+   	inc_var_assigned_from_binding_list(p_vars);
+
+   return c;
+}
+
 
 struct command *new_case_cmd(expr_str* p_case_expr,struct whens *p_whens,s_commands *p_otherwise,int block_id) {
 struct command *c;

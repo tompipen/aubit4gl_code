@@ -11,6 +11,9 @@ let_cmd : KW_LET atline obind_var_let_list EQUAL op_expr_null {
 }
 ;
 
+
+
+
 op_expr_null : 
 fgl_expr_concat  {
 		$<ptr_list>$=$<ptr_list>1;

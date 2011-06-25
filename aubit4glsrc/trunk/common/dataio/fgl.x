@@ -1,4 +1,4 @@
-/* $Id: fgl.x,v 1.64 2011-05-05 09:02:16 mikeaubury Exp $ */
+/* $Id: fgl.x,v 1.65 2011-06-25 18:00:02 mikeaubury Exp $ */
 typedef string str<>;
 typedef string sql_ident<>;
 
@@ -200,6 +200,7 @@ E_CMD_SPL_BLOCK_CMD,
 E_CMD_EXECUTE_PROCEDURE_CMD,
 E_CMD_TODO_CMD,
 E_CMD_DONE_CMD,
+E_CMD_MLET_CMD,
 
 E_CMD_LAST
 };
@@ -747,6 +748,11 @@ struct struct_start_cmd {
 struct struct_let_cmd {
 	struct expr_str_list* vars;
 	struct expr_str_list* vals;
+};
+
+struct struct_mlet_cmd {
+	struct expr_str_list* vars;
+	struct expr_str* val;
 };
 
 struct rowscols  {
@@ -1711,6 +1717,7 @@ union command_data switch (enum cmd_type type) {
 	case E_CMD_SCROLL_CMD: struct_scroll_cmd scroll_cmd;
 	case E_CMD_LABEL_CMD: struct_label_cmd label_cmd;
 	case E_CMD_LET_CMD: struct_let_cmd let_cmd;
+	case E_CMD_MLET_CMD: struct_mlet_cmd mlet_cmd;
 	case E_CMD_LOCATE_CMD: struct_locate_cmd locate_cmd;
 	case E_CMD_AT_TERM_CMD: struct_at_term_cmd at_term_cmd;
 	case E_CMD_RETURN_CMD: struct_return_cmd return_cmd;
