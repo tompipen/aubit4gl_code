@@ -949,6 +949,20 @@ print_label_cmd (struct_label_cmd * cmd_data)
 }
 
 
+int
+print_mlet_cmd (struct_mlet_cmd * cmd_data) {
+int a;
+
+	for (a=0;a<cmd_data->vars->list.list_len;a++) {
+      		print_expr (cmd_data->val);
+      		print_pop_usage (cmd_data->vars->list.list_val[a]);
+	}
+return 1;
+
+}
+
+
+
 /******************************************************************************/
 int
 print_let_cmd (struct_let_cmd * cmd_data)
