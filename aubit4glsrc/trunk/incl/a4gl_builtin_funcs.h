@@ -59,6 +59,7 @@ int aclfgl_aclfgl_tea_string_encipher(int n);
 int aclfgl_aclfgl_tea_string_decipher(int n);
 int aclfgl_fgl_dialog_seticon(int n);
 int aclfgl_aclfgl_get_error_details(int n);
+int aclfgl_acl_copy(int n) ;
 
 
 

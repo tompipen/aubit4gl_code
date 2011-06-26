@@ -126,3 +126,5 @@ spl_vname	<spl variable>
 win_attributes	<windows attribute>
 spl_dtype	<spl datatype>
 var_ident_qchar_e	<variable_or_identifier>
+attribs_sec	<attributes>
+events_construct	<Construct Events>

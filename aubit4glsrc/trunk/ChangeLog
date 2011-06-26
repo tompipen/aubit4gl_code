@@ -3,8 +3,6 @@ Sun Jun 26 15:27:20 BST 2011
 ---------------------------
 1.2_25 Released
 ---------------------------
-	2011-06-26 15:04  naurus
-	
 	2011-06-26 14:57  naurus
 	
 	Added WHENEVER SIGNAL SIGUSR1|SIGUSR2|Any-unix-signal-int CALL
@@ -12,21 +10,9 @@ Sun Jun 26 15:27:20 BST 2011
 	gets called if the respective signal is sent to the running
 	program.
 	
-	2011-06-25 19:01  mikeaubury
-	
 	2011-06-25 19:00  mikeaubury
 	
 	Added MLET with Nate...
-	
-	2011-06-17 15:53  mikeaubury
-	
-	2011-06-16 21:04  fortiz
-	
-	,
-	
-	2011-06-16 09:18  mikeaubury
-	
-	2011-06-14 17:03  mikeaubury
 	
 	2011-06-09 17:28  mikeaubury
 	
@@ -38,19 +24,9 @@ Sun Jun 26 15:27:20 BST 2011
 	
 	Allow TEXT and BYTE blobs to be DISPLAYed TO in XML GUI
 	
-	2011-05-30 14:40  mikeaubury
-	
-	2011-05-30 13:49  mikeaubury
-	
 	2011-05-27 13:47  mikeaubury
 	
 	ON KEY ... EXIT CONSTRUCT .. fixup for XML UI
-	
-	2011-05-20 20:34  mikeaubury
-	
-	2011-05-18 18:29  mikeaubury
-	
-	2011-05-17 18:26  mikeaubury
 	
 	2011-05-17 18:23  mikeaubury
 	

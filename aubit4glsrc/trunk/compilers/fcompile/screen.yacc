@@ -1166,8 +1166,14 @@ field_type : FORMONLY DOT field_name field_datatype_null {
 }
 | named_or_kw_any {
 	struct struct_scr_field *fld;
+	char *tab;
 	fld=A4GL_get_fld();
-	fld->tabname=strdup(fcompile_find_table($<str>1));
+	tab=fcompile_find_table($<str>1);
+	if (tab) {
+		fld->tabname=strdup(fcompile_find_table($<str>1));
+	} else {
+		fld->tabname=0;
+	}
 	fld->colname=acl_strdup($<str>1);
 	if (fld->tabname!=0) {
 		fld->not_null=0;

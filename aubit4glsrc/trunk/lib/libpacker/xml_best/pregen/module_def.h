@@ -1,5 +1,5 @@
 /* XML processor/application API for module_def.dtd.
- * Generated 2011/05/18 18:36:06.
+ * Generated 2011/06/26 15:08:53.
  *
  * This program was generated with the FleXML XML processor generator.
  * FleXML is Copyright (C) 1999-2005 Kristoffer Rose.  All rights reserved.
@@ -471,6 +471,8 @@ extern void STag_struct_menu_cmd(void);
 extern void ETag_struct_menu_cmd(void);
 extern void STag_struct_message_cmd(void);
 extern void ETag_struct_message_cmd(void);
+extern void STag_struct_mlet_cmd(void);
+extern void ETag_struct_mlet_cmd(void);
 extern void STag_struct_move_cmd(void);
 extern void ETag_struct_move_cmd(void);
 extern void STag_struct_msg_box_cmd(void);
@@ -597,6 +599,8 @@ extern void STag_struct_validate_cmd(void);
 extern void ETag_struct_validate_cmd(void);
 extern void STag_struct_whenever_cmd(void);
 extern void ETag_struct_whenever_cmd(void);
+extern void STag_struct_whenever_signal_cmd(void);
+extern void ETag_struct_whenever_signal_cmd(void);
 extern void STag_struct_while_cmd(void);
 extern void ETag_struct_while_cmd(void);
 extern void STag_u_pragmas(void);
@@ -691,6 +695,8 @@ typedef int AT_s_sli_cast_datatype;
 #define AU_s_sli_cast_datatype NULL
 typedef int AT_struct_return_cmd_with_resume;
 #define AU_struct_return_cmd_with_resume NULL
+typedef int AT_struct_whenever_signal_cmd_sigtype;
+#define AU_struct_whenever_signal_cmd_sigtype NULL
 typedef int AT_int_nm;
 #define AU_int_nm NULL
 typedef int AT_assoc_subscript_subscript_string;
@@ -1735,6 +1741,8 @@ typedef int AT_s_function_definition_lineno;
 #define AU_s_function_definition_lineno NULL
 typedef int AT_struct_construct_cmd_sio;
 #define AU_struct_construct_cmd_sio NULL
+typedef int AT_struct_whenever_signal_cmd_function_name;
+#define AU_struct_whenever_signal_cmd_function_name NULL
 typedef int AT_struct_hide_cmd_nm;
 #define AU_struct_hide_cmd_nm NULL
 typedef int AT_s_expr_interval_intval;
@@ -1869,6 +1877,8 @@ typedef int AT_struct_at_term_cmd_nm;
 #define AU_struct_at_term_cmd_nm NULL
 typedef int AT_constant_data_data_i;
 #define AU_constant_data_data_i NULL
+typedef int AT_struct_mlet_cmd_nm;
+#define AU_struct_mlet_cmd_nm NULL
 typedef int AT_s_select_list_item_extend_nm;
 #define AU_s_select_list_item_extend_nm NULL
 typedef int AT_report_format_section_entry_nm;
@@ -1983,6 +1993,8 @@ typedef int AT_struct_enable_cmd_nm;
 #define AU_struct_enable_cmd_nm NULL
 typedef int AT_struct_while_cmd_block_id;
 #define AU_struct_while_cmd_block_id NULL
+typedef int AT_struct_whenever_signal_cmd_nm;
+#define AU_struct_whenever_signal_cmd_nm NULL
 typedef int AT_command_module;
 #define AU_command_module NULL
 typedef int AT_s_import_legacy_definition_funcname;
@@ -2150,6 +2162,8 @@ extern AT_s_sli_cast_datatype AX_s_sli_cast_datatype;
 #define A_s_sli_cast_datatype (bufferstack + AX_s_sli_cast_datatype)
 extern AT_struct_return_cmd_with_resume AX_struct_return_cmd_with_resume;
 #define A_struct_return_cmd_with_resume (bufferstack + AX_struct_return_cmd_with_resume)
+extern AT_struct_whenever_signal_cmd_sigtype AX_struct_whenever_signal_cmd_sigtype;
+#define A_struct_whenever_signal_cmd_sigtype (bufferstack + AX_struct_whenever_signal_cmd_sigtype)
 extern AT_int_nm AX_int_nm;
 #define A_int_nm (bufferstack + AX_int_nm)
 extern AT_assoc_subscript_subscript_string AX_assoc_subscript_subscript_string;
@@ -3194,6 +3208,8 @@ extern AT_s_function_definition_lineno AX_s_function_definition_lineno;
 #define A_s_function_definition_lineno (bufferstack + AX_s_function_definition_lineno)
 extern AT_struct_construct_cmd_sio AX_struct_construct_cmd_sio;
 #define A_struct_construct_cmd_sio (bufferstack + AX_struct_construct_cmd_sio)
+extern AT_struct_whenever_signal_cmd_function_name AX_struct_whenever_signal_cmd_function_name;
+#define A_struct_whenever_signal_cmd_function_name (bufferstack + AX_struct_whenever_signal_cmd_function_name)
 extern AT_struct_hide_cmd_nm AX_struct_hide_cmd_nm;
 #define A_struct_hide_cmd_nm (bufferstack + AX_struct_hide_cmd_nm)
 extern AT_s_expr_interval_intval AX_s_expr_interval_intval;
@@ -3328,6 +3344,8 @@ extern AT_struct_at_term_cmd_nm AX_struct_at_term_cmd_nm;
 #define A_struct_at_term_cmd_nm (bufferstack + AX_struct_at_term_cmd_nm)
 extern AT_constant_data_data_i AX_constant_data_data_i;
 #define A_constant_data_data_i (bufferstack + AX_constant_data_data_i)
+extern AT_struct_mlet_cmd_nm AX_struct_mlet_cmd_nm;
+#define A_struct_mlet_cmd_nm (bufferstack + AX_struct_mlet_cmd_nm)
 extern AT_s_select_list_item_extend_nm AX_s_select_list_item_extend_nm;
 #define A_s_select_list_item_extend_nm (bufferstack + AX_s_select_list_item_extend_nm)
 extern AT_report_format_section_entry_nm AX_report_format_section_entry_nm;
@@ -3442,6 +3460,8 @@ extern AT_struct_enable_cmd_nm AX_struct_enable_cmd_nm;
 #define A_struct_enable_cmd_nm (bufferstack + AX_struct_enable_cmd_nm)
 extern AT_struct_while_cmd_block_id AX_struct_while_cmd_block_id;
 #define A_struct_while_cmd_block_id (bufferstack + AX_struct_while_cmd_block_id)
+extern AT_struct_whenever_signal_cmd_nm AX_struct_whenever_signal_cmd_nm;
+#define A_struct_whenever_signal_cmd_nm (bufferstack + AX_struct_whenever_signal_cmd_nm)
 extern AT_command_module AX_command_module;
 #define A_command_module (bufferstack + AX_command_module)
 extern AT_s_import_legacy_definition_funcname AX_s_import_legacy_definition_funcname;

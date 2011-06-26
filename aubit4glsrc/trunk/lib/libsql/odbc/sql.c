@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.243 2011-04-14 17:00:47 mikeaubury Exp $
+# $Id: sql.c,v 1.244 2011-06-26 14:31:41 mikeaubury Exp $
 #
 */
 
@@ -636,11 +636,6 @@ prettyprint_sql (char *sql, struct BINDING *ibind, int nibind, char *fromwhere)
 	}
     }
 
-	if ( A4GL_isyes (acl_getenv ("LOGODBCSQLPID"))) { // @ENV  LOGODBCSQLPID - Y/N - append the process ID to the filename 
-		char smbuff[200];
-		sprintf(smbuff,".%d",getpid());
-		strcat(fname,smbuff);
-	}
 
     if (!log_sql)
         return;
@@ -651,6 +646,11 @@ prettyprint_sql (char *sql, struct BINDING *ibind, int nibind, char *fromwhere)
     if (first_open)
     {
         first_open = 0;
+	if ( A4GL_isyes (acl_getenv ("LOGODBCSQLPID"))) { // @ENV  LOGODBCSQLPID - Y/N - append the process ID to the filename 
+		char smbuff[200];
+		sprintf(smbuff,".%d",getpid());
+		strcat(fname,smbuff);
+	}
         f = fopen (fname, "w");
     }
     else
@@ -768,8 +768,10 @@ prettyprint_sql (char *sql, struct BINDING *ibind, int nibind, char *fromwhere)
         c++;
     }
     buff[b] = 0;
-    FPRINTF (f, "%s;\n", buff);
-    fclose (f);
+    if (f) {
+    	FPRINTF (f, "%s;\n", buff);
+    	fclose (f);
+    }
 }
 
 

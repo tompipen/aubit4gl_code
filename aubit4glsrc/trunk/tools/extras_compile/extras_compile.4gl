@@ -415,7 +415,7 @@ function compile_optionals()
 	call run("FORMXML Packer", "cd lib/libpacker/formxml; make",0)
 	call run("Optimised 4glc", "cd compilers/4glc; make opt",0)
 	call run("SQL Command parser", "cd compilers/sqlcmd; make ",0)
-	call run("Plain text form decompile", "cd compilers/fcompile; make fdecompile_scr",0)
+	call run("Plain text form decompile", "cd compilers/fcompile; make ../../bin/fdecompile_scr",0)
 
 
 end function

@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: corba_server_util.c,v 1.45 2011-06-26 13:57:35 naurus Exp $
+# $Id: corba_server_util.c,v 1.46 2011-06-26 14:31:41 mikeaubury Exp $
 #
 */
 
@@ -1313,7 +1313,6 @@ etk_name_service_resolve (CosNaming_NamingContext name_service, gchar * id_vec[]
 
   return retval;
 }
-
 
 
 
