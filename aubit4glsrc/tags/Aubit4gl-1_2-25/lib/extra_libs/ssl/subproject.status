@@ -1,0 +1,16 @@
+Name: libA4GL_ssl
+Parent: aubit4glsrc
+Description: Low-level SSL access functions. No x4GL language bindings.
+Functionality: SSL access 
+Build:
+Example:
+Depends: None
+Documentation:
+Regressed: No
+Maintainer: MA
+Status: 1
+Todo:
+Notes: 
+
+
+

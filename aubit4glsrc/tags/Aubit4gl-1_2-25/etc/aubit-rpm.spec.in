@@ -1,0 +1,1019 @@
+###########################################################################
+#			RPM Package config file for Aubit 4gl
+#
+###########################################################################
+
+#
+# $Id: aubit-rpm.spec.in,v 1.29 2007-04-06 07:20:56 afalout Exp $
+#
+
+#--------------------------------------------------------------------------
+# TODO:
+# - create signature
+# - use RedHat plugin for Eclipse for edidting this file
+# - Use RPMlint
+# - separate all plug-ins to separate rpm's so we can enable dependencies
+# - mark license and readme files as --percent--license and --percent--readme
+# - use --with-xx & --without-xx to allow user to change A4GL_USER_INTERACTION
+#   and output verbosity
+# - verify prereqs for both install and build
+# - #TODO - we should create user & group aubit, so we dont use root here
+#
+#--------------------------------------------------------------------------
+
+#--------------------------------------------------------------------------
+# NOTES:
+# - See /usr/lib/rpm for available macros
+# - WARNING - RPM is a system intentionally designed to NOT have user intractions
+# - According to some RedHat developers, "rpm is an evil hack. <shrug>" And I 
+#   cant help but agree. Allways remember that RefHat created it as packaging
+#   for there OS - and not for application distribution. It sucs big time and if 
+#   it was not in LSB specification, I would rather be having a root canal then
+#   trying to make this work :-(
+#--------------------------------------------------------------------------
+
+#--------------------------------------------------------------------------
+# (replace --percent-- with real percent sign - must hide it as comments dont 
+# work here)
+#
+# Interesting macros maybe for future use:
+#
+# macro: --percent--suse_update_desktop_file
+#     Used to add easily a category to .desktop files according to XDG
+#     standard. see /usr/lib/rpm/suse_update_desktop_file.sh
+#
+#Prints to stderr
+#	--percent--{echo:Performing post-install tasks...}
+#
+#Prints message to stderr and returns BADSPEC
+#	--percent--{error:nessage}
+#
+#Print warning to stderr
+#	--percent--{warn:this and that}
+#
+#--percent--if --percent--build_qsa
+#--percent--exclude --percent--_libdir/libqsa.so.*
+#--percent--endif
+
+#--with-xxx --without-xx
+
+#--------------------------------------------------------------------------
+
+
+###################
+#Variables section
+#--------------------------------------------------------------------------
+#
+# WARNING! WARNING! WARNING! commenting out lines in this section WILL BE 
+# IGNORED AND THERE CONTENT PROCESSED REGARDLESS!!!!! So when you want to 
+# comment out any line containing percentage sign, use '--percent--' instead.
+#
+# User can override this variables when running rpm by using ...TODO...
+#
+#--------------------------------------------------------------------------
+# As RPM demands root privilege to install anything, it is pointless to 
+# install anything not available system-wide. User can specify a --prefix flag to 
+# rpm to relocate it to some other place. 
+#
+# Added -rpm to file name to avoid clashing with other types of installation (tarball, autopackage...)
+#
+#Note that rpm adjusts RPM_INSTALL_PREFIX[n] variable to account for user possibly
+#using --prefix flag, so this is only the DEFAULT and not nececeraly the acutall
+#location where we will install
+
+%define RPM_A4GL_RPMINSTALL_LOG		/tmp/aubit4gl-rpminstall.log
+%define RPM_A4GL_RPMDEINSTALL_LOG	/tmp/aubit4gl-rpmdeinstall.log
+%define RPM_A4GL_RPMVERIFY_LOG		/tmp/aubit4gl-rpmverify.log
+%define RPM_MAKE					gmake
+%define A4GL_USER_INTERACTION		1
+%define RPM_A4GL_DEBUG				1
+#Change to 'test' to silence:
+%define RPM_A4GL_VERBOSE			test
+%define RPM_A4GL_ERROR				echo
+%define RPM_A4GL_EXIT				echo
+#Change to 'test' to prevent exit
+%define RPM_A4GL_ERROR_EXIT			exit
+%define RPM_A4GL_ERROR_EXIT_CODE	0
+
+#-------------------------------
+#	The sub-directory (relative to --percent--{_builddir}  
+#    which is defined as --percent--_builddir		--percent--{_topdir}/BUILD) 
+#	where sources are compiled.
+#	This macro is set after processing --percent--setup, either explicitly from the
+#	value given to -n or the default name-version.
+#
+%define buildsubdir %{name}src-@AUBIT_VERSION@-@AUBIT_BUILD@
+
+#Just testing - defining a macro :
+#	--percent--define myPatch() patch --percent--{-p:-p--percent--{-p*}}
+#	--percent--define testfunc() echo "param to testfunc was --percent--1 --percent--2 --percent--3"
+#
+# Calling a custom defined macro:
+#	--percent--testfunc A 1 B
+
+#--------------------------------------------------------------------------
+#There may be times when RPM's automatic dependency processing is not
+#desired. In these cases, the autoreqprov tag may be used to disable it.
+#This tag takes a yes/no or 0/1 value. For example, to disable automatic
+#dependency processing, the following line may be used:
+#This is needed in case of Aubit, because otherwise all dependencies for
+#all plug-ins like GTK+ unixODBC, iODBC, ESQL/C, PDFlib, wtc, will be defined
+#as prerequisites for installing Aubit, which is not true, since Aubit can
+#be configured to use this extensions only if they are installed on target 
+#system
+AutoReqProv: no
+#--------------------------------------------------------------------------
+
+##############
+#Description
+##############
+Summary: @FULLNAME@
+Name: @SHORTNAME@
+Version: @AUBIT_VERSION@.@AUBIT_BUILD@
+Release: 1
+License: @AUBIT_LICENSE@
+Vendor: @AUBIT_PUBLISHER@
+Packager: Andrej Falout <andrej@falout.org>
+Group: Development/Languages
+URL: http://@AUBIT_WEBSITE@
+Distribution: Red Hat Contrib-Net
+BuildArchitectures: @target_cpu@
+
+#-------------------------------
+#FIXME: Icon tag accepts only GIF or XPM formats ?
+#We dont care anymore, as we install it using 'aubit' script
+#Icon: @prefix@/docs/aubit4gl.png
+
+#-------------------------------
+#Provides is supposed to specify a capability needed by other packages,
+#that can be provided by more then one package. For instance, both 4Js BDL,
+#Querix Hydra, and Informix RDS provide Informix-4gl compatible compiler.
+Provides: x4gl_compiler
+
+#-------------------------------
+#Finding  Requires: (using /usr/lib/rpm/find-requires)...
+#TODO - verify this
+Requires: glibc >= 2.2, glibc-devel >= 2.2, /bin/bash
+BuildRequires: glibc >= 2.2, glibc-devel >= 2.2, /bin/bash, /usr/bin/gmake, gawk, sed
+
+#-------------------------------
+#Define place where RPM build will be done; defines env var RPB_BUILD_ROOT
+#override with 'rpmbuild --buildroot'
+#Note: when running 'rpmbuild -bl' it checks for existance of files specified in
+#this file under RPM_BUILD_ROOT. 
+#If not defined, defualts to nothing - so it expects listed files under file
+#system root. Therefore, for convinience, we specify same location where
+#'make install' would install compiled binaries. In configure.in, this is controled
+#with RPM_ABSOLUTE variable
+#BuildRoot: @prefix@
+#BuildRoot: --percent--{_tmppath}/--percent--{name}---percent--{version}-rpmbuildroot
+
+#-------------------------------
+# Location where RPM gets installed by default on the targets system
+# user can override using 'rpm -i --prefix /some/path xxx.rpm'
+# this is default only - actuall installation location is automatically set
+# in variable RPM_INSTALL_PREFIX[n]
+# Acutally... this is just a tag so that rpm know WHICH PART OF THE FILE NAME
+# listed under 'files' section to replace when user specifies --prefix
+# SO that means that paths listed in 'files' section MUST have the same
+# part added!
+Prefix: @RPM_A4GL_DEFAULT_PREFIX@
+
+#--------------------------------
+# Do we care?
+#We dont want our doc files to get installed using RPM conventions outside our
+#tree so we will redefine destination for them:
+# this is default only - actuall installation location is automatically set
+#in variable RPM_INSTALL_PREFIX[n]
+#RPM includes /usr/doc /usr/info and /usr/man in --percent--docdir by default
+#OH CRAP THIS IS NOT WHAT ONE WOULD EXPECT... AGAIN!!!!
+#%docdir %{RPM_INSTALL_PREFIX0}/docs
+
+
+#-------------------------------
+#WARNNING: file name used here will need to be present on local system
+#at time of building RPM:
+Source: http://@AUBIT_WEBSITE@/files/%{name}src-@AUBIT_VERSION@-@AUBIT_BUILD@.@ARCHEXT@
+
+##############
+%description
+##############
+#--------------------------------------------------------------------------
+Aubit 4gl (Fourth Generation programing Language) compiler compiles source
+files to several low-level programming languages (C, Perl, Java...). It has
+conectivity to many databases, several UI interfaces and many features.
+
+Install Aubit compiler if you want to write new or compile existing Business 
+Related Database Oriented (BRDO) applications.
+
+See http://@AUBIT_WEBSITE@ for documentation
+#--------------------------------------------------------------------------
+
+##############
+%prep
+##############
+%{RPM_A4GL_VERBOSE} "Processing 'prep' section..."
+
+#Seems that setup macro is useless anyway, and can be ommited, but we need
+#it if we want to override buildsubdir to avoid manual cd-in and having to 
+#add buildsubdir in front of all --percent--doc macros
+%setup -q -n %buildsubdir
+
+%{RPM_A4GL_VERBOSE} "Finished processing 'prep' section."
+
+##############
+%build
+##############
+%{RPM_A4GL_VERBOSE} "Processing 'build' section..."
+./configure
+make RPM_OPT_FLAGS="$RPM_OPT_FLAGS"
+#CFLAGS="$RPM_OPT_FLAGS" ./configure --prefix=/usr
+%{RPM_A4GL_VERBOSE} "Finished processing 'build' section."
+
+##############
+%install
+##############
+%{RPM_A4GL_VERBOSE} "Processing 'install' section..."
+#install -s -m 755 -o 0 -g 0 loadmap /usr/bin/loadmap
+#install -m 644 -o 0 -g 0 eject.1 /usr/man/man1
+make install PREFIX="@RPM_A4GL_DEFAULT_PREFIX@"
+
+# If rpmbuild finds any installed, but unpackaged files, it will stop, so
+# delete the files and/or dirs from RPM_BUILD_ROOT that you do not want to 
+# package up:
+# We just deleted crucial link and left Aubit unusable...(unless user installing it was root
+# so another one is in /usr/lib)
+
+   rm -f ${RPM_BUILD_ROOT}/lib/libaubit4gl.so ${RPM_BUILD_ROOT}/etc/config/.cvsignore
+   rm -rf ${RPM_BUILD_ROOT}/etc/config/CVS
+
+%{RPM_A4GL_VERBOSE} "Finished processing 'install' section."
+
+##############
+#--percent--clean
+##############
+#%{RPM_A4GL_VERBOSE} "Processing 'clean' section..."
+#[ "$RPM_BUILD_ROOT" != "/" ] && rm -rf "$RPM_BUILD_ROOT"
+#%{RPM_A4GL_VERBOSE} "Finished processing 'clean' section."
+
+##############
+%files
+##############
+#NOTE: cannot have any shell commands in this section
+
+#Default file atributes to be applied to installed files:
+#Allows you to set default attributes for files listed after the defattr 
+#declaration. The attributes are listed in the form (mode, owner, group) where 
+#the mode is the octal number representing the bit pattern for the new permissions 
+#(like chmod would use), owner is the username of the owner, and group is the 
+#group you would like assigned. You may leave any field to the installed default 
+#by simply placing a - in its place, as was done in the mode field for the example 
+#package.
+#TODO - we should create user & group aubit, so we dont use root here
+%defattr(-,root,root)
+
+#Various files that will be created depending on system configuration, defined
+#from configure: (RPMFILE_x)
+@RPMFILE_1@
+@RPMFILE_2@
+@RPMFILE_3@
+@RPMFILE_4@
+@RPMFILE_5@
+@RPMFILE_6@
+@RPMFILE_7@
+@RPMFILE_8@
+@RPMFILE_9@
+@RPMFILE_10@
+@RPMFILE_11@
+@RPMFILE_12@
+@RPMFILE_13@
+@RPMFILE_14@
+@RPMFILE_15@
+@RPMFILE_16@
+@RPMFILE_17@
+@RPMFILE_18@
+@RPMFILE_19@
+@RPMFILE_20@
+@RPMFILE_21@
+@RPMFILE_22@
+@RPMFILE_23@
+@RPMFILE_24@
+@RPMFILE_25@
+@RPMFILE_26@
+@RPMFILE_27@
+@RPMFILE_28@
+@RPMFILE_29@
+@RPMFILE_30@
+@RPMFILE_31@
+@RPMFILE_32@
+@RPMFILE_33@
+@RPMFILE_34@
+@RPMFILE_35@
+@RPMFILE_36@
+@RPMFILE_37@
+@RPMFILE_38@
+@RPMFILE_39@
+@RPMFILE_40@
+@RPMFILE_41@
+@RPMFILE_42@
+@RPMFILE_43@
+@RPMFILE_44@
+@RPMFILE_45@
+@RPMFILE_46@
+@RPMFILE_47@
+@RPMFILE_48@
+@RPMFILE_49@
+@RPMFILE_50@
+#--end--
+
+#Shared libraries: (LIBFILE_x)
+@LIBFILE_1@
+@LIBFILE_2@
+@LIBFILE_3@
+@LIBFILE_4@
+@LIBFILE_5@
+@LIBFILE_6@
+@LIBFILE_7@
+@LIBFILE_8@
+@LIBFILE_9@
+@LIBFILE_10@
+@LIBFILE_11@
+@LIBFILE_12@
+@LIBFILE_13@
+@LIBFILE_14@
+@LIBFILE_15@
+@LIBFILE_16@
+@LIBFILE_17@
+@LIBFILE_18@
+@LIBFILE_19@
+@LIBFILE_20@
+@LIBFILE_21@
+@LIBFILE_22@
+@LIBFILE_23@
+@LIBFILE_24@
+@LIBFILE_25@
+@LIBFILE_26@
+@LIBFILE_27@
+@LIBFILE_28@
+@LIBFILE_29@
+@LIBFILE_30@
+@LIBFILE_31@
+@LIBFILE_32@
+@LIBFILE_33@
+@LIBFILE_34@
+@LIBFILE_35@
+@LIBFILE_36@
+@LIBFILE_37@
+@LIBFILE_38@
+@LIBFILE_39@
+@LIBFILE_40@
+#--end--
+
+#executables: (EXEFILE_x)
+@EXEFILE_1@
+@EXEFILE_2@
+@EXEFILE_3@
+@EXEFILE_4@
+@EXEFILE_5@
+@EXEFILE_6@
+@EXEFILE_7@
+@EXEFILE_8@
+@EXEFILE_9@
+@EXEFILE_10@
+@EXEFILE_11@
+@EXEFILE_12@
+@EXEFILE_13@
+@EXEFILE_14@
+@EXEFILE_15@
+@EXEFILE_16@
+@EXEFILE_17@
+@EXEFILE_18@
+@EXEFILE_19@
+@EXEFILE_20@
+@EXEFILE_21@
+@EXEFILE_22@
+@EXEFILE_23@
+@EXEFILE_24@
+@EXEFILE_25@
+@EXEFILE_26@
+@EXEFILE_27@
+@EXEFILE_28@
+@EXEFILE_29@
+@EXEFILE_30@
+@EXEFILE_31@
+@EXEFILE_32@
+@EXEFILE_33@
+@EXEFILE_34@
+@EXEFILE_35@
+@EXEFILE_36@
+@EXEFILE_37@
+@EXEFILE_38@
+@EXEFILE_39@
+@EXEFILE_40@
+@EXEFILE_41@
+@EXEFILE_42@
+@EXEFILE_43@
+@EXEFILE_44@
+@EXEFILE_45@
+@EXEFILE_46@
+@EXEFILE_47@
+@EXEFILE_48@
+@EXEFILE_49@
+@EXEFILE_50@
+#--end--
+
+#Shell scripts: (SHFILE_x)
+@SHFILE_1@
+@SHFILE_2@
+@SHFILE_3@
+@SHFILE_4@
+@SHFILE_5@
+@SHFILE_6@
+@SHFILE_7@
+@SHFILE_8@
+@SHFILE_9@
+@SHFILE_10@
+@SHFILE_11@
+@SHFILE_12@
+@SHFILE_13@
+@SHFILE_14@
+@SHFILE_15@
+@SHFILE_16@
+@SHFILE_17@
+@SHFILE_18@
+@SHFILE_19@
+@SHFILE_20@
+#--end--
+
+#Include files: (INCFILE_x)
+@INCFILE_1@
+@INCFILE_2@
+@INCFILE_3@
+@INCFILE_4@
+@INCFILE_5@
+@INCFILE_6@
+@INCFILE_7@
+@INCFILE_8@
+@INCFILE_9@
+@INCFILE_10@
+@INCFILE_11@
+@INCFILE_12@
+@INCFILE_13@
+@INCFILE_14@
+@INCFILE_15@
+@INCFILE_16@
+@INCFILE_17@
+@INCFILE_18@
+@INCFILE_19@
+@INCFILE_20@
+@INCFILE_21@
+@INCFILE_22@
+@INCFILE_23@
+@INCFILE_24@
+@INCFILE_25@
+@INCFILE_26@
+@INCFILE_27@
+@INCFILE_28@
+@INCFILE_29@
+@INCFILE_30@
+@INCFILE_31@
+@INCFILE_32@
+@INCFILE_33@
+@INCFILE_34@
+@INCFILE_35@
+@INCFILE_36@
+@INCFILE_37@
+@INCFILE_38@
+@INCFILE_39@
+@INCFILE_40@
+@INCFILE_41@
+@INCFILE_42@
+@INCFILE_43@
+@INCFILE_44@
+@INCFILE_45@
+@INCFILE_46@
+@INCFILE_47@
+@INCFILE_48@
+@INCFILE_49@
+@INCFILE_50@
+#--end--
+
+#Examples: (EXAMPFILE_x)
+@EXAMPFILE_1@
+@EXAMPFILE_2@
+@EXAMPFILE_3@
+@EXAMPFILE_4@
+@EXAMPFILE_5@
+@EXAMPFILE_6@
+@EXAMPFILE_7@
+@EXAMPFILE_8@
+@EXAMPFILE_9@
+@EXAMPFILE_10@
+@EXAMPFILE_11@
+@EXAMPFILE_12@
+@EXAMPFILE_13@
+@EXAMPFILE_14@
+@EXAMPFILE_15@
+@EXAMPFILE_16@
+@EXAMPFILE_17@
+@EXAMPFILE_18@
+@EXAMPFILE_19@
+@EXAMPFILE_20@
+@EXAMPFILE_21@
+@EXAMPFILE_22@
+@EXAMPFILE_23@
+@EXAMPFILE_24@
+@EXAMPFILE_25@
+@EXAMPFILE_26@
+@EXAMPFILE_27@
+@EXAMPFILE_28@
+@EXAMPFILE_29@
+@EXAMPFILE_30@
+@EXAMPFILE_31@
+@EXAMPFILE_32@
+@EXAMPFILE_33@
+@EXAMPFILE_34@
+@EXAMPFILE_35@
+@EXAMPFILE_36@
+@EXAMPFILE_37@
+@EXAMPFILE_38@
+@EXAMPFILE_39@
+@EXAMPFILE_40@
+@EXAMPFILE_41@
+@EXAMPFILE_42@
+@EXAMPFILE_43@
+@EXAMPFILE_44@
+@EXAMPFILE_45@
+@EXAMPFILE_46@
+@EXAMPFILE_47@
+@EXAMPFILE_48@
+@EXAMPFILE_49@
+@EXAMPFILE_50@
+@EXAMPFILE_51@
+@EXAMPFILE_52@
+@EXAMPFILE_53@
+@EXAMPFILE_54@
+@EXAMPFILE_55@
+@EXAMPFILE_56@
+@EXAMPFILE_57@
+@EXAMPFILE_58@
+@EXAMPFILE_59@
+@EXAMPFILE_60@
+#--end--
+
+#Makefiles: (MAKEFILE_x)
+@MAKEFILE_1@
+@MAKEFILE_2@
+@MAKEFILE_3@
+@MAKEFILE_4@
+@MAKEFILE_5@
+@MAKEFILE_6@
+@MAKEFILE_7@
+@MAKEFILE_8@
+@MAKEFILE_9@
+@MAKEFILE_10@
+@MAKEFILE_11@
+@MAKEFILE_12@
+@MAKEFILE_13@
+@MAKEFILE_14@
+@MAKEFILE_15@
+@MAKEFILE_16@
+@MAKEFILE_17@
+@MAKEFILE_18@
+@MAKEFILE_19@
+@MAKEFILE_20@
+#--end--
+
+#Documentation files: (DOCFILE_x)
+@DOCFILE_1@
+@DOCFILE_2@
+@DOCFILE_3@
+@DOCFILE_4@
+@DOCFILE_5@
+@DOCFILE_6@
+@DOCFILE_7@
+@DOCFILE_8@
+@DOCFILE_9@
+@DOCFILE_10@
+@DOCFILE_11@
+@DOCFILE_12@
+@DOCFILE_13@
+@DOCFILE_14@
+@DOCFILE_15@
+@DOCFILE_16@
+@DOCFILE_17@
+@DOCFILE_18@
+@DOCFILE_19@
+@DOCFILE_20@
+#--end--
+
+#Configuration files: (CONFFILE_x)
+@CONFFILE_1@
+@CONFFILE_2@
+@CONFFILE_3@
+@CONFFILE_4@
+@CONFFILE_5@
+@CONFFILE_6@
+@CONFFILE_7@
+@CONFFILE_8@
+@CONFFILE_9@
+@CONFFILE_10@
+@CONFFILE_11@
+@CONFFILE_12@
+@CONFFILE_13@
+@CONFFILE_14@
+@CONFFILE_15@
+@CONFFILE_16@
+@CONFFILE_17@
+@CONFFILE_18@
+@CONFFILE_19@
+@CONFFILE_20@
+#--end--
+
+#SQL conversion files: (CONVFILE_x)
+@CONVFILE_1@
+@CONVFILE_2@
+@CONVFILE_3@
+@CONVFILE_4@
+@CONVFILE_5@
+@CONVFILE_6@
+@CONVFILE_7@
+@CONVFILE_8@
+@CONVFILE_9@
+@CONVFILE_10@
+@CONVFILE_11@
+@CONVFILE_12@
+@CONVFILE_13@
+@CONVFILE_14@
+@CONVFILE_15@
+@CONVFILE_16@
+@CONVFILE_17@
+@CONVFILE_18@
+@CONVFILE_19@
+@CONVFILE_20@
+#--end--
+
+#Import files: (IMPORTFILE_x)
+@IMPORTFILE_1@
+@IMPORTFILE_2@
+@IMPORTFILE_3@
+@IMPORTFILE_4@
+@IMPORTFILE_5@
+@IMPORTFILE_6@
+@IMPORTFILE_7@
+@IMPORTFILE_8@
+@IMPORTFILE_9@
+@IMPORTFILE_10@
+@IMPORTFILE_11@
+@IMPORTFILE_12@
+@IMPORTFILE_13@
+@IMPORTFILE_14@
+@IMPORTFILE_15@
+@IMPORTFILE_16@
+@IMPORTFILE_17@
+@IMPORTFILE_18@
+@IMPORTFILE_19@
+@IMPORTFILE_20@
+#--end--
+
+#HELPFILE: (HELPFILE_x)
+@HELPFILE_1@
+@HELPFILE_2@
+@HELPFILE_3@
+@HELPFILE_4@
+@HELPFILE_5@
+@HELPFILE_6@
+@HELPFILE_7@
+@HELPFILE_8@
+@HELPFILE_9@
+@HELPFILE_10@
+#--end--
+
+#FORMFILE: (FORMFILE_x)
+@FORMFILE_1@
+@FORMFILE_2@
+@FORMFILE_3@
+@FORMFILE_4@
+@FORMFILE_5@
+@FORMFILE_6@
+@FORMFILE_7@
+@FORMFILE_8@
+@FORMFILE_9@
+@FORMFILE_10@
+#--end--
+
+#4GLPC compile settings files
+@FGLPCSETFILE_1@
+@FGLPCSETFILE_2@
+@FGLPCSETFILE_3@
+@FGLPCSETFILE_4@
+@FGLPCSETFILE_5@
+@FGLPCSETFILE_6@
+@FGLPCSETFILE_7@
+@FGLPCSETFILE_8@
+@FGLPCSETFILE_9@
+@FGLPCSETFILE_10@
+@FGLPCSETFILE_11@
+@FGLPCSETFILE_12@
+@FGLPCSETFILE_13@
+@FGLPCSETFILE_14@
+@FGLPCSETFILE_15@
+@FGLPCSETFILE_16@
+@FGLPCSETFILE_17@
+@FGLPCSETFILE_18@
+@FGLPCSETFILE_19@
+@FGLPCSETFILE_20@
+#--end--
+
+
+#We do this in 'aubit' script:
+#%_iconsdir/hicolor/*/apps/%rname.png
+#%_datadir/applications/qt3-qtconfig.desktop
+
+#%{RPM_A4GL_VERBOSE} "Finished processing 'files' section."
+
+##############
+%changelog
+##############
+#WARNING!!! RPM actually checks date format here !!
+
+* Fri Nov 17 2006 afalout <andrej@falout.org>
+- Abstract all pre/post tasks to 'aubit' wrapper scrip; this allows us to:
+- Share same tasks ammong tarball, AutoPackage, deb and RPM installations
+- Test and debug this functionality without having to circle trough package build cicles
+- Have consistenf functionality and user interaction between installers
+- Fix or change in one place and have it applied to all installers
+- enable user interaction to be enabled or disabled without blocking installation
+- satisfy RPm requirement for not requiring user interaction
+- and many other nice things...
+* Fri Nov 17 2006 afalout <andrej@falout.org>
+- Make it build on SuSE 10.1
+* Mon Jan 19 2004 afalout <andrej@falout.org>
+- Make it all work again
+* Wed Sep 17 2003 root <root@aptiva.falout.com>
+- All files set from Autoconf
+* Sun Aug 25 2002 root <root@aptiva.falout.com>
+- Synchronised files between tarball and RPM
+* Thu Dec 06 2001 root <root@aptiva.falout.com>
+- Manually modified autospec version
+* Thu Dec 06 2001 root <root@aptiva.falout.com>
+- Initial spec file created by autospec ver. 0.6 with rpm 2.5 compatibility
+
+
+##############
+%pre
+#is the macro to do pre-install scripts.
+# NOTE: pre-x tasks cant be interactive without having to block RPM
+#
+#rpm automatically adjusts variable RPM_INSTALL_PREFIX[n] if package is relocated
+#by user so we MUST use it to point to install location AND NOT VARIABLES WE
+#DEFINED AT COMPILE TIME!
+#
+##############
+if test "$RPM_INSTALL_PREFIX0" = ""; then
+	CURR_A4GL_PREFIX=%{prefix}
+else
+	CURR_A4GL_PREFIX=$RPM_INSTALL_PREFIX0
+fi
+A4GL_TASK_MSG="Pre-Install"
+A4GL_TASK_LOG="%{RPM_A4GL_RPMINSTALL_LOG}"
+A4GL_AUBIT_FLAG="--pre-install-rpm --rpm-install-dir=${CURR_A4GL_PREFIX}"
+A4GL_INTERACT_OPTION="--no-interaction  >> $A4GL_TASK_LOG"
+A4GL_INTERACT_MSG="non-interactive program"
+
+
+	#NOTE that ${CURR_A4GL_PREFIX} does not exist at this point
+
+	#---------------------------------
+	# Start task log file
+	%{RPM_A4GL_VERBOSE} "NOTE: Logging $A4GL_TASK_MSG tasks to $A4GL_TASK_LOG"
+	date > $A4GL_TASK_LOG
+
+	#---------------------------------
+	# Run task
+	%{RPM_A4GL_VERBOSE} "Running aubit $A4GL_AUBIT_FLAG as $A4GL_INTERACT_MSG ..." >> $A4GL_TASK_LOG
+	
+	#we may want to do tasks in 'aubit --clean-machine' here ??
+	
+	%{RPM_A4GL_VERBOSE} "$A4GL_TASK_MSG tasks exited"  >> $A4GL_TASK_LOG
+
+	#---------------------------------
+	# Show to user task summary
+	%{RPM_A4GL_VERBOSE} "$A4GL_TASK_MSG tasks finished, see $A4GL_TASK_LOG for details."
+
+
+##############
+%post
+#is the macro to do post-install scripts.
+##############
+if test "$RPM_INSTALL_PREFIX0" = ""; then
+	CURR_A4GL_PREFIX=%{prefix}
+else
+	CURR_A4GL_PREFIX=${RPM_INSTALL_PREFIX0}
+fi
+A4GL_TASK_MSG="Post-install"
+A4GL_TASK_LOG="%{RPM_A4GL_RPMINSTALL_LOG}"
+A4GL_AUBIT_FLAG="--post-install-rpm --rpm-install-dir=${CURR_A4GL_PREFIX}"
+
+#Note that AutoConf warnings are printed to stderr
+if test "%{A4GL_USER_INTERACTION}" = "1"; then
+	A4GL_INTERACT_OPTION=">> $A4GL_TASK_LOG 2>&1 &"
+	A4GL_INTERACT_MSG="interactive program in separate process"
+else
+	A4GL_INTERACT_OPTION="--no-interaction >> $A4GL_TASK_LOG 2>&1"
+	A4GL_INTERACT_MSG="non-interactive program"
+	A4GL_PLEASE_WAIT="echo 'Please wait ...'"
+fi
+
+	if ! test -d ${CURR_A4GL_PREFIX}; then
+		%{RPM_A4GL_ERROR} "ERROR: CURR_A4GL_PREFIX (${CURR_A4GL_PREFIX}) is not a directory"
+		%{RPM_A4GL_ERROR_EXIT} %{RPM_A4GL_ERROR_EXIT_CODE}
+	fi
+	
+	#---------------------------------
+	# Make sure we know where we are
+	cd ${CURR_A4GL_PREFIX}
+
+	#---------------------------------
+	# Run task
+	%{RPM_A4GL_VERBOSE} "Running aubit $A4GL_AUBIT_FLAG as $A4GL_INTERACT_MSG ..." >> $A4GL_TASK_LOG
+	${A4GL_PLEASE_WAIT}
+	eval ${CURR_A4GL_PREFIX}/bin/aubit $A4GL_AUBIT_FLAG $A4GL_INTERACT_OPTION
+	%{RPM_A4GL_VERBOSE} "$A4GL_TASK_MSG tasks exited"  >> $A4GL_TASK_LOG
+
+	#We do this in 'aubit' script:
+	#/var/tmp/rpm-tmp.15057: line 64: fg: no job control
+	#%post_ldconfig
+	#%{RPM_A4GL_VERBOSE} "after post_ldconfig"
+
+	#We do this in 'aubit' script:
+	#/var/tmp/rpm-tmp.15057: line 66: fg: no job control
+	#%update_menus
+	#%{RPM_A4GL_VERBOSE} "after update_menus"
+	
+	#---------------------------------
+	# Close log file
+	%{RPM_A4GL_VERBOSE} "$A4GL_TASK_MSG tasks finished" >> $A4GL_TASK_LOG
+	date >> $A4GL_TASK_LOG
+	
+	#---------------------------------
+	# Show to user task summary
+	%{RPM_A4GL_EXIT} "$A4GL_TASK_MSG tasks exited, see $A4GL_TASK_LOG for details."
+	if test "%{A4GL_USER_INTERACTION}" = "1"; then
+		%{RPM_A4GL_EXIT} "NOTE: configuration tasks are running in the background - please WAIT for them to finish before trying to use Aubit compiler. (~2 minutes)"
+	fi
+
+	
+##############
+%preun
+# is the macro to do pre-uninstall scripts.
+# NOTE: pre-x tasks cant be interactive without having to block RPM
+##############
+if test "$RPM_INSTALL_PREFIX0" = ""; then
+	CURR_A4GL_PREFIX=%{prefix}
+else
+	CURR_A4GL_PREFIX=${RPM_INSTALL_PREFIX0}
+fi
+A4GL_TASK_MSG="Pre-Uninstall"
+A4GL_TASK_LOG="%{RPM_A4GL_RPMDEINSTALL_LOG}"
+A4GL_AUBIT_FLAG="--pre-uninstall-rpm --rpm-install-dir=${CURR_A4GL_PREFIX}"
+A4GL_INTERACT_OPTION="--no-interaction >> $A4GL_TASK_LOG"
+A4GL_INTERACT_MSG="non-interactive program"
+
+	if ! test -d ${CURR_A4GL_PREFIX}; then
+		%{RPM_A4GL_ERROR} "ERROR: CURR_A4GL_PREFIX (${CURR_A4GL_PREFIX}) is not a directory"
+		%{RPM_A4GL_ERROR_EXIT} %{RPM_A4GL_ERROR_EXIT_CODE}
+	fi
+
+	#---------------------------------
+	# Make sure we know where we are
+	cd ${CURR_A4GL_PREFIX}
+
+	#---------------------------------
+	# Start task log file
+	%{RPM_A4GL_VERBOSE} "NOTE: Logging $A4GL_TASK_MSG tasks to $A4GL_TASK_LOG"
+	date > $A4GL_TASK_LOG
+
+	#---------------------------------
+	# Run task
+	%{RPM_A4GL_VERBOSE} "Running aubit $A4GL_AUBIT_FLAG as $A4GL_INTERACT_MSG ..." >> $A4GL_TASK_LOG
+	eval ${CURR_A4GL_PREFIX}/bin/aubit $A4GL_AUBIT_FLAG $A4GL_INTERACT_OPTION
+	%{RPM_A4GL_VERBOSE} "$A4GL_TASK_MSG tasks exited"  >> $A4GL_TASK_LOG
+
+	#---------------------------------
+	# Show to user task summary
+	%{RPM_A4GL_VERBOSE} "$A4GL_TASK_MSG tasks finished, see $A4GL_TASK_LOG for details."
+
+
+
+##############
+%postun
+# macro to do post-uninstall scripts.
+##############
+if test "$RPM_INSTALL_PREFIX0" = ""; then
+	CURR_A4GL_PREFIX=%{prefix}
+else
+	CURR_A4GL_PREFIX=${RPM_INSTALL_PREFIX0}
+fi
+A4GL_TASK_MSG="Post-Uninstall"
+A4GL_TASK_LOG="%{RPM_A4GL_RPMDEINSTALL_LOG}"
+A4GL_AUBIT_FLAG="--post-uninstall-rpm --rpm-install-dir=${CURR_A4GL_PREFIX}"
+if test "%{A4GL_USER_INTERACTION}" = "1"; then
+	A4GL_INTERACT_OPTION="&"
+	A4GL_INTERACT_MSG="interactive program in separate process"
+else
+	A4GL_INTERACT_OPTION="--no-interaction  >> $A4GL_TASK_LOG"
+	A4GL_INTERACT_MSG="non-interactive program"
+fi
+	
+	if ! test -d ${CURR_A4GL_PREFIX}; then
+		%{RPM_A4GL_ERROR} "ERROR: CURR_A4GL_PREFIX (${CURR_A4GL_PREFIX}) is not a directory"
+		%{RPM_A4GL_ERROR_EXIT} %{RPM_A4GL_ERROR_EXIT_CODE}
+	fi
+
+	#NOTE that at this point all FILES are allready deleted
+	
+	#---------------------------------
+	# Make sure we know where we are
+	cd ${CURR_A4GL_PREFIX}
+
+	#---------------------------------
+	# Run tasks
+
+	#We do this in 'aubit' script, in preunst:
+	#Causes: /var/tmp/rpm-tmp.27103: line 36: fg: no job control
+	#%postun_ldconfig
+	#%clean_menus
+
+	#Must be here, as 'aubit' script was allready deleted
+	rmdir ${CURR_A4GL_PREFIX}/bin  ${CURR_A4GL_PREFIX}/docs 2>/dev/null
+	rmdir ${CURR_A4GL_PREFIX}/etc/config  ${CURR_A4GL_PREFIX}/etc/convertsql  ${CURR_A4GL_PREFIX}/etc/import ${CURR_A4GL_PREFIX}/etc 2>/dev/null
+	rmdir ${CURR_A4GL_PREFIX}/incl ${CURR_A4GL_PREFIX}/lib  2>/dev/null
+	rmdir ${CURR_A4GL_PREFIX}/plugins-* 2>/dev/null
+	rmdir ${CURR_A4GL_PREFIX}/tools/4glpc/settings ${CURR_A4GL_PREFIX}/tools/4glpc ${CURR_A4GL_PREFIX}/tools 2>/dev/null
+	rmdir ${CURR_A4GL_PREFIX}/tools/test/gui ${CURR_A4GL_PREFIX}/tools/test ${CURR_A4GL_PREFIX}/test 2>/dev/null
+	rmdir ${CURR_A4GL_PREFIX}/ 2>/dev/null
+	
+	#---------------------------------
+	# Close log file 
+	date >> $A4GL_TASK_LOG
+	%{RPM_A4GL_VERBOSE} "$A4GL_TASK_MSG tasks finished" >> $A4GL_TASK_LOG	
+	
+	#---------------------------------
+	# Show to user task summary
+	%{RPM_A4GL_EXIT} "$A4GL_TASK_MSG tasks finished, see $A4GL_TASK_LOG for details."
+	
+
+##############
+%verifyscript
+# Tasks to perform as part of RPM verify command, after all files installed by
+# RPM are verified
+##############
+if test "$RPM_INSTALL_PREFIX0" = ""; then
+	CURR_A4GL_PREFIX=%{prefix}
+else
+	CURR_A4GL_PREFIX=${RPM_INSTALL_PREFIX0}
+fi
+A4GL_TASK_MSG="Post-Verify"
+A4GL_TASK_LOG="%{RPM_A4GL_RPMVERIFY_LOG}"
+A4GL_AUBIT_FLAG="--post-verify-rpm --rpm-install-dir=${CURR_A4GL_PREFIX}"
+if test "%{A4GL_USER_INTERACTION}" = "1"; then
+	A4GL_INTERACT_OPTION="&"
+	A4GL_INTERACT_MSG="interactive program in separate process"
+else
+	A4GL_INTERACT_OPTION="--no-interaction  >> $A4GL_TASK_LOG"
+	A4GL_INTERACT_MSG="non-interactive program"
+fi
+
+	if ! test -d ${CURR_A4GL_PREFIX}; then
+		%{RPM_A4GL_ERROR} "ERROR: CURR_A4GL_PREFIX (${CURR_A4GL_PREFIX}) is not a directory"
+		%{RPM_A4GL_ERROR_EXIT} %{RPM_A4GL_ERROR_EXIT_CODE}
+	fi
+
+	#---------------------------------
+	# Make sure we know where we are
+	cd ${CURR_A4GL_PREFIX}
+
+	#---------------------------------
+	# Start task log file
+	%{RPM_A4GL_VERBOSE} "NOTE: Logging $A4GL_TASK_MSG tasks to $A4GL_TASK_LOG"
+	date > $A4GL_TASK_LOG
+
+	#---------------------------------
+	# Run task
+	%${RPM_A4GL_VERBOSE} "Running aubit $A4GL_AUBIT_FLAG as $A4GL_INTERACT_MSG ..." >> $A4GL_TASK_LOG
+	${CURR_A4GL_PREFIX}/bin/aubit $A4GL_AUBIT_FLAG $A4GL_INTERACT_OPTION
+	%{RPM_A4GL_VERBOSE} "$A4GL_TASK_MSG tasks exited"  >> $A4GL_TASK_LOG
+
+	#---------------------------------
+	# Close log file 
+	date >> $A4GL_TASK_LOG
+	%{RPM_A4GL_VERBOSE} "$A4GL_TASK_MSG tasks finished" >> $A4GL_TASK_LOG
+	
+	#---------------------------------
+	# Show to user task summary
+	%{RPM_A4GL_EXIT} "$A4GL_TASK_MSG tasks finished, see $A4GL_TASK_LOG for details."
+
+	
+#-------------------------------- EOF ----------------------------------
+

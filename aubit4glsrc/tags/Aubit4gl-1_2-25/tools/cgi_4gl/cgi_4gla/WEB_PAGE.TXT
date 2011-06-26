@@ -1,0 +1,112 @@
+                     Informix 4GL World-Wide-Web Interface
+
+   by Brian K. Holman, Library Information Systems, Brigham Young University
+
+-------------------------------------------------------------------------------
+
+Description:
+
+I have created a small group of functions in the C language to simplify the
+retrieval of field values from HTML forms. I have also created Informix-4GL
+wrappers for each of those functions. So in essence, you can create CGI (Common
+Gateway Interface) compliant executables to take advantage of the Mosaic user
+interface and the Informix-4GL development environment. This project is very
+much in the early stages, any suggestions or improvements to the software are
+welcome!
+
+System Requirements:
+
+   * NCSA httpd Version 1.3
+   * Informix 4GL - Compiled Version
+   * forms-capable WWW Client (I prefer Netscape)
+
+User Requirements:
+
+   * A knowledge of HTML and HTML forms
+   * A knowledge of Informix 4GL
+   * Experience administering a Web Server
+
+Development Strategy:
+
+One common way of programming CGI applications is to create an HTML document
+that includes HTML forms for data entry and then to create an executable that
+handles the results and processes them in some meaningful way. This means you
+have one shot at data entry and then the results are processed.
+
+This is the easiest way to do it in the state-less environment of the
+World-Wide-Web. However, most database applications lend themselves to a more
+stateful approach. For example, if someone types in an invalid PIN with their
+account number you would like to redisplay the form with the valid account
+number, tell them the PIN was invalid and allow them another chance at entering
+a PIN. This would be very difficult to do with the approach taken above,
+especially as forms get more complex.
+
+I propose taking a pseudo-stateful approach to give the appearance of a
+stateful environment to the user while the underlying environment is really
+stateless. There are some different aspects of WWW technology that I employ to
+give this effect:
+
+   * Embed the HTML document containing the form within the CGI executable
+   * Use hidden fields in HTML forms to retain state information
+
+Documentation on the most important CGI-4GL functions:
+
+CALL load_form() RETURNING load_result
+The load_form function is used to determine whether or not the current instance
+of the CGI executable is suppose to display a form or process the results of a
+submitted form. It should be the first function called in any CGI-4GL program.
+If the load_result is 0 (zero) then the program should output the HTML form,
+otherwise it should begin processing the submitted field-value pairs.
+
+CALL free_form()
+This function should be the last function called in any CGI-4GL program. It
+frees up the dynamic structure that stores the field-value pairs. It is just
+for goodhousekeeping since the memory gets deallocated when the program
+terminates.
+
+CALL get_entry(field_name) RETURNING field_value
+This function is used to retrieve the values submitted from an HTML POST
+operation. Call get_entry passing in a string for the field_name as contained
+in the HTML form and the value of field_name is returned typecast according to
+Informix-4GL rules.
+
+An Example Application:
+
+This application prompts for a student ID and PIN number. If the values entered
+produce an error then an error message is displayed along with the original
+form. The portion of the data that was entered correctly displays on the new
+form as well. If the values are correct then the form is processed and the
+output displayed. One CGI-4GL executable performs all the above functions.
+
+When testing the application, try using the ID number 111 11 1430 and the PIN
+1234. Try another PIN number or a random ID number, etc.
+
+Press here to try it out or press here to view the 4GL source.
+
+Source:
+
+Click here to download the source for the CGI API, the 4GL wrapper functions,
+and the sample program.
+
+Disclaimer:
+
+This project is NOT affiliated in any way with Informix Software, Inc. Click
+here for Informix copyright and trademark information.
+
+Copyright © 1995 Brigham Young University. All rights reserved.
+
+Permission is hereby granted, without written agreement and without license or
+royalty fees, to use, copy, modify, and distribute this software and its
+documentation for any purpose, provided that the above copyright notice and the
+following two paragraphs appear in all copies of this software.
+
+IN NO EVENT SHALL BRIGHAM YOUNG UNIVERSITY BE LIABLE TO ANY PARTY FOR DIRECT,
+INDIRECT, SPECIAL, INCIDENTAL, OR CONSEQUENTIAL DAMAGES ARISING OUT OF THE USE
+OF THIS SOFTWARE AND ITS DOCUMENTATION, EVEN IF BRIGHAM YOUNG UNIVERSITY HAS
+BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+BRIGHAM YOUNG UNIVERSITY SPECIFICALLY DISCLAIMS ANY WARRANTIES, INCLUDING, BUT
+NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+PARTICULAR PURPOSE. THE SOFTWARE PROVIDED HEREUNDER IS ON AN "AS IS" BASIS, AND
+BRIGHAM YOUNG UNIVERSITY HAS NO OBLIGATION TO PROVIDE MAINTENANCE, SUPPORT,
+UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
