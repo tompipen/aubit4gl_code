@@ -1,19 +1,80 @@
 ---------------------------
+Sun Jun 26 15:27:20 BST 2011
+---------------------------
+1.2_25 Released
+---------------------------
+	2011-06-26 15:04  naurus
+	
+	2011-06-26 14:57  naurus
+	
+	Added WHENEVER SIGNAL SIGUSR1|SIGUSR2|Any-unix-signal-int CALL
+	sighandler where sighandler is a function taking no arguments that
+	gets called if the respective signal is sent to the running
+	program.
+	
+	2011-06-25 19:01  mikeaubury
+	
+	2011-06-25 19:00  mikeaubury
+	
+	Added MLET with Nate...
+	
+	2011-06-17 15:53  mikeaubury
+	
+	2011-06-16 21:04  fortiz
+	
+	,
+	
+	2011-06-16 09:18  mikeaubury
+	
+	2011-06-14 17:03  mikeaubury
+	
+	2011-06-09 17:28  mikeaubury
+	
+	Add an implicit 'EXIT MENU' command via ON ACTION fgl_exit_menu if
+	$ADDEXITMENUACTION=Y This will be used by the GUI to force an exit
+	menu...
+	
+	2011-05-30 14:55  mikeaubury
+	
+	Allow TEXT and BYTE blobs to be DISPLAYed TO in XML GUI
+	
+	2011-05-30 14:40  mikeaubury
+	
+	2011-05-30 13:49  mikeaubury
+	
+	2011-05-27 13:47  mikeaubury
+	
+	ON KEY ... EXIT CONSTRUCT .. fixup for XML UI
+	
+	2011-05-20 20:34  mikeaubury
+	
+	2011-05-18 18:29  mikeaubury
+	
+	2011-05-17 18:26  mikeaubury
+	
+	2011-05-17 18:23  mikeaubury
+	
+	Add new "fgl_copy" call - copies from one variable to another using
+	byte copies (so copying a large array of records is much faster).
+	Eg.  define a array[20] of record	  c char(20) end record
+	
+	define b array[20] of record	     c char(20) end record
+	...	     for d=1 to 20		    let a[d].c=d
+	end for
+	
+	CALL fgl_copy(a,b)
+	
+	will copy the array "a" into array "b"
+	
+	Sizes of the arrays *must match*
+	
+	2011-05-14 09:35  mikeaubury
+	
+---------------------------
 Sat May 14 09:32:56 BST 2011
 ---------------------------
 1.2_24 Released
 ---------------------------
-	2011-05-13 17:56  mikeaubury
-	
-	2011-05-13 13:23  mikeaubury
-	
-	2011-05-11 20:43  mikeaubury
-	
-	2011-05-11 20:07  mikeaubury
-	
-	2011-05-11 19:38  mikeaubury
-	
-	2011-05-11 19:07  mikeaubury
 	
 	2011-05-11 07:39  mikeaubury
 	
@@ -24,53 +85,21 @@ Sat May 14 09:32:56 BST 2011
 	Small construct fixup (fix the setting of the buffer when returning
 	from the 'large' construct field, when using an ON KEY event)
 	
-	2011-05-05 21:40  mikeaubury
-	
 	2011-05-05 21:36  mikeaubury
 	
 	Add function elasped time to TRACE4GLEXEC output
 	
 	2011-05-05 21:32  mikeaubury
 	
-	2011-05-05 21:32  mikeaubury
-	
 	Calltree fixups
-	
-	2011-05-05 10:20  mikeaubury
-	
-	2011-05-05 10:13  mikeaubury
-	
-	2011-05-05 10:09  mikeaubury
-	
-	2011-05-05 10:02  mikeaubury
-	
-	2011-05-04 12:41  mikeaubury
-	
-	2011-05-03 22:08  mikeaubury
-	
-	2011-05-02 20:42  mikeaubury
-	
-	2011-05-02 20:37  mikeaubury
-	
-	2011-05-02 20:33  mikeaubury
-	
-	2011-05-02 13:16  mikeaubury
 	
 	2011-05-02 12:23  mikeaubury
 	
 	Performance improvement
 	
-	2011-04-28 17:19  mikeaubury
-	
 	2011-04-26 12:31  mikeaubury
 	
 	Trim trailing spaces from menu options
-	
-	2011-04-21 14:56  mikeaubury
-	
-	2011-04-21 10:01  mikeaubury
-	
-	2011-04-20 19:36  mikeaubury
 	
 	2011-04-20 16:44  mikeaubury
 	
@@ -84,12 +113,6 @@ Sat May 14 09:32:56 BST 2011
 	2011-04-19 18:28  mikeaubury
 	
 	Allow "-port ###" as parameter to XML GUI proxy
-	
-	2011-04-19 18:17  mikeaubury
-	
-	2011-04-15 21:36  mikeaubury
-	
-	2011-04-15 21:14  mikeaubury
 	
 ---------------------------
 Fri Apr 15 21:11:24 BST 2011
