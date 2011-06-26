@@ -1779,6 +1779,15 @@ print_whenever_signal_cmd (struct_whenever_signal_cmd * cmd_data)
 {
   //set_whento (cmd_data->whencode);
  
+  if (strcmp(cmd_data->function_name,"<ignore>")==0) {
+  	printc("set_sig_handler_ignore(%d);", cmd_data->sigtype);
+	return 1;
+  } 
+  if (strcmp(cmd_data->function_name,"<default>")==0) {
+  	printc("set_sig_handler_default(%d);", cmd_data->sigtype);
+	return 1;
+  } 
+
   add_function_to_header(cmd_data->function_name, "aclfgl_", 1, 0);
   printh("void _sig_%s() {\nint nret;\n  nret=aclfgl_%s(0); if(nret) A4GL_pop_args(nret); \n}\n", cmd_data->function_name, cmd_data->function_name);
 

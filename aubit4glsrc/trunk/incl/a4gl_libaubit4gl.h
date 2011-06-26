@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.416 2011-05-05 20:35:46 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.417 2011-06-26 15:07:25 naurus Exp $
 #
 */
 
@@ -2756,6 +2756,13 @@ void A4GL_free_malloc_context(void *s) ;
 void A4GL_clr_malloc_context(void ) ;
 
 void A4GL_dec_dec_ops(int op);
+
+
+
+void set_sig_handler(void *ptr, int signalnumber);
+void set_sig_handler_default(int signalnumber) ;
+void set_sig_handler_ignore(int signalnumber) ;
+
 
 
 int A4GL_get_sql_conv (void);

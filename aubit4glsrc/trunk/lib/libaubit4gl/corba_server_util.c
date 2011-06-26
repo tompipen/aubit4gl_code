@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: corba_server_util.c,v 1.46 2011-06-26 14:31:41 mikeaubury Exp $
+# $Id: corba_server_util.c,v 1.47 2011-06-26 15:07:25 naurus Exp $
 #
 */
 
@@ -1353,4 +1353,16 @@ void set_sig_handler(void *ptr, int signalnumber){
 		A4GL_assertion(1,"Could not register signal handler");
 	}
 
+}
+
+void set_sig_handler_default(int signalnumber) {
+	if (signal(signalnumber, SIG_DFL)==SIG_ERR) {
+		A4GL_assertion(1,"Could not register signal handler");
+	}
+}
+
+void set_sig_handler_ignore(int signalnumber) {
+	if (signal(signalnumber, SIG_IGN)==SIG_ERR) {
+		A4GL_assertion(1,"Could not register signal handler");
+	}
 }

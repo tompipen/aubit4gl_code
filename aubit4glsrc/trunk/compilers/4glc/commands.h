@@ -95,7 +95,7 @@ struct command *new_msg_box_cmd ( expr_str_list *msg, expr_str_list *caption, in
 
 
 struct command *new_resize_arr_cmd(expr_str *p_variable);
-
+struct command *new_whenever_signal_cmd(int sigtype,char * func_name);
 struct command *new_dealloc_arr_cmd(expr_str * p_variable);
 struct command *new_alloc_arr_cmd(expr_str *p_variable);
 struct command *new_next_form_cmd(char *form, char *field);
