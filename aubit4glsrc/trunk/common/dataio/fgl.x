@@ -1,4 +1,4 @@
-/* $Id: fgl.x,v 1.65 2011-06-25 18:00:02 mikeaubury Exp $ */
+/* $Id: fgl.x,v 1.66 2011-06-26 13:57:35 naurus Exp $ */
 typedef string str<>;
 typedef string sql_ident<>;
 
@@ -201,6 +201,7 @@ E_CMD_EXECUTE_PROCEDURE_CMD,
 E_CMD_TODO_CMD,
 E_CMD_DONE_CMD,
 E_CMD_MLET_CMD,
+E_CMD_WHENEVER_SIGNAL_CMD,
 
 E_CMD_LAST
 };
@@ -1666,7 +1667,12 @@ struct  struct_spl_foreach_execute_cmd {
 	struct s_spl_block *block;
 };
 
+struct struct_whenever_signal_cmd {
 
+	str function_name;
+	int sigtype;
+
+};
 
 union command_data switch (enum cmd_type type) {
 	case E_CMD_STOP_RPC_CMD: void;
@@ -1808,7 +1814,10 @@ union command_data switch (enum cmd_type type) {
 	case E_CMD_EXECUTE_PROCEDURE_CMD: struct_execute_procedure_cmd execute_procedure_cmd ;
 	case E_CMD_TODO_CMD: struct_todo_cmd todo_cmd;
 
+	case E_CMD_WHENEVER_SIGNAL_CMD: struct_whenever_signal_cmd whenever_signal_cmd ;
+
 };
+
 
 
 struct fgl_comment {

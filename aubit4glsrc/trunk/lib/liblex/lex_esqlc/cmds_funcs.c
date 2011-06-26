@@ -1773,6 +1773,19 @@ print_whenever_cmd (struct_whenever_cmd * cmd_data)
   return 1;
 }
 
+/******************************************************************************/
+int
+print_whenever_signal_cmd (struct_whenever_signal_cmd * cmd_data)
+{
+  //set_whento (cmd_data->whencode);
+ 
+  add_function_to_header(cmd_data->function_name, "aclfgl_", 1, 0);
+  printh("void _sig_%s() {\nint nret;\n  nret=aclfgl_%s(0); if(nret) A4GL_pop_args(nret); \n}\n", cmd_data->function_name, cmd_data->function_name);
+
+  printc("/* SIGNAL CALLBACK DEFINITION..*/ ");
+  printc("set_sig_handler(_sig_%s,%d);", cmd_data->function_name, cmd_data->sigtype);
+  return 1;
+}
 
 /******************************************************************************/
 int

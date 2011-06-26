@@ -96,6 +96,7 @@ switch(cd->type) {
    case E_CMD_SQL_BLOCK_CMD        : ok=print_sql_block_cmd(&cd->command_data_u.sql_block_cmd); break;
    case E_CMD_VALIDATE_CMD         : ok=print_validate_cmd(&cd->command_data_u.validate_cmd); break;
    case E_CMD_WHENEVER_CMD         : ok=print_whenever_cmd(&cd->command_data_u.whenever_cmd); break;
+   case E_CMD_WHENEVER_SIGNAL_CMD  : ok=print_whenever_signal_cmd(&cd->command_data_u.whenever_signal_cmd); break;
    case E_CMD_WHILE_CMD            : ok=print_while_cmd(&cd->command_data_u.while_cmd); break;
    case E_CMD_CLEAR_CMD            : ok=print_clear_cmd(&cd->command_data_u.clear_cmd); break;
    case E_CMD_CURRENT_WIN_CMD      : ok=print_current_win_cmd(&cd->command_data_u.current_win_cmd); break;

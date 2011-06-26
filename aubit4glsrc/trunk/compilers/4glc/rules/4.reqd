@@ -37,7 +37,7 @@
 
 %type <variable_list_ptr> define_multiple define_section def_part define_set def_part2 op_private_define_section  spl_define_stmt spl_define_stmts spl_op_define_stmts spl_return_dtype_list spl_opt_returning  define_global_spl_stmt  define_spl_stmt  spl_parameters spl_parameter  op_spl_parameters spl_returning
 %type <variable_ptr>  dtype array_variable record_variable dtype2 dtype_ident time_dtypes define_constant spl_dtype_explicit spl_dtype spl_return_dtype_list_item  spl_dtype_with_references
-%type <str> define_ident constant_value var_def_name  op_char define_table_name like_var spl_vname spl_proc_name spl_cursor_name
+%type <str> define_ident constant_value var_def_name  op_char define_table_name like_var spl_vname spl_proc_name spl_cursor_name identifier
 %type <str_list> var_def_list  link_to_pk_list opt_spl_returning 
 %type <int_list> number_arr_list
 %type <integer_val> datetime_qual interval_qual interval_qual_i dtime_start dtime_val dtime_end opt_frac opt_unit_size dtfrac int_start int_start_unit int_end number_arr_assoc ranking number_value_arr   op_spl_with_resume spl_neg_int_value spl_opt_with_hold
@@ -58,3 +58,4 @@
 %type <s_select> opt_spl_select_into
 %type <splblock> spl_block
 %type <spl_if_conds> spl_if_rest
+%type <integer_val> sigtype 

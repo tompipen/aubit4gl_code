@@ -1654,7 +1654,15 @@ if (p_whencode==-1 && p_whento==NULL) {
    c->cmd_data.command_data_u.whenever_cmd.whento=strdup(p_whento);
    return c;
 }
- 
+
+struct command *new_whenever_signal_cmd(int sigtype,char * func_name) {
+struct command *c;
+
+   c=new_command(E_CMD_WHENEVER_SIGNAL_CMD);
+   c->cmd_data.command_data_u.whenever_signal_cmd.function_name=strdup(func_name);
+   c->cmd_data.command_data_u.whenever_signal_cmd.sigtype=sigtype;
+   return c;
+}
  
 struct command *new_skip_cmd(expr_str * p_lines) { //!
 struct command *c;

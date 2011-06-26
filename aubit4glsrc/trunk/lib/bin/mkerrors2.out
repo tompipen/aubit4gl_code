@@ -384,3 +384,4 @@
 394|Not an object of the correct type, or not initialized
 396|Parameter is not a reference
 398|Unable to open SQLPARSECMD library...
+400|Cannot copy to a record/array of a different size

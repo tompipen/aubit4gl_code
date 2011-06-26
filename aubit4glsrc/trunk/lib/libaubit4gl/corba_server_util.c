@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: corba_server_util.c,v 1.44 2011-05-04 11:41:27 mikeaubury Exp $
+# $Id: corba_server_util.c,v 1.45 2011-06-26 13:57:35 naurus Exp $
 #
 */
 
@@ -1346,3 +1346,12 @@ missing in server exec:
 
 
 // ---------------------------------- EOF ---------------------------------
+
+
+void set_sig_handler(void *ptr, int signalnumber){
+
+	if (signal(signalnumber, ptr)==SIG_ERR) {
+		A4GL_assertion(1,"Could not register signal handler");
+	}
+
+}
