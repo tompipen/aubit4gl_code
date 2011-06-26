@@ -1,0 +1,30 @@
+whenever_signal_cmd :		KW_WHENEVER_SIGNAL sigtype FCALL identifier {
+
+					$<cmd>$=new_whenever_signal_cmd($2,$4);
+
+				}
+;
+
+
+sigtype :
+
+		INT_VALUE{
+			$$=atol($<str>1);
+			if ($$<1 || $$>22) {
+				a4gl_yyerror("Signal must be between 1 and 22");
+			}
+		}
+		| KW_SIGNAL_TOKEN {
+
+			if (strcmp($<str>1,"SIGUSR1") == 0){
+				$$=10;
+			}
+
+			if (strcmp($<str>1,"SIGUSR2") == 0){
+				$$=12;
+			}
+
+		}
+;
+
+				
