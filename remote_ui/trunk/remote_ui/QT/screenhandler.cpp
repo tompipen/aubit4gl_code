@@ -2405,6 +2405,7 @@ MainFrame::vdcdebug("ScreenHandler","setArrLine", "int line");
    for(int i=0; i<context->fieldList().count(); i++){
       if(TableView *tableView = qobject_cast<TableView *> (context->fieldList().at(i))){
             tableView->setArrLine(line-1);
+            context->setOption("ARRLINE", line-1);
       }
    }
 }
@@ -2414,12 +2415,13 @@ void ScreenHandler::setScrLine(int line)
 MainFrame::vdcdebug("ScreenHandler","setScrLine", "int line");
    if(p_fglform == NULL)
       return;
-
+Context *context = getCurrentContext();
 //   QList<QWidget*> ql_fields = p_fglform->formElements();
    QList<QWidget*> ql_fields = p_fglform->ql_formFields;
    for(int i=0; i<ql_fields.size(); i++){
       if(TableView *tableView = qobject_cast<TableView *> (ql_fields.at(i))){
          tableView->setScrLine(line-1);
+         context->setOption("SCRLINE", line-1);
       }
    }
 }
