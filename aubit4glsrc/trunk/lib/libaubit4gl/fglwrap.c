@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.163 2011-05-17 17:26:12 mikeaubury Exp $
+# $Id: fglwrap.c,v 1.164 2011-06-29 13:19:21 mikeaubury Exp $
 #
 */
 
@@ -243,6 +243,8 @@ A4GL_fgl_start (int nargs, char *argv[])
   if (A4GL_aubit_strcasecmp (p, "GTK") == 0)
     ui_mode = 1;
   if (A4GL_aubit_strcasecmp (p, "GUI") == 0)
+    ui_mode = 1;
+  if (A4GL_aubit_strcasecmp (p, "XML") == 0)
     ui_mode = 1;
 
   p_numargs = nargs;
