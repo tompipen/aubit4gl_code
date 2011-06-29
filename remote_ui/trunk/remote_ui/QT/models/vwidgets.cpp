@@ -19,6 +19,7 @@
 #include <QFile>
 #include <QAction>
 #include <QDebug>
+#include <QMovie>
 #include <QFocusEvent>
 #include <QRegExp>
 #include <QRegExpValidator>
@@ -1857,7 +1858,7 @@ void WidgetHelper::setFieldText(QObject *object, QString fieldValue)
 MainFrame::vdcdebug("WidgetHelper","setFieldText", "QObject *object, QString fieldValue");
 
    if(Label *widget = qobject_cast<Label *> (object)){
-      if(widget->pixmap() == 0){
+      if(widget->pixmap() == 0 && widget->movie() == 0){
          widget->setText(fieldValue);
       }
       else{
@@ -1865,8 +1866,17 @@ MainFrame::vdcdebug("WidgetHelper","setFieldText", "QObject *object, QString fie
          {
              fieldValue.prepend(QDir::tempPath().append("/"));
          }
-         QPixmap pixmap(fieldValue);
-         widget->setPixmap(pixmap);
+         if(fieldValue.endsWith(".gif",Qt::CaseInsensitive))
+         {
+             QMovie *movie = new QMovie(fieldValue);
+             widget->setMovie(movie);
+             movie->start();
+         }
+         else
+         {
+             QPixmap pixmap(fieldValue);
+             widget->setPixmap(pixmap);
+         }
          //widget->setFixedSize(pixmap.size());
       }
       return;
