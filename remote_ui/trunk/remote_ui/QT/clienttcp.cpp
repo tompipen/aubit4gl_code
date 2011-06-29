@@ -2188,12 +2188,16 @@ MainFrame::vdcdebug("ProtocolHandler","sendFile", "QString name");
    if(name.isNull())
       return false;
 
-   QFile file(name);
+   QFile file;
+   file.setFileName(name);
    if(!file.open(QIODevice::ReadOnly | QIODevice::Unbuffered)){
-      //qDebug() << "File could not be opened!";
-      return false;
+      QFileInfo inf(name);
+      file.setFileName(QDir::tempPath() + "/" + inf.fileName());
+      if(!file.open(QIODevice::ReadOnly | QIODevice::Unbuffered)){
+         qDebug()<<"JA?";
+         return false;
+      }
    }
-
    // Get Filesize
    qint64 fileSize = file.size();
 
