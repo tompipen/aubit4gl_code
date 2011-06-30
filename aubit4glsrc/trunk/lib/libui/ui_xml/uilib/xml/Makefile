@@ -1,16 +1,15 @@
 # Programs.
 HASFLEXML:=$(shell type flexml 2> /dev/null)
 
-FLEXML = flexml -v  -s ./skel 
-FLEXMLOPTS=-v  -s ./skel
+FLEXML = flexml 
+FLEXMLOPTS=-v  -s ./skel  -b 1000000
 FLEX=flex -Cfer
-
 
 %.dtd: skel
 #
 #     # Generate linkable XML processor with header for application.
 %.l %.h: %.dtd
-	$(FLEXML) $<
+	$(FLEXML) $(FLEXMLOPTS) $<
 
 # Generate C source from flex scanner.
 %.c:    %.l
