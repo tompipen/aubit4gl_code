@@ -80,7 +80,7 @@ spl_vname:  /* An SPL variable name - nothing complicated in SPL :-)  */
 
 spl_op_default:
 	{ $$=NULL;}
-	| DEFAULT spl_expression {$$=$2;}
+	| KW_DEFAULT spl_expression {$$=$2;}
 ;
 
 spl_dtype_with_references:
@@ -263,7 +263,7 @@ define_spl_stmt:
 ;
 
 define_global_spl_stmt:
-	DEFINE_GLOBAL spl_vname_list spl_dtype DEFAULT spl_expression SEMICOLON {
+	DEFINE_GLOBAL spl_vname_list spl_dtype KW_DEFAULT spl_expression SEMICOLON {
 		$3->is_extern=1;
 		$$=create_variable_list($2,$3);
 	}

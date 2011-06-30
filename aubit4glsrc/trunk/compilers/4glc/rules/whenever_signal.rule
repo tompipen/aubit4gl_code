@@ -1,10 +1,10 @@
 whenever_signal_cmd :		KW_WHENEVER_SIGNAL sigtype FCALL identifier {
 					$<cmd>$=new_whenever_signal_cmd($2,$4);
 				} 
-				| KW_WHENEVER_SIGNAL sigtype DEFAULT {
+				| KW_WHENEVER_SIGNAL sigtype KW_DEFAULT {
 					$<cmd>$=new_whenever_signal_cmd($2,"<default>");
 				}
-				| KW_WHENEVER_SIGNAL sigtype IGNORE {
+				| KW_WHENEVER_SIGNAL sigtype KW_IGNORE {
 					$<cmd>$=new_whenever_signal_cmd($2,"<ignore>");
 				}
 			

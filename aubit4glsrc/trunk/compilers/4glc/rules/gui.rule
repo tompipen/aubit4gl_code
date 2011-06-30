@@ -90,7 +90,7 @@ op_buttons : {$<integer_val>$=0;} | gm_buttons {$<integer_val>$=atol($<str>1); }
 
 gm_buttons : BUTTONS INT_VALUE ;
 
-op_def_but : {$<integer_val>$=0;}| DEFAULT INT_VALUE {$<integer_val>$=atol($<str>2); }
+op_def_but : {$<integer_val>$=0;}| KW_DEFAULT INT_VALUE {$<integer_val>$=atol($<str>2); }
 ;
 
 
