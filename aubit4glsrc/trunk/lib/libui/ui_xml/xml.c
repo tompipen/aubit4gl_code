@@ -2212,6 +2212,7 @@ UILIB_A4GL_gotolinemode ()
 char *
 UILIB_A4GL_get_currwin_name ()
 {
+	A4GL_assertion(win_stack_cnt<=0, "Nothing on windows stack");
   return win_stack[win_stack_cnt - 1]->name;
 
 }
@@ -2219,18 +2220,21 @@ UILIB_A4GL_get_currwin_name ()
 int
 UILIB_A4GL_get_curr_width ()
 {
+	A4GL_assertion(win_stack_cnt<=0, "Nothing on windows stack");
   return win_stack[win_stack_cnt - 1]->w;
 }
 
 int
 UILIB_A4GL_get_curr_height ()
 {
+	A4GL_assertion(win_stack_cnt<=0, "Nothing on windows stack");
   return win_stack[win_stack_cnt - 1]->h;
 }
 
 int
 UILIB_A4GL_iscurrborder ()
 {
+	A4GL_assertion(win_stack_cnt<=0, "Nothing on windows stack");
   return win_stack[win_stack_cnt - 1]->border;
 }
 
