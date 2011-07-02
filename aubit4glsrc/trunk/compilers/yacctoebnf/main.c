@@ -175,9 +175,11 @@ void dump_section_list(struct s_parser_start *parser_start,char *buff, struct s_
 
 
 
-void contains (struct s_parse_entry *e, char *name,int *optional, int *repeat) {
+void contains (struct s_parse_entry *e, char *name,int *optional, int *repeat,int *comma) {
+//printf("Contains %s\n",name);
 	int a;
 	*repeat=-1;
+	*comma=0;
 
 	*optional=0;
 
@@ -186,10 +188,17 @@ void contains (struct s_parse_entry *e, char *name,int *optional, int *repeat) {
 			l=e->item->items[a];
 			if (l->nitems==0) {
 				*optional=*optional+1;
+					//printf("Break\n");
 				continue; // No point checking any names - it doesn't have any...
 			}
+			//printf("-->%s\n",l->items[0]->data);
 			
 			if (strcmp(e->name, l->items[0]->data)==0) {*repeat=a;}
+			if (l->nitems>=2) {
+				if (strcmp("KW_COMMA", l->items[1]->data)==0) {
+					*comma=1;
+				}
+			}
 	
 	}
 }
@@ -199,13 +208,23 @@ char buff[200000]="";
 	if (e->result==0) {
 			int repeatition=0;
 			int optional;
-			contains(e, e->name, &optional,&repeatition);
+			int comma;
+			contains(e, e->name, &optional,&repeatition,&comma);
 			strcpy(buff,"");
 			//sprintf(buff,"%s=",e->name);
 			if (optional) strcat(buff,"[");
-			if (repeatition>=0) strcat(buff,"{");
-			dump_section_list(parser_start, buff, e->item,repeatition);
-			if (repeatition>=0) strcat(buff,"}");
+			if (comma==0 || repeatition==0) {
+				if (repeatition>=0) strcat(buff,"{");
+				dump_section_list(parser_start, buff, e->item,repeatition);
+				if (repeatition>=0) strcat(buff,"}");
+			} else {
+				if (repeatition>=0) strcat(buff,"(");
+				dump_section_list(parser_start, buff, e->item,repeatition);
+				if (repeatition>=0) strcat(buff," ");
+				if (repeatition>=0) strcat(buff,"[( \",\" ");
+				dump_section_list(parser_start, buff, e->item,repeatition);
+				if (repeatition>=0) strcat(buff,")+])");
+			}
 			if (optional) strcat(buff, "]");
 			e->result=strdup(buff);
 	} 
@@ -450,6 +469,7 @@ struct s_section_item *new_section_item__1(char *s)  {
 	rval=malloc(sizeof(struct s_section_item));
 	rval->type=1;
 	rval->data=strdup(s);
+	//printf("new_section_item__1 %s\n",s);
 	return rval;
 }
 
@@ -458,6 +478,9 @@ struct s_section_item *new_section_item__2(char *s)  {
 	struct s_section_item *rval;
 	rval=malloc(sizeof(struct s_section_item));
 	rval->type=1;
+
+	//printf("new_section_item__2 %s\n",s);
+
 	rval->data=strdup(s);
 	return rval;
 }

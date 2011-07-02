@@ -67,7 +67,7 @@ section_item : 	NAMED 		{$<s_section_item>$=new_section_item__1($<str>1);}
 				char buff[100];
 				sprintf(buff,"%%prec PGKW_%s",$<str>2);
 				$<s_section_item>$=new_section_item__2(buff);
-				}
+	}
 	|       	{$<s_section_item>$=NULL;}
 	;
 

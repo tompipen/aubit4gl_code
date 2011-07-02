@@ -25,7 +25,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.187 2011-05-02 11:23:07 mikeaubury Exp $
+# $Id: ops.c,v 1.188 2011-07-02 13:48:44 mikeaubury Exp $
 #
 */
 
@@ -2906,14 +2906,16 @@ static void A4GL_char_char_ops (int op)
 	{
 	  free (a);
 	  free (b);
-	  A4GL_exitwith ("Invalid operation on a character string (1)");
+     		A4GL_push_null(DTYPE_INT,0);
+	  //A4GL_exitwith ("Invalid operation on a character string (1)");
 	  return;
 	}
       if (dt2 == DTYPE_CHAR)
 	{
 	  free (a);
 	  free (b);
-	  A4GL_exitwith ("Invalid operation on a character string (2)");
+     A4GL_push_null(DTYPE_INT,0);
+	  //A4GL_exitwith ("Invalid operation on a character string (2)");
 	  return;
 	}
 
@@ -5590,7 +5592,8 @@ A4GL_debug("Here..");
   if (d2 == DTYPE_CHAR)
     {
       free (ptr);
-      A4GL_exitwith ("Invalid operation on a character string (1)");
+     A4GL_push_null(DTYPE_INT,0);
+      A4GL_exitwith ("Invalid operation on a character string (3)");
       return;
     }
   if (d2 == DTYPE_DECIMAL)

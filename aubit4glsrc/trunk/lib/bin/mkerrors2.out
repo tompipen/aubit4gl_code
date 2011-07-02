@@ -385,3 +385,4 @@
 396|Parameter is not a reference
 398|Unable to open SQLPARSECMD library...
 400|Cannot copy to a record/array of a different size
+402|Invalid operation on a character string (3)
