@@ -912,7 +912,7 @@ MainFrame::vdcdebug("WidgetHelper","createLabel", "const QDomElement& formField,
   // p.setColor(QPalette::Foreground, Qt::blue);
  //  label->setPalette(p);
    label->setFixedHeight(defHeight);
-   label->setFixedWidth(w);
+  // label->setFixedWidth(w);
    return label;
 }
 
@@ -1118,6 +1118,7 @@ MainFrame::vdcdebug("WidgetHelper","createEdit", "const QDomElement& formField, 
    lineEdit->setFormat(format);
 
    QFontMetrics fm = lineEdit->fontMetrics();
+
    int width = w*fm.width("W")+10;
    lineEdit->setFixedWidth(width);
    lineEdit->setFixedHeight(defHeight);
