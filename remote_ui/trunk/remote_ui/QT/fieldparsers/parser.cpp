@@ -143,6 +143,7 @@ MainFrame::vdcdebug("Parser","parseElement", "const QDomNode& xmlNode");
          QGridLayout *layout = new QGridLayout;
          layout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
          layout->setSpacing(0);
+         layout->setVerticalSpacing(3);
 
          if(currentLayout == NULL){
             currentWidget->setLayout(layout);
