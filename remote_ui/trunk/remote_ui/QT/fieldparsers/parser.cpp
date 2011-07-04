@@ -28,7 +28,6 @@ Parser::Parser(QWidget *p_fglform) : QWidget()
 MainFrame::vdcdebug("Parser","Parser", "QWidget *p_fglform");
    this->setFocusPolicy(Qt::NoFocus);
    this->p_fglform = p_fglform;
-   qDebug()<<p_fglform;
    layout = new QHBoxLayout;
    layout->setSpacing(0);
    this->setLayout(layout);
@@ -144,6 +143,7 @@ MainFrame::vdcdebug("Parser","parseElement", "const QDomNode& xmlNode");
          layout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
          layout->setSpacing(0);
          layout->setVerticalSpacing(3);
+         layout->setHorizontalSpacing(3);
 
          if(currentLayout == NULL){
             currentWidget->setLayout(layout);
@@ -283,7 +283,8 @@ MainFrame::vdcdebug("Parser","parseElement", "const QDomNode& xmlNode");
 
          label->setFrameShape(QFrame::HLine);
          label->setFrameShadow(QFrame::Sunken);
-         label->setFixedWidth((gridWidth*10)+4);
+         QFontMetrics fm(label->font());
+         label->setFixedWidth((gridWidth*fm.width("W")));
          label->setAccessibleName(nodeName);
 
          if(hidden)
