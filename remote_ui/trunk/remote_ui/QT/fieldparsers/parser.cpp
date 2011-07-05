@@ -284,7 +284,7 @@ MainFrame::vdcdebug("Parser","parseElement", "const QDomNode& xmlNode");
          label->setFrameShape(QFrame::HLine);
          label->setFrameShadow(QFrame::Sunken);
          QFontMetrics fm(label->font());
-         label->setFixedWidth((gridWidth*fm.width("W")));
+         //label->setFixedWidth((gridWidth*fm.width("W")));
          label->setAccessibleName(nodeName);
 
          if(hidden)
@@ -575,7 +575,15 @@ MainFrame::vdcdebug("Parser","addWidgets", "QWidget *widget, bool add, int x, in
    if(QGridLayout *layout = qobject_cast<QGridLayout *> (currentLayout)){
       layout->setColumnMinimumWidth(y,0);
       layout->setRowMinimumHeight(x,0);
-      layout->addWidget(widget, x, y, span, gridWidth, Qt::AlignLeft|Qt::AlignTop);
+      //The HLine have no Qt::AlignLeft, because the HLine are not strechting then.
+      if(widget->accessibleName() == "HLine")
+      {
+          layout->addWidget(widget, x, y, span, gridWidth, Qt::AlignTop);
+      }
+      else
+      {
+          layout->addWidget(widget, x, y, span, gridWidth, Qt::AlignLeft|Qt::AlignTop);
+      }
    }
 
    if(QVBoxLayout *layout = qobject_cast<QVBoxLayout *> (currentLayout)){
