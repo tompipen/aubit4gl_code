@@ -25,6 +25,7 @@
 #include <QRegExpValidator>
 #include <QDomElement>
 #include <QDragEnterEvent>
+#include <QSplitter>
 
 #include "fglform.h"
 #include "mainframe.h"
@@ -942,6 +943,12 @@ MainFrame::vdcdebug("WidgetHelper","createImage", "const QDomElement& formField,
    label->colName = colName;
    label->sqlTabName = tabName;
    label->w = w;
+   label->img = true;
+
+   if(autoScale == 1)
+   {
+       label->setScaledContents(true);
+   }
 
    QString comments = labelElement.attribute("comments");
    if(!comments.isEmpty()){
@@ -1010,7 +1017,7 @@ MainFrame::vdcdebug("WidgetHelper","createWebView", "const QDomElement& formFiel
    	browser->setFixedWidth(wPixel);
    } else {
    	QFontMetrics fm = browser->fontMetrics();
-   	int width = w*fm.width("W")+10;
+        int width = w*fm.width("W")+10;
    	browser->setFixedWidth(width);
    }
    if (hPixel>0) {
@@ -1872,6 +1879,7 @@ MainFrame::vdcdebug("WidgetHelper","setFieldText", "QObject *object, QString fie
              QMovie *movie = new QMovie(fieldValue);
              widget->setMovie(movie);
              movie->start();
+
          }
          else
          {
@@ -1880,6 +1888,7 @@ MainFrame::vdcdebug("WidgetHelper","setFieldText", "QObject *object, QString fie
          }
          //widget->setFixedSize(pixmap.size());
       }
+
       return;
    }
 
@@ -2157,7 +2166,7 @@ Label::Label(const QString &text, QWidget *parent)
 {
    QFont font;
    font.setPixelSize(12);
-
+   this->img = false;
    this->setFont(font);
 
    this->setFocusPolicy(Qt::NoFocus);
@@ -2199,7 +2208,7 @@ Label::Label(QWidget *parent)
 {
    QFont font;
    font.setPixelSize(12);
-
+   this->img = false;
    this->setFont(font);
 }
 

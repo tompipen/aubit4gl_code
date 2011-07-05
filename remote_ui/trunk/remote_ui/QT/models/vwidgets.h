@@ -318,6 +318,7 @@ public:
     QString sqlTabName;
     QString name;
     QString colName;
+    bool img;
 
     int x,y,w;
 };

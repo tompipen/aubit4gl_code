@@ -576,6 +576,13 @@ MainFrame::vdcdebug("Parser","addWidgets", "QWidget *widget, bool add, int x, in
       layout->setColumnMinimumWidth(y,0);
       layout->setRowMinimumHeight(x,0);
       //The HLine have no Qt::AlignLeft, because the HLine are not strechting then.
+      if(Label *w = qobject_cast<Label *> (widget)){
+          if(w->img)
+          {
+                layout->addWidget(widget, x, y, span, -1, Qt::AlignTop);
+                return;
+          }
+      }
       if(widget->accessibleName() == "HLine")
       {
           layout->addWidget(widget, x, y, span, gridWidth, Qt::AlignTop);
