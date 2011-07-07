@@ -28,7 +28,7 @@
 #define MAX_STR_LEN 81
 #define MAX_STRINGS 20
 
-format(nargs)
+aclfgl_format(nargs)
 short nargs;
 {
     char FormStr[MAX_STR_LEN],*CleanStr,LeadingSpaces[MAX_STR_LEN];

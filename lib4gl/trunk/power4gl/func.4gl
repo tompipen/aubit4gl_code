@@ -2601,14 +2601,14 @@ define
   pagwid,paglen smallint,
   prsetup,prreset char(64),
   i integer,
-  done smallint
+  lv_done smallint
 if copies is null then let copies = "1" end if
 let whead = getwithhead("x")
 if jobtype() = "b" then
   call getprinter(prname,repwid)
     returning xprname,pipestr,paglen,pagwid,prsetup,prreset
     ,prbold,prboldx,prunderl,prunderlx,pritalic,pritalicx
-  let done = true
+  let lv_done = true
 else
   if prname is null then let prname = getdefprinter() end if
   call winform("print",6,16)
@@ -2620,9 +2620,9 @@ else
   let sprname = prname
   let swhead = whead
   let scopies = copies
-  let done = false
+  let lv_done = false
 end if
-while not done
+while not lv_done
   let prname = sprname
   let whead = swhead
   let copies = scopies
@@ -2632,7 +2632,7 @@ while not done
     case keytransl(fgl_lastkey())
     when "refresh" exit input
     when "help" call helpman("print","")
-    when "exit" let copies = null let done = true exit input
+    when "exit" let copies = null let lv_done = true exit input
     when "search"
       case
       when infield(prname)
@@ -2672,7 +2672,7 @@ while not done
     if repwid > pagwid then
       if not goahead("repwide",12,12) then next field prname end if
     end if
-    let done = true
+    let lv_done = true
   end input
 end while
 call winclose()
@@ -2696,7 +2696,7 @@ define
   pagwid,paglen smallint,
   prsetup,prreset char(64),
   i integer,
-  done,doit smallint
+  lv_done,doit smallint
 let prname = getdefprinter()
 call winform("pscreen",6,16)
 call disptitle("pscreen","s")
@@ -2704,8 +2704,8 @@ let prnametxt = upfword("printer") clipped,"................"
 display by name prnametxt attribute(normal)
 let sprname = prname
 let doit = false
-let done = false
-while not done
+let lv_done = false
+while not lv_done
   let prname = sprname
   let oprname = prname
   input by name prname without defaults
@@ -2713,7 +2713,7 @@ while not done
     case keytransl(fgl_lastkey())
     when "refresh" exit input
     when "help" call helpman("pscreen","")
-    when "exit" let done = true exit input
+    when "exit" let lv_done = true exit input
     when "search"
       case
       when infield(prname)
@@ -2739,7 +2739,7 @@ while not done
       let oprname = prname
     end if
   after input
-    let done = true
+    let lv_done = true
     let doit = true
   end input
 end while
@@ -2854,7 +2854,7 @@ define
   whead,swhead char(1),
   ppipetxt,wheadtxt char(32),
   i integer,
-  done smallint
+  lv_done smallint
 let pipestr = null
 let whead = getwithhead("x")
 if ppipe is null then let ppipe = getdefppipe() end if
@@ -2865,8 +2865,8 @@ let wheadtxt = upfword("withhead") clipped,"................"
 display by name ppipetxt,wheadtxt attribute(normal)
 let sppipe = ppipe
 let swhead = whead
-let done = false
-while not done
+let lv_done = false
+while not lv_done
   let ppipe = sppipe
   let whead = swhead
   let oppipe = ppipe
@@ -2875,7 +2875,7 @@ while not done
     case keytransl(fgl_lastkey())
     when "refresh" exit input
     when "help" call helpman("ppipe","")
-    when "exit" let ppipe = null let done = true exit input
+    when "exit" let ppipe = null let lv_done = true exit input
     when "search"
       case
       when infield(ppipe)
@@ -2902,7 +2902,7 @@ while not done
     if not checkx(whead) then next field whead end if
   after input
     if not checknn(ppipe) then next field ppipe end if
-    let done = true
+    let lv_done = true
   end input
 end while
 call winclose()
@@ -3016,10 +3016,10 @@ define
   whead,swhead char(1),
   pfiletxt,wheadtxt char(32),
   fp integer,
-  done smallint
+  lv_done smallint
 let whead = getwithhead("x")
 if jobtype() = "b" then
-  let done = true
+  let lv_done = true
 else
   call winform("pfile",6,16)
   call disptitle("pfile","s")
@@ -3028,9 +3028,9 @@ else
   display by name pfiletxt,wheadtxt attribute(normal)
   let spfile = pfile
   let swhead = whead
-  let done = false
+  let lv_done = false
 end if
-while not done
+while not lv_done
   let pfile = spfile
   let whead = swhead
   input by name pfile,whead without defaults
@@ -3038,7 +3038,7 @@ while not done
     case keytransl(fgl_lastkey())
     when "refresh" exit input
     when "help" call helpman("pfile","")
-    when "exit" let pfile = null let done = true exit input
+    when "exit" let pfile = null let lv_done = true exit input
     end case
   before field whead call msgtx("xyesno")
   after field whead
@@ -3057,7 +3057,7 @@ while not done
       next field pfile
     else call fgl_fclose(fp)
     end if
-    let done = true
+    let lv_done = true
   end input
 end while
 call winclose()
@@ -3079,7 +3079,7 @@ define
   mdescr1,mdescr2,mdescr3,mdescr4,mdescr5 char(64),
   maddrtxt,msubjtxt,wheadtxt,mdescrtxt char(32),
   fp integer,
-  done smallint
+  lv_done smallint
 let whead = getwithhead("x")
 if jobtype() = "b" then
   let mdescr1 = null
@@ -3087,7 +3087,7 @@ if jobtype() = "b" then
   let mdescr3 = null
   let mdescr4 = null
   let mdescr5 = null
-  let done = true
+  let lv_done = true
 else
   call winform("pmail",4,8)
   call disptitle("pmail","s")
@@ -3099,9 +3099,9 @@ else
   let smaddr = maddr
   let smsubj = msubj
   let swhead = whead
-  let done = false
+  let lv_done = false
 end if
-while not done
+while not lv_done
   let maddr = smaddr
   let msubj = smsubj
   let whead = swhead
@@ -3116,7 +3116,7 @@ while not done
     case keytransl(fgl_lastkey())
     when "refresh" exit input
     when "help" call helpman("pmail","")
-    when "exit" let maddr = null let done = true exit input
+    when "exit" let maddr = null let lv_done = true exit input
     end case
   after field maddr
     let maddr = strip(maddr)
@@ -3131,7 +3131,7 @@ while not done
   after input
     if not checknn(maddr) then next field maddr end if
     if not checknn(msubj) then next field msubj end if
-    let done = true
+    let lv_done = true
   end input
 end while
 call winclose()
@@ -3175,7 +3175,7 @@ define
   dum char(128),
   i integer,
   fp integer,
-  done,doit smallint
+  lv_done,doit smallint
 call winform("schedjob",8,16)
 call disptitle("schedjob","s")
 if norep is null then let norep = false end if
@@ -3197,8 +3197,8 @@ if prname is null then let prname = getdefprinter() end if
 let sprname = prname
 let spfile = pfile
 let doit = false
-let done = false
-while not done
+let lv_done = false
+while not lv_done
   let attime = extend(atdt,hour to minute)
   let atdate = date(atdt)
   let atrep = null
@@ -3211,7 +3211,7 @@ while not done
     case keytransl(fgl_lastkey())
     when "refresh" exit input
     when "help" call helpman("schedjob","")
-    when "exit" let done = true exit input
+    when "exit" let lv_done = true exit input
     when "search"
       case
       when infield(prname)
@@ -3322,7 +3322,7 @@ while not done
     let job.msubj = msubj
     let job.mailto = mailto
     let job.cmd = null
-    let done = true
+    let lv_done = true
     let doit = true
   end input
 end while
@@ -3790,7 +3790,7 @@ define
   pipestr char(128),
   copies smallint,
   xprsetup,xprreset char(64),
-  done,rtot,rscr,curs,r,c,i,j,ec smallint,
+  lv_done,rtot,rscr,curs,r,c,i,j,ec smallint,
   fp integer
 let i = 1
 let c = 42
@@ -3879,15 +3879,15 @@ end if
 let r = r + 1
 call winopen(catstr("help-",tcode1),2,2,r,c)
 let curs = 1
-let done = false
+let lv_done = false
 call disp(helptxt[1],"titlefirst",1,1)
 let uname = right(sysname(),32)
 let uid = right(sysid(),32)
 let utime = current
 let ptxt = stx("prany")
 call dispmsg(ptxt)
-while not done
-  let done = true
+while not lv_done
+  let lv_done = true
   for i = 2 to r - 1
     case
     when i + curs - 1 > rtot call disp(blank,"text",i,1)
@@ -3896,28 +3896,28 @@ while not done
     end case
   end for
   case keytransl(getkey())
-  when "nothing" let done = false
+  when "nothing" let lv_done = false
   when "up"
-    let done = false
+    let lv_done = false
     if curs > 1 then let curs = curs - 1 end if
   when "down"
-    let done = false
+    let lv_done = false
     if curs + (r - 2) < rtot then let curs = curs + 1 end if
   when "prevpage"
-    let done = false
+    let lv_done = false
     let curs = curs - (r - 2)
     if curs < 1 then let curs = 1 end if
   when "nextpage"
-    let done = false
+    let lv_done = false
     if curs + (r - 2) < rtot then let curs = curs + (r - 2) end if
   when "home"
-    let done = false
+    let lv_done = false
     let curs = 1
   when "end"
-    let done = false
+    let lv_done = false
     let curs = rtot - (r - 2)
   when "pfile"
-    let done = false
+    let lv_done = false
     call pfile("") returning filename,withhead
     if filename is null then exit case end if
     call msgopen("printing")
@@ -3940,7 +3940,7 @@ while not done
     finish report output
     call msgclose()
   when "ppipe"
-    let done = false
+    let lv_done = false
     call ppipe("") returning ppipeid,pipestr,withhead
     if ppipeid is null then exit case end if
     call msgopen("printing")
@@ -3963,7 +3963,7 @@ while not done
     end if
     call msgclose()
   when "pmail"
-    let done = false
+    let lv_done = false
     call pmail(defemail(),"") returning withhead,maddr,msubj,md1,md2,md3,md4,md5
     if maddr is null then exit case end if
     let filename = newtempfile("_mtext")
@@ -3998,7 +3998,7 @@ while not done
     call remtempfile(filename)
     call remtempfile(dscrname)
   when "print"
-    let done = false
+    let lv_done = false
     call print("","",c)
       returning pipestr,withhead,copies,paglen,xprsetup,xprreset
     if copies is null then exit case end if
@@ -4209,13 +4209,13 @@ function assessw(sqlcode,txt)
 define
   sqlcode integer,
   txt char(64),
-  done char
+  lv_done char
 let txt = "assessw-",txt clipped
-let done = false
+let lv_done = false
 if sqlcode is null then let sqlcode = sqlca.sqlcode end if
 if sqlcode = 0 then
   call commitw()
-  let done = true
+  let lv_done = true
 else
   call rollbackw()
   case
@@ -4232,7 +4232,7 @@ else
     call pause("noupdate",6,8)
   end case
 end if
-return done
+return lv_done
 
 end function
 
@@ -4717,20 +4717,20 @@ end function
 # Retrieves sets of column values from a table using rowids.
 ##############################################################################
 
-function rowid2colval(andmark,rowids,table,columns)
+function rowid2colval(andmark,p_rowids,p_table,p_columns)
 
 define
   andmark char(32),                  -- retrive columns if set to "&".
-  rowids char(1000),
-  table,columns char(100),
+  p_rowids char(1000),
+  p_table,p_columns char(100),
   ptxt,retval char(1000),
   colval char(100)
 initialize retval to null
 if andmark = "&" then
-  let ptxt = "select ",columns clipped
-   ," from ",table clipped
-    ," where rowid in (",rowids clipped
-    ,") order by ", columns clipped
+  let ptxt = "select ",p_columns clipped,
+                " from ", p_table clipped,
+                " where rowid in (",p_rowids clipped,
+                 ") order by ", p_columns clipped
   whenever any error continue  
   prepare prowids2col from ptxt
   declare rowids2col cursor for prowids2col

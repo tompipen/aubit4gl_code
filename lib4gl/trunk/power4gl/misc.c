@@ -36,7 +36,7 @@
  Return the processor time value.
 \******************************************************************************/
 
-cputime(nargs)
+aclfgl_putime(nargs)
   int nargs;
 {
 struct tms t;
@@ -53,7 +53,7 @@ return(1);
  Return the process id number.
 \******************************************************************************/
 
-processid(nargs)
+aclfgl_processid(nargs)
   int nargs;
 {
 retlong(getpid());
@@ -64,7 +64,7 @@ return(1);
  Return the effective user id.
 \******************************************************************************/
 
-userid(nargs)
+aclfgl_serid(nargs)
   int nargs;
 {
 retquote(getpwuid(geteuid())->pw_name);
@@ -131,10 +131,10 @@ int n;
  Clear messages.
 \******************************************************************************/
 
-fgl_clrmsg(nargs)
+aclfgl_fgl_clrmsg(nargs)
 int nargs;
 {
-clrmsg();
+/* clrmsg();  TODO : How to implement?   */
 return(0);
 }
 
@@ -144,7 +144,7 @@ return(0);
 
 /*extern short eflastkey;
 
-fgl_getkey(nargs)
+aclfgl_getkey(nargs)
 int nargs;
 {
 extern short _acckey;
@@ -196,11 +196,13 @@ typedef struct _efwindow {
   unsigned long ucount;
 } _EFwindow;
 
+/**** Use Internal Aubit function
+
 extern _EFwindow *topwin, *botwin, *_Wscreen;
 extern WINDOW *_efbigwin;
 extern char *GB;
 
-fgl_prtscr(nargs)
+aclfgl_fgl_prtscr(nargs)
 int nargs;
 {
 register FILE  *fp;
@@ -228,10 +230,10 @@ if (nargs >= 2) {
 if (dbprint == NULL)
   if ((dbprint = getenv("DBPRINT")) == NULL) dbprint = "lp -s";
 if (topwin == _Wscreen)
-  /* the user is looking at the "screen" */
+  # the user is looking at the "screen" 
   win = (WINDOW * ) _Wscreen->win;
 else {
-  /* the user is looking at the one or more "windows" */
+  #  the user is looking at the one or more "windows" 
   win = _efbigwin;
   for (scr = botwin; scr != (_EFwindow * )0; 
   scr = (_EFwindow * )scr->upper) {
@@ -264,11 +266,19 @@ if ((fp = popen(dbprint, "w")) != (FILE * )0) {
 return 0;
 }
 
+*/
+
+aclfgl_fgl_prtscr(nargs)
+int nargs;
+{
+aclfgl_aclfgl_dump_screen(nargs);
+return 0;
+}
 /******************************************************************************\
  Open a text file.
 \******************************************************************************/
 
-fgl_fopen(nargs)
+aclfgl_fgl_fopen(nargs)
 int nargs;
 {
 char filename[80];
@@ -291,7 +301,7 @@ return 1;
  Read a line from a text file.
 \******************************************************************************/
 
-fgl_fgets(nargs)
+aclfgl_fgl_fgets(nargs)
 int nargs;
 {
 long filehandle;
@@ -320,7 +330,7 @@ return 2;
  Write a fixed length string to a text file.
 \******************************************************************************/
 
-fgl_fputs(nargs)
+aclfgl_fgl_fputs(nargs)
 int nargs;
 {
 long filehandle;
@@ -343,7 +353,7 @@ return 1;
  Write a line to a text file (with cr and clipped).
 \******************************************************************************/
 
-fgl_fputl(nargs)
+aclfgl_fgl_fputl(nargs)
 int nargs;
 {
 long filehandle;
@@ -366,7 +376,7 @@ return 1;
  Close a text file.
 \******************************************************************************/
 
-fgl_fclose(nargs)
+aclfgl_fgl_fclose(nargs)
 int nargs;
 {
 long filehandle;
@@ -397,7 +407,7 @@ while (*blank == ' ')  {
  Find the maximum value of a set of integers.
 \******************************************************************************/
 
-fgl_maxints(nargs)
+aclfgl_fgl_maxints(nargs)
 int nargs;
 {
 int i;
@@ -419,16 +429,16 @@ return 1;
  using different numbers of record fields.
 \******************************************************************************/
 
-fgl_recdiff1(nargs) int nargs; {return (fgl_recdiff(nargs));}
-fgl_recdiff2(nargs) int nargs; {return (fgl_recdiff(nargs));}
-fgl_recdiff3(nargs) int nargs; {return (fgl_recdiff(nargs));}
-fgl_recdiff4(nargs) int nargs; {return (fgl_recdiff(nargs));}
-fgl_recdiff5(nargs) int nargs; {return (fgl_recdiff(nargs));}
-fgl_recdiff6(nargs) int nargs; {return (fgl_recdiff(nargs));}
-fgl_recdiff7(nargs) int nargs; {return (fgl_recdiff(nargs));}
-fgl_recdiff8(nargs) int nargs; {return (fgl_recdiff(nargs));}
-fgl_recdiff9(nargs) int nargs; {return (fgl_recdiff(nargs));}
-fgl_recdiff(nargs)
+aclfgl_fgl_recdiff1(nargs) int nargs; {return (aclfgl_fgl_recdiff(nargs));}
+aclfgl_fgl_recdiff2(nargs) int nargs; {return (aclfgl_fgl_recdiff(nargs));}
+aclfgl_fgl_recdiff3(nargs) int nargs; {return (aclfgl_fgl_recdiff(nargs));}
+aclfgl_fgl_recdiff4(nargs) int nargs; {return (aclfgl_fgl_recdiff(nargs));}
+aclfgl_fgl_recdiff5(nargs) int nargs; {return (aclfgl_fgl_recdiff(nargs));}
+aclfgl_fgl_recdiff6(nargs) int nargs; {return (aclfgl_fgl_recdiff(nargs));}
+aclfgl_fgl_recdiff7(nargs) int nargs; {return (aclfgl_fgl_recdiff(nargs));}
+aclfgl_fgl_recdiff8(nargs) int nargs; {return (aclfgl_fgl_recdiff(nargs));}
+aclfgl_fgl_recdiff9(nargs) int nargs; {return (aclfgl_fgl_recdiff(nargs));}
+aclfgl_fgl_recdiff(nargs)
 int nargs;
 {
 char* *argvec;
@@ -476,16 +486,16 @@ return(1);
  using different numbers of record fields.
 \******************************************************************************/
 
-fgl_recswap1(nargs) int nargs; {return (fgl_recswap(nargs));}
-fgl_recswap2(nargs) int nargs; {return (fgl_recswap(nargs));}
-fgl_recswap3(nargs) int nargs; {return (fgl_recswap(nargs));}
-fgl_recswap4(nargs) int nargs; {return (fgl_recswap(nargs));}
-fgl_recswap5(nargs) int nargs; {return (fgl_recswap(nargs));}
-fgl_recswap6(nargs) int nargs; {return (fgl_recswap(nargs));}
-fgl_recswap7(nargs) int nargs; {return (fgl_recswap(nargs));}
-fgl_recswap8(nargs) int nargs; {return (fgl_recswap(nargs));}
-fgl_recswap9(nargs) int nargs; {return (fgl_recswap(nargs));}
-fgl_recswap(nargs)
+aclfgl_fgl_recswap1(nargs) int nargs; {return (aclfgl_fgl_recswap(nargs));}
+aclfgl_fgl_recswap2(nargs) int nargs; {return (aclfgl_fgl_recswap(nargs));}
+aclfgl_fgl_recswap3(nargs) int nargs; {return (aclfgl_fgl_recswap(nargs));}
+aclfgl_fgl_recswap4(nargs) int nargs; {return (aclfgl_fgl_recswap(nargs));}
+aclfgl_fgl_recswap5(nargs) int nargs; {return (aclfgl_fgl_recswap(nargs));}
+aclfgl_fgl_recswap6(nargs) int nargs; {return (aclfgl_fgl_recswap(nargs));}
+aclfgl_fgl_recswap7(nargs) int nargs; {return (aclfgl_fgl_recswap(nargs));}
+aclfgl_fgl_recswap8(nargs) int nargs; {return (aclfgl_fgl_recswap(nargs));}
+aclfgl_fgl_recswap9(nargs) int nargs; {return (aclfgl_fgl_recswap(nargs));}
+aclfgl_fgl_recswap(nargs)
 int nargs;
 {
 char **argvec;
@@ -526,7 +536,7 @@ return(nargs);
  Replace occurences of a pattern in a string with another pattern.
 \******************************************************************************/
 
-fgl_strrep(nargs)
+aclfgl_fgl_strrep(nargs)
 int nargs;
 {
 char s1[2000];		/* Input string. */
@@ -571,7 +581,7 @@ return 1;
  Find position of first occurence of a pattern in a string.
 \******************************************************************************/
 
-fgl_strpos(nargs)
+aclfgl_fgl_strpos(nargs)
 int nargs;
 {
 char s1[1000];		/* Input string. */

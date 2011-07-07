@@ -41,7 +41,7 @@ exit(1);
 
 
 /*
-cpower(nargs)
+aclfgl_cpower(nargs)
   int nargs;
 {
 dec_t x,y;
@@ -57,7 +57,7 @@ double dx,dy;
   return(1);
 }
 */
-cpower(nargs)
+aclfgl_cpower(nargs)
   int nargs;
 {
 double x,y;
@@ -69,7 +69,7 @@ double x,y;
   retdub(&x);
   return(1);
 }
-cpower2(nargs)
+aclfgl_cpower2(nargs)
   int nargs;
 {
 double x,y;

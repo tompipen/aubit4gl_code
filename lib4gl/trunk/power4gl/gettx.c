@@ -187,7 +187,7 @@ return(data);
  4gl Return: Data text ("\0" if not found).
 \******************************************************************************/
 
-int gettx(nargs)
+int aclfgl_gettx(nargs)
 
 int nargs;
 {
