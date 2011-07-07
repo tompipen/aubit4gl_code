@@ -185,4 +185,24 @@ create table printer
 display "loading table printer ..."
 load from "powdemo.exp/printer111.unl" insert into printer
 
+if lv_dialect[1,8] = "POSTGRES" then
+    display "In postgresql database you still need:"
+    display ""
+    display "To enable some Informix compatible views/functions"
+    display "psql powdemo -f <aubitdir_src>/lib/libsql/postgresql/pg8.sql"
+    display ""
+    display "To simulate SERIAL datatypes as SEQUENCE, generate trigger"
+    display "cd <aubitdir_src>/lib/libsql/postgresql"
+    display "4glpc -k fix_serial.4gl -o fix_serial.4ae "
+    display "./fix_serial.4ae powdeeo"
+end if
+
+display "You can compile now the forms"
+display "./form_compile.sh"
+#run "./form_compile.sh"
+
+display "and then, compile the demo program"
+display "./a4gl_compile.sh"
+#run "./a4gl_compile.sh"
+
 end main

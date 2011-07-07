@@ -4204,7 +4204,7 @@ end function
 # Online Transaction error assessment and reaction.
 ################################################################################
 
-function assessw(sqlcode,txt)
+function assessw(txt)
 
 define
   sqlcode integer,
