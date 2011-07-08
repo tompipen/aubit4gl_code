@@ -9,4 +9,4 @@ echo "Compiling the 4gl and c modules..."
 if [ -x demo.4ae ]
 then
     echo demo.4ae created
-if
+fi
