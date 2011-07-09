@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.244 2011-06-26 14:31:41 mikeaubury Exp $
+# $Id: sql.c,v 1.245 2011-07-09 06:59:22 mikeaubury Exp $
 #
 */
 
@@ -2344,8 +2344,8 @@ A4GLSQL_make_connection (char *server, char *uid_p, char *pwd_p)
 	uid=uid_s;
 	pwd=pwd_s;
 #ifdef DEBUG
-    A4GL_dbg ("A4GLSQL_make_connection .. server=%s uid_p=%s pwd_p=%s",
-            server, uid_p, pwd_p);
+    A4GL_dbg ("A4GLSQL_make_connection .. server=%s uid_p=%s pwd_p=*****",
+            server, uid_p);
 #else
     A4GL_dbg ("A4GLSQL_make_connection .. server=%s uid_p=%s",
 	    server, uid_p);
