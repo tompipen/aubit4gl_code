@@ -748,6 +748,7 @@ maintain_socket (int newfd_orig)
 
   UIdebug (5, "Creating pipes\n");
   setenv ("PROXYUSER", usr, 1);
+  setenv ("LOGNAME", usr, 1); //Needed for VENTAS
   // Now - tell our child process who we are...
   setenv ("PROXYID", buff, 1);
   sock_s = create_pipes ();
