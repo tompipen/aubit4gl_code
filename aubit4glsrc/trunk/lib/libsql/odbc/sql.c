@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.245 2011-07-09 06:59:22 mikeaubury Exp $
+# $Id: sql.c,v 1.246 2011-07-11 11:41:37 mikeaubury Exp $
 #
 */
 
@@ -607,170 +607,177 @@ A4GL_add_cache_column(char*buff,char*def)
 
 
 static void
-prettyprint_sql (char *sql, struct BINDING *ibind, int nibind, char *fromwhere)
+prettyprint_sql (char *sql, struct BINDING *ibind, int nibind,
+		 char *fromwhere)
 {
-    int c;
-    FILE *f;
-    int a;
-    char buff[20000];
-    char sbuff[20000];
-    char fname[2000];
-    int b;
-    static int log_sql = -1;
+  int c;
+  FILE *f;
+  int a;
+  char buff[20000];
+  char sbuff[20000];
+  static char fname[2000] = "";
+  int b;
+  static int log_sql = -1;
 #ifdef __WIN32__
-    static char * log_sql_file = "c:\\log.sql";
+  static char *log_sql_file = "c:\\log.sql";
 #else
-    static char * log_sql_file = "/tmp/log.sql";
+  static char *log_sql_file = "/tmp/log.sql";
 #endif
-    static int first_open = 1;
+  static int first_open = 1;
 
 
-	
-    if (log_sql == -1) {
-	strcpy(fname, log_sql_file);
-        log_sql = A4GL_isyes (acl_getenv ("LOGODBCSQL")); // @ENV  LOGODBCSQL - Y/N if logging is enabled
-	
-	if (strlen(acl_getenv ("LOGODBCSQLFILE"))) {
-		log_sql=1;
-		strcpy(fname, acl_getenv ("LOGODBCSQLFILE")); // @ENV LOGODBCSQLFILE filename to use (if not /tmp/log.sql)
+
+  if (log_sql == -1)
+    {
+      strcpy (fname, log_sql_file);
+      log_sql = A4GL_isyes (acl_getenv ("LOGODBCSQL"));	// @ENV  LOGODBCSQL - Y/N if logging is enabled
+
+      if (strlen (acl_getenv ("LOGODBCSQLFILE"))) {
+	  		log_sql = 1;
+	  		strcpy (fname, acl_getenv ("LOGODBCSQLFILE"));	// @ENV LOGODBCSQLFILE filename to use (if not /tmp/log.sql)
+			}
+    }
+
+
+  if (!log_sql)
+    return;
+
+  c = 0;
+  b = 0;
+
+
+  if (first_open)
+    {
+      first_open = 0;
+      if (A4GL_isyes (acl_getenv ("LOGODBCSQLPID")))
+	{			// @ENV  LOGODBCSQLPID - Y/N - append the process ID to the filename 
+	  char smbuff[200];
+	  sprintf (smbuff, ".%d", getpid ());
+	  strcat (fname, smbuff);
 	}
+      f = fopen (fname, "w");
+    }
+  else
+    {
+      f = fopen (fname, "a");
     }
 
-
-    if (!log_sql)
-        return;
-
-    c = 0;
-    b = 0;
-
-    if (first_open)
+  if (f == NULL)
     {
-        first_open = 0;
-	if ( A4GL_isyes (acl_getenv ("LOGODBCSQLPID"))) { // @ENV  LOGODBCSQLPID - Y/N - append the process ID to the filename 
-		char smbuff[200];
-		sprintf(smbuff,".%d",getpid());
-		strcat(fname,smbuff);
+      A4GL_wrn ("Error opening SQL log file: '%s': %s",
+		log_sql_file, strerror (errno));
+      log_sql = 0;
+    }
+
+  if (ibind == 0)
+    {
+      if (!strchr (sql, '?'))
+	{
+	  FPRINTF (f, "%s;\n", sql);
 	}
-        f = fopen (fname, "w");
+      fclose (f);
+      return;
     }
-    else
+
+
+  for (a = 0; a < strlen (sql); a++)
     {
-        f = fopen (fname, "a");
-    }
+      if (sql[a] != '?')
+	{
+	  buff[b++] = sql[a];
+	  continue;
+	}
 
-    if (f == NULL)
+      SPRINTF1 (sbuff, "'?%d'", ibind[c].dtype);
+
+      if (ibind[c].dtype == DTYPE_CHAR || ibind[c].dtype == DTYPE_VCHAR)
+	{
+	  static char *buff = 0;
+	  char *ptr;
+	  int a = 0;
+	  int b = 0;
+	  ptr = ibind[c].ptr;
+
+	  if (strchr (ptr, '\''))
+	    {
+	      buff = acl_realloc (buff, (strlen (ibind[c].ptr) * 2) + 1);
+	      for (a = 0; a < strlen (ptr); a++)
+		{
+		  if (ptr[a] != '\'')
+		    {
+		      buff[b++] = ptr[a];
+		    }
+		  else
+		    {
+		      buff[b++] = '\'';
+		      buff[b++] = '\'';
+		    }
+		}
+	      buff[b] = 0;
+
+	      SPRINTF1 (sbuff, "'%s'", buff);
+	    }
+	  else
+	    {
+	      SPRINTF1 (sbuff, "'%s'", ptr);
+	    }
+	}
+
+
+      if (ibind[c].dtype == DTYPE_SMINT)
+	{
+	  SPRINTF1 (sbuff, "%d", *(short *) ibind[c].ptr);
+	}
+
+      if (ibind[c].dtype == DTYPE_INT)
+	{
+	  SPRINTF1 (sbuff, "%ld", *(long *) ibind[c].ptr);
+	}
+
+
+      if (ibind[c].dtype == DTYPE_FLOAT)
+	{
+	  SPRINTF1 (sbuff, "%lf", *(double *) ibind[c].ptr);
+	  A4GL_decstr_convert (sbuff, a4gl_convfmts.printf_decfmt,
+			       a4gl_convfmts.posix_decfmt, 0, 1, -1);
+	}
+
+      if (ibind[c].dtype == DTYPE_SMFLOAT)
+	{
+	  SPRINTF1 (sbuff, "%f", *(float *) ibind[c].ptr);
+	  A4GL_decstr_convert (sbuff, a4gl_convfmts.printf_decfmt,
+			       a4gl_convfmts.posix_decfmt, 0, 1, -1);
+	}
+
+      if (ibind[c].dtype == DTYPE_DECIMAL)
+	{
+	  char *ptr;
+	  int dtype;
+	  dtype = ibind[c].dtype + ENCODE_SIZE (ibind[c].size);
+	  A4GL_push_variable (ibind[c].ptr, dtype);
+	  ptr = A4GL_char_pop ();
+	  SPRINTF1 (sbuff, "%s", ptr);
+	  acl_free (ptr);
+	}
+
+      if (ibind[c].dtype == DTYPE_DATE)
+	{
+	  char *ptr;
+	  A4GL_push_date (*(long *) ibind[c].ptr);
+	  ptr = A4GL_char_pop ();
+	  SPRINTF1 (sbuff, "'%s'", ptr);
+	  acl_free (ptr);
+	}
+      buff[b] = 0;
+      strcat (buff, sbuff);
+      b = strlen (buff);
+      c++;
+    }
+  buff[b] = 0;
+  if (f)
     {
-        A4GL_wrn("Error opening SQL log file: '%s': %s",
-                  log_sql_file, strerror(errno));
-        log_sql = 0;
-    }
-
-    if (ibind == 0)
-    {
-        if (!strchr (sql, '?'))
-        {
-            FPRINTF (f, "%s;\n", sql);
-        }
-        fclose (f);
-        return;
-    }
-
-
-    for (a = 0; a < strlen (sql); a++)
-    {
-        if (sql[a] != '?')
-        {
-            buff[b++] = sql[a];
-            continue;
-        }
-
-        SPRINTF1 (sbuff, "'?%d'", ibind[c].dtype);
-
-        if (ibind[c].dtype == DTYPE_CHAR || ibind[c].dtype == DTYPE_VCHAR)
-        {
-            static char *buff = 0;
-            char *ptr;
-            int a = 0;
-            int b = 0;
-            ptr = ibind[c].ptr;
-
-            if (strchr (ptr, '\''))
-            {
-                buff = acl_realloc (buff, (strlen (ibind[c].ptr) * 2) + 1);
-                for (a = 0; a < strlen (ptr); a++)
-                {
-                    if (ptr[a] != '\'')
-                    {
-                        buff[b++] = ptr[a];
-                    }
-                    else
-                    {
-                        buff[b++] = '\'';
-                        buff[b++] = '\'';
-                    }
-                }
-                buff[b] = 0;
-
-                SPRINTF1 (sbuff, "'%s'", buff);
-            }
-            else
-            {
-                SPRINTF1 (sbuff, "'%s'", ptr);
-            }
-        }
-
-
-        if (ibind[c].dtype == DTYPE_SMINT)
-        {
-            SPRINTF1 (sbuff, "%d", *(short *) ibind[c].ptr);
-        }
-
-        if (ibind[c].dtype == DTYPE_INT)
-        {
-            SPRINTF1 (sbuff, "%ld", *(long *) ibind[c].ptr);
-        }
-
-
-        if (ibind[c].dtype == DTYPE_FLOAT)
-        {
-            SPRINTF1 (sbuff, "%lf", *(double *) ibind[c].ptr);
-	    A4GL_decstr_convert(sbuff, a4gl_convfmts.printf_decfmt, a4gl_convfmts.posix_decfmt, 0, 1, -1);
-        }
-
-        if (ibind[c].dtype == DTYPE_SMFLOAT)
-        {
-            SPRINTF1 (sbuff, "%f", *(float *) ibind[c].ptr);
-	    A4GL_decstr_convert(sbuff, a4gl_convfmts.printf_decfmt, a4gl_convfmts.posix_decfmt, 0, 1, -1);
-        }
-
-        if (ibind[c].dtype == DTYPE_DECIMAL)
-        {
-            char *ptr;
-            int dtype;
-            dtype = ibind[c].dtype + ENCODE_SIZE (ibind[c].size);
-            A4GL_push_variable (ibind[c].ptr, dtype);
-            ptr = A4GL_char_pop ();
-            SPRINTF1 (sbuff, "%s", ptr);
-            acl_free (ptr);
-        }
-
-        if (ibind[c].dtype == DTYPE_DATE)
-        {
-            char *ptr;
-            A4GL_push_date (*(long *) ibind[c].ptr);
-            ptr = A4GL_char_pop ();
-            SPRINTF1 (sbuff, "'%s'", ptr);
-            acl_free (ptr);
-        }
-        buff[b] = 0;
-        strcat (buff, sbuff);
-        b = strlen (buff);
-        c++;
-    }
-    buff[b] = 0;
-    if (f) {
-    	FPRINTF (f, "%s;\n", buff);
-    	fclose (f);
+      FPRINTF (f, "%s;\n", buff);
+      fclose (f);
     }
 }
 
