@@ -732,6 +732,7 @@ char buff[400];
 			fprintf(getOuputFile()," INTEGER */\n");
 	  return 1;
 	}
+
       if (strcasecmp (param->dtype, "ushort") == 0)
 	{
 	  sprintf (buff, "%s=A4GL_pop_long();", name);
@@ -740,6 +741,14 @@ char buff[400];
 	  return 1;
 	}
 
+      if (strcasecmp (param->dtype, "ENUM:xsd__boolean*") == 0)
+	{
+	  sprintf (buff, "{static int plong;plong=A4GL_pop_long();if (A4GL_isnull(2,&plong)) %s=0; else %s=&plong;}", name,name);
+		pop_param_buff[npop_param++]=strdup(buff);
+			fprintf(getOuputFile()," BOOLEAN */\n");
+	  return 1;
+	  return 1;
+	}
 
 	sprintf(buff,"%s=A4GL_op_%s();",name,param->dtype);
 	pop_param_buff[npop_param++]=strdup(buff);
@@ -750,13 +759,14 @@ char buff[400];
 }
 
 int
-print_4gl_push (char *old_prefix, struct variable_element *param,int isSingleton)
+print_4gl_push (char *old_prefix, struct variable_element *param,
+		int isSingleton)
 {
   char prefix[20000] = "";
-      char name[2000];
+  char name[2000];
   int a;
   int bad = 0;
-  int r=0;
+  int r = 0;
 
   if (param->next.next_len)
     {
@@ -768,152 +778,187 @@ print_4gl_push (char *old_prefix, struct variable_element *param,int isSingleton
       if (strstr (param->dtype, "**"))
 	{
 	  // Pointer to a pointer - probably some sort of an array ? 
-	  fprintf (getOuputFile (), " /* some values have been discarded - returning '0' as a placeholder */\n");
-	  fprintf (getOuputFile (), "   A4GL_push_long(0); /* %s */\n", old_prefix);
+	  fprintf (getOuputFile (),
+		   " /* some values have been discarded - returning '0' as a placeholder */\n");
+	  fprintf (getOuputFile (), "   A4GL_push_long(0); /* %s */\n",
+		   old_prefix);
 	  bad++;
 	}
       else
 	{
-		struct define_variables *v;
-		v=add_named_struct(unstar(param->dtype));
+	  struct define_variables *v;
+	  v = add_named_struct (unstar (param->dtype));
 
 	  if (strstr (param->dtype, "*"))
 	    {
 	      char buff[3888];
-		if (v) {
-			if (v->singleton) {
-				isSingleton=1;
-				strcpy(buff,"");
-			} else {
-	      			sprintf (buff, "->"); // , param->dtype,v->singleton);
-			}
-		} else {
-	      		sprintf (buff, "->"); //, param->dtype);
+	      if (v)
+		{
+		  if (v->singleton)
+		    {
+		      isSingleton = 1;
+		      strcpy (buff, "");
+		    }
+		  else
+		    {
+		      sprintf (buff, "->");	// , param->dtype,v->singleton);
+		    }
+		}
+	      else
+		{
+		  sprintf (buff, "->");	//, param->dtype);
 		}
 	      strcat (prefix, buff);	// or '.' ? ???
 	    }
 	  else
 	    {
-		if (v) {
-			char buff[2000];	
-			
-			if (v->singleton) {
-				isSingleton=1;
-			} else {
-	      			sprintf (buff, ". /* %d */", v->singleton);	// or '.' ? ???
-	      			strcat (prefix,buff);	// or '.' ? ???
-			}
-		} else {
-	      		strcat (prefix, ". /* NO V */");	// or '.' ? ???
+	      if (v)
+		{
+		  char buff[2000];
+
+		  if (v->singleton)
+		    {
+		      isSingleton = 1;
+		    }
+		  else
+		    {
+		      sprintf (buff, ". /* %d */", v->singleton);	// or '.' ? ???
+		      strcat (prefix, buff);	// or '.' ? ???
+		    }
+		}
+	      else
+		{
+		  strcat (prefix, ". /* NO V */");	// or '.' ? ???
 		}
 	    }
 
 	  for (a = 0; a < param->next.next_len; a++)
 	    {
-	      r+=print_4gl_push (prefix, &param->next.next_val[a],isSingleton);
+	      r +=
+		print_4gl_push (prefix, &param->next.next_val[a],
+				isSingleton);
 	    }
 	}
 
-	return r;
+      return r;
     }
 
 
 
-	if (isSingleton) {
-      		sprintf (name, "%s", old_prefix); // Dont worry about the name - its a singleton so it doesn't really have one..
-	} else {
-      		sprintf (name, "%s%s", old_prefix, param->name);
-	}
+  if (isSingleton)
+    {
+      sprintf (name, "%s", old_prefix);	// Dont worry about the name - its a singleton so it doesn't really have one..
+    }
+  else
+    {
+      sprintf (name, "%s%s", old_prefix, param->name);
+    }
 
-	 fprintf (getOuputFile (), "/* %s */\n", param->dtype);
+  fprintf (getOuputFile (), "/* %s */\n", param->dtype);
 
-      if (strcasecmp (param->dtype, "xsd__boolean") == 0 || strcasecmp(param->dtype,"ENUM:xsd__boolean")==0)
-	{
-	  fprintf (getOuputFile (), "   A4GL_push_int(%s);\n", name);
-	  return 1;
-	}
-      if (strcasecmp (param->dtype, "long") == 0)
-	{
-	  fprintf (getOuputFile (), "   A4GL_push_long(%s);\n", name);
-	  return 1;
-	}
-      if (strcasecmp (param->dtype, "char") == 0)
-	{
-	  fprintf (getOuputFile (), "   A4GL_push_single_char(%s);\n", name);
-	  return 1;
-	}
-      if (strcasecmp (param->dtype, "char*") ==0 || strcasecmp (param->dtype, "xml" ) == 0)
-	{
-	  fprintf (getOuputFile (), "   A4GL_push_char(%s); //%s\n", name, param->dtype);
-	  return 1;
-	}
-      if (strcasecmp (param->dtype, "double") == 0)
-	{
-	  fprintf (getOuputFile (), "   A4GL_push_double(%s);\n", name);
-	  return 1;
-	}
-      if (strcasecmp (param->dtype, "float") == 0)
-	{
-	  fprintf (getOuputFile (), "   A4GL_push_float(%s);", name);
-	  return 1;
-	}
-      if (strcasecmp (param->dtype, "long") == 0)
-	{
-	  fprintf (getOuputFile (), "   A4GL_push_long(%s);", name);
-	  return 1;
-	}
+  if (strcasecmp (param->dtype, "xsd__boolean") == 0
+      || strcasecmp (param->dtype, "ENUM:xsd__boolean") == 0)
+    {
+      fprintf (getOuputFile (), "   A4GL_push_int(%s);\n", name);
+      return 1;
+    }
+  if (strcasecmp (param->dtype, "long") == 0)
+    {
+      fprintf (getOuputFile (), "   A4GL_push_long(%s);\n", name);
+      return 1;
+    }
+  if (strcasecmp (param->dtype, "char") == 0)
+    {
+      fprintf (getOuputFile (), "   A4GL_push_single_char(%s);\n", name);
+      return 1;
+    }
+  if (strcasecmp (param->dtype, "char*") == 0
+      || strcasecmp (param->dtype, "xml") == 0)
+    {
+	 	
+      fprintf (getOuputFile (), "  if (%s) {\n", name);
+      fprintf (getOuputFile (), "   A4GL_push_char(%s); //%s\n", name,
+	       param->dtype);
+      fprintf (getOuputFile (), "  } else {\n");
+      fprintf (getOuputFile (), "    A4GL_push_null (0, 1);\n");
+      fprintf (getOuputFile (), "  }\n");
+      return 1;
+    }
+  if (strcasecmp (param->dtype, "double") == 0)
+    {
+      fprintf (getOuputFile (), "   A4GL_push_double(%s);\n", name);
+      return 1;
+    }
+  if (strcasecmp (param->dtype, "float") == 0)
+    {
+      fprintf (getOuputFile (), "   A4GL_push_float(%s);", name);
+      return 1;
+    }
+  if (strcasecmp (param->dtype, "long") == 0)
+    {
+      fprintf (getOuputFile (), "   A4GL_push_long(%s);", name);
+      return 1;
+    }
 
-      if (strcasecmp (param->dtype, "long*") == 0)
-	{
-	  fprintf (getOuputFile (), "   A4GL_push_long(*%s);", name);
-	  return 1;
-	}
+  if (strcasecmp (param->dtype, "long*") == 0)
+    {
+      fprintf (getOuputFile (), "  if (%s) {\n", name);
+      fprintf (getOuputFile (), "    A4GL_push_long(*%s);\n", name);
+      fprintf (getOuputFile (), "  } else {\n");
+      fprintf (getOuputFile (), "    A4GL_push_null (2, 0);\n");
+      fprintf (getOuputFile (), "  }\n");
+      return 1;
+    }
 
-      if (strcasecmp (param->dtype, "ENUM:xsd__boolean*") == 0)
-	{
-	  fprintf (getOuputFile (), "   A4GL_push_int(*%s);", name);
-	  return 1;
-	}
+  if (strcasecmp (param->dtype, "ENUM:xsd__boolean*") == 0)
+    {
+      fprintf (getOuputFile (), "  if (%s) {\n", name);
+      fprintf (getOuputFile (), "   A4GL_push_int(*%s);", name);
+      fprintf (getOuputFile (), "  } else {\n");
+      fprintf (getOuputFile (), "    A4GL_push_null (2, 0);\n");
+      fprintf (getOuputFile (), "  }\n");
+      return 1;
+    }
 
-      if (strcasecmp (param->dtype, "longlong") == 0)
-	{
-	  fprintf (getOuputFile (), "   A4GL_push_long(%s);", name);
-	  return 1;
-	}
-      if (strcasecmp (param->dtype, "short") == 0)
-	{
-	  fprintf (getOuputFile (), "   A4GL_push_long(%s);", name);
-	  return 1;
-	}
-      if (strcasecmp (param->dtype, "time_t") == 0)
-	{
-	  fprintf (getOuputFile (), "   A4GL_push_time_t(%s);", name);
-	  return 1;
-	}
-      if (strcasecmp (param->dtype, "uchar") == 0)
-	{
-	  fprintf (getOuputFile (), "   A4GL_push_single_char(%s);", name);
-	  return 1;
-	}
-      if (strcasecmp (param->dtype, "ulong") == 0)
-	{
-	  fprintf (getOuputFile (), "   A4GL_push_long(%s);", name);
-	  return 1;
-	}
-      if (strcasecmp (param->dtype, "ulonglong") == 0)
-	{
-	  fprintf (getOuputFile (), "   A4GL_push_long(%s);", name);
-	  return 1;
-	}
-      if (strcasecmp (param->dtype, "ushort") == 0)
-	{
-	  fprintf (getOuputFile (), "   A4GL_push_long(%s);", name);
-	  return 1;
-	}
+  if (strcasecmp (param->dtype, "longlong") == 0)
+    {
+      fprintf (getOuputFile (), "   A4GL_push_long(%s);", name);
+      return 1;
+    }
+  if (strcasecmp (param->dtype, "short") == 0)
+    {
+      fprintf (getOuputFile (), "   A4GL_push_long(%s);", name);
+      return 1;
+    }
+  if (strcasecmp (param->dtype, "time_t") == 0)
+    {
+      fprintf (getOuputFile (), "   A4GL_push_time_t(%s);", name);
+      return 1;
+    }
+  if (strcasecmp (param->dtype, "uchar") == 0)
+    {
+      fprintf (getOuputFile (), "   A4GL_push_single_char(%s);", name);
+      return 1;
+    }
+  if (strcasecmp (param->dtype, "ulong") == 0)
+    {
+      fprintf (getOuputFile (), "   A4GL_push_long(%s);", name);
+      return 1;
+    }
+  if (strcasecmp (param->dtype, "ulonglong") == 0)
+    {
+      fprintf (getOuputFile (), "   A4GL_push_long(%s);", name);
+      return 1;
+    }
+  if (strcasecmp (param->dtype, "ushort") == 0)
+    {
+      fprintf (getOuputFile (), "   A4GL_push_long(%s);", name);
+      return 1;
+    }
 
-	  fprintf (getOuputFile (), "   UNHANDLED : %s", param->dtype);
+  fprintf (getOuputFile (), "   UNHANDLED : %s", param->dtype);
 
-    
+
   return 1;
 }
 
