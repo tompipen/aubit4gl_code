@@ -680,7 +680,7 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
           
       }
       QString id = childElement.attribute("ID");
-      createWindow("screen", "", 0, 0, 100, 100, id);
+      createWindow("dummy_ventas", "", 0, 0, 100, 100, id);
       return;
    }
 
@@ -2194,7 +2194,6 @@ MainFrame::vdcdebug("ProtocolHandler","sendFile", "QString name");
       QFileInfo inf(name);
       file.setFileName(QDir::tempPath() + "/" + inf.fileName());
       if(!file.open(QIODevice::ReadOnly | QIODevice::Unbuffered)){
-         qDebug()<<"JA?";
          return false;
       }
    }

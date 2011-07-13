@@ -115,7 +115,10 @@ MainFrame::vdcdebug("ScreenHandler","createWindow", "QString windowTitle,QString
    //p_fglform = new FglForm(windowTitle, p_fglform);
    p_fglform = new FglForm(windowTitle);
    p_fglform->installEventFilter(this);
-
+   if(windowTitle == "dummy_ventas")
+   {
+       p_fglform->hide();
+   }
    p_fglform->setId(id);
    connect(p_fglform, SIGNAL(processResponse()), this, SLOT(processResponse()));
    connect(p_fglform, SIGNAL(sendDirect(QString)), this, SLOT(sendDirect(QString)));
