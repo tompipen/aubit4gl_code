@@ -80,6 +80,7 @@ public:
    QString windowName;
    bool b_getch_swin;
    bool b_allowClose;
+   bool b_dummy;
    QList<QString> ql_responseQueue;
    void setMenuEnabled(bool);
    void setMenu(RingMenu*);

@@ -36,6 +36,7 @@
 
 FglForm::FglForm(QString windowName, QWidget *parent) : QMainWindow(parent){
 
+   b_dummy = false;
    context = NULL;
    this->b_newForm = true;
    if(parent != NULL){
@@ -45,7 +46,10 @@ FglForm::FglForm(QString windowName, QWidget *parent) : QMainWindow(parent){
    if(!windowName.isEmpty()){
       this->windowName = windowName;
    }
-
+   if(this->windowName == "dummy_ventas")
+   {
+       b_dummy = true;
+   }
 
    this->setAccessibleName("FGLFORM");
    QSplitter *formSplitter = new QSplitter;
@@ -53,7 +57,6 @@ FglForm::FglForm(QString windowName, QWidget *parent) : QMainWindow(parent){
    setCentralWidget(formSplitter);
 
    setState(Fgl::IDLE);
-
 
    b_getch_swin = false;
    p_actionMenu = NULL;
@@ -2290,7 +2293,7 @@ int FglForm::findFieldIdByName(QString fieldName)
 {
 MainFrame::vdcdebug("FglForm","findFieldIdByName", "QString fieldName");
    QList<QWidget*> ql_fields = ql_formFields;
-
+   qDebug()<<fieldName;
    int index = fieldName.indexOf(".");
    int index2 = fieldName.indexOf("[");
 

@@ -118,6 +118,8 @@ MainFrame::vdcdebug("ScreenHandler","createWindow", "QString windowTitle,QString
    if(windowTitle == "dummy_ventas")
    {
        p_fglform->hide();
+       p_fglform->b_dummy = true;
+       cnt_form--;
    }
    p_fglform->setId(id);
    connect(p_fglform, SIGNAL(processResponse()), this, SLOT(processResponse()));
@@ -134,9 +136,12 @@ MainFrame::vdcdebug("ScreenHandler","createWindow", "QString windowTitle,QString
 
    p_fglform->windowName = windowTitle;
 
-   p_fglform->setStartMenu(startMenu);
-   startMenu.clear();
 
+   if(!p_fglform->b_dummy)
+   {
+      p_fglform->setStartMenu(startMenu);
+      startMenu.clear();
+   }
    if(style.isEmpty()){
       style = "default";
    }
@@ -237,8 +242,10 @@ MainFrame::vdcdebug("ScreenHandler","displayForm", "QString formName");
    else{
       qFatal("No such form %s", qPrintable(formName));
    }
-
-   p_fglform->show();
+   if(!p_fglform->b_dummy)
+   {
+       p_fglform->show();
+   }
 }
 
 //-------------------------------------------------------       -----------------------
@@ -273,9 +280,16 @@ MainFrame::vdcdebug("ScreenHandler","handleXMLStartMenu", "QString xmlFileString
       startMenu = xmlFile;
    }
    else{
-      if(p_fglform != NULL)
-         p_fglform->setStartMenu(xmlFile);
-   }
+      if(p_fglform != NULL && !p_fglform->b_dummy)
+       {
+          p_fglform->setStartMenu(xmlFile);
+       }
+      if(!p_fglform->b_dummy)
+      {
+          startMenu = xmlFile;
+      }
+  }
+
 }
 
 //------------------------------------------------------------------------------
@@ -326,8 +340,7 @@ void ScreenHandler::createMenu(QString title, QString comment, QString style, QS
 MainFrame::vdcdebug("ScreenHandler","createMenu", "QString title, QString comment, QString style, QString image");
    int i_Frm = getCurrForm();
 
-   if(i_Frm < 0)
-      return;
+
    // If menustyle is dialog
    if(style == "dialog"){
       createDialog(title, comment, style, image);
@@ -338,7 +351,8 @@ MainFrame::vdcdebug("ScreenHandler","createMenu", "QString title, QString commen
        createPulldown(title, comment, style, image);
        return;
    }
-
+   if(i_Frm < 0)
+      return;
    RingMenu *ringMenu = new RingMenu(title, style);
 
    p_fglform->setMenu(ringMenu);
@@ -357,8 +371,6 @@ MainFrame::vdcdebug("ScreenHandler","createMenuButton", "int buttonId, QString t
 
   int i_Frm = getCurrForm();
 
-   if(i_Frm < 0)
-      return;
 
    if(p_fglform == NULL)
       return;
@@ -376,6 +388,8 @@ MainFrame::vdcdebug("ScreenHandler","createMenuButton", "int buttonId, QString t
    if(p_fglform->menu() == NULL)
       return;
 
+   if(i_Frm < 0)
+      return;
    RingMenu *ringMenu = p_fglform->menu();
 
    ringMenu->createButton(buttonId, text, desc);
@@ -401,8 +415,7 @@ MainFrame::vdcdebug("ScreenHandler","createMenuAction", "int buttonId, QString t
 
   int i_Frm = getCurrForm();
 
-   if(i_Frm < 0)
-      return;
+
 
    if(p_fglform == NULL)
       return;
@@ -416,6 +429,8 @@ MainFrame::vdcdebug("ScreenHandler","createMenuAction", "int buttonId, QString t
        createPulldownButton(buttonId,text,"");
        return;
    }
+   if(i_Frm < 0)
+      return;
 
    if(p_fglform->menu() == NULL)
       return;
@@ -570,7 +585,7 @@ MainFrame::vdcdebug("ScreenHandler","createDialogButton", "int buttonId, QString
   int i_Frm = getCurrForm();
 
    Dialog* p_dialog = p_fglform->dialog();
-   if(i_Frm < 0 || p_fglform == NULL)
+   if(p_fglform == NULL)
       return;
 
    if(p_dialog == NULL)
@@ -619,7 +634,7 @@ MainFrame::vdcdebug("ScreenHandler","createPulldownButton", "int buttonId, QStri
   int i_Frm = getCurrForm();
 
    Pulldown* pulldown = p_fglform->pulldown();
-   if(i_Frm < 0 || p_fglform == NULL)
+   if(p_fglform == NULL)
       return;
 
    if(pulldown == NULL)
@@ -648,7 +663,7 @@ MainFrame::vdcdebug("ScreenHandler","createDialogAction", "int buttonId, QString
   int i_Frm = getCurrForm();
 
    Dialog* p_dialog = p_fglform->dialog();
-   if(i_Frm < 0 || p_fglform == NULL)
+   if(p_fglform == NULL)
       return;
 
    if(p_dialog == NULL)
@@ -1539,7 +1554,7 @@ MainFrame::vdcdebug("ScreenHandler","setFormOpts", "QString type, bool value, in
 
    int i_Frm = getCurrForm();
 
-   if(i_Frm < 0)
+   if(i_Frm < 0 && p_fglform->dialog() == NULL)
       return;
 
    Context *context = getContext(i_context);
@@ -1781,7 +1796,7 @@ MainFrame::vdcdebug("ScreenHandler","waitForEvent", "");
 
       p_fglform->checkState();
      //Hier evt abfragen ob IDLE und das Menu gesetzt ist. Es sollte aufjedenfall machbarsein ...
-      if(p_fglform->b_newForm && p_fglform->dialog () == NULL && p_fglform->pulldown() == NULL && saveactive->state() != Fgl::IDLE){
+      if(p_fglform->b_newForm && p_fglform->dialog () == NULL && p_fglform->pulldown() == NULL && saveactive->state() != Fgl::IDLE && !p_fglform->b_dummy){
          p_fglform->b_newForm = false;
          //Load the Actions again, before display the form
          p_fglform->checkActions();
