@@ -1070,14 +1070,12 @@ MainFrame::vdcdebug("ScreenHandler","setFieldEnabled", "QString fieldName, bool 
    int i_Frm = getCurrForm();
    if(i_Frm < 0)
       return;
-
    Context *context = getCurrentContext();
    if(context == NULL)
       return;
    
    // For fieldlist = table.*
    int index = fieldName.indexOf(".*");
-
    if(index < 0){
       // No wildcard
       QWidget *widget = p_fglform->findFieldByName(fieldName);
@@ -2156,7 +2154,7 @@ MainFrame::vdcdebug("ScreenHandler","closeWindow", "QString windowName");
 
 
          if(i_Frm > -1){
-            p_fglform = ql_fglForms.at(i_Frm);
+            p_fglform = ql_fglForms.at(i_Frm+1);
             p_fglform->setEnabled(true);
          }
          else{
