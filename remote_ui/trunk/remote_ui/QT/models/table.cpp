@@ -457,14 +457,14 @@ MainFrame::vdcdebug("TableView","fieldChanged", "QModelIndex current, QModelInde
       
       // only allow focus for fields that have a focus policy
       if(table->b_input && isReadOnlyColumn(current.column())){
-         if(current.column() > prev.column() || (current.row() > prev.row())){
-            emit nextfield();
-            return;
-         }
+//         if(current.column() > prev.column() || (current.row() > prev.row())){
+             emit nextfield();
+ /*        }
          else{
             emit prevfield();
             return;
          }
+         */
       }
 
 
@@ -548,7 +548,6 @@ void TableView::setCurrentField(int row, int col)
 {
 MainFrame::vdcdebug("TableView","setCurrentField", "int row, int col");
    this->setFocus();
-
    if(QSortFilterProxyModel *proxyModel = qobject_cast<QSortFilterProxyModel *> (this->model())){
 
       if(TableModel *table = qobject_cast<TableModel *> (proxyModel->sourceModel())){
