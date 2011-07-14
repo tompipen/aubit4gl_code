@@ -457,11 +457,13 @@ MainFrame::vdcdebug("TableView","fieldChanged", "QModelIndex current, QModelInde
       
       // only allow focus for fields that have a focus policy
       if(table->b_input && isReadOnlyColumn(current.column())){
-         if(current.column() > prev.column()){
+         if(current.column() > prev.column() || (current.row() > prev.row())){
             emit nextfield();
+            return;
          }
          else{
             emit prevfield();
+            return;
          }
       }
 
@@ -561,7 +563,8 @@ MainFrame::vdcdebug("TableView","setCurrentField", "int row, int col");
          }
          selectionModel()->setCurrentIndex(index, QItemSelectionModel::NoUpdate);
          //setCurrentIndex(index);
-         if(table->b_input && (currentIndex().row() == 0 && currentIndex().column() == 0)){
+//         if(table->b_input && (currentIndex().row() == 0 && currentIndex().column() == 0)){
+         if(table->b_input){
              edit(index);
          }
       }
