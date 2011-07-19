@@ -34,7 +34,8 @@ HEADERS += confwin.h \
 # fieldparsers/xml2form.h \
     fieldparsers/parser.h \
     xmlparsers/xml2menu.h \
-    xmlparsers/xml2style.h
+    xmlparsers/xml2style.h \
+    lib/qttelnet.h
 SOURCES += confwin.cpp \
     main.cpp \
     mainframe.cpp \
@@ -59,7 +60,8 @@ SOURCES += confwin.cpp \
     fieldparsers/parser.cpp \
     xmlparsers/xml2menu.cpp \
     xmlparsers/xml2style.cpp \
-    models/ringmenu.cpp
+    models/ringmenu.cpp \
+    lib/qttelnet.cpp
 
 RESOURCES += \
     ressource.qrc
