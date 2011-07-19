@@ -21,6 +21,8 @@
 #include <QMenu>
 #include <QAction>
 #include <QLineEdit>
+#include <QTcpSocket>
+#include <lib/qttelnet.h>
 #if QT_VERSION >= 0x040600
 #include <QProcessEnvironment>
 #endif
@@ -85,6 +87,7 @@ LoginForm::LoginForm(QWidget *parent)
 //   timer->start(3000);
    menuBar->addMenu(admin);
    admin->addAction(hosts);
+   menuBar->addAction(toggledebug);
    connect(hosts, SIGNAL(triggered()), this, SLOT(hosts()));
    }
    if (MainFrame::b_debugmodus && adminMenu)
@@ -132,7 +135,19 @@ welcomeBar();
    applicationLabel    = new QLabel(tr("Application"));
    applicationLineEdit = new QLineEdit;
    applicationLineEdit->setText("");
+   QHBoxLayout *vbox = new QHBoxLayout;
 
+   bg_connection = new QGroupBox("Connection Method", this);
+   rb_proxy = new QRadioButton("Proxy", bg_connection);
+   rb_telnet = new QRadioButton("Telnet", bg_connection);
+
+   vbox->addWidget(rb_proxy);
+   vbox->addWidget(rb_telnet);
+   rb_telnet->setChecked(true);
+   bg_connection->setLayout(vbox);
+   connect(rb_telnet, SIGNAL(clicked()), this, SLOT(disableApp()));
+   connect(rb_proxy, SIGNAL(clicked()), this, SLOT(enableApp()));
+   bg_connection->hide();
    loadSettings();
 
 
@@ -162,8 +177,8 @@ welcomeBar();
    okButton->addAction(okAction);
    QPushButton *cancelButton = new QPushButton(tr("Cancel"));
    cancelButton->addAction(cancelAction);
-   
-   
+
+
    // functionalize the buttons by using connect
    // accept and reject are predefined by qt, so we can use them
    // without declaration
@@ -194,6 +209,7 @@ welcomeBar();
        loginLayout->addWidget(applicationLabel);
        loginLayout->addWidget(applicationLineEdit);
    }
+   loginLayout->addWidget(bg_connection);
    loginLayout->addStretch(1);
 
    // putting buttons and line edits in one single layout
@@ -204,6 +220,17 @@ welcomeBar();
    //
    setLayout(loginLayout);
 
+}
+
+
+void LoginForm::disableApp()
+{
+   applicationLineEdit->setEnabled(false);
+}
+
+void LoginForm::enableApp()
+{
+   applicationLineEdit->setEnabled(true);
 }
 
 void LoginForm::debugToggle(bool checked)
@@ -702,7 +729,7 @@ MainFrame::vdcdebug("LoginForm","readEditFile", "QString fname");
 void LoginForm::saveEdits(){
    if(b_savefile){
       writeFile(qs_openFilename);
-      b_savefile = false;	
+      b_savefile = false;
    }
 }
 
@@ -725,6 +752,15 @@ MainFrame::vdcdebug("LoginForm","okPressed", "");
    settings.setValue("password", pass);
    settings.setValue("application", app);
    settings.sync();
+   if(rb_telnet->isChecked())
+   {
+      tn = new QtTelnet;
+      connect(tn, SIGNAL(loginRequired()), this, SLOT(connectToTelnet()));
+      tn->connectToHost(server, 23);
+      return;
+   }
+
+
 
    ClientSocket *socket = new ClientSocket(0, user, pass, applicationLineEdit->text());
 
@@ -733,6 +769,13 @@ MainFrame::vdcdebug("LoginForm","okPressed", "");
       QErrorMessage *errorMsg = new QErrorMessage(this);
       errorMsg->showMessage(tr("Could not connect to Host"));
    }
+}
+
+void LoginForm::connectToTelnet()
+{
+   QString user   = usernameLineEdit->text();
+   QString pass   = passwordLineEdit->text();
+   tn->login(user, pass);
 }
 
 //------------------------------------------------------------------------------

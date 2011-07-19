@@ -53,7 +53,7 @@ int main(int argc, char *argv[])
 //       loginForm = true;
 
     QFontDatabase::addApplicationFont(":/font/LiberationMono-Regular.ttf");
-    QFont yavcFont("Liberation Mono", 8);
+    QFont yavcFont("Arial", 8);
     yavcFont.setFixedPitch(true);
 
     app.setFont(yavcFont);

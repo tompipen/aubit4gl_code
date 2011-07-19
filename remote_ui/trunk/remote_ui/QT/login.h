@@ -22,9 +22,11 @@
 
 #include <QLabel>
 #include <QErrorMessage>
+#include <QRadioButton>
 #include <QTableWidget>
 
 #include "clienttcp.h"
+#include "lib/qttelnet.h"
 
 
 class LoginForm  : public QWidget
@@ -41,6 +43,7 @@ public:
    QString fontconv;
    QStringList splitlist;
    QString fonteingabe;
+   QtTelnet *tn;
    QMenu *admin;
    QAction *toggledebug;
 
@@ -49,8 +52,11 @@ public slots:
    void showMessage(QString m);
    void hosts();
    void welcomeBar();
+   void connectToTelnet();
    void debugToggle(bool checked);
    void debugCheck();
+   void disableApp();
+   void enableApp();
 
 private slots:
    void okPressed();
@@ -77,7 +83,9 @@ private:
    QLabel *hostLabel;
    QLabel *applicationLabel;
    QLabel *protocolLabel;
-
+   QGroupBox *bg_connection;
+   QRadioButton *rb_proxy;
+   QRadioButton *rb_telnet;
    QLineEdit *usernameLineEdit;
    QLineEdit *passwordLineEdit;
    QLineEdit *serverLineEdit;
