@@ -9,6 +9,9 @@ INCLUDEPATH += .
 QT += network
 QT += xml
 QT += webkit
+win32 {
+  LIBS += -lwsock32
+}
 
 # Input
 HEADERS += confwin.h \
