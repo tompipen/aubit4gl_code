@@ -811,7 +811,7 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
       qDebug() << "RUN: " << prog << args;
       process.execute(prog, args);
 */
-      QDesktopServices::openUrl(QUrl(QString("file://" + fileInfo.absoluteFilePath()), QUrl::TolerantMode));
+      QDesktopServices::openUrl(QUrl(QString("file:///" + fileInfo.absoluteFilePath()), QUrl::TolerantMode));
       //sleep(3);
       return;
    }
@@ -2275,7 +2275,7 @@ MainFrame::vdcdebug("ProtocolHandler","filterUmlauts", "QString qs_text");
    qs_text.replace(QChar(130), QString::fromUtf8("é")); 
    qs_text.replace(QChar(131), QString::fromUtf8("â")); 
    qs_text.replace(QChar(132), QString::fromUtf8("ä")); 
-   qs_text.replace(QChar(133), QString::fromUtf8("à")); 
+   qs_text.replace(QChar(133), QString::fromUtf8("� ")); 
    qs_text.replace(QChar(134), QString::fromUtf8("å")); 
    qs_text.replace(QChar(135), QString::fromUtf8("ç")); 
    qs_text.replace(QChar(136), QString::fromUtf8("ê")); 
