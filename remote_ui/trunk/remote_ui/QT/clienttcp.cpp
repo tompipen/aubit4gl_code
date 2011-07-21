@@ -350,9 +350,9 @@ void ClientSocket::makeOwnResponse(QString qs_replyString)
 MainFrame::vdcdebug("ClientSocket","makeOwnResponse", "QString qs_replyString");
    QTextStream out;
    out.setDevice(this);
-   
+
    qs_replyString+="\n";
-  
+
    out << qs_replyString;
 }
 //------------------------------------------------------------------------------
@@ -364,7 +364,7 @@ MainFrame::vdcdebug("ClientSocket","makeOwnResponse", "QString qs_replyString");
 ClientSocket::~ClientSocket(){
 
 
-   // terminate the protocol handling thread
+   // terminate the Ll handling thread
    // to avoid clients segfault when 4gl-applications get canceled or killed
    //
    while(ph.isRunning()){
@@ -604,7 +604,6 @@ MainFrame::vdcdebug("ProtocolHandler","run", "");
    }
 
    emit debugtext(QString("<< " + qsl_xmlCommands.at(i)));
-
          QDomElement envelope = doc.documentElement();
          pid = envelope.attribute("ID").toInt();
          QDomElement commands = envelope.firstChildElement("COMMANDS");
@@ -812,7 +811,7 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
       qDebug() << "RUN: " << prog << args;
       process.execute(prog, args);
 */
-      QDesktopServices::openUrl(QUrl(QString("file://" + fileInfo.absoluteFilePath())));
+      QDesktopServices::openUrl(QUrl(QString("file://" + fileInfo.absoluteFilePath()), QUrl::TolerantMode));
       //sleep(3);
       return;
    }
@@ -2120,8 +2119,10 @@ void ProtocolHandler::handleWaitForEventElement(const QDomNode& domNode)
 MainFrame::vdcdebug("ProtocolHandler","handleWaitForEventElement", "const QDomNode& domNode");
    QDomElement currentElement = domNode.toElement();
    QString nodeName = currentElement.nodeName();
-   
-   int changed = -1;
+
+
+   //Not needed atm
+  /* int changed = -1;
    if(nodeName == "WAITFOREVENT"){
       changed = currentElement.attribute("CHANGED").toInt();
    }
@@ -2137,7 +2138,7 @@ MainFrame::vdcdebug("ProtocolHandler","handleWaitForEventElement", "const QDomNo
          handleDisplayToElement(currentElement, currentElement.nodeName());
       }
    }
-
+*/
    return;
 }
 
