@@ -1293,7 +1293,7 @@ bool WidgetHelper::setDisplayAttributes(int fieldAttribute, QWidget *widget)
                 case Fgl::AUBIT_COLOR_BLUE:
                 {
                    QPalette p = widget->palette();
-                   QColor col("blue");
+                   QColor col(25, 59, 165);
                    if(Label *la = qobject_cast<Label *> (widget))
                    {
                       Q_UNUSED(la);
