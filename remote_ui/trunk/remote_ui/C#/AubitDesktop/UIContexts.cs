@@ -86,6 +86,7 @@ namespace AubitDesktop
     //    void toolBarAcceptClicked();
         void setNextField(string p);
 
+
     
     }
 

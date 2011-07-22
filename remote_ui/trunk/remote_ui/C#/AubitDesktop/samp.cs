@@ -679,6 +679,7 @@ namespace AubitDesktop
         [System.Xml.Serialization.XmlElementAttribute("WINQUESTION", Type = typeof(WINQUESTION))]
         [System.Xml.Serialization.XmlElementAttribute("UIDIRECT", Type = typeof(UIDIRECT))]
         [System.Xml.Serialization.XmlElementAttribute("FILE", Type = typeof(FILE))]
+        [System.Xml.Serialization.XmlElementAttribute("PRINTFILE", Type = typeof(PRINTFILE))]
         [System.Xml.Serialization.XmlElementAttribute("EXECUTE", Type = typeof(EXECUTE))]
         public object[] Items;
     }
@@ -696,6 +697,24 @@ namespace AubitDesktop
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute(DataType = "NMTOKEN")]
         public string CLIENTNAME;
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlTextAttribute()]
+        public string Text;
+    }
+
+    /// <remarks/>
+    [System.Xml.Serialization.XmlRootAttribute(Namespace = "", IsNullable = true)]
+    public class PRINTFILE
+    {
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "NMTOKEN")]
+        public string NAME;
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute]
+        public int PAGELENGTH;
 
         /// <remarks/>
         [System.Xml.Serialization.XmlTextAttribute()]
@@ -1288,6 +1307,7 @@ namespace AubitDesktop
         [System.Xml.Serialization.XmlArrayItem(Type = typeof(WINQUESTION), IsNullable = false)]
         [System.Xml.Serialization.XmlArrayItem(Type = typeof(SHOWOPTION), IsNullable = false)]
         [System.Xml.Serialization.XmlArrayItem(Type = typeof(UIDIRECT), IsNullable = false)]
+        [System.Xml.Serialization.XmlArrayItem(Type = typeof(PRINTFILE), IsNullable = false)]
         [System.Xml.Serialization.XmlArrayItem(Type = typeof(FILE), IsNullable = false)]
         [System.Xml.Serialization.XmlArrayItem(Type = typeof(EXECUTE), IsNullable = false)]
         public object[] COMMANDS;

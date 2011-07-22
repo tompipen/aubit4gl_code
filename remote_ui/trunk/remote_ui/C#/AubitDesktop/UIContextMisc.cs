@@ -410,6 +410,8 @@ namespace AubitDesktop
                     if (call.NAME=="ui.interface.close")
                     {
                         Application.Exit();
+                        System.Diagnostics.Process.GetCurrentProcess().Kill();
+                        Environment.Exit(0);
                         return;
                     }
                     

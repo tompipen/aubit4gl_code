@@ -1498,69 +1498,70 @@ namespace AubitDesktop
                 if (a is FILE)
                 {
 
-		if (!TopWindow.sendFileToClient((FILE)a)) {
-                    if (Program.AppSettings.allowReceiveFile)
+                    if (!TopWindow.sendFileToClient((FILE)a))
                     {
-                        FILE f;
-                        string oname="";
-                        FileStream fs = null;
-                        BinaryWriter sw;
-                        byte[] data;
-                        f = (FILE)a;
-                        if (f.CLIENTNAME != null && f.CLIENTNAME.Length > 0)
+                        if (Program.AppSettings.allowReceiveFile)
                         {
-                            oname = f.CLIENTNAME;
-                            if (System.IO.File.Exists(f.CLIENTNAME))
+                            FILE f;
+                            string oname = "";
+                            FileStream fs = null;
+                            BinaryWriter sw;
+                            byte[] data;
+                            f = (FILE)a;
+                            if (f.CLIENTNAME != null && f.CLIENTNAME.Length > 0)
                             {
-                                System.IO.File.Delete(f.CLIENTNAME);
-                            }
-                            fs = new FileStream(f.CLIENTNAME, FileMode.Create, FileAccess.Write);
-                        }
-                        else
-                        {
-                            try
-                            {
-                                if (System.IO.File.Exists(f.NAME))
+                                oname = f.CLIENTNAME;
+                                if (System.IO.File.Exists(f.CLIENTNAME))
                                 {
-                                    System.IO.File.Delete(f.NAME);
+                                    System.IO.File.Delete(f.CLIENTNAME);
                                 }
-                                fs = new FileStream(f.NAME, FileMode.Create, FileAccess.Write);
-                                oname = f.NAME;
+                                fs = new FileStream(f.CLIENTNAME, FileMode.Create, FileAccess.Write);
                             }
-                            catch (Exception Ex)
+                            else
                             {
-                                Program.Show(Ex.ToString(),"Error opening file : "+f.NAME);
-                            }
-                        }
-
-                        if (fs != null)
-                        {
-                            sw = new BinaryWriter(fs);
-                            data = Convert.FromBase64String(f.Text);
-                            sw.Write(data);
-                            sw.Flush();
-                            sw.Close();
-                            fs.Close();
-                            if (oname.EndsWith(".4sm"))
-                            {
-                                this.TopWindow.loadApplicationLauncherTree(oname, this.ApplicationEnvelopeID);
+                                try
+                                {
+                                    if (System.IO.File.Exists(f.NAME))
+                                    {
+                                        System.IO.File.Delete(f.NAME);
+                                    }
+                                    fs = new FileStream(f.NAME, FileMode.Create, FileAccess.Write);
+                                    oname = f.NAME;
+                                }
+                                catch (Exception Ex)
+                                {
+                                    Program.Show(Ex.ToString(), "Error opening file : " + f.NAME);
+                                }
                             }
 
-                            if (oname.EndsWith(".4tb"))
+                            if (fs != null)
                             {
-                                this.loadToolbar(oname, this.ApplicationEnvelopeID);
+                                sw = new BinaryWriter(fs);
+                                data = Convert.FromBase64String(f.Text);
+                                sw.Write(data);
+                                sw.Flush();
+                                sw.Close();
+                                fs.Close();
+                                if (oname.EndsWith(".4sm"))
+                                {
+                                    this.TopWindow.loadApplicationLauncherTree(oname, this.ApplicationEnvelopeID);
+                                }
+
+                                if (oname.EndsWith(".4tb"))
+                                {
+                                    this.loadToolbar(oname, this.ApplicationEnvelopeID);
+                                }
+                            }
+                            else
+                            {
+                                MessageBox.Show("File could not be opened : " + oname);
                             }
                         }
                         else
                         {
-                            MessageBox.Show("File could not be opened : "+oname);
+                            Program.Show("The 4GL program tried to send a file " + ((FILE)a).NAME + " but this is disallowed by the Aubit Desktop Client settings");
                         }
                     }
-                    else
-                    {
-                        Program.Show("The 4GL program tried to send a file " + ((FILE)a).NAME + " but this is disallowed by the Aubit Desktop Client settings");
-                    }
-		} 
                     commands.Remove(a);
                     continue;
                 }
@@ -2392,6 +2393,20 @@ namespace AubitDesktop
                         continue;
                 }
                 #endregion
+
+                #region PRINTFILE
+                if (a is PRINTFILE)
+                {
+                    frmTxtFileViewer fv = new frmTxtFileViewer();
+                    string fileContents = ((PRINTFILE)a).Text;
+                    byte[] data = Convert.FromBase64String(fileContents);
+                    fileContents=Program.getLocalisedString(data, data.Length);
+                    commands.Remove(a);
+                    fv.setText(fileContents, ((PRINTFILE)a).PAGELENGTH);
+                    fv.Show();
+                    continue;
+                }
+                #endregion 
                 #region DRAWBOX
                 if (a is DRAWBOX)
                 {

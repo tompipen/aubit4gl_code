@@ -103,8 +103,15 @@
     </Compile>
     <Compile Include="FGLConstruct.cs" />
     <Compile Include="FglWindow.cs" />
+    <Compile Include="FormattedCellSettings.cs" />
     <Compile Include="FormattedGridView.cs">
       <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="frmTxtFileViewer.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmTxtFileViewer.Designer.cs">
+      <DependentUpon>frmTxtFileViewer.cs</DependentUpon>
     </Compile>
     <Compile Include="UIContextInputArrayInTable.cs">
     </Compile>
@@ -261,6 +268,9 @@
     <EmbeddedResource Include="frmShortcut.resx">
       <SubType>Designer</SubType>
       <DependentUpon>frmShortcut.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frmTxtFileViewer.resx">
+      <DependentUpon>frmTxtFileViewer.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="mainfrm.resx">
       <SubType>Designer</SubType>

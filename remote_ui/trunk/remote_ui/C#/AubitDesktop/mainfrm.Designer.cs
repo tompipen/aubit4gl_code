@@ -69,6 +69,7 @@ namespace AubitDesktop
             this.grDate = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Direction = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
+            this.printTestToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tpShortcuts.SuspendLayout();
@@ -85,7 +86,8 @@ namespace AubitDesktop
             // 
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fileToolStripMenuItem,
-            this.connectionsToolStripMenuItem});
+            this.connectionsToolStripMenuItem,
+            this.printTestToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(399, 24);
@@ -478,6 +480,14 @@ namespace AubitDesktop
             this.timer1.Interval = 500;
             this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
             // 
+            // printTestToolStripMenuItem
+            // 
+            this.printTestToolStripMenuItem.Name = "printTestToolStripMenuItem";
+            this.printTestToolStripMenuItem.Size = new System.Drawing.Size(69, 20);
+            this.printTestToolStripMenuItem.Text = "Print Test";
+            this.printTestToolStripMenuItem.Visible = false;
+            this.printTestToolStripMenuItem.Click += new System.EventHandler(this.printTestToolStripMenuItem_Click);
+            // 
             // mainfrm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -551,5 +561,6 @@ namespace AubitDesktop
         private System.Windows.Forms.Label lblPortWarn;
         private System.Windows.Forms.TextBox txtDefaultEncoding;
         private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.ToolStripMenuItem printTestToolStripMenuItem;
     }
 }

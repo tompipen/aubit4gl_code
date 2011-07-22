@@ -617,5 +617,13 @@ namespace AubitDesktop
             Program.AppSettings.defaultEncoding = txtDefaultEncoding.Text;
             Program.SaveSettings();
         }
+
+        private void printTestToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            frmTxtFileViewer f = new frmTxtFileViewer();
+            f.setText("Hello\nWorld\n",66);
+            f.ShowDialog();
+
+        }
     }
 }
