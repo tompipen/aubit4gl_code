@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dialog.c,v 1.11 2011-07-22 18:06:17 mikeaubury Exp $
+# $Id: dialog.c,v 1.12 2011-07-22 20:10:00 mikeaubury Exp $
 #*/
 
 /**
@@ -336,7 +336,7 @@ void UILIB_A4GL_direct_to_ui(char *t, char *s) {
 // Does nothing - require by the API...
 }
 
-int UILIB_A4GL_ui_send_report_to_ui(char *filename, int linesPerPage) {
+int UILIB_A4GL_ui_send_report_to_ui(char *filename, int linesPerPage,char *mode) {
         return 0;
 }
 

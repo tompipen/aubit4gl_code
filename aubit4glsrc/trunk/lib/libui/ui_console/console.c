@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: console.c,v 1.57 2011-07-22 18:06:17 mikeaubury Exp $
+# $Id: console.c,v 1.58 2011-07-22 20:10:00 mikeaubury Exp $
 #*/
 
 /**
@@ -854,7 +854,7 @@ int UILIB_aclfgl_aclfgl_set_display_field_delimiters(int nparam) {
 return 0;
 }
 
-int UILIB_A4GL_ui_send_report_to_ui(char *filename, int linesPerPage) {
+int UILIB_A4GL_ui_send_report_to_ui(char *filename, int linesPerPage,char *mode) {
         return 0;
 }
 

@@ -16,7 +16,7 @@
 extern "C" {
 #endif
 
-SOAP_SOURCE_STAMP("@(#) soapC.c ver 2.8.1 2011-07-01 19:34:46 GMT")
+SOAP_SOURCE_STAMP("@(#) soapC.c ver 2.8.1 2011-07-22 18:45:42 GMT")
 
 
 #ifndef WITH_NOGLOBAL

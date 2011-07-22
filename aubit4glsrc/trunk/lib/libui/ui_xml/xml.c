@@ -1691,7 +1691,7 @@ int cnt;
 
 
 static void
-A4GL_send_xml_for_print_file (char *filename,int pageLength, char *fbuff, int len)
+A4GL_send_xml_for_print_file (char *filename,int pageLength, char *fbuff, int len,char *mode)
 {
   //int a;
   char *buff=0;
@@ -1702,7 +1702,7 @@ int cnt;
   //char *send;
   suspend_flush (1);
 
-  send_to_ui_no_nl ("<PRINTFILE NAME=\"%s\" PAGELENGTH=\"%d\">", filename, pageLength);
+  send_to_ui_no_nl ("<PRINTFILE NAME=\"%s\" PAGELENGTH=\"%d\" MODE=\"%s\" >", filename, pageLength,mode);
 
   cnt=0;
   A4GL_base64_encode(fbuff,len,&buff);
@@ -1757,7 +1757,7 @@ SendFile (char *filename, char *remotename)
 
 
 static int
-PrintFile (char *filename,int LinesPerPage)
+PrintFile (char *filename,int LinesPerPage,char *mode)
 {
   FILE *f;
   char *fbuff;
@@ -1777,7 +1777,7 @@ PrintFile (char *filename,int LinesPerPage)
       //fbuff[l] = 0;
       fclose (f);
 
-      A4GL_send_xml_for_print_file (filename,LinesPerPage,fbuff, l);
+      A4GL_send_xml_for_print_file (filename,LinesPerPage,fbuff, l,mode);
 
       free (fbuff);
       return 1;
@@ -4064,7 +4064,7 @@ if (n==0)  {
 
 
 
-int UILIB_A4GL_ui_send_report_to_ui(char *filename, int linesPerPage) {
-      return PrintFile (filename, linesPerPage);
+int UILIB_A4GL_ui_send_report_to_ui(char *filename, int linesPerPage,char *mode) {
+      return PrintFile (filename, linesPerPage,mode);
 }
 
