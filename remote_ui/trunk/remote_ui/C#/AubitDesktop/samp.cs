@@ -717,6 +717,10 @@ namespace AubitDesktop
         public int PAGELENGTH;
 
         /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute]
+        public string MODE;
+
+        /// <remarks/>
         [System.Xml.Serialization.XmlTextAttribute()]
         public string Text;
     }

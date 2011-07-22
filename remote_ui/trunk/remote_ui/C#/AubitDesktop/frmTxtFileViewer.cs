@@ -58,10 +58,18 @@ namespace AubitDesktop
         }
         List<string[]> pages;
         int currprintingpage = 0;
+        string Mode;
 
         public frmTxtFileViewer()
         {
             InitializeComponent();
+            Mode = "SCREEN";
+        }
+
+        public frmTxtFileViewer(string pMode)
+        {
+            InitializeComponent();
+            Mode = pMode.ToUpper();
         }
 
         
@@ -183,13 +191,20 @@ namespace AubitDesktop
         private void printToolStripMenuItem_Click(object sender, EventArgs e)
         {
 
- 
 
+
+            printFile();
+
+
+        }
+
+        private void printFile()
+        {
             // Now - we have each page divided into a separate string..
             currprintingpage = 0;
 
             PrintDocument pd = new PrintDocument();
-            
+
             pd.PrintPage += new PrintPageEventHandler(pd_PrintPage);
             printDialog1.Document = pd;
 
@@ -197,9 +212,7 @@ namespace AubitDesktop
             {
                 pd.Print();
             }
-
-
-
+            
         }
 
         private void Paginate()
@@ -331,6 +344,16 @@ namespace AubitDesktop
             tabControl1.Dock = DockStyle.Fill;
 
             PageMode = epageMode.pageModeFile;
+
+            if (Mode.StartsWith("PRINT"))
+            {
+                printFile();
+            }
+            if (Mode == "PRINTANDCLOSE")
+            {
+                this.Close();
+            }
         }
+
     }
 }

@@ -2397,7 +2397,7 @@ namespace AubitDesktop
                 #region PRINTFILE
                 if (a is PRINTFILE)
                 {
-                    frmTxtFileViewer fv = new frmTxtFileViewer();
+                    frmTxtFileViewer fv = new frmTxtFileViewer(((PRINTFILE)a).MODE);
                     string fileContents = ((PRINTFILE)a).Text;
                     byte[] data = Convert.FromBase64String(fileContents);
                     fileContents=Program.getLocalisedString(data, data.Length);
