@@ -24,10 +24,10 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.171 2010-12-07 10:24:42 mikeaubury Exp $
+# $Id: iarray.c,v 1.172 2011-07-22 19:30:35 mikeaubury Exp $
 #*/
 #ifndef lint
-static char const module_id[] = "$Id: iarray.c,v 1.171 2010-12-07 10:24:42 mikeaubury Exp $";
+static char const module_id[] = "$Id: iarray.c,v 1.172 2011-07-22 19:30:35 mikeaubury Exp $";
 #endif
 
 /**
@@ -321,6 +321,7 @@ delete_line_in_array (struct s_inp_arr *inpa)
   A4GL_idraw_arr_all (inpa);
 }
 
+
 /**
  *
  *
@@ -333,6 +334,7 @@ A4GL_idraw_arr (struct s_inp_arr *inpa, int type, int no)
   int topline;
   int scr_line;
   int fonly = 0;
+  int attr=0;
 #ifdef DEBUG
   {
     A4GL_debug ("in draw_arr %p %d %d", inpa, type, no);
@@ -344,13 +346,16 @@ A4GL_idraw_arr (struct s_inp_arr *inpa, int type, int no)
       type = 0 - type;
       fonly = 1;
     }
-
 #ifdef DEBUG
   A4GL_debug ("*** no=%d inpa->no_arr=%d\n", no, inpa->no_arr);
 #endif
 
   topline = inpa->arr_line - inpa->scr_line + 1;
   scr_line = no - topline + 1;
+
+
+
+
 
   if (scr_line > inpa->scr_dim)
     {
@@ -381,6 +386,25 @@ A4GL_idraw_arr (struct s_inp_arr *inpa, int type, int no)
   strcpy (srec2, inpa->srec->name);
   strcat (srec2, ".*");
 
+
+
+  if (inpa->curr_display) {
+	// Do we have current row highlighting ? 
+	int a;
+  	for (a=0;a<inpa->nbind;a++) {
+  		struct struct_scr_field *fprop;
+ 		fprop = (struct struct_scr_field *) (field_userptr (inpa->field_list[scr_line - 1][a]));
+  		attr = A4GL_determine_attribute (FGL_CMD_INPUT, inpa->display_attrib, fprop, 0);
+
+  		if (type==2) {
+			// If this is the current row - just the the "current row display" attribute...
+	      		attr = A4GL_strattr_to_num (inpa->curr_display);
+  		}
+		
+	    	A4GL_set_field_attr_with_attr_already_determined (inpa->field_list[scr_line - 1][a], attr, FGL_CMD_INPUT);
+	}
+  }
+
   if (type == 2)
     {
       int nv;
@@ -404,6 +428,7 @@ A4GL_idraw_arr (struct s_inp_arr *inpa, int type, int no)
 
 
   A4GL_iarr_arr_fields (inpa, inpa->display_attrib, no, scr_line, 0);
+
 }
 
 /**
@@ -2878,6 +2903,7 @@ process_control_stack_internal (struct s_inp_arr *arr,  struct aclfgl_event_list
 #ifdef DEBUG
       A4GL_debug ("A4GL_EVENT_AFT_ROW");
 #endif
+	
       new_state = 0;
       rval = A4GL_EVENT_AFT_ROW;
     }
@@ -3252,7 +3278,9 @@ process_control_stack_internal (struct s_inp_arr *arr,  struct aclfgl_event_list
 	  A4GL_debug ("Processed after users 'BEFORE FIELD'");
 #endif
 
+
 	  fprop = (struct struct_scr_field *) (field_userptr (arr->currentfield));
+/*
 	  attr = A4GL_determine_attribute (FGL_CMD_INPUT, arr->display_attrib, fprop, 0);
 
 
@@ -3273,9 +3301,10 @@ process_control_stack_internal (struct s_inp_arr *arr,  struct aclfgl_event_list
 	      attr = A4GL_strattr_to_num (arr->curr_display);
 	    }
 
+
 	  if (attr != 0)
 	    A4GL_set_field_attr_with_attr (arr->currentfield, attr, FGL_CMD_INPUT);
-
+*/
 
 #ifdef DEBUG
 	  A4GL_debug ("has_str_attrib - 2");
@@ -3552,6 +3581,7 @@ process_control_stack_internal (struct s_inp_arr *arr,  struct aclfgl_event_list
 	      cptr = (char *) arr->binding[attrib].ptr + arr->arr_elemsize * (arr->arr_line - 1);
 
 	      fprop = (struct struct_scr_field *) (field_userptr (arr->currentfield));
+/*
 	      attr = A4GL_determine_attribute (FGL_CMD_INPUT, arr->display_attrib, fprop, 0);
 
 
@@ -3568,13 +3598,13 @@ process_control_stack_internal (struct s_inp_arr *arr,  struct aclfgl_event_list
 #ifdef DEBUG
 		  A4GL_debug ("Got curr_display : %s\n", arr->curr_display);
 #endif
-		  attr = A4GL_strattr_to_num (arr->curr_display);
+		  attr = A4GL_strattr_to_num (arr->curr_display); // MJA MJA MJA 1111111
 		}
 
 
 	      if (attr != 0)
 		A4GL_set_field_attr_with_attr (arr->currentfield, attr, FGL_CMD_INPUT);
-
+*/
 
 
 
@@ -3827,6 +3857,7 @@ A4GL_iarr_arr_fields (struct s_inp_arr *arr, int dattr, int arr_line, int scr_li
 		da = da + AUBIT_ATTR_REVERSE;
 	    }
 
+/*
 	  if (arr->curr_display)
 	    {
 #ifdef DEBUG
@@ -3834,6 +3865,7 @@ A4GL_iarr_arr_fields (struct s_inp_arr *arr, int dattr, int arr_line, int scr_li
 #endif
 	      da = A4GL_strattr_to_num (arr->curr_display);
 	    }
+*/
 	}
 
 #ifdef DEBUG
