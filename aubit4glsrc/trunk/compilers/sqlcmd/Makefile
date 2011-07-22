@@ -1,5 +1,5 @@
 #
-# $Id: Makefile,v 1.3 2011-05-05 09:20:37 mikeaubury Exp $
+# $Id: Makefile,v 1.4 2011-07-22 18:09:49 mikeaubury Exp $
 #
 
 ROOT		=../..
@@ -31,7 +31,7 @@ ifeq "${YACC}" "no"
 else
 	Y_TAB_C		=y.tab.c
 	KW_YH		=../4glc/rules/generated/kw.yh
-	STATESDEP= mkstates y.output
+	STATESDEP=  y.output
 	STATESFILES=mk_sstates.c
 endif
 
@@ -88,7 +88,7 @@ sql.yacc: 1.reqd 2.reqd 10.reqd ${SQLPACK_IFX_PATH}/update.rule \
 	80.reqd 99.reqd
 	${CAT} $^ > $@
 	
-${Y_TAB_C}: sql.yacc lex.yy.c mk_sstates.c
+${Y_TAB_C} y.output : sql.yacc lex.yy.c mk_sstates.c
 ifneq "${YACC}" "no"
 	${YACC} -p sqlparse -r all -v -t -d $<
 else
@@ -110,7 +110,6 @@ y.tab.o: ${Y_TAB_C} ${LEX_YY_C} util.c ilist.h ../4glc/fix_insert.c cmds.c $(STA
 mk_sstates.c: $(STATESDEP)
 	${SH} mkstates $(AWK)
 
-y.output: y.tab.c
 
 	
 ## ==================================================================

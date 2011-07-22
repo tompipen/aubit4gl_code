@@ -8,7 +8,7 @@ extern "C"
 
 
 
-
+int aclfgl_aclfgl_printfile_to_ui(int a);
 int aclfgl_aclfgl_call_in_shared(int a) ;
 int aclfgl_aclfgl_file_exists(int n);
 int aclfgl_fgl_grid_header(int n);

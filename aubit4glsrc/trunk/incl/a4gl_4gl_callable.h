@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_4gl_callable.h,v 1.72 2011-04-14 17:00:47 mikeaubury Exp $
+# $Id: a4gl_4gl_callable.h,v 1.73 2011-07-22 18:09:49 mikeaubury Exp $
 */
 
 /**
@@ -237,7 +237,8 @@ void A4GL_add_object_type(char *s);
 int
 A4GL_add_datatype_function_i (int a, char *funcname, void *func);
 
-
+int send_report_to_ui(char *filename, int lineInFile);
+char *A4GL_get_tmp_rep(char *mod,char *f);
 
 //void A4GL_copyback(void *varptr,int sz, struct BINDING *binding, int n);
 
