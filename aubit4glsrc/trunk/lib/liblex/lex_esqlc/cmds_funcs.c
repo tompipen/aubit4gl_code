@@ -2546,6 +2546,7 @@ struct expr_str_list *li;
   printc ("SET(\"s_screenio\",_sio_%d,\"attrib\",_attr);\n", sio_id);
   printc ("SET(\"s_screenio\",_sio_%d,\"currform\",A4GL_get_curr_form(1));\n",sio_id);
   printc ("SET(\"s_screenio\",_sio_%d,\"currentfield\",0);\n",sio_id);
+  printc ("SET(\"s_screenio\",&_sio_%d,\"help_no\",%d);\n",sio_id, cmd_data->helpno);
   printc ("SET(\"s_screenio\",_sio_%d,\"currentmetrics\",0);\n",sio_id);
   printc ("SET(\"s_screenio\",_sio_%d,\"constr\",constr_flds);\n",sio_id);
   printc ("SET(\"s_screenio\",_sio_%d,\"mode\",%d);\n",sio_id, MODE_CONSTRUCT);
