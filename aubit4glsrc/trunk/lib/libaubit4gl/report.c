@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.200 2011-01-16 12:41:24 mikeaubury Exp $
+# $Id: report.c,v 1.201 2011-07-22 18:06:17 mikeaubury Exp $
 #
 */
 
@@ -735,6 +735,12 @@ A4GL_close_report_file (struct rep_structure *rep)
 	  if (rep->output != stdout)
 	    {
 	      fclose (rep->output);
+
+	      if (rep->output_mode=='U') {
+			A4GL_ui_send_report_to_ui(rep->output_loc_str,rep->page_length);
+			A4GL_delete_file(rep->output_loc_str);
+		}
+
 	      if (rep->output_mode == 'M')
 		{
 		  email_report (rep->output_loc_str, 0);
@@ -768,7 +774,7 @@ A4GL_internal_open_report_file (struct rep_structure *rep, int no_param)
       else
 	{
 
-	  if (rep->output_mode == 'F' || rep->output_mode == 'M')
+	  if (rep->output_mode == 'F' || rep->output_mode == 'M' || rep->output_mode=='U')
 	    {
 
 

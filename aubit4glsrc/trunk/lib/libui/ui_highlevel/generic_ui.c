@@ -8,7 +8,7 @@
 #include "formcntrl.h"
 
 #ifndef lint
-static char const module_id[] = "$Id: generic_ui.c,v 1.164 2011-03-23 20:29:28 mikeaubury Exp $";
+static char const module_id[] = "$Id: generic_ui.c,v 1.165 2011-07-22 18:06:17 mikeaubury Exp $";
 #endif
 
 static int A4GL_ll_field_opts_i (void *f);
@@ -4623,3 +4623,8 @@ UILIB_A4GL_ui_frontcall (char *module, char *name, void *ibind, int ni, void *ob
 {
 
 }
+
+int UILIB_A4GL_ui_send_report_to_ui(char *filename, int linesPerPage) {
+        return 0;
+}
+

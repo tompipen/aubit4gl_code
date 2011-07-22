@@ -10,7 +10,7 @@ start_cmd :
 			struct expr_str *p;
 			$<startrep>$=$<startrep>5;
 			$<startrep>$->towhat='|';
-		set_cmdlineno($<integer_val>3);
+			set_cmdlineno($<integer_val>3);
 
 			p=A4GL_new_expr_simple(ET_EXPR_REPORT_PRINTER);
 
@@ -46,7 +46,7 @@ start_cmd :
 			$<cmd>$=new_start_cmd($<str>2, $<startrep>$);
 			}
 	    | START_REPORT rep_name atline  TO_FILE rout op_with_dim {
-		set_cmdlineno($<integer_val>3);
+			set_cmdlineno($<integer_val>3);
 			$<startrep>$=$<startrep>6;
 			$<startrep>$->towhat='F';
 			$<startrep>$->s1=chk_expr($<ptr>5);
@@ -57,10 +57,21 @@ start_cmd :
 			$<cmd>$=new_start_cmd($<str>2, $<startrep>$);
 			}
 	    | START_REPORT rep_name atline  TO_PIPE rout op_with_dim {
-		set_cmdlineno($<integer_val>3);
+			set_cmdlineno($<integer_val>3);
 			$<startrep>$=$<startrep>6;
 			$<startrep>$->towhat='|';
 			$<startrep>$->s1=chk_expr($<ptr>5);
+
+			add_feature("USE_REPORT");
+			ADDMAP("Start Report",$<str>2);
+			map_start_report($<str>2);
+			$<cmd>$=new_start_cmd($<str>2, $<startrep>$);
+			}
+	    | START_REPORT rep_name atline  TO_UI  op_with_dim {
+		set_cmdlineno($<integer_val>3);
+			$<startrep>$=$<startrep>5;
+			$<startrep>$->towhat='U';
+			$<startrep>$->s1=chk_expr( A4GL_new_expr_simple_string($<str>2,ET_EXPR_REPORT_UI));
 
 			add_feature("USE_REPORT");
 			ADDMAP("Start Report",$<str>2);
@@ -805,6 +816,7 @@ output_command :
 | REPORT_TO CHAR_VALUE 			{rep_struct.output_mode='F';rep_struct.output_loc=A4GL_new_literal_string(A4GL_strip_quotes($<str>2)); }
 | REPORT_TO ensured_variable_usage_expression 	{rep_struct.output_mode='F';rep_struct.output_loc=$<ptr>2;  }
 | REPORT_TO_PIPE CHAR_VALUE 		{rep_struct.output_mode='P';rep_struct.output_loc=A4GL_new_literal_string(A4GL_strip_quotes($<str>2));} 
+| REPORT_TO_UI  		{rep_struct.output_mode='U';rep_struct.output_loc=A4GL_new_expr_simple(ET_EXPR_REPORT_UI);} 
 | REPORT_TO_PIPE ensured_variable_usage_expression 	{rep_struct.output_mode='P';rep_struct.output_loc=$<ptr>2;}
 | TOP_OF_PAGE CHAR_VALUE 		{strcpy(rep_struct.top_of_page,$<str>2);}
 ;

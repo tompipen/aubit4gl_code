@@ -1,7 +1,7 @@
 #include "a4gl_lib_ui_tui_int.h"
 #ifndef lint
 	static char const module_id[] =
-		"$Id: generic_ui.c,v 1.64 2011-03-07 19:58:41 mikeaubury Exp $";
+		"$Id: generic_ui.c,v 1.65 2011-07-22 18:06:17 mikeaubury Exp $";
 #endif
 
 static int A4GL_find_shown (ACL_Menu * menu, int chk, int dir);
@@ -1413,3 +1413,6 @@ ibind=vibind;
 
 
 
+int UILIB_A4GL_ui_send_report_to_ui(char *filename, int linesPerPage) {
+	return 0;
+}

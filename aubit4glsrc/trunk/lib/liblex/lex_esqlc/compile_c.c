@@ -24,12 +24,12 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.538 2011-05-18 17:29:50 mikeaubury Exp $
+# $Id: compile_c.c,v 1.539 2011-07-22 18:06:17 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
-static char const module_id[] = "$Id: compile_c.c,v 1.538 2011-05-18 17:29:50 mikeaubury Exp $";
+static char const module_id[] = "$Id: compile_c.c,v 1.539 2011-07-22 18:06:17 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -1836,6 +1836,10 @@ real_print_expr (struct expr_str *ptr)
       printc ("A4GL_push_char(acl_getenv(\"DBPRINT\"));");
       break;
     case ET_EXPR_REPORT_EMAIL:
+      printc ("A4GL_push_char(A4GL_get_tmp_rep(_module_name,\"%s\"));", ptr->expr_str_u.expr_string);
+      break;
+
+    case ET_EXPR_REPORT_UI:
       printc ("A4GL_push_char(A4GL_get_tmp_rep(_module_name,\"%s\"));", ptr->expr_str_u.expr_string);
       break;
 

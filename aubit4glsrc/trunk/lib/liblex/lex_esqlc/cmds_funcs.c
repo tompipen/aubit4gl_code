@@ -1541,13 +1541,13 @@ print_start_cmd (struct_start_cmd * cmd_data)
   } else {
 
   	printc ("A4GL_push_char(\"%c\");\n", where);
-  			if (out)
+ 	if (out)
     	{
-      	print_expr (out);
+      		print_expr (out);
     	}
   	else
     	{
-      	printc ("A4GL_push_char(\"%c\");\n", where);
+      		printc ("A4GL_push_char(\"%c\");\n", where);
     	}
   }
 

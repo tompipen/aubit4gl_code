@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper.c,v 1.95 2011-07-21 20:37:51 mikeaubury Exp $
+# $Id: helper.c,v 1.96 2011-07-22 18:06:17 mikeaubury Exp $
 #
 */
 
@@ -1272,13 +1272,21 @@ int
 aclfgl_aclfgl_printfile_to_ui (int n)
 {
   char *s;
-  if (n == 1)
+  if (n == 2)
     {
-      s = A4GL_char_pop ();
-      A4GL_direct_to_ui ("PRINTFILE", s);
+      int l;
+	l=A4GL_pop_long();
+        s = A4GL_char_pop ();
+
+ 	if (A4GL_ui_send_report_to_ui(s,l)) {
+		A4GL_push_int(1);
+	} else {
+		A4GL_push_int(0);
+	}
+
+      //A4GL_direct_to_ui ("PRINTFILE", s);
     } else {
 	A4GL_pop_args (n);
-
 	A4GL_push_int(0);
 	
     }

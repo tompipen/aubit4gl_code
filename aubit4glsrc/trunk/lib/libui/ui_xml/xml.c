@@ -1689,6 +1689,39 @@ int cnt;
   flush_ui ();
 }
 
+
+static void
+A4GL_send_xml_for_print_file (char *filename,int pageLength, char *fbuff, int len)
+{
+  //int a;
+  char *buff=0;
+char buff2[2000];
+  char *ptr;
+  int l;
+int cnt;
+  //char *send;
+  suspend_flush (1);
+
+  send_to_ui_no_nl ("<PRINTFILE NAME=\"%s\" PAGELENGTH=\"%d\">", filename, pageLength);
+
+  cnt=0;
+  A4GL_base64_encode(fbuff,len,&buff);
+  l=strlen(buff);
+  ptr=buff;
+  
+  while (cnt<l) {
+	strncpy(buff2,ptr,256);
+	buff2[256]=0;
+  	send_to_ui_no_nl ("%s", buff2);
+	cnt+=256;
+	ptr+=256;
+  }
+
+  send_to_ui ("</PRINTFILE>");
+  suspend_flush (-1);
+  flush_ui ();
+}
+
 static int
 SendFile (char *filename, char *remotename)
 {
@@ -1712,6 +1745,39 @@ SendFile (char *filename, char *remotename)
 
       A4GL_send_xml_for_binary_file (filename, fbuff, remotename,l);
 
+
+      free (fbuff);
+      return 1;
+    }
+  else
+    {
+      return 0;
+    }
+}
+
+
+static int
+PrintFile (char *filename,int LinesPerPage)
+{
+  FILE *f;
+  char *fbuff;
+  char buff[2000];
+  strcpy (buff, filename);
+  A4GL_trim (buff);
+  f = A4GL_open_file_dbpath (buff);
+
+  if (f)
+    {
+      long l;
+      fseek (f, 0, SEEK_END);
+      l = ftell (f);
+      rewind (f);
+      fbuff = malloc (l);
+      fread (fbuff, l, 1, f);
+      //fbuff[l] = 0;
+      fclose (f);
+
+      A4GL_send_xml_for_print_file (filename,LinesPerPage,fbuff, l);
 
       free (fbuff);
       return 1;
@@ -1799,7 +1865,7 @@ UILIB_A4GL_direct_to_ui (char *what, char *string)
     {
      char *p1;
      char *p2;
-     p2=A4GL_char_pop();
+     	p2=A4GL_char_pop();
 	p1=A4GL_char_pop();
       if (SendFile (p1,p2)) {
 		A4GL_push_int(1);
@@ -1818,6 +1884,8 @@ UILIB_A4GL_direct_to_ui (char *what, char *string)
 	}
       return;
     }
+
+
 
 
   if (strcmp (what, "GETFILE") == 0)
@@ -3993,3 +4061,10 @@ if (n==0)  {
 	send_to_ui("<CANCEL_DELETE/>");
 }
 }
+
+
+
+int UILIB_A4GL_ui_send_report_to_ui(char *filename, int linesPerPage) {
+      return PrintFile (filename, linesPerPage);
+}
+

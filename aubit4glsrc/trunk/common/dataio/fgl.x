@@ -1,4 +1,4 @@
-/* $Id: fgl.x,v 1.66 2011-06-26 13:57:35 naurus Exp $ */
+/* $Id: fgl.x,v 1.67 2011-07-22 18:06:40 mikeaubury Exp $ */
 typedef string str<>;
 typedef string sql_ident<>;
 
@@ -2247,6 +2247,7 @@ enum e_expr_type {
                 ET_EXPR_COLUMN,
                 ET_EXPR_REPORT_EMAIL,
                 ET_EXPR_REPORT_PRINTER,
+                ET_EXPR_REPORT_UI,
                 ET_EXPR_QUOTED_STRING,
                 ET_EXPR_TRANSLATED_STRING,
                 ET_EXPR_LITERAL_DOUBLE_STR,
@@ -2402,6 +2403,7 @@ union expr_str switch ( enum e_expr_type expr_type) {
 	case ET_EXPR_FALSE: /*! void; !*/
 	case ET_EXPR_REDUCED: /*! void; !*/
 	case ET_EXPR_REPORT_PRINTER: /*! void; !*/
+	case ET_EXPR_REPORT_UI: /*! void; !*/
 	case ET_EXPR_STRING: /*! void; !*/
 	case ET_EXPR_LITERAL_EMPTY_STRING: /*! void; !*/
 	case ET_EXPR_DATE_EXPR: /*! void; !*/
