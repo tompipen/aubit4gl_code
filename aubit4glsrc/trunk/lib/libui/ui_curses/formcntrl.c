@@ -24,10 +24,10 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.170 2011-05-05 21:16:53 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.171 2011-07-23 19:23:46 mikeaubury Exp $
 #*/
 #ifndef lint
-static char const module_id[] = "$Id: formcntrl.c,v 1.170 2011-05-05 21:16:53 mikeaubury Exp $";
+static char const module_id[] = "$Id: formcntrl.c,v 1.171 2011-07-23 19:23:46 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -3237,7 +3237,8 @@ A4GL_input_required_handling (void)
   if (input_required_type == REQUIRED_TYPE_UNSET)
     {
       char *ptr;
-      input_required_type = REQUIRED_TYPE_FIELD;
+      //input_required_type = REQUIRED_TYPE_FIELD;
+      input_required_type = REQUIRED_TYPE_INPUT;
       ptr = acl_getenv ("INPUTREQUIREDTYPE");
       if (ptr == 0)
 	ptr = "";
