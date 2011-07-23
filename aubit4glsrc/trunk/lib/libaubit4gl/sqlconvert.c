@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.174 2011-01-11 13:00:26 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.175 2011-07-23 08:33:36 mikeaubury Exp $
 #
 */
 
@@ -2077,8 +2077,17 @@ CV_matches (char *type, char *string, char *esc)
 {
   static char buff[1024];
   int a;
+  int lptr; // Position of the last ' in the string...
+  int sl;   // total input string length...
+  sl=strlen(string);
 
-//printf("CV_matches %s, %s, %s\n", type,string,esc);
+  lptr=0;
+  for (a=0;a<sl;a++) {
+		if (string[a]=='\'') {
+			lptr=a;
+		}
+  }
+
   if (strncmp (string, "'@@VARIABLE[", 12) == 0)
     {
       return string;
@@ -2127,6 +2136,8 @@ CV_matches (char *type, char *string, char *esc)
       buff[1] = 0;
     }
 
+//printf("CONVERT : %s\n",string);
+
   for (a = 1; a < strlen (string); a++)
     {
       {
@@ -2170,15 +2181,16 @@ CV_matches (char *type, char *string, char *esc)
 	  }
 
 
-
-	if (type[0] == '~' && string[a] == '\'')
+	if (type[0] == '~' && string[a] == '\'' && a==lptr) // We are at the end ...
 	  {
 	    if (strstr (buff, ".*"))
 	      {
-		if (buff[strlen(buff)-1]=='*') {
-			strcat (buff, "$");
+		int slbuff;
+		slbuff=strlen(buff);
+		if (buff[slbuff-1]=='*') {
+			strcat (buff, "$"); // Its got to be right at the end...
 		} else {
-			strcat (buff, "[ ]*$");
+			strcat (buff, "[ ]*$"); // We allow trailing blanks...
 		}
 		//printf("buf=%s\n",buff);
 	      }
