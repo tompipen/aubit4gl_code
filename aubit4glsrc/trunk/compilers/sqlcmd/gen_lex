@@ -21,6 +21,7 @@ ows 	[ \t\n]*
 ident [a-zA-Z]+[a-zA-Z\_0-9]* 
 int_num [0-9]+
 char_value \'[^\']*\'|\"[^\"]*\"
+schar_value \'[^\']*\'
 %option yylineno
 %%
 
@@ -68,9 +69,6 @@ char_value \'[^\']*\'|\"[^\"]*\"
 "INTERVAL("{int_num}":"{int_num}[)]  { a4gl_upshift(yytext); strcpy(yylval.str,yytext);  return INTERVAL_VALUE;}
 "INTERVAL("{int_num}":"{int_num}":"[0-9][0-9]"."{int_num}")"  { a4gl_upshift(yytext); strcpy(yylval.str,yytext);   return INTERVAL_VALUE;}
 "INTERVAL("{int_num}":"[0-9][0-9]"."{int_num}")"  { a4gl_upshift(yytext); strcpy(yylval.str,yytext);   return INTERVAL_VALUE;}
-"$"{ident} {strcpy(yylval.str,yytext);  return ENVVAR;}
-"["{ident}"]" {strcpy(yylval.str,yytext);  return USINGVAR;}
-
 
 "::" { return DOUBLE_COLON;}
 
@@ -147,7 +145,7 @@ cat << EOF
 ">=" {  strcpy(yylval.str,yytext); return GREATER_THAN_EQ;}
 \"[^\"]*\" {  strcpy(yylval.str,yytext); return CHAR_VALUE;}
 \"\" {  strcpy(yylval.str,yytext); return CHAR_VALUE;}
-\'[^\']*\' {  strcpy(yylval.str,yytext); return CHAR_VALUE;}
+{schar_value}+ {  strcpy(yylval.str,yytext); return CHAR_VALUE;}
 \'\' {  strcpy(yylval.str,yytext); return CHAR_VALUE;}
 "@@VARIABLE[" 	{return MARK_VAR;}
 "]@@" 		{return END_MARK_VAR;}
