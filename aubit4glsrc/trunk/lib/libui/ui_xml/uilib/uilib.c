@@ -2203,11 +2203,16 @@ allow_insert=POPint();
   ln = POPint ();		// context match on line
   mod = charpop ();		// context match on module
   ci = new_context (UIINPUTARRAY, mod, ln);
-
+  memset(&contexts[ci].ui.inputarray,0,sizeof(contexts[ci].ui.inputarray));
 
   contexts[ci].ui.inputarray.scr_line = 0;
   contexts[ci].ui.inputarray.arr_line = 0;
   contexts[ci].ui.inputarray.count = m_arr_count;
+
+  //contexts[ci].ui.inputarray.num_field_data = nvals
+  //contexts[ci].ui.inputarray.field_data=
+
+
 
   m_arr_count = m_arr_count;
   m_arr_curr = 1;
@@ -2215,6 +2220,7 @@ allow_insert=POPint();
 
   contexts[ci].ui.inputarray.maxarrsize = arrsize;
   contexts[ci].ui.inputarray.nvals = nvals;
+
 
   contexts[ci].ui.inputarray.changed_rows = malloc (arrsize * sizeof (int));
   contexts[ci].ui.inputarray.variable_data = malloc (arrsize * sizeof (char **));
@@ -2404,6 +2410,18 @@ uilib_input_array_loop (int n)
 	set_infield(contexts[context].ui.inputarray.infield);
     }
 
+  if (contexts[context].ui.inputarray.field_data) {
+		int a;
+		for (a=0;a<contexts[context].ui.inputarray.num_field_data;a++) {
+			if (contexts[context].ui.inputarray.field_data[a]!=0) {
+				free(contexts[context].ui.inputarray.field_data[a]) ;
+			}
+		
+		}
+		contexts[context].ui.inputarray.field_data=0;
+  }
+
+
   m_arr_count = last_attr->arrcount;
   m_arr_curr = last_attr->arrline;
   m_scr_line = last_attr->scrline;
@@ -2414,6 +2432,13 @@ uilib_input_array_loop (int n)
       int a;
       int b;
       int arrline;
+	
+  	contexts[context].ui.inputarray.num_field_data=contexts[context].ui.inputarray.nvals;
+  	contexts[context].ui.inputarray.field_data=malloc (sizeof (char *) * contexts[context].ui.inputarray.num_field_data);
+
+	for (a=0;a<contexts[context].ui.inputarray.num_field_data;a++) {
+		contexts[context].ui.inputarray.field_data[a]=0;
+	}
 
       for (a = 0; a < last_attr->rows.nrows; a++)
 	{
@@ -2432,7 +2457,11 @@ uilib_input_array_loop (int n)
 	  for (b = 0; b < contexts[context].ui.inputarray.nvals; b++)
 	    {
 	      char **p;
-	      p = contexts[context].ui.inputarray.variable_data[arrline];
+		if (a==0) {
+			contexts[context].ui.inputarray.field_data[b]=strdup(last_attr->rows.row[a].sync.vals[b].fieldname);
+		}
+
+	         p = contexts[context].ui.inputarray.variable_data[arrline];
 		contexts[context].ui.inputarray.touched[arrline][b]=last_attr->rows.row[a].sync.vals[b].touched;
 	      if (p[b])
 		{
@@ -2690,9 +2719,12 @@ uilib_getfldbuf (int nargs)
 		{
 		  if (field_match (flist[a], fields[b]))
 		    {
-		      PUSHquote (contexts[context].ui.inputarray.variable_data[currline][a]);
-		      pushed++;
+			if (currline>0 && currline<=contexts[context].ui.inputarray.count) {
+		      		PUSHquote (contexts[context].ui.inputarray.variable_data[currline-1][a]);
+		      		pushed++;
+			}
 		      break;
+
 		    }
 		}
 	      if (!pushed)
