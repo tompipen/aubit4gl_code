@@ -684,11 +684,30 @@ namespace AubitDesktop
                 for (int col = 0; col < this.nCols; col++)
                 {
                     string rval = "";
-                    if (inputArrayGrid.Rows[row].Cells[col + 1].Value is DBNull) {
-                        rval="";
-                    }else {
-                    
-                        rval = (string)inputArrayGrid.Rows[row].Cells[col + 1].Value;   // Data.Rows[row][col + 1];
+                    DataGridViewCell c = inputArrayGrid.Rows[row].Cells[col + 1];
+
+                    if (c.IsInEditMode)
+                    {
+                        // We're still in edit mode - so its probably a ON KEY - so set the fldbuf values..
+                        if (c.EditedFormattedValue is DBNull)
+                        {
+                            rval = "";
+                        }
+                        else
+                        {
+                            rval = (string)inputArrayGrid.Rows[row].Cells[col + 1].EditedFormattedValue;   // Data.Rows[row][col + 1];
+                        }
+                    }
+                    else
+                    {
+                        if (c.Value is DBNull)
+                        {
+                            rval = "";
+                        }
+                        else
+                        {
+                            rval = (string)inputArrayGrid.Rows[row].Cells[col + 1].Value;   // Data.Rows[row][col + 1];
+                        }
                     }
                     
 
