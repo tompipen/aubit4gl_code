@@ -162,25 +162,19 @@ xml_escape_int (char *s)
   int l;
   int b;
   int allocated;
-
+int sl;
+sl=strlen(s);
 
   c = 0;
   //if (s==0) return "";
+  for (a=0;a<sl;a++) {
+  		if (s[a]=='&' || s[a]=='<' || s[a]=='>' || s[a]=='"' || s[a]=='\'' || s[a]=='\n'  || s[a]=='\r' || s[a] < 31 || s[a] > 126) {
+				c++;
+			 break;
+		}
 
-  if (strchr (s, '&'))
-    c++;
-  if (strchr (s, '<'))
-    c++;
-  if (strchr (s, '>'))
-    c++;
-  if (strchr (s, '"'))
-    c++;
-  if (strchr (s, '\''))
-    c++;
-  if (strchr (s, '\n'))
-    c++;
-  if (strchr (s, '\r'))
-    c++;
+  	}
+
 
 
   if (c == 0)
