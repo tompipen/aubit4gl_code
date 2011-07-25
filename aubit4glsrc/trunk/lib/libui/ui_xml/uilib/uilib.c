@@ -2410,8 +2410,9 @@ uilib_input_array_loop (int n)
 	set_infield(contexts[context].ui.inputarray.infield);
     }
 
-  if (contexts[context].ui.inputarray.field_data) {
+  if (contexts[context].ui.inputarray.field_data && last_attr->rows.nrows) { // Do we have some replacement rows ? 
 		int a;
+		// yes - clean out the old stuff...
 		for (a=0;a<contexts[context].ui.inputarray.num_field_data;a++) {
 			if (contexts[context].ui.inputarray.field_data[a]!=0) {
 				free(contexts[context].ui.inputarray.field_data[a]) ;
