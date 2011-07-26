@@ -745,6 +745,11 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
       StatusBar *status = (StatusBar*) statusBar();
       QString keyEventString;
       keyEventString = keyEvent->text();
+      if(keyEvent->key() == Qt::Key_Backtab)
+      {
+              prevfield();
+              return true;
+      }
       if(keyEvent->key() == Qt::Key_Tab)
       {
           if(TextEdit *te = qobject_cast<TextEdit *> (obj))
@@ -1697,8 +1702,41 @@ MainFrame::vdcdebug("FglForm","prevfield", "");
                int rowCount = table->rowCount(QModelIndex());
                int column = view->currentIndex().column();
                int columnCount = table->columnCount(QModelIndex());
+               int counter = 0;
                switch(state()){
                   case Fgl::INPUTARRAY:
+                     if(column > 1) {
+                         for(int i=column-1; i > 0; i--)
+                         {
+                            if(FormField *tV = qobject_cast<FormField *> (ql_formFields.at(i))) {
+                               tV->noEntry();
+                            }
+                            if(view->isReadOnlyColumn(i) == false)
+                            {
+                               counter = i;
+                               break;
+                            }
+                         }
+                         QModelIndex tindex = table->index(row, counter);
+                         QModelIndex index = proxyModel->mapFromSource(tindex);
+                         view->setCurrentIndex(index);
+                         return;
+                     } else {
+                        if (row > 0) {
+                            for(int i=columnCount-1; i > 0; i--)
+                            {
+                               if(view->isReadOnlyColumn(i) == false)
+                               {
+                                  counter = i;
+                                  break;
+                               }
+                            }
+                           QModelIndex tindex = table->index(row-1, counter);
+                           QModelIndex index = proxyModel->mapFromSource(tindex);
+                           view->setCurrentIndex(index);
+                           return;
+                        }
+                     }
                   case Fgl::INPUT:
                         if(column > 0){
                            //GO TO PREV FIELD

@@ -31,6 +31,7 @@ class TableView : public QTableView
 
 public:
    TableView(QWidget *parent = 0);
+   bool isReadOnlyColumn(int);
    int pageSize;
    QString tabName;
    int arrCount() { return i_arrCount; };
@@ -72,7 +73,6 @@ private:
     int i_maxArrSize;
     bool b_ignoreFocus;
     bool b_ignoreRowChange;
-    bool isReadOnlyColumn(int);
     bool checkBounds(const QModelIndex);
     int i_currrowmouse;
     int i_currcolumnmouse;
