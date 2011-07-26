@@ -919,7 +919,7 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
                   hidden = valuesElement.text().toInt();
                }
             }
-            qDebug() << "SET FIELD HIDDEN:" << fieldName << hidden;
+
             setFieldHidden(fieldName, hidden);
          }
 
