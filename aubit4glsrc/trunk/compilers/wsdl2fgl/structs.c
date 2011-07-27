@@ -716,9 +716,19 @@ char buff[400];
 			fprintf(getOuputFile()," INTEGER */\n");
 	  return 1;
 	}
+
+      if (strcasecmp (param->dtype, "double*") == 0)
+	{
+	  sprintf (buff, "{static double pdbl;pdbl=A4GL_pop_dbl();if (A4GL_isnull(2,&pdbl)) %s=0; else %s=&pdbl;}", name,name);
+		pop_param_buff[npop_param++]=strdup(buff);
+			fprintf(getOuputFile()," DOUBLE */\n");
+	  return 1;
+	}
+
+
       if (strcasecmp (param->dtype, "short*") == 0)
 	{
-	  sprintf (buff, "{static int pshort;pshort=A4GL_pop_int();if (A4GL_isnull(1,&plong)) %s=0; %s=&pshort;}", name,name);
+	  sprintf (buff, "{static short pshort;pshort=A4GL_pop_int();if (A4GL_isnull(1,&pshort)) %s=0; %s=&pshort;}", name,name);
 		pop_param_buff[npop_param++]=strdup(buff);
 			fprintf(getOuputFile()," SMALLINT */\n");
 	  return 1;
@@ -904,6 +914,15 @@ print_4gl_push (char *old_prefix, struct variable_element *param,
     {
       fprintf (getOuputFile (), "  if (%s) {\n", name);
       fprintf (getOuputFile (), "    A4GL_push_long(*%s);\n", name);
+      fprintf (getOuputFile (), "  } else {\n");
+      fprintf (getOuputFile (), "    A4GL_push_null (2, 0);\n");
+      fprintf (getOuputFile (), "  }\n");
+      return 1;
+    }
+  if (strcasecmp (param->dtype, "double*") == 0)
+    {
+      fprintf (getOuputFile (), "  if (%s) {\n", name);
+      fprintf (getOuputFile (), "    A4GL_push_double(*%s);\n", name);
       fprintf (getOuputFile (), "  } else {\n");
       fprintf (getOuputFile (), "    A4GL_push_null (2, 0);\n");
       fprintf (getOuputFile (), "  }\n");
@@ -1152,7 +1171,13 @@ rvals=print_4gl_push( "", &params->var_val[params->var_len-1],0);
 fprintf(getOuputFile(),"   return %d;\n",rvals);
 fprintf(getOuputFile(),"}\n");
 
-fprintf(getOuputFile(),"else {soap_print_fault(soap,stderr); return 0;}\n");
+fprintf(getOuputFile(),"else {\n");
+fprintf(getOuputFile(),"soap_print_fault(soap,stderr);\n");
+for (a=0;a<rvals;a++) {
+	fprintf(getOuputFile(),"A4GL_push_null (2, 0);");
+}
+fprintf(getOuputFile(),"return %d;\n",rvals);
+fprintf(getOuputFile(),"}\n");
 
 /*
 
