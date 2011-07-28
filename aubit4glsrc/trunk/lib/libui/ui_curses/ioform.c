@@ -24,10 +24,10 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.242 2010-10-06 10:46:59 mikeaubury Exp $
+# $Id: ioform.c,v 1.243 2011-07-28 17:33:41 mikeaubury Exp $
 #*/
 #ifndef lint
-static char const module_id[] = "$Id: ioform.c,v 1.242 2010-10-06 10:46:59 mikeaubury Exp $";
+static char const module_id[] = "$Id: ioform.c,v 1.243 2011-07-28 17:33:41 mikeaubury Exp $";
 #endif
 
 /**
@@ -4878,10 +4878,20 @@ UILIB_A4GL_clr_fields_ap (int to_defaults, va_list * ap)
 
   for (a = 0; a <= c; a++)
     {
-      A4GL_mja_set_field_buffer (field_list[a], 0, "");
+      int attr;
+      int r;
       f = (struct struct_scr_field *) (field_userptr (field_list[a]));
       if (f)
 	A4GL_default_attributes (field_list[a], f->datatype);
+
+
+  	attr = A4GL_determine_attribute (FGL_CMD_CLEAR, attr, f, 0);
+
+  	if (attr & AUBIT_ATTR_REVERSE) r = 1;
+  	else r = 0;
+  	A4GL_set_field_colour_attr (field_list[a], r, attr);
+      A4GL_mja_set_field_buffer (field_list[a], 0, "");
+
     }
 
 
