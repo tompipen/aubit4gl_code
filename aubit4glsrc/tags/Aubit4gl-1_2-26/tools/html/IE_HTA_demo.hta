@@ -1,0 +1,64 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<HTML>
+<HEAD>
+  <TITLE>HTA Demo</TITLE>
+  <HTA:APPLICATION ID="oHTA"
+     APPLICATIONNAME="Aubit 4gl HTML application demo"
+	 BORDER="thin"
+	 BORDERSTYLE="normal"
+	 CAPTION="yes"
+	 ICON="graphics/face01.ico"
+	 MAXIMIZEBUTTON="yes"
+	 MINIMIZEBUTTON="yes"
+	 SHOWINTASKBAR="no"
+	 SINGLEINSTANCE="no"
+	 SYSMENU="yes"
+	 VERSION="1.0"
+	 WINDOWSTATE="normal"
+  >
+
+</HEAD>
+<BODY>
+
+<!--
+
+<FRAMESET COLS="25%, 50%, *">
+	<FRAME SRC="contents.htm">
+
+	<FRAME APPLICATION="yes" FRAMEBORDER=0 SCROLLING=NO SRC="http://www.falout.com/cgi-bin/simple_html">
+
+</FRAMESET>
+
+-->
+
+<!--
+
+<IFRAME APPLICATION="yes" SRC="http://www.falout.com/cgi-bin/simple_html">
+
+SCROLLING=NO
+
+-->
+
+<!--
+
+<IFRAME WIDTH=100% height=100% ID=IFrame1 SCROLLING=yes FRAMEBORDER=0 SRC="http://www.falout.com/cgi-bin/simple_html"></IFRAME>
+
+-->
+
+<IFRAME WIDTH=100% height=100% ID=IFrame1 SCROLLING=yes FRAMEBORDER=0 SRC="file://C:/cygwin/usr/aubit/aubit4glsrc/tools/html/simple_html.exe"></IFRAME>
+
+
+<frameset rows="10%,*">
+ <frame src="file.exe" >
+ </frameset>
+
+
+
+
+<!--
+  <HR>
+  <BUTTON onclick="window.close()">Quit Application</BUTTON>
+-->
+
+</BODY>
+</HTML>

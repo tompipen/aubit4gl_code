@@ -1,0 +1,14 @@
+Name: libSQLPARSE_NONE
+Parent: aubit4glsrc
+Description: Dummy SQL parse input plug-in.  Enables usage of compiler when no other SQL parsing input plug-ins are available
+Functionality: SQLPARSE
+Build:
+Example:
+Depends: None
+Documentation:
+Regressed:
+Maintainer:
+Status:
+Todo:
+Notes: Useful in rare cases when user cant use real SQLPARSE plug-in, or for debugging
+

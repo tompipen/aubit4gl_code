@@ -1,0 +1,44 @@
+/***************************************
+               dynarr.rule
+****************************************/
+
+
+alloc_arr_cmd :
+	ALLOCATE_ARRAY dyn_variable_usage_expression {
+		$<cmd>$=new_alloc_arr_cmd($<ptr>2);
+		if ($<cmd>$==0) {
+			a4gl_yyerror("Expecting an array and size");
+                        YYERROR;
+		}
+	}
+;
+
+dealloc_arr_cmd : 
+	DEALLOCATE_ARRAY dyn_variable_usage_expression {
+		add_feature("DEALLOCATE_ARRAY");
+		$<cmd>$=new_dealloc_arr_cmd($<ptr>2);
+	}
+;
+
+
+dyn_variable_usage_expression: variable_usage_expression {
+		char errbuff[256];
+		$<ptr>$=ensure_variable(errbuff, $<ptr>1,0);
+		if ($<ptr>$==0) {
+			a4gl_yyerror(errbuff);
+			YYERROR;
+		}
+	}
+;
+
+
+resize_arr_cmd :
+	RESIZE_ARRAY dyn_variable_usage_expression  {
+		$<cmd>$=new_resize_arr_cmd($<ptr>2);
+		if ($<cmd>$==0) {
+			a4gl_yyerror("Expecting an array and size");
+                        YYERROR;
+		}
+	}
+;
+

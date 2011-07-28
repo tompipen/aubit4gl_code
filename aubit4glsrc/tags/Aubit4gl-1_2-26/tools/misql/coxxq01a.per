@@ -1,0 +1,17 @@
+{ $Id: coxxq01a.per,v 1.1 2007-12-05 15:39:41 mikeaubury Exp $ }
+DATABASE formonly
+SCREEN
+{
+
+[f01            ][f02                                ] 
+
+}
+
+ATTRIBUTES
+f01 = formonly.keyname;
+f02 = formonly.keyqbe1;
+
+INSTRUCTIONS
+    DELIMITERS " "
+    SCREEN RECORD anyqbe[1](formonly.keyname)
+    SCREEN RECORD scrrr(formonly.keyqbe1 THRU formonly.keyqbe1)
