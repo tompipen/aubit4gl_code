@@ -402,19 +402,15 @@ MainFrame::vdcdebug("ClientSocket","readClient", "");
       
    while(canReadLine()){
       request.append(readLine());
-      if(request.contains("<ENVELOPE") && request.contains("</ENVELOPE")){
-          break;
-      }
    }
 
    // while existing thread is running 
    // wait until it's done to start a new one
    //
 
-   /*
+
    while(ph.isRunning()){
    }
-   */
 
    if(!request.isNull()){
       ph.request.append(request);

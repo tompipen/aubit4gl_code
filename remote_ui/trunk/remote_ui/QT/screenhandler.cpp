@@ -1862,11 +1862,15 @@ void ScreenHandler::processResponse()
        return;
    }
 
+
+
    QString id = p_fglform->ql_responseQueue.takeFirst();
    Response resp(id, p_fglform, cursorPos);
    QString qs_resp = resp.toString();
    if(qs_resp.isEmpty())
       return;
+
+   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 
    fglFormResponse(qs_resp);
    p_fglform->b_getch_swin = false;
