@@ -624,9 +624,9 @@ MainFrame::vdcdebug("ProtocolHandler","run", "");
          QDomElement child    = commands.firstChildElement();
 
          while(!child.isNull()){
-            setUpdatesEnabled(false);
+           // setUpdatesEnabled(false);
             outputTree(child);
-            setUpdatesEnabled(true);
+           // setUpdatesEnabled(true);
 
             child = child.nextSiblingElement();
          }
