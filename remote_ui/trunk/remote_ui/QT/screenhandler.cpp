@@ -1837,7 +1837,7 @@ MainFrame::vdcdebug("ScreenHandler","waitForEvent", "");
        if(p_fglform->ql_responseQueue.isEmpty())
           p_fglform->setUpdatesEnabled(true);
        p_fglform->setDestField(NULL);
-       QApplication::restoreOverrideCursor();
+   QApplication::setOverrideCursor(QCursor(Qt::ArrowCursor));
    }
 }
 
@@ -2180,7 +2180,7 @@ MainFrame::vdcdebug("ScreenHandler","closeWindow", "QString windowName");
          }
       }
    }
-QApplication::restoreOverrideCursor();
+   QApplication::setOverrideCursor(QCursor(Qt::ArrowCursor));
 }
 
 //------------------------------------------------------------------------------
