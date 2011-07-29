@@ -74,6 +74,7 @@ FglForm::FglForm(QString windowName, QWidget *parent) : QMainWindow(parent){
    formWidget = NULL;
 
    currentWidget = NULL;
+   destWidget = NULL;
 
    // Default Propertys/Styleattributes (can be overridden in *.4st files);
    setProperty("startMenuPosition", "tree");
@@ -467,7 +468,7 @@ void FglForm::actionTriggered()
 MainFrame::vdcdebug("FglForm","actionTriggered", "");
    QObject *obj = QObject::sender();
 
-//   qDebug() << "ACTION TRIGGERED!" << obj;
+   //qDebug() << "ACTION TRIGGERED!" << obj;
    if(Action *action = qobject_cast<Action *> (obj)){
       if(!handleGuiAction(action)){
          Fgl::Event ev;
@@ -667,9 +668,8 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
          QWidget *w = (QWidget*) obj;
          if(input() || construct()){
             if(context->fieldList().contains(w)){
-               while(w != currentWidget){
-                  nextfield();
-               }
+               destWidget = w;
+               nextfield();
                return true;
             }
          }

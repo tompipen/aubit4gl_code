@@ -1208,7 +1208,7 @@ MainFrame::vdcdebug("ScreenHandler","setFieldHidden", "QString fieldName, bool h
 }
 
 //------------------------------------------------------------------------------
-// Method       : setFieldFocus(QString FieldName )
+// Method       : setFieldFocus(String FieldName )
 // Filename     : screenhandler.cpp
 // Description  : sets the focus for the Field
 //------------------------------------------------------------------------------
@@ -1828,6 +1828,12 @@ MainFrame::vdcdebug("ScreenHandler","waitForEvent", "");
    p_fglform->b_getch_swin = true;
 
    processResponse();
+   if(p_fglform->destField() != p_fglform->currentField() && p_fglform->destField() != NULL){
+       p_fglform->nextfield();
+   }
+   else{
+       p_fglform->setDestField(NULL);
+   }
 }
 
 //------------------------------------------------------------------------------
