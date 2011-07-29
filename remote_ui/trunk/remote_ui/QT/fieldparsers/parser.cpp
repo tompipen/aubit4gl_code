@@ -233,10 +233,10 @@ MainFrame::vdcdebug("Parser","parseElement", "const QDomNode& xmlNode");
       }
 
       if(nodeName == "FormField"){
-         FormField *formField = WidgetHelper::createFormField(currentElement);
+         FormField *formField = WidgetHelper::createFormField(currentElement, p_fglform);
          ql_fglFields << formField;
 
-         QWidget *widget = WidgetHelper::createFormWidget(currentElement);
+         QWidget *widget = WidgetHelper::createFormWidget(currentElement, p_fglform);
          formField->addField(widget);
 
          QDomElement fieldElement = currentElement.firstChildElement();

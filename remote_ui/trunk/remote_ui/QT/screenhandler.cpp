@@ -1829,10 +1829,15 @@ MainFrame::vdcdebug("ScreenHandler","waitForEvent", "");
 
    processResponse();
    if(p_fglform->destField() != p_fglform->currentField() && p_fglform->destField() != NULL){
+       p_fglform->setUpdatesEnabled(false);
+       QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
        p_fglform->nextfield();
    }
    else{
+       if(p_fglform->ql_responseQueue.isEmpty())
+          p_fglform->setUpdatesEnabled(true);
        p_fglform->setDestField(NULL);
+       QApplication::restoreOverrideCursor();
    }
 }
 
