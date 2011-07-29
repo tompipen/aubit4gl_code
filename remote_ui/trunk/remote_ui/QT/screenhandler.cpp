@@ -1835,7 +1835,7 @@ MainFrame::vdcdebug("ScreenHandler","waitForEvent", "");
    }
    else{
        if(p_fglform->ql_responseQueue.isEmpty())
-          p_fglform->Enabled(true);
+          p_fglform->setUpdatesEnabled(true);
        p_fglform->setDestField(NULL);
        QApplication::restoreOverrideCursor();
    }
@@ -2625,7 +2625,8 @@ MainFrame::vdcdebug("ScreenHandler","checkFields", "");
 void ScreenHandler::setUpdatesEnabled(bool en)
 {
 MainFrame::vdcdebug("ScreenHandler","setUpdatesEnabled", "bool en");
-/*   for(int i=0; i<ql_fglForms.size(); i++){
+/*
+for(int i=0; i<ql_fglForms.size(); i++){
          FglForm *form = ql_fglForms.at(i);
 
       if(form != NULL){
