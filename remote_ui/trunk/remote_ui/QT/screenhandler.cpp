@@ -2155,7 +2155,7 @@ MainFrame::vdcdebug("ScreenHandler","MsgBox ", "QString title, QString text, QSt
 void ScreenHandler::closeWindow(QString windowName)
 {
 MainFrame::vdcdebug("ScreenHandler","closeWindow", "QString windowName");
-
+   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
    for(int i=0; i<ql_fglForms.size(); i++){
       FglForm *form = ql_fglForms.at(i);
 
@@ -2180,7 +2180,7 @@ MainFrame::vdcdebug("ScreenHandler","closeWindow", "QString windowName");
          }
       }
    }
-
+QApplication::restoreOverrideCursor();
 }
 
 //------------------------------------------------------------------------------
