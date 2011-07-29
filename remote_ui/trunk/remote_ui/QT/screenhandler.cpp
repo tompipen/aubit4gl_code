@@ -472,13 +472,13 @@ MainFrame::vdcdebug("ScreenHandler","setMenuEnabled", "bool enable");
 //------------------------------------------------------------------------------
 // Method       : hideOption(QString title, QString FieldValue)
 // Filename     : screenhandler.cpp
-// Description  : hide menu commands
 //------------------------------------------------------------------------------
 void ScreenHandler::hideOption(QString name)
 {
 MainFrame::vdcdebug("ScreenHandler","hideOption", "QString name");
    if(p_fglform == NULL)
       return;
+   // Description  : hide menu commands
 
    if(p_fglform->dialog() != NULL){
       p_fglform->dialog()->hideButton(name);
@@ -1778,7 +1778,7 @@ void ScreenHandler::waitForEvent()
 {
 MainFrame::vdcdebug("ScreenHandler","waitForEvent", "");
    FglForm *saveactive = p_fglform;
-
+   qDebug()<<p_fglform->b_getch_swin<<true;
    if(p_fglform == NULL)
       return;
 
@@ -1835,7 +1835,7 @@ MainFrame::vdcdebug("ScreenHandler","waitForEvent", "");
    }
    else{
        if(p_fglform->ql_responseQueue.isEmpty())
-          p_fglform->setUpdatesEnabled(true);
+          p_fglform->Enabled(true);
        p_fglform->setDestField(NULL);
        QApplication::restoreOverrideCursor();
    }
@@ -1984,6 +1984,9 @@ MainFrame::vdcdebug("ScreenHandler","free", "QString type");
       p_fglform->revertState(Fgl::DISPLAYARRAY);
    }
 
+   //if(p_fglform->finalWidget != NULL){
+  //     p_fglform->nextfield();
+  // }
 
    p_fglform->ql_responseQueue.clear();
    p_fglform->ql_formEvents.clear();
@@ -2622,13 +2625,13 @@ MainFrame::vdcdebug("ScreenHandler","checkFields", "");
 void ScreenHandler::setUpdatesEnabled(bool en)
 {
 MainFrame::vdcdebug("ScreenHandler","setUpdatesEnabled", "bool en");
-   for(int i=0; i<ql_fglForms.size(); i++){
+/*   for(int i=0; i<ql_fglForms.size(); i++){
          FglForm *form = ql_fglForms.at(i);
 
       if(form != NULL){
          form->setUpdatesEnabled(en);
       }
-   }
+   }*/
 }
 
 void ScreenHandler::setEnv(QString name, QString env)
