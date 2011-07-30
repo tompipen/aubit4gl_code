@@ -11,11 +11,14 @@ construct q_txt on systables.tabname, systables.version
 
 close window win1
 
-display q_txt
+display q_txt clipped
 
 if q_txt <> "systables.version in ('12345678','12345678','12345678','12345678','12345678','12345678')" then
     display "bad"
+	sleep 1
     exit program 1
 end if
+display "Good"
+	sleep 1
 exit program 0
 end main

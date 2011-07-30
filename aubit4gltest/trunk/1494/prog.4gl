@@ -23,4 +23,10 @@ main
         
         end input
         close window w1
+	if l_no = 1 then
+		exit program 0
+	else
+		exit program 1
+	end if
+		
 end main
