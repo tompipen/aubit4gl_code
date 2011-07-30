@@ -1,4 +1,103 @@
 ---------------------------
+Sat Jul 30 09:45:28 BST 2011
+---------------------------
+1.2_26 Released
+---------------------------
+	2011-07-28 18:33  mikeaubury
+	
+	Make 'CLEAR field' clear the attributes from a field too (UI=TUI)
+	
+	2011-07-27 14:31  mikeaubury
+	
+	2011-07-25 21:43  mikeaubury
+	
+	2011-07-25 20:28  mikeaubury
+	
+	get_fldbuf fixup for XML gui
+	
+	2011-07-25 13:09  mikeaubury
+	
+	2011-07-23 20:23  mikeaubury
+	
+	Make "A4GL_INPUTREQUIREDTYPE" default to REQUIRED_TYPE_INPUT
+	instead of REQUIRED_TYPE_FIELD
+	
+	2011-07-23 10:19  mikeaubury
+	
+	Small sql conversion fixup for double single quotes ('') in a
+	string..
+	
+	2011-07-23 09:33  mikeaubury
+	
+	Small fixup for embedded single quote when converting string to
+	regexp
+	
+	2011-07-22 21:10  mikeaubury
+	
+	2011-07-22 20:30  mikeaubury
+	
+	Fix CURRENT ROW DISPLAY= "...." in INPUT ARRAY (TUI)
+	
+	2011-07-22 19:09  mikeaubury
+	
+	2011-07-22 19:06  mikeaubury
+	
+	Add ability to "print files" to the XML GUI (C# client only atm)
+	
+	2011-07-22 16:53  mikeaubury
+	
+	2011-07-22 12:45  mikeaubury
+	
+	2011-07-21 21:37  mikeaubury
+	
+	Add aclfgl_printfile_to_ui to enable printing of files in the XML
+	UIs.. (C# client only atm)
+	
+	2011-07-12 13:58  mikeaubury
+	
+	2011-07-11 13:59  siverly
+	
+	Set the LOGNAME
+	
+	2011-07-11 12:41  mikeaubury
+	
+	2011-07-09 07:59  mikeaubury
+	
+	remove ODBC password from debug.out
+	
+	2011-07-02 14:48  mikeaubury
+	
+	2011-06-30 22:05  mikeaubury
+	
+	2011-06-30 19:48  mikeaubury
+	
+	2011-06-30 19:43  mikeaubury
+	
+	Incread the FLEXML buffersize for UI=XML
+	
+	2011-06-29 14:19  mikeaubury
+	
+	fixup a4gl_get_ui_mode for UI=XML
+	
+	2011-06-26 16:11  mikeaubury
+	
+	2011-06-26 16:07  naurus
+	
+	Added WHENEVER SIGNAL signal IGNORE|DEFAULT to clear any changes
+	made by WHENEVER SIGNAL signal CALL function.
+	
+	2011-06-26 15:31  mikeaubury
+	
+	2011-06-26 15:04  naurus
+	
+	2011-06-26 14:57  naurus
+	
+	Added WHENEVER SIGNAL SIGUSR1|SIGUSR2|Any-unix-signal-int CALL
+	sighandler where sighandler is a function taking no arguments that
+	gets called if the respective signal is sent to the running
+	program.
+	
+---------------------------
 Sun Jun 26 15:27:20 BST 2011
 ---------------------------
 1.2_25 Released
