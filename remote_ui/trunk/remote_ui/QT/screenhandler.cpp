@@ -1204,6 +1204,19 @@ MainFrame::vdcdebug("ScreenHandler","setFieldHidden", "QString fieldName, bool h
    if(QWidget *widget = qobject_cast<QWidget *> (p_fglform->findFieldByName(fieldName))){
       widget->setHidden(hidden);
    }
+   else{
+      if(LineEditDelegate *widget = qobject_cast<LineEditDelegate *> (p_fglform->findFieldByName(fieldName))){
+         int col = widget->column();
+         if(TableView *tableView = qobject_cast<TableView *> (widget->parent())){
+            if(hidden){
+               tableView->hideColumn(col);
+            }
+            else{
+               tableView->showColumn(col);
+            }
+         }
+      }
+   }
    
 }
 
