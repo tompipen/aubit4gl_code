@@ -1623,7 +1623,21 @@ MainFrame::vdcdebug("FglForm","nextfield", "bool change");
                int columnCount = table->columnCount(QModelIndex());
                switch(state()){
                   case Fgl::INPUTARRAY:
-                  case Fgl::INPUT:
+                   if(column < columnCount){
+
+                      view->setCurrentField(row, column+1);
+                      return;
+                   }
+                   else{
+                      if(row < rowCount){
+
+                         view->setCurrentField(row+1, 1);
+                      }
+                      else{
+                         return;
+                      }
+                   }
+               case Fgl::INPUT:
                         if(column < columnCount){
                            //GO TO NEXT FIELD
 /*
