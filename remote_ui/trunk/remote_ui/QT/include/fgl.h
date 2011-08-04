@@ -32,7 +32,7 @@ namespace Fgl
 
       QString fgl_using(QString, QString);
       QString fgl_using_date(QString, QString);
-      QString fgl_using_string(QString, QString, bool);
+      QString fgl_using_string(QString, QString, bool, QString dbmoney = "");
       QString fgl_convert_money(QString);
 
       QString getValueFromEnv(QString);

@@ -1123,6 +1123,7 @@ MainFrame::vdcdebug("ScreenHandler","setFieldFocus", "QString fieldName");
 
    if(i_Frm < 0)
       return;
+   p_fglform->setDestField(NULL);
 
    clearEvents();
 
@@ -1844,13 +1845,22 @@ MainFrame::vdcdebug("ScreenHandler","waitForEvent", "");
    if(p_fglform->destField() != p_fglform->currentField() && p_fglform->destField() != NULL){
        p_fglform->setUpdatesEnabled(false);
        QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-       p_fglform->nextfield();
+       int currPos = p_fglform->context->fieldList().indexOf(p_fglform->currentField());
+       int destPos = p_fglform->context->fieldList().indexOf(p_fglform->destField());
+       if(currPos < destPos){
+           p_fglform->nextfield();
+       }
+       else{
+           p_fglform->prevfield();
+       }
    }
    else{
-       if(p_fglform->ql_responseQueue.isEmpty())
+       if(p_fglform->ql_responseQueue.isEmpty()){
           p_fglform->setUpdatesEnabled(true);
-       p_fglform->setDestField(NULL);
-   QApplication::setOverrideCursor(QCursor(Qt::ArrowCursor));
+          p_fglform->update();
+          p_fglform->setDestField(NULL);
+       }
+       QApplication::setOverrideCursor(QCursor(Qt::ArrowCursor));
    }
 }
 

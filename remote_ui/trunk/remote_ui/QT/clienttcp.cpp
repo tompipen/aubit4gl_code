@@ -1686,7 +1686,7 @@ MainFrame::vdcdebug("ProtocolHandler","handleDisplayToElement", "const QDomNode&
 
             //DISPLAYTO
             if(textElement.nodeName() == "TEXT"){
-               qsl_fieldValues << textElement.text().trimmed();
+               qsl_fieldValues << textElement.text();
 
             }
 

@@ -9,6 +9,9 @@ namespace Fgl {
 
    QString usingFunc(QString fmt, QString value, DataType dataType)
    {
+       //just do nothing atm
+       return value;
+
       if(value.isEmpty())
          return value;
 
@@ -107,7 +110,7 @@ namespace Fgl {
       return value;
    }
 
-   QString fgl_using_string(QString fmt, QString value, bool isneg)
+   QString fgl_using_string(QString fmt, QString value, bool isneg, QString dbmoney)
    {
       Q_UNUSED(fmt);
       Q_UNUSED(value);
@@ -491,7 +494,15 @@ namespace Fgl {
       QChar dec;
       QChar tdel;
       QString suffix;
-      const QString DBMONEY = env["DBMONEY"];
+      const QString DBMONEY = dbmoney.isEmpty() ? dbmoney : env["DBMONEY"];
+      /*
+      if(dbmoney.isEmpty()) {
+          DBMONEY = env["DBMONEY"];
+      }
+      else{
+          DBMONEY = dbmoney;
+      }
+      */
       decFound = false;
       for(int i=0;i<DBMONEY.size(); i++){
          if(DBMONEY.at(i) == QChar('.') || DBMONEY.at(i) == QChar(',')){
@@ -547,7 +558,7 @@ namespace Fgl {
          }
       }
       
-      return qs_str;
+      return qs_str.trimmed();
    }
 
    QString fgl_convert_money(QString value){

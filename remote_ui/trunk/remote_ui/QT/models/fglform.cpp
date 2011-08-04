@@ -667,6 +667,9 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
          mev->ignore();
          QWidget *w = (QWidget*) obj;
          if(input() || construct()){
+            if(w == currentField())
+                return true;
+
             if(context->fieldList().contains(w)){
                destWidget = w;
                int currPos = context->fieldList().indexOf(currentField());
