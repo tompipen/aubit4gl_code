@@ -857,6 +857,8 @@ LineEditDelegate::LineEditDelegate(QDomElement formElement, QObject *parent)
 
    qw_editor = WidgetHelper::createFormWidget(this->formElement);
 
+   b_readOnly = false;
+
    if(LineEdit *le = qobject_cast<LineEdit *> (qw_editor)){
       b_readOnly = le->noEntry();
       le->setDragEnabled(true);
