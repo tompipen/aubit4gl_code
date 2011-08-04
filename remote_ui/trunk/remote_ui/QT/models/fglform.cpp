@@ -669,7 +669,14 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
          if(input() || construct()){
             if(context->fieldList().contains(w)){
                destWidget = w;
-               nextfield();
+               int currPos = context->fieldList().indexOf(currentField());
+               int destPos = context->fieldList().indexOf(w);
+               if(currPos < destPos){
+                   nextfield();
+               }
+               else{
+                   prevfield();
+               }
                return true;
             }
          }
@@ -1122,7 +1129,14 @@ void FglForm::clearCurrentFocus()
 {
 MainFrame::vdcdebug("FglForm","clearCurrentFocus", "");
    if(this->focusWidget() != NULL){
-      this->focusWidget()->clearFocus();
+       QWidget* wi = this->focusWidget();
+       if(wi != NULL){
+                Fgl::Event event;
+                event.type = Fgl::AFTER_FIELD_EVENT;
+                event.attribute = wi->objectName();
+                fieldEvent(event);
+       }
+       wi->clearFocus();
    }
 }
 
