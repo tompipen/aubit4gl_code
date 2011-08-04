@@ -2133,7 +2133,7 @@ MainFrame::vdcdebug("ProtocolHandler","handleWaitForEventElement", "const QDomNo
 
 
    //Not needed atm
-  /* int changed = -1;
+   int changed = -1;
    if(nodeName == "WAITFOREVENT"){
       changed = currentElement.attribute("CHANGED").toInt();
    }
@@ -2149,7 +2149,7 @@ MainFrame::vdcdebug("ProtocolHandler","handleWaitForEventElement", "const QDomNo
          handleDisplayToElement(currentElement, currentElement.nodeName());
       }
    }
-*/
+
    return;
 }
 
