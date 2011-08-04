@@ -1913,9 +1913,9 @@ MainFrame::vdcdebug("WidgetHelper","setFieldText", "QObject *object, QString fie
    }
 
    if(TextEdit *widget = qobject_cast<TextEdit *> (object)){
-      fieldValue = Fgl::fgl_convert_money(fieldValue);
+       fieldValue = Fgl::usingFunc("", fieldValue, Fgl::DTYPE_CHAR);
       if(fieldValue.trimmed() != widget->toPlainText())
-         widget->setPlainText(fieldValue.trimmed());
+         widget->setPlainText(fieldValue);
       return;
    }
 
