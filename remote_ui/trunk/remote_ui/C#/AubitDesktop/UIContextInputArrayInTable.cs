@@ -695,7 +695,7 @@ namespace AubitDesktop
                         }
                         else
                         {
-                            rval = (string)inputArrayGrid.Rows[row].Cells[col + 1].EditedFormattedValue;   // Data.Rows[row][col + 1];
+                            rval = FGLUtils.GetString(inputArrayGrid.Rows[row].Cells[col + 1].EditedFormattedValue);   // Data.Rows[row][col + 1];
                         }
                     }
                     else
@@ -706,7 +706,7 @@ namespace AubitDesktop
                         }
                         else
                         {
-                            rval = (string)inputArrayGrid.Rows[row].Cells[col + 1].Value;   // Data.Rows[row][col + 1];
+                            rval = FGLUtils.GetString( inputArrayGrid.Rows[row].Cells[col + 1].Value);   // Data.Rows[row][col + 1];
                         }
                     }
                     
@@ -716,7 +716,7 @@ namespace AubitDesktop
 
                 rowData += "  </SVS>\n";
                 rowData += " </ROW>\n";
-                if (lastRowData[row] != rowData)
+                if (lastRowData[row] != rowData ) // We might want to do this every time
                 { // Is it different to last time ? 
                     lastRowData[row] = rowData;
                     s += rowData;

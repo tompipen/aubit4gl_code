@@ -1751,6 +1751,20 @@ if (s.Contains("-"))
                     throw new ApplicationException("Invalid Datatype: " +datatype);
             }
         }
+
+        internal static string GetString(object p)
+        {
+            if (p is Boolean)
+            {
+                Boolean pb = (Boolean)p;
+                if (pb) return "true";
+                else return "false";
+            }
+            return
+                (string)p;
+                
+            
+        }
     }
     
 }
