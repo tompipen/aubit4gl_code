@@ -25,7 +25,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.188 2011-07-02 13:48:44 mikeaubury Exp $
+# $Id: ops.c,v 1.189 2011-08-09 09:16:05 mikeaubury Exp $
 #
 */
 
@@ -382,6 +382,30 @@ A4GL_dtype_function_string_substring (long *objectID, int nparam)
 	return A4GL_dtype_function_char_substring(object->objData,nparam);
 }
 
+
+static int
+A4GL_dtype_function_string_append (long *objectID, int nparam)
+{ 
+char *newstr;
+char *append_ptr;
+
+append_ptr=A4GL_char_pop();
+
+	struct sObject *object;
+        if (!ensureObject("STRING",*objectID,&object)) {
+                A4GL_exitwith("Not an object of type 'STRING' - or not initialized");
+                return 0;
+        }
+	newstr=object->objData;
+	if  (newstr) {
+			newstr=realloc(newstr,strlen(newstr)+strlen(append_ptr)+1);
+				strcat(newstr,append_ptr);
+	} else {
+			newstr=malloc(strlen(append_ptr)+1);
+				strcpy(newstr,append_ptr);
+	}
+	return 0;
+}
 /******************************************************************************/
 
 void
@@ -7687,6 +7711,7 @@ DTYPE_SERIAL
   A4GL_add_datatype_function_i (DTYPE_OBJECT, ":STRING.getlength", (void *) A4GL_dtype_function_string_getlength);
   A4GL_add_datatype_function_i (DTYPE_OBJECT, ":STRING.substring", (void *) A4GL_dtype_function_string_substring);
   A4GL_add_datatype_function_i (DTYPE_OBJECT, ":STRING.getcharat", (void *) A4GL_dtype_function_string_substring);
+  A4GL_add_datatype_function_i (DTYPE_OBJECT, ":STRING.append", (void *) A4GL_dtype_function_string_append);
 
 
 
