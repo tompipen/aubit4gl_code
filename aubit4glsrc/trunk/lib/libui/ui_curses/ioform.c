@@ -24,10 +24,10 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.243 2011-07-28 17:33:41 mikeaubury Exp $
+# $Id: ioform.c,v 1.244 2011-08-09 09:28:09 mikeaubury Exp $
 #*/
 #ifndef lint
-static char const module_id[] = "$Id: ioform.c,v 1.243 2011-07-28 17:33:41 mikeaubury Exp $";
+static char const module_id[] = "$Id: ioform.c,v 1.244 2011-08-09 09:28:09 mikeaubury Exp $";
 #endif
 
 /**
@@ -151,6 +151,10 @@ static int local_chk_field (struct s_form_dets *form, FIELD * f, int allfields, 
 =====================================================================
 */
 
+static int is_number_datatype(int dtype) {
+	dtype=dtype&DTYPE_MASK;
+	return dtype == DTYPE_DECIMAL || dtype == DTYPE_FLOAT || dtype == DTYPE_SMFLOAT || dtype == DTYPE_MONEY || dtype==DTYPE_SERIAL || dtype==DTYPE_INT || dtype==DTYPE_SMINT;
+}
 
 /**
  *
@@ -2988,6 +2992,10 @@ A4GL_display_field_contents (FIELD * field, int d1_ptr, int s1, char *ptr1, int 
   int ignore_formatting = 0;
   struct struct_scr_field *f;
   char *ff;
+  int isStatic;
+
+  isStatic=field_opts(field) & O_STATIC;
+
 
   field_width = A4GL_get_field_width_w (field, 1);
 
@@ -2996,6 +3004,12 @@ A4GL_display_field_contents (FIELD * field, int d1_ptr, int s1, char *ptr1, int 
 #endif
 
   f = (struct struct_scr_field *) (field_userptr (field));
+
+  if ( isStatic && f->dynamic==0 && is_number_datatype(dtype_field&DTYPE_MASK) ) { //&& A4GL_is_numeric_datatype(d1_ptr&DTYPE_MASK)) {
+	
+	// Looks like its really a CONSTRUCT atm..
+	dtype_field=DTYPE_CHAR;
+  }
   ff = acl_malloc2 (field_width + 1);
 
   has_format = A4GL_has_str_attribute (f, FA_S_FORMAT);
@@ -5715,3 +5729,5 @@ UILIB_A4GL_direct_to_ui (char *t, char *s)
     }
 // Does nothing - require by the API...
 }
+
+
