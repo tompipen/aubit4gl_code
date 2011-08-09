@@ -223,6 +223,29 @@ char_or_var_vl : CHAR_VALUE {
 ;
 
 
+char_or_var_vl_or_object : CHAR_VALUE {
+			$<ptr>$=new_variable_or_literal(ET_E_V_OR_LIT_STRING, $<str>1);
+		}
+		| variable_usage_expression {
+			char errbuff[256];
+			int dtype;
+			dtype=get_variable_dtype_from_variable_usage_expression(errbuff,$<ptr>1);
+			if (dtype==-1) {
+				a4gl_yyerror(errbuff);
+				YYERROR;
+			} else {
+				dtype=dtype&DTYPE_MASK; 
+                		if (dtype!=DTYPE_CHAR&&dtype!=DTYPE_VCHAR && dtype!=DTYPE_NCHAR) {
+					if (dtype!=DTYPE_OBJECT) {
+						a4gl_yyerror("Variable must be of type char..");YYERROR; 
+					}
+				}
+			}
+			$<ptr>$=$<ptr>1;
+			inc_var_usage($<ptr>$);
+		}
+;
+
 opt_use2_p : {$<ptr>$=0; set_cmdlineno(yylineno); } | USE_SESSION conn_id_p KW_FOR { $<ptr>$=$<ptr>2; set_cmdlineno(yylineno); }
 ;
 
