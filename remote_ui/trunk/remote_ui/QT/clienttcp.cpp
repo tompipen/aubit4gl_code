@@ -2142,6 +2142,9 @@ MainFrame::vdcdebug("ProtocolHandler","handleWaitForEventElement", "const QDomNo
    QString nodeName = currentElement.nodeName();
 
 
+   if(currentElement.attribute("CACHED").toInt() != 0)
+       return;
+
    //Not needed atm
    int changed = -1;
    if(nodeName == "WAITFOREVENT"){
