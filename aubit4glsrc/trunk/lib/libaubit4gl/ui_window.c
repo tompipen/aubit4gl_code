@@ -133,12 +133,12 @@ static int ui_form_setelementhidden(long *objectID, int nParam) {
 static int ui_form_setfieldhidden(long *objectID, int nParam) {
         struct ui_form_data *data;
         struct sObject *ptr;
-	int vis;
+	short vis;
 	char *field;
         struct BINDING ibind[]= {
                 {NULL,0,32,0,0,0},
                 {NULL,0,32,0,0,0},
-                {NULL,2,0,0,0,0}
+                {NULL,1,0,0,0,0}
         };
 
 
