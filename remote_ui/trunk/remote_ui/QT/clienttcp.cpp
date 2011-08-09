@@ -1686,7 +1686,16 @@ MainFrame::vdcdebug("ProtocolHandler","handleDisplayToElement", "const QDomNode&
 
             //DISPLAYTO
             if(textElement.nodeName() == "TEXT"){
-               qsl_fieldValues << textElement.text();
+               QString qs_type = textElement.attribute("TYPE");
+               QString qs_text;
+               if(qs_type == "BLOB"){
+                   QByteArray ba;
+                   ba.append(textElement.text());
+                   QByteArray ba2 = QByteArray::fromBase64(ba);
+                   qs_text = filterUmlauts(QString(ba2));
+               }
+
+               qsl_fieldValues << qs_text;
 
             }
 

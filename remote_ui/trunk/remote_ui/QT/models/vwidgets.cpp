@@ -1907,15 +1907,17 @@ MainFrame::vdcdebug("WidgetHelper","setFieldText", "QObject *object, QString fie
    if(LineEdit *widget = qobject_cast<LineEdit *> (object)){
        fieldValue = Fgl::usingFunc(widget->format(), fieldValue, widget->dataType());
 
-      if(fieldValue.trimmed() != widget->text())
+       if(fieldValue.trimmed() != widget->text()){
          widget->setText(fieldValue.trimmed());
+       }
       return;
    }
 
    if(TextEdit *widget = qobject_cast<TextEdit *> (object)){
        fieldValue = Fgl::usingFunc("", fieldValue, Fgl::DTYPE_CHAR);
-      if(fieldValue.trimmed() != widget->toPlainText())
+       if(fieldValue.trimmed() != widget->toPlainText()){
          widget->setPlainText(fieldValue);
+       }
       return;
    }
 
