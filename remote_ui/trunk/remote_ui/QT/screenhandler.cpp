@@ -1123,7 +1123,6 @@ MainFrame::vdcdebug("ScreenHandler","setFieldFocus", "QString fieldName");
 
    if(i_Frm < 0)
       return;
-   p_fglform->setDestField(NULL);
 
    clearEvents();
 
@@ -1842,26 +1841,6 @@ MainFrame::vdcdebug("ScreenHandler","waitForEvent", "");
    p_fglform->b_getch_swin = true;
 
    processResponse();
-   if(p_fglform->destField() != p_fglform->currentField() && p_fglform->destField() != NULL){
-       p_fglform->setUpdatesEnabled(false);
-       QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-       int currPos = p_fglform->context->fieldList().indexOf(p_fglform->currentField());
-       int destPos = p_fglform->context->fieldList().indexOf(p_fglform->destField());
-       if(currPos < destPos){
-           p_fglform->nextfield();
-       }
-       else{
-           p_fglform->prevfield();
-       }
-   }
-   else{
-       if(p_fglform->ql_responseQueue.isEmpty()){
-          p_fglform->setUpdatesEnabled(true);
-          p_fglform->update();
-          p_fglform->setDestField(NULL);
-       }
-       QApplication::setOverrideCursor(QCursor(Qt::ArrowCursor));
-   }
 }
 
 //------------------------------------------------------------------------------
@@ -1888,14 +1867,32 @@ void ScreenHandler::processResponse()
 
 
    QString id = p_fglform->ql_responseQueue.takeFirst();
-   Response resp(id, p_fglform, cursorPos);
-   QString qs_resp = resp.toString();
-   if(qs_resp.isEmpty())
-      return;
+   if(id.indexOf(",") == -1){
+      Response resp(id, p_fglform, cursorPos);
+      QString qs_resp = resp.toString().replace("\n","");
+      if(qs_resp.isEmpty())
+         return;
 
-   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+      fglFormResponse(qs_resp);
+   }
+   else{
+       QStringList qsl_ids = id.split(",");
+       QString qs_resp;
+       for(int i=0; i<qsl_ids.size(); i++){
+           id = qsl_ids.at(i);
+           Response resp(id, p_fglform, cursorPos);
+           resp.firstChildElement().setAttribute("CNT", i+1);
+           resp.firstChildElement().setAttribute("MAXCNT", qsl_ids.size());
+           qs_resp.append(resp.toString().replace("\n",""));
+           if(i+1<qsl_ids.size()){
+               qs_resp.append("\n");
+           }
+       }
+       if(qs_resp.isEmpty())
+          return;
 
-   fglFormResponse(qs_resp);
+       fglFormResponse(qs_resp);
+   }
    p_fglform->b_getch_swin = false;
 
 }

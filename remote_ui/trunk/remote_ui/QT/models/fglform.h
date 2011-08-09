@@ -112,8 +112,6 @@ public:
    void addFormEvent(Fgl::Event);
    void focusNextField() { this->focusNextChild(); };
    QWidget* currentField() { return currentWidget; };
-   QWidget* destField() { return destWidget; };
-   void setDestField(QWidget *w) { destWidget = w; };
    //void setCurrentField(QWidget* widget = NULL) { widget->setFocus(); currentWidget = widget; };
    void setCurrentField(QString, bool sendEvents = true);
 
@@ -245,7 +243,6 @@ private:
    QList<Fgl::State> ql_states;
    QWidget *formWidget;
    QWidget *currentWidget;
-   QWidget *destWidget;
    QList<RingMenu*> ql_menus;
    ActionMenu *p_actionMenu;
    Dialog *p_dialog;
@@ -280,6 +277,7 @@ private:
    bool b_bufferTouched;
    int i_lastCursor;
    QString qs_currentFieldBuffer;
+   void jumpToField(QWidget*);
 
 private slots:
    void actionTriggered();
