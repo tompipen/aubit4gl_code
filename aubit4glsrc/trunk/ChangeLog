@@ -7,15 +7,9 @@ Sat Jul 30 09:45:28 BST 2011
 	
 	Make 'CLEAR field' clear the attributes from a field too (UI=TUI)
 	
-	2011-07-27 14:31  mikeaubury
-	
-	2011-07-25 21:43  mikeaubury
-	
 	2011-07-25 20:28  mikeaubury
 	
 	get_fldbuf fixup for XML gui
-	
-	2011-07-25 13:09  mikeaubury
 	
 	2011-07-23 20:23  mikeaubury
 	
@@ -32,44 +26,27 @@ Sat Jul 30 09:45:28 BST 2011
 	Small fixup for embedded single quote when converting string to
 	regexp
 	
-	2011-07-22 21:10  mikeaubury
-	
 	2011-07-22 20:30  mikeaubury
 	
 	Fix CURRENT ROW DISPLAY= "...." in INPUT ARRAY (TUI)
 	
-	2011-07-22 19:09  mikeaubury
-	
 	2011-07-22 19:06  mikeaubury
 	
 	Add ability to "print files" to the XML GUI (C# client only atm)
-	
-	2011-07-22 16:53  mikeaubury
-	
-	2011-07-22 12:45  mikeaubury
 	
 	2011-07-21 21:37  mikeaubury
 	
 	Add aclfgl_printfile_to_ui to enable printing of files in the XML
 	UIs.. (C# client only atm)
 	
-	2011-07-12 13:58  mikeaubury
 	
 	2011-07-11 13:59  siverly
 	
 	Set the LOGNAME
 	
-	2011-07-11 12:41  mikeaubury
-	
 	2011-07-09 07:59  mikeaubury
 	
 	remove ODBC password from debug.out
-	
-	2011-07-02 14:48  mikeaubury
-	
-	2011-06-30 22:05  mikeaubury
-	
-	2011-06-30 19:48  mikeaubury
 	
 	2011-06-30 19:43  mikeaubury
 	
@@ -79,16 +56,10 @@ Sat Jul 30 09:45:28 BST 2011
 	
 	fixup a4gl_get_ui_mode for UI=XML
 	
-	2011-06-26 16:11  mikeaubury
-	
 	2011-06-26 16:07  naurus
 	
 	Added WHENEVER SIGNAL signal IGNORE|DEFAULT to clear any changes
 	made by WHENEVER SIGNAL signal CALL function.
-	
-	2011-06-26 15:31  mikeaubury
-	
-	2011-06-26 15:04  naurus
 	
 	2011-06-26 14:57  naurus
 	
