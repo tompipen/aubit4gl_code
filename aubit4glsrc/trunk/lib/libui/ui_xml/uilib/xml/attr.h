@@ -41,7 +41,8 @@ struct s_attr {
         int filelen;
         char *programname;
 	int bufferTouched;
-
+	int cnt;
+	int maxcnt;
 } ;
 
 

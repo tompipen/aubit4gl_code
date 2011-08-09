@@ -27,6 +27,8 @@ struct s_attr *xml_parse(char *s) {
 		lexed_attr.envelopeId=0;
 		lexed_attr. yourId=0;
 		lexed_attr. data=0;
+		lexed_attr. cnt=0;
+		lexed_attr. maxcnt=0;
 		lexed_attr. type=0;
 		lexed_attr. lastkey=0;
 		lexed_attr. infield=0;
@@ -130,6 +132,8 @@ return n;
 		lexed_attr.infield=0;
                 lexed_attr.filelen=-1;
                 lexed_attr.fileid=0;
+                lexed_attr.cnt=0;
+                lexed_attr.maxcnt=0;
                 lexed_attr.bufferTouched=0;
                 lexed_attr.programname=0;
 
@@ -148,6 +152,8 @@ return n;
 		if ({BUFFERTOUCHED}) lexed_attr.bufferTouched=atoi({BUFFERTOUCHED});
 		if ({PROGRAMNAME}) lexed_attr.programname=strdup({PROGRAMNAME});
                 if ({FILELEN}) lexed_attr.filelen=atoi({FILELEN});
+                if ({CNT}) lexed_attr.cnt=atoi({CNT});
+                if ({MAXCNT}) lexed_attr.maxcnt=atoi({MAXCNT});
 
 	//printf("Arrline set to %d\n",lexed_attr.arrline);
 		

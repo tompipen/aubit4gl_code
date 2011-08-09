@@ -8,6 +8,7 @@
 #include "uilib.h"
 #include "comms.h"
 #include "fglsys.h"
+
 void A4GL_push_null (int dtype,int size);
 size_t A4GL_base64_decode(const char *src, unsigned char **outptr);
 
@@ -22,105 +23,7 @@ static int m_arr_count = 0;
 char *mLastKey = 0;
 static char lastInfield[255]="";
 
-
-enum ui_state
-{
-  UI_NOT_INITIALIZED,
-  UI_WANT_BEFORE_MENU,
-  UI_WANT_BEFORE_INPUT,
-  UI_INITIALIZED,
-  UI_FREE,
-  UI_AFTER_BEFORE_MENU
-};
-
-
-struct uiinput
-{
-  int nfields;
-  int *changed;
-  char **variable_data;
-  char *setfield;
-  int num_field_data;
-  char **field_data;
-  char *infield;
-  int *touched;
-};
-
-
-struct uiconstruct
-{
-  char *constr_clause;
-  char *setfield;
-  int num_field_data;
-  char **field_data;
-  char **field_content_data;
-  char *infield;
-  int *touched;
-};
-
-struct uimenu
-{
-  char *menutitle;
-
-};
-
-struct uidisplayarray
-{
-  int count;
-  int scr_line;
-  int arr_line;
-};
-
-
-struct uiinputarray
-{
-  int count;
-  int scr_line;
-  int arr_line;
-  int maxarrsize;
-  int nvals;
-  char *setfield;
-  char ***variable_data;
-  int *changed_rows;
-  int num_field_data;
-  char **field_data;
-  char *infield;
-  int **touched;
-};
-
-struct uiprompt
-{
-  char *promptresult;
-};
-
-enum uitype
-{
-  UIFREE,
-  UIMENU,
-  UIINPUT,
-  UIPROMPT,
-  UICONSTRUCT,
-  UIDISPLAYARRAY,
-  UIINPUTARRAY
-};
-
-struct ui_context
-{
-  enum uitype type;
-  enum ui_state state;
-  char *modulename;
-  int lineno;
-  union
-  {
-    struct uimenu menu;
-    struct uiinput input;
-    struct uiprompt prompt;
-    struct uiconstruct construct;
-    struct uidisplayarray displayarray;
-    struct uiinputarray inputarray;
-  } ui;
-};
-
+#include "contexts.h"
 
 extern struct s_attr *last_attr;
 
@@ -379,13 +282,16 @@ new_context (enum uitype ui, char *module, int lineno)
   contexts[c].state = UI_NOT_INITIALIZED;
   contexts[c].modulename = module;
   contexts[c].lineno = lineno;
+
+  contexts[c].nPendingTriggereds=0;
+
   UIdebug (5, "New context generated as %d for %s %d", c, module, lineno);
   return c;
 }
 
 
 
-char *A4GL_char_pop();
+char *A4GL_char_pop(void);
 
 /*
  *******************************************************************************
@@ -906,13 +812,13 @@ uilib_prompt_loop (int n)
       return 1;
     }
 
-  send_to_ui ("<WAITFOREVENT CONTEXT=\"%d\" />", context);
+  send_to_ui ("<WAITFOREVENT CONTEXT=\"%d\" CACHED=\"%d\"/>", context,havePendingTriggers(&contexts[context]));
   flush_ui ();
 
   while (1)
     {
       contexts[context].ui.prompt.promptresult = 0;
-      i = get_event_from_ui ();
+      i = get_event_from_ui (&contexts[context]);
       mLastKey = last_attr->lastkey;
       if (i != -1)
 	break;
@@ -934,7 +840,7 @@ uilib_prompt_loop (int n)
 int uilib_get_call_result(void) {
 int i;
 int a;
-        i = get_event_from_ui ();
+        i = get_event_from_ui (NULL);
         if (i != -110) { // Not a RETURN... :-(
                 return 0;
         }
@@ -1203,11 +1109,11 @@ uilib_menu_loop (int nargs)
 
 
   // if we've got to here - we're in our menu loop proper...
-  send_to_ui ("<WAITFOREVENT CONTEXT=\"%d\" />", context);
+  send_to_ui ("<WAITFOREVENT CONTEXT=\"%d\" CACHED=\"%d\"/>", context, havePendingTriggers(&contexts[context]));
   flush_ui ();
   while (1)
     {
-      i = get_event_from_ui ();
+      i = get_event_from_ui (&contexts[context]);
       mLastKey = last_attr->lastkey;
       if (i != -1)
 	break;
@@ -1476,7 +1382,7 @@ UIdebug(5, "init=%d changed=%d\n", init, changed);
   if (changed || init==0 )			// Although only a single field has changed - we'll send the whole lot
     // we can always change this later...
     {
-      send_to_ui ("<WAITFOREVENT CONTEXT=\"%d\" CHANGED=\"%d\">", context,changed);
+      send_to_ui ("<WAITFOREVENT CONTEXT=\"%d\" CHANGED=\"%d\" CACHED=\"%d\">", context,changed, havePendingTriggers(&contexts[context]));
 	
       // Changed data...
       send_to_ui (" <VS>");
@@ -1498,13 +1404,13 @@ UIdebug(5, "init=%d changed=%d\n", init, changed);
     }
   else
     {
-      send_to_ui ("<WAITFOREVENT CONTEXT=\"%d\" />", context);
+      send_to_ui ("<WAITFOREVENT CONTEXT=\"%d\" CACHED=\"%d\"/>", context,havePendingTriggers(&contexts[context]));
       flush_ui ();
     }
 
   while (1)
     {
-      i = get_event_from_ui ();
+      i = get_event_from_ui (&contexts[context]);
       mLastKey = last_attr->lastkey;
       if (i != -1)
 	break;
@@ -1823,11 +1729,11 @@ uilib_construct_loop (int nargs)
     }
 
   UIdebug (5, "construct wait for event\n");
-  send_to_ui ("<WAITFOREVENT CONTEXT=\"%d\" />", context);
+  send_to_ui ("<WAITFOREVENT CONTEXT=\"%d\" CACHED=\"%d\"/>", context,havePendingTriggers(&contexts[context]));
   flush_ui ();
   while (1)
     {
-      i = get_event_from_ui ();
+      i = get_event_from_ui (&contexts[context]);
       mLastKey = last_attr->lastkey;
       if (i != -1)
 	break;
@@ -2113,12 +2019,12 @@ uilib_display_array_loop (int n)
       return 1;
     }
 
-  send_to_ui ("<WAITFOREVENT CONTEXT=\"%d\" />", context);
+  send_to_ui ("<WAITFOREVENT CONTEXT=\"%d\" CACHED=\"%d\"/>", context, havePendingTriggers(&contexts[context]));
   flush_ui ();
 
   while (1)
     {
-      i = get_event_from_ui ();
+      i = get_event_from_ui (&contexts[context]);
       mLastKey = last_attr->lastkey;
       if (i != -1)
 	break;
@@ -2373,13 +2279,13 @@ uilib_input_array_loop (int n)
       return 1;
     }
 
-  send_to_ui ("<WAITFOREVENT CONTEXT=\"%d\" >", context);
+  send_to_ui ("<WAITFOREVENT CONTEXT=\"%d\" CACHED=\"%d\">", context,havePendingTriggers(&contexts[context]));
   send_input_array_change (context);
   send_to_ui ("</WAITFOREVENT>");
   flush_ui ();
   while (1)
     {
-      i = get_event_from_ui ();
+      i = get_event_from_ui (&contexts[context]);
       mLastKey = last_attr->lastkey;
       if (i != -1)
 	break;
@@ -2556,7 +2462,7 @@ uilib_save_file (char *id, char *s)
 
   send_to_ui ("<REQUESTFILE FILEID='%s'/>", uilib_xml_escape (id));
   flush_ui ();
-  i = get_event_from_ui ();
+  i = get_event_from_ui (NULL);
 
   if (i != -103)
     {
@@ -3084,7 +2990,7 @@ if (no) {
 	// We only need to wait if we are expecting some result
   send_to_ui ("<WAITFOREVENT/>");
   flush_ui ();
-  a=get_event_from_ui ();
+  a=get_event_from_ui (NULL);
 	if (a!=ID_FRONTCALLRETURN) {
 		printf("Internal error - expecting a ID_FRONTCALLRETURN\n");
 		return 0;

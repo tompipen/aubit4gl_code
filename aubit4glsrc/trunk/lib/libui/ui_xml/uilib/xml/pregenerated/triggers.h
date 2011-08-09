@@ -1,5 +1,5 @@
 /* XML processor/application API for triggers.dtd.
- * Generated 2011/06/30 19:41:24.
+ * Generated 2011/08/09 16:08:14.
  *
  * This program was generated with the FleXML XML processor generator.
  * FleXML is Copyright (C) 1999-2005 Kristoffer Rose.  All rights reserved.
@@ -83,6 +83,8 @@ typedef int AT_TRIGGERED_LASTCURSOR;
 #define AU_TRIGGERED_LASTCURSOR NULL
 typedef int AT_ROW_SUBSCRIPT;
 #define AU_ROW_SUBSCRIPT NULL
+typedef int AT_TRIGGERED_MAXCNT;
+#define AU_TRIGGERED_MAXCNT NULL
 typedef int AT_TRIGGERED_LASTKEY;
 #define AU_TRIGGERED_LASTKEY NULL
 typedef int AT_SV_FN;
@@ -93,10 +95,12 @@ typedef int AT_TRIGGERED_FILEID;
 #define AU_TRIGGERED_FILEID NULL
 typedef int AT_TRIGGERED_xmlns_c_xsd;
 #define AU_TRIGGERED_xmlns_c_xsd NULL
-typedef int AT_TRIGGERED_TYPE;
-#define AU_TRIGGERED_TYPE NULL
+typedef int AT_TRIGGERED_CNT;
+#define AU_TRIGGERED_CNT NULL
 typedef int AT_TRIGGERED_xmlns_c_xsi;
 #define AU_TRIGGERED_xmlns_c_xsi NULL
+typedef int AT_TRIGGERED_TYPE;
+#define AU_TRIGGERED_TYPE NULL
 typedef int AT_TRIGGERED_FILELEN;
 #define AU_TRIGGERED_FILELEN NULL
 typedef int AT_TRIGGERED_PROGRAMNAME;
@@ -130,6 +134,8 @@ extern AT_TRIGGERED_LASTCURSOR AX_TRIGGERED_LASTCURSOR;
 #define A_TRIGGERED_LASTCURSOR (bufferstack + AX_TRIGGERED_LASTCURSOR)
 extern AT_ROW_SUBSCRIPT AX_ROW_SUBSCRIPT;
 #define A_ROW_SUBSCRIPT (bufferstack + AX_ROW_SUBSCRIPT)
+extern AT_TRIGGERED_MAXCNT AX_TRIGGERED_MAXCNT;
+#define A_TRIGGERED_MAXCNT (bufferstack + AX_TRIGGERED_MAXCNT)
 extern AT_TRIGGERED_LASTKEY AX_TRIGGERED_LASTKEY;
 #define A_TRIGGERED_LASTKEY (bufferstack + AX_TRIGGERED_LASTKEY)
 extern AT_SV_FN AX_SV_FN;
@@ -140,10 +146,12 @@ extern AT_TRIGGERED_FILEID AX_TRIGGERED_FILEID;
 #define A_TRIGGERED_FILEID (bufferstack + AX_TRIGGERED_FILEID)
 extern AT_TRIGGERED_xmlns_c_xsd AX_TRIGGERED_xmlns_c_xsd;
 #define A_TRIGGERED_xmlns_c_xsd (bufferstack + AX_TRIGGERED_xmlns_c_xsd)
-extern AT_TRIGGERED_TYPE AX_TRIGGERED_TYPE;
-#define A_TRIGGERED_TYPE (bufferstack + AX_TRIGGERED_TYPE)
+extern AT_TRIGGERED_CNT AX_TRIGGERED_CNT;
+#define A_TRIGGERED_CNT (bufferstack + AX_TRIGGERED_CNT)
 extern AT_TRIGGERED_xmlns_c_xsi AX_TRIGGERED_xmlns_c_xsi;
 #define A_TRIGGERED_xmlns_c_xsi (bufferstack + AX_TRIGGERED_xmlns_c_xsi)
+extern AT_TRIGGERED_TYPE AX_TRIGGERED_TYPE;
+#define A_TRIGGERED_TYPE (bufferstack + AX_TRIGGERED_TYPE)
 extern AT_TRIGGERED_FILELEN AX_TRIGGERED_FILELEN;
 #define A_TRIGGERED_FILELEN (bufferstack + AX_TRIGGERED_FILELEN)
 extern AT_TRIGGERED_PROGRAMNAME AX_TRIGGERED_PROGRAMNAME;
