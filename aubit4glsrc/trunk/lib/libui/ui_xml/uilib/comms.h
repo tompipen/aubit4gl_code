@@ -11,6 +11,7 @@ int connect_ui_noproxy (void);
 int connect_ui_proxy (void);
 int getMyId(void);
 int havePendingTriggers(struct ui_context *context);
+void clrPendingTriggers(int contextId);
 
 #define ID_FRONTCALLRETURN -123
 

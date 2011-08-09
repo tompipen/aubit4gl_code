@@ -3011,3 +3011,19 @@ return 0;
 }
 
 
+
+void clrPendingTriggers(int ContextID) {
+struct ui_context *context;
+        context=&contexts[ContextID];
+        if (context->nPendingTriggereds>0) {
+                int a;
+                for (a=0;a<context->nPendingTriggereds;a++) {
+                                if (context->pendingTriggereds[a]) {
+                                        free(context->pendingTriggereds[a]);
+                                        context->pendingTriggereds[a]=0;
+                                }
+                }
+        }
+        context->nPendingTriggereds=0;
+}
+

@@ -514,7 +514,10 @@ int havePendingTriggers(struct ui_context *context) {
 	return (context->nPendingTriggereds>0);
 }
 
-static void clrPendingTriggers(struct ui_context *context) {
+/*
+void clrPendingTriggers(int ContextID) {
+struct ui_context *context;
+	context=contexts[ContextID];
 	if (context->nPendingTriggereds>0) {
 		int a;
 		for (a=0;a<context->nPendingTriggereds;a++) {
@@ -526,6 +529,7 @@ static void clrPendingTriggers(struct ui_context *context) {
 	}
 	context->nPendingTriggereds=0;
 }
+*/
 
 int
 get_event_from_ui (struct ui_context *context)
@@ -538,7 +542,7 @@ get_event_from_ui (struct ui_context *context)
 
 // If the frontend  sent back a lot of  TRIGGEREDs all in one go - then we might have some pending..
 // // use these first...
-  if (havePendingTriggers (context))
+  if (context && havePendingTriggers (context))
     {
 	UIdebug(6,"Having pending...");
       attr = xml_parse (popPendingTriggered (context));
@@ -558,7 +562,7 @@ get_event_from_ui (struct ui_context *context)
 	if (attr) {
 		UIdebug(7,"attr->maxcnt =%d\n",attr->maxcnt );
 		UIdebug(7,"attr->cnt =%d\n",attr->cnt );
-		if (attr->maxcnt && attr->cnt!=attr->maxcnt) { // Do we have more to read ? 
+		if (attr->maxcnt && attr->cnt!=attr->maxcnt && context) { // Do we have more to read ? 
 			int a;
 			for (a=attr->cnt;a<attr->maxcnt;a++) {
 				localbuf=getTriggeredString();

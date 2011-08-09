@@ -770,6 +770,8 @@ UILIB_A4GL_req_field_input (void *sv, char type, va_list * ap)
 
   clr_exiting_context (context);
 
+  clrPendingTriggers(context);
+
   if (type == '+')
     {
       send_to_ui ("<NEXTFIELD CONTEXT=\"%d\" FIELD=\"NEXT\"/>", context);
@@ -813,6 +815,7 @@ UILIB_A4GL_req_field_input_array (void *sv, char type, va_list * ap)
   uilib_get_context (2);
   context = A4GL_pop_int ();
 clr_exiting_context(context);
+  clrPendingTriggers(context);
   if (type == '+')
     {
       send_to_ui ("<NEXTFIELD CONTEXT=\"%d\" FIELD=\"NEXT\"/>", context);
@@ -2686,7 +2689,7 @@ UILIB_A4GL_ui_fgl_winquestion (char *title, char *text, char *def, char *pos, ch
 
   send_to_ui ("<WAITFOREVENT/>");
   flush_ui ();
-  a = get_event_from_ui ();
+  a = get_event_from_ui (NULL);
   if (a == -118)
     {
       return "cancel";
@@ -3621,7 +3624,7 @@ UILIB_A4GL_get_key (int timeout)
   char *s;
   send_to_ui ("<GETKEY/><WAITFOREVENT/>");
   flush_ui ();
-  a = get_event_from_ui ();
+  a = get_event_from_ui (NULL);
   uilib_last_received_key ();
   s = A4GL_char_pop ();
   if (s)
