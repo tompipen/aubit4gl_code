@@ -1840,6 +1840,9 @@ uilib_construct_initialised (int nargs)
 
 static int get_context_for_modline(char *mod,int line,int fail_if_not_there) {
   int a;
+	if (line==0) {
+			A4GL_pause_execution();
+		}
   UIdebug (5, "get context request for module=%s line=%d ncontexts=%d",  mod, line, ncontexts);
   for (a = 0; a < ncontexts; a++)
     {
