@@ -24,10 +24,10 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.244 2011-08-09 09:28:09 mikeaubury Exp $
+# $Id: ioform.c,v 1.245 2011-08-09 10:31:14 mikeaubury Exp $
 #*/
 #ifndef lint
-static char const module_id[] = "$Id: ioform.c,v 1.244 2011-08-09 09:28:09 mikeaubury Exp $";
+static char const module_id[] = "$Id: ioform.c,v 1.245 2011-08-09 10:31:14 mikeaubury Exp $";
 #endif
 
 /**
@@ -3005,11 +3005,13 @@ A4GL_display_field_contents (FIELD * field, int d1_ptr, int s1, char *ptr1, int 
 
   f = (struct struct_scr_field *) (field_userptr (field));
 
-  if ( isStatic && f->dynamic==0 && is_number_datatype(dtype_field&DTYPE_MASK) ) { //&& A4GL_is_numeric_datatype(d1_ptr&DTYPE_MASK)) {
-	
+
+  if ( !isStatic && f->dynamic==0 && is_number_datatype(dtype_field&DTYPE_MASK) ) { //&& A4GL_is_numeric_datatype(d1_ptr&DTYPE_MASK)) {
 	// Looks like its really a CONSTRUCT atm..
 	dtype_field=DTYPE_CHAR;
   }
+
+
   ff = acl_malloc2 (field_width + 1);
 
   has_format = A4GL_has_str_attribute (f, FA_S_FORMAT);
