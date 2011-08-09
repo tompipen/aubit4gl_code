@@ -1934,7 +1934,8 @@ void FglForm::jumpToField(QWidget* w){
     int currPos = context->fieldList().indexOf(currentField());
     int destPos = context->fieldList().indexOf(w);
 
-    if(currPos > destPos){
+
+    if(currPos < destPos){
         for(int i=currPos; i<=destPos; i++){
             w = context->fieldList().at(i);
             QList<Fgl::Event> ql_events = ql_contextEvents.last();
@@ -1983,7 +1984,7 @@ void FglForm::jumpToField(QWidget* w){
 
     }
     else{
-        for(int i=destPos; i>=currPos; i--){
+        for(int i=currPos; i>=destPos; i--){
             w = context->fieldList().at(i);
             QList<Fgl::Event> ql_events = ql_contextEvents.last();
             Fgl::Event beforeField;
@@ -1997,10 +1998,13 @@ void FglForm::jumpToField(QWidget* w){
             //Look for Before Field Events
             for(int j=0; j<ql_events.size(); j++){
                 //We dont need Before Field for current field
+                Fgl::Event event = ql_events.at(j);
+
+
                 if(currPos == i)
                     break;
 
-                Fgl::Event event = ql_events.at(j);
+
                 if(beforeField.type == event.type &&
                    beforeField.attribute == event.attribute){
                     if(!resp.isEmpty())
@@ -2028,6 +2032,7 @@ void FglForm::jumpToField(QWidget* w){
         }
     }
     if(!resp.isEmpty())
+        currentWidget = w;
         addToQueue(resp);
 }
 
@@ -2451,7 +2456,7 @@ int FglForm::findFieldIdByName(QString fieldName)
 {
 MainFrame::vdcdebug("FglForm","findFieldIdByName", "QString fieldName");
    QList<QWidget*> ql_fields = ql_formFields;
-   qDebug()<<fieldName;
+
    int index = fieldName.indexOf(".");
    int index2 = fieldName.indexOf("[");
 

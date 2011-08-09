@@ -217,7 +217,9 @@ void ScreenHandler::closeProgramm()
 {
    if(p_fglform != NULL)
    {
-      fglFormResponse("<TRIGGERED ID=\"-999\"/>");
+      QString qs_pid;
+      qs_pid.number(this->pid);
+      fglFormResponse("<TRIGGERED ID=\"-999\" ENVELOPEID=\""+qs_pid+"\"/>");
    }
 }
 
@@ -1791,7 +1793,6 @@ void ScreenHandler::waitForEvent()
 {
 MainFrame::vdcdebug("ScreenHandler","waitForEvent", "");
    FglForm *saveactive = p_fglform;
-   qDebug()<<p_fglform->b_getch_swin<<true;
    if(p_fglform == NULL)
       return;
 
@@ -1864,12 +1865,15 @@ void ScreenHandler::processResponse()
        return;
    }
 
-
-
    QString id = p_fglform->ql_responseQueue.takeFirst();
    if(id.indexOf(",") == -1){
       Response resp(id, p_fglform, cursorPos);
       QString qs_resp = resp.toString().replace("\n","");
+      QDomDocument doc;
+      doc.setContent(qs_resp);
+      QDomElement triggeredElement = doc.documentElement();
+      triggeredElement.setAttribute("ENVELOPEID", pid);
+      qs_resp = doc.toString();
       if(qs_resp.isEmpty())
          return;
 
@@ -1883,6 +1887,7 @@ void ScreenHandler::processResponse()
            Response resp(id, p_fglform, cursorPos);
            resp.firstChildElement().setAttribute("CNT", i+1);
            resp.firstChildElement().setAttribute("MAXCNT", qsl_ids.size());
+           resp.firstChildElement().setAttribute("ENVELOPEID", pid);
            qs_resp.append(resp.toString().replace("\n",""));
            if(i+1<qsl_ids.size()){
                qs_resp.append("\n");
@@ -1890,7 +1895,6 @@ void ScreenHandler::processResponse()
        }
        if(qs_resp.isEmpty())
           return;
-
        fglFormResponse(qs_resp);
    }
    p_fglform->b_getch_swin = false;
@@ -2162,7 +2166,7 @@ MainFrame::vdcdebug("ScreenHandler","MsgBox ", "QString title, QString text, QSt
    }
 
    if (reply) {
-      fglFormResponse("<TRIGGERED ID=\""+rstr+"\"/>");
+      fglFormResponse("<TRIGGERED ID=\""+rstr+"\" ENVELOPEID=\""+this->pid+"\"/>");
    }
    //return rstr;
 }
@@ -2573,6 +2577,7 @@ MainFrame::vdcdebug("ScreenHandler","fileBrowser", "QString function, QString de
    doc.appendChild(docElement);
 
    docElement.setAttribute("ID", "RETURN");
+   docElement.setAttribute("ENVELOPEID", pid);
 
    QDomElement syncValuesElement = doc.createElement("SVS");
    docElement.appendChild(syncValuesElement);

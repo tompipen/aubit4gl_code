@@ -39,7 +39,7 @@ public:
    int getCurrForm();
    int getCurrWindow();
    FglForm* currForm();
-
+   int pid;
    QList<QSize*> ql_formSizes;
    QList<FglForm*> ql_fglForms;
    QStringList qsl_activeFieldNames;

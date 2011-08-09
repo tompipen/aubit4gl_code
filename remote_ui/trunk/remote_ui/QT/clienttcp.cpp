@@ -215,7 +215,7 @@ ClientSocket::ClientSocket(QObject *parent, QString name, QString pass, QString 
    connect(&ph, SIGNAL(setWindowTitle(QString)), 
            p_currScreenHandler, SLOT(setWindowTitle(QString)));
    // handles original aubit4gl forms
-   connect(&ph, SIGNAL(handleAubitForm(QString, QString, bool)), 
+   connect(&ph, SIGNAL(handleAubitForm(QString, QString, bool)  ),
            p_currScreenHandler, SLOT(handleAubitForm(QString, QString, bool)));
    // handles original aubit4gl forms
    connect(&ph, SIGNAL(displayForm(QString)), 
@@ -352,7 +352,7 @@ MainFrame::vdcdebug("ClientSocket","makeOwnResponse", "QString qs_replyString");
    out.setDevice(this);
 
    qs_replyString+="\n";
-
+   qs_replyString.replace("\n", "");
    out << qs_replyString;
 }
 //------------------------------------------------------------------------------
@@ -616,6 +616,7 @@ MainFrame::vdcdebug("ProtocolHandler","run", "");
    emit debugtext(QString("<< " + qsl_xmlCommands.at(i)));
          QDomElement envelope = doc.documentElement();
          pid = envelope.attribute("ID").toInt();
+         p_currScreenHandler->pid = pid;
          QDomElement commands = envelope.firstChildElement("COMMANDS");
          QDomElement child    = commands.firstChildElement();
 
@@ -2175,12 +2176,13 @@ MainFrame::vdcdebug("ProtocolHandler","handleWaitForEventElement", "const QDomNo
 void ProtocolHandler::fglFormResponse(QString qs_id)
 {
 MainFrame::vdcdebug("ProtocolHandler","fglFormResponse", "QString qs_id");
-   QDomDocument doc;
-   doc.setContent(qs_id);
-   QDomElement triggeredElement = doc.documentElement();
-   triggeredElement.setAttribute("ENVELOPEID", pid);
-   qs_id = doc.toString();
+//   QDomDocument doc;
+//   doc.setContent(qs_id);
+ //  QDomElement triggeredElement = doc.documentElement();
+ //  triggeredElement.setAttribute("ENVELOPEID", pid);
+ //  qs_id = doc.toString();
    qs_id = qs_id.replace("&amp;#x0A;", "&#x0A;");
+ //  qs_id.replace("\n","");
    makeResponse(qs_id);
    emit debugtext(QString(">> " + qs_id));
 }
@@ -2301,7 +2303,7 @@ MainFrame::vdcdebug("ProtocolHandler","filterUmlauts", "QString qs_text");
    qs_text.replace(QChar(130), QString::fromUtf8("é")); 
    qs_text.replace(QChar(131), QString::fromUtf8("â")); 
    qs_text.replace(QChar(132), QString::fromUtf8("ä")); 
-   qs_text.replace(QChar(133), QString::fromUtf8("à")); 
+   qs_text.replace(QChar(133), QString::fromUtf8("� ")); 
    qs_text.replace(QChar(134), QString::fromUtf8("å")); 
    qs_text.replace(QChar(135), QString::fromUtf8("ç")); 
    qs_text.replace(QChar(136), QString::fromUtf8("ê")); 
