@@ -25,7 +25,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.189 2011-08-09 09:16:05 mikeaubury Exp $
+# $Id: ops.c,v 1.190 2011-08-10 15:03:30 mikeaubury Exp $
 #
 */
 
@@ -357,7 +357,7 @@ static char *A4GL_objstring_toString(struct sObject *string) {
 static int
 A4GL_dtype_function_string_getlength (long *objectID, int nparam)
 {
-        printf("Hui");
+        //printf("Hui");
 	struct sObject *object;
         if (!ensureObject("STRING",*objectID,&object)) {
                 A4GL_exitwith("Not an object of type 'STRING' - or not initialized");
@@ -365,7 +365,7 @@ A4GL_dtype_function_string_getlength (long *objectID, int nparam)
                 return 1;
         }
 
-A4GL_push_int(strlen(object->objData));
+A4GL_push_long(strlen(object->objData));
 return 1;
 }
 
@@ -386,25 +386,38 @@ A4GL_dtype_function_string_substring (long *objectID, int nparam)
 static int
 A4GL_dtype_function_string_append (long *objectID, int nparam)
 { 
-char *newstr;
 char *append_ptr;
+	char *p;
 
-append_ptr=A4GL_char_pop();
+struct sObject *obj;
+
+
+	append_ptr=A4GL_char_pop();
 
 	struct sObject *object;
         if (!ensureObject("STRING",*objectID,&object)) {
                 A4GL_exitwith("Not an object of type 'STRING' - or not initialized");
-                return 0;
+		A4GL_push_char("");
+                return 1;
         }
-	newstr=object->objData;
-	if  (newstr) {
-			newstr=realloc(newstr,strlen(newstr)+strlen(append_ptr)+1);
-				strcat(newstr,append_ptr);
+
+	if (object->objData)  {
+		p=malloc(strlen(object->objData)+strlen(append_ptr)+1);
+		strcpy(p,object->objData);
+		strcat(p,append_ptr);
 	} else {
-			newstr=malloc(strlen(append_ptr)+1);
-				strcpy(newstr,append_ptr);
+		p=strdup(append_ptr);
 	}
-	return 0;
+
+        obj=new_object("STRING");
+
+        if (obj==NULL) {
+                A4GL_push_objectID(0);
+                return 1;
+        }
+	obj->objData=p;
+	A4GL_push_objectID(obj->objHeapId);
+	return 1;
 }
 /******************************************************************************/
 
