@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile.c,v 1.142 2010-08-23 17:23:21 mikeaubury Exp $
+# $Id: compile.c,v 1.143 2011-08-10 09:26:11 mikeaubury Exp $
 #*/
 
 /**
@@ -74,6 +74,7 @@ extern int glob_only;
 extern long fpos;					/** current file position for direct fseek */
 extern int yylineno;
 char arch[200]="";
+int isDebug=0;
 
 /* -------- unknown --------- */
 int compiling_system_4gl = 0;
@@ -353,6 +354,9 @@ initArguments (int argc, char *argv[])
 	   
     /************************/
 	case 'g':		/* -g --debug  (for C compiler flags compatibility */
+		isDebug=1;
+		SPRINTF1 (extra_ldflags,"%s -g ",extra_ldflags);
+		SPRINTF1 (extra_ccflags,"%s -g ",extra_ccflags);
 		//todo: pass -g to C compiler
 		break;;
 

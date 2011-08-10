@@ -480,7 +480,7 @@ dtype :
 			if (A4GL_isyes(acl_getenv("STRING_AS_OBJECT"))) {
 				$$=new_variable_object("STRING");
 			} else {
-				$$=new_simple_variable(NULL,DTYPE_CHAR,30000,0);
+				$$=new_simple_variable(NULL,DTYPE_CHAR,32767,0);
 			}
 		} 
 	|	BASECHANNEL {
