@@ -1869,8 +1869,10 @@ void ScreenHandler::processResponse()
    {
        return;
    }
+   qDebug()<<p_fglform->ql_responseQueue.size();
 
    QString id = p_fglform->ql_responseQueue.takeFirst();
+   qDebug()<<id;
    if(id.indexOf(",") == -1){
       Response resp(id, p_fglform, cursorPos);
       QString qs_resp = resp.toString().replace("\n","");
