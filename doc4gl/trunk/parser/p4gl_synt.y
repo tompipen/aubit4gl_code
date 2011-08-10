@@ -1640,8 +1640,8 @@ function_call
   | MENU '(' op_call_parameters ')' { $$=CpStr("MENU()"); }
   | RESOURCE '(' fgl_operand ')'   { $$=CpStr("RESOURCE(%s)",$3); }
   | WARNING '(' op_call_parameters ')'   { $$=CpStr("RESOURCE(%s)",$3); }
-  /*| EXTEND '(' fgl_expression ',' dtqualifier TO dtqualifier ')'    */
-                               { $$=CpStr("EXTEND()"); }
+  /*| EXTEND '(' fgl_expression ',' dtqualifier TO dtqualifier ')'    
+                               { $$=CpStr("EXTEND()"); } */
   | set_function_specification
   ;
 
