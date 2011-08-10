@@ -1567,6 +1567,11 @@ MainFrame::vdcdebug("ScreenHandler","setFormOpts", "QString type, bool value, in
 
    int i_Frm = getCurrForm();
 
+   if(p_fglform == NULL)
+   {
+       return;
+   }
+
    if(i_Frm < 0 && p_fglform != NULL && p_fglform->dialog() == NULL)
       return;
 
