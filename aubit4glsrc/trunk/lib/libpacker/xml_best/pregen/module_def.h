@@ -1,5 +1,5 @@
 /* XML processor/application API for module_def.dtd.
- * Generated 2011/07/30 09:17:59.
+ * Generated 2011/08/10 15:34:58.
  *
  * This program was generated with the FleXML XML processor generator.
  * FleXML is Copyright (C) 1999-2005 Kristoffer Rose.  All rights reserved.
@@ -257,6 +257,8 @@ extern void STag_s_module_variables(void);
 extern void ETag_s_module_variables(void);
 extern void STag_s_named_param(void);
 extern void ETag_s_named_param(void);
+extern void STag_s_onaction(void);
+extern void ETag_s_onaction(void);
 extern void STag_s_pdf_report_definition(void);
 extern void ETag_s_pdf_report_definition(void);
 extern void STag_s_report_definition(void);
@@ -831,8 +833,6 @@ typedef int AT_struct_if_cmd_nm;
 #define AU_struct_if_cmd_nm NULL
 typedef int AT_s_import_package_nm;
 #define AU_s_import_package_nm NULL
-typedef int AT_event_data_on_action;
-#define AU_event_data_on_action NULL
 typedef int AT_variable_data_e_variable_type;
 #define AU_variable_data_e_variable_type NULL
 typedef int AT_s_table_list_element_alias;
@@ -1815,6 +1815,8 @@ typedef int AT_struct_todo_cmd_block_id;
 #define AU_struct_todo_cmd_block_id NULL
 typedef int AT_s_expr_infield_sio_id;
 #define AU_s_expr_infield_sio_id NULL
+typedef int AT_s_onaction_actionName;
+#define AU_s_onaction_actionName NULL
 typedef int AT_struct_declare_cmd_with_hold;
 #define AU_struct_declare_cmd_with_hold NULL
 typedef int AT_struct_whenever_cmd_whento;
@@ -1917,10 +1919,10 @@ typedef int AT_simple_variable_nm;
 #define AU_simple_variable_nm NULL
 typedef int AT_struct_next_field_cmd_sio;
 #define AU_struct_next_field_cmd_sio NULL
-typedef int AT_expr_str_nm;
-#define AU_expr_str_nm NULL
 typedef int AT_bluebar_b;
 #define AU_bluebar_b NULL
+typedef int AT_expr_str_nm;
+#define AU_expr_str_nm NULL
 typedef int AT_s_function_definition_funcname;
 #define AU_s_function_definition_funcname NULL
 typedef int AT_struct_menu_cmd_sio;
@@ -1987,6 +1989,8 @@ typedef int AT_struct_sort_cmd_nm;
 #define AU_struct_sort_cmd_nm NULL
 typedef int AT_s_expr_parameter_expr_string;
 #define AU_s_expr_parameter_expr_string NULL
+typedef int AT_s_onaction_nm;
+#define AU_s_onaction_nm NULL
 typedef int AT_simple_variable_dimensions_1;
 #define AU_simple_variable_dimensions_1 NULL
 typedef int AT_struct_enable_cmd_nm;
@@ -2298,8 +2302,6 @@ extern AT_struct_if_cmd_nm AX_struct_if_cmd_nm;
 #define A_struct_if_cmd_nm (bufferstack + AX_struct_if_cmd_nm)
 extern AT_s_import_package_nm AX_s_import_package_nm;
 #define A_s_import_package_nm (bufferstack + AX_s_import_package_nm)
-extern AT_event_data_on_action AX_event_data_on_action;
-#define A_event_data_on_action (bufferstack + AX_event_data_on_action)
 extern AT_variable_data_e_variable_type AX_variable_data_e_variable_type;
 #define A_variable_data_e_variable_type (bufferstack + AX_variable_data_e_variable_type)
 extern AT_s_table_list_element_alias AX_s_table_list_element_alias;
@@ -3282,6 +3284,8 @@ extern AT_struct_todo_cmd_block_id AX_struct_todo_cmd_block_id;
 #define A_struct_todo_cmd_block_id (bufferstack + AX_struct_todo_cmd_block_id)
 extern AT_s_expr_infield_sio_id AX_s_expr_infield_sio_id;
 #define A_s_expr_infield_sio_id (bufferstack + AX_s_expr_infield_sio_id)
+extern AT_s_onaction_actionName AX_s_onaction_actionName;
+#define A_s_onaction_actionName (bufferstack + AX_s_onaction_actionName)
 extern AT_struct_declare_cmd_with_hold AX_struct_declare_cmd_with_hold;
 #define A_struct_declare_cmd_with_hold (bufferstack + AX_struct_declare_cmd_with_hold)
 extern AT_struct_whenever_cmd_whento AX_struct_whenever_cmd_whento;
@@ -3384,10 +3388,10 @@ extern AT_simple_variable_nm AX_simple_variable_nm;
 #define A_simple_variable_nm (bufferstack + AX_simple_variable_nm)
 extern AT_struct_next_field_cmd_sio AX_struct_next_field_cmd_sio;
 #define A_struct_next_field_cmd_sio (bufferstack + AX_struct_next_field_cmd_sio)
-extern AT_expr_str_nm AX_expr_str_nm;
-#define A_expr_str_nm (bufferstack + AX_expr_str_nm)
 extern AT_bluebar_b AX_bluebar_b;
 #define A_bluebar_b (bufferstack + AX_bluebar_b)
+extern AT_expr_str_nm AX_expr_str_nm;
+#define A_expr_str_nm (bufferstack + AX_expr_str_nm)
 extern AT_s_function_definition_funcname AX_s_function_definition_funcname;
 #define A_s_function_definition_funcname (bufferstack + AX_s_function_definition_funcname)
 extern AT_struct_menu_cmd_sio AX_struct_menu_cmd_sio;
@@ -3454,6 +3458,8 @@ extern AT_struct_sort_cmd_nm AX_struct_sort_cmd_nm;
 #define A_struct_sort_cmd_nm (bufferstack + AX_struct_sort_cmd_nm)
 extern AT_s_expr_parameter_expr_string AX_s_expr_parameter_expr_string;
 #define A_s_expr_parameter_expr_string (bufferstack + AX_s_expr_parameter_expr_string)
+extern AT_s_onaction_nm AX_s_onaction_nm;
+#define A_s_onaction_nm (bufferstack + AX_s_onaction_nm)
 extern AT_simple_variable_dimensions_1 AX_simple_variable_dimensions_1;
 #define A_simple_variable_dimensions_1 (bufferstack + AX_simple_variable_dimensions_1)
 extern AT_struct_enable_cmd_nm AX_struct_enable_cmd_nm;

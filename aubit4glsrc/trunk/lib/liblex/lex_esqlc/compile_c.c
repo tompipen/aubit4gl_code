@@ -24,12 +24,12 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.539 2011-07-22 18:06:17 mikeaubury Exp $
+# $Id: compile_c.c,v 1.540 2011-08-12 10:58:17 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
-static char const module_id[] = "$Id: compile_c.c,v 1.539 2011-07-22 18:06:17 mikeaubury Exp $";
+static char const module_id[] = "$Id: compile_c.c,v 1.540 2011-08-12 10:58:17 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -4500,7 +4500,26 @@ print_event_list (struct on_events *events)
 
 
 	case EVENT_ON_ACTION:	//str on_action; //A4GL_EVENT_ON_ACTION
-	  printc ("{%d,%d,0,\"%s\"}, //", A4GL_EVENT_ON_ACTION, a + 1, evt->evt_data.event_data_u.on_action);
+		if (evt->evt_data.event_data_u.on_action_s->actionName) {
+	  		printc ("{%d,%d,0,\"%s\"}, //", A4GL_EVENT_ON_ACTION, a + 1, evt->evt_data.event_data_u.on_action_s->actionName);
+		}
+		if (evt->evt_data.event_data_u.on_action_s->key_list) 
+	  {
+	    int c;
+	    for (c = 0; c < evt->evt_data.event_data_u.on_action_s->key_list->str_list_entry.str_list_entry_len; c++)
+	      {
+		keys = get_key_codes (evt->evt_data.event_data_u.on_action_s->key_list->str_list_entry.str_list_entry_val[c]);
+		for (b = 0; keys[b]; b++)
+		  {
+		    if (keys[b] == -1)
+		      {		// Invalid key code...
+			set_yytext (evt->evt_data.event_data_u.on_action_s->key_list->str_list_entry.str_list_entry_val[c]);
+			a4gl_yyerror ("Invalid Key");
+		      }
+		    printc ("{%d,%d,%d,NULL},", A4GL_EVENT_KEY_PRESS, a + 1, keys[b]);
+		  }
+	      }
+	  }
 	  break;
 
 

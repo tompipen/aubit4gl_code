@@ -5,7 +5,26 @@ event_onkey : ONKEY  key_do_sl  atline  commands_as_list {$<on_event>$=new_event
 
 
 event_action :
-        KW_ON KW_ACTION identifier    atline commands_as_list 		{$<on_event>$=new_event(EVENT_ON_ACTION, (void *)strdup($<str>3),$<commands>5,$<integer_val>4); }
+        KW_ON KW_ACTION identifier    atline commands_as_list 		{
+	        	//str actionName;
+        		//str_list *key_list;
+
+			struct s_onaction *oa;
+			oa=malloc(sizeof( struct s_onaction ));
+			oa->key_list=0;
+			oa->actionName=strdup($<str>3);
+			$<on_event>$=new_event(EVENT_ON_ACTION, (void *)oa,$<commands>5,$<integer_val>4); 
+		}
+	| KW_ON KW_ACTION identifier  KW_KEY key_do_sl atline commands_as_list 		{
+	        	//str actionName;
+        		//str_list *key_list;
+
+			struct s_onaction *oa;
+			oa=malloc(sizeof( struct s_onaction ));
+			oa->key_list=$<str_list>5;
+			oa->actionName=strdup($<str>3);
+			$<on_event>$=new_event(EVENT_ON_ACTION, (void *)oa,$<commands>7,$<integer_val>6); 
+		}
 ;
 
 event_timer :

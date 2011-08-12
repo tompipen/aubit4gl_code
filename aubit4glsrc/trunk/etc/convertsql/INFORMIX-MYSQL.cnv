@@ -1,7 +1,5 @@
-# rules for converting Informix SQL to Postgres-compatible syntax
+# rules for converting Informix SQL to MYSQL compatible syntax
 
-
-#Seems like INFORMIX-POSTGRESQL.cnv is obsolete? 
 
 
 DOUBLE_TO_SINGLE_QUOTES
@@ -184,4 +182,5 @@ BUILTINSQL ASQL_SELECT_INDEXES=show index from %table
 BUILTINSQL ASQL_SELECT_STATUS=show table status like %table
 REMAP_ERROR -1146=-206
 MATCHES_VAR_FUNC = matches_to_regexp
+FIRSTASLIMIT
 RTRIMSQLLIKEVAR

@@ -1748,7 +1748,7 @@ get_event (event_data * a)
       return "EVENT_TYPE=\"BEFORE EVENT\"";
 
     case EVENT_ON_ACTION:
-      sprintf (buff, "EVENT_TYPE=\"ON ACTION\" DATA=\"%s\"", xml_encode (a->event_data_u.on_action));
+      sprintf (buff, "EVENT_TYPE=\"ON ACTION\" DATA=\"%s\"", xml_encode (a->event_data_u.on_action_s->actionName));
       return buff;
     case EVENT_BEFORE:
       sprintf (buff, "EVENT_TYPE=\"BEFORE\" DATA=\"%s\"", xml_encode (get_str_list (a->event_data_u.slist)));

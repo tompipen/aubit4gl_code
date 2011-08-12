@@ -5244,7 +5244,7 @@ print_events_as_4gl (on_events * es, struct command *parent)
 
 	case EVENT_ON_ACTION:
 	  set_nonewlines ();
-	  printc (" ON ACTION %s", e->evt_data.event_data_u.on_action);
+	  printc (" ON ACTION %s", e->evt_data.event_data_u.on_action_s->actionName);
 	  clr_nonewlines ();
 	  break;
 

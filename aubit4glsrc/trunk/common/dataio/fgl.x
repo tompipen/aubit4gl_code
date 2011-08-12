@@ -1,4 +1,4 @@
-/* $Id: fgl.x,v 1.67 2011-07-22 18:06:40 mikeaubury Exp $ */
+/* $Id: fgl.x,v 1.68 2011-08-12 10:58:16 mikeaubury Exp $ */
 typedef string str<>;
 typedef string sql_ident<>;
 
@@ -1165,6 +1165,10 @@ enum e_event {
 	EVENT_AFTER_INP_CLEAN
 };
 
+struct s_onaction {
+	str actionName;
+	str_list *key_list;
+};
 
 struct menuoption {
 	str_list *keys;
@@ -1189,7 +1193,7 @@ union event_data switch (enum e_event event_type) {
 	case EVENT_ON_INTERVAL: int interval_n;
 	case EVENT_ON_TIME: int time_n;
 
-	case EVENT_ON_ACTION: str on_action;
+	case EVENT_ON_ACTION: struct s_onaction *on_action_s;
 
 	case EVENT_AFTER_INPUT: void;
 	case EVENT_BEFORE_INPUT:  void;

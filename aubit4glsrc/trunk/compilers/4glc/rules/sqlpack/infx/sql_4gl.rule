@@ -166,7 +166,7 @@ declare_cmd :
 		check_cursor_name($<ptr>3);
 		$<cmd>$=new_declare_cmd($<ptr>1,$<ptr>3,&$<curDef>6, 0,0,EB_TRUE);
 
-		ADDMAP("Declare Cursor",$<str>3);
+		ADDMAP("Declare Cursor",getcursorName($<ptr>3));
 		doing_declare=0;
 	}
 	| opt_use2_p DECLARE declare_cursor_name_and_clr_p CURSOR KW_FOR cursor_specification1_ins_ss {insql=0;chk4var=0;
@@ -175,7 +175,7 @@ declare_cmd :
 		check_cursor_name($<ptr>3);
 		$<cmd>$=new_declare_cmd($<ptr>1,$<ptr>3,&$<curDef>6, 0,0,EB_FALSE);
 
-		ADDMAP("Declare Cursor",$<str>3);
+		ADDMAP("Declare Cursor",getcursorName($<ptr>3));
 		doing_declare=0;
 	}
 	| opt_use2_p DECLARE declare_cursor_name_and_clr_p CURSOR WITH_HOLD KW_FOR cursor_specification1_ins_ss {insql=0;chk4var=0;
@@ -184,7 +184,7 @@ declare_cmd :
 
 		$<cmd>$=new_declare_cmd($<ptr>1,$<ptr>3,&$<curDef>7, 1,0,EB_FALSE);
 
-		ADDMAP("Declare Cursor",$<str>3);
+		ADDMAP("Declare Cursor",getcursorName($<ptr>3));
 		doing_declare=0;
 	}
 	| opt_use2_p DECLARE declare_cursor_name_and_clr_p CURSOR WITH_HOLD KW_FOR cursor_specification1_all_ss {insql=0;chk4var=0;
@@ -192,7 +192,7 @@ declare_cmd :
 		add_feature("HOLD_CURSOR");
 		check_cursor_name($<ptr>3);
 		$<cmd>$=new_declare_cmd($<ptr>1,$<ptr>3,  &$<curDef>7,1,0,EB_TRUE); 
-		ADDMAP("Declare Cursor",$<str>3);
+		ADDMAP("Declare Cursor",getcursorName($<ptr>3));
 		doing_declare=0;
 	}
 

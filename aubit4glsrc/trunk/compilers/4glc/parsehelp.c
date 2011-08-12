@@ -2466,3 +2466,9 @@ return 0;
 
 
 
+char *getcursorName(expr_str *p) {
+	if (p->expr_type==ET_EXPR_IDENTIFIER) {
+		return p->expr_str_u.expr_string;
+	}
+	return "CURSOR";
+}

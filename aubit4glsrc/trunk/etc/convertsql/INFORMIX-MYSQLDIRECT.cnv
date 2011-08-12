@@ -1,7 +1,5 @@
-# rules for converting Informix SQL to Postgres-compatible syntax
+# rules for converting Informix SQL to MYSQL-compatible syntax
 
-
-#Seems like INFORMIX-POSTGRESQL.cnv is obsolete? 
 
 
 DOUBLE_TO_SINGLE_QUOTES
@@ -181,4 +179,5 @@ RENAME_COLUMN_AS_ALTER_TABLE
 REMAP_ERROR -1146=-206
 SWAP_SQLCA62
 MATCHES_VAR_FUNC = matches_to_regexp
+FIRSTASLIMIT
 RTRIMSQLLIKEVAR

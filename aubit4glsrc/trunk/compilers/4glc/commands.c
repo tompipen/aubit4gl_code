@@ -2127,7 +2127,7 @@ struct on_event *new_event(e_event event_type, void *data, s_commands *cmds,int 
         case EVENT_ON_TIME: 		oe->evt_data.event_data_u.time_n=(int) data; break;
 
         case EVENT_KEY_PRESS: 		oe->evt_data.event_data_u.slist=(str_list *)data; break;
-        case EVENT_ON_ACTION:	 	oe->evt_data.event_data_u.on_action=(char *)data; break;
+        case EVENT_ON_ACTION:	 	oe->evt_data.event_data_u.on_action_s=(s_onaction *)data; break;
 
         case EVENT_ON:	 	oe->evt_data.event_data_u.slist=(str_list *)data; break;
         case EVENT_BEFORE:	 	oe->evt_data.event_data_u.slist=(str_list *)data; break;
