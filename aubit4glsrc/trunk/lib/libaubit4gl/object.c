@@ -86,6 +86,7 @@ struct sObject *new_object(char *type) {
 
 
 
+	
 	//dump_objects();
 
 
@@ -98,6 +99,9 @@ long objectSlotId;
 	init_objects();
 
 	if (objectId==0) return 0;
+
+	//dump_objects();
+
 	objectSlotId=find_head_slot_forobject_id(objectId);
 	if (heapOfObjects[objectSlotId].objType==NULL ) return 0;
 

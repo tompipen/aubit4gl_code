@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                          |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.273 2011-03-05 14:57:02 mikeaubury Exp $
+# $Id: stack.c,v 1.274 2011-08-12 16:15:28 mikeaubury Exp $
 #
 */
 
@@ -3095,7 +3095,6 @@ A4GL_params_on_stack (char *_paramnames[], int n)
 #endif
 	}
 
-      buff = acl_malloc2 (sz + 10);
 #ifdef DEBUG
       A4GL_debug ("Calling conv...");
 #endif
@@ -3121,7 +3120,17 @@ A4GL_params_on_stack (char *_paramnames[], int n)
 		case DTYPE_NVCHAR:
 		case DTYPE_INT8:
 		case DTYPE_SERIAL8:
+      			buff = acl_malloc2 (sz + 10);
       			A4GL_conv (params[a].dtype & DTYPE_MASK, params[a].ptr, 0, buff, sz);
+			break;
+
+		case DTYPE_OBJECT:
+			{
+	  		char *(*function) (void *, int, char *, int);
+			char *s;
+	  		function = A4GL_get_datatype_function_i (DTYPE_OBJECT, ">STRING");
+	  		buff = strdup(function (params[a].ptr, params[a].size, 0, 0));
+			}
 			break;
 
 		default:

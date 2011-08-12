@@ -25,7 +25,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.191 2011-08-11 11:48:46 mikeaubury Exp $
+# $Id: ops.c,v 1.192 2011-08-12 16:15:28 mikeaubury Exp $
 #
 */
 
@@ -336,13 +336,15 @@ static void *A4GL_conv_char_to_string(char *type, void *vobjId) {
 
 static char *A4GL_conv_obj_to_string(void *p, int size, char *s_in, int n_in) {
 	struct sObject *obj;
+	char *rval;
 	char buff[2000];
 	if (getObject(*(long*)p, &obj,NULL)==0) return "";
  	char *(*function) (struct sObject *);
 	sprintf(buff,":%s.toString", obj->objType);
 	function=A4GL_get_datatype_function_i(DTYPE_OBJECT,buff);
 	if (function) {
-		return function(obj);
+		rval=function(obj);
+		return rval;
 	} else {
 		return "";
 	}
@@ -7402,6 +7404,18 @@ int szp1;
 	return 1;
 }
 
+
+static int A4GL_conv_obj_to_char(int dtype_src,void *p1, int dtype2, void *dest, int size  ) {
+	struct sObject *obj;
+	char *s;
+	obj=(struct sObject*)(p1);
+
+	s=A4GL_conv_obj_to_string(p1,dtype2, 0,0);
+	A4GL_push_char(s);
+	A4GL_pop_char(dest,size);
+	return 1;
+}
+
 static int A4GL_conv_nvchar_to_char (int d1, void *p1, int d2, void *p2, int size) {
 	  A4GL_string_set (p2, p1, size);
 	//A4GL_assertion(1,"NOt implemented");
@@ -7737,6 +7751,8 @@ DTYPE_SERIAL
 
 
 // STRING object handling....
+
+  A4GL_add_datatype_function_i (DTYPE_OBJECT, "CONVTO_0", (void *) A4GL_conv_obj_to_char);
 
   A4GL_add_datatype_function_i (DTYPE_OBJECT, "0->STRING", (void *) A4GL_conv_char_to_string);
   A4GL_add_datatype_function_i (DTYPE_OBJECT, "1->STRING", (void *) A4GL_conv_char_to_string);
