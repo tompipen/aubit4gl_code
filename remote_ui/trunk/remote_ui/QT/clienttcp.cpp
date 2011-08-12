@@ -1688,7 +1688,11 @@ MainFrame::vdcdebug("ProtocolHandler","handleDisplayToElement", "const QDomNode&
             //DISPLAYTO
             if(textElement.nodeName() == "TEXT"){
                QString qs_type = textElement.attribute("TYPE");
+               /*
                QString qs_text = textElement.text();
+               # .trimmed() is needed to display the images correct with DISPLAY TO in the window
+               */
+               QString qs_text = textElement.text().trimmed();
                if(qs_type == "BLOB"){
                    QByteArray ba;
                    ba.append(textElement.text());
