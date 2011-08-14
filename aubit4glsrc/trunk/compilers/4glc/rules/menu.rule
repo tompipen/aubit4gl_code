@@ -141,7 +141,7 @@ opt_name_list	:	opt_name {
 
 ;
 
-menu_title 	:	char_or_var_vl 
+menu_title 	:	char_or_var_vl_or_object 
 ;
 
 
