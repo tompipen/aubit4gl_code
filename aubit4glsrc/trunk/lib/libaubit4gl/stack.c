@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                          |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.274 2011-08-12 16:15:28 mikeaubury Exp $
+# $Id: stack.c,v 1.275 2011-08-14 16:50:22 mikeaubury Exp $
 #
 */
 
@@ -1128,6 +1128,13 @@ A4GL_pop_params (struct BINDING *b, int n)
     {
       int dtype;
       dtype = b[a].dtype & DTYPE_MASK;
+
+      if (dtype==DTYPE_OBJECT) {
+		A4GL_pop_object(b[a].objectType,b[a].ptr,DTYPE_OBJECT,b[a].size);
+		continue;
+      }
+
+
       if (dtype == DTYPE_CHAR || dtype == DTYPE_VCHAR)
 	{
 	  if (b[a].start_char_subscript == 0 && b[a].end_char_subscript == 0)
