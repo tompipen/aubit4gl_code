@@ -15,7 +15,8 @@ menu_cmd	:	MENU atline {
 {
 				
 
-				if (A4GL_isyes(acl_getenv("ADDEXITMENUACTION"))) {
+				if (!A4GL_isno(acl_getenv("ADDEXITMENUACTION"))) {
+                        		struct s_onaction *oa;
 				/* Add an implicit EXIT MENU action for use by the XML UI */
 					struct s_commands *cmds=NULL;
 					struct command *cmd;
@@ -25,8 +26,13 @@ menu_cmd	:	MENU atline {
                 			cmds->cmds.cmds_len=1;
                 			cmds->cmds.cmds_val=malloc(sizeof(cmds->cmds.cmds_val[0]) * cmds->cmds.cmds_len);
                 			cmds->cmds.cmds_val[cmds->cmds.cmds_len-1]=cmd;
+
+                        		oa=malloc(sizeof( struct s_onaction ));
+                        		oa->key_list=NULL;
+                        		oa->actionName=strdup("fgl_exit_menu");
+
 					oe=new_event(EVENT_ON_ACTION, 
-						(void *)strdup("fgl_exit_menu"),
+						(void *)oa,
 						cmds,yylineno);
 					
                 			$<on_events>6->event.event_len=$<on_events>6->event.event_len+1;
