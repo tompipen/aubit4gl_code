@@ -24,12 +24,12 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.540 2011-08-12 10:58:17 mikeaubury Exp $
+# $Id: compile_c.c,v 1.541 2011-08-16 08:02:46 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
-static char const module_id[] = "$Id: compile_c.c,v 1.540 2011-08-12 10:58:17 mikeaubury Exp $";
+static char const module_id[] = "$Id: compile_c.c,v 1.541 2011-08-16 08:02:46 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -7017,7 +7017,7 @@ int level=0;
       if (strlen (u->object_type))
 	{
 	  	if (u->datatype==DTYPE_OBJECT) {
-	  	printc ("A4GL_pop_object(\"%s\",&", u->object_type);
+	  	printc ("A4GL_pop_object_n(\"%s\",&", u->object_type);
 		} else {
 	  	printc ("A4GL_pop_user_dtype(\"%s\",&", u->object_type);
 		}
@@ -7102,6 +7102,7 @@ int level=0;
     }
   else
     {
+
       printc (",%d,%d);", get_binding_dtype (v) & DTYPE_MASK, get_binding_dtype (v) >> 16);
     }
   clr_nonewlines ();

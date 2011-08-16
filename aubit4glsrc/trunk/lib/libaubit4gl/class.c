@@ -31,7 +31,7 @@ if (ptr) {
 	int x;
 	x=ptr(&m.objectID,nparam);
 	if (x) {
-		A4GL_pop_object(type,&m,99,0);
+		A4GL_pop_object(type,&m,99,0,0);
 		return m.objectID;
 	} else {
 		return 0;

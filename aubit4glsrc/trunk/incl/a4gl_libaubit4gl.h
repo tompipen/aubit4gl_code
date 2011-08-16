@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.418 2011-08-12 10:58:17 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.419 2011-08-16 08:02:46 mikeaubury Exp $
 #
 */
 
@@ -1287,7 +1287,7 @@ int A4GL_pop_binding_from_stack(struct BINDING **b, int *n,char dir) ;
   void A4GL_pop_into_double (double *d);
   int A4GL_pop_var (void *p, int d);
   int A4GL_pop_var2 (void *p, int d, int s);
- void A4GL_pop_object(char *objtype,void *obj,int dtype,int size) ;
+ void A4GL_pop_object(char *objtype,void *obj,int dtype,int size,int isFcall) ;
 int A4GL_ObjectTypeExists(char *s);
   int A4GL_pop_char (char *z, int size);
   int A4GL_pop_param (void *p, int d, int size);

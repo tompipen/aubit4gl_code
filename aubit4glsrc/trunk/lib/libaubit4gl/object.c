@@ -47,6 +47,11 @@ static void  dump_objects(void) {
 	for (a=0;a<MAXOBJECTS;a++) {
 		if (heapOfObjects[a].objType && heapOfObjects[a].objHeapId) {
 			printf("%d ObjectId=%d Type=%s - reference count=%d\n", a, heapOfObjects[a].objHeapId, heapOfObjects[a].objType, heapOfObjects[a].refCnt);
+			if (strcmp(heapOfObjects[a].objType,"STRING")==0) {
+			if (heapOfObjects[a].objData) {
+			printf("    %s\n", heapOfObjects[a].objData);
+			}
+			}
 		}
 	}
 	printf("\n");
@@ -86,8 +91,9 @@ struct sObject *new_object(char *type) {
 
 
 
-	
-	//dump_objects();
+	if (A4GL_isyes(acl_getenv("DUMPOBJECT"))) {
+	dump_objects();
+	}
 
 
 	//printf("found = %d\n",found);
@@ -99,12 +105,19 @@ long objectSlotId;
 	init_objects();
 
 	if (objectId==0) return 0;
-
-	//dump_objects();
+	if (A4GL_isyes(acl_getenv("DUMPOBJECT"))) {
+		dump_objects();
+	}
 
 	objectSlotId=find_head_slot_forobject_id(objectId);
+	if (objectSlotId==0) {
+		// Object Not found...
+		A4GL_assertion(1,"Object not found");
+		return 0;
+	}
 	if (heapOfObjects[objectSlotId].objType==NULL ) return 0;
 
+	//printf("objectSlotId=%ld for ObjectId=%ld\n",objectSlotId, objectId);
 	*o=&heapOfObjects[objectSlotId];
 
 
@@ -116,8 +129,10 @@ long objectSlotId;
 			int a;
 			// Should search down the parentage to find this clsss...
 			SPRINTF1(buff,"%s.castTo", (*o)->objType);
+			
 			A4GL_push_char(preferredObjectType);
 			a=A4GL_call_datatype_function_i(&objectId,99,buff,1);
+
 			if (a==0) {
 				// Cant be cast..
 				//a4gl_yyerror("Unable to cast to the requested object type");
@@ -195,6 +210,11 @@ void A4GL_object_dispose(long objectId) {
 		// Is it still in use ? 
 		if ( heapOfObjects[slot].refCnt) return;
 
+		if (objectId==2) {
+			A4GL_pause_execution();
+		}
+		//printf("---> dispose objectID %ld\n", objectId);
+		//sleep(3);
 
 		A4GL_call_object_destructor(objectId);
 		heapOfObjects[slot].objType=NULL;
@@ -235,11 +255,13 @@ static char buff[3000]="";
 int d1;
 int s1;
 long objId;
+long *p;
 	
 strcpy(buff,"");
 
 for (a=0;a<numberOfObjectsOnStack;a++) {
-	A4GL_get_top_of_stack (a+1 , &d1, &s1, (void *) &objId);
+	A4GL_get_top_of_stack (a+1 , &d1, &s1, (void *) &p);
+	objId=*p;
         if ((d1&DTYPE_MASK)==DTYPE_OBJECT) {
                 struct sObject *o;
                 if (getObject(objId,&o, NULL)) {

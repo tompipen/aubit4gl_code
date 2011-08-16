@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                          |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.275 2011-08-14 16:50:22 mikeaubury Exp $
+# $Id: stack.c,v 1.276 2011-08-16 08:02:46 mikeaubury Exp $
 #
 */
 
@@ -75,6 +75,7 @@
 #define AInt16 short
 
 void A4GL_debug_print_stack_simple (char *msg);
+static void A4GL_pop_params_internal (struct BINDING *b, int n,int isFcall);
 //struct s_sid * A4GLSQL_prepare_select (struct BINDING *ibind, int ni, struct BINDING *obind, int no, char *s, int singleton);
 //int A4GL_conversion_ok(int);
 /*
@@ -482,8 +483,11 @@ A4GL_cast_top_of_stack_to_dtype (int dtype)
   A4GL_push_variable (buff1, dtype);
 }
 
+void A4GL_pop_object_n(char *objtype,void *obj,int dtype,int size) {
+	A4GL_pop_object(objtype,obj,dtype,size,0);
+}
 
-void A4GL_pop_object(char *objtype,void *obj,int dtype,int size) {
+void A4GL_pop_object(char *objtype,void *obj,int dtype,int size,int isFcall) {
 	int d0;
 	char buff[200];
 	int s0;
@@ -511,6 +515,10 @@ if (oldObjectId) {
 			// Is it the same type ?
 			if (strcmp(o->objType,objtype)==0) {
 				*(long *)obj=o->objHeapId;
+				//printf("isFcall=%d\n",isFcall);
+				if (isFcall) {
+					o->refCnt++;
+				}
 				//memcpy(obj,o->objData,sizeof(long));
 				A4GL_drop_param();
 				return ;
@@ -1114,14 +1122,18 @@ params_cnt--;
 
 }
 
+void
+A4GL_pop_params (struct BINDING *b, int n)
+{
+A4GL_pop_params_internal(b,n,0);
+}
 /**
  * Pop parameters from a function call
  *
  * @param b
  * @param n
  */
-void
-A4GL_pop_params (struct BINDING *b, int n)
+static void A4GL_pop_params_internal (struct BINDING *b, int n,int isFcall)
 {
   int a;
   for (a = n - 1; a >= 0; a--)
@@ -1129,8 +1141,9 @@ A4GL_pop_params (struct BINDING *b, int n)
       int dtype;
       dtype = b[a].dtype & DTYPE_MASK;
 
-      if (dtype==DTYPE_OBJECT) {
-		A4GL_pop_object(b[a].objectType,b[a].ptr,DTYPE_OBJECT,b[a].size);
+
+      if (dtype==DTYPE_OBJECT  ) {
+		A4GL_pop_object(b[a].objectType,b[a].ptr,DTYPE_OBJECT,b[a].size, isFcall);
 		continue;
       }
 
@@ -5052,7 +5065,7 @@ if (b) {
 
 *blobdata=(void *)blobs;
 
-return A4GL_pop_params(b,n);
+A4GL_pop_params_internal(b,n,1);
 }
 
 
