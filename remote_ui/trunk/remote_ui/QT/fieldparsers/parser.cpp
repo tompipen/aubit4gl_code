@@ -455,7 +455,8 @@ void Parser::handleTableColumn(const QDomNode& xmlNode){
       if(hidden)
          p_screenRecord->hideColumn(i);
 
-      header->resizeSection(i, w+1); 
+      header->resizeSection(i, w+1);
+   //   header->resizeSections(QHeaderView::Fixed);
 
       QHeaderView *vert = p_screenRecord->verticalHeader();
       vert->setDefaultSectionSize(h+1); 
