@@ -31,7 +31,7 @@ MainFrame::vdcdebug("Response","Response", "QString id, FglForm* p_currForm, boo
    this->showCursorPos = cursorPos;
 
    if(id.isEmpty()){
-      qFatal("TRIGGERED ID is empty");
+      qWarning("TRIGGERED ID is empty");
       return;
    }
 
