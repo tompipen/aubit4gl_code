@@ -1730,7 +1730,7 @@ SendFile (char *filename, char *remotename)
 {
   FILE *f;
   char *fbuff;
-  char buff[2000];
+  char buff[50000];
   strcpy (buff, filename);
   A4GL_trim (buff);
   f = A4GL_open_file_dbpath (buff);
