@@ -69,6 +69,7 @@ private:
    QList<Context*> contexts;
    bool cursorPos;
    QString qs_interfaceTitle;
+   FglForm *dummy_fglform;
 
    FglForm *p_fglform;
 //   QList<QWidget*> ql_formFields;

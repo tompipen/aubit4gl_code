@@ -119,6 +119,7 @@ MainFrame::vdcdebug("ScreenHandler","createWindow", "QString windowTitle,QString
    {
        p_fglform->hide();
        p_fglform->b_dummy = true;
+       dummy_fglform = p_fglform;
        cnt_form--;
    }
    p_fglform->setId(id);
@@ -1797,6 +1798,7 @@ MainFrame::vdcdebug("ScreenHandler","setFormOpts", "QString type, QString attrib
 void ScreenHandler::waitForEvent()
 {
 MainFrame::vdcdebug("ScreenHandler","waitForEvent", "");
+
    FglForm *saveactive = p_fglform;
    if(p_fglform == NULL)
       return;
@@ -1869,10 +1871,8 @@ void ScreenHandler::processResponse()
    {
        return;
    }
-   qDebug()<<p_fglform->ql_responseQueue.size();
 
    QString id = p_fglform->ql_responseQueue.takeFirst();
-   qDebug()<<id;
    if(id.indexOf(",") == -1){
       Response resp(id, p_fglform, cursorPos);
       QString qs_resp = resp.toString().replace("\n","");
@@ -2207,7 +2207,7 @@ MainFrame::vdcdebug("ScreenHandler","closeWindow", "QString windowName");
             p_fglform->setEnabled(true);
          }
          else{
-            p_fglform = NULL;
+            p_fglform = dummy_fglform;
          }
       }
    }
