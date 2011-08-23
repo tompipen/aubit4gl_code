@@ -2032,8 +2032,10 @@ void FglForm::jumpToField(QWidget* w){
         }
     }
     if(!resp.isEmpty())
+    {
         currentWidget = w;
         addToQueue(resp);
+    }
 }
 
 //------------------------------------------------------------------------------
