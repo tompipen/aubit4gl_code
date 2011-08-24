@@ -1614,7 +1614,7 @@ MainFrame::vdcdebug("FglForm","nextfield", "bool change");
                    else{
                       if(row < rowCount){
 
-                         view->setCurrentField(row+1, 1);
+                         view->setCurrentField(row+2, 1);
                       }
                       else{
                          return;
@@ -1714,13 +1714,13 @@ MainFrame::vdcdebug("FglForm","prevfield", "");
                TableModel *table = static_cast<TableModel*> (proxyModel->sourceModel());
                int row = view->currentIndex().row();
                int rowCount = table->rowCount(QModelIndex());
-               int column = view->currentIndex().column();
+               int column = view->currentIndex().column()-1;
                int columnCount = table->columnCount(QModelIndex());
                int counter = 0;
                switch(state()){
                   case Fgl::INPUTARRAY:
-                     if(column > 1) {
-                         for(int i=column-1; i > 0; i--)
+                     if(column >= 0) {
+                         for(int i=column; i >= 0; i--)
                          {
                             if(FormField *tV = qobject_cast<FormField *> (ql_formFields.at(i))) {
                                tV->noEntry();
