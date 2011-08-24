@@ -310,7 +310,9 @@ MainFrame::vdcdebug("ScreenHandler","handleXMLActions", "QString xmlFileString")
    if (!xmlFile.setContent(xmlFileString, &errorMsg, &errorLine, &errorCol)){
       QString str = errorMsg + "\n" +
                     "Line:" + QString::number(errorLine) + "\n" +
-                    "Column" + QString::number(errorCol);
+                    "Column" + QString::number(errorCol) + "\n\n" +
+                    "Protocol : " + "\n" +
+                    xmlFileString;
       MsgBox("Protocol Error",str,"Warning","Ok","Ok",0);
    }
 
