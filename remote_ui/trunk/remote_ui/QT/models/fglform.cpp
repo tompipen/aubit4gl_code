@@ -1600,27 +1600,35 @@ MainFrame::vdcdebug("FglForm","nextfield", "bool change");
                //view->nextfield();
                QSortFilterProxyModel *proxyModel = static_cast<QSortFilterProxyModel*> (view->model());
                TableModel *table = static_cast<TableModel*> (proxyModel->sourceModel());
-               int row = view->currentIndex().row()+1;
+               int row = view->currentIndex().row();
                int rowCount = table->rowCount(QModelIndex());
                int column = view->currentIndex().column()+1;
                int columnCount = table->columnCount(QModelIndex());
+               bool field_found = false;
                switch(state()){
                   case Fgl::INPUTARRAY:
-                   if(column < columnCount){
+                     for(int j = row; j<rowCount;j++)
+                   {
+                        for(int i = column; i<columnCount;i++)
+                        {
+                           if(view->isReadOnlyColumn(i))
+                           {
+                               continue;
+                           }
+                           column = i;
+                           field_found = true;
+                           break;
+                        }
 
-                      view->setCurrentField(row, column+1);
-                      return;
-                   }
-                   else{
-                      if(row < rowCount){
+                        if(field_found)
+                        {
+                            view->setCurrentField(j+1, column+1);
+                            return;
+                        }
+                        column = 0;
+                    }
 
-                         view->setCurrentField(row+2, 1);
-                      }
-                      else{
-                         return;
-                      }
-                   }
-               case Fgl::INPUT:
+                  case Fgl::INPUT:
                         if(column < columnCount){
                            //GO TO NEXT FIELD
 /*
@@ -1715,10 +1723,40 @@ MainFrame::vdcdebug("FglForm","prevfield", "");
                int row = view->currentIndex().row();
                int rowCount = table->rowCount(QModelIndex());
                int column = view->currentIndex().column()-1;
+               qDebug()<<"COL : "<<column+1<<" ROW : "<<row;
                int columnCount = table->columnCount(QModelIndex());
                int counter = 0;
+               bool field_found = false;
                switch(state()){
                   case Fgl::INPUTARRAY:
+                   //falls es das erste feld im array ist sollte trotzdem das before field event ausgelöst werden
+                   if(view->currentIndex().column() == 0 && view->currentIndex().row() == 0)
+                   {
+                       view->setCurrentField(1,1);
+                       return;
+                   }
+                   for(int j = row; j>=0;j--)
+                 {
+                      for(int i = column; i>=0;i--)
+                      {
+                         if(view->isReadOnlyColumn(i))
+                         {
+                             continue;
+                         }
+                         column = i;
+                         field_found = true;
+                         break;
+                      }
+
+                      if(field_found)
+                      {
+                          view->setCurrentField(j+1, column+1);
+                          return;
+                      }
+                      column = columnCount-1;
+                  }
+
+                   /*
                      if(column >= 0) {
                          for(int i=column; i >= 0; i--)
                          {
@@ -1750,7 +1788,7 @@ MainFrame::vdcdebug("FglForm","prevfield", "");
                            view->setCurrentIndex(index);
                            return;
                         }
-                     }
+                     }*/
                   case Fgl::INPUT:
                         if(column > 0){
                            //GO TO PREV FIELD

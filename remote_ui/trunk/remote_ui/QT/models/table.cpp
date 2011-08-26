@@ -546,21 +546,23 @@ MainFrame::vdcdebug("TableView","setCurrentColumn", "int col");
 
 void TableView::setCurrentField(int row, int col)
 {
+        qDebug()<<"ROW : "<<row<<" COL : "<<col;
 MainFrame::vdcdebug("TableView","setCurrentField", "int row, int col");
    this->setFocus();
    if(QSortFilterProxyModel *proxyModel = qobject_cast<QSortFilterProxyModel *> (this->model())){
 
       if(TableModel *table = qobject_cast<TableModel *> (proxyModel->sourceModel())){
+          qDebug()<<"SETZE INDEX AUF:"<<row<<","<<col;
          QModelIndex tindex = table->index(row-1, col-1);
          QModelIndex index = proxyModel->mapFromSource(tindex);
-
+         selectionModel()->setCurrentIndex(index, QItemSelectionModel::NoUpdate);
          if(this->currentIndex() == index){
              Fgl::Event event;
              event.type = Fgl::BEFORE_FIELD_EVENT;
              event.attribute = table->qsl_colNames.at(index.column());
              emit fieldEvent(event);
          }
-         selectionModel()->setCurrentIndex(index, QItemSelectionModel::NoUpdate);
+
          //setCurrentIndex(index);
 //         if(table->b_input && (currentIndex().row() == 0 && currentIndex().column() == 0)){
          if(table->b_input){
@@ -886,7 +888,6 @@ QWidget* LineEditDelegate::createEditor(QWidget *parent,
 {
    QWidget *editor = WidgetHelper::createFormWidget(this->formElement, parent);
    editor->setAutoFillBackground(true);
-   
    editor->setEnabled(true);
    //remove borders from inputfields in inputarray
    QString className = editor->metaObject()->className();
