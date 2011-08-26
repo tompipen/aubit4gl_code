@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.253 2011-04-14 17:00:47 mikeaubury Exp $
+# $Id: esql.ec,v 1.254 2011-08-26 06:57:00 mikeaubury Exp $
 #
 */
 
@@ -156,6 +156,7 @@ struct s_extra_info {
 };
 
 static void free_blobs(struct s_extra_info *e) ;
+int infxWantsCommaForDecimal=-1;
 
 EXEC SQL END DECLARE SECTION;
 
@@ -186,7 +187,7 @@ static loc_t *add_blob(struct s_sid *sid, int n, struct s_extra_info *e,fglbyte 
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.253 2011-04-14 17:00:47 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.254 2011-08-26 06:57:00 mikeaubury Exp $";
 #endif
 
 
@@ -1185,6 +1186,32 @@ if (dtype==DTYPE_BYTE) {
 
 }
 
+
+
+static void setWhatInformixWants(void) {
+
+// If DBMONEY is set to ',' then we need to pass in a ',' instead of a '.'
+// when inserting a decimal number...
+if (infxWantsCommaForDecimal==-1) {
+	char b_dot[20]="2.0";
+	char result[200];
+	int rval;
+  	dec_t decimal_var;
+
+	infxWantsCommaForDecimal=0;
+	rval=deccvasc (b_dot, strlen (b_dot), &decimal_var);
+	rfmtdec(&decimal_var, "&&", result);
+
+	if (strcmp(result,"02")==0) { // 
+		infxWantsCommaForDecimal=0;
+	} else {
+		infxWantsCommaForDecimal=1;
+	}
+
+}
+}
+
+
 static void get_scale(char *b, int *p_prec, int *p_scale) {
 char buff[10000];
 int a;
@@ -1248,7 +1275,6 @@ bindInputValue (char *descName, int idx, struct BINDING *bind)
   dtime_t dtime_var;
 int d_scale=0;
 int d_prec=0;
-int infxWantsCommaForDecimal=-1;
   intrvl_t interval_var;
   byte byte_var;
   /*
@@ -1283,25 +1309,7 @@ int infxWantsCommaForDecimal=-1;
   A4GL_debug ("In binding - %d %d ptr=%p", dataType, length, bind[idx].ptr);
 
 
-// If DBMONEY is set to ',' then we need to pass in a ',' instead of a '.'
-// when inserting a decimal number...
-if (infxWantsCommaForDecimal==-1) {
-	char b_dot[20]="2.0";
-	char b_comma[20]="2,0";
-	char result[200];
-	int rval;
-
-	infxWantsCommaForDecimal=0;
-	rval=deccvasc (b_dot, strlen (b_dot), &decimal_var);
-	rfmtdec(&decimal_var, "&&", result);
-
-	if (strcmp(result,"02")==0) { // 
-		infxWantsCommaForDecimal=0;
-	} else {
-		infxWantsCommaForDecimal=1;
-	}
-
-}
+	setWhatInformixWants() ;
 
 
 
@@ -1365,12 +1373,13 @@ if (infxWantsCommaForDecimal==-1) {
 	b = A4GL_dec_to_str (fgl_decimal, 0);
 	A4GL_debug("dec_to_str returnings %s",b);
 	get_scale(b, &d_prec, &d_scale);
-	dotPtr=strchr(b,'.');
 
+	dotPtr=strchr(b,'.');
 	if (infxWantsCommaForDecimal && dotPtr) {
 		// Swap it from a '.' to a ','
 		*dotPtr=',';
         } 
+
 	rval=deccvasc (b, strlen (b), &decimal_var);
 
 	if (rval)
@@ -4545,6 +4554,7 @@ void A4GLSQLLIB_A4GLSQL_unload_data_internal (char *fname_o, char *delims, char 
   struct BINDING *ibind;
   ibind = vibind;
 
+	setWhatInformixWants() ;
 
   if (ipary)  {free(ipary);ipary=0;}
   if (fname)  {free(fname);fname=0;}
@@ -4957,6 +4967,20 @@ charcpy (unsigned char *target, unsigned char *source, long len)
 
 
 
+static void chk_for_decimal_point(char *string) {
+// Check what we are unloading matches the current DBMONEY setting...
+// We dont need to do anything fancy - because we dont expect thousands
+// separators - just the decimal point...
+char *dotPtr;
+if (infxWantsCommaForDecimal) {
+	dotPtr=strchr(string,'.');
+	if (dotPtr) {
+		// Swap it from a '.' to a ','
+		*dotPtr=',';
+        } 
+}
+
+}
 
 static int dumprec (FILE* outputfile, struct sqlda *ldesc,int row)
 {
@@ -5001,10 +5025,12 @@ static int dumprec (FILE* outputfile, struct sqlda *ldesc,int row)
 	    {
 	    case CFLOATTYPE:
 	      flen = SPRINTF1 (string, "%f", (double) *(float *) ptr);
+		chk_for_decimal_point(string);
 	      break;
 
 	    case CDOUBLETYPE:
 	      flen = SPRINTF1 (string, "%f", *(double *) ptr);
+		chk_for_decimal_point(string);
 	      break;
 
 	    case CDECIMALTYPE:
@@ -5060,11 +5086,13 @@ static int dumprec (FILE* outputfile, struct sqlda *ldesc,int row)
 	    case CDTIMETYPE:
 	      dttoasc ((dtime_t *) ptr, tstring);
 	      flen = SPRINTF1 (string, "%s", tstring);
+		chk_for_decimal_point(string);
 	      break;
 
 	    case CINVTYPE:
 	      intoasc ((intrvl_t *) ptr, tstring);
 	      flen = SPRINTF1 (string, "%s", tstring);
+		chk_for_decimal_point(string);
 	      break;
 
 
