@@ -2245,11 +2245,12 @@ MainFrame::vdcdebug("FglForm","checkState", "");
 void FglForm::writeSettingsLocal()
 {
 MainFrame::vdcdebug("FglForm","writeSettingsLocal", "");
-   QSettings settings;
+QSettings settings("VENTAS", windowName);
 
-   settings.beginGroup(windowName);
+   //settings.beginGroup(windowName);
    settings.setValue("pos", pos());
-   settings.endGroup();
+   settings.setValue("size", size());
+   //settings.endGroup();
    settings.sync();
 }
 
@@ -2261,13 +2262,13 @@ MainFrame::vdcdebug("FglForm","writeSettingsLocal", "");
 void FglForm::readSettingsLocal()
 {
 MainFrame::vdcdebug("FglForm","readSettingsLocal", "");
-   QSettings settings;
+   QSettings settings("VENTAS", windowName);
    settings.sync();
                     
 
-    settings.beginGroup(windowName);
+    //settings.beginGroup(windowName);
     move(settings.value("pos").toPoint());
-    settings.endGroup();
+    //settings.endGroup();
 
     update();
 

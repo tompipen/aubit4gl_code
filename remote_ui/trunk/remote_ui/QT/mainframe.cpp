@@ -799,6 +799,8 @@ MainFrame::vdcdebug("MainFrame","closeEvent", "QCloseEvent *event");
       }
 
       if(quit == 0){
+         QSettings settings("Ventas AG", "Ventas Desktop Client");
+         settings.setValue("pos", pos());
          cleanUp();
          event->accept();
          close();

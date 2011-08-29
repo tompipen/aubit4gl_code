@@ -19,6 +19,7 @@
 #include <QLineEdit>
 #include <QSplashScreen>
 #include <QFontDatabase>
+#include <QSettings>
 #include "confwin.h"
 #include "mainframe.h"
 #include "login.h"
@@ -70,7 +71,8 @@ int main(int argc, char *argv[])
     qRegisterMetaType<QModelIndex>("QDomDocument");
     qRegisterMetaType<QModelIndex>("QDomElement");
     MainFrame mainframe;
-    mainframe.move(QCursor::pos());
+    QSettings settings("Ventas AG", "Ventas Desktop Client");
+    mainframe.move(settings.value("pos").toPoint());
     mainframe.show();
     mainframe.adjustSize();
     splash->finish(&mainframe);
