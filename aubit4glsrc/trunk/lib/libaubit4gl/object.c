@@ -48,9 +48,9 @@ static void  dump_objects(void) {
 		if (heapOfObjects[a].objType && heapOfObjects[a].objHeapId) {
 			printf("%d ObjectId=%d Type=%s - reference count=%d\n", a, heapOfObjects[a].objHeapId, heapOfObjects[a].objType, heapOfObjects[a].refCnt);
 			if (strcmp(heapOfObjects[a].objType,"STRING")==0) {
-			if (heapOfObjects[a].objData) {
-			printf("    %s\n", heapOfObjects[a].objData);
-			}
+				if (heapOfObjects[a].objData) {
+					printf("    %s\n", (char *)heapOfObjects[a].objData);
+				}
 			}
 		}
 	}
@@ -210,9 +210,9 @@ void A4GL_object_dispose(long objectId) {
 		// Is it still in use ? 
 		if ( heapOfObjects[slot].refCnt) return;
 
-		if (objectId==2) {
-			A4GL_pause_execution();
-		}
+		//if (objectId==2) {
+			//A4GL_pause_execution();
+		//}
 		//printf("---> dispose objectID %ld\n", objectId);
 		//sleep(3);
 
@@ -254,15 +254,16 @@ int a;
 static char buff[3000]="";
 int d1;
 int s1;
-long objId;
 long *p;
 	
 strcpy(buff,"");
 
 for (a=0;a<numberOfObjectsOnStack;a++) {
+	p=0;
 	A4GL_get_top_of_stack (a+1 , &d1, &s1, (void *) &p);
-	objId=*p;
         if ((d1&DTYPE_MASK)==DTYPE_OBJECT) {
+		long objId;
+		objId=*p;
                 struct sObject *o;
                 if (getObject(objId,&o, NULL)) {
 			strcat(buff,"P");

@@ -14,7 +14,7 @@ if (ptr) { return ptr(objectID); }
 return 0;
 }
 
-int A4GL_create_object(char *type, int nparam) {
+long A4GL_create_object(char *type, int nparam) {
 char buff[2000];
 struct {
 	long objectID;
@@ -23,7 +23,7 @@ struct {
 // but - as its a constructor - we'll never pass in a real objID..
 // it will always be NULL....
 int (*ptr) (long *objectID,int nparam);
-
+m.objectID=0;
 //Calls the default destructor to free any previously allocated memory..
 sprintf(buff,":%s.new",type);
 ptr=A4GL_get_datatype_function_i(DTYPE_OBJECT, buff);

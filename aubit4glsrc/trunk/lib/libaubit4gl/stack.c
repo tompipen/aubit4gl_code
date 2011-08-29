@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                          |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.277 2011-08-29 08:24:04 mikeaubury Exp $
+# $Id: stack.c,v 1.278 2011-08-29 09:26:15 mikeaubury Exp $
 #
 */
 
@@ -493,7 +493,7 @@ void A4GL_pop_object(char *objtype,void *obj,int dtype,int size,int isFcall) {
 	int s0;
 	char *pi;
 
-int oldObjectId;
+long oldObjectId;
 
 oldObjectId=*(long*)obj;
 
