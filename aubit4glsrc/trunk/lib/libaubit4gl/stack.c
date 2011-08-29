@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                          |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.276 2011-08-16 08:02:46 mikeaubury Exp $
+# $Id: stack.c,v 1.277 2011-08-29 08:24:04 mikeaubury Exp $
 #
 */
 
@@ -3154,7 +3154,8 @@ A4GL_params_on_stack (char *_paramnames[], int n)
 			break;
 
 		default:
-			sprintf(buff,"Not printable");
+			buff=strdup("Not printable");
+			break;
 	}
 
 #ifdef DEBUG
