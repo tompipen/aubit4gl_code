@@ -1611,6 +1611,10 @@ MainFrame::vdcdebug("FglForm","nextfield", "bool change");
                    {
                         for(int i = column; i<columnCount;i++)
                         {
+                           if(view->isColumnHidden(i))
+                           {
+                              continue;
+                           }
                            if(view->isReadOnlyColumn(i))
                            {
                                continue;
