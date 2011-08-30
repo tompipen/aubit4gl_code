@@ -1743,6 +1743,10 @@ MainFrame::vdcdebug("FglForm","prevfield", "");
                  {
                       for(int i = column; i>=0;i--)
                       {
+                         if(view->isColumnHidden(i))
+                         {
+                            continue;
+                         }
                          if(view->isReadOnlyColumn(i))
                          {
                              continue;
