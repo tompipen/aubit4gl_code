@@ -24,10 +24,10 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.171 2011-07-23 19:23:46 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.172 2011-08-30 06:19:39 mikeaubury Exp $
 #*/
 #ifndef lint
-static char const module_id[] = "$Id: formcntrl.c,v 1.171 2011-07-23 19:23:46 mikeaubury Exp $";
+static char const module_id[] = "$Id: formcntrl.c,v 1.172 2011-08-30 06:19:39 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -51,6 +51,7 @@ void A4GL_mja_set_field_buffer (FIELD * field, int nbuff, char *buff);
 char *a_strchr (char *s, int c);
 void A4GL_idraw_arr_all (struct s_inp_arr *inpa);
 
+void reset_insovrmode(FORM *mform) ;
 static int internal_A4GL_form_loop_v2 (void *vs, int init, void *vevt);
 
 static int A4GL_has_something_on_control_stack (struct s_screenio *sio);
@@ -493,6 +494,13 @@ A4GL_newMovement (struct s_screenio *sio, int attrib)
 
   if (last_field != next_field || 1)
     {
+
+	// Reset the Insert/Overtype mode when we try to change fields..
+	if (!A4GL_isno(acl_getenv("OLDA4GLOVRMODE"))) {
+		reset_insovrmode(sio->currform->form);
+	}
+
+
       A4GL_add_to_control_stack (sio, FORMCONTROL_BEFORE_FIELD, next_field,
 				 A4GL_memdup (ptr, sizeof (struct s_movement)), 0, __LINE__);
       if (last_field)
@@ -3384,4 +3392,13 @@ getNextAttribute (void **field_list, int nfields, int curr_attrib, char dir)
     return curr_attrib + 1;
   A4GL_assertion (1, "Invalid direction");
   return -1;
+}
+
+void reset_insovrmode(FORM *mform) {
+  struct s_form_attr *form;
+  struct s_form_dets *fd;
+  fd = A4GL_getfromform (mform);
+  form = &fd->form_details;
+  form->insmode=0;
+  A4GL_int_form_driver (mform, REQ_OVL_MODE);
 }
