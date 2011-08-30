@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile,v 1.85 2010-11-01 09:18:54 mikeaubury Exp $
+# $Id: Makefile,v 1.86 2011-08-30 16:52:47 mikeaubury Exp $
 #
 
 #Save initial state of system varables, so we can undo changes 
@@ -95,14 +95,14 @@ endif
 
 ifeq "$(HAVE_CURSES)" "1"
 ifeq "$(A4GL_UI)" "CONSOLE"
-           CORE_ALL=core.ui.console 
+           CORE_ALL=core.ui.console  core.ui.xml
            REST_ALL=compile_rest_console
 else
-           CORE_ALL=core.ui.console.and.curses
+           CORE_ALL=core.ui.console.and.curses  core.ui.xml
            REST_ALL=compile_rest_tui
 endif
 else
-        CORE_ALL= core.ui.console 
+        CORE_ALL= core.ui.console  core.ui.xml
         REST_ALL=compile_rest_console
 endif
 
@@ -262,7 +262,7 @@ core.test:
  
 
 
-core.ui.console.and.curses: core.ui.console core.ui.curses
+core.ui.console.and.curses: core.ui.console core.ui.curses 
 
 
 core.ui.console:
@@ -270,6 +270,9 @@ core.ui.console:
 
 core.ui.curses:
 	$(MAKE) -C lib/libui/ui_curses
+
+core.ui.xml:
+	$(MAKE) -C lib/libui/ui_xml
 	
 	
 #main target of default build

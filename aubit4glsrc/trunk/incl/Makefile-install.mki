@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-install.mki,v 1.122 2009-07-15 19:54:35 mikeaubury Exp $
+# $Id: Makefile-install.mki,v 1.123 2011-08-30 16:52:48 mikeaubury Exp $
 #
 
 #This file is included from both source distribution root make file and
@@ -1505,22 +1505,27 @@ install.doxygen: ${DOXYGEN_RPM}
 
 ######################
 # 9: Install Informix ESQL/C compiler and ODBC libraries
-install.ifx.esql: ${IFXESQLC_BIN_ZIP}
-	mkdir -p /tmp/ifxcsdk
-	${UNZIP} $^ -d /tmp/ifxcsdk
-	mkdir -p ${INFORMIXDIR}
-#this will automatically create group 'informix':
-	-useradd informix
-	export INFORMIXDIR=${INFORMIXDIR};	rpm -i --relocate /opt/informix=${INFORMIXDIR} csdk.rpm
+install.ifx.esql: 
+	@echo "IBM/Informix no longer provide the ClientSDK from an FTP site we can"
+	@echo "easily use"
+	@echo "Please go to www.ibm.com and search for it..."
+	@echo "(sorry)"
+	@#${IFXESQLC_BIN_ZIP}
+	@#mkdir -p /tmp/ifxcsdk
+	@#${UNZIP} $^ -d /tmp/ifxcsdk
+	@#mkdir -p ${INFORMIXDIR}
+	@#this will automatically create group 'informix':
+	@#-useradd informix
+	@#export INFORMIXDIR=${INFORMIXDIR};	rpm -i --relocate /opt/informix=${INFORMIXDIR} csdk.rpm
 #ERROR: INFORMIXDIR does not match the target directory name provided in
 #the rpm command.  If you are not installing this product in the
 #default INFORMIXDIR name for Linux (/opt/informix), you MUST provide
 #your INFORMIXDIR directory name with the --prefix (RPM 2.X syntax)
 #or --relocate (RPM 3.X syntax) parameter in your rpm -i command line.
-	@echo "Package info & manuals: ${IFXESQLC_INFO}"
-	@echo " "
-	@echo "Informix CSDK (contains ESQL/C and ODBC) installed.  Please re-run 'configure' to detect changes."
-	@echo " "
+	@#@echo "Package info & manuals: ${IFXESQLC_INFO}"
+	@#@echo " "
+	@#@echo "Informix CSDK (contains ESQL/C and ODBC) installed.  Please re-run 'configure' to detect changes."
+	@#@echo " "
 
 ######################
 # 10: Install PostgreSQL ODBC libraries:

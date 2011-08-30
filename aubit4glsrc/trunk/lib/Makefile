@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.28 2010-05-14 11:15:17 mikeaubury Exp $
+# $Id: Makefile,v 1.29 2011-08-30 16:52:48 mikeaubury Exp $
 #
 
 ROOT    =..
@@ -82,6 +82,7 @@ LIBHTML_PATH        =${ROOT}/tools/html
 LIBMEMCACHE_PATH	=extra_libs/memcached
 LIBSQLESQL_PATH     =libsql/esqlc
 LIBUIHL_PATH       	=libui/ui_highlevel
+LIBUIXML_PATH=libui/ui_xml
 LIBUICURSES_PATH	=libui/ui_curses
 LIBUICONSOLE_PATH	=libui/ui_console
 LIBUIGLADE_PATH		=libui/ui_glade
@@ -208,6 +209,12 @@ LIBUIHL_DEPS		=$(wildcard ${LIBUIHL_PATH}/*.c) $(wildcard ${LIBUIHL_PATH}/*.h) \
 					$(wildcard ${LIBUIHL_PATH}/Makefile) ${ALL_H} 
 LIBUICURSES_DEPS	=$(wildcard ${LIBUICURSES_PATH}/*.c) $(wildcard ${LIBUICURSES_PATH}/*.h) \
 					$(wildcard ${LIBUICURSES_PATH}/Makefile) ${ALL_H}
+
+LIBUIXML_DEPS	=$(wildcard ${LIBUIXML_PATH}/*.c) $(wildcard ${LIBUIXML_PATH}/*.h) \
+					$(wildcard ${LIBUIXML_PATH}/Makefile) ${ALL_H} \
+				$(wildcard ${LIBUIXML_PATH}/uilib/*.c) \
+				$(wildcard ${LIBUIXML_PATH}/uilib/xml/*.c)
+
 LIBUICONSOLE_DEPS	=$(wildcard ${LIBUICONSOLE_PATH}/*.c) $(wildcard ${LIBUICONSOLE_PATH}/*.h) \
 					$(wildcard ${LIBUICONSOLE_PATH}/Makefile) ${ALL_H}
 LIBUIGLADE_DEPS		=$(wildcard ${LIBUIGLADE_PATH}/*.c) \
@@ -303,6 +310,8 @@ ${PLUGINDIR}/libLEX_C${SO_EXT} ${PLUGINDIR}/libLEX_EC${SO_EXT}: ${LIBLEXEC_DEPS}
 
 ${PLUGINDIR}/libUI_TUI${SO_EXT}: ${LIBUICURSES_DEPS}
 	$(MAKE) -C ${LIBUICURSES_PATH}
+${PLUGINDIR}/libUI_XML${SO_EXT}: ${LIBUIXML_DEPS}
+	$(MAKE) -C ${LIBUIXML_PATH}
 
 ${PLUGINDIR}/libUI_CONSOLE${SO_EXT}: ${LIBUICONSOLE_DEPS}
 	$(MAKE) -C ${LIBUICONSOLE_PATH}
@@ -701,6 +710,7 @@ clean.libui:
 	${MAKE} -C ${LIBUIHL_PATH} clean
 	${MAKE} -C ${LIBUICONSOLE_PATH} clean
 	${MAKE} -C ${LIBUICURSES_PATH} clean
+	${MAKE} -C ${LIBUIXML_PATH} clean
 	${MAKE} -C ${LIBUIGLADELIB_PATH} clean
 	${MAKE} -C ${LIBUIGLADE_PATH} clean
 	${MAKE} -C ${LIBUIHL_PATH}/remote_client clean

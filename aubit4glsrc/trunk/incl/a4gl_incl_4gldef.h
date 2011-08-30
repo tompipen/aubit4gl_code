@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_incl_4gldef.h,v 1.138 2010-12-11 13:09:34 mikeaubury Exp $
+# $Id: a4gl_incl_4gldef.h,v 1.139 2011-08-30 16:52:48 mikeaubury Exp $
 */
 
 /**
@@ -541,7 +541,8 @@ char *A4GL_get_target_dialect(char *lex_default,char *lex_compile_time_target);
 
 int A4GL_pdf_push_report_section (struct pdf_rep_structure *rep, char *mod, char *repname, int lineno, char where, char *why, int rb) ;
 
-int A4GL_create_object(char *type, int nparam) ;
+long A4GL_create_object(char *type, int nparam) ;
+void A4GL_pop_object_n(char *objtype,void *obj,int dtype,int size);
 int A4GL_destroy_object(char *type, long objectID) ;
 int A4GL_get_event_type( struct aclfgl_event_list *evt, int n);
 
