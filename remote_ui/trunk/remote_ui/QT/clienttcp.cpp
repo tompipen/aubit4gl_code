@@ -1616,7 +1616,8 @@ MainFrame::vdcdebug("ProtocolHandler","handleStartup", "const QDomNode& domNode"
 
          /*
          if(name == "DBPATH"){
-            p_currScreenHandler->setSearchPaths();
+            //p_currScreenHandler->setSearchPaths();
+            ScreenHandler::setSearchPaths();
          }
          */
       }
@@ -1624,7 +1625,8 @@ MainFrame::vdcdebug("ProtocolHandler","handleStartup", "const QDomNode& domNode"
       currentElement = currentElement.nextSiblingElement();
    }
    // ALWAYS set search Paths
-   p_currScreenHandler->setSearchPaths();
+   //p_currScreenHandler->setSearchPaths();
+   ScreenHandler::setSearchPaths();
 }
 
 //------------------------------------------------------------------------------

@@ -37,8 +37,9 @@ int main(int argc, char *argv[])
     QApplication app(argc, argv);
 
     QSplashScreen *splash = new QSplashScreen;
+    ScreenHandler::setSearchPaths();
     //splash->setPixmap(QPixmap("./pics/splash.png"));
-    splash->setPixmap(QPixmap("./pics/VENTAS_9_splashscreen.png"));
+    splash->setPixmap(QPixmap("pics:VENTAS_9_splashscreen.png"));
     splash->show();
     QString fileName; 
     QCoreApplication::setOrganizationName("VENTAS");

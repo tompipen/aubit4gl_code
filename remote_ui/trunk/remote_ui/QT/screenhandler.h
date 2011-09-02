@@ -54,7 +54,7 @@ public:
    void freeContext(int);
 
    QHash<QString, QString> qh_env;
-   void setSearchPaths();
+   static void setSearchPaths();
    void setEnv(QString, QString);
    void setInterfaceText(QString);
 

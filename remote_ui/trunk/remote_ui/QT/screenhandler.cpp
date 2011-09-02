@@ -1214,8 +1214,9 @@ MainFrame::vdcdebug("ScreenHandler","setFieldHidden", "QString fieldName, bool h
    if(i_Frm < 0)
       return;
 
+   qDebug() << p_fglform->findFieldByName(fieldName);
    if(QWidget *widget = qobject_cast<QWidget *> (p_fglform->findFieldByName(fieldName))){
-      widget->setHidden(hidden);
+       widget->setVisible(hidden);
    }
    else{
       if(LineEditDelegate *widget = qobject_cast<LineEditDelegate *> (p_fglform->findFieldByName(fieldName))){
@@ -1829,8 +1830,10 @@ MainFrame::vdcdebug("ScreenHandler","waitForEvent", "");
          p_fglform->b_newForm = false;
          //Load the Actions again, before display the form
          p_fglform->checkActions();
+         //p_fglform->adjustSize();
+         p_fglform->resize(500,500);
          p_fglform->show();
-         p_fglform->adjustSize();
+
       }
       else{
          if(p_fglform->dialog() != NULL){
@@ -2651,6 +2654,7 @@ sep = QChar(':');
    }
 
    dbPaths << QDir::searchPaths("pics");
+   dbPaths << ":/pics/";
 
    // Clean search Paths
    QDir::setSearchPaths("pics", dbPaths);
