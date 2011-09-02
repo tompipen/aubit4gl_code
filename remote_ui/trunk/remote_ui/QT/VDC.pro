@@ -12,7 +12,9 @@ QT += webkit
 win32 {
   LIBS += -lwsock32
 }
-
+macx {
+  ICON = pics/vdc.icns
+}
 # Input
 HEADERS += confwin.h \
     login.h \

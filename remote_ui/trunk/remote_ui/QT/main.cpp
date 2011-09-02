@@ -59,7 +59,12 @@ int main(int argc, char *argv[])
 
     app.setFont(yavcFont);
 
-    QIcon ventasLogo("./pics/vdc.png");
+
+    #ifdef Q_WS_MAC
+       QIcon ventasLogo("./pics/vdc.icns");
+    #else
+       QIcon ventasLogo("./pics/vdc.png");
+    #endif
 
     app.setWindowIcon(ventasLogo);
 
