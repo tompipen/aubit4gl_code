@@ -24,10 +24,10 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.172 2011-07-22 19:30:35 mikeaubury Exp $
+# $Id: iarray.c,v 1.173 2011-09-06 17:55:29 mikeaubury Exp $
 #*/
 #ifndef lint
-static char const module_id[] = "$Id: iarray.c,v 1.172 2011-07-22 19:30:35 mikeaubury Exp $";
+static char const module_id[] = "$Id: iarray.c,v 1.173 2011-09-06 17:55:29 mikeaubury Exp $";
 #endif
 
 /**
@@ -267,7 +267,7 @@ insert_line_in_array (struct s_inp_arr *inpa)
 
   init_arr_line (inpa, inpa->arr_line);
 
-  for (a = 0; a < inpa->nfields; a++)
+  for (a = 0; a <= inpa->nfields; a++)
     {
       prop = (struct struct_scr_field *) field_userptr (inpa->field_list[0][a]);
       if (A4GL_has_str_attribute (prop, FA_S_DEFAULT))
