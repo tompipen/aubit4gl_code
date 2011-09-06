@@ -24,10 +24,10 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.173 2011-09-06 17:55:29 mikeaubury Exp $
+# $Id: iarray.c,v 1.174 2011-09-06 18:44:35 mikeaubury Exp $
 #*/
 #ifndef lint
-static char const module_id[] = "$Id: iarray.c,v 1.173 2011-09-06 17:55:29 mikeaubury Exp $";
+static char const module_id[] = "$Id: iarray.c,v 1.174 2011-09-06 18:44:35 mikeaubury Exp $";
 #endif
 
 /**
@@ -3071,9 +3071,7 @@ process_control_stack_internal (struct s_inp_arr *arr,  struct aclfgl_event_list
 		  A4GL_debug ("Extent check1 %d for currentfield=%p zz9pa", fprop->flags, arr->currentfield);
 #endif
 
-//A4GL_pause_execution();
-
-		  if ((A4GL_fprop_flag_get (arr->currentfield, FLAG_MOVED_IN_FIELD)) == 0)
+		  if ((A4GL_fprop_flag_get (arr->currentfield, FLAG_MOVED_IN_FIELD)) == 0 && A4GL_get_curr_field_col (arr->currform->form) == 0 && !has_picture)
 		    {
 		      int attrib;
 #ifdef DEBUG
