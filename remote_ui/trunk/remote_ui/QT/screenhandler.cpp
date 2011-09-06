@@ -1216,7 +1216,8 @@ MainFrame::vdcdebug("ScreenHandler","setFieldHidden", "QString fieldName, bool h
 
    qDebug() << p_fglform->findFieldByName(fieldName);
    if(QWidget *widget = qobject_cast<QWidget *> (p_fglform->findFieldByName(fieldName))){
-       widget->setVisible(hidden);
+       //widget->setVisible(hidden) with setVisible the formfields are visible changed to setHidden
+       widget->setHidden(hidden);
    }
    else{
       if(LineEditDelegate *widget = qobject_cast<LineEditDelegate *> (p_fglform->findFieldByName(fieldName))){
