@@ -21,6 +21,7 @@
 #include <QStatusBar>
 #include <QMessageBox>
 #include <QFileDialog>
+#include <QSettings>
 
 #include "screenhandler.h"
 #include "mainframe.h"
@@ -1832,7 +1833,10 @@ MainFrame::vdcdebug("ScreenHandler","waitForEvent", "");
          //Load the Actions again, before display the form
          p_fglform->checkActions();
          //p_fglform->adjustSize();
-         p_fglform->resize(500,500);
+         //p_fglform->resize(500,500);
+
+         QSettings settings("VENTAS", p_fglform->windowName);
+         p_fglform->resize(settings.value("size").toSize());
          p_fglform->show();
 
       }

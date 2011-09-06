@@ -996,6 +996,10 @@ MainFrame::vdcdebug("FglForm","closeEvent", "QCloseEvent *event");
           emit closeAction();
       }
       event->accept();
+
+      QSettings settings("VENTAS", windowName);
+      settings.value("size", size());
+
       return QMainWindow::closeEvent(event);
    }
 
