@@ -21,6 +21,7 @@
 #include <QKeyEvent>
 #include <QFontMetrics>
 #include <QScrollBar>
+#include <QSettings>
 
 #include "mainframe.h"
 #include "table.h"
@@ -786,6 +787,9 @@ QVariant TableModel::headerData ( int section, Qt::Orientation orientation, int 
    if ( orientation == Qt::Horizontal )
    {
       if(qh_colLabels[section] != NULL){
+         QSettings settings("VENTAS", this->mytv->accessibleName());
+         settings.setValue(qh_colLabels[section]->colName, this->mytv->columnWidth(section));
+
          if(!qh_colLabels[section]->text().isEmpty()){
             return qh_colLabels[section]->text();
          }
