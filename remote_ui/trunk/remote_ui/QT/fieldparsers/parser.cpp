@@ -459,10 +459,10 @@ void Parser::handleTableColumn(const QDomNode& xmlNode){
       /*if(!settings.value(ql_formFields.at(i)->objectName()).isNull())
       {
           header->resizeSection(i, settings.value(ql_formFields.at(i)->objectName()).toInt());
-      } else {
+      } else { */
           header->resizeSection(i, w+1);
-      }
-      */
+      //}
+
 
    //   header->resizeSections(QHeaderView::Fixed);
 
