@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: console.c,v 1.58 2011-07-22 20:10:00 mikeaubury Exp $
+# $Id: console.c,v 1.59 2011-09-08 19:22:15 mikeaubury Exp $
 #*/
 
 /**
@@ -858,6 +858,9 @@ int UILIB_A4GL_ui_send_report_to_ui(char *filename, int linesPerPage,char *mode)
         return 0;
 }
 
+void UILIB_A4GL_ui_run_info(int mode, char*cmdline, int runcnt, int startstop) {
+		// Does nothing
+}
 
 /* ========================== EOF =============================== */
 

@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.164 2011-06-29 13:19:21 mikeaubury Exp $
+# $Id: fglwrap.c,v 1.165 2011-09-08 19:22:15 mikeaubury Exp $
 #
 */
 
@@ -362,6 +362,7 @@ A4GL_system_run (int a)
   int ret;
   int rf = 0;
   int oval;
+  static int runcnt=0;
   enum
   {
     MODE_NORMAL,
@@ -369,8 +370,13 @@ A4GL_system_run (int a)
     MODE_FORM
   } ui_mode;
   ;
+
+
   ui_mode = MODE_NORMAL;
+
   A4GL_set_status (0, 0);
+
+
 
 /* did they specify a mode on the RUN .. line ? */
   if (a > 255)
@@ -381,6 +387,7 @@ A4GL_system_run (int a)
 	ui_mode = MODE_FORM;
       a = a & 0xff;
     }
+
 
 
   if (ui_mode == MODE_NORMAL)
@@ -431,7 +438,12 @@ A4GL_system_run (int a)
       free (s);
       s = s2;
     }
+  runcnt++;
+
+  A4GL_ui_run_info(ui_mode, s,runcnt,1);
   ret = system (s);
+  A4GL_ui_run_info(ui_mode, s,runcnt,0);
+
   if (A4GL_env_option_set ("FIXSYSTEM"))
     ret = ret >> 8;
 #ifdef DEBUG

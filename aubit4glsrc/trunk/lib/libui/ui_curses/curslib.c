@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.176 2011-05-14 08:35:51 mikeaubury Exp $
+# $Id: curslib.c,v 1.177 2011-09-08 19:22:15 mikeaubury Exp $
 #*/
 
 /**
@@ -41,7 +41,7 @@
  */
 #ifndef lint
 static char const module_id[] =
-  "$Id: curslib.c,v 1.176 2011-05-14 08:35:51 mikeaubury Exp $";
+  "$Id: curslib.c,v 1.177 2011-09-08 19:22:15 mikeaubury Exp $";
 #endif
 /*
 =====================================================================
@@ -2376,5 +2376,8 @@ A4GL_error_box (char *str, int attr)
   //A4GL_mja_setcolor (NORMAL_TEXT);
 }
 
+void UILIB_A4GL_ui_run_info(int mode, char*cmdline, int runcnt, int startstop) {
+  // Does nothing - needed by api..
+}
 
 /* ============================== EOF ============================== */

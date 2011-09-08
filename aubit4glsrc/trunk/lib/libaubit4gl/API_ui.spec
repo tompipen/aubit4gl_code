@@ -111,3 +111,6 @@ aclfgl_aclfgl_set_application_xml int nparam -> int
 A4GL_ui_frontcall char* module char* name void* ibind int ni void* obind int no -> void
 A4GL_ui_cancel int type -> void
 A4GL_ui_send_report_to_ui char* filename int noLinesPerPage char* mode -> int
+* Tell the UI when we are about to start a RUN and when its finished...
+* apparently this is useful information for the Ventas Desktop...
+A4GL_ui_run_info int mode char* cmdline int runcnt int startstop

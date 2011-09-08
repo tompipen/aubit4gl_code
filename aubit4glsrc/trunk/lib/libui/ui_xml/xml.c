@@ -4071,3 +4071,9 @@ int UILIB_A4GL_ui_send_report_to_ui(char *filename, int linesPerPage,char *mode)
       return PrintFile (filename, linesPerPage,mode);
 }
 
+void UILIB_A4GL_ui_run_info(int mode, char*cmdline, int runcnt, int startstop) {
+	send_to_ui("<RUNINFO MODE=\"%d\" CMD=\"%s\" RUNCNT=\"%d\" STARTSTOP=\"%d\" />", mode,
+			uilib_xml_escape(cmdline),
+				runcnt,
+				startstop);
+}

@@ -8,7 +8,7 @@
 #include "lowlevel.h"
 #ifndef lint
 static char const module_id[] =
-  "$Id: misc.c,v 1.75 2011-03-23 20:29:28 mikeaubury Exp $";
+  "$Id: misc.c,v 1.76 2011-09-08 19:22:16 mikeaubury Exp $";
 #endif
 
 //void *UILIB_A4GL_get_curr_form (int n);
@@ -1582,3 +1582,6 @@ int UILIB_aclfgl_aclfgl_add_to_toolbar (int n) {
 }
 
 
+void UILIB_A4GL_ui_run_info(int mode, char*cmdline, int runcnt, int startstop) {
+	                // Does nothing
+ }
