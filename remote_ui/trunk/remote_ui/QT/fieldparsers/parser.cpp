@@ -471,11 +471,12 @@ void Parser::handleTableColumn(const QDomNode& xmlNode){
       QSettings settings("VENTAS", p_screenRecord->accessibleName());
       if(!settings.value(ql_fglFields.at(i)->colName()).isNull())
       {
-         header->resizeSection(i, settings.value(ql_fglFields.at(i)->colName()).toInt());
+  //       header->resizeSection(i, settings.value(ql_fglFields.at(i)->colName()).toInt());
       } else {
-         header->resizeSection(i, w+1);
+ //        header->resizeSection(i, w+1);
       }
-
+      //Solange Daniel seine Funktion nicht richtig lauffäig hat.
+      header->resizeSection(i, w+1);
 
    //   header->resizeSections(QHeaderView::Fixed);
 
