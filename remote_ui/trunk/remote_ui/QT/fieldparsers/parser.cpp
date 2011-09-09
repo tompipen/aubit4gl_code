@@ -233,6 +233,7 @@ MainFrame::vdcdebug("Parser","parseElement", "const QDomNode& xmlNode");
       }
 
       if(nodeName == "FormField"){
+
          FormField *formField = WidgetHelper::createFormField(currentElement, p_fglform);
          ql_fglFields << formField;
 
@@ -257,10 +258,22 @@ MainFrame::vdcdebug("Parser","parseElement", "const QDomNode& xmlNode");
 
          QDomElement fieldElement = currentElement.firstChildElement();
 
-         QWidget *widget = WidgetHelper::createFormWidget(currentElement);
-
-         widget->setFixedHeight(widget->height()*pageSize);
-
+         QWidget *widget = WidgetHelper::createFormWidget(currentElement, p_fglform);
+         if(TextEdit *te = qobject_cast<TextEdit*> (widget))
+         {
+             if(!te->b_stretch)
+             {
+                te->setFixedHeight(widget->height()*pageSize);
+             }
+             else
+             {
+                 te->setMinimumSize(widget->width(), widget->height()*pageSize);
+             }
+         }
+         else
+         {
+             widget->setFixedHeight(widget->height()*pageSize);
+         }
          //int w = fieldElement.attribute("width").toInt();
          int posX = fieldElement.attribute("posX").toInt();
          int posY = fieldElement.attribute("posY").toInt();
@@ -598,6 +611,14 @@ MainFrame::vdcdebug("Parser","addWidgets", "QWidget *widget, bool add, int x, in
       }
       else
       {
+          if(TextEdit *te = qobject_cast<TextEdit*> (widget))
+          {
+              if(te->b_stretch)
+              {
+                  layout->addWidget(widget, x, y);//), Qt::AlignTop);
+                  return;
+              }
+          }
           layout->addWidget(widget, x, y, span, gridWidth, Qt::AlignLeft|Qt::AlignTop);
       }
    }

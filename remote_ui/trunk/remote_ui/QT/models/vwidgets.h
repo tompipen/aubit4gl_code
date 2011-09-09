@@ -40,6 +40,7 @@
 #include <QTextCursor>
 #include <QDropEvent>
 #include <include/fgl.h>
+class FglForm;
 
 class FormField : public QObject
 {
@@ -387,13 +388,18 @@ public:
    QString name;
    QString colName;
 
+
+
+
    int x;
    int y;
+   bool b_stretch;
    int w;
    void setStyleProb(const QString s){ s_style = s; }
    QString getStyleProb() const { return s_style; }
    QString s_style;
    void setNoEntry(bool ro);
+   void setStretching(QString);
    bool noEntry() { return b_noEntry; };
    void setAutoNext(bool ro) { b_autoNext = ro; };
    bool autoNext() { return b_autoNext; };
@@ -426,6 +432,7 @@ private:
    bool b_compress;
    QString qs_shift;
    bool b_wantTabs;
+   FglForm *p_fglform;
    bool b_wantReturns;
    QString qs_default;
 

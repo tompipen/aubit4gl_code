@@ -26,7 +26,6 @@
 #include <QDomElement>
 #include <QDragEnterEvent>
 #include <QSplitter>
-
 #include "fglform.h"
 #include "mainframe.h"
 #include "vwidgets.h"
@@ -477,12 +476,13 @@ ButtonEdit::ButtonEdit(QString iconFileName, QWidget *parent)
           iconFileName.append(".png");
       }
       QPixmap pixmap("pics:" + iconFileName);
-      button->setIcon(QIcon(pixmap));
+      //   Its now a Stylesheet cause on MAC there is a little border around the button
+     // button->setIcon(QIcon(pixmap));
       QSize siz(18,18);
       button->setFixedSize(siz);
       button->setCursor(Qt::ArrowCursor);
       int frameWidth = style()->pixelMetric(QStyle::PM_DefaultFrameWidth);
-      setStyleSheet(QString("QLineEdit { padding-right: %0px; } ").arg(button->size().width() + frameWidth-1 ));
+      setStyleSheet(QString(" ButtonEdit QPushButton {border-image: url(pics:" + iconFileName + ");} QLineEdit { padding-right: %0px; } ").arg(button->size().width() + frameWidth-1 ));
    }
 }
 
@@ -544,6 +544,7 @@ DateEdit::DateEdit(QWidget *parent)
    this->setEnabled(false);
    this->iconFileName = "calendar";
    button = new QPushButton(this);
+   button->setEnabled(false);
    connect(button, SIGNAL(clicked()), this, SLOT(buttonClicked()));
    button->setFocusPolicy(Qt::NoFocus);
    if(!iconFileName.contains("."))
@@ -551,12 +552,13 @@ DateEdit::DateEdit(QWidget *parent)
        iconFileName.append(".png");
    }
    QPixmap pixmap("pics:" + iconFileName);
-   button->setIcon(QIcon(pixmap));
+   //   Its now a Stylesheet cause on MAC there is a little border around the button
+   //   button->setIcon(QIcon(pixmap));
    QSize siz(18,18);
    button->setFixedSize(siz);
    button->setCursor(Qt::ArrowCursor);
    int frameWidth = style()->pixelMetric(QStyle::PM_DefaultFrameWidth);
-   setStyleSheet(QString("QLineEdit { padding-right: %0px; } ").arg(button->size().width() + frameWidth-1 ));
+   setStyleSheet(QString(" DateEdit QPushButton {border-image: url(pics:" + iconFileName + ");} QLineEdit { padding-right: %0px; } ").arg(button->size().width() + frameWidth-1 ));
 }
 
 void DateEdit::resizeEvent(QResizeEvent *)
@@ -589,18 +591,63 @@ TextEdit::TextEdit(QWidget *parent)
    b_autoNext = false;
    b_required = false;
    b_compress = false;
-
+   b_stretch = false;
    b_denyFocus = false;
    setWantTabs(false);
    setWantReturns(true);
 
+
    setEnabled(false);
+}
+
+void TextEdit::setStretching(QString stretch)
+{
+    if(stretch == "none")
+    {
+        this->b_stretch = false;
+        return;
+    }
+
+    this->b_stretch = true;
+
+    if(stretch == "both" || stretch == "y" || stretch == "x")
+    {
+       if(FglForm *p_fglform = qobject_cast<FglForm*> (this->parent()))
+       {
+           this->p_fglform = p_fglform;
+           connect(p_fglform, SIGNAL(resizeEvent()), this, SLOT(adjustSizeEvent()));
+       }
+    }
 }
 
 int TextEdit::getCursorPosition(){
    QTextCursor c = this->textCursor();
    int index= this->getIndex(c);
    return index;
+}
+
+void TextEdit::adjustSizeEvent()
+{
+    QSplitter *split = (QSplitter*) this->p_fglform->centralWidget();
+return;
+
+    if(!this->b_stretch || split->widget(0) == NULL)
+    {
+        return;
+    }
+    QWidget *wid = split->widget(0);
+
+
+    QSize test;
+    test = wid->size();
+    qDebug()<<test.width()<<" "<<test.height();
+    //   this->resize(wid->sizeHint());
+ //   wid->setGeometry(QRect(0,0,test.width(), test.height()));
+    this->resize(wid->size());
+    this->updateGeometry();
+    wid->updateGeometry();
+
+    //this->p_fglform->centralWidget()->layout()->
 }
 
 int TextEdit::getIndex (const QTextCursor &crQTextCursor ){
@@ -847,6 +894,7 @@ MainFrame::vdcdebug("WidgetHelper","createFormField", "const QDomElement& formFi
 
    int fieldId  = formField.attribute("fieldId").toInt();
    int tabIndex = formField.attribute("tabIndex").toInt();
+
 
    QString defaultValue = formField.attribute("defaultValue");
 
@@ -1462,6 +1510,7 @@ MainFrame::vdcdebug("WidgetHelper","createTextEdit", "const QDomElement& formFie
    bool hidden   = formField.attribute("hidden").toInt();
    QString defaultValue = formField.attribute("defaultValue");
 
+
   // bool required = formField.attribute("required").toInt();
   // bool notNull = formField.attribute("notNull").toInt();
 
@@ -1479,11 +1528,10 @@ MainFrame::vdcdebug("WidgetHelper","createTextEdit", "const QDomElement& formFie
    bool noEntry  = textEditElement.attribute("noEntry").toInt();
    bool autoNext = textEditElement.attribute("autoNext").toInt();
 
-   QString scrollBars = textEditElement.attribute("scrollBars");
+   QString scrollBars = textEditElement.attribute("scrollBars").toLower();
    QString sizePolicy = textEditElement.attribute("sizePolicy");
    QString style = textEditElement.attribute("style");
-   QString stretch = textEditElement.attribute("stretch");
-
+   QString stretch = textEditElement.attribute("stretch","none").toLower();
    bool wantTabs = textEditElement.attribute("wantTabs").toInt();
    bool wantReturns = true;
    if(!textEditElement.attribute("wantReturns").isEmpty()){
@@ -1497,27 +1545,67 @@ MainFrame::vdcdebug("WidgetHelper","createTextEdit", "const QDomElement& formFie
    textEdit->name = name;
    textEdit->colName = colName;
    textEdit->sqlTabName = tabName;
+   textEdit->b_stretch = false;
+
+   if(stretch == "both")
+   {
+      textEdit->b_stretch = true;
+      textEdit->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+   }
+
+
+   textEdit->setStretching(stretch);
    textEdit->setWantTabs(wantTabs);
    textEdit->setWantReturns(wantReturns);
    textEdit->setDefaultValue(defaultValue);
+
+
+
+
+   if(scrollBars == "both" || scrollBars == "x")
+   {
+       textEdit->setLineWrapMode(QTextEdit::NoWrap);
+       textEdit->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+   }
+   if(scrollBars=="both" || scrollBars == "y")
+   {
+       textEdit->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+   }
+
+
+
+
+
+
+
+
 
    QString comments = textEditElement.attribute("comments");
    if(!comments.isEmpty()){
       textEdit->setToolTip(comments);
    }
 
-   int height = textEditElement.attribute("height").toInt();
+   int height = textEditElement.attribute("height", "0").toInt();
    if(height < 1) height = 1;
 
    if(hidden)
       textEdit->setVisible(false);
 
-   textEdit->setFixedHeight(defHeight*height);
-   
-
    QFontMetrics fm = textEdit->fontMetrics();
    int width = w*fm.width("W")+10;
-   textEdit->setFixedWidth(width);
+
+   if(stretch == "none")
+   {
+      textEdit->setFixedHeight(height*defHeight);
+      textEdit->setFixedWidth(width);
+
+   }
+   else
+   {
+       textEdit->setMinimumSize(width,defHeight*height);
+   }
+
+
 
    textEdit->setShift(shift);
    textEdit->setNoEntry(noEntry);
