@@ -609,15 +609,6 @@ void TextEdit::setStretching(QString stretch)
     }
 
     this->b_stretch = true;
-
-    if(stretch == "both" || stretch == "y" || stretch == "x")
-    {
-       if(FglForm *p_fglform = qobject_cast<FglForm*> (this->parent()))
-       {
-           this->p_fglform = p_fglform;
-           connect(p_fglform, SIGNAL(resizeEvent()), this, SLOT(adjustSizeEvent()));
-       }
-    }
 }
 
 int TextEdit::getCursorPosition(){
@@ -626,29 +617,6 @@ int TextEdit::getCursorPosition(){
    return index;
 }
 
-void TextEdit::adjustSizeEvent()
-{
-    QSplitter *split = (QSplitter*) this->p_fglform->centralWidget();
-return;
-
-    if(!this->b_stretch || split->widget(0) == NULL)
-    {
-        return;
-    }
-    QWidget *wid = split->widget(0);
-
-
-    QSize test;
-    test = wid->size();
-    qDebug()<<test.width()<<" "<<test.height();
-    //   this->resize(wid->sizeHint());
- //   wid->setGeometry(QRect(0,0,test.width(), test.height()));
-    this->resize(wid->size());
-    this->updateGeometry();
-    wid->updateGeometry();
-
-    //this->p_fglform->centralWidget()->layout()->
-}
 
 int TextEdit::getIndex (const QTextCursor &crQTextCursor ){
   QTextBlock           b;
