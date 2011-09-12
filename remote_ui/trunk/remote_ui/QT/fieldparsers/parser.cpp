@@ -467,20 +467,19 @@ void Parser::handleTableColumn(const QDomNode& xmlNode){
 
       if(hidden)
          p_screenRecord->hideColumn(i);
-      // restore the width for column Label from table.cpp and if QSettings is empty use the width from the form file.
+      // restore if the column is hidden/shown
       QSettings settings(ql_fglFields.at(i)->colName(), p_screenRecord->accessibleName());
       if(!settings.value("hideColumn").isNull())
       {
           header->hideSection(settings.value("columnId").toInt());
       }
-/*      if(!settings.value(ql_fglFields.at(i)->colName()).isNull())
+      // restore the width for each column.
+      if( !settings.value("width").isNull() && !settings.value("columnId").isNull())
       {
-  //       header->resizeSection(i, settings.value(ql_fglFields.at(i)->colName()).toInt());
+         header->resizeSection(settings.value("columnId").toInt(), settings.value("width").toInt());
       } else {
- //        header->resizeSection(i, w+1);
-      }
-      //Solange Daniel seine Funktion nicht richtig lauffäig hat.*/
       header->resizeSection(i, w+1);
+      }
 
    //   header->resizeSections(QHeaderView::Fixed);
       QHeaderView *vert = p_screenRecord->verticalHeader();

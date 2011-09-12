@@ -866,8 +866,9 @@ QVariant TableModel::headerData ( int section, Qt::Orientation orientation, int 
    if ( orientation == Qt::Horizontal )
    {
       if(qh_colLabels[section] != NULL){
-         QSettings settings("VENTAS", this->mytv->accessibleName());
-         settings.setValue(qh_colLabels[section]->colName, this->mytv->columnWidth(section));
+         QSettings settings(qh_colLabels[section]->colName, this->mytv->accessibleName());
+         settings.setValue("width", this->mytv->columnWidth(section));
+         settings.setValue("columnId", section);
 
          if(!qh_colLabels[section]->text().isEmpty()){
             return qh_colLabels[section]->text();
