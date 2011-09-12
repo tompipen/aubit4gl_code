@@ -56,6 +56,7 @@ MainFrame::vdcdebug("TableView","TableView", "QWidget *parent");
    header->setClickable(true);
    header->setSortIndicatorShown(true);
    header->setSortIndicator(0, Qt::AscendingOrder);
+   header->installEventFilter(this);
 
    connect(this, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(accept()));
    connect(this, SIGNAL(entered(QModelIndex)), this, SLOT(setMousePos(QModelIndex)));
@@ -68,6 +69,74 @@ MainFrame::vdcdebug("TableView","TableView", "QWidget *parent");
    this->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
    this->setInputEnabled(false);
    this->setEnabled(false);
+}
+
+bool TableView::eventFilter(QObject *object, QEvent *event)
+{
+    if(event->type() == QEvent::ContextMenu)
+    {
+        QSortFilterProxyModel *proxyModel = static_cast<QSortFilterProxyModel*> (this->model());
+        TableModel *table = static_cast<TableModel*> (proxyModel->sourceModel());
+        Pulldown *pulldownMenu = new Pulldown();
+        int i =0;
+
+        standardAct = new QAction(tr("Standard Einstellung der Spaltenbreite wiederherstellen"), this);
+        resetAct    = new QAction(tr("Standard Reihenfolge der Spalten wiederherstellen"), this);
+
+        //read all Column Names in a QList QLabel and Add the Pulldown Action dynamicly.
+        for (i=0; i < table->qsl_colNames.count(); i++)
+        {
+            if(getColumnName(i) != NULL)
+            {
+                columnLabels << getColumnLabel(i);
+                if(columnLabels.toVector().at(i) != NULL)
+                {
+
+                   pulldownMenu->addAction(columnLabels.at(i)->text());
+                }
+            }
+        }
+        // own signal to save the state for the hidden/shown column
+        connect(pulldownMenu, SIGNAL(triggered(QAction*)), this, SLOT(writeSettings(QAction*)));
+
+        // add the standardmenu to the pulldown and execute the pulldown menu
+        pulldownMenu->addSeparator();
+        pulldownMenu->addAction(standardAct);
+        pulldownMenu->addSeparator();
+        pulldownMenu->addAction(resetAct);
+        pulldownMenu->exec(QCursor::pos());
+
+        return true;
+    } else {
+        return false;
+    }
+}
+void TableView::writeSettings(QAction *action)
+{
+    QSortFilterProxyModel *proxyModel = static_cast<QSortFilterProxyModel*> (this->model());
+    TableModel *table = static_cast<TableModel*> (proxyModel->sourceModel());
+    int i = 0;
+
+    for(i=0; i < columnLabels.count(); i++)
+    {
+        if(columnLabels.at(i) != NULL)
+        {
+            if(columnLabels.at(i)->text() == action->text())
+            {
+                QSettings settings(columnLabels.at(i)->objectName(), table->mytv->accessibleName());
+                if(settings.value("hideColumn").isNull())
+                {
+                    settings.setValue("hideColumn", "1");
+                    this->horizontalHeader()->hideSection(i);
+                    return;
+                } else {
+                    settings.remove("hideColumn");
+                    this->horizontalHeader()->showSection(i);
+                    return;
+                }
+            }
+        }
+    }
 }
 
 /*

@@ -39,6 +39,10 @@ public:
    int arrLine() { return i_arrLine; };
    int scrLine() { return i_scrLine; };
    QWidget *p_fglform;
+   QList<QLabel*> columnLabels;
+   QAction *standardAct;
+   QAction *resetAct;
+
 //   void resize();
 
     void setInputEnabled(bool);
@@ -64,6 +68,7 @@ public:
     int getCurrMouseColumn();
     void setMouseModelIndex(QModelIndex);
     QModelIndex getMouseModelIndex();
+    bool eventFilter(QObject *, QEvent *);
 
 
 private:
@@ -82,6 +87,7 @@ public slots:
    void accept();
    void setMousePos(QModelIndex);
    void dragSuccess();
+   void writeSettings(QAction*);
 
 protected:
    QModelIndex mouseindex;
