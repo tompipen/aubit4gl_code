@@ -91,8 +91,16 @@ bool TableView::eventFilter(QObject *object, QEvent *event)
                 columnLabels << getColumnLabel(i);
                 if(columnLabels.toVector().at(i) != NULL)
                 {
+                   columnAct = new QAction(columnLabels.at(i)->text(), this);
+                   pulldownMenu->addAction(columnAct);
+                   columnAct->setCheckable(true);
 
-                   pulldownMenu->addAction(columnLabels.at(i)->text());
+                   QSettings settings(columnLabels.at(i)->objectName(), table->mytv->accessibleName());
+                   if(settings.value("hideColumn").isNull())
+                   {
+                       columnAct->setChecked(true);
+                   }
+
                 }
             }
         }

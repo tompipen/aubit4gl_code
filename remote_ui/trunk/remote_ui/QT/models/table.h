@@ -42,6 +42,7 @@ public:
    QList<QLabel*> columnLabels;
    QAction *standardAct;
    QAction *resetAct;
+   QAction *columnAct;
 
 //   void resize();
 
