@@ -135,10 +135,12 @@ void TableView::writeSettings(QAction *action)
                 if(settings.value("hideColumn").isNull())
                 {
                     settings.setValue("hideColumn", "1");
+                    settings.setValue("columnId", i);
                     this->horizontalHeader()->hideSection(i);
                     return;
                 } else {
                     settings.remove("hideColumn");
+                    settings.remove("columnId");
                     this->horizontalHeader()->showSection(i);
                     return;
                 }

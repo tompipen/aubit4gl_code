@@ -471,7 +471,7 @@ void Parser::handleTableColumn(const QDomNode& xmlNode){
       QSettings settings(ql_fglFields.at(i)->colName(), p_screenRecord->accessibleName());
       if(!settings.value("hideColumn").isNull())
       {
-          header->hideSection(i);
+          header->hideSection(settings.value("columnId").toInt());
       }
 /*      if(!settings.value(ql_fglFields.at(i)->colName()).isNull())
       {
