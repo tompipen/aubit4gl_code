@@ -394,6 +394,7 @@ public:
    int x;
    int y;
    bool b_stretch;
+   QString qs_stretch;
    int w;
    void setStyleProb(const QString s){ s_style = s; }
    QString getStyleProb() const { return s_style; }

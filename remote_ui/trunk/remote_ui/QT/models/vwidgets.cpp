@@ -602,6 +602,7 @@ TextEdit::TextEdit(QWidget *parent)
 
 void TextEdit::setStretching(QString stretch)
 {
+    this->qs_stretch = stretch;
     if(stretch == "none")
     {
         this->b_stretch = false;
@@ -1517,8 +1518,15 @@ MainFrame::vdcdebug("WidgetHelper","createTextEdit", "const QDomElement& formFie
 
    if(stretch == "both")
    {
-      textEdit->b_stretch = true;
       textEdit->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+   }
+   if(stretch == "y")
+   {
+       textEdit->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
+   }
+   if(stretch == "x")
+   {
+       textEdit->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
    }
 
 
@@ -1568,11 +1576,20 @@ MainFrame::vdcdebug("WidgetHelper","createTextEdit", "const QDomElement& formFie
       textEdit->setFixedWidth(width);
 
    }
-   else
+   if(stretch == "both")
    {
        textEdit->setMinimumSize(width,defHeight*height);
    }
-
+   if(stretch == "y")
+   {
+       textEdit->setMinimumHeight(defHeight*height);
+       textEdit->setFixedWidth(width);
+   }
+   if(stretch == "x")
+   {
+       textEdit->setFixedHeight(defHeight*height);
+       textEdit->setMinimumWidth(width);
+   }
 
 
    textEdit->setShift(shift);

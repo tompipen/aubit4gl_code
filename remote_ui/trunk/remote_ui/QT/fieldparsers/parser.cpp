@@ -616,11 +616,22 @@ MainFrame::vdcdebug("Parser","addWidgets", "QWidget *widget, bool add, int x, in
       {
           if(TextEdit *te = qobject_cast<TextEdit*> (widget))
           {
-              if(te->b_stretch)
+              if(te->qs_stretch == "both")
               {
                   layout->addWidget(widget, x, y);//), Qt::AlignTop);
                   return;
               }
+              if(te->qs_stretch == "y")
+              {
+                  layout->addWidget(widget, x, y, -1, gridWidth);//), Qt::AlignTop);
+                  return;
+              }
+              if(te->qs_stretch == "x")
+              {
+                  layout->addWidget(widget, x, y, span, -1);//), Qt::AlignTop);
+                  return;
+              }
+
           }
           layout->addWidget(widget, x, y, span, gridWidth, Qt::AlignLeft|Qt::AlignTop);
       }
