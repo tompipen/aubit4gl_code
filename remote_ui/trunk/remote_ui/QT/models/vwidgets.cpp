@@ -544,7 +544,6 @@ DateEdit::DateEdit(QWidget *parent)
    this->setEnabled(false);
    this->iconFileName = "calendar";
    button = new QPushButton(this);
-   button->setEnabled(false);
    connect(button, SIGNAL(clicked()), this, SLOT(buttonClicked()));
    button->setFocusPolicy(Qt::NoFocus);
    if(!iconFileName.contains("."))
