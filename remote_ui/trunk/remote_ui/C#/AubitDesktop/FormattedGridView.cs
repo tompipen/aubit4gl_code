@@ -18,13 +18,9 @@ namespace AubitDesktop
         internal DataTable defaultData;
         internal bool bolhareadOnly;
 
-        //internal int enteredCellColumn = -1;
-        //internal int enteredCellRow = -1;
-        //internal int enteredRow = -1;
-        //internal int leftCellColumn = -1;
-        //internal int leftCellRow = -1;
+
         internal bool rowChanged = false;
-        //internal bool ignEvents = false;
+
         private int _maxRows;
         internal int movingCellsInternally=0;
 
@@ -69,7 +65,6 @@ namespace AubitDesktop
                 if (_maxRows != value)
                 {
                     _maxRows = value;
-                   // setAllowUserToAddRows();
                 }
 
             }
@@ -89,7 +84,6 @@ namespace AubitDesktop
             set
             {
                 _allowInsertRow = value;
-              //  setAllowUserToAddRows();
             }
         }
 
