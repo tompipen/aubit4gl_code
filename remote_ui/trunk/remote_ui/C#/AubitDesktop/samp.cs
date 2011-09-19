@@ -101,9 +101,30 @@ namespace AubitDesktop
         public string TITLE;
 
         /// <remarks/>
-        [System.Xml.Serialization.XmlArrayItem(IsNullable = false)]
-        public MENUCOMMAND[] MENUCOMMANDS;
+        [System.Xml.Serialization.XmlArrayItem(Type = typeof(MENUACTION), IsNullable = false)]
+        [System.Xml.Serialization.XmlArrayItem(Type = typeof(MENUCOMMAND), IsNullable = false)]
+        public object[] MENUCOMMANDS;
     }
+
+
+    [System.Xml.Serialization.XmlRootAttribute(Namespace = "", IsNullable = true)]
+    public class MENUACTION
+    {
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string CONTEXT;
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string ID;
+
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string ACTION;
+
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string CMD_NO_TIMEOUT;
+    }
+
 
     /// <remarks/>
     [System.Xml.Serialization.XmlRootAttribute(Namespace = "", IsNullable = true)]
@@ -1189,6 +1210,10 @@ namespace AubitDesktop
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string CHANGED;
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string CACHED;
 
         /// <remarks/>
         /*
