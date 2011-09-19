@@ -206,126 +206,136 @@ namespace AubitDesktop
 
             keyList = new List<ONKEY_EVENT>();
             onActionList = new List<ON_ACTION_EVENT>();
-            
 
-            foreach (MENUCOMMAND a in m.MENUCOMMANDS)
+
+            foreach (object o in m.MENUCOMMANDS)
             {
-                Button btn;
-                string txt;
-                bool isOnToolbar = false;
-                txt = a.TEXT;
-                if (txt.Length == 0) txt = null;
-
-
-
-                if (txt == null)
+                if (o is MENUACTION)
                 {
-
-                    string[] menukeys;
-                    menukeys = a.KEYS.Split(',');
-                    foreach (string s in menukeys)
-                    {
-                        ONKEY_EVENT e = new ONKEY_EVENT();
-                        e.ID = a.ID;
-                        
-                        e.KEY = s;
-                        keyList.Add(e);
-                    }
+                    // Ignore for now..
 
                 }
-                else
+                if (o is MENUCOMMAND)
                 {
+                    MENUCOMMAND a;
+                    Button btn;
+                    string txt;
+                    bool isOnToolbar = false;
+                    a = o as MENUCOMMAND;
+                    txt = a.TEXT;
+                    if (txt.Length == 0) txt = null;
 
 
-                    string[] menukeys;
-                    if (a.KEYS == "")
+
+                    if (txt == null)
                     {
 
-                        menukeys = new string[1];
-                        //menukeys[0] =1;
+                        string[] menukeys;
+                        menukeys = a.KEYS.Split(',');
+                        foreach (string s in menukeys)
+                        {
+                            ONKEY_EVENT e = new ONKEY_EVENT();
+                            e.ID = a.ID;
 
-                        char[] arr = a.TEXT.Substring(0, 1).ToCharArray();
-                        menukeys[0] = ((int)(arr[0])).ToString();
-
+                            e.KEY = s;
+                            keyList.Add(e);
+                        }
 
                     }
                     else
                     {
-                        menukeys = a.KEYS.Split(',');
-                    }
 
-                    foreach (string s in menukeys)
-                    {
-                        int n = -1;
-                        ONKEY_EVENT e = new ONKEY_EVENT();
-                        try
+
+                        string[] menukeys;
+                        if (a.KEYS == "")
                         {
-                            n = Convert.ToInt32(s);
+
+                            menukeys = new string[1];
+                            //menukeys[0] =1;
+
+                            char[] arr = a.TEXT.Substring(0, 1).ToCharArray();
+                            menukeys[0] = ((int)(arr[0])).ToString();
+
+
                         }
-                        catch (Exception ) { }
-
-
-                        if (s.Trim() != "" && n != -1)
+                        else
                         {
-                            e.ID = a.ID;
-                            
-                            e.KEY = s;
-                            if (n <= 26 || n > 255)
+                            menukeys = a.KEYS.Split(',');
+                        }
+
+                        foreach (string s in menukeys)
+                        {
+                            int n = -1;
+                            ONKEY_EVENT e = new ONKEY_EVENT();
+                            try
                             {
-                                keyList.Add(e);
+                                n = Convert.ToInt32(s);
+                            }
+                            catch (Exception) { }
+
+
+                            if (s.Trim() != "" && n != -1)
+                            {
+                                e.ID = a.ID;
+
+                                e.KEY = s;
+                                if (n <= 26 || n > 255)
+                                {
+                                    keyList.Add(e);
+
+                                }
 
                             }
 
                         }
 
-                    }
-
-                    if (a.TEXT != null && a.TEXT != "")
-                    {
-                        if (f.hasToolbarButton(a.TEXT.ToLower()))
+                        if (a.TEXT != null && a.TEXT != "")
                         {
-                            ON_ACTION_EVENT e;
-                            e=new ON_ACTION_EVENT();
-                            e.ACTION=a.TEXT.ToLower();
-                            e.ID=a.ID;
-                           
-                            onActionList.Add(e);
-                            isOnToolbar = true;
-                            // NOTE : 
-                            // We might want to add a 'continue' here - so
-                            // we dont have a menubutton of we have a toolbar button...
+                            if (f.hasToolbarButton(a.TEXT.ToLower()))
+                            {
+                                ON_ACTION_EVENT e;
+                                e = new ON_ACTION_EVENT();
+                                e.ACTION = a.TEXT.ToLower();
+                                e.ID = a.ID;
 
+                                onActionList.Add(e);
+                                isOnToolbar = true;
+                                // NOTE : 
+                                // We might want to add a 'continue' here - so
+                                // we dont have a menubutton of we have a toolbar button...
+
+                            }
                         }
-                    }
 
-                    btn = new UIMenuBarButton(txt, a.ID);
-                    
+                        btn = new UIMenuBarButton(txt, a.ID);
 
-                    if (a.DESCRIPTION != null)
-                    {
-                        tooltips.SetToolTip(btn, a.DESCRIPTION);
-                    }
 
-                    btn.Click += new EventHandler(b_Click);
-                    btn.Top = top;
-                    btn.AutoSize = true;
-                    btn.Left = 10;
-                    if (btn.Image!=null)
-                    {
-                        btn.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-                        btn.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-                    }
-
-                    if (!isOnToolbar)
-                    {
-                        menuPanel.Controls.Add(btn);
-                        if (btn.Height == 0)
+                        if (a.DESCRIPTION != null)
                         {
-                            top += 30;
+                            tooltips.SetToolTip(btn, a.DESCRIPTION);
                         }
-                        else
+
+                        btn.Click += new EventHandler(b_Click);
+                        btn.Top = top;
+                        btn.AutoSize = true;
+                        btn.Left = 10;
+                        if (btn.Image != null)
                         {
-                            top += btn.Height;
+                            btn.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+                            btn.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+                        }
+
+                        if (!isOnToolbar)
+                        {
+                            menuPanel.Controls.Add(btn);
+                            if (btn.Height == 0)
+                            {
+                                top += 30;
+                            }
+                            else
+                            {
+                                top += btn.Height;
+                            }
                         }
                     }
                 }
