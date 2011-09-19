@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.187 2011-04-28 16:19:00 mikeaubury Exp $
+# $Id: conv.c,v 1.188 2011-09-19 18:03:02 mikeaubury Exp $
 #
 */
 
@@ -1530,6 +1530,11 @@ A4GL_stodec (void *a, void *z, int size)
   t = t - h * 256;
   errno = 0;
 
+
+if (!A4GL_isno(acl_getenv("NEWDECSTRCONV"))) {
+A4GL_decstr_convert(a,a4gl_convfmts.ui_decfmt,a4gl_convfmts.posix_decfmt,0,1, -1);
+} else {
+
   if (a)
     {
       char *ptr;
@@ -1582,6 +1587,9 @@ A4GL_stodec (void *a, void *z, int size)
 	}
 
     }
+}
+
+
 
 #ifdef DEBUG
   A4GL_debug ("converting '%s' to a decimal (%x) %d,%d", A4GL_null_as_null (a), size, h, t);
@@ -4243,7 +4251,7 @@ return 1;
 }
 
 
-int isValidPgStyleInterval(char *s, int *data, int size) {
+static int isValidPgStyleInterval(char *s, int *data, int size) {
 int ivals[7];
 struct ival i;
 if (data==NULL) data=ivals;

@@ -25,7 +25,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.192 2011-08-12 16:15:28 mikeaubury Exp $
+# $Id: ops.c,v 1.193 2011-09-19 18:03:02 mikeaubury Exp $
 #
 */
 
@@ -7983,11 +7983,11 @@ A4GL_whats_in_a_string (char *sorig, int *d, int *sz,int dtype_hint)
   int val;
   int orig_stat;
 int t;
-int dot_cnt;
+int dot_cnt, dgt_cnt;
 int sl;
 static char *s=NULL;
 
-if (s) {free(s) ; s=NULL;}
+if (s) {free(s) ; s=NULL;}//cleanup previous strdup()
 
   if (sorig == 0)
     return;
@@ -7996,37 +7996,51 @@ s=strdup(sorig);
   orig_stat = a4gl_status;
 
   *d = DTYPE_CHAR;
-  *sz = strlen (s);
+  sl = *sz = strlen (s);
 
+  if (s[0] > ':') return; //first char != digit, separator
 
-	if (strcmp(s,"0-1")==0) { *d=DTYPE_INTERVAL; *sz=0x612; }
+  if (strcmp(s,"0-1")==0) { *d=DTYPE_INTERVAL; *sz=0x612; return;}//return?
 
   orig_conv_ok = A4GL_conversion_ok (-1);
-  dot_cnt=0;
+  dot_cnt = dgt_cnt = 0;
 
 
-  sl=strlen(s);
+//sl=strlen(s);
 
-  for (a=0;a<sl;a++) {
-	if (s[a]=='.') dot_cnt++;
+//for (a=0;a<sl;a++) { if (s[a]=='.') dot_cnt++; }
+//scan string, classify chars, max first 40 chars? max length of DEC/DTIME?
+  if ((b = sl) > 40) { b=40; }
+  for (a=0;a<b;a++) {
+      switch(s[a]) {
+      case '0': case '1': case '2': case '3': case '4':
+      case '5': case '6': case '7': case '8': case '9':
+                dgt_cnt++;
+                break;
+      case '.': dot_cnt++;
+//TODO scan/classify '-' ':'  ... for DTIME tests?
+      }
   }
 
+  if (!dgt_cnt) return; //none digit!!!
 
-  if (dot_cnt==2) {
-	// its a date?
-	// 	11.11.2004;
+
+
+  if (dot_cnt==2 && dgt_cnt) {//two '.' && some digits
+        // its a date?
+        //      11.11.2004;
       *d = DTYPE_DATE;
       *sz = 4;
-  	A4GL_conversion_ok (1);
-  	val = A4GL_stod (s, buff, 4);
+        A4GL_conversion_ok (1);
+        val = A4GL_stod (s, buff, 4);
 
-  	if (!A4GL_conversion_ok (-1)) {
-    		val = 0;
-	}
-  	if (val == 1)
-    	{
-		return ;
-  	}
+        if (!A4GL_conversion_ok (-1)) {
+                val = 0;
+        }
+        if (val == 1)
+        {
+                return ;
+        }
    }
 
 
@@ -8037,18 +8051,18 @@ s=strdup(sorig);
       A4GL_conversion_ok (1);
       val = A4GL_stodec (s, buff, 32 * 256 + 16);
       if (!A4GL_conversion_ok (-1))
-	val = 0;
+        val = 0;
       if (val == 1)
-	{
+        {
 #ifdef DEBUG
-	  A4GL_debug ("Its a decimal");
+          A4GL_debug ("Its a decimal");
 #endif
-	  *d = DTYPE_DECIMAL;
-	  *sz = 32 * 256 + 16;	// Could work out a proper size here...
-	  A4GL_conversion_ok (orig_conv_ok);
-	  a4gl_status = orig_stat;
-	  return;
-	}
+          *d = DTYPE_DECIMAL;
+          *sz = 32 * 256 + 16;  // Could work out a proper size here...
+          A4GL_conversion_ok (orig_conv_ok);
+          a4gl_status = orig_stat;
+          return;
+        }
     }
   else
     {
@@ -8056,22 +8070,20 @@ s=strdup(sorig);
       A4GL_conversion_ok (1);
       val = A4GL_stol (s, buff, 4);
       if (!A4GL_conversion_ok (-1))
-	val = 0;
+        val = 0;
       if (val == 1)
-	{
-	  *d = DTYPE_INT;
-	  *sz = 4;
+        {
+          *d = DTYPE_INT;
+          *sz = 4;
 #ifdef DEBUG
-	  A4GL_debug ("Its an integer");
+          A4GL_debug ("Its an integer");
 #endif
-	  A4GL_conversion_ok (orig_conv_ok);
-	  a4gl_status = orig_stat;
-	  return;
-	}
+          A4GL_conversion_ok (orig_conv_ok);
+          a4gl_status = orig_stat;
+          return;
+        }
     }
-
-
-  a4gl_status = orig_stat;
+a4gl_status = orig_stat;
   A4GL_conversion_ok (orig_conv_ok);
 
   // Check for date
@@ -8096,36 +8108,37 @@ for (t=0;t<3;t++) {
 
 
 
-	if ((t==0 && dtype_hint==DTYPE_DTIME) || t==1) {
+        if ((t==0 && dtype_hint==DTYPE_DTIME) || t==1) {
   a4gl_status = orig_stat;
   A4GL_conversion_ok (orig_conv_ok);
 // Check for a datetime...
   for (a = 0; a <= 10; a++)
     {
       for (b = a; b <= 10; b++)
-	{
-	  if (a == b)
-	    continue;		// Year year, month month etc = integer
-	  A4GL_conversion_ok (1);
-	  val = A4GL_ctodt (s, buff, (a << 4) + b);
-	  if (val)
-	    {
-	      if (A4GL_isnull (DTYPE_DTIME, buff))
-		val = 0;
-	      if (!A4GL_conversion_ok (-1))
-		val = 0;
-	      if (val)
-		{
+        {
+          if (a == b)
+            continue;           // Year year, month month etc = integer
+          A4GL_conversion_ok (1);
+          val = A4GL_ctodt (s, buff, (a << 4) + b);
+          if (val)
+            {
+              if (A4GL_isnull (DTYPE_DTIME, buff))
+                val = 0;
+              if (!A4GL_conversion_ok (-1))
+                val = 0;
+              if (val)
+                {
 #ifdef DEBUG
-		  A4GL_debug ("Possible DATETIME %d to %d", a, b);
+                  A4GL_debug ("Possible DATETIME %d to %d", a, b);
 #endif
-		  *d = DTYPE_DTIME;
-		  *sz = (a << 4) + b;
-		  return;
-		}
-	    }
+                  *d = DTYPE_DTIME;
+                  *sz = (a << 4) + b;
+                  return;
 
-	}
+                }
+            }
+
+        }
     }
   }
 
@@ -8140,32 +8153,32 @@ if ((t==0 && dtype_hint==DTYPE_INTERVAL) || t==2) {
     {
       int size_b=0;
       for (b = a; b <= 10; b++)
-	{
-	  char str[2560];
-	  //int ibuff[30];
-	  strcpy (str, s);
+        {
+          char str[2560];
+          //int ibuff[30];
+          strcpy (str, s);
 
-	  if (a == b)
-	    continue;		// Year year, month month etc = integer
-	  size_b = 0x600 + ((a + 1) << 4) + (b + 1);
-	  if ((a == 0 || a == 1) && b > 1)
-	    continue;
+          if (a == b)
+            continue;           // Year year, month month etc = integer
+          size_b = 0x600 + ((a + 1) << 4) + (b + 1);
+          if ((a == 0 || a == 1) && b > 1)
+            continue;
 
-	  if (A4GL_valid_int (str, NULL , size_b))
-	    {
-	      //printf ("Possible INTERVAL %d to %d : %s", a, b,str);
+          if (A4GL_valid_int (str, NULL , size_b))
+            {
+              //printf ("Possible INTERVAL %d to %d : %s", a, b,str);
 #ifdef DEBUG
-	      A4GL_debug ("Possible INTERVAL %d to %d", a, b);
+              A4GL_debug ("Possible INTERVAL %d to %d", a, b);
 #endif
-	      *d = DTYPE_INTERVAL;
-	      *sz = size_b;
+              *d = DTYPE_INTERVAL;
+              *sz = size_b;
 #ifdef DEBUG
-	      A4GL_debug ("returning %d %d %d %x", a, b, *d,*sz);
+              A4GL_debug ("returning %d %d %d %x", a, b, *d,*sz);
 #endif
-	      return;
-	    }
+              return;
+            }
 
-	}
+        }
     }
 }
 }

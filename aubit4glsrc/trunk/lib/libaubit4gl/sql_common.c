@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql_common.c,v 1.102 2011-04-14 16:57:13 mikeaubury Exp $
+# $Id: sql_common.c,v 1.103 2011-09-19 18:03:02 mikeaubury Exp $
 #
 */
 
@@ -153,21 +153,25 @@ static int A4GL_findPreparedStatement (char *name);
 
 
 static char *cleanup(char *sql) {
-static char buff[21000];
-int a;
+static char buff[21000];// no reentrant!  - doesnt need to be - only used for debugging stuff internally and then
+			// only once per call
+int a, len;
 int b=0;
-for (a=0;a<strlen(sql);a++) {
-	if (sql[a]=='|') {buff[b++]='\\'; buff[b++]='|';continue;}
-	if (sql[a]<' ') {continue;}
-	if (sql[a]=='\n') {continue;}
-	if (sql[a]=='\r') {continue;}
-	
-
-	buff[b++]=sql[a];
+for (a=0, len=strlen(sql); a<len; a++) {
+        if (sql[a]<' ') {continue;}
+        switch (sql[a]) {
+        case '\r':
+        case '\n': break;
+        case '|': buff[b++]='\\';
+              /*@nobreak@*/
+        default:
+        buff[b++]=sql[a];
+        }
 }
 buff[b]=0;
-A4GL_trim(buff);
-return buff;
+  A4GL_trim(buff);
+  //A4GL_trim_charn(buff, b-1);
+  return buff;
 }
 
 static void log_sql(char *type, char *nm, char *sql, double tm, char *mod,int line) {
