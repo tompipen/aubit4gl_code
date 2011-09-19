@@ -2045,6 +2045,16 @@ namespace AubitDesktop
                 fld.Text = "";
                 fld.Attribute = -1;
             }
+
+            
+
+                foreach (DictionaryEntry d in grids)
+                {
+                    FormattedGridView f;
+                    f = (FormattedGridView)d.Value;
+                    f.clearDefaultData();
+                }
+               // f.Rows.Clear();
         }
 
         int colourCnt = 0;
