@@ -199,20 +199,34 @@ namespace AubitDesktop
 
 
 
+        //System.Drawing.Color enabledColor=System.Drawing.SystemColors.Highlight;
         private void setForContext()
         {
+
+
             switch (_context)
             {
                 case FGLContextType.ContextNone:
-                case FGLContextType.ContextDisplayArray:
                 case FGLContextType.ContextDisplayArrayInactive:
+                    this.DefaultCellStyle.SelectionBackColor = System.Drawing.Color.Gray;
                     AllowUserToResizeColumns = true;
                     AllowUserToResizeRows = true;
                     ReadOnly = true;
+                    
+                    SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+                    break;
+                
+                case FGLContextType.ContextDisplayArray:
+                    this.DefaultCellStyle.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+                    AllowUserToResizeColumns = true;
+                    AllowUserToResizeRows = true;
+                    ReadOnly = true;
+                    
                     SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
                     break;
 
                 case FGLContextType.ContextInputArrayInactive:
+                    this.DefaultCellStyle.SelectionBackColor = System.Drawing.Color.Gray;
                     AllowUserToResizeColumns = true;
                     AllowUserToResizeRows = true;
                     ReadOnly = true;
@@ -220,6 +234,7 @@ namespace AubitDesktop
                     break;
 
                 case FGLContextType.ContextInputArray:
+                    this.DefaultCellStyle.SelectionBackColor = System.Drawing.SystemColors.Highlight;
                     AllowUserToResizeColumns = true;
                     AllowUserToResizeRows = true;
 
@@ -227,7 +242,9 @@ namespace AubitDesktop
                     SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect;
                     break;
 
-
+                default:
+                    this.DefaultCellStyle.SelectionBackColor = System.Drawing.Color.Gray;
+                    break;
             }
         }
 
