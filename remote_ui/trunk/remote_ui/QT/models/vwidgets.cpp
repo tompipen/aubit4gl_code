@@ -2024,8 +2024,8 @@ MainFrame::vdcdebug("WidgetHelper","fieldText", "QObject *object");
    }
 
    if(LineEdit *widget = qobject_cast<LineEdit *> (object)){
-      QString text = widget->text();
-      if(widget->sqlTabName == "formonly")
+ /*      QString text = widget->text();
+     if(widget->sqlTabName == "formonly")
       {
          int cnt_comma = 0;
 //  text.replace(".","");
@@ -2046,22 +2046,22 @@ MainFrame::vdcdebug("WidgetHelper","fieldText", "QObject *object");
                  return text;
              }
          }
-         return text.replace(",",".");
+         return text;//.replace(",",".");
 
       }
       if(widget->sqlType().contains("FLOAT") || widget->sqlType().contains("DECIMAL"))
       {
-         return text.replace(",",".");
-      }
+         return text;//.replace(",",".");
+      }*/
       return widget->text();
    }
 
    if(TextEdit *widget = qobject_cast<TextEdit *> (object)){
-       if(widget->sqlType().contains("FLOAT") || widget->sqlType().contains("DECIMAL"))
+/*       if(widget->sqlType().contains("FLOAT") || widget->sqlType().contains("DECIMAL"))
        {
-          return widget->toPlainText().replace(",",".");
+          return widget->toPlainText();//.replace(",",".");
        }
-      return widget->toPlainText();
+  */    return widget->toPlainText();
    }
 
    if(ComboBox *widget = qobject_cast<ComboBox *> (object)){
