@@ -4076,4 +4076,5 @@ void UILIB_A4GL_ui_run_info(int mode, char*cmdline, int runcnt, int startstop) {
 			uilib_xml_escape(cmdline),
 				runcnt,
 				startstop);
+  flush_ui ();
 }
