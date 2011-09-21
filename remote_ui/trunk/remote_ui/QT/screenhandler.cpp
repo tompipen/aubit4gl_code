@@ -1836,7 +1836,12 @@ MainFrame::vdcdebug("ScreenHandler","waitForEvent", "");
          //p_fglform->resize(500,500);
 
          QSettings settings("VENTAS", p_fglform->windowName);
-         p_fglform->resize(settings.value("size").toSize());
+         if(!settings.value("size").isNull())
+         {
+             p_fglform->resize(settings.value("size").toSize());
+         } else {
+             p_fglform->adjustSize();
+         }
          p_fglform->show();
 
       }
