@@ -95,10 +95,18 @@ bool TableView::eventFilter(QObject *object, QEvent *event)
                    pulldownMenu->addAction(columnAct);
                    columnAct->setCheckable(true);
 
-                   QSettings settings(columnLabels.at(i)->objectName(), table->mytv->accessibleName());
-                   if(settings.value("hideColumn").isNull())
-                   {
+                   if(!columnLabels.at(i)->objectName().isNull()) {
+                       QSettings settings(columnLabels.at(i)->objectName(), table->mytv->accessibleName());
+                       if(settings.value("hideColumn").isNull())
+                       {
                        columnAct->setChecked(true);
+                       }
+                   } else {
+                       QSettings settings(columnLabels.at(i)->text(), table->mytv->accessibleName());
+                       if(settings.value("hideColumn").isNull())
+                       {
+                       columnAct->setChecked(true);
+                       }
                    }
 
                 }
@@ -131,18 +139,35 @@ void TableView::writeSettings(QAction *action)
         {
             if(columnLabels.at(i)->text() == action->text())
             {
-                QSettings settings(columnLabels.at(i)->objectName(), table->mytv->accessibleName());
-                if(settings.value("hideColumn").isNull())
+                if(!columnLabels.at(i)->objectName().isNull())
                 {
-                    settings.setValue("hideColumn", "1");
-                    settings.setValue("columnId", i);
-                    this->horizontalHeader()->hideSection(i);
-                    return;
+                    QSettings settings(columnLabels.at(i)->objectName(), table->mytv->accessibleName());
+                    if(settings.value("hideColumn").isNull())
+                    {
+                        settings.setValue("hideColumn", "1");
+                        settings.setValue("columnId", i);
+                        this->horizontalHeader()->hideSection(i);
+                        return;
+                    } else {
+                        settings.remove("hideColumn");
+                        settings.remove("columnId");
+                        this->horizontalHeader()->showSection(i);
+                        return;
+                    }
                 } else {
-                    settings.remove("hideColumn");
-                    settings.remove("columnId");
-                    this->horizontalHeader()->showSection(i);
-                    return;
+                    QSettings settings(columnLabels.at(i)->text(), table->mytv->accessibleName());
+                    if(settings.value("hideColumn").isNull())
+                    {
+                        settings.setValue("hideColumn", "1");
+                        settings.setValue("columnId", i);
+                        this->horizontalHeader()->hideSection(i);
+                        return;
+                    } else {
+                        settings.remove("hideColumn");
+                        settings.remove("columnId");
+                        this->horizontalHeader()->showSection(i);
+                        return;
+                    }
                 }
             }
         }
