@@ -62,9 +62,9 @@ int main(int argc, char *argv[])
 
 
     #ifdef Q_WS_MAC
-       QIcon ventasLogo("./pics/vdc.icns");
+       QIcon ventasLogo("pics:vdc.icns");
     #else
-       QIcon ventasLogo("./pics/vdc.png");
+       QIcon ventasLogo("pics:vdc.png");
     #endif
 
     app.setWindowIcon(ventasLogo);

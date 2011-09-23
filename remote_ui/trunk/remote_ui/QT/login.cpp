@@ -45,7 +45,7 @@ LoginForm::LoginForm(QWidget *parent)
    QStatusBar *statusBar = mainFrame->statusBar();
 
     QSystemTrayIcon *trayIcon = new QSystemTrayIcon(this);
-   trayIcon->setIcon(QIcon("./pics/vdc.png"));
+   trayIcon->setIcon(QIcon("pics:vdc.png"));
 
    QMenu *menu = new QMenu;
    QAction *showAction = menu->addAction("Show Login Window");
@@ -759,8 +759,6 @@ MainFrame::vdcdebug("LoginForm","okPressed", "");
       tn->connectToHost(server, 23);
       return;
    }
-
-
 
    ClientSocket *socket = new ClientSocket(0, user, pass, applicationLineEdit->text());
 

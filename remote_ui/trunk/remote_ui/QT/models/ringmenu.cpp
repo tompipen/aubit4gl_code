@@ -117,7 +117,7 @@ MainFrame::vdcdebug("RingMenu","createButton", "int id, QString text, QString to
 
    QString image = pic + ".png";
 
-   QFile img(QString("pics/%1").arg(image));
+   QFile img(QString("pics:%1").arg(image));
    if (!img.open(QIODevice::ReadOnly))
          image = "blank.png";
 

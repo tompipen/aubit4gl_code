@@ -59,7 +59,7 @@ MainFrame::vdcdebug("Pulldown","createAction", "int id, QString text");
    QString shortcut = text.at(0);
    QString image = pic + ".png";
 
-   QFile img(QString("pics/%1").arg(image));
+   QFile img(QString("pics:%1").arg(image));
    if (!img.open(QIODevice::ReadOnly))
          image = "blank.png";
 qDebug()<<QString("pics:%1").arg(image);
