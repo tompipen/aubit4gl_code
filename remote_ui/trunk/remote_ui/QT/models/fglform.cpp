@@ -2987,8 +2987,8 @@ MainFrame::vdcdebug("FglForm","handleGuiAction", "Action* fAction");
       accept();
       return true;
    }
-
-   if(fAction->name() == "cancel"){
+   //Hack for Ventas, until we fix this bug correctly.
+   if(fAction->name() == "cancel" || fAction->name() == "ende" || fAction->name() == "abbruch"){
       cancelTriggered();
       return true;
    }
