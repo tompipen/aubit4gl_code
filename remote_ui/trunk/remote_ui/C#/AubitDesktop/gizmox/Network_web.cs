@@ -388,7 +388,9 @@ namespace AubitDesktop
 
 
         private string cmd="";
-        string Envelope = "";
+	StringBuilder Envelope = new StringBuilder("");
+
+        //string Envelope = "";
         bool inEnvelope = false;
        private void tcpStream_DataReceived(object sender, com.thosmos.TcpStream.TcpDataEventArgs e)
        {
@@ -437,12 +439,14 @@ namespace AubitDesktop
                    {
                        if (c.StartsWith("<ENVELOPE"))
                        {
-                           Envelope = "";
+                           //Envelope = "";
+				Envelope = new StringBuilder("");
+
                            inEnvelope = true;
                        }
                        if (inEnvelope && this.sockStyle == AubitNetwork.SocketStyle.SocketStyleEnvelope)
                        {
-                           Envelope += (c + "\n");
+                           Envelope.Append (c + "\n");
                        }
 
                        if (!inEnvelope)
@@ -456,9 +460,9 @@ namespace AubitDesktop
                            inEnvelope = false;
 
 
-                           this.OnReceivedEnvelopeFromServer(new ReceivedEventArgs(null, Envelope));
-
-                           Envelope = "";
+                           this.OnReceivedEnvelopeFromServer(new ReceivedEventArgs(null, Envelope.ToString()));
+				Envelope = new StringBuilder("");
+                           //Envelope = "";
                        }
                    }
 
