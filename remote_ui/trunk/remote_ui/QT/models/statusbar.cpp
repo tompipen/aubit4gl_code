@@ -61,7 +61,7 @@ MainFrame::vdcdebug("StatusBar","displayMessage", "QString text");
 void StatusBar::displayError(QString text)
 {
 MainFrame::vdcdebug("StatusBar","displayError", "QString text");
-   errorLabel->setText(text);
+   errorLabel->setText("<b><font color=#ff0000>"+text+"</font></b>");
    QTimer::singleShot(5000, errorLabel, SLOT(clear()));
 }
 
