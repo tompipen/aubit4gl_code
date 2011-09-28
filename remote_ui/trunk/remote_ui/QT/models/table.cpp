@@ -300,8 +300,7 @@ MainFrame::vdcdebug("TableView","setArrCount", "int cnt");
    QSortFilterProxyModel *proxyModel = static_cast<QSortFilterProxyModel*> (this->model());
    TableModel *table = static_cast<TableModel*> (proxyModel->sourceModel());
 
-   if(table->b_input)
-      return;
+
 
 
    if(i_arrCount > table->rowCount(QModelIndex())){
@@ -322,8 +321,7 @@ void TableView::setMaxArrSize(int cnt)
 MainFrame::vdcdebug("TableView","setMaxArrSize", "int cnt");
    i_maxArrSize = cnt;
 
-   return;
-/*
+
 
    QSortFilterProxyModel *proxyModel = static_cast<QSortFilterProxyModel*> (this->model());
    TableModel *table = static_cast<TableModel*> (proxyModel->sourceModel());
@@ -332,7 +330,7 @@ MainFrame::vdcdebug("TableView","setMaxArrSize", "int cnt");
       int newRows = i_maxArrSize - table->rowCount(QModelIndex());
       table->insertRows(table->rowCount(QModelIndex()), newRows, QModelIndex());
    }
-   */
+
 
 }
 
@@ -505,21 +503,23 @@ MainFrame::vdcdebug("TableView","fieldChanged", "QModelIndex current, QModelInde
    QSortFilterProxyModel *proxyModel = static_cast<QSortFilterProxyModel*> (this->model());
    TableModel *table = static_cast<TableModel*> (proxyModel->sourceModel());
 
-   if(table->b_input && !checkBounds(current)){
+  /* if(table->b_input && !checkBounds(current)){
       //QModelIndex tindex = table->index(i_maxArrSize-1,current.column());
       //QModelIndex index = proxyModel->mapFromSource(tindex);
 
 
+
+     //  table->insertRows(current.row(), 1, QModelIndex());
       //setCurrentIndex(index);
 
-      QModelIndex tindex = table->index(prev.row(),prev.column());
-      QModelIndex index = proxyModel->mapFromSource(tindex);
-      setCurrentIndex(index);
+      //QModelIndex tindex = table->index(prev.row(),prev.column());
+      //QModelIndex index = proxyModel->mapFromSource(tindex);
+      setCurrentIndex(current);
 
-      emit error(QString("There are no more Rows in this direction"));
+     // emit error(QString("There are no more Rows in this direction"));
 
-      return;
-   }
+     // return;
+   }*/
 
    Fgl::Event event;
 
