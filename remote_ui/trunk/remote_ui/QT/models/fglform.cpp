@@ -44,7 +44,7 @@ FglForm::FglForm(QString windowName, QWidget *parent) : QMainWindow(parent){
        setWindowModality(Qt::WindowModal);
    }
 */
-   setWindowModality(Qt::WindowModal);
+   setWindowModality(Qt::NonModal);
 
    if(!windowName.isEmpty()){
       this->windowName = windowName;
