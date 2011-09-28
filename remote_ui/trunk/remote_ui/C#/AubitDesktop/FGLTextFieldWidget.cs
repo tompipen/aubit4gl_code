@@ -392,6 +392,7 @@ namespace AubitDesktop
             set
             {
                 string val;
+
                  
                 val = value;
 
@@ -438,10 +439,12 @@ namespace AubitDesktop
                 {
                     //l.Text = val;
                 }
+
+                string convert_value;
                 if (this.datatype.ToString() == "DTYPE_DECIMAL" || this.datatype.ToString() == "DTYPE_MONEY"
                     || this.datatype.ToString() == "DTYPE_FLOAT" || this.datatype.ToString() == "DTYPE_SMFLOAT")
                 {
-                    string convert_value;
+                    
                     try
                     {
                         convert_value = val.Replace(".", Thread.CurrentThread.CurrentCulture.NumberFormat.NumberDecimalSeparator);
@@ -459,7 +462,7 @@ namespace AubitDesktop
                    
 
                 }
-                t.Text = convert_value;
+                t.Text = l.Text;
             }
         }
 
