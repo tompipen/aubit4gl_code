@@ -32,14 +32,21 @@ class ScreenHandler : public QObject
    Q_OBJECT
 
 public:
-
+   static int cnt_screenhandler;
    ScreenHandler(QObject *parent = 0);
    ~ScreenHandler();
    //void handleXMLForm(const QDomDocument&);
    int getCurrForm();
    int getCurrWindow();
+   bool b_runinfo;
+   QString cmd;
+   int i_mode;
    FglForm* currForm();
    int pid;
+   QString programm_name;
+   int p_pid;
+   QString programm_name_run;
+   int p_pid_p;
    QList<QSize*> ql_formSizes;
    QList<FglForm*> ql_fglForms;
    QStringList qsl_activeFieldNames;
@@ -61,6 +68,7 @@ public:
    void addComboBoxItem(int, QString, QString);
    void removeComboBoxItem(int, QString);
    void clearComboBox(int);
+      FglForm *p_fglform;
 
 protected:
    bool eventFilter(QObject *obj, QEvent *ev);
@@ -71,7 +79,7 @@ private:
    QString qs_interfaceTitle;
    FglForm *dummy_fglform;
 
-   FglForm *p_fglform;
+
 //   QList<QWidget*> ql_formFields;
    QHash<QString, QLayout* > qh_fglLayouts;
    QHash<QString, QString > qh_formFiles;
@@ -108,8 +116,10 @@ public slots:
    void handleXMLForm(QString, QString, bool);
    void displayForm(QString);
    void handleXMLToolBar(QString);
-   void handleXMLStartMenu(QString);
+   void handleXMLStartMenu(QString); 
+   void activeFocus();
    void handleXMLActions(QString);
+   void setProgramName(QString);
    void handleXMLStyles(QString);
    //void setFieldBuffer(QString, QString);
    void setFieldBuffer(int, QString, int);
@@ -155,11 +165,13 @@ public slots:
    void sendDirect(QString);
    void setFieldOrder(QStringList);
    void setCursorPosition(int);
+   void setRuninfo(int, QString, int, bool);
    void closeProgramm();
    void setClearEvents();
    void fileBrowser(QString, QString, QString, QString, QString);
 
    void setUpdatesEnabled(bool);
+   void setCurrentFocus(QWidget*, QWidget*);
 
 
 signals:

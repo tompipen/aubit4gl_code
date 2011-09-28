@@ -109,6 +109,7 @@ signals:
    void createMenuButton(int, QString, QString, QStringList);
    void createMenuAction(int, QString);
    void setMenuEnabled(bool);
+   void setProgramName(QString);
    void hideOption(int);
    void hideOption(QString);
    void showOption(QString);
@@ -144,6 +145,7 @@ signals:
    void setFieldFocus(QString);
    void setFieldHidden(QString, bool);
    void setElementHidden(QString, bool);
+   void setRuninfo(int, QString, int, bool);
    void setScreenRecordEnabled(QString,bool, bool);
    void loadArrayValues(QStringList, QStringList);
    void loadArrayValues(QStringList);

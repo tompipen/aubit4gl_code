@@ -10,7 +10,7 @@
 //
 // This file is provided AS IT IS with NO WARRANTY OF ANY KIND, INCLUDING THE
 // WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
-// If you need professional Support please contact us at www.ventas.de
+// If you need professional Support please3 contact us at www.ventas.de
 // Enjoy using it!
 //
 //------------------------------------------------------------------------------

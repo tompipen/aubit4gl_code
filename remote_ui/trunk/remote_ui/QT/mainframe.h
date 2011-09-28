@@ -32,6 +32,7 @@
 #include "clienttcp.h"
 #include "include/fgl.h"
 #include "confwin.h"
+#include <screenhandler.h>
 
 class ConnectionsTab : public QWidget
 {
@@ -66,7 +67,10 @@ public:
    bool adminMenu;
    static bool b_debugmodus;
    static void vdcdebug(QString, QString, QString);
-
+   virtual bool eventFilter(QObject *, QEvent *);
+   static QList<ScreenHandler*> *ql_screenhandler;
+   static void check_new_pids();
+   static bool setFocusOn(int);
 public slots:
    void cleanUp();
    void debugClose();

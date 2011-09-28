@@ -49,6 +49,61 @@ MainFrame::vdcdebug("MainFrame","ReadSettings", "");
 }
 
 bool MainFrame::b_debugmodus = false;
+QList<ScreenHandler*> *MainFrame::ql_screenhandler = new QList<ScreenHandler*>();
+
+bool MainFrame::setFocusOn(int pid)
+{
+    QList<ScreenHandler*> *l_ql_screenhandler = MainFrame::ql_screenhandler;
+    if(pid < 0)
+    {
+        return false;
+    }
+
+    for(int i=0; i<l_ql_screenhandler->size(); i++)
+    {
+        if(l_ql_screenhandler->at(i)->p_pid == pid)
+        {
+            if(l_ql_screenhandler->at(i)->b_runinfo)
+            {
+                if(l_ql_screenhandler->at(i)->p_pid_p > 0)
+                {
+                    return MainFrame::setFocusOn(l_ql_screenhandler->at(i)->p_pid_p);
+                }
+            }
+            l_ql_screenhandler->at(i)->activeFocus();
+            return true;
+        }
+    }
+
+    return false;
+}
+
+void MainFrame::check_new_pids()
+{
+    QList<ScreenHandler*> *l_ql_screenhandler = MainFrame::ql_screenhandler;
+    for(int i = l_ql_screenhandler->size()-1; i>=0; i--)
+    {
+        if(l_ql_screenhandler->at(i) == NULL)
+        {
+            continue;
+        }
+        if(l_ql_screenhandler->at(i)->p_pid_p == 0 && l_ql_screenhandler->at(i)->b_runinfo)
+        {
+            for(int j = l_ql_screenhandler->size()-1; j>=0; j--)
+            {
+                if(l_ql_screenhandler->at(j) == NULL)
+                {
+                    continue;
+                }
+
+                if(l_ql_screenhandler->at(j)->programm_name.contains(l_ql_screenhandler->at(i)->programm_name_run))
+                {
+                    l_ql_screenhandler->at(i)->p_pid_p = l_ql_screenhandler->at(j)->p_pid;
+                }
+            }
+        }
+    }
+}
 
 MainFrame::MainFrame(QWidget *parent) : QMainWindow(parent)
 {
@@ -154,6 +209,33 @@ void MainFrame::vdcdebug(QString obj, QString funk, QString uebergabe)
     }
 }
 
+
+bool MainFrame::eventFilter(QObject *obj, QEvent *event)
+{
+    if(FglForm *p_fglform = qobject_cast<FglForm*> (obj))
+    {
+       if(event->type() == QEvent::WindowActivate && p_fglform != NULL && !p_fglform->screenhandler()->b_runinfo)
+       {
+
+           if(p_fglform->dialog() == NULL && p_fglform->pulldown() == NULL){
+
+               p_fglform->raise();
+               p_fglform->activateWindow();
+
+           }
+           if(p_fglform->dialog() != NULL)
+           {
+               p_fglform->dialog()->raise();
+               p_fglform->dialog()->activateWindow();
+               QApplication::setActiveWindow((QWidget*) p_fglform->dialog());
+           }
+
+       }
+    }
+
+       return QMainWindow::eventFilter(obj, event);
+
+}
 
 //------------------------------------------------------------------------------
 // Method       : createStatusBar()

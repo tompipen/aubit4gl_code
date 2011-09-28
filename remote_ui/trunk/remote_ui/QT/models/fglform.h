@@ -23,7 +23,7 @@
 #include <QAction>
 #include <QDomDocument>
 #include <QKeyEvent>
-
+class ScreenHandler;
 #include "vwidgets.h"
 #include "ringmenu.h"
 #include "actionmenu.h"
@@ -93,10 +93,13 @@ public:
    void setPulldown(Pulldown*);
    Dialog* dialog(){ return p_dialog; };
    Pulldown* pulldown() { return p_pulldown;};
+   void showEvent(QShowEvent *);
    void setToolBar(ToolBar*);
    void setToolBar(QDomDocument);
    void checkToolBar();
    void checkMenu();
+   ScreenHandler* screenhandler(){ return p_currscreenhandler; };
+   void setScreenHandler(ScreenHandler*);
    void checkActions();
    void checkShortcuts();
    void checkGuiActions();
@@ -244,6 +247,7 @@ private:
    QWidget *formWidget;
    QWidget *currentWidget;
    QList<RingMenu*> ql_menus;
+   ScreenHandler *p_currscreenhandler;
    ActionMenu *p_actionMenu;
    Dialog *p_dialog;
    Pulldown *p_pulldown;

@@ -188,7 +188,8 @@ ClientSocket::ClientSocket(QObject *parent, QString name, QString pass, QString 
    // ProtocolHandlers section
    //
    p_currScreenHandler = new ScreenHandler(this);
-
+//   QList<ScreenHandler*> *l_ql_screenhandler =  QList<ScreenHandler*> MainFrame::ql_screenhandler;
+   MainFrame::ql_screenhandler->append(p_currScreenHandler);
    // Thread to handle protocols data
    //
    ph.p_currScreenHandler = p_currScreenHandler;
@@ -334,13 +335,16 @@ ClientSocket::ClientSocket(QObject *parent, QString name, QString pass, QString 
    connect(&ph, SIGNAL(free(QString)), p_currScreenHandler, SLOT(free(QString)));
    // CURRENT WINDOW
    connect(&ph, SIGNAL(activeWindow(QString)), p_currScreenHandler, SLOT(activeWindow(QString)));
+   // RUN
+   connect(&ph, SIGNAL(setRuninfo(int,QString,int,bool)), p_currScreenHandler, SLOT(setRuninfo(int, QString, int, bool)));
    // CLOSE WINDOW
    connect(&ph, SIGNAL(closeWindow(QString)), p_currScreenHandler, SLOT(closeWindow(QString)));
    // activates connection to the server when the user reacts
    connect(p_currScreenHandler, SIGNAL(fglFormResponse(QString)), &ph, SLOT(fglFormResponse(QString)));
    // opens filebrowser
    connect(&ph, SIGNAL(fileBrowser(QString, QString, QString, QString, QString)), p_currScreenHandler, SLOT(fileBrowser(QString, QString, QString, QString, QString)));
-
+   // set the Programname 
+   connect(&ph, SIGNAL(setProgramName(QString)), p_currScreenHandler, SLOT(setProgramName(QString)));
 }
 
 
@@ -616,7 +620,9 @@ MainFrame::vdcdebug("ProtocolHandler","run", "");
    emit debugtext(QString("<< " + qsl_xmlCommands.at(i)));
          QDomElement envelope = doc.documentElement();
          pid = envelope.attribute("ID").toInt();
+         int p_pid = envelope.attribute("PID").toInt();
          p_currScreenHandler->pid = pid;
+         p_currScreenHandler->p_pid = p_pid;
          QDomElement commands = envelope.firstChildElement("COMMANDS");
          QDomElement child    = commands.firstChildElement();
 
@@ -644,6 +650,8 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
    if(childElement.nodeName() == "PROGRAMSTARTUP"){
       handleStartup(childElement);
       QString programName = childElement.attribute("PROGRAMNAME");
+      setProgramName(programName);
+      MainFrame::check_new_pids();
       QFile stylesFile(QString("%1.4st").arg(programName));
       if (stylesFile.open(QIODevice::ReadOnly | QIODevice::Text)){
           QString qs_defaultStyle = stylesFile.readAll();
@@ -801,6 +809,14 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
       }
 
       return;
+   }
+
+   if(childElement.nodeName() == "RUNINFO"){
+      bool startstop = childElement.attribute("STARTSTOP").toInt();
+      QString cmd = childElement.attribute("CMD");
+      int runcnt = childElement.attribute("RUNCNT").toInt();
+      int mode = childElement.attribute("MODE").toInt();
+      setRuninfo(mode, cmd, runcnt, startstop);
    }
 
    if(childElement.nodeName() == "REQUESTFILE"){

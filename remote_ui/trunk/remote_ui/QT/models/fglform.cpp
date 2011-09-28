@@ -39,9 +39,12 @@ FglForm::FglForm(QString windowName, QWidget *parent) : QMainWindow(parent){
    b_dummy = false;
    context = NULL;
    this->b_newForm = true;
+   /*
    if(parent != NULL){
-      setWindowModality(Qt::WindowModal);
+       setWindowModality(Qt::WindowModal);
    }
+*/
+   setWindowModality(Qt::WindowModal);
 
    if(!windowName.isEmpty()){
       this->windowName = windowName;
@@ -52,6 +55,7 @@ FglForm::FglForm(QString windowName, QWidget *parent) : QMainWindow(parent){
    }
 
    this->setAccessibleName("FGLFORM");
+   this->setObjectName("FGLFORM");
    QSplitter *formSplitter = new QSplitter;
    formSplitter->setChildrenCollapsible(false);
    setCentralWidget(formSplitter);
@@ -112,6 +116,10 @@ MainFrame::vdcdebug("FglForm","createStatusBar", "");
    setStatusBar(status);
 }
 
+void FglForm::showEvent(QShowEvent *qfe)
+{
+}
+
 //------------------------------------------------------------------------------
 // Method       : buttonClicked()
 // Filename     : fglform.cpp
@@ -152,6 +160,12 @@ MainFrame::vdcdebug("FglForm","addToQueue", "QString id");
       ql_responseQueue << id;
       processResponse();
 }
+
+void FglForm::setScreenHandler(ScreenHandler *p_sh)
+{
+    this->p_currscreenhandler = p_sh;
+}
+
 
 //------------------------------------------------------------------------------
 // Method       : setActions()
@@ -652,6 +666,7 @@ MainFrame::vdcdebug("FglForm","setToolBar", "QDomDocument xmlFile");
 bool FglForm::eventFilter(QObject *obj, QEvent *event)
 {
 //MainFrame::vdcdebug("FglForm","eventFilter", "QObject *obj, QEvent *event");
+
     if(event->type() == QEvent::MouseButtonRelease){
       QMouseEvent *mev = (QMouseEvent*) event;
       if(mev->button() == Qt::LeftButton){
@@ -1406,7 +1421,9 @@ MainFrame::vdcdebug("FglForm","setWindowType", "const QString &sm");
    }
 
    if(sm == "normal"){
-      setWindowModality(Qt::NonModal);
+     // setWindowModality(Qt::NonModal);
+        setWindowModality(Qt::WindowModal);
+
    }
 
 }

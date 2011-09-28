@@ -41,14 +41,39 @@ ScreenHandler::ScreenHandler(QObject *parent) : QObject(parent)
 {
 MainFrame::vdcdebug("ScreenHandler","ScreenHandler", "QObject *parent");
 
+   ScreenHandler::cnt_screenhandler++;
+   QString test = QString::number(ScreenHandler::cnt_screenhandler);
+   this->setObjectName(test);
+   p_pid_p = 0;
+   i_mode = 0;
+   p_pid = 0;
    cnt_form = 0;
    b_menuEnabled = false;
    p_screenRecord = NULL;
    p_fglform = NULL;
    cursorPos = false;
    p_prompt = NULL;
+   b_runinfo = false;
+   this->installEventFilter(this);
    QApplication::processEvents();
 
+ }
+
+
+void ScreenHandler::setCurrentFocus(QWidget *old, QWidget *current)
+{
+    return;
+    if(p_fglform == NULL)
+        return;
+    QWidget *qw_form = (QWidget*) p_fglform;
+    qApp->setActiveWindow(qw_form);
+    if(!p_fglform->isEnabled())
+    {
+        return;
+    }
+
+    p_fglform->activateWindow();
+    p_fglform->raise();
 }
 
 //------------------------------------------------------------------------------
@@ -59,6 +84,20 @@ MainFrame::vdcdebug("ScreenHandler","ScreenHandler", "QObject *parent");
 ScreenHandler::~ScreenHandler()
 {
 MainFrame::vdcdebug("ScreenHandler","~ScreenHandler", "");
+    QList<ScreenHandler*> *l_ql_screenhandler = MainFrame::ql_screenhandler;
+
+    for(int i = 0; i<l_ql_screenhandler->size(); i++)
+    {
+        if(l_ql_screenhandler->at(i)->p_pid_p == this->p_pid)
+        {
+            l_ql_screenhandler->at(i)->p_pid_p = 0;
+            l_ql_screenhandler->at(i)->b_runinfo = 0;
+            l_ql_screenhandler->at(i)->programm_name_run = "";
+        }
+    }
+
+    l_ql_screenhandler->removeOne(this);
+
     QApplication::processEvents();
 }
 
@@ -116,6 +155,7 @@ MainFrame::vdcdebug("ScreenHandler","createWindow", "QString windowTitle,QString
    //p_fglform = new FglForm(windowTitle, p_fglform);
    p_fglform = new FglForm(windowTitle);
    p_fglform->installEventFilter(this);
+   p_fglform->setScreenHandler(this);
    if(windowTitle == "dummy_ventas")
    {
        p_fglform->hide();
@@ -1215,7 +1255,6 @@ MainFrame::vdcdebug("ScreenHandler","setFieldHidden", "QString fieldName, bool h
    if(i_Frm < 0)
       return;
 
-   qDebug() << p_fglform->findFieldByName(fieldName);
    if(QWidget *widget = qobject_cast<QWidget *> (p_fglform->findFieldByName(fieldName))){
        //widget->setVisible(hidden) with setVisible the formfields are visible changed to setHidden
        widget->setHidden(hidden);
@@ -1865,7 +1904,6 @@ MainFrame::vdcdebug("ScreenHandler","waitForEvent", "");
    if(p_fglform->context != NULL)
       p_fglform->context->checkOptions();
 */
-
    p_fglform->raise();
 
    //p_fglform->checkState();
@@ -1894,7 +1932,6 @@ void ScreenHandler::processResponse()
    {
        return;
    }
-
    QString id = p_fglform->ql_responseQueue.takeFirst();
    if(id.indexOf(",") == -1){
       Response resp(id, p_fglform, cursorPos);
@@ -2200,7 +2237,7 @@ MainFrame::vdcdebug("ScreenHandler","MsgBox ", "QString title, QString text, QSt
    }
    //return rstr;
 }
-
+int ScreenHandler::cnt_screenhandler = 0;
 //------------------------------------------------------------------------------
 // Method       : closeWindow(QString windowName)
 // Filename     : screenhandler.cpp
@@ -2249,7 +2286,8 @@ MainFrame::vdcdebug("ScreenHandler","activeWindow", "QString windowName");
    if(p_fglform == NULL)
       return;
    
-   p_fglform->setEnabled(false);
+   // p_fglform->setEnabled(false);
+
    for(int i=0; i<ql_fglForms.size(); i++){
       FglForm *form = ql_fglForms.at(i);
 
@@ -2258,10 +2296,12 @@ MainFrame::vdcdebug("ScreenHandler","activeWindow", "QString windowName");
          form->setEnabled(true);
          form->raise();
       }
+
    }
 
-}
 
+
+}
 //------------------------------------------------------------------------------
 // Method       : setKeyLabel(int dialog, QString label, QString text)
 // Filename     : screenhandler.cpp
@@ -2701,9 +2741,51 @@ MainFrame::vdcdebug("ScreenHandler","setEnv", "QString name, QString env");
    Fgl::env[name] = env;
 }
 
+void ScreenHandler::activeFocus()
+{
+    if(p_fglform == NULL)
+    {
+        return;
+    }
+
+    if(p_fglform->dialog() == NULL && p_fglform->pulldown() == NULL){
+
+        p_fglform->raise();
+        p_fglform->activateWindow();
+    }
+    if(p_fglform->dialog() != NULL)
+    {
+        p_fglform->dialog()->raise();
+        p_fglform->dialog()->activateWindow();
+    }
+}
 
 bool ScreenHandler::eventFilter(QObject *obj, QEvent *event)
 {
+
+    if(event->type() == QEvent::WindowActivate)
+    {
+        if(this->b_runinfo && this->p_pid_p > 0 && this->i_mode != 2)
+        {
+            MainFrame::setFocusOn(this->p_pid_p);
+            //emit changefocus();
+        }
+        else
+        {
+            if(this->b_runinfo && this->i_mode != 2)
+            {
+                MainFrame::check_new_pids();
+                if(this->b_runinfo && this->p_pid_p > 0)
+                {
+                    MainFrame::setFocusOn(this->p_pid_p);
+                }
+            }
+            this->activeFocus();
+        }
+
+    }
+
+
 //MainFrame::vdcdebug("ScreenHandler","eventFilter", "QObject *obj, QEvent *event");
 
 /*
@@ -2761,3 +2843,42 @@ void ScreenHandler::clearComboBox(int id)
       cb->clearEditText();
    }
 }
+
+void ScreenHandler::setRuninfo(int mode, QString cmd, int runcnt, bool start)
+{
+    /*
+    if(mode == 2)
+    {
+       this->b_runinfo = false;
+    }
+    else
+    {*/
+        if(start)
+        {
+
+           this->b_runinfo = true;
+           this->i_mode = mode;
+           QStringList qsl_cmd = cmd.split(" ");
+           for(int i = 0; i<qsl_cmd.size(); i++)
+           {
+               if(qsl_cmd.at(i).startsWith("p_"))
+               {
+                   this->programm_name_run = qsl_cmd.at(i);
+               }
+           }
+           this->cmd = cmd;
+        }
+        else
+        {
+            this->programm_name_run = "";
+            this->b_runinfo = false;
+            this->p_pid_p = 0;
+            this->i_mode = 0;
+        }
+    }
+//}
+    void ScreenHandler::setProgramName(QString pn)
+    {
+        this->programm_name = pn;
+    }
+
