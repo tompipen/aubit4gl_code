@@ -2749,12 +2749,13 @@ void ScreenHandler::activeFocus()
     }
 
     if(p_fglform->dialog() == NULL && p_fglform->pulldown() == NULL){
-
+        QApplication::setActiveWindow((QWidget*) p_fglform);
         p_fglform->raise();
         p_fglform->activateWindow();
     }
     if(p_fglform->dialog() != NULL)
     {
+        QApplication::setActiveWindow((QWidget*) p_fglform->dialog());
         p_fglform->dialog()->raise();
         p_fglform->dialog()->activateWindow();
     }
