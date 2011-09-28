@@ -24,6 +24,7 @@ using System.Collections.Generic;
 using System.Text;
 using Gizmox.WebGUI.Forms;
 using System.ComponentModel;
+using System.Threading;
 
 
 
@@ -38,11 +39,13 @@ namespace AubitDesktop
         FormattedGridView inputArrayGrid;
         private bool currLineIsInserted;
         private bool firstTime = true;
+        private bool deletecontrol = false;
         private int maxRows;
         private string[] lastRowData;
 
-        class s_pending {
-            public s_pending(string ID, int scrLine,int arrLine)
+        class s_pending
+        {
+            public s_pending(string ID, int scrLine, int arrLine)
             {
                 //this.triggeredText = text;
                 this.scrLine = scrLine;
@@ -58,9 +61,9 @@ namespace AubitDesktop
         List<s_pending> PendingEvents;
 
 
-        private string lastKey="";
-        private bool allowInsert=true;
-        private bool allowDelete=true;
+        private string lastKey = "";
+        private bool allowInsert = true;
+        private bool allowDelete = true;
         private int rowLeft = -1;
         private int currentCol = -1;
         private int currentRow = -1;
@@ -77,20 +80,21 @@ namespace AubitDesktop
         private int lastArrLine;
 
         //private bool[] rowDataChanged;
-     //   private DataTable Data;
+        //   private DataTable Data;
 
-       // private BindingSource BS;
+        // private BindingSource BS;
         private DataTable Data;
 
-        private enum MoveType {
+        private enum MoveType
+        {
             MoveTypeNoPendingMovement,
             MoveTypeInsert,
             MoveTypeDelete
         };
 
-        private MoveType nextMove =  MoveType.MoveTypeNoPendingMovement;
+        private MoveType nextMove = MoveType.MoveTypeNoPendingMovement;
 
-        private int _arrLine=1;
+        private int _arrLine = 1;
 
         internal int arrLine
         {
@@ -103,7 +107,7 @@ namespace AubitDesktop
                 _arrLine = value;
             }
         }
-       
+
 
 
 
@@ -112,8 +116,8 @@ namespace AubitDesktop
         /// </summary>
 
 
-        
-        
+
+
 
 
 
@@ -134,12 +138,12 @@ namespace AubitDesktop
         private AFTER_INPUT_EVENT afterInput;
         private int[] beforeFieldEventIds;
         private int[] afterFieldEventIds;
-#endregion
+        #endregion
 
 
 
 
-      
+
         public bool contextIsActive()
         {
             return _contextIsActive;
@@ -151,9 +155,14 @@ namespace AubitDesktop
             return false;
         }
 
-
         public void toolBarAcceptClicked()
         {
+            if (inputArrayGrid.RowCount == 0)
+            {
+
+                InsertkeyPressed();
+            }
+
             if (inputArrayGrid.okToMove())
             {
                 lastKey = "ACCEPT";
@@ -166,16 +175,30 @@ namespace AubitDesktop
             }
             else
             {
-                MessageBox.Show("Can't ACCEPT at the minute...");
+                MessageBox.Show("Valor invalido...");
             }
+        }
+
+
+
+
+        public void toolBarInterruptClicked()
+        {
+            if (inputArrayGrid.RowCount == 0)
+            {
+
+                InsertkeyPressed();
+            }
+
+
         }
 
         public bool externallyTriggeredID(string ID)
         {
             switch (ID)
             {
-                case "INSERT": InsertkeyPressed(); return true;
-                case "DELETE": DeletekeyPressed(); return true;
+                case "CONTROL-INSERT": InsertkeyPressed(); return true;
+                case "CONTROL-DELETE": DeletekeyPressed(); return true;
                 case "PGUP": pgUpkeyPressed(); return true;
                 case "PGDN": pgDownkeyPressed(); return true;
                 case "DOWN": downkeyPressed(); return true;
@@ -198,74 +221,99 @@ namespace AubitDesktop
         public void setUpData(ROW[] rows)
         {
             DataGridViewCell c;
+            DataGridViewCell orig_c;
+
+            orig_c = inputArrayGrid.CurrentCell;
+            //Data.AcceptChanges();
             c = inputArrayGrid.CurrentCell;
 
 
-            Data.BeginLoadData();
-            
-            
-
-            for (int row = 0; row < rows.Length; row++)
+            // row may be been deleted..
+            // try selecting the same row anyway..
+            if (c == null && orig_c != null)
             {
-                int subscript = Convert.ToInt32(rows[row].SUBSCRIPT) - 1;
-                while (subscript >= Data.Rows.Count)
+
+                try
                 {
-                    string[] newData;
-                    newData = new string[nCols + 1];
-                    for (int cnt = 0; cnt <= nCols; cnt++)
-                    {
-                        newData[cnt] = null;
-                    }
-                    Data.Rows.Add(newData);
+                    c = inputArrayGrid.Rows[orig_c.RowIndex].Cells[orig_c.ColumnIndex];
+                }
+                catch (Exception ex)
+                {
+                    // if c is still null - nothing lost...
 
                 }
             }
+            Data.BeginLoadData();
 
 
-            for (int row = 0; row < rows.Length; row++)
+            try
             {
-                int subscript = Convert.ToInt32(rows[row].SUBSCRIPT) - 1;
-
-                // We'll use the first column to store the index
-                // for the current row...
-
-
-                Data.Rows[subscript][0] = "XXX"; // First column was to hold the subscript - but its currently not used....
-                for (int col = 0; col < rows[row].VALUES.Length; col++)
+                for (int row = 0; row < rows.Length; row++)
                 {
-                    object itm;
-                    int trimWidth = -1;
-                    AubitDesktop.Xml.XMLForm.TableColumn tc = inputArrayGrid.table.TableColumn[col];
-                    itm = tc.Item;
-
-                    if (itm is AubitDesktop.Xml.XMLForm.Edit)
+                    int subscript = Convert.ToInt32(rows[row].SUBSCRIPT) - 1;
+                    while (subscript >= Data.Rows.Count)
                     {
-                        AubitDesktop.Xml.XMLForm.Edit e;
-                        e = (AubitDesktop.Xml.XMLForm.Edit)itm;
-                        trimWidth = Convert.ToInt32(e.width);
-                    }
-
-
-                    Data.Rows[subscript][col + 1] = (string)rows[row].VALUES[col].Text;
-                    if (trimWidth > 0)
-                    {
-                        if (rows[row].VALUES[col].Text != null)
+                        string[] newData;
+                        newData = new string[nCols + 1];
+                        for (int cnt = 0; cnt <= nCols; cnt++)
                         {
-                            if (rows[row].VALUES[col].Text.Length > trimWidth)
+                            newData[cnt] = null;
+                        }
+                        Data.Rows.Add(newData);
+
+                    }
+                }
+
+
+                for (int row = 0; row < rows.Length; row++)
+                {
+                    int subscript = Convert.ToInt32(rows[row].SUBSCRIPT) - 1;
+
+                    // We'll use the first column to store the index
+                    // for the current row...
+
+
+                    Data.Rows[subscript][0] = "XXX"; // First column was to hold the subscript - but its currently not used....
+                    for (int col = 0; col < rows[row].VS.Length; col++)
+                    {
+                        object itm;
+                        int trimWidth = -1;
+                        AubitDesktop.Xml.XMLForm.TableColumn tc = inputArrayGrid.table.TableColumn[col];
+                        itm = tc.Item;
+
+                        if (itm is AubitDesktop.Xml.XMLForm.Edit)
+                        {
+                            AubitDesktop.Xml.XMLForm.Edit e;
+                            e = (AubitDesktop.Xml.XMLForm.Edit)itm;
+                            trimWidth = Convert.ToInt32(e.width);
+                        }
+
+
+
+                        Data.Rows[subscript][col + 1] = (string)rows[row].VS[col].Text;
+                        if (trimWidth > 0)
+                        {
+                            if (rows[row].VS[col].Text != null)
                             {
-                                Data.Rows[subscript][col + 1] = (string)rows[row].VALUES[col].Text.Substring(0, trimWidth);
+                                if (rows[row].VS[col].Text.Length > trimWidth)
+                                {
+                                    Data.Rows[subscript][col + 1] = (string)rows[row].VS[col].Text.Substring(0, trimWidth);
+                                }
                             }
                         }
+
                     }
-
+                    // as we've been passed these values in - 
+                    // it makes sense not to send them back straight away again
+                    // so we call 'AcceptChanges' to mark the rows as 'unchanged' after we've just
+                    // changed them ;-)
+                    Data.Rows[subscript].AcceptChanges();
                 }
-                // as we've been passed these values in - 
-                // it makes sense not to send them back straight away again
-                // so we call 'AcceptChanges' to mark the rows as 'unchanged' after we've just
-                // changed them ;-)
-                Data.Rows[subscript].AcceptChanges();
             }
+            catch
+            {
 
+            }
 
             inputArrayGrid.CurrentCell = c;
             Data.EndLoadData();
@@ -396,12 +444,12 @@ namespace AubitDesktop
                     {
                         havePgDn = true;
                     }
-                    if (e.KEY == "" + FGLUtils.getKeyCodeFromKeyName("INSERT"))
+                    if (e.KEY == "" + FGLUtils.getKeyCodeFromKeyName("CONTROL-INSERT"))
                     {
                         haveInsert = true;
                     }
 
-                    if (e.KEY == "" + FGLUtils.getKeyCodeFromKeyName("DELETE"))
+                    if (e.KEY == "" + FGLUtils.getKeyCodeFromKeyName("CONTROL-DELETE"))
                     {
                         haveDelete = true;
                     }
@@ -477,13 +525,39 @@ namespace AubitDesktop
                     BEFORE_FIELD_EVENT e;
                     e = (BEFORE_FIELD_EVENT)evt;
                     int a = getCellNumberForField(e.FIELD);
+                    if (a == 0)
+                    {
+                        //a = 1;
 
-                    if (a>=0) {
-                        beforeFieldEventIds[a] = Convert.ToInt32(e.ID);
+                        if (a >= 0)
+                        {
+                            try
+                            {
+                                beforeFieldEventIds[a] = Convert.ToInt32(e.ID);
+                            }
+                            catch
+                            {
+
+                                beforeFieldEventIds[0] = Convert.ToInt32(e.ID);
+                            }
+                        }
+                        else
+                        {
+                            MessageBox.Show("BEFORE FIELD " + e.FIELD + " - field not found");
+                        }
                     }
                     else
                     {
-                        MessageBox.Show("BEFORE FIELD " + e.FIELD + " - field not found");
+
+                        if (a >= 0)
+                        {
+                            beforeFieldEventIds[a] = Convert.ToInt32(e.ID);
+                        }
+                        else
+                        {
+                            MessageBox.Show("BEFORE FIELD " + e.FIELD + " - field not found");
+                        }
+
                     }
                     continue;
 
@@ -494,15 +568,46 @@ namespace AubitDesktop
                     AFTER_FIELD_EVENT e;
                     e = (AFTER_FIELD_EVENT)evt;
                     int a = getCellNumberForField(e.FIELD);
-                    if (a >= 0)
+
+                    if (a == 0)
                     {
-                        afterFieldEventIds[a] = Convert.ToInt32(e.ID);
+                        // a = 1;
+
+                        if (a >= 0)
+                        {
+                            try
+                            {
+                                afterFieldEventIds[a] = Convert.ToInt32(e.ID);
+
+                            }
+                            catch
+                            {
+
+                                afterFieldEventIds[0] = Convert.ToInt32(e.ID);
+                            }
+                        }
+                        else
+                        {
+                            MessageBox.Show("AFTER FIELD " + e.FIELD + " - field not found");
+                        }
+
                     }
                     else
                     {
-                        MessageBox.Show("AFTER FIELD " + e.FIELD + " - field not found");
+
+                        if (a >= 0)
+                        {
+                            afterFieldEventIds[a] = Convert.ToInt32(e.ID);
+                        }
+                        else
+                        {
+                            MessageBox.Show("AFTER FIELD " + e.FIELD + " - field not found");
+                        }
+
                     }
-                    
+
+
+
                     continue;
                 }
 
@@ -513,7 +618,8 @@ namespace AubitDesktop
 
 
 
-            if (p.NONEWLINES==1 || p.ALLOWINSERT==0)      {
+            if (p.NONEWLINES == 1 || p.ALLOWINSERT == 0)
+            {
                 allowInsert = false;
             }
             else
@@ -563,12 +669,12 @@ namespace AubitDesktop
 
             if (!haveInsert && allowInsert)
             {
-                KeyList.Add(new ONKEY_EVENT("INSERT"));
+                KeyList.Add(new ONKEY_EVENT("CONTROL-INSERT"));
             }
 
             if (!haveDelete && allowDelete)
             {
-                KeyList.Add(new ONKEY_EVENT("DELETE"));
+                KeyList.Add(new ONKEY_EVENT("CONTROL-DELETE"));
             }
         }
 
@@ -582,14 +688,6 @@ namespace AubitDesktop
         {
             return inputArrayGrid.getCellNumberForField(fieldname);
         }
-
-
-
-
-
-
-
-
 
 
         private void setFocusToCurrentRow()
@@ -652,32 +750,111 @@ namespace AubitDesktop
             //
             s = "\n<SYNCROWS>\n";
 
-            for (row = 0; row <inputArrayGrid.Rows.Count; row++)
+            for (row = 0; row < inputArrayGrid.Rows.Count; row++)
             {
                 string rowData;
                 subscript_string = "" + (row + 1);
                 if (row >= maxRows) continue;
 
                 rowData = " <ROW SUBSCRIPT=\"" +subscript_string + "\">\n";
-                rowData += "  <SYNCVALUES>\n";
+                rowData += "  <SVS>\n";
 
                 for (int col = 0; col < this.nCols; col++)
                 {
                     string rval = "";
-                    if (inputArrayGrid.Rows[row].Cells[col + 1].Value is DBNull) {
-                        rval="";
-                    }else {
-                    
-                        rval = (string)inputArrayGrid.Rows[row].Cells[col + 1].Value;   // Data.Rows[row][col + 1];
-                    }
-                    
+                    DataGridViewCell c = inputArrayGrid.Rows[row].Cells[col + 1];
 
-                    rowData += "   <SYNCVALUE FIELDNAME=\"" + inputArrayGrid.getFieldName(col) + "\">" + System.Security.SecurityElement.Escape(rval) + "</SYNCVALUE>\n";
+                    if (c.IsInEditMode)
+                    {
+                        // We're still in edit mode - so its probably a ON KEY - so set the fldbuf values..
+                        if (c.EditedFormattedValue is DBNull)
+                        {
+                            rval = "";
+                        }
+                        else
+                        {
+
+
+
+                            if (c.FormattedValueType == typeof(Boolean))
+                            {
+                                DataGridViewCheckBoxCell ch;
+                                ch = (DataGridViewCheckBoxCell)c;
+                                if (ch.EditedFormattedValue == null)
+                                {
+                                    s = null;
+                                }
+                                if (c.EditedFormattedValue is string)
+                                {
+                                    rval = (string)c.EditedFormattedValue;
+                                }
+                                else
+                                {
+                                    if ((Boolean)c.EditedFormattedValue)
+                                    {
+
+                                        rval = (string)ch.TrueValue;
+
+                                    }
+                                    else
+                                    {
+
+                                        rval = (string)ch.FalseValue;
+                                    }
+                                }
+                            }
+
+                            else
+                            {
+
+                                rval = FGLUtils.GetString(inputArrayGrid.Rows[row].Cells[col + 1].EditedFormattedValue);   // Data.Rows[row][col + 1];
+
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if (c.Value is DBNull)
+                        {
+                            rval = "";
+                        }
+                        else
+                        {
+                            rval = FGLUtils.GetString(inputArrayGrid.Rows[row].Cells[col + 1].Value);   // Data.Rows[row][col + 1];
+                        }
+                    }
+
+
+                    //   inputArrayGrid.getFieldName
+
+                    if (inputArrayGrid.getDataType(col + 1) == "DTYPE_DECIMAL" || inputArrayGrid.getDataType(col + 1) == "DTYPE_MONEY"
+                   || inputArrayGrid.getDataType(col + 1) == "DTYPE_FLOAT" || inputArrayGrid.getDataType(col + 1) == "DTYPE_SMFLOAT")
+                    {
+                        if (Thread.CurrentThread.CurrentCulture.NumberFormat.NumberDecimalSeparator != ".")
+                        {
+                            // The protocol should always use "." as the separator...
+                            string convert_value;
+                            try
+                            {
+                                convert_value = rval.Replace(Thread.CurrentThread.CurrentCulture.NumberFormat.NumberDecimalSeparator, ".");
+                                rval = convert_value;
+
+                            }
+                            catch
+                            {
+
+
+                            }
+
+                        }
+                    }
+
+                    rowData += "   <SV FN=\"" + inputArrayGrid.getFieldName(col) + "\">" + System.Security.SecurityElement.Escape(rval) + "</SV>\n";
                 }
 
-                rowData += "  </SYNCVALUES>\n";
+                rowData += "  </SVS>\n";
                 rowData += " </ROW>\n";
-                if (lastRowData[row] != rowData)
+                if (lastRowData[row] != rowData) // We might want to do this every time
                 { // Is it different to last time ? 
                     lastRowData[row] = rowData;
                     s += rowData;
@@ -686,8 +863,8 @@ namespace AubitDesktop
 
             s += "</SYNCROWS>\n";
 
-            
-            
+
+
             return s;
         }
 
@@ -699,7 +876,7 @@ namespace AubitDesktop
 
 
 
-        public void ActivateContext(UIEventHandler UIInputArrayContext_EventTriggered, VALUE[] values, ROW[] rows)
+        public void ActivateContext(UIEventHandler UIInputArrayContext_EventTriggered, V[] values, ROW[] rows)
         {
             this.EventTriggered = UIInputArrayContext_EventTriggered;
 
@@ -805,6 +982,12 @@ namespace AubitDesktop
             else
             {
                 inputArrayGrid.AllowUserToDeleteRows = false;
+            }
+
+            if (inputArrayGrid.RowCount == 0)
+            {
+
+                InsertkeyPressed();
             }
 
             inputArrayGrid.setActiveFocus();
@@ -913,7 +1096,18 @@ namespace AubitDesktop
           
             if (afterFieldEventIds[columnId] != -1)
             {
-                sendTrigger(""+afterFieldEventIds[columnId], rowid);
+                sendTrigger("" + afterFieldEventIds[columnId], rowid);
+            }
+            else
+            {
+                if (beforeRow != null)
+                {
+                    if (beforeRow.ID != "")
+                    {
+                        sendTrigger(beforeRow.ID, rowid);
+                    }
+                }
+
             }
         }
 
@@ -942,6 +1136,8 @@ namespace AubitDesktop
             int arrLine;
             int scrLine;
 
+            try
+            {
 
             if (rowIndex>=0)
             {
@@ -969,18 +1165,20 @@ namespace AubitDesktop
                 throw new ApplicationException("a row was found with no valid subscript");
             }
 
-            if (this.EventTriggered != null)
-            {
-                UIEventHandler EventTriggeredSave;
-                EventTriggeredSave=this.EventTriggered;
-                this.EventTriggered = null;
-                EventTriggeredSave(null, ID, getTriggeredTag(ID,arrLine,scrLine), this);
+                if (this.EventTriggered != null)
+                {
+                    UIEventHandler EventTriggeredSave;
+                    EventTriggeredSave = this.EventTriggered;
+                    this.EventTriggered = null;
+                    EventTriggeredSave(null, ID, getTriggeredTag(ID, arrLine, scrLine), this);
+                }
+                else
+                {
+                    Console.WriteLine("Adding pending event to " + arrLine + " " + scrLine);
+                    PendingEvents.Add(new s_pending(ID, scrLine, arrLine));
+                }
             }
-            else
-            {
-                Console.WriteLine("Adding pending event to " + arrLine + " " + scrLine);
-                PendingEvents.Add(new s_pending(ID, scrLine, arrLine));
-            }
+            catch { }
         }
 
 
@@ -996,13 +1194,28 @@ namespace AubitDesktop
             }
             try
             {
-                string syncValues = getSyncValues();
-                rval = "<TRIGGERED ID=\"" + ID + "\""+
-                       " ARRLINE=\"" + arrLine + "\" SCRLINE=\"" + scrLine + "\" LASTKEY=\"" + this.lastKey + "\"" 
-                       + infieldStr + " ARRCOUNT=\""+ Data.Rows.Count+"\">" + syncValues +
-                    "</TRIGGERED>";
-            } catch (Exception Ex) {
-                MessageBox.Show("Error getting value for return:"+Ex.Message);
+                if (deletecontrol == true)
+                {
+                    string syncValues = getSyncValues();
+                    rval = "<TRIGGERED ID=\"" + ID + "\"" +
+                           " ARRLINE=\"" + arrLine + "\" SCRLINE=\"" + scrLine + "\" LASTKEY=\"" + this.lastKey + "\""
+                           + infieldStr + " ARRCOUNT=\"" + (Data.Rows.Count) + "\">" + syncValues +
+                        "</TRIGGERED>";
+                    deletecontrol = false;
+                }
+                else
+                {
+                    string syncValues = getSyncValues();
+                    rval = "<TRIGGERED ID=\"" + ID + "\"" +
+                           " ARRLINE=\"" + arrLine + "\" SCRLINE=\"" + scrLine + "\" LASTKEY=\"" + this.lastKey + "\""
+                           + infieldStr + " ARRCOUNT=\"" + (Data.Rows.Count) + "\">" + syncValues +
+                        "</TRIGGERED>";
+                }
+
+            }
+            catch (Exception Ex)
+            {
+                MessageBox.Show("Error getting value for return:" + Ex.Message);
                 Application.Exit();
 
             }
@@ -1101,6 +1314,30 @@ namespace AubitDesktop
 
         }
 
+
+        void FormattedGridView_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+
+
+            if (beforeRow != null)
+            {
+                if (beforeRow.ID != "")
+                {
+                    sendTrigger(beforeRow.ID, -1);
+                }
+            }
+
+            inputArrayGrid.CurrentCell = inputArrayGrid.Rows[e.RowIndex].Cells[e.ColumnIndex];
+            //inputArrayGrid.CurrentCell = inputArrayGrid.Rows[e.RowIndex].Cells[e.ColumnIndex];
+
+
+
+
+
+
+
+        }
+
         public void FreeContext()
         {
             _contextIsActive = false;
@@ -1184,9 +1421,21 @@ namespace AubitDesktop
                 {
                     if (inputArrayGrid.Rows.Count < maxRows)
                     {
-                        int r = inputArrayGrid.CurrentRow.Index;
-                        doInsertRow();
-                        setField(r + 1, null);
+                        int r = 0;
+                        try
+                        {
+                            r = inputArrayGrid.CurrentRow.Index;
+                            doInsertRow();
+                            setField(r + 1, null);
+                        }
+                        catch
+                        {
+                            r = 0;
+                            doInsertRow();
+                            setField(r, null);
+                        }
+
+
                     }
                     else
                     {
@@ -1194,6 +1443,57 @@ namespace AubitDesktop
                     }
                 }
             }
+            try
+            {
+                inputArrayGrid.CurrentCell = inputArrayGrid.Rows[inputArrayGrid.CurrentCell.RowIndex + 1].Cells[1];
+            }
+            catch
+            {
+                inputArrayGrid.CurrentCell = inputArrayGrid.Rows[inputArrayGrid.CurrentCell.RowIndex].Cells[1];
+            }
+
+        }
+
+
+        internal void InsertkeyPressed2()
+        {
+            if (inputArrayGrid.okToMove())
+            {
+                if (!allowInsert) return;
+
+                if (beforeInsert != null)
+                {
+                    sendTrigger(beforeInsert.ID, -1);
+                    nextMove = MoveType.MoveTypeInsert;
+                }
+                else
+                {
+                    if (inputArrayGrid.Rows.Count < maxRows)
+                    {
+                        int r = 0;
+                        try
+                        {
+                            r = inputArrayGrid.Rows.Count;
+                            doInsertRow2();
+                            //   setField(r + 1, null);
+                        }
+                        catch
+                        {
+                            r = 0;
+                            doInsertRow();
+                            //   setField(r, null);
+                        }
+
+
+                    }
+                    else
+                    {
+                        MessageBox.Show("Cant insert more rows - array is full");
+                    }
+                }
+            }
+
+
         }
 
 
@@ -1201,33 +1501,125 @@ namespace AubitDesktop
         private void doInsertRow()
         {
             int r;
-            
+
             DataRow newRow;
-            r = inputArrayGrid.CurrentRow.Index;
-            
-            newRow = Data.NewRow();
+            try
+            {
+                r = inputArrayGrid.CurrentRow.Index;
+
+                newRow = Data.NewRow();
 
             newRow[0] = "XXX"; // First column was to hold the subscript - but its currently not used....
 
-            
-            for (int a = 0; a < inputArrayGrid. table.TableColumn.Length; a++)
-            {
-                if (inputArrayGrid.table.TableColumn[a].defaultValue != null && inputArrayGrid.table.TableColumn[a].defaultValue != "")
-                {
-                    newRow[a+1]= inputArrayGrid.table.TableColumn[a].defaultValue;
-                    //e.Row.Cells[a+1].Value=table.TableColumn[a].defaultValue;
-                }
-                else
-                {
-                    newRow[a+1] = "";
-                }
-            }
-            
-          
-            Data.Rows.InsertAt(newRow, r);
-            
 
-            
+                for (int a = 0; a < inputArrayGrid.table.TableColumn.Length; a++)
+                {
+                    if (inputArrayGrid.table.TableColumn[a].defaultValue != null && inputArrayGrid.table.TableColumn[a].defaultValue != "")
+                    {
+                        newRow[a + 1] = inputArrayGrid.table.TableColumn[a].defaultValue;
+                        //e.Row.Cells[a+1].Value=table.TableColumn[a].defaultValue;
+                    }
+                    else
+                    {
+                        newRow[a + 1] = "";
+                    }
+                }
+
+
+                Data.Rows.InsertAt(newRow, r + 1);
+            }
+            catch
+            {
+
+                newRow = Data.NewRow();
+
+                newRow[0] = "XXX"; // First column was to hold the subscript - but its currently not used....
+
+
+                for (int a = 0; a < inputArrayGrid.table.TableColumn.Length; a++)
+                {
+                    if (inputArrayGrid.table.TableColumn[a].defaultValue != null && inputArrayGrid.table.TableColumn[a].defaultValue != "")
+                    {
+                        newRow[a + 1] = inputArrayGrid.table.TableColumn[a].defaultValue;
+                        //e.Row.Cells[a+1].Value=table.TableColumn[a].defaultValue;
+                    }
+                    else
+                    {
+                        newRow[a + 1] = "";
+                    }
+                }
+
+
+                Data.Rows.InsertAt(newRow, 0);
+
+            }
+
+
+
+
+        }
+
+
+
+        private void doInsertRow2()
+        {
+            int r;
+
+            DataRow newRow;
+            try
+            {
+                r = inputArrayGrid.Rows.Count;
+
+                newRow = Data.NewRow();
+
+                newRow[0] = "XXX"; // First column was to hold the subscript - but its currently not used....
+
+
+                for (int a = 0; a < inputArrayGrid.table.TableColumn.Length; a++)
+                {
+                    if (inputArrayGrid.table.TableColumn[a].defaultValue != null && inputArrayGrid.table.TableColumn[a].defaultValue != "")
+                    {
+                        newRow[a + 1] = inputArrayGrid.table.TableColumn[a].defaultValue;
+                        //e.Row.Cells[a+1].Value=table.TableColumn[a].defaultValue;
+                    }
+                    else
+                    {
+                        newRow[a + 1] = "";
+                    }
+                }
+
+
+                Data.Rows.InsertAt(newRow, r + 1);
+            }
+            catch
+            {
+
+                newRow = Data.NewRow();
+
+                newRow[0] = "XXX"; // First column was to hold the subscript - but its currently not used....
+
+
+                for (int a = 0; a < inputArrayGrid.table.TableColumn.Length; a++)
+                {
+                    if (inputArrayGrid.table.TableColumn[a].defaultValue != null && inputArrayGrid.table.TableColumn[a].defaultValue != "")
+                    {
+                        newRow[a + 1] = inputArrayGrid.table.TableColumn[a].defaultValue;
+                        //e.Row.Cells[a+1].Value=table.TableColumn[a].defaultValue;
+                    }
+                    else
+                    {
+                        newRow[a + 1] = "";
+                    }
+                }
+
+
+                Data.Rows.InsertAt(newRow, 0);
+
+            }
+
+
+
+
         }
 
         internal void DeletekeyPressed()
@@ -1235,14 +1627,34 @@ namespace AubitDesktop
             if (inputArrayGrid.okToMove())
             {
                 if (!allowDelete) return;
+                deletecontrol = true;
 
                 try
                 {
+
                     doDeleteRow();
+                    Data.AcceptChanges();
+                    inputArrayGrid.CurrentCell = inputArrayGrid.Rows[inputArrayGrid.CurrentCell.RowIndex].Cells[1];
+                    InsertkeyPressed2();
+
                 }
-                catch (Exception e)
+                catch
                 {
-                    MessageBox.Show(e.Message);
+
+                    InsertkeyPressed();
+                    //   InsertkeyPressed();
+
+
+                    //  Data.AcceptChanges();
+                    try
+                    {
+                        inputArrayGrid.CurrentCell = inputArrayGrid.Rows[inputArrayGrid.CurrentCell.RowIndex + 1].Cells[1];
+                    }
+                    catch
+                    {
+                        inputArrayGrid.CurrentCell = inputArrayGrid.Rows[inputArrayGrid.CurrentCell.RowIndex].Cells[1];
+                    }
+
                 }
 
             }
@@ -1258,7 +1670,8 @@ namespace AubitDesktop
 
             inputArrayGrid.EndEdit();
             inputArrayGrid.Rows.RemoveAt(inputArrayGrid.CurrentRow.Index);
-            
+            Data.AcceptChanges();
+
         }
     }
 

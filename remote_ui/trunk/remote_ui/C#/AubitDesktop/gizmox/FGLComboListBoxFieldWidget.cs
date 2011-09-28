@@ -430,7 +430,7 @@ namespace AubitDesktop
             l.Visible = true;
             l.BorderStyle = BorderStyle.Fixed3D;
 
-            t.DropDownStyle = ComboBoxStyle.DropDown;
+            t.DropDownStyle = ComboBoxStyle.DropDownList;
             
             p.Controls.Add(t);
             p.Controls.Add(l);
@@ -443,6 +443,8 @@ namespace AubitDesktop
             // p.Size = l.Size;
 
 
+            t.CausesValidation = true;
+            t.Validating += new System.ComponentModel.CancelEventHandler(t_Validating);
             t.Enter += new EventHandler(t_GotFocus);
             t.Click += new EventHandler(t_Click);
             t.Visible = true;
@@ -495,6 +497,7 @@ namespace AubitDesktop
             FGLComboEntry ce;
             ce = new FGLComboEntry(name,text);
             t.Items.Add(ce);
+            t.SelectedIndex = 0;
         }
 
         internal void ui_combobox_clear()

@@ -4,6 +4,7 @@ using System.Windows.Forms;
 using System.Data;
 using System.ComponentModel;
 
+using System.Threading;
 
 namespace AubitDesktop
 {
@@ -485,6 +486,11 @@ namespace AubitDesktop
                 TextBox tb;
                 tb = (TextBox)e.Control;
                 tb.CharacterCasing = CharacterCasing.Normal;
+               // this.widgetSettings[CurrentCell.ColumnIndex - 1].
+
+               // this.widgetSettings[CurrentCell.ColumnIndex - 1].datatype
+
+                tb.MaxLength = this.widgetSettings[CurrentCell.ColumnIndex - 1].datatype_length; 
                 if (this.widgetSettings[CurrentCell.ColumnIndex - 1].upshift)
                 {
                     tb.CharacterCasing = CharacterCasing.Upper;
@@ -514,6 +520,26 @@ namespace AubitDesktop
             if (e.ColumnIndex - 1 > this.widgetSettings.Length) return;
 
             if (e.Value == null) return;
+
+            if (this.widgetSettings[e.ColumnIndex - 1].datatype.ToString() == "DTYPE_DECIMAL" || this.widgetSettings[e.ColumnIndex - 1].ToString() == "DTYPE_MONEY"
+                    || this.widgetSettings[e.ColumnIndex - 1].datatype.ToString() == "DTYPE_FLOAT" || this.widgetSettings[e.ColumnIndex - 1].ToString() == "DTYPE_SMFLOAT")
+            {
+                if (Thread.CurrentThread.CurrentCulture.NumberFormat.NumberDecimalSeparator != ".")
+                {
+                    // The protocol should always use "." as the separator...
+                    string convert_value;
+                    try
+                    {
+                        convert_value = e.Value.ToString().Replace(".", Thread.CurrentThread.CurrentCulture.NumberFormat.NumberDecimalSeparator);
+                    //    convert_value = (Convert.ToDouble(convert_value)).ToString();
+                        e.Value = convert_value;
+                    }
+                    catch
+                    {
+
+                    }
+                }
+            }
 
 
             if (this.widgetSettings[e.ColumnIndex - 1].format != null && this.widgetSettings[e.ColumnIndex - 1].format.Trim() != "")
@@ -1087,6 +1113,11 @@ namespace AubitDesktop
         }
 
 
+        internal string getDataType(int columnIndex)
+        {
+            return this.widgetSettings[columnIndex - 1].datatype.ToString();
+        }
+
         /// <summary>
         /// Set the focus to the first field in the first line...
         /// </summary>
@@ -1200,7 +1231,13 @@ namespace AubitDesktop
                     }
                     else
                     {
-                        this.CurrentCell = Rows[currentRowId].Cells[currentColId];
+                        if (currentColId == -1)
+                        {
+                        }
+                        else
+                        {
+                            this.CurrentCell = Rows[currentRowId].Cells[currentColId];
+                        }
                     }
                 }
             }
@@ -1256,6 +1293,7 @@ namespace AubitDesktop
                     }
                     else
                     {
+                
                         this.CurrentCell = GetNextCell(this.CurrentCell);
 
                     }

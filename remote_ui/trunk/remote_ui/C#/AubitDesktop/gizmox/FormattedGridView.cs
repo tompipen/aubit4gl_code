@@ -8,6 +8,7 @@ using System.Xml.Serialization;
 using System.Xml;
 using System.Data;
 using System.ComponentModel;
+using System.Threading;
 
 namespace AubitDesktop
 {
@@ -21,6 +22,7 @@ namespace AubitDesktop
         internal string defaultValue;
         internal bool upshift;
         internal bool downshift;
+        internal bool deletepress = false;
         internal string comments;
         internal bool isPassword;
         internal bool readOnly;
@@ -51,6 +53,8 @@ namespace AubitDesktop
         private EventHandler _onDblClick;
         internal bool addedNewRowBelow = false;
         internal DataTable defaultData;
+        internal bool bolhareadOnly;
+
         //internal int enteredCellColumn = -1;
         //internal int enteredCellRow = -1;
         //internal int enteredRow = -1;
@@ -102,7 +106,7 @@ namespace AubitDesktop
                 if (_maxRows != value)
                 {
                     _maxRows = value;
-                    setAllowUserToAddRows();
+                   // setAllowUserToAddRows();
                 }
 
             }
@@ -122,7 +126,7 @@ namespace AubitDesktop
             set
             {
                 _allowInsertRow = value;
-                setAllowUserToAddRows();
+              //  setAllowUserToAddRows();
             }
         }
 
@@ -276,6 +280,8 @@ namespace AubitDesktop
             DefaultValuesNeeded += new DataGridViewRowEventHandler(FormattedGridView_DefaultValuesNeeded);
             CellValidating +=new DataGridViewCellValidatingEventHandler(FormattedGridView_CellValidating);
             this.RowEnter += new DataGridViewCellEventHandler(FormattedGridView_RowEnter);
+            this.CausesValidation = true;
+            UserAddedRow += new DataGridViewRowEventHandler(displayArrayGrid_DoubleClick2);
             CellEnter += new DataGridViewCellEventHandler(FormattedGridView_CellEnter);
             CellFormatting += new DataGridViewCellFormattingEventHandler(FormattedGridView_CellFormatting);
             EditingControlShowing += new DataGridViewEditingControlShowingEventHandler(FormattedGridView_EditingControlShowing);
@@ -505,6 +511,11 @@ namespace AubitDesktop
                 TextBox tb;
                 tb = (TextBox)e.Control;
                 tb.CharacterCasing = CharacterCasing.Normal;
+               // this.widgetSettings[CurrentCell.ColumnIndex - 1].
+
+               // this.widgetSettings[CurrentCell.ColumnIndex - 1].datatype
+
+                tb.MaxLength = this.widgetSettings[CurrentCell.ColumnIndex - 1].datatype_length; 
                 if (this.widgetSettings[CurrentCell.ColumnIndex - 1].upshift)
                 {
                     tb.CharacterCasing = CharacterCasing.Upper;
@@ -534,6 +545,26 @@ namespace AubitDesktop
             if (e.ColumnIndex - 1 > this.widgetSettings.Length) return;
 
             if (e.Value == null) return;
+
+            if (this.widgetSettings[e.ColumnIndex - 1].datatype.ToString() == "DTYPE_DECIMAL" || this.widgetSettings[e.ColumnIndex - 1].ToString() == "DTYPE_MONEY"
+                    || this.widgetSettings[e.ColumnIndex - 1].datatype.ToString() == "DTYPE_FLOAT" || this.widgetSettings[e.ColumnIndex - 1].ToString() == "DTYPE_SMFLOAT")
+            {
+                if (Thread.CurrentThread.CurrentCulture.NumberFormat.NumberDecimalSeparator != ".")
+                {
+                    // The protocol should always use "." as the separator...
+                    string convert_value;
+                    try
+                    {
+                        convert_value = e.Value.ToString().Replace(".", Thread.CurrentThread.CurrentCulture.NumberFormat.NumberDecimalSeparator);
+                    //    convert_value = (Convert.ToDouble(convert_value)).ToString();
+                        e.Value = convert_value;
+                    }
+                    catch
+                    {
+
+                    }
+                }
+            }
 
 
             if (this.widgetSettings[e.ColumnIndex - 1].format != null && this.widgetSettings[e.ColumnIndex - 1].format.Trim() != "")
@@ -629,6 +660,15 @@ namespace AubitDesktop
            // setAllowUserToAddRows();
             cellMoved(e.RowIndex, e.ColumnIndex);
         }
+
+        void displayArrayGrid_DoubleClick2(object sender, DataGridViewRowEventArgs e)
+        {
+           // setAllowUserToAddRows();
+            this.AllowUserToAddRows = false;
+           
+ 
+        }
+        
 
 
         
@@ -899,7 +939,14 @@ namespace AubitDesktop
         public FormattedGridView(Xml.XMLForm.Table t)
         {
             int len;
+            if (t.TableColumn == null)
+            {
+                MessageBox.Show("Internal error : " + t.tabName + " is not in the XML form");
+                Application.Exit();
+                return;
+            }
             len = t.TableColumn.Length;
+            
             this.table = t;
             //            this.ReadOnly = true;
             //          this.Enabled = false;
@@ -964,7 +1011,7 @@ namespace AubitDesktop
             AutoGenerateColumns = false;
             setUpHandlers();
             //setAllowUserToAddRows();
-            this.Enabled = false;
+            this.Enabled = true;
             //DataSource = defaultData;
         }
 
@@ -1002,6 +1049,8 @@ namespace AubitDesktop
             {
                 DataSource = defaultData;
             }
+
+            this.AllowUserToAddRows = false;
 
         }
 
@@ -1088,6 +1137,11 @@ namespace AubitDesktop
         }
 
 
+        internal string getDataType(int columnIndex)
+        {
+            return this.widgetSettings[columnIndex - 1].datatype.ToString();
+        }
+
         /// <summary>
         /// Set the focus to the first field in the first line...
         /// </summary>
@@ -1166,12 +1220,14 @@ namespace AubitDesktop
             if (CurrentCell!=null) {
                 return validateField(CurrentCell.RowIndex, CurrentCell.ColumnIndex,GetStringToValidate(CurrentCell));
             }
+            
             return true;
         }
 
         internal void setActiveFocus()
         {
             bool incMovingCellsInternally = false;
+            
             if (currentColId == -1 && currentRowId == -1)
             {
                // first move - need to trigger the before fields/rows... 
@@ -1199,7 +1255,13 @@ namespace AubitDesktop
                     }
                     else
                     {
-                        this.CurrentCell = Rows[currentRowId].Cells[currentColId];
+                        if (currentColId == -1)
+                        {
+                        }
+                        else
+                        {
+                            this.CurrentCell = Rows[currentRowId].Cells[currentColId];
+                        }
                     }
                 }
             }
@@ -1229,13 +1291,99 @@ namespace AubitDesktop
                 }
             }
 
-            if (CurrentCell != null)
-            {
-                this.CurrentCell.Selected = true;
+            try {
+                if (widgetSettings[currentColId - 1].readOnly)
+                {
+                    //  e.Cancel = true;
+                    // Rows[e.RowIndex].Cells[e.ColumnIndex].ReadOnly = true;
+                    bolhareadOnly = true;
+
+                    GetNextCell2(this.CurrentCell);
+                    if (bolhareadOnly == false)
+                    {
+                        try
+                        {
+                            this.CurrentCell = Rows[currentRowId + 1].Cells[1];
+
+                            if (widgetSettings[currentColId - 1].readOnly)
+                            {
+                                this.CurrentCell = GetNextCell(this.CurrentCell);
+                            }
+                        }
+                        catch
+                        {
+                            this.CurrentCell = Rows[currentRowId].Cells[currentColId-1];
+                        }
+                    }
+                    else
+                    {
+                
+                        this.CurrentCell = GetNextCell(this.CurrentCell);
+
+                    }
+
+
+
+
+
+
+              
+             
             }
+
+            }
+            catch { }
+
+        
+            //if (CurrentCell != null)
+           // {
+             //   this.CurrentCell.Selected = true;
+                // this.table.
+           // }
+
+            
+           
+
+
 
         }
 
+        private DataGridViewCell GetNextCell(DataGridViewCell currentCell) { 
+
+            int i = 0;         
+            DataGridViewCell nextCell = currentCell;
+              do
+                {
+                    int nextCellIndex = (nextCell.ColumnIndex + 1) % this.ColumnCount;
+                    int nextRowIndex = nextCellIndex == 0 ? (nextCell.RowIndex + 1) % this.RowCount : nextCell.RowIndex;
+                    nextCell = this.Rows[nextRowIndex].Cells[nextCellIndex]; i++;
+                } while (i < this.RowCount * this.ColumnCount && widgetSettings[nextCell.ColumnIndex - 1].readOnly); return nextCell;
+            
+        }
+
+
+
+
+        private DataGridViewCell GetNextCell2(DataGridViewCell currentCell)
+        {
+
+            int i = 0;
+            DataGridViewCell nextCell = currentCell;
+            try
+           {
+                do
+                {
+                    int nextCellIndex = (nextCell.ColumnIndex + 1) % this.ColumnCount;
+                    int nextRowIndex = nextCellIndex == 0 ? (nextCell.RowIndex + 1) % this.RowCount : nextCell.RowIndex;
+                    nextCell = this.Rows[nextRowIndex].Cells[nextCellIndex]; i++;
+                } while (i < this.RowCount * this.ColumnCount && widgetSettings[nextCell.ColumnIndex - 1].readOnly); return nextCell;
+            }
+            catch
+            {
+                bolhareadOnly = false;
+                   return nextCell;
+            }
+        } 
 
 
 

@@ -33,6 +33,8 @@ namespace AubitDesktop
 
         //FGLContextType _ContextType;
 
+        Panel p;
+
         internal override void ContextTypeChanged()
         {  // The current ContextType - a field may appear differently if its used in a construct or input..
 
@@ -90,7 +92,7 @@ namespace AubitDesktop
         {
             get
             {
-                return (Control)btn;
+                return (Control)p;
             }
         }
 
@@ -203,6 +205,12 @@ namespace AubitDesktop
 
 
             this.SetWidget(thisAttribute, ma, row, index, column, 1, columns, widget, config, id, tabcol, action, attributeNo, incl);
+            p = new Panel();
+            p.BorderStyle = BorderStyle.None;
+
+            p.Margin = new Padding(0, 0, 0, 0);
+            p.Padding = new Padding(0, 0, 0, 0);
+            p.Name = "TWP_" + tabcol;
 
             btn = new Button();
             SizeControl(ma, index, btn);
@@ -217,6 +225,13 @@ namespace AubitDesktop
             }
             if (configSettings.ContainsKey("TEXT")) { this.Text = (string)configSettings["TEXT"]; }
             btn.Click += new EventHandler(b_Click);
+            p.BackColor = Color.Transparent;
+            p.Width = 1;
+            p.Height = 1;
+
+
+            p.Controls.Add(btn);
+            p.AutoSize = true;
             ContextTypeChanged();
         }
     }

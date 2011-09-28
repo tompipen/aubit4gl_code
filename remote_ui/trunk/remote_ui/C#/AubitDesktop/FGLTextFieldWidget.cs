@@ -23,6 +23,7 @@ using System.Collections.Generic;
 using System.Windows.Forms;
 using System.Text;
 using System.Drawing;
+using System.Threading;
 
 namespace AubitDesktop
 {
@@ -132,6 +133,56 @@ namespace AubitDesktop
         
         public override void setFocus()
         {
+
+            if (t.Parent != null)
+            {
+                if (t.Parent.GetType() == typeof(Panel))
+                {
+                    Panel Tab = (Panel)t.Parent;
+                    //if (WOTabs.TabPages.Contains(Tab))
+                    // {
+                    //    WOTabs.SelectedTab = Tab;
+                    //  TabSelected = true;
+
+                    // }
+
+
+                    if (Tab.Parent.GetType() == typeof(Panel))
+                    {
+                        Panel Tab3 = (Panel)Tab.Parent;
+
+
+                        if (Tab3.Parent.GetType() == typeof(Panel))
+                        {
+
+                            Panel Tab4 = (Panel)Tab3.Parent;
+
+                            if (Tab4.Parent.GetType() == typeof(TabPage))
+                            {
+                                TabPage Tab2 = (TabPage)Tab4.Parent;
+
+
+                                if (Tab2.Parent.GetType() == typeof(TabControl))
+                                {
+
+                                    TabControl Tab5 = (TabControl)Tab2.Parent;
+
+                                    Tab5.SelectedTab = Tab2;
+                                }
+
+                            }
+
+
+                        }  
+
+
+                    }
+                }
+
+
+               
+            }        
+            
             t.Focus();
             t.Select();
             t.SelectionLength = 0;
@@ -316,12 +367,41 @@ namespace AubitDesktop
         {
             get
             {
+
+                if (this.datatype.ToString() == "DTYPE_DECIMAL" || this.datatype.ToString() == "DTYPE_MONEY"
+                    || this.datatype.ToString() == "DTYPE_FLOAT" || this.datatype.ToString() == "DTYPE_SMFLOAT")
+                {
+                    if (Thread.CurrentThread.CurrentCulture.NumberFormat.NumberDecimalSeparator != ".")
+                    {
+                        // The protocol should always use "." as the separator...
+                        try
+                        {
+                            return t.Text.Replace(Thread.CurrentThread.CurrentCulture.NumberFormat.NumberDecimalSeparator, ".");
+                        }  catch{
+
+
+                        }
+                    }
+                }
+                           
+                
+
                 return t.Text;
             }
+               
             set
             {
                 string val;
+                 
                 val = value;
+
+                if (val != null)
+                {
+                    val = val.TrimEnd();
+
+                }
+
+              
                 if (val != t.Text)
                 {
                     this.FieldTextChanged = true;
@@ -356,9 +436,30 @@ namespace AubitDesktop
                 }
                 else
                 {
-                    l.Text = val;
+                    //l.Text = val;
                 }
-                t.Text = val;
+                if (this.datatype.ToString() == "DTYPE_DECIMAL" || this.datatype.ToString() == "DTYPE_MONEY"
+                    || this.datatype.ToString() == "DTYPE_FLOAT" || this.datatype.ToString() == "DTYPE_SMFLOAT")
+                {
+                    string convert_value;
+                    try
+                    {
+                        convert_value = val.Replace(".", Thread.CurrentThread.CurrentCulture.NumberFormat.NumberDecimalSeparator);
+
+                     //   convert_value = (Convert.ToDouble(convert_value)).ToString();
+                    }
+                    catch
+                    {
+                        convert_value = null;
+                    }
+                 //   MessageBox.Show(diogo_teste);
+
+                    l.Text = convert_value;
+                    
+                   
+
+                }
+                t.Text = convert_value;
             }
         }
 

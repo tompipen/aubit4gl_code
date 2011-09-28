@@ -194,7 +194,13 @@ namespace AubitDesktop
             {
                 fld.fglField.Text = "";
             }
-            activeFields[0].fglField.setFocus();
+            try
+            {
+                activeFields[0].fglField.setFocus();
+            }
+            catch
+            {
+            }
 
         }
 

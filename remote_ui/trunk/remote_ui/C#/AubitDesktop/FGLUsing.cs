@@ -46,18 +46,18 @@ namespace AubitDesktop
             {
                 case FGLUtils.FGLDataTypes.DTYPE_DECIMAL:
                 case FGLUtils.FGLDataTypes.DTYPE_MONEY:
-                    bool isneg = false;
-                    char[] p;
-                    p = value.ToCharArray();
-                    for (int a = 0; a < p.Length; a++)
+                    bool isneg1 = false;
+                    char[] p1;
+                    p1 = value.ToCharArray();
+                    for (int a = 0; a < p1.Length; a++)
                     {
-                        if (p[a] >= '0' && p[a] <= '9') continue;
-                        if (p[a] == '.') { p[a] = '.'; continue; }
-                        if (p[a] == '-') { p[a] = ' '; isneg = true; continue; }
-                        p[a] = ' ';
+                        if (p1[a] >= '0' && p1[a] <= '9') continue;
+                        if (p1[a] == '.') { p1[a] = '.'; continue; }
+                        if (p1[a] == '-') { p1[a] = ' '; isneg1 = true; continue; }
+                        p1[a] = ' ';
                     }
 
-                    return a4gl_using_from_string(fmt, value, isneg);
+                    return a4gl_using_from_string(fmt, value, isneg1);
 
 
 

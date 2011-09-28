@@ -27,6 +27,7 @@ using System.IO;
 using System.Xml.Serialization;
 using System.Xml;
 using System.Globalization;
+using System.Threading;
 
 
 namespace AubitDesktop
@@ -1473,7 +1474,16 @@ namespace AubitDesktop
 
         static public bool IsValidForType(FGLDataTypes datatype, string value, string format,int dtypeLength)
         {
-            CultureInfo culture = new CultureInfo("en-GB");
+            CultureInfo culture;
+            if (Thread.CurrentThread.CurrentCulture.NumberFormat.NumberDecimalSeparator != ".")
+            {
+                 culture = new CultureInfo("pt-BR");
+
+            }
+            else
+            {
+                 culture = new CultureInfo("en-GB");
+            }
             NumberStyles style = NumberStyles.Any;
 
             if (value == null) return true;
@@ -1503,13 +1513,29 @@ namespace AubitDesktop
                         return true;
                     }
 
-                case FGLDataTypes.DTYPE_DECIMAL:                
+                case FGLDataTypes.DTYPE_DECIMAL: 
                 case FGLDataTypes.DTYPE_MONEY:
                     {
                         int digits;
                         int decimals;
                         int int_part;
                         Double d;
+
+
+                        string convert_value;
+                        try
+                        {
+                            convert_value = value.Replace(".", Thread.CurrentThread.CurrentCulture.NumberFormat.NumberDecimalSeparator);
+
+                            //   convert_value = (Convert.ToDouble(convert_value)).ToString();
+                            value = convert_value;
+                        }
+                        catch
+                        {
+                            convert_value = null;
+                        }
+                        //   MessageBox.Show(diogo_teste);
+
                         
 
                         if (Double.TryParse(value,style, culture,  out d))
@@ -1672,33 +1698,60 @@ namespace AubitDesktop
             string sep="";
             arr_mdy = null;
 
+          
+         //   minhaData.ToString("dd/MM/yyyy");
+
             if (s.Contains("/"))
             {
                 arr_mdy = s.Split('/');
                 sep="/";
             }
-if (s.Contains("-"))
+            if (s.Contains("-"))
             {
                 arr_mdy = s.Split('-');
                 sep="-";
             }
-           
-                if (arr_mdy[0].Length == 1) arr_mdy[0] = "0" + arr_mdy[0];
-                if (arr_mdy[1].Length == 1) arr_mdy[1] = "0" + arr_mdy[1];
-                if (FGLUtils.DBDATEFormat_dotnet.Contains("yyyy"))
+
+            if (sep == "")
+            {
+                if (s.Length == 6)
                 {
-                    if (arr_mdy[2].Length == 2)
-                    {
-                        if (Convert.ToInt32(arr_mdy[2]) > 50)
-                        {
-                            arr_mdy[2] = "19" + arr_mdy[2];
-                        }
-                        else
-                        {
-                            arr_mdy[2] = "20" + arr_mdy[2];
-                        }
-                    }
+                    s = s.Substring(0, 2) + "/" + s.Substring(2, 2) + "/" + s.Substring(4, 2);
                 }
+                else
+                {
+                    s = s.Substring(0, 2) + "/" + s.Substring(2, 2) + "/" + s.Substring(4, 4);
+                }
+                arr_mdy = s.Split('/');
+                sep="/";
+
+            }
+try
+{
+    if (arr_mdy[0].Length == 1) arr_mdy[0] = "0" + arr_mdy[0];
+    if (arr_mdy[1].Length == 1) arr_mdy[1] = "0" + arr_mdy[1];
+    if (FGLUtils.DBDATEFormat_dotnet.Contains("yyyy"))
+    {
+        if (arr_mdy[2].Length == 2)
+        {
+            if (Convert.ToInt32(arr_mdy[2]) > 50)
+            {
+                arr_mdy[2] = "19" + arr_mdy[2];
+            }
+            else
+            {
+                arr_mdy[2] = "20" + arr_mdy[2];
+            }
+        }
+    }
+}
+catch
+{
+    // s = "01/01/1900";
+     t = DateTime.ParseExact(s, FGLUtils.DBDATEFormat_dotnet, null); ;
+  return t;
+
+}
                 if (arr_mdy!=null)
                 {
                     s = arr_mdy[0] + sep + arr_mdy[1] + sep + arr_mdy[2];

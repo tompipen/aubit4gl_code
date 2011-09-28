@@ -185,7 +185,12 @@ namespace AubitDesktop
                 if (fld.fglField.NoEntry == false)
                 {
                     setCurrentField = fld;
-                    //fld.fglField.setFocus();
+                    fld.fglField.gotFocus();
+                    CurrentField = fld;
+                    careAboutFocus = true;
+                    CurrentField.fglField.setFocus();
+                    careAboutFocus = false;
+                    setCurrentField = null;
                     break;
                 }
             }
@@ -384,6 +389,12 @@ namespace AubitDesktop
                 if (CurrentField.fglField.afterFieldID != "")
                 {
                     sendTrigger(CurrentField.fglField.afterFieldID);
+                    setField = true;
+                }
+                else
+                {
+
+                    sendTrigger("SETYOURID");
                     setField = true;
                 }
             }

@@ -33,7 +33,7 @@ namespace AubitDesktop
         //FGLContextType _ContextType;
         private int id;
         CheckBox cbFieldWidget;
-       // Panel p;
+        Panel p;
 
         string strIndeterminate;
         string strTrue;
@@ -220,7 +220,7 @@ namespace AubitDesktop
         {
             get
             {
-                return (Control)cbFieldWidget;
+                return (Control)p;
             }
         }
 
@@ -276,17 +276,28 @@ namespace AubitDesktop
             set
             {
                 CheckState oldvalue = cbFieldWidget.CheckState;
-                if (value == strTrue)
+
+                string val;
+
+                val = value;
+
+                if (val != null)
+                {
+                    val = val.TrimEnd();
+
+                }
+
+                if (val == strTrue)
                 {
                     cbFieldWidget.CheckState = CheckState.Checked;
                 }
 
-                if (value == strFalse)
+                if (val == strFalse)
                 {
                     cbFieldWidget.CheckState = CheckState.Unchecked;
                 }
 
-                if (value == strIndeterminate)
+                if (val == strIndeterminate)
                 {
                     cbFieldWidget.CheckState = CheckState.Indeterminate;
                 }
@@ -334,12 +345,22 @@ namespace AubitDesktop
 
         private void createCheckBoxWidget(ATTRIB thisAttribute, AubitDesktop.Xml.XMLForm.Matrix ma, int row, int index,int column, int columns, string widget, string config, int id, string tabcol, string action, int attributeNo, string incl, string cbText)
         {
-
+            int bcol = 1;
             this.SetWidget(thisAttribute,ma, row, index,column, 1, columns, widget, config, id, tabcol, action, attributeNo, incl);
 
             cbFieldWidget = new CheckBox();
             
+            p = new Panel();
+            p.BorderStyle = BorderStyle.None;
            
+            p.Margin = new Padding(0, 0, 0, 0);
+            p.Padding = new Padding(0, 0, 0, 0);
+            p.Name = "TWP_" + tabcol;
+            if (bcol > 0)
+            {
+             //   p.Size = new Size(GuiLayout.get_gui_w(columns + bcol + 1) - 5, GuiLayout.get_gui_h(1));
+            }
+
             SizeControl(ma,index,cbFieldWidget);
             if (cbText != null)
             {
@@ -353,13 +374,23 @@ namespace AubitDesktop
             //cbFieldWidget.Text = "#";
             //cb.Location = new System.Drawing.Point(GuiLayout.get_gui_x(column), GuiLayout.get_gui_y(row));
             
+            cbFieldWidget.CausesValidation = true;
+            cbFieldWidget.Validating += new System.ComponentModel.CancelEventHandler(t_Validating);
             cbFieldWidget.Enter += new EventHandler(t_GotFocus);
             cbFieldWidget.Leave += new EventHandler(cbFieldWidget_Leave);
             cbFieldWidget.TabStop = true;
             cbFieldWidget.Click += new EventHandler(t_Click);
            
            // cbFieldWidget.KeyPress += new KeyPressEventHandler(cbFieldWidget_KeyPress);
+
+            //p.Height = GuiLayout.get_gui_h(row);
+            p.BackColor = Color.Transparent;
+            p.Width = 1;
+            p.Height = 1;
            
+
+            p.Controls.Add(cbFieldWidget);
+            p.AutoSize = true;
             this.id = id;
         }
 

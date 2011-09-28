@@ -33,6 +33,7 @@ namespace AubitDesktop
         private FGLFoundField _currentField;
         private bool careAboutFocus;
         private bool isBeforeInput;
+        private string isInput;
 
         private FGLFoundField CurrentField
         {
@@ -184,7 +185,12 @@ namespace AubitDesktop
                 if (fld.fglField.NoEntry == false)
                 {
                     setCurrentField = fld;
-                    //fld.fglField.setFocus();
+                    fld.fglField.gotFocus();
+                    CurrentField = fld;
+                    careAboutFocus = true;
+                    CurrentField.fglField.setFocus();
+                    careAboutFocus = false;
+                    setCurrentField = null;
                     break;
                 }
             }
@@ -194,7 +200,10 @@ namespace AubitDesktop
 
 
         public void NavigateToTab()
+
         {
+
+            
             mainWin.setActiveToolBarKeys(KeyList, onActionList);
         }
 
@@ -205,12 +214,12 @@ namespace AubitDesktop
         public string getSyncValues()
         {
             string s;
-            s = "<SYNCVALUES>";
+            s = "<SVS>";
             foreach (FGLFoundField i in activeFields)
             {
-                s += "<SYNCVALUE FIELDNAME=\"" + i.useName + "\">" + System.Security.SecurityElement.Escape(i.fglField.Text) + "</SYNCVALUE>";
+                s += "<SV FN=\"" + i.useName + "\">" + System.Security.SecurityElement.Escape(i.fglField.Text) + "</SV>";
             }
-            s += "</SYNCVALUES>";
+            s += "</SVS>";
             return s;
         }
 
@@ -349,12 +358,12 @@ namespace AubitDesktop
         {
             bool setField = false;
 
-
+          
             FGLFoundField field=null;
 
 
             if (!careAboutFocus) return;
- 
+              // source.
 
             foreach (FGLFoundField f in activeFields)
             {
@@ -377,6 +386,12 @@ namespace AubitDesktop
                     sendTrigger(CurrentField.fglField.afterFieldID);
                     setField = true;
                 }
+                else
+                {
+
+                    sendTrigger("SETYOURID");
+                    setField = true;
+                }
             }
 
             CurrentField = field;
@@ -397,11 +412,13 @@ namespace AubitDesktop
                 setCurrentField = field;
             }
 
+            
+
         }
 
 
 
-        public void ActivateContext(UIEventHandler UIInputContext_EventTriggered, VALUE[] values, ROW[] rows)
+        public void ActivateContext(UIEventHandler UIInputContext_EventTriggered, V[] values, ROW[] rows)
         {
             int cnt = 0;
             int tstop = 0;
@@ -471,8 +488,9 @@ namespace AubitDesktop
             {
                 
                 CurrentField = setCurrentField;
-                
+                careAboutFocus = true;
                 CurrentField.fglField.setFocus();
+                careAboutFocus = false;
                 setCurrentField = null;
 
             }
@@ -562,14 +580,19 @@ namespace AubitDesktop
 
 
 
+            if (isInput == CurrentField.fglField.beforeFieldID)
+            {
+                isBeforeInput = false;
+            }
             
             if (isBeforeInput )
             {
                 if (CurrentField.fglField.beforeFieldID!="") { 
                                         sendTrigger(CurrentField.fglField.beforeFieldID);
+                                        isInput = CurrentField.fglField.beforeFieldID;
                     }
 
-                isBeforeInput = false;
+              //  isBeforeInput = false;
             }
 
                 careAboutFocus = true;

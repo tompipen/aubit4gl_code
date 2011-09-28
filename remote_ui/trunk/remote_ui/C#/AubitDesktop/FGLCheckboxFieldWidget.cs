@@ -33,7 +33,7 @@ namespace AubitDesktop
         //FGLContextType _ContextType;
         private int id;
         CheckBox cbFieldWidget;
-       // Panel p;
+        Panel p;
 
         string strIndeterminate;
         string strTrue;
@@ -220,7 +220,7 @@ namespace AubitDesktop
         {
             get
             {
-                return (Control)cbFieldWidget;
+                return (Control)p;
             }
         }
 
@@ -276,17 +276,28 @@ namespace AubitDesktop
             set
             {
                 CheckState oldvalue = cbFieldWidget.CheckState;
-                if (value == strTrue)
+
+                string val;
+
+                val = value;
+
+                if (val != null)
+                {
+                    val = val.TrimEnd();
+
+                }
+
+                if (val == strTrue)
                 {
                     cbFieldWidget.CheckState = CheckState.Checked;
                 }
 
-                if (value == strFalse)
+                if (val == strFalse)
                 {
                     cbFieldWidget.CheckState = CheckState.Unchecked;
                 }
 
-                if (value == strIndeterminate)
+                if (val == strIndeterminate)
                 {
                     cbFieldWidget.CheckState = CheckState.Indeterminate;
                 }
@@ -339,7 +350,13 @@ namespace AubitDesktop
 
             cbFieldWidget = new CheckBox();
             
+            p = new Panel();
+            p.BorderStyle = BorderStyle.None;
            
+            
+            p.Margin = new Padding(0, 0, 0, 0);
+            p.Padding = new Padding(0, 0, 0, 0);
+            p.Name = "TWP_" + tabcol;
             SizeControl(ma,index,cbFieldWidget);
             if (cbText != null)
             {
@@ -362,7 +379,15 @@ namespace AubitDesktop
             cbFieldWidget.Click += new EventHandler(t_Click);
            
            // cbFieldWidget.KeyPress += new KeyPressEventHandler(cbFieldWidget_KeyPress);
+
+            //p.Height = GuiLayout.get_gui_h(row);
+            p.BackColor = Color.Transparent;
+            p.Width = 1;
+            p.Height = 1;
            
+
+            p.Controls.Add(cbFieldWidget);
+            p.AutoSize = true;
             this.id = id;
         }
 
