@@ -212,6 +212,7 @@ void MainFrame::vdcdebug(QString obj, QString funk, QString uebergabe)
 
 bool MainFrame::eventFilter(QObject *obj, QEvent *event)
 {
+    /*
     if(FglForm *p_fglform = qobject_cast<FglForm*> (obj))
     {
        if(event->type() == QEvent::WindowActivate && p_fglform != NULL && !p_fglform->screenhandler()->b_runinfo)
@@ -232,7 +233,7 @@ bool MainFrame::eventFilter(QObject *obj, QEvent *event)
 
        }
     }
-
+*/
        return QMainWindow::eventFilter(obj, event);
 
 }
