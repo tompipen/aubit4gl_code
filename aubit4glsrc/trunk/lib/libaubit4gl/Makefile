@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.61 2011-01-07 11:18:36 mikeaubury Exp $
+# $Id: Makefile,v 1.62 2011-09-29 12:09:05 mikeaubury Exp $
 #
 
 ROOT    	=../..
@@ -169,8 +169,8 @@ ifeq "${TARGET_OS}" "darwin"
         #since is in effect hard coded path to the lib file
 		#we will have to link two libraries, one for use in source tree,
         #and one to install
-	CC=glibtool --mode=compile gcc
-	LD=glibtool --mode=link gcc
+	CC=glibtool --tag=CC --mode=compile gcc
+	LD=glibtool --tag=CC --mode=link gcc
 else
 		SO_LDFLAGS_NOBUNDLE=${SO_LDFLAGS}
 endif

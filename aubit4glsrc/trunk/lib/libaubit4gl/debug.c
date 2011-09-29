@@ -1,4 +1,4 @@
-/*
+/*4GL_getTimecode
 # +----------------------------------------------------------------------+
 # | Aubit 4gl Language Compiler Version $.0                              |
 # +----------------------------------------------------------------------+
@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: debug.c,v 1.71 2010-08-23 17:23:22 mikeaubury Exp $
+# $Id: debug.c,v 1.72 2011-09-29 12:09:05 mikeaubury Exp $
 #
 */
 
@@ -688,7 +688,7 @@ A4GL_getTimecode (void) // Also used by SQLMETRICS for its timestamp - so make s
   month = local_time->tm_mon + 1;
   mja_day = local_time->tm_mday;
 
-  SPRINTF7 (buff, "%04d-%02d-%02d %02d:%02d:%02d.%06ld", year, month, mja_day, local_time->tm_hour, local_time->tm_min, local_time->tm_sec, tv1.tv_usec ); /* MUST BE A VALID DATETIME */
+  SPRINTF7 (buff, "%04d-%02d-%02d %02d:%02d:%02d.%03ld", year, month, mja_day, local_time->tm_hour, local_time->tm_min, local_time->tm_sec, tv1.tv_usec/1000 ); /* MUST BE A VALID DATETIME */
   buff[27] = 0;
 
   return buff;
