@@ -62,6 +62,7 @@ MainFrame::vdcdebug("TableView","TableView", "QWidget *parent");
    connect(this, SIGNAL(entered(QModelIndex)), this, SLOT(setMousePos(QModelIndex)));
    QObject::connect(header, SIGNAL(sectionClicked(int)),
                     this, SLOT(sortByColumn(int)));
+   connect(header, SIGNAL(sectionResized(int,int,int)), this, SLOT(updateSectionWidth(int,int,int)));
 
    QObject::disconnect(header, SIGNAL(sectionPressed(int)),
                        this, SLOT(selectColumn(int)));
@@ -69,6 +70,24 @@ MainFrame::vdcdebug("TableView","TableView", "QWidget *parent");
    this->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
    this->setInputEnabled(false);
    this->setEnabled(false);
+}
+
+void TableView::updateSectionWidth(int logicalIndex, int, int newSize)
+{
+    QSortFilterProxyModel *proxyModel = static_cast<QSortFilterProxyModel*> (this->model());
+    TableModel *table = static_cast<TableModel*> (proxyModel->sourceModel());
+    columnLabels << getColumnLabel(logicalIndex);
+
+    if(isVisible()){
+        if(columnLabels.toVector().at(logicalIndex) != NULL){
+            if(logicalIndex != NULL){
+                QSettings settings(columnLabels.at(logicalIndex)->objectName(), table->mytv->accessibleName());
+                    settings.setValue("width", newSize);
+                    settings.setValue("columnId", logicalIndex);
+            }
+        }
+
+        }
 }
 
 bool TableView::eventFilter(QObject *object, QEvent *event)
@@ -117,6 +136,7 @@ bool TableView::eventFilter(QObject *object, QEvent *event)
 
         // add the standardmenu to the pulldown and execute the pulldown menu
         pulldownMenu->addSeparator();
+        connect(standardAct, SIGNAL(triggered()), this, SLOT(resetSettings()));
         pulldownMenu->addAction(standardAct);
         pulldownMenu->addSeparator();
         pulldownMenu->addAction(resetAct);
@@ -127,6 +147,23 @@ bool TableView::eventFilter(QObject *object, QEvent *event)
         return false;
     }
 }
+
+void TableView::resetSettings()
+{
+    QSortFilterProxyModel *proxyModel = static_cast<QSortFilterProxyModel*> (this->model());
+    TableModel *table = static_cast<TableModel*> (proxyModel->sourceModel());
+
+    for(int i = 0; i < columnLabels.count(); i++)
+    {
+        if(columnLabels.at(i) != NULL)
+        {
+            QSettings settings(columnLabels.at(i)->objectName(), table->mytv->accessibleName());
+            settings.remove("width");
+        }
+
+    }
+}
+
 void TableView::writeSettings(QAction *action)
 {
     QSortFilterProxyModel *proxyModel = static_cast<QSortFilterProxyModel*> (this->model());
@@ -891,10 +928,6 @@ QVariant TableModel::headerData ( int section, Qt::Orientation orientation, int 
    if ( orientation == Qt::Horizontal )
    {
       if(qh_colLabels[section] != NULL){
-         QSettings settings(qh_colLabels[section]->colName, this->mytv->accessibleName());
-         settings.setValue("width", this->mytv->columnWidth(section));
-         settings.setValue("columnId", section);
-
          if(!qh_colLabels[section]->text().isEmpty()){
             return qh_colLabels[section]->text();
          }

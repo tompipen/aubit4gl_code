@@ -89,6 +89,8 @@ public slots:
    void setMousePos(QModelIndex);
    void dragSuccess();
    void writeSettings(QAction*);
+   void updateSectionWidth(int logicalIndex, int oldSize, int newSize);
+   void resetSettings();
 
 protected:
    QModelIndex mouseindex;
