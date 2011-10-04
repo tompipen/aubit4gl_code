@@ -83,5 +83,20 @@ namespace AubitDesktop
             }
             return -1;
         }
+
+        internal int FindAttributeCellNo(string Name, bool showErrIfNotFound)
+        {
+            int n = 0;
+            foreach (FGLScreenRecordAttributes a in Attributes)
+            {
+                if (a.Name == Name) return n; //  a.AttributeNo;
+                n++;
+            }
+            if (showErrIfNotFound)
+            {
+                Program.Show("Field " + Name + " was not found");
+            }
+            return -1; 
+        }
     }
 }

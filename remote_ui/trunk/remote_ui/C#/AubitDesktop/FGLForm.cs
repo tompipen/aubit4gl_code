@@ -2110,10 +2110,15 @@ namespace AubitDesktop
 
             else
             {
+                /*
+                string str = "Could not find record : " + fIELD[0].NAME + "\r\n";
                 foreach (object s in grids.Keys)
                 {
-                    Program.Show((string)s);
+                    str += (string)s+"\r\n";
+                    //Program.Show((string)s);
                 }
+                Program.Show(str);
+                 */
                 return null;
             }
         }
@@ -2202,7 +2207,7 @@ namespace AubitDesktop
                         #region colName = * checks
                         if (colName != "*")
                         {
-                            int attr = ScreenRecords[sr].FindAttributeNo(colName,false);
+                            int attr = ScreenRecords[sr].FindAttributeCellNo(colName,false);
                             if (attr != -1)
                             {
                                 if (dg == null)
@@ -2213,6 +2218,7 @@ namespace AubitDesktop
                                 else
                                 {
                                   //  added = true;
+
                                     dgCells.Add(dg.Rows[subscript - 1].Cells[attr+1]);
                                     
                                 }
