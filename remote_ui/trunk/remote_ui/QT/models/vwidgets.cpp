@@ -2024,8 +2024,9 @@ MainFrame::vdcdebug("WidgetHelper","fieldText", "QObject *object");
    }
 
    if(LineEdit *widget = qobject_cast<LineEdit *> (object)){
- /*      QString text = widget->text();
-     if(widget->sqlTabName == "formonly")
+       QString text = Fgl::vdc_to_fgl(widget->format(), widget->text(), widget->dataType());
+       return text;
+  /*   if(widget->sqlTabName == "formonly")
       {
          int cnt_comma = 0;
 //  text.replace(".","");
@@ -2053,7 +2054,7 @@ MainFrame::vdcdebug("WidgetHelper","fieldText", "QObject *object");
       {
          return text;//.replace(",",".");
       }*/
-      return widget->text();
+
    }
 
    if(TextEdit *widget = qobject_cast<TextEdit *> (object)){
@@ -2061,7 +2062,7 @@ MainFrame::vdcdebug("WidgetHelper","fieldText", "QObject *object");
        {
           return widget->toPlainText();//.replace(",",".");
        }
-  */    return widget->toPlainText();
+   */  return widget->toPlainText();
    }
 
    if(ComboBox *widget = qobject_cast<ComboBox *> (object)){

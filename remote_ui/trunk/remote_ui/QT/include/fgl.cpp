@@ -10,7 +10,7 @@ namespace Fgl {
    QString usingFunc(QString fmt, QString value, DataType dataType)
    {
        //just do nothing atm
-       return value;
+       //return value;
 
       if(value.isEmpty())
          return value;
@@ -110,11 +110,71 @@ namespace Fgl {
       return value;
    }
 
-   QString fgl_using_string(QString fmt, QString value, bool isneg, QString dbmoney)
+   QString vdc_to_fgl(QString fmt, QString value, DataType dt)
    {
+       QString tdel = "";
+       QString dbmoney = env["DBMONEY"].trimmed();
+       if(dbmoney == ",")
+       {
+           tdel = ".";
+       }
+       if(dbmoney == ".")
+       {
+           tdel = ",";
+       }
+
+       if(tdel == "")
+       {
+           dbmoney = ".";
+           tdel = ",";
+       }
+
+       if(value.isEmpty())
+          return value;
+       if(!fmt.isEmpty() && dt == DTYPE_CHAR)
+       {
+           dt = DTYPE_FLOAT;
+       }
+
+
+       switch(dt){
+          case DTYPE_DECIMAL:
+           if(!fmt.isEmpty())
+           {
+               value = value.replace(tdel,"");
+           }
+           break;
+          case DTYPE_MONEY:
+          case DTYPE_BYTE:
+          case DTYPE_SMINT:
+          case DTYPE_INT:
+          case DTYPE_SERIAL:
+          case DTYPE_SMFLOAT:
+          case DTYPE_FLOAT:
+             if(!fmt.isEmpty())
+             {
+                 value = value.replace(tdel,"");
+             }
+             break;
+          case DTYPE_CHAR:
+          case DTYPE_NULL:
+          case DTYPE_DTIME:
+          case DTYPE_TEXT:
+          case DTYPE_VCHAR:
+          case DTYPE_INTERVAL:
+          case DTYPE_NCHAR:
+          default:;
+
+       }
+       return value;
+   }
+
+   QString fgl_using_string(QString fmt, QString value, bool isneg, QString dbmoney)
+   {/*
       Q_UNUSED(fmt);
       Q_UNUSED(value);
       Q_UNUSED(isneg);
+*/
 
       QString overflow;
       bool hasMoney = false;
@@ -124,7 +184,7 @@ namespace Fgl {
       repDigit << '*' << '&' << '#' << '<' << '-' << '+' << '(' << ')' << '$';
       int def = 30;
 
-      int lb, cb = 0;
+      int lb = 0, cb = 0;
 
       int s;
 
@@ -132,13 +192,13 @@ namespace Fgl {
 
       overflow.fill('*', s);
 
-
       for(int a=0; a<s; a++){
          if(fmt.at(a) == '(')
             lb++;
          if(fmt.at(a) == ')')
             cb++;
       }
+
 
       if(lb > 1 && cb > 1){
          //TODO: ERROR
@@ -240,7 +300,8 @@ namespace Fgl {
 
       bool decFound = false;
       for(int i=0; i<value.length(); i++){
-         if(value.at(i) == ','){
+          //DBMONEY ggf. einbauen
+          if(value.at(i) == ','){
             decFound = true;
             continue;
          }
@@ -494,15 +555,15 @@ namespace Fgl {
       QChar dec;
       QChar tdel;
       QString suffix;
-      const QString DBMONEY = dbmoney.isEmpty() ? dbmoney : env["DBMONEY"];
-      /*
+   //   const QString DBMONEY = dbmoney.isEmpty() ? dbmoney : env["DBMONEY"];
+      QString DBMONEY;
       if(dbmoney.isEmpty()) {
           DBMONEY = env["DBMONEY"];
       }
       else{
           DBMONEY = dbmoney;
       }
-      */
+
       decFound = false;
       for(int i=0;i<DBMONEY.size(); i++){
          if(DBMONEY.at(i) == QChar('.') || DBMONEY.at(i) == QChar(',')){
@@ -557,7 +618,6 @@ namespace Fgl {
             }
          }
       }
-      
       return qs_str.trimmed();
    }
 
