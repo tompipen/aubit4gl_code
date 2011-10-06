@@ -1033,12 +1033,11 @@ QWidget* LineEditDelegate::createEditor(QWidget *parent,
    editor->setEnabled(true);
    //remove borders from inputfields in inputarray
    QString className = editor->metaObject()->className();
-   QString style = QString("%0 { border-top-width: 0; border-top-style: none; border-bottom-width: 0; border-bottom-style: none; }").arg(className);
+   QString style = QString("%0 { border-top-width: 0; border-top-style: none; border-bottom-width: 0; border-bottom-style: none; }").arg(className) + " " + editor->styleSheet();
    editor->setStyleSheet(style);
 
    if(p_fglform != NULL)
        editor->installEventFilter(p_fglform);
-
    connect(editor, SIGNAL(fieldEvent(Fgl::Event)), p_fglform, SLOT(fieldEvent(Fgl::Event)));
 
    return editor;
