@@ -123,14 +123,17 @@ namespace Fgl {
            tdel = ",";
        }
 
+       //If the tousend delimiter is not ascertained, DBMONEY=.
+
        if(tdel == "")
        {
            dbmoney = ".";
            tdel = ",";
        }
-
+       //Nothing to do
        if(value.isEmpty())
           return value;
+       //If its a FORMONLY field and the Datatype is not set but FORMAT use it like floats
        if(!fmt.isEmpty() && dt == DTYPE_CHAR)
        {
            dt = DTYPE_FLOAT;

@@ -796,10 +796,11 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
           {
              QString lestring;
              int pos;
-             lestring = le->text();
+             lestring = WidgetHelper::fieldText(le);
              pos = le->cursorPosition();
              lestring.replace(pos,1,keyEventString);
-             le->setText(lestring);
+             WidgetHelper::setFieldText(le, lestring);
+
              le->setCursorPosition(pos+1);
              return true;
           }
@@ -3310,16 +3311,18 @@ MainFrame::vdcdebug("FglForm","checkField", "");
       if(state() != Fgl::IDLE &&
          state() != Fgl::CONSTRUCT){
          //widget->check();
-         QString text = widget->text();
+         QString text = WidgetHelper::fieldText(widget);
 
          //Set textformat if format given
          if(Fgl::isValidForType(widget->dataType(), text, widget->format())){
+             WidgetHelper::setFieldText(widget, text);
+             /*
             text = Fgl::usingFunc(widget->format(), text, widget->dataType());
-            widget->setText(text);
+            widget->setText(text);*/
          }
          else{
             emit error("ERROR in Character conversion");
-            widget->setText("");
+            WidgetHelper::setFieldText(widget, "");
          }
       }
    }
