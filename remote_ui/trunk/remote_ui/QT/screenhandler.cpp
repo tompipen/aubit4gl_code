@@ -2750,7 +2750,6 @@ void ScreenHandler::activeFocus()
     }
 
     if(p_fglform->dialog() == NULL && p_fglform->pulldown() == NULL){
-        qDebug()<<p_fglform->windowTitle();
         p_fglform->setWindowState(Qt::WindowActive);
         p_fglform->raise();
         QApplication::setActiveWindow((QWidget*) p_fglform);
