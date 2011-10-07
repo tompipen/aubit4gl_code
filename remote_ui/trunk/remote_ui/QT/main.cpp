@@ -40,6 +40,7 @@ int main(int argc, char *argv[])
     ScreenHandler::setSearchPaths();
     //splash->setPixmap(QPixmap("./pics/splash.png"));
     splash->setPixmap(QPixmap("pics:VENTAS_9_splashscreen.png"));
+    QEvent::registerEventType(1337);
     splash->show();
     QString fileName; 
     QCoreApplication::setOrganizationName("VENTAS");

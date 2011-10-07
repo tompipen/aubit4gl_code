@@ -2743,15 +2743,20 @@ MainFrame::vdcdebug("ScreenHandler","setEnv", "QString name, QString env");
 
 void ScreenHandler::activeFocus()
 {
+
     if(p_fglform == NULL)
     {
         return;
     }
 
     if(p_fglform->dialog() == NULL && p_fglform->pulldown() == NULL){
-        QApplication::setActiveWindow((QWidget*) p_fglform);
+        qDebug()<<p_fglform->windowTitle();
+        p_fglform->setWindowState(Qt::WindowActive);
         p_fglform->raise();
+        QApplication::setActiveWindow((QWidget*) p_fglform);
         p_fglform->activateWindow();
+        QApplication::postEvent(this, new QEvent((QEvent::Type)1337));
+
     }
     if(p_fglform->dialog() != NULL)
     {
@@ -2781,11 +2786,19 @@ bool ScreenHandler::eventFilter(QObject *obj, QEvent *event)
                     MainFrame::setFocusOn(this->p_pid_p);
                 }
             }
-            this->activeFocus();
+            else
+            {
+               this->activeFocus();
+
+            }
         }
 
     }
-
+    if(p_fglform != NULL && event->type() == 1337)
+    if(!p_fglform->b_dummy && p_fglform->isEnabled()&&p_fglform->currentField() != NULL && (p_fglform->state() == Fgl::CONSTRUCT || p_fglform->state() == Fgl::INPUT || p_fglform->state() == Fgl::INPUTARRAY))
+    {
+        p_fglform->setCurrentField(p_fglform->currentField()->objectName(), false);
+    }
 
 //MainFrame::vdcdebug("ScreenHandler","eventFilter", "QObject *obj, QEvent *event");
 
