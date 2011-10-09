@@ -571,12 +571,22 @@ A4GLSQLLIB_A4GLSQL_init_connection_internal (char *dbName)
   char *p;
   char uname_acl[256];
   char passwd_acl[256];
-  char empty[10] = "None";
+  char empty[10] = "None"; 
+  int port=0;
+  char *socket=0;
 
   isconnected = 0;
 
   strcpy (dbname, dbName);
   A4GL_trim (dbname);
+
+  if (acl_getenv_not_set_as_0("MYSQL_PORT")) {
+	port=atol(acl_getenv_not_set_as_0("MYSQL_PORT"));
+  }
+
+  if (acl_getenv_not_set_as_0("MYSQL_SOCKET")) {
+	socket=acl_getenv_not_set_as_0("MYSQL_SOCKET");
+  }
 
   if (A4GL_sqlid_from_aclfile (dbname, uname_acl, passwd_acl,NULL))
     {
@@ -633,7 +643,7 @@ A4GLSQLLIB_A4GLSQL_init_connection_internal (char *dbName)
   if (strcmp (dbname, "DEFAULT") == 0)
     {
       if (!mysql_real_connect
-	  (conn, acl_getenv ("MYSQL_SERVER"), u, p, NULL, 0, NULL, 0))
+	  (conn, acl_getenv ("MYSQL_SERVER"), u, p, NULL, port, socket, 0))
 	{
 	  strcpy (last_err, (char *) mysql_error (conn));
 		A4GL_debug("Error : %s",last_err);
@@ -651,7 +661,7 @@ A4GLSQLLIB_A4GLSQL_init_connection_internal (char *dbName)
   else
     {
       if (!mysql_real_connect
-	  (conn, acl_getenv ("MYSQL_SERVER"), u, p, dbname, 0, NULL, 0))
+	  (conn, acl_getenv ("MYSQL_SERVER"), u, p, dbname, port,socket, 0))
 	{
 	  strcpy (last_err, (char *) mysql_error (conn));
 		A4GL_debug("Error : %s",last_err);
