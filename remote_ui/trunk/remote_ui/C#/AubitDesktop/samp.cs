@@ -231,6 +231,19 @@ namespace AubitDesktop
 
     }
 
+    public class RUNINFO
+    {
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public int MODE;
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string CMD;
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public int RUNCNT;
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public int STARTSTOP;
+
+    }
+
     public class FIELDDELIMITERS
     {
         [System.Xml.Serialization.XmlAttributeAttribute(DataType = "NMTOKEN")]
@@ -658,6 +671,8 @@ namespace AubitDesktop
         [System.Xml.Serialization.XmlElementAttribute("CLEARWINDOW", Type = typeof(CLEARWINDOW))]
         [System.Xml.Serialization.XmlElementAttribute("FREE", Type = typeof(FREE))]
         [System.Xml.Serialization.XmlElementAttribute("CLOSEWINDOW", Type = typeof(CLOSEWINDOW))]
+        [System.Xml.Serialization.XmlElementAttribute("HIDEWINDOW", Type = typeof(HIDEWINDOW))]
+        [System.Xml.Serialization.XmlElementAttribute("SHOWWINDOW", Type = typeof(SHOWWINDOW))]
         [System.Xml.Serialization.XmlElementAttribute("OPENFORM", Type = typeof(OPENFORM))]
         [System.Xml.Serialization.XmlElementAttribute("CONSTRUCT", Type = typeof(CONSTRUCT))]
         [System.Xml.Serialization.XmlElementAttribute("ADDTOTOOLBAR", Type = typeof(ADDTOTOOLBAR))]
@@ -696,6 +711,7 @@ namespace AubitDesktop
         [System.Xml.Serialization.XmlElementAttribute("SETKEYLABEL", Type = typeof(SETKEYLABEL))]
         [System.Xml.Serialization.XmlElementAttribute("SETWINDOWTITLE", Type = typeof(SETWINDOWTITLE))]
         [System.Xml.Serialization.XmlElementAttribute("REQUESTFILE", Type = typeof(REQUESTFILE))]
+        [System.Xml.Serialization.XmlElementAttribute("RUNINFO", Type = typeof(RUNINFO))]
         [System.Xml.Serialization.XmlElementAttribute("SHOWOPTION", Type = typeof(SHOWOPTION))]
         [System.Xml.Serialization.XmlElementAttribute("WINQUESTION", Type = typeof(WINQUESTION))]
         [System.Xml.Serialization.XmlElementAttribute("UIDIRECT", Type = typeof(UIDIRECT))]
@@ -775,6 +791,24 @@ namespace AubitDesktop
         public string WINDOW;
     }
 
+    /// <remarks/>
+    [System.Xml.Serialization.XmlRootAttribute(Namespace = "", IsNullable = true)]
+    public class HIDEWINDOW
+    {
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "NMTOKEN")]
+        public string WINDOW;
+    }
+    /// <remarks/>
+    [System.Xml.Serialization.XmlRootAttribute(Namespace = "", IsNullable = true)]
+    public class SHOWWINDOW
+    {
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "NMTOKEN")]
+        public string WINDOW;
+    }
     /// <remarks/>
     [System.Xml.Serialization.XmlRootAttribute(Namespace = "", IsNullable = true)]
     public class CREATEWINDOW
@@ -1293,6 +1327,8 @@ namespace AubitDesktop
 
         [System.Xml.Serialization.XmlArrayItem(Type = typeof(FREE), IsNullable = false)]
         [System.Xml.Serialization.XmlArrayItem(Type = typeof(CLOSEWINDOW), IsNullable = false)]
+        [System.Xml.Serialization.XmlArrayItem(Type = typeof(SHOWWINDOW), IsNullable = false)]
+        [System.Xml.Serialization.XmlArrayItem(Type = typeof(HIDEWINDOW), IsNullable = false)]
         [System.Xml.Serialization.XmlArrayItem(Type = typeof(ADDTOTOOLBAR), IsNullable = false)]
         [System.Xml.Serialization.XmlArrayItem(Type = typeof(OPENFORM), IsNullable = false)]
         [System.Xml.Serialization.XmlArrayItem(Type = typeof(CONSTRUCT), IsNullable = false)]
@@ -1333,6 +1369,7 @@ namespace AubitDesktop
         [System.Xml.Serialization.XmlArrayItem(Type = typeof(SETWINDOWTITLE), IsNullable = false)]
         [System.Xml.Serialization.XmlArrayItem(Type = typeof(SETAPPLICATIONLAUNCHERXML), IsNullable = false)]
         [System.Xml.Serialization.XmlArrayItem(Type = typeof(REQUESTFILE), IsNullable = false)]
+        [System.Xml.Serialization.XmlArrayItem(Type = typeof(RUNINFO), IsNullable = false)]
         [System.Xml.Serialization.XmlArrayItem(Type = typeof(WINQUESTION), IsNullable = false)]
         [System.Xml.Serialization.XmlArrayItem(Type = typeof(SHOWOPTION), IsNullable = false)]
         [System.Xml.Serialization.XmlArrayItem(Type = typeof(UIDIRECT), IsNullable = false)]

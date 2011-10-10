@@ -1700,6 +1700,27 @@ namespace AubitDesktop
                     continue;
                 } 
                 #endregion
+                #region HIDEWINDOW
+                if (a is HIDEWINDOW)
+                {
+                    HIDEWINDOW c;
+                    c = (HIDEWINDOW)a;
+                    ApplicationWindows.HideWindow(c.WINDOW);
+                    commands.Remove(a);
+                    continue;
+                }
+                #endregion
+                #region SHOWWINDOW
+                if (a is SHOWWINDOW)
+                {
+                    SHOWWINDOW c;
+                    c = (SHOWWINDOW)a;
+                    ApplicationWindows.ShowWindow(c.WINDOW);
+                    commands.Remove(a);
+                    continue;
+                }
+                #endregion
+
                 #region CLOSEWINDOW
                 if (a is CLOSEWINDOW)
                 {
@@ -1780,6 +1801,16 @@ namespace AubitDesktop
                  //   Program.Show("DISPLAY .. AT is not support for GUI - please recode your application");
                     commands.Remove(a);
                     continue;
+                }
+                #endregion
+
+                #region RUNINFO
+                if (a is RUNINFO)
+                {
+                    // Ignored in this ui...
+                    commands.Remove(a);
+                    continue;
+
                 }
                 #endregion
                 #region REQUESTFILE
@@ -2135,8 +2166,33 @@ namespace AubitDesktop
                 {
                     CONSTRUCT i;
                     i = (CONSTRUCT)a;
+                    FormattedGridView v;
 
-                    contexts.Insert(Convert.ToInt32(i.CONTEXT), new UIConstructContext(this, i));
+                    // This is some cr@p to use SCREEN ARRAYs for Constructs
+                    // Personally - I think this is a really bad idea - but
+                    // client insists...
+
+                    List<DataGridViewCell> recordFields=null;
+                    // First - are we just looking at a screen record...
+                    v = FindRecord(i.FIELDLIST);
+
+                    
+                    if (v == null)
+                    {
+                        recordFields = FindRecordCells(i.FIELDLIST);
+                    }
+               
+
+
+
+                    if (recordFields != null || recordFields!=null)
+                    {
+                        contexts.Insert(Convert.ToInt32(i.CONTEXT), new UIConstructInTableContext(this, i,v,recordFields));
+                    }
+                    else
+                    {
+                        contexts.Insert(Convert.ToInt32(i.CONTEXT), new UIConstructContext(this, i));
+                    }
                     commands.Remove(a);
                     continue;
                 }
@@ -2680,6 +2736,11 @@ namespace AubitDesktop
         public List<FGLFoundField> FindFields(FIELD[] fieldlist)
         {
             return ApplicationWindows.FindFields(fieldlist);
+        }
+
+        public List<DataGridViewCell> FindRecordCells(FIELD[] fieldlist)
+        {
+            return ApplicationWindows.FindRecordCells(fieldlist);
         }
 
         public List<FGLFoundField> FindFields(string[] fieldlist)
