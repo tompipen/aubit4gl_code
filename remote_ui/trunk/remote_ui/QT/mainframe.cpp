@@ -98,6 +98,10 @@ void MainFrame::check_new_pids()
 
                 if(l_ql_screenhandler->at(j)->programm_name.contains(l_ql_screenhandler->at(i)->programm_name_run))
                 {
+                    if(l_ql_screenhandler->at(i)->programm_name_run.isEmpty())
+                    {
+                        continue;
+                    }
                     l_ql_screenhandler->at(i)->p_pid_p = l_ql_screenhandler->at(j)->p_pid;
                 }
             }

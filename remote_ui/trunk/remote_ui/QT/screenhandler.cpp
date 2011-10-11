@@ -142,6 +142,7 @@ MainFrame::vdcdebug("ScreenHandler","createWindow", "QString windowTitle,QString
    Q_UNUSED(y);
    Q_UNUSED(h);
    Q_UNUSED(w);
+   QApplication::setOverrideCursor(QCursor(Qt::ArrowCursor));
    cnt_form++;
    if(p_fglform != NULL)
    {
@@ -2868,7 +2869,6 @@ void ScreenHandler::setRuninfo(int mode, QString cmd, int runcnt, bool start)
     {*/
         if(start)
         {
-
            this->b_runinfo = true;
            this->i_mode = mode;
            QStringList qsl_cmd = cmd.split(" ");
@@ -2879,10 +2879,20 @@ void ScreenHandler::setRuninfo(int mode, QString cmd, int runcnt, bool start)
                    this->programm_name_run = qsl_cmd.at(i);
                }
            }
+           QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
            this->cmd = cmd;
+           if(p_fglform != NULL)
+           {
+               p_fglform->setEnabled(false);
+           }
         }
         else
         {
+            if(p_fglform != NULL)
+            {
+                p_fglform->setEnabled(true);
+            }
+            QApplication::setOverrideCursor(QCursor(Qt::ArrowCursor));
             this->programm_name_run = "";
             this->b_runinfo = false;
             this->p_pid_p = 0;
