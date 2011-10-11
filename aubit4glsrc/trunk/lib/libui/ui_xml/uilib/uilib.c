@@ -1952,8 +1952,10 @@ uilib_display_array_start (int nargs)
   int ln;
   char *mod;
   int nbind;
+	char *style;
 
   nbind=POPint();
+  style = charpop ();
   attr = charpop ();
   ln = POPint ();
   mod = charpop ();

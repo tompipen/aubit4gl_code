@@ -2079,12 +2079,13 @@ UILIB_A4GL_disp_arr_v2 (void *disp, void *ptr, char *srecname, int attrib, char 
       A4GL_push_char ("XML");
       A4GL_push_int (((long) disp) & 0xffffffff);
       A4GL_push_int (attrib);
+      A4GL_push_char (""); // STYLE
 
       A4GL_push_int (d->no_arr);
       uilib_set_count (1);
 
       A4GL_push_int (d->nbind);
-      uilib_display_array_start (3);
+      uilib_display_array_start (4);
       uilib_array_lines_start (0);
 
       for (a = 0; a < d->no_arr; a++)
@@ -4072,9 +4073,13 @@ int UILIB_A4GL_ui_send_report_to_ui(char *filename, int linesPerPage,char *mode)
 }
 
 void UILIB_A4GL_ui_run_info(int mode, char*cmdline, int runcnt, int startstop) {
-	send_to_ui("<RUNINFO MODE=\"%d\" CMD=\"%s\" RUNCNT=\"%d\" STARTSTOP=\"%d\" />", mode,
+	if (!A4GL_isno(acl_getenv("SENDRUNINFO"))) {
+
+		send_to_ui("<RUNINFO MODE=\"%d\" CMD=\"%s\" RUNCNT=\"%d\" STARTSTOP=\"%d\" />", mode,
 			uilib_xml_escape(cmdline),
 				runcnt,
 				startstop);
-  flush_ui ();
+  		flush_ui ();
+
+	}
 }
