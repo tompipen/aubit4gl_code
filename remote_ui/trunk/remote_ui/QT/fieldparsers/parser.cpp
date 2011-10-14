@@ -55,6 +55,10 @@ QList<QWidget*> Parser::getFieldList()
 MainFrame::vdcdebug("Parser","getFieldList", "");
    return ql_formFields;
 }
+QList<FormField*> Parser::getFglFields()
+{
+    return ql_fglFields;
+}
 
 void Parser::parseForm(QDomDocument xmlForm)
 {

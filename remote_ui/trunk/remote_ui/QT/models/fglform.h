@@ -224,6 +224,8 @@ public slots:
    void dropSuccess();
    void dragSuccess();
    void validateFields();
+   void resetFieldSettings();
+   void saveFieldSettings(QAction *);
 
    void clearCurrentFocus();
 
@@ -252,9 +254,12 @@ private:
    Dialog *p_dialog;
    Pulldown *p_pulldown;
    ToolBar *p_toolBar;
+   QAction *rightAct;
+   QAction *resetAct;
    QList<Action*> ql_formActions;
    QList<Action*> ql_defaultActions;
    QList<Action*> ql_actionDefaults;
+   QList<FormField*> ql_fglFields;
    void addToQueue(QString);
    void createStatusBar();
 

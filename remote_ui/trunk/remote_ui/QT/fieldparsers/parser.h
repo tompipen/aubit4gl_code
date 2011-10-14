@@ -32,6 +32,7 @@ public:
    void parseForm(QDomDocument);
    QWidget* getFormWidget();
    QList<QWidget*> getFieldList();
+   QList<FormField*> getFglFields();
 
 private:
    QHBoxLayout* layout;

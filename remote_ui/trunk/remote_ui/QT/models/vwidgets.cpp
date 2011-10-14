@@ -26,6 +26,7 @@
 #include <QDomElement>
 #include <QDragEnterEvent>
 #include <QSplitter>
+#include <QSettings>
 #include "fglform.h"
 #include "mainframe.h"
 #include "vwidgets.h"
@@ -917,7 +918,12 @@ MainFrame::vdcdebug("WidgetHelper","createLabel", "const QDomElement& formField,
    if(!comments.isEmpty()){
       label->setToolTip(comments);
    }
-
+   if(FglForm *p_fglform = qobject_cast<FglForm*> (parent)) {
+       QSettings settings(p_fglform->windowName, label->colName);
+       if(!settings.value("hideColumn").isNull()) {
+           label->hide();
+       }
+   }
    if(hidden){
       label->setVisible(false);
    }
@@ -1145,7 +1151,12 @@ MainFrame::vdcdebug("WidgetHelper","createEdit", "const QDomElement& formField, 
    int width = w*fm.width("W")+10;
    lineEdit->setFixedWidth(width);
    lineEdit->setFixedHeight(defHeight);
-
+   if(FglForm *p_fglform = qobject_cast<FglForm*> (parent)) {
+       QSettings settings(p_fglform->windowName, lineEdit->colName);
+       if(!settings.value("hideColumn").isNull()) {
+           lineEdit->hide();
+       }
+   }
    if(hidden)
       lineEdit->setVisible(false);
 
@@ -1200,6 +1211,12 @@ MainFrame::vdcdebug("WidgetHelper","createButtonEdit", "const QDomElement& formF
    lineEdit->setFixedWidth(width);
    lineEdit->setFixedHeight(defHeight);
 
+   if(FglForm *p_fglform = qobject_cast<FglForm*> (parent)) {
+       QSettings settings(p_fglform->windowName, lineEdit->colName);
+       if(!settings.value("hideColumn").isNull()) {
+           lineEdit->hide();
+       }
+   }
    if(hidden)
       lineEdit->setVisible(false);
 
@@ -1460,6 +1477,12 @@ MainFrame::vdcdebug("WidgetHelper","createDateEdit", "const QDomElement& formFie
    lineEdit->setFixedWidth(width);
    lineEdit->setFixedHeight(defHeight);
 
+   if(FglForm *p_fglform = qobject_cast<FglForm*> (parent)) {
+       QSettings settings(p_fglform->windowName, lineEdit->colName);
+       if(!settings.value("hideColumn").isNull()) {
+           lineEdit->hide();
+       }
+   }
    if(hidden)
       lineEdit->setVisible(false);
 
@@ -1563,6 +1586,12 @@ MainFrame::vdcdebug("WidgetHelper","createTextEdit", "const QDomElement& formFie
    int height = textEditElement.attribute("height", "0").toInt();
    if(height < 1) height = 1;
 
+   if(FglForm *p_fglform = qobject_cast<FglForm*> (parent)) {
+       QSettings settings(p_fglform->windowName, textEdit->colName);
+       if(!settings.value("hideColumn").isNull()) {
+           textEdit->hide();
+       }
+   }
    if(hidden)
       textEdit->setVisible(false);
 

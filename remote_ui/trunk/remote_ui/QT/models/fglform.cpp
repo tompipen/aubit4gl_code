@@ -819,6 +819,39 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
       }
    }
 
+   if(event->type() == QEvent::ContextMenu) {
+       if(input() || construct()) {
+           if(LineEdit *le = qobject_cast<LineEdit*> (obj)) {
+               Pulldown *pd = new Pulldown();
+               for(int i=0; i < this->ql_fglFields.count(); i++) {
+                   if(QLabel *la = qobject_cast<QLabel*> (this->findFieldByName(this->ql_fglFields.at(i)->colName())))
+                   {
+                       QSettings settings(windowName, ql_fglFields.at(i)->colName());
+                       if(!la->text().isEmpty()) {
+                           rightAct = new QAction(la->text(), this);
+                           rightAct->setObjectName(ql_fglFields.at(i)->colName());
+                           rightAct->setCheckable(true);
+                           if(settings.value("hideColumn").isNull()) {
+                               rightAct->setChecked(true);
+
+                           } else {
+                               rightAct->setChecked(false);
+                           }
+                       }
+                   }
+                   pd->addAction(rightAct);
+               }
+               pd->addSeparator();
+               resetAct = new QAction("Standardeinstellung wiederherstellen", this);
+               connect(resetAct, SIGNAL(triggered()), this, SLOT(resetFieldSettings()));
+               pd->addAction(resetAct);
+               connect(pd, SIGNAL(triggered(QAction*)), this, SLOT(saveFieldSettings(QAction*)));
+               pd->exec(QCursor::pos());
+           }
+       }
+
+   }
+
 
 /*
       for(int i=0; i<35; i++){
@@ -837,6 +870,60 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
 */
 
    return QMainWindow::eventFilter(obj, event);
+}
+
+//------------------------------------------------------------------------------
+// Method       : resetFieldSettings()
+// Filename     : fglform.cpp
+// Description  : removes all QSettings for Labels and Input fields
+//
+//------------------------------------------------------------------------------
+void FglForm::resetFieldSettings()
+{
+//MainFrame::vdcdebug("Fglform", "resetFieldSettings");
+    for(int i=0; i < this->ql_fglFields.count(); i++){
+        QSettings settings(windowName, this->ql_fglFields.at(i)->colName());
+        if(!settings.value("hideColumn").isNull()) {
+            settings.remove("hideColumn");
+            p_currscreenhandler->setFieldHidden(this->ql_fglFields.at(i)->colName(), 0);
+        }
+    }
+}
+
+//------------------------------------------------------------------------------
+// Method       : saveFieldSettings()
+// Filename     : fglform.cpp
+// Description  : save the field Settings for QLabel and Input Field
+//
+//------------------------------------------------------------------------------
+void FglForm::saveFieldSettings(QAction *action)
+{
+//MainFrame::vdcdebug("Fglform", "saveFieldSettings");
+    for(int i=0; i < this->ql_fglFields.count(); i++) {
+        if(this->ql_fglFields.at(i)->colName() == action->objectName())
+        {
+            int cnt = 0;
+            for (int k = i; k < this->ql_fglFields.count(); k++)
+            {
+                QSettings settings(windowName, this->ql_fglFields.at(k)->colName());
+                if(settings.value("hideColumn").isNull()) {
+                    settings.setValue("hideColumn", 1);
+                    p_currscreenhandler->setFieldHidden(this->ql_fglFields.at(k)->colName(), 1);
+                } else {
+                    settings.remove("hideColumn");
+                    p_currscreenhandler->setFieldHidden(this->ql_fglFields.at(k)->colName(), 0);
+                }
+                if(Label *la = qobject_cast<Label *> (this->findFieldByName(this->ql_fglFields.at(k)->colName()))) {
+                    cnt = cnt + 1;
+                    if( cnt == 2) {
+                        settings.remove("hideColumn");
+                        p_currscreenhandler->setFieldHidden(this->ql_fglFields.at(k)->colName(), 0);
+                        break;
+                    }
+                }
+            }
+        }
+    }
 }
 
 //------------------------------------------------------------------------------
@@ -1079,6 +1166,7 @@ MainFrame::vdcdebug("FglForm","setFormLayout", "const QDomDocument& docLayout");
    //formParser->getFormWidget()->show();
 
    this->ql_formFields << formParser->getFieldList();
+   this->ql_fglFields << formParser->getFglFields();
 
    for(int i=0; i<formElements().size(); i++){
       formElements().at(i)->installEventFilter(this);
