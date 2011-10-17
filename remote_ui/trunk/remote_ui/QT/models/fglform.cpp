@@ -837,6 +837,8 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
                            } else {
                                rightAct->setChecked(false);
                            }
+                        } else {
+                           rightAct = new QAction(ql_fglFields.at(i)->colName(), this);
                        }
                    }
                    pd->addAction(rightAct);
