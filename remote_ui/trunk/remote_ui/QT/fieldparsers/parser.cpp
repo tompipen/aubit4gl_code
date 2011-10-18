@@ -472,17 +472,22 @@ void Parser::handleTableColumn(const QDomNode& xmlNode){
       if(hidden)
          p_screenRecord->hideColumn(i);
       // restore if the column is hidden/shown
-      QSettings settings(ql_fglFields.at(i)->colName(), p_screenRecord->accessibleName());
-      if(!settings.value("hideColumn").isNull())
-      {
-          header->hideSection(settings.value("columnId").toInt());
-      }
-      // restore the width for each column.
-      if( !settings.value("width").isNull() && !settings.value("columnId").isNull())
-      {
-         header->resizeSection(settings.value("columnId").toInt(), settings.value("width").toInt());
+      if(p_screenRecord->getColumnLabel(i) != NULL) {
+
+          QSettings settings(p_screenRecord->getColumnLabel(i)->objectName(), p_screenRecord->accessibleName());
+          if(!settings.value("hideColumn").isNull())
+          {
+              header->hideSection(settings.value("columnId").toInt());
+          }
+          // restore the width for each column.
+          if( !settings.value("width").isNull() && !settings.value("columnId").isNull())
+          {
+              header->resizeSection(settings.value("columnId").toInt(), settings.value("width").toInt());
+          } else {
+              header->resizeSection(i, w+1);
+          }
       } else {
-      header->resizeSection(i, w+1);
+          header->resizeSection(i, w+1);
       }
 
    //   header->resizeSections(QHeaderView::Fixed);
