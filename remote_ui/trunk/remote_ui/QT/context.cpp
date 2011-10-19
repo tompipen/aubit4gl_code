@@ -230,7 +230,9 @@ MainFrame::vdcdebug("Context","screenRecordRowChanged", "const QModelIndex & cur
             int scrLine = tableView->currentIndex().row();
 
             setOption("SCRLINE", scrLine);
+            qDebug()<<"Setze scrline auf : "<<scrLine;
             setOption("ARRLINE", arrLine);
+            qDebug()<<"Setze arrline auf : "<<arrLine;
 
             /*
             if(fgl_state == Fgl::INPUTARRAY){
@@ -279,22 +281,21 @@ MainFrame::vdcdebug("Context","getScreenRecordValues", "int row");
          for(int j=0; j<tableView->model()->columnCount(); j++){
             QModelIndex currIndex = tableView->model()->index(row, j);
             if(LineEditDelegate *dele = qobject_cast<LineEditDelegate *> (tableView->itemDelegateForColumn(j))){
-               if(LineEdit *widget = qobject_cast<LineEdit *> (dele->qw_editor)){
-           /*        if(widget->sqlType().contains("FLOAT") || widget->sqlType().contains("DECIMAL"))
-                   {
-                      fieldValues << tableView->model()->data(currIndex).toString().replace(",",".");
-                  }
-                  else
-                  {*/
-                      fieldValues << tableView->model()->data(currIndex).toString();
-                  //}
-               }
-               else{
-                   fieldValues << WidgetHelper::fieldText(dele->qw_editor);
+                Fgl::DataType sqlType = Fgl::DTYPE_CHAR;
+                QString format = "";
+
+                if(LineEdit *le = qobject_cast<LineEdit*> (dele->qw_editor))
+                {
+                    sqlType = le->dataType();
+                    format  = le->format();
+                }
+
+
+
+               QString val = tableView->model()->data(currIndex).toString();
+                fieldValues << Fgl::vdc_to_fgl(format, val, sqlType);
                }
             }
-
-         }
       }
       else{
          fieldValues << WidgetHelper::fieldText(ql_fieldList.at(i));
