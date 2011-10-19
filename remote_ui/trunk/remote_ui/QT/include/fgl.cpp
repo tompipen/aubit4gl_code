@@ -146,6 +146,10 @@ namespace Fgl {
            {
                value = value.replace(tdel,"");
            }
+           if(dbmoney == ",")
+           {
+               value.replace(",",".");
+           }
            break;
           case DTYPE_MONEY:
           case DTYPE_BYTE:
@@ -157,6 +161,10 @@ namespace Fgl {
              if(!fmt.isEmpty())
              {
                  value = value.replace(tdel,"");
+             }
+             if(dbmoney == ",")
+             {
+                 value.replace(",",".");
              }
              break;
           case DTYPE_CHAR:
