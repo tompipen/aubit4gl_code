@@ -114,6 +114,8 @@ namespace Fgl {
    {
        QString tdel = "";
        QString dbmoney = env["DBMONEY"].trimmed();
+       QString a4gl_numeric = env["A4GL_NUMERIC"].trimmed();
+
        if(dbmoney == ",")
        {
            tdel = ".";
@@ -150,6 +152,14 @@ namespace Fgl {
            {
                value.replace(",",".");
            }
+           if(a4gl_numeric == ".")
+           {
+               value.replace(",", ".");
+           }
+           if(a4gl_numeric == ",")
+           {
+               value.replace(".", ",");
+           }
            break;
           case DTYPE_MONEY:
           case DTYPE_BYTE:
@@ -165,6 +175,14 @@ namespace Fgl {
              if(dbmoney == ",")
              {
                  value.replace(",",".");
+             }
+             if(a4gl_numeric == ".")
+             {
+                 value.replace(",", ".");
+             }
+             if(a4gl_numeric == ",")
+             {
+                 value.replace(".", ",");
              }
              break;
           case DTYPE_CHAR:
