@@ -68,8 +68,29 @@ A4GL_init_default_formats ()
   a4gl_convfmts.posix_decfmt.thsep = 0;
 
   // a4gl default numeric format
+  a4gl_convfmts.report_print_decfmt.decsep = '.';
+  a4gl_convfmts.report_print_decfmt.thsep = 0;
+
   a4gl_convfmts.ui_decfmt.decsep = '.';
   a4gl_convfmts.ui_decfmt.thsep = 0;
+
+  if (acl_getenv_not_set_as_0("A4GL_REPORT_NUMERIC")) {
+  	tmp = acl_getenv ("A4GL_REPORT_NUMERIC");
+  } else {
+  	tmp = acl_getenv ("A4GL_NUMERIC");
+  }
+
+  if (tmp)
+    {
+      if (tmp[0])
+	{
+	  a4gl_convfmts.report_print_decfmt.decsep = tmp[0];
+	  if (tmp[1])
+	    a4gl_convfmts.report_print_decfmt.thsep = tmp[1];
+	}
+    }
+
+
   tmp = acl_getenv ("A4GL_NUMERIC");
   if (tmp)
     {

@@ -25,7 +25,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.193 2011-09-19 18:03:02 mikeaubury Exp $
+# $Id: ops.c,v 1.194 2011-10-20 08:18:00 mikeaubury Exp $
 #
 */
 
@@ -6418,21 +6418,33 @@ A4GL_display_float (void *ptr, int size, int string_sz, struct struct_scr_field 
 	}
       a = *(double *) ptr;
       SPRINTF1 (buff_10, "%14.2f", a);
-      A4GL_decstr_convert (buff_10, a4gl_convfmts.printf_decfmt, a4gl_convfmts.ui_decfmt, 0, 0, 14);
+      if ( display_type == DISPLAY_TYPE_PRINT) {
+      		A4GL_decstr_convert (buff_10, a4gl_convfmts.printf_decfmt, a4gl_convfmts.report_print_decfmt, 0, 0, 14);
+	} else {
+      		A4GL_decstr_convert (buff_10, a4gl_convfmts.printf_decfmt, a4gl_convfmts.ui_decfmt, 0, 0, 14);
+	}
       if (!strchr (buff_10, '*'))
 	{
 	  return buff_10;
 	}
 
       SPRINTF1 (buff_10, "%14.1f", a);
-      A4GL_decstr_convert (buff_10, a4gl_convfmts.printf_decfmt, a4gl_convfmts.ui_decfmt, 0, 0, 14);
+      if ( display_type == DISPLAY_TYPE_PRINT) {
+      	A4GL_decstr_convert (buff_10, a4gl_convfmts.printf_decfmt, a4gl_convfmts.report_print_decfmt, 0, 0, 14);
+	} else {
+      	A4GL_decstr_convert (buff_10, a4gl_convfmts.printf_decfmt, a4gl_convfmts.ui_decfmt, 0, 0, 14);
+	}
       if (!strchr (buff_10, '*'))
 	{
 	  return buff_10;
 	}
 
       SPRINTF1 (buff_10, "%14.0f", a);
+      if ( display_type == DISPLAY_TYPE_PRINT) {
       A4GL_decstr_convert (buff_10, a4gl_convfmts.printf_decfmt, a4gl_convfmts.ui_decfmt, 0, 0, 14);
+	} else {
+      A4GL_decstr_convert (buff_10, a4gl_convfmts.printf_decfmt, a4gl_convfmts.report_print_decfmt, 0, 0, 14);
+	}
       if (!strchr (buff_10, '*'))
 	{
 	  return buff_10;
@@ -6560,7 +6572,11 @@ A4GL_display_smfloat (void *ptr, int size, int string_sz, struct struct_scr_fiel
 	}
       a = *(float *) ptr;
       SPRINTF1 (buff_11, "%14.2f", a);
-      A4GL_decstr_convert (buff_11, a4gl_convfmts.printf_decfmt, a4gl_convfmts.ui_decfmt, 0, 0, 14);
+	if (display_type == DISPLAY_TYPE_PRINT) {
+      		A4GL_decstr_convert (buff_11, a4gl_convfmts.printf_decfmt, a4gl_convfmts.report_print_decfmt, 0, 0, 14);
+	} else {
+      		A4GL_decstr_convert (buff_11, a4gl_convfmts.printf_decfmt, a4gl_convfmts.ui_decfmt, 0, 0, 14);
+	}
     }
 
   if (display_type == DISPLAY_TYPE_DISPLAY_AT)
@@ -6858,6 +6874,25 @@ A4GL_display_decimal (void *ptr, int size, int string_sz, struct struct_scr_fiel
       A4GL_push_char (A4GL_make_using_tostring (ptr, size >> 8, size & 255));
       A4GL_pushop (OP_USING);
       ptr = A4GL_char_pop ();
+
+ if (display_type == DISPLAY_TYPE_PRINT) {
+      if (a4gl_convfmts.report_print_decfmt.thsep != 0)
+	{
+	  char *tmpptr;
+	  tmpptr = A4GL_decstr_convert (ptr, a4gl_convfmts.using_decfmt, a4gl_convfmts.report_print_decfmt, 1, 0, strlen (ptr));	//try to preserve length
+	  if (tmpptr[0] == '*')	//overflow, length cannot be preserved
+	    {
+	      free (tmpptr);
+	      tmpptr = A4GL_decstr_convert (ptr, a4gl_convfmts.using_decfmt, a4gl_convfmts.report_print_decfmt, 1, 0, -1);
+	    }
+	  strcpy (s_x0, tmpptr);
+	  free (tmpptr);
+	}
+      else {
+	strcpy (s_x0, ptr);
+ 	}
+} else {
+
       if (a4gl_convfmts.ui_decfmt.thsep != 0)
 	{
 	  char *tmpptr;
@@ -6870,8 +6905,10 @@ A4GL_display_decimal (void *ptr, int size, int string_sz, struct struct_scr_fiel
 	  strcpy (s_x0, tmpptr);
 	  free (tmpptr);
 	}
-      else
+      else {
 	strcpy (s_x0, ptr);
+ 	}
+	}
       free (ptr);
       return s_x0;
     }
