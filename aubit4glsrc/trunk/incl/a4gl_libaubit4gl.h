@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.419 2011-08-16 08:02:46 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.420 2011-10-20 08:25:02 mikeaubury Exp $
 #
 */
 
@@ -1309,6 +1309,7 @@ void A4GL_set_last_cursor(int n);
   void A4GL_push_long (long p);
   void A4GL_push_date (long p);
   void A4GL_push_date_in_char(char *s);
+void A4GL_push_datetime_in_char(char *s);
 
   void A4GL_push_float (float p);
   void A4GL_push_dec (char *p, int ismoney,int size);
@@ -2853,6 +2854,7 @@ typedef struct
     s_decfmt printf_decfmt;
     s_decfmt scanf_decfmt;
     s_decfmt using_decfmt;
+    s_decfmt report_print_decfmt;
 } s_convfmts;
 
 #ifdef __WIN32__
