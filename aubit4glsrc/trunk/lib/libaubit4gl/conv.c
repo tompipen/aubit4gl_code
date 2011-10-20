@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.189 2011-10-17 21:11:26 mikeaubury Exp $
+# $Id: conv.c,v 1.190 2011-10-20 19:00:12 mikeaubury Exp $
 #
 */
 
@@ -1949,7 +1949,7 @@ A4GL_stof (void *aa, void *zz, int sz_ignore)
   double b;
   char *eptr;
 
-  a = A4GL_decstr_convert ((char *) aa, a4gl_convfmts.posix_decfmt, a4gl_convfmts.scanf_decfmt, 1, 1, -1);
+  a = A4GL_decstr_convert ((char *) aa, a4gl_convfmts.ui_decfmt, a4gl_convfmts.scanf_decfmt, 1, 1, -1);
   ok = (sscanf (a, "%lf", (double *) zz) == 1);
 #ifdef DEBUG
   A4GL_debug ("stof: %s->%16.16lf; OK=%d", A4GL_null_as_null (a), *(double *) zz, ok);
@@ -1991,7 +1991,7 @@ A4GL_stosf (void *aa, void *zz, int sz_ignore)
   char *a;
   int ok;
 
-  a = A4GL_decstr_convert ((char *) aa, a4gl_convfmts.posix_decfmt, a4gl_convfmts.scanf_decfmt, 1, 1, -1);
+  a = A4GL_decstr_convert ((char *) aa, a4gl_convfmts.ui_decfmt, a4gl_convfmts.scanf_decfmt, 1, 1, -1);
   ok = (sscanf (a, "%f", (float *) zz) == 1);
 #ifdef DEBUG
   A4GL_debug ("stosf: %s->%f; OK=%d", A4GL_null_as_null (a), *(float *) zz, ok);
