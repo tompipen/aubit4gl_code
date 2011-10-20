@@ -11,6 +11,8 @@
 
 void A4GL_push_null (int dtype,int size);
 size_t A4GL_base64_decode(const char *src, unsigned char **outptr);
+void A4GL_get_top_of_stack (int a, int *d, int *s, void **ptr);
+
 
 static void local_trim (char *p);
 void brpoint (void);		// DUMMY FUNCTION USED FOR DEBUGGING...
@@ -445,23 +447,49 @@ int
 uilib_display_values (int nargs)
 {
   char **args;
+  long *args_dtypes;
+  long *args_sizes;
   char *attr;
   int a;
   attr = charpop ();		// Attribute
   nargs--;
   args = malloc (sizeof (char *) * nargs);
+  args_dtypes = malloc (sizeof (long) * nargs);
+  args_sizes = malloc (sizeof (long) * nargs);
   for (a = 0; a < nargs; a++)
     {
-      args[a] = charpop ();
+	int d1;
+	int s1;
+	void *p1;
+
+	args_dtypes[a]=-1;
+	args_sizes[a]=0;
+//Aubit4GL specific code...
+	A4GL_get_top_of_stack (1, &d1, &s1, (void *) &p1);
+	args_dtypes[a]=d1;
+	args_sizes[a]=s1;
+//End of Aubit4GL specific code
+
+      	args[a] = charpop ();
+
     }
+
   send_to_ui ("<DISPLAYTO ATTRIBUTE=\"%s\">%s<VALUES>", attr, last_field_list);
   for (a = nargs - 1; a >= 0; a--)
     {
-      send_to_ui ("<TEXT>%s</TEXT>", xml_escape (args[a]));
+	if (args_dtypes[a]!=-1) {
+      		send_to_ui ("<TEXT DTYPE=\"%d\">%s</TEXT>", args_dtypes[a], xml_escape (args[a]));
+	} else {
+      		send_to_ui ("<TEXT>%s</TEXT>", xml_escape (args[a]));
+	}
       free (args[a]);
     }
+
   send_to_ui ("</VALUES></DISPLAYTO>");
+
   free (args);
+  free (args_dtypes);
+  free (args_sizes);
   free (attr);
   return 0;
 }

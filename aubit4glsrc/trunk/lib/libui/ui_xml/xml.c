@@ -491,7 +491,7 @@ UILIB_A4GL_disp_fields_ap (int n, int attr, va_list * ap)
       				send_to_ui ("<TEXT TYPE=\"BLOB\"/>"); // Empty blob - maybe it couldn't be loaded etc..
 			}
 		} else {
-      			send_to_ui ("<TEXT>%s</TEXT>", uilib_xml_escape (args[a]));
+      			send_to_ui ("<TEXT TYPE=\"%d\">%s</TEXT>", arg_types[a] & DTYPE_MASK, uilib_xml_escape (args[a]));
 		}
       free (args[a]);
     }
