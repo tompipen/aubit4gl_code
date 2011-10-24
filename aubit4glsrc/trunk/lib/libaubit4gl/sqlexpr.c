@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlexpr.c,v 1.101 2011-02-19 14:46:48 mikeaubury Exp $
+# $Id: sqlexpr.c,v 1.102 2011-10-24 18:52:25 mikeaubury Exp $
 #
 */
 
@@ -1545,6 +1545,7 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
 		  }
 	      }
 
+		/*
 	    if (select->table_elements.tables.tables_len == 1)
 	      {
 		if (A4GL_has_column
@@ -1568,6 +1569,7 @@ get_select_list_item_i (struct s_select *select, struct s_select_list_item *p)
 		      }
 		  }
 	      }
+		*/
 
 
 
