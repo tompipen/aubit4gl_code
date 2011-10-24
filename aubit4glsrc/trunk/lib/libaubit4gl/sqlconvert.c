@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.175 2011-07-23 08:33:36 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.176 2011-10-24 17:02:38 mikeaubury Exp $
 #
 */
 
@@ -2997,7 +2997,7 @@ sql_convert_func (char *srcfmt, char *srcparam, char *dstbuf, int dstbuf_size)
 char *
 A4GLSQLCV_sql_func (char *f, char *param)
 {
-  static char buff[256];
+  static char buff[25600]; // MID : 1434
   int b;
 
   if (param == 0)
