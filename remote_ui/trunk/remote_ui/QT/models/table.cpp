@@ -345,7 +345,7 @@ MainFrame::vdcdebug("TableView","setArrCount", "int cnt");
       table->insertRows(table->rowCount(QModelIndex()), newRows, QModelIndex());
    }
    else{
-      if(i_arrCount < table->rowCount(QModelIndex()) && i_arrCount > 0 && !table->b_input){
+      if(i_arrCount < table->rowCount(QModelIndex()) && i_arrCount > 1 && !table->b_input){
          int newRows = table->rowCount(QModelIndex()) - i_arrCount;
          table->removeRows(i_arrCount-1, newRows, QModelIndex());
       }
