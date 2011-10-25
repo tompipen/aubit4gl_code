@@ -41,7 +41,6 @@ ClientTcp::ClientTcp(QObject *parent)
    i_cnt_socket=0;
 
    socket = NULL;
-
    {
       //Commandline arguments for Debugging
       QStringList args = QApplication::arguments();
@@ -630,7 +629,11 @@ MainFrame::vdcdebug("ProtocolHandler","run", "");
            // setUpdatesEnabled(false);
             outputTree(child);
            // setUpdatesEnabled(true);
-
+            QDomElement childElement = child.toElement();
+            if(childElement.nodeName() == "PROGRAMSTOP")
+            {
+               break;
+            }
             child = child.nextSiblingElement();
          }
       }
@@ -1186,10 +1189,11 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
    if(childElement.nodeName() == "OPENFORM"){
       QString window = childElement.attribute("FORMNAME");
 
+      createWindow(window, "", 0, 0, 0, 0, 0);
+
       if(childElement.firstChildElement().nodeName() == "XMLFORM"){
         QDomDocument xmlForm = encodeXMLFile(childElement.text());
         QString xmlFormString = xmlForm.toString();
-
         handleXMLForm(window, xmlFormString, false);
       }
 
