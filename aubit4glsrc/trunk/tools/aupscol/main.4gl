@@ -65,7 +65,7 @@ while true
 	fetch c_hv_cnt into lv_cnt
 
 	if lv_cnt then
-		let lv_str="select ",get_rowid(),",* from ",fgl_getenv("A4GL_SPSCOL_VAL")," where tabname=? and colname=?"
+		let lv_str="select ",get_rowid(),",* from ",fgl_getenv("A4GL_SYSCOL_VAL")," where tabname=? and colname=?"
 		prepare p_hv_get from lv_str
 
 		declare c_hv_get cursor for p_hv_get
