@@ -1049,8 +1049,10 @@ prepare_query_1 (char *s, char type,int *err_at_col)
 
   EXEC SQL DEALLOCATE DESCRIPTOR "d1";
   cp_sqlca ();
+  //printf("1. Sqlca.sqlcode=%d\n",sqlca.sqlcode);
 
   EXEC SQL ALLOCATE DESCRIPTOR "d1";
+  //printf("2. Sqlca.sqlcode=%d\n",sqlca.sqlcode);
   cp_sqlca ();
   if (ec_check_and_report_error ())
     {
@@ -1058,7 +1060,9 @@ prepare_query_1 (char *s, char type,int *err_at_col)
       return -1;
     }
   EXEC SQL DESCRIBE stExec USING SQL DESCRIPTOR "d1";
+  //printf("3. Sqlca.sqlcode=%d p=%s\n",sqlca.sqlcode,p);
   cp_sqlca ();
+  if (sqlca.sqlcode<=0) return 0;
   qry_type = sqlca.sqlcode;
   return qry_type;
 }
