@@ -1,0 +1,266 @@
+#! /usr/bin/awk -f
+#	create_man_entries - an automated 4gl source code documenter
+#
+#	Marco Greco (marcog@ctonline.it), Catania, Italy
+#
+#	Initial release: Sep 97
+#	Current release: Oct 97
+#
+#				NOTICE
+# 	Permission to use, copy, modify and redistribute this software and
+#	its documentation is hereby granted without fee provided that
+#
+#	- all copies of the software and related documentation contain this
+#	  notice and authorship information, UNMODIFIED
+#
+#	- no fee is charged for the physical act of redistributing this
+#	  software or modified copies thereof
+# 
+#	THE SOFTWARE IS PROVIDED "AS-IS" AND WITHOUT WARRANTY OF ANY KIND,
+#	EXPRESS, IMPLIED OR OTHERWISE, INCLUDING WITHOUT LIMITATION, ANY
+#	WARRANTY OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.
+#
+#	IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, INCIDENTAL,
+#	INDIRECT OR CONSEQUENTIAL DAMAGES OF ANY KIND, OR ANY DAMAGES WHATSOEVER
+#	RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER OR NOT ADVISED
+#	OF THE POSSIBILITY OF DAMAGE, AND ON ANY THEORY OF LIABILITY, ARISING
+#	OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+# 
+#	ALL RISKS CONNECTED TO THE USE OF THIS SOFTWARE OR IMPOSSIBILITY 
+#	THEREOF LIE SOLELY ON YOU.
+#	USE OF THIS SOFTWARE CONSTITUES AGREEMENT WITH THE ABOVE TERMS 
+#	AND CONDITIONS.
+#
+
+BEGIN		{
+
+# token separator
+		    FS="[ \t]+|[ \t]*[(),][ \t]*"
+
+# get list of functions that have already been documented
+		    if (already_documented!="")
+			while ((getline < already_documented)>0)
+			    function_list[$0]=""
+
+# set some handy variables
+		    in_function="no"
+		    in_comment=0
+		    commentcounter=0
+		    restartcomment=0
+		}
+
+# if already within brace comment, don't want opening braces
+in_comment	{ in_comment=($0 !~ "{") }
+
+# if not within braces, we want a brace as first token, and no more
+!in_comment	{ in_comment=($0 ~ "^[ \t]*{[^{]*$") }
+
+# save comments just preceeding function definition
+(in_function=="no") && (in_comment || $1 ~ "(#|--).*") \
+		{
+
+# drop comment tokens
+	 	    sub("(#|--|{)[ \t]*", "")
+		    in_comment=in_comment && ! sub("}[ \t]*$", "")
+
+# drop decorative comments
+		    sub("^[=_\\-+*# \t]+", "")
+		    if (restartcomment)
+			commentcounter=0
+		    if (length($0) || commentcounter)
+			comment[++commentcounter]=$0
+		    restartcomment=0
+		    next
+		}
+
+# outside useful comments, flag comment buffering should start anew
+		{ restartcomment=1 }
+
+# strip all other comments
+/#.*/ || /--.*/ || /[{}]/ \
+		{
+		    sub("(#|--).*", "") 
+		    gsub("{[^{}]*}", "")
+		    sub("^.*}", "")
+		    sub("{.*", "")
+		    if (!length($0)) next
+		}
+
+# empty line, skip
+!length($0)	{ next }
+
+# downshift to simplify life
+		{
+		    oldrec=$0
+		    $0=tolower($0)
+		}
+
+# here starts a function
+(/^function/||/^report/)  && (already_documented=="" || ! ($2 in function_list)) \
+		{
+		    in_function="yes"
+
+# save name in documented list
+		    function_list[$2]=""
+
+# save param list for later
+		    delete currargs
+		    for (i=3; i<NF; i++)
+			currargs[$i]=i
+
+# init counters & save string for later
+		    retcount=0
+		    defcount=1
+		    definitions[1]=oldrec
+
+# open paragraph, create local anchor, print function name as header, and draw a rule
+		    print "<P><A NAME=\"" $2 "\"><H3>" $2 "</A><HR></H3>"
+
+# subsequent entries as a two col table
+		    print "<TABLE CELLSPACING=5>"
+
+# source filename
+		    print "<TR><TD VALIGN=\"TOP\"><B>file</B></TD>"
+		    print "<TD WIDTH=100%>" substr(FILENAME, \
+			match(FILENAME, "[^/]+$")) "</TD></TR>"
+
+# start declaration section
+		    print "<TR><TD VALIGN=\"TOP\"><B>declaration</B></TD>"
+		    next
+		}
+
+# not within function - skip
+(in_function=="no")	{ next }
+
+# drop leading blanks
+		{ gsub("^[ \t]+", "") }
+
+# skip returning clauses
+/returning/	{ next }
+
+# save return statements
+/return/ 	{
+		    sub(".*return", "")
+		    if (length($0))
+		    {
+			retcount++
+			returns[retcount]=$0
+		    }
+		}
+
+# end function - output all the saved data
+/end function/||/end report/ \
+		{
+		    in_function="no"
+
+# drop lone defines & empty strings
+		    while (defcount &&
+			   (tolower(definitions[defcount]) ~ "define[ \t]*$" \
+			    || !length(definitions[defcount])))
+			defcount--
+
+# drop a possible comma from last definition statement
+		    sub(",$", "", definitions[defcount])
+
+# print all define statements
+		    print "<TD WIDTH=100%><PRE>"
+		    for (i=1; i<=defcount; i++)
+			print definitions[i]
+	  	    print "</PRE></TD></TR>"
+
+# and the returns statements if any
+		    print "<TR><TD VALIGN=\"TOP\"><B>returns</B></TD>"
+		    print "<TD WIDTH=100%>"
+		    if (!retcount) print "nothing"
+		    else
+			for (i=1; i<=retcount; i++)
+			    print returns[i] "<BR>"
+		    print "</TD></TR>"
+
+# create purpose, ...
+		    print "<TR><TD VALIGN=\"TOP\"><B>purpose</B></TD>"
+		    print "<TD WIDTH=100%>"
+		    while (commentcounter && !length(comment[commentcounter]))
+			commentcounter--
+		    for (i=1; i<=commentcounter; i++)
+			print comment[i]
+		    print "</TD></TR>"
+
+# ...example, ...
+		    print "<TR><TD VALIGN=\"TOP\"><B>example</B></TD>"
+		    print "<TD WIDTH=100%>none</TD></TR>"
+
+# ...and notes rows
+		    print "<TR><TD VALIGN=\"TOP\"><B>notes</B></TD>"
+		    print "<TD WIDTH=100%>none</TD></TR>"
+
+# close table - we're done
+		    print "</TABLE></P>"
+
+# leave an empty line for clarity
+		    print ""
+
+# reinit comment variables & restart over
+		    commentcounter=0
+		    restartcomment=0
+		    next
+		}
+
+# here starts a definition section 
+/define/	{
+		    in_function="define"
+		    sub("define", "")
+		    varfound=0
+		}
+
+# not within definition - skip
+in_function=="yes" \
+		{ next }
+
+# see if we end with a comma
+		{
+		    terminate_define=!/,[ \t]*$/
+
+# remove trailing comma & leading & trailing blanks (simplifies life)
+		    sub("^[ \t]*", "")
+		    sub(",?[ \t]*$", "")
+		}
+
+# see if record starts or ends
+/record/	{
+		    if (in_function=="define")
+			in_function="record"
+		    else
+			in_function="define"
+		    sub("(end)?[ \t]*record", "")
+		}
+
+# if empty line or all reserved words or within record, save for later
+(in_function=="record" && parameterfound) || !length($0) \
+		{ definitions[++defcount]=oldrec }
+
+# scan to see if we spot a parameter - if yes, save line
+in_function=="define" \
+		{
+		    parameterfound=0
+		    varfound+=split($0, items, "[ \t]*,[ \t]*|[ \t]+")
+		    for (i in items)
+			if (items[i]!="" && items[i] in currargs)
+			{
+			    parameterfound=1
+			    definitions[++defcount]=oldrec
+			    break
+			}
+		}
+
+# definition section ends if line ends with no comma, outside record, 
+# the line is not empty and we have actually defined something
+in_function=="define" && length(oldrec) && varfound && terminate_define \
+		{ in_function="yes" }
+
+# on exit output updated documented function list
+END		{
+		    if (already_documented!="")
+			for (i in function_list)
+			    print i > already_documented
+		}

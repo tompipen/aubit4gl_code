@@ -1,0 +1,15 @@
+Name: libA4GL_file
+Parent: aubit4glsrc
+Description: Low-level file access functions. No x4GL language bindings.
+Functionality: Files manipulation library
+Build:
+Example:
+Depends: None
+Documentation:
+Regressed: mostly
+Maintainer: MA
+Status: 5
+Todo:
+Notes: See also libchannel
+
+

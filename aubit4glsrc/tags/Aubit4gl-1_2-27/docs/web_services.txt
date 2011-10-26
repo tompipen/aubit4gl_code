@@ -1,0 +1,345 @@
+Web services
+------------
+
+There are two situations that might arise for use with web services
+
+1) Serving 4gl functions for use as web services
+2) Using web services with 4gl
+
+There is a special case of '2' - when you want to use a 4gl function being
+served as a web service with a 4gl function.
+
+In order to create the web services - you will need to have installed the
+"gSOAP" library. This provides us with 2 important commands : 
+
+	soapcpp2
+and
+	wsdl2h
+
+
+If you cannot run these commands - you will not be able to generate the code
+necessary to serve or use webservices using this mechanism. 
+
+IMPORTANT : Please check the licensing for gSOAP is ok for your situation. Project page http://gsoap2.sourceforge.net/ or http://www.cs.fsu.edu/~engelen/soap.html (license frame http://www.cs.fsu.edu/~engelen/soaplicense.html).
+
+
+
+Serving 4gl functions
+---------------------
+
+Serving 4gl functions is relatively easy.
+All functions are served from what should be thought of as a single threaded
+application.
+
+There is every likelyhood though that you will not connect back to the service which
+you have previously called, no state will be preserved etc.
+You should therefore consider function calls to be 'atomic'. For example, you
+can't declare a cursor in one web service call, then read it in another..
+That cursor might well not exist...
+
+
+Ok - thats the pre-amble - lets get started..
+In order to export a function - then a definition of a function has to be
+created and used, this can be done using the 'fglproto' program.
+
+If you don't already have the 'fglproto' program - you should be able to
+compile it in the aubit4glsrc source code distribution/CVS by :
+	cd compilers/4glc
+	make fglproto
+
+Then - create a datafile containing your 4gl definition with :
+
+	4glpc  -t WRITE somemod.4gl
+
+You can do this with multiple 4gls, just run the command for each 4gl module.
+At this stage though - you only need to specify modules which :
+	1) Contain functions you wish to export
+	2) Contain functions used *DIRECTLY* in RETURN statements 
+		for functions you are exporting
+	
+You may wish to consolidate the functions into a single module - or create
+wrapper function to call your real functions so you don't export all of the 
+functions in a complex 4gl !
+
+Remember - here we are wanting to create "stub" functions to manage the Web
+service. **Later** we will need the moduled containing all the other functions
+that are needed to link our application together, but that is not at this
+"stage"..
+
+After you have run 4glpc -t WRITE for each module, we can generate the stub
+functions for all non-LOCAL functions in our 4gl module.
+We do this with 'fglproto' :
+
+	fglproto -w somemod
+
+If you have specified more than one 4gl module - add more to that one : 
+
+	fglproto -w somemod1 somemod2
+
+Remember - here we will create the logic to export *all* of the functions not
+marked as LOCAL, you dont need to use all the modules for the application, you
+can omit any that are needed just for linking..
+
+This should generate some files :
+	prototypes_server.c
+	prototypes_client.c
+	blacklist
+	prototypes.h
+
+(You can ignore 'blacklist' completely)
+
+Now - in order to create a server you need to use 'soapcpp2' to process our
+'prototypes.h' file : 
+
+	soapcpp2 -c prototypes.h
+
+(We're using normal 'C' generation so we need to use the '-c' option to tell
+soapcpp2 not to generate C++ code)
+
+
+That should generate us some more files ;-)
+
+
+For our server - we will need to use the soapcpp2 generated 'C' files : 
+
+ 	soapC.c soapServerLib.c prototypes_server.c
+
+You will also need a function to start the server itself - you can use this
+basic one as a starting point (see tools/test/gsoap/server.c) : 
+
+
+   
+   #include "soapH.h" /* get the gSOAP-generated definitions */
+   #include "fglserver.nsmap" /* get the gSOAP-generated namespace bindings */
+   #include <math.h>
+   int aclfgl_run_server(int n)
+   { int m, s; /* master and slave sockets */
+      int port;
+     struct soap *soap = soap_new();
+     if (n==0) {
+       soap_serve(soap); /* serve as CGI application */
+       soap_done(soap);
+       free(soap);
+       return 0;
+     }
+   
+      port=A4GL_pop_int();
+      printf("Listening on port %d\n",port);
+      m = soap_bind(soap, NULL, port, 100); /* bind to the port 
+   						supplied as command-line argument */
+       if (m < 0)
+       { soap_print_fault(soap, stderr);
+         exit(-1);
+       }
+       fprintf(stderr, "Socket connection successful: master socket = %d\n", m);
+       for (;;)
+       { s = soap_accept(soap);
+         fprintf(stderr, "Socket connection successful: slave socket = %d\n", s);
+         if (s < 0)
+         { soap_print_fault(soap, stderr);
+           exit(1);
+         }
+         soap_serve(soap);
+         soap_end(soap);
+       }
+   
+     soap_done(soap);
+     free(soap);
+     return 0;
+   }
+   
+
+You can call this function from within 4gl with something like : 
+
+	main
+        	call run_server(9090)
+	end main
+
+
+Putting it all together
+-----------------------
+
+Assuming you've put that "aclfgl_run_server' function in a file called
+'server.c', and the "main..end main" in a file called 'main.4gl' : 
+
+	4glpc -o server soapC.c soapServerLib.c server.c  functions.o prototypes_server.c main.4gl [all your 4gl modules]  -lgsoap 
+
+Eg. if your module containing functions you want to serve is called 'functions.4gl', but needs 'subrouts.4gl' to link : 
+
+
+        4glpc -t WRITE functions.4gl
+        fglproto -w functions
+        soapcpp2 -n -c  prototypes.h
+        4glpc -o functions.o functions.4gl
+        4glpc -o subrouts.o subrouts.4gl
+        4glpc -g -o server  soapC.c soapServerLib.c server.c  functions.o subrouts.o  nain.4gl prototypes_server.c -lgsoap
+
+
+Now - if you want to create a client to use the webservices for these functions - its very straightforward. 
+
+You simply need to compile you 4gl along with the generated client code and
+the 'gsoap' library, and
+optionally alter the function to include the URL where they will be served.
+
+
+        4glpc -g -o client_4gl soapC.c soapClient.c prototypes_client.c [your 4gls] -lgsoap
+
+
+The functions can have an optional first parameter specifying the URL where
+the functions will be served from. This is a default of
+"http://localhost:9090" if not specified- but the default can be manually changed in 
+the 'prototypes.h' generated by "fglproto -w"
+
+eg. 
+
+
+	main
+
+        	call get_tabname(54321) returning lv_tabname
+        	call get_tabname("http://localhost:9090",54321) returning lv_tabname
+
+        	display lv_tabname,":"
+	end main
+
+
+
+This assumes that you have exported a function similar to : 
+
+
+	database test1
+
+	main
+        	call run_server(9090)
+	end main
+	
+	function get_tabname(lv_id)
+	define lv_tabname char(18)
+	define lv_id integer
+	
+		display "lv_id=",lv_id
+	
+		select tabname into lv_tabname
+        		from systables where tabid=lv_id
+		
+		return lv_tabname
+	
+	end function
+
+
+
+See the code in tools/test/gsoap for this example.....
+
+
+
+
+
+
+
+
+Using non-aubit4gl web services
+-------------------------------
+
+Note: Not all webservices will be directly compatible.
+In particular - we can only handle certain datatypes, and cannot handle arrays
+etc. 
+If there is a particular service you want to use which cannot be compiled
+- please pass on the details to support@aubit.com and we will see if it is
+  possible to add support for them.
+
+Using non-aubit4gl web services requires the use of the wsdl2fgl compile
+(aubit4glsrc/compilers/wsdl2fgl), you can use either a wsdl, or the header
+file generated from soapcpp2 : 
+
+
+	wsdl2fgl someservice.wsdl
+or
+	wsdl2fgl someservice.h
+
+
+If used with a 'wsdl' file then the 'wsdl2h' from gsoap with be run to
+generate the header file.
+
+The output from wsdl2fgl should be files called soapClient.c soapC.c
+Client_4gl.c .
+
+These should be linked with your 4gl code along with the gsoap library, eg. 
+	4glpc -o client_4gl [your 4gls]  soapClient.c soapC.c Client_4gl.c -lgsoap
+
+
+Check the Client_4gl.c file for what functions are available - and what
+parameters/return values are used, noting that normally an 'aclfgl_' prefix
+will be added to the function names - which themselves will have a gsoap
+namespace prefix.
+
+For example, a "getdirections" webservice might be created as :
+
+	aclfgl___ns2__getdirections
+
+You would need to call this as '__ns2__getdirections' from within your 4gl
+(ie. removing the leading 'aclfgl_')
+
+
+
+Lets work through a full example...
+
+
+Using http://xmethods.net/ve2/ViewListing.po?key=427560, we download the WSDL
+file and save it as 'driving.wsdl'.
+
+We then run 'wsdl2fgl' on the wsdl : 
+
+	wsdl2fgl driving.wsdl
+
+Looking at the generate Client_4gl.c : 
+
+	we have 
+		aclfgl___ns2__getdirections
+			// Parameter 1 - fromAddress CHAR(...)
+			// Parameter 2 - toAddress CHAR(...)
+			// Parameter 3 - distanceUnit CHAR(...)
+			// Parameter 4 - expresswayEnabled CHAR(...)
+
+	and 
+		aclfgl___ns3__getdirections
+			// Parameter 1 - fromAddress CHAR(...)
+			// Parameter 2 - toAddress CHAR(...)
+			// Parameter 3 - distanceUnit CHAR(...)
+			// Parameter 4 - expresswayEnabled CHAR(...)
+
+
+(One is calling via "service name" drivingSoap and the other drivingSoap12)
+
+So - using the first one - and using some applicable parameters - we might
+have a 4gl program like this (testclient.4gl) : 
+
+
+	main
+	define lv_data char(1024)
+	
+	
+	
+        	call __ns2__getdirections(
+                      	   "1600 Amphitheatre Parkway Mountain View, CA ,USA",
+                      	   "2775 Middlefield Road Palo Alto, CA,USA",
+                      	   "miles",
+                      	   "true"
+		) returning lv_data
+	
+        	display lv_data clipped
+
+	end main
+
+(This is from Google HQ to a starbucks close by)
+Now - to compile it all up : 
+
+	4glpc -o client.4ae testclient.4gl soapClient.c soapC.c Client_4gl.c -lgsoap
+
+
+So - to summarise - we just need : 
+	
+	wsdl2fgl driving.wsdl
+	4glpc -o client.4ae testclient.4gl soapClient.c soapC.c Client_4gl.c -lgsoap
+
+:-)
+
+
