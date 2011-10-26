@@ -120,8 +120,10 @@ struct s_severities
   "MODNOTCALLEDUNSAFE", 2},
   {
   "MODNOTCALLEDSAFE", 6},
-  {
-  "CS.GC_TPAC", 5},
+  { "CS.GC_TPAC", 5},
+  { "INTBOOL", 2},
+  { "SMINTBOOL", 0},
+  { "NONINTBOOL", 6},
   {
   NULL, 0}
 };
@@ -251,6 +253,26 @@ add_function_stat (char *module, char *fname, int tot_lines, int loc,
   function_stats[nfunction_stats - 1].lines_of_ws = lines_of_ws;
   function_stats[nfunction_stats - 1].cc = cc;
   function_stats[nfunction_stats - 1].number_of_commands = number_of_commands;
+}
+
+static int chk_is_bool(char *mod, int ln, int dtype) {
+	dtype=dtype&DTYPE_MASK;
+
+
+	if (dtype==90) return 1;
+	//printf("dtype=%d %s %d\n",dtype,mod,ln);
+	if (dtype==DTYPE_INT || dtype==DTYPE_SERIAL) {
+
+			A4GL_lint(mod,ln,"INTBOOL","Converting integer to boolean",0);
+			return 1;
+	}
+	if (dtype==DTYPE_SMINT) {
+			A4GL_lint(mod,ln,"SMINTBOOL","Converting smallint to boolean",0);
+			return 1;
+	}
+
+	A4GL_lint(mod,ln,"NONINTBOOL","Converting non-integer to boolean",0);
+	return 0;
 }
 
 int
@@ -1467,6 +1489,7 @@ check_linearised_commands (char *module_name, s_commands * func_cmds)
 	{
 	  if (r->cmd_data.command_data_u.while_cmd.while_expr)
 	    {
+		 	chk_is_bool(r->module,r->lineno, expr_datatype (r->module, r->lineno, r->cmd_data.command_data_u.while_cmd.while_expr));
 	      ensure_bool (r->module, r->lineno,
 			   r->cmd_data.command_data_u.while_cmd.while_expr,
 			   0);
@@ -1487,6 +1510,8 @@ check_linearised_commands (char *module_name, s_commands * func_cmds)
 	      //struct command *r2;
 	      //int last_was_sql = 0;
 	      int done = 0;
+		 	chk_is_bool(r->module,if_c->conditions.conditions_val[b].lineno, expr_datatype (r->module, if_c->conditions.conditions_val[b].lineno, if_c->conditions.conditions_val[b].test_expr));
+
 	      ensure_bool (r->module,
 			   if_c->conditions.conditions_val[b].lineno,
 			   if_c->conditions.conditions_val[b].test_expr, 0);
@@ -7802,6 +7827,7 @@ check_expressions_cmd (struct s_commands *cmds)
 	    ifcmd = &c->cmd_data.command_data_u.if_cmd;
 	    for (b = 0; b < ifcmd->truths.conditions.conditions_len; b++)
 	      {
+		 	chk_is_bool(c->module, ifcmd->truths.conditions.conditions_val[b].  lineno, expr_datatype (c->module, ifcmd->truths.conditions.conditions_val[b].  lineno, ifcmd->truths.conditions.conditions_val[b].  test_expr));
 		ensure_bool (c->module,
 			     ifcmd->truths.conditions.conditions_val[b].
 			     lineno,

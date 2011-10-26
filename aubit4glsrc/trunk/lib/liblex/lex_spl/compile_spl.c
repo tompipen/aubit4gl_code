@@ -350,6 +350,7 @@ add_vname (char *f, char *v, int dtype)
     case DTYPE_VCHAR:
       sprintf (buff_dtype, "VARCHAR(%d)", dtype_sz);
       break;
+    case DTYPE_SERIAL:
     case DTYPE_INT:
       sprintf (buff_dtype, "INTEGER");
       break;
@@ -3443,6 +3444,7 @@ static char * get_spl_dtype (int dtype)
     case DTYPE_VCHAR:
       sprintf (buff_dtype, "VARCHAR(%d)", dtype_sz);
       break;
+    case DTYPE_SERIAL:
     case DTYPE_INT:
       sprintf (buff_dtype, "INTEGER");
       break;

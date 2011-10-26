@@ -1165,6 +1165,14 @@ main (int argc, char *argv[])
 	  mode = MODE_SOAP;
 	  continue;
 	}
+
+      if (strcmp (argv[z], "-iw") == 0)
+	{
+	  mode = MODE_SOAP;
+	  funcprefix=""; // aclfgl_
+	  continue;
+	}
+
       if (strcmp (argv[z], "-url") == 0)
 	{
 		z++;

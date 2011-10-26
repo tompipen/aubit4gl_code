@@ -2057,7 +2057,7 @@ static int
 calls_something (s_commands * func_commands)
 {
 int cnt;
- cnt=add_calltree_calls ("", func_commands, MODE_TRY);
+ 		cnt=add_calltree_calls ("", func_commands, MODE_TRY);
   		if (cnt==0 && AlwaysIncludeAllConditionals) {
 				return 1;
 		}
@@ -2218,6 +2218,7 @@ add_calltree_calls (char *s, s_commands * func_commands, int mode)
 
   for (a = 0; a < func_commands->cmds.cmds_len; a++)
     {
+	 //printf("Process cmd : %d\n", a);
 		call_cnt+=process_cmd(func_commands->cmds.cmds_val[a],mode);
     }
 
@@ -2231,6 +2232,7 @@ static int process_cmd(struct command *cmd,int mode) {
   struct struct_display_cmd *disp;
 	last_mod=cmd->module;
 	last_line=cmd->lineno;
+
 
       switch (cmd->cmd_data.type)
 	{
@@ -2768,6 +2770,9 @@ static int process_cmd(struct command *cmd,int mode) {
 	    int does_call;
 	    evt_list = cmd->cmd_data.command_data_u.display_array_cmd.events;
 	    does_call = add_calltree_calls_from_events ("", evt_list, MODE_TRY);
+		add_variable(cmd->cmd_data.command_data_u.display_array_cmd.arrayname,
+					cmd->module,
+								cmd->lineno,"USE",NULL);
 	    if (does_call)
 	      {
 		call_cnt += does_call;
@@ -2996,10 +3001,14 @@ static int process_cmd(struct command *cmd,int mode) {
 		char *str;
 		str=evaluate_expr(cmd->cmd_data.command_data_u.prepare_cmd.sql,0);
 		str=A4GL_strip_quotes_1(str);
+		printf("Add prepare : %s=%s\n", (calltree_get_ident(cmd->cmd_data.command_data_u.prepare_cmd.stmtid)), str);
 		add_symbol(calltree_get_ident(cmd->cmd_data.command_data_u.prepare_cmd.stmtid),last_mod,last_line,"STMT","PREPARE");
 	  	call_cnt += cache_expression ("", &cmd->cmd_data.command_data_u.prepare_cmd.sql, mode);
 
+
+
 		c=processSQL(str);
+		printf("Prepare - c=%p\n",c);
 
 		if (c!=0) {
 			c->lineno=last_line;
@@ -3380,6 +3389,7 @@ add_clobberings (mods, nmodules) ;
 	  indent++;
   	  print_whenever (MODE_BUY);
 	clr_variable_values();
+	printf("Calling add_calltree_calls for %s\n",  functions[a].function);
 	  add_calltree_calls ("", f->func_commands, MODE_BUY);
 	  indent--;
 	  print_indent ();
@@ -3877,6 +3887,8 @@ static int run_calltree (char *s)
   int cnt=0;
 
 
+printf("Run calltree : %s\n",s);
+
   if (endTarget) {
 	if (strcmp(s,endTarget)==0) {
 		//printf("Run_calltree for %s is endTarget\n",s);
@@ -3896,6 +3908,7 @@ static int run_calltree (char *s)
 	  if (functions[a].called == 0)
 	    {
 	      functions[a].called = 1;
+			printf("Running calltree for ...\n");
 	      cnt+=run_calltree_for (functions[a].call_list);
 		if (cnt) {
 			functions[a].callsEndTarget=1;
@@ -4353,6 +4366,9 @@ sprintf(buff,"<SELECT_STMT TABLE=\"%s\" MODULE=\"%s\" LINE=\"%d\" MAINACTION=\"%
 	return;
 }
 if (strstr(action,"UPDATE")) {
+if (strcmp(tabname,"tdetails")==0) {
+	printf("-----------------------------\n");
+}
 sprintf(buff,"<UPDATE_STMT TABLE=\"%s\" MODULE=\"%s\" LINE=\"%d\" MAINACTION=\"%s\"/>\n",tabname,module,line, mainaction);
 	calltree_addmap(MAPSET_CRUD_UPDATE, buff,module,line);
 	return;
@@ -4671,11 +4687,21 @@ if (isLineCalled(module,line)) {
 }
 
 
+static char *basename(char *s) {
+char *p;
+p=strrchr(s,'/');
+if (p) {
+	p++; 
+	return p;
+}
+return s;
+}
+
 
 static int isLineCalled(char *module, int line) {
 	int a;
 	for (a=0;a<functions_cnt;a++) {
-		if (strcmp(functions[a].module, module)==0) {
+		if (strcmp(basename(functions[a].module), basename(module))==0) {
 			if (functions[a].line<=line && functions[a].lastline>=line) {
 				if (functions[a].called) {
 					return 1;
