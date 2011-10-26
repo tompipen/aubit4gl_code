@@ -1066,9 +1066,12 @@ op_field_desc
 					case DTYPE_NCHAR:
 					case DTYPE_VCHAR:
 					case DTYPE_NVCHAR:
-						break;
-					// Characters can be spaces - everything else would have to be null
-					// but nulls are not allowed - so it must be 'required' as well
+						// Characters can be spaces - everything else would have to be null
+						// but nulls are not allowed - so it must be 'required' as well
+						if (A4GL_isyes(acl_getenv("SPCNOTNULLCHAR"))) {
+							break;
+						}
+						// drop through...
 					default : 
 						if (!A4GL_has_bool_attribute(fld,FA_B_NOENTRY)) {
 							// Forcing 'REQUIRED' on a 'NOENTRY' is just dumb...
