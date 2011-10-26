@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formwrite2.c,v 1.57 2011-03-11 17:38:30 mikeaubury Exp $
+# $Id: formwrite2.c,v 1.58 2011-10-26 17:11:20 mikeaubury Exp $
 #*/
 
 /**
@@ -247,7 +247,7 @@ A4GLFORM_A4GL_find_field (char *s)
 #ifdef DEBUG
       A4GL_debug ("%s %s", the_form_ptr->fields.fields_val[a].tag, s);
 #endif
-      if (strcasecmp (the_form_ptr->fields.fields_val[a].tag, s) == 0)
+      if (strcmp (the_form_ptr->fields.fields_val[a].tag, s) == 0)
 	{
 #ifdef DEBUG
 	  A4GL_debug ("Found it @ %d\n", a);
@@ -694,7 +694,7 @@ A4GLFORM_A4GL_add_field (char *s, int x, int y, int wid, int scr, int delim, cha
   for (a = 0; a < the_form_ptr->fields.fields_len; a++)
     {
       /* does field tag already exist */
-      if (strcasecmp (the_form_ptr->fields.fields_val[a].tag, s) == 0)
+      if (strcmp (the_form_ptr->fields.fields_val[a].tag, s) == 0)
 	{
 	  xx = new_form_metric (a);
 

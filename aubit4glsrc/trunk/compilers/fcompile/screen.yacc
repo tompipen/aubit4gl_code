@@ -6,7 +6,7 @@
 #define YYPURE 1
 #define YYLEX_PARAM yystate
 #define YY_DECL int yylex(int yystate)
-
+int tagCaseInsensitive=1;
 int ign_kw(int yystate,int kw);
 /*
 	y.tab.c was generated from screen.yacc using yacc
@@ -715,7 +715,9 @@ op_field_tag_type:
 
 field_tag :  op_field_tag_type
 		field_tag_name {
-			A4GL_make_downshift($<str>2);
+			if (tagCaseInsensitive) {
+				A4GL_make_downshift($<str>2);
+			}
 			strcpy(currftag,$<str>2);
 			fldno=A4GL_find_field($<str>2);
 		} 
@@ -1631,7 +1633,9 @@ ws_elem:
 field_tag_name : 
 named_or_kw_any  {
 	strcpy($<str>$,$<str>1);
-	A4GL_make_downshift($<str>$);
+	if (tagCaseInsensitive) {
+		A4GL_make_downshift($<str>$);
+	}
 	colno+=strlen($<str>1);
 	}
 ;
@@ -1641,8 +1645,10 @@ op_ws named_or_kw_any {
 	colno+=strlen($<str>2);
 } op_ws {
 	strcpy($<str>$,$<str>2);
-	A4GL_make_downshift($<str>$);
+	if (tagCaseInsensitive) {
+		A4GL_make_downshift($<str>$);
 	}
+}
 ;
 
 datatype : 

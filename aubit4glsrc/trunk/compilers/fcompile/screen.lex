@@ -382,7 +382,7 @@ on[	 ]beginning 	{if (ign_kw(yystate, KW_ON_BEGINNING)||doing_4gl()) REJECT;strc
 
 
 
-[a-zA-Z_]+[a-zA-Z\_0-9]*	{
+[a-zA-Z‰ﬂ£_]+[a-zA-Z\_0-9]*	{
 	if (ignorekw) REJECT;
 	strcpy(yylval.str, yytext);
 #ifdef DEBUG
@@ -391,7 +391,7 @@ on[	 ]beginning 	{if (ign_kw(yystate, KW_ON_BEGINNING)||doing_4gl()) REJECT;strc
 	if (yydebug) {printf("NAMED: %s\n",yytext); fflush(stdout);}
  	return(NAMED);
 }
-[a-zA-Z\_0-9]+[a-zA-Z\_0-9]*	{
+[a-zA-Z‰ﬂ£\_0-9]+[a-zA-Z\_0-9]*	{
 if (ignorekw!=1) REJECT;
 
         if (graphics_mode) {

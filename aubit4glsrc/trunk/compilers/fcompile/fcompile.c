@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fcompile.c,v 1.76 2010-12-11 13:30:14 mikeaubury Exp $
+# $Id: fcompile.c,v 1.77 2011-10-26 17:10:57 mikeaubury Exp $
 #*/
 
 /**
@@ -54,6 +54,7 @@
 //int as_c=1;
 
 //#ifdef YYDEBUG
+extern int tagCaseInsensitive;
 extern int a4gl_form_yydebug;	/* defined in y.tab.c */
 //#else /*  */
 //      int yydebug;
@@ -165,6 +166,11 @@ main (int argc, char *argv[])
       }
       if (strcmp(argv[cnt],"-s")==0) {
 	      	silent=1;
+		continue;
+      }
+
+      if (strcmp(argv[cnt],"-I")==0) {
+	      	tagCaseInsensitive=0;
 		continue;
       }
 
