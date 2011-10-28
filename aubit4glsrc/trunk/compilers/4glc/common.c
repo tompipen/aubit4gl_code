@@ -117,8 +117,9 @@ int attr=0;
   if (a->color!=-1) {
   	attr=a->color;
   }
-  if (a->normal==EB_TRUE)
+  if (a->normal==EB_TRUE) {
     attr += AUBIT_ATTR_NORMAL;
+  }
   if (a->reverse==EB_TRUE)
     attr += AUBIT_ATTR_REVERSE;
   if (a->underline==EB_TRUE )

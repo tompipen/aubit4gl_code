@@ -1427,6 +1427,7 @@ UILIB_A4GL_form_loop_v2 (void *s, int init, void *evt)
 	  A4GL_push_int (Context);
 	  uilib_input_get_values (1);
 	//printf("Popping values\n");
+	//A4GL_pause_execution();
 	  for (b= sreal->novars - 1; b >= 0; b--)
 	    {
 	      A4GL_pop_var2 (sreal->vars[b].ptr, sreal->vars[b].dtype, sreal->vars[b].size);

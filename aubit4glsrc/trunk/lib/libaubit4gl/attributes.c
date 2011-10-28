@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: attributes.c,v 1.47 2010-02-16 13:16:27 mikeaubury Exp $
+# $Id: attributes.c,v 1.48 2011-10-28 18:27:45 mikeaubury Exp $
 #*/
 
 /**
@@ -793,7 +793,7 @@ A4GL_determine_attribute (int cmd_type, int attrib_curr_int, void *vfprop, char 
   A4GL_debug ("attrib_curr_int=0x%x (%d)", attrib_curr_int, attrib_curr_int);
 #endif
 
-  if (attrib_curr_int != -1 && attrib_curr_int != 0)
+  if (attrib_curr_int != -1 ) // && attrib_curr_int != 0)
     {
 #ifdef DEBUG
       A4GL_debug ("a - %x %d", attrib_curr_int, attrib_curr_int);

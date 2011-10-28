@@ -520,7 +520,7 @@ make_cast (char *module, int lineno, struct expr_str *s, int target_dtype, int n
   s->expr_type = ET_EXPR_CAST;
   s->expr_str_u.expr_cast = malloc (sizeof (struct s_expr_cast));
   s->expr_str_u.expr_cast->expr = p;
-  s->expr_str_u.expr_cast->target_dtype = target_dtype & DTYPE_MASK;
+  s->expr_str_u.expr_cast->target_dtype = target_dtype; // & DTYPE_MASK;
   s->expr_str_u.expr_cast->src_dtype = d & DTYPE_MASK;
   s->expr_str_u.expr_cast->notnull = notnull;
   s->expr_str_u.expr_cast->force = force;
