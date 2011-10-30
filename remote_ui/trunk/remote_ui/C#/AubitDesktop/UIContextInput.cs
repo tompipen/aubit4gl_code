@@ -100,12 +100,23 @@ namespace AubitDesktop
             {
                 if (afterFieldID != "")
                 {
-                    this.EventTriggered(null, afterFieldID, getTriggeredTag(afterFieldID), this);
+                    if (this.EventTriggered != null)
+                    {
+                        this.EventTriggered(null, afterFieldID, getTriggeredTag(afterFieldID), this);
+                    }
+                    
                 }
                 CurrentField = pCurrentField;
-                if (beforeFieldID != "")
+                if (beforeFieldID!=null && beforeFieldID != "")
                 {
-                    this.EventTriggered(null, beforeFieldID, getTriggeredTag(beforeFieldID), this);
+                    if (this.EventTriggered != null)
+                    {
+                        this.EventTriggered(null, beforeFieldID, getTriggeredTag(beforeFieldID), this);
+                    }
+                    else
+                    {
+                        PendingEvents.Add(beforeFieldID);
+                    }
                 }
             }
 
