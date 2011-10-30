@@ -102,13 +102,14 @@ namespace AubitDesktop
                 {
                     this.EventTriggered(null, afterFieldID, getTriggeredTag(afterFieldID), this);
                 }
+                CurrentField = pCurrentField;
                 if (beforeFieldID != "")
                 {
                     this.EventTriggered(null, beforeFieldID, getTriggeredTag(beforeFieldID), this);
                 }
             }
 
-            CurrentField = pCurrentField;
+            
         }
 
 
