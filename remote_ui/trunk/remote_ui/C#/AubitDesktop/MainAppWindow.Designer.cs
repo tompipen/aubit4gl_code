@@ -73,9 +73,11 @@ namespace AubitDesktop
             this.MenuBarPanel = new System.Windows.Forms.Panel();
             this.statusStrip1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).BeginInit();
             this.splitContainer2.Panel1.SuspendLayout();
             this.splitContainer2.Panel2.SuspendLayout();
             this.splitContainer2.SuspendLayout();
@@ -108,14 +110,14 @@ namespace AubitDesktop
             // lblComment
             // 
             this.lblComment.Name = "lblComment";
-            this.lblComment.Size = new System.Drawing.Size(55, 17);
+            this.lblComment.Size = new System.Drawing.Size(64, 17);
             this.lblComment.Text = "comments";
             this.lblComment.TextChanged += new System.EventHandler(this.lblComment_TextChanged);
             // 
             // lblMessage
             // 
             this.lblMessage.Name = "lblMessage";
-            this.lblMessage.Size = new System.Drawing.Size(49, 17);
+            this.lblMessage.Size = new System.Drawing.Size(53, 17);
             this.lblMessage.Text = "message";
             this.lblMessage.Click += new System.EventHandler(this.lblMessage_Click);
             this.lblMessage.TextChanged += new System.EventHandler(this.lblMessage_TextChanged);
@@ -133,7 +135,7 @@ namespace AubitDesktop
             // 
             this.lblLineDisplay.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
             this.lblLineDisplay.Name = "lblLineDisplay";
-            this.lblLineDisplay.Size = new System.Drawing.Size(60, 17);
+            this.lblLineDisplay.Size = new System.Drawing.Size(67, 17);
             this.lblLineDisplay.Text = "LineDisplay";
             this.lblLineDisplay.TextChanged += new System.EventHandler(this.lblLineDisplay_TextChanged);
             // 
@@ -155,13 +157,13 @@ namespace AubitDesktop
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.exitToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
-            this.fileToolStripMenuItem.Size = new System.Drawing.Size(35, 20);
+            this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
             this.fileToolStripMenuItem.Text = "File";
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(103, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(92, 22);
             this.exitToolStripMenuItem.Text = "Exit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
@@ -173,34 +175,34 @@ namespace AubitDesktop
             this.cutToolStripMenuItem,
             this.enableEditModeToolStripMenuItem});
             this.editToolStripMenuItem.Name = "editToolStripMenuItem";
-            this.editToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
+            this.editToolStripMenuItem.Size = new System.Drawing.Size(39, 20);
             this.editToolStripMenuItem.Text = "Edit";
             // 
             // copyToolStripMenuItem
             // 
             this.copyToolStripMenuItem.Name = "copyToolStripMenuItem";
-            this.copyToolStripMenuItem.Size = new System.Drawing.Size(167, 22);
+            this.copyToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
             this.copyToolStripMenuItem.Text = "Copy";
             this.copyToolStripMenuItem.Click += new System.EventHandler(this.copyToolStripMenuItem_Click);
             // 
             // pasteToolStripMenuItem
             // 
             this.pasteToolStripMenuItem.Name = "pasteToolStripMenuItem";
-            this.pasteToolStripMenuItem.Size = new System.Drawing.Size(167, 22);
+            this.pasteToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
             this.pasteToolStripMenuItem.Text = "Paste";
             this.pasteToolStripMenuItem.Click += new System.EventHandler(this.pasteToolStripMenuItem_Click);
             // 
             // cutToolStripMenuItem
             // 
             this.cutToolStripMenuItem.Name = "cutToolStripMenuItem";
-            this.cutToolStripMenuItem.Size = new System.Drawing.Size(167, 22);
+            this.cutToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
             this.cutToolStripMenuItem.Text = "Cut";
             this.cutToolStripMenuItem.Click += new System.EventHandler(this.cutToolStripMenuItem_Click);
             // 
             // enableEditModeToolStripMenuItem
             // 
             this.enableEditModeToolStripMenuItem.Name = "enableEditModeToolStripMenuItem";
-            this.enableEditModeToolStripMenuItem.Size = new System.Drawing.Size(167, 22);
+            this.enableEditModeToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
             this.enableEditModeToolStripMenuItem.Text = "Enable Edit Mode";
             this.enableEditModeToolStripMenuItem.Click += new System.EventHandler(this.enableEditModeToolStripMenuItem_Click);
             // 
@@ -213,7 +215,7 @@ namespace AubitDesktop
             this.aboutToolStripMenuItem});
             this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
             this.helpToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F1;
-            this.helpToolStripMenuItem.Size = new System.Drawing.Size(40, 20);
+            this.helpToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
             this.helpToolStripMenuItem.Text = "Help";
             // 
             // applicationHelpToolStripMenuItem
@@ -244,7 +246,7 @@ namespace AubitDesktop
             this.saveWindowToolStripMenuItem,
             this.macroEditorToolStripMenuItem});
             this.viewToolStripMenuItem.Name = "viewToolStripMenuItem";
-            this.viewToolStripMenuItem.Size = new System.Drawing.Size(41, 20);
+            this.viewToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
             this.viewToolStripMenuItem.Text = "View";
             // 
             // menubarToolStripMenuItem
@@ -254,27 +256,27 @@ namespace AubitDesktop
             this.neverMenubarToolStripMenuItem,
             this.autoMenubarToolStripMenuItem});
             this.menubarToolStripMenuItem.Name = "menubarToolStripMenuItem";
-            this.menubarToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
+            this.menubarToolStripMenuItem.Size = new System.Drawing.Size(187, 22);
             this.menubarToolStripMenuItem.Text = "Menubar";
             // 
             // alwaysMenubarToolStripMenuItem
             // 
             this.alwaysMenubarToolStripMenuItem.Name = "alwaysMenubarToolStripMenuItem";
-            this.alwaysMenubarToolStripMenuItem.Size = new System.Drawing.Size(119, 22);
+            this.alwaysMenubarToolStripMenuItem.Size = new System.Drawing.Size(111, 22);
             this.alwaysMenubarToolStripMenuItem.Text = "Always";
             this.alwaysMenubarToolStripMenuItem.Click += new System.EventHandler(this.alwaysToolStripMenuItem_Click);
             // 
             // neverMenubarToolStripMenuItem
             // 
             this.neverMenubarToolStripMenuItem.Name = "neverMenubarToolStripMenuItem";
-            this.neverMenubarToolStripMenuItem.Size = new System.Drawing.Size(119, 22);
+            this.neverMenubarToolStripMenuItem.Size = new System.Drawing.Size(111, 22);
             this.neverMenubarToolStripMenuItem.Text = "Never";
             this.neverMenubarToolStripMenuItem.Click += new System.EventHandler(this.neverMenubarToolStripMenuItem_Click);
             // 
             // autoMenubarToolStripMenuItem
             // 
             this.autoMenubarToolStripMenuItem.Name = "autoMenubarToolStripMenuItem";
-            this.autoMenubarToolStripMenuItem.Size = new System.Drawing.Size(119, 22);
+            this.autoMenubarToolStripMenuItem.Size = new System.Drawing.Size(111, 22);
             this.autoMenubarToolStripMenuItem.Text = "Auto";
             this.autoMenubarToolStripMenuItem.Click += new System.EventHandler(this.autoMenubarToolStripMenuItem_Click);
             // 
@@ -286,34 +288,34 @@ namespace AubitDesktop
             this.autoALToolStripMenuItem1,
             this.loadToolStripMenuItem});
             this.applicationLauncherToolStripMenuItem.Name = "applicationLauncherToolStripMenuItem";
-            this.applicationLauncherToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
+            this.applicationLauncherToolStripMenuItem.Size = new System.Drawing.Size(187, 22);
             this.applicationLauncherToolStripMenuItem.Text = "Application Launcher";
             // 
             // alwaysALToolStripMenuItem1
             // 
             this.alwaysALToolStripMenuItem1.Name = "alwaysALToolStripMenuItem1";
-            this.alwaysALToolStripMenuItem1.Size = new System.Drawing.Size(119, 22);
+            this.alwaysALToolStripMenuItem1.Size = new System.Drawing.Size(111, 22);
             this.alwaysALToolStripMenuItem1.Text = "Always";
             this.alwaysALToolStripMenuItem1.Click += new System.EventHandler(this.alwaysALToolStripMenuItem1_Click);
             // 
             // neverALToolStripMenuItem1
             // 
             this.neverALToolStripMenuItem1.Name = "neverALToolStripMenuItem1";
-            this.neverALToolStripMenuItem1.Size = new System.Drawing.Size(119, 22);
+            this.neverALToolStripMenuItem1.Size = new System.Drawing.Size(111, 22);
             this.neverALToolStripMenuItem1.Text = "Never";
             this.neverALToolStripMenuItem1.Click += new System.EventHandler(this.neverALToolStripMenuItem1_Click);
             // 
             // autoALToolStripMenuItem1
             // 
             this.autoALToolStripMenuItem1.Name = "autoALToolStripMenuItem1";
-            this.autoALToolStripMenuItem1.Size = new System.Drawing.Size(119, 22);
+            this.autoALToolStripMenuItem1.Size = new System.Drawing.Size(111, 22);
             this.autoALToolStripMenuItem1.Text = "Auto";
             this.autoALToolStripMenuItem1.Click += new System.EventHandler(this.autoALToolStripMenuItem1_Click);
             // 
             // loadToolStripMenuItem
             // 
             this.loadToolStripMenuItem.Name = "loadToolStripMenuItem";
-            this.loadToolStripMenuItem.Size = new System.Drawing.Size(119, 22);
+            this.loadToolStripMenuItem.Size = new System.Drawing.Size(111, 22);
             // 
             // toolbarToolStripMenuItem
             // 
@@ -322,41 +324,41 @@ namespace AubitDesktop
             this.neverToolbarToolStripMenuItem,
             this.autoToolbarToolStripMenuItem});
             this.toolbarToolStripMenuItem.Name = "toolbarToolStripMenuItem";
-            this.toolbarToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
+            this.toolbarToolStripMenuItem.Size = new System.Drawing.Size(187, 22);
             this.toolbarToolStripMenuItem.Text = "Toolbar";
             // 
             // alwaysToolbarToolStripMenuItem
             // 
             this.alwaysToolbarToolStripMenuItem.Name = "alwaysToolbarToolStripMenuItem";
-            this.alwaysToolbarToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.alwaysToolbarToolStripMenuItem.Size = new System.Drawing.Size(111, 22);
             this.alwaysToolbarToolStripMenuItem.Text = "Always";
             this.alwaysToolbarToolStripMenuItem.Click += new System.EventHandler(this.alwaysToolbarToolStripMenuItem_Click);
             // 
             // neverToolbarToolStripMenuItem
             // 
             this.neverToolbarToolStripMenuItem.Name = "neverToolbarToolStripMenuItem";
-            this.neverToolbarToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.neverToolbarToolStripMenuItem.Size = new System.Drawing.Size(111, 22);
             this.neverToolbarToolStripMenuItem.Text = "Never";
             this.neverToolbarToolStripMenuItem.Click += new System.EventHandler(this.neverToolbarToolStripMenuItem_Click);
             // 
             // autoToolbarToolStripMenuItem
             // 
             this.autoToolbarToolStripMenuItem.Name = "autoToolbarToolStripMenuItem";
-            this.autoToolbarToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.autoToolbarToolStripMenuItem.Size = new System.Drawing.Size(111, 22);
             this.autoToolbarToolStripMenuItem.Text = "Auto";
             this.autoToolbarToolStripMenuItem.Click += new System.EventHandler(this.autoToolbarToolStripMenuItem_Click);
             // 
             // saveWindowToolStripMenuItem
             // 
             this.saveWindowToolStripMenuItem.Name = "saveWindowToolStripMenuItem";
-            this.saveWindowToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
+            this.saveWindowToolStripMenuItem.Size = new System.Drawing.Size(187, 22);
             this.saveWindowToolStripMenuItem.Text = "Save Window";
             this.saveWindowToolStripMenuItem.Click += new System.EventHandler(this.saveWindowToolStripMenuItem_Click);
             // 
             // macroEditorToolStripMenuItem
             // 
             this.macroEditorToolStripMenuItem.Name = "macroEditorToolStripMenuItem";
-            this.macroEditorToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
+            this.macroEditorToolStripMenuItem.Size = new System.Drawing.Size(187, 22);
             this.macroEditorToolStripMenuItem.Text = "Macro Editor";
             this.macroEditorToolStripMenuItem.Click += new System.EventHandler(this.macroEditorToolStripMenuItem_Click);
             // 
@@ -423,8 +425,8 @@ namespace AubitDesktop
             this.applicationLauncherTreeView.Name = "applicationLauncherTreeView";
             this.applicationLauncherTreeView.Size = new System.Drawing.Size(335, 564);
             this.applicationLauncherTreeView.TabIndex = 0;
-            this.applicationLauncherTreeView.DoubleClick += new System.EventHandler(this.applicationLauncherTreeView_DoubleClick);
             this.applicationLauncherTreeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeView1_AfterSelect);
+            this.applicationLauncherTreeView.DoubleClick += new System.EventHandler(this.applicationLauncherTreeView_DoubleClick);
             // 
             // panel1
             // 
@@ -470,25 +472,28 @@ namespace AubitDesktop
             this.Controls.Add(this.topWindowToolStrip);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.menuStrip1);
+            this.DoubleBuffered = true;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.KeyPreview = true;
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "frmMainAppWindow";
             this.Text = "Aubit4GL Desktop Client";
-            this.Load += new System.EventHandler(this.frmMainAppWindow_Load);
-            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.frmMainAppWindow_FormClosed);
-            this.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.frmMainAppWindow_KeyPress);
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.frmMainAppWindow_FormClosing);
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.frmMainAppWindow_FormClosed);
+            this.Load += new System.EventHandler(this.frmMainAppWindow_Load);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.frmMainAppWindow_KeyDown);
+            this.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.frmMainAppWindow_KeyPress);
             this.statusStrip1.ResumeLayout(false);
             this.statusStrip1.PerformLayout();
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
             this.splitContainer1.ResumeLayout(false);
             this.splitContainer2.Panel1.ResumeLayout(false);
             this.splitContainer2.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).EndInit();
             this.splitContainer2.ResumeLayout(false);
             this.applicationLauncherPanel.ResumeLayout(false);
             this.panel1.ResumeLayout(false);
