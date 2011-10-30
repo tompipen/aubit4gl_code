@@ -41,7 +41,7 @@ namespace AubitDesktop
         /// Returns True if we're between a 'ActivateContext' and a 'DeactivateContext'
         /// </summary>
         /// <returns></returns>
-        bool contextIsActive();
+   //      bool contextIsActive();
 
         bool useKeyPress(KeyEventArgs ke);
         bool externallyTriggeredID(string ID);
