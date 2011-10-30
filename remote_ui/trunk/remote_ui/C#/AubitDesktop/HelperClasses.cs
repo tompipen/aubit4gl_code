@@ -40,6 +40,7 @@ namespace AubitDesktop
         ContextNone,
         ContextInput,
         ContextConstruct,
+        ContextConstructArrayInactive,
         ContextDisplayArray,
         ContextDisplayArrayInactive,
         ContextInputArray,
@@ -583,6 +584,11 @@ namespace AubitDesktop
             windows[0].SetContext(contextType,pfields,  currContext, keyList,actionList,_evtHandler);
         }
 
+        internal List<DataGridViewCell> FindRecordCells(FIELD[] fieldlist)
+        {
+            return windows[0].FindRecordCells(fieldlist);
+        }
+
         internal List<FGLFoundField> FindFields(FIELD[] fieldlist)
         {
             return windows[0].FindFields(fieldlist);
@@ -625,7 +631,7 @@ namespace AubitDesktop
         }
 
 
-
+        
         internal FormattedGridView FindRecord(FIELD[] fIELD)
         {
             return windows[0].findRecord(fIELD);
@@ -647,6 +653,39 @@ namespace AubitDesktop
 
             windows[0].DisplayAt(d);
          
+        }
+
+
+
+        internal void ShowWindow(string windowName)
+        {
+
+            // Not found - look for our window name...
+            foreach (FGLWindow wtest in windows)
+            {
+                if (wtest.windowName.ToLower() == windowName.ToLower())
+                { // We've found it too..
+                    wtest.WindowWidget.Visible = true;
+                    return;
+                }
+            }
+            // If we get to here - we've not found the window at all
+            Program.Show("Window " + windowName + " not found");
+        }
+
+        internal void HideWindow(string windowName)
+        {
+            // Not found - look for our window name...
+            foreach (FGLWindow wtest in windows)
+            {
+                if (wtest.windowName.ToLower() == windowName.ToLower())
+                { // We've found it too..
+                    wtest.WindowWidget.Visible = false;
+                    return;
+                }
+            }
+            // If we get to here - we've not found the window at all
+            Program.Show("Window " + windowName + " not found");
         }
     }
 
