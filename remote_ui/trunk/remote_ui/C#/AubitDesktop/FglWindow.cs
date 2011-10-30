@@ -557,8 +557,13 @@ namespace AubitDesktop
         }
 
 
-            
-       
+
+
+                internal List<DataGridViewCell> FindRecordCells(FIELD[] fieldlist)
+        {
+            return CurrentForm.FindRecordCells(fieldlist);
+        }
+        
     }
 
 }
