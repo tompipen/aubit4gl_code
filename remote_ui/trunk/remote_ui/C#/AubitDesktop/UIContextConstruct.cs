@@ -558,12 +558,6 @@ namespace AubitDesktop
             }
             #endregion
 
-
-
-
-
-
-
             if (isBeforeInput)
             {
                 if (CurrentField.fglField.beforeFieldID != "")
