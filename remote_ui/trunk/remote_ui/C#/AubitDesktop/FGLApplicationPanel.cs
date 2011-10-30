@@ -192,6 +192,7 @@ namespace AubitDesktop
             this.programButtons = new List<AubitTSBtn>();
             this.options = new FGLOptions();
 
+            this.DoubleBuffered = true;
             
             this.Controls.Add(winScreen.WindowWidget);
             ApplicationWindows.PushWindow(winScreen);
@@ -2474,10 +2475,19 @@ namespace AubitDesktop
                 #region WAITFOREVENT
                 if (a is WAITFOREVENT)
                 {
+
+                    
                     //string rval;
                     WAITFOREVENT w;
 			bool callClrWaitCursor=true;
                     w = (WAITFOREVENT)a;
+
+                    if (w.CACHED != "0")
+                    {
+                        commands.Remove(a);
+                        continue;
+                    }
+
                     if (w.CONTEXT == null)
                     {
                         currentContext = immediateContext;
