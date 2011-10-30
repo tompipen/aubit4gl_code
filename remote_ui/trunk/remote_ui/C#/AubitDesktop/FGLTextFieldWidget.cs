@@ -35,7 +35,11 @@ namespace AubitDesktop
         private int id;
         TextBox t;
         Panel p;
-        Label l;
+
+
+        Label lblInsteadOfTxtBox;
+
+
         Button b;
       //  int reservedButtonWidth=0;
         int _maxLength = 0;
@@ -79,7 +83,7 @@ namespace AubitDesktop
 
         public new void setToolTip(ToolTip t, string s)
         {
-            t.SetToolTip(this.l, s);
+            t.SetToolTip(this.lblInsteadOfTxtBox, s);
             t.SetToolTip(this.p, s);
             t.SetToolTip(this.t, s);
         }
@@ -107,7 +111,7 @@ namespace AubitDesktop
             set
             {
                 p.Width = value;
-                l.Width = value;
+                lblInsteadOfTxtBox.Width = value;
                 t.Width = value;
             }
         }
@@ -193,7 +197,7 @@ namespace AubitDesktop
             set
             {
                 this.t.BackColor = value;
-                this.l.BackColor = value;
+                this.lblInsteadOfTxtBox.BackColor = value;
             }
             get
             {
@@ -219,25 +223,35 @@ namespace AubitDesktop
         {
             p.BorderStyle = BorderStyle.None;
             t.BackColor = SystemColors.Window;
-            l.BackColor = SystemColors.Control;
+            lblInsteadOfTxtBox.BackColor = SystemColors.Control;
+          
             t.ForeColor = SystemColors.WindowText;
+
+
             if (this.Attribute != -1)
             {
                 if ((this.Attribute & 4096) > 0)
                 { // reverse video 
                     t.BackColor = System.Drawing.Color.Bisque;
-                    l.BackColor = System.Drawing.Color.Bisque;
+                    lblInsteadOfTxtBox.BackColor = System.Drawing.Color.Bisque;
                 }
             }
+
+
 
             //t.TabStop = true;
             switch (_ContextType)
             {
                 case FGLContextType.ContextNone:
-                    
-                    l.Visible = true;
-                    t.Visible = false;
                     t.ReadOnly = true;
+                    
+                    if (false)
+                    {
+                         
+                        lblInsteadOfTxtBox.Visible = true;
+                        t.Visible = false;
+                        t.ReadOnly = true;
+                    }
                     break;
 
 
@@ -247,9 +261,9 @@ namespace AubitDesktop
                     {
                         t.Visible = true;
                     }
-                    if (l.Visible != false)
+                    if (lblInsteadOfTxtBox.Visible != false)
                     {
-                        l.Visible = false;
+                        lblInsteadOfTxtBox.Visible = false;
                     }
                     if (t.ReadOnly != true)
                     {
@@ -273,8 +287,11 @@ namespace AubitDesktop
 
 
                 case FGLContextType.ContextConstruct:
-                    t.Visible = true;
-                    l.Visible = false;
+                    if (false)
+                    {
+                        t.Visible = true;
+                        lblInsteadOfTxtBox.Visible = false;
+                    }
                     t.ReadOnly = false;
                     t.MaxLength = 0;
                     break;
@@ -285,13 +302,18 @@ namespace AubitDesktop
                     if (this.NoEntry)
                     {
                         t.Visible = false;
-                        l.Visible = true;
+                        lblInsteadOfTxtBox.Visible = true;
                         t.ReadOnly = false;
                     }
                     else
                     {
-                        t.Visible = true;
-                        l.Visible = false;
+
+                        if (false)
+                        {
+                            t.Visible = true;
+                            lblInsteadOfTxtBox.Visible = false;
+                        }
+
                         t.ReadOnly = false;
                     }
                     // We can't trap the tabstops if this is true..
@@ -303,22 +325,31 @@ namespace AubitDesktop
                     t.MaxLength = _maxLength;
                     if (this.NoEntry)
                     {
-                        t.Visible = false;
-                        l.Visible = true;
+                        if (false)
+                        {
+                            t.Visible = false;
+                            lblInsteadOfTxtBox.Visible = true;
+                        }
                         t.ReadOnly = false;
                     }
                     else
                     {
                         if (isOnSelectedRow)
                         {
-                            t.Visible = true;
-                            l.Visible = false;
+                            if (false)
+                            {
+                                t.Visible = true;
+                                lblInsteadOfTxtBox.Visible = false;
+                            }
                             t.ReadOnly = false;
                         }
                         else
                         {
-                            t.Visible = false;
-                            l.Visible = true;
+                            if (false)
+                            {
+                                t.Visible = false;
+                                lblInsteadOfTxtBox.Visible = true;
+                            }
                             t.ReadOnly = false;
                         }
                     }
@@ -327,19 +358,27 @@ namespace AubitDesktop
                 default:
                     if (this.NoEntry)
                     {
-                        t.Visible = false;
-                        l.Visible = true;
+                        if (false)
+                        {
+                            t.Visible = false;
+                            lblInsteadOfTxtBox.Visible = true;
+                        }
                         t.ReadOnly = false;
                     }
                     else
                     {
-                        t.Visible = true;
-                        l.Visible = false;
+                        if (false)
+                        {
+                            t.Visible = true;
+                            lblInsteadOfTxtBox.Visible = false;
+                        }
                         t.ReadOnly = false;
                     }
                     break;
 
             }
+
+
         }
 
         internal override Control WindowsWidget
@@ -432,7 +471,7 @@ namespace AubitDesktop
                 {
                     string s;
                     s = new string(t.PasswordChar, t.Text.Length);
-                    l.Text = s;
+                    lblInsteadOfTxtBox.Text = s;
                     
                 }
                 else
@@ -457,12 +496,12 @@ namespace AubitDesktop
                     }
                  //   MessageBox.Show(diogo_teste);
 
-                    l.Text = convert_value;
+                    lblInsteadOfTxtBox.Text = convert_value;
                     
                    
 
                 }
-                t.Text = l.Text;
+                t.Text = lblInsteadOfTxtBox.Text;
             }
         }
 
@@ -525,7 +564,7 @@ namespace AubitDesktop
             if (edit.fontPitch == "fixed")
             {
                 t.Font = new Font(FontFamily.GenericMonospace, t.Font.Size);
-                l.Font = t.Font;
+                lblInsteadOfTxtBox.Font = t.Font;
             }
         }
 
@@ -589,7 +628,7 @@ namespace AubitDesktop
             if (edit.fontPitch == "fixed")
             {
                 t.Font = new Font(FontFamily.GenericMonospace, t.Font.Size);
-                l.Font = t.Font;
+                lblInsteadOfTxtBox.Font = t.Font;
             }
         }
 
@@ -634,7 +673,7 @@ namespace AubitDesktop
             if (edit.fontPitch == "fixed")
             {
                 t.Font = new Font(FontFamily.GenericMonospace, t.Font.Size);
-                l.Font = t.Font;
+                lblInsteadOfTxtBox.Font = t.Font;
             }
         }
 
@@ -651,15 +690,15 @@ namespace AubitDesktop
             this.SetWidget(thisAttribute, ma,row, index,column, rows, columns, widget, config, id, tabcol, action, attributeNo, incl);
           
             p = new Panel();
-            l = new Label();
+            lblInsteadOfTxtBox = new Label();
             p.BorderStyle = BorderStyle.None;
             if (rows > 1)
             {
-                l.TextAlign = ContentAlignment.TopLeft;
+                lblInsteadOfTxtBox.TextAlign = ContentAlignment.TopLeft;
             }
             else
             {
-                l.TextAlign = ContentAlignment.MiddleLeft;
+                lblInsteadOfTxtBox.TextAlign = ContentAlignment.MiddleLeft;
             }
             
             t = new System.Windows.Forms.TextBox();
@@ -670,14 +709,14 @@ namespace AubitDesktop
            
             p.Margin = new Padding(0, 0, 0, 0);
             p.Padding = new Padding(0, 0, 0, 0);
-            l.Margin = new Padding(0, 0, 0, 0);
-            l.Padding = new Padding(0, 0, 0, 0);
+            lblInsteadOfTxtBox.Margin = new Padding(0, 0, 0, 0);
+            lblInsteadOfTxtBox.Padding = new Padding(0, 0, 0, 0);
             t.Margin = new Padding(0, 0, 0, 0);
             t.Padding = new Padding(0, 0, 0, 0);
 
             p.Name = "TWP_" + tabcol;
             t.Name = "TWT_" + tabcol;
-            l.Name = "TWL_" + tabcol;
+            lblInsteadOfTxtBox.Name = "TWL_" + tabcol;
 
             if (buttonEdit)
             {
@@ -754,10 +793,11 @@ namespace AubitDesktop
             }
 
 
-            l.Visible = true;
-            l.BorderStyle = BorderStyle.Fixed3D;
-            //l.BackColor = Color.Red;
-
+            if (false)
+            {
+                lblInsteadOfTxtBox.Visible = true;
+                lblInsteadOfTxtBox.BorderStyle = BorderStyle.Fixed3D;
+            }
 
             if (buttonEdit)
             {
@@ -826,11 +866,11 @@ namespace AubitDesktop
                 t.Width = totalWidth;
             }
             p.Height = GuiLayout.get_gui_h(rows);
-            l.Left = 0;
-            l.Top = 0;
-            l.Size = t.Size;
+            lblInsteadOfTxtBox.Left = 0;
+            lblInsteadOfTxtBox.Top = 0;
+            lblInsteadOfTxtBox.Size = t.Size;
             p.Controls.Add(t);
-            p.Controls.Add(l);
+            p.Controls.Add(lblInsteadOfTxtBox);
             p.AutoSize = true; //NOTWEBGUI
             if (b!=null)
             {
@@ -901,12 +941,12 @@ namespace AubitDesktop
             {
                 string s;
                 s = new string(t.PasswordChar, t.Text.Length);
-                l.Text = s;
+                lblInsteadOfTxtBox.Text = s;
 
             }
             else
             {
-                l.Text = t.Text;
+                lblInsteadOfTxtBox.Text = t.Text;
             }
 
             if (this.AutoNext)
