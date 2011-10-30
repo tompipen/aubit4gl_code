@@ -12,7 +12,7 @@ namespace AubitDesktop
     public class FormattedGridView : DataGridView
     {
         internal Xml.XMLForm.Table table;
-        FormattedCellSettings[] widgetSettings;
+        private FormattedCellSettings[] widgetSettings;
         private int __RowsToDisplay;
         private EventHandler _onDblClick;
         internal bool addedNewRowBelow = false;
@@ -232,7 +232,7 @@ namespace AubitDesktop
                     AllowUserToResizeRows = true;
                     ReadOnly = true;
                     SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect;
-                    break;
+                    break; 
 
                 case FGLContextType.ContextInputArray:
                     this.DefaultCellStyle.SelectionBackColor = System.Drawing.SystemColors.Highlight;
@@ -912,6 +912,9 @@ namespace AubitDesktop
             DataSource = defaultData;
         }
 
+
+
+
         public FormattedGridView(Xml.XMLForm.Table t)
         {
             int len;
@@ -954,6 +957,7 @@ namespace AubitDesktop
                 widgetSettings[a].datatype = (FGLUtils.FGLDataTypes)FGLWidget.decode_datatype(t.TableColumn[a].sqlType);
                 widgetSettings[a].datatype_length = FGLWidget.decode_datatype_size(t.TableColumn[a].sqlType);
                 widgetSettings[a].format = null;
+              
 
                 if (t.TableColumn[a].include != null)
                 {
@@ -986,9 +990,8 @@ namespace AubitDesktop
             EditMode = DataGridViewEditMode.EditOnEnter;
             AutoGenerateColumns = false;
             setUpHandlers();
-            //setAllowUserToAddRows();
             this.Enabled = true;
-            //DataSource = defaultData;
+
         }
 
 
@@ -1112,6 +1115,10 @@ namespace AubitDesktop
             return table.TableColumn[columnIndex].colName;
         }
 
+        internal string getFieldType(int columnIndex)
+        {
+            return table.TableColumn[columnIndex].sqlType;
+        }
 
         internal string getDataType(int columnIndex)
         {
