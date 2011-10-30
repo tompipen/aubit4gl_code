@@ -2014,28 +2014,7 @@ namespace AubitDesktop
 
         internal void saveForm()
         {
-
-
             Program.Show("Not implemented yet");
-            /*
-            MemoryStream memoryStream = new MemoryStream();
-            
-
-            XmlSerializer xs = new XmlSerializer(this.GetType());
-
-            XmlTextWriter xmlTextWriter = new XmlTextWriter(memoryStream, Encoding.UTF8);
-
-
-
-            xs.Serialize(xmlTextWriter, this);
-
-            memoryStream = (MemoryStream)xmlTextWriter.BaseStream;
-
-            XmlizedString = UTF8ByteArrayToString(memoryStream.ToArray());
-
-            Program.Show(XmlizedString);
-             * */
-            
         }
 
         public void clearForm()
