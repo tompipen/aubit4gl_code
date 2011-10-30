@@ -30,7 +30,7 @@ namespace AubitDesktop
         private event UIEventHandler EventTriggered;
         private bool _contextIsActive;
         private FGLFoundField setCurrentField;
-        private FGLFoundField _currentField;
+        private FGLFoundField _currentField=null;
         private bool careAboutFocus;
         private bool isBeforeInput;
         private string isInput;
@@ -72,9 +72,6 @@ namespace AubitDesktop
 
         private void sendTrigger(string ID)
         {
-
-
-
             if (this.EventTriggered != null)
             {
                 this.EventTriggered(null, ID, getTriggeredTag(ID), this);
@@ -85,6 +82,36 @@ namespace AubitDesktop
                 PendingEvents.Add(ID);
             }
         }
+
+        private void sendTriggers(FGLFoundField pCurrentField, string afterFieldID, FGLFoundField newfield, string beforeFieldID)
+        {
+       
+
+            if (afterFieldID != "" && beforeFieldID != "")
+            {
+                // Yah ! - send them both...
+                
+                    string str=getTriggeredTag(afterFieldID,1,2);
+                    CurrentField = pCurrentField;
+                    str += "\n"+getTriggeredTag(beforeFieldID, 2, 2);
+                    this.EventTriggered(null, "", str, this);
+            }
+            else
+            {
+                if (afterFieldID != "")
+                {
+                    this.EventTriggered(null, afterFieldID, getTriggeredTag(afterFieldID), this);
+                }
+                if (beforeFieldID != "")
+                {
+                    this.EventTriggered(null, beforeFieldID, getTriggeredTag(beforeFieldID), this);
+                }
+            }
+
+            CurrentField = pCurrentField;
+        }
+
+
 
         public bool externallyTriggeredID(string ID)
         {
@@ -258,9 +285,18 @@ namespace AubitDesktop
 
         public string getTriggeredTag(string ID)
         {
+            return getTriggeredTag(ID, 0, 0);
+        }
+
+        public string getTriggeredTag(string ID,int cnt,int maxcnt) {
+         
+        
             string cfield;
-
-
+            string cntstring="";
+            if (cnt > 0)
+            {
+                cntstring=" CNT=\""+cnt+"\" MAXCNT=\""+maxcnt+"\" ";
+            }
             foreach (FGLFoundField f in activeFields) // NOTWEBGUI
             { // NOTWEBGUI
                 if (f.fglField.hasFocus) // NOTWEBGUI
@@ -285,7 +321,7 @@ namespace AubitDesktop
             }
             else
             {
-                return "<TRIGGERED ID=\"" + ID + "\" " + cfield + " LASTKEY=\"" + mainWin.LastKey + "\"" + ">" + getSyncValues()+"</TRIGGERED>";
+                return "<TRIGGERED ID=\"" + ID + "\" " + cfield + cntstring+" LASTKEY=\"" + mainWin.LastKey + "\"" + ">" + getSyncValues()+"</TRIGGERED>";
             }
 
         }
@@ -384,11 +420,16 @@ namespace AubitDesktop
             if (CurrentField == field) return;
             if (field == setCurrentField) return;
 
+
+
+
+
+
             if (CurrentField != null)
             {
                 if (CurrentField.fglField.afterFieldID != "")
                 {
-                    sendTrigger(CurrentField.fglField.afterFieldID);
+                   // sendTrigger(CurrentField.fglField.afterFieldID);
                     setField = true;
                 }
                 else
@@ -399,9 +440,10 @@ namespace AubitDesktop
                 }
             }
 
-            CurrentField = field;
+            sendTriggers(CurrentField, CurrentField.fglField.afterFieldID, field, field.fglField.beforeFieldID);
+           // CurrentField = field;
 
-            
+            /*
             if (CurrentField != null)
             {
                 if (CurrentField.fglField.beforeFieldID != "")
@@ -410,6 +452,7 @@ namespace AubitDesktop
                     sendTrigger(CurrentField.fglField.beforeFieldID);
                 }
             }
+            */
 
             if (setField)
             {
@@ -418,6 +461,8 @@ namespace AubitDesktop
             }
 
         }
+
+
 
 
 
@@ -477,7 +522,7 @@ namespace AubitDesktop
             mainWin.SetContext(FGLContextType.ContextInput, activeFields, this, KeyList, onActionList, UIInputContext_EventTriggered);
             mainWin.setActiveToolBarKeys(KeyList,onActionList);
 
-
+            Application.DoEvents();
            
 
             foreach (FGLFoundField f in activeFields)
