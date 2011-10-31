@@ -74,7 +74,7 @@ namespace AubitDesktop
         {
             if (this.EventTriggered != null)
             {
-                this.EventTriggered(null, ID, getTriggeredTag(ID), this);
+                this.EventTriggered(null, ID, getTriggeredTag(ID,CurrentField), this);
                 this.EventTriggered = null;
             }
             else
@@ -90,11 +90,12 @@ namespace AubitDesktop
             if (afterFieldID != "" && beforeFieldID != "")
             {
                 // Yah ! - send them both...
-                
-                    string str=getTriggeredTag(afterFieldID,1,2);
+
+                string str = getTriggeredTag(afterFieldID, 1, 2, pCurrentField);
                     CurrentField = pCurrentField;
-                    str += "\n"+getTriggeredTag(beforeFieldID, 2, 2);
+                    str += "\n"+getTriggeredTag(beforeFieldID, 2, 2,newfield);
                     this.EventTriggered(null, "", str, this);
+                    this.EventTriggered = null;
             }
             else
             {
@@ -102,16 +103,18 @@ namespace AubitDesktop
                 {
                     if (this.EventTriggered != null)
                     {
-                        this.EventTriggered(null, afterFieldID, getTriggeredTag(afterFieldID), this);
+                        this.EventTriggered(null, afterFieldID, getTriggeredTag(afterFieldID, pCurrentField), this);
+                        this.EventTriggered = null;
                     }
                     
                 }
-                CurrentField = pCurrentField;
+               // CurrentField = pCurrentField;
                 if (beforeFieldID!=null && beforeFieldID != "")
                 {
                     if (this.EventTriggered != null)
                     {
-                        this.EventTriggered(null, beforeFieldID, getTriggeredTag(beforeFieldID), this);
+                        this.EventTriggered(null, beforeFieldID, getTriggeredTag(beforeFieldID,newfield), this);
+                        this.EventTriggered = null;
                     }
                     else
                     {
@@ -119,8 +122,6 @@ namespace AubitDesktop
                     }
                 }
             }
-
-            
         }
 
 
@@ -295,12 +296,12 @@ namespace AubitDesktop
         }
 
 
-        public string getTriggeredTag(string ID)
+        public string getTriggeredTag(string ID, FGLFoundField currentField)
         {
-            return getTriggeredTag(ID, 0, 0);
+            return getTriggeredTag(ID, 0, 0,currentField);
         }
 
-        public string getTriggeredTag(string ID,int cnt,int maxcnt) {
+        public string getTriggeredTag(string ID,int cnt,int maxcnt, FGLFoundField currentField) {
          
         
             string cfield;
@@ -318,9 +319,9 @@ namespace AubitDesktop
                 } // NOTWEBGUI
             } // NOTWEBGUI
 
-            if (CurrentField != null)
+            if (currentField != null)
             {
-                cfield = " INFIELD=\"" + CurrentField.useName + "\"";
+                cfield = " INFIELD=\"" + currentField.useName + "\"";
             }
             else
             {
@@ -407,6 +408,71 @@ namespace AubitDesktop
         }
 
 
+       void inputGotFocus_o(object source, string comment)
+        {
+            bool setField = false;
+
+
+            FGLFoundField field=null;
+
+
+            if (!careAboutFocus) return;
+
+
+            foreach (FGLFoundField f in activeFields)
+            {
+                if (f.fglField == source)
+                {
+                    field = f;
+                    break;
+                }
+            }
+
+            mainWin.CommentText = comment;
+
+            if (CurrentField == field) return;
+            if (field == setCurrentField) return;
+
+            if (CurrentField != null)
+            {
+                if (CurrentField.fglField.afterFieldID != "")
+                {
+                    sendTrigger(CurrentField.fglField.afterFieldID);
+                    setField = true;
+                }
+                else
+                {
+
+                    // sendTrigger("SETYOURID"); <<<< WTF ?
+                    setField = true;
+                }
+            }
+
+            CurrentField = field;
+
+
+            if (CurrentField != null)
+            {
+                if (CurrentField.fglField.beforeFieldID != "")
+                {
+                    setField = true;
+                    sendTrigger(CurrentField.fglField.beforeFieldID);
+                }
+            }
+
+            if (setField)
+            {
+                // The context will be deactivated - so we need to say where we're going next...
+                setCurrentField = field;
+            }
+
+        }
+
+
+
+
+
+
         void inputGotFocus(object source, string comment)
         {
             bool setField = false;
@@ -430,7 +496,13 @@ namespace AubitDesktop
             mainWin.CommentText = comment;
 
             if (CurrentField == field) return;
-            if (field == setCurrentField) return;
+            
+            if (field == setCurrentField)
+            {
+                setCurrentField = null;
+                return;
+            }
+             
 
 
 
@@ -447,7 +519,7 @@ namespace AubitDesktop
                 else
                 {
 
-                    sendTrigger("SETYOURID");
+                    //sendTrigger("SETYOURID");
                     setField = true;
                 }
             }
@@ -648,6 +720,7 @@ namespace AubitDesktop
             
             if (isBeforeInput )
             {
+                isBeforeInput = false;
                 if (CurrentField.fglField.beforeFieldID!="") { 
                                         sendTrigger(CurrentField.fglField.beforeFieldID);
                                         isInput = CurrentField.fglField.beforeFieldID;
