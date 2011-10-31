@@ -2482,7 +2482,7 @@ namespace AubitDesktop
 			bool callClrWaitCursor=true;
                     w = (WAITFOREVENT)a;
 
-                    if (w.CACHED != "0")
+                    if (w.CACHED!=null && w.CACHED != "0")
                     {
                         commands.Remove(a);
                         continue;
