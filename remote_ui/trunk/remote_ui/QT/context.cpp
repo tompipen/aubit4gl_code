@@ -192,6 +192,9 @@ MainFrame::vdcdebug("Context","addScreenRecord", "QWidget *screenRec, bool input
 
          tableView->setInputEnabled(input);
          tableView->setEnabled(true);
+         setOption("ARRLINE", 0);
+         setOption("SCRLINE", 0);
+
          if(ql_fieldList.count() == 1){
             if(!input){
                tableView->selectRow(0);
@@ -201,8 +204,6 @@ MainFrame::vdcdebug("Context","addScreenRecord", "QWidget *screenRec, bool input
             }
          }
 
-         setOption("ARRLINE", 0);
-         setOption("SCRLINE", 0);
 
 
 
@@ -215,7 +216,7 @@ MainFrame::vdcdebug("Context","addScreenRecord", "QWidget *screenRec, bool input
 void Context::screenRecordRowChanged(const QModelIndex & current, const QModelIndex & previous)
 {
 MainFrame::vdcdebug("Context","screenRecordRowChanged", "const QModelIndex & current, const QModelIndex & previous");
-
+   this->checkOptions();
    Q_UNUSED(previous);
 
    if(fgl_state != Fgl::INPUTARRAY && fgl_state != Fgl::DISPLAYARRAY)
@@ -230,9 +231,7 @@ MainFrame::vdcdebug("Context","screenRecordRowChanged", "const QModelIndex & cur
             int scrLine = tableView->currentIndex().row();
 
             setOption("SCRLINE", scrLine);
-            qDebug()<<"Setze scrline auf : "<<scrLine;
             setOption("ARRLINE", arrLine);
-            qDebug()<<"Setze arrline auf : "<<arrLine;
 
             /*
             if(fgl_state == Fgl::INPUTARRAY){
@@ -246,14 +245,16 @@ MainFrame::vdcdebug("Context","screenRecordRowChanged", "const QModelIndex & cur
             */
 
             if(this->state() == Fgl::INPUTARRAY){
-               if(current.row()+1 > tableView->arrCount() || (previous.row() < 0 && current.row() == 0)){
+
+               if(current.row()+1 > tableView->arrCount()){// || (previous.row() < 0 && current.row() == 0)){
+
                   setOption("ARRCOUNT", current.row()+1);
                }
-               /*
+
                else{
-                  setOption("ARRCOUNT", tableView->arrCount());
+                   setOption("ARRCOUNT", tableView->model()->rowCount(QModelIndex()));
                }
-               */
+
             }
 
          }
@@ -293,7 +294,7 @@ MainFrame::vdcdebug("Context","getScreenRecordValues", "int row");
 
 
                QString val = tableView->model()->data(currIndex).toString();
-                fieldValues << Fgl::vdc_to_fgl(format, val, sqlType);
+               fieldValues << Fgl::vdc_to_fgl(format, val, sqlType);
                }
             }
       }
@@ -366,7 +367,7 @@ MainFrame::vdcdebug("Context","checkOptions", "");
          }
       }
 
-      if(key == "ARRCOUNT" && this->state() == Fgl::DISPLAYARRAY){
+      if(key == "ARRCOUNT"){
          //return;
          for(int i=0; i<ql_fieldList.count(); i++){
             if(TableView *tableView = qobject_cast<TableView *> (ql_fieldList.at(i))){

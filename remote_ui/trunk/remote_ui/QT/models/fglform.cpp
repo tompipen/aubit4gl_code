@@ -687,7 +687,7 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
       }
    }
 
-   processResponse();
+
 
 /*
    if(event->type() == QEvent::FocusIn ||
@@ -870,7 +870,7 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
       }
    }
 */
-
+   processResponse();
    return QMainWindow::eventFilter(obj, event);
 }
 

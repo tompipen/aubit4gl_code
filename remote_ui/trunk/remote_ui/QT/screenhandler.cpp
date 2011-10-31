@@ -90,9 +90,8 @@ MainFrame::vdcdebug("ScreenHandler","~ScreenHandler", "");
     {
         if(l_ql_screenhandler->at(i)->p_pid_p == this->p_pid)
         {
-            l_ql_screenhandler->at(i)->p_pid_p = 0;
-            l_ql_screenhandler->at(i)->b_runinfo = 0;
-            l_ql_screenhandler->at(i)->programm_name_run = "";
+            //Reset Runinfo
+            l_ql_screenhandler->at(i)->setRuninfo(0, "", 0, false);
         }
     }
 
@@ -1882,6 +1881,8 @@ MainFrame::vdcdebug("ScreenHandler","waitForEvent", "");
          } else {
              p_fglform->adjustSize();
          }
+
+         p_fglform->context->checkOptions();
          p_fglform->show();
 
       }
