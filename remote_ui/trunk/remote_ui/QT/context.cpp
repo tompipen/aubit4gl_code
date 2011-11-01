@@ -251,9 +251,9 @@ MainFrame::vdcdebug("Context","screenRecordRowChanged", "const QModelIndex & cur
                   setOption("ARRCOUNT", current.row()+1);
                }
 
-               else{
+               /*else{
                    setOption("ARRCOUNT", tableView->model()->rowCount(QModelIndex()));
-               }
+               }*/
 
             }
 
