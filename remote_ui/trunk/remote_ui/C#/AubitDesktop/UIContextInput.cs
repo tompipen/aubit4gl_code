@@ -108,7 +108,7 @@ namespace AubitDesktop
                     }
                     
                 }
-               // CurrentField = pCurrentField;
+                CurrentField = newfield;
                 if (beforeFieldID!=null && beforeFieldID != "")
                 {
                     if (this.EventTriggered != null)
@@ -503,12 +503,6 @@ namespace AubitDesktop
                 return;
             }
              
-
-
-
-
-
-
             if (CurrentField != null)
             {
                 if (CurrentField.fglField.afterFieldID != "")
@@ -525,18 +519,7 @@ namespace AubitDesktop
             }
 
             sendTriggers(CurrentField, CurrentField.fglField.afterFieldID, field, field.fglField.beforeFieldID);
-           // CurrentField = field;
 
-            /*
-            if (CurrentField != null)
-            {
-                if (CurrentField.fglField.beforeFieldID != "")
-                {
-                    setField = true;
-                    sendTrigger(CurrentField.fglField.beforeFieldID);
-                }
-            }
-            */
 
             if (setField)
             {
