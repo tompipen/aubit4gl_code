@@ -1881,8 +1881,10 @@ MainFrame::vdcdebug("ScreenHandler","waitForEvent", "");
          } else {
              p_fglform->adjustSize();
          }
-
-         p_fglform->context->checkOptions();
+         if(p_fglform->context != NULL)
+         {
+             p_fglform->context->checkOptions();
+         }
          p_fglform->show();
 
       }
