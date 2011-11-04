@@ -768,6 +768,20 @@ QVariant TableModel::data(const QModelIndex &index, int role) const
    int row = index.row();
    int column = index.column();
 
+   if(LineEditDelegate *dele = qobject_cast<LineEditDelegate *> (getTableView()->itemDelegateForColumn(column))){
+       if(LineEdit *widget = qobject_cast<LineEdit *> (dele->qw_editor)){
+           if(widget->dataType() == 2 || widget->dataType() == 3 || widget->dataType() == 5 || widget->dataType() == 6) {
+               if (role == Qt::TextAlignmentRole) {
+                   return int(Qt::AlignRight);
+               }
+           } else {
+               if (role == Qt::TextAlignmentRole) {
+                   return int(Qt::AlignLeft);
+               }
+           }
+       }
+   }
+
    if(column == -1 || row == -1)
       return QVariant();
 
