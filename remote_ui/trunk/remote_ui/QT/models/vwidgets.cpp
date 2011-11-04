@@ -2031,7 +2031,11 @@ MainFrame::vdcdebug("WidgetHelper","setFieldText", "QObject *object, QString fie
 
        if(QFile::exists(QDir::tempPath() + "/" + fieldValue.split("?").at(0)))
        {
-           fieldValue = "file://" + QDir::tempPath() + "/" + fieldValue;
+           #ifdef Q_WS_WIN
+              fieldValue = QDir::tempPath() + "/" + fieldValue;
+           #else
+              fieldValue = "file://" +  QDir::tempPath() + "/" + fieldValue;
+           #endif
        }
        if(fieldValue.contains("vdc_google_api"))
        {
