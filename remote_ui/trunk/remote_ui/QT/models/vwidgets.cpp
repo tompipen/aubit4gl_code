@@ -2028,9 +2028,16 @@ MainFrame::vdcdebug("WidgetHelper","setFieldText", "QObject *object, QString fie
    }
 
    if(WebView *widget = qobject_cast<WebView *> (object)){
-		
-      		widget->load(QUrl(fieldValue,QUrl::TolerantMode));
-	
+
+       if(QFile::exists(QDir::tempPath() + "/" + fieldValue.split("?").at(0)))
+       {
+           fieldValue = "file://" + QDir::tempPath() + "/" + fieldValue;
+       }
+       if(fieldValue.contains("vdc_google_api"))
+       {
+           widget->setPage(new WebPage());
+       }
+          widget->load(QUrl(fieldValue,QUrl::TolerantMode));
       return;
    }
 

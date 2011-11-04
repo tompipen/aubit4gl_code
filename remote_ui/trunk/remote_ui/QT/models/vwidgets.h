@@ -566,6 +566,13 @@ public:
 
 };
 
+class WebPage : public QWebPage
+{
+    virtual QString userAgentForUrl(const QUrl& url) const {
+        return "Chrome/1.0";
+    }
+};
+
 class WebView : public QWebView
 {
    Q_OBJECT
