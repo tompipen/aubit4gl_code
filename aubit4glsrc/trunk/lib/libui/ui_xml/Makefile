@@ -10,8 +10,14 @@ endif
 
 CFLAGS+=-I$(ROOT)/incl -I. -I./uilib  -I./aubit4gl
 
+ifneq "${COMSPEC}" ""
+	PROXY=
+else
+	PROXY=proxy
+endif
 
-all: ${PLUGINDIR}/libUI_XML${SO_EXT} proxy
+all: ${PLUGINDIR}/libUI_XML${SO_EXT} $(PROXY)
+
 
 ${PLUGINDIR}/libUI_XML${SO_EXT}: xml.o uilib/libuilib.a  $(ROOT)/lib/libpacker/formxml/formxml.o
 	${LD} ${SO_LDFLAGS} ${CFLAGS} -o $@  xml.o $(ROOT)/lib/libpacker/formxml/formxml.o -Bstatic  -Luilib -luilib -L../.. -laubit4gl $(LINKLIBS)
