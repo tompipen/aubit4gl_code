@@ -2433,6 +2433,12 @@ MainFrame::vdcdebug("ComboBox","ComboBox", "QWidget *parent");
    setProperty("touched", false);
    setEnabled(false);
    setEditable(false);
+
+   if(FglForm *p_fglform = qobject_cast<FglForm*> (parent))
+   {
+       connect(this, SIGNAL(currentIndexChanged(int)), p_fglform, SLOT(nextfield()));
+   }
+
 }
 
 CheckBox::CheckBox(QWidget *parent) : QCheckBox(parent)
