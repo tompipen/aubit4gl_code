@@ -25,7 +25,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dump_form.c,v 1.26 2011-01-07 12:15:54 mikeaubury Exp $
+# $Id: dump_form.c,v 1.27 2011-11-06 10:54:52 mikeaubury Exp $
 #*/
 
 /**
@@ -3180,7 +3180,7 @@ int rval;
 }
 
 
-char *A4GL_has_column(char *tabname, char *colname);
+//char *A4GL_has_column(char *tabname, char *colname);
 
 static char *guess_table(struct_form *f, char *colname) {
 int a;

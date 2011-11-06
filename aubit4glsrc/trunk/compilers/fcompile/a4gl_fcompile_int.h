@@ -34,7 +34,7 @@ int yylex (int yystate);
 	/* ====================== From fcompile.c ======================== */
 void yyerror (char *s);
 int A4GLF_open_db (char *s);
-int A4GLF_getdatatype_fcompile (char *col, char *tab);
+int A4GLF_getdatatype_fcompile (char *col, char *tab,int isFormonlyField);
 
 
 

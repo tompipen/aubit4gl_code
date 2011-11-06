@@ -1111,10 +1111,10 @@ field_datatype_null :
 
 field_datatype : {strcpy($<str>$,"0");}
 	| 	TYPE LIKE named_or_kw_any DOT named_or_kw_any {
-			sprintf($<str>$,"%d",A4GLF_getdatatype_fcompile($<str>5,$<str>3));
+			sprintf($<str>$,"%d",A4GLF_getdatatype_fcompile($<str>5,$<str>3,1));
 		}
 	| 	TYPE LIKE named_or_kw_any {
-			sprintf($<str>$,"%d",A4GLF_getdatatype_fcompile($<str>3,""));
+			sprintf($<str>$,"%d",A4GLF_getdatatype_fcompile($<str>3,"",1));
 		}
 	| 	TYPE datatype {
 			strcpy($<str>$,$<str>2);
@@ -1166,7 +1166,7 @@ field_type : FORMONLY DOT field_name field_datatype_null {
 	fld->tabname=acl_strdup($<str>1); 
 	fld->colname=acl_strdup($<str>3);
 	fld->not_null=0;
-        fld->datatype=A4GLF_getdatatype_fcompile(fld->colname,fld->tabname);
+        fld->datatype=A4GLF_getdatatype_fcompile(fld->colname,fld->tabname,0);
         fld->dtype_size=A4GL_get_dtype_size();
 }
 | named_or_kw_any {
@@ -1182,7 +1182,7 @@ field_type : FORMONLY DOT field_name field_datatype_null {
 	fld->colname=acl_strdup($<str>1);
 	if (fld->tabname!=0) {
 		fld->not_null=0;
-        	fld->datatype=A4GLF_getdatatype_fcompile(fld->colname,fld->tabname);
+        	fld->datatype=A4GLF_getdatatype_fcompile(fld->colname,fld->tabname,0);
         	fld->dtype_size=A4GL_get_dtype_size();
 	} else {
 		fld->tabname=acl_strdup("-");
@@ -1197,7 +1197,7 @@ field_type : FORMONLY DOT field_name field_datatype_null {
 	fld->tabname=acl_strdup($<str>2); 
 	fld->colname=acl_strdup($<str>4);
 	fld->not_null=0;
-        fld->datatype=A4GLF_getdatatype_fcompile(fld->colname,fld->tabname);
+        fld->datatype=A4GLF_getdatatype_fcompile(fld->colname,fld->tabname,0);
         fld->dtype_size=A4GL_get_dtype_size();
 }
 | STAR named_or_kw_any {
@@ -1205,7 +1205,7 @@ field_type : FORMONLY DOT field_name field_datatype_null {
 				fld=A4GL_get_fld();
 	fld->colname=acl_strdup($<str>2);
 	fld->not_null=0;
-        fld->datatype=A4GLF_getdatatype_fcompile(fld->colname,"");
+        fld->datatype=A4GLF_getdatatype_fcompile(fld->colname,"",0);
 	fld->tabname=A4GL_get_found_in_tab();
         fld->dtype_size=A4GL_get_dtype_size();
 }
@@ -1973,7 +1973,7 @@ comp_item : table_name DOT column_name {
 } |  column_name {
 	int n;
 	char *tabname;
-        n=A4GLF_getdatatype_fcompile($<str>1,"");
+        n=A4GLF_getdatatype_fcompile($<str>1,"",0);
         tabname=A4GL_get_found_in_tab();
 
 	$<column>$.tabname=strdup(tabname);

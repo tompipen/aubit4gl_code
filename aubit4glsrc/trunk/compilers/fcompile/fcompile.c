@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fcompile.c,v 1.77 2011-10-26 17:10:57 mikeaubury Exp $
+# $Id: fcompile.c,v 1.78 2011-11-06 10:54:52 mikeaubury Exp $
 #*/
 
 /**
@@ -472,7 +472,7 @@ void err_on_status(void) {
  * @todo Describe function
  */
 int
-A4GLF_getdatatype_fcompile (char *col, char *tab)
+A4GLF_getdatatype_fcompile (char *col, char *tab,int isFormonlyField)
 {
   int a;
   A4GL_set_a4gl_status(0);
@@ -489,7 +489,11 @@ if (a==-1) {
 #endif
 
   if (a==DTYPE_VCHAR) a=DTYPE_CHAR;
-  
+  if (isFormonlyField && (a&0xff)==DTYPE_SERIAL) {
+	if (A4GL_isyes(acl_getenv("FORMONLYSERIALASINT"))) {
+			a=DTYPE_INT;
+	}
+  }
   return a&0xffff;
 }
 
