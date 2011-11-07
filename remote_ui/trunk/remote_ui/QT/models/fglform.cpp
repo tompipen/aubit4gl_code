@@ -1658,6 +1658,11 @@ void FglForm::nextfield(bool change)
 {
 MainFrame::vdcdebug("FglForm","nextfield", "bool change");
 
+if(this->context == NULL)
+{
+   return;
+}
+
    bool b_sendEvent = (QObject::sender() != NULL); //If called from screenHandler this is NULL
    b_sendEvent = change;
                                                    // Programatical change (NEXT FIELD NEXT)-> No AFTER_FIELD_EVENT
@@ -2659,8 +2664,8 @@ MainFrame::vdcdebug("FglForm","findFieldIdByName", "QString fieldName");
 
 QWidget* FglForm::findFieldById(int id)
 {
-   QList<QWidget*> ql_fields = ql_formFields;
-   return ql_fields.at(id);
+       QList<QWidget*> ql_fields = ql_formFields;
+       return ql_fields.at(id);
       
 }
 
