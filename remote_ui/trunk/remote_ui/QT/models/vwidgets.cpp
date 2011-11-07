@@ -2135,7 +2135,7 @@ MainFrame::vdcdebug("WidgetHelper","fieldText", "QObject *object");
    }
 
    if(ComboBox *widget = qobject_cast<ComboBox *> (object)){
-      return widget->currentText();
+      return widget->itemData(widget->currentIndex()).toString();
    }
 
    if(CheckBox *widget = qobject_cast<CheckBox *> (object)){
