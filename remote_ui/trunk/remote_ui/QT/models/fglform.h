@@ -117,6 +117,7 @@ public:
    QWidget* currentField() { return currentWidget; };
    //void setCurrentField(QWidget* widget = NULL) { widget->setFocus(); currentWidget = widget; };
    void setCurrentField(QString, bool sendEvents = true);
+   void addToQueue(QString);
 
    bool input() { return (ql_states.last() == Fgl::INPUT); };
    bool construct() { return (ql_states.last() == Fgl::CONSTRUCT); };
@@ -260,7 +261,6 @@ private:
    QList<Action*> ql_defaultActions;
    QList<Action*> ql_actionDefaults;
    QList<FormField*> ql_fglFields;
-   void addToQueue(QString);
    void createStatusBar();
 
    bool b_menu;

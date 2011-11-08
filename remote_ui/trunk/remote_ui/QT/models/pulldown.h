@@ -47,7 +47,7 @@ private:
    QButtonGroup *buttonGroup;
 
 protected:
- //  void keyPressEvent(QKeyEvent *event);
+   void keyPressEvent(QKeyEvent *event);
 
 signals:
    void PulldownActionPressed(QString);

@@ -64,7 +64,11 @@ MainFrame::vdcdebug("Pulldown","createAction", "int id, QString text");
          image = "blank.png";
 qDebug()<<QString("pics:%1").arg(image);
    Action *action = new Action(text.toLower(), text);
-   action->setIcon(QIcon(QString("pics/%1").arg(image)));
+   if(image == "blank.png") {
+       action->setIcon(QIcon(QString(":pics/%1.png").arg(id)));
+   } else {
+       action->setIcon(QIcon(QString(":pics/%1").arg(image)));
+   }
    action->setIconVisibleInMenu(true);
  //  action->setImage(QString("pics:%1").arg(image));
    //Hide the default close action.(Calls fgl_exit_menu action)
@@ -156,6 +160,22 @@ MainFrame::vdcdebug("Pulldown","buttonClicked", "int id");
 // Description  : when ENTER or Return Key is pressed the buttons
 //                should be activated also
 //------------------------------------------------------------------------------
+void Pulldown::keyPressEvent(QKeyEvent *event)
+{
+    if(event->key()) {
+        QString shortcut;
+        if(QString::number(event->key()) > "49" && QString::number(event->key()) < "58")
+        {
+            shortcut = QString::number(event->key()-48);
+        } else {
+            shortcut = QString::number(event->key()-55);
+        }
+        if(FglForm *bla = qobject_cast<FglForm *> (parent())) {
+            bla->addToQueue(shortcut);
+        }
+    }
+}
+
 //void Pulldown::keyPressEvent(QKeyEvent *event)
 //{
 //MainFrame::vdcdebug("Pulldown","keyPressEvent", "QKeyEvent *event");
