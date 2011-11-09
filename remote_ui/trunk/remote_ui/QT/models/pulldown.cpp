@@ -114,13 +114,14 @@ this->addActions(this->actions());
 
 void Pulldown::hideEvent(QHideEvent *e)
 {
-    //If the click is inside the menu, dont close the menu
+ /*   //If the click is inside the menu, dont close the menu
     if(this->geometry().contains(QCursor::pos()))
     {
         e->accept();
         return QMenu::hideEvent(e);
     }
-    emit closeEvent();
+    emit closeEvent();*/
+    this->exec(QCursor::pos());
 }
 
 //------------------------------------------------------------------------------
