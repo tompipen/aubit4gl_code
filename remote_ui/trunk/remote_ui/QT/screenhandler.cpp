@@ -1897,6 +1897,8 @@ MainFrame::vdcdebug("ScreenHandler","waitForEvent", "");
 
          if(p_fglform->pulldown() != NULL){
             p_fglform->checkActions();
+            QString style = QString("QMenu::item:disabled { width: 20px; background-image: url(none); height: 26px; margin-top: -8%; color: #000000;}") + " " + p_fglform->styleSheet();
+            p_fglform->setStyleSheet(style);
             p_fglform->pulldown()->popup(QCursor::pos());
          }
       }

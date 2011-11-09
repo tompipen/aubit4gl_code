@@ -59,21 +59,38 @@ MainFrame::vdcdebug("Pulldown","createAction", "int id, QString text");
    QString shortcut = text.at(0);
    QString image = pic + ".png";
 
+   if(ql_actions.count() < 1) {
+          QString title = this->title();
+          title = title.trimmed();
+
+          Action *action1 = new Action (title, title);
+          action1->setDisabled(true);
+          action1->setObjectName(title);
+
+          this->ql_actions.insert(0, action1);
+          this->addAction(action1);
+   }
+
   /* QFile img(QString("pics:%1").arg(image));
    if (!img.open(QIODevice::ReadOnly))
-         image = "blank.png";
-qDebug()<<QString("pics:%1").arg(image);*/
+       image = "blank.png";
+   qDebug()<<QString("pics:%1").arg(image);*/
+
    Action *action = new Action(text.toLower(), text);
    action->setIcon(QIcon(QString(":pics/%1.png").arg(id)));
    action->setIconVisibleInMenu(true);
- //  action->setImage(QString("pics:%1").arg(image));
+
+   //action->setImage(QString("pics:%1").arg(image));
    //Hide the default close action.(Calls fgl_exit_menu action)
+
    if(text.toLower().trimmed() == "fgl_exit_menu")
    {
        action->setVisible(false);
    }
+
    this->ql_actions.insert(id, action);
    this->addAction(action);
+
    connect(action, SIGNAL(triggered()), parent(), SLOT(actionTriggered()));
 
 }
