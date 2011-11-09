@@ -659,9 +659,9 @@ MainFrame::vdcdebug("FglForm","setToolBar", "QDomDocument xmlFile");
 
 //------------------------------------------------------------------------------
 // Method       : eventFilter()
-    // Filename     : fglform.cpp
-    // Description  :
-    //
+// Filename     : fglform.cpp
+// Description  :
+//
 //------------------------------------------------------------------------------
 bool FglForm::eventFilter(QObject *obj, QEvent *event)
 {
@@ -870,7 +870,20 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
       }
    }
 */
-   processResponse();
+//   qDebug()<<event->type();
+  // qDebug()<<obj->objectName();
+   if(this->b_getch_swin && event->type() != QEvent::EnabledChange)
+   {
+       if(TableView *tv = qobject_cast<TableView*> (obj))
+       {
+
+       }
+       else
+       {
+           processResponse();
+
+       }
+    }
    return QMainWindow::eventFilter(obj, event);
 }
 
@@ -1657,6 +1670,7 @@ MainFrame::vdcdebug("FglForm","editpaste", "");
 void FglForm::nextfield(bool change)
 {
 MainFrame::vdcdebug("FglForm","nextfield", "bool change");
+
 
 if(this->context == NULL)
 {

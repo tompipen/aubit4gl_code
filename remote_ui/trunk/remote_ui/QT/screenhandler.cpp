@@ -1913,11 +1913,22 @@ MainFrame::vdcdebug("ScreenHandler","waitForEvent", "");
    p_fglform->raise();
 
    //p_fglform->checkState();
+
+
+      processResponse();
+
+
+   if(!p_fglform->context == NULL)
+   {
+      for(int i=0; i<p_fglform->context->fieldList().count(); i++){
+         if(TableView *tableView = qobject_cast<TableView *> (p_fglform->context->fieldList().at(i))){
+            tableView->setEnabled(true);
+         }
+      }
+   }
    p_fglform->b_getch_swin = true;
-
-
-   processResponse();
    QApplication::setOverrideCursor(QCursor(Qt::ArrowCursor));
+   setUpdatesEnabled(true);
 }
 
 //------------------------------------------------------------------------------
@@ -1942,6 +1953,15 @@ void ScreenHandler::processResponse()
        return;
    }
    QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+   if(!p_fglform->context == NULL)
+   {
+      for(int i=0; i<p_fglform->context->fieldList().count(); i++){
+         if(TableView *tableView = qobject_cast<TableView *> (p_fglform->context->fieldList().at(i))){
+ //           tableView->setEnabled(false);
+         }
+      }
+   }
+   setUpdatesEnabled(false);
    QString id = p_fglform->ql_responseQueue.takeFirst();
    if(id.indexOf(",") == -1){
       Response resp(id, p_fglform, cursorPos);
