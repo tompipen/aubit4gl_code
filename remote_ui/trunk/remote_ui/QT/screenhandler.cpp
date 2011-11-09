@@ -1913,7 +1913,9 @@ MainFrame::vdcdebug("ScreenHandler","waitForEvent", "");
    //p_fglform->checkState();
    p_fglform->b_getch_swin = true;
 
+
    processResponse();
+   QApplication::setOverrideCursor(QCursor(Qt::ArrowCursor));
 }
 
 //------------------------------------------------------------------------------
@@ -1924,6 +1926,7 @@ MainFrame::vdcdebug("ScreenHandler","waitForEvent", "");
 void ScreenHandler::processResponse()
 {
 //MainFrame::vdcdebug("ScreenHandler","processResponse", "");
+
    if(p_fglform == NULL)
       return;
 
@@ -1936,6 +1939,7 @@ void ScreenHandler::processResponse()
    {
        return;
    }
+   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
    QString id = p_fglform->ql_responseQueue.takeFirst();
    if(id.indexOf(",") == -1){
       Response resp(id, p_fglform, cursorPos);
