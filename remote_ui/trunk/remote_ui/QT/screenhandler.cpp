@@ -1957,7 +1957,7 @@ void ScreenHandler::processResponse()
    {
       for(int i=0; i<p_fglform->context->fieldList().count(); i++){
          if(TableView *tableView = qobject_cast<TableView *> (p_fglform->context->fieldList().at(i))){
- //           tableView->setEnabled(false);
+            tableView->setEnabled(false);
          }
       }
    }
