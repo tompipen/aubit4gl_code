@@ -1899,6 +1899,21 @@ MainFrame::vdcdebug("ScreenHandler","waitForEvent", "");
             p_fglform->checkActions();
             QString style = QString("QMenu::item:disabled { width: 20px; background-image: url(none); padding-left: 110px; height: 26px; color: #000000;}") + " " + p_fglform->styleSheet();
             p_fglform->setStyleSheet(style);
+
+            int cnt = 0;
+            for(int i = 0; i < p_fglform->pulldown()->actions().count(); i++){
+                if(Action *action = qobject_cast<Action*> (p_fglform->pulldown()->getAction(p_fglform->pulldown()->actions().at(i)->text()))) {
+                    if(action->isVisible()) {
+                        if(action->text() == "Ende" || action->text() == "Exit") {
+                            action->setIcon((QIcon(QString(":pics/pulldown-esc.png"))));
+                        } else {
+                            action->setIcon((QIcon(QString(":pics/%1.png").arg(cnt))));
+                        }
+                        cnt++;
+                    }
+                }
+            }
+
             p_fglform->pulldown()->popup(QCursor::pos());
          }
       }

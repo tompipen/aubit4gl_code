@@ -1,22 +1,11 @@
 <RCC>
     <qresource prefix="/">
         <file>font/LiberationMono-Regular.ttf</file>
-        <file>pics/1.png</file>
-        <file>pics/2.png</file>
-        <file>pics/3.png</file>
-        <file>pics/4.png</file>
-        <file>pics/5.png</file>
-        <file>pics/6.png</file>
-        <file>pics/7.png</file>
-        <file>pics/8.png</file>
-        <file>pics/9.png</file>
-        <file>pics/a.png</file>
         <file>pics/abbrechen_ESC.png</file>
         <file>pics/abbrechen_rot.png</file>
         <file>pics/abbrechen.png</file>
         <file>pics/auflist.png</file>
         <file>pics/auflisten.png</file>
-        <file>pics/b.png</file>
         <file>pics/bak_calendar.png</file>
         <file>pics/bearbeiten.png</file>
         <file>pics/blank_bak.png</file>
@@ -27,10 +16,8 @@
         <file>pics/blank4.png</file>
         <file>pics/blank5.png</file>
         <file>pics/blank6.png</file>
-        <file>pics/c.png</file>
         <file>pics/calendar.png</file>
         <file>pics/cancel.png</file>
-        <file>pics/d.png</file>
         <file>pics/dms.png</file>
         <file>pics/dropdown_down_bak.png</file>
         <file>pics/dropdown_down.png</file>
@@ -44,12 +31,10 @@
         <file>pics/dropdown_zurueck.png</file>
         <file>pics/drucken.png</file>
         <file>pics/e-mail.png</file>
-        <file>pics/e.png</file>
         <file>pics/einfuegen.png</file>
         <file>pics/ek.png</file>
         <file>pics/ende.png</file>
         <file>pics/exclamation.png</file>
-        <file>pics/f.png</file>
         <file>pics/f1.png</file>
         <file>pics/f2.png</file>
         <file>pics/f3.png</file>
@@ -82,21 +67,15 @@
         <file>pics/f30.png</file>
         <file>pics/feldhilfe.png</file>
         <file>pics/fertigung.png</file>
-        <file>pics/g.png</file>
         <file>pics/garbage2.png</file>
-        <file>pics/h.png</file>
         <file>pics/hilfe.png</file>
         <file>pics/historien.png</file>
-        <file>pics/i.png</file>
         <file>pics/information.png</file>
-        <file>pics/j.png</file>
         <file>pics/ja.png</file>
-        <file>pics/k.png</file>
         <file>pics/kopier.png</file>
         <file>pics/kopieren.png</file>
         <file>pics/korr.png</file>
         <file>pics/korrigieren.png</file>
-        <file>pics/l.png</file>
         <file>pics/lager.png</file>
         <file>pics/loeschen.png</file>
         <file>pics/m_einkauf.png</file>
@@ -161,5 +140,27 @@
         <file>pics/weiter.png</file>
         <file>pics/weiteres.png</file>
         <file>pics/zurueck.png</file>
+        <file>pics/1.png</file>
+        <file>pics/2.png</file>
+        <file>pics/3.png</file>
+        <file>pics/4.png</file>
+        <file>pics/5.png</file>
+        <file>pics/6.png</file>
+        <file>pics/7.png</file>
+        <file>pics/8.png</file>
+        <file>pics/9.png</file>
+        <file>pics/a.png</file>
+        <file>pics/b.png</file>
+        <file>pics/d.png</file>
+        <file>pics/f.png</file>
+        <file>pics/g.png</file>
+        <file>pics/h.png</file>
+        <file>pics/i.png</file>
+        <file>pics/j.png</file>
+        <file>pics/k.png</file>
+        <file>pics/l.png</file>
+        <file>pics/c.png</file>
+        <file>pics/e.png</file>
+        <file>pics/pulldown-esc.png</file>
     </qresource>
 </RCC>

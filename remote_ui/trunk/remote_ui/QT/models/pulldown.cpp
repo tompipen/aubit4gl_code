@@ -77,7 +77,7 @@ MainFrame::vdcdebug("Pulldown","createAction", "int id, QString text");
    qDebug()<<QString("pics:%1").arg(image);*/
 
    Action *action = new Action(text.toLower(), text);
-   action->setIcon(QIcon(QString(":pics/%1.png").arg(id)));
+   //action->setIcon(QIcon(QString(":pics/%1.png").arg(id)));
    action->setIconVisibleInMenu(true);
 
    //action->setImage(QString("pics:%1").arg(image));
