@@ -38,7 +38,7 @@ private:
    void addSyncValues();
    void addScreenRecSyncValues(TableView*);
    void addScreenRecSyncValues(Matrix*);
-   void addScreenRecSyncValues();
+   void addScreenRecSyncValues(QString);
 };
 
 #endif
