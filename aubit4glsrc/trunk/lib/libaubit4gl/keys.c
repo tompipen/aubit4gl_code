@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: keys.c,v 1.47 2010-02-16 13:16:31 mikeaubury Exp $
+# $Id: keys.c,v 1.48 2011-11-13 09:48:59 mikeaubury Exp $
 #
 */
 
@@ -282,6 +282,10 @@ A4GL_key_val2 (char *str_x)
     return A4GLKEY_ENTER;
   if (mja_strcmp ("TAB", str) == 0)
     return '	';
+
+  if (mja_strcmp ("SHTAB", str) == 0)
+    return A4GLKEY_SHTAB;
+
   if (mja_strcmp ("DOWN", str) == 0)
     return A4GLKEY_DOWN;
   if (mja_strcmp ("UP", str) == 0)
