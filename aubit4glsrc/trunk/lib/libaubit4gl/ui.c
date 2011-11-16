@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ui.c,v 1.104 2011-03-11 20:09:35 mikeaubury Exp $
+# $Id: ui.c,v 1.105 2011-11-16 17:38:40 mikeaubury Exp $
 #
 */
 
@@ -1271,6 +1271,7 @@ A4GL_clr_evt_timeouts (struct aclfgl_event_list *evt)
   now = time (0);
   for (a = 0; evt[a].event_type; a++)
     {
+
       if (evt[a].event_type == A4GL_EVENT_ON_IDLE)
 	{
 	  *(long *) evt[a].field = now;

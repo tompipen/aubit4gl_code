@@ -1,7 +1,7 @@
 #include "a4gl_lib_ui_tui_int.h"
 #ifndef lint
 	static char const module_id[] =
-		"$Id: generic_ui.c,v 1.66 2011-07-22 20:10:00 mikeaubury Exp $";
+		"$Id: generic_ui.c,v 1.67 2011-11-16 17:38:42 mikeaubury Exp $";
 #endif
 
 static int A4GL_find_shown (ACL_Menu * menu, int chk, int dir);
@@ -1215,6 +1215,9 @@ void UILIB_A4GL_add_menu_action(void *vmenu,char *action,int cmd_on_timeout) {
 		menu->nevt++;
 		menu->evt=realloc(menu->evt,sizeof(struct aclfgl_event_list)*(menu->nevt+1));
 		menu->evt[menu->nevt].event_type=0; // We deliberatly made the evt record 1 more than nevt - so this should be ok
+			//if (menu->nevt==1) {
+				//menu->evt[0].event_type=0;
+			//}
 }
 
 

@@ -24,10 +24,10 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.245 2011-08-09 10:31:14 mikeaubury Exp $
+# $Id: ioform.c,v 1.246 2011-11-16 17:38:42 mikeaubury Exp $
 #*/
 #ifndef lint
-static char const module_id[] = "$Id: ioform.c,v 1.245 2011-08-09 10:31:14 mikeaubury Exp $";
+static char const module_id[] = "$Id: ioform.c,v 1.246 2011-11-16 17:38:42 mikeaubury Exp $";
 #endif
 
 /**
@@ -496,8 +496,13 @@ A4GL_default_attributes (FIELD * f, int dtype)
   struct struct_scr_field *fprop;
 
   int done = 0;
+int isStatic=0;
+
 
   fprop = (struct struct_scr_field *) (field_userptr (f));
+
+isStatic=local_field_opts(f)& O_STATIC;
+
 #ifdef DEBUG
   A4GL_debug ("In def attrib f=%p", f);
 #endif
@@ -509,7 +514,7 @@ A4GL_default_attributes (FIELD * f, int dtype)
 #ifdef DEBUG
 	  A4GL_debug ("ZZZZ - SET OPTS");
 #endif
-	  local_set_field_opts (f, O_VISIBLE | O_ACTIVE | O_PUBLIC | O_EDIT);
+	  local_set_field_opts (f, O_VISIBLE | O_ACTIVE | O_PUBLIC | O_EDIT | isStatic);
 	  done = 1;
 	}
 
@@ -529,7 +534,7 @@ A4GL_default_attributes (FIELD * f, int dtype)
 #ifdef DEBUG
 	  A4GL_debug ("ZZZZ - SET OPTS");
 #endif
-	  local_set_field_opts (f, O_VISIBLE | O_ACTIVE | O_PUBLIC | O_EDIT);
+	  local_set_field_opts (f, O_VISIBLE | O_ACTIVE | O_PUBLIC | O_EDIT  | isStatic);
 	  local_field_opts_off (f, O_BLANK);
 	}
       else
@@ -542,14 +547,15 @@ A4GL_default_attributes (FIELD * f, int dtype)
 #endif
 	  if (A4GL_isyes (acl_getenv ("USEOBLANK")))
 	    {
-	      local_set_field_opts (f, O_VISIBLE | O_ACTIVE | O_PUBLIC | O_EDIT | O_BLANK);
+	      local_set_field_opts (f, O_VISIBLE | O_ACTIVE | O_PUBLIC | O_EDIT | O_BLANK | isStatic);
 	    }
 	  else
 	    {
-	      local_set_field_opts (f, O_VISIBLE | O_ACTIVE | O_PUBLIC | O_EDIT);
+	      local_set_field_opts (f, O_VISIBLE | O_ACTIVE | O_PUBLIC | O_EDIT | isStatic);
 	    }
 	}
     }
+
 
 
 }
@@ -2835,6 +2841,7 @@ A4GL_set_field_pop_attr (FIELD * field, int attr, int cmd_type)
   int d1;
   int s1;
   void *ptr1;
+int newdtype;
 
 
   A4GL_get_top_of_stack (1, &d1, &s1, (void **) &ptr1);
@@ -2887,8 +2894,9 @@ A4GL_set_field_pop_attr (FIELD * field, int attr, int cmd_type)
 	      JUSTIFY_CENTER);
 #endif
 
-
-  A4GL_display_field_contents (field, d1, s1, ptr1, d1 + ENCODE_SIZE (s1));
+	 newdtype=d1 + ENCODE_SIZE (s1);
+  A4GL_debug("Newtype : %x", newdtype);
+  A4GL_display_field_contents (field, d1, s1, ptr1, newdtype);
 
 
 
@@ -2999,15 +3007,18 @@ A4GL_display_field_contents (FIELD * field, int d1_ptr, int s1, char *ptr1, int 
 
   field_width = A4GL_get_field_width_w (field, 1);
 
+  f = (struct struct_scr_field *) (field_userptr (field));
 #ifdef DEBUG
-  A4GL_debug ("In display_field_contents field width=%d", field_width);
+  A4GL_debug ("In display_field_contents field width=%d dtype_field=%x (%x) ", field_width, dtype_field, dtype_field & DTYPE_MASK);
+	A4GL_debug("f->dynamic=%d isStatic=%d\n", f->dynamic, isStatic);
 #endif
 
-  f = (struct struct_scr_field *) (field_userptr (field));
 
 
   if ( !isStatic && f->dynamic==0 && is_number_datatype(dtype_field&DTYPE_MASK) ) { //&& A4GL_is_numeric_datatype(d1_ptr&DTYPE_MASK)) {
+	
 	// Looks like its really a CONSTRUCT atm..
+	A4GL_debug("Looks like a construct - using a CHAR instead..");
 	dtype_field=DTYPE_CHAR;
   }
 

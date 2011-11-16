@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.420 2011-10-20 08:25:02 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.421 2011-11-16 17:38:40 mikeaubury Exp $
 #
 */
 
@@ -2445,6 +2445,7 @@ char *A4GL_not_set_empty_string(void);
 char *A4GL_tea_string_decipher(char *s);
 char *A4GL_tea_string_encipher(char *s);
 int A4GL_read_columns (char *tabname, char *xcolname, int *dtype, int *size);
+int A4GL_has_column (char *t, char *c);
 
 int A4GL_monitor_puts_int (char *str);
 //A4GL_convert_report (struct rep_structure *rep, char *ofile, char *otype, char *layout, int to_pipe);

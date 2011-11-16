@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formwrite2.c,v 1.58 2011-10-26 17:11:20 mikeaubury Exp $
+# $Id: formwrite2.c,v 1.59 2011-11-16 17:38:40 mikeaubury Exp $
 #*/
 
 /**
@@ -903,7 +903,7 @@ A4GLFORM_A4GL_add_srec_attribute (char *tab, char *col, char *thru)
     	if (!A4GLFORM_A4GL_has_bool_attribute( &the_form_ptr->attributes.attributes_val[ptr[z]] , FA_B_WORDWRAP)){
 		if (curr_rec->dim==1) {
       			curr_rec->dim=the_form_ptr->fields.  fields_val[the_form_ptr->attributes.attributes_val[ptr[z]].field_no].metric.metric_len;
-			printf("Warning : Mismatch in screen record\n");
+			printf("Warning : Mismatch in screen record (Feield : %s.%s)\n",tab,col);
 		} else {
 			if (A4GL_isyes(acl_getenv("FIXSCRLINES"))) {
       				curr_rec->dim=the_form_ptr->fields.  fields_val[the_form_ptr->attributes.attributes_val[ptr[z]].field_no].metric.metric_len;
