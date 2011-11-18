@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.30 2011-01-12 14:43:14 mikeaubury Exp $
+# $Id: Makefile.in,v 1.31 2011-11-18 14:15:59 mikeaubury Exp $
 #
 
 ROOT        =../..
@@ -58,7 +58,7 @@ else
 endif
 
 OBJECTS_NOPDF	=nopdf.o
-OBJECTS_PDF		=has_pdf.go ../liblogical/pdf/process/pdf_barcode.go
+OBJECTS_PDF		=has_pdf.g.o ../liblogical/pdf/process/pdf_barcode.g.o
 OBJECTS_HARU          =haru.o ../liblogical/pdf/process/pdf_barcode.o
 HARU_L_FLAGS=-L/usr/local/lib -lhpdf
 
@@ -74,7 +74,7 @@ else
 STDCPP=-lstdc++
 endif
 
-%.go:%.c
+%.g.o:%.c
 	$(CC_GO) $(CFLAGS) -c -o$@ $< 
 
 ${PLUGINDIR}/libEXREPORT_PDF${SO_EXT}: ${OBJECTS_PDF}
