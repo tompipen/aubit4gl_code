@@ -480,6 +480,7 @@ namespace AubitDesktop
                     }
                 }
 
+                /*
                 if (t.PasswordChar == '*')
                 {
                     string s;
@@ -491,28 +492,33 @@ namespace AubitDesktop
                 {
                     //l.Text = val;
                 }
+                 * */
 
                 string convert_value;
                 if (this.datatype.ToString() == "DTYPE_DECIMAL" || this.datatype.ToString() == "DTYPE_MONEY"
                     || this.datatype.ToString() == "DTYPE_FLOAT" || this.datatype.ToString() == "DTYPE_SMFLOAT")
                 {
-                    
+
                     try
                     {
                         convert_value = val.Replace(".", Thread.CurrentThread.CurrentCulture.NumberFormat.NumberDecimalSeparator);
 
-                     //   convert_value = (Convert.ToDouble(convert_value)).ToString();
+                        //   convert_value = (Convert.ToDouble(convert_value)).ToString();
                     }
                     catch
                     {
                         convert_value = null;
                     }
-                 //   MessageBox.Show(diogo_teste);
+                    //   MessageBox.Show(diogo_teste);
 
-                   t.Text = convert_value;
-                    
-                   
+                    t.Text = convert_value;
 
+
+
+                }
+                else
+                {
+                    t.Text = val;
                 }
                 // t.Text = lblInsteadOfTxtBox.Text;
             }
