@@ -123,9 +123,12 @@ namespace AubitDesktop
             MENUCOMMAND matchedCommand=null; 
             cnt = 0;
 
-            foreach (MENUCOMMAND a in thismenu.MENUCOMMANDS)
+
+            foreach (object o  in thismenu.MENUCOMMANDS)
             {
-            
+                if (!(o is MENUCOMMAND)) continue;
+                MENUCOMMAND a = o as MENUCOMMAND;
+
                 if (a.KEYS != "")
                 {
                     string[] keys = a.KEYS.Split(',');
@@ -157,8 +160,12 @@ namespace AubitDesktop
             }
 
 
-            foreach (MENUCOMMAND a in thismenu.MENUCOMMANDS)
+            foreach (object o in thismenu.MENUCOMMANDS)
             {
+
+                if (!(o is MENUCOMMAND)) continue;
+                MENUCOMMAND a = o as MENUCOMMAND;
+
                 string txt = a.TEXT;
 
                 if (txt == null) continue;
