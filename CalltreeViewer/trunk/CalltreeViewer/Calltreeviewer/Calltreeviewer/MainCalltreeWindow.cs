@@ -2247,13 +2247,7 @@ namespace Calltreeviewer
             setCurrentFunction(textBox1.currentLineNo);
             
             // Not in the functions - maybe its a symbol or variable..
-            SearchableControls.baseSymbolType type=null;
-            SearchableControls.symbolCursor sc = new SearchableControls.symbolCursor();
-            SearchableControls.symbolVariable sv = new SearchableControls.symbolVariable();
-            sv.possibleValue = null;
-            SearchableControls.symbolForm sf = new SearchableControls.symbolForm();
-            SearchableControls.symbolStatement ss = new SearchableControls.symbolStatement();
-            SearchableControls.symbolWindow sw = new SearchableControls.symbolWindow();
+
 
             if (searchTerm == null) return;
 
@@ -2272,7 +2266,127 @@ namespace Calltreeviewer
             }
              * */
             tslSrchText.Text = searchTerm.ToLower();
+            SearchableControls.baseSymbolType type = ScanForSymbols(searchTerm, false);
 
+            if (type is SearchableControls.symbolCursor)
+            {
+                SearchableControls.symbolCursor sc = type as SearchableControls.symbolCursor;
+
+                if (sc.hasClose == false && sc.hasDeclare == false && sc.hasFetch == false)
+                { 
+                    // Its not really a cursor - its a Prepare with a FREE ...
+                   type = ScanForSymbols(searchTerm, true);
+                }
+            }
+
+
+
+
+            #region Look for variables...
+            if (type == null || type is SearchableControls.symbolVariable)
+            {
+
+                bool processed = false;
+                if (current_local_variables != null)
+                {
+                    // Maybe we're on a DEFINE ? 
+                    for (int a = 0; a < current_local_variables.Count; a++)
+                    {
+                        if (name_match(current_local_variables[a].NAME,searchTerm,"VARIABLE"))
+                        {
+                            processed = true;
+                            symbolVariable sv;
+                            sv = new symbolVariable();
+                            type = sv;
+                            type.symbolName = searchTerm.ToLower();
+
+                            sv.hasDefine = true;
+                            SymbolLocation sl = new SymbolLocation(current_local_variables[a].MODULE, current_local_variables[a].LINE, current_local_variables[a].TYPE, current_local_variables[a].OPERATION, get_line(current_local_variables[a].MODULE, current_local_variables[a].LINE));
+                            if (!sl.InList(type))
+                            {
+                                type.symbols.Add(sl);
+                            }
+                            break;
+                        }
+                    }
+                }
+
+
+                if (!processed)
+                {
+                    for (int a = 0; a < current_module_variables.Count; a++)
+                    {
+                        if (name_match(current_module_variables[a].NAME, searchTerm,"VARIABLE"))
+                        {
+                            processed = true;
+                            symbolVariable sv;
+                            sv = new symbolVariable();
+                            type = sv;
+                            type.symbolName = searchTerm.ToLower();
+
+                            sv.hasDefine = true;
+                            SymbolLocation sl = new SymbolLocation(current_module_variables[a].MODULE, current_module_variables[a].LINE, current_module_variables[a].TYPE, current_module_variables[a].OPERATION, get_line(current_module_variables[a].MODULE, current_module_variables[a].LINE));
+                            if (!sl.InList(type))
+                            {
+                                type.symbols.Add(sl);
+                            }
+                                break;
+                        }
+                    }
+                }
+
+                if (!processed)
+                {
+                    for (int a = 0; a < current_global_variables.Count; a++)
+                    {
+                        if (name_match(current_global_variables[a].NAME,searchTerm,"VARIABLE"))
+                        {
+                            symbolVariable sv;
+                            sv = new symbolVariable();
+                            processed = true;
+                            type = sv;
+                            type.symbolName = searchTerm.ToLower();
+                            sv.hasDefine = true;
+                            SymbolLocation sl = new SymbolLocation(current_global_variables[a].MODULE, current_global_variables[a].LINE, current_global_variables[a].TYPE, current_global_variables[a].OPERATION, get_line(current_global_variables[a].MODULE, current_global_variables[a].LINE));
+                            if (!sl.InList(type))
+                            {
+                                type.symbols.Add(sl);
+                            }
+                            break;
+                        }
+                    }
+                }
+
+
+
+            }
+            #endregion
+
+            
+
+
+            if (type != null)
+            {
+                textBox1.setContextDialog(type);
+            }
+            else
+            {
+                textBox1.setContextDialog(null);
+            }
+        }
+
+        private SearchableControls.baseSymbolType ScanForSymbols(string searchTerm,bool ignoreCursor) 
+            //, SearchableControls.baseSymbolType type, SearchableControls.symbolCursor sc, SearchableControls.symbolVariable sv, SearchableControls.symbolForm sf, SearchableControls.symbolStatement ss, SearchableControls.symbolWindow sw)
+        {
+            SearchableControls.baseSymbolType type = null;
+            SearchableControls.symbolCursor sc = new SearchableControls.symbolCursor();
+            SearchableControls.symbolVariable sv = new SearchableControls.symbolVariable();
+            sv.possibleValue = null;
+            SearchableControls.symbolForm sf = new SearchableControls.symbolForm();
+            SearchableControls.symbolStatement ss = new SearchableControls.symbolStatement();
+            SearchableControls.symbolWindow sw = new SearchableControls.symbolWindow();
+
+            #region scanit
 
             for (int a = 0; a < curr_program.SYMBOLS.Length; a++)
             {
@@ -2287,6 +2401,10 @@ namespace Calltreeviewer
 
                     if (inScope(curr_program.SYMBOLS[a].SCOPE, curr_program.SYMBOLS[a].MODULE, curr_program.SYMBOLS[a].LINE))
                     {
+                        if (curr_program.SYMBOLS[a].TYPE == "CURSOR" && curr_program.SYMBOLS[a].OPERATION == "FREE" && ignoreCursor)
+                        {
+                            curr_program.SYMBOLS[a].TYPE = "STMT";
+                        }
 
                         switch (curr_program.SYMBOLS[a].TYPE)
                         {
@@ -2306,6 +2424,7 @@ namespace Calltreeviewer
                                     case "CLOSE": sc.hasClose = true; break;
                                     case "FETCH": sc.hasFetch = true; break;
                                     case "OPEN": sc.hasOpen = true; break;
+                                    case "FREE": sc.hasFree = true; break;
                                 }
                                 break;
 
@@ -2314,7 +2433,7 @@ namespace Calltreeviewer
                                     sv.symbolName = searchTerm.ToLower();
                                     type = sv;
                                     int line = curr_program.SYMBOLS[a].LINE;
-                                    
+
                                     sl = new SymbolLocation(curr_program.SYMBOLS[a].MODULE, line, curr_program.SYMBOLS[a].TYPE, curr_program.SYMBOLS[a].OPERATION, get_line(curr_program.SYMBOLS[a].MODULE, line));
                                     if (!sl.InList(type))
                                     {
@@ -2323,12 +2442,12 @@ namespace Calltreeviewer
 
                                     switch (curr_program.SYMBOLS[a].OPERATION)
                                     {
-                                        case "ASSIGN": sv.hasAssign = true; 
-                                           if (textBox1.currentLineNo == line && curr_program.MODULES[currentModuleNo].NAME == curr_program.SYMBOLS[a].MODULE)
+                                        case "ASSIGN": sv.hasAssign = true;
+                                            if (textBox1.currentLineNo == line && curr_program.MODULES[currentModuleNo].NAME == curr_program.SYMBOLS[a].MODULE)
                                             {
                                                 sv.possibleValue = curr_program.SYMBOLS[a].VALUE;
                                             }
-                                            
+
                                             break;
                                         case "USE": sv.hasRead = true;
                                             if (textBox1.currentLineNo == line && curr_program.MODULES[currentModuleNo].NAME == curr_program.SYMBOLS[a].MODULE)
@@ -2387,9 +2506,10 @@ namespace Calltreeviewer
                                 {
                                     case "PREPARE": ss.hasPrepare = true;
                                         ss.likelySQL = find_sql(curr_program, ss.symbolName, curr_program.SYMBOLS[a].LINE);
-                                            break;
+                                        break;
                                     case "DECLARE": ss.hasDeclare = true; break;
                                     case "EXECUTE": ss.hasExecute = true; break;
+                                    case "FREE": ss.hasFree = true; break;
                                 }
 
                                 break;
@@ -2398,95 +2518,9 @@ namespace Calltreeviewer
                     }
                 }
             }
-
-
-
-
-            #region Look for variables...
-            if (type == null || type==sv)
-            {
-
-                bool processed = false;
-                if (current_local_variables != null)
-                {
-                    // Maybe we're on a DEFINE ? 
-                    for (int a = 0; a < current_local_variables.Count; a++)
-                    {
-                        if (name_match(current_local_variables[a].NAME,searchTerm,"VARIABLE"))
-                        {
-                            processed = true;
-                            type = sv;
-                            type.symbolName = searchTerm.ToLower();
-
-                            sv.hasDefine = true;
-                            SymbolLocation sl = new SymbolLocation(current_local_variables[a].MODULE, current_local_variables[a].LINE, current_local_variables[a].TYPE, current_local_variables[a].OPERATION, get_line(current_local_variables[a].MODULE, current_local_variables[a].LINE));
-                            if (!sl.InList(type))
-                            {
-                                type.symbols.Add(sl);
-                            }
-                            break;
-                        }
-                    }
-                }
-
-
-                if (!processed)
-                {
-                    for (int a = 0; a < current_module_variables.Count; a++)
-                    {
-                        if (name_match(current_module_variables[a].NAME, searchTerm,"VARIABLE"))
-                        {
-                            processed = true;
-                            type = sv;
-                            type.symbolName = searchTerm.ToLower();
-
-                            sv.hasDefine = true;
-                            SymbolLocation sl = new SymbolLocation(current_module_variables[a].MODULE, current_module_variables[a].LINE, current_module_variables[a].TYPE, current_module_variables[a].OPERATION, get_line(current_module_variables[a].MODULE, current_module_variables[a].LINE));
-                            if (!sl.InList(type))
-                            {
-                                type.symbols.Add(sl);
-                            }
-                                break;
-                        }
-                    }
-                }
-
-                if (!processed)
-                {
-                    for (int a = 0; a < current_global_variables.Count; a++)
-                    {
-                        if (name_match(current_global_variables[a].NAME,searchTerm,"VARIABLE"))
-                        {
-                            processed = true;
-                            type = sv;
-                            type.symbolName = searchTerm.ToLower();
-                            sv.hasDefine = true;
-                            SymbolLocation sl = new SymbolLocation(current_global_variables[a].MODULE, current_global_variables[a].LINE, current_global_variables[a].TYPE, current_global_variables[a].OPERATION, get_line(current_global_variables[a].MODULE, current_global_variables[a].LINE));
-                            if (!sl.InList(type))
-                            {
-                                type.symbols.Add(sl);
-                            }
-                            break;
-                        }
-                    }
-                }
-
-
-
-            }
             #endregion
 
-            
-
-
-            if (type != null)
-            {
-                textBox1.setContextDialog(type);
-            }
-            else
-            {
-                textBox1.setContextDialog(null);
-            }
+            return type;
         }
 
         private string find_sql(AubitCalltreeViewer.PROGRAM curr_program, string p,int lineno)
