@@ -7806,11 +7806,11 @@ dump_cmd (struct command *r, struct command *parent)
     case E_CMD_FOREACH_CMD:
       //printc ("#");
       need_daylight ();
+#ifdef X
       if (r->cmd_data.command_data_u.foreach_cmd.inputvals)
 	{
 	  print_list (r->cmd_data.command_data_u.foreach_cmd.inputvals);
 
-#ifdef X
 	  if (r->cmd_data.command_data_u.foreach_cmd.inputvals->list.list_len)
 	    {
 
@@ -7830,8 +7830,8 @@ dump_cmd (struct command *r, struct command *parent)
 		    }
 		}
 	    }
-#endif
 	}
+#endif
 
 
       need_daylight ();		//printc ("#");

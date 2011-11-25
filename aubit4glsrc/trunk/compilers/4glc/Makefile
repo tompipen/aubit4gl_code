@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.72 2011-01-25 18:09:54 mikeaubury Exp $
+# $Id: Makefile,v 1.73 2011-11-25 10:05:00 mikeaubury Exp $
 #
 
 ROOT		=../..
@@ -332,7 +332,12 @@ clean.rules:
 fgllint: ../../bin/fgllint
 
 
-extra: ../../bin/fglreload ../../bin/fgllint ../../bin/fglcalltree 
+extra: ../../bin/fglreload ../../bin/fgllint ../../bin/fglcalltree  ../../bin/fglfunc 
+
+fglfunc:../../bin/fglfunc
+../../bin/fglfunc: func.o API_lex.o  linearise.o calltree_expr.o module_def.o expr_munging.o 
+	$(CC) ${CFLAGS} ${RDYNAMIC}  -g -o $@ $^ -L$(AUBITDIR)/lib -laubit4gl ${EXTRASYSTEMLIBS}
+
 
 ../../bin/fglreload: 	reload.c\
 				API_lex.c API_parse_self.c  \

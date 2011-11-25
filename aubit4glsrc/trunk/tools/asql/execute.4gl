@@ -850,9 +850,10 @@ return w;
 
 
 char *get_qry_msg(int qry_type,int n) {
-static char buff[256];
+static char buff[256]="";
 static int set_unl_msg=1;
 
+strcpy(buff,"");
 if (set_unl_msg) {
 	qry_strings[255]="%d row(s) unloaded";
 	qry_strings[256]="%d row(s) loaded";

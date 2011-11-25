@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.343 2010-12-11 13:09:34 mikeaubury Exp $
+# $Id: mod.c,v 1.344 2011-11-25 10:07:27 mikeaubury Exp $
 #
 */
 
@@ -3007,9 +3007,9 @@ void add_report_definition(char *s, struct  expr_str_list *params) {
         int curr_fdef;
         curr_fdef=get_function_definition(s);
 	
-	if (params) {
-		params=expand_variables_in_expr_str_list(params,1,1);
-	}
+		if (params) {
+			params=expand_variables_in_expr_str_list(params,1,1);
+		}
         if (curr_fdef==-1) {
                 nfunction_definitions++;
                 function_definitions=realloc(function_definitions, nfunction_definitions*sizeof(function_definitions[0]));

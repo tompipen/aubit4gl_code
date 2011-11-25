@@ -124,9 +124,9 @@ end if
 if not aclfgl_file_exists(lv_filename) THEN
 
 if lv_path !=" " then
-	let lv_filename = lv_path clipped, "/", lv_file clipped, ".log"
+	let lv_filename = lv_path clipped, "/", lv_file clipped
 else
-	let lv_filename =  lv_file clipped, ".log"
+	let lv_filename =  lv_file clipped
 end if
 END IF
 
