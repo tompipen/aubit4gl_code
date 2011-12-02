@@ -25,7 +25,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.195 2011-10-24 10:59:15 mikeaubury Exp $
+# $Id: ops.c,v 1.196 2011-12-02 11:00:21 mikeaubury Exp $
 #
 */
 
@@ -6300,12 +6300,13 @@ A4GL_display_int (void *ptr, int size, int string_sz, struct struct_scr_field *f
 	  return buff_8;
 	}
 
-      if (A4GL_has_str_attribute (field_details, FA_S_FORMAT))
+      if (field_details && A4GL_has_str_attribute (field_details, FA_S_FORMAT))
 	{
 	  strcpy (using_buff, (A4GL_get_str_attribute (field_details, FA_S_FORMAT)));
 	}
       else
 	{
+	if (string_sz<0) string_sz=13;
 	  memset (using_buff, '-', 255);
 	  using_buff[string_sz] = 0;
 	  using_buff[string_sz - 1] = '&';
@@ -6377,12 +6378,13 @@ A4GL_display_smint (void *ptr, int size, int string_sz, struct struct_scr_field 
 #ifdef DEBUG
       A4GL_debug ("display_smint a=%d", a);
 #endif
-      if (A4GL_has_str_attribute (field_details, FA_S_FORMAT))
+      if (field_details && A4GL_has_str_attribute (field_details, FA_S_FORMAT))
 	{
 	  strcpy (using_buff, (A4GL_get_str_attribute (field_details, FA_S_FORMAT)));
 	}
       else
 	{
+	if (string_sz<0) string_sz=9;
 	  memset (using_buff, '-', 255);
 	  using_buff[string_sz] = 0;
 	  using_buff[string_sz - 1] = '&';
@@ -6537,7 +6539,7 @@ A4GL_display_float (void *ptr, int size, int string_sz, struct struct_scr_field 
 					sprintf(buff_10,"%lf",a);
       		A4GL_decstr_convert (buff_10, a4gl_convfmts.printf_decfmt, a4gl_convfmts.ui_decfmt, 0, 0, string_sz);
 		} else {
-      if (A4GL_has_str_attribute (field_details, FA_S_FORMAT))
+      if (field_details && A4GL_has_str_attribute (field_details, FA_S_FORMAT))
 	{
 	  strcpy (using_buff, (A4GL_get_str_attribute (field_details, FA_S_FORMAT)));
 	}
@@ -6623,7 +6625,7 @@ A4GL_display_smfloat (void *ptr, int size, int string_sz, struct struct_scr_fiel
 				sprintf(buff_11,"%f",a);
       A4GL_decstr_convert (buff_11, a4gl_convfmts.printf_decfmt, a4gl_convfmts.ui_decfmt, 0, 0, string_sz);
 		} else {
-      if (A4GL_has_str_attribute (field_details, FA_S_FORMAT))
+      if (field_details && A4GL_has_str_attribute (field_details, FA_S_FORMAT))
 	{
 	  strcpy (using_buff, (A4GL_get_str_attribute (field_details, FA_S_FORMAT)));
 	}
@@ -6749,7 +6751,7 @@ A4GL_display_date (void *ptr, int size, int string_sz, struct struct_scr_field *
 	  return buff_12;
 	}
 
-      if (A4GL_has_str_attribute (field_details, FA_S_FORMAT))
+      if (field_details && A4GL_has_str_attribute (field_details, FA_S_FORMAT))
 	{
 	  strcpy (using_buff, (A4GL_get_str_attribute (field_details, FA_S_FORMAT)));
 	  A4GL_push_date (a);
@@ -6959,7 +6961,7 @@ A4GL_display_decimal (void *ptr, int size, int string_sz, struct struct_scr_fiel
 	  return buff_13;
 	}
 
-      if (A4GL_has_str_attribute (field_details, FA_S_FORMAT))
+      if (field_details && A4GL_has_str_attribute (field_details, FA_S_FORMAT))
 	{
 	  strcpy (using_buff, (A4GL_get_str_attribute (field_details, FA_S_FORMAT)));
 	}
@@ -6971,6 +6973,9 @@ A4GL_display_decimal (void *ptr, int size, int string_sz, struct struct_scr_fiel
 	  fgldec = (fgldecimal *) ptr;
 	  ndig = NUM_DIG (fgldec->dec_data);
 	  ndec = NUM_DEC (fgldec->dec_data);
+		if (string_sz<=0) {
+			string_sz=ndig+1;
+		}
 	  strcpy (using_buff, make_using_sz (ptr, string_sz, ndig, ndec));
 	}
       A4GL_push_dec (ptr, 0, size);
@@ -7116,7 +7121,7 @@ A4GL_display_money (void *ptr, int size, int string_sz, struct struct_scr_field 
 	  strcpy (buff_14, "");
 	  return buff_14;
 	}
-      if (A4GL_has_str_attribute (field_details, FA_S_FORMAT))
+      if (field_details && A4GL_has_str_attribute (field_details, FA_S_FORMAT))
 	{
 	  strcpy (using_buff, (A4GL_get_str_attribute (field_details, FA_S_FORMAT)));
 	}
@@ -7920,10 +7925,14 @@ make_using_sz (char *ptr, int sz, int dig, int dec)
   int a;
   int c;
   int l;
+int orig_sz;
 #ifdef DEBUG
   A4GL_debug ("make_using_sz - size=%d num dec = %d dig=%d", sz, dec, dig);
 #endif
-
+  orig_sz=sz;
+  if (sz==-1) {
+	sz=dig+1;
+  }
   //if (dec<0) dec=5;
 
   l = 1;			// '-'
@@ -8007,6 +8016,7 @@ make_using_sz (char *ptr, int sz, int dig, int dec)
       buff_sz[c--] = '.';
     }
   buff_sz[c--] = '&';
+
   return buff_sz;
 }
 
