@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.254 2011-08-26 06:57:00 mikeaubury Exp $
+# $Id: esql.ec,v 1.255 2011-12-05 18:35:51 mikeaubury Exp $
 #
 */
 
@@ -187,7 +187,7 @@ static loc_t *add_blob(struct s_sid *sid, int n, struct s_extra_info *e,fglbyte 
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.254 2011-08-26 06:57:00 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.255 2011-12-05 18:35:51 mikeaubury Exp $";
 #endif
 
 
@@ -2765,6 +2765,8 @@ getCursorType (int upd_hold, int scroll)
 	  return FOR_UPDATE;
 	case 2:
 	  return WITH_HOLD;
+	case 3:
+	  return FOR_UPDATE_WITH_HOLD;
 	}
     }
   else if (scroll == 1)
@@ -2825,6 +2827,7 @@ A4GLSQLLIB_A4GLSQL_declare_cursor_internal (int upd_hold, void *vsid, int scroll
   statementName = sid->statementName;
 
   A4GL_debug ("declare obind count=%d", sid->no);
+      A4GL_debug("Type : %d", getCursorType (upd_hold, scroll));
 
       switch (getCursorType (upd_hold, scroll))
 	{
@@ -2841,9 +2844,11 @@ A4GLSQLLIB_A4GLSQL_declare_cursor_internal (int upd_hold, void *vsid, int scroll
 
 
 	case WITH_HOLD:
+	case FOR_UPDATE_WITH_HOLD:
 
 	EXEC SQL DECLARE: cursorName CURSOR WITH HOLD FOR:statementName;
 	  break;
+
 
 	default:
 		A4GL_assertion(1,"Invalid cursor type");
