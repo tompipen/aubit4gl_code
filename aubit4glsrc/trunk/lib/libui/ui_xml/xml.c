@@ -420,7 +420,8 @@ UILIB_A4GL_disp_fields_ap (int n, int attr, va_list * ap)
 			A4GL_drop_param();
 				
 		} else {
-      			args[a] = A4GL_char_pop ();
+			args[a]=A4GL_pull_off_data_for_display(1, DISPLAY_TYPE_DISPLAY_TO);
+      			//args[a] = A4GL_char_pop ();
 			switch (d1&DTYPE_MASK) {
 				case DTYPE_INT:
 				case DTYPE_SMINT:
