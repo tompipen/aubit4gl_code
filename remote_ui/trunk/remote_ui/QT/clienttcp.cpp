@@ -841,7 +841,11 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
       qDebug() << "RUN: " << prog << args;
       process.execute(prog, args);
 */
-      QDesktopServices::openUrl(QUrl(QString("file:///" + fileInfo.absoluteFilePath()), QUrl::TolerantMode));
+      #ifdef Q_WS_X11      
+         QDesktopServices::openUrl(QUrl(QString("file://" + fileInfo.absoluteFilePath()), QUrl::TolerantMode));
+      #else
+         QDesktopServices::openUrl(QUrl(QString("file:///" + fileInfo.absoluteFilePath()), QUrl::TolerantMode));
+      #endif
       //sleep(3);
       return;
    }
