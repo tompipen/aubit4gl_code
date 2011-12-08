@@ -4855,7 +4855,7 @@ dump_cmd (struct command *r, struct command *parent)
 	}
 
       dump_comments (r->cmd_data.command_data_u.if_cmd.lineno);
-      printc ("END IF");
+      printc ("END IF;");
       need_daylight ();
 
       break;
