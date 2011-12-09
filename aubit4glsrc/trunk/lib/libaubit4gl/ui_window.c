@@ -38,6 +38,38 @@ static int ui_window_getcurrent(long *objectID, int nparam) {
 
 }
 
+static int ui_window_repgen(long *objectID, int nparam) {
+        //struct sObject *obj;
+        //struct ui_window_data *data;
+	char odfdatei[256];
+	char seddatei[256];
+	struct BINDING ibind[]= {
+   		{NULL,0,256,0,0,0},
+   		{NULL,0,256,0,0,0}
+   	};
+
+
+
+        /*obj=new_object("ui.window");
+        if (obj==NULL) {
+                A4GL_push_objectID(0);
+                return 1;
+        }
+
+        data=malloc(sizeof(struct ui_window_data));
+	*/
+
+        //strcpy(data->windowID,"");
+	A4GL_pop_char(seddatei,255);
+	A4GL_pop_char(odfdatei,255);
+	A4GL_trim(seddatei);
+	A4GL_trim(odfdatei);
+   	ibind[0].ptr=odfdatei;
+   	ibind[1].ptr=seddatei;
+	A4GL_ui_frontcall("INTERNAL","ui.window.repgen", ibind,2,NULL,0);
+        //obj->objData=data;
+        return 0;
+}
 
 static int ui_window_getform(long *objectID, int nParam) {
         struct ui_window_data *data;
@@ -211,6 +243,7 @@ void add_ui_window_support(void) {
 	A4GL_add_datatype_function_i (DTYPE_OBJECT, ":ui.window.getcurrent", (void *) ui_window_getcurrent);
 	A4GL_add_datatype_function_i (DTYPE_OBJECT, ":ui.window.settext", (void *) ui_window_settext);
 	A4GL_add_datatype_function_i (DTYPE_OBJECT, ":ui.window.getform", (void *) ui_window_getform);
+	A4GL_add_datatype_function_i (DTYPE_OBJECT, ":ui.window.repgen", (void *) ui_window_repgen);
 	A4GL_add_datatype_function_i (DTYPE_OBJECT, ":ui.form.setelementhidden", (void *) ui_form_setelementhidden);
 	A4GL_add_datatype_function_i (DTYPE_OBJECT, ":ui.form.setfieldhidden", (void *) ui_form_setfieldhidden);
 }
