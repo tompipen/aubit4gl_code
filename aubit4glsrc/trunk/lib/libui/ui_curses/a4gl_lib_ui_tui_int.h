@@ -282,6 +282,7 @@ void A4GL_set_array_mode (int type);
 
 
 int A4GL_has_acs_mapping(int ascii_val) ;
+int A4GL_get_key_no_transform(int timeout);
 
 #ifdef OBJECTMODULE
 attributes attributes_list[] = {

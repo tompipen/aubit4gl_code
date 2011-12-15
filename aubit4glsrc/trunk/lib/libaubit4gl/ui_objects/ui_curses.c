@@ -3,6 +3,8 @@ struct _data {
 	char data[256];
 };
  
+
+/*
 static int new_obj(char *newData) {
 struct sObject *obj;
 struct _data *data;
@@ -18,6 +20,7 @@ A4GL_push_objectID(obj->objHeapId);
 return 1;
  
 }
+*/
  
  
  
@@ -106,9 +109,33 @@ int width;
   // Set up output binding for our parameters
   return 0;
 }
+
+
+
+static int ui_curses_getkey(long *objectID_IgnoredAsAlways0,int n) {
+long x=0;
+struct BINDING _obind[2]={
+    {NULL,2,0,0,0,0,NULL},
+};
+ 
+/* END OF DEFINE SECTION */
+ 
+ 
+  _obind[0].ptr=&x;
+  if (n!=0) { 
+    A4GL_pop_args(n);
+  } else {
+      A4GL_ui_frontcall("INTERNAL","ui.curses.getkey",NULL,0,_obind,1 );
+  }
+ 
+ A4GL_push_int(x);
+  // Set up output binding for our parameters
+  return 1;
+}
  
 void add_ui_curses_support(void) {
 A4GL_add_object_type("ui.curses");
   A4GL_add_datatype_function_i (DTYPE_OBJECT, ":ui.curses.define_key", (void *)  ui_curses_define_key);
   A4GL_add_datatype_function_i (DTYPE_OBJECT, ":ui.curses.fgl_setsize", (void *)  ui_curses_fgl_setsize);
+  A4GL_add_datatype_function_i (DTYPE_OBJECT, ":ui.curses.getkey", (void *)  ui_curses_getkey);
 }

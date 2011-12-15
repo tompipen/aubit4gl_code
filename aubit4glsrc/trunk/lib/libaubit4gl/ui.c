@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ui.c,v 1.105 2011-11-16 17:38:40 mikeaubury Exp $
+# $Id: ui.c,v 1.106 2011-12-15 18:04:42 mikeaubury Exp $
 #
 */
 
@@ -2286,7 +2286,6 @@ int aclfgl_fgl_setsize(int nparam) {
    }
 	return 0;
 }
-
 
 
 #define TYPE_CHAR 1

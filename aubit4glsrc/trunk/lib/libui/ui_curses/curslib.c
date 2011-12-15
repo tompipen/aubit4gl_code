@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.177 2011-09-08 19:22:15 mikeaubury Exp $
+# $Id: curslib.c,v 1.178 2011-12-15 18:04:44 mikeaubury Exp $
 #*/
 
 /**
@@ -41,7 +41,7 @@
  */
 #ifndef lint
 static char const module_id[] =
-  "$Id: curslib.c,v 1.177 2011-09-08 19:22:15 mikeaubury Exp $";
+  "$Id: curslib.c,v 1.178 2011-12-15 18:04:44 mikeaubury Exp $";
 #endif
 /*
 =====================================================================
@@ -2075,6 +2075,40 @@ UILIB_A4GLUI_initlib (void)
 }
 
 
+int
+A4GL_get_key_no_transform (int timeout)
+{
+  int x;
+  abort_pressed = 0;
+
+  if (A4GL_islinemode()) {
+	  x=A4GL_readkey();
+  	if (x!=0) {
+#ifdef DEBUG
+                A4GL_debug("Read %d from keyfile",x);
+#endif
+                return x;
+        }
+
+	x=getchar();
+	return x;
+  }
+
+  A4GL_chkwin ();
+
+  if (timeout != -1)
+    {
+      A4GL_has_timeout (timeout);
+    }
+
+  x = A4GL_getch_win ();
+
+  if (timeout)
+    {
+      A4GL_has_timeout (0);
+    }
+  return x;
+}
 
 
 int

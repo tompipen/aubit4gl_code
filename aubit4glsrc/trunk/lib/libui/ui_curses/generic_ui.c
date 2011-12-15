@@ -1,7 +1,7 @@
 #include "a4gl_lib_ui_tui_int.h"
 #ifndef lint
 	static char const module_id[] =
-		"$Id: generic_ui.c,v 1.67 2011-11-16 17:38:42 mikeaubury Exp $";
+		"$Id: generic_ui.c,v 1.68 2011-12-15 18:04:44 mikeaubury Exp $";
 #endif
 
 static int A4GL_find_shown (ACL_Menu * menu, int chk, int dir);
@@ -1388,6 +1388,15 @@ ibind=vibind;
 		}  else {
 			A4GL_set_status(-3002,0);
 		}
+	}
+
+	if (strcmp(module,"INTERNAL")==0 && strcmp(name,"ui.curses.getkey")==0 ) {
+		int a=0;
+		while (a==0) {
+			a=A4GL_get_key_no_transform(-1);
+		}
+		A4GL_push_int(a);
+		A4GL_pop_param(obind[0].ptr, obind[0].dtype , obind[0].size);
 	}
 
 	if (strcmp(module,"INTERNAL")==0 && strcmp(name,"ui.curses.define_key")==0 ) {
