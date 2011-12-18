@@ -2581,7 +2581,7 @@ uilib_free_input_array (int nargs)
   int context;
   context = POPint ();
   contexts[context].state = UI_FREE;
-  send_to_ui ("<FREE TYPE=\"INPUT\" CONTEXT=\"%d\"/>", context);
+  send_to_ui ("<FREE TYPE=\"INPUTARRAY\" CONTEXT=\"%d\"/>", context);
   return 0;
 }
 
