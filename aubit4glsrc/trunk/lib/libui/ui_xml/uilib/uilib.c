@@ -2097,7 +2097,7 @@ uilib_display_array_line (int nargs)
   int a;
   args = get_args (nargs - 1);
   row = POPint ();
-  send_to_ui (" <ROW SUBSCRIPT=\"%d\">", row);
+  send_to_ui (" <ROW SUBSCRIPT=\"%d\">", row+1);
   send_to_ui ("  <VS>");
   for (a = 0; a < nargs - 1; a++)
     {
