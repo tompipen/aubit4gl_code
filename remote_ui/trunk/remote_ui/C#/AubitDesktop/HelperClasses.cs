@@ -40,6 +40,7 @@ namespace AubitDesktop
         ContextNone,
         ContextInput,
         ContextConstruct,
+        ContextConstructArray,
         ContextConstructArrayInactive,
         ContextDisplayArray,
         ContextDisplayArrayInactive,
