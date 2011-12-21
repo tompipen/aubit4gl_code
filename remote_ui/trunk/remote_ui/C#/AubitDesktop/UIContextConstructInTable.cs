@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using System.Data;
+using System.Diagnostics;
 
 namespace AubitDesktop
 {
@@ -124,25 +125,26 @@ namespace AubitDesktop
             mainWin = f;
 
 
-
-        //    constructGrid = f.FindRecord(c.FIELDLIST);
-
             constructGrid = pConstructGrid;
 
             if (constructGrid == null)
             {
                 constructGrid=(FormattedGridView)pRecordFields[0].DataGridView;
             }
+
             constructGrid.init();
             constructGrid.DataSource = null;
             dt = new DataTable();
             dt.Columns.Add("subscript");
-            for (int cols = 1; cols <= c.COLUMNS.Length; cols++)
+
+
+            // Add a column for each column in the grid
+            for (int cols = 0; cols < constructGrid.Columns.Count; cols++)
             {
-                dt.Columns.Add("col" + (cols));
+                DataColumn col = new DataColumn("col" + (cols));
+                dt.Columns.Add(col);
+               
             }
-
-
 
             constructColumnList = c.COLUMNS;
             
@@ -151,20 +153,15 @@ namespace AubitDesktop
 
             DataGridViewRow r;
             string[] data;
-            data = new string[c.COLUMNS.Length + 1];
+            data = new string[constructGrid.Columns.Count];
             r = new DataGridViewRow();
 
-            // We'll use the first column to store the index
-            // for the current row...
-            data[0] = "1";
 
-            for (int col = 0; col < c.COLUMNS.Length; col++)
+            for (int colno = 1; colno < constructGrid.Columns.Count; colno++)
             {
-                object itm;
-                AubitDesktop.Xml.XMLForm.TableColumn tc = constructGrid.table.TableColumn[col];
-                itm = tc.Item;
-                data[col + 1] = "";
+                data[colno] = "";
             }
+            setActiveFields();
             dt.Rows.Add(data);
 
             constructGrid.Columns[0].Visible = false;
@@ -172,15 +169,41 @@ namespace AubitDesktop
             constructGrid.AutoResizeColumnHeadersHeight();
             constructGrid.AutoResizeRow(0);
 
-            for (int col = 0; col < c.COLUMNS.Length; col++)
+            for (int colno = 1; colno < constructGrid.Columns.Count; colno++)
             {
-                constructGrid.AutoResizeColumn(col);
+                constructGrid.AutoResizeColumn(colno);
             }
 
             constructGrid.Enabled = false;
             
             // WEBGUI displayArrayGrid.sizeGrid(); 
 
+        }
+
+        private void setActiveFields()
+        {
+            DataGridViewCellStyle readonlyStyle;
+            DataGridViewCellStyle normalStyle = constructGrid.DefaultCellStyle;
+            readonlyStyle = new DataGridViewCellStyle();
+            readonlyStyle.BackColor = System.Drawing.Color.Gray;
+            for (int colno = 0; colno < constructGrid.Columns.Count; colno++)
+            {
+                constructGrid.Columns[colno].ReadOnly = true;
+                constructGrid.Columns[colno].DefaultCellStyle = readonlyStyle;
+            }
+
+            for (int colno = 0; colno < constructGrid.Columns.Count; colno++)
+            {
+                for (int colInRecord = 0; colInRecord < RecordFields.Count; colInRecord++)
+                {
+                    if (RecordFields[colInRecord].ColumnIndex == colno)
+                    {
+                        Debug.WriteLine("Can edit colno : " + colno);
+                        constructGrid.Columns[colno ].ReadOnly = false;
+                        constructGrid.Columns[colno].DefaultCellStyle = normalStyle;
+                    }
+                }
+            }
         }
 
         public bool contextIsActive()
@@ -205,6 +228,15 @@ namespace AubitDesktop
                 sendTrigger("ACCEPT");
         }
 
+        public bool isFieldForConstruct(int a)
+        {
+            for (int x = 0; x < RecordFields.Count; x++)
+            {
+                if (RecordFields[x].ColumnIndex == a) return true;
+            }
+            return false;
+        }
+
         public string getSyncValues()
         {
             string s;
@@ -212,12 +244,15 @@ namespace AubitDesktop
             
 //            constructGrid.syncData(0,
             
-            for (int a=0;a<this.constructGrid.Columns.Count-1;a++) 
+            for (int a=1;a<this.constructGrid.Columns.Count;a++) 
             {
 
                 dt.Rows[0].EndEdit();
                 //FGLFoundField i=activeFields[a];
-                s += "<SV FN=\"" + constructGrid.getFieldName(a) + "\">" + System.Security.SecurityElement.Escape(FGLUtils.GetString(constructGrid.Rows[0].Cells[a+1].EditedFormattedValue))  + "</SV>";
+                if (isFieldForConstruct(a))
+                {
+                    s += "<SV FN=\"" + constructGrid.getFieldName(a-1) + "\">" + System.Security.SecurityElement.Escape(FGLUtils.GetString(constructGrid.Rows[0].Cells[a].EditedFormattedValue)) + "</SV>";
+                }
             }
             
             s += "</SVS>";
@@ -285,6 +320,7 @@ namespace AubitDesktop
 
             mainWin.setActiveToolBarKeys(KeyList, onActionList); //, true,true,false);
 
+            setActiveFields();
 
             this.EventTriggered = UIDisplayArrayContext_EventTriggered;
 
@@ -296,7 +332,7 @@ namespace AubitDesktop
             constructGrid.allowInsertRow = false;
             constructGrid.setActiveFocus();
 
-            constructGrid.context = FGLContextType.ContextDisplayArray;
+            constructGrid.context = FGLContextType.ContextConstructArray;
         }
 
         public void DeactivateContext()
