@@ -209,6 +209,7 @@ namespace AubitDesktop
             {
                 case FGLContextType.ContextNone:
                 case FGLContextType.ContextDisplayArrayInactive:
+                
                     this.DefaultCellStyle.SelectionBackColor = System.Drawing.Color.Gray;
                     AllowUserToResizeColumns = true;
                     AllowUserToResizeRows = true;
@@ -227,6 +228,7 @@ namespace AubitDesktop
                     break;
 
                 case FGLContextType.ContextInputArrayInactive:
+                case FGLContextType.ContextConstructArrayInactive:
                     this.DefaultCellStyle.SelectionBackColor = System.Drawing.Color.Gray;
                     AllowUserToResizeColumns = true;
                     AllowUserToResizeRows = true;
@@ -235,6 +237,7 @@ namespace AubitDesktop
                     break; 
 
                 case FGLContextType.ContextInputArray:
+                case FGLContextType.ContextConstructArray:
                     this.DefaultCellStyle.SelectionBackColor = System.Drawing.SystemColors.Highlight;
                     AllowUserToResizeColumns = true;
                     AllowUserToResizeRows = true;
