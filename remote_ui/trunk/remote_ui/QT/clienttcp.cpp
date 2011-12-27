@@ -667,7 +667,8 @@ QString ProtocolHandler::getTemplateHeader(QString filename)
 
 void ProtocolHandler::startReportTemplate(QString odffile, QString sedfile)
 {
-   QString Content = prepareTemplateContent(2, odffile, sedfile);
+   QString content;
+   QList<QString> fieldlist;
 
    QFile *file = new QFile(QDir::tempPath() + "/content1.xml");
 
@@ -676,8 +677,17 @@ void ProtocolHandler::startReportTemplate(QString odffile, QString sedfile)
    }
 
    QTextStream xmlsave(file);
+   fieldlist << getTemplateVars(odffile);
 
-   xmlsave << getTemplateHeader(odffile) << Content << getTemplateFooter(odffile);
+   for(int i=1; i < fieldlist.count(); i++) {
+       //qDebug() << content;
+       content = content + prepareTemplateContent(i, odffile, sedfile);
+       if(fieldlist.at(i).contains("[")) {
+         break;
+       }
+   }
+
+   xmlsave << getTemplateHeader(odffile) << content << getTemplateFooter(odffile);
 
    file->close();
 
@@ -731,7 +741,7 @@ QString ProtocolHandler::prepareTemplateContent(int Position, QString odffile, Q
                         cnt = cnt + 1;
             }
 
-            if(ausgabe.contains("@") && ebene == 2) {
+            /*if(ausgabe.contains("@") && ebene == 2) {
                 for(int i=0; i < templateVars.count(); i++) {
                     if(ausgabe.contains(templateVars.at(i))) {
                         ausgabe.replace("@" + templateVars.at(i), QString("@%1_1" + templateVars.at(i)).arg(QString::number(Position)));
@@ -747,6 +757,13 @@ QString ProtocolHandler::prepareTemplateContent(int Position, QString odffile, Q
                                 }
                             }
                      }
+                }
+            }*/
+            if(ausgabe.contains("@") && ebene == 2) {
+                for(int i=0; i < templateVars.count(); i++) {
+                    if(ausgabe.contains("@" + templateVars.at(i))) {
+                        ausgabe.replace("@" + templateVars.at(i), QString("@%1_1" + templateVars.at(i)).arg(QString::number(Position)));
+                    }
                 }
             }
 
