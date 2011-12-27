@@ -640,6 +640,234 @@ MainFrame::vdcdebug("ProtocolHandler","run", "");
    }
 }
 
+QString ProtocolHandler::getTemplateHeader(QString filename)
+{
+    QFile *file = new QFile(QDir::tempPath() + "/" + filename);
+
+    if(!file->open(QIODevice::ReadOnly)) {
+        qDebug() << "Konnte Template file nicht öffnen" << "";
+    }
+
+    QDomDocument doc;
+    doc.setContent(file);
+
+    QString xml = doc.toString();
+    QTextStream stream(&xml);
+    QString header;
+    while(!stream.atEnd()) {
+        header = header + stream.readLine();
+
+        if(header.contains("</table:table-row")) {
+            return header;
+        }
+    }
+   file->close();
+
+}
+
+void ProtocolHandler::startReportTemplate(QString odffile, QString sedfile)
+{
+   QString Content = prepareTemplateContent(2, odffile, sedfile);
+
+   QFile *file = new QFile(QDir::tempPath() + "/content1.xml");
+
+   if(file->open(QIODevice::WriteOnly | QIODevice::Truncate)) {
+       qDebug() << "content1.xml konnte nicht geöffnet werden." << "";
+   }
+
+   QTextStream xmlsave(file);
+
+   xmlsave << getTemplateHeader(odffile) << Content << getTemplateFooter(odffile);
+
+   file->close();
+
+}
+
+QString ProtocolHandler::prepareTemplateContent(int Position, QString odffile, QString sedfile)
+{
+
+    QList<QString> templateVars;
+
+    templateVars << getTemplateVars(odffile);
+
+    QFile *file = new QFile(QDir::tempPath() + "/" + odffile);
+
+    if(!file->open(QIODevice::ReadOnly)) {
+        qDebug() << "Template Datei nicht lesbar" << "";
+    }
+
+    QDomDocument doc;
+    doc.setContent(file);
+    QString xmlfile = doc.toString();
+    QTextStream stream(&xmlfile);
+    QString ausgabe;
+    QString xmlout;
+
+    int cnt = 0;
+    int counter = 0;
+    int ebene = 0;
+
+    while(!stream.atEnd()) {
+        ausgabe = stream.readLine();
+
+
+        if(ausgabe.contains("<table:table-row")) {
+            counter = counter + 1;
+        }
+
+        if(counter > 0) {
+            if(ausgabe.contains("[")) {
+                ebene = ebene + 1;
+            }
+            //qDebug() << ebene;
+            if(ausgabe.contains("@") && ebene == 1) {
+                for(int i=0; i < templateVars.count(); i++) {
+                    if(ausgabe.contains(templateVars.at(i))) {
+                        ausgabe.replace("@" + templateVars.at(i), QString("@%1" + templateVars.at(i)).arg(QString::number(Position)));
+                    }
+                }
+            }
+            if(ausgabe.contains("@") && ebene == 2) {
+                        cnt = cnt + 1;
+            }
+
+            if(ausgabe.contains("@") && ebene == 2) {
+                for(int i=0; i < templateVars.count(); i++) {
+                    if(ausgabe.contains(templateVars.at(i))) {
+                        ausgabe.replace("@" + templateVars.at(i), QString("@%1_1" + templateVars.at(i)).arg(QString::number(Position)));
+                            for(int k=1; k < checkSedFile(templateVars.at(i), sedfile); k++) {
+                                if(checkSedFile(QString("@%1_%2").arg(QString::number(Position), QString::number(k+1)) + templateVars.at(i), sedfile) > 0) {
+                                    ausgabe.append("</table:table-cell>");
+                                    ausgabe.append("</table:table-row>");
+                                    ausgabe.append("<table:table-row table:style-name=\"ro3\">");
+                                    ausgabe.append(QString("<table:table-cell office:value-type=\"string\" table:style-name=\"ce4\"><text:p>@%1_%2</text:p>").arg(QString::number(Position), QString::number(k+1) + templateVars.at(i)));
+                                    ausgabe.append("</table:table-cell>");
+                                    ausgabe.append("</table:table-row>");
+
+                                }
+                            }
+                     }
+                }
+            }
+
+            if(ausgabe.contains("@") && ebene == 3) {
+                for(int i=0; i < templateVars.count(); i++) {
+                    if(ausgabe.contains("@" + templateVars.at(i))) {
+                        ausgabe.replace("@" + templateVars.at(i), QString("@%1_1_1" + templateVars.at(i)).arg(QString::number(Position)));
+                    }
+                }
+            }
+
+            if(ausgabe.contains("]")) {
+                ebene = ebene -1;
+            }
+
+            xmlout = xmlout + ausgabe;
+        }
+
+        if(ausgabe.contains("</table:table-row")) {
+            counter = 0;
+        }
+    }
+
+    file->close();
+
+    return xmlout;
+
+
+
+}
+
+QString ProtocolHandler::getTemplateFooter(QString filename)
+{
+    QFile *file = new QFile(QDir::tempPath() + "/" + filename);
+    QDomDocument doc;
+       doc.setContent(file);
+       QString xml = doc.toString();
+       QTextStream stream(&xml);
+       QString footer;
+       QString readLine;
+       int cnt = 0;
+
+       while(!stream.atEnd()) {
+           readLine = stream.readLine();
+
+           if(readLine.contains("</table:table>")) {
+               cnt = 1;
+           }
+           if(cnt > 0) {
+               footer = footer.trimmed() + readLine.trimmed();
+           }
+       }
+       file->close();
+       return footer;
+
+}
+
+int ProtocolHandler::checkSedFile(QString fieldname, QString filename)
+{
+    QFile *file = new QFile (QDir::tempPath() + "/" + filename);
+
+    QTextStream stream(file);
+    QString ausgabe;
+    QList<QString> suchliste;
+    int cnt = 0;
+
+    if(!file->open(QIODevice::ReadOnly)) {
+        qDebug() << "cannot open file!!!" << "";
+    }
+
+    while(!stream.atEnd()) {
+        ausgabe = stream.readAll();
+        suchliste << ausgabe.split("/g");
+
+        if(!suchliste.isEmpty()) {
+            for(int i=0; i < suchliste.count(); i++) {
+                if(suchliste.at(i).contains(fieldname)) {
+                    cnt = cnt + 1;
+                }
+            }
+        }
+    }
+    file->close();
+    return cnt;
+}
+
+QList<QString> ProtocolHandler::getTemplateVars(QString filename)
+{
+
+    QFile *file = new QFile(QDir::tempPath() + "/" + filename);
+
+    if(file->open(QIODevice::ReadOnly)) {
+
+        QDomDocument doc;
+        doc.setContent(file);
+        QString xmlout = doc.toString();
+        QTextStream stream(&xmlout);
+        QString ausgabe;
+        QList<QString> t_fieldlist;
+        int counter = 0;
+
+        while(!stream.atEnd()) {
+            ausgabe = stream.readLine();
+
+            if(ausgabe.contains("[")) {
+                counter = counter + 1;
+            }
+
+            if(ausgabe.contains("@") || ausgabe.contains("[") || ausgabe.contains("]")) {
+                ausgabe.remove("<text:p>");
+                ausgabe.remove("</text:p>");
+                ausgabe.remove("@");
+                t_fieldlist << ausgabe.trimmed();
+            }
+        }
+        file->close();
+        return t_fieldlist;
+    }
+
+}
+
 //------------------------------------------------------------------------------
 // Method       : outputTree(QDomNode domNode)
 // Filename     : tcpclient.cpp
@@ -904,6 +1132,22 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
             value = valueElement.text();
             setWindowTitle(value);
          }
+
+         if(qs_name == "ui.window.repgen") {
+             QString odffile;
+             QString sedfile;
+             for(int k=0; k < paramsElement.childNodes().count(); k++) {
+                 QDomElement valuesElement = paramsElement.childNodes().at(k).toElement();
+                 if(k == 0) {
+                    odffile = valuesElement.text();
+                 }
+                 if(k == 1) {
+                     sedfile = valuesElement.text();
+                 }
+             }
+             startReportTemplate(odffile, sedfile);
+         }
+
 
          if(qs_name == "ui.form.setelementhidden"){
             int form = -1;

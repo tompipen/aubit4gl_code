@@ -74,6 +74,12 @@ public:
    bool b_write;
    int pid;
    int id;
+   void startReportTemplate(QString odffile, QString sedfile);
+   QString prepareTemplateContent(int Position, QString odffile, QString sedfile);
+   QString getTemplateHeader(QString odffile);
+   QString getTemplateFooter(QString odffile);
+   int checkSedFile(QString fieldname, QString sedfile);
+   QList<QString> getTemplateVars(QString filename);
 
 private:
    QString decodeFile(QString);
