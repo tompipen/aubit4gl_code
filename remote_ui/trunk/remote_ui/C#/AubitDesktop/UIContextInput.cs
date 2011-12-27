@@ -34,6 +34,7 @@ namespace AubitDesktop
         private bool careAboutFocus;
         private bool isBeforeInput;
         private string isInput;
+        private FGLFoundField lastFiredBeforeField = null;
 
         private FGLFoundField CurrentField
         {
@@ -220,18 +221,21 @@ namespace AubitDesktop
             mainWin = f;
 
             activeFields = f.FindFields(i.FIELDLIST);
-            foreach (FGLFoundField fld in activeFields)
+            if (activeFields!=null)
             {
-                if (fld.fglField.NoEntry == false)
+                foreach (FGLFoundField fld in activeFields)
                 {
-                    setCurrentField = fld;
-                    fld.fglField.gotFocus();
-                    CurrentField = fld;
-                    careAboutFocus = true;
-                    CurrentField.fglField.setFocus();
-                    careAboutFocus = false;
-                    setCurrentField = null;
-                    break;
+                    if (fld.fglField.NoEntry == false)
+                    {
+                        setCurrentField = fld;
+                        fld.fglField.gotFocus();
+                        CurrentField = fld;
+                        careAboutFocus = true;
+                        CurrentField.fglField.setFocus();
+                        careAboutFocus = false;
+                        setCurrentField = null;
+                        break;
+                    }
                 }
             }
 
@@ -344,6 +348,7 @@ namespace AubitDesktop
         public void setNextField(string fieldName)
         {
             bool found = false;
+            lastFiredBeforeField = null;
             foreach (FGLFoundField f in activeFields)
             {
                 if (found && f.fglField.NoEntry == false)
@@ -495,12 +500,12 @@ namespace AubitDesktop
 
             mainWin.CommentText = comment;
 
-            if (CurrentField == field) return;
+            if (lastFiredBeforeField == field) return;
             
             if (field == setCurrentField)
             {
                 setCurrentField = null;
-                return;
+               // return;
             }
              
             if (CurrentField != null)
@@ -526,7 +531,7 @@ namespace AubitDesktop
                 // The context will be deactivated - so we need to say where we're going next...
                 setCurrentField = field;
             }
-
+            lastFiredBeforeField = field;
         }
 
 
@@ -589,7 +594,7 @@ namespace AubitDesktop
             mainWin.SetContext(FGLContextType.ContextInput, activeFields, this, KeyList, onActionList, UIInputContext_EventTriggered);
             mainWin.setActiveToolBarKeys(KeyList,onActionList);
 
-            Application.DoEvents();
+            //Application.DoEvents();
            
 
             foreach (FGLFoundField f in activeFields)
@@ -600,25 +605,11 @@ namespace AubitDesktop
             }
 
 
-            if (setCurrentField != null) // Next field has been registered..
-            {
-                
-                CurrentField = setCurrentField;
-                careAboutFocus = true;
-                CurrentField.fglField.setFocus();
-                careAboutFocus = false;
-                setCurrentField = null;
 
-            }
+            
 
 
-            if (CurrentField == null)
-            {
-                CurrentField = activeFields[0];
-                CurrentField.fglField.setFocus();
-            }
 
-            CurrentField.fglField.setFocus();
             
 
             //mainWin.CommentText = CurrentField.fglField.comment;
@@ -693,6 +684,23 @@ namespace AubitDesktop
 
 
 
+            if (setCurrentField != null) // Next field has been registered..
+            {
+                
+                CurrentField = setCurrentField;
+                careAboutFocus = true;
+                CurrentField.fglField.setFocus();
+                careAboutFocus = false;
+                setCurrentField = null;
+}
+
+                if (CurrentField == null)
+                {
+                    CurrentField = activeFields[0];
+                    CurrentField.fglField.setFocus();
+                }
+
+                CurrentField.fglField.setFocus();
 
 
 
@@ -714,6 +722,10 @@ namespace AubitDesktop
 
                 careAboutFocus = true;
                 mainWin.CommentText = CurrentField.fglField.comment;
+
+
+
+
 
 
             //Application.DoEvents();
