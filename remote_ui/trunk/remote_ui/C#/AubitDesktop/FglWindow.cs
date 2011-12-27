@@ -401,6 +401,12 @@ namespace AubitDesktop
 
         internal List<FGLFoundField> FindFields(FIELD[] fieldlist)
         {
+            if (CurrentForm == null)
+            {
+                MessageBox.Show("No form has been displayed");
+                Application.Exit();
+                return null;
+            }
             return CurrentForm.FindFields(fieldlist);
         }
 
