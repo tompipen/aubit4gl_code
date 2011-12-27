@@ -34,6 +34,7 @@ static int ui_window_getcurrent(long *objectID, int nparam) {
         obj->objData=data;
         A4GL_push_objectID(obj->objHeapId);
 
+
         return 1;
 
 }
@@ -43,11 +44,15 @@ static int ui_window_repgen(long *objectID, int nparam) {
         //struct ui_window_data *data;
 	char odfdatei[256];
 	char seddatei[256];
+	int rval;
 	struct BINDING ibind[]= {
    		{NULL,0,256,0,0,0},
    		{NULL,0,256,0,0,0}
    	};
 
+	struct BINDING obind[]= {
+   		{NULL,2,0,0,0,0}
+   	};
 
 
         /*obj=new_object("ui.window");
@@ -66,9 +71,11 @@ static int ui_window_repgen(long *objectID, int nparam) {
 	A4GL_trim(odfdatei);
    	ibind[0].ptr=odfdatei;
    	ibind[1].ptr=seddatei;
-	A4GL_ui_frontcall("INTERNAL","ui.window.repgen", ibind,2,NULL,0);
+	obind[0].ptr=&rval;
+	A4GL_ui_frontcall("INTERNAL","ui.window.repgen", ibind,2,obind,1);
         //obj->objData=data;
-        return 0;
+        A4GL_push_int(rval);
+        return 1;
 }
 
 static int ui_window_getform(long *objectID, int nParam) {
