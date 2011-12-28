@@ -9,6 +9,7 @@
 #include "comms.h"
 #include "fglsys.h"
 
+void A4GL_trim(char *s) ;
 void A4GL_push_null (int dtype,int size);
 size_t A4GL_base64_decode(const char *src, unsigned char **outptr);
 void A4GL_get_top_of_stack (int a, int *d, int *s, void **ptr);

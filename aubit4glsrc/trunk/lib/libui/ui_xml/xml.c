@@ -5,6 +5,7 @@
 #include "pipe.h"
 #include "uilib/xml/attr.h"
 #include "a4gl_API_ui_lib.h"
+char *A4GL_pull_off_data_for_display (int n, int display_type);
 extern struct s_attr *last_attr;
 static char *get_field_with_subscript_as_string(char *field, int i);
 FILE *def_stderr = NULL;
@@ -420,7 +421,9 @@ UILIB_A4GL_disp_fields_ap (int n, int attr, va_list * ap)
 			A4GL_drop_param();
 				
 		} else {
-			args[a]=A4GL_pull_off_data_for_display(1, DISPLAY_TYPE_DISPLAY_TO);
+			char *pudfd;
+			pudfd=A4GL_pull_off_data_for_display(1, DISPLAY_TYPE_DISPLAY_TO);
+			args[a]=pudfd;
       			//args[a] = A4GL_char_pop ();
 			switch (d1&DTYPE_MASK) {
 				case DTYPE_INT:

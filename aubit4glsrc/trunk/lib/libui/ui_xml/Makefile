@@ -8,7 +8,7 @@ ifneq "${COMSPEC}" ""
 endif
 
 
-CFLAGS+=-I$(ROOT)/incl -I. -I./uilib  -I./aubit4gl
+CFLAGS+=-I$(ROOT)/incl -I. -I./uilib  -I./aubit4gl -Wall
 
 ifneq "${COMSPEC}" ""
 	PROXY=

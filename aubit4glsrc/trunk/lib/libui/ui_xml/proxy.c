@@ -95,13 +95,14 @@ hex_digit (int n)
   return 'x';
 }
 
-
+/*
 
 static int
 A4GL_strstartswith (char *s, char *w)
 {
   return (strncmp (s, w, strlen (w)) == 0);
 }
+*/
 
 
 static char *
