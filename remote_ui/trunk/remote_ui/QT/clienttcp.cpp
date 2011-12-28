@@ -669,6 +669,8 @@ void ProtocolHandler::startReportTemplate(QString odffile, QString sedfile)
 {
    QString content;
    QList<QString> fieldlist;
+   int wiederholen = 0;
+   int cnt = 0;
 
    QFile *file = new QFile(QDir::tempPath() + "/content1.xml");
 
@@ -681,10 +683,22 @@ void ProtocolHandler::startReportTemplate(QString odffile, QString sedfile)
 
    for(int i=1; i < fieldlist.count(); i++) {
        //qDebug() << content;
-       content = content + prepareTemplateContent(i, odffile, sedfile);
-       if(fieldlist.at(i).contains("[")) {
-         break;
+       if(cnt == 1) {
+           wiederholen = checkSedFile(fieldlist.at(i), sedfile) + 1;
+           for(int j=1; j < wiederholen; j++) {
+               content = content + prepareTemplateContent(j, odffile, sedfile);
+           }
+           qDebug() << i << fieldlist.at(i);
+           break;
        }
+       if(fieldlist.at(i).contains("[")) {
+         cnt = cnt + 1;
+       }
+
+       if(cnt == 2) {
+           break;
+       }
+
    }
 
    xmlsave << getTemplateHeader(odffile) << content << getTemplateFooter(odffile);
