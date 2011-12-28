@@ -9,6 +9,8 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <sys/wait.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 #include <signal.h>
 #include <ctype.h>
 #ifndef __hpux__
@@ -18,6 +20,7 @@
 #include "pipe.h"
 #include "debug.h"
 #include "uilib/xml/attr.h"
+
 
 #ifdef htons
 #undef htons

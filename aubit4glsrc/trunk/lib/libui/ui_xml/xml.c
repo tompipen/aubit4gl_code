@@ -100,7 +100,7 @@ int exiting_context[100];
 int exiting_context_state[100];
 int exiting_context_cnt = 0;
 
-char *getlastkey(void);
+//char *getlastkey(void);
 
 static void set_xml_lastkey(void) {
 	char *ptr=getlastkey();
@@ -421,30 +421,7 @@ UILIB_A4GL_disp_fields_ap (int n, int attr, va_list * ap)
 			A4GL_drop_param();
 				
 		} else {
-			char *pudfd;
-			pudfd=A4GL_pull_off_data_for_display(1, DISPLAY_TYPE_DISPLAY_TO);
-			args[a]=pudfd;
-      			//args[a] = A4GL_char_pop ();
-			switch (d1&DTYPE_MASK) {
-				case DTYPE_INT:
-				case DTYPE_SMINT:
-				case DTYPE_FLOAT:
-				case DTYPE_SMFLOAT:
-				case DTYPE_MONEY:
-				case DTYPE_SERIAL:
-					A4GL_lrtrim(args[a]);
-					break;
-
-				case DTYPE_DECIMAL:
-					A4GL_lrtrim(args[a]);
-					if (args[a][0]=='.') {
-						char buff[2000];
-						sprintf(buff,"0%s",args[a]);
-						free(args[a]);
-						args[a]=strdup(buff);
-					}
-
-			}
+			args[a]=get_data_from_stack(&arg_types[a],NULL);
 		}
     }
 
@@ -1380,12 +1357,15 @@ UILIB_A4GL_form_loop_v2 (void *s, int init, void *evt)
                                 case DTYPE_SMFLOAT:
                                 case DTYPE_MONEY:
                                 case DTYPE_SERIAL:
-					fixnumeric=A4GL_char_pop();
-                                        A4GL_lrtrim(fixnumeric);
+                                case DTYPE_DECIMAL:
+					fixnumeric=get_data_from_stack(NULL,NULL);
+					//fixnumeric=A4GL_char_pop();
+                                        //A4GL_lrtrim(fixnumeric);
 					A4GL_push_char(fixnumeric);
 					free(fixnumeric);
                                         break;
 
+				/*
                                 case DTYPE_DECIMAL:
 					fixnumeric=A4GL_char_pop();
                                         A4GL_lrtrim(fixnumeric);
@@ -1397,6 +1377,7 @@ UILIB_A4GL_form_loop_v2 (void *s, int init, void *evt)
 						A4GL_push_char(fixnumeric);
 					}
 					free(fixnumeric);
+				*/
 
 		  }
 		}

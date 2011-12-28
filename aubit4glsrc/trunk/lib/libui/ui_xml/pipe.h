@@ -20,3 +20,4 @@ void set_timeout_flush_sock(int sockfd);
 
 void set_using_stdio(int n) ;
 void ensure_file (int sockfd);
+int pipe_sock_read (int sockfd, char *buf, size_t count);

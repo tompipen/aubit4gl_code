@@ -9,6 +9,35 @@
 #include "comms.h"
 #include "fglsys.h"
 
+char * A4GL_lrtrim (char *str);
+char *A4GL_pull_off_data_for_display (int n, int display_type);
+
+
+
+#define DTYPE_CHAR      0
+#define DTYPE_SMINT     1
+#define DTYPE_INT       2
+#define DTYPE_FLOAT     3
+#define DTYPE_SMFLOAT   4
+#define DTYPE_DECIMAL   5
+#define DTYPE_SERIAL    6
+#define DTYPE_DATE      7
+#define DTYPE_MONEY     8
+#define DTYPE_NULL      9
+#define DTYPE_DTIME     10
+#define DTYPE_BYTE      11
+#define DTYPE_TEXT      12
+#define DTYPE_VCHAR     13
+#define DTYPE_INTERVAL  14
+#define DTYPE_NCHAR  15
+#define DTYPE_NVCHAR  16
+#define DTYPE_INT8         17
+#define DTYPE_SERIAL8      18
+#define DTYPE_OBJECT    99
+#define DTYPE_BINDING    95
+#define DTYPE_MASK          255
+
+
 void A4GL_trim(char *s) ;
 void A4GL_push_null (int dtype,int size);
 size_t A4GL_base64_decode(const char *src, unsigned char **outptr);
@@ -69,6 +98,9 @@ xml_escape_int (char *s)
   int b;
   int allocated;
 int sl;
+
+A4GL_assertion(s==NULL,"Null pointer passed to xml_escape_int");
+
 sl=strlen(s);
 
   c = 0;
@@ -303,6 +335,7 @@ static char *
 charpop (void)
 {
   char s[1024];
+
   return A4GL_char_pop();
 
   popstring (s, 1023);
@@ -313,7 +346,7 @@ charpop (void)
 static void
 PUSHquote (char *s)
 {
-  
+  //printf("Pushing %s\n",s);
   pushquote (s, strlen (s));
 }
 
@@ -471,7 +504,7 @@ uilib_display_values (int nargs)
 	args_sizes[a]=s1;
 //End of Aubit4GL specific code
 
-      	args[a] = charpop ();
+      	args[a] = get_data_from_stack(NULL,NULL);
 
     }
 
@@ -1351,6 +1384,7 @@ uilib_input_loop (int nargs)
 		{
 			if (args[a]) {
 		  			contexts[context].ui.input.changed[a] = 1;	// Mark as changed
+	//printf("Setting to : %s from args\n",   args[a]);
 					contexts[context].ui.input.variable_data[a] = args[a]; 
 		      			changed++;
 			} else {
@@ -1364,6 +1398,7 @@ uilib_input_loop (int nargs)
 		      UIdebug (5, "WAS %s NOW %s\n", contexts[context].ui.input.variable_data[a], args[a]);
 		      free (contexts[context].ui.input.variable_data[a]);	// Remove old value
 		      contexts[context].ui.input.variable_data[a] = args[a];	// Copy in new value
+	//printf("Setting to : %s from args (2)\n",   args[a]);
 		      contexts[context].ui.input.changed[a] = 1;	// Mark as changed
 		      changed++;
 		    }
@@ -1393,6 +1428,7 @@ uilib_input_loop (int nargs)
 	    {
 	      UIdebug (5, "using variable_data : %d\n", nargs);
 	      contexts[context].ui.input.changed[a] = 1;
+	//printf("Setting to : %s from args (3)\n",   args[a]);
 	      contexts[context].ui.input.variable_data[a] = args[a];	// Copy in new value
 	      changed++;
 	    }
@@ -1470,6 +1506,7 @@ UIdebug(5, "init=%d changed=%d\n", init, changed);
 	      contexts[context].ui.input.field_data[a] = 0;
 	    }
 
+	//printf("Setting to : %s\n",  last_attr->sync.vals[a].value);
 	  contexts[context].ui.input.variable_data[a] = last_attr->sync.vals[a].value;
 	  contexts[context].ui.input.touched[a] = last_attr->sync.vals[a].touched;
 
@@ -1523,7 +1560,7 @@ get_args (int nargs)
     {
 
       UIdebug (5, "set args[%d]\n", a - 1);
-      args[a - 1] = charpop ();
+      args[a - 1] = get_data_from_stack(NULL,NULL);
       UIdebug (5, "set args[%d]=%s\n", a - 1, args[a - 1]);
     }
   UIdebug (5, "Returning\n");
@@ -3061,3 +3098,40 @@ struct ui_context *context;
         context->nPendingTriggereds=0;
 }
 
+
+#define DISPLAY_TYPE_DISPLAY_TO 3
+char *get_data_from_stack(int *d1,int *s1) {
+int d;
+int s;
+void *ptr1;
+char *ptr;
+if (d1==NULL) d1=&d;
+if (s1==NULL) s1=&s;
+
+                A4GL_get_top_of_stack (1, d1, s1, (void **) &ptr1);
+
+
+                ptr=A4GL_pull_off_data_for_display(1, DISPLAY_TYPE_DISPLAY_TO);
+                        //args[a] = A4GL_char_pop ();
+                        switch ((*d1)&DTYPE_MASK) {
+                                case DTYPE_INT:
+                                case DTYPE_SMINT:
+                                case DTYPE_FLOAT:
+                                case DTYPE_SMFLOAT:
+                                case DTYPE_MONEY:
+                                case DTYPE_SERIAL:
+                                        A4GL_lrtrim(ptr);
+                                        break;
+
+                                case DTYPE_DECIMAL:
+                                        A4GL_lrtrim(ptr);
+                                        if (ptr[0]=='.' || ptr[0]==',') {
+                                                char buff[2000];
+                                                sprintf(buff,"0%s",ptr);
+                                                free(ptr);
+                                                ptr=strdup(buff);
+                                        }
+
+                        }
+return ptr;
+}
