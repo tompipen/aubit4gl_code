@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: debug.c,v 1.72 2011-09-29 12:09:05 mikeaubury Exp $
+# $Id: debug.c,v 1.73 2011-12-28 10:52:51 mikeaubury Exp $
 #
 */
 
@@ -677,7 +677,7 @@ a4gl_basename (char **ppsz)
 char *
 A4GL_getTimecode (void) // Also used by SQLMETRICS for its timestamp - so make sure this returns a *** VALID DATETIME ***
 {
-  static char buff[30] = "";
+  static char buff[300] = "";
   int mja_day;
   struct tm *local_time;
   int month, year;		/* ch, yflag; */
