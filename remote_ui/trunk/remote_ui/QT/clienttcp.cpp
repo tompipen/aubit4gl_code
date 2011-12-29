@@ -682,13 +682,11 @@ void ProtocolHandler::startReportTemplate(QString odffile, QString sedfile)
    fieldlist << getTemplateVars(odffile);
 
    for(int i=1; i < fieldlist.count(); i++) {
-       //qDebug() << content;
        if(cnt == 1) {
            wiederholen = checkSedFile(fieldlist.at(i), sedfile) + 1;
            for(int j=1; j < wiederholen; j++) {
                content = content + prepareTemplateContent(j, odffile, sedfile);
            }
-           qDebug() << i << fieldlist.at(i);
            break;
        }
        if(fieldlist.at(i).contains("[")) {
@@ -710,10 +708,6 @@ void ProtocolHandler::startReportTemplate(QString odffile, QString sedfile)
 QString ProtocolHandler::prepareTemplateContent(int Position, QString odffile, QString sedfile)
 {
 
-    QList<QString> templateVars;
-
-    templateVars << getTemplateVars(odffile);
-
     QFile *file = new QFile(QDir::tempPath() + "/" + odffile);
 
     if(!file->open(QIODevice::ReadOnly)) {
@@ -726,10 +720,13 @@ QString ProtocolHandler::prepareTemplateContent(int Position, QString odffile, Q
     QTextStream stream(&xmlfile);
     QString ausgabe;
     QString xmlout;
+    QString test;
+    QList<QString> fieldlist;
 
     int cnt = 0;
     int counter = 0;
     int ebene = 0;
+    fieldlist << getTemplateVars(odffile);
 
     while(!stream.atEnd()) {
         ausgabe = stream.readLine();
@@ -745,9 +742,9 @@ QString ProtocolHandler::prepareTemplateContent(int Position, QString odffile, Q
             }
             //qDebug() << ebene;
             if(ausgabe.contains("@") && ebene == 1) {
-                for(int i=0; i < templateVars.count(); i++) {
-                    if(ausgabe.contains(templateVars.at(i))) {
-                        ausgabe.replace("@" + templateVars.at(i), QString("@%1" + templateVars.at(i)).arg(QString::number(Position)));
+                for(int i=0; i < fieldlist.count(); i++) {
+                    if(ausgabe.contains(fieldlist.at(i))) {
+                        ausgabe.replace("@" + fieldlist.at(i), QString("@%1" + fieldlist.at(i)).arg(QString::number(Position)));
                     }
                 }
             }
@@ -755,37 +752,39 @@ QString ProtocolHandler::prepareTemplateContent(int Position, QString odffile, Q
                         cnt = cnt + 1;
             }
 
-            /*if(ausgabe.contains("@") && ebene == 2) {
-                for(int i=0; i < templateVars.count(); i++) {
-                    if(ausgabe.contains(templateVars.at(i))) {
-                        ausgabe.replace("@" + templateVars.at(i), QString("@%1_1" + templateVars.at(i)).arg(QString::number(Position)));
-                            for(int k=1; k < checkSedFile(templateVars.at(i), sedfile); k++) {
-                                if(checkSedFile(QString("@%1_%2").arg(QString::number(Position), QString::number(k+1)) + templateVars.at(i), sedfile) > 0) {
-                                    ausgabe.append("</table:table-cell>");
-                                    ausgabe.append("</table:table-row>");
-                                    ausgabe.append("<table:table-row table:style-name=\"ro3\">");
-                                    ausgabe.append(QString("<table:table-cell office:value-type=\"string\" table:style-name=\"ce4\"><text:p>@%1_%2</text:p>").arg(QString::number(Position), QString::number(k+1) + templateVars.at(i)));
-                                    ausgabe.append("</table:table-cell>");
-                                    ausgabe.append("</table:table-row>");
-
-                                }
-                            }
-                     }
-                }
-            }*/
             if(ausgabe.contains("@") && ebene == 2) {
-                for(int i=0; i < templateVars.count(); i++) {
-                    if(ausgabe.contains("@" + templateVars.at(i))) {
-                        ausgabe.replace("@" + templateVars.at(i), QString("@%1_1" + templateVars.at(i)).arg(QString::number(Position)));
+                for(int i=0; i < fieldlist.count(); i++) {
+                    if(ausgabe.contains("@" + fieldlist.at(i))) {
+                        ausgabe.replace("@" + fieldlist.at(i), QString("@%1_1" + fieldlist.at(i)).arg(QString::number(Position)));
                     }
                 }
             }
 
             if(ausgabe.contains("@") && ebene == 3) {
-                for(int i=0; i < templateVars.count(); i++) {
-                    if(ausgabe.contains("@" + templateVars.at(i))) {
-                        ausgabe.replace("@" + templateVars.at(i), QString("@%1_1_1" + templateVars.at(i)).arg(QString::number(Position)));
+                for(int i=0; i < fieldlist.count(); i++) {
+                    if(ausgabe.contains("@" + fieldlist.at(i))) {
+                        ausgabe.replace("@" + fieldlist.at(i), QString("@%1_1_1" + fieldlist.at(i)).arg(QString::number(Position)));
                     }
+                }
+            }
+
+            if(ebene == 2) {
+                test = test + ausgabe;
+                if(ausgabe.contains(QString("]P%1]").arg(ebene))) {
+                    for(int i=0; i < fieldlist.count(); i++) {
+                        int found = 0;
+                        if(fieldlist.at(i).contains(QString("[P%1[").arg(ebene))) {
+                            i = i +1;
+                            ausgabe.append("</table:table-cell></table:table-row>");
+                            for(int j=2; j < fieldlist.count(); j++) {
+                                found = checkSedFile(QString("@%1_%2" + fieldlist.at(i)).arg(Position).arg(j), sedfile);
+                                if(found > 0) {
+                                    ausgabe.append(prepareTemplateEbene(Position, ebene, j, doc, sedfile));
+                                }
+                            }
+                        }
+                    }
+
                 }
             }
 
@@ -807,6 +806,47 @@ QString ProtocolHandler::prepareTemplateContent(int Position, QString odffile, Q
 
 
 
+}
+
+QString ProtocolHandler::prepareTemplateEbene(int Position, int Ebene, int Counter, QDomDocument doc, QString sedfile)
+{
+    QFile *file = new QFile(QDir::tempPath() + "/content1.xml");
+    QString ausgabe;
+    QString xmlout;
+    QString xmlout1;
+    int cnt = 0;
+
+    if(!file->open(QIODevice::ReadOnly)) {
+        qDebug() << "content1.xml konnte nicht geöffnet werden" << "";
+    }
+
+    xmlout = doc.toString();
+    xmlout1.append("<table:table-row><table:table-cell>");
+
+    QTextStream stream(&xmlout);
+
+    while(!stream.atEnd()) {
+        ausgabe = stream.readLine();
+
+        if(ausgabe.contains(QString("[P%1[").arg(Ebene))) {
+            cnt = cnt + 1;
+        }
+
+        if(cnt  == 1) {
+            if(ausgabe.contains("@")) {
+                ausgabe.replace("@", QString("@%1_%2").arg(QString::number(Position), QString::number(Counter)));
+            }
+            xmlout1 = xmlout1 + ausgabe;
+        }
+
+        if(ausgabe.contains(QString("]P%1]").arg(Ebene))) {
+            cnt = cnt - 1;
+        }
+    }
+
+    xmlout1.append(QString("</table:table-cell></table:table-row>"));
+
+    return xmlout1;
 }
 
 QString ProtocolHandler::getTemplateFooter(QString filename)
