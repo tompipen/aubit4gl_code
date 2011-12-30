@@ -654,15 +654,69 @@ QString ProtocolHandler::getTemplateHeader(QString filename)
     QString xml = doc.toString();
     QTextStream stream(&xml);
     QString header;
+    int cnt = 0;
     while(!stream.atEnd()) {
         header = header + stream.readLine();
 
-        if(header.contains("</table:table-row")) {
+        if(header.contains("<table:table-row")) {
+            header.append("</table:table-row>");
+            cnt = 1;
+        }
+        if(cnt == 1) {
             return header;
         }
     }
    file->close();
 
+}
+
+QString ProtocolHandler::getTemplatePosition(QString odffile)
+{
+
+    //qDebug() << "odf: " << odffile;
+    QFile *file = new QFile(QDir::tempPath() + "/" + odffile);
+
+    if(!file->open(QIODevice::ReadOnly)) {
+        qDebug() << "konnte kopf datei nicht lesen" << "";
+    }
+
+    QDomDocument doc;
+    doc.setContent(file);
+
+    QString xml = doc.toString();
+    QTextStream stream(&xml);
+    QString ausgabe;
+    QString behalten;
+    int cnt = 0;
+    int stop = 0;
+
+    while(!stream.atEnd()) {
+        ausgabe = stream.readLine();
+
+        if(ausgabe.contains("[")) {
+            stop = 1;
+        }
+
+        if(ausgabe.contains("<table:table-row")) {
+            cnt = 1;
+
+        }
+
+        if(cnt > 0 && stop  < 1) {
+            behalten = behalten + ausgabe;
+        }
+
+        if(ausgabe.contains("</table:table-row")) {
+            cnt = 0;
+        }
+
+    }
+
+    behalten.append("</table:table-cell></table:table-row>");
+
+    file->close();
+
+    return behalten;
 }
 
 void ProtocolHandler::startReportTemplate(QString odffile, QString sedfile)
@@ -699,7 +753,9 @@ void ProtocolHandler::startReportTemplate(QString odffile, QString sedfile)
 
    }
 
-   xmlsave << getTemplateHeader(odffile) << content << getTemplateFooter(odffile);
+   content.replace("[P1[", " ");
+
+   xmlsave << getTemplateHeader(odffile) << getTemplatePosition(odffile) << content << getTemplateFooter(odffile);
 
    file->close();
 
@@ -722,6 +778,7 @@ QString ProtocolHandler::prepareTemplateContent(int Position, QString odffile, Q
     QString xmlout;
     QString test;
     QList<QString> fieldlist;
+    xmlout.append("<table:table-row><table:table-cell>");
 
     int cnt = 0;
     int counter = 0;
@@ -732,11 +789,13 @@ QString ProtocolHandler::prepareTemplateContent(int Position, QString odffile, Q
         ausgabe = stream.readLine();
 
 
-        if(ausgabe.contains("<table:table-row")) {
+        if(ausgabe.contains("[P1[")) {
+        //if(ausgabe.contains("<table:table-row")) {
             counter = counter + 1;
         }
 
         if(counter > 0) {
+
             if(ausgabe.contains("[")) {
                 ebene = ebene + 1;
             }

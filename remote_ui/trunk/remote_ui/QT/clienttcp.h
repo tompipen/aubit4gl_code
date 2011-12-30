@@ -79,6 +79,7 @@ public:
    QString prepareTemplateEbene(int Position, int Ebene, int Counter, QDomDocument doc, QString sedfile);
    QString getTemplateHeader(QString odffile);
    QString getTemplateFooter(QString odffile);
+   QString getTemplatePosition(QString odffile);
    int checkSedFile(QString fieldname, QString sedfile);
    QList<QString> getTemplateVars(QString filename);
 
