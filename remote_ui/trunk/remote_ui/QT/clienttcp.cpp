@@ -683,8 +683,8 @@ void ProtocolHandler::startReportTemplate(QString odffile, QString sedfile)
 
    for(int i=1; i < fieldlist.count(); i++) {
        if(cnt == 1) {
-           wiederholen = checkSedFile(fieldlist.at(i), sedfile) + 1;
-           for(int j=1; j < wiederholen; j++) {
+           wiederholen = checkSedFile(fieldlist.at(i), sedfile);
+           for(int j=0; j < wiederholen; j++) {
                content = content + prepareTemplateContent(j, odffile, sedfile);
            }
            break;
