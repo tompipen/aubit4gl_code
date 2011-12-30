@@ -4136,7 +4136,7 @@ err_on_status();
 /* Line 1464 of yacc.c  */
 #line 1113 "screen.yacc"
     {
-			sprintf((yyval.str),"%d",A4GLF_getdatatype_fcompile((yyvsp[(5) - (5)].str),(yyvsp[(3) - (5)].str)));
+			sprintf((yyval.str),"%d",A4GLF_getdatatype_fcompile((yyvsp[(5) - (5)].str),(yyvsp[(3) - (5)].str),1));
 		}
     break;
 
@@ -4145,7 +4145,7 @@ err_on_status();
 /* Line 1464 of yacc.c  */
 #line 1116 "screen.yacc"
     {
-			sprintf((yyval.str),"%d",A4GLF_getdatatype_fcompile((yyvsp[(3) - (3)].str),""));
+			sprintf((yyval.str),"%d",A4GLF_getdatatype_fcompile((yyvsp[(3) - (3)].str),"",1));
 		}
     break;
 
@@ -4225,7 +4225,7 @@ err_on_status();
 	fld->tabname=acl_strdup((yyvsp[(1) - (3)].str)); 
 	fld->colname=acl_strdup((yyvsp[(3) - (3)].str));
 	fld->not_null=0;
-        fld->datatype=A4GLF_getdatatype_fcompile(fld->colname,fld->tabname);
+        fld->datatype=A4GLF_getdatatype_fcompile(fld->colname,fld->tabname,0);
         fld->dtype_size=A4GL_get_dtype_size();
 }
     break;
@@ -4247,7 +4247,7 @@ err_on_status();
 	fld->colname=acl_strdup((yyvsp[(1) - (1)].str));
 	if (fld->tabname!=0) {
 		fld->not_null=0;
-        	fld->datatype=A4GLF_getdatatype_fcompile(fld->colname,fld->tabname);
+        	fld->datatype=A4GLF_getdatatype_fcompile(fld->colname,fld->tabname,0);
         	fld->dtype_size=A4GL_get_dtype_size();
 	} else {
 		fld->tabname=acl_strdup("-");
@@ -4267,7 +4267,7 @@ err_on_status();
 	fld->tabname=acl_strdup((yyvsp[(2) - (4)].str)); 
 	fld->colname=acl_strdup((yyvsp[(4) - (4)].str));
 	fld->not_null=0;
-        fld->datatype=A4GLF_getdatatype_fcompile(fld->colname,fld->tabname);
+        fld->datatype=A4GLF_getdatatype_fcompile(fld->colname,fld->tabname,0);
         fld->dtype_size=A4GL_get_dtype_size();
 }
     break;
@@ -4281,7 +4281,7 @@ err_on_status();
 				fld=A4GL_get_fld();
 	fld->colname=acl_strdup((yyvsp[(2) - (2)].str));
 	fld->not_null=0;
-        fld->datatype=A4GLF_getdatatype_fcompile(fld->colname,"");
+        fld->datatype=A4GLF_getdatatype_fcompile(fld->colname,"",0);
 	fld->tabname=A4GL_get_found_in_tab();
         fld->dtype_size=A4GL_get_dtype_size();
 }
@@ -6105,7 +6105,7 @@ if (strcasecmp(currftag,(yyvsp[(1) - (1)].str))!=0) {
     {
 	int n;
 	char *tabname;
-        n=A4GLF_getdatatype_fcompile((yyvsp[(1) - (1)].str),"");
+        n=A4GLF_getdatatype_fcompile((yyvsp[(1) - (1)].str),"",0);
         tabname=A4GL_get_found_in_tab();
 
 	(yyval.column).tabname=strdup(tabname);

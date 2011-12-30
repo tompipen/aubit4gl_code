@@ -16,10 +16,6 @@ Fri Dec 30 10:30:54 GMT 2011
 	
 	fix for max os lion
 	
-	2011-12-28 10:52  mikeaubury
-	
-	2011-12-27 15:32  mikeaubury
-	
 	2011-12-18 08:56  mikeaubury
 	
 	Fix SUBSCRIPT on DISPLAY ARRAY for UI=XML
@@ -32,24 +28,6 @@ Fri Dec 30 10:30:54 GMT 2011
 	
 	Add a "ui.curses.getkey()" to allow a call to get an unmodified
 	keystroke (ie - does not convert to ACCEPT,INTERRUPT etc..)
-	
-	2011-12-13 12:54  mikeaubury
-	
-	2011-12-09 09:02  mikeaubury
-	
-	2011-12-08 09:40  mikeaubury
-	
-	2011-12-05 18:35  mikeaubury
-	
-	2011-12-05 18:28  mikeaubury
-	
-	2011-12-02 11:00  mikeaubury
-	
-	2011-11-25 10:07  mikeaubury
-	
-	2011-11-25 10:04  mikeaubury
-	
-	2011-11-18 14:15  mikeaubury
 	
 	2011-11-16 17:38  mikeaubury
 	
