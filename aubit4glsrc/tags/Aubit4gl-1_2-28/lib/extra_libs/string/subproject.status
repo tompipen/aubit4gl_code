@@ -1,0 +1,15 @@
+
+Name: libA4GL_string
+Parent: aubit4glsrc
+Description: Collection of useful string manipulation functions. 
+Functionality: String manipulation library
+Build:
+Example:
+Depends: None
+Documentation:
+Regressed: none
+Maintainer: MA
+Status: 3
+Todo:
+Notes:
+

@@ -1,0 +1,26 @@
+
+<!DOCTYPE actions SYSTEM "flexml-act.dtd">
+<actions>
+<top>
+<![CDATA[
+#include <stdio.h>
+#include <string.h>
+#include "module_def.act.h"
+#include "stack.h"
+#include "overloads_read.h"
+
+t_module_definition *loaded_module_definition=0;
+void SetParent(char *type, void *parent,  void *val);
+void Call_Callback(char *s,char *n,void *data );
+
+/*
+static int isyes(char *s) {
+if (strcmp(s,"TRUE")==0) return 1;
+return 0;
+}
+*/
+
+
+]]>
+</top>
+

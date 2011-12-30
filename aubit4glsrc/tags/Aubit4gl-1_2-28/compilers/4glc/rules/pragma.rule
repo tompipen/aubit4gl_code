@@ -1,0 +1,27 @@
+pragma: PRAGMA pragma_entry;
+
+
+pragma_entry: SYSTEM_4GL 				{  A4GL_set_pragma(&this_module, E_PRAGMA_SYSTEM_4GL,NULL,NULL,0); }
+	| SQL_FEATURE NAMED 				{  A4GL_set_pragma(&this_module, E_PRAGMA_SQL_FEATURE,$<str>2,NULL,0); }
+	| EMULATE_INSERT_CURSOR_FOR NAMED 		{  A4GL_set_pragma(&this_module, E_PRAGMA_EMULATE_INSERT_CURSOR_FOR,$<str>2,NULL,0); }
+
+	| COLUMN NAMED KW_DOT NAMED IS_SERIAL 		{  A4GL_set_pragma(&this_module, E_PRAGMA_COLUMN_IS_SERIAL,$<str>2,$<str>4,0); }
+	| REPLACE_STRING CHAR_VALUE WITH CHAR_VALUE 	{  A4GL_set_pragma(&this_module, E_PRAGMA_REPLACE_STRING,$<str>2,$<str>4,0); }
+	| STOP_REPLACE_STRING CHAR_VALUE  		{  A4GL_set_pragma(&this_module, E_PRAGMA_STOP_REPLACE_STRING,$<str>2,NULL,0); }
+
+	| IGNORE_FUNCTION  NAMED 			{  A4GL_set_pragma(&this_module, E_PRAGMA_IGNORE_FUNCTION,$<str>2,NULL,0); }
+	| FORCE_UI CHAR_VALUE 				{  A4GL_set_pragma(&this_module, E_PRAGMA_FORCE_UI,$<str>2,NULL,0); }
+	| DEBUG_FILE CHAR_VALUE 			{  A4GL_set_pragma(&this_module, E_PRAGMA_DEBUG_FILE,$<str>2,NULL,0); }
+
+	| NOSQLCLOBBER 					{  A4GL_set_pragma(&this_module, E_PRAGMA_NOSQLCLOBBER,NULL,NULL,0); }
+        | NOCLOBBER 					{  A4GL_set_pragma(&this_module, E_PRAGMA_NOCLOBBER,NULL,NULL,0); }
+        | ALWAYSSQLCLOBBER 				{  A4GL_set_pragma(&this_module, E_PRAGMA_ALWAYSSQLCLOBBER,NULL,NULL,0); }
+
+        | ALWAYSCLOBBER 				{  A4GL_set_pragma(&this_module, E_PRAGMA_ALWAYSCLOBBER,NULL,NULL,0); }
+        | LINTMODULEISLIBRARY 				{  A4GL_set_pragma(&this_module, E_PRAGMA_LINTMODULEISLIBRARY,NULL,NULL,0); }
+	| SET_POSTGRESQL_SEARCH_PATH CHAR_VALUE		{  A4GL_set_pragma(&this_module, E_PRAGMA_SET_POSTGRESQL_SEARCH_PATH,$<str>2,NULL,0); }
+
+;
+
+
+

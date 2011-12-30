@@ -1,0 +1,33 @@
+/*
+=====================================================================
+                        Source: let.rule
+=====================================================================
+*/
+
+
+let_cmd : KW_LET atline obind_var_let_list EQUAL op_expr_null {
+		set_cmdlineno($<integer_val>2);
+		$<cmd>$=new_let_cmd($<ptr_list>3,$<ptr_list>5);
+}
+;
+
+
+
+
+op_expr_null : 
+fgl_expr_concat  {
+		$<ptr_list>$=$<ptr_list>1;
+		// Check to see if they've assigned a value of 'NULL'
+		if ($<ptr_list>1) {
+			if ($<ptr_list>1->list.list_len==1) {
+				if ($<ptr_list>1->list.list_val[0]->expr_type==ET_EXPR_NULL) {
+					$<ptr_list>$=0;
+				}
+			}
+		}
+	}
+;
+
+
+/* ============================= let.rule ========================== */
+
