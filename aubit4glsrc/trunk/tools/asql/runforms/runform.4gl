@@ -940,11 +940,17 @@ code
 {
 char *p;
 p=(char *)gv_field_data[1];
-strcpy(buff,p);
+strncpy(buff,p,255);
+buff[255]=0;
 }
 endcode
-let buff=buff;
-display "FIELD2=",buff
+
+
+IF fgl_getenv("DISPFLD2")="Y" THEN
+	let buff=buff;
+	display "FIELD2=",buff CLIPPED
+	sleep 2
+END IF
 end function
 
 
