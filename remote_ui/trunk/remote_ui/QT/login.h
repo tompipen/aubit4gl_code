@@ -26,7 +26,7 @@
 #include <QTableWidget>
 
 #include "clienttcp.h"
-#include "lib/qttelnet.h"
+#include "qtelnet/qttelnet.h"
 
 
 class LoginForm  : public QWidget

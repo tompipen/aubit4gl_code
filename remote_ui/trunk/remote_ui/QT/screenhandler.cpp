@@ -22,6 +22,8 @@
 #include <QMessageBox>
 #include <QFileDialog>
 #include <QSettings>
+#include <quazipfileinfo.h>
+
 
 #include "screenhandler.h"
 #include "mainframe.h"
@@ -62,6 +64,7 @@ MainFrame::vdcdebug("ScreenHandler","ScreenHandler", "QObject *parent");
 
 void ScreenHandler::setCurrentFocus(QWidget *old, QWidget *current)
 {
+
     return;
     if(p_fglform == NULL)
         return;

@@ -1575,6 +1575,8 @@ MainFrame::vdcdebug("FglForm","setCurrentField", "QString fieldName, bool sendEv
                }
             }
          }
+
+
          Fgl::Event event;
          event.type = Fgl::BEFORE_FIELD_EVENT;
          event.attribute = next->objectName();

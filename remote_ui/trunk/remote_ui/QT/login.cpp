@@ -22,7 +22,7 @@
 #include <QAction>
 #include <QLineEdit>
 #include <QTcpSocket>
-#include <lib/qttelnet.h>
+#include <qtelnet/qttelnet.h>
 #if QT_VERSION >= 0x040600
 #include <QProcessEnvironment>
 #endif
