@@ -886,6 +886,209 @@ A4GLSQLLIB_A4GLSQL_describe_stmt (char *stmt, int colno, int type)
   return z;
 }
 
+static char *
+rewriteWhereCurrentOf (char *s)
+{
+
+  char *wherecurrentof;
+  char *cursorname;
+  struct s_cid *cid;
+  MYSQL_STMT *stmt;
+  MYSQL_RES *columns;
+  int i;
+  MYSQL_FIELD *field;
+  struct BINDING *obind;
+  int newquerysize;
+  char *newquery;
+
+  /* Find the cursor named in the WHERE CURRENT OF clause and build up a new
+   * query, replacing the WHERE CURRENT OF clause of the current query with a
+   * plain WHERE clause composed of the columns and fields of the current row
+   * of that cursor... */
+
+  /* look for WHERE CURRENT OF clause */
+  wherecurrentof = strstr (s, "WHERE CURRENT OF ");
+  if (wherecurrentof == 0)
+    {
+      return NULL;
+    }
+
+  /* get the cursor name */
+  cursorname = wherecurrentof + 17;
+
+  /* find that cursor */
+  cid = A4GL_find_cursor (cursorname);
+  if (cid == 0)
+    {
+      return NULL;
+    }
+
+  /* get the stmt */
+  stmt = cid->statement->hstmt;
+  if (stmt == 0)
+    {
+      return NULL;
+    }
+
+  /* make sure we have column data */
+  if (cid->statement->extobind == 0)
+    {
+      return NULL;
+    }
+
+  /* get the column data */
+  columns = mysql_stmt_result_metadata (stmt);
+  if (columns == 0)
+    {
+      return NULL;
+    }
+
+  /* start building up the new query */
+  /* FIXME: is there a max query size? */
+  newquerysize=32768;
+  newquery=(char *)malloc(newquerysize*sizeof(char));
+  strncpy(newquery,s,wherecurrentof-s);
+  strcpy(newquery+(wherecurrentof-s),"WHERE ");
+
+  /* run through the columns, adding to the size of the new query */
+  for (i=0; i<cid->sql_no; i++) 
+    {
+
+      // append "and" if necessary
+      if (i>0)
+        {
+          strcat(newquery," AND ");
+        }
+
+      // get the column name
+      field = mysql_fetch_field_direct (columns, i);
+      strcat(newquery,field->name);
+
+      /* get the field */
+      obind=&(cid->statement->extobind[i]);
+      if (!obind)
+        {
+          free(newquery);
+          return NULL;
+        }
+
+      /* if it's null... */
+      if (A4GL_isnull(obind->dtype & DTYPE_MASK,obind->ptr))
+        {
+          strcat(newquery," IS NULL");
+          continue;
+        }
+      else
+        {
+          strcat(newquery," = ");
+        }
+
+
+      /* handle it differently based on the type */
+      switch (obind->dtype & DTYPE_MASK)
+        {
+        case DTYPE_VCHAR:
+        case DTYPE_CHAR:
+        case DTYPE_NVCHAR:
+        case DTYPE_NCHAR:
+        case DTYPE_INTERVAL:
+          strcat(newquery,"'");
+          strcat(newquery,(char *)obind->ptr);
+          strcat(newquery,"'");
+          break;
+
+        case DTYPE_SMINT:
+          {
+            char buffer[10];
+            snprintf(buffer,10,"%d",*((short *)obind->ptr));
+            strcat(newquery,buffer);
+          }
+          break;
+
+        case DTYPE_INT:
+        case DTYPE_SERIAL:
+          {
+            char buffer[22];
+            snprintf(buffer,22,"%ld",*((long *)obind->ptr));
+            strcat(newquery,buffer);
+          }
+          break;
+
+        case DTYPE_DECIMAL:
+        case DTYPE_MONEY:
+        case DTYPE_FLOAT:
+          {
+            char buffer[22];
+            char *ptr;
+            snprintf(buffer,22,"%*.*f",
+                        (int)field->length,(int)field->decimals,
+                        *((double *)obind->ptr));
+            /* In some regions a comma is used rather than a period for the
+             * decimal and the i8n settings will cause snprintf to use a comma
+             * as the separator.  Databases don't like commas in their numbers.
+             * Convert commas to periods here. */
+            for (ptr=buffer; *ptr; ptr++)
+             {
+                if (*ptr==',')
+                  {
+                    *ptr='.';
+                  }
+             }
+            strcat(newquery,buffer);
+          }
+          break;
+
+        case DTYPE_SMFLOAT:
+          {
+            char buffer[22];
+            snprintf(buffer,22,"%*.*f",
+                        (int)field->length,(int)field->decimals,
+                        *((float *)obind->ptr));
+            strcat(newquery,buffer);
+          }
+          break;
+
+        case DTYPE_DATE:
+          {
+            int d, m, y;
+            A4GL_get_date(*(long *)obind->ptr, &d, &m, &y);
+            char buffer[11];
+            snprintf(buffer, 11, "%04d-%02d-%02d", y, m, d);
+            strcat(newquery,"'");
+            strcat(newquery,buffer);
+            strcat(newquery,"'");
+          }
+          break;
+
+        case DTYPE_DTIME:
+          {
+            int data[22];
+            A4GL_decode_datetime((struct A4GLSQL_dtime *)obind->ptr, data);
+            char buffer[22];
+            snprintf(buffer, 22, "%04d-%02d-%02d %02d:%02d:%02d",
+			data[0], data[1], data[2], data[3], data[4], data[5]);
+            strcat(newquery,"'");
+            strcat(newquery,buffer);
+            strcat(newquery,"'");
+          }
+          break;
+
+        case DTYPE_BYTE:
+        case DTYPE_TEXT:
+          /* not implemented yet */
+          break;
+
+        default:
+	  break;
+        }
+    }
+
+  /* clean up */
+  /* FIXME: this should be safe to do but it crashes */
+  /*mysql_free_result(columns);*/
+
+  return newquery;
+}
 
 /*****************************************************************************/
 
@@ -894,6 +1097,9 @@ A4GLSQLLIB_A4GLSQL_prepare_select_internal (void *ibind, int ni, void *obind,
 					    int no, char *s, char *uniqid, int singleton)
 {
   MYSQL_STMT *stmt;
+  /* DLM added */
+  char *new_s;
+  int prep_result;
   struct s_sid *sid;
   sid = acl_malloc2 (sizeof (struct s_sid));
 
@@ -907,6 +1113,10 @@ A4GLSQLLIB_A4GLSQL_prepare_select_internal (void *ibind, int ni, void *obind,
 
   sid->ni = ni;
   sid->no = no;
+
+  /* DLM added */
+  sid->extobind = NULL;
+  sid->neo = 0;
 
 //printf("Alloc\n");
   stmt = mysql_stmt_init (conn);
@@ -932,7 +1142,14 @@ A4GLSQLLIB_A4GLSQL_prepare_select_internal (void *ibind, int ni, void *obind,
       return sid;
     }
 
-  if (mysql_stmt_prepare (stmt, s, strlen (s)) != 0)
+  /* DLM modified */
+  new_s = rewriteWhereCurrentOf (s);
+  prep_result = mysql_stmt_prepare (stmt, (new_s)?new_s:s, strlen ((new_s)?new_s:s));
+  if (new_s)
+    {
+      free(new_s);
+    }
+  if (prep_result != 0)
     {
       // Some error...
       A4GL_debug ("Err : %s (%p)\n", mysql_stmt_error (stmt), stmt);	
@@ -2345,10 +2562,66 @@ A4GLSQLLIB_A4GLSQL_fetch_cursor_internal (char *cursor_name, int fetch_mode,
 
   fetch_from_mysql_to_aubit (cid->statement->hstmt, &v_for_ptr, obind, copy_out_n);
 
-
   A4GL_set_a4gl_sqlca_errd (2, 1);
   A4GL_free_associated_mem (&v_for_ptr);
 
+  /* DLM added */
+
+  /* now that the column data has been fetched into the obind's, back up and
+   * fetch it again into the "extra" output binds */
+
+  /* allocate the array and initialize it */
+  if (!cid->statement->extobind)
+    {
+
+      /* allocate the array, zero-it and set the count */
+      cid->statement->extobind = malloc (sizeof(struct BINDING) * cid->sql_no);
+      memset(cid->statement->extobind, 0, sizeof(struct BINDING) * cid->sql_no);
+      cid->statement->neo = cid->sql_no;
+
+      /* run through the columns of the query... */
+      int i;
+      MYSQL_RES *columns;
+      columns = mysql_stmt_result_metadata (cid->statement->hstmt);
+      for (i=0; i<cid->sql_no; i++)
+        {
+
+          /* set up the extra output binds based on the column data */
+	  MYSQL_FIELD *field;
+          int prc;
+          int size;
+          field = mysql_fetch_field_direct (columns, i);
+	  conv_sqldtype (field->type, field->length, field->decimals, field->flags, &(cid->statement->extobind[i].dtype), &prc);
+          switch (field->type)
+            {
+		case DTYPE_NCHAR:
+		case DTYPE_CHAR:
+		case DTYPE_NVCHAR:
+		case DTYPE_VCHAR:
+                  size = field->length;
+                  break;
+                default:
+                  /* it has to be big enough to store whatever
+                   * other types we might want to put in there
+                   * ideally, it could be smaller */
+                  size = 1024;
+                  break;
+            }
+          cid->statement->extobind[i].size = size;
+          /* I wouldn't expect to have to add the +1 here but it crashes
+           * copying out strings if I don't */
+          cid->statement->extobind[i].ptr = malloc (sizeof(char) * (size + 1));
+        }
+
+      /* FIXME: this should be safe to do but it crashes */
+      /*mysql_free_result(columns);*/
+    }
+
+    /* back up */
+    mysql_stmt_data_seek (cid->statement->hstmt, cid->currpos - 1);
+
+    /* fetch the data into the extra output bind variables */
+    fetch_from_mysql_to_aubit (cid->statement->hstmt, cid->statement->hstmt, cid->statement->extobind, cid->sql_no);
 
   return 1;
 }
@@ -2746,6 +3019,15 @@ struct s_sid *sid;
 	}
 	if (sid->obind) {
 		acl_free(sid->obind);
+	}
+
+        /* DLM added */
+	if (sid->extobind) {
+		int i;
+		for (i=0; i<sid->neo; i++) {
+			free(sid->extobind[i].ptr);
+		}
+		free(sid->extobind);
 	}
 
 
