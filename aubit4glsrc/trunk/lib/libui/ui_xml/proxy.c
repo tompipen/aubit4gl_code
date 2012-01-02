@@ -1024,8 +1024,11 @@ wait_for_some_action (int clientui_read, int clientui_write, int listen_fgl)
 
 	      if (strstr (mainbuff, "</TRIGGERED>"))
 		{
-		  is_full_tag = 1;
-		  eptr=strstr(mainbuff,"</TRIGGERED>")+strlen("</TRIGGERED>");
+			// Are there more than one in the package....
+		  if (!strstr(mainbuff+1,"<TRIGGERRED")) {
+		  	is_full_tag = 1;
+		  	eptr=strstr(mainbuff,"</TRIGGERED>")+strlen("</TRIGGERED>");
+			}
 		}
 
 

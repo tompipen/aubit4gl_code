@@ -9148,7 +9148,7 @@ int xml_yy_flex_debug = 0;
 char *xml_yytext;
 #line 1 "triggers.l"
 /* Validating XML processor for triggers.dtd.
- * Generated 2012/01/02 13:40:51.
+ * Generated 2012/01/02 13:43:15.
  *
  * This program was generated with the FleXML XML processor generator.
  * FleXML is Copyright (C) 1999-2005 Kristoffer Rose.  All rights reserved.
@@ -9197,7 +9197,7 @@ char *xml_yytext;
 
 /* Version strings. */
 const char rcs_flexml_skeleton[] =
- "$" "Id: skel,v 1.2 2011/05/14 08:35:52 mikeaubury Exp $";
+ "$" "Id: skel,v 1.3 2012/01/02 13:42:35 mikeaubury Exp $";
 const char rcs_flexml[] =
  "$" "Id: flexml.pl,v 1.61 2006/09/13 16:34:33 wdowling Exp $";
 
