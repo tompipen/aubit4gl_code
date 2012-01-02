@@ -735,7 +735,7 @@ void ProtocolHandler::startReportTemplate(QString odffile, QString sedfile)
    QTextStream xmlsave(file);
    fieldlist << getTemplateVars(odffile);
 
-   for(int i=1; i < fieldlist.count(); i++) {
+   for(int i=0; i < fieldlist.count(); i++) {
        if(cnt == 1) {
            wiederholen = checkSedFile(fieldlist.at(i), sedfile);
            for(int j=0; j < wiederholen; j++) {
@@ -854,7 +854,7 @@ QString ProtocolHandler::prepareTemplateContent(int Position, QString odffile, Q
             xmlout = xmlout + ausgabe;
         }
 
-        if(ausgabe.contains("</table:table-row")) {
+        if(ausgabe.contains("</table:table-row") && ausgabe.contains("]")) {
             counter = 0;
         }
     }

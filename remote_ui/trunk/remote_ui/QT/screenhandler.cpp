@@ -22,8 +22,6 @@
 #include <QMessageBox>
 #include <QFileDialog>
 #include <QSettings>
-#include <quazipfileinfo.h>
-
 
 #include "screenhandler.h"
 #include "mainframe.h"
