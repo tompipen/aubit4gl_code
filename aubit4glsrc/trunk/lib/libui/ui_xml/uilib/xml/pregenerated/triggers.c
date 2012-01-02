@@ -9148,7 +9148,7 @@ int xml_yy_flex_debug = 0;
 char *xml_yytext;
 #line 1 "triggers.l"
 /* Validating XML processor for triggers.dtd.
- * Generated 2011/12/30 09:58:08.
+ * Generated 2012/01/02 13:40:51.
  *
  * This program was generated with the FleXML XML processor generator.
  * FleXML is Copyright (C) 1999-2005 Kristoffer Rose.  All rights reserved.
@@ -11809,6 +11809,14 @@ static int fail(const char* fmt, ...)
 #ifndef FLEXML_quiet_parser
     /* print directly to sdterr */
     fprintf(stderr, "%s\n", flexml_err_msg);
+{
+FILE *faillog;
+faillog=fopen("xmlfail.log","a");
+if (faillog) {
+    fprintf(faillog, "%s\n", flexml_err_msg);
+}
+
+}
     flexml_err_msg[0] = '\0';
 #endif
 
