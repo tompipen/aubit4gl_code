@@ -15,8 +15,12 @@ extern "C"
   {
     struct BINDING *ibind;                  /**< The input bind array */
     struct BINDING *obind;                  /**< The output bind array */
+    /* DLM added */
+    struct BINDING *extobind;
     int ni;                                 /**< Number of elements in the input bind array*/
     int no;                                 /**< Number of elements in the output bind array*/
+    /* DLM addes */
+    int neo;                                 /**< Number of elements in the extra output bind array*/
     char *inputDescriptorName;              /**< Name of input descriptor (ESQL) */
     char *outputDescriptorName;             /**< Name of output descriptor (ESQL) */
     char *select;                           /**< The SQL statement content */
