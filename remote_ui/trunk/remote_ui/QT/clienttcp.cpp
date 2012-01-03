@@ -814,7 +814,7 @@ QString ProtocolHandler::prepareTemplateContent(int Position, QString odffile, Q
             if(ausgabe.contains("@") && ebene == 2) {
                 for(int i=0; i < fieldlist.count(); i++) {
                     if(ausgabe.contains("@" + fieldlist.at(i))) {
-                        ausgabe.replace("@" + fieldlist.at(i), QString("@%1_1" + fieldlist.at(i)).arg(QString::number(Position)));
+                        ausgabe.replace("@" + fieldlist.at(i), QString("@%1_0" + fieldlist.at(i)).arg(QString::number(Position)));
                     }
                 }
             }
@@ -822,7 +822,7 @@ QString ProtocolHandler::prepareTemplateContent(int Position, QString odffile, Q
             if(ausgabe.contains("@") && ebene == 3) {
                 for(int i=0; i < fieldlist.count(); i++) {
                     if(ausgabe.contains("@" + fieldlist.at(i))) {
-                        ausgabe.replace("@" + fieldlist.at(i), QString("@%1_1_1" + fieldlist.at(i)).arg(QString::number(Position)));
+                        ausgabe.replace("@" + fieldlist.at(i), QString("@%1_0_0" + fieldlist.at(i)).arg(QString::number(Position)));
                     }
                 }
             }
@@ -835,7 +835,7 @@ QString ProtocolHandler::prepareTemplateContent(int Position, QString odffile, Q
                         if(fieldlist.at(i).contains(QString("[P%1[").arg(ebene))) {
                             i = i +1;
                             ausgabe.append("</table:table-cell></table:table-row>");
-                            for(int j=2; j < fieldlist.count(); j++) {
+                            for(int j=1; j < fieldlist.count(); j++) {
                                 found = checkSedFile(QString("@%1_%2" + fieldlist.at(i)).arg(Position).arg(j), sedfile);
                                 if(found > 0) {
                                     ausgabe.append(prepareTemplateEbene(Position, ebene, j, doc, sedfile));
