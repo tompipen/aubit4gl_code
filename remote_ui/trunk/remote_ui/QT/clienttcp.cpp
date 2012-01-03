@@ -653,6 +653,7 @@ QString ProtocolHandler::getTemplateHeader(QString filename)
 
     QString xml = doc.toString();
     QTextStream stream(&xml);
+    stream.setCodec("UTF-8");
     QString header;
     int cnt = 0;
     while(!stream.atEnd()) {
@@ -685,6 +686,7 @@ QString ProtocolHandler::getTemplatePosition(QString odffile)
 
     QString xml = doc.toString();
     QTextStream stream(&xml);
+    stream.setCodec("UTF-8");
     QString ausgabe;
     QString behalten;
     int cnt = 0;
@@ -733,6 +735,7 @@ void ProtocolHandler::startReportTemplate(QString odffile, QString sedfile)
    }
 
    QTextStream xmlsave(file);
+   xmlsave.setCodec("UTF-8");
    fieldlist << getTemplateVars(odffile);
 
    for(int i=0; i < fieldlist.count(); i++) {
@@ -762,6 +765,8 @@ void ProtocolHandler::startReportTemplate(QString odffile, QString sedfile)
 
    file->close();
 
+   replaceTempateVars("content1.xml", sedfile);
+
 }
 
 QString ProtocolHandler::prepareTemplateContent(int Position, QString odffile, QString sedfile)
@@ -777,6 +782,7 @@ QString ProtocolHandler::prepareTemplateContent(int Position, QString odffile, Q
     doc.setContent(file);
     QString xmlfile = doc.toString();
     QTextStream stream(&xmlfile);
+    stream.setCodec("UTF-8");
     QString ausgabe;
     QString xmlout;
     QString test;
@@ -886,6 +892,7 @@ QString ProtocolHandler::prepareTemplateEbene(int Position, int Ebene, int Count
     xmlout1.append("<table:table-row><table:table-cell>");
 
     QTextStream stream(&xmlout);
+    stream.setCodec("UTF-8");
 
     while(!stream.atEnd()) {
         ausgabe = stream.readLine();
@@ -918,6 +925,7 @@ QString ProtocolHandler::getTemplateFooter(QString filename)
        doc.setContent(file);
        QString xml = doc.toString();
        QTextStream stream(&xml);
+       stream.setCodec("UTF-8");
        QString footer;
        QString readLine;
        int cnt = 0;
@@ -942,6 +950,7 @@ int ProtocolHandler::checkSedFile(QString fieldname, QString filename)
     QFile *file = new QFile (QDir::tempPath() + "/" + filename);
 
     QTextStream stream(file);
+    stream.setCodec("UTF-8");
     QString ausgabe;
     QList<QString> suchliste;
     int cnt = 0;
@@ -977,6 +986,7 @@ QList<QString> ProtocolHandler::getTemplateVars(QString filename)
         doc.setContent(file);
         QString xmlout = doc.toString();
         QTextStream stream(&xmlout);
+        stream.setCodec("UTF-8");
         QString ausgabe;
         QList<QString> t_fieldlist;
         int counter = 0;
@@ -998,6 +1008,78 @@ QList<QString> ProtocolHandler::getTemplateVars(QString filename)
         file->close();
         return t_fieldlist;
     }
+
+}
+
+void ProtocolHandler::replaceTempateVars(QString odffile, QString sedfile)
+{
+    QList<QString> fieldlist = getTemplateVars(odffile);
+    QString ausgabe;
+
+    QFile *file = new QFile(QDir::tempPath() + "/" + odffile);
+
+    if(!file->open(QIODevice::ReadOnly)) {
+        qDebug() << "cannot open content1.xml (ersetzung)";
+    }
+
+    QDomDocument doc;
+    doc.setContent(file);
+    QString xml = doc.toString();
+
+    QTextStream stream(&xml);
+    stream.setCodec("UTF-8");
+
+    while(!stream.atEnd()) {
+        ausgabe = ausgabe + stream.readLine();
+
+        if(ausgabe.contains("@")) {
+            for(int i=0; i<fieldlist.count(); i++) {
+                if(ausgabe.contains(fieldlist.at(i))) {
+                    if(ausgabe.contains("[")) {
+                        break;
+                    }
+                    if(checkSedFile(fieldlist.at(i), sedfile)) {
+                        QFile *seddatei = new QFile(QDir::tempPath() + "/" + sedfile);
+                        QString ersetze;
+                        if(!seddatei->open(QIODevice::ReadOnly)) {
+                            qDebug() << "konnte SED Datei nicht zum lesen öffnen (ersetzen)" << "";
+                        }
+
+                        while(!seddatei->atEnd()) {
+                            ersetze = seddatei->readLine();
+
+                            if(ersetze.contains(fieldlist.at(i))) {
+                                ersetze.replace("s/@" + fieldlist.at(i) + "/", " ");
+                                ersetze.replace("/g", "");
+                                ausgabe.replace("@" + fieldlist.at(i), ersetze.trimmed());
+                            }
+                        }
+
+                        seddatei->close();
+                    } else {
+                        ausgabe.replace("@" + fieldlist.at(i), " ");
+                    }
+                }
+            }
+        }
+    }
+
+    file->close();
+
+    QFile *file1 = new QFile(QDir::tempPath() + "/content1.xml");
+
+    if(!file1->open(QIODevice::WriteOnly | QIODevice::Truncate)) {
+        qDebug() << "konnte nicht zum schreiben öffnen (ersetzen)" << "";
+    }
+
+    QTextStream stream1(file1);
+    stream1.setCodec("UTF-8");
+
+    stream1 << filterUmlauts(ausgabe);
+
+    file1->close();
+
+
 
 }
 
