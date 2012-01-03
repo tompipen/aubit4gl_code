@@ -854,7 +854,7 @@ char buff2[2000];
 char *eptr;
 int npow;
 int ndec;
-SPRINTF1(buff,"%+1.8e",d);
+SPRINTF1(buff,"%+1.20e",d);
 eptr=strchr(buff,'e');
 A4GL_assertion(eptr==0,"internal error - 'e' not found in proper place");
 *eptr=0;
@@ -862,7 +862,7 @@ eptr++;
 strcpy(buff2,buff);
 trim_trailing_zero(buff2);
 if (atol(eptr)<=-31 && useExponent) {
-	sprintf(buff,"%.6e",d);
+	sprintf(buff,"%.18e",d);
 	return buff;
 }
 npow=atol(eptr)-strlen(buff2)+3;
