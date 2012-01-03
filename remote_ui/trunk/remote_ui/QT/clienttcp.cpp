@@ -753,7 +753,10 @@ void ProtocolHandler::startReportTemplate(QString odffile, QString sedfile)
 
    }
 
-   content.replace("[P1[", " ");
+   content.replace("[P1[", "");
+   content.replace("[P2[", "");
+   content.replace("]P1]", "");
+   content.replace("]P2]", "");
 
    xmlsave << getTemplateHeader(odffile) << getTemplatePosition(odffile) << content << getTemplateFooter(odffile);
 
