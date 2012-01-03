@@ -835,6 +835,55 @@ A4GL_debug("ptr=%s\n",ptr);
 }
 
 
+static void trim_trailing_zero(char *s) {
+int a;
+int l;
+a=strlen(s)-1;
+for (l=a;l>0;l--) {
+	if (s[l]!='0') break;
+	s[l]=0;
+}
+}
+
+// Try to get the best formatting for a double
+// regardless of the size of any fields etc
+// we will take the most significant 8 digits or so...
+char *formatDouble(double d,int useExponent) {
+static char buff[3000];
+char buff2[2000];
+char *eptr;
+int npow;
+int ndec;
+SPRINTF1(buff,"%+1.8e",d);
+eptr=strchr(buff,'e');
+A4GL_assertion(eptr==0,"internal error - 'e' not found in proper place");
+*eptr=0;
+eptr++;
+strcpy(buff2,buff);
+trim_trailing_zero(buff2);
+if (atol(eptr)<=-31 && useExponent) {
+	sprintf(buff,"%.6e",d);
+	return buff;
+}
+npow=atol(eptr)-strlen(buff2)+3;
+ndec=0;
+if (npow<0) {
+	ndec=0-npow;
+} else {
+	npow=npow;
+	if (npow<0) {
+		ndec=0-npow;
+	} 
+}
+	
+sprintf(buff,"%.*f",ndec,d);
+	// +1.00100000e+00
+	//1.00100000e+00
+
+A4GL_debug(">>%s<< %f (ndec=%d)\n", buff, d,ndec);
+return buff;
+}
+
 
 #ifdef USE_MAPM
 
@@ -1411,6 +1460,11 @@ A4GL_apm_str_detect_overflow (char *s1, char *s2, int op, int overflow_dtype)
   return 0;
 
 }
+
+
+
+
+
 #endif
 //a4gl_dececvt()
 //a4gl_decfcvt() 

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.255 2011-12-05 18:35:51 mikeaubury Exp $
+# $Id: esql.ec,v 1.256 2012-01-03 10:30:06 mikeaubury Exp $
 #
 */
 
@@ -110,6 +110,7 @@ dll_export sqlca_struct a4gl_sqlca;
 void A4GL_sql_copy_blob(loc_t *infx,  struct fgl_int_loc *a4gl,short * p_indicat,int size,char mode,int dtype) ;
 static void internal_free_cursor (char *s,int reset_Sqlca);
 
+
 #if defined (WIN32) || defined (__CYGWIN__)
 #define _NO_FORM_H_
 #define _NO_CURSES_H_
@@ -187,7 +188,7 @@ static loc_t *add_blob(struct s_sid *sid, int n, struct s_extra_info *e,fglbyte 
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.255 2011-12-05 18:35:51 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.256 2012-01-03 10:30:06 mikeaubury Exp $";
 #endif
 
 
@@ -5029,12 +5030,14 @@ static int dumprec (FILE* outputfile, struct sqlda *ldesc,int row)
 	  switch (col->sqltype)
 	    {
 	    case CFLOATTYPE:
-	      flen = SPRINTF1 (string, "%f", (double) *(float *) ptr);
+		strcpy(string,formatDouble((double) *(float *) ptr,1));
+	      flen = strlen(string); // SPRINTF1 (string, "%f", (double) *(float *) ptr);
 		chk_for_decimal_point(string);
 	      break;
 
 	    case CDOUBLETYPE:
-	      flen = SPRINTF1 (string, "%f", *(double *) ptr);
+		strcpy(string,formatDouble(*(double*) ptr,1));
+	      flen = strlen(string);
 		chk_for_decimal_point(string);
 	      break;
 
