@@ -652,6 +652,7 @@ get_event_from_ui (struct ui_context *context)
       if (strcmp (attr->id, "EXEC") == 0)
 	{
 	  char buff[2000];
+	UIdebug(3,"Starting program %s",  attr->programname);
 	  sprintf (buff, "%s &", attr->programname);
 	  system (buff);
 	  n = -105;
@@ -661,6 +662,7 @@ get_event_from_ui (struct ui_context *context)
       if (strcmp (attr->id, "EXECWAIT") == 0)
 	{
 	  char buff[2000];
+	UIdebug(3,"Starting program %s (WAIT)",  attr->programname);
 	  sprintf (buff, "%s", attr->programname);
 	  system (buff);
 	  n = -105;

@@ -1037,6 +1037,8 @@ wait_for_some_action (int clientui_read, int clientui_write, int listen_fgl)
 
 	      startTriggered = strstr (mainbuff, "<TRIGGERED");
 
+
+		  UIdebug (3, "is_full_tag=%d startTriggered=%d\n", is_full_tag, startTriggered);
 	      if (!is_full_tag && startTriggered)
 		{
 		  int l;
@@ -1080,6 +1082,9 @@ wait_for_some_action (int clientui_read, int clientui_write, int listen_fgl)
 
 
 
+
+	      UIdebug (3, "is_full_tag=%d startTriggered=%d\n", is_full_tag, startTriggered);
+
 	      if (is_full_tag)
 		{
 		  struct s_attr *attr;
@@ -1092,7 +1097,8 @@ wait_for_some_action (int clientui_read, int clientui_write, int listen_fgl)
 		      *eptr = 0;
 		    }
 
-		  printf ("Parsing : %s\n", mainbuff);
+		  UIdebug (3, "Parsing  %s\n", mainbuff);
+
 		  attr = xml_parse (mainbuff);
 
 		  *eptr = z;
@@ -1200,9 +1206,20 @@ wait_for_some_action (int clientui_read, int clientui_write, int listen_fgl)
 		}
 
 
+		if (mainbuff) {
+			UIdebug(3,"Main buff now set to %s",mainbuff);
+		} else {
+			UIdebug(3,"Main buff now empty");
+		}
 
-
+		
 	    }
+		UIdebug(3,"Finished while loop");
+		if (mainbuff) {
+			UIdebug(3,"Main buff now set to %s",mainbuff);
+		} else {
+			UIdebug(3,"Main buff now empty");
+		}
 	}
 
 
