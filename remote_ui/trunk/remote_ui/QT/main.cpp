@@ -44,7 +44,7 @@ int main(int argc, char *argv[])
     splash->show();
     QString fileName; 
     QCoreApplication::setOrganizationName("VENTAS");
-    QCoreApplication::setOrganizationDomain("ventas.com");
+    QCoreApplication::setOrganizationDomain("ventas.de");
     QCoreApplication::setApplicationName("VDC - Ventas Desktop Client");
 
     //sleep(3);
