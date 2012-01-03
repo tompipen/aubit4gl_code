@@ -865,6 +865,7 @@ small (char *s)
 }
 */
 
+
 void
 wait_for_some_action (int clientui_read, int clientui_write, int listen_fgl)
 {
@@ -985,18 +986,18 @@ wait_for_some_action (int clientui_read, int clientui_write, int listen_fgl)
       if (FD_ISSET (clientui_read, &rfds))
 	{
 	  static char *mainbuff = 0;	// a place holder to add all our strings onto...
-  	  int latest_ui = 0;
+	  int latest_ui = 0;
 	  char buff[100001];
 	  int nb;
 	  //int new_id;
 	  int z;
-	char *startTriggered;
+	  char *startTriggered;
 	  int usable = 0;
 	  char *eptr;
-          int is_full_tag = 0;
+	  int is_full_tag = 0;
 	  memset (buff, 0, sizeof (buff));
 
-	  nb = read (clientui_read, buff, sizeof(buff)-1);
+	  nb = read (clientui_read, buff, sizeof (buff) - 1);
 
 
 	  if (nb <= 0)
@@ -1007,37 +1008,39 @@ wait_for_some_action (int clientui_read, int clientui_write, int listen_fgl)
 	  buff[nb] = 0;
 
 	  UIdebug (2, "DATA FROM CLIENT : %s\n", buff);
-	    
-	      if (mainbuff)
-		{
-		  mainbuff = realloc (mainbuff, strlen (mainbuff) + strlen (buff) + 1);
-		  strcat (mainbuff, buff);
-		}
-	      else
-		{
-		  mainbuff = strdup (buff);
-		}
 
-	      UIdebug (3,"set mainbuff\n");
-	      UIdebug (3,"String now :---------------------------------------------\n%s\n----------------------------------\n", mainbuff);
+	  if (mainbuff)
+	    {
+	      mainbuff = realloc (mainbuff, strlen (mainbuff) + strlen (buff) + 1);
+	      strcat (mainbuff, buff);
+	    }
+	  else
+	    {
+	      mainbuff = strdup (buff);
+	    }
+
+	  while (1)
+	    {
+
+
+	      UIdebug (3, "set mainbuff\n");
+	      UIdebug (3, "String now :---------------------------------------------\n%s\n----------------------------------\n",
+		       mainbuff);
 
 
 	      if (strstr (mainbuff, "</TRIGGERED>"))
 		{
-			// Are there more than one in the package....
-		  if (!strstr(mainbuff+1,"<TRIGGERRED")) {
-		  	is_full_tag = 1;
-		  	eptr=strstr(mainbuff,"</TRIGGERED>")+strlen("</TRIGGERED>");
-			}
+		  is_full_tag = 1;
+		  eptr = strstr (mainbuff, "</TRIGGERED>") + strlen ("</TRIGGERED>");
 		}
 
 
-	      startTriggered=strstr (mainbuff, "<TRIGGERED");
+	      startTriggered = strstr (mainbuff, "<TRIGGERED");
 
 	      if (!is_full_tag && startTriggered)
 		{
 		  int l;
-		//printf("Might be a single tag\n");
+		  //printf("Might be a single tag\n");
 		  l = strlen (mainbuff);
 		  while (mainbuff[l - 1] == '\n' || mainbuff[l - 1] == '\r')
 		    {
@@ -1047,38 +1050,53 @@ wait_for_some_action (int clientui_read, int clientui_write, int listen_fgl)
 		  // Well - its a good start - does it and in /> ?
 		  if (mainbuff[l - 2] == '/' && mainbuff[l - 1] == '>')
 		    {
-			char *lptr;
-			char *sptr;
-			sptr=strchr(mainbuff,'<');
+		      char *lptr;
+		      char *sptr;
+		      sptr = strchr (mainbuff, '<');
 		      // Even better - final check - we should have any extra
 		      // starting tags - so we don't wabt to see any '<' after the first one..
-		      
-		      lptr=strchr (sptr+1, '<');
-			if (lptr) 
+
+		      lptr = strchr (sptr + 1, '<');
+		      if (lptr)
 			{
-				printf("Got : '%s' - lptr=%s\n",mainbuff,lptr);
-				if (lptr>=&mainbuff[l]) {
-			  		is_full_tag = 1;
-					eptr=&mainbuff[l];
-				}
-			} else {
-				//printf("Got : '%s' - no lptr\n",mainbuff);
-			  	is_full_tag = 1;
-				eptr=0;
+			  printf ("Got : '%s' - lptr=%s\n", mainbuff, lptr);
+			  if (lptr >= &mainbuff[l])
+			    {
+			      is_full_tag = 1;
+			      eptr = &mainbuff[l];
+
+
+
+			    }
+			}
+		      else
+			{
+			  //printf("Got : '%s' - no lptr\n",mainbuff);
+			  is_full_tag = 1;
+			  eptr = 0;
 			}
 		    }
 		}
 
-		
+
 
 	      if (is_full_tag)
 		{
-		struct s_attr *attr;
-		char *ptr;
+		  struct s_attr *attr;
+		  char *ptr;
+		  char z;
+		  if (eptr)
+		    {
+		      z = *eptr;
+		      printf ("z=%d\n", z);
+		      *eptr = 0;
+		    }
 
-
+		  printf ("Parsing : %s\n", mainbuff);
 		  attr = xml_parse (mainbuff);
-		  UIdebug (3,"Parsed gives %p\n", attr);
+
+		  *eptr = z;
+		  UIdebug (3, "Parsed gives %p\n", attr);
 		  if (attr != NULL)
 		    {
 
@@ -1086,14 +1104,14 @@ wait_for_some_action (int clientui_read, int clientui_write, int listen_fgl)
 
 		      if (latest_ui < 1000)
 			{
-			  printf ("Invalid Envelope ID - must be > 1000 got %d\n",latest_ui);
-			printf("In : %s\n", mainbuff);
+			  printf ("Invalid Envelope ID - must be > 1000 got %d\n", latest_ui);
+			  printf ("In : %s\n", mainbuff);
 			}
 		      else
 			{
 			  latest_ui -= 1000;
 
-			  UIdebug(2,"Set latest_ui=%d\n",latest_ui);
+			  UIdebug (2, "Set latest_ui=%d\n", latest_ui);
 
 			}
 		    }
@@ -1107,65 +1125,82 @@ wait_for_some_action (int clientui_read, int clientui_write, int listen_fgl)
 		{
 		  usable = 0;
 		}
-	    
 
 
 
-	  //z = sscanf (buff, "<TRIGGERED ENVELOPEID=\"%d", &new_id);
+
+	      //z = sscanf (buff, "<TRIGGERED ENVELOPEID=\"%d", &new_id);
 
 
-	  if (usable)
-	    {
-	      if (latest_ui)
+	      if (usable)
 		{
-		  int rval;
-			char lc;
-		  	UIdebug (3, "WRITING TO FGLPROG '%s' on %d\n", mainbuff,latest_ui);
-			if (eptr) {
-				lc=*eptr;
-				*eptr=0;
-			}
-		  	UIdebug (3, "PASSING THROUGH '%s' on %d\n", mainbuff,latest_ui);
-
-		  	rval = write (latest_ui, mainbuff, strlen (mainbuff));
-			{
-				char buff[2];
-				sprintf(buff,"\n");
-				write(latest_ui,buff,1);
-			}
-			
-			//fsync(latest_ui);
-
-		  if (rval == -1)
+		  if (latest_ui)
 		    {
-		      UIdebug (3, "WRITING TO FGLPROG '%s' on %d failed\n", mainbuff, latest_ui);
-		      printf ("Failed - latest_ui=%d\n", latest_ui);
-		      perror ("write failed sending to fgl");
-		    }
-			
-			if (eptr) {
-				char *buff;
-				*eptr=lc;
-				while (*eptr==' ' || *eptr=='\n' || *eptr=='\r') eptr++;
-				if (strlen(eptr)) {
-					buff=strdup(eptr);
-					free(mainbuff);
-					mainbuff=buff;
-		  			UIdebug (3, "RESTORING REST OF BUFFER '%s' on %d\n", mainbuff,latest_ui);
-				} else {
-	      				free (mainbuff);
-	      				mainbuff = 0;
-		  			UIdebug (3, "Nothing left for mainbuff (1)\n");
-				}
-			} else {
-		  			UIdebug (3, "Nothing left for mainbuff (2)\n");
-	      				free (mainbuff);
-	      				mainbuff = 0;
-				
+		      int rval;
+		      char lc;
+		      UIdebug (3, "WRITING TO FGLPROG '%s' on %d\n", mainbuff, latest_ui);
+		      if (eptr)
+			{
+			  lc = *eptr;
+			  *eptr = 0;
+			}
+		      UIdebug (3, "PASSING THROUGH '%s' on %d\n", mainbuff, latest_ui);
+
+		      rval = write (latest_ui, mainbuff, strlen (mainbuff));
+		      {
+			char buff[2];
+			sprintf (buff, "\n");
+			write (latest_ui, buff, 1);
+		      }
+
+		      //fsync(latest_ui);
+
+		      if (rval == -1)
+			{
+			  UIdebug (3, "WRITING TO FGLPROG '%s' on %d failed\n", mainbuff, latest_ui);
+			  printf ("Failed - latest_ui=%d\n", latest_ui);
+			  perror ("write failed sending to fgl");
+			break;
+			}
+
+		      if (eptr)
+			{
+			  char *buff;
+			  *eptr = lc;
+			  while (*eptr == ' ' || *eptr == '\n' || *eptr == '\r')
+			    eptr++;
+			  if (strlen (eptr))
+			    {
+			      buff = strdup (eptr);
+			      free (mainbuff);
+			      mainbuff = buff;
+			      printf ("RESTORING REST OF BUFFER '%s' on %d\n", mainbuff, latest_ui);
+			      UIdebug (3, "RESTORING REST OF BUFFER '%s' on %d\n", mainbuff, latest_ui);
+			    }
+			  else
+			    {
+			      free (mainbuff);
+			      mainbuff = 0;
+			      UIdebug (3, "Nothing left for mainbuff (1)\n");
+			break;
+			    }
+			}
+		      else
+			{
+			  UIdebug (3, "Nothing left for mainbuff (2)\n");
+			  free (mainbuff);
+			  mainbuff = 0;
+			break;
 			}
 
 
+		    }
+		} else { // Usable
+			break;
 		}
+
+
+
 
 	    }
 	}
