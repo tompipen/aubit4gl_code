@@ -728,7 +728,7 @@ void ProtocolHandler::startReportTemplate(QString odffile, QString sedfile)
 
    QFile *file = new QFile(QDir::tempPath() + "/content1.xml");
 
-   if(file->open(QIODevice::WriteOnly | QIODevice::Truncate)) {
+   if(!file->open(QIODevice::WriteOnly | QIODevice::Truncate)) {
        qDebug() << "content1.xml konnte nicht geöffnet werden." << "";
    }
 
