@@ -854,7 +854,7 @@ QString ProtocolHandler::prepareTemplateContent(int Position, QString odffile, Q
             xmlout = xmlout + ausgabe;
         }
 
-        if(ausgabe.contains("</table:table-row") && ausgabe.contains("]")) {
+        if(ausgabe.contains("</table:table-row") && xmlout.contains("]")) {
             counter = 0;
         }
     }
