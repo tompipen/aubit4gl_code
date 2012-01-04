@@ -761,7 +761,7 @@ void ProtocolHandler::startReportTemplate(QString odffile, QString sedfile)
    content.replace("]P1]", "");
    content.replace("]P2]", "");
 
-   xmlsave << getTemplateHeader(odffile) << getTemplatePosition(odffile) << content << getTemplateFooter(odffile);
+   xmlsave << getTemplateHeader(odffile) << getTemplatePosition(odffile).toUtf8() << content << getTemplateFooter(odffile);
 
    file->close();
 
@@ -1073,9 +1073,8 @@ void ProtocolHandler::replaceTempateVars(QString odffile, QString sedfile)
     }
 
     QTextStream stream1(file1);
-    stream1.setCodec("UTF-8");
 
-    stream1 << filterUmlauts(ausgabe);
+    stream1 << ausgabe;
 
     file1->close();
 
