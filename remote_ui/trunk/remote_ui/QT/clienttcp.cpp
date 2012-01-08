@@ -724,7 +724,8 @@ QString ProtocolHandler::getTemplatePosition(QString odffile)
 void ProtocolHandler::startReportTemplate(QString odffile, QString sedfile)
 {
    QString content;
-   QList<QString> fieldlist;
+   QList<QString> temp_fields;
+   QList<QString> sed_fields;
    int wiederholen = 0;
    int cnt = 0;
 
@@ -736,17 +737,37 @@ void ProtocolHandler::startReportTemplate(QString odffile, QString sedfile)
 
    QTextStream xmlsave(file);
    xmlsave.setCodec("UTF-8");
-   fieldlist << getTemplateVars(odffile);
+   temp_fields << getTemplateVars(odffile);
+   sed_fields << readSedFile(sedfile);
 
-   for(int i=0; i < fieldlist.count(); i++) {
+   //Überprüfen der SED Datei wie viele einträge der ersten Variable von der 1ten Ebene vorhanden ist.
+
+   for(int i=0; i < temp_fields.count(); i++) {
+       if(temp_fields.at(i).contains("[")) {
+           i = i + 1;
+           if(!temp_fields.at(i).contains("[") && !temp_fields.at(i).contains("]")) {
+               for(int k=0; k<sed_fields.count(); k++) {
+                   for(int j=0; j<sed_fields.count(); j++) {
+                       if(sed_fields.at(j).contains(QString("@%1" + temp_fields.at(i)).arg(k))) {
+                           wiederholen = wiederholen + 1;
+                       }
+                   }
+
+               }
+               break;
+           }
+       }
+   }
+
+   //
+   for(int i=0; i < temp_fields.count(); i++) {
        if(cnt == 1) {
-           wiederholen = checkSedFile(fieldlist.at(i), sedfile);
            for(int j=0; j < wiederholen; j++) {
                content = content + prepareTemplateContent(j, odffile, sedfile);
            }
            break;
        }
-       if(fieldlist.at(i).contains("[")) {
+       if(temp_fields.at(i).contains("[")) {
          cnt = cnt + 1;
        }
 
@@ -943,6 +964,21 @@ QString ProtocolHandler::getTemplateFooter(QString filename)
        file->close();
        return footer;
 
+}
+QList<QString> ProtocolHandler::readSedFile(QString sedfile)
+{
+    QFile *file = new QFile(QDir::tempPath() + "/" + sedfile);
+    QList<QString> temp_fields;
+
+    if(!file->open(QIODevice::ReadOnly)) {
+        qDebug() << "(readSed): Konnte SED Datei nicht lesen." << "";
+    }
+
+    while(!file->atEnd()) {
+        temp_fields << file->readLine();
+    }
+    file->close();
+    return temp_fields;
 }
 
 int ProtocolHandler::checkSedFile(QString fieldname, QString filename)

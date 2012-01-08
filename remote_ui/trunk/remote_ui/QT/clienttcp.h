@@ -81,6 +81,7 @@ public:
    QString getTemplateHeader(QString odffile);
    QString getTemplateFooter(QString odffile);
    QString getTemplatePosition(QString odffile);
+   QList<QString> readSedFile(QString seddatei);
    int checkSedFile(QString fieldname, QString sedfile);
    QList<QString> getTemplateVars(QString filename);
 
