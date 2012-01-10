@@ -74,7 +74,7 @@ public:
    bool b_write;
    int pid;
    int id;
-   void startReportTemplate(QString odffile, QString sedfile);
+   bool startReportTemplate(QString odffile, QString sedfile);
    void replaceTempateVars(QString odffile, QString sedfile);
    QString prepareTemplateContent(int Position, QString odffile, QString sedfile);
    QString prepareTemplateEbene(int Position, int Ebene, int Counter, QDomDocument doc, QString sedfile);

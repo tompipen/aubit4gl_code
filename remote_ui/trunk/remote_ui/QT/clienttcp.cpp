@@ -721,7 +721,7 @@ QString ProtocolHandler::getTemplatePosition(QString odffile)
     return behalten;
 }
 
-void ProtocolHandler::startReportTemplate(QString odffile, QString sedfile)
+bool ProtocolHandler::startReportTemplate(QString odffile, QString sedfile)
 {
    QString content;
    QList<QString> temp_fields;
@@ -787,6 +787,8 @@ void ProtocolHandler::startReportTemplate(QString odffile, QString sedfile)
    file->close();
 
    replaceTempateVars("content1.xml", sedfile);
+
+   return true;
 
 }
 
@@ -1395,7 +1397,7 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
                      sedfile = valuesElement.text();
                  }
              }
-             startReportTemplate(odffile, sedfile);
+             value = QString::number(startReportTemplate(odffile, sedfile));
          }
 
 
@@ -2741,6 +2743,11 @@ MainFrame::vdcdebug("ProtocolHandler","sendFile", "QString name");
 
    QFile file;
    file.setFileName(name);
+
+   if(!QFile::exists(name)) {
+       file.setFileName(QString(QDir::tempPath() + "/" + name));
+   }
+
    if(!file.open(QIODevice::ReadOnly | QIODevice::Unbuffered)){
       QFileInfo inf(name);
       file.setFileName(QDir::tempPath() + "/" + inf.fileName());
@@ -2748,6 +2755,7 @@ MainFrame::vdcdebug("ProtocolHandler","sendFile", "QString name");
          return false;
       }
    }
+
    // Get Filesize
    qint64 fileSize = file.size();
 
