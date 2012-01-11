@@ -729,7 +729,7 @@ bool ProtocolHandler::startReportTemplate(QString odffile, QString sedfile)
    int wiederholen = 0;
    int cnt = 0;
 
-   QFile *file = new QFile(QDir::tempPath() + "/" + QString("1" + odffile));
+   QFile *file = new QFile(QDir::tempPath() + "/" + QString("1-" + odffile));
 
    if(!file->open(QIODevice::WriteOnly | QIODevice::Truncate)) {
        qDebug() << "content1.xml konnte nicht geöffnet werden." << "";
@@ -901,7 +901,7 @@ QString ProtocolHandler::prepareTemplateContent(int Position, QString odffile, Q
 
 QString ProtocolHandler::prepareTemplateEbene(int Position, int Ebene, int Counter, QDomDocument doc, QString odffile)
 {
-    QFile *file = new QFile(QDir::tempPath() + "/" + QString("1-" + odffile));
+    QFile *file = new QFile(QDir::tempPath() + "/" + QString("1" + odffile));
     QString ausgabe;
     QString xmlout;
     QString xmlout1;
@@ -1054,7 +1054,7 @@ void ProtocolHandler::replaceTempateVars(QString odffile, QString sedfile)
     QList<QString> fieldlist = getTemplateVars(odffile);
     QString ausgabe;
 
-    QFile *file = new QFile(QDir::tempPath() + "/" + odffile);
+    QFile *file = new QFile(QDir::tempPath() + "/1-" + odffile);
 
     if(!file->open(QIODevice::ReadOnly)) {
         qDebug() << "cannot open content1.xml (ersetzung)";
@@ -1073,9 +1073,9 @@ void ProtocolHandler::replaceTempateVars(QString odffile, QString sedfile)
         if(ausgabe.contains("@")) {
             for(int i=0; i<fieldlist.count(); i++) {
                 if(ausgabe.contains(fieldlist.at(i))) {
-                    if(ausgabe.contains("[")) {
+                    /*if(ausgabe.contains("[")) {
                         break;
-                    }
+                    }*/
                     if(checkSedFile(fieldlist.at(i), sedfile)) {
                         QFile *seddatei = new QFile(QDir::tempPath() + "/" + sedfile);
                         QString ersetze;
@@ -1388,6 +1388,8 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
          if(qs_name == "ui.window.repgen") {
              QString odffile;
              QString sedfile;
+             QString temp_datei;
+
              for(int k=0; k < paramsElement.childNodes().count(); k++) {
                  QDomElement valuesElement = paramsElement.childNodes().at(k).toElement();
                  if(k == 0) {
@@ -1397,7 +1399,17 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
                      sedfile = valuesElement.text();
                  }
              }
-             value = QString::number(startReportTemplate(odffile, sedfile));
+             QFileInfo file(odffile);
+             temp_datei = file.completeBaseName();
+
+             QFile *file1 = new QFile(QDir::tempPath() + "/" + QString(temp_datei + ".xml"));
+
+             if(!file1->open(QIODevice::ReadOnly)) {
+                 qDebug() << "Datei vom Server nicht empfangen" << "";
+                 value = QString::number(file1->open(QIODevice::ReadOnly));
+             }
+
+             value = QString::number(startReportTemplate(QString(temp_datei + ".xml"), sedfile));
          }
 
 
