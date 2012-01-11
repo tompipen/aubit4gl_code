@@ -675,7 +675,7 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
            if(input() || construct() || inputArray() || displayArray()){
                if(LineEdit *le = qobject_cast<LineEdit*> (w))
                {
-                   if(!le->isEnabled()|| !le->isReadOnly())
+                   if(!le->isEnabled()|| le->isReadOnly())
                    {
                        emit sendinactiveevent();
                    }
