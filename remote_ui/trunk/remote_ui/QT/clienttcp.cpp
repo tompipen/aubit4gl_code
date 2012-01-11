@@ -2736,6 +2736,7 @@ bool ProtocolHandler::sendFile(QString name)
 {
 MainFrame::vdcdebug("ProtocolHandler","sendFile", "QString name");
    QDomDocument doc;
+   QByteArray data;
 
    
    if(name.isNull())
@@ -2752,7 +2753,7 @@ MainFrame::vdcdebug("ProtocolHandler","sendFile", "QString name");
       QFileInfo inf(name);
       file.setFileName(QDir::tempPath() + "/" + inf.fileName());
       if(!file.open(QIODevice::ReadOnly | QIODevice::Unbuffered)){
-         return false;
+          data = 0;
       }
    }
 
@@ -2769,8 +2770,6 @@ MainFrame::vdcdebug("ProtocolHandler","sendFile", "QString name");
    triggeredElement.appendChild(syncValuesElement);
    QDomElement syncValueElement = doc.createElement("SV");
    syncValuesElement.appendChild(syncValueElement);
-
-   QByteArray data;
 
    while(!file.atEnd()){
       data = file.readAll();
