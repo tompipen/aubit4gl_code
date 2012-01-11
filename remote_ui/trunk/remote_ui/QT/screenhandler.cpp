@@ -2872,7 +2872,8 @@ void ScreenHandler::setInterfaceText(QString text)
 MainFrame::vdcdebug("ScreenHandler","setInterfaceText", "QString text");
    qs_interfaceTitle = text;
    for(int i=0; i<ql_fglForms.size(); i++){
-       ql_fglForms.at(i)->setWindowTitle(text);
+       //ql_fglForms.at(i)->setWindowTitle(text);
+       QMetaObject::invokeMethod(ql_fglForms.at(i), "setWindowTitle", Qt::QueuedConnection, Q_ARG(QString, text));
    }
 }
 
