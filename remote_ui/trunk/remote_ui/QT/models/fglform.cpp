@@ -667,6 +667,24 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
 {
 //MainFrame::vdcdebug("FglForm","eventFilter", "QObject *obj, QEvent *event");
 
+    if(event->type() == QEvent::MouseButtonPress)
+    {
+        QMouseEvent *mev = (QMouseEvent*) event;
+        if(mev->button() == Qt::LeftButton){
+           QWidget *w = (QWidget*) obj;
+           if(input() || construct() || inputArray() || displayArray()){
+               if(LineEdit *le = qobject_cast<LineEdit*> (w))
+               {
+                   if(!le->isEnabled())
+                   {
+                       emit sendinactiveevent();
+                   }
+               }
+         }  }
+
+    }
+
+
     if(event->type() == QEvent::MouseButtonRelease){
       QMouseEvent *mev = (QMouseEvent*) event;
       if(mev->button() == Qt::LeftButton){
@@ -1064,6 +1082,15 @@ void FglForm::dragSuccess()
     Fgl::Event ev;
     ev.type = Fgl::ONACTION_EVENT;
     ev.attribute = "drag";
+    emit fieldEvent(ev);
+}
+
+
+void FglForm::sendinactiveevent()
+{
+    Fgl::Event ev;
+    ev.type = Fgl::ONACTION_EVENT;
+    ev.attribute = "inactive";
     emit fieldEvent(ev);
 }
 

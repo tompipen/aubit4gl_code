@@ -224,6 +224,7 @@ public slots:
    void exitMenu();
    void dropSuccess();
    void dragSuccess();
+   void sendinactiveevent();
    void validateFields();
    void resetFieldSettings();
    void saveFieldSettings(QAction *);
