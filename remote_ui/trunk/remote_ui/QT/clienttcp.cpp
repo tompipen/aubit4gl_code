@@ -729,7 +729,7 @@ bool ProtocolHandler::startReportTemplate(QString odffile, QString sedfile)
    int wiederholen = 0;
    int cnt = 0;
 
-   QFile *file = new QFile(QDir::tempPath() + "/content1.xml");
+   QFile *file = new QFile(QDir::tempPath() + "/" + QString("1" + odffile));
 
    if(!file->open(QIODevice::WriteOnly | QIODevice::Truncate)) {
        qDebug() << "content1.xml konnte nicht geöffnet werden." << "";
@@ -786,7 +786,7 @@ bool ProtocolHandler::startReportTemplate(QString odffile, QString sedfile)
 
    file->close();
 
-   replaceTempateVars("content1.xml", sedfile);
+   replaceTempateVars(odffile, sedfile);
 
    return true;
 
@@ -870,7 +870,7 @@ QString ProtocolHandler::prepareTemplateContent(int Position, QString odffile, Q
                             for(int j=1; j < fieldlist.count(); j++) {
                                 found = checkSedFile(QString("@%1_%2" + fieldlist.at(i)).arg(Position).arg(j), sedfile);
                                 if(found > 0) {
-                                    ausgabe.append(prepareTemplateEbene(Position, ebene, j, doc, sedfile));
+                                    ausgabe.append(prepareTemplateEbene(Position, ebene, j, doc, odffile));
                                 }
                             }
                         }
@@ -899,9 +899,9 @@ QString ProtocolHandler::prepareTemplateContent(int Position, QString odffile, Q
 
 }
 
-QString ProtocolHandler::prepareTemplateEbene(int Position, int Ebene, int Counter, QDomDocument doc, QString sedfile)
+QString ProtocolHandler::prepareTemplateEbene(int Position, int Ebene, int Counter, QDomDocument doc, QString odffile)
 {
-    QFile *file = new QFile(QDir::tempPath() + "/content1.xml");
+    QFile *file = new QFile(QDir::tempPath() + "/" + QString("1-" + odffile));
     QString ausgabe;
     QString xmlout;
     QString xmlout1;
@@ -1104,7 +1104,7 @@ void ProtocolHandler::replaceTempateVars(QString odffile, QString sedfile)
 
     file->close();
 
-    QFile *file1 = new QFile(QDir::tempPath() + "/content1.xml");
+    QFile *file1 = new QFile(QDir::tempPath() + "/" + QString("1-" + odffile));
 
     if(!file1->open(QIODevice::WriteOnly | QIODevice::Truncate)) {
         qDebug() << "konnte nicht zum schreiben öffnen (ersetzen)" << "";
