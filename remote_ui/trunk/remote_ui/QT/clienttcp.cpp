@@ -728,7 +728,7 @@ QString ProtocolHandler::getTemplatePosition(QString odffile)
 
     }
 
-    //behalten.append("</table:table-cell></table:table-row>");
+    behalten.append("</table:table-cell></table:table-row>");
 
     file->close();
 
@@ -835,7 +835,7 @@ QString ProtocolHandler::prepareTemplateContent(int Position, QString odffile, Q
     QString xmlout;
     QString test;
     QList<QString> fieldlist;
-    //xmlout.append("<table:table-row><table:table-cell>");
+    xmlout.append("<table:table-row><table:table-cell>");
 
     int cnt = 0;
     int counter = 0;
@@ -912,6 +912,7 @@ QString ProtocolHandler::prepareTemplateContent(int Position, QString odffile, Q
         }
 
         if(ausgabe.contains("</table:table-row") && xmlout.contains("]")) {
+            ausgabe.append("</table:table-cell></table:table-row>");
             counter = 0;
         }
     }
