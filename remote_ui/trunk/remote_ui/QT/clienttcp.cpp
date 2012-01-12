@@ -713,13 +713,13 @@ QString ProtocolHandler::getTemplatePosition(QString odffile)
             stop = 1;
         }
 
+        if(cnt > 0 && stop  < 1) {
+            behalten = behalten + ausgabe;
+        }
+
         if(ausgabe.contains("<office:body>")) {
             cnt = 1;
 
-        }
-
-        if(cnt > 0 && stop  < 1) {
-            behalten = behalten + ausgabe;
         }
 
         /*if(ausgabe.contains("</table:table-row")) {
