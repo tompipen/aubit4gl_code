@@ -640,6 +640,13 @@ MainFrame::vdcdebug("ProtocolHandler","run", "");
    }
 }
 
+//-------------------------------------------------------------------------------
+// Method       : getTemplateHeader(QString filename)
+// Filename     : clienttcp.cpp
+// Description  : Returns the Header from the top of the file till <office:body>.
+//
+//-------------------------------------------------------------------------------
+
 QString ProtocolHandler::getTemplateHeader(QString filename)
 {
     QFile *file = new QFile(QDir::tempPath() + "/" + filename);
@@ -657,10 +664,10 @@ QString ProtocolHandler::getTemplateHeader(QString filename)
     QString header;
     int cnt = 0;
     while(!stream.atEnd()) {
-        header = header + stream.readLine();
+        header = header + stream.readLine().trimmed();
 
-        if(header.contains("<table:table-row")) {
-            header.append("</table:table-row>");
+        if(header.contains("<office:body>")) {
+            //header.append("</table:table-row>");
             cnt = 1;
         }
         if(cnt == 1) {
@@ -670,6 +677,13 @@ QString ProtocolHandler::getTemplateHeader(QString filename)
    file->close();
 
 }
+
+//---------------------------------------------------------------------------------------
+// Method       : getTemplatePosition(QString odffile)
+// Filename     : clienttcp.cpp
+// Description  : Get the Vars from <office:body> (header) till the first position ([P1[).
+//
+//---------------------------------------------------------------------------------------
 
 QString ProtocolHandler::getTemplatePosition(QString odffile)
 {
@@ -699,7 +713,7 @@ QString ProtocolHandler::getTemplatePosition(QString odffile)
             stop = 1;
         }
 
-        if(ausgabe.contains("<table:table-row")) {
+        if(ausgabe.contains("<office:body>")) {
             cnt = 1;
 
         }
@@ -708,18 +722,25 @@ QString ProtocolHandler::getTemplatePosition(QString odffile)
             behalten = behalten + ausgabe;
         }
 
-        if(ausgabe.contains("</table:table-row")) {
+        /*if(ausgabe.contains("</table:table-row")) {
             cnt = 0;
-        }
+        }*/
 
     }
 
-    behalten.append("</table:table-cell></table:table-row>");
+    //behalten.append("</table:table-cell></table:table-row>");
 
     file->close();
 
     return behalten;
 }
+
+//--------------------------------------------------------------------------------
+// Method       : startReportTemplate(QString odffile, QString sedfile)
+// Filename     : clienttcp.cpp
+// Description  : Main function to handle the append and replace of each Template.
+//
+//--------------------------------------------------------------------------------
 
 bool ProtocolHandler::startReportTemplate(QString odffile, QString sedfile)
 {
@@ -759,7 +780,6 @@ bool ProtocolHandler::startReportTemplate(QString odffile, QString sedfile)
        }
    }
 
-   //
    for(int i=0; i < temp_fields.count(); i++) {
        if(cnt == 1) {
            for(int j=0; j < wiederholen; j++) {
@@ -783,14 +803,19 @@ bool ProtocolHandler::startReportTemplate(QString odffile, QString sedfile)
    content.replace("]P2]", "");
 
    xmlsave << getTemplateHeader(odffile) << getTemplatePosition(odffile).toUtf8() << content << getTemplateFooter(odffile);
-
    file->close();
 
    replaceTempateVars(odffile, sedfile);
 
    return true;
-
 }
+
+//------------------------------------------------------------------------------
+// Method       : prepareTemplateContent(int, Position, QString odffile, QString sedfile)
+// Filename     : clienttcp.cpp
+// Description  : Create the content of each Template.
+//
+//------------------------------------------------------------------------------
 
 QString ProtocolHandler::prepareTemplateContent(int Position, QString odffile, QString sedfile)
 {
@@ -810,7 +835,7 @@ QString ProtocolHandler::prepareTemplateContent(int Position, QString odffile, Q
     QString xmlout;
     QString test;
     QList<QString> fieldlist;
-    xmlout.append("<table:table-row><table:table-cell>");
+    //xmlout.append("<table:table-row><table:table-cell>");
 
     int cnt = 0;
     int counter = 0;
@@ -818,7 +843,7 @@ QString ProtocolHandler::prepareTemplateContent(int Position, QString odffile, Q
     fieldlist << getTemplateVars(odffile);
 
     while(!stream.atEnd()) {
-        ausgabe = stream.readLine();
+        ausgabe = stream.readLine().trimmed();
 
 
         if(ausgabe.contains("[P1[")) {
@@ -866,7 +891,7 @@ QString ProtocolHandler::prepareTemplateContent(int Position, QString odffile, Q
                         int found = 0;
                         if(fieldlist.at(i).contains(QString("[P%1[").arg(ebene))) {
                             i = i +1;
-                            ausgabe.append("</table:table-cell></table:table-row>");
+                            //ausgabe.append("</table:table-cell></table:table-row>");
                             for(int j=1; j < fieldlist.count(); j++) {
                                 found = checkSedFile(QString("@%1_%2" + fieldlist.at(i)).arg(Position).arg(j), sedfile);
                                 if(found > 0) {
@@ -890,14 +915,16 @@ QString ProtocolHandler::prepareTemplateContent(int Position, QString odffile, Q
             counter = 0;
         }
     }
-
     file->close();
-
     return xmlout;
-
-
-
 }
+
+//-------------------------------------------------------------------------------------------------------------
+// Method       : prepareTemplateEbene(int Position, int Ebene, int Counter, QDomDocument doc, QString odffile)
+// Filename     : clienttcp.cpp
+// Description  : Make a QString with the Positions Vars.
+//
+//-------------------------------------------------------------------------------------------------------------
 
 QString ProtocolHandler::prepareTemplateEbene(int Position, int Ebene, int Counter, QDomDocument doc, QString odffile)
 {
@@ -936,10 +963,17 @@ QString ProtocolHandler::prepareTemplateEbene(int Position, int Ebene, int Count
         }
     }
 
-    xmlout1.append(QString("</table:table-cell></table:table-row>"));
+    //xmlout1.append(QString("</table:table-cell></table:table-row>"));
 
     return xmlout1;
 }
+
+//------------------------------------------------------------------------------
+// Method       : getTemplateFooter(QString filename)
+// Filename     : clienttcp.cpp
+// Description  : returns the footer of each Template file.
+//
+//------------------------------------------------------------------------------
 
 QString ProtocolHandler::getTemplateFooter(QString filename)
 {
@@ -952,21 +986,32 @@ QString ProtocolHandler::getTemplateFooter(QString filename)
        QString footer;
        QString readLine;
        int cnt = 0;
+       int start = 0;
 
        while(!stream.atEnd()) {
            readLine = stream.readLine();
 
-           if(readLine.contains("</table:table>")) {
+           if(readLine.contains("]P1]")) {
                cnt = 1;
            }
-           if(cnt > 0) {
-               footer = footer.trimmed() + readLine.trimmed();
+           if(start > 0) {
+               footer = footer + readLine + "\n";
+           }
+           if(cnt > 0 && readLine.contains("<table:table")) {
+               start = 1;
            }
        }
        file->close();
        return footer;
-
 }
+
+//------------------------------------------------------------------------------
+// Method       : readSedFile(QString sedfile)
+// Filename     : clienttcp.cpp
+// Description  : Read each Line from the SED File and save it as a QList.
+//
+//------------------------------------------------------------------------------
+
 QList<QString> ProtocolHandler::readSedFile(QString sedfile)
 {
     QFile *file = new QFile(QDir::tempPath() + "/" + sedfile);
@@ -982,6 +1027,13 @@ QList<QString> ProtocolHandler::readSedFile(QString sedfile)
     file->close();
     return temp_fields;
 }
+
+//------------------------------------------------------------------------------
+// Method       : checkSedFile(QString fieldname, QString filename)
+// Filename     : clienttcp.cpp
+// Description  : read the SED File complete and return ne number of found
+//
+//------------------------------------------------------------------------------
 
 int ProtocolHandler::checkSedFile(QString fieldname, QString filename)
 {
@@ -1013,6 +1065,13 @@ int ProtocolHandler::checkSedFile(QString fieldname, QString filename)
     return cnt;
 }
 
+//------------------------------------------------------------------------------
+// Method       : getTemplateVars(QString filename)
+// Filename     : clienttcp.cpp
+// Description  : Get the Vars from the Template file and save it as a QList.
+//
+//------------------------------------------------------------------------------
+
 QList<QString> ProtocolHandler::getTemplateVars(QString filename)
 {
 
@@ -1037,6 +1096,7 @@ QList<QString> ProtocolHandler::getTemplateVars(QString filename)
             }
 
             if(ausgabe.contains("@") || ausgabe.contains("[") || ausgabe.contains("]")) {
+                ausgabe.remove("<text:p text:style-name=\"Normal\">");
                 ausgabe.remove("<text:p>");
                 ausgabe.remove("</text:p>");
                 ausgabe.remove("@");
@@ -1048,6 +1108,13 @@ QList<QString> ProtocolHandler::getTemplateVars(QString filename)
     }
 
 }
+
+//------------------------------------------------------------------------------
+// Method       : replaceTemplateVars(QString odffile, QString sedfile)
+// Filename     : clienttcp.cpp
+// Description  : replace te vars with the value from the SED File.
+//
+//------------------------------------------------------------------------------
 
 void ProtocolHandler::replaceTempateVars(QString odffile, QString sedfile)
 {
@@ -1073,9 +1140,9 @@ void ProtocolHandler::replaceTempateVars(QString odffile, QString sedfile)
         if(ausgabe.contains("@")) {
             for(int i=0; i<fieldlist.count(); i++) {
                 if(ausgabe.contains(fieldlist.at(i))) {
-                    /*if(ausgabe.contains("[")) {
+                    if(ausgabe.contains("[")) {
                         break;
-                    }*/
+                    }
                     if(checkSedFile(fieldlist.at(i), sedfile)) {
                         QFile *seddatei = new QFile(QDir::tempPath() + "/" + sedfile);
                         QString ersetze;
