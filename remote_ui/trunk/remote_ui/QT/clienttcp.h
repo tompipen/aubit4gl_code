@@ -75,7 +75,7 @@ public:
    int pid;
    int id;
    bool startReportTemplate(QString odffile, QString sedfile);
-   void replaceTempateVars(QString odffile, QString sedfile);
+   void replaceTemplateVars(QString odffile, QString sedfile);
    QString prepareTemplateContent(int Position, QString odffile, QString sedfile);
    QString prepareTemplateEbene(int Position, int Ebene, int Counter, QDomDocument doc, QString odffile);
    QString getTemplateHeader(QString odffile);

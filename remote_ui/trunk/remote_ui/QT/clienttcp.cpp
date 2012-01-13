@@ -750,10 +750,16 @@ bool ProtocolHandler::startReportTemplate(QString odffile, QString sedfile)
    int wiederholen = 0;
    int cnt = 0;
 
-   QFile *file = new QFile(QDir::tempPath() + "/" + QString("1-" + odffile));
+   QFile *file = new QFile(QDir::tempPath() + "/" + QString("////1-" + odffile));
 
    if(!file->open(QIODevice::WriteOnly | QIODevice::Truncate)) {
-       qDebug() << "content1.xml konnte nicht geöffnet werden." << "";
+       qDebug() << "(startReport): XML Datei konnte nicht erzeugt werden." << "";
+       QMessageBox msgbox;
+       msgbox.setText("Ventas Report Generator");
+       msgbox.setInformativeText("Es ist ein Fehler aufgetreten beim erzeugen des Dokumentes.");
+       msgbox.setIcon(QMessageBox::Information);
+       msgbox.exec();
+       return false;
    }
 
    QTextStream xmlsave(file);
@@ -805,7 +811,7 @@ bool ProtocolHandler::startReportTemplate(QString odffile, QString sedfile)
    xmlsave << getTemplateHeader(odffile) << getTemplatePosition(odffile).toUtf8() << content << getTemplateFooter(odffile);
    file->close();
 
-   replaceTempateVars(odffile, sedfile);
+   replaceTemplateVars(odffile, sedfile);
 
    return true;
 }
@@ -1117,7 +1123,89 @@ QList<QString> ProtocolHandler::getTemplateVars(QString filename)
 //
 //------------------------------------------------------------------------------
 
-void ProtocolHandler::replaceTempateVars(QString odffile, QString sedfile)
+void ProtocolHandler::replaceTemplateVars(QString odffile, QString sedfile)
+{
+    QList<QString> temp_fields = getTemplateVars(odffile);
+    QList<QString> sed_fields = readSedFile(sedfile);
+    QString ausgabe;
+    QString ersetzen;
+    int wiederholen = 0;
+
+    QFile *file = new QFile(QDir::tempPath() + "/1-" + odffile);
+
+    if(!file->open(QIODevice::ReadOnly)) {
+        qDebug() << "cannot open content1.xml (ersetzung)";
+    }
+
+    QDomDocument doc;
+    doc.setContent(file);
+    QString xml = doc.toString();
+
+    QTextStream stream(&xml);
+    stream.setCodec("UTF-8");
+    int ebene = 0;
+
+    while(!stream.atEnd()) {
+        ausgabe = ausgabe + stream.readLine();
+
+
+        if(ausgabe.contains("@")) {
+            for(int i=0; i < temp_fields.count(); i++) {
+                if(temp_fields.at(i).contains("[")) {
+                    ebene = ebene + 1;
+                }
+                if (temp_fields.at(i).contains("]")) {
+                    ebene = ebene - 1;
+                }
+
+                if(ausgabe.contains(temp_fields.at(i))) {
+                    switch(ebene) {
+                        case 0:
+                        for(int j=0; j < sed_fields.count(); j++) {
+                            if(sed_fields.at(j).contains(temp_fields.at(i))) {
+                                ersetzen = sed_fields.at(j);
+                                ersetzen.replace(QString("s/@" + temp_fields.at(i) + "/"), " ");
+                                ersetzen.replace(QString("/g"), "");
+                                ausgabe.replace("@" + temp_fields.at(i), ersetzen.trimmed());
+                            }
+                        }
+                        break;
+                        case 1:
+                        for(int k=0; k < sed_fields.count(); k++) {
+                            for(int j=0; j < sed_fields.count(); j++) {
+                                 if(sed_fields.at(j).contains(QString("@%1" + temp_fields.at(i) + "/").arg(k))) {
+                                    ersetzen = sed_fields.at(j);
+                                    ersetzen.replace("ß", "ss");
+                                    ersetzen.replace(QString("s/@%1" + temp_fields.at(i) + "/").arg(k), " ");
+                                    ersetzen.replace(QString("/g"), "");
+                                    ausgabe.replace(QString("@%1" + temp_fields.at(i)).arg(k), filterUmlauts(ersetzen.trimmed()));
+                                }
+                            }
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+
+    }
+
+    QFile *file1 = new QFile(QDir::tempPath() + "/" + QString("1-" + odffile));
+
+    if(!file1->open(QIODevice::WriteOnly | QIODevice::Truncate)) {
+        qDebug() << "konnte nicht zum schreiben öffnen (ersetzen)" << "";
+    }
+
+    QTextStream stream1(file1);
+
+    stream1 << ausgabe;
+
+    file1->close();
+    file->close();
+
+}
+
+/*void ProtocolHandler::replaceTemplateVars(QString odffile, QString sedfile)
 {
     QList<QString> fieldlist = getTemplateVars(odffile);
     QString ausgabe;
@@ -1186,7 +1274,7 @@ void ProtocolHandler::replaceTempateVars(QString odffile, QString sedfile)
 
 
 
-}
+}*/
 
 //------------------------------------------------------------------------------
 // Method       : outputTree(QDomNode domNode)
