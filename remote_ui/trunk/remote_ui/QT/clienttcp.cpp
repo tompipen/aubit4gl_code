@@ -1125,11 +1125,12 @@ QList<QString> ProtocolHandler::getTemplateVars(QString filename)
 
 void ProtocolHandler::replaceTemplateVars(QString odffile, QString sedfile)
 {
-    QList<QString> temp_fields = getTemplateVars(odffile);
+    QList<QString> temp_fields = getTemplateVars("1-" + odffile);
     QList<QString> sed_fields = readSedFile(sedfile);
     QString ausgabe;
     QString ersetzen;
-    int wiederholen = 0;
+    int start = 0;
+    int ebene = 0;
 
     QFile *file = new QFile(QDir::tempPath() + "/1-" + odffile);
 
@@ -1140,13 +1141,13 @@ void ProtocolHandler::replaceTemplateVars(QString odffile, QString sedfile)
     QDomDocument doc;
     doc.setContent(file);
     QString xml = doc.toString();
+    QString xmlout;
 
     QTextStream stream(&xml);
     stream.setCodec("UTF-8");
-    int ebene = 0;
 
     while(!stream.atEnd()) {
-        ausgabe = ausgabe + stream.readLine();
+        ausgabe = stream.readLine();
 
 
         if(ausgabe.contains("@")) {
@@ -1159,8 +1160,7 @@ void ProtocolHandler::replaceTemplateVars(QString odffile, QString sedfile)
                 }
 
                 if(ausgabe.contains(temp_fields.at(i))) {
-                    switch(ebene) {
-                        case 0:
+                    if(ebene == 0) {
                         for(int j=0; j < sed_fields.count(); j++) {
                             if(sed_fields.at(j).contains(temp_fields.at(i))) {
                                 ersetzen = sed_fields.at(j);
@@ -1169,24 +1169,33 @@ void ProtocolHandler::replaceTemplateVars(QString odffile, QString sedfile)
                                 ausgabe.replace("@" + temp_fields.at(i), ersetzen.trimmed());
                             }
                         }
-                        break;
-                        case 1:
-                        for(int k=0; k < sed_fields.count(); k++) {
-                            for(int j=0; j < sed_fields.count(); j++) {
-                                 if(sed_fields.at(j).contains(QString("@%1" + temp_fields.at(i) + "/").arg(k))) {
-                                    ersetzen = sed_fields.at(j);
-                                    ersetzen.replace("ß", "ss");
-                                    ersetzen.replace(QString("s/@%1" + temp_fields.at(i) + "/").arg(k), " ");
-                                    ersetzen.replace(QString("/g"), "");
-                                    ausgabe.replace(QString("@%1" + temp_fields.at(i)).arg(k), filterUmlauts(ersetzen.trimmed()));
+                    } else if (ebene == 1) {
+                        for(int i=0; i < temp_fields.count(); i++) {
+                            if(temp_fields.at(i).contains("]P1]")) {
+                                start = 0;
+                            }
+
+                            if(ausgabe.contains(temp_fields.at(i)) && start == 1) {
+                                for(int j=0; j < sed_fields.count(); j++) {
+                                    if (sed_fields.at(j).contains(temp_fields.at(i))) {
+                                        ersetzen = sed_fields.at(j);
+                                        ersetzen.replace("ß", "ss");
+                                        ersetzen.replace(QString("s/@" + temp_fields.at(i) + "/"), " ");
+                                        ersetzen.replace(QString("/g"), "");
+                                        ausgabe.replace(QString("@" + temp_fields.at(i)), filterUmlauts(ersetzen.trimmed()));
+                                    }
                                 }
                             }
+
+                            if(temp_fields.at(i).contains("[P1[")) {
+                                start = 1;
+                            }
                         }
-                        break;
                     }
                 }
             }
         }
+        xmlout = xmlout + ausgabe;
 
     }
 
@@ -1198,7 +1207,7 @@ void ProtocolHandler::replaceTemplateVars(QString odffile, QString sedfile)
 
     QTextStream stream1(file1);
 
-    stream1 << ausgabe;
+    stream1 << xmlout;
 
     file1->close();
     file->close();
