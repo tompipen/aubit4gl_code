@@ -1,7 +1,7 @@
 #include "a4gl_lib_ui_tui_int.h"
 #ifndef lint
 	static char const module_id[] =
-		"$Id: generic_ui.c,v 1.68 2011-12-15 18:04:44 mikeaubury Exp $";
+		"$Id: generic_ui.c,v 1.69 2012-01-15 10:51:53 mikeaubury Exp $";
 #endif
 
 static int A4GL_find_shown (ACL_Menu * menu, int chk, int dir);
@@ -1197,6 +1197,7 @@ void UILIB_A4GL_add_menu_timeout(void *vmenu,char timeout_type,int timeout_len,i
 		menu->evt=realloc(menu->evt,sizeof(struct aclfgl_event_list)*(menu->nevt+1));
 
 
+		 menu->evt[menu->nevt-1].event_type=-1;
 		if (timeout_type=='D') { menu->evt[menu->nevt-1].event_type=A4GL_EVENT_ON_IDLE;     }
 		if (timeout_type=='V') { menu->evt[menu->nevt-1].event_type=A4GL_EVENT_ON_INTERVAL; }
 		menu->evt[menu->nevt-1].block=cmd_on_timeout+1; // menu options are numbered from 0 - but event blocks are from 1...
@@ -1214,6 +1215,8 @@ void UILIB_A4GL_add_menu_action(void *vmenu,char *action,int cmd_on_timeout) {
 		menu=vmenu;
 		menu->nevt++;
 		menu->evt=realloc(menu->evt,sizeof(struct aclfgl_event_list)*(menu->nevt+1));
+		menu->evt[menu->nevt-1].event_type=-1; 
+
 		menu->evt[menu->nevt].event_type=0; // We deliberatly made the evt record 1 more than nevt - so this should be ok
 			//if (menu->nevt==1) {
 				//menu->evt[0].event_type=0;
