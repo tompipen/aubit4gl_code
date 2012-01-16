@@ -750,6 +750,71 @@ bool ProtocolHandler::startReportTemplate(QString odffile, QString sedfile)
    int wiederholen = 0;
    int cnt = 0;
 
+   if(sedfile.contains("SCAN:")) {
+
+           QString templateFile = QDir::tempPath() + "/" + "LTGR_Beispiel_content.xml";
+
+           QFile *file = new QFile(templateFile);
+
+           if(!file->open(QIODevice::ReadOnly)) {
+               qWarning(QString("Konnte Datei nicht zum lesen öffnen: %1").arg(templateFile).toLatin1());
+               return false;
+           }
+
+           QDomDocument doc1;
+           doc1.setContent(file);
+           QString xml = doc1.toString();
+           QString ausgabe;
+           int counter = 0;
+           QList<QString> fields;
+
+           QTextStream stream(&xml);
+
+           while(!stream.atEnd()) {
+               ausgabe = stream.readLine();
+               if(ausgabe.contains("[")) {
+                   counter = counter + 1;
+               }
+               if(ausgabe.contains("@")) {
+                   ausgabe.replace("<text:p>", "");
+                   ausgabe.replace("</text:p>", "");
+                   ausgabe.replace("@", QString("@P%1:").arg(counter));
+                   qDebug() << "ausgabe: " << ausgabe;
+                   fields << ausgabe;
+               }
+           }
+
+           QFile *file1 = new QFile(QDir::tempPath() + "/SCAN:" + odffile);
+
+           if(!file1->open(QIODevice::WriteOnly | QIODevice::Truncate)) {
+               qDebug() << "konnte template to sed nicht schreiben" << "";
+               return false;
+           }
+
+           QTextStream stream1(file1);
+           stream1 << QString("EBENEN:");
+
+           switch(counter)
+           {
+           case 1:
+               stream1 << QString("P0,") << QString("P%1").arg(counter) << "\n";
+               break;
+           case 2:
+               stream1 << QString("P0,") << QString ("P1,") << QString("P%1").arg(counter) << "\n";
+               break;
+           case 3:
+               stream1 << QString("P0,") << QString ("P1,") << QString ("P2,") << QString("P%1").arg(counter) << "\n";
+               break;
+
+           }
+
+           for(int i=0; i < fields.count(); i++) {
+               stream1 << fields.at(i).trimmed() + "\n";
+           }
+           return true;
+       }
+
+
    QFile *file = new QFile(QDir::tempPath() + "/" + QString("////1-" + odffile));
 
    if(!file->open(QIODevice::WriteOnly | QIODevice::Truncate)) {
