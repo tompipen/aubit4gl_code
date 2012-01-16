@@ -32,7 +32,8 @@
 RingMenu::RingMenu(QWidget *parent) : QGroupBox(parent)
 {
 MainFrame::vdcdebug("RingMenu","RingMenu", "QWidget *parent");
-   b_hideButtons = false;
+   //Switch for Hide/Disable
+   b_hideButtons = true;
    this->setAlignment(Qt::AlignTop);
    // disable widget until it it gets called
    this->setEnabled(false);
@@ -55,7 +56,8 @@ MainFrame::vdcdebug("RingMenu","RingMenu", "QWidget *parent");
 RingMenu::RingMenu(QString title, QString style, 
                    QWidget *parent) : QGroupBox(title, parent)
 {
-   b_hideButtons = false;
+       //Switch for Hide/Disable
+   b_hideButtons = true;
 
    if(!style.isEmpty()){
       this->setProperty("menuStyle", style);
