@@ -125,6 +125,7 @@ MainFrame::vdcdebug("RingMenu","createButton", "int id, QString text, QString to
 
    // Create the Button and set Text + ToolTip
    QPushButton *button = new QPushButton(buttonText);
+   button->setToolTip(tooltip);
    button->setFlat(true);
    button->installEventFilter(this);
    button->setStyleSheet("QPushButton {text-align:left;}");
