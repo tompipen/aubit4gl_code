@@ -784,7 +784,7 @@ bool ProtocolHandler::startReportTemplate(QString odffile, QString sedfile)
                }
            }
 
-           QFile *file1 = new QFile(QDir::tempPath() + "/SCAN:" + odffile);
+           QFile *file1 = new QFile(QDir::tempPath() + "/SCAN@" + odffile);
 
            if(!file1->open(QIODevice::WriteOnly | QIODevice::Truncate)) {
                qDebug() << "konnte template to sed nicht schreiben" << "";
