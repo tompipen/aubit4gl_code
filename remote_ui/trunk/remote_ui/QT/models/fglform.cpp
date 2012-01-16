@@ -680,7 +680,16 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
                        emit sendinactiveevent();
                    }
                }
-         }  }
+               if(TableView *tv = qobject_cast<TableView*> (obj))
+               {
+                   if(!inputArray())
+                   {
+                       emit sendinactiveevent();
+                   }
+               }
+
+         }
+        }
 
     }
 
