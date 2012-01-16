@@ -663,7 +663,7 @@ MainFrame::vdcdebug("ScreenHandler","createDialog", "QString title, QString comm
 
    //Dialog *p_dialog = new Dialog(title, comment, style, image, p_fglform);
    Pulldown *pulldown = new Pulldown(title, comment, style, image, p_fglform);
-   connect(pulldown, SIGNAL(closeEvent()), p_fglform, SLOT(exitMenu()));
+   connect(pulldown, SIGNAL(closeEvent()), p_fglform, SLOT(reopenPulldown()));
    p_fglform->setPulldown(pulldown);
    clearEvents();
 

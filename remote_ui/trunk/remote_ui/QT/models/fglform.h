@@ -222,6 +222,7 @@ public slots:
    void nexttab();
    void prevtab();
    void exitMenu();
+   void reopenPulldown();
    void dropSuccess();
    void dragSuccess();
    void sendinactiveevent();

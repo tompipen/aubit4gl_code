@@ -1123,6 +1123,16 @@ void FglForm::exitMenu()
     ev.attribute = "fgl_exit_menu";
     emit fieldEvent(ev);
 }
+//------------------------------------------------------------------------------
+// Method       : reopenPulldown()
+// Filename     : fglform.cpp
+// Description  :
+//
+//--------
+void FglForm::reopenPulldown()
+{
+    this->pulldown()->popup(QCursor::pos());
+}
 
 //------------------------------------------------------------------------------
 // Method       : closeEvent()
