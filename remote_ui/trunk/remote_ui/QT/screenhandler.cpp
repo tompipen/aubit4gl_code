@@ -1201,7 +1201,14 @@ MainFrame::vdcdebug("ScreenHandler","setFieldFocus", "QString fieldName");
       }
    }
    else{
-      p_fglform->setCurrentField(fieldName, false);
+       for(int i = 0; i<p_fglform->ql_formFields.size(); i++)
+       {
+           if(p_fglform->ql_formFields.at(i)->objectName() == fieldName)
+           {
+               p_fglform->jumpToField(p_fglform->ql_formFields.at(i), false);
+           }
+       }
+      //p_fglform->setCurrentField(fieldName, false);
 
 /*
       // For fieldlist = table.*
@@ -1943,8 +1950,17 @@ MainFrame::vdcdebug("ScreenHandler","waitForEvent", "");
       }
    }
    p_fglform->b_getch_swin = true;
-   QApplication::setOverrideCursor(QCursor(Qt::ArrowCursor));
    setUpdatesEnabled(true);
+   if(p_fglform->currentWidget == NULL)
+   {
+
+   }
+   else
+   {
+       p_fglform->currentWidget->setFocus(Qt::OtherFocusReason);
+   }
+   QApplication::setOverrideCursor(QCursor(Qt::ArrowCursor));
+
 }
 
 //------------------------------------------------------------------------------
@@ -1963,12 +1979,19 @@ void ScreenHandler::processResponse()
    {
       return;
   }
-
+QString id;
    if(p_fglform->ql_responseQueue.size() <= 0)
    {
        return;
    }
-   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+   else
+   {
+       id = p_fglform->ql_responseQueue.takeFirst();
+
+         setUpdatesEnabled(false);
+         QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+         }
+/*
    if(!p_fglform->context == NULL)
    {
       for(int i=0; i<p_fglform->context->fieldList().count(); i++){
@@ -1976,9 +1999,8 @@ void ScreenHandler::processResponse()
    //         tableView->setEnabled(false);
          }
       }
-   }
-   setUpdatesEnabled(false);
-   QString id = p_fglform->ql_responseQueue.takeFirst();
+   }*/
+
    if(id.indexOf(",") == -1){
       Response resp(id, p_fglform, cursorPos);
       QString qs_resp = resp.toString().replace("\n","");
@@ -2771,6 +2793,13 @@ MainFrame::vdcdebug("ScreenHandler","checkFields", "");
 void ScreenHandler::setUpdatesEnabled(bool en)
 {
 MainFrame::vdcdebug("ScreenHandler","setUpdatesEnabled", "bool en");
+if(p_fglform == NULL)
+{
+    return;
+
+}
+qDebug()<<en;
+p_fglform->setEnabled(en);
 /*
 for(int i=0; i<ql_fglForms.size(); i++){
          FglForm *form = ql_fglForms.at(i);

@@ -1280,8 +1280,16 @@ bool WidgetHelper::setDisplayAttributes(int fieldAttribute, QWidget *widget)
             dummy.setEnabled(widget->isEnabled());
             QColor dummycol = dummy.palette().color(QPalette::Text);
             QPalette p = widget->palette();
-            QColor col(dummycol.red()-10, dummycol.green()-10, dummycol.blue()-10);
-            p.setColor(QPalette::Text, col);
+            if(dummycol.red() < 10 || dummycol.blue() < 10 || dummycol.green() < 10)
+            {
+                QColor col(0,0,0);
+                p.setColor(QPalette::Text, col);
+            }
+            else
+            {
+                QColor col(dummycol.red()-10, dummycol.green()-10, dummycol.blue()-10);
+                p.setColor(QPalette::Text, col);
+            }
             widget->setPalette(p);
             widget->setFont(dummy.font());
          }

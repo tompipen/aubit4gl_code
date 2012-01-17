@@ -78,9 +78,11 @@ public:
    FglForm(QString windowName = "", QWidget *parent=0);
    ~FglForm();
    QString windowName;
+   QWidget *currentWidget;
    bool b_getch_swin;
    bool b_allowClose;
    bool b_dummy;
+   void jumpToField(QWidget*, bool b_after=true);
    QList<QString> ql_responseQueue;
    void setMenuEnabled(bool);
    void setMenu(RingMenu*);
@@ -250,7 +252,7 @@ public slots:
 private:
    QList<Fgl::State> ql_states;
    QWidget *formWidget;
-   QWidget *currentWidget;
+
    QList<RingMenu*> ql_menus;
    ScreenHandler *p_currscreenhandler;
    ActionMenu *p_actionMenu;
@@ -288,7 +290,7 @@ private:
    bool b_bufferTouched;
    int i_lastCursor;
    QString qs_currentFieldBuffer;
-   void jumpToField(QWidget*);
+
 
 private slots:
    void actionTriggered();

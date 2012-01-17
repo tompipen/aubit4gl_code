@@ -112,7 +112,7 @@ MainFrame::vdcdebug("FglForm","~FglForm", "");
 void FglForm::createStatusBar()
 {
 MainFrame::vdcdebug("FglForm","createStatusBar", "");
-   StatusBar *status = new StatusBar;
+StatusBar *status = new StatusBar(this);
    setStatusBar(status);
 }
 
@@ -667,6 +667,9 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
 {
 //MainFrame::vdcdebug("FglForm","eventFilter", "QObject *obj, QEvent *event");
 
+
+
+
     if(event->type() == QEvent::MouseButtonPress)
     {
         QMouseEvent *mev = (QMouseEvent*) event;
@@ -694,6 +697,7 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
     }
 
 
+
     if(event->type() == QEvent::MouseButtonRelease){
       QMouseEvent *mev = (QMouseEvent*) event;
       if(mev->button() == Qt::LeftButton){
@@ -708,10 +712,17 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
                return true;
             }
          }
+
+         if(!input() && !construct() && !screenRecord()){
+             if(LineEdit *le = qobject_cast<LineEdit*> (obj))
+             {
+                 if(!le->isEnabled())
+                     createContextMenu(mev->globalPos());
+
+             }
+            }
       }
-      if(!input() && !construct() && !screenRecord()){
-         createContextMenu(mev->globalPos());
-      }
+
    }
 
 
@@ -1581,6 +1592,7 @@ MainFrame::vdcdebug("FglForm","setWindowType", "const QString &sm");
 void FglForm::setCurrentField(QString fieldName, bool sendEvents)
 {
 MainFrame::vdcdebug("FglForm","setCurrentField", "QString fieldName, bool sendEvents");
+
    if(!screenRecord()){
       QWidget *wi = currentWidget;
 
@@ -1592,7 +1604,7 @@ MainFrame::vdcdebug("FglForm","setCurrentField", "QString fieldName, bool sendEv
                Fgl::Event event;
                event.type = Fgl::AFTER_FIELD_EVENT;
                event.attribute = wi->objectName();
-               fieldEvent(event);
+             //  fieldEvent(event);
       }
 
       QWidget *next = NULL;
@@ -1626,10 +1638,10 @@ MainFrame::vdcdebug("FglForm","setCurrentField", "QString fieldName, bool sendEv
          Fgl::Event event;
          event.type = Fgl::BEFORE_FIELD_EVENT;
          event.attribute = next->objectName();
-         fieldEvent(event);
-
-         next->setFocus(Qt::TabFocusReason);
-         currentWidget = next;
+         //fieldEvent(event);
+         jumpToField(next);
+         //next->setFocus(Qt::TabFocusReason);
+         //currentWidget = next;
       }
       else{
          //NO FIELD FOUND
@@ -1751,6 +1763,7 @@ if(this->context == NULL)
                   default:
                      break;
                }
+
                return;
             }
          }
@@ -1882,8 +1895,8 @@ MainFrame::vdcdebug("FglForm","prevfield", "");
        if(prev == NULL){ //no next field -> go to first field
            prev = context->fieldList().last();
        }
-
-       setCurrentField(prev->objectName(), b_sendEvent);
+       jumpToField(prev);
+       //setCurrentField(prev->objectName(), b_sendEvent);
    }
    else{
       //find active screenRecord
@@ -2150,7 +2163,7 @@ MainFrame::vdcdebug("FglForm","prevtab", "");
    }
 };
 
-void FglForm::jumpToField(QWidget* w){
+void FglForm::jumpToField(QWidget* w, bool b_after){
     if(w == NULL)
         return;
 
@@ -2159,6 +2172,25 @@ void FglForm::jumpToField(QWidget* w){
     int currPos = context->fieldList().indexOf(currentField());
     int destPos = context->fieldList().indexOf(w);
 
+
+
+    if(currPos == -1 || !b_after)
+    {
+        w->setFocus(Qt::OtherFocusReason);
+        QList<Fgl::Event> ql_events = ql_contextEvents.last();
+        Fgl::Event beforeField;
+        beforeField.type = Fgl::BEFORE_FIELD_EVENT;
+        beforeField.attribute = w->objectName();
+        for(int i = 0; i<ql_events.size(); i++)
+        {
+            if(ql_events.at(i).type == beforeField.type || ql_events.at(i).attribute == beforeField.attribute)
+            {
+                currentWidget = w;
+                addToQueue(QString::number(ql_events.at(i).id));
+                return;
+            }
+        }
+    }
 
     if(currPos < destPos){
         for(int i=currPos; i<=destPos; i++){
@@ -2470,7 +2502,7 @@ void FglForm::contextMenuEvent(QContextMenuEvent *ev)
 {
 MainFrame::vdcdebug("FglForm","contextMenuEvent", "QContextMenuEvent *ev");
 ev->accept();
-return;
+
 createContextMenu(ev->globalPos());
    
 }
