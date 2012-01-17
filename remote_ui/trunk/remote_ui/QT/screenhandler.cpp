@@ -1164,7 +1164,7 @@ MainFrame::vdcdebug("ScreenHandler","setFieldEnabled", "QString fieldName, bool 
 
 }
 
-//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------se
 // Method       : setFieldFocus(QString FieldName )
 // Filename     : screenhandler.cpp
 // Description  : sets the focus for the Field
@@ -2798,7 +2798,6 @@ if(p_fglform == NULL)
     return;
 
 }
-qDebug()<<en;
 p_fglform->setEnabled(en);
 /*
 for(int i=0; i<ql_fglForms.size(); i++){
