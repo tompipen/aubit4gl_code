@@ -2185,11 +2185,13 @@ void FglForm::jumpToField(QWidget* w, bool b_after){
         {
             if(ql_events.at(i).type == beforeField.type || ql_events.at(i).attribute == beforeField.attribute)
             {
-                currentWidget = w;
+
                 addToQueue(QString::number(ql_events.at(i).id));
-                return;
+
             }
         }
+        currentWidget = w;
+        return;
     }
 
     if(currPos < destPos){
