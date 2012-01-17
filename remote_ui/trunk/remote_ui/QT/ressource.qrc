@@ -164,5 +164,6 @@
         <file>pics/pulldown-esc.png</file>
         <file>pics/VENTAS_9_gebuersteter_stahl.png</file>
         <file>pics/VENTAS_9_textur_1.png</file>
+        <file>pics/VENTAS_9_gebuersteter_alu.png</file>
     </qresource>
 </RCC>
