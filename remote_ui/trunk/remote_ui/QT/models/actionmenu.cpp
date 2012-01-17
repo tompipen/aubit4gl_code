@@ -105,7 +105,7 @@ MainFrame::vdcdebug("ActionMenu","createButton", "QString id, QString text, QStr
    //QString shortcut = text.at(0);
 
    // Create the Button and set Text + ToolTip
-   QPushButton *button = new QPushButton(text.trimmed());
+   QPushButton *button = new QPushButton(text.trimmed(), this);
    button->setFocusPolicy(Qt::NoFocus);
    button->setShortcut(shortcut);
    button->setIcon(QIcon(QString("pics:blank.png")));
