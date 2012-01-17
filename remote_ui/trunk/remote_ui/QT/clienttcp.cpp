@@ -757,7 +757,8 @@ bool ProtocolHandler::startReportTemplate(QString odffile, QString sedfile)
            QFile *file = new QFile(templateFile);
 
            if(!file->open(QIODevice::ReadOnly)) {
-               qWarning(QString("Konnte Datei nicht zum lesen öffnen: %1").arg(templateFile).toLatin1());
+               qDebug() << "konnte datei nicht öffnen" << "";
+               //qWarning(QString("Konnte Datei nicht zum lesen öffnen: %1").arg(templateFile).toLatin1());
                return false;
            }
 
@@ -779,12 +780,11 @@ bool ProtocolHandler::startReportTemplate(QString odffile, QString sedfile)
                    ausgabe.replace("<text:p>", "");
                    ausgabe.replace("</text:p>", "");
                    ausgabe.replace("@", QString("@P%1:").arg(counter));
-                   qDebug() << "ausgabe: " << ausgabe;
                    fields << ausgabe;
                }
            }
 
-           QFile *file1 = new QFile(QDir::tempPath() + "/SCAN@" + odffile);
+           QFile *file1 = new QFile(QDir::tempPath() + "/SCAN_" + odffile);
 
            if(!file1->open(QIODevice::WriteOnly | QIODevice::Truncate)) {
                qDebug() << "konnte template to sed nicht schreiben" << "";
