@@ -2183,7 +2183,7 @@ void FglForm::jumpToField(QWidget* w, bool b_after){
         beforeField.attribute = w->objectName();
         for(int i = 0; i<ql_events.size(); i++)
         {
-            if(ql_events.at(i).type == beforeField.type || ql_events.at(i).attribute == beforeField.attribute)
+            if(ql_events.at(i).type == beforeField.type && ql_events.at(i).attribute == beforeField.attribute)
             {
 
                 addToQueue(QString::number(ql_events.at(i).id));
