@@ -779,7 +779,7 @@ bool ProtocolHandler::startReportTemplate(QString odffile, QString sedfile)
                if(ausgabe.contains("@")) {
                    ausgabe.replace("<text:p>", "");
                    ausgabe.replace("</text:p>", "");
-                   ausgabe.replace("@", QString("@P%1:").arg(counter));
+                   ausgabe.replace("@", QString("%1:").arg(counter));
                    fields << ausgabe;
                }
            }
@@ -797,13 +797,13 @@ bool ProtocolHandler::startReportTemplate(QString odffile, QString sedfile)
            switch(counter)
            {
            case 1:
-               stream1 << QString("P0,") << QString("P%1").arg(counter) << "\n";
+               stream1 << QString("0") << QString("%1").arg(counter) << "\n";
                break;
            case 2:
-               stream1 << QString("P0,") << QString ("P1,") << QString("P%1").arg(counter) << "\n";
+               stream1 << QString("0") << QString ("1") << QString("%1").arg(counter) << "\n";
                break;
            case 3:
-               stream1 << QString("P0,") << QString ("P1,") << QString ("P2,") << QString("P%1").arg(counter) << "\n";
+               stream1 << QString("0") << QString ("1") << QString ("2") << QString("1").arg(counter) << "\n";
                break;
 
            }
