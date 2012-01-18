@@ -289,7 +289,7 @@ MainFrame::vdcdebug("FglForm","initActions", "");
    addFormAction(acceptA);
 
    Action *cancelA = new Action("cancel", tr("Cancel"));
-   cancelA->setAcceleratorName("Escape");
+//   cancelA->setAcceleratorName("Escape");
    addFormAction(cancelA);
 
    Action *nextRowA = new Action("nextrow", tr("Next Row"));
@@ -298,16 +298,16 @@ MainFrame::vdcdebug("FglForm","initActions", "");
    addFormAction(nextRowA);
 
    Action *prevRowA = new Action("prevrow", tr("Previous Row"));
-   prevRowA->setAcceleratorName("Shift+Tab");
+//   prevRowA->setAcceleratorName("Shift+Tab");
    prevRowA->setAcceleratorName("Up");
    addFormAction(prevRowA);
 
    Action *nextFieldA = new Action("nextfield", tr("Next Field"));
-   nextFieldA->setAcceleratorName("Tab");
+//   nextFieldA->setAcceleratorName("Tab");
    addFormAction(nextFieldA);
 
    Action *prevFieldA = new Action("prevfield", tr("Previous Field"));
-   prevFieldA->setAcceleratorName("Shift+Tab");
+//   prevFieldA->setAcceleratorName("Shift+Tab");
    addFormAction(prevFieldA);
 
 
@@ -800,13 +800,13 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
       {
           if(TextEdit *te = qobject_cast<TextEdit *> (obj))
           {
-             if(!te->wantTabs())
+             if(te->wantTabs())
              {
-                 event->ignore();
-                 nextfield();
-                 return true;
+                 return false;
              }
           }
+          nextfield();
+          return true;
       }
 
 
@@ -814,13 +814,13 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
       {
           if(TextEdit *te = qobject_cast<TextEdit *> (obj))
           {
-             if(!te->wantReturns())
+             if(te->wantReturns())
              {
-                 event->ignore();
-                 nextfield();
-                 return true;
+                 return false;
              }
           }
+          nextfield();
+          return true;
       }
 
       if(keyEvent->key() == Qt::Key_Insert){
