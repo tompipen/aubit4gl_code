@@ -24,12 +24,12 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.541 2011-08-16 08:02:46 mikeaubury Exp $
+# $Id: compile_c.c,v 1.542 2012-01-18 19:21:29 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
-static char const module_id[] = "$Id: compile_c.c,v 1.541 2011-08-16 08:02:46 mikeaubury Exp $";
+static char const module_id[] = "$Id: compile_c.c,v 1.542 2012-01-18 19:21:29 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -368,8 +368,10 @@ print_space (void)
 
 
 void
-set_suppress_lines (void)
+set_suppress_lines (char *location)
 {
+// printc(" /* set_suppress_lines %s - old value=%d*/",location, suppress_lines);
+
   suppress_lines++;
 }
 
@@ -1054,7 +1056,7 @@ A4GL_internal_lex_printc (char *fmt, int isjustblankline, va_list * ap)
 		{
 		  if (current_module && current_module->module_name != 0)
 		    {
-		      FPRINTF (outfile, "#line %d \"%s.4gl\"\n", line_for_cmd, current_module->module_name);
+		      FPRINTF (outfile, "#line %d \"%s.4gl\" \n", line_for_cmd, current_module->module_name);
 		    }
 		  else
 		    {
@@ -2932,12 +2934,12 @@ print_param_g (char i, char *fname, struct expr_str_list *bind)
     }
   if (bind->list.list_len == 0)
     {
-      set_suppress_lines ();
+      set_suppress_lines ("X1");
       printc ("{NULL,0,0,0,0,0,NULL}");
     }
   else
     {
-      set_suppress_lines ();
+      set_suppress_lines ("x2");
       for (a = 0; a < bind->list.list_len; a++)
 	{
 	  int dtype;
@@ -4781,7 +4783,7 @@ print_bind_dir_definition_g (struct expr_str_list *lbind, int ignore_esql, char 
       lbind = &empty;
     }
 
-  set_suppress_lines ();
+  set_suppress_lines ("x3");
 #ifdef DEBUG
   A4GL_debug ("/* %c */\n", i);
 #endif
@@ -4861,7 +4863,7 @@ print_bind_dir_definition_g (struct expr_str_list *lbind, int ignore_esql, char 
 
 	    {
 	      char *ptr;
-	      set_suppress_lines ();
+	      set_suppress_lines ("x4");
 	      ptr = make_sql_bind_g (lbind, lbind_type);
 
 	      if (last_print_bind_dir_definition_g_rval[(int) lbind_type])
@@ -5441,7 +5443,7 @@ print_variable_new (struct variable *v, enum e_scope scope, int level)
       return;
     }
 
-  set_suppress_lines ();
+  set_suppress_lines ("x5");
 
   strcpy (arrbuff, "-1");
   /* are we dealing with the sqlca variable ? */
@@ -5648,6 +5650,7 @@ print_variable_new (struct variable *v, enum e_scope scope, int level)
 	      A4GL_assertion (1, "Not expecting this type of variable");
 	      break;
 	    }
+	  clr_suppress_lines ();
 	  return;
 	}
     }
@@ -5673,6 +5676,7 @@ print_variable_new (struct variable *v, enum e_scope scope, int level)
 
 	/* Is this an unsed global ? */
 	if (level==0 && v->usage ==0 && v->assigned==0 && scope==E_SCOPE_IMPORTED_GLOBAL && A4GL_isyes(acl_getenv("GLOBALEXCLNOTUSED"))) {
+	  clr_suppress_lines ();
 		return ;
 	}
 
@@ -5722,6 +5726,7 @@ print_variable_new (struct variable *v, enum e_scope scope, int level)
       print_start_record (static_extern_flg, name, arrbuff, level);
       print_variable_new (v->var_data.variable_data_u.v_object.definition, scope, level + 1);
       print_end_record (name, v, level);
+	  clr_suppress_lines ();
       return;
     }
 
@@ -6147,7 +6152,7 @@ static void
 print_module_variable_init (module_definition *m, variable_list * mvars)
 {
 int a;
-  set_suppress_lines ();
+  set_suppress_lines ("x6");
   if (!A4GL_doing_pcode ())
     {
       printc ("#");
@@ -8107,7 +8112,7 @@ print_fgllib_start (char *db, int is_schema, char *force_ui, char *debug_filenam
       int t;
       t = tmp_ccnt;
       tmp_ccnt = 0;
-      set_suppress_lines ();
+      set_suppress_lines ("x7");
 
       printc ("#ifdef LEXDIALECT_TYPE");
       printc ("    A4GL_setenv (\"A4GL_LEXDIALECT\",LEXDIALECT_TYPE, 1);");

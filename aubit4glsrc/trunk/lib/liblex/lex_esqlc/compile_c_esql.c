@@ -236,7 +236,7 @@ empty.list.list_val=0;
         static char buff[200];
         started_with_aclfgli=1;
         printc ("{");
-set_suppress_lines();
+set_suppress_lines("E1");
         printc("EXEC SQL BEGIN DECLARE SECTION;");
         printc("char *_sid;\n");
         printc("EXEC SQL END DECLARE SECTION;");
@@ -272,7 +272,7 @@ clr_suppress_lines();
       print_bind_set_value_g (using_bind,'i');
       print_conversions_g (using_bind,'i');
 
-      set_suppress_lines ();
+      set_suppress_lines ("E3");
       printc ("\nEXEC SQL EXECUTE %s USING \n", stmt);
       for (a = 0; a < using_bind->list.list_len; a++)
         {
@@ -293,7 +293,7 @@ clr_suppress_lines();
       printc ("{ /* EXECUTE 2 */\n");
       print_bind_definition_g (into_bind,'o');
       print_bind_set_value_g (into_bind,'o');
-      set_suppress_lines ();
+      set_suppress_lines ("E5");
       printc ("\nEXEC SQL EXECUTE %s INTO \n", stmt);
       for (a = 0; a < into_bind->list.list_len; a++)
         {
@@ -312,7 +312,7 @@ clr_suppress_lines();
     {
       int a;
   	printc("A4GL_set_logsqlstart();");
-      	set_suppress_lines ();
+      	set_suppress_lines ("E7");
 	if (into_bind==0) into_bind=&empty;
 	if (using_bind==0) using_bind=&empty;
       printc ("{ /* EXECUTE 3 */\n");
@@ -631,7 +631,7 @@ int using_username=0;
 
 
   printc ("{");
-  set_suppress_lines ();
+  set_suppress_lines ("E8");
   printc ("\nEXEC SQL BEGIN DECLARE SECTION;");
   printc ("char _u[256];");
   printc ("char _p[256];");
@@ -751,7 +751,7 @@ static void print_set_conn_from_str(char *conn) {
 static void print_use_session(expr_str *con) {
   if (con==NULL) return ;
   printc ("{");
-set_suppress_lines();
+set_suppress_lines("E9");
   printc("EXEC SQL BEGIN DECLARE SECTION;");
   printc("char _sav_cur_conn[32];\n");
   printc("EXEC SQL END DECLARE SECTION;");
@@ -787,7 +787,7 @@ void print_exists_subquery(int i, struct s_expr_exists_sq *e) {
   	SPRINTF1 (cname, "aclfgl_cE_%d", ncnt++);
 
   	printc ("{");
-set_suppress_lines();
+set_suppress_lines("E10");
   	printc ("EXEC SQL BEGIN DECLARE SECTION;");
   	printc("char *_sql;");
   	printc ("int _npc;");
@@ -872,7 +872,7 @@ void print_in_subquery(int i, struct s_expr_in_sq *e) {
 
         clr_bindings();
         printc("{ /* SUBQUERY - IN */");
-set_suppress_lines();
+set_suppress_lines("E11");
   printc ("EXEC SQL BEGIN DECLARE SECTION;");
   printc ("int _npc;");
   printc ("short _npi;");
@@ -1171,7 +1171,7 @@ if (bind && bind->list.list_len==0) {
   printc("A4GL_set_logsqlstart();");
 
 
-  set_suppress_lines ();
+  set_suppress_lines ("E12");
 
 
   printc ("\nEXEC SQL PUT %s \n", get_esql_ident_as_string(cmd_data->cursorname));
@@ -1420,7 +1420,7 @@ print_prepare_cmd (struct_prepare_cmd * cmd_data,int already_doing_cmd)
 		print_use_session(cmd_data->connid);
 	}
   printc ("{ /* prep1 */\n");
-  set_suppress_lines ();
+  set_suppress_lines ("E13");
   printc ("\nEXEC SQL BEGIN DECLARE SECTION;\n");
   printc ("char *_sql;\n");
   printc ("char *_s;\n");
@@ -1506,7 +1506,7 @@ print_free_cmd (struct_free_cmd * cmd_data)
   //static char *cname = 0;
   //struct expr_str *cursorname;
   print_cmd_start ();
-set_suppress_lines();
+set_suppress_lines("E14");
   print_use_session(cmd_data->connid);
  
   if (cmd_data->cursorname->expr_type==ET_EXPR_VARIABLE_IDENTIFIER) {
@@ -1541,7 +1541,7 @@ print_set_database_cmd (struct_set_database_cmd * cmd_data)
   if (A4GLSQLCV_check_requirement ("USE_DATABASE_STMT") || esql_type () == E_DIALECT_INFOFLEX ||  esql_type () == E_DIALECT_INFORMIX)
     {
 	  printc ("{");
-	  set_suppress_lines ();
+	  set_suppress_lines ("E15");
 	  printc ("\nEXEC SQL BEGIN DECLARE SECTION;\n");
 	  printc ("char *_s;");
 	  printc ("\nEXEC SQL END DECLARE SECTION;\n");
@@ -1555,7 +1555,7 @@ print_set_database_cmd (struct_set_database_cmd * cmd_data)
                 struct_close_sql_cmd cmd_data_for_close_db;
                 cmd_data_for_close_db.cl_type=E_CT_DATABASE;
 	  printc ("{");
-	  set_suppress_lines ();
+	  set_suppress_lines ("E16");
 	  printc ("\nEXEC SQL BEGIN DECLARE SECTION; \n");
 	  printc ("char *_s;");
 	  printc ("char _uAcl[256]=\"\";");
@@ -1712,7 +1712,7 @@ int ll;
   print_cmd_start ();
   print_use_session(cmd_data->connid);
 
-  set_suppress_lines ();
+  set_suppress_lines ("E17");
 
   printc ("{");
   printc ("\nEXEC SQL BEGIN DECLARE SECTION;");
@@ -1878,7 +1878,7 @@ empty.list.list_len=0;
 
 
   declare_dets=cmd_data->declare_dets;
-  set_suppress_lines ();
+  set_suppress_lines ("E18");
 
   A4GL_add_pointer(cname,CURSOR_DEFINED,(void *) 1);
 
@@ -1984,7 +1984,7 @@ var_prepname=0;
 	} else {
 	  prepname= get_esql_ident_as_string(declare_dets->ident);
 	}
-      set_suppress_lines();
+      set_suppress_lines("E19");
       if (output_bind->list.list_len) print_conversions_g (output_bind,'o');
       clr_suppress_lines();
       stmt=prepname;
@@ -2240,7 +2240,7 @@ print_open_cursor_cmd (struct_open_cursor_cmd * cmd_data)
 	}
     }
 
-  set_suppress_lines ();
+  set_suppress_lines ("E20");
 
   if (A4GLSQLCV_check_requirement ("CLOSE_CURSOR_BEFORE_OPEN"))
     {
@@ -2309,7 +2309,7 @@ int no;
   print_cmd_start ();
   print_use_session(cmd_data->connid);
 
-  set_suppress_lines ();
+  set_suppress_lines ("E21");
   clr_bindings();
   if (cmd_data->convert==1) {
 	a4gl_yyerror("Conversions cannot be used in an SQLBLOCK when generating ESQL/C code");
@@ -2404,7 +2404,7 @@ int no;
 static void print_exec_sql_bound_g (char *s, int converted,expr_str_list *bind)
 {
   int c;
-  set_suppress_lines ();
+  set_suppress_lines ("E22");
 char *buff;
   printc("A4GL_set_logsqlstart();");
 
@@ -2455,7 +2455,7 @@ int doing_esql_unload = 0;
       
   printc("{");
   tmp_ccnt++;
-set_suppress_lines();
+set_suppress_lines("E23");
   printc ("\nEXEC SQL BEGIN DECLARE SECTION;\n");
   printc("char *_sql=0;\n");
   printc("char _filename[512];");
@@ -2664,7 +2664,7 @@ int converted;
 
   printc("A4GL_set_logsqlstart();");
 
-  set_suppress_lines ();
+  set_suppress_lines ("E24");
   if (input_bind && input_bind->list.list_len) {
 	// We used some variables...
   	printc ("{\n");
@@ -2717,7 +2717,7 @@ int converted=0;
   ptr=(get_delete_cmd(cmd_data,&converted));
 
 
-  set_suppress_lines ();	
+  set_suppress_lines ("E25");	
   if (input_bind && input_bind->list.list_len) {
 	int c;
 	// We used some variables...
@@ -2771,7 +2771,7 @@ int converted=0;
   ptr=(get_update_cmd(cmd_data,&converted));
 
   printc("A4GL_set_logsqlstart();");
-  set_suppress_lines ();
+  set_suppress_lines ("E26");
   if (input_bind && input_bind->list.list_len) {
 	int c;
 	// We used some variables...
@@ -2820,7 +2820,7 @@ char *p;
   p=strdup(ptr);
   A4GL_trim(p);
   if (strlen(p)) {
-  set_suppress_lines ();
+  set_suppress_lines ("E27");
 	// No variables used...
   printc ("\nEXEC SQL %s;\n", p);
   clr_suppress_lines ();
@@ -3025,7 +3025,7 @@ int has_own_using;
   tmp_ccnt++;
 
   printc("A4GL_set_logsqlstart();");
-  	set_suppress_lines ();
+  	set_suppress_lines ("E28");
 	if (cmd_data->outputvals && cmd_data->outputvals->list.list_len) {
   		ni = print_bind_definition_g (cmd_data->outputvals,'o');
   		print_bind_set_value_g(cmd_data->outputvals,'o');
@@ -3093,7 +3093,7 @@ int uses_filter=0;
 
   printc ("{");
   printc ("void *_filterfunc=NULL;");
-set_suppress_lines();
+set_suppress_lines("E29");
   printc ("\nEXEC SQL BEGIN DECLARE SECTION; ");
 
   printc ("char _filename[512];");
@@ -3533,7 +3533,7 @@ printc("/*******************************************************************/");
       strcat (ins_str, ")");
 
       //start_bind ('i', 0);
-      set_suppress_lines ();
+      set_suppress_lines ("E30");
 
       xptr = A4GLSQLCV_check_sql (buff, &converted);
       printc("EXEC SQL %s;",xptr);
@@ -3651,7 +3651,7 @@ char *p;
   p=strdup(ptr);
   A4GL_trim(p);
   if (strlen(p)) {
-  set_suppress_lines ();
+  set_suppress_lines ("E31");
 	// No variables used...
   printc ("\nEXEC SQL %s;\n", p);
   clr_suppress_lines ();

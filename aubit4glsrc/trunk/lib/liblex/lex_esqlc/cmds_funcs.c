@@ -296,7 +296,7 @@ print_close_cmd (struct_close_cmd * cmd_data)
 int
 print_code_cmd (struct_code_cmd * cmd_data)
 {
-set_suppress_lines();
+set_suppress_lines("F1");
   printc ("%s", cmd_data->contents);
 clr_suppress_lines();
   return 1;

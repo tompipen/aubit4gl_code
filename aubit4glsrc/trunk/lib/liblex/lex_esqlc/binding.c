@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: binding.c,v 1.81 2009-05-08 14:40:51 mikeaubury Exp $
+# $Id: binding.c,v 1.82 2012-01-18 19:21:29 mikeaubury Exp $
 */
 
 /**
@@ -39,7 +39,7 @@
 #include "compile_c.h"
 #ifndef lint
 	static char const module_id[] =
-		"$Id: binding.c,v 1.81 2009-05-08 14:40:51 mikeaubury Exp $";
+		"$Id: binding.c,v 1.82 2012-01-18 19:21:29 mikeaubury Exp $";
 #endif
 
 //extern int ibindcnt;
@@ -113,7 +113,7 @@ make_sql_bind_g (expr_str_list *bind,char bind_type)
   int a;
 char *rval=0;
 
-      set_suppress_lines ();
+      set_suppress_lines ("B1");
       printc ("\nEXEC SQL BEGIN DECLARE SECTION;\n");
       if (bind_type== 'i')
 	{
@@ -189,7 +189,7 @@ char *rval=0;
       clr_suppress_lines ();
 
 
-      set_suppress_lines ();
+      set_suppress_lines ("B2");
       if (bind_type=='i')
 	{
 
@@ -256,7 +256,7 @@ char *rval=0;
 	      printc ("};\n");
 	    }
 	}
-      set_suppress_lines ();
+      set_suppress_lines ("B3");
 
 
 
