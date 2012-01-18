@@ -1511,8 +1511,21 @@ MainFrame::vdcdebug("WidgetHelper","createDateEdit", "const QDomElement& formFie
 
    QFontMetrics fm = lineEdit->fontMetrics();
    int width = w*fm.width("W")+10;
-   lineEdit->setFixedWidth(width);
-   lineEdit->setFixedHeight(defHeight);
+   //lineEdit->setFixedWidth(width);
+   //lineEdit->setFixedHeight(defHeight);
+   if(parent != NULL) {
+       if(parent->accessibleName() != "FGLFORM") {
+           if(parent->isEnabled()) {
+           lineEdit->resize(QSize(width, defHeight));
+           }
+       } else {
+           lineEdit->setFixedWidth(width);
+           lineEdit->setFixedHeight(defHeight);
+       }
+   } else {
+       lineEdit->setFixedWidth(width);
+       lineEdit->setFixedHeight(defHeight);
+   }
 
    if(FglForm *p_fglform = qobject_cast<FglForm*> (parent)) {
        QSettings settings(p_fglform->windowName, lineEdit->colName);
