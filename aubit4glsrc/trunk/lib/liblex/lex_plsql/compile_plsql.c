@@ -27,6 +27,7 @@ int xps = 0;
 
 char *record_headers[100];
 char mainbuff[200000];
+static char *deduce_rval_name(int n, struct expr_str *v) ;
 static char * get_spl_dtype (int dtype);
 struct variable_usage *usage_bottom_level (variable_usage * u);	// parsehelp.c
 struct s_commands *linearise_commands (struct s_commands *master_list, struct s_commands *cmds);
@@ -36,6 +37,7 @@ struct expr_str *input_array_variable = 0;
 void not_in_spl (void);
 extern int yylineno;
 static int loop_descent_level = 0;
+char buff_rvalvar[2000]="";
 
 static char* get_ident (struct expr_str *ptr);
 
@@ -3599,6 +3601,32 @@ print_spl_dtype (int dtype)
 }
 
 
+char *rvals_name[MAX_RETURN_VALUES];
+
+static int looks_ok (char *s) {
+	int a;
+	for (a=0;a<strlen(s);a++) {
+		if (s[a]>='a' && s[a]<='z') continue;
+		if (s[a]>='0' && s[a]<='9') continue;
+		if (s[a]=='_') continue;
+		return 0;
+	}
+	return 1;
+}
+
+
+static char *deduce_rval_name(int n, struct expr_str *v) {
+char buff[2000];
+	if (v->expr_type==ET_EXPR_VARIABLE_USAGE) {
+			strcpy(buff,get_variable_usage_as_string(v->expr_str_u.expr_variable_usage));
+			if (looks_ok(buff)) {
+				return strdup(buff);
+			}
+	}
+	sprintf(buff, "rval_%d", n);
+	return strdup(buff);
+
+}
 
 static char *
 get_dump_function_returning (struct s_function_definition *function_definition)
@@ -3611,7 +3639,12 @@ get_dump_function_returning (struct s_function_definition *function_definition)
   int have_return = 0;
   int nreturns;
   int n;
+	char *funcName;
   static char buff[20000];
+  int isSetof=0;
+
+  strcpy(buff_rvalvar,"");
+  funcName=function_definition->funcname;
 
   strcpy (buff, "");
 
@@ -3666,6 +3699,10 @@ get_dump_function_returning (struct s_function_definition *function_definition)
 	      dtypes_new[n] = -1;
 	    }
 
+	  if (r->cmd_data.command_data_u.return_cmd.with_resume) {
+			isSetof=1;
+	  }
+
 	  if (r->cmd_data.command_data_u.return_cmd.retvals)
 	    {
 	      int b;
@@ -3678,6 +3715,7 @@ get_dump_function_returning (struct s_function_definition *function_definition)
 		}
 	      for (b = 0; b < nreturns; b++)
 		{
+		  rvals_name[b]=deduce_rval_name(b,r->cmd_data.command_data_u.return_cmd.retvals->list.list_val[b]);
 		  dtypes_new[b] = expr_datatype (r->module,r->lineno, r->cmd_data.command_data_u.return_cmd.retvals->list.list_val[b]);
 		  if (dtypes_new[b] == FAKE_DTYPE_BOOL)
 		    {		// always return a int instead..
@@ -3711,15 +3749,38 @@ get_dump_function_returning (struct s_function_definition *function_definition)
 
   if (nreturns)
     {
-      strcpy (buff, " returns ");
+	if (nreturns>1) { 
+		sprintf(buff_rvalvar,"rv_rval %s_rval;", funcName);
+		printc("DROP TYPE %s_rval CASCADE;",funcName);
+		printc("CREATE TYPE %s_rval as (",funcName);
+      		for (n = 0; n < nreturns; n++)
+		{
+			printc ("   %s %s%s",rvals_name[n], get_spl_dtype (dtypes_cur[n]), n<nreturns-1?",":"");
+			printc("");
+		}
+		printc(");");
+		if (isSetof) {
+			sprintf(buff," RETURNS SETOF %s_rval", funcName);
+		} else {
+			sprintf(buff," RETURNS %s_rval", funcName);
+		}
+	
+		return buff;
+	}
+
+      strcpy (buff, " RETURNS ");
+	if (isSetof) {
+		strcat(buff," SETOF ");
+	}
       for (n = 0; n < nreturns; n++)
 	{
 	  if (n)
 	    strcat (buff, ",");
 	  strcat (buff, get_spl_dtype (dtypes_cur[n]));
 	}
+
     } else {
-	strcat(buff," returns void");
+	strcat(buff," RETURNS VOID");
     }
   return buff;
 }
@@ -3744,6 +3805,21 @@ tr_dot_to_underscore (char *s)
 }
 
 
+int has_record(expr_str_list *function_parameters ) {
+	int a;
+	if (function_parameters==0) return 0;
+	for (a=0;a<function_parameters->list.list_len;a++) {
+		if (function_parameters->list.list_val[a]->expr_type!=ET_EXPR_VARIABLE_USAGE) continue;
+		struct variable_usage *v=function_parameters->list.list_val[a]->expr_str_u.expr_variable_usage;
+		if (v->next) {
+			// Its a record..
+			return 1;
+		}
+		printf("%d\n", function_parameters->list.list_val[a]->expr_type);
+	}
+	return 0;
+}
+
 
 static int
 dump_function (struct s_function_definition *function_definition, int ismain)
@@ -3765,15 +3841,20 @@ dump_function (struct s_function_definition *function_definition, int ismain)
     }
 
 
-  set_nonewlines ();
 
   returning = get_dump_function_returning (function_definition);
+  set_nonewlines ();
 
-  printc ("create or replace function %s (", function_definition->funcname);
+
+  int need_copy=0;
+
 
   if (function_definition->parameters)
     {
-      function_parameters = expand_parameters (&function_definition->variables, function_definition->parameters);
+	
+  	printc ("DROP FUNCTION %s (", function_definition->funcname);
+      	function_parameters = expand_parameters (&function_definition->variables, function_definition->parameters);
+
 
       //int skipped;
       //char isrec[256] = "";
@@ -3782,19 +3863,45 @@ dump_function (struct s_function_definition *function_definition, int ismain)
 	  if (a)
 	    printc (",");
 
-	  printc ("In_%s %s",
+	  printc (" %s", get_spl_dtype (get_binding_dtype (function_parameters->list.list_val[a])));
+	}
+  printc (") CASCADE;");
+  } else {
+  	printc ("DROP FUNCTION %s () CASCADE;", function_definition->funcname);
+  }
+
+  printc ("CREATE OR REPLACE FUNCTION %s (", function_definition->funcname);
+
+  if (function_definition->parameters)
+    {
+	
+      function_parameters = expand_parameters (&function_definition->variables, function_definition->parameters);
+      if (has_record(function_parameters)) {
+		need_copy=1;
+	}
+
+
+      //int skipped;
+      //char isrec[256] = "";
+      for (a = 0; a < function_definition->parameters->list.list_len; a++)
+	{
+	  if (a)
+	    printc (",");
+
+	  printc ("%s%s %s", need_copy?"In_":"",
 		  tr_dot_to_underscore (get_variable_usage (function_parameters->list.list_val[a]->expr_str_u.expr_variable_usage)),
 		  get_spl_dtype (get_binding_dtype (function_parameters->list.list_val[a])));
 	}
     }
   printc (")");
 
-  printc ("%s as $$", returning);
+  printc ("%s AS $$", returning);
 
   clr_nonewlines ();
-  printc("declare");
+  printc("DECLARE");
 // local variables...
 
+  printc("--local variable");
   if (function_definition->variables.variables.variables_len)
     {
       for (a = 0; a < function_definition->variables.variables.variables_len; a++)
@@ -3804,6 +3911,11 @@ dump_function (struct s_function_definition *function_definition, int ismain)
     }
 
 
+  if (strlen(buff_rvalvar)) {
+	printc("-- Place Holder for return values");
+  	printc("%s\n",buff_rvalvar);
+  }
+  printc("--Module variable");
   if (curr_module->module_variables.variables.variables.variables_len)
     {
       for (a = 0; a < curr_module->module_variables.variables.variables.variables_len; a++)
@@ -3812,13 +3924,13 @@ dump_function (struct s_function_definition *function_definition, int ismain)
 	}
     }
 
-  printc("%s",mainbuff); // Any declares or prepares...
-  printc("begin");
+  printc("--\n%s",mainbuff); // Any declares or prepares...
+  printc("BEGIN");
   tmp_ccnt++;
 
   need_daylight ();		//printc ("#");
 
-  if (function_parameters)
+  if (function_parameters && need_copy)
     {
 
       printc ("-- #####################################");
@@ -3862,7 +3974,7 @@ dump_function (struct s_function_definition *function_definition, int ismain)
       A4GL_assertion (1, "nonewlines shouldn't be set...");
     }
 
-  printc("end;");
+  printc("END;");
   printc("$$ LANGUAGE plpgsql;");
 
   return 1;
@@ -4912,18 +5024,36 @@ dump_cmd (struct command *r, struct command *parent)
 
       if (r->cmd_data.command_data_u.return_cmd.retvals && r->cmd_data.command_data_u.return_cmd.retvals->list.list_len)
 	{
-	  set_nonewlines ();
-	  printc ("RETURN ");
-	  real_print_expr_list_with_separator (r->cmd_data.command_data_u.return_cmd.retvals, ",");
-
-	if (r->cmd_data.command_data_u.return_cmd.with_resume)  {
-	    printc (" WITH RESUME;" );
-	} else {
-	    printc (";");
-	}
 
 
-	  clr_nonewlines ();
+	  if (strlen(buff_rvalvar)) {
+		int a;
+		// Assign all the variables..
+		for (a=0;a<r->cmd_data.command_data_u.return_cmd.retvals->list.list_len;a++ ) {
+			set_nonewlines();
+			printc("rv_rval.%s=", rvals_name[a]);
+			real_print_expr(r->cmd_data.command_data_u.return_cmd.retvals->list.list_val[a]);
+			printc(";");
+			clr_nonewlines();
+			
+		}
+			if (r->cmd_data.command_data_u.return_cmd.with_resume)  {
+	  			printc ("RETURN NEXT rv_rval;");
+			} else {
+	  			printc ("RETURN rv_rval;");
+			}
+	  } else {
+	  	set_nonewlines ();
+		if (r->cmd_data.command_data_u.return_cmd.with_resume)  {
+	  		printc ("RETURN NEXT ");
+		} else {
+	  		printc ("RETURN ");
+		}
+	  	real_print_expr_list_with_separator (r->cmd_data.command_data_u.return_cmd.retvals, ",");
+		printc(";");
+	  	clr_nonewlines ();
+	  }
+
 	}
       else
 	{
@@ -6003,3 +6133,42 @@ void
 not_in_spl ()
 {
 }
+
+
+char *get_variable_usage_as_string (struct variable_usage *var_usage) {
+        char buff[2000];
+
+        if (strcmp(var_usage->variable_name,"a4gl_status")==0 || strcmp(var_usage->variable_name,"a4gl_sqlca")==0 ) {
+                sprintf(buff, "%s",&var_usage->variable_name[5]);
+        }  else {
+                sprintf(buff, "%s",var_usage->variable_name);
+        }
+        if (var_usage->subscripts.subscripts_len) {
+                int a;
+                strcat(buff, "[");
+                for (a=0;a<var_usage->subscripts.subscripts_len;a++) {
+                        if(a) strcat(buff, ",");
+                        strcat(buff, expr_as_string_when_possible(var_usage->subscripts.subscripts_val[a]));
+                }
+                strcat(buff, "]");
+        }
+        if (var_usage->substrings_start.substrings_start) {
+                strcat(buff, "[");
+                strcat(buff, expr_as_string_when_possible(var_usage->substrings_start.substrings_start));
+                if (var_usage->substrings_end.substrings_end) {
+                        strcat(buff, ",");
+                        strcat(buff, expr_as_string_when_possible(var_usage->substrings_end.substrings_end));
+                }
+                strcat(buff, "]");
+        }
+        if (var_usage->next) {
+                char *ptr;
+                strcat(buff,"_");
+                ptr=get_variable_usage_as_string(var_usage->next);
+                strcat(buff, ptr);
+                free(ptr);
+        }
+
+        return strdup(buff);
+}
+

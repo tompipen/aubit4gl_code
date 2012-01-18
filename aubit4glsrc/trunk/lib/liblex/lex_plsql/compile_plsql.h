@@ -10,4 +10,5 @@ void printh(char *fmt, ...);
 
 
 void dump_comments (int n) ;
+char *get_variable_usage_as_string (struct variable_usage *var_usage);
 
