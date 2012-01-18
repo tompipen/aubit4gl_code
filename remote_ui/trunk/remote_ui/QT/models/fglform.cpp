@@ -2290,10 +2290,14 @@ void FglForm::jumpToField(QWidget* w, bool b_after){
             }
         }
     }
+    currentWidget = w;
     if(!resp.isEmpty())
     {
-        currentWidget = w;
         addToQueue(resp);
+    }
+    else
+    {
+        currentWidget->setFocus(Qt::OtherFocusReason);
     }
 }
 
