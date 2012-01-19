@@ -26,6 +26,8 @@
 #include <QMessageBox>
 #include "clienttcp.h"
 #include "mainframe.h"
+#include "quazip/quazip.h"
+#include "quazip/quazipfile.h"
 
 //------------------------------------------------------------------------------
 // Method       : ClientTcp()
@@ -733,6 +735,14 @@ QString ProtocolHandler::getTemplatePosition(QString odffile)
     file->close();
 
     return behalten;
+}
+
+void ProtocolHandler::startUnzipRoutine()
+{
+    QString archiv;
+    //QuaZipFileInfo file(archiv);
+    //QuaZip zip(archiv);
+
 }
 
 //--------------------------------------------------------------------------------

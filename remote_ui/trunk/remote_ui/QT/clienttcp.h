@@ -84,6 +84,7 @@ public:
    QList<QString> readSedFile(QString seddatei);
    int checkSedFile(QString fieldname, QString sedfile);
    QList<QString> getTemplateVars(QString filename);
+   void startUnzipRoutine();
 
 private:
    QString decodeFile(QString);
