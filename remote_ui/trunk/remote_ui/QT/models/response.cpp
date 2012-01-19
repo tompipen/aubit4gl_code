@@ -59,8 +59,10 @@ MainFrame::vdcdebug("Response","Response", "QString id, FglForm* p_currForm, boo
    if(currEvent.type == Fgl::AFTER_FIELD_EVENT)
        p_currForm->setBufferNotTouched();
 
-   QWidget *focusWidget = p_currForm->focusWidget();
-   QString colName = WidgetHelper::getWidgetColName(focusWidget);
+   //focusWidget ist leer, da wir hier im disabled zustand sind. in getWidgetColName wird auf TV geprüft, also können
+   //wir currentWidget aus p_fglform verwenden.
+   //QWidget *focusWidget = p_currForm->focusWidget();
+   QString colName = WidgetHelper::getWidgetColName(p_currForm->currentWidget);
 
    if(!colName.isNull() && !colName.isEmpty() &&  (p_currForm->dialog() == NULL && (p_currForm->menu() == NULL || !p_currForm->menu()->isEnabled()))){
       responseElement.setAttribute("INFIELD", colName);
