@@ -865,6 +865,12 @@ Qt::ItemFlags TableModel::flags(const QModelIndex &index) const
        f = Qt::ItemIsEnabled ;
       f |= b_input ? Qt::ItemIsEditable : Qt::ItemIsSelectable;
    }
+
+   if(getTableView()->isReadOnlyColumn(index.column()) && b_input) {
+       f = Qt::NoItemFlags;
+       return f;
+   }
+
    f |= Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled;
    return f;
 }
