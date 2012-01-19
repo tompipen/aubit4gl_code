@@ -1029,13 +1029,19 @@ MainFrame::vdcdebug("ScreenHandler","setArrayBuffer", "int row, QString tabName,
          }
       }
    }
+
+   //Edit wurde für jede zeile ausgeführt, so ging der fokus kaputt und immer diese
+   //nervigen Shell prints: invalid index
+
+   /*
    // VERMUTLICH HIER WEITERMACHEN
 QSortFilterProxyModel *proxyModel = static_cast<QSortFilterProxyModel*> (tableView->model());
 TableModel *table = static_cast<TableModel*> (proxyModel->sourceModel());
 QModelIndex qmindex = tableView->currentIndex();
 if(table->b_input){
-    tableView->edit(qmindex);
-   }
+
+//tableView->setCurrentField(tableView->row, tableView->col);
+}*/
 }
 
 void ScreenHandler::setArrayBuffer(int row, QStringList fieldValues)
@@ -1940,25 +1946,31 @@ MainFrame::vdcdebug("ScreenHandler","waitForEvent", "");
 
       processResponse();
 
+      p_fglform->b_getch_swin = true;
+      setUpdatesEnabled(true);
 
-   if(!p_fglform->context == NULL)
-   {
-      for(int i=0; i<p_fglform->context->fieldList().count(); i++){
-         if(TableView *tableView = qobject_cast<TableView *> (p_fglform->context->fieldList().at(i))){
-       //     tableView->setEnabled(true);
-         }
-      }
-   }
-   p_fglform->b_getch_swin = true;
-   setUpdatesEnabled(true);
+
    if(p_fglform->currentWidget == NULL)
    {
 
    }
    else
    {
-       p_fglform->currentWidget->setFocus(Qt::OtherFocusReason);
-   }
+       if(TableView *tableView = qobject_cast<TableView *> (p_fglform->currentWidget)){
+           if(p_fglform->inputArray())
+           {
+               if(tableView->curr_editor != NULL)
+               {
+                  tableView->curr_editor->setFocus(Qt::OtherFocusReason);
+               }
+           }
+       }
+       else
+       {
+           p_fglform->currentWidget->setFocus(Qt::OtherFocusReason);
+
+       }
+        }
    QApplication::setOverrideCursor(QCursor(Qt::ArrowCursor));
 
 }
@@ -2828,6 +2840,7 @@ void ScreenHandler::activeFocus()
         p_fglform->raise();
         QApplication::setActiveWindow((QWidget*) p_fglform);
         p_fglform->activateWindow();
+        //Qt3 weg, static QMetaobject::invokeMethod in zukunft
         QApplication::postEvent(this, new QEvent((QEvent::Type)1337));
 
     }

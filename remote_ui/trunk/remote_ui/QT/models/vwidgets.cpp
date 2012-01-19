@@ -1266,6 +1266,7 @@ bool WidgetHelper::setDisplayAttributes(int fieldAttribute, QWidget *widget)
             QColor dummycol = dummy.palette().color(QPalette::Foreground);
             QPalette p = widget->palette();
             QColor col(dummycol.red(), dummycol.green(), dummycol.blue());
+            //p.setColor(QPalette::Active, QPalette::Foreground, col);
             p.setColor(QPalette::Foreground, col);
             widget->setPalette(p);
             widget->setFont(dummy.font());

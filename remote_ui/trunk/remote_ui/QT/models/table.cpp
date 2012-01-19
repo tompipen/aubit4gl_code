@@ -49,7 +49,8 @@ MainFrame::vdcdebug("TableView","TableView", "QWidget *parent");
    verticalHeader()->setFocusPolicy(Qt::NoFocus);
    horizontalHeader()->setFocusPolicy(Qt::NoFocus);
    this->setDragEnabled(true);
-   setTabKeyNavigation(true);
+   //Keine Auswirkung
+   // setTabKeyNavigation(false);
    this->verticalHeader()->hide();
    QHeaderView *header = this->horizontalHeader();
    header->setMovable(true);
@@ -688,13 +689,11 @@ MainFrame::vdcdebug("TableView","setCurrentColumn", "int col");
 
 void TableView::setCurrentField(int row, int col)
 {
-        qDebug()<<"ROW : "<<row<<" COL : "<<col;
 MainFrame::vdcdebug("TableView","setCurrentField", "int row, int col");
-   this->setFocus();
+//   this->setFocus();
    if(QSortFilterProxyModel *proxyModel = qobject_cast<QSortFilterProxyModel *> (this->model())){
 
       if(TableModel *table = qobject_cast<TableModel *> (proxyModel->sourceModel())){
-          qDebug()<<"SETZE INDEX AUF:"<<row<<","<<col;
          QModelIndex tindex = table->index(row-1, col-1);
          QModelIndex index = proxyModel->mapFromSource(tindex);
          selectionModel()->setCurrentIndex(index, QItemSelectionModel::NoUpdate);
@@ -708,6 +707,13 @@ MainFrame::vdcdebug("TableView","setCurrentField", "int row, int col");
          //setCurrentIndex(index);
 //         if(table->b_input && (currentIndex().row() == 0 && currentIndex().column() == 0)){
          if(table->b_input){
+             if(FglForm *form = qobject_cast<FglForm*> (this->p_fglform))
+             {
+                 if(form != NULL)
+                 {
+                     form->currentWidget = this;
+                 }
+             }
              edit(index);
          }
       }
@@ -1054,6 +1060,11 @@ QWidget* LineEditDelegate::createEditor(QWidget *parent,
    const QModelIndex &/* index */) const
 {
    QWidget *editor = WidgetHelper::createFormWidget(this->formElement, parent);
+   if(TableView *tv = qobject_cast<TableView*> (parent->parentWidget()))
+   {
+           tv->curr_editor = editor;
+   }
+
    editor->setAutoFillBackground(true);
    editor->setEnabled(true);
    //remove borders from inputfields in inputarray
@@ -1103,7 +1114,13 @@ MainFrame::vdcdebug("LineEditDelegate","setForm", "QWidget *form");
 bool LineEditDelegate::eventFilter(QObject *object, QEvent *event)
 {
 //MainFrame::vdcdebug("LineEditDelegate","eventFilter", "QObject *object, QEvent *event");
-   if(event->type() == QEvent::FocusOut){
+
+
+
+//Verhindert beim disablen von p_fglform, das der Editor geschlossen wird. Kommt durch synchronisation des
+//Protokolls.
+
+    if(event->type() == QEvent::FocusOut){
       QFocusEvent *fe = (QFocusEvent*) event;
       if(fe->reason() == Qt::ActiveWindowFocusReason ||
          fe->reason() == Qt::OtherFocusReason ||

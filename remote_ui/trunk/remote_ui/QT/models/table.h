@@ -24,6 +24,7 @@
 #include <models/fglform.h>
 #include "vwidgets.h"
 #include <include/fgl.h>
+#include <QPointer>
 
 class TableView : public QTableView
 {
@@ -42,6 +43,7 @@ public:
    QList<QLabel*> columnLabels;
    QAction *standardAct;
    QAction *resetAct;
+   QPointer<QWidget> curr_editor;
    QAction *columnAct;
 
 //   void resize();
