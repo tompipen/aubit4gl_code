@@ -1,0 +1,226 @@
+#!/bin/sh
+
+# this script puts all libs directly needed by the bundle into it
+
+QTDIR=""
+IS_DEBUG=0
+HAVE_CORE=0
+HAVE_SVG=0
+HAVE_PHONON=0
+HAVE_SCRIPT=0
+HAVE_SQL=0
+HAVE_WEBKIT=0
+
+function handleFile()
+{
+    local FILE="$1"
+    local BUNDLE="$2"
+
+    # all dynamic libs directly needed by the bundle, which are not in /System/Library or in /usr/lib (which are system default libs, which we don't want)
+    local LIBS=`otool -L "$FILE" | grep -v 'executable_path' | grep -v '/System/Library' | grep -v '/usr/lib' | sed -ne 's,^ *\(.*\) (.*,\1,p'`
+
+    local lib
+    for lib in $LIBS; do
+        local NAME=`basename $lib`
+        
+        if echo $NAME | grep 'QtCore' >/dev/null; then
+            HAVE_CORE=1
+            QTDIR=`echo $lib | sed -ne 's,^\(.*\)/lib/[^/]*QtCore.*$,\1,p'`
+            if echo $NAME | grep 'debug' >/dev/null; then
+                IS_DEBUG=1
+            fi
+        elif echo $NAME | grep 'QtSvg' >/dev/null; then
+            HAVE_SVG=1
+        elif echo $NAME | grep 'phonon' >/dev/null; then
+            HAVE_PHONON=1
+        elif echo $NAME | grep 'QtScript' >/dev/null; then
+            HAVE_SCRIPT=1
+        elif echo $NAME | grep 'QtSql' >/dev/null; then
+            HAVE_SQL=1
+        elif echo $NAME | grep 'QtWebKit' >/dev/null; then
+            HAVE_WEBKIT=1
+        fi
+
+        if [ "`basename "$FILE"`" != $NAME ]; then
+
+        # this part handles libraries which are Mac OS X frameworks
+        if echo $lib | grep '\.framework' >/dev/null; then
+            local FRAMEWORKPATH=`echo $lib | sed -ne 's,\(.*\.framework\).*,\1,p'`
+            local FRAMEWORKNAME=`basename $FRAMEWORKPATH`
+            local NEWFRAMEWORKPATH=`echo $lib | sed -ne "s,.*\($FRAMEWORKNAME\),\1,p"`
+          
+            # Qt installed via the precompled binaries...
+            if [ $FRAMEWORKPATH = $FRAMEWORKNAME ]; then
+                FRAMEWORKPATH="/Library/Frameworks/$FRAMEWORKNAME"
+                if [ ! -e "$FRAMEWORKPATH" ]; then
+                    OIFS=$IFS
+                    IFS=':'
+
+                    for DIR in $DYLD_LIBRARY_PATH; do
+                        if [ ! -e "$FRAMEWORKPATH" ]; then
+                            FRAMEWORKPATH="$DIR/$FRAMEWORKNAME"
+                        fi
+                    done
+
+                    IFS=$OIFS
+                    if [ ! -e "$FRAMEWORKPATH" ]; then
+                        echo "Framework $FRAMEWORKNAME not found."
+                        exit 1
+                    fi
+                fi
+            fi
+
+            if [ ! -e "$BUNDLE/Contents/Frameworks/$NEWFRAMEWORKPATH" ]; then
+                echo Embedding framework $FRAMEWORKNAME
+
+        
+                # copy the framework into the bundle
+                cp -R $FRAMEWORKPATH "$BUNDLE/Contents/Frameworks"
+                # remove debug libs we've copied
+                find "$BUNDLE/Contents/Frameworks/$FRAMEWORKNAME" -regex '.*_debug\(\.dSYM\)*' -exec rm -rf \{\} \;
+
+                chmod u+w "$BUNDLE/Contents/Frameworks/$NEWFRAMEWORKPATH"
+                install_name_tool -id "@executable_path/../Frameworks/$NEWFRAMEWORKPATH" "$BUNDLE/Contents/Frameworks/$NEWFRAMEWORKPATH"
+                handleFile "$BUNDLE/Contents/Frameworks/$NEWFRAMEWORKPATH" "$BUNDLE"
+            fi
+            # and inform the dynamic linker about this
+            chmod u+w "$FILE"
+            install_name_tool -change "$lib" "@executable_path/../Frameworks/$NEWFRAMEWORKPATH" "$FILE"
+
+
+        # this part handles 'normal' dynamic libraries (.dylib)
+        else
+            local file=$lib
+            # Qt installed via the precompled binaries...
+            if [ $lib = $NAME ]; then
+                file="/Library/Frameworks/$NAME"
+                if [ ! -e "$file" ]; then
+                    file="/usr/lib/$NAME"
+                fi
+
+                OIFS=$IFS
+                IFS=':'
+
+                for DIR in $DYLD_LIBRARY_PATH; do
+                    if [ ! -e "$file" ]; then
+                        file="$DIR/$NAME"
+                    fi
+                done
+
+                IFS=$OIFS
+            fi
+
+            if [ "$file" -nt "$BUNDLE/Contents/Frameworks/$NAME" ]; then
+               rm -f "$BUNDLE/Contents/Frameworks/$NAME"
+            fi
+
+            if [ ! -e "$BUNDLE/Contents/Frameworks/$NAME" ]; then
+                echo Embedding library $NAME
+
+                if [ ! -e "$file" ]; then
+                    echo "Library $NAME not found."
+                    exit 1
+                fi
+    
+                # copy the lib into the bundle
+                cp -R "$file" "$BUNDLE/Contents/Frameworks"
+                dir=`dirname "$file"`
+                while readlink "$file" > /dev/null ; do
+                    file="$dir"/`readlink "$file"`
+                    cp -R "$file" "$BUNDLE/Contents/Frameworks"
+                done
+                chmod u+w "$BUNDLE/Contents/Frameworks/$NAME"
+                install_name_tool -id "@executable_path/../Frameworks/$NAME" "$BUNDLE/Contents/Frameworks/$NAME"
+                handleFile "$BUNDLE/Contents/Frameworks/$NAME" "$BUNDLE"
+            fi
+
+            # and inform the dynamic linker about this
+            chmod u+w "$FILE"
+            install_name_tool -change "$lib" "@executable_path/../Frameworks/$NAME" "$FILE"
+        fi
+
+        fi
+    done
+}
+
+function handleQtPlugins()
+{
+    local PLUGINPATH=$QTDIR/plugins
+
+    # QTDIR was not found, then we're using /Developer/Applications/Qt
+    if [ "$PLUGINPATH" = "/plugins" ]; then
+        PLUGINPATH="/Developer/Applications/Qt/plugins"
+    fi
+
+    CLASS=$1
+    BUNDLE=$2
+    mkdir -p "$BUNDLE/Contents/plugins/$CLASS"
+    echo Add $CLASS plugins
+    for plugin in `ls $PLUGINPATH/$CLASS/*`; do
+        plugin=`basename $plugin`
+        if echo $plugin | grep 'debug' >/dev/null; then
+            if [ $IS_DEBUG -eq 1 ]; then
+                cp "$PLUGINPATH/$CLASS/$plugin" "$BUNDLE/Contents/plugins/$CLASS"
+                handleFile "$BUNDLE/Contents/plugins/$CLASS/$plugin" "$BUNDLE"
+            fi
+        else
+            if [ $IS_DEBUG -eq 0 ]; then
+                cp "$PLUGINPATH/$CLASS/$plugin" "$BUNDLE/Contents/plugins/$CLASS"
+                handleFile "$BUNDLE/Contents/plugins/$CLASS/$plugin" "$BUNDLE"
+            fi
+        fi
+   done
+
+   # create a qt.conf, making sure we're not loading any other plugins
+   echo "[Paths]\
+   Prefix = /" > "$BUNDLE/Contents/Resources/qt.conf"
+
+}
+
+# the app bundle we're working with
+BUNDLE="$1"
+pushd "$BUNDLE" >/dev/null
+BUNDLE=`pwd`
+popd >/dev/null
+# the executable inside of the bundle
+EXECUTABLE=`defaults read "$BUNDLE/Contents/Info" CFBundleExecutable`
+EXECUTABLE=`printf "$EXECUTABLE" | iconv -f iso-8859-1 -t utf-8-mac`
+
+EXECUTABLE="$BUNDLE/Contents/MacOS/$EXECUTABLE"
+
+
+mkdir -p "$BUNDLE/Contents/Frameworks"
+
+handleFile "$EXECUTABLE" "$BUNDLE"
+
+shift
+
+while [ "$1" ]
+do
+    FILE="$1"
+    TARGET="$BUNDLE/Contents/Frameworks/`basename $FILE`"
+    DIR=`dirname "$1"`
+    cp -R "$FILE" "$TARGET"
+    while readlink "$FILE" >/dev/null ; do
+       FILE=`readlink "$FILE"`
+       cp -R "$DIR"/"$FILE" "$BUNDLE/Contents/Frameworks"
+    done
+    handleFile "$TARGET" "$BUNDLE"
+    shift
+done
+
+if [ $HAVE_CORE -eq 1 ]; then
+    handleQtPlugins "imageformats" "$BUNDLE"
+fi
+if [ $HAVE_SVG -eq 1 ]; then
+    handleQtPlugins "iconengines" "$BUNDLE"
+fi
+if [ $HAVE_PHONON -eq 1 ]; then
+    handleQtPlugins "phonon_backend" "$BUNDLE"
+fi
+if [ $HAVE_SQL -eq 1 ]; then
+    handleQtPlugins "sqldrivers" "$BUNDLE"
+fi
+if [ $HAVE_WEBKIT -eq 1 ]; then
+    handleQtPlugins "codecs" "$BUNDLE"
+fi

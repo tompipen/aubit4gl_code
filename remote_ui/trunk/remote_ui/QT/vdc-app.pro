@@ -8,7 +8,7 @@ DEPENDPATH += .
 INCLUDEPATH += . ./quazip/
 LIBS += -L"$$_PRO_FILE_PWD_/lib" -lquazip
 LIBS += -L"$$OUT_PWD/quazip/lib" -lquazip
-unix {
+unix:!macx {
 QMAKE_LFLAGS += -Wl,--rpath="$$_PRO_FILE_PWD_/lib"
 }
 TARGET = VDC
@@ -22,6 +22,7 @@ win32 {
 
 macx {
   ICON = pics/vdc.icns
+  QMAKE_POST_LINK = DYLD_LIBRARY_PATH=$$OUT_PWD/lib $$PWD/libsintobundle $$OUT_PWD/VDC.app
 }
 # Input
 HEADERS += confwin.h \
