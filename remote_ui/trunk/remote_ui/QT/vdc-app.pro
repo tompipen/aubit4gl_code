@@ -6,7 +6,7 @@ CONFIG += release
 TEMPLATE = app
 DEPENDPATH += .
 INCLUDEPATH += . ./quazip/
-#LIBS += -L"$$_PRO_FILE_PWD_/lib" -lquazip
+LIBS += -L"$$_PRO_FILE_PWD_/lib" -lquazip
 LIBS += -L"$$OUT_PWD/quazip/lib" -lquazip
 unix {
 QMAKE_LFLAGS += -Wl,--rpath="$$_PRO_FILE_PWD_/lib"
