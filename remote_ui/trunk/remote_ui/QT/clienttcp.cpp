@@ -2920,6 +2920,10 @@ MainFrame::vdcdebug("ProtocolHandler","handleWaitForEventElement", "const QDomNo
    QDomElement currentElement = domNode.toElement();
    QString nodeName = currentElement.nodeName();
 
+   if(currentElement.attribute("ERR").size() > 0)
+   {
+      qFatal("Bad Id in Triggered");
+   }
 
    if(currentElement.attribute("CACHED").toInt() != 0)
        return;
@@ -2928,8 +2932,9 @@ MainFrame::vdcdebug("ProtocolHandler","handleWaitForEventElement", "const QDomNo
    int changed = -1;
    if(nodeName == "WAITFOREVENT"){
       changed = currentElement.attribute("CHANGED").toInt();
+      
    }
-
+   //Catch ID Errors from a4gl and qFatal
    // currently not used
    if(currentElement.firstChildElement().nodeName() == "ROWS"){
       handleDisplayArrayElement(currentElement);

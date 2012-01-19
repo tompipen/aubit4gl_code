@@ -445,7 +445,7 @@ MainFrame::vdcdebug("ScreenHandler","createMenuButton", "int buttonId, QString t
 
    Fgl::Event event;
    event.type = Fgl::MENUACTION_EVENT;
-   event.id = buttonId;
+   event.id = QString::number(buttonId);
    event.attribute = text.toLower(); //Fgl::stringToKey(attribute);
    p_fglform->ql_menuEvents << event;
    p_fglform->addFormEvent(event);
@@ -490,7 +490,7 @@ MainFrame::vdcdebug("ScreenHandler","createMenuAction", "int buttonId, QString t
 
    Fgl::Event event;
    event.type = Fgl::MENUACTION_EVENT;
-   event.id = buttonId;
+   event.id = QString::number(buttonId);
    event.attribute = text.toLower(); //Fgl::stringToKey(attribute);
    p_fglform->ql_menuEvents << event;
    p_fglform->addFormEvent(event);
@@ -644,7 +644,7 @@ MainFrame::vdcdebug("ScreenHandler","createDialogButton", "int buttonId, QString
 
    Fgl::Event event;
    event.type = Fgl::MENUACTION_EVENT;
-   event.id = buttonId;
+   event.id = QString::number(buttonId);
    event.attribute = text.toLower(); //Fgl::stringToKey(attribute);
    p_fglform->ql_dialogEvents << event;
    p_fglform->addFormEvent(event);
@@ -691,7 +691,7 @@ MainFrame::vdcdebug("ScreenHandler","createPulldownButton", "int buttonId, QStri
 
    Fgl::Event event;
    event.type = Fgl::MENUACTION_EVENT;
-   event.id = buttonId;
+   event.id = QString::number(buttonId);
    event.attribute = text.toLower(); //Fgl::stringToKey(attribute);
    p_fglform->ql_pulldownEvents << event;
    p_fglform->addFormEvent(event);
@@ -722,7 +722,7 @@ MainFrame::vdcdebug("ScreenHandler","createDialogAction", "int buttonId, QString
 
    Fgl::Event event;
    event.type = Fgl::MENUACTION_EVENT;
-   event.id = buttonId;
+   event.id = QString::number(buttonId);
    event.attribute = text.toLower(); //Fgl::stringToKey(attribute);
    p_fglform->ql_dialogEvents << event;
    p_fglform->addFormEvent(event);
@@ -781,6 +781,9 @@ MainFrame::vdcdebug("ScreenHandler","setFieldBuffer", "QStringList fieldNames, Q
             }
     //Deactive because Segmentationfaults on Screenarrays. For Ventas currently not needed, but planed for the feature.
     //        WidgetHelper::setDisplayAttributes(attr, widget);
+
+            //count +1 cause we reduce the row in setArrayBuffer
+            row++;
             QStringList values;
             values << fieldValues.at(i);
             setArrayBuffer(row, fieldName, values);
@@ -1391,7 +1394,7 @@ MainFrame::vdcdebug("ScreenHandler","setEvent", "QString event, QString attribut
    if(event == "BEFORE_MENU_EVENT"){
       Fgl::Event event;
       event.type = Fgl::BEFORE_INPUT_EVENT;
-      event.id = id;
+      event.id = QString::number(id);
 
       //p_fglform->ql_formEvents << event;
       p_fglform->addFormEvent(event);
@@ -1401,7 +1404,7 @@ MainFrame::vdcdebug("ScreenHandler","setEvent", "QString event, QString attribut
    if(event == "BEFORE_INPUT_EVENT"){
       Fgl::Event event;
       event.type = Fgl::BEFORE_INPUT_EVENT;
-      event.id = id;
+      event.id = QString::number(id);
 
       //p_fglform->ql_formEvents << event;
       p_fglform->addFormEvent(event);
@@ -1411,7 +1414,7 @@ MainFrame::vdcdebug("ScreenHandler","setEvent", "QString event, QString attribut
    if(event == "BEFORE_CONSTRUCT_EVENT"){
       Fgl::Event event;
       event.type = Fgl::BEFORE_CONSTRUCT_EVENT;
-      event.id = id;
+      event.id = QString::number(id);
 
       //p_fglform->ql_formEvents << event;
       p_fglform->addFormEvent(event);
@@ -1421,7 +1424,7 @@ MainFrame::vdcdebug("ScreenHandler","setEvent", "QString event, QString attribut
    if(event == "BEFORE_DISPLAY_EVENT"){
       Fgl::Event event;
       event.type = Fgl::BEFORE_DISPLAY_EVENT;
-      event.id = id;
+      event.id = QString::number(id);
 
       //p_fglform->ql_formEvents << event;
       p_fglform->addFormEvent(event);
@@ -1431,7 +1434,7 @@ MainFrame::vdcdebug("ScreenHandler","setEvent", "QString event, QString attribut
    if(event == "AFTER_INPUT_EVENT"){
       Fgl::Event event;
       event.type = Fgl::AFTER_INPUT_EVENT;
-      event.id = id;
+      event.id = QString::number(id);
 
       //p_fglform->ql_formEvents << event;
       p_fglform->addFormEvent(event);
@@ -1441,7 +1444,7 @@ MainFrame::vdcdebug("ScreenHandler","setEvent", "QString event, QString attribut
    if(event == "AFTER_CONSTRUCT_EVENT"){
       Fgl::Event event;
       event.type = Fgl::AFTER_CONSTRUCT_EVENT;
-      event.id = id;
+      event.id = QString::number(id);
 
       //p_fglform->ql_formEvents << event;
       p_fglform->addFormEvent(event);
@@ -1451,7 +1454,7 @@ MainFrame::vdcdebug("ScreenHandler","setEvent", "QString event, QString attribut
    if(event == "AFTER_DISPLAY_EVENT"){
       Fgl::Event event;
       event.type = Fgl::AFTER_DISPLAY_EVENT;
-      event.id = id;
+      event.id = QString::number(id);
 
       //p_fglform->ql_formEvents << event;
       p_fglform->addFormEvent(event);
@@ -1461,7 +1464,7 @@ MainFrame::vdcdebug("ScreenHandler","setEvent", "QString event, QString attribut
    if(event == "BEFORE_FIELD_EVENT"){
       Fgl::Event event;
       event.type = Fgl::BEFORE_FIELD_EVENT;
-      event.id = id;
+      event.id = QString::number(id);
       event.attribute= attribute;
 
       //p_fglform->ql_formEvents << event;
@@ -1472,7 +1475,7 @@ MainFrame::vdcdebug("ScreenHandler","setEvent", "QString event, QString attribut
    if(event == "AFTER_FIELD_EVENT"){
       Fgl::Event event;
       event.type = Fgl::AFTER_FIELD_EVENT;
-      event.id = id;
+      event.id = QString::number(id);
       event.attribute= attribute;
 
       //p_fglform->ql_formEvents << event;
@@ -1483,7 +1486,7 @@ MainFrame::vdcdebug("ScreenHandler","setEvent", "QString event, QString attribut
    if(event == "BEFORE_ROW_EVENT"){
       Fgl::Event event;
       event.type = Fgl::BEFORE_ROW_EVENT;
-      event.id = id;
+      event.id = QString::number(id);
 
       //p_fglform->ql_formEvents << event;
       p_fglform->addFormEvent(event);
@@ -1493,7 +1496,7 @@ MainFrame::vdcdebug("ScreenHandler","setEvent", "QString event, QString attribut
    if(event == "AFTER_ROW_EVENT"){
       Fgl::Event event;
       event.type = Fgl::AFTER_ROW_EVENT;
-      event.id = id;
+      event.id = QString::number(id);
 
       //p_fglform->ql_formEvents << event;
       p_fglform->addFormEvent(event);
@@ -1503,7 +1506,7 @@ MainFrame::vdcdebug("ScreenHandler","setEvent", "QString event, QString attribut
    if(event == "BEFORE_INSERT_DELETE_EVENT"){
       Fgl::Event event;
       event.type = Fgl::BEFORE_INSERT_DELETE_EVENT;
-      event.id = id;
+      event.id = QString::number(id);
 
       //p_fglform->ql_formEvents << event;
       p_fglform->addFormEvent(event);
@@ -1513,7 +1516,7 @@ MainFrame::vdcdebug("ScreenHandler","setEvent", "QString event, QString attribut
    if(event == "AFTER_INSERT_DELETE_EVENT"){
       Fgl::Event event;
       event.type = Fgl::AFTER_INSERT_DELETE_EVENT;
-      event.id = id;
+      event.id = QString::number(id);
 
       //p_fglform->ql_formEvents << event;
       p_fglform->addFormEvent(event);
@@ -1523,7 +1526,7 @@ MainFrame::vdcdebug("ScreenHandler","setEvent", "QString event, QString attribut
    if(event == "ONKEY_EVENT"){
       Fgl::Event event;
       event.type = Fgl::ONKEY_EVENT;
-      event.id = id;
+      event.id = QString::number(id);
       event.attribute = attribute; //Fgl::stringToKey(attribute);
 
       Action *action = new Action(attribute);
@@ -1540,7 +1543,7 @@ MainFrame::vdcdebug("ScreenHandler","setEvent", "QString event, QString attribut
    if(event == "ON_ACTION_EVENT"){
       Fgl::Event event;
       event.type = Fgl::ONACTION_EVENT;
-      event.id = id;
+      event.id = QString::number(id);
       event.attribute = attribute; //Fgl::stringToKey(attribute);
 
       Action *action = new Action(attribute);
@@ -1658,13 +1661,13 @@ MainFrame::vdcdebug("ScreenHandler","setFormOpts", "QString type, bool value, in
 
          Fgl::Event event;
          event.type = Fgl::ONACTION_EVENT;
-         event.id = -1;
+         event.id = "-1";
          event.attribute = "accept"; 
 
          p_fglform->addFormEvent(event);
 
          event.type = Fgl::ONACTION_EVENT;
-         event.id = -1;
+         event.id = "-1";
          event.attribute = "cancel";
 
          p_fglform->addFormEvent(event);
@@ -1676,13 +1679,13 @@ MainFrame::vdcdebug("ScreenHandler","setFormOpts", "QString type, bool value, in
 
          Fgl::Event event;
          event.type = Fgl::ONACTION_EVENT;
-         event.id = -1;
+         event.id = "-1";
          event.attribute = "accept"; 
 
          p_fglform->addFormEvent(event);
 
          event.type = Fgl::ONACTION_EVENT;
-         event.id = -1;
+         event.id = "-1";
          event.attribute = "cancel";
 
          p_fglform->addFormEvent(event);
@@ -1695,13 +1698,13 @@ MainFrame::vdcdebug("ScreenHandler","setFormOpts", "QString type, bool value, in
 
          Fgl::Event event;
          event.type = Fgl::ONACTION_EVENT;
-         event.id = -1;
+         event.id = "-1";
          event.attribute = "accept"; 
 
          p_fglform->addFormEvent(event);
 
          event.type = Fgl::ONACTION_EVENT;
-         event.id = -1;
+         event.id = "-1";
          event.attribute = "cancel";
 
          p_fglform->addFormEvent(event);
@@ -1714,13 +1717,13 @@ MainFrame::vdcdebug("ScreenHandler","setFormOpts", "QString type, bool value, in
 
          Fgl::Event event;
          event.type = Fgl::ONACTION_EVENT;
-         event.id = -1;
+         event.id = "-1";
          event.attribute = "accept"; 
 
          p_fglform->addFormEvent(event);
 
          event.type = Fgl::ONACTION_EVENT;
-         event.id = -1;
+         event.id = "-1";
          event.attribute = "cancel";
 
          p_fglform->addFormEvent(event);
@@ -1968,6 +1971,21 @@ MainFrame::vdcdebug("ScreenHandler","waitForEvent", "");
        else
        {
            p_fglform->currentWidget->setFocus(Qt::OtherFocusReason);
+           if(p_fglform->nextclick != NULL)
+           {
+               if(ButtonEdit *be = qobject_cast<ButtonEdit*> (p_fglform->nextclick->parentWidget()))
+               {
+                   if(p_fglform->currentWidget == p_fglform->nextclick)
+                      be->buttonClicked();
+               }
+               if(DateEdit *de = qobject_cast<DateEdit*> (p_fglform->nextclick->parentWidget()))
+               {
+                   if(p_fglform->currentWidget == p_fglform->nextclick)
+                      de->buttonClicked();
+               }
+
+                   p_fglform->nextclick = NULL;
+           }
 
        }
         }
@@ -1991,7 +2009,7 @@ void ScreenHandler::processResponse()
    {
       return;
   }
-QString id;
+Fgl::Event id;
    if(p_fglform->ql_responseQueue.size() <= 0)
    {
        return;
@@ -2013,7 +2031,7 @@ QString id;
       }
    }*/
 
-   if(id.indexOf(",") == -1){
+   if(id.id.indexOf(",") == -1){
       Response resp(id, p_fglform, cursorPos);
       QString qs_resp = resp.toString().replace("\n","");
       QDomDocument doc;
@@ -2027,11 +2045,16 @@ QString id;
       fglFormResponse(qs_resp);
    }
    else{
-       QStringList qsl_ids = id.split(",");
+       QStringList qsl_ids = id.id.split(",");
        QString qs_resp;
        for(int i=0; i<qsl_ids.size(); i++){
-           id = qsl_ids.at(i);
-           Response resp(id, p_fglform, cursorPos);
+           Fgl::Event fevent;
+           fevent.id = qsl_ids.at(i);
+           if((i+1) == qsl_ids.size())
+           {
+               fevent.field = id.field;
+           }
+           Response resp(fevent, p_fglform, cursorPos);
            resp.firstChildElement().setAttribute("CNT", i+1);
            resp.firstChildElement().setAttribute("MAXCNT", qsl_ids.size());
            resp.firstChildElement().setAttribute("ENVELOPEID", pid);

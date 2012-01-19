@@ -34,6 +34,7 @@ class ScreenHandler;
 #include "table.h"
 #include <include/fgl.h>
 #include <context.h>
+#include <QPointer>
 
 class FglForm : public QMainWindow
 {
@@ -79,11 +80,12 @@ public:
    ~FglForm();
    QString windowName;
    QWidget *currentWidget;
+   QPointer<QPushButton> nextclick;
    bool b_getch_swin;
    bool b_allowClose;
    bool b_dummy;
    void jumpToField(QWidget*, bool b_after=true);
-   QList<QString> ql_responseQueue;
+   QList<Fgl::Event> ql_responseQueue;
    void setMenuEnabled(bool);
    void setMenu(RingMenu*);
    void removeMenu();
@@ -119,7 +121,8 @@ public:
    QWidget* currentField() { return currentWidget; };
    //void setCurrentField(QWidget* widget = NULL) { widget->setFocus(); currentWidget = widget; };
    void setCurrentField(QString, bool sendEvents = true);
-   void addToQueue(QString);
+   void addToQueue(Fgl::Event);
+   void addToQueue(QList<Fgl::Event>);
 
    bool input() { return (ql_states.last() == Fgl::INPUT); };
    bool construct() { return (ql_states.last() == Fgl::CONSTRUCT); };

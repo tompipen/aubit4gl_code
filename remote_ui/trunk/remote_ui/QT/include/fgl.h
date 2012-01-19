@@ -13,8 +13,9 @@ namespace Fgl
 
    typedef struct {
       EventType type;
-      int id;
+      QString id;
       QString attribute;
+      QString field;
    } Event;
 
    typedef struct {

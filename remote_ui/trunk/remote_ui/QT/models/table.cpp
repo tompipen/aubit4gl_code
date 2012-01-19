@@ -36,7 +36,7 @@ MainFrame::vdcdebug("TableView","TableView", "QWidget *parent");
    i_arrCount = 0;
    i_arrLine = 0;
    i_scrLine = 0;
-   i_maxArrSize = 1;
+       i_maxArrSize = 1;
    /*
    this->setCurrMouseColumn(0);
    this->setCurrMouseRow(0);

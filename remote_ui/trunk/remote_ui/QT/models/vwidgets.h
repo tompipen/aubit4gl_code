@@ -239,7 +239,7 @@ private:
 protected:
    void resizeEvent(QResizeEvent *);
 
-private slots:
+public slots:
    void buttonClicked();
 
 signals:
@@ -303,7 +303,7 @@ private:
     QPushButton *button;
     QString iconFileName;
     
-private slots:
+public slots:
    void buttonClicked();
 };
 

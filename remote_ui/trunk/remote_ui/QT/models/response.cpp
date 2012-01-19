@@ -22,7 +22,7 @@
 #include "table.h"
 #include "include/fgl.h"
 
-Response::Response(QString id, FglForm* p_currForm, bool cursorPos) : QDomDocument()
+Response::Response(Fgl::Event id, FglForm* p_currForm, bool cursorPos) : QDomDocument()
 {
 MainFrame::vdcdebug("Response","Response", "QString id, FglForm* p_currForm, bool cursorPos");
   
@@ -30,7 +30,18 @@ MainFrame::vdcdebug("Response","Response", "QString id, FglForm* p_currForm, boo
 
    this->showCursorPos = cursorPos;
 
-   if(id.isEmpty()){
+for(int i = 0; i<id.id.size(); i++)
+{
+    if(id.id.at(i).isLetter() || id.id.at(i).isDigit())
+    {
+        continue;
+    }
+    else
+    {
+        qFatal("Invalid TRIGGERED ID");
+    }
+}
+   if(id.id.isEmpty()){
       qFatal("TRIGGERED ID is empty");
       return;
    }
@@ -38,7 +49,10 @@ MainFrame::vdcdebug("Response","Response", "QString id, FglForm* p_currForm, boo
    QList<Fgl::Event> ql_events = p_currForm->ql_contextEvents.last();
    Fgl::Event currEvent;
 
-   for(int i=0; i<ql_events.size(); i++){
+
+   //Funktion nicht genau bekannt, deaktivieren
+
+   /*for(int i=0; i<ql_events.size(); i++){
       Fgl::Event ev = ql_events.at(i);
       bool ok = false;
       int i_id = id.toInt(&ok);
@@ -48,10 +62,44 @@ MainFrame::vdcdebug("Response","Response", "QString id, FglForm* p_currForm, boo
             break;
          }
       }
+   }*/
+
+
+   for(int i=0; i<ql_events.size(); i++)
+   {
+       Fgl::Event ev = ql_events.at(i);
+       //Failsafe das wenn die actions wirklich in die loop gehängt werden auch ausgewählt wird
+       if(id.id == "ACCEPT")
+       {
+           currEvent = id;
+           break;
+       }
+       if(id.id == "INTERRUPT")
+       {
+           currEvent = id;
+           break;
+       }
+       if(ev.id == id.id)
+       {
+
+           currEvent = id;
+           if(id.attribute.isEmpty())
+           {
+               currEvent.attribute = ev.attribute;
+
+           }
+           break;
+       }
+
+       //Wenn das Event nicht gefunden wurde, brech hart ab um den Fehler aufzudecken.
+       if((i+1) == ql_events.size())
+       {
+           qFatal("Event not found");
+       }
    }
 
    this->appendChild(responseElement = this->createElement("TRIGGERED"));
-   responseElement.setAttribute("ID", id);
+   responseElement.setAttribute("ID", currEvent.id);
 
    responseElement.setAttribute("BUFFERTOUCHED", p_currForm->bufferTouched());
    responseElement.setAttribute("LASTCURSOR", p_currForm->lastCursor());
@@ -62,8 +110,15 @@ MainFrame::vdcdebug("Response","Response", "QString id, FglForm* p_currForm, boo
    //focusWidget ist leer, da wir hier im disabled zustand sind. in getWidgetColName wird auf TV geprüft, also können
    //wir currentWidget aus p_fglform verwenden.
    //QWidget *focusWidget = p_currForm->focusWidget();
-   QString colName = WidgetHelper::getWidgetColName(p_currForm->currentWidget);
-
+   QString colName = "";
+   if(id.field.size() > 0)
+   {
+       colName = id.field;
+   }
+   else
+   {
+      QString colName = WidgetHelper::getWidgetColName(p_currForm->currentWidget);
+   }
    if(!colName.isNull() && !colName.isEmpty() &&  (p_currForm->dialog() == NULL && (p_currForm->menu() == NULL || !p_currForm->menu()->isEnabled()))){
       responseElement.setAttribute("INFIELD", colName);
    }
@@ -92,7 +147,7 @@ MainFrame::vdcdebug("Response","Response", "QString id, FglForm* p_currForm, boo
          }
          else{
             if(p_currForm->inputArray() || p_currForm->displayArray()){
-               addScreenRecSyncValues(id);
+               addScreenRecSyncValues(id.id);
             }
          }
    //}

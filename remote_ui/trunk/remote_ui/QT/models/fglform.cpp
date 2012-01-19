@@ -153,12 +153,19 @@ MainFrame::vdcdebug("FglForm","buttonClicked", "QString id");
 // Filename     : fglform.cpp
 // Description  : receives the Triggered id and execs the processResponse slot
 //------------------------------------------------------------------------------
-void FglForm::addToQueue(QString id)
+void FglForm::addToQueue(Fgl::Event id)
 {
 MainFrame::vdcdebug("FglForm","addToQueue", "QString id");
 
       ql_responseQueue << id;
       processResponse();
+}
+
+void FglForm::addToQueue(QList<Fgl::Event> events)
+{
+
+    ql_responseQueue += events;
+    processResponse();
 }
 
 void FglForm::setScreenHandler(ScreenHandler *p_sh)
@@ -476,12 +483,12 @@ MainFrame::vdcdebug("FglForm","actionTriggered", "");
    //qDebug() << "ACTION TRIGGERED!" << obj;
    if(Action *action = qobject_cast<Action *> (obj)){
       if(!handleGuiAction(action)){
-         Fgl::Event ev;
-         ev.type = Fgl::ONACTION_EVENT;
-         ev.attribute = action->name();
-         emit fieldEvent(ev);
-      }
-   }
+          Fgl::Event ev;
+          ev.type = Fgl::ONACTION_EVENT;
+          ev.attribute = action->name();
+          emit fieldEvent(ev);
+       }
+    }
    else{
       qFatal("Action error");
    }
@@ -547,7 +554,9 @@ MainFrame::vdcdebug("FglForm","toolBarActionTriggered", "");
                text.remove(0,1);
             }
             if(text == action->text() || text == action->objectName()){
-               addToQueue(QString::number(menu()->buttonId(ql_buttons.at(i))));
+               Fgl::Event tb_event;
+               tb_event.id = QString::number(menu()->buttonId(ql_buttons.at(i)));
+               addToQueue(tb_event);
             }
          }
       }
@@ -696,6 +705,25 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
 
     }
 
+
+    if(event->type() == QEvent::MouseButtonPress){
+      QMouseEvent *mev = (QMouseEvent*) event;
+      if(mev->button() == Qt::LeftButton){
+         mev->ignore();
+         QWidget *w = (QWidget*) obj;
+         if(QPushButton *qpb = qobject_cast<QPushButton*> (obj))
+         {
+             if(context->fieldList().contains(qpb->parentWidget()))
+             {
+                 if(input() || construct()){
+                    jumpToField(w->parentWidget());
+                    nextclick = qpb;
+
+                 }
+             }
+         }
+      }
+    }
 
 
     if(event->type() == QEvent::MouseButtonRelease){
@@ -993,7 +1021,7 @@ void FglForm::saveFieldSettings(QAction *action)
 // Method       : fieldEvent()
 // Filename     : fglform.cpp
 // Description  : 
-//               
+// Important    :
 //------------------------------------------------------------------------------
 void FglForm::fieldEvent(Fgl::Event type, QWidget* widget)
 {
@@ -1018,13 +1046,21 @@ MainFrame::vdcdebug("FglForm","fieldEvent", "Fgl");
                  if(widget != NULL){
                     if(widget->objectName() == event.attribute ||
                        widget->accessibleName() == event.attribute){
-                       addToQueue(QString::number(event.id));
+                        if(type.field.size() > 0)
+                        {
+                            event.field = type.field;
+                        }
+                       addToQueue(event);
                        return;
                     }
                  }
                  else{
                     if(type.attribute == event.attribute){
-                       addToQueue(QString::number(event.id));
+                        if(type.field.size() > 0)
+                        {
+                            event.field = type.field;
+                        }
+                       addToQueue(event);
                        return;
                     }
                  }
@@ -1047,7 +1083,11 @@ MainFrame::vdcdebug("FglForm","fieldEvent", "Fgl");
            for(int i=0; i<ql_events.size(); i++){
               Fgl::Event event = ql_events.at(i);
               if(event.type == type.type){
-                 addToQueue(QString::number(event.id));
+                  if(type.field.size() > 0)
+                  {
+                      event.field = type.field;
+                  }
+                 addToQueue(event);
                  return;
               }
            }
@@ -1078,10 +1118,14 @@ MainFrame::vdcdebug("FglForm","fieldEvent", "Fgl");
                  event.type == Fgl::MENUACTION_EVENT) && 
                  event.attribute.toLower() == type.attribute.toLower()){
 */
-              if(event.attribute.toLower() == type.attribute.toLower() ||
-                 Fgl::keyToString(event.attribute).toLower() == type.attribute.toLower()){
-                 if(event.id >= 0){
-                    addToQueue(QString::number(event.id));
+              if((event.attribute.toLower() == type.attribute.toLower() ||
+                  Fgl::keyToString(event.attribute).toLower() == type.attribute.toLower()) && event.id != "-1"){
+                 if(event.id.size() > 0){
+                     if(type.field.size() > 0)
+                     {
+                         event.field = type.field;
+                     }
+                    addToQueue(event);
                     return;
                  }
               }
@@ -1194,12 +1238,16 @@ MainFrame::vdcdebug("FglForm","closeEvent", "QCloseEvent *event");
       QList<QPushButton*> buttons = menu()->buttons();
       for(int i=0; i< buttons.size(); i++){
          if(buttons.at(i)->text() == "&Ende"){
-            addToQueue(QString::number(i+1));
+             Fgl::Event ende_event;
+             ende_event.id = QString::number(i+1);
+             addToQueue(ende_event);
          }
       }
    }
    else{
-      addToQueue("INTERRUPT");
+      Fgl::Event ievent;
+      ievent.id = "INTERRUPT";
+      addToQueue(ievent);
    }
 
 }
@@ -1325,7 +1373,9 @@ MainFrame::vdcdebug("FglForm","clearCurrentFocus", "");
 void FglForm::acceptTriggered()
 {
 MainFrame::vdcdebug("FglForm","acceptTriggered", "");
-   addToQueue("ACCEPT");
+   Fgl::Event aevent;
+   aevent.id = "ACCEPT";
+   addToQueue(aevent);
 }
 
 //------------------------------------------------------------------------------
@@ -1337,7 +1387,9 @@ MainFrame::vdcdebug("FglForm","acceptTriggered", "");
 void FglForm::cancelTriggered()
 {
 MainFrame::vdcdebug("FglForm","cancelTriggered", "");
-   addToQueue("INTERRUPT");
+   Fgl::Event ievent;
+   ievent.id = "INTERRUPT";
+   addToQueue(ievent);
 }
 
 //------------------------------------------------------------------------------
@@ -1781,7 +1833,7 @@ if(this->context == NULL)
 
 
       QWidget *next = NULL;
-      for(int i=0; i<context->fieldList().count()-1; i++){
+      for(int i=0; i<=context->fieldList().count()-1; i++){
           if(context->fieldList().at(i) == currentWidget){
               next = context->fieldList().at(i+1);
               break;
@@ -2178,6 +2230,7 @@ void FglForm::jumpToField(QWidget* w, bool b_after){
         return;
 
     QString resp;
+    QList<Fgl::Event> ql_responseevents;
 
     int currPos = context->fieldList().indexOf(currentField());
     int destPos = context->fieldList().indexOf(w);
@@ -2196,7 +2249,7 @@ void FglForm::jumpToField(QWidget* w, bool b_after){
             if(ql_events.at(i).type == beforeField.type && ql_events.at(i).attribute == beforeField.attribute)
             {
 
-                addToQueue(QString::number(ql_events.at(i).id));
+                addToQueue(ql_events.at(i));
 
             }
         }
@@ -2225,9 +2278,7 @@ void FglForm::jumpToField(QWidget* w, bool b_after){
                 Fgl::Event event = ql_events.at(j);
                 if(beforeField.type == event.type &&
                    beforeField.attribute == event.attribute){
-                    if(!resp.isEmpty())
-                        resp.append(",");
-                    resp.append(QString::number(event.id));
+                    ql_responseevents << event;
                     break;
                 }
             }
@@ -2241,9 +2292,7 @@ void FglForm::jumpToField(QWidget* w, bool b_after){
                 Fgl::Event event = ql_events.at(j);
                 if(afterField.type == event.type &&
                    afterField.attribute == event.attribute){
-                    if(!resp.isEmpty())
-                        resp.append(",");
-                    resp.append(QString::number(event.id));
+                   ql_responseevents << event;
                     break;
                 }
             }
@@ -2276,9 +2325,7 @@ void FglForm::jumpToField(QWidget* w, bool b_after){
 
                 if(beforeField.type == event.type &&
                    beforeField.attribute == event.attribute){
-                    if(!resp.isEmpty())
-                        resp.append(",");
-                    resp.append(QString::number(event.id));
+                    ql_responseevents << event;
                     break;
                 }
             }
@@ -2292,18 +2339,16 @@ void FglForm::jumpToField(QWidget* w, bool b_after){
                 Fgl::Event event = ql_events.at(j);
                 if(afterField.type == event.type &&
                    afterField.attribute == event.attribute){
-                    if(!resp.isEmpty())
-                        resp.append(",");
-                    resp.append(QString::number(event.id));
+                    ql_responseevents << event;
                     break;
                 }
             }
         }
     }
     currentWidget = w;
-    if(!resp.isEmpty())
+    if(!ql_responseevents.isEmpty())
     {
-        addToQueue(resp);
+        addToQueue(ql_responseevents);
     }
     else
     {

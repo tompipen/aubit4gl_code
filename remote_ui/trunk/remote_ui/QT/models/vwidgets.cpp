@@ -524,11 +524,11 @@ void ButtonEdit::buttonClicked()
 MainFrame::vdcdebug("ButtonEdit","buttonClicked", "");
     if(buttonKey().isEmpty())
       return;
-
    // For F-Key Events
    Fgl::Event event;
    event.type = Fgl::ONACTION_EVENT;
    event.attribute = Fgl::stringToKey(buttonKey());
+   event.field = this->colName;
    emit fieldEvent(event);
 }
 

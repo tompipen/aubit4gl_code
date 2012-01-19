@@ -185,7 +185,9 @@ void Pulldown::keyPressEvent(QKeyEvent *event)
             shortcut = QString::number(event->key()-55);
         }
         if(FglForm *bla = qobject_cast<FglForm *> (parent())) {
-            bla->addToQueue(shortcut);
+            Fgl::Event sevent;
+            sevent.id = shortcut;
+            bla->addToQueue(sevent);
         }
     }
 }

@@ -28,7 +28,7 @@ class Response : public QDomDocument
 {
 
 public:
-   Response(QString, FglForm*, bool cursorPos = false);
+   Response(Fgl::Event, FglForm*, bool cursorPos = false);
 
 
 private:
