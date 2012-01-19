@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.176 2011-10-24 17:02:38 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.177 2012-01-19 19:23:58 mikeaubury Exp $
 #
 */
 
@@ -968,6 +968,9 @@ A4GL_cv_fnlist (char *source, char *target, char *name)
 
   if (fh == NULL)
     {
+	char buff[600];
+	sprintf(buff, "Unable to open SQL conversion file from %s to %s", source,target);
+	A4GL_assertion(1, buff);
 #ifdef DEBUG
       A4GL_debug ("failed to open file");
 #endif

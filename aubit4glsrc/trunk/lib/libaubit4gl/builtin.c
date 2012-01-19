@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin.c,v 1.163 2010-12-13 17:59:38 mikeaubury Exp $
+# $Id: builtin.c,v 1.164 2012-01-19 19:23:58 mikeaubury Exp $
 #
 */
 
@@ -1046,6 +1046,7 @@ A4GL_errorlog (char *fname, int l, int nargs)
     }
   else
     {
+	return;
       A4GL_exitwith ("Error Log file is not open");
     }
 

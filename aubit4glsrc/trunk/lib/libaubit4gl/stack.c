@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                          |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.278 2011-08-29 09:26:15 mikeaubury Exp $
+# $Id: stack.c,v 1.279 2012-01-19 19:23:58 mikeaubury Exp $
 #
 */
 
@@ -4788,8 +4788,9 @@ if (maxbound<=0) {
 		 	return n;
 		 }
 if (n<0 || n>=maxbound) {
-
-	A4GL_assertion(1,"Your program has accessed an array outside of its bounds and must be stopped");
+	char buff[2000];
+	SPRINTF2(buff,"Your program has accessed an array outside of its bounds and must be stopped\n(Access @ index : %d - which is not between 1 and %d", n+1,maxbound);
+	A4GL_assertion(1,buff);
 	return 0;
 }
 return n;
