@@ -483,7 +483,17 @@ MainFrame::vdcdebug("FglForm","actionTriggered", "");
    //qDebug() << "ACTION TRIGGERED!" << obj;
    if(Action *action = qobject_cast<Action *> (obj)){
       if(!handleGuiAction(action)){
+
           Fgl::Event ev;
+
+          if(input() || inputArray() || construct())
+          {
+              if(currentWidget != NULL)
+              {
+                  ev.field = WidgetHelper::getWidgetColName(currentWidget);
+              }
+          }
+
           ev.type = Fgl::ONACTION_EVENT;
           ev.attribute = action->name();
           emit fieldEvent(ev);
@@ -1798,7 +1808,6 @@ if(this->context == NULL)
 {
    return;
 }
-
    bool b_sendEvent = (QObject::sender() != NULL); //If called from screenHandler this is NULL
    b_sendEvent = change;
                                                    // Programatical change (NEXT FIELD NEXT)-> No AFTER_FIELD_EVENT
@@ -1829,7 +1838,7 @@ if(this->context == NULL)
                return;
             }
          }
-      }
+        }
 
 
       QWidget *next = NULL;
@@ -1841,10 +1850,28 @@ if(this->context == NULL)
                 break;
               } else {
                   next = context->fieldList().at(i+1);
-                  break;
+                  if(!next->isEnabled() || next->isHidden())
+                  {
+                      for(int j=i; j<context->fieldList().count()-1; j++)
+                      {
+                          if(j >= context->fieldList().count()-1) {
+                            next == NULL;
+                            break;
+                          }
+                          next = context->fieldList().at(j+1);
+                          if(next->isEnabled() && !next->isHidden())
+                          {
+                              break;
+                          }
+
+                      }
+                      break;
+                  }
               }
           }
       }
+
+
 
       if(next == NULL){ //no next field -> go to first field
           next = context->fieldList().first();
@@ -1987,7 +2014,6 @@ MainFrame::vdcdebug("FglForm","prevfield", "");
                int row = view->currentIndex().row();
                int rowCount = table->rowCount(QModelIndex());
                int column = view->currentIndex().column()-1;
-               qDebug()<<"COL : "<<column+1<<" ROW : "<<row;
                int columnCount = table->columnCount(QModelIndex());
                int counter = 0;
                bool field_found = false;
@@ -2245,7 +2271,7 @@ void FglForm::jumpToField(QWidget* w, bool b_after){
 
     if(currPos == -1 || !b_after)
     {
-        w->setFocus(Qt::OtherFocusReason);
+      //  w->setFocus(Qt::OtherFocusReason);
         QList<Fgl::Event> ql_events = ql_contextEvents.last();
         Fgl::Event beforeField;
         beforeField.type = Fgl::BEFORE_FIELD_EVENT;
