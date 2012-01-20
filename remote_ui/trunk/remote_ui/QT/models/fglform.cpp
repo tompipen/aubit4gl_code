@@ -1835,8 +1835,14 @@ if(this->context == NULL)
       QWidget *next = NULL;
       for(int i=0; i<=context->fieldList().count()-1; i++){
           if(context->fieldList().at(i) == currentWidget){
-              next = context->fieldList().at(i+1);
-              break;
+              // fixed segmentation fault fieldlist.count is 0
+              if(i >= context->fieldList().count()-1) {
+                next == NULL;
+                break;
+              } else {
+                  next = context->fieldList().at(i+1);
+                  break;
+              }
           }
       }
 
