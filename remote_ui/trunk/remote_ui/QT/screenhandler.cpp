@@ -1975,12 +1975,12 @@ MainFrame::vdcdebug("ScreenHandler","waitForEvent", "");
            {
                if(ButtonEdit *be = qobject_cast<ButtonEdit*> (p_fglform->nextclick->parentWidget()))
                {
-                   if(p_fglform->currentWidget == p_fglform->nextclick)
+                   if(p_fglform->currentWidget == p_fglform->nextclick->parentWidget())
                       be->buttonClicked();
                }
                if(DateEdit *de = qobject_cast<DateEdit*> (p_fglform->nextclick->parentWidget()))
                {
-                   if(p_fglform->currentWidget == p_fglform->nextclick)
+                   if(p_fglform->currentWidget == p_fglform->nextclick->parentWidget())
                       de->buttonClicked();
                }
 
