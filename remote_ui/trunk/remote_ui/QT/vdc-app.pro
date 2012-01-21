@@ -50,7 +50,9 @@ HEADERS += confwin.h \
     fieldparsers/parser.h \
     xmlparsers/xml2menu.h \
     xmlparsers/xml2style.h \
-    qtelnet/qttelnet.h
+    qtelnet/qttelnet.h \
+    models/zipunzip.h \
+    models/xmlreader.h
 SOURCES += confwin.cpp \
     main.cpp \
     mainframe.cpp \
@@ -76,7 +78,9 @@ SOURCES += confwin.cpp \
     xmlparsers/xml2menu.cpp \
     xmlparsers/xml2style.cpp \
     models/ringmenu.cpp \
-    qtelnet/qttelnet.cpp
+    qtelnet/qttelnet.cpp \
+    models/zipunzip.cpp \
+    models/xmlreader.cpp
 
 RESOURCES += \
     ressource.qrc
