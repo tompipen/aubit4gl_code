@@ -24,10 +24,10 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.246 2011-11-16 17:38:42 mikeaubury Exp $
+# $Id: ioform.c,v 1.247 2012-01-22 10:37:50 mikeaubury Exp $
 #*/
 #ifndef lint
-static char const module_id[] = "$Id: ioform.c,v 1.246 2011-11-16 17:38:42 mikeaubury Exp $";
+static char const module_id[] = "$Id: ioform.c,v 1.247 2012-01-22 10:37:50 mikeaubury Exp $";
 #endif
 
 /**
@@ -143,7 +143,8 @@ int A4GL_do_after_field (FIELD * f, struct s_screenio *sio);
 static int A4GL_get_metric_for (struct s_form_dets *form, FIELD * f);
 //int A4GL_wcswidth(char *mbs);         /* utf8 */
 
-static int local_chk_field (struct s_form_dets *form, FIELD * f, int allfields, int var_dtype);
+static int local_chk_field (struct s_form_dets *form, FIELD * f, int allfields, int var_dtype, char *contents);
+char* create_field_contents (FIELD * field, int d1_ptr, int s1, char *ptr1, int dtype_field);
 
 /*
 =====================================================================
@@ -1014,7 +1015,7 @@ A4GL_form_field_chk (struct s_screenio *sio, int m)
       if (form->currentfield != 0)
 	{
 	  int rval;
-	  rval = local_chk_field (form, form->currentfield, 0, sio->vars[sio->curr_attrib].dtype);
+	  rval = local_chk_field (form, form->currentfield, 0, sio->vars[sio->curr_attrib].dtype, field_buffer(form->currentfield, 0));
 	  if (rval == -4)
 	    {
 	      set_current_field (mform, form->currentfield);
@@ -1028,29 +1029,52 @@ A4GL_form_field_chk (struct s_screenio *sio, int m)
 }
 
 
+
 int
 chk_all_fields (struct s_screenio *sio)
 {
   int a;
-
   if (sio->mode != MODE_CONSTRUCT)
     {
       // Might need to do something similar for construct ? 
+      int checkvar=A4GL_isyes (acl_getenv ("A4GL_CHECK_VARIABLE_AFTER_INPUT"));
       for (a = 0; a <= sio->nfields; a++)
 	{
-	  if (local_chk_field (sio->currform, sio->field_list[a], 1, sio->vars[a].dtype) == -4)
+          FIELD *f = sio->field_list[a];
+          char *contents;
+          if(checkvar)
+            {
+              int size = sio->vars[a].size;
+              int dtype = sio->vars[a].dtype + ENCODE_SIZE (size);
+              A4GL_push_param (sio->vars[a].ptr, dtype);
+              contents = create_field_contents (f, dtype, size, sio->vars[a].ptr, dtype);
+              if(contents == NULL)
+                {
+                  return a;
+                }
+            }
+          else
+            {
+              contents = field_buffer(f,0);
+            }
+	  int chk = local_chk_field (sio->currform, f, 1, sio->vars[a].dtype, contents);
+          if(checkvar)
+            {
+              acl_free (contents);
+            }
+          if(chk == -4)
 	    {
 	      return a;
 	    }
 	}
     }
   return -1;
-
 }
 
 
 int
-local_chk_field (struct s_form_dets *form, FIELD * f, int allfields, int var_dtype)
+local_chk_field (struct s_form_dets *form, FIELD * f, int allfields, int var_dtype, char *contents)
+// contents is field_buffer or variable-contents
 {
   char buff[8000] = "";
   char buff2[8000] = "";
@@ -1105,7 +1129,7 @@ local_chk_field (struct s_form_dets *form, FIELD * f, int allfields, int var_dty
 
 	      A4GL_modify_size (&buff[4], form->fileform->metrics.metrics_val[A4GL_get_metric_for (form, f)].w);
 
-	      strcpy (&buff[4], field_buffer (f, 0));
+	      strcpy (&buff[4], contents);
 
 	      strcpy (buff2, &buff[4]);
 
@@ -1265,7 +1289,7 @@ local_chk_field (struct s_form_dets *form, FIELD * f, int allfields, int var_dty
 	    }
 
 
-	  strcpy (buff3, field_buffer (f, 0));
+	  strcpy (buff3, contents); 
 
 	  if (A4GL_has_str_attribute (fprop, FA_S_PICTURE))
 	    {
@@ -1313,7 +1337,7 @@ local_chk_field (struct s_form_dets *form, FIELD * f, int allfields, int var_dty
 	  if (A4GL_has_bool_attribute (fprop, FA_B_REQUIRED) && !A4GL_has_bool_attribute (fprop, FA_B_NOENTRY) && chk_required)
 	    {
 	      char buff[8024];
-	      strcpy (buff, field_buffer (f, 0));
+	      strcpy (buff, contents);
 	      A4GL_trim (buff);
 
 	      if (strlen (buff) == 0)
@@ -1367,7 +1391,6 @@ local_chk_field (struct s_form_dets *form, FIELD * f, int allfields, int var_dty
 
   return 0;
 }
-
 
 
 
@@ -2987,12 +3010,28 @@ A4GL_replace_tab_with_spaces_on_stack (void)
     }
 }
 
+
 /**
  *
  * @todo Describe function
  */
 void
 A4GL_display_field_contents (FIELD * field, int d1_ptr, int s1, char *ptr1, int dtype_field)
+{
+  char *ff;
+  ff=create_field_contents (field, d1_ptr, s1, ptr1, dtype_field);
+  if(ff != NULL){
+    A4GL_mja_set_field_buffer (field, 0, ff);
+    acl_free (ff);
+  }
+}
+
+
+/**
+ * @todo Describe function
+ */
+char*
+create_field_contents (FIELD * field, int d1_ptr, int s1, char *ptr1, int dtype_field)
 {
   int field_width;
   int has_format;
@@ -3010,9 +3049,8 @@ A4GL_display_field_contents (FIELD * field, int d1_ptr, int s1, char *ptr1, int 
   f = (struct struct_scr_field *) (field_userptr (field));
 #ifdef DEBUG
   A4GL_debug ("In display_field_contents field width=%d dtype_field=%x (%x) ", field_width, dtype_field, dtype_field & DTYPE_MASK);
-	A4GL_debug("f->dynamic=%d isStatic=%d\n", f->dynamic, isStatic);
+  A4GL_debug("f->dynamic=%d isStatic=%d\n", f->dynamic, isStatic);
 #endif
-
 
 
   if ( !isStatic && f->dynamic==0 && is_number_datatype(dtype_field&DTYPE_MASK) ) { //&& A4GL_is_numeric_datatype(d1_ptr&DTYPE_MASK)) {
@@ -3040,7 +3078,7 @@ A4GL_display_field_contents (FIELD * field, int d1_ptr, int s1, char *ptr1, int 
   if ((d1_ptr & DTYPE_MASK) == DTYPE_BYTE || (dtype_field & DTYPE_MASK) == DTYPE_BYTE)
     {
       // Can't display a blob :-)
-      return;
+      return NULL;
     }
 
   switch (dtype_field & DTYPE_MASK)
@@ -3068,7 +3106,7 @@ A4GL_display_field_contents (FIELD * field, int d1_ptr, int s1, char *ptr1, int 
 	{
 	  A4GL_exitwith ("Format is wider than the field");
 	  A4GL_drop_param ();
-	  return;
+	  return NULL;
 	}
 
       A4GL_push_char (A4GL_get_str_attribute (f, FA_S_FORMAT));
@@ -3206,16 +3244,8 @@ A4GL_display_field_contents (FIELD * field, int d1_ptr, int s1, char *ptr1, int 
 	    }
 	}
     }
-
-
-
-  A4GL_mja_set_field_buffer (field, 0, ff);
-  acl_free (ff);
-
-
-
+  return ff;
 }
-
 
 
 
@@ -4912,11 +4942,11 @@ UILIB_A4GL_clr_fields_ap (int to_defaults, va_list * ap)
 	A4GL_default_attributes (field_list[a], f->datatype);
 
 
-  	attr = A4GL_determine_attribute (FGL_CMD_CLEAR, attr, f, 0);
+      attr = A4GL_determine_attribute (FGL_CMD_CLEAR, attr, f, 0);
 
-  	if (attr & AUBIT_ATTR_REVERSE) r = 1;
-  	else r = 0;
-  	A4GL_set_field_colour_attr (field_list[a], r, attr);
+      if (attr & AUBIT_ATTR_REVERSE) r = 1;
+      else r = 0;
+      A4GL_set_field_colour_attr (field_list[a], r, attr);
       A4GL_mja_set_field_buffer (field_list[a], 0, "");
 
     }
