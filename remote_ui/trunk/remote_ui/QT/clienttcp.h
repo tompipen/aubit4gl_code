@@ -29,6 +29,7 @@
 #include <QDomDocument>
 
 #include "screenhandler.h"
+#include "models/reportgen.h"
 
 class DebugWindow : public QDialog
 {
@@ -74,21 +75,11 @@ public:
    bool b_write;
    int pid;
    int id;
-   bool startReportTemplate(QString odffile, QString sedfile);
-   void replaceTemplateVars(QString odffile, QString sedfile);
-   QString prepareTemplateContent(int Position, QString odffile, QString sedfile);
-   QString prepareTemplateEbene(int Position, int Ebene, int Counter, QDomDocument doc, QString odffile);
-   QString getTemplateHeader(QString odffile);
-   QString getTemplateFooter(QString odffile);
-   QString getTemplatePosition(QString odffile);
-   QList<QString> readSedFile(QString seddatei);
-   int checkSedFile(QString fieldname, QString sedfile);
-   QList<QString> getTemplateVars(QString filename);
-   void startUnzipRoutine();
 
 private:
    QString decodeFile(QString);
    void outputTree(QDomNode);
+   Reportgen *p_reportgen;
 
    QDomDocument encodeXMLFile(QString);
    void handleStartup(const QDomNode&);
