@@ -28,30 +28,15 @@ bool ZipUnzip::unzipArchiv(QString filePath, QString fileName)
 
     //file.setZipName( QString(QDir::tempPath() + "/") );
     //file.setFileName( fileName );
-    QuaZipFile file( &zip );
 
     for( bool more=zip.goToFirstFile(); more; more=zip.goToNextFile() )
     {
+        QuaZipFile file( &zip );
 
         QString name = zip.getCurrentFileName();
         QFile meminfo( QDir::tempPath() + "/" + infoFileBaseName.baseName() + "/" + name );
-        QFileInfo infofile( meminfo );
 
-        if( !infofile.baseName().isNull() )
-        {
-            file.open(QIODevice::ReadOnly);
-            qDebug() << "file: " << file.readAll();
-            qDebug() << infofile.baseName();
-            file.close();
-        }
-
-        //file.close();
-
-
- /*       QString name = zip.getCurrentFileName();
-        QFile meminfo( QDir::tempPath() + "/" + infoFileBaseName.baseName() + "/" + name );
         QFileInfo infofile(meminfo);
-        qDebug() << infofile.baseName();
 
         QDir extract( QDir::tempPath() + "/" + infoFileBaseName.baseName() );
 
@@ -61,18 +46,26 @@ bool ZipUnzip::unzipArchiv(QString filePath, QString fileName)
             return false;
         }
 
-        if( meminfo.open( QIODevice::ReadWrite ) )
-        {
-                qDebug() << "stream" << file.readAll();
-                qDebug() << "infoFileBaseName.baseName()" << extract.absolutePath();
-                meminfo.write( file.readAll() );
-                meminfo.close();
-            //qWarning ( "(unzipArchiv()); Konnte Dateien nicht zum Schreiben öffnen %d", name );
-        }*/
+            if(name.contains(".")) {
+                qDebug() << "getCurrentFileName();" << name;
+                qDebug() << "error: " << file.getZipError();
+                if( !file.open( QIODevice::ReadOnly ) && file.isReadable() ) {
+                    qDebug() << "nich lesbar" << "";
+                }
 
+                QFile *destdir = new QFile(QString(QDir::tempPath() + "/" + infoFileBaseName.baseName() + "/" + zip.getCurrentFileName()));
+
+                if( destdir->open( QIODevice::WriteOnly | QIODevice::Truncate) )
+                {
+                    QTextStream stream( destdir );
+                    stream << file.readAll();
+                }
+
+                file.close();
+                destdir->close();
+            }
     }
     zip.close();
-    file.close();
     return true;
 }
 
