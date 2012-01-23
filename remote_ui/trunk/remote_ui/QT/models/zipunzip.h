@@ -4,7 +4,7 @@
 #include <quazip/quazipfile.h>
 #include <QtGui>
 
-class ZipUnzip
+class ZipUnzip : public QObject
 {
     Q_OBJECT;
 

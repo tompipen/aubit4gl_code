@@ -1,7 +1,7 @@
 #include <QtGui>
 #include <QDomDocument>
 #include "models/reportgen.h"
-
+#include "models/zipunzip.h"
 //--------------------------------------------------------------------------------
 // Method       : startReportTemplate(QString odffile, QString sedfile)
 // Filename     : clienttcp.cpp

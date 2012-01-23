@@ -9,7 +9,7 @@ bool ZipUnzip::unzipArchiv(QString filePath, QString fileName)
 
     if( !zip.open( QuaZip::mdUnzip ) )
     {
-        qWarning ( "(unzipArchiv()): Datei konnte nicht geöffnet werden. Fehlermeldung: %d,", zip.getZipError() );
+        qWarning ( "(unzipArchiv()): Datei konnte nicht geöffnet werden. Fehlermeldung: " );
         return false;
     }
 
@@ -30,7 +30,7 @@ bool ZipUnzip::unzipArchiv(QString filePath, QString fileName)
 
         if( !extract.mkpath( infofile.absolutePath() ) )
         {
-            qWarning ( "(unzipArchiv()): Konnte Verzeichnis nicht anlegen: %d", infofile.absolutePath() );
+            qWarning ( "(unzipArchiv()): Konnte Verzeichnis nicht anlegen: " );
             return false;
         }
 
