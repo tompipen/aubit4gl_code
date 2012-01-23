@@ -862,17 +862,21 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
           nextfield();
           return true;
       }
-
-      if(keyEvent->key() == Qt::Key_Up) {
-          prevfield();
-          return true;
+      if(TextEdit *te = qobject_cast<TextEdit *> (obj))
+      {
       }
+      else
+      {
+         if(keyEvent->key() == Qt::Key_Up ) {
+             prevfield();
+             return true;
+         }
 
-      if(keyEvent->key() == Qt::Key_Down) {
-          nextfield();
-          return true;
+         if(keyEvent->key() == Qt::Key_Down) {
+             nextfield();
+             return true;
+         }
       }
-
 
       if((keyEvent->modifiers() == 0 ) && (keyEvent->key() == Qt::Key_Return || keyEvent->key() == Qt::Key_Enter))
       {
