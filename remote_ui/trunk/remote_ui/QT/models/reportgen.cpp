@@ -12,12 +12,12 @@
 bool Reportgen::startReportTemplate(QString odffile, QString sedfile)
 {
 
-    //qDebug() << "p_zip" << p_zip;
+    ZipUnzip *p_zipunzip = new ZipUnzip();
 
-    QObject *obj = new QObject();
-    ZipUnzip *test = dynamic_cast<ZipUnzip*> (obj);
-    qDebug() << test;
-    test->unzipArchiv(QDir::tempPath(), QString("LTGR_Template.ods"));
+    if(p_zipunzip->unzipArchiv(QDir::tempPath(), QString("LTGR_Template.ods")) == FALSE)
+    {
+        qDebug() << "Es ist ein Fehler beim entpacken aufgetreten" << "";
+    }
 
    QString content;
    QList<QString> temp_fields;

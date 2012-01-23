@@ -1,11 +1,24 @@
 #include "models/zipunzip.h"
 
+/*ZipUnzip::ZipUnzip()
+{
+
+}
+
+ZipUnzip::~ZipUnzip()
+{
+
+}*/
+
 bool ZipUnzip::unzipArchiv(QString filePath, QString fileName)
 {
     QFile fileBaseName(QDir::tempPath() + "/" + fileName);
     QFileInfo infoFileBaseName(fileBaseName);
 
+    qDebug() << QDir::tempPath() + "/" + fileName;
+
     QuaZip zip(QString(filePath + "/" + fileName));
+    qDebug() << "filePath + fileName" << QString(filePath + "/" + fileName);
 
     if( !zip.open( QuaZip::mdUnzip ) )
     {
@@ -13,15 +26,29 @@ bool ZipUnzip::unzipArchiv(QString filePath, QString fileName)
         return false;
     }
 
-    QuaZipFile file( &zip );
     //file.setZipName( QString(QDir::tempPath() + "/") );
     //file.setFileName( fileName );
-    qDebug() << "pfad:" << QString(QDir::tempPath() + "/" + fileName );
+    QuaZipFile file( &zip );
 
     for( bool more=zip.goToFirstFile(); more; more=zip.goToNextFile() )
     {
-        file.open(QIODevice::ReadOnly);
+
         QString name = zip.getCurrentFileName();
+        QFile meminfo( QDir::tempPath() + "/" + infoFileBaseName.baseName() + "/" + name );
+        QFileInfo infofile( meminfo );
+
+        if( !infofile.baseName().isNull() )
+        {
+            file.open(QIODevice::ReadOnly);
+            qDebug() << "file: " << file.readAll();
+            qDebug() << infofile.baseName();
+            file.close();
+        }
+
+        //file.close();
+
+
+ /*       QString name = zip.getCurrentFileName();
         QFile meminfo( QDir::tempPath() + "/" + infoFileBaseName.baseName() + "/" + name );
         QFileInfo infofile(meminfo);
         qDebug() << infofile.baseName();
@@ -41,7 +68,7 @@ bool ZipUnzip::unzipArchiv(QString filePath, QString fileName)
                 meminfo.write( file.readAll() );
                 meminfo.close();
             //qWarning ( "(unzipArchiv()); Konnte Dateien nicht zum Schreiben öffnen %d", name );
-        }
+        }*/
 
     }
     zip.close();
