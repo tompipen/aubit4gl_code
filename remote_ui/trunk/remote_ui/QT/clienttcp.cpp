@@ -317,8 +317,8 @@ ClientSocket::ClientSocket(QObject *parent, QString name, QString pass, QString 
    connect(&ph, SIGNAL(setScrLine(int)), 
            p_currScreenHandler, SLOT(setScrLine(int)));
    // defines all events like "before field" or "on key F9"
-   connect(&ph, SIGNAL(setEvent(QString, QString, int)), 
-           p_currScreenHandler, SLOT(setEvent(QString, QString, int)));
+   connect(&ph, SIGNAL(setEvent(QString, QString, QString)), 
+           p_currScreenHandler, SLOT(setEvent(QString, QString, QString)));
 
       connect(&ph, SIGNAL(MsgBox(QString, QString,QString,QString,QString,int)), p_currScreenHandler, SLOT(MsgBox(QString, QString,QString,QString,QString,int)));
 
@@ -618,6 +618,7 @@ MainFrame::vdcdebug("ProtocolHandler","run", "");
       MsgBox("Protocol Error",str,"Warning","Ok","Ok",0);
       break;
    }
+   qDebug()<< qsl_xmlCommands.at(i);
    emit debugtext(QString("<< " + qsl_xmlCommands.at(i)));
          QDomElement envelope = doc.documentElement();
          pid = envelope.attribute("ID").toInt();
@@ -2153,39 +2154,39 @@ MainFrame::vdcdebug("ProtocolHandler","handleEventsElement", "const QDomNode& do
       if(nodeName == "BEFORE_INPUT_EVENT" ||
          nodeName == "BEFORE_CONSTRUCT_EVENT" ||
          nodeName == "BEFORE_DISPLAY_EVENT"){
-         int id = currentElement.attribute("ID").toInt();
+         QString id = currentElement.attribute("ID");
          setEvent(nodeName, QString(), id);
       }
 
       if(nodeName == "AFTER_INPUT_EVENT" ||
          nodeName == "AFTER_CONSTRUCT_EVENT" ||
          nodeName == "AFTER_DISPLAY_EVENT"){
-         int id = currentElement.attribute("ID").toInt();
+         QString id = currentElement.attribute("ID");
          setEvent(nodeName, QString(), id);
       }
 
       if(nodeName == "BEFORE_FIELD_EVENT" || 
          nodeName == "AFTER_FIELD_EVENT"){
          QString field = currentElement.attribute("FIELD");
-         int id = currentElement.attribute("ID").toInt();
+         QString id = currentElement.attribute("ID");
          setEvent(nodeName, field, id);
       }
 
       if(nodeName == "BEFORE_ROW_EVENT" || 
          nodeName == "AFTER_ROW_EVENT"){
-         int id = currentElement.attribute("ID").toInt();
+         QString id = currentElement.attribute("ID");
          setEvent(nodeName, QString(), id);
       }
 
       if(nodeName == "ONKEY_EVENT"){
-         int id  = currentElement.attribute("ID").toInt();
+         QString id  = currentElement.attribute("ID");
          int key = currentElement.attribute("KEY").toInt();
 
          setEvent(nodeName, QString::number(key), id);
       }
 
       if(nodeName == "ON_ACTION_EVENT"){
-         int id  = currentElement.attribute("ID").toInt();
+         QString id  = currentElement.attribute("ID");
          QString key = currentElement.attribute("ACTION");
 
          setEvent(nodeName, key, id);
@@ -2250,6 +2251,7 @@ MainFrame::vdcdebug("ProtocolHandler","fglFormResponse", "QString qs_id");
    qs_id = qs_id.replace("&amp;#x0A;", "&#x0A;");
  //  qs_id.replace("\n","");
    makeResponse(qs_id);
+   qDebug()<<qs_id;
    emit debugtext(QString(">> " + qs_id));
 }
 

@@ -715,8 +715,9 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
 
     }
 
-
-    if(event->type() == QEvent::MouseButtonPress){
+    //F9 Taste wird hier ausgelößt, damit er erstmal das Feld Über jumptofield setzt, und dann im waitforevent den klick auslößt.
+    //Falls wir uns schon im Feld befinden, soll er hier den click machen.
+    if(event->type() == QEvent::MouseButtonRelease){
       QMouseEvent *mev = (QMouseEvent*) event;
       if(mev->button() == Qt::LeftButton){
          mev->ignore();
@@ -726,8 +727,23 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
              if(context->fieldList().contains(qpb->parentWidget()))
              {
                  if(input() || construct()){
-                    jumpToField(w->parentWidget());
-                    nextclick = qpb;
+                     if(currentField() == w->parentWidget())
+                     {
+                         if(ButtonEdit *be = qobject_cast<ButtonEdit*> (qpb->parentWidget()))
+                         {
+                                be->buttonClicked();
+                         }
+                         if(DateEdit *de = qobject_cast<DateEdit*> (qpb->parentWidget()))
+                         {
+                                de->buttonClicked();
+                         }
+                     }
+                     else
+                     {
+                         jumpToField(w->parentWidget());
+                         nextclick = qpb;
+
+                     }
 
                  }
              }

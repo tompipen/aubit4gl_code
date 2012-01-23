@@ -154,7 +154,7 @@ signals:
    void setArrLine(int);
    void setScrLine(int);
    void setFieldOrder(QStringList);
-   void setEvent(QString, QString, int);
+   void setEvent(QString, QString, QString);
 
    void setFormOpts(QString, bool, int);
    void setFormOpts(QString, QString, int);

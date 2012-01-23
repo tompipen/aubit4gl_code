@@ -469,8 +469,8 @@ ButtonEdit::ButtonEdit(QString iconFileName, QWidget *parent)
    this->iconFileName = iconFileName;
    if(this->iconFileName != NULL){
       button = new QPushButton(this);
-      connect(button, SIGNAL(clicked()), this, SLOT(buttonClicked()));
-  //    button->setFocusPolicy(Qt::NoFocus);
+      //connect(button, SIGNAL(clicked()), this, SLOT(buttonClicked()));
+      button->setFocusPolicy(Qt::NoFocus);
       button->setFocusProxy(this);
       if(!iconFileName.contains("."))
       {
@@ -545,7 +545,7 @@ DateEdit::DateEdit(QWidget *parent)
    this->setEnabled(false);
    this->iconFileName = "calendar";
    button = new QPushButton(this);
-   //connect(button, SIGNAL(clicked()), this, SLOT(buttonClicked()));
+  // connect(button, SIGNAL(clicked()), this, SLOT(buttonClicked()));
    button->setFocusPolicy(Qt::NoFocus);
    if(!iconFileName.contains("."))
    {

@@ -157,7 +157,7 @@ public slots:
    void activeWindow(QString);
    void setFormOpts(QString, bool,int);
    void setFormOpts(QString, QString, int);
-   void setEvent(QString, QString, int);
+   void setEvent(QString, QString, QString);
    void clearEvents();
    void displayError(QString);
    void displayMessage(QString);

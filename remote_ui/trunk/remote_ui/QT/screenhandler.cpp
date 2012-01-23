@@ -1388,13 +1388,13 @@ MainFrame::vdcdebug("ScreenHandler","clearEvents", "");
 // Filename     : screenhandler.cpp
 // Description  : relates field with events and activate it
 //------------------------------------------------------------------------------
-void ScreenHandler::setEvent(QString event, QString attribute, int id)
+void ScreenHandler::setEvent(QString event, QString attribute, QString id)
 {
 MainFrame::vdcdebug("ScreenHandler","setEvent", "QString event, QString attribute, int id");
    if(event == "BEFORE_MENU_EVENT"){
       Fgl::Event event;
       event.type = Fgl::BEFORE_INPUT_EVENT;
-      event.id = QString::number(id);
+      event.id = id;
 
       //p_fglform->ql_formEvents << event;
       p_fglform->addFormEvent(event);
@@ -1404,7 +1404,7 @@ MainFrame::vdcdebug("ScreenHandler","setEvent", "QString event, QString attribut
    if(event == "BEFORE_INPUT_EVENT"){
       Fgl::Event event;
       event.type = Fgl::BEFORE_INPUT_EVENT;
-      event.id = QString::number(id);
+      event.id = id;
 
       //p_fglform->ql_formEvents << event;
       p_fglform->addFormEvent(event);
@@ -1414,7 +1414,7 @@ MainFrame::vdcdebug("ScreenHandler","setEvent", "QString event, QString attribut
    if(event == "BEFORE_CONSTRUCT_EVENT"){
       Fgl::Event event;
       event.type = Fgl::BEFORE_CONSTRUCT_EVENT;
-      event.id = QString::number(id);
+      event.id = id;
 
       //p_fglform->ql_formEvents << event;
       p_fglform->addFormEvent(event);
@@ -1424,7 +1424,7 @@ MainFrame::vdcdebug("ScreenHandler","setEvent", "QString event, QString attribut
    if(event == "BEFORE_DISPLAY_EVENT"){
       Fgl::Event event;
       event.type = Fgl::BEFORE_DISPLAY_EVENT;
-      event.id = QString::number(id);
+      event.id = id;
 
       //p_fglform->ql_formEvents << event;
       p_fglform->addFormEvent(event);
@@ -1434,7 +1434,7 @@ MainFrame::vdcdebug("ScreenHandler","setEvent", "QString event, QString attribut
    if(event == "AFTER_INPUT_EVENT"){
       Fgl::Event event;
       event.type = Fgl::AFTER_INPUT_EVENT;
-      event.id = QString::number(id);
+      event.id = id;
 
       //p_fglform->ql_formEvents << event;
       p_fglform->addFormEvent(event);
@@ -1444,7 +1444,7 @@ MainFrame::vdcdebug("ScreenHandler","setEvent", "QString event, QString attribut
    if(event == "AFTER_CONSTRUCT_EVENT"){
       Fgl::Event event;
       event.type = Fgl::AFTER_CONSTRUCT_EVENT;
-      event.id = QString::number(id);
+      event.id = id;
 
       //p_fglform->ql_formEvents << event;
       p_fglform->addFormEvent(event);
@@ -1454,7 +1454,7 @@ MainFrame::vdcdebug("ScreenHandler","setEvent", "QString event, QString attribut
    if(event == "AFTER_DISPLAY_EVENT"){
       Fgl::Event event;
       event.type = Fgl::AFTER_DISPLAY_EVENT;
-      event.id = QString::number(id);
+      event.id = id;
 
       //p_fglform->ql_formEvents << event;
       p_fglform->addFormEvent(event);
@@ -1464,7 +1464,7 @@ MainFrame::vdcdebug("ScreenHandler","setEvent", "QString event, QString attribut
    if(event == "BEFORE_FIELD_EVENT"){
       Fgl::Event event;
       event.type = Fgl::BEFORE_FIELD_EVENT;
-      event.id = QString::number(id);
+      event.id = id;
       event.attribute= attribute;
 
       //p_fglform->ql_formEvents << event;
@@ -1475,7 +1475,7 @@ MainFrame::vdcdebug("ScreenHandler","setEvent", "QString event, QString attribut
    if(event == "AFTER_FIELD_EVENT"){
       Fgl::Event event;
       event.type = Fgl::AFTER_FIELD_EVENT;
-      event.id = QString::number(id);
+      event.id = id;
       event.attribute= attribute;
 
       //p_fglform->ql_formEvents << event;
@@ -1486,7 +1486,7 @@ MainFrame::vdcdebug("ScreenHandler","setEvent", "QString event, QString attribut
    if(event == "BEFORE_ROW_EVENT"){
       Fgl::Event event;
       event.type = Fgl::BEFORE_ROW_EVENT;
-      event.id = QString::number(id);
+      event.id = id;
 
       //p_fglform->ql_formEvents << event;
       p_fglform->addFormEvent(event);
@@ -1496,7 +1496,7 @@ MainFrame::vdcdebug("ScreenHandler","setEvent", "QString event, QString attribut
    if(event == "AFTER_ROW_EVENT"){
       Fgl::Event event;
       event.type = Fgl::AFTER_ROW_EVENT;
-      event.id = QString::number(id);
+      event.id = id;
 
       //p_fglform->ql_formEvents << event;
       p_fglform->addFormEvent(event);
@@ -1506,7 +1506,7 @@ MainFrame::vdcdebug("ScreenHandler","setEvent", "QString event, QString attribut
    if(event == "BEFORE_INSERT_DELETE_EVENT"){
       Fgl::Event event;
       event.type = Fgl::BEFORE_INSERT_DELETE_EVENT;
-      event.id = QString::number(id);
+      event.id = id;
 
       //p_fglform->ql_formEvents << event;
       p_fglform->addFormEvent(event);
@@ -1516,7 +1516,7 @@ MainFrame::vdcdebug("ScreenHandler","setEvent", "QString event, QString attribut
    if(event == "AFTER_INSERT_DELETE_EVENT"){
       Fgl::Event event;
       event.type = Fgl::AFTER_INSERT_DELETE_EVENT;
-      event.id = QString::number(id);
+      event.id = id;
 
       //p_fglform->ql_formEvents << event;
       p_fglform->addFormEvent(event);
@@ -1526,7 +1526,7 @@ MainFrame::vdcdebug("ScreenHandler","setEvent", "QString event, QString attribut
    if(event == "ONKEY_EVENT"){
       Fgl::Event event;
       event.type = Fgl::ONKEY_EVENT;
-      event.id = QString::number(id);
+      event.id = id;
       event.attribute = attribute; //Fgl::stringToKey(attribute);
 
       Action *action = new Action(attribute);
@@ -1543,7 +1543,7 @@ MainFrame::vdcdebug("ScreenHandler","setEvent", "QString event, QString attribut
    if(event == "ON_ACTION_EVENT"){
       Fgl::Event event;
       event.type = Fgl::ONACTION_EVENT;
-      event.id = QString::number(id);
+      event.id = id;
       event.attribute = attribute; //Fgl::stringToKey(attribute);
 
       Action *action = new Action(attribute);
