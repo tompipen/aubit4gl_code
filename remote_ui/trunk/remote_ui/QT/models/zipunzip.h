@@ -6,8 +6,11 @@
 
 class ZipUnzip
 {
+    Q_OBJECT;
 
 public:
+
+    bool unzipArchiv(QString filePath, QString fileName);
     bool unzipFile(QString filePath, QString fileName);
     bool zipFile(QString filePath, QString FileName);
 

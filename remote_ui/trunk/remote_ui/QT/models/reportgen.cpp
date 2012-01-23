@@ -11,6 +11,14 @@
 
 bool Reportgen::startReportTemplate(QString odffile, QString sedfile)
 {
+
+    //qDebug() << "p_zip" << p_zip;
+
+    QObject *obj = new QObject();
+    ZipUnzip *test = dynamic_cast<ZipUnzip*> (obj);
+    qDebug() << test;
+    test->unzipArchiv(QDir::tempPath(), QString("LTGR_Template.ods"));
+
    QString content;
    QList<QString> temp_fields;
    QList<QString> sed_fields;
