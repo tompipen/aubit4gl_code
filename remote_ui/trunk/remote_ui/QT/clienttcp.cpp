@@ -913,6 +913,7 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
              QString odffile;
              QString sedfile;
              QString temp_datei;
+             QString extension;
 
              for(int k=0; k < paramsElement.childNodes().count(); k++) {
                  QDomElement valuesElement = paramsElement.childNodes().at(k).toElement();
@@ -925,14 +926,15 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
              }
              QFileInfo file(odffile);
              temp_datei = file.completeBaseName();
-
-             QFile *file1 = new QFile(QDir::tempPath() + "/" + odffile);
+             extension = odffile.replace(temp_datei, "");
+             qDebug() << "extension: " << extension;
+             QFile *file1 = new QFile(QDir::tempPath() + "/" + QString(temp_datei + extension));
 
              if(!file1->open(QIODevice::ReadOnly)) {
                  qDebug() << "Datei vom Server nicht empfangen" << "";
                  value = QString::number(file1->open(QIODevice::ReadOnly));
              } else {
-                 value = QString::number(p_reportgen->startReportTemplate(temp_datei, sedfile));
+                 value = QString::number(p_reportgen->startReportTemplate(QString(temp_datei + extension), sedfile));
              }
          }
 

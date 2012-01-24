@@ -23,7 +23,7 @@ bool Reportgen::startReportTemplate(QString odffile, QString sedfile)
    QString content;
    QList<QString> temp_fields;
    QList<QString> sed_fields;
-   QString oldFileName = QString(odffile + "/content.xml");
+   QFileInfo oldFileName = odffile;
 
 
    int wiederholen = 0;
@@ -93,7 +93,7 @@ bool Reportgen::startReportTemplate(QString odffile, QString sedfile)
            return true;
        }
 
-   QFile *file = new QFile(QDir::tempPath() + "/" + QString("1-" + odffile + ".xml"));
+   QFile *file = new QFile(QDir::tempPath() + "/" + QString("1" + odffile + ".xml"));
 
    if(!file->open(QIODevice::WriteOnly | QIODevice::Truncate)) {
        qDebug() << "(startReport): XML Datei konnte nicht erzeugt werden." << "";
@@ -107,7 +107,7 @@ bool Reportgen::startReportTemplate(QString odffile, QString sedfile)
 
    QTextStream xmlsave(file);
    xmlsave.setCodec("UTF-8");
-   temp_fields << getTemplateVars(oldFileName);
+   temp_fields << getTemplateVars(oldFileName.baseName() + "/content.xml");
    sed_fields << readSedFile(sedfile);
 
    //Überprüfen der SED Datei wie viele einträge der ersten Variable von der 1ten Ebene vorhanden ist.
@@ -132,7 +132,7 @@ bool Reportgen::startReportTemplate(QString odffile, QString sedfile)
    for(int i=0; i < temp_fields.count(); i++) {
        if(cnt == 1) {
            for(int j=0; j < wiederholen; j++) {
-               content = content + prepareTemplateContent(j, oldFileName, sedfile);
+               content = content + prepareTemplateContent(j, oldFileName.baseName() + "/content.xml", sedfile);
            }
            break;
        }
@@ -151,10 +151,12 @@ bool Reportgen::startReportTemplate(QString odffile, QString sedfile)
    content.replace("]P1]", "");
    content.replace("]P2]", "");
 
-   xmlsave << getTemplateHeader(oldFileName) << getTemplatePosition(oldFileName).toUtf8() << content << getTemplateFooter(oldFileName);
+   qDebug() << "content: " << content;
+
+   xmlsave << content;//xmlsave << getTemplateHeader(oldFileName) << getTemplatePosition(oldFileName).toUtf8() << content << getTemplateFooter(oldFileName);
    file->close();
 
-   replaceTemplateVars(oldFileName, sedfile);
+   //replaceTemplateVars(oldFileName, sedfile);
 
    return true;
 }
