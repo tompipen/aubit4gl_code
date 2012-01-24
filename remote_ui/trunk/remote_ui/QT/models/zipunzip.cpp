@@ -106,6 +106,122 @@ bool ZipUnzip::unzipFile(QString filePath, QString fileName)
 
 bool ZipUnzip::zipFileArchiv(QString filePath, QString FileName)
 {
+    const QString currentDir = QDir::currentPath();
+    QString absolutFilePath =  QString( filePath + "/" + FileName );
+    QDir dir( absolutFilePath );
+    char c;
+
+    if( !dir.exists() ) {
+        qDebug() << "Ordner nicht gefunden" << absolutFilePath ;
+        return false;
+
+    }
+
+    absolutFilePath.append("123.ods");
+    QuaZip zip( absolutFilePath );
+    zip.setFileNameCodec("IBM866");
+
+    if( !zip.open(QuaZip::mdCreate ) )
+    {
+        qDebug() << "Konnte Archiv nicht anlegen: " << absolutFilePath;
+        return false;
+    }
+
+    QFile inFile;
+    QuaZipFile out( &zip );
+    QFileInfo fileInfo;
+    const QFileInfoList list = dir.entryInfoList();
+
+    for( int i=0; i < list.count(); i++ )
+    {
+        fileInfo = list.at(i);
+        if( fileInfo.isDir() && fileInfo.fileName() != "." && fileInfo.fileName() != ".." )
+        {
+            QString subDirPath = QString( filePath + "/" + FileName + "/" + list.at(i).fileName() + "/" );
+            qDebug() << "ich bin ein verzeichnis" << subDirPath;
+            QDir subdir( subDirPath);
+            const QFileInfoList listsub = subdir.entryInfoList();
+            QFileInfo subFileInfo;
+            qDebug() << "count: " << listsub.count();
+            for(int j=0; j < listsub.count(); j++)
+            {
+                subFileInfo = listsub.at(j);
+
+                if(subFileInfo.isDir() && subFileInfo.fileName() != "." && subFileInfo.fileName() != ".." )
+                {
+
+                } else if ( subFileInfo.isFile() && subFileInfo.fileName() != QString("LTGR_Template.ods") )
+                {
+                    QDir::setCurrent( dir.absolutePath() );
+                    inFile.setFileName( fileInfo.fileName() + "/" + subFileInfo.fileName() );
+                    if(!inFile.open(QIODevice::ReadOnly)) {
+                        qDebug() << "Datei nicht gefunden: " << subFileInfo.fileName();
+                        return false;
+                    }
+                    if( !out.open(QIODevice::WriteOnly, QuaZipNewInfo(inFile.fileName()/*, QString( filePath + "/" + FileName + "/" ) */) ) )
+                    {
+                        qDebug() << "Datei konnte nich zum schreiben geöffnet werde: " << inFile.fileName();
+                        return false;
+                    }
+
+                    while( inFile.getChar(&c) && out.putChar(c) );
+
+                    if( out.getZipError() != UNZ_OK )
+                    {
+                        qDebug() << "Es ist ein Schreibfehler aufgetreten: " << out.getZipError();
+                        return false;
+                    }
+                    out.close();
+
+                    if( out.getZipError() != UNZ_OK )
+                    {
+                        qDebug() << "Es ist ein Schreibfehler aufgetreten: " << out.getZipError();
+                        return false;
+                    }
+                    inFile.close();
+                }
+            }
+        } else if ( fileInfo.isFile() && fileInfo.fileName() != QString("LTGR_Template.ods"))
+        {
+            QDir::setCurrent( dir.absolutePath() );
+            inFile.setFileName( fileInfo.fileName() );
+            qDebug() << "inFile: " << inFile.fileName();
+            if(!inFile.open(QIODevice::ReadOnly)) {
+                qDebug() << "Datei nicht gefunden: " << fileInfo.fileName();
+                return false;
+            }
+            if( !out.open(QIODevice::WriteOnly, QuaZipNewInfo(inFile.fileName() /*QString( filePath + "/" + FileName + "/" )*/ ) ) )
+            {
+                qDebug() << "Datei konnte nich zum schreiben geöffnet werde: " << inFile.fileName();
+                return false;
+            }
+
+            while( inFile.getChar(&c) && out.putChar(c) );
+
+            if( out.getZipError() != UNZ_OK )
+            {
+                qDebug() << "Es ist ein Schreibfehler aufgetreten: " << out.getZipError();
+                return false;
+            }
+            out.close();
+
+            if( out.getZipError() != UNZ_OK )
+            {
+                qDebug() << "Es ist ein Schreibfehler aufgetreten: " << out.getZipError();
+                return false;
+            }
+            inFile.close();
+        }
+    }
+
+    zip.close();
+    if( zip.getZipError() !=0 ) {
+        qDebug() << "Es sit ein Fehler beim Packen aufgetreten: " << zip.getZipError();
+        QDir::setCurrent(currentDir);
+    }
+
+    qDebug() << "currentDir: " << currentDir;
+    QDir::setCurrent(currentDir);
     return true;
 
 }

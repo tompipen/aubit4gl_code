@@ -648,6 +648,9 @@ void Reportgen::replaceTemplateVars(QString odffile, QString sedfile)
     file1->close();
     file->close();
 
+    ZipUnzip *p_zip = new ZipUnzip();
+    p_zip->zipFileArchiv(QDir::tempPath(), "LTGR_Template");
+
 }
 
 /*void ProtocolHandler::replaceTemplateVars(QString odffile, QString sedfile)
