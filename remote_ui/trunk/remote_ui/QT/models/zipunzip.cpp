@@ -18,16 +18,12 @@ bool ZipUnzip::unzipArchiv(QString filePath, QString fileName)
     qDebug() << QDir::tempPath() + "/" + fileName;
 
     QuaZip zip(QString(filePath + "/" + fileName));
-    qDebug() << "filePath + fileName" << QString(filePath + "/" + fileName);
 
     if( !zip.open( QuaZip::mdUnzip ) )
     {
         qWarning ( "(unzipArchiv()): Datei konnte nicht geöffnet werden. Fehlermeldung: " );
         return false;
     }
-
-    //file.setZipName( QString(QDir::tempPath() + "/") );
-    //file.setFileName( fileName );
 
     for( bool more=zip.goToFirstFile(); more; more=zip.goToNextFile() )
     {
@@ -47,10 +43,9 @@ bool ZipUnzip::unzipArchiv(QString filePath, QString fileName)
         }
 
             if(name.contains(".")) {
-                qDebug() << "getCurrentFileName();" << name;
-                qDebug() << "error: " << file.getZipError();
                 if( !file.open( QIODevice::ReadOnly ) && file.isReadable() ) {
                     qDebug() << "nich lesbar" << "";
+                    return false;
                 }
 
                 QFile *destdir = new QFile(QString(QDir::tempPath() + "/" + infoFileBaseName.baseName() + "/" + zip.getCurrentFileName()));
@@ -59,6 +54,8 @@ bool ZipUnzip::unzipArchiv(QString filePath, QString fileName)
                 {
                     QTextStream stream( destdir );
                     stream << file.readAll();
+                } else {
+                    return false;
                 }
 
                 file.close();
@@ -107,7 +104,7 @@ bool ZipUnzip::unzipFile(QString filePath, QString fileName)
     return true;
 }
 
-bool ZipUnzip::zipFile(QString filePath, QString FileName)
+bool ZipUnzip::zipFileArchiv(QString filePath, QString FileName)
 {
     return true;
 

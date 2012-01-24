@@ -14,7 +14,7 @@ public:
     ZipUnzip();*/
     bool unzipArchiv(QString filePath, QString fileName);
     bool unzipFile(QString filePath, QString fileName);
-    bool zipFile(QString filePath, QString FileName);
+    bool zipFileArchiv(QString filePath, QString FileName);
 
 };
 
