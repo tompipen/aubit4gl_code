@@ -212,10 +212,17 @@ BEGIN {
 			}
 
 			if (param[a]=="dtype_int") { 
-				print "    "param_name[a] "=A4GL_pop_int();" 
+				print "    "param_name[a] "=A4GL_pop_long();" 
 				print "    _ibind[" a "].ptr=&" param_name[a] ";"
 				print "    _ibind[" a "].size=4;"
 				print "    _ibind[" a "].dtype=DTYPE_INT;"
+				continue
+			}
+			if (param[a]=="dtype_smallint") { 
+				print "    "param_name[a] "=A4GL_pop_int();" 
+				print "    _ibind[" a "].ptr=&" param_name[a] ";"
+				print "    _ibind[" a "].size=4;"
+				print "    _ibind[" a "].dtype=DTYPE_SMALLINT;"
 				continue
 			}
 			print "Invalid param type : \"" param[a] "\""
@@ -244,6 +251,12 @@ BEGIN {
 				print "    _obind[" a "].ptr=&rval_" a ";"
 				print "    _obind[" a "].size=4;"
 				print "    _obind[" a "].dtype=DTYPE_INT;"
+				continue
+			}
+			if (rval[a]=="dtype_smallint") { 
+				print "    _obind[" a "].ptr=&rval_" a ";"
+				print "    _obind[" a "].size=4;"
+				print "    _obind[" a "].dtype=DTYPE_SMALLINT;"
 				continue
 			}
 			print "Invalid return type : \"" rval[a] "\""
@@ -280,20 +293,23 @@ BEGIN {
 		for (a=0;a<rval_cnt;a++) {
 			if (rval[a]=="thisobject") {
 				print "    A4GL_push_objectID(0);"
+				continue
 			} else {
 				if (rval[a]=="dtype_char") {
 					print "    A4GL_push_null(DTYPE_CHAR,1);"
+				continue
 				}
 				if (rval[a]=="dtype_int") {
 					print "    A4GL_push_null(DTYPE_INT,0);"
+				continue
 				}
 			}
+			print "Unhandled datatype : " rval[a]
 		}
 		print "  } else {"
 
 		for (a=0;a<rval_cnt;a++) {
-
-			if (rval[a]=="dtype_integer") {
+			if (rval[a]=="dtype_int") {
 				print "    A4GL_push_int(rval_" a ");"
 			}
 
