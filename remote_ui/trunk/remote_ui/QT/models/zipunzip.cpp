@@ -15,8 +15,6 @@ bool ZipUnzip::unzipArchiv(QString filePath, QString fileName)
     QFile fileBaseName(QDir::tempPath() + "/" + fileName);
     QFileInfo infoFileBaseName(fileBaseName);
 
-    qDebug() << QDir::tempPath() + "/" + fileName;
-
     QuaZip zip(QString(filePath + "/" + fileName));
 
     if( !zip.open( QuaZip::mdUnzip ) )
@@ -138,11 +136,10 @@ bool ZipUnzip::zipFileArchiv(QString filePath, QString FileName)
         if( fileInfo.isDir() && fileInfo.fileName() != "." && fileInfo.fileName() != ".." )
         {
             QString subDirPath = QString( filePath + "/" + FileName + "/" + list.at(i).fileName() + "/" );
-            qDebug() << "ich bin ein verzeichnis" << subDirPath;
             QDir subdir( subDirPath);
             const QFileInfoList listsub = subdir.entryInfoList();
             QFileInfo subFileInfo;
-            qDebug() << "count: " << listsub.count();
+
             for(int j=0; j < listsub.count(); j++)
             {
                 subFileInfo = listsub.at(j);
