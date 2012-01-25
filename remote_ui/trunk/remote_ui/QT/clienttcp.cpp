@@ -929,12 +929,21 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
              extension = file.completeSuffix();
              QFile *file1 = new QFile(QDir::tempPath() + "/" + QString(temp_datei + "." + extension));
 
-             if(!file1->open(QIODevice::ReadOnly)) {
-                 qDebug() << "Datei vom Server nicht empfangen" << "";
-                 value = QString::number(file1->open(QIODevice::ReadOnly));
-             } else {
-                 value = QString::number(p_reportgen->startReportTemplate(QString(temp_datei + "." + extension), sedfile));
-             }
+             if( file.completeSuffix() == "ods" || file.completeSuffix() == "odt" )
+             {
+                 if(!file1->open(QIODevice::ReadOnly)) {
+                     qDebug() << "Datei vom Server nicht empfangen" << "";
+                     value = QString::number(file1->open(QIODevice::ReadOnly));
+                 } else {
+                     value = QString::number(p_reportgen->startReportTemplate(QString(temp_datei + "." + extension), sedfile));
+                 }
+             } else
+             {
+                 QString error;
+                 error = "Die empfangene Datei ist kein OpenOffice Format :<b>\n" +
+                         odffile;
+                 MsgBox("Unbekanntes Format", error, "Error", "Ok", "Ok", 0);
+             } 
          }
 
 
