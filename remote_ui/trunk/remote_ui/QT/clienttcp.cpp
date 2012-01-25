@@ -885,7 +885,7 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
       int expect = childElement.attribute("EXPECT").toInt();
 
       QDomElement paramsElement = childElement.firstChildElement();
-      QString value;
+      QStringList returnvalues;
 
       if(qs_module == "Standard"){
        
@@ -894,18 +894,18 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
       if(qs_module == "INTERNAL"){
          if(qs_name == "ui.window.getcurrent"){
             //TODO
-            value = QString::number(p_currScreenHandler->getCurrWindow());
+            returnvalues << QString::number(p_currScreenHandler->getCurrWindow());
          }
 
          if(qs_name == "ui.window.getform"){
             //TODO
-            value = QString::number(p_currScreenHandler->getCurrForm());
+            returnvalues << QString::number(p_currScreenHandler->getCurrForm());
          }
 
          if(qs_name == "ui.window.settext"){
             QDomElement values = childElement.firstChildElement();
             QDomElement valueElement = values.firstChildElement().nextSiblingElement();
-            value = valueElement.text();
+            QString value =  valueElement.text();
             setWindowTitle(value);
          }
 
@@ -933,9 +933,9 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
              {
                  if(!file1->open(QIODevice::ReadOnly)) {
                      qDebug() << "Datei vom Server nicht empfangen" << "";
-                     value = QString::number(file1->open(QIODevice::ReadOnly));
+                     returnvalues << QString::number(file1->open(QIODevice::ReadOnly));
                  } else {
-                     value = QString::number(p_reportgen->startReportTemplate(QString(temp_datei + "." + extension), sedfile));
+                     returnvalues << QString::number(p_reportgen->startReportTemplate(QString(temp_datei + "." + extension), sedfile));
                  }
              } else
              {
@@ -990,8 +990,45 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
             setFieldHidden(fieldName, hidden);
          }
 
-         if(qs_name == "ui.interface.refresh"){
+         if(qs_name == "ui.vdc.action"){
+           QStringList params;
+            for(int k=0; k<paramsElement.childNodes().count(); k++){
+               QDomElement valuesElement = paramsElement.childNodes().at(k).toElement();
+               params << valuesElement.text();
+            }
+            
+            returnvalues << "0";
+            returnvalues <<"Test"; 
          }
+
+         if(qs_name == "ui.vdc.repgen"){
+
+           QStringList params;
+            for(int k=0; k<paramsElement.childNodes().count(); k++){
+               QDomElement valuesElement = paramsElement.childNodes().at(k).toElement();
+               params << valuesElement.text();
+            }
+           //params 0-2 sind die uebergabeparameter 
+            //Rückgabe werte. Erster = Exitcode, Zweiter = Failsafe Dateiname
+            returnvalues << "0";
+            returnvalues << "";
+         }
+
+         if(qs_name == "ui.vdc.odftopdf"){
+ 
+           QStringList params;
+            for(int k=0; k<paramsElement.childNodes().count(); k++){
+               QDomElement valuesElement = paramsElement.childNodes().at(k).toElement();
+               params << valuesElement.text();
+            
+            }
+
+           
+
+            returnvalues << "0";
+            returnvalues << "";
+
+         }  
 
          if(qs_name == "ui.interface.settext"){
             QDomElement values = childElement.firstChildElement();
@@ -1050,15 +1087,15 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
          if(qs_name == "ui.combobox.forname"){
             QDomElement values = childElement.firstChildElement();
             QDomElement valueElement = values.firstChildElement();
-            value = valueElement.text();
-            value = QString::number(p_currScreenHandler->currForm()->findFieldIdByName(value));
+            QString value = valueElement.text();
+            returnvalues << QString::number(p_currScreenHandler->currForm()->findFieldIdByName(value));
          }
 
          if(qs_name == "ui.combobox.getcolumnname"){
             QDomElement values = childElement.firstChildElement();
             QDomElement valueElement = values.firstChildElement();
             int id = valueElement.text().toInt();
-            value = WidgetHelper::getWidgetColName(p_currScreenHandler->currForm()->findFieldById(id));
+            returnvalues <<  WidgetHelper::getWidgetColName(p_currScreenHandler->currForm()->findFieldById(id));
          }
 
          if(qs_name == "ui.combobox.getitemname"){
@@ -1075,7 +1112,7 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
                }
             }
             if(ComboBox *cb = qobject_cast<ComboBox *> (p_currScreenHandler->currForm()->findFieldById(id))){
-               value = cb->itemData(pos-1).toString();
+               returnvalues << cb->itemData(pos-1).toString();
             }
          }
 
@@ -1085,7 +1122,7 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
             int id = valueElement.text().toInt();
             if(ComboBox *cb = qobject_cast<ComboBox *> (p_currScreenHandler->currForm()->findFieldById(id))){
 
-                value = QString::number(cb->count());
+                returnvalues << QString::number(cb->count());
             }
          }
 
@@ -1103,7 +1140,7 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
                }
             }
             if(ComboBox *cb = qobject_cast<ComboBox *> (p_currScreenHandler->currForm()->findFieldById(id))){
-               value = cb->itemText(pos-1);
+               returnvalues << cb->itemText(pos-1);
             }
          }
 
@@ -1111,7 +1148,7 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
             QDomElement values = childElement.firstChildElement();
             QDomElement valueElement = values.firstChildElement();
             int id = valueElement.text().toInt();
-            value = WidgetHelper::getWidgetTabName(p_currScreenHandler->currForm()->findFieldById(id));
+            returnvalues << WidgetHelper::getWidgetTabName(p_currScreenHandler->currForm()->findFieldById(id));
          }
 
          if(qs_name == "ui.combobox.gettag"){
@@ -1131,7 +1168,7 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
                 }
              }
              if(ComboBox *cb = qobject_cast<ComboBox *> (p_currScreenHandler->currForm()->findFieldById(id))){
-                 value = QString::number(cb->findText(text));
+                 returnvalues << QString::number(cb->findText(text));
              }
          }
 
@@ -1169,10 +1206,14 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
 
          QDomElement syncValuesElement = doc.createElement("SVS");
          triggeredElement.appendChild(syncValuesElement);
-         QDomElement syncValueElement = doc.createElement("SV");
-         syncValuesElement.appendChild(syncValueElement);
-         QDomText text = doc.createTextNode(value);
-         syncValueElement.appendChild(text);
+         for(int v = 0; v<returnvalues.size(); v++)
+         {
+            QDomElement syncValueElement = doc.createElement("SV");
+            syncValuesElement.appendChild(syncValueElement);
+            QDomText text = doc.createTextNode(returnvalues.at(v));
+            syncValueElement.appendChild(text);
+         }
+
          QString returnString = doc.toString();
 
          //makeResponse(returnString.trimmed());
