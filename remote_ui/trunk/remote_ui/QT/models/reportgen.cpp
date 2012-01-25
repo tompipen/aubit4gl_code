@@ -162,6 +162,7 @@ bool Reportgen::startReportTemplate(QString odffile, QString sedfile)
    replaceTemplateVars(fileBaseName, sedfile);
 
    return true;
+
 }
 
 //-------------------------------------------------------------------------------
@@ -568,9 +569,9 @@ QList<QString> Reportgen::getTemplateVars(QString filename)
 //
 //------------------------------------------------------------------------------
 
-void Reportgen::replaceTemplateVars(QString odffile, QString sedfile)
+bool Reportgen::replaceTemplateVars(QString odffile, QString sedfile)
 {
-    QList<QString> temp_fields = getTemplateVars(QDir::tempPath() + "/" + odffile + "/1-content.xml");
+    QList<QString> temp_fields = getTemplateVars(odffile + "/1-content.xml");
     QList<QString> sed_fields = readSedFile(sedfile);
     QString ausgabe;
     QString ersetzen;
@@ -668,6 +669,8 @@ void Reportgen::replaceTemplateVars(QString odffile, QString sedfile)
 
     ZipUnzip *p_zip = new ZipUnzip();
     p_zip->zipFileArchiv(QDir::tempPath(), odffile);
+
+    return true;
 
 }
 

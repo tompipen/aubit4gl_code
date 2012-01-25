@@ -8,8 +8,8 @@ class Reportgen : public QObject
     Q_OBJECT;
 
 public:
-    void replaceTemplateVars(QString odffile, QString sedfile);
 
+    bool replaceTemplateVars(QString odffile, QString sedfile);
     bool startReportTemplate(QString odffile, QString sedfile);
     int checkSedFile(QString fieldname, QString filename);
 
