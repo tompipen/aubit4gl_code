@@ -15,15 +15,17 @@ bool Reportgen::startReportTemplate(QString odffile, QString sedfile)
 
     ZipUnzip *p_zipunzip = new ZipUnzip();
 
-    if(p_zipunzip->unzipArchiv(QDir::tempPath(), QString("LTGR_Template.ods")) == FALSE)
+    if(p_zipunzip->unzipArchiv(QDir::tempPath(), QString(odffile)) == FALSE)
     {
         qDebug() << "Es ist ein Fehler beim entpacken aufgetreten" << "";
+        return false;
     }
 
    QString content;
    QList<QString> temp_fields;
    QList<QString> sed_fields;
    QFileInfo oldFileName = odffile;
+   QString fileBaseName = oldFileName.baseName();
 
 
    int wiederholen = 0;
@@ -93,7 +95,7 @@ bool Reportgen::startReportTemplate(QString odffile, QString sedfile)
            return true;
        }
 
-   QFile *file = new QFile(QDir::tempPath() + "/" + QString("1" + odffile + ".xml"));
+   QFile *file = new QFile(QDir::tempPath() + "/" + fileBaseName + "/1-content.xml");
 
    if(!file->open(QIODevice::WriteOnly | QIODevice::Truncate)) {
        qDebug() << "(startReport): XML Datei konnte nicht erzeugt werden." << "";
@@ -107,7 +109,7 @@ bool Reportgen::startReportTemplate(QString odffile, QString sedfile)
 
    QTextStream xmlsave(file);
    xmlsave.setCodec("UTF-8");
-   temp_fields << getTemplateVars(oldFileName.baseName() + "/content.xml");
+   temp_fields << getTemplateVars(fileBaseName + "/content.xml");
    sed_fields << readSedFile(sedfile);
 
    //Überprüfen der SED Datei wie viele einträge der ersten Variable von der 1ten Ebene vorhanden ist.
@@ -151,12 +153,13 @@ bool Reportgen::startReportTemplate(QString odffile, QString sedfile)
    content.replace("]P1]", "");
    content.replace("]P2]", "");
 
-   qDebug() << "content: " << content;
 
-   xmlsave << content;//xmlsave << getTemplateHeader(oldFileName) << getTemplatePosition(oldFileName).toUtf8() << content << getTemplateFooter(oldFileName);
+   //xmlsave << getTemplateHeader(fileBaseName + "/content.xml");
+   qDebug() << "bla: " << getTemplateHeader(fileBaseName + "/content.xml");
+   xmlsave << getTemplateHeader( fileBaseName + "/content.xml" ) << getTemplatePosition( fileBaseName + "/content.xml" ).toUtf8() << content << getTemplateFooter( fileBaseName + "/content.xml" );
    file->close();
 
-   //replaceTemplateVars(oldFileName, sedfile);
+   replaceTemplateVars(fileBaseName, sedfile);
 
    return true;
 }
@@ -170,7 +173,7 @@ bool Reportgen::startReportTemplate(QString odffile, QString sedfile)
 
 QString Reportgen::getTemplateHeader(QString filename)
 {
-    QFile *file = new QFile(QDir::tempPath() + "/" + filename);
+    QFile *file = new QFile(QDir::tempPath() + "/" + filename );
 
     if(!file->open(QIODevice::ReadOnly)) {
         qDebug() << "Konnte Template file nicht öffnen" << "";
@@ -290,7 +293,7 @@ QString Reportgen::prepareTemplateContent(int Position, QString odffile, QString
     fieldlist << getTemplateVars(odffile);
 
     while(!stream.atEnd()) {
-        ausgabe = stream.readLine().trimmed();
+        ausgabe = stream.readLine() + "\n";
 
 
         if(ausgabe.contains("[P1[")) {
@@ -338,7 +341,7 @@ QString Reportgen::prepareTemplateContent(int Position, QString odffile, QString
                         int found = 0;
                         if(fieldlist.at(i).contains(QString("[P%1[").arg(ebene))) {
                             i = i +1;
-                            //ausgabe.append("</table:table-cell></table:table-row>");
+                            ausgabe.append("</table:table-cell></table:table-row>");
                             for(int j=1; j < fieldlist.count(); j++) {
                                 found = checkSedFile(QString("@%1_%2" + fieldlist.at(i)).arg(Position).arg(j), sedfile);
                                 if(found > 0) {
@@ -376,7 +379,7 @@ QString Reportgen::prepareTemplateContent(int Position, QString odffile, QString
 
 QString Reportgen::prepareTemplateEbene(int Position, int Ebene, int Counter, QDomDocument doc, QString odffile)
 {
-    QFile *file = new QFile(QDir::tempPath() + "/" + QString("1" + odffile));
+    QFile *file = new QFile(QDir::tempPath() + "/" + QString("1-" + odffile));
     QString ausgabe;
     QString xmlout;
     QString xmlout1;
@@ -411,7 +414,7 @@ QString Reportgen::prepareTemplateEbene(int Position, int Ebene, int Counter, QD
         }
     }
 
-    //xmlout1.append(QString("</table:table-cell></table:table-row>"));
+    xmlout1.append(QString("</table:table-cell></table:table-row>"));
 
     return xmlout1;
 }
@@ -443,9 +446,10 @@ QString Reportgen::getTemplateFooter(QString filename)
                cnt = 1;
            }
            if(start > 0) {
+               qDebug() << "readLine: " << readLine;
                footer = footer + readLine + "\n";
            }
-           if(cnt > 0 && readLine.contains("<table:table")) {
+           if(cnt > 0 && /*readLine.contains("<table:table") || */ readLine.contains("</table:table-row")) {
                start = 1;
            }
        }
@@ -566,14 +570,14 @@ QList<QString> Reportgen::getTemplateVars(QString filename)
 
 void Reportgen::replaceTemplateVars(QString odffile, QString sedfile)
 {
-    QList<QString> temp_fields = getTemplateVars("1-" + odffile);
+    QList<QString> temp_fields = getTemplateVars(QDir::tempPath() + "/" + odffile + "/1-content.xml");
     QList<QString> sed_fields = readSedFile(sedfile);
     QString ausgabe;
     QString ersetzen;
     int start = 0;
     int ebene = 0;
 
-    QFile *file = new QFile(QDir::tempPath() + "/1-" + odffile);
+    QFile *file = new QFile(QDir::tempPath() + "/" + odffile + "/1-content.xml");
 
     if(!file->open(QIODevice::ReadOnly)) {
         qDebug() << "cannot open content1.xml (ersetzung)";
@@ -640,7 +644,7 @@ void Reportgen::replaceTemplateVars(QString odffile, QString sedfile)
 
     }
 
-    QFile *file1 = new QFile(QDir::tempPath() + "/" + QString("1-" + odffile));
+    QFile *file1 = new QFile(QDir::tempPath() + "/" + odffile + "/1-content.xml");
 
     if(!file1->open(QIODevice::WriteOnly | QIODevice::Truncate)) {
         qDebug() << "konnte nicht zum schreiben öffnen (ersetzen)" << "";
@@ -653,8 +657,17 @@ void Reportgen::replaceTemplateVars(QString odffile, QString sedfile)
     file1->close();
     file->close();
 
+    QFile *oldContent = new QFile(QDir::tempPath() + "/" + odffile + "/content.xml" );
+    //QFile *newContent = new QFile("1-content.xml")
+
+    if(oldContent->exists()) {
+        oldContent->remove();
+    }
+
+    QFile::rename( QString( QDir::tempPath() + "/" + odffile + "/1-content.xml" ) , QString( QDir::tempPath() + "/" + odffile + "/content.xml" ) );
+
     ZipUnzip *p_zip = new ZipUnzip();
-    p_zip->zipFileArchiv(QDir::tempPath(), "LTGR_Template");
+    p_zip->zipFileArchiv(QDir::tempPath(), odffile);
 
 }
 
