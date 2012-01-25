@@ -991,6 +991,7 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
          }
 
          if(qs_name == "ui.vdc.action"){
+           qDebug() << "werde aufgerufen!!!" << "";
            QStringList params;
             for(int k=0; k<paramsElement.childNodes().count(); k++){
                QDomElement valuesElement = paramsElement.childNodes().at(k).toElement();
@@ -1004,15 +1005,40 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
          if(qs_name == "ui.vdc.repgen"){
 
            QStringList params;
+           QString odffile;
+           QString sedfile;
+           QString temp_datei;
+           QString extension;
+
             for(int k=0; k<paramsElement.childNodes().count(); k++){
                QDomElement valuesElement = paramsElement.childNodes().at(k).toElement();
                params << valuesElement.text();
             }
            //params 0-2 sind die uebergabeparameter 
-            //Rückgabe werte. Erster = Exitcode, Zweiter = Failsafe Dateiname
+           //Rückgabe werte. Erster = Exitcode, Zweiter = Failsafe Dateiname
+            QFileInfo file(params.at(0));
+            sedfile = params.at(1);
+            temp_datei = file.baseName();
+            extension = file.completeSuffix();
+            QFile *file1 = new QFile(QDir::tempPath() + "/" + QString(temp_datei + "." + extension));
+            if( file.completeSuffix() == "ods" || file.completeSuffix() == "odt" )
+            {
+                if(!file1->open(QIODevice::ReadOnly)) {
+                    qDebug() << "Datei vom Server nicht empfangen" << "";
+                    returnvalues << QString::number(file1->open(QIODevice::ReadOnly));
+                } else {
+                    returnvalues << QString::number(p_reportgen->startReportTemplate(QString(temp_datei + "." + extension), sedfile));
+                }
+            } else
+            {
+                QString error;
+                error = "Die empfangene Datei ist kein OpenOffice Format :<b>\n" +
+                        odffile;
+                MsgBox("Unbekanntes Format", error, "Error", "Ok", "Ok", 0);
+            } 
             returnvalues << "0";
             returnvalues << "";
-         }
+          }
 
          if(qs_name == "ui.vdc.odftopdf"){
  
