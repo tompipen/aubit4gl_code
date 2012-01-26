@@ -45,6 +45,7 @@ void add_base_channel_support(void) ;
 void add_ui_interface_support(void) ;
 void add_ui_window_support(void) ;
 void add_ui_combobox_support(void) ;
+void add_ui_vdc_support(void) ;
 void add_ui_curses_support(void);
 void add_dyn_support(void) ;
 char *getSigForTopOfStack(int numberOfObjectsOnStack) ;
