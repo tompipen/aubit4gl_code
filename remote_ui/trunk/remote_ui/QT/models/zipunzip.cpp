@@ -51,6 +51,7 @@ bool ZipUnzip::unzipArchiv(QString filePath, QString fileName)
                 if( destdir->open( QIODevice::WriteOnly | QIODevice::Truncate) )
                 {
                     QTextStream stream( destdir );
+                    stream.setCodec("ISO-8859-1");
                     stream << file.readAll();
                 } else {
                     return false;
