@@ -31,9 +31,9 @@ bool Reportgen::startReportTemplate(QString odffile, QString sedfile)
    int wiederholen = 0;
    int cnt = 0;
 
-   if(sedfile.contains("SCAN:")) {
-       createInfoFile(odffile);
-   }
+   /*if(sedfile.contains("SCAN:")) {
+       createInfoFile(odffile, sedfile);
+   }*/
 
    QFile *file = new QFile(QDir::tempPath() + "/" + fileBaseName + "/1-content.xml");
 
@@ -599,13 +599,30 @@ bool Reportgen::replaceTemplateVars(QString odffile, QString sedfile)
     file->close();
 
     QFile *oldContent = new QFile(QDir::tempPath() + "/" + odffile + "/content.xml" );
-    //QFile *newContent = new QFile("1-content.xml")
+    QString buffer;
+    QFile *newContent = new QFile(QDir::tempPath() + "/" + odffile + "/1-content.xml" );
 
-    if(oldContent->exists()) {
-        oldContent->remove();
+    if(newContent->exists())
+    {
+        if(!newContent->open(QIODevice::ReadOnly))
+        {
+            qDebug("konnte 1-content. nicht zum lesen öffnen");
+        }
+
+        buffer = newContent->readAll();
     }
 
-    QFile::rename( QString( QDir::tempPath() + "/" + odffile + "/1-content.xml" ) , QString( QDir::tempPath() + "/" + odffile + "/content.xml" ) );
+    if(oldContent->exists()) {
+        if(oldContent->open(QIODevice::WriteOnly | QIODevice::Truncate))
+        {
+            QTextStream stream(oldContent);
+            stream << buffer;
+            newContent->remove();
+        }
+
+    }
+
+    //QFile::rename( QString( QDir::tempPath() + "/" + odffile + "/1-content.xml" ) , QString( QDir::tempPath() + "/" + odffile + "/content.xml" ) );
 
     ZipUnzip *p_zip = new ZipUnzip();
     p_zip->zipFileArchiv(QDir::tempPath(), odffile);
@@ -614,7 +631,7 @@ bool Reportgen::replaceTemplateVars(QString odffile, QString sedfile)
 
 }
 
-bool Reportgen::createInfoFile(QString odffile)
+bool Reportgen::createInfoFile(QString odffile, QString sedfile, QString zieldatei)
 {
 
     QString templateFile = QString ( QDir::tempPath() + "/" + "LTGR_Beispiel_content.xml" );
