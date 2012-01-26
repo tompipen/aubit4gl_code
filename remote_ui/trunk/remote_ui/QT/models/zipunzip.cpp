@@ -57,6 +57,7 @@ bool ZipUnzip::unzipArchiv(QString filePath, QString fileName)
                 }
 
                 file.close();
+                destdir->setPermissions(QFile::ReadOther | QFile::WriteOther | QFile::ReadOwner | QFile::WriteOwner);
                 destdir->close();
             }
     }
