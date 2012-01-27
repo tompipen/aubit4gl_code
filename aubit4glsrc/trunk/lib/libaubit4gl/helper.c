@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper.c,v 1.97 2011-07-22 20:10:00 mikeaubury Exp $
+# $Id: helper.c,v 1.98 2012-01-27 08:56:11 mikeaubury Exp $
 #
 */
 
@@ -682,9 +682,16 @@ int_get_info_window (char *ptr, char *info)
       A4GL_push_int (p->h);
       params = 4;
       break;
+
+
+
     case 0:
       A4GL_exitwith ("Invalid Window info request");
       return 0;
+	default:
+		
+      	A4GL_exitwith ("Invalid Window info request");
+ 	return 0;
     }
 #ifdef DEBUG
   A4GL_debug ("params=%d", params);
