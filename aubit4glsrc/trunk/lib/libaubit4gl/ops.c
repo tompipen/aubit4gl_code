@@ -25,7 +25,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.198 2012-01-26 13:30:05 mseidel Exp $
+# $Id: ops.c,v 1.199 2012-01-27 08:57:21 mikeaubury Exp $
 #
 */
 
@@ -5862,38 +5862,51 @@ A4GL_dt_dt_ops (int op)
       int inverted;
       s1 = -1;
       s2 = -1;
+	int a;
 
-      if (dtime_data1[0] && s1 == -1)
+if (dt1.stime>0) {
+	s1=dt1.stime-1;
+} else {
+
+      if (dtime_data1[0]>=0 && s1 == -1)
 	s1 = 0;
-      if (dtime_data1[1] && s1 == -1)
+      if (dtime_data1[1]>=0 && s1 == -1)
 	s1 = 1;
-      if (dtime_data1[2] && s1 == -1)
+      if (dtime_data1[2]>=0 && s1 == -1)
 	s1 = 2;
-      if (dtime_data1[3] && s1 == -1)
+      if (dtime_data1[3]>=0 && s1 == -1)
 	s1 = 3;
-      if (dtime_data1[4] && s1 == -1)
+      if (dtime_data1[4]>=0 && s1 == -1)
 	s1 = 4;
-      if (dtime_data1[5] && s1 == -1)
+      if (dtime_data1[5]>=0 && s1 == -1)
 	s1 = 5;
-      if (dtime_data1[6] && s1 == -1)
+      if (dtime_data1[6]>=0 && s1 == -1)
 	s1 = 6;
+}
 
-      if (dtime_data2[0] && s2 == -1)
+if (dt2.stime>0) {
+
+	s2=dt2.stime-1;
+} else {
+
+      if (dtime_data2[0]>=0 && s2 == -1)
 	s2 = 0;
-      if (dtime_data2[1] && s2 == -1)
+      if (dtime_data2[1]>=0 && s2 == -1)
 	s2 = 1;
-      if (dtime_data2[2] && s2 == -1)
+      if (dtime_data2[2]>=0 && s2 == -1)
 	s2 = 2;
-      if (dtime_data2[3] && s2 == -1)
+      if (dtime_data2[3]>=0 && s2 == -1)
 	s2 = 3;
-      if (dtime_data2[4] && s2 == -1)
+      if (dtime_data2[4]>=0 && s2 == -1)
 	s2 = 4;
-      if (dtime_data2[5] && s2 == -1)
+      if (dtime_data2[5]>=0 && s2 == -1)
 	s2 = 5;
-      if (dtime_data2[6] && s2 == -1)
+      if (dtime_data2[6]>=0 && s2 == -1)
 	s2 = 6;
+}
 
 /* We need to make sure we're comparing like for like... */
+
       if (s1 > 0 || s2 > 0)
 	{
 	  dtime_data1[0] = 0;
@@ -5929,6 +5942,7 @@ A4GL_dt_dt_ops (int op)
 	  dtime_data1[6] = 0;
 	  dtime_data2[6] = 0;
 	}
+
 
       inverted = 0;
       for (cnt = 0; cnt < 6; cnt++)
