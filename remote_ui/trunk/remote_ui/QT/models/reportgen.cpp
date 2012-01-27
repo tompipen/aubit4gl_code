@@ -511,6 +511,105 @@ QList<QString> Reportgen::getTemplateVars(QString filename)
 
 bool Reportgen::replaceTemplateVars(QString odffile, QString sedfile)
 {
+    QList <QString> temp_fields = getTemplateVars(odffile + "/1-content.xml");
+    QFileInfo sedInfo =  sedfile;
+    QString ausgabe;
+    QString sedLine;
+    QList<QString> templateVars;
+
+
+    QFile *file = new QFile(QDir::tempPath() + "/" + sedInfo.baseName());
+    if(!file->open(QIODevice::ReadOnly))
+    {
+        qDebug() << "(replaceTemplateVars()): Konnte SED Datei nicht zum lesen öffnen";
+    }
+
+    while(!file->atEnd())
+    {
+        sedLine = file->readLine();
+        if(sedLine.contains("@"))
+        {
+            templateVars = getTemplateVars(odffile + "/1-content.xml");
+            if(templateVars.isEmpty())
+            {
+                qDebug() << "(replaceTemplateVars()): Keine Template Variablen gefunden. Abbruch!";
+                break;
+            }
+
+            for( int i=0; i < templateVars.count(); i++)
+            {
+                if(sedLine.contains("@" + templateVars.at(i)))
+                {
+                    sedLine.replace("s/", "");
+                    sedLine.replace("@" + templateVars.at(i) + "/", "");
+                    sedLine.replace("/g", "");
+                    qDebug() << "sedLine: " << sedLine;
+
+                    QFile *oldContent = new QFile(QDir::tempPath() + "/" + odffile + "/1-content.xml");
+                    if(!oldContent->open(QIODevice::ReadOnly))
+                    {
+                        qDebug() << "(replaceTemplateVars()): 1-content.xml konnte nicht zum lesen geöffnet werden.";
+                    }
+                        ausgabe = oldContent->readAll();
+
+                        if(ausgabe.contains("@" + templateVars.at(i))) {
+                            ausgabe.replace("@" + templateVars.at(i), sedLine.trimmed());
+                            qDebug() << "replace wurde ausgeführt" << "";
+                        }
+
+                        QFile *newContent = new QFile(QDir::tempPath() + "/" + odffile + "/1-content.xml");
+                        if(!newContent->open(QIODevice::WriteOnly | QIODevice::Truncate))
+                        {
+                            qDebug() << "(replaceTemplateVars()): content.xml konnte nicht zum schreiben geöffnet werden.";
+                        }
+
+                        QTextStream newContentstream(newContent);
+                        newContentstream << ausgabe;
+                        newContent->close();
+                        //qDebug() << "ausgabe:" << ausgabe;
+                        ausgabe.clear();
+                }
+
+            }
+        }
+    }
+    file->close();
+
+    QFile *oldContent = new QFile(QDir::tempPath() + "/" + odffile + "/content.xml" );
+    QString buffer;
+    QFile *newContent = new QFile(QDir::tempPath() + "/" + odffile + "/1-content.xml" );
+
+    if(newContent->exists())
+    {
+        if(!newContent->open(QIODevice::ReadOnly))
+        {
+            qDebug("konnte 1-content. nicht zum lesen öffnen");
+        }
+
+        buffer = newContent->readAll();
+    }
+
+    if(oldContent->exists()) {
+        if(oldContent->open(QIODevice::WriteOnly | QIODevice::Truncate))
+        {
+            QTextStream stream(oldContent);
+            stream << buffer;
+            newContent->remove();
+        }
+
+    }
+
+    //QFile::rename( QString( QDir::tempPath() + "/" + odffile + "/1-content.xml" ) , QString( QDir::tempPath() + "/" + odffile + "/content.xml" ) );
+
+    ZipUnzip *p_zip = new ZipUnzip();
+    p_zip->zipFileArchiv(QDir::tempPath(), odffile);
+
+    return true;
+
+}
+
+/*bool Reportgen::replaceTemplateVars(QString odffile, QString sedfile)
+{
     QList<QString> temp_fields = getTemplateVars(odffile + "/1-content.xml");
     QList<QString> sed_fields = readSedFile(sedfile);
     QString ausgabe;
@@ -568,7 +667,7 @@ bool Reportgen::replaceTemplateVars(QString odffile, QString sedfile)
                                         ersetzen.replace("ß", "ss");
                                         ersetzen.replace(QString("s/@" + temp_fields.at(i) + "/"), " ");
                                         ersetzen.replace(QString("/g"), "");
-                                        ausgabe.replace(QString("@" + temp_fields.at(i)), /*p_protocol->filterUmlauts(*/ersetzen.trimmed());//);
+                                        ausgabe.replace(QString("@" + temp_fields.at(i)), p_protocol->filterUmlauts(ersetzen.trimmed());//);
                                     }
                                 }
                             }
@@ -629,7 +728,7 @@ bool Reportgen::replaceTemplateVars(QString odffile, QString sedfile)
 
     return true;
 
-}
+}*/
 
 bool Reportgen::createInfoFile(QString odffile, QString sedfile, QString zieldatei)
 {
