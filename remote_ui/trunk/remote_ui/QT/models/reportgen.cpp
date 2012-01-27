@@ -543,7 +543,6 @@ bool Reportgen::replaceTemplateVars(QString odffile, QString sedfile)
                     sedLine.replace("s/", "");
                     sedLine.replace("@" + templateVars.at(i) + "/", "");
                     sedLine.replace("/g", "");
-                    qDebug() << "sedLine: " << sedLine;
 
                     QFile *oldContent = new QFile(QDir::tempPath() + "/" + odffile + "/1-content.xml");
                     if(!oldContent->open(QIODevice::ReadOnly))
@@ -554,7 +553,6 @@ bool Reportgen::replaceTemplateVars(QString odffile, QString sedfile)
 
                         if(ausgabe.contains("@" + templateVars.at(i))) {
                             ausgabe.replace("@" + templateVars.at(i), sedLine.trimmed());
-                            qDebug() << "replace wurde ausgeführt" << "";
                         }
 
                         QFile *newContent = new QFile(QDir::tempPath() + "/" + odffile + "/1-content.xml");
@@ -566,7 +564,6 @@ bool Reportgen::replaceTemplateVars(QString odffile, QString sedfile)
                         QTextStream newContentstream(newContent);
                         newContentstream << ausgabe;
                         newContent->close();
-                        //qDebug() << "ausgabe:" << ausgabe;
                         ausgabe.clear();
                 }
 
@@ -598,9 +595,6 @@ bool Reportgen::replaceTemplateVars(QString odffile, QString sedfile)
         }
 
     }
-
-    //QFile::rename( QString( QDir::tempPath() + "/" + odffile + "/1-content.xml" ) , QString( QDir::tempPath() + "/" + odffile + "/content.xml" ) );
-
     ZipUnzip *p_zip = new ZipUnzip();
     p_zip->zipFileArchiv(QDir::tempPath(), odffile);
 
