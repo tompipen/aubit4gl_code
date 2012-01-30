@@ -1040,7 +1040,6 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
                 MsgBox("Unbekanntes Format", error, "Error", "Ok", "Ok", 0);
             } 
             returnvalues << "0";
-            returnvalues << "";
           }
          
           if(qs_name == "ui.vdc.checkodffile")
