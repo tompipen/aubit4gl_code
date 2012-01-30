@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.177 2012-01-19 19:23:58 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.178 2012-01-30 09:03:54 mikeaubury Exp $
 #
 */
 
@@ -940,6 +940,10 @@ A4GL_cv_fnlist (char *source, char *target, char *name)
   char buff_sm[201];
   FILE *fh;
 
+
+  if (target==0) return;
+  if (strlen(target)==0) return;
+  if (strcmp(target,"FILE")==0) return;
 
   SPRINTF2 (buff_sm, "/%s-%s.cnv", source, target);
 
