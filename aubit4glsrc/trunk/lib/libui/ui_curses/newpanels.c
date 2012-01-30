@@ -24,11 +24,11 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.191 2011-05-03 21:08:40 mikeaubury Exp $
+# $Id: newpanels.c,v 1.192 2012-01-30 18:05:54 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: newpanels.c,v 1.191 2011-05-03 21:08:40 mikeaubury Exp $";
+		"$Id: newpanels.c,v 1.192 2012-01-30 18:05:54 mikeaubury Exp $";
 #endif
 
 /**
@@ -3481,8 +3481,12 @@ int b;
         }
   } else {
         if (a>(UILIB_A4GL_get_curr_height())) {
-                a=2;
-		if (a>UILIB_A4GL_get_curr_height()-A4GL_iscurrborder()) a=1;
+		if (!A4GL_isno(acl_getenv("MSGLINEFIXUP"))) {
+			a=UILIB_A4GL_get_curr_height();
+ 		} else {
+                	a=2;
+			if (a>UILIB_A4GL_get_curr_height()-A4GL_iscurrborder()) a=1;
+		}
         }
   }
 
