@@ -724,12 +724,18 @@ bool Reportgen::replaceTemplateVars(QString odffile, QString sedfile)
 
 }*/
 
-bool Reportgen::createInfoFile(QString odffile, QString sedfile, QString zieldatei)
+bool Reportgen::createInfoFile(QFileInfo odffile, QFileInfo zieldatei)
 {
+    qDebug() << "erstellen der Info Datei" << odffile.fileName();
 
-    QString templateFile = QString ( QDir::tempPath() + "/" + "LTGR_Beispiel_content.xml" );
+    ZipUnzip *p_zipunzip = new ZipUnzip();
 
-    QFile *file = new QFile( templateFile );
+    if(p_zipunzip->unzipArchiv(QDir::tempPath(), QString(odffile.fileName())) == FALSE)
+    {
+        qDebug() << "Es ist ein Fehler beim entpacken aufgetreten" << "";
+        return false;
+    }
+    QFile *file = new QFile( QDir::tempPath() + "/"  + odffile.baseName() + "/content.xml");
 
     if( !file->open( QIODevice::ReadOnly ) )
     {
@@ -763,7 +769,7 @@ bool Reportgen::createInfoFile(QString odffile, QString sedfile, QString zieldat
         }
     }
 
-    QFile *file1 = new QFile( QDir::tempPath() + "/SCAN_" + odffile );
+    QFile *file1 = new QFile( QDir::tempPath() + "/" + zieldatei.baseName() );
 
     if(!file1->open(QIODevice::WriteOnly | QIODevice::Truncate))
     {
@@ -783,7 +789,7 @@ bool Reportgen::createInfoFile(QString odffile, QString sedfile, QString zieldat
         stream1 << QString( "0" ) << QString ( "1" ) << QString( "%1" ).arg( counter ) << "\n";
         break;
     case 3:
-        stream1 << QString( "0" ) << QString ( "1" ) << QString ( "2" ) << QString( "1" ).arg( counter ) << "\n";
+        stream1 << QString( "0" ) << QString ( "1" ) << QString ( "2" ) << QString( "%1" ).arg( counter ) << "\n";
         break;
 
     }

@@ -1039,6 +1039,29 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
             returnvalues << "0";
             returnvalues << "";
           }
+         
+          if(qs_name == "ui.vdc.checkodffile")
+          {
+             QStringList params;
+             for(int k=0; k<paramsElement.childNodes().count(); k++){
+                QDomElement valuesElement = paramsElement.childNodes().at(k).toElement();
+                params << valuesElement.text();
+            
+             }
+             QFileInfo odffile(params.at(0));
+             QFileInfo zieldatei(params.at(1));
+             QFile *file = new QFile(QDir::tempPath() + "/" + odffile.baseName() + "." + odffile.completeSuffix());
+
+             if(file->open(QIODevice::ReadOnly))
+             {
+                returnvalues << QString::number(p_reportgen->createInfoFile(odffile.baseName() + "." + odffile.completeSuffix(), zieldatei));
+        
+             } else 
+             {
+                qDebug() << "Datei nicht geöffnet" << "";
+                returnvalues << "O";
+             }
+          }  
 
          if(qs_name == "ui.vdc.odftopdf"){
  

@@ -8,7 +8,7 @@ class Reportgen : public QObject
     Q_OBJECT;
 
 public:
-    bool createInfoFile(QString odffile, QString sedfile, QString zieldatei);
+    bool createInfoFile(QFileInfo odffile, QFileInfo zieldatei);
     bool replaceTemplateVars(QString odffile, QString sedfile);
     bool startReportTemplate(QString odffile, QString sedfile);
     int checkSedFile(QString fieldname, QString filename);
