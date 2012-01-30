@@ -547,7 +547,12 @@ bool Reportgen::replaceTemplateVars(QString odffile, QString sedfile)
                     {
                         qDebug() << "(replaceTemplateVars()): 1-content.xml konnte nicht zum lesen geöffnet werden.";
                     }
-                        ausgabe = oldContent->readAll();
+                        QTextStream oldStream(oldContent);
+                        oldStream.setCodec("UTF-8");
+                        while(!oldStream.atEnd())
+                        {
+                            ausgabe = oldStream.readAll();
+                        }
 
                         if(ausgabe.contains("@" + templateVars.at(i))) {
                             ausgabe.replace("@" + templateVars.at(i), sedLine.trimmed());
