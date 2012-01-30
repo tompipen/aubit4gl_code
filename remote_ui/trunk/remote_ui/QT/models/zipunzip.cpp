@@ -184,7 +184,6 @@ bool ZipUnzip::zipFileArchiv(QString filePath, QString FileName)
         {
             QDir::setCurrent( dir.absolutePath() );
             inFile.setFileName( fileInfo.fileName() );
-            qDebug() << "inFile: " << inFile.fileName();
             if(!inFile.open(QIODevice::ReadOnly)) {
                 qDebug() << "Datei nicht gefunden: " << fileInfo.fileName();
                 return false;

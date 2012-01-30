@@ -90,12 +90,11 @@ bool Reportgen::startReportTemplate(QString odffile, QString sedfile)
 
    content.replace("[P1[", "");
    content.replace("[P2[", "");
+   content.replace("[P3[", "");
    content.replace("]P1]", "");
    content.replace("]P2]", "");
+   content.replace("]P3]", "");
 
-
-   //xmlsave << getTemplateHeader(fileBaseName + "/content.xml");
-   qDebug() << "bla: " << getTemplateHeader(fileBaseName + "/content.xml");
    xmlsave << getTemplateHeader( fileBaseName + "/content.xml" ) << getTemplatePosition( fileBaseName + "/content.xml" ).toUtf8() << content << getTemplateFooter( fileBaseName + "/content.xml" );
    file->close();
 
@@ -387,7 +386,6 @@ QString Reportgen::getTemplateFooter(QString filename)
                cnt = 1;
            }
            if(start > 0) {
-               qDebug() << "readLine: " << readLine;
                footer = footer + readLine + "\n";
            }
            if(cnt > 0 && /*readLine.contains("<table:table") || */ readLine.contains("</table:table-row")) {
