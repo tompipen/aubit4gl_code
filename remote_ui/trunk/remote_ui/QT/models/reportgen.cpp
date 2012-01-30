@@ -10,7 +10,7 @@
 //
 //--------------------------------------------------------------------------------
 
-bool Reportgen::startReportTemplate(QString odffile, QString sedfile)
+bool Reportgen::startReportTemplate(QString odffile, QString sedfile, QFileInfo zielDatei)
 {
 
     ZipUnzip *p_zipunzip = new ZipUnzip();
@@ -98,7 +98,7 @@ bool Reportgen::startReportTemplate(QString odffile, QString sedfile)
    xmlsave << getTemplateHeader( fileBaseName + "/content.xml" ) << getTemplatePosition( fileBaseName + "/content.xml" ).toUtf8() << content << getTemplateFooter( fileBaseName + "/content.xml" );
    file->close();
 
-   replaceTemplateVars(fileBaseName, sedfile);
+   replaceTemplateVars(fileBaseName, sedfile, zielDatei);
 
    return true;
 
@@ -507,7 +507,7 @@ QList<QString> Reportgen::getTemplateVars(QString filename)
 //
 //------------------------------------------------------------------------------
 
-bool Reportgen::replaceTemplateVars(QString odffile, QString sedfile)
+bool Reportgen::replaceTemplateVars(QString odffile, QString sedfile, QFileInfo zielDatei)
 {
     QList <QString> temp_fields = getTemplateVars(odffile + "/1-content.xml");
     QFileInfo sedInfo =  sedfile;
@@ -599,7 +599,7 @@ bool Reportgen::replaceTemplateVars(QString odffile, QString sedfile)
 
     }
     ZipUnzip *p_zip = new ZipUnzip();
-    p_zip->zipFileArchiv(QDir::tempPath(), odffile);
+    p_zip->zipFileArchiv(QDir::tempPath(), odffile, zielDatei);
 
     return true;
 

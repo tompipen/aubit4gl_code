@@ -104,7 +104,7 @@ bool ZipUnzip::unzipFile(QString filePath, QString fileName)
     return true;
 }
 
-bool ZipUnzip::zipFileArchiv(QString filePath, QString FileName)
+bool ZipUnzip::zipFileArchiv(QString filePath, QString FileName, QFileInfo zielDatei)
 {
     const QString currentDir = QDir::currentPath();
     QString absolutFilePath =  QString( filePath + "/" + FileName );
@@ -117,8 +117,9 @@ bool ZipUnzip::zipFileArchiv(QString filePath, QString FileName)
 
     }
 
-    absolutFilePath.append("123.ods");
-    QuaZip zip( absolutFilePath );
+    //absolutFilePath.append("123.ods");
+
+    QuaZip zip( filePath + "/" + zielDatei.fileName() );
     zip.setFileNameCodec("IBM866");
 
     if( !zip.open(QuaZip::mdCreate ) )
@@ -218,7 +219,6 @@ bool ZipUnzip::zipFileArchiv(QString filePath, QString FileName)
         QDir::setCurrent(currentDir);
     }
 
-    qDebug() << "currentDir: " << currentDir;
     QDir::setCurrent(currentDir);
     return true;
 

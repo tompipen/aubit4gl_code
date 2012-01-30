@@ -927,6 +927,8 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
              QFileInfo file(odffile);
              temp_datei = file.baseName();
              extension = file.completeSuffix();
+             QFileInfo zieldatei;
+             //QFileInfo zieldatei = params.at(2);
              QFile *file1 = new QFile(QDir::tempPath() + "/" + QString(temp_datei + "." + extension));
 
              if( file.completeSuffix() == "ods" || file.completeSuffix() == "odt" )
@@ -935,7 +937,7 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
                      qDebug() << "Datei vom Server nicht empfangen" << "";
                      returnvalues << QString::number(file1->open(QIODevice::ReadOnly));
                  } else {
-                     returnvalues << QString::number(p_reportgen->startReportTemplate(QString(temp_datei + "." + extension), sedfile));
+                     returnvalues << QString::number(p_reportgen->startReportTemplate(QString(temp_datei + "." + extension), sedfile, zieldatei.baseName() + "." + zieldatei.completeSuffix()));
                  }
              } else
              {
@@ -1020,6 +1022,7 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
             sedfile = params.at(1);
             temp_datei = file.baseName();
             extension = file.completeSuffix();
+            QFileInfo zieldatei = params.at(2);
             QFile *file1 = new QFile(QDir::tempPath() + "/" + QString(temp_datei + "." + extension));
             if( file.completeSuffix() == "ods" || file.completeSuffix() == "odt" )
             {
@@ -1027,7 +1030,7 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
                     qDebug() << "Datei vom Server nicht empfangen" << "";
                     returnvalues << QString::number(file1->open(QIODevice::ReadOnly));
                 } else {
-                    returnvalues << QString::number(p_reportgen->startReportTemplate(QString(temp_datei + "." + extension), sedfile));
+                    returnvalues << QString::number(p_reportgen->startReportTemplate(QString(temp_datei + "." + extension), sedfile, zieldatei.baseName() + "." + zieldatei.completeSuffix()));
                 }
             } else
             {
