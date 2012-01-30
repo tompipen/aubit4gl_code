@@ -772,7 +772,7 @@ bool Reportgen::createInfoFile(QFileInfo odffile, QFileInfo zieldatei)
         }
     }
 
-    QFile *file1 = new QFile( QDir::tempPath() + "/" + zieldatei.baseName() );
+    QFile *file1 = new QFile( QDir::tempPath() + "/" + zieldatei.fileName() );
 
     if(!file1->open(QIODevice::WriteOnly | QIODevice::Truncate))
     {
