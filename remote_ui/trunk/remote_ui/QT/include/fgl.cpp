@@ -676,6 +676,7 @@ namespace Fgl {
       for(int a=value.length()-1; a>=0; a--){
          if(value.at(a) == '.'){
             value[a] = dec;
+             //value[a] = ',';
          }
       }
       return value;
