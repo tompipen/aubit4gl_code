@@ -568,6 +568,7 @@ bool Reportgen::replaceTemplateVars(QString odffile, QString sedfile, QFileInfo 
                         newContentstream << ausgabe;
                         newContent->close();
                         ausgabe.clear();
+                        oldContent->close();
                 }
 
             }
