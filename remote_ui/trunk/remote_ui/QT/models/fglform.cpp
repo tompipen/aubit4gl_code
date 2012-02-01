@@ -1823,15 +1823,9 @@ void FglForm::nextfield(bool change)
 {
 MainFrame::vdcdebug("FglForm","nextfield", "bool change");
 
-/*if(this->context == NULL)
+if(this->context == NULL)
 {
     return;
-}*/
-
-//TODO: Max anschauen ob das vorhaben auch 100% so gewollt ist. Wenn Prüfen ob Fieldlist leer ist, und nicht ob die Speicheradresse gesetzt ist.
-if(context->fieldList().isEmpty())
-{
-   return;
 }
 
    bool b_sendEvent = (QObject::sender() != NULL); //If called from screenHandler this is NULL
@@ -1900,7 +1894,12 @@ if(context->fieldList().isEmpty())
 
 
       if(next == NULL){ //no next field -> go to first field
-          next = context->fieldList().first();
+          if(context->fieldList().isEmpty())
+          {
+             return;
+          } else {
+              next = context->fieldList().first();
+          }
       }
 
       setCurrentField(next->objectName(), b_sendEvent);
@@ -2004,10 +2003,7 @@ void FglForm::prevfield()
 MainFrame::vdcdebug("FglForm","prevfield", "");
    bool b_sendEvent = (QObject::sender() != NULL); //If called from screenHandler this is NULL
                                                    // Programatical change (NEXT FIELD PREVIOUS)-> No AFTER_FIELD_EVENT
-
-   //TODO: Max anschauen. Wenn Fieldlist leer ist abbruch, ansonsten Seg fault (backtab + KEY_UP).
-
-   if(context->fieldList().isEmpty())
+   if(this->context == NULL)
    {
        return;
    }
@@ -2022,7 +2018,12 @@ MainFrame::vdcdebug("FglForm","prevfield", "");
        }
 
        if(prev == NULL){ //no next field -> go to first field
-           prev = context->fieldList().last();
+           if(context->fieldList().isEmpty())
+           {
+               return;
+           } else {
+               prev = context->fieldList().last();
+           }
        }
        jumpToField(prev);
        //setCurrentField(prev->objectName(), b_sendEvent);
