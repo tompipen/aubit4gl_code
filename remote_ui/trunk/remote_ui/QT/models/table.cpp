@@ -728,14 +728,15 @@ MainFrame::vdcdebug("TableView","setText", "QString text, int row, int col");
          //row-1 cause the proxyModel counts at 0
        TableModel *table = static_cast<TableModel*> (proxyModel->sourceModel());
        QModelIndex modelIndex;
-       if(table->b_input)
+       modelIndex = proxyModel->index(row, col, QModelIndex());
+       /*if(table->b_input)
        {
-         modelIndex = proxyModel->index(row, col, QModelIndex());
+
        }
        else
        {
                    modelIndex = proxyModel->index(row-1, col, QModelIndex());
-       }
+       }*/
 
          if(LineEditDelegate *dele = qobject_cast<LineEditDelegate *> (this->itemDelegateForColumn(col))){
             if(LineEdit *widget = qobject_cast<LineEdit *> (dele->qw_editor)){

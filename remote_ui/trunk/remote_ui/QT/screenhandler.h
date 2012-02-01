@@ -58,6 +58,7 @@ public:
    Prompt *p_prompt;
    Context* getContext(int);
    Context* getCurrentContext();
+   QList<Context*> getContexts(){ return contexts; }
    void freeContext(int);
 
    QHash<QString, QString> qh_env;
@@ -126,7 +127,7 @@ public slots:
    void clearFieldBuffer(QString);
    //void setFieldBuffer(QString, QStringList);
    void setFieldBuffer(QStringList, QStringList, int);
-   void setArrayBuffer(QWidget*, QString, QString);
+   //void setArrayBuffer(QWidget*, QString, QString);
    void setArrayBuffer(int, QString, QStringList);
    void setArrayBuffer(int, QStringList);
    void loadArrayValues(QStringList, QStringList);

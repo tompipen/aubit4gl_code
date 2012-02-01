@@ -61,6 +61,7 @@ public:
    QList<QAction*> actions();
    QAction* getAction(QString);
    bool isActionButton(QPushButton*);
+   bool eventFilter(QObject *obj, QEvent *event);
 
 
 private:
@@ -76,6 +77,7 @@ protected:
    void resizeEvent(QResizeEvent *);
    void focusInEvent(QFocusEvent*);
    void keyPressEvent(QKeyEvent*);
+
 
 signals:
    void menuButtonPressed(QString);

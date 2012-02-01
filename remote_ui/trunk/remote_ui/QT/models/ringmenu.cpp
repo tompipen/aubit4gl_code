@@ -37,7 +37,7 @@ MainFrame::vdcdebug("RingMenu","RingMenu", "QWidget *parent");
    this->setAlignment(Qt::AlignTop);
    // disable widget until it it gets called
    this->setEnabled(false);
-
+   this->installEventFilter(this);
    QVBoxLayout *layout = new QVBoxLayout;
    layout->setAlignment(Qt::AlignTop);
    layout->setSpacing(0);
@@ -446,4 +446,31 @@ bool RingMenu::isActionButton(QPushButton* button)
 MainFrame::vdcdebug("RingMenu","isActionButton", "QPushButton* button");
    Q_UNUSED(button);
    return false;
+}
+
+
+bool RingMenu::eventFilter(QObject *obj, QEvent *event)
+{
+
+    if(event->type() == QEvent::KeyPress){
+       QKeyEvent *keyEvent = (QKeyEvent*) event;
+       if(keyEvent->key() == Qt::Key_Backtab)
+       {
+
+       }
+       if(keyEvent->key() == Qt::Key_Tab)
+       {
+
+       }
+
+       if(keyEvent->key() == Qt::Key_Up) {
+
+       }
+
+       if(keyEvent->key() == Qt::Key_Down) {
+       }
+    }
+
+
+    return QGroupBox::eventFilter(obj,event);
 }

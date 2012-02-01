@@ -2790,7 +2790,15 @@ MainFrame::vdcdebug("FglForm","findFieldByName", "QString fieldName");
          for(int j=0; j<links.count(); j++){
             Fgl::Link link = links.at(j);
             if(link.colName == fieldName)
-               return ql_fields.at(link.fieldIdRef);
+            {
+                //DISPLAY BY NAME Failsafe, if a inputarray have a member with the same field like a edit field
+                if(LineEditDelegate *led = qobject_cast<LineEditDelegate*> (ql_fields.at(link.fieldIdRef)))
+                {
+                    continue;
+                }
+                return ql_fields.at(link.fieldIdRef);
+            }
+
          }
       }
    }
@@ -2887,6 +2895,18 @@ MainFrame::vdcdebug("FglForm","findFieldIdByName", "QString fieldName");
 QWidget* FglForm::findFieldById(int id)
 {
        QList<QWidget*> ql_fields = ql_formFields;
+       if(ql_formFields.size() <= 0)
+       {
+           if(p_currscreenhandler->getContexts().last() != context)
+           {
+               return p_currscreenhandler->getContexts().last()->fieldList().at(id);
+           }
+
+       }
+       if(id < 0)
+       {
+           qFatal("Invalid FieldId");
+       }
        return ql_fields.at(id);
       
 }

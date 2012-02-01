@@ -1977,7 +1977,8 @@ MainFrame::vdcdebug("ProtocolHandler","handleDisplayArrayElement", "const QDomNo
             QDomElement rowElement = child.toElement();
 
             if(rowElement.nodeName() == "ROW"){
-               int row = rowElement.attribute("SUBSCRIPT").toInt();
+               //We begin with 0 in the vdc
+               int row = rowElement.attribute("SUBSCRIPT").toInt()-1;
                QStringList qsl_arrayValues;
 
                QDomElement valuesElement = rowElement.firstChildElement();
@@ -1999,7 +2000,7 @@ MainFrame::vdcdebug("ProtocolHandler","handleDisplayArrayElement", "const QDomNo
                   setArrayBuffer(row, screenRecordName, qsl_arrayValues);
                }
                else{
-                  setArrayBuffer(row-1, qsl_arrayValues);
+                  setArrayBuffer(row, qsl_arrayValues);
                }
             }
          }

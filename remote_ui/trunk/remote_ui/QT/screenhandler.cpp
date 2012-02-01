@@ -767,7 +767,7 @@ MainFrame::vdcdebug("ScreenHandler","setFieldBuffer", "QStringList fieldNames, Q
             return;
          }
 
-         if(qobject_cast<LineEditDelegate *> (widget)){
+         if(LineEditDelegate *led = qobject_cast<LineEditDelegate *> (widget)){
             int index2 = fieldName.indexOf("[");
             int index3 = fieldName.indexOf("]")+1;
             int row;
@@ -783,7 +783,7 @@ MainFrame::vdcdebug("ScreenHandler","setFieldBuffer", "QStringList fieldNames, Q
     //        WidgetHelper::setDisplayAttributes(attr, widget);
 
             //count +1 cause we reduce the row in setArrayBuffer
-            row++;
+          //  row++;
             QStringList values;
             values << fieldValues.at(i);
             setArrayBuffer(row, fieldName, values);
@@ -891,7 +891,7 @@ MainFrame::vdcdebug("ScreenHandler","setFieldBuffer", "int fieldNo, QString fiel
 
       QStringList values;
       values << fieldValue;
-      setArrayBuffer(row, fieldName, values);
+      setArrayBuffer(row+1, fieldName, values);
    }
    else{
       WidgetHelper::setDisplayAttributes(attr, widget);
@@ -948,7 +948,7 @@ MainFrame::vdcdebug("ScreenHandler","clearFieldBuffer", "QString fieldName");
 // Filename     : screenhandler.cpp
 // Description  : sets the Text for the Field in display/input array
 //------------------------------------------------------------------------------
-void ScreenHandler::setArrayBuffer(QWidget* tableView, QString fieldName, QString fieldValue)
+/*void ScreenHandler::setArrayBuffer(QWidget* tableView, QString fieldName, QString fieldValue)
 {
 MainFrame::vdcdebug("ScreenHandler","setArrayBuffer", "QWidget* tableView, QString fieldName, QString fieldValue");
    TableView *screenRecord = qobject_cast<TableView *> (tableView);
@@ -982,9 +982,10 @@ MainFrame::vdcdebug("ScreenHandler","setArrayBuffer", "QWidget* tableView, QStri
    }
 
    if(!(row < 0 || col < 0)){
-      screenRecord->setText(fieldValue.trimmed(), row, col);
+      screenRecord->setText(fieldValue.trimmed(),row, col);
    }
 }
+*/
 
 void ScreenHandler::setArrayBuffer(int row, QString tabName, QStringList fieldValues)
 {
