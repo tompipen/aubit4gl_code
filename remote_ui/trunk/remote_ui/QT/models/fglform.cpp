@@ -1685,6 +1685,16 @@ void FglForm::setCurrentField(QString fieldName, bool sendEvents)
 {
 MainFrame::vdcdebug("FglForm","setCurrentField", "QString fieldName, bool sendEvents");
 
+if(fieldName.size() <= 0)
+{
+    return;
+}
+
+if(context == NULL)
+{
+    return;
+}
+
    if(!screenRecord()){
       QWidget *wi = currentWidget;
 
