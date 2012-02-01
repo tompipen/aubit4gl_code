@@ -1823,11 +1823,17 @@ void FglForm::nextfield(bool change)
 {
 MainFrame::vdcdebug("FglForm","nextfield", "bool change");
 
+/*if(this->context == NULL)
+{
+    return;
+}*/
 
-if(this->context == NULL)
+//TODO: Max anschauen ob das vorhaben auch 100% so gewollt ist. Wenn Prüfen ob Fieldlist leer ist, und nicht ob die Speicheradresse gesetzt ist.
+if(context->fieldList().isEmpty())
 {
    return;
 }
+
    bool b_sendEvent = (QObject::sender() != NULL); //If called from screenHandler this is NULL
    b_sendEvent = change;
                                                    // Programatical change (NEXT FIELD NEXT)-> No AFTER_FIELD_EVENT
@@ -1998,6 +2004,14 @@ void FglForm::prevfield()
 MainFrame::vdcdebug("FglForm","prevfield", "");
    bool b_sendEvent = (QObject::sender() != NULL); //If called from screenHandler this is NULL
                                                    // Programatical change (NEXT FIELD PREVIOUS)-> No AFTER_FIELD_EVENT
+
+   //TODO: Max anschauen. Wenn Fieldlist leer ist abbruch, ansonsten Seg fault (backtab + KEY_UP).
+
+   if(context->fieldList().isEmpty())
+   {
+       return;
+   }
+
    if(!screenRecord()){
        QWidget *prev = NULL;
        for(int i=1; i<context->fieldList().count(); i++){
