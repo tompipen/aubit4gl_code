@@ -88,13 +88,6 @@ bool Reportgen::startReportTemplate(QString odffile, QString sedfile, QFileInfo 
 
    }
 
-   content.replace("[P1[", "");
-   content.replace("[P2[", "");
-   content.replace("[P3[", "");
-   content.replace("]P1]", "");
-   content.replace("]P2]", "");
-   content.replace("]P3]", "");
-
    xmlsave << getTemplateHeader( fileBaseName + "/content.xml" ) << getTemplatePosition( fileBaseName + "/content.xml" ).toUtf8() << content << getTemplateFooter( fileBaseName + "/content.xml" );
    file->close();
 
@@ -233,7 +226,7 @@ QString Reportgen::prepareTemplateContent(int Position, QString odffile, QString
     fieldlist << getTemplateVars(odffile);
 
     while(!stream.atEnd()) {
-        ausgabe = stream.readLine() + "\n";
+        ausgabe = stream.readLine().trimmed();
 
 
         if(ausgabe.contains("[P1[")) {
@@ -281,7 +274,7 @@ QString Reportgen::prepareTemplateContent(int Position, QString odffile, QString
                         int found = 0;
                         if(fieldlist.at(i).contains(QString("[P%1[").arg(ebene))) {
                             i = i +1;
-                            ausgabe.append("</table:table-cell></table:table-row>");
+                            //ausgabe.append("</table:table-cell></table:table-row>");
                             for(int j=1; j < fieldlist.count(); j++) {
                                 found = checkSedFile(QString("@%1_%2" + fieldlist.at(i)).arg(Position).arg(j), sedfile);
                                 if(found > 0) {
@@ -301,8 +294,8 @@ QString Reportgen::prepareTemplateContent(int Position, QString odffile, QString
             xmlout = xmlout + ausgabe;
         }
 
-        if(ausgabe.contains("</table:table-row") && xmlout.contains("]")) {
-            ausgabe.append("</table:table-cell></table:table-row>");
+        if(ausgabe.contains("</table:table-row") && xmlout.contains("]P1]")) {
+            //ausgabe.append("</table:table-cell></table:table-row>");
             counter = 0;
         }
     }
@@ -324,13 +317,14 @@ QString Reportgen::prepareTemplateEbene(int Position, int Ebene, int Counter, QD
     QString xmlout;
     QString xmlout1;
     int cnt = 0;
+    int found = 0;
 
     if(!file->open(QIODevice::ReadOnly)) {
         qDebug() << "content1.xml konnte nicht geöffnet werden" << "";
     }
 
     xmlout = doc.toString();
-    xmlout1.append("<table:table-row><table:table-cell>");
+    //xmlout1.append("<table:table-row><table:table-cell>");
 
     QTextStream stream(&xmlout);
     stream.setCodec("UTF-8");
@@ -341,10 +335,23 @@ QString Reportgen::prepareTemplateEbene(int Position, int Ebene, int Counter, QD
         if(ausgabe.contains(QString("[P%1[").arg(Ebene))) {
             cnt = cnt + 1;
         }
+        if(ausgabe.contains("["))
+        {
+            found = found + 1;
+        }
 
         if(cnt  == 1) {
             if(ausgabe.contains("@")) {
-                ausgabe.replace("@", QString("@%1_%2").arg(QString::number(Position), QString::number(Counter)));
+                if(found == 1)
+                {
+                    ausgabe.replace("@", QString("@%1").arg(QString::number(Position)/*, QString::number(Counter)*/));
+                } else if (found == 2)
+                {
+                    ausgabe.replace("@", QString("@%1_%2").arg(QString::number(Position)).arg(QString::number(Counter)));
+                } else if (found == 3)
+                {
+                ausgabe.replace("@", QString("@%1_%2_%3").arg(QString::number(Position)).arg(QString::number(Counter)).arg(QString::number(0))/*, QString::number(Counter)*/);
+                }
             }
             xmlout1 = xmlout1 + ausgabe;
         }
@@ -352,9 +359,14 @@ QString Reportgen::prepareTemplateEbene(int Position, int Ebene, int Counter, QD
         if(ausgabe.contains(QString("]P%1]").arg(Ebene))) {
             cnt = cnt - 1;
         }
+
+        if(ausgabe.contains("]"))
+        {
+            found = found - 1;
+        }
     }
 
-    xmlout1.append(QString("</table:table-cell></table:table-row>"));
+    //xmlout1.append(QString("</table:table-cell></table:table-row>"));
 
     return xmlout1;
 }
@@ -386,7 +398,7 @@ QString Reportgen::getTemplateFooter(QString filename)
                cnt = 1;
            }
            if(start > 0) {
-               footer = footer + readLine + "\n";
+               footer = footer + readLine.trimmed();
            }
            if(cnt > 0 && /*readLine.contains("<table:table") || */ readLine.contains("</table:table-row")) {
                start = 1;
@@ -524,7 +536,7 @@ bool Reportgen::replaceTemplateVars(QString odffile, QString sedfile, QFileInfo 
 
     while(!file->atEnd())
     {
-        sedLine = file->readLine();
+        sedLine = file->readLine().trimmed();
         if(sedLine.contains("@"))
         {
             templateVars = getTemplateVars(odffile + "/1-content.xml");
@@ -551,12 +563,28 @@ bool Reportgen::replaceTemplateVars(QString odffile, QString sedfile, QFileInfo 
                         oldStream.setCodec("UTF-8");
                         while(!oldStream.atEnd())
                         {
-                            ausgabe = oldStream.readAll();
+                            ausgabe = oldStream.readAll().trimmed();
                         }
 
                         if(ausgabe.contains("@" + templateVars.at(i))) {
-                            ausgabe.replace("@" + templateVars.at(i), sedLine.trimmed());
+                            if(!sedLine.trimmed().isEmpty())
+                            {
+                                ausgabe.replace("@" + templateVars.at(i), sedLine.trimmed());
+                            } else {
+                                ausgabe.replace("@" + templateVars.at(i), "");
+                            }
                         }
+                        /*if(ausgabe.contains("["))
+                        {
+                            ausgabe.replace("[P1[", "").trimmed();
+                            ausgabe.remove("[P2[").trimmed();
+                            ausgabe.replace("[P3[", "").trimmed();
+                        } else if (ausgabe.contains("]"))
+                        {
+                            ausgabe.replace("]P1]", "").trimmed();
+                            ausgabe.remove("]P2]").trimmed();
+                            ausgabe.replace("]P3]", "").trimmed();
+                        }*/
 
                         QFile *newContent = new QFile(QDir::tempPath() + "/" + odffile + "/1-content.xml");
                         if(!newContent->open(QIODevice::WriteOnly | QIODevice::Truncate))
@@ -565,7 +593,7 @@ bool Reportgen::replaceTemplateVars(QString odffile, QString sedfile, QFileInfo 
                         }
 
                         QTextStream newContentstream(newContent);
-                        newContentstream << ausgabe;
+                        newContentstream << ausgabe.trimmed();
                         newContent->close();
                         ausgabe.clear();
                         oldContent->close();
@@ -574,6 +602,7 @@ bool Reportgen::replaceTemplateVars(QString odffile, QString sedfile, QFileInfo 
             }
         }
     }
+
     file->close();
 
     QFile *oldContent = new QFile(QDir::tempPath() + "/" + odffile + "/content.xml" );
@@ -587,14 +616,14 @@ bool Reportgen::replaceTemplateVars(QString odffile, QString sedfile, QFileInfo 
             qDebug("konnte 1-content. nicht zum lesen öffnen");
         }
 
-        buffer = newContent->readAll();
+        buffer = newContent->readAll().trimmed();
     }
 
     if(oldContent->exists()) {
         if(oldContent->open(QIODevice::WriteOnly | QIODevice::Truncate))
         {
             QTextStream stream(oldContent);
-            stream << buffer;
+            stream << buffer.trimmed();
             newContent->remove();
         }
 
