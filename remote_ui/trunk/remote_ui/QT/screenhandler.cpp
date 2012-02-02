@@ -1773,7 +1773,9 @@ MainFrame::vdcdebug("ScreenHandler","setFormOpts", "QString type, bool value, in
             p_fglform->ql_formEvents.clear();
             return;
          }
-
+      }
+      if(type == "INPUTARRAY")
+      {
          if(p_fglform->inputArray()){
 //            QList<QWidget*> ql_fields = p_fglform->formElements();
 /*
