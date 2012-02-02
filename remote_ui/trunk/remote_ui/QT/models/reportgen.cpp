@@ -574,17 +574,17 @@ bool Reportgen::replaceTemplateVars(QString odffile, QString sedfile, QFileInfo 
                                 ausgabe.replace("@" + templateVars.at(i), "");
                             }
                         }
-                        /*if(ausgabe.contains("["))
+                        if(ausgabe.contains("["))
                         {
                             ausgabe.replace("[P1[", "").trimmed();
-                            ausgabe.remove("[P2[").trimmed();
+                            ausgabe.replace("[P2[", "").trimmed();
                             ausgabe.replace("[P3[", "").trimmed();
                         } else if (ausgabe.contains("]"))
                         {
                             ausgabe.replace("]P1]", "").trimmed();
-                            ausgabe.remove("]P2]").trimmed();
+                            ausgabe.replace("]P2]", "").trimmed();
                             ausgabe.replace("]P3]", "").trimmed();
-                        }*/
+                        }
 
                         QFile *newContent = new QFile(QDir::tempPath() + "/" + odffile + "/1-content.xml");
                         if(!newContent->open(QIODevice::WriteOnly | QIODevice::Truncate))
