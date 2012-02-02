@@ -319,9 +319,9 @@ QString Reportgen::prepareTemplateEbene(int Position, int Ebene, int Counter, QD
     int cnt = 0;
     int found = 0;
 
-    if(!file->open(QIODevice::ReadOnly)) {
+    /*if(!file->open(QIODevice::ReadOnly)) {
         qDebug() << "content1.xml konnte nicht geöffnet werden" << "";
-    }
+    }*/
 
     xmlout = doc.toString();
     //xmlout1.append("<table:table-row><table:table-cell>");
