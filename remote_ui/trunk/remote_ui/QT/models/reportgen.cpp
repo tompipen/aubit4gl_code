@@ -27,13 +27,10 @@ bool Reportgen::startReportTemplate(QString odffile, QString sedfile, QFileInfo 
    QFileInfo oldFileName = odffile;
    QString fileBaseName = oldFileName.baseName();
 
-
    int wiederholen = 0;
    int cnt = 0;
-
-   /*if(sedfile.contains("SCAN:")) {
-       createInfoFile(odffile, sedfile);
-   }*/
+   int gefunden = 0;
+   int zaehler = 0;
 
    QFile *file = new QFile(QDir::tempPath() + "/" + fileBaseName + "/1-content.xml");
 
@@ -49,12 +46,51 @@ bool Reportgen::startReportTemplate(QString odffile, QString sedfile, QFileInfo 
 
    QTextStream xmlsave(file);
    xmlsave.setCodec("UTF-8");
+   xmlsave << getTemplateHeader( fileBaseName + "/content.xml" ) << getTemplatePosition( fileBaseName + "/content.xml" ).toUtf8();
    temp_fields << getTemplateVars(fileBaseName + "/content.xml");
    sed_fields << readSedFile(sedfile);
 
+   for(int i=0; i < temp_fields.count(); i++)
+   {
+       if(temp_fields.at(i).contains("[P1["))
+       {
+           gefunden = 1;
+       }
+   }
+
+   if(gefunden == 0)
+   {
+       qDebug() << "Es sind keine Ebenen im Dokument vorhanden ABBRUCH!" << "";
+       QMessageBox msgbox;
+       msgbox.setText("Ventas Report Generator");
+       msgbox.setInformativeText("Das Dokument enthlt keine Ebenen. Falsches Dokument ausgewhlt?");
+       msgbox.setIcon(QMessageBox::Information);
+       msgbox.exec();
+       return false;
+   }
+
    //Überprüfen der SED Datei wie viele einträge der ersten Variable von der 1ten Ebene vorhanden ist.
 
-   for(int i=0; i < temp_fields.count(); i++) {
+   for(int i=0; i < temp_fields.count(); i++)
+   {
+       if(temp_fields.at(i).contains("[")) {
+           i = i + 1;
+           qDebug() << "gefunden: " << temp_fields.at(i);
+           for(int k=0; k < sed_fields.count(); k++)
+           {
+               qDebug() << "Suche in SED nach Anfang: " << k << "von" << sed_fields.count();
+               if(sed_fields.at(k).contains(QString("%1"+ temp_fields.at(i)).arg(zaehler)))
+               {
+                   wiederholen++;
+                   zaehler++;
+                   qDebug() << "gefunden " << temp_fields.at(i) << wiederholen;
+               }
+           }
+           break;
+       }
+   }
+
+   /*for(int i=0; i < temp_fields.count(); i++) {
        if(temp_fields.at(i).contains("[")) {
            i = i + 1;
            if(!temp_fields.at(i).contains("[") && !temp_fields.at(i).contains("]")) {
@@ -69,12 +105,15 @@ bool Reportgen::startReportTemplate(QString odffile, QString sedfile, QFileInfo 
                break;
            }
        }
-   }
+   }*/
 
    for(int i=0; i < temp_fields.count(); i++) {
        if(cnt == 1) {
            for(int j=0; j < wiederholen; j++) {
-               content = content + prepareTemplateContent(j, oldFileName.baseName() + "/content.xml", sedfile);
+               qDebug() << "ergaenze Ebene";
+               qDebug() << j << "von" << wiederholen;
+               content = prepareTemplateContent(j, oldFileName.baseName() + "/content.xml", sedfile);
+               xmlsave << content;
            }
            break;
        }
@@ -88,7 +127,7 @@ bool Reportgen::startReportTemplate(QString odffile, QString sedfile, QFileInfo 
 
    }
 
-   xmlsave << getTemplateHeader( fileBaseName + "/content.xml" ) << getTemplatePosition( fileBaseName + "/content.xml" ).toUtf8() << content << getTemplateFooter( fileBaseName + "/content.xml" );
+   xmlsave << getTemplateFooter( fileBaseName + "/content.xml" );
    file->close();
 
    replaceTemplateVars(fileBaseName, sedfile, zielDatei);
@@ -275,10 +314,13 @@ QString Reportgen::prepareTemplateContent(int Position, QString odffile, QString
                         if(fieldlist.at(i).contains(QString("[P%1[").arg(ebene))) {
                             i = i +1;
                             //ausgabe.append("</table:table-cell></table:table-row>");
-                            for(int j=1; j < fieldlist.count(); j++) {
+                            for(int j=1; j < (fieldlist.count() *1000); j++) {
+                                qDebug() << j << "von" << fieldlist.count() * 1000 << " moeglichen Datenstze";
                                 found = checkSedFile(QString("@%1_%2" + fieldlist.at(i)).arg(Position).arg(j), sedfile);
                                 if(found > 0) {
                                     ausgabe.append(prepareTemplateEbene(Position, ebene, j, doc, odffile));
+                                } else {
+                                    break;
                                 }
                             }
                         }
