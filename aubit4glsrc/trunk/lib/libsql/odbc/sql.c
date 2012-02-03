@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.247 2012-01-19 19:23:14 mikeaubury Exp $
+# $Id: sql.c,v 1.248 2012-02-03 13:41:16 mikeaubury Exp $
 #
 */
 
@@ -1258,7 +1258,7 @@ int allocated_nsid=0;
 
 	    // prepare new sid
 	    nsid = acl_malloc2 (sizeof (struct s_sid));
-    		sid->refcnt=0;
+    		nsid->refcnt=0;
 	    	allocated_nsid=1;
 	    A4GL_trc("Malloced nsid=%p", nsid);
 	    nsid->extra_info = 0;

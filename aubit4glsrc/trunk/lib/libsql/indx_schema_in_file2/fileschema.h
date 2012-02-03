@@ -1,6 +1,6 @@
 
 struct s_idx_columns {
-	char columnName[20];
+	char columnName[65];
 	int datatype;
 	int size;
 };
@@ -8,7 +8,7 @@ struct s_idx_columns {
 struct s_idx_table {
 int tabid;
 int partnum;
-char tablename[20];
+char tablename[65];
 struct {
  unsigned int columns_len;
  struct s_idx_columns * columns_val;
