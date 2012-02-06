@@ -312,7 +312,7 @@ QString Reportgen::prepareTemplateContent(int Position, QString odffile, QString
                             i = i +1;
                             //ausgabe.append("</table:table-cell></table:table-row>");
                             for(int j=1; j < (fieldlist.count() *1000); j++) {
-                                qDebug() << j << "von" << fieldlist.count() * 1000 << " moeglichen Datenstze";
+                                qDebug() << j << "von" << fieldlist.count() * 1000 << " moeglichen Datensaetze. Aktuelle Position in Ebene2: " << Position;
                                 found = checkSedFile(QString("@%1_%2" + fieldlist.at(i)).arg(Position).arg(j), sedfile);
                                 if(found > 0) {
                                     ausgabe.append(prepareTemplateEbene(Position, ebene, 0, j, doc, odffile, sedfile));
@@ -637,6 +637,8 @@ bool Reportgen::replaceTemplateVars(QString odffile, QString sedfile, QFileInfo 
     if(!file->open(QIODevice::ReadOnly))
     {
         qDebug() << "(replaceTemplateVars()): Konnte SED Datei nicht zum lesen öffnen";
+        qDebug() << "Suche in: " << QDir::tempPath() + "/" + sedInfo.baseName();
+        return false;
     }
 
     while(!file->atEnd())
@@ -653,6 +655,7 @@ bool Reportgen::replaceTemplateVars(QString odffile, QString sedfile, QFileInfo 
 
             for( int i=0; i < templateVars.count(); i++)
             {
+                qDebug() << "Suche nach Variable: " << QString("@" + templateVars.at(i));
                 if(sedLine.contains("@" + templateVars.at(i)))
                 {
                     sedLine.replace("s/", "");
@@ -672,6 +675,7 @@ bool Reportgen::replaceTemplateVars(QString odffile, QString sedfile, QFileInfo 
                         }
 
                         if(ausgabe.contains("@" + templateVars.at(i))) {
+                            qDebug() << "Variable gefunden: " << QString("@" + templateVars.at(i));
                             if(!sedLine.trimmed().isEmpty())
                             {
                                 ausgabe.replace("@" + templateVars.at(i), sedLine.trimmed());
