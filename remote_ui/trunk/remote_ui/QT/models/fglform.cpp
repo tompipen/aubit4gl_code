@@ -175,7 +175,7 @@ void FglForm::setScreenHandler(ScreenHandler *p_sh)
 
 
 //------------------------------------------------------------------------------
-// Method       : setActions()
+// Method       : setActions()p
 // Filename     : fglform.cpp
 // Description  : init the standard actions (ESC = INTERRUPT, F12 = ACCEPT, etc)
 //                and adds them to the Form
@@ -1382,16 +1382,41 @@ MainFrame::vdcdebug("FglForm","formElements", "");
 void FglForm::clearCurrentFocus()
 {
 MainFrame::vdcdebug("FglForm","clearCurrentFocus", "");
-   if(this->focusWidget() != NULL){
-       QWidget* wi = this->focusWidget();
+if(input() || construct())
+{
+   if(this->currentField() != NULL){
+       QWidget* wi = this->currentField();
        if(wi != NULL){
                 Fgl::Event event;
                 event.type = Fgl::AFTER_FIELD_EVENT;
                 event.attribute = wi->objectName();
                 fieldEvent(event);
+
+                //Avoid segmentation fault
+                wi->clearFocus();
        }
-       wi->clearFocus();
+//wi->clearFocus();
+
    }
+}
+if(inputArray() || displayArray())
+{
+    if(TableView *tableView = qobject_cast<TableView *> (currentField())){
+       if(tableView->curr_editor != NULL)
+       {
+          //Close Editor(needed to get the data in the view)
+
+           //tableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
+          tableView->curr_editor->close();
+          //tableView->setEditTriggers(QAbstractItemView::AllEditTriggers);
+          //tableView->setEditTriggers(et);
+          //Fgl::Event event;
+          //event.type = Fgl::AFTER_FIELD_EVENT;
+          //event.attribute = tableView->curr_editor->objectName();
+          //fieldEvent(event);
+        }
+    }
+}
 }
 
 //------------------------------------------------------------------------------
