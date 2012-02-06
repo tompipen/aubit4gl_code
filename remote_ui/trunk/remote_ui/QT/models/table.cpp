@@ -67,8 +67,8 @@ MainFrame::vdcdebug("TableView","TableView", "QWidget *parent");
 
    QObject::disconnect(header, SIGNAL(sectionPressed(int)),
                        this, SLOT(selectColumn(int)));
-
-   this->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+   //Show only the Scrollbars when needed
+   //this->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
    this->setInputEnabled(false);
    this->setEnabled(false);
 }
