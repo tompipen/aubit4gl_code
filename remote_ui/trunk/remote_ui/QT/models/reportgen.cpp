@@ -286,9 +286,6 @@ QString Reportgen::prepareTemplateContent(int Position, QString odffile, QString
                     }
                 }
             }
-            if(ausgabe.contains("@") && ebene == 2) {
-                        cnt = cnt + 1;
-            }
 
             if(ausgabe.contains("@") && ebene == 2) {
                 for(int i=0; i < fieldlist.count(); i++) {
@@ -318,10 +315,43 @@ QString Reportgen::prepareTemplateContent(int Position, QString odffile, QString
                                 qDebug() << j << "von" << fieldlist.count() * 1000 << " moeglichen Datenstze";
                                 found = checkSedFile(QString("@%1_%2" + fieldlist.at(i)).arg(Position).arg(j), sedfile);
                                 if(found > 0) {
-                                    ausgabe.append(prepareTemplateEbene(Position, ebene, j, doc, odffile));
+                                    ausgabe.append(prepareTemplateEbene(Position, ebene, 0, j, doc, odffile, sedfile));
                                 } else {
                                     break;
                                 }
+                            }
+                        }
+                    }
+
+                }
+            }
+
+            if(ebene == 3 ) {
+                test = test + ausgabe;
+                if(ausgabe.contains(QString("]P%1]").arg(ebene))) {
+                    for(int i=0; i < fieldlist.count(); i++) {
+                        int found = 0;
+                        if(fieldlist.at(i).contains(QString("[P%1[").arg(ebene))) {
+                            i = i +1;
+                            //ausgabe.append("</table:table-cell></table:table-row>");
+                            found = checkSedFile(QString("@%1_%2_0" + fieldlist.at(i)).arg(Position).arg(0), sedfile);
+                            if(found > 0) {
+                                for(int k=1; k < (fieldlist.count() *1000); k++)
+                                {
+                                    int found1 = 0;
+                                    qDebug() << "von" << fieldlist.count() * 1000 << " moeglichen Datenstze";
+                                    qDebug() << "found123: " << QString("@%1_%2_%3" + fieldlist.at(i)).arg(Position).arg(0).arg(k);
+                                    found1 = checkSedFile(QString("@%1_%2_%3" + fieldlist.at(i)).arg(Position).arg(0).arg(k), sedfile);
+                                    qDebug() << "found: " << found;
+                                    if(found1 > 0) {
+                                        ausgabe.append(prepareTemplateEbene(Position, ebene, k, 0, doc, odffile, sedfile));
+                                        cnt++;
+                                    } else {
+                                        break;
+                                    }
+                                }
+                            } else {
+                                break;
                             }
                         }
                     }
@@ -352,12 +382,14 @@ QString Reportgen::prepareTemplateContent(int Position, QString odffile, QString
 //
 //-------------------------------------------------------------------------------------------------------------
 
-QString Reportgen::prepareTemplateEbene(int Position, int Ebene, int Counter, QDomDocument doc, QString odffile)
+QString Reportgen::prepareTemplateEbene(int Position, int Ebene, int Ebene3, int Counter, QDomDocument doc, QString odffile, QString sedfile)
 {
     QFile *file = new QFile(QDir::tempPath() + "/" + QString("1-" + odffile));
+    QList<QString> temp_fields = getTemplateVars(odffile);
     QString ausgabe;
     QString xmlout;
     QString xmlout1;
+    QString behalten;
     int cnt = 0;
     int found = 0;
 
@@ -382,6 +414,11 @@ QString Reportgen::prepareTemplateEbene(int Position, int Ebene, int Counter, QD
             found = found + 1;
         }
 
+        if(found == 3)
+        {
+            behalten = behalten + ausgabe;
+        }
+
         if(cnt  == 1) {
             if(ausgabe.contains("@")) {
                 if(found == 1)
@@ -392,8 +429,34 @@ QString Reportgen::prepareTemplateEbene(int Position, int Ebene, int Counter, QD
                     ausgabe.replace("@", QString("@%1_%2").arg(QString::number(Position)).arg(QString::number(Counter)));
                 } else if (found == 3)
                 {
-                ausgabe.replace("@", QString("@%1_%2_%3").arg(QString::number(Position)).arg(QString::number(Counter)).arg(QString::number(0))/*, QString::number(Counter)*/);
+                ausgabe.replace("@", QString("@%1_%2_%3").arg(QString::number(Position)).arg(QString::number(Counter)).arg(QString::number(Ebene3))/*, QString::number(Counter)*/);
                 }
+            }
+            if(found == 3)
+            {
+                if(ausgabe.contains("]P3]"))
+                {
+                    if(Ebene3 == 0)
+                    {
+                        int found = 0;
+                        for(int j=1; j < temp_fields.count(); j++)
+                        {
+                            qDebug() << QString("@%1_%2_%3").arg(QString::number(Position)).arg(QString::number(Counter)).arg(QString::number(j));
+                            found = checkSedFile(QString("@%1_%2_%3").arg(QString::number(Position)).arg(QString::number(Counter)).arg(QString::number(j)), sedfile);
+                            if(found > 0)
+                            {
+                                if(ausgabe.contains("]P3]"))
+                                {
+                                    behalten.replace("@", QString("@%1_%2_%3").arg(QString::number(Position)).arg(QString::number(Counter)).arg(QString::number(j)));
+                                    xmlout1 = xmlout1 + behalten;
+                                }
+                            } else {
+                                break;
+                            }
+                        }
+                    }
+                }
+                //behalten.append("</table:table-row></table:table-cell>");
             }
             xmlout1 = xmlout1 + ausgabe;
         }
