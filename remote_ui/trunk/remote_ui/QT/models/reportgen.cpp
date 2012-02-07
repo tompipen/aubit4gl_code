@@ -626,6 +626,119 @@ QList<QString> Reportgen::getTemplateVars(QString filename)
 
 bool Reportgen::replaceTemplateVars(QString odffile, QString sedfile, QFileInfo zielDatei)
 {
+    QList<QString> temp_fields = getTemplateVars(odffile + "/1-content.xml");
+    QList<QString> sed_fields = readSedFile(sedfile);
+    QString ausgabe;
+    QString temp_var;
+    QString sedLine;
+    int cnt = 0;
+    QFile *file = new QFile(QDir::tempPath() + "/" + odffile + "/1-content.xml");
+    QFile *file1 = new QFile(QDir::tempPath() + "/" + odffile + "/content.xml");
+
+    if(!file->open(QIODevice::ReadOnly)) {
+        qDebug() << "cannot open content1.xml (ersetzung)";
+        return false;
+    }
+    if(!file1->open(QIODevice::WriteOnly | QIODevice::Truncate))
+    {
+        qDebug() << "(replaceTemplateVars()): Konnte XML nicht zum schreiben öffnen";
+        return false;
+    }
+
+    if(sed_fields.isEmpty())
+    {
+        qDebug() << "Konnte SED Datei nicht lesen. ABBRUCH!";
+        return false;
+    }
+
+    QTextStream stream1(file1);
+    stream1.setCodec("UTF-8");
+
+    QDomDocument doc;
+    doc.setContent(file);
+    QString xml = doc.toString();
+
+    QTextStream stream(&xml);
+    stream.setCodec("UTF-8");
+
+    while(!stream.atEnd()) {
+        ausgabe = stream.readLine().trimmed();
+        if(ausgabe.contains("@"))
+        {
+            temp_var = ausgabe;
+            temp_var.replace("<text:p>", "");
+            temp_var.replace("</text:p>", "");
+            qDebug() << "Suche nach: " << temp_var;
+
+            if(cnt < temp_fields.count())
+            {
+                qDebug() << temp_fields.at(cnt);
+                for (int i=0; i < sed_fields.count(); i++)
+                {
+                    //qDebug() << "Verbleibende Datensätze: " << sed_fields.count();
+                    if(sed_fields.at(i).contains(temp_var))
+                    {
+                        //qDebug() << "i" << i;
+                        qDebug() << "Es wurde gefunden: " << sed_fields.at(i);
+                        sedLine = sed_fields.at(i).trimmed();
+                        //qDebug() << "ersetze:" << QString("s/" + temp_var + "/");
+                        sedLine.replace(QString("s/" + temp_var + "/"), "");
+                        sedLine.replace("/g", "");
+                        ausgabe.replace(temp_var, sedLine);
+                        sed_fields.removeAt(i);
+                        break;
+                    }
+                }
+                //qDebug() << "ausgabe: " << ausgabe;
+            }
+        } else if(ausgabe.contains("["))
+        {
+            ausgabe.replace("<text:p>[P1[</text:p>", "");
+            ausgabe.replace("<text:p>[P2[</text:p>", "");
+            ausgabe.replace("<text:p>[P3[</text:p>", "");
+        } else if(ausgabe.contains("]"))
+        {
+            ausgabe.replace("<text:p>]P1]</text:p>", "");
+            ausgabe.replace("<text:p>]P2]</text:p>", "");
+            ausgabe.replace("<text:p>]P3]</text:p>", "");
+        }
+        //qDebug() << "ausgabe: " << ausgabe;
+        stream1 << ausgabe.trimmed();
+    }
+    file1->close();
+    file->close();
+
+    //QFile *oldContent = new QFile(QDir::tempPath() + "/" + odffile + "/content.xml" );
+    QString buffer;
+    QFile *newContent = new QFile(QDir::tempPath() + "/" + odffile + "/1-content.xml" );
+
+    if(newContent->exists())
+    {
+        if(!newContent->open(QIODevice::ReadOnly))
+        {
+            qDebug("konnte 1-content. nicht zum lesen öffnen");
+        }
+        newContent->remove();
+        //buffer = newContent->readAll().trimmed();
+    }
+
+    /*if(oldContent->exists()) {
+        if(oldContent->open(QIODevice::WriteOnly | QIODevice::Truncate))
+        {
+            QTextStream stream(oldContent);
+            stream << buffer.trimmed();
+            newContent->remove();
+        }
+
+    }*/
+    ZipUnzip *p_zip = new ZipUnzip();
+    p_zip->zipFileArchiv(QDir::tempPath(), odffile, zielDatei);
+
+    return true;
+}
+
+/*bool Reportgen::replaceTemplateVars(QString odffile, QString sedfile, QFileInfo zielDatei)
+{
     QList <QString> temp_fields = getTemplateVars(odffile + "/1-content.xml");
     QFileInfo sedInfo =  sedfile;
     QString ausgabe;
@@ -742,7 +855,7 @@ bool Reportgen::replaceTemplateVars(QString odffile, QString sedfile, QFileInfo 
 
     return true;
 
-}
+}*/
 
 /*bool Reportgen::replaceTemplateVars(QString odffile, QString sedfile)
 {
