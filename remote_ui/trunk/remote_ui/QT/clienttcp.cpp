@@ -1473,7 +1473,7 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
    if(childElement.nodeName() == "NEXTOPTION"){
       //TODO
       int context = childElement.attribute("CONTEXT").toInt();
-      QString name = childElement.attribute("OPTION");
+      QString name = childElement.attribute("OPTION").trimmed();
       nextOption(name, context);
       return;
    }

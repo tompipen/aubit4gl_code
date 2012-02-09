@@ -41,7 +41,6 @@ MainFrame::vdcdebug("RingMenu","RingMenu", "QWidget *parent");
    QVBoxLayout *layout = new QVBoxLayout;
    layout->setAlignment(Qt::AlignTop);
    layout->setSpacing(0);
-
    buttonGroup = new QButtonGroup(this);
 
    this->layout = layout;
@@ -71,7 +70,6 @@ RingMenu::RingMenu(QString title, QString style,
    // TODO: Layout is set by style
    if(style == "TODO"){
    }
-
 
    QVBoxLayout *layout = new QVBoxLayout;
    layout->setAlignment(Qt::AlignTop);
@@ -239,7 +237,8 @@ MainFrame::vdcdebug("RingMenu","selectButton", "QString name");
    for(int i=0; i<buttonGroup->buttons().size(); i++){
       if(QPushButton *button = qobject_cast<QPushButton *> (buttonGroup->buttons().at(i))){
          if(button->text() == name){
-            button->setFocus();
+//            nextButton = button;
+            QMetaObject::invokeMethod(button, "setFocus", Qt::QueuedConnection);
             return;
          }
       }
