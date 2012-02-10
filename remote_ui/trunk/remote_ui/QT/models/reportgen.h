@@ -11,6 +11,7 @@ public:
     bool createInfoFile(QFileInfo odffile, QFileInfo zieldatei);
     bool replaceTemplateVars(QString odffile, QString sedfile, QFileInfo zielDatei);
     bool startReportTemplate(QString odffile, QString sedfile, QFileInfo zielDatei);
+    bool replaceEbene(QFile *file, QString odffile);
     int checkSedFile(QString fieldname, QString filename);
 
     QString getTemplateHeader(QString filename);

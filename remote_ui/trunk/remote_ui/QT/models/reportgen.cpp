@@ -129,6 +129,7 @@ bool Reportgen::startReportTemplate(QString odffile, QString sedfile, QFileInfo 
 
    xmlsave << getTemplateFooter( fileBaseName + "/content.xml" );
    file->close();
+   replaceEbene(file, fileBaseName);
 
    replaceTemplateVars(fileBaseName, sedfile, zielDatei);
 
@@ -142,6 +143,108 @@ bool Reportgen::startReportTemplate(QString odffile, QString sedfile, QFileInfo 
 // Description  : Returns the Header from the top of the file till <office:body>.
 //
 //-------------------------------------------------------------------------------
+
+bool Reportgen::replaceEbene(QFile *file, QString odffile)
+{
+
+    QTemporaryFile *temp_file = new QTemporaryFile(QDir::tempPath() + "/" + odffile + "/tmp.xml");
+
+    if(!temp_file->open())
+    {
+        qDebug() << "(replaceEbene()): Konnte Tempfile nicht erstellen" << "";
+        return false;
+    }
+
+    if(!file->open(QIODevice::ReadOnly))
+    {
+        qDebug() << "(replaceEbene()): konnte XML nicht lesen" << "";
+        return false;
+    }
+
+    QTextStream stream(temp_file);
+    stream.setCodec("UTF-8");
+
+    stream << file->readAll();
+
+    temp_file->close();
+    file->close();
+
+    QFile *newFile = new QFile(QDir::tempPath() + "/" + odffile + "/1-content.xml");
+
+    if(!newFile->open(QIODevice::WriteOnly | QIODevice::Truncate))
+    {
+        qDebug() << "(replaceEbene()): Konnte XML nicht zum schreiben oeffnen";
+        return false;
+    }
+
+    QDomDocument doc;
+    doc.setContent(temp_file);
+    QString xml;
+    int merken = 0;
+    int start = 0;
+
+    xml = doc.toString();
+
+    QTextStream stream1(&xml);
+    stream1.setCodec("UTF-8");
+    QTextStream xmlsave1(newFile);
+    xmlsave1.setCodec("UTF-8");
+    QString xmlsave;
+    QString ausgabe;
+    QString behalten;
+
+    xmlsave1 << getTemplateHeader(odffile + "/content.xml") << getTemplatePosition(odffile + "/content.xml");
+
+    while(!stream1.atEnd())
+    {
+
+        ausgabe = stream1.readLine();
+        if(ausgabe.contains("[P1["))
+        {
+            start = 1;
+        }
+
+        if(ausgabe.contains("]P1]"))
+        {
+            start = 0;
+        }
+
+        if(ausgabe.contains("<table:table-row"))
+        {
+            merken = 1;
+            qDebug() << "merken ist 1";
+        }
+
+        if(merken == 1 && start == 1)
+        {
+                xmlsave = xmlsave + ausgabe;
+        }
+
+        if(ausgabe.contains("</table:table-row"))
+        {
+            merken = 0;
+            qDebug() << "merken ist 0";
+        }
+
+        if(merken == 0 && start == 1)
+        {
+            if(xmlsave.contains("[") || xmlsave.contains("]"))
+            {
+                xmlsave.clear();
+            } else if(xmlsave.contains("@")){
+                behalten = xmlsave;
+                xmlsave.clear();
+            }
+        }
+        xmlsave1 << behalten;
+        behalten.clear();
+    }
+
+    QFile::remove(temp_file->fileName());
+
+    xmlsave1 << getTemplateFooter( odffile + "/content.xml" ); //<< "</office:spreadsheet>";
+
+}
 
 QString Reportgen::getTemplateHeader(QString filename)
 {
