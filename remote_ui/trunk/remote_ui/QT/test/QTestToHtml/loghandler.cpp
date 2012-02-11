@@ -118,7 +118,7 @@ QStringList LogHandler::initLog()
     qsl_returnLines <<"</style>";
     }
 
-    qsl_returnLines << "<body><h3>QT-Unittest Report Results Summary</h3>";
+    qsl_returnLines << "<body><h3>QT-Unittest Report Results Summary</h3><br>";
     qsl_returnLines << "<table id=\"tablebody\">";
     return qsl_returnLines;
 }
@@ -265,6 +265,7 @@ QStringList LogHandler::handleFooter(QStringList lines)
         }
     }
     returnLines <<"</table>";
+    returnLines <<"</body></html>";
     return returnLines;
 }
 
