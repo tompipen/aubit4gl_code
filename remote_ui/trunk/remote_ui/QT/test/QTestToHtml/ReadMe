@@ -1,0 +1,11 @@
+QTestToHtml - by Maxmilian Seidel 2012
+
+
+Simple Tool to convert the QTest Logfiles to HTML
+
+Example:
+
+qtesttohtml -i test_fgl.log -o test_fgl.html
+
+If you want use Stylesheets, put in the directory where the binary is a "style.css" file and define stylesheets.
+They get printed in the HTML Files
