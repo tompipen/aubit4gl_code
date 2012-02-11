@@ -99,7 +99,7 @@ QStringList LogHandler::initLog()
     QString style = "style.css";
 
     qsl_returnLines << "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \n \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">";
-    qsl_returnLines << "<html><head>"
+    qsl_returnLines << "<html><head>";
     qsl_returnLines << "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"/>";
     qsl_returnLines << "<title>QT-Unittest Report Results Summary</title></head>";
 
