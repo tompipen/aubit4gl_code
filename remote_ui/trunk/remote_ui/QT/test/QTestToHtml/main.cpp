@@ -29,6 +29,7 @@ int main(int argc, char *argv[])
     QStringList argvs;
     QString inputfile;
     QString outputfile;
+    bool printflag = false;
     argvs = QCoreApplication::arguments();
     for(int i =0; i<argvs.count();i++)
     {
@@ -41,6 +42,11 @@ int main(int argc, char *argv[])
         {
             i++;
             outputfile = argvs.at(i);
+        }
+
+        if(argvs.at(i) == "-only-table")
+        {
+           printflag = true;
         }
 
     }
@@ -76,7 +82,7 @@ int main(int argc, char *argv[])
     }
 
     LogHandler *lh = new LogHandler(inputfile);
-
+    lh->onlyTable(printflag);
     lh->start();
     QString html = lh->getHtmlString();
 

@@ -97,15 +97,17 @@ QStringList LogHandler::initLog()
 {
     QStringList qsl_returnLines;
     QString style = "style.css";
-
-    qsl_returnLines << "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \n \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">";
-    qsl_returnLines << "<html><head>";
-    qsl_returnLines << "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"/>";
-    qsl_returnLines << "<title>QT-Unittest Report Results Summary</title>";
+    if(!this->isonlyTable())
+    {
+       qsl_returnLines << "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \n \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">";
+       qsl_returnLines << "<html><head>";
+       qsl_returnLines << "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"/>";
+       qsl_returnLines << "<title>QT-Unittest Report Results Summary</title>";
+    }
 
     QFile styles(style);
 
-    if (styles.open(QIODevice::ReadOnly | QIODevice::Text))
+    if (styles.open(QIODevice::ReadOnly | QIODevice::Text) && !this->isonlyTable())
     {
     qsl_returnLines << "<style type=\"text/css\">";
 
@@ -117,8 +119,10 @@ QStringList LogHandler::initLog()
    }
     qsl_returnLines <<"</style>";
     }
-
-    qsl_returnLines << "</head><body><h3>QT-Unittest Report Results Summary</h3><br>";
+    if(!this->isonlyTable())
+    {
+       qsl_returnLines << "</head><body><h3>QT-Unittest Report Results Summary</h3><br>";
+    }
     qsl_returnLines << "<table id=\"tablebody\">";
     return qsl_returnLines;
 }
@@ -277,4 +281,13 @@ void LogHandler::setFileName(QString n)
 QString LogHandler::getFileName()
 {
     return this->filename;
+}
+void LogHandler::onlyTable(bool b)
+{
+   this->onlytable = b;
+}
+
+bool LogHandler::isonlyTable()
+{
+   return this->onlytable;
 }

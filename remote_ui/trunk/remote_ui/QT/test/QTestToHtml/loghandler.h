@@ -28,8 +28,11 @@ public:
     void setHtmlString(QStringList);
     QString getHtmlString();
     bool start();
+    bool isonlyTable();
+    void onlyTable(bool);
 
 private:
+    bool onlytable;
     QString filename;
     QString htmlstring;
     QStringList handleFooter(QStringList);
