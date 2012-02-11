@@ -31,5 +31,6 @@ do
    cd $i
    ./$i &> ../$i.log
    cd -
-  qtesttohtml -i $i.log -o $i.html
+  qtesttohtml -only-table  -i $i.log -o $i.html
 done
+bundlehtmls

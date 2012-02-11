@@ -17,7 +17,8 @@
 #------------------------------------------------------------------------------
 rm -rf summary.html
 
-echo "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \n  \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">
+echo "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" 
+ \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">
 <html><head>
 <meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"/>
 <title>QT-Unittest Report Results Summary</title>" >> summary.html
@@ -25,6 +26,7 @@ echo "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \n  \"htt
 if [ -e "style.css" ];
 then echo "<style type=\"text/css\">" >> summary.html
      cat style.css >> summary.html
+     echo "</style>" >> summary.html
 fi
 echo "</head><body>" >> summary.html
 
