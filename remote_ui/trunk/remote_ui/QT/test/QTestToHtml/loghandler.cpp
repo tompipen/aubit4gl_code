@@ -269,7 +269,10 @@ QStringList LogHandler::handleFooter(QStringList lines)
         }
     }
     returnLines <<"</table>";
-    returnLines <<"</body></html>";
+    if(!this->isonlyTable())
+    {
+       returnLines <<"</body></html>";
+    }
     return returnLines;
 }
 
