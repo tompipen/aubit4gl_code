@@ -1,0 +1,35 @@
+#!/bin/bash
+#--------------------------------------------------------- (C) VENTAS AG 2012 -
+# Project      : VENTAS Desktop Client for A4gl
+# File name    : runtest
+# Description  : BASH-Script for Executing VDC-Tests
+#------------------------------------------------------------------------------
+#
+# This file may be used under the terms of the GNU General Public
+# License version 2.0 as published by the Free Software Foundation
+# (http:#www.gnu.org/licenses/gpl-2.0.html)
+#
+# This file is provided AS IT IS with NO WARRANTY OF ANY KIND, INCLUDING THE
+# WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
+# If you need professional Support please contact us at www.ventas.de
+# Enjoy using it!
+#
+#------------------------------------------------------------------------------
+rm -rf compile.log &>/dev/null
+rm -rf *.log
+rm -rf *.html
+make clean >>compile.log
+for i in `find . -name "Makefile"`
+do
+   rm -rf $i
+done
+qmake VDC_Test.pro >>compile.log
+make >>compile.log
+mv QTestToHtml/QTestToHtml qtesttohtml
+for i in `ls |  grep test_`
+do
+   cd $i
+   ./$i &> ../$i.log
+   cd -
+  qtesttohtml -i $i.log -o $i.html
+done
