@@ -101,7 +101,7 @@ QStringList LogHandler::initLog()
     qsl_returnLines << "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \n \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">";
     qsl_returnLines << "<html><head>";
     qsl_returnLines << "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"/>";
-    qsl_returnLines << "<title>QT-Unittest Report Results Summary</title></head>";
+    qsl_returnLines << "<title>QT-Unittest Report Results Summary</title>";
 
     QFile styles(style);
 
@@ -118,7 +118,7 @@ QStringList LogHandler::initLog()
     qsl_returnLines <<"</style>";
     }
 
-    qsl_returnLines << "<body><h3>QT-Unittest Report Results Summary</h3><br>";
+    qsl_returnLines << "</head><body><h3>QT-Unittest Report Results Summary</h3><br>";
     qsl_returnLines << "<table id=\"tablebody\">";
     return qsl_returnLines;
 }
