@@ -1,0 +1,36 @@
+#!/bin/bash
+#--------------------------------------------------------- (C) VENTAS AG 2012 -
+# Project      : VENTAS Desktop Client for A4gl
+# File name    : bundlehtml
+# Description  : BASH-Script for Bundling the Htmls
+#------------------------------------------------------------------------------
+#
+# This file may be used under the terms of the GNU General Public
+# License version 2.0 as published by the Free Software Foundation
+# (http:#www.gnu.org/licenses/gpl-2.0.html)
+#
+# This file is provided AS IT IS with NO WARRANTY OF ANY KIND, INCLUDING THE
+# WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
+# If you need professional Support please contact us at www.ventas.de
+# Enjoy using it!
+#
+#------------------------------------------------------------------------------
+rm -rf summary.html
+
+echo "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \n  \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">
+<html><head>
+<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"/>
+<title>QT-Unittest Report Results Summary</title>" >> summary.html
+
+if [ -e "style.css" ];
+then echo "<style type=\"text/css\">" >> summary.html
+     cat style.css >> summary.html
+fi
+echo "</head><body>" >> summary.html
+
+for i in `ls *.html | grep -v "summary.html"`
+do
+   cat $i >> summary.html
+done
+
+echo "</body></html>" >> summary.html
