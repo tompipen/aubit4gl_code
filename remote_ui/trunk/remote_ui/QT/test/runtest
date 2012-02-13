@@ -31,7 +31,7 @@ for i in `ls |  grep test_`
 do
    cd $i
    if [ -f $i.pro ]
-     then ./$i -v2 &> ../$i.log
+     then ./$i &> ../$i.log
           cd -
           ./qtesttohtml -only-table  -i $i.log -o $i.html
      else cd -
