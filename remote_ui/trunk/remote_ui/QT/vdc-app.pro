@@ -53,7 +53,8 @@ HEADERS += confwin.h \
     qtelnet/qttelnet.h \
     models/zipunzip.h \
     models/xmlreader.h \
-    models/reportgen.h
+    models/reportgen.h \
+    models/webbrowser.h
 SOURCES += confwin.cpp \
     main.cpp \
     mainframe.cpp \
@@ -82,9 +83,8 @@ SOURCES += confwin.cpp \
     qtelnet/qttelnet.cpp \
     models/zipunzip.cpp \
     models/xmlreader.cpp \
-    models/reportgen.cpp
+    models/reportgen.cpp \
+    models/webbrowser.cpp
 
 RESOURCES += \
     ressource.qrc
-
-
