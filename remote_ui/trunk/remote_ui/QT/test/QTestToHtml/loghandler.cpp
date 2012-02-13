@@ -167,6 +167,8 @@ QStringList LogHandler::handleHead(QStringList lines)
 QStringList LogHandler::handleTableBody(QStringList lines)
 {
     QStringList returnLines;
+    bool start = true;
+    bool ende   = false;
     for(int i = 0; i<lines.count(); i++)
     {
         QString line = lines.at(i);
@@ -181,37 +183,47 @@ QStringList LogHandler::handleTableBody(QStringList lines)
 
 
         QStringList linesplit = line.split(":");
-        returnLines<<"<tr id=\"row" + QString::number(i) + "\">";
-        if(linesplit.at(0).trimmed() == "PASS")
+        if(linesplit.at(0).trimmed().contains("PASS") || linesplit.at(0).trimmed().contains("PASS") || linesplit.at(0).trimmed().contains("PASS"))
         {
-            returnLines << "<td bgcolor=\"green\">PASS</td>";
+           ende  = true;
+           start = true;
         }
-
-        if(linesplit.at(0).trimmed() == "FAIL")
+ 
+        if(start)
         {
-            returnLines << "<td bgcolor=\"red\">FAIL</td>";
+       
+
+           if(ende && i > 0)
+           {
+              returnLines <<"</td></tr>";
+           }
+           returnLines<<"<tr id=\"row" + QString::number(i) + "\">";
+           start = false;
+           ende = false;
+           if(linesplit.at(0).trimmed().contains("PASS"))
+           {
+               returnLines << "<td id=\"passtdlabel\" bgcolor=\"green\">PASS</td><td id=\"passtdfield\">";
+               line.remove(1, linesplit.at(0).size()+1);
+           }
+
+           if(linesplit.at(0).trimmed().contains("FAIL"))
+           {
+               returnLines << "<td id=\"failtdlabel\" bgcolor=\"red\">FAIL</td><td id=\"failtdfield\">";
+               line.remove(1, linesplit.at(0).size()+1);
+           }
+
+
+           if(linesplit.at(0).trimmed().contains("SKIP"))
+           {
+               returnLines << "<td id=\"skiptdlabel\"  bgcolor=\"yellow\">SKIP</td><td id=\"skiptdfield\">";
+               line.remove(1, linesplit.at(0).size()+1);
+           }
+
         }
+       
+       returnLines << line;
 
 
-        if(linesplit.at(0).trimmed() == "SKIP")
-        {
-            returnLines << "<td bgcolor=\"yellow\">SKIP</td>";
-        }
-
-        QString method;
-
-        for(int j = 1; j<linesplit.count(); j++)
-        {
-            if(j==1)
-            {
-                method = linesplit.at(j) + "::";
-                continue;
-            }
-            method.append(linesplit.at(j));
-        }
-
-        returnLines << "<td>" + method + "</td>";
-        returnLines <<"</tr>";
     }
 
     return returnLines;
