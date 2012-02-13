@@ -175,7 +175,7 @@ void FglForm::setScreenHandler(ScreenHandler *p_sh)
 
 
 //------------------------------------------------------------------------------
-// Method       : setActions()p
+// Method       : setActions()
 // Filename     : fglform.cpp
 // Description  : init the standard actions (ESC = INTERRUPT, F12 = ACCEPT, etc)
 //                and adds them to the Form
@@ -694,6 +694,7 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
         QMouseEvent *mev = (QMouseEvent*) event;
         if(mev->button() == Qt::LeftButton){
            QWidget *w = (QWidget*) obj;
+
            if(input() || construct() || inputArray() || displayArray()){
                if(LineEdit *le = qobject_cast<LineEdit*> (w))
                {
@@ -1393,9 +1394,9 @@ if(input() || construct())
                 fieldEvent(event);
 
                 //Avoid segmentation fault
-                wi->clearFocus();
+               // wi->clearFocus();
        }
-//wi->clearFocus();
+this->clearFieldFocus();
 
    }
 }
@@ -1418,6 +1419,25 @@ if(inputArray() || displayArray())
     }
 }
 }
+
+
+
+void FglForm::clearFieldFocus()
+{
+  currentField()->clearFocus();
+  for(int i = 0; i<formElements().size(); i++)
+    {
+      formElements().at(i)->clearFocus();
+    }
+}
+
+void FglForm::setFocusOnWidget(QWidget *w, Qt::FocusReason reason)
+{
+  currentField()->clearFocus();
+  this->clearFieldFocus();
+  QMetaObject::invokeMethod(w, "setFocus", Qt::QueuedConnection);
+}
+
 
 //------------------------------------------------------------------------------
 // Method       : acceptTriggered()
@@ -1721,7 +1741,7 @@ if(context == NULL)
 }
 
    if(!screenRecord()){
-      QWidget *wi = currentWidget;
+      QWidget *wi = currentField();
 
       if(wi != NULL){
          wi->clearFocus();
@@ -1884,7 +1904,7 @@ if(this->context == NULL)
            //          event.type = Fgl::AFTER_FIELD_EVENT;
            //          event.attribute = currentWidget->objectName();
            //          fieldEvent(event);
-                     acceptTriggered();
+                     accept();
                      break;
                   default:
                      break;
@@ -2331,6 +2351,12 @@ void FglForm::jumpToField(QWidget* w, bool b_after){
     if(w == NULL)
         return;
 
+    if(currentField() != NULL)
+    {
+        this->clearFieldFocus();
+
+    }
+
     QString resp;
     QList<Fgl::Event> ql_responseevents;
 
@@ -2454,37 +2480,8 @@ void FglForm::jumpToField(QWidget* w, bool b_after){
     }
     else
     {
-        currentWidget->setFocus(Qt::OtherFocusReason);
+       // currentWidget->setFocus(Qt::OtherFocusReason);
     }
-}
-
-//------------------------------------------------------------------------------
-// Method       : validateFields()
-// Filename     : fglform.cpp
-// Description  : 
-//------------------------------------------------------------------------------
-void FglForm::validateFields()
-{
-MainFrame::vdcdebug("FglForm","validateFields", "");
-   int start=0;
-
-   for(int k=0; k<qsl_fieldOrder.size(); k++){
-      if(WidgetHelper::isFieldWidget(this->focusWidget(), qsl_fieldOrder.at(k))){
-         start=k;
-         break;
-      }
-   }
-
-   for(int i=start; i<qsl_fieldOrder.size(); i++){
-      for(int j=0; j<formElements().size(); j++){
-         if(WidgetHelper::isFieldWidget(formElements().at(j), qsl_fieldOrder.at(i))){
-            QWidget *widget = (QWidget*) formElements().at(j);
-            widget->setFocus();
-            widget->clearFocus();
-            continue;
-         }
-      }
-   }
 }
 
 //------------------------------------------------------------------------------
@@ -3603,7 +3600,7 @@ MainFrame::vdcdebug("FglForm","focusNextPrevChild", "bool next");
                   }
                }
 
-               nextWidget->setFocus();
+               setFocusOnWidget(nextWidget);
             }
             else{
                QList<QPushButton*> ql_buttons = menu()->buttons();
@@ -3637,7 +3634,7 @@ MainFrame::vdcdebug("FglForm","focusNextPrevChild", "bool next");
                }
 
                if(nextWidget != NULL){
-                  nextWidget->setFocus();
+                   setFocusOnWidget(nextWidget);
                }
             }
          }

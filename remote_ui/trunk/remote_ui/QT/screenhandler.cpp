@@ -597,7 +597,7 @@ MainFrame::vdcdebug("ScreenHandler","nextOption", "QString name, int context");
    }
 
    if(p_fglform->menu() != NULL){
-      p_fglform->menu()->selectButton(name);
+       p_fglform->menu()->selectButton(name);
       return;
    }
 }
@@ -1967,13 +1967,15 @@ MainFrame::vdcdebug("ScreenHandler","waitForEvent", "");
            {
                if(tableView->curr_editor != NULL)
                {
-                  tableView->curr_editor->setFocus(Qt::OtherFocusReason);
+            //      tableView->curr_editor->setFocus(Qt::OtherFocusReason);
+                  p_fglform->setFocusOnWidget(tableView->curr_editor);
                }
            }
        }
        else
        {
-           p_fglform->currentWidget->setFocus(Qt::OtherFocusReason);
+
+           p_fglform->setFocusOnWidget(p_fglform->currentWidget);
            if(p_fglform->nextclick != NULL)
            {
                if(ButtonEdit *be = qobject_cast<ButtonEdit*> (p_fglform->nextclick->parentWidget()))
@@ -2837,6 +2839,9 @@ if(p_fglform == NULL)
 
 }
 p_fglform->setEnabled(en);
+
+
+
 /*
 for(int i=0; i<ql_fglForms.size(); i++){
          FglForm *form = ql_fglForms.at(i);

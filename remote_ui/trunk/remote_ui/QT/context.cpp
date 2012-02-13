@@ -323,6 +323,10 @@ MainFrame::vdcdebug("Context","setRowChanged", "");
 QList<QWidget*> Context::fieldList()
 {
 MainFrame::vdcdebug("Context","fieldList", "");
+/*if(ql_fieldList == NULL)
+{
+    return QList<QWidget*> ql_tmp;
+}*/
    return ql_fieldList;
 }
 

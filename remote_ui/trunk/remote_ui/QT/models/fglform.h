@@ -231,11 +231,12 @@ public slots:
    void dropSuccess();
    void dragSuccess();
    void sendinactiveevent();
-   void validateFields();
    void resetFieldSettings();
    void saveFieldSettings(QAction *);
 
    void clearCurrentFocus();
+   void clearFieldFocus();
+   void setFocusOnWidget(QWidget*, Qt::FocusReason = Qt::OtherFocusReason);
 
    //void interrupt();
 
