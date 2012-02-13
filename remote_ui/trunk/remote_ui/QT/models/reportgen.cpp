@@ -626,14 +626,17 @@ QString Reportgen::getTemplateFooter(QString filename)
 QList<QString> Reportgen::readSedFile(QString sedfile)
 {
     QFile *file = new QFile(QDir::tempPath() + "/" + sedfile);
+    QTextStream stream(file);
+    stream.setCodec("UTF-8");
     QList<QString> temp_fields;
+
 
     if(!file->open(QIODevice::ReadOnly)) {
         qDebug() << "(readSed): Konnte SED Datei nicht lesen." << "";
     }
 
-    while(!file->atEnd()) {
-        temp_fields << file->readLine();
+    while(!stream.atEnd()) {
+        temp_fields << stream.readLine();
     }
     file->close();
     return temp_fields;
@@ -755,8 +758,8 @@ bool Reportgen::replaceTemplateVars(QString odffile, QString sedfile, QFileInfo 
     }
 
     QTextStream stream1(file1);
-    //stream1.setCodec("UTF-8");
-    stream1.setCodec("ISO-8859-1");
+    stream1.setCodec("UTF-8");
+    //stream1.setCodec("ISO-8859-1");
 
     QDomDocument doc;
     doc.setContent(file);
@@ -782,17 +785,14 @@ bool Reportgen::replaceTemplateVars(QString odffile, QString sedfile, QFileInfo 
                     //qDebug() << "Verbleibende Datensätze: " << sed_fields.count();
                     if(sed_fields.at(i).contains(temp_var))
                     {
-                        //qDebug() << "i" << i;
                         qDebug() << "Es wurde gefunden: " << sed_fields.at(i);
                         sedLine = sed_fields.at(i).trimmed();
-                        //qDebug() << "ersetze:" << QString("s/" + temp_var + "/");
                         sedLine.replace(QString(temp_var + "/"), "");
                         ausgabe.replace(temp_var, sedLine);
                         sed_fields.removeAt(i);
                         break;
                     }
                 }
-                //qDebug() << "ausgabe: " << ausgabe;
             }
         } else if(ausgabe.contains("["))
         {
