@@ -326,4 +326,4 @@ void Test_fgl::getDate_test_mdy2_data() {
     }
 
 }
-
+QTEST_MAIN(Test_fgl)

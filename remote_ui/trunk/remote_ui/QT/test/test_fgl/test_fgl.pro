@@ -13,4 +13,3 @@ HEADERS += test_fgl.h \
            include/fgl.h
 SOURCES += test_fgl.cpp \
            include/fgl.cpp \
-    main.cpp
