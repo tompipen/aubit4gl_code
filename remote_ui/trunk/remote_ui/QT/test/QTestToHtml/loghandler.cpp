@@ -48,7 +48,7 @@ bool LogHandler::start()
     while (!in.atEnd()) {
         QString line = in.readLine();
 
-        if((line.contains("PASS") || line.contains("SKIP") || line.contains("FAIL") )&& !headerflag)
+        if((line.contains("PASS") || line.contains("SKIP") || line.contains("FAIL") || line.contains("INFO") || line.contains("QWARN") || line.contains("QDEBUG") || line.contains("QSYSTEM"))&& !headerflag)
         {
             htmldoc << this->handleHead(buffer);
             buffer.clear();
@@ -183,7 +183,8 @@ QStringList LogHandler::handleTableBody(QStringList lines)
 
 
         QStringList linesplit = line.split(":");
-        if(linesplit.at(0).trimmed().contains("PASS") || linesplit.at(0).trimmed().contains("FAIL") || linesplit.at(0).trimmed().contains("SIL"))
+        if(linesplit.at(0).trimmed().contains("PASS") || linesplit.at(0).trimmed().contains("FAIL") || linesplit.at(0).trimmed().contains("SKIP") || linesplit.at(0).trimmed().contains("QWARN") || linesplit.at(0).trimmed().contains("QDEBUG") || linesplit.at(0).trimmed().contains("QSYSTEM")
+|| linesplit.at(0).trimmed().contains("INFO"))
         {
            ende  = true;
            start = true;
@@ -206,6 +207,26 @@ QStringList LogHandler::handleTableBody(QStringList lines)
                line.remove(0, linesplit.at(0).size()+1);
            }
 
+           if(linesplit.at(0).trimmed().contains("INFO"))
+           {
+               returnLines << "<td id=\"infotdlabel\" bgcolor=\"green\">PASS</td><td id=\"infotdfield\">";
+               line.remove(0, linesplit.at(0).size()+1);
+           }
+           if(linesplit.at(0).trimmed().contains("QWARN"))
+           {
+               returnLines << "<td id=\"warntdlabel\" bgcolor=\"yellow\">QWARN</td><td id=\"warntdfield\">";
+               line.remove(0, linesplit.at(0).size()+1);
+           }
+           if(linesplit.at(0).trimmed().contains("QDEBUG"))
+           {
+               returnLines << "<td id=\"debugtdlabel\" >QDEBUG</td><td id=\"debugtdfield\">";
+               line.remove(0, linesplit.at(0).size()+1);
+           }
+           if(linesplit.at(0).trimmed().contains("QSYSTEM"))
+           {
+               returnLines << "<td id=\"systemtdlabel\" bgcolor=\"red\">QSYSTEM</td><td id=\"systemtdfield\">";
+               line.remove(0, linesplit.at(0).size()+1);
+           }
            if(linesplit.at(0).trimmed().contains("FAIL"))
            {
                returnLines << "<td id=\"failtdlabel\" bgcolor=\"red\">FAIL</td><td id=\"failtdfield\">";
