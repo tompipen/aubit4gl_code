@@ -238,8 +238,8 @@ QStringList LogHandler::handleFooter(QStringList lines)
         QString htmlline;
         if(i == 0)
         {
-            returnLines<<"<tr id=\"rowtestsummery\">";
-            returnLines<<"<td id=\"namelabel\">Testsummery</td>";
+            returnLines<<"<tr id=\"rowtestsummary\">";
+            returnLines<<"<td id=\"namelabel\">Testsummary</td>";
             QStringList qsl_tmpfirst = line.split(":");
             QStringList qsl_values = qsl_tmpfirst.at(1).split(",");
 
