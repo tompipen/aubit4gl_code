@@ -23,14 +23,19 @@ for i in `find . -name "Makefile"`
 do
    rm -rf $i
 done
+
 qmake VDC_Test.pro >>compile.log
 make >>compile.log
 mv QTestToHtml/QTestToHtml qtesttohtml
 for i in `ls |  grep test_`
 do
    cd $i
-   ./$i &> ../$i.log
-   cd -
-  qtesttohtml -only-table  -i $i.log -o $i.html
+   if [ -f $i.pro ]
+     then ./$i -v2 &> ../$i.log
+          cd -
+          ./qtesttohtml -only-table  -i $i.log -o $i.html
+     else cd -
+   fi
+   
 done
-bundlehtmls
+./bundlehtmls
