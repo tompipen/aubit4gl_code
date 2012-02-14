@@ -103,6 +103,8 @@ void MainFrame::check_new_pids()
                         continue;
                     }
                     l_ql_screenhandler->at(i)->p_pid_p = l_ql_screenhandler->at(j)->p_pid;
+                    //Focus of windows, when kind closes active the Focus of the Parent Window
+                    connect(l_ql_screenhandler->at(i), SIGNAL(destroyed()), l_ql_screenhandler->at(j), SLOT(activeFocus()));
                 }
             }
         }

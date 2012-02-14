@@ -23,7 +23,10 @@
 #include <QAction>
 #include <QDomDocument>
 #include <QKeyEvent>
-class ScreenHandler;
+#include <QPointer>
+
+//class ScreenHandler;
+#include "screenhandler.h"
 #include "vwidgets.h"
 #include "ringmenu.h"
 #include "actionmenu.h"
@@ -102,7 +105,7 @@ public:
    void setToolBar(QDomDocument);
    void checkToolBar();
    void checkMenu();
-   ScreenHandler* screenhandler(){ return p_currscreenhandler; };
+   ScreenHandler* screenhandler(){ return p_currscreenhandler.data(); }
    void setScreenHandler(ScreenHandler*);
    void checkActions();
    void checkShortcuts();
@@ -119,6 +122,7 @@ public:
    void addFormEvent(Fgl::Event);
    void focusNextField() { this->focusNextChild(); };
    QWidget* currentField() { return currentWidget; };
+   void setCurrentWidget(QWidget*);
    //void setCurrentField(QWidget* widget = NULL) { widget->setFocus(); currentWidget = widget; };
    void setCurrentField(QString, bool sendEvents = true);
    void addToQueue(Fgl::Event);
@@ -258,7 +262,7 @@ private:
    QWidget *formWidget;
 
    QList<RingMenu*> ql_menus;
-   ScreenHandler *p_currscreenhandler;
+   QPointer<ScreenHandler> p_currscreenhandler;
    ActionMenu *p_actionMenu;
    Dialog *p_dialog;
    Pulldown *p_pulldown;

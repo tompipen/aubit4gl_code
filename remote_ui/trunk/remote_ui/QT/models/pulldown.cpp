@@ -21,6 +21,7 @@
 
 #include "pulldown.h"
 #include "actions.h"
+#include "fglform.h"
 #include "mainframe.h"
 
 //------------------------------------------------------------------------------

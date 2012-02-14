@@ -1956,13 +1956,13 @@ MainFrame::vdcdebug("ScreenHandler","waitForEvent", "");
       setUpdatesEnabled(true);
 
 
-   if(p_fglform->currentWidget == NULL)
+   if(p_fglform->currentField() == NULL)
    {
 
    }
    else
    {
-       if(TableView *tableView = qobject_cast<TableView *> (p_fglform->currentWidget)){
+       if(TableView *tableView = qobject_cast<TableView *> (p_fglform->currentField())){
            if(p_fglform->inputArray())
            {
                if(tableView->curr_editor != NULL)
@@ -1975,17 +1975,17 @@ MainFrame::vdcdebug("ScreenHandler","waitForEvent", "");
        else
        {
 
-           p_fglform->setFocusOnWidget(p_fglform->currentWidget);
+           p_fglform->setFocusOnWidget(p_fglform->currentField());
            if(p_fglform->nextclick != NULL)
            {
                if(ButtonEdit *be = qobject_cast<ButtonEdit*> (p_fglform->nextclick->parentWidget()))
                {
-                   if(p_fglform->currentWidget == p_fglform->nextclick->parentWidget())
+                   if(p_fglform->currentField() == p_fglform->nextclick->parentWidget())
                       be->buttonClicked();
                }
                if(DateEdit *de = qobject_cast<DateEdit*> (p_fglform->nextclick->parentWidget()))
                {
-                   if(p_fglform->currentWidget == p_fglform->nextclick->parentWidget())
+                   if(p_fglform->currentField() == p_fglform->nextclick->parentWidget())
                       de->buttonClicked();
                }
 
@@ -2885,7 +2885,6 @@ void ScreenHandler::activeFocus()
 
 bool ScreenHandler::eventFilter(QObject *obj, QEvent *event)
 {
-
     if(event->type() == QEvent::WindowActivate)
     {
         if(this->b_runinfo && this->p_pid_p > 0 && this->i_mode != 2)

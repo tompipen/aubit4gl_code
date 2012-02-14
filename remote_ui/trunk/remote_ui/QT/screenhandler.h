@@ -20,7 +20,9 @@
 #include <QObject>
 #include <QDomDocument>
 
-#include <models/fglform.h>
+class FglForm;
+//#include <models/fglform.h>
+#include <context.h>
 #include <models/ringmenu.h>
 #include <models/actionmenu.h>
 #include <models/toolbar.h>

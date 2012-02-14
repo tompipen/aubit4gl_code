@@ -711,7 +711,7 @@ MainFrame::vdcdebug("TableView","setCurrentField", "int row, int col");
              {
                  if(form != NULL)
                  {
-                     form->currentWidget = this;
+                     form->setCurrentWidget(this);
                  }
              }
              edit(index);

@@ -28,6 +28,7 @@
 #include "mainframe.h"
 #include "quazip/quazip.h"
 #include "quazip/quazipfile.h"
+#include <models/fglform.h>
 
 //------------------------------------------------------------------------------
 // Method       : ClientTcp()

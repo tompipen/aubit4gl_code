@@ -77,7 +77,8 @@ FglForm::FglForm(QString windowName, QWidget *parent) : QMainWindow(parent){
    p_pulldown = NULL;
    formWidget = NULL;
 
-   currentWidget = NULL;
+   //currentWidget = NULL;
+   setCurrentWidget(NULL);
 
    // Default Propertys/Styleattributes (can be overridden in *.4st files);
    setProperty("startMenuPosition", "tree");
@@ -101,7 +102,13 @@ FglForm::FglForm(QString windowName, QWidget *parent) : QMainWindow(parent){
 
 FglForm::~FglForm()
 {
-MainFrame::vdcdebug("FglForm","~FglForm", "");
+  MainFrame::vdcdebug("FglForm","~FglForm", "");
+
+  if(p_currscreenhandler == NULL)
+  {
+     return;
+  }
+p_currscreenhandler->activeFocus();
 }
 
 //------------------------------------------------------------------------------
@@ -488,9 +495,9 @@ MainFrame::vdcdebug("FglForm","actionTriggered", "");
 
           if(input() || inputArray() || construct())
           {
-              if(currentWidget != NULL)
+              if(currentField() != NULL)
               {
-                  ev.field = WidgetHelper::getWidgetColName(currentWidget);
+                  ev.field = WidgetHelper::getWidgetColName(currentField());
               }
           }
 
@@ -1726,6 +1733,28 @@ MainFrame::vdcdebug("FglForm","setWindowType", "const QString &sm");
 
 }
 
+void FglForm::setCurrentWidget(QWidget *qw)
+{
+  currentWidget = qw;
+  //Falls das Objekt in nem Tab ist
+
+  if(currentWidget != NULL){
+     QList<QTabWidget*> ql_tabList = formWidget->findChildren<QTabWidget*>();
+     for(int i=0; i<ql_tabList.count(); i++){
+        QTabWidget *tabWidget = ql_tabList.at(i);
+
+        for(int j=0; j<tabWidget->count(); j++){
+            QWidget* tab = tabWidget->widget(j);
+            if(tab->findChild<QWidget*>(currentWidget->objectName())){
+               tabWidget->setCurrentIndex(j);
+               break;
+           }
+        }
+     }
+
+}
+}
+
 void FglForm::setCurrentField(QString fieldName, bool sendEvents)
 {
 MainFrame::vdcdebug("FglForm","setCurrentField", "QString fieldName, bool sendEvents");
@@ -1744,9 +1773,9 @@ if(context == NULL)
       QWidget *wi = currentField();
 
       if(wi != NULL){
-         wi->clearFocus();
+         this->clearFieldFocus();
       }
-
+      //AfterfieldEvent of Current Field
       if(wi != NULL && wi->objectName() != fieldName && sendEvents){
                Fgl::Event event;
                event.type = Fgl::AFTER_FIELD_EVENT;
@@ -1896,7 +1925,7 @@ if(this->context == NULL)
          if(context->fieldList().count() > 0){
             QWidget* lastField = context->fieldList().last();
             Fgl::Event event;
-            if(lastField == currentWidget){
+            if(lastField == currentField()){
                switch(state()){
                   case Fgl::INPUT:
                   case Fgl::CONSTRUCT:
@@ -1918,7 +1947,7 @@ if(this->context == NULL)
 
       QWidget *next = NULL;
       for(int i=0; i<=context->fieldList().count()-1; i++){
-          if(context->fieldList().at(i) == currentWidget){
+          if(context->fieldList().at(i) == currentField()){
               // fixed segmentation fault fieldlist.count is 0
               if(i >= context->fieldList().count()-1) {
                 next == NULL;
@@ -2066,7 +2095,7 @@ MainFrame::vdcdebug("FglForm","prevfield", "");
    if(!screenRecord()){
        QWidget *prev = NULL;
        for(int i=1; i<context->fieldList().count(); i++){
-           if(context->fieldList().at(i) == currentWidget){
+           if(context->fieldList().at(i) == currentField()){
                prev = context->fieldList().at(i-1);
                break;
            }
@@ -2381,7 +2410,7 @@ void FglForm::jumpToField(QWidget* w, bool b_after){
 
             }
         }
-        currentWidget = w;
+        setCurrentWidget(w);
         return;
     }
 
