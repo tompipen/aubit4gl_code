@@ -2480,7 +2480,7 @@ void FglForm::jumpToField(QWidget* w, bool b_after){
     }
     else
     {
-       // currentWidget->setFocus(Qt::OtherFocusReason);
+       this->setFocusOnWidget(currentWidget, Qt::OtherFocusReason);
     }
 }
 
