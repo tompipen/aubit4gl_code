@@ -835,7 +835,7 @@ print_if_cmd (struct_if_cmd * cmd_data)
 	  printc ("}");
 	}
     }
-  print_copy_status_not_sql (0);
+      //print_copy_status_not_sql (0);
  return 1;
 }
 
@@ -1769,6 +1769,7 @@ print_whenever_cmd (struct_whenever_cmd * cmd_data)
 {
   //set_whento (cmd_data->whencode);
   printc("/* WHENEVER..*/ ");
+  //printc("aclfgli_clr_err_flg();");  //? 
   set_whenever (cmd_data->whencode, cmd_data->whento);
   return 1;
 }
