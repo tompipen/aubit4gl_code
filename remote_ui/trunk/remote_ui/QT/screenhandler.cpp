@@ -615,6 +615,7 @@ MainFrame::vdcdebug("ScreenHandler","createDialog", "QString title, QString comm
 
    //Dialog *p_dialog = new Dialog(title, comment, style, image, p_fglform);
    Dialog *p_dialog = new Dialog(title, comment, style, image, p_fglform);
+   connect(p_dialog, SIGNAL(destroyed()), this, SLOT(activeFocus()));
    p_fglform->setDialog(p_dialog);
    clearEvents();
 
@@ -665,6 +666,7 @@ MainFrame::vdcdebug("ScreenHandler","createDialog", "QString title, QString comm
    Pulldown *pulldown = new Pulldown(title, comment, style, image, p_fglform);
    connect(pulldown, SIGNAL(closeEvent()), p_fglform, SLOT(reopenPulldown()));
    p_fglform->setPulldown(pulldown);
+   connect(p_pulldown, SIGNAL(destroyed()), this, SLOT(activeFocus()));
    clearEvents();
 
 }
