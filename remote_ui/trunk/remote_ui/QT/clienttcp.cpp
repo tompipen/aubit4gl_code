@@ -1017,7 +1017,7 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
                params << valuesElement.text();
             }
            //params 0-2 sind die uebergabeparameter 
-           //R�ckgabe werte. Erster = Exitcode, Zweiter = Failsafe Dateiname
+           //Ruckgabe werte. Erster = Exitcode, Zweiter = Failsafe Dateiname
             QFileInfo file(params.at(0));
             sedfile = params.at(1);
             temp_datei = file.baseName();
@@ -1060,7 +1060,7 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
         
              } else 
              {
-                qDebug() << "Datei nicht ge�ffnet" << "";
+                qDebug() << "Datei nicht geoffnet" << "";
                 returnvalues << "O";
              }
           }  
@@ -2479,7 +2479,7 @@ MainFrame::vdcdebug("ProtocolHandler","filterUmlauts", "QString qs_text");
    qs_text.replace(QChar(130), QString::fromUtf8("é")); 
    qs_text.replace(QChar(131), QString::fromUtf8("â")); 
    qs_text.replace(QChar(132), QString::fromUtf8("ä")); 
-   qs_text.replace(QChar(133), QString::fromUtf8("� ")); 
+   qs_text.replace(QChar(133), QString::fromUtf8("à")); 
    qs_text.replace(QChar(134), QString::fromUtf8("å")); 
    qs_text.replace(QChar(135), QString::fromUtf8("ç")); 
    qs_text.replace(QChar(136), QString::fromUtf8("ê")); 
