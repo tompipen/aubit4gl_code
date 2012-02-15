@@ -142,7 +142,7 @@ MainFrame::vdcdebug("ScreenHandler","createWindow", "QString windowTitle,QString
    Q_UNUSED(y);
    Q_UNUSED(h);
    Q_UNUSED(w);
-   QApplication::setOverrideCursor(QCursor(Qt::ArrowCursor));
+   QApplication::restoreOverrideCursor();
    cnt_form++;
    if(p_fglform != NULL)
    {
@@ -1996,7 +1996,7 @@ MainFrame::vdcdebug("ScreenHandler","waitForEvent", "");
 
        }
         }
-   QApplication::setOverrideCursor(QCursor(Qt::ArrowCursor));
+   QApplication::restoreOverrideCursor();
 
 }
 
@@ -2381,7 +2381,7 @@ MainFrame::vdcdebug("ScreenHandler","closeWindow", "QString windowName");
          }
       }
    }
-   QApplication::setOverrideCursor(QCursor(Qt::ArrowCursor));
+   QApplication::restoreOverrideCursor();
 }
 
 //------------------------------------------------------------------------------
@@ -3009,7 +3009,7 @@ void ScreenHandler::setRuninfo(int mode, QString cmd, int runcnt, bool start)
             {
                 p_fglform->setEnabled(true);
             }
-            QApplication::setOverrideCursor(QCursor(Qt::ArrowCursor));
+            QApplication::restoreOverrideCursor();
             this->programm_name_run = "";
             this->b_runinfo = false;
             this->p_pid_p = 0;
