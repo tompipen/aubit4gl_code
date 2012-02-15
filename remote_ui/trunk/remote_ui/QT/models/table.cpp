@@ -78,7 +78,7 @@ void TableView::updateSectionWidth(int logicalIndex, int, int newSize)
     QSortFilterProxyModel *proxyModel = static_cast<QSortFilterProxyModel*> (this->model());
     TableModel *table = static_cast<TableModel*> (proxyModel->sourceModel());
     columnLabels << getColumnLabel(logicalIndex);
-
+/*
     if(isVisible()){
         if(columnLabels.toVector().at(logicalIndex) != NULL){
             if(logicalIndex != NULL){
@@ -88,7 +88,7 @@ void TableView::updateSectionWidth(int logicalIndex, int, int newSize)
             }
         }
 
-        }
+        }*/
 }
 
 bool TableView::eventFilter(QObject *object, QEvent *event)

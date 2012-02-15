@@ -482,7 +482,9 @@ void Parser::handleTableColumn(const QDomNode& xmlNode){
           // restore the width for each column.
           if( !settings.value("width").isNull() && !settings.value("columnId").isNull())
           {
-              header->resizeSection(settings.value("columnId").toInt(), settings.value("width").toInt());
+              header->resizeSection(i, w+1);
+
+//              header->resizeSection(settings.value("columnId").toInt(), settings.value("width").toInt());
           } else {
               header->resizeSection(i, w+1);
           }

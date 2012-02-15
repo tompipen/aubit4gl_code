@@ -2668,6 +2668,7 @@ MainFrame::vdcdebug("FglForm","checkState", "");
 //------------------------------------------------------------------------------
 void FglForm::writeSettingsLocal()
 {
+  return;
 MainFrame::vdcdebug("FglForm","writeSettingsLocal", "");
 QSettings settings("VENTAS", windowName);
 
@@ -2685,9 +2686,10 @@ QSettings settings("VENTAS", windowName);
 //------------------------------------------------------------------------------
 void FglForm::readSettingsLocal()
 {
+  return;
 MainFrame::vdcdebug("FglForm","readSettingsLocal", "");
    QSettings settings("VENTAS", windowName);
-   settings.sync();
+   //settings.sync();
                     
 
     //settings.beginGroup(windowName);

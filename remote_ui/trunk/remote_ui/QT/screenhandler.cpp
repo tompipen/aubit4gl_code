@@ -1896,13 +1896,13 @@ MainFrame::vdcdebug("ScreenHandler","waitForEvent", "");
          //p_fglform->adjustSize();
          //p_fglform->resize(500,500);
 
-         QSettings settings("VENTAS", p_fglform->windowName);
-         if(!settings.value("size").isNull())
-         {
-             p_fglform->resize(settings.value("size").toSize());
-         } else {
+         //QSettings settings("VENTAS", p_fglform->windowName);
+      //   if(!settings.value("size").isNull())
+      //   {
+      //       //p_fglform->resize(settings.value("size").toSize());
+       //  } else {
              p_fglform->adjustSize();
-         }
+       //  }
          if(p_fglform->context != NULL)
          {
              p_fglform->context->checkOptions();
