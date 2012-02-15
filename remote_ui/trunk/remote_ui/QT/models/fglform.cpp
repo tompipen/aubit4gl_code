@@ -1436,9 +1436,11 @@ if(inputArray() || displayArray())
 void FglForm::clearFieldFocus()
 {
   currentField()->clearFocus();
-  for(int i = 0; i<formElements().size(); i++)
+  QList<QWidget*> ql_widgets = formElements();
+  int cnt_elements = ql_widgets.size();
+  for(int i = 0; i<cnt_elements; i++)
     {
-      formElements().at(i)->clearFocus();
+      ql_widgets.at(i)->clearFocus();
     }
 }
 
