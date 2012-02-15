@@ -850,6 +850,10 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
 
    if(event->type() == QEvent::KeyPress){
       QKeyEvent *keyEvent = (QKeyEvent*) event;
+      if(!b_getch_swin)
+        {
+          return true;
+        }
       StatusBar *status = (StatusBar*) statusBar();
       QString keyEventString;
       keyEventString = keyEvent->text();
