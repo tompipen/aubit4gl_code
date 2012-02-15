@@ -2502,10 +2502,20 @@ void FglForm::jumpToField(QWidget* w, bool b_after){
             }
         }
     }
-    currentWidget = w;
+    setCurrentWidget(w);
     if(!ql_responseevents.isEmpty())
     {
-        addToQueue(ql_responseevents);
+        Fgl::Event summary;
+        int resp_cnt = ql_responseevents.size();
+        for(int i = 0; i<resp_cnt; i++)
+        {
+
+            summary.id += ql_responseevents.at(i).id;
+            if(i+1 != resp_cnt)
+               summary.id += ",";
+        }
+
+        addToQueue(summary);
     }
     else
     {
