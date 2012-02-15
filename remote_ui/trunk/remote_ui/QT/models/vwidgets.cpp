@@ -1039,7 +1039,7 @@ MainFrame::vdcdebug("WidgetHelper","createWebView", "const QDomElement& formFiel
    	browser->setFixedWidth(wPixel);
    } else {
    	QFontMetrics fm = browser->fontMetrics();
-        int width = w*fm.width("W")+10;
+        int width = w*fm.averageCharWidth()+10;
    	browser->setFixedWidth(width);
    }
    if (hPixel>0) {
@@ -1091,7 +1091,7 @@ MainFrame::vdcdebug("WidgetHelper","createButton", "const QDomElement& formField
    int w = buttonElement.attribute("width").toInt();
 
    QFontMetrics fm = button->fontMetrics();
-   int width = w*fm.width("W");
+   int width = w*fm.averageCharWidth();
    if(w == 1){
       width += 10;
    }
@@ -1148,7 +1148,7 @@ MainFrame::vdcdebug("WidgetHelper","createEdit", "const QDomElement& formField, 
 
    QFontMetrics fm = lineEdit->fontMetrics();
 
-   int width = w*fm.width("W")+10;
+   int width = w*fm.averageCharWidth()+10;
    /*lineEdit->setFixedWidth(width);
    lineEdit->setFixedHeight(defHeight);*/
 
@@ -1222,7 +1222,7 @@ MainFrame::vdcdebug("WidgetHelper","createButtonEdit", "const QDomElement& formF
    lineEdit->setPicture(picture);
 
    QFontMetrics fm = lineEdit->fontMetrics();
-   int width = w*fm.width("W")+10;
+   int width = w*fm.averageCharWidth()+10;
    /*lineEdit->setFixedWidth(width);
    lineEdit->setFixedHeight(defHeight);*/
 
@@ -1512,7 +1512,7 @@ MainFrame::vdcdebug("WidgetHelper","createDateEdit", "const QDomElement& formFie
    lineEdit->setPicture(picture);
 
    QFontMetrics fm = lineEdit->fontMetrics();
-   int width = w*fm.width("W")+10;
+   int width = w*fm.averageCharWidth()+10;
    //lineEdit->setFixedWidth(width);
    //lineEdit->setFixedHeight(defHeight);
    if(parent != NULL) {
@@ -1648,7 +1648,7 @@ MainFrame::vdcdebug("WidgetHelper","createTextEdit", "const QDomElement& formFie
       textEdit->setVisible(false);
 
    QFontMetrics fm = textEdit->fontMetrics();
-   int width = w*fm.width("W")+10;
+   int width = w*fm.averageCharWidth()+10;
 
    if(stretch == "none")
    {
@@ -1757,7 +1757,7 @@ MainFrame::vdcdebug("WidgetHelper","createComboBox", "const QDomElement& formFie
       comboBox->setVisible(false);
 
    QFontMetrics fm = comboBox->fontMetrics();
-   int width = w*fm.width("W")+10;
+   int width = w*fm.averageCharWidth()+10;
    comboBox->setFixedWidth(width);
 
    Edit *edit = new Edit;
@@ -1838,7 +1838,7 @@ MainFrame::vdcdebug("WidgetHelper","createCheckBox", "const QDomElement& formFie
    
 
    QFontMetrics fm = checkBox->fontMetrics();
-   int width = w*fm.width("W")+10;
+   int width = w*fm.averageCharWidth()+10;
    checkBox->setFixedWidth(width);
 
    Edit *edit = new Edit;
@@ -1907,7 +1907,7 @@ MainFrame::vdcdebug("WidgetHelper","createProgressBar", "const QDomElement& form
    
 
    QFontMetrics fm = progressBar->fontMetrics();
-   int width = w*fm.width("W")+10;
+   int width = w*fm.averageCharWidth()+10;
    progressBar->setFixedWidth(width);
 
    Edit *edit = new Edit;
