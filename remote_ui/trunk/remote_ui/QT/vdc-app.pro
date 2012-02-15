@@ -21,6 +21,23 @@ win32 {
   LIBS += -lwsock32
 }
 
+KDCHART_PATH = $$(VKDChart)
+
+!isEmpty(KDCHART_PATH) {
+include("models/chart.pri")
+DEFINES += KDChart_Version
+
+CONFIG(debug, debug|release) {
+  INCLUDEPATH += $$KDCHART_PATH/include/
+message( $$INCLUDEPATH )
+  !win32:LIBS += -L$$KDCHART_PATH/lib/ -lkdchart
+  win32:LIBS += -L$$KDCHART_PATH/lib/ -lkdchartd
+} else {
+  INCLUDEPATH += $$KDCHART_PATH/include/
+  LIBS += -L$$KDCHART_PATH/lib/ -lkdchart
+}
+}
+
 macx {
   ICON = pics/vdc.icns
   QMAKE_POST_LINK = DYLD_LIBRARY_PATH=$$OUT_PWD/lib $$PWD/libsintobundle $$OUT_PWD/VDC.app
