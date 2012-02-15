@@ -2840,9 +2840,7 @@ if(p_fglform == NULL)
     return;
 
 }
-p_fglform->setEnabled(en);
-
-
+p_fglform->setUserInputEnabled(en);
 
 /*
 for(int i=0; i<ql_fglForms.size(); i++){

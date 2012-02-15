@@ -3735,3 +3735,16 @@ MainFrame::vdcdebug("FglForm","checkField", "");
       }
    }
 }
+
+void FglForm::setUserInputEnabled(bool enabled)
+{
+    if (context) {
+        foreach (QWidget *widget, context->fieldList())
+            widget->setEnabled(enabled);
+    }
+    if (p_actionMenu)
+        p_actionMenu->setEnabled(enabled);
+    RingMenu *ringMenu = menu();
+    if (ringMenu)
+        ringMenu->setEnabled(enabled);
+}

@@ -202,6 +202,8 @@ public:
    void setId(QString id) { i_id = id.toInt(); };
    int id() { return i_id; };
 
+   // enables/disables all user input elements
+   void setUserInputEnabled(bool enabled);
 
 public slots:
    void buttonClicked(QString);
