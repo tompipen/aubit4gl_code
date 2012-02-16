@@ -293,9 +293,9 @@ LineEdit::LineEdit(QWidget *parent)
    setProperty("touched", false);
    this->setFixedHeight(defHeight);
    setContextMenuPolicy(Qt::CustomContextMenu);
-   QFont textFont;
-   textFont.setPixelSize(12);
-   QFontMetrics fm(textFont);
+//   QFont textFont;
+ //  textFont.setPixelSize(12);
+  // QFontMetrics fm(textFont);
    //this->installEventFilter(this);
    b_denyFocus = false;
    b_noEntry = false;
