@@ -2039,6 +2039,8 @@ Fgl::Event id;
    }*/
 
    if(id.id.indexOf(",") == -1){
+
+      p_fglform->b_svs = true;
       Response resp(id, p_fglform, cursorPos);
       QString qs_resp = resp.toString().replace("\n","");
       QDomDocument doc;
@@ -2052,6 +2054,7 @@ Fgl::Event id;
       fglFormResponse(qs_resp);
    }
    else{
+       QDomNodeList qdl_node;
        QStringList qsl_ids = id.id.split(",");
        QString qs_resp;
        for(int i=0; i<qsl_ids.size(); i++){
@@ -2061,15 +2064,22 @@ Fgl::Event id;
            {
                fevent.field = id.field;
            }
+           if(i>0)
+           {
+               p_fglform->b_svs = false;
+           }
            Response resp(fevent, p_fglform, cursorPos);
            resp.firstChildElement().setAttribute("CNT", i+1);
            resp.firstChildElement().setAttribute("MAXCNT", qsl_ids.size());
            resp.firstChildElement().setAttribute("ENVELOPEID", pid);
+
            qs_resp.append(resp.toString().replace("\n",""));
            if(i+1<qsl_ids.size()){
                qs_resp.append("\n");
            }
        }
+
+       p_fglform->b_svs = true;
        if(qs_resp.isEmpty())
           return;
        fglFormResponse(qs_resp);

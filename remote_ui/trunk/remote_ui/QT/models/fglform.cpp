@@ -67,6 +67,7 @@ FglForm::FglForm(QString windowName, QWidget *parent) : QMainWindow(parent){
    p_toolBar = NULL;
    b_denyFocus = false;
    b_allowClose = false;
+   b_svs = true;
    b_bufferTouched = false;
    i_lastCursor = 1;
 
@@ -3745,10 +3746,29 @@ MainFrame::vdcdebug("FglForm","checkField", "");
 }
 
 void FglForm::setUserInputEnabled(bool enabled)
-{
+{ /*
+    QPalette pal = qApp->palette();
+    QPalette tmp(pal);
+    tmp.setCurrentColorGroup(QPalette::Active);
+    tmp.setColor(QPalette::Disabled, QPalette::Window, tmp.color(QPalette::Window));
+
+    tmp.setColor(QPalette::Disabled, QPalette::WindowText, tmp.color(QPalette::WindowText));
+
+    tmp.setColor(QPalette::Disabled, QPalette::Text, tmp.color(QPalette::Text));
+
+    tmp.setColor(QPalette::Disabled, QPalette::Button, tmp.color(QPalette::Button));
+
+    tmp.setColor(QPalette::Disabled, QPalette::ButtonText, tmp.color(QPalette::ButtonText));
+
+    tmp.setColor(QPalette::Disabled, QPalette::Base, tmp.color(QPalette::Base));
+*/
+
     if (context) {
         foreach (QWidget *widget, context->fieldList())
+        {
             widget->setEnabled(enabled);
+           // widget->setPalette(tmp);
+        }
     }
     if (p_actionMenu)
         p_actionMenu->setEnabled(enabled);

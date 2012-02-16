@@ -142,11 +142,11 @@ for(int i = 0; i<id.id.size(); i++)
 
    //if(!(currEvent.type == Fgl::ONKEY_EVENT ||
    //   currEvent.type == Fgl::ONACTION_EVENT)){
-         if(p_currForm->input() || p_currForm->construct()){
+         if((p_currForm->input() || p_currForm->construct()) && p_currForm->b_svs){
             addSyncValues();
          }
          else{
-            if(p_currForm->inputArray() || p_currForm->displayArray()){
+            if((p_currForm->inputArray() || p_currForm->displayArray()) && p_currForm->b_svs){
                addScreenRecSyncValues(id.id);
             }
          }
