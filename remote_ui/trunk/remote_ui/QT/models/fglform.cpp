@@ -708,14 +708,14 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
                {
                    if(!le->isEnabled()|| le->isReadOnly())
                    {
-                       emit sendinactiveevent();
+                       emit sendactivateinputevent();
                    }
                }
                if(TableView *tv = qobject_cast<TableView*> (obj))
                {
                    if(!inputArray())
                    {
-                       emit sendinactiveevent();
+                       emit sendactivateinputevent();
                    }
                }
 
@@ -1203,11 +1203,11 @@ void FglForm::dragSuccess()
 }
 
 
-void FglForm::sendinactiveevent()
+void FglForm::sendactivateinputevent()
 {
     Fgl::Event ev;
     ev.type = Fgl::ONACTION_EVENT;
-    ev.attribute = "inactive";
+    ev.attribute = "activateinput";
     emit fieldEvent(ev);
 }
 

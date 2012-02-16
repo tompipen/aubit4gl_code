@@ -239,7 +239,7 @@ public slots:
    void reopenPulldown();
    void dropSuccess();
    void dragSuccess();
-   void sendinactiveevent();
+   void sendactivateinputevent();
    void resetFieldSettings();
    void saveFieldSettings(QAction *);
 
