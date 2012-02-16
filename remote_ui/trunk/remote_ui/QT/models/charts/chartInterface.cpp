@@ -1,4 +1,4 @@
-#include "models/chartInterface.h"
+#include "models/charts/chartInterface.h"
 #include <KDChart/KDChartAbstractCoordinatePlane>
 #include <KDChart/KDChartAbstractCartesianDiagram>
 #include <KDChart/KDChartDataValueAttributes>
@@ -13,7 +13,7 @@
 
 using namespace KDChart;
 
-class TestModel : public QAbstractTableModel
+/*class TestModel : public QAbstractTableModel
 {
     Q_OBJECT
 public:
@@ -61,7 +61,7 @@ TestModel::TestModel( QObject *parent )
     : QAbstractTableModel( parent )
 {
 
-}
+}*/
 
 
 ChartInterface::ChartInterface( ChartType type )
@@ -71,7 +71,7 @@ ChartInterface::ChartInterface( ChartType type )
         createGantt();
     } else {
         m_chart = createChart( type );
-        setModel( new TestModel());
+        //setModel( new TestModel());
     }
 
 }
@@ -420,6 +420,6 @@ void ChartInterface::saveAs(const QString &fileName)
     }
 }
 
-#include "../chartInterface.moc"
+//#include "../chartInterface.moc"
 
 
