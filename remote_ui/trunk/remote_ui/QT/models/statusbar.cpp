@@ -30,11 +30,11 @@ MainFrame::vdcdebug("StatusBar","StatusBar", "QWidget *parent");
    b_overwrite = false;
 
    //init Labels
-   commentLabel = new QLabel;
-   messageLabel = new QLabel;
-   errorLabel = new QLabel;
+   commentLabel = new QLabel(this);
+   messageLabel = new QLabel(this);
+   errorLabel = new QLabel(this);
 
-   writeModeLabel = new QLabel("OVR");
+   writeModeLabel = new QLabel("OVR", this);
    writeModeLabel->setEnabled(b_overwrite);
 
    addWidget(commentLabel, 10);
