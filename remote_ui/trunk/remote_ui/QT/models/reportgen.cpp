@@ -63,13 +63,13 @@ bool Reportgen::startReportTemplate(QString odffile, QString sedfile, QFileInfo 
        qDebug() << "Es sind keine Ebenen im Dokument vorhanden ABBRUCH!" << "";
        QMessageBox msgbox;
        msgbox.setText("Ventas Report Generator");
-       msgbox.setInformativeText("Das Dokument enthlt keine Ebenen. Falsches Dokument ausgewhlt?");
+       msgbox.setInformativeText("Das Dokument entaehlt keine Ebenen. Falsches Dokument ausgewaehlt?");
        msgbox.setIcon(QMessageBox::Information);
        msgbox.exec();
        return false;
    }
 
-   //Überprüfen der SED Datei wie viele einträge der ersten Variable von der 1ten Ebene vorhanden ist.
+   //Ueberpruefen der SED Datei wie viele eintraege der ersten Variable von der 1ten Ebene vorhanden ist.
 
    for(int i=0; i < temp_fields.count(); i++)
    {
@@ -251,7 +251,7 @@ QString Reportgen::getTemplateHeader(QString filename)
     QFile *file = new QFile(QDir::tempPath() + "/" + filename );
 
     if(!file->open(QIODevice::ReadOnly)) {
-        qDebug() << "Konnte Template file nicht öffnen" << "";
+        qDebug() << "Konnte Template file nicht oeffnen" << "";
     }
 
     QDomDocument doc;
@@ -442,7 +442,7 @@ QString Reportgen::prepareTemplateContent(int Position, QString odffile, QString
                                 for(int k=1; k < (fieldlist.count() *1000); k++)
                                 {
                                     int found1 = 0;
-                                    qDebug() << "von" << fieldlist.count() * 1000 << " moeglichen Datenstze";
+                                    qDebug() << "von" << fieldlist.count() * 1000 << " moeglichen Datensaetze";
                                     qDebug() << "found123: " << QString("@%1_%2_%3" + fieldlist.at(i)).arg(Position).arg(0).arg(k);
                                     found1 = checkSedFile(QString("@%1_%2_%3" + fieldlist.at(i)).arg(Position).arg(0).arg(k), sedfile);
                                     qDebug() << "found: " << found;
@@ -497,7 +497,7 @@ QString Reportgen::prepareTemplateEbene(int Position, int Ebene, int Ebene3, int
     int found = 0;
 
     /*if(!file->open(QIODevice::ReadOnly)) {
-        qDebug() << "content1.xml konnte nicht geöffnet werden" << "";
+        qDebug() << "content1.xml konnte nicht geoeffnet werden" << "";
     }*/
 
     xmlout = doc.toString();
@@ -747,7 +747,7 @@ bool Reportgen::replaceTemplateVars(QString odffile, QString sedfile, QFileInfo 
     }
     if(!file1->open(QIODevice::WriteOnly | QIODevice::Truncate))
     {
-        qDebug() << "(replaceTemplateVars()): Konnte XML nicht zum schreiben öffnen";
+        qDebug() << "(replaceTemplateVars()): Konnte XML nicht zum schreiben oeffnen";
         return false;
     }
 
@@ -782,7 +782,7 @@ bool Reportgen::replaceTemplateVars(QString odffile, QString sedfile, QFileInfo 
                 qDebug() << temp_fields.at(cnt);
                 for (int i=0; i < sed_fields.count(); i++)
                 {
-                    //qDebug() << "Verbleibende Datensätze: " << sed_fields.count();
+                    //qDebug() << "Verbleibende Datensaetze: " << sed_fields.count();
                     if(sed_fields.at(i).contains(temp_var))
                     {
                         qDebug() << "Es wurde gefunden: " << sed_fields.at(i);
@@ -819,7 +819,7 @@ bool Reportgen::replaceTemplateVars(QString odffile, QString sedfile, QFileInfo 
     {
         if(!newContent->open(QIODevice::ReadOnly))
         {
-            qDebug("konnte 1-content. nicht zum lesen öffnen");
+            qDebug("konnte 1-content. nicht zum lesen oeffnen");
         }
         newContent->remove();
         //buffer = newContent->readAll().trimmed();
@@ -852,7 +852,7 @@ bool Reportgen::replaceTemplateVars(QString odffile, QString sedfile, QFileInfo 
     QFile *file = new QFile(QDir::tempPath() + "/" + sedInfo.baseName());
     if(!file->open(QIODevice::ReadOnly))
     {
-        qDebug() << "(replaceTemplateVars()): Konnte SED Datei nicht zum lesen öffnen";
+        qDebug() << "(replaceTemplateVars()): Konnte SED Datei nicht zum lesen oeffnen";
         qDebug() << "Suche in: " << QDir::tempPath() + "/" + sedInfo.baseName();
         return false;
     }
@@ -881,7 +881,7 @@ bool Reportgen::replaceTemplateVars(QString odffile, QString sedfile, QFileInfo 
                     QFile *oldContent = new QFile(QDir::tempPath() + "/" + odffile + "/1-content.xml");
                     if(!oldContent->open(QIODevice::ReadOnly))
                     {
-                        qDebug() << "(replaceTemplateVars()): 1-content.xml konnte nicht zum lesen geöffnet werden.";
+                        qDebug() << "(replaceTemplateVars()): 1-content.xml konnte nicht zum lesen geoeffnet werden.";
                     }
                         QTextStream oldStream(oldContent);
                         oldStream.setCodec("UTF-8");
@@ -914,7 +914,7 @@ bool Reportgen::replaceTemplateVars(QString odffile, QString sedfile, QFileInfo 
                         QFile *newContent = new QFile(QDir::tempPath() + "/" + odffile + "/1-content.xml");
                         if(!newContent->open(QIODevice::WriteOnly | QIODevice::Truncate))
                         {
-                            qDebug() << "(replaceTemplateVars()): content.xml konnte nicht zum schreiben geöffnet werden.";
+                            qDebug() << "(replaceTemplateVars()): content.xml konnte nicht zum schreiben geoeffnet werden.";
                         }
 
                         QTextStream newContentstream(newContent);
@@ -938,7 +938,7 @@ bool Reportgen::replaceTemplateVars(QString odffile, QString sedfile, QFileInfo 
     {
         if(!newContent->open(QIODevice::ReadOnly))
         {
-            qDebug("konnte 1-content. nicht zum lesen öffnen");
+            qDebug("konnte 1-content. nicht zum lesen oeffnen");
         }
 
         buffer = newContent->readAll().trimmed();
@@ -1039,7 +1039,7 @@ bool Reportgen::replaceTemplateVars(QString odffile, QString sedfile, QFileInfo 
     QFile *file1 = new QFile(QDir::tempPath() + "/" + odffile + "/1-content.xml");
 
     if(!file1->open(QIODevice::WriteOnly | QIODevice::Truncate)) {
-        qDebug() << "konnte nicht zum schreiben öffnen (ersetzen)" << "";
+        qDebug() << "konnte nicht zum schreiben oeffnen (ersetzen)" << "";
     }
 
     QTextStream stream1(file1);
@@ -1057,7 +1057,7 @@ bool Reportgen::replaceTemplateVars(QString odffile, QString sedfile, QFileInfo 
     {
         if(!newContent->open(QIODevice::ReadOnly))
         {
-            qDebug("konnte 1-content. nicht zum lesen öffnen");
+            qDebug("konnte 1-content. nicht zum lesen oeffnen");
         }
 
         buffer = newContent->readAll();
@@ -1097,8 +1097,8 @@ bool Reportgen::createInfoFile(QFileInfo odffile, QFileInfo zieldatei)
 
     if( !file->open( QIODevice::ReadOnly ) )
     {
-        qDebug() << "konnte datei nicht öffnen" << "";
-        //qWarning(QString("Konnte Datei nicht zum lesen öffnen: %1").arg(templateFile).toLatin1());
+        qDebug() << "konnte datei nicht oeffnen" << "";
+        //qWarning(QString("Konnte Datei nicht zum lesen oeffnen: %1").arg(templateFile).toLatin1());
         return false;
     }
 
@@ -1118,6 +1118,12 @@ bool Reportgen::createInfoFile(QFileInfo odffile, QFileInfo zieldatei)
         {
             counter = counter + 1;
         }
+
+        if(ausgabe.contains("]"))
+        {
+            counter = counter - 1;
+        }
+
         if( ausgabe.contains("@") )
         {
             ausgabe.replace( "<text:p>", "" );
@@ -1190,7 +1196,7 @@ bool Reportgen::createInfoFile(QFileInfo odffile, QFileInfo zieldatei)
                         QFile *seddatei = new QFile(QDir::tempPath() + "/" + sedfile);
                         QString ersetze;
                         if(!seddatei->open(QIODevice::ReadOnly)) {
-                            qDebug() << "konnte SED Datei nicht zum lesen öffnen (ersetzen)" << "";
+                            qDebug() << "konnte SED Datei nicht zum lesen oeffnen (ersetzen)" << "";
                         }
 
                         while(!seddatei->atEnd()) {
@@ -1217,7 +1223,7 @@ bool Reportgen::createInfoFile(QFileInfo odffile, QFileInfo zieldatei)
     QFile *file1 = new QFile(QDir::tempPath() + "/" + QString("1-" + odffile));
 
     if(!file1->open(QIODevice::WriteOnly | QIODevice::Truncate)) {
-        qDebug() << "konnte nicht zum schreiben öffnen (ersetzen)" << "";
+        qDebug() << "konnte nicht zum schreiben oeffnen (ersetzen)" << "";
     }
 
     QTextStream stream1(file1);
