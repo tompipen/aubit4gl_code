@@ -28,7 +28,7 @@
 #include "mainframe.h"
 #include "quazip/quazip.h"
 #include "quazip/quazipfile.h"
-#ifdef VREPORTGEN_PATH
+#ifdef VREPGEN_USE
 #include "models/reportgen/reportgen.cpp"
 #endif
 #include <models/fglform.h>
@@ -929,7 +929,7 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
                  }
              }
              QFileInfo file(odffile);
-             #ifdef VREPORTGEN_PATH
+             #ifdef VREPGEN_USE
              Reportgen *p_reportgen = new Reportgen();
              temp_datei = file.baseName();
              extension = file.completeSuffix();
@@ -1025,7 +1025,7 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
             }
            //params 0-2 sind die uebergabeparameter 
            //Ruckgabe werte. Erster = Exitcode, Zweiter = Failsafe Dateiname
-            #ifdef VREPORTGEN_PATH
+            #ifdef VREPGEN_USE
             Reportgen *p_reportgen = new Reportgen();
             QFileInfo file(params.at(0));
             sedfile = params.at(1);
@@ -1060,7 +1060,7 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
                 params << valuesElement.text();
             
              }
-            #ifdef VREPORTGEN_PATH
+            #ifdef VREPGEN_USE
             Reportgen *p_reportgen = new Reportgen();
              QFileInfo odffile(params.at(0));
              QFileInfo zieldatei(params.at(1));
