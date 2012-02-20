@@ -29,7 +29,6 @@
 #include <QDomDocument>
 
 #include "screenhandler.h"
-#include "models/reportgen.h"
 
 class DebugWindow : public QDialog
 {
@@ -79,7 +78,6 @@ public:
 private:
    QString decodeFile(QString);
    void outputTree(QDomNode);
-   Reportgen *p_reportgen;
 
    QDomDocument encodeXMLFile(QString);
    void handleStartup(const QDomNode&);

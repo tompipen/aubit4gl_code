@@ -5,10 +5,6 @@
 CONFIG += debug
 TEMPLATE = app
 DEPENDPATH += .
-INCLUDEPATH += . ./quazip/
-LIBS += -L"$$_PRO_FILE_PWD_/lib" -lquazip
-LIBS += -L"$$OUT_PWD/lib" -lquazip
-LIBS += -L"$$OUT_PWD/quazip/lib" -lquazip
 unix:!macx {
 QMAKE_LFLAGS += -Wl,--rpath="$$_PRO_FILE_PWD_/lib"
 }
@@ -19,6 +15,17 @@ QT += webkit
 
 win32 {
   LIBS += -lwsock32
+}
+
+VREPGEN_PATH = $$(VREPGEN)
+
+!isEmpty(VREPGEN_PATH) {
+INCLUDEPATH += . ./quazip/
+LIBS += -L"$$_PRO_FILE_PWD_/lib" -lquazip
+LIBS += -L"$$OUT_PWD/lib" -lquazip
+LIBS += -L"$$OUT_PWD/quazip/lib" -lquazip
+
+include("models/reportgen.pri")
 }
 
 KDCHART_PATH = $$(VKDChart)
@@ -68,9 +75,7 @@ HEADERS += confwin.h \
     xmlparsers/xml2menu.h \
     xmlparsers/xml2style.h \
     qtelnet/qttelnet.h \
-    models/zipunzip.h \
     models/xmlreader.h \
-    models/reportgen.h \
     models/webbrowser.h
 SOURCES += confwin.cpp \
     main.cpp \
@@ -98,9 +103,7 @@ SOURCES += confwin.cpp \
     xmlparsers/xml2style.cpp \
     models/ringmenu.cpp \
     qtelnet/qttelnet.cpp \
-    models/zipunzip.cpp \
     models/xmlreader.cpp \
-    models/reportgen.cpp \
     models/webbrowser.cpp
 
 RESOURCES += \
