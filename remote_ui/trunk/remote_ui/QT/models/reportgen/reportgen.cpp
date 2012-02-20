@@ -1,6 +1,6 @@
 #include <QtGui>
 #include <QDomDocument>
-#include "models/reportgen.h"
+#include "models/reportgen/reportgen.h"
 #include "models/zipunzip.h"
 #include "libgen.h"
 //--------------------------------------------------------------------------------
