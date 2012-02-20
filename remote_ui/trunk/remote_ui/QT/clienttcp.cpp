@@ -28,6 +28,9 @@
 #include "mainframe.h"
 #include "quazip/quazip.h"
 #include "quazip/quazipfile.h"
+#ifdef VREPORTGEN_PATH
+#include "models/reportgen/reportgen.cpp"
+#endif
 #include <models/fglform.h>
 
 //------------------------------------------------------------------------------
@@ -926,6 +929,8 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
                  }
              }
              QFileInfo file(odffile);
+             #ifdef VREPORTGEN_PATH
+             Reportgen *p_reportgen = new Reportgen();
              temp_datei = file.baseName();
              extension = file.completeSuffix();
              QFileInfo zieldatei;
@@ -947,6 +952,7 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
                          odffile;
                  MsgBox("Unbekanntes Format", error, "Error", "Ok", "Ok", 0);
              } 
+             #endif
          }
 
 
@@ -1019,6 +1025,8 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
             }
            //params 0-2 sind die uebergabeparameter 
            //Ruckgabe werte. Erster = Exitcode, Zweiter = Failsafe Dateiname
+            #ifdef VREPORTGEN_PATH
+            Reportgen *p_reportgen = new Reportgen();
             QFileInfo file(params.at(0));
             sedfile = params.at(1);
             temp_datei = file.baseName();
@@ -1041,6 +1049,7 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
                 MsgBox("Unbekanntes Format", error, "Error", "Ok", "Ok", 0);
             } 
             returnvalues << "0";
+            #endif
           }
          
           if(qs_name == "ui.vdc.checkodffile")
@@ -1051,6 +1060,8 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
                 params << valuesElement.text();
             
              }
+            #ifdef VREPORTGEN_PATH
+            Reportgen *p_reportgen = new Reportgen();
              QFileInfo odffile(params.at(0));
              QFileInfo zieldatei(params.at(1));
              QFile *file = new QFile(QDir::tempPath() + "/" + odffile.baseName() + "." + odffile.completeSuffix());
@@ -1064,6 +1075,7 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
                 qDebug() << "Datei nicht geoffnet" << "";
                 returnvalues << "O";
              }
+            #endif
           }  
 
          if(qs_name == "ui.vdc.odftopdf"){
