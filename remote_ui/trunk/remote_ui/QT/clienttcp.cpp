@@ -1050,6 +1050,10 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
             } 
             returnvalues << "0";
             #endif
+            #ifndef VREPGEN_USE
+                qDebug() << "Umgebungsvariable nicht gesetzt. Benutz export VREPGEN=YES";
+                returnvalues << "0";
+            #endif
           }
          
           if(qs_name == "ui.vdc.checkodffile")
@@ -1075,6 +1079,10 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
                 qDebug() << "Datei nicht geoffnet" << "";
                 returnvalues << "O";
              }
+            #endif
+            #ifndef VREPGEN_USE
+                qDebug() << "Umgebungsvariable nicht gesetzt: benutz export VREPGEN=YES ";
+                returnvalues << "0";
             #endif
           }  
 
