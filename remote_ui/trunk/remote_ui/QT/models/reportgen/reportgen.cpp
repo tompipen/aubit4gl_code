@@ -1108,6 +1108,7 @@ bool Reportgen::createInfoFile(QFileInfo odffile, QFileInfo zieldatei)
     QString ausgabe;
     int counter = 0;
     int ebenen = 0;
+    int found = 0;
     QList<QString> fields;
 
     QTextStream stream(&xml);
@@ -1115,10 +1116,25 @@ bool Reportgen::createInfoFile(QFileInfo odffile, QFileInfo zieldatei)
     while( !stream.atEnd() )
     {
         ausgabe = stream.readLine();
+
+        if( ausgabe.contains("[P1["))
+        {
+            ebenen = 1;
+        }
+
+        if( ausgabe.contains("[P2["))
+        {
+            ebenen = 2;
+        }
+
+        if( ausgabe.contains("[P3["))
+        {
+            ebenen = 3;
+        }
+
         if( ausgabe.contains("[") )
         {
             counter = counter + 1;
-            ebenen = ebenen + 1;
         }
 
         if(ausgabe.contains("]"))
@@ -1130,8 +1146,24 @@ bool Reportgen::createInfoFile(QFileInfo odffile, QFileInfo zieldatei)
         {
             ausgabe.replace( "<text:p>", "" );
             ausgabe.replace( "</text:p>", "" );
-            ausgabe.replace( "@", QString("%1:" ).arg( counter ) );
-            fields << ausgabe;
+            ausgabe.replace( "@", QString("%1:" ).arg( counter ) ).trimmed();
+            if(!fields.isEmpty())
+            {
+                for(int i=0; i < fields.count(); i++)
+                {
+                    if(fields.at(i).contains(ausgabe))
+                    {
+                        found = found + 1;
+                    }
+                }
+                if(found == 0)
+                {
+                    fields << ausgabe;
+                }
+                found = 0;
+            } else {
+                fields << ausgabe;
+            }
         }
     }
 
@@ -1160,6 +1192,7 @@ bool Reportgen::createInfoFile(QFileInfo odffile, QFileInfo zieldatei)
 
     }
 
+    qSort(fields);
     for(int i=0; i < fields.count(); i++)
     {
         stream1 << fields.at( i ).trimmed() + "\n";
