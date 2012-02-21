@@ -15,10 +15,10 @@ public:
     int checkSedFile(QString fieldname, QString filename);
 
     QString getTemplateHeader(QString filename);
-    QString getTemplatePosition(QString odffile);
-    QString prepareTemplateContent(int Position, QString odffile, QString sedfile);
+    QString getTemplatePosition(int Table, QString odffile);
+    QString prepareTemplateContent(int Table, int Position, QString odffile, QString sedfile);
     QString prepareTemplateEbene(int Position, int Ebene, int eben3, int Counter, QDomDocument doc, QString odffile, QString sedfile);
-    QString getTemplateFooter(QString filename);
+    QString getTemplateFooter(int Table, QString filename);
 
     QList<QString> readSedFile(QString sedfile);
     QList<QString> getTemplateVars(QString filename);

@@ -46,7 +46,7 @@ bool Reportgen::startReportTemplate(QString odffile, QString sedfile, QFileInfo 
 
    QTextStream xmlsave(file);
    xmlsave.setCodec("UTF-8");
-   xmlsave << getTemplateHeader( fileBaseName + "/content.xml" ) << getTemplatePosition( fileBaseName + "/content.xml" ).toUtf8();
+   xmlsave << getTemplateHeader( fileBaseName + "/content.xml" ); //<< getTemplatePosition( fileBaseName + "/content.xml" ).toUtf8();
    temp_fields << getTemplateVars(fileBaseName + "/content.xml");
    sed_fields << readSedFile(sedfile);
 
@@ -54,7 +54,8 @@ bool Reportgen::startReportTemplate(QString odffile, QString sedfile, QFileInfo 
    {
        if(temp_fields.at(i).contains("[P1["))
        {
-           gefunden = 1;
+           gefunden = gefunden + 1;
+           qDebug() << "gefunden: " << gefunden;
        }
    }
 
@@ -107,29 +108,22 @@ bool Reportgen::startReportTemplate(QString odffile, QString sedfile, QFileInfo 
        }
    }*/
 
-   for(int i=0; i < temp_fields.count(); i++) {
-       if(cnt == 1) {
-           for(int j=0; j < wiederholen; j++) {
-               qDebug() << "ergaenze Ebene";
-               qDebug() << j << "von" << wiederholen;
-               content = prepareTemplateContent(j, oldFileName.baseName() + "/content.xml", sedfile);
-               xmlsave << content;
-           }
-           break;
+   for(int i=0; i < gefunden; i++) {
+   content.append(getTemplatePosition(i+1, fileBaseName + "/content.xml"));//.toUtf8());
+       for(int j=0; j < wiederholen; j++) {
+           qDebug() << "ergaenze Ebene";
+           qDebug() << j << "von" << wiederholen;
+           content.append(prepareTemplateContent(i+1, j, oldFileName.baseName() + "/content.xml", sedfile));
+           xmlsave << content;
+           content.clear();
        }
-       if(temp_fields.at(i).contains("[")) {
-         cnt = cnt + 1;
-       }
-
-       if(cnt == 2) {
-           break;
-       }
-
+       xmlsave << getTemplateFooter( i+1, fileBaseName + "/content.xml" );
    }
 
-   xmlsave << getTemplateFooter( fileBaseName + "/content.xml" );
+   xmlsave << "</office:spreadsheet></office:body></office:document-content>";
+   //xmlsave << getTemplateFooter( fileBaseName + "/content.xml" );
    file->close();
-   replaceEbene(file, fileBaseName);
+   //replaceEbene(file, fileBaseName);
 
    replaceTemplateVars(fileBaseName, sedfile, zielDatei);
 
@@ -193,7 +187,7 @@ bool Reportgen::replaceEbene(QFile *file, QString odffile)
     QString ausgabe;
     QString behalten;
 
-    xmlsave1 << getTemplateHeader(odffile + "/content.xml") << getTemplatePosition(odffile + "/content.xml");
+    //xmlsave1 << getTemplateHeader(odffile + "/content.xml") << getTemplatePosition(odffile + "/content.xml");
 
     while(!stream1.atEnd())
     {
@@ -242,7 +236,7 @@ bool Reportgen::replaceEbene(QFile *file, QString odffile)
 
     QFile::remove(temp_file->fileName());
 
-    xmlsave1 << getTemplateFooter( odffile + "/content.xml" ); //<< "</office:spreadsheet>";
+    //xmlsave1 << getTemplateFooter( odffile + "/content.xml" ); //<< "</office:spreadsheet>";
 
 }
 
@@ -265,10 +259,14 @@ QString Reportgen::getTemplateHeader(QString filename)
     while(!stream.atEnd()) {
         header = header + stream.readLine().trimmed();
 
-        if(header.contains("<office:body>")) {
-            //header.append("</table:table-row>");
+        if(header.contains("<office:spreadsheet>")) {
             cnt = 1;
         }
+        /*if(header.contains("<office:body>")) {
+            //header.append("</table:table-row>");
+            cnt = 1;
+        }*/
+
         if(cnt == 1) {
             return header;
         }
@@ -284,7 +282,7 @@ QString Reportgen::getTemplateHeader(QString filename)
 //
 //---------------------------------------------------------------------------------------
 
-QString Reportgen::getTemplatePosition(QString odffile)
+QString Reportgen::getTemplatePosition(int Table, QString odffile)
 {
 
     //qDebug() << "odf: " << odffile;
@@ -304,22 +302,33 @@ QString Reportgen::getTemplatePosition(QString odffile)
     QString behalten;
     int cnt = 0;
     int stop = 0;
+    int foundTable = 0;
 
     while(!stream.atEnd()) {
         ausgabe = stream.readLine();
+
+        if(ausgabe.contains("<table:table table:name"))
+        {
+            foundTable = foundTable + 1;
+            stop = 0;
+        }
 
         if(ausgabe.contains("[")) {
             stop = 1;
         }
 
-        if(cnt > 0 && stop  < 1) {
+        if(foundTable == Table)
+        {
+            if(stop  < 1)
+            {
             behalten = behalten + ausgabe;
+            }
         }
 
-        if(ausgabe.contains("<office:body>")) {
+        /*if(ausgabe.contains("<office:body>")) {
             cnt = 1;
 
-        }
+        }*/
 
         /*if(ausgabe.contains("</table:table-row")) {
             cnt = 0;
@@ -342,7 +351,7 @@ QString Reportgen::getTemplatePosition(QString odffile)
 //
 //------------------------------------------------------------------------------
 
-QString Reportgen::prepareTemplateContent(int Position, QString odffile, QString sedfile)
+QString Reportgen::prepareTemplateContent(int Table, int Position, QString odffile, QString sedfile)
 {
 
     QFile *file = new QFile(QDir::tempPath() + "/" + odffile);
@@ -365,18 +374,26 @@ QString Reportgen::prepareTemplateContent(int Position, QString odffile, QString
     int cnt = 0;
     int counter = 0;
     int ebene = 0;
+    int tableFound = 0;
     fieldlist << getTemplateVars(odffile);
 
     while(!stream.atEnd()) {
         ausgabe = stream.readLine().trimmed();
 
 
+        if(ausgabe.contains("<table:table table:name"))
+        {
+            tableFound = tableFound + 1;
+            counter = 0;
+            qDebug() << "tableFound: " << tableFound;
+        }
+
         if(ausgabe.contains("[P1[")) {
         //if(ausgabe.contains("<table:table-row")) {
             counter = counter + 1;
         }
 
-        if(counter > 0) {
+        if(counter > 0 && tableFound == Table) {
 
             if(ausgabe.contains("[")) {
                 ebene = ebene + 1;
@@ -471,7 +488,7 @@ QString Reportgen::prepareTemplateContent(int Position, QString odffile, QString
 
         if(ausgabe.contains("</table:table-row") && xmlout.contains("]P1]")) {
             //ausgabe.append("</table:table-cell></table:table-row>");
-            counter = 0;
+            counter = counter - 1;
         }
     }
     file->close();
@@ -586,7 +603,7 @@ QString Reportgen::prepareTemplateEbene(int Position, int Ebene, int Ebene3, int
 //
 //------------------------------------------------------------------------------
 
-QString Reportgen::getTemplateFooter(QString filename)
+QString Reportgen::getTemplateFooter(int Table, QString filename)
 {
     QFile *file = new QFile(QDir::tempPath() + "/" + filename);
     QDomDocument doc;
@@ -598,19 +615,27 @@ QString Reportgen::getTemplateFooter(QString filename)
        QString readLine;
        int cnt = 0;
        int start = 0;
+       int tableFound = 0;
 
        while(!stream.atEnd()) {
            readLine = stream.readLine();
+           if(readLine.contains("<table:table table:name"))
+           {
+                tableFound = tableFound + 1;
+           }
+           if(tableFound == Table)
+           {
+               if(readLine.contains("]P1]")) {
+                    cnt = 1;
+               }
+               if(start > 0) {
+                    footer = footer + readLine.trimmed();
+               }
+               if(cnt > 0 && /*readLine.contains("<table:table") || */ readLine.contains("</table:table-row")) {
+                    start = 1;
+               }
+           }
 
-           if(readLine.contains("]P1]")) {
-               cnt = 1;
-           }
-           if(start > 0) {
-               footer = footer + readLine.trimmed();
-           }
-           if(cnt > 0 && /*readLine.contains("<table:table") || */ readLine.contains("</table:table-row")) {
-               start = 1;
-           }
        }
        file->close();
        return footer;
