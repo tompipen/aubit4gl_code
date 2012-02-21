@@ -1107,6 +1107,7 @@ bool Reportgen::createInfoFile(QFileInfo odffile, QFileInfo zieldatei)
     QString xml = doc1.toString();
     QString ausgabe;
     int counter = 0;
+    int ebenen = 0;
     QList<QString> fields;
 
     QTextStream stream(&xml);
@@ -1117,6 +1118,7 @@ bool Reportgen::createInfoFile(QFileInfo odffile, QFileInfo zieldatei)
         if( ausgabe.contains("[") )
         {
             counter = counter + 1;
+            ebenen = ebenen + 1;
         }
 
         if(ausgabe.contains("]"))
@@ -1144,16 +1146,16 @@ bool Reportgen::createInfoFile(QFileInfo odffile, QFileInfo zieldatei)
     QTextStream stream1( file1 );
     stream1 << QString( "EBENEN:" );
 
-    switch(counter)
+    switch(ebenen)
     {
     case 1:
-        stream1 << QString( "0" ) << QString( "%1" ).arg( counter ) << "\n";
+        stream1 << QString( "0" ) << QString( "%1" ).arg( ebenen ) << "\n";
         break;
     case 2:
-        stream1 << QString( "0" ) << QString ( "1" ) << QString( "%1" ).arg( counter ) << "\n";
+        stream1 << QString( "0" ) << QString ( "1" ) << QString( "%1" ).arg( ebenen ) << "\n";
         break;
     case 3:
-        stream1 << QString( "0" ) << QString ( "1" ) << QString ( "2" ) << QString( "%1" ).arg( counter ) << "\n";
+        stream1 << QString( "0" ) << QString ( "1" ) << QString ( "2" ) << QString( "%1" ).arg( ebenen ) << "\n";
         break;
 
     }
