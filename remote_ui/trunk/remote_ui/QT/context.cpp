@@ -171,7 +171,7 @@ void Context::setPaletteForWidget(QWidget *field)
   tmp.setColor(QPalette::Disabled, QPalette::Text, tmp.color(QPalette::Text));
   tmp.setColor(QPalette::Disabled, QPalette::Button, tmp.color(QPalette::Button));
   tmp.setColor(QPalette::Disabled, QPalette::ButtonText, tmp.color(QPalette::ButtonText));
-  tmp.setColor(QPalette::Disabled, QPalette::Background, Qt::white);
+  tmp.setColor(QPalette::Disabled, QPalette::Background, tmp.color(QPalette::Background));
   tmp.setColor(QPalette::Disabled, QPalette::Base, tmp.color(QPalette::Base));
   tmp.setColor(QPalette::Disabled, QPalette::AlternateBase, tmp.color(QPalette::AlternateBase));
 
@@ -179,6 +179,8 @@ void Context::setPaletteForWidget(QWidget *field)
   if(LineEdit *le = qobject_cast<LineEdit*> (field))
     {
       tmp.setColor(QPalette::Disabled, QPalette::Window, tmp.color(QPalette::Base));
+      tmp.setColor(QPalette::Active, QPalette::Window, tmp.color(QPalette::Base));
+
     }
   else
     {

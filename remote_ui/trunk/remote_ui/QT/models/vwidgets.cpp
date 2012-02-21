@@ -306,7 +306,6 @@ LineEdit::LineEdit(QWidget *parent)
    w = 0;
    valid = NULL;
 
-   setBackgroundRole(QPalette::Base);
 
    // Set enabled as long as Protocol says to enable it
    this->setEnabled(false);
