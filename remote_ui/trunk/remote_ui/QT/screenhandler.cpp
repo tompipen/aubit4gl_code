@@ -147,6 +147,11 @@ MainFrame::vdcdebug("ScreenHandler","createWindow", "QString windowTitle,QString
    if(p_fglform != NULL)
    {
       p_fglform->setEnabled(false);
+      if(p_fglform->actionMenu())
+      {
+         p_fglform->actionMenu()->restoreButtonIcon();
+         p_fglform->actionMenu()->restoreButtonPalette();
+      }
 /*
       if(p_fglform->menu() != NULL)
          p_fglform->menu()->setEnabled(false);
@@ -1649,9 +1654,23 @@ MainFrame::vdcdebug("ScreenHandler","setFormOpts", "QString type, bool value, in
       return;
 
    Context *context = getContext(i_context);
+  /* if(context != p_fglform->context)
+     {
+       if(p_fglform->context)
+       {
+           if(value)
+           {
+              p_fglform->context->restoreFieldPalette();
+              p_fglform->actionMenu()->setButtonIcons();
+              p_fglform->actionMenu()->setButtonPalette();
+           }
+       }
+     }*/
    p_fglform->context = context;
 
+
    if(value){
+
       if(type == "MENU"){
          p_fglform->setState(Fgl::MENU);
          context->setState(Fgl::MENU);
@@ -1901,13 +1920,14 @@ MainFrame::vdcdebug("ScreenHandler","waitForEvent", "");
       //   {
       //       //p_fglform->resize(settings.value("size").toSize());
        //  } else {
+             p_fglform->show();
              p_fglform->adjustSize();
        //  }
          if(p_fglform->context != NULL)
          {
              p_fglform->context->checkOptions();
          }
-         p_fglform->show();
+
 
       }
       else{
@@ -1941,6 +1961,16 @@ MainFrame::vdcdebug("ScreenHandler","waitForEvent", "");
       }
    }
    p_fglform = saveactive;
+   if(p_fglform->inputArray() || p_fglform->construct() || p_fglform->input() || p_fglform->displayArray())
+   {
+
+       if(p_fglform->actionMenu())
+       {
+          p_fglform->actionMenu()->setButtonIcons();
+          p_fglform->actionMenu()->setButtonPalette();
+       }
+
+   }
    checkFields();
 
 /*
@@ -2681,6 +2711,8 @@ MainFrame::vdcdebug("ScreenHandler","getContext", "int i_context");
 
    for(int i=contextCount; i<i_context; i++){
       Context *context = new Context;
+      if(!contexts.isEmpty())
+        contexts.last()->restoreFieldPalette();
       contexts << context;
    }
 
@@ -2718,10 +2750,18 @@ MainFrame::vdcdebug("ScreenHandler","freeContext", "int i_context");
          }
          field->blockSignals(false);
       }
+      context->restoreFieldPalette();
       delete context;
 
       context = getCurrentContext();
       p_fglform->context = context;
+      if(context)
+         context->setPaletteList();
+     /* if(p_fglform->displayArray() || p_fglform->inputArray() || p_fglform->input() || p_fglform->construct())
+        {
+          p_fglform->actionMenu()->setButtonIcons();
+          p_fglform->actionMenu()->setButtonPalette();
+        }*/
 
       //->deleteLater();
    }
@@ -2895,6 +2935,37 @@ void ScreenHandler::activeFocus()
 
 bool ScreenHandler::eventFilter(QObject *obj, QEvent *event)
 {
+
+  if(event->type() == QEvent::EnabledChange)
+  {
+      if(FglForm *p_form = qobject_cast<FglForm*> (obj))
+      {
+          if(!p_form->isEnabled())
+          {
+             if(p_form->actionMenu())
+             {
+                p_form->actionMenu()->restoreButtonIcon();
+                p_form->actionMenu()->restoreButtonPalette();
+             }
+             if(p_form->context)
+             {
+                p_form->context->restoreFieldPalette();
+             }
+
+          }
+          else
+          {
+              if(p_form->actionMenu())
+              {
+                 p_form->actionMenu()->setButtonIcons();
+                 p_form->actionMenu()->setButtonPalette();
+              }
+          }
+      }
+  }
+
+
+
     if(event->type() == QEvent::WindowActivate)
     {
         if(this->b_runinfo && this->p_pid_p > 0 && this->i_mode != 2)
@@ -2924,6 +2995,7 @@ bool ScreenHandler::eventFilter(QObject *obj, QEvent *event)
     if(!p_fglform->b_dummy && p_fglform->isEnabled()&&p_fglform->currentField() != NULL && (p_fglform->state() == Fgl::CONSTRUCT || p_fglform->state() == Fgl::INPUT || p_fglform->state() == Fgl::INPUTARRAY))
     {
         p_fglform->setCurrentField(p_fglform->currentField()->objectName(), false);
+
     }
 
 //MainFrame::vdcdebug("ScreenHandler","eventFilter", "QObject *obj, QEvent *event");

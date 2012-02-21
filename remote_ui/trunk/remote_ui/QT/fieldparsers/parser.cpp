@@ -37,10 +37,9 @@ MainFrame::vdcdebug("Parser","Parser", "QWidget *p_fglform");
    layoutChanged = false;
    hidden = false;
 
+
    // create dummy label to detect the used colors 
    // 
-   QLabel colorDummyLabel;
-   qcol_BaseColor = colorDummyLabel.palette().color(QPalette::Background);
 
 }
 
@@ -600,10 +599,6 @@ MainFrame::vdcdebug("Parser","addWidgets", "QWidget *widget, bool add, int x, in
       widget->setHidden(hidden);
    }
 
-   QPalette p = widget->palette();
-   QColor col(qcol_BaseColor.red()-10, qcol_BaseColor.green()-10, qcol_BaseColor.blue()-10);
-   p.setColor(QPalette::Disabled, QPalette::Base, col);
-   widget->setPalette(p);
 
    if(add)
       ql_formFields << widget;

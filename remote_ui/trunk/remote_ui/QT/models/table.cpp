@@ -31,18 +31,14 @@ TableView::TableView(QWidget *parent) : QTableView(parent)
 MainFrame::vdcdebug("TableView","TableView", "QWidget *parent");
 
    this->setFocusPolicy(Qt::NoFocus);
-   //this->installEventFilter(this);
    this->p_fglform = parent;
    i_arrCount = 0;
    i_arrLine = 0;
    i_scrLine = 0;
-       i_maxArrSize = 1;
-   /*
-   this->setCurrMouseColumn(0);
-   this->setCurrMouseRow(0);
-   */
+   i_maxArrSize = 1;
    b_ignoreFocus = false;
    b_ignoreRowChange = false;
+   b_palette = false;
    this->setMouseTracking(true);
    const int rowHeight = fontMetrics().height() + 2;
    verticalHeader()->setDefaultSectionSize(rowHeight);
@@ -68,10 +64,104 @@ MainFrame::vdcdebug("TableView","TableView", "QWidget *parent");
    QObject::disconnect(header, SIGNAL(sectionPressed(int)),
                        this, SLOT(selectColumn(int)));
    //Show only the Scrollbars when needed
-   //this->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+   this->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+   this->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
    this->setInputEnabled(false);
    this->setEnabled(false);
 }
+
+
+void TableView::restoreViewPalette()
+{
+
+
+
+  if(!b_palette)
+  {
+     return;
+  }
+
+
+  this->horizontalHeader()->setPalette(this->header);
+  this->verticalScrollBar()->setPalette(this->scrollbars);
+  this->horizontalScrollBar()->setPalette(this->scrollbars);
+  this->viewport()->setPalette(this->tableview);
+
+
+  b_palette = false;
+}
+
+void TableView::setViewPalette()
+{
+
+  if(b_palette)
+  {
+      return;
+
+  }
+
+  b_palette = true;
+
+  QPalette tablepal(this->viewport()->palette());
+  QHeaderView *headerview = this->horizontalHeader();
+  QPalette headerpal(headerview->palette());
+  QScrollBar *verticalBar = this->verticalScrollBar();
+  QScrollBar *horizontalBar = this->horizontalScrollBar();
+
+  //verticalBar = new QScrollBar(Qt::Vertical, this);
+
+  QPalette verticalbarpal(verticalBar->palette());
+
+  this->tableview = tablepal;
+  this->header = headerpal;
+  this->scrollbars = verticalbarpal;
+
+
+  //Palette for QTableView
+  tablepal.setCurrentColorGroup(QPalette::Active);
+  tablepal.setColor(QPalette::Disabled, QPalette::WindowText, tablepal.color(QPalette::WindowText));
+  tablepal.setColor(QPalette::Disabled, QPalette::Text, tablepal.color(QPalette::Text));
+  tablepal.setColor(QPalette::Disabled, QPalette::Button, tablepal.color(QPalette::Button));
+  tablepal.setColor(QPalette::Disabled, QPalette::ButtonText, tablepal.color(QPalette::ButtonText));
+  tablepal.setColor(QPalette::Disabled, QPalette::Background, tablepal.color(QPalette::Background));
+  tablepal.setColor(QPalette::Disabled, QPalette::Base, tablepal.color(QPalette::Base));
+  tablepal.setColor(QPalette::Disabled, QPalette::AlternateBase, tablepal.color(QPalette::AlternateBase));
+  tablepal.setColor(QPalette::Disabled, QPalette::Window, tablepal.color(QPalette::Window));
+  //Palette for HeaderView
+  headerpal.setCurrentColorGroup(QPalette::Active);
+  headerpal.setColor(QPalette::Disabled, QPalette::WindowText, headerpal.color(QPalette::WindowText));
+  headerpal.setColor(QPalette::Disabled, QPalette::Text, headerpal.color(QPalette::Text));
+  headerpal.setColor(QPalette::Disabled, QPalette::Button, headerpal.color(QPalette::Button));
+  headerpal.setColor(QPalette::Disabled, QPalette::ButtonText, headerpal.color(QPalette::ButtonText));
+  headerpal.setColor(QPalette::Disabled, QPalette::Background, headerpal.color(QPalette::Background));
+  headerpal.setColor(QPalette::Disabled, QPalette::Base, headerpal.color(QPalette::Base));
+  headerpal.setColor(QPalette::Disabled, QPalette::AlternateBase, headerpal.color(QPalette::AlternateBase));
+  headerpal.setColor(QPalette::Disabled, QPalette::Window, headerpal.color(QPalette::Window));
+  //Palette for Scrollbars
+  verticalbarpal.setCurrentColorGroup(QPalette::Active);
+  verticalbarpal.setColor(QPalette::Disabled, QPalette::WindowText, verticalbarpal.color(QPalette::WindowText));
+  verticalbarpal.setColor(QPalette::Disabled, QPalette::Text, verticalbarpal.color(QPalette::Text));
+  verticalbarpal.setColor(QPalette::Disabled, QPalette::Button, verticalbarpal.color(QPalette::Button));
+  verticalbarpal.setColor(QPalette::Disabled, QPalette::ButtonText, verticalbarpal.color(QPalette::ButtonText));
+  verticalbarpal.setColor(QPalette::Disabled, QPalette::Background, verticalbarpal.color(QPalette::Background));
+  verticalbarpal.setColor(QPalette::Disabled, QPalette::Base, verticalbarpal.color(QPalette::Base));
+  verticalbarpal.setColor(QPalette::Disabled, QPalette::AlternateBase, verticalbarpal.color(QPalette::AlternateBase));
+  verticalbarpal.setColor(QPalette::Disabled, QPalette::Window, verticalbarpal.color(QPalette::Window));
+  verticalbarpal.setColor(QPalette::Disabled, QPalette::Mid, verticalbarpal.color(QPalette::ButtonText));
+
+
+
+
+
+  this->viewport()->setPalette(tablepal);
+  verticalBar->setPalette(verticalbarpal);
+  horizontalBar->setPalette(verticalbarpal);
+  headerview->setPalette(headerpal);
+
+
+
+}
+
 
 void TableView::updateSectionWidth(int logicalIndex, int, int newSize)
 {
@@ -438,61 +528,6 @@ MainFrame::vdcdebug("TableView","accept", "");
    }
 }
 
-/*
-void TableView::nextfield()
-{
-MainFrame::vdcdebug("TableView","nextfield", "");
-   QSortFilterProxyModel *proxyModel = static_cast<QSortFilterProxyModel*> (this->model());
-   TableModel *table = static_cast<TableModel*> (proxyModel->sourceModel());
-
-   if(table->b_input){
-      int currentRow = currentIndex().row();
-      //int rowCount = table->rowCount(QModelIndex());
-
-      int currentCol = currentIndex().column();
-      int colCount = table->columnCount(QModelIndex());
-      
-      if(currentCol < colCount-1){
-         QModelIndex tindex = table->index(currentRow, currentCol+1);
-         QModelIndex index = proxyModel->mapFromSource(tindex);
-
-         setCurrentIndex(index);
-      }
-      else{
-         QModelIndex tindex = table->index(currentRow+1, 0);
-         QModelIndex index = proxyModel->mapFromSource(tindex);
-
-         setCurrentIndex(index);
-      }
-   }
-   else{
-      int currentRow = currentIndex().row();
-      int rowCount = table->rowCount(QModelIndex());
-
-      if(currentRow <= rowCount){
-         selectRow(currentRow+1);
-      }
-   }
-}
-
-void TableView::prevfield()
-{
-MainFrame::vdcdebug("TableView","prevfield", "");
-   QSortFilterProxyModel *proxyModel = static_cast<QSortFilterProxyModel*> (this->model());
-   TableModel *table = static_cast<TableModel*> (proxyModel->sourceModel());
-
-   if(table->b_input){
-      this->focusPreviousChild();
-   }
-   else{
-      int currentRow = currentIndex().row();
-
-      if(currentRow > 0){
-         selectRow(currentRow-1);
-      }
-   }
-}
-*/
 
 void TableView::dragSuccess()
 {
@@ -798,6 +833,41 @@ QVariant TableModel::data(const QModelIndex &index, int role) const
                }
            }
        }
+
+       if(b_input)
+       {
+       if(role == Qt::ForegroundRole)
+       {
+           if(mytv->p_fglform->isEnabled())
+           {
+              QPalette pal(dele->qw_editor->palette());
+              pal.setCurrentColorGroup(QPalette::Active);
+              return pal.text();
+           }
+           else
+           {
+                  QPalette pal(dele->qw_editor->palette());
+                  pal.setCurrentColorGroup(QPalette::Disabled);
+                  return pal.text();
+           }
+       }
+       if(role == Qt::BackgroundRole)
+       {
+           if(mytv->p_fglform->isEnabled())
+           {
+              QPalette pal(dele->qw_editor->palette());
+              pal.setCurrentColorGroup(QPalette::Active);
+              return pal.base();
+           }
+           else
+           {
+                  QPalette pal(dele->qw_editor->palette());
+                  pal.setCurrentColorGroup(QPalette::Disabled);
+                  return pal.background();
+           }
+       }
+       }
+
    }
 
    if(column == -1 || row == -1)

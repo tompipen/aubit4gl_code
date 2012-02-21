@@ -76,6 +76,7 @@ FglForm::FglForm(QString windowName, QWidget *parent) : QMainWindow(parent){
    b_screenRecord = false;
    p_dialog = NULL;
    p_pulldown = NULL;
+   p_actionMenu = NULL;
    formWidget = NULL;
 
    //currentWidget = NULL;
@@ -91,6 +92,11 @@ FglForm::FglForm(QString windowName, QWidget *parent) : QMainWindow(parent){
    setProperty("sizable", "yes");
    setProperty("actionPanelPosition", "right");
    setProperty("toolBarPosition", "top");
+
+
+
+
+
 
    createStatusBar();
 
@@ -471,8 +477,11 @@ MainFrame::vdcdebug("FglForm","setActionMenuEnabled", "bool enable");
    if(p_actionMenu == NULL)
       return;
 
+
    p_actionMenu->setVisible(enable);
    p_actionMenu->setEnabled(enable);
+
+
 
 
 //   p_actionMenu->hideButtons(!enable);
@@ -3746,28 +3755,12 @@ MainFrame::vdcdebug("FglForm","checkField", "");
 }
 
 void FglForm::setUserInputEnabled(bool enabled)
-{ /*
-    QPalette pal = qApp->palette();
-    QPalette tmp(pal);
-    tmp.setCurrentColorGroup(QPalette::Active);
-    tmp.setColor(QPalette::Disabled, QPalette::Window, tmp.color(QPalette::Window));
-
-    tmp.setColor(QPalette::Disabled, QPalette::WindowText, tmp.color(QPalette::WindowText));
-
-    tmp.setColor(QPalette::Disabled, QPalette::Text, tmp.color(QPalette::Text));
-
-    tmp.setColor(QPalette::Disabled, QPalette::Button, tmp.color(QPalette::Button));
-
-    tmp.setColor(QPalette::Disabled, QPalette::ButtonText, tmp.color(QPalette::ButtonText));
-
-    tmp.setColor(QPalette::Disabled, QPalette::Base, tmp.color(QPalette::Base));
-*/
-
+{
     if (context) {
         foreach (QWidget *widget, context->fieldList())
         {
             widget->setEnabled(enabled);
-           // widget->setPalette(tmp);
+
         }
     }
     if (p_actionMenu)

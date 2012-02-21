@@ -39,7 +39,9 @@ MainFrame::vdcdebug("ActionMenu","ActionMenu", "QWidget *parent");
    QVBoxLayout *layout = new QVBoxLayout;
    layout->setAlignment(Qt::AlignTop);
 
-   buttonGroup = new QButtonGroup;
+   buttonGroup = new QButtonGroup(this);
+   b_disabledi = false;
+   b_disabledp = false;
 /*
    connect(buttonGroup, SIGNAL(buttonClicked(int)), 
            this, SLOT(buttonClicked(int)));
@@ -63,6 +65,8 @@ MainFrame::vdcdebug("ActionMenu","ActionMenu", "QString title, QString style, QW
    // disable widget until it it gets called
    this->setEnabled(false);
    this->setVisible(false);
+   b_disabledi = false;
+   b_disabledp = false;
 
    // TODO: Layout is set by style
    if(style == "TODO"){
@@ -72,7 +76,7 @@ MainFrame::vdcdebug("ActionMenu","ActionMenu", "QString title, QString style, QW
    QVBoxLayout *layout = new QVBoxLayout;
    layout->setAlignment(Qt::AlignTop);
 
-   buttonGroup = new QButtonGroup;
+   buttonGroup = new QButtonGroup(this);
 
 /*
    connect(buttonGroup, SIGNAL(buttonClicked(QAbstractButton*)), 
@@ -100,6 +104,8 @@ MainFrame::vdcdebug("ActionMenu","createButton", "QString id, QString text, QStr
 //      text = id;
    }
 
+
+
    // Make Shortcut for Button
    QString pic = text.toLower();
    //QString shortcut = text.at(0);
@@ -110,6 +116,10 @@ MainFrame::vdcdebug("ActionMenu","createButton", "QString id, QString text, QStr
    button->setShortcut(shortcut);
    button->setIcon(QIcon(QString("pics:blank.png")));
    button->setIconSize(QSize(40,25));
+
+
+   qh_buttonpals[text.trimmed()] = button->palette();
+
    button->setVisible(visible);
 
    if(action != NULL){
@@ -117,6 +127,8 @@ MainFrame::vdcdebug("ActionMenu","createButton", "QString id, QString text, QStr
       button->addAction(action);
       connect(button, SIGNAL(clicked()), action, SLOT(trigger()));
    }
+
+   qh_buttonicon[text.trimmed()] = button->icon();
 
 /*
    Action *action = new Action(text.toLower(), text, button);
@@ -345,3 +357,153 @@ void ActionMenu::setOrientation(const Qt::Orientation &o){
    }
 }
 
+
+void ActionMenu::setPaletteForButton(QPushButton *button)
+{
+
+  if(!button)
+    {
+      return;
+    }
+
+  if(button->text().isEmpty())
+  {
+     qWarning("Button without Text");
+     return;
+  }
+
+
+
+  QPalette pal = button->palette();
+  QPalette tmp(pal);
+
+  tmp.setCurrentColorGroup(QPalette::Active);
+  tmp.setColor(QPalette::Disabled, QPalette::WindowText, tmp.color(QPalette::WindowText));
+  tmp.setColor(QPalette::Disabled, QPalette::Text, tmp.color(QPalette::Text));
+  tmp.setColor(QPalette::Disabled, QPalette::Button, tmp.color(QPalette::Button));
+  tmp.setColor(QPalette::Disabled, QPalette::ButtonText, tmp.color(QPalette::ButtonText));
+  tmp.setColor(QPalette::Disabled, QPalette::Background, tmp.color(QPalette::Background));
+  tmp.setColor(QPalette::Disabled, QPalette::Base, tmp.color(QPalette::Base));
+  tmp.setColor(QPalette::Disabled, QPalette::AlternateBase, tmp.color(QPalette::AlternateBase));
+  tmp.setColor(QPalette::Disabled, QPalette::Window, tmp.color(QPalette::Window));
+
+  if(tmp != pal)
+  {
+     qh_buttonpals[button->text().trimmed()] = button->palette();
+     button->setPalette(tmp);
+  }
+}
+
+void ActionMenu::setButtonPalette()
+{
+
+  if(b_disabledp)
+  {
+     return;
+  }
+
+  b_disabledp = true;
+
+  if(buttonGroup->buttons().size() < 1)
+    {
+      return;
+    }
+
+  foreach(QAbstractButton *button, buttonGroup->buttons())
+    {
+      QPushButton *pbutton = (QPushButton*) button;
+      setPaletteForButton(pbutton);
+    }
+}
+
+
+void ActionMenu::setButtonIcons()
+{
+  if(b_disabledi)
+  {
+     return;
+  }
+
+  b_disabledi = true;
+
+  if(!buttonGroup)
+  {
+      return;
+  }
+
+
+  if(buttonGroup->buttons().size() < 1)
+    {
+      return;
+    }
+
+  foreach(QAbstractButton *button, buttonGroup->buttons())
+    {
+      QPushButton *pbutton = (QPushButton*) button;
+      setIconForButton(pbutton);
+    }
+}
+
+
+void ActionMenu::restoreButtonPalette()
+{
+  b_disabledp = false;
+
+
+  if(buttonGroup->buttons().size() < 1)
+    {
+      return;
+    }
+
+  foreach(QAbstractButton *button, buttonGroup->buttons())
+    {
+      QPalette pal = qh_buttonpals[button->text().trimmed()];
+      if(pal != button->palette())
+        {
+          button->setPalette(pal);
+        }
+    }
+
+
+}
+
+void ActionMenu::setIconForButton(QPushButton *button)
+{
+
+  if(!button)
+  {
+      qWarning("Button not found");
+  }
+
+  QIcon icon = button->icon();
+
+  qh_buttonicon[button->text()] = icon;
+
+  //How i get the Pixmap without knowing the Qsize?
+  QPixmap pix(icon.pixmap(QSize(40,25)));
+  icon.addPixmap(pix, QIcon::Disabled);
+
+  button->setIcon(icon);
+
+}
+
+void ActionMenu::restoreButtonIcon()
+{
+  b_disabledi = false;
+
+  if(buttonGroup->buttons().size() < 1)
+    {
+      return;
+    }
+
+  foreach(QAbstractButton *button, buttonGroup->buttons())
+    {
+      QIcon ic = qh_buttonicon[button->text().trimmed()];
+      if(!ic.isNull())
+        {
+          button->setIcon(ic);
+        }
+    }
+
+
+}

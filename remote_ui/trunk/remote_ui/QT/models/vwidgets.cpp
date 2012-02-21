@@ -293,10 +293,10 @@ LineEdit::LineEdit(QWidget *parent)
    setProperty("touched", false);
    this->setFixedHeight(defHeight);
    setContextMenuPolicy(Qt::CustomContextMenu);
-//   QFont textFont;
- //  textFont.setPixelSize(12);
-  // QFontMetrics fm(textFont);
-   //this->installEventFilter(this);
+/*   QFont textFont;
+   textFont.setPixelSize(12);
+   QFontMetrics fm(textFont);
+  */ //this->installEventFilter(this);
    b_denyFocus = false;
    b_noEntry = false;
    b_autoNext = false;
@@ -305,6 +305,8 @@ LineEdit::LineEdit(QWidget *parent)
    this->setDragEnabled(true);
    w = 0;
    valid = NULL;
+
+   setBackgroundRole(QPalette::Base);
 
    // Set enabled as long as Protocol says to enable it
    this->setEnabled(false);
@@ -595,6 +597,7 @@ TextEdit::TextEdit(QWidget *parent)
    b_denyFocus = false;
    setWantTabs(false);
    setWantReturns(true);
+  // setAutoFillBackground(true);
 
 
    setEnabled(false);
@@ -1254,6 +1257,7 @@ MainFrame::vdcdebug("WidgetHelper","createButtonEdit", "const QDomElement& formF
 
 bool WidgetHelper::setDisplayAttributes(int fieldAttribute, QWidget *widget)
    {
+
          int col_int = (fieldAttribute & 0xf00);
          if(fieldAttribute == -1)
             fieldAttribute = 0;
@@ -1677,14 +1681,6 @@ MainFrame::vdcdebug("WidgetHelper","createTextEdit", "const QDomElement& formFie
    textEdit->setAutoNext(autoNext);
    textEdit->setSqlType(sqlType);
 
-   Edit *edit = new Edit;
-   QPalette pal = edit->palette();
-
-   QColor col = pal.color(QPalette::Disabled, QPalette::Window);
-
-   QPalette p = textEdit->palette();
-   p.setColor(QPalette::Disabled,QPalette::Base, col);
-   textEdit->setPalette(p);
 
    return textEdit;
 
@@ -1760,14 +1756,6 @@ MainFrame::vdcdebug("WidgetHelper","createComboBox", "const QDomElement& formFie
    int width = w*fm.averageCharWidth()+10;
    comboBox->setFixedWidth(width);
 
-   Edit *edit = new Edit;
-   QPalette pal = edit->palette();
-
-   QColor col = pal.color(QPalette::Disabled, QPalette::Window);
-
-   QPalette p = comboBox->palette();
-   p.setColor(QPalette::Disabled,QPalette::Base, col);
-   comboBox->setPalette(p);
 
    return comboBox;
 
@@ -1841,14 +1829,7 @@ MainFrame::vdcdebug("WidgetHelper","createCheckBox", "const QDomElement& formFie
    int width = w*fm.averageCharWidth()+10;
    checkBox->setFixedWidth(width);
 
-   Edit *edit = new Edit;
-   QPalette pal = edit->palette();
 
-   QColor col = pal.color(QPalette::Disabled, QPalette::Window);
-
-   QPalette p = checkBox->palette();
-   p.setColor(QPalette::Disabled,QPalette::Base, col);
-   checkBox->setPalette(p);
 
    return checkBox;
 
@@ -1909,15 +1890,6 @@ MainFrame::vdcdebug("WidgetHelper","createProgressBar", "const QDomElement& form
    QFontMetrics fm = progressBar->fontMetrics();
    int width = w*fm.averageCharWidth()+10;
    progressBar->setFixedWidth(width);
-
-   Edit *edit = new Edit;
-   QPalette pal = edit->palette();
-
-   QColor col = pal.color(QPalette::Disabled, QPalette::Window);
-
-   QPalette p = progressBar->palette();
-   p.setColor(QPalette::Disabled,QPalette::Base, col);
-   progressBar->setPalette(p);
 
    return progressBar;
 

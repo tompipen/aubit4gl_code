@@ -98,7 +98,7 @@ public:
    RingMenu* menu(){ if(ql_menus.count() > 0) return ql_menus.last(); else return NULL; };
    void setActionMenuEnabled(bool);
    void setActionMenu(ActionMenu*);
-   ActionMenu* actionMenu(){ return p_actionMenu; };
+   ActionMenu* actionMenu(){ if(p_actionMenu != NULL) return p_actionMenu; else return NULL;}
    void setDialog(Dialog*);
    void setPulldown(Pulldown*);
    Dialog* dialog(){ return p_dialog; };
