@@ -1052,6 +1052,7 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
             #endif
             #ifndef VREPGEN_USE
                 qDebug() << "Umgebungsvariable nicht gesetzt. Benutz export VREPGEN=YES";
+                MsgBox("Unbekannte Umgebungsvariable", "Es wurde keine Umgebungsvariable \"export VPREPGEN=YES\" gesetzt.", "Error", "Ok", "Ok", 0);
                 returnvalues << "0";
             #endif
           }
@@ -1082,6 +1083,7 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
             #endif
             #ifndef VREPGEN_USE
                 qDebug() << "Umgebungsvariable nicht gesetzt: benutz export VREPGEN=YES ";
+                MsgBox("Unbekannte Umgebungsvariable", "Es wurde keine Umgebungsvariable \"export VPREPGEN=YES\" gesetzt.", "Error", "Ok", "Ok", 0);
                 returnvalues << "0";
             #endif
           }  
