@@ -5,6 +5,7 @@
 CONFIG += debug
 TEMPLATE = app
 DEPENDPATH += .
+INCLUDEPATH += .
 unix:!macx {
 QMAKE_LFLAGS += -Wl,--rpath="$$_PRO_FILE_PWD_/lib"
 }
@@ -21,7 +22,7 @@ VREPGEN_PATH = $$(VREPGEN)
 
 !isEmpty(VREPGEN_PATH) {
 DEFINES += VREPGEN_USE
-INCLUDEPATH += . ./quazip/
+INCLUDEPATH += ./quazip/
 LIBS += -L"$$_PRO_FILE_PWD_/lib" -lquazip
 LIBS += -L"$$OUT_PWD/lib" -lquazip
 LIBS += -L"$$OUT_PWD/quazip/lib" -lquazip
