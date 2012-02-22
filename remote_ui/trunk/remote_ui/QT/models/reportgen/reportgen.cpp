@@ -123,7 +123,7 @@ bool Reportgen::startReportTemplate(QString odffile, QString sedfile, QFileInfo 
    xmlsave << "</office:spreadsheet></office:body></office:document-content>";
    //xmlsave << getTemplateFooter( fileBaseName + "/content.xml" );
    file->close();
-   //replaceEbene(file, fileBaseName);
+   replaceEbene(file, fileBaseName);
 
    replaceTemplateVars(fileBaseName, sedfile, zielDatei);
 
@@ -174,11 +174,7 @@ bool Reportgen::replaceEbene(QFile *file, QString odffile)
     QDomDocument doc;
     doc.setContent(temp_file);
     QString xml;
-    int merken = 0;
-    int start = 0;
-
     xml = doc.toString();
-
     QTextStream stream1(&xml);
     stream1.setCodec("UTF-8");
     QTextStream xmlsave1(newFile);
@@ -187,39 +183,48 @@ bool Reportgen::replaceEbene(QFile *file, QString odffile)
     QString ausgabe;
     QString behalten;
 
-    //xmlsave1 << getTemplateHeader(odffile + "/content.xml") << getTemplatePosition(odffile + "/content.xml");
+    int merken = 0;
+    int start = 0;
+    int tableFound = 0;
+    int tableEnd = 0;
 
+    xmlsave1 << getTemplateHeader(odffile + "/content.xml");
     while(!stream1.atEnd())
     {
-
         ausgabe = stream1.readLine();
+
+        if(ausgabe.contains("<table:table table:name"))
+        {
+            xmlsave1 <<getTemplatePosition(tableFound+1, odffile + "/content.xml");
+            tableFound = tableFound + 1;
+        }
+
+        if(merken == 0 && ausgabe.contains("</table:table>"))
+        {
+            xmlsave1 << getTemplateFooter(tableEnd+1, odffile + "/content.xml");
+            tableEnd = tableEnd + 1;
+        }
+
         if(ausgabe.contains("[P1["))
         {
             start = 1;
         }
-
         if(ausgabe.contains("]P1]"))
         {
             start = 0;
         }
-
         if(ausgabe.contains("<table:table-row"))
         {
             merken = 1;
-            qDebug() << "merken ist 1";
         }
-
         if(merken == 1 && start == 1)
         {
                 xmlsave = xmlsave + ausgabe;
         }
-
         if(ausgabe.contains("</table:table-row"))
         {
             merken = 0;
-            qDebug() << "merken ist 0";
         }
-
         if(merken == 0 && start == 1)
         {
             if(xmlsave.contains("[") || xmlsave.contains("]"))
@@ -233,11 +238,7 @@ bool Reportgen::replaceEbene(QFile *file, QString odffile)
         xmlsave1 << behalten;
         behalten.clear();
     }
-
     QFile::remove(temp_file->fileName());
-
-    //xmlsave1 << getTemplateFooter( odffile + "/content.xml" ); //<< "</office:spreadsheet>";
-
 }
 
 QString Reportgen::getTemplateHeader(QString filename)
