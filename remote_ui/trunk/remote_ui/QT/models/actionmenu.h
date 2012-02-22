@@ -40,23 +40,27 @@ public:
    void removeButton(QString);
    void removeButtons();
    void hideButtons(bool);
+   /*
    void restoreButtonPalette();
    void setButtonPalette();
    void setPaletteForButton(QPushButton*);
+   */
    QList<QAction*> actions();
    QAction* getAction(QString);
+   /*
    void setIconForButton(QPushButton*);
    void restoreButtonIcon();
    void setButtonIcons();
-
+*/
 private:
    QHash<QString, QPalette> qh_buttonpals;
    QHash<QString, QIcon> qh_buttonicon;
    QLayout* layout;
    QButtonGroup *buttonGroup;
+   /*
    bool b_disabledp;
    bool b_disabledi;
-
+*/
 protected:
    void resizeEvent(QResizeEvent *);
    void keyPressEvent(QKeyEvent *event);

@@ -125,7 +125,7 @@ void Context::sendAfterEvent()
     }
 }
 
-
+/*
 void Context::restoreFieldPalette()
 {
   if(ql_fieldList.size() < 1)
@@ -213,6 +213,7 @@ void Context::setPaletteList()
       setPaletteForWidget(field);
     }
 }
+*/
 void Context::addField(QWidget *field)
 {
   MainFrame::vdcdebug("Context","addField", "QWidget *field");
@@ -220,7 +221,6 @@ void Context::addField(QWidget *field)
   if(!ql_fieldList.contains(field)){
       ql_fieldList << field;
 
-      setPaletteForWidget(field);
       field->setEnabled(true);
 
 
@@ -282,12 +282,13 @@ void Context::addScreenRecord(QWidget *screenRec, bool input)
                   this, SLOT(screenRecordColumnChanged(const QModelIndex&, const QModelIndex&)));
 
           tableView->setInputEnabled(input);
+          /*
           //set palette for inputarrays
           if(input)
           {
              setPaletteForWidget(screenRec);
              tableView->setViewPalette();
-          }
+          }*/
           tableView->setEnabled(true);
           setOption("ARRLINE", 0);
           setOption("SCRLINE", 0);

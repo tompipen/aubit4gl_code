@@ -147,11 +147,12 @@ MainFrame::vdcdebug("ScreenHandler","createWindow", "QString windowTitle,QString
    if(p_fglform != NULL)
    {
       p_fglform->setEnabled(false);
+      /*
       if(p_fglform->actionMenu())
       {
          p_fglform->actionMenu()->restoreButtonIcon();
          p_fglform->actionMenu()->restoreButtonPalette();
-      }
+      }*/
 /*
       if(p_fglform->menu() != NULL)
          p_fglform->menu()->setEnabled(false);
@@ -1961,6 +1962,7 @@ MainFrame::vdcdebug("ScreenHandler","waitForEvent", "");
       }
    }
    p_fglform = saveactive;
+   /*
    if(p_fglform->inputArray() || p_fglform->construct() || p_fglform->input() || p_fglform->displayArray())
    {
 
@@ -1970,7 +1972,7 @@ MainFrame::vdcdebug("ScreenHandler","waitForEvent", "");
           p_fglform->actionMenu()->setButtonPalette();
        }
 
-   }
+   }*/
    checkFields();
 
 /*
@@ -2711,8 +2713,8 @@ MainFrame::vdcdebug("ScreenHandler","getContext", "int i_context");
 
    for(int i=contextCount; i<i_context; i++){
       Context *context = new Context;
-      if(!contexts.isEmpty())
-        contexts.last()->restoreFieldPalette();
+  /*    if(!contexts.isEmpty())
+        contexts.last()->restoreFieldPalette();*/
       contexts << context;
    }
 
@@ -2750,14 +2752,14 @@ MainFrame::vdcdebug("ScreenHandler","freeContext", "int i_context");
          }
          field->blockSignals(false);
       }
-      context->restoreFieldPalette();
+      //context->restoreFieldPalette();
       delete context;
 
       context = getCurrentContext();
       p_fglform->context = context;
-      if(context)
+   /*   if(context)
          context->setPaletteList();
-     /* if(p_fglform->displayArray() || p_fglform->inputArray() || p_fglform->input() || p_fglform->construct())
+      if(p_fglform->displayArray() || p_fglform->inputArray() || p_fglform->input() || p_fglform->construct())
         {
           p_fglform->actionMenu()->setButtonIcons();
           p_fglform->actionMenu()->setButtonPalette();
@@ -2935,7 +2937,7 @@ void ScreenHandler::activeFocus()
 
 bool ScreenHandler::eventFilter(QObject *obj, QEvent *event)
 {
-
+/*
   if(event->type() == QEvent::EnabledChange)
   {
       if(FglForm *p_form = qobject_cast<FglForm*> (obj))
@@ -2963,7 +2965,7 @@ bool ScreenHandler::eventFilter(QObject *obj, QEvent *event)
           }
       }
   }
-
+*/
 
 
     if(event->type() == QEvent::WindowActivate)

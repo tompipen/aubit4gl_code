@@ -40,9 +40,9 @@ MainFrame::vdcdebug("ActionMenu","ActionMenu", "QWidget *parent");
    layout->setAlignment(Qt::AlignTop);
 
    buttonGroup = new QButtonGroup(this);
-   b_disabledi = false;
+   /*b_disabledi = false;
    b_disabledp = false;
-/*
+
    connect(buttonGroup, SIGNAL(buttonClicked(int)), 
            this, SLOT(buttonClicked(int)));
 */
@@ -65,9 +65,10 @@ MainFrame::vdcdebug("ActionMenu","ActionMenu", "QString title, QString style, QW
    // disable widget until it it gets called
    this->setEnabled(false);
    this->setVisible(false);
+/*
    b_disabledi = false;
    b_disabledp = false;
-
+*/
    // TODO: Layout is set by style
    if(style == "TODO"){
    }
@@ -357,7 +358,7 @@ void ActionMenu::setOrientation(const Qt::Orientation &o){
    }
 }
 
-
+/*
 void ActionMenu::setPaletteForButton(QPushButton *button)
 {
 
@@ -507,3 +508,4 @@ void ActionMenu::restoreButtonIcon()
 
 
 }
+*/

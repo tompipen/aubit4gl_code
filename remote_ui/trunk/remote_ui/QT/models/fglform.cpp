@@ -3759,12 +3759,28 @@ void FglForm::setUserInputEnabled(bool enabled)
     if (context) {
         foreach (QWidget *widget, context->fieldList())
         {
-            widget->setEnabled(enabled);
+            if(enabled)
+            {
+                widget->setFocusPolicy(Qt::StrongFocus);
+            }
+            else
+            {
+               widget->setFocusPolicy(Qt::NoFocus);
+            }
 
         }
     }
     if (p_actionMenu)
-        p_actionMenu->setEnabled(enabled);
+    {
+        if(enabled)
+        {
+            p_actionMenu->setFocusPolicy(Qt::StrongFocus);
+        }
+        else
+        {
+           p_actionMenu->setFocusPolicy(Qt::NoFocus);
+        }
+    }
     RingMenu *ringMenu = menu();
     if (ringMenu)
         ringMenu->setEnabled(enabled);

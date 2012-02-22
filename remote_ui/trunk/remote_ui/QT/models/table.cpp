@@ -38,7 +38,7 @@ MainFrame::vdcdebug("TableView","TableView", "QWidget *parent");
    i_maxArrSize = 1;
    b_ignoreFocus = false;
    b_ignoreRowChange = false;
-   b_palette = false;
+ //  b_palette = false;
    this->setMouseTracking(true);
    const int rowHeight = fontMetrics().height() + 2;
    verticalHeader()->setDefaultSectionSize(rowHeight);
@@ -69,7 +69,7 @@ MainFrame::vdcdebug("TableView","TableView", "QWidget *parent");
    this->setInputEnabled(false);
    this->setEnabled(false);
 }
-
+/*
 
 void TableView::restoreViewPalette()
 {
@@ -162,7 +162,7 @@ void TableView::setViewPalette()
 
 }
 
-
+*/
 void TableView::updateSectionWidth(int logicalIndex, int, int newSize)
 {
     QSortFilterProxyModel *proxyModel = static_cast<QSortFilterProxyModel*> (this->model());
@@ -832,40 +832,6 @@ QVariant TableModel::data(const QModelIndex &index, int role) const
                    return int(Qt::AlignLeft);
                }
            }
-       }
-
-       if(b_input)
-       {
-       if(role == Qt::ForegroundRole)
-       {
-           if(mytv->p_fglform->isEnabled())
-           {
-              QPalette pal(dele->qw_editor->palette());
-              pal.setCurrentColorGroup(QPalette::Active);
-              return pal.text();
-           }
-           else
-           {
-                  QPalette pal(dele->qw_editor->palette());
-                  pal.setCurrentColorGroup(QPalette::Disabled);
-                  return pal.text();
-           }
-       }
-       if(role == Qt::BackgroundRole)
-       {
-           if(mytv->p_fglform->isEnabled())
-           {
-              QPalette pal(dele->qw_editor->palette());
-              pal.setCurrentColorGroup(QPalette::Active);
-              return pal.base();
-           }
-           else
-           {
-                  QPalette pal(dele->qw_editor->palette());
-                  pal.setCurrentColorGroup(QPalette::Disabled);
-                  return pal.background();
-           }
-       }
        }
 
    }

@@ -1629,7 +1629,6 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
    
    if(childElement.nodeName() == "WAITFOREVENT"){
       handleWaitForEventElement(childElement);
-      waitForEvent();
       return;
    }
 
@@ -2356,6 +2355,8 @@ MainFrame::vdcdebug("ProtocolHandler","handleWaitForEventElement", "const QDomNo
          handleDisplayToElement(currentElement, currentElement.nodeName());
       }
    }
+
+   waitForEvent();
 
    return;
 }

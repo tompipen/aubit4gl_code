@@ -45,9 +45,10 @@ public:
    QAction *resetAct;
    QPointer<QWidget> curr_editor;
    QAction *columnAct;
+   /*
    void setViewPalette();
    void restoreViewPalette();
-
+*/
 //   void resize();
 
     void setInputEnabled(bool);
@@ -81,16 +82,17 @@ private:
     int i_arrLine;
     int i_scrLine;
     int i_maxArrSize;
-    bool b_palette;
+  //  bool b_palette;
     bool b_ignoreFocus;
     bool b_ignoreRowChange;
     bool checkBounds(const QModelIndex);
     int i_currrowmouse;
     int i_currcolumnmouse;
+    /*
     QPalette header;
     QPalette tableview;
     QPalette scrollbars;
-
+*/
 public slots:
    void fieldChanged(QModelIndex, QModelIndex);
    void accept();

@@ -28,14 +28,17 @@ public:
    void sendBeforeEvent();
    void sendAfterEvent();
    void checkOptions();
+   /*
    void restoreFieldPalette();
    void setPaletteList();
    void setPaletteForWidget(QWidget*);
+   */
+
 private:
    Fgl::State fgl_state;
    QList<QWidget*> ql_fieldList;
    QHash<QString, int> qh_options;
-   QHash<QString, QPalette> qh_palette;
+   //QHash<QString, QPalette> qh_palette;
    void setRowChanged();
    int rowChangedCnt;
 
