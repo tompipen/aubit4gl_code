@@ -756,6 +756,9 @@ bool Reportgen::replaceTemplateVars(QString odffile, QString sedfile, QFileInfo 
     QFile *file = new QFile(QDir::tempPath() + "/" + odffile + "/1-content.xml");
     QFile *file1 = new QFile(QDir::tempPath() + "/" + odffile + "/content.xml");
 
+    QString diag_pfad = "/home/da/";
+    QString diag_bild = "diag.jpg";
+
     if(!file->open(QIODevice::ReadOnly)) {
         qDebug() << "cannot open content1.xml (ersetzung)";
         return false;
@@ -791,6 +794,47 @@ bool Reportgen::replaceTemplateVars(QString odffile, QString sedfile, QFileInfo 
             temp_var.replace("<text:p>", "");
             temp_var.replace("</text:p>", "");
             //qDebug() << "Suche nach: " << temp_var;
+
+            if(temp_var.contains("@DIAG_"))
+            {
+                if(QFile::exists(QString(diag_pfad + diag_bild)));
+                {
+                    if(QFile::copy(QString(diag_pfad + diag_bild), QString( QDir::tempPath() + "/" + odffile + "/Pictures/" + diag_bild )))
+                    {
+                        QFile *manifestfile = new QFile(QDir::tempPath() + "/" + odffile + "/META-INF/manifest.xml");
+                        if(!manifestfile->open(QIODevice::ReadWrite))
+                        {
+                            qDebug() << "Manifest nicht geoeffnet zum lesen";
+                        }
+                        QDomDocument doc;
+                        doc.setContent(manifestfile);
+                        QString xml = doc.toString();
+                        QTextStream manistream(&xml);
+                        QString manifestText;
+                        QString save;
+                        while(!manistream.atEnd())
+                        {
+                            manifestText = manistream.readLine();
+
+                            if(manifestText.contains("image/jpeg"))
+                            {
+                                manifestText = manifestText.append("<manifest:file-entry manifest:media-type=\"image/jpeg\" manifest:full-path=\"Pictures/" + diag_bild + "\"/>");
+                            }
+                            save = save + manifestText;
+                        }
+                        QFile *manisave = new QFile(QDir::tempPath() + "/" + odffile + "/META-INF/manifest.xml");
+                        if(!manisave->open(QIODevice::WriteOnly | QIODevice::Truncate))
+                        {
+                            qDebug() << "Manifest konnte nicht zum schreiben geoeffnet werden";
+                        }
+                        manifestfile->close();
+                        QTextStream maniWritter(manisave);
+                        maniWritter << save;
+                        ausgabe.replace(QString("<text:p>" + temp_var + "</text:p>"), QString("<draw:frame table:end-cell-address=\"Tabelle1.E20\" draw:text-style-name=\"P1\" svg:width=\"14.544cm\" svg:x=\"0.081cm\" draw:style-name=\"gr1\" svg:y=\"0.016cm\" draw:name=\"Graphics 1\" table:end-x=\"2.181cm\" table:end-y=\"0.419cm\" svg:height=\"12.321cm\" draw:z-index=\"0\"><draw:image xlink:type=\"simple\" xlink:show=\"embed\" xlink:href=\"Pictures/" + diag_bild + "\" xlink:actuate=\"onLoad\"> <text:p/></draw:image></draw:frame>"));
+                        manisave->close();
+                    }
+                }
+            }
 
             if(cnt < temp_fields.count())
             {
