@@ -1,9 +1,10 @@
 #ifndef REPORTGEN_H
 #define REPORTGEN_H
-#include <QtGui>
+#include <QThread>
 #include <QDomDocument>
+#include <QFileInfo>
 
-class Reportgen : public QObject
+class Reportgen : public QThread
 {
     Q_OBJECT;
 
@@ -20,8 +21,12 @@ public:
     QString prepareTemplateEbene(int Position, int Ebene, int eben3, int Counter, QDomDocument doc, QString odffile, QString sedfile);
     QString getTemplateFooter(int Table, QString filename);
 
-    QList<QString> readSedFile(QString sedfile);
-    QList<QString> getTemplateVars(QString filename);
+    bool readSedFile(QString sedfile);
+    bool getTemplateVars(QString filename);
+
+private:
+    QList<QString> sed_fields;
+    QList<QString> temp_fields;
 
 
 

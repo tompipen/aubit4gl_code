@@ -1,4 +1,3 @@
-#include <QtGui>
 #include <QDomDocument>
 #include "models/reportgen/reportgen.h"
 #include "models/zipunzip.h"
@@ -12,6 +11,7 @@
 
 bool Reportgen::startReportTemplate(QString odffile, QString sedfile, QFileInfo zielDatei)
 {
+    readSedFile(sedfile);
 
     ZipUnzip *p_zipunzip = new ZipUnzip();
 
@@ -22,8 +22,6 @@ bool Reportgen::startReportTemplate(QString odffile, QString sedfile, QFileInfo 
     }
 
    QString content;
-   QList<QString> temp_fields;
-   QList<QString> sed_fields;
    QFileInfo oldFileName = odffile;
    QString fileBaseName = oldFileName.baseName();
 
@@ -47,8 +45,7 @@ bool Reportgen::startReportTemplate(QString odffile, QString sedfile, QFileInfo 
    QTextStream xmlsave(file);
    xmlsave.setCodec("UTF-8");
    xmlsave << getTemplateHeader( fileBaseName + "/content.xml" ); //<< getTemplatePosition( fileBaseName + "/content.xml" ).toUtf8();
-   temp_fields << getTemplateVars(fileBaseName + "/content.xml");
-   sed_fields << readSedFile(sedfile);
+   getTemplateVars(fileBaseName + "/content.xml");
 
    for(int i=0; i < temp_fields.count(); i++)
    {
@@ -369,14 +366,12 @@ QString Reportgen::prepareTemplateContent(int Table, int Position, QString odffi
     QString ausgabe;
     QString xmlout;
     QString test;
-    QList<QString> fieldlist;
     xmlout.append("<table:table-row><table:table-cell>");
 
     int cnt = 0;
     int counter = 0;
     int ebene = 0;
     int tableFound = 0;
-    fieldlist << getTemplateVars(odffile);
 
     while(!stream.atEnd()) {
         ausgabe = stream.readLine().trimmed();
@@ -386,7 +381,7 @@ QString Reportgen::prepareTemplateContent(int Table, int Position, QString odffi
         {
             tableFound = tableFound + 1;
             counter = 0;
-            qDebug() << "tableFound: " << tableFound;
+            //qDebug() << "tableFound: " << tableFound;
         }
 
         if(ausgabe.contains("[P1[")) {
@@ -401,25 +396,25 @@ QString Reportgen::prepareTemplateContent(int Table, int Position, QString odffi
             }
             //qDebug() << ebene;
             if(ausgabe.contains("@") && ebene == 1) {
-                for(int i=0; i < fieldlist.count(); i++) {
-                    if(ausgabe.contains(fieldlist.at(i))) {
-                        ausgabe.replace("@" + fieldlist.at(i), QString("@%1" + fieldlist.at(i)).arg(QString::number(Position)));
+                for(int i=0; i < temp_fields.count(); i++) {
+                    if(ausgabe.contains(temp_fields.at(i))) {
+                        ausgabe.replace("@" + temp_fields.at(i), QString("@%1" + temp_fields.at(i)).arg(QString::number(Position)));
                     }
                 }
             }
 
             if(ausgabe.contains("@") && ebene == 2) {
-                for(int i=0; i < fieldlist.count(); i++) {
-                    if(ausgabe.contains("@" + fieldlist.at(i))) {
-                        ausgabe.replace("@" + fieldlist.at(i), QString("@%1_0" + fieldlist.at(i)).arg(QString::number(Position)));
+                for(int i=0; i < temp_fields.count(); i++) {
+                    if(ausgabe.contains("@" + temp_fields.at(i))) {
+                        ausgabe.replace("@" + temp_fields.at(i), QString("@%1_0" + temp_fields.at(i)).arg(QString::number(Position)));
                     }
                 }
             }
 
             if(ausgabe.contains("@") && ebene == 3) {
-                for(int i=0; i < fieldlist.count(); i++) {
-                    if(ausgabe.contains("@" + fieldlist.at(i))) {
-                        ausgabe.replace("@" + fieldlist.at(i), QString("@%1_0_0" + fieldlist.at(i)).arg(QString::number(Position)));
+                for(int i=0; i < temp_fields.count(); i++) {
+                    if(ausgabe.contains("@" + temp_fields.at(i))) {
+                        ausgabe.replace("@" + temp_fields.at(i), QString("@%1_0_0" + temp_fields.at(i)).arg(QString::number(Position)));
                     }
                 }
             }
@@ -427,14 +422,14 @@ QString Reportgen::prepareTemplateContent(int Table, int Position, QString odffi
             if(ebene == 2) {
                 test = test + ausgabe;
                 if(ausgabe.contains(QString("]P%1]").arg(ebene))) {
-                    for(int i=0; i < fieldlist.count(); i++) {
+                    for(int i=0; i < temp_fields.count(); i++) {
                         int found = 0;
-                        if(fieldlist.at(i).contains(QString("[P%1[").arg(ebene))) {
+                        if(temp_fields.at(i).contains(QString("[P%1[").arg(ebene))) {
                             i = i +1;
                             //ausgabe.append("</table:table-cell></table:table-row>");
-                            for(int j=1; j < (fieldlist.count() *1000); j++) {
-                                qDebug() << j << "von" << fieldlist.count() * 1000 << " moeglichen Datensaetze. Aktuelle Position in Ebene2: " << Position;
-                                found = checkSedFile(QString("@%1_%2" + fieldlist.at(i)).arg(Position).arg(j), sedfile);
+                            for(int j=1; j < (temp_fields.count() *1000); j++) {
+                                //qDebug() << j << "von" << temp_fields.count() * 1000 << " moeglichen Datensaetze. Aktuelle Position in Ebene2: " << Position;
+                                found = checkSedFile(QString("@%1_%2" + temp_fields.at(i)).arg(Position).arg(j), sedfile);
                                 if(found > 0) {
                                     ausgabe.append(prepareTemplateEbene(Position, ebene, 0, j, doc, odffile, sedfile));
                                 } else {
@@ -450,19 +445,19 @@ QString Reportgen::prepareTemplateContent(int Table, int Position, QString odffi
             if(ebene == 3 ) {
                 test = test + ausgabe;
                 if(ausgabe.contains(QString("]P%1]").arg(ebene))) {
-                    for(int i=0; i < fieldlist.count(); i++) {
+                    for(int i=0; i < temp_fields.count(); i++) {
                         int found = 0;
-                        if(fieldlist.at(i).contains(QString("[P%1[").arg(ebene))) {
+                        if(temp_fields.at(i).contains(QString("[P%1[").arg(ebene))) {
                             i = i +1;
                             //ausgabe.append("</table:table-cell></table:table-row>");
-                            found = checkSedFile(QString("@%1_%2_0" + fieldlist.at(i)).arg(Position).arg(0), sedfile);
+                            found = checkSedFile(QString("@%1_%2_0" + temp_fields.at(i)).arg(Position).arg(0), sedfile);
                             if(found > 0) {
-                                for(int k=1; k < (fieldlist.count() *1000); k++)
+                                for(int k=1; k < (temp_fields.count() *1000); k++)
                                 {
                                     int found1 = 0;
-                                    qDebug() << "von" << fieldlist.count() * 1000 << " moeglichen Datensaetze";
-                                    qDebug() << "found123: " << QString("@%1_%2_%3" + fieldlist.at(i)).arg(Position).arg(0).arg(k);
-                                    found1 = checkSedFile(QString("@%1_%2_%3" + fieldlist.at(i)).arg(Position).arg(0).arg(k), sedfile);
+                                    qDebug() << "von" << temp_fields.count() * 1000 << " moeglichen Datensaetze";
+                                    qDebug() << "found123: " << QString("@%1_%2_%3" + temp_fields.at(i)).arg(Position).arg(0).arg(k);
+                                    found1 = checkSedFile(QString("@%1_%2_%3" + temp_fields.at(i)).arg(Position).arg(0).arg(k), sedfile);
                                     qDebug() << "found: " << found;
                                     if(found1 > 0) {
                                         ausgabe.append(prepareTemplateEbene(Position, ebene, k, 0, doc, odffile, sedfile));
@@ -506,7 +501,6 @@ QString Reportgen::prepareTemplateContent(int Table, int Position, QString odffi
 QString Reportgen::prepareTemplateEbene(int Position, int Ebene, int Ebene3, int Counter, QDomDocument doc, QString odffile, QString sedfile)
 {
     QFile *file = new QFile(QDir::tempPath() + "/" + QString("1-" + odffile));
-    QList<QString> temp_fields = getTemplateVars(odffile);
     QString ausgabe;
     QString xmlout;
     QString xmlout1;
@@ -649,12 +643,11 @@ QString Reportgen::getTemplateFooter(int Table, QString filename)
 //
 //------------------------------------------------------------------------------
 
-QList<QString> Reportgen::readSedFile(QString sedfile)
+bool Reportgen::readSedFile(QString sedfile)
 {
     QFile *file = new QFile(QDir::tempPath() + "/" + sedfile);
     QTextStream stream(file);
     stream.setCodec("UTF-8");
-    QList<QString> temp_fields;
 
 
     if(!file->open(QIODevice::ReadOnly)) {
@@ -662,10 +655,9 @@ QList<QString> Reportgen::readSedFile(QString sedfile)
     }
 
     while(!stream.atEnd()) {
-        temp_fields << stream.readLine();
+        sed_fields << stream.readLine();
     }
     file->close();
-    return temp_fields;
 }
 
 //------------------------------------------------------------------------------
@@ -712,7 +704,7 @@ int Reportgen::checkSedFile(QString fieldname, QString filename)
 //
 //------------------------------------------------------------------------------
 
-QList<QString> Reportgen::getTemplateVars(QString filename)
+bool Reportgen::getTemplateVars(QString filename)
 {
 
     QFile *file = new QFile(QDir::tempPath() + "/" + filename);
@@ -725,7 +717,6 @@ QList<QString> Reportgen::getTemplateVars(QString filename)
         QTextStream stream(&xmlout);
         stream.setCodec("UTF-8");
         QString ausgabe;
-        QList<QString> t_fieldlist;
         int counter = 0;
 
         while(!stream.atEnd()) {
@@ -740,11 +731,10 @@ QList<QString> Reportgen::getTemplateVars(QString filename)
                 ausgabe.remove("<text:p>");
                 ausgabe.remove("</text:p>");
                 ausgabe.remove("@");
-                t_fieldlist << ausgabe.trimmed();
+                temp_fields << ausgabe.trimmed();
             }
         }
         file->close();
-        return t_fieldlist;
     }
 
 }
@@ -758,8 +748,8 @@ QList<QString> Reportgen::getTemplateVars(QString filename)
 
 bool Reportgen::replaceTemplateVars(QString odffile, QString sedfile, QFileInfo zielDatei)
 {
-    QList<QString> temp_fields = getTemplateVars(odffile + "/1-content.xml");
-    QList<QString> sed_fields = readSedFile(sedfile);
+    temp_fields.clear();
+    getTemplateVars(odffile + "/1-content.xml");
     QString ausgabe;
     QString temp_var;
     QString sedLine;
@@ -801,11 +791,10 @@ bool Reportgen::replaceTemplateVars(QString odffile, QString sedfile, QFileInfo 
             temp_var = ausgabe;
             temp_var.replace("<text:p>", "");
             temp_var.replace("</text:p>", "");
-            qDebug() << "Suche nach: " << temp_var;
+            //qDebug() << "Suche nach: " << temp_var;
 
             if(cnt < temp_fields.count())
             {
-                qDebug() << temp_fields.at(cnt);
                 for (int i=0; i < sed_fields.count(); i++)
                 {
                     //qDebug() << "Verbleibende Datensaetze: " << sed_fields.count();
