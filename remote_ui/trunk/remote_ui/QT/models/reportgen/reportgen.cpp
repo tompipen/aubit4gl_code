@@ -73,7 +73,6 @@ bool Reportgen::startReportTemplate(QString odffile, QString sedfile, QFileInfo 
    {
        if(temp_fields.at(i).contains("[")) {
            i = i + 1;
-           qDebug() << "gefunden: " << temp_fields.at(i);
            for(int k=0; k < sed_fields.count(); k++)
            {
                qDebug() << "Suche in SED nach Anfang: " << k << "von" << sed_fields.count();
@@ -804,7 +803,10 @@ bool Reportgen::replaceTemplateVars(QString odffile, QString sedfile, QFileInfo 
                         sedLine = sed_fields.at(i).trimmed();
                         sedLine.replace(QString(temp_var + "/"), "");
                         ausgabe.replace(temp_var, sedLine);
-                        sed_fields.removeAt(i);
+                        if(!temp_var.endsWith("1"))
+                        {
+                           sed_fields.removeAt(i);
+                        }
                         break;
                     }
                 }
