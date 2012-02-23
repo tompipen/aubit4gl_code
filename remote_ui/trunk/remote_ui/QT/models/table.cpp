@@ -386,37 +386,51 @@ MainFrame::vdcdebug("TableView","sizeHint", " const");
    if(QSortFilterProxyModel *proxyModel = qobject_cast<QSortFilterProxyModel *> (this->model())){
       if(TableModel *table = qobject_cast<TableModel *> (proxyModel->sourceModel())){
 
-         /*
+
          if(this->horizontalHeader()->isVisible())
             height += this->horizontalHeader()->height();
-            */
 
+/*
          if(!this->verticalHeader()->isHidden()){
             width += this->verticalHeader()->width();
          }
-
-         for(int i=0; i<table->rowCount(QModelIndex());i++){
+*/
+         for(int i=0; i<table->pageSize();i++){
             height += this->rowHeight(i);
          }
-
+/*
          for(int j=0; j<table->columnCount(QModelIndex()); j++){
             width += this->columnWidth(j);
          }
-
+*/
          if(!this->horizontalScrollBar()->isHidden()){
             height+= this->horizontalScrollBar()->height();
          }
 
+
+         if(p_fglform)
+         {
+            if(FglForm *form = qobject_cast<FglForm*> (p_fglform))
+            {
+               QFontMetrics fm = qApp->fontMetrics();
+               width += form->gridWidth * fm.averageCharWidth();
+            }
+         }
+
+/*
+
+         i
+
          if(!this->verticalScrollBar()->isHidden()){
             width+= this->verticalScrollBar()->width();
          }
-
+*/
 //         this->setFixedSize(width, height);
 //         this->setMinimumSize(width+5, height);
 //         this->setFixedWidth(width);
       }
    }
-   return QSize(width+12, height);
+   return QSize(width, height+5);
 }
 
 
@@ -801,6 +815,8 @@ MainFrame::vdcdebug("TableModel","TableModel", "int rows, int columns, QObject *
       insertRows(i, 1, QModelIndex());
    }
 
+   this->setPageSize(rows);
+
    b_input = true;
 }
 
@@ -809,6 +825,7 @@ TableModel::TableModel(QObject *parent) : QAbstractTableModel(parent)
 MainFrame::vdcdebug("TableModel","TableModel", "QObject *parent");
    b_input = true;
    this->columns = 0;
+   this->setPageSize(0);
 }
 
 int TableModel::rowCount(const QModelIndex&) const { return this->rows; }//fields2.count(); }

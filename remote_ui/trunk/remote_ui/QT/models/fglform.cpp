@@ -38,6 +38,7 @@ FglForm::FglForm(QString windowName, QWidget *parent) : QMainWindow(parent){
 
    b_dummy = false;
    context = NULL;
+   gridWidth = 0;
    this->b_newForm = true;
    /*
    if(parent != NULL){
@@ -73,7 +74,7 @@ FglForm::FglForm(QString windowName, QWidget *parent) : QMainWindow(parent){
 
    b_menu = false;
    b_input = false;
-   b_screenRecord = false;
+   b_screenRecord = false;   gridWidth = 0;
    p_dialog = NULL;
    p_pulldown = NULL;
    p_actionMenu = NULL;
@@ -3785,3 +3786,18 @@ void FglForm::setUserInputEnabled(bool enabled)
     if (ringMenu)
         ringMenu->setEnabled(enabled);
 }
+
+/*
+QSize FglForm::sizeHint() const
+{
+  int height = 0;
+  int width  = 0;
+
+  QFontMetrics *fm;
+
+  height += fm->averageCharWidth() * this->gridHeight;
+  width  += fm->averageCharWidth() * this->gridWidth;
+
+  return QSize(width, height);
+}
+*/

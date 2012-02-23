@@ -32,7 +32,7 @@ MainFrame::vdcdebug("Parser","Parser", "QWidget *p_fglform");
    layout->setSpacing(0);
    this->setLayout(layout);
 
-   currentWidget = new QWidget;
+   currentWidget = new QWidget(this);
    currentLayout = NULL;
    layoutChanged = false;
    hidden = false;
@@ -104,6 +104,39 @@ MainFrame::vdcdebug("Parser","parseElement", "const QDomNode& xmlNode");
    bool b_folder = false;
    bool hidden = false;
 
+   QString nodeName;
+   QDomElement currentElement;
+
+   nodeName = xmlNode.nodeName();
+   currentElement = xmlNode.toElement();
+   if(nodeName == "Form")
+   {
+
+       int gridWidth      = currentElement.attribute("width").toInt();
+       int gridHeight     = currentElement.attribute("height").toInt();
+       QString delimiters = currentElement.attribute("delimiters");
+       QString sqldbname  = currentElement.attribute("sqlDbName");
+       QString formname   = currentElement.attribute("name");
+       QString encoding   = currentElement.attribute("encoding");
+
+       QFontMetrics fm = qApp->fontMetrics();
+       int width = gridWidth * fm.averageCharWidth();
+
+       this->setMinimumWidth(width);
+
+
+       if(p_fglform)
+       {
+          if(FglForm *form = qobject_cast<FglForm*> (p_fglform))
+          {
+             form->gridWidth = gridWidth;
+          }
+       }
+
+   }
+
+
+
    QDomNodeList children = xmlNode.childNodes();
    for(int i=0; i<children.count(); ++i){
 
@@ -113,9 +146,10 @@ MainFrame::vdcdebug("Parser","parseElement", "const QDomNode& xmlNode");
       }
 
       // start parsing the first element
-      QDomElement currentElement = child.toElement();
+      currentElement = child.toElement();
 
-      QString nodeName = currentElement.nodeName();
+      nodeName = currentElement.nodeName();
+
 
 
 /*
@@ -505,7 +539,8 @@ void Parser::handleTableColumn(const QDomNode& xmlNode){
  
    //p_screenRecord->setFixedSize(recordWidth, recordHeight);
    //p_screenRecord->resize();
- 
+
+
    addWidgets(p_screenRecord);
  
 }
@@ -586,7 +621,7 @@ void Parser::handleMatrixColumn(const QDomNode& xmlNode){
    int x = matrixElement.firstChild().toElement().attribute("posX").toInt();
    int y = matrixElement.firstChild().toElement().attribute("posY").toInt();
 
-   addWidgets(p_screenRecord, false, y, x, gridWidth);
+   addWidgets(p_screenRecord, false, y, x);
 }
 
 void Parser::addWidgets(QWidget *widget, bool add, int x, int y, int gridWidth, int span)

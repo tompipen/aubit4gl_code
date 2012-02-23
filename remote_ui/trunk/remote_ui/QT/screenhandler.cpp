@@ -407,6 +407,7 @@ MainFrame::vdcdebug("ScreenHandler","createMenu", "QString title, QString commen
    if(i_Frm < 0)
       return;
    RingMenu *ringMenu = new RingMenu(title, style);
+   ringMenu->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 
    p_fglform->setMenu(ringMenu);
 }
@@ -1913,7 +1914,7 @@ MainFrame::vdcdebug("ScreenHandler","waitForEvent", "");
          p_fglform->b_newForm = false;
          //Load the Actions again, before display the form
          p_fglform->checkActions();
-         //p_fglform->adjustSize();
+         p_fglform->adjustSize();
          //p_fglform->resize(500,500);
 
          //QSettings settings("VENTAS", p_fglform->windowName);

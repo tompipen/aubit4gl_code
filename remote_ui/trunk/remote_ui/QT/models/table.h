@@ -152,6 +152,9 @@ public:
     TableView* getTableView() const{return mytv;}
     void setTableView(TableView*);
 
+    int pageSize() const{return pagesize;}
+    int setPageSize(int lines){this->pagesize = lines;}
+
     bool insertRows(int position, int rows, const QModelIndex &index=QModelIndex());
     bool removeRows(int position, int rows, const QModelIndex &index=QModelIndex());
     //bool removeRows(int position, int rows, const QModelIndex &index=QModelIndex());
@@ -166,6 +169,8 @@ public:
 private:
     int columns;
     int rows;
+
+    int pagesize;
 
     //QHash<QModelIndex,QVariant> displayValues;
     QVector< QVector<QString> >fields;

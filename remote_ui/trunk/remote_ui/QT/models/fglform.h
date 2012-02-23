@@ -152,7 +152,7 @@ public:
    void initActions();
    bool b_newForm;
    bool b_denyFocus;
-
+   int gridWidth;
    //TableView *p_screenRecord;
    
    void setFormLayout(const QDomDocument&);
@@ -303,6 +303,10 @@ private:
    bool b_bufferTouched;
    int i_lastCursor;
    QString qs_currentFieldBuffer;
+   QString qs_formfile;
+
+   int gridHeight;
+ //  virtual QSize sizeHint() const;
 
 
 private slots:
