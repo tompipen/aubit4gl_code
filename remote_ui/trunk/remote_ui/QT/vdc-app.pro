@@ -21,6 +21,7 @@ win32 {
 VREPGEN_PATH = $$(VREPGEN)
 
 !isEmpty(VREPGEN_PATH) {
+message("VREPGEN erkannt")
 DEFINES += VREPGEN_USE
 INCLUDEPATH += ./quazip/
 LIBS += -L"$$_PRO_FILE_PWD_/lib" -lquazip
