@@ -234,7 +234,9 @@ bool Reportgen::replaceEbene(QFile *file, QString odffile)
         xmlsave1 << behalten;
         behalten.clear();
     }
-    QFile::remove(temp_file->fileName());
+    temp_file->close();
+    temp_file->remove();
+    newFile->close();
 }
 
 QString Reportgen::getTemplateHeader(QString filename)
