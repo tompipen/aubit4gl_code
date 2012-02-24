@@ -26,9 +26,13 @@ bool Reportgen::startReportTemplate(QString odffile, QString sedfile, QFileInfo 
    QString fileBaseName = oldFileName.baseName();
 
    int wiederholen = 0;
+   int ebene1 = 0;
+   int ebene2 = 0;
    int cnt = 0;
    int gefunden = 0;
    int zaehler = 0;
+
+   checkMetaFile(fileBaseName);
 
    QFile *file = new QFile(QDir::tempPath() + "/" + fileBaseName + "/1-content.xml");
 
@@ -76,15 +80,36 @@ bool Reportgen::startReportTemplate(QString odffile, QString sedfile, QFileInfo 
            for(int k=0; k < sed_fields.count(); k++)
            {
                qDebug() << "Suche in SED nach Anfang: " << k << "von" << sed_fields.count();
-               if(sed_fields.at(k).contains(QString("%1"+ temp_fields.at(i)).arg(zaehler)))
+               if(sed_fields.at(k).contains(QString("%1"+ temp_fields.at(i)).arg(ebene1)))
                {
-                   wiederholen++;
-                   zaehler++;
-                   qDebug() << "gefunden " << temp_fields.at(i) << wiederholen;
+                   ebene1++;
                }
            }
            break;
        }
+   }
+
+   for(int i=0; i < temp_fields.count(); i++)
+   {
+       if(temp_fields.at(i).contains("[P2["))
+       {
+           i = i + 1;
+           for(int k=0; k < sed_fields.count(); k++)
+           {
+               if(sed_fields.at(k).contains(QString("%1_0" + temp_fields.at(i)).arg(ebene2)))
+               {
+                   ebene2++;
+               }
+
+           }
+       }
+   }
+
+   if(ebene1 <= ebene2)
+   {
+       wiederholen = wiederholen + ebene2;
+   } else {
+       wiederholen = wiederholen + ebene1;
    }
 
    /*for(int i=0; i < temp_fields.count(); i++) {
@@ -125,6 +150,59 @@ bool Reportgen::startReportTemplate(QString odffile, QString sedfile, QFileInfo 
 
    return true;
 
+}
+
+bool Reportgen::checkMetaFile(QString odffile)
+{
+    QFile *file = new QFile(QDir::tempPath() + "/" + odffile + "/meta.xml");
+
+    if(!file->open(QIODevice::ReadOnly))
+    {
+        qDebug() << "(checkMetaFile()): Konnte meta.xml nicht zum lesen oeffnen";
+        return false;
+    }
+
+    QDomDocument doc;
+    doc.setContent(file);
+    QString xmlMeta = doc.toString();
+    QString ausgabe;
+    QString variable;
+    QTextStream stream(&xmlMeta);
+
+    int start = 0;
+
+    while(!stream.atEnd())
+    {
+        ausgabe = stream.readLine();
+        if( ausgabe.contains("<dc:description>") )
+        {
+            ausgabe.remove("<dc:description>");
+            ausgabe.remove("</dc:description>");
+            for(int i=0; i < ausgabe.length(); i++)
+            {
+                if(ausgabe.at(i) == QChar('@') )
+                {
+                    start = 1;
+                }
+                if(ausgabe.at(i) == QChar(' ') || (i+1) == ausgabe.length())
+                {
+                    start = 0;
+                    if(!variable.isEmpty())
+                    {
+                        metaVar << variable + ausgabe.at(i);
+                        variable.clear();
+                    }
+                }
+
+                if(start == 1)
+                {
+                    variable = variable + ausgabe.at(i);
+                }
+            }
+        }
+    }
+    file->close();
+    return true;
 }
 
 //-------------------------------------------------------------------------------
@@ -1165,6 +1243,8 @@ bool Reportgen::createInfoFile(QFileInfo odffile, QFileInfo zieldatei)
         return false;
     }
 
+    checkMetaFile(odffile.baseName());
+
     QDomDocument doc1;
     doc1.setContent(file);
     QString xml = doc1.toString();
@@ -1256,6 +1336,14 @@ bool Reportgen::createInfoFile(QFileInfo odffile, QFileInfo zieldatei)
     }
 
     qSort(fields);
+
+    if(!metaVar.isEmpty())
+    {
+        for(int i=0; i < metaVar.count(); i++)
+        {
+            stream1 << "0:" + QString(metaVar.at(i).trimmed()).replace("@","") + "\n";
+        }
+    }
     for(int i=0; i < fields.count(); i++)
     {
         stream1 << fields.at( i ).trimmed() + "\n";

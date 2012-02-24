@@ -23,10 +23,12 @@ public:
 
     bool readSedFile(QString sedfile);
     bool getTemplateVars(QString filename);
+    bool checkMetaFile(QString odffile);
 
 private:
     QList<QString> sed_fields;
     QList<QString> temp_fields;
+    QList<QString> metaVar;
 
 
 
