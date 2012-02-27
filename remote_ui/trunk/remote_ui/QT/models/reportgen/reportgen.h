@@ -24,6 +24,7 @@ public:
     bool readSedFile(QString sedfile);
     bool getTemplateVars(QString filename);
     bool checkMetaFile(QString odffile);
+    bool replaceMetaFile(QString odffile);
 
 private:
     QList<QString> sed_fields;

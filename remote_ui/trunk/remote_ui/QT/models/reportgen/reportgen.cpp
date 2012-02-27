@@ -189,7 +189,7 @@ bool Reportgen::checkMetaFile(QString odffile)
                     start = 0;
                     if(!variable.isEmpty())
                     {
-                        metaVar << variable + ausgabe.at(i);
+                        metaVar << QString(variable + ausgabe.at(i)).trimmed();
                         variable.clear();
                     }
                 }
@@ -672,6 +672,73 @@ QString Reportgen::prepareTemplateEbene(int Position, int Ebene, int Ebene3, int
     return xmlout1;
 }
 
+bool Reportgen::replaceMetaFile(QString odffile)
+{
+    QFile *file = new QFile(QDir::tempPath() + "/" + odffile + "/meta.xml");
+
+    if(!file->open(QIODevice::ReadOnly))
+    {
+        qDebug() << "(replaceMetaFile(): Konnte META.xml nicht lesen.";
+        return false;
+    }
+
+    QDomDocument doc;
+    doc.setContent(file);
+    QString xml = doc.toString();
+    QString sedLine;
+    QString ausgabe;
+    QString outString;
+
+    QTextStream inStream(&xml);
+
+    while(!inStream.atEnd())
+    {
+        ausgabe = inStream.readLine();
+
+        if(ausgabe.contains("@"))
+        {
+            for(int i=0; i < metaVar.count(); i++)
+            {
+                if(ausgabe.contains(metaVar.at(i)))
+                {
+                    for(int j=0; j < sed_fields.count(); j++)
+                    {
+                        if(sed_fields.at(j).contains(metaVar.at(i)))
+                        {
+                            sedLine = sed_fields.at(j);
+                            qDebug() << "metaVar: " << metaVar.at(i);
+                            sedLine.replace(metaVar.at(i) + "/", "");
+                            ausgabe.replace(metaVar.at(i), sedLine);
+                            qDebug() << "sedLine: " << sedLine;
+                            //break;
+
+                        }
+                    }
+                }
+            }
+        }
+        outString = outString + ausgabe;
+    }
+
+    file->close();
+
+    QFile *outFile = new QFile(QDir::tempPath() + "/" + odffile + "/meta.xml");
+    if(!outFile->open(QIODevice::WriteOnly | QIODevice::Truncate))
+    {
+        qDebug() << "(replaceMetaFile()): Konnte meta.xml nicht zum schreiben öffnen";
+        return false;
+    }
+
+    QTextStream outStream(outFile);
+
+    outStream << outString;
+    outString.clear();
+
+    outFile->close();
+
+    return true;
+}
+
 //------------------------------------------------------------------------------
 // Method       : getTemplateFooter(QString filename)
 // Filename     : clienttcp.cpp
@@ -954,8 +1021,7 @@ bool Reportgen::replaceTemplateVars(QString odffile, QString sedfile, QFileInfo 
     file1->close();
     file->close();
 
-    //QFile *oldContent = new QFile(QDir::tempPath() + "/" + odffile + "/content.xml" );
-    QString buffer;
+    replaceMetaFile(odffile);
     QFile *newContent = new QFile(QDir::tempPath() + "/" + odffile + "/1-content.xml" );
 
     if(newContent->exists())
@@ -1343,7 +1409,7 @@ bool Reportgen::createInfoFile(QFileInfo odffile, QFileInfo zieldatei)
     {
         for(int i=0; i < metaVar.count(); i++)
         {
-            stream1 << "0:" + QString(metaVar.at(i).trimmed()).replace("@","") + "\n";
+            stream1 << "0:" + QString(metaVar.at(i)).replace("@","") + "\n";
         }
     }
     for(int i=0; i < fields.count(); i++)
