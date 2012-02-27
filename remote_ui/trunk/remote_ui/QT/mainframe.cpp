@@ -59,7 +59,7 @@ bool MainFrame::setFocusOn(int pid)
         return false;
     }
 
-    for(int i=0; i<l_ql_screenhandler->size(); i++)
+    for(int i=0; i<l_ql_screenhandler->count(); i++)
     {
         if(l_ql_screenhandler->at(i)->p_pid == pid)
         {
