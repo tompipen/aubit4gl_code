@@ -1,0 +1,2690 @@
+\hypertarget{classFglForm}{
+\section{FglForm Class Reference}
+\label{classFglForm}\index{FglForm@{FglForm}}
+}
+
+
+{\ttfamily \#include $<$fglform.h$>$}
+
+\subsection*{Public Slots}
+\begin{DoxyCompactItemize}
+\item 
+void \hyperlink{classFglForm_a0ee0e2722721bf18a2809e670e0777cf}{buttonClicked} (QString)
+\item 
+void \hyperlink{classFglForm_a1fd5cabc8ec447738e4420f618d69ca7}{fieldEvent} (\hyperlink{structFgl_1_1Event}{Fgl::Event}, QWidget $\ast$=NULL)
+\item 
+void \hyperlink{classFglForm_a763db4c754333829447f9766c25f0e0b}{setBufferTouched} ()
+\item 
+void \hyperlink{classFglForm_a8495f6c9444756a6bdf370c3ce158921}{setLastCursor} (int, int)
+\item 
+void \hyperlink{classFglForm_ab61a1af085f68fa6673e516812b0b9c8}{setLastCursor} ()
+\item 
+void \hyperlink{classFglForm_a7146bdb938bcb9a88b23051b39ea19b7}{setBufferNotTouched} ()
+\item 
+void \hyperlink{classFglForm_a21cf637edb3ad010d7e00e4d20b95825}{cancelTriggered} ()
+\item 
+void \hyperlink{classFglForm_afd623938967b4f76707704ab67032a57}{acceptTriggered} ()
+\item 
+void \hyperlink{classFglForm_a2300cda82ffb223096c19f63004e248f}{accept} ()
+\item 
+void \hyperlink{classFglForm_a0e2bda025291fc5a29a74254418cffdb}{interrupt} ()
+\item 
+void \hyperlink{classFglForm_ac51ab1764a0c88802875af3b0ef890af}{editcopy} ()
+\item 
+void \hyperlink{classFglForm_acba6e2dba68f2d8c8354a1f3e7de0213}{editcut} ()
+\item 
+void \hyperlink{classFglForm_a3bbc33d5de6401f21553a0e09e091292}{editpaste} ()
+\item 
+void \hyperlink{classFglForm_a1a279ed4bf3d729f30a346e8e6c9b8c7}{nextfield} (bool change=true)
+\item 
+void \hyperlink{classFglForm_a1a8413bf151ffd1e9fb4b0ae2a78dd6e}{prevfield} ()
+\item 
+void \hyperlink{classFglForm_a0321ef0bb745923607aecc90ff23dc16}{nextrow} ()
+\item 
+void \hyperlink{classFglForm_a92a335499ab7c95fa5b106f7a9f21e33}{prevrow} ()
+\item 
+void \hyperlink{classFglForm_af18f12d697d5a9fa0041c597d692d8f1}{firstrow} ()
+\item 
+void \hyperlink{classFglForm_adbc1aae701b9f9be093df1b60072ed10}{lastrow} ()
+\item 
+void \hyperlink{classFglForm_aafc9f7cacb9852d58b809a840abc104e}{nextpage} ()
+\item 
+void \hyperlink{classFglForm_ac3cf8e2f5bfc433cb19497e6bad4db0d}{prevpage} ()
+\item 
+void \hyperlink{classFglForm_a3f1ae54d6ef1585a6f14cf394758c09b}{nexttab} ()
+\item 
+void \hyperlink{classFglForm_a9eefd50c2b2dbcd9303a20a02a2ad140}{prevtab} ()
+\item 
+void \hyperlink{classFglForm_ac9689ad22eff52db3ab60446b78274e3}{exitMenu} ()
+\item 
+void \hyperlink{classFglForm_a267469fbb08f5d257f162df03b88852a}{reopenPulldown} ()
+\item 
+void \hyperlink{classFglForm_a0ccb7e3f717496c6dceaf34b0a6d49df}{dropSuccess} ()
+\item 
+void \hyperlink{classFglForm_a2a05aab413be356d8591d9feaa3818ea}{dragSuccess} ()
+\item 
+void \hyperlink{classFglForm_a6c13e4f1841a38f5cbf615595f88f78f}{sendactivateinputevent} ()
+\item 
+void \hyperlink{classFglForm_a1d7dad289a4b04321a2c932adf12d19b}{resetFieldSettings} ()
+\item 
+void \hyperlink{classFglForm_a3d7ccbba13b950e970333db68755d022}{saveFieldSettings} (QAction $\ast$)
+\item 
+void \hyperlink{classFglForm_a4430f1038e2dcfd957c1d361d0c286d4}{clearCurrentFocus} ()
+\item 
+void \hyperlink{classFglForm_ae2815f84a3c114c000f97cc0cf431bb7}{clearFieldFocus} ()
+\item 
+void \hyperlink{classFglForm_abacf589f219bcfbcf54ca2a5fb9ba859}{setFocusOnWidget} (QWidget $\ast$, Qt::FocusReason=Qt::OtherFocusReason)
+\item 
+void \hyperlink{classFglForm_a5e7fe57471d1f3ad4d6dbf7ac1c8b843}{sendMenuCommand} (QString)
+\item 
+void \hyperlink{classFglForm_af3d272e5dc101746b728bdd457d42a6f}{setStartMenu} (const QDomDocument \&doc)
+\item 
+void \hyperlink{classFglForm_af07f7257121ab71b9a53ccb2fd1a9fe3}{createContextMenu} (const QPoint \&)
+\item 
+void \hyperlink{classFglForm_afce8d989187c85d7bde751824a9b6c6a}{setScreenRecordArrLine} (int)
+\item 
+void \hyperlink{classFglForm_a3d2c6f2a3a0e1828ff1f43d4d93fa775}{error} (const QString \&)
+\item 
+void \hyperlink{classFglForm_a95fd29ee66dc40bb56d6bb94593feddd}{checkField} ()
+\item 
+void \hyperlink{classFglForm_a4fdd15cf1295a7d04b378e5c4cb2d877}{writeSettingsLocal} ()
+\item 
+void \hyperlink{classFglForm_ae9f393760ac910dd86de0919be07f41c}{readSettingsLocal} ()
+\end{DoxyCompactItemize}
+\subsection*{Signals}
+\begin{DoxyCompactItemize}
+\item 
+void \hyperlink{classFglForm_a797f5a3e960a73a6fff9a1bb74059956}{processResponse} ()
+\item 
+void \hyperlink{classFglForm_ab8e58a4d027770ba170972d247b617dd}{sendDirect} (QString)
+\item 
+void \hyperlink{classFglForm_a1e972cdb1514dcb3c6613d123beb8f6a}{accepted} ()
+\item 
+void \hyperlink{classFglForm_a9c7de4f0bd6f44e3103df2e81a504974}{setClearEvents} ()
+\item 
+void \hyperlink{classFglForm_a7bef8f5a9e151e3b09d9de652b78ec92}{setArrLine} (int)
+\item 
+void \hyperlink{classFglForm_a6084470ee7bb46645d64a82503c60fba}{closeAction} ()
+\end{DoxyCompactItemize}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classFglForm_a4a6d10fc6cce5a7984d59b80730cd7e1}{FglForm} (QString \hyperlink{classFglForm_a154084978ed81b8739db7197541881f5}{windowName}=\char`\"{}\char`\"{}, QWidget $\ast$parent=0)
+\item 
+\hyperlink{classFglForm_a14fc02c52beeeffefa92a4b3425da772}{$\sim$FglForm} ()
+\item 
+void \hyperlink{classFglForm_a626014edfd45271d30f38d877601abd5}{jumpToField} (QWidget $\ast$, bool b\_\-after=true)
+\item 
+void \hyperlink{classFglForm_acfb920aa37d488d2877fe75441ac7f65}{setMenuEnabled} (bool)
+\item 
+void \hyperlink{classFglForm_a0060da33eb1943f1b762e8a164ede398}{setMenu} (\hyperlink{classRingMenu}{RingMenu} $\ast$)
+\item 
+void \hyperlink{classFglForm_a7b0af358781bf6b0f37d80e9383cf10e}{removeMenu} ()
+\item 
+\hyperlink{classRingMenu}{RingMenu} $\ast$ \hyperlink{classFglForm_acffbcaf62fc53ff47363cf13b2967242}{menu} ()
+\item 
+void \hyperlink{classFglForm_ab322288b13021e7b98a5cf87912d2f18}{setActionMenuEnabled} (bool)
+\item 
+void \hyperlink{classFglForm_acdc54b976403abededb061ba2dd0c30f}{setActionMenu} (\hyperlink{classActionMenu}{ActionMenu} $\ast$)
+\item 
+\hyperlink{classActionMenu}{ActionMenu} $\ast$ \hyperlink{classFglForm_aa7339ffc3aa81015c493104643fde6a1}{actionMenu} ()
+\item 
+void \hyperlink{classFglForm_aee2921f4bcb8f95e10fde25ec84842d3}{setDialog} (\hyperlink{classDialog}{Dialog} $\ast$)
+\item 
+void \hyperlink{classFglForm_a19892721571e2c56399ca6be07c3f750}{setPulldown} (\hyperlink{classPulldown}{Pulldown} $\ast$)
+\item 
+\hyperlink{classDialog}{Dialog} $\ast$ \hyperlink{classFglForm_ace102516f1523e1ea87c64f2db1ea30e}{dialog} ()
+\item 
+\hyperlink{classPulldown}{Pulldown} $\ast$ \hyperlink{classFglForm_a05f163612a936468e8fac3e84aeec02e}{pulldown} ()
+\item 
+void \hyperlink{classFglForm_a81b6a444e67df3a3e56ff786fe9099b7}{showEvent} (QShowEvent $\ast$)
+\item 
+void \hyperlink{classFglForm_acf0280c2e7ca7d56bc45c822b8fb9468}{setToolBar} (\hyperlink{classToolBar}{ToolBar} $\ast$)
+\item 
+void \hyperlink{classFglForm_ad139148f573546a3ef5ead0f49170d08}{setToolBar} (QDomDocument)
+\item 
+void \hyperlink{classFglForm_a7490e381d17c7644c7f37a58d5ffa9b4}{checkToolBar} ()
+\item 
+void \hyperlink{classFglForm_ab7d3ed99ee7eac4b6b781e576d33a1ea}{checkMenu} ()
+\item 
+ScreenHandler $\ast$ \hyperlink{classFglForm_aebb86e0bc590b730ff490b030b5dba7c}{screenhandler} ()
+\item 
+void \hyperlink{classFglForm_aba5859f32918808eb18606b85483a4c6}{setScreenHandler} (ScreenHandler $\ast$)
+\item 
+void \hyperlink{classFglForm_ad806af9cecf975dc4abe1e12eb52864a}{checkActions} ()
+\item 
+void \hyperlink{classFglForm_a3770f9b34c38cb5bc3f66a7e388c43ce}{checkShortcuts} ()
+\item 
+void \hyperlink{classFglForm_a60718980fe99888336db588976319382}{checkGuiActions} ()
+\item 
+bool \hyperlink{classFglForm_ab44742db0c6d0d2e0663db22c9668b4c}{handleGuiAction} (\hyperlink{classAction}{Action} $\ast$)
+\item 
+\hyperlink{classToolBar}{ToolBar} $\ast$ \hyperlink{classFglForm_ae474767d66111cda958e191e6be1e34d}{toolBar} ()
+\item 
+Qt::ToolBarArea \hyperlink{classFglForm_acca25b6cbf4161c7075fb594a556eb9a}{toolBarPosition} ()
+\item 
+void \hyperlink{classFglForm_a4b9c2e9963530fba9dc68f9dae0928a0}{setActions} (QDomDocument)
+\item 
+QList$<$ \hyperlink{classAction}{Action} $\ast$ $>$ \hyperlink{classFglForm_ac8a66ae6b84ca24c622a87eb631a4834}{formActions} ()
+\item 
+QList$<$ \hyperlink{classAction}{Action} $\ast$ $>$ \hyperlink{classFglForm_a1a92c94c67dd0ff9d8ff48c3fc64dcf9}{defActions} ()
+\item 
+QList$<$ \hyperlink{classAction}{Action} $\ast$ $>$ \hyperlink{classFglForm_aa65ef0a575b40217c5fbbe71c6faaf28}{actionDefaults} ()
+\item 
+void \hyperlink{classFglForm_ac43c7da12a298a241c7c98cf9a688a6f}{addFormAction} (QAction $\ast$)
+\item 
+void \hyperlink{classFglForm_a21e61578024f5922c949b4c2870684d4}{addFormAction} (QString name, QString text=\char`\"{}\char`\"{}, QString comment=\char`\"{}\char`\"{}, QString image=\char`\"{}\char`\"{}, QString accName=\char`\"{}\char`\"{}, QString accName2=\char`\"{}\char`\"{}, QString accName3=\char`\"{}\char`\"{}, QString accName4=\char`\"{}\char`\"{}, QString defaultView=\char`\"{}\char`\"{})
+\item 
+void \hyperlink{classFglForm_abadbd33d56f9bc46b3421f8fe0628952}{addFormEvent} (\hyperlink{structFgl_1_1Event}{Fgl::Event})
+\item 
+void \hyperlink{classFglForm_a5f3fea57cf46e7d548912efdaffa35f9}{focusNextField} ()
+\item 
+QWidget $\ast$ \hyperlink{classFglForm_a74cb6310512352e1fd501efbcd88724b}{currentField} ()
+\item 
+void \hyperlink{classFglForm_ac521356370affcf115340e2279475c6b}{setCurrentWidget} (QWidget $\ast$)
+\item 
+void \hyperlink{classFglForm_a4574756e714c6d93e6d177ecbfb78ae1}{setCurrentField} (QString, bool sendEvents=true)
+\item 
+void \hyperlink{classFglForm_a82a066a47d5d8bc2f7c2ec41ab29d4f2}{addToQueue} (\hyperlink{structFgl_1_1Event}{Fgl::Event})
+\item 
+void \hyperlink{classFglForm_a21e6b7f851487d6d0db29b015a37e374}{addToQueue} (QList$<$ \hyperlink{structFgl_1_1Event}{Fgl::Event} $>$)
+\item 
+bool \hyperlink{classFglForm_ab6b474ce22c93c45ccbee4b637647732}{input} ()
+\item 
+bool \hyperlink{classFglForm_ab131183405b70a2d48643ec9a522f877}{construct} ()
+\item 
+bool \hyperlink{classFglForm_a2e45f9d338ef208ffb1c08f1f97e6b2b}{screenRecord} ()
+\item 
+bool \hyperlink{classFglForm_a77b1a70cf1fff7d103b8c1895b3302c4}{displayArray} ()
+\item 
+bool \hyperlink{classFglForm_a452b19a215f6acbb86320ed3a8b32ead}{inputArray} ()
+\item 
+bool \hyperlink{classFglForm_ae6cab599f897bf58335df99e6d43b72d}{bufferTouched} ()
+\item 
+int \hyperlink{classFglForm_aab860a48ab46e95732543f3cb345ba26}{lastCursor} ()
+\item 
+void \hyperlink{classFglForm_af5e8206054e3275e2977056e685b73da}{initActions} ()
+\item 
+void \hyperlink{classFglForm_a6a923c50e859e58d34046d0b0f86c11d}{setFormLayout} (const QDomDocument \&)
+\item 
+void \hyperlink{classFglForm_a07c0926396e4229b40de7988689a1f16}{setStyles} (const QDomDocument \&)
+\item 
+QString \hyperlink{classFglForm_a40002405b99f9291e8f61944a775172a}{getStartMenuPosition} () const 
+\item 
+void \hyperlink{classFglForm_a2badc0486f40c57306fdefe14800a13b}{setStartMenuPosition} (const QString \&sm)
+\item 
+QString \hyperlink{classFglForm_ac138a537d43b85e677818e1a61f3cd3d}{getToolBarPosition} () const 
+\item 
+void \hyperlink{classFglForm_af3b00991b1e002fe156d0298468a2311}{setToolBarPosition} (const QString \&sm)
+\item 
+QString \hyperlink{classFglForm_a1e47b1b987a50ed9e4155bdf0664feba}{getWindowType} () const 
+\item 
+void \hyperlink{classFglForm_ad780eff8bf0437a8e33a9115885718e9}{setWindowType} (const QString \&sm)
+\item 
+QString \hyperlink{classFglForm_a714fbe1dca04c76d368a8a429b6322c1}{sizable} () const 
+\item 
+void \hyperlink{classFglForm_a805e33b8b74b0cc73dad05eac238f9db}{setSizable} (const QString \&sm)
+\item 
+bool \hyperlink{classFglForm_a9cacfea35fa0152d42b399fc6d2a2524}{getDefaultStatusBar} () const 
+\item 
+void \hyperlink{classFglForm_a4b2f8754ef3aa90fc46d04c2020ed5af}{setDefaultStatusBar} (const bool \&sm)
+\item 
+QString \hyperlink{classFglForm_a1d53398b0bf7a81f7d6f4fab65faa3dd}{getActionPanelPosition} () const 
+\item 
+void \hyperlink{classFglForm_a80b78ad88d0dc22b7f4df7a724794a13}{setActionPanelPosition} (const QString \&sm)
+\item 
+QString \hyperlink{classFglForm_a773cd80cab1ae1efaccc48262b2cbc55}{getRingMenuPosition} () const 
+\item 
+void \hyperlink{classFglForm_af25c944e246c0522cd333e452ead9cad}{setRingMenuPosition} (const QString \&sm)
+\item 
+void \hyperlink{classFglForm_a5f6285fdf157e863c68402ec8147c53a}{setState} (\hyperlink{namespaceFgl_a66700792cb225549384ae76c1057cf22}{Fgl::State} state)
+\item 
+void \hyperlink{classFglForm_a4d2edce15aac96b22d221a11c0e7681e}{revertState} (\hyperlink{namespaceFgl_a66700792cb225549384ae76c1057cf22}{Fgl::State})
+\item 
+\hyperlink{namespaceFgl_a66700792cb225549384ae76c1057cf22}{Fgl::State} \hyperlink{classFglForm_aeed42adf5a051006db1742e2b48617e1}{state} ()
+\item 
+void \hyperlink{classFglForm_a0ef6e6d0ddf327e89c3e2d54be8548a6}{checkState} ()
+\item 
+QList$<$ QWidget $\ast$ $>$ \hyperlink{classFglForm_ab40c533416d35aac75f2ccf5157a3cf2}{formElements} ()
+\item 
+QWidget $\ast$ \hyperlink{classFglForm_a7490b2d18830368110a69983f19d65cf}{findFieldByName} (QString)
+\item 
+QList$<$ QWidget $\ast$ $>$ \hyperlink{classFglForm_aa9bed6529e8937fdf1ebed65ca23cc45}{findFieldsByName} (QString)
+\item 
+int \hyperlink{classFglForm_a4d506d1f05b8ac540fe33dfa1524d681}{findFieldIdByName} (QString)
+\item 
+QWidget $\ast$ \hyperlink{classFglForm_a997cd55b341e14c89fdc300efe75b907}{findFieldById} (int)
+\item 
+void \hyperlink{classFglForm_a7010467be800cf868884b589f8ce8ce7}{setId} (QString id)
+\item 
+int \hyperlink{classFglForm_a4fc9bc745910f209c6f54f509293bd73}{id} ()
+\item 
+void \hyperlink{classFglForm_a47d0bbf071cbf0051b72c44a90062f81}{setUserInputEnabled} (bool enabled)
+\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+bool \hyperlink{classFglForm_a8c411d93b67981a684a5cf6b67111dc1}{b\_\-svs}
+\item 
+QString \hyperlink{classFglForm_a154084978ed81b8739db7197541881f5}{windowName}
+\item 
+QWidget $\ast$ \hyperlink{classFglForm_abce220040f982717756bfc10b51dac44}{currentWidget}
+\item 
+QPointer$<$ QPushButton $>$ \hyperlink{classFglForm_a17945f68955698f41dac6b11cf73cd07}{nextclick}
+\item 
+bool \hyperlink{classFglForm_ac6325d19f253fe4e7cdfbd50bd027c19}{b\_\-getch\_\-swin}
+\item 
+bool \hyperlink{classFglForm_af7e3a4c11559a83dd68df64c286fdb1e}{b\_\-allowClose}
+\item 
+bool \hyperlink{classFglForm_a4dd283ca13e8a699e88783b2946b6841}{b\_\-dummy}
+\item 
+QList$<$ \hyperlink{structFgl_1_1Event}{Fgl::Event} $>$ \hyperlink{classFglForm_a3aa184c0556d81cfb244f726d95b0538}{ql\_\-responseQueue}
+\item 
+QStringList \hyperlink{classFglForm_ab53b016e506ad4ed7fdb2ac2210d43b1}{qsl\_\-fieldOrder}
+\item 
+QHash$<$ QString, QList$<$ \hyperlink{structFgl_1_1Link}{Fgl::Link} $>$ $>$ \hyperlink{classFglForm_a2e8895a4cd6f58cc36f31c8a51c06a54}{recordView}
+\item 
+bool \hyperlink{classFglForm_ab089d04abad8973c262e3c5e1827b070}{b\_\-newForm}
+\item 
+bool \hyperlink{classFglForm_a99b822401e45535d412f2a6c5601734d}{b\_\-denyFocus}
+\item 
+int \hyperlink{classFglForm_a34347fff01950e4574b64c69b62d1ff2}{gridWidth}
+\item 
+QList$<$ \hyperlink{structFgl_1_1Event}{Fgl::Event} $>$ \hyperlink{classFglForm_a0a20950e5d9deba35525fbcb7935f6f0}{ql\_\-menuEvents}
+\item 
+QList$<$ \hyperlink{structFgl_1_1Event}{Fgl::Event} $>$ \hyperlink{classFglForm_a764e11f62e1849d568cda143fa11583e}{ql\_\-dialogEvents}
+\item 
+QList$<$ \hyperlink{structFgl_1_1Event}{Fgl::Event} $>$ \hyperlink{classFglForm_a14b1e58865612b4ebbfa83c8769f9353}{ql\_\-pulldownEvents}
+\item 
+QList$<$ \hyperlink{structFgl_1_1Event}{Fgl::Event} $>$ \hyperlink{classFglForm_aec60babfa521575768a4aa1147318ba1}{ql\_\-formEvents}
+\item 
+QList$<$ QList$<$ \hyperlink{structFgl_1_1Event}{Fgl::Event} $>$ $>$ \hyperlink{classFglForm_ac7920cda2f9ebef4076ff19e73cfa047}{ql\_\-contextEvents}
+\item 
+QList$<$ QWidget $\ast$ $>$ \hyperlink{classFglForm_ad0adbaabeb97d6fabd2a23f5ac5c0069}{ql\_\-formFields}
+\item 
+QStringList \hyperlink{classFglForm_a127a846458930510880fd13eb07d4463}{qsl\_\-activeFields}
+\item 
+Context $\ast$ \hyperlink{classFglForm_ad88a7b19b295fe1f14de652a9e3e1c17}{context}
+\end{DoxyCompactItemize}
+\subsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+bool \hyperlink{classFglForm_ad684c111c48ae9b6bfee70f36383e8a0}{eventFilter} (QObject $\ast$obj, QEvent $\ast$event)
+\item 
+void \hyperlink{classFglForm_ab4a2e829699bf5c49124801ccd0eb5f2}{closeEvent} (QCloseEvent $\ast$event)
+\item 
+void \hyperlink{classFglForm_a039e7ba89ece4f1bb47c32dc34271536}{contextMenuEvent} (QContextMenuEvent $\ast$)
+\item 
+bool \hyperlink{classFglForm_abbb79e3d5fbc48341d4e88bc91002c22}{focusNextPrevChild} (bool)
+\end{DoxyCompactItemize}
+\subsection*{Properties}
+\begin{DoxyCompactItemize}
+\item 
+QString \hyperlink{classFglForm_a5262a92dfdf82913701d4661bbefaaac}{windowType}
+\item 
+QString \hyperlink{classFglForm_aec7035cbd1e5a013f2d96a1a3a98aa53}{startMenuPosition}
+\item 
+QString \hyperlink{classFglForm_a2e26a9f76fe7c63c8103ac4b04776e81}{sizable}
+\item 
+bool \hyperlink{classFglForm_aed179664fb0f0999affabd3b746edae7}{defaultStatusBar}
+\item 
+QString \hyperlink{classFglForm_afc1641787bae0be3864cce6efdea9e17}{toolBarPosition}
+\item 
+QString \hyperlink{classFglForm_a8ca117823135914a8977974b455372a1}{actionPanelPosition}
+\item 
+QString \hyperlink{classFglForm_ab0e939affc05fa6c0297dcf7c257b25f}{ringMenuPosition}
+\end{DoxyCompactItemize}
+\subsection*{Private Slots}
+\begin{DoxyCompactItemize}
+\item 
+void \hyperlink{classFglForm_a6a62cd6e46c191cbec6c49381fd53a95}{actionTriggered} ()
+\item 
+void \hyperlink{classFglForm_a7d6b1d8b49f56f8b8ae6dbffae4a6499}{toolBarActionTriggered} ()
+\end{DoxyCompactItemize}
+\subsection*{Private Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \hyperlink{classFglForm_a98a3ed85a0f12181c96d15a020250807}{createStatusBar} ()
+\end{DoxyCompactItemize}
+\subsection*{Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+e ms QT models fglform \hyperlink{classFglForm_a2adf651bccc4bd01a985a0c5bde45af7}{h} e ms QT models fglform \hyperlink{classFglForm_a2adf651bccc4bd01a985a0c5bde45af7}{h} e ms QT models fglform \hyperlink{classFglForm_a2adf651bccc4bd01a985a0c5bde45af7}{h} e ms QT models fglform \hyperlink{classFglForm_a2adf651bccc4bd01a985a0c5bde45af7}{h} e ms QT models fglform \hyperlink{classFglForm_a2adf651bccc4bd01a985a0c5bde45af7}{h}
+\item 
+QList$<$ \hyperlink{namespaceFgl_a66700792cb225549384ae76c1057cf22}{Fgl::State} $>$ \hyperlink{classFglForm_a18774054d5c9773a7075b5933b0bbc9a}{ql\_\-states}
+\item 
+QWidget $\ast$ \hyperlink{classFglForm_a382565fe4e148f5e37aabea41e079809}{formWidget}
+\item 
+QList$<$ \hyperlink{classRingMenu}{RingMenu} $\ast$ $>$ \hyperlink{classFglForm_a587196a08706e03ec05f1fae4048f344}{ql\_\-menus}
+\item 
+QPointer$<$ ScreenHandler $>$ \hyperlink{classFglForm_a98e11b2d55100f907821e3a8281b4ab5}{p\_\-currscreenhandler}
+\item 
+\hyperlink{classActionMenu}{ActionMenu} $\ast$ \hyperlink{classFglForm_aace1d4f7b637af4d3aa86e53a770152e}{p\_\-actionMenu}
+\item 
+\hyperlink{classDialog}{Dialog} $\ast$ \hyperlink{classFglForm_afa28d86c6e353e3e31c677b463199a4a}{p\_\-dialog}
+\item 
+\hyperlink{classPulldown}{Pulldown} $\ast$ \hyperlink{classFglForm_a87a0ac69973f45c48fb629d04ac5b364}{p\_\-pulldown}
+\item 
+\hyperlink{classToolBar}{ToolBar} $\ast$ \hyperlink{classFglForm_a63ee680575b50bd02473649cd3d272f5}{p\_\-toolBar}
+\item 
+QAction $\ast$ \hyperlink{classFglForm_ac85748725f2a9ba437e62be1293eae02}{rightAct}
+\item 
+QAction $\ast$ \hyperlink{classFglForm_aa9bb2c29fa0161164dd5250a7602a1be}{resetAct}
+\item 
+QList$<$ \hyperlink{classAction}{Action} $\ast$ $>$ \hyperlink{classFglForm_a091b50c03ba4a353485d34ea34f4001a}{ql\_\-formActions}
+\item 
+QList$<$ \hyperlink{classAction}{Action} $\ast$ $>$ \hyperlink{classFglForm_acc7f6b6c7b13cf1e6e39bfdeba18ddc1}{ql\_\-defaultActions}
+\item 
+QList$<$ \hyperlink{classAction}{Action} $\ast$ $>$ \hyperlink{classFglForm_a6b78dae39bcab3791a9acc99a3b8248d}{ql\_\-actionDefaults}
+\item 
+QList$<$ \hyperlink{classFormField}{FormField} $\ast$ $>$ \hyperlink{classFglForm_a1d775e481b65ae50b2a557fa9ae975c5}{ql\_\-fglFields}
+\item 
+bool \hyperlink{classFglForm_ac1f8bea18516701b1192825f83e962d7}{b\_\-menu}
+\item 
+bool \hyperlink{classFglForm_a348ba4d61a2c9e18513ac88c919015c0}{b\_\-input}
+\item 
+bool \hyperlink{classFglForm_a656061ca98f40226c99fa61b12ced56c}{b\_\-screenRecord}
+\item 
+QString \hyperlink{classFglForm_aff3b675ee7063af63839e029f66b4075}{m\_\-windowType}
+\item 
+QString \hyperlink{classFglForm_a94e20a9c06c349d6e7c5ec47c03de4a6}{m\_\-startMenuPosition}
+\item 
+QString \hyperlink{classFglForm_a0008c6a1c3362095ebd5ab0601910003}{m\_\-toolBarPosition}
+\item 
+QString \hyperlink{classFglForm_a25371a3df6cb3e1dc66e141bb2a9dff1}{m\_\-ringMenuPosition}
+\item 
+QString \hyperlink{classFglForm_af3882d981d23db8e6dca26a44ac23051}{m\_\-actionPanelPosition}
+\item 
+QString \hyperlink{classFglForm_a7861c07caeb306c5ae9f2012ce73bff7}{m\_\-sizable}
+\item 
+bool \hyperlink{classFglForm_a2e877386e4ba441d929c0c35d48620cb}{m\_\-defaultStatusBar}
+\item 
+QWidget $\ast$ \hyperlink{classFglForm_a15cd139d56b40da6de43a6bb4d438c0d}{widget}
+\item 
+QLabel $\ast$ \hyperlink{classFglForm_a72467aa7c8750f7075b7ba7fc67a29bb}{insLabel}
+\item 
+int \hyperlink{classFglForm_ae7e903902c63ce3179656df4b684038f}{i\_\-currentField}
+\item 
+QWidget $\ast$ \hyperlink{classFglForm_a67c8174c2d61e69e76c3206766fe3ac9}{fieldsContainer}
+\item 
+int \hyperlink{classFglForm_a6142cd4363f16562e52631f1987b46c3}{i\_\-id}
+\item 
+bool \hyperlink{classFglForm_a4bddddc3ca57303fbf3d55394e260a00}{b\_\-bufferTouched}
+\item 
+int \hyperlink{classFglForm_a9f622b4a17fcad8c785e119d19abe326}{i\_\-lastCursor}
+\item 
+QString \hyperlink{classFglForm_a04725912842355fc88fa7412e435f4a9}{qs\_\-currentFieldBuffer}
+\item 
+QString \hyperlink{classFglForm_a1bca5dcb62f50a5939c295b7c0d662d2}{qs\_\-formfile}
+\item 
+int \hyperlink{classFglForm_a9dc5de78bd4b0d7024831926f9cdc7d9}{gridHeight}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+
+
+Definition at line 42 of file fglform.h.
+
+
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{classFglForm_a4a6d10fc6cce5a7984d59b80730cd7e1}{
+\index{FglForm@{FglForm}!FglForm@{FglForm}}
+\index{FglForm@{FglForm}!FglForm@{FglForm}}
+\subsubsection[{FglForm}]{\setlength{\rightskip}{0pt plus 5cm}FglForm::FglForm (
+\begin{DoxyParamCaption}
+\item[{QString}]{windowName = {\ttfamily \char`\"{}\char`\"{}}, }
+\item[{QWidget $\ast$}]{parent = {\ttfamily 0}}
+\end{DoxyParamCaption}
+)}}
+\label{classFglForm_a4a6d10fc6cce5a7984d59b80730cd7e1}
+
+
+Definition at line 37 of file fglform.cpp.
+
+\hypertarget{classFglForm_a14fc02c52beeeffefa92a4b3425da772}{
+\index{FglForm@{FglForm}!$\sim$FglForm@{$\sim$FglForm}}
+\index{$\sim$FglForm@{$\sim$FglForm}!FglForm@{FglForm}}
+\subsubsection[{$\sim$FglForm}]{\setlength{\rightskip}{0pt plus 5cm}FglForm::$\sim$FglForm (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}
+\label{classFglForm_a14fc02c52beeeffefa92a4b3425da772}
+
+
+Definition at line 111 of file fglform.cpp.
+
+
+
+\subsection{Member Function Documentation}
+\hypertarget{classFglForm_a2300cda82ffb223096c19f63004e248f}{
+\index{FglForm@{FglForm}!accept@{accept}}
+\index{accept@{accept}!FglForm@{FglForm}}
+\subsubsection[{accept}]{\setlength{\rightskip}{0pt plus 5cm}void FglForm::accept (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}slot\mbox{]}}}}
+\label{classFglForm_a2300cda82ffb223096c19f63004e248f}
+
+
+Definition at line 1500 of file fglform.cpp.
+
+\hypertarget{classFglForm_a1e972cdb1514dcb3c6613d123beb8f6a}{
+\index{FglForm@{FglForm}!accepted@{accepted}}
+\index{accepted@{accepted}!FglForm@{FglForm}}
+\subsubsection[{accepted}]{\setlength{\rightskip}{0pt plus 5cm}void FglForm::accepted (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}signal\mbox{]}}}}
+\label{classFglForm_a1e972cdb1514dcb3c6613d123beb8f6a}
+\hypertarget{classFglForm_afd623938967b4f76707704ab67032a57}{
+\index{FglForm@{FglForm}!acceptTriggered@{acceptTriggered}}
+\index{acceptTriggered@{acceptTriggered}!FglForm@{FglForm}}
+\subsubsection[{acceptTriggered}]{\setlength{\rightskip}{0pt plus 5cm}void FglForm::acceptTriggered (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}slot\mbox{]}}}}
+\label{classFglForm_afd623938967b4f76707704ab67032a57}
+
+
+Definition at line 1472 of file fglform.cpp.
+
+\hypertarget{classFglForm_aa65ef0a575b40217c5fbbe71c6faaf28}{
+\index{FglForm@{FglForm}!actionDefaults@{actionDefaults}}
+\index{actionDefaults@{actionDefaults}!FglForm@{FglForm}}
+\subsubsection[{actionDefaults}]{\setlength{\rightskip}{0pt plus 5cm}QList$<${\bf Action}$\ast$$>$ FglForm::actionDefaults (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}inline\mbox{]}}}}
+\label{classFglForm_aa65ef0a575b40217c5fbbe71c6faaf28}
+
+
+Definition at line 127 of file fglform.h.
+
+\hypertarget{classFglForm_aa7339ffc3aa81015c493104643fde6a1}{
+\index{FglForm@{FglForm}!actionMenu@{actionMenu}}
+\index{actionMenu@{actionMenu}!FglForm@{FglForm}}
+\subsubsection[{actionMenu}]{\setlength{\rightskip}{0pt plus 5cm}{\bf ActionMenu}$\ast$ FglForm::actionMenu (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}inline\mbox{]}}}}
+\label{classFglForm_aa7339ffc3aa81015c493104643fde6a1}
+
+
+Definition at line 106 of file fglform.h.
+
+\hypertarget{classFglForm_a6a62cd6e46c191cbec6c49381fd53a95}{
+\index{FglForm@{FglForm}!actionTriggered@{actionTriggered}}
+\index{actionTriggered@{actionTriggered}!FglForm@{FglForm}}
+\subsubsection[{actionTriggered}]{\setlength{\rightskip}{0pt plus 5cm}void FglForm::actionTriggered (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}private, slot\mbox{]}}}}
+\label{classFglForm_a6a62cd6e46c191cbec6c49381fd53a95}
+
+
+Definition at line 496 of file fglform.cpp.
+
+\hypertarget{classFglForm_ac43c7da12a298a241c7c98cf9a688a6f}{
+\index{FglForm@{FglForm}!addFormAction@{addFormAction}}
+\index{addFormAction@{addFormAction}!FglForm@{FglForm}}
+\subsubsection[{addFormAction}]{\setlength{\rightskip}{0pt plus 5cm}void FglForm::addFormAction (
+\begin{DoxyParamCaption}
+\item[{QAction $\ast$}]{qaction}
+\end{DoxyParamCaption}
+)}}
+\label{classFglForm_ac43c7da12a298a241c7c98cf9a688a6f}
+
+
+Definition at line 3018 of file fglform.cpp.
+
+\hypertarget{classFglForm_a21e61578024f5922c949b4c2870684d4}{
+\index{FglForm@{FglForm}!addFormAction@{addFormAction}}
+\index{addFormAction@{addFormAction}!FglForm@{FglForm}}
+\subsubsection[{addFormAction}]{\setlength{\rightskip}{0pt plus 5cm}void FglForm::addFormAction (
+\begin{DoxyParamCaption}
+\item[{QString}]{name, }
+\item[{QString}]{text = {\ttfamily \char`\"{}\char`\"{}}, }
+\item[{QString}]{comment = {\ttfamily \char`\"{}\char`\"{}}, }
+\item[{QString}]{image = {\ttfamily \char`\"{}\char`\"{}}, }
+\item[{QString}]{accName = {\ttfamily \char`\"{}\char`\"{}}, }
+\item[{QString}]{accName2 = {\ttfamily \char`\"{}\char`\"{}}, }
+\item[{QString}]{accName3 = {\ttfamily \char`\"{}\char`\"{}}, }
+\item[{QString}]{accName4 = {\ttfamily \char`\"{}\char`\"{}}, }
+\item[{QString}]{defaultView = {\ttfamily \char`\"{}\char`\"{}}}
+\end{DoxyParamCaption}
+)}}
+\label{classFglForm_a21e61578024f5922c949b4c2870684d4}
+
+
+Definition at line 3070 of file fglform.cpp.
+
+\hypertarget{classFglForm_abadbd33d56f9bc46b3421f8fe0628952}{
+\index{FglForm@{FglForm}!addFormEvent@{addFormEvent}}
+\index{addFormEvent@{addFormEvent}!FglForm@{FglForm}}
+\subsubsection[{addFormEvent}]{\setlength{\rightskip}{0pt plus 5cm}void FglForm::addFormEvent (
+\begin{DoxyParamCaption}
+\item[{{\bf Fgl::Event}}]{newEvent}
+\end{DoxyParamCaption}
+)}}
+\label{classFglForm_abadbd33d56f9bc46b3421f8fe0628952}
+
+
+Definition at line 3121 of file fglform.cpp.
+
+\hypertarget{classFglForm_a82a066a47d5d8bc2f7c2ec41ab29d4f2}{
+\index{FglForm@{FglForm}!addToQueue@{addToQueue}}
+\index{addToQueue@{addToQueue}!FglForm@{FglForm}}
+\subsubsection[{addToQueue}]{\setlength{\rightskip}{0pt plus 5cm}void FglForm::addToQueue (
+\begin{DoxyParamCaption}
+\item[{{\bf Fgl::Event}}]{id}
+\end{DoxyParamCaption}
+)}}
+\label{classFglForm_a82a066a47d5d8bc2f7c2ec41ab29d4f2}
+
+
+Definition at line 171 of file fglform.cpp.
+
+\hypertarget{classFglForm_a21e6b7f851487d6d0db29b015a37e374}{
+\index{FglForm@{FglForm}!addToQueue@{addToQueue}}
+\index{addToQueue@{addToQueue}!FglForm@{FglForm}}
+\subsubsection[{addToQueue}]{\setlength{\rightskip}{0pt plus 5cm}void FglForm::addToQueue (
+\begin{DoxyParamCaption}
+\item[{QList$<$ {\bf Fgl::Event} $>$}]{events}
+\end{DoxyParamCaption}
+)}}
+\label{classFglForm_a21e6b7f851487d6d0db29b015a37e374}
+
+
+Definition at line 179 of file fglform.cpp.
+
+\hypertarget{classFglForm_ae6cab599f897bf58335df99e6d43b72d}{
+\index{FglForm@{FglForm}!bufferTouched@{bufferTouched}}
+\index{bufferTouched@{bufferTouched}!FglForm@{FglForm}}
+\subsubsection[{bufferTouched}]{\setlength{\rightskip}{0pt plus 5cm}bool FglForm::bufferTouched (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}inline\mbox{]}}}}
+\label{classFglForm_ae6cab599f897bf58335df99e6d43b72d}
+
+
+Definition at line 145 of file fglform.h.
+
+\hypertarget{classFglForm_a0ee0e2722721bf18a2809e670e0777cf}{
+\index{FglForm@{FglForm}!buttonClicked@{buttonClicked}}
+\index{buttonClicked@{buttonClicked}!FglForm@{FglForm}}
+\subsubsection[{buttonClicked}]{\setlength{\rightskip}{0pt plus 5cm}void FglForm::buttonClicked (
+\begin{DoxyParamCaption}
+\item[{QString}]{id}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}slot\mbox{]}}}}
+\label{classFglForm_a0ee0e2722721bf18a2809e670e0777cf}
+
+
+Definition at line 144 of file fglform.cpp.
+
+\hypertarget{classFglForm_a21cf637edb3ad010d7e00e4d20b95825}{
+\index{FglForm@{FglForm}!cancelTriggered@{cancelTriggered}}
+\index{cancelTriggered@{cancelTriggered}!FglForm@{FglForm}}
+\subsubsection[{cancelTriggered}]{\setlength{\rightskip}{0pt plus 5cm}void FglForm::cancelTriggered (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}slot\mbox{]}}}}
+\label{classFglForm_a21cf637edb3ad010d7e00e4d20b95825}
+
+
+Definition at line 1486 of file fglform.cpp.
+
+\hypertarget{classFglForm_ad806af9cecf975dc4abe1e12eb52864a}{
+\index{FglForm@{FglForm}!checkActions@{checkActions}}
+\index{checkActions@{checkActions}!FglForm@{FglForm}}
+\subsubsection[{checkActions}]{\setlength{\rightskip}{0pt plus 5cm}void FglForm::checkActions (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}
+\label{classFglForm_ad806af9cecf975dc4abe1e12eb52864a}
+
+
+Definition at line 3210 of file fglform.cpp.
+
+\hypertarget{classFglForm_a95fd29ee66dc40bb56d6bb94593feddd}{
+\index{FglForm@{FglForm}!checkField@{checkField}}
+\index{checkField@{checkField}!FglForm@{FglForm}}
+\subsubsection[{checkField}]{\setlength{\rightskip}{0pt plus 5cm}void FglForm::checkField (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}slot\mbox{]}}}}
+\label{classFglForm_a95fd29ee66dc40bb56d6bb94593feddd}
+
+
+Definition at line 3732 of file fglform.cpp.
+
+\hypertarget{classFglForm_a60718980fe99888336db588976319382}{
+\index{FglForm@{FglForm}!checkGuiActions@{checkGuiActions}}
+\index{checkGuiActions@{checkGuiActions}!FglForm@{FglForm}}
+\subsubsection[{checkGuiActions}]{\setlength{\rightskip}{0pt plus 5cm}void FglForm::checkGuiActions (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}
+\label{classFglForm_a60718980fe99888336db588976319382}
+
+
+Definition at line 3346 of file fglform.cpp.
+
+\hypertarget{classFglForm_ab7d3ed99ee7eac4b6b781e576d33a1ea}{
+\index{FglForm@{FglForm}!checkMenu@{checkMenu}}
+\index{checkMenu@{checkMenu}!FglForm@{FglForm}}
+\subsubsection[{checkMenu}]{\setlength{\rightskip}{0pt plus 5cm}void FglForm::checkMenu (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}
+\label{classFglForm_ab7d3ed99ee7eac4b6b781e576d33a1ea}
+
+
+Definition at line 3413 of file fglform.cpp.
+
+\hypertarget{classFglForm_a3770f9b34c38cb5bc3f66a7e388c43ce}{
+\index{FglForm@{FglForm}!checkShortcuts@{checkShortcuts}}
+\index{checkShortcuts@{checkShortcuts}!FglForm@{FglForm}}
+\subsubsection[{checkShortcuts}]{\setlength{\rightskip}{0pt plus 5cm}void FglForm::checkShortcuts (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}
+\label{classFglForm_a3770f9b34c38cb5bc3f66a7e388c43ce}
+
+
+Definition at line 3521 of file fglform.cpp.
+
+\hypertarget{classFglForm_a0ef6e6d0ddf327e89c3e2d54be8548a6}{
+\index{FglForm@{FglForm}!checkState@{checkState}}
+\index{checkState@{checkState}!FglForm@{FglForm}}
+\subsubsection[{checkState}]{\setlength{\rightskip}{0pt plus 5cm}void FglForm::checkState (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}
+\label{classFglForm_a0ef6e6d0ddf327e89c3e2d54be8548a6}
+
+
+Definition at line 2630 of file fglform.cpp.
+
+\hypertarget{classFglForm_a7490e381d17c7644c7f37a58d5ffa9b4}{
+\index{FglForm@{FglForm}!checkToolBar@{checkToolBar}}
+\index{checkToolBar@{checkToolBar}!FglForm@{FglForm}}
+\subsubsection[{checkToolBar}]{\setlength{\rightskip}{0pt plus 5cm}void FglForm::checkToolBar (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}
+\label{classFglForm_a7490e381d17c7644c7f37a58d5ffa9b4}
+
+
+Definition at line 3155 of file fglform.cpp.
+
+\hypertarget{classFglForm_a4430f1038e2dcfd957c1d361d0c286d4}{
+\index{FglForm@{FglForm}!clearCurrentFocus@{clearCurrentFocus}}
+\index{clearCurrentFocus@{clearCurrentFocus}!FglForm@{FglForm}}
+\subsubsection[{clearCurrentFocus}]{\setlength{\rightskip}{0pt plus 5cm}void FglForm::clearCurrentFocus (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}slot\mbox{]}}}}
+\label{classFglForm_a4430f1038e2dcfd957c1d361d0c286d4}
+
+
+Definition at line 1405 of file fglform.cpp.
+
+\hypertarget{classFglForm_ae2815f84a3c114c000f97cc0cf431bb7}{
+\index{FglForm@{FglForm}!clearFieldFocus@{clearFieldFocus}}
+\index{clearFieldFocus@{clearFieldFocus}!FglForm@{FglForm}}
+\subsubsection[{clearFieldFocus}]{\setlength{\rightskip}{0pt plus 5cm}void FglForm::clearFieldFocus (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}slot\mbox{]}}}}
+\label{classFglForm_ae2815f84a3c114c000f97cc0cf431bb7}
+
+
+Definition at line 1447 of file fglform.cpp.
+
+\hypertarget{classFglForm_a6084470ee7bb46645d64a82503c60fba}{
+\index{FglForm@{FglForm}!closeAction@{closeAction}}
+\index{closeAction@{closeAction}!FglForm@{FglForm}}
+\subsubsection[{closeAction}]{\setlength{\rightskip}{0pt plus 5cm}void FglForm::closeAction (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}signal\mbox{]}}}}
+\label{classFglForm_a6084470ee7bb46645d64a82503c60fba}
+\hypertarget{classFglForm_ab4a2e829699bf5c49124801ccd0eb5f2}{
+\index{FglForm@{FglForm}!closeEvent@{closeEvent}}
+\index{closeEvent@{closeEvent}!FglForm@{FglForm}}
+\subsubsection[{closeEvent}]{\setlength{\rightskip}{0pt plus 5cm}void FglForm::closeEvent (
+\begin{DoxyParamCaption}
+\item[{QCloseEvent $\ast$}]{event}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}protected\mbox{]}}}}
+\label{classFglForm_ab4a2e829699bf5c49124801ccd0eb5f2}
+
+
+Definition at line 1271 of file fglform.cpp.
+
+\hypertarget{classFglForm_ab131183405b70a2d48643ec9a522f877}{
+\index{FglForm@{FglForm}!construct@{construct}}
+\index{construct@{construct}!FglForm@{FglForm}}
+\subsubsection[{construct}]{\setlength{\rightskip}{0pt plus 5cm}bool FglForm::construct (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}inline\mbox{]}}}}
+\label{classFglForm_ab131183405b70a2d48643ec9a522f877}
+
+
+Definition at line 140 of file fglform.h.
+
+\hypertarget{classFglForm_a039e7ba89ece4f1bb47c32dc34271536}{
+\index{FglForm@{FglForm}!contextMenuEvent@{contextMenuEvent}}
+\index{contextMenuEvent@{contextMenuEvent}!FglForm@{FglForm}}
+\subsubsection[{contextMenuEvent}]{\setlength{\rightskip}{0pt plus 5cm}void FglForm::contextMenuEvent (
+\begin{DoxyParamCaption}
+\item[{QContextMenuEvent $\ast$}]{ev}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}protected\mbox{]}}}}
+\label{classFglForm_a039e7ba89ece4f1bb47c32dc34271536}
+
+
+Definition at line 2719 of file fglform.cpp.
+
+\hypertarget{classFglForm_af07f7257121ab71b9a53ccb2fd1a9fe3}{
+\index{FglForm@{FglForm}!createContextMenu@{createContextMenu}}
+\index{createContextMenu@{createContextMenu}!FglForm@{FglForm}}
+\subsubsection[{createContextMenu}]{\setlength{\rightskip}{0pt plus 5cm}void FglForm::createContextMenu (
+\begin{DoxyParamCaption}
+\item[{const QPoint \&}]{pos}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}slot\mbox{]}}}}
+\label{classFglForm_af07f7257121ab71b9a53ccb2fd1a9fe3}
+
+
+Definition at line 2728 of file fglform.cpp.
+
+\hypertarget{classFglForm_a98a3ed85a0f12181c96d15a020250807}{
+\index{FglForm@{FglForm}!createStatusBar@{createStatusBar}}
+\index{createStatusBar@{createStatusBar}!FglForm@{FglForm}}
+\subsubsection[{createStatusBar}]{\setlength{\rightskip}{0pt plus 5cm}void FglForm::createStatusBar (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classFglForm_a98a3ed85a0f12181c96d15a020250807}
+
+
+Definition at line 127 of file fglform.cpp.
+
+\hypertarget{classFglForm_a74cb6310512352e1fd501efbcd88724b}{
+\index{FglForm@{FglForm}!currentField@{currentField}}
+\index{currentField@{currentField}!FglForm@{FglForm}}
+\subsubsection[{currentField}]{\setlength{\rightskip}{0pt plus 5cm}QWidget$\ast$ FglForm::currentField (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}inline\mbox{]}}}}
+\label{classFglForm_a74cb6310512352e1fd501efbcd88724b}
+
+
+Definition at line 132 of file fglform.h.
+
+\hypertarget{classFglForm_a1a92c94c67dd0ff9d8ff48c3fc64dcf9}{
+\index{FglForm@{FglForm}!defActions@{defActions}}
+\index{defActions@{defActions}!FglForm@{FglForm}}
+\subsubsection[{defActions}]{\setlength{\rightskip}{0pt plus 5cm}QList$<${\bf Action}$\ast$$>$ FglForm::defActions (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}inline\mbox{]}}}}
+\label{classFglForm_a1a92c94c67dd0ff9d8ff48c3fc64dcf9}
+
+
+Definition at line 126 of file fglform.h.
+
+\hypertarget{classFglForm_ace102516f1523e1ea87c64f2db1ea30e}{
+\index{FglForm@{FglForm}!dialog@{dialog}}
+\index{dialog@{dialog}!FglForm@{FglForm}}
+\subsubsection[{dialog}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Dialog}$\ast$ FglForm::dialog (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}inline\mbox{]}}}}
+\label{classFglForm_ace102516f1523e1ea87c64f2db1ea30e}
+
+
+Definition at line 109 of file fglform.h.
+
+\hypertarget{classFglForm_a77b1a70cf1fff7d103b8c1895b3302c4}{
+\index{FglForm@{FglForm}!displayArray@{displayArray}}
+\index{displayArray@{displayArray}!FglForm@{FglForm}}
+\subsubsection[{displayArray}]{\setlength{\rightskip}{0pt plus 5cm}bool FglForm::displayArray (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}inline\mbox{]}}}}
+\label{classFglForm_a77b1a70cf1fff7d103b8c1895b3302c4}
+
+
+Definition at line 142 of file fglform.h.
+
+\hypertarget{classFglForm_a2a05aab413be356d8591d9feaa3818ea}{
+\index{FglForm@{FglForm}!dragSuccess@{dragSuccess}}
+\index{dragSuccess@{dragSuccess}!FglForm@{FglForm}}
+\subsubsection[{dragSuccess}]{\setlength{\rightskip}{0pt plus 5cm}void FglForm::dragSuccess (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}slot\mbox{]}}}}
+\label{classFglForm_a2a05aab413be356d8591d9feaa3818ea}
+
+
+Definition at line 1207 of file fglform.cpp.
+
+\hypertarget{classFglForm_a0ccb7e3f717496c6dceaf34b0a6d49df}{
+\index{FglForm@{FglForm}!dropSuccess@{dropSuccess}}
+\index{dropSuccess@{dropSuccess}!FglForm@{FglForm}}
+\subsubsection[{dropSuccess}]{\setlength{\rightskip}{0pt plus 5cm}void FglForm::dropSuccess (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}slot\mbox{]}}}}
+\label{classFglForm_a0ccb7e3f717496c6dceaf34b0a6d49df}
+
+
+Definition at line 1231 of file fglform.cpp.
+
+\hypertarget{classFglForm_ac51ab1764a0c88802875af3b0ef890af}{
+\index{FglForm@{FglForm}!editcopy@{editcopy}}
+\index{editcopy@{editcopy}!FglForm@{FglForm}}
+\subsubsection[{editcopy}]{\setlength{\rightskip}{0pt plus 5cm}void FglForm::editcopy (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}slot\mbox{]}}}}
+\label{classFglForm_ac51ab1764a0c88802875af3b0ef890af}
+
+
+Definition at line 1889 of file fglform.cpp.
+
+\hypertarget{classFglForm_acba6e2dba68f2d8c8354a1f3e7de0213}{
+\index{FglForm@{FglForm}!editcut@{editcut}}
+\index{editcut@{editcut}!FglForm@{FglForm}}
+\subsubsection[{editcut}]{\setlength{\rightskip}{0pt plus 5cm}void FglForm::editcut (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}slot\mbox{]}}}}
+\label{classFglForm_acba6e2dba68f2d8c8354a1f3e7de0213}
+
+
+Definition at line 1904 of file fglform.cpp.
+
+\hypertarget{classFglForm_a3bbc33d5de6401f21553a0e09e091292}{
+\index{FglForm@{FglForm}!editpaste@{editpaste}}
+\index{editpaste@{editpaste}!FglForm@{FglForm}}
+\subsubsection[{editpaste}]{\setlength{\rightskip}{0pt plus 5cm}void FglForm::editpaste (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}slot\mbox{]}}}}
+\label{classFglForm_a3bbc33d5de6401f21553a0e09e091292}
+
+
+Definition at line 1914 of file fglform.cpp.
+
+\hypertarget{classFglForm_a3d2c6f2a3a0e1828ff1f43d4d93fa775}{
+\index{FglForm@{FglForm}!error@{error}}
+\index{error@{error}!FglForm@{FglForm}}
+\subsubsection[{error}]{\setlength{\rightskip}{0pt plus 5cm}void FglForm::error (
+\begin{DoxyParamCaption}
+\item[{const QString \&}]{text}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}slot\mbox{]}}}}
+\label{classFglForm_a3d2c6f2a3a0e1828ff1f43d4d93fa775}
+
+
+Definition at line 3012 of file fglform.cpp.
+
+\hypertarget{classFglForm_ad684c111c48ae9b6bfee70f36383e8a0}{
+\index{FglForm@{FglForm}!eventFilter@{eventFilter}}
+\index{eventFilter@{eventFilter}!FglForm@{FglForm}}
+\subsubsection[{eventFilter}]{\setlength{\rightskip}{0pt plus 5cm}bool FglForm::eventFilter (
+\begin{DoxyParamCaption}
+\item[{QObject $\ast$}]{obj, }
+\item[{QEvent $\ast$}]{event}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}protected\mbox{]}}}}
+\label{classFglForm_ad684c111c48ae9b6bfee70f36383e8a0}
+
+
+Definition at line 703 of file fglform.cpp.
+
+\hypertarget{classFglForm_ac9689ad22eff52db3ab60446b78274e3}{
+\index{FglForm@{FglForm}!exitMenu@{exitMenu}}
+\index{exitMenu@{exitMenu}!FglForm@{FglForm}}
+\subsubsection[{exitMenu}]{\setlength{\rightskip}{0pt plus 5cm}void FglForm::exitMenu (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}slot\mbox{]}}}}
+\label{classFglForm_ac9689ad22eff52db3ab60446b78274e3}
+
+
+Definition at line 1246 of file fglform.cpp.
+
+\hypertarget{classFglForm_a1fd5cabc8ec447738e4420f618d69ca7}{
+\index{FglForm@{FglForm}!fieldEvent@{fieldEvent}}
+\index{fieldEvent@{fieldEvent}!FglForm@{FglForm}}
+\subsubsection[{fieldEvent}]{\setlength{\rightskip}{0pt plus 5cm}void FglForm::fieldEvent (
+\begin{DoxyParamCaption}
+\item[{{\bf Fgl::Event}}]{type, }
+\item[{QWidget $\ast$}]{widget = {\ttfamily NULL}}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}slot\mbox{]}}}}
+\label{classFglForm_a1fd5cabc8ec447738e4420f618d69ca7}
+
+
+Definition at line 1079 of file fglform.cpp.
+
+\hypertarget{classFglForm_a997cd55b341e14c89fdc300efe75b907}{
+\index{FglForm@{FglForm}!findFieldById@{findFieldById}}
+\index{findFieldById@{findFieldById}!FglForm@{FglForm}}
+\subsubsection[{findFieldById}]{\setlength{\rightskip}{0pt plus 5cm}QWidget $\ast$ FglForm::findFieldById (
+\begin{DoxyParamCaption}
+\item[{int}]{id}
+\end{DoxyParamCaption}
+)}}
+\label{classFglForm_a997cd55b341e14c89fdc300efe75b907}
+
+
+Definition at line 2985 of file fglform.cpp.
+
+\hypertarget{classFglForm_a7490b2d18830368110a69983f19d65cf}{
+\index{FglForm@{FglForm}!findFieldByName@{findFieldByName}}
+\index{findFieldByName@{findFieldByName}!FglForm@{FglForm}}
+\subsubsection[{findFieldByName}]{\setlength{\rightskip}{0pt plus 5cm}QWidget $\ast$ FglForm::findFieldByName (
+\begin{DoxyParamCaption}
+\item[{QString}]{fieldName}
+\end{DoxyParamCaption}
+)}}
+\label{classFglForm_a7490b2d18830368110a69983f19d65cf}
+
+
+Definition at line 2860 of file fglform.cpp.
+
+\hypertarget{classFglForm_a4d506d1f05b8ac540fe33dfa1524d681}{
+\index{FglForm@{FglForm}!findFieldIdByName@{findFieldIdByName}}
+\index{findFieldIdByName@{findFieldIdByName}!FglForm@{FglForm}}
+\subsubsection[{findFieldIdByName}]{\setlength{\rightskip}{0pt plus 5cm}int FglForm::findFieldIdByName (
+\begin{DoxyParamCaption}
+\item[{QString}]{fieldName}
+\end{DoxyParamCaption}
+)}}
+\label{classFglForm_a4d506d1f05b8ac540fe33dfa1524d681}
+
+
+Definition at line 2941 of file fglform.cpp.
+
+\hypertarget{classFglForm_aa9bed6529e8937fdf1ebed65ca23cc45}{
+\index{FglForm@{FglForm}!findFieldsByName@{findFieldsByName}}
+\index{findFieldsByName@{findFieldsByName}!FglForm@{FglForm}}
+\subsubsection[{findFieldsByName}]{\setlength{\rightskip}{0pt plus 5cm}QList$<$ QWidget $\ast$ $>$ FglForm::findFieldsByName (
+\begin{DoxyParamCaption}
+\item[{QString}]{fieldName}
+\end{DoxyParamCaption}
+)}}
+\label{classFglForm_aa9bed6529e8937fdf1ebed65ca23cc45}
+
+
+Definition at line 2911 of file fglform.cpp.
+
+\hypertarget{classFglForm_af18f12d697d5a9fa0041c597d692d8f1}{
+\index{FglForm@{FglForm}!firstrow@{firstrow}}
+\index{firstrow@{firstrow}!FglForm@{FglForm}}
+\subsubsection[{firstrow}]{\setlength{\rightskip}{0pt plus 5cm}void FglForm::firstrow (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}slot\mbox{]}}}}
+\label{classFglForm_af18f12d697d5a9fa0041c597d692d8f1}
+
+
+Definition at line 2320 of file fglform.cpp.
+
+\hypertarget{classFglForm_a5f3fea57cf46e7d548912efdaffa35f9}{
+\index{FglForm@{FglForm}!focusNextField@{focusNextField}}
+\index{focusNextField@{focusNextField}!FglForm@{FglForm}}
+\subsubsection[{focusNextField}]{\setlength{\rightskip}{0pt plus 5cm}void FglForm::focusNextField (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}inline\mbox{]}}}}
+\label{classFglForm_a5f3fea57cf46e7d548912efdaffa35f9}
+
+
+Definition at line 131 of file fglform.h.
+
+\hypertarget{classFglForm_abbb79e3d5fbc48341d4e88bc91002c22}{
+\index{FglForm@{FglForm}!focusNextPrevChild@{focusNextPrevChild}}
+\index{focusNextPrevChild@{focusNextPrevChild}!FglForm@{FglForm}}
+\subsubsection[{focusNextPrevChild}]{\setlength{\rightskip}{0pt plus 5cm}bool FglForm::focusNextPrevChild (
+\begin{DoxyParamCaption}
+\item[{bool}]{next}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}protected\mbox{]}}}}
+\label{classFglForm_abbb79e3d5fbc48341d4e88bc91002c22}
+
+
+Definition at line 3622 of file fglform.cpp.
+
+\hypertarget{classFglForm_ac8a66ae6b84ca24c622a87eb631a4834}{
+\index{FglForm@{FglForm}!formActions@{formActions}}
+\index{formActions@{formActions}!FglForm@{FglForm}}
+\subsubsection[{formActions}]{\setlength{\rightskip}{0pt plus 5cm}QList$<${\bf Action}$\ast$$>$ FglForm::formActions (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}inline\mbox{]}}}}
+\label{classFglForm_ac8a66ae6b84ca24c622a87eb631a4834}
+
+
+Definition at line 125 of file fglform.h.
+
+\hypertarget{classFglForm_ab40c533416d35aac75f2ccf5157a3cf2}{
+\index{FglForm@{FglForm}!formElements@{formElements}}
+\index{formElements@{formElements}!FglForm@{FglForm}}
+\subsubsection[{formElements}]{\setlength{\rightskip}{0pt plus 5cm}QList$<$ QWidget $\ast$ $>$ FglForm::formElements (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}
+\label{classFglForm_ab40c533416d35aac75f2ccf5157a3cf2}
+
+
+Definition at line 1393 of file fglform.cpp.
+
+\hypertarget{classFglForm_a1d53398b0bf7a81f7d6f4fab65faa3dd}{
+\index{FglForm@{FglForm}!getActionPanelPosition@{getActionPanelPosition}}
+\index{getActionPanelPosition@{getActionPanelPosition}!FglForm@{FglForm}}
+\subsubsection[{getActionPanelPosition}]{\setlength{\rightskip}{0pt plus 5cm}QString FglForm::getActionPanelPosition (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily  \mbox{[}inline\mbox{]}}}}
+\label{classFglForm_a1d53398b0bf7a81f7d6f4fab65faa3dd}
+
+
+Definition at line 191 of file fglform.h.
+
+\hypertarget{classFglForm_a9cacfea35fa0152d42b399fc6d2a2524}{
+\index{FglForm@{FglForm}!getDefaultStatusBar@{getDefaultStatusBar}}
+\index{getDefaultStatusBar@{getDefaultStatusBar}!FglForm@{FglForm}}
+\subsubsection[{getDefaultStatusBar}]{\setlength{\rightskip}{0pt plus 5cm}bool FglForm::getDefaultStatusBar (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily  \mbox{[}inline\mbox{]}}}}
+\label{classFglForm_a9cacfea35fa0152d42b399fc6d2a2524}
+
+
+Definition at line 188 of file fglform.h.
+
+\hypertarget{classFglForm_a773cd80cab1ae1efaccc48262b2cbc55}{
+\index{FglForm@{FglForm}!getRingMenuPosition@{getRingMenuPosition}}
+\index{getRingMenuPosition@{getRingMenuPosition}!FglForm@{FglForm}}
+\subsubsection[{getRingMenuPosition}]{\setlength{\rightskip}{0pt plus 5cm}QString FglForm::getRingMenuPosition (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily  \mbox{[}inline\mbox{]}}}}
+\label{classFglForm_a773cd80cab1ae1efaccc48262b2cbc55}
+
+
+Definition at line 194 of file fglform.h.
+
+\hypertarget{classFglForm_a40002405b99f9291e8f61944a775172a}{
+\index{FglForm@{FglForm}!getStartMenuPosition@{getStartMenuPosition}}
+\index{getStartMenuPosition@{getStartMenuPosition}!FglForm@{FglForm}}
+\subsubsection[{getStartMenuPosition}]{\setlength{\rightskip}{0pt plus 5cm}QString FglForm::getStartMenuPosition (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily  \mbox{[}inline\mbox{]}}}}
+\label{classFglForm_a40002405b99f9291e8f61944a775172a}
+
+
+Definition at line 176 of file fglform.h.
+
+\hypertarget{classFglForm_ac138a537d43b85e677818e1a61f3cd3d}{
+\index{FglForm@{FglForm}!getToolBarPosition@{getToolBarPosition}}
+\index{getToolBarPosition@{getToolBarPosition}!FglForm@{FglForm}}
+\subsubsection[{getToolBarPosition}]{\setlength{\rightskip}{0pt plus 5cm}QString FglForm::getToolBarPosition (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily  \mbox{[}inline\mbox{]}}}}
+\label{classFglForm_ac138a537d43b85e677818e1a61f3cd3d}
+
+
+Definition at line 179 of file fglform.h.
+
+\hypertarget{classFglForm_a1e47b1b987a50ed9e4155bdf0664feba}{
+\index{FglForm@{FglForm}!getWindowType@{getWindowType}}
+\index{getWindowType@{getWindowType}!FglForm@{FglForm}}
+\subsubsection[{getWindowType}]{\setlength{\rightskip}{0pt plus 5cm}QString FglForm::getWindowType (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily  \mbox{[}inline\mbox{]}}}}
+\label{classFglForm_a1e47b1b987a50ed9e4155bdf0664feba}
+
+
+Definition at line 182 of file fglform.h.
+
+\hypertarget{classFglForm_ab44742db0c6d0d2e0663db22c9668b4c}{
+\index{FglForm@{FglForm}!handleGuiAction@{handleGuiAction}}
+\index{handleGuiAction@{handleGuiAction}!FglForm@{FglForm}}
+\subsubsection[{handleGuiAction}]{\setlength{\rightskip}{0pt plus 5cm}bool FglForm::handleGuiAction (
+\begin{DoxyParamCaption}
+\item[{{\bf Action} $\ast$}]{fAction}
+\end{DoxyParamCaption}
+)}}
+\label{classFglForm_ab44742db0c6d0d2e0663db22c9668b4c}
+
+
+Definition at line 3420 of file fglform.cpp.
+
+\hypertarget{classFglForm_a4fc9bc745910f209c6f54f509293bd73}{
+\index{FglForm@{FglForm}!id@{id}}
+\index{id@{id}!FglForm@{FglForm}}
+\subsubsection[{id}]{\setlength{\rightskip}{0pt plus 5cm}int FglForm::id (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}inline\mbox{]}}}}
+\label{classFglForm_a4fc9bc745910f209c6f54f509293bd73}
+
+
+Definition at line 211 of file fglform.h.
+
+\hypertarget{classFglForm_af5e8206054e3275e2977056e685b73da}{
+\index{FglForm@{FglForm}!initActions@{initActions}}
+\index{initActions@{initActions}!FglForm@{FglForm}}
+\subsubsection[{initActions}]{\setlength{\rightskip}{0pt plus 5cm}void FglForm::initActions (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}
+\label{classFglForm_af5e8206054e3275e2977056e685b73da}
+
+
+Definition at line 306 of file fglform.cpp.
+
+\hypertarget{classFglForm_ab6b474ce22c93c45ccbee4b637647732}{
+\index{FglForm@{FglForm}!input@{input}}
+\index{input@{input}!FglForm@{FglForm}}
+\subsubsection[{input}]{\setlength{\rightskip}{0pt plus 5cm}bool FglForm::input (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}inline\mbox{]}}}}
+\label{classFglForm_ab6b474ce22c93c45ccbee4b637647732}
+
+
+Definition at line 139 of file fglform.h.
+
+\hypertarget{classFglForm_a452b19a215f6acbb86320ed3a8b32ead}{
+\index{FglForm@{FglForm}!inputArray@{inputArray}}
+\index{inputArray@{inputArray}!FglForm@{FglForm}}
+\subsubsection[{inputArray}]{\setlength{\rightskip}{0pt plus 5cm}bool FglForm::inputArray (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}inline\mbox{]}}}}
+\label{classFglForm_a452b19a215f6acbb86320ed3a8b32ead}
+
+
+Definition at line 143 of file fglform.h.
+
+\hypertarget{classFglForm_a0e2bda025291fc5a29a74254418cffdb}{
+\index{FglForm@{FglForm}!interrupt@{interrupt}}
+\index{interrupt@{interrupt}!FglForm@{FglForm}}
+\subsubsection[{interrupt}]{\setlength{\rightskip}{0pt plus 5cm}void FglForm::interrupt (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}slot\mbox{]}}}}
+\label{classFglForm_a0e2bda025291fc5a29a74254418cffdb}
+
+
+Definition at line 1515 of file fglform.cpp.
+
+\hypertarget{classFglForm_a626014edfd45271d30f38d877601abd5}{
+\index{FglForm@{FglForm}!jumpToField@{jumpToField}}
+\index{jumpToField@{jumpToField}!FglForm@{FglForm}}
+\subsubsection[{jumpToField}]{\setlength{\rightskip}{0pt plus 5cm}void FglForm::jumpToField (
+\begin{DoxyParamCaption}
+\item[{QWidget $\ast$}]{w, }
+\item[{bool}]{b\_\-after = {\ttfamily true}}
+\end{DoxyParamCaption}
+)}}
+\label{classFglForm_a626014edfd45271d30f38d877601abd5}
+
+
+Definition at line 2396 of file fglform.cpp.
+
+\hypertarget{classFglForm_aab860a48ab46e95732543f3cb345ba26}{
+\index{FglForm@{FglForm}!lastCursor@{lastCursor}}
+\index{lastCursor@{lastCursor}!FglForm@{FglForm}}
+\subsubsection[{lastCursor}]{\setlength{\rightskip}{0pt plus 5cm}int FglForm::lastCursor (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}inline\mbox{]}}}}
+\label{classFglForm_aab860a48ab46e95732543f3cb345ba26}
+
+
+Definition at line 146 of file fglform.h.
+
+\hypertarget{classFglForm_adbc1aae701b9f9be093df1b60072ed10}{
+\index{FglForm@{FglForm}!lastrow@{lastrow}}
+\index{lastrow@{lastrow}!FglForm@{FglForm}}
+\subsubsection[{lastrow}]{\setlength{\rightskip}{0pt plus 5cm}void FglForm::lastrow (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}slot\mbox{]}}}}
+\label{classFglForm_adbc1aae701b9f9be093df1b60072ed10}
+
+
+Definition at line 2343 of file fglform.cpp.
+
+\hypertarget{classFglForm_acffbcaf62fc53ff47363cf13b2967242}{
+\index{FglForm@{FglForm}!menu@{menu}}
+\index{menu@{menu}!FglForm@{FglForm}}
+\subsubsection[{menu}]{\setlength{\rightskip}{0pt plus 5cm}{\bf RingMenu}$\ast$ FglForm::menu (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}inline\mbox{]}}}}
+\label{classFglForm_acffbcaf62fc53ff47363cf13b2967242}
+
+
+Definition at line 103 of file fglform.h.
+
+\hypertarget{classFglForm_a1a279ed4bf3d729f30a346e8e6c9b8c7}{
+\index{FglForm@{FglForm}!nextfield@{nextfield}}
+\index{nextfield@{nextfield}!FglForm@{FglForm}}
+\subsubsection[{nextfield}]{\setlength{\rightskip}{0pt plus 5cm}void FglForm::nextfield (
+\begin{DoxyParamCaption}
+\item[{bool}]{change = {\ttfamily true}}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}slot\mbox{]}}}}
+\label{classFglForm_a1a279ed4bf3d729f30a346e8e6c9b8c7}
+
+
+Definition at line 1923 of file fglform.cpp.
+
+\hypertarget{classFglForm_aafc9f7cacb9852d58b809a840abc104e}{
+\index{FglForm@{FglForm}!nextpage@{nextpage}}
+\index{nextpage@{nextpage}!FglForm@{FglForm}}
+\subsubsection[{nextpage}]{\setlength{\rightskip}{0pt plus 5cm}void FglForm::nextpage (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}slot\mbox{]}}}}
+\label{classFglForm_aafc9f7cacb9852d58b809a840abc104e}
+
+
+Definition at line 2367 of file fglform.cpp.
+
+\hypertarget{classFglForm_a0321ef0bb745923607aecc90ff23dc16}{
+\index{FglForm@{FglForm}!nextrow@{nextrow}}
+\index{nextrow@{nextrow}!FglForm@{FglForm}}
+\subsubsection[{nextrow}]{\setlength{\rightskip}{0pt plus 5cm}void FglForm::nextrow (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}slot\mbox{]}}}}
+\label{classFglForm_a0321ef0bb745923607aecc90ff23dc16}
+
+
+Definition at line 2268 of file fglform.cpp.
+
+\hypertarget{classFglForm_a3f1ae54d6ef1585a6f14cf394758c09b}{
+\index{FglForm@{FglForm}!nexttab@{nexttab}}
+\index{nexttab@{nexttab}!FglForm@{FglForm}}
+\subsubsection[{nexttab}]{\setlength{\rightskip}{0pt plus 5cm}void FglForm::nexttab (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}slot\mbox{]}}}}
+\label{classFglForm_a3f1ae54d6ef1585a6f14cf394758c09b}
+
+
+Definition at line 2369 of file fglform.cpp.
+
+\hypertarget{classFglForm_a1a8413bf151ffd1e9fb4b0ae2a78dd6e}{
+\index{FglForm@{FglForm}!prevfield@{prevfield}}
+\index{prevfield@{prevfield}!FglForm@{FglForm}}
+\subsubsection[{prevfield}]{\setlength{\rightskip}{0pt plus 5cm}void FglForm::prevfield (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}slot\mbox{]}}}}
+\label{classFglForm_a1a8413bf151ffd1e9fb4b0ae2a78dd6e}
+
+
+Definition at line 2102 of file fglform.cpp.
+
+\hypertarget{classFglForm_ac3cf8e2f5bfc433cb19497e6bad4db0d}{
+\index{FglForm@{FglForm}!prevpage@{prevpage}}
+\index{prevpage@{prevpage}!FglForm@{FglForm}}
+\subsubsection[{prevpage}]{\setlength{\rightskip}{0pt plus 5cm}void FglForm::prevpage (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}slot\mbox{]}}}}
+\label{classFglForm_ac3cf8e2f5bfc433cb19497e6bad4db0d}
+
+
+Definition at line 2368 of file fglform.cpp.
+
+\hypertarget{classFglForm_a92a335499ab7c95fa5b106f7a9f21e33}{
+\index{FglForm@{FglForm}!prevrow@{prevrow}}
+\index{prevrow@{prevrow}!FglForm@{FglForm}}
+\subsubsection[{prevrow}]{\setlength{\rightskip}{0pt plus 5cm}void FglForm::prevrow (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}slot\mbox{]}}}}
+\label{classFglForm_a92a335499ab7c95fa5b106f7a9f21e33}
+
+
+Definition at line 2297 of file fglform.cpp.
+
+\hypertarget{classFglForm_a9eefd50c2b2dbcd9303a20a02a2ad140}{
+\index{FglForm@{FglForm}!prevtab@{prevtab}}
+\index{prevtab@{prevtab}!FglForm@{FglForm}}
+\subsubsection[{prevtab}]{\setlength{\rightskip}{0pt plus 5cm}void FglForm::prevtab (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}slot\mbox{]}}}}
+\label{classFglForm_a9eefd50c2b2dbcd9303a20a02a2ad140}
+
+
+Definition at line 2382 of file fglform.cpp.
+
+\hypertarget{classFglForm_a797f5a3e960a73a6fff9a1bb74059956}{
+\index{FglForm@{FglForm}!processResponse@{processResponse}}
+\index{processResponse@{processResponse}!FglForm@{FglForm}}
+\subsubsection[{processResponse}]{\setlength{\rightskip}{0pt plus 5cm}void FglForm::processResponse (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}signal\mbox{]}}}}
+\label{classFglForm_a797f5a3e960a73a6fff9a1bb74059956}
+\hypertarget{classFglForm_a05f163612a936468e8fac3e84aeec02e}{
+\index{FglForm@{FglForm}!pulldown@{pulldown}}
+\index{pulldown@{pulldown}!FglForm@{FglForm}}
+\subsubsection[{pulldown}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Pulldown}$\ast$ FglForm::pulldown (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}inline\mbox{]}}}}
+\label{classFglForm_a05f163612a936468e8fac3e84aeec02e}
+
+
+Definition at line 110 of file fglform.h.
+
+\hypertarget{classFglForm_ae9f393760ac910dd86de0919be07f41c}{
+\index{FglForm@{FglForm}!readSettingsLocal@{readSettingsLocal}}
+\index{readSettingsLocal@{readSettingsLocal}!FglForm@{FglForm}}
+\subsubsection[{readSettingsLocal}]{\setlength{\rightskip}{0pt plus 5cm}void FglForm::readSettingsLocal (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}slot\mbox{]}}}}
+\label{classFglForm_ae9f393760ac910dd86de0919be07f41c}
+
+
+Definition at line 2698 of file fglform.cpp.
+
+\hypertarget{classFglForm_a7b0af358781bf6b0f37d80e9383cf10e}{
+\index{FglForm@{FglForm}!removeMenu@{removeMenu}}
+\index{removeMenu@{removeMenu}!FglForm@{FglForm}}
+\subsubsection[{removeMenu}]{\setlength{\rightskip}{0pt plus 5cm}void FglForm::removeMenu (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}
+\label{classFglForm_a7b0af358781bf6b0f37d80e9383cf10e}
+
+
+Definition at line 377 of file fglform.cpp.
+
+\hypertarget{classFglForm_a267469fbb08f5d257f162df03b88852a}{
+\index{FglForm@{FglForm}!reopenPulldown@{reopenPulldown}}
+\index{reopenPulldown@{reopenPulldown}!FglForm@{FglForm}}
+\subsubsection[{reopenPulldown}]{\setlength{\rightskip}{0pt plus 5cm}void FglForm::reopenPulldown (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}slot\mbox{]}}}}
+\label{classFglForm_a267469fbb08f5d257f162df03b88852a}
+
+
+Definition at line 1259 of file fglform.cpp.
+
+\hypertarget{classFglForm_a1d7dad289a4b04321a2c932adf12d19b}{
+\index{FglForm@{FglForm}!resetFieldSettings@{resetFieldSettings}}
+\index{resetFieldSettings@{resetFieldSettings}!FglForm@{FglForm}}
+\subsubsection[{resetFieldSettings}]{\setlength{\rightskip}{0pt plus 5cm}void FglForm::resetFieldSettings (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}slot\mbox{]}}}}
+\label{classFglForm_a1d7dad289a4b04321a2c932adf12d19b}
+
+
+Definition at line 1025 of file fglform.cpp.
+
+\hypertarget{classFglForm_a4d2edce15aac96b22d221a11c0e7681e}{
+\index{FglForm@{FglForm}!revertState@{revertState}}
+\index{revertState@{revertState}!FglForm@{FglForm}}
+\subsubsection[{revertState}]{\setlength{\rightskip}{0pt plus 5cm}void FglForm::revertState (
+\begin{DoxyParamCaption}
+\item[{{\bf Fgl::State}}]{state}
+\end{DoxyParamCaption}
+)}}
+\label{classFglForm_a4d2edce15aac96b22d221a11c0e7681e}
+
+
+Definition at line 2612 of file fglform.cpp.
+
+\hypertarget{classFglForm_a3d7ccbba13b950e970333db68755d022}{
+\index{FglForm@{FglForm}!saveFieldSettings@{saveFieldSettings}}
+\index{saveFieldSettings@{saveFieldSettings}!FglForm@{FglForm}}
+\subsubsection[{saveFieldSettings}]{\setlength{\rightskip}{0pt plus 5cm}void FglForm::saveFieldSettings (
+\begin{DoxyParamCaption}
+\item[{QAction $\ast$}]{action}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}slot\mbox{]}}}}
+\label{classFglForm_a3d7ccbba13b950e970333db68755d022}
+
+
+Definition at line 1043 of file fglform.cpp.
+
+\hypertarget{classFglForm_aebb86e0bc590b730ff490b030b5dba7c}{
+\index{FglForm@{FglForm}!screenhandler@{screenhandler}}
+\index{screenhandler@{screenhandler}!FglForm@{FglForm}}
+\subsubsection[{screenhandler}]{\setlength{\rightskip}{0pt plus 5cm}ScreenHandler$\ast$ FglForm::screenhandler (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}inline\mbox{]}}}}
+\label{classFglForm_aebb86e0bc590b730ff490b030b5dba7c}
+
+
+Definition at line 116 of file fglform.h.
+
+\hypertarget{classFglForm_a2e45f9d338ef208ffb1c08f1f97e6b2b}{
+\index{FglForm@{FglForm}!screenRecord@{screenRecord}}
+\index{screenRecord@{screenRecord}!FglForm@{FglForm}}
+\subsubsection[{screenRecord}]{\setlength{\rightskip}{0pt plus 5cm}bool FglForm::screenRecord (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}inline\mbox{]}}}}
+\label{classFglForm_a2e45f9d338ef208ffb1c08f1f97e6b2b}
+
+
+Definition at line 141 of file fglform.h.
+
+\hypertarget{classFglForm_a6c13e4f1841a38f5cbf615595f88f78f}{
+\index{FglForm@{FglForm}!sendactivateinputevent@{sendactivateinputevent}}
+\index{sendactivateinputevent@{sendactivateinputevent}!FglForm@{FglForm}}
+\subsubsection[{sendactivateinputevent}]{\setlength{\rightskip}{0pt plus 5cm}void FglForm::sendactivateinputevent (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}slot\mbox{]}}}}
+\label{classFglForm_a6c13e4f1841a38f5cbf615595f88f78f}
+
+
+Definition at line 1216 of file fglform.cpp.
+
+\hypertarget{classFglForm_ab8e58a4d027770ba170972d247b617dd}{
+\index{FglForm@{FglForm}!sendDirect@{sendDirect}}
+\index{sendDirect@{sendDirect}!FglForm@{FglForm}}
+\subsubsection[{sendDirect}]{\setlength{\rightskip}{0pt plus 5cm}void FglForm::sendDirect (
+\begin{DoxyParamCaption}
+\item[{QString}]{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}signal\mbox{]}}}}
+\label{classFglForm_ab8e58a4d027770ba170972d247b617dd}
+\hypertarget{classFglForm_a5e7fe57471d1f3ad4d6dbf7ac1c8b843}{
+\index{FglForm@{FglForm}!sendMenuCommand@{sendMenuCommand}}
+\index{sendMenuCommand@{sendMenuCommand}!FglForm@{FglForm}}
+\subsubsection[{sendMenuCommand}]{\setlength{\rightskip}{0pt plus 5cm}void FglForm::sendMenuCommand (
+\begin{DoxyParamCaption}
+\item[{QString}]{cmd}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}slot\mbox{]}}}}
+\label{classFglForm_a5e7fe57471d1f3ad4d6dbf7ac1c8b843}
+
+
+Definition at line 1314 of file fglform.cpp.
+
+\hypertarget{classFglForm_acdc54b976403abededb061ba2dd0c30f}{
+\index{FglForm@{FglForm}!setActionMenu@{setActionMenu}}
+\index{setActionMenu@{setActionMenu}!FglForm@{FglForm}}
+\subsubsection[{setActionMenu}]{\setlength{\rightskip}{0pt plus 5cm}void FglForm::setActionMenu (
+\begin{DoxyParamCaption}
+\item[{{\bf ActionMenu} $\ast$}]{menu}
+\end{DoxyParamCaption}
+)}}
+\label{classFglForm_acdc54b976403abededb061ba2dd0c30f}
+
+
+Definition at line 444 of file fglform.cpp.
+
+\hypertarget{classFglForm_ab322288b13021e7b98a5cf87912d2f18}{
+\index{FglForm@{FglForm}!setActionMenuEnabled@{setActionMenuEnabled}}
+\index{setActionMenuEnabled@{setActionMenuEnabled}!FglForm@{FglForm}}
+\subsubsection[{setActionMenuEnabled}]{\setlength{\rightskip}{0pt plus 5cm}void FglForm::setActionMenuEnabled (
+\begin{DoxyParamCaption}
+\item[{bool}]{enable}
+\end{DoxyParamCaption}
+)}}
+\label{classFglForm_ab322288b13021e7b98a5cf87912d2f18}
+
+
+Definition at line 473 of file fglform.cpp.
+
+\hypertarget{classFglForm_a80b78ad88d0dc22b7f4df7a724794a13}{
+\index{FglForm@{FglForm}!setActionPanelPosition@{setActionPanelPosition}}
+\index{setActionPanelPosition@{setActionPanelPosition}!FglForm@{FglForm}}
+\subsubsection[{setActionPanelPosition}]{\setlength{\rightskip}{0pt plus 5cm}void FglForm::setActionPanelPosition (
+\begin{DoxyParamCaption}
+\item[{const QString \&}]{sm}
+\end{DoxyParamCaption}
+)}}
+\label{classFglForm_a80b78ad88d0dc22b7f4df7a724794a13}
+
+
+Definition at line 1659 of file fglform.cpp.
+
+\hypertarget{classFglForm_a4b9c2e9963530fba9dc68f9dae0928a0}{
+\index{FglForm@{FglForm}!setActions@{setActions}}
+\index{setActions@{setActions}!FglForm@{FglForm}}
+\subsubsection[{setActions}]{\setlength{\rightskip}{0pt plus 5cm}void FglForm::setActions (
+\begin{DoxyParamCaption}
+\item[{QDomDocument}]{xmlFile}
+\end{DoxyParamCaption}
+)}}
+\label{classFglForm_a4b9c2e9963530fba9dc68f9dae0928a0}
+
+
+Definition at line 198 of file fglform.cpp.
+
+\hypertarget{classFglForm_a7bef8f5a9e151e3b09d9de652b78ec92}{
+\index{FglForm@{FglForm}!setArrLine@{setArrLine}}
+\index{setArrLine@{setArrLine}!FglForm@{FglForm}}
+\subsubsection[{setArrLine}]{\setlength{\rightskip}{0pt plus 5cm}void FglForm::setArrLine (
+\begin{DoxyParamCaption}
+\item[{int}]{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}signal\mbox{]}}}}
+\label{classFglForm_a7bef8f5a9e151e3b09d9de652b78ec92}
+\hypertarget{classFglForm_a7146bdb938bcb9a88b23051b39ea19b7}{
+\index{FglForm@{FglForm}!setBufferNotTouched@{setBufferNotTouched}}
+\index{setBufferNotTouched@{setBufferNotTouched}!FglForm@{FglForm}}
+\subsubsection[{setBufferNotTouched}]{\setlength{\rightskip}{0pt plus 5cm}void FglForm::setBufferNotTouched (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}inline, slot\mbox{]}}}}
+\label{classFglForm_a7146bdb938bcb9a88b23051b39ea19b7}
+
+
+Definition at line 222 of file fglform.h.
+
+\hypertarget{classFglForm_a763db4c754333829447f9766c25f0e0b}{
+\index{FglForm@{FglForm}!setBufferTouched@{setBufferTouched}}
+\index{setBufferTouched@{setBufferTouched}!FglForm@{FglForm}}
+\subsubsection[{setBufferTouched}]{\setlength{\rightskip}{0pt plus 5cm}void FglForm::setBufferTouched (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}inline, slot\mbox{]}}}}
+\label{classFglForm_a763db4c754333829447f9766c25f0e0b}
+
+
+Definition at line 219 of file fglform.h.
+
+\hypertarget{classFglForm_a9c7de4f0bd6f44e3103df2e81a504974}{
+\index{FglForm@{FglForm}!setClearEvents@{setClearEvents}}
+\index{setClearEvents@{setClearEvents}!FglForm@{FglForm}}
+\subsubsection[{setClearEvents}]{\setlength{\rightskip}{0pt plus 5cm}void FglForm::setClearEvents (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}signal\mbox{]}}}}
+\label{classFglForm_a9c7de4f0bd6f44e3103df2e81a504974}
+\hypertarget{classFglForm_a4574756e714c6d93e6d177ecbfb78ae1}{
+\index{FglForm@{FglForm}!setCurrentField@{setCurrentField}}
+\index{setCurrentField@{setCurrentField}!FglForm@{FglForm}}
+\subsubsection[{setCurrentField}]{\setlength{\rightskip}{0pt plus 5cm}void FglForm::setCurrentField (
+\begin{DoxyParamCaption}
+\item[{QString}]{fieldName, }
+\item[{bool}]{sendEvents = {\ttfamily true}}
+\end{DoxyParamCaption}
+)}}
+\label{classFglForm_a4574756e714c6d93e6d177ecbfb78ae1}
+
+
+Definition at line 1775 of file fglform.cpp.
+
+\hypertarget{classFglForm_ac521356370affcf115340e2279475c6b}{
+\index{FglForm@{FglForm}!setCurrentWidget@{setCurrentWidget}}
+\index{setCurrentWidget@{setCurrentWidget}!FglForm@{FglForm}}
+\subsubsection[{setCurrentWidget}]{\setlength{\rightskip}{0pt plus 5cm}void FglForm::setCurrentWidget (
+\begin{DoxyParamCaption}
+\item[{QWidget $\ast$}]{qw}
+\end{DoxyParamCaption}
+)}}
+\label{classFglForm_ac521356370affcf115340e2279475c6b}
+
+
+Definition at line 1753 of file fglform.cpp.
+
+\hypertarget{classFglForm_a4b2f8754ef3aa90fc46d04c2020ed5af}{
+\index{FglForm@{FglForm}!setDefaultStatusBar@{setDefaultStatusBar}}
+\index{setDefaultStatusBar@{setDefaultStatusBar}!FglForm@{FglForm}}
+\subsubsection[{setDefaultStatusBar}]{\setlength{\rightskip}{0pt plus 5cm}void FglForm::setDefaultStatusBar (
+\begin{DoxyParamCaption}
+\item[{const bool \&}]{sm}
+\end{DoxyParamCaption}
+)}}
+\label{classFglForm_a4b2f8754ef3aa90fc46d04c2020ed5af}
+
+
+Definition at line 1723 of file fglform.cpp.
+
+\hypertarget{classFglForm_aee2921f4bcb8f95e10fde25ec84842d3}{
+\index{FglForm@{FglForm}!setDialog@{setDialog}}
+\index{setDialog@{setDialog}!FglForm@{FglForm}}
+\subsubsection[{setDialog}]{\setlength{\rightskip}{0pt plus 5cm}void FglForm::setDialog (
+\begin{DoxyParamCaption}
+\item[{{\bf Dialog} $\ast$}]{dialog}
+\end{DoxyParamCaption}
+)}}
+\label{classFglForm_aee2921f4bcb8f95e10fde25ec84842d3}
+
+
+Definition at line 610 of file fglform.cpp.
+
+\hypertarget{classFglForm_abacf589f219bcfbcf54ca2a5fb9ba859}{
+\index{FglForm@{FglForm}!setFocusOnWidget@{setFocusOnWidget}}
+\index{setFocusOnWidget@{setFocusOnWidget}!FglForm@{FglForm}}
+\subsubsection[{setFocusOnWidget}]{\setlength{\rightskip}{0pt plus 5cm}void FglForm::setFocusOnWidget (
+\begin{DoxyParamCaption}
+\item[{QWidget $\ast$}]{w, }
+\item[{Qt::FocusReason}]{reason = {\ttfamily Qt::OtherFocusReason}}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}slot\mbox{]}}}}
+\label{classFglForm_abacf589f219bcfbcf54ca2a5fb9ba859}
+
+
+Definition at line 1458 of file fglform.cpp.
+
+\hypertarget{classFglForm_a6a923c50e859e58d34046d0b0f86c11d}{
+\index{FglForm@{FglForm}!setFormLayout@{setFormLayout}}
+\index{setFormLayout@{setFormLayout}!FglForm@{FglForm}}
+\subsubsection[{setFormLayout}]{\setlength{\rightskip}{0pt plus 5cm}void FglForm::setFormLayout (
+\begin{DoxyParamCaption}
+\item[{const QDomDocument \&}]{docLayout}
+\end{DoxyParamCaption}
+)}}
+\label{classFglForm_a6a923c50e859e58d34046d0b0f86c11d}
+
+
+Definition at line 1331 of file fglform.cpp.
+
+\hypertarget{classFglForm_a7010467be800cf868884b589f8ce8ce7}{
+\index{FglForm@{FglForm}!setId@{setId}}
+\index{setId@{setId}!FglForm@{FglForm}}
+\subsubsection[{setId}]{\setlength{\rightskip}{0pt plus 5cm}void FglForm::setId (
+\begin{DoxyParamCaption}
+\item[{QString}]{id}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}inline\mbox{]}}}}
+\label{classFglForm_a7010467be800cf868884b589f8ce8ce7}
+
+
+Definition at line 210 of file fglform.h.
+
+\hypertarget{classFglForm_a8495f6c9444756a6bdf370c3ce158921}{
+\index{FglForm@{FglForm}!setLastCursor@{setLastCursor}}
+\index{setLastCursor@{setLastCursor}!FglForm@{FglForm}}
+\subsubsection[{setLastCursor}]{\setlength{\rightskip}{0pt plus 5cm}void FglForm::setLastCursor (
+\begin{DoxyParamCaption}
+\item[{int}]{i\_\-old, }
+\item[{int}]{i\_\-new}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}slot\mbox{]}}}}
+\label{classFglForm_a8495f6c9444756a6bdf370c3ce158921}
+
+
+Definition at line 3714 of file fglform.cpp.
+
+\hypertarget{classFglForm_ab61a1af085f68fa6673e516812b0b9c8}{
+\index{FglForm@{FglForm}!setLastCursor@{setLastCursor}}
+\index{setLastCursor@{setLastCursor}!FglForm@{FglForm}}
+\subsubsection[{setLastCursor}]{\setlength{\rightskip}{0pt plus 5cm}void FglForm::setLastCursor (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}slot\mbox{]}}}}
+\label{classFglForm_ab61a1af085f68fa6673e516812b0b9c8}
+
+
+Definition at line 3721 of file fglform.cpp.
+
+\hypertarget{classFglForm_a0060da33eb1943f1b762e8a164ede398}{
+\index{FglForm@{FglForm}!setMenu@{setMenu}}
+\index{setMenu@{setMenu}!FglForm@{FglForm}}
+\subsubsection[{setMenu}]{\setlength{\rightskip}{0pt plus 5cm}void FglForm::setMenu (
+\begin{DoxyParamCaption}
+\item[{{\bf RingMenu} $\ast$}]{p\_\-menu}
+\end{DoxyParamCaption}
+)}}
+\label{classFglForm_a0060da33eb1943f1b762e8a164ede398}
+
+
+Definition at line 344 of file fglform.cpp.
+
+\hypertarget{classFglForm_acfb920aa37d488d2877fe75441ac7f65}{
+\index{FglForm@{FglForm}!setMenuEnabled@{setMenuEnabled}}
+\index{setMenuEnabled@{setMenuEnabled}!FglForm@{FglForm}}
+\subsubsection[{setMenuEnabled}]{\setlength{\rightskip}{0pt plus 5cm}void FglForm::setMenuEnabled (
+\begin{DoxyParamCaption}
+\item[{bool}]{enable}
+\end{DoxyParamCaption}
+)}}
+\label{classFglForm_acfb920aa37d488d2877fe75441ac7f65}
+
+
+Definition at line 399 of file fglform.cpp.
+
+\hypertarget{classFglForm_a19892721571e2c56399ca6be07c3f750}{
+\index{FglForm@{FglForm}!setPulldown@{setPulldown}}
+\index{setPulldown@{setPulldown}!FglForm@{FglForm}}
+\subsubsection[{setPulldown}]{\setlength{\rightskip}{0pt plus 5cm}void FglForm::setPulldown (
+\begin{DoxyParamCaption}
+\item[{{\bf Pulldown} $\ast$}]{pulldown}
+\end{DoxyParamCaption}
+)}}
+\label{classFglForm_a19892721571e2c56399ca6be07c3f750}
+
+
+Definition at line 630 of file fglform.cpp.
+
+\hypertarget{classFglForm_af25c944e246c0522cd333e452ead9cad}{
+\index{FglForm@{FglForm}!setRingMenuPosition@{setRingMenuPosition}}
+\index{setRingMenuPosition@{setRingMenuPosition}!FglForm@{FglForm}}
+\subsubsection[{setRingMenuPosition}]{\setlength{\rightskip}{0pt plus 5cm}void FglForm::setRingMenuPosition (
+\begin{DoxyParamCaption}
+\item[{const QString \&}]{sm}
+\end{DoxyParamCaption}
+)}}
+\label{classFglForm_af25c944e246c0522cd333e452ead9cad}
+
+
+Definition at line 1608 of file fglform.cpp.
+
+\hypertarget{classFglForm_aba5859f32918808eb18606b85483a4c6}{
+\index{FglForm@{FglForm}!setScreenHandler@{setScreenHandler}}
+\index{setScreenHandler@{setScreenHandler}!FglForm@{FglForm}}
+\subsubsection[{setScreenHandler}]{\setlength{\rightskip}{0pt plus 5cm}void FglForm::setScreenHandler (
+\begin{DoxyParamCaption}
+\item[{ScreenHandler $\ast$}]{p\_\-sh}
+\end{DoxyParamCaption}
+)}}
+\label{classFglForm_aba5859f32918808eb18606b85483a4c6}
+
+
+Definition at line 186 of file fglform.cpp.
+
+\hypertarget{classFglForm_afce8d989187c85d7bde751824a9b6c6a}{
+\index{FglForm@{FglForm}!setScreenRecordArrLine@{setScreenRecordArrLine}}
+\index{setScreenRecordArrLine@{setScreenRecordArrLine}!FglForm@{FglForm}}
+\subsubsection[{setScreenRecordArrLine}]{\setlength{\rightskip}{0pt plus 5cm}void FglForm::setScreenRecordArrLine (
+\begin{DoxyParamCaption}
+\item[{int}]{line}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}slot\mbox{]}}}}
+\label{classFglForm_afce8d989187c85d7bde751824a9b6c6a}
+
+
+Definition at line 3004 of file fglform.cpp.
+
+\hypertarget{classFglForm_a805e33b8b74b0cc73dad05eac238f9db}{
+\index{FglForm@{FglForm}!setSizable@{setSizable}}
+\index{setSizable@{setSizable}!FglForm@{FglForm}}
+\subsubsection[{setSizable}]{\setlength{\rightskip}{0pt plus 5cm}void FglForm::setSizable (
+\begin{DoxyParamCaption}
+\item[{const QString \&}]{sm}
+\end{DoxyParamCaption}
+)}}
+\label{classFglForm_a805e33b8b74b0cc73dad05eac238f9db}
+
+
+Definition at line 1711 of file fglform.cpp.
+
+\hypertarget{classFglForm_af3d272e5dc101746b728bdd457d42a6f}{
+\index{FglForm@{FglForm}!setStartMenu@{setStartMenu}}
+\index{setStartMenu@{setStartMenu}!FglForm@{FglForm}}
+\subsubsection[{setStartMenu}]{\setlength{\rightskip}{0pt plus 5cm}void FglForm::setStartMenu (
+\begin{DoxyParamCaption}
+\item[{const QDomDocument \&}]{doc}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}slot\mbox{]}}}}
+\label{classFglForm_af3d272e5dc101746b728bdd457d42a6f}
+
+
+Definition at line 1526 of file fglform.cpp.
+
+\hypertarget{classFglForm_a2badc0486f40c57306fdefe14800a13b}{
+\index{FglForm@{FglForm}!setStartMenuPosition@{setStartMenuPosition}}
+\index{setStartMenuPosition@{setStartMenuPosition}!FglForm@{FglForm}}
+\subsubsection[{setStartMenuPosition}]{\setlength{\rightskip}{0pt plus 5cm}void FglForm::setStartMenuPosition (
+\begin{DoxyParamCaption}
+\item[{const QString \&}]{sm}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}inline\mbox{]}}}}
+\label{classFglForm_a2badc0486f40c57306fdefe14800a13b}
+
+
+Definition at line 177 of file fglform.h.
+
+\hypertarget{classFglForm_a5f6285fdf157e863c68402ec8147c53a}{
+\index{FglForm@{FglForm}!setState@{setState}}
+\index{setState@{setState}!FglForm@{FglForm}}
+\subsubsection[{setState}]{\setlength{\rightskip}{0pt plus 5cm}void FglForm::setState (
+\begin{DoxyParamCaption}
+\item[{{\bf Fgl::State}}]{state}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}inline\mbox{]}}}}
+\label{classFglForm_a5f6285fdf157e863c68402ec8147c53a}
+
+
+Definition at line 197 of file fglform.h.
+
+\hypertarget{classFglForm_a07c0926396e4229b40de7988689a1f16}{
+\index{FglForm@{FglForm}!setStyles@{setStyles}}
+\index{setStyles@{setStyles}!FglForm@{FglForm}}
+\subsubsection[{setStyles}]{\setlength{\rightskip}{0pt plus 5cm}void FglForm::setStyles (
+\begin{DoxyParamCaption}
+\item[{const QDomDocument \&}]{doc}
+\end{DoxyParamCaption}
+)}}
+\label{classFglForm_a07c0926396e4229b40de7988689a1f16}
+
+
+Definition at line 1552 of file fglform.cpp.
+
+\hypertarget{classFglForm_ad139148f573546a3ef5ead0f49170d08}{
+\index{FglForm@{FglForm}!setToolBar@{setToolBar}}
+\index{setToolBar@{setToolBar}!FglForm@{FglForm}}
+\subsubsection[{setToolBar}]{\setlength{\rightskip}{0pt plus 5cm}void FglForm::setToolBar (
+\begin{DoxyParamCaption}
+\item[{QDomDocument}]{xmlFile}
+\end{DoxyParamCaption}
+)}}
+\label{classFglForm_ad139148f573546a3ef5ead0f49170d08}
+
+
+Definition at line 671 of file fglform.cpp.
+
+\hypertarget{classFglForm_acf0280c2e7ca7d56bc45c822b8fb9468}{
+\index{FglForm@{FglForm}!setToolBar@{setToolBar}}
+\index{setToolBar@{setToolBar}!FglForm@{FglForm}}
+\subsubsection[{setToolBar}]{\setlength{\rightskip}{0pt plus 5cm}void FglForm::setToolBar (
+\begin{DoxyParamCaption}
+\item[{{\bf ToolBar} $\ast$}]{toolBar}
+\end{DoxyParamCaption}
+)}}
+\label{classFglForm_acf0280c2e7ca7d56bc45c822b8fb9468}
+
+
+Definition at line 640 of file fglform.cpp.
+
+\hypertarget{classFglForm_af3b00991b1e002fe156d0298468a2311}{
+\index{FglForm@{FglForm}!setToolBarPosition@{setToolBarPosition}}
+\index{setToolBarPosition@{setToolBarPosition}!FglForm@{FglForm}}
+\subsubsection[{setToolBarPosition}]{\setlength{\rightskip}{0pt plus 5cm}void FglForm::setToolBarPosition (
+\begin{DoxyParamCaption}
+\item[{const QString \&}]{sm}
+\end{DoxyParamCaption}
+)}}
+\label{classFglForm_af3b00991b1e002fe156d0298468a2311}
+
+
+Definition at line 1566 of file fglform.cpp.
+
+\hypertarget{classFglForm_a47d0bbf071cbf0051b72c44a90062f81}{
+\index{FglForm@{FglForm}!setUserInputEnabled@{setUserInputEnabled}}
+\index{setUserInputEnabled@{setUserInputEnabled}!FglForm@{FglForm}}
+\subsubsection[{setUserInputEnabled}]{\setlength{\rightskip}{0pt plus 5cm}void FglForm::setUserInputEnabled (
+\begin{DoxyParamCaption}
+\item[{bool}]{enabled}
+\end{DoxyParamCaption}
+)}}
+\label{classFglForm_a47d0bbf071cbf0051b72c44a90062f81}
+
+
+Definition at line 3758 of file fglform.cpp.
+
+\hypertarget{classFglForm_ad780eff8bf0437a8e33a9115885718e9}{
+\index{FglForm@{FglForm}!setWindowType@{setWindowType}}
+\index{setWindowType@{setWindowType}!FglForm@{FglForm}}
+\subsubsection[{setWindowType}]{\setlength{\rightskip}{0pt plus 5cm}void FglForm::setWindowType (
+\begin{DoxyParamCaption}
+\item[{const QString \&}]{sm}
+\end{DoxyParamCaption}
+)}}
+\label{classFglForm_ad780eff8bf0437a8e33a9115885718e9}
+
+
+Definition at line 1735 of file fglform.cpp.
+
+\hypertarget{classFglForm_a81b6a444e67df3a3e56ff786fe9099b7}{
+\index{FglForm@{FglForm}!showEvent@{showEvent}}
+\index{showEvent@{showEvent}!FglForm@{FglForm}}
+\subsubsection[{showEvent}]{\setlength{\rightskip}{0pt plus 5cm}void FglForm::showEvent (
+\begin{DoxyParamCaption}
+\item[{QShowEvent $\ast$}]{qfe}
+\end{DoxyParamCaption}
+)}}
+\label{classFglForm_a81b6a444e67df3a3e56ff786fe9099b7}
+
+
+Definition at line 134 of file fglform.cpp.
+
+\hypertarget{classFglForm_a714fbe1dca04c76d368a8a429b6322c1}{
+\index{FglForm@{FglForm}!sizable@{sizable}}
+\index{sizable@{sizable}!FglForm@{FglForm}}
+\subsubsection[{sizable}]{\setlength{\rightskip}{0pt plus 5cm}QString FglForm::sizable (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily  \mbox{[}inline\mbox{]}}}}
+\label{classFglForm_a714fbe1dca04c76d368a8a429b6322c1}
+
+
+Definition at line 185 of file fglform.h.
+
+\hypertarget{classFglForm_aeed42adf5a051006db1742e2b48617e1}{
+\index{FglForm@{FglForm}!state@{state}}
+\index{state@{state}!FglForm@{FglForm}}
+\subsubsection[{state}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Fgl::State} FglForm::state (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}inline\mbox{]}}}}
+\label{classFglForm_aeed42adf5a051006db1742e2b48617e1}
+
+
+Definition at line 199 of file fglform.h.
+
+\hypertarget{classFglForm_ae474767d66111cda958e191e6be1e34d}{
+\index{FglForm@{FglForm}!toolBar@{toolBar}}
+\index{toolBar@{toolBar}!FglForm@{FglForm}}
+\subsubsection[{toolBar}]{\setlength{\rightskip}{0pt plus 5cm}{\bf ToolBar}$\ast$ FglForm::toolBar (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}inline\mbox{]}}}}
+\label{classFglForm_ae474767d66111cda958e191e6be1e34d}
+
+
+Definition at line 122 of file fglform.h.
+
+\hypertarget{classFglForm_a7d6b1d8b49f56f8b8ae6dbffae4a6499}{
+\index{FglForm@{FglForm}!toolBarActionTriggered@{toolBarActionTriggered}}
+\index{toolBarActionTriggered@{toolBarActionTriggered}!FglForm@{FglForm}}
+\subsubsection[{toolBarActionTriggered}]{\setlength{\rightskip}{0pt plus 5cm}void FglForm::toolBarActionTriggered (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}private, slot\mbox{]}}}}
+\label{classFglForm_a7d6b1d8b49f56f8b8ae6dbffae4a6499}
+
+
+Definition at line 572 of file fglform.cpp.
+
+\hypertarget{classFglForm_acca25b6cbf4161c7075fb594a556eb9a}{
+\index{FglForm@{FglForm}!toolBarPosition@{toolBarPosition}}
+\index{toolBarPosition@{toolBarPosition}!FglForm@{FglForm}}
+\subsubsection[{toolBarPosition}]{\setlength{\rightskip}{0pt plus 5cm}Qt::ToolBarArea FglForm::toolBarPosition (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}
+\label{classFglForm_acca25b6cbf4161c7075fb594a556eb9a}
+\hypertarget{classFglForm_a4fdd15cf1295a7d04b378e5c4cb2d877}{
+\index{FglForm@{FglForm}!writeSettingsLocal@{writeSettingsLocal}}
+\index{writeSettingsLocal@{writeSettingsLocal}!FglForm@{FglForm}}
+\subsubsection[{writeSettingsLocal}]{\setlength{\rightskip}{0pt plus 5cm}void FglForm::writeSettingsLocal (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}slot\mbox{]}}}}
+\label{classFglForm_a4fdd15cf1295a7d04b378e5c4cb2d877}
+
+
+Definition at line 2680 of file fglform.cpp.
+
+
+
+\subsection{Member Data Documentation}
+\hypertarget{classFglForm_af7e3a4c11559a83dd68df64c286fdb1e}{
+\index{FglForm@{FglForm}!b\_\-allowClose@{b\_\-allowClose}}
+\index{b\_\-allowClose@{b\_\-allowClose}!FglForm@{FglForm}}
+\subsubsection[{b\_\-allowClose}]{\setlength{\rightskip}{0pt plus 5cm}bool {\bf FglForm::b\_\-allowClose}}}
+\label{classFglForm_af7e3a4c11559a83dd68df64c286fdb1e}
+
+
+Definition at line 96 of file fglform.h.
+
+\hypertarget{classFglForm_a4bddddc3ca57303fbf3d55394e260a00}{
+\index{FglForm@{FglForm}!b\_\-bufferTouched@{b\_\-bufferTouched}}
+\index{b\_\-bufferTouched@{b\_\-bufferTouched}!FglForm@{FglForm}}
+\subsubsection[{b\_\-bufferTouched}]{\setlength{\rightskip}{0pt plus 5cm}bool {\bf FglForm::b\_\-bufferTouched}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classFglForm_a4bddddc3ca57303fbf3d55394e260a00}
+
+
+Definition at line 308 of file fglform.h.
+
+\hypertarget{classFglForm_a99b822401e45535d412f2a6c5601734d}{
+\index{FglForm@{FglForm}!b\_\-denyFocus@{b\_\-denyFocus}}
+\index{b\_\-denyFocus@{b\_\-denyFocus}!FglForm@{FglForm}}
+\subsubsection[{b\_\-denyFocus}]{\setlength{\rightskip}{0pt plus 5cm}bool {\bf FglForm::b\_\-denyFocus}}}
+\label{classFglForm_a99b822401e45535d412f2a6c5601734d}
+
+
+Definition at line 159 of file fglform.h.
+
+\hypertarget{classFglForm_a4dd283ca13e8a699e88783b2946b6841}{
+\index{FglForm@{FglForm}!b\_\-dummy@{b\_\-dummy}}
+\index{b\_\-dummy@{b\_\-dummy}!FglForm@{FglForm}}
+\subsubsection[{b\_\-dummy}]{\setlength{\rightskip}{0pt plus 5cm}bool {\bf FglForm::b\_\-dummy}}}
+\label{classFglForm_a4dd283ca13e8a699e88783b2946b6841}
+
+
+Definition at line 97 of file fglform.h.
+
+\hypertarget{classFglForm_ac6325d19f253fe4e7cdfbd50bd027c19}{
+\index{FglForm@{FglForm}!b\_\-getch\_\-swin@{b\_\-getch\_\-swin}}
+\index{b\_\-getch\_\-swin@{b\_\-getch\_\-swin}!FglForm@{FglForm}}
+\subsubsection[{b\_\-getch\_\-swin}]{\setlength{\rightskip}{0pt plus 5cm}bool {\bf FglForm::b\_\-getch\_\-swin}}}
+\label{classFglForm_ac6325d19f253fe4e7cdfbd50bd027c19}
+
+
+Definition at line 95 of file fglform.h.
+
+\hypertarget{classFglForm_a348ba4d61a2c9e18513ac88c919015c0}{
+\index{FglForm@{FglForm}!b\_\-input@{b\_\-input}}
+\index{b\_\-input@{b\_\-input}!FglForm@{FglForm}}
+\subsubsection[{b\_\-input}]{\setlength{\rightskip}{0pt plus 5cm}bool {\bf FglForm::b\_\-input}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classFglForm_a348ba4d61a2c9e18513ac88c919015c0}
+
+
+Definition at line 289 of file fglform.h.
+
+\hypertarget{classFglForm_ac1f8bea18516701b1192825f83e962d7}{
+\index{FglForm@{FglForm}!b\_\-menu@{b\_\-menu}}
+\index{b\_\-menu@{b\_\-menu}!FglForm@{FglForm}}
+\subsubsection[{b\_\-menu}]{\setlength{\rightskip}{0pt plus 5cm}bool {\bf FglForm::b\_\-menu}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classFglForm_ac1f8bea18516701b1192825f83e962d7}
+
+
+Definition at line 288 of file fglform.h.
+
+\hypertarget{classFglForm_ab089d04abad8973c262e3c5e1827b070}{
+\index{FglForm@{FglForm}!b\_\-newForm@{b\_\-newForm}}
+\index{b\_\-newForm@{b\_\-newForm}!FglForm@{FglForm}}
+\subsubsection[{b\_\-newForm}]{\setlength{\rightskip}{0pt plus 5cm}bool {\bf FglForm::b\_\-newForm}}}
+\label{classFglForm_ab089d04abad8973c262e3c5e1827b070}
+
+
+Definition at line 158 of file fglform.h.
+
+\hypertarget{classFglForm_a656061ca98f40226c99fa61b12ced56c}{
+\index{FglForm@{FglForm}!b\_\-screenRecord@{b\_\-screenRecord}}
+\index{b\_\-screenRecord@{b\_\-screenRecord}!FglForm@{FglForm}}
+\subsubsection[{b\_\-screenRecord}]{\setlength{\rightskip}{0pt plus 5cm}bool {\bf FglForm::b\_\-screenRecord}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classFglForm_a656061ca98f40226c99fa61b12ced56c}
+
+
+Definition at line 290 of file fglform.h.
+
+\hypertarget{classFglForm_a8c411d93b67981a684a5cf6b67111dc1}{
+\index{FglForm@{FglForm}!b\_\-svs@{b\_\-svs}}
+\index{b\_\-svs@{b\_\-svs}!FglForm@{FglForm}}
+\subsubsection[{b\_\-svs}]{\setlength{\rightskip}{0pt plus 5cm}bool {\bf FglForm::b\_\-svs}}}
+\label{classFglForm_a8c411d93b67981a684a5cf6b67111dc1}
+
+
+Definition at line 91 of file fglform.h.
+
+\hypertarget{classFglForm_ad88a7b19b295fe1f14de652a9e3e1c17}{
+\index{FglForm@{FglForm}!context@{context}}
+\index{context@{context}!FglForm@{FglForm}}
+\subsubsection[{context}]{\setlength{\rightskip}{0pt plus 5cm}Context$\ast$ {\bf FglForm::context}}}
+\label{classFglForm_ad88a7b19b295fe1f14de652a9e3e1c17}
+
+
+Definition at line 204 of file fglform.h.
+
+\hypertarget{classFglForm_abce220040f982717756bfc10b51dac44}{
+\index{FglForm@{FglForm}!currentWidget@{currentWidget}}
+\index{currentWidget@{currentWidget}!FglForm@{FglForm}}
+\subsubsection[{currentWidget}]{\setlength{\rightskip}{0pt plus 5cm}QWidget$\ast$ {\bf FglForm::currentWidget}}}
+\label{classFglForm_abce220040f982717756bfc10b51dac44}
+
+
+Definition at line 93 of file fglform.h.
+
+\hypertarget{classFglForm_a67c8174c2d61e69e76c3206766fe3ac9}{
+\index{FglForm@{FglForm}!fieldsContainer@{fieldsContainer}}
+\index{fieldsContainer@{fieldsContainer}!FglForm@{FglForm}}
+\subsubsection[{fieldsContainer}]{\setlength{\rightskip}{0pt plus 5cm}QWidget$\ast$ {\bf FglForm::fieldsContainer}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classFglForm_a67c8174c2d61e69e76c3206766fe3ac9}
+
+
+Definition at line 306 of file fglform.h.
+
+\hypertarget{classFglForm_a382565fe4e148f5e37aabea41e079809}{
+\index{FglForm@{FglForm}!formWidget@{formWidget}}
+\index{formWidget@{formWidget}!FglForm@{FglForm}}
+\subsubsection[{formWidget}]{\setlength{\rightskip}{0pt plus 5cm}QWidget$\ast$ {\bf FglForm::formWidget}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classFglForm_a382565fe4e148f5e37aabea41e079809}
+
+
+Definition at line 272 of file fglform.h.
+
+\hypertarget{classFglForm_a9dc5de78bd4b0d7024831926f9cdc7d9}{
+\index{FglForm@{FglForm}!gridHeight@{gridHeight}}
+\index{gridHeight@{gridHeight}!FglForm@{FglForm}}
+\subsubsection[{gridHeight}]{\setlength{\rightskip}{0pt plus 5cm}int {\bf FglForm::gridHeight}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classFglForm_a9dc5de78bd4b0d7024831926f9cdc7d9}
+
+
+Definition at line 313 of file fglform.h.
+
+\hypertarget{classFglForm_a34347fff01950e4574b64c69b62d1ff2}{
+\index{FglForm@{FglForm}!gridWidth@{gridWidth}}
+\index{gridWidth@{gridWidth}!FglForm@{FglForm}}
+\subsubsection[{gridWidth}]{\setlength{\rightskip}{0pt plus 5cm}int {\bf FglForm::gridWidth}}}
+\label{classFglForm_a34347fff01950e4574b64c69b62d1ff2}
+
+
+Definition at line 160 of file fglform.h.
+
+\hypertarget{classFglForm_a2adf651bccc4bd01a985a0c5bde45af7}{
+\index{FglForm@{FglForm}!h@{h}}
+\index{h@{h}!FglForm@{FglForm}}
+\subsubsection[{h}]{\setlength{\rightskip}{0pt plus 5cm}e ms QT models fglform {\bf h} e ms QT models fglform {\bf h} e ms QT models fglform {\bf h} e ms QT models fglform {\bf h} e ms QT models fglform {\bf FglForm::h}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classFglForm_a2adf651bccc4bd01a985a0c5bde45af7}
+
+
+Definition at line 49 of file fglform.h.
+
+\hypertarget{classFglForm_ae7e903902c63ce3179656df4b684038f}{
+\index{FglForm@{FglForm}!i\_\-currentField@{i\_\-currentField}}
+\index{i\_\-currentField@{i\_\-currentField}!FglForm@{FglForm}}
+\subsubsection[{i\_\-currentField}]{\setlength{\rightskip}{0pt plus 5cm}int {\bf FglForm::i\_\-currentField}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classFglForm_ae7e903902c63ce3179656df4b684038f}
+
+
+Definition at line 305 of file fglform.h.
+
+\hypertarget{classFglForm_a6142cd4363f16562e52631f1987b46c3}{
+\index{FglForm@{FglForm}!i\_\-id@{i\_\-id}}
+\index{i\_\-id@{i\_\-id}!FglForm@{FglForm}}
+\subsubsection[{i\_\-id}]{\setlength{\rightskip}{0pt plus 5cm}int {\bf FglForm::i\_\-id}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classFglForm_a6142cd4363f16562e52631f1987b46c3}
+
+
+Definition at line 307 of file fglform.h.
+
+\hypertarget{classFglForm_a9f622b4a17fcad8c785e119d19abe326}{
+\index{FglForm@{FglForm}!i\_\-lastCursor@{i\_\-lastCursor}}
+\index{i\_\-lastCursor@{i\_\-lastCursor}!FglForm@{FglForm}}
+\subsubsection[{i\_\-lastCursor}]{\setlength{\rightskip}{0pt plus 5cm}int {\bf FglForm::i\_\-lastCursor}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classFglForm_a9f622b4a17fcad8c785e119d19abe326}
+
+
+Definition at line 309 of file fglform.h.
+
+\hypertarget{classFglForm_a72467aa7c8750f7075b7ba7fc67a29bb}{
+\index{FglForm@{FglForm}!insLabel@{insLabel}}
+\index{insLabel@{insLabel}!FglForm@{FglForm}}
+\subsubsection[{insLabel}]{\setlength{\rightskip}{0pt plus 5cm}QLabel$\ast$ {\bf FglForm::insLabel}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classFglForm_a72467aa7c8750f7075b7ba7fc67a29bb}
+
+
+Definition at line 304 of file fglform.h.
+
+\hypertarget{classFglForm_af3882d981d23db8e6dca26a44ac23051}{
+\index{FglForm@{FglForm}!m\_\-actionPanelPosition@{m\_\-actionPanelPosition}}
+\index{m\_\-actionPanelPosition@{m\_\-actionPanelPosition}!FglForm@{FglForm}}
+\subsubsection[{m\_\-actionPanelPosition}]{\setlength{\rightskip}{0pt plus 5cm}QString {\bf FglForm::m\_\-actionPanelPosition}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classFglForm_af3882d981d23db8e6dca26a44ac23051}
+
+
+Definition at line 298 of file fglform.h.
+
+\hypertarget{classFglForm_a2e877386e4ba441d929c0c35d48620cb}{
+\index{FglForm@{FglForm}!m\_\-defaultStatusBar@{m\_\-defaultStatusBar}}
+\index{m\_\-defaultStatusBar@{m\_\-defaultStatusBar}!FglForm@{FglForm}}
+\subsubsection[{m\_\-defaultStatusBar}]{\setlength{\rightskip}{0pt plus 5cm}bool {\bf FglForm::m\_\-defaultStatusBar}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classFglForm_a2e877386e4ba441d929c0c35d48620cb}
+
+
+Definition at line 300 of file fglform.h.
+
+\hypertarget{classFglForm_a25371a3df6cb3e1dc66e141bb2a9dff1}{
+\index{FglForm@{FglForm}!m\_\-ringMenuPosition@{m\_\-ringMenuPosition}}
+\index{m\_\-ringMenuPosition@{m\_\-ringMenuPosition}!FglForm@{FglForm}}
+\subsubsection[{m\_\-ringMenuPosition}]{\setlength{\rightskip}{0pt plus 5cm}QString {\bf FglForm::m\_\-ringMenuPosition}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classFglForm_a25371a3df6cb3e1dc66e141bb2a9dff1}
+
+
+Definition at line 297 of file fglform.h.
+
+\hypertarget{classFglForm_a7861c07caeb306c5ae9f2012ce73bff7}{
+\index{FglForm@{FglForm}!m\_\-sizable@{m\_\-sizable}}
+\index{m\_\-sizable@{m\_\-sizable}!FglForm@{FglForm}}
+\subsubsection[{m\_\-sizable}]{\setlength{\rightskip}{0pt plus 5cm}QString {\bf FglForm::m\_\-sizable}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classFglForm_a7861c07caeb306c5ae9f2012ce73bff7}
+
+
+Definition at line 299 of file fglform.h.
+
+\hypertarget{classFglForm_a94e20a9c06c349d6e7c5ec47c03de4a6}{
+\index{FglForm@{FglForm}!m\_\-startMenuPosition@{m\_\-startMenuPosition}}
+\index{m\_\-startMenuPosition@{m\_\-startMenuPosition}!FglForm@{FglForm}}
+\subsubsection[{m\_\-startMenuPosition}]{\setlength{\rightskip}{0pt plus 5cm}QString {\bf FglForm::m\_\-startMenuPosition}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classFglForm_a94e20a9c06c349d6e7c5ec47c03de4a6}
+
+
+Definition at line 295 of file fglform.h.
+
+\hypertarget{classFglForm_a0008c6a1c3362095ebd5ab0601910003}{
+\index{FglForm@{FglForm}!m\_\-toolBarPosition@{m\_\-toolBarPosition}}
+\index{m\_\-toolBarPosition@{m\_\-toolBarPosition}!FglForm@{FglForm}}
+\subsubsection[{m\_\-toolBarPosition}]{\setlength{\rightskip}{0pt plus 5cm}QString {\bf FglForm::m\_\-toolBarPosition}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classFglForm_a0008c6a1c3362095ebd5ab0601910003}
+
+
+Definition at line 296 of file fglform.h.
+
+\hypertarget{classFglForm_aff3b675ee7063af63839e029f66b4075}{
+\index{FglForm@{FglForm}!m\_\-windowType@{m\_\-windowType}}
+\index{m\_\-windowType@{m\_\-windowType}!FglForm@{FglForm}}
+\subsubsection[{m\_\-windowType}]{\setlength{\rightskip}{0pt plus 5cm}QString {\bf FglForm::m\_\-windowType}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classFglForm_aff3b675ee7063af63839e029f66b4075}
+
+
+Definition at line 294 of file fglform.h.
+
+\hypertarget{classFglForm_a17945f68955698f41dac6b11cf73cd07}{
+\index{FglForm@{FglForm}!nextclick@{nextclick}}
+\index{nextclick@{nextclick}!FglForm@{FglForm}}
+\subsubsection[{nextclick}]{\setlength{\rightskip}{0pt plus 5cm}QPointer$<$QPushButton$>$ {\bf FglForm::nextclick}}}
+\label{classFglForm_a17945f68955698f41dac6b11cf73cd07}
+
+
+Definition at line 94 of file fglform.h.
+
+\hypertarget{classFglForm_aace1d4f7b637af4d3aa86e53a770152e}{
+\index{FglForm@{FglForm}!p\_\-actionMenu@{p\_\-actionMenu}}
+\index{p\_\-actionMenu@{p\_\-actionMenu}!FglForm@{FglForm}}
+\subsubsection[{p\_\-actionMenu}]{\setlength{\rightskip}{0pt plus 5cm}{\bf ActionMenu}$\ast$ {\bf FglForm::p\_\-actionMenu}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classFglForm_aace1d4f7b637af4d3aa86e53a770152e}
+
+
+Definition at line 276 of file fglform.h.
+
+\hypertarget{classFglForm_a98e11b2d55100f907821e3a8281b4ab5}{
+\index{FglForm@{FglForm}!p\_\-currscreenhandler@{p\_\-currscreenhandler}}
+\index{p\_\-currscreenhandler@{p\_\-currscreenhandler}!FglForm@{FglForm}}
+\subsubsection[{p\_\-currscreenhandler}]{\setlength{\rightskip}{0pt plus 5cm}QPointer$<$ScreenHandler$>$ {\bf FglForm::p\_\-currscreenhandler}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classFglForm_a98e11b2d55100f907821e3a8281b4ab5}
+
+
+Definition at line 275 of file fglform.h.
+
+\hypertarget{classFglForm_afa28d86c6e353e3e31c677b463199a4a}{
+\index{FglForm@{FglForm}!p\_\-dialog@{p\_\-dialog}}
+\index{p\_\-dialog@{p\_\-dialog}!FglForm@{FglForm}}
+\subsubsection[{p\_\-dialog}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Dialog}$\ast$ {\bf FglForm::p\_\-dialog}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classFglForm_afa28d86c6e353e3e31c677b463199a4a}
+
+
+Definition at line 277 of file fglform.h.
+
+\hypertarget{classFglForm_a87a0ac69973f45c48fb629d04ac5b364}{
+\index{FglForm@{FglForm}!p\_\-pulldown@{p\_\-pulldown}}
+\index{p\_\-pulldown@{p\_\-pulldown}!FglForm@{FglForm}}
+\subsubsection[{p\_\-pulldown}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Pulldown}$\ast$ {\bf FglForm::p\_\-pulldown}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classFglForm_a87a0ac69973f45c48fb629d04ac5b364}
+
+
+Definition at line 278 of file fglform.h.
+
+\hypertarget{classFglForm_a63ee680575b50bd02473649cd3d272f5}{
+\index{FglForm@{FglForm}!p\_\-toolBar@{p\_\-toolBar}}
+\index{p\_\-toolBar@{p\_\-toolBar}!FglForm@{FglForm}}
+\subsubsection[{p\_\-toolBar}]{\setlength{\rightskip}{0pt plus 5cm}{\bf ToolBar}$\ast$ {\bf FglForm::p\_\-toolBar}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classFglForm_a63ee680575b50bd02473649cd3d272f5}
+
+
+Definition at line 279 of file fglform.h.
+
+\hypertarget{classFglForm_a6b78dae39bcab3791a9acc99a3b8248d}{
+\index{FglForm@{FglForm}!ql\_\-actionDefaults@{ql\_\-actionDefaults}}
+\index{ql\_\-actionDefaults@{ql\_\-actionDefaults}!FglForm@{FglForm}}
+\subsubsection[{ql\_\-actionDefaults}]{\setlength{\rightskip}{0pt plus 5cm}QList$<${\bf Action}$\ast$$>$ {\bf FglForm::ql\_\-actionDefaults}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classFglForm_a6b78dae39bcab3791a9acc99a3b8248d}
+
+
+Definition at line 284 of file fglform.h.
+
+\hypertarget{classFglForm_ac7920cda2f9ebef4076ff19e73cfa047}{
+\index{FglForm@{FglForm}!ql\_\-contextEvents@{ql\_\-contextEvents}}
+\index{ql\_\-contextEvents@{ql\_\-contextEvents}!FglForm@{FglForm}}
+\subsubsection[{ql\_\-contextEvents}]{\setlength{\rightskip}{0pt plus 5cm}QList$<$ QList$<${\bf Fgl::Event}$>$ $>$ {\bf FglForm::ql\_\-contextEvents}}}
+\label{classFglForm_ac7920cda2f9ebef4076ff19e73cfa047}
+
+
+Definition at line 170 of file fglform.h.
+
+\hypertarget{classFglForm_acc7f6b6c7b13cf1e6e39bfdeba18ddc1}{
+\index{FglForm@{FglForm}!ql\_\-defaultActions@{ql\_\-defaultActions}}
+\index{ql\_\-defaultActions@{ql\_\-defaultActions}!FglForm@{FglForm}}
+\subsubsection[{ql\_\-defaultActions}]{\setlength{\rightskip}{0pt plus 5cm}QList$<${\bf Action}$\ast$$>$ {\bf FglForm::ql\_\-defaultActions}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classFglForm_acc7f6b6c7b13cf1e6e39bfdeba18ddc1}
+
+
+Definition at line 283 of file fglform.h.
+
+\hypertarget{classFglForm_a764e11f62e1849d568cda143fa11583e}{
+\index{FglForm@{FglForm}!ql\_\-dialogEvents@{ql\_\-dialogEvents}}
+\index{ql\_\-dialogEvents@{ql\_\-dialogEvents}!FglForm@{FglForm}}
+\subsubsection[{ql\_\-dialogEvents}]{\setlength{\rightskip}{0pt plus 5cm}QList$<${\bf Fgl::Event}$>$ {\bf FglForm::ql\_\-dialogEvents}}}
+\label{classFglForm_a764e11f62e1849d568cda143fa11583e}
+
+
+Definition at line 167 of file fglform.h.
+
+\hypertarget{classFglForm_a1d775e481b65ae50b2a557fa9ae975c5}{
+\index{FglForm@{FglForm}!ql\_\-fglFields@{ql\_\-fglFields}}
+\index{ql\_\-fglFields@{ql\_\-fglFields}!FglForm@{FglForm}}
+\subsubsection[{ql\_\-fglFields}]{\setlength{\rightskip}{0pt plus 5cm}QList$<${\bf FormField}$\ast$$>$ {\bf FglForm::ql\_\-fglFields}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classFglForm_a1d775e481b65ae50b2a557fa9ae975c5}
+
+
+Definition at line 285 of file fglform.h.
+
+\hypertarget{classFglForm_a091b50c03ba4a353485d34ea34f4001a}{
+\index{FglForm@{FglForm}!ql\_\-formActions@{ql\_\-formActions}}
+\index{ql\_\-formActions@{ql\_\-formActions}!FglForm@{FglForm}}
+\subsubsection[{ql\_\-formActions}]{\setlength{\rightskip}{0pt plus 5cm}QList$<${\bf Action}$\ast$$>$ {\bf FglForm::ql\_\-formActions}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classFglForm_a091b50c03ba4a353485d34ea34f4001a}
+
+
+Definition at line 282 of file fglform.h.
+
+\hypertarget{classFglForm_aec60babfa521575768a4aa1147318ba1}{
+\index{FglForm@{FglForm}!ql\_\-formEvents@{ql\_\-formEvents}}
+\index{ql\_\-formEvents@{ql\_\-formEvents}!FglForm@{FglForm}}
+\subsubsection[{ql\_\-formEvents}]{\setlength{\rightskip}{0pt plus 5cm}QList$<${\bf Fgl::Event}$>$ {\bf FglForm::ql\_\-formEvents}}}
+\label{classFglForm_aec60babfa521575768a4aa1147318ba1}
+
+
+Definition at line 169 of file fglform.h.
+
+\hypertarget{classFglForm_ad0adbaabeb97d6fabd2a23f5ac5c0069}{
+\index{FglForm@{FglForm}!ql\_\-formFields@{ql\_\-formFields}}
+\index{ql\_\-formFields@{ql\_\-formFields}!FglForm@{FglForm}}
+\subsubsection[{ql\_\-formFields}]{\setlength{\rightskip}{0pt plus 5cm}QList$<$QWidget$\ast$$>$ {\bf FglForm::ql\_\-formFields}}}
+\label{classFglForm_ad0adbaabeb97d6fabd2a23f5ac5c0069}
+
+
+Definition at line 171 of file fglform.h.
+
+\hypertarget{classFglForm_a0a20950e5d9deba35525fbcb7935f6f0}{
+\index{FglForm@{FglForm}!ql\_\-menuEvents@{ql\_\-menuEvents}}
+\index{ql\_\-menuEvents@{ql\_\-menuEvents}!FglForm@{FglForm}}
+\subsubsection[{ql\_\-menuEvents}]{\setlength{\rightskip}{0pt plus 5cm}QList$<${\bf Fgl::Event}$>$ {\bf FglForm::ql\_\-menuEvents}}}
+\label{classFglForm_a0a20950e5d9deba35525fbcb7935f6f0}
+
+
+Definition at line 166 of file fglform.h.
+
+\hypertarget{classFglForm_a587196a08706e03ec05f1fae4048f344}{
+\index{FglForm@{FglForm}!ql\_\-menus@{ql\_\-menus}}
+\index{ql\_\-menus@{ql\_\-menus}!FglForm@{FglForm}}
+\subsubsection[{ql\_\-menus}]{\setlength{\rightskip}{0pt plus 5cm}QList$<${\bf RingMenu}$\ast$$>$ {\bf FglForm::ql\_\-menus}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classFglForm_a587196a08706e03ec05f1fae4048f344}
+
+
+Definition at line 274 of file fglform.h.
+
+\hypertarget{classFglForm_a14b1e58865612b4ebbfa83c8769f9353}{
+\index{FglForm@{FglForm}!ql\_\-pulldownEvents@{ql\_\-pulldownEvents}}
+\index{ql\_\-pulldownEvents@{ql\_\-pulldownEvents}!FglForm@{FglForm}}
+\subsubsection[{ql\_\-pulldownEvents}]{\setlength{\rightskip}{0pt plus 5cm}QList$<${\bf Fgl::Event}$>$ {\bf FglForm::ql\_\-pulldownEvents}}}
+\label{classFglForm_a14b1e58865612b4ebbfa83c8769f9353}
+
+
+Definition at line 168 of file fglform.h.
+
+\hypertarget{classFglForm_a3aa184c0556d81cfb244f726d95b0538}{
+\index{FglForm@{FglForm}!ql\_\-responseQueue@{ql\_\-responseQueue}}
+\index{ql\_\-responseQueue@{ql\_\-responseQueue}!FglForm@{FglForm}}
+\subsubsection[{ql\_\-responseQueue}]{\setlength{\rightskip}{0pt plus 5cm}QList$<${\bf Fgl::Event}$>$ {\bf FglForm::ql\_\-responseQueue}}}
+\label{classFglForm_a3aa184c0556d81cfb244f726d95b0538}
+
+
+Definition at line 99 of file fglform.h.
+
+\hypertarget{classFglForm_a18774054d5c9773a7075b5933b0bbc9a}{
+\index{FglForm@{FglForm}!ql\_\-states@{ql\_\-states}}
+\index{ql\_\-states@{ql\_\-states}!FglForm@{FglForm}}
+\subsubsection[{ql\_\-states}]{\setlength{\rightskip}{0pt plus 5cm}QList$<${\bf Fgl::State}$>$ {\bf FglForm::ql\_\-states}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classFglForm_a18774054d5c9773a7075b5933b0bbc9a}
+
+
+Definition at line 271 of file fglform.h.
+
+\hypertarget{classFglForm_a04725912842355fc88fa7412e435f4a9}{
+\index{FglForm@{FglForm}!qs\_\-currentFieldBuffer@{qs\_\-currentFieldBuffer}}
+\index{qs\_\-currentFieldBuffer@{qs\_\-currentFieldBuffer}!FglForm@{FglForm}}
+\subsubsection[{qs\_\-currentFieldBuffer}]{\setlength{\rightskip}{0pt plus 5cm}QString {\bf FglForm::qs\_\-currentFieldBuffer}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classFglForm_a04725912842355fc88fa7412e435f4a9}
+
+
+Definition at line 310 of file fglform.h.
+
+\hypertarget{classFglForm_a1bca5dcb62f50a5939c295b7c0d662d2}{
+\index{FglForm@{FglForm}!qs\_\-formfile@{qs\_\-formfile}}
+\index{qs\_\-formfile@{qs\_\-formfile}!FglForm@{FglForm}}
+\subsubsection[{qs\_\-formfile}]{\setlength{\rightskip}{0pt plus 5cm}QString {\bf FglForm::qs\_\-formfile}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classFglForm_a1bca5dcb62f50a5939c295b7c0d662d2}
+
+
+Definition at line 311 of file fglform.h.
+
+\hypertarget{classFglForm_a127a846458930510880fd13eb07d4463}{
+\index{FglForm@{FglForm}!qsl\_\-activeFields@{qsl\_\-activeFields}}
+\index{qsl\_\-activeFields@{qsl\_\-activeFields}!FglForm@{FglForm}}
+\subsubsection[{qsl\_\-activeFields}]{\setlength{\rightskip}{0pt plus 5cm}QStringList {\bf FglForm::qsl\_\-activeFields}}}
+\label{classFglForm_a127a846458930510880fd13eb07d4463}
+
+
+Definition at line 174 of file fglform.h.
+
+\hypertarget{classFglForm_ab53b016e506ad4ed7fdb2ac2210d43b1}{
+\index{FglForm@{FglForm}!qsl\_\-fieldOrder@{qsl\_\-fieldOrder}}
+\index{qsl\_\-fieldOrder@{qsl\_\-fieldOrder}!FglForm@{FglForm}}
+\subsubsection[{qsl\_\-fieldOrder}]{\setlength{\rightskip}{0pt plus 5cm}QStringList {\bf FglForm::qsl\_\-fieldOrder}}}
+\label{classFglForm_ab53b016e506ad4ed7fdb2ac2210d43b1}
+
+
+Definition at line 146 of file fglform.h.
+
+\hypertarget{classFglForm_a2e8895a4cd6f58cc36f31c8a51c06a54}{
+\index{FglForm@{FglForm}!recordView@{recordView}}
+\index{recordView@{recordView}!FglForm@{FglForm}}
+\subsubsection[{recordView}]{\setlength{\rightskip}{0pt plus 5cm}QHash$<$QString, QList$<${\bf Fgl::Link}$>$ $>$ {\bf FglForm::recordView}}}
+\label{classFglForm_a2e8895a4cd6f58cc36f31c8a51c06a54}
+
+
+Definition at line 155 of file fglform.h.
+
+\hypertarget{classFglForm_aa9bb2c29fa0161164dd5250a7602a1be}{
+\index{FglForm@{FglForm}!resetAct@{resetAct}}
+\index{resetAct@{resetAct}!FglForm@{FglForm}}
+\subsubsection[{resetAct}]{\setlength{\rightskip}{0pt plus 5cm}QAction$\ast$ {\bf FglForm::resetAct}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classFglForm_aa9bb2c29fa0161164dd5250a7602a1be}
+
+
+Definition at line 281 of file fglform.h.
+
+\hypertarget{classFglForm_ac85748725f2a9ba437e62be1293eae02}{
+\index{FglForm@{FglForm}!rightAct@{rightAct}}
+\index{rightAct@{rightAct}!FglForm@{FglForm}}
+\subsubsection[{rightAct}]{\setlength{\rightskip}{0pt plus 5cm}QAction$\ast$ {\bf FglForm::rightAct}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classFglForm_ac85748725f2a9ba437e62be1293eae02}
+
+
+Definition at line 280 of file fglform.h.
+
+\hypertarget{classFglForm_a15cd139d56b40da6de43a6bb4d438c0d}{
+\index{FglForm@{FglForm}!widget@{widget}}
+\index{widget@{widget}!FglForm@{FglForm}}
+\subsubsection[{widget}]{\setlength{\rightskip}{0pt plus 5cm}QWidget$\ast$ {\bf FglForm::widget}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classFglForm_a15cd139d56b40da6de43a6bb4d438c0d}
+
+
+Definition at line 302 of file fglform.h.
+
+\hypertarget{classFglForm_a154084978ed81b8739db7197541881f5}{
+\index{FglForm@{FglForm}!windowName@{windowName}}
+\index{windowName@{windowName}!FglForm@{FglForm}}
+\subsubsection[{windowName}]{\setlength{\rightskip}{0pt plus 5cm}QString {\bf FglForm::windowName}}}
+\label{classFglForm_a154084978ed81b8739db7197541881f5}
+
+
+Definition at line 92 of file fglform.h.
+
+
+
+\subsection{Property Documentation}
+\hypertarget{classFglForm_a8ca117823135914a8977974b455372a1}{
+\index{FglForm@{FglForm}!actionPanelPosition@{actionPanelPosition}}
+\index{actionPanelPosition@{actionPanelPosition}!FglForm@{FglForm}}
+\subsubsection[{actionPanelPosition}]{\setlength{\rightskip}{0pt plus 5cm}QString FglForm::actionPanelPosition\hspace{0.3cm}{\ttfamily  \mbox{[}read, write\mbox{]}}}}
+\label{classFglForm_a8ca117823135914a8977974b455372a1}
+
+
+Definition at line 79 of file fglform.h.
+
+\hypertarget{classFglForm_aed179664fb0f0999affabd3b746edae7}{
+\index{FglForm@{FglForm}!defaultStatusBar@{defaultStatusBar}}
+\index{defaultStatusBar@{defaultStatusBar}!FglForm@{FglForm}}
+\subsubsection[{defaultStatusBar}]{\setlength{\rightskip}{0pt plus 5cm}bool FglForm::defaultStatusBar\hspace{0.3cm}{\ttfamily  \mbox{[}read, write\mbox{]}}}}
+\label{classFglForm_aed179664fb0f0999affabd3b746edae7}
+
+
+Definition at line 69 of file fglform.h.
+
+\hypertarget{classFglForm_ab0e939affc05fa6c0297dcf7c257b25f}{
+\index{FglForm@{FglForm}!ringMenuPosition@{ringMenuPosition}}
+\index{ringMenuPosition@{ringMenuPosition}!FglForm@{FglForm}}
+\subsubsection[{ringMenuPosition}]{\setlength{\rightskip}{0pt plus 5cm}QString FglForm::ringMenuPosition\hspace{0.3cm}{\ttfamily  \mbox{[}read, write\mbox{]}}}}
+\label{classFglForm_ab0e939affc05fa6c0297dcf7c257b25f}
+
+
+Definition at line 84 of file fglform.h.
+
+\hypertarget{classFglForm_a2e26a9f76fe7c63c8103ac4b04776e81}{
+\index{FglForm@{FglForm}!sizable@{sizable}}
+\index{sizable@{sizable}!FglForm@{FglForm}}
+\subsubsection[{sizable}]{\setlength{\rightskip}{0pt plus 5cm}QString FglForm::sizable\hspace{0.3cm}{\ttfamily  \mbox{[}read, write\mbox{]}}}}
+\label{classFglForm_a2e26a9f76fe7c63c8103ac4b04776e81}
+
+
+Definition at line 64 of file fglform.h.
+
+\hypertarget{classFglForm_aec7035cbd1e5a013f2d96a1a3a98aa53}{
+\index{FglForm@{FglForm}!startMenuPosition@{startMenuPosition}}
+\index{startMenuPosition@{startMenuPosition}!FglForm@{FglForm}}
+\subsubsection[{startMenuPosition}]{\setlength{\rightskip}{0pt plus 5cm}QString FglForm::startMenuPosition\hspace{0.3cm}{\ttfamily  \mbox{[}read, write\mbox{]}}}}
+\label{classFglForm_aec7035cbd1e5a013f2d96a1a3a98aa53}
+
+
+Definition at line 59 of file fglform.h.
+
+\hypertarget{classFglForm_afc1641787bae0be3864cce6efdea9e17}{
+\index{FglForm@{FglForm}!toolBarPosition@{toolBarPosition}}
+\index{toolBarPosition@{toolBarPosition}!FglForm@{FglForm}}
+\subsubsection[{toolBarPosition}]{\setlength{\rightskip}{0pt plus 5cm}Qt::ToolBarArea FglForm::toolBarPosition\hspace{0.3cm}{\ttfamily  \mbox{[}read, write\mbox{]}}}}
+\label{classFglForm_afc1641787bae0be3864cce6efdea9e17}
+
+
+Definition at line 74 of file fglform.h.
+
+\hypertarget{classFglForm_a5262a92dfdf82913701d4661bbefaaac}{
+\index{FglForm@{FglForm}!windowType@{windowType}}
+\index{windowType@{windowType}!FglForm@{FglForm}}
+\subsubsection[{windowType}]{\setlength{\rightskip}{0pt plus 5cm}QString FglForm::windowType\hspace{0.3cm}{\ttfamily  \mbox{[}read, write\mbox{]}}}}
+\label{classFglForm_a5262a92dfdf82913701d4661bbefaaac}
+
+
+Definition at line 54 of file fglform.h.
+
+
+
+The documentation for this class was generated from the following files:\begin{DoxyCompactItemize}
+\item 
+/e/ms/QT/models/\hyperlink{fglform_8h}{fglform.h}\item 
+/e/ms/QT/models/\hyperlink{fglform_8cpp}{fglform.cpp}\end{DoxyCompactItemize}

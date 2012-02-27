@@ -31,6 +31,12 @@
 // Description  : starts the application
 //                starts main frame (so called damon)
 //------------------------------------------------------------------------------
+/*!
+ * \mainpage Ventas Desktop Client for Aubit4GL
+ * \author Ventas AG 2006-2012
+ * \date Februar 2012
+ * \version 1.0
+ */
 
 int main(int argc, char *argv[])
 {

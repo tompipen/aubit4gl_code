@@ -1,0 +1,575 @@
+\hypertarget{classAction}{
+\section{Action Class Reference}
+\label{classAction}\index{Action@{Action}}
+}
+
+
+{\ttfamily \#include $<$actions.h$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classAction_a19f5986459abb4c093af4c969ddb95d5}{Action} (QObject $\ast$parent)
+\item 
+\hyperlink{classAction_afb1997789b13713d3bec0faa8c84f5d7}{Action} (QString name, QString text=\char`\"{}\char`\"{}, QObject $\ast$parent=NULL)
+\item 
+void \hyperlink{classAction_ab89d1a53464534b099865e181e1c4d01}{setName} (QString)
+\item 
+void \hyperlink{classAction_a1ffd85975b55c5d5c3a7c8df1ac7778a}{setComment} (QString)
+\item 
+void \hyperlink{classAction_a68e472ae5942c5eeb580ec867227bfab}{setImage} (QString)
+\item 
+void \hyperlink{classAction_af3eafd7a50b6d218071d9aa4e7e167ed}{setAcceleratorName} (QString)
+\item 
+void \hyperlink{classAction_a974c76abe5e6641aa494ddd1bca43781}{setAcceleratorName2} (QString)
+\item 
+void \hyperlink{classAction_a0f81680bd00daf348c1ff4aa257b90d9}{setAcceleratorName3} (QString)
+\item 
+void \hyperlink{classAction_a43c1516d2297c5e13627e23bd032793c}{setAcceleratorName4} (QString)
+\item 
+void \hyperlink{classAction_af1d71a8b6b250c9d25f2c1b4ac894c43}{setAccNameEnabled} (bool e)
+\item 
+void \hyperlink{classAction_a08e496aaf9b23b387282b4b51c02896d}{setAccName2Enabled} (bool e)
+\item 
+void \hyperlink{classAction_a36f1883a6525d7f03792749f86730816}{setAccName3Enabled} (bool e)
+\item 
+void \hyperlink{classAction_adc370de7bbe58511e0767e847cc12de6}{setAccName4Enabled} (bool e)
+\item 
+bool \hyperlink{classAction_a03e424392bb8c88665a45f4c2ccd69c0}{accNameEnabled} ()
+\item 
+bool \hyperlink{classAction_a623a08e84bed0dac6741348c30a47420}{accName2Enabled} ()
+\item 
+bool \hyperlink{classAction_a51680d60a7413f60eb2d5c6c21c269eb}{accName3Enabled} ()
+\item 
+bool \hyperlink{classAction_a89e48238e97cae2c0da883fa1897a87f}{accName4Enabled} ()
+\item 
+void \hyperlink{classAction_a2a6bf37306a598fab26baa2edc831422}{checkAccelerators} ()
+\item 
+void \hyperlink{classAction_a11335bd5aa3730a6136b8e53164043be}{setDefaultView} (QString)
+\item 
+QString \hyperlink{classAction_a536425b6315cb8801058671139a67c2a}{name} ()
+\item 
+QString \hyperlink{classAction_a26224e312a1101754de548d7a342db67}{comment} ()
+\item 
+QString \hyperlink{classAction_a0e15f30ba83b6e444e5f4cec37c4f0e8}{image} ()
+\item 
+QString \hyperlink{classAction_a9a99731f4412f9db44ad412f7cf5d2e7}{acceleratorName} ()
+\item 
+QString \hyperlink{classAction_ac9fb9c769be6415492d9c1a47546aa21}{acceleratorName2} ()
+\item 
+QString \hyperlink{classAction_a84303051210d1d003c7e13a59629e0da}{acceleratorName3} ()
+\item 
+QString \hyperlink{classAction_ae76effe846fe9b67dc1c159a4bcfa141}{acceleratorName4} ()
+\item 
+QString \hyperlink{classAction_aa26f9ce4c941d7aaf1ac2929707f0b21}{defaultView} ()
+\end{DoxyCompactItemize}
+\subsection*{Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+QString \hyperlink{classAction_ac3d7cf76ccbb09e443681b14b7326010}{qs\_\-name}
+\item 
+QString \hyperlink{classAction_ab64fc5a6e59778ef85350d47d9cb6ce0}{qs\_\-comment}
+\item 
+QString \hyperlink{classAction_ae949229a3406a96b59c832acfef35009}{qs\_\-image}
+\item 
+QString \hyperlink{classAction_abab75a630d429f44376a2516801dcd60}{qs\_\-acceleratorName}
+\item 
+QString \hyperlink{classAction_ad9bc287f7970ac64d5ffc111c15147cb}{qs\_\-acceleratorName2}
+\item 
+QString \hyperlink{classAction_a43c9708f64c0b502c379454a6f10f72d}{qs\_\-acceleratorName3}
+\item 
+QString \hyperlink{classAction_a7284950e9b48ead289b5ccce09fcd10c}{qs\_\-acceleratorName4}
+\item 
+bool \hyperlink{classAction_a12e25c60bd585bc32f49cb9414edfa4f}{b\_\-accName1}
+\item 
+bool \hyperlink{classAction_a6eec35b5551935b91f05088ce4d7dfea}{b\_\-accName2}
+\item 
+bool \hyperlink{classAction_a2bec79ffffdabb3eeb86a98a66dfb8a2}{b\_\-accName3}
+\item 
+bool \hyperlink{classAction_a2b5a8aa9b8c0fc0946ac3bcf00077187}{b\_\-accName4}
+\item 
+QString \hyperlink{classAction_a95faeba966aec50a7fb869fad2b11e52}{qs\_\-defaultView}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+
+
+Definition at line 27 of file actions.h.
+
+
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{classAction_a19f5986459abb4c093af4c969ddb95d5}{
+\index{Action@{Action}!Action@{Action}}
+\index{Action@{Action}!Action@{Action}}
+\subsubsection[{Action}]{\setlength{\rightskip}{0pt plus 5cm}Action::Action (
+\begin{DoxyParamCaption}
+\item[{QObject $\ast$}]{parent}
+\end{DoxyParamCaption}
+)}}
+\label{classAction_a19f5986459abb4c093af4c969ddb95d5}
+
+
+Definition at line 105 of file actions.cpp.
+
+\hypertarget{classAction_afb1997789b13713d3bec0faa8c84f5d7}{
+\index{Action@{Action}!Action@{Action}}
+\index{Action@{Action}!Action@{Action}}
+\subsubsection[{Action}]{\setlength{\rightskip}{0pt plus 5cm}Action::Action (
+\begin{DoxyParamCaption}
+\item[{QString}]{name, }
+\item[{QString}]{text = {\ttfamily \char`\"{}\char`\"{}}, }
+\item[{QObject $\ast$}]{parent = {\ttfamily NULL}}
+\end{DoxyParamCaption}
+)}}
+\label{classAction_afb1997789b13713d3bec0faa8c84f5d7}
+
+
+Definition at line 117 of file actions.cpp.
+
+
+
+\subsection{Member Function Documentation}
+\hypertarget{classAction_a9a99731f4412f9db44ad412f7cf5d2e7}{
+\index{Action@{Action}!acceleratorName@{acceleratorName}}
+\index{acceleratorName@{acceleratorName}!Action@{Action}}
+\subsubsection[{acceleratorName}]{\setlength{\rightskip}{0pt plus 5cm}QString Action::acceleratorName (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}inline\mbox{]}}}}
+\label{classAction_a9a99731f4412f9db44ad412f7cf5d2e7}
+
+
+Definition at line 54 of file actions.h.
+
+\hypertarget{classAction_ac9fb9c769be6415492d9c1a47546aa21}{
+\index{Action@{Action}!acceleratorName2@{acceleratorName2}}
+\index{acceleratorName2@{acceleratorName2}!Action@{Action}}
+\subsubsection[{acceleratorName2}]{\setlength{\rightskip}{0pt plus 5cm}QString Action::acceleratorName2 (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}inline\mbox{]}}}}
+\label{classAction_ac9fb9c769be6415492d9c1a47546aa21}
+
+
+Definition at line 55 of file actions.h.
+
+\hypertarget{classAction_a84303051210d1d003c7e13a59629e0da}{
+\index{Action@{Action}!acceleratorName3@{acceleratorName3}}
+\index{acceleratorName3@{acceleratorName3}!Action@{Action}}
+\subsubsection[{acceleratorName3}]{\setlength{\rightskip}{0pt plus 5cm}QString Action::acceleratorName3 (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}inline\mbox{]}}}}
+\label{classAction_a84303051210d1d003c7e13a59629e0da}
+
+
+Definition at line 56 of file actions.h.
+
+\hypertarget{classAction_ae76effe846fe9b67dc1c159a4bcfa141}{
+\index{Action@{Action}!acceleratorName4@{acceleratorName4}}
+\index{acceleratorName4@{acceleratorName4}!Action@{Action}}
+\subsubsection[{acceleratorName4}]{\setlength{\rightskip}{0pt plus 5cm}QString Action::acceleratorName4 (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}inline\mbox{]}}}}
+\label{classAction_ae76effe846fe9b67dc1c159a4bcfa141}
+
+
+Definition at line 57 of file actions.h.
+
+\hypertarget{classAction_a623a08e84bed0dac6741348c30a47420}{
+\index{Action@{Action}!accName2Enabled@{accName2Enabled}}
+\index{accName2Enabled@{accName2Enabled}!Action@{Action}}
+\subsubsection[{accName2Enabled}]{\setlength{\rightskip}{0pt plus 5cm}bool Action::accName2Enabled (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}inline\mbox{]}}}}
+\label{classAction_a623a08e84bed0dac6741348c30a47420}
+
+
+Definition at line 46 of file actions.h.
+
+\hypertarget{classAction_a51680d60a7413f60eb2d5c6c21c269eb}{
+\index{Action@{Action}!accName3Enabled@{accName3Enabled}}
+\index{accName3Enabled@{accName3Enabled}!Action@{Action}}
+\subsubsection[{accName3Enabled}]{\setlength{\rightskip}{0pt plus 5cm}bool Action::accName3Enabled (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}inline\mbox{]}}}}
+\label{classAction_a51680d60a7413f60eb2d5c6c21c269eb}
+
+
+Definition at line 47 of file actions.h.
+
+\hypertarget{classAction_a89e48238e97cae2c0da883fa1897a87f}{
+\index{Action@{Action}!accName4Enabled@{accName4Enabled}}
+\index{accName4Enabled@{accName4Enabled}!Action@{Action}}
+\subsubsection[{accName4Enabled}]{\setlength{\rightskip}{0pt plus 5cm}bool Action::accName4Enabled (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}inline\mbox{]}}}}
+\label{classAction_a89e48238e97cae2c0da883fa1897a87f}
+
+
+Definition at line 48 of file actions.h.
+
+\hypertarget{classAction_a03e424392bb8c88665a45f4c2ccd69c0}{
+\index{Action@{Action}!accNameEnabled@{accNameEnabled}}
+\index{accNameEnabled@{accNameEnabled}!Action@{Action}}
+\subsubsection[{accNameEnabled}]{\setlength{\rightskip}{0pt plus 5cm}bool Action::accNameEnabled (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}inline\mbox{]}}}}
+\label{classAction_a03e424392bb8c88665a45f4c2ccd69c0}
+
+
+Definition at line 45 of file actions.h.
+
+\hypertarget{classAction_a2a6bf37306a598fab26baa2edc831422}{
+\index{Action@{Action}!checkAccelerators@{checkAccelerators}}
+\index{checkAccelerators@{checkAccelerators}!Action@{Action}}
+\subsubsection[{checkAccelerators}]{\setlength{\rightskip}{0pt plus 5cm}void Action::checkAccelerators (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}
+\label{classAction_a2a6bf37306a598fab26baa2edc831422}
+
+
+Definition at line 182 of file actions.cpp.
+
+\hypertarget{classAction_a26224e312a1101754de548d7a342db67}{
+\index{Action@{Action}!comment@{comment}}
+\index{comment@{comment}!Action@{Action}}
+\subsubsection[{comment}]{\setlength{\rightskip}{0pt plus 5cm}QString Action::comment (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}inline\mbox{]}}}}
+\label{classAction_a26224e312a1101754de548d7a342db67}
+
+
+Definition at line 52 of file actions.h.
+
+\hypertarget{classAction_aa26f9ce4c941d7aaf1ac2929707f0b21}{
+\index{Action@{Action}!defaultView@{defaultView}}
+\index{defaultView@{defaultView}!Action@{Action}}
+\subsubsection[{defaultView}]{\setlength{\rightskip}{0pt plus 5cm}QString Action::defaultView (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}inline\mbox{]}}}}
+\label{classAction_aa26f9ce4c941d7aaf1ac2929707f0b21}
+
+
+Definition at line 58 of file actions.h.
+
+\hypertarget{classAction_a0e15f30ba83b6e444e5f4cec37c4f0e8}{
+\index{Action@{Action}!image@{image}}
+\index{image@{image}!Action@{Action}}
+\subsubsection[{image}]{\setlength{\rightskip}{0pt plus 5cm}QString Action::image (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}inline\mbox{]}}}}
+\label{classAction_a0e15f30ba83b6e444e5f4cec37c4f0e8}
+
+
+Definition at line 53 of file actions.h.
+
+\hypertarget{classAction_a536425b6315cb8801058671139a67c2a}{
+\index{Action@{Action}!name@{name}}
+\index{name@{name}!Action@{Action}}
+\subsubsection[{name}]{\setlength{\rightskip}{0pt plus 5cm}QString Action::name (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}inline\mbox{]}}}}
+\label{classAction_a536425b6315cb8801058671139a67c2a}
+
+
+Definition at line 51 of file actions.h.
+
+\hypertarget{classAction_af3eafd7a50b6d218071d9aa4e7e167ed}{
+\index{Action@{Action}!setAcceleratorName@{setAcceleratorName}}
+\index{setAcceleratorName@{setAcceleratorName}!Action@{Action}}
+\subsubsection[{setAcceleratorName}]{\setlength{\rightskip}{0pt plus 5cm}void Action::setAcceleratorName (
+\begin{DoxyParamCaption}
+\item[{QString}]{ac}
+\end{DoxyParamCaption}
+)}}
+\label{classAction_af3eafd7a50b6d218071d9aa4e7e167ed}
+
+
+Definition at line 150 of file actions.cpp.
+
+\hypertarget{classAction_a974c76abe5e6641aa494ddd1bca43781}{
+\index{Action@{Action}!setAcceleratorName2@{setAcceleratorName2}}
+\index{setAcceleratorName2@{setAcceleratorName2}!Action@{Action}}
+\subsubsection[{setAcceleratorName2}]{\setlength{\rightskip}{0pt plus 5cm}void Action::setAcceleratorName2 (
+\begin{DoxyParamCaption}
+\item[{QString}]{ac}
+\end{DoxyParamCaption}
+)}}
+\label{classAction_a974c76abe5e6641aa494ddd1bca43781}
+
+
+Definition at line 158 of file actions.cpp.
+
+\hypertarget{classAction_a0f81680bd00daf348c1ff4aa257b90d9}{
+\index{Action@{Action}!setAcceleratorName3@{setAcceleratorName3}}
+\index{setAcceleratorName3@{setAcceleratorName3}!Action@{Action}}
+\subsubsection[{setAcceleratorName3}]{\setlength{\rightskip}{0pt plus 5cm}void Action::setAcceleratorName3 (
+\begin{DoxyParamCaption}
+\item[{QString}]{ac}
+\end{DoxyParamCaption}
+)}}
+\label{classAction_a0f81680bd00daf348c1ff4aa257b90d9}
+
+
+Definition at line 166 of file actions.cpp.
+
+\hypertarget{classAction_a43c1516d2297c5e13627e23bd032793c}{
+\index{Action@{Action}!setAcceleratorName4@{setAcceleratorName4}}
+\index{setAcceleratorName4@{setAcceleratorName4}!Action@{Action}}
+\subsubsection[{setAcceleratorName4}]{\setlength{\rightskip}{0pt plus 5cm}void Action::setAcceleratorName4 (
+\begin{DoxyParamCaption}
+\item[{QString}]{ac}
+\end{DoxyParamCaption}
+)}}
+\label{classAction_a43c1516d2297c5e13627e23bd032793c}
+
+
+Definition at line 174 of file actions.cpp.
+
+\hypertarget{classAction_a08e496aaf9b23b387282b4b51c02896d}{
+\index{Action@{Action}!setAccName2Enabled@{setAccName2Enabled}}
+\index{setAccName2Enabled@{setAccName2Enabled}!Action@{Action}}
+\subsubsection[{setAccName2Enabled}]{\setlength{\rightskip}{0pt plus 5cm}void Action::setAccName2Enabled (
+\begin{DoxyParamCaption}
+\item[{bool}]{e}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}inline\mbox{]}}}}
+\label{classAction_a08e496aaf9b23b387282b4b51c02896d}
+
+
+Definition at line 42 of file actions.h.
+
+\hypertarget{classAction_a36f1883a6525d7f03792749f86730816}{
+\index{Action@{Action}!setAccName3Enabled@{setAccName3Enabled}}
+\index{setAccName3Enabled@{setAccName3Enabled}!Action@{Action}}
+\subsubsection[{setAccName3Enabled}]{\setlength{\rightskip}{0pt plus 5cm}void Action::setAccName3Enabled (
+\begin{DoxyParamCaption}
+\item[{bool}]{e}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}inline\mbox{]}}}}
+\label{classAction_a36f1883a6525d7f03792749f86730816}
+
+
+Definition at line 43 of file actions.h.
+
+\hypertarget{classAction_adc370de7bbe58511e0767e847cc12de6}{
+\index{Action@{Action}!setAccName4Enabled@{setAccName4Enabled}}
+\index{setAccName4Enabled@{setAccName4Enabled}!Action@{Action}}
+\subsubsection[{setAccName4Enabled}]{\setlength{\rightskip}{0pt plus 5cm}void Action::setAccName4Enabled (
+\begin{DoxyParamCaption}
+\item[{bool}]{e}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}inline\mbox{]}}}}
+\label{classAction_adc370de7bbe58511e0767e847cc12de6}
+
+
+Definition at line 44 of file actions.h.
+
+\hypertarget{classAction_af1d71a8b6b250c9d25f2c1b4ac894c43}{
+\index{Action@{Action}!setAccNameEnabled@{setAccNameEnabled}}
+\index{setAccNameEnabled@{setAccNameEnabled}!Action@{Action}}
+\subsubsection[{setAccNameEnabled}]{\setlength{\rightskip}{0pt plus 5cm}void Action::setAccNameEnabled (
+\begin{DoxyParamCaption}
+\item[{bool}]{e}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}inline\mbox{]}}}}
+\label{classAction_af1d71a8b6b250c9d25f2c1b4ac894c43}
+
+
+Definition at line 41 of file actions.h.
+
+\hypertarget{classAction_a1ffd85975b55c5d5c3a7c8df1ac7778a}{
+\index{Action@{Action}!setComment@{setComment}}
+\index{setComment@{setComment}!Action@{Action}}
+\subsubsection[{setComment}]{\setlength{\rightskip}{0pt plus 5cm}void Action::setComment (
+\begin{DoxyParamCaption}
+\item[{QString}]{comment}
+\end{DoxyParamCaption}
+)}}
+\label{classAction_a1ffd85975b55c5d5c3a7c8df1ac7778a}
+
+
+Definition at line 136 of file actions.cpp.
+
+\hypertarget{classAction_a11335bd5aa3730a6136b8e53164043be}{
+\index{Action@{Action}!setDefaultView@{setDefaultView}}
+\index{setDefaultView@{setDefaultView}!Action@{Action}}
+\subsubsection[{setDefaultView}]{\setlength{\rightskip}{0pt plus 5cm}void Action::setDefaultView (
+\begin{DoxyParamCaption}
+\item[{QString}]{dv}
+\end{DoxyParamCaption}
+)}}
+\label{classAction_a11335bd5aa3730a6136b8e53164043be}
+
+
+Definition at line 213 of file actions.cpp.
+
+\hypertarget{classAction_a68e472ae5942c5eeb580ec867227bfab}{
+\index{Action@{Action}!setImage@{setImage}}
+\index{setImage@{setImage}!Action@{Action}}
+\subsubsection[{setImage}]{\setlength{\rightskip}{0pt plus 5cm}void Action::setImage (
+\begin{DoxyParamCaption}
+\item[{QString}]{image}
+\end{DoxyParamCaption}
+)}}
+\label{classAction_a68e472ae5942c5eeb580ec867227bfab}
+
+
+Definition at line 142 of file actions.cpp.
+
+\hypertarget{classAction_ab89d1a53464534b099865e181e1c4d01}{
+\index{Action@{Action}!setName@{setName}}
+\index{setName@{setName}!Action@{Action}}
+\subsubsection[{setName}]{\setlength{\rightskip}{0pt plus 5cm}void Action::setName (
+\begin{DoxyParamCaption}
+\item[{QString}]{name}
+\end{DoxyParamCaption}
+)}}
+\label{classAction_ab89d1a53464534b099865e181e1c4d01}
+
+
+Definition at line 128 of file actions.cpp.
+
+
+
+\subsection{Member Data Documentation}
+\hypertarget{classAction_a12e25c60bd585bc32f49cb9414edfa4f}{
+\index{Action@{Action}!b\_\-accName1@{b\_\-accName1}}
+\index{b\_\-accName1@{b\_\-accName1}!Action@{Action}}
+\subsubsection[{b\_\-accName1}]{\setlength{\rightskip}{0pt plus 5cm}bool {\bf Action::b\_\-accName1}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classAction_a12e25c60bd585bc32f49cb9414edfa4f}
+
+
+Definition at line 68 of file actions.h.
+
+\hypertarget{classAction_a6eec35b5551935b91f05088ce4d7dfea}{
+\index{Action@{Action}!b\_\-accName2@{b\_\-accName2}}
+\index{b\_\-accName2@{b\_\-accName2}!Action@{Action}}
+\subsubsection[{b\_\-accName2}]{\setlength{\rightskip}{0pt plus 5cm}bool {\bf Action::b\_\-accName2}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classAction_a6eec35b5551935b91f05088ce4d7dfea}
+
+
+Definition at line 69 of file actions.h.
+
+\hypertarget{classAction_a2bec79ffffdabb3eeb86a98a66dfb8a2}{
+\index{Action@{Action}!b\_\-accName3@{b\_\-accName3}}
+\index{b\_\-accName3@{b\_\-accName3}!Action@{Action}}
+\subsubsection[{b\_\-accName3}]{\setlength{\rightskip}{0pt plus 5cm}bool {\bf Action::b\_\-accName3}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classAction_a2bec79ffffdabb3eeb86a98a66dfb8a2}
+
+
+Definition at line 70 of file actions.h.
+
+\hypertarget{classAction_a2b5a8aa9b8c0fc0946ac3bcf00077187}{
+\index{Action@{Action}!b\_\-accName4@{b\_\-accName4}}
+\index{b\_\-accName4@{b\_\-accName4}!Action@{Action}}
+\subsubsection[{b\_\-accName4}]{\setlength{\rightskip}{0pt plus 5cm}bool {\bf Action::b\_\-accName4}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classAction_a2b5a8aa9b8c0fc0946ac3bcf00077187}
+
+
+Definition at line 71 of file actions.h.
+
+\hypertarget{classAction_abab75a630d429f44376a2516801dcd60}{
+\index{Action@{Action}!qs\_\-acceleratorName@{qs\_\-acceleratorName}}
+\index{qs\_\-acceleratorName@{qs\_\-acceleratorName}!Action@{Action}}
+\subsubsection[{qs\_\-acceleratorName}]{\setlength{\rightskip}{0pt plus 5cm}QString {\bf Action::qs\_\-acceleratorName}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classAction_abab75a630d429f44376a2516801dcd60}
+
+
+Definition at line 64 of file actions.h.
+
+\hypertarget{classAction_ad9bc287f7970ac64d5ffc111c15147cb}{
+\index{Action@{Action}!qs\_\-acceleratorName2@{qs\_\-acceleratorName2}}
+\index{qs\_\-acceleratorName2@{qs\_\-acceleratorName2}!Action@{Action}}
+\subsubsection[{qs\_\-acceleratorName2}]{\setlength{\rightskip}{0pt plus 5cm}QString {\bf Action::qs\_\-acceleratorName2}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classAction_ad9bc287f7970ac64d5ffc111c15147cb}
+
+
+Definition at line 65 of file actions.h.
+
+\hypertarget{classAction_a43c9708f64c0b502c379454a6f10f72d}{
+\index{Action@{Action}!qs\_\-acceleratorName3@{qs\_\-acceleratorName3}}
+\index{qs\_\-acceleratorName3@{qs\_\-acceleratorName3}!Action@{Action}}
+\subsubsection[{qs\_\-acceleratorName3}]{\setlength{\rightskip}{0pt plus 5cm}QString {\bf Action::qs\_\-acceleratorName3}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classAction_a43c9708f64c0b502c379454a6f10f72d}
+
+
+Definition at line 66 of file actions.h.
+
+\hypertarget{classAction_a7284950e9b48ead289b5ccce09fcd10c}{
+\index{Action@{Action}!qs\_\-acceleratorName4@{qs\_\-acceleratorName4}}
+\index{qs\_\-acceleratorName4@{qs\_\-acceleratorName4}!Action@{Action}}
+\subsubsection[{qs\_\-acceleratorName4}]{\setlength{\rightskip}{0pt plus 5cm}QString {\bf Action::qs\_\-acceleratorName4}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classAction_a7284950e9b48ead289b5ccce09fcd10c}
+
+
+Definition at line 67 of file actions.h.
+
+\hypertarget{classAction_ab64fc5a6e59778ef85350d47d9cb6ce0}{
+\index{Action@{Action}!qs\_\-comment@{qs\_\-comment}}
+\index{qs\_\-comment@{qs\_\-comment}!Action@{Action}}
+\subsubsection[{qs\_\-comment}]{\setlength{\rightskip}{0pt plus 5cm}QString {\bf Action::qs\_\-comment}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classAction_ab64fc5a6e59778ef85350d47d9cb6ce0}
+
+
+Definition at line 62 of file actions.h.
+
+\hypertarget{classAction_a95faeba966aec50a7fb869fad2b11e52}{
+\index{Action@{Action}!qs\_\-defaultView@{qs\_\-defaultView}}
+\index{qs\_\-defaultView@{qs\_\-defaultView}!Action@{Action}}
+\subsubsection[{qs\_\-defaultView}]{\setlength{\rightskip}{0pt plus 5cm}QString {\bf Action::qs\_\-defaultView}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classAction_a95faeba966aec50a7fb869fad2b11e52}
+
+
+Definition at line 72 of file actions.h.
+
+\hypertarget{classAction_ae949229a3406a96b59c832acfef35009}{
+\index{Action@{Action}!qs\_\-image@{qs\_\-image}}
+\index{qs\_\-image@{qs\_\-image}!Action@{Action}}
+\subsubsection[{qs\_\-image}]{\setlength{\rightskip}{0pt plus 5cm}QString {\bf Action::qs\_\-image}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classAction_ae949229a3406a96b59c832acfef35009}
+
+
+Definition at line 63 of file actions.h.
+
+\hypertarget{classAction_ac3d7cf76ccbb09e443681b14b7326010}{
+\index{Action@{Action}!qs\_\-name@{qs\_\-name}}
+\index{qs\_\-name@{qs\_\-name}!Action@{Action}}
+\subsubsection[{qs\_\-name}]{\setlength{\rightskip}{0pt plus 5cm}QString {\bf Action::qs\_\-name}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classAction_ac3d7cf76ccbb09e443681b14b7326010}
+
+
+Definition at line 58 of file actions.h.
+
+
+
+The documentation for this class was generated from the following files:\begin{DoxyCompactItemize}
+\item 
+/e/ms/QT/models/\hyperlink{actions_8h}{actions.h}\item 
+/e/ms/QT/models/\hyperlink{actions_8cpp}{actions.cpp}\end{DoxyCompactItemize}

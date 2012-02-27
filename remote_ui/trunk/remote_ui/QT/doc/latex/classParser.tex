@@ -1,0 +1,308 @@
+\hypertarget{classParser}{
+\section{Parser Class Reference}
+\label{classParser}\index{Parser@{Parser}}
+}
+
+
+{\ttfamily \#include $<$parser.h$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classParser_aefe5848f785f24b3e225c19c2164c792}{Parser} (QWidget $\ast$\hyperlink{classParser_a8ae7aeec1e5360fa29b9976624cde0f1}{p\_\-fglform})
+\item 
+void \hyperlink{classParser_a6df35e9ed4a8615a7224aa51e91a46d3}{parseForm} (QDomDocument)
+\item 
+QWidget $\ast$ \hyperlink{classParser_a03625492828e17a3e1a540f7a0e07b75}{getFormWidget} ()
+\item 
+QList$<$ QWidget $\ast$ $>$ \hyperlink{classParser_ae6283c9c8504b6d7ea3f95599b8dfa8d}{getFieldList} ()
+\item 
+QList$<$ \hyperlink{classFormField}{FormField} $\ast$ $>$ \hyperlink{classParser_a4b4c41ad7831993e9d4cd52468d5fe88}{getFglFields} ()
+\end{DoxyCompactItemize}
+\subsection*{Private Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \hyperlink{classParser_ae02f5da1e3974e81746c91dae0e265a2}{parseElement} (const QDomNode \&)
+\item 
+void \hyperlink{classParser_a806540a8e1fab811586a5f5df0aead21}{handleTableColumn} (const QDomNode \&)
+\item 
+void \hyperlink{classParser_a9f4c1bd5465f5abc6587ee66d2a085da}{handleMatrixColumn} (const QDomNode \&)
+\item 
+void \hyperlink{classParser_afd7f37611e56b353507ebbf79ae0edb5}{handleRecordView} (const QDomNode \&)
+\item 
+void \hyperlink{classParser_a80b5245c70a7f73fcdba2c61096cc21f}{addWidgets} (QWidget $\ast$, bool add=false, int y=0, int x=0, int gridWidth=0, int span=1)
+\item 
+void \hyperlink{classParser_a97f0648d8b9a23badc802076b88db7ef}{addLayout} (QLayout $\ast$)
+\end{DoxyCompactItemize}
+\subsection*{Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+QHBoxLayout $\ast$ \hyperlink{classParser_a10b118e730f600194f26db151575c6fa}{layout}
+\item 
+QWidget $\ast$ \hyperlink{classParser_a8ae7aeec1e5360fa29b9976624cde0f1}{p\_\-fglform}
+\item 
+QList$<$ QWidget $\ast$ $>$ \hyperlink{classParser_a457a6f19e0594ed8a745c8a00be32c4b}{ql\_\-formFields}
+\item 
+QList$<$ \hyperlink{classFormField}{FormField} $\ast$ $>$ \hyperlink{classParser_a2cc0ce2919a5f45d55cab55a9e3c8b28}{ql\_\-fglFields}
+\item 
+QColor \hyperlink{classParser_ade3fc5bc98be3edaf605694661d73693}{qcol\_\-BaseColor}
+\item 
+QLayout $\ast$ \hyperlink{classParser_a3b94abe3e2c41c419f5be2a2e3fd63a4}{currentLayout}
+\item 
+QWidget $\ast$ \hyperlink{classParser_a05d665391ab1db7f4729654df9fa4079}{currentWidget}
+\item 
+bool \hyperlink{classParser_a8088fac11586b6de2df5ed1720f7a943}{layoutChanged}
+\item 
+bool \hyperlink{classParser_a24d2c0cb2595e44b9a7f73d801685e70}{hidden}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+
+
+Definition at line 25 of file parser.h.
+
+
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{classParser_aefe5848f785f24b3e225c19c2164c792}{
+\index{Parser@{Parser}!Parser@{Parser}}
+\index{Parser@{Parser}!Parser@{Parser}}
+\subsubsection[{Parser}]{\setlength{\rightskip}{0pt plus 5cm}Parser::Parser (
+\begin{DoxyParamCaption}
+\item[{QWidget $\ast$}]{p\_\-fglform}
+\end{DoxyParamCaption}
+)}}
+\label{classParser_aefe5848f785f24b3e225c19c2164c792}
+
+
+Definition at line 26 of file parser.cpp.
+
+
+
+\subsection{Member Function Documentation}
+\hypertarget{classParser_a97f0648d8b9a23badc802076b88db7ef}{
+\index{Parser@{Parser}!addLayout@{addLayout}}
+\index{addLayout@{addLayout}!Parser@{Parser}}
+\subsubsection[{addLayout}]{\setlength{\rightskip}{0pt plus 5cm}void Parser::addLayout (
+\begin{DoxyParamCaption}
+\item[{QLayout $\ast$}]{newLayout}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classParser_a97f0648d8b9a23badc802076b88db7ef}
+
+
+Definition at line 691 of file parser.cpp.
+
+\hypertarget{classParser_a80b5245c70a7f73fcdba2c61096cc21f}{
+\index{Parser@{Parser}!addWidgets@{addWidgets}}
+\index{addWidgets@{addWidgets}!Parser@{Parser}}
+\subsubsection[{addWidgets}]{\setlength{\rightskip}{0pt plus 5cm}void Parser::addWidgets (
+\begin{DoxyParamCaption}
+\item[{QWidget $\ast$}]{widget, }
+\item[{bool}]{add = {\ttfamily false}, }
+\item[{int}]{y = {\ttfamily 0}, }
+\item[{int}]{x = {\ttfamily 0}, }
+\item[{int}]{gridWidth = {\ttfamily 0}, }
+\item[{int}]{span = {\ttfamily 1}}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classParser_a80b5245c70a7f73fcdba2c61096cc21f}
+
+
+Definition at line 627 of file parser.cpp.
+
+\hypertarget{classParser_a4b4c41ad7831993e9d4cd52468d5fe88}{
+\index{Parser@{Parser}!getFglFields@{getFglFields}}
+\index{getFglFields@{getFglFields}!Parser@{Parser}}
+\subsubsection[{getFglFields}]{\setlength{\rightskip}{0pt plus 5cm}QList$<$ {\bf FormField} $\ast$ $>$ Parser::getFglFields (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}
+\label{classParser_a4b4c41ad7831993e9d4cd52468d5fe88}
+
+
+Definition at line 57 of file parser.cpp.
+
+\hypertarget{classParser_ae6283c9c8504b6d7ea3f95599b8dfa8d}{
+\index{Parser@{Parser}!getFieldList@{getFieldList}}
+\index{getFieldList@{getFieldList}!Parser@{Parser}}
+\subsubsection[{getFieldList}]{\setlength{\rightskip}{0pt plus 5cm}QList$<$ QWidget $\ast$ $>$ Parser::getFieldList (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}
+\label{classParser_ae6283c9c8504b6d7ea3f95599b8dfa8d}
+
+
+Definition at line 52 of file parser.cpp.
+
+\hypertarget{classParser_a03625492828e17a3e1a540f7a0e07b75}{
+\index{Parser@{Parser}!getFormWidget@{getFormWidget}}
+\index{getFormWidget@{getFormWidget}!Parser@{Parser}}
+\subsubsection[{getFormWidget}]{\setlength{\rightskip}{0pt plus 5cm}QWidget $\ast$ Parser::getFormWidget (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}
+\label{classParser_a03625492828e17a3e1a540f7a0e07b75}
+
+
+Definition at line 46 of file parser.cpp.
+
+\hypertarget{classParser_a9f4c1bd5465f5abc6587ee66d2a085da}{
+\index{Parser@{Parser}!handleMatrixColumn@{handleMatrixColumn}}
+\index{handleMatrixColumn@{handleMatrixColumn}!Parser@{Parser}}
+\subsubsection[{handleMatrixColumn}]{\setlength{\rightskip}{0pt plus 5cm}void Parser::handleMatrixColumn (
+\begin{DoxyParamCaption}
+\item[{const QDomNode \&}]{xmlNode}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classParser_a9f4c1bd5465f5abc6587ee66d2a085da}
+
+
+Definition at line 548 of file parser.cpp.
+
+\hypertarget{classParser_afd7f37611e56b353507ebbf79ae0edb5}{
+\index{Parser@{Parser}!handleRecordView@{handleRecordView}}
+\index{handleRecordView@{handleRecordView}!Parser@{Parser}}
+\subsubsection[{handleRecordView}]{\setlength{\rightskip}{0pt plus 5cm}void Parser::handleRecordView (
+\begin{DoxyParamCaption}
+\item[{const QDomNode \&}]{xmlNode}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classParser_afd7f37611e56b353507ebbf79ae0edb5}
+
+
+Definition at line 714 of file parser.cpp.
+
+\hypertarget{classParser_a806540a8e1fab811586a5f5df0aead21}{
+\index{Parser@{Parser}!handleTableColumn@{handleTableColumn}}
+\index{handleTableColumn@{handleTableColumn}!Parser@{Parser}}
+\subsubsection[{handleTableColumn}]{\setlength{\rightskip}{0pt plus 5cm}void Parser::handleTableColumn (
+\begin{DoxyParamCaption}
+\item[{const QDomNode \&}]{xmlNode}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classParser_a806540a8e1fab811586a5f5df0aead21}
+
+
+Definition at line 402 of file parser.cpp.
+
+\hypertarget{classParser_ae02f5da1e3974e81746c91dae0e265a2}{
+\index{Parser@{Parser}!parseElement@{parseElement}}
+\index{parseElement@{parseElement}!Parser@{Parser}}
+\subsubsection[{parseElement}]{\setlength{\rightskip}{0pt plus 5cm}void Parser::parseElement (
+\begin{DoxyParamCaption}
+\item[{const QDomNode \&}]{xmlNode}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classParser_ae02f5da1e3974e81746c91dae0e265a2}
+
+
+Definition at line 97 of file parser.cpp.
+
+\hypertarget{classParser_a6df35e9ed4a8615a7224aa51e91a46d3}{
+\index{Parser@{Parser}!parseForm@{parseForm}}
+\index{parseForm@{parseForm}!Parser@{Parser}}
+\subsubsection[{parseForm}]{\setlength{\rightskip}{0pt plus 5cm}void Parser::parseForm (
+\begin{DoxyParamCaption}
+\item[{QDomDocument}]{xmlForm}
+\end{DoxyParamCaption}
+)}}
+\label{classParser_a6df35e9ed4a8615a7224aa51e91a46d3}
+
+
+Definition at line 62 of file parser.cpp.
+
+
+
+\subsection{Member Data Documentation}
+\hypertarget{classParser_a3b94abe3e2c41c419f5be2a2e3fd63a4}{
+\index{Parser@{Parser}!currentLayout@{currentLayout}}
+\index{currentLayout@{currentLayout}!Parser@{Parser}}
+\subsubsection[{currentLayout}]{\setlength{\rightskip}{0pt plus 5cm}QLayout$\ast$ {\bf Parser::currentLayout}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classParser_a3b94abe3e2c41c419f5be2a2e3fd63a4}
+
+
+Definition at line 43 of file parser.h.
+
+\hypertarget{classParser_a05d665391ab1db7f4729654df9fa4079}{
+\index{Parser@{Parser}!currentWidget@{currentWidget}}
+\index{currentWidget@{currentWidget}!Parser@{Parser}}
+\subsubsection[{currentWidget}]{\setlength{\rightskip}{0pt plus 5cm}QWidget$\ast$ {\bf Parser::currentWidget}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classParser_a05d665391ab1db7f4729654df9fa4079}
+
+
+Definition at line 44 of file parser.h.
+
+\hypertarget{classParser_a24d2c0cb2595e44b9a7f73d801685e70}{
+\index{Parser@{Parser}!hidden@{hidden}}
+\index{hidden@{hidden}!Parser@{Parser}}
+\subsubsection[{hidden}]{\setlength{\rightskip}{0pt plus 5cm}bool {\bf Parser::hidden}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classParser_a24d2c0cb2595e44b9a7f73d801685e70}
+
+
+Definition at line 46 of file parser.h.
+
+\hypertarget{classParser_a10b118e730f600194f26db151575c6fa}{
+\index{Parser@{Parser}!layout@{layout}}
+\index{layout@{layout}!Parser@{Parser}}
+\subsubsection[{layout}]{\setlength{\rightskip}{0pt plus 5cm}QHBoxLayout$\ast$ {\bf Parser::layout}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classParser_a10b118e730f600194f26db151575c6fa}
+
+
+Definition at line 38 of file parser.h.
+
+\hypertarget{classParser_a8088fac11586b6de2df5ed1720f7a943}{
+\index{Parser@{Parser}!layoutChanged@{layoutChanged}}
+\index{layoutChanged@{layoutChanged}!Parser@{Parser}}
+\subsubsection[{layoutChanged}]{\setlength{\rightskip}{0pt plus 5cm}bool {\bf Parser::layoutChanged}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classParser_a8088fac11586b6de2df5ed1720f7a943}
+
+
+Definition at line 45 of file parser.h.
+
+\hypertarget{classParser_a8ae7aeec1e5360fa29b9976624cde0f1}{
+\index{Parser@{Parser}!p\_\-fglform@{p\_\-fglform}}
+\index{p\_\-fglform@{p\_\-fglform}!Parser@{Parser}}
+\subsubsection[{p\_\-fglform}]{\setlength{\rightskip}{0pt plus 5cm}QWidget$\ast$ {\bf Parser::p\_\-fglform}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classParser_a8ae7aeec1e5360fa29b9976624cde0f1}
+
+
+Definition at line 39 of file parser.h.
+
+\hypertarget{classParser_ade3fc5bc98be3edaf605694661d73693}{
+\index{Parser@{Parser}!qcol\_\-BaseColor@{qcol\_\-BaseColor}}
+\index{qcol\_\-BaseColor@{qcol\_\-BaseColor}!Parser@{Parser}}
+\subsubsection[{qcol\_\-BaseColor}]{\setlength{\rightskip}{0pt plus 5cm}QColor {\bf Parser::qcol\_\-BaseColor}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classParser_ade3fc5bc98be3edaf605694661d73693}
+
+
+Definition at line 42 of file parser.h.
+
+\hypertarget{classParser_a2cc0ce2919a5f45d55cab55a9e3c8b28}{
+\index{Parser@{Parser}!ql\_\-fglFields@{ql\_\-fglFields}}
+\index{ql\_\-fglFields@{ql\_\-fglFields}!Parser@{Parser}}
+\subsubsection[{ql\_\-fglFields}]{\setlength{\rightskip}{0pt plus 5cm}QList$<${\bf FormField}$\ast$$>$ {\bf Parser::ql\_\-fglFields}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classParser_a2cc0ce2919a5f45d55cab55a9e3c8b28}
+
+
+Definition at line 41 of file parser.h.
+
+\hypertarget{classParser_a457a6f19e0594ed8a745c8a00be32c4b}{
+\index{Parser@{Parser}!ql\_\-formFields@{ql\_\-formFields}}
+\index{ql\_\-formFields@{ql\_\-formFields}!Parser@{Parser}}
+\subsubsection[{ql\_\-formFields}]{\setlength{\rightskip}{0pt plus 5cm}QList$<$QWidget$\ast$$>$ {\bf Parser::ql\_\-formFields}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classParser_a457a6f19e0594ed8a745c8a00be32c4b}
+
+
+Definition at line 40 of file parser.h.
+
+
+
+The documentation for this class was generated from the following files:\begin{DoxyCompactItemize}
+\item 
+/e/ms/QT/fieldparsers/\hyperlink{parser_8h}{parser.h}\item 
+/e/ms/QT/fieldparsers/\hyperlink{parser_8cpp}{parser.cpp}\end{DoxyCompactItemize}

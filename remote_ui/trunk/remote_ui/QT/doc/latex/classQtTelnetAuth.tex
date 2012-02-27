@@ -1,0 +1,187 @@
+\hypertarget{classQtTelnetAuth}{
+\section{QtTelnetAuth Class Reference}
+\label{classQtTelnetAuth}\index{QtTelnetAuth@{QtTelnetAuth}}
+}
+Inheritance diagram for QtTelnetAuth:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{classQtTelnetAuth}
+\end{center}
+\end{figure}
+\subsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+enum \hyperlink{classQtTelnetAuth_aef4fcfe1cf60491f566b31c7f8f8f2f2}{State} \{ \hyperlink{classQtTelnetAuth_aef4fcfe1cf60491f566b31c7f8f8f2f2ae72cd9a5978207fc7d62288158e389ef}{AuthIntermediate}, 
+\hyperlink{classQtTelnetAuth_aef4fcfe1cf60491f566b31c7f8f8f2f2ae0795bd80ac1a018650ae5a13cb0720a}{AuthSuccess}, 
+\hyperlink{classQtTelnetAuth_aef4fcfe1cf60491f566b31c7f8f8f2f2a31851366016c0a5fd364675c9a727def}{AuthFailure}
+ \}
+\end{DoxyCompactItemize}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classQtTelnetAuth_ae7d7ea247f07ff6c9890b9d4765a645a}{QtTelnetAuth} (char code)
+\item 
+virtual \hyperlink{classQtTelnetAuth_a9435d78fc604e59410dc36dc9334108d}{$\sim$QtTelnetAuth} ()
+\item 
+int \hyperlink{classQtTelnetAuth_a3d1b6069c3be43a9ced1906b8210e452}{code} () const 
+\item 
+\hyperlink{classQtTelnetAuth_aef4fcfe1cf60491f566b31c7f8f8f2f2}{State} \hyperlink{classQtTelnetAuth_a472cf022d3976da5abf78916b02ade7a}{state} () const 
+\item 
+void \hyperlink{classQtTelnetAuth_a89803c6612426beaaaf295528915f573}{setState} (\hyperlink{classQtTelnetAuth_aef4fcfe1cf60491f566b31c7f8f8f2f2}{State} state)
+\item 
+virtual QByteArray \hyperlink{classQtTelnetAuth_adceeb3a4fec9b58472d7cd7f2540e575}{authStep} (const QByteArray \&data)=0
+\end{DoxyCompactItemize}
+\subsection*{Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classQtTelnetAuth_aef4fcfe1cf60491f566b31c7f8f8f2f2}{State} \hyperlink{classQtTelnetAuth_a38da91878419c68ec79384b5d75b3908}{st}
+\item 
+int \hyperlink{classQtTelnetAuth_a708030f5805da6a12876c6cbab24dacc}{cd}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+
+
+Definition at line 95 of file qttelnet.cpp.
+
+
+
+\subsection{Member Enumeration Documentation}
+\hypertarget{classQtTelnetAuth_aef4fcfe1cf60491f566b31c7f8f8f2f2}{
+\index{QtTelnetAuth@{QtTelnetAuth}!State@{State}}
+\index{State@{State}!QtTelnetAuth@{QtTelnetAuth}}
+\subsubsection[{State}]{\setlength{\rightskip}{0pt plus 5cm}enum {\bf QtTelnetAuth::State}}}
+\label{classQtTelnetAuth_aef4fcfe1cf60491f566b31c7f8f8f2f2}
+\begin{Desc}
+\item[Enumerator: ]\par
+\begin{description}
+\index{AuthIntermediate@{AuthIntermediate}!QtTelnetAuth@{QtTelnetAuth}}\index{QtTelnetAuth@{QtTelnetAuth}!AuthIntermediate@{AuthIntermediate}}\item[{\em 
+\hypertarget{classQtTelnetAuth_aef4fcfe1cf60491f566b31c7f8f8f2f2ae72cd9a5978207fc7d62288158e389ef}{
+AuthIntermediate}
+\label{classQtTelnetAuth_aef4fcfe1cf60491f566b31c7f8f8f2f2ae72cd9a5978207fc7d62288158e389ef}
+}]\index{AuthSuccess@{AuthSuccess}!QtTelnetAuth@{QtTelnetAuth}}\index{QtTelnetAuth@{QtTelnetAuth}!AuthSuccess@{AuthSuccess}}\item[{\em 
+\hypertarget{classQtTelnetAuth_aef4fcfe1cf60491f566b31c7f8f8f2f2ae0795bd80ac1a018650ae5a13cb0720a}{
+AuthSuccess}
+\label{classQtTelnetAuth_aef4fcfe1cf60491f566b31c7f8f8f2f2ae0795bd80ac1a018650ae5a13cb0720a}
+}]\index{AuthFailure@{AuthFailure}!QtTelnetAuth@{QtTelnetAuth}}\index{QtTelnetAuth@{QtTelnetAuth}!AuthFailure@{AuthFailure}}\item[{\em 
+\hypertarget{classQtTelnetAuth_aef4fcfe1cf60491f566b31c7f8f8f2f2a31851366016c0a5fd364675c9a727def}{
+AuthFailure}
+\label{classQtTelnetAuth_aef4fcfe1cf60491f566b31c7f8f8f2f2a31851366016c0a5fd364675c9a727def}
+}]\end{description}
+\end{Desc}
+
+
+
+Definition at line 98 of file qttelnet.cpp.
+
+
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{classQtTelnetAuth_ae7d7ea247f07ff6c9890b9d4765a645a}{
+\index{QtTelnetAuth@{QtTelnetAuth}!QtTelnetAuth@{QtTelnetAuth}}
+\index{QtTelnetAuth@{QtTelnetAuth}!QtTelnetAuth@{QtTelnetAuth}}
+\subsubsection[{QtTelnetAuth}]{\setlength{\rightskip}{0pt plus 5cm}QtTelnetAuth::QtTelnetAuth (
+\begin{DoxyParamCaption}
+\item[{char}]{code}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}inline\mbox{]}}}}
+\label{classQtTelnetAuth_ae7d7ea247f07ff6c9890b9d4765a645a}
+
+
+Definition at line 100 of file qttelnet.cpp.
+
+\hypertarget{classQtTelnetAuth_a9435d78fc604e59410dc36dc9334108d}{
+\index{QtTelnetAuth@{QtTelnetAuth}!$\sim$QtTelnetAuth@{$\sim$QtTelnetAuth}}
+\index{$\sim$QtTelnetAuth@{$\sim$QtTelnetAuth}!QtTelnetAuth@{QtTelnetAuth}}
+\subsubsection[{$\sim$QtTelnetAuth}]{\setlength{\rightskip}{0pt plus 5cm}virtual QtTelnetAuth::$\sim$QtTelnetAuth (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}inline, virtual\mbox{]}}}}
+\label{classQtTelnetAuth_a9435d78fc604e59410dc36dc9334108d}
+
+
+Definition at line 101 of file qttelnet.cpp.
+
+
+
+\subsection{Member Function Documentation}
+\hypertarget{classQtTelnetAuth_adceeb3a4fec9b58472d7cd7f2540e575}{
+\index{QtTelnetAuth@{QtTelnetAuth}!authStep@{authStep}}
+\index{authStep@{authStep}!QtTelnetAuth@{QtTelnetAuth}}
+\subsubsection[{authStep}]{\setlength{\rightskip}{0pt plus 5cm}virtual QByteArray QtTelnetAuth::authStep (
+\begin{DoxyParamCaption}
+\item[{const QByteArray \&}]{data}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}pure virtual\mbox{]}}}}
+\label{classQtTelnetAuth_adceeb3a4fec9b58472d7cd7f2540e575}
+
+
+Implemented in \hyperlink{classQtTelnetAuthNull_a76cf474cf6860aeae906bf242ac09f95}{QtTelnetAuthNull}.
+
+\hypertarget{classQtTelnetAuth_a3d1b6069c3be43a9ced1906b8210e452}{
+\index{QtTelnetAuth@{QtTelnetAuth}!code@{code}}
+\index{code@{code}!QtTelnetAuth@{QtTelnetAuth}}
+\subsubsection[{code}]{\setlength{\rightskip}{0pt plus 5cm}int QtTelnetAuth::code (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily  \mbox{[}inline\mbox{]}}}}
+\label{classQtTelnetAuth_a3d1b6069c3be43a9ced1906b8210e452}
+
+
+Definition at line 103 of file qttelnet.cpp.
+
+\hypertarget{classQtTelnetAuth_a89803c6612426beaaaf295528915f573}{
+\index{QtTelnetAuth@{QtTelnetAuth}!setState@{setState}}
+\index{setState@{setState}!QtTelnetAuth@{QtTelnetAuth}}
+\subsubsection[{setState}]{\setlength{\rightskip}{0pt plus 5cm}void QtTelnetAuth::setState (
+\begin{DoxyParamCaption}
+\item[{{\bf State}}]{state}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}inline\mbox{]}}}}
+\label{classQtTelnetAuth_a89803c6612426beaaaf295528915f573}
+
+
+Definition at line 105 of file qttelnet.cpp.
+
+\hypertarget{classQtTelnetAuth_a472cf022d3976da5abf78916b02ade7a}{
+\index{QtTelnetAuth@{QtTelnetAuth}!state@{state}}
+\index{state@{state}!QtTelnetAuth@{QtTelnetAuth}}
+\subsubsection[{state}]{\setlength{\rightskip}{0pt plus 5cm}{\bf State} QtTelnetAuth::state (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily  \mbox{[}inline\mbox{]}}}}
+\label{classQtTelnetAuth_a472cf022d3976da5abf78916b02ade7a}
+
+
+Definition at line 104 of file qttelnet.cpp.
+
+
+
+\subsection{Member Data Documentation}
+\hypertarget{classQtTelnetAuth_a708030f5805da6a12876c6cbab24dacc}{
+\index{QtTelnetAuth@{QtTelnetAuth}!cd@{cd}}
+\index{cd@{cd}!QtTelnetAuth@{QtTelnetAuth}}
+\subsubsection[{cd}]{\setlength{\rightskip}{0pt plus 5cm}int {\bf QtTelnetAuth::cd}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classQtTelnetAuth_a708030f5805da6a12876c6cbab24dacc}
+
+
+Definition at line 111 of file qttelnet.cpp.
+
+\hypertarget{classQtTelnetAuth_a38da91878419c68ec79384b5d75b3908}{
+\index{QtTelnetAuth@{QtTelnetAuth}!st@{st}}
+\index{st@{st}!QtTelnetAuth@{QtTelnetAuth}}
+\subsubsection[{st}]{\setlength{\rightskip}{0pt plus 5cm}{\bf State} {\bf QtTelnetAuth::st}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classQtTelnetAuth_a38da91878419c68ec79384b5d75b3908}
+
+
+Definition at line 110 of file qttelnet.cpp.
+
+
+
+The documentation for this class was generated from the following file:\begin{DoxyCompactItemize}
+\item 
+/e/ms/QT/qtelnet/\hyperlink{qttelnet_8cpp}{qttelnet.cpp}\end{DoxyCompactItemize}

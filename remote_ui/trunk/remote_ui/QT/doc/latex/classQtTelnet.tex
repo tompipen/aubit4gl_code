@@ -1,0 +1,702 @@
+\hypertarget{classQtTelnet}{
+\section{QtTelnet Class Reference}
+\label{classQtTelnet}\index{QtTelnet@{QtTelnet}}
+}
+
+
+The \hyperlink{classQtTelnet}{QtTelnet} class proveds an API to connect to Telnet servers, issue commands and receive replies.  
+
+
+
+
+{\ttfamily \#include $<$qttelnet.h$>$}
+
+\subsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+enum \hyperlink{classQtTelnet_a59ad635c17c3b531ac49a83bb406f89e}{Control} \{ \par
+\hyperlink{classQtTelnet_a59ad635c17c3b531ac49a83bb406f89ea0f838ccc5ebd49da58435fb65750fc7f}{GoAhead}, 
+\hyperlink{classQtTelnet_a59ad635c17c3b531ac49a83bb406f89eae2fe37e564d7fab67209a6352b3d66c6}{InterruptProcess}, 
+\hyperlink{classQtTelnet_a59ad635c17c3b531ac49a83bb406f89ea01456777328aff57ea5b0d650f0c4f55}{AreYouThere}, 
+\hyperlink{classQtTelnet_a59ad635c17c3b531ac49a83bb406f89ead9622371b21b81920a1d5edec5583e9c}{AbortOutput}, 
+\par
+\hyperlink{classQtTelnet_a59ad635c17c3b531ac49a83bb406f89eaec8abb4eceacf87f7347ef656f81ea32}{EraseCharacter}, 
+\hyperlink{classQtTelnet_a59ad635c17c3b531ac49a83bb406f89eaeeca06730974bb161792dc779fee5f53}{EraseLine}, 
+\hyperlink{classQtTelnet_a59ad635c17c3b531ac49a83bb406f89ea9495869000e0d6f8c30d91c37a371de3}{Break}, 
+\hyperlink{classQtTelnet_a59ad635c17c3b531ac49a83bb406f89ea9b773f8362e15c07ccf34c925ed34061}{EndOfFile}, 
+\par
+\hyperlink{classQtTelnet_a59ad635c17c3b531ac49a83bb406f89eab4578000b4de6ee05478d9ed4164a7d8}{Suspend}, 
+\hyperlink{classQtTelnet_a59ad635c17c3b531ac49a83bb406f89eae1fe14df493d4b6e566ad2489ec5e788}{Abort}
+ \}
+\end{DoxyCompactItemize}
+\subsection*{Public Slots}
+\begin{DoxyCompactItemize}
+\item 
+void \hyperlink{classQtTelnet_af3a32007f06949b28cee13ccbfbe1041}{close} ()
+\item 
+void \hyperlink{classQtTelnet_a9617e3c120e8ff9750b63c5fe4779f16}{logout} ()
+\item 
+void \hyperlink{classQtTelnet_aad51391ddbdae2c34a493f2d9ce68eae}{sendControl} (\hyperlink{classQtTelnet_a59ad635c17c3b531ac49a83bb406f89e}{Control} ctrl)
+\item 
+void \hyperlink{classQtTelnet_a9f48197f4356c4550e7b258daf89fb02}{sendData} (const QString \&data)
+\item 
+void \hyperlink{classQtTelnet_a57b0b9addff684501331df21f2f68259}{sendSync} ()
+\end{DoxyCompactItemize}
+\subsection*{Signals}
+\begin{DoxyCompactItemize}
+\item 
+void \hyperlink{classQtTelnet_a1f5c31b8928e740ac09d7c6c307b4451}{loginRequired} ()
+\item 
+void \hyperlink{classQtTelnet_a1181936a48b5857f464e8d49586ef5f3}{loginFailed} ()
+\item 
+void \hyperlink{classQtTelnet_a5734a75c3d87d91db8fa069e74d29458}{loggedIn} ()
+\item 
+void \hyperlink{classQtTelnet_aafd4782b3e8e45850bf063a1087ab908}{loggedOut} ()
+\item 
+void \hyperlink{classQtTelnet_ab6e03a94fcb63d1393dfb7edda5c8a03}{connectionError} (QAbstractSocket::SocketError error)
+\item 
+void \hyperlink{classQtTelnet_affc0f7c1666a379e18ff11bdc09f90d8}{message} (const QString \&data)
+\end{DoxyCompactItemize}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classQtTelnet_a246f1f976859e2530a4cd2183b2ee2e0}{QtTelnet} (QObject $\ast$parent=0)
+\item 
+\hyperlink{classQtTelnet_a9fb18d832d8844fcb956a46f0aa4e1a4}{$\sim$QtTelnet} ()
+\item 
+void \hyperlink{classQtTelnet_a226897664d5b148a31d811acb964cc91}{connectToHost} (const QString \&host, quint16 port=23)
+\item 
+void \hyperlink{classQtTelnet_a2142cdc1a44a56e3037529dde6f5c9ca}{login} (const QString \&user, const QString \&pass)
+\item 
+void \hyperlink{classQtTelnet_ac4475a0ca183283d3f9e26f3a4857124}{setWindowSize} (const QSize \&size)
+\item 
+void \hyperlink{classQtTelnet_a6cdc9b7fc9d27261dd62bf5725bf9e3c}{setWindowSize} (int width, int height)
+\item 
+QSize \hyperlink{classQtTelnet_a8d6a8c8f7be73d0fd17042eb472b1bb7}{windowSize} () const 
+\item 
+bool \hyperlink{classQtTelnet_a48d00e9c0481c66833d6aa480d7ba873}{isValidWindowSize} () const 
+\item 
+void \hyperlink{classQtTelnet_a4d9b0d3d024344f5319cdf5cde1f647a}{setSocket} (QTcpSocket $\ast$socket)
+\item 
+QTcpSocket $\ast$ \hyperlink{classQtTelnet_a76817174fd5ca030ab5a40a1b5735e79}{socket} () const 
+\item 
+void \hyperlink{classQtTelnet_a096bcdda2451ccbfea3c4eb4b26fd51e}{setPromptPattern} (const QRegExp \&pattern)
+\item 
+void \hyperlink{classQtTelnet_a137fcf7ced491719268d07a7b53aff25}{setPromptString} (const QString \&pattern)
+\item 
+void \hyperlink{classQtTelnet_a2910ce853f6ea8b50d8ab1cfc607f168}{setLoginPattern} (const QRegExp \&pattern)
+\item 
+void \hyperlink{classQtTelnet_a638099de262c33cd5ffc2e007bce5ebf}{setLoginString} (const QString \&pattern)
+\item 
+void \hyperlink{classQtTelnet_a13cc290fbfd93c50c5263b3191da8f69}{setPasswordPattern} (const QRegExp \&pattern)
+\item 
+void \hyperlink{classQtTelnet_a95a9e595ae0f7d95f5e410e2e553bd1d}{setPasswordString} (const QString \&pattern)
+\end{DoxyCompactItemize}
+\subsection*{Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classQtTelnetPrivate}{QtTelnetPrivate} $\ast$ \hyperlink{classQtTelnet_a1622dba7b3536ecf918543995d89c14c}{d}
+\end{DoxyCompactItemize}
+\subsection*{Friends}
+\begin{DoxyCompactItemize}
+\item 
+class \hyperlink{classQtTelnet_ad680c25404e0d6ccdf3e8a5a6cf36502}{QtTelnetPrivate}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+The \hyperlink{classQtTelnet}{QtTelnet} class proveds an API to connect to Telnet servers, issue commands and receive replies. When a \hyperlink{classQtTelnet}{QtTelnet} object has been created, you need to call \hyperlink{classQtTelnet_a226897664d5b148a31d811acb964cc91}{connectToHost()} to establish a connection with a Telnet server. When the connection is established the connected() signal is emitted. At this point you should call \hyperlink{classQtTelnet_a2142cdc1a44a56e3037529dde6f5c9ca}{login()}. The \hyperlink{classQtTelnet}{QtTelnet} object will emit \hyperlink{classQtTelnet_ab6e03a94fcb63d1393dfb7edda5c8a03}{connectionError()} if the connection fails, and authenticationFailed() if the \hyperlink{classQtTelnet_a2142cdc1a44a56e3037529dde6f5c9ca}{login()} failed.
+
+Once the connection has been successfully established and you've logged in you can send control messages using \hyperlink{classQtTelnet_aad51391ddbdae2c34a493f2d9ce68eae}{sendControl()} and data using \hyperlink{classQtTelnet_a9f48197f4356c4550e7b258daf89fb02}{sendData()}. Connect to the \hyperlink{classQtTelnet_affc0f7c1666a379e18ff11bdc09f90d8}{message()} signal to receive data from the Telnet server. The connection is closed with \hyperlink{classQtTelnet_af3a32007f06949b28cee13ccbfbe1041}{close()}.
+
+You can use your own socket if you call \hyperlink{classQtTelnet_a4d9b0d3d024344f5319cdf5cde1f647a}{setSocket()} before connecting. The socket used by \hyperlink{classQtTelnet}{QtTelnet} is available from \hyperlink{classQtTelnet_a76817174fd5ca030ab5a40a1b5735e79}{socket()}. 
+
+Definition at line 74 of file qttelnet.h.
+
+
+
+\subsection{Member Enumeration Documentation}
+\hypertarget{classQtTelnet_a59ad635c17c3b531ac49a83bb406f89e}{
+\index{QtTelnet@{QtTelnet}!Control@{Control}}
+\index{Control@{Control}!QtTelnet@{QtTelnet}}
+\subsubsection[{Control}]{\setlength{\rightskip}{0pt plus 5cm}enum {\bf QtTelnet::Control}}}
+\label{classQtTelnet_a59ad635c17c3b531ac49a83bb406f89e}
+This enum specifies control messages you can send to the Telnet server using \hyperlink{classQtTelnet_aad51391ddbdae2c34a493f2d9ce68eae}{sendControl()}.
+
+GoAhead Sends the {\ttfamily GO} {\ttfamily AHEAD} control message, meaning that the server can continue to send data.
+
+InterruptProcess Interrupts the current running process on the server. This is the equivalent of pressing \{Ctrl+C\} in most terminal emulators.
+
+AreYouThere Sends the {\ttfamily ARE} {\ttfamily YOU} {\ttfamily THERE} control message, to check if the connection is still alive.
+
+AbortOutput Temporarily suspends the output from the server. The output will resume if you send this control message again.
+
+EraseCharacter Erases the last entered character.
+
+EraseLine Erases the last line.
+
+Break Sends the {\ttfamily BREAK} control message.
+
+EndOfFile Sends the {\ttfamily END} {\ttfamily OF} {\ttfamily FILE} control message.
+
+Suspend Suspends the current running process on the server. Equivalent to pressing \{Ctrl+Z\} in most terminal emulators.
+
+Abort Sends the {\ttfamily ABORT} control message.
+
+\begin{DoxySeeAlso}{See also}
+\hyperlink{classQtTelnet_aad51391ddbdae2c34a493f2d9ce68eae}{sendControl()} 
+\end{DoxySeeAlso}
+\begin{Desc}
+\item[Enumerator: ]\par
+\begin{description}
+\index{GoAhead@{GoAhead}!QtTelnet@{QtTelnet}}\index{QtTelnet@{QtTelnet}!GoAhead@{GoAhead}}\item[{\em 
+\hypertarget{classQtTelnet_a59ad635c17c3b531ac49a83bb406f89ea0f838ccc5ebd49da58435fb65750fc7f}{
+GoAhead}
+\label{classQtTelnet_a59ad635c17c3b531ac49a83bb406f89ea0f838ccc5ebd49da58435fb65750fc7f}
+}]\index{InterruptProcess@{InterruptProcess}!QtTelnet@{QtTelnet}}\index{QtTelnet@{QtTelnet}!InterruptProcess@{InterruptProcess}}\item[{\em 
+\hypertarget{classQtTelnet_a59ad635c17c3b531ac49a83bb406f89eae2fe37e564d7fab67209a6352b3d66c6}{
+InterruptProcess}
+\label{classQtTelnet_a59ad635c17c3b531ac49a83bb406f89eae2fe37e564d7fab67209a6352b3d66c6}
+}]\index{AreYouThere@{AreYouThere}!QtTelnet@{QtTelnet}}\index{QtTelnet@{QtTelnet}!AreYouThere@{AreYouThere}}\item[{\em 
+\hypertarget{classQtTelnet_a59ad635c17c3b531ac49a83bb406f89ea01456777328aff57ea5b0d650f0c4f55}{
+AreYouThere}
+\label{classQtTelnet_a59ad635c17c3b531ac49a83bb406f89ea01456777328aff57ea5b0d650f0c4f55}
+}]\index{AbortOutput@{AbortOutput}!QtTelnet@{QtTelnet}}\index{QtTelnet@{QtTelnet}!AbortOutput@{AbortOutput}}\item[{\em 
+\hypertarget{classQtTelnet_a59ad635c17c3b531ac49a83bb406f89ead9622371b21b81920a1d5edec5583e9c}{
+AbortOutput}
+\label{classQtTelnet_a59ad635c17c3b531ac49a83bb406f89ead9622371b21b81920a1d5edec5583e9c}
+}]\index{EraseCharacter@{EraseCharacter}!QtTelnet@{QtTelnet}}\index{QtTelnet@{QtTelnet}!EraseCharacter@{EraseCharacter}}\item[{\em 
+\hypertarget{classQtTelnet_a59ad635c17c3b531ac49a83bb406f89eaec8abb4eceacf87f7347ef656f81ea32}{
+EraseCharacter}
+\label{classQtTelnet_a59ad635c17c3b531ac49a83bb406f89eaec8abb4eceacf87f7347ef656f81ea32}
+}]\index{EraseLine@{EraseLine}!QtTelnet@{QtTelnet}}\index{QtTelnet@{QtTelnet}!EraseLine@{EraseLine}}\item[{\em 
+\hypertarget{classQtTelnet_a59ad635c17c3b531ac49a83bb406f89eaeeca06730974bb161792dc779fee5f53}{
+EraseLine}
+\label{classQtTelnet_a59ad635c17c3b531ac49a83bb406f89eaeeca06730974bb161792dc779fee5f53}
+}]\index{Break@{Break}!QtTelnet@{QtTelnet}}\index{QtTelnet@{QtTelnet}!Break@{Break}}\item[{\em 
+\hypertarget{classQtTelnet_a59ad635c17c3b531ac49a83bb406f89ea9495869000e0d6f8c30d91c37a371de3}{
+Break}
+\label{classQtTelnet_a59ad635c17c3b531ac49a83bb406f89ea9495869000e0d6f8c30d91c37a371de3}
+}]\index{EndOfFile@{EndOfFile}!QtTelnet@{QtTelnet}}\index{QtTelnet@{QtTelnet}!EndOfFile@{EndOfFile}}\item[{\em 
+\hypertarget{classQtTelnet_a59ad635c17c3b531ac49a83bb406f89ea9b773f8362e15c07ccf34c925ed34061}{
+EndOfFile}
+\label{classQtTelnet_a59ad635c17c3b531ac49a83bb406f89ea9b773f8362e15c07ccf34c925ed34061}
+}]\index{Suspend@{Suspend}!QtTelnet@{QtTelnet}}\index{QtTelnet@{QtTelnet}!Suspend@{Suspend}}\item[{\em 
+\hypertarget{classQtTelnet_a59ad635c17c3b531ac49a83bb406f89eab4578000b4de6ee05478d9ed4164a7d8}{
+Suspend}
+\label{classQtTelnet_a59ad635c17c3b531ac49a83bb406f89eab4578000b4de6ee05478d9ed4164a7d8}
+}]\index{Abort@{Abort}!QtTelnet@{QtTelnet}}\index{QtTelnet@{QtTelnet}!Abort@{Abort}}\item[{\em 
+\hypertarget{classQtTelnet_a59ad635c17c3b531ac49a83bb406f89eae1fe14df493d4b6e566ad2489ec5e788}{
+Abort}
+\label{classQtTelnet_a59ad635c17c3b531ac49a83bb406f89eae1fe14df493d4b6e566ad2489ec5e788}
+}]\end{description}
+\end{Desc}
+
+
+
+Definition at line 82 of file qttelnet.h.
+
+
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{classQtTelnet_a246f1f976859e2530a4cd2183b2ee2e0}{
+\index{QtTelnet@{QtTelnet}!QtTelnet@{QtTelnet}}
+\index{QtTelnet@{QtTelnet}!QtTelnet@{QtTelnet}}
+\subsubsection[{QtTelnet}]{\setlength{\rightskip}{0pt plus 5cm}QtTelnet::QtTelnet (
+\begin{DoxyParamCaption}
+\item[{QObject $\ast$}]{parent = {\ttfamily 0}}
+\end{DoxyParamCaption}
+)}}
+\label{classQtTelnet_a246f1f976859e2530a4cd2183b2ee2e0}
+Constructs a \hyperlink{classQtTelnet}{QtTelnet} object.
+
+You must call \hyperlink{classQtTelnet_a226897664d5b148a31d811acb964cc91}{connectToHost()} before calling any of the other member functions.
+
+The {\itshape parent\/} is sent to the QObject constructor.
+
+\begin{DoxySeeAlso}{See also}
+\hyperlink{classQtTelnet_a226897664d5b148a31d811acb964cc91}{connectToHost()} 
+\end{DoxySeeAlso}
+
+
+Definition at line 1015 of file qttelnet.cpp.
+
+\hypertarget{classQtTelnet_a9fb18d832d8844fcb956a46f0aa4e1a4}{
+\index{QtTelnet@{QtTelnet}!$\sim$QtTelnet@{$\sim$QtTelnet}}
+\index{$\sim$QtTelnet@{$\sim$QtTelnet}!QtTelnet@{QtTelnet}}
+\subsubsection[{$\sim$QtTelnet}]{\setlength{\rightskip}{0pt plus 5cm}QtTelnet::$\sim$QtTelnet (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}
+\label{classQtTelnet_a9fb18d832d8844fcb956a46f0aa4e1a4}
+Destroys the \hyperlink{classQtTelnet}{QtTelnet} object. This will also close the connection to the server.
+
+\begin{DoxySeeAlso}{See also}
+\hyperlink{classQtTelnet_a9617e3c120e8ff9750b63c5fe4779f16}{logout()} 
+\end{DoxySeeAlso}
+
+
+Definition at line 1026 of file qttelnet.cpp.
+
+
+
+\subsection{Member Function Documentation}
+\hypertarget{classQtTelnet_af3a32007f06949b28cee13ccbfbe1041}{
+\index{QtTelnet@{QtTelnet}!close@{close}}
+\index{close@{close}!QtTelnet@{QtTelnet}}
+\subsubsection[{close}]{\setlength{\rightskip}{0pt plus 5cm}void QtTelnet::close (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}slot\mbox{]}}}}
+\label{classQtTelnet_af3a32007f06949b28cee13ccbfbe1041}
+Closes the connection to a Telnet server.
+
+\begin{DoxySeeAlso}{See also}
+\hyperlink{classQtTelnet_a226897664d5b148a31d811acb964cc91}{connectToHost()} \hyperlink{classQtTelnet_a2142cdc1a44a56e3037529dde6f5c9ca}{login()} 
+\end{DoxySeeAlso}
+
+
+Definition at line 1055 of file qttelnet.cpp.
+
+\hypertarget{classQtTelnet_ab6e03a94fcb63d1393dfb7edda5c8a03}{
+\index{QtTelnet@{QtTelnet}!connectionError@{connectionError}}
+\index{connectionError@{connectionError}!QtTelnet@{QtTelnet}}
+\subsubsection[{connectionError}]{\setlength{\rightskip}{0pt plus 5cm}void QtTelnet::connectionError (
+\begin{DoxyParamCaption}
+\item[{QAbstractSocket::SocketError}]{error}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}signal\mbox{]}}}}
+\label{classQtTelnet_ab6e03a94fcb63d1393dfb7edda5c8a03}
+This signal is emitted if the underlying socket implementation receives an error. The {\itshape error\/} argument is the same as being used in QSocket::connectionError() \hypertarget{classQtTelnet_a226897664d5b148a31d811acb964cc91}{
+\index{QtTelnet@{QtTelnet}!connectToHost@{connectToHost}}
+\index{connectToHost@{connectToHost}!QtTelnet@{QtTelnet}}
+\subsubsection[{connectToHost}]{\setlength{\rightskip}{0pt plus 5cm}void QtTelnet::connectToHost (
+\begin{DoxyParamCaption}
+\item[{const QString \&}]{host, }
+\item[{quint16}]{port = {\ttfamily 23}}
+\end{DoxyParamCaption}
+)}}
+\label{classQtTelnet_a226897664d5b148a31d811acb964cc91}
+Calling this function will make the \hyperlink{classQtTelnet}{QtTelnet} object attempt to connect to a Telnet server specified by the given {\itshape host\/} and {\itshape port\/}.
+
+The connected() signal is emitted if the connection succeeds, and the \hyperlink{classQtTelnet_ab6e03a94fcb63d1393dfb7edda5c8a03}{connectionError()} signal is emitted if the connection fails. Once the connection is establishe you must call \hyperlink{classQtTelnet_a2142cdc1a44a56e3037529dde6f5c9ca}{login()}.
+
+\begin{DoxySeeAlso}{See also}
+\hyperlink{classQtTelnet_af3a32007f06949b28cee13ccbfbe1041}{close()} 
+\end{DoxySeeAlso}
+
+
+Definition at line 1043 of file qttelnet.cpp.
+
+\hypertarget{classQtTelnet_a48d00e9c0481c66833d6aa480d7ba873}{
+\index{QtTelnet@{QtTelnet}!isValidWindowSize@{isValidWindowSize}}
+\index{isValidWindowSize@{isValidWindowSize}!QtTelnet@{QtTelnet}}
+\subsubsection[{isValidWindowSize}]{\setlength{\rightskip}{0pt plus 5cm}bool QtTelnet::isValidWindowSize (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const}}
+\label{classQtTelnet_a48d00e9c0481c66833d6aa480d7ba873}
+Returns true if the window size is valid, i.e. \hyperlink{classQtTelnet_a8d6a8c8f7be73d0fd17042eb472b1bb7}{windowSize()}.isValid() returns true; otherwise returns false.
+
+\begin{DoxySeeAlso}{See also}
+\hyperlink{classQtTelnet_ac4475a0ca183283d3f9e26f3a4857124}{setWindowSize()} 
+\end{DoxySeeAlso}
+
+
+Definition at line 1196 of file qttelnet.cpp.
+
+\hypertarget{classQtTelnet_a5734a75c3d87d91db8fa069e74d29458}{
+\index{QtTelnet@{QtTelnet}!loggedIn@{loggedIn}}
+\index{loggedIn@{loggedIn}!QtTelnet@{QtTelnet}}
+\subsubsection[{loggedIn}]{\setlength{\rightskip}{0pt plus 5cm}void QtTelnet::loggedIn (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}signal\mbox{]}}}}
+\label{classQtTelnet_a5734a75c3d87d91db8fa069e74d29458}
+This signal is emitted when you have been logged in to the server as a result of the \hyperlink{classQtTelnet_a2142cdc1a44a56e3037529dde6f5c9ca}{login()} command being called. Do note that you might never see this signal even if you have been logged in, due to the Telnet specification not requiring Telnet servers to notify clients when users are logged in.
+
+\begin{DoxySeeAlso}{See also}
+\hyperlink{classQtTelnet_a2142cdc1a44a56e3037529dde6f5c9ca}{login()}, \hyperlink{classQtTelnet_a096bcdda2451ccbfea3c4eb4b26fd51e}{setPromptPattern()} 
+\end{DoxySeeAlso}
+\hypertarget{classQtTelnet_aafd4782b3e8e45850bf063a1087ab908}{
+\index{QtTelnet@{QtTelnet}!loggedOut@{loggedOut}}
+\index{loggedOut@{loggedOut}!QtTelnet@{QtTelnet}}
+\subsubsection[{loggedOut}]{\setlength{\rightskip}{0pt plus 5cm}void QtTelnet::loggedOut (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}signal\mbox{]}}}}
+\label{classQtTelnet_aafd4782b3e8e45850bf063a1087ab908}
+This signal is emitted when you have called \hyperlink{classQtTelnet_a9617e3c120e8ff9750b63c5fe4779f16}{logout()} and the Telnet server has actually logged you out.
+
+\begin{DoxySeeAlso}{See also}
+\hyperlink{classQtTelnet_a9617e3c120e8ff9750b63c5fe4779f16}{logout()}, \hyperlink{classQtTelnet_a2142cdc1a44a56e3037529dde6f5c9ca}{login()} 
+\end{DoxySeeAlso}
+\hypertarget{classQtTelnet_a2142cdc1a44a56e3037529dde6f5c9ca}{
+\index{QtTelnet@{QtTelnet}!login@{login}}
+\index{login@{login}!QtTelnet@{QtTelnet}}
+\subsubsection[{login}]{\setlength{\rightskip}{0pt plus 5cm}void QtTelnet::login (
+\begin{DoxyParamCaption}
+\item[{const QString \&}]{username, }
+\item[{const QString \&}]{password}
+\end{DoxyParamCaption}
+)}}
+\label{classQtTelnet_a2142cdc1a44a56e3037529dde6f5c9ca}
+Sets the {\itshape username\/} and {\itshape password\/} to be used when logging in to the server.
+
+\begin{DoxySeeAlso}{See also}
+\hyperlink{classQtTelnet_a2910ce853f6ea8b50d8ab1cfc607f168}{setLoginPattern()}, \hyperlink{classQtTelnet_a13cc290fbfd93c50c5263b3191da8f69}{setPasswordPattern()} 
+\end{DoxySeeAlso}
+
+
+Definition at line 1318 of file qttelnet.cpp.
+
+\hypertarget{classQtTelnet_a1181936a48b5857f464e8d49586ef5f3}{
+\index{QtTelnet@{QtTelnet}!loginFailed@{loginFailed}}
+\index{loginFailed@{loginFailed}!QtTelnet@{QtTelnet}}
+\subsubsection[{loginFailed}]{\setlength{\rightskip}{0pt plus 5cm}void QtTelnet::loginFailed (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}signal\mbox{]}}}}
+\label{classQtTelnet_a1181936a48b5857f464e8d49586ef5f3}
+This signal is emitted when the login has failed. Do note that you might in certain cases see several \hyperlink{classQtTelnet_a1f5c31b8928e740ac09d7c6c307b4451}{loginRequired()} signals being emitted but no \hyperlink{classQtTelnet_a1181936a48b5857f464e8d49586ef5f3}{loginFailed()} signals. This is due to the Telnet specification not requiring the Telnet server to support reliable authentication methods.
+
+\begin{DoxySeeAlso}{See also}
+\hyperlink{classQtTelnet_a2142cdc1a44a56e3037529dde6f5c9ca}{login()}, \hyperlink{classQtTelnet_a1f5c31b8928e740ac09d7c6c307b4451}{loginRequired()} 
+\end{DoxySeeAlso}
+\hypertarget{classQtTelnet_a1f5c31b8928e740ac09d7c6c307b4451}{
+\index{QtTelnet@{QtTelnet}!loginRequired@{loginRequired}}
+\index{loginRequired@{loginRequired}!QtTelnet@{QtTelnet}}
+\subsubsection[{loginRequired}]{\setlength{\rightskip}{0pt plus 5cm}void QtTelnet::loginRequired (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}signal\mbox{]}}}}
+\label{classQtTelnet_a1f5c31b8928e740ac09d7c6c307b4451}
+This signal is emitted when the \hyperlink{classQtTelnet}{QtTelnet} class sees that the Telnet server expects authentication and you have not already called \hyperlink{classQtTelnet_a2142cdc1a44a56e3037529dde6f5c9ca}{login()}.
+
+As a reply to this signal you should either call \hyperlink{classQtTelnet_a2142cdc1a44a56e3037529dde6f5c9ca}{login()} or \hyperlink{classQtTelnet_a9617e3c120e8ff9750b63c5fe4779f16}{logout()}
+
+\begin{DoxySeeAlso}{See also}
+\hyperlink{classQtTelnet_a2142cdc1a44a56e3037529dde6f5c9ca}{login()}, \hyperlink{classQtTelnet_a9617e3c120e8ff9750b63c5fe4779f16}{logout()} 
+\end{DoxySeeAlso}
+\hypertarget{classQtTelnet_a9617e3c120e8ff9750b63c5fe4779f16}{
+\index{QtTelnet@{QtTelnet}!logout@{logout}}
+\index{logout@{logout}!QtTelnet@{QtTelnet}}
+\subsubsection[{logout}]{\setlength{\rightskip}{0pt plus 5cm}void QtTelnet::logout (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}slot\mbox{]}}}}
+\label{classQtTelnet_a9617e3c120e8ff9750b63c5fe4779f16}
+This function will log you out of the Telnet server. You cannot send any other data after sending this command.
+
+\begin{DoxySeeAlso}{See also}
+\hyperlink{classQtTelnet_a2142cdc1a44a56e3037529dde6f5c9ca}{login()} \hyperlink{classQtTelnet_a9f48197f4356c4550e7b258daf89fb02}{sendData()} \hyperlink{classQtTelnet_aad51391ddbdae2c34a493f2d9ce68eae}{sendControl()} 
+\end{DoxySeeAlso}
+
+
+Definition at line 1139 of file qttelnet.cpp.
+
+\hypertarget{classQtTelnet_affc0f7c1666a379e18ff11bdc09f90d8}{
+\index{QtTelnet@{QtTelnet}!message@{message}}
+\index{message@{message}!QtTelnet@{QtTelnet}}
+\subsubsection[{message}]{\setlength{\rightskip}{0pt plus 5cm}void QtTelnet::message (
+\begin{DoxyParamCaption}
+\item[{const QString \&}]{data}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}signal\mbox{]}}}}
+\label{classQtTelnet_affc0f7c1666a379e18ff11bdc09f90d8}
+This signal is emitted when the \hyperlink{classQtTelnet}{QtTelnet} object receives more {\itshape data\/} from the Telnet server.
+
+\begin{DoxySeeAlso}{See also}
+\hyperlink{classQtTelnet_a9f48197f4356c4550e7b258daf89fb02}{sendData()} 
+\end{DoxySeeAlso}
+\hypertarget{classQtTelnet_aad51391ddbdae2c34a493f2d9ce68eae}{
+\index{QtTelnet@{QtTelnet}!sendControl@{sendControl}}
+\index{sendControl@{sendControl}!QtTelnet@{QtTelnet}}
+\subsubsection[{sendControl}]{\setlength{\rightskip}{0pt plus 5cm}void QtTelnet::sendControl (
+\begin{DoxyParamCaption}
+\item[{{\bf Control}}]{ctrl}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}slot\mbox{]}}}}
+\label{classQtTelnet_aad51391ddbdae2c34a493f2d9ce68eae}
+Sends the control message {\itshape ctrl\/} to the Telnet server the \hyperlink{classQtTelnet}{QtTelnet} object is connected to.
+
+\begin{DoxySeeAlso}{See also}
+\hyperlink{classQtTelnet_a59ad635c17c3b531ac49a83bb406f89e}{Control} \hyperlink{classQtTelnet_a9f48197f4356c4550e7b258daf89fb02}{sendData()} \hyperlink{classQtTelnet_a57b0b9addff684501331df21f2f68259}{sendSync()} 
+\end{DoxySeeAlso}
+
+
+Definition at line 1072 of file qttelnet.cpp.
+
+\hypertarget{classQtTelnet_a9f48197f4356c4550e7b258daf89fb02}{
+\index{QtTelnet@{QtTelnet}!sendData@{sendData}}
+\index{sendData@{sendData}!QtTelnet@{QtTelnet}}
+\subsubsection[{sendData}]{\setlength{\rightskip}{0pt plus 5cm}void QtTelnet::sendData (
+\begin{DoxyParamCaption}
+\item[{const QString \&}]{data}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}slot\mbox{]}}}}
+\label{classQtTelnet_a9f48197f4356c4550e7b258daf89fb02}
+Sends the string {\itshape data\/} to the Telnet server. This is often a command the Telnet server will execute.
+
+\begin{DoxySeeAlso}{See also}
+\hyperlink{classQtTelnet_aad51391ddbdae2c34a493f2d9ce68eae}{sendControl()} 
+\end{DoxySeeAlso}
+
+
+Definition at line 1125 of file qttelnet.cpp.
+
+\hypertarget{classQtTelnet_a57b0b9addff684501331df21f2f68259}{
+\index{QtTelnet@{QtTelnet}!sendSync@{sendSync}}
+\index{sendSync@{sendSync}!QtTelnet@{QtTelnet}}
+\subsubsection[{sendSync}]{\setlength{\rightskip}{0pt plus 5cm}void QtTelnet::sendSync (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}slot\mbox{]}}}}
+\label{classQtTelnet_a57b0b9addff684501331df21f2f68259}
+Sends the Telnet {\ttfamily SYNC} sequence, meaning that the Telnet server should discard any data waiting to be processed once the {\ttfamily SYNC} sequence has been received. This is sent using a TCP urgent notification.
+
+\begin{DoxySeeAlso}{See also}
+\hyperlink{classQtTelnet_aad51391ddbdae2c34a493f2d9ce68eae}{sendControl()} 
+\end{DoxySeeAlso}
+
+
+Definition at line 1235 of file qttelnet.cpp.
+
+\hypertarget{classQtTelnet_a2910ce853f6ea8b50d8ab1cfc607f168}{
+\index{QtTelnet@{QtTelnet}!setLoginPattern@{setLoginPattern}}
+\index{setLoginPattern@{setLoginPattern}!QtTelnet@{QtTelnet}}
+\subsubsection[{setLoginPattern}]{\setlength{\rightskip}{0pt plus 5cm}void QtTelnet::setLoginPattern (
+\begin{DoxyParamCaption}
+\item[{const QRegExp \&}]{pattern}
+\end{DoxyParamCaption}
+)}}
+\label{classQtTelnet_a2910ce853f6ea8b50d8ab1cfc607f168}
+Sets the expected login pattern.
+
+The {\itshape pattern\/} is used to automatically recognize when the server asks for a username. If no username has been set, the \hyperlink{classQtTelnet_a1f5c31b8928e740ac09d7c6c307b4451}{loginRequired()} signal will be emitted.
+
+\begin{DoxySeeAlso}{See also}
+\hyperlink{classQtTelnet_a2142cdc1a44a56e3037529dde6f5c9ca}{login()} 
+\end{DoxySeeAlso}
+
+
+Definition at line 1277 of file qttelnet.cpp.
+
+\hypertarget{classQtTelnet_a638099de262c33cd5ffc2e007bce5ebf}{
+\index{QtTelnet@{QtTelnet}!setLoginString@{setLoginString}}
+\index{setLoginString@{setLoginString}!QtTelnet@{QtTelnet}}
+\subsubsection[{setLoginString}]{\setlength{\rightskip}{0pt plus 5cm}void QtTelnet::setLoginString (
+\begin{DoxyParamCaption}
+\item[{const QString \&}]{login}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}inline\mbox{]}}}}
+\label{classQtTelnet_a638099de262c33cd5ffc2e007bce5ebf}
+Sets the expected login string to {\itshape login\/}.
+
+This is an overloaded member function, provided for convenience. It differs from the above function only in what argument(s) it accepts. 
+
+Definition at line 118 of file qttelnet.h.
+
+\hypertarget{classQtTelnet_a13cc290fbfd93c50c5263b3191da8f69}{
+\index{QtTelnet@{QtTelnet}!setPasswordPattern@{setPasswordPattern}}
+\index{setPasswordPattern@{setPasswordPattern}!QtTelnet@{QtTelnet}}
+\subsubsection[{setPasswordPattern}]{\setlength{\rightskip}{0pt plus 5cm}void QtTelnet::setPasswordPattern (
+\begin{DoxyParamCaption}
+\item[{const QRegExp \&}]{pattern}
+\end{DoxyParamCaption}
+)}}
+\label{classQtTelnet_a13cc290fbfd93c50c5263b3191da8f69}
+Sets the expected password prompt pattern.
+
+The {\itshape pattern\/} is used to automatically recognize when the server asks for a password. If no password has been set, the \hyperlink{classQtTelnet_a1f5c31b8928e740ac09d7c6c307b4451}{loginRequired()} signal will be emitted.
+
+\begin{DoxySeeAlso}{See also}
+\hyperlink{classQtTelnet_a2142cdc1a44a56e3037529dde6f5c9ca}{login()} 
+\end{DoxySeeAlso}
+
+
+Definition at line 1299 of file qttelnet.cpp.
+
+\hypertarget{classQtTelnet_a95a9e595ae0f7d95f5e410e2e553bd1d}{
+\index{QtTelnet@{QtTelnet}!setPasswordString@{setPasswordString}}
+\index{setPasswordString@{setPasswordString}!QtTelnet@{QtTelnet}}
+\subsubsection[{setPasswordString}]{\setlength{\rightskip}{0pt plus 5cm}void QtTelnet::setPasswordString (
+\begin{DoxyParamCaption}
+\item[{const QString \&}]{pattern}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}inline\mbox{]}}}}
+\label{classQtTelnet_a95a9e595ae0f7d95f5e410e2e553bd1d}
+Sets the expected password prompt to {\itshape pattern\/}.
+
+This is an overloaded member function, provided for convenience. It differs from the above function only in what argument(s) it accepts. 
+
+Definition at line 121 of file qttelnet.h.
+
+\hypertarget{classQtTelnet_a096bcdda2451ccbfea3c4eb4b26fd51e}{
+\index{QtTelnet@{QtTelnet}!setPromptPattern@{setPromptPattern}}
+\index{setPromptPattern@{setPromptPattern}!QtTelnet@{QtTelnet}}
+\subsubsection[{setPromptPattern}]{\setlength{\rightskip}{0pt plus 5cm}void QtTelnet::setPromptPattern (
+\begin{DoxyParamCaption}
+\item[{const QRegExp \&}]{pattern}
+\end{DoxyParamCaption}
+)}}
+\label{classQtTelnet_a096bcdda2451ccbfea3c4eb4b26fd51e}
+Sets the expected shell prompt pattern.
+
+The {\itshape pattern\/} is used to automatically recognize when the client has successfully logged in. When a line is read that matches the {\itshape pattern\/}, the \hyperlink{classQtTelnet_a5734a75c3d87d91db8fa069e74d29458}{loggedIn()} signal will be emitted.
+
+\begin{DoxySeeAlso}{See also}
+\hyperlink{classQtTelnet_a2142cdc1a44a56e3037529dde6f5c9ca}{login()}, \hyperlink{classQtTelnet_a5734a75c3d87d91db8fa069e74d29458}{loggedIn()} 
+\end{DoxySeeAlso}
+
+
+Definition at line 1255 of file qttelnet.cpp.
+
+\hypertarget{classQtTelnet_a137fcf7ced491719268d07a7b53aff25}{
+\index{QtTelnet@{QtTelnet}!setPromptString@{setPromptString}}
+\index{setPromptString@{setPromptString}!QtTelnet@{QtTelnet}}
+\subsubsection[{setPromptString}]{\setlength{\rightskip}{0pt plus 5cm}void QtTelnet::setPromptString (
+\begin{DoxyParamCaption}
+\item[{const QString \&}]{pattern}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}inline\mbox{]}}}}
+\label{classQtTelnet_a137fcf7ced491719268d07a7b53aff25}
+Sets the expected shell prompt to {\itshape pattern\/}.
+
+This is an overloaded member function, provided for convenience. It differs from the above function only in what argument(s) it accepts. 
+
+Definition at line 99 of file qttelnet.h.
+
+\hypertarget{classQtTelnet_a4d9b0d3d024344f5319cdf5cde1f647a}{
+\index{QtTelnet@{QtTelnet}!setSocket@{setSocket}}
+\index{setSocket@{setSocket}!QtTelnet@{QtTelnet}}
+\subsubsection[{setSocket}]{\setlength{\rightskip}{0pt plus 5cm}void QtTelnet::setSocket (
+\begin{DoxyParamCaption}
+\item[{QTcpSocket $\ast$}]{socket}
+\end{DoxyParamCaption}
+)}}
+\label{classQtTelnet_a4d9b0d3d024344f5319cdf5cde1f647a}
+Set the {\itshape socket\/} to be used in the communication.
+
+This function allows you to use your own QSocket subclass. You should call this function before calling \hyperlink{classQtTelnet_a226897664d5b148a31d811acb964cc91}{connectToHost()}; if you call it after a connection has been established the connection will be closed, so in all cases you will need to call \hyperlink{classQtTelnet_a226897664d5b148a31d811acb964cc91}{connectToHost()} after calling this function.
+
+\begin{DoxySeeAlso}{See also}
+\hyperlink{classQtTelnet_a76817174fd5ca030ab5a40a1b5735e79}{socket()}, \hyperlink{classQtTelnet_a226897664d5b148a31d811acb964cc91}{connectToHost()}, \hyperlink{classQtTelnet_a9617e3c120e8ff9750b63c5fe4779f16}{logout()} 
+\end{DoxySeeAlso}
+
+
+Definition at line 1212 of file qttelnet.cpp.
+
+\hypertarget{classQtTelnet_a6cdc9b7fc9d27261dd62bf5725bf9e3c}{
+\index{QtTelnet@{QtTelnet}!setWindowSize@{setWindowSize}}
+\index{setWindowSize@{setWindowSize}!QtTelnet@{QtTelnet}}
+\subsubsection[{setWindowSize}]{\setlength{\rightskip}{0pt plus 5cm}void QtTelnet::setWindowSize (
+\begin{DoxyParamCaption}
+\item[{int}]{width, }
+\item[{int}]{height}
+\end{DoxyParamCaption}
+)}}
+\label{classQtTelnet_a6cdc9b7fc9d27261dd62bf5725bf9e3c}
+Sets the client window size.
+
+The {\itshape width\/} and {\itshape height\/} are given in number of characters.
+
+This is an overloaded member function, provided for convenience. It differs from the above function only in what argument(s) it accepts. 
+
+Definition at line 1164 of file qttelnet.cpp.
+
+\hypertarget{classQtTelnet_ac4475a0ca183283d3f9e26f3a4857124}{
+\index{QtTelnet@{QtTelnet}!setWindowSize@{setWindowSize}}
+\index{setWindowSize@{setWindowSize}!QtTelnet@{QtTelnet}}
+\subsubsection[{setWindowSize}]{\setlength{\rightskip}{0pt plus 5cm}void QtTelnet::setWindowSize (
+\begin{DoxyParamCaption}
+\item[{const QSize \&}]{size}
+\end{DoxyParamCaption}
+)}}
+\label{classQtTelnet_ac4475a0ca183283d3f9e26f3a4857124}
+Sets the client window size to {\itshape size\/}.
+
+The width and height are given in number of characters. Non-\/visible clients should pass an invalid size (i.e. QSize()).
+
+\begin{DoxySeeAlso}{See also}
+\hyperlink{classQtTelnet_a48d00e9c0481c66833d6aa480d7ba873}{isValidWindowSize()} 
+\end{DoxySeeAlso}
+
+
+Definition at line 1152 of file qttelnet.cpp.
+
+\hypertarget{classQtTelnet_a76817174fd5ca030ab5a40a1b5735e79}{
+\index{QtTelnet@{QtTelnet}!socket@{socket}}
+\index{socket@{socket}!QtTelnet@{QtTelnet}}
+\subsubsection[{socket}]{\setlength{\rightskip}{0pt plus 5cm}QTcpSocket $\ast$ QtTelnet::socket (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const}}
+\label{classQtTelnet_a76817174fd5ca030ab5a40a1b5735e79}
+Returns the QTcpSocket instance used by this telnet object.
+
+\begin{DoxySeeAlso}{See also}
+\hyperlink{classQtTelnet_a4d9b0d3d024344f5319cdf5cde1f647a}{setSocket()} 
+\end{DoxySeeAlso}
+
+
+Definition at line 1222 of file qttelnet.cpp.
+
+\hypertarget{classQtTelnet_a8d6a8c8f7be73d0fd17042eb472b1bb7}{
+\index{QtTelnet@{QtTelnet}!windowSize@{windowSize}}
+\index{windowSize@{windowSize}!QtTelnet@{QtTelnet}}
+\subsubsection[{windowSize}]{\setlength{\rightskip}{0pt plus 5cm}QSize QtTelnet::windowSize (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const}}
+\label{classQtTelnet_a8d6a8c8f7be73d0fd17042eb472b1bb7}
+Returns the window's size. This will be an invalid size if the Telnet server is not using the NAWS option (RFC1073).
+
+\begin{DoxySeeAlso}{See also}
+\hyperlink{classQtTelnet_a48d00e9c0481c66833d6aa480d7ba873}{isValidWindowSize()} 
+\end{DoxySeeAlso}
+
+
+Definition at line 1185 of file qttelnet.cpp.
+
+
+
+\subsection{Friends And Related Function Documentation}
+\hypertarget{classQtTelnet_ad680c25404e0d6ccdf3e8a5a6cf36502}{
+\index{QtTelnet@{QtTelnet}!QtTelnetPrivate@{QtTelnetPrivate}}
+\index{QtTelnetPrivate@{QtTelnetPrivate}!QtTelnet@{QtTelnet}}
+\subsubsection[{QtTelnetPrivate}]{\setlength{\rightskip}{0pt plus 5cm}friend class {\bf QtTelnetPrivate}\hspace{0.3cm}{\ttfamily  \mbox{[}friend\mbox{]}}}}
+\label{classQtTelnet_ad680c25404e0d6ccdf3e8a5a6cf36502}
+
+
+Definition at line 77 of file qttelnet.h.
+
+
+
+\subsection{Member Data Documentation}
+\hypertarget{classQtTelnet_a1622dba7b3536ecf918543995d89c14c}{
+\index{QtTelnet@{QtTelnet}!d@{d}}
+\index{d@{d}!QtTelnet@{QtTelnet}}
+\subsubsection[{d}]{\setlength{\rightskip}{0pt plus 5cm}{\bf QtTelnetPrivate}$\ast$ {\bf QtTelnet::d}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classQtTelnet_a1622dba7b3536ecf918543995d89c14c}
+
+
+Definition at line 125 of file qttelnet.h.
+
+
+
+The documentation for this class was generated from the following files:\begin{DoxyCompactItemize}
+\item 
+/e/ms/QT/qtelnet/\hyperlink{qttelnet_8h}{qttelnet.h}\item 
+/e/ms/QT/qtelnet/\hyperlink{qttelnet_8cpp}{qttelnet.cpp}\end{DoxyCompactItemize}

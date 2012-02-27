@@ -1,0 +1,161 @@
+\hypertarget{classXML2Style}{
+\section{XML2Style Class Reference}
+\label{classXML2Style}\index{XML2Style@{XML2Style}}
+}
+
+
+{\ttfamily \#include $<$xml2style.h$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classXML2Style_ad4d0925f68a0aeef31a11cfc7c1eb4af}{XML2Style} (\hyperlink{classFglForm}{FglForm} $\ast$)
+\item 
+\hyperlink{classXML2Style_a671c07757a3f964ef7a0a2be8ca7d45c}{$\sim$XML2Style} ()
+\item 
+int \hyperlink{classXML2Style_a7092cd6d3d81df9a67f903d9931e3288}{readXML} (const QDomDocument \&)
+\item 
+QString \hyperlink{classXML2Style_a369089a066a0ea258abb14335f4ca0e0}{getStyleSheet} ()
+\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+QStringList \hyperlink{classXML2Style_aee8ffe7e9130c6966419b3334e03fad4}{qsl\_\-styleSheets}
+\end{DoxyCompactItemize}
+\subsection*{Private Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \hyperlink{classXML2Style_ae6ec6cfd462f7139a47ebf03d1edc5a3}{outputTree} (const QDomNode \&)
+\end{DoxyCompactItemize}
+\subsection*{Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+QString \hyperlink{classXML2Style_a8dfd6003a5efc5a49e1126edc93c3535}{qs\_\-styleName}
+\item 
+QString \hyperlink{classXML2Style_abb76712e28059172c7d98bd7f6923aed}{qs\_\-styleSheet}
+\item 
+\hyperlink{classFglForm}{FglForm} $\ast$ \hyperlink{classXML2Style_abe26c1d5050c8e78c9f8a770fbab31a1}{p\_\-currForm}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+
+
+Definition at line 27 of file xml2style.h.
+
+
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{classXML2Style_ad4d0925f68a0aeef31a11cfc7c1eb4af}{
+\index{XML2Style@{XML2Style}!XML2Style@{XML2Style}}
+\index{XML2Style@{XML2Style}!XML2Style@{XML2Style}}
+\subsubsection[{XML2Style}]{\setlength{\rightskip}{0pt plus 5cm}XML2Style::XML2Style (
+\begin{DoxyParamCaption}
+\item[{{\bf FglForm} $\ast$}]{p\_\-currForm}
+\end{DoxyParamCaption}
+)}}
+\label{classXML2Style_ad4d0925f68a0aeef31a11cfc7c1eb4af}
+
+
+Definition at line 27 of file xml2style.cpp.
+
+\hypertarget{classXML2Style_a671c07757a3f964ef7a0a2be8ca7d45c}{
+\index{XML2Style@{XML2Style}!$\sim$XML2Style@{$\sim$XML2Style}}
+\index{$\sim$XML2Style@{$\sim$XML2Style}!XML2Style@{XML2Style}}
+\subsubsection[{$\sim$XML2Style}]{\setlength{\rightskip}{0pt plus 5cm}XML2Style::$\sim$XML2Style (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}
+\label{classXML2Style_a671c07757a3f964ef7a0a2be8ca7d45c}
+
+
+Definition at line 41 of file xml2style.cpp.
+
+
+
+\subsection{Member Function Documentation}
+\hypertarget{classXML2Style_a369089a066a0ea258abb14335f4ca0e0}{
+\index{XML2Style@{XML2Style}!getStyleSheet@{getStyleSheet}}
+\index{getStyleSheet@{getStyleSheet}!XML2Style@{XML2Style}}
+\subsubsection[{getStyleSheet}]{\setlength{\rightskip}{0pt plus 5cm}QString XML2Style::getStyleSheet (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}inline\mbox{]}}}}
+\label{classXML2Style_a369089a066a0ea258abb14335f4ca0e0}
+
+
+Definition at line 37 of file xml2style.h.
+
+\hypertarget{classXML2Style_ae6ec6cfd462f7139a47ebf03d1edc5a3}{
+\index{XML2Style@{XML2Style}!outputTree@{outputTree}}
+\index{outputTree@{outputTree}!XML2Style@{XML2Style}}
+\subsubsection[{outputTree}]{\setlength{\rightskip}{0pt plus 5cm}void XML2Style::outputTree (
+\begin{DoxyParamCaption}
+\item[{const QDomNode \&}]{domNode}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classXML2Style_ae6ec6cfd462f7139a47ebf03d1edc5a3}
+
+
+Definition at line 52 of file xml2style.cpp.
+
+\hypertarget{classXML2Style_a7092cd6d3d81df9a67f903d9931e3288}{
+\index{XML2Style@{XML2Style}!readXML@{readXML}}
+\index{readXML@{readXML}!XML2Style@{XML2Style}}
+\subsubsection[{readXML}]{\setlength{\rightskip}{0pt plus 5cm}int XML2Style::readXML (
+\begin{DoxyParamCaption}
+\item[{const QDomDocument \&}]{doc}
+\end{DoxyParamCaption}
+)}}
+\label{classXML2Style_a7092cd6d3d81df9a67f903d9931e3288}
+
+
+Definition at line 180 of file xml2style.cpp.
+
+
+
+\subsection{Member Data Documentation}
+\hypertarget{classXML2Style_abe26c1d5050c8e78c9f8a770fbab31a1}{
+\index{XML2Style@{XML2Style}!p\_\-currForm@{p\_\-currForm}}
+\index{p\_\-currForm@{p\_\-currForm}!XML2Style@{XML2Style}}
+\subsubsection[{p\_\-currForm}]{\setlength{\rightskip}{0pt plus 5cm}{\bf FglForm}$\ast$ {\bf XML2Style::p\_\-currForm}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classXML2Style_abe26c1d5050c8e78c9f8a770fbab31a1}
+
+
+Definition at line 43 of file xml2style.h.
+
+\hypertarget{classXML2Style_a8dfd6003a5efc5a49e1126edc93c3535}{
+\index{XML2Style@{XML2Style}!qs\_\-styleName@{qs\_\-styleName}}
+\index{qs\_\-styleName@{qs\_\-styleName}!XML2Style@{XML2Style}}
+\subsubsection[{qs\_\-styleName}]{\setlength{\rightskip}{0pt plus 5cm}QString {\bf XML2Style::qs\_\-styleName}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classXML2Style_a8dfd6003a5efc5a49e1126edc93c3535}
+
+
+Definition at line 41 of file xml2style.h.
+
+\hypertarget{classXML2Style_abb76712e28059172c7d98bd7f6923aed}{
+\index{XML2Style@{XML2Style}!qs\_\-styleSheet@{qs\_\-styleSheet}}
+\index{qs\_\-styleSheet@{qs\_\-styleSheet}!XML2Style@{XML2Style}}
+\subsubsection[{qs\_\-styleSheet}]{\setlength{\rightskip}{0pt plus 5cm}QString {\bf XML2Style::qs\_\-styleSheet}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classXML2Style_abb76712e28059172c7d98bd7f6923aed}
+
+
+Definition at line 42 of file xml2style.h.
+
+\hypertarget{classXML2Style_aee8ffe7e9130c6966419b3334e03fad4}{
+\index{XML2Style@{XML2Style}!qsl\_\-styleSheets@{qsl\_\-styleSheets}}
+\index{qsl\_\-styleSheets@{qsl\_\-styleSheets}!XML2Style@{XML2Style}}
+\subsubsection[{qsl\_\-styleSheets}]{\setlength{\rightskip}{0pt plus 5cm}QStringList {\bf XML2Style::qsl\_\-styleSheets}}}
+\label{classXML2Style_aee8ffe7e9130c6966419b3334e03fad4}
+
+
+Definition at line 36 of file xml2style.h.
+
+
+
+The documentation for this class was generated from the following files:\begin{DoxyCompactItemize}
+\item 
+/e/ms/QT/xmlparsers/\hyperlink{xml2style_8h}{xml2style.h}\item 
+/e/ms/QT/xmlparsers/\hyperlink{xml2style_8cpp}{xml2style.cpp}\end{DoxyCompactItemize}

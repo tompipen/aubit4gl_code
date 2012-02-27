@@ -1,0 +1,291 @@
+\hypertarget{classXML2Fields}{
+\section{XML2Fields Class Reference}
+\label{classXML2Fields}\index{XML2Fields@{XML2Fields}}
+}
+
+
+{\ttfamily \#include $<$xml2fields.h$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classXML2Fields_ab137f257e4b4a24c22c19e02187bf244}{XML2Fields} ()
+\item 
+void \hyperlink{classXML2Fields_a8167567a765a2b695b505bc5ac757ac7}{parseForm} (QDomDocument)
+\item 
+void \hyperlink{classXML2Fields_aa58a06287e0c221b5447fdd04be6cfa5}{parseElement} (QDomNode)
+\item 
+QList$<$ QObject $\ast$ $>$ \hyperlink{classXML2Fields_a2f9ef3fc4ee382767b0a3828644183ed}{getFieldList} ()
+\item 
+QObject $\ast$ \hyperlink{classXML2Fields_ae9c6004fc3c4f7129447112eb85fdf09}{getLayout} ()
+\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classTableView}{TableView} $\ast$ \hyperlink{classXML2Fields_a520c208c5d9f130f7e534443ec045297}{p\_\-screenRecord}
+\item 
+QList$<$ QObject $\ast$ $>$ \hyperlink{classXML2Fields_ae92aef70643deee1737b7fc0096735f6}{ql\_\-formFields}
+\end{DoxyCompactItemize}
+\subsection*{Private Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \hyperlink{classXML2Fields_a0c3fb22790512de12888f93d89d6921e}{addToForm} (QObject $\ast$, bool add=false, int x=0, int y=0, int w=0)
+\item 
+void \hyperlink{classXML2Fields_ad8d3383e6a6db84e1499a8f42055744d}{handleField} (const QDomNode \&)
+\item 
+void \hyperlink{classXML2Fields_a703cfa98e9f508904bf619bee44b5ced}{handleFormField} (const QDomNode \&)
+\item 
+void \hyperlink{classXML2Fields_a4f91d9cc5b3cdc353534a8c06e3ef4f9}{handleTableColumn} (const QDomNode \&)
+\end{DoxyCompactItemize}
+\subsection*{Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+QObject $\ast$ \hyperlink{classXML2Fields_aeb1f9accfbfbad654fbda8d7fc2b2e78}{currObject}
+\item 
+QObject $\ast$ \hyperlink{classXML2Fields_a2cf56baac7b4559ba2aca1af32279d26}{parentObject}
+\item 
+QLayout $\ast$ \hyperlink{classXML2Fields_a602aa9a9339f73cf633ed6c1d26385f8}{layout}
+\item 
+QColor \hyperlink{classXML2Fields_a33cfcfe4863357bceb94ac279120925a}{qcol\_\-BaseColor}
+\item 
+bool \hyperlink{classXML2Fields_a08d0d38fbb8a0273ec6b94f05f5061b9}{hidden}
+\item 
+int \hyperlink{classXML2Fields_a66a1337c8ec02921c2ba3a9b24d5e12e}{widthFactor}
+\item 
+int \hyperlink{classXML2Fields_a26ed37a4d7fb8cd65360ac174e12dd87}{heightFactor}
+\item 
+QList$<$ QObject $\ast$ $>$ \hyperlink{classXML2Fields_ac3f7050cd12bcb4c6a187f419a0f03bb}{ql\_\-objectList}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+
+
+Definition at line 37 of file xml2fields.h.
+
+
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{classXML2Fields_ab137f257e4b4a24c22c19e02187bf244}{
+\index{XML2Fields@{XML2Fields}!XML2Fields@{XML2Fields}}
+\index{XML2Fields@{XML2Fields}!XML2Fields@{XML2Fields}}
+\subsubsection[{XML2Fields}]{\setlength{\rightskip}{0pt plus 5cm}XML2Fields::XML2Fields (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}
+\label{classXML2Fields_ab137f257e4b4a24c22c19e02187bf244}
+
+
+Definition at line 30 of file xml2fields.cpp.
+
+
+
+\subsection{Member Function Documentation}
+\hypertarget{classXML2Fields_a0c3fb22790512de12888f93d89d6921e}{
+\index{XML2Fields@{XML2Fields}!addToForm@{addToForm}}
+\index{addToForm@{addToForm}!XML2Fields@{XML2Fields}}
+\subsubsection[{addToForm}]{\setlength{\rightskip}{0pt plus 5cm}void XML2Fields::addToForm (
+\begin{DoxyParamCaption}
+\item[{QObject $\ast$}]{obj, }
+\item[{bool}]{add = {\ttfamily false}, }
+\item[{int}]{x = {\ttfamily 0}, }
+\item[{int}]{y = {\ttfamily 0}, }
+\item[{int}]{w = {\ttfamily 0}}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classXML2Fields_a0c3fb22790512de12888f93d89d6921e}
+
+
+Definition at line 208 of file xml2fields.cpp.
+
+\hypertarget{classXML2Fields_a2f9ef3fc4ee382767b0a3828644183ed}{
+\index{XML2Fields@{XML2Fields}!getFieldList@{getFieldList}}
+\index{getFieldList@{getFieldList}!XML2Fields@{XML2Fields}}
+\subsubsection[{getFieldList}]{\setlength{\rightskip}{0pt plus 5cm}QList$<$ QObject $\ast$ $>$ XML2Fields::getFieldList (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}
+\label{classXML2Fields_a2f9ef3fc4ee382767b0a3828644183ed}
+
+
+Definition at line 46 of file xml2fields.cpp.
+
+\hypertarget{classXML2Fields_ae9c6004fc3c4f7129447112eb85fdf09}{
+\index{XML2Fields@{XML2Fields}!getLayout@{getLayout}}
+\index{getLayout@{getLayout}!XML2Fields@{XML2Fields}}
+\subsubsection[{getLayout}]{\setlength{\rightskip}{0pt plus 5cm}QObject $\ast$ XML2Fields::getLayout (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}
+\label{classXML2Fields_ae9c6004fc3c4f7129447112eb85fdf09}
+
+
+Definition at line 40 of file xml2fields.cpp.
+
+\hypertarget{classXML2Fields_ad8d3383e6a6db84e1499a8f42055744d}{
+\index{XML2Fields@{XML2Fields}!handleField@{handleField}}
+\index{handleField@{handleField}!XML2Fields@{XML2Fields}}
+\subsubsection[{handleField}]{\setlength{\rightskip}{0pt plus 5cm}void XML2Fields::handleField (
+\begin{DoxyParamCaption}
+\item[{const QDomNode \&}]{domNode}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classXML2Fields_ad8d3383e6a6db84e1499a8f42055744d}
+
+
+Definition at line 274 of file xml2fields.cpp.
+
+\hypertarget{classXML2Fields_a703cfa98e9f508904bf619bee44b5ced}{
+\index{XML2Fields@{XML2Fields}!handleFormField@{handleFormField}}
+\index{handleFormField@{handleFormField}!XML2Fields@{XML2Fields}}
+\subsubsection[{handleFormField}]{\setlength{\rightskip}{0pt plus 5cm}void XML2Fields::handleFormField (
+\begin{DoxyParamCaption}
+\item[{const QDomNode \&}]{domNode}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classXML2Fields_a703cfa98e9f508904bf619bee44b5ced}
+
+
+Definition at line 329 of file xml2fields.cpp.
+
+\hypertarget{classXML2Fields_a4f91d9cc5b3cdc353534a8c06e3ef4f9}{
+\index{XML2Fields@{XML2Fields}!handleTableColumn@{handleTableColumn}}
+\index{handleTableColumn@{handleTableColumn}!XML2Fields@{XML2Fields}}
+\subsubsection[{handleTableColumn}]{\setlength{\rightskip}{0pt plus 5cm}void XML2Fields::handleTableColumn (
+\begin{DoxyParamCaption}
+\item[{const QDomNode \&}]{domNode}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classXML2Fields_a4f91d9cc5b3cdc353534a8c06e3ef4f9}
+
+
+Definition at line 424 of file xml2fields.cpp.
+
+\hypertarget{classXML2Fields_aa58a06287e0c221b5447fdd04be6cfa5}{
+\index{XML2Fields@{XML2Fields}!parseElement@{parseElement}}
+\index{parseElement@{parseElement}!XML2Fields@{XML2Fields}}
+\subsubsection[{parseElement}]{\setlength{\rightskip}{0pt plus 5cm}void XML2Fields::parseElement (
+\begin{DoxyParamCaption}
+\item[{QDomNode}]{xmlNode}
+\end{DoxyParamCaption}
+)}}
+\label{classXML2Fields_aa58a06287e0c221b5447fdd04be6cfa5}
+
+
+Definition at line 59 of file xml2fields.cpp.
+
+\hypertarget{classXML2Fields_a8167567a765a2b695b505bc5ac757ac7}{
+\index{XML2Fields@{XML2Fields}!parseForm@{parseForm}}
+\index{parseForm@{parseForm}!XML2Fields@{XML2Fields}}
+\subsubsection[{parseForm}]{\setlength{\rightskip}{0pt plus 5cm}void XML2Fields::parseForm (
+\begin{DoxyParamCaption}
+\item[{QDomDocument}]{xmlForm}
+\end{DoxyParamCaption}
+)}}
+\label{classXML2Fields_a8167567a765a2b695b505bc5ac757ac7}
+
+
+Definition at line 52 of file xml2fields.cpp.
+
+
+
+\subsection{Member Data Documentation}
+\hypertarget{classXML2Fields_aeb1f9accfbfbad654fbda8d7fc2b2e78}{
+\index{XML2Fields@{XML2Fields}!currObject@{currObject}}
+\index{currObject@{currObject}!XML2Fields@{XML2Fields}}
+\subsubsection[{currObject}]{\setlength{\rightskip}{0pt plus 5cm}QObject$\ast$ {\bf XML2Fields::currObject}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classXML2Fields_aeb1f9accfbfbad654fbda8d7fc2b2e78}
+
+
+Definition at line 55 of file xml2fields.h.
+
+\hypertarget{classXML2Fields_a26ed37a4d7fb8cd65360ac174e12dd87}{
+\index{XML2Fields@{XML2Fields}!heightFactor@{heightFactor}}
+\index{heightFactor@{heightFactor}!XML2Fields@{XML2Fields}}
+\subsubsection[{heightFactor}]{\setlength{\rightskip}{0pt plus 5cm}int {\bf XML2Fields::heightFactor}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classXML2Fields_a26ed37a4d7fb8cd65360ac174e12dd87}
+
+
+Definition at line 68 of file xml2fields.h.
+
+\hypertarget{classXML2Fields_a08d0d38fbb8a0273ec6b94f05f5061b9}{
+\index{XML2Fields@{XML2Fields}!hidden@{hidden}}
+\index{hidden@{hidden}!XML2Fields@{XML2Fields}}
+\subsubsection[{hidden}]{\setlength{\rightskip}{0pt plus 5cm}bool {\bf XML2Fields::hidden}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classXML2Fields_a08d0d38fbb8a0273ec6b94f05f5061b9}
+
+
+Definition at line 65 of file xml2fields.h.
+
+\hypertarget{classXML2Fields_a602aa9a9339f73cf633ed6c1d26385f8}{
+\index{XML2Fields@{XML2Fields}!layout@{layout}}
+\index{layout@{layout}!XML2Fields@{XML2Fields}}
+\subsubsection[{layout}]{\setlength{\rightskip}{0pt plus 5cm}QLayout$\ast$ {\bf XML2Fields::layout}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classXML2Fields_a602aa9a9339f73cf633ed6c1d26385f8}
+
+
+Definition at line 57 of file xml2fields.h.
+
+\hypertarget{classXML2Fields_a520c208c5d9f130f7e534443ec045297}{
+\index{XML2Fields@{XML2Fields}!p\_\-screenRecord@{p\_\-screenRecord}}
+\index{p\_\-screenRecord@{p\_\-screenRecord}!XML2Fields@{XML2Fields}}
+\subsubsection[{p\_\-screenRecord}]{\setlength{\rightskip}{0pt plus 5cm}{\bf TableView}$\ast$ {\bf XML2Fields::p\_\-screenRecord}}}
+\label{classXML2Fields_a520c208c5d9f130f7e534443ec045297}
+
+
+Definition at line 47 of file xml2fields.h.
+
+\hypertarget{classXML2Fields_a2cf56baac7b4559ba2aca1af32279d26}{
+\index{XML2Fields@{XML2Fields}!parentObject@{parentObject}}
+\index{parentObject@{parentObject}!XML2Fields@{XML2Fields}}
+\subsubsection[{parentObject}]{\setlength{\rightskip}{0pt plus 5cm}QObject$\ast$ {\bf XML2Fields::parentObject}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classXML2Fields_a2cf56baac7b4559ba2aca1af32279d26}
+
+
+Definition at line 56 of file xml2fields.h.
+
+\hypertarget{classXML2Fields_a33cfcfe4863357bceb94ac279120925a}{
+\index{XML2Fields@{XML2Fields}!qcol\_\-BaseColor@{qcol\_\-BaseColor}}
+\index{qcol\_\-BaseColor@{qcol\_\-BaseColor}!XML2Fields@{XML2Fields}}
+\subsubsection[{qcol\_\-BaseColor}]{\setlength{\rightskip}{0pt plus 5cm}QColor {\bf XML2Fields::qcol\_\-BaseColor}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classXML2Fields_a33cfcfe4863357bceb94ac279120925a}
+
+
+Definition at line 58 of file xml2fields.h.
+
+\hypertarget{classXML2Fields_ae92aef70643deee1737b7fc0096735f6}{
+\index{XML2Fields@{XML2Fields}!ql\_\-formFields@{ql\_\-formFields}}
+\index{ql\_\-formFields@{ql\_\-formFields}!XML2Fields@{XML2Fields}}
+\subsubsection[{ql\_\-formFields}]{\setlength{\rightskip}{0pt plus 5cm}QList$<$QObject$\ast$$>$ {\bf XML2Fields::ql\_\-formFields}}}
+\label{classXML2Fields_ae92aef70643deee1737b7fc0096735f6}
+
+
+Definition at line 49 of file xml2fields.h.
+
+\hypertarget{classXML2Fields_ac3f7050cd12bcb4c6a187f419a0f03bb}{
+\index{XML2Fields@{XML2Fields}!ql\_\-objectList@{ql\_\-objectList}}
+\index{ql\_\-objectList@{ql\_\-objectList}!XML2Fields@{XML2Fields}}
+\subsubsection[{ql\_\-objectList}]{\setlength{\rightskip}{0pt plus 5cm}QList$<$QObject$\ast$$>$ {\bf XML2Fields::ql\_\-objectList}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classXML2Fields_ac3f7050cd12bcb4c6a187f419a0f03bb}
+
+
+Definition at line 70 of file xml2fields.h.
+
+\hypertarget{classXML2Fields_a66a1337c8ec02921c2ba3a9b24d5e12e}{
+\index{XML2Fields@{XML2Fields}!widthFactor@{widthFactor}}
+\index{widthFactor@{widthFactor}!XML2Fields@{XML2Fields}}
+\subsubsection[{widthFactor}]{\setlength{\rightskip}{0pt plus 5cm}int {\bf XML2Fields::widthFactor}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classXML2Fields_a66a1337c8ec02921c2ba3a9b24d5e12e}
+
+
+Definition at line 67 of file xml2fields.h.
+
+
+
+The documentation for this class was generated from the following files:\begin{DoxyCompactItemize}
+\item 
+/e/ms/QT/fieldparsers/\hyperlink{xml2fields_8h}{xml2fields.h}\item 
+/e/ms/QT/fieldparsers/\hyperlink{xml2fields_8cpp}{xml2fields.cpp}\end{DoxyCompactItemize}

@@ -1,0 +1,188 @@
+\hypertarget{classWebBrowser}{
+\section{WebBrowser Class Reference}
+\label{classWebBrowser}\index{WebBrowser@{WebBrowser}}
+}
+
+
+{\ttfamily \#include $<$webbrowser.h$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classWebBrowser_a57e874b70beb48faad0fa234911292f2}{WebBrowser} (const QUrl \&url)
+\end{DoxyCompactItemize}
+\subsection*{Protected Slots}
+\begin{DoxyCompactItemize}
+\item 
+void \hyperlink{classWebBrowser_a3163f7fba97a679546f337f522425de2}{adjustLocation} ()
+\item 
+void \hyperlink{classWebBrowser_a019b509364eddb9a97849c0cc280c0d1}{changeLocation} ()
+\item 
+void \hyperlink{classWebBrowser_abf934236fb5f9e8d588935e92e05b590}{adjustTitle} ()
+\item 
+void \hyperlink{classWebBrowser_a2dfe3602f9038c77cb9952f62651948b}{setProgress} (int p)
+\item 
+void \hyperlink{classWebBrowser_ad5e406fd329da7e05e1de3bbb786eb5b}{finishLoading} (bool)
+\item 
+void \hyperlink{classWebBrowser_afd425096d85a3e79cff09af427e73dcf}{highlightAllLinks} ()
+\end{DoxyCompactItemize}
+\subsection*{Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+QString \hyperlink{classWebBrowser_a24491d38505f561e1b8e19fda935b846}{jQuery}
+\item 
+QWebView $\ast$ \hyperlink{classWebBrowser_aca7125e85b1c317dc6e49e7aa76ec87f}{WebView}
+\item 
+QLineEdit $\ast$ \hyperlink{classWebBrowser_ae902e67fcb201863444d1edef801a662}{locationEdit}
+\item 
+QAction $\ast$ \hyperlink{classWebBrowser_a72affcc10a896cc9684c6187058077b8}{rotateAction}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+
+
+Definition at line 10 of file webbrowser.h.
+
+
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{classWebBrowser_a57e874b70beb48faad0fa234911292f2}{
+\index{WebBrowser@{WebBrowser}!WebBrowser@{WebBrowser}}
+\index{WebBrowser@{WebBrowser}!WebBrowser@{WebBrowser}}
+\subsubsection[{WebBrowser}]{\setlength{\rightskip}{0pt plus 5cm}WebBrowser::WebBrowser (
+\begin{DoxyParamCaption}
+\item[{const QUrl \&}]{url}
+\end{DoxyParamCaption}
+)}}
+\label{classWebBrowser_a57e874b70beb48faad0fa234911292f2}
+
+
+Definition at line 4 of file webbrowser.cpp.
+
+
+
+\subsection{Member Function Documentation}
+\hypertarget{classWebBrowser_a3163f7fba97a679546f337f522425de2}{
+\index{WebBrowser@{WebBrowser}!adjustLocation@{adjustLocation}}
+\index{adjustLocation@{adjustLocation}!WebBrowser@{WebBrowser}}
+\subsubsection[{adjustLocation}]{\setlength{\rightskip}{0pt plus 5cm}void WebBrowser::adjustLocation (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}protected, slot\mbox{]}}}}
+\label{classWebBrowser_a3163f7fba97a679546f337f522425de2}
+
+
+Definition at line 42 of file webbrowser.cpp.
+
+\hypertarget{classWebBrowser_abf934236fb5f9e8d588935e92e05b590}{
+\index{WebBrowser@{WebBrowser}!adjustTitle@{adjustTitle}}
+\index{adjustTitle@{adjustTitle}!WebBrowser@{WebBrowser}}
+\subsubsection[{adjustTitle}]{\setlength{\rightskip}{0pt plus 5cm}void WebBrowser::adjustTitle (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}protected, slot\mbox{]}}}}
+\label{classWebBrowser_abf934236fb5f9e8d588935e92e05b590}
+
+
+Definition at line 55 of file webbrowser.cpp.
+
+\hypertarget{classWebBrowser_a019b509364eddb9a97849c0cc280c0d1}{
+\index{WebBrowser@{WebBrowser}!changeLocation@{changeLocation}}
+\index{changeLocation@{changeLocation}!WebBrowser@{WebBrowser}}
+\subsubsection[{changeLocation}]{\setlength{\rightskip}{0pt plus 5cm}void WebBrowser::changeLocation (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}protected, slot\mbox{]}}}}
+\label{classWebBrowser_a019b509364eddb9a97849c0cc280c0d1}
+
+
+Definition at line 47 of file webbrowser.cpp.
+
+\hypertarget{classWebBrowser_ad5e406fd329da7e05e1de3bbb786eb5b}{
+\index{WebBrowser@{WebBrowser}!finishLoading@{finishLoading}}
+\index{finishLoading@{finishLoading}!WebBrowser@{WebBrowser}}
+\subsubsection[{finishLoading}]{\setlength{\rightskip}{0pt plus 5cm}void WebBrowser::finishLoading (
+\begin{DoxyParamCaption}
+\item[{bool}]{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}protected, slot\mbox{]}}}}
+\label{classWebBrowser_ad5e406fd329da7e05e1de3bbb786eb5b}
+
+
+Definition at line 65 of file webbrowser.cpp.
+
+\hypertarget{classWebBrowser_afd425096d85a3e79cff09af427e73dcf}{
+\index{WebBrowser@{WebBrowser}!highlightAllLinks@{highlightAllLinks}}
+\index{highlightAllLinks@{highlightAllLinks}!WebBrowser@{WebBrowser}}
+\subsubsection[{highlightAllLinks}]{\setlength{\rightskip}{0pt plus 5cm}void WebBrowser::highlightAllLinks (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}protected, slot\mbox{]}}}}
+\label{classWebBrowser_afd425096d85a3e79cff09af427e73dcf}
+
+
+Definition at line 72 of file webbrowser.cpp.
+
+\hypertarget{classWebBrowser_a2dfe3602f9038c77cb9952f62651948b}{
+\index{WebBrowser@{WebBrowser}!setProgress@{setProgress}}
+\index{setProgress@{setProgress}!WebBrowser@{WebBrowser}}
+\subsubsection[{setProgress}]{\setlength{\rightskip}{0pt plus 5cm}void WebBrowser::setProgress (
+\begin{DoxyParamCaption}
+\item[{int}]{p}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}protected, slot\mbox{]}}}}
+\label{classWebBrowser_a2dfe3602f9038c77cb9952f62651948b}
+
+
+Definition at line 60 of file webbrowser.cpp.
+
+
+
+\subsection{Member Data Documentation}
+\hypertarget{classWebBrowser_a24491d38505f561e1b8e19fda935b846}{
+\index{WebBrowser@{WebBrowser}!jQuery@{jQuery}}
+\index{jQuery@{jQuery}!WebBrowser@{WebBrowser}}
+\subsubsection[{jQuery}]{\setlength{\rightskip}{0pt plus 5cm}QString {\bf WebBrowser::jQuery}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classWebBrowser_a24491d38505f561e1b8e19fda935b846}
+
+
+Definition at line 36 of file webbrowser.h.
+
+\hypertarget{classWebBrowser_ae902e67fcb201863444d1edef801a662}{
+\index{WebBrowser@{WebBrowser}!locationEdit@{locationEdit}}
+\index{locationEdit@{locationEdit}!WebBrowser@{WebBrowser}}
+\subsubsection[{locationEdit}]{\setlength{\rightskip}{0pt plus 5cm}QLineEdit$\ast$ {\bf WebBrowser::locationEdit}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classWebBrowser_ae902e67fcb201863444d1edef801a662}
+
+
+Definition at line 38 of file webbrowser.h.
+
+\hypertarget{classWebBrowser_a72affcc10a896cc9684c6187058077b8}{
+\index{WebBrowser@{WebBrowser}!rotateAction@{rotateAction}}
+\index{rotateAction@{rotateAction}!WebBrowser@{WebBrowser}}
+\subsubsection[{rotateAction}]{\setlength{\rightskip}{0pt plus 5cm}QAction$\ast$ {\bf WebBrowser::rotateAction}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classWebBrowser_a72affcc10a896cc9684c6187058077b8}
+
+
+Definition at line 39 of file webbrowser.h.
+
+\hypertarget{classWebBrowser_aca7125e85b1c317dc6e49e7aa76ec87f}{
+\index{WebBrowser@{WebBrowser}!WebView@{WebView}}
+\index{WebView@{WebView}!WebBrowser@{WebBrowser}}
+\subsubsection[{WebView}]{\setlength{\rightskip}{0pt plus 5cm}QWebView$\ast$ {\bf WebBrowser::WebView}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classWebBrowser_aca7125e85b1c317dc6e49e7aa76ec87f}
+
+
+Definition at line 37 of file webbrowser.h.
+
+
+
+The documentation for this class was generated from the following files:\begin{DoxyCompactItemize}
+\item 
+/e/ms/QT/models/\hyperlink{webbrowser_8h}{webbrowser.h}\item 
+/e/ms/QT/models/\hyperlink{webbrowser_8cpp}{webbrowser.cpp}\end{DoxyCompactItemize}

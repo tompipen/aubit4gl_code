@@ -1,0 +1,310 @@
+\hypertarget{namespaceLineMode}{
+\section{LineMode Namespace Reference}
+\label{namespaceLineMode}\index{LineMode@{LineMode}}
+}
+\subsection*{Enumerations}
+\begin{DoxyCompactItemize}
+\item 
+enum \hyperlink{namespaceLineMode_a8bca40d5c4a09d910bd71dd1be47c99b}{Modes} \{ \par
+\hyperlink{namespaceLineMode_a8bca40d5c4a09d910bd71dd1be47c99baece3f6b606cb967d0414dc1980b37c9b}{EDIT} =  1, 
+\hyperlink{namespaceLineMode_a8bca40d5c4a09d910bd71dd1be47c99ba9efcd58065aebde6524edcb6299fc4d9}{TRAPSIG} =  2, 
+\hyperlink{namespaceLineMode_a8bca40d5c4a09d910bd71dd1be47c99bafe03b145df35c51cf2224a52de728f43}{MODE\_\-ACK} =  4, 
+\hyperlink{namespaceLineMode_a8bca40d5c4a09d910bd71dd1be47c99ba9142db5da2ddd6e8f080a1321bb911ef}{SOFT\_\-TAB} =  8, 
+\par
+\hyperlink{namespaceLineMode_a8bca40d5c4a09d910bd71dd1be47c99ba7d61f0c041e6395ce0c490b5a11ca1f0}{LIT\_\-ECHO} =  16
+ \}
+\item 
+enum \hyperlink{namespaceLineMode_abebf06755a3b54a53f1f650f5be54e3b}{SLCs} \{ \par
+\hyperlink{namespaceLineMode_abebf06755a3b54a53f1f650f5be54e3bacaede46e509d60fb46a394bdb4876a07}{SLC\_\-SYNCH} =  1, 
+\hyperlink{namespaceLineMode_abebf06755a3b54a53f1f650f5be54e3bac5ec05632305fa8f085e0fa149e5e04c}{SLC\_\-BRK} =  2, 
+\hyperlink{namespaceLineMode_abebf06755a3b54a53f1f650f5be54e3ba7d40550439b51b2e68d6376af40a484c}{SLC\_\-IP} =  3, 
+\hyperlink{namespaceLineMode_abebf06755a3b54a53f1f650f5be54e3ba250aa4d28a833ed4ff661920c3f0df73}{SLC\_\-AO} =  4, 
+\par
+\hyperlink{namespaceLineMode_abebf06755a3b54a53f1f650f5be54e3ba9aad10aed50d5bf45a1819c892d46e73}{SLC\_\-AYT} =  5, 
+\hyperlink{namespaceLineMode_abebf06755a3b54a53f1f650f5be54e3bad5cd7138bf3c21b835424aa104d6aa07}{SLC\_\-EOR} =  6, 
+\hyperlink{namespaceLineMode_abebf06755a3b54a53f1f650f5be54e3badd2eb0c4675b402242c0a1b440b2c95e}{SLC\_\-ABORT} =  7, 
+\hyperlink{namespaceLineMode_abebf06755a3b54a53f1f650f5be54e3ba8bfda4344e6c7fa1e6c49244578bcd4e}{SLC\_\-EOF} =  8, 
+\par
+\hyperlink{namespaceLineMode_abebf06755a3b54a53f1f650f5be54e3ba1cfcd4fa2af68b1fff28bd976ba5831b}{SLC\_\-SUSP} =  9, 
+\hyperlink{namespaceLineMode_abebf06755a3b54a53f1f650f5be54e3bad60e00a8799386977ff2ae926c03c76b}{SLC\_\-EC} =  10, 
+\hyperlink{namespaceLineMode_abebf06755a3b54a53f1f650f5be54e3baa467b805d13d3d650b39352d28974840}{SLC\_\-EL} =  11, 
+\hyperlink{namespaceLineMode_abebf06755a3b54a53f1f650f5be54e3ba8917a49503092892edffa1f4bc2c23e8}{SLC\_\-EW} =  12, 
+\par
+\hyperlink{namespaceLineMode_abebf06755a3b54a53f1f650f5be54e3ba0737760e067e7dc833f0cc1dd43710a0}{SLC\_\-RP} =  13, 
+\hyperlink{namespaceLineMode_abebf06755a3b54a53f1f650f5be54e3ba0b8782729c3ef6d410440212fa99a93a}{SLC\_\-LNEXT} =  14, 
+\hyperlink{namespaceLineMode_abebf06755a3b54a53f1f650f5be54e3bac294f9d260d09074528f73be8f10e2dd}{SLC\_\-XON} =  15, 
+\hyperlink{namespaceLineMode_abebf06755a3b54a53f1f650f5be54e3ba96acd861c2b9bdb8e38de4e72b2dcd03}{SLC\_\-XOFF} =  16, 
+\par
+\hyperlink{namespaceLineMode_abebf06755a3b54a53f1f650f5be54e3ba3f746a46fa7915a492b3a33388079f2b}{SLC\_\-FORW1} =  17, 
+\hyperlink{namespaceLineMode_abebf06755a3b54a53f1f650f5be54e3ba9273ea83e0564de79a4252b67c56d3dd}{SLC\_\-FORW2} =  18, 
+\hyperlink{namespaceLineMode_abebf06755a3b54a53f1f650f5be54e3ba1e06db2c547fbbacc8a2bdc49aa4031c}{SLC\_\-MCL} =  19, 
+\hyperlink{namespaceLineMode_abebf06755a3b54a53f1f650f5be54e3ba4f6421a990d07ac741dc7c731aeab653}{SLC\_\-MCR} =  20, 
+\par
+\hyperlink{namespaceLineMode_abebf06755a3b54a53f1f650f5be54e3bad1a44c78bccfe6e3fcee1c7df77e925b}{SLC\_\-MCWL} =  21, 
+\hyperlink{namespaceLineMode_abebf06755a3b54a53f1f650f5be54e3bab19b6d130b10f797cf09dcb504e7dccd}{SLC\_\-MCWR} =  22, 
+\hyperlink{namespaceLineMode_abebf06755a3b54a53f1f650f5be54e3badf846c03c26e35888168fd0e697e9f73}{SLC\_\-MCBOL} =  23, 
+\hyperlink{namespaceLineMode_abebf06755a3b54a53f1f650f5be54e3bab411b891fa6b20e1b9a32d8f726dae9a}{SLC\_\-MCEOL} =  24, 
+\par
+\hyperlink{namespaceLineMode_abebf06755a3b54a53f1f650f5be54e3ba4dfa20840a18bd8ccc26b209de5b6849}{SLC\_\-INSRT} =  25, 
+\hyperlink{namespaceLineMode_abebf06755a3b54a53f1f650f5be54e3ba2dfa5dcae2f2a827412924c5beb6d66f}{SLC\_\-OVER} =  26, 
+\hyperlink{namespaceLineMode_abebf06755a3b54a53f1f650f5be54e3ba7637e5c4c3b70d18aed9f06c18add6c5}{SLC\_\-ECR} =  27, 
+\hyperlink{namespaceLineMode_abebf06755a3b54a53f1f650f5be54e3ba7487446c4132ff7d5b1eb12ee327c7ef}{SLC\_\-EWR} =  28, 
+\par
+\hyperlink{namespaceLineMode_abebf06755a3b54a53f1f650f5be54e3ba013095b56eb037d2c1a5346f6df254d6}{SLC\_\-EBOL} =  29, 
+\hyperlink{namespaceLineMode_abebf06755a3b54a53f1f650f5be54e3ba871881ec18b434124946867864565aa5}{SLC\_\-EEOL} =  30, 
+\hyperlink{namespaceLineMode_abebf06755a3b54a53f1f650f5be54e3ba31f682392b0ea69ff99eafc6bae536b9}{SLC\_\-DEFAULT} =  3, 
+\hyperlink{namespaceLineMode_abebf06755a3b54a53f1f650f5be54e3ba135924f4860ff1c8bf3a62ec80d3382e}{SLC\_\-VALUE} =  2, 
+\par
+\hyperlink{namespaceLineMode_abebf06755a3b54a53f1f650f5be54e3baeb9538ccc1c859d30abd812b1ce8c425}{SLC\_\-CANTCHANGE} =  1, 
+\hyperlink{namespaceLineMode_abebf06755a3b54a53f1f650f5be54e3bada44ceb09a5f8edb6576c9c0a12f2a77}{SLC\_\-NOSUPPORT} =  0, 
+\hyperlink{namespaceLineMode_abebf06755a3b54a53f1f650f5be54e3baa9382aac8d130cc63022182d259d8ed2}{SLC\_\-LEVELBITS} =  3, 
+\hyperlink{namespaceLineMode_abebf06755a3b54a53f1f650f5be54e3bad5070eb9f249c1a7e7e44425ed2aefd4}{SLC\_\-ACK} =  128, 
+\par
+\hyperlink{namespaceLineMode_abebf06755a3b54a53f1f650f5be54e3bae8bd3238087d02bb9bd0b04a0b97a59b}{SLC\_\-FLUSHIN} =  64, 
+\hyperlink{namespaceLineMode_abebf06755a3b54a53f1f650f5be54e3ba83b0525ca2be6370007984d756f099e2}{SLC\_\-FLUSHOUT} =  32
+ \}
+\end{DoxyCompactItemize}
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+const char \hyperlink{namespaceLineMode_a0856e552cef22379961d80f018154a18}{Mode} = 1
+\item 
+const char \hyperlink{namespaceLineMode_a05d9f57c1b284d291144d033f2af85fe}{ForwardMask} = 2
+\item 
+const char \hyperlink{namespaceLineMode_a4a0d3e56ac29300bfaca0df198a19c32}{SLC} = 3
+\end{DoxyCompactItemize}
+
+
+\subsection{Enumeration Type Documentation}
+\hypertarget{namespaceLineMode_a8bca40d5c4a09d910bd71dd1be47c99b}{
+\index{LineMode@{LineMode}!Modes@{Modes}}
+\index{Modes@{Modes}!LineMode@{LineMode}}
+\subsubsection[{Modes}]{\setlength{\rightskip}{0pt plus 5cm}enum {\bf LineMode::Modes}}}
+\label{namespaceLineMode_a8bca40d5c4a09d910bd71dd1be47c99b}
+\begin{Desc}
+\item[Enumerator: ]\par
+\begin{description}
+\index{EDIT@{EDIT}!LineMode@{LineMode}}\index{LineMode@{LineMode}!EDIT@{EDIT}}\item[{\em 
+\hypertarget{namespaceLineMode_a8bca40d5c4a09d910bd71dd1be47c99baece3f6b606cb967d0414dc1980b37c9b}{
+EDIT}
+\label{namespaceLineMode_a8bca40d5c4a09d910bd71dd1be47c99baece3f6b606cb967d0414dc1980b37c9b}
+}]\index{TRAPSIG@{TRAPSIG}!LineMode@{LineMode}}\index{LineMode@{LineMode}!TRAPSIG@{TRAPSIG}}\item[{\em 
+\hypertarget{namespaceLineMode_a8bca40d5c4a09d910bd71dd1be47c99ba9efcd58065aebde6524edcb6299fc4d9}{
+TRAPSIG}
+\label{namespaceLineMode_a8bca40d5c4a09d910bd71dd1be47c99ba9efcd58065aebde6524edcb6299fc4d9}
+}]\index{MODE\_\-ACK@{MODE\_\-ACK}!LineMode@{LineMode}}\index{LineMode@{LineMode}!MODE\_\-ACK@{MODE\_\-ACK}}\item[{\em 
+\hypertarget{namespaceLineMode_a8bca40d5c4a09d910bd71dd1be47c99bafe03b145df35c51cf2224a52de728f43}{
+MODE\_\-ACK}
+\label{namespaceLineMode_a8bca40d5c4a09d910bd71dd1be47c99bafe03b145df35c51cf2224a52de728f43}
+}]\index{SOFT\_\-TAB@{SOFT\_\-TAB}!LineMode@{LineMode}}\index{LineMode@{LineMode}!SOFT\_\-TAB@{SOFT\_\-TAB}}\item[{\em 
+\hypertarget{namespaceLineMode_a8bca40d5c4a09d910bd71dd1be47c99ba9142db5da2ddd6e8f080a1321bb911ef}{
+SOFT\_\-TAB}
+\label{namespaceLineMode_a8bca40d5c4a09d910bd71dd1be47c99ba9142db5da2ddd6e8f080a1321bb911ef}
+}]\index{LIT\_\-ECHO@{LIT\_\-ECHO}!LineMode@{LineMode}}\index{LineMode@{LineMode}!LIT\_\-ECHO@{LIT\_\-ECHO}}\item[{\em 
+\hypertarget{namespaceLineMode_a8bca40d5c4a09d910bd71dd1be47c99ba7d61f0c041e6395ce0c490b5a11ca1f0}{
+LIT\_\-ECHO}
+\label{namespaceLineMode_a8bca40d5c4a09d910bd71dd1be47c99ba7d61f0c041e6395ce0c490b5a11ca1f0}
+}]\end{description}
+\end{Desc}
+
+
+
+Definition at line 422 of file qttelnet.cpp.
+
+\hypertarget{namespaceLineMode_abebf06755a3b54a53f1f650f5be54e3b}{
+\index{LineMode@{LineMode}!SLCs@{SLCs}}
+\index{SLCs@{SLCs}!LineMode@{LineMode}}
+\subsubsection[{SLCs}]{\setlength{\rightskip}{0pt plus 5cm}enum {\bf LineMode::SLCs}}}
+\label{namespaceLineMode_abebf06755a3b54a53f1f650f5be54e3b}
+\begin{Desc}
+\item[Enumerator: ]\par
+\begin{description}
+\index{SLC\_\-SYNCH@{SLC\_\-SYNCH}!LineMode@{LineMode}}\index{LineMode@{LineMode}!SLC\_\-SYNCH@{SLC\_\-SYNCH}}\item[{\em 
+\hypertarget{namespaceLineMode_abebf06755a3b54a53f1f650f5be54e3bacaede46e509d60fb46a394bdb4876a07}{
+SLC\_\-SYNCH}
+\label{namespaceLineMode_abebf06755a3b54a53f1f650f5be54e3bacaede46e509d60fb46a394bdb4876a07}
+}]\index{SLC\_\-BRK@{SLC\_\-BRK}!LineMode@{LineMode}}\index{LineMode@{LineMode}!SLC\_\-BRK@{SLC\_\-BRK}}\item[{\em 
+\hypertarget{namespaceLineMode_abebf06755a3b54a53f1f650f5be54e3bac5ec05632305fa8f085e0fa149e5e04c}{
+SLC\_\-BRK}
+\label{namespaceLineMode_abebf06755a3b54a53f1f650f5be54e3bac5ec05632305fa8f085e0fa149e5e04c}
+}]\index{SLC\_\-IP@{SLC\_\-IP}!LineMode@{LineMode}}\index{LineMode@{LineMode}!SLC\_\-IP@{SLC\_\-IP}}\item[{\em 
+\hypertarget{namespaceLineMode_abebf06755a3b54a53f1f650f5be54e3ba7d40550439b51b2e68d6376af40a484c}{
+SLC\_\-IP}
+\label{namespaceLineMode_abebf06755a3b54a53f1f650f5be54e3ba7d40550439b51b2e68d6376af40a484c}
+}]\index{SLC\_\-AO@{SLC\_\-AO}!LineMode@{LineMode}}\index{LineMode@{LineMode}!SLC\_\-AO@{SLC\_\-AO}}\item[{\em 
+\hypertarget{namespaceLineMode_abebf06755a3b54a53f1f650f5be54e3ba250aa4d28a833ed4ff661920c3f0df73}{
+SLC\_\-AO}
+\label{namespaceLineMode_abebf06755a3b54a53f1f650f5be54e3ba250aa4d28a833ed4ff661920c3f0df73}
+}]\index{SLC\_\-AYT@{SLC\_\-AYT}!LineMode@{LineMode}}\index{LineMode@{LineMode}!SLC\_\-AYT@{SLC\_\-AYT}}\item[{\em 
+\hypertarget{namespaceLineMode_abebf06755a3b54a53f1f650f5be54e3ba9aad10aed50d5bf45a1819c892d46e73}{
+SLC\_\-AYT}
+\label{namespaceLineMode_abebf06755a3b54a53f1f650f5be54e3ba9aad10aed50d5bf45a1819c892d46e73}
+}]\index{SLC\_\-EOR@{SLC\_\-EOR}!LineMode@{LineMode}}\index{LineMode@{LineMode}!SLC\_\-EOR@{SLC\_\-EOR}}\item[{\em 
+\hypertarget{namespaceLineMode_abebf06755a3b54a53f1f650f5be54e3bad5cd7138bf3c21b835424aa104d6aa07}{
+SLC\_\-EOR}
+\label{namespaceLineMode_abebf06755a3b54a53f1f650f5be54e3bad5cd7138bf3c21b835424aa104d6aa07}
+}]\index{SLC\_\-ABORT@{SLC\_\-ABORT}!LineMode@{LineMode}}\index{LineMode@{LineMode}!SLC\_\-ABORT@{SLC\_\-ABORT}}\item[{\em 
+\hypertarget{namespaceLineMode_abebf06755a3b54a53f1f650f5be54e3badd2eb0c4675b402242c0a1b440b2c95e}{
+SLC\_\-ABORT}
+\label{namespaceLineMode_abebf06755a3b54a53f1f650f5be54e3badd2eb0c4675b402242c0a1b440b2c95e}
+}]\index{SLC\_\-EOF@{SLC\_\-EOF}!LineMode@{LineMode}}\index{LineMode@{LineMode}!SLC\_\-EOF@{SLC\_\-EOF}}\item[{\em 
+\hypertarget{namespaceLineMode_abebf06755a3b54a53f1f650f5be54e3ba8bfda4344e6c7fa1e6c49244578bcd4e}{
+SLC\_\-EOF}
+\label{namespaceLineMode_abebf06755a3b54a53f1f650f5be54e3ba8bfda4344e6c7fa1e6c49244578bcd4e}
+}]\index{SLC\_\-SUSP@{SLC\_\-SUSP}!LineMode@{LineMode}}\index{LineMode@{LineMode}!SLC\_\-SUSP@{SLC\_\-SUSP}}\item[{\em 
+\hypertarget{namespaceLineMode_abebf06755a3b54a53f1f650f5be54e3ba1cfcd4fa2af68b1fff28bd976ba5831b}{
+SLC\_\-SUSP}
+\label{namespaceLineMode_abebf06755a3b54a53f1f650f5be54e3ba1cfcd4fa2af68b1fff28bd976ba5831b}
+}]\index{SLC\_\-EC@{SLC\_\-EC}!LineMode@{LineMode}}\index{LineMode@{LineMode}!SLC\_\-EC@{SLC\_\-EC}}\item[{\em 
+\hypertarget{namespaceLineMode_abebf06755a3b54a53f1f650f5be54e3bad60e00a8799386977ff2ae926c03c76b}{
+SLC\_\-EC}
+\label{namespaceLineMode_abebf06755a3b54a53f1f650f5be54e3bad60e00a8799386977ff2ae926c03c76b}
+}]\index{SLC\_\-EL@{SLC\_\-EL}!LineMode@{LineMode}}\index{LineMode@{LineMode}!SLC\_\-EL@{SLC\_\-EL}}\item[{\em 
+\hypertarget{namespaceLineMode_abebf06755a3b54a53f1f650f5be54e3baa467b805d13d3d650b39352d28974840}{
+SLC\_\-EL}
+\label{namespaceLineMode_abebf06755a3b54a53f1f650f5be54e3baa467b805d13d3d650b39352d28974840}
+}]\index{SLC\_\-EW@{SLC\_\-EW}!LineMode@{LineMode}}\index{LineMode@{LineMode}!SLC\_\-EW@{SLC\_\-EW}}\item[{\em 
+\hypertarget{namespaceLineMode_abebf06755a3b54a53f1f650f5be54e3ba8917a49503092892edffa1f4bc2c23e8}{
+SLC\_\-EW}
+\label{namespaceLineMode_abebf06755a3b54a53f1f650f5be54e3ba8917a49503092892edffa1f4bc2c23e8}
+}]\index{SLC\_\-RP@{SLC\_\-RP}!LineMode@{LineMode}}\index{LineMode@{LineMode}!SLC\_\-RP@{SLC\_\-RP}}\item[{\em 
+\hypertarget{namespaceLineMode_abebf06755a3b54a53f1f650f5be54e3ba0737760e067e7dc833f0cc1dd43710a0}{
+SLC\_\-RP}
+\label{namespaceLineMode_abebf06755a3b54a53f1f650f5be54e3ba0737760e067e7dc833f0cc1dd43710a0}
+}]\index{SLC\_\-LNEXT@{SLC\_\-LNEXT}!LineMode@{LineMode}}\index{LineMode@{LineMode}!SLC\_\-LNEXT@{SLC\_\-LNEXT}}\item[{\em 
+\hypertarget{namespaceLineMode_abebf06755a3b54a53f1f650f5be54e3ba0b8782729c3ef6d410440212fa99a93a}{
+SLC\_\-LNEXT}
+\label{namespaceLineMode_abebf06755a3b54a53f1f650f5be54e3ba0b8782729c3ef6d410440212fa99a93a}
+}]\index{SLC\_\-XON@{SLC\_\-XON}!LineMode@{LineMode}}\index{LineMode@{LineMode}!SLC\_\-XON@{SLC\_\-XON}}\item[{\em 
+\hypertarget{namespaceLineMode_abebf06755a3b54a53f1f650f5be54e3bac294f9d260d09074528f73be8f10e2dd}{
+SLC\_\-XON}
+\label{namespaceLineMode_abebf06755a3b54a53f1f650f5be54e3bac294f9d260d09074528f73be8f10e2dd}
+}]\index{SLC\_\-XOFF@{SLC\_\-XOFF}!LineMode@{LineMode}}\index{LineMode@{LineMode}!SLC\_\-XOFF@{SLC\_\-XOFF}}\item[{\em 
+\hypertarget{namespaceLineMode_abebf06755a3b54a53f1f650f5be54e3ba96acd861c2b9bdb8e38de4e72b2dcd03}{
+SLC\_\-XOFF}
+\label{namespaceLineMode_abebf06755a3b54a53f1f650f5be54e3ba96acd861c2b9bdb8e38de4e72b2dcd03}
+}]\index{SLC\_\-FORW1@{SLC\_\-FORW1}!LineMode@{LineMode}}\index{LineMode@{LineMode}!SLC\_\-FORW1@{SLC\_\-FORW1}}\item[{\em 
+\hypertarget{namespaceLineMode_abebf06755a3b54a53f1f650f5be54e3ba3f746a46fa7915a492b3a33388079f2b}{
+SLC\_\-FORW1}
+\label{namespaceLineMode_abebf06755a3b54a53f1f650f5be54e3ba3f746a46fa7915a492b3a33388079f2b}
+}]\index{SLC\_\-FORW2@{SLC\_\-FORW2}!LineMode@{LineMode}}\index{LineMode@{LineMode}!SLC\_\-FORW2@{SLC\_\-FORW2}}\item[{\em 
+\hypertarget{namespaceLineMode_abebf06755a3b54a53f1f650f5be54e3ba9273ea83e0564de79a4252b67c56d3dd}{
+SLC\_\-FORW2}
+\label{namespaceLineMode_abebf06755a3b54a53f1f650f5be54e3ba9273ea83e0564de79a4252b67c56d3dd}
+}]\index{SLC\_\-MCL@{SLC\_\-MCL}!LineMode@{LineMode}}\index{LineMode@{LineMode}!SLC\_\-MCL@{SLC\_\-MCL}}\item[{\em 
+\hypertarget{namespaceLineMode_abebf06755a3b54a53f1f650f5be54e3ba1e06db2c547fbbacc8a2bdc49aa4031c}{
+SLC\_\-MCL}
+\label{namespaceLineMode_abebf06755a3b54a53f1f650f5be54e3ba1e06db2c547fbbacc8a2bdc49aa4031c}
+}]\index{SLC\_\-MCR@{SLC\_\-MCR}!LineMode@{LineMode}}\index{LineMode@{LineMode}!SLC\_\-MCR@{SLC\_\-MCR}}\item[{\em 
+\hypertarget{namespaceLineMode_abebf06755a3b54a53f1f650f5be54e3ba4f6421a990d07ac741dc7c731aeab653}{
+SLC\_\-MCR}
+\label{namespaceLineMode_abebf06755a3b54a53f1f650f5be54e3ba4f6421a990d07ac741dc7c731aeab653}
+}]\index{SLC\_\-MCWL@{SLC\_\-MCWL}!LineMode@{LineMode}}\index{LineMode@{LineMode}!SLC\_\-MCWL@{SLC\_\-MCWL}}\item[{\em 
+\hypertarget{namespaceLineMode_abebf06755a3b54a53f1f650f5be54e3bad1a44c78bccfe6e3fcee1c7df77e925b}{
+SLC\_\-MCWL}
+\label{namespaceLineMode_abebf06755a3b54a53f1f650f5be54e3bad1a44c78bccfe6e3fcee1c7df77e925b}
+}]\index{SLC\_\-MCWR@{SLC\_\-MCWR}!LineMode@{LineMode}}\index{LineMode@{LineMode}!SLC\_\-MCWR@{SLC\_\-MCWR}}\item[{\em 
+\hypertarget{namespaceLineMode_abebf06755a3b54a53f1f650f5be54e3bab19b6d130b10f797cf09dcb504e7dccd}{
+SLC\_\-MCWR}
+\label{namespaceLineMode_abebf06755a3b54a53f1f650f5be54e3bab19b6d130b10f797cf09dcb504e7dccd}
+}]\index{SLC\_\-MCBOL@{SLC\_\-MCBOL}!LineMode@{LineMode}}\index{LineMode@{LineMode}!SLC\_\-MCBOL@{SLC\_\-MCBOL}}\item[{\em 
+\hypertarget{namespaceLineMode_abebf06755a3b54a53f1f650f5be54e3badf846c03c26e35888168fd0e697e9f73}{
+SLC\_\-MCBOL}
+\label{namespaceLineMode_abebf06755a3b54a53f1f650f5be54e3badf846c03c26e35888168fd0e697e9f73}
+}]\index{SLC\_\-MCEOL@{SLC\_\-MCEOL}!LineMode@{LineMode}}\index{LineMode@{LineMode}!SLC\_\-MCEOL@{SLC\_\-MCEOL}}\item[{\em 
+\hypertarget{namespaceLineMode_abebf06755a3b54a53f1f650f5be54e3bab411b891fa6b20e1b9a32d8f726dae9a}{
+SLC\_\-MCEOL}
+\label{namespaceLineMode_abebf06755a3b54a53f1f650f5be54e3bab411b891fa6b20e1b9a32d8f726dae9a}
+}]\index{SLC\_\-INSRT@{SLC\_\-INSRT}!LineMode@{LineMode}}\index{LineMode@{LineMode}!SLC\_\-INSRT@{SLC\_\-INSRT}}\item[{\em 
+\hypertarget{namespaceLineMode_abebf06755a3b54a53f1f650f5be54e3ba4dfa20840a18bd8ccc26b209de5b6849}{
+SLC\_\-INSRT}
+\label{namespaceLineMode_abebf06755a3b54a53f1f650f5be54e3ba4dfa20840a18bd8ccc26b209de5b6849}
+}]\index{SLC\_\-OVER@{SLC\_\-OVER}!LineMode@{LineMode}}\index{LineMode@{LineMode}!SLC\_\-OVER@{SLC\_\-OVER}}\item[{\em 
+\hypertarget{namespaceLineMode_abebf06755a3b54a53f1f650f5be54e3ba2dfa5dcae2f2a827412924c5beb6d66f}{
+SLC\_\-OVER}
+\label{namespaceLineMode_abebf06755a3b54a53f1f650f5be54e3ba2dfa5dcae2f2a827412924c5beb6d66f}
+}]\index{SLC\_\-ECR@{SLC\_\-ECR}!LineMode@{LineMode}}\index{LineMode@{LineMode}!SLC\_\-ECR@{SLC\_\-ECR}}\item[{\em 
+\hypertarget{namespaceLineMode_abebf06755a3b54a53f1f650f5be54e3ba7637e5c4c3b70d18aed9f06c18add6c5}{
+SLC\_\-ECR}
+\label{namespaceLineMode_abebf06755a3b54a53f1f650f5be54e3ba7637e5c4c3b70d18aed9f06c18add6c5}
+}]\index{SLC\_\-EWR@{SLC\_\-EWR}!LineMode@{LineMode}}\index{LineMode@{LineMode}!SLC\_\-EWR@{SLC\_\-EWR}}\item[{\em 
+\hypertarget{namespaceLineMode_abebf06755a3b54a53f1f650f5be54e3ba7487446c4132ff7d5b1eb12ee327c7ef}{
+SLC\_\-EWR}
+\label{namespaceLineMode_abebf06755a3b54a53f1f650f5be54e3ba7487446c4132ff7d5b1eb12ee327c7ef}
+}]\index{SLC\_\-EBOL@{SLC\_\-EBOL}!LineMode@{LineMode}}\index{LineMode@{LineMode}!SLC\_\-EBOL@{SLC\_\-EBOL}}\item[{\em 
+\hypertarget{namespaceLineMode_abebf06755a3b54a53f1f650f5be54e3ba013095b56eb037d2c1a5346f6df254d6}{
+SLC\_\-EBOL}
+\label{namespaceLineMode_abebf06755a3b54a53f1f650f5be54e3ba013095b56eb037d2c1a5346f6df254d6}
+}]\index{SLC\_\-EEOL@{SLC\_\-EEOL}!LineMode@{LineMode}}\index{LineMode@{LineMode}!SLC\_\-EEOL@{SLC\_\-EEOL}}\item[{\em 
+\hypertarget{namespaceLineMode_abebf06755a3b54a53f1f650f5be54e3ba871881ec18b434124946867864565aa5}{
+SLC\_\-EEOL}
+\label{namespaceLineMode_abebf06755a3b54a53f1f650f5be54e3ba871881ec18b434124946867864565aa5}
+}]\index{SLC\_\-DEFAULT@{SLC\_\-DEFAULT}!LineMode@{LineMode}}\index{LineMode@{LineMode}!SLC\_\-DEFAULT@{SLC\_\-DEFAULT}}\item[{\em 
+\hypertarget{namespaceLineMode_abebf06755a3b54a53f1f650f5be54e3ba31f682392b0ea69ff99eafc6bae536b9}{
+SLC\_\-DEFAULT}
+\label{namespaceLineMode_abebf06755a3b54a53f1f650f5be54e3ba31f682392b0ea69ff99eafc6bae536b9}
+}]\index{SLC\_\-VALUE@{SLC\_\-VALUE}!LineMode@{LineMode}}\index{LineMode@{LineMode}!SLC\_\-VALUE@{SLC\_\-VALUE}}\item[{\em 
+\hypertarget{namespaceLineMode_abebf06755a3b54a53f1f650f5be54e3ba135924f4860ff1c8bf3a62ec80d3382e}{
+SLC\_\-VALUE}
+\label{namespaceLineMode_abebf06755a3b54a53f1f650f5be54e3ba135924f4860ff1c8bf3a62ec80d3382e}
+}]\index{SLC\_\-CANTCHANGE@{SLC\_\-CANTCHANGE}!LineMode@{LineMode}}\index{LineMode@{LineMode}!SLC\_\-CANTCHANGE@{SLC\_\-CANTCHANGE}}\item[{\em 
+\hypertarget{namespaceLineMode_abebf06755a3b54a53f1f650f5be54e3baeb9538ccc1c859d30abd812b1ce8c425}{
+SLC\_\-CANTCHANGE}
+\label{namespaceLineMode_abebf06755a3b54a53f1f650f5be54e3baeb9538ccc1c859d30abd812b1ce8c425}
+}]\index{SLC\_\-NOSUPPORT@{SLC\_\-NOSUPPORT}!LineMode@{LineMode}}\index{LineMode@{LineMode}!SLC\_\-NOSUPPORT@{SLC\_\-NOSUPPORT}}\item[{\em 
+\hypertarget{namespaceLineMode_abebf06755a3b54a53f1f650f5be54e3bada44ceb09a5f8edb6576c9c0a12f2a77}{
+SLC\_\-NOSUPPORT}
+\label{namespaceLineMode_abebf06755a3b54a53f1f650f5be54e3bada44ceb09a5f8edb6576c9c0a12f2a77}
+}]\index{SLC\_\-LEVELBITS@{SLC\_\-LEVELBITS}!LineMode@{LineMode}}\index{LineMode@{LineMode}!SLC\_\-LEVELBITS@{SLC\_\-LEVELBITS}}\item[{\em 
+\hypertarget{namespaceLineMode_abebf06755a3b54a53f1f650f5be54e3baa9382aac8d130cc63022182d259d8ed2}{
+SLC\_\-LEVELBITS}
+\label{namespaceLineMode_abebf06755a3b54a53f1f650f5be54e3baa9382aac8d130cc63022182d259d8ed2}
+}]\index{SLC\_\-ACK@{SLC\_\-ACK}!LineMode@{LineMode}}\index{LineMode@{LineMode}!SLC\_\-ACK@{SLC\_\-ACK}}\item[{\em 
+\hypertarget{namespaceLineMode_abebf06755a3b54a53f1f650f5be54e3bad5070eb9f249c1a7e7e44425ed2aefd4}{
+SLC\_\-ACK}
+\label{namespaceLineMode_abebf06755a3b54a53f1f650f5be54e3bad5070eb9f249c1a7e7e44425ed2aefd4}
+}]\index{SLC\_\-FLUSHIN@{SLC\_\-FLUSHIN}!LineMode@{LineMode}}\index{LineMode@{LineMode}!SLC\_\-FLUSHIN@{SLC\_\-FLUSHIN}}\item[{\em 
+\hypertarget{namespaceLineMode_abebf06755a3b54a53f1f650f5be54e3bae8bd3238087d02bb9bd0b04a0b97a59b}{
+SLC\_\-FLUSHIN}
+\label{namespaceLineMode_abebf06755a3b54a53f1f650f5be54e3bae8bd3238087d02bb9bd0b04a0b97a59b}
+}]\index{SLC\_\-FLUSHOUT@{SLC\_\-FLUSHOUT}!LineMode@{LineMode}}\index{LineMode@{LineMode}!SLC\_\-FLUSHOUT@{SLC\_\-FLUSHOUT}}\item[{\em 
+\hypertarget{namespaceLineMode_abebf06755a3b54a53f1f650f5be54e3ba83b0525ca2be6370007984d756f099e2}{
+SLC\_\-FLUSHOUT}
+\label{namespaceLineMode_abebf06755a3b54a53f1f650f5be54e3ba83b0525ca2be6370007984d756f099e2}
+}]\end{description}
+\end{Desc}
+
+
+
+Definition at line 430 of file qttelnet.cpp.
+
+
+
+\subsection{Variable Documentation}
+\hypertarget{namespaceLineMode_a05d9f57c1b284d291144d033f2af85fe}{
+\index{LineMode@{LineMode}!ForwardMask@{ForwardMask}}
+\index{ForwardMask@{ForwardMask}!LineMode@{LineMode}}
+\subsubsection[{ForwardMask}]{\setlength{\rightskip}{0pt plus 5cm}const char {\bf LineMode::ForwardMask} = 2}}
+\label{namespaceLineMode_a05d9f57c1b284d291144d033f2af85fe}
+
+
+Definition at line 420 of file qttelnet.cpp.
+
+\hypertarget{namespaceLineMode_a0856e552cef22379961d80f018154a18}{
+\index{LineMode@{LineMode}!Mode@{Mode}}
+\index{Mode@{Mode}!LineMode@{LineMode}}
+\subsubsection[{Mode}]{\setlength{\rightskip}{0pt plus 5cm}const char {\bf LineMode::Mode} = 1}}
+\label{namespaceLineMode_a0856e552cef22379961d80f018154a18}
+
+
+Definition at line 419 of file qttelnet.cpp.
+
+\hypertarget{namespaceLineMode_a4a0d3e56ac29300bfaca0df198a19c32}{
+\index{LineMode@{LineMode}!SLC@{SLC}}
+\index{SLC@{SLC}!LineMode@{LineMode}}
+\subsubsection[{SLC}]{\setlength{\rightskip}{0pt plus 5cm}const char {\bf LineMode::SLC} = 3}}
+\label{namespaceLineMode_a4a0d3e56ac29300bfaca0df198a19c32}
+
+
+Definition at line 421 of file qttelnet.cpp.
+

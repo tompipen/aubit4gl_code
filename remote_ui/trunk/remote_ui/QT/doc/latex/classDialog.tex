@@ -1,0 +1,249 @@
+\hypertarget{classDialog}{
+\section{Dialog Class Reference}
+\label{classDialog}\index{Dialog@{Dialog}}
+}
+
+
+{\ttfamily \#include $<$dialog.h$>$}
+
+\subsection*{Public Slots}
+\begin{DoxyCompactItemize}
+\item 
+void \hyperlink{classDialog_a6fa11449e967bd9aba0e6afe89a5ad1a}{buttonClicked} (int)
+\end{DoxyCompactItemize}
+\subsection*{Signals}
+\begin{DoxyCompactItemize}
+\item 
+void \hyperlink{classDialog_a0e8bd522a50e34e2edee2c6f64cf0399}{dialogButtonPressed} (QString)
+\end{DoxyCompactItemize}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classDialog_a762d6d1bbcb935f48ce8a5debf7ce56e}{Dialog} (QString, QString, QString, QString, QWidget $\ast$parent=0, Qt::WindowFlags f=0)
+\item 
+\hyperlink{classDialog_a34b8d24a06d2d7cc90b2899b9acddd07}{Dialog} (QWidget $\ast$parent=0, Qt::WindowFlags f=0)
+\item 
+void \hyperlink{classDialog_afdfc6edcd72cc3f41e7ca5f4fc2499e5}{createButton} (int id=0, QString text=\char`\"{}\char`\"{}, QString desc=\char`\"{}\char`\"{}, QString icon=\char`\"{}\char`\"{})
+\item 
+void \hyperlink{classDialog_aebe85fc2c90f9418802687d1e0658548}{createAction} (int id=0, QString text=\char`\"{}\char`\"{})
+\item 
+void \hyperlink{classDialog_aa5d0ff2444e0d905bba16b0d82687f7b}{hideButton} (QString)
+\item 
+void \hyperlink{classDialog_aebbcfbdeabec1995374e3c37b248254f}{showButton} (QString)
+\item 
+QList$<$ QAction $\ast$ $>$ \hyperlink{classDialog_a583d6db9f52b55c8dae6bce5c85bfb14}{actions} ()
+\item 
+QAction $\ast$ \hyperlink{classDialog_a398e67a3c6eee5bbb9ed97d092211c62}{getAction} (QString)
+\end{DoxyCompactItemize}
+\subsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \hyperlink{classDialog_aa687205f957253ec53f4ce47b49d302b}{keyPressEvent} (QKeyEvent $\ast$event)
+\end{DoxyCompactItemize}
+\subsection*{Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+QLayout $\ast$ \hyperlink{classDialog_ad114214ed45b9210050334b5bde25250}{layout}
+\item 
+QLayout $\ast$ \hyperlink{classDialog_ad36793f71df8daf4e41ec4399d363985}{buttonLayout}
+\item 
+QButtonGroup $\ast$ \hyperlink{classDialog_a97288373583dd9aef3759869db27d5ff}{buttonGroup}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+
+
+Definition at line 26 of file dialog.h.
+
+
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{classDialog_a762d6d1bbcb935f48ce8a5debf7ce56e}{
+\index{Dialog@{Dialog}!Dialog@{Dialog}}
+\index{Dialog@{Dialog}!Dialog@{Dialog}}
+\subsubsection[{Dialog}]{\setlength{\rightskip}{0pt plus 5cm}Dialog::Dialog (
+\begin{DoxyParamCaption}
+\item[{QString}]{title, }
+\item[{QString}]{comment, }
+\item[{QString}]{style, }
+\item[{QString}]{image, }
+\item[{QWidget $\ast$}]{parent = {\ttfamily 0}, }
+\item[{Qt::WindowFlags}]{f = {\ttfamily 0}}
+\end{DoxyParamCaption}
+)}}
+\label{classDialog_a762d6d1bbcb935f48ce8a5debf7ce56e}
+
+
+Definition at line 42 of file dialog.cpp.
+
+\hypertarget{classDialog_a34b8d24a06d2d7cc90b2899b9acddd07}{
+\index{Dialog@{Dialog}!Dialog@{Dialog}}
+\index{Dialog@{Dialog}!Dialog@{Dialog}}
+\subsubsection[{Dialog}]{\setlength{\rightskip}{0pt plus 5cm}Dialog::Dialog (
+\begin{DoxyParamCaption}
+\item[{QWidget $\ast$}]{parent = {\ttfamily 0}, }
+\item[{Qt::WindowFlags}]{f = {\ttfamily 0}}
+\end{DoxyParamCaption}
+)}}
+\label{classDialog_a34b8d24a06d2d7cc90b2899b9acddd07}
+
+
+Definition at line 31 of file dialog.cpp.
+
+
+
+\subsection{Member Function Documentation}
+\hypertarget{classDialog_a583d6db9f52b55c8dae6bce5c85bfb14}{
+\index{Dialog@{Dialog}!actions@{actions}}
+\index{actions@{actions}!Dialog@{Dialog}}
+\subsubsection[{actions}]{\setlength{\rightskip}{0pt plus 5cm}QList$<$ QAction $\ast$ $>$ Dialog::actions (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}
+\label{classDialog_a583d6db9f52b55c8dae6bce5c85bfb14}
+
+
+Definition at line 247 of file dialog.cpp.
+
+\hypertarget{classDialog_a6fa11449e967bd9aba0e6afe89a5ad1a}{
+\index{Dialog@{Dialog}!buttonClicked@{buttonClicked}}
+\index{buttonClicked@{buttonClicked}!Dialog@{Dialog}}
+\subsubsection[{buttonClicked}]{\setlength{\rightskip}{0pt plus 5cm}void Dialog::buttonClicked (
+\begin{DoxyParamCaption}
+\item[{int}]{id}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}slot\mbox{]}}}}
+\label{classDialog_a6fa11449e967bd9aba0e6afe89a5ad1a}
+
+
+Definition at line 215 of file dialog.cpp.
+
+\hypertarget{classDialog_aebe85fc2c90f9418802687d1e0658548}{
+\index{Dialog@{Dialog}!createAction@{createAction}}
+\index{createAction@{createAction}!Dialog@{Dialog}}
+\subsubsection[{createAction}]{\setlength{\rightskip}{0pt plus 5cm}void Dialog::createAction (
+\begin{DoxyParamCaption}
+\item[{int}]{id = {\ttfamily 0}, }
+\item[{QString}]{text = {\ttfamily \char`\"{}\char`\"{}}}
+\end{DoxyParamCaption}
+)}}
+\label{classDialog_aebe85fc2c90f9418802687d1e0658548}
+
+
+Definition at line 144 of file dialog.cpp.
+
+\hypertarget{classDialog_afdfc6edcd72cc3f41e7ca5f4fc2499e5}{
+\index{Dialog@{Dialog}!createButton@{createButton}}
+\index{createButton@{createButton}!Dialog@{Dialog}}
+\subsubsection[{createButton}]{\setlength{\rightskip}{0pt plus 5cm}void Dialog::createButton (
+\begin{DoxyParamCaption}
+\item[{int}]{id = {\ttfamily 0}, }
+\item[{QString}]{text = {\ttfamily \char`\"{}\char`\"{}}, }
+\item[{QString}]{desc = {\ttfamily \char`\"{}\char`\"{}}, }
+\item[{QString}]{icon = {\ttfamily \char`\"{}\char`\"{}}}
+\end{DoxyParamCaption}
+)}}
+\label{classDialog_afdfc6edcd72cc3f41e7ca5f4fc2499e5}
+
+
+Definition at line 95 of file dialog.cpp.
+
+\hypertarget{classDialog_a0e8bd522a50e34e2edee2c6f64cf0399}{
+\index{Dialog@{Dialog}!dialogButtonPressed@{dialogButtonPressed}}
+\index{dialogButtonPressed@{dialogButtonPressed}!Dialog@{Dialog}}
+\subsubsection[{dialogButtonPressed}]{\setlength{\rightskip}{0pt plus 5cm}void Dialog::dialogButtonPressed (
+\begin{DoxyParamCaption}
+\item[{QString}]{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}signal\mbox{]}}}}
+\label{classDialog_a0e8bd522a50e34e2edee2c6f64cf0399}
+\hypertarget{classDialog_a398e67a3c6eee5bbb9ed97d092211c62}{
+\index{Dialog@{Dialog}!getAction@{getAction}}
+\index{getAction@{getAction}!Dialog@{Dialog}}
+\subsubsection[{getAction}]{\setlength{\rightskip}{0pt plus 5cm}QAction $\ast$ Dialog::getAction (
+\begin{DoxyParamCaption}
+\item[{QString}]{name}
+\end{DoxyParamCaption}
+)}}
+\label{classDialog_a398e67a3c6eee5bbb9ed97d092211c62}
+
+
+Definition at line 262 of file dialog.cpp.
+
+\hypertarget{classDialog_aa5d0ff2444e0d905bba16b0d82687f7b}{
+\index{Dialog@{Dialog}!hideButton@{hideButton}}
+\index{hideButton@{hideButton}!Dialog@{Dialog}}
+\subsubsection[{hideButton}]{\setlength{\rightskip}{0pt plus 5cm}void Dialog::hideButton (
+\begin{DoxyParamCaption}
+\item[{QString}]{name}
+\end{DoxyParamCaption}
+)}}
+\label{classDialog_aa5d0ff2444e0d905bba16b0d82687f7b}
+
+
+Definition at line 174 of file dialog.cpp.
+
+\hypertarget{classDialog_aa687205f957253ec53f4ce47b49d302b}{
+\index{Dialog@{Dialog}!keyPressEvent@{keyPressEvent}}
+\index{keyPressEvent@{keyPressEvent}!Dialog@{Dialog}}
+\subsubsection[{keyPressEvent}]{\setlength{\rightskip}{0pt plus 5cm}void Dialog::keyPressEvent (
+\begin{DoxyParamCaption}
+\item[{QKeyEvent $\ast$}]{event}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}protected\mbox{]}}}}
+\label{classDialog_aa687205f957253ec53f4ce47b49d302b}
+
+
+Definition at line 229 of file dialog.cpp.
+
+\hypertarget{classDialog_aebbcfbdeabec1995374e3c37b248254f}{
+\index{Dialog@{Dialog}!showButton@{showButton}}
+\index{showButton@{showButton}!Dialog@{Dialog}}
+\subsubsection[{showButton}]{\setlength{\rightskip}{0pt plus 5cm}void Dialog::showButton (
+\begin{DoxyParamCaption}
+\item[{QString}]{name}
+\end{DoxyParamCaption}
+)}}
+\label{classDialog_aebbcfbdeabec1995374e3c37b248254f}
+
+
+Definition at line 197 of file dialog.cpp.
+
+
+
+\subsection{Member Data Documentation}
+\hypertarget{classDialog_a97288373583dd9aef3759869db27d5ff}{
+\index{Dialog@{Dialog}!buttonGroup@{buttonGroup}}
+\index{buttonGroup@{buttonGroup}!Dialog@{Dialog}}
+\subsubsection[{buttonGroup}]{\setlength{\rightskip}{0pt plus 5cm}QButtonGroup$\ast$ {\bf Dialog::buttonGroup}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classDialog_a97288373583dd9aef3759869db27d5ff}
+
+
+Definition at line 44 of file dialog.h.
+
+\hypertarget{classDialog_ad36793f71df8daf4e41ec4399d363985}{
+\index{Dialog@{Dialog}!buttonLayout@{buttonLayout}}
+\index{buttonLayout@{buttonLayout}!Dialog@{Dialog}}
+\subsubsection[{buttonLayout}]{\setlength{\rightskip}{0pt plus 5cm}QLayout$\ast$ {\bf Dialog::buttonLayout}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classDialog_ad36793f71df8daf4e41ec4399d363985}
+
+
+Definition at line 43 of file dialog.h.
+
+\hypertarget{classDialog_ad114214ed45b9210050334b5bde25250}{
+\index{Dialog@{Dialog}!layout@{layout}}
+\index{layout@{layout}!Dialog@{Dialog}}
+\subsubsection[{layout}]{\setlength{\rightskip}{0pt plus 5cm}QLayout$\ast$ {\bf Dialog::layout}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classDialog_ad114214ed45b9210050334b5bde25250}
+
+
+Definition at line 42 of file dialog.h.
+
+
+
+The documentation for this class was generated from the following files:\begin{DoxyCompactItemize}
+\item 
+/e/ms/QT/models/\hyperlink{dialog_8h}{dialog.h}\item 
+/e/ms/QT/models/\hyperlink{dialog_8cpp}{dialog.cpp}\end{DoxyCompactItemize}

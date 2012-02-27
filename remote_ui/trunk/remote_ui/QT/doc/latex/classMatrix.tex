@@ -1,0 +1,300 @@
+\hypertarget{classMatrix}{
+\section{Matrix Class Reference}
+\label{classMatrix}\index{Matrix@{Matrix}}
+}
+
+
+{\ttfamily \#include $<$matrix.h$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classMatrix_a0c5753e6dece4a4824cb048c547582a4}{Matrix} (QWidget $\ast$parent=0)
+\item 
+\hyperlink{classMatrix_a6ebc45f87de9a49b3314fda941efb24f}{Matrix} (QString title, QString style=\char`\"{}\char`\"{}, QString image=\char`\"{}\char`\"{}, QWidget $\ast$parent=0)
+\item 
+void \hyperlink{classMatrix_a53fea58b6efc849c26c731f8178c18e0}{addWidget} (QWidget $\ast$)
+\item 
+QString \hyperlink{classMatrix_a529e80e4d3b32cad13888740aa2875de}{getMenuStyle} () const 
+\item 
+void \hyperlink{classMatrix_a1c6c865ef6fbfd4aca31cf84a39262d4}{setMenuStyle} (const QString \&ms)
+\item 
+void \hyperlink{classMatrix_a571e1aec866ba04b9e1f2fb12b114202}{setOrientation} (const Qt::Orientation \&o)
+\item 
+void \hyperlink{classMatrix_a3617fe2df4835ab4c9319e4d34a756c9}{setEnabled} (bool)
+\item 
+void \hyperlink{classMatrix_a5b1d9d8492cff710a9f0bdcbd465baca}{setText} (int, QString)
+\item 
+QString \hyperlink{classMatrix_a7285f98ef07a8e8d42b12172f4bbd287}{text} (int)
+\item 
+void \hyperlink{classMatrix_a89eb342828eb7a0ec3f4a827d21500ff}{setInputEnabled} (bool en)
+\item 
+int \hyperlink{classMatrix_ab8c6ce5374fbf2624503b194e854ff68}{arrCount} ()
+\end{DoxyCompactItemize}
+\subsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+bool \hyperlink{classMatrix_ada7f0d8559fe1e7f45d3dc6a63bf3722}{eventFilter} (QObject $\ast$obj, QEvent $\ast$event)
+\item 
+void \hyperlink{classMatrix_a83400b2608b19f43246edaf3814f5710}{focusInEvent} (QFocusEvent $\ast$)
+\end{DoxyCompactItemize}
+\subsection*{Properties}
+\begin{DoxyCompactItemize}
+\item 
+QString \hyperlink{classMatrix_a047dfe13d0d463c8f4d206ad6bf80d91}{menuStyle}
+\end{DoxyCompactItemize}
+\subsection*{Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+QLayout $\ast$ \hyperlink{classMatrix_a4d1dc53df9097ceed1fb26d5994935d6}{layout}
+\item 
+QString \hyperlink{classMatrix_a38be86e653e4899e473e15d5b26f7ec5}{m\_\-menuStyle}
+\item 
+bool \hyperlink{classMatrix_a75070a6c4617a5abe5a3b95fa3d31098}{b\_\-input}
+\item 
+QList$<$ QWidget $\ast$ $>$ \hyperlink{classMatrix_a4b4d1b9d677922817b0b5ec66a40bbf0}{ql\_\-fields}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+
+
+Definition at line 23 of file matrix.h.
+
+
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{classMatrix_a0c5753e6dece4a4824cb048c547582a4}{
+\index{Matrix@{Matrix}!Matrix@{Matrix}}
+\index{Matrix@{Matrix}!Matrix@{Matrix}}
+\subsubsection[{Matrix}]{\setlength{\rightskip}{0pt plus 5cm}Matrix::Matrix (
+\begin{DoxyParamCaption}
+\item[{QWidget $\ast$}]{parent = {\ttfamily 0}}
+\end{DoxyParamCaption}
+)}}
+\label{classMatrix_a0c5753e6dece4a4824cb048c547582a4}
+
+
+Definition at line 30 of file matrix.cpp.
+
+\hypertarget{classMatrix_a6ebc45f87de9a49b3314fda941efb24f}{
+\index{Matrix@{Matrix}!Matrix@{Matrix}}
+\index{Matrix@{Matrix}!Matrix@{Matrix}}
+\subsubsection[{Matrix}]{\setlength{\rightskip}{0pt plus 5cm}Matrix::Matrix (
+\begin{DoxyParamCaption}
+\item[{QString}]{title, }
+\item[{QString}]{style = {\ttfamily \char`\"{}\char`\"{}}, }
+\item[{QString}]{image = {\ttfamily \char`\"{}\char`\"{}}, }
+\item[{QWidget $\ast$}]{parent = {\ttfamily 0}}
+\end{DoxyParamCaption}
+)}}
+\label{classMatrix_a6ebc45f87de9a49b3314fda941efb24f}
+
+
+Definition at line 52 of file matrix.cpp.
+
+
+
+\subsection{Member Function Documentation}
+\hypertarget{classMatrix_a53fea58b6efc849c26c731f8178c18e0}{
+\index{Matrix@{Matrix}!addWidget@{addWidget}}
+\index{addWidget@{addWidget}!Matrix@{Matrix}}
+\subsubsection[{addWidget}]{\setlength{\rightskip}{0pt plus 5cm}void Matrix::addWidget (
+\begin{DoxyParamCaption}
+\item[{QWidget $\ast$}]{widget}
+\end{DoxyParamCaption}
+)}}
+\label{classMatrix_a53fea58b6efc849c26c731f8178c18e0}
+
+
+Definition at line 81 of file matrix.cpp.
+
+\hypertarget{classMatrix_ab8c6ce5374fbf2624503b194e854ff68}{
+\index{Matrix@{Matrix}!arrCount@{arrCount}}
+\index{arrCount@{arrCount}!Matrix@{Matrix}}
+\subsubsection[{arrCount}]{\setlength{\rightskip}{0pt plus 5cm}int Matrix::arrCount (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}inline\mbox{]}}}}
+\label{classMatrix_ab8c6ce5374fbf2624503b194e854ff68}
+
+
+Definition at line 47 of file matrix.h.
+
+\hypertarget{classMatrix_ada7f0d8559fe1e7f45d3dc6a63bf3722}{
+\index{Matrix@{Matrix}!eventFilter@{eventFilter}}
+\index{eventFilter@{eventFilter}!Matrix@{Matrix}}
+\subsubsection[{eventFilter}]{\setlength{\rightskip}{0pt plus 5cm}bool Matrix::eventFilter (
+\begin{DoxyParamCaption}
+\item[{QObject $\ast$}]{obj, }
+\item[{QEvent $\ast$}]{event}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}protected\mbox{]}}}}
+\label{classMatrix_ada7f0d8559fe1e7f45d3dc6a63bf3722}
+
+
+Definition at line 95 of file matrix.cpp.
+
+\hypertarget{classMatrix_a83400b2608b19f43246edaf3814f5710}{
+\index{Matrix@{Matrix}!focusInEvent@{focusInEvent}}
+\index{focusInEvent@{focusInEvent}!Matrix@{Matrix}}
+\subsubsection[{focusInEvent}]{\setlength{\rightskip}{0pt plus 5cm}void Matrix::focusInEvent (
+\begin{DoxyParamCaption}
+\item[{QFocusEvent $\ast$}]{event}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}protected\mbox{]}}}}
+\label{classMatrix_a83400b2608b19f43246edaf3814f5710}
+
+
+Definition at line 88 of file matrix.cpp.
+
+\hypertarget{classMatrix_a529e80e4d3b32cad13888740aa2875de}{
+\index{Matrix@{Matrix}!getMenuStyle@{getMenuStyle}}
+\index{getMenuStyle@{getMenuStyle}!Matrix@{Matrix}}
+\subsubsection[{getMenuStyle}]{\setlength{\rightskip}{0pt plus 5cm}QString Matrix::getMenuStyle (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily  \mbox{[}inline\mbox{]}}}}
+\label{classMatrix_a529e80e4d3b32cad13888740aa2875de}
+
+
+Definition at line 40 of file matrix.h.
+
+\hypertarget{classMatrix_a3617fe2df4835ab4c9319e4d34a756c9}{
+\index{Matrix@{Matrix}!setEnabled@{setEnabled}}
+\index{setEnabled@{setEnabled}!Matrix@{Matrix}}
+\subsubsection[{setEnabled}]{\setlength{\rightskip}{0pt plus 5cm}void Matrix::setEnabled (
+\begin{DoxyParamCaption}
+\item[{bool}]{enable}
+\end{DoxyParamCaption}
+)}}
+\label{classMatrix_a3617fe2df4835ab4c9319e4d34a756c9}
+
+
+Definition at line 121 of file matrix.cpp.
+
+\hypertarget{classMatrix_a89eb342828eb7a0ec3f4a827d21500ff}{
+\index{Matrix@{Matrix}!setInputEnabled@{setInputEnabled}}
+\index{setInputEnabled@{setInputEnabled}!Matrix@{Matrix}}
+\subsubsection[{setInputEnabled}]{\setlength{\rightskip}{0pt plus 5cm}void Matrix::setInputEnabled (
+\begin{DoxyParamCaption}
+\item[{bool}]{en}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}inline\mbox{]}}}}
+\label{classMatrix_a89eb342828eb7a0ec3f4a827d21500ff}
+
+
+Definition at line 46 of file matrix.h.
+
+\hypertarget{classMatrix_a1c6c865ef6fbfd4aca31cf84a39262d4}{
+\index{Matrix@{Matrix}!setMenuStyle@{setMenuStyle}}
+\index{setMenuStyle@{setMenuStyle}!Matrix@{Matrix}}
+\subsubsection[{setMenuStyle}]{\setlength{\rightskip}{0pt plus 5cm}void Matrix::setMenuStyle (
+\begin{DoxyParamCaption}
+\item[{const QString \&}]{ms}
+\end{DoxyParamCaption}
+)}}
+\label{classMatrix_a1c6c865ef6fbfd4aca31cf84a39262d4}
+
+
+Definition at line 101 of file matrix.cpp.
+
+\hypertarget{classMatrix_a571e1aec866ba04b9e1f2fb12b114202}{
+\index{Matrix@{Matrix}!setOrientation@{setOrientation}}
+\index{setOrientation@{setOrientation}!Matrix@{Matrix}}
+\subsubsection[{setOrientation}]{\setlength{\rightskip}{0pt plus 5cm}void Matrix::setOrientation (
+\begin{DoxyParamCaption}
+\item[{const Qt::Orientation \&}]{o}
+\end{DoxyParamCaption}
+)}}
+\label{classMatrix_a571e1aec866ba04b9e1f2fb12b114202}
+
+
+Definition at line 109 of file matrix.cpp.
+
+\hypertarget{classMatrix_a5b1d9d8492cff710a9f0bdcbd465baca}{
+\index{Matrix@{Matrix}!setText@{setText}}
+\index{setText@{setText}!Matrix@{Matrix}}
+\subsubsection[{setText}]{\setlength{\rightskip}{0pt plus 5cm}void Matrix::setText (
+\begin{DoxyParamCaption}
+\item[{int}]{row, }
+\item[{QString}]{value}
+\end{DoxyParamCaption}
+)}}
+\label{classMatrix_a5b1d9d8492cff710a9f0bdcbd465baca}
+
+
+Definition at line 134 of file matrix.cpp.
+
+\hypertarget{classMatrix_a7285f98ef07a8e8d42b12172f4bbd287}{
+\index{Matrix@{Matrix}!text@{text}}
+\index{text@{text}!Matrix@{Matrix}}
+\subsubsection[{text}]{\setlength{\rightskip}{0pt plus 5cm}QString Matrix::text (
+\begin{DoxyParamCaption}
+\item[{int}]{row}
+\end{DoxyParamCaption}
+)}}
+\label{classMatrix_a7285f98ef07a8e8d42b12172f4bbd287}
+
+
+Definition at line 145 of file matrix.cpp.
+
+
+
+\subsection{Member Data Documentation}
+\hypertarget{classMatrix_a75070a6c4617a5abe5a3b95fa3d31098}{
+\index{Matrix@{Matrix}!b\_\-input@{b\_\-input}}
+\index{b\_\-input@{b\_\-input}!Matrix@{Matrix}}
+\subsubsection[{b\_\-input}]{\setlength{\rightskip}{0pt plus 5cm}bool {\bf Matrix::b\_\-input}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classMatrix_a75070a6c4617a5abe5a3b95fa3d31098}
+
+
+Definition at line 53 of file matrix.h.
+
+\hypertarget{classMatrix_a4d1dc53df9097ceed1fb26d5994935d6}{
+\index{Matrix@{Matrix}!layout@{layout}}
+\index{layout@{layout}!Matrix@{Matrix}}
+\subsubsection[{layout}]{\setlength{\rightskip}{0pt plus 5cm}QLayout$\ast$ {\bf Matrix::layout}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classMatrix_a4d1dc53df9097ceed1fb26d5994935d6}
+
+
+Definition at line 47 of file matrix.h.
+
+\hypertarget{classMatrix_a38be86e653e4899e473e15d5b26f7ec5}{
+\index{Matrix@{Matrix}!m\_\-menuStyle@{m\_\-menuStyle}}
+\index{m\_\-menuStyle@{m\_\-menuStyle}!Matrix@{Matrix}}
+\subsubsection[{m\_\-menuStyle}]{\setlength{\rightskip}{0pt plus 5cm}QString {\bf Matrix::m\_\-menuStyle}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classMatrix_a38be86e653e4899e473e15d5b26f7ec5}
+
+
+Definition at line 52 of file matrix.h.
+
+\hypertarget{classMatrix_a4b4d1b9d677922817b0b5ec66a40bbf0}{
+\index{Matrix@{Matrix}!ql\_\-fields@{ql\_\-fields}}
+\index{ql\_\-fields@{ql\_\-fields}!Matrix@{Matrix}}
+\subsubsection[{ql\_\-fields}]{\setlength{\rightskip}{0pt plus 5cm}QList$<$QWidget$\ast$$>$ {\bf Matrix::ql\_\-fields}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classMatrix_a4b4d1b9d677922817b0b5ec66a40bbf0}
+
+
+Definition at line 55 of file matrix.h.
+
+
+
+\subsection{Property Documentation}
+\hypertarget{classMatrix_a047dfe13d0d463c8f4d206ad6bf80d91}{
+\index{Matrix@{Matrix}!menuStyle@{menuStyle}}
+\index{menuStyle@{menuStyle}!Matrix@{Matrix}}
+\subsubsection[{menuStyle}]{\setlength{\rightskip}{0pt plus 5cm}QString Matrix::menuStyle\hspace{0.3cm}{\ttfamily  \mbox{[}read, write\mbox{]}}}}
+\label{classMatrix_a047dfe13d0d463c8f4d206ad6bf80d91}
+
+
+Definition at line 30 of file matrix.h.
+
+
+
+The documentation for this class was generated from the following files:\begin{DoxyCompactItemize}
+\item 
+/e/ms/QT/models/\hyperlink{matrix_8h}{matrix.h}\item 
+/e/ms/QT/models/\hyperlink{matrix_8cpp}{matrix.cpp}\end{DoxyCompactItemize}

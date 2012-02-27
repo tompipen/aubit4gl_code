@@ -1,0 +1,444 @@
+\hypertarget{classTableModel}{
+\section{TableModel Class Reference}
+\label{classTableModel}\index{TableModel@{TableModel}}
+}
+
+
+{\ttfamily \#include $<$table.h$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classTableModel_a95196d3e35846be172b6e52c2b40c099}{TableModel} (int \hyperlink{classTableModel_ab55a02518eefc1d6fc1bcf0ea62be849}{rows}, int \hyperlink{classTableModel_a363abf84b86025d76dd5f29c1e255bdd}{columns}, QObject $\ast$parent=0)
+\item 
+\hyperlink{classTableModel_ad7d9723995888a77fa2242069fe3e67d}{TableModel} (QObject $\ast$parent=0)
+\item 
+int \hyperlink{classTableModel_a053ac3f027a487a18c991bdc094a88ab}{rowCount} (const QModelIndex \&) const 
+\item 
+int \hyperlink{classTableModel_a3c00d361175b94462364581c57cd5871}{columnCount} (const QModelIndex \&) const 
+\item 
+QVariant \hyperlink{classTableModel_ab22a19802ca81ba42e1cec670e864183}{data} (const QModelIndex \&index, int role) const 
+\item 
+QStringList \hyperlink{classTableModel_a601afd00ae8e83cef022608eb6586a89}{mimeTypes} () const 
+\item 
+QMimeData $\ast$ \hyperlink{classTableModel_a8b605509eb243a62936d68373bc9a13d}{mimeData} (const QModelIndexList \&indexes) const 
+\item 
+bool \hyperlink{classTableModel_a6b42f2f951eb350bb7d80cffc0ebeb84}{setData} (const QModelIndex \&index, const QVariant \&value, int role)
+\item 
+Qt::ItemFlags \hyperlink{classTableModel_ac758b15767be92f2ac9e0c4d958d5662}{flags} (const QModelIndex \&index) const 
+\item 
+QVariant \hyperlink{classTableModel_a4677a49af807c3b72ca4c1e82971d9ec}{headerData} (int section, Qt::Orientation orientation, int role) const 
+\item 
+\hyperlink{classTableView}{TableView} $\ast$ \hyperlink{classTableModel_a220cdd35aec84f12a792899a69b615a2}{getTableView} () const 
+\item 
+void \hyperlink{classTableModel_a2d38aa0dc5f8d82f159adbe2c6959449}{setTableView} (\hyperlink{classTableView}{TableView} $\ast$)
+\item 
+int \hyperlink{classTableModel_af33093ef15d3becaa3fa0fd6b5dec732}{pageSize} () const 
+\item 
+int \hyperlink{classTableModel_aafaa63e6e95adc0178ce814d443dcbce}{setPageSize} (int lines)
+\item 
+bool \hyperlink{classTableModel_a7fcf06eebf32f5295fec05cadcdf5320}{insertRows} (int position, int \hyperlink{classTableModel_ab55a02518eefc1d6fc1bcf0ea62be849}{rows}, const QModelIndex \&index=QModelIndex())
+\item 
+bool \hyperlink{classTableModel_abd1d9fd2aebf4ab22a5bc1f1bc4c446d}{removeRows} (int position, int \hyperlink{classTableModel_ab55a02518eefc1d6fc1bcf0ea62be849}{rows}, const QModelIndex \&index=QModelIndex())
+\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+QStringList \hyperlink{classTableModel_af80c02eb0f33a2c10804aae3c35699f8}{qsl\_\-colNames}
+\item 
+QStringList \hyperlink{classTableModel_a09bb7e46ef71f2a97ea01d73f5e2cb02}{qsl\_\-colTitleNames}
+\item 
+QStringList \hyperlink{classTableModel_a96ee46443dfe2b3eae27af6919781450}{qsl\_\-colTitleTabNames}
+\item 
+QVector$<$ QString $>$ \hyperlink{classTableModel_a8cdd6044f20e1442e77bab8f74a3d2fe}{v\_\-colTabNames}
+\item 
+\hyperlink{classTableView}{TableView} $\ast$ \hyperlink{classTableModel_a8971dba45716f1d616d51f9363935ace}{mytv}
+\item 
+bool \hyperlink{classTableModel_a575ac8236f73bfeb624eb0971e647e55}{b\_\-input}
+\item 
+QString \hyperlink{classTableModel_a3cf9e7d2a7d75f156247d572df42d669}{qs\_\-tabName}
+\item 
+QHash$<$ int, \hyperlink{classLabel}{Label} $\ast$ $>$ \hyperlink{classTableModel_a5a5e432aac68a716c4bf1849d821a846}{qh\_\-colLabels}
+\item 
+QStringList \hyperlink{classTableModel_ae2d3fd99f245025a7078671bb8b42225}{qsl\_\-a}
+\end{DoxyCompactItemize}
+\subsection*{Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+int \hyperlink{classTableModel_a363abf84b86025d76dd5f29c1e255bdd}{columns}
+\item 
+int \hyperlink{classTableModel_ab55a02518eefc1d6fc1bcf0ea62be849}{rows}
+\item 
+int \hyperlink{classTableModel_ab9dfb638330390087383eb9373c3d419}{pagesize}
+\item 
+QVector$<$ QVector$<$ QString $>$ $>$ \hyperlink{classTableModel_aa7a971b1dc03dbf0392bb0c77c5a5e85}{fields}
+\item 
+QVector$<$ QVector$<$ QString $>$ $>$ \hyperlink{classTableModel_aaba457443a11f6e5e720ffb65b6f7191}{fields5}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+
+
+Definition at line 128 of file table.h.
+
+
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{classTableModel_a95196d3e35846be172b6e52c2b40c099}{
+\index{TableModel@{TableModel}!TableModel@{TableModel}}
+\index{TableModel@{TableModel}!TableModel@{TableModel}}
+\subsubsection[{TableModel}]{\setlength{\rightskip}{0pt plus 5cm}TableModel::TableModel (
+\begin{DoxyParamCaption}
+\item[{int}]{rows, }
+\item[{int}]{columns, }
+\item[{QObject $\ast$}]{parent = {\ttfamily 0}}
+\end{DoxyParamCaption}
+)}}
+\label{classTableModel_a95196d3e35846be172b6e52c2b40c099}
+
+
+Definition at line 810 of file table.cpp.
+
+\hypertarget{classTableModel_ad7d9723995888a77fa2242069fe3e67d}{
+\index{TableModel@{TableModel}!TableModel@{TableModel}}
+\index{TableModel@{TableModel}!TableModel@{TableModel}}
+\subsubsection[{TableModel}]{\setlength{\rightskip}{0pt plus 5cm}TableModel::TableModel (
+\begin{DoxyParamCaption}
+\item[{QObject $\ast$}]{parent = {\ttfamily 0}}
+\end{DoxyParamCaption}
+)}}
+\label{classTableModel_ad7d9723995888a77fa2242069fe3e67d}
+
+
+Definition at line 823 of file table.cpp.
+
+
+
+\subsection{Member Function Documentation}
+\hypertarget{classTableModel_a3c00d361175b94462364581c57cd5871}{
+\index{TableModel@{TableModel}!columnCount@{columnCount}}
+\index{columnCount@{columnCount}!TableModel@{TableModel}}
+\subsubsection[{columnCount}]{\setlength{\rightskip}{0pt plus 5cm}int TableModel::columnCount (
+\begin{DoxyParamCaption}
+\item[{const QModelIndex \&}]{}
+\end{DoxyParamCaption}
+) const}}
+\label{classTableModel_a3c00d361175b94462364581c57cd5871}
+
+
+Definition at line 833 of file table.cpp.
+
+\hypertarget{classTableModel_ab22a19802ca81ba42e1cec670e864183}{
+\index{TableModel@{TableModel}!data@{data}}
+\index{data@{data}!TableModel@{TableModel}}
+\subsubsection[{data}]{\setlength{\rightskip}{0pt plus 5cm}QVariant TableModel::data (
+\begin{DoxyParamCaption}
+\item[{const QModelIndex \&}]{index, }
+\item[{int}]{role}
+\end{DoxyParamCaption}
+) const}}
+\label{classTableModel_ab22a19802ca81ba42e1cec670e864183}
+
+
+Definition at line 835 of file table.cpp.
+
+\hypertarget{classTableModel_ac758b15767be92f2ac9e0c4d958d5662}{
+\index{TableModel@{TableModel}!flags@{flags}}
+\index{flags@{flags}!TableModel@{TableModel}}
+\subsubsection[{flags}]{\setlength{\rightskip}{0pt plus 5cm}Qt::ItemFlags TableModel::flags (
+\begin{DoxyParamCaption}
+\item[{const QModelIndex \&}]{index}
+\end{DoxyParamCaption}
+) const}}
+\label{classTableModel_ac758b15767be92f2ac9e0c4d958d5662}
+
+
+Definition at line 914 of file table.cpp.
+
+\hypertarget{classTableModel_a220cdd35aec84f12a792899a69b615a2}{
+\index{TableModel@{TableModel}!getTableView@{getTableView}}
+\index{getTableView@{getTableView}!TableModel@{TableModel}}
+\subsubsection[{getTableView}]{\setlength{\rightskip}{0pt plus 5cm}{\bf TableView}$\ast$ TableModel::getTableView (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily  \mbox{[}inline\mbox{]}}}}
+\label{classTableModel_a220cdd35aec84f12a792899a69b615a2}
+
+
+Definition at line 152 of file table.h.
+
+\hypertarget{classTableModel_a4677a49af807c3b72ca4c1e82971d9ec}{
+\index{TableModel@{TableModel}!headerData@{headerData}}
+\index{headerData@{headerData}!TableModel@{TableModel}}
+\subsubsection[{headerData}]{\setlength{\rightskip}{0pt plus 5cm}QVariant TableModel::headerData (
+\begin{DoxyParamCaption}
+\item[{int}]{section, }
+\item[{Qt::Orientation}]{orientation, }
+\item[{int}]{role}
+\end{DoxyParamCaption}
+) const}}
+\label{classTableModel_a4677a49af807c3b72ca4c1e82971d9ec}
+
+
+Definition at line 1013 of file table.cpp.
+
+\hypertarget{classTableModel_a7fcf06eebf32f5295fec05cadcdf5320}{
+\index{TableModel@{TableModel}!insertRows@{insertRows}}
+\index{insertRows@{insertRows}!TableModel@{TableModel}}
+\subsubsection[{insertRows}]{\setlength{\rightskip}{0pt plus 5cm}bool TableModel::insertRows (
+\begin{DoxyParamCaption}
+\item[{int}]{position, }
+\item[{int}]{rows, }
+\item[{const QModelIndex \&}]{index = {\ttfamily QModelIndex()}}
+\end{DoxyParamCaption}
+)}}
+\label{classTableModel_a7fcf06eebf32f5295fec05cadcdf5320}
+
+
+Definition at line 962 of file table.cpp.
+
+\hypertarget{classTableModel_a8b605509eb243a62936d68373bc9a13d}{
+\index{TableModel@{TableModel}!mimeData@{mimeData}}
+\index{mimeData@{mimeData}!TableModel@{TableModel}}
+\subsubsection[{mimeData}]{\setlength{\rightskip}{0pt plus 5cm}QMimeData $\ast$ TableModel::mimeData (
+\begin{DoxyParamCaption}
+\item[{const QModelIndexList \&}]{indexes}
+\end{DoxyParamCaption}
+) const}}
+\label{classTableModel_a8b605509eb243a62936d68373bc9a13d}
+
+
+Definition at line 939 of file table.cpp.
+
+\hypertarget{classTableModel_a601afd00ae8e83cef022608eb6586a89}{
+\index{TableModel@{TableModel}!mimeTypes@{mimeTypes}}
+\index{mimeTypes@{mimeTypes}!TableModel@{TableModel}}
+\subsubsection[{mimeTypes}]{\setlength{\rightskip}{0pt plus 5cm}QStringList TableModel::mimeTypes (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const}}
+\label{classTableModel_a601afd00ae8e83cef022608eb6586a89}
+
+
+Definition at line 932 of file table.cpp.
+
+\hypertarget{classTableModel_af33093ef15d3becaa3fa0fd6b5dec732}{
+\index{TableModel@{TableModel}!pageSize@{pageSize}}
+\index{pageSize@{pageSize}!TableModel@{TableModel}}
+\subsubsection[{pageSize}]{\setlength{\rightskip}{0pt plus 5cm}int TableModel::pageSize (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily  \mbox{[}inline\mbox{]}}}}
+\label{classTableModel_af33093ef15d3becaa3fa0fd6b5dec732}
+
+
+Definition at line 155 of file table.h.
+
+\hypertarget{classTableModel_abd1d9fd2aebf4ab22a5bc1f1bc4c446d}{
+\index{TableModel@{TableModel}!removeRows@{removeRows}}
+\index{removeRows@{removeRows}!TableModel@{TableModel}}
+\subsubsection[{removeRows}]{\setlength{\rightskip}{0pt plus 5cm}bool TableModel::removeRows (
+\begin{DoxyParamCaption}
+\item[{int}]{position, }
+\item[{int}]{rows, }
+\item[{const QModelIndex \&}]{index = {\ttfamily QModelIndex()}}
+\end{DoxyParamCaption}
+)}}
+\label{classTableModel_abd1d9fd2aebf4ab22a5bc1f1bc4c446d}
+
+
+Definition at line 987 of file table.cpp.
+
+\hypertarget{classTableModel_a053ac3f027a487a18c991bdc094a88ab}{
+\index{TableModel@{TableModel}!rowCount@{rowCount}}
+\index{rowCount@{rowCount}!TableModel@{TableModel}}
+\subsubsection[{rowCount}]{\setlength{\rightskip}{0pt plus 5cm}int TableModel::rowCount (
+\begin{DoxyParamCaption}
+\item[{const QModelIndex \&}]{}
+\end{DoxyParamCaption}
+) const}}
+\label{classTableModel_a053ac3f027a487a18c991bdc094a88ab}
+
+
+Definition at line 831 of file table.cpp.
+
+\hypertarget{classTableModel_a6b42f2f951eb350bb7d80cffc0ebeb84}{
+\index{TableModel@{TableModel}!setData@{setData}}
+\index{setData@{setData}!TableModel@{TableModel}}
+\subsubsection[{setData}]{\setlength{\rightskip}{0pt plus 5cm}bool TableModel::setData (
+\begin{DoxyParamCaption}
+\item[{const QModelIndex \&}]{index, }
+\item[{const QVariant \&}]{value, }
+\item[{int}]{role}
+\end{DoxyParamCaption}
+)}}
+\label{classTableModel_a6b42f2f951eb350bb7d80cffc0ebeb84}
+
+
+Definition at line 898 of file table.cpp.
+
+\hypertarget{classTableModel_aafaa63e6e95adc0178ce814d443dcbce}{
+\index{TableModel@{TableModel}!setPageSize@{setPageSize}}
+\index{setPageSize@{setPageSize}!TableModel@{TableModel}}
+\subsubsection[{setPageSize}]{\setlength{\rightskip}{0pt plus 5cm}int TableModel::setPageSize (
+\begin{DoxyParamCaption}
+\item[{int}]{lines}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}inline\mbox{]}}}}
+\label{classTableModel_aafaa63e6e95adc0178ce814d443dcbce}
+
+
+Definition at line 156 of file table.h.
+
+\hypertarget{classTableModel_a2d38aa0dc5f8d82f159adbe2c6959449}{
+\index{TableModel@{TableModel}!setTableView@{setTableView}}
+\index{setTableView@{setTableView}!TableModel@{TableModel}}
+\subsubsection[{setTableView}]{\setlength{\rightskip}{0pt plus 5cm}void TableModel::setTableView (
+\begin{DoxyParamCaption}
+\item[{{\bf TableView} $\ast$}]{tv}
+\end{DoxyParamCaption}
+)}}
+\label{classTableModel_a2d38aa0dc5f8d82f159adbe2c6959449}
+
+
+Definition at line 1008 of file table.cpp.
+
+
+
+\subsection{Member Data Documentation}
+\hypertarget{classTableModel_a575ac8236f73bfeb624eb0971e647e55}{
+\index{TableModel@{TableModel}!b\_\-input@{b\_\-input}}
+\index{b\_\-input@{b\_\-input}!TableModel@{TableModel}}
+\subsubsection[{b\_\-input}]{\setlength{\rightskip}{0pt plus 5cm}bool {\bf TableModel::b\_\-input}}}
+\label{classTableModel_a575ac8236f73bfeb624eb0971e647e55}
+
+
+Definition at line 164 of file table.h.
+
+\hypertarget{classTableModel_a363abf84b86025d76dd5f29c1e255bdd}{
+\index{TableModel@{TableModel}!columns@{columns}}
+\index{columns@{columns}!TableModel@{TableModel}}
+\subsubsection[{columns}]{\setlength{\rightskip}{0pt plus 5cm}int {\bf TableModel::columns}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classTableModel_a363abf84b86025d76dd5f29c1e255bdd}
+
+
+Definition at line 170 of file table.h.
+
+\hypertarget{classTableModel_aa7a971b1dc03dbf0392bb0c77c5a5e85}{
+\index{TableModel@{TableModel}!fields@{fields}}
+\index{fields@{fields}!TableModel@{TableModel}}
+\subsubsection[{fields}]{\setlength{\rightskip}{0pt plus 5cm}QVector$<$ QVector$<$QString$>$ $>$ {\bf TableModel::fields}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classTableModel_aa7a971b1dc03dbf0392bb0c77c5a5e85}
+
+
+Definition at line 176 of file table.h.
+
+\hypertarget{classTableModel_aaba457443a11f6e5e720ffb65b6f7191}{
+\index{TableModel@{TableModel}!fields5@{fields5}}
+\index{fields5@{fields5}!TableModel@{TableModel}}
+\subsubsection[{fields5}]{\setlength{\rightskip}{0pt plus 5cm}QVector$<$ QVector$<$QString$>$ $>$ {\bf TableModel::fields5}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classTableModel_aaba457443a11f6e5e720ffb65b6f7191}
+
+
+Definition at line 177 of file table.h.
+
+\hypertarget{classTableModel_a8971dba45716f1d616d51f9363935ace}{
+\index{TableModel@{TableModel}!mytv@{mytv}}
+\index{mytv@{mytv}!TableModel@{TableModel}}
+\subsubsection[{mytv}]{\setlength{\rightskip}{0pt plus 5cm}{\bf TableView}$\ast$ {\bf TableModel::mytv}}}
+\label{classTableModel_a8971dba45716f1d616d51f9363935ace}
+
+
+Definition at line 162 of file table.h.
+
+\hypertarget{classTableModel_ab9dfb638330390087383eb9373c3d419}{
+\index{TableModel@{TableModel}!pagesize@{pagesize}}
+\index{pagesize@{pagesize}!TableModel@{TableModel}}
+\subsubsection[{pagesize}]{\setlength{\rightskip}{0pt plus 5cm}int {\bf TableModel::pagesize}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classTableModel_ab9dfb638330390087383eb9373c3d419}
+
+
+Definition at line 173 of file table.h.
+
+\hypertarget{classTableModel_a5a5e432aac68a716c4bf1849d821a846}{
+\index{TableModel@{TableModel}!qh\_\-colLabels@{qh\_\-colLabels}}
+\index{qh\_\-colLabels@{qh\_\-colLabels}!TableModel@{TableModel}}
+\subsubsection[{qh\_\-colLabels}]{\setlength{\rightskip}{0pt plus 5cm}QHash$<$int, {\bf Label}$\ast$$>$ {\bf TableModel::qh\_\-colLabels}}}
+\label{classTableModel_a5a5e432aac68a716c4bf1849d821a846}
+
+
+Definition at line 166 of file table.h.
+
+\hypertarget{classTableModel_a3cf9e7d2a7d75f156247d572df42d669}{
+\index{TableModel@{TableModel}!qs\_\-tabName@{qs\_\-tabName}}
+\index{qs\_\-tabName@{qs\_\-tabName}!TableModel@{TableModel}}
+\subsubsection[{qs\_\-tabName}]{\setlength{\rightskip}{0pt plus 5cm}QString {\bf TableModel::qs\_\-tabName}}}
+\label{classTableModel_a3cf9e7d2a7d75f156247d572df42d669}
+
+
+Definition at line 165 of file table.h.
+
+\hypertarget{classTableModel_ae2d3fd99f245025a7078671bb8b42225}{
+\index{TableModel@{TableModel}!qsl\_\-a@{qsl\_\-a}}
+\index{qsl\_\-a@{qsl\_\-a}!TableModel@{TableModel}}
+\subsubsection[{qsl\_\-a}]{\setlength{\rightskip}{0pt plus 5cm}QStringList {\bf TableModel::qsl\_\-a}}}
+\label{classTableModel_ae2d3fd99f245025a7078671bb8b42225}
+
+
+Definition at line 167 of file table.h.
+
+\hypertarget{classTableModel_af80c02eb0f33a2c10804aae3c35699f8}{
+\index{TableModel@{TableModel}!qsl\_\-colNames@{qsl\_\-colNames}}
+\index{qsl\_\-colNames@{qsl\_\-colNames}!TableModel@{TableModel}}
+\subsubsection[{qsl\_\-colNames}]{\setlength{\rightskip}{0pt plus 5cm}QStringList {\bf TableModel::qsl\_\-colNames}}}
+\label{classTableModel_af80c02eb0f33a2c10804aae3c35699f8}
+
+
+Definition at line 148 of file table.h.
+
+\hypertarget{classTableModel_a09bb7e46ef71f2a97ea01d73f5e2cb02}{
+\index{TableModel@{TableModel}!qsl\_\-colTitleNames@{qsl\_\-colTitleNames}}
+\index{qsl\_\-colTitleNames@{qsl\_\-colTitleNames}!TableModel@{TableModel}}
+\subsubsection[{qsl\_\-colTitleNames}]{\setlength{\rightskip}{0pt plus 5cm}QStringList {\bf TableModel::qsl\_\-colTitleNames}}}
+\label{classTableModel_a09bb7e46ef71f2a97ea01d73f5e2cb02}
+
+
+Definition at line 149 of file table.h.
+
+\hypertarget{classTableModel_a96ee46443dfe2b3eae27af6919781450}{
+\index{TableModel@{TableModel}!qsl\_\-colTitleTabNames@{qsl\_\-colTitleTabNames}}
+\index{qsl\_\-colTitleTabNames@{qsl\_\-colTitleTabNames}!TableModel@{TableModel}}
+\subsubsection[{qsl\_\-colTitleTabNames}]{\setlength{\rightskip}{0pt plus 5cm}QStringList {\bf TableModel::qsl\_\-colTitleTabNames}}}
+\label{classTableModel_a96ee46443dfe2b3eae27af6919781450}
+
+
+Definition at line 150 of file table.h.
+
+\hypertarget{classTableModel_ab55a02518eefc1d6fc1bcf0ea62be849}{
+\index{TableModel@{TableModel}!rows@{rows}}
+\index{rows@{rows}!TableModel@{TableModel}}
+\subsubsection[{rows}]{\setlength{\rightskip}{0pt plus 5cm}int {\bf TableModel::rows}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classTableModel_ab55a02518eefc1d6fc1bcf0ea62be849}
+
+
+Definition at line 171 of file table.h.
+
+\hypertarget{classTableModel_a8cdd6044f20e1442e77bab8f74a3d2fe}{
+\index{TableModel@{TableModel}!v\_\-colTabNames@{v\_\-colTabNames}}
+\index{v\_\-colTabNames@{v\_\-colTabNames}!TableModel@{TableModel}}
+\subsubsection[{v\_\-colTabNames}]{\setlength{\rightskip}{0pt plus 5cm}QVector$<$QString$>$ {\bf TableModel::v\_\-colTabNames}}}
+\label{classTableModel_a8cdd6044f20e1442e77bab8f74a3d2fe}
+
+
+Definition at line 151 of file table.h.
+
+
+
+The documentation for this class was generated from the following files:\begin{DoxyCompactItemize}
+\item 
+/e/ms/QT/models/\hyperlink{table_8h}{table.h}\item 
+/e/ms/QT/models/\hyperlink{table_8cpp}{table.cpp}\end{DoxyCompactItemize}

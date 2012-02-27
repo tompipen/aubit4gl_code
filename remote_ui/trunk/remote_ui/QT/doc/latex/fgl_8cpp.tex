@@ -1,0 +1,50 @@
+\hypertarget{fgl_8cpp}{
+\section{/e/ms/QT/include/fgl.cpp File Reference}
+\label{fgl_8cpp}\index{/e/ms/QT/include/fgl.cpp@{/e/ms/QT/include/fgl.cpp}}
+}
+{\ttfamily \#include $<$include/fgl.h$>$}\par
+{\ttfamily \#include $<$QStringList$>$}\par
+{\ttfamily \#include $<$QDebug$>$}\par
+{\ttfamily \#include $<$QProcessEnvironment$>$}\par
+{\ttfamily \#include $<$cstdlib$>$}\par
+\subsection*{Namespaces}
+\begin{DoxyCompactItemize}
+\item 
+namespace \hyperlink{namespaceFgl}{Fgl}
+\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+QString \hyperlink{namespaceFgl_a224ca31123410961b37ec74cac4c7b0a}{Fgl::usingFunc} (QString fmt, QString value, DataType dataType)
+\item 
+QString \hyperlink{namespaceFgl_a7757d5871d47d7ccaba56201a5c019be}{Fgl::fgl\_\-using} (QString fmt, QString value)
+\item 
+QString \hyperlink{namespaceFgl_a9efb6ea5c503dd355a279fe691e51218}{Fgl::fgl\_\-using\_\-date} (QString fmt, QString value)
+\item 
+QString \hyperlink{namespaceFgl_a588de0a8d9bc385030005007bde97a8d}{Fgl::vdc\_\-to\_\-fgl} (QString fmt, QString value, DataType dt)
+\item 
+QString \hyperlink{namespaceFgl_ac7ee6be1cf53ff2ffb34b25576689c24}{Fgl::fgl\_\-using\_\-string} (QString fmt, QString value, bool isneg, QString dbmoney)
+\item 
+QString \hyperlink{namespaceFgl_abb08147dfe3b331ef854161e597f7927}{Fgl::fgl\_\-convert\_\-money} (QString value)
+\item 
+DataType \hyperlink{namespaceFgl_a2d5a9376ae8e5ebb28ddb1d016356ae4}{Fgl::decodeDataType} (QString type)
+\item 
+QDate \hyperlink{namespaceFgl_a22923696c7e89efba943bfc065c9d3ea}{Fgl::getDate} (QString value)
+\item 
+QString \hyperlink{namespaceFgl_acda3ef22ab61f74e6e9f401df8b77917}{Fgl::dbDateToFormat} (QString dbdate)
+\item 
+QChar \hyperlink{namespaceFgl_a60e9729a00a40b0ce63428fe470fa284}{Fgl::getDBDateSeperator} (QString dbdate)
+\item 
+bool \hyperlink{namespaceFgl_a7560ddc940aea8357bfae44485522b31}{Fgl::isValidForType} (DataType datatype, QString value, QString format)
+\item 
+QString \hyperlink{namespaceFgl_aa987ce49dbcf2c9fa730b64902e9c84e}{Fgl::stringToKey} (QString s)
+\item 
+QString \hyperlink{namespaceFgl_acdc01c0826cbfc5bb18bea857765b751}{Fgl::getValueFromEnv} (QString envname)
+\item 
+QString \hyperlink{namespaceFgl_a378c2347baa22e3b429ce42010887963}{Fgl::keyToString} (QString s)
+\end{DoxyCompactItemize}
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+QHash$<$ QString, QString $>$ \hyperlink{namespaceFgl_a2efd7c9f3a914495e4d1ad2c0d557dc9}{Fgl::env}
+\end{DoxyCompactItemize}

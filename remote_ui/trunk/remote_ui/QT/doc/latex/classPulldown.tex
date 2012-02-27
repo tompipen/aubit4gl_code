@@ -1,0 +1,282 @@
+\hypertarget{classPulldown}{
+\section{Pulldown Class Reference}
+\label{classPulldown}\index{Pulldown@{Pulldown}}
+}
+
+
+{\ttfamily \#include $<$pulldown.h$>$}
+
+\subsection*{Public Slots}
+\begin{DoxyCompactItemize}
+\item 
+void \hyperlink{classPulldown_a16b0f7c311015cd850ba6df9e4fb64ea}{actionClicked} (int)
+\end{DoxyCompactItemize}
+\subsection*{Signals}
+\begin{DoxyCompactItemize}
+\item 
+void \hyperlink{classPulldown_af3b9bba6285a333790916e68507bf736}{PulldownActionPressed} (QString)
+\item 
+void \hyperlink{classPulldown_a74abcbec6196edfe4a4fa85e32d882c0}{closeEvent} ()
+\end{DoxyCompactItemize}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classPulldown_a877a1bbe993a2c4db4de0032a1390b01}{Pulldown} (QString, QString, QString, QString, QWidget $\ast$parent=0)
+\item 
+\hyperlink{classPulldown_ac13c98e9829756be08c13e79328697b0}{Pulldown} (QWidget $\ast$parent=0)
+\item 
+void \hyperlink{classPulldown_aadb9f61c88f11bf2701cac144f358014}{createAction} (int id=0, QString text=\char`\"{}\char`\"{}, QString icon=\char`\"{}\char`\"{})
+\item 
+void \hyperlink{classPulldown_aa1d33daa01ef053e3c37a8a17f147910}{hideAction} (QString)
+\item 
+void \hyperlink{classPulldown_a114fcb0f554e953c89848b1cea7262ba}{showAction} (QString)
+\item 
+QList$<$ QAction $\ast$ $>$ \hyperlink{classPulldown_a0226b93cdbcc9d02c9872e9f3abf700e}{actions} ()
+\item 
+QAction $\ast$ \hyperlink{classPulldown_a5e23742ee925a864e9cb8db5911dc93b}{getAction} (QString)
+\item 
+void \hyperlink{classPulldown_a26cd37f80074793419e026144bbfb417}{refresh} ()
+\item 
+void \hyperlink{classPulldown_a28773430dd853bcf30190a0a61febec5}{hideEvent} (QHideEvent $\ast$)
+\end{DoxyCompactItemize}
+\subsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \hyperlink{classPulldown_ada49d05d718b0a017551ab245dbee3c2}{keyPressEvent} (QKeyEvent $\ast$event)
+\end{DoxyCompactItemize}
+\subsection*{Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+QLayout $\ast$ \hyperlink{classPulldown_a9f543b38d4c7672c6625ddc5bbe8406b}{layout}
+\item 
+QList$<$ QAction $\ast$ $>$ \hyperlink{classPulldown_aa9f1b8ca4cc943e49fab19b9b4ee50f6}{ql\_\-actions}
+\item 
+QLayout $\ast$ \hyperlink{classPulldown_aefeadc3a4f7a06bef46341a396207622}{buttonLayout}
+\item 
+QButtonGroup $\ast$ \hyperlink{classPulldown_af19c376e24bee16a2eef3d60ae522913}{buttonGroup}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+
+
+Definition at line 26 of file pulldown.h.
+
+
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{classPulldown_a877a1bbe993a2c4db4de0032a1390b01}{
+\index{Pulldown@{Pulldown}!Pulldown@{Pulldown}}
+\index{Pulldown@{Pulldown}!Pulldown@{Pulldown}}
+\subsubsection[{Pulldown}]{\setlength{\rightskip}{0pt plus 5cm}Pulldown::Pulldown (
+\begin{DoxyParamCaption}
+\item[{QString}]{title, }
+\item[{QString}]{comment, }
+\item[{QString}]{style, }
+\item[{QString}]{image, }
+\item[{QWidget $\ast$}]{parent = {\ttfamily 0}}
+\end{DoxyParamCaption}
+)}}
+\label{classPulldown_a877a1bbe993a2c4db4de0032a1390b01}
+
+
+Definition at line 43 of file pulldown.cpp.
+
+\hypertarget{classPulldown_ac13c98e9829756be08c13e79328697b0}{
+\index{Pulldown@{Pulldown}!Pulldown@{Pulldown}}
+\index{Pulldown@{Pulldown}!Pulldown@{Pulldown}}
+\subsubsection[{Pulldown}]{\setlength{\rightskip}{0pt plus 5cm}Pulldown::Pulldown (
+\begin{DoxyParamCaption}
+\item[{QWidget $\ast$}]{parent = {\ttfamily 0}}
+\end{DoxyParamCaption}
+)}}
+\label{classPulldown_ac13c98e9829756be08c13e79328697b0}
+
+
+Definition at line 32 of file pulldown.cpp.
+
+
+
+\subsection{Member Function Documentation}
+\hypertarget{classPulldown_a16b0f7c311015cd850ba6df9e4fb64ea}{
+\index{Pulldown@{Pulldown}!actionClicked@{actionClicked}}
+\index{actionClicked@{actionClicked}!Pulldown@{Pulldown}}
+\subsubsection[{actionClicked}]{\setlength{\rightskip}{0pt plus 5cm}void Pulldown::actionClicked (
+\begin{DoxyParamCaption}
+\item[{int}]{id}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}slot\mbox{]}}}}
+\label{classPulldown_a16b0f7c311015cd850ba6df9e4fb64ea}
+
+
+Definition at line 164 of file pulldown.cpp.
+
+\hypertarget{classPulldown_a0226b93cdbcc9d02c9872e9f3abf700e}{
+\index{Pulldown@{Pulldown}!actions@{actions}}
+\index{actions@{actions}!Pulldown@{Pulldown}}
+\subsubsection[{actions}]{\setlength{\rightskip}{0pt plus 5cm}QList$<$ QAction $\ast$ $>$ Pulldown::actions (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}
+\label{classPulldown_a0226b93cdbcc9d02c9872e9f3abf700e}
+
+
+Definition at line 216 of file pulldown.cpp.
+
+\hypertarget{classPulldown_a74abcbec6196edfe4a4fa85e32d882c0}{
+\index{Pulldown@{Pulldown}!closeEvent@{closeEvent}}
+\index{closeEvent@{closeEvent}!Pulldown@{Pulldown}}
+\subsubsection[{closeEvent}]{\setlength{\rightskip}{0pt plus 5cm}void Pulldown::closeEvent (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}signal\mbox{]}}}}
+\label{classPulldown_a74abcbec6196edfe4a4fa85e32d882c0}
+\hypertarget{classPulldown_aadb9f61c88f11bf2701cac144f358014}{
+\index{Pulldown@{Pulldown}!createAction@{createAction}}
+\index{createAction@{createAction}!Pulldown@{Pulldown}}
+\subsubsection[{createAction}]{\setlength{\rightskip}{0pt plus 5cm}void Pulldown::createAction (
+\begin{DoxyParamCaption}
+\item[{int}]{id = {\ttfamily 0}, }
+\item[{QString}]{text = {\ttfamily \char`\"{}\char`\"{}}, }
+\item[{QString}]{icon = {\ttfamily \char`\"{}\char`\"{}}}
+\end{DoxyParamCaption}
+)}}
+\label{classPulldown_aadb9f61c88f11bf2701cac144f358014}
+
+
+Definition at line 55 of file pulldown.cpp.
+
+\hypertarget{classPulldown_a5e23742ee925a864e9cb8db5911dc93b}{
+\index{Pulldown@{Pulldown}!getAction@{getAction}}
+\index{getAction@{getAction}!Pulldown@{Pulldown}}
+\subsubsection[{getAction}]{\setlength{\rightskip}{0pt plus 5cm}QAction $\ast$ Pulldown::getAction (
+\begin{DoxyParamCaption}
+\item[{QString}]{name}
+\end{DoxyParamCaption}
+)}}
+\label{classPulldown_a5e23742ee925a864e9cb8db5911dc93b}
+
+
+Definition at line 223 of file pulldown.cpp.
+
+\hypertarget{classPulldown_aa1d33daa01ef053e3c37a8a17f147910}{
+\index{Pulldown@{Pulldown}!hideAction@{hideAction}}
+\index{hideAction@{hideAction}!Pulldown@{Pulldown}}
+\subsubsection[{hideAction}]{\setlength{\rightskip}{0pt plus 5cm}void Pulldown::hideAction (
+\begin{DoxyParamCaption}
+\item[{QString}]{name}
+\end{DoxyParamCaption}
+)}}
+\label{classPulldown_aa1d33daa01ef053e3c37a8a17f147910}
+
+
+Definition at line 104 of file pulldown.cpp.
+
+\hypertarget{classPulldown_a28773430dd853bcf30190a0a61febec5}{
+\index{Pulldown@{Pulldown}!hideEvent@{hideEvent}}
+\index{hideEvent@{hideEvent}!Pulldown@{Pulldown}}
+\subsubsection[{hideEvent}]{\setlength{\rightskip}{0pt plus 5cm}void Pulldown::hideEvent (
+\begin{DoxyParamCaption}
+\item[{QHideEvent $\ast$}]{e}
+\end{DoxyParamCaption}
+)}}
+\label{classPulldown_a28773430dd853bcf30190a0a61febec5}
+
+
+Definition at line 116 of file pulldown.cpp.
+
+\hypertarget{classPulldown_ada49d05d718b0a017551ab245dbee3c2}{
+\index{Pulldown@{Pulldown}!keyPressEvent@{keyPressEvent}}
+\index{keyPressEvent@{keyPressEvent}!Pulldown@{Pulldown}}
+\subsubsection[{keyPressEvent}]{\setlength{\rightskip}{0pt plus 5cm}void Pulldown::keyPressEvent (
+\begin{DoxyParamCaption}
+\item[{QKeyEvent $\ast$}]{event}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}protected\mbox{]}}}}
+\label{classPulldown_ada49d05d718b0a017551ab245dbee3c2}
+
+
+Definition at line 178 of file pulldown.cpp.
+
+\hypertarget{classPulldown_af3b9bba6285a333790916e68507bf736}{
+\index{Pulldown@{Pulldown}!PulldownActionPressed@{PulldownActionPressed}}
+\index{PulldownActionPressed@{PulldownActionPressed}!Pulldown@{Pulldown}}
+\subsubsection[{PulldownActionPressed}]{\setlength{\rightskip}{0pt plus 5cm}void Pulldown::PulldownActionPressed (
+\begin{DoxyParamCaption}
+\item[{QString}]{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}signal\mbox{]}}}}
+\label{classPulldown_af3b9bba6285a333790916e68507bf736}
+\hypertarget{classPulldown_a26cd37f80074793419e026144bbfb417}{
+\index{Pulldown@{Pulldown}!refresh@{refresh}}
+\index{refresh@{refresh}!Pulldown@{Pulldown}}
+\subsubsection[{refresh}]{\setlength{\rightskip}{0pt plus 5cm}void Pulldown::refresh (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}
+\label{classPulldown_a26cd37f80074793419e026144bbfb417}
+
+
+Definition at line 153 of file pulldown.cpp.
+
+\hypertarget{classPulldown_a114fcb0f554e953c89848b1cea7262ba}{
+\index{Pulldown@{Pulldown}!showAction@{showAction}}
+\index{showAction@{showAction}!Pulldown@{Pulldown}}
+\subsubsection[{showAction}]{\setlength{\rightskip}{0pt plus 5cm}void Pulldown::showAction (
+\begin{DoxyParamCaption}
+\item[{QString}]{name}
+\end{DoxyParamCaption}
+)}}
+\label{classPulldown_a114fcb0f554e953c89848b1cea7262ba}
+
+
+Definition at line 133 of file pulldown.cpp.
+
+
+
+\subsection{Member Data Documentation}
+\hypertarget{classPulldown_af19c376e24bee16a2eef3d60ae522913}{
+\index{Pulldown@{Pulldown}!buttonGroup@{buttonGroup}}
+\index{buttonGroup@{buttonGroup}!Pulldown@{Pulldown}}
+\subsubsection[{buttonGroup}]{\setlength{\rightskip}{0pt plus 5cm}QButtonGroup$\ast$ {\bf Pulldown::buttonGroup}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classPulldown_af19c376e24bee16a2eef3d60ae522913}
+
+
+Definition at line 47 of file pulldown.h.
+
+\hypertarget{classPulldown_aefeadc3a4f7a06bef46341a396207622}{
+\index{Pulldown@{Pulldown}!buttonLayout@{buttonLayout}}
+\index{buttonLayout@{buttonLayout}!Pulldown@{Pulldown}}
+\subsubsection[{buttonLayout}]{\setlength{\rightskip}{0pt plus 5cm}QLayout$\ast$ {\bf Pulldown::buttonLayout}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classPulldown_aefeadc3a4f7a06bef46341a396207622}
+
+
+Definition at line 46 of file pulldown.h.
+
+\hypertarget{classPulldown_a9f543b38d4c7672c6625ddc5bbe8406b}{
+\index{Pulldown@{Pulldown}!layout@{layout}}
+\index{layout@{layout}!Pulldown@{Pulldown}}
+\subsubsection[{layout}]{\setlength{\rightskip}{0pt plus 5cm}QLayout$\ast$ {\bf Pulldown::layout}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classPulldown_a9f543b38d4c7672c6625ddc5bbe8406b}
+
+
+Definition at line 44 of file pulldown.h.
+
+\hypertarget{classPulldown_aa9f1b8ca4cc943e49fab19b9b4ee50f6}{
+\index{Pulldown@{Pulldown}!ql\_\-actions@{ql\_\-actions}}
+\index{ql\_\-actions@{ql\_\-actions}!Pulldown@{Pulldown}}
+\subsubsection[{ql\_\-actions}]{\setlength{\rightskip}{0pt plus 5cm}QList$<$QAction$\ast$$>$ {\bf Pulldown::ql\_\-actions}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classPulldown_aa9f1b8ca4cc943e49fab19b9b4ee50f6}
+
+
+Definition at line 45 of file pulldown.h.
+
+
+
+The documentation for this class was generated from the following files:\begin{DoxyCompactItemize}
+\item 
+/e/ms/QT/models/\hyperlink{pulldown_8h}{pulldown.h}\item 
+/e/ms/QT/models/\hyperlink{pulldown_8cpp}{pulldown.cpp}\end{DoxyCompactItemize}

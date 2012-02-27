@@ -1,0 +1,545 @@
+\hypertarget{classRingMenu}{
+\section{RingMenu Class Reference}
+\label{classRingMenu}\index{RingMenu@{RingMenu}}
+}
+
+
+{\ttfamily \#include $<$ringmenu.h$>$}
+
+\subsection*{Signals}
+\begin{DoxyCompactItemize}
+\item 
+void \hyperlink{classRingMenu_aa22f82a8f32d73a85d974f5825943d8c}{menuButtonPressed} (QString)
+\end{DoxyCompactItemize}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classRingMenu_a161290d15ceb65ba81a049b050d73fd9}{RingMenu} (QWidget $\ast$parent=0)
+\item 
+\hyperlink{classRingMenu_a9315b3098d82e38ba24dab2be77ad49d}{RingMenu} (QString title, QString style=\char`\"{}\char`\"{}, QWidget $\ast$parent=0)
+\item 
+void \hyperlink{classRingMenu_a76fe327229667a0dda2b9b6bc4103203}{createButton} (int id=0, QString text=\char`\"{}\char`\"{}, QString desc=\char`\"{}\char`\"{})
+\item 
+void \hyperlink{classRingMenu_afccef718c896d4efc1085f05b4ae9737}{hideButton} (int)
+\item 
+void \hyperlink{classRingMenu_ac0ebc3b36ea3ae2d25e9471fac6ab271}{hideButton} (QString)
+\item 
+void \hyperlink{classRingMenu_a5bd5285d8e3e6de5fbcb0c96de75110c}{showButton} (QString)
+\item 
+void \hyperlink{classRingMenu_a8d76f877a6936c9392a91226e9f7aab9}{selectButton} (QString)
+\item 
+QList$<$ QPushButton $\ast$ $>$ \hyperlink{classRingMenu_ac3ba363326a56f30fd7fa7417f77a2cd}{buttons} ()
+\item 
+int \hyperlink{classRingMenu_adde629b6589c82f0457bf4091827878e}{buttonId} (QPushButton $\ast$button)
+\item 
+void \hyperlink{classRingMenu_a86e635c5a4ad42e3d8615d7f041d5a2e}{createAction} (int id=0, QString text=\char`\"{}\char`\"{})
+\item 
+QString \hyperlink{classRingMenu_a4255e9fe83130885f7f8d2e32d7555bf}{getMenuStyle} () const 
+\item 
+void \hyperlink{classRingMenu_a6a2d9d48229e85f036cf51e738092ff7}{setMenuStyle} (const QString \&ms)
+\item 
+QString \hyperlink{classRingMenu_a124f8251bf13042eed80479e7661ab5f}{getHideButtons} () const 
+\item 
+void \hyperlink{classRingMenu_a863af1bf79f57086df81812774a9d1ac}{setHideButtons} (const QString \&ms)
+\item 
+void \hyperlink{classRingMenu_a2daf310042d624f5bb16a21ca5833f69}{setOrientation} (const Qt::Orientation \&o)
+\item 
+QList$<$ QAction $\ast$ $>$ \hyperlink{classRingMenu_a051677097bff295a68a8d00d21b3cd16}{actions} ()
+\item 
+QAction $\ast$ \hyperlink{classRingMenu_a92c0197723e41fb50a464c4880226466}{getAction} (QString)
+\item 
+bool \hyperlink{classRingMenu_ac80fd9e02e31d943615f69d5e7a998aa}{isActionButton} (QPushButton $\ast$)
+\item 
+bool \hyperlink{classRingMenu_ab6098f804da03d7fc319d95567f09a01}{eventFilter} (QObject $\ast$obj, QEvent $\ast$event)
+\end{DoxyCompactItemize}
+\subsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \hyperlink{classRingMenu_a321580d0f07f4498ef44ffc0a8d0527c}{resizeEvent} (QResizeEvent $\ast$)
+\item 
+void \hyperlink{classRingMenu_ab6b5988095b4d955fcdb58aed2a47320}{focusInEvent} (QFocusEvent $\ast$)
+\item 
+void \hyperlink{classRingMenu_a23ee1e4db5dda7e4bf83e46548ebb22a}{keyPressEvent} (QKeyEvent $\ast$)
+\end{DoxyCompactItemize}
+\subsection*{Properties}
+\begin{DoxyCompactItemize}
+\item 
+QString \hyperlink{classRingMenu_af5694ea5c7af1ded9aedfbb44eaff454}{menuStyle}
+\item 
+QString \hyperlink{classRingMenu_ab945829d0a36844d2be8249414f587bd}{hideButtons}
+\end{DoxyCompactItemize}
+\subsection*{Private Types}
+\begin{DoxyCompactItemize}
+\item 
+enum \hyperlink{classRingMenu_a549495d417ab0acc433800ec2badb3de}{ButtonHideStyle} \{ \hyperlink{classRingMenu_a549495d417ab0acc433800ec2badb3dea4874b2a8af3e7e62ee6666158882f615}{hidden}, 
+\hyperlink{classRingMenu_a549495d417ab0acc433800ec2badb3dea7c0fea2b01048852bf3389e093bbd3e5}{disabled}
+ \}
+\end{DoxyCompactItemize}
+\subsection*{Private Slots}
+\begin{DoxyCompactItemize}
+\item 
+void \hyperlink{classRingMenu_ad28bad7db8ecd20ba7d7c5fea3151e3a}{buttonClicked} (int)
+\end{DoxyCompactItemize}
+\subsection*{Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+QLayout $\ast$ \hyperlink{classRingMenu_af0f01459ece60416bad089171cfe7a2a}{layout}
+\item 
+QButtonGroup $\ast$ \hyperlink{classRingMenu_af6cb8d6f3b6de7197633c558020dff5d}{buttonGroup}
+\item 
+QString \hyperlink{classRingMenu_a44e8981a662fcf261033a1b81e8c2c17}{m\_\-menuStyle}
+\item 
+QString \hyperlink{classRingMenu_af9f395e6f878ed78c19507f1aea10085}{m\_\-hideButtons}
+\item 
+bool \hyperlink{classRingMenu_aea35804a8279e64176a639c1d16a8be1}{b\_\-hideButtons}
+\item 
+QList$<$ QAction $\ast$ $>$ \hyperlink{classRingMenu_a019bd2cb1e166b982396829515e7eb81}{ql\_\-menuCommands}
+\item 
+QList$<$ QAction $\ast$ $>$ \hyperlink{classRingMenu_a5f21339751f39c89451aab407339bbb2}{ql\_\-menuActions}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+
+
+Definition at line 25 of file ringmenu.h.
+
+
+
+\subsection{Member Enumeration Documentation}
+\hypertarget{classRingMenu_a549495d417ab0acc433800ec2badb3de}{
+\index{RingMenu@{RingMenu}!ButtonHideStyle@{ButtonHideStyle}}
+\index{ButtonHideStyle@{ButtonHideStyle}!RingMenu@{RingMenu}}
+\subsubsection[{ButtonHideStyle}]{\setlength{\rightskip}{0pt plus 5cm}enum {\bf RingMenu::ButtonHideStyle}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classRingMenu_a549495d417ab0acc433800ec2badb3de}
+\begin{Desc}
+\item[Enumerator: ]\par
+\begin{description}
+\index{hidden@{hidden}!RingMenu@{RingMenu}}\index{RingMenu@{RingMenu}!hidden@{hidden}}\item[{\em 
+\hypertarget{classRingMenu_a549495d417ab0acc433800ec2badb3dea4874b2a8af3e7e62ee6666158882f615}{
+hidden}
+\label{classRingMenu_a549495d417ab0acc433800ec2badb3dea4874b2a8af3e7e62ee6666158882f615}
+}]\index{disabled@{disabled}!RingMenu@{RingMenu}}\index{RingMenu@{RingMenu}!disabled@{disabled}}\item[{\em 
+\hypertarget{classRingMenu_a549495d417ab0acc433800ec2badb3dea7c0fea2b01048852bf3389e093bbd3e5}{
+disabled}
+\label{classRingMenu_a549495d417ab0acc433800ec2badb3dea7c0fea2b01048852bf3389e093bbd3e5}
+}]\end{description}
+\end{Desc}
+
+
+
+Definition at line 29 of file ringmenu.h.
+
+
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{classRingMenu_a161290d15ceb65ba81a049b050d73fd9}{
+\index{RingMenu@{RingMenu}!RingMenu@{RingMenu}}
+\index{RingMenu@{RingMenu}!RingMenu@{RingMenu}}
+\subsubsection[{RingMenu}]{\setlength{\rightskip}{0pt plus 5cm}RingMenu::RingMenu (
+\begin{DoxyParamCaption}
+\item[{QWidget $\ast$}]{parent = {\ttfamily 0}}
+\end{DoxyParamCaption}
+)}}
+\label{classRingMenu_a161290d15ceb65ba81a049b050d73fd9}
+
+
+Definition at line 32 of file ringmenu.cpp.
+
+\hypertarget{classRingMenu_a9315b3098d82e38ba24dab2be77ad49d}{
+\index{RingMenu@{RingMenu}!RingMenu@{RingMenu}}
+\index{RingMenu@{RingMenu}!RingMenu@{RingMenu}}
+\subsubsection[{RingMenu}]{\setlength{\rightskip}{0pt plus 5cm}RingMenu::RingMenu (
+\begin{DoxyParamCaption}
+\item[{QString}]{title, }
+\item[{QString}]{style = {\ttfamily \char`\"{}\char`\"{}}, }
+\item[{QWidget $\ast$}]{parent = {\ttfamily 0}}
+\end{DoxyParamCaption}
+)}}
+\label{classRingMenu_a9315b3098d82e38ba24dab2be77ad49d}
+
+
+Definition at line 55 of file ringmenu.cpp.
+
+
+
+\subsection{Member Function Documentation}
+\hypertarget{classRingMenu_a051677097bff295a68a8d00d21b3cd16}{
+\index{RingMenu@{RingMenu}!actions@{actions}}
+\index{actions@{actions}!RingMenu@{RingMenu}}
+\subsubsection[{actions}]{\setlength{\rightskip}{0pt plus 5cm}QList$<$ QAction $\ast$ $>$ RingMenu::actions (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}
+\label{classRingMenu_a051677097bff295a68a8d00d21b3cd16}
+
+
+Definition at line 407 of file ringmenu.cpp.
+
+\hypertarget{classRingMenu_ad28bad7db8ecd20ba7d7c5fea3151e3a}{
+\index{RingMenu@{RingMenu}!buttonClicked@{buttonClicked}}
+\index{buttonClicked@{buttonClicked}!RingMenu@{RingMenu}}
+\subsubsection[{buttonClicked}]{\setlength{\rightskip}{0pt plus 5cm}void RingMenu::buttonClicked (
+\begin{DoxyParamCaption}
+\item[{int}]{id}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}private, slot\mbox{]}}}}
+\label{classRingMenu_ad28bad7db8ecd20ba7d7c5fea3151e3a}
+
+
+Definition at line 272 of file ringmenu.cpp.
+
+\hypertarget{classRingMenu_adde629b6589c82f0457bf4091827878e}{
+\index{RingMenu@{RingMenu}!buttonId@{buttonId}}
+\index{buttonId@{buttonId}!RingMenu@{RingMenu}}
+\subsubsection[{buttonId}]{\setlength{\rightskip}{0pt plus 5cm}int RingMenu::buttonId (
+\begin{DoxyParamCaption}
+\item[{QPushButton $\ast$}]{button}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}inline\mbox{]}}}}
+\label{classRingMenu_adde629b6589c82f0457bf4091827878e}
+
+
+Definition at line 53 of file ringmenu.h.
+
+\hypertarget{classRingMenu_ac3ba363326a56f30fd7fa7417f77a2cd}{
+\index{RingMenu@{RingMenu}!buttons@{buttons}}
+\index{buttons@{buttons}!RingMenu@{RingMenu}}
+\subsubsection[{buttons}]{\setlength{\rightskip}{0pt plus 5cm}QList$<$ QPushButton $\ast$ $>$ RingMenu::buttons (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}
+\label{classRingMenu_ac3ba363326a56f30fd7fa7417f77a2cd}
+
+
+Definition at line 254 of file ringmenu.cpp.
+
+\hypertarget{classRingMenu_a86e635c5a4ad42e3d8615d7f041d5a2e}{
+\index{RingMenu@{RingMenu}!createAction@{createAction}}
+\index{createAction@{createAction}!RingMenu@{RingMenu}}
+\subsubsection[{createAction}]{\setlength{\rightskip}{0pt plus 5cm}void RingMenu::createAction (
+\begin{DoxyParamCaption}
+\item[{int}]{id = {\ttfamily 0}, }
+\item[{QString}]{text = {\ttfamily \char`\"{}\char`\"{}}}
+\end{DoxyParamCaption}
+)}}
+\label{classRingMenu_a86e635c5a4ad42e3d8615d7f041d5a2e}
+
+
+Definition at line 285 of file ringmenu.cpp.
+
+\hypertarget{classRingMenu_a76fe327229667a0dda2b9b6bc4103203}{
+\index{RingMenu@{RingMenu}!createButton@{createButton}}
+\index{createButton@{createButton}!RingMenu@{RingMenu}}
+\subsubsection[{createButton}]{\setlength{\rightskip}{0pt plus 5cm}void RingMenu::createButton (
+\begin{DoxyParamCaption}
+\item[{int}]{id = {\ttfamily 0}, }
+\item[{QString}]{text = {\ttfamily \char`\"{}\char`\"{}}, }
+\item[{QString}]{desc = {\ttfamily \char`\"{}\char`\"{}}}
+\end{DoxyParamCaption}
+)}}
+\label{classRingMenu_a76fe327229667a0dda2b9b6bc4103203}
+
+
+Definition at line 93 of file ringmenu.cpp.
+
+\hypertarget{classRingMenu_ab6098f804da03d7fc319d95567f09a01}{
+\index{RingMenu@{RingMenu}!eventFilter@{eventFilter}}
+\index{eventFilter@{eventFilter}!RingMenu@{RingMenu}}
+\subsubsection[{eventFilter}]{\setlength{\rightskip}{0pt plus 5cm}bool RingMenu::eventFilter (
+\begin{DoxyParamCaption}
+\item[{QObject $\ast$}]{obj, }
+\item[{QEvent $\ast$}]{event}
+\end{DoxyParamCaption}
+)}}
+\label{classRingMenu_ab6098f804da03d7fc319d95567f09a01}
+
+
+Definition at line 451 of file ringmenu.cpp.
+
+\hypertarget{classRingMenu_ab6b5988095b4d955fcdb58aed2a47320}{
+\index{RingMenu@{RingMenu}!focusInEvent@{focusInEvent}}
+\index{focusInEvent@{focusInEvent}!RingMenu@{RingMenu}}
+\subsubsection[{focusInEvent}]{\setlength{\rightskip}{0pt plus 5cm}void RingMenu::focusInEvent (
+\begin{DoxyParamCaption}
+\item[{QFocusEvent $\ast$}]{event}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}protected\mbox{]}}}}
+\label{classRingMenu_ab6b5988095b4d955fcdb58aed2a47320}
+
+
+Definition at line 343 of file ringmenu.cpp.
+
+\hypertarget{classRingMenu_a92c0197723e41fb50a464c4880226466}{
+\index{RingMenu@{RingMenu}!getAction@{getAction}}
+\index{getAction@{getAction}!RingMenu@{RingMenu}}
+\subsubsection[{getAction}]{\setlength{\rightskip}{0pt plus 5cm}QAction $\ast$ RingMenu::getAction (
+\begin{DoxyParamCaption}
+\item[{QString}]{name}
+\end{DoxyParamCaption}
+)}}
+\label{classRingMenu_a92c0197723e41fb50a464c4880226466}
+
+
+Definition at line 422 of file ringmenu.cpp.
+
+\hypertarget{classRingMenu_a124f8251bf13042eed80479e7661ab5f}{
+\index{RingMenu@{RingMenu}!getHideButtons@{getHideButtons}}
+\index{getHideButtons@{getHideButtons}!RingMenu@{RingMenu}}
+\subsubsection[{getHideButtons}]{\setlength{\rightskip}{0pt plus 5cm}QString RingMenu::getHideButtons (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily  \mbox{[}inline\mbox{]}}}}
+\label{classRingMenu_a124f8251bf13042eed80479e7661ab5f}
+
+
+Definition at line 58 of file ringmenu.h.
+
+\hypertarget{classRingMenu_a4255e9fe83130885f7f8d2e32d7555bf}{
+\index{RingMenu@{RingMenu}!getMenuStyle@{getMenuStyle}}
+\index{getMenuStyle@{getMenuStyle}!RingMenu@{RingMenu}}
+\subsubsection[{getMenuStyle}]{\setlength{\rightskip}{0pt plus 5cm}QString RingMenu::getMenuStyle (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily  \mbox{[}inline\mbox{]}}}}
+\label{classRingMenu_a4255e9fe83130885f7f8d2e32d7555bf}
+
+
+Definition at line 56 of file ringmenu.h.
+
+\hypertarget{classRingMenu_afccef718c896d4efc1085f05b4ae9737}{
+\index{RingMenu@{RingMenu}!hideButton@{hideButton}}
+\index{hideButton@{hideButton}!RingMenu@{RingMenu}}
+\subsubsection[{hideButton}]{\setlength{\rightskip}{0pt plus 5cm}void RingMenu::hideButton (
+\begin{DoxyParamCaption}
+\item[{int}]{id}
+\end{DoxyParamCaption}
+)}}
+\label{classRingMenu_afccef718c896d4efc1085f05b4ae9737}
+
+
+Definition at line 160 of file ringmenu.cpp.
+
+\hypertarget{classRingMenu_ac0ebc3b36ea3ae2d25e9471fac6ab271}{
+\index{RingMenu@{RingMenu}!hideButton@{hideButton}}
+\index{hideButton@{hideButton}!RingMenu@{RingMenu}}
+\subsubsection[{hideButton}]{\setlength{\rightskip}{0pt plus 5cm}void RingMenu::hideButton (
+\begin{DoxyParamCaption}
+\item[{QString}]{name}
+\end{DoxyParamCaption}
+)}}
+\label{classRingMenu_ac0ebc3b36ea3ae2d25e9471fac6ab271}
+
+
+Definition at line 178 of file ringmenu.cpp.
+
+\hypertarget{classRingMenu_ac80fd9e02e31d943615f69d5e7a998aa}{
+\index{RingMenu@{RingMenu}!isActionButton@{isActionButton}}
+\index{isActionButton@{isActionButton}!RingMenu@{RingMenu}}
+\subsubsection[{isActionButton}]{\setlength{\rightskip}{0pt plus 5cm}bool RingMenu::isActionButton (
+\begin{DoxyParamCaption}
+\item[{QPushButton $\ast$}]{button}
+\end{DoxyParamCaption}
+)}}
+\label{classRingMenu_ac80fd9e02e31d943615f69d5e7a998aa}
+
+
+Definition at line 443 of file ringmenu.cpp.
+
+\hypertarget{classRingMenu_a23ee1e4db5dda7e4bf83e46548ebb22a}{
+\index{RingMenu@{RingMenu}!keyPressEvent@{keyPressEvent}}
+\index{keyPressEvent@{keyPressEvent}!RingMenu@{RingMenu}}
+\subsubsection[{keyPressEvent}]{\setlength{\rightskip}{0pt plus 5cm}void RingMenu::keyPressEvent (
+\begin{DoxyParamCaption}
+\item[{QKeyEvent $\ast$}]{keyEvent}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}protected\mbox{]}}}}
+\label{classRingMenu_a23ee1e4db5dda7e4bf83e46548ebb22a}
+
+
+Definition at line 350 of file ringmenu.cpp.
+
+\hypertarget{classRingMenu_aa22f82a8f32d73a85d974f5825943d8c}{
+\index{RingMenu@{RingMenu}!menuButtonPressed@{menuButtonPressed}}
+\index{menuButtonPressed@{menuButtonPressed}!RingMenu@{RingMenu}}
+\subsubsection[{menuButtonPressed}]{\setlength{\rightskip}{0pt plus 5cm}void RingMenu::menuButtonPressed (
+\begin{DoxyParamCaption}
+\item[{QString}]{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}signal\mbox{]}}}}
+\label{classRingMenu_aa22f82a8f32d73a85d974f5825943d8c}
+\hypertarget{classRingMenu_a321580d0f07f4498ef44ffc0a8d0527c}{
+\index{RingMenu@{RingMenu}!resizeEvent@{resizeEvent}}
+\index{resizeEvent@{resizeEvent}!RingMenu@{RingMenu}}
+\subsubsection[{resizeEvent}]{\setlength{\rightskip}{0pt plus 5cm}void RingMenu::resizeEvent (
+\begin{DoxyParamCaption}
+\item[{QResizeEvent $\ast$}]{event}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}protected\mbox{]}}}}
+\label{classRingMenu_a321580d0f07f4498ef44ffc0a8d0527c}
+
+
+Definition at line 337 of file ringmenu.cpp.
+
+\hypertarget{classRingMenu_a8d76f877a6936c9392a91226e9f7aab9}{
+\index{RingMenu@{RingMenu}!selectButton@{selectButton}}
+\index{selectButton@{selectButton}!RingMenu@{RingMenu}}
+\subsubsection[{selectButton}]{\setlength{\rightskip}{0pt plus 5cm}void RingMenu::selectButton (
+\begin{DoxyParamCaption}
+\item[{QString}]{name}
+\end{DoxyParamCaption}
+)}}
+\label{classRingMenu_a8d76f877a6936c9392a91226e9f7aab9}
+
+
+Definition at line 233 of file ringmenu.cpp.
+
+\hypertarget{classRingMenu_a863af1bf79f57086df81812774a9d1ac}{
+\index{RingMenu@{RingMenu}!setHideButtons@{setHideButtons}}
+\index{setHideButtons@{setHideButtons}!RingMenu@{RingMenu}}
+\subsubsection[{setHideButtons}]{\setlength{\rightskip}{0pt plus 5cm}void RingMenu::setHideButtons (
+\begin{DoxyParamCaption}
+\item[{const QString \&}]{ms}
+\end{DoxyParamCaption}
+)}}
+\label{classRingMenu_a863af1bf79f57086df81812774a9d1ac}
+
+
+Definition at line 383 of file ringmenu.cpp.
+
+\hypertarget{classRingMenu_a6a2d9d48229e85f036cf51e738092ff7}{
+\index{RingMenu@{RingMenu}!setMenuStyle@{setMenuStyle}}
+\index{setMenuStyle@{setMenuStyle}!RingMenu@{RingMenu}}
+\subsubsection[{setMenuStyle}]{\setlength{\rightskip}{0pt plus 5cm}void RingMenu::setMenuStyle (
+\begin{DoxyParamCaption}
+\item[{const QString \&}]{ms}
+\end{DoxyParamCaption}
+)}}
+\label{classRingMenu_a6a2d9d48229e85f036cf51e738092ff7}
+
+
+Definition at line 375 of file ringmenu.cpp.
+
+\hypertarget{classRingMenu_a2daf310042d624f5bb16a21ca5833f69}{
+\index{RingMenu@{RingMenu}!setOrientation@{setOrientation}}
+\index{setOrientation@{setOrientation}!RingMenu@{RingMenu}}
+\subsubsection[{setOrientation}]{\setlength{\rightskip}{0pt plus 5cm}void RingMenu::setOrientation (
+\begin{DoxyParamCaption}
+\item[{const Qt::Orientation \&}]{o}
+\end{DoxyParamCaption}
+)}}
+\label{classRingMenu_a2daf310042d624f5bb16a21ca5833f69}
+
+
+Definition at line 395 of file ringmenu.cpp.
+
+\hypertarget{classRingMenu_a5bd5285d8e3e6de5fbcb0c96de75110c}{
+\index{RingMenu@{RingMenu}!showButton@{showButton}}
+\index{showButton@{showButton}!RingMenu@{RingMenu}}
+\subsubsection[{showButton}]{\setlength{\rightskip}{0pt plus 5cm}void RingMenu::showButton (
+\begin{DoxyParamCaption}
+\item[{QString}]{name}
+\end{DoxyParamCaption}
+)}}
+\label{classRingMenu_a5bd5285d8e3e6de5fbcb0c96de75110c}
+
+
+Definition at line 206 of file ringmenu.cpp.
+
+
+
+\subsection{Member Data Documentation}
+\hypertarget{classRingMenu_aea35804a8279e64176a639c1d16a8be1}{
+\index{RingMenu@{RingMenu}!b\_\-hideButtons@{b\_\-hideButtons}}
+\index{b\_\-hideButtons@{b\_\-hideButtons}!RingMenu@{RingMenu}}
+\subsubsection[{b\_\-hideButtons}]{\setlength{\rightskip}{0pt plus 5cm}bool {\bf RingMenu::b\_\-hideButtons}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classRingMenu_aea35804a8279e64176a639c1d16a8be1}
+
+
+Definition at line 72 of file ringmenu.h.
+
+\hypertarget{classRingMenu_af6cb8d6f3b6de7197633c558020dff5d}{
+\index{RingMenu@{RingMenu}!buttonGroup@{buttonGroup}}
+\index{buttonGroup@{buttonGroup}!RingMenu@{RingMenu}}
+\subsubsection[{buttonGroup}]{\setlength{\rightskip}{0pt plus 5cm}QButtonGroup$\ast$ {\bf RingMenu::buttonGroup}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classRingMenu_af6cb8d6f3b6de7197633c558020dff5d}
+
+
+Definition at line 69 of file ringmenu.h.
+
+\hypertarget{classRingMenu_af0f01459ece60416bad089171cfe7a2a}{
+\index{RingMenu@{RingMenu}!layout@{layout}}
+\index{layout@{layout}!RingMenu@{RingMenu}}
+\subsubsection[{layout}]{\setlength{\rightskip}{0pt plus 5cm}QLayout$\ast$ {\bf RingMenu::layout}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classRingMenu_af0f01459ece60416bad089171cfe7a2a}
+
+
+Definition at line 68 of file ringmenu.h.
+
+\hypertarget{classRingMenu_af9f395e6f878ed78c19507f1aea10085}{
+\index{RingMenu@{RingMenu}!m\_\-hideButtons@{m\_\-hideButtons}}
+\index{m\_\-hideButtons@{m\_\-hideButtons}!RingMenu@{RingMenu}}
+\subsubsection[{m\_\-hideButtons}]{\setlength{\rightskip}{0pt plus 5cm}QString {\bf RingMenu::m\_\-hideButtons}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classRingMenu_af9f395e6f878ed78c19507f1aea10085}
+
+
+Definition at line 71 of file ringmenu.h.
+
+\hypertarget{classRingMenu_a44e8981a662fcf261033a1b81e8c2c17}{
+\index{RingMenu@{RingMenu}!m\_\-menuStyle@{m\_\-menuStyle}}
+\index{m\_\-menuStyle@{m\_\-menuStyle}!RingMenu@{RingMenu}}
+\subsubsection[{m\_\-menuStyle}]{\setlength{\rightskip}{0pt plus 5cm}QString {\bf RingMenu::m\_\-menuStyle}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classRingMenu_a44e8981a662fcf261033a1b81e8c2c17}
+
+
+Definition at line 70 of file ringmenu.h.
+
+\hypertarget{classRingMenu_a5f21339751f39c89451aab407339bbb2}{
+\index{RingMenu@{RingMenu}!ql\_\-menuActions@{ql\_\-menuActions}}
+\index{ql\_\-menuActions@{ql\_\-menuActions}!RingMenu@{RingMenu}}
+\subsubsection[{ql\_\-menuActions}]{\setlength{\rightskip}{0pt plus 5cm}QList$<$QAction$\ast$$>$ {\bf RingMenu::ql\_\-menuActions}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classRingMenu_a5f21339751f39c89451aab407339bbb2}
+
+
+Definition at line 74 of file ringmenu.h.
+
+\hypertarget{classRingMenu_a019bd2cb1e166b982396829515e7eb81}{
+\index{RingMenu@{RingMenu}!ql\_\-menuCommands@{ql\_\-menuCommands}}
+\index{ql\_\-menuCommands@{ql\_\-menuCommands}!RingMenu@{RingMenu}}
+\subsubsection[{ql\_\-menuCommands}]{\setlength{\rightskip}{0pt plus 5cm}QList$<$QAction$\ast$$>$ {\bf RingMenu::ql\_\-menuCommands}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classRingMenu_a019bd2cb1e166b982396829515e7eb81}
+
+
+Definition at line 73 of file ringmenu.h.
+
+
+
+\subsection{Property Documentation}
+\hypertarget{classRingMenu_ab945829d0a36844d2be8249414f587bd}{
+\index{RingMenu@{RingMenu}!hideButtons@{hideButtons}}
+\index{hideButtons@{hideButtons}!RingMenu@{RingMenu}}
+\subsubsection[{hideButtons}]{\setlength{\rightskip}{0pt plus 5cm}QString RingMenu::hideButtons\hspace{0.3cm}{\ttfamily  \mbox{[}read, write\mbox{]}}}}
+\label{classRingMenu_ab945829d0a36844d2be8249414f587bd}
+
+
+Definition at line 39 of file ringmenu.h.
+
+\hypertarget{classRingMenu_af5694ea5c7af1ded9aedfbb44eaff454}{
+\index{RingMenu@{RingMenu}!menuStyle@{menuStyle}}
+\index{menuStyle@{menuStyle}!RingMenu@{RingMenu}}
+\subsubsection[{menuStyle}]{\setlength{\rightskip}{0pt plus 5cm}QString RingMenu::menuStyle\hspace{0.3cm}{\ttfamily  \mbox{[}read, write\mbox{]}}}}
+\label{classRingMenu_af5694ea5c7af1ded9aedfbb44eaff454}
+
+
+Definition at line 34 of file ringmenu.h.
+
+
+
+The documentation for this class was generated from the following files:\begin{DoxyCompactItemize}
+\item 
+/e/ms/QT/models/\hyperlink{ringmenu_8h}{ringmenu.h}\item 
+/e/ms/QT/models/\hyperlink{ringmenu_8cpp}{ringmenu.cpp}\end{DoxyCompactItemize}

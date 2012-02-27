@@ -1,0 +1,160 @@
+\hypertarget{classActions}{
+\section{Actions Class Reference}
+\label{classActions}\index{Actions@{Actions}}
+}
+
+
+{\ttfamily \#include $<$actions.h$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classActions_ac67e8c16bb09fef5bb0babde13f044d4}{Actions} (QWidget $\ast$form, QObject $\ast$parent=0)
+\item 
+\hyperlink{classActions_a5b05cd9ca4e4bb6f75e11f0e87673d4d}{Actions} (QString title, QObject $\ast$parent=0)
+\item 
+void \hyperlink{classActions_a9f8ba63a37f428b3cf38d7fc66300e1a}{parseFile} (QDomDocument)
+\item 
+void \hyperlink{classActions_a3bdb0b11ee3cae83ee5fc642493c3043}{parseElement} (QDomNode)
+\item 
+QList$<$ \hyperlink{classAction}{Action} $\ast$ $>$ \hyperlink{classActions_ad2a312ace21d32a4cb41dd65c9dba6a5}{actions} ()
+\item 
+QStringList \hyperlink{classActions_a6050208547b42100cd2436d7c3136796}{names} ()
+\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+QList$<$ \hyperlink{classAction}{Action} $\ast$ $>$ \hyperlink{classActions_a203248bdd5f4dd6c480f88e58ac80fcc}{ql\_\-actions}
+\item 
+QStringList \hyperlink{classActions_a863664ecad15bff8c6968ec9ecc17a4a}{qsl\_\-names}
+\end{DoxyCompactItemize}
+\subsection*{Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+QWidget $\ast$ \hyperlink{classActions_accd87f3514bfe9be6ba9c83550aa1e24}{p\_\-fglform}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+
+
+Definition at line 78 of file actions.h.
+
+
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{classActions_ac67e8c16bb09fef5bb0babde13f044d4}{
+\index{Actions@{Actions}!Actions@{Actions}}
+\index{Actions@{Actions}!Actions@{Actions}}
+\subsubsection[{Actions}]{\setlength{\rightskip}{0pt plus 5cm}Actions::Actions (
+\begin{DoxyParamCaption}
+\item[{QWidget $\ast$}]{form, }
+\item[{QObject $\ast$}]{parent = {\ttfamily 0}}
+\end{DoxyParamCaption}
+)}}
+\label{classActions_ac67e8c16bb09fef5bb0babde13f044d4}
+
+
+Definition at line 25 of file actions.cpp.
+
+\hypertarget{classActions_a5b05cd9ca4e4bb6f75e11f0e87673d4d}{
+\index{Actions@{Actions}!Actions@{Actions}}
+\index{Actions@{Actions}!Actions@{Actions}}
+\subsubsection[{Actions}]{\setlength{\rightskip}{0pt plus 5cm}Actions::Actions (
+\begin{DoxyParamCaption}
+\item[{QString}]{title, }
+\item[{QObject $\ast$}]{parent = {\ttfamily 0}}
+\end{DoxyParamCaption}
+)}}
+\label{classActions_a5b05cd9ca4e4bb6f75e11f0e87673d4d}
+
+
+\subsection{Member Function Documentation}
+\hypertarget{classActions_ad2a312ace21d32a4cb41dd65c9dba6a5}{
+\index{Actions@{Actions}!actions@{actions}}
+\index{actions@{actions}!Actions@{Actions}}
+\subsubsection[{actions}]{\setlength{\rightskip}{0pt plus 5cm}QList$<${\bf Action}$\ast$$>$ Actions::actions (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}inline\mbox{]}}}}
+\label{classActions_ad2a312ace21d32a4cb41dd65c9dba6a5}
+
+
+Definition at line 87 of file actions.h.
+
+\hypertarget{classActions_a6050208547b42100cd2436d7c3136796}{
+\index{Actions@{Actions}!names@{names}}
+\index{names@{names}!Actions@{Actions}}
+\subsubsection[{names}]{\setlength{\rightskip}{0pt plus 5cm}QStringList Actions::names (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}inline\mbox{]}}}}
+\label{classActions_a6050208547b42100cd2436d7c3136796}
+
+
+Definition at line 88 of file actions.h.
+
+\hypertarget{classActions_a3bdb0b11ee3cae83ee5fc642493c3043}{
+\index{Actions@{Actions}!parseElement@{parseElement}}
+\index{parseElement@{parseElement}!Actions@{Actions}}
+\subsubsection[{parseElement}]{\setlength{\rightskip}{0pt plus 5cm}void Actions::parseElement (
+\begin{DoxyParamCaption}
+\item[{QDomNode}]{xmlNode}
+\end{DoxyParamCaption}
+)}}
+\label{classActions_a3bdb0b11ee3cae83ee5fc642493c3043}
+
+
+Definition at line 40 of file actions.cpp.
+
+\hypertarget{classActions_a9f8ba63a37f428b3cf38d7fc66300e1a}{
+\index{Actions@{Actions}!parseFile@{parseFile}}
+\index{parseFile@{parseFile}!Actions@{Actions}}
+\subsubsection[{parseFile}]{\setlength{\rightskip}{0pt plus 5cm}void Actions::parseFile (
+\begin{DoxyParamCaption}
+\item[{QDomDocument}]{xmlActions}
+\end{DoxyParamCaption}
+)}}
+\label{classActions_a9f8ba63a37f428b3cf38d7fc66300e1a}
+
+
+Definition at line 33 of file actions.cpp.
+
+
+
+\subsection{Member Data Documentation}
+\hypertarget{classActions_accd87f3514bfe9be6ba9c83550aa1e24}{
+\index{Actions@{Actions}!p\_\-fglform@{p\_\-fglform}}
+\index{p\_\-fglform@{p\_\-fglform}!Actions@{Actions}}
+\subsubsection[{p\_\-fglform}]{\setlength{\rightskip}{0pt plus 5cm}QWidget$\ast$ {\bf Actions::p\_\-fglform}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classActions_accd87f3514bfe9be6ba9c83550aa1e24}
+
+
+Definition at line 95 of file actions.h.
+
+\hypertarget{classActions_a203248bdd5f4dd6c480f88e58ac80fcc}{
+\index{Actions@{Actions}!ql\_\-actions@{ql\_\-actions}}
+\index{ql\_\-actions@{ql\_\-actions}!Actions@{Actions}}
+\subsubsection[{ql\_\-actions}]{\setlength{\rightskip}{0pt plus 5cm}QList$<${\bf Action}$\ast$$>$ {\bf Actions::ql\_\-actions}}}
+\label{classActions_a203248bdd5f4dd6c480f88e58ac80fcc}
+
+
+Definition at line 88 of file actions.h.
+
+\hypertarget{classActions_a863664ecad15bff8c6968ec9ecc17a4a}{
+\index{Actions@{Actions}!qsl\_\-names@{qsl\_\-names}}
+\index{qsl\_\-names@{qsl\_\-names}!Actions@{Actions}}
+\subsubsection[{qsl\_\-names}]{\setlength{\rightskip}{0pt plus 5cm}QStringList {\bf Actions::qsl\_\-names}}}
+\label{classActions_a863664ecad15bff8c6968ec9ecc17a4a}
+
+
+Definition at line 91 of file actions.h.
+
+
+
+The documentation for this class was generated from the following files:\begin{DoxyCompactItemize}
+\item 
+/e/ms/QT/models/\hyperlink{actions_8h}{actions.h}\item 
+/e/ms/QT/models/\hyperlink{actions_8cpp}{actions.cpp}\end{DoxyCompactItemize}

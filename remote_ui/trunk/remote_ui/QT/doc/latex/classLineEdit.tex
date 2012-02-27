@@ -1,0 +1,727 @@
+\hypertarget{classLineEdit}{
+\section{LineEdit Class Reference}
+\label{classLineEdit}\index{LineEdit@{LineEdit}}
+}
+
+
+{\ttfamily \#include $<$vwidgets.h$>$}
+
+Inheritance diagram for LineEdit:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{classLineEdit}
+\end{center}
+\end{figure}
+\subsection*{Public Slots}
+\begin{DoxyCompactItemize}
+\item 
+void \hyperlink{classLineEdit_ad3cd1fe6bd62dfbd72e071054711015d}{isTouched} ()
+\item 
+void \hyperlink{classLineEdit_ae01737e586a9fc6f880c15885b7e8479}{checkNext} (const QString \&)
+\end{DoxyCompactItemize}
+\subsection*{Signals}
+\begin{DoxyCompactItemize}
+\item 
+void \hyperlink{classLineEdit_a5d13e4462115bd039c90f38429a7de14}{widgetOpen} ()
+\item 
+void \hyperlink{classLineEdit_ad00eb1212a7343c7f80d65a19d23c4e0}{nextField} ()
+\item 
+void \hyperlink{classLineEdit_acb394b5ebd47db7a2fddf3ba3d57344e}{fieldEvent} (\hyperlink{structFgl_1_1Event}{Fgl::Event})
+\item 
+void \hyperlink{classLineEdit_afb721c2578c83bad5d35f84e069b615a}{error} (QString)
+\item 
+void \hyperlink{classLineEdit_a54187e66ebc1bdad7421e3b20b996444}{dropSuccess} ()
+\end{DoxyCompactItemize}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classLineEdit_a0c54dc37150c2eea45af904a8146025a}{LineEdit} (QWidget $\ast$parent=0)
+\item 
+void \hyperlink{classLineEdit_a2f16adf255e3b0413579c3c689040afd}{setNoEntry} (bool ro)
+\item 
+bool \hyperlink{classLineEdit_aae4ac49369514ba569049214623f6dea}{noEntry} ()
+\item 
+void \hyperlink{classLineEdit_aee6f145415075ee47b730cbd26941f1b}{setAutoNext} (bool ro)
+\item 
+bool \hyperlink{classLineEdit_aca89c8a1aa943a93e68cd0a910f2331b}{autoNext} ()
+\item 
+void \hyperlink{classLineEdit_ac5c681c48927ade8548fd3293b614b78}{setRequired} (bool ro)
+\item 
+bool \hyperlink{classLineEdit_af82e35289d3464e9d161fd69cfdbbbe0}{required} ()
+\item 
+void \hyperlink{classLineEdit_afbe0dcdde72b9be055701f6a1bd0608b}{setCompress} (bool ro)
+\item 
+bool \hyperlink{classLineEdit_aac8fb7e5ef390627a71044b0ae8745bc}{compress} ()
+\item 
+void \hyperlink{classLineEdit_abcca038575cbc1ce186062f671763608}{setShift} (QString s)
+\item 
+QString \hyperlink{classLineEdit_a3d10f3933a882f6afef6383cb758191b}{shift} ()
+\item 
+void \hyperlink{classLineEdit_a8c0cb7cb1a2b0738db17ab3fad4b251b}{setSqlType} (QString)
+\item 
+QString \hyperlink{classLineEdit_afff2070683add5e2bc642cc58ae05a74}{sqlType} ()
+\item 
+\hyperlink{namespaceFgl_a221c9c0366d5227f8c27ca97308a691c}{Fgl::DataType} \hyperlink{classLineEdit_ac24782317d25afec4c02d74ed5892c99}{dataType} ()
+\item 
+const QValidator $\ast$ \hyperlink{classLineEdit_a7f6fef4035828aa9413b5d5763680adb}{getValidator} ()
+\item 
+void \hyperlink{classLineEdit_a52dde6d0059debb1730a029fceab64b7}{setTouchendEnabled} (bool t)
+\item 
+bool \hyperlink{classLineEdit_a7b733b195f9df2b7b495d030993868c6}{touched} ()
+\item 
+void \hyperlink{classLineEdit_a65785ee018716e1d1f3145070de82aba}{setDefaultValue} (QString def)
+\item 
+QString \hyperlink{classLineEdit_ab812bc7b7f6ff4df6f0978b2a10affca}{defaultValue} ()
+\item 
+void \hyperlink{classLineEdit_a28de25ae19583ad6446fd57f4d7d80a5}{setPicture} (QString pic)
+\item 
+QString \hyperlink{classLineEdit_afa2599d7285a22ead9fc92f8277a3f99}{picture} ()
+\item 
+void \hyperlink{classLineEdit_ab1d9a17ce52c3bceb98ef4536e107dbe}{setFormat} (QString f)
+\item 
+QString \hyperlink{classLineEdit_a748da55fa9586cd430c4ed68bf5f7219}{format} ()
+\item 
+void \hyperlink{classLineEdit_add02ad1ab2af8928e3245f44fa62c071}{check} ()
+\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+QString \hyperlink{classLineEdit_ac7a4f4fcd5b7f40f66c47ff64d66f7ec}{sqlTabName}
+\item 
+QString \hyperlink{classLineEdit_a337f64c9e882f065b5771f9e2289784f}{name}
+\item 
+QString \hyperlink{classLineEdit_a18b45b2581575cf88489ab3a6f15281f}{colName}
+\item 
+int \hyperlink{classLineEdit_a8a3d3eb982e8a27cc6bdbf3664330bb4}{x}
+\item 
+int \hyperlink{classLineEdit_aa6005ddcc5167be3d2d3d73e869dd434}{y}
+\item 
+int \hyperlink{classLineEdit_a9ac1b912bc68696a166d681a5b86dbf2}{w}
+\item 
+bool \hyperlink{classLineEdit_a4769336d33259d543b795da2831fe4f7}{b\_\-denyFocus}
+\end{DoxyCompactItemize}
+\subsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \hyperlink{classLineEdit_a4aea170d9ee45df41951a8565b4a8d9a}{dropEvent} (QDropEvent $\ast$)
+\item 
+void \hyperlink{classLineEdit_afa85c9e14cc728c93cfa848af50c2762}{dragEnterEvent} (QDragEnterEvent $\ast$)
+\end{DoxyCompactItemize}
+\subsection*{Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+QString \hyperlink{classLineEdit_a662654e1d1126e311ba37ab357f90ef3}{qs\_\-sqlType}
+\item 
+bool \hyperlink{classLineEdit_a86b1ba413925186833fa1ffe1d08fe23}{b\_\-noEntry}
+\item 
+bool \hyperlink{classLineEdit_aa85bee848a5fcf91042127505f0d3686}{b\_\-autoNext}
+\item 
+bool \hyperlink{classLineEdit_a54067fa92f09cdde4c4f900333a1af5d}{b\_\-required}
+\item 
+bool \hyperlink{classLineEdit_afee15f7042521fb78ee568902aa8b603}{b\_\-compress}
+\item 
+QString \hyperlink{classLineEdit_ae554482e3fa80ec2695a79850b36bf1b}{qs\_\-shift}
+\item 
+const QValidator $\ast$ \hyperlink{classLineEdit_a4d9da17a0bc8380fdb22c4b197431d0a}{valid}
+\item 
+QString \hyperlink{classLineEdit_a73d2e143f00df406134a9e73ceba40af}{qs\_\-default}
+\item 
+QString \hyperlink{classLineEdit_aa7911a11a6d620f20248e968c093bd94}{qs\_\-picture}
+\item 
+QString \hyperlink{classLineEdit_ac06a746e3b29d84d14672e0931d1c457}{qs\_\-format}
+\item 
+\hyperlink{namespaceFgl_a221c9c0366d5227f8c27ca97308a691c}{Fgl::DataType} \hyperlink{classLineEdit_a7eafffbf2d586eac9c90f5d97fd89c6e}{dt\_\-dataType}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+
+
+Definition at line 115 of file vwidgets.h.
+
+
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{classLineEdit_a0c54dc37150c2eea45af904a8146025a}{
+\index{LineEdit@{LineEdit}!LineEdit@{LineEdit}}
+\index{LineEdit@{LineEdit}!LineEdit@{LineEdit}}
+\subsubsection[{LineEdit}]{\setlength{\rightskip}{0pt plus 5cm}LineEdit::LineEdit (
+\begin{DoxyParamCaption}
+\item[{QWidget $\ast$}]{parent = {\ttfamily 0}}
+\end{DoxyParamCaption}
+)}}
+\label{classLineEdit_a0c54dc37150c2eea45af904a8146025a}
+
+
+Definition at line 290 of file vwidgets.cpp.
+
+
+
+\subsection{Member Function Documentation}
+\hypertarget{classLineEdit_aca89c8a1aa943a93e68cd0a910f2331b}{
+\index{LineEdit@{LineEdit}!autoNext@{autoNext}}
+\index{autoNext@{autoNext}!LineEdit@{LineEdit}}
+\subsubsection[{autoNext}]{\setlength{\rightskip}{0pt plus 5cm}bool LineEdit::autoNext (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}inline\mbox{]}}}}
+\label{classLineEdit_aca89c8a1aa943a93e68cd0a910f2331b}
+
+
+Definition at line 132 of file vwidgets.h.
+
+\hypertarget{classLineEdit_add02ad1ab2af8928e3245f44fa62c071}{
+\index{LineEdit@{LineEdit}!check@{check}}
+\index{check@{check}!LineEdit@{LineEdit}}
+\subsubsection[{check}]{\setlength{\rightskip}{0pt plus 5cm}void LineEdit::check (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}
+\label{classLineEdit_add02ad1ab2af8928e3245f44fa62c071}
+
+
+Definition at line 319 of file vwidgets.cpp.
+
+\hypertarget{classLineEdit_ae01737e586a9fc6f880c15885b7e8479}{
+\index{LineEdit@{LineEdit}!checkNext@{checkNext}}
+\index{checkNext@{checkNext}!LineEdit@{LineEdit}}
+\subsubsection[{checkNext}]{\setlength{\rightskip}{0pt plus 5cm}void LineEdit::checkNext (
+\begin{DoxyParamCaption}
+\item[{const QString \&}]{textr}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}slot\mbox{]}}}}
+\label{classLineEdit_ae01737e586a9fc6f880c15885b7e8479}
+
+
+Definition at line 385 of file vwidgets.cpp.
+
+\hypertarget{classLineEdit_aac8fb7e5ef390627a71044b0ae8745bc}{
+\index{LineEdit@{LineEdit}!compress@{compress}}
+\index{compress@{compress}!LineEdit@{LineEdit}}
+\subsubsection[{compress}]{\setlength{\rightskip}{0pt plus 5cm}bool LineEdit::compress (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}inline\mbox{]}}}}
+\label{classLineEdit_aac8fb7e5ef390627a71044b0ae8745bc}
+
+
+Definition at line 136 of file vwidgets.h.
+
+\hypertarget{classLineEdit_ac24782317d25afec4c02d74ed5892c99}{
+\index{LineEdit@{LineEdit}!dataType@{dataType}}
+\index{dataType@{dataType}!LineEdit@{LineEdit}}
+\subsubsection[{dataType}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Fgl::DataType} LineEdit::dataType (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}inline\mbox{]}}}}
+\label{classLineEdit_ac24782317d25afec4c02d74ed5892c99}
+
+
+Definition at line 141 of file vwidgets.h.
+
+\hypertarget{classLineEdit_ab812bc7b7f6ff4df6f0978b2a10affca}{
+\index{LineEdit@{LineEdit}!defaultValue@{defaultValue}}
+\index{defaultValue@{defaultValue}!LineEdit@{LineEdit}}
+\subsubsection[{defaultValue}]{\setlength{\rightskip}{0pt plus 5cm}QString LineEdit::defaultValue (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}inline\mbox{]}}}}
+\label{classLineEdit_ab812bc7b7f6ff4df6f0978b2a10affca}
+
+
+Definition at line 146 of file vwidgets.h.
+
+\hypertarget{classLineEdit_afa85c9e14cc728c93cfa848af50c2762}{
+\index{LineEdit@{LineEdit}!dragEnterEvent@{dragEnterEvent}}
+\index{dragEnterEvent@{dragEnterEvent}!LineEdit@{LineEdit}}
+\subsubsection[{dragEnterEvent}]{\setlength{\rightskip}{0pt plus 5cm}void LineEdit::dragEnterEvent (
+\begin{DoxyParamCaption}
+\item[{QDragEnterEvent $\ast$}]{e}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}protected\mbox{]}}}}
+\label{classLineEdit_afa85c9e14cc728c93cfa848af50c2762}
+
+
+Definition at line 393 of file vwidgets.cpp.
+
+\hypertarget{classLineEdit_a4aea170d9ee45df41951a8565b4a8d9a}{
+\index{LineEdit@{LineEdit}!dropEvent@{dropEvent}}
+\index{dropEvent@{dropEvent}!LineEdit@{LineEdit}}
+\subsubsection[{dropEvent}]{\setlength{\rightskip}{0pt plus 5cm}void LineEdit::dropEvent (
+\begin{DoxyParamCaption}
+\item[{QDropEvent $\ast$}]{e}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}protected\mbox{]}}}}
+\label{classLineEdit_a4aea170d9ee45df41951a8565b4a8d9a}
+
+
+Definition at line 402 of file vwidgets.cpp.
+
+\hypertarget{classLineEdit_a54187e66ebc1bdad7421e3b20b996444}{
+\index{LineEdit@{LineEdit}!dropSuccess@{dropSuccess}}
+\index{dropSuccess@{dropSuccess}!LineEdit@{LineEdit}}
+\subsubsection[{dropSuccess}]{\setlength{\rightskip}{0pt plus 5cm}void LineEdit::dropSuccess (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}signal\mbox{]}}}}
+\label{classLineEdit_a54187e66ebc1bdad7421e3b20b996444}
+\hypertarget{classLineEdit_afb721c2578c83bad5d35f84e069b615a}{
+\index{LineEdit@{LineEdit}!error@{error}}
+\index{error@{error}!LineEdit@{LineEdit}}
+\subsubsection[{error}]{\setlength{\rightskip}{0pt plus 5cm}void LineEdit::error (
+\begin{DoxyParamCaption}
+\item[{QString}]{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}signal\mbox{]}}}}
+\label{classLineEdit_afb721c2578c83bad5d35f84e069b615a}
+\hypertarget{classLineEdit_acb394b5ebd47db7a2fddf3ba3d57344e}{
+\index{LineEdit@{LineEdit}!fieldEvent@{fieldEvent}}
+\index{fieldEvent@{fieldEvent}!LineEdit@{LineEdit}}
+\subsubsection[{fieldEvent}]{\setlength{\rightskip}{0pt plus 5cm}void LineEdit::fieldEvent (
+\begin{DoxyParamCaption}
+\item[{{\bf Fgl::Event}}]{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}signal\mbox{]}}}}
+\label{classLineEdit_acb394b5ebd47db7a2fddf3ba3d57344e}
+\hypertarget{classLineEdit_a748da55fa9586cd430c4ed68bf5f7219}{
+\index{LineEdit@{LineEdit}!format@{format}}
+\index{format@{format}!LineEdit@{LineEdit}}
+\subsubsection[{format}]{\setlength{\rightskip}{0pt plus 5cm}QString LineEdit::format (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}inline\mbox{]}}}}
+\label{classLineEdit_a748da55fa9586cd430c4ed68bf5f7219}
+
+
+Definition at line 150 of file vwidgets.h.
+
+\hypertarget{classLineEdit_a7f6fef4035828aa9413b5d5763680adb}{
+\index{LineEdit@{LineEdit}!getValidator@{getValidator}}
+\index{getValidator@{getValidator}!LineEdit@{LineEdit}}
+\subsubsection[{getValidator}]{\setlength{\rightskip}{0pt plus 5cm}const QValidator$\ast$ LineEdit::getValidator (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}inline\mbox{]}}}}
+\label{classLineEdit_a7f6fef4035828aa9413b5d5763680adb}
+
+
+Definition at line 142 of file vwidgets.h.
+
+\hypertarget{classLineEdit_ad3cd1fe6bd62dfbd72e071054711015d}{
+\index{LineEdit@{LineEdit}!isTouched@{isTouched}}
+\index{isTouched@{isTouched}!LineEdit@{LineEdit}}
+\subsubsection[{isTouched}]{\setlength{\rightskip}{0pt plus 5cm}void LineEdit::isTouched (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}inline, slot\mbox{]}}}}
+\label{classLineEdit_ad3cd1fe6bd62dfbd72e071054711015d}
+
+
+Definition at line 174 of file vwidgets.h.
+
+\hypertarget{classLineEdit_ad00eb1212a7343c7f80d65a19d23c4e0}{
+\index{LineEdit@{LineEdit}!nextField@{nextField}}
+\index{nextField@{nextField}!LineEdit@{LineEdit}}
+\subsubsection[{nextField}]{\setlength{\rightskip}{0pt plus 5cm}void LineEdit::nextField (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}signal\mbox{]}}}}
+\label{classLineEdit_ad00eb1212a7343c7f80d65a19d23c4e0}
+\hypertarget{classLineEdit_aae4ac49369514ba569049214623f6dea}{
+\index{LineEdit@{LineEdit}!noEntry@{noEntry}}
+\index{noEntry@{noEntry}!LineEdit@{LineEdit}}
+\subsubsection[{noEntry}]{\setlength{\rightskip}{0pt plus 5cm}bool LineEdit::noEntry (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}inline\mbox{]}}}}
+\label{classLineEdit_aae4ac49369514ba569049214623f6dea}
+
+
+Definition at line 130 of file vwidgets.h.
+
+\hypertarget{classLineEdit_afa2599d7285a22ead9fc92f8277a3f99}{
+\index{LineEdit@{LineEdit}!picture@{picture}}
+\index{picture@{picture}!LineEdit@{LineEdit}}
+\subsubsection[{picture}]{\setlength{\rightskip}{0pt plus 5cm}QString LineEdit::picture (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}inline\mbox{]}}}}
+\label{classLineEdit_afa2599d7285a22ead9fc92f8277a3f99}
+
+
+Definition at line 148 of file vwidgets.h.
+
+\hypertarget{classLineEdit_af82e35289d3464e9d161fd69cfdbbbe0}{
+\index{LineEdit@{LineEdit}!required@{required}}
+\index{required@{required}!LineEdit@{LineEdit}}
+\subsubsection[{required}]{\setlength{\rightskip}{0pt plus 5cm}bool LineEdit::required (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}inline\mbox{]}}}}
+\label{classLineEdit_af82e35289d3464e9d161fd69cfdbbbe0}
+
+
+Definition at line 134 of file vwidgets.h.
+
+\hypertarget{classLineEdit_aee6f145415075ee47b730cbd26941f1b}{
+\index{LineEdit@{LineEdit}!setAutoNext@{setAutoNext}}
+\index{setAutoNext@{setAutoNext}!LineEdit@{LineEdit}}
+\subsubsection[{setAutoNext}]{\setlength{\rightskip}{0pt plus 5cm}void LineEdit::setAutoNext (
+\begin{DoxyParamCaption}
+\item[{bool}]{ro}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}inline\mbox{]}}}}
+\label{classLineEdit_aee6f145415075ee47b730cbd26941f1b}
+
+
+Definition at line 131 of file vwidgets.h.
+
+\hypertarget{classLineEdit_afbe0dcdde72b9be055701f6a1bd0608b}{
+\index{LineEdit@{LineEdit}!setCompress@{setCompress}}
+\index{setCompress@{setCompress}!LineEdit@{LineEdit}}
+\subsubsection[{setCompress}]{\setlength{\rightskip}{0pt plus 5cm}void LineEdit::setCompress (
+\begin{DoxyParamCaption}
+\item[{bool}]{ro}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}inline\mbox{]}}}}
+\label{classLineEdit_afbe0dcdde72b9be055701f6a1bd0608b}
+
+
+Definition at line 135 of file vwidgets.h.
+
+\hypertarget{classLineEdit_a65785ee018716e1d1f3145070de82aba}{
+\index{LineEdit@{LineEdit}!setDefaultValue@{setDefaultValue}}
+\index{setDefaultValue@{setDefaultValue}!LineEdit@{LineEdit}}
+\subsubsection[{setDefaultValue}]{\setlength{\rightskip}{0pt plus 5cm}void LineEdit::setDefaultValue (
+\begin{DoxyParamCaption}
+\item[{QString}]{def}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}inline\mbox{]}}}}
+\label{classLineEdit_a65785ee018716e1d1f3145070de82aba}
+
+
+Definition at line 145 of file vwidgets.h.
+
+\hypertarget{classLineEdit_ab1d9a17ce52c3bceb98ef4536e107dbe}{
+\index{LineEdit@{LineEdit}!setFormat@{setFormat}}
+\index{setFormat@{setFormat}!LineEdit@{LineEdit}}
+\subsubsection[{setFormat}]{\setlength{\rightskip}{0pt plus 5cm}void LineEdit::setFormat (
+\begin{DoxyParamCaption}
+\item[{QString}]{f}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}inline\mbox{]}}}}
+\label{classLineEdit_ab1d9a17ce52c3bceb98ef4536e107dbe}
+
+
+Definition at line 149 of file vwidgets.h.
+
+\hypertarget{classLineEdit_a2f16adf255e3b0413579c3c689040afd}{
+\index{LineEdit@{LineEdit}!setNoEntry@{setNoEntry}}
+\index{setNoEntry@{setNoEntry}!LineEdit@{LineEdit}}
+\subsubsection[{setNoEntry}]{\setlength{\rightskip}{0pt plus 5cm}void LineEdit::setNoEntry (
+\begin{DoxyParamCaption}
+\item[{bool}]{ro}
+\end{DoxyParamCaption}
+)}}
+\label{classLineEdit_a2f16adf255e3b0413579c3c689040afd}
+
+
+Definition at line 336 of file vwidgets.cpp.
+
+\hypertarget{classLineEdit_a28de25ae19583ad6446fd57f4d7d80a5}{
+\index{LineEdit@{LineEdit}!setPicture@{setPicture}}
+\index{setPicture@{setPicture}!LineEdit@{LineEdit}}
+\subsubsection[{setPicture}]{\setlength{\rightskip}{0pt plus 5cm}void LineEdit::setPicture (
+\begin{DoxyParamCaption}
+\item[{QString}]{pic}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}inline\mbox{]}}}}
+\label{classLineEdit_a28de25ae19583ad6446fd57f4d7d80a5}
+
+
+Definition at line 147 of file vwidgets.h.
+
+\hypertarget{classLineEdit_ac5c681c48927ade8548fd3293b614b78}{
+\index{LineEdit@{LineEdit}!setRequired@{setRequired}}
+\index{setRequired@{setRequired}!LineEdit@{LineEdit}}
+\subsubsection[{setRequired}]{\setlength{\rightskip}{0pt plus 5cm}void LineEdit::setRequired (
+\begin{DoxyParamCaption}
+\item[{bool}]{ro}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}inline\mbox{]}}}}
+\label{classLineEdit_ac5c681c48927ade8548fd3293b614b78}
+
+
+Definition at line 133 of file vwidgets.h.
+
+\hypertarget{classLineEdit_abcca038575cbc1ce186062f671763608}{
+\index{LineEdit@{LineEdit}!setShift@{setShift}}
+\index{setShift@{setShift}!LineEdit@{LineEdit}}
+\subsubsection[{setShift}]{\setlength{\rightskip}{0pt plus 5cm}void LineEdit::setShift (
+\begin{DoxyParamCaption}
+\item[{QString}]{s}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}inline\mbox{]}}}}
+\label{classLineEdit_abcca038575cbc1ce186062f671763608}
+
+
+Definition at line 137 of file vwidgets.h.
+
+\hypertarget{classLineEdit_a8c0cb7cb1a2b0738db17ab3fad4b251b}{
+\index{LineEdit@{LineEdit}!setSqlType@{setSqlType}}
+\index{setSqlType@{setSqlType}!LineEdit@{LineEdit}}
+\subsubsection[{setSqlType}]{\setlength{\rightskip}{0pt plus 5cm}void LineEdit::setSqlType (
+\begin{DoxyParamCaption}
+\item[{QString}]{sqlType}
+\end{DoxyParamCaption}
+)}}
+\label{classLineEdit_a8c0cb7cb1a2b0738db17ab3fad4b251b}
+
+
+Definition at line 350 of file vwidgets.cpp.
+
+\hypertarget{classLineEdit_a52dde6d0059debb1730a029fceab64b7}{
+\index{LineEdit@{LineEdit}!setTouchendEnabled@{setTouchendEnabled}}
+\index{setTouchendEnabled@{setTouchendEnabled}!LineEdit@{LineEdit}}
+\subsubsection[{setTouchendEnabled}]{\setlength{\rightskip}{0pt plus 5cm}void LineEdit::setTouchendEnabled (
+\begin{DoxyParamCaption}
+\item[{bool}]{t}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}inline\mbox{]}}}}
+\label{classLineEdit_a52dde6d0059debb1730a029fceab64b7}
+
+
+Definition at line 143 of file vwidgets.h.
+
+\hypertarget{classLineEdit_a3d10f3933a882f6afef6383cb758191b}{
+\index{LineEdit@{LineEdit}!shift@{shift}}
+\index{shift@{shift}!LineEdit@{LineEdit}}
+\subsubsection[{shift}]{\setlength{\rightskip}{0pt plus 5cm}QString LineEdit::shift (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}inline\mbox{]}}}}
+\label{classLineEdit_a3d10f3933a882f6afef6383cb758191b}
+
+
+Definition at line 138 of file vwidgets.h.
+
+\hypertarget{classLineEdit_afff2070683add5e2bc642cc58ae05a74}{
+\index{LineEdit@{LineEdit}!sqlType@{sqlType}}
+\index{sqlType@{sqlType}!LineEdit@{LineEdit}}
+\subsubsection[{sqlType}]{\setlength{\rightskip}{0pt plus 5cm}QString LineEdit::sqlType (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}inline\mbox{]}}}}
+\label{classLineEdit_afff2070683add5e2bc642cc58ae05a74}
+
+
+Definition at line 140 of file vwidgets.h.
+
+\hypertarget{classLineEdit_a7b733b195f9df2b7b495d030993868c6}{
+\index{LineEdit@{LineEdit}!touched@{touched}}
+\index{touched@{touched}!LineEdit@{LineEdit}}
+\subsubsection[{touched}]{\setlength{\rightskip}{0pt plus 5cm}bool LineEdit::touched (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}inline\mbox{]}}}}
+\label{classLineEdit_a7b733b195f9df2b7b495d030993868c6}
+
+
+Definition at line 144 of file vwidgets.h.
+
+\hypertarget{classLineEdit_a5d13e4462115bd039c90f38429a7de14}{
+\index{LineEdit@{LineEdit}!widgetOpen@{widgetOpen}}
+\index{widgetOpen@{widgetOpen}!LineEdit@{LineEdit}}
+\subsubsection[{widgetOpen}]{\setlength{\rightskip}{0pt plus 5cm}void LineEdit::widgetOpen (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}signal\mbox{]}}}}
+\label{classLineEdit_a5d13e4462115bd039c90f38429a7de14}
+
+
+\subsection{Member Data Documentation}
+\hypertarget{classLineEdit_aa85bee848a5fcf91042127505f0d3686}{
+\index{LineEdit@{LineEdit}!b\_\-autoNext@{b\_\-autoNext}}
+\index{b\_\-autoNext@{b\_\-autoNext}!LineEdit@{LineEdit}}
+\subsubsection[{b\_\-autoNext}]{\setlength{\rightskip}{0pt plus 5cm}bool {\bf LineEdit::b\_\-autoNext}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classLineEdit_aa85bee848a5fcf91042127505f0d3686}
+
+
+Definition at line 163 of file vwidgets.h.
+
+\hypertarget{classLineEdit_afee15f7042521fb78ee568902aa8b603}{
+\index{LineEdit@{LineEdit}!b\_\-compress@{b\_\-compress}}
+\index{b\_\-compress@{b\_\-compress}!LineEdit@{LineEdit}}
+\subsubsection[{b\_\-compress}]{\setlength{\rightskip}{0pt plus 5cm}bool {\bf LineEdit::b\_\-compress}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classLineEdit_afee15f7042521fb78ee568902aa8b603}
+
+
+Definition at line 165 of file vwidgets.h.
+
+\hypertarget{classLineEdit_a4769336d33259d543b795da2831fe4f7}{
+\index{LineEdit@{LineEdit}!b\_\-denyFocus@{b\_\-denyFocus}}
+\index{b\_\-denyFocus@{b\_\-denyFocus}!LineEdit@{LineEdit}}
+\subsubsection[{b\_\-denyFocus}]{\setlength{\rightskip}{0pt plus 5cm}bool {\bf LineEdit::b\_\-denyFocus}}}
+\label{classLineEdit_a4769336d33259d543b795da2831fe4f7}
+
+
+Definition at line 153 of file vwidgets.h.
+
+\hypertarget{classLineEdit_a86b1ba413925186833fa1ffe1d08fe23}{
+\index{LineEdit@{LineEdit}!b\_\-noEntry@{b\_\-noEntry}}
+\index{b\_\-noEntry@{b\_\-noEntry}!LineEdit@{LineEdit}}
+\subsubsection[{b\_\-noEntry}]{\setlength{\rightskip}{0pt plus 5cm}bool {\bf LineEdit::b\_\-noEntry}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classLineEdit_a86b1ba413925186833fa1ffe1d08fe23}
+
+
+Definition at line 162 of file vwidgets.h.
+
+\hypertarget{classLineEdit_a54067fa92f09cdde4c4f900333a1af5d}{
+\index{LineEdit@{LineEdit}!b\_\-required@{b\_\-required}}
+\index{b\_\-required@{b\_\-required}!LineEdit@{LineEdit}}
+\subsubsection[{b\_\-required}]{\setlength{\rightskip}{0pt plus 5cm}bool {\bf LineEdit::b\_\-required}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classLineEdit_a54067fa92f09cdde4c4f900333a1af5d}
+
+
+Definition at line 164 of file vwidgets.h.
+
+\hypertarget{classLineEdit_a18b45b2581575cf88489ab3a6f15281f}{
+\index{LineEdit@{LineEdit}!colName@{colName}}
+\index{colName@{colName}!LineEdit@{LineEdit}}
+\subsubsection[{colName}]{\setlength{\rightskip}{0pt plus 5cm}QString {\bf LineEdit::colName}}}
+\label{classLineEdit_a18b45b2581575cf88489ab3a6f15281f}
+
+
+Definition at line 123 of file vwidgets.h.
+
+\hypertarget{classLineEdit_a7eafffbf2d586eac9c90f5d97fd89c6e}{
+\index{LineEdit@{LineEdit}!dt\_\-dataType@{dt\_\-dataType}}
+\index{dt\_\-dataType@{dt\_\-dataType}!LineEdit@{LineEdit}}
+\subsubsection[{dt\_\-dataType}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Fgl::DataType} {\bf LineEdit::dt\_\-dataType}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classLineEdit_a7eafffbf2d586eac9c90f5d97fd89c6e}
+
+
+Definition at line 171 of file vwidgets.h.
+
+\hypertarget{classLineEdit_a337f64c9e882f065b5771f9e2289784f}{
+\index{LineEdit@{LineEdit}!name@{name}}
+\index{name@{name}!LineEdit@{LineEdit}}
+\subsubsection[{name}]{\setlength{\rightskip}{0pt plus 5cm}QString {\bf LineEdit::name}}}
+\label{classLineEdit_a337f64c9e882f065b5771f9e2289784f}
+
+
+Definition at line 122 of file vwidgets.h.
+
+\hypertarget{classLineEdit_a73d2e143f00df406134a9e73ceba40af}{
+\index{LineEdit@{LineEdit}!qs\_\-default@{qs\_\-default}}
+\index{qs\_\-default@{qs\_\-default}!LineEdit@{LineEdit}}
+\subsubsection[{qs\_\-default}]{\setlength{\rightskip}{0pt plus 5cm}QString {\bf LineEdit::qs\_\-default}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classLineEdit_a73d2e143f00df406134a9e73ceba40af}
+
+
+Definition at line 168 of file vwidgets.h.
+
+\hypertarget{classLineEdit_ac06a746e3b29d84d14672e0931d1c457}{
+\index{LineEdit@{LineEdit}!qs\_\-format@{qs\_\-format}}
+\index{qs\_\-format@{qs\_\-format}!LineEdit@{LineEdit}}
+\subsubsection[{qs\_\-format}]{\setlength{\rightskip}{0pt plus 5cm}QString {\bf LineEdit::qs\_\-format}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classLineEdit_ac06a746e3b29d84d14672e0931d1c457}
+
+
+Definition at line 170 of file vwidgets.h.
+
+\hypertarget{classLineEdit_aa7911a11a6d620f20248e968c093bd94}{
+\index{LineEdit@{LineEdit}!qs\_\-picture@{qs\_\-picture}}
+\index{qs\_\-picture@{qs\_\-picture}!LineEdit@{LineEdit}}
+\subsubsection[{qs\_\-picture}]{\setlength{\rightskip}{0pt plus 5cm}QString {\bf LineEdit::qs\_\-picture}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classLineEdit_aa7911a11a6d620f20248e968c093bd94}
+
+
+Definition at line 169 of file vwidgets.h.
+
+\hypertarget{classLineEdit_ae554482e3fa80ec2695a79850b36bf1b}{
+\index{LineEdit@{LineEdit}!qs\_\-shift@{qs\_\-shift}}
+\index{qs\_\-shift@{qs\_\-shift}!LineEdit@{LineEdit}}
+\subsubsection[{qs\_\-shift}]{\setlength{\rightskip}{0pt plus 5cm}QString {\bf LineEdit::qs\_\-shift}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classLineEdit_ae554482e3fa80ec2695a79850b36bf1b}
+
+
+Definition at line 166 of file vwidgets.h.
+
+\hypertarget{classLineEdit_a662654e1d1126e311ba37ab357f90ef3}{
+\index{LineEdit@{LineEdit}!qs\_\-sqlType@{qs\_\-sqlType}}
+\index{qs\_\-sqlType@{qs\_\-sqlType}!LineEdit@{LineEdit}}
+\subsubsection[{qs\_\-sqlType}]{\setlength{\rightskip}{0pt plus 5cm}QString {\bf LineEdit::qs\_\-sqlType}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classLineEdit_a662654e1d1126e311ba37ab357f90ef3}
+
+
+Definition at line 161 of file vwidgets.h.
+
+\hypertarget{classLineEdit_ac7a4f4fcd5b7f40f66c47ff64d66f7ec}{
+\index{LineEdit@{LineEdit}!sqlTabName@{sqlTabName}}
+\index{sqlTabName@{sqlTabName}!LineEdit@{LineEdit}}
+\subsubsection[{sqlTabName}]{\setlength{\rightskip}{0pt plus 5cm}QString {\bf LineEdit::sqlTabName}}}
+\label{classLineEdit_ac7a4f4fcd5b7f40f66c47ff64d66f7ec}
+
+
+Definition at line 121 of file vwidgets.h.
+
+\hypertarget{classLineEdit_a4d9da17a0bc8380fdb22c4b197431d0a}{
+\index{LineEdit@{LineEdit}!valid@{valid}}
+\index{valid@{valid}!LineEdit@{LineEdit}}
+\subsubsection[{valid}]{\setlength{\rightskip}{0pt plus 5cm}const QValidator$\ast$ {\bf LineEdit::valid}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classLineEdit_a4d9da17a0bc8380fdb22c4b197431d0a}
+
+
+Definition at line 167 of file vwidgets.h.
+
+\hypertarget{classLineEdit_a9ac1b912bc68696a166d681a5b86dbf2}{
+\index{LineEdit@{LineEdit}!w@{w}}
+\index{w@{w}!LineEdit@{LineEdit}}
+\subsubsection[{w}]{\setlength{\rightskip}{0pt plus 5cm}int {\bf LineEdit::w}}}
+\label{classLineEdit_a9ac1b912bc68696a166d681a5b86dbf2}
+
+
+Definition at line 126 of file vwidgets.h.
+
+\hypertarget{classLineEdit_a8a3d3eb982e8a27cc6bdbf3664330bb4}{
+\index{LineEdit@{LineEdit}!x@{x}}
+\index{x@{x}!LineEdit@{LineEdit}}
+\subsubsection[{x}]{\setlength{\rightskip}{0pt plus 5cm}int {\bf LineEdit::x}}}
+\label{classLineEdit_a8a3d3eb982e8a27cc6bdbf3664330bb4}
+
+
+Definition at line 124 of file vwidgets.h.
+
+\hypertarget{classLineEdit_aa6005ddcc5167be3d2d3d73e869dd434}{
+\index{LineEdit@{LineEdit}!y@{y}}
+\index{y@{y}!LineEdit@{LineEdit}}
+\subsubsection[{y}]{\setlength{\rightskip}{0pt plus 5cm}int {\bf LineEdit::y}}}
+\label{classLineEdit_aa6005ddcc5167be3d2d3d73e869dd434}
+
+
+Definition at line 125 of file vwidgets.h.
+
+
+
+The documentation for this class was generated from the following files:\begin{DoxyCompactItemize}
+\item 
+/e/ms/QT/models/\hyperlink{vwidgets_8h}{vwidgets.h}\item 
+/e/ms/QT/models/\hyperlink{vwidgets_8cpp}{vwidgets.cpp}\end{DoxyCompactItemize}

@@ -1,0 +1,136 @@
+\hypertarget{fgl_8h}{
+\section{/e/ms/QT/include/fgl.h File Reference}
+\label{fgl_8h}\index{/e/ms/QT/include/fgl.h@{/e/ms/QT/include/fgl.h}}
+}
+{\ttfamily \#include $<$QString$>$}\par
+{\ttfamily \#include $<$QHash$>$}\par
+{\ttfamily \#include $<$QDate$>$}\par
+\subsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \hyperlink{structFgl_1_1Event}{Fgl::Event}
+\item 
+struct \hyperlink{structFgl_1_1Link}{Fgl::Link}
+\end{DoxyCompactItemize}
+\subsection*{Namespaces}
+\begin{DoxyCompactItemize}
+\item 
+namespace \hyperlink{namespaceFgl}{Fgl}
+\end{DoxyCompactItemize}
+\subsection*{Enumerations}
+\begin{DoxyCompactItemize}
+\item 
+enum \hyperlink{namespaceFgl_a221c9c0366d5227f8c27ca97308a691c}{Fgl::DataType} \{ \par
+\hyperlink{namespaceFgl_a221c9c0366d5227f8c27ca97308a691caa069ea13d4fbcc636513c861ffd5a0a5}{Fgl::DTYPE\_\-CHAR}, 
+\hyperlink{namespaceFgl_a221c9c0366d5227f8c27ca97308a691ca421150f5e460691473e3b73f5a4cff77}{Fgl::DTYPE\_\-SMINT}, 
+\hyperlink{namespaceFgl_a221c9c0366d5227f8c27ca97308a691caa65748cb8118299194b0e94c79f7ed16}{Fgl::DTYPE\_\-INT}, 
+\hyperlink{namespaceFgl_a221c9c0366d5227f8c27ca97308a691ca3de87e9ebd12d2a27e9f1c5548bbbb1e}{Fgl::DTYPE\_\-FLOAT}, 
+\par
+\hyperlink{namespaceFgl_a221c9c0366d5227f8c27ca97308a691ca736541087aff0bdcf4de6b614fb1c7a8}{Fgl::DTYPE\_\-SMFLOAT}, 
+\hyperlink{namespaceFgl_a221c9c0366d5227f8c27ca97308a691ca0a3b34bf80b8d865c5144b70b05c20b2}{Fgl::DTYPE\_\-DECIMAL}, 
+\hyperlink{namespaceFgl_a221c9c0366d5227f8c27ca97308a691ca58d616b5ec3eb05985d54a84127247a9}{Fgl::DTYPE\_\-SERIAL}, 
+\hyperlink{namespaceFgl_a221c9c0366d5227f8c27ca97308a691ca955722507f475c645f9969b4f47ea62b}{Fgl::DTYPE\_\-DATE}, 
+\par
+\hyperlink{namespaceFgl_a221c9c0366d5227f8c27ca97308a691ca1089d46b752ea5e60c0f8f028e32946a}{Fgl::DTYPE\_\-MONEY}, 
+\hyperlink{namespaceFgl_a221c9c0366d5227f8c27ca97308a691cadc944429d500699855ff8358744ccafe}{Fgl::DTYPE\_\-NULL}, 
+\hyperlink{namespaceFgl_a221c9c0366d5227f8c27ca97308a691ca5dfcdf2b603061f71e1e699d0a5fd00d}{Fgl::DTYPE\_\-DTIME}, 
+\hyperlink{namespaceFgl_a221c9c0366d5227f8c27ca97308a691ca95204b269b22456070e0d4b0a2d17878}{Fgl::DTYPE\_\-BYTE}, 
+\par
+\hyperlink{namespaceFgl_a221c9c0366d5227f8c27ca97308a691ca1e6a347f34e3bacc5ffae6f68b66fb1f}{Fgl::DTYPE\_\-TEXT}, 
+\hyperlink{namespaceFgl_a221c9c0366d5227f8c27ca97308a691caeab8f048d690d7aff79e4f3414f57550}{Fgl::DTYPE\_\-VCHAR}, 
+\hyperlink{namespaceFgl_a221c9c0366d5227f8c27ca97308a691ca94656452eeee982084d5d07f731e083b}{Fgl::DTYPE\_\-INTERVAL}, 
+\hyperlink{namespaceFgl_a221c9c0366d5227f8c27ca97308a691caccc267cba325bd5a14f3abd6ccb7f1e2}{Fgl::DTYPE\_\-NCHAR}, 
+\par
+\hyperlink{namespaceFgl_a221c9c0366d5227f8c27ca97308a691ca0d5037f242d7e0d535b4d82e98940b7a}{Fgl::DTYPE\_\-INT8}, 
+\hyperlink{namespaceFgl_a221c9c0366d5227f8c27ca97308a691cace841d25cf95ce64a624e7016f6001d5}{Fgl::DTYPE\_\-SERIAL8}
+ \}
+\item 
+enum \hyperlink{namespaceFgl_a66700792cb225549384ae76c1057cf22}{Fgl::State} \{ \par
+\hyperlink{namespaceFgl_a66700792cb225549384ae76c1057cf22a3a5aa8ccf2377dc2b3a6d965635a6eb6}{Fgl::IDLE}, 
+\hyperlink{namespaceFgl_a66700792cb225549384ae76c1057cf22add52348d516c9d5ba9da08a3052ca40f}{Fgl::MENU}, 
+\hyperlink{namespaceFgl_a66700792cb225549384ae76c1057cf22a44a7ee3ee0989f85b0255ee91e59b423}{Fgl::INPUT}, 
+\hyperlink{namespaceFgl_a66700792cb225549384ae76c1057cf22a134ea7c57c8ce8a226bb57a3bdfc5733}{Fgl::CONSTRUCT}, 
+\par
+\hyperlink{namespaceFgl_a66700792cb225549384ae76c1057cf22ab019b8d80dc5cce02f0596c7ff252301}{Fgl::DISPLAYARRAY}, 
+\hyperlink{namespaceFgl_a66700792cb225549384ae76c1057cf22a6e1b247a5050ed29e7fe7cc74b307f12}{Fgl::INPUTARRAY}
+ \}
+\item 
+enum \hyperlink{namespaceFgl_a7bbae69263a5d0012370d5cbb859c6a8}{Fgl::EventType} \{ \par
+\hyperlink{namespaceFgl_a7bbae69263a5d0012370d5cbb859c6a8aaf4eb493493e5b9144388bd3c6f0a56c}{Fgl::BEFORE\_\-FIELD\_\-EVENT}, 
+\hyperlink{namespaceFgl_a7bbae69263a5d0012370d5cbb859c6a8a67f55478b8f692065b1e223dd8545e4a}{Fgl::AFTER\_\-FIELD\_\-EVENT}, 
+\hyperlink{namespaceFgl_a7bbae69263a5d0012370d5cbb859c6a8aea412ca359de2c03baab7cc6ca4a856d}{Fgl::BEFORE\_\-ROW\_\-EVENT}, 
+\hyperlink{namespaceFgl_a7bbae69263a5d0012370d5cbb859c6a8a192a36fae78f7c2b331f3c5b17008953}{Fgl::AFTER\_\-ROW\_\-EVENT}, 
+\par
+\hyperlink{namespaceFgl_a7bbae69263a5d0012370d5cbb859c6a8aadd05cc475d2e51c57c4553b63803968}{Fgl::MENUACTION\_\-EVENT}, 
+\hyperlink{namespaceFgl_a7bbae69263a5d0012370d5cbb859c6a8afe3e39bf7df01f76a4a60b1e6dcd2bfb}{Fgl::ONACTION\_\-EVENT}, 
+\hyperlink{namespaceFgl_a7bbae69263a5d0012370d5cbb859c6a8af817e5d09a4d5de55281399b45834dc4}{Fgl::ONKEY\_\-EVENT}, 
+\hyperlink{namespaceFgl_a7bbae69263a5d0012370d5cbb859c6a8a21dd52adcd2a31f98f449b968b4a1c56}{Fgl::BEFORE\_\-INPUT\_\-EVENT}, 
+\par
+\hyperlink{namespaceFgl_a7bbae69263a5d0012370d5cbb859c6a8a7f05c979746799947b4015c3be33a8ec}{Fgl::AFTER\_\-INPUT\_\-EVENT}, 
+\hyperlink{namespaceFgl_a7bbae69263a5d0012370d5cbb859c6a8ab056b5777c51c6b03d41ad65f9dc0592}{Fgl::BEFORE\_\-CONSTRUCT\_\-EVENT}, 
+\hyperlink{namespaceFgl_a7bbae69263a5d0012370d5cbb859c6a8ab308df2a3cd3f5a4a7d92d4f8119e2a8}{Fgl::AFTER\_\-CONSTRUCT\_\-EVENT}, 
+\hyperlink{namespaceFgl_a7bbae69263a5d0012370d5cbb859c6a8a50c41c5932fc33375d56004132e8c727}{Fgl::BEFORE\_\-DISPLAY\_\-EVENT}, 
+\par
+\hyperlink{namespaceFgl_a7bbae69263a5d0012370d5cbb859c6a8a81671dcd6d04932d2684a112a0cb3874}{Fgl::AFTER\_\-DISPLAY\_\-EVENT}, 
+\hyperlink{namespaceFgl_a7bbae69263a5d0012370d5cbb859c6a8aa540c14b4c4a3da46fa872ec88e1e0ec}{Fgl::BEFORE\_\-MENU\_\-EVENT}, 
+\hyperlink{namespaceFgl_a7bbae69263a5d0012370d5cbb859c6a8a2acee749adc43054a12bd6fdb3edda53}{Fgl::AFTER\_\-MENU\_\-EVENT}, 
+\hyperlink{namespaceFgl_a7bbae69263a5d0012370d5cbb859c6a8a6407f2770e2022a7c3f6245a05ece9b9}{Fgl::BEFORE\_\-INSERT\_\-DELETE\_\-EVENT}, 
+\par
+\hyperlink{namespaceFgl_a7bbae69263a5d0012370d5cbb859c6a8a49151d7b6ee9ad9bc86c2caddfb398d0}{Fgl::AFTER\_\-INSERT\_\-DELETE\_\-EVENT}
+ \}
+\item 
+enum \hyperlink{namespaceFgl_a84fecc3553ced7408465762be30c82fb}{Fgl::FieldAttributes} \{ \par
+\hyperlink{namespaceFgl_a84fecc3553ced7408465762be30c82fbacfbcf23c543050264e8b0760c17dd5e9}{Fgl::AUBIT\_\-COLOR\_\-BLACK} =  0x00000, 
+\hyperlink{namespaceFgl_a84fecc3553ced7408465762be30c82fba09168ef8df113d902dea228001ea27dd}{Fgl::AUBIT\_\-COLOR\_\-RED} =  0x00100, 
+\hyperlink{namespaceFgl_a84fecc3553ced7408465762be30c82fbaee0e8be59c72b091afc98f7284fdee71}{Fgl::AUBIT\_\-COLOR\_\-GREEN} =  0x00200, 
+\hyperlink{namespaceFgl_a84fecc3553ced7408465762be30c82fba878fa2e855e7bdc2afae0722530b1be0}{Fgl::AUBIT\_\-COLOR\_\-YELLOW} =  0x00300, 
+\par
+\hyperlink{namespaceFgl_a84fecc3553ced7408465762be30c82fba92835f358c3709a81aa16d40757a157d}{Fgl::AUBIT\_\-COLOR\_\-BLUE} =  0x00400, 
+\hyperlink{namespaceFgl_a84fecc3553ced7408465762be30c82fba79fef77789aecd8701b3c81f7ce8f929}{Fgl::AUBIT\_\-COLOR\_\-MAGENTA} =  0x00500, 
+\hyperlink{namespaceFgl_a84fecc3553ced7408465762be30c82fba6220aabb66f9b00e3dfec17986bb401b}{Fgl::AUBIT\_\-COLOR\_\-CYAN} =  0x00600, 
+\hyperlink{namespaceFgl_a84fecc3553ced7408465762be30c82fba3fcd51188bbb620691dbbe5678f1e4d4}{Fgl::AUBIT\_\-COLOR\_\-WHITE} =  0x00700, 
+\par
+\hyperlink{namespaceFgl_a84fecc3553ced7408465762be30c82fba04c7fe736f33af94e76b3aad1614baaa}{Fgl::AUBIT\_\-ATTR\_\-NORMAL} =  0x0, 
+\hyperlink{namespaceFgl_a84fecc3553ced7408465762be30c82fbac28aa3d9263ae597c461f55417935daf}{Fgl::AUBIT\_\-ATTR\_\-REVERSE} =  0x01000, 
+\hyperlink{namespaceFgl_a84fecc3553ced7408465762be30c82fbadce2649f08f8c7e01012cd1feab0fcbe}{Fgl::AUBIT\_\-ATTR\_\-UNDERLINE} =  0x02000, 
+\hyperlink{namespaceFgl_a84fecc3553ced7408465762be30c82fbae0684cc037518f62d980ca40ea7bcd03}{Fgl::AUBIT\_\-ATTR\_\-BOLD} =  0x04000, 
+\par
+\hyperlink{namespaceFgl_a84fecc3553ced7408465762be30c82fba9af5eb28087d2de8337b247b2c630dd6}{Fgl::AUBIT\_\-ATTR\_\-BLINK} =  0x08000, 
+\hyperlink{namespaceFgl_a84fecc3553ced7408465762be30c82fba076fe163a0e45025344e5fe7259b71b3}{Fgl::AUBIT\_\-ATTR\_\-DIM} =  0x10000, 
+\hyperlink{namespaceFgl_a84fecc3553ced7408465762be30c82fba717d2efa26078d014e14123bec249c6b}{Fgl::AUBIT\_\-ATTR\_\-INVISIBLE} =  0x20000, 
+\hyperlink{namespaceFgl_a84fecc3553ced7408465762be30c82fbaaaa9c0f3337d29af9e35ad5037bd2f08}{Fgl::AUBIT\_\-ATTR\_\-ALTCHARSET} =  0x40000, 
+\par
+\hyperlink{namespaceFgl_a84fecc3553ced7408465762be30c82fbaa65394cd0a8d74265414e97f890ffd86}{Fgl::AUBIT\_\-ATTR\_\-LEFT} =  0x80000
+ \}
+\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+QString \hyperlink{namespaceFgl_aa987ce49dbcf2c9fa730b64902e9c84e}{Fgl::stringToKey} (QString s)
+\item 
+QString \hyperlink{namespaceFgl_a378c2347baa22e3b429ce42010887963}{Fgl::keyToString} (QString s)
+\item 
+DataType \hyperlink{namespaceFgl_a2d5a9376ae8e5ebb28ddb1d016356ae4}{Fgl::decodeDataType} (QString type)
+\item 
+QString \hyperlink{namespaceFgl_a224ca31123410961b37ec74cac4c7b0a}{Fgl::usingFunc} (QString fmt, QString value, DataType dataType)
+\item 
+QDate \hyperlink{namespaceFgl_a22923696c7e89efba943bfc065c9d3ea}{Fgl::getDate} (QString value)
+\item 
+QString \hyperlink{namespaceFgl_a7757d5871d47d7ccaba56201a5c019be}{Fgl::fgl\_\-using} (QString fmt, QString value)
+\item 
+QString \hyperlink{namespaceFgl_a9efb6ea5c503dd355a279fe691e51218}{Fgl::fgl\_\-using\_\-date} (QString fmt, QString value)
+\item 
+QString \hyperlink{namespaceFgl_ac7ee6be1cf53ff2ffb34b25576689c24}{Fgl::fgl\_\-using\_\-string} (QString fmt, QString value, bool isneg, QString dbmoney)
+\item 
+QString \hyperlink{namespaceFgl_abb08147dfe3b331ef854161e597f7927}{Fgl::fgl\_\-convert\_\-money} (QString value)
+\item 
+QString \hyperlink{namespaceFgl_a588de0a8d9bc385030005007bde97a8d}{Fgl::vdc\_\-to\_\-fgl} (QString fmt, QString value, DataType dt)
+\item 
+QString \hyperlink{namespaceFgl_acdc01c0826cbfc5bb18bea857765b751}{Fgl::getValueFromEnv} (QString envname)
+\item 
+QString \hyperlink{namespaceFgl_acda3ef22ab61f74e6e9f401df8b77917}{Fgl::dbDateToFormat} (QString dbdate)
+\item 
+QChar \hyperlink{namespaceFgl_a60e9729a00a40b0ce63428fe470fa284}{Fgl::getDBDateSeperator} (QString dbdate)
+\item 
+bool \hyperlink{namespaceFgl_a7560ddc940aea8357bfae44485522b31}{Fgl::isValidForType} (DataType datatype, QString value, QString format)
+\end{DoxyCompactItemize}

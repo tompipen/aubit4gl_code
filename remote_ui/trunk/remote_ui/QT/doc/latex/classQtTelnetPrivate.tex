@@ -1,0 +1,697 @@
+\hypertarget{classQtTelnetPrivate}{
+\section{QtTelnetPrivate Class Reference}
+\label{classQtTelnetPrivate}\index{QtTelnetPrivate@{QtTelnetPrivate}}
+}
+\subsection*{Public Slots}
+\begin{DoxyCompactItemize}
+\item 
+void \hyperlink{classQtTelnetPrivate_ac4be71355182f5fd94ba3470c9735f04}{socketConnected} ()
+\item 
+void \hyperlink{classQtTelnetPrivate_ae58ae8a85e306d69e8f0c2319784341e}{socketConnectionClosed} ()
+\item 
+void \hyperlink{classQtTelnetPrivate_a460c21d4294b03c64c4a63f703d474aa}{socketReadyRead} ()
+\item 
+void \hyperlink{classQtTelnetPrivate_ae6898112df89f6e96f465865e5d653eb}{socketError} (QAbstractSocket::SocketError error)
+\item 
+void \hyperlink{classQtTelnetPrivate_afc8a54ee4ba780dfa5f0a9e6019047c7}{socketException} (int)
+\end{DoxyCompactItemize}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classQtTelnetPrivate_aec32e6a37ffe8e3463ec1dce83b88882}{QtTelnetPrivate} (\hyperlink{classQtTelnet}{QtTelnet} $\ast$parent)
+\item 
+\hyperlink{classQtTelnetPrivate_a64c056f9faf47ae076260359cd800c0f}{$\sim$QtTelnetPrivate} ()
+\item 
+bool \hyperlink{classQtTelnetPrivate_a065b1e26480f7adfba32055f11e58be3}{allowOption} (int oper, int opt)
+\item 
+void \hyperlink{classQtTelnetPrivate_a5ef8a8e0dac6d4f22f3b321523ce2c2b}{sendOptions} ()
+\item 
+void \hyperlink{classQtTelnetPrivate_a56326b558d3ceaea90abec25fa2fdf70}{sendCommand} (const QByteArray \&command)
+\item 
+void \hyperlink{classQtTelnetPrivate_a9fc01a0012b6c20ec64e9447fc6dc104}{sendCommand} (const char $\ast$command, int length)
+\item 
+void \hyperlink{classQtTelnetPrivate_abf61d8563f370b8a279b785e164a3abe}{sendCommand} (const char operation, const char option)
+\item 
+void \hyperlink{classQtTelnetPrivate_a1e133bd1afc78ef83c24fa02f8065ca6}{sendString} (const QString \&str)
+\item 
+bool \hyperlink{classQtTelnetPrivate_a507a8b94a1b244db6ca550d26ee0bd66}{replyNeeded} (uchar operation, uchar option)
+\item 
+void \hyperlink{classQtTelnetPrivate_aba4517cfd26c48d3cb4814c870699d95}{setMode} (uchar operation, uchar option)
+\item 
+bool \hyperlink{classQtTelnetPrivate_a15171a07533bd81ac5fe803b6189215d}{alreadySent} (uchar operation, uchar option)
+\item 
+void \hyperlink{classQtTelnetPrivate_a03a34fe9c77fe778c3a5fe74783611eb}{addSent} (uchar operation, uchar option)
+\item 
+void \hyperlink{classQtTelnetPrivate_aa71ecdd44e469c963cce025bd155f35b}{sendWindowSize} ()
+\item 
+int \hyperlink{classQtTelnetPrivate_af51d95e209673d006412d53264073573}{parsePlaintext} (const QByteArray \&data)
+\item 
+int \hyperlink{classQtTelnetPrivate_af6841ecc23b684b6b14065d9134795ba}{parseIAC} (const QByteArray \&data)
+\item 
+bool \hyperlink{classQtTelnetPrivate_adf047094261734d80497ed5e312529f3}{isOperation} (const uchar c)
+\item 
+bool \hyperlink{classQtTelnetPrivate_a87dc935d78d08e61c0c01742d8cafa6a}{isCommand} (const uchar c)
+\item 
+QByteArray \hyperlink{classQtTelnetPrivate_a50887aa4aa50718b8d8d7346becca84f}{getSubOption} (const QByteArray \&data)
+\item 
+void \hyperlink{classQtTelnetPrivate_a7b7516b63445c980c4159513371c6bba}{parseSubAuth} (const QByteArray \&data)
+\item 
+void \hyperlink{classQtTelnetPrivate_a9477255e82131a4c31f1cc643dda7298}{parseSubTT} (const QByteArray \&data)
+\item 
+void \hyperlink{classQtTelnetPrivate_a85ddee7ac8158da81abec0762f7b3bd3}{parseSubNAWS} (const QByteArray \&data)
+\item 
+uchar \hyperlink{classQtTelnetPrivate_ac3faf60570fc602551fb9b5d0afa3157}{opposite} (uchar operation, bool positive)
+\item 
+void \hyperlink{classQtTelnetPrivate_aaf74ce757fd90148cb60be32458d5dae}{consume} ()
+\item 
+void \hyperlink{classQtTelnetPrivate_a1bb6ff5139d2a05c09aad37f64042687}{setSocket} (QTcpSocket $\ast$\hyperlink{classQtTelnetPrivate_a8a3800a6c6c14c4501ac0cb5d1f9996b}{socket})
+\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+QMap$<$ char, bool $>$ \hyperlink{classQtTelnetPrivate_a19f4f4927ab411905a637e04694dd4b4}{modes}
+\item 
+QList$<$ QPair$<$ uchar, uchar $>$ $>$ \hyperlink{classQtTelnetPrivate_a8c36d306aa1d9e15183f339ec9bc5862}{osent}
+\item 
+\hyperlink{classQtTelnet}{QtTelnet} $\ast$ \hyperlink{classQtTelnetPrivate_accc5387fdb43bf070a18bcf975134406}{q}
+\item 
+QTcpSocket $\ast$ \hyperlink{classQtTelnetPrivate_a8a3800a6c6c14c4501ac0cb5d1f9996b}{socket}
+\item 
+\hyperlink{classQtTelnetReceiveBuffer}{QtTelnetReceiveBuffer} \hyperlink{classQtTelnetPrivate_a075248a1b2a42ca268848d2d5e89040b}{buffer}
+\item 
+QSocketNotifier $\ast$ \hyperlink{classQtTelnetPrivate_aacc76c154d962e6275960e4c48e503c9}{notifier}
+\item 
+QSize \hyperlink{classQtTelnetPrivate_af249e77e92cc059087ea90f48afe7f08}{windowSize}
+\item 
+bool \hyperlink{classQtTelnetPrivate_a974f5ee35e078ae2b13b3ad60bbb40cc}{connected}
+\item 
+bool \hyperlink{classQtTelnetPrivate_a2b680b042ddaada4aeb87b549669d979}{nocheckp}
+\item 
+bool \hyperlink{classQtTelnetPrivate_acc2df3045ddf17a821c8fd1d5e93e006}{triedlogin}
+\item 
+bool \hyperlink{classQtTelnetPrivate_a9314dd43d6817a310381d8867e9ed56f}{triedpass}
+\item 
+bool \hyperlink{classQtTelnetPrivate_a5c08132513e77454325480668f3ced49}{firsttry}
+\item 
+QMap$<$ int, \hyperlink{classQtTelnetAuth}{QtTelnetAuth} $\ast$ $>$ \hyperlink{classQtTelnetPrivate_af739b55b1e603436bda658ef8c94447d}{auths}
+\item 
+\hyperlink{classQtTelnetAuth}{QtTelnetAuth} $\ast$ \hyperlink{classQtTelnetPrivate_a5ba83994ceb1886f9aa8751edc289c2e}{curauth}
+\item 
+bool \hyperlink{classQtTelnetPrivate_a0b40d5a76ef06d3a224ac4623883e4c5}{nullauth}
+\item 
+QRegExp \hyperlink{classQtTelnetPrivate_a9e259a89ff0c66c78f16f63ec52307f5}{loginp}
+\item 
+QRegExp \hyperlink{classQtTelnetPrivate_ab162800a573c3b01b264a76b5e311f4b}{passp}
+\item 
+QRegExp \hyperlink{classQtTelnetPrivate_a2f2b0fe1bdb6bb84d9f5db5f38af0062}{promptp}
+\item 
+QString \hyperlink{classQtTelnetPrivate_ae443a4bb75c5d2398e4810791902a4c3}{login}
+\item 
+QString \hyperlink{classQtTelnetPrivate_ae4bbc9a28524e8e55071fdd9587303bc}{pass}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+
+
+Definition at line 495 of file qttelnet.cpp.
+
+
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{classQtTelnetPrivate_aec32e6a37ffe8e3463ec1dce83b88882}{
+\index{QtTelnetPrivate@{QtTelnetPrivate}!QtTelnetPrivate@{QtTelnetPrivate}}
+\index{QtTelnetPrivate@{QtTelnetPrivate}!QtTelnetPrivate@{QtTelnetPrivate}}
+\subsubsection[{QtTelnetPrivate}]{\setlength{\rightskip}{0pt plus 5cm}QtTelnetPrivate::QtTelnetPrivate (
+\begin{DoxyParamCaption}
+\item[{{\bf QtTelnet} $\ast$}]{parent}
+\end{DoxyParamCaption}
+)}}
+\label{classQtTelnetPrivate_aec32e6a37ffe8e3463ec1dce83b88882}
+
+
+Definition at line 556 of file qttelnet.cpp.
+
+\hypertarget{classQtTelnetPrivate_a64c056f9faf47ae076260359cd800c0f}{
+\index{QtTelnetPrivate@{QtTelnetPrivate}!$\sim$QtTelnetPrivate@{$\sim$QtTelnetPrivate}}
+\index{$\sim$QtTelnetPrivate@{$\sim$QtTelnetPrivate}!QtTelnetPrivate@{QtTelnetPrivate}}
+\subsubsection[{$\sim$QtTelnetPrivate}]{\setlength{\rightskip}{0pt plus 5cm}QtTelnetPrivate::$\sim$QtTelnetPrivate (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}
+\label{classQtTelnetPrivate_a64c056f9faf47ae076260359cd800c0f}
+
+
+Definition at line 566 of file qttelnet.cpp.
+
+
+
+\subsection{Member Function Documentation}
+\hypertarget{classQtTelnetPrivate_a03a34fe9c77fe778c3a5fe74783611eb}{
+\index{QtTelnetPrivate@{QtTelnetPrivate}!addSent@{addSent}}
+\index{addSent@{addSent}!QtTelnetPrivate@{QtTelnetPrivate}}
+\subsubsection[{addSent}]{\setlength{\rightskip}{0pt plus 5cm}void QtTelnetPrivate::addSent (
+\begin{DoxyParamCaption}
+\item[{uchar}]{operation, }
+\item[{uchar}]{option}
+\end{DoxyParamCaption}
+)}}
+\label{classQtTelnetPrivate_a03a34fe9c77fe778c3a5fe74783611eb}
+
+
+Definition at line 861 of file qttelnet.cpp.
+
+\hypertarget{classQtTelnetPrivate_a065b1e26480f7adfba32055f11e58be3}{
+\index{QtTelnetPrivate@{QtTelnetPrivate}!allowOption@{allowOption}}
+\index{allowOption@{allowOption}!QtTelnetPrivate@{QtTelnetPrivate}}
+\subsubsection[{allowOption}]{\setlength{\rightskip}{0pt plus 5cm}bool QtTelnetPrivate::allowOption (
+\begin{DoxyParamCaption}
+\item[{int}]{oper, }
+\item[{int}]{opt}
+\end{DoxyParamCaption}
+)}}
+\label{classQtTelnetPrivate_a065b1e26480f7adfba32055f11e58be3}
+
+
+Definition at line 911 of file qttelnet.cpp.
+
+\hypertarget{classQtTelnetPrivate_a15171a07533bd81ac5fe803b6189215d}{
+\index{QtTelnetPrivate@{QtTelnetPrivate}!alreadySent@{alreadySent}}
+\index{alreadySent@{alreadySent}!QtTelnetPrivate@{QtTelnetPrivate}}
+\subsubsection[{alreadySent}]{\setlength{\rightskip}{0pt plus 5cm}bool QtTelnetPrivate::alreadySent (
+\begin{DoxyParamCaption}
+\item[{uchar}]{operation, }
+\item[{uchar}]{option}
+\end{DoxyParamCaption}
+)}}
+\label{classQtTelnetPrivate_a15171a07533bd81ac5fe803b6189215d}
+
+
+Definition at line 866 of file qttelnet.cpp.
+
+\hypertarget{classQtTelnetPrivate_aaf74ce757fd90148cb60be32458d5dae}{
+\index{QtTelnetPrivate@{QtTelnetPrivate}!consume@{consume}}
+\index{consume@{consume}!QtTelnetPrivate@{QtTelnetPrivate}}
+\subsubsection[{consume}]{\setlength{\rightskip}{0pt plus 5cm}void QtTelnetPrivate::consume (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}
+\label{classQtTelnetPrivate_aaf74ce757fd90148cb60be32458d5dae}
+
+
+Definition at line 608 of file qttelnet.cpp.
+
+\hypertarget{classQtTelnetPrivate_a50887aa4aa50718b8d8d7346becca84f}{
+\index{QtTelnetPrivate@{QtTelnetPrivate}!getSubOption@{getSubOption}}
+\index{getSubOption@{getSubOption}!QtTelnetPrivate@{QtTelnetPrivate}}
+\subsubsection[{getSubOption}]{\setlength{\rightskip}{0pt plus 5cm}QByteArray QtTelnetPrivate::getSubOption (
+\begin{DoxyParamCaption}
+\item[{const QByteArray \&}]{data}
+\end{DoxyParamCaption}
+)}}
+\label{classQtTelnetPrivate_a50887aa4aa50718b8d8d7346becca84f}
+
+
+Definition at line 638 of file qttelnet.cpp.
+
+\hypertarget{classQtTelnetPrivate_a87dc935d78d08e61c0c01742d8cafa6a}{
+\index{QtTelnetPrivate@{QtTelnetPrivate}!isCommand@{isCommand}}
+\index{isCommand@{isCommand}!QtTelnetPrivate@{QtTelnetPrivate}}
+\subsubsection[{isCommand}]{\setlength{\rightskip}{0pt plus 5cm}bool QtTelnetPrivate::isCommand (
+\begin{DoxyParamCaption}
+\item[{const uchar}]{c}
+\end{DoxyParamCaption}
+)}}
+\label{classQtTelnetPrivate_a87dc935d78d08e61c0c01742d8cafa6a}
+
+
+Definition at line 627 of file qttelnet.cpp.
+
+\hypertarget{classQtTelnetPrivate_adf047094261734d80497ed5e312529f3}{
+\index{QtTelnetPrivate@{QtTelnetPrivate}!isOperation@{isOperation}}
+\index{isOperation@{isOperation}!QtTelnetPrivate@{QtTelnetPrivate}}
+\subsubsection[{isOperation}]{\setlength{\rightskip}{0pt plus 5cm}bool QtTelnetPrivate::isOperation (
+\begin{DoxyParamCaption}
+\item[{const uchar}]{c}
+\end{DoxyParamCaption}
+)}}
+\label{classQtTelnetPrivate_adf047094261734d80497ed5e312529f3}
+
+
+Definition at line 632 of file qttelnet.cpp.
+
+\hypertarget{classQtTelnetPrivate_ac3faf60570fc602551fb9b5d0afa3157}{
+\index{QtTelnetPrivate@{QtTelnetPrivate}!opposite@{opposite}}
+\index{opposite@{opposite}!QtTelnetPrivate@{QtTelnetPrivate}}
+\subsubsection[{opposite}]{\setlength{\rightskip}{0pt plus 5cm}uchar QtTelnetPrivate::opposite (
+\begin{DoxyParamCaption}
+\item[{uchar}]{operation, }
+\item[{bool}]{positive}
+\end{DoxyParamCaption}
+)}}
+\label{classQtTelnetPrivate_ac3faf60570fc602551fb9b5d0afa3157}
+
+
+Definition at line 595 of file qttelnet.cpp.
+
+\hypertarget{classQtTelnetPrivate_af6841ecc23b684b6b14065d9134795ba}{
+\index{QtTelnetPrivate@{QtTelnetPrivate}!parseIAC@{parseIAC}}
+\index{parseIAC@{parseIAC}!QtTelnetPrivate@{QtTelnetPrivate}}
+\subsubsection[{parseIAC}]{\setlength{\rightskip}{0pt plus 5cm}int QtTelnetPrivate::parseIAC (
+\begin{DoxyParamCaption}
+\item[{const QByteArray \&}]{data}
+\end{DoxyParamCaption}
+)}}
+\label{classQtTelnetPrivate_af6841ecc23b684b6b14065d9134795ba}
+
+
+Definition at line 716 of file qttelnet.cpp.
+
+\hypertarget{classQtTelnetPrivate_af51d95e209673d006412d53264073573}{
+\index{QtTelnetPrivate@{QtTelnetPrivate}!parsePlaintext@{parsePlaintext}}
+\index{parsePlaintext@{parsePlaintext}!QtTelnetPrivate@{QtTelnetPrivate}}
+\subsubsection[{parsePlaintext}]{\setlength{\rightskip}{0pt plus 5cm}int QtTelnetPrivate::parsePlaintext (
+\begin{DoxyParamCaption}
+\item[{const QByteArray \&}]{data}
+\end{DoxyParamCaption}
+)}}
+\label{classQtTelnetPrivate_af51d95e209673d006412d53264073573}
+
+
+Definition at line 769 of file qttelnet.cpp.
+
+\hypertarget{classQtTelnetPrivate_a7b7516b63445c980c4159513371c6bba}{
+\index{QtTelnetPrivate@{QtTelnetPrivate}!parseSubAuth@{parseSubAuth}}
+\index{parseSubAuth@{parseSubAuth}!QtTelnetPrivate@{QtTelnetPrivate}}
+\subsubsection[{parseSubAuth}]{\setlength{\rightskip}{0pt plus 5cm}void QtTelnetPrivate::parseSubAuth (
+\begin{DoxyParamCaption}
+\item[{const QByteArray \&}]{data}
+\end{DoxyParamCaption}
+)}}
+\label{classQtTelnetPrivate_a7b7516b63445c980c4159513371c6bba}
+
+
+Definition at line 673 of file qttelnet.cpp.
+
+\hypertarget{classQtTelnetPrivate_a85ddee7ac8158da81abec0762f7b3bd3}{
+\index{QtTelnetPrivate@{QtTelnetPrivate}!parseSubNAWS@{parseSubNAWS}}
+\index{parseSubNAWS@{parseSubNAWS}!QtTelnetPrivate@{QtTelnetPrivate}}
+\subsubsection[{parseSubNAWS}]{\setlength{\rightskip}{0pt plus 5cm}void QtTelnetPrivate::parseSubNAWS (
+\begin{DoxyParamCaption}
+\item[{const QByteArray \&}]{data}
+\end{DoxyParamCaption}
+)}}
+\label{classQtTelnetPrivate_a85ddee7ac8158da81abec0762f7b3bd3}
+
+
+Definition at line 653 of file qttelnet.cpp.
+
+\hypertarget{classQtTelnetPrivate_a9477255e82131a4c31f1cc643dda7298}{
+\index{QtTelnetPrivate@{QtTelnetPrivate}!parseSubTT@{parseSubTT}}
+\index{parseSubTT@{parseSubTT}!QtTelnetPrivate@{QtTelnetPrivate}}
+\subsubsection[{parseSubTT}]{\setlength{\rightskip}{0pt plus 5cm}void QtTelnetPrivate::parseSubTT (
+\begin{DoxyParamCaption}
+\item[{const QByteArray \&}]{data}
+\end{DoxyParamCaption}
+)}}
+\label{classQtTelnetPrivate_a9477255e82131a4c31f1cc643dda7298}
+
+
+Definition at line 658 of file qttelnet.cpp.
+
+\hypertarget{classQtTelnetPrivate_a507a8b94a1b244db6ca550d26ee0bd66}{
+\index{QtTelnetPrivate@{QtTelnetPrivate}!replyNeeded@{replyNeeded}}
+\index{replyNeeded@{replyNeeded}!QtTelnetPrivate@{QtTelnetPrivate}}
+\subsubsection[{replyNeeded}]{\setlength{\rightskip}{0pt plus 5cm}bool QtTelnetPrivate::replyNeeded (
+\begin{DoxyParamCaption}
+\item[{uchar}]{operation, }
+\item[{uchar}]{option}
+\end{DoxyParamCaption}
+)}}
+\label{classQtTelnetPrivate_a507a8b94a1b244db6ca550d26ee0bd66}
+
+
+Definition at line 823 of file qttelnet.cpp.
+
+\hypertarget{classQtTelnetPrivate_a9fc01a0012b6c20ec64e9447fc6dc104}{
+\index{QtTelnetPrivate@{QtTelnetPrivate}!sendCommand@{sendCommand}}
+\index{sendCommand@{sendCommand}!QtTelnetPrivate@{QtTelnetPrivate}}
+\subsubsection[{sendCommand}]{\setlength{\rightskip}{0pt plus 5cm}void QtTelnetPrivate::sendCommand (
+\begin{DoxyParamCaption}
+\item[{const char $\ast$}]{command, }
+\item[{int}]{length}
+\end{DoxyParamCaption}
+)}}
+\label{classQtTelnetPrivate_a9fc01a0012b6c20ec64e9447fc6dc104}
+
+
+Definition at line 905 of file qttelnet.cpp.
+
+\hypertarget{classQtTelnetPrivate_abf61d8563f370b8a279b785e164a3abe}{
+\index{QtTelnetPrivate@{QtTelnetPrivate}!sendCommand@{sendCommand}}
+\index{sendCommand@{sendCommand}!QtTelnetPrivate@{QtTelnetPrivate}}
+\subsubsection[{sendCommand}]{\setlength{\rightskip}{0pt plus 5cm}void QtTelnetPrivate::sendCommand (
+\begin{DoxyParamCaption}
+\item[{const char}]{operation, }
+\item[{const char}]{option}
+\end{DoxyParamCaption}
+)}}
+\label{classQtTelnetPrivate_abf61d8563f370b8a279b785e164a3abe}
+
+
+Definition at line 899 of file qttelnet.cpp.
+
+\hypertarget{classQtTelnetPrivate_a56326b558d3ceaea90abec25fa2fdf70}{
+\index{QtTelnetPrivate@{QtTelnetPrivate}!sendCommand@{sendCommand}}
+\index{sendCommand@{sendCommand}!QtTelnetPrivate@{QtTelnetPrivate}}
+\subsubsection[{sendCommand}]{\setlength{\rightskip}{0pt plus 5cm}void QtTelnetPrivate::sendCommand (
+\begin{DoxyParamCaption}
+\item[{const QByteArray \&}]{command}
+\end{DoxyParamCaption}
+)}}
+\label{classQtTelnetPrivate_a56326b558d3ceaea90abec25fa2fdf70}
+
+
+Definition at line 884 of file qttelnet.cpp.
+
+\hypertarget{classQtTelnetPrivate_a5ef8a8e0dac6d4f22f3b321523ce2c2b}{
+\index{QtTelnetPrivate@{QtTelnetPrivate}!sendOptions@{sendOptions}}
+\index{sendOptions@{sendOptions}!QtTelnetPrivate@{QtTelnetPrivate}}
+\subsubsection[{sendOptions}]{\setlength{\rightskip}{0pt plus 5cm}void QtTelnetPrivate::sendOptions (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}
+\label{classQtTelnetPrivate_a5ef8a8e0dac6d4f22f3b321523ce2c2b}
+
+
+Definition at line 925 of file qttelnet.cpp.
+
+\hypertarget{classQtTelnetPrivate_a1e133bd1afc78ef83c24fa02f8065ca6}{
+\index{QtTelnetPrivate@{QtTelnetPrivate}!sendString@{sendString}}
+\index{sendString@{sendString}!QtTelnetPrivate@{QtTelnetPrivate}}
+\subsubsection[{sendString}]{\setlength{\rightskip}{0pt plus 5cm}void QtTelnetPrivate::sendString (
+\begin{DoxyParamCaption}
+\item[{const QString \&}]{str}
+\end{DoxyParamCaption}
+)}}
+\label{classQtTelnetPrivate_a1e133bd1afc78ef83c24fa02f8065ca6}
+
+
+Definition at line 876 of file qttelnet.cpp.
+
+\hypertarget{classQtTelnetPrivate_aa71ecdd44e469c963cce025bd155f35b}{
+\index{QtTelnetPrivate@{QtTelnetPrivate}!sendWindowSize@{sendWindowSize}}
+\index{sendWindowSize@{sendWindowSize}!QtTelnetPrivate@{QtTelnetPrivate}}
+\subsubsection[{sendWindowSize}]{\setlength{\rightskip}{0pt plus 5cm}void QtTelnetPrivate::sendWindowSize (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}
+\label{classQtTelnetPrivate_aa71ecdd44e469c963cce025bd155f35b}
+
+
+Definition at line 846 of file qttelnet.cpp.
+
+\hypertarget{classQtTelnetPrivate_aba4517cfd26c48d3cb4814c870699d95}{
+\index{QtTelnetPrivate@{QtTelnetPrivate}!setMode@{setMode}}
+\index{setMode@{setMode}!QtTelnetPrivate@{QtTelnetPrivate}}
+\subsubsection[{setMode}]{\setlength{\rightskip}{0pt plus 5cm}void QtTelnetPrivate::setMode (
+\begin{DoxyParamCaption}
+\item[{uchar}]{operation, }
+\item[{uchar}]{option}
+\end{DoxyParamCaption}
+)}}
+\label{classQtTelnetPrivate_aba4517cfd26c48d3cb4814c870699d95}
+
+
+Definition at line 836 of file qttelnet.cpp.
+
+\hypertarget{classQtTelnetPrivate_a1bb6ff5139d2a05c09aad37f64042687}{
+\index{QtTelnetPrivate@{QtTelnetPrivate}!setSocket@{setSocket}}
+\index{setSocket@{setSocket}!QtTelnetPrivate@{QtTelnetPrivate}}
+\subsubsection[{setSocket}]{\setlength{\rightskip}{0pt plus 5cm}void QtTelnetPrivate::setSocket (
+\begin{DoxyParamCaption}
+\item[{QTcpSocket $\ast$}]{socket}
+\end{DoxyParamCaption}
+)}}
+\label{classQtTelnetPrivate_a1bb6ff5139d2a05c09aad37f64042687}
+
+
+Definition at line 573 of file qttelnet.cpp.
+
+\hypertarget{classQtTelnetPrivate_ac4be71355182f5fd94ba3470c9735f04}{
+\index{QtTelnetPrivate@{QtTelnetPrivate}!socketConnected@{socketConnected}}
+\index{socketConnected@{socketConnected}!QtTelnetPrivate@{QtTelnetPrivate}}
+\subsubsection[{socketConnected}]{\setlength{\rightskip}{0pt plus 5cm}void QtTelnetPrivate::socketConnected (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}slot\mbox{]}}}}
+\label{classQtTelnetPrivate_ac4be71355182f5fd94ba3470c9735f04}
+
+
+Definition at line 935 of file qttelnet.cpp.
+
+\hypertarget{classQtTelnetPrivate_ae58ae8a85e306d69e8f0c2319784341e}{
+\index{QtTelnetPrivate@{QtTelnetPrivate}!socketConnectionClosed@{socketConnectionClosed}}
+\index{socketConnectionClosed@{socketConnectionClosed}!QtTelnetPrivate@{QtTelnetPrivate}}
+\subsubsection[{socketConnectionClosed}]{\setlength{\rightskip}{0pt plus 5cm}void QtTelnetPrivate::socketConnectionClosed (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}slot\mbox{]}}}}
+\label{classQtTelnetPrivate_ae58ae8a85e306d69e8f0c2319784341e}
+
+
+Definition at line 951 of file qttelnet.cpp.
+
+\hypertarget{classQtTelnetPrivate_ae6898112df89f6e96f465865e5d653eb}{
+\index{QtTelnetPrivate@{QtTelnetPrivate}!socketError@{socketError}}
+\index{socketError@{socketError}!QtTelnetPrivate@{QtTelnetPrivate}}
+\subsubsection[{socketError}]{\setlength{\rightskip}{0pt plus 5cm}void QtTelnetPrivate::socketError (
+\begin{DoxyParamCaption}
+\item[{QAbstractSocket::SocketError}]{error}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}slot\mbox{]}}}}
+\label{classQtTelnetPrivate_ae6898112df89f6e96f465865e5d653eb}
+
+
+Definition at line 965 of file qttelnet.cpp.
+
+\hypertarget{classQtTelnetPrivate_afc8a54ee4ba780dfa5f0a9e6019047c7}{
+\index{QtTelnetPrivate@{QtTelnetPrivate}!socketException@{socketException}}
+\index{socketException@{socketException}!QtTelnetPrivate@{QtTelnetPrivate}}
+\subsubsection[{socketException}]{\setlength{\rightskip}{0pt plus 5cm}void QtTelnetPrivate::socketException (
+\begin{DoxyParamCaption}
+\item[{int}]{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}slot\mbox{]}}}}
+\label{classQtTelnetPrivate_afc8a54ee4ba780dfa5f0a9e6019047c7}
+
+
+Definition at line 946 of file qttelnet.cpp.
+
+\hypertarget{classQtTelnetPrivate_a460c21d4294b03c64c4a63f703d474aa}{
+\index{QtTelnetPrivate@{QtTelnetPrivate}!socketReadyRead@{socketReadyRead}}
+\index{socketReadyRead@{socketReadyRead}!QtTelnetPrivate@{QtTelnetPrivate}}
+\subsubsection[{socketReadyRead}]{\setlength{\rightskip}{0pt plus 5cm}void QtTelnetPrivate::socketReadyRead (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}slot\mbox{]}}}}
+\label{classQtTelnetPrivate_a460c21d4294b03c64c4a63f703d474aa}
+
+
+Definition at line 959 of file qttelnet.cpp.
+
+
+
+\subsection{Member Data Documentation}
+\hypertarget{classQtTelnetPrivate_af739b55b1e603436bda658ef8c94447d}{
+\index{QtTelnetPrivate@{QtTelnetPrivate}!auths@{auths}}
+\index{auths@{auths}!QtTelnetPrivate@{QtTelnetPrivate}}
+\subsubsection[{auths}]{\setlength{\rightskip}{0pt plus 5cm}QMap$<$int, {\bf QtTelnetAuth}$\ast$$>$ {\bf QtTelnetPrivate::auths}}}
+\label{classQtTelnetPrivate_af739b55b1e603436bda658ef8c94447d}
+
+
+Definition at line 515 of file qttelnet.cpp.
+
+\hypertarget{classQtTelnetPrivate_a075248a1b2a42ca268848d2d5e89040b}{
+\index{QtTelnetPrivate@{QtTelnetPrivate}!buffer@{buffer}}
+\index{buffer@{buffer}!QtTelnetPrivate@{QtTelnetPrivate}}
+\subsubsection[{buffer}]{\setlength{\rightskip}{0pt plus 5cm}{\bf QtTelnetReceiveBuffer} {\bf QtTelnetPrivate::buffer}}}
+\label{classQtTelnetPrivate_a075248a1b2a42ca268848d2d5e89040b}
+
+
+Definition at line 507 of file qttelnet.cpp.
+
+\hypertarget{classQtTelnetPrivate_a974f5ee35e078ae2b13b3ad60bbb40cc}{
+\index{QtTelnetPrivate@{QtTelnetPrivate}!connected@{connected}}
+\index{connected@{connected}!QtTelnetPrivate@{QtTelnetPrivate}}
+\subsubsection[{connected}]{\setlength{\rightskip}{0pt plus 5cm}bool {\bf QtTelnetPrivate::connected}}}
+\label{classQtTelnetPrivate_a974f5ee35e078ae2b13b3ad60bbb40cc}
+
+
+Definition at line 512 of file qttelnet.cpp.
+
+\hypertarget{classQtTelnetPrivate_a5ba83994ceb1886f9aa8751edc289c2e}{
+\index{QtTelnetPrivate@{QtTelnetPrivate}!curauth@{curauth}}
+\index{curauth@{curauth}!QtTelnetPrivate@{QtTelnetPrivate}}
+\subsubsection[{curauth}]{\setlength{\rightskip}{0pt plus 5cm}{\bf QtTelnetAuth}$\ast$ {\bf QtTelnetPrivate::curauth}}}
+\label{classQtTelnetPrivate_a5ba83994ceb1886f9aa8751edc289c2e}
+
+
+Definition at line 516 of file qttelnet.cpp.
+
+\hypertarget{classQtTelnetPrivate_a5c08132513e77454325480668f3ced49}{
+\index{QtTelnetPrivate@{QtTelnetPrivate}!firsttry@{firsttry}}
+\index{firsttry@{firsttry}!QtTelnetPrivate@{QtTelnetPrivate}}
+\subsubsection[{firsttry}]{\setlength{\rightskip}{0pt plus 5cm}bool {\bf QtTelnetPrivate::firsttry}}}
+\label{classQtTelnetPrivate_a5c08132513e77454325480668f3ced49}
+
+
+Definition at line 513 of file qttelnet.cpp.
+
+\hypertarget{classQtTelnetPrivate_ae443a4bb75c5d2398e4810791902a4c3}{
+\index{QtTelnetPrivate@{QtTelnetPrivate}!login@{login}}
+\index{login@{login}!QtTelnetPrivate@{QtTelnetPrivate}}
+\subsubsection[{login}]{\setlength{\rightskip}{0pt plus 5cm}QString {\bf QtTelnetPrivate::login}}}
+\label{classQtTelnetPrivate_ae443a4bb75c5d2398e4810791902a4c3}
+
+
+Definition at line 520 of file qttelnet.cpp.
+
+\hypertarget{classQtTelnetPrivate_a9e259a89ff0c66c78f16f63ec52307f5}{
+\index{QtTelnetPrivate@{QtTelnetPrivate}!loginp@{loginp}}
+\index{loginp@{loginp}!QtTelnetPrivate@{QtTelnetPrivate}}
+\subsubsection[{loginp}]{\setlength{\rightskip}{0pt plus 5cm}QRegExp {\bf QtTelnetPrivate::loginp}}}
+\label{classQtTelnetPrivate_a9e259a89ff0c66c78f16f63ec52307f5}
+
+
+Definition at line 519 of file qttelnet.cpp.
+
+\hypertarget{classQtTelnetPrivate_a19f4f4927ab411905a637e04694dd4b4}{
+\index{QtTelnetPrivate@{QtTelnetPrivate}!modes@{modes}}
+\index{modes@{modes}!QtTelnetPrivate@{QtTelnetPrivate}}
+\subsubsection[{modes}]{\setlength{\rightskip}{0pt plus 5cm}QMap$<$char, bool$>$ {\bf QtTelnetPrivate::modes}}}
+\label{classQtTelnetPrivate_a19f4f4927ab411905a637e04694dd4b4}
+
+
+Definition at line 502 of file qttelnet.cpp.
+
+\hypertarget{classQtTelnetPrivate_a2b680b042ddaada4aeb87b549669d979}{
+\index{QtTelnetPrivate@{QtTelnetPrivate}!nocheckp@{nocheckp}}
+\index{nocheckp@{nocheckp}!QtTelnetPrivate@{QtTelnetPrivate}}
+\subsubsection[{nocheckp}]{\setlength{\rightskip}{0pt plus 5cm}bool {\bf QtTelnetPrivate::nocheckp}}}
+\label{classQtTelnetPrivate_a2b680b042ddaada4aeb87b549669d979}
+
+
+Definition at line 512 of file qttelnet.cpp.
+
+\hypertarget{classQtTelnetPrivate_aacc76c154d962e6275960e4c48e503c9}{
+\index{QtTelnetPrivate@{QtTelnetPrivate}!notifier@{notifier}}
+\index{notifier@{notifier}!QtTelnetPrivate@{QtTelnetPrivate}}
+\subsubsection[{notifier}]{\setlength{\rightskip}{0pt plus 5cm}QSocketNotifier$\ast$ {\bf QtTelnetPrivate::notifier}}}
+\label{classQtTelnetPrivate_aacc76c154d962e6275960e4c48e503c9}
+
+
+Definition at line 508 of file qttelnet.cpp.
+
+\hypertarget{classQtTelnetPrivate_a0b40d5a76ef06d3a224ac4623883e4c5}{
+\index{QtTelnetPrivate@{QtTelnetPrivate}!nullauth@{nullauth}}
+\index{nullauth@{nullauth}!QtTelnetPrivate@{QtTelnetPrivate}}
+\subsubsection[{nullauth}]{\setlength{\rightskip}{0pt plus 5cm}bool {\bf QtTelnetPrivate::nullauth}}}
+\label{classQtTelnetPrivate_a0b40d5a76ef06d3a224ac4623883e4c5}
+
+
+Definition at line 517 of file qttelnet.cpp.
+
+\hypertarget{classQtTelnetPrivate_a8c36d306aa1d9e15183f339ec9bc5862}{
+\index{QtTelnetPrivate@{QtTelnetPrivate}!osent@{osent}}
+\index{osent@{osent}!QtTelnetPrivate@{QtTelnetPrivate}}
+\subsubsection[{osent}]{\setlength{\rightskip}{0pt plus 5cm}QList$<$ QPair$<$uchar, uchar$>$ $>$ {\bf QtTelnetPrivate::osent}}}
+\label{classQtTelnetPrivate_a8c36d306aa1d9e15183f339ec9bc5862}
+
+
+Definition at line 503 of file qttelnet.cpp.
+
+\hypertarget{classQtTelnetPrivate_ae4bbc9a28524e8e55071fdd9587303bc}{
+\index{QtTelnetPrivate@{QtTelnetPrivate}!pass@{pass}}
+\index{pass@{pass}!QtTelnetPrivate@{QtTelnetPrivate}}
+\subsubsection[{pass}]{\setlength{\rightskip}{0pt plus 5cm}QString {\bf QtTelnetPrivate::pass}}}
+\label{classQtTelnetPrivate_ae4bbc9a28524e8e55071fdd9587303bc}
+
+
+Definition at line 520 of file qttelnet.cpp.
+
+\hypertarget{classQtTelnetPrivate_ab162800a573c3b01b264a76b5e311f4b}{
+\index{QtTelnetPrivate@{QtTelnetPrivate}!passp@{passp}}
+\index{passp@{passp}!QtTelnetPrivate@{QtTelnetPrivate}}
+\subsubsection[{passp}]{\setlength{\rightskip}{0pt plus 5cm}QRegExp {\bf QtTelnetPrivate::passp}}}
+\label{classQtTelnetPrivate_ab162800a573c3b01b264a76b5e311f4b}
+
+
+Definition at line 519 of file qttelnet.cpp.
+
+\hypertarget{classQtTelnetPrivate_a2f2b0fe1bdb6bb84d9f5db5f38af0062}{
+\index{QtTelnetPrivate@{QtTelnetPrivate}!promptp@{promptp}}
+\index{promptp@{promptp}!QtTelnetPrivate@{QtTelnetPrivate}}
+\subsubsection[{promptp}]{\setlength{\rightskip}{0pt plus 5cm}QRegExp {\bf QtTelnetPrivate::promptp}}}
+\label{classQtTelnetPrivate_a2f2b0fe1bdb6bb84d9f5db5f38af0062}
+
+
+Definition at line 519 of file qttelnet.cpp.
+
+\hypertarget{classQtTelnetPrivate_accc5387fdb43bf070a18bcf975134406}{
+\index{QtTelnetPrivate@{QtTelnetPrivate}!q@{q}}
+\index{q@{q}!QtTelnetPrivate@{QtTelnetPrivate}}
+\subsubsection[{q}]{\setlength{\rightskip}{0pt plus 5cm}{\bf QtTelnet}$\ast$ {\bf QtTelnetPrivate::q}}}
+\label{classQtTelnetPrivate_accc5387fdb43bf070a18bcf975134406}
+
+
+Definition at line 505 of file qttelnet.cpp.
+
+\hypertarget{classQtTelnetPrivate_a8a3800a6c6c14c4501ac0cb5d1f9996b}{
+\index{QtTelnetPrivate@{QtTelnetPrivate}!socket@{socket}}
+\index{socket@{socket}!QtTelnetPrivate@{QtTelnetPrivate}}
+\subsubsection[{socket}]{\setlength{\rightskip}{0pt plus 5cm}QTcpSocket$\ast$ {\bf QtTelnetPrivate::socket}}}
+\label{classQtTelnetPrivate_a8a3800a6c6c14c4501ac0cb5d1f9996b}
+
+
+Definition at line 506 of file qttelnet.cpp.
+
+\hypertarget{classQtTelnetPrivate_acc2df3045ddf17a821c8fd1d5e93e006}{
+\index{QtTelnetPrivate@{QtTelnetPrivate}!triedlogin@{triedlogin}}
+\index{triedlogin@{triedlogin}!QtTelnetPrivate@{QtTelnetPrivate}}
+\subsubsection[{triedlogin}]{\setlength{\rightskip}{0pt plus 5cm}bool {\bf QtTelnetPrivate::triedlogin}}}
+\label{classQtTelnetPrivate_acc2df3045ddf17a821c8fd1d5e93e006}
+
+
+Definition at line 513 of file qttelnet.cpp.
+
+\hypertarget{classQtTelnetPrivate_a9314dd43d6817a310381d8867e9ed56f}{
+\index{QtTelnetPrivate@{QtTelnetPrivate}!triedpass@{triedpass}}
+\index{triedpass@{triedpass}!QtTelnetPrivate@{QtTelnetPrivate}}
+\subsubsection[{triedpass}]{\setlength{\rightskip}{0pt plus 5cm}bool {\bf QtTelnetPrivate::triedpass}}}
+\label{classQtTelnetPrivate_a9314dd43d6817a310381d8867e9ed56f}
+
+
+Definition at line 513 of file qttelnet.cpp.
+
+\hypertarget{classQtTelnetPrivate_af249e77e92cc059087ea90f48afe7f08}{
+\index{QtTelnetPrivate@{QtTelnetPrivate}!windowSize@{windowSize}}
+\index{windowSize@{windowSize}!QtTelnetPrivate@{QtTelnetPrivate}}
+\subsubsection[{windowSize}]{\setlength{\rightskip}{0pt plus 5cm}QSize {\bf QtTelnetPrivate::windowSize}}}
+\label{classQtTelnetPrivate_af249e77e92cc059087ea90f48afe7f08}
+
+
+Definition at line 510 of file qttelnet.cpp.
+
+
+
+The documentation for this class was generated from the following file:\begin{DoxyCompactItemize}
+\item 
+/e/ms/QT/qtelnet/\hyperlink{qttelnet_8cpp}{qttelnet.cpp}\end{DoxyCompactItemize}

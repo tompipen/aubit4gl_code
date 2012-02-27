@@ -1,0 +1,324 @@
+\hypertarget{classLineEditDelegate}{
+\section{LineEditDelegate Class Reference}
+\label{classLineEditDelegate}\index{LineEditDelegate@{LineEditDelegate}}
+}
+
+
+{\ttfamily \#include $<$table.h$>$}
+
+\subsection*{Signals}
+\begin{DoxyCompactItemize}
+\item 
+void \hyperlink{classLineEditDelegate_aef453ff10ab9068948696442b9c2a867}{fieldEvent} (\hyperlink{structFgl_1_1Event}{Fgl::Event}, QWidget $\ast$)
+\end{DoxyCompactItemize}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classLineEditDelegate_ab418c36b7c2603193b1365e6d43b4f8f}{LineEditDelegate} (QObject $\ast$parent=0)
+\item 
+\hyperlink{classLineEditDelegate_ade4fd9d641f292561e65488b1f50d2b0}{LineEditDelegate} (QDomElement, QObject $\ast$parent=0)
+\item 
+QWidget $\ast$ \hyperlink{classLineEditDelegate_a0134697582deea5baf2627b075e08189}{createEditor} (QWidget $\ast$parent, const QStyleOptionViewItem \&option, const QModelIndex \&index) const 
+\item 
+void \hyperlink{classLineEditDelegate_a7084c71313b96297c32ecf69e4c52fe0}{setEditorData} (QWidget $\ast$editor, const QModelIndex \&index) const 
+\item 
+void \hyperlink{classLineEditDelegate_add0abb09725ff1b794825cc428ec36b3}{setModelData} (QWidget $\ast$editor, QAbstractItemModel $\ast$model, const QModelIndex \&index) const 
+\item 
+void \hyperlink{classLineEditDelegate_a543ae4345264f2e17d75d80c6dcf9f41}{updateEditorGeometry} (QWidget $\ast$editor, const QStyleOptionViewItem \&option, const QModelIndex \&index) const 
+\item 
+QSize \hyperlink{classLineEditDelegate_a35ced057564e0e83f1cee748c0e4f8c0}{sizeHint} (const QStyleOptionViewItem \&option, const QModelIndex \&index) const 
+\item 
+void \hyperlink{classLineEditDelegate_a70f070297a44835836592b2dc7e9b38a}{setForm} (QWidget $\ast$form)
+\item 
+void \hyperlink{classLineEditDelegate_a4aca4a31277cbb989436840eb7371c6e}{setColumn} (int c)
+\item 
+int \hyperlink{classLineEditDelegate_a1d6c0bec6f2650cd4b6893c7e5c08480}{column} ()
+\item 
+bool \hyperlink{classLineEditDelegate_a72fc91aa30d6afb7264bd07c356788d0}{readOnly} ()
+\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+QSize $\ast$ \hyperlink{classLineEditDelegate_ace648742ec01e245e35b39261383ae89}{fieldSize}
+\item 
+QWidget $\ast$ \hyperlink{classLineEditDelegate_a16d00d8e62e3c89978d07adcffa007c9}{qw\_\-editor}
+\end{DoxyCompactItemize}
+\subsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+bool \hyperlink{classLineEditDelegate_acc5efdbc01898262cc1050dc696aad6a}{eventFilter} (QObject $\ast$editor, QEvent $\ast$event)
+\end{DoxyCompactItemize}
+\subsection*{Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+QWidget $\ast$ \hyperlink{classLineEditDelegate_a2f504917f4de35dd8f400d8d696bdc1d}{p\_\-fglform}
+\item 
+QDomElement \hyperlink{classLineEditDelegate_aa635e6dd4afb8971b6d85db420c16773}{formElement}
+\item 
+QString \hyperlink{classLineEditDelegate_ad734b27bd24f9eebab7dc0b0a70897a7}{qs\_\-text}
+\item 
+bool \hyperlink{classLineEditDelegate_ae056ae674734bac2b666e31071568fbd}{b\_\-readOnly}
+\item 
+int \hyperlink{classLineEditDelegate_a8484d34acb269d70d28e3ccaa98c8a49}{i\_\-column}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+
+
+Definition at line 197 of file table.h.
+
+
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{classLineEditDelegate_ab418c36b7c2603193b1365e6d43b4f8f}{
+\index{LineEditDelegate@{LineEditDelegate}!LineEditDelegate@{LineEditDelegate}}
+\index{LineEditDelegate@{LineEditDelegate}!LineEditDelegate@{LineEditDelegate}}
+\subsubsection[{LineEditDelegate}]{\setlength{\rightskip}{0pt plus 5cm}LineEditDelegate::LineEditDelegate (
+\begin{DoxyParamCaption}
+\item[{QObject $\ast$}]{parent = {\ttfamily 0}}
+\end{DoxyParamCaption}
+)}}
+\label{classLineEditDelegate_ab418c36b7c2603193b1365e6d43b4f8f}
+
+
+Definition at line 1080 of file table.cpp.
+
+\hypertarget{classLineEditDelegate_ade4fd9d641f292561e65488b1f50d2b0}{
+\index{LineEditDelegate@{LineEditDelegate}!LineEditDelegate@{LineEditDelegate}}
+\index{LineEditDelegate@{LineEditDelegate}!LineEditDelegate@{LineEditDelegate}}
+\subsubsection[{LineEditDelegate}]{\setlength{\rightskip}{0pt plus 5cm}LineEditDelegate::LineEditDelegate (
+\begin{DoxyParamCaption}
+\item[{QDomElement}]{formElement, }
+\item[{QObject $\ast$}]{parent = {\ttfamily 0}}
+\end{DoxyParamCaption}
+)}}
+\label{classLineEditDelegate_ade4fd9d641f292561e65488b1f50d2b0}
+
+
+Definition at line 1086 of file table.cpp.
+
+
+
+\subsection{Member Function Documentation}
+\hypertarget{classLineEditDelegate_a1d6c0bec6f2650cd4b6893c7e5c08480}{
+\index{LineEditDelegate@{LineEditDelegate}!column@{column}}
+\index{column@{column}!LineEditDelegate@{LineEditDelegate}}
+\subsubsection[{column}]{\setlength{\rightskip}{0pt plus 5cm}int LineEditDelegate::column (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}inline\mbox{]}}}}
+\label{classLineEditDelegate_a1d6c0bec6f2650cd4b6893c7e5c08480}
+
+
+Definition at line 220 of file table.h.
+
+\hypertarget{classLineEditDelegate_a0134697582deea5baf2627b075e08189}{
+\index{LineEditDelegate@{LineEditDelegate}!createEditor@{createEditor}}
+\index{createEditor@{createEditor}!LineEditDelegate@{LineEditDelegate}}
+\subsubsection[{createEditor}]{\setlength{\rightskip}{0pt plus 5cm}QWidget $\ast$ LineEditDelegate::createEditor (
+\begin{DoxyParamCaption}
+\item[{QWidget $\ast$}]{parent, }
+\item[{const QStyleOptionViewItem \&}]{option, }
+\item[{const QModelIndex \&}]{index}
+\end{DoxyParamCaption}
+) const}}
+\label{classLineEditDelegate_a0134697582deea5baf2627b075e08189}
+
+
+Definition at line 1118 of file table.cpp.
+
+\hypertarget{classLineEditDelegate_acc5efdbc01898262cc1050dc696aad6a}{
+\index{LineEditDelegate@{LineEditDelegate}!eventFilter@{eventFilter}}
+\index{eventFilter@{eventFilter}!LineEditDelegate@{LineEditDelegate}}
+\subsubsection[{eventFilter}]{\setlength{\rightskip}{0pt plus 5cm}bool LineEditDelegate::eventFilter (
+\begin{DoxyParamCaption}
+\item[{QObject $\ast$}]{editor, }
+\item[{QEvent $\ast$}]{event}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}protected\mbox{]}}}}
+\label{classLineEditDelegate_acc5efdbc01898262cc1050dc696aad6a}
+
+
+Definition at line 1174 of file table.cpp.
+
+\hypertarget{classLineEditDelegate_aef453ff10ab9068948696442b9c2a867}{
+\index{LineEditDelegate@{LineEditDelegate}!fieldEvent@{fieldEvent}}
+\index{fieldEvent@{fieldEvent}!LineEditDelegate@{LineEditDelegate}}
+\subsubsection[{fieldEvent}]{\setlength{\rightskip}{0pt plus 5cm}void LineEditDelegate::fieldEvent (
+\begin{DoxyParamCaption}
+\item[{{\bf Fgl::Event}}]{, }
+\item[{QWidget $\ast$}]{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}signal\mbox{]}}}}
+\label{classLineEditDelegate_aef453ff10ab9068948696442b9c2a867}
+\hypertarget{classLineEditDelegate_a72fc91aa30d6afb7264bd07c356788d0}{
+\index{LineEditDelegate@{LineEditDelegate}!readOnly@{readOnly}}
+\index{readOnly@{readOnly}!LineEditDelegate@{LineEditDelegate}}
+\subsubsection[{readOnly}]{\setlength{\rightskip}{0pt plus 5cm}bool LineEditDelegate::readOnly (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}inline\mbox{]}}}}
+\label{classLineEditDelegate_a72fc91aa30d6afb7264bd07c356788d0}
+
+
+Definition at line 221 of file table.h.
+
+\hypertarget{classLineEditDelegate_a4aca4a31277cbb989436840eb7371c6e}{
+\index{LineEditDelegate@{LineEditDelegate}!setColumn@{setColumn}}
+\index{setColumn@{setColumn}!LineEditDelegate@{LineEditDelegate}}
+\subsubsection[{setColumn}]{\setlength{\rightskip}{0pt plus 5cm}void LineEditDelegate::setColumn (
+\begin{DoxyParamCaption}
+\item[{int}]{c}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}inline\mbox{]}}}}
+\label{classLineEditDelegate_a4aca4a31277cbb989436840eb7371c6e}
+
+
+Definition at line 219 of file table.h.
+
+\hypertarget{classLineEditDelegate_a7084c71313b96297c32ecf69e4c52fe0}{
+\index{LineEditDelegate@{LineEditDelegate}!setEditorData@{setEditorData}}
+\index{setEditorData@{setEditorData}!LineEditDelegate@{LineEditDelegate}}
+\subsubsection[{setEditorData}]{\setlength{\rightskip}{0pt plus 5cm}void LineEditDelegate::setEditorData (
+\begin{DoxyParamCaption}
+\item[{QWidget $\ast$}]{editor, }
+\item[{const QModelIndex \&}]{index}
+\end{DoxyParamCaption}
+) const}}
+\label{classLineEditDelegate_a7084c71313b96297c32ecf69e4c52fe0}
+
+
+Definition at line 1142 of file table.cpp.
+
+\hypertarget{classLineEditDelegate_a70f070297a44835836592b2dc7e9b38a}{
+\index{LineEditDelegate@{LineEditDelegate}!setForm@{setForm}}
+\index{setForm@{setForm}!LineEditDelegate@{LineEditDelegate}}
+\subsubsection[{setForm}]{\setlength{\rightskip}{0pt plus 5cm}void LineEditDelegate::setForm (
+\begin{DoxyParamCaption}
+\item[{QWidget $\ast$}]{form}
+\end{DoxyParamCaption}
+)}}
+\label{classLineEditDelegate_a70f070297a44835836592b2dc7e9b38a}
+
+
+Definition at line 1167 of file table.cpp.
+
+\hypertarget{classLineEditDelegate_add0abb09725ff1b794825cc428ec36b3}{
+\index{LineEditDelegate@{LineEditDelegate}!setModelData@{setModelData}}
+\index{setModelData@{setModelData}!LineEditDelegate@{LineEditDelegate}}
+\subsubsection[{setModelData}]{\setlength{\rightskip}{0pt plus 5cm}void LineEditDelegate::setModelData (
+\begin{DoxyParamCaption}
+\item[{QWidget $\ast$}]{editor, }
+\item[{QAbstractItemModel $\ast$}]{model, }
+\item[{const QModelIndex \&}]{index}
+\end{DoxyParamCaption}
+) const}}
+\label{classLineEditDelegate_add0abb09725ff1b794825cc428ec36b3}
+
+
+Definition at line 1151 of file table.cpp.
+
+\hypertarget{classLineEditDelegate_a35ced057564e0e83f1cee748c0e4f8c0}{
+\index{LineEditDelegate@{LineEditDelegate}!sizeHint@{sizeHint}}
+\index{sizeHint@{sizeHint}!LineEditDelegate@{LineEditDelegate}}
+\subsubsection[{sizeHint}]{\setlength{\rightskip}{0pt plus 5cm}QSize LineEditDelegate::sizeHint (
+\begin{DoxyParamCaption}
+\item[{const QStyleOptionViewItem \&}]{option, }
+\item[{const QModelIndex \&}]{index}
+\end{DoxyParamCaption}
+) const}}
+\label{classLineEditDelegate_a35ced057564e0e83f1cee748c0e4f8c0}
+
+
+Definition at line 1103 of file table.cpp.
+
+\hypertarget{classLineEditDelegate_a543ae4345264f2e17d75d80c6dcf9f41}{
+\index{LineEditDelegate@{LineEditDelegate}!updateEditorGeometry@{updateEditorGeometry}}
+\index{updateEditorGeometry@{updateEditorGeometry}!LineEditDelegate@{LineEditDelegate}}
+\subsubsection[{updateEditorGeometry}]{\setlength{\rightskip}{0pt plus 5cm}void LineEditDelegate::updateEditorGeometry (
+\begin{DoxyParamCaption}
+\item[{QWidget $\ast$}]{editor, }
+\item[{const QStyleOptionViewItem \&}]{option, }
+\item[{const QModelIndex \&}]{index}
+\end{DoxyParamCaption}
+) const}}
+\label{classLineEditDelegate_a543ae4345264f2e17d75d80c6dcf9f41}
+
+
+Definition at line 1161 of file table.cpp.
+
+
+
+\subsection{Member Data Documentation}
+\hypertarget{classLineEditDelegate_ae056ae674734bac2b666e31071568fbd}{
+\index{LineEditDelegate@{LineEditDelegate}!b\_\-readOnly@{b\_\-readOnly}}
+\index{b\_\-readOnly@{b\_\-readOnly}!LineEditDelegate@{LineEditDelegate}}
+\subsubsection[{b\_\-readOnly}]{\setlength{\rightskip}{0pt plus 5cm}bool {\bf LineEditDelegate::b\_\-readOnly}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classLineEditDelegate_ae056ae674734bac2b666e31071568fbd}
+
+
+Definition at line 234 of file table.h.
+
+\hypertarget{classLineEditDelegate_ace648742ec01e245e35b39261383ae89}{
+\index{LineEditDelegate@{LineEditDelegate}!fieldSize@{fieldSize}}
+\index{fieldSize@{fieldSize}!LineEditDelegate@{LineEditDelegate}}
+\subsubsection[{fieldSize}]{\setlength{\rightskip}{0pt plus 5cm}QSize$\ast$ {\bf LineEditDelegate::fieldSize}}}
+\label{classLineEditDelegate_ace648742ec01e245e35b39261383ae89}
+
+
+Definition at line 215 of file table.h.
+
+\hypertarget{classLineEditDelegate_aa635e6dd4afb8971b6d85db420c16773}{
+\index{LineEditDelegate@{LineEditDelegate}!formElement@{formElement}}
+\index{formElement@{formElement}!LineEditDelegate@{LineEditDelegate}}
+\subsubsection[{formElement}]{\setlength{\rightskip}{0pt plus 5cm}QDomElement {\bf LineEditDelegate::formElement}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classLineEditDelegate_aa635e6dd4afb8971b6d85db420c16773}
+
+
+Definition at line 232 of file table.h.
+
+\hypertarget{classLineEditDelegate_a8484d34acb269d70d28e3ccaa98c8a49}{
+\index{LineEditDelegate@{LineEditDelegate}!i\_\-column@{i\_\-column}}
+\index{i\_\-column@{i\_\-column}!LineEditDelegate@{LineEditDelegate}}
+\subsubsection[{i\_\-column}]{\setlength{\rightskip}{0pt plus 5cm}int {\bf LineEditDelegate::i\_\-column}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classLineEditDelegate_a8484d34acb269d70d28e3ccaa98c8a49}
+
+
+Definition at line 236 of file table.h.
+
+\hypertarget{classLineEditDelegate_a2f504917f4de35dd8f400d8d696bdc1d}{
+\index{LineEditDelegate@{LineEditDelegate}!p\_\-fglform@{p\_\-fglform}}
+\index{p\_\-fglform@{p\_\-fglform}!LineEditDelegate@{LineEditDelegate}}
+\subsubsection[{p\_\-fglform}]{\setlength{\rightskip}{0pt plus 5cm}QWidget$\ast$ {\bf LineEditDelegate::p\_\-fglform}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classLineEditDelegate_a2f504917f4de35dd8f400d8d696bdc1d}
+
+
+Definition at line 231 of file table.h.
+
+\hypertarget{classLineEditDelegate_ad734b27bd24f9eebab7dc0b0a70897a7}{
+\index{LineEditDelegate@{LineEditDelegate}!qs\_\-text@{qs\_\-text}}
+\index{qs\_\-text@{qs\_\-text}!LineEditDelegate@{LineEditDelegate}}
+\subsubsection[{qs\_\-text}]{\setlength{\rightskip}{0pt plus 5cm}QString {\bf LineEditDelegate::qs\_\-text}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classLineEditDelegate_ad734b27bd24f9eebab7dc0b0a70897a7}
+
+
+Definition at line 233 of file table.h.
+
+\hypertarget{classLineEditDelegate_a16d00d8e62e3c89978d07adcffa007c9}{
+\index{LineEditDelegate@{LineEditDelegate}!qw\_\-editor@{qw\_\-editor}}
+\index{qw\_\-editor@{qw\_\-editor}!LineEditDelegate@{LineEditDelegate}}
+\subsubsection[{qw\_\-editor}]{\setlength{\rightskip}{0pt plus 5cm}QWidget$\ast$ {\bf LineEditDelegate::qw\_\-editor}}}
+\label{classLineEditDelegate_a16d00d8e62e3c89978d07adcffa007c9}
+
+
+Definition at line 221 of file table.h.
+
+
+
+The documentation for this class was generated from the following files:\begin{DoxyCompactItemize}
+\item 
+/e/ms/QT/models/\hyperlink{table_8h}{table.h}\item 
+/e/ms/QT/models/\hyperlink{table_8cpp}{table.cpp}\end{DoxyCompactItemize}

@@ -1,0 +1,853 @@
+\hypertarget{classTableView}{
+\section{TableView Class Reference}
+\label{classTableView}\index{TableView@{TableView}}
+}
+
+
+{\ttfamily \#include $<$table.h$>$}
+
+\subsection*{Public Slots}
+\begin{DoxyCompactItemize}
+\item 
+void \hyperlink{classTableView_a4c5b64ca3ffb2289d6b9030942cfbfd5}{fieldChanged} (QModelIndex, QModelIndex)
+\item 
+void \hyperlink{classTableView_a4ae2229ec68bc96ada98844bc47434f5}{accept} ()
+\item 
+void \hyperlink{classTableView_ab31519c042431fa0e23f04b719156776}{setMousePos} (QModelIndex)
+\item 
+void \hyperlink{classTableView_ae24787bc253d6f181c13fc58bffd7ba2}{dragSuccess} ()
+\item 
+void \hyperlink{classTableView_a70c32ac02d45e8723f3521cf80f3862e}{writeSettings} (QAction $\ast$)
+\item 
+void \hyperlink{classTableView_a643a93fdbb136136598e30dc3b3ad5e4}{updateSectionWidth} (int logicalIndex, int oldSize, int newSize)
+\item 
+void \hyperlink{classTableView_af8a2f8a181aeb8d565fca8be2fe1437c}{resetSettings} ()
+\end{DoxyCompactItemize}
+\subsection*{Signals}
+\begin{DoxyCompactItemize}
+\item 
+void \hyperlink{classTableView_aadaf88a599aa680ea0d6a3887ed8289d}{fieldEvent} (\hyperlink{structFgl_1_1Event}{Fgl::Event})
+\item 
+void \hyperlink{classTableView_a5f99090ec924b96b7f2b026c47f580e6}{setArrLineSignal} (int)
+\item 
+void \hyperlink{classTableView_ad4f6aa906c014bed4437f67817e990e0}{accepted} ()
+\item 
+void \hyperlink{classTableView_a2ae0fadd583c6d25c0c8759d2b01ba6a}{error} (QString)
+\item 
+void \hyperlink{classTableView_a305e99f446bebdec5735d14281e06de9}{nextfield} ()
+\item 
+void \hyperlink{classTableView_a7648f39aa6fe83ae729c874f5437dba6}{prevfield} ()
+\end{DoxyCompactItemize}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classTableView_adb6530c7759567b474c3a3b7ba81855c}{TableView} (QWidget $\ast$parent=0)
+\item 
+bool \hyperlink{classTableView_a845c45c80748f79f3e81f7bf77e5261a}{isReadOnlyColumn} (int)
+\item 
+int \hyperlink{classTableView_a35187a10df2c76c9fe9099d17d9869cd}{arrCount} ()
+\item 
+int \hyperlink{classTableView_a2573035b04bb9582878096d501381e3b}{maxArrSize} ()
+\item 
+int \hyperlink{classTableView_a7ec1fcd1ab0302dde810332c72602273}{arrLine} ()
+\item 
+int \hyperlink{classTableView_aecb8d3ea59d572fb9a7df9a7ba798c20}{scrLine} ()
+\item 
+void \hyperlink{classTableView_ac80392b3e39df8bb876d5ac378375caf}{setInputEnabled} (bool)
+\item 
+void \hyperlink{classTableView_a5a86ed0c209382e0c31266952d3fafaf}{setColumnLabel} (int, \hyperlink{classLabel}{Label} $\ast$)
+\item 
+QLabel $\ast$ \hyperlink{classTableView_a22d025267d25ecfe7684c31edab75a2a}{getColumnLabel} (int)
+\item 
+void \hyperlink{classTableView_ac8f1f15e7ec4e97a15560d1c00ce7b02}{setColumnName} (int, QString)
+\item 
+QString \hyperlink{classTableView_af953c1328e203f9b0d380b9d5c6125ff}{getColumnName} (int)
+\item 
+void \hyperlink{classTableView_a2bd7391fdc86cdd2f57f40b220aacf9d}{setArrCount} (int cnt)
+\item 
+void \hyperlink{classTableView_a53b722124712ba16befce5b620a82a8f}{setMaxArrSize} (int max)
+\item 
+void \hyperlink{classTableView_a41a45f3b1b6fc2be38f7068629bd9462}{setIgnoreRowChange} (bool b)
+\item 
+bool \hyperlink{classTableView_a83872a716abf63ed862c2c4607dc4146}{ignoreRowChange} ()
+\item 
+void \hyperlink{classTableView_ac961015fe4c7fe1c5af03035db501400}{setScrLine} (int)
+\item 
+void \hyperlink{classTableView_a9579368ee0b02a654fc5f68ff504a83f}{setArrLine} (int)
+\item 
+void \hyperlink{classTableView_a51769748b8e61de5f2e118ff5df32887}{setCurrentColumn} (int)
+\item 
+void \hyperlink{classTableView_a245773b2b9426d4e354cf55fff770aa8}{setCurrentField} (int, int)
+\item 
+void \hyperlink{classTableView_abe0f2fa077f2d14e7e14f6cfcad09bd6}{setText} (QString, int, int)
+\item 
+virtual QSize \hyperlink{classTableView_a448f34f348c812c632d5e33b7f6987a0}{sizeHint} () const 
+\item 
+void \hyperlink{classTableView_ae672b410481126e82682273afd28ccdb}{setCurrMouseRow} (int)
+\item 
+int \hyperlink{classTableView_a4c4cd480a0979197e2b96e6b03fa0213}{getCurrMouseRow} ()
+\item 
+void \hyperlink{classTableView_ae927aad90eebbc37f4429ec40393a175}{setCurrMouseColumn} (int)
+\item 
+int \hyperlink{classTableView_af23a2d29fe926816fc8d42f11ea57a38}{getCurrMouseColumn} ()
+\item 
+void \hyperlink{classTableView_a54c133e2fe1893644c9996694c075ed2}{setMouseModelIndex} (QModelIndex)
+\item 
+QModelIndex \hyperlink{classTableView_ae777b72755652714896a7b45b96bb2da}{getMouseModelIndex} ()
+\item 
+bool \hyperlink{classTableView_a119f899686b60f0c3d0a910b65e2daa8}{eventFilter} (QObject $\ast$, QEvent $\ast$)
+\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+int \hyperlink{classTableView_abb4a46ca1492e88b8fe2fa9b68595340}{pageSize}
+\item 
+QString \hyperlink{classTableView_aa26e19998b21b401d0f7b4c703a7c91d}{tabName}
+\item 
+QWidget $\ast$ \hyperlink{classTableView_a1d048152ea82f3f8d33e538cb032b37b}{p\_\-fglform}
+\item 
+QList$<$ QLabel $\ast$ $>$ \hyperlink{classTableView_a1160d50c2fd480dfd59b3d7660ef17b0}{columnLabels}
+\item 
+QAction $\ast$ \hyperlink{classTableView_a24e6725afbdbe0fded4ee3409fc877a7}{standardAct}
+\item 
+QAction $\ast$ \hyperlink{classTableView_a513618ab0a9e4a3048ab617b68ba4409}{resetAct}
+\item 
+QPointer$<$ QWidget $>$ \hyperlink{classTableView_a294454aaf1b1d44841f39bc28527d93c}{curr\_\-editor}
+\item 
+QAction $\ast$ \hyperlink{classTableView_a1808f7915f3db4bdea5fb535ecebda52}{columnAct}
+\end{DoxyCompactItemize}
+\subsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+QModelIndex \hyperlink{classTableView_a489364559dd2e697eafec6cce3b67a1c}{mouseindex}
+\end{DoxyCompactItemize}
+\subsection*{Private Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+bool \hyperlink{classTableView_a62372425629462c3d4035b1f2676e847}{checkBounds} (const QModelIndex)
+\end{DoxyCompactItemize}
+\subsection*{Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+int \hyperlink{classTableView_a6624fcee6052dd850b9437ed02ed27d8}{i\_\-arrCount}
+\item 
+int \hyperlink{classTableView_a1f1333ce0ba4e23da60de63d9324d522}{i\_\-arrLine}
+\item 
+int \hyperlink{classTableView_a5fc28c3171c5f26f2f60fac01173a57d}{i\_\-scrLine}
+\item 
+int \hyperlink{classTableView_a02c154332908ba1622903ac621ef31bb}{i\_\-maxArrSize}
+\item 
+bool \hyperlink{classTableView_a150be12afa3562146d290f26f10459b2}{b\_\-ignoreFocus}
+\item 
+bool \hyperlink{classTableView_a20a7e1035a96ddde81059ce744099798}{b\_\-ignoreRowChange}
+\item 
+int \hyperlink{classTableView_aed6ae9fb72681922a98a95e41ca84716}{i\_\-currrowmouse}
+\item 
+int \hyperlink{classTableView_a7b47dd87b8a2bcd86d413c2f19402429}{i\_\-currcolumnmouse}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+
+
+Definition at line 29 of file table.h.
+
+
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{classTableView_adb6530c7759567b474c3a3b7ba81855c}{
+\index{TableView@{TableView}!TableView@{TableView}}
+\index{TableView@{TableView}!TableView@{TableView}}
+\subsubsection[{TableView}]{\setlength{\rightskip}{0pt plus 5cm}TableView::TableView (
+\begin{DoxyParamCaption}
+\item[{QWidget $\ast$}]{parent = {\ttfamily 0}}
+\end{DoxyParamCaption}
+)}}
+\label{classTableView_adb6530c7759567b474c3a3b7ba81855c}
+
+
+Definition at line 29 of file table.cpp.
+
+
+
+\subsection{Member Function Documentation}
+\hypertarget{classTableView_a4ae2229ec68bc96ada98844bc47434f5}{
+\index{TableView@{TableView}!accept@{accept}}
+\index{accept@{accept}!TableView@{TableView}}
+\subsubsection[{accept}]{\setlength{\rightskip}{0pt plus 5cm}void TableView::accept (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}slot\mbox{]}}}}
+\label{classTableView_a4ae2229ec68bc96ada98844bc47434f5}
+
+
+Definition at line 526 of file table.cpp.
+
+\hypertarget{classTableView_ad4f6aa906c014bed4437f67817e990e0}{
+\index{TableView@{TableView}!accepted@{accepted}}
+\index{accepted@{accepted}!TableView@{TableView}}
+\subsubsection[{accepted}]{\setlength{\rightskip}{0pt plus 5cm}void TableView::accepted (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}signal\mbox{]}}}}
+\label{classTableView_ad4f6aa906c014bed4437f67817e990e0}
+\hypertarget{classTableView_a35187a10df2c76c9fe9099d17d9869cd}{
+\index{TableView@{TableView}!arrCount@{arrCount}}
+\index{arrCount@{arrCount}!TableView@{TableView}}
+\subsubsection[{arrCount}]{\setlength{\rightskip}{0pt plus 5cm}int TableView::arrCount (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}inline\mbox{]}}}}
+\label{classTableView_a35187a10df2c76c9fe9099d17d9869cd}
+
+
+Definition at line 38 of file table.h.
+
+\hypertarget{classTableView_a7ec1fcd1ab0302dde810332c72602273}{
+\index{TableView@{TableView}!arrLine@{arrLine}}
+\index{arrLine@{arrLine}!TableView@{TableView}}
+\subsubsection[{arrLine}]{\setlength{\rightskip}{0pt plus 5cm}int TableView::arrLine (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}inline\mbox{]}}}}
+\label{classTableView_a7ec1fcd1ab0302dde810332c72602273}
+
+
+Definition at line 40 of file table.h.
+
+\hypertarget{classTableView_a62372425629462c3d4035b1f2676e847}{
+\index{TableView@{TableView}!checkBounds@{checkBounds}}
+\index{checkBounds@{checkBounds}!TableView@{TableView}}
+\subsubsection[{checkBounds}]{\setlength{\rightskip}{0pt plus 5cm}bool TableView::checkBounds (
+\begin{DoxyParamCaption}
+\item[{const QModelIndex}]{current}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classTableView_a62372425629462c3d4035b1f2676e847}
+
+
+Definition at line 801 of file table.cpp.
+
+\hypertarget{classTableView_ae24787bc253d6f181c13fc58bffd7ba2}{
+\index{TableView@{TableView}!dragSuccess@{dragSuccess}}
+\index{dragSuccess@{dragSuccess}!TableView@{TableView}}
+\subsubsection[{dragSuccess}]{\setlength{\rightskip}{0pt plus 5cm}void TableView::dragSuccess (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}slot\mbox{]}}}}
+\label{classTableView_ae24787bc253d6f181c13fc58bffd7ba2}
+
+
+Definition at line 546 of file table.cpp.
+
+\hypertarget{classTableView_a2ae0fadd583c6d25c0c8759d2b01ba6a}{
+\index{TableView@{TableView}!error@{error}}
+\index{error@{error}!TableView@{TableView}}
+\subsubsection[{error}]{\setlength{\rightskip}{0pt plus 5cm}void TableView::error (
+\begin{DoxyParamCaption}
+\item[{QString}]{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}signal\mbox{]}}}}
+\label{classTableView_a2ae0fadd583c6d25c0c8759d2b01ba6a}
+\hypertarget{classTableView_a119f899686b60f0c3d0a910b65e2daa8}{
+\index{TableView@{TableView}!eventFilter@{eventFilter}}
+\index{eventFilter@{eventFilter}!TableView@{TableView}}
+\subsubsection[{eventFilter}]{\setlength{\rightskip}{0pt plus 5cm}bool TableView::eventFilter (
+\begin{DoxyParamCaption}
+\item[{QObject $\ast$}]{object, }
+\item[{QEvent $\ast$}]{event}
+\end{DoxyParamCaption}
+)}}
+\label{classTableView_a119f899686b60f0c3d0a910b65e2daa8}
+
+
+Definition at line 184 of file table.cpp.
+
+\hypertarget{classTableView_a4c5b64ca3ffb2289d6b9030942cfbfd5}{
+\index{TableView@{TableView}!fieldChanged@{fieldChanged}}
+\index{fieldChanged@{fieldChanged}!TableView@{TableView}}
+\subsubsection[{fieldChanged}]{\setlength{\rightskip}{0pt plus 5cm}void TableView::fieldChanged (
+\begin{DoxyParamCaption}
+\item[{QModelIndex}]{current, }
+\item[{QModelIndex}]{prev}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}slot\mbox{]}}}}
+\label{classTableView_a4c5b64ca3ffb2289d6b9030942cfbfd5}
+
+
+Definition at line 586 of file table.cpp.
+
+\hypertarget{classTableView_aadaf88a599aa680ea0d6a3887ed8289d}{
+\index{TableView@{TableView}!fieldEvent@{fieldEvent}}
+\index{fieldEvent@{fieldEvent}!TableView@{TableView}}
+\subsubsection[{fieldEvent}]{\setlength{\rightskip}{0pt plus 5cm}void TableView::fieldEvent (
+\begin{DoxyParamCaption}
+\item[{{\bf Fgl::Event}}]{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}signal\mbox{]}}}}
+\label{classTableView_aadaf88a599aa680ea0d6a3887ed8289d}
+\hypertarget{classTableView_a22d025267d25ecfe7684c31edab75a2a}{
+\index{TableView@{TableView}!getColumnLabel@{getColumnLabel}}
+\index{getColumnLabel@{getColumnLabel}!TableView@{TableView}}
+\subsubsection[{getColumnLabel}]{\setlength{\rightskip}{0pt plus 5cm}QLabel $\ast$ TableView::getColumnLabel (
+\begin{DoxyParamCaption}
+\item[{int}]{col}
+\end{DoxyParamCaption}
+)}}
+\label{classTableView_a22d025267d25ecfe7684c31edab75a2a}
+
+
+Definition at line 489 of file table.cpp.
+
+\hypertarget{classTableView_af953c1328e203f9b0d380b9d5c6125ff}{
+\index{TableView@{TableView}!getColumnName@{getColumnName}}
+\index{getColumnName@{getColumnName}!TableView@{TableView}}
+\subsubsection[{getColumnName}]{\setlength{\rightskip}{0pt plus 5cm}QString TableView::getColumnName (
+\begin{DoxyParamCaption}
+\item[{int}]{col}
+\end{DoxyParamCaption}
+)}}
+\label{classTableView_af953c1328e203f9b0d380b9d5c6125ff}
+
+
+Definition at line 512 of file table.cpp.
+
+\hypertarget{classTableView_af23a2d29fe926816fc8d42f11ea57a38}{
+\index{TableView@{TableView}!getCurrMouseColumn@{getCurrMouseColumn}}
+\index{getCurrMouseColumn@{getCurrMouseColumn}!TableView@{TableView}}
+\subsubsection[{getCurrMouseColumn}]{\setlength{\rightskip}{0pt plus 5cm}int TableView::getCurrMouseColumn (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}
+\label{classTableView_af23a2d29fe926816fc8d42f11ea57a38}
+
+
+Definition at line 357 of file table.cpp.
+
+\hypertarget{classTableView_a4c4cd480a0979197e2b96e6b03fa0213}{
+\index{TableView@{TableView}!getCurrMouseRow@{getCurrMouseRow}}
+\index{getCurrMouseRow@{getCurrMouseRow}!TableView@{TableView}}
+\subsubsection[{getCurrMouseRow}]{\setlength{\rightskip}{0pt plus 5cm}int TableView::getCurrMouseRow (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}
+\label{classTableView_a4c4cd480a0979197e2b96e6b03fa0213}
+
+
+Definition at line 347 of file table.cpp.
+
+\hypertarget{classTableView_ae777b72755652714896a7b45b96bb2da}{
+\index{TableView@{TableView}!getMouseModelIndex@{getMouseModelIndex}}
+\index{getMouseModelIndex@{getMouseModelIndex}!TableView@{TableView}}
+\subsubsection[{getMouseModelIndex}]{\setlength{\rightskip}{0pt plus 5cm}QModelIndex TableView::getMouseModelIndex (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}
+\label{classTableView_ae777b72755652714896a7b45b96bb2da}
+
+
+Definition at line 368 of file table.cpp.
+
+\hypertarget{classTableView_a83872a716abf63ed862c2c4607dc4146}{
+\index{TableView@{TableView}!ignoreRowChange@{ignoreRowChange}}
+\index{ignoreRowChange@{ignoreRowChange}!TableView@{TableView}}
+\subsubsection[{ignoreRowChange}]{\setlength{\rightskip}{0pt plus 5cm}bool TableView::ignoreRowChange (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}inline\mbox{]}}}}
+\label{classTableView_a83872a716abf63ed862c2c4607dc4146}
+
+
+Definition at line 63 of file table.h.
+
+\hypertarget{classTableView_a845c45c80748f79f3e81f7bf77e5261a}{
+\index{TableView@{TableView}!isReadOnlyColumn@{isReadOnlyColumn}}
+\index{isReadOnlyColumn@{isReadOnlyColumn}!TableView@{TableView}}
+\subsubsection[{isReadOnlyColumn}]{\setlength{\rightskip}{0pt plus 5cm}bool TableView::isReadOnlyColumn (
+\begin{DoxyParamCaption}
+\item[{int}]{col}
+\end{DoxyParamCaption}
+)}}
+\label{classTableView_a845c45c80748f79f3e81f7bf77e5261a}
+
+
+Definition at line 689 of file table.cpp.
+
+\hypertarget{classTableView_a2573035b04bb9582878096d501381e3b}{
+\index{TableView@{TableView}!maxArrSize@{maxArrSize}}
+\index{maxArrSize@{maxArrSize}!TableView@{TableView}}
+\subsubsection[{maxArrSize}]{\setlength{\rightskip}{0pt plus 5cm}int TableView::maxArrSize (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}inline\mbox{]}}}}
+\label{classTableView_a2573035b04bb9582878096d501381e3b}
+
+
+Definition at line 39 of file table.h.
+
+\hypertarget{classTableView_a305e99f446bebdec5735d14281e06de9}{
+\index{TableView@{TableView}!nextfield@{nextfield}}
+\index{nextfield@{nextfield}!TableView@{TableView}}
+\subsubsection[{nextfield}]{\setlength{\rightskip}{0pt plus 5cm}void TableView::nextfield (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}signal\mbox{]}}}}
+\label{classTableView_a305e99f446bebdec5735d14281e06de9}
+\hypertarget{classTableView_a7648f39aa6fe83ae729c874f5437dba6}{
+\index{TableView@{TableView}!prevfield@{prevfield}}
+\index{prevfield@{prevfield}!TableView@{TableView}}
+\subsubsection[{prevfield}]{\setlength{\rightskip}{0pt plus 5cm}void TableView::prevfield (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}signal\mbox{]}}}}
+\label{classTableView_a7648f39aa6fe83ae729c874f5437dba6}
+\hypertarget{classTableView_af8a2f8a181aeb8d565fca8be2fe1437c}{
+\index{TableView@{TableView}!resetSettings@{resetSettings}}
+\index{resetSettings@{resetSettings}!TableView@{TableView}}
+\subsubsection[{resetSettings}]{\setlength{\rightskip}{0pt plus 5cm}void TableView::resetSettings (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}slot\mbox{]}}}}
+\label{classTableView_af8a2f8a181aeb8d565fca8be2fe1437c}
+
+
+Definition at line 242 of file table.cpp.
+
+\hypertarget{classTableView_aecb8d3ea59d572fb9a7df9a7ba798c20}{
+\index{TableView@{TableView}!scrLine@{scrLine}}
+\index{scrLine@{scrLine}!TableView@{TableView}}
+\subsubsection[{scrLine}]{\setlength{\rightskip}{0pt plus 5cm}int TableView::scrLine (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}inline\mbox{]}}}}
+\label{classTableView_aecb8d3ea59d572fb9a7df9a7ba798c20}
+
+
+Definition at line 41 of file table.h.
+
+\hypertarget{classTableView_a2bd7391fdc86cdd2f57f40b220aacf9d}{
+\index{TableView@{TableView}!setArrCount@{setArrCount}}
+\index{setArrCount@{setArrCount}!TableView@{TableView}}
+\subsubsection[{setArrCount}]{\setlength{\rightskip}{0pt plus 5cm}void TableView::setArrCount (
+\begin{DoxyParamCaption}
+\item[{int}]{cnt}
+\end{DoxyParamCaption}
+)}}
+\label{classTableView_a2bd7391fdc86cdd2f57f40b220aacf9d}
+
+
+Definition at line 437 of file table.cpp.
+
+\hypertarget{classTableView_a9579368ee0b02a654fc5f68ff504a83f}{
+\index{TableView@{TableView}!setArrLine@{setArrLine}}
+\index{setArrLine@{setArrLine}!TableView@{TableView}}
+\subsubsection[{setArrLine}]{\setlength{\rightskip}{0pt plus 5cm}void TableView::setArrLine (
+\begin{DoxyParamCaption}
+\item[{int}]{line}
+\end{DoxyParamCaption}
+)}}
+\label{classTableView_a9579368ee0b02a654fc5f68ff504a83f}
+
+
+Definition at line 711 of file table.cpp.
+
+\hypertarget{classTableView_a5f99090ec924b96b7f2b026c47f580e6}{
+\index{TableView@{TableView}!setArrLineSignal@{setArrLineSignal}}
+\index{setArrLineSignal@{setArrLineSignal}!TableView@{TableView}}
+\subsubsection[{setArrLineSignal}]{\setlength{\rightskip}{0pt plus 5cm}void TableView::setArrLineSignal (
+\begin{DoxyParamCaption}
+\item[{int}]{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}signal\mbox{]}}}}
+\label{classTableView_a5f99090ec924b96b7f2b026c47f580e6}
+\hypertarget{classTableView_a5a86ed0c209382e0c31266952d3fafaf}{
+\index{TableView@{TableView}!setColumnLabel@{setColumnLabel}}
+\index{setColumnLabel@{setColumnLabel}!TableView@{TableView}}
+\subsubsection[{setColumnLabel}]{\setlength{\rightskip}{0pt plus 5cm}void TableView::setColumnLabel (
+\begin{DoxyParamCaption}
+\item[{int}]{col, }
+\item[{{\bf Label} $\ast$}]{label}
+\end{DoxyParamCaption}
+)}}
+\label{classTableView_a5a86ed0c209382e0c31266952d3fafaf}
+
+
+Definition at line 479 of file table.cpp.
+
+\hypertarget{classTableView_ac8f1f15e7ec4e97a15560d1c00ce7b02}{
+\index{TableView@{TableView}!setColumnName@{setColumnName}}
+\index{setColumnName@{setColumnName}!TableView@{TableView}}
+\subsubsection[{setColumnName}]{\setlength{\rightskip}{0pt plus 5cm}void TableView::setColumnName (
+\begin{DoxyParamCaption}
+\item[{int}]{col, }
+\item[{QString}]{name}
+\end{DoxyParamCaption}
+)}}
+\label{classTableView_ac8f1f15e7ec4e97a15560d1c00ce7b02}
+
+
+Definition at line 499 of file table.cpp.
+
+\hypertarget{classTableView_a51769748b8e61de5f2e118ff5df32887}{
+\index{TableView@{TableView}!setCurrentColumn@{setCurrentColumn}}
+\index{setCurrentColumn@{setCurrentColumn}!TableView@{TableView}}
+\subsubsection[{setCurrentColumn}]{\setlength{\rightskip}{0pt plus 5cm}void TableView::setCurrentColumn (
+\begin{DoxyParamCaption}
+\item[{int}]{col}
+\end{DoxyParamCaption}
+)}}
+\label{classTableView_a51769748b8e61de5f2e118ff5df32887}
+
+
+Definition at line 726 of file table.cpp.
+
+\hypertarget{classTableView_a245773b2b9426d4e354cf55fff770aa8}{
+\index{TableView@{TableView}!setCurrentField@{setCurrentField}}
+\index{setCurrentField@{setCurrentField}!TableView@{TableView}}
+\subsubsection[{setCurrentField}]{\setlength{\rightskip}{0pt plus 5cm}void TableView::setCurrentField (
+\begin{DoxyParamCaption}
+\item[{int}]{row, }
+\item[{int}]{col}
+\end{DoxyParamCaption}
+)}}
+\label{classTableView_a245773b2b9426d4e354cf55fff770aa8}
+
+
+Definition at line 739 of file table.cpp.
+
+\hypertarget{classTableView_ae927aad90eebbc37f4429ec40393a175}{
+\index{TableView@{TableView}!setCurrMouseColumn@{setCurrMouseColumn}}
+\index{setCurrMouseColumn@{setCurrMouseColumn}!TableView@{TableView}}
+\subsubsection[{setCurrMouseColumn}]{\setlength{\rightskip}{0pt plus 5cm}void TableView::setCurrMouseColumn (
+\begin{DoxyParamCaption}
+\item[{int}]{col}
+\end{DoxyParamCaption}
+)}}
+\label{classTableView_ae927aad90eebbc37f4429ec40393a175}
+
+
+Definition at line 352 of file table.cpp.
+
+\hypertarget{classTableView_ae672b410481126e82682273afd28ccdb}{
+\index{TableView@{TableView}!setCurrMouseRow@{setCurrMouseRow}}
+\index{setCurrMouseRow@{setCurrMouseRow}!TableView@{TableView}}
+\subsubsection[{setCurrMouseRow}]{\setlength{\rightskip}{0pt plus 5cm}void TableView::setCurrMouseRow (
+\begin{DoxyParamCaption}
+\item[{int}]{row}
+\end{DoxyParamCaption}
+)}}
+\label{classTableView_ae672b410481126e82682273afd28ccdb}
+
+
+Definition at line 342 of file table.cpp.
+
+\hypertarget{classTableView_a41a45f3b1b6fc2be38f7068629bd9462}{
+\index{TableView@{TableView}!setIgnoreRowChange@{setIgnoreRowChange}}
+\index{setIgnoreRowChange@{setIgnoreRowChange}!TableView@{TableView}}
+\subsubsection[{setIgnoreRowChange}]{\setlength{\rightskip}{0pt plus 5cm}void TableView::setIgnoreRowChange (
+\begin{DoxyParamCaption}
+\item[{bool}]{b}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}inline\mbox{]}}}}
+\label{classTableView_a41a45f3b1b6fc2be38f7068629bd9462}
+
+
+Definition at line 62 of file table.h.
+
+\hypertarget{classTableView_ac80392b3e39df8bb876d5ac378375caf}{
+\index{TableView@{TableView}!setInputEnabled@{setInputEnabled}}
+\index{setInputEnabled@{setInputEnabled}!TableView@{TableView}}
+\subsubsection[{setInputEnabled}]{\setlength{\rightskip}{0pt plus 5cm}void TableView::setInputEnabled (
+\begin{DoxyParamCaption}
+\item[{bool}]{enable}
+\end{DoxyParamCaption}
+)}}
+\label{classTableView_ac80392b3e39df8bb876d5ac378375caf}
+
+
+Definition at line 552 of file table.cpp.
+
+\hypertarget{classTableView_a53b722124712ba16befce5b620a82a8f}{
+\index{TableView@{TableView}!setMaxArrSize@{setMaxArrSize}}
+\index{setMaxArrSize@{setMaxArrSize}!TableView@{TableView}}
+\subsubsection[{setMaxArrSize}]{\setlength{\rightskip}{0pt plus 5cm}void TableView::setMaxArrSize (
+\begin{DoxyParamCaption}
+\item[{int}]{max}
+\end{DoxyParamCaption}
+)}}
+\label{classTableView_a53b722124712ba16befce5b620a82a8f}
+
+
+Definition at line 461 of file table.cpp.
+
+\hypertarget{classTableView_a54c133e2fe1893644c9996694c075ed2}{
+\index{TableView@{TableView}!setMouseModelIndex@{setMouseModelIndex}}
+\index{setMouseModelIndex@{setMouseModelIndex}!TableView@{TableView}}
+\subsubsection[{setMouseModelIndex}]{\setlength{\rightskip}{0pt plus 5cm}void TableView::setMouseModelIndex (
+\begin{DoxyParamCaption}
+\item[{QModelIndex}]{mouse}
+\end{DoxyParamCaption}
+)}}
+\label{classTableView_a54c133e2fe1893644c9996694c075ed2}
+
+
+Definition at line 363 of file table.cpp.
+
+\hypertarget{classTableView_ab31519c042431fa0e23f04b719156776}{
+\index{TableView@{TableView}!setMousePos@{setMousePos}}
+\index{setMousePos@{setMousePos}!TableView@{TableView}}
+\subsubsection[{setMousePos}]{\setlength{\rightskip}{0pt plus 5cm}void TableView::setMousePos (
+\begin{DoxyParamCaption}
+\item[{QModelIndex}]{mousepos}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}slot\mbox{]}}}}
+\label{classTableView_ab31519c042431fa0e23f04b719156776}
+
+
+Definition at line 373 of file table.cpp.
+
+\hypertarget{classTableView_ac961015fe4c7fe1c5af03035db501400}{
+\index{TableView@{TableView}!setScrLine@{setScrLine}}
+\index{setScrLine@{setScrLine}!TableView@{TableView}}
+\subsubsection[{setScrLine}]{\setlength{\rightskip}{0pt plus 5cm}void TableView::setScrLine (
+\begin{DoxyParamCaption}
+\item[{int}]{line}
+\end{DoxyParamCaption}
+)}}
+\label{classTableView_ac961015fe4c7fe1c5af03035db501400}
+
+
+Definition at line 698 of file table.cpp.
+
+\hypertarget{classTableView_abe0f2fa077f2d14e7e14f6cfcad09bd6}{
+\index{TableView@{TableView}!setText@{setText}}
+\index{setText@{setText}!TableView@{TableView}}
+\subsubsection[{setText}]{\setlength{\rightskip}{0pt plus 5cm}void TableView::setText (
+\begin{DoxyParamCaption}
+\item[{QString}]{text, }
+\item[{int}]{row, }
+\item[{int}]{col}
+\end{DoxyParamCaption}
+)}}
+\label{classTableView_abe0f2fa077f2d14e7e14f6cfcad09bd6}
+
+
+Definition at line 773 of file table.cpp.
+
+\hypertarget{classTableView_a448f34f348c812c632d5e33b7f6987a0}{
+\index{TableView@{TableView}!sizeHint@{sizeHint}}
+\index{sizeHint@{sizeHint}!TableView@{TableView}}
+\subsubsection[{sizeHint}]{\setlength{\rightskip}{0pt plus 5cm}QSize TableView::sizeHint (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily  \mbox{[}virtual\mbox{]}}}}
+\label{classTableView_a448f34f348c812c632d5e33b7f6987a0}
+
+
+Definition at line 380 of file table.cpp.
+
+\hypertarget{classTableView_a643a93fdbb136136598e30dc3b3ad5e4}{
+\index{TableView@{TableView}!updateSectionWidth@{updateSectionWidth}}
+\index{updateSectionWidth@{updateSectionWidth}!TableView@{TableView}}
+\subsubsection[{updateSectionWidth}]{\setlength{\rightskip}{0pt plus 5cm}void TableView::updateSectionWidth (
+\begin{DoxyParamCaption}
+\item[{int}]{logicalIndex, }
+\item[{int}]{oldSize, }
+\item[{int}]{newSize}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}slot\mbox{]}}}}
+\label{classTableView_a643a93fdbb136136598e30dc3b3ad5e4}
+
+
+Definition at line 166 of file table.cpp.
+
+\hypertarget{classTableView_a70c32ac02d45e8723f3521cf80f3862e}{
+\index{TableView@{TableView}!writeSettings@{writeSettings}}
+\index{writeSettings@{writeSettings}!TableView@{TableView}}
+\subsubsection[{writeSettings}]{\setlength{\rightskip}{0pt plus 5cm}void TableView::writeSettings (
+\begin{DoxyParamCaption}
+\item[{QAction $\ast$}]{action}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}slot\mbox{]}}}}
+\label{classTableView_a70c32ac02d45e8723f3521cf80f3862e}
+
+
+Definition at line 258 of file table.cpp.
+
+
+
+\subsection{Member Data Documentation}
+\hypertarget{classTableView_a150be12afa3562146d290f26f10459b2}{
+\index{TableView@{TableView}!b\_\-ignoreFocus@{b\_\-ignoreFocus}}
+\index{b\_\-ignoreFocus@{b\_\-ignoreFocus}!TableView@{TableView}}
+\subsubsection[{b\_\-ignoreFocus}]{\setlength{\rightskip}{0pt plus 5cm}bool {\bf TableView::b\_\-ignoreFocus}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classTableView_a150be12afa3562146d290f26f10459b2}
+
+
+Definition at line 86 of file table.h.
+
+\hypertarget{classTableView_a20a7e1035a96ddde81059ce744099798}{
+\index{TableView@{TableView}!b\_\-ignoreRowChange@{b\_\-ignoreRowChange}}
+\index{b\_\-ignoreRowChange@{b\_\-ignoreRowChange}!TableView@{TableView}}
+\subsubsection[{b\_\-ignoreRowChange}]{\setlength{\rightskip}{0pt plus 5cm}bool {\bf TableView::b\_\-ignoreRowChange}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classTableView_a20a7e1035a96ddde81059ce744099798}
+
+
+Definition at line 87 of file table.h.
+
+\hypertarget{classTableView_a1808f7915f3db4bdea5fb535ecebda52}{
+\index{TableView@{TableView}!columnAct@{columnAct}}
+\index{columnAct@{columnAct}!TableView@{TableView}}
+\subsubsection[{columnAct}]{\setlength{\rightskip}{0pt plus 5cm}QAction$\ast$ {\bf TableView::columnAct}}}
+\label{classTableView_a1808f7915f3db4bdea5fb535ecebda52}
+
+
+Definition at line 47 of file table.h.
+
+\hypertarget{classTableView_a1160d50c2fd480dfd59b3d7660ef17b0}{
+\index{TableView@{TableView}!columnLabels@{columnLabels}}
+\index{columnLabels@{columnLabels}!TableView@{TableView}}
+\subsubsection[{columnLabels}]{\setlength{\rightskip}{0pt plus 5cm}QList$<$QLabel$\ast$$>$ {\bf TableView::columnLabels}}}
+\label{classTableView_a1160d50c2fd480dfd59b3d7660ef17b0}
+
+
+Definition at line 43 of file table.h.
+
+\hypertarget{classTableView_a294454aaf1b1d44841f39bc28527d93c}{
+\index{TableView@{TableView}!curr\_\-editor@{curr\_\-editor}}
+\index{curr\_\-editor@{curr\_\-editor}!TableView@{TableView}}
+\subsubsection[{curr\_\-editor}]{\setlength{\rightskip}{0pt plus 5cm}QPointer$<$QWidget$>$ {\bf TableView::curr\_\-editor}}}
+\label{classTableView_a294454aaf1b1d44841f39bc28527d93c}
+
+
+Definition at line 46 of file table.h.
+
+\hypertarget{classTableView_a6624fcee6052dd850b9437ed02ed27d8}{
+\index{TableView@{TableView}!i\_\-arrCount@{i\_\-arrCount}}
+\index{i\_\-arrCount@{i\_\-arrCount}!TableView@{TableView}}
+\subsubsection[{i\_\-arrCount}]{\setlength{\rightskip}{0pt plus 5cm}int {\bf TableView::i\_\-arrCount}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classTableView_a6624fcee6052dd850b9437ed02ed27d8}
+
+
+Definition at line 81 of file table.h.
+
+\hypertarget{classTableView_a1f1333ce0ba4e23da60de63d9324d522}{
+\index{TableView@{TableView}!i\_\-arrLine@{i\_\-arrLine}}
+\index{i\_\-arrLine@{i\_\-arrLine}!TableView@{TableView}}
+\subsubsection[{i\_\-arrLine}]{\setlength{\rightskip}{0pt plus 5cm}int {\bf TableView::i\_\-arrLine}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classTableView_a1f1333ce0ba4e23da60de63d9324d522}
+
+
+Definition at line 82 of file table.h.
+
+\hypertarget{classTableView_a7b47dd87b8a2bcd86d413c2f19402429}{
+\index{TableView@{TableView}!i\_\-currcolumnmouse@{i\_\-currcolumnmouse}}
+\index{i\_\-currcolumnmouse@{i\_\-currcolumnmouse}!TableView@{TableView}}
+\subsubsection[{i\_\-currcolumnmouse}]{\setlength{\rightskip}{0pt plus 5cm}int {\bf TableView::i\_\-currcolumnmouse}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classTableView_a7b47dd87b8a2bcd86d413c2f19402429}
+
+
+Definition at line 90 of file table.h.
+
+\hypertarget{classTableView_aed6ae9fb72681922a98a95e41ca84716}{
+\index{TableView@{TableView}!i\_\-currrowmouse@{i\_\-currrowmouse}}
+\index{i\_\-currrowmouse@{i\_\-currrowmouse}!TableView@{TableView}}
+\subsubsection[{i\_\-currrowmouse}]{\setlength{\rightskip}{0pt plus 5cm}int {\bf TableView::i\_\-currrowmouse}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classTableView_aed6ae9fb72681922a98a95e41ca84716}
+
+
+Definition at line 89 of file table.h.
+
+\hypertarget{classTableView_a02c154332908ba1622903ac621ef31bb}{
+\index{TableView@{TableView}!i\_\-maxArrSize@{i\_\-maxArrSize}}
+\index{i\_\-maxArrSize@{i\_\-maxArrSize}!TableView@{TableView}}
+\subsubsection[{i\_\-maxArrSize}]{\setlength{\rightskip}{0pt plus 5cm}int {\bf TableView::i\_\-maxArrSize}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classTableView_a02c154332908ba1622903ac621ef31bb}
+
+
+Definition at line 84 of file table.h.
+
+\hypertarget{classTableView_a5fc28c3171c5f26f2f60fac01173a57d}{
+\index{TableView@{TableView}!i\_\-scrLine@{i\_\-scrLine}}
+\index{i\_\-scrLine@{i\_\-scrLine}!TableView@{TableView}}
+\subsubsection[{i\_\-scrLine}]{\setlength{\rightskip}{0pt plus 5cm}int {\bf TableView::i\_\-scrLine}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classTableView_a5fc28c3171c5f26f2f60fac01173a57d}
+
+
+Definition at line 83 of file table.h.
+
+\hypertarget{classTableView_a489364559dd2e697eafec6cce3b67a1c}{
+\index{TableView@{TableView}!mouseindex@{mouseindex}}
+\index{mouseindex@{mouseindex}!TableView@{TableView}}
+\subsubsection[{mouseindex}]{\setlength{\rightskip}{0pt plus 5cm}QModelIndex {\bf TableView::mouseindex}\hspace{0.3cm}{\ttfamily  \mbox{[}protected\mbox{]}}}}
+\label{classTableView_a489364559dd2e697eafec6cce3b67a1c}
+
+
+Definition at line 106 of file table.h.
+
+\hypertarget{classTableView_a1d048152ea82f3f8d33e538cb032b37b}{
+\index{TableView@{TableView}!p\_\-fglform@{p\_\-fglform}}
+\index{p\_\-fglform@{p\_\-fglform}!TableView@{TableView}}
+\subsubsection[{p\_\-fglform}]{\setlength{\rightskip}{0pt plus 5cm}QWidget$\ast$ {\bf TableView::p\_\-fglform}}}
+\label{classTableView_a1d048152ea82f3f8d33e538cb032b37b}
+
+
+Definition at line 41 of file table.h.
+
+\hypertarget{classTableView_abb4a46ca1492e88b8fe2fa9b68595340}{
+\index{TableView@{TableView}!pageSize@{pageSize}}
+\index{pageSize@{pageSize}!TableView@{TableView}}
+\subsubsection[{pageSize}]{\setlength{\rightskip}{0pt plus 5cm}int {\bf TableView::pageSize}}}
+\label{classTableView_abb4a46ca1492e88b8fe2fa9b68595340}
+
+
+Definition at line 36 of file table.h.
+
+\hypertarget{classTableView_a513618ab0a9e4a3048ab617b68ba4409}{
+\index{TableView@{TableView}!resetAct@{resetAct}}
+\index{resetAct@{resetAct}!TableView@{TableView}}
+\subsubsection[{resetAct}]{\setlength{\rightskip}{0pt plus 5cm}QAction$\ast$ {\bf TableView::resetAct}}}
+\label{classTableView_a513618ab0a9e4a3048ab617b68ba4409}
+
+
+Definition at line 45 of file table.h.
+
+\hypertarget{classTableView_a24e6725afbdbe0fded4ee3409fc877a7}{
+\index{TableView@{TableView}!standardAct@{standardAct}}
+\index{standardAct@{standardAct}!TableView@{TableView}}
+\subsubsection[{standardAct}]{\setlength{\rightskip}{0pt plus 5cm}QAction$\ast$ {\bf TableView::standardAct}}}
+\label{classTableView_a24e6725afbdbe0fded4ee3409fc877a7}
+
+
+Definition at line 44 of file table.h.
+
+\hypertarget{classTableView_aa26e19998b21b401d0f7b4c703a7c91d}{
+\index{TableView@{TableView}!tabName@{tabName}}
+\index{tabName@{tabName}!TableView@{TableView}}
+\subsubsection[{tabName}]{\setlength{\rightskip}{0pt plus 5cm}QString {\bf TableView::tabName}}}
+\label{classTableView_aa26e19998b21b401d0f7b4c703a7c91d}
+
+
+Definition at line 37 of file table.h.
+
+
+
+The documentation for this class was generated from the following files:\begin{DoxyCompactItemize}
+\item 
+/e/ms/QT/models/\hyperlink{table_8h}{table.h}\item 
+/e/ms/QT/models/\hyperlink{table_8cpp}{table.cpp}\end{DoxyCompactItemize}

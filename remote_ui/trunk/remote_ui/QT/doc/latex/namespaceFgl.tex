@@ -1,0 +1,636 @@
+\hypertarget{namespaceFgl}{
+\section{Fgl Namespace Reference}
+\label{namespaceFgl}\index{Fgl@{Fgl}}
+}
+\subsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \hyperlink{structFgl_1_1Event}{Event}
+\item 
+struct \hyperlink{structFgl_1_1Link}{Link}
+\end{DoxyCompactItemize}
+\subsection*{Enumerations}
+\begin{DoxyCompactItemize}
+\item 
+enum \hyperlink{namespaceFgl_a221c9c0366d5227f8c27ca97308a691c}{DataType} \{ \par
+\hyperlink{namespaceFgl_a221c9c0366d5227f8c27ca97308a691caa069ea13d4fbcc636513c861ffd5a0a5}{DTYPE\_\-CHAR}, 
+\hyperlink{namespaceFgl_a221c9c0366d5227f8c27ca97308a691ca421150f5e460691473e3b73f5a4cff77}{DTYPE\_\-SMINT}, 
+\hyperlink{namespaceFgl_a221c9c0366d5227f8c27ca97308a691caa65748cb8118299194b0e94c79f7ed16}{DTYPE\_\-INT}, 
+\hyperlink{namespaceFgl_a221c9c0366d5227f8c27ca97308a691ca3de87e9ebd12d2a27e9f1c5548bbbb1e}{DTYPE\_\-FLOAT}, 
+\par
+\hyperlink{namespaceFgl_a221c9c0366d5227f8c27ca97308a691ca736541087aff0bdcf4de6b614fb1c7a8}{DTYPE\_\-SMFLOAT}, 
+\hyperlink{namespaceFgl_a221c9c0366d5227f8c27ca97308a691ca0a3b34bf80b8d865c5144b70b05c20b2}{DTYPE\_\-DECIMAL}, 
+\hyperlink{namespaceFgl_a221c9c0366d5227f8c27ca97308a691ca58d616b5ec3eb05985d54a84127247a9}{DTYPE\_\-SERIAL}, 
+\hyperlink{namespaceFgl_a221c9c0366d5227f8c27ca97308a691ca955722507f475c645f9969b4f47ea62b}{DTYPE\_\-DATE}, 
+\par
+\hyperlink{namespaceFgl_a221c9c0366d5227f8c27ca97308a691ca1089d46b752ea5e60c0f8f028e32946a}{DTYPE\_\-MONEY}, 
+\hyperlink{namespaceFgl_a221c9c0366d5227f8c27ca97308a691cadc944429d500699855ff8358744ccafe}{DTYPE\_\-NULL}, 
+\hyperlink{namespaceFgl_a221c9c0366d5227f8c27ca97308a691ca5dfcdf2b603061f71e1e699d0a5fd00d}{DTYPE\_\-DTIME}, 
+\hyperlink{namespaceFgl_a221c9c0366d5227f8c27ca97308a691ca95204b269b22456070e0d4b0a2d17878}{DTYPE\_\-BYTE}, 
+\par
+\hyperlink{namespaceFgl_a221c9c0366d5227f8c27ca97308a691ca1e6a347f34e3bacc5ffae6f68b66fb1f}{DTYPE\_\-TEXT}, 
+\hyperlink{namespaceFgl_a221c9c0366d5227f8c27ca97308a691caeab8f048d690d7aff79e4f3414f57550}{DTYPE\_\-VCHAR}, 
+\hyperlink{namespaceFgl_a221c9c0366d5227f8c27ca97308a691ca94656452eeee982084d5d07f731e083b}{DTYPE\_\-INTERVAL}, 
+\hyperlink{namespaceFgl_a221c9c0366d5227f8c27ca97308a691caccc267cba325bd5a14f3abd6ccb7f1e2}{DTYPE\_\-NCHAR}, 
+\par
+\hyperlink{namespaceFgl_a221c9c0366d5227f8c27ca97308a691ca0d5037f242d7e0d535b4d82e98940b7a}{DTYPE\_\-INT8}, 
+\hyperlink{namespaceFgl_a221c9c0366d5227f8c27ca97308a691cace841d25cf95ce64a624e7016f6001d5}{DTYPE\_\-SERIAL8}
+ \}
+\item 
+enum \hyperlink{namespaceFgl_a66700792cb225549384ae76c1057cf22}{State} \{ \par
+\hyperlink{namespaceFgl_a66700792cb225549384ae76c1057cf22a3a5aa8ccf2377dc2b3a6d965635a6eb6}{IDLE}, 
+\hyperlink{namespaceFgl_a66700792cb225549384ae76c1057cf22add52348d516c9d5ba9da08a3052ca40f}{MENU}, 
+\hyperlink{namespaceFgl_a66700792cb225549384ae76c1057cf22a44a7ee3ee0989f85b0255ee91e59b423}{INPUT}, 
+\hyperlink{namespaceFgl_a66700792cb225549384ae76c1057cf22a134ea7c57c8ce8a226bb57a3bdfc5733}{CONSTRUCT}, 
+\par
+\hyperlink{namespaceFgl_a66700792cb225549384ae76c1057cf22ab019b8d80dc5cce02f0596c7ff252301}{DISPLAYARRAY}, 
+\hyperlink{namespaceFgl_a66700792cb225549384ae76c1057cf22a6e1b247a5050ed29e7fe7cc74b307f12}{INPUTARRAY}
+ \}
+\item 
+enum \hyperlink{namespaceFgl_a7bbae69263a5d0012370d5cbb859c6a8}{EventType} \{ \par
+\hyperlink{namespaceFgl_a7bbae69263a5d0012370d5cbb859c6a8aaf4eb493493e5b9144388bd3c6f0a56c}{BEFORE\_\-FIELD\_\-EVENT}, 
+\hyperlink{namespaceFgl_a7bbae69263a5d0012370d5cbb859c6a8a67f55478b8f692065b1e223dd8545e4a}{AFTER\_\-FIELD\_\-EVENT}, 
+\hyperlink{namespaceFgl_a7bbae69263a5d0012370d5cbb859c6a8aea412ca359de2c03baab7cc6ca4a856d}{BEFORE\_\-ROW\_\-EVENT}, 
+\hyperlink{namespaceFgl_a7bbae69263a5d0012370d5cbb859c6a8a192a36fae78f7c2b331f3c5b17008953}{AFTER\_\-ROW\_\-EVENT}, 
+\par
+\hyperlink{namespaceFgl_a7bbae69263a5d0012370d5cbb859c6a8aadd05cc475d2e51c57c4553b63803968}{MENUACTION\_\-EVENT}, 
+\hyperlink{namespaceFgl_a7bbae69263a5d0012370d5cbb859c6a8afe3e39bf7df01f76a4a60b1e6dcd2bfb}{ONACTION\_\-EVENT}, 
+\hyperlink{namespaceFgl_a7bbae69263a5d0012370d5cbb859c6a8af817e5d09a4d5de55281399b45834dc4}{ONKEY\_\-EVENT}, 
+\hyperlink{namespaceFgl_a7bbae69263a5d0012370d5cbb859c6a8a21dd52adcd2a31f98f449b968b4a1c56}{BEFORE\_\-INPUT\_\-EVENT}, 
+\par
+\hyperlink{namespaceFgl_a7bbae69263a5d0012370d5cbb859c6a8a7f05c979746799947b4015c3be33a8ec}{AFTER\_\-INPUT\_\-EVENT}, 
+\hyperlink{namespaceFgl_a7bbae69263a5d0012370d5cbb859c6a8ab056b5777c51c6b03d41ad65f9dc0592}{BEFORE\_\-CONSTRUCT\_\-EVENT}, 
+\hyperlink{namespaceFgl_a7bbae69263a5d0012370d5cbb859c6a8ab308df2a3cd3f5a4a7d92d4f8119e2a8}{AFTER\_\-CONSTRUCT\_\-EVENT}, 
+\hyperlink{namespaceFgl_a7bbae69263a5d0012370d5cbb859c6a8a50c41c5932fc33375d56004132e8c727}{BEFORE\_\-DISPLAY\_\-EVENT}, 
+\par
+\hyperlink{namespaceFgl_a7bbae69263a5d0012370d5cbb859c6a8a81671dcd6d04932d2684a112a0cb3874}{AFTER\_\-DISPLAY\_\-EVENT}, 
+\hyperlink{namespaceFgl_a7bbae69263a5d0012370d5cbb859c6a8aa540c14b4c4a3da46fa872ec88e1e0ec}{BEFORE\_\-MENU\_\-EVENT}, 
+\hyperlink{namespaceFgl_a7bbae69263a5d0012370d5cbb859c6a8a2acee749adc43054a12bd6fdb3edda53}{AFTER\_\-MENU\_\-EVENT}, 
+\hyperlink{namespaceFgl_a7bbae69263a5d0012370d5cbb859c6a8a6407f2770e2022a7c3f6245a05ece9b9}{BEFORE\_\-INSERT\_\-DELETE\_\-EVENT}, 
+\par
+\hyperlink{namespaceFgl_a7bbae69263a5d0012370d5cbb859c6a8a49151d7b6ee9ad9bc86c2caddfb398d0}{AFTER\_\-INSERT\_\-DELETE\_\-EVENT}
+ \}
+\item 
+enum \hyperlink{namespaceFgl_a84fecc3553ced7408465762be30c82fb}{FieldAttributes} \{ \par
+\hyperlink{namespaceFgl_a84fecc3553ced7408465762be30c82fbacfbcf23c543050264e8b0760c17dd5e9}{AUBIT\_\-COLOR\_\-BLACK} =  0x00000, 
+\hyperlink{namespaceFgl_a84fecc3553ced7408465762be30c82fba09168ef8df113d902dea228001ea27dd}{AUBIT\_\-COLOR\_\-RED} =  0x00100, 
+\hyperlink{namespaceFgl_a84fecc3553ced7408465762be30c82fbaee0e8be59c72b091afc98f7284fdee71}{AUBIT\_\-COLOR\_\-GREEN} =  0x00200, 
+\hyperlink{namespaceFgl_a84fecc3553ced7408465762be30c82fba878fa2e855e7bdc2afae0722530b1be0}{AUBIT\_\-COLOR\_\-YELLOW} =  0x00300, 
+\par
+\hyperlink{namespaceFgl_a84fecc3553ced7408465762be30c82fba92835f358c3709a81aa16d40757a157d}{AUBIT\_\-COLOR\_\-BLUE} =  0x00400, 
+\hyperlink{namespaceFgl_a84fecc3553ced7408465762be30c82fba79fef77789aecd8701b3c81f7ce8f929}{AUBIT\_\-COLOR\_\-MAGENTA} =  0x00500, 
+\hyperlink{namespaceFgl_a84fecc3553ced7408465762be30c82fba6220aabb66f9b00e3dfec17986bb401b}{AUBIT\_\-COLOR\_\-CYAN} =  0x00600, 
+\hyperlink{namespaceFgl_a84fecc3553ced7408465762be30c82fba3fcd51188bbb620691dbbe5678f1e4d4}{AUBIT\_\-COLOR\_\-WHITE} =  0x00700, 
+\par
+\hyperlink{namespaceFgl_a84fecc3553ced7408465762be30c82fba04c7fe736f33af94e76b3aad1614baaa}{AUBIT\_\-ATTR\_\-NORMAL} =  0x0, 
+\hyperlink{namespaceFgl_a84fecc3553ced7408465762be30c82fbac28aa3d9263ae597c461f55417935daf}{AUBIT\_\-ATTR\_\-REVERSE} =  0x01000, 
+\hyperlink{namespaceFgl_a84fecc3553ced7408465762be30c82fbadce2649f08f8c7e01012cd1feab0fcbe}{AUBIT\_\-ATTR\_\-UNDERLINE} =  0x02000, 
+\hyperlink{namespaceFgl_a84fecc3553ced7408465762be30c82fbae0684cc037518f62d980ca40ea7bcd03}{AUBIT\_\-ATTR\_\-BOLD} =  0x04000, 
+\par
+\hyperlink{namespaceFgl_a84fecc3553ced7408465762be30c82fba9af5eb28087d2de8337b247b2c630dd6}{AUBIT\_\-ATTR\_\-BLINK} =  0x08000, 
+\hyperlink{namespaceFgl_a84fecc3553ced7408465762be30c82fba076fe163a0e45025344e5fe7259b71b3}{AUBIT\_\-ATTR\_\-DIM} =  0x10000, 
+\hyperlink{namespaceFgl_a84fecc3553ced7408465762be30c82fba717d2efa26078d014e14123bec249c6b}{AUBIT\_\-ATTR\_\-INVISIBLE} =  0x20000, 
+\hyperlink{namespaceFgl_a84fecc3553ced7408465762be30c82fbaaaa9c0f3337d29af9e35ad5037bd2f08}{AUBIT\_\-ATTR\_\-ALTCHARSET} =  0x40000, 
+\par
+\hyperlink{namespaceFgl_a84fecc3553ced7408465762be30c82fbaa65394cd0a8d74265414e97f890ffd86}{AUBIT\_\-ATTR\_\-LEFT} =  0x80000
+ \}
+\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+QString \hyperlink{namespaceFgl_a224ca31123410961b37ec74cac4c7b0a}{usingFunc} (QString fmt, QString value, \hyperlink{namespaceFgl_a221c9c0366d5227f8c27ca97308a691c}{DataType} dataType)
+\item 
+QString \hyperlink{namespaceFgl_a7757d5871d47d7ccaba56201a5c019be}{fgl\_\-using} (QString fmt, QString value)
+\item 
+QString \hyperlink{namespaceFgl_a9efb6ea5c503dd355a279fe691e51218}{fgl\_\-using\_\-date} (QString fmt, QString value)
+\item 
+QString \hyperlink{namespaceFgl_a588de0a8d9bc385030005007bde97a8d}{vdc\_\-to\_\-fgl} (QString fmt, QString value, \hyperlink{namespaceFgl_a221c9c0366d5227f8c27ca97308a691c}{DataType} dt)
+\item 
+QString \hyperlink{namespaceFgl_ac7ee6be1cf53ff2ffb34b25576689c24}{fgl\_\-using\_\-string} (QString fmt, QString value, bool isneg, QString dbmoney)
+\item 
+QString \hyperlink{namespaceFgl_abb08147dfe3b331ef854161e597f7927}{fgl\_\-convert\_\-money} (QString value)
+\item 
+\hyperlink{namespaceFgl_a221c9c0366d5227f8c27ca97308a691c}{DataType} \hyperlink{namespaceFgl_a2d5a9376ae8e5ebb28ddb1d016356ae4}{decodeDataType} (QString type)
+\item 
+QDate \hyperlink{namespaceFgl_a22923696c7e89efba943bfc065c9d3ea}{getDate} (QString value)
+\item 
+QString \hyperlink{namespaceFgl_acda3ef22ab61f74e6e9f401df8b77917}{dbDateToFormat} (QString dbdate)
+\item 
+QChar \hyperlink{namespaceFgl_a60e9729a00a40b0ce63428fe470fa284}{getDBDateSeperator} (QString dbdate)
+\item 
+bool \hyperlink{namespaceFgl_a7560ddc940aea8357bfae44485522b31}{isValidForType} (\hyperlink{namespaceFgl_a221c9c0366d5227f8c27ca97308a691c}{DataType} datatype, QString value, QString format)
+\item 
+QString \hyperlink{namespaceFgl_aa987ce49dbcf2c9fa730b64902e9c84e}{stringToKey} (QString s)
+\item 
+QString \hyperlink{namespaceFgl_acdc01c0826cbfc5bb18bea857765b751}{getValueFromEnv} (QString envname)
+\item 
+QString \hyperlink{namespaceFgl_a378c2347baa22e3b429ce42010887963}{keyToString} (QString s)
+\end{DoxyCompactItemize}
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+QHash$<$ QString, QString $>$ \hyperlink{namespaceFgl_a2efd7c9f3a914495e4d1ad2c0d557dc9}{env}
+\end{DoxyCompactItemize}
+
+
+\subsection{Enumeration Type Documentation}
+\hypertarget{namespaceFgl_a221c9c0366d5227f8c27ca97308a691c}{
+\index{Fgl@{Fgl}!DataType@{DataType}}
+\index{DataType@{DataType}!Fgl@{Fgl}}
+\subsubsection[{DataType}]{\setlength{\rightskip}{0pt plus 5cm}enum {\bf Fgl::DataType}}}
+\label{namespaceFgl_a221c9c0366d5227f8c27ca97308a691c}
+\begin{Desc}
+\item[Enumerator: ]\par
+\begin{description}
+\index{DTYPE\_\-CHAR@{DTYPE\_\-CHAR}!Fgl@{Fgl}}\index{Fgl@{Fgl}!DTYPE\_\-CHAR@{DTYPE\_\-CHAR}}\item[{\em 
+\hypertarget{namespaceFgl_a221c9c0366d5227f8c27ca97308a691caa069ea13d4fbcc636513c861ffd5a0a5}{
+DTYPE\_\-CHAR}
+\label{namespaceFgl_a221c9c0366d5227f8c27ca97308a691caa069ea13d4fbcc636513c861ffd5a0a5}
+}]\index{DTYPE\_\-SMINT@{DTYPE\_\-SMINT}!Fgl@{Fgl}}\index{Fgl@{Fgl}!DTYPE\_\-SMINT@{DTYPE\_\-SMINT}}\item[{\em 
+\hypertarget{namespaceFgl_a221c9c0366d5227f8c27ca97308a691ca421150f5e460691473e3b73f5a4cff77}{
+DTYPE\_\-SMINT}
+\label{namespaceFgl_a221c9c0366d5227f8c27ca97308a691ca421150f5e460691473e3b73f5a4cff77}
+}]\index{DTYPE\_\-INT@{DTYPE\_\-INT}!Fgl@{Fgl}}\index{Fgl@{Fgl}!DTYPE\_\-INT@{DTYPE\_\-INT}}\item[{\em 
+\hypertarget{namespaceFgl_a221c9c0366d5227f8c27ca97308a691caa65748cb8118299194b0e94c79f7ed16}{
+DTYPE\_\-INT}
+\label{namespaceFgl_a221c9c0366d5227f8c27ca97308a691caa65748cb8118299194b0e94c79f7ed16}
+}]\index{DTYPE\_\-FLOAT@{DTYPE\_\-FLOAT}!Fgl@{Fgl}}\index{Fgl@{Fgl}!DTYPE\_\-FLOAT@{DTYPE\_\-FLOAT}}\item[{\em 
+\hypertarget{namespaceFgl_a221c9c0366d5227f8c27ca97308a691ca3de87e9ebd12d2a27e9f1c5548bbbb1e}{
+DTYPE\_\-FLOAT}
+\label{namespaceFgl_a221c9c0366d5227f8c27ca97308a691ca3de87e9ebd12d2a27e9f1c5548bbbb1e}
+}]\index{DTYPE\_\-SMFLOAT@{DTYPE\_\-SMFLOAT}!Fgl@{Fgl}}\index{Fgl@{Fgl}!DTYPE\_\-SMFLOAT@{DTYPE\_\-SMFLOAT}}\item[{\em 
+\hypertarget{namespaceFgl_a221c9c0366d5227f8c27ca97308a691ca736541087aff0bdcf4de6b614fb1c7a8}{
+DTYPE\_\-SMFLOAT}
+\label{namespaceFgl_a221c9c0366d5227f8c27ca97308a691ca736541087aff0bdcf4de6b614fb1c7a8}
+}]\index{DTYPE\_\-DECIMAL@{DTYPE\_\-DECIMAL}!Fgl@{Fgl}}\index{Fgl@{Fgl}!DTYPE\_\-DECIMAL@{DTYPE\_\-DECIMAL}}\item[{\em 
+\hypertarget{namespaceFgl_a221c9c0366d5227f8c27ca97308a691ca0a3b34bf80b8d865c5144b70b05c20b2}{
+DTYPE\_\-DECIMAL}
+\label{namespaceFgl_a221c9c0366d5227f8c27ca97308a691ca0a3b34bf80b8d865c5144b70b05c20b2}
+}]\index{DTYPE\_\-SERIAL@{DTYPE\_\-SERIAL}!Fgl@{Fgl}}\index{Fgl@{Fgl}!DTYPE\_\-SERIAL@{DTYPE\_\-SERIAL}}\item[{\em 
+\hypertarget{namespaceFgl_a221c9c0366d5227f8c27ca97308a691ca58d616b5ec3eb05985d54a84127247a9}{
+DTYPE\_\-SERIAL}
+\label{namespaceFgl_a221c9c0366d5227f8c27ca97308a691ca58d616b5ec3eb05985d54a84127247a9}
+}]\index{DTYPE\_\-DATE@{DTYPE\_\-DATE}!Fgl@{Fgl}}\index{Fgl@{Fgl}!DTYPE\_\-DATE@{DTYPE\_\-DATE}}\item[{\em 
+\hypertarget{namespaceFgl_a221c9c0366d5227f8c27ca97308a691ca955722507f475c645f9969b4f47ea62b}{
+DTYPE\_\-DATE}
+\label{namespaceFgl_a221c9c0366d5227f8c27ca97308a691ca955722507f475c645f9969b4f47ea62b}
+}]\index{DTYPE\_\-MONEY@{DTYPE\_\-MONEY}!Fgl@{Fgl}}\index{Fgl@{Fgl}!DTYPE\_\-MONEY@{DTYPE\_\-MONEY}}\item[{\em 
+\hypertarget{namespaceFgl_a221c9c0366d5227f8c27ca97308a691ca1089d46b752ea5e60c0f8f028e32946a}{
+DTYPE\_\-MONEY}
+\label{namespaceFgl_a221c9c0366d5227f8c27ca97308a691ca1089d46b752ea5e60c0f8f028e32946a}
+}]\index{DTYPE\_\-NULL@{DTYPE\_\-NULL}!Fgl@{Fgl}}\index{Fgl@{Fgl}!DTYPE\_\-NULL@{DTYPE\_\-NULL}}\item[{\em 
+\hypertarget{namespaceFgl_a221c9c0366d5227f8c27ca97308a691cadc944429d500699855ff8358744ccafe}{
+DTYPE\_\-NULL}
+\label{namespaceFgl_a221c9c0366d5227f8c27ca97308a691cadc944429d500699855ff8358744ccafe}
+}]\index{DTYPE\_\-DTIME@{DTYPE\_\-DTIME}!Fgl@{Fgl}}\index{Fgl@{Fgl}!DTYPE\_\-DTIME@{DTYPE\_\-DTIME}}\item[{\em 
+\hypertarget{namespaceFgl_a221c9c0366d5227f8c27ca97308a691ca5dfcdf2b603061f71e1e699d0a5fd00d}{
+DTYPE\_\-DTIME}
+\label{namespaceFgl_a221c9c0366d5227f8c27ca97308a691ca5dfcdf2b603061f71e1e699d0a5fd00d}
+}]\index{DTYPE\_\-BYTE@{DTYPE\_\-BYTE}!Fgl@{Fgl}}\index{Fgl@{Fgl}!DTYPE\_\-BYTE@{DTYPE\_\-BYTE}}\item[{\em 
+\hypertarget{namespaceFgl_a221c9c0366d5227f8c27ca97308a691ca95204b269b22456070e0d4b0a2d17878}{
+DTYPE\_\-BYTE}
+\label{namespaceFgl_a221c9c0366d5227f8c27ca97308a691ca95204b269b22456070e0d4b0a2d17878}
+}]\index{DTYPE\_\-TEXT@{DTYPE\_\-TEXT}!Fgl@{Fgl}}\index{Fgl@{Fgl}!DTYPE\_\-TEXT@{DTYPE\_\-TEXT}}\item[{\em 
+\hypertarget{namespaceFgl_a221c9c0366d5227f8c27ca97308a691ca1e6a347f34e3bacc5ffae6f68b66fb1f}{
+DTYPE\_\-TEXT}
+\label{namespaceFgl_a221c9c0366d5227f8c27ca97308a691ca1e6a347f34e3bacc5ffae6f68b66fb1f}
+}]\index{DTYPE\_\-VCHAR@{DTYPE\_\-VCHAR}!Fgl@{Fgl}}\index{Fgl@{Fgl}!DTYPE\_\-VCHAR@{DTYPE\_\-VCHAR}}\item[{\em 
+\hypertarget{namespaceFgl_a221c9c0366d5227f8c27ca97308a691caeab8f048d690d7aff79e4f3414f57550}{
+DTYPE\_\-VCHAR}
+\label{namespaceFgl_a221c9c0366d5227f8c27ca97308a691caeab8f048d690d7aff79e4f3414f57550}
+}]\index{DTYPE\_\-INTERVAL@{DTYPE\_\-INTERVAL}!Fgl@{Fgl}}\index{Fgl@{Fgl}!DTYPE\_\-INTERVAL@{DTYPE\_\-INTERVAL}}\item[{\em 
+\hypertarget{namespaceFgl_a221c9c0366d5227f8c27ca97308a691ca94656452eeee982084d5d07f731e083b}{
+DTYPE\_\-INTERVAL}
+\label{namespaceFgl_a221c9c0366d5227f8c27ca97308a691ca94656452eeee982084d5d07f731e083b}
+}]\index{DTYPE\_\-NCHAR@{DTYPE\_\-NCHAR}!Fgl@{Fgl}}\index{Fgl@{Fgl}!DTYPE\_\-NCHAR@{DTYPE\_\-NCHAR}}\item[{\em 
+\hypertarget{namespaceFgl_a221c9c0366d5227f8c27ca97308a691caccc267cba325bd5a14f3abd6ccb7f1e2}{
+DTYPE\_\-NCHAR}
+\label{namespaceFgl_a221c9c0366d5227f8c27ca97308a691caccc267cba325bd5a14f3abd6ccb7f1e2}
+}]\index{DTYPE\_\-INT8@{DTYPE\_\-INT8}!Fgl@{Fgl}}\index{Fgl@{Fgl}!DTYPE\_\-INT8@{DTYPE\_\-INT8}}\item[{\em 
+\hypertarget{namespaceFgl_a221c9c0366d5227f8c27ca97308a691ca0d5037f242d7e0d535b4d82e98940b7a}{
+DTYPE\_\-INT8}
+\label{namespaceFgl_a221c9c0366d5227f8c27ca97308a691ca0d5037f242d7e0d535b4d82e98940b7a}
+}]\index{DTYPE\_\-SERIAL8@{DTYPE\_\-SERIAL8}!Fgl@{Fgl}}\index{Fgl@{Fgl}!DTYPE\_\-SERIAL8@{DTYPE\_\-SERIAL8}}\item[{\em 
+\hypertarget{namespaceFgl_a221c9c0366d5227f8c27ca97308a691cace841d25cf95ce64a624e7016f6001d5}{
+DTYPE\_\-SERIAL8}
+\label{namespaceFgl_a221c9c0366d5227f8c27ca97308a691cace841d25cf95ce64a624e7016f6001d5}
+}]\end{description}
+\end{Desc}
+
+
+
+Definition at line 10 of file fgl.h.
+
+\hypertarget{namespaceFgl_a7bbae69263a5d0012370d5cbb859c6a8}{
+\index{Fgl@{Fgl}!EventType@{EventType}}
+\index{EventType@{EventType}!Fgl@{Fgl}}
+\subsubsection[{EventType}]{\setlength{\rightskip}{0pt plus 5cm}enum {\bf Fgl::EventType}}}
+\label{namespaceFgl_a7bbae69263a5d0012370d5cbb859c6a8}
+\begin{Desc}
+\item[Enumerator: ]\par
+\begin{description}
+\index{BEFORE\_\-FIELD\_\-EVENT@{BEFORE\_\-FIELD\_\-EVENT}!Fgl@{Fgl}}\index{Fgl@{Fgl}!BEFORE\_\-FIELD\_\-EVENT@{BEFORE\_\-FIELD\_\-EVENT}}\item[{\em 
+\hypertarget{namespaceFgl_a7bbae69263a5d0012370d5cbb859c6a8aaf4eb493493e5b9144388bd3c6f0a56c}{
+BEFORE\_\-FIELD\_\-EVENT}
+\label{namespaceFgl_a7bbae69263a5d0012370d5cbb859c6a8aaf4eb493493e5b9144388bd3c6f0a56c}
+}]\index{AFTER\_\-FIELD\_\-EVENT@{AFTER\_\-FIELD\_\-EVENT}!Fgl@{Fgl}}\index{Fgl@{Fgl}!AFTER\_\-FIELD\_\-EVENT@{AFTER\_\-FIELD\_\-EVENT}}\item[{\em 
+\hypertarget{namespaceFgl_a7bbae69263a5d0012370d5cbb859c6a8a67f55478b8f692065b1e223dd8545e4a}{
+AFTER\_\-FIELD\_\-EVENT}
+\label{namespaceFgl_a7bbae69263a5d0012370d5cbb859c6a8a67f55478b8f692065b1e223dd8545e4a}
+}]\index{BEFORE\_\-ROW\_\-EVENT@{BEFORE\_\-ROW\_\-EVENT}!Fgl@{Fgl}}\index{Fgl@{Fgl}!BEFORE\_\-ROW\_\-EVENT@{BEFORE\_\-ROW\_\-EVENT}}\item[{\em 
+\hypertarget{namespaceFgl_a7bbae69263a5d0012370d5cbb859c6a8aea412ca359de2c03baab7cc6ca4a856d}{
+BEFORE\_\-ROW\_\-EVENT}
+\label{namespaceFgl_a7bbae69263a5d0012370d5cbb859c6a8aea412ca359de2c03baab7cc6ca4a856d}
+}]\index{AFTER\_\-ROW\_\-EVENT@{AFTER\_\-ROW\_\-EVENT}!Fgl@{Fgl}}\index{Fgl@{Fgl}!AFTER\_\-ROW\_\-EVENT@{AFTER\_\-ROW\_\-EVENT}}\item[{\em 
+\hypertarget{namespaceFgl_a7bbae69263a5d0012370d5cbb859c6a8a192a36fae78f7c2b331f3c5b17008953}{
+AFTER\_\-ROW\_\-EVENT}
+\label{namespaceFgl_a7bbae69263a5d0012370d5cbb859c6a8a192a36fae78f7c2b331f3c5b17008953}
+}]\index{MENUACTION\_\-EVENT@{MENUACTION\_\-EVENT}!Fgl@{Fgl}}\index{Fgl@{Fgl}!MENUACTION\_\-EVENT@{MENUACTION\_\-EVENT}}\item[{\em 
+\hypertarget{namespaceFgl_a7bbae69263a5d0012370d5cbb859c6a8aadd05cc475d2e51c57c4553b63803968}{
+MENUACTION\_\-EVENT}
+\label{namespaceFgl_a7bbae69263a5d0012370d5cbb859c6a8aadd05cc475d2e51c57c4553b63803968}
+}]\index{ONACTION\_\-EVENT@{ONACTION\_\-EVENT}!Fgl@{Fgl}}\index{Fgl@{Fgl}!ONACTION\_\-EVENT@{ONACTION\_\-EVENT}}\item[{\em 
+\hypertarget{namespaceFgl_a7bbae69263a5d0012370d5cbb859c6a8afe3e39bf7df01f76a4a60b1e6dcd2bfb}{
+ONACTION\_\-EVENT}
+\label{namespaceFgl_a7bbae69263a5d0012370d5cbb859c6a8afe3e39bf7df01f76a4a60b1e6dcd2bfb}
+}]\index{ONKEY\_\-EVENT@{ONKEY\_\-EVENT}!Fgl@{Fgl}}\index{Fgl@{Fgl}!ONKEY\_\-EVENT@{ONKEY\_\-EVENT}}\item[{\em 
+\hypertarget{namespaceFgl_a7bbae69263a5d0012370d5cbb859c6a8af817e5d09a4d5de55281399b45834dc4}{
+ONKEY\_\-EVENT}
+\label{namespaceFgl_a7bbae69263a5d0012370d5cbb859c6a8af817e5d09a4d5de55281399b45834dc4}
+}]\index{BEFORE\_\-INPUT\_\-EVENT@{BEFORE\_\-INPUT\_\-EVENT}!Fgl@{Fgl}}\index{Fgl@{Fgl}!BEFORE\_\-INPUT\_\-EVENT@{BEFORE\_\-INPUT\_\-EVENT}}\item[{\em 
+\hypertarget{namespaceFgl_a7bbae69263a5d0012370d5cbb859c6a8a21dd52adcd2a31f98f449b968b4a1c56}{
+BEFORE\_\-INPUT\_\-EVENT}
+\label{namespaceFgl_a7bbae69263a5d0012370d5cbb859c6a8a21dd52adcd2a31f98f449b968b4a1c56}
+}]\index{AFTER\_\-INPUT\_\-EVENT@{AFTER\_\-INPUT\_\-EVENT}!Fgl@{Fgl}}\index{Fgl@{Fgl}!AFTER\_\-INPUT\_\-EVENT@{AFTER\_\-INPUT\_\-EVENT}}\item[{\em 
+\hypertarget{namespaceFgl_a7bbae69263a5d0012370d5cbb859c6a8a7f05c979746799947b4015c3be33a8ec}{
+AFTER\_\-INPUT\_\-EVENT}
+\label{namespaceFgl_a7bbae69263a5d0012370d5cbb859c6a8a7f05c979746799947b4015c3be33a8ec}
+}]\index{BEFORE\_\-CONSTRUCT\_\-EVENT@{BEFORE\_\-CONSTRUCT\_\-EVENT}!Fgl@{Fgl}}\index{Fgl@{Fgl}!BEFORE\_\-CONSTRUCT\_\-EVENT@{BEFORE\_\-CONSTRUCT\_\-EVENT}}\item[{\em 
+\hypertarget{namespaceFgl_a7bbae69263a5d0012370d5cbb859c6a8ab056b5777c51c6b03d41ad65f9dc0592}{
+BEFORE\_\-CONSTRUCT\_\-EVENT}
+\label{namespaceFgl_a7bbae69263a5d0012370d5cbb859c6a8ab056b5777c51c6b03d41ad65f9dc0592}
+}]\index{AFTER\_\-CONSTRUCT\_\-EVENT@{AFTER\_\-CONSTRUCT\_\-EVENT}!Fgl@{Fgl}}\index{Fgl@{Fgl}!AFTER\_\-CONSTRUCT\_\-EVENT@{AFTER\_\-CONSTRUCT\_\-EVENT}}\item[{\em 
+\hypertarget{namespaceFgl_a7bbae69263a5d0012370d5cbb859c6a8ab308df2a3cd3f5a4a7d92d4f8119e2a8}{
+AFTER\_\-CONSTRUCT\_\-EVENT}
+\label{namespaceFgl_a7bbae69263a5d0012370d5cbb859c6a8ab308df2a3cd3f5a4a7d92d4f8119e2a8}
+}]\index{BEFORE\_\-DISPLAY\_\-EVENT@{BEFORE\_\-DISPLAY\_\-EVENT}!Fgl@{Fgl}}\index{Fgl@{Fgl}!BEFORE\_\-DISPLAY\_\-EVENT@{BEFORE\_\-DISPLAY\_\-EVENT}}\item[{\em 
+\hypertarget{namespaceFgl_a7bbae69263a5d0012370d5cbb859c6a8a50c41c5932fc33375d56004132e8c727}{
+BEFORE\_\-DISPLAY\_\-EVENT}
+\label{namespaceFgl_a7bbae69263a5d0012370d5cbb859c6a8a50c41c5932fc33375d56004132e8c727}
+}]\index{AFTER\_\-DISPLAY\_\-EVENT@{AFTER\_\-DISPLAY\_\-EVENT}!Fgl@{Fgl}}\index{Fgl@{Fgl}!AFTER\_\-DISPLAY\_\-EVENT@{AFTER\_\-DISPLAY\_\-EVENT}}\item[{\em 
+\hypertarget{namespaceFgl_a7bbae69263a5d0012370d5cbb859c6a8a81671dcd6d04932d2684a112a0cb3874}{
+AFTER\_\-DISPLAY\_\-EVENT}
+\label{namespaceFgl_a7bbae69263a5d0012370d5cbb859c6a8a81671dcd6d04932d2684a112a0cb3874}
+}]\index{BEFORE\_\-MENU\_\-EVENT@{BEFORE\_\-MENU\_\-EVENT}!Fgl@{Fgl}}\index{Fgl@{Fgl}!BEFORE\_\-MENU\_\-EVENT@{BEFORE\_\-MENU\_\-EVENT}}\item[{\em 
+\hypertarget{namespaceFgl_a7bbae69263a5d0012370d5cbb859c6a8aa540c14b4c4a3da46fa872ec88e1e0ec}{
+BEFORE\_\-MENU\_\-EVENT}
+\label{namespaceFgl_a7bbae69263a5d0012370d5cbb859c6a8aa540c14b4c4a3da46fa872ec88e1e0ec}
+}]\index{AFTER\_\-MENU\_\-EVENT@{AFTER\_\-MENU\_\-EVENT}!Fgl@{Fgl}}\index{Fgl@{Fgl}!AFTER\_\-MENU\_\-EVENT@{AFTER\_\-MENU\_\-EVENT}}\item[{\em 
+\hypertarget{namespaceFgl_a7bbae69263a5d0012370d5cbb859c6a8a2acee749adc43054a12bd6fdb3edda53}{
+AFTER\_\-MENU\_\-EVENT}
+\label{namespaceFgl_a7bbae69263a5d0012370d5cbb859c6a8a2acee749adc43054a12bd6fdb3edda53}
+}]\index{BEFORE\_\-INSERT\_\-DELETE\_\-EVENT@{BEFORE\_\-INSERT\_\-DELETE\_\-EVENT}!Fgl@{Fgl}}\index{Fgl@{Fgl}!BEFORE\_\-INSERT\_\-DELETE\_\-EVENT@{BEFORE\_\-INSERT\_\-DELETE\_\-EVENT}}\item[{\em 
+\hypertarget{namespaceFgl_a7bbae69263a5d0012370d5cbb859c6a8a6407f2770e2022a7c3f6245a05ece9b9}{
+BEFORE\_\-INSERT\_\-DELETE\_\-EVENT}
+\label{namespaceFgl_a7bbae69263a5d0012370d5cbb859c6a8a6407f2770e2022a7c3f6245a05ece9b9}
+}]\index{AFTER\_\-INSERT\_\-DELETE\_\-EVENT@{AFTER\_\-INSERT\_\-DELETE\_\-EVENT}!Fgl@{Fgl}}\index{Fgl@{Fgl}!AFTER\_\-INSERT\_\-DELETE\_\-EVENT@{AFTER\_\-INSERT\_\-DELETE\_\-EVENT}}\item[{\em 
+\hypertarget{namespaceFgl_a7bbae69263a5d0012370d5cbb859c6a8a49151d7b6ee9ad9bc86c2caddfb398d0}{
+AFTER\_\-INSERT\_\-DELETE\_\-EVENT}
+\label{namespaceFgl_a7bbae69263a5d0012370d5cbb859c6a8a49151d7b6ee9ad9bc86c2caddfb398d0}
+}]\end{description}
+\end{Desc}
+
+
+
+Definition at line 12 of file fgl.h.
+
+\hypertarget{namespaceFgl_a84fecc3553ced7408465762be30c82fb}{
+\index{Fgl@{Fgl}!FieldAttributes@{FieldAttributes}}
+\index{FieldAttributes@{FieldAttributes}!Fgl@{Fgl}}
+\subsubsection[{FieldAttributes}]{\setlength{\rightskip}{0pt plus 5cm}enum {\bf Fgl::FieldAttributes}}}
+\label{namespaceFgl_a84fecc3553ced7408465762be30c82fb}
+\begin{Desc}
+\item[Enumerator: ]\par
+\begin{description}
+\index{AUBIT\_\-COLOR\_\-BLACK@{AUBIT\_\-COLOR\_\-BLACK}!Fgl@{Fgl}}\index{Fgl@{Fgl}!AUBIT\_\-COLOR\_\-BLACK@{AUBIT\_\-COLOR\_\-BLACK}}\item[{\em 
+\hypertarget{namespaceFgl_a84fecc3553ced7408465762be30c82fbacfbcf23c543050264e8b0760c17dd5e9}{
+AUBIT\_\-COLOR\_\-BLACK}
+\label{namespaceFgl_a84fecc3553ced7408465762be30c82fbacfbcf23c543050264e8b0760c17dd5e9}
+}]\index{AUBIT\_\-COLOR\_\-RED@{AUBIT\_\-COLOR\_\-RED}!Fgl@{Fgl}}\index{Fgl@{Fgl}!AUBIT\_\-COLOR\_\-RED@{AUBIT\_\-COLOR\_\-RED}}\item[{\em 
+\hypertarget{namespaceFgl_a84fecc3553ced7408465762be30c82fba09168ef8df113d902dea228001ea27dd}{
+AUBIT\_\-COLOR\_\-RED}
+\label{namespaceFgl_a84fecc3553ced7408465762be30c82fba09168ef8df113d902dea228001ea27dd}
+}]\index{AUBIT\_\-COLOR\_\-GREEN@{AUBIT\_\-COLOR\_\-GREEN}!Fgl@{Fgl}}\index{Fgl@{Fgl}!AUBIT\_\-COLOR\_\-GREEN@{AUBIT\_\-COLOR\_\-GREEN}}\item[{\em 
+\hypertarget{namespaceFgl_a84fecc3553ced7408465762be30c82fbaee0e8be59c72b091afc98f7284fdee71}{
+AUBIT\_\-COLOR\_\-GREEN}
+\label{namespaceFgl_a84fecc3553ced7408465762be30c82fbaee0e8be59c72b091afc98f7284fdee71}
+}]\index{AUBIT\_\-COLOR\_\-YELLOW@{AUBIT\_\-COLOR\_\-YELLOW}!Fgl@{Fgl}}\index{Fgl@{Fgl}!AUBIT\_\-COLOR\_\-YELLOW@{AUBIT\_\-COLOR\_\-YELLOW}}\item[{\em 
+\hypertarget{namespaceFgl_a84fecc3553ced7408465762be30c82fba878fa2e855e7bdc2afae0722530b1be0}{
+AUBIT\_\-COLOR\_\-YELLOW}
+\label{namespaceFgl_a84fecc3553ced7408465762be30c82fba878fa2e855e7bdc2afae0722530b1be0}
+}]\index{AUBIT\_\-COLOR\_\-BLUE@{AUBIT\_\-COLOR\_\-BLUE}!Fgl@{Fgl}}\index{Fgl@{Fgl}!AUBIT\_\-COLOR\_\-BLUE@{AUBIT\_\-COLOR\_\-BLUE}}\item[{\em 
+\hypertarget{namespaceFgl_a84fecc3553ced7408465762be30c82fba92835f358c3709a81aa16d40757a157d}{
+AUBIT\_\-COLOR\_\-BLUE}
+\label{namespaceFgl_a84fecc3553ced7408465762be30c82fba92835f358c3709a81aa16d40757a157d}
+}]\index{AUBIT\_\-COLOR\_\-MAGENTA@{AUBIT\_\-COLOR\_\-MAGENTA}!Fgl@{Fgl}}\index{Fgl@{Fgl}!AUBIT\_\-COLOR\_\-MAGENTA@{AUBIT\_\-COLOR\_\-MAGENTA}}\item[{\em 
+\hypertarget{namespaceFgl_a84fecc3553ced7408465762be30c82fba79fef77789aecd8701b3c81f7ce8f929}{
+AUBIT\_\-COLOR\_\-MAGENTA}
+\label{namespaceFgl_a84fecc3553ced7408465762be30c82fba79fef77789aecd8701b3c81f7ce8f929}
+}]\index{AUBIT\_\-COLOR\_\-CYAN@{AUBIT\_\-COLOR\_\-CYAN}!Fgl@{Fgl}}\index{Fgl@{Fgl}!AUBIT\_\-COLOR\_\-CYAN@{AUBIT\_\-COLOR\_\-CYAN}}\item[{\em 
+\hypertarget{namespaceFgl_a84fecc3553ced7408465762be30c82fba6220aabb66f9b00e3dfec17986bb401b}{
+AUBIT\_\-COLOR\_\-CYAN}
+\label{namespaceFgl_a84fecc3553ced7408465762be30c82fba6220aabb66f9b00e3dfec17986bb401b}
+}]\index{AUBIT\_\-COLOR\_\-WHITE@{AUBIT\_\-COLOR\_\-WHITE}!Fgl@{Fgl}}\index{Fgl@{Fgl}!AUBIT\_\-COLOR\_\-WHITE@{AUBIT\_\-COLOR\_\-WHITE}}\item[{\em 
+\hypertarget{namespaceFgl_a84fecc3553ced7408465762be30c82fba3fcd51188bbb620691dbbe5678f1e4d4}{
+AUBIT\_\-COLOR\_\-WHITE}
+\label{namespaceFgl_a84fecc3553ced7408465762be30c82fba3fcd51188bbb620691dbbe5678f1e4d4}
+}]\index{AUBIT\_\-ATTR\_\-NORMAL@{AUBIT\_\-ATTR\_\-NORMAL}!Fgl@{Fgl}}\index{Fgl@{Fgl}!AUBIT\_\-ATTR\_\-NORMAL@{AUBIT\_\-ATTR\_\-NORMAL}}\item[{\em 
+\hypertarget{namespaceFgl_a84fecc3553ced7408465762be30c82fba04c7fe736f33af94e76b3aad1614baaa}{
+AUBIT\_\-ATTR\_\-NORMAL}
+\label{namespaceFgl_a84fecc3553ced7408465762be30c82fba04c7fe736f33af94e76b3aad1614baaa}
+}]\index{AUBIT\_\-ATTR\_\-REVERSE@{AUBIT\_\-ATTR\_\-REVERSE}!Fgl@{Fgl}}\index{Fgl@{Fgl}!AUBIT\_\-ATTR\_\-REVERSE@{AUBIT\_\-ATTR\_\-REVERSE}}\item[{\em 
+\hypertarget{namespaceFgl_a84fecc3553ced7408465762be30c82fbac28aa3d9263ae597c461f55417935daf}{
+AUBIT\_\-ATTR\_\-REVERSE}
+\label{namespaceFgl_a84fecc3553ced7408465762be30c82fbac28aa3d9263ae597c461f55417935daf}
+}]\index{AUBIT\_\-ATTR\_\-UNDERLINE@{AUBIT\_\-ATTR\_\-UNDERLINE}!Fgl@{Fgl}}\index{Fgl@{Fgl}!AUBIT\_\-ATTR\_\-UNDERLINE@{AUBIT\_\-ATTR\_\-UNDERLINE}}\item[{\em 
+\hypertarget{namespaceFgl_a84fecc3553ced7408465762be30c82fbadce2649f08f8c7e01012cd1feab0fcbe}{
+AUBIT\_\-ATTR\_\-UNDERLINE}
+\label{namespaceFgl_a84fecc3553ced7408465762be30c82fbadce2649f08f8c7e01012cd1feab0fcbe}
+}]\index{AUBIT\_\-ATTR\_\-BOLD@{AUBIT\_\-ATTR\_\-BOLD}!Fgl@{Fgl}}\index{Fgl@{Fgl}!AUBIT\_\-ATTR\_\-BOLD@{AUBIT\_\-ATTR\_\-BOLD}}\item[{\em 
+\hypertarget{namespaceFgl_a84fecc3553ced7408465762be30c82fbae0684cc037518f62d980ca40ea7bcd03}{
+AUBIT\_\-ATTR\_\-BOLD}
+\label{namespaceFgl_a84fecc3553ced7408465762be30c82fbae0684cc037518f62d980ca40ea7bcd03}
+}]\index{AUBIT\_\-ATTR\_\-BLINK@{AUBIT\_\-ATTR\_\-BLINK}!Fgl@{Fgl}}\index{Fgl@{Fgl}!AUBIT\_\-ATTR\_\-BLINK@{AUBIT\_\-ATTR\_\-BLINK}}\item[{\em 
+\hypertarget{namespaceFgl_a84fecc3553ced7408465762be30c82fba9af5eb28087d2de8337b247b2c630dd6}{
+AUBIT\_\-ATTR\_\-BLINK}
+\label{namespaceFgl_a84fecc3553ced7408465762be30c82fba9af5eb28087d2de8337b247b2c630dd6}
+}]\index{AUBIT\_\-ATTR\_\-DIM@{AUBIT\_\-ATTR\_\-DIM}!Fgl@{Fgl}}\index{Fgl@{Fgl}!AUBIT\_\-ATTR\_\-DIM@{AUBIT\_\-ATTR\_\-DIM}}\item[{\em 
+\hypertarget{namespaceFgl_a84fecc3553ced7408465762be30c82fba076fe163a0e45025344e5fe7259b71b3}{
+AUBIT\_\-ATTR\_\-DIM}
+\label{namespaceFgl_a84fecc3553ced7408465762be30c82fba076fe163a0e45025344e5fe7259b71b3}
+}]\index{AUBIT\_\-ATTR\_\-INVISIBLE@{AUBIT\_\-ATTR\_\-INVISIBLE}!Fgl@{Fgl}}\index{Fgl@{Fgl}!AUBIT\_\-ATTR\_\-INVISIBLE@{AUBIT\_\-ATTR\_\-INVISIBLE}}\item[{\em 
+\hypertarget{namespaceFgl_a84fecc3553ced7408465762be30c82fba717d2efa26078d014e14123bec249c6b}{
+AUBIT\_\-ATTR\_\-INVISIBLE}
+\label{namespaceFgl_a84fecc3553ced7408465762be30c82fba717d2efa26078d014e14123bec249c6b}
+}]\index{AUBIT\_\-ATTR\_\-ALTCHARSET@{AUBIT\_\-ATTR\_\-ALTCHARSET}!Fgl@{Fgl}}\index{Fgl@{Fgl}!AUBIT\_\-ATTR\_\-ALTCHARSET@{AUBIT\_\-ATTR\_\-ALTCHARSET}}\item[{\em 
+\hypertarget{namespaceFgl_a84fecc3553ced7408465762be30c82fbaaaa9c0f3337d29af9e35ad5037bd2f08}{
+AUBIT\_\-ATTR\_\-ALTCHARSET}
+\label{namespaceFgl_a84fecc3553ced7408465762be30c82fbaaaa9c0f3337d29af9e35ad5037bd2f08}
+}]\index{AUBIT\_\-ATTR\_\-LEFT@{AUBIT\_\-ATTR\_\-LEFT}!Fgl@{Fgl}}\index{Fgl@{Fgl}!AUBIT\_\-ATTR\_\-LEFT@{AUBIT\_\-ATTR\_\-LEFT}}\item[{\em 
+\hypertarget{namespaceFgl_a84fecc3553ced7408465762be30c82fbaa65394cd0a8d74265414e97f890ffd86}{
+AUBIT\_\-ATTR\_\-LEFT}
+\label{namespaceFgl_a84fecc3553ced7408465762be30c82fbaa65394cd0a8d74265414e97f890ffd86}
+}]\end{description}
+\end{Desc}
+
+
+
+Definition at line 46 of file fgl.h.
+
+\hypertarget{namespaceFgl_a66700792cb225549384ae76c1057cf22}{
+\index{Fgl@{Fgl}!State@{State}}
+\index{State@{State}!Fgl@{Fgl}}
+\subsubsection[{State}]{\setlength{\rightskip}{0pt plus 5cm}enum {\bf Fgl::State}}}
+\label{namespaceFgl_a66700792cb225549384ae76c1057cf22}
+\begin{Desc}
+\item[Enumerator: ]\par
+\begin{description}
+\index{IDLE@{IDLE}!Fgl@{Fgl}}\index{Fgl@{Fgl}!IDLE@{IDLE}}\item[{\em 
+\hypertarget{namespaceFgl_a66700792cb225549384ae76c1057cf22a3a5aa8ccf2377dc2b3a6d965635a6eb6}{
+IDLE}
+\label{namespaceFgl_a66700792cb225549384ae76c1057cf22a3a5aa8ccf2377dc2b3a6d965635a6eb6}
+}]\index{MENU@{MENU}!Fgl@{Fgl}}\index{Fgl@{Fgl}!MENU@{MENU}}\item[{\em 
+\hypertarget{namespaceFgl_a66700792cb225549384ae76c1057cf22add52348d516c9d5ba9da08a3052ca40f}{
+MENU}
+\label{namespaceFgl_a66700792cb225549384ae76c1057cf22add52348d516c9d5ba9da08a3052ca40f}
+}]\index{INPUT@{INPUT}!Fgl@{Fgl}}\index{Fgl@{Fgl}!INPUT@{INPUT}}\item[{\em 
+\hypertarget{namespaceFgl_a66700792cb225549384ae76c1057cf22a44a7ee3ee0989f85b0255ee91e59b423}{
+INPUT}
+\label{namespaceFgl_a66700792cb225549384ae76c1057cf22a44a7ee3ee0989f85b0255ee91e59b423}
+}]\index{CONSTRUCT@{CONSTRUCT}!Fgl@{Fgl}}\index{Fgl@{Fgl}!CONSTRUCT@{CONSTRUCT}}\item[{\em 
+\hypertarget{namespaceFgl_a66700792cb225549384ae76c1057cf22a134ea7c57c8ce8a226bb57a3bdfc5733}{
+CONSTRUCT}
+\label{namespaceFgl_a66700792cb225549384ae76c1057cf22a134ea7c57c8ce8a226bb57a3bdfc5733}
+}]\index{DISPLAYARRAY@{DISPLAYARRAY}!Fgl@{Fgl}}\index{Fgl@{Fgl}!DISPLAYARRAY@{DISPLAYARRAY}}\item[{\em 
+\hypertarget{namespaceFgl_a66700792cb225549384ae76c1057cf22ab019b8d80dc5cce02f0596c7ff252301}{
+DISPLAYARRAY}
+\label{namespaceFgl_a66700792cb225549384ae76c1057cf22ab019b8d80dc5cce02f0596c7ff252301}
+}]\index{INPUTARRAY@{INPUTARRAY}!Fgl@{Fgl}}\index{Fgl@{Fgl}!INPUTARRAY@{INPUTARRAY}}\item[{\em 
+\hypertarget{namespaceFgl_a66700792cb225549384ae76c1057cf22a6e1b247a5050ed29e7fe7cc74b307f12}{
+INPUTARRAY}
+\label{namespaceFgl_a66700792cb225549384ae76c1057cf22a6e1b247a5050ed29e7fe7cc74b307f12}
+}]\end{description}
+\end{Desc}
+
+
+
+Definition at line 11 of file fgl.h.
+
+
+
+\subsection{Function Documentation}
+\hypertarget{namespaceFgl_acda3ef22ab61f74e6e9f401df8b77917}{
+\index{Fgl@{Fgl}!dbDateToFormat@{dbDateToFormat}}
+\index{dbDateToFormat@{dbDateToFormat}!Fgl@{Fgl}}
+\subsubsection[{dbDateToFormat}]{\setlength{\rightskip}{0pt plus 5cm}QString Fgl::dbDateToFormat (
+\begin{DoxyParamCaption}
+\item[{QString}]{dbdate}
+\end{DoxyParamCaption}
+)}}
+\label{namespaceFgl_acda3ef22ab61f74e6e9f401df8b77917}
+
+
+Definition at line 845 of file fgl.cpp.
+
+\hypertarget{namespaceFgl_a2d5a9376ae8e5ebb28ddb1d016356ae4}{
+\index{Fgl@{Fgl}!decodeDataType@{decodeDataType}}
+\index{decodeDataType@{decodeDataType}!Fgl@{Fgl}}
+\subsubsection[{decodeDataType}]{\setlength{\rightskip}{0pt plus 5cm}{\bf DataType} Fgl::decodeDataType (
+\begin{DoxyParamCaption}
+\item[{QString}]{type}
+\end{DoxyParamCaption}
+)}}
+\label{namespaceFgl_a2d5a9376ae8e5ebb28ddb1d016356ae4}
+
+
+Definition at line 718 of file fgl.cpp.
+
+\hypertarget{namespaceFgl_abb08147dfe3b331ef854161e597f7927}{
+\index{Fgl@{Fgl}!fgl\_\-convert\_\-money@{fgl\_\-convert\_\-money}}
+\index{fgl\_\-convert\_\-money@{fgl\_\-convert\_\-money}!Fgl@{Fgl}}
+\subsubsection[{fgl\_\-convert\_\-money}]{\setlength{\rightskip}{0pt plus 5cm}QString Fgl::fgl\_\-convert\_\-money (
+\begin{DoxyParamCaption}
+\item[{QString}]{value}
+\end{DoxyParamCaption}
+)}}
+\label{namespaceFgl_abb08147dfe3b331ef854161e597f7927}
+
+
+Definition at line 653 of file fgl.cpp.
+
+\hypertarget{namespaceFgl_a7757d5871d47d7ccaba56201a5c019be}{
+\index{Fgl@{Fgl}!fgl\_\-using@{fgl\_\-using}}
+\index{fgl\_\-using@{fgl\_\-using}!Fgl@{Fgl}}
+\subsubsection[{fgl\_\-using}]{\setlength{\rightskip}{0pt plus 5cm}QString Fgl::fgl\_\-using (
+\begin{DoxyParamCaption}
+\item[{QString}]{fmt, }
+\item[{QString}]{value}
+\end{DoxyParamCaption}
+)}}
+\label{namespaceFgl_a7757d5871d47d7ccaba56201a5c019be}
+
+
+Definition at line 83 of file fgl.cpp.
+
+\hypertarget{namespaceFgl_a9efb6ea5c503dd355a279fe691e51218}{
+\index{Fgl@{Fgl}!fgl\_\-using\_\-date@{fgl\_\-using\_\-date}}
+\index{fgl\_\-using\_\-date@{fgl\_\-using\_\-date}!Fgl@{Fgl}}
+\subsubsection[{fgl\_\-using\_\-date}]{\setlength{\rightskip}{0pt plus 5cm}QString Fgl::fgl\_\-using\_\-date (
+\begin{DoxyParamCaption}
+\item[{QString}]{fmt, }
+\item[{QString}]{value}
+\end{DoxyParamCaption}
+)}}
+\label{namespaceFgl_a9efb6ea5c503dd355a279fe691e51218}
+
+
+Definition at line 97 of file fgl.cpp.
+
+\hypertarget{namespaceFgl_ac7ee6be1cf53ff2ffb34b25576689c24}{
+\index{Fgl@{Fgl}!fgl\_\-using\_\-string@{fgl\_\-using\_\-string}}
+\index{fgl\_\-using\_\-string@{fgl\_\-using\_\-string}!Fgl@{Fgl}}
+\subsubsection[{fgl\_\-using\_\-string}]{\setlength{\rightskip}{0pt plus 5cm}QString Fgl::fgl\_\-using\_\-string (
+\begin{DoxyParamCaption}
+\item[{QString}]{fmt, }
+\item[{QString}]{value, }
+\item[{bool}]{isneg, }
+\item[{QString}]{dbmoney}
+\end{DoxyParamCaption}
+)}}
+\label{namespaceFgl_ac7ee6be1cf53ff2ffb34b25576689c24}
+
+
+Definition at line 201 of file fgl.cpp.
+
+\hypertarget{namespaceFgl_a22923696c7e89efba943bfc065c9d3ea}{
+\index{Fgl@{Fgl}!getDate@{getDate}}
+\index{getDate@{getDate}!Fgl@{Fgl}}
+\subsubsection[{getDate}]{\setlength{\rightskip}{0pt plus 5cm}QDate Fgl::getDate (
+\begin{DoxyParamCaption}
+\item[{QString}]{value}
+\end{DoxyParamCaption}
+)}}
+\label{namespaceFgl_a22923696c7e89efba943bfc065c9d3ea}
+
+
+Definition at line 737 of file fgl.cpp.
+
+\hypertarget{namespaceFgl_a60e9729a00a40b0ce63428fe470fa284}{
+\index{Fgl@{Fgl}!getDBDateSeperator@{getDBDateSeperator}}
+\index{getDBDateSeperator@{getDBDateSeperator}!Fgl@{Fgl}}
+\subsubsection[{getDBDateSeperator}]{\setlength{\rightskip}{0pt plus 5cm}QChar Fgl::getDBDateSeperator (
+\begin{DoxyParamCaption}
+\item[{QString}]{dbdate}
+\end{DoxyParamCaption}
+)}}
+\label{namespaceFgl_a60e9729a00a40b0ce63428fe470fa284}
+
+
+Definition at line 891 of file fgl.cpp.
+
+\hypertarget{namespaceFgl_acdc01c0826cbfc5bb18bea857765b751}{
+\index{Fgl@{Fgl}!getValueFromEnv@{getValueFromEnv}}
+\index{getValueFromEnv@{getValueFromEnv}!Fgl@{Fgl}}
+\subsubsection[{getValueFromEnv}]{\setlength{\rightskip}{0pt plus 5cm}QString Fgl::getValueFromEnv (
+\begin{DoxyParamCaption}
+\item[{QString}]{envname}
+\end{DoxyParamCaption}
+)}}
+\label{namespaceFgl_acdc01c0826cbfc5bb18bea857765b751}
+
+
+Definition at line 1144 of file fgl.cpp.
+
+\hypertarget{namespaceFgl_a7560ddc940aea8357bfae44485522b31}{
+\index{Fgl@{Fgl}!isValidForType@{isValidForType}}
+\index{isValidForType@{isValidForType}!Fgl@{Fgl}}
+\subsubsection[{isValidForType}]{\setlength{\rightskip}{0pt plus 5cm}bool Fgl::isValidForType (
+\begin{DoxyParamCaption}
+\item[{DataType}]{datatype, }
+\item[{QString}]{value, }
+\item[{QString}]{format}
+\end{DoxyParamCaption}
+)}}
+\label{namespaceFgl_a7560ddc940aea8357bfae44485522b31}
+
+
+Definition at line 906 of file fgl.cpp.
+
+\hypertarget{namespaceFgl_a378c2347baa22e3b429ce42010887963}{
+\index{Fgl@{Fgl}!keyToString@{keyToString}}
+\index{keyToString@{keyToString}!Fgl@{Fgl}}
+\subsubsection[{keyToString}]{\setlength{\rightskip}{0pt plus 5cm}QString Fgl::keyToString (
+\begin{DoxyParamCaption}
+\item[{QString}]{s}
+\end{DoxyParamCaption}
+)}}
+\label{namespaceFgl_a378c2347baa22e3b429ce42010887963}
+
+
+Definition at line 1157 of file fgl.cpp.
+
+\hypertarget{namespaceFgl_aa987ce49dbcf2c9fa730b64902e9c84e}{
+\index{Fgl@{Fgl}!stringToKey@{stringToKey}}
+\index{stringToKey@{stringToKey}!Fgl@{Fgl}}
+\subsubsection[{stringToKey}]{\setlength{\rightskip}{0pt plus 5cm}QString Fgl::stringToKey (
+\begin{DoxyParamCaption}
+\item[{QString}]{s}
+\end{DoxyParamCaption}
+)}}
+\label{namespaceFgl_aa987ce49dbcf2c9fa730b64902e9c84e}
+
+
+Definition at line 1050 of file fgl.cpp.
+
+\hypertarget{namespaceFgl_a224ca31123410961b37ec74cac4c7b0a}{
+\index{Fgl@{Fgl}!usingFunc@{usingFunc}}
+\index{usingFunc@{usingFunc}!Fgl@{Fgl}}
+\subsubsection[{usingFunc}]{\setlength{\rightskip}{0pt plus 5cm}QString Fgl::usingFunc (
+\begin{DoxyParamCaption}
+\item[{QString}]{fmt, }
+\item[{QString}]{value, }
+\item[{DataType}]{dataType}
+\end{DoxyParamCaption}
+)}}
+\label{namespaceFgl_a224ca31123410961b37ec74cac4c7b0a}
+
+
+Definition at line 10 of file fgl.cpp.
+
+\hypertarget{namespaceFgl_a588de0a8d9bc385030005007bde97a8d}{
+\index{Fgl@{Fgl}!vdc\_\-to\_\-fgl@{vdc\_\-to\_\-fgl}}
+\index{vdc\_\-to\_\-fgl@{vdc\_\-to\_\-fgl}!Fgl@{Fgl}}
+\subsubsection[{vdc\_\-to\_\-fgl}]{\setlength{\rightskip}{0pt plus 5cm}QString Fgl::vdc\_\-to\_\-fgl (
+\begin{DoxyParamCaption}
+\item[{QString}]{fmt, }
+\item[{QString}]{value, }
+\item[{DataType}]{dt}
+\end{DoxyParamCaption}
+)}}
+\label{namespaceFgl_a588de0a8d9bc385030005007bde97a8d}
+
+
+Definition at line 113 of file fgl.cpp.
+
+
+
+\subsection{Variable Documentation}
+\hypertarget{namespaceFgl_a2efd7c9f3a914495e4d1ad2c0d557dc9}{
+\index{Fgl@{Fgl}!env@{env}}
+\index{env@{env}!Fgl@{Fgl}}
+\subsubsection[{env}]{\setlength{\rightskip}{0pt plus 5cm}QHash$<$ QString, QString $>$ {\bf Fgl::env}}}
+\label{namespaceFgl_a2efd7c9f3a914495e4d1ad2c0d557dc9}
+
+
+Definition at line 8 of file fgl.cpp.
+

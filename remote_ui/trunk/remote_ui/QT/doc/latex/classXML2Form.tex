@@ -1,0 +1,526 @@
+\hypertarget{classXML2Form}{
+\section{XML2Form Class Reference}
+\label{classXML2Form}\index{XML2Form@{XML2Form}}
+}
+
+
+{\ttfamily \#include $<$xml2form.h$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classXML2Form_aea85912c9f4c7e61406086464fdcb076}{XML2Form} ()
+\item 
+\hyperlink{classXML2Form_a016742be563e446478aa39682db1f816}{$\sim$XML2Form} ()
+\item 
+QLayout $\ast$ \hyperlink{classXML2Form_ac6eeef2926b8b2d82d077d1101ca364f}{getLayout} ()
+\item 
+QList$<$ QObject $\ast$ $>$ \hyperlink{classXML2Form_ac35dbcdb7c719906f3de9143d29bdf80}{getFieldList} ()
+\item 
+void \hyperlink{classXML2Form_acf926f156b8bbc9016bb271baaa9c491}{parseForm} (QDomDocument)
+\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+QColor \hyperlink{classXML2Form_aaf96ae45cb0c2c4c58e9e6d86385c0c4}{qcol\_\-BaseColor}
+\item 
+bool \hyperlink{classXML2Form_aca390efca9cfb6233372fe20f583c2ab}{b\_\-tableColumnUsed}
+\item 
+int \hyperlink{classXML2Form_a7d4f92c44bd1ac3f9a8aa31c8081f077}{i\_\-cntFolder}
+\item 
+int \hyperlink{classXML2Form_a5053e99259b0e7720ce7e9ad5ba397f8}{i\_\-cntPage}
+\item 
+int \hyperlink{classXML2Form_a66eb7e8e2ca2f84f01e7175a518679a9}{i\_\-formWidth}
+\item 
+int \hyperlink{classXML2Form_a9ec68b9ec9319af60841934e2f9dd132}{i\_\-formHeight}
+\item 
+QWidget $\ast$ \hyperlink{classXML2Form_abfb6a1adcacc676da34e9bafa8f2eb39}{p\_\-arr\_\-XMLFields} \mbox{[}800\mbox{]}
+\item 
+int \hyperlink{classXML2Form_ad747ac3452cf4212ded9dfb4632d6bf8}{i\_\-cntFields}
+\item 
+\hyperlink{classTableView}{TableView} $\ast$ \hyperlink{classXML2Form_a03f67ad20c8828f5864659ce6740bcb7}{p\_\-screenRecord}
+\item 
+QLayout $\ast$ \hyperlink{classXML2Form_ae48311c25310084db4c3847ca6d38246}{xmlformLayout}
+\item 
+QLayout $\ast$ \hyperlink{classXML2Form_a3f1e41e202d65c9bf760c03aa7b3e440}{p\_\-arr\_\-PageLayouts} \mbox{[}5\mbox{]}
+\item 
+QString $\ast$ \hyperlink{classXML2Form_af9e35a7f57bce3c06e15b1ded76f5155}{p\_\-arr\_\-PageTitle} \mbox{[}5\mbox{]}
+\item 
+\hyperlink{classTableView}{TableView} $\ast$ \hyperlink{classXML2Form_a765978f88c9ea144f7488fffa3f011f3}{tableV}
+\item 
+\hyperlink{classLineEditDelegate}{LineEditDelegate} $\ast$ \hyperlink{classXML2Form_aa69423c0c79ac964cb295be17856bb85}{p\_\-delegate}
+\item 
+QStandardItemModel $\ast$ \hyperlink{classXML2Form_af3d7959ecccc1032081211b0681fea50}{model}
+\item 
+int \hyperlink{classXML2Form_a984c469e4d9c9ffc99c99897bd3122bf}{i\_\-cnt}
+\item 
+int \hyperlink{classXML2Form_a11097ff5d10cd176646e3c154405c035}{i\_\-screenRecRow}
+\item 
+int \hyperlink{classXML2Form_ac6c302b110a9608d7f607199a22d8a7b}{i\_\-screenRecCol}
+\item 
+QList$<$ QDomElement $>$ \hyperlink{classXML2Form_a9111b53f6b6c4f5c1433eb018b1a5434}{recordViews}
+\end{DoxyCompactItemize}
+\subsection*{Private Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+int \hyperlink{classXML2Form_ae1ab9e5e978954651c10800d4dd16b89}{getLengthBySqlType} (const QString \&)
+\item 
+void \hyperlink{classXML2Form_a4302872a12a04aa016619a235698a8db}{outputTree} (const QDomNode \&, QLayout $\ast$)
+\item 
+bool \hyperlink{classXML2Form_a97a812b4c01de1a025894fbbc5e1270f}{handleFormField} (const QDomElement \&, QLayout $\ast$)
+\item 
+bool \hyperlink{classXML2Form_ad1f3322e4844ad7ede46bd5a2360d4f6}{handleTableColumn} (const QDomElement \&, QLayout $\ast$)
+\item 
+bool \hyperlink{classXML2Form_aca6f9a788c34548d890c8bb9d57ef6e9}{handleTableColumn2} (const QDomElement \&, QLayout $\ast$)
+\end{DoxyCompactItemize}
+\subsection*{Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+QList$<$ QObject $\ast$ $>$ \hyperlink{classXML2Form_a4b16916a87a4c7d23e5708d47c211777}{ql\_\-formFields}
+\item 
+\hyperlink{classLabel}{Label} $\ast$ \hyperlink{classXML2Form_ade9a27a26e1d017fd4f851b5007741af}{label}
+\item 
+QWidget $\ast$ \hyperlink{classXML2Form_a22c224e3d1fa058bff67bea04cf0a35b}{childWidget}
+\item 
+QWidget $\ast$ \hyperlink{classXML2Form_ab1d32c23c4b270fd000b5e2d09272f31}{grandChildWidget}
+\item 
+QLayout $\ast$ \hyperlink{classXML2Form_a23039ea01dc3a50ee859e12b645774b5}{layout}
+\item 
+QLayout $\ast$ \hyperlink{classXML2Form_a54e053fb4e1186a487f9bce37b9ef078}{formLayout}
+\item 
+bool \hyperlink{classXML2Form_a81704c4b6c2ec90cd5dab7c6617b2349}{b\_\-table}
+\item 
+QDomDocument \hyperlink{classXML2Form_ac74f0507d6417126e8f10a81f659d51d}{inp\_\-arr\_\-fields}
+\item 
+\hyperlink{classTableView}{TableView} $\ast$ \hyperlink{classXML2Form_a3e475b021d282927ffd56f28c6836477}{tableWidget}
+\item 
+QTableWidgetItem $\ast$ \hyperlink{classXML2Form_a0a01128f9b5e28a00315cb83369727ee}{tableWidgetItem}
+\item 
+QStringList \hyperlink{classXML2Form_adaf365aa28cc5d86386e0dbc0da773c2}{qsl\_\-horizontalHeader}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+
+
+Definition at line 67 of file xml2form.h.
+
+
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{classXML2Form_aea85912c9f4c7e61406086464fdcb076}{
+\index{XML2Form@{XML2Form}!XML2Form@{XML2Form}}
+\index{XML2Form@{XML2Form}!XML2Form@{XML2Form}}
+\subsubsection[{XML2Form}]{\setlength{\rightskip}{0pt plus 5cm}XML2Form::XML2Form (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}
+\label{classXML2Form_aea85912c9f4c7e61406086464fdcb076}
+
+
+Definition at line 38 of file xml2form.cpp.
+
+\hypertarget{classXML2Form_a016742be563e446478aa39682db1f816}{
+\index{XML2Form@{XML2Form}!$\sim$XML2Form@{$\sim$XML2Form}}
+\index{$\sim$XML2Form@{$\sim$XML2Form}!XML2Form@{XML2Form}}
+\subsubsection[{$\sim$XML2Form}]{\setlength{\rightskip}{0pt plus 5cm}XML2Form::$\sim$XML2Form (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}
+\label{classXML2Form_a016742be563e446478aa39682db1f816}
+
+
+Definition at line 87 of file xml2form.cpp.
+
+
+
+\subsection{Member Function Documentation}
+\hypertarget{classXML2Form_ac35dbcdb7c719906f3de9143d29bdf80}{
+\index{XML2Form@{XML2Form}!getFieldList@{getFieldList}}
+\index{getFieldList@{getFieldList}!XML2Form@{XML2Form}}
+\subsubsection[{getFieldList}]{\setlength{\rightskip}{0pt plus 5cm}QList$<$QObject$\ast$$>$ XML2Form::getFieldList (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}inline\mbox{]}}}}
+\label{classXML2Form_ac35dbcdb7c719906f3de9143d29bdf80}
+
+
+Definition at line 76 of file xml2form.h.
+
+\hypertarget{classXML2Form_ac6eeef2926b8b2d82d077d1101ca364f}{
+\index{XML2Form@{XML2Form}!getLayout@{getLayout}}
+\index{getLayout@{getLayout}!XML2Form@{XML2Form}}
+\subsubsection[{getLayout}]{\setlength{\rightskip}{0pt plus 5cm}QLayout$\ast$ XML2Form::getLayout (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}inline\mbox{]}}}}
+\label{classXML2Form_ac6eeef2926b8b2d82d077d1101ca364f}
+
+
+Definition at line 75 of file xml2form.h.
+
+\hypertarget{classXML2Form_ae1ab9e5e978954651c10800d4dd16b89}{
+\index{XML2Form@{XML2Form}!getLengthBySqlType@{getLengthBySqlType}}
+\index{getLengthBySqlType@{getLengthBySqlType}!XML2Form@{XML2Form}}
+\subsubsection[{getLengthBySqlType}]{\setlength{\rightskip}{0pt plus 5cm}int XML2Form::getLengthBySqlType (
+\begin{DoxyParamCaption}
+\item[{const QString \&}]{sqlType}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classXML2Form_ae1ab9e5e978954651c10800d4dd16b89}
+
+
+Definition at line 1176 of file xml2form.cpp.
+
+\hypertarget{classXML2Form_a97a812b4c01de1a025894fbbc5e1270f}{
+\index{XML2Form@{XML2Form}!handleFormField@{handleFormField}}
+\index{handleFormField@{handleFormField}!XML2Form@{XML2Form}}
+\subsubsection[{handleFormField}]{\setlength{\rightskip}{0pt plus 5cm}bool XML2Form::handleFormField (
+\begin{DoxyParamCaption}
+\item[{const QDomElement \&}]{childElement, }
+\item[{QLayout $\ast$}]{parent}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classXML2Form_a97a812b4c01de1a025894fbbc5e1270f}
+
+
+Definition at line 281 of file xml2form.cpp.
+
+\hypertarget{classXML2Form_ad1f3322e4844ad7ede46bd5a2360d4f6}{
+\index{XML2Form@{XML2Form}!handleTableColumn@{handleTableColumn}}
+\index{handleTableColumn@{handleTableColumn}!XML2Form@{XML2Form}}
+\subsubsection[{handleTableColumn}]{\setlength{\rightskip}{0pt plus 5cm}bool XML2Form::handleTableColumn (
+\begin{DoxyParamCaption}
+\item[{const QDomElement \&}]{childElement, }
+\item[{QLayout $\ast$}]{parent}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classXML2Form_ad1f3322e4844ad7ede46bd5a2360d4f6}
+
+
+Definition at line 886 of file xml2form.cpp.
+
+\hypertarget{classXML2Form_aca6f9a788c34548d890c8bb9d57ef6e9}{
+\index{XML2Form@{XML2Form}!handleTableColumn2@{handleTableColumn2}}
+\index{handleTableColumn2@{handleTableColumn2}!XML2Form@{XML2Form}}
+\subsubsection[{handleTableColumn2}]{\setlength{\rightskip}{0pt plus 5cm}bool XML2Form::handleTableColumn2 (
+\begin{DoxyParamCaption}
+\item[{const QDomElement \&}]{childElement, }
+\item[{QLayout $\ast$}]{parent}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classXML2Form_aca6f9a788c34548d890c8bb9d57ef6e9}
+
+
+Definition at line 1067 of file xml2form.cpp.
+
+\hypertarget{classXML2Form_a4302872a12a04aa016619a235698a8db}{
+\index{XML2Form@{XML2Form}!outputTree@{outputTree}}
+\index{outputTree@{outputTree}!XML2Form@{XML2Form}}
+\subsubsection[{outputTree}]{\setlength{\rightskip}{0pt plus 5cm}void XML2Form::outputTree (
+\begin{DoxyParamCaption}
+\item[{const QDomNode \&}]{domNode, }
+\item[{QLayout $\ast$}]{parent}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classXML2Form_a4302872a12a04aa016619a235698a8db}
+
+
+Definition at line 98 of file xml2form.cpp.
+
+\hypertarget{classXML2Form_acf926f156b8bbc9016bb271baaa9c491}{
+\index{XML2Form@{XML2Form}!parseForm@{parseForm}}
+\index{parseForm@{parseForm}!XML2Form@{XML2Form}}
+\subsubsection[{parseForm}]{\setlength{\rightskip}{0pt plus 5cm}void XML2Form::parseForm (
+\begin{DoxyParamCaption}
+\item[{QDomDocument}]{formFile}
+\end{DoxyParamCaption}
+)}}
+\label{classXML2Form_acf926f156b8bbc9016bb271baaa9c491}
+
+
+Definition at line 266 of file xml2form.cpp.
+
+
+
+\subsection{Member Data Documentation}
+\hypertarget{classXML2Form_a81704c4b6c2ec90cd5dab7c6617b2349}{
+\index{XML2Form@{XML2Form}!b\_\-table@{b\_\-table}}
+\index{b\_\-table@{b\_\-table}!XML2Form@{XML2Form}}
+\subsubsection[{b\_\-table}]{\setlength{\rightskip}{0pt plus 5cm}bool {\bf XML2Form::b\_\-table}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classXML2Form_a81704c4b6c2ec90cd5dab7c6617b2349}
+
+
+Definition at line 119 of file xml2form.h.
+
+\hypertarget{classXML2Form_aca390efca9cfb6233372fe20f583c2ab}{
+\index{XML2Form@{XML2Form}!b\_\-tableColumnUsed@{b\_\-tableColumnUsed}}
+\index{b\_\-tableColumnUsed@{b\_\-tableColumnUsed}!XML2Form@{XML2Form}}
+\subsubsection[{b\_\-tableColumnUsed}]{\setlength{\rightskip}{0pt plus 5cm}bool {\bf XML2Form::b\_\-tableColumnUsed}}}
+\label{classXML2Form_aca390efca9cfb6233372fe20f583c2ab}
+
+
+Definition at line 80 of file xml2form.h.
+
+\hypertarget{classXML2Form_a22c224e3d1fa058bff67bea04cf0a35b}{
+\index{XML2Form@{XML2Form}!childWidget@{childWidget}}
+\index{childWidget@{childWidget}!XML2Form@{XML2Form}}
+\subsubsection[{childWidget}]{\setlength{\rightskip}{0pt plus 5cm}QWidget$\ast$ {\bf XML2Form::childWidget}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classXML2Form_a22c224e3d1fa058bff67bea04cf0a35b}
+
+
+Definition at line 114 of file xml2form.h.
+
+\hypertarget{classXML2Form_a54e053fb4e1186a487f9bce37b9ef078}{
+\index{XML2Form@{XML2Form}!formLayout@{formLayout}}
+\index{formLayout@{formLayout}!XML2Form@{XML2Form}}
+\subsubsection[{formLayout}]{\setlength{\rightskip}{0pt plus 5cm}QLayout$\ast$ {\bf XML2Form::formLayout}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classXML2Form_a54e053fb4e1186a487f9bce37b9ef078}
+
+
+Definition at line 117 of file xml2form.h.
+
+\hypertarget{classXML2Form_ab1d32c23c4b270fd000b5e2d09272f31}{
+\index{XML2Form@{XML2Form}!grandChildWidget@{grandChildWidget}}
+\index{grandChildWidget@{grandChildWidget}!XML2Form@{XML2Form}}
+\subsubsection[{grandChildWidget}]{\setlength{\rightskip}{0pt plus 5cm}QWidget$\ast$ {\bf XML2Form::grandChildWidget}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classXML2Form_ab1d32c23c4b270fd000b5e2d09272f31}
+
+
+Definition at line 115 of file xml2form.h.
+
+\hypertarget{classXML2Form_a984c469e4d9c9ffc99c99897bd3122bf}{
+\index{XML2Form@{XML2Form}!i\_\-cnt@{i\_\-cnt}}
+\index{i\_\-cnt@{i\_\-cnt}!XML2Form@{XML2Form}}
+\subsubsection[{i\_\-cnt}]{\setlength{\rightskip}{0pt plus 5cm}int {\bf XML2Form::i\_\-cnt}}}
+\label{classXML2Form_a984c469e4d9c9ffc99c99897bd3122bf}
+
+
+Definition at line 105 of file xml2form.h.
+
+\hypertarget{classXML2Form_ad747ac3452cf4212ded9dfb4632d6bf8}{
+\index{XML2Form@{XML2Form}!i\_\-cntFields@{i\_\-cntFields}}
+\index{i\_\-cntFields@{i\_\-cntFields}!XML2Form@{XML2Form}}
+\subsubsection[{i\_\-cntFields}]{\setlength{\rightskip}{0pt plus 5cm}int {\bf XML2Form::i\_\-cntFields}}}
+\label{classXML2Form_ad747ac3452cf4212ded9dfb4632d6bf8}
+
+
+Definition at line 89 of file xml2form.h.
+
+\hypertarget{classXML2Form_a7d4f92c44bd1ac3f9a8aa31c8081f077}{
+\index{XML2Form@{XML2Form}!i\_\-cntFolder@{i\_\-cntFolder}}
+\index{i\_\-cntFolder@{i\_\-cntFolder}!XML2Form@{XML2Form}}
+\subsubsection[{i\_\-cntFolder}]{\setlength{\rightskip}{0pt plus 5cm}int {\bf XML2Form::i\_\-cntFolder}}}
+\label{classXML2Form_a7d4f92c44bd1ac3f9a8aa31c8081f077}
+
+
+Definition at line 82 of file xml2form.h.
+
+\hypertarget{classXML2Form_a5053e99259b0e7720ce7e9ad5ba397f8}{
+\index{XML2Form@{XML2Form}!i\_\-cntPage@{i\_\-cntPage}}
+\index{i\_\-cntPage@{i\_\-cntPage}!XML2Form@{XML2Form}}
+\subsubsection[{i\_\-cntPage}]{\setlength{\rightskip}{0pt plus 5cm}int {\bf XML2Form::i\_\-cntPage}}}
+\label{classXML2Form_a5053e99259b0e7720ce7e9ad5ba397f8}
+
+
+Definition at line 83 of file xml2form.h.
+
+\hypertarget{classXML2Form_a9ec68b9ec9319af60841934e2f9dd132}{
+\index{XML2Form@{XML2Form}!i\_\-formHeight@{i\_\-formHeight}}
+\index{i\_\-formHeight@{i\_\-formHeight}!XML2Form@{XML2Form}}
+\subsubsection[{i\_\-formHeight}]{\setlength{\rightskip}{0pt plus 5cm}int {\bf XML2Form::i\_\-formHeight}}}
+\label{classXML2Form_a9ec68b9ec9319af60841934e2f9dd132}
+
+
+Definition at line 86 of file xml2form.h.
+
+\hypertarget{classXML2Form_a66eb7e8e2ca2f84f01e7175a518679a9}{
+\index{XML2Form@{XML2Form}!i\_\-formWidth@{i\_\-formWidth}}
+\index{i\_\-formWidth@{i\_\-formWidth}!XML2Form@{XML2Form}}
+\subsubsection[{i\_\-formWidth}]{\setlength{\rightskip}{0pt plus 5cm}int {\bf XML2Form::i\_\-formWidth}}}
+\label{classXML2Form_a66eb7e8e2ca2f84f01e7175a518679a9}
+
+
+Definition at line 85 of file xml2form.h.
+
+\hypertarget{classXML2Form_ac6c302b110a9608d7f607199a22d8a7b}{
+\index{XML2Form@{XML2Form}!i\_\-screenRecCol@{i\_\-screenRecCol}}
+\index{i\_\-screenRecCol@{i\_\-screenRecCol}!XML2Form@{XML2Form}}
+\subsubsection[{i\_\-screenRecCol}]{\setlength{\rightskip}{0pt plus 5cm}int {\bf XML2Form::i\_\-screenRecCol}}}
+\label{classXML2Form_ac6c302b110a9608d7f607199a22d8a7b}
+
+
+Definition at line 109 of file xml2form.h.
+
+\hypertarget{classXML2Form_a11097ff5d10cd176646e3c154405c035}{
+\index{XML2Form@{XML2Form}!i\_\-screenRecRow@{i\_\-screenRecRow}}
+\index{i\_\-screenRecRow@{i\_\-screenRecRow}!XML2Form@{XML2Form}}
+\subsubsection[{i\_\-screenRecRow}]{\setlength{\rightskip}{0pt plus 5cm}int {\bf XML2Form::i\_\-screenRecRow}}}
+\label{classXML2Form_a11097ff5d10cd176646e3c154405c035}
+
+
+Definition at line 108 of file xml2form.h.
+
+\hypertarget{classXML2Form_ac74f0507d6417126e8f10a81f659d51d}{
+\index{XML2Form@{XML2Form}!inp\_\-arr\_\-fields@{inp\_\-arr\_\-fields}}
+\index{inp\_\-arr\_\-fields@{inp\_\-arr\_\-fields}!XML2Form@{XML2Form}}
+\subsubsection[{inp\_\-arr\_\-fields}]{\setlength{\rightskip}{0pt plus 5cm}QDomDocument {\bf XML2Form::inp\_\-arr\_\-fields}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classXML2Form_ac74f0507d6417126e8f10a81f659d51d}
+
+
+Definition at line 120 of file xml2form.h.
+
+\hypertarget{classXML2Form_ade9a27a26e1d017fd4f851b5007741af}{
+\index{XML2Form@{XML2Form}!label@{label}}
+\index{label@{label}!XML2Form@{XML2Form}}
+\subsubsection[{label}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Label}$\ast$ {\bf XML2Form::label}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classXML2Form_ade9a27a26e1d017fd4f851b5007741af}
+
+
+Definition at line 113 of file xml2form.h.
+
+\hypertarget{classXML2Form_a23039ea01dc3a50ee859e12b645774b5}{
+\index{XML2Form@{XML2Form}!layout@{layout}}
+\index{layout@{layout}!XML2Form@{XML2Form}}
+\subsubsection[{layout}]{\setlength{\rightskip}{0pt plus 5cm}QLayout$\ast$ {\bf XML2Form::layout}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classXML2Form_a23039ea01dc3a50ee859e12b645774b5}
+
+
+Definition at line 116 of file xml2form.h.
+
+\hypertarget{classXML2Form_af3d7959ecccc1032081211b0681fea50}{
+\index{XML2Form@{XML2Form}!model@{model}}
+\index{model@{model}!XML2Form@{XML2Form}}
+\subsubsection[{model}]{\setlength{\rightskip}{0pt plus 5cm}QStandardItemModel$\ast$ {\bf XML2Form::model}}}
+\label{classXML2Form_af3d7959ecccc1032081211b0681fea50}
+
+
+Definition at line 104 of file xml2form.h.
+
+\hypertarget{classXML2Form_a3f1e41e202d65c9bf760c03aa7b3e440}{
+\index{XML2Form@{XML2Form}!p\_\-arr\_\-PageLayouts@{p\_\-arr\_\-PageLayouts}}
+\index{p\_\-arr\_\-PageLayouts@{p\_\-arr\_\-PageLayouts}!XML2Form@{XML2Form}}
+\subsubsection[{p\_\-arr\_\-PageLayouts}]{\setlength{\rightskip}{0pt plus 5cm}QLayout$\ast$ {\bf XML2Form::p\_\-arr\_\-PageLayouts}\mbox{[}5\mbox{]}}}
+\label{classXML2Form_a3f1e41e202d65c9bf760c03aa7b3e440}
+
+
+Definition at line 98 of file xml2form.h.
+
+\hypertarget{classXML2Form_af9e35a7f57bce3c06e15b1ded76f5155}{
+\index{XML2Form@{XML2Form}!p\_\-arr\_\-PageTitle@{p\_\-arr\_\-PageTitle}}
+\index{p\_\-arr\_\-PageTitle@{p\_\-arr\_\-PageTitle}!XML2Form@{XML2Form}}
+\subsubsection[{p\_\-arr\_\-PageTitle}]{\setlength{\rightskip}{0pt plus 5cm}QString$\ast$ {\bf XML2Form::p\_\-arr\_\-PageTitle}\mbox{[}5\mbox{]}}}
+\label{classXML2Form_af9e35a7f57bce3c06e15b1ded76f5155}
+
+
+Definition at line 99 of file xml2form.h.
+
+\hypertarget{classXML2Form_abfb6a1adcacc676da34e9bafa8f2eb39}{
+\index{XML2Form@{XML2Form}!p\_\-arr\_\-XMLFields@{p\_\-arr\_\-XMLFields}}
+\index{p\_\-arr\_\-XMLFields@{p\_\-arr\_\-XMLFields}!XML2Form@{XML2Form}}
+\subsubsection[{p\_\-arr\_\-XMLFields}]{\setlength{\rightskip}{0pt plus 5cm}QWidget$\ast$ {\bf XML2Form::p\_\-arr\_\-XMLFields}\mbox{[}800\mbox{]}}}
+\label{classXML2Form_abfb6a1adcacc676da34e9bafa8f2eb39}
+
+
+Definition at line 88 of file xml2form.h.
+
+\hypertarget{classXML2Form_aa69423c0c79ac964cb295be17856bb85}{
+\index{XML2Form@{XML2Form}!p\_\-delegate@{p\_\-delegate}}
+\index{p\_\-delegate@{p\_\-delegate}!XML2Form@{XML2Form}}
+\subsubsection[{p\_\-delegate}]{\setlength{\rightskip}{0pt plus 5cm}{\bf LineEditDelegate}$\ast$ {\bf XML2Form::p\_\-delegate}}}
+\label{classXML2Form_aa69423c0c79ac964cb295be17856bb85}
+
+
+Definition at line 103 of file xml2form.h.
+
+\hypertarget{classXML2Form_a03f67ad20c8828f5864659ce6740bcb7}{
+\index{XML2Form@{XML2Form}!p\_\-screenRecord@{p\_\-screenRecord}}
+\index{p\_\-screenRecord@{p\_\-screenRecord}!XML2Form@{XML2Form}}
+\subsubsection[{p\_\-screenRecord}]{\setlength{\rightskip}{0pt plus 5cm}{\bf TableView}$\ast$ {\bf XML2Form::p\_\-screenRecord}}}
+\label{classXML2Form_a03f67ad20c8828f5864659ce6740bcb7}
+
+
+Definition at line 91 of file xml2form.h.
+
+\hypertarget{classXML2Form_aaf96ae45cb0c2c4c58e9e6d86385c0c4}{
+\index{XML2Form@{XML2Form}!qcol\_\-BaseColor@{qcol\_\-BaseColor}}
+\index{qcol\_\-BaseColor@{qcol\_\-BaseColor}!XML2Form@{XML2Form}}
+\subsubsection[{qcol\_\-BaseColor}]{\setlength{\rightskip}{0pt plus 5cm}QColor {\bf XML2Form::qcol\_\-BaseColor}}}
+\label{classXML2Form_aaf96ae45cb0c2c4c58e9e6d86385c0c4}
+
+
+Definition at line 76 of file xml2form.h.
+
+\hypertarget{classXML2Form_a4b16916a87a4c7d23e5708d47c211777}{
+\index{XML2Form@{XML2Form}!ql\_\-formFields@{ql\_\-formFields}}
+\index{ql\_\-formFields@{ql\_\-formFields}!XML2Form@{XML2Form}}
+\subsubsection[{ql\_\-formFields}]{\setlength{\rightskip}{0pt plus 5cm}QList$<$QObject$\ast$$>$ {\bf XML2Form::ql\_\-formFields}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classXML2Form_a4b16916a87a4c7d23e5708d47c211777}
+
+
+Definition at line 112 of file xml2form.h.
+
+\hypertarget{classXML2Form_adaf365aa28cc5d86386e0dbc0da773c2}{
+\index{XML2Form@{XML2Form}!qsl\_\-horizontalHeader@{qsl\_\-horizontalHeader}}
+\index{qsl\_\-horizontalHeader@{qsl\_\-horizontalHeader}!XML2Form@{XML2Form}}
+\subsubsection[{qsl\_\-horizontalHeader}]{\setlength{\rightskip}{0pt plus 5cm}QStringList {\bf XML2Form::qsl\_\-horizontalHeader}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classXML2Form_adaf365aa28cc5d86386e0dbc0da773c2}
+
+
+Definition at line 130 of file xml2form.h.
+
+\hypertarget{classXML2Form_a9111b53f6b6c4f5c1433eb018b1a5434}{
+\index{XML2Form@{XML2Form}!recordViews@{recordViews}}
+\index{recordViews@{recordViews}!XML2Form@{XML2Form}}
+\subsubsection[{recordViews}]{\setlength{\rightskip}{0pt plus 5cm}QList$<$QDomElement$>$ {\bf XML2Form::recordViews}}}
+\label{classXML2Form_a9111b53f6b6c4f5c1433eb018b1a5434}
+
+
+Definition at line 110 of file xml2form.h.
+
+\hypertarget{classXML2Form_a765978f88c9ea144f7488fffa3f011f3}{
+\index{XML2Form@{XML2Form}!tableV@{tableV}}
+\index{tableV@{tableV}!XML2Form@{XML2Form}}
+\subsubsection[{tableV}]{\setlength{\rightskip}{0pt plus 5cm}{\bf TableView}$\ast$ {\bf XML2Form::tableV}}}
+\label{classXML2Form_a765978f88c9ea144f7488fffa3f011f3}
+
+
+Definition at line 102 of file xml2form.h.
+
+\hypertarget{classXML2Form_a3e475b021d282927ffd56f28c6836477}{
+\index{XML2Form@{XML2Form}!tableWidget@{tableWidget}}
+\index{tableWidget@{tableWidget}!XML2Form@{XML2Form}}
+\subsubsection[{tableWidget}]{\setlength{\rightskip}{0pt plus 5cm}{\bf TableView}$\ast$ {\bf XML2Form::tableWidget}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classXML2Form_a3e475b021d282927ffd56f28c6836477}
+
+
+Definition at line 126 of file xml2form.h.
+
+\hypertarget{classXML2Form_a0a01128f9b5e28a00315cb83369727ee}{
+\index{XML2Form@{XML2Form}!tableWidgetItem@{tableWidgetItem}}
+\index{tableWidgetItem@{tableWidgetItem}!XML2Form@{XML2Form}}
+\subsubsection[{tableWidgetItem}]{\setlength{\rightskip}{0pt plus 5cm}QTableWidgetItem$\ast$ {\bf XML2Form::tableWidgetItem}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classXML2Form_a0a01128f9b5e28a00315cb83369727ee}
+
+
+Definition at line 128 of file xml2form.h.
+
+\hypertarget{classXML2Form_ae48311c25310084db4c3847ca6d38246}{
+\index{XML2Form@{XML2Form}!xmlformLayout@{xmlformLayout}}
+\index{xmlformLayout@{xmlformLayout}!XML2Form@{XML2Form}}
+\subsubsection[{xmlformLayout}]{\setlength{\rightskip}{0pt plus 5cm}QLayout$\ast$ {\bf XML2Form::xmlformLayout}}}
+\label{classXML2Form_ae48311c25310084db4c3847ca6d38246}
+
+
+Definition at line 93 of file xml2form.h.
+
+
+
+The documentation for this class was generated from the following files:\begin{DoxyCompactItemize}
+\item 
+/e/ms/QT/fieldparsers/\hyperlink{xml2form_8h}{xml2form.h}\item 
+/e/ms/QT/fieldparsers/\hyperlink{xml2form_8cpp}{xml2form.cpp}\end{DoxyCompactItemize}

@@ -1,0 +1,199 @@
+\hypertarget{classAubit2Fields}{
+\section{Aubit2Fields Class Reference}
+\label{classAubit2Fields}\index{Aubit2Fields@{Aubit2Fields}}
+}
+
+
+{\ttfamily \#include $<$aubit2fields.h$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classAubit2Fields_aafa7c2764922bafd18652b126c8de901}{Aubit2Fields} ()
+\item 
+void \hyperlink{classAubit2Fields_a7dd159573c8f4d465b9b9968257729cf}{parseForm} (QDomDocument)
+\item 
+void \hyperlink{classAubit2Fields_a217bfecc3db98089ffad7649f221003d}{parseElement} (QDomNode)
+\item 
+QList$<$ QWidget $\ast$ $>$ \hyperlink{classAubit2Fields_a36c95075ce26ecc98dd7378daad3b6b6}{getFieldList} ()
+\item 
+QLayout $\ast$ \hyperlink{classAubit2Fields_ae1c754b5ab84e1c023e8ec57c4576b56}{getLayout} ()
+\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+QList$<$ QWidget $\ast$ $>$ \hyperlink{classAubit2Fields_a57520a544c310f8c9a96cef7d6ffaaf4}{ql\_\-formFields}
+\end{DoxyCompactItemize}
+\subsection*{Private Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \hyperlink{classAubit2Fields_a4aa443642d7d73a76766ed5ee4c82475}{addToForm} (QObject $\ast$, bool add=false, int x=0, int y=0, int w=0)
+\item 
+void \hyperlink{classAubit2Fields_a160c6a3194c259b4082650831f9f6cd1}{handleField} (const QDomNode \&)
+\item 
+void \hyperlink{classAubit2Fields_a1306814dcbcc29fb3daf4d35d7d3955b}{handleFormField} (const QDomNode \&)
+\end{DoxyCompactItemize}
+\subsection*{Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+QVBoxLayout $\ast$ \hyperlink{classAubit2Fields_a5e53b1c23f719c00b7e7c93bc31f9499}{layout}
+\item 
+QObject $\ast$ \hyperlink{classAubit2Fields_ae443d7b94a3674316b2be0eb7a883148}{currObject}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+
+
+Definition at line 36 of file aubit2fields.h.
+
+
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{classAubit2Fields_aafa7c2764922bafd18652b126c8de901}{
+\index{Aubit2Fields@{Aubit2Fields}!Aubit2Fields@{Aubit2Fields}}
+\index{Aubit2Fields@{Aubit2Fields}!Aubit2Fields@{Aubit2Fields}}
+\subsubsection[{Aubit2Fields}]{\setlength{\rightskip}{0pt plus 5cm}Aubit2Fields::Aubit2Fields (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}
+\label{classAubit2Fields_aafa7c2764922bafd18652b126c8de901}
+
+
+Definition at line 23 of file aubit2fields.cpp.
+
+
+
+\subsection{Member Function Documentation}
+\hypertarget{classAubit2Fields_a4aa443642d7d73a76766ed5ee4c82475}{
+\index{Aubit2Fields@{Aubit2Fields}!addToForm@{addToForm}}
+\index{addToForm@{addToForm}!Aubit2Fields@{Aubit2Fields}}
+\subsubsection[{addToForm}]{\setlength{\rightskip}{0pt plus 5cm}void Aubit2Fields::addToForm (
+\begin{DoxyParamCaption}
+\item[{QObject $\ast$}]{obj, }
+\item[{bool}]{add = {\ttfamily false}, }
+\item[{int}]{x = {\ttfamily 0}, }
+\item[{int}]{y = {\ttfamily 0}, }
+\item[{int}]{w = {\ttfamily 0}}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classAubit2Fields_a4aa443642d7d73a76766ed5ee4c82475}
+
+
+Definition at line 110 of file aubit2fields.cpp.
+
+\hypertarget{classAubit2Fields_a36c95075ce26ecc98dd7378daad3b6b6}{
+\index{Aubit2Fields@{Aubit2Fields}!getFieldList@{getFieldList}}
+\index{getFieldList@{getFieldList}!Aubit2Fields@{Aubit2Fields}}
+\subsubsection[{getFieldList}]{\setlength{\rightskip}{0pt plus 5cm}QList$<$ QWidget $\ast$ $>$ Aubit2Fields::getFieldList (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}
+\label{classAubit2Fields_a36c95075ce26ecc98dd7378daad3b6b6}
+
+
+Definition at line 40 of file aubit2fields.cpp.
+
+\hypertarget{classAubit2Fields_ae1c754b5ab84e1c023e8ec57c4576b56}{
+\index{Aubit2Fields@{Aubit2Fields}!getLayout@{getLayout}}
+\index{getLayout@{getLayout}!Aubit2Fields@{Aubit2Fields}}
+\subsubsection[{getLayout}]{\setlength{\rightskip}{0pt plus 5cm}QLayout $\ast$ Aubit2Fields::getLayout (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}
+\label{classAubit2Fields_ae1c754b5ab84e1c023e8ec57c4576b56}
+
+
+Definition at line 34 of file aubit2fields.cpp.
+
+\hypertarget{classAubit2Fields_a160c6a3194c259b4082650831f9f6cd1}{
+\index{Aubit2Fields@{Aubit2Fields}!handleField@{handleField}}
+\index{handleField@{handleField}!Aubit2Fields@{Aubit2Fields}}
+\subsubsection[{handleField}]{\setlength{\rightskip}{0pt plus 5cm}void Aubit2Fields::handleField (
+\begin{DoxyParamCaption}
+\item[{const QDomNode \&}]{domNode}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classAubit2Fields_a160c6a3194c259b4082650831f9f6cd1}
+
+
+Definition at line 168 of file aubit2fields.cpp.
+
+\hypertarget{classAubit2Fields_a1306814dcbcc29fb3daf4d35d7d3955b}{
+\index{Aubit2Fields@{Aubit2Fields}!handleFormField@{handleFormField}}
+\index{handleFormField@{handleFormField}!Aubit2Fields@{Aubit2Fields}}
+\subsubsection[{handleFormField}]{\setlength{\rightskip}{0pt plus 5cm}void Aubit2Fields::handleFormField (
+\begin{DoxyParamCaption}
+\item[{const QDomNode \&}]{domNode}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classAubit2Fields_a1306814dcbcc29fb3daf4d35d7d3955b}
+
+
+Definition at line 217 of file aubit2fields.cpp.
+
+\hypertarget{classAubit2Fields_a217bfecc3db98089ffad7649f221003d}{
+\index{Aubit2Fields@{Aubit2Fields}!parseElement@{parseElement}}
+\index{parseElement@{parseElement}!Aubit2Fields@{Aubit2Fields}}
+\subsubsection[{parseElement}]{\setlength{\rightskip}{0pt plus 5cm}void Aubit2Fields::parseElement (
+\begin{DoxyParamCaption}
+\item[{QDomNode}]{xmlNode}
+\end{DoxyParamCaption}
+)}}
+\label{classAubit2Fields_a217bfecc3db98089ffad7649f221003d}
+
+
+Definition at line 55 of file aubit2fields.cpp.
+
+\hypertarget{classAubit2Fields_a7dd159573c8f4d465b9b9968257729cf}{
+\index{Aubit2Fields@{Aubit2Fields}!parseForm@{parseForm}}
+\index{parseForm@{parseForm}!Aubit2Fields@{Aubit2Fields}}
+\subsubsection[{parseForm}]{\setlength{\rightskip}{0pt plus 5cm}void Aubit2Fields::parseForm (
+\begin{DoxyParamCaption}
+\item[{QDomDocument}]{xmlForm}
+\end{DoxyParamCaption}
+)}}
+\label{classAubit2Fields_a7dd159573c8f4d465b9b9968257729cf}
+
+
+Definition at line 46 of file aubit2fields.cpp.
+
+
+
+\subsection{Member Data Documentation}
+\hypertarget{classAubit2Fields_ae443d7b94a3674316b2be0eb7a883148}{
+\index{Aubit2Fields@{Aubit2Fields}!currObject@{currObject}}
+\index{currObject@{currObject}!Aubit2Fields@{Aubit2Fields}}
+\subsubsection[{currObject}]{\setlength{\rightskip}{0pt plus 5cm}QObject$\ast$ {\bf Aubit2Fields::currObject}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classAubit2Fields_ae443d7b94a3674316b2be0eb7a883148}
+
+
+Definition at line 53 of file aubit2fields.h.
+
+\hypertarget{classAubit2Fields_a5e53b1c23f719c00b7e7c93bc31f9499}{
+\index{Aubit2Fields@{Aubit2Fields}!layout@{layout}}
+\index{layout@{layout}!Aubit2Fields@{Aubit2Fields}}
+\subsubsection[{layout}]{\setlength{\rightskip}{0pt plus 5cm}QVBoxLayout$\ast$ {\bf Aubit2Fields::layout}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classAubit2Fields_a5e53b1c23f719c00b7e7c93bc31f9499}
+
+
+Definition at line 52 of file aubit2fields.h.
+
+\hypertarget{classAubit2Fields_a57520a544c310f8c9a96cef7d6ffaaf4}{
+\index{Aubit2Fields@{Aubit2Fields}!ql\_\-formFields@{ql\_\-formFields}}
+\index{ql\_\-formFields@{ql\_\-formFields}!Aubit2Fields@{Aubit2Fields}}
+\subsubsection[{ql\_\-formFields}]{\setlength{\rightskip}{0pt plus 5cm}QList$<$QWidget$\ast$$>$ {\bf Aubit2Fields::ql\_\-formFields}}}
+\label{classAubit2Fields_a57520a544c310f8c9a96cef7d6ffaaf4}
+
+
+Definition at line 46 of file aubit2fields.h.
+
+
+
+The documentation for this class was generated from the following files:\begin{DoxyCompactItemize}
+\item 
+/e/ms/QT/fieldparsers/\hyperlink{aubit2fields_8h}{aubit2fields.h}\item 
+/e/ms/QT/fieldparsers/\hyperlink{aubit2fields_8cpp}{aubit2fields.cpp}\end{DoxyCompactItemize}

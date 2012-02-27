@@ -1,0 +1,191 @@
+\hypertarget{classPrompt}{
+\section{Prompt Class Reference}
+\label{classPrompt}\index{Prompt@{Prompt}}
+}
+
+
+{\ttfamily \#include $<$prompt.h$>$}
+
+\subsection*{Signals}
+\begin{DoxyCompactItemize}
+\item 
+void \hyperlink{classPrompt_a115dfab6b20a8d28f953089f9eef1120}{sendDirect} (QString)
+\end{DoxyCompactItemize}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classPrompt_a9b9a2e32ba8ef0639dfe5f4eb263ab61}{Prompt} (QWidget $\ast$parent=0, Qt::WindowFlags f=0)
+\item 
+\hyperlink{classPrompt_aca349f134a91a4a1e5126f313fad0ca9}{Prompt} (QString, int, int, QWidget $\ast$parent=0, Qt::WindowFlags f=0)
+\end{DoxyCompactItemize}
+\subsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \hyperlink{classPrompt_a3e8ab9fc256bf464c751fe36d533bc0a}{keyPressEvent} (QKeyEvent $\ast$event)
+\item 
+void \hyperlink{classPrompt_a5c2538d52f63f936dd7d987e2f892f58}{closeEvent} (QCloseEvent $\ast$event)
+\end{DoxyCompactItemize}
+\subsection*{Private Slots}
+\begin{DoxyCompactItemize}
+\item 
+void \hyperlink{classPrompt_aef3df767b03b5ff95017c85f96d2ecda}{promptLineEditTextChanged} (const QString \&text)
+\end{DoxyCompactItemize}
+\subsection*{Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+QLayout $\ast$ \hyperlink{classPrompt_a94a07c07154d88490530bb08bb26f811}{layout}
+\item 
+QLayout $\ast$ \hyperlink{classPrompt_a56e03af79121de4fc2580bfc46cf04fc}{buttonLayout}
+\item 
+\hyperlink{classLineEdit}{LineEdit} $\ast$ \hyperlink{classPrompt_af52469d5dd32521df6bdedcc3af42964}{p\_\-lineEdit}
+\item 
+bool \hyperlink{classPrompt_a9f5af6b368e25cf76125fd694f3d72e3}{isAccepted}
+\item 
+bool \hyperlink{classPrompt_a0e000db2a581909f5cfb8928138d6ff0}{isCharOnlyMode}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+
+
+Definition at line 27 of file prompt.h.
+
+
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{classPrompt_a9b9a2e32ba8ef0639dfe5f4eb263ab61}{
+\index{Prompt@{Prompt}!Prompt@{Prompt}}
+\index{Prompt@{Prompt}!Prompt@{Prompt}}
+\subsubsection[{Prompt}]{\setlength{\rightskip}{0pt plus 5cm}Prompt::Prompt (
+\begin{DoxyParamCaption}
+\item[{QWidget $\ast$}]{parent = {\ttfamily 0}, }
+\item[{Qt::WindowFlags}]{f = {\ttfamily 0}}
+\end{DoxyParamCaption}
+)}}
+\label{classPrompt_a9b9a2e32ba8ef0639dfe5f4eb263ab61}
+
+
+Definition at line 35 of file prompt.cpp.
+
+\hypertarget{classPrompt_aca349f134a91a4a1e5126f313fad0ca9}{
+\index{Prompt@{Prompt}!Prompt@{Prompt}}
+\index{Prompt@{Prompt}!Prompt@{Prompt}}
+\subsubsection[{Prompt}]{\setlength{\rightskip}{0pt plus 5cm}Prompt::Prompt (
+\begin{DoxyParamCaption}
+\item[{QString}]{text, }
+\item[{int}]{charMode, }
+\item[{int}]{fieldAttribute, }
+\item[{QWidget $\ast$}]{parent = {\ttfamily 0}, }
+\item[{Qt::WindowFlags}]{f = {\ttfamily 0}}
+\end{DoxyParamCaption}
+)}}
+\label{classPrompt_aca349f134a91a4a1e5126f313fad0ca9}
+
+
+Definition at line 46 of file prompt.cpp.
+
+
+
+\subsection{Member Function Documentation}
+\hypertarget{classPrompt_a5c2538d52f63f936dd7d987e2f892f58}{
+\index{Prompt@{Prompt}!closeEvent@{closeEvent}}
+\index{closeEvent@{closeEvent}!Prompt@{Prompt}}
+\subsubsection[{closeEvent}]{\setlength{\rightskip}{0pt plus 5cm}void Prompt::closeEvent (
+\begin{DoxyParamCaption}
+\item[{QCloseEvent $\ast$}]{event}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}protected\mbox{]}}}}
+\label{classPrompt_a5c2538d52f63f936dd7d987e2f892f58}
+
+
+Definition at line 119 of file prompt.cpp.
+
+\hypertarget{classPrompt_a3e8ab9fc256bf464c751fe36d533bc0a}{
+\index{Prompt@{Prompt}!keyPressEvent@{keyPressEvent}}
+\index{keyPressEvent@{keyPressEvent}!Prompt@{Prompt}}
+\subsubsection[{keyPressEvent}]{\setlength{\rightskip}{0pt plus 5cm}void Prompt::keyPressEvent (
+\begin{DoxyParamCaption}
+\item[{QKeyEvent $\ast$}]{event}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}protected\mbox{]}}}}
+\label{classPrompt_a3e8ab9fc256bf464c751fe36d533bc0a}
+
+
+Definition at line 94 of file prompt.cpp.
+
+\hypertarget{classPrompt_aef3df767b03b5ff95017c85f96d2ecda}{
+\index{Prompt@{Prompt}!promptLineEditTextChanged@{promptLineEditTextChanged}}
+\index{promptLineEditTextChanged@{promptLineEditTextChanged}!Prompt@{Prompt}}
+\subsubsection[{promptLineEditTextChanged}]{\setlength{\rightskip}{0pt plus 5cm}void Prompt::promptLineEditTextChanged (
+\begin{DoxyParamCaption}
+\item[{const QString \&}]{text}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}private, slot\mbox{]}}}}
+\label{classPrompt_aef3df767b03b5ff95017c85f96d2ecda}
+
+
+Definition at line 112 of file prompt.cpp.
+
+\hypertarget{classPrompt_a115dfab6b20a8d28f953089f9eef1120}{
+\index{Prompt@{Prompt}!sendDirect@{sendDirect}}
+\index{sendDirect@{sendDirect}!Prompt@{Prompt}}
+\subsubsection[{sendDirect}]{\setlength{\rightskip}{0pt plus 5cm}void Prompt::sendDirect (
+\begin{DoxyParamCaption}
+\item[{QString}]{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}signal\mbox{]}}}}
+\label{classPrompt_a115dfab6b20a8d28f953089f9eef1120}
+
+
+\subsection{Member Data Documentation}
+\hypertarget{classPrompt_a56e03af79121de4fc2580bfc46cf04fc}{
+\index{Prompt@{Prompt}!buttonLayout@{buttonLayout}}
+\index{buttonLayout@{buttonLayout}!Prompt@{Prompt}}
+\subsubsection[{buttonLayout}]{\setlength{\rightskip}{0pt plus 5cm}QLayout$\ast$ {\bf Prompt::buttonLayout}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classPrompt_a56e03af79121de4fc2580bfc46cf04fc}
+
+
+Definition at line 37 of file prompt.h.
+
+\hypertarget{classPrompt_a9f5af6b368e25cf76125fd694f3d72e3}{
+\index{Prompt@{Prompt}!isAccepted@{isAccepted}}
+\index{isAccepted@{isAccepted}!Prompt@{Prompt}}
+\subsubsection[{isAccepted}]{\setlength{\rightskip}{0pt plus 5cm}bool {\bf Prompt::isAccepted}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classPrompt_a9f5af6b368e25cf76125fd694f3d72e3}
+
+
+Definition at line 39 of file prompt.h.
+
+\hypertarget{classPrompt_a0e000db2a581909f5cfb8928138d6ff0}{
+\index{Prompt@{Prompt}!isCharOnlyMode@{isCharOnlyMode}}
+\index{isCharOnlyMode@{isCharOnlyMode}!Prompt@{Prompt}}
+\subsubsection[{isCharOnlyMode}]{\setlength{\rightskip}{0pt plus 5cm}bool {\bf Prompt::isCharOnlyMode}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classPrompt_a0e000db2a581909f5cfb8928138d6ff0}
+
+
+Definition at line 40 of file prompt.h.
+
+\hypertarget{classPrompt_a94a07c07154d88490530bb08bb26f811}{
+\index{Prompt@{Prompt}!layout@{layout}}
+\index{layout@{layout}!Prompt@{Prompt}}
+\subsubsection[{layout}]{\setlength{\rightskip}{0pt plus 5cm}QLayout$\ast$ {\bf Prompt::layout}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classPrompt_a94a07c07154d88490530bb08bb26f811}
+
+
+Definition at line 36 of file prompt.h.
+
+\hypertarget{classPrompt_af52469d5dd32521df6bdedcc3af42964}{
+\index{Prompt@{Prompt}!p\_\-lineEdit@{p\_\-lineEdit}}
+\index{p\_\-lineEdit@{p\_\-lineEdit}!Prompt@{Prompt}}
+\subsubsection[{p\_\-lineEdit}]{\setlength{\rightskip}{0pt plus 5cm}{\bf LineEdit}$\ast$ {\bf Prompt::p\_\-lineEdit}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classPrompt_af52469d5dd32521df6bdedcc3af42964}
+
+
+Definition at line 38 of file prompt.h.
+
+
+
+The documentation for this class was generated from the following files:\begin{DoxyCompactItemize}
+\item 
+/e/ms/QT/models/\hyperlink{prompt_8h}{prompt.h}\item 
+/e/ms/QT/models/\hyperlink{prompt_8cpp}{prompt.cpp}\end{DoxyCompactItemize}

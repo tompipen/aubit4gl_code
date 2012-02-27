@@ -1,0 +1,478 @@
+\hypertarget{classWidgetHelper}{
+\section{WidgetHelper Class Reference}
+\label{classWidgetHelper}\index{WidgetHelper@{WidgetHelper}}
+}
+
+
+{\ttfamily \#include $<$vwidgets.h$>$}
+
+\subsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+static bool \hyperlink{classWidgetHelper_aabfcae96d26b2f06c6b54415fafd126a}{setDisplayAttributes} (int, QWidget $\ast$)
+\item 
+static int \hyperlink{classWidgetHelper_a44924edd75dd3550e891d36e4239c3b5}{getLengthBySqlType} (const QString \&sqlType)
+\item 
+static QString \hyperlink{classWidgetHelper_ab262e7771ed7559e29f96b84f30fa060}{getWidgetName} (QObject $\ast$)
+\item 
+static QString \hyperlink{classWidgetHelper_a5b84bc03a940b50ce9adbf8aa743d050}{getWidgetColName} (QObject $\ast$)
+\item 
+static QString \hyperlink{classWidgetHelper_ac17838da3e6d0857231e428c0a24b18d}{getWidgetTabName} (QObject $\ast$)
+\item 
+static \hyperlink{classEdit}{Edit} $\ast$ \hyperlink{classWidgetHelper_ae1c1eafb6a151ca2fffd8ad97e2ce0e2}{createEdit} (const QDomElement \&, QWidget $\ast$parent=NULL)
+\item 
+static \hyperlink{classFormField}{FormField} $\ast$ \hyperlink{classWidgetHelper_a5944782c8e36ae4d657129e519373d49}{createFormField} (const QDomElement \&, QWidget $\ast$parent=NULL)
+\item 
+static \hyperlink{classLabel}{Label} $\ast$ \hyperlink{classWidgetHelper_a881cf0f58d99160a2bb26952dcd0ef83}{createLabel} (const QDomElement \&, QWidget $\ast$parent=NULL)
+\item 
+static \hyperlink{classLabel}{Label} $\ast$ \hyperlink{classWidgetHelper_a368ade1be02a16b36f98b6dc56fbad68}{createImage} (const QDomElement \&, QWidget $\ast$parent=NULL)
+\item 
+static \hyperlink{classButton}{Button} $\ast$ \hyperlink{classWidgetHelper_abd0bc4a027c1a4fbd986e467b2eb7fe4}{createButton} (const QDomElement \&, QWidget $\ast$parent=NULL)
+\item 
+static QWidget $\ast$ \hyperlink{classWidgetHelper_ae52d8d07fe63d8cc60ffd216aadafc52}{createFormWidget} (const QDomElement \&, QWidget $\ast$parent=NULL)
+\item 
+static \hyperlink{classButtonEdit}{ButtonEdit} $\ast$ \hyperlink{classWidgetHelper_ad97a163bd94704f52bd079d573da314b}{createButtonEdit} (const QDomElement \&, QWidget $\ast$parent=NULL)
+\item 
+static \hyperlink{classDateEdit}{DateEdit} $\ast$ \hyperlink{classWidgetHelper_a6354c56559916f916adebcf6b8f627d1}{createDateEdit} (const QDomElement \&, QWidget $\ast$parent=NULL)
+\item 
+static \hyperlink{classTextEdit}{TextEdit} $\ast$ \hyperlink{classWidgetHelper_a937976f257925ced21d24388e56c94a6}{createTextEdit} (const QDomElement \&, QWidget $\ast$parent=NULL)
+\item 
+static \hyperlink{classWebView}{WebView} $\ast$ \hyperlink{classWidgetHelper_a48d30e83e4a30db1d74d17d9b62022ce}{createWebView} (const QDomElement \&, QWidget $\ast$parent=NULL)
+\item 
+static \hyperlink{classComboBox}{ComboBox} $\ast$ \hyperlink{classWidgetHelper_a50bc6b6b14895efd71704e4d5a781331}{createComboBox} (const QDomElement \&, QWidget $\ast$parent=NULL)
+\item 
+static \hyperlink{classCheckBox}{CheckBox} $\ast$ \hyperlink{classWidgetHelper_a037063613f5af349e65e1bf6b788b0ad}{createCheckBox} (const QDomElement \&, QWidget $\ast$parent=NULL)
+\item 
+static \hyperlink{classProgressBar}{ProgressBar} $\ast$ \hyperlink{classWidgetHelper_a1e8b20777e928d477f77e118126ed9ad}{createProgressBar} (const QDomElement \&, QWidget $\ast$parent=NULL)
+\item 
+static void \hyperlink{classWidgetHelper_a53ad6696037211fd3ef0cbe545350d91}{setValidator} (QWidget $\ast$)
+\item 
+static bool \hyperlink{classWidgetHelper_a59309147e5fa4a38a4cf146279406220}{isFieldWidget} (QObject $\ast$)
+\item 
+static bool \hyperlink{classWidgetHelper_a35b32f711ca59921d88b31038c71aeae}{isFieldWidget} (QObject $\ast$, QString)
+\item 
+static void \hyperlink{classWidgetHelper_a2b32de266bc3de938fbcbad3e4e2d7b0}{setFieldText} (QObject $\ast$, QString)
+\item 
+static QString \hyperlink{classWidgetHelper_a3b07ca2c147e99a5856980f6ffdb414b}{fieldText} (QObject $\ast$)
+\item 
+static void \hyperlink{classWidgetHelper_ab9ca0c6fd6e0c785c05de6ff535d57df}{setDefaultFieldText} (QObject $\ast$)
+\item 
+static QString \hyperlink{classWidgetHelper_a7173c953cdc22dee570b8fa49173d342}{defaultFieldText} (QObject $\ast$)
+\item 
+static void \hyperlink{classWidgetHelper_aaa2943838bf4fe36fba5b7484a3a654e}{setFieldAttribute} (QObject $\ast$)
+\item 
+static void \hyperlink{classWidgetHelper_a8e00036f0d2266bbad98acda7160387d}{copy} (QObject $\ast$)
+\item 
+static void \hyperlink{classWidgetHelper_aa82033bc031548cfec7861cf0fca1fc8}{cut} (QObject $\ast$)
+\item 
+static void \hyperlink{classWidgetHelper_a430b5248cce29cc89388f6a9596400ce}{paste} (QObject $\ast$)
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+
+
+Definition at line 596 of file vwidgets.h.
+
+
+
+\subsection{Member Function Documentation}
+\hypertarget{classWidgetHelper_a8e00036f0d2266bbad98acda7160387d}{
+\index{WidgetHelper@{WidgetHelper}!copy@{copy}}
+\index{copy@{copy}!WidgetHelper@{WidgetHelper}}
+\subsubsection[{copy}]{\setlength{\rightskip}{0pt plus 5cm}void WidgetHelper::copy (
+\begin{DoxyParamCaption}
+\item[{QObject $\ast$}]{object}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}
+\label{classWidgetHelper_a8e00036f0d2266bbad98acda7160387d}
+
+
+Definition at line 1952 of file vwidgets.cpp.
+
+\hypertarget{classWidgetHelper_abd0bc4a027c1a4fbd986e467b2eb7fe4}{
+\index{WidgetHelper@{WidgetHelper}!createButton@{createButton}}
+\index{createButton@{createButton}!WidgetHelper@{WidgetHelper}}
+\subsubsection[{createButton}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Button} $\ast$ WidgetHelper::createButton (
+\begin{DoxyParamCaption}
+\item[{const QDomElement \&}]{formField, }
+\item[{QWidget $\ast$}]{parent = {\ttfamily NULL}}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}
+\label{classWidgetHelper_abd0bc4a027c1a4fbd986e467b2eb7fe4}
+
+
+Definition at line 1062 of file vwidgets.cpp.
+
+\hypertarget{classWidgetHelper_ad97a163bd94704f52bd079d573da314b}{
+\index{WidgetHelper@{WidgetHelper}!createButtonEdit@{createButtonEdit}}
+\index{createButtonEdit@{createButtonEdit}!WidgetHelper@{WidgetHelper}}
+\subsubsection[{createButtonEdit}]{\setlength{\rightskip}{0pt plus 5cm}{\bf ButtonEdit} $\ast$ WidgetHelper::createButtonEdit (
+\begin{DoxyParamCaption}
+\item[{const QDomElement \&}]{formField, }
+\item[{QWidget $\ast$}]{parent = {\ttfamily NULL}}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}
+\label{classWidgetHelper_ad97a163bd94704f52bd079d573da314b}
+
+
+Definition at line 1183 of file vwidgets.cpp.
+
+\hypertarget{classWidgetHelper_a037063613f5af349e65e1bf6b788b0ad}{
+\index{WidgetHelper@{WidgetHelper}!createCheckBox@{createCheckBox}}
+\index{createCheckBox@{createCheckBox}!WidgetHelper@{WidgetHelper}}
+\subsubsection[{createCheckBox}]{\setlength{\rightskip}{0pt plus 5cm}{\bf CheckBox} $\ast$ WidgetHelper::createCheckBox (
+\begin{DoxyParamCaption}
+\item[{const QDomElement \&}]{formField, }
+\item[{QWidget $\ast$}]{parent = {\ttfamily NULL}}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}
+\label{classWidgetHelper_a037063613f5af349e65e1bf6b788b0ad}
+
+
+Definition at line 1763 of file vwidgets.cpp.
+
+\hypertarget{classWidgetHelper_a50bc6b6b14895efd71704e4d5a781331}{
+\index{WidgetHelper@{WidgetHelper}!createComboBox@{createComboBox}}
+\index{createComboBox@{createComboBox}!WidgetHelper@{WidgetHelper}}
+\subsubsection[{createComboBox}]{\setlength{\rightskip}{0pt plus 5cm}{\bf ComboBox} $\ast$ WidgetHelper::createComboBox (
+\begin{DoxyParamCaption}
+\item[{const QDomElement \&}]{formField, }
+\item[{QWidget $\ast$}]{parent = {\ttfamily NULL}}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}
+\label{classWidgetHelper_a50bc6b6b14895efd71704e4d5a781331}
+
+
+Definition at line 1688 of file vwidgets.cpp.
+
+\hypertarget{classWidgetHelper_a6354c56559916f916adebcf6b8f627d1}{
+\index{WidgetHelper@{WidgetHelper}!createDateEdit@{createDateEdit}}
+\index{createDateEdit@{createDateEdit}!WidgetHelper@{WidgetHelper}}
+\subsubsection[{createDateEdit}]{\setlength{\rightskip}{0pt plus 5cm}{\bf DateEdit} $\ast$ WidgetHelper::createDateEdit (
+\begin{DoxyParamCaption}
+\item[{const QDomElement \&}]{formField, }
+\item[{QWidget $\ast$}]{parent = {\ttfamily NULL}}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}
+\label{classWidgetHelper_a6354c56559916f916adebcf6b8f627d1}
+
+
+Definition at line 1476 of file vwidgets.cpp.
+
+\hypertarget{classWidgetHelper_ae1c1eafb6a151ca2fffd8ad97e2ce0e2}{
+\index{WidgetHelper@{WidgetHelper}!createEdit@{createEdit}}
+\index{createEdit@{createEdit}!WidgetHelper@{WidgetHelper}}
+\subsubsection[{createEdit}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Edit} $\ast$ WidgetHelper::createEdit (
+\begin{DoxyParamCaption}
+\item[{const QDomElement \&}]{formField, }
+\item[{QWidget $\ast$}]{parent = {\ttfamily NULL}}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}
+\label{classWidgetHelper_ae1c1eafb6a151ca2fffd8ad97e2ce0e2}
+
+
+Definition at line 1105 of file vwidgets.cpp.
+
+\hypertarget{classWidgetHelper_a5944782c8e36ae4d657129e519373d49}{
+\index{WidgetHelper@{WidgetHelper}!createFormField@{createFormField}}
+\index{createFormField@{createFormField}!WidgetHelper@{WidgetHelper}}
+\subsubsection[{createFormField}]{\setlength{\rightskip}{0pt plus 5cm}{\bf FormField} $\ast$ WidgetHelper::createFormField (
+\begin{DoxyParamCaption}
+\item[{const QDomElement \&}]{formField, }
+\item[{QWidget $\ast$}]{parent = {\ttfamily NULL}}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}
+\label{classWidgetHelper_a5944782c8e36ae4d657129e519373d49}
+
+
+Definition at line 851 of file vwidgets.cpp.
+
+\hypertarget{classWidgetHelper_ae52d8d07fe63d8cc60ffd216aadafc52}{
+\index{WidgetHelper@{WidgetHelper}!createFormWidget@{createFormWidget}}
+\index{createFormWidget@{createFormWidget}!WidgetHelper@{WidgetHelper}}
+\subsubsection[{createFormWidget}]{\setlength{\rightskip}{0pt plus 5cm}QWidget $\ast$ WidgetHelper::createFormWidget (
+\begin{DoxyParamCaption}
+\item[{const QDomElement \&}]{formField, }
+\item[{QWidget $\ast$}]{parent = {\ttfamily NULL}}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}
+\label{classWidgetHelper_ae52d8d07fe63d8cc60ffd216aadafc52}
+
+
+Definition at line 790 of file vwidgets.cpp.
+
+\hypertarget{classWidgetHelper_a368ade1be02a16b36f98b6dc56fbad68}{
+\index{WidgetHelper@{WidgetHelper}!createImage@{createImage}}
+\index{createImage@{createImage}!WidgetHelper@{WidgetHelper}}
+\subsubsection[{createImage}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Label} $\ast$ WidgetHelper::createImage (
+\begin{DoxyParamCaption}
+\item[{const QDomElement \&}]{formField, }
+\item[{QWidget $\ast$}]{parent = {\ttfamily NULL}}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}
+\label{classWidgetHelper_a368ade1be02a16b36f98b6dc56fbad68}
+
+
+Definition at line 944 of file vwidgets.cpp.
+
+\hypertarget{classWidgetHelper_a881cf0f58d99160a2bb26952dcd0ef83}{
+\index{WidgetHelper@{WidgetHelper}!createLabel@{createLabel}}
+\index{createLabel@{createLabel}!WidgetHelper@{WidgetHelper}}
+\subsubsection[{createLabel}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Label} $\ast$ WidgetHelper::createLabel (
+\begin{DoxyParamCaption}
+\item[{const QDomElement \&}]{formField, }
+\item[{QWidget $\ast$}]{parent = {\ttfamily NULL}}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}
+\label{classWidgetHelper_a881cf0f58d99160a2bb26952dcd0ef83}
+
+
+Definition at line 892 of file vwidgets.cpp.
+
+\hypertarget{classWidgetHelper_a1e8b20777e928d477f77e118126ed9ad}{
+\index{WidgetHelper@{WidgetHelper}!createProgressBar@{createProgressBar}}
+\index{createProgressBar@{createProgressBar}!WidgetHelper@{WidgetHelper}}
+\subsubsection[{createProgressBar}]{\setlength{\rightskip}{0pt plus 5cm}{\bf ProgressBar} $\ast$ WidgetHelper::createProgressBar (
+\begin{DoxyParamCaption}
+\item[{const QDomElement \&}]{formField, }
+\item[{QWidget $\ast$}]{parent = {\ttfamily NULL}}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}
+\label{classWidgetHelper_a1e8b20777e928d477f77e118126ed9ad}
+
+
+Definition at line 1837 of file vwidgets.cpp.
+
+\hypertarget{classWidgetHelper_a937976f257925ced21d24388e56c94a6}{
+\index{WidgetHelper@{WidgetHelper}!createTextEdit@{createTextEdit}}
+\index{createTextEdit@{createTextEdit}!WidgetHelper@{WidgetHelper}}
+\subsubsection[{createTextEdit}]{\setlength{\rightskip}{0pt plus 5cm}{\bf TextEdit} $\ast$ WidgetHelper::createTextEdit (
+\begin{DoxyParamCaption}
+\item[{const QDomElement \&}]{formField, }
+\item[{QWidget $\ast$}]{parent = {\ttfamily NULL}}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}
+\label{classWidgetHelper_a937976f257925ced21d24388e56c94a6}
+
+
+Definition at line 1547 of file vwidgets.cpp.
+
+\hypertarget{classWidgetHelper_a48d30e83e4a30db1d74d17d9b62022ce}{
+\index{WidgetHelper@{WidgetHelper}!createWebView@{createWebView}}
+\index{createWebView@{createWebView}!WidgetHelper@{WidgetHelper}}
+\subsubsection[{createWebView}]{\setlength{\rightskip}{0pt plus 5cm}{\bf WebView} $\ast$ WidgetHelper::createWebView (
+\begin{DoxyParamCaption}
+\item[{const QDomElement \&}]{formField, }
+\item[{QWidget $\ast$}]{parent = {\ttfamily NULL}}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}
+\label{classWidgetHelper_a48d30e83e4a30db1d74d17d9b62022ce}
+
+
+Definition at line 999 of file vwidgets.cpp.
+
+\hypertarget{classWidgetHelper_aa82033bc031548cfec7861cf0fca1fc8}{
+\index{WidgetHelper@{WidgetHelper}!cut@{cut}}
+\index{cut@{cut}!WidgetHelper@{WidgetHelper}}
+\subsubsection[{cut}]{\setlength{\rightskip}{0pt plus 5cm}void WidgetHelper::cut (
+\begin{DoxyParamCaption}
+\item[{QObject $\ast$}]{object}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}
+\label{classWidgetHelper_aa82033bc031548cfec7861cf0fca1fc8}
+
+
+Definition at line 1964 of file vwidgets.cpp.
+
+\hypertarget{classWidgetHelper_a7173c953cdc22dee570b8fa49173d342}{
+\index{WidgetHelper@{WidgetHelper}!defaultFieldText@{defaultFieldText}}
+\index{defaultFieldText@{defaultFieldText}!WidgetHelper@{WidgetHelper}}
+\subsubsection[{defaultFieldText}]{\setlength{\rightskip}{0pt plus 5cm}QString WidgetHelper::defaultFieldText (
+\begin{DoxyParamCaption}
+\item[{QObject $\ast$}]{object}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}
+\label{classWidgetHelper_a7173c953cdc22dee570b8fa49173d342}
+
+
+Definition at line 2202 of file vwidgets.cpp.
+
+\hypertarget{classWidgetHelper_a3b07ca2c147e99a5856980f6ffdb414b}{
+\index{WidgetHelper@{WidgetHelper}!fieldText@{fieldText}}
+\index{fieldText@{fieldText}!WidgetHelper@{WidgetHelper}}
+\subsubsection[{fieldText}]{\setlength{\rightskip}{0pt plus 5cm}QString WidgetHelper::fieldText (
+\begin{DoxyParamCaption}
+\item[{QObject $\ast$}]{object}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}
+\label{classWidgetHelper_a3b07ca2c147e99a5856980f6ffdb414b}
+
+
+Definition at line 2073 of file vwidgets.cpp.
+
+\hypertarget{classWidgetHelper_a44924edd75dd3550e891d36e4239c3b5}{
+\index{WidgetHelper@{WidgetHelper}!getLengthBySqlType@{getLengthBySqlType}}
+\index{getLengthBySqlType@{getLengthBySqlType}!WidgetHelper@{WidgetHelper}}
+\subsubsection[{getLengthBySqlType}]{\setlength{\rightskip}{0pt plus 5cm}int WidgetHelper::getLengthBySqlType (
+\begin{DoxyParamCaption}
+\item[{const QString \&}]{sqlType}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}
+\label{classWidgetHelper_a44924edd75dd3550e891d36e4239c3b5}
+
+
+Definition at line 694 of file vwidgets.cpp.
+
+\hypertarget{classWidgetHelper_a5b84bc03a940b50ce9adbf8aa743d050}{
+\index{WidgetHelper@{WidgetHelper}!getWidgetColName@{getWidgetColName}}
+\index{getWidgetColName@{getWidgetColName}!WidgetHelper@{WidgetHelper}}
+\subsubsection[{getWidgetColName}]{\setlength{\rightskip}{0pt plus 5cm}QString WidgetHelper::getWidgetColName (
+\begin{DoxyParamCaption}
+\item[{QObject $\ast$}]{widget}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}
+\label{classWidgetHelper_a5b84bc03a940b50ce9adbf8aa743d050}
+
+
+Definition at line 738 of file vwidgets.cpp.
+
+\hypertarget{classWidgetHelper_ab262e7771ed7559e29f96b84f30fa060}{
+\index{WidgetHelper@{WidgetHelper}!getWidgetName@{getWidgetName}}
+\index{getWidgetName@{getWidgetName}!WidgetHelper@{WidgetHelper}}
+\subsubsection[{getWidgetName}]{\setlength{\rightskip}{0pt plus 5cm}QString WidgetHelper::getWidgetName (
+\begin{DoxyParamCaption}
+\item[{QObject $\ast$}]{widget}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}
+\label{classWidgetHelper_ab262e7771ed7559e29f96b84f30fa060}
+
+
+Definition at line 717 of file vwidgets.cpp.
+
+\hypertarget{classWidgetHelper_ac17838da3e6d0857231e428c0a24b18d}{
+\index{WidgetHelper@{WidgetHelper}!getWidgetTabName@{getWidgetTabName}}
+\index{getWidgetTabName@{getWidgetTabName}!WidgetHelper@{WidgetHelper}}
+\subsubsection[{getWidgetTabName}]{\setlength{\rightskip}{0pt plus 5cm}QString WidgetHelper::getWidgetTabName (
+\begin{DoxyParamCaption}
+\item[{QObject $\ast$}]{widget}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}
+\label{classWidgetHelper_ac17838da3e6d0857231e428c0a24b18d}
+
+
+Definition at line 766 of file vwidgets.cpp.
+
+\hypertarget{classWidgetHelper_a59309147e5fa4a38a4cf146279406220}{
+\index{WidgetHelper@{WidgetHelper}!isFieldWidget@{isFieldWidget}}
+\index{isFieldWidget@{isFieldWidget}!WidgetHelper@{WidgetHelper}}
+\subsubsection[{isFieldWidget}]{\setlength{\rightskip}{0pt plus 5cm}bool WidgetHelper::isFieldWidget (
+\begin{DoxyParamCaption}
+\item[{QObject $\ast$}]{object}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}
+\label{classWidgetHelper_a59309147e5fa4a38a4cf146279406220}
+
+
+Definition at line 1897 of file vwidgets.cpp.
+
+\hypertarget{classWidgetHelper_a35b32f711ca59921d88b31038c71aeae}{
+\index{WidgetHelper@{WidgetHelper}!isFieldWidget@{isFieldWidget}}
+\index{isFieldWidget@{isFieldWidget}!WidgetHelper@{WidgetHelper}}
+\subsubsection[{isFieldWidget}]{\setlength{\rightskip}{0pt plus 5cm}bool WidgetHelper::isFieldWidget (
+\begin{DoxyParamCaption}
+\item[{QObject $\ast$}]{object, }
+\item[{QString}]{fieldName}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}
+\label{classWidgetHelper_a35b32f711ca59921d88b31038c71aeae}
+
+
+Definition at line 1914 of file vwidgets.cpp.
+
+\hypertarget{classWidgetHelper_a430b5248cce29cc89388f6a9596400ce}{
+\index{WidgetHelper@{WidgetHelper}!paste@{paste}}
+\index{paste@{paste}!WidgetHelper@{WidgetHelper}}
+\subsubsection[{paste}]{\setlength{\rightskip}{0pt plus 5cm}void WidgetHelper::paste (
+\begin{DoxyParamCaption}
+\item[{QObject $\ast$}]{object}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}
+\label{classWidgetHelper_a430b5248cce29cc89388f6a9596400ce}
+
+
+Definition at line 1976 of file vwidgets.cpp.
+
+\hypertarget{classWidgetHelper_ab9ca0c6fd6e0c785c05de6ff535d57df}{
+\index{WidgetHelper@{WidgetHelper}!setDefaultFieldText@{setDefaultFieldText}}
+\index{setDefaultFieldText@{setDefaultFieldText}!WidgetHelper@{WidgetHelper}}
+\subsubsection[{setDefaultFieldText}]{\setlength{\rightskip}{0pt plus 5cm}void WidgetHelper::setDefaultFieldText (
+\begin{DoxyParamCaption}
+\item[{QObject $\ast$}]{object}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}
+\label{classWidgetHelper_ab9ca0c6fd6e0c785c05de6ff535d57df}
+
+
+Definition at line 2157 of file vwidgets.cpp.
+
+\hypertarget{classWidgetHelper_aabfcae96d26b2f06c6b54415fafd126a}{
+\index{WidgetHelper@{WidgetHelper}!setDisplayAttributes@{setDisplayAttributes}}
+\index{setDisplayAttributes@{setDisplayAttributes}!WidgetHelper@{WidgetHelper}}
+\subsubsection[{setDisplayAttributes}]{\setlength{\rightskip}{0pt plus 5cm}bool WidgetHelper::setDisplayAttributes (
+\begin{DoxyParamCaption}
+\item[{int}]{fieldAttribute, }
+\item[{QWidget $\ast$}]{widget}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}
+\label{classWidgetHelper_aabfcae96d26b2f06c6b54415fafd126a}
+
+
+Definition at line 1257 of file vwidgets.cpp.
+
+\hypertarget{classWidgetHelper_aaa2943838bf4fe36fba5b7484a3a654e}{
+\index{WidgetHelper@{WidgetHelper}!setFieldAttribute@{setFieldAttribute}}
+\index{setFieldAttribute@{setFieldAttribute}!WidgetHelper@{WidgetHelper}}
+\subsubsection[{setFieldAttribute}]{\setlength{\rightskip}{0pt plus 5cm}void WidgetHelper::setFieldAttribute (
+\begin{DoxyParamCaption}
+\item[{QObject $\ast$}]{object}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}
+\label{classWidgetHelper_aaa2943838bf4fe36fba5b7484a3a654e}
+
+
+Definition at line 2314 of file vwidgets.cpp.
+
+\hypertarget{classWidgetHelper_a2b32de266bc3de938fbcbad3e4e2d7b0}{
+\index{WidgetHelper@{WidgetHelper}!setFieldText@{setFieldText}}
+\index{setFieldText@{setFieldText}!WidgetHelper@{WidgetHelper}}
+\subsubsection[{setFieldText}]{\setlength{\rightskip}{0pt plus 5cm}void WidgetHelper::setFieldText (
+\begin{DoxyParamCaption}
+\item[{QObject $\ast$}]{object, }
+\item[{QString}]{fieldValue}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}
+\label{classWidgetHelper_a2b32de266bc3de938fbcbad3e4e2d7b0}
+
+
+Definition at line 1988 of file vwidgets.cpp.
+
+\hypertarget{classWidgetHelper_a53ad6696037211fd3ef0cbe545350d91}{
+\index{WidgetHelper@{WidgetHelper}!setValidator@{setValidator}}
+\index{setValidator@{setValidator}!WidgetHelper@{WidgetHelper}}
+\subsubsection[{setValidator}]{\setlength{\rightskip}{0pt plus 5cm}void WidgetHelper::setValidator (
+\begin{DoxyParamCaption}
+\item[{QWidget $\ast$}]{widget}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}
+\label{classWidgetHelper_a53ad6696037211fd3ef0cbe545350d91}
+
+
+Definition at line 2238 of file vwidgets.cpp.
+
+
+
+The documentation for this class was generated from the following files:\begin{DoxyCompactItemize}
+\item 
+/e/ms/QT/models/\hyperlink{vwidgets_8h}{vwidgets.h}\item 
+/e/ms/QT/models/\hyperlink{vwidgets_8cpp}{vwidgets.cpp}\end{DoxyCompactItemize}

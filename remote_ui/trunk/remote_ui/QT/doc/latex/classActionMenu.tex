@@ -1,0 +1,346 @@
+\hypertarget{classActionMenu}{
+\section{ActionMenu Class Reference}
+\label{classActionMenu}\index{ActionMenu@{ActionMenu}}
+}
+
+
+{\ttfamily \#include $<$actionmenu.h$>$}
+
+\subsection*{Signals}
+\begin{DoxyCompactItemize}
+\item 
+void \hyperlink{classActionMenu_a173cbad1d02c27905563e80eeba3ca9f}{menuButtonPressed} (QString)
+\end{DoxyCompactItemize}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classActionMenu_a702a96aca8b51697d55d1a97396c7776}{ActionMenu} (QWidget $\ast$parent=0)
+\item 
+\hyperlink{classActionMenu_aa5226e4b5b902f5857274f20ff594a74}{ActionMenu} (QString title=\char`\"{}\char`\"{}, QString style=\char`\"{}\char`\"{}, QWidget $\ast$parent=0)
+\item 
+void \hyperlink{classActionMenu_aad5a9530b92a300c0bcfb5671b5be868}{createButton} (QString id=\char`\"{}\char`\"{}, QString text=\char`\"{}\char`\"{}, QString desc=\char`\"{}\char`\"{}, QAction $\ast$action=NULL)
+\item 
+void \hyperlink{classActionMenu_ae80a3c156af75468db09bc4de9a9476a}{setAction} (QString, QAction $\ast$)
+\item 
+void \hyperlink{classActionMenu_ae79b45ab7a21c6b907c5dd013fca1657}{hideButton} (QString)
+\item 
+QList$<$ QPushButton $\ast$ $>$ \hyperlink{classActionMenu_a20e4afb9ee2a392e70a846685285809a}{buttons} ()
+\item 
+void \hyperlink{classActionMenu_a22e541a44d329c4c3436e80bab89145e}{setOrientation} (const Qt::Orientation \&o)
+\item 
+void \hyperlink{classActionMenu_a057543db1dfd0df7cd154f94064a2324}{removeButton} (QString)
+\item 
+void \hyperlink{classActionMenu_a57b228151344e9fd7fe3eb94174469c6}{removeButtons} ()
+\item 
+void \hyperlink{classActionMenu_a1c953fd1e69e7057c0a4d1eb7323208b}{hideButtons} (bool)
+\item 
+QList$<$ QAction $\ast$ $>$ \hyperlink{classActionMenu_a44ba9130999e74857a8f571e78da63de}{actions} ()
+\item 
+QAction $\ast$ \hyperlink{classActionMenu_a29c473d325be2186531fcf9b281ac5f5}{getAction} (QString)
+\end{DoxyCompactItemize}
+\subsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \hyperlink{classActionMenu_a437f074013c2ac56b42050e67e6e0793}{resizeEvent} (QResizeEvent $\ast$)
+\item 
+void \hyperlink{classActionMenu_ac7958439c159f48ffdb9e9b8e504a33b}{keyPressEvent} (QKeyEvent $\ast$event)
+\end{DoxyCompactItemize}
+\subsection*{Private Slots}
+\begin{DoxyCompactItemize}
+\item 
+void \hyperlink{classActionMenu_a4ad6df9a6b18418d8a34cb5dae95bf74}{buttonClicked} (int)
+\item 
+void \hyperlink{classActionMenu_ad66335742121b47be8ddd578766c23a3}{buttonClicked} (QAbstractButton $\ast$)
+\end{DoxyCompactItemize}
+\subsection*{Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+QHash$<$ QString, QPalette $>$ \hyperlink{classActionMenu_ab5d9ea9892dc558b8cc9fb1eafb60801}{qh\_\-buttonpals}
+\item 
+QHash$<$ QString, QIcon $>$ \hyperlink{classActionMenu_ad5e51a340311d4ba65c8d3e012db3d36}{qh\_\-buttonicon}
+\item 
+QLayout $\ast$ \hyperlink{classActionMenu_a001562cff4f1a3f8356eaf167d725904}{layout}
+\item 
+QButtonGroup $\ast$ \hyperlink{classActionMenu_a019ac48a117d01f6d52feb941486d78a}{buttonGroup}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+
+
+Definition at line 26 of file actionmenu.h.
+
+
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{classActionMenu_a702a96aca8b51697d55d1a97396c7776}{
+\index{ActionMenu@{ActionMenu}!ActionMenu@{ActionMenu}}
+\index{ActionMenu@{ActionMenu}!ActionMenu@{ActionMenu}}
+\subsubsection[{ActionMenu}]{\setlength{\rightskip}{0pt plus 5cm}ActionMenu::ActionMenu (
+\begin{DoxyParamCaption}
+\item[{QWidget $\ast$}]{parent = {\ttfamily 0}}
+\end{DoxyParamCaption}
+)}}
+\label{classActionMenu_a702a96aca8b51697d55d1a97396c7776}
+
+
+Definition at line 29 of file actionmenu.cpp.
+
+\hypertarget{classActionMenu_aa5226e4b5b902f5857274f20ff594a74}{
+\index{ActionMenu@{ActionMenu}!ActionMenu@{ActionMenu}}
+\index{ActionMenu@{ActionMenu}!ActionMenu@{ActionMenu}}
+\subsubsection[{ActionMenu}]{\setlength{\rightskip}{0pt plus 5cm}ActionMenu::ActionMenu (
+\begin{DoxyParamCaption}
+\item[{QString}]{title = {\ttfamily \char`\"{}\char`\"{}}, }
+\item[{QString}]{style = {\ttfamily \char`\"{}\char`\"{}}, }
+\item[{QWidget $\ast$}]{parent = {\ttfamily 0}}
+\end{DoxyParamCaption}
+)}}
+\label{classActionMenu_aa5226e4b5b902f5857274f20ff594a74}
+
+
+Definition at line 60 of file actionmenu.cpp.
+
+
+
+\subsection{Member Function Documentation}
+\hypertarget{classActionMenu_a44ba9130999e74857a8f571e78da63de}{
+\index{ActionMenu@{ActionMenu}!actions@{actions}}
+\index{actions@{actions}!ActionMenu@{ActionMenu}}
+\subsubsection[{actions}]{\setlength{\rightskip}{0pt plus 5cm}QList$<$ QAction $\ast$ $>$ ActionMenu::actions (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}
+\label{classActionMenu_a44ba9130999e74857a8f571e78da63de}
+
+
+Definition at line 304 of file actionmenu.cpp.
+
+\hypertarget{classActionMenu_a4ad6df9a6b18418d8a34cb5dae95bf74}{
+\index{ActionMenu@{ActionMenu}!buttonClicked@{buttonClicked}}
+\index{buttonClicked@{buttonClicked}!ActionMenu@{ActionMenu}}
+\subsubsection[{buttonClicked}]{\setlength{\rightskip}{0pt plus 5cm}void ActionMenu::buttonClicked (
+\begin{DoxyParamCaption}
+\item[{int}]{id}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}private, slot\mbox{]}}}}
+\label{classActionMenu_a4ad6df9a6b18418d8a34cb5dae95bf74}
+
+
+Definition at line 194 of file actionmenu.cpp.
+
+\hypertarget{classActionMenu_ad66335742121b47be8ddd578766c23a3}{
+\index{ActionMenu@{ActionMenu}!buttonClicked@{buttonClicked}}
+\index{buttonClicked@{buttonClicked}!ActionMenu@{ActionMenu}}
+\subsubsection[{buttonClicked}]{\setlength{\rightskip}{0pt plus 5cm}void ActionMenu::buttonClicked (
+\begin{DoxyParamCaption}
+\item[{QAbstractButton $\ast$}]{button}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}private, slot\mbox{]}}}}
+\label{classActionMenu_ad66335742121b47be8ddd578766c23a3}
+
+
+Definition at line 205 of file actionmenu.cpp.
+
+\hypertarget{classActionMenu_a20e4afb9ee2a392e70a846685285809a}{
+\index{ActionMenu@{ActionMenu}!buttons@{buttons}}
+\index{buttons@{buttons}!ActionMenu@{ActionMenu}}
+\subsubsection[{buttons}]{\setlength{\rightskip}{0pt plus 5cm}QList$<$ QPushButton $\ast$ $>$ ActionMenu::buttons (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}
+\label{classActionMenu_a20e4afb9ee2a392e70a846685285809a}
+
+
+Definition at line 176 of file actionmenu.cpp.
+
+\hypertarget{classActionMenu_aad5a9530b92a300c0bcfb5671b5be868}{
+\index{ActionMenu@{ActionMenu}!createButton@{createButton}}
+\index{createButton@{createButton}!ActionMenu@{ActionMenu}}
+\subsubsection[{createButton}]{\setlength{\rightskip}{0pt plus 5cm}void ActionMenu::createButton (
+\begin{DoxyParamCaption}
+\item[{QString}]{id = {\ttfamily \char`\"{}\char`\"{}}, }
+\item[{QString}]{text = {\ttfamily \char`\"{}\char`\"{}}, }
+\item[{QString}]{desc = {\ttfamily \char`\"{}\char`\"{}}, }
+\item[{QAction $\ast$}]{action = {\ttfamily NULL}}
+\end{DoxyParamCaption}
+)}}
+\label{classActionMenu_aad5a9530b92a300c0bcfb5671b5be868}
+
+
+Definition at line 97 of file actionmenu.cpp.
+
+\hypertarget{classActionMenu_a29c473d325be2186531fcf9b281ac5f5}{
+\index{ActionMenu@{ActionMenu}!getAction@{getAction}}
+\index{getAction@{getAction}!ActionMenu@{ActionMenu}}
+\subsubsection[{getAction}]{\setlength{\rightskip}{0pt plus 5cm}QAction $\ast$ ActionMenu::getAction (
+\begin{DoxyParamCaption}
+\item[{QString}]{name}
+\end{DoxyParamCaption}
+)}}
+\label{classActionMenu_a29c473d325be2186531fcf9b281ac5f5}
+
+
+Definition at line 319 of file actionmenu.cpp.
+
+\hypertarget{classActionMenu_ae79b45ab7a21c6b907c5dd013fca1657}{
+\index{ActionMenu@{ActionMenu}!hideButton@{hideButton}}
+\index{hideButton@{hideButton}!ActionMenu@{ActionMenu}}
+\subsubsection[{hideButton}]{\setlength{\rightskip}{0pt plus 5cm}void ActionMenu::hideButton (
+\begin{DoxyParamCaption}
+\item[{QString}]{name}
+\end{DoxyParamCaption}
+)}}
+\label{classActionMenu_ae79b45ab7a21c6b907c5dd013fca1657}
+
+
+Definition at line 159 of file actionmenu.cpp.
+
+\hypertarget{classActionMenu_a1c953fd1e69e7057c0a4d1eb7323208b}{
+\index{ActionMenu@{ActionMenu}!hideButtons@{hideButtons}}
+\index{hideButtons@{hideButtons}!ActionMenu@{ActionMenu}}
+\subsubsection[{hideButtons}]{\setlength{\rightskip}{0pt plus 5cm}void ActionMenu::hideButtons (
+\begin{DoxyParamCaption}
+\item[{bool}]{hide}
+\end{DoxyParamCaption}
+)}}
+\label{classActionMenu_a1c953fd1e69e7057c0a4d1eb7323208b}
+
+
+Definition at line 291 of file actionmenu.cpp.
+
+\hypertarget{classActionMenu_ac7958439c159f48ffdb9e9b8e504a33b}{
+\index{ActionMenu@{ActionMenu}!keyPressEvent@{keyPressEvent}}
+\index{keyPressEvent@{keyPressEvent}!ActionMenu@{ActionMenu}}
+\subsubsection[{keyPressEvent}]{\setlength{\rightskip}{0pt plus 5cm}void ActionMenu::keyPressEvent (
+\begin{DoxyParamCaption}
+\item[{QKeyEvent $\ast$}]{event}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}protected\mbox{]}}}}
+\label{classActionMenu_ac7958439c159f48ffdb9e9b8e504a33b}
+
+
+Definition at line 249 of file actionmenu.cpp.
+
+\hypertarget{classActionMenu_a173cbad1d02c27905563e80eeba3ca9f}{
+\index{ActionMenu@{ActionMenu}!menuButtonPressed@{menuButtonPressed}}
+\index{menuButtonPressed@{menuButtonPressed}!ActionMenu@{ActionMenu}}
+\subsubsection[{menuButtonPressed}]{\setlength{\rightskip}{0pt plus 5cm}void ActionMenu::menuButtonPressed (
+\begin{DoxyParamCaption}
+\item[{QString}]{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}signal\mbox{]}}}}
+\label{classActionMenu_a173cbad1d02c27905563e80eeba3ca9f}
+\hypertarget{classActionMenu_a057543db1dfd0df7cd154f94064a2324}{
+\index{ActionMenu@{ActionMenu}!removeButton@{removeButton}}
+\index{removeButton@{removeButton}!ActionMenu@{ActionMenu}}
+\subsubsection[{removeButton}]{\setlength{\rightskip}{0pt plus 5cm}void ActionMenu::removeButton (
+\begin{DoxyParamCaption}
+\item[{QString}]{name}
+\end{DoxyParamCaption}
+)}}
+\label{classActionMenu_a057543db1dfd0df7cd154f94064a2324}
+
+
+Definition at line 262 of file actionmenu.cpp.
+
+\hypertarget{classActionMenu_a57b228151344e9fd7fe3eb94174469c6}{
+\index{ActionMenu@{ActionMenu}!removeButtons@{removeButtons}}
+\index{removeButtons@{removeButtons}!ActionMenu@{ActionMenu}}
+\subsubsection[{removeButtons}]{\setlength{\rightskip}{0pt plus 5cm}void ActionMenu::removeButtons (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}
+\label{classActionMenu_a57b228151344e9fd7fe3eb94174469c6}
+
+
+Definition at line 278 of file actionmenu.cpp.
+
+\hypertarget{classActionMenu_a437f074013c2ac56b42050e67e6e0793}{
+\index{ActionMenu@{ActionMenu}!resizeEvent@{resizeEvent}}
+\index{resizeEvent@{resizeEvent}!ActionMenu@{ActionMenu}}
+\subsubsection[{resizeEvent}]{\setlength{\rightskip}{0pt plus 5cm}void ActionMenu::resizeEvent (
+\begin{DoxyParamCaption}
+\item[{QResizeEvent $\ast$}]{event}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}protected\mbox{]}}}}
+\label{classActionMenu_a437f074013c2ac56b42050e67e6e0793}
+
+
+Definition at line 235 of file actionmenu.cpp.
+
+\hypertarget{classActionMenu_ae80a3c156af75468db09bc4de9a9476a}{
+\index{ActionMenu@{ActionMenu}!setAction@{setAction}}
+\index{setAction@{setAction}!ActionMenu@{ActionMenu}}
+\subsubsection[{setAction}]{\setlength{\rightskip}{0pt plus 5cm}void ActionMenu::setAction (
+\begin{DoxyParamCaption}
+\item[{QString}]{name, }
+\item[{QAction $\ast$}]{action}
+\end{DoxyParamCaption}
+)}}
+\label{classActionMenu_ae80a3c156af75468db09bc4de9a9476a}
+
+
+Definition at line 339 of file actionmenu.cpp.
+
+\hypertarget{classActionMenu_a22e541a44d329c4c3436e80bab89145e}{
+\index{ActionMenu@{ActionMenu}!setOrientation@{setOrientation}}
+\index{setOrientation@{setOrientation}!ActionMenu@{ActionMenu}}
+\subsubsection[{setOrientation}]{\setlength{\rightskip}{0pt plus 5cm}void ActionMenu::setOrientation (
+\begin{DoxyParamCaption}
+\item[{const Qt::Orientation \&}]{o}
+\end{DoxyParamCaption}
+)}}
+\label{classActionMenu_a22e541a44d329c4c3436e80bab89145e}
+
+
+Definition at line 349 of file actionmenu.cpp.
+
+
+
+\subsection{Member Data Documentation}
+\hypertarget{classActionMenu_a019ac48a117d01f6d52feb941486d78a}{
+\index{ActionMenu@{ActionMenu}!buttonGroup@{buttonGroup}}
+\index{buttonGroup@{buttonGroup}!ActionMenu@{ActionMenu}}
+\subsubsection[{buttonGroup}]{\setlength{\rightskip}{0pt plus 5cm}QButtonGroup$\ast$ {\bf ActionMenu::buttonGroup}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classActionMenu_a019ac48a117d01f6d52feb941486d78a}
+
+
+Definition at line 59 of file actionmenu.h.
+
+\hypertarget{classActionMenu_a001562cff4f1a3f8356eaf167d725904}{
+\index{ActionMenu@{ActionMenu}!layout@{layout}}
+\index{layout@{layout}!ActionMenu@{ActionMenu}}
+\subsubsection[{layout}]{\setlength{\rightskip}{0pt plus 5cm}QLayout$\ast$ {\bf ActionMenu::layout}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classActionMenu_a001562cff4f1a3f8356eaf167d725904}
+
+
+Definition at line 58 of file actionmenu.h.
+
+\hypertarget{classActionMenu_ad5e51a340311d4ba65c8d3e012db3d36}{
+\index{ActionMenu@{ActionMenu}!qh\_\-buttonicon@{qh\_\-buttonicon}}
+\index{qh\_\-buttonicon@{qh\_\-buttonicon}!ActionMenu@{ActionMenu}}
+\subsubsection[{qh\_\-buttonicon}]{\setlength{\rightskip}{0pt plus 5cm}QHash$<$QString, QIcon$>$ {\bf ActionMenu::qh\_\-buttonicon}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classActionMenu_ad5e51a340311d4ba65c8d3e012db3d36}
+
+
+Definition at line 57 of file actionmenu.h.
+
+\hypertarget{classActionMenu_ab5d9ea9892dc558b8cc9fb1eafb60801}{
+\index{ActionMenu@{ActionMenu}!qh\_\-buttonpals@{qh\_\-buttonpals}}
+\index{qh\_\-buttonpals@{qh\_\-buttonpals}!ActionMenu@{ActionMenu}}
+\subsubsection[{qh\_\-buttonpals}]{\setlength{\rightskip}{0pt plus 5cm}QHash$<$QString, QPalette$>$ {\bf ActionMenu::qh\_\-buttonpals}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classActionMenu_ab5d9ea9892dc558b8cc9fb1eafb60801}
+
+
+Definition at line 56 of file actionmenu.h.
+
+
+
+The documentation for this class was generated from the following files:\begin{DoxyCompactItemize}
+\item 
+/e/ms/QT/models/\hyperlink{actionmenu_8h}{actionmenu.h}\item 
+/e/ms/QT/models/\hyperlink{actionmenu_8cpp}{actionmenu.cpp}\end{DoxyCompactItemize}

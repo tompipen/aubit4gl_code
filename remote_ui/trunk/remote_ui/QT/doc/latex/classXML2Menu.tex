@@ -1,0 +1,483 @@
+\hypertarget{classXML2Menu}{
+\section{XML2Menu Class Reference}
+\label{classXML2Menu}\index{XML2Menu@{XML2Menu}}
+}
+
+
+{\ttfamily \#include $<$xml2menu.h$>$}
+
+\subsection*{Public Slots}
+\begin{DoxyCompactItemize}
+\item 
+void \hyperlink{classXML2Menu_a9e6cee2a02fb7f5c009fc659ddcd1974}{execAction} ()
+\item 
+void \hyperlink{classXML2Menu_a9e6cee2a02fb7f5c009fc659ddcd1974}{execAction} ()
+\end{DoxyCompactItemize}
+\subsection*{Signals}
+\begin{DoxyCompactItemize}
+\item 
+void \hyperlink{classXML2Menu_a23b75169843ab4c6dc1135189ac3da1d}{sendMenuCommand} (QString)
+\item 
+void \hyperlink{classXML2Menu_a23b75169843ab4c6dc1135189ac3da1d}{sendMenuCommand} (QString)
+\end{DoxyCompactItemize}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classXML2Menu_ab4ac0ccda115176b1034c045d018de76}{XML2Menu} (QLayout $\ast$layout, QString)
+\item 
+\hyperlink{classXML2Menu_a5aedad854a6e246b0e44b3dd8f3747d6}{$\sim$XML2Menu} ()
+\item 
+int \hyperlink{classXML2Menu_a9199ad70e7a4e66c75cc2dcf9bdaff1d}{readXML} (const QDomDocument \&)
+\item 
+\hyperlink{classXML2Menu_ab8ee16ccf25c87c171072a8789ce2b30}{XML2Menu} (QString)
+\item 
+\hyperlink{classXML2Menu_a5aedad854a6e246b0e44b3dd8f3747d6}{$\sim$XML2Menu} ()
+\item 
+int \hyperlink{classXML2Menu_a9199ad70e7a4e66c75cc2dcf9bdaff1d}{readXML} (const QDomDocument \&)
+\item 
+QWidget $\ast$ \hyperlink{classXML2Menu_aaddbb07aff76035cbef70d3dc0741f83}{getMenu} ()
+\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+QLayout $\ast$ \hyperlink{classXML2Menu_a17579d47fd587b9f197bd8c8fc41e454}{xmlformLayout}
+\item 
+QString \hyperlink{classXML2Menu_a5d7d43cf678fa24fb1d41cdd046386c5}{menu}
+\item 
+int \hyperlink{classXML2Menu_a2ac418439899de73ea514d1077857585}{i\_\-cnt}
+\item 
+int \hyperlink{classXML2Menu_aef8a9bf7f7392284a21ff6d32172fb0a}{i\_\-cntTopLevel}
+\item 
+int \hyperlink{classXML2Menu_ab96b42cd1ca2941ad73f3d495f25f5c5}{i\_\-cntGroup}
+\item 
+int \hyperlink{classXML2Menu_aa957ed5b40c6254bb990cd385777ed49}{i\_\-cntFolder}
+\item 
+QTreeWidget $\ast$ \hyperlink{classXML2Menu_ad45f71995bccb3f741be0e66e53b853d}{treeWidget}
+\item 
+QMenuBar $\ast$ \hyperlink{classXML2Menu_abb96af1c6a8aec202902250e17d1b4f8}{menuWidget}
+\end{DoxyCompactItemize}
+\subsection*{Private Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \hyperlink{classXML2Menu_a62262a3156dd7dd8820d78535e7594e7}{outputTree} (const QDomNode \&)
+\item 
+void \hyperlink{classXML2Menu_a62262a3156dd7dd8820d78535e7594e7}{outputTree} (const QDomNode \&)
+\item 
+void \hyperlink{classXML2Menu_adc7bd8f412e8d79f12fdbc39b87359c3}{createActionMenu} (const QDomNode \&)
+\item 
+void \hyperlink{classXML2Menu_a5bbff86c8b5c6423e61c89ab45098252}{createTreeMenu} (const QDomNode \&)
+\end{DoxyCompactItemize}
+\subsection*{Private Attributes}
+\begin{DoxyCompactItemize}
+\item 
+QTreeWidgetItem $\ast$ \hyperlink{classXML2Menu_a13cea0b23ecf22219630e4f790b3100d}{treeWidgetItem}
+\item 
+QTreeWidgetItem $\ast$ \hyperlink{classXML2Menu_a165191c6389fde7fb84b297d55b39637}{parentTreeItem}
+\item 
+QList$<$ QTreeWidgetItem $\ast$ $>$ \hyperlink{classXML2Menu_a236e5e92260fd3f5e3442770cd830325}{parentTreeItems}
+\item 
+QList$<$ QTreeWidgetItem $\ast$ $>$ \hyperlink{classXML2Menu_ab2decbff5105065ab9f97bcc733350da}{treeCommands}
+\item 
+QList$<$ QTreeWidgetItem $\ast$ $>$ \hyperlink{classXML2Menu_a546c44f9da1506ff7d3f5f4903702550}{topLevelTreeItems}
+\item 
+QStringList \hyperlink{classXML2Menu_aabba060620e79a1008c49d6da80d9d8c}{treeActions}
+\item 
+QMenu $\ast$ \hyperlink{classXML2Menu_aef3b2dd32010ef176178277075ddb0e2}{menuWidgetItem}
+\item 
+QMenu $\ast$ \hyperlink{classXML2Menu_a502707dcd0dde7d0b74b33cb0e03bd9a}{parentMenuItem}
+\item 
+QAction $\ast$ \hyperlink{classXML2Menu_a9a8070ff51e88a2d9bbdcb476c701b96}{menuWidgetAction}
+\item 
+QList$<$ QMenu $\ast$ $>$ \hyperlink{classXML2Menu_a1f7a54c39f5f96f607d6bc9acdba422e}{parentMenuItems}
+\item 
+QList$<$ QMenu $\ast$ $>$ \hyperlink{classXML2Menu_ac5ac423657c0b6f87d8b66ac67d49eaa}{topLevelMenuItems}
+\item 
+QList$<$ QAction $\ast$ $>$ \hyperlink{classXML2Menu_a6b956ab3cc4eb0e148736a077b003a50}{menuCommands}
+\item 
+QStringList \hyperlink{classXML2Menu_a6358d28b430761cd31987607d583af39}{menuActions}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+
+
+Definition at line 35 of file xml2menu.h.
+
+
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{classXML2Menu_ab4ac0ccda115176b1034c045d018de76}{
+\index{XML2Menu@{XML2Menu}!XML2Menu@{XML2Menu}}
+\index{XML2Menu@{XML2Menu}!XML2Menu@{XML2Menu}}
+\subsubsection[{XML2Menu}]{\setlength{\rightskip}{0pt plus 5cm}XML2Menu::XML2Menu (
+\begin{DoxyParamCaption}
+\item[{QLayout $\ast$}]{layout, }
+\item[{QString}]{startMenuPosition}
+\end{DoxyParamCaption}
+)}}
+\label{classXML2Menu_ab4ac0ccda115176b1034c045d018de76}
+
+
+Definition at line 32 of file xml2menu.cpp.
+
+\hypertarget{classXML2Menu_a5aedad854a6e246b0e44b3dd8f3747d6}{
+\index{XML2Menu@{XML2Menu}!$\sim$XML2Menu@{$\sim$XML2Menu}}
+\index{$\sim$XML2Menu@{$\sim$XML2Menu}!XML2Menu@{XML2Menu}}
+\subsubsection[{$\sim$XML2Menu}]{\setlength{\rightskip}{0pt plus 5cm}XML2Menu::$\sim$XML2Menu (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}
+\label{classXML2Menu_a5aedad854a6e246b0e44b3dd8f3747d6}
+
+
+Definition at line 72 of file xml2menu.cpp.
+
+\hypertarget{classXML2Menu_ab8ee16ccf25c87c171072a8789ce2b30}{
+\index{XML2Menu@{XML2Menu}!XML2Menu@{XML2Menu}}
+\index{XML2Menu@{XML2Menu}!XML2Menu@{XML2Menu}}
+\subsubsection[{XML2Menu}]{\setlength{\rightskip}{0pt plus 5cm}XML2Menu::XML2Menu (
+\begin{DoxyParamCaption}
+\item[{QString}]{startMenuPosition}
+\end{DoxyParamCaption}
+)}}
+\label{classXML2Menu_ab8ee16ccf25c87c171072a8789ce2b30}
+
+
+Definition at line 33 of file xml2menu.cpp.
+
+\hypertarget{classXML2Menu_a5aedad854a6e246b0e44b3dd8f3747d6}{
+\index{XML2Menu@{XML2Menu}!$\sim$XML2Menu@{$\sim$XML2Menu}}
+\index{$\sim$XML2Menu@{$\sim$XML2Menu}!XML2Menu@{XML2Menu}}
+\subsubsection[{$\sim$XML2Menu}]{\setlength{\rightskip}{0pt plus 5cm}XML2Menu::$\sim$XML2Menu (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}
+\label{classXML2Menu_a5aedad854a6e246b0e44b3dd8f3747d6}
+
+
+\subsection{Member Function Documentation}
+\hypertarget{classXML2Menu_adc7bd8f412e8d79f12fdbc39b87359c3}{
+\index{XML2Menu@{XML2Menu}!createActionMenu@{createActionMenu}}
+\index{createActionMenu@{createActionMenu}!XML2Menu@{XML2Menu}}
+\subsubsection[{createActionMenu}]{\setlength{\rightskip}{0pt plus 5cm}void XML2Menu::createActionMenu (
+\begin{DoxyParamCaption}
+\item[{const QDomNode \&}]{domNode}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classXML2Menu_adc7bd8f412e8d79f12fdbc39b87359c3}
+
+
+Definition at line 317 of file xml2menu.cpp.
+
+\hypertarget{classXML2Menu_a5bbff86c8b5c6423e61c89ab45098252}{
+\index{XML2Menu@{XML2Menu}!createTreeMenu@{createTreeMenu}}
+\index{createTreeMenu@{createTreeMenu}!XML2Menu@{XML2Menu}}
+\subsubsection[{createTreeMenu}]{\setlength{\rightskip}{0pt plus 5cm}void XML2Menu::createTreeMenu (
+\begin{DoxyParamCaption}
+\item[{const QDomNode \&}]{domNode}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classXML2Menu_a5bbff86c8b5c6423e61c89ab45098252}
+
+
+Definition at line 239 of file xml2menu.cpp.
+
+\hypertarget{classXML2Menu_a9e6cee2a02fb7f5c009fc659ddcd1974}{
+\index{XML2Menu@{XML2Menu}!execAction@{execAction}}
+\index{execAction@{execAction}!XML2Menu@{XML2Menu}}
+\subsubsection[{execAction}]{\setlength{\rightskip}{0pt plus 5cm}void XML2Menu::execAction (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}slot\mbox{]}}}}
+\label{classXML2Menu_a9e6cee2a02fb7f5c009fc659ddcd1974}
+
+
+Definition at line 258 of file xml2menu.cpp.
+
+\hypertarget{classXML2Menu_a9e6cee2a02fb7f5c009fc659ddcd1974}{
+\index{XML2Menu@{XML2Menu}!execAction@{execAction}}
+\index{execAction@{execAction}!XML2Menu@{XML2Menu}}
+\subsubsection[{execAction}]{\setlength{\rightskip}{0pt plus 5cm}void XML2Menu::execAction (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}slot\mbox{]}}}}
+\label{classXML2Menu_a9e6cee2a02fb7f5c009fc659ddcd1974}
+\hypertarget{classXML2Menu_aaddbb07aff76035cbef70d3dc0741f83}{
+\index{XML2Menu@{XML2Menu}!getMenu@{getMenu}}
+\index{getMenu@{getMenu}!XML2Menu@{XML2Menu}}
+\subsubsection[{getMenu}]{\setlength{\rightskip}{0pt plus 5cm}QWidget $\ast$ XML2Menu::getMenu (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}
+\label{classXML2Menu_aaddbb07aff76035cbef70d3dc0741f83}
+
+
+Definition at line 417 of file xml2menu.cpp.
+
+\hypertarget{classXML2Menu_a62262a3156dd7dd8820d78535e7594e7}{
+\index{XML2Menu@{XML2Menu}!outputTree@{outputTree}}
+\index{outputTree@{outputTree}!XML2Menu@{XML2Menu}}
+\subsubsection[{outputTree}]{\setlength{\rightskip}{0pt plus 5cm}void XML2Menu::outputTree (
+\begin{DoxyParamCaption}
+\item[{const QDomNode \&}]{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classXML2Menu_a62262a3156dd7dd8820d78535e7594e7}
+\hypertarget{classXML2Menu_a62262a3156dd7dd8820d78535e7594e7}{
+\index{XML2Menu@{XML2Menu}!outputTree@{outputTree}}
+\index{outputTree@{outputTree}!XML2Menu@{XML2Menu}}
+\subsubsection[{outputTree}]{\setlength{\rightskip}{0pt plus 5cm}void XML2Menu::outputTree (
+\begin{DoxyParamCaption}
+\item[{const QDomNode \&}]{domNode}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classXML2Menu_a62262a3156dd7dd8820d78535e7594e7}
+
+
+Definition at line 83 of file xml2menu.cpp.
+
+\hypertarget{classXML2Menu_a9199ad70e7a4e66c75cc2dcf9bdaff1d}{
+\index{XML2Menu@{XML2Menu}!readXML@{readXML}}
+\index{readXML@{readXML}!XML2Menu@{XML2Menu}}
+\subsubsection[{readXML}]{\setlength{\rightskip}{0pt plus 5cm}int XML2Menu::readXML (
+\begin{DoxyParamCaption}
+\item[{const QDomDocument \&}]{}
+\end{DoxyParamCaption}
+)}}
+\label{classXML2Menu_a9199ad70e7a4e66c75cc2dcf9bdaff1d}
+\hypertarget{classXML2Menu_a9199ad70e7a4e66c75cc2dcf9bdaff1d}{
+\index{XML2Menu@{XML2Menu}!readXML@{readXML}}
+\index{readXML@{readXML}!XML2Menu@{XML2Menu}}
+\subsubsection[{readXML}]{\setlength{\rightskip}{0pt plus 5cm}int XML2Menu::readXML (
+\begin{DoxyParamCaption}
+\item[{const QDomDocument \&}]{doc}
+\end{DoxyParamCaption}
+)}}
+\label{classXML2Menu_a9199ad70e7a4e66c75cc2dcf9bdaff1d}
+
+
+Definition at line 234 of file xml2menu.cpp.
+
+\hypertarget{classXML2Menu_a23b75169843ab4c6dc1135189ac3da1d}{
+\index{XML2Menu@{XML2Menu}!sendMenuCommand@{sendMenuCommand}}
+\index{sendMenuCommand@{sendMenuCommand}!XML2Menu@{XML2Menu}}
+\subsubsection[{sendMenuCommand}]{\setlength{\rightskip}{0pt plus 5cm}void XML2Menu::sendMenuCommand (
+\begin{DoxyParamCaption}
+\item[{QString}]{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}signal\mbox{]}}}}
+\label{classXML2Menu_a23b75169843ab4c6dc1135189ac3da1d}
+\hypertarget{classXML2Menu_a23b75169843ab4c6dc1135189ac3da1d}{
+\index{XML2Menu@{XML2Menu}!sendMenuCommand@{sendMenuCommand}}
+\index{sendMenuCommand@{sendMenuCommand}!XML2Menu@{XML2Menu}}
+\subsubsection[{sendMenuCommand}]{\setlength{\rightskip}{0pt plus 5cm}void XML2Menu::sendMenuCommand (
+\begin{DoxyParamCaption}
+\item[{QString}]{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}signal\mbox{]}}}}
+\label{classXML2Menu_a23b75169843ab4c6dc1135189ac3da1d}
+
+
+\subsection{Member Data Documentation}
+\hypertarget{classXML2Menu_a2ac418439899de73ea514d1077857585}{
+\index{XML2Menu@{XML2Menu}!i\_\-cnt@{i\_\-cnt}}
+\index{i\_\-cnt@{i\_\-cnt}!XML2Menu@{XML2Menu}}
+\subsubsection[{i\_\-cnt}]{\setlength{\rightskip}{0pt plus 5cm}int {\bf XML2Menu::i\_\-cnt}}}
+\label{classXML2Menu_a2ac418439899de73ea514d1077857585}
+
+
+Definition at line 46 of file xml2menu.h.
+
+\hypertarget{classXML2Menu_aa957ed5b40c6254bb990cd385777ed49}{
+\index{XML2Menu@{XML2Menu}!i\_\-cntFolder@{i\_\-cntFolder}}
+\index{i\_\-cntFolder@{i\_\-cntFolder}!XML2Menu@{XML2Menu}}
+\subsubsection[{i\_\-cntFolder}]{\setlength{\rightskip}{0pt plus 5cm}int {\bf XML2Menu::i\_\-cntFolder}}}
+\label{classXML2Menu_aa957ed5b40c6254bb990cd385777ed49}
+
+
+Definition at line 49 of file xml2menu.h.
+
+\hypertarget{classXML2Menu_ab96b42cd1ca2941ad73f3d495f25f5c5}{
+\index{XML2Menu@{XML2Menu}!i\_\-cntGroup@{i\_\-cntGroup}}
+\index{i\_\-cntGroup@{i\_\-cntGroup}!XML2Menu@{XML2Menu}}
+\subsubsection[{i\_\-cntGroup}]{\setlength{\rightskip}{0pt plus 5cm}int {\bf XML2Menu::i\_\-cntGroup}}}
+\label{classXML2Menu_ab96b42cd1ca2941ad73f3d495f25f5c5}
+
+
+Definition at line 48 of file xml2menu.h.
+
+\hypertarget{classXML2Menu_aef8a9bf7f7392284a21ff6d32172fb0a}{
+\index{XML2Menu@{XML2Menu}!i\_\-cntTopLevel@{i\_\-cntTopLevel}}
+\index{i\_\-cntTopLevel@{i\_\-cntTopLevel}!XML2Menu@{XML2Menu}}
+\subsubsection[{i\_\-cntTopLevel}]{\setlength{\rightskip}{0pt plus 5cm}int {\bf XML2Menu::i\_\-cntTopLevel}}}
+\label{classXML2Menu_aef8a9bf7f7392284a21ff6d32172fb0a}
+
+
+Definition at line 47 of file xml2menu.h.
+
+\hypertarget{classXML2Menu_a5d7d43cf678fa24fb1d41cdd046386c5}{
+\index{XML2Menu@{XML2Menu}!menu@{menu}}
+\index{menu@{menu}!XML2Menu@{XML2Menu}}
+\subsubsection[{menu}]{\setlength{\rightskip}{0pt plus 5cm}QString {\bf XML2Menu::menu}}}
+\label{classXML2Menu_a5d7d43cf678fa24fb1d41cdd046386c5}
+
+
+Definition at line 45 of file xml2menu.h.
+
+\hypertarget{classXML2Menu_a6358d28b430761cd31987607d583af39}{
+\index{XML2Menu@{XML2Menu}!menuActions@{menuActions}}
+\index{menuActions@{menuActions}!XML2Menu@{XML2Menu}}
+\subsubsection[{menuActions}]{\setlength{\rightskip}{0pt plus 5cm}QStringList {\bf XML2Menu::menuActions}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classXML2Menu_a6358d28b430761cd31987607d583af39}
+
+
+Definition at line 71 of file xml2menu.h.
+
+\hypertarget{classXML2Menu_a6b956ab3cc4eb0e148736a077b003a50}{
+\index{XML2Menu@{XML2Menu}!menuCommands@{menuCommands}}
+\index{menuCommands@{menuCommands}!XML2Menu@{XML2Menu}}
+\subsubsection[{menuCommands}]{\setlength{\rightskip}{0pt plus 5cm}QList$<$ QAction $\ast$ $>$ {\bf XML2Menu::menuCommands}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classXML2Menu_a6b956ab3cc4eb0e148736a077b003a50}
+
+
+Definition at line 70 of file xml2menu.h.
+
+\hypertarget{classXML2Menu_abb96af1c6a8aec202902250e17d1b4f8}{
+\index{XML2Menu@{XML2Menu}!menuWidget@{menuWidget}}
+\index{menuWidget@{menuWidget}!XML2Menu@{XML2Menu}}
+\subsubsection[{menuWidget}]{\setlength{\rightskip}{0pt plus 5cm}QMenuBar $\ast$ {\bf XML2Menu::menuWidget}}}
+\label{classXML2Menu_abb96af1c6a8aec202902250e17d1b4f8}
+
+
+Definition at line 52 of file xml2menu.h.
+
+\hypertarget{classXML2Menu_a9a8070ff51e88a2d9bbdcb476c701b96}{
+\index{XML2Menu@{XML2Menu}!menuWidgetAction@{menuWidgetAction}}
+\index{menuWidgetAction@{menuWidgetAction}!XML2Menu@{XML2Menu}}
+\subsubsection[{menuWidgetAction}]{\setlength{\rightskip}{0pt plus 5cm}QAction $\ast$ {\bf XML2Menu::menuWidgetAction}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classXML2Menu_a9a8070ff51e88a2d9bbdcb476c701b96}
+
+
+Definition at line 67 of file xml2menu.h.
+
+\hypertarget{classXML2Menu_aef3b2dd32010ef176178277075ddb0e2}{
+\index{XML2Menu@{XML2Menu}!menuWidgetItem@{menuWidgetItem}}
+\index{menuWidgetItem@{menuWidgetItem}!XML2Menu@{XML2Menu}}
+\subsubsection[{menuWidgetItem}]{\setlength{\rightskip}{0pt plus 5cm}QMenu $\ast$ {\bf XML2Menu::menuWidgetItem}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classXML2Menu_aef3b2dd32010ef176178277075ddb0e2}
+
+
+Definition at line 65 of file xml2menu.h.
+
+\hypertarget{classXML2Menu_a502707dcd0dde7d0b74b33cb0e03bd9a}{
+\index{XML2Menu@{XML2Menu}!parentMenuItem@{parentMenuItem}}
+\index{parentMenuItem@{parentMenuItem}!XML2Menu@{XML2Menu}}
+\subsubsection[{parentMenuItem}]{\setlength{\rightskip}{0pt plus 5cm}QMenu $\ast$ {\bf XML2Menu::parentMenuItem}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classXML2Menu_a502707dcd0dde7d0b74b33cb0e03bd9a}
+
+
+Definition at line 66 of file xml2menu.h.
+
+\hypertarget{classXML2Menu_a1f7a54c39f5f96f607d6bc9acdba422e}{
+\index{XML2Menu@{XML2Menu}!parentMenuItems@{parentMenuItems}}
+\index{parentMenuItems@{parentMenuItems}!XML2Menu@{XML2Menu}}
+\subsubsection[{parentMenuItems}]{\setlength{\rightskip}{0pt plus 5cm}QList$<$ QMenu $\ast$ $>$ {\bf XML2Menu::parentMenuItems}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classXML2Menu_a1f7a54c39f5f96f607d6bc9acdba422e}
+
+
+Definition at line 68 of file xml2menu.h.
+
+\hypertarget{classXML2Menu_a165191c6389fde7fb84b297d55b39637}{
+\index{XML2Menu@{XML2Menu}!parentTreeItem@{parentTreeItem}}
+\index{parentTreeItem@{parentTreeItem}!XML2Menu@{XML2Menu}}
+\subsubsection[{parentTreeItem}]{\setlength{\rightskip}{0pt plus 5cm}QTreeWidgetItem $\ast$ {\bf XML2Menu::parentTreeItem}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classXML2Menu_a165191c6389fde7fb84b297d55b39637}
+
+
+Definition at line 58 of file xml2menu.h.
+
+\hypertarget{classXML2Menu_a236e5e92260fd3f5e3442770cd830325}{
+\index{XML2Menu@{XML2Menu}!parentTreeItems@{parentTreeItems}}
+\index{parentTreeItems@{parentTreeItems}!XML2Menu@{XML2Menu}}
+\subsubsection[{parentTreeItems}]{\setlength{\rightskip}{0pt plus 5cm}QList$<$ QTreeWidgetItem $\ast$ $>$ {\bf XML2Menu::parentTreeItems}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classXML2Menu_a236e5e92260fd3f5e3442770cd830325}
+
+
+Definition at line 59 of file xml2menu.h.
+
+\hypertarget{classXML2Menu_ac5ac423657c0b6f87d8b66ac67d49eaa}{
+\index{XML2Menu@{XML2Menu}!topLevelMenuItems@{topLevelMenuItems}}
+\index{topLevelMenuItems@{topLevelMenuItems}!XML2Menu@{XML2Menu}}
+\subsubsection[{topLevelMenuItems}]{\setlength{\rightskip}{0pt plus 5cm}QList$<$ QMenu $\ast$ $>$ {\bf XML2Menu::topLevelMenuItems}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classXML2Menu_ac5ac423657c0b6f87d8b66ac67d49eaa}
+
+
+Definition at line 69 of file xml2menu.h.
+
+\hypertarget{classXML2Menu_a546c44f9da1506ff7d3f5f4903702550}{
+\index{XML2Menu@{XML2Menu}!topLevelTreeItems@{topLevelTreeItems}}
+\index{topLevelTreeItems@{topLevelTreeItems}!XML2Menu@{XML2Menu}}
+\subsubsection[{topLevelTreeItems}]{\setlength{\rightskip}{0pt plus 5cm}QList$<$ QTreeWidgetItem $\ast$ $>$ {\bf XML2Menu::topLevelTreeItems}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classXML2Menu_a546c44f9da1506ff7d3f5f4903702550}
+
+
+Definition at line 61 of file xml2menu.h.
+
+\hypertarget{classXML2Menu_aabba060620e79a1008c49d6da80d9d8c}{
+\index{XML2Menu@{XML2Menu}!treeActions@{treeActions}}
+\index{treeActions@{treeActions}!XML2Menu@{XML2Menu}}
+\subsubsection[{treeActions}]{\setlength{\rightskip}{0pt plus 5cm}QStringList {\bf XML2Menu::treeActions}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classXML2Menu_aabba060620e79a1008c49d6da80d9d8c}
+
+
+Definition at line 62 of file xml2menu.h.
+
+\hypertarget{classXML2Menu_ab2decbff5105065ab9f97bcc733350da}{
+\index{XML2Menu@{XML2Menu}!treeCommands@{treeCommands}}
+\index{treeCommands@{treeCommands}!XML2Menu@{XML2Menu}}
+\subsubsection[{treeCommands}]{\setlength{\rightskip}{0pt plus 5cm}QList$<$ QTreeWidgetItem $\ast$ $>$ {\bf XML2Menu::treeCommands}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classXML2Menu_ab2decbff5105065ab9f97bcc733350da}
+
+
+Definition at line 60 of file xml2menu.h.
+
+\hypertarget{classXML2Menu_ad45f71995bccb3f741be0e66e53b853d}{
+\index{XML2Menu@{XML2Menu}!treeWidget@{treeWidget}}
+\index{treeWidget@{treeWidget}!XML2Menu@{XML2Menu}}
+\subsubsection[{treeWidget}]{\setlength{\rightskip}{0pt plus 5cm}QTreeWidget $\ast$ {\bf XML2Menu::treeWidget}}}
+\label{classXML2Menu_ad45f71995bccb3f741be0e66e53b853d}
+
+
+Definition at line 51 of file xml2menu.h.
+
+\hypertarget{classXML2Menu_a13cea0b23ecf22219630e4f790b3100d}{
+\index{XML2Menu@{XML2Menu}!treeWidgetItem@{treeWidgetItem}}
+\index{treeWidgetItem@{treeWidgetItem}!XML2Menu@{XML2Menu}}
+\subsubsection[{treeWidgetItem}]{\setlength{\rightskip}{0pt plus 5cm}QTreeWidgetItem $\ast$ {\bf XML2Menu::treeWidgetItem}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classXML2Menu_a13cea0b23ecf22219630e4f790b3100d}
+
+
+Definition at line 57 of file xml2menu.h.
+
+\hypertarget{classXML2Menu_a17579d47fd587b9f197bd8c8fc41e454}{
+\index{XML2Menu@{XML2Menu}!xmlformLayout@{xmlformLayout}}
+\index{xmlformLayout@{xmlformLayout}!XML2Menu@{XML2Menu}}
+\subsubsection[{xmlformLayout}]{\setlength{\rightskip}{0pt plus 5cm}QLayout $\ast$ {\bf XML2Menu::xmlformLayout}}}
+\label{classXML2Menu_a17579d47fd587b9f197bd8c8fc41e454}
+
+
+Definition at line 43 of file xml2menu.h.
+
+
+
+The documentation for this class was generated from the following files:\begin{DoxyCompactItemize}
+\item 
+/e/ms/QT/models/\hyperlink{models_2xml2menu_8h}{xml2menu.h}\item 
+/e/ms/QT/xmlparsers/\hyperlink{xmlparsers_2xml2menu_8h}{xml2menu.h}\item 
+/e/ms/QT/models/\hyperlink{models_2xml2menu_8cpp}{xml2menu.cpp}\item 
+/e/ms/QT/xmlparsers/\hyperlink{xmlparsers_2xml2menu_8cpp}{xml2menu.cpp}\end{DoxyCompactItemize}
