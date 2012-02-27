@@ -642,7 +642,9 @@ QString Reportgen::prepareTemplateEbene(int Position, int Ebene, int Ebene3, int
                                 if(ausgabe.contains("]P3]"))
                                 {
                                     behalten.replace("@", QString("@%1_%2_%3").arg(QString::number(Position)).arg(QString::number(Counter)).arg(QString::number(j)));
+                                    qDebug() << "behalten: " << behalten;
                                     xmlout1 = xmlout1 + behalten;
+                                    behalten.clear();
                                 }
                             } else {
                                 break;
