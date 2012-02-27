@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: interval.c,v 1.27 2009-04-23 10:12:30 mikeaubury Exp $
+# $Id: interval.c,v 1.28 2012-02-27 20:46:40 mikeaubury Exp $
 #
 */
 
@@ -110,12 +110,14 @@ A4GL_get_rval_ival (void)
 int
 A4GL_conv_invdatatoc (int *data, int v1, int v2, int v3, struct ival *i)
 {
+int orig_neg=0;
   //char fractions[6];
   //char *buff=0;
   //buff = i->data;
 
   //A4GL_debug ("v1=%d v2=%d v3=%d buff=%p\n", v1, v2, v3, buff);
 
+orig_neg=i->is_neg;
 #ifdef DEBUG
   A4GL_debug ("Y %d\n", data[0]);
   A4GL_debug ("M %d\n", data[1]);
@@ -212,6 +214,17 @@ A4GL_conv_invdatatoc (int *data, int v1, int v2, int v3, struct ival *i)
       i->i_seconds *= -1;
       i->is_neg = 1;
     }
+
+if (i->is_neg==0) {
+	if ( orig_neg) {
+		i->is_neg=1;
+	}
+} else {
+	if (orig_neg) {
+		i->is_neg=0;
+	}
+}
+
 
 #ifdef DEBUG
   A4GL_debug ("Normalized data %d %d %d %d %d %d %d", data[0], data[1], data[2], data[3], data[4], data[5], data[6]);

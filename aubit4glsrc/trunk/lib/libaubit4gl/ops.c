@@ -25,7 +25,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.199 2012-01-27 08:57:21 mikeaubury Exp $
+# $Id: ops.c,v 1.200 2012-02-27 20:46:40 mikeaubury Exp $
 #
 */
 
@@ -4328,12 +4328,14 @@ int fake2;
 
   if (in_months == 0)
     {
+A4GL_debug("in_months=0");
       in_seconds = (double) ival_data[2] * 24.0 * 60.0 * 60.0;	// Days
       in_seconds += (double) ival_data[3] * 60.0 * 60.0;	// Hours
       in_seconds += (double) ival_data[4] * 60.0;	// Minutes
       in_seconds += ival_data[5] + (double) ival_data[6] / 100000.0;	// Seconds
 
       if (isneg) {
+	A4GL_debug("isneg");
 	in_seconds *= -1.0;
       }
 #ifdef DEBUG
@@ -4350,6 +4352,7 @@ int fake2;
 	  dtime_data[5] = 0;
 	  dtime_data[6] = 0;
 	  ok = 1;
+	A4GL_debug("ADD");
 
 	  dt_seconds += in_seconds;
 	  dt_dbl = a4gl_local_trunc (dt_seconds);
@@ -4359,6 +4362,36 @@ int fake2;
 	  dt_seconds *= 100000;
 	  d = dt_seconds;
 	  dtime_data[6] = d;
+
+	
+	  if (dtime_data[6] < 0)
+	    {
+	      dtime_data[5]--;
+	      dtime_data[6] += 100000;
+	    }
+
+	  // Seconds
+	  while (dtime_data[5] < 0)
+	    {
+	      dtime_data[4]--;
+	      dtime_data[5] += 60;
+	    }
+
+
+	  // Minutes
+	  while (dtime_data[4] < 0)
+	    {
+	      dtime_data[3]--;
+	      dtime_data[4] += 60;
+	    }
+
+
+	  // Hours
+	  while (dtime_data[3] < 0)
+	    {
+	      dtime_data[2]--;
+	      dtime_data[3] += 24;
+	    }
 
 	  while (dtime_data[6] > 99999)
 	    {

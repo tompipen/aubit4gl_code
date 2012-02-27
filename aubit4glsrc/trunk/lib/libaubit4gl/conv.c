@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.190 2011-10-20 19:00:12 mikeaubury Exp $
+# $Id: conv.c,v 1.191 2012-02-27 20:46:40 mikeaubury Exp $
 #
 */
 
@@ -668,6 +668,7 @@ A4GL_ctoint (void *a_char, void *b_int, int size_b)
 {
   int data[256];
   struct ival *d;
+  struct ival d2;
   int v1, v2, v3;
   char localchar[65];
   int is_neg = 0;
@@ -732,12 +733,12 @@ A4GL_ctoint (void *a_char, void *b_int, int size_b)
   if (A4GL_valid_int (localchar, data, size_b))
     {
 #ifdef DEBUG
-      A4GL_debug ("CHECK1 :  d->stime=%d d->ltime=%d", d->stime, d->ltime);
+      A4GL_debug ("CHECK1 :  d->stime=%d d->ltime=%d d->isneg=%d", d->stime, d->ltime,d->is_neg);
 #endif
       A4GL_conv_invdatatoc (data, v1, v2, v3, d);
 #ifdef DEBUG
 //printf("---->Y %d M %d D %d H %d M %d S %d\n", data[0],data[1],data[2],data[3],data[4],data[5]);
-      A4GL_debug ("CHECK2 :  d->stime=%d d->ltime=%d", d->stime, d->ltime);
+      A4GL_debug ("CHECK2 :  d->stime=%d d->ltime=%d d->isneg=%d", d->stime, d->ltime,d->is_neg);
 #endif
       return 1;
     }
