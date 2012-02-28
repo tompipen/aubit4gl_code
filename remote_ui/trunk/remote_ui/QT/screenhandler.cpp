@@ -407,7 +407,6 @@ MainFrame::vdcdebug("ScreenHandler","createMenu", "QString title, QString commen
    if(i_Frm < 0)
       return;
    RingMenu *ringMenu = new RingMenu(title, style);
-   ringMenu->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 
    p_fglform->setMenu(ringMenu);
 }
@@ -3079,6 +3078,7 @@ void ScreenHandler::setRuninfo(int mode, QString cmd, int runcnt, bool start)
                if(qsl_cmd.at(i).startsWith("p_"))
                {
                    this->programm_name_run = qsl_cmd.at(i);
+                   break;
                }
            }
            QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
@@ -3090,15 +3090,16 @@ void ScreenHandler::setRuninfo(int mode, QString cmd, int runcnt, bool start)
         }
         else
         {
+            this->programm_name_run = "";
+            this->b_runinfo = false;
+            this->p_pid_p = 0;
+            this->i_mode = 0;
             if(p_fglform != NULL)
             {
                 p_fglform->setEnabled(true);
             }
             QApplication::restoreOverrideCursor();
-            this->programm_name_run = "";
-            this->b_runinfo = false;
-            this->p_pid_p = 0;
-            this->i_mode = 0;
+
         }
     }
 //}
