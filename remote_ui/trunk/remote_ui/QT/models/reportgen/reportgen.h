@@ -3,6 +3,7 @@
 #include <QThread>
 #include <QDomDocument>
 #include <QFileInfo>
+#include <QPair>
 
 class Reportgen : public QThread
 {
@@ -30,6 +31,9 @@ private:
     QList<QString> sed_fields;
     QList<QString> temp_fields;
     QList<QString> metaVar;
+    QList<QString> chartVar;
+    QList<QString> chartValues1;
+    QList<QString> chartValues2;
 
 
 

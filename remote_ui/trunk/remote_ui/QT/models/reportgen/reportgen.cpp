@@ -28,9 +28,7 @@ bool Reportgen::startReportTemplate(QString odffile, QString sedfile, QFileInfo 
    int wiederholen = 0;
    int ebene1 = 0;
    int ebene2 = 0;
-   int cnt = 0;
    int gefunden = 0;
-   int zaehler = 0;
 
    checkMetaFile(fileBaseName);
 
@@ -256,9 +254,11 @@ bool Reportgen::replaceEbene(QFile *file, QString odffile)
     QString xmlsave;
     QString ausgabe;
     QString behalten;
+    QString var;
 
     int merken = 0;
     int start = 0;
+    int found = 0;
     int tableFound = 0;
     int tableEnd = 0;
 
@@ -266,6 +266,28 @@ bool Reportgen::replaceEbene(QFile *file, QString odffile)
     while(!stream1.atEnd())
     {
         ausgabe = stream1.readLine();
+
+        if(start == 1)
+        {
+            if(ausgabe.contains("[P2[") || ausgabe.contains("]P1]"))
+            {
+                found = 0;
+            }
+        }
+
+        if(found > 0 && tableFound < 2  && ausgabe.contains("@"))
+        {
+
+            var = ausgabe.trimmed();
+            var.remove("<text:p>");
+            var.remove("</text:p>");
+            var.replace(0, 2, "");
+            if(!chartVar.contains(var))
+            {
+                chartVar << var;
+
+            }
+        }
 
         if(ausgabe.contains("<table:table table:name"))
         {
@@ -282,6 +304,7 @@ bool Reportgen::replaceEbene(QFile *file, QString odffile)
         if(ausgabe.contains("[P1["))
         {
             start = 1;
+            found = 1;
         }
         if(ausgabe.contains("]P1]"))
         {
@@ -902,6 +925,7 @@ bool Reportgen::replaceTemplateVars(QString odffile, QString sedfile, QFileInfo 
     QString temp_var;
     QString sedLine;
     int cnt = 0;
+    int createChart = 0;
     QFile *file = new QFile(QDir::tempPath() + "/" + odffile + "/1-content.xml");
     QFile *file1 = new QFile(QDir::tempPath() + "/" + odffile + "/content.xml");
 
@@ -999,6 +1023,30 @@ bool Reportgen::replaceTemplateVars(QString odffile, QString sedfile, QFileInfo 
                         if(!temp_var.endsWith("1"))
                         {
                            sed_fields.removeAt(i);
+                        } else {
+                            /* chartVar wird in replaceEbene gesetzt um zu sehen welche Variablen in der 1ten Tabelle sind um sie ins Chart einzutragen!!! */
+                            if(!chartVar.isEmpty())
+                            {
+                                for(int j=0; j < chartVar.count(); j++)
+                                {
+                                    if(temp_var.contains(chartVar.at(j)))
+                                    {
+                                        if(j == 0)
+                                        {
+                                            if(!chartValues1.contains(sedLine))
+                                            {
+                                                chartValues1 << sedLine;
+                                            }
+                                        } else if(j == 1)
+                                        {
+                                            if(!chartValues2.contains(sedLine))
+                                            {
+                                                    chartValues2 << sedLine;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
                         }
                         break;
                     }
@@ -1020,6 +1068,18 @@ bool Reportgen::replaceTemplateVars(QString odffile, QString sedfile, QFileInfo 
     }
     file1->close();
     file->close();
+
+/* Werte Ausgabe fuer KD-Charts!!!! */
+
+    if(chartValues1.count() == chartValues2.count())
+    {
+        for(int i=0; i < chartValues1.count(); i++)
+        {
+            /*Hier wird addChartValues(name, Wert); ausgefuehrt um die Charts zu füllen */
+        //qDebug() << "Werte fuer KD Charts: " << chartValues1.at(i) << ","<< chartValues2.at(i);
+        }
+    }
+
 
     replaceMetaFile(odffile);
     QFile *newContent = new QFile(QDir::tempPath() + "/" + odffile + "/1-content.xml" );
