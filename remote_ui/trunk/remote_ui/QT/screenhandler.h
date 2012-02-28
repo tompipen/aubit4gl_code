@@ -28,6 +28,7 @@ class FglForm;
 #include <models/toolbar.h>
 #include <models/dialog.h>
 #include <models/prompt.h>
+#include <include/vdc.h>
 
 class ScreenHandler : public QObject
 {

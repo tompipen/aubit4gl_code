@@ -142,7 +142,7 @@ MainFrame::vdcdebug("ScreenHandler","createWindow", "QString windowTitle,QString
    Q_UNUSED(y);
    Q_UNUSED(h);
    Q_UNUSED(w);
-   QApplication::restoreOverrideCursor();
+   VDC::arrowCursor();
    cnt_form++;
    if(p_fglform != NULL)
    {
@@ -2028,7 +2028,7 @@ MainFrame::vdcdebug("ScreenHandler","waitForEvent", "");
 
        }
         }
-   QApplication::restoreOverrideCursor();
+   VDC::arrowCursor();
 
 }
 
@@ -2058,7 +2058,7 @@ Fgl::Event id;
        id = p_fglform->ql_responseQueue.takeFirst();
 
          setUpdatesEnabled(false);
-         QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+         VDC::waitCursor();
          }
 /*
    if(!p_fglform->context == NULL)
@@ -2398,7 +2398,7 @@ int ScreenHandler::cnt_screenhandler = 0;
 void ScreenHandler::closeWindow(QString windowName)
 {
 MainFrame::vdcdebug("ScreenHandler","closeWindow", "QString windowName");
-   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+   VDC::waitCursor();
    for(int i=0; i<ql_fglForms.size(); i++){
       FglForm *form = ql_fglForms.at(i);
 
@@ -2423,7 +2423,7 @@ MainFrame::vdcdebug("ScreenHandler","closeWindow", "QString windowName");
          }
       }
    }
-   QApplication::restoreOverrideCursor();
+   VDC::arrowCursor();
 }
 
 //------------------------------------------------------------------------------
@@ -3081,7 +3081,7 @@ void ScreenHandler::setRuninfo(int mode, QString cmd, int runcnt, bool start)
                    break;
                }
            }
-           QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+           VDC::waitCursor();
            this->cmd = cmd;
            if(p_fglform != NULL)
            {
@@ -3098,7 +3098,7 @@ void ScreenHandler::setRuninfo(int mode, QString cmd, int runcnt, bool start)
             {
                 p_fglform->setEnabled(true);
             }
-            QApplication::restoreOverrideCursor();
+            VDC::arrowCursor();
 
         }
     }
