@@ -17,7 +17,6 @@
 #include <QStatusBar>
 #include <QDomDocument>
 #include <QSplitter>
-
 #include <mainframe.h>
 #include <models/fglform.h>
 #include <models/statusbar.h>
@@ -1433,10 +1432,10 @@ if(inputArray() || displayArray())
           tableView->curr_editor->close();
           //tableView->setEditTriggers(QAbstractItemView::AllEditTriggers);
           //tableView->setEditTriggers(et);
-          //Fgl::Event event;
-          //event.type = Fgl::AFTER_FIELD_EVENT;
-          //event.attribute = tableView->curr_editor->objectName();
-          //fieldEvent(event);
+          Fgl::Event event;
+          event.type = Fgl::AFTER_FIELD_EVENT;
+          event.attribute = tableView->curr_editor->objectName();
+          fieldEvent(event);
         }
     }
 }
@@ -1457,6 +1456,13 @@ void FglForm::clearFieldFocus()
 
 void FglForm::setFocusOnWidget(QWidget *w, Qt::FocusReason reason)
 {
+
+  if(w == focusWidget())
+  {
+      return;
+  }
+
+
   currentField()->clearFocus();
   this->clearFieldFocus();
   QMetaObject::invokeMethod(w, "setFocus", Qt::QueuedConnection);
