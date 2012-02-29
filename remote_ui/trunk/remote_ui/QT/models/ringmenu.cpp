@@ -41,6 +41,7 @@ MainFrame::vdcdebug("RingMenu","RingMenu", "QWidget *parent");
    QVBoxLayout *layout = new QVBoxLayout;
    layout->setAlignment(Qt::AlignTop);
    layout->setSpacing(0);
+   //layout->setSizeConstraint(QLayout::SetFixedSize);
    buttonGroup = new QButtonGroup(this);
 
    this->layout = layout;
@@ -74,8 +75,11 @@ RingMenu::RingMenu(QString title, QString style,
    QVBoxLayout *layout = new QVBoxLayout;
    layout->setAlignment(Qt::AlignTop);
    layout->setSpacing(0);
-
+   //layout->setSizeConstraint(QLayout::SetFixedSize);
    buttonGroup = new QButtonGroup(this);
+
+   this->setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Expanding);
+
 /*
    connect(buttonGroup, SIGNAL(buttonClicked(int)), 
            this, SLOT(buttonClicked(int)));
@@ -123,6 +127,7 @@ MainFrame::vdcdebug("RingMenu","createButton", "int id, QString text, QString to
 
    // Create the Button and set Text + ToolTip
    QPushButton *button = new QPushButton(buttonText);
+   button->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
    button->setToolTip(tooltip);
    button->setFlat(true);
    button->installEventFilter(this);
@@ -306,6 +311,7 @@ MainFrame::vdcdebug("RingMenu","createAction", "int id, QString text");
 //   button->setShortcut(shortcut);
    button->setIcon(QIcon(QString("pics:blank.png")));
    button->setIconSize(QSize(40,25));
+   button->setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Fixed);
 
    Action *action = new Action(text.toLower(), text, button);
    action->setImage("blank.png");

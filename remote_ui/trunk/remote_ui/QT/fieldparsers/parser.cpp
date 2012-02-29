@@ -31,12 +31,12 @@ MainFrame::vdcdebug("Parser","Parser", "QWidget *p_fglform");
    layout = new QHBoxLayout;
    layout->setSpacing(0);
    this->setLayout(layout);
-
    currentWidget = new QWidget(this);
+   currentWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+   this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
    currentLayout = NULL;
    layoutChanged = false;
    hidden = false;
-
 
    // create dummy label to detect the used colors 
    // 
@@ -119,11 +119,6 @@ MainFrame::vdcdebug("Parser","parseElement", "const QDomNode& xmlNode");
        QString formname   = currentElement.attribute("name");
        QString encoding   = currentElement.attribute("encoding");
 
-       QFontMetrics fm = qApp->fontMetrics();
-       int width = gridWidth * fm.averageCharWidth();
-
-       this->setMinimumWidth(width);
-
 
        if(p_fglform)
        {
@@ -181,7 +176,7 @@ MainFrame::vdcdebug("Parser","parseElement", "const QDomNode& xmlNode");
          layout->setSpacing(0);
          layout->setVerticalSpacing(3);
          layout->setHorizontalSpacing(3);
-
+         layout->setSizeConstraint(QLayout::SetMinimumSize);
          if(currentLayout == NULL){
             currentWidget->setLayout(layout);
          }
@@ -202,7 +197,6 @@ MainFrame::vdcdebug("Parser","parseElement", "const QDomNode& xmlNode");
       if(nodeName == "VBox"){
          QVBoxLayout *layout = new QVBoxLayout;
          layout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
-
          if(currentLayout == NULL){
             currentWidget->setLayout(layout);
          }
@@ -222,7 +216,6 @@ MainFrame::vdcdebug("Parser","parseElement", "const QDomNode& xmlNode");
       if(nodeName == "HBox"){
          QHBoxLayout *layout = new QHBoxLayout;
          layout->setAlignment(Qt::AlignLeft | Qt::AlignTop);
-
          if(currentLayout == NULL){
             currentWidget->setLayout(layout);
          }
@@ -410,6 +403,8 @@ void Parser::handleTableColumn(const QDomNode& xmlNode){
    TableModel *model = new TableModel(pageSize, colCount);
 
    TableView *p_screenRecord = new TableView(p_fglform);
+
+   p_screenRecord->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
    p_screenRecord->setParent(this->p_fglform);
 
    p_screenRecord->tabName = name;

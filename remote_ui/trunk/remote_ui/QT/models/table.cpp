@@ -387,7 +387,7 @@ MainFrame::vdcdebug("TableView","sizeHint", " const");
       if(TableModel *table = qobject_cast<TableModel *> (proxyModel->sourceModel())){
 
 
-         if(this->horizontalHeader()->isVisible())
+         if(this->horizontalHeader())
             height += this->horizontalHeader()->height();
 
 /*
@@ -403,18 +403,8 @@ MainFrame::vdcdebug("TableView","sizeHint", " const");
             width += this->columnWidth(j);
          }
 */
-         if(!this->horizontalScrollBar()->isHidden()){
+         if(this->horizontalScrollBar()){
             height+= this->horizontalScrollBar()->height();
-         }
-
-
-         if(p_fglform)
-         {
-            if(FglForm *form = qobject_cast<FglForm*> (p_fglform))
-            {
-               QFontMetrics fm = qApp->fontMetrics();
-               width += form->gridWidth * fm.averageCharWidth();
-            }
          }
 
 /*
@@ -430,7 +420,8 @@ MainFrame::vdcdebug("TableView","sizeHint", " const");
 //         this->setFixedWidth(width);
       }
    }
-   return QSize(width, height+5);
+
+   return QSize(0, height+5);
 }
 
 

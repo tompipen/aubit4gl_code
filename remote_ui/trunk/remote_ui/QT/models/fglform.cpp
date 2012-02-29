@@ -32,7 +32,10 @@
 // Filename     : fglform.cpp
 // Description  : constructor for the instances
 //------------------------------------------------------------------------------
-
+/*!
+  * \brief Constructor for the Fglform
+  *
+  */
 FglForm::FglForm(QString windowName, QWidget *parent) : QMainWindow(parent){
 
    b_dummy = false;
@@ -58,6 +61,7 @@ FglForm::FglForm(QString windowName, QWidget *parent) : QMainWindow(parent){
    this->setObjectName("FGLFORM");
    QSplitter *formSplitter = new QSplitter;
    formSplitter->setChildrenCollapsible(false);
+   formSplitter->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
    setCentralWidget(formSplitter);
 
    setState(Fgl::IDLE);
@@ -1454,14 +1458,16 @@ void FglForm::clearFieldFocus()
     }
 }
 
+/*!
+ * \brief Method to set Focus and remove the focus of all other widgets
+ */
+
 void FglForm::setFocusOnWidget(QWidget *w, Qt::FocusReason reason)
 {
-
   if(w == focusWidget())
   {
-      return;
+     return;
   }
-
 
   currentField()->clearFocus();
   this->clearFieldFocus();

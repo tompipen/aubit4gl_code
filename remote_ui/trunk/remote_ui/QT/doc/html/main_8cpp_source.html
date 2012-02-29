@@ -93,62 +93,62 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <a name="l00031"></a>00031 <span class="comment">// Description  : starts the application</span>
 <a name="l00032"></a>00032 <span class="comment">//                starts main frame (so called damon)</span>
 <a name="l00033"></a>00033 <span class="comment">//------------------------------------------------------------------------------</span>
-<a name="l00042"></a><a class="code" href="main_8cpp.html#a0ddf1224851353fc92bfbff6f499fa97">00042</a> <span class="comment"></span><span class="keywordtype">int</span> <a class="code" href="main_8cpp.html#a0ddf1224851353fc92bfbff6f499fa97">main</a>(<span class="keywordtype">int</span> argc, <span class="keywordtype">char</span> *argv[])
-<a name="l00043"></a>00043 {
-<a name="l00044"></a>00044     QApplication app(argc, argv);
-<a name="l00045"></a>00045 
-<a name="l00046"></a>00046     QSplashScreen *splash = <span class="keyword">new</span> QSplashScreen;
-<a name="l00047"></a>00047     ScreenHandler::setSearchPaths();
-<a name="l00048"></a>00048     <span class="comment">//splash-&gt;setPixmap(QPixmap(&quot;./pics/splash.png&quot;));</span>
-<a name="l00049"></a>00049     splash-&gt;setPixmap(QPixmap(<span class="stringliteral">&quot;pics:VENTAS_9_splashscreen.png&quot;</span>));
-<a name="l00050"></a>00050     QEvent::registerEventType(1337);
-<a name="l00051"></a>00051     splash-&gt;show();
-<a name="l00052"></a>00052     QString fileName; 
-<a name="l00053"></a>00053     QCoreApplication::setOrganizationName(<span class="stringliteral">&quot;VENTAS&quot;</span>);
-<a name="l00054"></a>00054     QCoreApplication::setOrganizationDomain(<span class="stringliteral">&quot;ventas.de&quot;</span>);
-<a name="l00055"></a>00055     QCoreApplication::setApplicationName(<span class="stringliteral">&quot;VDC - Ventas Desktop Client&quot;</span>);
-<a name="l00056"></a>00056 
-<a name="l00057"></a>00057     <span class="comment">//sleep(3);</span>
+<a name="l00041"></a><a class="code" href="main_8cpp.html#a0ddf1224851353fc92bfbff6f499fa97">00041</a> <span class="comment"></span><span class="keywordtype">int</span> <a class="code" href="main_8cpp.html#a0ddf1224851353fc92bfbff6f499fa97">main</a>(<span class="keywordtype">int</span> argc, <span class="keywordtype">char</span> *argv[])
+<a name="l00042"></a>00042 {
+<a name="l00043"></a>00043     QApplication app(argc, argv);
+<a name="l00044"></a>00044 
+<a name="l00045"></a>00045     QSplashScreen *splash = <span class="keyword">new</span> QSplashScreen;
+<a name="l00046"></a>00046     ScreenHandler::setSearchPaths();
+<a name="l00047"></a>00047     <span class="comment">//splash-&gt;setPixmap(QPixmap(&quot;./pics/splash.png&quot;));</span>
+<a name="l00048"></a>00048     splash-&gt;setPixmap(QPixmap(<span class="stringliteral">&quot;pics:VENTAS_9_splashscreen.png&quot;</span>));
+<a name="l00049"></a>00049     QEvent::registerEventType(1337);
+<a name="l00050"></a>00050     splash-&gt;show();
+<a name="l00051"></a>00051     QString fileName; 
+<a name="l00052"></a>00052     QCoreApplication::setOrganizationName(<span class="stringliteral">&quot;VENTAS&quot;</span>);
+<a name="l00053"></a>00053     QCoreApplication::setOrganizationDomain(<span class="stringliteral">&quot;ventas.de&quot;</span>);
+<a name="l00054"></a>00054     QCoreApplication::setApplicationName(<span class="stringliteral">&quot;VDC - Ventas Desktop Client&quot;</span>);
+<a name="l00055"></a>00055 
+<a name="l00056"></a>00056     <span class="comment">//sleep(3);</span>
+<a name="l00057"></a>00057 
 <a name="l00058"></a>00058 
 <a name="l00059"></a>00059 
-<a name="l00060"></a>00060 
-<a name="l00061"></a>00061 <span class="comment">//    if(argc &gt;= 2 &amp;&amp;</span>
-<a name="l00062"></a>00062 <span class="comment">//       QString(argv[1]) == &quot;-l&quot;)</span>
-<a name="l00063"></a>00063 <span class="comment">//       loginForm = true;</span>
-<a name="l00064"></a>00064 
-<a name="l00065"></a>00065     QFontDatabase::addApplicationFont(<span class="stringliteral">&quot;:/font/LiberationMono-Regular.ttf&quot;</span>);
-<a name="l00066"></a>00066     QFont yavcFont(<span class="stringliteral">&quot;Arial&quot;</span>, 8);
-<a name="l00067"></a>00067     yavcFont.setFixedPitch(<span class="keyword">true</span>);
-<a name="l00068"></a>00068 
-<a name="l00069"></a>00069     app.setFont(yavcFont);
+<a name="l00060"></a>00060 <span class="comment">//    if(argc &gt;= 2 &amp;&amp;</span>
+<a name="l00061"></a>00061 <span class="comment">//       QString(argv[1]) == &quot;-l&quot;)</span>
+<a name="l00062"></a>00062 <span class="comment">//       loginForm = true;</span>
+<a name="l00063"></a>00063 
+<a name="l00064"></a>00064     QFontDatabase::addApplicationFont(<span class="stringliteral">&quot;:/font/LiberationMono-Regular.ttf&quot;</span>);
+<a name="l00065"></a>00065     QFont yavcFont(<span class="stringliteral">&quot;Arial&quot;</span>, 8);
+<a name="l00066"></a>00066     yavcFont.setFixedPitch(<span class="keyword">true</span>);
+<a name="l00067"></a>00067 
+<a name="l00068"></a>00068     app.setFont(yavcFont);
+<a name="l00069"></a>00069 
 <a name="l00070"></a>00070 
-<a name="l00071"></a>00071 
-<a name="l00072"></a>00072 <span class="preprocessor">    #ifdef Q_WS_MAC</span>
-<a name="l00073"></a>00073 <span class="preprocessor"></span>       QIcon ventasLogo(<span class="stringliteral">&quot;pics:vdc.icns&quot;</span>);
-<a name="l00074"></a>00074 <span class="preprocessor">    #else</span>
-<a name="l00075"></a>00075 <span class="preprocessor"></span>       QIcon ventasLogo(<span class="stringliteral">&quot;pics:vdc.png&quot;</span>);
-<a name="l00076"></a>00076 <span class="preprocessor">    #endif</span>
-<a name="l00077"></a>00077 <span class="preprocessor"></span>
-<a name="l00078"></a>00078     app.setWindowIcon(ventasLogo);
-<a name="l00079"></a>00079 
-<a name="l00080"></a>00080     <span class="comment">// we need to register the QStringList with the meta-object system</span>
-<a name="l00081"></a>00081     <span class="comment">// to make it usable for signal/slot connections</span>
-<a name="l00082"></a>00082     <span class="comment">//</span>
-<a name="l00083"></a>00083     qRegisterMetaType&lt;QStringList&gt;(<span class="stringliteral">&quot;QStringList&quot;</span>);
-<a name="l00084"></a>00084     qRegisterMetaType&lt;QModelIndex&gt;(<span class="stringliteral">&quot;QModelIndex&quot;</span>);
-<a name="l00085"></a>00085     qRegisterMetaType&lt;QModelIndex&gt;(<span class="stringliteral">&quot;QDomDocument&quot;</span>);
-<a name="l00086"></a>00086     qRegisterMetaType&lt;QModelIndex&gt;(<span class="stringliteral">&quot;QDomElement&quot;</span>);
-<a name="l00087"></a>00087     MainFrame mainframe;
-<a name="l00088"></a>00088     QSettings settings(<span class="stringliteral">&quot;Ventas AG&quot;</span>, <span class="stringliteral">&quot;Ventas Desktop Client&quot;</span>);
-<a name="l00089"></a>00089     mainframe.move(settings.value(<span class="stringliteral">&quot;pos&quot;</span>).toPoint());
-<a name="l00090"></a>00090     mainframe.show();
-<a name="l00091"></a>00091     mainframe.adjustSize();
-<a name="l00092"></a>00092     splash-&gt;finish(&amp;mainframe);
-<a name="l00093"></a>00093     mainframe.activateWindow();
-<a name="l00094"></a>00094     mainframe.raise();
-<a name="l00095"></a>00095     <span class="keyword">delete</span> splash;
-<a name="l00096"></a>00096     <span class="keywordflow">return</span> app.exec();
-<a name="l00097"></a>00097 }
+<a name="l00071"></a>00071 <span class="preprocessor">    #ifdef Q_WS_MAC</span>
+<a name="l00072"></a>00072 <span class="preprocessor"></span>       QIcon ventasLogo(<span class="stringliteral">&quot;pics:vdc.icns&quot;</span>);
+<a name="l00073"></a>00073 <span class="preprocessor">    #else</span>
+<a name="l00074"></a>00074 <span class="preprocessor"></span>       QIcon ventasLogo(<span class="stringliteral">&quot;pics:vdc.png&quot;</span>);
+<a name="l00075"></a>00075 <span class="preprocessor">    #endif</span>
+<a name="l00076"></a>00076 <span class="preprocessor"></span>
+<a name="l00077"></a>00077     app.setWindowIcon(ventasLogo);
+<a name="l00078"></a>00078 
+<a name="l00079"></a>00079     <span class="comment">// we need to register the QStringList with the meta-object system</span>
+<a name="l00080"></a>00080     <span class="comment">// to make it usable for signal/slot connections</span>
+<a name="l00081"></a>00081     <span class="comment">//</span>
+<a name="l00082"></a>00082     qRegisterMetaType&lt;QStringList&gt;(<span class="stringliteral">&quot;QStringList&quot;</span>);
+<a name="l00083"></a>00083     qRegisterMetaType&lt;QModelIndex&gt;(<span class="stringliteral">&quot;QModelIndex&quot;</span>);
+<a name="l00084"></a>00084     qRegisterMetaType&lt;QModelIndex&gt;(<span class="stringliteral">&quot;QDomDocument&quot;</span>);
+<a name="l00085"></a>00085     qRegisterMetaType&lt;QModelIndex&gt;(<span class="stringliteral">&quot;QDomElement&quot;</span>);
+<a name="l00086"></a>00086     MainFrame mainframe;
+<a name="l00087"></a>00087     QSettings settings(<span class="stringliteral">&quot;Ventas AG&quot;</span>, <span class="stringliteral">&quot;Ventas Desktop Client&quot;</span>);
+<a name="l00088"></a>00088     mainframe.move(settings.value(<span class="stringliteral">&quot;pos&quot;</span>).toPoint());
+<a name="l00089"></a>00089     mainframe.show();
+<a name="l00090"></a>00090     mainframe.adjustSize();
+<a name="l00091"></a>00091     splash-&gt;finish(&amp;mainframe);
+<a name="l00092"></a>00092     mainframe.activateWindow();
+<a name="l00093"></a>00093     mainframe.raise();
+<a name="l00094"></a>00094     <span class="keyword">delete</span> splash;
+<a name="l00095"></a>00095     <span class="keywordflow">return</span> app.exec();
+<a name="l00096"></a>00096 }
 </pre></div></div>
 </div>
 <!--- window showing the filter options -->
@@ -165,7 +165,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </iframe>
 </div>
 
-<hr class="footer"/><address class="footer"><small>Generated on Mon Feb 27 2012 11:03:55 for VDC by&#160;
+<hr class="footer"/><address class="footer"><small>Generated on Wed Feb 29 2012 13:19:13 for VDC by&#160;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.7.3 </small></address>
 </body>

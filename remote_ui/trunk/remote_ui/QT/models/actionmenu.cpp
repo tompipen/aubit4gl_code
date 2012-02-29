@@ -49,7 +49,8 @@ MainFrame::vdcdebug("ActionMenu","ActionMenu", "QWidget *parent");
 
    this->layout = layout;
    setLayout(this->layout);
-   this->setFixedWidth(this->minimumWidth());
+  // layout->setSizeConstraint(QLayout::SetFixedSize);
+
 }
 
 //------------------------------------------------------------------------------
@@ -85,8 +86,8 @@ MainFrame::vdcdebug("ActionMenu","ActionMenu", "QString title, QString style, QW
 */
 
    this->layout = layout;
+ //  layout->setSizeConstraint(QLayout::SetFixedSize);
    setLayout(this->layout);
-
 }
 
 //------------------------------------------------------------------------------
@@ -117,6 +118,7 @@ MainFrame::vdcdebug("ActionMenu","createButton", "QString id, QString text, QStr
    button->setShortcut(shortcut);
    button->setIcon(QIcon(QString("pics:blank.png")));
    button->setIconSize(QSize(40,25));
+   button->setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Fixed);
 
 
    qh_buttonpals[text.trimmed()] = button->palette();
