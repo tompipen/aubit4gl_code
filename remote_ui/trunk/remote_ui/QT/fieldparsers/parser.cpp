@@ -176,7 +176,7 @@ MainFrame::vdcdebug("Parser","parseElement", "const QDomNode& xmlNode");
          layout->setSpacing(0);
          layout->setVerticalSpacing(3);
          layout->setHorizontalSpacing(3);
-         layout->setSizeConstraint(QLayout::SetMinimumSize);
+      //   layout->setSizeConstraint(QLayout::SetMinimumSize);
          if(currentLayout == NULL){
             currentWidget->setLayout(layout);
          }
