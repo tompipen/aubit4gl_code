@@ -79,6 +79,7 @@ HEADERS += confwin.h \
     xmlparsers/xml2style.h \
     qtelnet/qttelnet.h \
     models/xmlreader.h \
+    include/vdc.h \
     models/webbrowser.h
 SOURCES += confwin.cpp \
     main.cpp \
@@ -107,6 +108,7 @@ SOURCES += confwin.cpp \
     models/ringmenu.cpp \
     qtelnet/qttelnet.cpp \
     models/xmlreader.cpp \
+    include/vdc.cpp \
     models/webbrowser.cpp
 
 RESOURCES += \
