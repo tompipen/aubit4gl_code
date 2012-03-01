@@ -31,6 +31,7 @@
 #include "models/table.h"
 #include "models/matrix.h"
 #include "xmlparsers/xml2menu.h"
+#include <QMutex>
 
 //------------------------------------------------------------------------------
 // Method       : ScreenHandler()
@@ -3107,4 +3108,39 @@ void ScreenHandler::setRuninfo(int mode, QString cmd, int runcnt, bool start)
     {
         this->programm_name = pn;
     }
+
+
+#ifdef KDChart_Version
+void ScreenHandler::createChart(QString chart2)
+{
+    ChartInterface *chart = new ChartInterface(ChartInterface::DIAG_BAR);
+    m_chart = chart;
+    //m_chart->chart()->setGlobalLeading(20,20,20,20);
+
+}
+
+void ScreenHandler::addChartValue(QString name, QString wert)
+{
+    if(wert.contains(","))
+    {
+        wert.replace(",", ".");
+    }
+
+        m_model.addChartData(name, wert);
+
+}
+
+void ScreenHandler::displayChart(QString fileName)
+{
+    if(m_chart)
+    {
+        m_chart->addAxis(KDChart::CartesianAxis::Left);
+        m_chart->addAxis(KDChart::CartesianAxis::Bottom);
+        m_chart->setDiagramColor(&m_model);
+        m_chart->setModel(&m_model);
+        m_chart->saveAs(fileName);
+    }
+
+}
+#endif
 

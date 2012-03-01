@@ -31,20 +31,21 @@ LIBS += -L"$$OUT_PWD/quazip/lib" -lquazip
 include("models/reportgen.pri")
 }
 
-KDCHART_PATH = $$(VKDChart)
+VKDCHART = /usr/local/KDAB/KDChart-2.4.2
 
-!isEmpty(KDCHART_PATH) {
+!isEmpty(VKDCHART) {
 include("models/chart.pri")
 DEFINES += KDChart_Version
+message( $$VKDCHART )
 
 CONFIG(debug, debug|release) {
-  INCLUDEPATH += $$KDCHART_PATH/include/
+  INCLUDEPATH += $$VKDCHART/include/
 message( $$INCLUDEPATH )
-  !win32:LIBS += -L$$KDCHART_PATH/lib/ -lkdchart
-  win32:LIBS += -L$$KDCHART_PATH/lib/ -lkdchartd
+  !win32:LIBS += -L$$VKDCHART/lib/ -lkdchart
+  win32:LIBS += -L$$VKDCHART/lib/ -lkdchartd
 } else {
-  INCLUDEPATH += $$KDCHART_PATH/include/
-  LIBS += -L$$KDCHART_PATH/lib/ -lkdchart
+  INCLUDEPATH += $$VKDCHART/include/
+  LIBS += -L$$VKDCHART/lib/ -lkdchart
 }
 }
 

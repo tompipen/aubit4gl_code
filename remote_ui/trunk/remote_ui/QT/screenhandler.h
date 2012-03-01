@@ -29,6 +29,10 @@ class FglForm;
 #include <models/dialog.h>
 #include <models/prompt.h>
 #include <include/vdc.h>
+#ifdef KDChart_Version
+#include "models/charts/chartInterface.h"
+#include "models/charts/chartTableModel.h"
+#endif
 
 class ScreenHandler : public QObject
 {
@@ -78,6 +82,11 @@ protected:
    bool eventFilter(QObject *obj, QEvent *ev);
 
 private:
+   #ifdef KDChart_Version
+   ChartInterface *m_chart;
+   ChartTableModel m_model;
+   #endif
+
    QList<Context*> contexts;
    bool cursorPos;
    QString qs_interfaceTitle;
@@ -124,6 +133,11 @@ public slots:
    void activeFocus();
    void handleXMLActions(QString);
    void setProgramName(QString);
+   #ifdef KDChart_Version
+   void createChart(QString);
+   void addChartValue(QString, QString);
+   void displayChart(QString);
+   #endif
    void handleXMLStyles(QString);
    //void setFieldBuffer(QString, QString);
    void setFieldBuffer(int, QString, int);
@@ -180,6 +194,7 @@ public slots:
 
 signals:
    void fglFormResponse(QString);
+
 };
 
 #endif

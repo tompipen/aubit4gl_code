@@ -1,15 +1,21 @@
-#include "models/charts/chartInterface.h"
+#include "chartInterface.h"
+#include "chartTableModel.h"
 #include <KDChart/KDChartAbstractCoordinatePlane>
 #include <KDChart/KDChartAbstractCartesianDiagram>
 #include <KDChart/KDChartDataValueAttributes>
 #include <KDChart/KDChartBackgroundAttributes>
 #include <KDChart/KDChartBarDiagram>
 #include <KDChart/KDChartPieDiagram>
+#include <KDChart/KDChartPieAttributes>
+#include <KDChart/KDChartThreeDPieAttributes>
 #include <KDGantt/KDGanttGraphicsView>
 #include <KDGantt/KDGanttGraphicsScene>
 #include <KDChart/KDChartLineDiagram>
+#include <KDChart/KDChartHeaderFooter>
 #include <QPrinter>
 #include <QAbstractTableModel>
+#include <QDebug>
+#include <QDir>
 
 using namespace KDChart;
 
@@ -66,12 +72,11 @@ TestModel::TestModel( QObject *parent )
 
 ChartInterface::ChartInterface( ChartType type )
 {
-    if(type == Gantt)
+    if(type == DIAG_GANTT)
     {
         createGantt();
     } else {
         m_chart = createChart( type );
-        //setModel( new TestModel());
     }
 
 }
@@ -236,7 +241,7 @@ void ChartInterface::changeBackground( const QBrush& myBrush, ChartArea area )
     {
         AbstractDiagram *diagram = m_chart->coordinatePlane()->diagram();
         AbstractCartesianDiagram* dia = dynamic_cast<AbstractCartesianDiagram*> (m_chart->coordinatePlane()->diagram());
-
+qDebug() << "CI Diagram" <<diagram;
         if(diagram)
         {
             AbstractAreaBase *baseArea = 0;
@@ -248,11 +253,11 @@ void ChartInterface::changeBackground( const QBrush& myBrush, ChartArea area )
 
                 break;
             case AxisY:
-                baseArea = findAxis(dia, CartesianAxis::Top);
+                baseArea = findAxis(dia, CartesianAxis::Left);
 
                 break;
             case AxisH:
-                baseArea = findAxis(dia, CartesianAxis::Left);
+                baseArea = findAxis(dia, CartesianAxis::Top);
 
                 break;
             case AxisV:
@@ -277,28 +282,50 @@ void ChartInterface::changeBackground( const QBrush& myBrush, ChartArea area )
                 baseArea->setBackgroundAttributes(bgattributes);
 
             } else {
-                qWarning("BaseArea ist nicht vorhanden");
+                qWarning("changeBackground: BaseArea ist nicht vorhanden");
             }
 
 
         }
 
     } else {
-        qWarning( "Es ist kein Chart vorhanden");
+        qWarning( "changeBackground: Es ist kein Chart vorhanden");
     }
 
 }
 
-void ChartInterface::addLegend( Position myPosition, Legend::LegendStyle myStyle )
+void ChartInterface::addLegend( Position myPosition, Legend::LegendStyle myStyle, Qt::Orientation myOrientation, const QString &myTitel)
 {
     if(m_chart)
     {
-        KDChart::Legend *myLegend = new KDChart::Legend( m_chart );
+        KDChart::Legend *myLegend = new KDChart::Legend(dia, m_chart );
         myLegend->setPosition(myPosition);
         myLegend->setLegendStyle(myStyle);
+        myLegend->setTitleText( myTitel );
+
+        myLegend->setOrientation( myOrientation );
+
+        TextAttributes lta( myLegend->textAttributes() );
+        lta.setPen( QPen( Qt::darkGray ) );
+        Measure me( lta.fontSize() );
+        me.setValue( me.value() * 1.5 );
+        lta.setFontSize( Measure( 10, KDChartEnums::MeasureCalculationModeAbsolute ) );
+        myLegend->setTextAttributes(  lta );
+
+        myLegend->size();
+        // adjust the legend title's font:
+        lta = myLegend->titleTextAttributes();
+        lta.setPen( QPen( Qt::black ) );
+        me = lta.fontSize();
+        me.setValue( me.value() * 1.5 );
+        lta.setFontSize( me );
+        myLegend->setTitleTextAttributes(  lta );
+
         m_chart->addLegend(myLegend);
+
+        //qDebug()<<"addLegend " << m_chart;
     } else {
-        qWarning("Es ist kein Chart vorhanden");
+        qWarning("addLegend:  Es ist kein Chart vorhanden");
     }
 
 }
@@ -306,26 +333,46 @@ void ChartInterface::addLegend( Position myPosition, Legend::LegendStyle myStyle
 KDChart::Chart* ChartInterface::createChart( ChartType type )
 {
     Chart *newChart = new Chart;
-    AbstractDiagram *dia = 0;
+
+    if(!m_chart)
+    {
+        m_chart = newChart;
+    }
+
+    dia = 0;
     switch ( type )
     {
-        case PieDiagram:
+        case DIAG_PIE:
             {
              dia = new KDChart::PieDiagram();
              PolarCoordinatePlane *newPlane = new PolarCoordinatePlane;
              newChart->replaceCoordinatePlane( newPlane );
+
+            }
+            break;
+        case DIAG_BAR:
+            {
+            dia = new KDChart::BarDiagram();
+            CartesianCoordinatePlane *newPlane = new CartesianCoordinatePlane;
+            newChart->replaceCoordinatePlane( newPlane );
             }
             break;
 
-        case BarDiagram:
-            dia = new KDChart::BarDiagram();
-            break;
-
-        case LineDiagram:
+        case DIAG_LINE:
             dia = new KDChart::LineDiagram();
             break;
-    default:
-        break;
+        case DIAG_POLAR:
+            break;
+        case DIAG_GANTT:
+            break;
+        case DIAG_RING:
+            break;
+        case DIAG_STOCK:
+            break;
+        case DIAG_AREA:
+            break;
+        default:
+            break;
     }
 
     if(dia)
@@ -337,15 +384,15 @@ KDChart::Chart* ChartInterface::createChart( ChartType type )
 
 }
 
-ChartInterface::~ChartInterface()
+/*ChartInterface::~ChartInterface()
 {
     if ( m_chart && !m_chart->parent() )
         delete m_chart.data();
     if ( m_gantt && !m_gantt->parent() )
         delete m_gantt.data();
-}
+}*/
 
-void ChartInterface::setModel( QAbstractItemModel *myModel)
+void ChartInterface::setModel( ChartTableModel *myModel)
 {
     if(m_chart)
     {
@@ -354,11 +401,12 @@ void ChartInterface::setModel( QAbstractItemModel *myModel)
         {
             diagram->setModel(myModel);
         }
+        qDebug() << "Diagramm-Model " << diagram;
     } else if (m_gantt) {
         m_gantt->setModel(myModel);
     }
     else {
-        qWarning(" Kein Chart vorhanden " );
+        qWarning(" setModel:  Kein Chart vorhanden " );
     }
 
 }
@@ -378,7 +426,7 @@ void ChartInterface::saveAs(const QString &fileName)
             QPrinter printer(QPrinter::HighResolution);
             printer.setOrientation(QPrinter::Landscape);
             printer.setOutputFormat(QPrinter::PdfFormat);
-            printer.setOutputFileName(fileName);
+            printer.setOutputFileName(QDir::tempPath() + "/" + fileName);
             QPainter painter;
             painter.begin(&printer);
             m_chart->paint(&painter, printer.pageRect());
@@ -388,9 +436,10 @@ void ChartInterface::saveAs(const QString &fileName)
 
         } else {
             QPixmap pix = QPixmap(m_chart->size());
+            pix.fill(Qt::white);
             QPainter painter ( &pix );
             m_chart->paint( &painter, QRect( 0, 0, pix.width(), pix.height() ) );
-            pix.save(fileName);
+            qDebug()<< "gespeichert? "<<   pix.save(QDir::tempPath() + "/" + fileName);
         }
 
     } else if(m_gantt){
@@ -399,7 +448,7 @@ void ChartInterface::saveAs(const QString &fileName)
             QPrinter printer(QPrinter::HighResolution);
             printer.setOrientation(QPrinter::Landscape);
             printer.setOutputFormat(QPrinter::PdfFormat);
-            printer.setOutputFileName(fileName);
+            printer.setOutputFileName(QDir::tempPath() + "/" + fileName);
             printer.setPaperSize(QPrinter::A4);
             QPainter painter;
             painter.begin(&printer);
@@ -414,12 +463,103 @@ void ChartInterface::saveAs(const QString &fileName)
             QPixmap pix = QPixmap(m_gantt->size());
             QPainter painter ( &pix );
             m_gantt->scene()->render( &painter, QRect( 0, 0, pix.width(), pix.height() ));
-            pix.save(fileName);
+            pix.save( QDir::tempPath() + "/" + fileName);
         }
 
     }
 }
 
+bool ChartInterface::displayChart() {
+    if(m_chart){
+
+        BackgroundAttributes c_brush(m_chart->backgroundAttributes());
+        c_brush.setBrush(Qt::white);
+        m_chart->setBackgroundAttributes(c_brush);
+        m_chart->setVisible(true);
+        m_chart->show();
+        return true;
+    } else {
+        qWarning(" displayChart():  Kein Chart vorhanden " );
+        return false;
+    }
+}
+
+bool ChartInterface::displayChart( int width, int height) {
+    if(m_chart){
+
+        m_chart->resize(width, height);
+        m_chart->setVisible(true);
+        m_chart->show();
+        //m_chart->setBackgroundAttributes(c_brush);
+        return true;
+    } else {
+        qWarning(" displayChart():  Kein Chart vorhanden " );
+        return false;
+    }
+}
+
+void ChartInterface::removeChart(KDChart::Chart *chart) {
+
+    if(chart){
+        delete chart;
+    }
+}
+
+
+bool ChartInterface::setHeader(KDChart::Chart* chart, KDChart::Position position, ChartTableModel &model){
+    HeaderFooter* header = new HeaderFooter( chart );
+    header->setPosition( position );
+    //header->setText( model.getTitelText() );
+    chart->addHeaderFooter( header );
+    return true;
+}
+
+
+void ChartInterface::initPie(PieDiagram *m_pie){
+
+    ThreeDPieAttributes attrs( m_pie->threeDPieAttributes() );
+    attrs.setEnabled( true );
+    attrs.setDepth( 40);
+    m_pie->setThreeDPieAttributes( attrs );
+
+    PieAttributes pa( m_pie->pieAttributes() );
+    pa.setExplodeFactor( 0.2 );
+
+    m_pie->setPieAttributes( 1, pa );
+   // m_pie->setPieAttributes( 0, pa );
+    qDebug() << "initPie " << m_pie;
+    addLegend(Position::East, Legend::MarkersAndLines, Qt::Vertical, QString("Legende"));
+
+    DataValueAttributes dva( m_pie->dataValueAttributes() );
+
+    TextAttributes ta( dva.textAttributes() );
+
+    ta.setFont( QFont( "Comic", 15 ) );
+    ta.setPen( QPen( QColor( Qt::black ) ) );
+    ta.setVisible( true );
+
+    dva.setTextAttributes( ta );
+    dva.setVisible( true );
+    dva.setDecimalDigits( 2 );
+    dva.dataLabel();
+    m_pie->setDataValueAttributes( dva );
+
+}
+
+KDChart::AbstractDiagram* ChartInterface::getDiagram(){
+    return dia;
+}
+
+void ChartInterface::setDiagramColor(ChartTableModel *m_model){
+    QList<QColor> bcolor;
+    bcolor.append(Qt::yellow);
+    bcolor.append(Qt::green);
+    bcolor.append(Qt::darkRed);
+    bcolor.append(Qt::lightGray);
+    for (int row=0; row < m_model->columnCount(QModelIndex()); ++row) {
+        this->dia->setBrush(row, QBrush(bcolor[row]));
+    }
+}
 //#include "../chartInterface.moc"
 
 

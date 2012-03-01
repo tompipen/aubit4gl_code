@@ -925,12 +925,13 @@ bool Reportgen::replaceTemplateVars(QString odffile, QString sedfile, QFileInfo 
     QString temp_var;
     QString sedLine;
     int cnt = 0;
-    int createChart = 0;
+    int makeChart = 0;
+    int wiederholen = 0;
     QFile *file = new QFile(QDir::tempPath() + "/" + odffile + "/1-content.xml");
     QFile *file1 = new QFile(QDir::tempPath() + "/" + odffile + "/content.xml");
 
-    QString diag_pfad = "/home/da/";
-    QString diag_bild = "diag.jpg";
+    //String diag_pfad = "/home/da/";
+    QString diag_bild = QString(QString::number(this->thread()->currentThreadId()) + "DIAG_BAR.png");
 
     if(!file->open(QIODevice::ReadOnly)) {
         qDebug() << "cannot open content1.xml (ersetzung)";
@@ -970,43 +971,10 @@ bool Reportgen::replaceTemplateVars(QString odffile, QString sedfile, QFileInfo 
 
             if(temp_var.contains("@DIAG_"))
             {
-                if(QFile::exists(QString(diag_pfad + diag_bild)));
-                {
-                    if(QFile::copy(QString(diag_pfad + diag_bild), QString( QDir::tempPath() + "/" + odffile + "/Pictures/" + diag_bild )))
-                    {
-                        QFile *manifestfile = new QFile(QDir::tempPath() + "/" + odffile + "/META-INF/manifest.xml");
-                        if(!manifestfile->open(QIODevice::ReadWrite))
-                        {
-                            qDebug() << "Manifest nicht geoeffnet zum lesen";
-                        }
-                        QDomDocument doc;
-                        doc.setContent(manifestfile);
-                        QString xml = doc.toString();
-                        QTextStream manistream(&xml);
-                        QString manifestText;
-                        QString save;
-                        while(!manistream.atEnd())
-                        {
-                            manifestText = manistream.readLine();
+                emit createChart("DIAG_BAR");
+                ausgabe.replace(QString("<text:p>" + temp_var + "</text:p>"), QString("<draw:frame table:end-cell-address=\"Tabelle1.E20\" draw:text-style-name=\"P1\" svg:width=\"16.93cm\" svg:x=\"0.081cm\" draw:style-name=\"gr1\" svg:y=\"0.016cm\" draw:name=\"Graphics 1\" table:end-x=\"2.181cm\" table:end-y=\"0.419cm\" svg:height=\"12.70cm\" draw:z-index=\"0\"><draw:image xlink:type=\"simple\" xlink:show=\"embed\" xlink:href=\"Pictures/" + diag_bild + "\" xlink:actuate=\"onLoad\"> <text:p/></draw:image></draw:frame>"));
 
-                            if(manifestText.contains("image/jpeg"))
-                            {
-                                manifestText = manifestText.append("<manifest:file-entry manifest:media-type=\"image/jpeg\" manifest:full-path=\"Pictures/" + diag_bild + "\"/>");
-                            }
-                            save = save + manifestText;
-                        }
-                        QFile *manisave = new QFile(QDir::tempPath() + "/" + odffile + "/META-INF/manifest.xml");
-                        if(!manisave->open(QIODevice::WriteOnly | QIODevice::Truncate))
-                        {
-                            qDebug() << "Manifest konnte nicht zum schreiben geoeffnet werden";
-                        }
-                        manifestfile->close();
-                        QTextStream maniWritter(manisave);
-                        maniWritter << save;
-                        ausgabe.replace(QString("<text:p>" + temp_var + "</text:p>"), QString("<draw:frame table:end-cell-address=\"Tabelle1.E20\" draw:text-style-name=\"P1\" svg:width=\"14.544cm\" svg:x=\"0.081cm\" draw:style-name=\"gr1\" svg:y=\"0.016cm\" draw:name=\"Graphics 1\" table:end-x=\"2.181cm\" table:end-y=\"0.419cm\" svg:height=\"12.321cm\" draw:z-index=\"0\"><draw:image xlink:type=\"simple\" xlink:show=\"embed\" xlink:href=\"Pictures/" + diag_bild + "\" xlink:actuate=\"onLoad\"> <text:p/></draw:image></draw:frame>"));
-                        manisave->close();
-                    }
-                }
+                makeChart = 1;
             }
 
             if(cnt < temp_fields.count())
@@ -1036,13 +1004,15 @@ bool Reportgen::replaceTemplateVars(QString odffile, QString sedfile, QFileInfo 
                                             if(!chartValues1.contains(sedLine))
                                             {
                                                 chartValues1 << sedLine;
+                                                qDebug() << "trage ein in chart1: " << sedLine;
                                             }
                                         } else if(j == 1)
                                         {
-                                            if(!chartValues2.contains(sedLine))
-                                            {
+                                            //if(!chartValues2.contains(sedLine))
+                                            //{
                                                     chartValues2 << sedLine;
-                                            }
+                                                    qDebug() << "trage ein in chart2: " << sedLine;
+                                            //}
                                         }
                                     }
                                 }
@@ -1071,12 +1041,70 @@ bool Reportgen::replaceTemplateVars(QString odffile, QString sedfile, QFileInfo 
 
 /* Werte Ausgabe fuer KD-Charts!!!! */
 
-    if(chartValues1.count() == chartValues2.count())
+    //if(chartValues1.count() == chartValues2.count())
+    //{
+
+
+    if(chartValues1.count() > chartValues2.count())
     {
-        for(int i=0; i < chartValues1.count(); i++)
+        wiederholen = chartValues2.count();
+    } else if(chartValues2.count() > chartValues1.count())
+    {
+        wiederholen = chartValues1.count();
+    }
+
+        for(int i=0; i < wiederholen; i++)
         {
-            /*Hier wird addChartValues(name, Wert); ausgefuehrt um die Charts zu füllen */
+            /*Hier wird addChartValues(name, Wert); ausgefuehrt um die Charts zu fuellen */
         //qDebug() << "Werte fuer KD Charts: " << chartValues1.at(i) << ","<< chartValues2.at(i);
+            //qDebug() << "chartValues1.at(i)" << chartValues1.at(i) << " " <<  chartValues2.at(i);
+            if(!chartValues1.at(i).isNull() && !chartValues2.at(i).isNull())
+            {
+                emit addChartValue(chartValues1.at(i), chartValues2.at(i));
+            }
+        }
+    //}
+
+    emit displayChart(diag_bild);
+
+    if(makeChart == 1)
+    {
+        sleep(2);
+        if(QFile::exists(QString(QDir::tempPath() + "/" + diag_bild)));
+        {
+            if(QFile::copy(QString(QDir::tempPath() + "/" + diag_bild), QString( QDir::tempPath() + "/" + odffile + "/Pictures/" + diag_bild )))
+            {
+                QFile *manifestfile = new QFile(QDir::tempPath() + "/" + odffile + "/META-INF/manifest.xml");
+                if(!manifestfile->open(QIODevice::ReadWrite))
+                {
+                    qDebug() << "Manifest nicht geoeffnet zum lesen";
+                }
+                QDomDocument doc;
+                doc.setContent(manifestfile);
+                QString xml = doc.toString();
+                QTextStream manistream(&xml);
+                QString manifestText;
+                QString save;
+                while(!manistream.atEnd())
+                {
+                    manifestText = manistream.readLine();
+
+                    if(manifestText.contains("image/jpeg"))
+                    {
+                        manifestText = manifestText.append("<manifest:file-entry manifest:media-type=\"image/jpeg\" manifest:full-path=\"Pictures/" + diag_bild + "\"/>");
+                    }
+                    save = save + manifestText;
+                }
+                QFile *manisave = new QFile(QDir::tempPath() + "/" + odffile + "/META-INF/manifest.xml");
+                if(!manisave->open(QIODevice::WriteOnly | QIODevice::Truncate))
+                {
+                    qDebug() << "Manifest konnte nicht zum schreiben geoeffnet werden";
+                }
+                manifestfile->close();
+                QTextStream maniWritter(manisave);
+                maniWritter << save;
+                manisave->close();
+            }
         }
     }
 

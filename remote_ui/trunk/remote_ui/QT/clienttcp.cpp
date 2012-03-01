@@ -1025,6 +1025,7 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
             }
            //params 0-2 sind die uebergabeparameter 
            //Ruckgabe werte. Erster = Exitcode, Zweiter = Failsafe Dateiname
+
             #ifdef VREPGEN_USE
             Reportgen *p_reportgen = new Reportgen();
             QFileInfo file(params.at(0));
@@ -1033,6 +1034,11 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
             extension = file.completeSuffix();
             QFileInfo zieldatei = params.at(2);
             QFile *file1 = new QFile(QDir::tempPath() + "/" + QString(temp_datei + "." + extension));
+            #ifdef KDChart_Version
+            connect(p_reportgen, SIGNAL(createChart(QString)), this->p_currScreenHandler, SLOT(createChart(QString)));
+            connect(p_reportgen, SIGNAL(addChartValue(QString,QString)), this->p_currScreenHandler, SLOT(addChartValue(QString,QString)));
+            connect(p_reportgen, SIGNAL(displayChart(QString)), this->p_currScreenHandler, SLOT(displayChart(QString)));
+            #endif
             if( file.completeSuffix() == "ods" || file.completeSuffix() == "odt" )
             {
                 if(!file1->open(QIODevice::ReadOnly)) {

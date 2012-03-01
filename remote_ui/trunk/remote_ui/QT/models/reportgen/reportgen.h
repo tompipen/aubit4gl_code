@@ -35,6 +35,11 @@ private:
     QList<QString> chartValues1;
     QList<QString> chartValues2;
 
+signals:
+    void createChart(QString diag);
+    void addChartValue(QString, QString);
+    void displayChart(QString);
+
 
 
 };
