@@ -33,7 +33,6 @@ public:
    QWidget* getFormWidget();
    QList<QWidget*> getFieldList();
    QList<FormField*> getFglFields();
-
 private:
    QHBoxLayout* layout;
    QWidget *p_fglform;
@@ -42,6 +41,7 @@ private:
    QColor qcol_BaseColor;
    QLayout *currentLayout;
    QWidget *currentWidget;
+   int gridWidth;
    bool layoutChanged;
    bool hidden;
 

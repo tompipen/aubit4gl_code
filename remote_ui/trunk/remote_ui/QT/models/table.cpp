@@ -181,6 +181,7 @@ void TableView::updateSectionWidth(int logicalIndex, int, int newSize)
         }*/
 }
 
+
 bool TableView::eventFilter(QObject *object, QEvent *event)
 {
     if(event->type() == QEvent::ContextMenu)
@@ -390,38 +391,40 @@ MainFrame::vdcdebug("TableView","sizeHint", " const");
          if(this->horizontalHeader())
             height += this->horizontalHeader()->height();
 
-/*
-         if(!this->verticalHeader()->isHidden()){
+
+         if(this->verticalHeader()){
             width += this->verticalHeader()->width();
          }
-*/
+
          for(int i=0; i<table->pageSize();i++){
             height += this->rowHeight(i);
          }
-/*
+
          for(int j=0; j<table->columnCount(QModelIndex()); j++){
             width += this->columnWidth(j);
          }
-*/
-         if(this->horizontalScrollBar()){
+
+         if(this->horizontalScrollBar()&& this->horizontalScrollBarPolicy() != Qt::ScrollBarAlwaysOff){
             height+= this->horizontalScrollBar()->height();
          }
 
-/*
 
-         i
 
-         if(!this->verticalScrollBar()->isHidden()){
+
+         if(this->verticalScrollBar() && this->verticalScrollBarPolicy() != Qt::ScrollBarAlwaysOff){
             width+= this->verticalScrollBar()->width();
          }
-*/
+
+         width  += frameWidth() * 2;
+         height += frameWidth() * 2;
+
 //         this->setFixedSize(width, height);
 //         this->setMinimumSize(width+5, height);
 //         this->setFixedWidth(width);
       }
    }
 
-   return QSize(0, height+5);
+   return QSize(width, height);
 }
 
 

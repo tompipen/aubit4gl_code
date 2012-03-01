@@ -37,7 +37,7 @@ MainFrame::vdcdebug("Parser","Parser", "QWidget *p_fglform");
    currentLayout = NULL;
    layoutChanged = false;
    hidden = false;
-
+   gridWidth = 0;
    // create dummy label to detect the used colors 
    // 
 
@@ -48,6 +48,7 @@ QWidget* Parser::getFormWidget()
 MainFrame::vdcdebug("Parser","getFormWidget", "");
    return this;
 }
+
 
 QList<QWidget*> Parser::getFieldList()
 {
@@ -119,14 +120,7 @@ MainFrame::vdcdebug("Parser","parseElement", "const QDomNode& xmlNode");
        QString formname   = currentElement.attribute("name");
        QString encoding   = currentElement.attribute("encoding");
 
-
-       if(p_fglform)
-       {
-          if(FglForm *form = qobject_cast<FglForm*> (p_fglform))
-          {
-             form->gridWidth = gridWidth;
-          }
-       }
+       this->gridWidth = gridWidth;
 
    }
 
@@ -600,7 +594,7 @@ void Parser::handleMatrixColumn(const QDomNode& xmlNode){
    ql_formFields << (QWidget*) de;
  
    p_screenRecord->setItemDelegate(de);
-
+/*
    for(int i=0; i<header->count(); i++){
       header->resizeSection(i, w+2);
    }
@@ -608,11 +602,11 @@ void Parser::handleMatrixColumn(const QDomNode& xmlNode){
    for(int i=0; i<vert->count(); i++){
       vert->resizeSection(i, h+2);
    }
-
+/*
    p_screenRecord->setFixedWidth(recordWidth);
    p_screenRecord->setFixedHeight(recordHeight);
    //p_screenRecord->setFixedSize(recordWidth, recordHeight);
-
+*/
    int x = matrixElement.firstChild().toElement().attribute("posX").toInt();
    int y = matrixElement.firstChild().toElement().attribute("posY").toInt();
 
@@ -632,6 +626,7 @@ MainFrame::vdcdebug("Parser","addWidgets", "QWidget *widget, bool add, int x, in
 
    if(add)
       ql_formFields << widget;
+
 
    if(QGridLayout *layout = qobject_cast<QGridLayout *> (currentLayout)){
       layout->setColumnMinimumWidth(y,0);
@@ -733,3 +728,4 @@ MainFrame::vdcdebug("Parser","handleRecordView", "const QDomNode& xmlNode");
       }
    }
 }
+
