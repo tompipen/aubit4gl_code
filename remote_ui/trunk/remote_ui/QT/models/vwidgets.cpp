@@ -1269,8 +1269,8 @@ bool WidgetHelper::setDisplayAttributes(int fieldAttribute, QWidget *widget)
             QColor dummycol = dummy.palette().color(QPalette::Foreground);
             QPalette p = widget->palette();
             QColor col(dummycol.red(), dummycol.green(), dummycol.blue());
-            //p.setColor(QPalette::Active, QPalette::Foreground, col);
-            p.setColor(QPalette::Foreground, col);
+            p.setColor(QPalette::Active, QPalette::Foreground, col);
+            //p.setColor(QPalette::Foreground, col);
             widget->setPalette(p);
             widget->setFont(dummy.font());
          }
@@ -1279,7 +1279,7 @@ bool WidgetHelper::setDisplayAttributes(int fieldAttribute, QWidget *widget)
              Q_UNUSED(led);
          }
          else
-         {
+         {/*
             QLineEdit dummy;
             dummy.setEnabled(widget->isEnabled());
             QColor dummycol = dummy.palette().color(QPalette::Text);
@@ -1296,7 +1296,7 @@ bool WidgetHelper::setDisplayAttributes(int fieldAttribute, QWidget *widget)
                 //p.setColor(QPalette::Text, col);
             }
             widget->setPalette(p);
-            widget->setFont(dummy.font());
+            widget->setFont(dummy.font());*/
          }
 
 
