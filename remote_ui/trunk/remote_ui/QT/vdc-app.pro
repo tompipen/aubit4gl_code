@@ -31,7 +31,7 @@ LIBS += -L"$$OUT_PWD/quazip/lib" -lquazip
 include("models/reportgen.pri")
 }
 
-VKDCHART = /usr/local/KDAB/KDChart-2.4.2
+##VKDCHART = /usr/local/KDAB/KDChart-2.4.2
 
 !isEmpty(VKDCHART) {
 include("models/chart.pri")
