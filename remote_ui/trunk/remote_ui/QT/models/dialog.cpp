@@ -114,7 +114,7 @@ MainFrame::vdcdebug("Dialog","createButton", "int id, QString text, QString tool
       button->setIconSize(QSize(40,25));
    }
 
-   Action *action = (Action*) this->getAction(text);
+ /*  Action *action = (Action*) this->getAction(text);
    if(action->text() != text){
       action = new Action(text.toLower(), text, button);
       action->setComment(tooltip);
@@ -126,9 +126,20 @@ MainFrame::vdcdebug("Dialog","createButton", "int id, QString text, QString tool
       {
          action->setImage("pics:" + icon);
       }
-   }
+   }*/
    
+   Action *action = new Action(text.toLower(), text, button);
+   action->setComment(tooltip);
+   if(icon == "")
+   {
+      action->setImage("pics:blank.png");
+   }
+   else
+   {
+      action->setImage("pics:" + icon);
+   }
    button->addAction(action);
+
    connect(button, SIGNAL(clicked()), action, SLOT(trigger()));
 
    buttonLayout->addWidget(button);
@@ -158,7 +169,7 @@ MainFrame::vdcdebug("Dialog","createAction", "int id, QString text");
    Action *action = new Action(text.toLower(), text, button);
    action->setImage("blank.png");
    button->addAction(action);
-   connect(button, SIGNAL(clicked()), action, SLOT(trigger()));
+   //connect(button, SIGNAL(clicked()), action, SLOT(trigger()));
 
    // Add the Button to the Layout
    buttonLayout->addWidget(button);
@@ -263,7 +274,7 @@ QAction* Dialog::getAction(QString name)
 {
 MainFrame::vdcdebug("Dialog","getAction", "QString name");
 
-   for(int i=0; i<buttonGroup->buttons().size(); i++){
+   for(int i=buttonGroup->buttons().size()-1; i>=0; i--){
       if(QPushButton *button = qobject_cast<QPushButton *> (buttonGroup->buttons().at(i))){
          if(button->text().toLower() == name.toLower()){
             QList<QAction*> actions = button->actions();
