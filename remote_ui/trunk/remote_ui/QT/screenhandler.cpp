@@ -1199,7 +1199,7 @@ MainFrame::vdcdebug("ScreenHandler","setFieldFocus", "QString fieldName");
       return;
 
    clearEvents();
-
+   p_fglform->nextclick = NULL;
    if(p_fglform->focusWidget() != NULL && !p_fglform->screenRecord()){
       clearEvents();
    }
@@ -2009,8 +2009,8 @@ MainFrame::vdcdebug("ScreenHandler","waitForEvent", "");
        }
        else
        {
-
            p_fglform->setFocusOnWidget(p_fglform->currentField());
+
            if(p_fglform->nextclick != NULL)
            {
                if(ButtonEdit *be = qobject_cast<ButtonEdit*> (p_fglform->nextclick->parentWidget()))
@@ -2026,9 +2026,8 @@ MainFrame::vdcdebug("ScreenHandler","waitForEvent", "");
 
                    p_fglform->nextclick = NULL;
            }
-
        }
-        }
+   }
    VDC::arrowCursor();
 
 }

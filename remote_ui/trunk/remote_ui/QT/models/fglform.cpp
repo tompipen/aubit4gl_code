@@ -762,8 +762,9 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
                      }
                      else
                      {
-                         jumpToField(w->parentWidget());
                          nextclick = qpb;
+                         jumpToField(w->parentWidget());
+
 
                      }
 
@@ -1472,6 +1473,7 @@ void FglForm::setFocusOnWidget(QWidget *w, Qt::FocusReason reason)
   currentField()->clearFocus();
   this->clearFieldFocus();
   QMetaObject::invokeMethod(w, "setFocus", Qt::QueuedConnection);
+
 }
 
 
@@ -2549,6 +2551,21 @@ void FglForm::jumpToField(QWidget* w, bool b_after){
     else
     {
        this->setFocusOnWidget(currentWidget, Qt::OtherFocusReason);
+        if(nextclick != NULL)
+        {
+            if(ButtonEdit *be = qobject_cast<ButtonEdit*> (nextclick->parentWidget()))
+            {
+                if(currentField() == nextclick->parentWidget())
+                   be->buttonClicked();
+            }
+            if(DateEdit *de = qobject_cast<DateEdit*> (nextclick->parentWidget()))
+            {
+                if(currentField() == nextclick->parentWidget())
+                   de->buttonClicked();
+            }
+
+                nextclick = NULL;
+        }
     }
 }
 
