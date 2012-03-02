@@ -52,6 +52,7 @@ public:
     bool displayChart();
     bool displayChart(int width, int height);
     void initPie(KDChart::PieDiagram *m_pie );
+    void initBar(KDChart::BarDiagram *m_bar );
     static void removeChart(KDChart::Chart* );
 
     void setModel (ChartTableModel *myModel);

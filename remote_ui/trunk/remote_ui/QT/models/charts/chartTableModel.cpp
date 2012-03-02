@@ -134,6 +134,10 @@ bool ChartTableModel::loadData( const QString &filename ) {
 
 } // loadData
 
+bool ChartTableModel::addChartData(const QVector<QVariant>& name, const QVector<QVariant>& wert)
+{
+
+}
 
 bool ChartTableModel::addChartData(const QString& name, const QString& wert) {
 

@@ -24,6 +24,8 @@ public:
 
     bool loadData(const QString &filename);// laden aus Datei
     bool addChartData(const QString& name, const QString& wert);
+    bool addChartData(const QVector<QVariant>& name, const QVector<QVariant>& wert);
+
     bool setData(const QModelIndex &, const QVariant&, int role);
 
     void setTitelText(const QString&);

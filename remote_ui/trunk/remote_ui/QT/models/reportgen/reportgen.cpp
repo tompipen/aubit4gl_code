@@ -927,6 +927,7 @@ bool Reportgen::replaceTemplateVars(QString odffile, QString sedfile, QFileInfo 
     int cnt = 0;
     int makeChart = 0;
     int wiederholen = 0;
+    int diag_state = 0;
     QFile *file = new QFile(QDir::tempPath() + "/" + odffile + "/1-content.xml");
     QFile *file1 = new QFile(QDir::tempPath() + "/" + odffile + "/content.xml");
 
@@ -971,7 +972,16 @@ bool Reportgen::replaceTemplateVars(QString odffile, QString sedfile, QFileInfo 
 
             if(temp_var.contains("@DIAG_"))
             {
-                emit createChart("DIAG_BAR");
+                qDebug() << temp_var;
+                if(temp_var == "@DIAG_BAR")
+                {
+                    diag_state = 1;
+                } else if(temp_var == "@DIAG_PIE")
+                {
+                    diag_state = 2;
+                }
+                qDebug() << "diag_state" << diag_state;
+                emit createChart(temp_var);
                 ausgabe.replace(QString("<text:p>" + temp_var + "</text:p>"), QString("<draw:frame table:end-cell-address=\"Tabelle1.E20\" draw:text-style-name=\"P1\" svg:width=\"16.93cm\" svg:x=\"0.081cm\" draw:style-name=\"gr1\" svg:y=\"0.016cm\" draw:name=\"Graphics 1\" table:end-x=\"2.181cm\" table:end-y=\"0.419cm\" svg:height=\"12.70cm\" draw:z-index=\"0\"><draw:image xlink:type=\"simple\" xlink:show=\"embed\" xlink:href=\"Pictures/" + diag_bild + "\" xlink:actuate=\"onLoad\"> <text:p/></draw:image></draw:frame>"));
 
                 makeChart = 1;
@@ -1004,15 +1014,10 @@ bool Reportgen::replaceTemplateVars(QString odffile, QString sedfile, QFileInfo 
                                             if(!chartValues1.contains(sedLine))
                                             {
                                                 chartValues1 << sedLine;
-                                                qDebug() << "trage ein in chart1: " << sedLine;
                                             }
                                         } else if(j == 1)
                                         {
-                                            //if(!chartValues2.contains(sedLine))
-                                            //{
                                                     chartValues2 << sedLine;
-                                                    qDebug() << "trage ein in chart2: " << sedLine;
-                                            //}
                                         }
                                     }
                                 }
@@ -1045,30 +1050,52 @@ bool Reportgen::replaceTemplateVars(QString odffile, QString sedfile, QFileInfo 
     //{
 
 
-    if(chartValues1.count() > chartValues2.count())
+    switch(diag_state)
     {
-        wiederholen = chartValues2.count();
-    } else if(chartValues2.count() > chartValues1.count())
-    {
-        wiederholen = chartValues1.count();
-    }
-
-        for(int i=0; i < wiederholen; i++)
-        {
-            /*Hier wird addChartValues(name, Wert); ausgefuehrt um die Charts zu fuellen */
-        //qDebug() << "Werte fuer KD Charts: " << chartValues1.at(i) << ","<< chartValues2.at(i);
-            //qDebug() << "chartValues1.at(i)" << chartValues1.at(i) << " " <<  chartValues2.at(i);
-            if(!chartValues1.at(i).isNull() && !chartValues2.at(i).isNull())
+        case 1:
+            if(chartValues1.count() > chartValues2.count())
             {
-                emit addChartValue(chartValues1.at(i), chartValues2.at(i));
+                wiederholen = chartValues2.count();
+            } else if(chartValues2.count() > chartValues1.count())
+            {
+                wiederholen = chartValues1.count();
+            }
+
+                for(int i=0; i < wiederholen; i++)
+                {
+                    /*Hier wird addChartValues(name, Wert); ausgefuehrt um die Charts zu fuellen */
+                //qDebug() << "Werte fuer KD Charts: " << chartValues1.at(i) << ","<< chartValues2.at(i);
+                    //qDebug() << "chartValues1.at(i)" << chartValues1.at(i) << " " <<  chartValues2.at(i);
+                    if(!chartValues1.at(i).isNull() && !chartValues2.at(i).isNull())
+                    {
+                        emit addChartValue(chartValues1.at(i), chartValues2.at(i));
+                    }
+                }
+          break;
+        case 2:
+        QVector< QVariant > wertList;
+        QVector< QVariant > nameList;
+        for(int i=0; i < chartValues2.count(); i++)
+        {
+            if(!chartValues2.at(i).isEmpty())
+            {
+                wertList.append(chartValues2.at(i));
+            }
+
+        }
+        for(int i=0; i < chartValues1.count(); i++)
+        {
+            if(!chartValues1.at(i).isEmpty())
+            {
+                nameList.append(chartValues1.at(i));
             }
         }
-    //}
-
-    emit displayChart(diag_bild);
+        break;
+    }
 
     if(makeChart == 1)
     {
+        emit displayChart(diag_bild);
         sleep(2);
         if(QFile::exists(QString(QDir::tempPath() + "/" + diag_bild)));
         {

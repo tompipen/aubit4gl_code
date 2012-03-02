@@ -8,6 +8,7 @@
 #include <KDChart/KDChartPieDiagram>
 #include <KDChart/KDChartPieAttributes>
 #include <KDChart/KDChartThreeDPieAttributes>
+#include <KDChart/KDChartThreeDBarAttributes>
 #include <KDGantt/KDGanttGraphicsView>
 #include <KDGantt/KDGanttGraphicsScene>
 #include <KDChart/KDChartLineDiagram>
@@ -512,6 +513,28 @@ bool ChartInterface::setHeader(KDChart::Chart* chart, KDChart::Position position
     //header->setText( model.getTitelText() );
     chart->addHeaderFooter( header );
     return true;
+}
+
+void ChartInterface::initBar(BarDiagram *m_bar){
+
+    ThreeDBarAttributes attrs( m_bar->threeDBarAttributes() );
+    double defaultDepth = attrs.depth();
+    attrs.setEnabled( true );
+    attrs.setDepth( defaultDepth );
+    m_bar->setThreeDBarAttributes( attrs );
+
+    BarAttributes pa( m_bar->barAttributes() );
+
+    /*m_bar->setBarAttributes( 1, pa );
+   // m_bar->setPieAttributes( 0, pa );
+    qDebug() << "initPie " << m_bar;
+
+    DataValueAttributes dva( m_bar->dataValueAttributes() );
+
+    m_bar->setDataValueAttributes( dva );*/
+
+    m_bar->update();
+
 }
 
 
