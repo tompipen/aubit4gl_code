@@ -85,6 +85,8 @@ private:
    #ifdef KDChart_Version
    ChartInterface *m_chart;
    ChartTableModel m_model;
+   KDChart::PieDiagram* m_pie;
+   KDChart::BarDiagram* m_bar;
    #endif
 
    QList<Context*> contexts;
@@ -136,6 +138,7 @@ public slots:
    #ifdef KDChart_Version
    void createChart(QString);
    void addChartValue(QString, QString);
+   void addChartValue(QVector<QVariant>& name, QVector<QVariant>& wert);
    void displayChart(QString);
    #endif
    void handleXMLStyles(QString);

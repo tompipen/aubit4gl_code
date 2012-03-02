@@ -1037,6 +1037,7 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
             #ifdef KDChart_Version
             connect(p_reportgen, SIGNAL(createChart(QString)), this->p_currScreenHandler, SLOT(createChart(QString)));
             connect(p_reportgen, SIGNAL(addChartValue(QString,QString)), this->p_currScreenHandler, SLOT(addChartValue(QString,QString)));
+            connect(p_reportgen, SIGNAL(addChartValue(QVector,QVector)), this->p_currScreenHandler, SLOT(addChartValue(QVector, QVector)));
             connect(p_reportgen, SIGNAL(displayChart(QString)), this->p_currScreenHandler, SLOT(displayChart(QString)));
             #endif
             if( file.completeSuffix() == "ods" || file.completeSuffix() == "odt" )

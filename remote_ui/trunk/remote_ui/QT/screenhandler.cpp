@@ -3113,9 +3113,22 @@ void ScreenHandler::setRuninfo(int mode, QString cmd, int runcnt, bool start)
 #ifdef KDChart_Version
 void ScreenHandler::createChart(QString chart2)
 {
-    ChartInterface *chart = new ChartInterface(ChartInterface::DIAG_BAR);
+    qDebug() << "chart2:" << chart2;
+    ChartInterface *chart;
+    if(chart2 == "@DIAG_BAR")
+    {
+        chart = new ChartInterface(ChartInterface::DIAG_BAR);
+        m_bar = dynamic_cast<KDChart::BarDiagram*>(chart->getDiagram());
+        chart->initBar(m_bar);
+    } else if (chart2 == "@DIAG_PIE")
+    {
+        qDebug() << "erstelle pie";
+        chart = new ChartInterface(ChartInterface::DIAG_PIE);
+        m_pie = dynamic_cast<KDChart::PieDiagram*>(chart->getDiagram());
+        chart->initPie(m_pie);
+    }
+
     m_chart = chart;
-    //m_chart->chart()->setGlobalLeading(20,20,20,20);
 
 }
 
@@ -3126,6 +3139,12 @@ void ScreenHandler::addChartValue(QString name, QString wert)
         wert.replace(",", ".");
     }
 
+        m_model.addChartData(name, wert);
+
+}
+
+void ScreenHandler::addChartValue(QVector<QVariant>& name, QVector<QVariant>& wert)
+{
         m_model.addChartData(name, wert);
 
 }
