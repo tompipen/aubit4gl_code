@@ -1090,6 +1090,7 @@ bool Reportgen::replaceTemplateVars(QString odffile, QString sedfile, QFileInfo 
                 nameList.append(chartValues1.at(i));
             }
         }
+        addChartValue(nameList, wertList);
         break;
     }
 

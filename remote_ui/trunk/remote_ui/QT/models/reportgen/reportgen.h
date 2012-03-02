@@ -38,6 +38,7 @@ private:
 signals:
     void createChart(QString diag);
     void addChartValue(QString, QString);
+    void addChartValue(QVector<QVariant>& name, QVector<QVariant>& wert);
     void displayChart(QString);
 
 

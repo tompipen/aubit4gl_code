@@ -525,6 +525,11 @@ void ChartInterface::initBar(BarDiagram *m_bar){
 
     BarAttributes pa( m_bar->barAttributes() );
 
+    QPen pen;
+    pen.setWidth(1);
+    pen.setColor(Qt::darkGray);
+    m_bar->setPen(pen);
+
     /*m_bar->setBarAttributes( 1, pa );
    // m_bar->setPieAttributes( 0, pa );
     qDebug() << "initPie " << m_bar;
