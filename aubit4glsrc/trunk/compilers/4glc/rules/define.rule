@@ -654,9 +654,9 @@ like_var :
 		}
 		| LIKE identifier ATSIGN identifier COLON identifier KW_DOT col_name{
 			char buff[200];
-		     	SPRINTF3(buff,"%s@%s:%s.%s",$<str>2,$<str>4,$<str>6);
+		     	SPRINTF3(buff,"%s@%s:%s",$<str>2,$<str>4,$<str>6);
 			add_dependant_table(buff);
-		     	SPRINTF2($<str>$,"%s.%s",buff,$<str>6);
+		     	SPRINTF2($<str>$,"%s.%s",buff,$<str>8);
 		} 
 		| LIKE CHAR_VALUE KW_DOT define_table_name KW_DOT col_name {
 			add_dependant_table($<str>4);
