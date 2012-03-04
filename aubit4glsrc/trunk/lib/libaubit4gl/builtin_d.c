@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin_d.c,v 1.115 2011-10-17 21:11:26 mikeaubury Exp $
+# $Id: builtin_d.c,v 1.116 2012-03-04 20:43:21 mikeaubury Exp $
 #
 */
 
@@ -414,7 +414,16 @@ A4GL_push_double_str (char *p)
   double *ptr;
   char *cp;
   char *pdot;
+double d;
 
+// This will always be in "." format - never "," 
+char buff[3000];
+strcpy(buff,p);
+
+A4GL_decstr_convert (buff, a4gl_convfmts.posix_decfmt, a4gl_convfmts.scanf_decfmt , 0, 1, -1);
+sscanf(buff,"%lf",&d);
+A4GL_push_double(d);
+return;
 
   A4GL_push_decimal_str (p);	// push a decimal instead..
   return;
