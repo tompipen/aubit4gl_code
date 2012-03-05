@@ -87,11 +87,10 @@ LoginForm::LoginForm(QWidget *parent)
    QSignalMapper* signalMapper = new QSignalMapper (this) ;
    connect(feldplus, SIGNAL(triggered()), signalMapper, SLOT(map()));
    connect(feldminus, SIGNAL(triggered()), signalMapper, SLOT(map()));
-   connect(feldreset, SIGNAL(triggered()), signalMapper, SLOT(map()));
+   connect(feldreset, SIGNAL(triggered()), this, SLOT(resetFactor()));
 
    signalMapper->setMapping(feldplus,  "0.1");
    signalMapper->setMapping(feldminus, "-0.1");
-   signalMapper->setMapping(feldreset, "1");
 
    connect(signalMapper, SIGNAL(mapped(QString)), this, SLOT(setFactorWidth(QString)));
 
@@ -240,15 +239,18 @@ welcomeBar();
 
 }
 
+void LoginForm::resetFactor()
+{
+    VDC::setFieldSizeFactor(1);
+    qDebug() << "reset Factor to default: 1.0";
+}
+
 void LoginForm::setFactorWidth(QString factor)
 {
     double wert = VDC::getFieldSizeFactor();
     QString zeichen;
 
-    if(factor.toDouble() == 1)
-    {
-        wert = 0;
-    } else if(factor.contains("-"))
+    if(factor.contains("-"))
     {
         zeichen = "-";
         factor.remove(zeichen);
