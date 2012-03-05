@@ -4,8 +4,7 @@ TEMPLATE=subdirs
 
 VREPGEN_PATH = $$(VREPGEN)
 
-macx
-{
+macx {
    DEFINES += VREPGEN_USE
 }
 
