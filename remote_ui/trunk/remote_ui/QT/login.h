@@ -49,6 +49,7 @@ public:
 
 public slots:
    void font();
+   void setFactorWidth(QString);
    void showMessage(QString m);
    void hosts();
    void welcomeBar();

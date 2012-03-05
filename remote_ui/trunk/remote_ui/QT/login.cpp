@@ -28,6 +28,7 @@
 #endif
 #include "login.h"
 #include "mainframe.h"
+#include "include/vdc.h"
 
 
 //------------------------------------------------------------------------------
@@ -67,6 +68,9 @@ LoginForm::LoginForm(QWidget *parent)
 
    QMenuBar *menuBar = mainFrame->menuBar(); //new QMenuBar(0);
    QAction *font = new QAction(tr("&Font"), this);
+   QAction *feldplus = new QAction(tr("Fieldwidth + "), this);
+   QAction *feldminus = new QAction(tr("Fieldwidth - "), this);
+   QAction *feldreset = new QAction(tr("Default Fieldwidth"), this);
    QMenu *admin = new QMenu(tr("&Admin"), this);
    QAction *hosts = new QAction(tr("&Hosts"), this);
    QMenu *options = new QMenu(tr("&Options"), this);
@@ -77,6 +81,20 @@ LoginForm::LoginForm(QWidget *parent)
    hosts->setStatusTip(tr("Opens the Hosts Data Settings"));
    connect(font, SIGNAL(triggered()), this, SLOT(font()));
    options->addAction(font);
+   options->addAction(feldplus);
+   options->addAction(feldminus);
+   options->addAction(feldreset);
+   QSignalMapper* signalMapper = new QSignalMapper (this) ;
+   connect(feldplus, SIGNAL(triggered()), signalMapper, SLOT(map()));
+   connect(feldminus, SIGNAL(triggered()), signalMapper, SLOT(map()));
+   connect(feldreset, SIGNAL(triggered()), signalMapper, SLOT(map()));
+
+   signalMapper->setMapping(feldplus,  "0.1");
+   signalMapper->setMapping(feldminus, "-0.1");
+   signalMapper->setMapping(feldreset, "1");
+
+   connect(signalMapper, SIGNAL(mapped(QString)), this, SLOT(setFactorWidth(QString)));
+
    menuBar->addMenu(options);
    connect(toggledebug, SIGNAL(toggled(bool)), this, SLOT(debugToggle(bool)));
    if (adminMenu == true)
@@ -222,6 +240,29 @@ welcomeBar();
 
 }
 
+void LoginForm::setFactorWidth(QString factor)
+{
+    double wert = VDC::getFieldSizeFactor();
+    QString zeichen;
+
+    if(factor.toDouble() == 1)
+    {
+        wert = 0;
+    } else if(factor.contains("-"))
+    {
+        zeichen = "-";
+        factor.remove(zeichen);
+    }
+
+    if(!zeichen.isEmpty())
+    {
+        wert = wert - factor.toDouble();
+    } else {
+        wert = wert + factor.toDouble();
+    }
+    qDebug() << "New Fieldwidth factor: " << wert;
+    VDC::setFieldSizeFactor(wert);
+}
 
 void LoginForm::disableApp()
 {

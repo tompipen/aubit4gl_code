@@ -1,9 +1,7 @@
 #include <include/vdc.h>
 
 namespace VDC {
-
-
-   int fieldsizefactor = 1;
+   double fieldsizefactor;
 
    void waitCursor()
    {
@@ -19,13 +17,22 @@ namespace VDC {
        QApplication::restoreOverrideCursor();
    }
 
-   void setFieldSizeFactor(int s)
+   void setFieldSizeFactor(double s)
    {
+
+     QSettings settings("Ventas AG", "Ventas Desktop Client");
+     settings.setValue("fieldSizeFactor", s);
      fieldsizefactor = s;
    }
 
-   int getFieldSizeFactor()
+   double getFieldSizeFactor()
    {
+       QSettings settings("Ventas AG", "Ventas Desktop Client");
+       fieldsizefactor = settings.value("fieldSizeFactor").toDouble();
+       if(fieldsizefactor == 0)
+       {
+           fieldsizefactor = 1;
+       }
      return fieldsizefactor;
    }
 

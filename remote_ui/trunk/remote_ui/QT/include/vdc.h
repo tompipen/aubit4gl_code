@@ -1,15 +1,16 @@
 #ifndef VDC_H
 #define VDC_H
 #include <QApplication>
+#include <QSettings>
 
 namespace VDC
 {
 
   void waitCursor();
   void arrowCursor();
-  int getFieldSizeFactor();
-  void setFieldSizeFactor(int);
-  extern int fieldsizefactor;
+  double getFieldSizeFactor();
+  void setFieldSizeFactor(double);
+  extern double fieldsizefactor;
 
 
 };
