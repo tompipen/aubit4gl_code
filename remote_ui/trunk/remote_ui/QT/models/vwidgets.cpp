@@ -1887,7 +1887,7 @@ MainFrame::vdcdebug("WidgetHelper","createProgressBar", "const QDomElement& form
    
 
    QFontMetrics fm = progressBar->fontMetrics();
-   int width = w*w*fm.averageCharWidth()*VDC::getFieldSizeFactor()+10;
+   int width = w*fm.averageCharWidth()*VDC::getFieldSizeFactor()+10;
    progressBar->setFixedWidth(width);
 
    return progressBar;
