@@ -4,6 +4,11 @@ TEMPLATE=subdirs
 
 VREPGEN_PATH = $$(VREPGEN)
 
+macx
+{
+   DEFINES += VREPGEN_USE
+}
+
 !isEmpty(VREPGEN_PATH) {
 DEFINES += VREPGEN_USE
 message("Setze VDC Makro")
