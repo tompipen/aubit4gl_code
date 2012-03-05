@@ -7,6 +7,10 @@ namespace VDC
 
   void waitCursor();
   void arrowCursor();
+  int getFieldSizeFactor();
+  void setFieldSizeFactor(int);
+  extern int fieldsizefactor;
+
 
 };
 
