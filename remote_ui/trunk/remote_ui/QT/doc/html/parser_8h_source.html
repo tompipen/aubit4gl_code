@@ -95,15 +95,15 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <a name="l00033"></a>00033    QWidget* <a class="code" href="classParser.html#a03625492828e17a3e1a540f7a0e07b75">getFormWidget</a>();
 <a name="l00034"></a>00034    QList&lt;QWidget*&gt; <a class="code" href="classParser.html#ae6283c9c8504b6d7ea3f95599b8dfa8d">getFieldList</a>();
 <a name="l00035"></a>00035    QList&lt;FormField*&gt; <a class="code" href="classParser.html#a4b4c41ad7831993e9d4cd52468d5fe88">getFglFields</a>();
-<a name="l00036"></a>00036 
-<a name="l00037"></a>00037 <span class="keyword">private</span>:
-<a name="l00038"></a><a class="code" href="classParser.html#a10b118e730f600194f26db151575c6fa">00038</a>    QHBoxLayout* <a class="code" href="classParser.html#a10b118e730f600194f26db151575c6fa">layout</a>;
-<a name="l00039"></a><a class="code" href="classParser.html#a8ae7aeec1e5360fa29b9976624cde0f1">00039</a>    QWidget *<a class="code" href="classParser.html#a8ae7aeec1e5360fa29b9976624cde0f1">p_fglform</a>;
-<a name="l00040"></a><a class="code" href="classParser.html#a457a6f19e0594ed8a745c8a00be32c4b">00040</a>    QList&lt;QWidget*&gt; <a class="code" href="classParser.html#a457a6f19e0594ed8a745c8a00be32c4b">ql_formFields</a>;
-<a name="l00041"></a><a class="code" href="classParser.html#a2cc0ce2919a5f45d55cab55a9e3c8b28">00041</a>    QList&lt;FormField*&gt; <a class="code" href="classParser.html#a2cc0ce2919a5f45d55cab55a9e3c8b28">ql_fglFields</a>;
-<a name="l00042"></a><a class="code" href="classParser.html#ade3fc5bc98be3edaf605694661d73693">00042</a>    QColor <a class="code" href="classParser.html#ade3fc5bc98be3edaf605694661d73693">qcol_BaseColor</a>;
-<a name="l00043"></a><a class="code" href="classParser.html#a3b94abe3e2c41c419f5be2a2e3fd63a4">00043</a>    QLayout *<a class="code" href="classParser.html#a3b94abe3e2c41c419f5be2a2e3fd63a4">currentLayout</a>;
-<a name="l00044"></a><a class="code" href="classParser.html#a05d665391ab1db7f4729654df9fa4079">00044</a>    QWidget *<a class="code" href="classParser.html#a05d665391ab1db7f4729654df9fa4079">currentWidget</a>;
+<a name="l00036"></a>00036 <span class="keyword">private</span>:
+<a name="l00037"></a><a class="code" href="classParser.html#a10b118e730f600194f26db151575c6fa">00037</a>    QHBoxLayout* <a class="code" href="classParser.html#a10b118e730f600194f26db151575c6fa">layout</a>;
+<a name="l00038"></a><a class="code" href="classParser.html#a8ae7aeec1e5360fa29b9976624cde0f1">00038</a>    QWidget *<a class="code" href="classParser.html#a8ae7aeec1e5360fa29b9976624cde0f1">p_fglform</a>;
+<a name="l00039"></a><a class="code" href="classParser.html#a457a6f19e0594ed8a745c8a00be32c4b">00039</a>    QList&lt;QWidget*&gt; <a class="code" href="classParser.html#a457a6f19e0594ed8a745c8a00be32c4b">ql_formFields</a>;
+<a name="l00040"></a><a class="code" href="classParser.html#a2cc0ce2919a5f45d55cab55a9e3c8b28">00040</a>    QList&lt;FormField*&gt; <a class="code" href="classParser.html#a2cc0ce2919a5f45d55cab55a9e3c8b28">ql_fglFields</a>;
+<a name="l00041"></a><a class="code" href="classParser.html#ade3fc5bc98be3edaf605694661d73693">00041</a>    QColor <a class="code" href="classParser.html#ade3fc5bc98be3edaf605694661d73693">qcol_BaseColor</a>;
+<a name="l00042"></a><a class="code" href="classParser.html#a3b94abe3e2c41c419f5be2a2e3fd63a4">00042</a>    QLayout *<a class="code" href="classParser.html#a3b94abe3e2c41c419f5be2a2e3fd63a4">currentLayout</a>;
+<a name="l00043"></a><a class="code" href="classParser.html#a05d665391ab1db7f4729654df9fa4079">00043</a>    QWidget *<a class="code" href="classParser.html#a05d665391ab1db7f4729654df9fa4079">currentWidget</a>;
+<a name="l00044"></a><a class="code" href="classParser.html#a52e6fad38b265e732b7667aab6648472">00044</a>    <span class="keywordtype">int</span> <a class="code" href="classParser.html#a52e6fad38b265e732b7667aab6648472">gridWidth</a>;
 <a name="l00045"></a><a class="code" href="classParser.html#a8088fac11586b6de2df5ed1720f7a943">00045</a>    <span class="keywordtype">bool</span> <a class="code" href="classParser.html#a8088fac11586b6de2df5ed1720f7a943">layoutChanged</a>;
 <a name="l00046"></a><a class="code" href="classParser.html#a24d2c0cb2595e44b9a7f73d801685e70">00046</a>    <span class="keywordtype">bool</span> <a class="code" href="classParser.html#a24d2c0cb2595e44b9a7f73d801685e70">hidden</a>;
 <a name="l00047"></a>00047 
@@ -111,7 +111,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <a name="l00049"></a>00049    <span class="keywordtype">void</span> <a class="code" href="classParser.html#a806540a8e1fab811586a5f5df0aead21">handleTableColumn</a>(<span class="keyword">const</span> QDomNode&amp;);
 <a name="l00050"></a>00050    <span class="keywordtype">void</span> <a class="code" href="classParser.html#a9f4c1bd5465f5abc6587ee66d2a085da">handleMatrixColumn</a>(<span class="keyword">const</span> QDomNode&amp;);
 <a name="l00051"></a>00051    <span class="keywordtype">void</span> <a class="code" href="classParser.html#afd7f37611e56b353507ebbf79ae0edb5">handleRecordView</a>(<span class="keyword">const</span> QDomNode&amp;);
-<a name="l00052"></a>00052    <span class="keywordtype">void</span> <a class="code" href="classParser.html#a80b5245c70a7f73fcdba2c61096cc21f">addWidgets</a>(QWidget*, <span class="keywordtype">bool</span> add=<span class="keyword">false</span>, <span class="keywordtype">int</span> y=0, <span class="keywordtype">int</span> x=0, <span class="keywordtype">int</span> gridWidth=0, <span class="keywordtype">int</span> span = 1);
+<a name="l00052"></a>00052    <span class="keywordtype">void</span> <a class="code" href="classParser.html#a80b5245c70a7f73fcdba2c61096cc21f">addWidgets</a>(QWidget*, <span class="keywordtype">bool</span> add=<span class="keyword">false</span>, <span class="keywordtype">int</span> y=0, <span class="keywordtype">int</span> x=0, <span class="keywordtype">int</span> <a class="code" href="classParser.html#a52e6fad38b265e732b7667aab6648472">gridWidth</a>=0, <span class="keywordtype">int</span> span = 1);
 <a name="l00053"></a>00053    <span class="keywordtype">void</span> <a class="code" href="classParser.html#a97f0648d8b9a23badc802076b88db7ef">addLayout</a>(QLayout*);
 <a name="l00054"></a>00054 
 <a name="l00055"></a>00055 
@@ -134,7 +134,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </iframe>
 </div>
 
-<hr class="footer"/><address class="footer"><small>Generated on Wed Feb 29 2012 13:19:13 for VDC by&#160;
+<hr class="footer"/><address class="footer"><small>Generated on Tue Mar 6 2012 14:00:11 for VDC by&#160;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.7.3 </small></address>
 </body>

@@ -993,7 +993,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <a name="l00931"></a>00931    }
 <a name="l00932"></a>00932 
 <a name="l00933"></a>00933    QFontMetrics fm = label-&gt;fontMetrics();
-<a name="l00934"></a>00934    w = w*fm.width(<span class="stringliteral">&quot;a&quot;</span>);
+<a name="l00934"></a>00934    w = w*fm.averageCharWidth()*<a class="code" href="namespaceVDC.html#a56ff43661010701c46d4fa6114c34f5f">VDC::getFieldSizeFactor</a>();
 <a name="l00935"></a>00935 
 <a name="l00936"></a>00936   <span class="comment">// QPalette p = label-&gt;palette();</span>
 <a name="l00937"></a>00937   <span class="comment">// p.setColor(QPalette::Foreground, Qt::blue);</span>
@@ -1103,7 +1103,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <a name="l01041"></a>01041         browser-&gt;setFixedWidth(wPixel);
 <a name="l01042"></a>01042    } <span class="keywordflow">else</span> {
 <a name="l01043"></a>01043         QFontMetrics fm = browser-&gt;fontMetrics();
-<a name="l01044"></a>01044         <span class="keywordtype">int</span> width = w*fm.averageCharWidth()+10;
+<a name="l01044"></a>01044         <span class="keywordtype">int</span> width = w*fm.averageCharWidth()*<a class="code" href="namespaceVDC.html#a56ff43661010701c46d4fa6114c34f5f">VDC::getFieldSizeFactor</a>()*+10;
 <a name="l01045"></a>01045         browser-&gt;setFixedWidth(width);
 <a name="l01046"></a>01046    }
 <a name="l01047"></a>01047    <span class="keywordflow">if</span> (hPixel&gt;0) {
@@ -1155,7 +1155,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <a name="l01093"></a>01093    <span class="keywordtype">int</span> w = buttonElement.attribute(<span class="stringliteral">&quot;width&quot;</span>).toInt();
 <a name="l01094"></a>01094 
 <a name="l01095"></a>01095    QFontMetrics fm = button-&gt;fontMetrics();
-<a name="l01096"></a>01096    <span class="keywordtype">int</span> width = w*fm.averageCharWidth();
+<a name="l01096"></a>01096    <span class="keywordtype">int</span> width = w*fm.averageCharWidth()*<a class="code" href="namespaceVDC.html#a56ff43661010701c46d4fa6114c34f5f">VDC::getFieldSizeFactor</a>();
 <a name="l01097"></a>01097    <span class="keywordflow">if</span>(w == 1){
 <a name="l01098"></a>01098       width += 10;
 <a name="l01099"></a>01099    }
@@ -1212,7 +1212,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <a name="l01150"></a>01150 
 <a name="l01151"></a>01151    QFontMetrics fm = lineEdit-&gt;fontMetrics();
 <a name="l01152"></a>01152 
-<a name="l01153"></a>01153    <span class="keywordtype">int</span> width = w*fm.averageCharWidth()+10;
+<a name="l01153"></a>01153    <span class="keywordtype">int</span> width = w*fm.averageCharWidth()*<a class="code" href="namespaceVDC.html#a56ff43661010701c46d4fa6114c34f5f">VDC::getFieldSizeFactor</a>()+10;
 <a name="l01154"></a>01154    <span class="comment">/*lineEdit-&gt;setFixedWidth(width);</span>
 <a name="l01155"></a>01155 <span class="comment">   lineEdit-&gt;setFixedHeight(defHeight);*/</span>
 <a name="l01156"></a>01156 
@@ -1286,7 +1286,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <a name="l01224"></a>01224    lineEdit-&gt;<a class="code" href="classLineEdit.html#a28de25ae19583ad6446fd57f4d7d80a5">setPicture</a>(picture);
 <a name="l01225"></a>01225 
 <a name="l01226"></a>01226    QFontMetrics fm = lineEdit-&gt;fontMetrics();
-<a name="l01227"></a>01227    <span class="keywordtype">int</span> width = w*fm.averageCharWidth()+10;
+<a name="l01227"></a>01227    <span class="keywordtype">int</span> width = w*fm.averageCharWidth()*<a class="code" href="namespaceVDC.html#a56ff43661010701c46d4fa6114c34f5f">VDC::getFieldSizeFactor</a>()+10;
 <a name="l01228"></a>01228    <span class="comment">/*lineEdit-&gt;setFixedWidth(width);</span>
 <a name="l01229"></a>01229 <span class="comment">   lineEdit-&gt;setFixedHeight(defHeight);*/</span>
 <a name="l01230"></a>01230 
@@ -1331,8 +1331,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <a name="l01269"></a>01269             QColor dummycol = dummy.palette().color(QPalette::Foreground);
 <a name="l01270"></a>01270             QPalette p = widget-&gt;palette();
 <a name="l01271"></a>01271             QColor col(dummycol.red(), dummycol.green(), dummycol.blue());
-<a name="l01272"></a>01272             <span class="comment">//p.setColor(QPalette::Active, QPalette::Foreground, col);</span>
-<a name="l01273"></a>01273             p.setColor(QPalette::Foreground, col);
+<a name="l01272"></a>01272             p.setColor(QPalette::Active, QPalette::Foreground, col);
+<a name="l01273"></a>01273             <span class="comment">//p.setColor(QPalette::Foreground, col);</span>
 <a name="l01274"></a>01274             widget-&gt;setPalette(p);
 <a name="l01275"></a>01275             widget-&gt;setFont(dummy.font());
 <a name="l01276"></a>01276          }
@@ -1341,24 +1341,24 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <a name="l01279"></a>01279              Q_UNUSED(led);
 <a name="l01280"></a>01280          }
 <a name="l01281"></a>01281          <span class="keywordflow">else</span>
-<a name="l01282"></a>01282          {
-<a name="l01283"></a>01283             QLineEdit dummy;
-<a name="l01284"></a>01284             dummy.setEnabled(widget-&gt;isEnabled());
-<a name="l01285"></a>01285             QColor dummycol = dummy.palette().color(QPalette::Text);
-<a name="l01286"></a>01286             QPalette p = widget-&gt;palette();
-<a name="l01287"></a>01287             <span class="keywordflow">if</span>(dummycol.red() &lt; 10 || dummycol.blue() &lt; 10 || dummycol.green() &lt; 10)
-<a name="l01288"></a>01288             {
-<a name="l01289"></a>01289                 QColor col(0,0,0);
-<a name="l01290"></a>01290                 p.setColor(QPalette::Text, col);
-<a name="l01291"></a>01291             }
-<a name="l01292"></a>01292             <span class="keywordflow">else</span>
-<a name="l01293"></a>01293             {
-<a name="l01294"></a>01294                 QColor col(dummycol.red()-10, dummycol.green()-10, dummycol.blue()-10);
-<a name="l01295"></a>01295                 p.setColor(QPalette::Active, QPalette::Foreground, col);
-<a name="l01296"></a>01296                 <span class="comment">//p.setColor(QPalette::Text, col);</span>
-<a name="l01297"></a>01297             }
-<a name="l01298"></a>01298             widget-&gt;setPalette(p);
-<a name="l01299"></a>01299             widget-&gt;setFont(dummy.font());
+<a name="l01282"></a>01282          {<span class="comment">/*</span>
+<a name="l01283"></a>01283 <span class="comment">            QLineEdit dummy;</span>
+<a name="l01284"></a>01284 <span class="comment">            dummy.setEnabled(widget-&gt;isEnabled());</span>
+<a name="l01285"></a>01285 <span class="comment">            QColor dummycol = dummy.palette().color(QPalette::Text);</span>
+<a name="l01286"></a>01286 <span class="comment">            QPalette p = widget-&gt;palette();</span>
+<a name="l01287"></a>01287 <span class="comment">            if(dummycol.red() &lt; 10 || dummycol.blue() &lt; 10 || dummycol.green() &lt; 10)</span>
+<a name="l01288"></a>01288 <span class="comment">            {</span>
+<a name="l01289"></a>01289 <span class="comment">                QColor col(0,0,0);</span>
+<a name="l01290"></a>01290 <span class="comment">                p.setColor(QPalette::Text, col);</span>
+<a name="l01291"></a>01291 <span class="comment">            }</span>
+<a name="l01292"></a>01292 <span class="comment">            else</span>
+<a name="l01293"></a>01293 <span class="comment">            {</span>
+<a name="l01294"></a>01294 <span class="comment">                QColor col(dummycol.red()-10, dummycol.green()-10, dummycol.blue()-10);</span>
+<a name="l01295"></a>01295 <span class="comment">                p.setColor(QPalette::Active, QPalette::Foreground, col);</span>
+<a name="l01296"></a>01296 <span class="comment">                //p.setColor(QPalette::Text, col);</span>
+<a name="l01297"></a>01297 <span class="comment">            }</span>
+<a name="l01298"></a>01298 <span class="comment">            widget-&gt;setPalette(p);</span>
+<a name="l01299"></a>01299 <span class="comment">            widget-&gt;setFont(dummy.font());*/</span>
 <a name="l01300"></a>01300          }
 <a name="l01301"></a>01301 
 <a name="l01302"></a>01302 
@@ -1577,7 +1577,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <a name="l01515"></a>01515    lineEdit-&gt;<a class="code" href="classLineEdit.html#a28de25ae19583ad6446fd57f4d7d80a5">setPicture</a>(picture);
 <a name="l01516"></a>01516 
 <a name="l01517"></a>01517    QFontMetrics fm = lineEdit-&gt;fontMetrics();
-<a name="l01518"></a>01518    <span class="keywordtype">int</span> width = w*fm.averageCharWidth()+10;
+<a name="l01518"></a>01518    <span class="keywordtype">int</span> width = w*fm.averageCharWidth()*<a class="code" href="namespaceVDC.html#a56ff43661010701c46d4fa6114c34f5f">VDC::getFieldSizeFactor</a>()+10;
 <a name="l01519"></a>01519    <span class="comment">//lineEdit-&gt;setFixedWidth(width);</span>
 <a name="l01520"></a>01520    <span class="comment">//lineEdit-&gt;setFixedHeight(defHeight);</span>
 <a name="l01521"></a>01521    <span class="keywordflow">if</span>(parent != NULL) {
@@ -1713,7 +1713,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <a name="l01651"></a>01651       textEdit-&gt;setVisible(<span class="keyword">false</span>);
 <a name="l01652"></a>01652 
 <a name="l01653"></a>01653    QFontMetrics fm = textEdit-&gt;fontMetrics();
-<a name="l01654"></a>01654    <span class="keywordtype">int</span> width = w*fm.averageCharWidth()+10;
+<a name="l01654"></a>01654    <span class="keywordtype">int</span> width = w*fm.averageCharWidth()*<a class="code" href="namespaceVDC.html#a56ff43661010701c46d4fa6114c34f5f">VDC::getFieldSizeFactor</a>()+10;
 <a name="l01655"></a>01655 
 <a name="l01656"></a>01656    <span class="keywordflow">if</span>(stretch == <span class="stringliteral">&quot;none&quot;</span>)
 <a name="l01657"></a>01657    {
@@ -1814,7 +1814,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <a name="l01752"></a>01752       comboBox-&gt;setVisible(<span class="keyword">false</span>);
 <a name="l01753"></a>01753 
 <a name="l01754"></a>01754    QFontMetrics fm = comboBox-&gt;fontMetrics();
-<a name="l01755"></a>01755    <span class="keywordtype">int</span> width = w*fm.averageCharWidth()+10;
+<a name="l01755"></a>01755    <span class="keywordtype">int</span> width = w*fm.averageCharWidth()*<a class="code" href="namespaceVDC.html#a56ff43661010701c46d4fa6114c34f5f">VDC::getFieldSizeFactor</a>()+10;
 <a name="l01756"></a>01756    comboBox-&gt;setFixedWidth(width);
 <a name="l01757"></a>01757 
 <a name="l01758"></a>01758 
@@ -1887,7 +1887,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <a name="l01825"></a>01825    
 <a name="l01826"></a>01826 
 <a name="l01827"></a>01827    QFontMetrics fm = checkBox-&gt;fontMetrics();
-<a name="l01828"></a>01828    <span class="keywordtype">int</span> width = w*fm.averageCharWidth()+10;
+<a name="l01828"></a>01828    <span class="keywordtype">int</span> width = w*fm.averageCharWidth()*<a class="code" href="namespaceVDC.html#a56ff43661010701c46d4fa6114c34f5f">VDC::getFieldSizeFactor</a>()+10;
 <a name="l01829"></a>01829    checkBox-&gt;setFixedWidth(width);
 <a name="l01830"></a>01830 
 <a name="l01831"></a>01831 
@@ -1949,7 +1949,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <a name="l01887"></a>01887    
 <a name="l01888"></a>01888 
 <a name="l01889"></a>01889    QFontMetrics fm = progressBar-&gt;fontMetrics();
-<a name="l01890"></a>01890    <span class="keywordtype">int</span> width = w*fm.averageCharWidth()+10;
+<a name="l01890"></a>01890    <span class="keywordtype">int</span> width = w*fm.averageCharWidth()*<a class="code" href="namespaceVDC.html#a56ff43661010701c46d4fa6114c34f5f">VDC::getFieldSizeFactor</a>()+10;
 <a name="l01891"></a>01891    progressBar-&gt;setFixedWidth(width);
 <a name="l01892"></a>01892 
 <a name="l01893"></a>01893    <span class="keywordflow">return</span> progressBar;
@@ -2537,7 +2537,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </iframe>
 </div>
 
-<hr class="footer"/><address class="footer"><small>Generated on Wed Feb 29 2012 13:19:13 for VDC by&#160;
+<hr class="footer"/><address class="footer"><small>Generated on Tue Mar 6 2012 14:00:11 for VDC by&#160;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.7.3 </small></address>
 </body>

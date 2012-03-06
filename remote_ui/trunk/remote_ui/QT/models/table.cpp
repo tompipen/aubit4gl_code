@@ -576,14 +576,31 @@ MainFrame::vdcdebug("TableView","setInputEnabled", "bool enable");
       //selection->select(index, QItemSelectionModel::Clear);
    }
 }
+/*!
+ * \brief Method to get the FglForm. It cast the classmember QWidget p_fglform to FglForm and returns it.
+          If the cast fail or the member is not set, the returnvalue is NULL.
+ */
+
+FglForm* TableView::getForm() const
+{
+  if(!p_fglform)
+     return NULL;
+
+  if(FglForm *form = qobject_cast<FglForm*> (this->p_fglform))
+     return form;
+  else
+     return NULL;
+}
 
 void TableView::fieldChanged(QModelIndex current, QModelIndex prev)
 {
 MainFrame::vdcdebug("TableView","fieldChanged", "QModelIndex current, QModelIndex prev");
 
+if(!p_fglform)
+  return;
+
    QSortFilterProxyModel *proxyModel = static_cast<QSortFilterProxyModel*> (this->model());
    TableModel *table = static_cast<TableModel*> (proxyModel->sourceModel());
-
   /* if(table->b_input && !checkBounds(current)){
       //QModelIndex tindex = table->index(i_maxArrSize-1,current.column());
       //QModelIndex index = proxyModel->mapFromSource(tindex);
@@ -603,13 +620,21 @@ MainFrame::vdcdebug("TableView","fieldChanged", "QModelIndex current, QModelInde
    }*/
 
    Fgl::Event event;
+   Fgl::Event returnevent;
+   Fgl::Event diffevent;
 
+   QList<Fgl::Event> ql_events = QList<Fgl::Event>();
+   QList<Fgl::Event> ql_events2 = QList<Fgl::Event>();
    if(prev.column() > -1){
       // ignore field event if the before field was also ignored
       if(!b_ignoreFocus){
          event.type = Fgl::AFTER_FIELD_EVENT;
          event.attribute = table->qsl_colNames.at(prev.column());
-         emit fieldEvent(event);
+         diffevent = getForm()->getFormEvent(event);
+         if(diffevent.id != event.id)
+         {
+         ql_events2 += diffevent;
+         }
       }
       else{
          b_ignoreFocus = false;
@@ -619,19 +644,26 @@ MainFrame::vdcdebug("TableView","fieldChanged", "QModelIndex current, QModelInde
    if(current.row() != prev.row()){
        if(prev.row() > -1){
          if(!b_ignoreRowChange){
-            emit setArrLineSignal(current.row()+1);
             event.type = Fgl::AFTER_ROW_EVENT;
-            emit fieldEvent(event);
+            diffevent = getForm()->getFormEvent(event);
+            if(diffevent.id != event.id)
+            {
+            ql_events2 += diffevent;
+            }
          }
       }
 
       if(current.row() > -1){
          if(!b_ignoreRowChange){
-            emit setArrLineSignal(current.row()+1);
+          //  emit setArrLineSignal(current.row()+1);
             event.type = Fgl::BEFORE_ROW_EVENT;
-            emit fieldEvent(event);
-            i_arrLine = current.row()+1;
-            i_scrLine = current.row()+1;
+            diffevent = getForm()->getFormEvent(event);
+            if(diffevent.id != event.id)
+            {
+            ql_events += diffevent;
+            }
+        //    i_arrLine = current.row()+1;
+        //    i_scrLine = current.row()+1;
          }
       }
    }
@@ -639,7 +671,11 @@ MainFrame::vdcdebug("TableView","fieldChanged", "QModelIndex current, QModelInde
    if(current.column() > -1 && current.row() > -1){
       event.type = Fgl::BEFORE_FIELD_EVENT;
       event.attribute = table->qsl_colNames.at(current.column());
-      emit fieldEvent(event);
+      diffevent = getForm()->getFormEvent(event);
+      if(diffevent.id != event.id)
+      {
+      ql_events += diffevent;
+      }
       
       // only allow focus for fields that have a focus policy
       if(table->b_input && isReadOnlyColumn(current.column())){
@@ -678,6 +714,37 @@ MainFrame::vdcdebug("TableView","fieldChanged", "QModelIndex current, QModelInde
       }
       */
    }
+
+
+   if(!ql_events2.isEmpty())
+   {
+       int resp_cnt = ql_events2.size();
+       for(int i = 0; i<resp_cnt; i++)
+       {
+
+           returnevent.id += ql_events2.at(i).id;
+           if(i+1 != resp_cnt)
+              returnevent.id += ",";
+       }
+
+       addToQueue(returnevent);
+   }
+   returnevent.id = "";
+   if(!ql_events.isEmpty())
+   {
+       int resp_cnt = ql_events.size();
+       for(int i = 0; i<resp_cnt; i++)
+       {
+
+           returnevent.id += ql_events.at(i).id;
+           if(i+1 != resp_cnt)
+              returnevent.id += ",";
+       }
+
+       addToQueue(returnevent);
+   }
+
+
 }
 
 bool TableView::isReadOnlyColumn(int col)

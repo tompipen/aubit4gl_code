@@ -1220,14 +1220,18 @@ MainFrame::vdcdebug("ScreenHandler","setFieldFocus", "QString fieldName");
       }
    }
    else{
-       for(int i = 0; i<p_fglform->ql_formFields.size(); i++)
+       if(p_fglform->input() || p_fglform->construct())
        {
-           if(p_fglform->ql_formFields.at(i)->objectName() == fieldName)
-           {
-               p_fglform->jumpToField(p_fglform->ql_formFields.at(i), false);
-           }
-       }
-      //p_fglform->setCurrentField(fieldName, false);
+          for(int i = 0; i<p_fglform->ql_formFields.size(); i++)
+          {
+              if(p_fglform->ql_formFields.at(i)->objectName() == fieldName)
+              {
+                     p_fglform->jumpToField(p_fglform->ql_formFields.at(i), false);
+                     return;
+              }
+          }
+      }
+      p_fglform->setCurrentField(fieldName, false);
 
 /*
       // For fieldlist = table.*
@@ -1985,9 +1989,10 @@ MainFrame::vdcdebug("ScreenHandler","waitForEvent", "");
    //p_fglform->checkState();
 
 
-      processResponse();
+
 
       p_fglform->b_getch_swin = true;
+      processResponse();
       setUpdatesEnabled(true);
 
 
@@ -2044,10 +2049,7 @@ void ScreenHandler::processResponse()
    if(p_fglform == NULL)
       return;
 
-   if(!p_fglform->b_getch_swin)
-   {
-      return;
-  }
+
 Fgl::Event id;
    if(p_fglform->ql_responseQueue.size() <= 0)
    {
@@ -2055,6 +2057,14 @@ Fgl::Event id;
    }
    else
    {
+
+       if(!p_fglform->b_getch_swin)
+       {
+          return;
+      }
+
+       p_fglform->b_getch_swin = false;
+
        id = p_fglform->ql_responseQueue.takeFirst();
 
          setUpdatesEnabled(false);
@@ -2116,7 +2126,7 @@ Fgl::Event id;
           return;
        fglFormResponse(qs_resp);
    }
-   p_fglform->b_getch_swin = false;
+
 
 }
 //------------------------------------------------------------------------------

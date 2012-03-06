@@ -179,6 +179,12 @@ MainFrame::vdcdebug("FglForm","addToQueue", "QString id");
       processResponse();
 }
 
+/*void FglForm::bundleQueue(Fgl::Event id)
+{
+
+}
+*/
+
 void FglForm::addToQueue(QList<Fgl::Event> events)
 {
 
@@ -1005,18 +1011,7 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
 */
 //   qDebug()<<event->type();
   // qDebug()<<obj->objectName();
-   if(this->b_getch_swin && event->type() != QEvent::EnabledChange)
-   {
-       if(TableView *tv = qobject_cast<TableView*> (obj))
-       {
 
-       }
-       else
-       {
-           processResponse();
-
-       }
-    }
    return QMainWindow::eventFilter(obj, event);
 }
 
@@ -1074,131 +1069,128 @@ void FglForm::saveFieldSettings(QAction *action)
     }
 }
 
+
+/*!
+ * \brief Method to get the formevent based on the event.type and merge the event.field of the parameter to the returnvalue.
+          If the event.id is set, the method found the event otherwise the event.id is empty.
+ */
+
+Fgl::Event FglForm::getFormEvent(Fgl::Event type, QWidget *widget)
+{
+
+  QList<Fgl::Event> ql_events = ql_contextEvents.last();
+  switch(type.type)
+  {
+     case Fgl::BEFORE_FIELD_EVENT:
+     case Fgl::AFTER_FIELD_EVENT:
+
+          for(int i=0; i<ql_events.size(); i++){
+             Fgl::Event event = ql_events.at(i);
+             if(event.type == type.type){
+                if(widget != NULL){
+                   if(widget->objectName() == event.attribute ||
+                      widget->accessibleName() == event.attribute){
+                       if(type.field.size() > 0)
+                       {
+                           event.field = type.field;
+                       }
+                      return event;
+                   }
+                }
+                else{
+                   if(type.attribute == event.attribute){
+                       if(type.field.size() > 0)
+                       {
+                           event.field = type.field;
+                       }
+                      return event;
+
+                   }
+                }
+             }
+          }
+          break;
+
+     case Fgl::BEFORE_INSERT_DELETE_EVENT:
+     case Fgl::AFTER_INSERT_DELETE_EVENT:
+     case Fgl::BEFORE_MENU_EVENT:
+     case Fgl::AFTER_MENU_EVENT:
+     case Fgl::BEFORE_INPUT_EVENT:
+     case Fgl::AFTER_INPUT_EVENT:
+     case Fgl::BEFORE_CONSTRUCT_EVENT:
+     case Fgl::AFTER_CONSTRUCT_EVENT:
+     case Fgl::BEFORE_DISPLAY_EVENT:
+     case Fgl::AFTER_DISPLAY_EVENT:
+     case Fgl::BEFORE_ROW_EVENT:
+     case Fgl::AFTER_ROW_EVENT:
+          for(int i=0; i<ql_events.size(); i++){
+             Fgl::Event event = ql_events.at(i);
+             if(event.type == type.type){
+                 if(type.field.size() > 0)
+                 {
+                     event.field = type.field;
+                 }
+                return event;
+
+             }
+          }
+          break;
+
+     case Fgl::ONACTION_EVENT:
+     case Fgl::ONKEY_EVENT:
+     case Fgl::MENUACTION_EVENT:
+          for(int i=0; i<ql_events.size(); i++){
+             Fgl::Event event = ql_events.at(i);
+             if((event.attribute.toLower() == type.attribute.toLower() ||
+                 Fgl::keyToString(event.attribute).toLower() == type.attribute.toLower()) && event.id != "-1"){
+                if(event.id.size() > 0){
+                    if(type.field.size() > 0)
+                    {
+                        event.field = type.field;
+                    }
+                   return event;
+                }
+             }
+          }
+
+          break;
+  }
+  //No Event Found
+  return type;
+
+
+}
 //------------------------------------------------------------------------------
 // Method       : fieldEvent()
 // Filename     : fglform.cpp
-// Description  : 
+// Description  :
 // Important    :
 //------------------------------------------------------------------------------
+
 void FglForm::fieldEvent(Fgl::Event type, QWidget* widget)
 {
 MainFrame::vdcdebug("FglForm","fieldEvent", "Fgl");
-   //type.attribute = Fgl::stringToKey(type.attribute);
 
-   QList<Fgl::Event> ql_events = ql_contextEvents.last();
-/*
-   ql_events << ql_dialogEvents;
-   ql_events << ql_menuEvents;
-   ql_events << ql_formEvents;
-*/
 
-   switch(type.type)
-   {
-      case Fgl::BEFORE_FIELD_EVENT:
-      case Fgl::AFTER_FIELD_EVENT:
+Fgl::Event event = getFormEvent(type, widget);
 
-           for(int i=0; i<ql_events.size(); i++){
-              Fgl::Event event = ql_events.at(i);
-              if(event.type == type.type){
-                 if(widget != NULL){
-                    if(widget->objectName() == event.attribute ||
-                       widget->accessibleName() == event.attribute){
-                        if(type.field.size() > 0)
-                        {
-                            event.field = type.field;
-                        }
-                       addToQueue(event);
-                       return;
-                    }
-                 }
-                 else{
-                    if(type.attribute == event.attribute){
-                        if(type.field.size() > 0)
-                        {
-                            event.field = type.field;
-                        }
-                       addToQueue(event);
-                       return;
-                    }
-                 }
-              }
-           }
-           break;
+if(event.id != type.id)
+{
+    addToQueue(event);
+}
 
-      case Fgl::BEFORE_INSERT_DELETE_EVENT:
-      case Fgl::AFTER_INSERT_DELETE_EVENT:
-      case Fgl::BEFORE_MENU_EVENT:
-      case Fgl::AFTER_MENU_EVENT:
-      case Fgl::BEFORE_INPUT_EVENT:
-      case Fgl::AFTER_INPUT_EVENT:
-      case Fgl::BEFORE_CONSTRUCT_EVENT:
-      case Fgl::AFTER_CONSTRUCT_EVENT:
-      case Fgl::BEFORE_DISPLAY_EVENT:
-      case Fgl::AFTER_DISPLAY_EVENT:
-      case Fgl::BEFORE_ROW_EVENT:
-      case Fgl::AFTER_ROW_EVENT:
-           for(int i=0; i<ql_events.size(); i++){
-              Fgl::Event event = ql_events.at(i);
-              if(event.type == type.type){
-                  if(type.field.size() > 0)
-                  {
-                      event.field = type.field;
-                  }
-                 addToQueue(event);
-                 return;
-              }
-           }
-           break;
 
-/*
-      case Fgl::ONKEY_EVENT:
-      case Fgl::ONACTION_EVENT:
-           for(int i=0; i<ql_events.size(); i++){
-              Fgl::Event event = ql_events.at(i);
-              if(event.type == type.type && 
-                 event.attribute.toLower() == type.attribute.toLower()){
-                 addToQueue(QString::number(event.id));
-                 return;
-              }
-           }
-           break;
-      case Fgl::MENUCOMMAND_EVENT:
-         break;
-*/
-      case Fgl::ONACTION_EVENT:
-      case Fgl::ONKEY_EVENT:
-      case Fgl::MENUACTION_EVENT:
-           for(int i=0; i<ql_events.size(); i++){
-              Fgl::Event event = ql_events.at(i);
-/*
-              if((event.type == Fgl::ONACTION_EVENT ||
-                 event.type == Fgl::MENUACTION_EVENT) && 
-                 event.attribute.toLower() == type.attribute.toLower()){
-*/
-              if((event.attribute.toLower() == type.attribute.toLower() ||
-                  Fgl::keyToString(event.attribute).toLower() == type.attribute.toLower()) && event.id != "-1"){
-                 if(event.id.size() > 0){
-                     if(type.field.size() > 0)
-                     {
-                         event.field = type.field;
-                     }
-                    addToQueue(event);
-                    return;
-                 }
-              }
-           }
-           //if no action was found
-           if(type.attribute == "accept"){
-              accept();
-              return;
-           }
+//if no action was found
+if(type.attribute == "accept"){
+   accept();
+   return;
+}
 
-           if(type.attribute == "cancel"){
-              cancelTriggered();
-              return;
-           }
-           break;
-   }
+if(type.attribute == "cancel"){
+   cancelTriggered();
+   return;
+}
+
 }
 
 //------------------------------------------------------------------------------
@@ -1381,6 +1373,7 @@ MainFrame::vdcdebug("FglForm","setFormLayout", "const QDomDocument& docLayout");
 
       if(TableView *tableView = qobject_cast<TableView *> (formElements().at(i))){
          connect(tableView, SIGNAL(fieldEvent(Fgl::Event)), this, SLOT(fieldEvent(Fgl::Event)));
+         connect(tableView, SIGNAL(addToQueue(Fgl::Event)), this, SLOT(addToQueue(Fgl::Event)));
          connect(tableView, SIGNAL(setArrLineSignal(int)), this, SLOT(setScreenRecordArrLine(int)));
          connect(tableView, SIGNAL(accepted()), this, SLOT(acceptTriggered()));
          connect(tableView, SIGNAL(error(const QString&)), this, SLOT(error(const QString&)));

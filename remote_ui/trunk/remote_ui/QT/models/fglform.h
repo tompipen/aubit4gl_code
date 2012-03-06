@@ -128,8 +128,7 @@ public:
    void setCurrentWidget(QWidget*);
    //void setCurrentField(QWidget* widget = NULL) { widget->setFocus(); currentWidget = widget; };
    void setCurrentField(QString, bool sendEvents = true);
-   void addToQueue(Fgl::Event);
-   void addToQueue(QList<Fgl::Event>);
+
 
    bool input() { return (ql_states.last() == Fgl::INPUT); };
    bool construct() { return (ql_states.last() == Fgl::CONSTRUCT); };
@@ -211,6 +210,7 @@ public:
 public slots:
    void buttonClicked(QString);
    void fieldEvent(Fgl::Event, QWidget* = NULL);
+   Fgl::Event getFormEvent(Fgl::Event, QWidget* widget = NULL);
    void setBufferTouched() { b_bufferTouched = true; };
    void setLastCursor(int,int);
    void setLastCursor();
@@ -219,6 +219,8 @@ public slots:
    //action defaults
    void cancelTriggered();
    void acceptTriggered();
+   void addToQueue(QList<Fgl::Event>);
+   void addToQueue(Fgl::Event);
 
    void accept();
    void interrupt();

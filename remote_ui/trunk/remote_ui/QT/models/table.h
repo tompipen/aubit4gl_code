@@ -61,6 +61,7 @@ public:
 
     void setIgnoreRowChange(bool b) { b_ignoreRowChange = b; };
     bool ignoreRowChange() { return b_ignoreRowChange; };
+    FglForm* getForm() const;
     void setScrLine(int);
     void setArrLine(int);
     void setCurrentColumn(int);
@@ -116,6 +117,7 @@ protected:
 
 signals:
    void fieldEvent(Fgl::Event);
+   void addToQueue(Fgl::Event);
    void setArrLineSignal(int);
    void accepted();
    void error(QString);

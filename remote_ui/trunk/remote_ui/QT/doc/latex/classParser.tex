@@ -30,7 +30,7 @@ void \hyperlink{classParser_a9f4c1bd5465f5abc6587ee66d2a085da}{handleMatrixColum
 \item 
 void \hyperlink{classParser_afd7f37611e56b353507ebbf79ae0edb5}{handleRecordView} (const QDomNode \&)
 \item 
-void \hyperlink{classParser_a80b5245c70a7f73fcdba2c61096cc21f}{addWidgets} (QWidget $\ast$, bool add=false, int y=0, int x=0, int gridWidth=0, int span=1)
+void \hyperlink{classParser_a80b5245c70a7f73fcdba2c61096cc21f}{addWidgets} (QWidget $\ast$, bool add=false, int y=0, int x=0, int \hyperlink{classParser_a52e6fad38b265e732b7667aab6648472}{gridWidth}=0, int span=1)
 \item 
 void \hyperlink{classParser_a97f0648d8b9a23badc802076b88db7ef}{addLayout} (QLayout $\ast$)
 \end{DoxyCompactItemize}
@@ -50,6 +50,8 @@ QColor \hyperlink{classParser_ade3fc5bc98be3edaf605694661d73693}{qcol\_\-BaseCol
 QLayout $\ast$ \hyperlink{classParser_a3b94abe3e2c41c419f5be2a2e3fd63a4}{currentLayout}
 \item 
 QWidget $\ast$ \hyperlink{classParser_a05d665391ab1db7f4729654df9fa4079}{currentWidget}
+\item 
+int \hyperlink{classParser_a52e6fad38b265e732b7667aab6648472}{gridWidth}
 \item 
 bool \hyperlink{classParser_a8088fac11586b6de2df5ed1720f7a943}{layoutChanged}
 \item 
@@ -92,7 +94,7 @@ Definition at line 26 of file parser.cpp.
 \label{classParser_a97f0648d8b9a23badc802076b88db7ef}
 
 
-Definition at line 686 of file parser.cpp.
+Definition at line 681 of file parser.cpp.
 
 \hypertarget{classParser_a80b5245c70a7f73fcdba2c61096cc21f}{
 \index{Parser@{Parser}!addWidgets@{addWidgets}}
@@ -110,7 +112,7 @@ Definition at line 686 of file parser.cpp.
 \label{classParser_a80b5245c70a7f73fcdba2c61096cc21f}
 
 
-Definition at line 622 of file parser.cpp.
+Definition at line 616 of file parser.cpp.
 
 \hypertarget{classParser_a4b4c41ad7831993e9d4cd52468d5fe88}{
 \index{Parser@{Parser}!getFglFields@{getFglFields}}
@@ -123,7 +125,7 @@ Definition at line 622 of file parser.cpp.
 \label{classParser_a4b4c41ad7831993e9d4cd52468d5fe88}
 
 
-Definition at line 57 of file parser.cpp.
+Definition at line 58 of file parser.cpp.
 
 \hypertarget{classParser_ae6283c9c8504b6d7ea3f95599b8dfa8d}{
 \index{Parser@{Parser}!getFieldList@{getFieldList}}
@@ -136,7 +138,7 @@ Definition at line 57 of file parser.cpp.
 \label{classParser_ae6283c9c8504b6d7ea3f95599b8dfa8d}
 
 
-Definition at line 52 of file parser.cpp.
+Definition at line 53 of file parser.cpp.
 
 \hypertarget{classParser_a03625492828e17a3e1a540f7a0e07b75}{
 \index{Parser@{Parser}!getFormWidget@{getFormWidget}}
@@ -162,7 +164,7 @@ Definition at line 46 of file parser.cpp.
 \label{classParser_a9f4c1bd5465f5abc6587ee66d2a085da}
 
 
-Definition at line 543 of file parser.cpp.
+Definition at line 537 of file parser.cpp.
 
 \hypertarget{classParser_afd7f37611e56b353507ebbf79ae0edb5}{
 \index{Parser@{Parser}!handleRecordView@{handleRecordView}}
@@ -175,7 +177,7 @@ Definition at line 543 of file parser.cpp.
 \label{classParser_afd7f37611e56b353507ebbf79ae0edb5}
 
 
-Definition at line 709 of file parser.cpp.
+Definition at line 704 of file parser.cpp.
 
 \hypertarget{classParser_a806540a8e1fab811586a5f5df0aead21}{
 \index{Parser@{Parser}!handleTableColumn@{handleTableColumn}}
@@ -188,7 +190,7 @@ Definition at line 709 of file parser.cpp.
 \label{classParser_a806540a8e1fab811586a5f5df0aead21}
 
 
-Definition at line 395 of file parser.cpp.
+Definition at line 389 of file parser.cpp.
 
 \hypertarget{classParser_ae02f5da1e3974e81746c91dae0e265a2}{
 \index{Parser@{Parser}!parseElement@{parseElement}}
@@ -201,7 +203,7 @@ Definition at line 395 of file parser.cpp.
 \label{classParser_ae02f5da1e3974e81746c91dae0e265a2}
 
 
-Definition at line 97 of file parser.cpp.
+Definition at line 98 of file parser.cpp.
 
 \hypertarget{classParser_a6df35e9ed4a8615a7224aa51e91a46d3}{
 \index{Parser@{Parser}!parseForm@{parseForm}}
@@ -214,7 +216,7 @@ Definition at line 97 of file parser.cpp.
 \label{classParser_a6df35e9ed4a8615a7224aa51e91a46d3}
 
 
-Definition at line 62 of file parser.cpp.
+Definition at line 63 of file parser.cpp.
 
 
 
@@ -226,13 +228,22 @@ Definition at line 62 of file parser.cpp.
 \label{classParser_a3b94abe3e2c41c419f5be2a2e3fd63a4}
 
 
-Definition at line 43 of file parser.h.
+Definition at line 42 of file parser.h.
 
 \hypertarget{classParser_a05d665391ab1db7f4729654df9fa4079}{
 \index{Parser@{Parser}!currentWidget@{currentWidget}}
 \index{currentWidget@{currentWidget}!Parser@{Parser}}
 \subsubsection[{currentWidget}]{\setlength{\rightskip}{0pt plus 5cm}QWidget$\ast$ {\bf Parser::currentWidget}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
 \label{classParser_a05d665391ab1db7f4729654df9fa4079}
+
+
+Definition at line 43 of file parser.h.
+
+\hypertarget{classParser_a52e6fad38b265e732b7667aab6648472}{
+\index{Parser@{Parser}!gridWidth@{gridWidth}}
+\index{gridWidth@{gridWidth}!Parser@{Parser}}
+\subsubsection[{gridWidth}]{\setlength{\rightskip}{0pt plus 5cm}int {\bf Parser::gridWidth}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classParser_a52e6fad38b265e732b7667aab6648472}
 
 
 Definition at line 44 of file parser.h.
@@ -253,7 +264,7 @@ Definition at line 46 of file parser.h.
 \label{classParser_a10b118e730f600194f26db151575c6fa}
 
 
-Definition at line 38 of file parser.h.
+Definition at line 37 of file parser.h.
 
 \hypertarget{classParser_a8088fac11586b6de2df5ed1720f7a943}{
 \index{Parser@{Parser}!layoutChanged@{layoutChanged}}
@@ -271,7 +282,7 @@ Definition at line 45 of file parser.h.
 \label{classParser_a8ae7aeec1e5360fa29b9976624cde0f1}
 
 
-Definition at line 39 of file parser.h.
+Definition at line 38 of file parser.h.
 
 \hypertarget{classParser_ade3fc5bc98be3edaf605694661d73693}{
 \index{Parser@{Parser}!qcol\_\-BaseColor@{qcol\_\-BaseColor}}
@@ -280,7 +291,7 @@ Definition at line 39 of file parser.h.
 \label{classParser_ade3fc5bc98be3edaf605694661d73693}
 
 
-Definition at line 42 of file parser.h.
+Definition at line 41 of file parser.h.
 
 \hypertarget{classParser_a2cc0ce2919a5f45d55cab55a9e3c8b28}{
 \index{Parser@{Parser}!ql\_\-fglFields@{ql\_\-fglFields}}
@@ -289,7 +300,7 @@ Definition at line 42 of file parser.h.
 \label{classParser_a2cc0ce2919a5f45d55cab55a9e3c8b28}
 
 
-Definition at line 41 of file parser.h.
+Definition at line 40 of file parser.h.
 
 \hypertarget{classParser_a457a6f19e0594ed8a745c8a00be32c4b}{
 \index{Parser@{Parser}!ql\_\-formFields@{ql\_\-formFields}}
@@ -298,7 +309,7 @@ Definition at line 41 of file parser.h.
 \label{classParser_a457a6f19e0594ed8a745c8a00be32c4b}
 
 
-Definition at line 40 of file parser.h.
+Definition at line 39 of file parser.h.
 
 
 

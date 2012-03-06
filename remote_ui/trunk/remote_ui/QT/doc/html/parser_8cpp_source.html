@@ -99,7 +99,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <a name="l00037"></a>00037    <a class="code" href="classParser.html#a3b94abe3e2c41c419f5be2a2e3fd63a4">currentLayout</a> = NULL;
 <a name="l00038"></a>00038    <a class="code" href="classParser.html#a8088fac11586b6de2df5ed1720f7a943">layoutChanged</a> = <span class="keyword">false</span>;
 <a name="l00039"></a>00039    <a class="code" href="classParser.html#a24d2c0cb2595e44b9a7f73d801685e70">hidden</a> = <span class="keyword">false</span>;
-<a name="l00040"></a>00040 
+<a name="l00040"></a>00040    <a class="code" href="classParser.html#a52e6fad38b265e732b7667aab6648472">gridWidth</a> = 0;
 <a name="l00041"></a>00041    <span class="comment">// create dummy label to detect the used colors </span>
 <a name="l00042"></a>00042    <span class="comment">// </span>
 <a name="l00043"></a>00043 
@@ -111,690 +111,686 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <a name="l00049"></a>00049    <span class="keywordflow">return</span> <span class="keyword">this</span>;
 <a name="l00050"></a>00050 }
 <a name="l00051"></a>00051 
-<a name="l00052"></a><a class="code" href="classParser.html#ae6283c9c8504b6d7ea3f95599b8dfa8d">00052</a> QList&lt;QWidget*&gt; <a class="code" href="classParser.html#ae6283c9c8504b6d7ea3f95599b8dfa8d">Parser::getFieldList</a>()
-<a name="l00053"></a>00053 {
-<a name="l00054"></a>00054 MainFrame::vdcdebug(<span class="stringliteral">&quot;Parser&quot;</span>,<span class="stringliteral">&quot;getFieldList&quot;</span>, <span class="stringliteral">&quot;&quot;</span>);
-<a name="l00055"></a>00055    <span class="keywordflow">return</span> <a class="code" href="classParser.html#a457a6f19e0594ed8a745c8a00be32c4b">ql_formFields</a>;
-<a name="l00056"></a>00056 }
-<a name="l00057"></a><a class="code" href="classParser.html#a4b4c41ad7831993e9d4cd52468d5fe88">00057</a> QList&lt;FormField*&gt; <a class="code" href="classParser.html#a4b4c41ad7831993e9d4cd52468d5fe88">Parser::getFglFields</a>()
-<a name="l00058"></a>00058 {
-<a name="l00059"></a>00059     <span class="keywordflow">return</span> <a class="code" href="classParser.html#a2cc0ce2919a5f45d55cab55a9e3c8b28">ql_fglFields</a>;
-<a name="l00060"></a>00060 }
-<a name="l00061"></a>00061 
-<a name="l00062"></a><a class="code" href="classParser.html#a6df35e9ed4a8615a7224aa51e91a46d3">00062</a> <span class="keywordtype">void</span> <a class="code" href="classParser.html#a6df35e9ed4a8615a7224aa51e91a46d3">Parser::parseForm</a>(QDomDocument xmlForm)
-<a name="l00063"></a>00063 {
-<a name="l00064"></a>00064 MainFrame::vdcdebug(<span class="stringliteral">&quot;Parser&quot;</span>,<span class="stringliteral">&quot;parseForm&quot;</span>, <span class="stringliteral">&quot;QDomDocument xmlForm&quot;</span>);
-<a name="l00065"></a>00065    <span class="comment">// get first element of XML form and start parsing</span>
-<a name="l00066"></a>00066    QDomElement formElement = xmlForm.documentElement();
-<a name="l00067"></a>00067    <a class="code" href="classParser.html#ae02f5da1e3974e81746c91dae0e265a2">parseElement</a>(formElement);
-<a name="l00068"></a>00068 
-<a name="l00069"></a>00069    <a class="code" href="classParser.html#a10b118e730f600194f26db151575c6fa">layout</a>-&gt;addWidget(<a class="code" href="classParser.html#a05d665391ab1db7f4729654df9fa4079">currentWidget</a>);
-<a name="l00070"></a>00070    <a class="code" href="classParser.html#a10b118e730f600194f26db151575c6fa">layout</a>-&gt;setAlignment(Qt::AlignLeft | Qt::AlignTop);
-<a name="l00071"></a>00071 
-<a name="l00072"></a>00072    <span class="comment">//order fields by fieldid</span>
-<a name="l00073"></a>00073    <span class="keywordtype">int</span> cnt=0;
-<a name="l00074"></a>00074    <span class="keywordtype">bool</span> sorted = <span class="keyword">false</span>;
-<a name="l00075"></a>00075    <span class="keywordflow">while</span>(!sorted){
-<a name="l00076"></a>00076       <span class="keywordflow">for</span>(<span class="keywordtype">int</span> i=0; i&lt;<a class="code" href="classParser.html#a457a6f19e0594ed8a745c8a00be32c4b">ql_formFields</a>.count(); i++){
-<a name="l00077"></a>00077          QWidget *w = <a class="code" href="classParser.html#a457a6f19e0594ed8a745c8a00be32c4b">ql_formFields</a>.takeAt(i);
-<a name="l00078"></a>00078 
-<a name="l00079"></a>00079          <a class="code" href="classParser.html#a457a6f19e0594ed8a745c8a00be32c4b">ql_formFields</a>.insert(w-&gt;property(<span class="stringliteral">&quot;fieldId&quot;</span>).toInt(), w);
-<a name="l00080"></a>00080       }
-<a name="l00081"></a>00081       sorted = <span class="keyword">true</span>;
-<a name="l00082"></a>00082       <span class="keywordflow">for</span>(<span class="keywordtype">int</span> i=0; i&lt;<a class="code" href="classParser.html#a457a6f19e0594ed8a745c8a00be32c4b">ql_formFields</a>.count(); i++){
-<a name="l00083"></a>00083          <span class="keywordflow">if</span>(<a class="code" href="classParser.html#a457a6f19e0594ed8a745c8a00be32c4b">ql_formFields</a>.at(i)-&gt;property(<span class="stringliteral">&quot;fieldId&quot;</span>).toInt() != i){
-<a name="l00084"></a>00084             sorted = <span class="keyword">false</span>;
-<a name="l00085"></a>00085          }
-<a name="l00086"></a>00086       }
-<a name="l00087"></a>00087 
-<a name="l00088"></a>00088       <span class="keywordflow">if</span>(cnt &gt; <a class="code" href="classParser.html#a457a6f19e0594ed8a745c8a00be32c4b">ql_formFields</a>.count()*<a class="code" href="classParser.html#a457a6f19e0594ed8a745c8a00be32c4b">ql_formFields</a>.count()*10){
-<a name="l00089"></a>00089          <span class="keywordflow">return</span>;
-<a name="l00090"></a>00090          qFatal(<span class="stringliteral">&quot;SORTING FIELDS FAILED EXITING&quot;</span>);
-<a name="l00091"></a>00091          <span class="keywordflow">break</span>;
-<a name="l00092"></a>00092       }
-<a name="l00093"></a>00093       cnt++;
-<a name="l00094"></a>00094    }
-<a name="l00095"></a>00095 }
-<a name="l00096"></a>00096 
-<a name="l00097"></a><a class="code" href="classParser.html#ae02f5da1e3974e81746c91dae0e265a2">00097</a> <span class="keywordtype">void</span> <a class="code" href="classParser.html#ae02f5da1e3974e81746c91dae0e265a2">Parser::parseElement</a>(<span class="keyword">const</span> QDomNode&amp; xmlNode)
-<a name="l00098"></a>00098 {
-<a name="l00099"></a>00099 MainFrame::vdcdebug(<span class="stringliteral">&quot;Parser&quot;</span>,<span class="stringliteral">&quot;parseElement&quot;</span>, <span class="stringliteral">&quot;const QDomNode&amp; xmlNode&quot;</span>);
-<a name="l00100"></a>00100    <span class="comment">// start parsing specific nodes</span>
-<a name="l00101"></a>00101    QDomElement xmlFormElement = xmlNode.toElement();
-<a name="l00102"></a>00102 
-<a name="l00103"></a>00103    <span class="keywordtype">bool</span> <a class="code" href="classParser.html#a8088fac11586b6de2df5ed1720f7a943">layoutChanged</a> = <span class="keyword">false</span>;
-<a name="l00104"></a>00104    <span class="keywordtype">bool</span> b_folder = <span class="keyword">false</span>;
-<a name="l00105"></a>00105    <span class="keywordtype">bool</span> <a class="code" href="classParser.html#a24d2c0cb2595e44b9a7f73d801685e70">hidden</a> = <span class="keyword">false</span>;
-<a name="l00106"></a>00106 
-<a name="l00107"></a>00107    QString nodeName;
-<a name="l00108"></a>00108    QDomElement currentElement;
-<a name="l00109"></a>00109 
-<a name="l00110"></a>00110    nodeName = xmlNode.nodeName();
-<a name="l00111"></a>00111    currentElement = xmlNode.toElement();
-<a name="l00112"></a>00112    <span class="keywordflow">if</span>(nodeName == <span class="stringliteral">&quot;Form&quot;</span>)
-<a name="l00113"></a>00113    {
-<a name="l00114"></a>00114 
-<a name="l00115"></a>00115        <span class="keywordtype">int</span> gridWidth      = currentElement.attribute(<span class="stringliteral">&quot;width&quot;</span>).toInt();
-<a name="l00116"></a>00116        <span class="keywordtype">int</span> gridHeight     = currentElement.attribute(<span class="stringliteral">&quot;height&quot;</span>).toInt();
-<a name="l00117"></a>00117        QString delimiters = currentElement.attribute(<span class="stringliteral">&quot;delimiters&quot;</span>);
-<a name="l00118"></a>00118        QString sqldbname  = currentElement.attribute(<span class="stringliteral">&quot;sqlDbName&quot;</span>);
-<a name="l00119"></a>00119        QString formname   = currentElement.attribute(<span class="stringliteral">&quot;name&quot;</span>);
-<a name="l00120"></a>00120        QString encoding   = currentElement.attribute(<span class="stringliteral">&quot;encoding&quot;</span>);
-<a name="l00121"></a>00121 
+<a name="l00052"></a>00052 
+<a name="l00053"></a><a class="code" href="classParser.html#ae6283c9c8504b6d7ea3f95599b8dfa8d">00053</a> QList&lt;QWidget*&gt; <a class="code" href="classParser.html#ae6283c9c8504b6d7ea3f95599b8dfa8d">Parser::getFieldList</a>()
+<a name="l00054"></a>00054 {
+<a name="l00055"></a>00055 MainFrame::vdcdebug(<span class="stringliteral">&quot;Parser&quot;</span>,<span class="stringliteral">&quot;getFieldList&quot;</span>, <span class="stringliteral">&quot;&quot;</span>);
+<a name="l00056"></a>00056    <span class="keywordflow">return</span> <a class="code" href="classParser.html#a457a6f19e0594ed8a745c8a00be32c4b">ql_formFields</a>;
+<a name="l00057"></a>00057 }
+<a name="l00058"></a><a class="code" href="classParser.html#a4b4c41ad7831993e9d4cd52468d5fe88">00058</a> QList&lt;FormField*&gt; <a class="code" href="classParser.html#a4b4c41ad7831993e9d4cd52468d5fe88">Parser::getFglFields</a>()
+<a name="l00059"></a>00059 {
+<a name="l00060"></a>00060     <span class="keywordflow">return</span> <a class="code" href="classParser.html#a2cc0ce2919a5f45d55cab55a9e3c8b28">ql_fglFields</a>;
+<a name="l00061"></a>00061 }
+<a name="l00062"></a>00062 
+<a name="l00063"></a><a class="code" href="classParser.html#a6df35e9ed4a8615a7224aa51e91a46d3">00063</a> <span class="keywordtype">void</span> <a class="code" href="classParser.html#a6df35e9ed4a8615a7224aa51e91a46d3">Parser::parseForm</a>(QDomDocument xmlForm)
+<a name="l00064"></a>00064 {
+<a name="l00065"></a>00065 MainFrame::vdcdebug(<span class="stringliteral">&quot;Parser&quot;</span>,<span class="stringliteral">&quot;parseForm&quot;</span>, <span class="stringliteral">&quot;QDomDocument xmlForm&quot;</span>);
+<a name="l00066"></a>00066    <span class="comment">// get first element of XML form and start parsing</span>
+<a name="l00067"></a>00067    QDomElement formElement = xmlForm.documentElement();
+<a name="l00068"></a>00068    <a class="code" href="classParser.html#ae02f5da1e3974e81746c91dae0e265a2">parseElement</a>(formElement);
+<a name="l00069"></a>00069 
+<a name="l00070"></a>00070    <a class="code" href="classParser.html#a10b118e730f600194f26db151575c6fa">layout</a>-&gt;addWidget(<a class="code" href="classParser.html#a05d665391ab1db7f4729654df9fa4079">currentWidget</a>);
+<a name="l00071"></a>00071    <a class="code" href="classParser.html#a10b118e730f600194f26db151575c6fa">layout</a>-&gt;setAlignment(Qt::AlignLeft | Qt::AlignTop);
+<a name="l00072"></a>00072 
+<a name="l00073"></a>00073    <span class="comment">//order fields by fieldid</span>
+<a name="l00074"></a>00074    <span class="keywordtype">int</span> cnt=0;
+<a name="l00075"></a>00075    <span class="keywordtype">bool</span> sorted = <span class="keyword">false</span>;
+<a name="l00076"></a>00076    <span class="keywordflow">while</span>(!sorted){
+<a name="l00077"></a>00077       <span class="keywordflow">for</span>(<span class="keywordtype">int</span> i=0; i&lt;<a class="code" href="classParser.html#a457a6f19e0594ed8a745c8a00be32c4b">ql_formFields</a>.count(); i++){
+<a name="l00078"></a>00078          QWidget *w = <a class="code" href="classParser.html#a457a6f19e0594ed8a745c8a00be32c4b">ql_formFields</a>.takeAt(i);
+<a name="l00079"></a>00079 
+<a name="l00080"></a>00080          <a class="code" href="classParser.html#a457a6f19e0594ed8a745c8a00be32c4b">ql_formFields</a>.insert(w-&gt;property(<span class="stringliteral">&quot;fieldId&quot;</span>).toInt(), w);
+<a name="l00081"></a>00081       }
+<a name="l00082"></a>00082       sorted = <span class="keyword">true</span>;
+<a name="l00083"></a>00083       <span class="keywordflow">for</span>(<span class="keywordtype">int</span> i=0; i&lt;<a class="code" href="classParser.html#a457a6f19e0594ed8a745c8a00be32c4b">ql_formFields</a>.count(); i++){
+<a name="l00084"></a>00084          <span class="keywordflow">if</span>(<a class="code" href="classParser.html#a457a6f19e0594ed8a745c8a00be32c4b">ql_formFields</a>.at(i)-&gt;property(<span class="stringliteral">&quot;fieldId&quot;</span>).toInt() != i){
+<a name="l00085"></a>00085             sorted = <span class="keyword">false</span>;
+<a name="l00086"></a>00086          }
+<a name="l00087"></a>00087       }
+<a name="l00088"></a>00088 
+<a name="l00089"></a>00089       <span class="keywordflow">if</span>(cnt &gt; <a class="code" href="classParser.html#a457a6f19e0594ed8a745c8a00be32c4b">ql_formFields</a>.count()*<a class="code" href="classParser.html#a457a6f19e0594ed8a745c8a00be32c4b">ql_formFields</a>.count()*10){
+<a name="l00090"></a>00090          <span class="keywordflow">return</span>;
+<a name="l00091"></a>00091          qFatal(<span class="stringliteral">&quot;SORTING FIELDS FAILED EXITING&quot;</span>);
+<a name="l00092"></a>00092          <span class="keywordflow">break</span>;
+<a name="l00093"></a>00093       }
+<a name="l00094"></a>00094       cnt++;
+<a name="l00095"></a>00095    }
+<a name="l00096"></a>00096 }
+<a name="l00097"></a>00097 
+<a name="l00098"></a><a class="code" href="classParser.html#ae02f5da1e3974e81746c91dae0e265a2">00098</a> <span class="keywordtype">void</span> <a class="code" href="classParser.html#ae02f5da1e3974e81746c91dae0e265a2">Parser::parseElement</a>(<span class="keyword">const</span> QDomNode&amp; xmlNode)
+<a name="l00099"></a>00099 {
+<a name="l00100"></a>00100 MainFrame::vdcdebug(<span class="stringliteral">&quot;Parser&quot;</span>,<span class="stringliteral">&quot;parseElement&quot;</span>, <span class="stringliteral">&quot;const QDomNode&amp; xmlNode&quot;</span>);
+<a name="l00101"></a>00101    <span class="comment">// start parsing specific nodes</span>
+<a name="l00102"></a>00102    QDomElement xmlFormElement = xmlNode.toElement();
+<a name="l00103"></a>00103 
+<a name="l00104"></a>00104    <span class="keywordtype">bool</span> <a class="code" href="classParser.html#a8088fac11586b6de2df5ed1720f7a943">layoutChanged</a> = <span class="keyword">false</span>;
+<a name="l00105"></a>00105    <span class="keywordtype">bool</span> b_folder = <span class="keyword">false</span>;
+<a name="l00106"></a>00106    <span class="keywordtype">bool</span> <a class="code" href="classParser.html#a24d2c0cb2595e44b9a7f73d801685e70">hidden</a> = <span class="keyword">false</span>;
+<a name="l00107"></a>00107 
+<a name="l00108"></a>00108    QString nodeName;
+<a name="l00109"></a>00109    QDomElement currentElement;
+<a name="l00110"></a>00110 
+<a name="l00111"></a>00111    nodeName = xmlNode.nodeName();
+<a name="l00112"></a>00112    currentElement = xmlNode.toElement();
+<a name="l00113"></a>00113    <span class="keywordflow">if</span>(nodeName == <span class="stringliteral">&quot;Form&quot;</span>)
+<a name="l00114"></a>00114    {
+<a name="l00115"></a>00115 
+<a name="l00116"></a>00116        <span class="keywordtype">int</span> <a class="code" href="classParser.html#a52e6fad38b265e732b7667aab6648472">gridWidth</a>      = currentElement.attribute(<span class="stringliteral">&quot;width&quot;</span>).toInt();
+<a name="l00117"></a>00117        <span class="keywordtype">int</span> gridHeight     = currentElement.attribute(<span class="stringliteral">&quot;height&quot;</span>).toInt();
+<a name="l00118"></a>00118        QString delimiters = currentElement.attribute(<span class="stringliteral">&quot;delimiters&quot;</span>);
+<a name="l00119"></a>00119        QString sqldbname  = currentElement.attribute(<span class="stringliteral">&quot;sqlDbName&quot;</span>);
+<a name="l00120"></a>00120        QString formname   = currentElement.attribute(<span class="stringliteral">&quot;name&quot;</span>);
+<a name="l00121"></a>00121        QString encoding   = currentElement.attribute(<span class="stringliteral">&quot;encoding&quot;</span>);
 <a name="l00122"></a>00122 
-<a name="l00123"></a>00123        <span class="keywordflow">if</span>(<a class="code" href="classParser.html#a8ae7aeec1e5360fa29b9976624cde0f1">p_fglform</a>)
-<a name="l00124"></a>00124        {
-<a name="l00125"></a>00125           <span class="keywordflow">if</span>(<a class="code" href="classFglForm.html">FglForm</a> *form = qobject_cast&lt;FglForm*&gt; (<a class="code" href="classParser.html#a8ae7aeec1e5360fa29b9976624cde0f1">p_fglform</a>))
-<a name="l00126"></a>00126           {
-<a name="l00127"></a>00127              form-&gt;gridWidth = gridWidth;
-<a name="l00128"></a>00128           }
-<a name="l00129"></a>00129        }
-<a name="l00130"></a>00130 
-<a name="l00131"></a>00131    }
-<a name="l00132"></a>00132 
-<a name="l00133"></a>00133 
-<a name="l00134"></a>00134 
-<a name="l00135"></a>00135    QDomNodeList children = xmlNode.childNodes();
-<a name="l00136"></a>00136    <span class="keywordflow">for</span>(<span class="keywordtype">int</span> i=0; i&lt;children.count(); ++i){
-<a name="l00137"></a>00137 
-<a name="l00138"></a>00138       QDomNode child = children.at(i);
-<a name="l00139"></a>00139       <span class="keywordflow">if</span>(!child.isElement()){
-<a name="l00140"></a>00140          <span class="keywordflow">continue</span>;
-<a name="l00141"></a>00141       }
+<a name="l00123"></a>00123        this-&gt;gridWidth = <a class="code" href="classParser.html#a52e6fad38b265e732b7667aab6648472">gridWidth</a>;
+<a name="l00124"></a>00124 
+<a name="l00125"></a>00125    }
+<a name="l00126"></a>00126 
+<a name="l00127"></a>00127 
+<a name="l00128"></a>00128 
+<a name="l00129"></a>00129    QDomNodeList children = xmlNode.childNodes();
+<a name="l00130"></a>00130    <span class="keywordflow">for</span>(<span class="keywordtype">int</span> i=0; i&lt;children.count(); ++i){
+<a name="l00131"></a>00131 
+<a name="l00132"></a>00132       QDomNode child = children.at(i);
+<a name="l00133"></a>00133       <span class="keywordflow">if</span>(!child.isElement()){
+<a name="l00134"></a>00134          <span class="keywordflow">continue</span>;
+<a name="l00135"></a>00135       }
+<a name="l00136"></a>00136 
+<a name="l00137"></a>00137       <span class="comment">// start parsing the first element</span>
+<a name="l00138"></a>00138       currentElement = child.toElement();
+<a name="l00139"></a>00139 
+<a name="l00140"></a>00140       nodeName = currentElement.nodeName();
+<a name="l00141"></a>00141 
 <a name="l00142"></a>00142 
-<a name="l00143"></a>00143       <span class="comment">// start parsing the first element</span>
-<a name="l00144"></a>00144       currentElement = child.toElement();
-<a name="l00145"></a>00145 
-<a name="l00146"></a>00146       nodeName = currentElement.nodeName();
-<a name="l00147"></a>00147 
-<a name="l00148"></a>00148 
-<a name="l00149"></a>00149 
-<a name="l00150"></a>00150 <span class="comment">/*</span>
-<a name="l00151"></a>00151 <span class="comment">      if(nodeName == &quot;Screen&quot;){</span>
-<a name="l00152"></a>00152 <span class="comment">         QGridLayout *layout = new QGridLayout;</span>
-<a name="l00153"></a>00153 <span class="comment">         layout-&gt;setAlignment(Qt::AlignLeft | Qt::AlignTop);</span>
-<a name="l00154"></a>00154 <span class="comment"></span>
-<a name="l00155"></a>00155 <span class="comment">         if(currentLayout == NULL){</span>
-<a name="l00156"></a>00156 <span class="comment">            currentWidget-&gt;setLayout(layout);</span>
-<a name="l00157"></a>00157 <span class="comment">         }</span>
-<a name="l00158"></a>00158 <span class="comment">         else{</span>
-<a name="l00159"></a>00159 <span class="comment">            addLayout(layout);</span>
-<a name="l00160"></a>00160 <span class="comment">            layoutChanged = true;</span>
-<a name="l00161"></a>00161 <span class="comment">         }</span>
-<a name="l00162"></a>00162 <span class="comment"></span>
-<a name="l00163"></a>00163 <span class="comment">         currentLayout = layout;</span>
-<a name="l00164"></a>00164 <span class="comment"></span>
-<a name="l00165"></a>00165 <span class="comment">         hidden = currentElement.attribute(&quot;hidden&quot;).toInt();</span>
-<a name="l00166"></a>00166 <span class="comment">         if(hidden){</span>
-<a name="l00167"></a>00167 <span class="comment">            this-&gt;hidden = true;</span>
-<a name="l00168"></a>00168 <span class="comment">         }</span>
-<a name="l00169"></a>00169 <span class="comment">      }</span>
-<a name="l00170"></a>00170 <span class="comment">*/</span>
-<a name="l00171"></a>00171 
-<a name="l00172"></a>00172       <span class="keywordflow">if</span>(nodeName == <span class="stringliteral">&quot;Grid&quot;</span> ||
-<a name="l00173"></a>00173          nodeName == <span class="stringliteral">&quot;Screen&quot;</span>){
-<a name="l00174"></a>00174          QGridLayout *<a class="code" href="classParser.html#a10b118e730f600194f26db151575c6fa">layout</a> = <span class="keyword">new</span> QGridLayout;
-<a name="l00175"></a>00175          layout-&gt;setAlignment(Qt::AlignLeft | Qt::AlignTop);
-<a name="l00176"></a>00176          layout-&gt;setSpacing(0);
-<a name="l00177"></a>00177          layout-&gt;setVerticalSpacing(3);
-<a name="l00178"></a>00178          layout-&gt;setHorizontalSpacing(3);
-<a name="l00179"></a>00179          layout-&gt;setSizeConstraint(QLayout::SetMinimumSize);
-<a name="l00180"></a>00180          <span class="keywordflow">if</span>(<a class="code" href="classParser.html#a3b94abe3e2c41c419f5be2a2e3fd63a4">currentLayout</a> == NULL){
-<a name="l00181"></a>00181             <a class="code" href="classParser.html#a05d665391ab1db7f4729654df9fa4079">currentWidget</a>-&gt;setLayout(layout);
-<a name="l00182"></a>00182          }
-<a name="l00183"></a>00183          <span class="keywordflow">else</span>{
-<a name="l00184"></a>00184             <a class="code" href="classParser.html#a97f0648d8b9a23badc802076b88db7ef">addLayout</a>(layout);
-<a name="l00185"></a>00185             layoutChanged = <span class="keyword">true</span>;
-<a name="l00186"></a>00186          }
-<a name="l00187"></a>00187 
-<a name="l00188"></a>00188          <a class="code" href="classParser.html#a3b94abe3e2c41c419f5be2a2e3fd63a4">currentLayout</a> = <a class="code" href="classParser.html#a10b118e730f600194f26db151575c6fa">layout</a>;
-<a name="l00189"></a>00189 
-<a name="l00190"></a>00190          hidden = currentElement.attribute(<span class="stringliteral">&quot;hidden&quot;</span>).toInt();
-<a name="l00191"></a>00191          <span class="keywordflow">if</span>(hidden){
-<a name="l00192"></a>00192             this-&gt;hidden = <span class="keyword">true</span>;
-<a name="l00193"></a>00193          }
-<a name="l00194"></a>00194 
-<a name="l00195"></a>00195       }
-<a name="l00196"></a>00196 
-<a name="l00197"></a>00197       <span class="keywordflow">if</span>(nodeName == <span class="stringliteral">&quot;VBox&quot;</span>){
-<a name="l00198"></a>00198          QVBoxLayout *<a class="code" href="classParser.html#a10b118e730f600194f26db151575c6fa">layout</a> = <span class="keyword">new</span> QVBoxLayout;
-<a name="l00199"></a>00199          layout-&gt;setAlignment(Qt::AlignLeft | Qt::AlignTop);
-<a name="l00200"></a>00200          <span class="keywordflow">if</span>(<a class="code" href="classParser.html#a3b94abe3e2c41c419f5be2a2e3fd63a4">currentLayout</a> == NULL){
-<a name="l00201"></a>00201             <a class="code" href="classParser.html#a05d665391ab1db7f4729654df9fa4079">currentWidget</a>-&gt;setLayout(layout);
-<a name="l00202"></a>00202          }
-<a name="l00203"></a>00203          <span class="keywordflow">else</span>{
-<a name="l00204"></a>00204             <a class="code" href="classParser.html#a97f0648d8b9a23badc802076b88db7ef">addLayout</a>(layout);
-<a name="l00205"></a>00205             layoutChanged = <span class="keyword">true</span>;
-<a name="l00206"></a>00206          }
-<a name="l00207"></a>00207 
-<a name="l00208"></a>00208          <a class="code" href="classParser.html#a3b94abe3e2c41c419f5be2a2e3fd63a4">currentLayout</a> = <a class="code" href="classParser.html#a10b118e730f600194f26db151575c6fa">layout</a>;
+<a name="l00143"></a>00143 
+<a name="l00144"></a>00144 <span class="comment">/*</span>
+<a name="l00145"></a>00145 <span class="comment">      if(nodeName == &quot;Screen&quot;){</span>
+<a name="l00146"></a>00146 <span class="comment">         QGridLayout *layout = new QGridLayout;</span>
+<a name="l00147"></a>00147 <span class="comment">         layout-&gt;setAlignment(Qt::AlignLeft | Qt::AlignTop);</span>
+<a name="l00148"></a>00148 <span class="comment"></span>
+<a name="l00149"></a>00149 <span class="comment">         if(currentLayout == NULL){</span>
+<a name="l00150"></a>00150 <span class="comment">            currentWidget-&gt;setLayout(layout);</span>
+<a name="l00151"></a>00151 <span class="comment">         }</span>
+<a name="l00152"></a>00152 <span class="comment">         else{</span>
+<a name="l00153"></a>00153 <span class="comment">            addLayout(layout);</span>
+<a name="l00154"></a>00154 <span class="comment">            layoutChanged = true;</span>
+<a name="l00155"></a>00155 <span class="comment">         }</span>
+<a name="l00156"></a>00156 <span class="comment"></span>
+<a name="l00157"></a>00157 <span class="comment">         currentLayout = layout;</span>
+<a name="l00158"></a>00158 <span class="comment"></span>
+<a name="l00159"></a>00159 <span class="comment">         hidden = currentElement.attribute(&quot;hidden&quot;).toInt();</span>
+<a name="l00160"></a>00160 <span class="comment">         if(hidden){</span>
+<a name="l00161"></a>00161 <span class="comment">            this-&gt;hidden = true;</span>
+<a name="l00162"></a>00162 <span class="comment">         }</span>
+<a name="l00163"></a>00163 <span class="comment">      }</span>
+<a name="l00164"></a>00164 <span class="comment">*/</span>
+<a name="l00165"></a>00165 
+<a name="l00166"></a>00166       <span class="keywordflow">if</span>(nodeName == <span class="stringliteral">&quot;Grid&quot;</span> ||
+<a name="l00167"></a>00167          nodeName == <span class="stringliteral">&quot;Screen&quot;</span>){
+<a name="l00168"></a>00168          QGridLayout *<a class="code" href="classParser.html#a10b118e730f600194f26db151575c6fa">layout</a> = <span class="keyword">new</span> QGridLayout;
+<a name="l00169"></a>00169          layout-&gt;setAlignment(Qt::AlignLeft | Qt::AlignTop);
+<a name="l00170"></a>00170          layout-&gt;setSpacing(0);
+<a name="l00171"></a>00171          layout-&gt;setVerticalSpacing(3);
+<a name="l00172"></a>00172          layout-&gt;setHorizontalSpacing(3);
+<a name="l00173"></a>00173       <span class="comment">//   layout-&gt;setSizeConstraint(QLayout::SetMinimumSize);</span>
+<a name="l00174"></a>00174          <span class="keywordflow">if</span>(<a class="code" href="classParser.html#a3b94abe3e2c41c419f5be2a2e3fd63a4">currentLayout</a> == NULL){
+<a name="l00175"></a>00175             <a class="code" href="classParser.html#a05d665391ab1db7f4729654df9fa4079">currentWidget</a>-&gt;setLayout(layout);
+<a name="l00176"></a>00176          }
+<a name="l00177"></a>00177          <span class="keywordflow">else</span>{
+<a name="l00178"></a>00178             <a class="code" href="classParser.html#a97f0648d8b9a23badc802076b88db7ef">addLayout</a>(layout);
+<a name="l00179"></a>00179             layoutChanged = <span class="keyword">true</span>;
+<a name="l00180"></a>00180          }
+<a name="l00181"></a>00181 
+<a name="l00182"></a>00182          <a class="code" href="classParser.html#a3b94abe3e2c41c419f5be2a2e3fd63a4">currentLayout</a> = <a class="code" href="classParser.html#a10b118e730f600194f26db151575c6fa">layout</a>;
+<a name="l00183"></a>00183 
+<a name="l00184"></a>00184          hidden = currentElement.attribute(<span class="stringliteral">&quot;hidden&quot;</span>).toInt();
+<a name="l00185"></a>00185          <span class="keywordflow">if</span>(hidden){
+<a name="l00186"></a>00186             this-&gt;hidden = <span class="keyword">true</span>;
+<a name="l00187"></a>00187          }
+<a name="l00188"></a>00188 
+<a name="l00189"></a>00189       }
+<a name="l00190"></a>00190 
+<a name="l00191"></a>00191       <span class="keywordflow">if</span>(nodeName == <span class="stringliteral">&quot;VBox&quot;</span>){
+<a name="l00192"></a>00192          QVBoxLayout *<a class="code" href="classParser.html#a10b118e730f600194f26db151575c6fa">layout</a> = <span class="keyword">new</span> QVBoxLayout;
+<a name="l00193"></a>00193          layout-&gt;setAlignment(Qt::AlignLeft | Qt::AlignTop);
+<a name="l00194"></a>00194          <span class="keywordflow">if</span>(<a class="code" href="classParser.html#a3b94abe3e2c41c419f5be2a2e3fd63a4">currentLayout</a> == NULL){
+<a name="l00195"></a>00195             <a class="code" href="classParser.html#a05d665391ab1db7f4729654df9fa4079">currentWidget</a>-&gt;setLayout(layout);
+<a name="l00196"></a>00196          }
+<a name="l00197"></a>00197          <span class="keywordflow">else</span>{
+<a name="l00198"></a>00198             <a class="code" href="classParser.html#a97f0648d8b9a23badc802076b88db7ef">addLayout</a>(layout);
+<a name="l00199"></a>00199             layoutChanged = <span class="keyword">true</span>;
+<a name="l00200"></a>00200          }
+<a name="l00201"></a>00201 
+<a name="l00202"></a>00202          <a class="code" href="classParser.html#a3b94abe3e2c41c419f5be2a2e3fd63a4">currentLayout</a> = <a class="code" href="classParser.html#a10b118e730f600194f26db151575c6fa">layout</a>;
+<a name="l00203"></a>00203 
+<a name="l00204"></a>00204          hidden = currentElement.attribute(<span class="stringliteral">&quot;hidden&quot;</span>).toInt();
+<a name="l00205"></a>00205          <span class="keywordflow">if</span>(hidden){
+<a name="l00206"></a>00206             this-&gt;hidden = <span class="keyword">true</span>;
+<a name="l00207"></a>00207          }
+<a name="l00208"></a>00208       }
 <a name="l00209"></a>00209 
-<a name="l00210"></a>00210          hidden = currentElement.attribute(<span class="stringliteral">&quot;hidden&quot;</span>).toInt();
-<a name="l00211"></a>00211          <span class="keywordflow">if</span>(hidden){
-<a name="l00212"></a>00212             this-&gt;hidden = <span class="keyword">true</span>;
-<a name="l00213"></a>00213          }
-<a name="l00214"></a>00214       }
-<a name="l00215"></a>00215 
-<a name="l00216"></a>00216       <span class="keywordflow">if</span>(nodeName == <span class="stringliteral">&quot;HBox&quot;</span>){
-<a name="l00217"></a>00217          QHBoxLayout *<a class="code" href="classParser.html#a10b118e730f600194f26db151575c6fa">layout</a> = <span class="keyword">new</span> QHBoxLayout;
-<a name="l00218"></a>00218          layout-&gt;setAlignment(Qt::AlignLeft | Qt::AlignTop);
-<a name="l00219"></a>00219          <span class="keywordflow">if</span>(<a class="code" href="classParser.html#a3b94abe3e2c41c419f5be2a2e3fd63a4">currentLayout</a> == NULL){
-<a name="l00220"></a>00220             <a class="code" href="classParser.html#a05d665391ab1db7f4729654df9fa4079">currentWidget</a>-&gt;setLayout(layout);
-<a name="l00221"></a>00221          }
-<a name="l00222"></a>00222          <span class="keywordflow">else</span>{
-<a name="l00223"></a>00223             <a class="code" href="classParser.html#a97f0648d8b9a23badc802076b88db7ef">addLayout</a>(layout);
-<a name="l00224"></a>00224             layoutChanged = <span class="keyword">true</span>;
-<a name="l00225"></a>00225          }
-<a name="l00226"></a>00226 
-<a name="l00227"></a>00227          <a class="code" href="classParser.html#a3b94abe3e2c41c419f5be2a2e3fd63a4">currentLayout</a> = <a class="code" href="classParser.html#a10b118e730f600194f26db151575c6fa">layout</a>;
+<a name="l00210"></a>00210       <span class="keywordflow">if</span>(nodeName == <span class="stringliteral">&quot;HBox&quot;</span>){
+<a name="l00211"></a>00211          QHBoxLayout *<a class="code" href="classParser.html#a10b118e730f600194f26db151575c6fa">layout</a> = <span class="keyword">new</span> QHBoxLayout;
+<a name="l00212"></a>00212          layout-&gt;setAlignment(Qt::AlignLeft | Qt::AlignTop);
+<a name="l00213"></a>00213          <span class="keywordflow">if</span>(<a class="code" href="classParser.html#a3b94abe3e2c41c419f5be2a2e3fd63a4">currentLayout</a> == NULL){
+<a name="l00214"></a>00214             <a class="code" href="classParser.html#a05d665391ab1db7f4729654df9fa4079">currentWidget</a>-&gt;setLayout(layout);
+<a name="l00215"></a>00215          }
+<a name="l00216"></a>00216          <span class="keywordflow">else</span>{
+<a name="l00217"></a>00217             <a class="code" href="classParser.html#a97f0648d8b9a23badc802076b88db7ef">addLayout</a>(layout);
+<a name="l00218"></a>00218             layoutChanged = <span class="keyword">true</span>;
+<a name="l00219"></a>00219          }
+<a name="l00220"></a>00220 
+<a name="l00221"></a>00221          <a class="code" href="classParser.html#a3b94abe3e2c41c419f5be2a2e3fd63a4">currentLayout</a> = <a class="code" href="classParser.html#a10b118e730f600194f26db151575c6fa">layout</a>;
+<a name="l00222"></a>00222 
+<a name="l00223"></a>00223          hidden = currentElement.attribute(<span class="stringliteral">&quot;hidden&quot;</span>).toInt();
+<a name="l00224"></a>00224          <span class="keywordflow">if</span>(hidden){
+<a name="l00225"></a>00225             this-&gt;hidden = <span class="keyword">true</span>;
+<a name="l00226"></a>00226          }
+<a name="l00227"></a>00227       }
 <a name="l00228"></a>00228 
-<a name="l00229"></a>00229          hidden = currentElement.attribute(<span class="stringliteral">&quot;hidden&quot;</span>).toInt();
-<a name="l00230"></a>00230          <span class="keywordflow">if</span>(hidden){
-<a name="l00231"></a>00231             this-&gt;hidden = <span class="keyword">true</span>;
-<a name="l00232"></a>00232          }
-<a name="l00233"></a>00233       }
-<a name="l00234"></a>00234 
-<a name="l00235"></a>00235 
-<a name="l00236"></a>00236       <span class="keywordflow">if</span>(nodeName == <span class="stringliteral">&quot;Folder&quot;</span>){
-<a name="l00237"></a>00237          <a class="code" href="classTabWidget.html">TabWidget</a> *folder = <span class="keyword">new</span> <a class="code" href="classTabWidget.html">TabWidget</a>;
-<a name="l00238"></a>00238          folder-&gt;setAccessibleName(<span class="stringliteral">&quot;Folder&quot;</span>);
-<a name="l00239"></a>00239          <a class="code" href="classParser.html#a05d665391ab1db7f4729654df9fa4079">currentWidget</a> = folder;
-<a name="l00240"></a>00240          b_folder = <span class="keyword">true</span>;
-<a name="l00241"></a>00241       }
-<a name="l00242"></a>00242 
-<a name="l00243"></a>00243       <span class="keywordflow">if</span>(nodeName == <span class="stringliteral">&quot;Page&quot;</span>){
-<a name="l00244"></a>00244          QString text = currentElement.attribute(<span class="stringliteral">&quot;text&quot;</span>);
-<a name="l00245"></a>00245 
-<a name="l00246"></a>00246          <span class="keywordflow">if</span>(QTabWidget *tabWidget = qobject_cast&lt;QTabWidget *&gt; (<a class="code" href="classParser.html#a05d665391ab1db7f4729654df9fa4079">currentWidget</a>)){
-<a name="l00247"></a>00247             QWidget *wi = <span class="keyword">new</span> QWidget;
-<a name="l00248"></a>00248             wi-&gt;setAccessibleName(text);
-<a name="l00249"></a>00249             tabWidget-&gt;addTab(wi, text);
-<a name="l00250"></a>00250             <a class="code" href="classParser.html#a05d665391ab1db7f4729654df9fa4079">currentWidget</a> = wi;
-<a name="l00251"></a>00251             <a class="code" href="classParser.html#a3b94abe3e2c41c419f5be2a2e3fd63a4">currentLayout</a> = NULL;
-<a name="l00252"></a>00252          }
-<a name="l00253"></a>00253          <span class="keywordflow">else</span>{
-<a name="l00254"></a>00254             <span class="keywordflow">if</span>(QTabWidget *tabWidget = qobject_cast&lt;QTabWidget *&gt; (<a class="code" href="classParser.html#a05d665391ab1db7f4729654df9fa4079">currentWidget</a>-&gt;parent()-&gt;parent())){
-<a name="l00255"></a>00255                QWidget *wi = <span class="keyword">new</span> QWidget;
-<a name="l00256"></a>00256                wi-&gt;setAccessibleName(text);
-<a name="l00257"></a>00257                tabWidget-&gt;addTab(wi, text);
-<a name="l00258"></a>00258                <a class="code" href="classParser.html#a05d665391ab1db7f4729654df9fa4079">currentWidget</a> = wi;
-<a name="l00259"></a>00259                <a class="code" href="classParser.html#a3b94abe3e2c41c419f5be2a2e3fd63a4">currentLayout</a> = NULL;
-<a name="l00260"></a>00260             }
-<a name="l00261"></a>00261          }
-<a name="l00262"></a>00262 
-<a name="l00263"></a>00263       }
-<a name="l00264"></a>00264 
-<a name="l00265"></a>00265       <span class="keywordflow">if</span>(nodeName == <span class="stringliteral">&quot;FormField&quot;</span>){
+<a name="l00229"></a>00229 
+<a name="l00230"></a>00230       <span class="keywordflow">if</span>(nodeName == <span class="stringliteral">&quot;Folder&quot;</span>){
+<a name="l00231"></a>00231          <a class="code" href="classTabWidget.html">TabWidget</a> *folder = <span class="keyword">new</span> <a class="code" href="classTabWidget.html">TabWidget</a>;
+<a name="l00232"></a>00232          folder-&gt;setAccessibleName(<span class="stringliteral">&quot;Folder&quot;</span>);
+<a name="l00233"></a>00233          <a class="code" href="classParser.html#a05d665391ab1db7f4729654df9fa4079">currentWidget</a> = folder;
+<a name="l00234"></a>00234          b_folder = <span class="keyword">true</span>;
+<a name="l00235"></a>00235       }
+<a name="l00236"></a>00236 
+<a name="l00237"></a>00237       <span class="keywordflow">if</span>(nodeName == <span class="stringliteral">&quot;Page&quot;</span>){
+<a name="l00238"></a>00238          QString text = currentElement.attribute(<span class="stringliteral">&quot;text&quot;</span>);
+<a name="l00239"></a>00239 
+<a name="l00240"></a>00240          <span class="keywordflow">if</span>(QTabWidget *tabWidget = qobject_cast&lt;QTabWidget *&gt; (<a class="code" href="classParser.html#a05d665391ab1db7f4729654df9fa4079">currentWidget</a>)){
+<a name="l00241"></a>00241             QWidget *wi = <span class="keyword">new</span> QWidget;
+<a name="l00242"></a>00242             wi-&gt;setAccessibleName(text);
+<a name="l00243"></a>00243             tabWidget-&gt;addTab(wi, text);
+<a name="l00244"></a>00244             <a class="code" href="classParser.html#a05d665391ab1db7f4729654df9fa4079">currentWidget</a> = wi;
+<a name="l00245"></a>00245             <a class="code" href="classParser.html#a3b94abe3e2c41c419f5be2a2e3fd63a4">currentLayout</a> = NULL;
+<a name="l00246"></a>00246          }
+<a name="l00247"></a>00247          <span class="keywordflow">else</span>{
+<a name="l00248"></a>00248             <span class="keywordflow">if</span>(QTabWidget *tabWidget = qobject_cast&lt;QTabWidget *&gt; (<a class="code" href="classParser.html#a05d665391ab1db7f4729654df9fa4079">currentWidget</a>-&gt;parent()-&gt;parent())){
+<a name="l00249"></a>00249                QWidget *wi = <span class="keyword">new</span> QWidget;
+<a name="l00250"></a>00250                wi-&gt;setAccessibleName(text);
+<a name="l00251"></a>00251                tabWidget-&gt;addTab(wi, text);
+<a name="l00252"></a>00252                <a class="code" href="classParser.html#a05d665391ab1db7f4729654df9fa4079">currentWidget</a> = wi;
+<a name="l00253"></a>00253                <a class="code" href="classParser.html#a3b94abe3e2c41c419f5be2a2e3fd63a4">currentLayout</a> = NULL;
+<a name="l00254"></a>00254             }
+<a name="l00255"></a>00255          }
+<a name="l00256"></a>00256 
+<a name="l00257"></a>00257       }
+<a name="l00258"></a>00258 
+<a name="l00259"></a>00259       <span class="keywordflow">if</span>(nodeName == <span class="stringliteral">&quot;FormField&quot;</span>){
+<a name="l00260"></a>00260 
+<a name="l00261"></a>00261          <a class="code" href="classFormField.html">FormField</a> *formField = <a class="code" href="classWidgetHelper.html#a5944782c8e36ae4d657129e519373d49">WidgetHelper::createFormField</a>(currentElement, <a class="code" href="classParser.html#a8ae7aeec1e5360fa29b9976624cde0f1">p_fglform</a>);
+<a name="l00262"></a>00262          <a class="code" href="classParser.html#a2cc0ce2919a5f45d55cab55a9e3c8b28">ql_fglFields</a> &lt;&lt; formField;
+<a name="l00263"></a>00263 
+<a name="l00264"></a>00264          QWidget *widget = <a class="code" href="classWidgetHelper.html#ae52d8d07fe63d8cc60ffd216aadafc52">WidgetHelper::createFormWidget</a>(currentElement, <a class="code" href="classParser.html#a8ae7aeec1e5360fa29b9976624cde0f1">p_fglform</a>);
+<a name="l00265"></a>00265          formField-&gt;addField(widget);
 <a name="l00266"></a>00266 
-<a name="l00267"></a>00267          <a class="code" href="classFormField.html">FormField</a> *formField = <a class="code" href="classWidgetHelper.html#a5944782c8e36ae4d657129e519373d49">WidgetHelper::createFormField</a>(currentElement, <a class="code" href="classParser.html#a8ae7aeec1e5360fa29b9976624cde0f1">p_fglform</a>);
-<a name="l00268"></a>00268          <a class="code" href="classParser.html#a2cc0ce2919a5f45d55cab55a9e3c8b28">ql_fglFields</a> &lt;&lt; formField;
-<a name="l00269"></a>00269 
-<a name="l00270"></a>00270          QWidget *widget = <a class="code" href="classWidgetHelper.html#ae52d8d07fe63d8cc60ffd216aadafc52">WidgetHelper::createFormWidget</a>(currentElement, <a class="code" href="classParser.html#a8ae7aeec1e5360fa29b9976624cde0f1">p_fglform</a>);
-<a name="l00271"></a>00271          formField-&gt;addField(widget);
-<a name="l00272"></a>00272 
-<a name="l00273"></a>00273          QDomElement fieldElement = currentElement.firstChildElement();
-<a name="l00274"></a>00274 
-<a name="l00275"></a>00275          <span class="comment">//int w = fieldElement.attribute(&quot;width&quot;).toInt();</span>
-<a name="l00276"></a>00276          <span class="keywordtype">int</span> posX = fieldElement.attribute(<span class="stringliteral">&quot;posX&quot;</span>).toInt();
-<a name="l00277"></a>00277          <span class="keywordtype">int</span> posY = fieldElement.attribute(<span class="stringliteral">&quot;posY&quot;</span>).toInt();
-<a name="l00278"></a>00278          <span class="keywordtype">int</span> gridWidth = fieldElement.attribute(<span class="stringliteral">&quot;gridWidth&quot;</span>).toInt();
+<a name="l00267"></a>00267          QDomElement fieldElement = currentElement.firstChildElement();
+<a name="l00268"></a>00268 
+<a name="l00269"></a>00269          <span class="comment">//int w = fieldElement.attribute(&quot;width&quot;).toInt();</span>
+<a name="l00270"></a>00270          <span class="keywordtype">int</span> posX = fieldElement.attribute(<span class="stringliteral">&quot;posX&quot;</span>).toInt();
+<a name="l00271"></a>00271          <span class="keywordtype">int</span> posY = fieldElement.attribute(<span class="stringliteral">&quot;posY&quot;</span>).toInt();
+<a name="l00272"></a>00272          <span class="keywordtype">int</span> <a class="code" href="classParser.html#a52e6fad38b265e732b7667aab6648472">gridWidth</a> = fieldElement.attribute(<span class="stringliteral">&quot;gridWidth&quot;</span>).toInt();
+<a name="l00273"></a>00273 
+<a name="l00274"></a>00274          widget-&gt;setProperty(<span class="stringliteral">&quot;fieldId&quot;</span>, currentElement.attribute(<span class="stringliteral">&quot;fieldId&quot;</span>).toInt());
+<a name="l00275"></a>00275 
+<a name="l00276"></a>00276          <a class="code" href="classParser.html#a80b5245c70a7f73fcdba2c61096cc21f">addWidgets</a>(widget, <span class="keyword">true</span>, posY, posX, gridWidth);
+<a name="l00277"></a>00277          <span class="keywordflow">continue</span>;
+<a name="l00278"></a>00278       }
 <a name="l00279"></a>00279 
-<a name="l00280"></a>00280          widget-&gt;setProperty(<span class="stringliteral">&quot;fieldId&quot;</span>, currentElement.attribute(<span class="stringliteral">&quot;fieldId&quot;</span>).toInt());
-<a name="l00281"></a>00281 
-<a name="l00282"></a>00282          <a class="code" href="classParser.html#a80b5245c70a7f73fcdba2c61096cc21f">addWidgets</a>(widget, <span class="keyword">true</span>, posY, posX, gridWidth);
-<a name="l00283"></a>00283          <span class="keywordflow">continue</span>;
-<a name="l00284"></a>00284       }
-<a name="l00285"></a>00285 
-<a name="l00286"></a>00286       <span class="keywordflow">if</span>(nodeName == <span class="stringliteral">&quot;Matrix&quot;</span>){
-<a name="l00287"></a>00287          <span class="keywordtype">int</span> pageSize = currentElement.attribute(<span class="stringliteral">&quot;pageSize&quot;</span>).toInt();
-<a name="l00288"></a>00288 
-<a name="l00289"></a>00289          QDomElement fieldElement = currentElement.firstChildElement();
-<a name="l00290"></a>00290 
-<a name="l00291"></a>00291          QWidget *widget = <a class="code" href="classWidgetHelper.html#ae52d8d07fe63d8cc60ffd216aadafc52">WidgetHelper::createFormWidget</a>(currentElement, <a class="code" href="classParser.html#a8ae7aeec1e5360fa29b9976624cde0f1">p_fglform</a>);
-<a name="l00292"></a>00292          <span class="keywordflow">if</span>(<a class="code" href="classTextEdit.html">TextEdit</a> *te = qobject_cast&lt;TextEdit*&gt; (widget))
-<a name="l00293"></a>00293          {
-<a name="l00294"></a>00294              <span class="keywordflow">if</span>(!te-&gt;b_stretch)
-<a name="l00295"></a>00295              {
-<a name="l00296"></a>00296                 te-&gt;setFixedHeight(widget-&gt;height()*pageSize);
-<a name="l00297"></a>00297              }
-<a name="l00298"></a>00298              <span class="keywordflow">else</span>
-<a name="l00299"></a>00299              {
-<a name="l00300"></a>00300                  te-&gt;setMinimumSize(widget-&gt;width(), widget-&gt;height()*pageSize);
-<a name="l00301"></a>00301              }
-<a name="l00302"></a>00302          }
-<a name="l00303"></a>00303          <span class="keywordflow">else</span>
-<a name="l00304"></a>00304          {
-<a name="l00305"></a>00305              widget-&gt;setFixedHeight(widget-&gt;height()*pageSize);
-<a name="l00306"></a>00306          }
-<a name="l00307"></a>00307          <span class="comment">//int w = fieldElement.attribute(&quot;width&quot;).toInt();</span>
-<a name="l00308"></a>00308          <span class="keywordtype">int</span> posX = fieldElement.attribute(<span class="stringliteral">&quot;posX&quot;</span>).toInt();
-<a name="l00309"></a>00309          <span class="keywordtype">int</span> posY = fieldElement.attribute(<span class="stringliteral">&quot;posY&quot;</span>).toInt();
-<a name="l00310"></a>00310          <span class="keywordtype">int</span> gridWidth = fieldElement.attribute(<span class="stringliteral">&quot;gridWidth&quot;</span>).toInt();
+<a name="l00280"></a>00280       <span class="keywordflow">if</span>(nodeName == <span class="stringliteral">&quot;Matrix&quot;</span>){
+<a name="l00281"></a>00281          <span class="keywordtype">int</span> pageSize = currentElement.attribute(<span class="stringliteral">&quot;pageSize&quot;</span>).toInt();
+<a name="l00282"></a>00282 
+<a name="l00283"></a>00283          QDomElement fieldElement = currentElement.firstChildElement();
+<a name="l00284"></a>00284 
+<a name="l00285"></a>00285          QWidget *widget = <a class="code" href="classWidgetHelper.html#ae52d8d07fe63d8cc60ffd216aadafc52">WidgetHelper::createFormWidget</a>(currentElement, <a class="code" href="classParser.html#a8ae7aeec1e5360fa29b9976624cde0f1">p_fglform</a>);
+<a name="l00286"></a>00286          <span class="keywordflow">if</span>(<a class="code" href="classTextEdit.html">TextEdit</a> *te = qobject_cast&lt;TextEdit*&gt; (widget))
+<a name="l00287"></a>00287          {
+<a name="l00288"></a>00288              <span class="keywordflow">if</span>(!te-&gt;b_stretch)
+<a name="l00289"></a>00289              {
+<a name="l00290"></a>00290                 te-&gt;setFixedHeight(widget-&gt;height()*pageSize);
+<a name="l00291"></a>00291              }
+<a name="l00292"></a>00292              <span class="keywordflow">else</span>
+<a name="l00293"></a>00293              {
+<a name="l00294"></a>00294                  te-&gt;setMinimumSize(widget-&gt;width(), widget-&gt;height()*pageSize);
+<a name="l00295"></a>00295              }
+<a name="l00296"></a>00296          }
+<a name="l00297"></a>00297          <span class="keywordflow">else</span>
+<a name="l00298"></a>00298          {
+<a name="l00299"></a>00299              widget-&gt;setFixedHeight(widget-&gt;height()*pageSize);
+<a name="l00300"></a>00300          }
+<a name="l00301"></a>00301          <span class="comment">//int w = fieldElement.attribute(&quot;width&quot;).toInt();</span>
+<a name="l00302"></a>00302          <span class="keywordtype">int</span> posX = fieldElement.attribute(<span class="stringliteral">&quot;posX&quot;</span>).toInt();
+<a name="l00303"></a>00303          <span class="keywordtype">int</span> posY = fieldElement.attribute(<span class="stringliteral">&quot;posY&quot;</span>).toInt();
+<a name="l00304"></a>00304          <span class="keywordtype">int</span> <a class="code" href="classParser.html#a52e6fad38b265e732b7667aab6648472">gridWidth</a> = fieldElement.attribute(<span class="stringliteral">&quot;gridWidth&quot;</span>).toInt();
+<a name="l00305"></a>00305 
+<a name="l00306"></a>00306          widget-&gt;setProperty(<span class="stringliteral">&quot;fieldId&quot;</span>, currentElement.attribute(<span class="stringliteral">&quot;fieldId&quot;</span>).toInt());
+<a name="l00307"></a>00307 
+<a name="l00308"></a>00308          <a class="code" href="classParser.html#a80b5245c70a7f73fcdba2c61096cc21f">addWidgets</a>(widget, <span class="keyword">true</span>, posY, posX, gridWidth, pageSize);
+<a name="l00309"></a>00309          <span class="keywordflow">continue</span>;
+<a name="l00310"></a>00310       }
 <a name="l00311"></a>00311 
-<a name="l00312"></a>00312          widget-&gt;setProperty(<span class="stringliteral">&quot;fieldId&quot;</span>, currentElement.attribute(<span class="stringliteral">&quot;fieldId&quot;</span>).toInt());
-<a name="l00313"></a>00313 
-<a name="l00314"></a>00314          <a class="code" href="classParser.html#a80b5245c70a7f73fcdba2c61096cc21f">addWidgets</a>(widget, <span class="keyword">true</span>, posY, posX, gridWidth, pageSize);
-<a name="l00315"></a>00315          <span class="keywordflow">continue</span>;
-<a name="l00316"></a>00316       }
+<a name="l00312"></a>00312       <span class="keywordflow">if</span>(nodeName == <span class="stringliteral">&quot;HLine&quot;</span>){
+<a name="l00313"></a>00313          <span class="keywordtype">int</span> posX = currentElement.attribute(<span class="stringliteral">&quot;posX&quot;</span>).toInt();
+<a name="l00314"></a>00314          <span class="keywordtype">int</span> posY = currentElement.attribute(<span class="stringliteral">&quot;posY&quot;</span>).toInt();
+<a name="l00315"></a>00315          <span class="keywordtype">int</span> <a class="code" href="classParser.html#a52e6fad38b265e732b7667aab6648472">gridWidth</a> = currentElement.attribute(<span class="stringliteral">&quot;gridWidth&quot;</span>).toInt();
+<a name="l00316"></a>00316          <span class="keywordtype">bool</span> hidden = currentElement.attribute(<span class="stringliteral">&quot;hidden&quot;</span>).toInt();
 <a name="l00317"></a>00317 
-<a name="l00318"></a>00318       <span class="keywordflow">if</span>(nodeName == <span class="stringliteral">&quot;HLine&quot;</span>){
-<a name="l00319"></a>00319          <span class="keywordtype">int</span> posX = currentElement.attribute(<span class="stringliteral">&quot;posX&quot;</span>).toInt();
-<a name="l00320"></a>00320          <span class="keywordtype">int</span> posY = currentElement.attribute(<span class="stringliteral">&quot;posY&quot;</span>).toInt();
-<a name="l00321"></a>00321          <span class="keywordtype">int</span> gridWidth = currentElement.attribute(<span class="stringliteral">&quot;gridWidth&quot;</span>).toInt();
-<a name="l00322"></a>00322          <span class="keywordtype">bool</span> hidden = currentElement.attribute(<span class="stringliteral">&quot;hidden&quot;</span>).toInt();
-<a name="l00323"></a>00323 
-<a name="l00324"></a>00324 
-<a name="l00325"></a>00325          QLabel *label = <span class="keyword">new</span> QLabel;
+<a name="l00318"></a>00318 
+<a name="l00319"></a>00319          QLabel *label = <span class="keyword">new</span> QLabel;
+<a name="l00320"></a>00320 
+<a name="l00321"></a>00321          label-&gt;setFrameShape(QFrame::HLine);
+<a name="l00322"></a>00322          label-&gt;setFrameShadow(QFrame::Sunken);
+<a name="l00323"></a>00323          QFontMetrics fm(label-&gt;font());
+<a name="l00324"></a>00324          <span class="comment">//label-&gt;setFixedWidth((gridWidth*fm.width(&quot;W&quot;)));</span>
+<a name="l00325"></a>00325          label-&gt;setAccessibleName(nodeName);
 <a name="l00326"></a>00326 
-<a name="l00327"></a>00327          label-&gt;setFrameShape(QFrame::HLine);
-<a name="l00328"></a>00328          label-&gt;setFrameShadow(QFrame::Sunken);
-<a name="l00329"></a>00329          QFontMetrics fm(label-&gt;font());
-<a name="l00330"></a>00330          <span class="comment">//label-&gt;setFixedWidth((gridWidth*fm.width(&quot;W&quot;)));</span>
-<a name="l00331"></a>00331          label-&gt;setAccessibleName(nodeName);
+<a name="l00327"></a>00327          <span class="keywordflow">if</span>(hidden)
+<a name="l00328"></a>00328             label-&gt;setHidden(hidden);
+<a name="l00329"></a>00329 
+<a name="l00330"></a>00330          <a class="code" href="classParser.html#a80b5245c70a7f73fcdba2c61096cc21f">addWidgets</a>(label, <span class="keyword">false</span>, posY, posX, gridWidth);
+<a name="l00331"></a>00331       }
 <a name="l00332"></a>00332 
-<a name="l00333"></a>00333          <span class="keywordflow">if</span>(hidden)
-<a name="l00334"></a>00334             label-&gt;setHidden(hidden);
-<a name="l00335"></a>00335 
-<a name="l00336"></a>00336          <a class="code" href="classParser.html#a80b5245c70a7f73fcdba2c61096cc21f">addWidgets</a>(label, <span class="keyword">false</span>, posY, posX, gridWidth);
-<a name="l00337"></a>00337       }
+<a name="l00333"></a>00333       <span class="keywordflow">if</span>(nodeName == <span class="stringliteral">&quot;Label&quot;</span> || nodeName == <span class="stringliteral">&quot;RipLABEL&quot;</span>){
+<a name="l00334"></a>00334          QString text = currentElement.attribute(<span class="stringliteral">&quot;text&quot;</span>);
+<a name="l00335"></a>00335          <span class="keywordtype">int</span> posX = currentElement.attribute(<span class="stringliteral">&quot;posX&quot;</span>).toInt();
+<a name="l00336"></a>00336          <span class="keywordtype">int</span> posY = currentElement.attribute(<span class="stringliteral">&quot;posY&quot;</span>).toInt();
+<a name="l00337"></a>00337          <span class="keywordtype">int</span> <a class="code" href="classParser.html#a52e6fad38b265e732b7667aab6648472">gridWidth</a> = currentElement.attribute(<span class="stringliteral">&quot;gridWidth&quot;</span>).toInt();
 <a name="l00338"></a>00338 
-<a name="l00339"></a>00339       <span class="keywordflow">if</span>(nodeName == <span class="stringliteral">&quot;Label&quot;</span> || nodeName == <span class="stringliteral">&quot;RipLABEL&quot;</span>){
-<a name="l00340"></a>00340          QString text = currentElement.attribute(<span class="stringliteral">&quot;text&quot;</span>);
-<a name="l00341"></a>00341          <span class="keywordtype">int</span> posX = currentElement.attribute(<span class="stringliteral">&quot;posX&quot;</span>).toInt();
-<a name="l00342"></a>00342          <span class="keywordtype">int</span> posY = currentElement.attribute(<span class="stringliteral">&quot;posY&quot;</span>).toInt();
-<a name="l00343"></a>00343          <span class="keywordtype">int</span> gridWidth = currentElement.attribute(<span class="stringliteral">&quot;gridWidth&quot;</span>).toInt();
-<a name="l00344"></a>00344 
-<a name="l00345"></a>00345          <span class="keywordflow">if</span>(text == <span class="stringliteral">&quot;:&quot;</span>)
-<a name="l00346"></a>00346             <span class="keywordflow">continue</span>;
-<a name="l00347"></a>00347 
-<a name="l00348"></a>00348          QLabel *label = <span class="keyword">new</span> QLabel(text);
-<a name="l00349"></a>00349 
-<a name="l00350"></a>00350          <span class="comment">//label-&gt;setAccessibleName(text);</span>
-<a name="l00351"></a>00351 
-<a name="l00352"></a>00352          <a class="code" href="classParser.html#a80b5245c70a7f73fcdba2c61096cc21f">addWidgets</a>(label, <span class="keyword">false</span>, posY, posX, gridWidth);
-<a name="l00353"></a>00353       }
-<a name="l00354"></a>00354 
-<a name="l00355"></a>00355       <span class="keywordflow">if</span>(nodeName == <span class="stringliteral">&quot;Table&quot;</span>){
-<a name="l00356"></a>00356          <a class="code" href="classParser.html#a806540a8e1fab811586a5f5df0aead21">handleTableColumn</a>(currentElement);
-<a name="l00357"></a>00357       }
+<a name="l00339"></a>00339          <span class="keywordflow">if</span>(text == <span class="stringliteral">&quot;:&quot;</span>)
+<a name="l00340"></a>00340             <span class="keywordflow">continue</span>;
+<a name="l00341"></a>00341 
+<a name="l00342"></a>00342          QLabel *label = <span class="keyword">new</span> QLabel(text);
+<a name="l00343"></a>00343 
+<a name="l00344"></a>00344          <span class="comment">//label-&gt;setAccessibleName(text);</span>
+<a name="l00345"></a>00345 
+<a name="l00346"></a>00346          <a class="code" href="classParser.html#a80b5245c70a7f73fcdba2c61096cc21f">addWidgets</a>(label, <span class="keyword">false</span>, posY, posX, gridWidth);
+<a name="l00347"></a>00347       }
+<a name="l00348"></a>00348 
+<a name="l00349"></a>00349       <span class="keywordflow">if</span>(nodeName == <span class="stringliteral">&quot;Table&quot;</span>){
+<a name="l00350"></a>00350          <a class="code" href="classParser.html#a806540a8e1fab811586a5f5df0aead21">handleTableColumn</a>(currentElement);
+<a name="l00351"></a>00351       }
+<a name="l00352"></a>00352 
+<a name="l00353"></a>00353       <span class="comment">/*</span>
+<a name="l00354"></a>00354 <span class="comment">      if(nodeName == &quot;Matrix&quot;){</span>
+<a name="l00355"></a>00355 <span class="comment">         handleMatrixColumn(currentElement);</span>
+<a name="l00356"></a>00356 <span class="comment">      }</span>
+<a name="l00357"></a>00357 <span class="comment">      */</span>
 <a name="l00358"></a>00358 
-<a name="l00359"></a>00359       <span class="comment">/*</span>
-<a name="l00360"></a>00360 <span class="comment">      if(nodeName == &quot;Matrix&quot;){</span>
-<a name="l00361"></a>00361 <span class="comment">         handleMatrixColumn(currentElement);</span>
-<a name="l00362"></a>00362 <span class="comment">      }</span>
-<a name="l00363"></a>00363 <span class="comment">      */</span>
-<a name="l00364"></a>00364 
-<a name="l00365"></a>00365       <span class="keywordflow">if</span>(nodeName == <span class="stringliteral">&quot;RecordView&quot;</span>){
-<a name="l00366"></a>00366          <a class="code" href="classParser.html#afd7f37611e56b353507ebbf79ae0edb5">handleRecordView</a>(currentElement);
-<a name="l00367"></a>00367       }
-<a name="l00368"></a>00368 
+<a name="l00359"></a>00359       <span class="keywordflow">if</span>(nodeName == <span class="stringliteral">&quot;RecordView&quot;</span>){
+<a name="l00360"></a>00360          <a class="code" href="classParser.html#afd7f37611e56b353507ebbf79ae0edb5">handleRecordView</a>(currentElement);
+<a name="l00361"></a>00361       }
+<a name="l00362"></a>00362 
+<a name="l00363"></a>00363 
+<a name="l00364"></a>00364       <a class="code" href="classParser.html#ae02f5da1e3974e81746c91dae0e265a2">parseElement</a>(currentElement);
+<a name="l00365"></a>00365 
+<a name="l00366"></a>00366       <span class="keywordflow">if</span>(hidden){
+<a name="l00367"></a>00367          this-&gt;hidden = <span class="keyword">false</span>;
+<a name="l00368"></a>00368       }
 <a name="l00369"></a>00369 
-<a name="l00370"></a>00370       <a class="code" href="classParser.html#ae02f5da1e3974e81746c91dae0e265a2">parseElement</a>(currentElement);
-<a name="l00371"></a>00371 
-<a name="l00372"></a>00372       <span class="keywordflow">if</span>(hidden){
-<a name="l00373"></a>00373          this-&gt;hidden = <span class="keyword">false</span>;
-<a name="l00374"></a>00374       }
-<a name="l00375"></a>00375 
-<a name="l00376"></a>00376       <span class="keywordflow">if</span>(layoutChanged){
-<a name="l00377"></a>00377          <span class="keywordflow">if</span>(QLayout *<a class="code" href="classParser.html#a10b118e730f600194f26db151575c6fa">layout</a> = qobject_cast&lt;QLayout *&gt; (<a class="code" href="classParser.html#a3b94abe3e2c41c419f5be2a2e3fd63a4">currentLayout</a>-&gt;parent())){
-<a name="l00378"></a>00378             <a class="code" href="classParser.html#a3b94abe3e2c41c419f5be2a2e3fd63a4">currentLayout</a> = <a class="code" href="classParser.html#a10b118e730f600194f26db151575c6fa">layout</a>;
-<a name="l00379"></a>00379             layoutChanged = <span class="keyword">false</span>;
-<a name="l00380"></a>00380          }
-<a name="l00381"></a>00381       }
-<a name="l00382"></a>00382 
-<a name="l00383"></a>00383       <span class="keywordflow">if</span>(b_folder){
-<a name="l00384"></a>00384          <span class="keywordflow">if</span>(QTabWidget *tabWidget = qobject_cast&lt;QTabWidget *&gt; (<a class="code" href="classParser.html#a05d665391ab1db7f4729654df9fa4079">currentWidget</a>-&gt;parent()-&gt;parent())){
-<a name="l00385"></a>00385             <a class="code" href="classParser.html#a05d665391ab1db7f4729654df9fa4079">currentWidget</a> = tabWidget;
-<a name="l00386"></a>00386             b_folder = <span class="keyword">false</span>;
-<a name="l00387"></a>00387          }
-<a name="l00388"></a>00388          
-<a name="l00389"></a>00389       }
+<a name="l00370"></a>00370       <span class="keywordflow">if</span>(layoutChanged){
+<a name="l00371"></a>00371          <span class="keywordflow">if</span>(QLayout *<a class="code" href="classParser.html#a10b118e730f600194f26db151575c6fa">layout</a> = qobject_cast&lt;QLayout *&gt; (<a class="code" href="classParser.html#a3b94abe3e2c41c419f5be2a2e3fd63a4">currentLayout</a>-&gt;parent())){
+<a name="l00372"></a>00372             <a class="code" href="classParser.html#a3b94abe3e2c41c419f5be2a2e3fd63a4">currentLayout</a> = <a class="code" href="classParser.html#a10b118e730f600194f26db151575c6fa">layout</a>;
+<a name="l00373"></a>00373             layoutChanged = <span class="keyword">false</span>;
+<a name="l00374"></a>00374          }
+<a name="l00375"></a>00375       }
+<a name="l00376"></a>00376 
+<a name="l00377"></a>00377       <span class="keywordflow">if</span>(b_folder){
+<a name="l00378"></a>00378          <span class="keywordflow">if</span>(QTabWidget *tabWidget = qobject_cast&lt;QTabWidget *&gt; (<a class="code" href="classParser.html#a05d665391ab1db7f4729654df9fa4079">currentWidget</a>-&gt;parent()-&gt;parent())){
+<a name="l00379"></a>00379             <a class="code" href="classParser.html#a05d665391ab1db7f4729654df9fa4079">currentWidget</a> = tabWidget;
+<a name="l00380"></a>00380             b_folder = <span class="keyword">false</span>;
+<a name="l00381"></a>00381          }
+<a name="l00382"></a>00382          
+<a name="l00383"></a>00383       }
+<a name="l00384"></a>00384 
+<a name="l00385"></a>00385    }
+<a name="l00386"></a>00386 
+<a name="l00387"></a>00387 }
+<a name="l00388"></a>00388 
+<a name="l00389"></a><a class="code" href="classParser.html#a806540a8e1fab811586a5f5df0aead21">00389</a> <span class="keywordtype">void</span> <a class="code" href="classParser.html#a806540a8e1fab811586a5f5df0aead21">Parser::handleTableColumn</a>(<span class="keyword">const</span> QDomNode&amp; xmlNode){
 <a name="l00390"></a>00390 
-<a name="l00391"></a>00391    }
-<a name="l00392"></a>00392 
-<a name="l00393"></a>00393 }
-<a name="l00394"></a>00394 
-<a name="l00395"></a><a class="code" href="classParser.html#a806540a8e1fab811586a5f5df0aead21">00395</a> <span class="keywordtype">void</span> <a class="code" href="classParser.html#a806540a8e1fab811586a5f5df0aead21">Parser::handleTableColumn</a>(<span class="keyword">const</span> QDomNode&amp; xmlNode){
+<a name="l00391"></a>00391    QDomElement tableElement = xmlNode.toElement();
+<a name="l00392"></a>00392    
+<a name="l00393"></a>00393    <span class="keywordtype">int</span> pageSize = tableElement.attribute(<span class="stringliteral">&quot;pageSize&quot;</span>).toInt();
+<a name="l00394"></a>00394    QString name = tableElement.attribute(<span class="stringliteral">&quot;tabName&quot;</span>);
+<a name="l00395"></a>00395    <span class="keywordtype">int</span> colCount = tableElement.childNodes().count();
 <a name="l00396"></a>00396 
-<a name="l00397"></a>00397    QDomElement tableElement = xmlNode.toElement();
-<a name="l00398"></a>00398    
-<a name="l00399"></a>00399    <span class="keywordtype">int</span> pageSize = tableElement.attribute(<span class="stringliteral">&quot;pageSize&quot;</span>).toInt();
-<a name="l00400"></a>00400    QString name = tableElement.attribute(<span class="stringliteral">&quot;tabName&quot;</span>);
-<a name="l00401"></a>00401    <span class="keywordtype">int</span> colCount = tableElement.childNodes().count();
-<a name="l00402"></a>00402 
-<a name="l00403"></a>00403    <a class="code" href="classTableModel.html">TableModel</a> *model = <span class="keyword">new</span> <a class="code" href="classTableModel.html">TableModel</a>(pageSize, colCount);
-<a name="l00404"></a>00404 
-<a name="l00405"></a>00405    <a class="code" href="classTableView.html">TableView</a> *p_screenRecord = <span class="keyword">new</span> <a class="code" href="classTableView.html">TableView</a>(<a class="code" href="classParser.html#a8ae7aeec1e5360fa29b9976624cde0f1">p_fglform</a>);
-<a name="l00406"></a>00406 
-<a name="l00407"></a>00407    p_screenRecord-&gt;setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-<a name="l00408"></a>00408    p_screenRecord-&gt;setParent(this-&gt;<a class="code" href="classParser.html#a8ae7aeec1e5360fa29b9976624cde0f1">p_fglform</a>);
-<a name="l00409"></a>00409 
-<a name="l00410"></a>00410    p_screenRecord-&gt;<a class="code" href="classTableView.html#aa26e19998b21b401d0f7b4c703a7c91d">tabName</a> = name;
-<a name="l00411"></a>00411    p_screenRecord-&gt;setAccessibleName(name);
-<a name="l00412"></a>00412    p_screenRecord-&gt;setObjectName(name);
-<a name="l00413"></a>00413 
-<a name="l00414"></a>00414    p_screenRecord-&gt;setEditTriggers(QAbstractItemView::AllEditTriggers);
-<a name="l00415"></a>00415    QSortFilterProxyModel *proxy = <span class="keyword">new</span> <a class="code" href="classMyFilter.html">MyFilter</a>();
-<a name="l00416"></a>00416    proxy-&gt;setSourceModel(model);
-<a name="l00417"></a>00417 
-<a name="l00418"></a>00418    p_screenRecord-&gt;setModel(proxy);
-<a name="l00419"></a>00419    model-&gt;<a class="code" href="classTableModel.html#a2d38aa0dc5f8d82f159adbe2c6959449">setTableView</a>(p_screenRecord);
+<a name="l00397"></a>00397    <a class="code" href="classTableModel.html">TableModel</a> *model = <span class="keyword">new</span> <a class="code" href="classTableModel.html">TableModel</a>(pageSize, colCount);
+<a name="l00398"></a>00398 
+<a name="l00399"></a>00399    <a class="code" href="classTableView.html">TableView</a> *p_screenRecord = <span class="keyword">new</span> <a class="code" href="classTableView.html">TableView</a>(<a class="code" href="classParser.html#a8ae7aeec1e5360fa29b9976624cde0f1">p_fglform</a>);
+<a name="l00400"></a>00400 
+<a name="l00401"></a>00401    p_screenRecord-&gt;setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+<a name="l00402"></a>00402    p_screenRecord-&gt;setParent(this-&gt;<a class="code" href="classParser.html#a8ae7aeec1e5360fa29b9976624cde0f1">p_fglform</a>);
+<a name="l00403"></a>00403 
+<a name="l00404"></a>00404    p_screenRecord-&gt;<a class="code" href="classTableView.html#aa26e19998b21b401d0f7b4c703a7c91d">tabName</a> = name;
+<a name="l00405"></a>00405    p_screenRecord-&gt;setAccessibleName(name);
+<a name="l00406"></a>00406    p_screenRecord-&gt;setObjectName(name);
+<a name="l00407"></a>00407 
+<a name="l00408"></a>00408    p_screenRecord-&gt;setEditTriggers(QAbstractItemView::AllEditTriggers);
+<a name="l00409"></a>00409    QSortFilterProxyModel *proxy = <span class="keyword">new</span> <a class="code" href="classMyFilter.html">MyFilter</a>();
+<a name="l00410"></a>00410    proxy-&gt;setSourceModel(model);
+<a name="l00411"></a>00411 
+<a name="l00412"></a>00412    p_screenRecord-&gt;setModel(proxy);
+<a name="l00413"></a>00413    model-&gt;<a class="code" href="classTableModel.html#a2d38aa0dc5f8d82f159adbe2c6959449">setTableView</a>(p_screenRecord);
+<a name="l00414"></a>00414 
+<a name="l00415"></a>00415    connect(p_screenRecord-&gt;selectionModel(), SIGNAL(currentChanged(QModelIndex,QModelIndex)), p_screenRecord, SLOT(fieldChanged(QModelIndex, QModelIndex))); 
+<a name="l00416"></a>00416 
+<a name="l00417"></a>00417    QHeaderView *header = p_screenRecord-&gt;horizontalHeader(); 
+<a name="l00418"></a>00418 
+<a name="l00419"></a>00419    <span class="keywordtype">int</span> recordHeight = header-&gt;height()+4;
 <a name="l00420"></a>00420 
-<a name="l00421"></a>00421    connect(p_screenRecord-&gt;selectionModel(), SIGNAL(currentChanged(QModelIndex,QModelIndex)), p_screenRecord, SLOT(fieldChanged(QModelIndex, QModelIndex))); 
+<a name="l00421"></a>00421    <span class="keywordtype">int</span> recordWidth = 0;
 <a name="l00422"></a>00422 
-<a name="l00423"></a>00423    QHeaderView *header = p_screenRecord-&gt;horizontalHeader(); 
+<a name="l00423"></a>00423    <span class="keywordtype">int</span> height = p_screenRecord-&gt;verticalHeader()-&gt;defaultSectionSize();
 <a name="l00424"></a>00424 
-<a name="l00425"></a>00425    <span class="keywordtype">int</span> recordHeight = header-&gt;height()+4;
-<a name="l00426"></a>00426 
-<a name="l00427"></a>00427    <span class="keywordtype">int</span> recordWidth = 0;
+<a name="l00425"></a>00425    <span class="keywordflow">for</span>(<span class="keywordtype">int</span> i=0; i&lt;pageSize; i++){
+<a name="l00426"></a>00426        recordHeight += height;
+<a name="l00427"></a>00427    }
 <a name="l00428"></a>00428 
-<a name="l00429"></a>00429    <span class="keywordtype">int</span> height = p_screenRecord-&gt;verticalHeader()-&gt;defaultSectionSize();
-<a name="l00430"></a>00430 
-<a name="l00431"></a>00431    <span class="keywordflow">for</span>(<span class="keywordtype">int</span> i=0; i&lt;pageSize; i++){
-<a name="l00432"></a>00432        recordHeight += height;
-<a name="l00433"></a>00433    }
-<a name="l00434"></a>00434 
-<a name="l00435"></a>00435 
-<a name="l00436"></a>00436    QDomNodeList children = xmlNode.childNodes();
-<a name="l00437"></a>00437    <span class="keywordflow">for</span>(<span class="keywordtype">int</span> i=0; i&lt;children.count(); ++i){
-<a name="l00438"></a>00438 
-<a name="l00439"></a>00439       QDomNode child = children.at(i);
-<a name="l00440"></a>00440       <span class="keywordflow">if</span>(!child.isElement()){
-<a name="l00441"></a>00441          <span class="keywordflow">continue</span>;
-<a name="l00442"></a>00442       }
-<a name="l00443"></a>00443 
-<a name="l00444"></a>00444       QDomElement currentElement = child.toElement();
-<a name="l00445"></a>00445 
-<a name="l00446"></a>00446       QString colText = currentElement.attribute(<span class="stringliteral">&quot;text&quot;</span>);
-<a name="l00447"></a>00447       QString colName = currentElement.attribute(<span class="stringliteral">&quot;colName&quot;</span>);
-<a name="l00448"></a>00448       QString name = currentElement.attribute(<span class="stringliteral">&quot;name&quot;</span>);
-<a name="l00449"></a>00449       <span class="keywordtype">int</span> <a class="code" href="classParser.html#a24d2c0cb2595e44b9a7f73d801685e70">hidden</a> = currentElement.attribute(<span class="stringliteral">&quot;hidden&quot;</span>).toInt();
-<a name="l00450"></a>00450       <span class="keywordtype">int</span> fieldId = currentElement.attribute(<span class="stringliteral">&quot;fieldId&quot;</span>).toInt();
-<a name="l00451"></a>00451       p_screenRecord-&gt;<a class="code" href="classTableView.html#ac8f1f15e7ec4e97a15560d1c00ce7b02">setColumnName</a>(i,colName);
-<a name="l00452"></a>00452  
-<a name="l00453"></a>00453       QString nodeName = currentElement.nodeName();
-<a name="l00454"></a>00454  
-<a name="l00455"></a>00455       <span class="keywordtype">int</span> formW = currentElement.firstChild().toElement().attribute(<span class="stringliteral">&quot;width&quot;</span>).toInt();
-<a name="l00456"></a>00456       QWidget *wi = <a class="code" href="classWidgetHelper.html#ae52d8d07fe63d8cc60ffd216aadafc52">WidgetHelper::createFormWidget</a>(currentElement);
-<a name="l00457"></a>00457       <a class="code" href="classTableColumn.html">TableColumn</a> *tableColumn = (<a class="code" href="classTableColumn.html">TableColumn</a>*) <a class="code" href="classWidgetHelper.html#a5944782c8e36ae4d657129e519373d49">WidgetHelper::createFormField</a>(currentElement);
-<a name="l00458"></a>00458       <a class="code" href="classParser.html#a2cc0ce2919a5f45d55cab55a9e3c8b28">ql_fglFields</a> &lt;&lt; tableColumn;
-<a name="l00459"></a>00459       tableColumn-&gt;<a class="code" href="classFormField.html#a9e7ab4c532d7445e3bb17ce91b4edd2f">addField</a>(wi);
-<a name="l00460"></a>00460       <span class="keywordtype">int</span> w = wi-&gt;width();
-<a name="l00461"></a>00461       <span class="keywordtype">int</span> h = wi-&gt;height();
-<a name="l00462"></a>00462       <span class="keyword">delete</span> wi;
+<a name="l00429"></a>00429 
+<a name="l00430"></a>00430    QDomNodeList children = xmlNode.childNodes();
+<a name="l00431"></a>00431    <span class="keywordflow">for</span>(<span class="keywordtype">int</span> i=0; i&lt;children.count(); ++i){
+<a name="l00432"></a>00432 
+<a name="l00433"></a>00433       QDomNode child = children.at(i);
+<a name="l00434"></a>00434       <span class="keywordflow">if</span>(!child.isElement()){
+<a name="l00435"></a>00435          <span class="keywordflow">continue</span>;
+<a name="l00436"></a>00436       }
+<a name="l00437"></a>00437 
+<a name="l00438"></a>00438       QDomElement currentElement = child.toElement();
+<a name="l00439"></a>00439 
+<a name="l00440"></a>00440       QString colText = currentElement.attribute(<span class="stringliteral">&quot;text&quot;</span>);
+<a name="l00441"></a>00441       QString colName = currentElement.attribute(<span class="stringliteral">&quot;colName&quot;</span>);
+<a name="l00442"></a>00442       QString name = currentElement.attribute(<span class="stringliteral">&quot;name&quot;</span>);
+<a name="l00443"></a>00443       <span class="keywordtype">int</span> <a class="code" href="classParser.html#a24d2c0cb2595e44b9a7f73d801685e70">hidden</a> = currentElement.attribute(<span class="stringliteral">&quot;hidden&quot;</span>).toInt();
+<a name="l00444"></a>00444       <span class="keywordtype">int</span> fieldId = currentElement.attribute(<span class="stringliteral">&quot;fieldId&quot;</span>).toInt();
+<a name="l00445"></a>00445       p_screenRecord-&gt;<a class="code" href="classTableView.html#ac8f1f15e7ec4e97a15560d1c00ce7b02">setColumnName</a>(i,colName);
+<a name="l00446"></a>00446  
+<a name="l00447"></a>00447       QString nodeName = currentElement.nodeName();
+<a name="l00448"></a>00448  
+<a name="l00449"></a>00449       <span class="keywordtype">int</span> formW = currentElement.firstChild().toElement().attribute(<span class="stringliteral">&quot;width&quot;</span>).toInt();
+<a name="l00450"></a>00450       QWidget *wi = <a class="code" href="classWidgetHelper.html#ae52d8d07fe63d8cc60ffd216aadafc52">WidgetHelper::createFormWidget</a>(currentElement);
+<a name="l00451"></a>00451       <a class="code" href="classTableColumn.html">TableColumn</a> *tableColumn = (<a class="code" href="classTableColumn.html">TableColumn</a>*) <a class="code" href="classWidgetHelper.html#a5944782c8e36ae4d657129e519373d49">WidgetHelper::createFormField</a>(currentElement);
+<a name="l00452"></a>00452       <a class="code" href="classParser.html#a2cc0ce2919a5f45d55cab55a9e3c8b28">ql_fglFields</a> &lt;&lt; tableColumn;
+<a name="l00453"></a>00453       tableColumn-&gt;<a class="code" href="classFormField.html#a9e7ab4c532d7445e3bb17ce91b4edd2f">addField</a>(wi);
+<a name="l00454"></a>00454       <span class="keywordtype">int</span> w = wi-&gt;width();
+<a name="l00455"></a>00455       <span class="keywordtype">int</span> h = wi-&gt;height();
+<a name="l00456"></a>00456       <span class="keyword">delete</span> wi;
+<a name="l00457"></a>00457  
+<a name="l00458"></a>00458       <span class="comment">//int fieldCount = ql_formFields.count();</span>
+<a name="l00459"></a>00459  
+<a name="l00460"></a>00460       <span class="keywordtype">int</span> fieldAt = <a class="code" href="classParser.html#a457a6f19e0594ed8a745c8a00be32c4b">ql_formFields</a>.count() - children.count();
+<a name="l00461"></a>00461 
+<a name="l00462"></a>00462       <span class="keywordflow">for</span>(<span class="keywordtype">int</span> k=fieldAt; k&lt;= <a class="code" href="classParser.html#a457a6f19e0594ed8a745c8a00be32c4b">ql_formFields</a>.size(); k++){
 <a name="l00463"></a>00463  
-<a name="l00464"></a>00464       <span class="comment">//int fieldCount = ql_formFields.count();</span>
-<a name="l00465"></a>00465  
-<a name="l00466"></a>00466       <span class="keywordtype">int</span> fieldAt = <a class="code" href="classParser.html#a457a6f19e0594ed8a745c8a00be32c4b">ql_formFields</a>.count() - children.count();
-<a name="l00467"></a>00467 
-<a name="l00468"></a>00468       <span class="keywordflow">for</span>(<span class="keywordtype">int</span> k=fieldAt; k&lt;= <a class="code" href="classParser.html#a457a6f19e0594ed8a745c8a00be32c4b">ql_formFields</a>.size(); k++){
-<a name="l00469"></a>00469  
-<a name="l00470"></a>00470  
-<a name="l00471"></a>00471       <span class="keywordflow">if</span>(colText.isEmpty()){
-<a name="l00472"></a>00472          <span class="keywordflow">if</span>(k &gt;= 0 &amp;&amp; k &lt;= <a class="code" href="classParser.html#a457a6f19e0594ed8a745c8a00be32c4b">ql_formFields</a>.size()-1){
-<a name="l00473"></a>00473             <span class="keywordflow">if</span>(<a class="code" href="classLabel.html">Label</a> *wi = qobject_cast&lt;Label *&gt; (<a class="code" href="classParser.html#a457a6f19e0594ed8a745c8a00be32c4b">ql_formFields</a>.at(k))){
-<a name="l00474"></a>00474                <span class="keywordflow">if</span>(wi-&gt;w == formW &amp;&amp; p_screenRecord-&gt;<a class="code" href="classTableView.html#a22d025267d25ecfe7684c31edab75a2a">getColumnLabel</a>(i) == NULL){ 
-<a name="l00475"></a>00475                   p_screenRecord-&gt;<a class="code" href="classTableView.html#a5a86ed0c209382e0c31266952d3fafaf">setColumnLabel</a>(i, wi);
-<a name="l00476"></a>00476                   wi-&gt;setVisible(<span class="keyword">false</span>);
-<a name="l00477"></a>00477                }
-<a name="l00478"></a>00478             }
-<a name="l00479"></a>00479          }
+<a name="l00464"></a>00464  
+<a name="l00465"></a>00465       <span class="keywordflow">if</span>(colText.isEmpty()){
+<a name="l00466"></a>00466          <span class="keywordflow">if</span>(k &gt;= 0 &amp;&amp; k &lt;= <a class="code" href="classParser.html#a457a6f19e0594ed8a745c8a00be32c4b">ql_formFields</a>.size()-1){
+<a name="l00467"></a>00467             <span class="keywordflow">if</span>(<a class="code" href="classLabel.html">Label</a> *wi = qobject_cast&lt;Label *&gt; (<a class="code" href="classParser.html#a457a6f19e0594ed8a745c8a00be32c4b">ql_formFields</a>.at(k))){
+<a name="l00468"></a>00468                <span class="keywordflow">if</span>(wi-&gt;w == formW &amp;&amp; p_screenRecord-&gt;<a class="code" href="classTableView.html#a22d025267d25ecfe7684c31edab75a2a">getColumnLabel</a>(i) == NULL){ 
+<a name="l00469"></a>00469                   p_screenRecord-&gt;<a class="code" href="classTableView.html#a5a86ed0c209382e0c31266952d3fafaf">setColumnLabel</a>(i, wi);
+<a name="l00470"></a>00470                   wi-&gt;setVisible(<span class="keyword">false</span>);
+<a name="l00471"></a>00471                }
+<a name="l00472"></a>00472             }
+<a name="l00473"></a>00473          }
+<a name="l00474"></a>00474       }
+<a name="l00475"></a>00475       <span class="keywordflow">else</span>{
+<a name="l00476"></a>00476          <a class="code" href="classLabel.html">Label</a> *label = <span class="keyword">new</span> <a class="code" href="classLabel.html">Label</a>;
+<a name="l00477"></a>00477          label-&gt;setText(colText);
+<a name="l00478"></a>00478          p_screenRecord-&gt;<a class="code" href="classTableView.html#a5a86ed0c209382e0c31266952d3fafaf">setColumnLabel</a>(i, label);
+<a name="l00479"></a>00479       }
 <a name="l00480"></a>00480       }
-<a name="l00481"></a>00481       <span class="keywordflow">else</span>{
-<a name="l00482"></a>00482          <a class="code" href="classLabel.html">Label</a> *label = <span class="keyword">new</span> <a class="code" href="classLabel.html">Label</a>;
-<a name="l00483"></a>00483          label-&gt;setText(colText);
-<a name="l00484"></a>00484          p_screenRecord-&gt;<a class="code" href="classTableView.html#a5a86ed0c209382e0c31266952d3fafaf">setColumnLabel</a>(i, label);
-<a name="l00485"></a>00485       }
-<a name="l00486"></a>00486       }
-<a name="l00487"></a>00487  
-<a name="l00488"></a>00488  
-<a name="l00489"></a>00489       recordWidth += w + 8;
-<a name="l00490"></a>00490  
-<a name="l00491"></a>00491       <a class="code" href="classLineEditDelegate.html">LineEditDelegate</a> *de = <span class="keyword">new</span> <a class="code" href="classLineEditDelegate.html">LineEditDelegate</a>(currentElement, p_screenRecord);
-<a name="l00492"></a>00492       de-&gt;setObjectName(name);
-<a name="l00493"></a>00493       de-&gt;setProperty(<span class="stringliteral">&quot;fieldId&quot;</span>, fieldId);
-<a name="l00494"></a>00494       de-&gt;<a class="code" href="classLineEditDelegate.html#a70f070297a44835836592b2dc7e9b38a">setForm</a>(<a class="code" href="classParser.html#a8ae7aeec1e5360fa29b9976624cde0f1">p_fglform</a>);
-<a name="l00495"></a>00495       de-&gt;<a class="code" href="classLineEditDelegate.html#a4aca4a31277cbb989436840eb7371c6e">setColumn</a>(i);
-<a name="l00496"></a>00496 
-<a name="l00497"></a>00497 
-<a name="l00498"></a>00498       p_screenRecord-&gt;setItemDelegateForColumn(i,de);
-<a name="l00499"></a>00499 
-<a name="l00500"></a>00500       <span class="keywordflow">if</span>(hidden)
-<a name="l00501"></a>00501          p_screenRecord-&gt;hideColumn(i);
-<a name="l00502"></a>00502       <span class="comment">// restore if the column is hidden/shown</span>
-<a name="l00503"></a>00503       <span class="keywordflow">if</span>(p_screenRecord-&gt;<a class="code" href="classTableView.html#a22d025267d25ecfe7684c31edab75a2a">getColumnLabel</a>(i) != NULL) {
-<a name="l00504"></a>00504 
-<a name="l00505"></a>00505           QSettings settings(p_screenRecord-&gt;<a class="code" href="classTableView.html#a22d025267d25ecfe7684c31edab75a2a">getColumnLabel</a>(i)-&gt;objectName(), p_screenRecord-&gt;accessibleName());
-<a name="l00506"></a>00506           <span class="keywordflow">if</span>(!settings.value(<span class="stringliteral">&quot;hideColumn&quot;</span>).isNull())
-<a name="l00507"></a>00507           {
-<a name="l00508"></a>00508               header-&gt;hideSection(settings.value(<span class="stringliteral">&quot;columnId&quot;</span>).toInt());
-<a name="l00509"></a>00509           }
-<a name="l00510"></a>00510           <span class="comment">// restore the width for each column.</span>
-<a name="l00511"></a>00511           <span class="keywordflow">if</span>( !settings.value(<span class="stringliteral">&quot;width&quot;</span>).isNull() &amp;&amp; !settings.value(<span class="stringliteral">&quot;columnId&quot;</span>).isNull())
-<a name="l00512"></a>00512           {
-<a name="l00513"></a>00513               header-&gt;resizeSection(i, w+1);
-<a name="l00514"></a>00514 
-<a name="l00515"></a>00515 <span class="comment">//              header-&gt;resizeSection(settings.value(&quot;columnId&quot;).toInt(), settings.value(&quot;width&quot;).toInt());</span>
-<a name="l00516"></a>00516           } <span class="keywordflow">else</span> {
-<a name="l00517"></a>00517               header-&gt;resizeSection(i, w+1);
-<a name="l00518"></a>00518           }
-<a name="l00519"></a>00519       } <span class="keywordflow">else</span> {
-<a name="l00520"></a>00520           header-&gt;resizeSection(i, w+1);
-<a name="l00521"></a>00521       }
-<a name="l00522"></a>00522 
-<a name="l00523"></a>00523    <span class="comment">//   header-&gt;resizeSections(QHeaderView::Fixed);</span>
-<a name="l00524"></a>00524       QHeaderView *vert = p_screenRecord-&gt;verticalHeader();
-<a name="l00525"></a>00525       vert-&gt;setDefaultSectionSize(h+1); 
-<a name="l00526"></a>00526       vert-&gt;resizeSections(QHeaderView::Fixed);
-<a name="l00527"></a>00527 
-<a name="l00528"></a>00528       <span class="keywordflow">for</span>(<span class="keywordtype">int</span> i=0; i&lt;vert-&gt;count(); i++){
-<a name="l00529"></a>00529          vert-&gt;resizeSection(i, h+1);
-<a name="l00530"></a>00530       }
+<a name="l00481"></a>00481  
+<a name="l00482"></a>00482  
+<a name="l00483"></a>00483       recordWidth += w + 8;
+<a name="l00484"></a>00484  
+<a name="l00485"></a>00485       <a class="code" href="classLineEditDelegate.html">LineEditDelegate</a> *de = <span class="keyword">new</span> <a class="code" href="classLineEditDelegate.html">LineEditDelegate</a>(currentElement, p_screenRecord);
+<a name="l00486"></a>00486       de-&gt;setObjectName(name);
+<a name="l00487"></a>00487       de-&gt;setProperty(<span class="stringliteral">&quot;fieldId&quot;</span>, fieldId);
+<a name="l00488"></a>00488       de-&gt;<a class="code" href="classLineEditDelegate.html#a70f070297a44835836592b2dc7e9b38a">setForm</a>(<a class="code" href="classParser.html#a8ae7aeec1e5360fa29b9976624cde0f1">p_fglform</a>);
+<a name="l00489"></a>00489       de-&gt;<a class="code" href="classLineEditDelegate.html#a4aca4a31277cbb989436840eb7371c6e">setColumn</a>(i);
+<a name="l00490"></a>00490 
+<a name="l00491"></a>00491 
+<a name="l00492"></a>00492       p_screenRecord-&gt;setItemDelegateForColumn(i,de);
+<a name="l00493"></a>00493 
+<a name="l00494"></a>00494       <span class="keywordflow">if</span>(hidden)
+<a name="l00495"></a>00495          p_screenRecord-&gt;hideColumn(i);
+<a name="l00496"></a>00496       <span class="comment">// restore if the column is hidden/shown</span>
+<a name="l00497"></a>00497       <span class="keywordflow">if</span>(p_screenRecord-&gt;<a class="code" href="classTableView.html#a22d025267d25ecfe7684c31edab75a2a">getColumnLabel</a>(i) != NULL) {
+<a name="l00498"></a>00498 
+<a name="l00499"></a>00499           QSettings settings(p_screenRecord-&gt;<a class="code" href="classTableView.html#a22d025267d25ecfe7684c31edab75a2a">getColumnLabel</a>(i)-&gt;objectName(), p_screenRecord-&gt;accessibleName());
+<a name="l00500"></a>00500           <span class="keywordflow">if</span>(!settings.value(<span class="stringliteral">&quot;hideColumn&quot;</span>).isNull())
+<a name="l00501"></a>00501           {
+<a name="l00502"></a>00502               header-&gt;hideSection(settings.value(<span class="stringliteral">&quot;columnId&quot;</span>).toInt());
+<a name="l00503"></a>00503           }
+<a name="l00504"></a>00504           <span class="comment">// restore the width for each column.</span>
+<a name="l00505"></a>00505           <span class="keywordflow">if</span>( !settings.value(<span class="stringliteral">&quot;width&quot;</span>).isNull() &amp;&amp; !settings.value(<span class="stringliteral">&quot;columnId&quot;</span>).isNull())
+<a name="l00506"></a>00506           {
+<a name="l00507"></a>00507               header-&gt;resizeSection(i, w+1);
+<a name="l00508"></a>00508 
+<a name="l00509"></a>00509 <span class="comment">//              header-&gt;resizeSection(settings.value(&quot;columnId&quot;).toInt(), settings.value(&quot;width&quot;).toInt());</span>
+<a name="l00510"></a>00510           } <span class="keywordflow">else</span> {
+<a name="l00511"></a>00511               header-&gt;resizeSection(i, w+1);
+<a name="l00512"></a>00512           }
+<a name="l00513"></a>00513       } <span class="keywordflow">else</span> {
+<a name="l00514"></a>00514           header-&gt;resizeSection(i, w+1);
+<a name="l00515"></a>00515       }
+<a name="l00516"></a>00516 
+<a name="l00517"></a>00517    <span class="comment">//   header-&gt;resizeSections(QHeaderView::Fixed);</span>
+<a name="l00518"></a>00518       QHeaderView *vert = p_screenRecord-&gt;verticalHeader();
+<a name="l00519"></a>00519       vert-&gt;setDefaultSectionSize(h+1); 
+<a name="l00520"></a>00520       vert-&gt;resizeSections(QHeaderView::Fixed);
+<a name="l00521"></a>00521 
+<a name="l00522"></a>00522       <span class="keywordflow">for</span>(<span class="keywordtype">int</span> i=0; i&lt;vert-&gt;count(); i++){
+<a name="l00523"></a>00523          vert-&gt;resizeSection(i, h+1);
+<a name="l00524"></a>00524       }
+<a name="l00525"></a>00525 
+<a name="l00526"></a>00526       <a class="code" href="classParser.html#a457a6f19e0594ed8a745c8a00be32c4b">ql_formFields</a> &lt;&lt; (QWidget*) de;
+<a name="l00527"></a>00527    }
+<a name="l00528"></a>00528  
+<a name="l00529"></a>00529    <span class="comment">//p_screenRecord-&gt;setFixedSize(recordWidth, recordHeight);</span>
+<a name="l00530"></a>00530    <span class="comment">//p_screenRecord-&gt;resize();</span>
 <a name="l00531"></a>00531 
-<a name="l00532"></a>00532       <a class="code" href="classParser.html#a457a6f19e0594ed8a745c8a00be32c4b">ql_formFields</a> &lt;&lt; (QWidget*) de;
-<a name="l00533"></a>00533    }
+<a name="l00532"></a>00532 
+<a name="l00533"></a>00533    <a class="code" href="classParser.html#a80b5245c70a7f73fcdba2c61096cc21f">addWidgets</a>(p_screenRecord);
 <a name="l00534"></a>00534  
-<a name="l00535"></a>00535    <span class="comment">//p_screenRecord-&gt;setFixedSize(recordWidth, recordHeight);</span>
-<a name="l00536"></a>00536    <span class="comment">//p_screenRecord-&gt;resize();</span>
-<a name="l00537"></a>00537 
+<a name="l00535"></a>00535 }
+<a name="l00536"></a>00536 
+<a name="l00537"></a><a class="code" href="classParser.html#a9f4c1bd5465f5abc6587ee66d2a085da">00537</a> <span class="keywordtype">void</span> <a class="code" href="classParser.html#a9f4c1bd5465f5abc6587ee66d2a085da">Parser::handleMatrixColumn</a>(<span class="keyword">const</span> QDomNode&amp; xmlNode){
 <a name="l00538"></a>00538 
-<a name="l00539"></a>00539    <a class="code" href="classParser.html#a80b5245c70a7f73fcdba2c61096cc21f">addWidgets</a>(p_screenRecord);
-<a name="l00540"></a>00540  
-<a name="l00541"></a>00541 }
-<a name="l00542"></a>00542 
-<a name="l00543"></a><a class="code" href="classParser.html#a9f4c1bd5465f5abc6587ee66d2a085da">00543</a> <span class="keywordtype">void</span> <a class="code" href="classParser.html#a9f4c1bd5465f5abc6587ee66d2a085da">Parser::handleMatrixColumn</a>(<span class="keyword">const</span> QDomNode&amp; xmlNode){
+<a name="l00539"></a>00539    QDomElement matrixElement = xmlNode.toElement();
+<a name="l00540"></a>00540    
+<a name="l00541"></a>00541    <span class="keywordtype">int</span> pageSize = matrixElement.attribute(<span class="stringliteral">&quot;pageSize&quot;</span>).toInt();
+<a name="l00542"></a>00542    QString name = matrixElement.attribute(<span class="stringliteral">&quot;name&quot;</span>);
+<a name="l00543"></a>00543    <span class="comment">//int colCount = matrixElement.childNodes().count();</span>
 <a name="l00544"></a>00544 
-<a name="l00545"></a>00545    QDomElement matrixElement = xmlNode.toElement();
-<a name="l00546"></a>00546    
-<a name="l00547"></a>00547    <span class="keywordtype">int</span> pageSize = matrixElement.attribute(<span class="stringliteral">&quot;pageSize&quot;</span>).toInt();
-<a name="l00548"></a>00548    QString name = matrixElement.attribute(<span class="stringliteral">&quot;name&quot;</span>);
-<a name="l00549"></a>00549    <span class="comment">//int colCount = matrixElement.childNodes().count();</span>
-<a name="l00550"></a>00550 
-<a name="l00551"></a>00551    <a class="code" href="classTableModel.html">TableModel</a> *model = <span class="keyword">new</span> <a class="code" href="classTableModel.html">TableModel</a>(pageSize, 1);
-<a name="l00552"></a>00552 
-<a name="l00553"></a>00553    <a class="code" href="classTableView.html">TableView</a> *p_screenRecord = <span class="keyword">new</span> <a class="code" href="classTableView.html">TableView</a>(<a class="code" href="classParser.html#a8ae7aeec1e5360fa29b9976624cde0f1">p_fglform</a>);
-<a name="l00554"></a>00554    p_screenRecord-&gt;<a class="code" href="classTableView.html#aa26e19998b21b401d0f7b4c703a7c91d">tabName</a> = name;
-<a name="l00555"></a>00555    p_screenRecord-&gt;setAccessibleName(name);
-<a name="l00556"></a>00556    p_screenRecord-&gt;setObjectName(name);
+<a name="l00545"></a>00545    <a class="code" href="classTableModel.html">TableModel</a> *model = <span class="keyword">new</span> <a class="code" href="classTableModel.html">TableModel</a>(pageSize, 1);
+<a name="l00546"></a>00546 
+<a name="l00547"></a>00547    <a class="code" href="classTableView.html">TableView</a> *p_screenRecord = <span class="keyword">new</span> <a class="code" href="classTableView.html">TableView</a>(<a class="code" href="classParser.html#a8ae7aeec1e5360fa29b9976624cde0f1">p_fglform</a>);
+<a name="l00548"></a>00548    p_screenRecord-&gt;<a class="code" href="classTableView.html#aa26e19998b21b401d0f7b4c703a7c91d">tabName</a> = name;
+<a name="l00549"></a>00549    p_screenRecord-&gt;setAccessibleName(name);
+<a name="l00550"></a>00550    p_screenRecord-&gt;setObjectName(name);
+<a name="l00551"></a>00551 
+<a name="l00552"></a>00552    p_screenRecord-&gt;setEditTriggers(QAbstractItemView::AllEditTriggers);
+<a name="l00553"></a>00553    QSortFilterProxyModel *proxy = <span class="keyword">new</span> <a class="code" href="classMyFilter.html">MyFilter</a>();
+<a name="l00554"></a>00554    proxy-&gt;setSourceModel(model);
+<a name="l00555"></a>00555 
+<a name="l00556"></a>00556    p_screenRecord-&gt;setModel(proxy);
 <a name="l00557"></a>00557 
-<a name="l00558"></a>00558    p_screenRecord-&gt;setEditTriggers(QAbstractItemView::AllEditTriggers);
-<a name="l00559"></a>00559    QSortFilterProxyModel *proxy = <span class="keyword">new</span> <a class="code" href="classMyFilter.html">MyFilter</a>();
-<a name="l00560"></a>00560    proxy-&gt;setSourceModel(model);
-<a name="l00561"></a>00561 
-<a name="l00562"></a>00562    p_screenRecord-&gt;setModel(proxy);
+<a name="l00558"></a>00558    connect(p_screenRecord-&gt;selectionModel(), SIGNAL(currentChanged(QModelIndex,QModelIndex)), p_screenRecord, SLOT(fieldChanged(QModelIndex, QModelIndex))); 
+<a name="l00559"></a>00559 
+<a name="l00560"></a>00560    p_screenRecord-&gt;setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+<a name="l00561"></a>00561    p_screenRecord-&gt;setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+<a name="l00562"></a>00562 
 <a name="l00563"></a>00563 
-<a name="l00564"></a>00564    connect(p_screenRecord-&gt;selectionModel(), SIGNAL(currentChanged(QModelIndex,QModelIndex)), p_screenRecord, SLOT(fieldChanged(QModelIndex, QModelIndex))); 
-<a name="l00565"></a>00565 
-<a name="l00566"></a>00566    p_screenRecord-&gt;setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-<a name="l00567"></a>00567    p_screenRecord-&gt;setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-<a name="l00568"></a>00568 
-<a name="l00569"></a>00569 
-<a name="l00570"></a>00570    QHeaderView *header = p_screenRecord-&gt;horizontalHeader(); 
-<a name="l00571"></a>00571    header-&gt;setStretchLastSection(<span class="keyword">true</span>);
-<a name="l00572"></a>00572    header-&gt;setVisible(<span class="keyword">false</span>);
+<a name="l00564"></a>00564    QHeaderView *header = p_screenRecord-&gt;horizontalHeader(); 
+<a name="l00565"></a>00565    header-&gt;setStretchLastSection(<span class="keyword">true</span>);
+<a name="l00566"></a>00566    header-&gt;setVisible(<span class="keyword">false</span>);
+<a name="l00567"></a>00567 
+<a name="l00568"></a>00568    QHeaderView *vert = p_screenRecord-&gt;verticalHeader();
+<a name="l00569"></a>00569    vert-&gt;setVisible(<span class="keyword">false</span>);
+<a name="l00570"></a>00570 
+<a name="l00571"></a>00571    <span class="keywordtype">int</span> recordHeight = 0;
+<a name="l00572"></a>00572    <span class="keywordtype">int</span> recordWidth = 0;
 <a name="l00573"></a>00573 
-<a name="l00574"></a>00574    QHeaderView *vert = p_screenRecord-&gt;verticalHeader();
-<a name="l00575"></a>00575    vert-&gt;setVisible(<span class="keyword">false</span>);
+<a name="l00574"></a>00574    <span class="comment">//int formW = matrixElement.firstChild().toElement().attribute(&quot;width&quot;).toInt();</span>
+<a name="l00575"></a>00575    <span class="keywordtype">int</span> <a class="code" href="classParser.html#a52e6fad38b265e732b7667aab6648472">gridWidth</a> = matrixElement.firstChild().toElement().attribute(<span class="stringliteral">&quot;gridWidth&quot;</span>).toInt();
 <a name="l00576"></a>00576 
-<a name="l00577"></a>00577    <span class="keywordtype">int</span> recordHeight = 0;
-<a name="l00578"></a>00578    <span class="keywordtype">int</span> recordWidth = 0;
-<a name="l00579"></a>00579 
-<a name="l00580"></a>00580    <span class="comment">//int formW = matrixElement.firstChild().toElement().attribute(&quot;width&quot;).toInt();</span>
-<a name="l00581"></a>00581    <span class="keywordtype">int</span> gridWidth = matrixElement.firstChild().toElement().attribute(<span class="stringliteral">&quot;gridWidth&quot;</span>).toInt();
-<a name="l00582"></a>00582 
-<a name="l00583"></a>00583    QWidget *wi = <a class="code" href="classWidgetHelper.html#ae52d8d07fe63d8cc60ffd216aadafc52">WidgetHelper::createFormWidget</a>(matrixElement);
-<a name="l00584"></a>00584    <span class="keywordtype">int</span> w = wi-&gt;width();
-<a name="l00585"></a>00585    <span class="keywordtype">int</span> h = wi-&gt;height();
-<a name="l00586"></a>00586    <span class="keyword">delete</span> wi;
-<a name="l00587"></a>00587  
-<a name="l00588"></a>00588    recordWidth += w+6;
-<a name="l00589"></a>00589 
-<a name="l00590"></a>00590    <span class="keywordflow">for</span>(<span class="keywordtype">int</span> i=0; i&lt;pageSize; i++){
-<a name="l00591"></a>00591       recordHeight += h+4;
-<a name="l00592"></a>00592    }
-<a name="l00593"></a>00593 
-<a name="l00594"></a>00594    p_screenRecord-&gt;<a class="code" href="classTableView.html#ac8f1f15e7ec4e97a15560d1c00ce7b02">setColumnName</a>(0,matrixElement.attribute(<span class="stringliteral">&quot;colName&quot;</span>));
+<a name="l00577"></a>00577    QWidget *wi = <a class="code" href="classWidgetHelper.html#ae52d8d07fe63d8cc60ffd216aadafc52">WidgetHelper::createFormWidget</a>(matrixElement);
+<a name="l00578"></a>00578    <span class="keywordtype">int</span> w = wi-&gt;width();
+<a name="l00579"></a>00579    <span class="keywordtype">int</span> h = wi-&gt;height();
+<a name="l00580"></a>00580    <span class="keyword">delete</span> wi;
+<a name="l00581"></a>00581  
+<a name="l00582"></a>00582    recordWidth += w+6;
+<a name="l00583"></a>00583 
+<a name="l00584"></a>00584    <span class="keywordflow">for</span>(<span class="keywordtype">int</span> i=0; i&lt;pageSize; i++){
+<a name="l00585"></a>00585       recordHeight += h+4;
+<a name="l00586"></a>00586    }
+<a name="l00587"></a>00587 
+<a name="l00588"></a>00588    p_screenRecord-&gt;<a class="code" href="classTableView.html#ac8f1f15e7ec4e97a15560d1c00ce7b02">setColumnName</a>(0,matrixElement.attribute(<span class="stringliteral">&quot;colName&quot;</span>));
+<a name="l00589"></a>00589  
+<a name="l00590"></a>00590    <a class="code" href="classLineEditDelegate.html">LineEditDelegate</a> *de = <span class="keyword">new</span> <a class="code" href="classLineEditDelegate.html">LineEditDelegate</a>(matrixElement, p_screenRecord);
+<a name="l00591"></a>00591    de-&gt;setObjectName(matrixElement.attribute(<span class="stringliteral">&quot;name&quot;</span>));
+<a name="l00592"></a>00592    de-&gt;setProperty(<span class="stringliteral">&quot;fieldId&quot;</span>, matrixElement.attribute(<span class="stringliteral">&quot;fieldId&quot;</span>).toInt());
+<a name="l00593"></a>00593    de-&gt;<a class="code" href="classLineEditDelegate.html#a70f070297a44835836592b2dc7e9b38a">setForm</a>(<a class="code" href="classParser.html#a8ae7aeec1e5360fa29b9976624cde0f1">p_fglform</a>);
+<a name="l00594"></a>00594    <a class="code" href="classParser.html#a457a6f19e0594ed8a745c8a00be32c4b">ql_formFields</a> &lt;&lt; (QWidget*) de;
 <a name="l00595"></a>00595  
-<a name="l00596"></a>00596    <a class="code" href="classLineEditDelegate.html">LineEditDelegate</a> *de = <span class="keyword">new</span> <a class="code" href="classLineEditDelegate.html">LineEditDelegate</a>(matrixElement, p_screenRecord);
-<a name="l00597"></a>00597    de-&gt;setObjectName(matrixElement.attribute(<span class="stringliteral">&quot;name&quot;</span>));
-<a name="l00598"></a>00598    de-&gt;setProperty(<span class="stringliteral">&quot;fieldId&quot;</span>, matrixElement.attribute(<span class="stringliteral">&quot;fieldId&quot;</span>).toInt());
-<a name="l00599"></a>00599    de-&gt;<a class="code" href="classLineEditDelegate.html#a70f070297a44835836592b2dc7e9b38a">setForm</a>(<a class="code" href="classParser.html#a8ae7aeec1e5360fa29b9976624cde0f1">p_fglform</a>);
-<a name="l00600"></a>00600    <a class="code" href="classParser.html#a457a6f19e0594ed8a745c8a00be32c4b">ql_formFields</a> &lt;&lt; (QWidget*) de;
-<a name="l00601"></a>00601  
-<a name="l00602"></a>00602    p_screenRecord-&gt;setItemDelegate(de);
-<a name="l00603"></a>00603 
-<a name="l00604"></a>00604    <span class="keywordflow">for</span>(<span class="keywordtype">int</span> i=0; i&lt;header-&gt;count(); i++){
-<a name="l00605"></a>00605       header-&gt;resizeSection(i, w+2);
-<a name="l00606"></a>00606    }
-<a name="l00607"></a>00607 
-<a name="l00608"></a>00608    <span class="keywordflow">for</span>(<span class="keywordtype">int</span> i=0; i&lt;vert-&gt;count(); i++){
-<a name="l00609"></a>00609       vert-&gt;resizeSection(i, h+2);
-<a name="l00610"></a>00610    }
-<a name="l00611"></a>00611 
-<a name="l00612"></a>00612    p_screenRecord-&gt;setFixedWidth(recordWidth);
-<a name="l00613"></a>00613    p_screenRecord-&gt;setFixedHeight(recordHeight);
-<a name="l00614"></a>00614    <span class="comment">//p_screenRecord-&gt;setFixedSize(recordWidth, recordHeight);</span>
+<a name="l00596"></a>00596    p_screenRecord-&gt;setItemDelegate(de);
+<a name="l00597"></a>00597 <span class="comment">/*</span>
+<a name="l00598"></a>00598 <span class="comment">   for(int i=0; i&lt;header-&gt;count(); i++){</span>
+<a name="l00599"></a>00599 <span class="comment">      header-&gt;resizeSection(i, w+2);</span>
+<a name="l00600"></a>00600 <span class="comment">   }</span>
+<a name="l00601"></a>00601 <span class="comment"></span>
+<a name="l00602"></a>00602 <span class="comment">   for(int i=0; i&lt;vert-&gt;count(); i++){</span>
+<a name="l00603"></a>00603 <span class="comment">      vert-&gt;resizeSection(i, h+2);</span>
+<a name="l00604"></a>00604 <span class="comment">   }</span>
+<a name="l00605"></a>00605 <span class="comment">/*</span>
+<a name="l00606"></a>00606 <span class="comment">   p_screenRecord-&gt;setFixedWidth(recordWidth);</span>
+<a name="l00607"></a>00607 <span class="comment">   p_screenRecord-&gt;setFixedHeight(recordHeight);</span>
+<a name="l00608"></a>00608 <span class="comment">   //p_screenRecord-&gt;setFixedSize(recordWidth, recordHeight);</span>
+<a name="l00609"></a>00609 <span class="comment">*/</span>
+<a name="l00610"></a>00610    <span class="keywordtype">int</span> x = matrixElement.firstChild().toElement().attribute(<span class="stringliteral">&quot;posX&quot;</span>).toInt();
+<a name="l00611"></a>00611    <span class="keywordtype">int</span> y = matrixElement.firstChild().toElement().attribute(<span class="stringliteral">&quot;posY&quot;</span>).toInt();
+<a name="l00612"></a>00612 
+<a name="l00613"></a>00613    <a class="code" href="classParser.html#a80b5245c70a7f73fcdba2c61096cc21f">addWidgets</a>(p_screenRecord, <span class="keyword">false</span>, y, x);
+<a name="l00614"></a>00614 }
 <a name="l00615"></a>00615 
-<a name="l00616"></a>00616    <span class="keywordtype">int</span> x = matrixElement.firstChild().toElement().attribute(<span class="stringliteral">&quot;posX&quot;</span>).toInt();
-<a name="l00617"></a>00617    <span class="keywordtype">int</span> y = matrixElement.firstChild().toElement().attribute(<span class="stringliteral">&quot;posY&quot;</span>).toInt();
-<a name="l00618"></a>00618 
-<a name="l00619"></a>00619    <a class="code" href="classParser.html#a80b5245c70a7f73fcdba2c61096cc21f">addWidgets</a>(p_screenRecord, <span class="keyword">false</span>, y, x);
-<a name="l00620"></a>00620 }
+<a name="l00616"></a><a class="code" href="classParser.html#a80b5245c70a7f73fcdba2c61096cc21f">00616</a> <span class="keywordtype">void</span> <a class="code" href="classParser.html#a80b5245c70a7f73fcdba2c61096cc21f">Parser::addWidgets</a>(QWidget *widget, <span class="keywordtype">bool</span> add, <span class="keywordtype">int</span> x, <span class="keywordtype">int</span> y, <span class="keywordtype">int</span> gridWidth, <span class="keywordtype">int</span> span)
+<a name="l00617"></a>00617 {
+<a name="l00618"></a>00618 MainFrame::vdcdebug(<span class="stringliteral">&quot;Parser&quot;</span>,<span class="stringliteral">&quot;addWidgets&quot;</span>, <span class="stringliteral">&quot;QWidget *widget, bool add, int x, int y, int gridWidth, int span&quot;</span>);
+<a name="l00619"></a>00619    <span class="keywordflow">if</span>(<a class="code" href="classParser.html#a3b94abe3e2c41c419f5be2a2e3fd63a4">currentLayout</a> == NULL)
+<a name="l00620"></a>00620       <span class="keywordflow">return</span>;
 <a name="l00621"></a>00621 
-<a name="l00622"></a><a class="code" href="classParser.html#a80b5245c70a7f73fcdba2c61096cc21f">00622</a> <span class="keywordtype">void</span> <a class="code" href="classParser.html#a80b5245c70a7f73fcdba2c61096cc21f">Parser::addWidgets</a>(QWidget *widget, <span class="keywordtype">bool</span> add, <span class="keywordtype">int</span> x, <span class="keywordtype">int</span> y, <span class="keywordtype">int</span> gridWidth, <span class="keywordtype">int</span> span)
-<a name="l00623"></a>00623 {
-<a name="l00624"></a>00624 MainFrame::vdcdebug(<span class="stringliteral">&quot;Parser&quot;</span>,<span class="stringliteral">&quot;addWidgets&quot;</span>, <span class="stringliteral">&quot;QWidget *widget, bool add, int x, int y, int gridWidth, int span&quot;</span>);
-<a name="l00625"></a>00625    <span class="keywordflow">if</span>(<a class="code" href="classParser.html#a3b94abe3e2c41c419f5be2a2e3fd63a4">currentLayout</a> == NULL)
-<a name="l00626"></a>00626       <span class="keywordflow">return</span>;
-<a name="l00627"></a>00627 
-<a name="l00628"></a>00628    <span class="keywordflow">if</span>(<a class="code" href="classParser.html#a24d2c0cb2595e44b9a7f73d801685e70">hidden</a>){
-<a name="l00629"></a>00629       widget-&gt;setHidden(<a class="code" href="classParser.html#a24d2c0cb2595e44b9a7f73d801685e70">hidden</a>);
-<a name="l00630"></a>00630    }
-<a name="l00631"></a>00631 
-<a name="l00632"></a>00632 
-<a name="l00633"></a>00633    <span class="keywordflow">if</span>(add)
-<a name="l00634"></a>00634       <a class="code" href="classParser.html#a457a6f19e0594ed8a745c8a00be32c4b">ql_formFields</a> &lt;&lt; widget;
-<a name="l00635"></a>00635 
-<a name="l00636"></a>00636    <span class="keywordflow">if</span>(QGridLayout *<a class="code" href="classParser.html#a10b118e730f600194f26db151575c6fa">layout</a> = qobject_cast&lt;QGridLayout *&gt; (<a class="code" href="classParser.html#a3b94abe3e2c41c419f5be2a2e3fd63a4">currentLayout</a>)){
-<a name="l00637"></a>00637       <a class="code" href="classParser.html#a10b118e730f600194f26db151575c6fa">layout</a>-&gt;setColumnMinimumWidth(y,0);
-<a name="l00638"></a>00638       <a class="code" href="classParser.html#a10b118e730f600194f26db151575c6fa">layout</a>-&gt;setRowMinimumHeight(x,0);
-<a name="l00639"></a>00639       <span class="comment">//The HLine have no Qt::AlignLeft, because the HLine are not strechting then.</span>
-<a name="l00640"></a>00640       <span class="keywordflow">if</span>(<a class="code" href="classLabel.html">Label</a> *w = qobject_cast&lt;Label *&gt; (widget)){
-<a name="l00641"></a>00641           <span class="keywordflow">if</span>(w-&gt;img)
-<a name="l00642"></a>00642           {
-<a name="l00643"></a>00643                 <a class="code" href="classParser.html#a10b118e730f600194f26db151575c6fa">layout</a>-&gt;addWidget(widget, x, y, span, -1, Qt::AlignTop);
-<a name="l00644"></a>00644                 <span class="keywordflow">return</span>;
-<a name="l00645"></a>00645           }
-<a name="l00646"></a>00646       }
-<a name="l00647"></a>00647       <span class="keywordflow">if</span>(widget-&gt;accessibleName() == <span class="stringliteral">&quot;HLine&quot;</span>)
-<a name="l00648"></a>00648       {
-<a name="l00649"></a>00649           <a class="code" href="classParser.html#a10b118e730f600194f26db151575c6fa">layout</a>-&gt;addWidget(widget, x, y, span, gridWidth, Qt::AlignTop);
-<a name="l00650"></a>00650       }
-<a name="l00651"></a>00651       <span class="keywordflow">else</span>
-<a name="l00652"></a>00652       {
-<a name="l00653"></a>00653           <span class="keywordflow">if</span>(<a class="code" href="classTextEdit.html">TextEdit</a> *te = qobject_cast&lt;TextEdit*&gt; (widget))
-<a name="l00654"></a>00654           {
-<a name="l00655"></a>00655               <span class="keywordflow">if</span>(te-&gt;qs_stretch == <span class="stringliteral">&quot;both&quot;</span>)
+<a name="l00622"></a>00622    <span class="keywordflow">if</span>(<a class="code" href="classParser.html#a24d2c0cb2595e44b9a7f73d801685e70">hidden</a>){
+<a name="l00623"></a>00623       widget-&gt;setHidden(<a class="code" href="classParser.html#a24d2c0cb2595e44b9a7f73d801685e70">hidden</a>);
+<a name="l00624"></a>00624    }
+<a name="l00625"></a>00625 
+<a name="l00626"></a>00626 
+<a name="l00627"></a>00627    <span class="keywordflow">if</span>(add)
+<a name="l00628"></a>00628       <a class="code" href="classParser.html#a457a6f19e0594ed8a745c8a00be32c4b">ql_formFields</a> &lt;&lt; widget;
+<a name="l00629"></a>00629 
+<a name="l00630"></a>00630 
+<a name="l00631"></a>00631    <span class="keywordflow">if</span>(QGridLayout *<a class="code" href="classParser.html#a10b118e730f600194f26db151575c6fa">layout</a> = qobject_cast&lt;QGridLayout *&gt; (<a class="code" href="classParser.html#a3b94abe3e2c41c419f5be2a2e3fd63a4">currentLayout</a>)){
+<a name="l00632"></a>00632       <a class="code" href="classParser.html#a10b118e730f600194f26db151575c6fa">layout</a>-&gt;setColumnMinimumWidth(y,0);
+<a name="l00633"></a>00633       <a class="code" href="classParser.html#a10b118e730f600194f26db151575c6fa">layout</a>-&gt;setRowMinimumHeight(x,0);
+<a name="l00634"></a>00634       <span class="comment">//The HLine have no Qt::AlignLeft, because the HLine are not strechting then.</span>
+<a name="l00635"></a>00635       <span class="keywordflow">if</span>(<a class="code" href="classLabel.html">Label</a> *w = qobject_cast&lt;Label *&gt; (widget)){
+<a name="l00636"></a>00636           <span class="keywordflow">if</span>(w-&gt;img)
+<a name="l00637"></a>00637           {
+<a name="l00638"></a>00638                 <a class="code" href="classParser.html#a10b118e730f600194f26db151575c6fa">layout</a>-&gt;addWidget(widget, x, y, span, -1, Qt::AlignTop);
+<a name="l00639"></a>00639                 <span class="keywordflow">return</span>;
+<a name="l00640"></a>00640           }
+<a name="l00641"></a>00641       }
+<a name="l00642"></a>00642       <span class="keywordflow">if</span>(widget-&gt;accessibleName() == <span class="stringliteral">&quot;HLine&quot;</span>)
+<a name="l00643"></a>00643       {
+<a name="l00644"></a>00644           <a class="code" href="classParser.html#a10b118e730f600194f26db151575c6fa">layout</a>-&gt;addWidget(widget, x, y, span, gridWidth, Qt::AlignTop);
+<a name="l00645"></a>00645       }
+<a name="l00646"></a>00646       <span class="keywordflow">else</span>
+<a name="l00647"></a>00647       {
+<a name="l00648"></a>00648           <span class="keywordflow">if</span>(<a class="code" href="classTextEdit.html">TextEdit</a> *te = qobject_cast&lt;TextEdit*&gt; (widget))
+<a name="l00649"></a>00649           {
+<a name="l00650"></a>00650               <span class="keywordflow">if</span>(te-&gt;qs_stretch == <span class="stringliteral">&quot;both&quot;</span>)
+<a name="l00651"></a>00651               {
+<a name="l00652"></a>00652                   <a class="code" href="classParser.html#a10b118e730f600194f26db151575c6fa">layout</a>-&gt;addWidget(widget, x, y);<span class="comment">//), Qt::AlignTop);</span>
+<a name="l00653"></a>00653                   <span class="keywordflow">return</span>;
+<a name="l00654"></a>00654               }
+<a name="l00655"></a>00655               <span class="keywordflow">if</span>(te-&gt;qs_stretch == <span class="stringliteral">&quot;y&quot;</span>)
 <a name="l00656"></a>00656               {
-<a name="l00657"></a>00657                   <a class="code" href="classParser.html#a10b118e730f600194f26db151575c6fa">layout</a>-&gt;addWidget(widget, x, y);<span class="comment">//), Qt::AlignTop);</span>
+<a name="l00657"></a>00657                   <a class="code" href="classParser.html#a10b118e730f600194f26db151575c6fa">layout</a>-&gt;addWidget(widget, x, y, -1, gridWidth);<span class="comment">//), Qt::AlignTop);</span>
 <a name="l00658"></a>00658                   <span class="keywordflow">return</span>;
 <a name="l00659"></a>00659               }
-<a name="l00660"></a>00660               <span class="keywordflow">if</span>(te-&gt;qs_stretch == <span class="stringliteral">&quot;y&quot;</span>)
+<a name="l00660"></a>00660               <span class="keywordflow">if</span>(te-&gt;qs_stretch == <span class="stringliteral">&quot;x&quot;</span>)
 <a name="l00661"></a>00661               {
-<a name="l00662"></a>00662                   <a class="code" href="classParser.html#a10b118e730f600194f26db151575c6fa">layout</a>-&gt;addWidget(widget, x, y, -1, gridWidth);<span class="comment">//), Qt::AlignTop);</span>
+<a name="l00662"></a>00662                   <a class="code" href="classParser.html#a10b118e730f600194f26db151575c6fa">layout</a>-&gt;addWidget(widget, x, y, span, -1);<span class="comment">//), Qt::AlignTop);</span>
 <a name="l00663"></a>00663                   <span class="keywordflow">return</span>;
 <a name="l00664"></a>00664               }
-<a name="l00665"></a>00665               <span class="keywordflow">if</span>(te-&gt;qs_stretch == <span class="stringliteral">&quot;x&quot;</span>)
-<a name="l00666"></a>00666               {
-<a name="l00667"></a>00667                   <a class="code" href="classParser.html#a10b118e730f600194f26db151575c6fa">layout</a>-&gt;addWidget(widget, x, y, span, -1);<span class="comment">//), Qt::AlignTop);</span>
-<a name="l00668"></a>00668                   <span class="keywordflow">return</span>;
-<a name="l00669"></a>00669               }
+<a name="l00665"></a>00665 
+<a name="l00666"></a>00666           }
+<a name="l00667"></a>00667           <a class="code" href="classParser.html#a10b118e730f600194f26db151575c6fa">layout</a>-&gt;addWidget(widget, x, y, span, gridWidth, Qt::AlignLeft|Qt::AlignTop);
+<a name="l00668"></a>00668       }
+<a name="l00669"></a>00669    }
 <a name="l00670"></a>00670 
-<a name="l00671"></a>00671           }
-<a name="l00672"></a>00672           <a class="code" href="classParser.html#a10b118e730f600194f26db151575c6fa">layout</a>-&gt;addWidget(widget, x, y, span, gridWidth, Qt::AlignLeft|Qt::AlignTop);
-<a name="l00673"></a>00673       }
-<a name="l00674"></a>00674    }
-<a name="l00675"></a>00675 
-<a name="l00676"></a>00676    <span class="keywordflow">if</span>(QVBoxLayout *<a class="code" href="classParser.html#a10b118e730f600194f26db151575c6fa">layout</a> = qobject_cast&lt;QVBoxLayout *&gt; (<a class="code" href="classParser.html#a3b94abe3e2c41c419f5be2a2e3fd63a4">currentLayout</a>)){
-<a name="l00677"></a>00677       <a class="code" href="classParser.html#a10b118e730f600194f26db151575c6fa">layout</a>-&gt;addWidget(widget);
-<a name="l00678"></a>00678    }
-<a name="l00679"></a>00679 
-<a name="l00680"></a>00680    <span class="keywordflow">if</span>(QHBoxLayout *<a class="code" href="classParser.html#a10b118e730f600194f26db151575c6fa">layout</a> = qobject_cast&lt;QHBoxLayout *&gt; (<a class="code" href="classParser.html#a3b94abe3e2c41c419f5be2a2e3fd63a4">currentLayout</a>)){
-<a name="l00681"></a>00681       <a class="code" href="classParser.html#a10b118e730f600194f26db151575c6fa">layout</a>-&gt;addWidget(widget);
-<a name="l00682"></a>00682    }
-<a name="l00683"></a>00683 
-<a name="l00684"></a>00684 }
-<a name="l00685"></a>00685 
-<a name="l00686"></a><a class="code" href="classParser.html#a97f0648d8b9a23badc802076b88db7ef">00686</a> <span class="keywordtype">void</span> <a class="code" href="classParser.html#a97f0648d8b9a23badc802076b88db7ef">Parser::addLayout</a>(QLayout *newLayout)
-<a name="l00687"></a>00687 {
-<a name="l00688"></a>00688 MainFrame::vdcdebug(<span class="stringliteral">&quot;Parser&quot;</span>,<span class="stringliteral">&quot;addLayout&quot;</span>, <span class="stringliteral">&quot;QLayout *newLayout&quot;</span>);
-<a name="l00689"></a>00689    <span class="keywordflow">if</span>(<a class="code" href="classParser.html#a3b94abe3e2c41c419f5be2a2e3fd63a4">currentLayout</a> == NULL)
-<a name="l00690"></a>00690       <span class="keywordflow">return</span>;
-<a name="l00691"></a>00691 
-<a name="l00692"></a>00692 <span class="comment">//   if(QGridLayout *layout = qobject_cast&lt;QGridLayout *&gt; (currentLayout)){</span>
-<a name="l00693"></a>00693 <span class="comment">//   }</span>
-<a name="l00694"></a>00694 
-<a name="l00695"></a>00695    <span class="keywordflow">if</span>(QVBoxLayout *<a class="code" href="classParser.html#a10b118e730f600194f26db151575c6fa">layout</a> = qobject_cast&lt;QVBoxLayout *&gt; (<a class="code" href="classParser.html#a3b94abe3e2c41c419f5be2a2e3fd63a4">currentLayout</a>)){
-<a name="l00696"></a>00696       <a class="code" href="classParser.html#a10b118e730f600194f26db151575c6fa">layout</a>-&gt;addLayout(newLayout);
-<a name="l00697"></a>00697       <a class="code" href="classParser.html#a3b94abe3e2c41c419f5be2a2e3fd63a4">currentLayout</a> = newLayout;
-<a name="l00698"></a>00698       <span class="keywordflow">return</span>;
-<a name="l00699"></a>00699    }
-<a name="l00700"></a>00700 
-<a name="l00701"></a>00701    <span class="keywordflow">if</span>(QHBoxLayout *<a class="code" href="classParser.html#a10b118e730f600194f26db151575c6fa">layout</a> = qobject_cast&lt;QHBoxLayout *&gt; (<a class="code" href="classParser.html#a3b94abe3e2c41c419f5be2a2e3fd63a4">currentLayout</a>)){
-<a name="l00702"></a>00702       <a class="code" href="classParser.html#a10b118e730f600194f26db151575c6fa">layout</a>-&gt;addLayout(newLayout);
-<a name="l00703"></a>00703       <a class="code" href="classParser.html#a3b94abe3e2c41c419f5be2a2e3fd63a4">currentLayout</a> = newLayout;
-<a name="l00704"></a>00704       <span class="keywordflow">return</span>;
-<a name="l00705"></a>00705    }
-<a name="l00706"></a>00706 
-<a name="l00707"></a>00707 }
+<a name="l00671"></a>00671    <span class="keywordflow">if</span>(QVBoxLayout *<a class="code" href="classParser.html#a10b118e730f600194f26db151575c6fa">layout</a> = qobject_cast&lt;QVBoxLayout *&gt; (<a class="code" href="classParser.html#a3b94abe3e2c41c419f5be2a2e3fd63a4">currentLayout</a>)){
+<a name="l00672"></a>00672       <a class="code" href="classParser.html#a10b118e730f600194f26db151575c6fa">layout</a>-&gt;addWidget(widget);
+<a name="l00673"></a>00673    }
+<a name="l00674"></a>00674 
+<a name="l00675"></a>00675    <span class="keywordflow">if</span>(QHBoxLayout *<a class="code" href="classParser.html#a10b118e730f600194f26db151575c6fa">layout</a> = qobject_cast&lt;QHBoxLayout *&gt; (<a class="code" href="classParser.html#a3b94abe3e2c41c419f5be2a2e3fd63a4">currentLayout</a>)){
+<a name="l00676"></a>00676       <a class="code" href="classParser.html#a10b118e730f600194f26db151575c6fa">layout</a>-&gt;addWidget(widget);
+<a name="l00677"></a>00677    }
+<a name="l00678"></a>00678 
+<a name="l00679"></a>00679 }
+<a name="l00680"></a>00680 
+<a name="l00681"></a><a class="code" href="classParser.html#a97f0648d8b9a23badc802076b88db7ef">00681</a> <span class="keywordtype">void</span> <a class="code" href="classParser.html#a97f0648d8b9a23badc802076b88db7ef">Parser::addLayout</a>(QLayout *newLayout)
+<a name="l00682"></a>00682 {
+<a name="l00683"></a>00683 MainFrame::vdcdebug(<span class="stringliteral">&quot;Parser&quot;</span>,<span class="stringliteral">&quot;addLayout&quot;</span>, <span class="stringliteral">&quot;QLayout *newLayout&quot;</span>);
+<a name="l00684"></a>00684    <span class="keywordflow">if</span>(<a class="code" href="classParser.html#a3b94abe3e2c41c419f5be2a2e3fd63a4">currentLayout</a> == NULL)
+<a name="l00685"></a>00685       <span class="keywordflow">return</span>;
+<a name="l00686"></a>00686 
+<a name="l00687"></a>00687 <span class="comment">//   if(QGridLayout *layout = qobject_cast&lt;QGridLayout *&gt; (currentLayout)){</span>
+<a name="l00688"></a>00688 <span class="comment">//   }</span>
+<a name="l00689"></a>00689 
+<a name="l00690"></a>00690    <span class="keywordflow">if</span>(QVBoxLayout *<a class="code" href="classParser.html#a10b118e730f600194f26db151575c6fa">layout</a> = qobject_cast&lt;QVBoxLayout *&gt; (<a class="code" href="classParser.html#a3b94abe3e2c41c419f5be2a2e3fd63a4">currentLayout</a>)){
+<a name="l00691"></a>00691       <a class="code" href="classParser.html#a10b118e730f600194f26db151575c6fa">layout</a>-&gt;addLayout(newLayout);
+<a name="l00692"></a>00692       <a class="code" href="classParser.html#a3b94abe3e2c41c419f5be2a2e3fd63a4">currentLayout</a> = newLayout;
+<a name="l00693"></a>00693       <span class="keywordflow">return</span>;
+<a name="l00694"></a>00694    }
+<a name="l00695"></a>00695 
+<a name="l00696"></a>00696    <span class="keywordflow">if</span>(QHBoxLayout *<a class="code" href="classParser.html#a10b118e730f600194f26db151575c6fa">layout</a> = qobject_cast&lt;QHBoxLayout *&gt; (<a class="code" href="classParser.html#a3b94abe3e2c41c419f5be2a2e3fd63a4">currentLayout</a>)){
+<a name="l00697"></a>00697       <a class="code" href="classParser.html#a10b118e730f600194f26db151575c6fa">layout</a>-&gt;addLayout(newLayout);
+<a name="l00698"></a>00698       <a class="code" href="classParser.html#a3b94abe3e2c41c419f5be2a2e3fd63a4">currentLayout</a> = newLayout;
+<a name="l00699"></a>00699       <span class="keywordflow">return</span>;
+<a name="l00700"></a>00700    }
+<a name="l00701"></a>00701 
+<a name="l00702"></a>00702 }
+<a name="l00703"></a>00703 
+<a name="l00704"></a><a class="code" href="classParser.html#afd7f37611e56b353507ebbf79ae0edb5">00704</a> <span class="keywordtype">void</span> <a class="code" href="classParser.html#afd7f37611e56b353507ebbf79ae0edb5">Parser::handleRecordView</a>(<span class="keyword">const</span> QDomNode&amp; xmlNode)
+<a name="l00705"></a>00705 {
+<a name="l00706"></a>00706 MainFrame::vdcdebug(<span class="stringliteral">&quot;Parser&quot;</span>,<span class="stringliteral">&quot;handleRecordView&quot;</span>, <span class="stringliteral">&quot;const QDomNode&amp; xmlNode&quot;</span>);
+<a name="l00707"></a>00707    QString tabName = xmlNode.toElement().attribute(<span class="stringliteral">&quot;tabName&quot;</span>);
 <a name="l00708"></a>00708 
-<a name="l00709"></a><a class="code" href="classParser.html#afd7f37611e56b353507ebbf79ae0edb5">00709</a> <span class="keywordtype">void</span> <a class="code" href="classParser.html#afd7f37611e56b353507ebbf79ae0edb5">Parser::handleRecordView</a>(<span class="keyword">const</span> QDomNode&amp; xmlNode)
-<a name="l00710"></a>00710 {
-<a name="l00711"></a>00711 MainFrame::vdcdebug(<span class="stringliteral">&quot;Parser&quot;</span>,<span class="stringliteral">&quot;handleRecordView&quot;</span>, <span class="stringliteral">&quot;const QDomNode&amp; xmlNode&quot;</span>);
-<a name="l00712"></a>00712    QString tabName = xmlNode.toElement().attribute(<span class="stringliteral">&quot;tabName&quot;</span>);
+<a name="l00709"></a>00709    <a class="code" href="classFglForm.html">FglForm</a> *form = (<a class="code" href="classFglForm.html">FglForm</a>*) <a class="code" href="classParser.html#a8ae7aeec1e5360fa29b9976624cde0f1">p_fglform</a>;
+<a name="l00710"></a>00710 
+<a name="l00711"></a>00711    QDomNodeList children = xmlNode.childNodes();
+<a name="l00712"></a>00712    <span class="keywordflow">for</span>(<span class="keywordtype">int</span> i=0; i&lt;children.count(); ++i){
 <a name="l00713"></a>00713 
-<a name="l00714"></a>00714    <a class="code" href="classFglForm.html">FglForm</a> *form = (<a class="code" href="classFglForm.html">FglForm</a>*) <a class="code" href="classParser.html#a8ae7aeec1e5360fa29b9976624cde0f1">p_fglform</a>;
-<a name="l00715"></a>00715 
-<a name="l00716"></a>00716    QDomNodeList children = xmlNode.childNodes();
-<a name="l00717"></a>00717    <span class="keywordflow">for</span>(<span class="keywordtype">int</span> i=0; i&lt;children.count(); ++i){
+<a name="l00714"></a>00714       QDomNode child = children.at(i);
+<a name="l00715"></a>00715       <span class="keywordflow">if</span>(!child.isElement()){
+<a name="l00716"></a>00716          <span class="keywordflow">continue</span>;
+<a name="l00717"></a>00717       }
 <a name="l00718"></a>00718 
-<a name="l00719"></a>00719       QDomNode child = children.at(i);
-<a name="l00720"></a>00720       <span class="keywordflow">if</span>(!child.isElement()){
-<a name="l00721"></a>00721          <span class="keywordflow">continue</span>;
-<a name="l00722"></a>00722       }
-<a name="l00723"></a>00723 
-<a name="l00724"></a>00724       QDomElement currentElement = child.toElement();
-<a name="l00725"></a>00725 
-<a name="l00726"></a>00726       QString nodeName = currentElement.nodeName();
-<a name="l00727"></a>00727 
-<a name="l00728"></a>00728       <span class="keywordflow">if</span>(nodeName == <span class="stringliteral">&quot;Link&quot;</span>){
-<a name="l00729"></a>00729          <a class="code" href="structFgl_1_1Link.html">Fgl::Link</a> link;
-<a name="l00730"></a>00730          link.<a class="code" href="structFgl_1_1Link.html#aab28eb1cddb4a867be3eb372229d1047">colName</a> = currentElement.attribute(<span class="stringliteral">&quot;colName&quot;</span>);
-<a name="l00731"></a>00731          link.<a class="code" href="structFgl_1_1Link.html#a083fb7f6a020a3da8e9b936f2c207bab">fieldIdRef</a> = currentElement.attribute(<span class="stringliteral">&quot;fieldIdRef&quot;</span>).toInt();
-<a name="l00732"></a>00732          form-&gt;<a class="code" href="classFglForm.html#a2e8895a4cd6f58cc36f31c8a51c06a54">recordView</a>[tabName] &lt;&lt; link;
-<a name="l00733"></a>00733       }
-<a name="l00734"></a>00734    }
-<a name="l00735"></a>00735 }
+<a name="l00719"></a>00719       QDomElement currentElement = child.toElement();
+<a name="l00720"></a>00720 
+<a name="l00721"></a>00721       QString nodeName = currentElement.nodeName();
+<a name="l00722"></a>00722 
+<a name="l00723"></a>00723       <span class="keywordflow">if</span>(nodeName == <span class="stringliteral">&quot;Link&quot;</span>){
+<a name="l00724"></a>00724          <a class="code" href="structFgl_1_1Link.html">Fgl::Link</a> link;
+<a name="l00725"></a>00725          link.<a class="code" href="structFgl_1_1Link.html#aab28eb1cddb4a867be3eb372229d1047">colName</a> = currentElement.attribute(<span class="stringliteral">&quot;colName&quot;</span>);
+<a name="l00726"></a>00726          link.<a class="code" href="structFgl_1_1Link.html#a083fb7f6a020a3da8e9b936f2c207bab">fieldIdRef</a> = currentElement.attribute(<span class="stringliteral">&quot;fieldIdRef&quot;</span>).toInt();
+<a name="l00727"></a>00727          form-&gt;<a class="code" href="classFglForm.html#a2e8895a4cd6f58cc36f31c8a51c06a54">recordView</a>[tabName] &lt;&lt; link;
+<a name="l00728"></a>00728       }
+<a name="l00729"></a>00729    }
+<a name="l00730"></a>00730 }
+<a name="l00731"></a>00731 
 </pre></div></div>
 </div>
 <!--- window showing the filter options -->
@@ -811,7 +807,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </iframe>
 </div>
 
-<hr class="footer"/><address class="footer"><small>Generated on Wed Feb 29 2012 13:19:13 for VDC by&#160;
+<hr class="footer"/><address class="footer"><small>Generated on Tue Mar 6 2012 14:00:11 for VDC by&#160;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.7.3 </small></address>
 </body>

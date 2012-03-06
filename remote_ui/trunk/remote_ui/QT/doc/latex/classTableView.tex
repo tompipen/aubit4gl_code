@@ -28,6 +28,8 @@ void \hyperlink{classTableView_af8a2f8a181aeb8d565fca8be2fe1437c}{resetSettings}
 \item 
 void \hyperlink{classTableView_aadaf88a599aa680ea0d6a3887ed8289d}{fieldEvent} (\hyperlink{structFgl_1_1Event}{Fgl::Event})
 \item 
+void \hyperlink{classTableView_ae62964a1e3681bf228009babab06d55e}{addToQueue} (QList$<$ \hyperlink{structFgl_1_1Event}{Fgl::Event} $>$)
+\item 
 void \hyperlink{classTableView_a5f99090ec924b96b7f2b026c47f580e6}{setArrLineSignal} (int)
 \item 
 void \hyperlink{classTableView_ad4f6aa906c014bed4437f67817e990e0}{accepted} ()
@@ -71,6 +73,8 @@ void \hyperlink{classTableView_a41a45f3b1b6fc2be38f7068629bd9462}{setIgnoreRowCh
 \item 
 bool \hyperlink{classTableView_a83872a716abf63ed862c2c4607dc4146}{ignoreRowChange} ()
 \item 
+\hyperlink{classFglForm}{FglForm} \hyperlink{classTableView_a9dc54c4342e2d05f754129376dcd032f}{getForm} () const 
+\begin{DoxyCompactList}\small\item\em Method to get the \hyperlink{classFglForm}{FglForm}. It cast the classmember QWidget p\_\-fglform to \hyperlink{classFglForm}{FglForm} and returns it. If the cast fail or the member is not set, the returnvalue is NULL. \item\end{DoxyCompactList}\item 
 void \hyperlink{classTableView_ac961015fe4c7fe1c5af03035db501400}{setScrLine} (int)
 \item 
 void \hyperlink{classTableView_a9579368ee0b02a654fc5f68ff504a83f}{setArrLine} (int)
@@ -182,7 +186,7 @@ Definition at line 29 of file table.cpp.
 \label{classTableView_a4ae2229ec68bc96ada98844bc47434f5}
 
 
-Definition at line 517 of file table.cpp.
+Definition at line 520 of file table.cpp.
 
 \hypertarget{classTableView_ad4f6aa906c014bed4437f67817e990e0}{
 \index{TableView@{TableView}!accepted@{accepted}}
@@ -193,6 +197,15 @@ Definition at line 517 of file table.cpp.
 \end{DoxyParamCaption}
 )\hspace{0.3cm}{\ttfamily  \mbox{[}signal\mbox{]}}}}
 \label{classTableView_ad4f6aa906c014bed4437f67817e990e0}
+\hypertarget{classTableView_ae62964a1e3681bf228009babab06d55e}{
+\index{TableView@{TableView}!addToQueue@{addToQueue}}
+\index{addToQueue@{addToQueue}!TableView@{TableView}}
+\subsubsection[{addToQueue}]{\setlength{\rightskip}{0pt plus 5cm}void TableView::addToQueue (
+\begin{DoxyParamCaption}
+\item[{QList$<$ {\bf Fgl::Event} $>$}]{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}signal\mbox{]}}}}
+\label{classTableView_ae62964a1e3681bf228009babab06d55e}
 \hypertarget{classTableView_a35187a10df2c76c9fe9099d17d9869cd}{
 \index{TableView@{TableView}!arrCount@{arrCount}}
 \index{arrCount@{arrCount}!TableView@{TableView}}
@@ -230,7 +243,7 @@ Definition at line 40 of file table.h.
 \label{classTableView_a62372425629462c3d4035b1f2676e847}
 
 
-Definition at line 792 of file table.cpp.
+Definition at line 819 of file table.cpp.
 
 \hypertarget{classTableView_ae24787bc253d6f181c13fc58bffd7ba2}{
 \index{TableView@{TableView}!dragSuccess@{dragSuccess}}
@@ -243,7 +256,7 @@ Definition at line 792 of file table.cpp.
 \label{classTableView_ae24787bc253d6f181c13fc58bffd7ba2}
 
 
-Definition at line 537 of file table.cpp.
+Definition at line 540 of file table.cpp.
 
 \hypertarget{classTableView_a2ae0fadd583c6d25c0c8759d2b01ba6a}{
 \index{TableView@{TableView}!error@{error}}
@@ -266,7 +279,7 @@ Definition at line 537 of file table.cpp.
 \label{classTableView_a119f899686b60f0c3d0a910b65e2daa8}
 
 
-Definition at line 184 of file table.cpp.
+Definition at line 185 of file table.cpp.
 
 \hypertarget{classTableView_a4c5b64ca3ffb2289d6b9030942cfbfd5}{
 \index{TableView@{TableView}!fieldChanged@{fieldChanged}}
@@ -280,7 +293,7 @@ Definition at line 184 of file table.cpp.
 \label{classTableView_a4c5b64ca3ffb2289d6b9030942cfbfd5}
 
 
-Definition at line 577 of file table.cpp.
+Definition at line 595 of file table.cpp.
 
 \hypertarget{classTableView_aadaf88a599aa680ea0d6a3887ed8289d}{
 \index{TableView@{TableView}!fieldEvent@{fieldEvent}}
@@ -302,7 +315,7 @@ Definition at line 577 of file table.cpp.
 \label{classTableView_a22d025267d25ecfe7684c31edab75a2a}
 
 
-Definition at line 480 of file table.cpp.
+Definition at line 483 of file table.cpp.
 
 \hypertarget{classTableView_af953c1328e203f9b0d380b9d5c6125ff}{
 \index{TableView@{TableView}!getColumnName@{getColumnName}}
@@ -315,7 +328,7 @@ Definition at line 480 of file table.cpp.
 \label{classTableView_af953c1328e203f9b0d380b9d5c6125ff}
 
 
-Definition at line 503 of file table.cpp.
+Definition at line 506 of file table.cpp.
 
 \hypertarget{classTableView_af23a2d29fe926816fc8d42f11ea57a38}{
 \index{TableView@{TableView}!getCurrMouseColumn@{getCurrMouseColumn}}
@@ -328,7 +341,7 @@ Definition at line 503 of file table.cpp.
 \label{classTableView_af23a2d29fe926816fc8d42f11ea57a38}
 
 
-Definition at line 357 of file table.cpp.
+Definition at line 358 of file table.cpp.
 
 \hypertarget{classTableView_a4c4cd480a0979197e2b96e6b03fa0213}{
 \index{TableView@{TableView}!getCurrMouseRow@{getCurrMouseRow}}
@@ -341,7 +354,24 @@ Definition at line 357 of file table.cpp.
 \label{classTableView_a4c4cd480a0979197e2b96e6b03fa0213}
 
 
-Definition at line 347 of file table.cpp.
+Definition at line 348 of file table.cpp.
+
+\hypertarget{classTableView_a9dc54c4342e2d05f754129376dcd032f}{
+\index{TableView@{TableView}!getForm@{getForm}}
+\index{getForm@{getForm}!TableView@{TableView}}
+\subsubsection[{getForm}]{\setlength{\rightskip}{0pt plus 5cm}{\bf FglForm} TableView::getForm (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const}}
+\label{classTableView_a9dc54c4342e2d05f754129376dcd032f}
+
+
+Method to get the \hyperlink{classFglForm}{FglForm}. It cast the classmember QWidget p\_\-fglform to \hyperlink{classFglForm}{FglForm} and returns it. If the cast fail or the member is not set, the returnvalue is NULL. 
+
+
+
+Definition at line 584 of file table.cpp.
 
 \hypertarget{classTableView_ae777b72755652714896a7b45b96bb2da}{
 \index{TableView@{TableView}!getMouseModelIndex@{getMouseModelIndex}}
@@ -354,7 +384,7 @@ Definition at line 347 of file table.cpp.
 \label{classTableView_ae777b72755652714896a7b45b96bb2da}
 
 
-Definition at line 368 of file table.cpp.
+Definition at line 369 of file table.cpp.
 
 \hypertarget{classTableView_a83872a716abf63ed862c2c4607dc4146}{
 \index{TableView@{TableView}!ignoreRowChange@{ignoreRowChange}}
@@ -380,7 +410,7 @@ Definition at line 63 of file table.h.
 \label{classTableView_a845c45c80748f79f3e81f7bf77e5261a}
 
 
-Definition at line 680 of file table.cpp.
+Definition at line 707 of file table.cpp.
 
 \hypertarget{classTableView_a2573035b04bb9582878096d501381e3b}{
 \index{TableView@{TableView}!maxArrSize@{maxArrSize}}
@@ -424,7 +454,7 @@ Definition at line 39 of file table.h.
 \label{classTableView_af8a2f8a181aeb8d565fca8be2fe1437c}
 
 
-Definition at line 242 of file table.cpp.
+Definition at line 243 of file table.cpp.
 
 \hypertarget{classTableView_aecb8d3ea59d572fb9a7df9a7ba798c20}{
 \index{TableView@{TableView}!scrLine@{scrLine}}
@@ -450,7 +480,7 @@ Definition at line 41 of file table.h.
 \label{classTableView_a2bd7391fdc86cdd2f57f40b220aacf9d}
 
 
-Definition at line 428 of file table.cpp.
+Definition at line 431 of file table.cpp.
 
 \hypertarget{classTableView_a9579368ee0b02a654fc5f68ff504a83f}{
 \index{TableView@{TableView}!setArrLine@{setArrLine}}
@@ -463,7 +493,7 @@ Definition at line 428 of file table.cpp.
 \label{classTableView_a9579368ee0b02a654fc5f68ff504a83f}
 
 
-Definition at line 702 of file table.cpp.
+Definition at line 729 of file table.cpp.
 
 \hypertarget{classTableView_a5f99090ec924b96b7f2b026c47f580e6}{
 \index{TableView@{TableView}!setArrLineSignal@{setArrLineSignal}}
@@ -486,7 +516,7 @@ Definition at line 702 of file table.cpp.
 \label{classTableView_a5a86ed0c209382e0c31266952d3fafaf}
 
 
-Definition at line 470 of file table.cpp.
+Definition at line 473 of file table.cpp.
 
 \hypertarget{classTableView_ac8f1f15e7ec4e97a15560d1c00ce7b02}{
 \index{TableView@{TableView}!setColumnName@{setColumnName}}
@@ -500,7 +530,7 @@ Definition at line 470 of file table.cpp.
 \label{classTableView_ac8f1f15e7ec4e97a15560d1c00ce7b02}
 
 
-Definition at line 490 of file table.cpp.
+Definition at line 493 of file table.cpp.
 
 \hypertarget{classTableView_a51769748b8e61de5f2e118ff5df32887}{
 \index{TableView@{TableView}!setCurrentColumn@{setCurrentColumn}}
@@ -513,7 +543,7 @@ Definition at line 490 of file table.cpp.
 \label{classTableView_a51769748b8e61de5f2e118ff5df32887}
 
 
-Definition at line 717 of file table.cpp.
+Definition at line 744 of file table.cpp.
 
 \hypertarget{classTableView_a245773b2b9426d4e354cf55fff770aa8}{
 \index{TableView@{TableView}!setCurrentField@{setCurrentField}}
@@ -527,7 +557,7 @@ Definition at line 717 of file table.cpp.
 \label{classTableView_a245773b2b9426d4e354cf55fff770aa8}
 
 
-Definition at line 730 of file table.cpp.
+Definition at line 757 of file table.cpp.
 
 \hypertarget{classTableView_ae927aad90eebbc37f4429ec40393a175}{
 \index{TableView@{TableView}!setCurrMouseColumn@{setCurrMouseColumn}}
@@ -540,7 +570,7 @@ Definition at line 730 of file table.cpp.
 \label{classTableView_ae927aad90eebbc37f4429ec40393a175}
 
 
-Definition at line 352 of file table.cpp.
+Definition at line 353 of file table.cpp.
 
 \hypertarget{classTableView_ae672b410481126e82682273afd28ccdb}{
 \index{TableView@{TableView}!setCurrMouseRow@{setCurrMouseRow}}
@@ -553,7 +583,7 @@ Definition at line 352 of file table.cpp.
 \label{classTableView_ae672b410481126e82682273afd28ccdb}
 
 
-Definition at line 342 of file table.cpp.
+Definition at line 343 of file table.cpp.
 
 \hypertarget{classTableView_a41a45f3b1b6fc2be38f7068629bd9462}{
 \index{TableView@{TableView}!setIgnoreRowChange@{setIgnoreRowChange}}
@@ -579,7 +609,7 @@ Definition at line 62 of file table.h.
 \label{classTableView_ac80392b3e39df8bb876d5ac378375caf}
 
 
-Definition at line 543 of file table.cpp.
+Definition at line 546 of file table.cpp.
 
 \hypertarget{classTableView_a53b722124712ba16befce5b620a82a8f}{
 \index{TableView@{TableView}!setMaxArrSize@{setMaxArrSize}}
@@ -592,7 +622,7 @@ Definition at line 543 of file table.cpp.
 \label{classTableView_a53b722124712ba16befce5b620a82a8f}
 
 
-Definition at line 452 of file table.cpp.
+Definition at line 455 of file table.cpp.
 
 \hypertarget{classTableView_a54c133e2fe1893644c9996694c075ed2}{
 \index{TableView@{TableView}!setMouseModelIndex@{setMouseModelIndex}}
@@ -605,7 +635,7 @@ Definition at line 452 of file table.cpp.
 \label{classTableView_a54c133e2fe1893644c9996694c075ed2}
 
 
-Definition at line 363 of file table.cpp.
+Definition at line 364 of file table.cpp.
 
 \hypertarget{classTableView_ab31519c042431fa0e23f04b719156776}{
 \index{TableView@{TableView}!setMousePos@{setMousePos}}
@@ -618,7 +648,7 @@ Definition at line 363 of file table.cpp.
 \label{classTableView_ab31519c042431fa0e23f04b719156776}
 
 
-Definition at line 373 of file table.cpp.
+Definition at line 374 of file table.cpp.
 
 \hypertarget{classTableView_ac961015fe4c7fe1c5af03035db501400}{
 \index{TableView@{TableView}!setScrLine@{setScrLine}}
@@ -631,7 +661,7 @@ Definition at line 373 of file table.cpp.
 \label{classTableView_ac961015fe4c7fe1c5af03035db501400}
 
 
-Definition at line 689 of file table.cpp.
+Definition at line 716 of file table.cpp.
 
 \hypertarget{classTableView_abe0f2fa077f2d14e7e14f6cfcad09bd6}{
 \index{TableView@{TableView}!setText@{setText}}
@@ -646,7 +676,7 @@ Definition at line 689 of file table.cpp.
 \label{classTableView_abe0f2fa077f2d14e7e14f6cfcad09bd6}
 
 
-Definition at line 764 of file table.cpp.
+Definition at line 791 of file table.cpp.
 
 \hypertarget{classTableView_a448f34f348c812c632d5e33b7f6987a0}{
 \index{TableView@{TableView}!sizeHint@{sizeHint}}
@@ -659,7 +689,7 @@ Definition at line 764 of file table.cpp.
 \label{classTableView_a448f34f348c812c632d5e33b7f6987a0}
 
 
-Definition at line 380 of file table.cpp.
+Definition at line 381 of file table.cpp.
 
 \hypertarget{classTableView_a643a93fdbb136136598e30dc3b3ad5e4}{
 \index{TableView@{TableView}!updateSectionWidth@{updateSectionWidth}}
@@ -687,7 +717,7 @@ Definition at line 166 of file table.cpp.
 \label{classTableView_a70c32ac02d45e8723f3521cf80f3862e}
 
 
-Definition at line 258 of file table.cpp.
+Definition at line 259 of file table.cpp.
 
 
 
@@ -699,7 +729,7 @@ Definition at line 258 of file table.cpp.
 \label{classTableView_a150be12afa3562146d290f26f10459b2}
 
 
-Definition at line 86 of file table.h.
+Definition at line 87 of file table.h.
 
 \hypertarget{classTableView_a20a7e1035a96ddde81059ce744099798}{
 \index{TableView@{TableView}!b\_\-ignoreRowChange@{b\_\-ignoreRowChange}}
@@ -708,7 +738,7 @@ Definition at line 86 of file table.h.
 \label{classTableView_a20a7e1035a96ddde81059ce744099798}
 
 
-Definition at line 87 of file table.h.
+Definition at line 88 of file table.h.
 
 \hypertarget{classTableView_a1808f7915f3db4bdea5fb535ecebda52}{
 \index{TableView@{TableView}!columnAct@{columnAct}}
@@ -744,7 +774,7 @@ Definition at line 46 of file table.h.
 \label{classTableView_a6624fcee6052dd850b9437ed02ed27d8}
 
 
-Definition at line 81 of file table.h.
+Definition at line 82 of file table.h.
 
 \hypertarget{classTableView_a1f1333ce0ba4e23da60de63d9324d522}{
 \index{TableView@{TableView}!i\_\-arrLine@{i\_\-arrLine}}
@@ -753,7 +783,7 @@ Definition at line 81 of file table.h.
 \label{classTableView_a1f1333ce0ba4e23da60de63d9324d522}
 
 
-Definition at line 82 of file table.h.
+Definition at line 83 of file table.h.
 
 \hypertarget{classTableView_a7b47dd87b8a2bcd86d413c2f19402429}{
 \index{TableView@{TableView}!i\_\-currcolumnmouse@{i\_\-currcolumnmouse}}
@@ -762,7 +792,7 @@ Definition at line 82 of file table.h.
 \label{classTableView_a7b47dd87b8a2bcd86d413c2f19402429}
 
 
-Definition at line 90 of file table.h.
+Definition at line 91 of file table.h.
 
 \hypertarget{classTableView_aed6ae9fb72681922a98a95e41ca84716}{
 \index{TableView@{TableView}!i\_\-currrowmouse@{i\_\-currrowmouse}}
@@ -771,7 +801,7 @@ Definition at line 90 of file table.h.
 \label{classTableView_aed6ae9fb72681922a98a95e41ca84716}
 
 
-Definition at line 89 of file table.h.
+Definition at line 90 of file table.h.
 
 \hypertarget{classTableView_a02c154332908ba1622903ac621ef31bb}{
 \index{TableView@{TableView}!i\_\-maxArrSize@{i\_\-maxArrSize}}
@@ -780,7 +810,7 @@ Definition at line 89 of file table.h.
 \label{classTableView_a02c154332908ba1622903ac621ef31bb}
 
 
-Definition at line 84 of file table.h.
+Definition at line 85 of file table.h.
 
 \hypertarget{classTableView_a5fc28c3171c5f26f2f60fac01173a57d}{
 \index{TableView@{TableView}!i\_\-scrLine@{i\_\-scrLine}}
@@ -789,7 +819,7 @@ Definition at line 84 of file table.h.
 \label{classTableView_a5fc28c3171c5f26f2f60fac01173a57d}
 
 
-Definition at line 83 of file table.h.
+Definition at line 84 of file table.h.
 
 \hypertarget{classTableView_a489364559dd2e697eafec6cce3b67a1c}{
 \index{TableView@{TableView}!mouseindex@{mouseindex}}
@@ -798,7 +828,7 @@ Definition at line 83 of file table.h.
 \label{classTableView_a489364559dd2e697eafec6cce3b67a1c}
 
 
-Definition at line 106 of file table.h.
+Definition at line 107 of file table.h.
 
 \hypertarget{classTableView_a1d048152ea82f3f8d33e538cb032b37b}{
 \index{TableView@{TableView}!p\_\-fglform@{p\_\-fglform}}
