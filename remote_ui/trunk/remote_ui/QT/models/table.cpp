@@ -1049,7 +1049,7 @@ bool TableModel::removeRows(int position, int rows, const QModelIndex &index)
 {
 MainFrame::vdcdebug("TableModel","removeRows", "int position, int rows, const QModelIndex &index");
    Q_UNUSED(index);
-   if(this->rows > 0 && this->fields.count() > position+rows){
+   if(this->rows > 0 && this->fields.count() > rowCount(index)){
 
       beginRemoveRows(QModelIndex(), position, position+rows-1);
       this->rows -= rows;
