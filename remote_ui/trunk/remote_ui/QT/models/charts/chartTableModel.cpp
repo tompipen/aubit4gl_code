@@ -42,7 +42,7 @@ QVariant ChartTableModel::data(const QModelIndex &index, int role) const {
     }
 }
 
-QVariant ChartTableModel::headerData(int section, Qt::Orientation orientation, int role ) const {
+/*QVariant ChartTableModel::headerData(int section, Qt::Orientation orientation, int role ) const {
     QVariant axis_text;
 
     if (role == Qt::DisplayRole){
@@ -53,7 +53,7 @@ QVariant ChartTableModel::headerData(int section, Qt::Orientation orientation, i
         }
     }
     return axis_text;
-}
+}*/
 
 
 void ChartTableModel::setTitelText(const QString& text){
@@ -64,7 +64,6 @@ void ChartTableModel::setTitelText(const QString& text){
 QString ChartTableModel::getTitelText(){
     return titelText;
 }
-
 
 
 bool ChartTableModel::loadData( const QString &filename ) {
@@ -127,17 +126,33 @@ bool ChartTableModel::loadData( const QString &filename ) {
 
         reset();
         }
-        return true;      
+        return true;
     } else {
         return false;  //Dateifehler
     }
 
 } // loadData
 
-bool ChartTableModel::addChartData(const QVector<QVariant>& name, const QVector<QVariant>& wert)
+bool ChartTableModel::addChartData(const QVector<QVariant>& name, const QVector<QVariant>& wert )
 {
+    if(!name.isEmpty()){     // header
+        h_AxisText.clear();
+        for(int column = 0; column < name.size(); column++) {
+            h_AxisText.append( name[column].toString() );
+        }
 
+        if(!wert.isEmpty()){  // datarow
+            int size = this->dataVector.size();
+            this->dataVector.resize( size + 1);
+            this->dataVector[size] = wert;
+            qDebug()<< "datavector: " << dataVector;
+            return true;
+        }
+    }
+    return false;
 }
+
+
 
 bool ChartTableModel::addChartData(const QString& name, const QString& wert) {
 
