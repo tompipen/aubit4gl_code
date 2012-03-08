@@ -1071,8 +1071,6 @@ MainFrame::vdcdebug("TableModel","removeRows", "int position, int rows, const QM
        if(this->rows >= 0){
           this->rows -= rows;
 
-
-          if(position < rows) {
               beginRemoveRows(QModelIndex(), position, rows-1);
 
               for(int row=1; row < rows; row++){
@@ -1081,17 +1079,6 @@ MainFrame::vdcdebug("TableModel","removeRows", "int position, int rows, const QM
 
               endRemoveRows();
               return true;
-          }
-          else {
-              beginRemoveRows(QModelIndex(), rows-1, position);
-
-              for(int row=0; row < position; row++){
-                 this->fields.remove(this->rows);
-              }
-
-              endRemoveRows();
-              return true;
-          }
        }
        return false;
 
