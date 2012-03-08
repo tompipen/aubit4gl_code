@@ -476,7 +476,10 @@ dtype :
 	|	UICOMBOBOX {
 			$$=new_variable_object("ui.combobox");
 		} 
-	|	STRING {
+	|  UIBROWSER {
+         $$=new_variable_object("ui.browser");
+      }
+   |  STRING {
 			if (A4GL_isyes(acl_getenv("STRING_AS_OBJECT"))) {
 				$$=new_variable_object("STRING");
 			} else {

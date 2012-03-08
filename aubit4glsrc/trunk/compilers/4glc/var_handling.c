@@ -66,6 +66,8 @@ int A4GL_check_isobject_name(char *s) {
     return DTYPE_OBJECT;
   if (strcasecmp (s, "ui.combobox") == 0)
     return DTYPE_OBJECT;
+  if (strcasecmp (s, "ui.browser") == 0)
+    return DTYPE_OBJECT;
 
   if (A4GL_ObjectTypeExists(s)) {
     return DTYPE_OBJECT;

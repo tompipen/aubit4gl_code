@@ -2,7 +2,13 @@
 # these should be committed to CVS - we dont need to regenerate
 # the .c files from the .objspec files all the time...
 
-all: ui_combobox.c ui_curses.c ui_vdc.c
+all: ui_combobox.c ui_curses.c ui_vdc.c ui_browser.c
+
+ui_browser.o: ui_browser.c
+	gcc -c -I../../../incl -I.. ui_browser.c
+
+ui_combobox.c: ui.browser.objspec  mk_objspec
+	sh mk_objspec ui.browser > ui_browser.c
 
 ui_combobox.o: ui_combobox.c
 	gcc -c -I../../../incl -I.. ui_combobox.c

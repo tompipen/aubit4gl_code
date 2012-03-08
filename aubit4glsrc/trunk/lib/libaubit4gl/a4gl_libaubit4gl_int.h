@@ -47,6 +47,7 @@ void add_ui_window_support(void) ;
 void add_ui_combobox_support(void) ;
 void add_ui_vdc_support(void) ;
 void add_ui_curses_support(void);
+void add_ui_browser_support(void);
 void add_dyn_support(void) ;
 char *getSigForTopOfStack(int numberOfObjectsOnStack) ;
 struct s_save_binding {
