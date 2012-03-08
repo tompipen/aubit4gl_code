@@ -998,7 +998,55 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
 
             setFieldHidden(fieldName, hidden);
          }
+         if(qs_name == "ui.browser.create")
+         {
+             QStringList params;
+              for(int k=0; k<paramsElement.childNodes().count(); k++){
+                 QDomElement valuesElement = paramsElement.childNodes().at(k).toElement();
+                 params << valuesElement.text();
+              }
 
+              connect(this, SIGNAL(createBrowser()), this->p_currScreenHandler, SLOT(createBrowser()));
+              emit createBrowser();
+
+              returnvalues << "0";
+
+         }
+         if(qs_name == "ui.browser.openurl")
+         {
+             QStringList params;
+              for(int k=0; k<paramsElement.childNodes().count(); k++){
+                 QDomElement valuesElement = paramsElement.childNodes().at(k).toElement();
+                 params << valuesElement.text();
+              }
+
+              connect(this, SIGNAL(setUrl(QUrl)), this->p_currScreenHandler, SLOT(setUrl(QUrl)));
+              if(this->p_currScreenHandler->getBrowser())
+              {
+                  emit setUrl(QUrl(params.at(1)));
+                  returnvalues << "1";
+              } else {
+                  qDebug() << "Es wurde kein Browser initialisiert mit createBrowser()";
+                  returnvalues << "408";
+              }
+
+         }
+         if(qs_name == "ui.browser.close")
+         {
+             QStringList params;
+              for(int k=0; k<paramsElement.childNodes().count(); k++){
+                 QDomElement valuesElement = paramsElement.childNodes().at(k).toElement();
+                 params << valuesElement.text();
+              }
+
+              connect(this, SIGNAL(closeBrowser()), this->p_currScreenHandler, SLOT(closeBrowser()));
+              if(this->p_currScreenHandler->getBrowser())
+              {
+                  emit closeBrowser();
+              }
+              //returnvalues << "0";
+
+         }
          if(qs_name == "ui.vdc.action"){
            qDebug() << "werde aufgerufen!!!" << "";
            QStringList params;

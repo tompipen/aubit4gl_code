@@ -33,6 +33,7 @@ class FglForm;
 #include "models/charts/chartInterface.h"
 #include "models/charts/chartTableModel.h"
 #endif
+#include "models/webbrowser.h"
 
 class ScreenHandler : public QObject
 {
@@ -57,6 +58,7 @@ public:
    QList<QSize*> ql_formSizes;
    QList<FglForm*> ql_fglForms;
    QStringList qsl_activeFieldNames;
+   WebBrowser *p_browser;
 
    bool b_menuEnabled;
    //QStringList qsl_arrayValues;
@@ -76,6 +78,8 @@ public:
    void addComboBoxItem(int, QString, QString);
    void removeComboBoxItem(int, QString);
    void clearComboBox(int);
+
+   WebBrowser* getBrowser() const { return p_browser; };
       FglForm *p_fglform;
 
 protected:
@@ -141,6 +145,9 @@ public slots:
    void addChartValue(QVector<QVariant>& name, QVector<QVariant>& wert);
    void displayChart(QString);
    #endif
+   void createBrowser();
+   void setUrl(const QUrl &http);
+   void closeBrowser();
    void handleXMLStyles(QString);
    //void setFieldBuffer(QString, QString);
    void setFieldBuffer(int, QString, int);

@@ -1,19 +1,24 @@
 #include "models/webbrowser.h"
 
 
-WebBrowser::WebBrowser(const QUrl &url)
+/*WebBrowser::WebBrowser()
 {
 
+}*/
+
+void WebBrowser::createBrowser()
+{
     QFile file;
     file.setFileName(":/jquery.min.js");
     file.open(QIODevice::ReadOnly);
     jQuery = file.readAll();
     file.close();
+    //QUrl url = QUrl("http://www.google.de");
 
     QNetworkProxyFactory::setUseSystemConfiguration(true);
 
     WebView = new QWebView(this);
-    WebView->load(url);
+    //WebView->load(url);
     connect(WebView, SIGNAL(loadFinished(bool)), SLOT(adjustLocation()));
     connect(WebView, SIGNAL(titleChanged(QString)), SLOT(adjustTitle()));
     connect(WebView, SIGNAL(loadProgress(int)), SLOT(setProgress(int)));
@@ -36,12 +41,21 @@ WebBrowser::WebBrowser(const QUrl &url)
 
     setCentralWidget(WebView);
     setUnifiedTitleAndToolBarOnMac(true);
-
+    this->show();
+}
+void WebBrowser::loadUrl(const QUrl &http)
+{
+    WebView->setUrl(http);
 }
 
 void WebBrowser::adjustLocation()
 {
     locationEdit->setText(WebView->url().toString());
+}
+
+void WebBrowser::closeBrowser()
+{
+    this->close();
 }
 
 void WebBrowser::changeLocation()

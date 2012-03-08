@@ -3172,3 +3172,20 @@ void ScreenHandler::displayChart(QString fileName)
 }
 #endif
 
+void ScreenHandler::createBrowser()
+{
+    p_browser = new WebBrowser();
+    p_browser->createBrowser();
+}
+void ScreenHandler::setUrl(const QUrl &http)
+{
+    if(p_browser)
+    {
+        p_browser->loadUrl(http);
+    }
+}
+void ScreenHandler::closeBrowser()
+{
+    p_browser->closeBrowser();
+}
+

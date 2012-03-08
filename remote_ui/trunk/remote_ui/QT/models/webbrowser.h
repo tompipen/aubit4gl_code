@@ -13,7 +13,10 @@ class WebBrowser : public QMainWindow
 
 
 public:
-    WebBrowser(const QUrl& url);
+    //WebBrowser();
+    void createBrowser();
+    void loadUrl(const QUrl&);
+    void closeBrowser();
 
 protected slots:
 
@@ -34,9 +37,10 @@ protected slots:
 
 private:
     QString jQuery;
-    QWebView *WebView;
+    QWebView* WebView;
     QLineEdit *locationEdit;
     QAction *rotateAction;
+
 };
 
 #endif // WEBBROWSER_H
