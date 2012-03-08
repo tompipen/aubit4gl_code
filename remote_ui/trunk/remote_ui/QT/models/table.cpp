@@ -1049,23 +1049,55 @@ bool TableModel::removeRows(int position, int rows, const QModelIndex &index)
 {
 MainFrame::vdcdebug("TableModel","removeRows", "int position, int rows, const QModelIndex &index");
    Q_UNUSED(index);
-   if(this->rows > 0 && this->fields.count() > rowCount(index)){
+   if(position > rows)
+   {
+       if(this->rows > 0 && this->fields.count() > position+rows-1){
 
-      beginRemoveRows(QModelIndex(), position, position+rows-1);
-      this->rows -= rows;
-      for(int i=1; i<rows; i++){
-         if(this->fields.count() > position+i){
-         this->fields.remove(position+i);
-         }
-      }
-      endRemoveRows();
+          beginRemoveRows(QModelIndex(), position, position+rows-1);
+          this->rows -= rows;
+          for(int i=1; i<rows; i++){
+             if(this->fields.count() > position+i){
+             this->fields.remove(position+i);
+             }
+          }
+          endRemoveRows();
 
-      return true;
+          return true;
+       }
+
+       return false;
    }
+   else {
+       if(this->rows >= 0){
+          this->rows -= rows;
 
-   return false;
 
+          if(position < rows) {
+              beginRemoveRows(QModelIndex(), position, rows-1);
+
+              for(int row=1; row < rows; row++){
+                 this->fields.remove(this->rows);
+              }
+
+              endRemoveRows();
+              return true;
+          }
+          else {
+              beginRemoveRows(QModelIndex(), rows-1, position);
+
+              for(int row=0; row < position; row++){
+                 this->fields.remove(this->rows);
+              }
+
+              endRemoveRows();
+              return true;
+          }
+       }
+       return false;
+
+   }
 }
+
 void TableModel::setTableView(TableView *tv)
 {
     this->mytv = tv;
