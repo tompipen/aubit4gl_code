@@ -1393,6 +1393,7 @@ MainFrame::vdcdebug("ScreenHandler","clearEvents", "");
    if(p_fglform->ql_responseQueue.size() > 0){
       p_fglform->ql_responseQueue.clear();
    }
+   p_fglform->clearKeyboardBuffer();
 
    this->clearFieldEvents = false;
 }
@@ -1990,9 +1991,12 @@ MainFrame::vdcdebug("ScreenHandler","waitForEvent", "");
 
 
 
-
-      p_fglform->b_getch_swin = true;
-      processResponse();
+     if(p_fglform->ql_responseQueue.size() > 0)
+     {
+         p_fglform->b_getch_swin = true;
+         processResponse();
+         return;
+     }
       setUpdatesEnabled(true);
 
 
@@ -2008,7 +2012,7 @@ MainFrame::vdcdebug("ScreenHandler","waitForEvent", "");
                if(tableView->curr_editor != NULL)
                {
             //      tableView->curr_editor->setFocus(Qt::OtherFocusReason);
-                  p_fglform->setFocusOnWidget(tableView->curr_editor);
+                  //p_fglform->setFocusOnWidget(tableView->curr_editor);
                }
            }
        }
@@ -2033,7 +2037,11 @@ MainFrame::vdcdebug("ScreenHandler","waitForEvent", "");
            }
        }
    }
+   p_fglform->replayKeyboard();
+   p_fglform->b_getch_swin = true;
    VDC::arrowCursor();
+
+
 
 }
 
@@ -3006,7 +3014,23 @@ bool ScreenHandler::eventFilter(QObject *obj, QEvent *event)
     if(p_fglform != NULL && event->type() == 1337)
     if(!p_fglform->b_dummy && p_fglform->isEnabled()&&p_fglform->currentField() != NULL && (p_fglform->state() == Fgl::CONSTRUCT || p_fglform->state() == Fgl::INPUT || p_fglform->state() == Fgl::INPUTARRAY))
     {
-        p_fglform->setCurrentField(p_fglform->currentField()->objectName(), false);
+
+        if(TableView *tableView = qobject_cast<TableView *> (p_fglform->currentField())){
+            if(p_fglform->inputArray())
+            {
+                if(tableView->curr_editor != NULL)
+                {
+                   p_fglform->setFocusOnWidget(tableView->curr_editor);
+                }
+            }
+        }
+        else
+        {
+            p_fglform->setFocusOnWidget(p_fglform->currentField());
+
+        }
+
+       // p_fglform->setCurrentField(p_fglform->currentField()->objectName(), false);
 
     }
 

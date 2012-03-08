@@ -1195,6 +1195,9 @@ MainFrame::vdcdebug("LineEditDelegate","sizeHint", "const QStyleOptionViewItem &
    return QSize();
 }
 
+
+
+
 QWidget* LineEditDelegate::createEditor(QWidget *parent,
    const QStyleOptionViewItem &/* option */,
    const QModelIndex &/* index */) const
@@ -1202,7 +1205,7 @@ QWidget* LineEditDelegate::createEditor(QWidget *parent,
    QWidget *editor = WidgetHelper::createFormWidget(this->formElement, parent);
    if(TableView *tv = qobject_cast<TableView*> (parent->parentWidget()))
    {
-           tv->curr_editor = editor;
+            tv->curr_editor = editor;
    }
 
    editor->setAutoFillBackground(true);

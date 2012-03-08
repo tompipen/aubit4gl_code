@@ -77,7 +77,8 @@ FglForm::FglForm(QString windowName, QWidget *parent) : QMainWindow(parent){
 
    b_menu = false;
    b_input = false;
-   b_screenRecord = false;   gridWidth = 0;
+   b_screenRecord = false;
+   gridWidth = 0;
    p_dialog = NULL;
    p_pulldown = NULL;
    p_actionMenu = NULL;
@@ -703,6 +704,57 @@ MainFrame::vdcdebug("FglForm","setToolBar", "QDomDocument xmlFile");
    }
 }
 
+/*!
+ * \brief Method to replay the Keyboardbuffer.
+ */
+
+void FglForm::replayKeyboard()
+{
+
+  if(!currentField())
+  {
+     return;
+  }
+
+  if(b_keybuffer)
+  {
+     return;
+  }
+
+  foreach(QKeyEvent *key, ql_keybuffer)
+  {
+      if(TableView *tableView = qobject_cast<TableView *> (currentField())){
+          if(inputArray())
+          {
+              if(tableView->curr_editor != NULL)
+              {
+                  qDebug()<<"SENDE AN : "<<tableView->curr_editor->objectName();
+                  QApplication::postEvent(tableView->curr_editor, key);
+              }
+          }
+      }
+      else
+      {
+          QApplication::postEvent(currentField(), key);
+      }
+
+      ql_keybuffer.removeOne(key);
+  }
+
+}
+/*!
+ * \brief Method to clear the current Keyboardbuffer. Needed for NEXTFIELD introductions cause the keystrokes are obsolet.
+ */
+void FglForm::clearKeyboardBuffer()
+{
+  b_keybuffer = false;
+  if(ql_keybuffer.size() > 0)
+  {
+     ql_keybuffer.clear();
+  }
+
+}
+
 //------------------------------------------------------------------------------
 // Method       : eventFilter()
 // Filename     : fglform.cpp
@@ -712,6 +764,34 @@ MainFrame::vdcdebug("FglForm","setToolBar", "QDomDocument xmlFile");
 bool FglForm::eventFilter(QObject *obj, QEvent *event)
 {
 //MainFrame::vdcdebug("FglForm","eventFilter", "QObject *obj, QEvent *event");
+
+
+
+   //Keyboardbuffer
+
+  if(event->type() == QEvent::KeyPress || event->type() == QEvent::KeyRelease)
+  {
+      if(b_keybuffer)
+      {
+
+          if(event->type() == QEvent::KeyRelease && ql_keybuffer.size() < 1)
+          {
+             return true;
+          }
+
+          QKeyEvent *kev = (QKeyEvent*) event;
+          QKeyEvent *mykev = new QKeyEvent(kev->type(),
+                                           kev->key(),
+                                           kev->modifiers(),
+                                           kev->text(),
+                                           kev->isAutoRepeat(),
+                                           kev->count());
+          ql_keybuffer << mykev;
+          return true;
+
+
+      }
+  }
 
 
 
@@ -1440,7 +1520,10 @@ if(inputArray() || displayArray())
 }
 
 
-
+/*!
+ * \brief Method to remove the Focus of all widgets. Needed if its not known which widget has the focus(Enabled/Disabled Widgets).
+ * \see setFocusOnWidget()
+ */
 void FglForm::clearFieldFocus()
 {
   currentField()->clearFocus();
@@ -1454,6 +1537,7 @@ void FglForm::clearFieldFocus()
 
 /*!
  * \brief Method to set Focus and remove the focus of all other widgets
+ * \see clearFieldFocus()
  */
 
 void FglForm::setFocusOnWidget(QWidget *w, Qt::FocusReason reason)
@@ -3779,6 +3863,7 @@ MainFrame::vdcdebug("FglForm","checkField", "");
 
 void FglForm::setUserInputEnabled(bool enabled)
 {
+    b_keybuffer = !enabled;
     if (context) {
         foreach (QWidget *widget, context->fieldList())
         {
@@ -3807,6 +3892,8 @@ void FglForm::setUserInputEnabled(bool enabled)
     RingMenu *ringMenu = menu();
     if (ringMenu)
         ringMenu->setEnabled(enabled);
+
+
 }
 
 /*

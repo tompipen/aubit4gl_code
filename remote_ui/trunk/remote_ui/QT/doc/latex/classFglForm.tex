@@ -14,7 +14,7 @@ void \hyperlink{classFglForm_a0ee0e2722721bf18a2809e670e0777cf}{buttonClicked} (
 void \hyperlink{classFglForm_a1fd5cabc8ec447738e4420f618d69ca7}{fieldEvent} (\hyperlink{structFgl_1_1Event}{Fgl::Event}, QWidget $\ast$=NULL)
 \item 
 \hyperlink{structFgl_1_1Event}{Fgl::Event} \hyperlink{classFglForm_a8ce69fa40e651b0238b3efbe64bb7ef7}{getFormEvent} (\hyperlink{structFgl_1_1Event}{Fgl::Event}, QWidget $\ast$\hyperlink{classFglForm_a15cd139d56b40da6de43a6bb4d438c0d}{widget}=NULL)
-\begin{DoxyCompactList}\small\item\em Method to get the formevent based on the event.type and merge the event.field of the parameter to the returnvalue. If no Event was found, it returns type to diff with the . \item\end{DoxyCompactList}\item 
+\begin{DoxyCompactList}\small\item\em Method to get the formevent based on the event.type and merge the event.field of the parameter to the returnvalue. If the event.id is set, the method found the event otherwise the event.id is empty. \item\end{DoxyCompactList}\item 
 void \hyperlink{classFglForm_a763db4c754333829447f9766c25f0e0b}{setBufferTouched} ()
 \item 
 void \hyperlink{classFglForm_a8495f6c9444756a6bdf370c3ce158921}{setLastCursor} (int, int)
@@ -28,6 +28,8 @@ void \hyperlink{classFglForm_a21cf637edb3ad010d7e00e4d20b95825}{cancelTriggered}
 void \hyperlink{classFglForm_afd623938967b4f76707704ab67032a57}{acceptTriggered} ()
 \item 
 void \hyperlink{classFglForm_a21e6b7f851487d6d0db29b015a37e374}{addToQueue} (QList$<$ \hyperlink{structFgl_1_1Event}{Fgl::Event} $>$)
+\item 
+void \hyperlink{classFglForm_a82a066a47d5d8bc2f7c2ec41ab29d4f2}{addToQueue} (\hyperlink{structFgl_1_1Event}{Fgl::Event})
 \item 
 void \hyperlink{classFglForm_a2300cda82ffb223096c19f63004e248f}{accept} ()
 \item 
@@ -76,7 +78,7 @@ void \hyperlink{classFglForm_a3d7ccbba13b950e970333db68755d022}{saveFieldSetting
 void \hyperlink{classFglForm_a4430f1038e2dcfd957c1d361d0c286d4}{clearCurrentFocus} ()
 \item 
 void \hyperlink{classFglForm_ae2815f84a3c114c000f97cc0cf431bb7}{clearFieldFocus} ()
-\item 
+\begin{DoxyCompactList}\small\item\em Method to remove the Focus of all widgets. Needed if its not known which widget has the focus(Enabled/Disabled Widgets). \item\end{DoxyCompactList}\item 
 void \hyperlink{classFglForm_abacf589f219bcfbcf54ca2a5fb9ba859}{setFocusOnWidget} (QWidget $\ast$, Qt::FocusReason=Qt::OtherFocusReason)
 \begin{DoxyCompactList}\small\item\em Method to set Focus and remove the focus of all other widgets. \item\end{DoxyCompactList}\item 
 void \hyperlink{classFglForm_a5e7fe57471d1f3ad4d6dbf7ac1c8b843}{sendMenuCommand} (QString)
@@ -117,6 +119,10 @@ void \hyperlink{classFglForm_a6084470ee7bb46645d64a82503c60fba}{closeAction} ()
 \begin{DoxyCompactList}\small\item\em Constructor for the Fglform. \item\end{DoxyCompactList}\item 
 \hyperlink{classFglForm_a14fc02c52beeeffefa92a4b3425da772}{$\sim$FglForm} ()
 \item 
+void \hyperlink{classFglForm_a304cb50242f0f546f3c750be160738e5}{replayKeyboard} ()
+\begin{DoxyCompactList}\small\item\em Method to replay the Keyboardbuffer. \item\end{DoxyCompactList}\item 
+void \hyperlink{classFglForm_a929ef0072e09235e5496c7f59c4be2e6}{clearKeyboardBuffer} ()
+\begin{DoxyCompactList}\small\item\em Method to clear the current Keyboardbuffer. Needed for NEXTFIELD introductions cause the keystrokes are obsolet. \item\end{DoxyCompactList}\item 
 void \hyperlink{classFglForm_a626014edfd45271d30f38d877601abd5}{jumpToField} (QWidget $\ast$, bool b\_\-after=true)
 \item 
 void \hyperlink{classFglForm_acfb920aa37d488d2877fe75441ac7f65}{setMenuEnabled} (bool)
@@ -188,8 +194,6 @@ QWidget $\ast$ \hyperlink{classFglForm_a74cb6310512352e1fd501efbcd88724b}{curren
 void \hyperlink{classFglForm_ac521356370affcf115340e2279475c6b}{setCurrentWidget} (QWidget $\ast$)
 \item 
 void \hyperlink{classFglForm_a4574756e714c6d93e6d177ecbfb78ae1}{setCurrentField} (QString, bool sendEvents=true)
-\item 
-void \hyperlink{classFglForm_a82a066a47d5d8bc2f7c2ec41ab29d4f2}{addToQueue} (\hyperlink{structFgl_1_1Event}{Fgl::Event})
 \item 
 bool \hyperlink{classFglForm_ab6b474ce22c93c45ccbee4b637647732}{input} ()
 \item 
@@ -355,6 +359,8 @@ e ms QT models fglform \hyperlink{classFglForm_a2adf651bccc4bd01a985a0c5bde45af7
 \item 
 QList$<$ \hyperlink{namespaceFgl_a66700792cb225549384ae76c1057cf22}{Fgl::State} $>$ \hyperlink{classFglForm_a18774054d5c9773a7075b5933b0bbc9a}{ql\_\-states}
 \item 
+QList$<$ QKeyEvent $\ast$ $>$ \hyperlink{classFglForm_a2164d9fc4e8c4be30d54ec2a99e881ea}{ql\_\-keybuffer}
+\item 
 QWidget $\ast$ \hyperlink{classFglForm_a382565fe4e148f5e37aabea41e079809}{formWidget}
 \item 
 QList$<$ \hyperlink{classRingMenu}{RingMenu} $\ast$ $>$ \hyperlink{classFglForm_a587196a08706e03ec05f1fae4048f344}{ql\_\-menus}
@@ -386,6 +392,8 @@ bool \hyperlink{classFglForm_ac1f8bea18516701b1192825f83e962d7}{b\_\-menu}
 bool \hyperlink{classFglForm_a348ba4d61a2c9e18513ac88c919015c0}{b\_\-input}
 \item 
 bool \hyperlink{classFglForm_a656061ca98f40226c99fa61b12ced56c}{b\_\-screenRecord}
+\item 
+bool \hyperlink{classFglForm_ae5096059ba81229c8e0070e85286420f}{b\_\-keybuffer}
 \item 
 QString \hyperlink{classFglForm_aff3b675ee7063af63839e029f66b4075}{m\_\-windowType}
 \item 
@@ -460,7 +468,7 @@ Definition at line 39 of file fglform.cpp.
 \label{classFglForm_a14fc02c52beeeffefa92a4b3425da772}
 
 
-Definition at line 114 of file fglform.cpp.
+Definition at line 115 of file fglform.cpp.
 
 
 
@@ -476,7 +484,7 @@ Definition at line 114 of file fglform.cpp.
 \label{classFglForm_a2300cda82ffb223096c19f63004e248f}
 
 
-Definition at line 1519 of file fglform.cpp.
+Definition at line 1589 of file fglform.cpp.
 
 \hypertarget{classFglForm_a1e972cdb1514dcb3c6613d123beb8f6a}{
 \index{FglForm@{FglForm}!accepted@{accepted}}
@@ -498,7 +506,7 @@ Definition at line 1519 of file fglform.cpp.
 \label{classFglForm_afd623938967b4f76707704ab67032a57}
 
 
-Definition at line 1491 of file fglform.cpp.
+Definition at line 1561 of file fglform.cpp.
 
 \hypertarget{classFglForm_aa65ef0a575b40217c5fbbe71c6faaf28}{
 \index{FglForm@{FglForm}!actionDefaults@{actionDefaults}}
@@ -511,7 +519,7 @@ Definition at line 1491 of file fglform.cpp.
 \label{classFglForm_aa65ef0a575b40217c5fbbe71c6faaf28}
 
 
-Definition at line 127 of file fglform.h.
+Definition at line 129 of file fglform.h.
 
 \hypertarget{classFglForm_aa7339ffc3aa81015c493104643fde6a1}{
 \index{FglForm@{FglForm}!actionMenu@{actionMenu}}
@@ -524,7 +532,7 @@ Definition at line 127 of file fglform.h.
 \label{classFglForm_aa7339ffc3aa81015c493104643fde6a1}
 
 
-Definition at line 106 of file fglform.h.
+Definition at line 108 of file fglform.h.
 
 \hypertarget{classFglForm_a6a62cd6e46c191cbec6c49381fd53a95}{
 \index{FglForm@{FglForm}!actionTriggered@{actionTriggered}}
@@ -537,20 +545,7 @@ Definition at line 106 of file fglform.h.
 \label{classFglForm_a6a62cd6e46c191cbec6c49381fd53a95}
 
 
-Definition at line 505 of file fglform.cpp.
-
-\hypertarget{classFglForm_ac43c7da12a298a241c7c98cf9a688a6f}{
-\index{FglForm@{FglForm}!addFormAction@{addFormAction}}
-\index{addFormAction@{addFormAction}!FglForm@{FglForm}}
-\subsubsection[{addFormAction}]{\setlength{\rightskip}{0pt plus 5cm}void FglForm::addFormAction (
-\begin{DoxyParamCaption}
-\item[{QAction $\ast$}]{qaction}
-\end{DoxyParamCaption}
-)}}
-\label{classFglForm_ac43c7da12a298a241c7c98cf9a688a6f}
-
-
-Definition at line 3052 of file fglform.cpp.
+Definition at line 506 of file fglform.cpp.
 
 \hypertarget{classFglForm_a21e61578024f5922c949b4c2870684d4}{
 \index{FglForm@{FglForm}!addFormAction@{addFormAction}}
@@ -571,7 +566,20 @@ Definition at line 3052 of file fglform.cpp.
 \label{classFglForm_a21e61578024f5922c949b4c2870684d4}
 
 
-Definition at line 3104 of file fglform.cpp.
+Definition at line 3174 of file fglform.cpp.
+
+\hypertarget{classFglForm_ac43c7da12a298a241c7c98cf9a688a6f}{
+\index{FglForm@{FglForm}!addFormAction@{addFormAction}}
+\index{addFormAction@{addFormAction}!FglForm@{FglForm}}
+\subsubsection[{addFormAction}]{\setlength{\rightskip}{0pt plus 5cm}void FglForm::addFormAction (
+\begin{DoxyParamCaption}
+\item[{QAction $\ast$}]{qaction}
+\end{DoxyParamCaption}
+)}}
+\label{classFglForm_ac43c7da12a298a241c7c98cf9a688a6f}
+
+
+Definition at line 3122 of file fglform.cpp.
 
 \hypertarget{classFglForm_abadbd33d56f9bc46b3421f8fe0628952}{
 \index{FglForm@{FglForm}!addFormEvent@{addFormEvent}}
@@ -584,20 +592,7 @@ Definition at line 3104 of file fglform.cpp.
 \label{classFglForm_abadbd33d56f9bc46b3421f8fe0628952}
 
 
-Definition at line 3155 of file fglform.cpp.
-
-\hypertarget{classFglForm_a82a066a47d5d8bc2f7c2ec41ab29d4f2}{
-\index{FglForm@{FglForm}!addToQueue@{addToQueue}}
-\index{addToQueue@{addToQueue}!FglForm@{FglForm}}
-\subsubsection[{addToQueue}]{\setlength{\rightskip}{0pt plus 5cm}void FglForm::addToQueue (
-\begin{DoxyParamCaption}
-\item[{{\bf Fgl::Event}}]{id}
-\end{DoxyParamCaption}
-)}}
-\label{classFglForm_a82a066a47d5d8bc2f7c2ec41ab29d4f2}
-
-
-Definition at line 174 of file fglform.cpp.
+Definition at line 3225 of file fglform.cpp.
 
 \hypertarget{classFglForm_a21e6b7f851487d6d0db29b015a37e374}{
 \index{FglForm@{FglForm}!addToQueue@{addToQueue}}
@@ -610,7 +605,20 @@ Definition at line 174 of file fglform.cpp.
 \label{classFglForm_a21e6b7f851487d6d0db29b015a37e374}
 
 
-Definition at line 188 of file fglform.cpp.
+Definition at line 189 of file fglform.cpp.
+
+\hypertarget{classFglForm_a82a066a47d5d8bc2f7c2ec41ab29d4f2}{
+\index{FglForm@{FglForm}!addToQueue@{addToQueue}}
+\index{addToQueue@{addToQueue}!FglForm@{FglForm}}
+\subsubsection[{addToQueue}]{\setlength{\rightskip}{0pt plus 5cm}void FglForm::addToQueue (
+\begin{DoxyParamCaption}
+\item[{{\bf Fgl::Event}}]{id}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}slot\mbox{]}}}}
+\label{classFglForm_a82a066a47d5d8bc2f7c2ec41ab29d4f2}
+
+
+Definition at line 175 of file fglform.cpp.
 
 \hypertarget{classFglForm_ae6cab599f897bf58335df99e6d43b72d}{
 \index{FglForm@{FglForm}!bufferTouched@{bufferTouched}}
@@ -623,7 +631,7 @@ Definition at line 188 of file fglform.cpp.
 \label{classFglForm_ae6cab599f897bf58335df99e6d43b72d}
 
 
-Definition at line 144 of file fglform.h.
+Definition at line 146 of file fglform.h.
 
 \hypertarget{classFglForm_a0ee0e2722721bf18a2809e670e0777cf}{
 \index{FglForm@{FglForm}!buttonClicked@{buttonClicked}}
@@ -636,7 +644,7 @@ Definition at line 144 of file fglform.h.
 \label{classFglForm_a0ee0e2722721bf18a2809e670e0777cf}
 
 
-Definition at line 147 of file fglform.cpp.
+Definition at line 148 of file fglform.cpp.
 
 \hypertarget{classFglForm_a21cf637edb3ad010d7e00e4d20b95825}{
 \index{FglForm@{FglForm}!cancelTriggered@{cancelTriggered}}
@@ -649,7 +657,7 @@ Definition at line 147 of file fglform.cpp.
 \label{classFglForm_a21cf637edb3ad010d7e00e4d20b95825}
 
 
-Definition at line 1505 of file fglform.cpp.
+Definition at line 1575 of file fglform.cpp.
 
 \hypertarget{classFglForm_ad806af9cecf975dc4abe1e12eb52864a}{
 \index{FglForm@{FglForm}!checkActions@{checkActions}}
@@ -662,7 +670,7 @@ Definition at line 1505 of file fglform.cpp.
 \label{classFglForm_ad806af9cecf975dc4abe1e12eb52864a}
 
 
-Definition at line 3244 of file fglform.cpp.
+Definition at line 3314 of file fglform.cpp.
 
 \hypertarget{classFglForm_a95fd29ee66dc40bb56d6bb94593feddd}{
 \index{FglForm@{FglForm}!checkField@{checkField}}
@@ -675,7 +683,7 @@ Definition at line 3244 of file fglform.cpp.
 \label{classFglForm_a95fd29ee66dc40bb56d6bb94593feddd}
 
 
-Definition at line 3766 of file fglform.cpp.
+Definition at line 3836 of file fglform.cpp.
 
 \hypertarget{classFglForm_a60718980fe99888336db588976319382}{
 \index{FglForm@{FglForm}!checkGuiActions@{checkGuiActions}}
@@ -688,7 +696,7 @@ Definition at line 3766 of file fglform.cpp.
 \label{classFglForm_a60718980fe99888336db588976319382}
 
 
-Definition at line 3380 of file fglform.cpp.
+Definition at line 3450 of file fglform.cpp.
 
 \hypertarget{classFglForm_ab7d3ed99ee7eac4b6b781e576d33a1ea}{
 \index{FglForm@{FglForm}!checkMenu@{checkMenu}}
@@ -701,7 +709,7 @@ Definition at line 3380 of file fglform.cpp.
 \label{classFglForm_ab7d3ed99ee7eac4b6b781e576d33a1ea}
 
 
-Definition at line 3447 of file fglform.cpp.
+Definition at line 3517 of file fglform.cpp.
 
 \hypertarget{classFglForm_a3770f9b34c38cb5bc3f66a7e388c43ce}{
 \index{FglForm@{FglForm}!checkShortcuts@{checkShortcuts}}
@@ -714,7 +722,7 @@ Definition at line 3447 of file fglform.cpp.
 \label{classFglForm_a3770f9b34c38cb5bc3f66a7e388c43ce}
 
 
-Definition at line 3555 of file fglform.cpp.
+Definition at line 3625 of file fglform.cpp.
 
 \hypertarget{classFglForm_a0ef6e6d0ddf327e89c3e2d54be8548a6}{
 \index{FglForm@{FglForm}!checkState@{checkState}}
@@ -727,7 +735,7 @@ Definition at line 3555 of file fglform.cpp.
 \label{classFglForm_a0ef6e6d0ddf327e89c3e2d54be8548a6}
 
 
-Definition at line 2664 of file fglform.cpp.
+Definition at line 2734 of file fglform.cpp.
 
 \hypertarget{classFglForm_a7490e381d17c7644c7f37a58d5ffa9b4}{
 \index{FglForm@{FglForm}!checkToolBar@{checkToolBar}}
@@ -740,7 +748,7 @@ Definition at line 2664 of file fglform.cpp.
 \label{classFglForm_a7490e381d17c7644c7f37a58d5ffa9b4}
 
 
-Definition at line 3189 of file fglform.cpp.
+Definition at line 3259 of file fglform.cpp.
 
 \hypertarget{classFglForm_a4430f1038e2dcfd957c1d361d0c286d4}{
 \index{FglForm@{FglForm}!clearCurrentFocus@{clearCurrentFocus}}
@@ -753,7 +761,7 @@ Definition at line 3189 of file fglform.cpp.
 \label{classFglForm_a4430f1038e2dcfd957c1d361d0c286d4}
 
 
-Definition at line 1414 of file fglform.cpp.
+Definition at line 1481 of file fglform.cpp.
 
 \hypertarget{classFglForm_ae2815f84a3c114c000f97cc0cf431bb7}{
 \index{FglForm@{FglForm}!clearFieldFocus@{clearFieldFocus}}
@@ -766,7 +774,31 @@ Definition at line 1414 of file fglform.cpp.
 \label{classFglForm_ae2815f84a3c114c000f97cc0cf431bb7}
 
 
-Definition at line 1456 of file fglform.cpp.
+Method to remove the Focus of all widgets. Needed if its not known which widget has the focus(Enabled/Disabled Widgets). 
+
+\begin{DoxySeeAlso}{See also}
+\hyperlink{classFglForm_abacf589f219bcfbcf54ca2a5fb9ba859}{setFocusOnWidget(QWidget$\ast$, Qt::FocusReason)} 
+\end{DoxySeeAlso}
+
+
+Definition at line 1526 of file fglform.cpp.
+
+\hypertarget{classFglForm_a929ef0072e09235e5496c7f59c4be2e6}{
+\index{FglForm@{FglForm}!clearKeyboardBuffer@{clearKeyboardBuffer}}
+\index{clearKeyboardBuffer@{clearKeyboardBuffer}!FglForm@{FglForm}}
+\subsubsection[{clearKeyboardBuffer}]{\setlength{\rightskip}{0pt plus 5cm}void FglForm::clearKeyboardBuffer (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}
+\label{classFglForm_a929ef0072e09235e5496c7f59c4be2e6}
+
+
+Method to clear the current Keyboardbuffer. Needed for NEXTFIELD introductions cause the keystrokes are obsolet. 
+
+
+
+Definition at line 747 of file fglform.cpp.
 
 \hypertarget{classFglForm_a6084470ee7bb46645d64a82503c60fba}{
 \index{FglForm@{FglForm}!closeAction@{closeAction}}
@@ -788,7 +820,7 @@ Definition at line 1456 of file fglform.cpp.
 \label{classFglForm_ab4a2e829699bf5c49124801ccd0eb5f2}
 
 
-Definition at line 1279 of file fglform.cpp.
+Definition at line 1346 of file fglform.cpp.
 
 \hypertarget{classFglForm_ab131183405b70a2d48643ec9a522f877}{
 \index{FglForm@{FglForm}!construct@{construct}}
@@ -801,7 +833,7 @@ Definition at line 1279 of file fglform.cpp.
 \label{classFglForm_ab131183405b70a2d48643ec9a522f877}
 
 
-Definition at line 139 of file fglform.h.
+Definition at line 141 of file fglform.h.
 
 \hypertarget{classFglForm_a039e7ba89ece4f1bb47c32dc34271536}{
 \index{FglForm@{FglForm}!contextMenuEvent@{contextMenuEvent}}
@@ -814,7 +846,7 @@ Definition at line 139 of file fglform.h.
 \label{classFglForm_a039e7ba89ece4f1bb47c32dc34271536}
 
 
-Definition at line 2753 of file fglform.cpp.
+Definition at line 2823 of file fglform.cpp.
 
 \hypertarget{classFglForm_af07f7257121ab71b9a53ccb2fd1a9fe3}{
 \index{FglForm@{FglForm}!createContextMenu@{createContextMenu}}
@@ -827,7 +859,7 @@ Definition at line 2753 of file fglform.cpp.
 \label{classFglForm_af07f7257121ab71b9a53ccb2fd1a9fe3}
 
 
-Definition at line 2762 of file fglform.cpp.
+Definition at line 2832 of file fglform.cpp.
 
 \hypertarget{classFglForm_a98a3ed85a0f12181c96d15a020250807}{
 \index{FglForm@{FglForm}!createStatusBar@{createStatusBar}}
@@ -840,7 +872,7 @@ Definition at line 2762 of file fglform.cpp.
 \label{classFglForm_a98a3ed85a0f12181c96d15a020250807}
 
 
-Definition at line 130 of file fglform.cpp.
+Definition at line 131 of file fglform.cpp.
 
 \hypertarget{classFglForm_a74cb6310512352e1fd501efbcd88724b}{
 \index{FglForm@{FglForm}!currentField@{currentField}}
@@ -853,7 +885,7 @@ Definition at line 130 of file fglform.cpp.
 \label{classFglForm_a74cb6310512352e1fd501efbcd88724b}
 
 
-Definition at line 132 of file fglform.h.
+Definition at line 134 of file fglform.h.
 
 \hypertarget{classFglForm_a1a92c94c67dd0ff9d8ff48c3fc64dcf9}{
 \index{FglForm@{FglForm}!defActions@{defActions}}
@@ -866,7 +898,7 @@ Definition at line 132 of file fglform.h.
 \label{classFglForm_a1a92c94c67dd0ff9d8ff48c3fc64dcf9}
 
 
-Definition at line 126 of file fglform.h.
+Definition at line 128 of file fglform.h.
 
 \hypertarget{classFglForm_ace102516f1523e1ea87c64f2db1ea30e}{
 \index{FglForm@{FglForm}!dialog@{dialog}}
@@ -879,7 +911,7 @@ Definition at line 126 of file fglform.h.
 \label{classFglForm_ace102516f1523e1ea87c64f2db1ea30e}
 
 
-Definition at line 109 of file fglform.h.
+Definition at line 111 of file fglform.h.
 
 \hypertarget{classFglForm_a77b1a70cf1fff7d103b8c1895b3302c4}{
 \index{FglForm@{FglForm}!displayArray@{displayArray}}
@@ -892,7 +924,7 @@ Definition at line 109 of file fglform.h.
 \label{classFglForm_a77b1a70cf1fff7d103b8c1895b3302c4}
 
 
-Definition at line 141 of file fglform.h.
+Definition at line 143 of file fglform.h.
 
 \hypertarget{classFglForm_a2a05aab413be356d8591d9feaa3818ea}{
 \index{FglForm@{FglForm}!dragSuccess@{dragSuccess}}
@@ -905,7 +937,7 @@ Definition at line 141 of file fglform.h.
 \label{classFglForm_a2a05aab413be356d8591d9feaa3818ea}
 
 
-Definition at line 1215 of file fglform.cpp.
+Definition at line 1282 of file fglform.cpp.
 
 \hypertarget{classFglForm_a0ccb7e3f717496c6dceaf34b0a6d49df}{
 \index{FglForm@{FglForm}!dropSuccess@{dropSuccess}}
@@ -918,7 +950,7 @@ Definition at line 1215 of file fglform.cpp.
 \label{classFglForm_a0ccb7e3f717496c6dceaf34b0a6d49df}
 
 
-Definition at line 1239 of file fglform.cpp.
+Definition at line 1306 of file fglform.cpp.
 
 \hypertarget{classFglForm_ac51ab1764a0c88802875af3b0ef890af}{
 \index{FglForm@{FglForm}!editcopy@{editcopy}}
@@ -931,7 +963,7 @@ Definition at line 1239 of file fglform.cpp.
 \label{classFglForm_ac51ab1764a0c88802875af3b0ef890af}
 
 
-Definition at line 1908 of file fglform.cpp.
+Definition at line 1978 of file fglform.cpp.
 
 \hypertarget{classFglForm_acba6e2dba68f2d8c8354a1f3e7de0213}{
 \index{FglForm@{FglForm}!editcut@{editcut}}
@@ -944,7 +976,7 @@ Definition at line 1908 of file fglform.cpp.
 \label{classFglForm_acba6e2dba68f2d8c8354a1f3e7de0213}
 
 
-Definition at line 1923 of file fglform.cpp.
+Definition at line 1993 of file fglform.cpp.
 
 \hypertarget{classFglForm_a3bbc33d5de6401f21553a0e09e091292}{
 \index{FglForm@{FglForm}!editpaste@{editpaste}}
@@ -957,7 +989,7 @@ Definition at line 1923 of file fglform.cpp.
 \label{classFglForm_a3bbc33d5de6401f21553a0e09e091292}
 
 
-Definition at line 1933 of file fglform.cpp.
+Definition at line 2003 of file fglform.cpp.
 
 \hypertarget{classFglForm_a3d2c6f2a3a0e1828ff1f43d4d93fa775}{
 \index{FglForm@{FglForm}!error@{error}}
@@ -970,7 +1002,7 @@ Definition at line 1933 of file fglform.cpp.
 \label{classFglForm_a3d2c6f2a3a0e1828ff1f43d4d93fa775}
 
 
-Definition at line 3046 of file fglform.cpp.
+Definition at line 3116 of file fglform.cpp.
 
 \hypertarget{classFglForm_ad684c111c48ae9b6bfee70f36383e8a0}{
 \index{FglForm@{FglForm}!eventFilter@{eventFilter}}
@@ -984,7 +1016,7 @@ Definition at line 3046 of file fglform.cpp.
 \label{classFglForm_ad684c111c48ae9b6bfee70f36383e8a0}
 
 
-Definition at line 712 of file fglform.cpp.
+Definition at line 763 of file fglform.cpp.
 
 \hypertarget{classFglForm_ac9689ad22eff52db3ab60446b78274e3}{
 \index{FglForm@{FglForm}!exitMenu@{exitMenu}}
@@ -997,7 +1029,7 @@ Definition at line 712 of file fglform.cpp.
 \label{classFglForm_ac9689ad22eff52db3ab60446b78274e3}
 
 
-Definition at line 1254 of file fglform.cpp.
+Definition at line 1321 of file fglform.cpp.
 
 \hypertarget{classFglForm_a1fd5cabc8ec447738e4420f618d69ca7}{
 \index{FglForm@{FglForm}!fieldEvent@{fieldEvent}}
@@ -1011,7 +1043,7 @@ Definition at line 1254 of file fglform.cpp.
 \label{classFglForm_a1fd5cabc8ec447738e4420f618d69ca7}
 
 
-Definition at line 1182 of file fglform.cpp.
+Definition at line 1249 of file fglform.cpp.
 
 \hypertarget{classFglForm_a997cd55b341e14c89fdc300efe75b907}{
 \index{FglForm@{FglForm}!findFieldById@{findFieldById}}
@@ -1024,7 +1056,7 @@ Definition at line 1182 of file fglform.cpp.
 \label{classFglForm_a997cd55b341e14c89fdc300efe75b907}
 
 
-Definition at line 3019 of file fglform.cpp.
+Definition at line 3089 of file fglform.cpp.
 
 \hypertarget{classFglForm_a7490b2d18830368110a69983f19d65cf}{
 \index{FglForm@{FglForm}!findFieldByName@{findFieldByName}}
@@ -1037,7 +1069,7 @@ Definition at line 3019 of file fglform.cpp.
 \label{classFglForm_a7490b2d18830368110a69983f19d65cf}
 
 
-Definition at line 2894 of file fglform.cpp.
+Definition at line 2964 of file fglform.cpp.
 
 \hypertarget{classFglForm_a4d506d1f05b8ac540fe33dfa1524d681}{
 \index{FglForm@{FglForm}!findFieldIdByName@{findFieldIdByName}}
@@ -1050,7 +1082,7 @@ Definition at line 2894 of file fglform.cpp.
 \label{classFglForm_a4d506d1f05b8ac540fe33dfa1524d681}
 
 
-Definition at line 2975 of file fglform.cpp.
+Definition at line 3045 of file fglform.cpp.
 
 \hypertarget{classFglForm_aa9bed6529e8937fdf1ebed65ca23cc45}{
 \index{FglForm@{FglForm}!findFieldsByName@{findFieldsByName}}
@@ -1063,7 +1095,7 @@ Definition at line 2975 of file fglform.cpp.
 \label{classFglForm_aa9bed6529e8937fdf1ebed65ca23cc45}
 
 
-Definition at line 2945 of file fglform.cpp.
+Definition at line 3015 of file fglform.cpp.
 
 \hypertarget{classFglForm_af18f12d697d5a9fa0041c597d692d8f1}{
 \index{FglForm@{FglForm}!firstrow@{firstrow}}
@@ -1076,7 +1108,7 @@ Definition at line 2945 of file fglform.cpp.
 \label{classFglForm_af18f12d697d5a9fa0041c597d692d8f1}
 
 
-Definition at line 2339 of file fglform.cpp.
+Definition at line 2409 of file fglform.cpp.
 
 \hypertarget{classFglForm_a5f3fea57cf46e7d548912efdaffa35f9}{
 \index{FglForm@{FglForm}!focusNextField@{focusNextField}}
@@ -1089,7 +1121,7 @@ Definition at line 2339 of file fglform.cpp.
 \label{classFglForm_a5f3fea57cf46e7d548912efdaffa35f9}
 
 
-Definition at line 131 of file fglform.h.
+Definition at line 133 of file fglform.h.
 
 \hypertarget{classFglForm_abbb79e3d5fbc48341d4e88bc91002c22}{
 \index{FglForm@{FglForm}!focusNextPrevChild@{focusNextPrevChild}}
@@ -1102,7 +1134,7 @@ Definition at line 131 of file fglform.h.
 \label{classFglForm_abbb79e3d5fbc48341d4e88bc91002c22}
 
 
-Definition at line 3656 of file fglform.cpp.
+Definition at line 3726 of file fglform.cpp.
 
 \hypertarget{classFglForm_ac8a66ae6b84ca24c622a87eb631a4834}{
 \index{FglForm@{FglForm}!formActions@{formActions}}
@@ -1115,7 +1147,7 @@ Definition at line 3656 of file fglform.cpp.
 \label{classFglForm_ac8a66ae6b84ca24c622a87eb631a4834}
 
 
-Definition at line 125 of file fglform.h.
+Definition at line 127 of file fglform.h.
 
 \hypertarget{classFglForm_ab40c533416d35aac75f2ccf5157a3cf2}{
 \index{FglForm@{FglForm}!formElements@{formElements}}
@@ -1128,7 +1160,7 @@ Definition at line 125 of file fglform.h.
 \label{classFglForm_ab40c533416d35aac75f2ccf5157a3cf2}
 
 
-Definition at line 1402 of file fglform.cpp.
+Definition at line 1469 of file fglform.cpp.
 
 \hypertarget{classFglForm_a1d53398b0bf7a81f7d6f4fab65faa3dd}{
 \index{FglForm@{FglForm}!getActionPanelPosition@{getActionPanelPosition}}
@@ -1141,7 +1173,7 @@ Definition at line 1402 of file fglform.cpp.
 \label{classFglForm_a1d53398b0bf7a81f7d6f4fab65faa3dd}
 
 
-Definition at line 190 of file fglform.h.
+Definition at line 192 of file fglform.h.
 
 \hypertarget{classFglForm_a9cacfea35fa0152d42b399fc6d2a2524}{
 \index{FglForm@{FglForm}!getDefaultStatusBar@{getDefaultStatusBar}}
@@ -1154,7 +1186,7 @@ Definition at line 190 of file fglform.h.
 \label{classFglForm_a9cacfea35fa0152d42b399fc6d2a2524}
 
 
-Definition at line 187 of file fglform.h.
+Definition at line 189 of file fglform.h.
 
 \hypertarget{classFglForm_a8ce69fa40e651b0238b3efbe64bb7ef7}{
 \index{FglForm@{FglForm}!getFormEvent@{getFormEvent}}
@@ -1168,11 +1200,11 @@ Definition at line 187 of file fglform.h.
 \label{classFglForm_a8ce69fa40e651b0238b3efbe64bb7ef7}
 
 
-Method to get the formevent based on the event.type and merge the event.field of the parameter to the returnvalue. If no Event was found, it returns type to diff with the . 
+Method to get the formevent based on the event.type and merge the event.field of the parameter to the returnvalue. If the event.id is set, the method found the event otherwise the event.id is empty. 
 
 
 
-Definition at line 1090 of file fglform.cpp.
+Definition at line 1157 of file fglform.cpp.
 
 \hypertarget{classFglForm_a773cd80cab1ae1efaccc48262b2cbc55}{
 \index{FglForm@{FglForm}!getRingMenuPosition@{getRingMenuPosition}}
@@ -1185,7 +1217,7 @@ Definition at line 1090 of file fglform.cpp.
 \label{classFglForm_a773cd80cab1ae1efaccc48262b2cbc55}
 
 
-Definition at line 193 of file fglform.h.
+Definition at line 195 of file fglform.h.
 
 \hypertarget{classFglForm_a40002405b99f9291e8f61944a775172a}{
 \index{FglForm@{FglForm}!getStartMenuPosition@{getStartMenuPosition}}
@@ -1198,7 +1230,7 @@ Definition at line 193 of file fglform.h.
 \label{classFglForm_a40002405b99f9291e8f61944a775172a}
 
 
-Definition at line 175 of file fglform.h.
+Definition at line 177 of file fglform.h.
 
 \hypertarget{classFglForm_ac138a537d43b85e677818e1a61f3cd3d}{
 \index{FglForm@{FglForm}!getToolBarPosition@{getToolBarPosition}}
@@ -1211,7 +1243,7 @@ Definition at line 175 of file fglform.h.
 \label{classFglForm_ac138a537d43b85e677818e1a61f3cd3d}
 
 
-Definition at line 178 of file fglform.h.
+Definition at line 180 of file fglform.h.
 
 \hypertarget{classFglForm_a1e47b1b987a50ed9e4155bdf0664feba}{
 \index{FglForm@{FglForm}!getWindowType@{getWindowType}}
@@ -1224,7 +1256,7 @@ Definition at line 178 of file fglform.h.
 \label{classFglForm_a1e47b1b987a50ed9e4155bdf0664feba}
 
 
-Definition at line 181 of file fglform.h.
+Definition at line 183 of file fglform.h.
 
 \hypertarget{classFglForm_ab44742db0c6d0d2e0663db22c9668b4c}{
 \index{FglForm@{FglForm}!handleGuiAction@{handleGuiAction}}
@@ -1237,7 +1269,7 @@ Definition at line 181 of file fglform.h.
 \label{classFglForm_ab44742db0c6d0d2e0663db22c9668b4c}
 
 
-Definition at line 3454 of file fglform.cpp.
+Definition at line 3524 of file fglform.cpp.
 
 \hypertarget{classFglForm_a4fc9bc745910f209c6f54f509293bd73}{
 \index{FglForm@{FglForm}!id@{id}}
@@ -1250,7 +1282,7 @@ Definition at line 3454 of file fglform.cpp.
 \label{classFglForm_a4fc9bc745910f209c6f54f509293bd73}
 
 
-Definition at line 210 of file fglform.h.
+Definition at line 212 of file fglform.h.
 
 \hypertarget{classFglForm_af5e8206054e3275e2977056e685b73da}{
 \index{FglForm@{FglForm}!initActions@{initActions}}
@@ -1263,7 +1295,7 @@ Definition at line 210 of file fglform.h.
 \label{classFglForm_af5e8206054e3275e2977056e685b73da}
 
 
-Definition at line 315 of file fglform.cpp.
+Definition at line 316 of file fglform.cpp.
 
 \hypertarget{classFglForm_ab6b474ce22c93c45ccbee4b637647732}{
 \index{FglForm@{FglForm}!input@{input}}
@@ -1276,7 +1308,7 @@ Definition at line 315 of file fglform.cpp.
 \label{classFglForm_ab6b474ce22c93c45ccbee4b637647732}
 
 
-Definition at line 138 of file fglform.h.
+Definition at line 140 of file fglform.h.
 
 \hypertarget{classFglForm_a452b19a215f6acbb86320ed3a8b32ead}{
 \index{FglForm@{FglForm}!inputArray@{inputArray}}
@@ -1289,7 +1321,7 @@ Definition at line 138 of file fglform.h.
 \label{classFglForm_a452b19a215f6acbb86320ed3a8b32ead}
 
 
-Definition at line 142 of file fglform.h.
+Definition at line 144 of file fglform.h.
 
 \hypertarget{classFglForm_a0e2bda025291fc5a29a74254418cffdb}{
 \index{FglForm@{FglForm}!interrupt@{interrupt}}
@@ -1302,7 +1334,7 @@ Definition at line 142 of file fglform.h.
 \label{classFglForm_a0e2bda025291fc5a29a74254418cffdb}
 
 
-Definition at line 1534 of file fglform.cpp.
+Definition at line 1604 of file fglform.cpp.
 
 \hypertarget{classFglForm_a626014edfd45271d30f38d877601abd5}{
 \index{FglForm@{FglForm}!jumpToField@{jumpToField}}
@@ -1316,7 +1348,7 @@ Definition at line 1534 of file fglform.cpp.
 \label{classFglForm_a626014edfd45271d30f38d877601abd5}
 
 
-Definition at line 2415 of file fglform.cpp.
+Definition at line 2485 of file fglform.cpp.
 
 \hypertarget{classFglForm_aab860a48ab46e95732543f3cb345ba26}{
 \index{FglForm@{FglForm}!lastCursor@{lastCursor}}
@@ -1329,7 +1361,7 @@ Definition at line 2415 of file fglform.cpp.
 \label{classFglForm_aab860a48ab46e95732543f3cb345ba26}
 
 
-Definition at line 145 of file fglform.h.
+Definition at line 147 of file fglform.h.
 
 \hypertarget{classFglForm_adbc1aae701b9f9be093df1b60072ed10}{
 \index{FglForm@{FglForm}!lastrow@{lastrow}}
@@ -1342,7 +1374,7 @@ Definition at line 145 of file fglform.h.
 \label{classFglForm_adbc1aae701b9f9be093df1b60072ed10}
 
 
-Definition at line 2362 of file fglform.cpp.
+Definition at line 2432 of file fglform.cpp.
 
 \hypertarget{classFglForm_acffbcaf62fc53ff47363cf13b2967242}{
 \index{FglForm@{FglForm}!menu@{menu}}
@@ -1355,7 +1387,7 @@ Definition at line 2362 of file fglform.cpp.
 \label{classFglForm_acffbcaf62fc53ff47363cf13b2967242}
 
 
-Definition at line 103 of file fglform.h.
+Definition at line 105 of file fglform.h.
 
 \hypertarget{classFglForm_a1a279ed4bf3d729f30a346e8e6c9b8c7}{
 \index{FglForm@{FglForm}!nextfield@{nextfield}}
@@ -1368,7 +1400,7 @@ Definition at line 103 of file fglform.h.
 \label{classFglForm_a1a279ed4bf3d729f30a346e8e6c9b8c7}
 
 
-Definition at line 1942 of file fglform.cpp.
+Definition at line 2012 of file fglform.cpp.
 
 \hypertarget{classFglForm_aafc9f7cacb9852d58b809a840abc104e}{
 \index{FglForm@{FglForm}!nextpage@{nextpage}}
@@ -1381,7 +1413,7 @@ Definition at line 1942 of file fglform.cpp.
 \label{classFglForm_aafc9f7cacb9852d58b809a840abc104e}
 
 
-Definition at line 2386 of file fglform.cpp.
+Definition at line 2456 of file fglform.cpp.
 
 \hypertarget{classFglForm_a0321ef0bb745923607aecc90ff23dc16}{
 \index{FglForm@{FglForm}!nextrow@{nextrow}}
@@ -1394,7 +1426,7 @@ Definition at line 2386 of file fglform.cpp.
 \label{classFglForm_a0321ef0bb745923607aecc90ff23dc16}
 
 
-Definition at line 2287 of file fglform.cpp.
+Definition at line 2357 of file fglform.cpp.
 
 \hypertarget{classFglForm_a3f1ae54d6ef1585a6f14cf394758c09b}{
 \index{FglForm@{FglForm}!nexttab@{nexttab}}
@@ -1407,7 +1439,7 @@ Definition at line 2287 of file fglform.cpp.
 \label{classFglForm_a3f1ae54d6ef1585a6f14cf394758c09b}
 
 
-Definition at line 2388 of file fglform.cpp.
+Definition at line 2458 of file fglform.cpp.
 
 \hypertarget{classFglForm_a1a8413bf151ffd1e9fb4b0ae2a78dd6e}{
 \index{FglForm@{FglForm}!prevfield@{prevfield}}
@@ -1420,7 +1452,7 @@ Definition at line 2388 of file fglform.cpp.
 \label{classFglForm_a1a8413bf151ffd1e9fb4b0ae2a78dd6e}
 
 
-Definition at line 2121 of file fglform.cpp.
+Definition at line 2191 of file fglform.cpp.
 
 \hypertarget{classFglForm_ac3cf8e2f5bfc433cb19497e6bad4db0d}{
 \index{FglForm@{FglForm}!prevpage@{prevpage}}
@@ -1433,7 +1465,7 @@ Definition at line 2121 of file fglform.cpp.
 \label{classFglForm_ac3cf8e2f5bfc433cb19497e6bad4db0d}
 
 
-Definition at line 2387 of file fglform.cpp.
+Definition at line 2457 of file fglform.cpp.
 
 \hypertarget{classFglForm_a92a335499ab7c95fa5b106f7a9f21e33}{
 \index{FglForm@{FglForm}!prevrow@{prevrow}}
@@ -1446,7 +1478,7 @@ Definition at line 2387 of file fglform.cpp.
 \label{classFglForm_a92a335499ab7c95fa5b106f7a9f21e33}
 
 
-Definition at line 2316 of file fglform.cpp.
+Definition at line 2386 of file fglform.cpp.
 
 \hypertarget{classFglForm_a9eefd50c2b2dbcd9303a20a02a2ad140}{
 \index{FglForm@{FglForm}!prevtab@{prevtab}}
@@ -1459,7 +1491,7 @@ Definition at line 2316 of file fglform.cpp.
 \label{classFglForm_a9eefd50c2b2dbcd9303a20a02a2ad140}
 
 
-Definition at line 2401 of file fglform.cpp.
+Definition at line 2471 of file fglform.cpp.
 
 \hypertarget{classFglForm_a797f5a3e960a73a6fff9a1bb74059956}{
 \index{FglForm@{FglForm}!processResponse@{processResponse}}
@@ -1481,7 +1513,7 @@ Definition at line 2401 of file fglform.cpp.
 \label{classFglForm_a05f163612a936468e8fac3e84aeec02e}
 
 
-Definition at line 110 of file fglform.h.
+Definition at line 112 of file fglform.h.
 
 \hypertarget{classFglForm_ae9f393760ac910dd86de0919be07f41c}{
 \index{FglForm@{FglForm}!readSettingsLocal@{readSettingsLocal}}
@@ -1494,7 +1526,7 @@ Definition at line 110 of file fglform.h.
 \label{classFglForm_ae9f393760ac910dd86de0919be07f41c}
 
 
-Definition at line 2732 of file fglform.cpp.
+Definition at line 2802 of file fglform.cpp.
 
 \hypertarget{classFglForm_a7b0af358781bf6b0f37d80e9383cf10e}{
 \index{FglForm@{FglForm}!removeMenu@{removeMenu}}
@@ -1507,7 +1539,7 @@ Definition at line 2732 of file fglform.cpp.
 \label{classFglForm_a7b0af358781bf6b0f37d80e9383cf10e}
 
 
-Definition at line 386 of file fglform.cpp.
+Definition at line 387 of file fglform.cpp.
 
 \hypertarget{classFglForm_a267469fbb08f5d257f162df03b88852a}{
 \index{FglForm@{FglForm}!reopenPulldown@{reopenPulldown}}
@@ -1520,7 +1552,24 @@ Definition at line 386 of file fglform.cpp.
 \label{classFglForm_a267469fbb08f5d257f162df03b88852a}
 
 
-Definition at line 1267 of file fglform.cpp.
+Definition at line 1334 of file fglform.cpp.
+
+\hypertarget{classFglForm_a304cb50242f0f546f3c750be160738e5}{
+\index{FglForm@{FglForm}!replayKeyboard@{replayKeyboard}}
+\index{replayKeyboard@{replayKeyboard}!FglForm@{FglForm}}
+\subsubsection[{replayKeyboard}]{\setlength{\rightskip}{0pt plus 5cm}void FglForm::replayKeyboard (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}
+\label{classFglForm_a304cb50242f0f546f3c750be160738e5}
+
+
+Method to replay the Keyboardbuffer. 
+
+
+
+Definition at line 711 of file fglform.cpp.
 
 \hypertarget{classFglForm_a1d7dad289a4b04321a2c932adf12d19b}{
 \index{FglForm@{FglForm}!resetFieldSettings@{resetFieldSettings}}
@@ -1533,7 +1582,7 @@ Definition at line 1267 of file fglform.cpp.
 \label{classFglForm_a1d7dad289a4b04321a2c932adf12d19b}
 
 
-Definition at line 1036 of file fglform.cpp.
+Definition at line 1103 of file fglform.cpp.
 
 \hypertarget{classFglForm_a4d2edce15aac96b22d221a11c0e7681e}{
 \index{FglForm@{FglForm}!revertState@{revertState}}
@@ -1546,7 +1595,7 @@ Definition at line 1036 of file fglform.cpp.
 \label{classFglForm_a4d2edce15aac96b22d221a11c0e7681e}
 
 
-Definition at line 2646 of file fglform.cpp.
+Definition at line 2716 of file fglform.cpp.
 
 \hypertarget{classFglForm_a3d7ccbba13b950e970333db68755d022}{
 \index{FglForm@{FglForm}!saveFieldSettings@{saveFieldSettings}}
@@ -1559,7 +1608,7 @@ Definition at line 2646 of file fglform.cpp.
 \label{classFglForm_a3d7ccbba13b950e970333db68755d022}
 
 
-Definition at line 1054 of file fglform.cpp.
+Definition at line 1121 of file fglform.cpp.
 
 \hypertarget{classFglForm_aebb86e0bc590b730ff490b030b5dba7c}{
 \index{FglForm@{FglForm}!screenhandler@{screenhandler}}
@@ -1572,7 +1621,7 @@ Definition at line 1054 of file fglform.cpp.
 \label{classFglForm_aebb86e0bc590b730ff490b030b5dba7c}
 
 
-Definition at line 116 of file fglform.h.
+Definition at line 118 of file fglform.h.
 
 \hypertarget{classFglForm_a2e45f9d338ef208ffb1c08f1f97e6b2b}{
 \index{FglForm@{FglForm}!screenRecord@{screenRecord}}
@@ -1585,7 +1634,7 @@ Definition at line 116 of file fglform.h.
 \label{classFglForm_a2e45f9d338ef208ffb1c08f1f97e6b2b}
 
 
-Definition at line 140 of file fglform.h.
+Definition at line 142 of file fglform.h.
 
 \hypertarget{classFglForm_a6c13e4f1841a38f5cbf615595f88f78f}{
 \index{FglForm@{FglForm}!sendactivateinputevent@{sendactivateinputevent}}
@@ -1598,7 +1647,7 @@ Definition at line 140 of file fglform.h.
 \label{classFglForm_a6c13e4f1841a38f5cbf615595f88f78f}
 
 
-Definition at line 1224 of file fglform.cpp.
+Definition at line 1291 of file fglform.cpp.
 
 \hypertarget{classFglForm_ab8e58a4d027770ba170972d247b617dd}{
 \index{FglForm@{FglForm}!sendDirect@{sendDirect}}
@@ -1620,7 +1669,7 @@ Definition at line 1224 of file fglform.cpp.
 \label{classFglForm_a5e7fe57471d1f3ad4d6dbf7ac1c8b843}
 
 
-Definition at line 1322 of file fglform.cpp.
+Definition at line 1389 of file fglform.cpp.
 
 \hypertarget{classFglForm_acdc54b976403abededb061ba2dd0c30f}{
 \index{FglForm@{FglForm}!setActionMenu@{setActionMenu}}
@@ -1633,7 +1682,7 @@ Definition at line 1322 of file fglform.cpp.
 \label{classFglForm_acdc54b976403abededb061ba2dd0c30f}
 
 
-Definition at line 453 of file fglform.cpp.
+Definition at line 454 of file fglform.cpp.
 
 \hypertarget{classFglForm_ab322288b13021e7b98a5cf87912d2f18}{
 \index{FglForm@{FglForm}!setActionMenuEnabled@{setActionMenuEnabled}}
@@ -1646,7 +1695,7 @@ Definition at line 453 of file fglform.cpp.
 \label{classFglForm_ab322288b13021e7b98a5cf87912d2f18}
 
 
-Definition at line 482 of file fglform.cpp.
+Definition at line 483 of file fglform.cpp.
 
 \hypertarget{classFglForm_a80b78ad88d0dc22b7f4df7a724794a13}{
 \index{FglForm@{FglForm}!setActionPanelPosition@{setActionPanelPosition}}
@@ -1659,7 +1708,7 @@ Definition at line 482 of file fglform.cpp.
 \label{classFglForm_a80b78ad88d0dc22b7f4df7a724794a13}
 
 
-Definition at line 1678 of file fglform.cpp.
+Definition at line 1748 of file fglform.cpp.
 
 \hypertarget{classFglForm_a4b9c2e9963530fba9dc68f9dae0928a0}{
 \index{FglForm@{FglForm}!setActions@{setActions}}
@@ -1672,7 +1721,7 @@ Definition at line 1678 of file fglform.cpp.
 \label{classFglForm_a4b9c2e9963530fba9dc68f9dae0928a0}
 
 
-Definition at line 207 of file fglform.cpp.
+Definition at line 208 of file fglform.cpp.
 
 \hypertarget{classFglForm_a7bef8f5a9e151e3b09d9de652b78ec92}{
 \index{FglForm@{FglForm}!setArrLine@{setArrLine}}
@@ -1694,7 +1743,7 @@ Definition at line 207 of file fglform.cpp.
 \label{classFglForm_a7146bdb938bcb9a88b23051b39ea19b7}
 
 
-Definition at line 222 of file fglform.h.
+Definition at line 224 of file fglform.h.
 
 \hypertarget{classFglForm_a763db4c754333829447f9766c25f0e0b}{
 \index{FglForm@{FglForm}!setBufferTouched@{setBufferTouched}}
@@ -1707,7 +1756,7 @@ Definition at line 222 of file fglform.h.
 \label{classFglForm_a763db4c754333829447f9766c25f0e0b}
 
 
-Definition at line 219 of file fglform.h.
+Definition at line 221 of file fglform.h.
 
 \hypertarget{classFglForm_a9c7de4f0bd6f44e3103df2e81a504974}{
 \index{FglForm@{FglForm}!setClearEvents@{setClearEvents}}
@@ -1730,7 +1779,7 @@ Definition at line 219 of file fglform.h.
 \label{classFglForm_a4574756e714c6d93e6d177ecbfb78ae1}
 
 
-Definition at line 1794 of file fglform.cpp.
+Definition at line 1864 of file fglform.cpp.
 
 \hypertarget{classFglForm_ac521356370affcf115340e2279475c6b}{
 \index{FglForm@{FglForm}!setCurrentWidget@{setCurrentWidget}}
@@ -1743,7 +1792,7 @@ Definition at line 1794 of file fglform.cpp.
 \label{classFglForm_ac521356370affcf115340e2279475c6b}
 
 
-Definition at line 1772 of file fglform.cpp.
+Definition at line 1842 of file fglform.cpp.
 
 \hypertarget{classFglForm_a4b2f8754ef3aa90fc46d04c2020ed5af}{
 \index{FglForm@{FglForm}!setDefaultStatusBar@{setDefaultStatusBar}}
@@ -1756,7 +1805,7 @@ Definition at line 1772 of file fglform.cpp.
 \label{classFglForm_a4b2f8754ef3aa90fc46d04c2020ed5af}
 
 
-Definition at line 1742 of file fglform.cpp.
+Definition at line 1812 of file fglform.cpp.
 
 \hypertarget{classFglForm_aee2921f4bcb8f95e10fde25ec84842d3}{
 \index{FglForm@{FglForm}!setDialog@{setDialog}}
@@ -1769,7 +1818,7 @@ Definition at line 1742 of file fglform.cpp.
 \label{classFglForm_aee2921f4bcb8f95e10fde25ec84842d3}
 
 
-Definition at line 619 of file fglform.cpp.
+Definition at line 620 of file fglform.cpp.
 
 \hypertarget{classFglForm_abacf589f219bcfbcf54ca2a5fb9ba859}{
 \index{FglForm@{FglForm}!setFocusOnWidget@{setFocusOnWidget}}
@@ -1787,7 +1836,7 @@ Method to set Focus and remove the focus of all other widgets.
 
 
 
-Definition at line 1471 of file fglform.cpp.
+Definition at line 1541 of file fglform.cpp.
 
 \hypertarget{classFglForm_a6a923c50e859e58d34046d0b0f86c11d}{
 \index{FglForm@{FglForm}!setFormLayout@{setFormLayout}}
@@ -1800,7 +1849,7 @@ Definition at line 1471 of file fglform.cpp.
 \label{classFglForm_a6a923c50e859e58d34046d0b0f86c11d}
 
 
-Definition at line 1339 of file fglform.cpp.
+Definition at line 1406 of file fglform.cpp.
 
 \hypertarget{classFglForm_a7010467be800cf868884b589f8ce8ce7}{
 \index{FglForm@{FglForm}!setId@{setId}}
@@ -1813,7 +1862,7 @@ Definition at line 1339 of file fglform.cpp.
 \label{classFglForm_a7010467be800cf868884b589f8ce8ce7}
 
 
-Definition at line 209 of file fglform.h.
+Definition at line 211 of file fglform.h.
 
 \hypertarget{classFglForm_ab61a1af085f68fa6673e516812b0b9c8}{
 \index{FglForm@{FglForm}!setLastCursor@{setLastCursor}}
@@ -1826,7 +1875,7 @@ Definition at line 209 of file fglform.h.
 \label{classFglForm_ab61a1af085f68fa6673e516812b0b9c8}
 
 
-Definition at line 3755 of file fglform.cpp.
+Definition at line 3825 of file fglform.cpp.
 
 \hypertarget{classFglForm_a8495f6c9444756a6bdf370c3ce158921}{
 \index{FglForm@{FglForm}!setLastCursor@{setLastCursor}}
@@ -1840,7 +1889,7 @@ Definition at line 3755 of file fglform.cpp.
 \label{classFglForm_a8495f6c9444756a6bdf370c3ce158921}
 
 
-Definition at line 3748 of file fglform.cpp.
+Definition at line 3818 of file fglform.cpp.
 
 \hypertarget{classFglForm_a0060da33eb1943f1b762e8a164ede398}{
 \index{FglForm@{FglForm}!setMenu@{setMenu}}
@@ -1853,7 +1902,7 @@ Definition at line 3748 of file fglform.cpp.
 \label{classFglForm_a0060da33eb1943f1b762e8a164ede398}
 
 
-Definition at line 353 of file fglform.cpp.
+Definition at line 354 of file fglform.cpp.
 
 \hypertarget{classFglForm_acfb920aa37d488d2877fe75441ac7f65}{
 \index{FglForm@{FglForm}!setMenuEnabled@{setMenuEnabled}}
@@ -1866,7 +1915,7 @@ Definition at line 353 of file fglform.cpp.
 \label{classFglForm_acfb920aa37d488d2877fe75441ac7f65}
 
 
-Definition at line 408 of file fglform.cpp.
+Definition at line 409 of file fglform.cpp.
 
 \hypertarget{classFglForm_a19892721571e2c56399ca6be07c3f750}{
 \index{FglForm@{FglForm}!setPulldown@{setPulldown}}
@@ -1879,7 +1928,7 @@ Definition at line 408 of file fglform.cpp.
 \label{classFglForm_a19892721571e2c56399ca6be07c3f750}
 
 
-Definition at line 639 of file fglform.cpp.
+Definition at line 640 of file fglform.cpp.
 
 \hypertarget{classFglForm_af25c944e246c0522cd333e452ead9cad}{
 \index{FglForm@{FglForm}!setRingMenuPosition@{setRingMenuPosition}}
@@ -1892,7 +1941,7 @@ Definition at line 639 of file fglform.cpp.
 \label{classFglForm_af25c944e246c0522cd333e452ead9cad}
 
 
-Definition at line 1627 of file fglform.cpp.
+Definition at line 1697 of file fglform.cpp.
 
 \hypertarget{classFglForm_aba5859f32918808eb18606b85483a4c6}{
 \index{FglForm@{FglForm}!setScreenHandler@{setScreenHandler}}
@@ -1905,7 +1954,7 @@ Definition at line 1627 of file fglform.cpp.
 \label{classFglForm_aba5859f32918808eb18606b85483a4c6}
 
 
-Definition at line 195 of file fglform.cpp.
+Definition at line 196 of file fglform.cpp.
 
 \hypertarget{classFglForm_afce8d989187c85d7bde751824a9b6c6a}{
 \index{FglForm@{FglForm}!setScreenRecordArrLine@{setScreenRecordArrLine}}
@@ -1918,7 +1967,7 @@ Definition at line 195 of file fglform.cpp.
 \label{classFglForm_afce8d989187c85d7bde751824a9b6c6a}
 
 
-Definition at line 3038 of file fglform.cpp.
+Definition at line 3108 of file fglform.cpp.
 
 \hypertarget{classFglForm_a805e33b8b74b0cc73dad05eac238f9db}{
 \index{FglForm@{FglForm}!setSizable@{setSizable}}
@@ -1931,7 +1980,7 @@ Definition at line 3038 of file fglform.cpp.
 \label{classFglForm_a805e33b8b74b0cc73dad05eac238f9db}
 
 
-Definition at line 1730 of file fglform.cpp.
+Definition at line 1800 of file fglform.cpp.
 
 \hypertarget{classFglForm_af3d272e5dc101746b728bdd457d42a6f}{
 \index{FglForm@{FglForm}!setStartMenu@{setStartMenu}}
@@ -1944,7 +1993,7 @@ Definition at line 1730 of file fglform.cpp.
 \label{classFglForm_af3d272e5dc101746b728bdd457d42a6f}
 
 
-Definition at line 1545 of file fglform.cpp.
+Definition at line 1615 of file fglform.cpp.
 
 \hypertarget{classFglForm_a2badc0486f40c57306fdefe14800a13b}{
 \index{FglForm@{FglForm}!setStartMenuPosition@{setStartMenuPosition}}
@@ -1957,7 +2006,7 @@ Definition at line 1545 of file fglform.cpp.
 \label{classFglForm_a2badc0486f40c57306fdefe14800a13b}
 
 
-Definition at line 176 of file fglform.h.
+Definition at line 178 of file fglform.h.
 
 \hypertarget{classFglForm_a5f6285fdf157e863c68402ec8147c53a}{
 \index{FglForm@{FglForm}!setState@{setState}}
@@ -1970,7 +2019,7 @@ Definition at line 176 of file fglform.h.
 \label{classFglForm_a5f6285fdf157e863c68402ec8147c53a}
 
 
-Definition at line 196 of file fglform.h.
+Definition at line 198 of file fglform.h.
 
 \hypertarget{classFglForm_a07c0926396e4229b40de7988689a1f16}{
 \index{FglForm@{FglForm}!setStyles@{setStyles}}
@@ -1983,20 +2032,7 @@ Definition at line 196 of file fglform.h.
 \label{classFglForm_a07c0926396e4229b40de7988689a1f16}
 
 
-Definition at line 1571 of file fglform.cpp.
-
-\hypertarget{classFglForm_ad139148f573546a3ef5ead0f49170d08}{
-\index{FglForm@{FglForm}!setToolBar@{setToolBar}}
-\index{setToolBar@{setToolBar}!FglForm@{FglForm}}
-\subsubsection[{setToolBar}]{\setlength{\rightskip}{0pt plus 5cm}void FglForm::setToolBar (
-\begin{DoxyParamCaption}
-\item[{QDomDocument}]{xmlFile}
-\end{DoxyParamCaption}
-)}}
-\label{classFglForm_ad139148f573546a3ef5ead0f49170d08}
-
-
-Definition at line 680 of file fglform.cpp.
+Definition at line 1641 of file fglform.cpp.
 
 \hypertarget{classFglForm_acf0280c2e7ca7d56bc45c822b8fb9468}{
 \index{FglForm@{FglForm}!setToolBar@{setToolBar}}
@@ -2009,7 +2045,20 @@ Definition at line 680 of file fglform.cpp.
 \label{classFglForm_acf0280c2e7ca7d56bc45c822b8fb9468}
 
 
-Definition at line 649 of file fglform.cpp.
+Definition at line 650 of file fglform.cpp.
+
+\hypertarget{classFglForm_ad139148f573546a3ef5ead0f49170d08}{
+\index{FglForm@{FglForm}!setToolBar@{setToolBar}}
+\index{setToolBar@{setToolBar}!FglForm@{FglForm}}
+\subsubsection[{setToolBar}]{\setlength{\rightskip}{0pt plus 5cm}void FglForm::setToolBar (
+\begin{DoxyParamCaption}
+\item[{QDomDocument}]{xmlFile}
+\end{DoxyParamCaption}
+)}}
+\label{classFglForm_ad139148f573546a3ef5ead0f49170d08}
+
+
+Definition at line 681 of file fglform.cpp.
 
 \hypertarget{classFglForm_af3b00991b1e002fe156d0298468a2311}{
 \index{FglForm@{FglForm}!setToolBarPosition@{setToolBarPosition}}
@@ -2022,7 +2071,7 @@ Definition at line 649 of file fglform.cpp.
 \label{classFglForm_af3b00991b1e002fe156d0298468a2311}
 
 
-Definition at line 1585 of file fglform.cpp.
+Definition at line 1655 of file fglform.cpp.
 
 \hypertarget{classFglForm_a47d0bbf071cbf0051b72c44a90062f81}{
 \index{FglForm@{FglForm}!setUserInputEnabled@{setUserInputEnabled}}
@@ -2035,7 +2084,7 @@ Definition at line 1585 of file fglform.cpp.
 \label{classFglForm_a47d0bbf071cbf0051b72c44a90062f81}
 
 
-Definition at line 3792 of file fglform.cpp.
+Definition at line 3862 of file fglform.cpp.
 
 \hypertarget{classFglForm_ad780eff8bf0437a8e33a9115885718e9}{
 \index{FglForm@{FglForm}!setWindowType@{setWindowType}}
@@ -2048,7 +2097,7 @@ Definition at line 3792 of file fglform.cpp.
 \label{classFglForm_ad780eff8bf0437a8e33a9115885718e9}
 
 
-Definition at line 1754 of file fglform.cpp.
+Definition at line 1824 of file fglform.cpp.
 
 \hypertarget{classFglForm_a81b6a444e67df3a3e56ff786fe9099b7}{
 \index{FglForm@{FglForm}!showEvent@{showEvent}}
@@ -2061,7 +2110,7 @@ Definition at line 1754 of file fglform.cpp.
 \label{classFglForm_a81b6a444e67df3a3e56ff786fe9099b7}
 
 
-Definition at line 137 of file fglform.cpp.
+Definition at line 138 of file fglform.cpp.
 
 \hypertarget{classFglForm_a714fbe1dca04c76d368a8a429b6322c1}{
 \index{FglForm@{FglForm}!sizable@{sizable}}
@@ -2074,7 +2123,7 @@ Definition at line 137 of file fglform.cpp.
 \label{classFglForm_a714fbe1dca04c76d368a8a429b6322c1}
 
 
-Definition at line 184 of file fglform.h.
+Definition at line 186 of file fglform.h.
 
 \hypertarget{classFglForm_aeed42adf5a051006db1742e2b48617e1}{
 \index{FglForm@{FglForm}!state@{state}}
@@ -2087,7 +2136,7 @@ Definition at line 184 of file fglform.h.
 \label{classFglForm_aeed42adf5a051006db1742e2b48617e1}
 
 
-Definition at line 198 of file fglform.h.
+Definition at line 200 of file fglform.h.
 
 \hypertarget{classFglForm_ae474767d66111cda958e191e6be1e34d}{
 \index{FglForm@{FglForm}!toolBar@{toolBar}}
@@ -2100,7 +2149,7 @@ Definition at line 198 of file fglform.h.
 \label{classFglForm_ae474767d66111cda958e191e6be1e34d}
 
 
-Definition at line 122 of file fglform.h.
+Definition at line 124 of file fglform.h.
 
 \hypertarget{classFglForm_a7d6b1d8b49f56f8b8ae6dbffae4a6499}{
 \index{FglForm@{FglForm}!toolBarActionTriggered@{toolBarActionTriggered}}
@@ -2113,7 +2162,7 @@ Definition at line 122 of file fglform.h.
 \label{classFglForm_a7d6b1d8b49f56f8b8ae6dbffae4a6499}
 
 
-Definition at line 581 of file fglform.cpp.
+Definition at line 582 of file fglform.cpp.
 
 \hypertarget{classFglForm_acca25b6cbf4161c7075fb594a556eb9a}{
 \index{FglForm@{FglForm}!toolBarPosition@{toolBarPosition}}
@@ -2135,7 +2184,7 @@ Definition at line 581 of file fglform.cpp.
 \label{classFglForm_a4fdd15cf1295a7d04b378e5c4cb2d877}
 
 
-Definition at line 2714 of file fglform.cpp.
+Definition at line 2784 of file fglform.cpp.
 
 
 
@@ -2147,7 +2196,7 @@ Definition at line 2714 of file fglform.cpp.
 \label{classFglForm_af7e3a4c11559a83dd68df64c286fdb1e}
 
 
-Definition at line 96 of file fglform.h.
+Definition at line 98 of file fglform.h.
 
 \hypertarget{classFglForm_a4bddddc3ca57303fbf3d55394e260a00}{
 \index{FglForm@{FglForm}!b\_\-bufferTouched@{b\_\-bufferTouched}}
@@ -2156,7 +2205,7 @@ Definition at line 96 of file fglform.h.
 \label{classFglForm_a4bddddc3ca57303fbf3d55394e260a00}
 
 
-Definition at line 309 of file fglform.h.
+Definition at line 314 of file fglform.h.
 
 \hypertarget{classFglForm_a99b822401e45535d412f2a6c5601734d}{
 \index{FglForm@{FglForm}!b\_\-denyFocus@{b\_\-denyFocus}}
@@ -2165,7 +2214,7 @@ Definition at line 309 of file fglform.h.
 \label{classFglForm_a99b822401e45535d412f2a6c5601734d}
 
 
-Definition at line 158 of file fglform.h.
+Definition at line 160 of file fglform.h.
 
 \hypertarget{classFglForm_a4dd283ca13e8a699e88783b2946b6841}{
 \index{FglForm@{FglForm}!b\_\-dummy@{b\_\-dummy}}
@@ -2174,7 +2223,7 @@ Definition at line 158 of file fglform.h.
 \label{classFglForm_a4dd283ca13e8a699e88783b2946b6841}
 
 
-Definition at line 97 of file fglform.h.
+Definition at line 99 of file fglform.h.
 
 \hypertarget{classFglForm_ac6325d19f253fe4e7cdfbd50bd027c19}{
 \index{FglForm@{FglForm}!b\_\-getch\_\-swin@{b\_\-getch\_\-swin}}
@@ -2183,7 +2232,7 @@ Definition at line 97 of file fglform.h.
 \label{classFglForm_ac6325d19f253fe4e7cdfbd50bd027c19}
 
 
-Definition at line 95 of file fglform.h.
+Definition at line 97 of file fglform.h.
 
 \hypertarget{classFglForm_a348ba4d61a2c9e18513ac88c919015c0}{
 \index{FglForm@{FglForm}!b\_\-input@{b\_\-input}}
@@ -2192,7 +2241,16 @@ Definition at line 95 of file fglform.h.
 \label{classFglForm_a348ba4d61a2c9e18513ac88c919015c0}
 
 
-Definition at line 290 of file fglform.h.
+Definition at line 294 of file fglform.h.
+
+\hypertarget{classFglForm_ae5096059ba81229c8e0070e85286420f}{
+\index{FglForm@{FglForm}!b\_\-keybuffer@{b\_\-keybuffer}}
+\index{b\_\-keybuffer@{b\_\-keybuffer}!FglForm@{FglForm}}
+\subsubsection[{b\_\-keybuffer}]{\setlength{\rightskip}{0pt plus 5cm}bool {\bf FglForm::b\_\-keybuffer}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classFglForm_ae5096059ba81229c8e0070e85286420f}
+
+
+Definition at line 296 of file fglform.h.
 
 \hypertarget{classFglForm_ac1f8bea18516701b1192825f83e962d7}{
 \index{FglForm@{FglForm}!b\_\-menu@{b\_\-menu}}
@@ -2201,7 +2259,7 @@ Definition at line 290 of file fglform.h.
 \label{classFglForm_ac1f8bea18516701b1192825f83e962d7}
 
 
-Definition at line 289 of file fglform.h.
+Definition at line 293 of file fglform.h.
 
 \hypertarget{classFglForm_ab089d04abad8973c262e3c5e1827b070}{
 \index{FglForm@{FglForm}!b\_\-newForm@{b\_\-newForm}}
@@ -2210,7 +2268,7 @@ Definition at line 289 of file fglform.h.
 \label{classFglForm_ab089d04abad8973c262e3c5e1827b070}
 
 
-Definition at line 157 of file fglform.h.
+Definition at line 159 of file fglform.h.
 
 \hypertarget{classFglForm_a656061ca98f40226c99fa61b12ced56c}{
 \index{FglForm@{FglForm}!b\_\-screenRecord@{b\_\-screenRecord}}
@@ -2219,7 +2277,7 @@ Definition at line 157 of file fglform.h.
 \label{classFglForm_a656061ca98f40226c99fa61b12ced56c}
 
 
-Definition at line 291 of file fglform.h.
+Definition at line 295 of file fglform.h.
 
 \hypertarget{classFglForm_a8c411d93b67981a684a5cf6b67111dc1}{
 \index{FglForm@{FglForm}!b\_\-svs@{b\_\-svs}}
@@ -2237,7 +2295,7 @@ Definition at line 91 of file fglform.h.
 \label{classFglForm_ad88a7b19b295fe1f14de652a9e3e1c17}
 
 
-Definition at line 203 of file fglform.h.
+Definition at line 205 of file fglform.h.
 
 \hypertarget{classFglForm_abce220040f982717756bfc10b51dac44}{
 \index{FglForm@{FglForm}!currentWidget@{currentWidget}}
@@ -2255,7 +2313,7 @@ Definition at line 93 of file fglform.h.
 \label{classFglForm_a67c8174c2d61e69e76c3206766fe3ac9}
 
 
-Definition at line 307 of file fglform.h.
+Definition at line 312 of file fglform.h.
 
 \hypertarget{classFglForm_a382565fe4e148f5e37aabea41e079809}{
 \index{FglForm@{FglForm}!formWidget@{formWidget}}
@@ -2264,7 +2322,7 @@ Definition at line 307 of file fglform.h.
 \label{classFglForm_a382565fe4e148f5e37aabea41e079809}
 
 
-Definition at line 273 of file fglform.h.
+Definition at line 277 of file fglform.h.
 
 \hypertarget{classFglForm_a9dc5de78bd4b0d7024831926f9cdc7d9}{
 \index{FglForm@{FglForm}!gridHeight@{gridHeight}}
@@ -2273,7 +2331,7 @@ Definition at line 273 of file fglform.h.
 \label{classFglForm_a9dc5de78bd4b0d7024831926f9cdc7d9}
 
 
-Definition at line 314 of file fglform.h.
+Definition at line 319 of file fglform.h.
 
 \hypertarget{classFglForm_a34347fff01950e4574b64c69b62d1ff2}{
 \index{FglForm@{FglForm}!gridWidth@{gridWidth}}
@@ -2282,7 +2340,7 @@ Definition at line 314 of file fglform.h.
 \label{classFglForm_a34347fff01950e4574b64c69b62d1ff2}
 
 
-Definition at line 159 of file fglform.h.
+Definition at line 161 of file fglform.h.
 
 \hypertarget{classFglForm_a2adf651bccc4bd01a985a0c5bde45af7}{
 \index{FglForm@{FglForm}!h@{h}}
@@ -2300,7 +2358,7 @@ Definition at line 49 of file fglform.h.
 \label{classFglForm_ae7e903902c63ce3179656df4b684038f}
 
 
-Definition at line 306 of file fglform.h.
+Definition at line 311 of file fglform.h.
 
 \hypertarget{classFglForm_a6142cd4363f16562e52631f1987b46c3}{
 \index{FglForm@{FglForm}!i\_\-id@{i\_\-id}}
@@ -2309,7 +2367,7 @@ Definition at line 306 of file fglform.h.
 \label{classFglForm_a6142cd4363f16562e52631f1987b46c3}
 
 
-Definition at line 308 of file fglform.h.
+Definition at line 313 of file fglform.h.
 
 \hypertarget{classFglForm_a9f622b4a17fcad8c785e119d19abe326}{
 \index{FglForm@{FglForm}!i\_\-lastCursor@{i\_\-lastCursor}}
@@ -2318,7 +2376,7 @@ Definition at line 308 of file fglform.h.
 \label{classFglForm_a9f622b4a17fcad8c785e119d19abe326}
 
 
-Definition at line 310 of file fglform.h.
+Definition at line 315 of file fglform.h.
 
 \hypertarget{classFglForm_a72467aa7c8750f7075b7ba7fc67a29bb}{
 \index{FglForm@{FglForm}!insLabel@{insLabel}}
@@ -2327,7 +2385,7 @@ Definition at line 310 of file fglform.h.
 \label{classFglForm_a72467aa7c8750f7075b7ba7fc67a29bb}
 
 
-Definition at line 305 of file fglform.h.
+Definition at line 310 of file fglform.h.
 
 \hypertarget{classFglForm_af3882d981d23db8e6dca26a44ac23051}{
 \index{FglForm@{FglForm}!m\_\-actionPanelPosition@{m\_\-actionPanelPosition}}
@@ -2336,7 +2394,7 @@ Definition at line 305 of file fglform.h.
 \label{classFglForm_af3882d981d23db8e6dca26a44ac23051}
 
 
-Definition at line 299 of file fglform.h.
+Definition at line 304 of file fglform.h.
 
 \hypertarget{classFglForm_a2e877386e4ba441d929c0c35d48620cb}{
 \index{FglForm@{FglForm}!m\_\-defaultStatusBar@{m\_\-defaultStatusBar}}
@@ -2345,7 +2403,7 @@ Definition at line 299 of file fglform.h.
 \label{classFglForm_a2e877386e4ba441d929c0c35d48620cb}
 
 
-Definition at line 301 of file fglform.h.
+Definition at line 306 of file fglform.h.
 
 \hypertarget{classFglForm_a25371a3df6cb3e1dc66e141bb2a9dff1}{
 \index{FglForm@{FglForm}!m\_\-ringMenuPosition@{m\_\-ringMenuPosition}}
@@ -2354,7 +2412,7 @@ Definition at line 301 of file fglform.h.
 \label{classFglForm_a25371a3df6cb3e1dc66e141bb2a9dff1}
 
 
-Definition at line 298 of file fglform.h.
+Definition at line 303 of file fglform.h.
 
 \hypertarget{classFglForm_a7861c07caeb306c5ae9f2012ce73bff7}{
 \index{FglForm@{FglForm}!m\_\-sizable@{m\_\-sizable}}
@@ -2363,7 +2421,7 @@ Definition at line 298 of file fglform.h.
 \label{classFglForm_a7861c07caeb306c5ae9f2012ce73bff7}
 
 
-Definition at line 300 of file fglform.h.
+Definition at line 305 of file fglform.h.
 
 \hypertarget{classFglForm_a94e20a9c06c349d6e7c5ec47c03de4a6}{
 \index{FglForm@{FglForm}!m\_\-startMenuPosition@{m\_\-startMenuPosition}}
@@ -2372,7 +2430,7 @@ Definition at line 300 of file fglform.h.
 \label{classFglForm_a94e20a9c06c349d6e7c5ec47c03de4a6}
 
 
-Definition at line 296 of file fglform.h.
+Definition at line 301 of file fglform.h.
 
 \hypertarget{classFglForm_a0008c6a1c3362095ebd5ab0601910003}{
 \index{FglForm@{FglForm}!m\_\-toolBarPosition@{m\_\-toolBarPosition}}
@@ -2381,7 +2439,7 @@ Definition at line 296 of file fglform.h.
 \label{classFglForm_a0008c6a1c3362095ebd5ab0601910003}
 
 
-Definition at line 297 of file fglform.h.
+Definition at line 302 of file fglform.h.
 
 \hypertarget{classFglForm_aff3b675ee7063af63839e029f66b4075}{
 \index{FglForm@{FglForm}!m\_\-windowType@{m\_\-windowType}}
@@ -2390,7 +2448,7 @@ Definition at line 297 of file fglform.h.
 \label{classFglForm_aff3b675ee7063af63839e029f66b4075}
 
 
-Definition at line 295 of file fglform.h.
+Definition at line 300 of file fglform.h.
 
 \hypertarget{classFglForm_a17945f68955698f41dac6b11cf73cd07}{
 \index{FglForm@{FglForm}!nextclick@{nextclick}}
@@ -2408,7 +2466,7 @@ Definition at line 94 of file fglform.h.
 \label{classFglForm_aace1d4f7b637af4d3aa86e53a770152e}
 
 
-Definition at line 277 of file fglform.h.
+Definition at line 281 of file fglform.h.
 
 \hypertarget{classFglForm_a98e11b2d55100f907821e3a8281b4ab5}{
 \index{FglForm@{FglForm}!p\_\-currscreenhandler@{p\_\-currscreenhandler}}
@@ -2417,7 +2475,7 @@ Definition at line 277 of file fglform.h.
 \label{classFglForm_a98e11b2d55100f907821e3a8281b4ab5}
 
 
-Definition at line 276 of file fglform.h.
+Definition at line 280 of file fglform.h.
 
 \hypertarget{classFglForm_afa28d86c6e353e3e31c677b463199a4a}{
 \index{FglForm@{FglForm}!p\_\-dialog@{p\_\-dialog}}
@@ -2426,7 +2484,7 @@ Definition at line 276 of file fglform.h.
 \label{classFglForm_afa28d86c6e353e3e31c677b463199a4a}
 
 
-Definition at line 278 of file fglform.h.
+Definition at line 282 of file fglform.h.
 
 \hypertarget{classFglForm_a87a0ac69973f45c48fb629d04ac5b364}{
 \index{FglForm@{FglForm}!p\_\-pulldown@{p\_\-pulldown}}
@@ -2435,7 +2493,7 @@ Definition at line 278 of file fglform.h.
 \label{classFglForm_a87a0ac69973f45c48fb629d04ac5b364}
 
 
-Definition at line 279 of file fglform.h.
+Definition at line 283 of file fglform.h.
 
 \hypertarget{classFglForm_a63ee680575b50bd02473649cd3d272f5}{
 \index{FglForm@{FglForm}!p\_\-toolBar@{p\_\-toolBar}}
@@ -2444,7 +2502,7 @@ Definition at line 279 of file fglform.h.
 \label{classFglForm_a63ee680575b50bd02473649cd3d272f5}
 
 
-Definition at line 280 of file fglform.h.
+Definition at line 284 of file fglform.h.
 
 \hypertarget{classFglForm_a6b78dae39bcab3791a9acc99a3b8248d}{
 \index{FglForm@{FglForm}!ql\_\-actionDefaults@{ql\_\-actionDefaults}}
@@ -2453,7 +2511,7 @@ Definition at line 280 of file fglform.h.
 \label{classFglForm_a6b78dae39bcab3791a9acc99a3b8248d}
 
 
-Definition at line 285 of file fglform.h.
+Definition at line 289 of file fglform.h.
 
 \hypertarget{classFglForm_ac7920cda2f9ebef4076ff19e73cfa047}{
 \index{FglForm@{FglForm}!ql\_\-contextEvents@{ql\_\-contextEvents}}
@@ -2462,7 +2520,7 @@ Definition at line 285 of file fglform.h.
 \label{classFglForm_ac7920cda2f9ebef4076ff19e73cfa047}
 
 
-Definition at line 169 of file fglform.h.
+Definition at line 171 of file fglform.h.
 
 \hypertarget{classFglForm_acc7f6b6c7b13cf1e6e39bfdeba18ddc1}{
 \index{FglForm@{FglForm}!ql\_\-defaultActions@{ql\_\-defaultActions}}
@@ -2471,7 +2529,7 @@ Definition at line 169 of file fglform.h.
 \label{classFglForm_acc7f6b6c7b13cf1e6e39bfdeba18ddc1}
 
 
-Definition at line 284 of file fglform.h.
+Definition at line 288 of file fglform.h.
 
 \hypertarget{classFglForm_a764e11f62e1849d568cda143fa11583e}{
 \index{FglForm@{FglForm}!ql\_\-dialogEvents@{ql\_\-dialogEvents}}
@@ -2480,7 +2538,7 @@ Definition at line 284 of file fglform.h.
 \label{classFglForm_a764e11f62e1849d568cda143fa11583e}
 
 
-Definition at line 166 of file fglform.h.
+Definition at line 168 of file fglform.h.
 
 \hypertarget{classFglForm_a1d775e481b65ae50b2a557fa9ae975c5}{
 \index{FglForm@{FglForm}!ql\_\-fglFields@{ql\_\-fglFields}}
@@ -2489,7 +2547,7 @@ Definition at line 166 of file fglform.h.
 \label{classFglForm_a1d775e481b65ae50b2a557fa9ae975c5}
 
 
-Definition at line 286 of file fglform.h.
+Definition at line 290 of file fglform.h.
 
 \hypertarget{classFglForm_a091b50c03ba4a353485d34ea34f4001a}{
 \index{FglForm@{FglForm}!ql\_\-formActions@{ql\_\-formActions}}
@@ -2498,7 +2556,7 @@ Definition at line 286 of file fglform.h.
 \label{classFglForm_a091b50c03ba4a353485d34ea34f4001a}
 
 
-Definition at line 283 of file fglform.h.
+Definition at line 287 of file fglform.h.
 
 \hypertarget{classFglForm_aec60babfa521575768a4aa1147318ba1}{
 \index{FglForm@{FglForm}!ql\_\-formEvents@{ql\_\-formEvents}}
@@ -2507,7 +2565,7 @@ Definition at line 283 of file fglform.h.
 \label{classFglForm_aec60babfa521575768a4aa1147318ba1}
 
 
-Definition at line 168 of file fglform.h.
+Definition at line 170 of file fglform.h.
 
 \hypertarget{classFglForm_ad0adbaabeb97d6fabd2a23f5ac5c0069}{
 \index{FglForm@{FglForm}!ql\_\-formFields@{ql\_\-formFields}}
@@ -2516,7 +2574,16 @@ Definition at line 168 of file fglform.h.
 \label{classFglForm_ad0adbaabeb97d6fabd2a23f5ac5c0069}
 
 
-Definition at line 170 of file fglform.h.
+Definition at line 172 of file fglform.h.
+
+\hypertarget{classFglForm_a2164d9fc4e8c4be30d54ec2a99e881ea}{
+\index{FglForm@{FglForm}!ql\_\-keybuffer@{ql\_\-keybuffer}}
+\index{ql\_\-keybuffer@{ql\_\-keybuffer}!FglForm@{FglForm}}
+\subsubsection[{ql\_\-keybuffer}]{\setlength{\rightskip}{0pt plus 5cm}QList$<$QKeyEvent$\ast$$>$ {\bf FglForm::ql\_\-keybuffer}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}
+\label{classFglForm_a2164d9fc4e8c4be30d54ec2a99e881ea}
+
+
+Definition at line 276 of file fglform.h.
 
 \hypertarget{classFglForm_a0a20950e5d9deba35525fbcb7935f6f0}{
 \index{FglForm@{FglForm}!ql\_\-menuEvents@{ql\_\-menuEvents}}
@@ -2525,7 +2592,7 @@ Definition at line 170 of file fglform.h.
 \label{classFglForm_a0a20950e5d9deba35525fbcb7935f6f0}
 
 
-Definition at line 165 of file fglform.h.
+Definition at line 167 of file fglform.h.
 
 \hypertarget{classFglForm_a587196a08706e03ec05f1fae4048f344}{
 \index{FglForm@{FglForm}!ql\_\-menus@{ql\_\-menus}}
@@ -2534,7 +2601,7 @@ Definition at line 165 of file fglform.h.
 \label{classFglForm_a587196a08706e03ec05f1fae4048f344}
 
 
-Definition at line 275 of file fglform.h.
+Definition at line 279 of file fglform.h.
 
 \hypertarget{classFglForm_a14b1e58865612b4ebbfa83c8769f9353}{
 \index{FglForm@{FglForm}!ql\_\-pulldownEvents@{ql\_\-pulldownEvents}}
@@ -2543,7 +2610,7 @@ Definition at line 275 of file fglform.h.
 \label{classFglForm_a14b1e58865612b4ebbfa83c8769f9353}
 
 
-Definition at line 167 of file fglform.h.
+Definition at line 169 of file fglform.h.
 
 \hypertarget{classFglForm_a3aa184c0556d81cfb244f726d95b0538}{
 \index{FglForm@{FglForm}!ql\_\-responseQueue@{ql\_\-responseQueue}}
@@ -2552,7 +2619,7 @@ Definition at line 167 of file fglform.h.
 \label{classFglForm_a3aa184c0556d81cfb244f726d95b0538}
 
 
-Definition at line 99 of file fglform.h.
+Definition at line 101 of file fglform.h.
 
 \hypertarget{classFglForm_a18774054d5c9773a7075b5933b0bbc9a}{
 \index{FglForm@{FglForm}!ql\_\-states@{ql\_\-states}}
@@ -2561,7 +2628,7 @@ Definition at line 99 of file fglform.h.
 \label{classFglForm_a18774054d5c9773a7075b5933b0bbc9a}
 
 
-Definition at line 272 of file fglform.h.
+Definition at line 275 of file fglform.h.
 
 \hypertarget{classFglForm_a04725912842355fc88fa7412e435f4a9}{
 \index{FglForm@{FglForm}!qs\_\-currentFieldBuffer@{qs\_\-currentFieldBuffer}}
@@ -2570,7 +2637,7 @@ Definition at line 272 of file fglform.h.
 \label{classFglForm_a04725912842355fc88fa7412e435f4a9}
 
 
-Definition at line 311 of file fglform.h.
+Definition at line 316 of file fglform.h.
 
 \hypertarget{classFglForm_a1bca5dcb62f50a5939c295b7c0d662d2}{
 \index{FglForm@{FglForm}!qs\_\-formfile@{qs\_\-formfile}}
@@ -2579,7 +2646,7 @@ Definition at line 311 of file fglform.h.
 \label{classFglForm_a1bca5dcb62f50a5939c295b7c0d662d2}
 
 
-Definition at line 312 of file fglform.h.
+Definition at line 317 of file fglform.h.
 
 \hypertarget{classFglForm_a127a846458930510880fd13eb07d4463}{
 \index{FglForm@{FglForm}!qsl\_\-activeFields@{qsl\_\-activeFields}}
@@ -2588,7 +2655,7 @@ Definition at line 312 of file fglform.h.
 \label{classFglForm_a127a846458930510880fd13eb07d4463}
 
 
-Definition at line 173 of file fglform.h.
+Definition at line 175 of file fglform.h.
 
 \hypertarget{classFglForm_ab53b016e506ad4ed7fdb2ac2210d43b1}{
 \index{FglForm@{FglForm}!qsl\_\-fieldOrder@{qsl\_\-fieldOrder}}
@@ -2597,7 +2664,7 @@ Definition at line 173 of file fglform.h.
 \label{classFglForm_ab53b016e506ad4ed7fdb2ac2210d43b1}
 
 
-Definition at line 145 of file fglform.h.
+Definition at line 147 of file fglform.h.
 
 \hypertarget{classFglForm_a2e8895a4cd6f58cc36f31c8a51c06a54}{
 \index{FglForm@{FglForm}!recordView@{recordView}}
@@ -2606,7 +2673,7 @@ Definition at line 145 of file fglform.h.
 \label{classFglForm_a2e8895a4cd6f58cc36f31c8a51c06a54}
 
 
-Definition at line 154 of file fglform.h.
+Definition at line 156 of file fglform.h.
 
 \hypertarget{classFglForm_aa9bb2c29fa0161164dd5250a7602a1be}{
 \index{FglForm@{FglForm}!resetAct@{resetAct}}
@@ -2615,7 +2682,7 @@ Definition at line 154 of file fglform.h.
 \label{classFglForm_aa9bb2c29fa0161164dd5250a7602a1be}
 
 
-Definition at line 282 of file fglform.h.
+Definition at line 286 of file fglform.h.
 
 \hypertarget{classFglForm_ac85748725f2a9ba437e62be1293eae02}{
 \index{FglForm@{FglForm}!rightAct@{rightAct}}
@@ -2624,7 +2691,7 @@ Definition at line 282 of file fglform.h.
 \label{classFglForm_ac85748725f2a9ba437e62be1293eae02}
 
 
-Definition at line 281 of file fglform.h.
+Definition at line 285 of file fglform.h.
 
 \hypertarget{classFglForm_a15cd139d56b40da6de43a6bb4d438c0d}{
 \index{FglForm@{FglForm}!widget@{widget}}
@@ -2633,7 +2700,7 @@ Definition at line 281 of file fglform.h.
 \label{classFglForm_a15cd139d56b40da6de43a6bb4d438c0d}
 
 
-Definition at line 303 of file fglform.h.
+Definition at line 308 of file fglform.h.
 
 \hypertarget{classFglForm_a154084978ed81b8739db7197541881f5}{
 \index{FglForm@{FglForm}!windowName@{windowName}}

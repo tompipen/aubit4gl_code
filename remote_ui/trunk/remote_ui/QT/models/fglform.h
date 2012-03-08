@@ -87,6 +87,8 @@ public:
    QString windowName;
    QWidget *currentWidget;
    QPointer<QPushButton> nextclick;
+   void replayKeyboard();
+   void clearKeyboardBuffer();
    bool b_getch_swin;
    bool b_allowClose;
    bool b_dummy;
@@ -266,6 +268,7 @@ public slots:
 
 private:
    QList<Fgl::State> ql_states;
+   QList<QKeyEvent*> ql_keybuffer;
    QWidget *formWidget;
 
    QList<RingMenu*> ql_menus;
@@ -285,6 +288,7 @@ private:
    bool b_menu;
    bool b_input;
    bool b_screenRecord;
+   bool b_keybuffer;
    //bool b_construct;
 
    //PROPERTIES

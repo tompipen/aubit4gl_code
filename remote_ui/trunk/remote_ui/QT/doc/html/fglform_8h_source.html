@@ -149,249 +149,254 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <a name="l00087"></a>00087    QString windowName;
 <a name="l00088"></a>00088    QWidget *<a class="code" href="classFglForm.html#abce220040f982717756bfc10b51dac44">currentWidget</a>;
 <a name="l00089"></a>00089    QPointer&lt;QPushButton&gt; <a class="code" href="classFglForm.html#a17945f68955698f41dac6b11cf73cd07">nextclick</a>;
-<a name="l00090"></a>00090    <span class="keywordtype">bool</span> <a class="code" href="classFglForm.html#ac6325d19f253fe4e7cdfbd50bd027c19">b_getch_swin</a>;
-<a name="l00091"></a><a class="code" href="classFglForm.html#a8c411d93b67981a684a5cf6b67111dc1">00091</a>    <span class="keywordtype">bool</span> <a class="code" href="classFglForm.html#af7e3a4c11559a83dd68df64c286fdb1e">b_allowClose</a>;
-<a name="l00092"></a><a class="code" href="classFglForm.html#a154084978ed81b8739db7197541881f5">00092</a>    <span class="keywordtype">bool</span> <a class="code" href="classFglForm.html#a4dd283ca13e8a699e88783b2946b6841">b_dummy</a>;
-<a name="l00093"></a><a class="code" href="classFglForm.html#abce220040f982717756bfc10b51dac44">00093</a>    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#a626014edfd45271d30f38d877601abd5">jumpToField</a>(QWidget*, <span class="keywordtype">bool</span> b_after=true);
-<a name="l00094"></a><a class="code" href="classFglForm.html#a17945f68955698f41dac6b11cf73cd07">00094</a>    QList&lt;Fgl::Event&gt; <a class="code" href="classFglForm.html#a3aa184c0556d81cfb244f726d95b0538">ql_responseQueue</a>;
-<a name="l00095"></a><a class="code" href="classFglForm.html#ac6325d19f253fe4e7cdfbd50bd027c19">00095</a>    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#acfb920aa37d488d2877fe75441ac7f65">setMenuEnabled</a>(<span class="keywordtype">bool</span>);
-<a name="l00096"></a><a class="code" href="classFglForm.html#af7e3a4c11559a83dd68df64c286fdb1e">00096</a>    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#a0060da33eb1943f1b762e8a164ede398">setMenu</a>(<a class="code" href="classRingMenu.html">RingMenu</a>*);
-<a name="l00097"></a><a class="code" href="classFglForm.html#a4dd283ca13e8a699e88783b2946b6841">00097</a>    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#a7b0af358781bf6b0f37d80e9383cf10e">removeMenu</a>();
-<a name="l00098"></a>00098    RingMenu* <a class="code" href="classFglForm.html#acffbcaf62fc53ff47363cf13b2967242">menu</a>(){ <span class="keywordflow">if</span>(<a class="code" href="classFglForm.html#a587196a08706e03ec05f1fae4048f344">ql_menus</a>.count() &gt; 0) <span class="keywordflow">return</span> <a class="code" href="classFglForm.html#a587196a08706e03ec05f1fae4048f344">ql_menus</a>.last(); <span class="keywordflow">else</span> <span class="keywordflow">return</span> NULL; };
-<a name="l00099"></a><a class="code" href="classFglForm.html#a3aa184c0556d81cfb244f726d95b0538">00099</a>    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#ab322288b13021e7b98a5cf87912d2f18">setActionMenuEnabled</a>(<span class="keywordtype">bool</span>);
-<a name="l00100"></a>00100    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#acdc54b976403abededb061ba2dd0c30f">setActionMenu</a>(<a class="code" href="classActionMenu.html">ActionMenu</a>*);
-<a name="l00101"></a>00101    <a class="code" href="classActionMenu.html">ActionMenu</a>* <a class="code" href="classFglForm.html#aa7339ffc3aa81015c493104643fde6a1">actionMenu</a>(){ <span class="keywordflow">if</span>(<a class="code" href="classFglForm.html#aace1d4f7b637af4d3aa86e53a770152e">p_actionMenu</a> != NULL) <span class="keywordflow">return</span> <a class="code" href="classFglForm.html#aace1d4f7b637af4d3aa86e53a770152e">p_actionMenu</a>; <span class="keywordflow">else</span> <span class="keywordflow">return</span> NULL;}
-<a name="l00102"></a>00102    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#aee2921f4bcb8f95e10fde25ec84842d3">setDialog</a>(<a class="code" href="classDialog.html">Dialog</a>*);
-<a name="l00103"></a><a class="code" href="classFglForm.html#acffbcaf62fc53ff47363cf13b2967242">00103</a>    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#a19892721571e2c56399ca6be07c3f750">setPulldown</a>(<a class="code" href="classPulldown.html">Pulldown</a>*);
-<a name="l00104"></a>00104    <a class="code" href="classDialog.html">Dialog</a>* <a class="code" href="classFglForm.html#ace102516f1523e1ea87c64f2db1ea30e">dialog</a>(){ <span class="keywordflow">return</span> <a class="code" href="classFglForm.html#afa28d86c6e353e3e31c677b463199a4a">p_dialog</a>; };
-<a name="l00105"></a>00105    <a class="code" href="classPulldown.html">Pulldown</a>* <a class="code" href="classFglForm.html#a05f163612a936468e8fac3e84aeec02e">pulldown</a>() { <span class="keywordflow">return</span> <a class="code" href="classFglForm.html#a87a0ac69973f45c48fb629d04ac5b364">p_pulldown</a>;};
-<a name="l00106"></a><a class="code" href="classFglForm.html#aa7339ffc3aa81015c493104643fde6a1">00106</a>    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#a81b6a444e67df3a3e56ff786fe9099b7">showEvent</a>(QShowEvent *);
-<a name="l00107"></a>00107    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#acf0280c2e7ca7d56bc45c822b8fb9468">setToolBar</a>(<a class="code" href="classToolBar.html">ToolBar</a>*);
-<a name="l00108"></a>00108    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#acf0280c2e7ca7d56bc45c822b8fb9468">setToolBar</a>(QDomDocument);
-<a name="l00109"></a><a class="code" href="classFglForm.html#ace102516f1523e1ea87c64f2db1ea30e">00109</a>    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#a7490e381d17c7644c7f37a58d5ffa9b4">checkToolBar</a>();
-<a name="l00110"></a><a class="code" href="classFglForm.html#a05f163612a936468e8fac3e84aeec02e">00110</a>    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#ab7d3ed99ee7eac4b6b781e576d33a1ea">checkMenu</a>();
-<a name="l00111"></a>00111    ScreenHandler* <a class="code" href="classFglForm.html#aebb86e0bc590b730ff490b030b5dba7c">screenhandler</a>(){ <span class="keywordflow">return</span> <a class="code" href="classFglForm.html#a98e11b2d55100f907821e3a8281b4ab5">p_currscreenhandler</a>.data(); }
-<a name="l00112"></a>00112    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#aba5859f32918808eb18606b85483a4c6">setScreenHandler</a>(ScreenHandler*);
-<a name="l00113"></a>00113    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#ad806af9cecf975dc4abe1e12eb52864a">checkActions</a>();
-<a name="l00114"></a>00114    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#a3770f9b34c38cb5bc3f66a7e388c43ce">checkShortcuts</a>();
-<a name="l00115"></a>00115    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#a60718980fe99888336db588976319382">checkGuiActions</a>();
-<a name="l00116"></a><a class="code" href="classFglForm.html#aebb86e0bc590b730ff490b030b5dba7c">00116</a>    <span class="keywordtype">bool</span> <a class="code" href="classFglForm.html#ab44742db0c6d0d2e0663db22c9668b4c">handleGuiAction</a>(<a class="code" href="classAction.html">Action</a>*);
-<a name="l00117"></a>00117    <a class="code" href="classToolBar.html">ToolBar</a>* <a class="code" href="classFglForm.html#ae474767d66111cda958e191e6be1e34d">toolBar</a>(){ <span class="keywordflow">return</span> <a class="code" href="classFglForm.html#a63ee680575b50bd02473649cd3d272f5">p_toolBar</a>; };
-<a name="l00118"></a>00118    Qt::ToolBarArea <a class="code" href="classFglForm.html#acca25b6cbf4161c7075fb594a556eb9a">toolBarPosition</a>();
-<a name="l00119"></a>00119    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#a4b9c2e9963530fba9dc68f9dae0928a0">setActions</a>(QDomDocument);
-<a name="l00120"></a>00120    QList&lt;Action*&gt; <a class="code" href="classFglForm.html#ac8a66ae6b84ca24c622a87eb631a4834">formActions</a>(){ <span class="keywordflow">return</span> <a class="code" href="classFglForm.html#a091b50c03ba4a353485d34ea34f4001a">ql_formActions</a>; };
-<a name="l00121"></a>00121    QList&lt;Action*&gt; <a class="code" href="classFglForm.html#a1a92c94c67dd0ff9d8ff48c3fc64dcf9">defActions</a>(){ <span class="keywordflow">return</span> <a class="code" href="classFglForm.html#acc7f6b6c7b13cf1e6e39bfdeba18ddc1">ql_defaultActions</a>; };
-<a name="l00122"></a><a class="code" href="classFglForm.html#ae474767d66111cda958e191e6be1e34d">00122</a>    QList&lt;Action*&gt; <a class="code" href="classFglForm.html#aa65ef0a575b40217c5fbbe71c6faaf28">actionDefaults</a>(){ <span class="keywordflow">return</span> <a class="code" href="classFglForm.html#a6b78dae39bcab3791a9acc99a3b8248d">ql_actionDefaults</a>; };
-<a name="l00123"></a>00123    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#ac43c7da12a298a241c7c98cf9a688a6f">addFormAction</a>(QAction*);
-<a name="l00124"></a>00124    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#ac43c7da12a298a241c7c98cf9a688a6f">addFormAction</a>(QString name, QString text=<span class="stringliteral">&quot;&quot;</span>, QString comment=<span class="stringliteral">&quot;&quot;</span>, QString image=<span class="stringliteral">&quot;&quot;</span>, QString accName=<span class="stringliteral">&quot;&quot;</span>, QString accName2=<span class="stringliteral">&quot;&quot;</span>, QString accName3=<span class="stringliteral">&quot;&quot;</span>, QString accName4=<span class="stringliteral">&quot;&quot;</span>, QString defaultView=<span class="stringliteral">&quot;&quot;</span>);
-<a name="l00125"></a><a class="code" href="classFglForm.html#ac8a66ae6b84ca24c622a87eb631a4834">00125</a>    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#abadbd33d56f9bc46b3421f8fe0628952">addFormEvent</a>(<a class="code" href="structFgl_1_1Event.html">Fgl::Event</a>);
-<a name="l00126"></a><a class="code" href="classFglForm.html#a1a92c94c67dd0ff9d8ff48c3fc64dcf9">00126</a>    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#a5f3fea57cf46e7d548912efdaffa35f9">focusNextField</a>() { this-&gt;focusNextChild(); };
-<a name="l00127"></a><a class="code" href="classFglForm.html#aa65ef0a575b40217c5fbbe71c6faaf28">00127</a>    QWidget* <a class="code" href="classFglForm.html#a74cb6310512352e1fd501efbcd88724b">currentField</a>() { <span class="keywordflow">return</span> <a class="code" href="classFglForm.html#abce220040f982717756bfc10b51dac44">currentWidget</a>; };
-<a name="l00128"></a>00128    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#ac521356370affcf115340e2279475c6b">setCurrentWidget</a>(QWidget*);
-<a name="l00129"></a>00129    <span class="comment">//void setCurrentField(QWidget* widget = NULL) { widget-&gt;setFocus(); currentWidget = widget; };</span>
-<a name="l00130"></a>00130    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#a4574756e714c6d93e6d177ecbfb78ae1">setCurrentField</a>(QString, <span class="keywordtype">bool</span> sendEvents = <span class="keyword">true</span>);
-<a name="l00131"></a><a class="code" href="classFglForm.html#a5f3fea57cf46e7d548912efdaffa35f9">00131</a>    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#a82a066a47d5d8bc2f7c2ec41ab29d4f2">addToQueue</a>(<a class="code" href="structFgl_1_1Event.html">Fgl::Event</a>);
-<a name="l00132"></a><a class="code" href="classFglForm.html#a74cb6310512352e1fd501efbcd88724b">00132</a> 
-<a name="l00133"></a>00133    <span class="keywordtype">bool</span> <a class="code" href="classFglForm.html#ab6b474ce22c93c45ccbee4b637647732">input</a>() { <span class="keywordflow">return</span> (<a class="code" href="classFglForm.html#a18774054d5c9773a7075b5933b0bbc9a">ql_states</a>.last() == <a class="code" href="namespaceFgl.html#a66700792cb225549384ae76c1057cf22a44a7ee3ee0989f85b0255ee91e59b423">Fgl::INPUT</a>); };
-<a name="l00134"></a>00134    <span class="keywordtype">bool</span> <a class="code" href="classFglForm.html#ab131183405b70a2d48643ec9a522f877">construct</a>() { <span class="keywordflow">return</span> (<a class="code" href="classFglForm.html#a18774054d5c9773a7075b5933b0bbc9a">ql_states</a>.last() == <a class="code" href="namespaceFgl.html#a66700792cb225549384ae76c1057cf22a134ea7c57c8ce8a226bb57a3bdfc5733">Fgl::CONSTRUCT</a>); };
-<a name="l00135"></a>00135    <span class="keywordtype">bool</span> <a class="code" href="classFglForm.html#a2e45f9d338ef208ffb1c08f1f97e6b2b">screenRecord</a>() { <span class="keywordflow">return</span> (<a class="code" href="classFglForm.html#a18774054d5c9773a7075b5933b0bbc9a">ql_states</a>.last() == <a class="code" href="namespaceFgl.html#a66700792cb225549384ae76c1057cf22ab019b8d80dc5cce02f0596c7ff252301">Fgl::DISPLAYARRAY</a> || <a class="code" href="classFglForm.html#a18774054d5c9773a7075b5933b0bbc9a">ql_states</a>.last() == <a class="code" href="namespaceFgl.html#a66700792cb225549384ae76c1057cf22a6e1b247a5050ed29e7fe7cc74b307f12">Fgl::INPUTARRAY</a>); };
-<a name="l00136"></a>00136    <span class="keywordtype">bool</span> <a class="code" href="classFglForm.html#a77b1a70cf1fff7d103b8c1895b3302c4">displayArray</a>() { <span class="keywordflow">return</span> (<a class="code" href="classFglForm.html#a18774054d5c9773a7075b5933b0bbc9a">ql_states</a>.last() == <a class="code" href="namespaceFgl.html#a66700792cb225549384ae76c1057cf22ab019b8d80dc5cce02f0596c7ff252301">Fgl::DISPLAYARRAY</a>); };
-<a name="l00137"></a>00137    <span class="keywordtype">bool</span> <a class="code" href="classFglForm.html#a452b19a215f6acbb86320ed3a8b32ead">inputArray</a>() { <span class="keywordflow">return</span> (<a class="code" href="classFglForm.html#a18774054d5c9773a7075b5933b0bbc9a">ql_states</a>.last() == <a class="code" href="namespaceFgl.html#a66700792cb225549384ae76c1057cf22a6e1b247a5050ed29e7fe7cc74b307f12">Fgl::INPUTARRAY</a>); };
-<a name="l00138"></a><a class="code" href="classFglForm.html#ab6b474ce22c93c45ccbee4b637647732">00138</a> 
-<a name="l00139"></a><a class="code" href="classFglForm.html#ab131183405b70a2d48643ec9a522f877">00139</a>    <span class="keywordtype">bool</span> <a class="code" href="classFglForm.html#ae6cab599f897bf58335df99e6d43b72d">bufferTouched</a>() { <span class="keywordflow">return</span> <a class="code" href="classFglForm.html#a4bddddc3ca57303fbf3d55394e260a00">b_bufferTouched</a>; };
-<a name="l00140"></a><a class="code" href="classFglForm.html#a2e45f9d338ef208ffb1c08f1f97e6b2b">00140</a>    <span class="keywordtype">int</span> <a class="code" href="classFglForm.html#aab860a48ab46e95732543f3cb345ba26">lastCursor</a>() { <span class="keywordflow">return</span> <a class="code" href="classFglForm.html#a9f622b4a17fcad8c785e119d19abe326">i_lastCursor</a>; };
-<a name="l00141"></a><a class="code" href="classFglForm.html#a77b1a70cf1fff7d103b8c1895b3302c4">00141</a> 
-<a name="l00142"></a><a class="code" href="classFglForm.html#a452b19a215f6acbb86320ed3a8b32ead">00142</a>    <span class="comment">/*</span>
-<a name="l00143"></a>00143 <span class="comment">   void setConstructEnabled(bool enable ) { b_construct = enable; };</span>
-<a name="l00144"></a><a class="code" href="classFglForm.html#ae6cab599f897bf58335df99e6d43b72d">00144</a> <span class="comment">   bool construct() { return b_construct; };</span>
-<a name="l00145"></a><a class="code" href="classFglForm.html#ab53b016e506ad4ed7fdb2ac2210d43b1">00145</a> <span class="comment">   */</span>
-<a name="l00146"></a>00146    QStringList <a class="code" href="classFglForm.html#ab53b016e506ad4ed7fdb2ac2210d43b1">qsl_fieldOrder</a>;
-<a name="l00147"></a>00147 
-<a name="l00148"></a>00148    <span class="comment">//QDomDocument *recordView;</span>
-<a name="l00149"></a>00149    QHash&lt;QString, QList&lt;Fgl::Link&gt; &gt; <a class="code" href="classFglForm.html#a2e8895a4cd6f58cc36f31c8a51c06a54">recordView</a>;
-<a name="l00150"></a>00150    
-<a name="l00151"></a>00151    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#af5e8206054e3275e2977056e685b73da">initActions</a>();
-<a name="l00152"></a>00152    <span class="keywordtype">bool</span> <a class="code" href="classFglForm.html#ab089d04abad8973c262e3c5e1827b070">b_newForm</a>;
-<a name="l00153"></a>00153    <span class="keywordtype">bool</span> <a class="code" href="classFglForm.html#a99b822401e45535d412f2a6c5601734d">b_denyFocus</a>;
-<a name="l00154"></a><a class="code" href="classFglForm.html#a2e8895a4cd6f58cc36f31c8a51c06a54">00154</a>    <span class="keywordtype">int</span> <a class="code" href="classFglForm.html#a34347fff01950e4574b64c69b62d1ff2">gridWidth</a>;
-<a name="l00155"></a>00155    <span class="comment">//TableView *p_screenRecord;</span>
-<a name="l00156"></a>00156    
-<a name="l00157"></a><a class="code" href="classFglForm.html#ab089d04abad8973c262e3c5e1827b070">00157</a>    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#a6a923c50e859e58d34046d0b0f86c11d">setFormLayout</a>(<span class="keyword">const</span> QDomDocument&amp;);
-<a name="l00158"></a><a class="code" href="classFglForm.html#a99b822401e45535d412f2a6c5601734d">00158</a>    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#a07c0926396e4229b40de7988689a1f16">setStyles</a>(<span class="keyword">const</span> QDomDocument&amp;);
-<a name="l00159"></a><a class="code" href="classFglForm.html#a34347fff01950e4574b64c69b62d1ff2">00159</a> 
-<a name="l00160"></a>00160    QList&lt;Fgl::Event&gt; <a class="code" href="classFglForm.html#a0a20950e5d9deba35525fbcb7935f6f0">ql_menuEvents</a>;
-<a name="l00161"></a>00161    QList&lt;Fgl::Event&gt; <a class="code" href="classFglForm.html#a764e11f62e1849d568cda143fa11583e">ql_dialogEvents</a>;
-<a name="l00162"></a>00162    QList&lt;Fgl::Event&gt; <a class="code" href="classFglForm.html#a14b1e58865612b4ebbfa83c8769f9353">ql_pulldownEvents</a>;
-<a name="l00163"></a>00163    QList&lt;Fgl::Event&gt; <a class="code" href="classFglForm.html#aec60babfa521575768a4aa1147318ba1">ql_formEvents</a>;
-<a name="l00164"></a>00164    QList&lt; QList&lt;Fgl::Event&gt; &gt; <a class="code" href="classFglForm.html#ac7920cda2f9ebef4076ff19e73cfa047">ql_contextEvents</a>;
-<a name="l00165"></a><a class="code" href="classFglForm.html#a0a20950e5d9deba35525fbcb7935f6f0">00165</a>    QList&lt;QWidget*&gt; <a class="code" href="classFglForm.html#ad0adbaabeb97d6fabd2a23f5ac5c0069">ql_formFields</a>;
-<a name="l00166"></a><a class="code" href="classFglForm.html#a764e11f62e1849d568cda143fa11583e">00166</a> 
-<a name="l00167"></a><a class="code" href="classFglForm.html#a14b1e58865612b4ebbfa83c8769f9353">00167</a>    <span class="comment">// Contains all Fieldnames in the order they get their focus</span>
-<a name="l00168"></a><a class="code" href="classFglForm.html#aec60babfa521575768a4aa1147318ba1">00168</a>    QStringList <a class="code" href="classFglForm.html#a127a846458930510880fd13eb07d4463">qsl_activeFields</a>;
-<a name="l00169"></a><a class="code" href="classFglForm.html#ac7920cda2f9ebef4076ff19e73cfa047">00169</a> 
-<a name="l00170"></a><a class="code" href="classFglForm.html#ad0adbaabeb97d6fabd2a23f5ac5c0069">00170</a>    QString <a class="code" href="classFglForm.html#a40002405b99f9291e8f61944a775172a">getStartMenuPosition</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code" href="classFglForm.html#a94e20a9c06c349d6e7c5ec47c03de4a6">m_startMenuPosition</a>; };
-<a name="l00171"></a>00171    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#a2badc0486f40c57306fdefe14800a13b">setStartMenuPosition</a>(<span class="keyword">const</span> QString &amp;sm) { <a class="code" href="classFglForm.html#a94e20a9c06c349d6e7c5ec47c03de4a6">m_startMenuPosition</a> = sm; };
-<a name="l00172"></a>00172 
-<a name="l00173"></a><a class="code" href="classFglForm.html#a127a846458930510880fd13eb07d4463">00173</a>    QString <a class="code" href="classFglForm.html#ac138a537d43b85e677818e1a61f3cd3d">getToolBarPosition</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code" href="classFglForm.html#a0008c6a1c3362095ebd5ab0601910003">m_toolBarPosition</a>; };
-<a name="l00174"></a>00174    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#af3b00991b1e002fe156d0298468a2311">setToolBarPosition</a>(<span class="keyword">const</span> QString &amp;sm);<span class="comment">//{ m_toolBarPosition = sm; };</span>
-<a name="l00175"></a><a class="code" href="classFglForm.html#a40002405b99f9291e8f61944a775172a">00175</a> 
-<a name="l00176"></a><a class="code" href="classFglForm.html#a2badc0486f40c57306fdefe14800a13b">00176</a>    QString <a class="code" href="classFglForm.html#a1e47b1b987a50ed9e4155bdf0664feba">getWindowType</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code" href="classFglForm.html#aff3b675ee7063af63839e029f66b4075">m_windowType</a>; };
-<a name="l00177"></a>00177    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#ad780eff8bf0437a8e33a9115885718e9">setWindowType</a>(<span class="keyword">const</span> QString &amp;sm);
-<a name="l00178"></a><a class="code" href="classFglForm.html#ac138a537d43b85e677818e1a61f3cd3d">00178</a> 
-<a name="l00179"></a>00179    QString <a class="code" href="classFglForm.html#a714fbe1dca04c76d368a8a429b6322c1">sizable</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code" href="classFglForm.html#a7861c07caeb306c5ae9f2012ce73bff7">m_sizable</a>; };
-<a name="l00180"></a>00180    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#a805e33b8b74b0cc73dad05eac238f9db">setSizable</a>(<span class="keyword">const</span> QString &amp;sm);
-<a name="l00181"></a><a class="code" href="classFglForm.html#a1e47b1b987a50ed9e4155bdf0664feba">00181</a> 
-<a name="l00182"></a>00182    <span class="keywordtype">bool</span> <a class="code" href="classFglForm.html#a9cacfea35fa0152d42b399fc6d2a2524">getDefaultStatusBar</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code" href="classFglForm.html#a2e877386e4ba441d929c0c35d48620cb">m_defaultStatusBar</a>; };
-<a name="l00183"></a>00183    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#a4b2f8754ef3aa90fc46d04c2020ed5af">setDefaultStatusBar</a>(<span class="keyword">const</span> <span class="keywordtype">bool</span> &amp;sm);
-<a name="l00184"></a><a class="code" href="classFglForm.html#a714fbe1dca04c76d368a8a429b6322c1">00184</a> 
-<a name="l00185"></a>00185    QString <a class="code" href="classFglForm.html#a1d53398b0bf7a81f7d6f4fab65faa3dd">getActionPanelPosition</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code" href="classFglForm.html#af3882d981d23db8e6dca26a44ac23051">m_actionPanelPosition</a>; };
-<a name="l00186"></a>00186    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#a80b78ad88d0dc22b7f4df7a724794a13">setActionPanelPosition</a>(<span class="keyword">const</span> QString &amp;sm);
-<a name="l00187"></a><a class="code" href="classFglForm.html#a9cacfea35fa0152d42b399fc6d2a2524">00187</a> 
-<a name="l00188"></a>00188    QString <a class="code" href="classFglForm.html#a773cd80cab1ae1efaccc48262b2cbc55">getRingMenuPosition</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code" href="classFglForm.html#a25371a3df6cb3e1dc66e141bb2a9dff1">m_ringMenuPosition</a>; };
-<a name="l00189"></a>00189    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#af25c944e246c0522cd333e452ead9cad">setRingMenuPosition</a>(<span class="keyword">const</span> QString &amp;sm);
-<a name="l00190"></a><a class="code" href="classFglForm.html#a1d53398b0bf7a81f7d6f4fab65faa3dd">00190</a> 
-<a name="l00191"></a>00191    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#a5f6285fdf157e863c68402ec8147c53a">setState</a>(<a class="code" href="namespaceFgl.html#a66700792cb225549384ae76c1057cf22">Fgl::State</a> <a class="code" href="classFglForm.html#aeed42adf5a051006db1742e2b48617e1">state</a>) { ql_states &lt;&lt; state;  ql_contextEvents &lt;&lt; QList&lt;Fgl::Event&gt;(); } ;
-<a name="l00192"></a>00192    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#a4d2edce15aac96b22d221a11c0e7681e">revertState</a>(<a class="code" href="namespaceFgl.html#a66700792cb225549384ae76c1057cf22">Fgl::State</a>);
-<a name="l00193"></a><a class="code" href="classFglForm.html#a773cd80cab1ae1efaccc48262b2cbc55">00193</a>    <a class="code" href="namespaceFgl.html#a66700792cb225549384ae76c1057cf22">Fgl::State</a> <a class="code" href="classFglForm.html#aeed42adf5a051006db1742e2b48617e1">state</a>() { <span class="keywordflow">return</span> <a class="code" href="classFglForm.html#a18774054d5c9773a7075b5933b0bbc9a">ql_states</a>.last(); };
-<a name="l00194"></a>00194    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#a0ef6e6d0ddf327e89c3e2d54be8548a6">checkState</a>();
-<a name="l00195"></a>00195 
-<a name="l00196"></a><a class="code" href="classFglForm.html#a5f6285fdf157e863c68402ec8147c53a">00196</a>    QList&lt;QWidget*&gt; <a class="code" href="classFglForm.html#ab40c533416d35aac75f2ccf5157a3cf2">formElements</a>();
+<a name="l00090"></a>00090    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#a304cb50242f0f546f3c750be160738e5" title="Method to replay the Keyboardbuffer.">replayKeyboard</a>();
+<a name="l00091"></a><a class="code" href="classFglForm.html#a8c411d93b67981a684a5cf6b67111dc1">00091</a>    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#a929ef0072e09235e5496c7f59c4be2e6" title="Method to clear the current Keyboardbuffer. Needed for NEXTFIELD introductions cause the keystrokes a...">clearKeyboardBuffer</a>();
+<a name="l00092"></a><a class="code" href="classFglForm.html#a154084978ed81b8739db7197541881f5">00092</a>    <span class="keywordtype">bool</span> <a class="code" href="classFglForm.html#ac6325d19f253fe4e7cdfbd50bd027c19">b_getch_swin</a>;
+<a name="l00093"></a><a class="code" href="classFglForm.html#abce220040f982717756bfc10b51dac44">00093</a>    <span class="keywordtype">bool</span> <a class="code" href="classFglForm.html#af7e3a4c11559a83dd68df64c286fdb1e">b_allowClose</a>;
+<a name="l00094"></a><a class="code" href="classFglForm.html#a17945f68955698f41dac6b11cf73cd07">00094</a>    <span class="keywordtype">bool</span> <a class="code" href="classFglForm.html#a4dd283ca13e8a699e88783b2946b6841">b_dummy</a>;
+<a name="l00095"></a>00095    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#a626014edfd45271d30f38d877601abd5">jumpToField</a>(QWidget*, <span class="keywordtype">bool</span> b_after=true);
+<a name="l00096"></a>00096    QList&lt;Fgl::Event&gt; <a class="code" href="classFglForm.html#a3aa184c0556d81cfb244f726d95b0538">ql_responseQueue</a>;
+<a name="l00097"></a><a class="code" href="classFglForm.html#ac6325d19f253fe4e7cdfbd50bd027c19">00097</a>    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#acfb920aa37d488d2877fe75441ac7f65">setMenuEnabled</a>(<span class="keywordtype">bool</span>);
+<a name="l00098"></a><a class="code" href="classFglForm.html#af7e3a4c11559a83dd68df64c286fdb1e">00098</a>    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#a0060da33eb1943f1b762e8a164ede398">setMenu</a>(<a class="code" href="classRingMenu.html">RingMenu</a>*);
+<a name="l00099"></a><a class="code" href="classFglForm.html#a4dd283ca13e8a699e88783b2946b6841">00099</a>    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#a7b0af358781bf6b0f37d80e9383cf10e">removeMenu</a>();
+<a name="l00100"></a>00100    RingMenu* <a class="code" href="classFglForm.html#acffbcaf62fc53ff47363cf13b2967242">menu</a>(){ <span class="keywordflow">if</span>(<a class="code" href="classFglForm.html#a587196a08706e03ec05f1fae4048f344">ql_menus</a>.count() &gt; 0) <span class="keywordflow">return</span> <a class="code" href="classFglForm.html#a587196a08706e03ec05f1fae4048f344">ql_menus</a>.last(); <span class="keywordflow">else</span> <span class="keywordflow">return</span> NULL; };
+<a name="l00101"></a><a class="code" href="classFglForm.html#a3aa184c0556d81cfb244f726d95b0538">00101</a>    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#ab322288b13021e7b98a5cf87912d2f18">setActionMenuEnabled</a>(<span class="keywordtype">bool</span>);
+<a name="l00102"></a>00102    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#acdc54b976403abededb061ba2dd0c30f">setActionMenu</a>(<a class="code" href="classActionMenu.html">ActionMenu</a>*);
+<a name="l00103"></a>00103    <a class="code" href="classActionMenu.html">ActionMenu</a>* <a class="code" href="classFglForm.html#aa7339ffc3aa81015c493104643fde6a1">actionMenu</a>(){ <span class="keywordflow">if</span>(<a class="code" href="classFglForm.html#aace1d4f7b637af4d3aa86e53a770152e">p_actionMenu</a> != NULL) <span class="keywordflow">return</span> <a class="code" href="classFglForm.html#aace1d4f7b637af4d3aa86e53a770152e">p_actionMenu</a>; <span class="keywordflow">else</span> <span class="keywordflow">return</span> NULL;}
+<a name="l00104"></a>00104    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#aee2921f4bcb8f95e10fde25ec84842d3">setDialog</a>(<a class="code" href="classDialog.html">Dialog</a>*);
+<a name="l00105"></a><a class="code" href="classFglForm.html#acffbcaf62fc53ff47363cf13b2967242">00105</a>    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#a19892721571e2c56399ca6be07c3f750">setPulldown</a>(<a class="code" href="classPulldown.html">Pulldown</a>*);
+<a name="l00106"></a>00106    <a class="code" href="classDialog.html">Dialog</a>* <a class="code" href="classFglForm.html#ace102516f1523e1ea87c64f2db1ea30e">dialog</a>(){ <span class="keywordflow">return</span> <a class="code" href="classFglForm.html#afa28d86c6e353e3e31c677b463199a4a">p_dialog</a>; };
+<a name="l00107"></a>00107    <a class="code" href="classPulldown.html">Pulldown</a>* <a class="code" href="classFglForm.html#a05f163612a936468e8fac3e84aeec02e">pulldown</a>() { <span class="keywordflow">return</span> <a class="code" href="classFglForm.html#a87a0ac69973f45c48fb629d04ac5b364">p_pulldown</a>;};
+<a name="l00108"></a><a class="code" href="classFglForm.html#aa7339ffc3aa81015c493104643fde6a1">00108</a>    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#a81b6a444e67df3a3e56ff786fe9099b7">showEvent</a>(QShowEvent *);
+<a name="l00109"></a>00109    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#acf0280c2e7ca7d56bc45c822b8fb9468">setToolBar</a>(<a class="code" href="classToolBar.html">ToolBar</a>*);
+<a name="l00110"></a>00110    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#acf0280c2e7ca7d56bc45c822b8fb9468">setToolBar</a>(QDomDocument);
+<a name="l00111"></a><a class="code" href="classFglForm.html#ace102516f1523e1ea87c64f2db1ea30e">00111</a>    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#a7490e381d17c7644c7f37a58d5ffa9b4">checkToolBar</a>();
+<a name="l00112"></a><a class="code" href="classFglForm.html#a05f163612a936468e8fac3e84aeec02e">00112</a>    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#ab7d3ed99ee7eac4b6b781e576d33a1ea">checkMenu</a>();
+<a name="l00113"></a>00113    ScreenHandler* <a class="code" href="classFglForm.html#aebb86e0bc590b730ff490b030b5dba7c">screenhandler</a>(){ <span class="keywordflow">return</span> <a class="code" href="classFglForm.html#a98e11b2d55100f907821e3a8281b4ab5">p_currscreenhandler</a>.data(); }
+<a name="l00114"></a>00114    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#aba5859f32918808eb18606b85483a4c6">setScreenHandler</a>(ScreenHandler*);
+<a name="l00115"></a>00115    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#ad806af9cecf975dc4abe1e12eb52864a">checkActions</a>();
+<a name="l00116"></a>00116    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#a3770f9b34c38cb5bc3f66a7e388c43ce">checkShortcuts</a>();
+<a name="l00117"></a>00117    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#a60718980fe99888336db588976319382">checkGuiActions</a>();
+<a name="l00118"></a><a class="code" href="classFglForm.html#aebb86e0bc590b730ff490b030b5dba7c">00118</a>    <span class="keywordtype">bool</span> <a class="code" href="classFglForm.html#ab44742db0c6d0d2e0663db22c9668b4c">handleGuiAction</a>(<a class="code" href="classAction.html">Action</a>*);
+<a name="l00119"></a>00119    <a class="code" href="classToolBar.html">ToolBar</a>* <a class="code" href="classFglForm.html#ae474767d66111cda958e191e6be1e34d">toolBar</a>(){ <span class="keywordflow">return</span> <a class="code" href="classFglForm.html#a63ee680575b50bd02473649cd3d272f5">p_toolBar</a>; };
+<a name="l00120"></a>00120    Qt::ToolBarArea <a class="code" href="classFglForm.html#acca25b6cbf4161c7075fb594a556eb9a">toolBarPosition</a>();
+<a name="l00121"></a>00121    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#a4b9c2e9963530fba9dc68f9dae0928a0">setActions</a>(QDomDocument);
+<a name="l00122"></a>00122    QList&lt;Action*&gt; <a class="code" href="classFglForm.html#ac8a66ae6b84ca24c622a87eb631a4834">formActions</a>(){ <span class="keywordflow">return</span> <a class="code" href="classFglForm.html#a091b50c03ba4a353485d34ea34f4001a">ql_formActions</a>; };
+<a name="l00123"></a>00123    QList&lt;Action*&gt; <a class="code" href="classFglForm.html#a1a92c94c67dd0ff9d8ff48c3fc64dcf9">defActions</a>(){ <span class="keywordflow">return</span> <a class="code" href="classFglForm.html#acc7f6b6c7b13cf1e6e39bfdeba18ddc1">ql_defaultActions</a>; };
+<a name="l00124"></a><a class="code" href="classFglForm.html#ae474767d66111cda958e191e6be1e34d">00124</a>    QList&lt;Action*&gt; <a class="code" href="classFglForm.html#aa65ef0a575b40217c5fbbe71c6faaf28">actionDefaults</a>(){ <span class="keywordflow">return</span> <a class="code" href="classFglForm.html#a6b78dae39bcab3791a9acc99a3b8248d">ql_actionDefaults</a>; };
+<a name="l00125"></a>00125    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#ac43c7da12a298a241c7c98cf9a688a6f">addFormAction</a>(QAction*);
+<a name="l00126"></a>00126    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#ac43c7da12a298a241c7c98cf9a688a6f">addFormAction</a>(QString name, QString text=<span class="stringliteral">&quot;&quot;</span>, QString comment=<span class="stringliteral">&quot;&quot;</span>, QString image=<span class="stringliteral">&quot;&quot;</span>, QString accName=<span class="stringliteral">&quot;&quot;</span>, QString accName2=<span class="stringliteral">&quot;&quot;</span>, QString accName3=<span class="stringliteral">&quot;&quot;</span>, QString accName4=<span class="stringliteral">&quot;&quot;</span>, QString defaultView=<span class="stringliteral">&quot;&quot;</span>);
+<a name="l00127"></a><a class="code" href="classFglForm.html#ac8a66ae6b84ca24c622a87eb631a4834">00127</a>    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#abadbd33d56f9bc46b3421f8fe0628952">addFormEvent</a>(<a class="code" href="structFgl_1_1Event.html">Fgl::Event</a>);
+<a name="l00128"></a><a class="code" href="classFglForm.html#a1a92c94c67dd0ff9d8ff48c3fc64dcf9">00128</a>    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#a5f3fea57cf46e7d548912efdaffa35f9">focusNextField</a>() { this-&gt;focusNextChild(); };
+<a name="l00129"></a><a class="code" href="classFglForm.html#aa65ef0a575b40217c5fbbe71c6faaf28">00129</a>    QWidget* <a class="code" href="classFglForm.html#a74cb6310512352e1fd501efbcd88724b">currentField</a>() { <span class="keywordflow">return</span> <a class="code" href="classFglForm.html#abce220040f982717756bfc10b51dac44">currentWidget</a>; };
+<a name="l00130"></a>00130    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#ac521356370affcf115340e2279475c6b">setCurrentWidget</a>(QWidget*);
+<a name="l00131"></a>00131    <span class="comment">//void setCurrentField(QWidget* widget = NULL) { widget-&gt;setFocus(); currentWidget = widget; };</span>
+<a name="l00132"></a>00132    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#a4574756e714c6d93e6d177ecbfb78ae1">setCurrentField</a>(QString, <span class="keywordtype">bool</span> sendEvents = <span class="keyword">true</span>);
+<a name="l00133"></a><a class="code" href="classFglForm.html#a5f3fea57cf46e7d548912efdaffa35f9">00133</a> 
+<a name="l00134"></a><a class="code" href="classFglForm.html#a74cb6310512352e1fd501efbcd88724b">00134</a> 
+<a name="l00135"></a>00135    <span class="keywordtype">bool</span> <a class="code" href="classFglForm.html#ab6b474ce22c93c45ccbee4b637647732">input</a>() { <span class="keywordflow">return</span> (<a class="code" href="classFglForm.html#a18774054d5c9773a7075b5933b0bbc9a">ql_states</a>.last() == <a class="code" href="namespaceFgl.html#a66700792cb225549384ae76c1057cf22a44a7ee3ee0989f85b0255ee91e59b423">Fgl::INPUT</a>); };
+<a name="l00136"></a>00136    <span class="keywordtype">bool</span> <a class="code" href="classFglForm.html#ab131183405b70a2d48643ec9a522f877">construct</a>() { <span class="keywordflow">return</span> (<a class="code" href="classFglForm.html#a18774054d5c9773a7075b5933b0bbc9a">ql_states</a>.last() == <a class="code" href="namespaceFgl.html#a66700792cb225549384ae76c1057cf22a134ea7c57c8ce8a226bb57a3bdfc5733">Fgl::CONSTRUCT</a>); };
+<a name="l00137"></a>00137    <span class="keywordtype">bool</span> <a class="code" href="classFglForm.html#a2e45f9d338ef208ffb1c08f1f97e6b2b">screenRecord</a>() { <span class="keywordflow">return</span> (<a class="code" href="classFglForm.html#a18774054d5c9773a7075b5933b0bbc9a">ql_states</a>.last() == <a class="code" href="namespaceFgl.html#a66700792cb225549384ae76c1057cf22ab019b8d80dc5cce02f0596c7ff252301">Fgl::DISPLAYARRAY</a> || <a class="code" href="classFglForm.html#a18774054d5c9773a7075b5933b0bbc9a">ql_states</a>.last() == <a class="code" href="namespaceFgl.html#a66700792cb225549384ae76c1057cf22a6e1b247a5050ed29e7fe7cc74b307f12">Fgl::INPUTARRAY</a>); };
+<a name="l00138"></a>00138    <span class="keywordtype">bool</span> <a class="code" href="classFglForm.html#a77b1a70cf1fff7d103b8c1895b3302c4">displayArray</a>() { <span class="keywordflow">return</span> (<a class="code" href="classFglForm.html#a18774054d5c9773a7075b5933b0bbc9a">ql_states</a>.last() == <a class="code" href="namespaceFgl.html#a66700792cb225549384ae76c1057cf22ab019b8d80dc5cce02f0596c7ff252301">Fgl::DISPLAYARRAY</a>); };
+<a name="l00139"></a>00139    <span class="keywordtype">bool</span> <a class="code" href="classFglForm.html#a452b19a215f6acbb86320ed3a8b32ead">inputArray</a>() { <span class="keywordflow">return</span> (<a class="code" href="classFglForm.html#a18774054d5c9773a7075b5933b0bbc9a">ql_states</a>.last() == <a class="code" href="namespaceFgl.html#a66700792cb225549384ae76c1057cf22a6e1b247a5050ed29e7fe7cc74b307f12">Fgl::INPUTARRAY</a>); };
+<a name="l00140"></a><a class="code" href="classFglForm.html#ab6b474ce22c93c45ccbee4b637647732">00140</a> 
+<a name="l00141"></a><a class="code" href="classFglForm.html#ab131183405b70a2d48643ec9a522f877">00141</a>    <span class="keywordtype">bool</span> <a class="code" href="classFglForm.html#ae6cab599f897bf58335df99e6d43b72d">bufferTouched</a>() { <span class="keywordflow">return</span> <a class="code" href="classFglForm.html#a4bddddc3ca57303fbf3d55394e260a00">b_bufferTouched</a>; };
+<a name="l00142"></a><a class="code" href="classFglForm.html#a2e45f9d338ef208ffb1c08f1f97e6b2b">00142</a>    <span class="keywordtype">int</span> <a class="code" href="classFglForm.html#aab860a48ab46e95732543f3cb345ba26">lastCursor</a>() { <span class="keywordflow">return</span> <a class="code" href="classFglForm.html#a9f622b4a17fcad8c785e119d19abe326">i_lastCursor</a>; };
+<a name="l00143"></a><a class="code" href="classFglForm.html#a77b1a70cf1fff7d103b8c1895b3302c4">00143</a> 
+<a name="l00144"></a><a class="code" href="classFglForm.html#a452b19a215f6acbb86320ed3a8b32ead">00144</a>    <span class="comment">/*</span>
+<a name="l00145"></a>00145 <span class="comment">   void setConstructEnabled(bool enable ) { b_construct = enable; };</span>
+<a name="l00146"></a><a class="code" href="classFglForm.html#ae6cab599f897bf58335df99e6d43b72d">00146</a> <span class="comment">   bool construct() { return b_construct; };</span>
+<a name="l00147"></a><a class="code" href="classFglForm.html#ab53b016e506ad4ed7fdb2ac2210d43b1">00147</a> <span class="comment">   */</span>
+<a name="l00148"></a>00148    QStringList <a class="code" href="classFglForm.html#ab53b016e506ad4ed7fdb2ac2210d43b1">qsl_fieldOrder</a>;
+<a name="l00149"></a>00149 
+<a name="l00150"></a>00150    <span class="comment">//QDomDocument *recordView;</span>
+<a name="l00151"></a>00151    QHash&lt;QString, QList&lt;Fgl::Link&gt; &gt; <a class="code" href="classFglForm.html#a2e8895a4cd6f58cc36f31c8a51c06a54">recordView</a>;
+<a name="l00152"></a>00152    
+<a name="l00153"></a>00153    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#af5e8206054e3275e2977056e685b73da">initActions</a>();
+<a name="l00154"></a>00154    <span class="keywordtype">bool</span> <a class="code" href="classFglForm.html#ab089d04abad8973c262e3c5e1827b070">b_newForm</a>;
+<a name="l00155"></a>00155    <span class="keywordtype">bool</span> <a class="code" href="classFglForm.html#a99b822401e45535d412f2a6c5601734d">b_denyFocus</a>;
+<a name="l00156"></a><a class="code" href="classFglForm.html#a2e8895a4cd6f58cc36f31c8a51c06a54">00156</a>    <span class="keywordtype">int</span> <a class="code" href="classFglForm.html#a34347fff01950e4574b64c69b62d1ff2">gridWidth</a>;
+<a name="l00157"></a>00157    <span class="comment">//TableView *p_screenRecord;</span>
+<a name="l00158"></a>00158    
+<a name="l00159"></a><a class="code" href="classFglForm.html#ab089d04abad8973c262e3c5e1827b070">00159</a>    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#a6a923c50e859e58d34046d0b0f86c11d">setFormLayout</a>(<span class="keyword">const</span> QDomDocument&amp;);
+<a name="l00160"></a><a class="code" href="classFglForm.html#a99b822401e45535d412f2a6c5601734d">00160</a>    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#a07c0926396e4229b40de7988689a1f16">setStyles</a>(<span class="keyword">const</span> QDomDocument&amp;);
+<a name="l00161"></a><a class="code" href="classFglForm.html#a34347fff01950e4574b64c69b62d1ff2">00161</a> 
+<a name="l00162"></a>00162    QList&lt;Fgl::Event&gt; <a class="code" href="classFglForm.html#a0a20950e5d9deba35525fbcb7935f6f0">ql_menuEvents</a>;
+<a name="l00163"></a>00163    QList&lt;Fgl::Event&gt; <a class="code" href="classFglForm.html#a764e11f62e1849d568cda143fa11583e">ql_dialogEvents</a>;
+<a name="l00164"></a>00164    QList&lt;Fgl::Event&gt; <a class="code" href="classFglForm.html#a14b1e58865612b4ebbfa83c8769f9353">ql_pulldownEvents</a>;
+<a name="l00165"></a>00165    QList&lt;Fgl::Event&gt; <a class="code" href="classFglForm.html#aec60babfa521575768a4aa1147318ba1">ql_formEvents</a>;
+<a name="l00166"></a>00166    QList&lt; QList&lt;Fgl::Event&gt; &gt; <a class="code" href="classFglForm.html#ac7920cda2f9ebef4076ff19e73cfa047">ql_contextEvents</a>;
+<a name="l00167"></a><a class="code" href="classFglForm.html#a0a20950e5d9deba35525fbcb7935f6f0">00167</a>    QList&lt;QWidget*&gt; <a class="code" href="classFglForm.html#ad0adbaabeb97d6fabd2a23f5ac5c0069">ql_formFields</a>;
+<a name="l00168"></a><a class="code" href="classFglForm.html#a764e11f62e1849d568cda143fa11583e">00168</a> 
+<a name="l00169"></a><a class="code" href="classFglForm.html#a14b1e58865612b4ebbfa83c8769f9353">00169</a>    <span class="comment">// Contains all Fieldnames in the order they get their focus</span>
+<a name="l00170"></a><a class="code" href="classFglForm.html#aec60babfa521575768a4aa1147318ba1">00170</a>    QStringList <a class="code" href="classFglForm.html#a127a846458930510880fd13eb07d4463">qsl_activeFields</a>;
+<a name="l00171"></a><a class="code" href="classFglForm.html#ac7920cda2f9ebef4076ff19e73cfa047">00171</a> 
+<a name="l00172"></a><a class="code" href="classFglForm.html#ad0adbaabeb97d6fabd2a23f5ac5c0069">00172</a>    QString <a class="code" href="classFglForm.html#a40002405b99f9291e8f61944a775172a">getStartMenuPosition</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code" href="classFglForm.html#a94e20a9c06c349d6e7c5ec47c03de4a6">m_startMenuPosition</a>; };
+<a name="l00173"></a>00173    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#a2badc0486f40c57306fdefe14800a13b">setStartMenuPosition</a>(<span class="keyword">const</span> QString &amp;sm) { <a class="code" href="classFglForm.html#a94e20a9c06c349d6e7c5ec47c03de4a6">m_startMenuPosition</a> = sm; };
+<a name="l00174"></a>00174 
+<a name="l00175"></a><a class="code" href="classFglForm.html#a127a846458930510880fd13eb07d4463">00175</a>    QString <a class="code" href="classFglForm.html#ac138a537d43b85e677818e1a61f3cd3d">getToolBarPosition</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code" href="classFglForm.html#a0008c6a1c3362095ebd5ab0601910003">m_toolBarPosition</a>; };
+<a name="l00176"></a>00176    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#af3b00991b1e002fe156d0298468a2311">setToolBarPosition</a>(<span class="keyword">const</span> QString &amp;sm);<span class="comment">//{ m_toolBarPosition = sm; };</span>
+<a name="l00177"></a><a class="code" href="classFglForm.html#a40002405b99f9291e8f61944a775172a">00177</a> 
+<a name="l00178"></a><a class="code" href="classFglForm.html#a2badc0486f40c57306fdefe14800a13b">00178</a>    QString <a class="code" href="classFglForm.html#a1e47b1b987a50ed9e4155bdf0664feba">getWindowType</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code" href="classFglForm.html#aff3b675ee7063af63839e029f66b4075">m_windowType</a>; };
+<a name="l00179"></a>00179    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#ad780eff8bf0437a8e33a9115885718e9">setWindowType</a>(<span class="keyword">const</span> QString &amp;sm);
+<a name="l00180"></a><a class="code" href="classFglForm.html#ac138a537d43b85e677818e1a61f3cd3d">00180</a> 
+<a name="l00181"></a>00181    QString <a class="code" href="classFglForm.html#a714fbe1dca04c76d368a8a429b6322c1">sizable</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code" href="classFglForm.html#a7861c07caeb306c5ae9f2012ce73bff7">m_sizable</a>; };
+<a name="l00182"></a>00182    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#a805e33b8b74b0cc73dad05eac238f9db">setSizable</a>(<span class="keyword">const</span> QString &amp;sm);
+<a name="l00183"></a><a class="code" href="classFglForm.html#a1e47b1b987a50ed9e4155bdf0664feba">00183</a> 
+<a name="l00184"></a>00184    <span class="keywordtype">bool</span> <a class="code" href="classFglForm.html#a9cacfea35fa0152d42b399fc6d2a2524">getDefaultStatusBar</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code" href="classFglForm.html#a2e877386e4ba441d929c0c35d48620cb">m_defaultStatusBar</a>; };
+<a name="l00185"></a>00185    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#a4b2f8754ef3aa90fc46d04c2020ed5af">setDefaultStatusBar</a>(<span class="keyword">const</span> <span class="keywordtype">bool</span> &amp;sm);
+<a name="l00186"></a><a class="code" href="classFglForm.html#a714fbe1dca04c76d368a8a429b6322c1">00186</a> 
+<a name="l00187"></a>00187    QString <a class="code" href="classFglForm.html#a1d53398b0bf7a81f7d6f4fab65faa3dd">getActionPanelPosition</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code" href="classFglForm.html#af3882d981d23db8e6dca26a44ac23051">m_actionPanelPosition</a>; };
+<a name="l00188"></a>00188    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#a80b78ad88d0dc22b7f4df7a724794a13">setActionPanelPosition</a>(<span class="keyword">const</span> QString &amp;sm);
+<a name="l00189"></a><a class="code" href="classFglForm.html#a9cacfea35fa0152d42b399fc6d2a2524">00189</a> 
+<a name="l00190"></a>00190    QString <a class="code" href="classFglForm.html#a773cd80cab1ae1efaccc48262b2cbc55">getRingMenuPosition</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code" href="classFglForm.html#a25371a3df6cb3e1dc66e141bb2a9dff1">m_ringMenuPosition</a>; };
+<a name="l00191"></a>00191    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#af25c944e246c0522cd333e452ead9cad">setRingMenuPosition</a>(<span class="keyword">const</span> QString &amp;sm);
+<a name="l00192"></a><a class="code" href="classFglForm.html#a1d53398b0bf7a81f7d6f4fab65faa3dd">00192</a> 
+<a name="l00193"></a>00193    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#a5f6285fdf157e863c68402ec8147c53a">setState</a>(<a class="code" href="namespaceFgl.html#a66700792cb225549384ae76c1057cf22">Fgl::State</a> <a class="code" href="classFglForm.html#aeed42adf5a051006db1742e2b48617e1">state</a>) { ql_states &lt;&lt; state;  ql_contextEvents &lt;&lt; QList&lt;Fgl::Event&gt;(); } ;
+<a name="l00194"></a>00194    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#a4d2edce15aac96b22d221a11c0e7681e">revertState</a>(<a class="code" href="namespaceFgl.html#a66700792cb225549384ae76c1057cf22">Fgl::State</a>);
+<a name="l00195"></a><a class="code" href="classFglForm.html#a773cd80cab1ae1efaccc48262b2cbc55">00195</a>    <a class="code" href="namespaceFgl.html#a66700792cb225549384ae76c1057cf22">Fgl::State</a> <a class="code" href="classFglForm.html#aeed42adf5a051006db1742e2b48617e1">state</a>() { <span class="keywordflow">return</span> <a class="code" href="classFglForm.html#a18774054d5c9773a7075b5933b0bbc9a">ql_states</a>.last(); };
+<a name="l00196"></a>00196    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#a0ef6e6d0ddf327e89c3e2d54be8548a6">checkState</a>();
 <a name="l00197"></a>00197 
-<a name="l00198"></a><a class="code" href="classFglForm.html#aeed42adf5a051006db1742e2b48617e1">00198</a>    Context *<a class="code" href="classFglForm.html#ad88a7b19b295fe1f14de652a9e3e1c17">context</a>;
+<a name="l00198"></a><a class="code" href="classFglForm.html#a5f6285fdf157e863c68402ec8147c53a">00198</a>    QList&lt;QWidget*&gt; <a class="code" href="classFglForm.html#ab40c533416d35aac75f2ccf5157a3cf2">formElements</a>();
 <a name="l00199"></a>00199 
-<a name="l00200"></a>00200    QWidget* <a class="code" href="classFglForm.html#a7490b2d18830368110a69983f19d65cf">findFieldByName</a>(QString);
-<a name="l00201"></a>00201    QList&lt;QWidget*&gt; <a class="code" href="classFglForm.html#aa9bed6529e8937fdf1ebed65ca23cc45">findFieldsByName</a>(QString);
-<a name="l00202"></a>00202    <span class="keywordtype">int</span> <a class="code" href="classFglForm.html#a4d506d1f05b8ac540fe33dfa1524d681">findFieldIdByName</a>(QString);
-<a name="l00203"></a><a class="code" href="classFglForm.html#ad88a7b19b295fe1f14de652a9e3e1c17">00203</a>    QWidget* <a class="code" href="classFglForm.html#a997cd55b341e14c89fdc300efe75b907">findFieldById</a>(<span class="keywordtype">int</span>);
-<a name="l00204"></a>00204    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#a7010467be800cf868884b589f8ce8ce7">setId</a>(QString <span class="keywordtype">id</span>) { <a class="code" href="classFglForm.html#a6142cd4363f16562e52631f1987b46c3">i_id</a> = <span class="keywordtype">id</span>.toInt(); };
-<a name="l00205"></a>00205    <span class="keywordtype">int</span> <a class="code" href="classFglForm.html#a4fc9bc745910f209c6f54f509293bd73">id</a>() { <span class="keywordflow">return</span> <a class="code" href="classFglForm.html#a6142cd4363f16562e52631f1987b46c3">i_id</a>; };
-<a name="l00206"></a>00206 
-<a name="l00207"></a>00207    <span class="comment">// enables/disables all user input elements</span>
-<a name="l00208"></a>00208    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#a47d0bbf071cbf0051b72c44a90062f81">setUserInputEnabled</a>(<span class="keywordtype">bool</span> enabled);
-<a name="l00209"></a><a class="code" href="classFglForm.html#a7010467be800cf868884b589f8ce8ce7">00209</a> 
-<a name="l00210"></a><a class="code" href="classFglForm.html#a4fc9bc745910f209c6f54f509293bd73">00210</a> <span class="keyword">public</span> slots:
-<a name="l00211"></a>00211    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#a0ee0e2722721bf18a2809e670e0777cf">buttonClicked</a>(QString);
-<a name="l00212"></a>00212    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#a1fd5cabc8ec447738e4420f618d69ca7">fieldEvent</a>(<a class="code" href="structFgl_1_1Event.html">Fgl::Event</a>, QWidget* = NULL);
-<a name="l00213"></a>00213    <a class="code" href="structFgl_1_1Event.html">Fgl::Event</a> <a class="code" href="classFglForm.html#a8ce69fa40e651b0238b3efbe64bb7ef7" title="Method to get the formevent based on the event.type and merge the event.field of the parameter to the...">getFormEvent</a>(<a class="code" href="structFgl_1_1Event.html">Fgl::Event</a>, QWidget* <a class="code" href="classFglForm.html#a15cd139d56b40da6de43a6bb4d438c0d">widget</a> = NULL);
-<a name="l00214"></a>00214    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#a763db4c754333829447f9766c25f0e0b">setBufferTouched</a>() { <a class="code" href="classFglForm.html#a4bddddc3ca57303fbf3d55394e260a00">b_bufferTouched</a> = <span class="keyword">true</span>; };
-<a name="l00215"></a>00215    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#ab61a1af085f68fa6673e516812b0b9c8">setLastCursor</a>(<span class="keywordtype">int</span>,<span class="keywordtype">int</span>);
-<a name="l00216"></a>00216    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#ab61a1af085f68fa6673e516812b0b9c8">setLastCursor</a>();
-<a name="l00217"></a>00217    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#a7146bdb938bcb9a88b23051b39ea19b7">setBufferNotTouched</a>() { <a class="code" href="classFglForm.html#a4bddddc3ca57303fbf3d55394e260a00">b_bufferTouched</a> = <span class="keyword">false</span>; };
-<a name="l00218"></a>00218 
-<a name="l00219"></a><a class="code" href="classFglForm.html#a763db4c754333829447f9766c25f0e0b">00219</a>    <span class="comment">//action defaults</span>
-<a name="l00220"></a>00220    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#a21cf637edb3ad010d7e00e4d20b95825">cancelTriggered</a>();
-<a name="l00221"></a>00221    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#afd623938967b4f76707704ab67032a57">acceptTriggered</a>();
-<a name="l00222"></a><a class="code" href="classFglForm.html#a7146bdb938bcb9a88b23051b39ea19b7">00222</a>    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#a82a066a47d5d8bc2f7c2ec41ab29d4f2">addToQueue</a>(QList&lt;Fgl::Event&gt;);
-<a name="l00223"></a>00223 
-<a name="l00224"></a>00224    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#a2300cda82ffb223096c19f63004e248f">accept</a>();
-<a name="l00225"></a>00225    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#a0e2bda025291fc5a29a74254418cffdb">interrupt</a>();
-<a name="l00226"></a>00226    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#ac51ab1764a0c88802875af3b0ef890af">editcopy</a>();
-<a name="l00227"></a>00227    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#acba6e2dba68f2d8c8354a1f3e7de0213">editcut</a>();
-<a name="l00228"></a>00228    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#a3bbc33d5de6401f21553a0e09e091292">editpaste</a>();
-<a name="l00229"></a>00229    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#a1a279ed4bf3d729f30a346e8e6c9b8c7">nextfield</a>(<span class="keywordtype">bool</span> change=<span class="keyword">true</span>);
-<a name="l00230"></a>00230    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#a1a8413bf151ffd1e9fb4b0ae2a78dd6e">prevfield</a>();
-<a name="l00231"></a>00231    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#a0321ef0bb745923607aecc90ff23dc16">nextrow</a>();
-<a name="l00232"></a>00232    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#a92a335499ab7c95fa5b106f7a9f21e33">prevrow</a>();
-<a name="l00233"></a>00233    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#af18f12d697d5a9fa0041c597d692d8f1">firstrow</a>();
-<a name="l00234"></a>00234    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#adbc1aae701b9f9be093df1b60072ed10">lastrow</a>();
-<a name="l00235"></a>00235    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#aafc9f7cacb9852d58b809a840abc104e">nextpage</a>();
-<a name="l00236"></a>00236    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#ac3cf8e2f5bfc433cb19497e6bad4db0d">prevpage</a>();
-<a name="l00237"></a>00237    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#a3f1ae54d6ef1585a6f14cf394758c09b">nexttab</a>();
-<a name="l00238"></a>00238    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#a9eefd50c2b2dbcd9303a20a02a2ad140">prevtab</a>();
-<a name="l00239"></a>00239    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#ac9689ad22eff52db3ab60446b78274e3">exitMenu</a>();
-<a name="l00240"></a>00240    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#a267469fbb08f5d257f162df03b88852a">reopenPulldown</a>();
-<a name="l00241"></a>00241    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#a0ccb7e3f717496c6dceaf34b0a6d49df">dropSuccess</a>();
-<a name="l00242"></a>00242    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#a2a05aab413be356d8591d9feaa3818ea">dragSuccess</a>();
-<a name="l00243"></a>00243    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#a6c13e4f1841a38f5cbf615595f88f78f">sendactivateinputevent</a>();
-<a name="l00244"></a>00244    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#a1d7dad289a4b04321a2c932adf12d19b">resetFieldSettings</a>();
-<a name="l00245"></a>00245    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#a3d7ccbba13b950e970333db68755d022">saveFieldSettings</a>(QAction *);
-<a name="l00246"></a>00246 
-<a name="l00247"></a>00247    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#a4430f1038e2dcfd957c1d361d0c286d4">clearCurrentFocus</a>();
-<a name="l00248"></a>00248    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#ae2815f84a3c114c000f97cc0cf431bb7">clearFieldFocus</a>();
-<a name="l00249"></a>00249    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#abacf589f219bcfbcf54ca2a5fb9ba859" title="Method to set Focus and remove the focus of all other widgets.">setFocusOnWidget</a>(QWidget*, Qt::FocusReason = Qt::OtherFocusReason);
-<a name="l00250"></a>00250 
-<a name="l00251"></a>00251    <span class="comment">//void interrupt();</span>
-<a name="l00252"></a>00252 
-<a name="l00253"></a>00253    <span class="comment">//XML Menu</span>
-<a name="l00254"></a>00254    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#a5e7fe57471d1f3ad4d6dbf7ac1c8b843">sendMenuCommand</a>(QString);
+<a name="l00200"></a><a class="code" href="classFglForm.html#aeed42adf5a051006db1742e2b48617e1">00200</a>    Context *<a class="code" href="classFglForm.html#ad88a7b19b295fe1f14de652a9e3e1c17">context</a>;
+<a name="l00201"></a>00201 
+<a name="l00202"></a>00202    QWidget* <a class="code" href="classFglForm.html#a7490b2d18830368110a69983f19d65cf">findFieldByName</a>(QString);
+<a name="l00203"></a>00203    QList&lt;QWidget*&gt; <a class="code" href="classFglForm.html#aa9bed6529e8937fdf1ebed65ca23cc45">findFieldsByName</a>(QString);
+<a name="l00204"></a>00204    <span class="keywordtype">int</span> <a class="code" href="classFglForm.html#a4d506d1f05b8ac540fe33dfa1524d681">findFieldIdByName</a>(QString);
+<a name="l00205"></a><a class="code" href="classFglForm.html#ad88a7b19b295fe1f14de652a9e3e1c17">00205</a>    QWidget* <a class="code" href="classFglForm.html#a997cd55b341e14c89fdc300efe75b907">findFieldById</a>(<span class="keywordtype">int</span>);
+<a name="l00206"></a>00206    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#a7010467be800cf868884b589f8ce8ce7">setId</a>(QString <span class="keywordtype">id</span>) { <a class="code" href="classFglForm.html#a6142cd4363f16562e52631f1987b46c3">i_id</a> = <span class="keywordtype">id</span>.toInt(); };
+<a name="l00207"></a>00207    <span class="keywordtype">int</span> <a class="code" href="classFglForm.html#a4fc9bc745910f209c6f54f509293bd73">id</a>() { <span class="keywordflow">return</span> <a class="code" href="classFglForm.html#a6142cd4363f16562e52631f1987b46c3">i_id</a>; };
+<a name="l00208"></a>00208 
+<a name="l00209"></a>00209    <span class="comment">// enables/disables all user input elements</span>
+<a name="l00210"></a>00210    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#a47d0bbf071cbf0051b72c44a90062f81">setUserInputEnabled</a>(<span class="keywordtype">bool</span> enabled);
+<a name="l00211"></a><a class="code" href="classFglForm.html#a7010467be800cf868884b589f8ce8ce7">00211</a> 
+<a name="l00212"></a><a class="code" href="classFglForm.html#a4fc9bc745910f209c6f54f509293bd73">00212</a> <span class="keyword">public</span> slots:
+<a name="l00213"></a>00213    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#a0ee0e2722721bf18a2809e670e0777cf">buttonClicked</a>(QString);
+<a name="l00214"></a>00214    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#a1fd5cabc8ec447738e4420f618d69ca7">fieldEvent</a>(<a class="code" href="structFgl_1_1Event.html">Fgl::Event</a>, QWidget* = NULL);
+<a name="l00215"></a>00215    <a class="code" href="structFgl_1_1Event.html">Fgl::Event</a> <a class="code" href="classFglForm.html#a8ce69fa40e651b0238b3efbe64bb7ef7" title="Method to get the formevent based on the event.type and merge the event.field of the parameter to the...">getFormEvent</a>(<a class="code" href="structFgl_1_1Event.html">Fgl::Event</a>, QWidget* <a class="code" href="classFglForm.html#a15cd139d56b40da6de43a6bb4d438c0d">widget</a> = NULL);
+<a name="l00216"></a>00216    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#a763db4c754333829447f9766c25f0e0b">setBufferTouched</a>() { <a class="code" href="classFglForm.html#a4bddddc3ca57303fbf3d55394e260a00">b_bufferTouched</a> = <span class="keyword">true</span>; };
+<a name="l00217"></a>00217    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#ab61a1af085f68fa6673e516812b0b9c8">setLastCursor</a>(<span class="keywordtype">int</span>,<span class="keywordtype">int</span>);
+<a name="l00218"></a>00218    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#ab61a1af085f68fa6673e516812b0b9c8">setLastCursor</a>();
+<a name="l00219"></a>00219    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#a7146bdb938bcb9a88b23051b39ea19b7">setBufferNotTouched</a>() { <a class="code" href="classFglForm.html#a4bddddc3ca57303fbf3d55394e260a00">b_bufferTouched</a> = <span class="keyword">false</span>; };
+<a name="l00220"></a>00220 
+<a name="l00221"></a><a class="code" href="classFglForm.html#a763db4c754333829447f9766c25f0e0b">00221</a>    <span class="comment">//action defaults</span>
+<a name="l00222"></a>00222    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#a21cf637edb3ad010d7e00e4d20b95825">cancelTriggered</a>();
+<a name="l00223"></a>00223    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#afd623938967b4f76707704ab67032a57">acceptTriggered</a>();
+<a name="l00224"></a><a class="code" href="classFglForm.html#a7146bdb938bcb9a88b23051b39ea19b7">00224</a>    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#a21e6b7f851487d6d0db29b015a37e374">addToQueue</a>(QList&lt;Fgl::Event&gt;);
+<a name="l00225"></a>00225    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#a21e6b7f851487d6d0db29b015a37e374">addToQueue</a>(<a class="code" href="structFgl_1_1Event.html">Fgl::Event</a>);
+<a name="l00226"></a>00226 
+<a name="l00227"></a>00227    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#a2300cda82ffb223096c19f63004e248f">accept</a>();
+<a name="l00228"></a>00228    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#a0e2bda025291fc5a29a74254418cffdb">interrupt</a>();
+<a name="l00229"></a>00229    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#ac51ab1764a0c88802875af3b0ef890af">editcopy</a>();
+<a name="l00230"></a>00230    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#acba6e2dba68f2d8c8354a1f3e7de0213">editcut</a>();
+<a name="l00231"></a>00231    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#a3bbc33d5de6401f21553a0e09e091292">editpaste</a>();
+<a name="l00232"></a>00232    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#a1a279ed4bf3d729f30a346e8e6c9b8c7">nextfield</a>(<span class="keywordtype">bool</span> change=<span class="keyword">true</span>);
+<a name="l00233"></a>00233    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#a1a8413bf151ffd1e9fb4b0ae2a78dd6e">prevfield</a>();
+<a name="l00234"></a>00234    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#a0321ef0bb745923607aecc90ff23dc16">nextrow</a>();
+<a name="l00235"></a>00235    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#a92a335499ab7c95fa5b106f7a9f21e33">prevrow</a>();
+<a name="l00236"></a>00236    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#af18f12d697d5a9fa0041c597d692d8f1">firstrow</a>();
+<a name="l00237"></a>00237    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#adbc1aae701b9f9be093df1b60072ed10">lastrow</a>();
+<a name="l00238"></a>00238    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#aafc9f7cacb9852d58b809a840abc104e">nextpage</a>();
+<a name="l00239"></a>00239    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#ac3cf8e2f5bfc433cb19497e6bad4db0d">prevpage</a>();
+<a name="l00240"></a>00240    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#a3f1ae54d6ef1585a6f14cf394758c09b">nexttab</a>();
+<a name="l00241"></a>00241    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#a9eefd50c2b2dbcd9303a20a02a2ad140">prevtab</a>();
+<a name="l00242"></a>00242    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#ac9689ad22eff52db3ab60446b78274e3">exitMenu</a>();
+<a name="l00243"></a>00243    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#a267469fbb08f5d257f162df03b88852a">reopenPulldown</a>();
+<a name="l00244"></a>00244    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#a0ccb7e3f717496c6dceaf34b0a6d49df">dropSuccess</a>();
+<a name="l00245"></a>00245    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#a2a05aab413be356d8591d9feaa3818ea">dragSuccess</a>();
+<a name="l00246"></a>00246    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#a6c13e4f1841a38f5cbf615595f88f78f">sendactivateinputevent</a>();
+<a name="l00247"></a>00247    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#a1d7dad289a4b04321a2c932adf12d19b">resetFieldSettings</a>();
+<a name="l00248"></a>00248    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#a3d7ccbba13b950e970333db68755d022">saveFieldSettings</a>(QAction *);
+<a name="l00249"></a>00249 
+<a name="l00250"></a>00250    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#a4430f1038e2dcfd957c1d361d0c286d4">clearCurrentFocus</a>();
+<a name="l00251"></a>00251    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#ae2815f84a3c114c000f97cc0cf431bb7" title="Method to remove the Focus of all widgets. Needed if its not known which widget has the focus(Enabled...">clearFieldFocus</a>();
+<a name="l00252"></a>00252    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#abacf589f219bcfbcf54ca2a5fb9ba859" title="Method to set Focus and remove the focus of all other widgets.">setFocusOnWidget</a>(QWidget*, Qt::FocusReason = Qt::OtherFocusReason);
+<a name="l00253"></a>00253 
+<a name="l00254"></a>00254    <span class="comment">//void interrupt();</span>
 <a name="l00255"></a>00255 
-<a name="l00256"></a>00256    <span class="comment">//void setStartMenu(XML2Menu* menu);</span>
-<a name="l00257"></a>00257    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#af3d272e5dc101746b728bdd457d42a6f">setStartMenu</a>(<span class="keyword">const</span> QDomDocument &amp;doc);
-<a name="l00258"></a>00258    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#af07f7257121ab71b9a53ccb2fd1a9fe3">createContextMenu</a>(<span class="keyword">const</span> QPoint&amp;);
-<a name="l00259"></a>00259    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#afce8d989187c85d7bde751824a9b6c6a">setScreenRecordArrLine</a>(<span class="keywordtype">int</span>);
-<a name="l00260"></a>00260    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#a3d2c6f2a3a0e1828ff1f43d4d93fa775">error</a>(<span class="keyword">const</span> QString&amp;);
-<a name="l00261"></a>00261    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#a95fd29ee66dc40bb56d6bb94593feddd">checkField</a>();
-<a name="l00262"></a>00262    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#a4fdd15cf1295a7d04b378e5c4cb2d877">writeSettingsLocal</a>();
-<a name="l00263"></a>00263    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#ae9f393760ac910dd86de0919be07f41c">readSettingsLocal</a>();
-<a name="l00264"></a>00264 
-<a name="l00265"></a>00265 
-<a name="l00266"></a>00266 <span class="keyword">private</span>:
-<a name="l00267"></a>00267    QList&lt;Fgl::State&gt; <a class="code" href="classFglForm.html#a18774054d5c9773a7075b5933b0bbc9a">ql_states</a>;
-<a name="l00268"></a>00268    QWidget *<a class="code" href="classFglForm.html#a382565fe4e148f5e37aabea41e079809">formWidget</a>;
-<a name="l00269"></a>00269 
-<a name="l00270"></a>00270    QList&lt;RingMenu*&gt; <a class="code" href="classFglForm.html#a587196a08706e03ec05f1fae4048f344">ql_menus</a>;
-<a name="l00271"></a>00271    QPointer&lt;ScreenHandler&gt; <a class="code" href="classFglForm.html#a98e11b2d55100f907821e3a8281b4ab5">p_currscreenhandler</a>;
-<a name="l00272"></a><a class="code" href="classFglForm.html#a18774054d5c9773a7075b5933b0bbc9a">00272</a>    <a class="code" href="classActionMenu.html">ActionMenu</a> *<a class="code" href="classFglForm.html#aace1d4f7b637af4d3aa86e53a770152e">p_actionMenu</a>;
-<a name="l00273"></a><a class="code" href="classFglForm.html#a382565fe4e148f5e37aabea41e079809">00273</a>    <a class="code" href="classDialog.html">Dialog</a> *<a class="code" href="classFglForm.html#afa28d86c6e353e3e31c677b463199a4a">p_dialog</a>;
-<a name="l00274"></a>00274    <a class="code" href="classPulldown.html">Pulldown</a> *<a class="code" href="classFglForm.html#a87a0ac69973f45c48fb629d04ac5b364">p_pulldown</a>;
-<a name="l00275"></a><a class="code" href="classFglForm.html#a587196a08706e03ec05f1fae4048f344">00275</a>    <a class="code" href="classToolBar.html">ToolBar</a> *<a class="code" href="classFglForm.html#a63ee680575b50bd02473649cd3d272f5">p_toolBar</a>;
-<a name="l00276"></a><a class="code" href="classFglForm.html#a98e11b2d55100f907821e3a8281b4ab5">00276</a>    QAction *<a class="code" href="classFglForm.html#ac85748725f2a9ba437e62be1293eae02">rightAct</a>;
-<a name="l00277"></a><a class="code" href="classFglForm.html#aace1d4f7b637af4d3aa86e53a770152e">00277</a>    QAction *<a class="code" href="classFglForm.html#aa9bb2c29fa0161164dd5250a7602a1be">resetAct</a>;
-<a name="l00278"></a><a class="code" href="classFglForm.html#afa28d86c6e353e3e31c677b463199a4a">00278</a>    QList&lt;Action*&gt; <a class="code" href="classFglForm.html#a091b50c03ba4a353485d34ea34f4001a">ql_formActions</a>;
-<a name="l00279"></a><a class="code" href="classFglForm.html#a87a0ac69973f45c48fb629d04ac5b364">00279</a>    QList&lt;Action*&gt; <a class="code" href="classFglForm.html#acc7f6b6c7b13cf1e6e39bfdeba18ddc1">ql_defaultActions</a>;
-<a name="l00280"></a><a class="code" href="classFglForm.html#a63ee680575b50bd02473649cd3d272f5">00280</a>    QList&lt;Action*&gt; <a class="code" href="classFglForm.html#a6b78dae39bcab3791a9acc99a3b8248d">ql_actionDefaults</a>;
-<a name="l00281"></a><a class="code" href="classFglForm.html#ac85748725f2a9ba437e62be1293eae02">00281</a>    QList&lt;FormField*&gt; <a class="code" href="classFglForm.html#a1d775e481b65ae50b2a557fa9ae975c5">ql_fglFields</a>;
-<a name="l00282"></a><a class="code" href="classFglForm.html#aa9bb2c29fa0161164dd5250a7602a1be">00282</a>    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#a98a3ed85a0f12181c96d15a020250807">createStatusBar</a>();
-<a name="l00283"></a><a class="code" href="classFglForm.html#a091b50c03ba4a353485d34ea34f4001a">00283</a> 
-<a name="l00284"></a><a class="code" href="classFglForm.html#acc7f6b6c7b13cf1e6e39bfdeba18ddc1">00284</a>    <span class="keywordtype">bool</span> <a class="code" href="classFglForm.html#ac1f8bea18516701b1192825f83e962d7">b_menu</a>;
-<a name="l00285"></a><a class="code" href="classFglForm.html#a6b78dae39bcab3791a9acc99a3b8248d">00285</a>    <span class="keywordtype">bool</span> <a class="code" href="classFglForm.html#a348ba4d61a2c9e18513ac88c919015c0">b_input</a>;
-<a name="l00286"></a><a class="code" href="classFglForm.html#a1d775e481b65ae50b2a557fa9ae975c5">00286</a>    <span class="keywordtype">bool</span> <a class="code" href="classFglForm.html#a656061ca98f40226c99fa61b12ced56c">b_screenRecord</a>;
-<a name="l00287"></a>00287    <span class="comment">//bool b_construct;</span>
-<a name="l00288"></a>00288 
-<a name="l00289"></a><a class="code" href="classFglForm.html#ac1f8bea18516701b1192825f83e962d7">00289</a>    <span class="comment">//PROPERTIES</span>
-<a name="l00290"></a><a class="code" href="classFglForm.html#a348ba4d61a2c9e18513ac88c919015c0">00290</a>    QString <a class="code" href="classFglForm.html#aff3b675ee7063af63839e029f66b4075">m_windowType</a>;
-<a name="l00291"></a><a class="code" href="classFglForm.html#a656061ca98f40226c99fa61b12ced56c">00291</a>    QString <a class="code" href="classFglForm.html#a94e20a9c06c349d6e7c5ec47c03de4a6">m_startMenuPosition</a>;
-<a name="l00292"></a>00292    QString <a class="code" href="classFglForm.html#a0008c6a1c3362095ebd5ab0601910003">m_toolBarPosition</a>;
-<a name="l00293"></a>00293    QString <a class="code" href="classFglForm.html#a25371a3df6cb3e1dc66e141bb2a9dff1">m_ringMenuPosition</a>;
-<a name="l00294"></a>00294    QString <a class="code" href="classFglForm.html#af3882d981d23db8e6dca26a44ac23051">m_actionPanelPosition</a>;
-<a name="l00295"></a><a class="code" href="classFglForm.html#aff3b675ee7063af63839e029f66b4075">00295</a>    QString <a class="code" href="classFglForm.html#a7861c07caeb306c5ae9f2012ce73bff7">m_sizable</a>;
-<a name="l00296"></a><a class="code" href="classFglForm.html#a94e20a9c06c349d6e7c5ec47c03de4a6">00296</a>    <span class="keywordtype">bool</span> <a class="code" href="classFglForm.html#a2e877386e4ba441d929c0c35d48620cb">m_defaultStatusBar</a>;
-<a name="l00297"></a><a class="code" href="classFglForm.html#a0008c6a1c3362095ebd5ab0601910003">00297</a> 
-<a name="l00298"></a><a class="code" href="classFglForm.html#a25371a3df6cb3e1dc66e141bb2a9dff1">00298</a>    QWidget *<a class="code" href="classFglForm.html#a15cd139d56b40da6de43a6bb4d438c0d">widget</a>;
-<a name="l00299"></a><a class="code" href="classFglForm.html#af3882d981d23db8e6dca26a44ac23051">00299</a> 
-<a name="l00300"></a><a class="code" href="classFglForm.html#a7861c07caeb306c5ae9f2012ce73bff7">00300</a>    QLabel *<a class="code" href="classFglForm.html#a72467aa7c8750f7075b7ba7fc67a29bb">insLabel</a>;
-<a name="l00301"></a><a class="code" href="classFglForm.html#a2e877386e4ba441d929c0c35d48620cb">00301</a>    <span class="keywordtype">int</span> <a class="code" href="classFglForm.html#ae7e903902c63ce3179656df4b684038f">i_currentField</a>;
-<a name="l00302"></a>00302    QWidget *<a class="code" href="classFglForm.html#a67c8174c2d61e69e76c3206766fe3ac9">fieldsContainer</a>;
-<a name="l00303"></a><a class="code" href="classFglForm.html#a15cd139d56b40da6de43a6bb4d438c0d">00303</a>    <span class="keywordtype">int</span> <a class="code" href="classFglForm.html#a6142cd4363f16562e52631f1987b46c3">i_id</a>;
-<a name="l00304"></a>00304    <span class="keywordtype">bool</span> <a class="code" href="classFglForm.html#a4bddddc3ca57303fbf3d55394e260a00">b_bufferTouched</a>;
-<a name="l00305"></a><a class="code" href="classFglForm.html#a72467aa7c8750f7075b7ba7fc67a29bb">00305</a>    <span class="keywordtype">int</span> <a class="code" href="classFglForm.html#a9f622b4a17fcad8c785e119d19abe326">i_lastCursor</a>;
-<a name="l00306"></a><a class="code" href="classFglForm.html#ae7e903902c63ce3179656df4b684038f">00306</a>    QString <a class="code" href="classFglForm.html#a04725912842355fc88fa7412e435f4a9">qs_currentFieldBuffer</a>;
-<a name="l00307"></a><a class="code" href="classFglForm.html#a67c8174c2d61e69e76c3206766fe3ac9">00307</a>    QString <a class="code" href="classFglForm.html#a1bca5dcb62f50a5939c295b7c0d662d2">qs_formfile</a>;
-<a name="l00308"></a><a class="code" href="classFglForm.html#a6142cd4363f16562e52631f1987b46c3">00308</a> 
-<a name="l00309"></a><a class="code" href="classFglForm.html#a4bddddc3ca57303fbf3d55394e260a00">00309</a>    <span class="keywordtype">int</span> <a class="code" href="classFglForm.html#a9dc5de78bd4b0d7024831926f9cdc7d9">gridHeight</a>;
-<a name="l00310"></a><a class="code" href="classFglForm.html#a9f622b4a17fcad8c785e119d19abe326">00310</a>  <span class="comment">//  virtual QSize sizeHint() const;</span>
-<a name="l00311"></a><a class="code" href="classFglForm.html#a04725912842355fc88fa7412e435f4a9">00311</a> 
-<a name="l00312"></a><a class="code" href="classFglForm.html#a1bca5dcb62f50a5939c295b7c0d662d2">00312</a> 
-<a name="l00313"></a>00313 <span class="keyword">private</span> slots:
-<a name="l00314"></a><a class="code" href="classFglForm.html#a9dc5de78bd4b0d7024831926f9cdc7d9">00314</a>    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#a6a62cd6e46c191cbec6c49381fd53a95">actionTriggered</a>();
-<a name="l00315"></a>00315    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#a7d6b1d8b49f56f8b8ae6dbffae4a6499">toolBarActionTriggered</a>();
-<a name="l00316"></a>00316 
-<a name="l00317"></a>00317 signals:
-<a name="l00318"></a>00318    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#a797f5a3e960a73a6fff9a1bb74059956">processResponse</a>();
-<a name="l00319"></a>00319    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#ab8e58a4d027770ba170972d247b617dd">sendDirect</a>(QString);
-<a name="l00320"></a>00320    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#a1e972cdb1514dcb3c6613d123beb8f6a">accepted</a>();
-<a name="l00321"></a>00321    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#a9c7de4f0bd6f44e3103df2e81a504974">setClearEvents</a>();
-<a name="l00322"></a>00322    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#a7bef8f5a9e151e3b09d9de652b78ec92">setArrLine</a>(<span class="keywordtype">int</span>);
-<a name="l00323"></a>00323    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#a6084470ee7bb46645d64a82503c60fba">closeAction</a>();
-<a name="l00324"></a>00324 
-<a name="l00325"></a>00325 <span class="keyword">protected</span>:
-<a name="l00326"></a>00326    <span class="keywordtype">bool</span> <a class="code" href="classFglForm.html#ad684c111c48ae9b6bfee70f36383e8a0">eventFilter</a>(QObject *obj, QEvent *event);
-<a name="l00327"></a>00327    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#ab4a2e829699bf5c49124801ccd0eb5f2">closeEvent</a>(QCloseEvent *event);
-<a name="l00328"></a>00328    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#a039e7ba89ece4f1bb47c32dc34271536">contextMenuEvent</a>(QContextMenuEvent*);
-<a name="l00329"></a>00329    <span class="keywordtype">bool</span> <a class="code" href="classFglForm.html#abbb79e3d5fbc48341d4e88bc91002c22">focusNextPrevChild</a>(<span class="keywordtype">bool</span>);
-<a name="l00330"></a>00330 };
-<a name="l00331"></a>00331 
-<a name="l00332"></a>00332 <span class="preprocessor">#endif</span>
+<a name="l00256"></a>00256    <span class="comment">//XML Menu</span>
+<a name="l00257"></a>00257    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#a5e7fe57471d1f3ad4d6dbf7ac1c8b843">sendMenuCommand</a>(QString);
+<a name="l00258"></a>00258 
+<a name="l00259"></a>00259    <span class="comment">//void setStartMenu(XML2Menu* menu);</span>
+<a name="l00260"></a>00260    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#af3d272e5dc101746b728bdd457d42a6f">setStartMenu</a>(<span class="keyword">const</span> QDomDocument &amp;doc);
+<a name="l00261"></a>00261    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#af07f7257121ab71b9a53ccb2fd1a9fe3">createContextMenu</a>(<span class="keyword">const</span> QPoint&amp;);
+<a name="l00262"></a>00262    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#afce8d989187c85d7bde751824a9b6c6a">setScreenRecordArrLine</a>(<span class="keywordtype">int</span>);
+<a name="l00263"></a>00263    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#a3d2c6f2a3a0e1828ff1f43d4d93fa775">error</a>(<span class="keyword">const</span> QString&amp;);
+<a name="l00264"></a>00264    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#a95fd29ee66dc40bb56d6bb94593feddd">checkField</a>();
+<a name="l00265"></a>00265    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#a4fdd15cf1295a7d04b378e5c4cb2d877">writeSettingsLocal</a>();
+<a name="l00266"></a>00266    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#ae9f393760ac910dd86de0919be07f41c">readSettingsLocal</a>();
+<a name="l00267"></a>00267 
+<a name="l00268"></a>00268 
+<a name="l00269"></a>00269 <span class="keyword">private</span>:
+<a name="l00270"></a>00270    QList&lt;Fgl::State&gt; <a class="code" href="classFglForm.html#a18774054d5c9773a7075b5933b0bbc9a">ql_states</a>;
+<a name="l00271"></a>00271    QList&lt;QKeyEvent*&gt; <a class="code" href="classFglForm.html#a2164d9fc4e8c4be30d54ec2a99e881ea">ql_keybuffer</a>;
+<a name="l00272"></a>00272    QWidget *<a class="code" href="classFglForm.html#a382565fe4e148f5e37aabea41e079809">formWidget</a>;
+<a name="l00273"></a>00273 
+<a name="l00274"></a>00274    QList&lt;RingMenu*&gt; <a class="code" href="classFglForm.html#a587196a08706e03ec05f1fae4048f344">ql_menus</a>;
+<a name="l00275"></a><a class="code" href="classFglForm.html#a18774054d5c9773a7075b5933b0bbc9a">00275</a>    QPointer&lt;ScreenHandler&gt; <a class="code" href="classFglForm.html#a98e11b2d55100f907821e3a8281b4ab5">p_currscreenhandler</a>;
+<a name="l00276"></a><a class="code" href="classFglForm.html#a2164d9fc4e8c4be30d54ec2a99e881ea">00276</a>    <a class="code" href="classActionMenu.html">ActionMenu</a> *<a class="code" href="classFglForm.html#aace1d4f7b637af4d3aa86e53a770152e">p_actionMenu</a>;
+<a name="l00277"></a><a class="code" href="classFglForm.html#a382565fe4e148f5e37aabea41e079809">00277</a>    <a class="code" href="classDialog.html">Dialog</a> *<a class="code" href="classFglForm.html#afa28d86c6e353e3e31c677b463199a4a">p_dialog</a>;
+<a name="l00278"></a>00278    <a class="code" href="classPulldown.html">Pulldown</a> *<a class="code" href="classFglForm.html#a87a0ac69973f45c48fb629d04ac5b364">p_pulldown</a>;
+<a name="l00279"></a><a class="code" href="classFglForm.html#a587196a08706e03ec05f1fae4048f344">00279</a>    <a class="code" href="classToolBar.html">ToolBar</a> *<a class="code" href="classFglForm.html#a63ee680575b50bd02473649cd3d272f5">p_toolBar</a>;
+<a name="l00280"></a><a class="code" href="classFglForm.html#a98e11b2d55100f907821e3a8281b4ab5">00280</a>    QAction *<a class="code" href="classFglForm.html#ac85748725f2a9ba437e62be1293eae02">rightAct</a>;
+<a name="l00281"></a><a class="code" href="classFglForm.html#aace1d4f7b637af4d3aa86e53a770152e">00281</a>    QAction *<a class="code" href="classFglForm.html#aa9bb2c29fa0161164dd5250a7602a1be">resetAct</a>;
+<a name="l00282"></a><a class="code" href="classFglForm.html#afa28d86c6e353e3e31c677b463199a4a">00282</a>    QList&lt;Action*&gt; <a class="code" href="classFglForm.html#a091b50c03ba4a353485d34ea34f4001a">ql_formActions</a>;
+<a name="l00283"></a><a class="code" href="classFglForm.html#a87a0ac69973f45c48fb629d04ac5b364">00283</a>    QList&lt;Action*&gt; <a class="code" href="classFglForm.html#acc7f6b6c7b13cf1e6e39bfdeba18ddc1">ql_defaultActions</a>;
+<a name="l00284"></a><a class="code" href="classFglForm.html#a63ee680575b50bd02473649cd3d272f5">00284</a>    QList&lt;Action*&gt; <a class="code" href="classFglForm.html#a6b78dae39bcab3791a9acc99a3b8248d">ql_actionDefaults</a>;
+<a name="l00285"></a><a class="code" href="classFglForm.html#ac85748725f2a9ba437e62be1293eae02">00285</a>    QList&lt;FormField*&gt; <a class="code" href="classFglForm.html#a1d775e481b65ae50b2a557fa9ae975c5">ql_fglFields</a>;
+<a name="l00286"></a><a class="code" href="classFglForm.html#aa9bb2c29fa0161164dd5250a7602a1be">00286</a>    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#a98a3ed85a0f12181c96d15a020250807">createStatusBar</a>();
+<a name="l00287"></a><a class="code" href="classFglForm.html#a091b50c03ba4a353485d34ea34f4001a">00287</a> 
+<a name="l00288"></a><a class="code" href="classFglForm.html#acc7f6b6c7b13cf1e6e39bfdeba18ddc1">00288</a>    <span class="keywordtype">bool</span> <a class="code" href="classFglForm.html#ac1f8bea18516701b1192825f83e962d7">b_menu</a>;
+<a name="l00289"></a><a class="code" href="classFglForm.html#a6b78dae39bcab3791a9acc99a3b8248d">00289</a>    <span class="keywordtype">bool</span> <a class="code" href="classFglForm.html#a348ba4d61a2c9e18513ac88c919015c0">b_input</a>;
+<a name="l00290"></a><a class="code" href="classFglForm.html#a1d775e481b65ae50b2a557fa9ae975c5">00290</a>    <span class="keywordtype">bool</span> <a class="code" href="classFglForm.html#a656061ca98f40226c99fa61b12ced56c">b_screenRecord</a>;
+<a name="l00291"></a>00291    <span class="keywordtype">bool</span> <a class="code" href="classFglForm.html#ae5096059ba81229c8e0070e85286420f">b_keybuffer</a>;
+<a name="l00292"></a>00292    <span class="comment">//bool b_construct;</span>
+<a name="l00293"></a><a class="code" href="classFglForm.html#ac1f8bea18516701b1192825f83e962d7">00293</a> 
+<a name="l00294"></a><a class="code" href="classFglForm.html#a348ba4d61a2c9e18513ac88c919015c0">00294</a>    <span class="comment">//PROPERTIES</span>
+<a name="l00295"></a><a class="code" href="classFglForm.html#a656061ca98f40226c99fa61b12ced56c">00295</a>    QString <a class="code" href="classFglForm.html#aff3b675ee7063af63839e029f66b4075">m_windowType</a>;
+<a name="l00296"></a><a class="code" href="classFglForm.html#ae5096059ba81229c8e0070e85286420f">00296</a>    QString <a class="code" href="classFglForm.html#a94e20a9c06c349d6e7c5ec47c03de4a6">m_startMenuPosition</a>;
+<a name="l00297"></a>00297    QString <a class="code" href="classFglForm.html#a0008c6a1c3362095ebd5ab0601910003">m_toolBarPosition</a>;
+<a name="l00298"></a>00298    QString <a class="code" href="classFglForm.html#a25371a3df6cb3e1dc66e141bb2a9dff1">m_ringMenuPosition</a>;
+<a name="l00299"></a>00299    QString <a class="code" href="classFglForm.html#af3882d981d23db8e6dca26a44ac23051">m_actionPanelPosition</a>;
+<a name="l00300"></a><a class="code" href="classFglForm.html#aff3b675ee7063af63839e029f66b4075">00300</a>    QString <a class="code" href="classFglForm.html#a7861c07caeb306c5ae9f2012ce73bff7">m_sizable</a>;
+<a name="l00301"></a><a class="code" href="classFglForm.html#a94e20a9c06c349d6e7c5ec47c03de4a6">00301</a>    <span class="keywordtype">bool</span> <a class="code" href="classFglForm.html#a2e877386e4ba441d929c0c35d48620cb">m_defaultStatusBar</a>;
+<a name="l00302"></a><a class="code" href="classFglForm.html#a0008c6a1c3362095ebd5ab0601910003">00302</a> 
+<a name="l00303"></a><a class="code" href="classFglForm.html#a25371a3df6cb3e1dc66e141bb2a9dff1">00303</a>    QWidget *<a class="code" href="classFglForm.html#a15cd139d56b40da6de43a6bb4d438c0d">widget</a>;
+<a name="l00304"></a><a class="code" href="classFglForm.html#af3882d981d23db8e6dca26a44ac23051">00304</a> 
+<a name="l00305"></a><a class="code" href="classFglForm.html#a7861c07caeb306c5ae9f2012ce73bff7">00305</a>    QLabel *<a class="code" href="classFglForm.html#a72467aa7c8750f7075b7ba7fc67a29bb">insLabel</a>;
+<a name="l00306"></a><a class="code" href="classFglForm.html#a2e877386e4ba441d929c0c35d48620cb">00306</a>    <span class="keywordtype">int</span> <a class="code" href="classFglForm.html#ae7e903902c63ce3179656df4b684038f">i_currentField</a>;
+<a name="l00307"></a>00307    QWidget *<a class="code" href="classFglForm.html#a67c8174c2d61e69e76c3206766fe3ac9">fieldsContainer</a>;
+<a name="l00308"></a><a class="code" href="classFglForm.html#a15cd139d56b40da6de43a6bb4d438c0d">00308</a>    <span class="keywordtype">int</span> <a class="code" href="classFglForm.html#a6142cd4363f16562e52631f1987b46c3">i_id</a>;
+<a name="l00309"></a>00309    <span class="keywordtype">bool</span> <a class="code" href="classFglForm.html#a4bddddc3ca57303fbf3d55394e260a00">b_bufferTouched</a>;
+<a name="l00310"></a><a class="code" href="classFglForm.html#a72467aa7c8750f7075b7ba7fc67a29bb">00310</a>    <span class="keywordtype">int</span> <a class="code" href="classFglForm.html#a9f622b4a17fcad8c785e119d19abe326">i_lastCursor</a>;
+<a name="l00311"></a><a class="code" href="classFglForm.html#ae7e903902c63ce3179656df4b684038f">00311</a>    QString <a class="code" href="classFglForm.html#a04725912842355fc88fa7412e435f4a9">qs_currentFieldBuffer</a>;
+<a name="l00312"></a><a class="code" href="classFglForm.html#a67c8174c2d61e69e76c3206766fe3ac9">00312</a>    QString <a class="code" href="classFglForm.html#a1bca5dcb62f50a5939c295b7c0d662d2">qs_formfile</a>;
+<a name="l00313"></a><a class="code" href="classFglForm.html#a6142cd4363f16562e52631f1987b46c3">00313</a> 
+<a name="l00314"></a><a class="code" href="classFglForm.html#a4bddddc3ca57303fbf3d55394e260a00">00314</a>    <span class="keywordtype">int</span> <a class="code" href="classFglForm.html#a9dc5de78bd4b0d7024831926f9cdc7d9">gridHeight</a>;
+<a name="l00315"></a><a class="code" href="classFglForm.html#a9f622b4a17fcad8c785e119d19abe326">00315</a>  <span class="comment">//  virtual QSize sizeHint() const;</span>
+<a name="l00316"></a><a class="code" href="classFglForm.html#a04725912842355fc88fa7412e435f4a9">00316</a> 
+<a name="l00317"></a><a class="code" href="classFglForm.html#a1bca5dcb62f50a5939c295b7c0d662d2">00317</a> 
+<a name="l00318"></a>00318 <span class="keyword">private</span> slots:
+<a name="l00319"></a><a class="code" href="classFglForm.html#a9dc5de78bd4b0d7024831926f9cdc7d9">00319</a>    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#a6a62cd6e46c191cbec6c49381fd53a95">actionTriggered</a>();
+<a name="l00320"></a>00320    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#a7d6b1d8b49f56f8b8ae6dbffae4a6499">toolBarActionTriggered</a>();
+<a name="l00321"></a>00321 
+<a name="l00322"></a>00322 signals:
+<a name="l00323"></a>00323    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#a797f5a3e960a73a6fff9a1bb74059956">processResponse</a>();
+<a name="l00324"></a>00324    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#ab8e58a4d027770ba170972d247b617dd">sendDirect</a>(QString);
+<a name="l00325"></a>00325    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#a1e972cdb1514dcb3c6613d123beb8f6a">accepted</a>();
+<a name="l00326"></a>00326    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#a9c7de4f0bd6f44e3103df2e81a504974">setClearEvents</a>();
+<a name="l00327"></a>00327    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#a7bef8f5a9e151e3b09d9de652b78ec92">setArrLine</a>(<span class="keywordtype">int</span>);
+<a name="l00328"></a>00328    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#a6084470ee7bb46645d64a82503c60fba">closeAction</a>();
+<a name="l00329"></a>00329 
+<a name="l00330"></a>00330 <span class="keyword">protected</span>:
+<a name="l00331"></a>00331    <span class="keywordtype">bool</span> <a class="code" href="classFglForm.html#ad684c111c48ae9b6bfee70f36383e8a0">eventFilter</a>(QObject *obj, QEvent *event);
+<a name="l00332"></a>00332    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#ab4a2e829699bf5c49124801ccd0eb5f2">closeEvent</a>(QCloseEvent *event);
+<a name="l00333"></a>00333    <span class="keywordtype">void</span> <a class="code" href="classFglForm.html#a039e7ba89ece4f1bb47c32dc34271536">contextMenuEvent</a>(QContextMenuEvent*);
+<a name="l00334"></a>00334    <span class="keywordtype">bool</span> <a class="code" href="classFglForm.html#abbb79e3d5fbc48341d4e88bc91002c22">focusNextPrevChild</a>(<span class="keywordtype">bool</span>);
+<a name="l00335"></a>00335 };
+<a name="l00336"></a>00336 
+<a name="l00337"></a>00337 <span class="preprocessor">#endif</span>
 </pre></div></div>
 </div>
 <!--- window showing the filter options -->
@@ -408,7 +413,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </iframe>
 </div>
 
-<hr class="footer"/><address class="footer"><small>Generated on Tue Mar 6 2012 14:00:11 for VDC by&#160;
+<hr class="footer"/><address class="footer"><small>Generated on Wed Mar 7 2012 13:52:54 for VDC by&#160;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.7.3 </small></address>
 </body>

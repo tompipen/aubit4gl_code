@@ -83,7 +83,7 @@ Public Slots</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFglForm.html#a0ee0e2722721bf18a2809e670e0777cf">buttonClicked</a> (QString)</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFglForm.html#a1fd5cabc8ec447738e4420f618d69ca7">fieldEvent</a> (<a class="el" href="structFgl_1_1Event.html">Fgl::Event</a>, QWidget *=NULL)</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="el" href="structFgl_1_1Event.html">Fgl::Event</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFglForm.html#a8ce69fa40e651b0238b3efbe64bb7ef7">getFormEvent</a> (<a class="el" href="structFgl_1_1Event.html">Fgl::Event</a>, QWidget *<a class="el" href="classFglForm.html#a15cd139d56b40da6de43a6bb4d438c0d">widget</a>=NULL)</td></tr>
-<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Method to get the formevent based on the event.type and merge the event.field of the parameter to the returnvalue. If no Event was found, it returns type to diff with the .  <a href="#a8ce69fa40e651b0238b3efbe64bb7ef7"></a><br/></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Method to get the formevent based on the event.type and merge the event.field of the parameter to the returnvalue. If the event.id is set, the method found the event otherwise the event.id is empty.  <a href="#a8ce69fa40e651b0238b3efbe64bb7ef7"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFglForm.html#a763db4c754333829447f9766c25f0e0b">setBufferTouched</a> ()</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFglForm.html#a8495f6c9444756a6bdf370c3ce158921">setLastCursor</a> (int, int)</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFglForm.html#ab61a1af085f68fa6673e516812b0b9c8">setLastCursor</a> ()</td></tr>
@@ -91,6 +91,7 @@ Public Slots</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFglForm.html#a21cf637edb3ad010d7e00e4d20b95825">cancelTriggered</a> ()</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFglForm.html#afd623938967b4f76707704ab67032a57">acceptTriggered</a> ()</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFglForm.html#a21e6b7f851487d6d0db29b015a37e374">addToQueue</a> (QList&lt; <a class="el" href="structFgl_1_1Event.html">Fgl::Event</a> &gt;)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFglForm.html#a82a066a47d5d8bc2f7c2ec41ab29d4f2">addToQueue</a> (<a class="el" href="structFgl_1_1Event.html">Fgl::Event</a>)</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFglForm.html#a2300cda82ffb223096c19f63004e248f">accept</a> ()</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFglForm.html#a0e2bda025291fc5a29a74254418cffdb">interrupt</a> ()</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFglForm.html#ac51ab1764a0c88802875af3b0ef890af">editcopy</a> ()</td></tr>
@@ -115,6 +116,7 @@ Public Slots</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFglForm.html#a3d7ccbba13b950e970333db68755d022">saveFieldSettings</a> (QAction *)</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFglForm.html#a4430f1038e2dcfd957c1d361d0c286d4">clearCurrentFocus</a> ()</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFglForm.html#ae2815f84a3c114c000f97cc0cf431bb7">clearFieldFocus</a> ()</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Method to remove the Focus of all widgets. Needed if its not known which widget has the focus(Enabled/Disabled Widgets).  <a href="#ae2815f84a3c114c000f97cc0cf431bb7"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFglForm.html#abacf589f219bcfbcf54ca2a5fb9ba859">setFocusOnWidget</a> (QWidget *, Qt::FocusReason=Qt::OtherFocusReason)</td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Method to set Focus and remove the focus of all other widgets.  <a href="#abacf589f219bcfbcf54ca2a5fb9ba859"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFglForm.html#a5e7fe57471d1f3ad4d6dbf7ac1c8b843">sendMenuCommand</a> (QString)</td></tr>
@@ -138,6 +140,10 @@ Public Member Functions</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFglForm.html#a4a6d10fc6cce5a7984d59b80730cd7e1">FglForm</a> (QString <a class="el" href="classFglForm.html#a154084978ed81b8739db7197541881f5">windowName</a>=&quot;&quot;, QWidget *parent=0)</td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor for the Fglform.  <a href="#a4a6d10fc6cce5a7984d59b80730cd7e1"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFglForm.html#a14fc02c52beeeffefa92a4b3425da772">~FglForm</a> ()</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFglForm.html#a304cb50242f0f546f3c750be160738e5">replayKeyboard</a> ()</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Method to replay the Keyboardbuffer.  <a href="#a304cb50242f0f546f3c750be160738e5"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFglForm.html#a929ef0072e09235e5496c7f59c4be2e6">clearKeyboardBuffer</a> ()</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Method to clear the current Keyboardbuffer. Needed for NEXTFIELD introductions cause the keystrokes are obsolet.  <a href="#a929ef0072e09235e5496c7f59c4be2e6"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFglForm.html#a626014edfd45271d30f38d877601abd5">jumpToField</a> (QWidget *, bool b_after=true)</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFglForm.html#acfb920aa37d488d2877fe75441ac7f65">setMenuEnabled</a> (bool)</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFglForm.html#a0060da33eb1943f1b762e8a164ede398">setMenu</a> (<a class="el" href="classRingMenu.html">RingMenu</a> *)</td></tr>
@@ -174,7 +180,6 @@ Public Member Functions</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">QWidget *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFglForm.html#a74cb6310512352e1fd501efbcd88724b">currentField</a> ()</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFglForm.html#ac521356370affcf115340e2279475c6b">setCurrentWidget</a> (QWidget *)</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFglForm.html#a4574756e714c6d93e6d177ecbfb78ae1">setCurrentField</a> (QString, bool sendEvents=true)</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFglForm.html#a82a066a47d5d8bc2f7c2ec41ab29d4f2">addToQueue</a> (<a class="el" href="structFgl_1_1Event.html">Fgl::Event</a>)</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFglForm.html#ab6b474ce22c93c45ccbee4b637647732">input</a> ()</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFglForm.html#ab131183405b70a2d48643ec9a522f877">construct</a> ()</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFglForm.html#a2e45f9d338ef208ffb1c08f1f97e6b2b">screenRecord</a> ()</td></tr>
@@ -265,6 +270,7 @@ models fglform <a class="el" href="classFglForm.html#a2adf651bccc4bd01a985a0c5bd
 models fglform <a class="el" href="classFglForm.html#a2adf651bccc4bd01a985a0c5bde45af7">h</a> e ms QT <br class="typebreak"/>
 models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFglForm.html#a2adf651bccc4bd01a985a0c5bde45af7">h</a></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">QList&lt; <a class="el" href="namespaceFgl.html#a66700792cb225549384ae76c1057cf22">Fgl::State</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFglForm.html#a18774054d5c9773a7075b5933b0bbc9a">ql_states</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">QList&lt; QKeyEvent * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFglForm.html#a2164d9fc4e8c4be30d54ec2a99e881ea">ql_keybuffer</a></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">QWidget *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFglForm.html#a382565fe4e148f5e37aabea41e079809">formWidget</a></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">QList&lt; <a class="el" href="classRingMenu.html">RingMenu</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFglForm.html#a587196a08706e03ec05f1fae4048f344">ql_menus</a></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">QPointer&lt; ScreenHandler &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFglForm.html#a98e11b2d55100f907821e3a8281b4ab5">p_currscreenhandler</a></td></tr>
@@ -281,6 +287,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 <tr><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFglForm.html#ac1f8bea18516701b1192825f83e962d7">b_menu</a></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFglForm.html#a348ba4d61a2c9e18513ac88c919015c0">b_input</a></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFglForm.html#a656061ca98f40226c99fa61b12ced56c">b_screenRecord</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFglForm.html#ae5096059ba81229c8e0070e85286420f">b_keybuffer</a></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">QString&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFglForm.html#aff3b675ee7063af63839e029f66b4075">m_windowType</a></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">QString&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFglForm.html#a94e20a9c06c349d6e7c5ec47c03de4a6">m_startMenuPosition</a></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">QString&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFglForm.html#a0008c6a1c3362095ebd5ab0601910003">m_toolBarPosition</a></td></tr>
@@ -348,7 +355,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l00114">114</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l00115">115</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
 
 </div>
 </div>
@@ -367,7 +374,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l01519">1519</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l01589">1589</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
 
 </div>
 </div>
@@ -401,7 +408,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l01491">1491</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l01561">1561</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
 
 </div>
 </div>
@@ -419,7 +426,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8h_source.html#l00127">127</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8h_source.html#l00129">129</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
 
 </div>
 </div>
@@ -437,7 +444,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8h_source.html#l00106">106</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8h_source.html#l00108">108</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
 
 </div>
 </div>
@@ -455,26 +462,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l00505">505</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="ac43c7da12a298a241c7c98cf9a688a6f"></a><!-- doxytag: member="FglForm::addFormAction" ref="ac43c7da12a298a241c7c98cf9a688a6f" args="(QAction *)" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void FglForm::addFormAction </td>
-          <td>(</td>
-          <td class="paramtype">QAction *&#160;</td>
-          <td class="paramname"><em>qaction</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-
-<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l03052">3052</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l00506">506</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
 
 </div>
 </div>
@@ -545,7 +533,26 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l03104">3104</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l03174">3174</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ac43c7da12a298a241c7c98cf9a688a6f"></a><!-- doxytag: member="FglForm::addFormAction" ref="ac43c7da12a298a241c7c98cf9a688a6f" args="(QAction *)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void FglForm::addFormAction </td>
+          <td>(</td>
+          <td class="paramtype">QAction *&#160;</td>
+          <td class="paramname"><em>qaction</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l03122">3122</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
 
 </div>
 </div>
@@ -564,26 +571,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l03155">3155</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="a82a066a47d5d8bc2f7c2ec41ab29d4f2"></a><!-- doxytag: member="FglForm::addToQueue" ref="a82a066a47d5d8bc2f7c2ec41ab29d4f2" args="(Fgl::Event)" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void FglForm::addToQueue </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="structFgl_1_1Event.html">Fgl::Event</a>&#160;</td>
-          <td class="paramname"><em>id</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-
-<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l00174">174</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l03225">3225</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
 
 </div>
 </div>
@@ -602,7 +590,26 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l00188">188</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l00189">189</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a82a066a47d5d8bc2f7c2ec41ab29d4f2"></a><!-- doxytag: member="FglForm::addToQueue" ref="a82a066a47d5d8bc2f7c2ec41ab29d4f2" args="(Fgl::Event)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void FglForm::addToQueue </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structFgl_1_1Event.html">Fgl::Event</a>&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td><code> [slot]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l00175">175</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
 
 </div>
 </div>
@@ -620,7 +627,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8h_source.html#l00144">144</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8h_source.html#l00146">146</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
 
 </div>
 </div>
@@ -639,7 +646,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l00147">147</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l00148">148</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
 
 </div>
 </div>
@@ -657,7 +664,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l01505">1505</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l01575">1575</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
 
 </div>
 </div>
@@ -675,7 +682,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l03244">3244</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l03314">3314</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
 
 </div>
 </div>
@@ -693,7 +700,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l03766">3766</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l03836">3836</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
 
 </div>
 </div>
@@ -711,7 +718,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l03380">3380</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l03450">3450</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
 
 </div>
 </div>
@@ -729,7 +736,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l03447">3447</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l03517">3517</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
 
 </div>
 </div>
@@ -747,7 +754,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l03555">3555</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l03625">3625</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
 
 </div>
 </div>
@@ -765,7 +772,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l02664">2664</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l02734">2734</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
 
 </div>
 </div>
@@ -783,7 +790,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l03189">3189</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l03259">3259</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
 
 </div>
 </div>
@@ -801,7 +808,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l01414">1414</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l01481">1481</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
 
 </div>
 </div>
@@ -819,7 +826,30 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l01456">1456</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
+<p>Method to remove the Focus of all widgets. Needed if its not known which widget has the focus(Enabled/Disabled Widgets). </p>
+<dl class="see"><dt><b>See also:</b></dt><dd><a class="el" href="classFglForm.html#abacf589f219bcfbcf54ca2a5fb9ba859" title="Method to set Focus and remove the focus of all other widgets.">setFocusOnWidget(QWidget*, Qt::FocusReason)</a> </dd></dl>
+
+<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l01526">1526</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a929ef0072e09235e5496c7f59c4be2e6"></a><!-- doxytag: member="FglForm::clearKeyboardBuffer" ref="a929ef0072e09235e5496c7f59c4be2e6" args="()" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void FglForm::clearKeyboardBuffer </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Method to clear the current Keyboardbuffer. Needed for NEXTFIELD introductions cause the keystrokes are obsolet. </p>
+
+<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l00747">747</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
 
 </div>
 </div>
@@ -854,7 +884,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l01279">1279</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l01346">1346</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
 
 </div>
 </div>
@@ -872,7 +902,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8h_source.html#l00139">139</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8h_source.html#l00141">141</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
 
 </div>
 </div>
@@ -891,7 +921,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l02753">2753</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l02823">2823</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
 
 </div>
 </div>
@@ -910,7 +940,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l02762">2762</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l02832">2832</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
 
 </div>
 </div>
@@ -928,7 +958,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l00130">130</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l00131">131</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
 
 </div>
 </div>
@@ -946,7 +976,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8h_source.html#l00132">132</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8h_source.html#l00134">134</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
 
 </div>
 </div>
@@ -964,7 +994,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8h_source.html#l00126">126</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8h_source.html#l00128">128</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
 
 </div>
 </div>
@@ -982,7 +1012,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8h_source.html#l00109">109</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8h_source.html#l00111">111</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
 
 </div>
 </div>
@@ -1000,7 +1030,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8h_source.html#l00141">141</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8h_source.html#l00143">143</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
 
 </div>
 </div>
@@ -1018,7 +1048,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l01215">1215</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l01282">1282</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
 
 </div>
 </div>
@@ -1036,7 +1066,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l01239">1239</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l01306">1306</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
 
 </div>
 </div>
@@ -1054,7 +1084,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l01908">1908</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l01978">1978</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
 
 </div>
 </div>
@@ -1072,7 +1102,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l01923">1923</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l01993">1993</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
 
 </div>
 </div>
@@ -1090,7 +1120,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l01933">1933</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l02003">2003</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
 
 </div>
 </div>
@@ -1109,7 +1139,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l03046">3046</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l03116">3116</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
 
 </div>
 </div>
@@ -1138,7 +1168,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l00712">712</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l00763">763</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
 
 </div>
 </div>
@@ -1156,7 +1186,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l01254">1254</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l01321">1321</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
 
 </div>
 </div>
@@ -1185,7 +1215,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l01182">1182</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l01249">1249</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
 
 </div>
 </div>
@@ -1204,7 +1234,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l03019">3019</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l03089">3089</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
 
 </div>
 </div>
@@ -1223,7 +1253,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l02894">2894</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l02964">2964</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
 
 </div>
 </div>
@@ -1242,7 +1272,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l02975">2975</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l03045">3045</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
 
 </div>
 </div>
@@ -1261,7 +1291,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l02945">2945</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l03015">3015</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
 
 </div>
 </div>
@@ -1279,7 +1309,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l02339">2339</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l02409">2409</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
 
 </div>
 </div>
@@ -1297,7 +1327,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8h_source.html#l00131">131</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8h_source.html#l00133">133</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
 
 </div>
 </div>
@@ -1316,7 +1346,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l03656">3656</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l03726">3726</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
 
 </div>
 </div>
@@ -1334,7 +1364,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8h_source.html#l00125">125</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8h_source.html#l00127">127</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
 
 </div>
 </div>
@@ -1352,7 +1382,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l01402">1402</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l01469">1469</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
 
 </div>
 </div>
@@ -1370,7 +1400,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8h_source.html#l00190">190</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8h_source.html#l00192">192</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
 
 </div>
 </div>
@@ -1388,7 +1418,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8h_source.html#l00187">187</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8h_source.html#l00189">189</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
 
 </div>
 </div>
@@ -1417,9 +1447,9 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Method to get the formevent based on the event.type and merge the event.field of the parameter to the returnvalue. If no Event was found, it returns type to diff with the . </p>
+<p>Method to get the formevent based on the event.type and merge the event.field of the parameter to the returnvalue. If the event.id is set, the method found the event otherwise the event.id is empty. </p>
 
-<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l01090">1090</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l01157">1157</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
 
 </div>
 </div>
@@ -1437,7 +1467,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8h_source.html#l00193">193</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8h_source.html#l00195">195</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
 
 </div>
 </div>
@@ -1455,7 +1485,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8h_source.html#l00175">175</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8h_source.html#l00177">177</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
 
 </div>
 </div>
@@ -1473,7 +1503,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8h_source.html#l00178">178</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8h_source.html#l00180">180</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
 
 </div>
 </div>
@@ -1491,7 +1521,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8h_source.html#l00181">181</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8h_source.html#l00183">183</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
 
 </div>
 </div>
@@ -1510,7 +1540,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l03454">3454</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l03524">3524</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
 
 </div>
 </div>
@@ -1528,7 +1558,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8h_source.html#l00210">210</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8h_source.html#l00212">212</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
 
 </div>
 </div>
@@ -1546,7 +1576,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l00315">315</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l00316">316</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
 
 </div>
 </div>
@@ -1564,7 +1594,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8h_source.html#l00138">138</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8h_source.html#l00140">140</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
 
 </div>
 </div>
@@ -1582,7 +1612,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8h_source.html#l00142">142</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8h_source.html#l00144">144</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
 
 </div>
 </div>
@@ -1600,7 +1630,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l01534">1534</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l01604">1604</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
 
 </div>
 </div>
@@ -1629,7 +1659,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l02415">2415</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l02485">2485</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
 
 </div>
 </div>
@@ -1647,7 +1677,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8h_source.html#l00145">145</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8h_source.html#l00147">147</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
 
 </div>
 </div>
@@ -1665,7 +1695,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l02362">2362</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l02432">2432</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
 
 </div>
 </div>
@@ -1683,7 +1713,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8h_source.html#l00103">103</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8h_source.html#l00105">105</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
 
 </div>
 </div>
@@ -1702,7 +1732,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l01942">1942</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l02012">2012</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
 
 </div>
 </div>
@@ -1720,7 +1750,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l02386">2386</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l02456">2456</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
 
 </div>
 </div>
@@ -1738,7 +1768,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l02287">2287</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l02357">2357</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
 
 </div>
 </div>
@@ -1756,7 +1786,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l02388">2388</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l02458">2458</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
 
 </div>
 </div>
@@ -1774,7 +1804,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l02121">2121</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l02191">2191</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
 
 </div>
 </div>
@@ -1792,7 +1822,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l02387">2387</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l02457">2457</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
 
 </div>
 </div>
@@ -1810,7 +1840,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l02316">2316</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l02386">2386</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
 
 </div>
 </div>
@@ -1828,7 +1858,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l02401">2401</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l02471">2471</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
 
 </div>
 </div>
@@ -1862,7 +1892,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8h_source.html#l00110">110</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8h_source.html#l00112">112</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
 
 </div>
 </div>
@@ -1880,7 +1910,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l02732">2732</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l02802">2802</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
 
 </div>
 </div>
@@ -1898,7 +1928,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l00386">386</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l00387">387</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
 
 </div>
 </div>
@@ -1916,7 +1946,27 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l01267">1267</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l01334">1334</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a304cb50242f0f546f3c750be160738e5"></a><!-- doxytag: member="FglForm::replayKeyboard" ref="a304cb50242f0f546f3c750be160738e5" args="()" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void FglForm::replayKeyboard </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Method to replay the Keyboardbuffer. </p>
+
+<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l00711">711</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
 
 </div>
 </div>
@@ -1934,7 +1984,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l01036">1036</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l01103">1103</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
 
 </div>
 </div>
@@ -1953,7 +2003,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l02646">2646</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l02716">2716</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
 
 </div>
 </div>
@@ -1972,7 +2022,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l01054">1054</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l01121">1121</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
 
 </div>
 </div>
@@ -1990,7 +2040,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8h_source.html#l00116">116</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8h_source.html#l00118">118</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
 
 </div>
 </div>
@@ -2008,7 +2058,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8h_source.html#l00140">140</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8h_source.html#l00142">142</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
 
 </div>
 </div>
@@ -2026,7 +2076,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l01224">1224</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l01291">1291</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
 
 </div>
 </div>
@@ -2062,7 +2112,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l01322">1322</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l01389">1389</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
 
 </div>
 </div>
@@ -2081,7 +2131,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l00453">453</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l00454">454</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
 
 </div>
 </div>
@@ -2100,7 +2150,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l00482">482</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l00483">483</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
 
 </div>
 </div>
@@ -2119,7 +2169,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l01678">1678</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l01748">1748</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
 
 </div>
 </div>
@@ -2138,7 +2188,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l00207">207</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l00208">208</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
 
 </div>
 </div>
@@ -2173,7 +2223,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8h_source.html#l00222">222</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8h_source.html#l00224">224</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
 
 </div>
 </div>
@@ -2191,7 +2241,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8h_source.html#l00219">219</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8h_source.html#l00221">221</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
 
 </div>
 </div>
@@ -2236,7 +2286,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l01794">1794</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l01864">1864</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
 
 </div>
 </div>
@@ -2255,7 +2305,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l01772">1772</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l01842">1842</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
 
 </div>
 </div>
@@ -2274,7 +2324,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l01742">1742</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l01812">1812</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
 
 </div>
 </div>
@@ -2293,7 +2343,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l00619">619</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l00620">620</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
 
 </div>
 </div>
@@ -2324,7 +2374,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 
 <p>Method to set Focus and remove the focus of all other widgets. </p>
 
-<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l01471">1471</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l01541">1541</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
 
 </div>
 </div>
@@ -2343,7 +2393,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l01339">1339</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l01406">1406</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
 
 </div>
 </div>
@@ -2362,7 +2412,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8h_source.html#l00209">209</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8h_source.html#l00211">211</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
 
 </div>
 </div>
@@ -2380,7 +2430,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l03755">3755</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l03825">3825</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
 
 </div>
 </div>
@@ -2409,7 +2459,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l03748">3748</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l03818">3818</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
 
 </div>
 </div>
@@ -2428,7 +2478,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l00353">353</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l00354">354</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
 
 </div>
 </div>
@@ -2447,7 +2497,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l00408">408</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l00409">409</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
 
 </div>
 </div>
@@ -2466,7 +2516,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l00639">639</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l00640">640</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
 
 </div>
 </div>
@@ -2485,7 +2535,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l01627">1627</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l01697">1697</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
 
 </div>
 </div>
@@ -2504,7 +2554,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l00195">195</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l00196">196</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
 
 </div>
 </div>
@@ -2523,7 +2573,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l03038">3038</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l03108">3108</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
 
 </div>
 </div>
@@ -2542,7 +2592,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l01730">1730</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l01800">1800</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
 
 </div>
 </div>
@@ -2561,7 +2611,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l01545">1545</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l01615">1615</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
 
 </div>
 </div>
@@ -2580,7 +2630,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8h_source.html#l00176">176</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8h_source.html#l00178">178</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
 
 </div>
 </div>
@@ -2599,7 +2649,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8h_source.html#l00196">196</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8h_source.html#l00198">198</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
 
 </div>
 </div>
@@ -2618,26 +2668,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l01571">1571</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="ad139148f573546a3ef5ead0f49170d08"></a><!-- doxytag: member="FglForm::setToolBar" ref="ad139148f573546a3ef5ead0f49170d08" args="(QDomDocument)" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void FglForm::setToolBar </td>
-          <td>(</td>
-          <td class="paramtype">QDomDocument&#160;</td>
-          <td class="paramname"><em>xmlFile</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-
-<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l00680">680</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l01641">1641</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
 
 </div>
 </div>
@@ -2656,7 +2687,26 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l00649">649</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l00650">650</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ad139148f573546a3ef5ead0f49170d08"></a><!-- doxytag: member="FglForm::setToolBar" ref="ad139148f573546a3ef5ead0f49170d08" args="(QDomDocument)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void FglForm::setToolBar </td>
+          <td>(</td>
+          <td class="paramtype">QDomDocument&#160;</td>
+          <td class="paramname"><em>xmlFile</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l00681">681</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
 
 </div>
 </div>
@@ -2675,7 +2725,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l01585">1585</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l01655">1655</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
 
 </div>
 </div>
@@ -2694,7 +2744,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l03792">3792</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l03862">3862</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
 
 </div>
 </div>
@@ -2713,7 +2763,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l01754">1754</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l01824">1824</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
 
 </div>
 </div>
@@ -2732,7 +2782,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l00137">137</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l00138">138</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
 
 </div>
 </div>
@@ -2750,7 +2800,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8h_source.html#l00184">184</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8h_source.html#l00186">186</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
 
 </div>
 </div>
@@ -2768,7 +2818,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8h_source.html#l00198">198</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8h_source.html#l00200">200</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
 
 </div>
 </div>
@@ -2786,7 +2836,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8h_source.html#l00122">122</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8h_source.html#l00124">124</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
 
 </div>
 </div>
@@ -2804,7 +2854,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l00581">581</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l00582">582</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
 
 </div>
 </div>
@@ -2838,7 +2888,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l02714">2714</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8cpp_source.html#l02784">2784</a> of file <a class="el" href="fglform_8cpp_source.html">fglform.cpp</a>.</p>
 
 </div>
 </div>
@@ -2854,7 +2904,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8h_source.html#l00096">96</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8h_source.html#l00098">98</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
 
 </div>
 </div>
@@ -2869,7 +2919,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8h_source.html#l00309">309</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8h_source.html#l00314">314</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
 
 </div>
 </div>
@@ -2884,7 +2934,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8h_source.html#l00158">158</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8h_source.html#l00160">160</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
 
 </div>
 </div>
@@ -2899,7 +2949,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8h_source.html#l00097">97</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8h_source.html#l00099">99</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
 
 </div>
 </div>
@@ -2914,7 +2964,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8h_source.html#l00095">95</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8h_source.html#l00097">97</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
 
 </div>
 </div>
@@ -2929,7 +2979,22 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8h_source.html#l00290">290</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8h_source.html#l00294">294</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ae5096059ba81229c8e0070e85286420f"></a><!-- doxytag: member="FglForm::b_keybuffer" ref="ae5096059ba81229c8e0070e85286420f" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool <a class="el" href="classFglForm.html#ae5096059ba81229c8e0070e85286420f">FglForm::b_keybuffer</a><code> [private]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definition at line <a class="el" href="fglform_8h_source.html#l00296">296</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
 
 </div>
 </div>
@@ -2944,7 +3009,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8h_source.html#l00289">289</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8h_source.html#l00293">293</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
 
 </div>
 </div>
@@ -2959,7 +3024,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8h_source.html#l00157">157</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8h_source.html#l00159">159</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
 
 </div>
 </div>
@@ -2974,7 +3039,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8h_source.html#l00291">291</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8h_source.html#l00295">295</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
 
 </div>
 </div>
@@ -3004,7 +3069,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8h_source.html#l00203">203</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8h_source.html#l00205">205</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
 
 </div>
 </div>
@@ -3034,7 +3099,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8h_source.html#l00307">307</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8h_source.html#l00312">312</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
 
 </div>
 </div>
@@ -3049,7 +3114,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8h_source.html#l00273">273</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8h_source.html#l00277">277</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
 
 </div>
 </div>
@@ -3064,7 +3129,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8h_source.html#l00314">314</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8h_source.html#l00319">319</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
 
 </div>
 </div>
@@ -3079,7 +3144,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8h_source.html#l00159">159</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8h_source.html#l00161">161</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
 
 </div>
 </div>
@@ -3109,7 +3174,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8h_source.html#l00306">306</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8h_source.html#l00311">311</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
 
 </div>
 </div>
@@ -3124,7 +3189,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8h_source.html#l00308">308</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8h_source.html#l00313">313</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
 
 </div>
 </div>
@@ -3139,7 +3204,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8h_source.html#l00310">310</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8h_source.html#l00315">315</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
 
 </div>
 </div>
@@ -3154,7 +3219,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8h_source.html#l00305">305</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8h_source.html#l00310">310</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
 
 </div>
 </div>
@@ -3169,7 +3234,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8h_source.html#l00299">299</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8h_source.html#l00304">304</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
 
 </div>
 </div>
@@ -3184,7 +3249,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8h_source.html#l00301">301</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8h_source.html#l00306">306</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
 
 </div>
 </div>
@@ -3199,7 +3264,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8h_source.html#l00298">298</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8h_source.html#l00303">303</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
 
 </div>
 </div>
@@ -3214,7 +3279,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8h_source.html#l00300">300</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8h_source.html#l00305">305</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
 
 </div>
 </div>
@@ -3229,7 +3294,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8h_source.html#l00296">296</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8h_source.html#l00301">301</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
 
 </div>
 </div>
@@ -3244,7 +3309,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8h_source.html#l00297">297</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8h_source.html#l00302">302</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
 
 </div>
 </div>
@@ -3259,7 +3324,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8h_source.html#l00295">295</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8h_source.html#l00300">300</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
 
 </div>
 </div>
@@ -3289,7 +3354,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8h_source.html#l00277">277</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8h_source.html#l00281">281</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
 
 </div>
 </div>
@@ -3304,7 +3369,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8h_source.html#l00276">276</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8h_source.html#l00280">280</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
 
 </div>
 </div>
@@ -3319,7 +3384,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8h_source.html#l00278">278</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8h_source.html#l00282">282</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
 
 </div>
 </div>
@@ -3334,7 +3399,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8h_source.html#l00279">279</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8h_source.html#l00283">283</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
 
 </div>
 </div>
@@ -3349,7 +3414,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8h_source.html#l00280">280</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8h_source.html#l00284">284</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
 
 </div>
 </div>
@@ -3364,7 +3429,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8h_source.html#l00285">285</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8h_source.html#l00289">289</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
 
 </div>
 </div>
@@ -3379,7 +3444,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8h_source.html#l00169">169</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8h_source.html#l00171">171</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
 
 </div>
 </div>
@@ -3394,7 +3459,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8h_source.html#l00284">284</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8h_source.html#l00288">288</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
 
 </div>
 </div>
@@ -3409,7 +3474,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8h_source.html#l00166">166</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8h_source.html#l00168">168</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
 
 </div>
 </div>
@@ -3424,7 +3489,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8h_source.html#l00286">286</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8h_source.html#l00290">290</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
 
 </div>
 </div>
@@ -3439,7 +3504,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8h_source.html#l00283">283</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8h_source.html#l00287">287</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
 
 </div>
 </div>
@@ -3454,7 +3519,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8h_source.html#l00168">168</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8h_source.html#l00170">170</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
 
 </div>
 </div>
@@ -3469,7 +3534,22 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8h_source.html#l00170">170</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8h_source.html#l00172">172</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a2164d9fc4e8c4be30d54ec2a99e881ea"></a><!-- doxytag: member="FglForm::ql_keybuffer" ref="a2164d9fc4e8c4be30d54ec2a99e881ea" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">QList&lt;QKeyEvent*&gt; <a class="el" href="classFglForm.html#a2164d9fc4e8c4be30d54ec2a99e881ea">FglForm::ql_keybuffer</a><code> [private]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Definition at line <a class="el" href="fglform_8h_source.html#l00276">276</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
 
 </div>
 </div>
@@ -3484,7 +3564,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8h_source.html#l00165">165</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8h_source.html#l00167">167</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
 
 </div>
 </div>
@@ -3499,7 +3579,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8h_source.html#l00275">275</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8h_source.html#l00279">279</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
 
 </div>
 </div>
@@ -3514,7 +3594,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8h_source.html#l00167">167</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8h_source.html#l00169">169</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
 
 </div>
 </div>
@@ -3529,7 +3609,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8h_source.html#l00099">99</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8h_source.html#l00101">101</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
 
 </div>
 </div>
@@ -3544,7 +3624,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8h_source.html#l00272">272</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8h_source.html#l00275">275</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
 
 </div>
 </div>
@@ -3559,7 +3639,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8h_source.html#l00311">311</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8h_source.html#l00316">316</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
 
 </div>
 </div>
@@ -3574,7 +3654,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8h_source.html#l00312">312</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8h_source.html#l00317">317</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
 
 </div>
 </div>
@@ -3589,7 +3669,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8h_source.html#l00173">173</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8h_source.html#l00175">175</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
 
 </div>
 </div>
@@ -3604,7 +3684,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8h_source.html#l00145">145</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8h_source.html#l00147">147</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
 
 </div>
 </div>
@@ -3619,7 +3699,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8h_source.html#l00154">154</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8h_source.html#l00156">156</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
 
 </div>
 </div>
@@ -3634,7 +3714,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8h_source.html#l00282">282</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8h_source.html#l00286">286</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
 
 </div>
 </div>
@@ -3649,7 +3729,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8h_source.html#l00281">281</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8h_source.html#l00285">285</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
 
 </div>
 </div>
@@ -3664,7 +3744,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="fglform_8h_source.html#l00303">303</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
+<p>Definition at line <a class="el" href="fglform_8h_source.html#l00308">308</a> of file <a class="el" href="fglform_8h_source.html">fglform.h</a>.</p>
 
 </div>
 </div>
@@ -3808,7 +3888,7 @@ models fglform&#160;</td><td class="memItemRight" valign="bottom"><a class="el" 
 </iframe>
 </div>
 
-<hr class="footer"/><address class="footer"><small>Generated on Tue Mar 6 2012 14:00:12 for VDC by&#160;
+<hr class="footer"/><address class="footer"><small>Generated on Wed Mar 7 2012 13:52:56 for VDC by&#160;
 <a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.7.3 </small></address>
 </body>

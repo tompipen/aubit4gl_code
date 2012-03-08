@@ -28,7 +28,7 @@ void \hyperlink{classTableView_af8a2f8a181aeb8d565fca8be2fe1437c}{resetSettings}
 \item 
 void \hyperlink{classTableView_aadaf88a599aa680ea0d6a3887ed8289d}{fieldEvent} (\hyperlink{structFgl_1_1Event}{Fgl::Event})
 \item 
-void \hyperlink{classTableView_ae62964a1e3681bf228009babab06d55e}{addToQueue} (QList$<$ \hyperlink{structFgl_1_1Event}{Fgl::Event} $>$)
+void \hyperlink{classTableView_a32078b555ceb891d3a9548d82cf7c689}{addToQueue} (\hyperlink{structFgl_1_1Event}{Fgl::Event})
 \item 
 void \hyperlink{classTableView_a5f99090ec924b96b7f2b026c47f580e6}{setArrLineSignal} (int)
 \item 
@@ -73,7 +73,7 @@ void \hyperlink{classTableView_a41a45f3b1b6fc2be38f7068629bd9462}{setIgnoreRowCh
 \item 
 bool \hyperlink{classTableView_a83872a716abf63ed862c2c4607dc4146}{ignoreRowChange} ()
 \item 
-\hyperlink{classFglForm}{FglForm} \hyperlink{classTableView_a9dc54c4342e2d05f754129376dcd032f}{getForm} () const 
+\hyperlink{classFglForm}{FglForm} $\ast$ \hyperlink{classTableView_a0f9f4eeeac49765581dd86a3e97a5b4b}{getForm} () const 
 \begin{DoxyCompactList}\small\item\em Method to get the \hyperlink{classFglForm}{FglForm}. It cast the classmember QWidget p\_\-fglform to \hyperlink{classFglForm}{FglForm} and returns it. If the cast fail or the member is not set, the returnvalue is NULL. \item\end{DoxyCompactList}\item 
 void \hyperlink{classTableView_ac961015fe4c7fe1c5af03035db501400}{setScrLine} (int)
 \item 
@@ -197,15 +197,15 @@ Definition at line 520 of file table.cpp.
 \end{DoxyParamCaption}
 )\hspace{0.3cm}{\ttfamily  \mbox{[}signal\mbox{]}}}}
 \label{classTableView_ad4f6aa906c014bed4437f67817e990e0}
-\hypertarget{classTableView_ae62964a1e3681bf228009babab06d55e}{
+\hypertarget{classTableView_a32078b555ceb891d3a9548d82cf7c689}{
 \index{TableView@{TableView}!addToQueue@{addToQueue}}
 \index{addToQueue@{addToQueue}!TableView@{TableView}}
 \subsubsection[{addToQueue}]{\setlength{\rightskip}{0pt plus 5cm}void TableView::addToQueue (
 \begin{DoxyParamCaption}
-\item[{QList$<$ {\bf Fgl::Event} $>$}]{}
+\item[{{\bf Fgl::Event}}]{}
 \end{DoxyParamCaption}
 )\hspace{0.3cm}{\ttfamily  \mbox{[}signal\mbox{]}}}}
-\label{classTableView_ae62964a1e3681bf228009babab06d55e}
+\label{classTableView_a32078b555ceb891d3a9548d82cf7c689}
 \hypertarget{classTableView_a35187a10df2c76c9fe9099d17d9869cd}{
 \index{TableView@{TableView}!arrCount@{arrCount}}
 \index{arrCount@{arrCount}!TableView@{TableView}}
@@ -243,7 +243,7 @@ Definition at line 40 of file table.h.
 \label{classTableView_a62372425629462c3d4035b1f2676e847}
 
 
-Definition at line 819 of file table.cpp.
+Definition at line 862 of file table.cpp.
 
 \hypertarget{classTableView_ae24787bc253d6f181c13fc58bffd7ba2}{
 \index{TableView@{TableView}!dragSuccess@{dragSuccess}}
@@ -356,15 +356,15 @@ Definition at line 358 of file table.cpp.
 
 Definition at line 348 of file table.cpp.
 
-\hypertarget{classTableView_a9dc54c4342e2d05f754129376dcd032f}{
+\hypertarget{classTableView_a0f9f4eeeac49765581dd86a3e97a5b4b}{
 \index{TableView@{TableView}!getForm@{getForm}}
 \index{getForm@{getForm}!TableView@{TableView}}
-\subsubsection[{getForm}]{\setlength{\rightskip}{0pt plus 5cm}{\bf FglForm} TableView::getForm (
+\subsubsection[{getForm}]{\setlength{\rightskip}{0pt plus 5cm}{\bf FglForm} $\ast$ TableView::getForm (
 \begin{DoxyParamCaption}
 {}
 \end{DoxyParamCaption}
 ) const}}
-\label{classTableView_a9dc54c4342e2d05f754129376dcd032f}
+\label{classTableView_a0f9f4eeeac49765581dd86a3e97a5b4b}
 
 
 Method to get the \hyperlink{classFglForm}{FglForm}. It cast the classmember QWidget p\_\-fglform to \hyperlink{classFglForm}{FglForm} and returns it. If the cast fail or the member is not set, the returnvalue is NULL. 
@@ -410,7 +410,7 @@ Definition at line 63 of file table.h.
 \label{classTableView_a845c45c80748f79f3e81f7bf77e5261a}
 
 
-Definition at line 707 of file table.cpp.
+Definition at line 750 of file table.cpp.
 
 \hypertarget{classTableView_a2573035b04bb9582878096d501381e3b}{
 \index{TableView@{TableView}!maxArrSize@{maxArrSize}}
@@ -493,7 +493,7 @@ Definition at line 431 of file table.cpp.
 \label{classTableView_a9579368ee0b02a654fc5f68ff504a83f}
 
 
-Definition at line 729 of file table.cpp.
+Definition at line 772 of file table.cpp.
 
 \hypertarget{classTableView_a5f99090ec924b96b7f2b026c47f580e6}{
 \index{TableView@{TableView}!setArrLineSignal@{setArrLineSignal}}
@@ -543,7 +543,7 @@ Definition at line 493 of file table.cpp.
 \label{classTableView_a51769748b8e61de5f2e118ff5df32887}
 
 
-Definition at line 744 of file table.cpp.
+Definition at line 787 of file table.cpp.
 
 \hypertarget{classTableView_a245773b2b9426d4e354cf55fff770aa8}{
 \index{TableView@{TableView}!setCurrentField@{setCurrentField}}
@@ -557,7 +557,7 @@ Definition at line 744 of file table.cpp.
 \label{classTableView_a245773b2b9426d4e354cf55fff770aa8}
 
 
-Definition at line 757 of file table.cpp.
+Definition at line 800 of file table.cpp.
 
 \hypertarget{classTableView_ae927aad90eebbc37f4429ec40393a175}{
 \index{TableView@{TableView}!setCurrMouseColumn@{setCurrMouseColumn}}
@@ -661,7 +661,7 @@ Definition at line 374 of file table.cpp.
 \label{classTableView_ac961015fe4c7fe1c5af03035db501400}
 
 
-Definition at line 716 of file table.cpp.
+Definition at line 759 of file table.cpp.
 
 \hypertarget{classTableView_abe0f2fa077f2d14e7e14f6cfcad09bd6}{
 \index{TableView@{TableView}!setText@{setText}}
@@ -676,7 +676,7 @@ Definition at line 716 of file table.cpp.
 \label{classTableView_abe0f2fa077f2d14e7e14f6cfcad09bd6}
 
 
-Definition at line 791 of file table.cpp.
+Definition at line 834 of file table.cpp.
 
 \hypertarget{classTableView_a448f34f348c812c632d5e33b7f6987a0}{
 \index{TableView@{TableView}!sizeHint@{sizeHint}}
