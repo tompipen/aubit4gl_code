@@ -2654,17 +2654,17 @@ void ScreenHandler::setCursorPosition(int pos)
 {
 MainFrame::vdcdebug("ScreenHandler","setCursorPosition", "int pos");
 
-//   QList<QWidget*> ql_fields = p_fglform->formElements();
-   QList<QWidget*> ql_fields = p_fglform->ql_formFields;
-   for(int i=0; i<ql_fields.size(); i++){
+if(TextEdit *edit = qobject_cast<TextEdit *> (p_fglform->currentField())){
+    if(edit->toPlainText().length() < pos )
+    {
+        pos = edit->toPlainText().length();
+    }
 
-      if(TextEdit *edit = qobject_cast<TextEdit *> (ql_fields.at(i))){
-           QTextCursor cursor = edit->textCursor();
-           cursor.setPosition(pos);
-           edit->setTextCursor(cursor);
-            return;
-      }
-   }
+   QTextCursor cursor = edit->textCursor();
+   cursor.setPosition(pos, QTextCursor::MoveAnchor);
+   edit->setTextCursor(cursor);
+    return;
+}
 }
 
 void ScreenHandler::setInputFields(QStringList qsl_fields)
