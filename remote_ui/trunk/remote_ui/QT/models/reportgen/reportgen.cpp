@@ -932,7 +932,8 @@ bool Reportgen::replaceTemplateVars(QString odffile, QString sedfile, QFileInfo 
     QFile *file1 = new QFile(QDir::tempPath() + "/" + odffile + "/content.xml");
 
     //String diag_pfad = "/home/da/";
-    QString diag_bild = QString(QString::number(this->thread()->currentThreadId()) + "DIAG_BAR.png");
+    //Kompilierbar gemacht behebt einer aus den Repgen teeam bitte den fehler
+    QString diag_bild = "";//QString(QString::number(this->thread()->currentThreadId()) + "DIAG_BAR.png");
 
     if(!file->open(QIODevice::ReadOnly)) {
         qDebug() << "cannot open content1.xml (ersetzung)";
