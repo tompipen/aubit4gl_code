@@ -57,8 +57,8 @@ public:
    int p_pid_p;
    QList<QSize*> ql_formSizes;
    QList<FglForm*> ql_fglForms;
+   QList<WebBrowser*> ql_browser;
    QStringList qsl_activeFieldNames;
-   WebBrowser *p_browser;
 
    bool b_menuEnabled;
    //QStringList qsl_arrayValues;
@@ -78,8 +78,6 @@ public:
    void addComboBoxItem(int, QString, QString);
    void removeComboBoxItem(int, QString);
    void clearComboBox(int);
-
-   WebBrowser* getBrowser() const { return p_browser; };
       FglForm *p_fglform;
 
 protected:
@@ -103,6 +101,7 @@ private:
    QHash<QString, QLayout* > qh_fglLayouts;
    QHash<QString, QString > qh_formFiles;
    QHash<int, QList<QWidget*> > qh_formFields;
+
    QHash<int, ActionMenu*> qh_formActionMenus;
    //QWidget *startMenu;
    QDomDocument startMenu;
@@ -146,8 +145,8 @@ public slots:
    void displayChart(QString);
    #endif
    void createBrowser();
-   void setUrl(const QUrl &http);
-   void closeBrowser();
+   void setUrl(int id, const QUrl &http);
+   void closeBrowser(int id);
    void handleXMLStyles(QString);
    //void setFieldBuffer(QString, QString);
    void setFieldBuffer(int, QString, int);

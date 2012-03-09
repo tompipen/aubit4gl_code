@@ -350,6 +350,11 @@ ClientSocket::ClientSocket(QObject *parent, QString name, QString pass, QString 
    connect(&ph, SIGNAL(fileBrowser(QString, QString, QString, QString, QString)), p_currScreenHandler, SLOT(fileBrowser(QString, QString, QString, QString, QString)));
    // set the Programname 
    connect(&ph, SIGNAL(setProgramName(QString)), p_currScreenHandler, SLOT(setProgramName(QString)));
+
+   // UI-Browser
+   connect(&ph, SIGNAL(setUrl(int, QUrl)), p_currScreenHandler, SLOT(setUrl(int, QUrl)));
+   connect(&ph, SIGNAL(createBrowser()), p_currScreenHandler, SLOT(createBrowser()));
+   connect(&ph, SIGNAL(closeBrowser(int)), p_currScreenHandler, SLOT(closeBrowser(int)));
 }
 
 
@@ -1006,10 +1011,9 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
                  params << valuesElement.text();
               }
 
-              connect(this, SIGNAL(createBrowser()), this->p_currScreenHandler, SLOT(createBrowser()));
               emit createBrowser();
-
-              returnvalues << "0";
+              //Important, we want sending the triggered out of the screenhandler, because there we have the initial index for the browser.
+              expect = 0;
 
          }
          if(qs_name == "ui.browser.openurl")
@@ -1019,16 +1023,9 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
                  QDomElement valuesElement = paramsElement.childNodes().at(k).toElement();
                  params << valuesElement.text();
               }
-
-              connect(this, SIGNAL(setUrl(QUrl)), this->p_currScreenHandler, SLOT(setUrl(QUrl)));
-              if(this->p_currScreenHandler->getBrowser())
-              {
-                  emit setUrl(QUrl(params.at(1)));
-                  returnvalues << "1";
-              } else {
-                  qDebug() << "Es wurde kein Browser initialisiert mit createBrowser()";
-                  returnvalues << "408";
-              }
+              emit setUrl(params.at(0).toInt(), QUrl(params.at(1)));
+              //Important, we want sending the triggered out of the screenhandler, because there we have the errorcodes.
+              expect = 0;
 
          }
          if(qs_name == "ui.browser.close")
@@ -1039,13 +1036,7 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
                  params << valuesElement.text();
               }
 
-              connect(this, SIGNAL(closeBrowser()), this->p_currScreenHandler, SLOT(closeBrowser()));
-              if(this->p_currScreenHandler->getBrowser())
-              {
-                  emit closeBrowser();
-              }
-              //returnvalues << "0";
-
+              emit closeBrowser(params.at(0).toInt());
          }
          if(qs_name == "ui.vdc.action"){
            qDebug() << "werde aufgerufen!!!" << "";

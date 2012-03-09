@@ -22,7 +22,7 @@ protected slots:
 
     void adjustLocation();
     void changeLocation();
-    void adjustTitle();
+    void adjustTitle(QString title);
     void setProgress(int p);
     void finishLoading(bool);
 

@@ -3198,18 +3198,41 @@ void ScreenHandler::displayChart(QString fileName)
 
 void ScreenHandler::createBrowser()
 {
-    p_browser = new WebBrowser();
+    int next = ql_browser.size();
+    WebBrowser *p_browser = new WebBrowser();
+    p_browser->setObjectName(QString::number(next));
     p_browser->createBrowser();
+    ql_browser << p_browser;
+
+    fglFormResponse("<TRIGGERED ID=\"-123\"><SVS><SV>" + QString::number(next) + "</SV></SVS></TRIGGERED>");
+
 }
-void ScreenHandler::setUrl(const QUrl &http)
+void ScreenHandler::setUrl(int id, const QUrl &http)
 {
-    if(p_browser)
+  int code = 408; //Browser not initialised
+
+
+    foreach(WebBrowser *p_browser, ql_browser)
     {
-        p_browser->loadUrl(http);
+        if(QString::number(id) == p_browser->objectName())
+        {
+            code = 0;
+            p_browser->loadUrl(http);
+        }
     }
+
+    fglFormResponse("<TRIGGERED ID=\"-123\"><SVS><SV>" + QString::number(code) + "</SV></SVS></TRIGGERED>");
+
 }
-void ScreenHandler::closeBrowser()
+void ScreenHandler::closeBrowser(int id)
 {
-    p_browser->closeBrowser();
+  foreach(WebBrowser *p_browser, ql_browser)
+  {
+      if(QString::number(id) == p_browser->objectName())
+      {
+          p_browser->closeBrowser();
+          return;
+      }
+  }
 }
 

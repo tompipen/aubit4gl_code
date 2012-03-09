@@ -99,8 +99,8 @@ signals:
    void makeResponse(QString);
    void setUpdatesEnabled(bool);
    void createBrowser();
-   void setUrl(const QUrl);
-   void closeBrowser();
+   void setUrl(int, const QUrl);
+   void closeBrowser(int);
 
    // ProtocolHandler -> ScreenHandler (WorkerThread -> GuiThread)
    void createWindow(QString, QString, int, int, int, int, QString);

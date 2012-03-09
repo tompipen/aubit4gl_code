@@ -20,7 +20,7 @@ void WebBrowser::createBrowser()
     WebView = new QWebView(this);
     //WebView->load(url);
     connect(WebView, SIGNAL(loadFinished(bool)), SLOT(adjustLocation()));
-    connect(WebView, SIGNAL(titleChanged(QString)), SLOT(adjustTitle()));
+    connect(WebView, SIGNAL(titleChanged(QString)), SLOT(adjustTitle(QString)));
     connect(WebView, SIGNAL(loadProgress(int)), SLOT(setProgress(int)));
     connect(WebView, SIGNAL(loadFinished(bool)), SLOT(finishLoading(bool)));
 
@@ -65,20 +65,18 @@ void WebBrowser::changeLocation()
     WebView->setFocus();
 }
 
-//VENTAS.help - Titel-Anzeige
-void WebBrowser::adjustTitle()
+
+void WebBrowser::adjustTitle(QString title)
 {
-    setWindowTitle(QString("VENTAS.help"));
+    setWindowTitle(title);
 }
 
 void WebBrowser::setProgress(int p)
 {
-    adjustTitle();
 }
 
 void WebBrowser::finishLoading(bool)
 {
-    adjustTitle();
     WebView->page()->mainFrame()->evaluateJavaScript(jQuery);
 
 }
