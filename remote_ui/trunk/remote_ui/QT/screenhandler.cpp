@@ -2666,14 +2666,12 @@ if(TextEdit *edit = qobject_cast<TextEdit *> (p_fglform->currentField())){
     return;
 }
 if(LineEdit *edit = qobject_cast<LineEdit *> (p_fglform->currentField())){
-    if(edit->toPlainText().length() < pos )
+    if(edit->text().length() < pos )
     {
-        pos = edit->toPlainText().length();
+        pos = edit->text().length();
     }
 
-    QTextCursor cursor = edit->textCursor();
-    cursor.setPosition(pos, QTextCursor::MoveAnchor);
-    edit->setTextCursor(cursor);
+    edit->cursorForward(false, pos);
     return;
 }
 }
