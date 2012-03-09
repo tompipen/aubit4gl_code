@@ -3218,6 +3218,7 @@ void ScreenHandler::setUrl(int id, const QUrl &http)
         {
             code = 0;
             p_browser->loadUrl(http);
+            break;
         }
     }
 
