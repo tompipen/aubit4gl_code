@@ -654,12 +654,11 @@ QString Reportgen::prepareTemplateEbene(int Position, int Ebene, int Ebene3, int
             {
                 if(ausgabe.contains("]P3]"))
                 {
-                    if(Ebene3 == 0)
+                    if(Ebene3 == 1)
                     {
                         int found = 0;
-                        for(int j=1; j < temp_fields.count(); j++)
+                        for(int j=2; j < temp_fields.count(); j++)
                         {
-                            qDebug() << QString("@%1_%2_%3").arg(QString::number(Position)).arg(QString::number(Counter)).arg(QString::number(j));
                             found = checkSedFile(QString("@%1_%2_%3").arg(QString::number(Position)).arg(QString::number(Counter)).arg(QString::number(j)), sedfile);
                             if(found > 0)
                             {
