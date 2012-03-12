@@ -856,6 +856,25 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
 
                  }
              }
+
+             if(inputArray()){
+                 if(TableView *tableView = qobject_cast<TableView *> (currentField())){
+                     if(tableView->curr_editor == w->parentWidget())
+                     {
+
+                     if(ButtonEdit *be = qobject_cast<ButtonEdit*> (qpb->parentWidget()))
+                     {
+                            be->buttonClicked();
+                     }
+                     if(DateEdit *de = qobject_cast<DateEdit*> (qpb->parentWidget()))
+                     {
+                            de->buttonClicked();
+                     }
+
+                 }
+
+             }
+         }
          }
       }
     }

@@ -295,6 +295,7 @@ class DateEdit : public LineEdit
 
 public:
     DateEdit(QWidget *parent = 0);
+    QPushButton* getButtonObj();
 
 protected:
    void resizeEvent(QResizeEvent *);

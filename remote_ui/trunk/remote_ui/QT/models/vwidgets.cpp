@@ -579,6 +579,13 @@ MainFrame::vdcdebug("DateEdit","buttonClicked", "");
    calendar->show();
 }
 
+
+QPushButton* DateEdit::getButtonObj()
+{
+MainFrame::vdcdebug("ButtonEdit","getButtonObj", "");
+    return this->button;
+}
+
 //------------------------------------------------------------------------------
 // Method       : TextEdit()
 // Filename     : xml2form.cpp
