@@ -607,6 +607,7 @@ QString Reportgen::prepareTemplateEbene(int Position, int Ebene, int Ebene3, int
     QString xmlout;
     QString xmlout1;
     QString behalten;
+    QString ersetzeVar;
     int cnt = 0;
     int found = 0;
 
@@ -664,10 +665,10 @@ QString Reportgen::prepareTemplateEbene(int Position, int Ebene, int Ebene3, int
                             {
                                 if(ausgabe.contains("]P3]"))
                                 {
-                                    behalten.replace("@", QString("@%1_%2_%3").arg(QString::number(Position)).arg(QString::number(Counter)).arg(QString::number(j)));
-                                    qDebug() << "behalten: " << behalten;
-                                    xmlout1 = xmlout1 + behalten;
-                                    behalten.clear();
+                                    ersetzeVar = behalten;
+                                    ersetzeVar.replace(QString("@"), QString("@%1_%2_%3").arg(QString::number(Position)).arg(QString::number(Counter)).arg(QString::number(j)));
+                                    xmlout1 = xmlout1 + ersetzeVar;
+                                    //behalten.clear();
                                 }
                             } else {
                                 break;
@@ -933,7 +934,7 @@ bool Reportgen::replaceTemplateVars(QString odffile, QString sedfile, QFileInfo 
 
     //String diag_pfad = "/home/da/";
     //Kompilierbar gemacht behebt einer aus den Repgen teeam bitte den fehler
-    QString diag_bild = "";//QString(QString::number(this->thread()->currentThreadId()) + "DIAG_BAR.png");
+    QString diag_bild = "DIAG_BAR.png";
 
     if(!file->open(QIODevice::ReadOnly)) {
         qDebug() << "cannot open content1.xml (ersetzung)";
