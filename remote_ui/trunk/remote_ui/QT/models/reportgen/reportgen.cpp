@@ -27,7 +27,7 @@ bool Reportgen::startReportTemplate(QString odffile, QString sedfile, QFileInfo 
 
    int wiederholen = 0;
    int ebene1 = 1;
-   int ebene2 = 0;
+   int ebene2 = 1;
    int gefunden = 0;
 
    checkMetaFile(fileBaseName);
@@ -94,7 +94,7 @@ bool Reportgen::startReportTemplate(QString odffile, QString sedfile, QFileInfo 
            i = i + 1;
            for(int k=0; k < sed_fields.count(); k++)
            {
-               if(sed_fields.at(k).contains(QString("%1_0" + temp_fields.at(i)).arg(ebene2)))
+               if(sed_fields.at(k).contains(QString("%1_1" + temp_fields.at(i)).arg(ebene2)))
                {
                    ebene2++;
                }
