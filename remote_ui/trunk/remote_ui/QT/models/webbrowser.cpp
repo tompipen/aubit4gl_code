@@ -45,7 +45,20 @@ void WebBrowser::createBrowser()
 }
 void WebBrowser::loadUrl(const QUrl &http)
 {
-    WebView->setUrl(http);
+  QString file = http.toString();
+
+
+  if(QFile::exists(QDir::tempPath() + "/" + file))
+  {
+      #ifdef Q_WS_WIN
+         file = QDir::tempPath() + "/" + file;
+      #else
+         file = "file://" +  QDir::tempPath() + "/" + file;
+      #endif
+  }
+  QUrl nurl(file, QUrl::TolerantMode);
+
+    WebView->setUrl(nurl);
 }
 
 void WebBrowser::adjustLocation()
