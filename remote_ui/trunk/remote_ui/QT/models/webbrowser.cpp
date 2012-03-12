@@ -35,6 +35,7 @@ void WebBrowser::createBrowser()
     toolBar->addAction(WebView->pageAction(QWebPage::Reload));
     toolBar->addAction(WebView->pageAction(QWebPage::Stop));
     toolBar->addWidget(locationEdit);
+    setWindowTitle("VENTAS.browser");
 
     QMenu *effectMenu = menuBar()->addMenu(tr("&Auswahl"));
     effectMenu->addAction("Alle Links hervorheben...", this, SLOT(highlightAllLinks()));
