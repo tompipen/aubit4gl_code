@@ -533,7 +533,7 @@ QString Reportgen::prepareTemplateContent(int Table, int Position, QString odffi
                                 //qDebug() << j << "von" << temp_fields.count() * 1000 << " moeglichen Datensaetze. Aktuelle Position in Ebene2: " << Position;
                                 found = checkSedFile(QString("@%1_%2" + temp_fields.at(i)).arg(Position).arg(j), sedfile);
                                 if(found > 0) {
-                                    ausgabe.append(prepareTemplateEbene(Position, ebene, 0, j, doc, odffile, sedfile));
+                                    ausgabe.append(prepareTemplateEbene(Position, ebene, 1, j, doc, odffile, sedfile));
                                 } else {
                                     break;
                                 }
@@ -562,7 +562,7 @@ QString Reportgen::prepareTemplateContent(int Table, int Position, QString odffi
                                     found1 = checkSedFile(QString("@%1_%2_%3" + temp_fields.at(i)).arg(Position).arg(1).arg(k), sedfile);
                                     qDebug() << "found: " << found;
                                     if(found1 > 0) {
-                                        ausgabe.append(prepareTemplateEbene(Position, ebene, k, 0, doc, odffile, sedfile));
+                                        ausgabe.append(prepareTemplateEbene(Position, ebene, k, 1, doc, odffile, sedfile));
                                         cnt++;
                                     } else {
                                         break;

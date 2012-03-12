@@ -1074,6 +1074,7 @@ MainFrame::vdcdebug("TableModel","removeRows", "int position, int rows, const QM
               beginRemoveRows(QModelIndex(), position, rows-1);
 
               for(int row=1; row < rows; row++){
+                  qDebug() << "row" << row;
                  this->fields.remove(this->rows);
               }
 
