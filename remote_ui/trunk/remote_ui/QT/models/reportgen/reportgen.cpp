@@ -26,7 +26,7 @@ bool Reportgen::startReportTemplate(QString odffile, QString sedfile, QFileInfo 
    QString fileBaseName = oldFileName.baseName();
 
    int wiederholen = 0;
-   int ebene1 = 0;
+   int ebene1 = 1;
    int ebene2 = 0;
    int gefunden = 0;
 
@@ -71,7 +71,7 @@ bool Reportgen::startReportTemplate(QString odffile, QString sedfile, QFileInfo 
 
    //Ueberpruefen der SED Datei wie viele eintraege der ersten Variable von der 1ten Ebene vorhanden ist.
 
-   for(int i=0; i < temp_fields.count(); i++)
+   for(int i=1; i < temp_fields.count(); i++)
    {
        if(temp_fields.at(i).contains("[")) {
            i = i + 1;
@@ -87,7 +87,7 @@ bool Reportgen::startReportTemplate(QString odffile, QString sedfile, QFileInfo 
        }
    }
 
-   for(int i=0; i < temp_fields.count(); i++)
+   for(int i=1; i < temp_fields.count(); i++)
    {
        if(temp_fields.at(i).contains("[P2["))
        {
@@ -129,7 +129,7 @@ bool Reportgen::startReportTemplate(QString odffile, QString sedfile, QFileInfo 
 
    for(int i=0; i < gefunden; i++) {
    content.append(getTemplatePosition(i+1, fileBaseName + "/content.xml"));//.toUtf8());
-       for(int j=0; j < wiederholen; j++) {
+       for(int j=1; j < wiederholen; j++) {
            qDebug() << "ergaenze Ebene";
            qDebug() << j << "von" << wiederholen;
            content.append(prepareTemplateContent(i+1, j, oldFileName.baseName() + "/content.xml", sedfile));
@@ -508,7 +508,7 @@ QString Reportgen::prepareTemplateContent(int Table, int Position, QString odffi
             if(ausgabe.contains("@") && ebene == 2) {
                 for(int i=0; i < temp_fields.count(); i++) {
                     if(ausgabe.contains("@" + temp_fields.at(i))) {
-                        ausgabe.replace("@" + temp_fields.at(i), QString("@%1_0" + temp_fields.at(i)).arg(QString::number(Position)));
+                        ausgabe.replace("@" + temp_fields.at(i), QString("@%1_1" + temp_fields.at(i)).arg(QString::number(Position)));
                     }
                 }
             }
@@ -516,7 +516,7 @@ QString Reportgen::prepareTemplateContent(int Table, int Position, QString odffi
             if(ausgabe.contains("@") && ebene == 3) {
                 for(int i=0; i < temp_fields.count(); i++) {
                     if(ausgabe.contains("@" + temp_fields.at(i))) {
-                        ausgabe.replace("@" + temp_fields.at(i), QString("@%1_0_0" + temp_fields.at(i)).arg(QString::number(Position)));
+                        ausgabe.replace("@" + temp_fields.at(i), QString("@%1_1_1" + temp_fields.at(i)).arg(QString::number(Position)));
                     }
                 }
             }
@@ -524,12 +524,12 @@ QString Reportgen::prepareTemplateContent(int Table, int Position, QString odffi
             if(ebene == 2) {
                 test = test + ausgabe;
                 if(ausgabe.contains(QString("]P%1]").arg(ebene))) {
-                    for(int i=0; i < temp_fields.count(); i++) {
+                    for(int i=1; i < temp_fields.count(); i++) {
                         int found = 0;
                         if(temp_fields.at(i).contains(QString("[P%1[").arg(ebene))) {
                             i = i +1;
                             //ausgabe.append("</table:table-cell></table:table-row>");
-                            for(int j=1; j < (temp_fields.count() *1000); j++) {
+                            for(int j=2; j < (temp_fields.count() *1000); j++) {
                                 //qDebug() << j << "von" << temp_fields.count() * 1000 << " moeglichen Datensaetze. Aktuelle Position in Ebene2: " << Position;
                                 found = checkSedFile(QString("@%1_%2" + temp_fields.at(i)).arg(Position).arg(j), sedfile);
                                 if(found > 0) {
@@ -547,19 +547,19 @@ QString Reportgen::prepareTemplateContent(int Table, int Position, QString odffi
             if(ebene == 3 ) {
                 test = test + ausgabe;
                 if(ausgabe.contains(QString("]P%1]").arg(ebene))) {
-                    for(int i=0; i < temp_fields.count(); i++) {
+                    for(int i=1; i < temp_fields.count(); i++) {
                         int found = 0;
                         if(temp_fields.at(i).contains(QString("[P%1[").arg(ebene))) {
                             i = i +1;
                             //ausgabe.append("</table:table-cell></table:table-row>");
-                            found = checkSedFile(QString("@%1_%2_0" + temp_fields.at(i)).arg(Position).arg(0), sedfile);
+                            found = checkSedFile(QString("@%1_%2_1" + temp_fields.at(i)).arg(Position).arg(1), sedfile);
                             if(found > 0) {
-                                for(int k=1; k < (temp_fields.count() *1000); k++)
+                                for(int k=2; k < (temp_fields.count() *1000); k++)
                                 {
                                     int found1 = 0;
                                     qDebug() << "von" << temp_fields.count() * 1000 << " moeglichen Datensaetze";
-                                    qDebug() << "found123: " << QString("@%1_%2_%3" + temp_fields.at(i)).arg(Position).arg(0).arg(k);
-                                    found1 = checkSedFile(QString("@%1_%2_%3" + temp_fields.at(i)).arg(Position).arg(0).arg(k), sedfile);
+                                    qDebug() << "found123: " << QString("@%1_%2_%3" + temp_fields.at(i)).arg(Position).arg(1).arg(k);
+                                    found1 = checkSedFile(QString("@%1_%2_%3" + temp_fields.at(i)).arg(Position).arg(1).arg(k), sedfile);
                                     qDebug() << "found: " << found;
                                     if(found1 > 0) {
                                         ausgabe.append(prepareTemplateEbene(Position, ebene, k, 0, doc, odffile, sedfile));
@@ -1004,7 +1004,6 @@ bool Reportgen::replaceTemplateVars(QString odffile, QString sedfile, QFileInfo 
                         {
                            sed_fields.removeAt(i);
                         } else {
-                            /* chartVar wird in replaceEbene gesetzt um zu sehen welche Variablen in der 1ten Tabelle sind um sie ins Chart einzutragen!!! */
                             if(!chartVar.isEmpty())
                             {
                                 for(int j=0; j < chartVar.count(); j++)
@@ -1046,8 +1045,6 @@ bool Reportgen::replaceTemplateVars(QString odffile, QString sedfile, QFileInfo 
     file1->close();
     file->close();
 
-/* Werte Ausgabe fuer KD-Charts!!!! */
-
     //if(chartValues1.count() == chartValues2.count())
     //{
 
@@ -1065,7 +1062,6 @@ bool Reportgen::replaceTemplateVars(QString odffile, QString sedfile, QFileInfo 
 
                 for(int i=0; i < wiederholen; i++)
                 {
-                    /*Hier wird addChartValues(name, Wert); ausgefuehrt um die Charts zu fuellen */
                 //qDebug() << "Werte fuer KD Charts: " << chartValues1.at(i) << ","<< chartValues2.at(i);
                     //qDebug() << "chartValues1.at(i)" << chartValues1.at(i) << " " <<  chartValues2.at(i);
                     if(!chartValues1.at(i).isNull() && !chartValues2.at(i).isNull())
