@@ -1005,6 +1005,7 @@ bool Reportgen::replaceTemplateVars(QString odffile, QString sedfile, QFileInfo 
                         } else {
                             if(!chartVar.isEmpty())
                             {
+                                qDebug() << "chartVar: " << chartVar;
                                 for(int j=0; j < chartVar.count(); j++)
                                 {
                                     if(temp_var.contains(chartVar.at(j)))
@@ -1017,7 +1018,12 @@ bool Reportgen::replaceTemplateVars(QString odffile, QString sedfile, QFileInfo 
                                                 {
                                                     sedLine.replace(",",".");
                                                 }
-                                                chartValues1 << sedLine;
+                                                if(sedLine.isEmpty())
+                                                {
+                                                    chartValues1 << "(null)";
+                                                } else {
+                                                    chartValues1 << sedLine;
+                                                }
                                             }
                                         } else if(j == 1)
                                         {
@@ -1080,7 +1086,7 @@ bool Reportgen::replaceTemplateVars(QString odffile, QString sedfile, QFileInfo 
         case 2:
         QVector<QVariant> wertList;
         QVector<QVariant> nameList;
-        for(int i=0; i < chartValues2.count(); i++)
+        for(int i=0; i < chartValues1.count(); i++)
         {
             if(!chartValues2.at(i).isEmpty())
             {
@@ -1096,6 +1102,8 @@ bool Reportgen::replaceTemplateVars(QString odffile, QString sedfile, QFileInfo 
             }
         }
         addChartValue(nameList, wertList);
+        qDebug() << "nameList" << nameList;
+        qDebug() << "wertList" << wertList;
         break;
 
     }
