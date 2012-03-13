@@ -1013,11 +1013,19 @@ bool Reportgen::replaceTemplateVars(QString odffile, QString sedfile, QFileInfo 
                                         {
                                             if(!chartValues1.contains(sedLine))
                                             {
+                                                if(sedLine.contains("."))
+                                                {
+                                                    sedLine.replace(".",",");
+                                                }
                                                 chartValues1 << sedLine;
                                             }
                                         } else if(j == 1)
                                         {
-                                                    chartValues2 << sedLine;
+                                            if(sedLine.contains("."))
+                                            {
+                                                sedLine.replace(".",",");
+                                            }
+                                            chartValues2 << sedLine;
                                         }
                                     }
                                 }
@@ -1070,13 +1078,13 @@ bool Reportgen::replaceTemplateVars(QString odffile, QString sedfile, QFileInfo 
                 }
           break;
         case 2:
-        QVector< QVariant > wertList;
-        QVector< QVariant > nameList;
+        QVector<QVariant> wertList;
+        QVector<QVariant> nameList;
         for(int i=0; i < chartValues2.count(); i++)
         {
             if(!chartValues2.at(i).isEmpty())
             {
-                wertList.append(chartValues2.at(i));
+                wertList << chartValues2.at(i);
             }
 
         }
@@ -1084,7 +1092,7 @@ bool Reportgen::replaceTemplateVars(QString odffile, QString sedfile, QFileInfo 
         {
             if(!chartValues1.at(i).isEmpty())
             {
-                nameList.append(chartValues1.at(i));
+                nameList << chartValues1.at(i);
             }
         }
         addChartValue(nameList, wertList);

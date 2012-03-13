@@ -34,6 +34,8 @@ class FglForm;
 #include "models/charts/chartTableModel.h"
 #endif
 #include "models/webbrowser.h"
+#include <QVector>
+#include <QVariant>
 
 class ScreenHandler : public QObject
 {
@@ -79,6 +81,7 @@ public:
    void removeComboBoxItem(int, QString);
    void clearComboBox(int);
       FglForm *p_fglform;
+   typedef QVector<QVariant> chartVector;
 
 protected:
    bool eventFilter(QObject *obj, QEvent *ev);
@@ -141,7 +144,7 @@ public slots:
    #ifdef KDChart_Version
    void createChart(QString);
    void addChartValue(QString, QString);
-   void addChartValue(QVector<QVariant>& name, QVector<QVariant>& wert);
+   void addChartValue(const chartVector &name, const chartVector &wert);
    void displayChart(QString);
    #endif
    void createBrowser();

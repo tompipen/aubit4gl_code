@@ -4,6 +4,8 @@
 #include <QDomDocument>
 #include <QFileInfo>
 #include <QPair>
+#include <QVector>
+#include <QVariant>
 
 class Reportgen : public QThread
 {
@@ -27,6 +29,8 @@ public:
     bool checkMetaFile(QString odffile);
     bool replaceMetaFile(QString odffile);
 
+    typedef QVector<QVariant> chartVector;
+
 private:
     QList<QString> sed_fields;
     QList<QString> temp_fields;
@@ -38,7 +42,7 @@ private:
 signals:
     void createChart(QString diag);
     void addChartValue(QString, QString);
-    void addChartValue(QVector<QVariant>& name, QVector<QVariant>& wert);
+    void addChartValue(const chartVector &name , const chartVector &wert);
     void displayChart(QString);
 
 

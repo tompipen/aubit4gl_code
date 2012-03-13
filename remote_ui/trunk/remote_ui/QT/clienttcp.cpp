@@ -24,6 +24,8 @@
 #include <QUrl>
 #include <QDebug>
 #include <QMessageBox>
+#include <QVector>
+#include <QVariant>
 #include "clienttcp.h"
 #include "mainframe.h"
 #include "quazip/quazip.h"
@@ -1074,9 +1076,11 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
             QFileInfo zieldatei = params.at(2);
             QFile *file1 = new QFile(QDir::tempPath() + "/" + QString(temp_datei + "." + extension));
             #ifdef KDChart_Version
+            typedef QVector<QVariant> chartVector;
+            qRegisterMetaType<chartVector>("chartVector");
             connect(p_reportgen, SIGNAL(createChart(QString)), this->p_currScreenHandler, SLOT(createChart(QString)));
             connect(p_reportgen, SIGNAL(addChartValue(QString,QString)), this->p_currScreenHandler, SLOT(addChartValue(QString,QString)));
-            connect(p_reportgen, SIGNAL(addChartValue(QVector,QVector)), this->p_currScreenHandler, SLOT(addChartValue(QVector, QVector)));
+            connect(p_reportgen, SIGNAL(addChartValue(chartVector,chartVector)), this->p_currScreenHandler, SLOT(addChartValue(chartVector, chartVector)));
             connect(p_reportgen, SIGNAL(displayChart(QString)), this->p_currScreenHandler, SLOT(displayChart(QString)));
             #endif
             if( file.completeSuffix() == "ods" || file.completeSuffix() == "odt" )

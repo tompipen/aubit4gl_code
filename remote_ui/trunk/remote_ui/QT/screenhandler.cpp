@@ -3185,7 +3185,7 @@ void ScreenHandler::addChartValue(QString name, QString wert)
 
 }
 
-void ScreenHandler::addChartValue(QVector<QVariant>& name, QVector<QVariant>& wert)
+void ScreenHandler::addChartValue(const chartVector &name, const chartVector &wert)
 {
         m_model.addChartData(name, wert);
 
