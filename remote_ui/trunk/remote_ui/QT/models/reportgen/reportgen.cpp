@@ -1013,17 +1013,17 @@ bool Reportgen::replaceTemplateVars(QString odffile, QString sedfile, QFileInfo 
                                         {
                                             if(!chartValues1.contains(sedLine))
                                             {
-                                                if(sedLine.contains("."))
+                                                if(sedLine.contains(","))
                                                 {
-                                                    sedLine.replace(".",",");
+                                                    sedLine.replace(",",".");
                                                 }
                                                 chartValues1 << sedLine;
                                             }
                                         } else if(j == 1)
                                         {
-                                            if(sedLine.contains("."))
+                                            if(sedLine.contains(","))
                                             {
-                                                sedLine.replace(".",",");
+                                                sedLine.replace(",",".");
                                             }
                                             chartValues2 << sedLine;
                                         }
@@ -1097,6 +1097,7 @@ bool Reportgen::replaceTemplateVars(QString odffile, QString sedfile, QFileInfo 
         }
         addChartValue(nameList, wertList);
         break;
+
     }
 
     if(makeChart == 1)
