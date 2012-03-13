@@ -1081,7 +1081,7 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
             connect(p_reportgen, SIGNAL(createChart(QString)), this->p_currScreenHandler, SLOT(createChart(QString)));
             connect(p_reportgen, SIGNAL(addChartValue(QString,QString)), this->p_currScreenHandler, SLOT(addChartValue(QString,QString)));
             connect(p_reportgen, SIGNAL(addChartValue(chartVector,chartVector)), this->p_currScreenHandler, SLOT(addChartValue(chartVector, chartVector)));
-            connect(p_reportgen, SIGNAL(displayChart(QString)), this->p_currScreenHandler, SLOT(displayChart(QString)));
+            connect(p_reportgen, SIGNAL(displayChart(QString, int)), this->p_currScreenHandler, SLOT(displayChart(QString, int)));
             #endif
             if( file.completeSuffix() == "ods" || file.completeSuffix() == "odt" )
             {

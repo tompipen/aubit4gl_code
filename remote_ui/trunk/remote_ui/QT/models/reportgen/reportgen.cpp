@@ -1086,6 +1086,10 @@ bool Reportgen::replaceTemplateVars(QString odffile, QString sedfile, QFileInfo 
         case 2:
         QVector<QVariant> wertList;
         QVector<QVariant> nameList;
+        if(wertList.isEmpty())
+        {
+            wertList << "Test Titel";
+        }
         for(int i=0; i < chartValues1.count(); i++)
         {
             if(!chartValues2.at(i).isEmpty())
@@ -1110,7 +1114,7 @@ bool Reportgen::replaceTemplateVars(QString odffile, QString sedfile, QFileInfo 
 
     if(makeChart == 1)
     {
-        emit displayChart(diag_bild);
+        emit displayChart(diag_bild, diag_state);
         sleep(2);
         if(QFile::exists(QString(QDir::tempPath() + "/" + diag_bild)));
         {
@@ -1133,7 +1137,7 @@ bool Reportgen::replaceTemplateVars(QString odffile, QString sedfile, QFileInfo 
 
                     if(manifestText.contains("image/jpeg"))
                     {
-                        manifestText = manifestText.append("<manifest:file-entry manifest:media-type=\"image/jpeg\" manifest:full-path=\"Pictures/" + diag_bild + "\"/>");
+                        manifestText = manifestText.append("<manifest:file-entry manifest:media-type=\"image/png\" manifest:full-path=\"Pictures/" + diag_bild + "\"/>");
                     }
                     save = save + manifestText;
                 }

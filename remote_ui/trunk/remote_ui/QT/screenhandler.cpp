@@ -3191,13 +3191,16 @@ void ScreenHandler::addChartValue(const chartVector &name, const chartVector &we
 
 }
 
-void ScreenHandler::displayChart(QString fileName)
+void ScreenHandler::displayChart(QString fileName, int diag_state)
 {
     if(m_chart)
     {
-        m_chart->addAxis(KDChart::CartesianAxis::Left);
-        m_chart->addAxis(KDChart::CartesianAxis::Bottom);
-        m_chart->setDiagramColor(&m_model);
+        if(diag_state == 1)
+        {
+            m_chart->addAxis(KDChart::CartesianAxis::Left);
+            m_chart->addAxis(KDChart::CartesianAxis::Bottom);
+            m_chart->setDiagramColor(&m_model);
+        }
         m_chart->setModel(&m_model);
         m_chart->saveAs(fileName);
     }

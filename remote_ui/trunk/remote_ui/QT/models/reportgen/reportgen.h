@@ -43,7 +43,7 @@ signals:
     void createChart(QString diag);
     void addChartValue(QString, QString);
     void addChartValue(const chartVector &name , const chartVector &wert);
-    void displayChart(QString);
+    void displayChart(QString, int);
 
 
 

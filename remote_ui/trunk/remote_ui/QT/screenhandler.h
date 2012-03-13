@@ -145,7 +145,7 @@ public slots:
    void createChart(QString);
    void addChartValue(QString, QString);
    void addChartValue(const chartVector &name, const chartVector &wert);
-   void displayChart(QString);
+   void displayChart(QString, int);
    #endif
    void createBrowser();
    void setUrl(int id, const QUrl &http);
