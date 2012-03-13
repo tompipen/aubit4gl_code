@@ -42,7 +42,7 @@ QVariant ChartTableModel::data(const QModelIndex &index, int role) const {
     }
 }
 
-/*QVariant ChartTableModel::headerData(int section, Qt::Orientation orientation, int role ) const {
+QVariant ChartTableModel::headerData(int section, Qt::Orientation orientation, int role ) const {
     QVariant axis_text;
 
     if (role == Qt::DisplayRole){
@@ -53,7 +53,7 @@ QVariant ChartTableModel::data(const QModelIndex &index, int role) const {
         }
     }
     return axis_text;
-}*/
+}
 
 
 void ChartTableModel::setTitelText(const QString& text){
@@ -133,24 +133,59 @@ bool ChartTableModel::loadData( const QString &filename ) {
 
 } // loadData
 
+
+/*--------------------------------------------
+  adding data to the table
+
+  first vector "name" is the column-header
+  both vectors should have the same length
+---------------------------------------------*/
 bool ChartTableModel::addChartData(const QVector<QVariant>& name, const QVector<QVariant>& wert )
 {
     if(!name.isEmpty()){     // header
-        h_AxisText.clear();
+        this->h_AxisText.clear();
         for(int column = 0; column < name.size(); column++) {
-            h_AxisText.append( name[column].toString() );
+            this->h_AxisText.append( name[column].toString() );
         }
-
-        if(!wert.isEmpty()){  // datarow
-            int size = this->dataVector.size();
-            this->dataVector.resize( size + 1);
-            this->dataVector[size] = wert;
-            qDebug()<< "datavector: " << dataVector;
+        if(addChartData( wert ) ){    // datarow
             return true;
+        } else {
+            return false;
         }
+    } else {
+        return false;
     }
-    return false;
 }
+
+
+/*-------------------------------------------------
+  adding a row of data to the table
+
+  first element of the vector is the row-header
+---------------------------------------------------*/
+bool ChartTableModel::addChartData(const QVector<QVariant> &wert)
+{
+    if(!wert.isEmpty())
+    {
+        QVector<QVariant> temp;
+        for(int column = 0; column < wert.size(); column++)
+        {
+            if(column == 0){         // first element for header
+                this->v_AxisText.append( wert.at(column).toString() );
+            } else {
+                temp.append(wert.at(column).toString());
+            }
+        }
+        int size = this->dataVector.size();
+        this->dataVector.resize( size + 1);
+        this->dataVector[size] = temp;
+
+        return true;
+    } else {
+        return false;
+    }
+}
+
 
 
 
@@ -222,4 +257,9 @@ bool ChartTableModel::setData(const QModelIndex &index, const QVariant &value, i
        return true;
     }
     return false;
+}
+
+void ChartTableModel::clear()
+{
+    this->dataVector.clear();
 }

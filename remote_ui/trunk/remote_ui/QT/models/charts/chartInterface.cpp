@@ -565,12 +565,14 @@ void ChartInterface::initPie(PieDiagram *m_pie){
     ta.setFont( QFont( "Comic", 15 ) );
     ta.setPen( QPen( QColor( Qt::black ) ) );
     ta.setVisible( true );
-
+/*
     dva.setTextAttributes( ta );
     dva.setVisible( true );
     dva.setDecimalDigits( 2 );
     dva.dataLabel();
     m_pie->setDataValueAttributes( dva );
+*/
+
 
 }
 
@@ -583,9 +585,20 @@ void ChartInterface::setDiagramColor(ChartTableModel *m_model){
     bcolor.append(Qt::yellow);
     bcolor.append(Qt::green);
     bcolor.append(Qt::darkRed);
+    bcolor.append(Qt::darkGray);
     bcolor.append(Qt::lightGray);
+    bcolor.append(Qt::red);
+    bcolor.append(Qt::blue);
+    bcolor.append(Qt::cyan);
+    bcolor.append(Qt::magenta);
+  //  bcolor.append(Qt::darkCyan);
+  //  bcolor.append(Qt::darkBlue);
+
+
     for (int row=0; row < m_model->columnCount(QModelIndex()); ++row) {
-        this->dia->setBrush(row, QBrush(bcolor[row]));
+        if( row < bcolor.size()){
+            this->dia->setBrush(row, QBrush(bcolor[row]));
+        }
     }
 }
 //#include "../chartInterface.moc"

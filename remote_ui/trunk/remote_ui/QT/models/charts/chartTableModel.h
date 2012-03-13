@@ -19,8 +19,7 @@ public:
     int columnCount(const QModelIndex &parent = QModelIndex()) const;
     bool insertRows(int row, int count, const QModelIndex &parent);
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
-    //QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const;
-
+    QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const;
 
     bool loadData(const QString &filename);// laden aus Datei
     bool addChartData(const QVector<QVariant>& name, const QVector<QVariant>& wert );
