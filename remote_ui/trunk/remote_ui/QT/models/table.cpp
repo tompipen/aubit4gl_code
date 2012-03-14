@@ -456,14 +456,31 @@ void TableView::setMaxArrSize(int cnt)
 {
 MainFrame::vdcdebug("TableView","setMaxArrSize", "int cnt");
    i_maxArrSize = cnt;
-
-
+   int setMaxRows = 16;
 
    QSortFilterProxyModel *proxyModel = static_cast<QSortFilterProxyModel*> (this->model());
    TableModel *table = static_cast<TableModel*> (proxyModel->sourceModel());
 
-   if(i_maxArrSize > table->rowCount(QModelIndex())){
-      int newRows = i_maxArrSize - table->rowCount(QModelIndex());
+   if(table->b_input && this->pageSize < i_maxArrSize && i_arrCount > 0)
+   {
+       if(this->pageSize > setMaxRows)
+       {
+           if(this->pageSize > i_arrCount)
+           {
+               setMaxRows = this->pageSize;
+           } else {
+               setMaxRows = i_arrCount;
+           }
+       }
+   } else {
+       if(i_arrCount > 0)
+       {
+           setMaxRows = i_arrCount;
+       }
+   }
+
+   if(setMaxRows > table->rowCount(QModelIndex())){
+      int newRows = setMaxRows - table->rowCount(QModelIndex());
       table->insertRows(table->rowCount(QModelIndex()), newRows, QModelIndex());
    }
 
@@ -618,6 +635,11 @@ if(!p_fglform)
 
      // return;
    }*/
+
+   if(table->rowCount(current) == current.row() + 1 && current.row() > 0 && current.row()+1  < i_maxArrSize)
+   {
+       table->insertRow(current.row()+1, current);
+   }
 
    Fgl::Event event;
    Fgl::Event returnevent;
