@@ -1000,13 +1000,19 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
       else
       {
          if(keyEvent->key() == Qt::Key_Up ) {
-             prevfield();
-             return true;
+             if(LineEdit *le = qobject_cast<LineEdit*> (obj))
+             {
+                 prevfield();
+                 return true;
+             } else if( LineEditDelegate *led = qobject_cast<LineEditDelegate*> (obj))
+             {
+                 prevfield();
+                 return true;
+             }
          }
 
          if(keyEvent->key() == Qt::Key_Down) {
-             nextfield();
-             return true;
+
          }
       }
 
@@ -1017,10 +1023,19 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
              if(te->wantReturns())
              {
                  return false;
+             } else {
+                 nextfield();
+                 return true;
              }
+          } else if(LineEdit *le = qobject_cast<LineEdit*> (obj))
+          {
+              nextfield();
+              return true;
+          } else if( LineEditDelegate *led = qobject_cast<LineEditDelegate*> (obj))
+          {
+              nextfield();
+              return true;
           }
-          nextfield();
-          return true;
       }
 
       if(keyEvent->key() == Qt::Key_Insert){
