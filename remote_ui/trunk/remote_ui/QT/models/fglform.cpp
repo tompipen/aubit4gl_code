@@ -1012,6 +1012,15 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
          }
 
          if(keyEvent->key() == Qt::Key_Down) {
+             if(LineEdit *le = qobject_cast<LineEdit*> (obj))
+             {
+                 nextfield();
+                 return true;
+             } else if( LineEditDelegate *led = qobject_cast<LineEditDelegate*> (obj))
+             {
+                 nextfield();
+                 return true;
+             }
 
          }
       }
