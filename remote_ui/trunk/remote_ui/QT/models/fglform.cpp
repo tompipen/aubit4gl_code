@@ -1008,6 +1008,10 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
              {
                  prevfield();
                  return true;
+             } else if(ComboBox *cb = qobject_cast<ComboBox*> (obj))
+             {
+                 prevfield();
+                 return true;
              }
          }
 
@@ -1017,6 +1021,10 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
                  nextfield();
                  return true;
              } else if( LineEditDelegate *led = qobject_cast<LineEditDelegate*> (obj))
+             {
+                 nextfield();
+                 return true;
+             } else if(ComboBox *cb = qobject_cast<ComboBox*> (obj))
              {
                  nextfield();
                  return true;
