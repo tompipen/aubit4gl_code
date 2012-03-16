@@ -601,6 +601,36 @@ void ChartInterface::setDiagramColor(ChartTableModel *m_model){
         }
     }
 }
+
+
+/*---------------------------------------------------------
+    setting the 3D Attributes depending on the ChartType
+---------------------------------------------------------*/
+void ChartInterface::set3D(int depth, ChartInterface::ChartType type){
+
+    switch(type)
+    {
+    case DIAG_PIE:
+    {
+        KDChart::PieDiagram *my_pie = (KDChart::PieDiagram *) getDiagram() ;
+        ThreeDPieAttributes attrs( my_pie->threeDPieAttributes() );
+        attrs.setEnabled( true );
+        attrs.setDepth( depth);
+        my_pie->setThreeDPieAttributes( attrs );
+    }
+    case DIAG_BAR:
+    {
+        KDChart::BarDiagram *my_bar = (KDChart::BarDiagram *) getDiagram() ;
+        ThreeDBarAttributes attrs( my_bar->threeDBarAttributes() );
+        attrs.setEnabled( true );
+        attrs.setDepth( depth);
+        my_bar->setThreeDBarAttributes( attrs );
+    }
+
+    }
+}
+
+
 //#include "../chartInterface.moc"
 
 

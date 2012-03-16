@@ -71,6 +71,8 @@ public:
     void changeMarker( int position, const KDChart::MarkerAttributes& );
     void changeMarker( int position, int feld, const KDChart::MarkerAttributes& );
 
+    void set3D(int depth, ChartType type);
+
 
 
 protected:
