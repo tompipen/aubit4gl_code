@@ -625,6 +625,10 @@ void ChartInterface::set3D(int depth, ChartInterface::ChartType type){
         attrs.setEnabled( true );
         attrs.setDepth( depth);
         my_bar->setThreeDBarAttributes( attrs );
+        QPen pen;
+        pen.setWidth(1);
+        pen.setColor(Qt::darkGray);
+        my_bar->setPen(pen);
     }
 
     }
