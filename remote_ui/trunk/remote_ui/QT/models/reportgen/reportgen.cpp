@@ -1027,6 +1027,10 @@ bool Reportgen::replaceTemplateVars(QString odffile, QString sedfile, QFileInfo 
                                             }
                                         } else if(j == 1)
                                         {
+                                            if(sedLine.contains("."))
+                                            {
+                                                sedLine.remove(".");
+                                            }
                                             if(sedLine.contains(","))
                                             {
                                                 sedLine.replace(",",".");
