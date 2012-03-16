@@ -1044,6 +1044,10 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
           {
               nextfield();
               return true;
+          } else if( ComboBox *cb = qobject_cast<ComboBox*> (obj))
+          {
+              nextfield();
+              return true;
           }
       }
 
