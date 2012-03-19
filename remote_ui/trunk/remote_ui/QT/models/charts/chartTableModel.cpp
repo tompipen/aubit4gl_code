@@ -262,4 +262,7 @@ bool ChartTableModel::setData(const QModelIndex &index, const QVariant &value, i
 void ChartTableModel::clear()
 {
     this->dataVector.clear();
+    this->v_AxisText.clear();
+    this->h_AxisText.clear();
+    reset();
 }
