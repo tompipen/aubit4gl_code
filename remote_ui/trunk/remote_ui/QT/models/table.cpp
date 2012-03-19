@@ -839,15 +839,16 @@ MainFrame::vdcdebug("TableView","setCurrentField", "int row, int col");
       if(TableModel *table = qobject_cast<TableModel *> (proxyModel->sourceModel())){
          QModelIndex tindex = table->index(row-1, col-1);
          QModelIndex index = proxyModel->mapFromSource(tindex);
-         selectionModel()->setCurrentIndex(index, QItemSelectionModel::NoUpdate);
-         //already send in fieldChanged
-         /*
+         //If fieldchange is not emitted, run before field
          if(this->currentIndex() == index){
              Fgl::Event event;
              event.type = Fgl::BEFORE_FIELD_EVENT;
              event.attribute = table->qsl_colNames.at(index.column());
              emit fieldEvent(event);
-         }*/
+         }
+         selectionModel()->setCurrentIndex(index, QItemSelectionModel::NoUpdate);
+
+
          //setCurrentIndex(index);
 //         if(table->b_input && (currentIndex().row() == 0 && currentIndex().column() == 0)){
          if(table->b_input){
