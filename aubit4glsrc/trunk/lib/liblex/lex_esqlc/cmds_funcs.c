@@ -1065,7 +1065,7 @@ print_let_cmd (struct_let_cmd * cmd_data)
 				}
 			}
 		}
-		if (cmd_data->vars->list.list_len==1 && cmd_data->vars->list.list_val[0]->expr_type==ET_EXPR_VARIABLE_USAGE && 
+		if (cmd_data->vars->list.list_len==1 && cmd_data->vals->list.list_len>1 && cmd_data->vars->list.list_val[0]->expr_type==ET_EXPR_VARIABLE_USAGE && 
 			
 			A4GL_is_number_datatype(cmd_data->vars->list.list_val[0]->expr_str_u.expr_variable_usage->datatype & DTYPE_MASK ) ) {
 				// LET some_numbervar=1,2 (comma - not '.')
