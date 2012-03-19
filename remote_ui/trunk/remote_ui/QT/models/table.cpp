@@ -46,7 +46,7 @@ MainFrame::vdcdebug("TableView","TableView", "QWidget *parent");
    horizontalHeader()->setFocusPolicy(Qt::NoFocus);
    this->setDragEnabled(true);
    //Keine Auswirkung
-   // setTabKeyNavigation(false);
+   setTabKeyNavigation(false);
    this->verticalHeader()->hide();
    QHeaderView *header = this->horizontalHeader();
    header->setMovable(true);
@@ -123,7 +123,11 @@ void TableView::setViewPalette()
   tablepal.setColor(QPalette::Disabled, QPalette::Text, tablepal.color(QPalette::Text));
   tablepal.setColor(QPalette::Disabled, QPalette::Button, tablepal.color(QPalette::Button));
   tablepal.setColor(QPalette::Disabled, QPalette::ButtonText, tablepal.color(QPalette::ButtonText));
-  tablepal.setColor(QPalette::Disabled, QPalette::Background, tablepal.color(QPalette::Background));
+  tablepal.
+
+
+
+Color(QPalette::Disabled, QPalette::Background, tablepal.color(QPalette::Background));
   tablepal.setColor(QPalette::Disabled, QPalette::Base, tablepal.color(QPalette::Base));
   tablepal.setColor(QPalette::Disabled, QPalette::AlternateBase, tablepal.color(QPalette::AlternateBase));
   tablepal.setColor(QPalette::Disabled, QPalette::Window, tablepal.color(QPalette::Window));
@@ -184,6 +188,7 @@ void TableView::updateSectionWidth(int logicalIndex, int, int newSize)
 
 bool TableView::eventFilter(QObject *object, QEvent *event)
 {
+
     if(event->type() == QEvent::ContextMenu)
     {
         QSortFilterProxyModel *proxyModel = static_cast<QSortFilterProxyModel*> (this->model());
@@ -301,6 +306,13 @@ void TableView::writeSettings(QAction *action)
             }
         }
     }
+}
+
+
+void TableView::playkey(QKeyEvent *ev)
+{
+  QAbstractItemDelegate *led = itemDelegateForColumn(currentIndex().column());
+  QApplication::postEvent(curr_editor, ev, Qt::LowEventPriority);
 }
 
 /*
@@ -590,6 +602,7 @@ MainFrame::vdcdebug("TableView","setInputEnabled", "bool enable");
       table->b_input = enable;
       //QItemSelectionModel *selection = this->selectionModel();
       QModelIndex index = table->index(0,0, QModelIndex());
+
       //selection->select(index, QItemSelectionModel::Clear);
    }
 }
@@ -613,6 +626,7 @@ void TableView::fieldChanged(QModelIndex current, QModelIndex prev)
 {
 MainFrame::vdcdebug("TableView","fieldChanged", "QModelIndex current, QModelIndex prev");
 
+
 if(!p_fglform)
   return;
 
@@ -635,7 +649,6 @@ if(!p_fglform)
 
      // return;
    }*/
-
    if(table->rowCount(current) == current.row() + 1 && current.row() > 0 && current.row()+1  < i_maxArrSize)
    {
        table->insertRow(current.row()+1, current);
@@ -655,28 +668,27 @@ if(!p_fglform)
          diffevent = getForm()->getFormEvent(event);
          if(diffevent.id != event.id)
          {
+         eventfield = prev;
          ql_events2 += diffevent;
          }
-      }
-      else{
-         b_ignoreFocus = false;
       }
    }
 
    if(current.row() != prev.row()){
        if(prev.row() > -1){
-         if(!b_ignoreRowChange){
+         if(!b_ignoreFocus){
             event.type = Fgl::AFTER_ROW_EVENT;
             diffevent = getForm()->getFormEvent(event);
             if(diffevent.id != event.id)
             {
-            ql_events2 += diffevent;
+               eventfield = prev;
+               ql_events2 += diffevent;
             }
          }
       }
 
       if(current.row() > -1){
-         if(!b_ignoreRowChange){
+         if(!b_ignoreFocus){
           //  emit setArrLineSignal(current.row()+1);
             event.type = Fgl::BEFORE_ROW_EVENT;
             diffevent = getForm()->getFormEvent(event);
@@ -794,7 +806,6 @@ MainFrame::vdcdebug("TableView","setScrLine", "int line");
 void TableView::setArrLine(int line)
 {
 MainFrame::vdcdebug("TableView","setArrLine", "int line");
-   return;
    if(QSortFilterProxyModel *proxyModel = qobject_cast<QSortFilterProxyModel *> (this->model())){
 
 //      if(TableModel *table = qobject_cast<TableModel *> (proxyModel->sourceModel())){
@@ -829,13 +840,14 @@ MainFrame::vdcdebug("TableView","setCurrentField", "int row, int col");
          QModelIndex tindex = table->index(row-1, col-1);
          QModelIndex index = proxyModel->mapFromSource(tindex);
          selectionModel()->setCurrentIndex(index, QItemSelectionModel::NoUpdate);
+         //already send in fieldChanged
+         /*
          if(this->currentIndex() == index){
              Fgl::Event event;
              event.type = Fgl::BEFORE_FIELD_EVENT;
              event.attribute = table->qsl_colNames.at(index.column());
              emit fieldEvent(event);
-         }
-
+         }*/
          //setCurrentIndex(index);
 //         if(table->b_input && (currentIndex().row() == 0 && currentIndex().column() == 0)){
          if(table->b_input){
@@ -846,7 +858,6 @@ MainFrame::vdcdebug("TableView","setCurrentField", "int row, int col");
                      form->setCurrentWidget(this);
                  }
              }
-             edit(index);
          }
       }
    }
@@ -1096,7 +1107,6 @@ MainFrame::vdcdebug("TableModel","removeRows", "int position, int rows, const QM
               beginRemoveRows(QModelIndex(), position, rows-1);
 
               for(int row=1; row < rows; row++){
-                  qDebug() << "row" << row;
                  this->fields.remove(this->rows);
               }
 
@@ -1250,6 +1260,8 @@ QWidget* LineEditDelegate::createEditor(QWidget *parent,
       de->getButtonObj()->installEventFilter(p_fglform);
    }
    connect(editor, SIGNAL(fieldEvent(Fgl::Event)), p_fglform, SLOT(fieldEvent(Fgl::Event)));
+   connect(this, SIGNAL(nextfield()), p_fglform, SLOT(nextfield()));
+   connect(this, SIGNAL(prevfield()), p_fglform, SLOT(prevfield()));
 
    return editor;
 }
@@ -1291,15 +1303,102 @@ bool LineEditDelegate::eventFilter(QObject *object, QEvent *event)
 //MainFrame::vdcdebug("LineEditDelegate","eventFilter", "QObject *object, QEvent *event");
 
 
+//Events sollen im fglform abgefangen werden. Die Signale dürfen nicht zum QStyledItemDelegate Eventfilter, da diese dann
+//auf die Steuerung der View zugreift
+  if(event->type() == QEvent::KeyPress || event->type() == QEvent::KeyRelease)
+  {
 
-//Verhindert beim disablen von p_fglform, das der Editor geschlossen wird. Kommt durch synchronisation des
-//Protokolls.
+      QKeyEvent *key = (QKeyEvent*) event;
+
+
+      if(key->key() == Qt::Key_Down || key->key() == Qt::Key_Up || key->key() == Qt::Key_Tab || key->key() == Qt::Key_Enter || key->key() == Qt::Key_Backtab || key->key() == Qt::Key_Return || key->key() == Qt::Key_Escape)
+      {
+          QKeyEvent *mykev = new QKeyEvent(key->type(),
+                                           key->key(),
+                                           key->modifiers(),
+                                           key->text(),
+                                           key->isAutoRepeat(),
+                                           key->count());
+             QApplication::postEvent(p_fglform, mykev);
+             return true;
+      }
+
+
+      if(FglForm *form = qobject_cast<FglForm*> (p_fglform))
+      {
+
+          if(form->b_keybuffer)
+          {
+
+              if(event->type() == QEvent::KeyPress)
+              {
+                  QKeyEvent *mykev = new QKeyEvent(((QEvent::Type) 1400),
+                                                   key->key(),
+                                                   key->modifiers(),
+                                                   key->text(),
+                                                   key->isAutoRepeat(),
+                                                   key->count());
+
+                  QApplication::postEvent(p_fglform, mykev);
+              }
+
+              if(event->type() == QEvent::KeyRelease)
+              {
+                  QKeyEvent *mykev = new QKeyEvent(((QEvent::Type) 1401),
+                                                   key->key(),
+                                                   key->modifiers(),
+                                                   key->text(),
+                                                   key->isAutoRepeat(),
+                                                   key->count());
+
+                  QApplication::postEvent(p_fglform, mykev);
+              }
+              return true;
+          }
+
+      }
+
+  }
+  //Type wieder glätten für die weitere Verarbeitung
+  if(event->type() == 1400)
+  {
+      QKeyEvent *key = (QKeyEvent*) event;
+
+
+      QKeyEvent *mykev = new QKeyEvent(QEvent::KeyPress,
+                                       key->key(),
+                                       key->modifiers(),
+                                       key->text(),
+                                       key->isAutoRepeat(),
+                                       key->count());
+   return QStyledItemDelegate::eventFilter(object, mykev);
+  }
+
+  if(event->type() == 1401)
+  {
+
+      QKeyEvent *key = (QKeyEvent*) event;
+
+
+      QKeyEvent *mykev = new QKeyEvent(QEvent::KeyRelease,
+                                       key->key(),
+                                       key->modifiers(),
+                                       key->text(),
+                                       key->isAutoRepeat(),
+                                       key->count());
+   return QStyledItemDelegate::eventFilter(object, mykev);
+  }
+
+  //Verhindert beim disablen von p_fglform, das der Editor geschlossen wird. Kommt durch synchronisation des
+  //Protokolls.
+
 
     if(event->type() == QEvent::FocusOut){
       QFocusEvent *fe = (QFocusEvent*) event;
       if(fe->reason() == Qt::ActiveWindowFocusReason ||
          fe->reason() == Qt::OtherFocusReason ||
          fe->reason() == Qt::PopupFocusReason ||
+         fe->reason() == Qt::TabFocusReason   ||
          fe->reason() == Qt::MouseFocusReason){
          fe->ignore();
          return true;

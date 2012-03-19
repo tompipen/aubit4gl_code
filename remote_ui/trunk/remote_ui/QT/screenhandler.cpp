@@ -1994,6 +1994,18 @@ MainFrame::vdcdebug("ScreenHandler","waitForEvent", "");
      if(p_fglform->ql_responseQueue.size() > 0)
      {
          p_fglform->b_getch_swin = true;
+         if(TableView *tableView = qobject_cast<TableView *> (p_fglform->currentField())){
+             if(p_fglform->inputArray())
+             {
+                 tableView->eventfield = QModelIndex();                 tableView->b_ignoreFocus = false;
+
+                 if(tableView->curr_editor != NULL)
+                 {
+              //      tableView->curr_editor->setFocus(Qt::OtherFocusReason);
+                    //p_fglform->setFocusOnWidget(tableView->curr_editor);
+                 }
+             }
+         }
          processResponse();
          return;
      }
@@ -2009,6 +2021,10 @@ MainFrame::vdcdebug("ScreenHandler","waitForEvent", "");
        if(TableView *tableView = qobject_cast<TableView *> (p_fglform->currentField())){
            if(p_fglform->inputArray())
            {
+               tableView->eventfield = QModelIndex();
+
+               tableView->b_ignoreFocus = false;
+             //  tableView->edit(tableView->currentIndex());
                if(tableView->curr_editor != NULL)
                {
             //      tableView->curr_editor->setFocus(Qt::OtherFocusReason);
@@ -2037,10 +2053,18 @@ MainFrame::vdcdebug("ScreenHandler","waitForEvent", "");
            }
        }
    }
-   p_fglform->replayKeyboard();
-   p_fglform->b_getch_swin = true;
-   VDC::arrowCursor();
+   if(p_fglform->ql_responseQueue.size() == 0)
+   {
+     p_fglform->b_getch_swin = true;
+     p_fglform->replayKeyboard();
 
+   VDC::arrowCursor();
+}
+   else
+   {
+   p_fglform->b_getch_swin = true;
+   processResponse();
+   }
 
 
 }
@@ -2771,8 +2795,11 @@ MainFrame::vdcdebug("ScreenHandler","freeContext", "int i_context");
          field->blockSignals(true);
          field->setEnabled(false);
          if(TableView *tableView = qobject_cast<TableView *> (field)){
+             tableView->setIgnoreRowChange(true);
+
              QModelIndex current = tableView->currentIndex();
              tableView->closePersistentEditor(current);
+
          }
          if(LineEdit *le = qobject_cast<LineEdit *> (field)){
              le->setTouchendEnabled(false);
@@ -2780,6 +2807,7 @@ MainFrame::vdcdebug("ScreenHandler","freeContext", "int i_context");
          field->blockSignals(false);
       }
       //context->restoreFieldPalette();
+
       delete context;
 
       context = getCurrentContext();
@@ -2794,7 +2822,7 @@ MainFrame::vdcdebug("ScreenHandler","freeContext", "int i_context");
 
       //->deleteLater();
    }
-      //contexts.removeAt(i_context);
+
 
 }
 

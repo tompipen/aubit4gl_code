@@ -18,6 +18,8 @@ Context::Context(Fgl::State state, QObject *parent) : QObject(parent)
   MainFrame::vdcdebug("Context","Context", "Fgl");
   this->rowChangedCnt = 0;
   this->fgl_state = state;
+  b_arrlinech = false;
+  b_scrlinech = false;
 
   sendBeforeEvent();
 }
@@ -299,6 +301,12 @@ void Context::addScreenRecord(QWidget *screenRec, bool input)
                 }
               else{
                   tableView->setCurrentField(1,1);
+                  if(QSortFilterProxyModel *proxyModel = qobject_cast<QSortFilterProxyModel *> (tableView->model())){
+                     if(TableModel *table = qobject_cast<TableModel *> (proxyModel->sourceModel())){
+                         QModelIndex tindex = table->index(0,0);
+                         QModelIndex index = proxyModel->mapFromSource(tindex);
+                         tableView->edit(index);
+                       }
                 }
             }
 
@@ -309,6 +317,7 @@ void Context::addScreenRecord(QWidget *screenRec, bool input)
 
         }
     }
+}
 }
 
 void Context::screenRecordRowChanged(const QModelIndex & current, const QModelIndex & previous)
@@ -431,8 +440,25 @@ QList<QWidget*> Context::fieldList()
 void Context::setOption(QString name, int value)
 {
   MainFrame::vdcdebug("Context","setOption", "QString name, int value");
+
+
+  if(name == "ARRLINE" && (value != qh_options[name]))
+  {
+     b_arrlinech = true;
+  }
+
+
+  if(name == "SCRLINE" && (value != qh_options[name]))
+  {
+     b_scrlinech = true;
+  }
+
+
   qh_options[name] = value;
   checkOptions();
+
+
+
 
   if(name == "ARRCOUNT"){
       //return;

@@ -47,6 +47,11 @@ int main(int argc, char *argv[])
     //splash->setPixmap(QPixmap("./pics/splash.png"));
     splash->setPixmap(QPixmap("pics:VENTAS_9_splashscreen.png"));
     QEvent::registerEventType(1337);
+    //Event to seperate Keys for the Puffers(same like KeyPress)
+    QEvent::registerEventType(1400);
+    //Event to seperate Keys for the Puffers(same like KeyRelease)
+    QEvent::registerEventType(1401);
+
     splash->show();
     QString fileName; 
     QCoreApplication::setOrganizationName("VENTAS");

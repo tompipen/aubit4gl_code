@@ -83,6 +83,8 @@ FglForm::FglForm(QString windowName, QWidget *parent) : QMainWindow(parent){
    p_pulldown = NULL;
    p_actionMenu = NULL;
    formWidget = NULL;
+   b_keybuffer = false;
+   b_keybufferrunning = false;
 
    //currentWidget = NULL;
    setCurrentWidget(NULL);
@@ -177,7 +179,10 @@ void FglForm::addToQueue(Fgl::Event id)
 MainFrame::vdcdebug("FglForm","addToQueue", "QString id");
 
       ql_responseQueue << id;
-      processResponse();
+      if(ql_responseQueue.size() == 1 && b_getch_swin)
+      {
+         processResponse();
+      }
 }
 
 /*void FglForm::bundleQueue(Fgl::Event id)
@@ -190,7 +195,11 @@ void FglForm::addToQueue(QList<Fgl::Event> events)
 {
 
     ql_responseQueue += events;
-    processResponse();
+
+    if(ql_responseQueue.size() == 1 && b_getch_swin)
+    {
+       processResponse();
+    }
 }
 
 void FglForm::setScreenHandler(ScreenHandler *p_sh)
@@ -325,13 +334,13 @@ MainFrame::vdcdebug("FglForm","initActions", "");
    addFormAction(cancelA);
 
    Action *nextRowA = new Action("nextrow", tr("Next Row"));
-   nextRowA->setAcceleratorName("Down");
+  // nextRowA->setAcceleratorName("Down");
 //   nextRowA->setAcceleratorName2("Down");
    addFormAction(nextRowA);
 
    Action *prevRowA = new Action("prevrow", tr("Previous Row"));
 //   prevRowA->setAcceleratorName("Shift+Tab");
-   prevRowA->setAcceleratorName("Up");
+  // prevRowA->setAcceleratorName("Up");
    addFormAction(prevRowA);
 
    Action *nextFieldA = new Action("nextfield", tr("Next Field"));
@@ -716,21 +725,31 @@ void FglForm::replayKeyboard()
      return;
   }
 
-  if(b_keybuffer)
+  if(!b_keybuffer)
   {
      return;
   }
 
+  b_keybufferrunning = true;
+
   foreach(QKeyEvent *key, ql_keybuffer)
   {
+      //Response? Break hart, send keys in next scope
+      if(!b_getch_swin)
+      {
+         break;
+      }
+
       if(TableView *tableView = qobject_cast<TableView *> (currentField())){
           if(inputArray())
           {
-              if(tableView->curr_editor != NULL)
-              {
-                  qDebug()<<"SENDE AN : "<<tableView->curr_editor->objectName();
-                  QApplication::postEvent(tableView->curr_editor, key);
-              }
+              QApplication::postEvent(currentField(), key);
+//              tableView->playkey(key);
+              //tableView->itemDelegateForColumn(tableView->currentIndex().column())->event(key);
+             // QMetaObject::invokeMethod(tableView->itemDelegateForColumn(tableView->currentIndex().column()), "event", Qt::QueuedConnection,Q_ARG(QEvent*, key));
+             // QApplication::postEvent(tableView->itemDelegateForColumn(tableView->currentIndex().column()), key);
+
+
           }
       }
       else
@@ -740,6 +759,10 @@ void FglForm::replayKeyboard()
 
       ql_keybuffer.removeOne(key);
   }
+
+
+  b_keybufferrunning = false;
+  b_keybuffer = false;
 
 }
 /*!
@@ -769,12 +792,13 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
 
    //Keyboardbuffer
 
-  if(event->type() == QEvent::KeyPress || event->type() == QEvent::KeyRelease)
+  if((event->type() == QEvent::KeyPress || event->type() == 1400) || (event->type() == QEvent::KeyRelease || event->type() == 1401))
   {
+
       if(b_keybuffer)
       {
 
-          if(event->type() == QEvent::KeyRelease && ql_keybuffer.size() < 1)
+          if((event->type() == QEvent::KeyRelease || event->type() == 1401) && ql_keybuffer.size() < 1)
           {
              return true;
           }
@@ -1000,37 +1024,21 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
       else
       {
          if(keyEvent->key() == Qt::Key_Up ) {
-             if(LineEdit *le = qobject_cast<LineEdit*> (obj))
-             {
-                 prevfield();
-                 return true;
-             } else if( LineEditDelegate *led = qobject_cast<LineEditDelegate*> (obj))
-             {
-                 prevfield();
-                 return true;
-             } else if(ComboBox *cb = qobject_cast<ComboBox*> (obj))
-             {
-                 prevfield();
-                 return true;
+             if(input() || construct())
+               prevfield();
+             if(inputArray() || displayArray())
+               prevrow();
+             return true;
              }
-         }
 
          if(keyEvent->key() == Qt::Key_Down) {
-             if(LineEdit *le = qobject_cast<LineEdit*> (obj))
-             {
-                 nextfield();
-                 return true;
-             } else if( LineEditDelegate *led = qobject_cast<LineEditDelegate*> (obj))
-             {
-                 nextfield();
-                 return true;
-             } else if(ComboBox *cb = qobject_cast<ComboBox*> (obj))
-             {
-                 nextfield();
-                 return true;
+             if(input() || construct())
+               nextfield();
+             if(inputArray() || displayArray())
+               nextrow();
+             return true;
              }
 
-         }
       }
 
       if((keyEvent->modifiers() == 0 ) && (keyEvent->key() == Qt::Key_Return || keyEvent->key() == Qt::Key_Enter))
@@ -1044,21 +1052,12 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
                  nextfield();
                  return true;
              }
-          } else if(LineEdit *le = qobject_cast<LineEdit*> (obj))
-          {
-              nextfield();
-              return true;
-          } else if( LineEditDelegate *led = qobject_cast<LineEditDelegate*> (obj))
-          {
-              nextfield();
-              return true;
-          } else if( ComboBox *cb = qobject_cast<ComboBox*> (obj))
-          {
-              nextfield();
-              return true;
+          } else {
+          nextfield();
+          event->accept();
+          return true;
           }
       }
-
       if(keyEvent->key() == Qt::Key_Insert){
          status->toggleOverwriteMode();
          return true;
@@ -1994,7 +1993,16 @@ if(context == NULL)
             if(view->isEnabled()){
                QSortFilterProxyModel *proxyModel = static_cast<QSortFilterProxyModel*> (view->model());
                TableModel *table = static_cast<TableModel*> (proxyModel->sourceModel());
-               int row = view->currentIndex().row()+1;
+               int row = -1;
+               if(view->eventfield.row() != -1)
+               {
+                  row = view->eventfield.row()+1;
+                  view->b_ignoreFocus = true;
+               }
+               else
+               {
+                   row = view->currentIndex().row()+1;
+               }
                int column = -1;
                int columnCount = table->columnCount(QModelIndex());
 
@@ -2014,6 +2022,7 @@ if(context == NULL)
                switch(state()){
                   case Fgl::INPUTARRAY:
                   case Fgl::INPUT:
+
                      view->setCurrentField(row, column);
                      break;
                   case Fgl::DISPLAYARRAY:
@@ -2159,9 +2168,29 @@ if(this->context == NULL)
                //view->nextfield();
                QSortFilterProxyModel *proxyModel = static_cast<QSortFilterProxyModel*> (view->model());
                TableModel *table = static_cast<TableModel*> (proxyModel->sourceModel());
-               int row = view->currentIndex().row();
+               int row = -1;
+               if(view->eventfield.row() != -1)
+               {
+                   //No After Field + After Row Event if its nextfield/prevfield/current etc
+                   view->b_ignoreFocus = true;
+                  row = view->eventfield.row();
+               }
+               else
+               {
+                   row = view->currentIndex().row();
+               }
                int rowCount = table->rowCount(QModelIndex());
-               int column = view->currentIndex().column()+1;
+               int column = -1;
+               if(view->eventfield.column() != -1)
+               {
+                   //No After Field + After Row Event if its nextfield/prevfield/current etc
+                   view->b_ignoreFocus = true;
+                  column = view->eventfield.column()+1;
+               }
+               else
+               {
+                   column = view->currentIndex().column()+1;
+               }
                int columnCount = table->columnCount(QModelIndex());
                bool field_found = false;
                switch(state()){
@@ -2185,6 +2214,8 @@ if(this->context == NULL)
 
                         if(field_found)
                         {
+
+
                             view->setCurrentField(j+1, column+1);
                             return;
                         }
@@ -2247,6 +2278,7 @@ if(this->context == NULL)
 //------------------------------------------------------------------------------
 void FglForm::prevfield()
 {
+
 MainFrame::vdcdebug("FglForm","prevfield", "");
    bool b_sendEvent = (QObject::sender() != NULL); //If called from screenHandler this is NULL
                                                    // Programatical change (NEXT FIELD PREVIOUS)-> No AFTER_FIELD_EVENT
@@ -2293,9 +2325,29 @@ MainFrame::vdcdebug("FglForm","prevfield", "");
             if(view->isEnabled()){
                QSortFilterProxyModel *proxyModel = static_cast<QSortFilterProxyModel*> (view->model());
                TableModel *table = static_cast<TableModel*> (proxyModel->sourceModel());
-               int row = view->currentIndex().row();
+               int row = -1;
+               if(view->eventfield.row() != -1)
+               {
+                   //No After Field + After Row Event if its nextfield/prevfield/current etc
+                   view->b_ignoreFocus = true;
+                  row = view->eventfield.row();
+               }
+               else
+               {
+                   row = view->currentIndex().row();
+               }
                int rowCount = table->rowCount(QModelIndex());
-               int column = view->currentIndex().column()-1;
+               int column = -1;
+               if(view->eventfield.column() != -1)
+               {
+                   //No After Field + After Row Event if its nextfield/prevfield/current etc
+                   view->b_ignoreFocus = true;
+                  column = view->eventfield.column()-1;
+               }
+               else
+               {
+                   column = view->currentIndex().column()-1;
+               }
                int columnCount = table->columnCount(QModelIndex());
                int counter = 0;
                bool field_found = false;
@@ -2304,6 +2356,8 @@ MainFrame::vdcdebug("FglForm","prevfield", "");
                    //falls es das erste feld im array ist sollte trotzdem das before field event ausgelöst werden
                    if(view->currentIndex().column() == 0 && view->currentIndex().row() == 0)
                    {
+
+
                        view->setCurrentField(1,1);
                        return;
                    }
@@ -2326,6 +2380,7 @@ MainFrame::vdcdebug("FglForm","prevfield", "");
 
                       if(field_found)
                       {
+
                           view->setCurrentField(j+1, column+1);
                           return;
                       }
@@ -3918,7 +3973,9 @@ MainFrame::vdcdebug("FglForm","checkField", "");
 
 void FglForm::setUserInputEnabled(bool enabled)
 {
-    b_keybuffer = !enabled;
+  if(!enabled)
+    b_keybuffer = true;
+
     if (context) {
         foreach (QWidget *widget, context->fieldList())
         {

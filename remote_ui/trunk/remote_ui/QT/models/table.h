@@ -45,12 +45,13 @@ public:
    QAction *resetAct;
    QPointer<QWidget> curr_editor;
    QAction *columnAct;
+   QModelIndex eventfield;
    /*
    void setViewPalette();
    void restoreViewPalette();
 */
 //   void resize();
-
+    bool b_ignoreFocus;
     void setInputEnabled(bool);
     void setColumnLabel(int, Label*);
     QLabel* getColumnLabel(int);
@@ -84,11 +85,12 @@ private:
     int i_scrLine;
     int i_maxArrSize;
   //  bool b_palette;
-    bool b_ignoreFocus;
+
     bool b_ignoreRowChange;
     bool checkBounds(const QModelIndex);
     int i_currrowmouse;
     int i_currcolumnmouse;
+
     /*
     QPalette header;
     QPalette tableview;
@@ -102,6 +104,7 @@ public slots:
    void writeSettings(QAction*);
    void updateSectionWidth(int logicalIndex, int oldSize, int newSize);
    void resetSettings();
+   void playkey(QKeyEvent*);
 
 protected:
    QModelIndex mouseindex;
@@ -228,6 +231,8 @@ protected:
 
 signals:
    void fieldEvent(Fgl::Event, QWidget*);
+   void nextfield();
+   void prevfield();
 
 private:
    QWidget *p_fglform;

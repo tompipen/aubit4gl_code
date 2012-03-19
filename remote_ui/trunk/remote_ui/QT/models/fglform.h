@@ -198,7 +198,8 @@ public:
    QList<QWidget*> formElements();
 
    Context *context;
-
+   bool b_keybuffer;
+   bool b_keybufferrunning;
    QWidget* findFieldByName(QString);
    QList<QWidget*> findFieldsByName(QString);
    int findFieldIdByName(QString);
@@ -288,7 +289,7 @@ private:
    bool b_menu;
    bool b_input;
    bool b_screenRecord;
-   bool b_keybuffer;
+
    //bool b_construct;
 
    //PROPERTIES

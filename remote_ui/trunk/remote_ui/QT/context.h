@@ -23,8 +23,11 @@ public:
    QList<QWidget*> fieldList();
    void setOption(QString, int);
    int getOption(QString name) { return qh_options[name]; };
+   bool arrlinechanged(){ if(b_arrlinech) { b_arrlinech = false; return true; } else { return false; } }
+   bool scrlinechanged(){ if(b_scrlinech) { b_scrlinech = false; return true; } else { return false; } }
    QStringList getScreenRecordValues(int);
-
+   bool b_arrlinech;
+   bool b_scrlinech;
    void sendBeforeEvent();
    void sendAfterEvent();
    void checkOptions();
@@ -41,6 +44,7 @@ private:
    //QHash<QString, QPalette> qh_palette;
    void setRowChanged();
    int rowChangedCnt;
+
 
 public slots:
    void screenRecordRowChanged(const QModelIndex &current, const QModelIndex &previous);
