@@ -2435,10 +2435,10 @@ MainFrame::vdcdebug("ComboBox","ComboBox", "QWidget *parent");
    setEnabled(false);
    setEditable(false);
 
-   if(FglForm *p_fglform = qobject_cast<FglForm*> (parent))
+   /*if(FglForm *p_fglform = qobject_cast<FglForm*> (parent))
    {
        connect(this, SIGNAL(currentIndexChanged(int)), p_fglform, SLOT(nextfield()));
-   }
+   }*/
 
 }
 
