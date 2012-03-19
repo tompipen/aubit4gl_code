@@ -2139,7 +2139,7 @@ uilib_display_array_line (int nargs)
   send_to_ui ("  <VS>");
   for (a = 0; a < nargs - 1; a++)
     {
-      send_to_ui ("   <V>%s</V>", xml_escape (args[a]));
+      send_to_ui ("   <V>%s</V>", xml_escape (args[a])); // MJA1
     }
   send_to_ui ("  </VS>");
   send_to_ui (" </ROW>");

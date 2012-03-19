@@ -15,6 +15,7 @@ char *set_current_display_delims = 0;
 int generate_xml_forms=1; // Automatically generate XML form files where no XML file exists
 
 void dump_form_labels(void) ;
+void fixup_data_on_stack(int dtype) ;
 
 #include "lib/libpacker/formxml/formxml.h"
 static int last_w=1;
@@ -1359,25 +1360,9 @@ UILIB_A4GL_form_loop_v2 (void *s, int init, void *evt)
                                 case DTYPE_SERIAL:
                                 case DTYPE_DECIMAL:
 					fixnumeric=get_data_from_stack(NULL,NULL);
-					//fixnumeric=A4GL_char_pop();
-                                        //A4GL_lrtrim(fixnumeric);
 					A4GL_push_char(fixnumeric);
 					free(fixnumeric);
                                         break;
-
-				/*
-                                case DTYPE_DECIMAL:
-					fixnumeric=A4GL_char_pop();
-                                        A4GL_lrtrim(fixnumeric);
-                                        if (fixnumeric[0]=='.') {
-                                                char buff[2000];
-                                                sprintf(buff,"0%s",fixnumeric);
-						A4GL_push_char(buff);
-                                        } else {
-						A4GL_push_char(fixnumeric);
-					}
-					free(fixnumeric);
-				*/
 
 		  }
 		}
@@ -2080,10 +2065,13 @@ UILIB_A4GL_disp_arr_v2 (void *disp, void *ptr, char *srecname, int attrib, char 
 	  A4GL_push_int (a);
 	  for (b = 0; b < d->nbind; b++)
 	    {
-	      char *cptr;
+	      	char *cptr;
 		char *aptr;
-	      cptr = (char *) d->binding[b].ptr + d->arr_elemsize * (a);
-	      A4GL_push_param (cptr, d->binding[b].dtype + ENCODE_SIZE (d->binding[b].size));
+	      	cptr = (char *) d->binding[b].ptr + d->arr_elemsize * (a);
+	      	A4GL_push_param (cptr, d->binding[b].dtype + ENCODE_SIZE (d->binding[b].size));
+		fixup_data_on_stack(d->binding[b].dtype&DTYPE_MASK);
+
+		/*
 	      switch (d->binding[b].dtype&DTYPE_MASK) {
 				case DTYPE_INT:
 				case DTYPE_SMINT:
@@ -2113,6 +2101,7 @@ UILIB_A4GL_disp_arr_v2 (void *disp, void *ptr, char *srecname, int attrib, char 
 			}
 
 
+		*/
 	    }
 	  uilib_display_array_line (d->nbind + 1);
 	}
@@ -2393,6 +2382,8 @@ if (count==-1) {
 			//printf("Pushing  : %s\n", cptr);
 	//}
 	  A4GL_push_param (cptr, inp->binding[b].dtype + ENCODE_SIZE (inp->binding[b].size));
+		fixup_data_on_stack(inp->binding[b].dtype&DTYPE_MASK);
+		/*
 	      switch (inp->binding[b].dtype&DTYPE_MASK) {
 				case DTYPE_INT:
 				case DTYPE_SMINT:
@@ -2420,6 +2411,7 @@ if (count==-1) {
 					break;		
 			
 	    }
+		*/
 	}
       uilib_input_array_sync (inp->nbind + 2);
     }
@@ -4069,4 +4061,37 @@ void UILIB_A4GL_ui_run_info(int mode, char*cmdline, int runcnt, int startstop) {
   		flush_ui ();
 
 	}
+}
+
+
+
+
+
+void
+fixup_data_on_stack (int dtype)
+{
+char *fixnumeric;
+  switch (dtype)
+    {
+    case DTYPE_INT:
+    case DTYPE_SMINT:
+    case DTYPE_FLOAT:
+    case DTYPE_SMFLOAT:
+    case DTYPE_MONEY:
+    case DTYPE_SERIAL:
+    case DTYPE_DECIMAL:
+      fixnumeric = get_data_from_stack (NULL, NULL);
+      A4GL_lrtrim(fixnumeric);
+      if (fixnumeric[0] == '.')
+	{
+	  char buff[2000];
+	  sprintf (buff, "0%s", fixnumeric);
+	  free (fixnumeric);
+	  fixnumeric = strdup (buff);
+	}
+      A4GL_push_char (fixnumeric);
+      free (fixnumeric);
+      break;
+
+    }
 }
