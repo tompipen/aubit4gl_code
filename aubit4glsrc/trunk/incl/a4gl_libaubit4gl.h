@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.422 2012-01-03 10:30:04 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.423 2012-03-19 19:28:05 mikeaubury Exp $
 #
 */
 
@@ -2874,7 +2874,8 @@ s_convfmts * A4GL_get_convfmts(void);
 
 void A4GL_init_default_formats(void);
 char *A4GL_decstr_convert(char *buf, s_decfmt from, s_decfmt to, int newbuf, int trim, int maxlen);
-int A4GL_is_numeric_datatype(int dtype);
+int A4GL_is_numeric_datatype(int dtype); /* FLOAT,DECIMAL */
+int A4GL_is_number_datatype(int dtype); /* FLOAT, DECIMAL, INTEGER */
 char *A4GL_has_comment(int n,int c);
 int A4GL_GetComment(int a, char **s, int *l, int *c, char *type);
 int A4GL_is_meaningful_in_decfmt(s_decfmt fmt, char c);

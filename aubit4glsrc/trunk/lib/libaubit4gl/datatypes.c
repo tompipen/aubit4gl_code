@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: datatypes.c,v 1.45 2010-09-23 11:48:31 mikeaubury Exp $
+# $Id: datatypes.c,v 1.46 2012-03-19 19:28:05 mikeaubury Exp $
 #
 */
 
@@ -646,6 +646,11 @@ int
 A4GL_is_numeric_datatype (int dtype)
 {
   return dtype == DTYPE_DECIMAL || dtype == DTYPE_FLOAT || dtype == DTYPE_SMFLOAT || dtype == DTYPE_MONEY;
+}
+int
+A4GL_is_number_datatype (int dtype)
+{
+  return dtype == DTYPE_DECIMAL || dtype == DTYPE_FLOAT || dtype == DTYPE_SMFLOAT || dtype == DTYPE_MONEY || dtype==DTYPE_INT || dtype==DTYPE_SMINT;
 }
 
 /* =============================== EOF ================================ */

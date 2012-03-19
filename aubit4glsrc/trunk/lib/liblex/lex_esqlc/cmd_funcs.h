@@ -51,6 +51,8 @@ int print_input_cmd(struct_input_cmd *cmd_data);
 int print_insert_cmd(struct_insert_cmd *cmd_data);
 int print_label_cmd(struct_label_cmd *cmd_data);
 int print_let_cmd(struct_let_cmd *cmd_data);
+int print_whenever_signal_cmd(struct_whenever_signal_cmd *cmd_data);
+int print_mlet_cmd(struct_mlet_cmd *cmd_data);
 int print_load_cmd(struct_load_cmd *cmd_data);
 int print_locate_cmd(struct_locate_cmd *cmd_data);
 int print_menu_cmd(struct_menu_cmd *cmd_data);

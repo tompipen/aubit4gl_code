@@ -949,8 +949,7 @@ print_label_cmd (struct_label_cmd * cmd_data)
 }
 
 
-int
-print_mlet_cmd (struct_mlet_cmd * cmd_data) {
+int print_mlet_cmd (struct_mlet_cmd * cmd_data) {
 int a;
 
 	for (a=0;a<cmd_data->vars->list.list_len;a++) {
@@ -1066,6 +1065,13 @@ print_let_cmd (struct_let_cmd * cmd_data)
 				}
 			}
 		}
+		if (cmd_data->vars->list.list_len==1 && cmd_data->vars->list.list_val[0]->expr_type==ET_EXPR_VARIABLE_USAGE && 
+			
+			A4GL_is_number_datatype(cmd_data->vars->list.list_val[0]->expr_str_u.expr_variable_usage->datatype & DTYPE_MASK ) ) {
+				// LET some_numbervar=1,2 (comma - not '.')
+			a4gl_yyerror("You cannot use a numeric variable for the result of a concatenation");
+			
+		}
       		A4GL_print_expr_list_concat (l);
       		print_pop_usage (cmd_data->vars->list.list_val[0]);
 		}
@@ -1154,7 +1160,6 @@ print_return_cmd (struct_return_cmd * cmd_data)
 {
   struct expr_str_list *expr;
   int n;
-  int z;
 
  if (cmd_data->with_resume) {
 	a4gl_yyerror("WITH RESUME can only be used with the SPL target");
