@@ -360,7 +360,11 @@ KDChart::Chart* ChartInterface::createChart( ChartType type )
             break;
 
         case DIAG_LINE:
+            {
             dia = new KDChart::LineDiagram();
+            CartesianCoordinatePlane *newPlane = new CartesianCoordinatePlane;
+            newChart->replaceCoordinatePlane( newPlane );
+            }
             break;
         case DIAG_POLAR:
             break;
@@ -371,6 +375,11 @@ KDChart::Chart* ChartInterface::createChart( ChartType type )
         case DIAG_STOCK:
             break;
         case DIAG_AREA:
+            {
+            dia = new KDChart::LineDiagram();
+            CartesianCoordinatePlane *newPlane = new CartesianCoordinatePlane;
+            newChart->replaceCoordinatePlane( newPlane );
+            }
             break;
         default:
             break;
