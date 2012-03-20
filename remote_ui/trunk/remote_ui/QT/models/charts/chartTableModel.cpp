@@ -170,17 +170,19 @@ bool ChartTableModel::addChartData(const QVector<QVariant> &wert)
         QVector<QVariant> temp;
         for(int column = 0; column < wert.size(); column++)
         {
-            if(column == 0){         // first element for header
+            if(column == 0){         // first element for row-header
                 this->v_AxisText.append( wert.at(column).toString() );
             } else {
                 temp.append(wert.at(column).toString());
             }
         }
-        int size = this->dataVector.size();
-        this->dataVector.resize( size + 1);
-        this->dataVector[size] = temp;
-
-        return true;
+        if(temp.size() <= this->h_AxisText.size()){ // check for number of columns
+            int size = this->dataVector.size();
+            this->dataVector.resize( size + 1);
+            this->dataVector[size] = temp;
+            return true;
+        }
+        return false;
     } else {
         return false;
     }

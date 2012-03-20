@@ -75,6 +75,7 @@ public:
 
 
 
+
 protected:
     KDChart::Chart* createChart( ChartType );
     QPointer< KDChart::Chart> m_chart;
