@@ -1059,9 +1059,11 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
                  return true;
              }
           } else {
-              nextfield();
-              event->accept();
-              return true;
+              if(!obj->inherits("QComboBoxListView") && !obj->inherits("QComboBoxPrivateContainer")){
+                  nextfield();
+                  event->accept();
+                  return true;
+              }
           }
       }
       if(keyEvent->key() == Qt::Key_Insert){
