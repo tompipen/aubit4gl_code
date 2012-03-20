@@ -1059,25 +1059,9 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
                  return true;
              }
           } else {
-/*              nextfield();
+              nextfield();
               event->accept();
-              return true;*/
-              if( LineEdit *le = qobject_cast<LineEdit*> (obj))
-              {
-                  nextfield();
-                  event->accept();
-                  return true;
-              } else if(LineEditDelegate *le = qobject_cast<LineEditDelegate*> (obj))
-              {
-                  nextfield();
-                  event->accept();
-                  return true;
-              } else if(ComboBox *le = qobject_cast<ComboBox*> (obj))
-              {
-                  nextfield();
-                  event->accept();
-                  return true;
-              }
+              return true;
           }
       }
       if(keyEvent->key() == Qt::Key_Insert){
