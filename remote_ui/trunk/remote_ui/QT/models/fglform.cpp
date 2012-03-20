@@ -1024,20 +1024,26 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
       else
       {
          if(keyEvent->key() == Qt::Key_Up ) {
-             if(input() || construct())
-               prevfield();
-             if(inputArray() || displayArray())
-               prevrow();
-             return true;
+             if(!obj->inherits("QComboBoxListView"))
+             {
+                 if(input() || construct())
+                   prevfield();
+                 if(inputArray() || displayArray())
+                   prevrow();
+                 return true;
              }
+         }
 
          if(keyEvent->key() == Qt::Key_Down) {
-             if(input() || construct())
-               nextfield();
-             if(inputArray() || displayArray())
-               nextrow();
-             return true;
+             if(!obj->inherits("QComboBoxListView"))
+             {
+                 if(input() || construct())
+                   nextfield();
+                 if(inputArray() || displayArray())
+                   nextrow();
+                 return true;
              }
+         }
 
       }
 
@@ -1053,9 +1059,12 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
                  return true;
              }
           } else {
-          nextfield();
-          event->accept();
-          return true;
+              if(!obj->inherits("QComboBoxListView"))
+              {
+                  nextfield();
+                  event->accept();
+                  return true;
+              }
           }
       }
       if(keyEvent->key() == Qt::Key_Insert){
