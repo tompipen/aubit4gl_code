@@ -627,6 +627,7 @@ void ChartInterface::set3D(int depth, ChartInterface::ChartType type){
         attrs.setDepth( depth);
         my_pie->setThreeDPieAttributes( attrs );
     }
+        break;
     case DIAG_BAR:
     {
         KDChart::BarDiagram *my_bar = (KDChart::BarDiagram *) getDiagram() ;
@@ -639,7 +640,7 @@ void ChartInterface::set3D(int depth, ChartInterface::ChartType type){
         pen.setColor(Qt::darkGray);
         my_bar->setPen(pen);
     }
-
+        break;
     }
 }
 
