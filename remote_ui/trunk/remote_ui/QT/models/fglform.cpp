@@ -1059,7 +1059,20 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
                  return true;
              }
           } else {
-              if(!obj->inherits("QComboBoxListView"))
+/*              nextfield();
+              event->accept();
+              return true;*/
+              if( LineEdit *le = qobject_cast<LineEdit*> (obj))
+              {
+                  nextfield();
+                  event->accept();
+                  return true;
+              } else if(LineEditDelegate *le = qobject_cast<LineEditDelegate*> (obj))
+              {
+                  nextfield();
+                  event->accept();
+                  return true;
+              } else if(ComboBox *le = qobject_cast<ComboBox*> (obj))
               {
                   nextfield();
                   event->accept();
