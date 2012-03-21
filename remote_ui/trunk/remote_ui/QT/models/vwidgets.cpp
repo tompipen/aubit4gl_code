@@ -2064,9 +2064,7 @@ MainFrame::vdcdebug("WidgetHelper","setFieldText", "QObject *object, QString fie
    }
 
    if(ComboBox *widget = qobject_cast<ComboBox *> (object)){
-      /* There is no DisplayTo for ComboBox
-      widget->addItem(fieldValue);
-      */
+      widget->setCurrentIndex(fieldValue.toInt());
       return;
    }
 
