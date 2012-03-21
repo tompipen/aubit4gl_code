@@ -910,6 +910,13 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
          mev->ignore();
          QWidget *w = (QWidget*) obj;
          if(input() || construct()){
+             if(ComboBox *cb = qobject_cast<ComboBox*> (w->parentWidget()))
+             {
+                 if(context->fieldList().contains(w->parentWidget())){
+                        jumpToField(w->parentWidget());
+                    return true;
+                 }
+             }
             if(w == currentField())
                 return true;
 
