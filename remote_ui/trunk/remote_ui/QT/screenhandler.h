@@ -61,6 +61,7 @@ public:
    QList<FglForm*> ql_fglForms;
    QList<WebBrowser*> ql_browser;
    QStringList qsl_activeFieldNames;
+   QStringList qsl_triggereds;
 
    bool b_menuEnabled;
    //QStringList qsl_arrayValues;

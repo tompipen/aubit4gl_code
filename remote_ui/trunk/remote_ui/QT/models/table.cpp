@@ -626,7 +626,6 @@ void TableView::fieldChanged(QModelIndex current, QModelIndex prev)
 {
 MainFrame::vdcdebug("TableView","fieldChanged", "QModelIndex current, QModelIndex prev");
 
-
 if(!p_fglform)
   return;
 
@@ -833,13 +832,13 @@ MainFrame::vdcdebug("TableView","setCurrentColumn", "int col");
 void TableView::setCurrentField(int row, int col)
 {
 MainFrame::vdcdebug("TableView","setCurrentField", "int row, int col");
-//   this->setFocus();
    if(QSortFilterProxyModel *proxyModel = qobject_cast<QSortFilterProxyModel *> (this->model())){
 
       if(TableModel *table = qobject_cast<TableModel *> (proxyModel->sourceModel())){
          QModelIndex tindex = table->index(row-1, col-1);
          QModelIndex index = proxyModel->mapFromSource(tindex);
          //If fieldchange is not emitted, run before field
+
          if(this->currentIndex() == index){
              Fgl::Event event;
              event.type = Fgl::BEFORE_FIELD_EVENT;

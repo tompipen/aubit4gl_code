@@ -1897,7 +1897,17 @@ MainFrame::vdcdebug("ScreenHandler","setFormOpts", "QString type, QString attrib
 //------------------------------------------------------------------------------
 void ScreenHandler::waitForEvent()
 {
+
 MainFrame::vdcdebug("ScreenHandler","waitForEvent", "");
+if(qsl_triggereds.size() > 0)
+{
+    if(p_fglform)
+    {
+       p_fglform->b_getch_swin = true;
+    }
+   sendDirect(qsl_triggereds.takeFirst());
+   return;
+}
 
    FglForm *saveactive = p_fglform;
    if(p_fglform == NULL)
@@ -2170,9 +2180,21 @@ Fgl::Event id;
 void ScreenHandler::sendDirect(QString cmd)
 {
 MainFrame::vdcdebug("ScreenHandler","sendDirect", "QString cmd");
-   fglFormResponse(cmd);
-   if(p_fglform != NULL)
-      p_fglform->b_getch_swin = false;
+
+if(p_fglform != NULL)
+{
+
+  if(!p_fglform->b_getch_swin)
+  {
+      qsl_triggereds << cmd;
+      return;
+  }
+
+  p_fglform->b_getch_swin = false;
+}
+  fglFormResponse(cmd);
+
+
 }
 
 //------------------------------------------------------------------------------

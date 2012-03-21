@@ -1341,7 +1341,8 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
          QString returnString = doc.toString();
 
          //makeResponse(returnString.trimmed());
-         p_currScreenHandler->sendDirect(returnString.trimmed());
+         QMetaObject::invokeMethod(p_currScreenHandler, "sendDirect", Q_ARG(QString, returnString.trimmed()));
+         //p_currScreenHandler->sendDirect(returnString.trimmed());
       }
       
    }
