@@ -468,7 +468,7 @@ void TableView::setMaxArrSize(int cnt)
 {
 MainFrame::vdcdebug("TableView","setMaxArrSize", "int cnt");
    i_maxArrSize = cnt;
-   int setMaxRows = 16;
+   int setMaxRows = 1;
 
    QSortFilterProxyModel *proxyModel = static_cast<QSortFilterProxyModel*> (this->model());
    TableModel *table = static_cast<TableModel*> (proxyModel->sourceModel());
