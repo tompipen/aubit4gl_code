@@ -2064,7 +2064,14 @@ MainFrame::vdcdebug("WidgetHelper","setFieldText", "QObject *object, QString fie
    }
 
    if(ComboBox *widget = qobject_cast<ComboBox *> (object)){
-      widget->setCurrentIndex(fieldValue.toInt());
+      //widget->setCurrentIndex(fieldValue.toInt());
+       if(!fieldValue.isEmpty())
+       {
+            if(widget->count() >= fieldValue.toInt())
+            {
+                widget->setCurrentIndex(fieldValue.toInt()-1);
+            }
+       }
       return;
    }
 
