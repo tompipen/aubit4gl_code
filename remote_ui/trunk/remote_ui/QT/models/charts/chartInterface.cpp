@@ -305,6 +305,7 @@ void ChartInterface::addLegend( Position myPosition, Legend::LegendStyle myStyle
         myLegend->setTitleText( myTitel );
 
         myLegend->setOrientation( myOrientation );
+        myLegend->setShowLines( true );
 
         TextAttributes lta( myLegend->textAttributes() );
         lta.setPen( QPen( Qt::darkGray ) );
@@ -617,7 +618,6 @@ void ChartInterface::setDiagramColor(ChartTableModel *m_model){
         }
     }
 }
-
 
 /*---------------------------------------------------------
     setting the 3D Attributes depending on the ChartType
