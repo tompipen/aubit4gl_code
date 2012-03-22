@@ -524,6 +524,13 @@ bool ChartInterface::setHeader(KDChart::Chart* chart, KDChart::Position position
     return true;
 }
 
+void ChartInterface::initArea(LineDiagram *m_line){
+    LineAttributes la = m_line->lineAttributes();
+    la.setDisplayArea( true );
+    la.setTransparency( 40 );
+    m_line->setLineAttributes( la );
+}
+
 void ChartInterface::initBar(BarDiagram *m_bar){
 
     ThreeDBarAttributes attrs( m_bar->threeDBarAttributes() );
