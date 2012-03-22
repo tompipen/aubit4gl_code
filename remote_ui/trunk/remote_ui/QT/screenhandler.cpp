@@ -210,6 +210,9 @@ MainFrame::vdcdebug("ScreenHandler","createWindow", "QString windowTitle,QString
    if(formsActions.hasChildNodes()){
       p_fglform->setActions(formsActions);
    }
+   if(formsActions1.hasChildNodes()){
+      p_fglform->setActions(formsActions1);
+   }
 
 }
 
@@ -366,7 +369,12 @@ MainFrame::vdcdebug("ScreenHandler","handleXMLActions", "QString xmlFileString")
    }
 
 
-   formsActions = xmlFile;
+   if(formsActions.isNull())
+   {
+       formsActions = xmlFile;
+   } else {
+       formsActions1 = xmlFile;
+   }
 }
 
 //------------------------------------------------------------------------------

@@ -112,6 +112,7 @@ private:
 //   ToolBar* formsToolBar;
    QDomDocument formsToolBar;
    QDomDocument formsActions;
+   QDomDocument formsActions1;
    QDomDocument formsStyles;
    int cnt_form;
 
