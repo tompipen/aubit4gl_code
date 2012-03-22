@@ -256,11 +256,17 @@ public:
    ComboBox(QWidget *parent = 0);
    void setDefaultValue(QString def) { qs_default = def; };
    QString defaultValue() { return qs_default; };
+   int indexForId(QString);
+   QString idForIndex(int);
    QString colName;
    QString sqlTabName;
 
 private:
+   QHash<QString, int> qh_indexies;
    QString qs_default;
+
+public slots:
+    void isTouched() { setProperty("touched", true); };
 
 signals:
    void fieldEvent(Fgl::Event);

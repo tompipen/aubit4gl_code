@@ -1527,6 +1527,11 @@ MainFrame::vdcdebug("FglForm","setFormLayout", "const QDomDocument& docLayout");
          textEdit->installEventFilter(this);
       }
 
+      if(ComboBox *cb = qobject_cast<ComboBox*> (ql_formelements.at(i)))
+      {
+          connect(cb, SIGNAL(currentIndexChanged(QString)), this, SLOT(setBufferTouched()));
+      }
+
       if(TableView *tableView = qobject_cast<TableView *> (ql_formelements.at(i))){
          connect(tableView, SIGNAL(fieldEvent(Fgl::Event)), this, SLOT(fieldEvent(Fgl::Event)));
          connect(tableView, SIGNAL(addToQueue(Fgl::Event)), this, SLOT(addToQueue(Fgl::Event)));

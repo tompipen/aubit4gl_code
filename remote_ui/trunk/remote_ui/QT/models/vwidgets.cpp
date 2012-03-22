@@ -2070,16 +2070,9 @@ MainFrame::vdcdebug("WidgetHelper","setFieldText", "QObject *object, QString fie
    }
 
    if(ComboBox *widget = qobject_cast<ComboBox *> (object)){
-      //widget->setCurrentIndex(fieldValue.toInt());
-       if(!fieldValue.isEmpty())
-       {
-            if(widget->count() >= fieldValue.toInt() & fieldValue.toInt() >= 0)
-            {
-                widget->setCurrentIndex(fieldValue.toInt()-1);
-            }
-       }
-      return;
-   }
+      int index = widget->findData(fieldValue.trimmed());
+      widget->setCurrentIndex(index);
+}
 
    if(ProgressBar *widget = qobject_cast<ProgressBar *> (object)){
       widget->setValue(fieldValue.toInt());
@@ -2445,11 +2438,7 @@ MainFrame::vdcdebug("ComboBox","ComboBox", "QWidget *parent");
    setProperty("touched", false);
    setEnabled(false);
    setEditable(false);
-
-   /*if(FglForm *p_fglform = qobject_cast<FglForm*> (parent))
-   {
-       connect(this, SIGNAL(currentIndexChanged(int)), p_fglform, SLOT(nextfield()));
-   }*/
+   connect(this, SIGNAL(currentIndexChanged(int)), this, SLOT(isTouched()));
 
 }
 
