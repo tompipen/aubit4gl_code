@@ -2073,7 +2073,7 @@ MainFrame::vdcdebug("WidgetHelper","setFieldText", "QObject *object, QString fie
       //widget->setCurrentIndex(fieldValue.toInt());
        if(!fieldValue.isEmpty())
        {
-            if(widget->count() >= fieldValue.toInt())
+            if(widget->count() >= fieldValue.toInt() & fieldValue.toInt() >= 0)
             {
                 widget->setCurrentIndex(fieldValue.toInt()-1);
             }
@@ -2147,7 +2147,7 @@ MainFrame::vdcdebug("WidgetHelper","fieldText", "QObject *object");
    }
 
    if(ComboBox *widget = qobject_cast<ComboBox *> (object)){
-      return widget->itemData(widget->currentIndex()-1).toString();
+      return widget->itemData(widget->currentIndex()).toString();
    }
 
    if(CheckBox *widget = qobject_cast<CheckBox *> (object)){
