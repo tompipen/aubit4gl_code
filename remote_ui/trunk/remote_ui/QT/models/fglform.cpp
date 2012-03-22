@@ -1499,9 +1499,13 @@ MainFrame::vdcdebug("FglForm","setFormLayout", "const QDomDocument& docLayout");
    this->ql_formFields << formParser->getFieldList();
    this->ql_fglFields << formParser->getFglFields();
 
-   for(int i=0; i<formElements().size(); i++){
-      formElements().at(i)->installEventFilter(this);
-      if(LineEdit *lineEdit = qobject_cast<LineEdit *> (formElements().at(i))){
+
+
+   QList<QWidget*> ql_formelements = formElements();
+   int i_cntelements = ql_formelements.size();
+   for(int i=0; i<i_cntelements; i++){
+      ql_formelements.at(i)->installEventFilter(this);
+      if(LineEdit *lineEdit = qobject_cast<LineEdit *> (ql_formelements.at(i))){
          connect(lineEdit, SIGNAL(fieldEvent(Fgl::Event)), this, SLOT(fieldEvent(Fgl::Event)));
          connect(lineEdit, SIGNAL(nextField()), this, SLOT(nextfield()));
          connect(lineEdit, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(createContextMenu(const QPoint&)));
@@ -1512,18 +1516,18 @@ MainFrame::vdcdebug("FglForm","setFormLayout", "const QDomDocument& docLayout");
 
       }
 
-      if(Button *button = qobject_cast<Button *> (formElements().at(i))){
+      if(Button *button = qobject_cast<Button *> (ql_formelements.at(i))){
          connect(button, SIGNAL(fieldEvent(Fgl::Event)), this, SLOT(fieldEvent(Fgl::Event)));
          button->installEventFilter(this);
       }
 
-      if(TextEdit *textEdit = qobject_cast<TextEdit *> (formElements().at(i))){
+      if(TextEdit *textEdit = qobject_cast<TextEdit *> (ql_formelements.at(i))){
        //  connect(textEdit, SIGNAL(returnPressed()), this, SLOT(nextfield()));
          connect(textEdit, SIGNAL(cursorPositionChanged()), this, SLOT(setLastCursor()));
          textEdit->installEventFilter(this);
       }
 
-      if(TableView *tableView = qobject_cast<TableView *> (formElements().at(i))){
+      if(TableView *tableView = qobject_cast<TableView *> (ql_formelements.at(i))){
          connect(tableView, SIGNAL(fieldEvent(Fgl::Event)), this, SLOT(fieldEvent(Fgl::Event)));
          connect(tableView, SIGNAL(addToQueue(Fgl::Event)), this, SLOT(addToQueue(Fgl::Event)));
          connect(tableView, SIGNAL(setArrLineSignal(int)), this, SLOT(setScreenRecordArrLine(int)));
@@ -1533,10 +1537,11 @@ MainFrame::vdcdebug("FglForm","setFormLayout", "const QDomDocument& docLayout");
          connect(tableView, SIGNAL(prevfield()), this, SLOT(prevfield()));
       }
 
-      if(LineEditDelegate *delegate = qobject_cast<LineEditDelegate *> (formElements().at(i))){
+      if(LineEditDelegate *delegate = qobject_cast<LineEditDelegate *> (ql_formelements.at(i))){
          delegate->setForm(this);
       }
    }
+
 }
 
 QList<QWidget*> FglForm::formElements()
