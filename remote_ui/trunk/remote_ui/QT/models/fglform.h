@@ -146,7 +146,7 @@ public:
    bool construct() { return b_construct; };
    */
    QStringList qsl_fieldOrder;
-
+ QList<QKeyEvent*> ql_keybuffer;
    //QDomDocument *recordView;
    QHash<QString, QList<Fgl::Link> > recordView;
    
@@ -269,7 +269,7 @@ public slots:
 
 private:
    QList<Fgl::State> ql_states;
-   QList<QKeyEvent*> ql_keybuffer;
+
    QWidget *formWidget;
 
    QList<RingMenu*> ql_menus;

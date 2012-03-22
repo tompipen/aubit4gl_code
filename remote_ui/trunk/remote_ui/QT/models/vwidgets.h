@@ -173,6 +173,7 @@ private:
 public slots:
     void isTouched() { setProperty("touched", true); };
     void checkNext(const QString&);
+    void markup();
 
 signals:
    void widgetOpen();

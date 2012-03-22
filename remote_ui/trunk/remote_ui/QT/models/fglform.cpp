@@ -732,6 +732,8 @@ void FglForm::replayKeyboard()
 
   b_keybufferrunning = true;
 
+  qDebug()<<ql_keybuffer;
+
   foreach(QKeyEvent *key, ql_keybuffer)
   {
       //Response? Break hart, send keys in next scope
@@ -743,11 +745,11 @@ void FglForm::replayKeyboard()
       if(TableView *tableView = qobject_cast<TableView *> (currentField())){
           if(inputArray())
           {
-              QApplication::postEvent(currentField(), key);
+              //QApplication::postEvent(currentField(), key);
 //              tableView->playkey(key);
               //tableView->itemDelegateForColumn(tableView->currentIndex().column())->event(key);
              // QMetaObject::invokeMethod(tableView->itemDelegateForColumn(tableView->currentIndex().column()), "event", Qt::QueuedConnection,Q_ARG(QEvent*, key));
-             // QApplication::postEvent(tableView->itemDelegateForColumn(tableView->currentIndex().column()), key);
+             QApplication::postEvent(tableView->itemDelegateForColumn(tableView->currentIndex().column()), key);
 
 
           }
@@ -794,6 +796,7 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
 
   if((event->type() == QEvent::KeyPress || event->type() == 1400) || (event->type() == QEvent::KeyRelease || event->type() == 1401))
   {
+      qDebug()<<event;
 
       if(b_keybuffer)
       {
@@ -1619,6 +1622,11 @@ void FglForm::setFocusOnWidget(QWidget *w, Qt::FocusReason reason)
   currentField()->clearFocus();
   this->clearFieldFocus();
   QMetaObject::invokeMethod(w, "setFocus", Qt::QueuedConnection);
+  //Mark the LineEdits content if step into the field
+  if(LineEdit *le = qobject_cast<LineEdit*> (w))
+  {
+      QMetaObject::invokeMethod(le, "markup", Qt::QueuedConnection);
+  }
 
 }
 

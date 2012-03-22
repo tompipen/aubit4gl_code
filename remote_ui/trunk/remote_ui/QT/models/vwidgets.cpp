@@ -441,6 +441,12 @@ void LineEdit::dropEvent(QDropEvent *e)
     }
 }
 
+void LineEdit::markup()
+{
+  this->setCursorPosition(0);
+  this->end(true);
+}
+
 
 //------------------------------------------------------------------------------
 // Method       : Edit()
@@ -1864,7 +1870,8 @@ MainFrame::vdcdebug("WidgetHelper","createProgressBar", "const QDomElement& form
 
    QString include = progressBarElement.attribute("include");
 
-   //bool noEntry  = progressBarElement.attribute("noEntry").toInt();
+   //bool noEntry  = progressBarElement.attribute("noEntry").toInt();+      widget->setCurrentIndex(fieldValue.toInt() - 1);
+
    //bool autoNext = progressBarElement.attribute("autoNext").toInt();
 
    QString sizePolicy = progressBarElement.attribute("sizePolicy");
