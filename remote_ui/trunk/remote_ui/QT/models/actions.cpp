@@ -54,6 +54,7 @@ MainFrame::vdcdebug("Actions","parseElement", "QDomNode xmlNode");
       QString nodeName = currentElement.nodeName();
       
 
+      qDebug() << "nodeName:" << nodeName;
       if(nodeName == "ActionDefault"){
          QList<QKeySequence> ql_shortcutList;
          QString name = currentElement.attribute("name");
@@ -98,6 +99,20 @@ MainFrame::vdcdebug("Actions","parseElement", "QDomNode xmlNode");
             action->setDefaultView(defaultView);
 
          ql_actions << action;
+      } else if( nodeName == "Icon")
+      {
+          QString text = currentElement.attribute("text");
+          QString image = currentElement.attribute("icon");
+          qsl_names << text.toLower();
+
+          Action *action = new Action(text.toLower(), text, p_fglform);
+
+          if(!image.isEmpty())
+          {
+              action->setImage(image);
+          }
+
+          ql_actions << action;
       }
    }
 }
