@@ -573,7 +573,7 @@ void ChartInterface::initPie(PieDiagram *m_pie){
     m_pie->setPieAttributes( 1, pa );
    // m_pie->setPieAttributes( 0, pa );
     qDebug() << "initPie " << m_pie;
-    addLegend(Position::East, Legend::MarkersAndLines, Qt::Vertical, QString("Legende"));
+    addLegend(Position::East, Legend::MarkersOnly, Qt::Vertical, QString("Legende"));
 
     DataValueAttributes dva( m_pie->dataValueAttributes() );
 
