@@ -2320,16 +2320,26 @@ MainFrame::vdcdebug("FglForm","prevfield", "");
        return;
    }
 
+
+
+
    if(!screenRecord()){
+
+
        QWidget *prev = NULL;
-       for(int i=1; i<context->fieldList().count(); i++){
-           if(context->fieldList().at(i) == currentField()){
-               prev = context->fieldList().at(i-1);
-               break;
-           }
+       QWidget *tmp  = NULL;
+       int i_currpos = context->fieldList().indexOf(currentField()) - 1;
+       for(int i=i_currpos; i>0; i--){
+          tmp = context->fieldList().at(i);
+          if(tmp->isEnabled() && tmp->isVisible())
+          {
+             prev = tmp;
+             break;
+          }
        }
 
-       if(prev == NULL){ //no next field -> go to first field
+
+       if(prev == NULL){ //no next field -> go to last! field
            if(context->fieldList().isEmpty())
            {
                return;
