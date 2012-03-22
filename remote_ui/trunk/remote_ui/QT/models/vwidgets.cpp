@@ -1870,8 +1870,7 @@ MainFrame::vdcdebug("WidgetHelper","createProgressBar", "const QDomElement& form
 
    QString include = progressBarElement.attribute("include");
 
-   //bool noEntry  = progressBarElement.attribute("noEntry").toInt();+      widget->setCurrentIndex(fieldValue.toInt() - 1);
-
+   //bool noEntry  = progressBarElement.attribute("noEntry").toInt();
    //bool autoNext = progressBarElement.attribute("autoNext").toInt();
 
    QString sizePolicy = progressBarElement.attribute("sizePolicy");
