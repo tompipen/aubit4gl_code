@@ -24,12 +24,12 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.542 2012-01-18 19:21:29 mikeaubury Exp $
+# $Id: compile_c.c,v 1.543 2012-03-23 18:21:05 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
-static char const module_id[] = "$Id: compile_c.c,v 1.542 2012-01-18 19:21:29 mikeaubury Exp $";
+static char const module_id[] = "$Id: compile_c.c,v 1.543 2012-03-23 18:21:05 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -3650,6 +3650,7 @@ print_init_var (struct variable *v, char *prefix, int alvl, int explicit, int Pr
 	  {
 	    switch (d1 & DTYPE_MASK)
 	      {
+	      case DTYPE_SERIAL:
 	      case DTYPE_INT:
 	      case DTYPE_SMINT:
 		printc ("%s=0;", prefix2);
@@ -3688,9 +3689,9 @@ print_init_var (struct variable *v, char *prefix, int alvl, int explicit, int Pr
 	  }
 	else
 	  {
-	    if (explicit == 0 && (d1 == DTYPE_INT || d1 == DTYPE_SMINT || d1 == DTYPE_FLOAT || d1 == DTYPE_SMFLOAT))	//  || d1 == DTYPE_DECIMAL || d1 == DTYPE_MONEY))
+	    if (explicit == 0 && (d1==DTYPE_SERIAL || d1 == DTYPE_INT || d1 == DTYPE_SMINT || d1 == DTYPE_FLOAT || d1 == DTYPE_SMFLOAT))	//  || d1 == DTYPE_DECIMAL || d1 == DTYPE_MONEY))
 	      {
-		if (d1 == DTYPE_INT || d1 == DTYPE_SMINT)
+		if (d1 == DTYPE_INT || d1 == DTYPE_SMINT || d1==DTYPE_SERIAL)
 		  {
 		    printc ("%s=0;", prefix2);
 		  }

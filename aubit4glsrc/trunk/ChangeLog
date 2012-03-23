@@ -1,4 +1,160 @@
 ---------------------------
+Fri Mar 23 18:21:59 GMT 2012
+---------------------------
+1.2_29 Released
+---------------------------
+	2012-03-23 18:18  mikeaubury
+	
+	2012-03-23 17:40  mikeaubury
+	
+	Small fixup for substrings
+	
+	2012-03-23 10:03  mikeaubury
+	
+	Force use of 'integer' datatype when binding a serial
+	
+	2012-03-19 22:26  mikeaubury
+	
+	2012-03-19 19:28  mikeaubury
+	
+	Check and disallow  :
+	
+	LET a=1,2
+	
+	where a is a numeric variable.	This ensures people cant
+	get confused with ',' as a decimal separator - as 4gl code should
+	*always* be with a "." for decimal literal
+	
+	2012-03-19 19:12  mikeaubury
+	
+	Float/decimal fixups for XML GUI
+	
+	2012-03-08 10:59  siverly
+	
+	Max with Alains Account:
+	
+	Adding new simple object based browser which needs no
+	perform
+	
+	ui.browser.create() return object ui.browser.openUrl(url
+	CHAR) return int http_code ui.browser.waitForClose() return int
+	ui.browser.close() ui.browser.forward/backward
+	
+	2012-03-05 14:33  mikeaubury
+	
+	2012-03-04 20:43  mikeaubury
+	
+	fix A4GL_push_double_str for A4GL_NUMERIC/LANG
+	
+	2012-03-04 18:27  mikeaubury
+	
+	Add some extra function prototypes to incl/a4gl_4gl_callable.h
+	
+	2012-03-04 07:58  mikeaubury
+	
+	Fix DEFINE .. LIKE db@server:table.column
+	
+	2012-02-27 20:46  mikeaubury
+	
+	Interval fixups
+	
+	2012-02-14 18:57  mikeaubury
+	
+	2012-02-03 13:41  mikeaubury
+	
+	2012-01-30 18:05  mikeaubury
+	
+	Set MESSAGE LINE to last possible line if MESSAGE LINE > # of lines
+	in windows (rather than '2')
+	
+	2012-01-30 09:03  mikeaubury
+	
+	remove check for sqlconversion file when using FILESCHEMA
+	
+	2012-01-30 08:43  mseidel
+	
+	+ ui.vdc.checkOdfFile
+	
+	2012-01-27 08:57  mikeaubury
+	
+	DateTime fixup - build test 1734
+	
+	2012-01-27 08:56  mikeaubury
+	
+	Small fixup for a4gl_get_info to stop assertion
+	
+	2012-01-26 14:07  mikeaubury
+	
+	2012-01-26 13:30  mseidel
+	
+	New Gui-Functions: ui.vdc.action (atm only on a4gl side)
+	ui.vdc.odttopdf (atm only on a4gl side) ui.vdc.repgen (Soon
+	Release)
+	
+	2012-01-24 16:14  mikeaubury
+	
+	2012-01-22 10:37  mikeaubury
+	
+	2012-01-19 19:23  mikeaubury
+	
+	Put floating points back to a smaller number of significant digits
+	
+	2012-01-19 19:23  mikeaubury
+	
+	2012-01-18 19:21  mikeaubury
+	
+	Fix A4GL_INCLINES for some commands
+	
+	2012-01-18 10:28  mikeaubury
+	
+	2012-01-15 10:51  mikeaubury
+	
+	Small "Conditional jump or move depends on uninitialised value"
+	fixup for using Actions in menus
+	
+	2012-01-03 16:31  mikeaubury
+	
+	2012-01-03 14:46  mikeaubury
+	
+	Testing a new routine for splitting incoming packets
+	
+	2012-01-03 13:55  siverly
+	
+	8 to 20 digits float
+	
+	2012-01-03 10:30  mikeaubury
+	
+	Adjust FLOAT formatting for (Informix ESQL/C) Unloads and UI=XML
+	
+	2012-01-02 16:08  mikeaubury
+	
+	Add some stuff needed for SQLRelay  - changes written by David Muse
+	This allows connections to an *ORACLE* database by using the Mysql
+	client libraries and the SQLRelay software to redirect to the
+	appropriate database (should allow connections to other database
+	types, connection pooling etc etc)
+	
+	http://sqlrelay.sourceforge.net/sqlrelay/faq.html
+	
+	2012-01-02 16:06  mikeaubury
+	
+	Add some stuff needed for SQLRelay  - changes written by David Muse
+	
+	2012-01-02 15:14  mikeaubury
+	
+	2012-01-02 13:42  mikeaubury
+	
+	Try writing to "xmlfail.log" when theres an error parsing the XML
+	UI protocol
+	
+	2011-12-30 10:31  mikeaubury
+	
+	2011-12-30 09:15  mikeaubury
+	
+	MID : 1446  - Add/Update in runforms.4ae failed in probably
+	nonsense function disp_field_2() in runform.4gl.
+	
+---------------------------
 Fri Dec 30 10:30:54 GMT 2011
 ---------------------------
 1.2_28 Released
