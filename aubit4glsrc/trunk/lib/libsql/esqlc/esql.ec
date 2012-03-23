@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.256 2012-01-03 10:30:06 mikeaubury Exp $
+# $Id: esql.ec,v 1.257 2012-03-23 10:03:46 mikeaubury Exp $
 #
 */
 
@@ -188,7 +188,7 @@ static loc_t *add_blob(struct s_sid *sid, int n, struct s_extra_info *e,fglbyte 
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.256 2012-01-03 10:30:06 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.257 2012-03-23 10:03:46 mikeaubury Exp $";
 #endif
 
 
@@ -1352,7 +1352,8 @@ int d_prec=0;
     case DTYPE_INT:
       int_ptr = (long *) bind[idx].ptr;
       int_var = (long) *int_ptr;
-    EXEC SQL SET DESCRIPTOR:descriptorName VALUE:index TYPE =: dataType, DATA =:int_var;
+				// Used to use dataType here  V but informix does not like that if its a serial 
+    EXEC SQL SET DESCRIPTOR:descriptorName VALUE:index TYPE = 2, DATA =:int_var;
       break;
     case DTYPE_FLOAT:
       float_ptr = (double *) bind[idx].ptr;
