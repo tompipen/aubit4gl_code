@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin.c,v 1.164 2012-01-19 19:23:58 mikeaubury Exp $
+# $Id: builtin.c,v 1.165 2012-03-23 17:40:54 mikeaubury Exp $
 #
 */
 
@@ -464,6 +464,11 @@ a4gl_substr (char *ca, int dtype, int a, int b, ...)
 #endif
   if (A4GL_isnull (DTYPE_CHAR, ca))
     return "";
+
+  if (b<a) {
+      A4GL_exitwith ("A character variable has referenced subscripts that are out of range");
+	return "";
+  }
 
   sz = DECODE_SIZE (dtype);
   if (b > sz && sz)
