@@ -508,7 +508,13 @@ QString Reportgen::prepareTemplateContent(int Table, int Position, QString odffi
             if(ausgabe.contains("@") && ebene == 2) {
                 for(int i=0; i < temp_fields.count(); i++) {
                     if(ausgabe.contains("@" + temp_fields.at(i))) {
-                        ausgabe.replace("@" + temp_fields.at(i), QString("@%1_1" + temp_fields.at(i)).arg(QString::number(Position)));
+                        int found = checkSedFile(QString("@%1_1" + temp_fields.at(i)).arg(QString::number(Position)), sedfile);
+                        if(found > 0)
+                        {
+                            ausgabe.replace("@" + temp_fields.at(i), QString("@%1_1" + temp_fields.at(i)).arg(QString::number(Position)));
+                        } else {
+                            ausgabe.remove("@" + temp_fields.at(i));
+                        }
                     }
                 }
             }
@@ -516,7 +522,13 @@ QString Reportgen::prepareTemplateContent(int Table, int Position, QString odffi
             if(ausgabe.contains("@") && ebene == 3) {
                 for(int i=0; i < temp_fields.count(); i++) {
                     if(ausgabe.contains("@" + temp_fields.at(i))) {
-                        ausgabe.replace("@" + temp_fields.at(i), QString("@%1_1_1" + temp_fields.at(i)).arg(QString::number(Position)));
+                        int found = checkSedFile(QString("@%1_1_1" + temp_fields.at(i)).arg(QString::number(Position)), sedfile);
+                        if(found > 0)
+                        {
+                            ausgabe.replace("@" + temp_fields.at(i), QString("@%1_1_1" + temp_fields.at(i)).arg(QString::number(Position)));
+                        } else {
+                            ausgabe.remove("@" + temp_fields.at(i));
+                        }
                     }
                 }
             }
