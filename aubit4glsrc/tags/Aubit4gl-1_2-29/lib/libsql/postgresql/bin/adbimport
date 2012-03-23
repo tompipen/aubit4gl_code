@@ -1,0 +1,16 @@
+if createdb $1 >/dev/null 2>&1
+then
+    echo "Base de Datos $1 Creada "
+    chmod 777 $1.exp -R 
+    cd $1.exp
+    ls *.imp >systab.out 
+    for t in `cat systab.out`
+    do
+      cat $t
+      psql -d $1 -f $t
+    done
+    echo "adbimport Completed "
+else
+    echo "Ya Existe Base de Datos $1 "
+fi
+

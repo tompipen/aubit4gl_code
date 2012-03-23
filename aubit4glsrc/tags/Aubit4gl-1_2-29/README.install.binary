@@ -1,0 +1,29 @@
+Aubit 4gl compiler readme
+-------------------------
+
+For a binary installation we recommend extracting this tarball where you want the final files
+to reside, and then set
+
+  For Linux & most Unix :
+     $ export AUBITDIR=/path/to/aubit4glbin
+     $ export PATH=$PATH:$AUBITDIR/bin
+     $ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$AUBITDIR/lib
+
+  For Windows           :
+     $ export AUBITDIR=/path/to/aubit4glbin
+     $ export PATH=$PATH:$AUBITDIR/bin:$AUBITDIR/lib
+
+  For MacOSX            :
+     $ export AUBITDIR=/path/to/aubit4glbin
+     $ export PATH=$PATH:$AUBITDIR/bin
+     $ export DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:$AUBITDIR/lib
+
+  For HPUX :
+     $ export AUBITDIR=/path/to/aubit4glbin
+     $ export PATH=$PATH:$AUBITDIR/bin
+     $ export SHLIB_PATH=$SHLIB_PATH:$AUBITDIR/lib
+
+You should then check your etc/aubitrc file and make sure that everything is setup
+as you require.
+
+

@@ -1,0 +1,25 @@
+database formonly
+screen
+{
+
+ Username             Password          
+[f000              ] [f001                                            ]
+[f000              ] [f001                                            ]
+[f000              ] [f001                                            ]
+[f000              ] [f001                                            ]
+[f000              ] [f001                                            ]
+[f000              ] [f001                                            ]
+	                                ^ Maximum length of
+                                        | unencrypted password
+
+Please note  :  The encryption used for the passwords is extremely weak
+and only intended to 'obscure' the password when stored in the database
+
+}
+end
+attributes
+f000 = formonly.username,downshift;
+f001 = formonly.password;
+end
+instructions
+screen record srec1[6] (username,password)

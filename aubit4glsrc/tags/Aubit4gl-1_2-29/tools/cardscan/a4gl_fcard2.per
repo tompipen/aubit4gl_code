@@ -1,0 +1,23 @@
+
+database formonly
+screen 
+{
+Account  [pan                ]
+Name     [name                      ]
+Expires  [exp ]
+Service  [srv ]
+Data     [data1                   ]
+         [data2                   ]
+
+}
+end
+attributes
+pan=formonly.pan,noentry;
+name=formonly.name,noentry;
+exp=formonly.expire,noentry;
+srv=formonly.service,noentry;
+data1=formonly.data1,noentry;
+data2=formonly.data2,noentry;
+end
+instructions 
+delimiters " "

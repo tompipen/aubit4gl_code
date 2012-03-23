@@ -1,0 +1,122 @@
+# +----------------------------------------------------------------------+
+# | Aubit 4gl Language Compiler Version $.0   root makefile              |
+# +----------------------------------------------------------------------+
+# | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
+# +----------------------------------------------------------------------+
+# | This program is free software; you can redistribute it and/or modify |
+# | it under the terms of one of the following licenses:                 |
+# |                                                                      |
+# |  A) the GNU General Public License as published by the Free Software |
+# |     Foundation; either version 2 of the License, or (at your option) |
+# |     any later version.                                               |
+# |                                                                      |
+# |  B) the Aubit License as published by the Aubit Development Team and |
+# |     included in the distribution in the file: LICENSE                |
+# |                                                                      |
+# | This program is distributed in the hope that it will be useful,      |
+# | but WITHOUT ANY WARRANTY; without even the implied warranty of       |
+# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        |
+# | GNU General Public License for more details.                         |
+# |                                                                      |
+# | You should have received a copy of both licenses referred to here.   |
+# | If you did not, or have any questions about Aubit licensing, please  |
+# | contact afalout@ihug.co.nz                                           |
+# +----------------------------------------------------------------------+
+#   Based on "INFORMIX D4GL Programmer's Environment Version 2.00.UC2"
+#
+# $Id: Makefile.in,v 1.8 2003-02-07 04:01:46 afalout Exp $
+#
+
+#This make file uses "Amake" - NO TARGETS are defined here !
+
+#All stuff common to more then one Aubit compiler make file is there:
+#This is needed when making IDE as part of Aubit compiler build from
+#source code, before Aubit is installed :
+include ../../incl/Makefile-common
+#override NOINCL=0
+
+## ==================================================================
+##                              Header Includes
+## ==================================================================
+
+ifneq "$(AUBITDIR)" ""
+	include $(wildcard $(AUBITDIR)/incl/*.mk)
+else
+	AUBITDIR=../..
+	include $(wildcard ../../incl/*.mk)
+endif
+#include $(MAKERULES)
+
+#include $(AUBITDIR)/incl/i4gl.mk
+#include $(AUBITDIR)/incl/d4gl.mk
+#include $(AUBITDIR)/incl/a4gl.mk
+#include $(AUBITDIR)/incl/q4gl.mk
+
+
+## ==================================================================
+##                              Options
+## ==================================================================
+
+
+#Program(s) to build
+FILES		= ide
+
+#We can change the list of C source files into a list of object files by
+#replacing the `.c' suffix with `.o' in the result, like this:
+#$(patsubst %.c,%.o,$(wildcard *.c))
+
+GLOBALS.4gl = d4glglob.4gl
+
+FILES.4gl	= ${GLOBALS.4gl} checkint.4gl findstr.4gl getopt.4gl instring.4gl \
+			d4glmain.4gl d4glfile.4gl d4glform.4gl rcsmunge.4gl shell.4gl
+
+
+FILES.aubit.4gl = access_a4gl.4gl
+
+FILES.per := $(wildcard *.per)
+#FILES.per 	= d4glinpt.per d4glopts.per
+
+FILES.msg := $(wildcard *.msg)
+#FILES.msg 	= d4glhelp.msg
+
+DBASE     = databasename
+DBASE.sch = ${DBASE}.sch
+
+CFILE1.c  	= access.c
+CFILE2.c  	= popstr.c
+CFILE3.c  	= d4gl-access.c
+FGIUSR.c  	= fgiusr.c
+FGLEXT.c  	= fglext.c
+
+## ==================================================================
+##                              Install Information
+## ==================================================================
+
+#user and group to use to perform installation:
+D4GL_USR      = informix
+D4GL_GRP      = informix
+#files installation root:
+#D4GL_DIR      = ${AUBITDIR}
+D4GL_DIR      = /usr/local
+#place to put lounch shell script(s) (preferably in $PATH)
+D4GL_BIN      = ${D4GL_DIR}/bin
+#place to put all program files:
+#D4GL_D4GL     = ${D4GL_DIR}/${FILES}_bin
+D4GL_D4GL     = ${D4GL_DIR}/4glide
+
+ADDITIONAL_CLEAN	= *.log d4gl.4ge d4glopts.frm d4glinpt.frm d4glhelp.iem \
+					*.afr ${FILES.4gl:.4gl=.h}
+
+
+## ==================================================================
+##                              Footer include
+## ==================================================================
+
+ifneq "$(AUBITDIR)" ""
+	include $(AUBITDIR)/incl/footer-c.mki
+else
+	include ../../incl/footer-c.mki
+endif
+## ---------------------------- EOF ---------------------------------
+
+

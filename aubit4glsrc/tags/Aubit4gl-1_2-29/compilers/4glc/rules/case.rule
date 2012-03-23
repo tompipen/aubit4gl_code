@@ -1,0 +1,67 @@
+/*
+=====================================================================
+                        Source: case.rule
+=====================================================================
+*/
+
+op_case_fgl_expr_c : {$<ptr>$=0;} | fgl_expr_c {$<ptr>$=$<ptr>1;}
+;
+
+case_cmd	: CASE atline op_case_fgl_expr_c  {
+			push_blockcommand("CASE");
+			add_feature("CASE_EXPR");
+			setinc(1);
+			setinc(1);
+		} when_unit op_otherwise_command end_case_command {
+			int blk;
+			blk=get_sio_ids("CASE");
+			/*print_after_when(0); */
+			//continue_blockcommand("CASE");
+			pop_blockcommand("CASE");
+			set_cmdlineno($<integer_val>2);
+			$<cmd>$=new_case_cmd(chk_expr($<ptr>3), $<whens>5, $<commands>6,blk);
+		}
+;
+
+
+
+op_then :
+       | KW_THEN
+;
+
+when_unit : when_command  {
+			$<whens>$=malloc(sizeof(whens));
+			$<whens>$->whens.whens_len=1;
+			$<whens>$->whens.whens_val=malloc(sizeof($<whens>$->whens.whens_val[0]) * $<whens>$->whens.whens_len);
+			$<whens>$->whens.whens_val[$<whens>$->whens.whens_len-1]=$<when>1;
+		}
+		| when_unit when_command  {
+			$<whens>$=$<whens>1;
+			$<whens>$->whens.whens_len=$<whens>1->whens.whens_len+1;
+			$<whens>$->whens.whens_val=realloc($<whens>1->whens.whens_val, sizeof($<whens>$->whens.whens_val[0]) * $<whens>$->whens.whens_len);
+			$<whens>$->whens.whens_val[$<whens>$->whens.whens_len-1]=$<when>2;
+		}
+;
+
+
+end_case_command : END_CASE 
+;
+
+op_otherwise_command : {$<commands>$=0;} | OTHERWISE {  lastlineno=yylineno;} commands_as_list { $<commands>$=$<commands>3; }
+;
+
+
+when_command		: WHEN atline fgl_expr_c op_then {  lastlineno=yylineno;} commands_as_list { 	
+				$<when>$=malloc(sizeof(when));
+				$<when>$->when_expr=chk_expr($<ptr>3);
+				$<when>$->when_commands=$<commands>6;
+				$<when>$->lineno=$<integer_val>2;
+				$<when>$->colno=0;
+ 				setinc(-1);
+			}
+;
+
+
+
+/* ================================= case.rule ============================= */
+

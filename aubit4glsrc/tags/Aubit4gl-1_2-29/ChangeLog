@@ -1,0 +1,3501 @@
+---------------------------
+Fri Dec 30 10:30:54 GMT 2011
+---------------------------
+1.2_28 Released
+---------------------------
+	2011-12-30 09:15  mikeaubury
+	
+	MID : 1446  - Add/Update in runforms.4ae failed in probably
+	nonsense function disp_field_2() in runform.4gl.
+	
+	2011-12-28 14:41  mikeaubury
+	
+	Attempt to fix UI=XML issues with float
+	
+	2011-12-28 11:50  siverly
+	
+	fix for max os lion
+	
+	2011-12-18 08:56  mikeaubury
+	
+	Fix SUBSCRIPT on DISPLAY ARRAY for UI=XML
+	
+	2011-12-18 08:49  mikeaubury
+	
+	Fix TYPE in FREE for UI=XML
+	
+	2011-12-15 18:04  mikeaubury
+	
+	Add a "ui.curses.getkey()" to allow a call to get an unmodified
+	keystroke (ie - does not convert to ACCEPT,INTERRUPT etc..)
+	
+	2011-11-16 17:38  mikeaubury
+	
+	Small patch for fields after a CLEAR
+	
+	2011-11-13 09:48  mikeaubury
+	
+	Add keycode for SHTAB
+	
+	2011-11-06 10:54  mikeaubury
+	
+	add export FORMONLYSERIALASINT=Y
+	to force an integer when a field is defined as
+	f001=formonly.colname type sometab.someserialcolumn
+	
+	as informix doesn't treat it the same way as an proper
+	serial column
+	
+	2011-11-05 14:25  mikeaubury
+	
+	Win32 Fixup
+	
+	2011-10-28 19:27  mikeaubury
+	
+---------------------------
+Fri Oct 28 18:52:12 BST 2011
+---------------------------
+1.2_27 Released
+---------------------------
+	2011-10-26 18:10  mikeaubury
+	
+	Add a -I option to make field tags case sensitive...
+	
+	2011-10-26 10:58  mikeaubury
+	
+	Set REQUIRED for NOTNULL char fields too (can be turned off by
+	setting "SPCNOTNULLCHAR=Y")
+	
+	2011-10-24 19:52  mikeaubury
+	
+	MID 1429
+	
+	2011-10-24 18:02  mikeaubury
+	
+	Fix for MID : 1434
+	
+	2011-10-20 19:32  mikeaubury
+	
+	Add TYPE to TEXT tag for DISPLAYTO in XML GUI
+	
+	2011-10-20 09:18  mikeaubury
+	
+	A4GL_NUMERIC handling fixups
+	
+	2011-10-17 22:11  mikeaubury
+	
+	fixup decimal handling..
+	
+	2011-10-09 20:18  mikeaubury
+	
+	Add MYSQL_PORT and MYSQL_SOCKET environment settings
+	
+	2011-09-29 13:09  mikeaubury
+	
+	Darwin fixup
+	
+	2011-09-21 12:37  mikeaubury
+	
+	Add 'flush_ui' after RUNINFO
+	
+	2011-09-08 20:22  mikeaubury
+	
+	Add an extra packet to XML protocol to indicate the start and end
+	of a RUN command
+	
+	2011-09-06 19:44  mikeaubury
+	
+	INPUT ARRAY clear field on typing fixup (dont clear if moved from
+	first column)
+	
+	2011-09-06 18:55  mikeaubury
+	
+	Fix DEFAULT value for field in an INPUT ARRAY (TUI)
+	
+	2011-08-30 07:19  mikeaubury
+	
+	Small insert/overtype fix for TUI
+	
+	2011-08-26 07:57  mikeaubury
+	
+	Fixup UNLOAD with DBMONEY=,
+	
+	2011-08-16 09:02  mikeaubury
+	
+	Object ref cnt fixup
+	
+	2011-08-14 12:58  mikeaubury
+	
+	Allow objects (via toString) for the menu title
+	
+	2011-08-12 17:15  mikeaubury
+	
+	more string object fixups
+	
+	2011-08-12 11:58  mikeaubury
+	
+	Fixup for MAP4GL (show cursor names properly) Small enhancement for
+	ON ACTION actionname KEY (key list)
+	
+	2011-08-11 12:48  mikeaubury
+	
+	Add string.getindexof
+	
+	2011-08-10 16:03  mikeaubury
+	
+	Modifications for STRING_AS_OBJECT
+	
+	2011-08-09 16:13  mikeaubury
+	
+	Allow multiple TRIGGEREDs in a single return from the XML GUI
+	
+	2011-08-09 10:28  mikeaubury
+	
+	Small Construct fixup for TUI (DISPLAYing to numeric fields)
+	
+	2011-08-09 10:23  mikeaubury
+	
+	Add ability to use an OBJECT for a prepare (eg. for a string)
+	
+	2011-08-09 10:16  mikeaubury
+	
+	Add string.append member function
+	
+	2011-07-30 09:48  mikeaubury
+	
+---------------------------
+Sat Jul 30 09:45:28 BST 2011
+---------------------------
+1.2_26 Released
+---------------------------
+	2011-07-28 18:33  mikeaubury
+	
+	Make 'CLEAR field' clear the attributes from a field too (UI=TUI)
+	
+	2011-07-25 20:28  mikeaubury
+	
+	get_fldbuf fixup for XML gui
+	
+	2011-07-23 20:23  mikeaubury
+	
+	Make "A4GL_INPUTREQUIREDTYPE" default to REQUIRED_TYPE_INPUT
+	instead of REQUIRED_TYPE_FIELD
+	
+	2011-07-23 10:19  mikeaubury
+	
+	Small sql conversion fixup for double single quotes ('') in a
+	string..
+	
+	2011-07-23 09:33  mikeaubury
+	
+	Small fixup for embedded single quote when converting string to
+	regexp
+	
+	2011-07-22 20:30  mikeaubury
+	
+	Fix CURRENT ROW DISPLAY= "...." in INPUT ARRAY (TUI)
+	
+	2011-07-22 19:06  mikeaubury
+	
+	Add ability to "print files" to the XML GUI (C# client only atm)
+	
+	2011-07-21 21:37  mikeaubury
+	
+	Add aclfgl_printfile_to_ui to enable printing of files in the XML
+	UIs.. (C# client only atm)
+	
+	
+	2011-07-11 13:59  siverly
+	
+	Set the LOGNAME
+	
+	2011-07-09 07:59  mikeaubury
+	
+	remove ODBC password from debug.out
+	
+	2011-06-30 19:43  mikeaubury
+	
+	Incread the FLEXML buffersize for UI=XML
+	
+	2011-06-29 14:19  mikeaubury
+	
+	fixup a4gl_get_ui_mode for UI=XML
+	
+	2011-06-26 16:07  naurus
+	
+	Added WHENEVER SIGNAL signal IGNORE|DEFAULT to clear any changes
+	made by WHENEVER SIGNAL signal CALL function.
+	
+	2011-06-26 14:57  naurus
+	
+	Added WHENEVER SIGNAL SIGUSR1|SIGUSR2|Any-unix-signal-int CALL
+	sighandler where sighandler is a function taking no arguments that
+	gets called if the respective signal is sent to the running
+	program.
+	
+---------------------------
+Sun Jun 26 15:27:20 BST 2011
+---------------------------
+1.2_25 Released
+---------------------------
+	2011-06-26 14:57  naurus
+	
+	Added WHENEVER SIGNAL SIGUSR1|SIGUSR2|Any-unix-signal-int CALL
+	sighandler where sighandler is a function taking no arguments that
+	gets called if the respective signal is sent to the running
+	program.
+	
+	2011-06-25 19:00  mikeaubury
+	
+	Added MLET with Nate...
+	
+	2011-06-09 17:28  mikeaubury
+	
+	Add an implicit 'EXIT MENU' command via ON ACTION fgl_exit_menu if
+	$ADDEXITMENUACTION=Y This will be used by the GUI to force an exit
+	menu...
+	
+	2011-05-30 14:55  mikeaubury
+	
+	Allow TEXT and BYTE blobs to be DISPLAYed TO in XML GUI
+	
+	2011-05-27 13:47  mikeaubury
+	
+	ON KEY ... EXIT CONSTRUCT .. fixup for XML UI
+	
+	2011-05-17 18:23  mikeaubury
+	
+	Add new "fgl_copy" call - copies from one variable to another using
+	byte copies (so copying a large array of records is much faster).
+	Eg.  define a array[20] of record	  c char(20) end record
+	
+	define b array[20] of record	     c char(20) end record
+	...	     for d=1 to 20		    let a[d].c=d
+	end for
+	
+	CALL fgl_copy(a,b)
+	
+	will copy the array "a" into array "b"
+	
+	Sizes of the arrays *must match*
+	
+	2011-05-14 09:35  mikeaubury
+	
+---------------------------
+Sat May 14 09:32:56 BST 2011
+---------------------------
+1.2_24 Released
+---------------------------
+	
+	2011-05-11 07:39  mikeaubury
+	
+	Small calltree fixups
+	
+	2011-05-05 22:16  mikeaubury
+	
+	Small construct fixup (fix the setting of the buffer when returning
+	from the 'large' construct field, when using an ON KEY event)
+	
+	2011-05-05 21:36  mikeaubury
+	
+	Add function elasped time to TRACE4GLEXEC output
+	
+	2011-05-05 21:32  mikeaubury
+	
+	Calltree fixups
+	
+	2011-05-02 12:23  mikeaubury
+	
+	Performance improvement
+	
+	2011-04-26 12:31  mikeaubury
+	
+	Trim trailing spaces from menu options
+	
+	2011-04-20 16:44  mikeaubury
+	
+	Create smaller XML packets by reducing the size of some of the XML
+	tags (UI=XML)
+	
+	2011-04-20 07:48  mikeaubury
+	
+	Small win32fixup
+	
+	2011-04-19 18:28  mikeaubury
+	
+	Allow "-port ###" as parameter to XML GUI proxy
+	
+---------------------------
+Fri Apr 15 21:11:24 BST 2011
+---------------------------
+1.2_23 Released
+---------------------------
+---------------------------
+Fri Apr 15 17:12:39 BST 2011
+---------------------------
+1.2_22 Released
+---------------------------
+	2011-04-14 17:57  mikeaubury
+	
+	Postgresql Interval fixups
+	
+	2011-04-14 17:57  mikeaubury
+	
+	Allow DSN as 4th field in the ACL file - the means you can "map" a
+	database to a different db for ODBC connections
+	
+	2011-03-29 14:12  mikeaubury
+	
+	Add ui.interface.close() [ intended to close the GUI front end with
+	XML protocol ]
+	
+	2011-03-23 20:29  mikeaubury
+	
+	Add a datatype hint for the PROMPT statement (useful with UI=XML)
+	
+	2011-03-16 18:28  mikeaubury
+	
+	QREncode detection fixup
+	
+	2011-03-11 20:09  mikeaubury
+	
+	CamelCasing forms used for form_is_compile fixups
+	
+	2011-03-11 07:37  mikeaubury
+	
+	Ensure screen mode is used when resizing using fgl_setsize
+	
+	2011-03-05 14:57  mikeaubury
+	
+	NCHAR fixup
+	
+---------------------------
+Mon Feb 28 18:39:37 GMT 2011
+---------------------------
+1.2_21 Released
+---------------------------
+	2011-02-18 21:08  mikeaubury
+	
+	fix NEXT FIELD PREVIOUS on first field bug
+	
+	2011-02-14 19:15  mikeaubury
+	
+	add 'require' option to 4glpc settings file
+	
+	2011-01-24 07:42  mikeaubury
+	
+	Fix MYSQL detection
+	
+---------------------------
+Sun Jan 16 13:10:06 GMT 2011
+---------------------------
+1.2_20 Released
+---------------------------
+	2011-01-11 13:04  mikeaubury
+	
+	Fixup for CASE in SELECT
+	
+	2011-01-07 11:58  mikeaubury
+	
+	Add sql parsing to PREPARE statements in fglcalltree
+	
+	2011-01-06 19:46  mikeaubury
+	
+	Stop column name transformations unless they are needed in SQL
+	translation
+	
+	2011-01-05 14:42  mikeaubury
+	
+	Calltree updates
+	
+	2011-01-04 18:05  mikeaubury
+	
+	2010-12-23 14:31  mikeaubury
+	
+	Changed to just use g++ for pdflib - not haru too...
+	
+	2010-12-21 15:52  mike-no
+	
+	qrencode updated
+	
+	2010-12-21 11:02  mike-no
+	
+	Use of pdflib8
+	
+	2010-12-20 03:02  mike-no
+	
+	pdf updates
+	
+	2010-12-19 16:50  mike-no
+	
+	Initial revision
+	
+	2010-12-16 21:22  mikeaubury
+	
+	Calltree updates
+	
+	2010-12-12 12:55  mikeaubury
+	
+	fglcalltree enhancements
+	
+	2010-12-11 13:08  mikeaubury
+	
+	Added MENU .. ATTRIBUTES(NORMAL="...", HIGHLIGHT="...") where
+	NORMAL and HIGHTLIGHT specify the attributes as strings for the
+	normal and highlighted menu options.  Eg.
+	
+	main menu "Select" attributes(normal="BLUE",
+	highlight="GREEN,REVERSE")	   command "Yes"
+	message "Yes"	      command "No"		   message "No"
+	command "Exit"		   exit menu end menu end main
+	
+---------------------------
+Sat Dec 11 14:42:51 GMT 2010
+---------------------------
+1.2_19 Released
+---------------------------
+	
+	2010-12-11 13:08  mikeaubury
+	
+	Added MENU .. ATTRIBUTES(NORMAL="...", HIGHLIGHT="...") where
+	NORMAL and HIGHTLIGHT specify the attributes as strings for the
+	normal and highlighted menu options.  Eg.
+	
+	main menu "Select" attributes(normal="BLUE",
+	highlight="GREEN,REVERSE")	   command "Yes"
+	message "Yes"	      command "No"		   message "No"
+	command "Exit"		   exit menu end menu end main
+	
+	2010-12-09 16:41  siverly
+	
+	fix for mac sqlerrd
+	
+	2010-12-09 14:58  dbuettner
+	
+	added inlibrary table to the create table list
+	
+	2010-12-07 10:44  mikeaubury
+	
+	Construct Issue with UI=XML
+	
+	2010-12-07 10:24  mikeaubury
+	
+	Small fixup for INPUT ARRAY where no fields are editable
+	
+	2010-12-06 18:24  mikeaubury
+	
+	Add the "syspgma4gl" database configuration parameter eg
+	A4GL_SYSPGMA4GL=mikesa4gl
+	
+	allows you to specify an alternate name for the syspgma4gl
+	database name
+	
+	2010-12-04 15:46  mikeaubury
+	
+	fgllint fixup for "CURRENT WINDOW IS SCREEN"  (causes segfault)
+	
+	2010-11-29 09:40  mikeaubury
+	
+	Multidimensional dynamic array fixup
+	
+	2010-11-26 09:49  siverly
+	
+	ms: Added a daemon functionality. Parameters : (-start, -stop,
+	-restart)
+	
+	2010-11-24 20:46  mikeaubury
+	
+	Add "schema". for PG8 unload
+	
+	2010-11-17 19:35  mikeaubury
+	
+	Add LOGODBCSQLFILE and LOGODBCSQLPID settings
+	
+---------------------------
+Tue Nov 16 18:53:22 GMT 2010
+---------------------------
+1.2_18 Released
+---------------------------
+	2010-11-08 16:15  siverly
+	
+	ms: Fixed the Borken pipe Bug
+	
+	2010-11-08 12:12  siverly
+	
+	pass another parameter to the program (XML proxy)
+	
+	2010-11-02 18:19  mikeaubury
+	
+	BEFORE DISPLAY fixup for TUI
+	
+	2010-11-01 15:03  mikeaubury
+	
+	Fix unload of CHAR in PG8 when using ' ' as the delimiter (to
+	remove trailing blanks)
+	
+	2010-10-27 20:39  mikeaubury
+	
+	Add some ON ANY KEY functionality back in
+	
+	2010-10-26 16:06  mikeaubury
+	
+	Fixup to the MDY handling - so its not done *every* time
+	
+	2010-10-08 12:03  dbuettner
+	
+	still insertElement
+	
+	2010-10-08 11:58  mikeaubury
+	
+	CHAR<->numeric comparison fixup
+	
+	2010-10-08 10:36  dbuettner
+	
+	try to get insertElement working
+	
+	2010-10-07 09:56  mikeaubury
+	
+	Small dynamic array fixup
+	
+	2010-10-06 15:49  dbuettner
+	
+	Added the getcharat function for chars and strings (that are not
+	objects (STRING_AS_OBJECT=N)
+	
+	2010-10-06 14:16  mikeaubury
+	
+	Dynamic array fixups
+	
+	2010-10-06 11:46  mikeaubury
+	
+	TUI_wide fixup
+	
+	2010-09-27 13:13  mikeaubury
+	
+	Minor fixups
+	
+---------------------------
+Mon Sep 27 16:27:06 BST 2010
+---------------------------
+1.2_17 Released
+---------------------------
+	2010-09-27 13:13  mikeaubury
+	
+	Minor fixups
+	
+	2010-09-16 20:54  mikeaubury
+	
+	Fixup for when DBMONEY is set to ,
+	
+	2010-09-16 12:01  mike-no
+	
+	new barcode EAN-128 A,B,C + GS1-128
+	
+	2010-09-07 10:26  mikeaubury
+	
+	Fix FIELD ORDER CONSTRAINED
+	
+	2010-08-27 16:38  mikeaubury
+	
+	XML UI GET_FLDBUF fixup
+	
+	2010-08-26 21:23  mikeaubury
+	
+	Add polymorphic function signatures for 4gl classes
+	
+	2010-08-25 12:23  mikeaubury
+	
+	added some magnetic card scanner code
+	
+	2010-08-25 12:13  mikeaubury
+	
+	Add fgl_setsize function
+	
+---------------------------
+Wed Aug 25 14:01:58 BST 2010
+---------------------------
+1.2_16 Released
+---------------------------
+	2010-08-25 12:23  mikeaubury
+	
+	added some magnetic card scanner code
+	
+	2010-08-25 12:13  mikeaubury
+	
+	Add fgl_setsize function
+	
+	2010-08-23 21:26  mikeaubury
+	
+	Restrict detection of the 'CODE' to just where it can be used...
+	
+	2010-08-23 18:23  mikeaubury
+	
+	Some new OO functionality
+	
+	2010-08-13 09:47  mikeaubury
+	
+	Add initial Multi-SQLTYPE capability (ie - can connect to different
+	database types at the same time)
+	
+	2010-08-13 09:09  mikeaubury
+	
+	Remove usage restrictions on the Perl ace runner
+	
+	2010-08-12 13:13  mikeaubury
+	
+	Put PRAGMAs into globals headers too - when you read the GLOBALs -
+	it sets the pragmas for the module you're compiling as well
+	
+	2010-08-05 15:37  mikeaubury
+	
+	Allow DEFINE .. RECORD LIKE schema.table.*  and DEFINE	.. LIKE
+	schema.table.column
+	
+	2010-08-05 00:41  mikeaubury
+	
+	Add  'pragma set postgresql search_path "..."'	to aid compilation
+	with postgresql schemas...
+	
+	Eg.  database test1 pragma set postgresql search_path
+	"public,blah"
+	
+	main	# Where bibble_in_blah is a table in the 'blah'
+	schema	       define a record like bibble_in_blah.* end main
+	
+	2010-08-05 00:24  mikeaubury
+	
+	Couple of minor parser fixups for Joe Vigil
+	
+	2010-08-03 14:17  mikeaubury
+	
+	Add some more schema support for postgresql
+	
+	2010-07-30 09:29  mikeaubury
+	
+	Small cursor name mapping fixup
+	
+	2010-07-23 21:01  mikeaubury
+	
+	Add default of 16,2 for numeric
+	
+	2010-07-23 19:36  fortiz
+	
+	added sign64: openssl dgst -md5 -sign and openssl enc -base64 -A
+	
+	2010-07-19 15:32  mikeaubury
+	
+	2010-07-19 14:08  fortiz
+	
+	Added error handling to openssl extension
+	
+	
+	2010-07-16 18:34  fortiz
+	
+	First example of A4GL_ssl:: functions
+	
+	2010-07-16 18:31  fortiz
+	
+	A4GL_ssl::Functions taken from sign.c demo from openssl source
+	
+	
+---------------------------
+Wed Jul 14 14:35:50 BST 2010
+---------------------------
+1.2_15 Released
+---------------------------
+	2010-07-09 10:30  mikeaubury
+	
+	Add SET TEXT FORMAT for PDF reports
+	
+	2010-07-09 09:49  mikeaubury
+	
+	Add PDF changes from Michael Krauss for EAN-2 Addon and EAN-5
+	addon.
+	
+	To quote from his email : "EAN-5 is a supplement to the
+	EAN-13 and UPC-A barcode used on books. It is used to give a
+	suggestion for the price of the book.
+	
+	The EAN-2 is a supplement to the EAN-13 and UPC-A barcodes.
+	It is often used on magazines and periodicals to indicate an issue
+	number."
+	
+	2010-07-08 13:47  mikeaubury
+	
+	Add some ui.curses Object functions
+	
+	2010-07-08 13:43  mikeaubury
+	
+	Add some ui.curses Object functions
+	
+	2010-07-06 15:36  mikeaubury
+	
+	Add a "-compat" option to 4glpc to make it as compatible with
+	informix4gl at compile time as possible (turns off --! and --# etc,
+	sets the namespaces to " ", so it can find C functions etc)
+	
+	2010-07-06 15:35  mikeaubury
+	
+	Allow "HASHNOCOMMENT" to be set to "none" for fuller Informix4GL
+	compatibility (no --! or --#)
+	
+	2010-07-06 15:34  mikeaubury
+	
+	Add some "styles" for open window - eg. "zoom", "ds1", "ds2" (drop
+	shadow)
+	
+	2010-06-30 18:34  mikeaubury
+	
+	Small TRACE4GLEXEC fixup
+	
+	2010-06-25 16:21  mikeaubury
+	
+	Small fixup to ensure variables are expanded in a SELECT list
+	(which they probably shouldn't be in anyway!)
+	
+	2010-06-21 18:56  mikeaubury
+	
+	Small fixups Date field fixup for fields with a FORMAT Add assert
+	error text to the error log
+	
+	2010-06-21 14:17  mikeaubury
+	
+	navrc fixups for Informix UNLOAD files
+	
+	2010-06-21 12:16  mikeaubury
+	
+	Small fixup for UNLOAD
+	
+	2010-06-18 11:13  mikeaubury
+	
+	CALL showhelp(#) fixup
+	
+	2010-06-16 11:40  mikeaubury
+	
+	Compile time check for Integer expression with 'SPACES'
+	
+	2010-06-15 09:03  mikeaubury
+	
+	small 'datestyle' fixup for pg8 driver
+	
+	2010-06-14 13:17  mikeaubury
+	
+	Added '-G' option for fglcalltree to group functions into modules
+	
+	2010-06-09 13:40  mikeaubury
+	
+	Some minor LIKE sql translation fixups
+	
+	2010-06-09 13:36  mikeaubury
+	
+	matches_to_regexp fixups for Postgresql - and a new one for Mysql
+	
+	2010-06-09 07:57  mikeaubury
+	
+	Small fixup for datetime to float conversion
+	
+	2010-06-08 17:45  mikeaubury
+	
+	Small INPUT fixup + INPUT ARRAY fixup (for clearing date fields on
+	entry)
+	
+---------------------------
+Tue Jun  8 13:38:17 BST 2010
+---------------------------
+1.2_14 Released
+---------------------------
+	2010-06-04 20:02  mikeaubury
+	
+	Fix date issue in fields using 'mmm' in the format for input
+	
+	2010-06-04 13:35  mikeaubury
+	
+	Minor Date fixup
+	
+	2010-06-02 14:26  mikeaubury
+	
+	Small decimal fixup (comparison null check)
+	
+	2010-06-02 14:26  mikeaubury
+	
+	Page trailer fixup
+	
+	2010-06-02 12:26  mikeaubury
+	
+	Smallint field overflow fixup
+	
+	2010-06-02 12:25  mikeaubury
+	
+	Added some decimal separator fixups to HL_...
+	
+	2010-06-01 18:40  mikeaubury
+	
+	Add aclfgl_function_in_library
+	
+	2010-06-01 16:44  mikeaubury
+	
+	Small report fixup for Tiago
+	
+	2010-06-01 15:28  mikeaubury
+	
+	Fix fcompile problem
+	
+	2010-05-26 17:25  mikeaubury
+	
+	Add  A4GL_SINGLEFORM=Y for fcompile (emulates some informix4gl
+	behaviour which probably shouldn't be emulated)
+	
+	2010-05-24 11:05  mikeaubury
+	
+	Add program level timeout (at least while waiting on user
+	interaction)
+	
+	2010-05-20 17:49  mikeaubury
+	
+	MID 0001369  Problem with Fetch Next/Previous  and start and end of
+	resultset
+	
+	2010-05-19 08:52  mikeaubury
+	
+	Wordwrap fixup for pavel (expand embedded newlines)
+	
+	2010-05-18 11:52  mikeaubury
+	
+	INPUT ARRAY fixup for Pavel
+	
+	2010-05-14 12:15  mikeaubury
+	
+	Add TODO command
+	
+	2010-05-14 11:29  mikeaubury
+	
+---------------------------
+Fri May 14 16:25:47 BST 2010
+---------------------------
+1.2_13 Released
+---------------------------
+	2010-05-14 12:15  mikeaubury
+	
+	Add TODO command
+	
+	2010-05-12 09:29  mikeaubury
+	
+	Fix string comparision issue with newlines
+	
+	2010-05-11 10:03  mikeaubury
+	
+	Remove PCODE compilation..  (Can still be done manually - but not
+	by default...)
+	
+	2010-05-10 15:17  mikeaubury
+	
+	ZLIB updates
+	
+	2010-05-09 11:45  mikeaubury
+	
+	Small INTERVAL fixups, small parser updates (for fgllint)
+	
+---------------------------
+Sun May  2 12:13:51 BST 2010
+---------------------------
+1.2_12 Released
+---------------------------
+	2010-04-26 13:37  mikeaubury
+	
+	Allow write(x) and write([x]) for base.channel
+	
+	2010-04-26 11:35  mikeaubury
+	
+	Add "A4GL_NULLBADARGVAL" setting to return NULL instead of " " when
+	getting ARG_VAL(x) where 'x' is greater than NUM_ARGS
+	
+	2010-04-23 09:06  mikeaubury
+	
+	Fix FETCH ABSOLUTE 0 in informix sql driver
+	
+	2010-04-20 10:20  mikeaubury
+	
+	Remove field_match prints in UI_XML
+	
+	2010-04-16 14:44  siverly
+	
+	dbuettner: added DB_LOCALE and LANG to startup variables
+	
+	2010-04-16 13:44  mikeaubury
+	
+	Used a different command line when generating a '.so' on darwin...
+	
+	2010-04-08 16:45  mikeaubury
+	
+	Add functionality for buffer_touched
+	
+	2010-04-06 20:45  mikeaubury
+	
+	Add EAN13 and EAN8 barcode generation for PDF reports (kindly
+	submitted by Michael Krauss)
+	
+	2010-03-18 11:23  mikeaubury
+	
+	Remove any generated file when an error occurs..
+	
+	2010-03-17 19:01  mikeaubury
+	
+	Slight 4GL -> XML  generation fixups
+	
+	2010-03-16 12:19  mikeaubury
+	
+	Small 'unexpanded_list' fixups for 4GL -> 4GL conversions.  Small
+	fixup for 4glpc (4glpc -t FGL) small fixup for DEFAULT=CURRENT in
+	forms
+	
+	2010-03-16 12:08  mikeaubury
+	
+	Small 'unexpanded_list' fixups for 4GL -> 4GL conversions.  Small
+	fixup for 4glpc (4glpc -t FGL) small fixup for DEFAULT=CURRENT in
+	forms
+	
+---------------------------
+Fri Mar 12 10:13:53 GMT 2010
+---------------------------
+1.2_11 Released
+---------------------------
+	2010-03-10 13:45  mikeaubury
+	
+	Add a warning for MID 1366: Report: Agregate function, where
+	clause: comparing against variable not working
+	
+	2010-03-09 07:54  mikeaubury
+	
+	Change MATCHES to check "ALLOWPLINGMATCHESINVERT" before allowing a
+	'!' to invert the search on a '[...]' section
+	
+	2010-03-08 09:43  mikeaubury
+	
+	Renamed a couple of internal structure elements (cname ->
+	cursorname, fname -> functionname)
+	
+	
+	2010-03-04 12:35  mikeaubury
+	
+	Fix for build test 1733 - problem with a DISPLAY in an INPUT ARRAY
+	not detecting the line as changed
+	
+	2010-03-04 12:31  mikeaubury
+	
+	Fix for build test 1733 - problem with a DISPLAY in an INPUT ARRAY
+	not detecting the line as changed
+	
+	2010-03-02 14:44  mikeaubury
+	
+	Add calltree_load target for a4gl built makefiles
+	
+	2010-03-01 11:58  mikeaubury
+	
+---------------------------
+Mon Mar  1 11:56:58 GMT 2010
+---------------------------
+1.2_10 Released
+---------------------------
+	2010-02-27 10:14  mikeaubury
+	
+	Add LIMIT to the sort...
+	
+	2010-02-26 12:09  mikeaubury
+	
+	Add DBMONEY to the environment variables sent to the client
+	
+	2010-02-25 21:08  mikeaubury
+	
+	Add support for PRINT IMAGE ["character string" | charactervar] in
+	addition to PRINT IMAGE blobvar in PDF reports
+	
+	2010-02-22 14:42  dbuettner
+	
+	changed ui commands to act like 4js
+	
+	2010-02-17 10:59  mikeaubury
+	
+	IDS11.5 fixups for adbschema -sys
+	
+	2010-02-16 13:17  mikeaubury
+	
+	#ifdef DEBUG .. #endif	fixups
+	
+	2010-02-16 13:14  mikeaubury
+	
+	#ifdef DEBUG .. #endif	fixups
+	
+	2010-02-16 13:08  mikeaubury
+	
+	#ifdef DEBUG .. #endif	fixups
+	
+	2010-02-15 13:20  mikeaubury
+	
+	some internal function aliasing for compilers/sql
+	
+	2010-02-12 16:28  mikeaubury
+	
+	New Indexed fileschema - for faster compilations
+	
+	2010-02-12 14:39  mikeaubury
+	
+	Some minor fixups to allow (at least partial) compilation with g++
+	some 'const' fixups
+	
+---------------------------
+Wed Feb 10 13:06:27 GMT 2010
+---------------------------
+1.2_9 Released
+---------------------------
+	2010-02-09 14:15  mikeaubury
+	
+	Initial wsdl2fgl compiler
+	
+	2010-02-08 09:48  mikeaubury
+	
+	Minor fixup
+	
+	2010-02-04 18:16  mikeaubury
+	
+	Fix ints with gsoap generation
+	
+	2010-02-03 09:49  jcbatalha
+	
+	AIX ncurses detection fix.
+	
+	2010-01-29 12:59  mikeaubury
+	
+	fix sql_parse segfault reported by "navrc"
+	
+---------------------------
+Fri Jan 29 13:07:17 GMT 2010
+---------------------------
+1.2_8 Released
+---------------------------
+	2010-01-29 12:59  mikeaubury
+	
+	fix sql_parse segfault reported by "navrc"
+	
+	2010-01-26 15:49  jcbatalha
+	
+	Added some more include paths
+	
+	2010-01-25 21:02  mikeaubury
+	
+	Some initial SOA XML handling
+	
+	2010-01-22 14:21  jcbatalha
+	
+	Corrected 64 Bits AIX ar and ranlib options
+	
+	2010-01-21 18:19  mikeaubury
+	
+	Implement 1346: An option to order an ARRAY would be useful
+	SORT lv_array USING callback_function
+	
+	2010-01-20 13:14  mikeaubury
+	
+	Fix problem where a form is still displayed - even if a form cant
+	be opened
+	
+	2010-01-19 14:44  mikeaubury
+	
+	Add DISPLAYLINKERRFILE option for 4glpc
+	
+	2010-01-18 16:24  mikeaubury
+	
+	4glpc -t WRITE for windows fixup
+	
+	2010-01-18 12:49  mikeaubury
+	
+	Issue a compile time error when taking the LENGTH of a
+	non-character variable in a Substring...  eg:	 LET x	    = x[1, LENGTH(int_var)]
+	
+---------------------------
+Sun Jan 17 14:49:11 GMT 2010
+---------------------------
+1.2_7 Released
+---------------------------
+	
+	2010-01-15 17:35  jcbatalha
+	
+	Updated aix 4glpc lib linking settings
+	
+	2010-01-15 17:31  jcbatalha
+	
+	ar command was being issued twice.
+	
+	2010-01-15 15:42  jcbatalha
+	
+	Added 4glpc awareness to four new environment variables related to
+	lib linking: #ar command A4GL_AR_CMD=
+	
+	#ar options A4GL_AR_OPTS=
+	
+	#ranlib command #A4GL_AR_CMD=
+	
+	#ranlib options A4GL_RANLIB_OPTS=
+	
+	2010-01-14 07:46  mikeaubury
+	
+	USERDTYPEs (mpz) fixups - should work now, and no longer need
+	load_datatypes call TRANSLATED_STRING - automatic string
+	replacement should work again
+	
+	2010-01-14 07:43  mikeaubury
+	
+	Fixup for extra 'A4GL_push_char' for get_fldbuf in an INPUT ARRAY
+	
+	2010-01-14 07:41  mikeaubury
+	
+	dump_form.c - 4gl code generation , add "Simple mode"
+	
+	2010-01-13 16:39  mikeaubury
+	
+	generate RECORD LIKE ... when refactoring using A4GL_LEXTYPE=FGL
+	instead of generating a full column list
+	
+	2010-01-13 10:38  mikeaubury
+	
+	TRACE4GLEXEC fixup when a program abends..
+	
+	2010-01-12 09:01  mikeaubury
+	
+	Add A4GLSQL_fixup_descriptor to allow smaller SQL descriptor names
+	in infx esqlc sql driver
+	
+	2010-01-12 08:49  mikeaubury
+	
+	Add retvchar
+	
+	2010-01-07 09:27  mikeaubury
+	
+	win32 fixup
+	
+---------------------------
+Thu Jan  7 08:09:48 GMT 2010
+---------------------------
+1.2_6 Released
+---------------------------
+	2010-01-06 17:48  mikeaubury
+	
+	fix EXECUTE PROCEDURE
+	
+	2010-01-04 15:41  mikeaubury
+	
+	Small build fixups
+	
+	
+---------------------------
+Mon Jan  4 08:36:46 GMT 2010
+---------------------------
+1.2_5 Released
+---------------------------
+	2010-01-02 15:33  mikeaubury
+	
+	AIX fixup
+	
+	DATE fixup
+	
+	Remove compilers/fcompile/form_x.x etc Fix form compilation problem
+	with A4GL_FORMTYPE=XDR
+	
+	Add ability to create a web link in a PDF - just use :
+	
+	set color 0,1,1 	# make text it
+	blue..
+	call pdf_function("texturl","text to
+	display", "http://url_to_go_to/"))
+	set color 0,0,0 	# back to black
+	
+---------------------------
+Fri Dec 11 11:34:40 GMT 2009
+---------------------------
+1.2_4 Released
+---------------------------
+	
+	Adding CREATE PROCEDURE parser logic
+	
+	Increase buffer size for formxml
+	
+	Add FGL_DIALOG_SETICON
+	
+	Add BASENAMEARGV0, which strips any directory name and extension
+	from the arg_val(0) return value
+	
+	Add 'copyback' functionality for COPYOF parameters..
+	
+	Add HEADER tag to fields for XML forms
+	
+	Small fgllint fixups
+	
+	Print all block data on the same line
+	
+	Add form_line to window packet
+	
+	label handling changed - labels with predefined text are now static
+	
+---------------------------
+Tue Nov  3 11:02:51 GMT 2009
+---------------------------
+1.2_3 Released
+---------------------------
+	
+---------------------------
+Sat Oct 17 10:32:46 BST 2009
+---------------------------
+1.2_2 Released
+---------------------------
+	
+	Add combobox object support
+	
+	changed the function to convertMatrix records
+	
+	Fix assertion error reported by Peter Müller
+	
+	frontcall fixups
+	
+	more UI=XML fixups
+	
+	Fixup for multitab ui interface (sends and receives an ENVELOPEID
+	properly now)
+	
+	Add A4GL_PROGNAME to be the currently processing program name in
+	A4GL IDE generated makefiles
+	
+	Add 'IGNORE ERROR ([error number list]) FOR [4gl statement]'
+	
+	Add 4gl function prototyping program
+	
+	Small macosx fixup
+	
+	MID 1330 - fgllint : max(date) -> considered float : LETEXPR
+	
+	PRINT COLUMN COLUMN .. fixup for MID 1329
+	
+	Compilation speed optimisation
+	
+	
+	MID 1328
+	
+	builtin functions : check number of arguments
+	
+	MID 1327
+	
+	MID 1326 (for INPUT)
+	
+	MID  1326
+	
+	MID 1325
+	
+	MID 1324
+	
+	Add a 'DEFAULT_GLOBALS' setting which can be used to automatically
+	include a GLOBALS file in any module
+	
+	Allow shell variable exapansion in GLOBALS definitions - eg GLOBALS
+	"$DIR/somefile"
+	
+	Check parameters and return values to builtin functions (only MDY
+	atm)
+	
+	Minor fixups Added some Querix comptatibilty function stubs
+	
+	Add AUTOCASTSUBSCRIPT (cast character strings to integers when used
+	as a substring subscript)
+	
+	Add some sqlerrmessage support
+	
+---------------------------
+Sat Jul 25 10:50:05 BST 2009
+---------------------------
+1.2_1 Released
+---------------------------
+	
+	Add IGNDUPGLOBALS
+	
+	Fixup for MID 1317 (build test 1807)
+	
+	DISPLAY ARRAY fixup for XML GUIs
+	
+	Add more function keys (F66->F99)
+	
+	Small lint fixups
+	
+	Small 'Date' fixup for fields with more complex FORMATs
+	
+---------------------------
+Sun Jul 12 08:48:26 BST 2009
+---------------------------
+1.10RC_65 Released
+---------------------------
+	
+	Allow SKIP <expression> LINES as opposed to SKIP <integer> LINES.
+	
+	memory fixups
+	
+	Radio buttons in forms
+	
+	input array fixup - ensure AFTER INSERT is triggered on ACCEPT
+	
+	load fixup for blobs
+	
+---------------------------
+Sun Jul  5 10:37:24 BST 2009
+---------------------------
+1.10RC_64 Released
+---------------------------
+	
+	add --enable-optimised Some other minor performance improvements
+	
+	indentation
+	
+	Add getlength for dynamic arrays
+	
+	More UI_XML extensions (initial ui.form & ui.window)
+	
+	Major updates to Object extensions.  Allow base.channel variables
+	Allow DISPLAY NULL TO .. as alias for CLEAR Add ON CHANGE (for XML
+	UI only atm) Allow charvariable.substring(x,y) Add
+	interface.ui.loadToolbar, interface.ui.loadActionDefaults,
+	interface.ui.loadStyles for XML UI Add CALL ui.Interface.FrontCall
+	for XML UI
+	
+	fixup for build tests 1643 and 1653 ...
+	
+	Bugfix for broken decimal separator support in INPUT ARRAY
+	
+	Fixed debug message (decimal format info)
+	
+---------------------------
+Thu Jun 25 09:09:02 BST 2009
+---------------------------
+1.10RC_63 Released
+---------------------------
+	
+	INFIELD fixup when not in an INPUT/INPUT ARRAY/CONSTRUCT for XML
+	GUIs
+	
+	Implicit REQUIRED fixup for when a field is marked NOENTRY.
+	
+	Allow 'NULL' in RETURNINIG clause of a CALL
+	
+	Add 'fgllint -e' to set exit status if any LINT errors have been
+	reported...
+	
+---------------------------
+Sat Jun 13 11:12:28 BST 2009
+---------------------------
+1.10RC_62 Released
+---------------------------
+	
+	SYSCOLVAL fixups for fcompile
+	
+	Fixup for runforms
+	
+	MID 1281: function month return string, invalid conversion to int
+	
+	added a check for envvariable A4GL_AUTOCONVSCRAR to turn off the
+	autoconversion
+	
+	added a conversion routine to convert the matrix in a screen to a
+	table in a vbox
+	
+	MID 1280
+	
+	Small lint fixup
+	
+	lint : removed debug messages
+	
+	Add variables to the list of possible values for an IN in ACE
+	reports
+	
+	lint updates
+	
+	win32 fixups
+	
+	win32 fixup
+	
+---------------------------
+Wed May 27 18:05:21 BST 2009
+---------------------------
+1.10RC_61 Released
+---------------------------
+	
+	win32 fixups
+	
+	win32 fixup
+	
+	NOT NULL fixups for forms
+	
+	Add some experimental performance improvements
+	
+	datetime fixups
+	
+	menu option with trailing ' ' fixup
+	
+	err_txt fixup
+	
+	Add function statistics for fgllint XML output
+	
+	TAG handling
+	
+	Remove any leading directory name when creating an SQLMETRICS file
+	under $A4GL_SQLMETRICS
+	
+	Fix insert on Postgresql with Esql/c
+	
+---------------------------
+Mon May 11 12:17:46 BST 2009
+---------------------------
+1.10RC_60 Released
+---------------------------
+	
+	ensure menu option is visible when selected by key
+	
+	"without null input" fixup
+	
+---------------------------
+Tue May  5 18:42:55 BST 2009
+---------------------------
+1.10RC_59 Released
+---------------------------
+	
+	Menu positioning (and logo) fixups for HL_GTK
+	
+	fgllint fixups
+	
+	SQLMetrics : Basic audit skeleton
+	
+	Win32 fixups for UI=XML
+	
+---------------------------
+Wed Apr 29 14:35:59 BST 2009
+---------------------------
+1.10RC_58 Released
+---------------------------
+	
+	Win32 fixups for UI=XML
+	
+	Allow load of SQLMETRICS in File mode
+	
+	sqlmetrics: Initial support for sqlcode and timestamp
+	
+	Fix UNION with different sized strings returning CHAR(-1) in pg8.c
+	
+	fgllint fixups
+	
+	Added #ifdef DEBUG .. #endif around more A4GL_debug statements
+	Other small optimizations
+	
+---------------------------
+Thu Apr 23 11:26:50 BST 2009
+---------------------------
+1.10RC_57 Released
+---------------------------
+	
+	Added #ifdef DEBUG .. #endif around more A4GL_debug statements
+	Other small optimizations
+	
+	SQLMETRICS for ESQL/C generation
+	
+	Add 'RIGHT' field attribute
+	
+	Decimal/Float/Smallfloat fixup for comparison checking	(add
+	significant digit check for Floats)
+	
+	Small memory leak fixup for MYSQL driver
+	
+---------------------------
+Sat Apr 18 10:57:02 BST 2009
+---------------------------
+1.10RC_56 Released
+---------------------------
+	
+	Decimal/Float/Smallfloat fixup for comparison checking	(add
+	significant digit check for Floats)
+	
+	Small memory leak fixup for MYSQL driver
+	
+	Update verbose messages in '4glpc'
+	
+	Add reserved words workaround for SQL conversion parser
+	
+---------------------------
+Mon Apr  6 09:37:20 BST 2009
+---------------------------
+1.10RC_55 Released
+---------------------------
+	
+	Typo
+	
+	sqlmetrics : simple load and analyze program  (running prototype)
+	
+	Add A4GL_SQLMETRICS handling (log all SQLs with execution timing to
+	a file)
+	
+	fgllint fixups
+	
+	Add module and lineno to expr_datatype
+	
+	Mysql fixup for FETCH
+	
+---------------------------
+Wed Mar 25 17:17:45 GMT 2009
+---------------------------
+1.10RC_53 Released
+---------------------------
+	
+	INTEGER optimisations
+	
+	Ace compiler fixups - add EXTEND (...)
+	
+	New build
+	
+---------------------------
+Sat Mar 14 09:24:15 GMT 2009
+---------------------------
+1.10RC_52 Released
+---------------------------
+	
+	Add expressions for current row attributes + styles.  Add a verbose
+	mode for aubit-config (aubit-config -verbose)  to indicate where
+	the setting was read from
+	
+	Add 'ENTER' as a synonym for the key 'RETURN'
+	
+	Shift-HOME, Shift-END for HL_...
+	
+	Add Shift+END and Shift+HOME to input array/display array
+	
+	INSERT ROW=, DELETE ROW= fixups
+	
+	1260: truncate datetime when assigned to char
+	
+	Replace GTK_MESSAGE_NONE - not always defined
+	
+	Use stock buttons where available in winquestion
+	
+---------------------------
+Sat Feb 28 17:29:37 GMT 2009
+---------------------------
+1.10RC_51 Released
+---------------------------
+	
+	Use stock buttons where available in winquestion
+	
+	A4GL_UI=HL_GTK fixups (enable buttons when KEY is used in an ON
+	KEY)
+	
+	Add RIGHT ALIGN for PDF reports
+	
+	Win32 fixup for aace
+	
+	Win32 Fixup
+	
+---------------------------
+Tue Feb 24 08:19:24 GMT 2009
+---------------------------
+1.10RC_50 Released
+---------------------------
+	
+	Move some prepare/cursor checks back into libaubit4gl
+	
+	lastkey fixups for Pavel
+	
+	1238: datetime with fraction, can't be assigned if many decimals
+	
+	handle large oid     oid    |		   relname
+	-----------+-----------------------------------       2619 |
+	pg_statistic	  10978 | pg_prepared_statements  586347826 |
+	claexist
+	
+	compiling modules as object : next menu option like r4gl
+	
+	Fixup for when no fields are editable (all fields are noentry)
+	
+	Add reserved words checking back in for variable names
+	
+	national character fixup
+	
+	Add RUN ... WAITING FOR nsec [BY nsec] WITH [ERROR|MESSAGE] msg
+	
+	Fix setting OPTION HELP KEY
+	
+	TRACE4GLEXEC enhancements
+	
+	function tracing updates
+	
+	aace fixups
+	
+	Small patch to parse for OUTER joins
+	
+	Add keycode checking (lint and code generation)
+	
+	Add INSERT/DELETE/NEXT/PREV key detection to INPUT, CONSTRUCT and
+	PROMPT
+	
+	NCHAR fixups
+	
+---------------------------
+Mon Feb  9 17:57:31 GMT 2009
+---------------------------
+1.10RC_49 Released
+---------------------------
+	
+	NCHAR fixups
+	
+	Add 'ALWAYS_CAST' setting which can be used for ecpg generation to
+	add Casts to variables used in SQL statements.
+	
+	UI_XML fixup - add aclfgl_client_ui_call
+	
+	Minor HL_GTK & HL_TUI fixups for CONSTRUCT
+	
+	Display 'TEXT' to field (HL_TUI/HL_GTK)
+	
+	Display 'TEXT' to field (TUI)
+	
+	Fix A4GLSQLLIB_A4GLSQL_cancel in other SQL libraries
+	
+	Add curr_file_name & curr_line_no eg :
+	MAIN
+		display curr_file_name, "-",curr_line_no
+	END MAIN
+
+	
+	Fix page size problem in PDF reports
+	
+	Add compiling a makefile directly to 'PROGRAM COMPILE' in a4gl ide
+	
+	Added partial support for long query termination (in esql backend
+	atm)
+	
+	Indentation..
+	
+	Parameter fixups for 'printc'
+	
+	get_fldbuf fixup for non subscripted fields
+	
+	Win32 fixups
+	
+---------------------------
+Sat Jan 24 17:38:27 GMT 2009
+---------------------------
+1.10RC_48 Released
+---------------------------
+	
+	Change parser to use a different mechanism for setting variables
+	(parser change).  Add version protection to generated files when
+	using PACKED packer
+	
+	In function A4GL_wcswidth(): fallback to strlen() in case of
+	"invalid multibyte sequence" error.
+	
+	Fake pass by reference for BLOBs
+	
+	Add blob open error
+	
+	Fix required for build test 1698
+	
+	Fixup for compiling SPL
+	
+	Add 'WITH RESUME" to RETURN to be used solely with SPL generation
+	
+---------------------------
+Thu Jan  8 17:34:51 GMT 2009
+---------------------------
+1.10RC_47 Released
+---------------------------
+	
+	add SET EXPLAIN ON/OFF for pg8
+	
+	replace @font_name which seems to be causing some users an issue...
+	
+	win32 fixup
+	
+	Warnings fixups
+	
+---------------------------
+Fri Jan  2 13:14:53 GMT 2009
+---------------------------
+1.10RC_46 Released
+---------------------------
+---------------------------
+Tue Dec 16 14:24:47 GMT 2008
+---------------------------
+1.10RC_45 Released
+---------------------------
+	
+	Add CLEAR SCREEN as a NOP for CONSOLE driver
+	
+	fixup for build test 1697
+	
+	Postgresql serial fixups
+	
+	Serial support for Postgresql when in ESQL/C mode
+	
+	Serial support for unpatched Postgres in ESQL mode
+	
+	Add some debugging info
+	
+	Lint fixups
+	
+	Bugfix/support for DTYPE_NCHAR
+	
+	Add casting rules
+	
+	Add 'pick' library
+	
+	MESSAGE ... WAIT FOR KEY fixup for HL_GTK (& add usage in a4gl IDE)
+	
+	temporary file for blobs located in memory
+	
+	1232: segfault: display out of bound to screen record array
+	
+	UI fixups for HL_GTK and getting asql/a4gl to work nicely with GUIs
+	(XML and HL_GTK)
+	
+	win32 fixups
+	
+	DISPLAY blobvar TO field updates
+	
+	warn form linked
+	
+	UI=XML fixups
+	
+	memory leak fixup
+	
+	use new pdf report syntax
+	
+	Memory leak fixups
+	
+	memory leak fixups
+	
+	Memory leak fixups
+	
+	A4GL IDE fixups
+	
+	Warning fixups
+	
+	Add explicit 'Casting' operator
+	
+	Add 'currpos' pdf function call
+	
+	memory leak fixups
+	
+	Ensure we're using the postgres engine version, rather than
+	compilation version in pg8.c
+	
+	1230: Using don't show fine information
+	
+	Fix nasty arr_subscript issue
+	
+	lint fixups
+	
+	Memory leak fixups Also MID 1227: pg8: FINISH report without OUTPUT
+	TO REPORT fails.
+	
+	1207: pg8: same cursor executed multiple times in transaction
+	
+	Memory leak fixup
+	
+	1205: initialize RECORD_NAME.* to NOT NULL would be useful
+	
+	Wordwrap fixup to allow ^J to split a line
+	
+	Add warnings fixup for 4glp
+	
+	Add warnings fixup for 4glpc
+	
+	Small datetime fixup
+	
+	replace_ibind fixup
+	
+	Fix prototypes for asql
+	
+	64 bit fixups
+	
+	Add special case where you use a USING on an OPEN immediately
+	before a FOREACH
+	
+	Use A4GL_MAKE for make program in a4gl IDE
+	
+	Darwin fixups
+	
+	Darwin fixups
+	
+	Darwin fixup
+	
+	Darwin fixup
+	
+	Darwin fixups
+	
+	"fcompile -c" fixup
+	
+	small enhancement to A4GL (allow "fcompile -c" forms)
+	
+	Lint fixups
+	
+	Fix 'EXECUTE' (set noindicators) on a fake insert cursor for
+	postgres
+	
+	Postgresql Varchar fixup
+	
+	Add RELEASE SAVEPOINTs
+	
+	a4gl : fix for pg8
+	
+	More code cleanups in a4gl IDE tool
+	
+	MID 1202: pg8: whenever error stop , if error doesn't stop
+	
+	Code cleanup (remove unused variables etc)
+	
+	Lint code cleanups
+	
+	Add A4GL_CLASSPATH searchpath for shared library calls
+	
+	Small memory leak fixup
+	
+	asql: Control-B : Remove tables starting with space GL_COLLATE
+	GL_CTYPE VERSION
+	
+	asql: query choose: keep last selected file
+	
+	UI Fixup (segfault on test 1612 for  hl_tui)
+	
+	asql: BUG: Can't split first line with editor
+	
+	,
+	
+	
+	
+---------------------------
+Tue Nov 18 18:40:07 GMT 2008
+---------------------------
+1.10RC_43 Released
+---------------------------
+	
+	Critical 'GLOBAL's fixup
+	
+---------------------------
+Tue Nov 18 14:32:58 GMT 2008
+---------------------------
+1.10RC_42 Released
+---------------------------
+	
+	Forms in a4gl should all be formonly
+	
+	1195: INPUT ARRAY DON'T WORK WITH FIELD TYPE DATE Force the format
+	into lowercase when comparing
+	
+---------------------------
+Mon Nov 17 12:02:13 GMT 2008
+---------------------------
+1.10RC_41 Released
+---------------------------
+	
+	1195: INPUT ARRAY DON'T WORK WITH FIELD TYPE DATE Force the format
+	into lowercase when comparing
+	
+	Fixups required for new A4GL IDE
+	
+	LOAD fixup
+	
+	Small fixup for ESQL/C generation with INCLINES set
+	
+	Add PRINT FILE for pdf reports
+	
+	A4GL_INCLINES fixup
+	
+	Move the help number to the correct place in the INPUT command
+	
+	Allow clearing of pointers in DLmagic'd routines
+	
+	Tab in field fixup (reported by  john <john@og.co.nz> on 12 Nov
+	2008)
+	
+---------------------------
+Wed Nov 12 20:36:25 GMT 2008
+---------------------------
+1.10RC_40 Released
+---------------------------
+	
+	A4GL_INCLINES fixup
+	
+	Move the help number to the correct place in the INPUT command
+	
+	Allow clearing of pointers in DLmagic'd routines
+	
+	Tab in field fixup (reported by  john <john@og.co.nz> on 12 Nov
+	2008)
+	
+	memory leak fixup
+	
+	Small SQL Clobber fixup for a filenames starting with a number
+	
+	Small LEXTYPE=WRITE fixup for 4glpc
+	
+	Fix missing error message
+	
+	Look for the last '.' not the first one when looking at GLOBAL file
+	names
+	
+	libharu fixups
+	
+	UI_XML fixups
+	
+	Small memory leak fixup
+	
+---------------------------
+Fri Nov  7 08:05:38 GMT 2008
+---------------------------
+1.10RC_39 Released
+---------------------------
+	
+	Small memory leak fixup
+	
+	fix interrupt on a menu
+	
+	Small internationalization fixup (',' as decimal separator)
+	
+	1183: INPUT field with FOMAT=DMY4/ fails if DBDATE=DMY2/
+	
+	warning fixups
+	
+	warning fixups
+	
+	warnings fixups
+	
+	Initial GLOBALCURS support (allows globals cursors if GLOBALCURS=Y)
+	
+	Fix FORMAT on a serial column in fcompile (' A FORMAT cannot be
+	applied to this fields because of the datatype')
+	
+	Fix for build test 1688 (recognise changing menu options) + some
+	minor cleanups
+	
+	0001147: display datetime/timestamps variable to a form field
+	
+	Fix form errors not being reported
+	
+	Add OUTER_JOINS_NB for Postgres
+	
+	Fix Postgresql load / Automatically set datestyle for Postgres
+	
+	Fix formats in default values
+	
+	Fixup for filenames in LOAD/UNLOAD
+	
+	lineno fixup
+	
+	lineno fixup
+	
+	Fix layout of .ec code when INCLINES is set
+	
+	Small INCLINES fixup
+	
+	Small typo fixup
+	
+	Fix comma in prompt fix lineno/pageno variables
+	
+	Add construct callback functionality (eg construct lv_str on a,b
+	from a,b via c_callback)
+	
+	Decimal fixups
+	
+	BLOB fixup for A4GL_UI=TUI
+	
+	Decimal fixup
+	
+	Allow use of the SQLACL file for usernames/password in the Informix
+	database connector
+	
+	Try to remove reserved words from fcompile
+	
+---------------------------
+Mon Oct 20 21:11:58 BST 2008
+---------------------------
+1.10RC_38 Released
+---------------------------
+	
+	Try to remove reserved words from fcompile
+	
+	Win32 fixup
+	
+	textview (multiline text edit) fixups
+	
+	Minor error number handling changes
+	
+	Add REMAP_ERROR to convertsql file
+	
+	SPRINTF fixups Small fixups for internationalization - (commas for
+	decimal point in numeric input)
+	
+---------------------------
+Thu Oct 16 11:48:37 BST 2008
+---------------------------
+1.10RC_37 Released
+---------------------------
+	
+	SPRINTF fixups Small fixups for internationalization - (commas for
+	decimal point in numeric input)
+	
+	Small fixup for MENU (set current window first)
+	
+---------------------------
+Mon Oct 13 13:48:16 BST 2008
+---------------------------
+1.10RC_36 Released
+---------------------------
+	
+	Small fixup for MENU (set current window first)
+	
+	Fix "#" problem reported by John O'Gorman
+	
+	Small update to reports (adding proper error generation for FINISH
+	REPORT and OUTPUT TO REPORT when report is not STARTed) Add bounds
+	checking on ARRAY access
+	
+	Add serial detection to MYSQL
+	
+---------------------------
+Tue Oct  7 10:21:57 BST 2008
+---------------------------
+1.10RC_35 Released
+---------------------------
+	
+	Indentation...
+	
+	Add aclfgl_split_on_delimiter
+	
+	LOAD enhancement - add Filter function Eg.  load from "somefile"
+	using filter somefunc insert into sometable The filter function
+	needs to return the data to insert (one value per column) and can
+	return 0 values - in which case the line is ignored an no insert
+	performed There is a builtin CSV parser filter function available
+	(aclfgl_parse_csv) so you should be able to load a CSV file using :
+	load from "myfile.csv" using filter aclfgl_parse_csv insert into
+	blah1
+	
+	couple of minor LOAD fixups Add INNER JOIN to ANSI join syntax
+	
+---------------------------
+Wed Oct  1 10:31:45 BST 2008
+---------------------------
+1.10RC_34 Released
+---------------------------
+---------------------------
+Mon Sep 22 08:29:35 BST 2008
+---------------------------
+1.10RC_33 Released
+---------------------------
+	
+	Add aclfgl_add_acs_mapping for translating characters to alternate
+	character set characters
+	
+	detect 'serial' in a better way
+	
+	Almost cosmetic change around the ODBC_LONGVARCHAR_AS_CHAR
+	conversion.
+	
+	automatically drop a serial column when doing an UPDATE *=* Now
+	issues a warning : Serial column dropped from UPDATE statement
+	(serial columns cannot be updated)
+	
+	,
+	
+	win32 fixup
+	
+	Fixups for using 'static' libaubit4gl
+	
+	win32 fixup
+	
+	win32 fixup
+	
+	win32
+	
+	win32 fixup
+	
+	Win32 fixup
+	
+	get_fldbuf fix for INPUT ARRAY
+	
+	PDF Bookmark fixup
+	
+	Some PDF report fixups - added BLUEBAR option Minor parser cleanups
+	(removed missing ';' etc)
+	
+---------------------------
+Sun Sep 14 15:49:35 BST 2008
+---------------------------
+1.10RC_32 Released
+---------------------------
+	
+	Some PDF report fixups - added BLUEBAR option Minor parser cleanups
+	(removed missing ';' etc)
+	
+	PDF report and empty or invalid  blob
+	
+	Added QR barcodes
+	
+	Small warning fixups
+	
+	New build
+	
+---------------------------
+Wed Sep 10 11:25:23 BST 2008
+---------------------------
+1.10RC_31 Released
+---------------------------
+	
+	0001167: Simple arithmetic bug
+	
+	remove extra \n in asql
+	
+	0001149: pg8: error in sum(), format error
+	
+	0001156: cannot create functions
+	
+	minor UI_XML fixups
+	
+	Small patch to enable the retrival of the connection username via
+	aclfgl_get_connection_username() or via REPLACE_SQLCONST
+	USER=$DBUSER in the convertsql file.
+	
+	1159: asql_i.4ae doesn't recognize locking problems
+	
+	Ensure REPLACE_SQLCONST is used for ROWID -> OID conversion (MID
+	1166)
+	
+	More warnings fixups
+	
+	Warnings fixups
+	
+	add fgl_dialog_setcursor and fgl_dialog_getcursor
+	
+	Add  browser as a widget type
+	
+	Minor channel::write fixup
+	
+	small fixup for variable name remapping
+	
+	Add BYTE COPY for parameters to function (uses 'COPYOF') Add some
+	options for FCOMPILE minor 4glc syntax fixups
+	
+	Add matrix size when theres no INSTRUCTIONS screen record
+	
+---------------------------
+Tue Aug 26 14:38:31 BST 2008
+---------------------------
+1.10RC_30 Released
+---------------------------
+	
+	small fixup for variable name remapping
+	
+	Add BYTE COPY for parameters to function (uses 'COPYOF') Add some
+	options for FCOMPILE minor 4glc syntax fixups
+	
+	Add matrix size when theres no INSTRUCTIONS screen record
+	
+	trivial fix...
+	
+	ODBC_LONGVARCHAR_AS_CHAR conversion code moved from
+	liblex/lex_esqlc/compile_c.c to libsql/odbc/sql.c
+	
+	New build
+	
+---------------------------
+Wed Aug 13 07:32:56 BST 2008
+---------------------------
+1.10RC_29 Released
+---------------------------
+	
+	Always send an XMLFORM...
+	
+	Format fixups
+	
+	check pdf_functions are not called from within a normal report
+	
+	Add encodings for pdf reports
+	
+	Use '_' as a single character wildcard for LIKE
+	
+	Add NCHAR
+	
+	Add ECPGLOGGING
+	
+	Add DISPLAYLOCAL
+	
+	Add some basic user authentication
+	
+	Added partial support for less generic datetime data types,
+	currently for Informix only.
+	
+	PDF report fixups
+	
+	Report performance fixups
+	
+	XML form generation (not used for reading forms - just writing
+	them)
+	
+	Fix FINISH REPORT .. CONVERT TO
+	
+	Move XMLFORM
+	
+---------------------------
+Wed Jul  9 11:28:13 BST 2008
+---------------------------
+1.10RC_28 Released
+---------------------------
+	
+	send xmlforms as base64
+	
+	Change licensing contact
+	
+	UI=XML updates
+	
+---------------------------
+Sat Jun 28 09:12:09 BST 2008
+---------------------------
+1.10RC_27 Released
+---------------------------
+	
+	sql memory leak fixups
+	
+	Added 'boolean' as a recognised datatype for LIKE within 'pg8'
+	
+	Add (c) to schema file
+	
+	1146: -fileschema for datetime fields is invalid, (EC mode)
+	
+	pdf_function fixup Added SQL errors to be logged in errorlog when
+	continued over when ERRLOG_CONTINUE_ERRORS is set
+	
+	pdf_function fixup
+	
+	indent
+	
+	1144: pg8 : compile error: Assertion failed in define like
+	unexistant table
+	
+	MID 1143: pg.8: Compile error: DEFINE LIKE text column, can't
+	LOCATE
+	
+	libUI_XML fixups
+	
+	fix for build test 1709
+	
+	CONSTANT fixup
+	
+---------------------------
+Sat Jun 14 13:00:10 BST 2008
+---------------------------
+1.10RC_26 Released
+---------------------------
+	
+	CONVERTSQL fixup
+	
+	Small formatting update for FGL generation
+	
+	Small aubit4gl extension fixups
+	
+	Update FGLIdent information stored
+	
+	small unload fixup
+	
+	mid 1142
+	
+---------------------------
+Fri May 23 11:05:17 BST 2008
+---------------------------
+1.10RC_25 Released
+---------------------------
+	
+	Added compile time table checksums for dependant tables Added data
+	to store compilation info (available by running any .4ae with
+	--compiled-version) re-added Member function calls (parser2 issue)
+	
+	compile time optimisations.  Added extra header info (including
+	'dependant' tables) Some small code clearups
+	
+	lint fixup
+	
+	PG8 fixup Add filename and line number for assert fails add extra
+	operators for tests in convertsql files fix FORMAT EVERY ROW
+	
+	Build issue fixup
+	
+	further fixup for MID 0001133: Type casting doesn't work in *.4gl
+	programs.
+	
+---------------------------
+Tue May 13 21:18:53 BST 2008
+---------------------------
+1.10RC_24 Released
+---------------------------
+	
+	further fixup for MID 0001133: Type casting doesn't work in *.4gl
+	programs.
+	
+	Add :	      call aclfgl_send_to_ui("MAXIMISE")	 call
+	aclfgl_send_to_ui("MINIMISE")	      call
+	aclfgl_send_to_ui("UNMAXIMISE") 	call
+	aclfgl_send_to_ui("UNMIMINISE") for HL_GTK
+	
+	File format fixups
+	
+	ACE fixups
+	
+	Some tidy ups on the compilers to make them more consistent
+	
+---------------------------
+Mon May 12 13:47:54 BST 2008
+---------------------------
+1.10RC_23 Released
+---------------------------
+	
+	File format fixups
+	
+	ACE fixups
+	
+	Some tidy ups on the compilers to make them more consistent
+	
+	Select parameter fix Report fixup for reporting to STDOUT
+	
+	TARGETDIALECT Fixup Report output 'new parser' bug fix (use
+	file/stdout as default )
+	
+	Fix generate_aace getting column names
+	
+	An enhancement request: can we have colon (:) as a synonym for $
+	inside SQL ... END SQL too?
+	
+	Dynamic array fixups
+	
+	Small declare cursor fixup
+	
+---------------------------
+Thu May  8 15:33:41 BST 2008
+---------------------------
+1.10RC_22 Released
+---------------------------
+	
+	Dynamic array fixups
+	
+	Small declare cursor fixup
+	
+	_variable(...) fixup
+	
+	Fixup for MID 1139
+	
+---------------------------
+Tue May  6 22:13:42 BST 2008
+---------------------------
+1.10RC_21 Released
+---------------------------
+	
+	_variable(...) fixup
+	
+	Fixup for MID 1139
+	
+	Add FOR_UPDATE_DROP_COLLIST & FOR_UPDATE_NOWAIT
+	
+	A4GL_LOCALOUTPUT fixup
+	
+---------------------------
+Thu May  1 13:50:20 BST 2008
+---------------------------
+1.10RC_20 Released
+---------------------------
+	
+	A4GL_LOCALOUTPUT fixup
+	
+	Snall postgresql fixups
+	
+	add explicit date casting for postgres when generating ESQL/C code
+	(Theres a bug in postgres 8.3 which results in problems when doing
+	date arithmetic)
+	
+	Postgresql unload fixup for dates (unload to DBDATE format rather
+	than yyyy-mm-dd)
+	
+	number of lines in trailer fixup
+	
+	Try to display date using 2 digits for year when 4 digits wont fit
+	
+	time(#) fixup
+	
+---------------------------
+Wed Apr 30 14:27:06 BST 2008
+---------------------------
+1.10RC_19 Released
+---------------------------
+	
+	Postgresql unload fixup for dates (unload to DBDATE format rather
+	than yyyy-mm-dd)
+	
+	number of lines in trailer fixup
+	
+	Try to display date using 2 digits for year when 4 digits wont fit
+	
+	time(#) fixup
+	
+	aace fixups
+	
+	Construct fixup for <>
+	
+---------------------------
+Mon Apr 28 23:04:44 BST 2008
+---------------------------
+1.10RC_18 Released
+---------------------------
+	
+	Construct fixup for <>
+	
+	Add WITH CONVERSIONS/WITHOUT CONVERSIONS to SQLBLOCK Add TIME and
+	TIMESTAMP datatypes as synonyms for DATETIME
+	
+	PG8 fixup
+	
+	Construct Fixup Some Postgresql asql_p.4ae info additions
+	
+	fix required for build test 1674
+	
+	indentation
+	
+---------------------------
+Sat Apr 26 20:33:58 BST 2008
+---------------------------
+1.10RC_17 Released
+---------------------------
+	
+	PG8 fixup
+	
+	Construct Fixup Some Postgresql asql_p.4ae info additions
+	
+	fix required for build test 1674
+	
+	indentation
+	
+	Small datetime fixup
+	
+---------------------------
+Fri Apr 25 09:03:02 BST 2008
+---------------------------
+1.10RC_16 Released
+---------------------------
+	
+	Removed MISC_INFX_SQL
+	
+	Fixup for when LOCALOUTPUT is set
+	
+	New build
+	
+	Add : for insert values
+	
+---------------------------
+Wed Apr 23 10:23:07 BST 2008
+---------------------------
+1.10RC_15 Released
+---------------------------
+	
+	Add : for insert values
+	
+	Casting fixup
+	
+	Postgresql fixups Automate SQLConvert constants/detection routines
+	
+	New build
+	
+	add fgl_setcurrline
+	
+	Add cast (::) operator to sql parsing
+	
+	compile time warning fixups
+	
+	Add INCLUDE capability to convertsql files
+	
+---------------------------
+Sat Apr 19 15:23:59 BST 2008
+---------------------------
+1.10RC_14 Released
+---------------------------
+	
+	add fgl_setcurrline
+	
+	Add cast (::) operator to sql parsing
+	
+	compile time warning fixups
+	
+	Add INCLUDE capability to convertsql files
+	
+	Fixup for CONTINUE and EXIT
+	
+	MONEY fixup
+	
+---------------------------
+Fri Apr 18 12:22:23 BST 2008
+---------------------------
+1.10RC_13 Released
+---------------------------
+	
+	Fixup for CONTINUE and EXIT
+	
+	MONEY fixup
+	
+	err_get/err_print fixup
+	
+	Add SCROLL
+	
+	New build
+	
+---------------------------
+Wed Apr 16 08:09:25 BST 2008
+---------------------------
+1.10RC_12 Released
+---------------------------
+	
+	Help file update
+	
+	err_get and err_print fixup (uses help file to obtain error text)
+	
+	Help file update
+	
+	$GTKRC fixup - look for allow $GTKRC"_2" first - if not found
+	revert to $GTKRC
+	
+	Couple of simple helper scripts
+	
+	OUTER JOIN fixup
+	
+	fixup for CASE in sql statements
+	
+	Add IF.. ELSE.. ENDIF capability to convertsql files
+	
+	get_fldbuf fixup
+	
+	XML UI fixups
+	
+	Outer join fixup (Add LEFT OUTER syntax)
+	
+	XML UI fixups
+	
+	Outer join fixup
+	
+---------------------------
+Mon Apr 14 19:19:43 BST 2008
+---------------------------
+1.10RC_11 Released
+---------------------------
+	
+	Add IF.. ELSE.. ENDIF capability to convertsql files
+	
+	get_fldbuf fixup
+	
+	XML UI fixups
+	
+	Outer join fixup (Add LEFT OUTER syntax)
+	
+	XML UI fixups
+	
+	Outer join fixup
+	
+	New build
+	
+	Add FIRSTASLIMIT, ALLOWTABLELESS Add ':' as a synonym for $ in
+	prefixing variables in SQL statements
+	
+	Minor fixups Removed decimal separator when converting from a
+	string Add --neverconvert to 4glpc options Use --neverconvert when
+	compiling asql_i.4ae to    avoid forcing a connection to the
+	database
+	
+	Fix NEXT FIELD so it does an implicit CONTINUE INPUT
+	
+---------------------------
+Sat Apr 12 13:50:10 BST 2008
+---------------------------
+1.10RC_10 Released
+---------------------------
+	
+	Add FIRSTASLIMIT, ALLOWTABLELESS Add ':' as a synonym for $ in
+	prefixing variables in SQL statements
+	
+	Minor fixups Removed decimal separator when converting from a
+	string Add --neverconvert to 4glpc options Use --neverconvert when
+	compiling asql_i.4ae to    avoid forcing a connection to the
+	database
+	
+	Fix NEXT FIELD so it does an implicit CONTINUE INPUT
+	
+	Minor menu fixup
+	
+	remove the fgl.xs.h from the runtime (generated) files
+	
+	minor XML UI fixups
+	
+	Fixup for variable attributes on windows
+	
+	Postgresql ecpg fixup
+	
+	New build
+	
+	added new function prototypes
+	
+	Force non XDR packer when compiling a 4GL module with PACKER=XDR
+	set (used for reading/writing the globals file)
+	
+	initial syscolatt implementation
+	
+	return success or failure correctly when using the XDR packer
+	
+	Minor Postgres fixups
+	
+	syscolatt/A4GL_SYSCOL_ATT fixups
+	
+	_variable(...) attributes fixup
+	
+	make prompt field for a "FOR CHAR" in GTK much smaller
+	
+	'INVISIBLE' attribute cleanup for form fields (alternative method
+	not using O_PUBLIC) Small fixup for _variable(id) in ESQL/C
+	generation
+	
+---------------------------
+Wed Apr  9 17:22:08 BST 2008
+---------------------------
+1.10RC_9 Released
+---------------------------
+	
+	added new function prototypes
+	
+	Force non XDR packer when compiling a 4GL module with PACKER=XDR
+	set (used for reading/writing the globals file)
+	
+	initial syscolatt implementation
+	
+	return success or failure correctly when using the XDR packer
+	
+	Minor Postgres fixups
+	
+	syscolatt/A4GL_SYSCOL_ATT fixups
+	
+	_variable(...) attributes fixup
+	
+	make prompt field for a "FOR CHAR" in GTK much smaller
+	
+	'INVISIBLE' attribute cleanup for form fields (alternative method
+	not using O_PUBLIC) Small fixup for _variable(id) in ESQL/C
+	generation
+	
+	Small fixup for TARGETDIALECT
+	
+	Report WORDWRAP fixup MATCHES -> REGEX fixup (add $ at the end of
+	the string)
+	
+	New build
+	
+	syscolval update
+	
+---------------------------
+Mon Apr  7 19:30:05 BST 2008
+---------------------------
+1.10RC_8 Released
+---------------------------
+	
+	syscolval update
+	
+	'FORCE_HOLD_ALWAYS', 'FORCE_HOLD_NEVER', and
+	'FORCE_HOLD_EXCEPT_UPDATE' update for Postgres Esql/c generation
+	
+	increase size of some buffers (see build test 1499)
+	
+	Small pg8 fixup to fix SCROLL CURSOR traversal
+	
+	Small wordwrap fixup Fixup for SET PAUSE MODE ON
+	
+	Fix SET PAUSE MODE ON
+	
+	new build
+	
+	Small rename in order to avoid conflicts for get_ident_as_string
+	
+	Small fixup for detecting a 'postgres' executable rather (or in
+	addition to) than postmaster
+	
+	small fixup for hello_db.4ae test program (SESSION related)
+	
+---------------------------
+Sun Mar 30 16:18:14 BST 2008
+---------------------------
+1.10RC_7 Released
+---------------------------
+	
+	Small rename in order to avoid conflicts for get_ident_as_string
+	
+	Small fixup for detecting a 'postgres' executable rather (or in
+	addition to) than postmaster
+	
+	small fixup for hello_db.4ae test program (SESSION related)
+	
+	Fixup to allow CURSOR_NAME function
+	
+	Small IMPORT fixup
+	
+	allow datetime->varchar conversion
+	
+	Display a message when we cant connect to the client.
+	
+	Cleanup the default binary aubitrc file
+	
+	Make DATETIME YEAR TO SECOND a timestamp
+	
+	Add PADCHAR env variable (useful when debugging) Some minor
+	debugging stuff added for WORDWRAP
+	
+	Add strip_quotes for INITIALIZE LIKE
+	
+	Small fixup for temp tables in postgres - add  the
+	pg_table_is_visible to ensure that two user sessions with the same
+	temp table name do not conflict
+	
+	Check an aubitrc file has been read (any aubitrc file will do) Also
+	- check for DEFAULT_AUBITRCFILE_HAS_BEEN_EDITED which will be set
+	in an unedited aubitrc for a binary build
+	
+	Small fixup to detect a bad filename for a load
+	
+	Small fixup for UPDATE/INSERT/DELETE when updating using an
+	operator on variables Small fixup for variable attributes
+	
+	Small load fixup to remove trailing CR when used with a LF..
+	
+	Add A4GL_ACLFILE as a fallback for A4GL_SQLACL
+	
+	Small varchar fixups Fix for wordwrap
+	
+---------------------------
+Sat Mar 22 18:03:39 GMT 2008
+---------------------------
+1.10RC_6 Released
+---------------------------
+	
+	Small varchar fixups Fix for wordwrap
+	
+	u_int detection added
+	
+	Freebsd  fixups
+	
+	construct fixup for ':5', '5:' in an integer field..
+	
+	Makefile fixups
+	
+	Postgresql fixups
+	
+	'CURRENT' compatibility fixups
+	
+	Added dt_as_char stuff
+	
+	populate sqlerrd[3]
+	
+	1119: dbaccess screen flow is different from old version on
+	sco/informix
+	
+	Postgres 8.3 fixups
+	
+	"Initialize" fixup
+	
+	Small fixups :	Fix "variable not found" errors in some places
+	
+	Added some extra debugging info..
+	
+	belt and braces check for finding a table..
+	
+	New Build
+	
+	Small input/display array fixup for ATTRIBUTE handling
+	
+---------------------------
+Mon Mar 17 08:35:18 GMT 2008
+---------------------------
+1.10RC_5 Released
+---------------------------
+	
+	Small input/display array fixup for ATTRIBUTE handling
+	
+	Minor fixups :	error if masking a global variable with a module
+	variable	       (otherwise the C compiler complains)    Fix
+	"variable 'THRU' variable" for certain commands
+	
+	Added "Module variable hides a Global variable" to stop static
+	declaration of XXXX follows non-static declaration
+	
+	1101: row count function - fix the screen width and height returned
+	from a4gl_get_info
+	
+	New build
+	
+---------------------------
+Fri Mar 14 09:46:15 GMT 2008
+---------------------------
+1.10RC_4 Released
+---------------------------
+	
+	Refix 1031 - broken because of the AUTONEXT fixup...  1031: HL_TUI:
+	Construct type a long value should go to last line to continue
+	typing
+	
+	1106: HL_TUI: AUTONEXT not working
+	
+	MID 1099: ERROR in a INPUT ARRAY goes to next line
+	
+	MID 1104: Nested INPUTs, cursor in second input not returning to
+	first input
+	
+---------------------------
+Thu Mar 13 12:24:12 GMT 2008
+---------------------------
+1.10RC_3 Released
+---------------------------
+	
+	1106: HL_TUI: AUTONEXT not working
+	
+	MID 1099: ERROR in a INPUT ARRAY goes to next line
+	
+	MID 1104: Nested INPUTs, cursor in second input not returning to
+	first input
+	
+	Solaris fixup
+	
+	Rename "struct comment"
+	
+	Minor memory leak fixups Small error number fixup (make sure all
+	files are readable) Small DEBUG error message fix when using input
+	arrays
+	
+	Small memory leak fixups
+	
+---------------------------
+Sun Mar  9 14:46:58 GMT 2008
+---------------------------
+1.10RC_2 Released
+---------------------------
+	
+	Small memory leak fixups
+	
+	1114: 1.1 RC1 (win32bin) - 'status' in SQL statements
+	
+	fix nasty null comparison bug
+	
+	Add ET_EXPR_BRACKET to	expr_when_possible
+	
+	NOT(NULL) fixup
+	
+	patch for returning into a substring of a character string variable
+	
+	Code cleanup (remove sprintfs) and some minor patches
+	
+	Fix for 'exit case'
+	
+---------------------------
+Tue Feb 19 12:56:48 GMT 2008
+---------------------------
+1.10RC_1 Released
+---------------------------
+	
+	***********  Parser upgrade *************
+	The parser has had a massive upgrade to generate an in memory
+	structure which is then processed, rather than generating code as its
+	parses the 4gl code. This means that all of the code generation has
+	been rewritten as well as the parser itself..
+
+	Code cleanup (remove sprintfs) and some minor patches
+	
+	Fix for 'exit case'
+	
+	Postgresql fixups
+	
+	Small fixup to move when we close the database connection until
+	after we've written the code out (so the libLEX_.. can use the
+	connection if required...)
+	
+	Fixup for build test 1671
+	
+	Fixup for build test 1672
+	
+	win32 & other minor fixups
+	
+	Small XML fixups
+	
+	Fixup for prompt
+	
+	fix for build test 1669
+	
+	Minor fixups
+	
+	make install fixups
+	
+	Add missing plugins
+	
+	Warning fixups
+	
+	missing structure to 'make'
+	
+	1102: HL_TUI: CLEAR FORM erases part of ERROR LINE (3) if switched
+	CURRENT WINDOW
+	
+	slightly change the way debugs are handled (uses GCC specific
+	syntax)
+	
+	Add extra info for packer library
+	
+	Add  extra info for packer library
+	
+	MID 1099: ERROR in a INPUT ARRAY goes to next line
+	
+	New build (added changelog to 'make commit')
+	
+	MID 1096: runforms.4ae enhancement Add A4GL_ASQLERRLOG &
+	A4GL_RUNFORMERRLOG to be filenames of ERRLOG files (if set.)
+	
+	Small fixups for memory problems and substrings on nulls
+	
+---------------------------
+Tue Jan 22 14:39:41 GMT 2008
+---------------------------
+1.00_72 Released
+---------------------------
+	
+	MID 1096: runforms.4ae enhancement Add A4GL_ASQLERRLOG &
+	A4GL_RUNFORMERRLOG to be filenames of ERRLOG files (if set.)
+	
+	Small fixups for memory problems and substrings on nulls
+	
+	generic fixups (tested against mysql )
+	
+	Mysql fixups
+	
+	PRINT FILE quotes
+	
+	TEXTOID
+	
+	add NUMERICOID
+	
+	Try adding in SQL translation
+	
+	"print file" and multiple spaces in 'ORDER BY' fixups
+	
+	PRINTFILE error
+	
+	ace fixups
+	
+	Fixup the NEWDECIMAL
+	
+	MID 1095 : construct doesn't do checks on hiting ESC if same field
+	
+	INPUT fixup
+	
+	Fix broken ecpg in 8.3 (Doesn't seem to like '\'')
+	
+	fixups for INPUT
+	
+	1093: PRINT FILE ".." fails if repeated more than 1,000 times
+	
+	Small valgrind fixup
+	
+	Interval fixup
+	
+	Added extra aliases - trying to make sure we dont get any name
+	clashes...
+	
+	Replace trunc function
+	
+
+	936: a report affected by the output section of the previous report
+
+
+	Decimal handling bug with padded out decimals
+
+
+	934: pageno is not updated in before group -> can't control odd/even pages
+
+
+	933: error -402
+
+
+	910: missing "$"
+
+
+	927: segmentation fault -> construct numeric field and alpha value typed and then trigger exit
+
+
+	925: Internal error - unable to change field width.
+	927: segmentation fault -> construct numeric field and alpha value typed and then trigger exit
+
+
+	931: bad bad looping problem
+
+
+	930: using hour to minute in if statement
+	929: comparison between (current hour to min) and string
+
+
+	928: select true ... not working
+
+
+	926: set_count() is not working for display array inside an input array.
+
+
+	932: begin/commit inside a REPORT with 'order by' -> no all rows processed
+
+
+	932: begin/commit inside a REPORT with 'order by' -> no all rows processed
+	Right margin padding for wordwrap in report
+
+
+	@prefix@ for SQLCNVPATH
+
+
+	925: Internal error - unable to change field width.
+
+
+	909: extended error messages
+
+
+	small debugging additions
+
+
+	Add varchar #define
+
+
+	small datatype fixup
+
+
+	923: report length not breaking correctly
+	varchar fixup
+
+
+	922: variable corruption, after printing varchar (wordwrap of a defined ike )
+
+
+	Bug fixes
+
+
+	923: report length not breaking correctly
+
+
+	924: construct blanking
+	917: INPUT WITHOUT DEFAULTS preserves content of smallint
+	918: include statement in form ignored
+
+
+	usage
+
+
+	919: use-editor weirdness
+
+
+	Date fixup for 32bit
+
+
+	varchar fixup
+
+
+	918: include statement in form ignored
+
+
+	MID 917
+
+
+	Show transaction status
+
+
+	More pg8 fixups - make sure we use any EC established connection if we
+	dont have an explicit one
+
+
+	Try not setting an error when just retrieving column info
+
+
+	gen_rep_tab_name() changed to generate more unique table names on POSIX systems - PID is also included in table name now. Name prefix has been shortened from RTAB to RT, to satisfy max name and PID length.
+	Added support for A4GL_REP_DEFAULT_OWNER environment variable - for prefixing report temp table names with arbitrary owner.
+
+
+	small menu handling fixup
+	changed Informix ESQL/C version required to use extended datatypes
+
+
+	876: dbaccess won't execute related to bug 870
+
+
+	Small fixups
+
+
+	912: load from a textfile WITHOUT EOL fails
+
+
+	914: adbschema prints function/procedure to stdout
+
+
+	915: selecting varchar returns full length padded with spaces
+
+
+	Missing A4GLSQLCV_ownerize_tablename() added in some actions.
+
+
+	Missing A4GLSQLCV_ownerize_tablename() added in some actions.
+
+
+	Rules changed to match empty strings as a CHAR_VALUE.
+
+
+	916: concatenating substring invalid result
+
+
+	Error message buffer size increased in sqlparse_yyerror()
+
+
+	new_select_list_item_column_from_transform() fixed to support three-part column names (i.e. prefixed with owner);
+	preprocess_sql_statement() fixed to call A4GLSQL_end_get_columns() only wheen needed.
+
+
+	Fixed loading of the conversions. Now AUBITETC variable, if set, is used to determine path of the conversion config file.
+
+
+	fixups for double free
+
+
+	USING fixups (for (..) )
+
+
+	nicer error reporting when editing after an error.
+	(c) fixups
+
+
+	Just to be sure...
+
+
+	64bit fixup
+
+
+
+	ambiguous keystroke in a menu fix
+
+
+	fixup for intervals in "order external by" report
+
+
+	remove debugging 'pause_execution'
+
+
+	win32 fixup
+
+
+	Win32 fixup
+
+
+	907: with LEXTYPE=EC, doing a order by in a report with internal variable -> syntax error on identifier or symbol
+	Build test 1606
+
+
+	906: with LEXTYPE=EC, undefined reference to `A4GL_init_out_byte'
+
+
+	input array fixup
+
+
+	fix for Build test 1604
+
+
+	904: string to smallint conversion, abort when invalid striing
+
+
+	905: printing extended ascii (128-255) miscalcute COLUMN
+
+
+	903: select where date(aroable) = field ->
+
+
+	826: With several unloads : *** glibc detected *** free(): invalid pointer -
+	fixup date usage for 64bit..
+
+
+	892: input array, required field enforced in \UP and should return to previous row
+
+
+	    0000904: string to smallint conversion, abort when invalid string
+
+
+	Fixed reporting error, when EXIT_ON_BAD_SQL var is set and sql cannot be parsed.
+
+
+	880: display decimal field to smaller field in form, omit decimal part
+
+
+	Fixup group by NULLs
+
+
+	Fixup displaying TEXT datatypes
+
+
+
+	0000899: selecting two TEXT fields, the second contains no data -> Error status number -30127 Unread blob
+
+	also added USE_DATABASE_STMT as default for INFORMIX/ESQLC generation
+
+
+	division by zero returns NULL
+
+
+	MID 870: multiset
+	changed select to work in the same way as unload - should now
+	handle multisets correctly
+
+
+	MID 898 - no-printable ascii corrupt column position
+
+
+	Fixes for declare and open. Some cleanups.
+
+
+	MID 892
+
+
+	Fixed warning handling. Unneeded(?) resource freeing removed (commented).
+
+
+	correction - because last description is incorrect -
+	MID - 897 (build test 1437)
+
+
+	MID 1437
+
+
+	small mysql fixup
+
+
+
+	MID 897 fixup
+
+
+	Insert cursor support fixed
+
+
+	Fixed database reopening
+
+
+	finor fixuos
+
+
+	Parameter "singleton" added to function A4GLSQL_prepare_select()
+
+
+	A lot of changes, completly changed error handling functions, fixed schema
+	caching, resource freeing and support for both SQLDescribeCol and
+	backward-compatible SQLColumns.  A lots of fixes and cleanups.
+
+
+	Function prototypes modified
+
+
+	A4GLSQL_set_status() fixed, default owner conversion support added
+
+
+	Added/modified debugging macros, added/changed function prototypes
+
+
+	Added/modified debugging macros
+
+
+	Added/changed function prototypes
+
+
+	Copy-pasted logic doing quoting/unquoting owners moved to one function,
+	A4GLSQLCV_ownerize_tablename(). Unused code removed.
+	Calls to A4GLSQLCV_check_tablename() added in rule column_name_x.
+
+
+	Copy-pasted logic doing quoting/unquoting owners moved to one function,
+	A4GLSQLCV_ownerize_tablename(). Unused code removed.
+
+
+	Changed A4GLSQL_set_status() return type to int.
+
+
+	Some cleanups
+
+
+	Function name logging added - functions A4GL_debug_full_extended(),
+	A4GL_set_line_extended() - the blind ones
+
+
+	Logging some messages to stdout changed to stderr.
+
+
+	In function LEXLIB_rettype(): Changed type conversion code to more readable
+	form and added detection and logging of unsupported types.
+	In function LEXLIB_print_foreach_close: Added logic to change status after
+	a succesful foreach loop from 100 to 0.
+
+
+	Somewhat cleaned up and fixed logic, misguiding function name A4GL_get_errm
+	changed to A4GL_get_errmsg, buffer size increased
+
+
+	Function name logging added - functions A4GL_debug_full_extended(),
+	A4GL_set_line_extended(). Buffer size increased.
+
+
+	Logging some messages to stdout changed to stderr.
+
+
+	Added setting error string in assertion handling code.
+
+
+	In function find_columns():
+	Changing calls to strcmp() to A4GL_aubit_strcasecmp(), added support for
+	owner prefixed columns, removed (commented) calls to A4GLSQL_set_status(),
+	that seems to be unneeded (not sure about that).
+
+
+	STRIP_QUOTES_FROM_OWNER convertsql parameter added.
+	USE_DESCRIBE_NOT_SQLCOLUMNS parameter setting changed from environment
+	variable to a convertsql parameter.
+	Added support for disabling the query cache.
+	Copy-pasted logic doing quoting/unquoting owners moved to one function,
+	A4GLSQLCV_ownerize_tablename().
+
+
+	ERR_CHK_ERROR macro fixed
+
+
+	Removed unused code
+
+
+	Just some comments
+
+
+	Added support for functions exitwith_sql_odbc(), exitwith_sql_odbc_errm()
+	Added #define A4GL_ERR_BASE 30000
+
+
+	WHENEVER_ERROR and WHENEVER_SQLERROR handling fixed
+
+
+	New options added
+
+
+	MID 0000895: sqlerrd[3] not getting set on unload
+
+
+	key_down in a new line goto first column array
+	key_ins goto first column in array
+
+
+	Goto to field1 after insert line key
+
+
+	slice updates
+
+
+	fix typo
+
+
+	DISPLAY/INPUT ARRAY slicing
+	Adding extended menu attributes
+
+
+	Add extended attributes to menu calls
+	Added 'Unknown error' to error.c
+
+
+	Add extended attributes to menu calls
+	detect error on failed INPUT ARRAY/DISPLAY ARRAY field setups
+
+
+	fix up error message collection when done from an 'indent'ed file
+	(The message is often on the next line)
+
+
+	1) Add extended attributes to menu calls
+	2) Add errors for too many or too few variables in
+	   an array for Input/Display array (when compared to the
+	   screen record)
+	3) add new "SLICE" functionality to INPUT and DISPLAY array
+
+
+	fix transmission of 8bit characters
+
+
+	go to first field after down in a new line and after insert row
+
+
+	dump procedures when dumping entire database
+
+
+	fixup for ec generation (exclude INDICATOR variables in a select list)
+	small fixups for remote UI client,
+
+
+	message fixups
+
+
+	UPDATE (x.*) = (...) fixups
+
+
+	',' decimal separator fixups
+
+
+	decimal ',' separator updates
+
+
+	win32 fixup
+
+
+	Initial multiset fixups for asql (still a WIP)
+
+
+	Detect and throw error if a form field is a different size to its FORMAT
+
+
+	ALLOWCOMMAINDECIMAL fixups
+
+
+	Fixup to detect and show errors generated in libform
+
+
+	pg8 updates
+
+
+	more pg8 fixups
+
+
+	extended using some postgres 8.2 functionality
+
+
+	Change in important SQL interface function definition needs a new build
+
+
+
+	Fixups.
+	Added extra parameters to A4GLSQL_execute_implicit_sql in the libSQL drivers.
+	Code fixups for postgres compatibility
+	Added first draft postgres direct connector - targeted mainly at Postgresql version 8+
+
+
+	add settings so that USE_INDICATOR=N works correctly
+
+
+	Added a check to force initialization of the 4gl stack if the main
+	is in a purely C module
+
+	Increased size of some of the variables in the 4glpc tool
+
+
+	Fix for compiling ESQLC when LOCALOUTPUT mode is being used..
+
+
+	Complain if a fields table/column is not in the database
+

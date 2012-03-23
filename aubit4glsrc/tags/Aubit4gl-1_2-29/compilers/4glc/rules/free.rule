@@ -1,0 +1,55 @@
+/*
+=====================================================================
+                        Source: free.rule
+=====================================================================
+*/
+
+
+free_cmd :
+
+		 opt_use2_p FREE atline variable_usage_expression {
+                        char errbuff[256];
+			int a=0;
+			expr_str *ptr=0;
+			//int vtype;
+                        if ($<ptr>4->expr_type==ET_EXPR_VARIABLE_USAGE) {
+                                ptr=ensure_variable(errbuff,$<ptr>4,1);
+                        	if (ptr!=0) {
+					a=get_variable_dtype_from_variable_usage_expression(errbuff,$<ptr>4);
+				} 
+			}
+
+			if (ptr==0) {
+				a=0;
+			}
+
+			set_cmdlineno($<integer_val>3);
+
+
+			if (a!=DTYPE_BYTE && a!= DTYPE_TEXT) {
+				char *s;
+				s=do_clobbering_sql(&this_module, clobber, downshift(expr_as_string_when_possible($<ptr>4)));
+                        	strcpy(last_var,downshift(s));
+                        	$<ptr>$=A4GL_new_expr_simple_string(s, ET_EXPR_IDENTIFIER);
+				$<cmd>$=new_free_cmd($<ptr>1, $<ptr>$);
+			} else {
+                        	inc_var_usage(ptr);
+				$<cmd>$=new_free_blob_cmd(ptr);
+			}
+
+		}
+
+
+/*
+		| 
+
+opt_use2_p FREE fetch_cursor_name_p {
+			add_feature("FREE_CURSOR");
+			set_cmdlineno(token_read_on_line);
+			$<cmd>$=new_free_cmd($<ptr>1, $<ptr>3);
+			
+		}
+*/
+;
+
+
