@@ -911,6 +911,7 @@ bool Reportgen::getTemplateVars(QString filename)
 
             if(ausgabe.contains("@") || ausgabe.contains("[") || ausgabe.contains("]")) {
                 ausgabe.remove("<text:p text:style-name=\"Normal\">");
+                ausgabe.remove("<text:p text:style-name=\"Standard\">");
                 ausgabe.remove("<text:p>");
                 ausgabe.remove("</text:p>");
                 ausgabe.remove("@");
@@ -980,6 +981,7 @@ bool Reportgen::replaceTemplateVars(QString odffile, QString sedfile, QFileInfo 
         {
             temp_var = ausgabe;
             temp_var.replace("<text:p>", "");
+            temp_var.remove("<text:p text:style-name=\"Standard\">");
             temp_var.replace("</text:p>", "");
             //qDebug() << "Suche nach: " << temp_var;
 
@@ -1005,12 +1007,12 @@ bool Reportgen::replaceTemplateVars(QString odffile, QString sedfile, QFileInfo 
                 for (int i=0; i < sed_fields.count(); i++)
                 {
                     //qDebug() << "Verbleibende Datensaetze: " << sed_fields.count();
-                    if(sed_fields.at(i).contains(temp_var))
+                    if(sed_fields.at(i).contains(temp_var.trimmed()))
                     {
                         qDebug() << "Es wurde gefunden: " << sed_fields.at(i);
                         sedLine = sed_fields.at(i).trimmed();
-                        sedLine.replace(QString(temp_var + "/"), "");
-                        ausgabe.replace(temp_var, sedLine);
+                        sedLine.replace(QString(temp_var.trimmed() + "/"), "");
+                        ausgabe.replace(temp_var.trimmed(), sedLine);
                         if(!temp_var.endsWith("1"))
                         {
                            sed_fields.removeAt(i);
@@ -1264,6 +1266,7 @@ bool Reportgen::createInfoFile(QFileInfo odffile, QFileInfo zieldatei)
         if( ausgabe.contains("@") )
         {
             ausgabe.replace( "<text:p>", "" );
+            ausgabe.remove("<text:p text:style-name=\"Standard\">");
             ausgabe.replace( "</text:p>", "" );
             ausgabe.replace( "@", QString("%1:" ).arg( counter ) ).trimmed();
             if(!fields.isEmpty())
