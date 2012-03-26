@@ -49,6 +49,7 @@ MainFrame::vdcdebug("TableView","TableView", "QWidget *parent");
    setTabKeyNavigation(false);
    this->verticalHeader()->hide();
    QHeaderView *header = this->horizontalHeader();
+   header->setDefaultAlignment(Qt::AlignLeft);
    header->setMovable(true);
    header->setClickable(true);
    header->setSortIndicatorShown(true);
