@@ -936,11 +936,11 @@ QVariant TableModel::data(const QModelIndex &index, int role) const
        if(LineEdit *widget = qobject_cast<LineEdit *> (dele->qw_editor)){
            if(widget->dataType() == 2 || widget->dataType() == 3 || widget->dataType() == 5 || widget->dataType() == 6) {
                if (role == Qt::TextAlignmentRole) {
-                   return int(Qt::AlignRight);
+                   return int(Qt::AlignRight | Qt::AlignVCenter);
                }
            } else {
                if (role == Qt::TextAlignmentRole) {
-                   return int(Qt::AlignLeft);
+                   return int(Qt::AlignLeft | Qt::AlignVCenter);
                }
            }
        }
