@@ -368,9 +368,10 @@ MainFrame::vdcdebug("LineEdit","setSqlType", "QString sqlType");
               int right = 0;
               int top = 0;
               int bottom = 0;
-              edit->getTextMargins(&left,&top,&right,&bottom);
+              /*edit->getTextMargins(&left,&top,&right,&bottom);
               right = edit->getButtonObj()->width();
-              edit->setTextMargins(left,top,right,bottom);
+              edit->setTextMargins(left,top,right,bottom);*/
+              edit->setAlignment(Qt::AlignRight);
           }
           break;
 
