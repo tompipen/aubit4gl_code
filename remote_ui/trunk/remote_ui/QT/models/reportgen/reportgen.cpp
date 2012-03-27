@@ -532,6 +532,32 @@ QString Reportgen::prepareTemplateContent(int Table, int Position, QString odffi
                     }
                 }
             }
+            if(ausgabe.contains("@") && ebene == 4) {
+                for(int i=0; i < temp_fields.count(); i++) {
+                    if(ausgabe.contains("@" + temp_fields.at(i))) {
+                        int found = checkSedFile(QString("@%1_1_1_1" + temp_fields.at(i)).arg(QString::number(Position)), sedfile);
+                        if(found > 0)
+                        {
+                            ausgabe.replace("@" + temp_fields.at(i), QString("@%1_1_1_1" + temp_fields.at(i)).arg(QString::number(Position)));
+                        } else {
+                            ausgabe.remove("@" + temp_fields.at(i));
+                        }
+                    }
+                }
+            }
+            if(ausgabe.contains("@") && ebene == 5) {
+                for(int i=0; i < temp_fields.count(); i++) {
+                    if(ausgabe.contains("@" + temp_fields.at(i))) {
+                        int found = checkSedFile(QString("@%1_1_1_1_1" + temp_fields.at(i)).arg(QString::number(Position)), sedfile);
+                        if(found > 0)
+                        {
+                            ausgabe.replace("@" + temp_fields.at(i), QString("@%1_1_1_1_1" + temp_fields.at(i)).arg(QString::number(Position)));
+                        } else {
+                            ausgabe.remove("@" + temp_fields.at(i));
+                        }
+                    }
+                }
+            }
 
             if(ebene == 2) {
                 test = test + ausgabe;
@@ -545,7 +571,7 @@ QString Reportgen::prepareTemplateContent(int Table, int Position, QString odffi
                                 //qDebug() << j << "von" << temp_fields.count() * 1000 << " moeglichen Datensaetze. Aktuelle Position in Ebene2: " << Position;
                                 found = checkSedFile(QString("@%1_%2" + temp_fields.at(i)).arg(Position).arg(j), sedfile);
                                 if(found > 0) {
-                                    ausgabe.append(prepareTemplateEbene(Position, ebene, 1, j, doc, odffile, sedfile));
+                                    ausgabe.append(prepareTemplateEbene(Position, ebene, 1, j, 1, 1, doc, odffile, sedfile));
                                 } else {
                                     break;
                                 }
@@ -574,7 +600,7 @@ QString Reportgen::prepareTemplateContent(int Table, int Position, QString odffi
                                     found1 = checkSedFile(QString("@%1_%2_%3" + temp_fields.at(i)).arg(Position).arg(1).arg(k), sedfile);
                                     qDebug() << "found: " << found;
                                     if(found1 > 0) {
-                                        ausgabe.append(prepareTemplateEbene(Position, ebene, k, 1, doc, odffile, sedfile));
+                                        ausgabe.append(prepareTemplateEbene(Position, ebene, k, 1, 1, 1, doc, odffile, sedfile));
                                         cnt++;
                                     } else {
                                         break;
@@ -612,7 +638,7 @@ QString Reportgen::prepareTemplateContent(int Table, int Position, QString odffi
 //
 //-------------------------------------------------------------------------------------------------------------
 
-QString Reportgen::prepareTemplateEbene(int Position, int Ebene, int Ebene3, int Counter, QDomDocument doc, QString odffile, QString sedfile)
+QString Reportgen::prepareTemplateEbene(int Position, int Ebene, int Ebene3, int Ebene4, int Ebene5, int Counter, QDomDocument doc, QString odffile, QString sedfile)
 {
     QFile *file = new QFile(QDir::tempPath() + "/" + QString("1-" + odffile));
     QString ausgabe;
@@ -660,6 +686,12 @@ QString Reportgen::prepareTemplateEbene(int Position, int Ebene, int Ebene3, int
                 } else if (found == 3)
                 {
                 ausgabe.replace("@", QString("@%1_%2_%3").arg(QString::number(Position)).arg(QString::number(Counter)).arg(QString::number(Ebene3))/*, QString::number(Counter)*/);
+                } else if (found == 4)
+                {
+                ausgabe.replace("@", QString("@%1_%2_%3_%4").arg(QString::number(Position)).arg(QString::number(Counter)).arg(QString::number(Ebene3)).arg(QString::number(Ebene4))/*, QString::number(Counter)*/);
+                } else if (found == 5)
+                {
+                ausgabe.replace("@", QString("@%1_%2_%3_%4_%5").arg(QString::number(Position)).arg(QString::number(Counter)).arg(QString::number(Ebene3)).arg(QString::number(Ebene4)).arg(QString::number(Ebene5))/*, QString::number(Counter)*/);
                 }
             }
             if(found == 3)
@@ -678,6 +710,60 @@ QString Reportgen::prepareTemplateEbene(int Position, int Ebene, int Ebene3, int
                                 {
                                     ersetzeVar = behalten;
                                     ersetzeVar.replace(QString("@"), QString("@%1_%2_%3").arg(QString::number(Position)).arg(QString::number(Counter)).arg(QString::number(j)));
+                                    xmlout1 = xmlout1 + ersetzeVar;
+                                    //behalten.clear();
+                                }
+                            } else {
+                                break;
+                            }
+                        }
+                    }
+                }
+                //behalten.append("</table:table-row></table:table-cell>");
+            }
+            if(found == 4)
+            {
+                if(ausgabe.contains("]P4]"))
+                {
+                    if(Ebene4 == 1)
+                    {
+                        int found = 0;
+                        for(int j=2; j < temp_fields.count(); j++)
+                        {
+                            found = checkSedFile(QString("@%1_%2_%3_%4").arg(QString::number(Position)).arg(QString::number(Counter)).arg(QString::number(j)), sedfile);
+                            if(found > 0)
+                            {
+                                if(ausgabe.contains("]P4]"))
+                                {
+                                    ersetzeVar = behalten;
+                                    ersetzeVar.replace(QString("@"), QString("@%1_%2_%3_%4").arg(QString::number(Position)).arg(QString::number(Counter)).arg(QString::number(j)));
+                                    xmlout1 = xmlout1 + ersetzeVar;
+                                    //behalten.clear();
+                                }
+                            } else {
+                                break;
+                            }
+                        }
+                    }
+                }
+                //behalten.append("</table:table-row></table:table-cell>");
+            }
+            if(found == 5)
+            {
+                if(ausgabe.contains("]P5]"))
+                {
+                    if(Ebene5 == 1)
+                    {
+                        int found = 0;
+                        for(int j=2; j < temp_fields.count(); j++)
+                        {
+                            found = checkSedFile(QString("@%1_%2_%3_%4_%5").arg(QString::number(Position)).arg(QString::number(Counter)).arg(QString::number(j)).arg(QString::number(Ebene4)), sedfile);
+                            if(found > 0)
+                            {
+                                if(ausgabe.contains("]P5]"))
+                                {
+                                    ersetzeVar = behalten;
+                                    ersetzeVar.replace(QString("@"), QString("@%1_%2_%3_%4_%5").arg(QString::number(Position)).arg(QString::number(Counter)).arg(QString::number(j)).arg(QString::number(Ebene4)).arg(QString::number(Ebene5)));
                                     xmlout1 = xmlout1 + ersetzeVar;
                                     //behalten.clear();
                                 }
