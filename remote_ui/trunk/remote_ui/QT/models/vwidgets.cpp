@@ -1739,6 +1739,7 @@ MainFrame::vdcdebug("WidgetHelper","createComboBox", "const QDomElement& formFie
    comboBox->setAccessibleName(name);
    comboBox->setObjectName(colName);
    comboBox->setDefaultValue(defaultValue);
+   comboBox->setStyle(new QWindowsStyle());
 
    int height = comboBoxElement.attribute("height").toInt();
    if(height < 1) height = 1;
