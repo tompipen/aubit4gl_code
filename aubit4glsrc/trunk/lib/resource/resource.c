@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.169 2011-08-14 16:50:23 mikeaubury Exp $
+# $Id: resource.c,v 1.170 2012-03-28 19:10:29 mikeaubury Exp $
 #
 */
 
@@ -204,6 +204,7 @@ struct str_resource builtin_resource[] = {
   {"USE_INDICATOR", "Y","internal"},
   {"TRIMWORDWRAP", "Y","internal"},
   {"STRING_AS_OBJECT", "Y","internal"},
+  {"FIXSCRBEFINP","Y","internal"},
   {"A4GL_STATUSASCOL","Y","internal"},
   {"ERROR_MSG", "Press Any Key","internal"},
   {"PAUSE_MSG", "Press Any Key","internal"},

@@ -24,10 +24,10 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.174 2011-09-06 18:44:35 mikeaubury Exp $
+# $Id: iarray.c,v 1.175 2012-03-28 19:10:29 mikeaubury Exp $
 #*/
 #ifndef lint
-static char const module_id[] = "$Id: iarray.c,v 1.174 2011-09-06 18:44:35 mikeaubury Exp $";
+static char const module_id[] = "$Id: iarray.c,v 1.175 2012-03-28 19:10:29 mikeaubury Exp $";
 #endif
 
 /**
@@ -1386,7 +1386,7 @@ UILIB_A4GL_inp_arr_v2 (void *vinpa, int defs, char *srecname, int attrib, int in
       A4GL_set_arr_count (0);
     }
 
-
+A4GL_set_array_mode('I');
 #ifdef DEBUG
   A4GL_debug ("inp_arr_v2 ... zz9pa");
 #endif
@@ -1585,6 +1585,8 @@ UILIB_A4GL_inp_arr_v2_i (void *vinpa, int defs, char *srecname, int attrib, int 
 #ifdef DEBUG
       A4GL_debug ("Calling newmovement");
 #endif
+
+
       A4GL_newMovement (inpa, 0, 0, 0, 0);
 
       inpa->last_scr_line = -1;
@@ -1599,6 +1601,7 @@ UILIB_A4GL_inp_arr_v2_i (void *vinpa, int defs, char *srecname, int attrib, int 
 #endif
       if (A4GL_has_event (A4GL_EVENT_BEFORE_INP, evt))
 	return A4GL_has_event (A4GL_EVENT_BEFORE_INP, evt);
+
       return -1;
     }
 #ifdef DEBUG
@@ -1620,12 +1623,16 @@ int
 set_scrline_ia (int np)
 {
   int a;
+int cnt;
+int oldscr_line;
+  struct s_movement *ptr_movement;
   if (np != 1)
     {
       A4GL_exitwith ("set_scrline requires 1 parameter");
       return 0;
     }
   a = A4GL_pop_int ();
+  oldscr_line=curr_arr_inp->scr_line;
   curr_arr_inp->scr_line = a;
   A4GL_set_scr_line (a);
   A4GL_idraw_arr_all (curr_arr_inp);
@@ -1634,6 +1641,22 @@ set_scrline_ia (int np)
     A4GL_debug ("Set scrline...%d", a);
   }
 #endif
+if (A4GL_isyes(acl_getenv("FIXSCRBEFINP"))) {
+// Are there any movements planned on the movement stack ? 
+for (cnt=0;cnt<curr_arr_inp->fcntrl_cnt;cnt++) {
+	switch ( curr_arr_inp->fcntrl[cnt].op) {
+		case FORMCONTROL_BEFORE_ROW:
+		case FORMCONTROL_BEFORE_FIELD:
+	  		ptr_movement = (struct s_movement *) curr_arr_inp->fcntrl[cnt].parameter;
+			if (ptr_movement) {
+				ptr_movement->scr_line=a;
+			}
+			break;
+		default: break;
+	}
+}
+}
+
   return 0;
 }
 
@@ -1643,6 +1666,8 @@ int
 set_arrline_ia (int np)
 {
   int a;
+ struct s_movement *ptr_movement;
+
   if (np != 1)
     {
       A4GL_exitwith ("set_arrline requires 1 parameter");
@@ -1657,6 +1682,22 @@ set_arrline_ia (int np)
     A4GL_debug ("Set arrline... %d", a);
   }
 #endif
+
+if (A4GL_isyes(acl_getenv("FIXSCRBEFINP"))) {
+int cnt;
+for (cnt=0;cnt<curr_arr_inp->fcntrl_cnt;cnt++) {
+	switch ( curr_arr_inp->fcntrl[cnt].op) {
+		case FORMCONTROL_BEFORE_ROW:
+		case FORMCONTROL_BEFORE_FIELD:
+	  		ptr_movement = (struct s_movement *) curr_arr_inp->fcntrl[cnt].parameter;
+			if (ptr_movement) {
+				ptr_movement->arr_line=a;
+			}
+			break;
+		default: break;
+	}
+}
+}
   return 0;
 }
 
