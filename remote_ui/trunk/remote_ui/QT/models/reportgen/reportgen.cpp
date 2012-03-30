@@ -1596,6 +1596,45 @@ bool Reportgen::replaceTemplateVars(QString odffile, QString sedfile, QFileInfo 
     ZipUnzip *p_zip = new ZipUnzip();
     p_zip->zipFileArchiv(QDir::tempPath(), odffile, zielDatei);
 
+    QDir dir;
+    dir.setPath(QDir::tempPath() + "/" + odffile);
+
+    QList<QString> fileEntrys = dir.entryList( QDir::NoDotAndDotDot | QDir::Dirs | QDir::Files);
+
+    for(int i=0; i < fileEntrys.count(); i++)
+    {
+        QFile *file = new QFile(dir.path() + "/" + fileEntrys.at(i));
+        QFileInfo *fileInfo = new QFileInfo(dir.path() + "/" + fileEntrys.at(i));
+
+        if(fileInfo->isFile())
+        {
+            if(file->exists())
+            {
+                file->remove();
+            }
+        } else if(fileInfo->isDir())
+        {
+            QDir dir1;
+            dir1.setPath(QDir::tempPath() + "/" + odffile + "/" + fileEntrys.at(i));
+
+            QList<QString> fileEntrys1 = dir1.entryList( QDir::NoDotAndDotDot | QDir::Dirs | QDir::Files);
+
+            for(int j=0; j < fileEntrys1.count(); j++)
+            {
+                QFile *file1 = new QFile(dir1.path() + "/" + fileEntrys1.at(j));
+                QFileInfo *fileInfo1 = new QFileInfo(dir1.path() + "/" + fileEntrys1.at(j));
+
+                if(fileInfo1->isFile())
+                {
+                    if(file1->exists())
+                    {
+                        file1->remove();
+                    }
+                }
+            }
+        }
+    }
+
     return true;
 }
 
