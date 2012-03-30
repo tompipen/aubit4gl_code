@@ -19,7 +19,9 @@ public:
     int checkSedFile(QString fieldname, QString filename);
 
     QString getTemplateHeader(QString filename);
+    QString getTemplateHeader(QString filename, QString endung);
     QString getTemplatePosition(int Table, QString odffile);
+    QString getTemplatePosition(QString odffile);
     QString prepareTemplateContent(int Table, int Position, QString odffile, QString sedfile);
     QString prepareTemplateContentOdt(int Table, int Position, QString odffile, QString sedfile);
     QString prepareTemplateEbene(int Position, int Ebene, int eben3, int ebene4, int ebene5, int Counter, QDomDocument doc, QString odffile, QString sedfile);
