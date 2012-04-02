@@ -174,6 +174,7 @@ public slots:
     void isTouched() { setProperty("touched", true); };
     void checkNext(const QString&);
     void markup();
+    void copyText();
 
 signals:
    void widgetOpen();
@@ -399,6 +400,7 @@ public:
 
 
 
+
    int x;
    int y;
    bool b_stretch;
@@ -432,6 +434,9 @@ public:
    int getCursorPosition();
 
    int getIndex (const QTextCursor &crQTextCursor );
+
+public slots:
+   void copyText();
 
 private:
    // Attributes to know wich Validators to use

@@ -448,6 +448,12 @@ void LineEdit::markup()
   this->end(true);
 }
 
+void LineEdit::copyText()
+{
+    this->selectAll();
+    this->copy();
+}
+
 
 //------------------------------------------------------------------------------
 // Method       : Edit()
@@ -626,6 +632,12 @@ void TextEdit::setStretching(QString stretch)
     }
 
     this->b_stretch = true;
+}
+
+void TextEdit::copyText()
+{
+    this->selectAll();
+    this->copy();
 }
 
 int TextEdit::getCursorPosition(){
