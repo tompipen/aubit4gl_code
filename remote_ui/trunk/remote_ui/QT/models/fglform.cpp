@@ -3055,12 +3055,12 @@ MainFrame::vdcdebug("FglForm","createContextMenu", "const QPoint &pos");
 
    //dbutest
    QList<QAction*> ql_actions;
-   if(!input())
+   if(!input() && !construct() && !screenRecord())
    {
        if(RingMenu *p_menu = qobject_cast<RingMenu *> (menu())){
           ql_actions << p_menu->actions();
        }
-   } else if(input())
+   } else if(input() || construct() || screenRecord())
        if(!actionMenu()->actions().isEmpty())
        {
            ql_actions << actionMenu()->actions();
