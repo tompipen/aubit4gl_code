@@ -929,10 +929,10 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
             }
          }
 
-         if(!input() && !construct() && !screenRecord()){
+         if(!input() || !construct() || !screenRecord()){
              if(LineEdit *le = qobject_cast<LineEdit*> (obj))
              {
-                 if(!le->isEnabled())
+                 if(le->isEnabled())
                      createContextMenu(mev->globalPos());
 
              }
@@ -1113,7 +1113,8 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
    if(event->type() == QEvent::ContextMenu) {
        if(input() || construct()) {
            if(LineEdit *le = qobject_cast<LineEdit*> (obj)) {
-               Pulldown *pd = new Pulldown();
+               //Pulldown *pd = new Pulldown();
+               hideFields = new QMenu("Felder Ein-/Ausblenden");
                for(int i=0; i < this->ql_fglFields.count(); i++) {
                    if(QLabel *la = qobject_cast<QLabel*> (this->findFieldByName(this->ql_fglFields.at(i)->colName())))
                    {
@@ -1132,14 +1133,15 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
                            rightAct = new QAction(ql_fglFields.at(i)->colName(), this);
                        }
                    }
-                   pd->addAction(rightAct);
+                   //pd->addAction(rightAct);
+                   hideFields->addAction(rightAct);
                }
-               pd->addSeparator();
+               hideFields->addSeparator();
                resetAct = new QAction("Standardeinstellung wiederherstellen", this);
                connect(resetAct, SIGNAL(triggered()), this, SLOT(resetFieldSettings()));
-               pd->addAction(resetAct);
-               connect(pd, SIGNAL(triggered(QAction*)), this, SLOT(saveFieldSettings(QAction*)));
-               pd->exec(QCursor::pos());
+               hideFields->addAction(resetAct);
+               connect(hideFields, SIGNAL(triggered(QAction*)), this, SLOT(saveFieldSettings(QAction*)));
+               //pd->exec(QCursor::pos());
            }
        }
 
@@ -2987,7 +2989,6 @@ createContextMenu(ev->globalPos());
 void FglForm::createContextMenu(const QPoint &pos)
 {
 MainFrame::vdcdebug("FglForm","createContextMenu", "const QPoint &pos");
-return;
    QMenu* contextMenu = new QMenu(this);
 /*
    contextMenu->setStyleSheet("QMenu { background-color: blue;}  \
@@ -3004,6 +3005,11 @@ return;
       if(LineEdit *lineEdit = qobject_cast<LineEdit *> (w)){
          contextMenu = lineEdit->createStandardContextMenu();
          contextMenu->addSeparator();
+         if(!hideFields->isEmpty())
+         {
+             contextMenu->addMenu(hideFields);
+         }
+
       }
 
    }

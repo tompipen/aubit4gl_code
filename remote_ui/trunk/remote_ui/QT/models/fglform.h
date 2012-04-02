@@ -278,6 +278,7 @@ private:
    Dialog *p_dialog;
    Pulldown *p_pulldown;
    ToolBar *p_toolBar;
+   QMenu *hideFields;
    QAction *rightAct;
    QAction *resetAct;
    QList<Action*> ql_formActions;
