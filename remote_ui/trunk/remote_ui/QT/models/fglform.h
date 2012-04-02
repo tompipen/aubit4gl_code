@@ -130,6 +130,7 @@ public:
    void setCurrentWidget(QWidget*);
    //void setCurrentField(QWidget* widget = NULL) { widget->setFocus(); currentWidget = widget; };
    void setCurrentField(QString, bool sendEvents = true);
+   QMenu* createMenuHideShowFields(QObject*);
 
 
    bool input() { return (ql_states.last() == Fgl::INPUT); };
@@ -278,7 +279,6 @@ private:
    Dialog *p_dialog;
    Pulldown *p_pulldown;
    ToolBar *p_toolBar;
-   QMenu *hideFields;
    QAction *rightAct;
    QAction *resetAct;
    QList<Action*> ql_formActions;

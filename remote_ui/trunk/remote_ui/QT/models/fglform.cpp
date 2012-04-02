@@ -929,27 +929,39 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
             }
          }
 
-         qDebug() << "obj: " << obj;
-
          if(!input() && !construct() && !screenRecord()){
              if(LineEdit *le = qobject_cast<LineEdit*> (obj))
              {
                  if(!le->isEnabled())
                      createContextMenu(mev->globalPos());
 
+             } else if(TextEdit *te = qobject_cast<TextEdit*> (obj))
+             {
+                 if(!te->isEnabled())
+                 {
+                     createContextMenu(mev->globalPos());
+                 }
              }
          }
       } else if (mev->button() == Qt::RightButton){
-          qDebug() << "RIGHT CLICK" << obj;
           if(!input() && !construct() && !screenRecord()){
               if(LineEdit *le = qobject_cast<LineEdit*> (obj))
               {
                   if(!le->isEnabled())
                   {
                       QMenu *rightClick = le->createStandardContextMenu();
+                      rightClick->addMenu(createMenuHideShowFields(obj));
                       rightClick->exec(QCursor::pos());
                   }
 
+              } else if(TextEdit *te = qobject_cast<TextEdit*> (obj))
+              {
+                  if(!te->isEnabled())
+                  {
+                      QMenu *rightClick = te->createStandardContextMenu();
+                      rightClick->addMenu(createMenuHideShowFields(obj));
+                      rightClick->exec(QCursor::pos());
+                  }
               }
           }
 
@@ -1126,44 +1138,6 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
       }
    }
 
-   if(event->type() == QEvent::ContextMenu) {
-       if(input() || construct()) {
-           if(LineEdit *le = qobject_cast<LineEdit*> (obj)) {
-               //Pulldown *pd = new Pulldown();
-               hideFields = new QMenu("Felder Ein-/Ausblenden");
-               for(int i=0; i < this->ql_fglFields.count(); i++) {
-                   if(QLabel *la = qobject_cast<QLabel*> (this->findFieldByName(this->ql_fglFields.at(i)->colName())))
-                   {
-                       QSettings settings(windowName, ql_fglFields.at(i)->colName());
-                       if(!la->text().isEmpty()) {
-                           rightAct = new QAction(la->text(), this);
-                           rightAct->setObjectName(ql_fglFields.at(i)->colName());
-                           rightAct->setCheckable(true);
-                           if(settings.value("hideColumn").isNull()) {
-                               rightAct->setChecked(true);
-
-                           } else {
-                               rightAct->setChecked(false);
-                           }
-                        } else {
-                           rightAct = new QAction(ql_fglFields.at(i)->colName(), this);
-                       }
-                   }
-                   //pd->addAction(rightAct);
-                   hideFields->addAction(rightAct);
-               }
-               hideFields->addSeparator();
-               resetAct = new QAction("Standardeinstellung wiederherstellen", this);
-               connect(resetAct, SIGNAL(triggered()), this, SLOT(resetFieldSettings()));
-               hideFields->addAction(resetAct);
-               connect(hideFields, SIGNAL(triggered(QAction*)), this, SLOT(saveFieldSettings(QAction*)));
-               //pd->exec(QCursor::pos());
-           }
-       }
-
-   }
-
-
 /*
       for(int i=0; i<35; i++){
          int key = 0x01000030 + i;
@@ -1183,6 +1157,38 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
   // qDebug()<<obj->objectName();
 
    return QMainWindow::eventFilter(obj, event);
+}
+
+QMenu* FglForm::createMenuHideShowFields(QObject *obj)
+{
+    QMenu *hideFields = new QMenu("Felder Ein-/Ausblenden");
+        for(int i=0; i < this->ql_fglFields.count(); i++) {
+            if(QLabel *la = qobject_cast<QLabel*> (this->findFieldByName(this->ql_fglFields.at(i)->colName())))
+            {
+                QSettings settings(windowName, ql_fglFields.at(i)->colName());
+                if(!la->text().isEmpty()) {
+                    rightAct = new QAction(la->text(), this);
+                    rightAct->setObjectName(ql_fglFields.at(i)->colName());
+                    rightAct->setCheckable(true);
+                    if(settings.value("hideColumn").isNull()) {
+                        rightAct->setChecked(true);
+
+                    } else {
+                        rightAct->setChecked(false);
+                    }
+                 } else {
+                    rightAct = new QAction(ql_fglFields.at(i)->colName(), this);
+                }
+            }
+            hideFields->addAction(rightAct);
+        }
+        hideFields->addSeparator();
+        resetAct = new QAction("Standardeinstellung wiederherstellen", this);
+        connect(resetAct, SIGNAL(triggered()), this, SLOT(resetFieldSettings()));
+        hideFields->addAction(resetAct);
+        connect(hideFields, SIGNAL(triggered(QAction*)), this, SLOT(saveFieldSettings(QAction*)));
+
+    return hideFields;
 }
 
 //------------------------------------------------------------------------------
@@ -1542,6 +1548,7 @@ MainFrame::vdcdebug("FglForm","setFormLayout", "const QDomDocument& docLayout");
       if(TextEdit *textEdit = qobject_cast<TextEdit *> (ql_formelements.at(i))){
        //  connect(textEdit, SIGNAL(returnPressed()), this, SLOT(nextfield()));
          connect(textEdit, SIGNAL(cursorPositionChanged()), this, SLOT(setLastCursor()));
+         connect(textEdit, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(createContextMenu(const QPoint&)));
          textEdit->installEventFilter(this);
       }
 
@@ -3021,11 +3028,11 @@ MainFrame::vdcdebug("FglForm","createContextMenu", "const QPoint &pos");
       if(LineEdit *lineEdit = qobject_cast<LineEdit *> (w)){
          contextMenu = lineEdit->createStandardContextMenu();
          contextMenu->addSeparator();
-         if(!hideFields->isEmpty())
-         {
-             contextMenu->addMenu(hideFields);
-         }
-
+         contextMenu->addMenu(createMenuHideShowFields(w));
+      } else if(TextEdit *textEdit = qobject_cast<TextEdit *> (w)) {
+          contextMenu = textEdit->createStandardContextMenu();
+          contextMenu->addSeparator();
+          contextMenu->addMenu(createMenuHideShowFields(w));
       }
 
    }
