@@ -1,4 +1,4 @@
-#include <QDebug>
+  #include <QDebug>
 #include <context.h>
 #include <models/vwidgets.h>
 #include <models/table.h>
@@ -9,7 +9,7 @@ Context::Context(QObject *parent) : QObject(parent)
   MainFrame::vdcdebug("Context","Context", "QObject *parent");
   this->rowChangedCnt = 0;
   this->fgl_state = Fgl::IDLE;
-
+  this->qw_lastfocus = NULL;
   sendBeforeEvent();
 }
 
@@ -20,6 +20,7 @@ Context::Context(Fgl::State state, QObject *parent) : QObject(parent)
   this->fgl_state = state;
   b_arrlinech = false;
   b_scrlinech = false;
+  this->qw_lastfocus = NULL;
 
   sendBeforeEvent();
 }
@@ -504,7 +505,17 @@ void Context::checkOptions()
             }
           return;
         }
-    }
+  }
 
+}
+
+void Context::setLastFocusWidget(QWidget *w)
+{
+  this->qw_lastfocus = w;
+}
+
+QWidget* Context::lastFocusWidget()
+{
+  return qw_lastfocus;
 }
 

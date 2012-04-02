@@ -31,6 +31,8 @@ public:
    void sendBeforeEvent();
    void sendAfterEvent();
    void checkOptions();
+   void setLastFocusWidget(QWidget*);
+   QWidget *lastFocusWidget();
    /*
    void restoreFieldPalette();
    void setPaletteList();
@@ -44,6 +46,7 @@ private:
    //QHash<QString, QPalette> qh_palette;
    void setRowChanged();
    int rowChangedCnt;
+   QWidget *qw_lastfocus;
 
 
 public slots:

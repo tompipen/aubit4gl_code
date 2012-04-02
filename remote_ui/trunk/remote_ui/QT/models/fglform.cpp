@@ -1641,7 +1641,9 @@ if(inputArray() || displayArray())
  */
 void FglForm::clearFieldFocus()
 {
-  currentField()->clearFocus();
+  if(currentField())
+     currentField()->clearFocus();
+
   QList<QWidget*> ql_widgets = formElements();
   int cnt_elements = ql_widgets.size();
   for(int i = 0; i<cnt_elements; i++)
@@ -1964,6 +1966,9 @@ MainFrame::vdcdebug("FglForm","setWindowType", "const QString &sm");
 void FglForm::setCurrentWidget(QWidget *qw)
 {
   currentWidget = qw;
+  if(context)
+     this->context->setLastFocusWidget(qw);
+
   //Falls das Objekt in nem Tab ist
 
   if(currentWidget != NULL){

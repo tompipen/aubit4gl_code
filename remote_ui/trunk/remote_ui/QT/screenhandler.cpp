@@ -2794,8 +2794,31 @@ MainFrame::vdcdebug("ScreenHandler","getContext", "int i_context");
 
    for(int i=contextCount; i<i_context; i++){
       Context *context = new Context;
-  /*    if(!contexts.isEmpty())
-        contexts.last()->restoreFieldPalette();*/
+      if(!contexts.isEmpty())
+      {
+          if(p_fglform)
+             p_fglform->clearFieldFocus();
+
+          int f = contexts.last()->fieldList().size();
+          QList<QWidget*> ql_widgets = contexts.last()->fieldList();
+          if(f > 0)
+          {
+              for(int i = 0; i < f; i++)
+              {
+                  ql_widgets.at(i)->blockSignals(true);
+                  if(TableView *tableView = qobject_cast<TableView *> (ql_widgets.at(i))){
+                      tableView->setIgnoreRowChange(true);
+
+                      QModelIndex current = tableView->currentIndex();
+                      tableView->closePersistentEditor(current);
+
+                  }
+                  ql_widgets.at(i)->setEnabled(false);
+                  ql_widgets.at(i)->blockSignals(false);
+
+              }
+          }
+      }
       contexts << context;
    }
 
@@ -2824,6 +2847,7 @@ MainFrame::vdcdebug("ScreenHandler","freeContext", "int i_context");
          QWidget *field = context->fieldList().at(i);
          field->blockSignals(true);
          field->setEnabled(false);
+         field->clearFocus();
          if(TableView *tableView = qobject_cast<TableView *> (field)){
              tableView->setIgnoreRowChange(true);
 
@@ -2842,6 +2866,26 @@ MainFrame::vdcdebug("ScreenHandler","freeContext", "int i_context");
 
       context = getCurrentContext();
       p_fglform->context = context;
+
+      if(p_fglform)
+         p_fglform->clearFieldFocus();
+
+      p_fglform->setCurrentWidget(context->lastFocusWidget());
+      int f = context->fieldList().size();
+      QList<QWidget*> ql_widgets = context->fieldList();
+      if(f > 0)
+      {
+          for(int i = 0; i < f; i++)
+          {
+              ql_widgets.at(i)->setEnabled(true);
+              if(TableView *tableView = qobject_cast<TableView *> (ql_widgets.at(i)))
+              {
+                  QModelIndex current = tableView->currentIndex();
+                  tableView->edit(current);
+              }
+
+          }
+      }
    /*   if(context)
          context->setPaletteList();
       if(p_fglform->displayArray() || p_fglform->inputArray() || p_fglform->input() || p_fglform->construct())
