@@ -616,6 +616,7 @@ TextEdit::TextEdit(QWidget *parent)
    b_denyFocus = false;
    setWantTabs(false);
    setWantReturns(true);
+   setContextMenuPolicy(Qt::CustomContextMenu);
   // setAutoFillBackground(true);
 
 
