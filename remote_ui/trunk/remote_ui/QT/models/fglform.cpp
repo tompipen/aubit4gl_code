@@ -929,17 +929,33 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
             }
          }
 
-         if(!input() || !construct() || !screenRecord()){
+         qDebug() << "obj: " << obj;
+
+         if(!input() && !construct() && !screenRecord()){
              if(LineEdit *le = qobject_cast<LineEdit*> (obj))
              {
-                 if(le->isEnabled())
+                 if(!le->isEnabled())
                      createContextMenu(mev->globalPos());
 
              }
-            }
+         }
+      } else if (mev->button() == Qt::RightButton){
+          qDebug() << "RIGHT CLICK" << obj;
+          if(!input() && !construct() && !screenRecord()){
+              if(LineEdit *le = qobject_cast<LineEdit*> (obj))
+              {
+                  if(!le->isEnabled())
+                  {
+                      QMenu *rightClick = le->createStandardContextMenu();
+                      rightClick->exec(QCursor::pos());
+                  }
+
+              }
+          }
+
       }
 
-   }
+    }
 
 
 
@@ -2980,9 +2996,9 @@ MainFrame::vdcdebug("FglForm","readSettingsLocal", "");
 void FglForm::contextMenuEvent(QContextMenuEvent *ev)
 {
 MainFrame::vdcdebug("FglForm","contextMenuEvent", "QContextMenuEvent *ev");
-ev->accept();
+//ev->accept();
 
-createContextMenu(ev->globalPos());
+//createContextMenu(ev->globalPos());
    
 }
 
@@ -3022,6 +3038,7 @@ MainFrame::vdcdebug("FglForm","createContextMenu", "const QPoint &pos");
    if(RingMenu *p_menu = qobject_cast<RingMenu *> (menu())){
       ql_actions << p_menu->actions();
    }
+
 
 /*
    for(int i=0; i<actions().size(); i++){
