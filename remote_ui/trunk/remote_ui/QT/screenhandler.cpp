@@ -2870,21 +2870,27 @@ MainFrame::vdcdebug("ScreenHandler","freeContext", "int i_context");
       if(p_fglform)
          p_fglform->clearFieldFocus();
 
-      p_fglform->setCurrentWidget(context->lastFocusWidget());
-      int f = context->fieldList().size();
-      QList<QWidget*> ql_widgets = context->fieldList();
-      if(f > 0)
+      if(context)
       {
-          for(int i = 0; i < f; i++)
-          {
-              ql_widgets.at(i)->setEnabled(true);
-              if(TableView *tableView = qobject_cast<TableView *> (ql_widgets.at(i)))
-              {
-                  QModelIndex current = tableView->currentIndex();
-                  tableView->edit(current);
-              }
-
-          }
+         p_fglform->setCurrentWidget(context->lastFocusWidget());
+         int f = context->fieldList().size();
+         QList<QWidget*> ql_widgets = context->fieldList();
+         if(f > 0)
+         {
+             for(int i = 0; i < f; i++)
+             {
+                 ql_widgets.at(i)->setEnabled(true);
+                 if(TableView *tableView = qobject_cast<TableView *> (ql_widgets.at(i)))
+                 {
+                     QModelIndex current = tableView->currentIndex();
+                     tableView->edit(current);
+                 }
+             }
+         }
+      }
+      else
+      {
+        p_fglform->setCurrentWidget(NULL);
       }
    /*   if(context)
          context->setPaletteList();
