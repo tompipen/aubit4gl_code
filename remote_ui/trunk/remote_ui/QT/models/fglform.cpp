@@ -949,7 +949,14 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
               {
                   if(!le->isEnabled())
                   {
-                      QMenu *rightClick = le->createStandardContextMenu();
+                      QMenu *rightClick = new QMenu(this);
+                      QAction *copy = new QAction("copy", this);
+                      QAction *selectAll = new QAction("select all", this);
+                      rightClick->addAction(selectAll);
+                      connect(selectAll, SIGNAL(triggered()), le, SLOT(selectAll()));
+                      rightClick->addAction(copy);
+                      connect(copy, SIGNAL(triggered()), le, SLOT(copy()));
+                      rightClick->addSeparator();
                       rightClick->addMenu(createMenuHideShowFields(obj));
                       rightClick->exec(QCursor::pos());
                   }
@@ -958,7 +965,14 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
               {
                   if(!te->isEnabled())
                   {
-                      QMenu *rightClick = te->createStandardContextMenu();
+                      QMenu *rightClick = new QMenu(this);
+                      QAction *copy = new QAction("copy", this);
+                      QAction *selectAll = new QAction("select all", this);
+                      rightClick->addAction(selectAll);
+                      connect(selectAll, SIGNAL(triggered()), te, SLOT(selectAll()));
+                      rightClick->addAction(copy);
+                      connect(copy, SIGNAL(triggered()), te, SLOT(copy()));
+                      rightClick->addSeparator();
                       rightClick->addMenu(createMenuHideShowFields(obj));
                       rightClick->exec(QCursor::pos());
                   }
