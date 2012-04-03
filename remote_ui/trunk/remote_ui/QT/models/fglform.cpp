@@ -1451,22 +1451,21 @@ void FglForm::reopenPulldown()
 void FglForm::closeEvent(QCloseEvent *event)
 {
 MainFrame::vdcdebug("FglForm","closeEvent", "QCloseEvent *event");
-   if(b_allowClose){
-      if(QObject::sender() == NULL)
+   if(!b_allowClose){
+      if(QObject::sender() == NULL) //Null when it comes from the
       {
          connect(this, SIGNAL(closeAction()), this, SLOT(exitMenu()));
           emit closeAction();
       }
-      event->accept();
+      event->ignore();
 
-      QSettings settings("VENTAS", windowName);
-      settings.value("size", size());
-
-      return QMainWindow::closeEvent(event);
    }
 
-   event->ignore();
+   QSettings settings("VENTAS", windowName);
+   settings.value("size", size());
 
+   return QMainWindow::closeEvent(event);
+  /*
    if(menu() != NULL && menu()->isEnabled()){
       QList<QPushButton*> buttons = menu()->buttons();
       for(int i=0; i< buttons.size(); i++){
@@ -1482,7 +1481,7 @@ MainFrame::vdcdebug("FglForm","closeEvent", "QCloseEvent *event");
       ievent.id = "INTERRUPT";
       addToQueue(ievent);
    }
-
+*/
 }
 
 //------------------------------------------------------------------------------
