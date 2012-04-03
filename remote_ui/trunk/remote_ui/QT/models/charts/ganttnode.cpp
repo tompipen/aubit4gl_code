@@ -82,6 +82,13 @@ void Node::setPosition( KDGantt::StyleOptionGanttItem::Position pos ) {
     m_position = pos;
 }
 
+void Node::setTaskNr( const QString& str) {
+    m_taskNr = str;
+}
+
+void Node::setDependTask( const QString& str) {
+    m_dependTask = str;
+}
 
 /* --------------------------------------
         getter-methods
@@ -116,4 +123,12 @@ int Node::getCompletion() const {
 
 KDGantt::StyleOptionGanttItem::Position Node::getPosition() const {
     return m_position;
+}
+
+QString Node::getTaskNr() const {
+    return m_taskNr;
+}
+
+QString Node::getDependTask() const {
+    return m_dependTask;
 }

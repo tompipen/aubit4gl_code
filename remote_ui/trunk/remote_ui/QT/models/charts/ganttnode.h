@@ -29,6 +29,8 @@ public:
     void setType( int type ) ;
     void setCompletion( int completion ) ;
     void setPosition( KDGantt::StyleOptionGanttItem::Position pos ) ;
+    void setTaskNr( const QString& str);
+    void setDependTask( const QString& str);
 
     Node* getParent() const;
     QList<Node*> getChildren();
@@ -39,6 +41,8 @@ public:
     KDGantt::ItemType getType() const;
     int getCompletion() const;
     KDGantt::StyleOptionGanttItem::Position getPosition() const ;
+    QString   getTaskNr() const;
+    QString   getDependTask() const;
 
 private:
     Node* m_parent;
@@ -47,6 +51,7 @@ private:
     QDateTime m_startTime, m_endTime;
     QString m_label;
     int m_completion;
+    QString m_taskNr, m_dependTask;
     KDGantt::StyleOptionGanttItem::Position m_position;
 
 };
