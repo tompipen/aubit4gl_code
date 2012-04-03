@@ -28,7 +28,7 @@ int GanttTable::rowCount( const QModelIndex& parent ) const
 int GanttTable::columnCount( const QModelIndex& parent ) const
 {
     Q_UNUSED(parent);
-    return 5;
+    return 7;
 }
 
 QModelIndex GanttTable::index( int row, int col, const QModelIndex& parent ) const
@@ -66,6 +66,8 @@ QVariant GanttTable::headerData( int section, Qt::Orientation orientation, int r
     case START_TIME:    return tr( "Start" );
     case END_TIME:      return tr( "Ende" );
     case COMPLETION:    return tr( "Erledigt %" );
+    case TASK_NUMBER:   return tr( "Task_nr");
+    case DEPEND_TASK:   return tr( "next Task" );
     default:            return QVariant();
     }
 }
@@ -245,16 +247,17 @@ bool GanttTable::readCSV( GanttTable* model, KDGantt::View* view, QString &filen
                     }
                     if( column == 3 ) {  // completion
                         node->setCompletion(strWert.toInt( &ok, 10));
-                        qDebug()<<node->getCompletion();
                     }
                     if( column == 4 ) { // number of current task
                         if( strWert.toInt( &ok, 10)) {
+                            node->setTaskNr( strWert );
                             currentString = strWert;
                             currentTask.insert(currentString, row);
                         }
                     }
                     if( column == 5 ) { // number of depending task
                         if( strWert.toInt( &ok, 10)) {
+                            node->setDependTask( strWert );
                             dependString = strWert;
                             dependTask.insert(dependString, row);
                         }
@@ -271,6 +274,10 @@ bool GanttTable::readCSV( GanttTable* model, KDGantt::View* view, QString &filen
                                                 qVariantFromValue( node->getEndTime() ),KDGantt::EndTimeRole);
                 model->setData(model->index(row, GanttTable::COMPLETION, QModelIndex()),
                                                 qVariantFromValue( node->getCompletion() ) );
+                model->setData(model->index(row, GanttTable::TASK_NUMBER, QModelIndex()),
+                                                qVariantFromValue( node->getTaskNr() ) );
+                model->setData(model->index(row, GanttTable::DEPEND_TASK, QModelIndex()),
+                                                qVariantFromValue( node->getDependTask() ) );
             }
             //  set constraints
             foreach(QString str, dependTask.keys()){
