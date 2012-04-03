@@ -14,7 +14,9 @@ public:
         TYPE,
         START_TIME,
         END_TIME,
-        COMPLETION
+        COMPLETION,
+        TASK_NUMBER,
+        DEPEND_TASK
     };
 
     explicit GanttTable( QObject* parent = 0 );
