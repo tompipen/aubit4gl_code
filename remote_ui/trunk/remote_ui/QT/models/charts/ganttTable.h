@@ -31,7 +31,7 @@ public:
     bool setData( const QModelIndex& idx,  const QVariant& value, int role = Qt::DisplayRole );
     bool insertRows( int row, int count, const QModelIndex& parent = QModelIndex() );
 
-    bool readCSV(GanttTable* model, KDGantt::View* view, const QString &filename);
+    bool readCSV(GanttTable* model, KDGantt::View* view, QString &filename);
     void newRow(GanttTable *model, KDGantt::View *view);
     void appendRow(GanttTable* model, KDGantt::View *view);
 

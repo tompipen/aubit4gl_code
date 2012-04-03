@@ -205,7 +205,7 @@ bool GanttTable::insertRows( int row, int count, const QModelIndex& parent )
     return true;
 }
 
-bool readCSV( GanttTable* model, KDGantt::View* view, const QString &filename) {
+bool GanttTable::readCSV( GanttTable* model, KDGantt::View* view, QString &filename) {
     QFile datei(filename);
     QStringList strList;
     QHash<QString, int> currentTask, dependTask;
@@ -224,7 +224,7 @@ bool readCSV( GanttTable* model, KDGantt::View* view, const QString &filename) {
             view->setSelectionModel( new QItemSelectionModel(model));
             for( int row = 0; row < strList.size(); row++ ){
                 model->appendRow( model , view);
-                QStringList zeilenLeiste = strList.at( row ).split( QString( "," ));
+                QStringList zeilenLeiste = strList.at( row ).split( QString( "|" ));
                 Node *node = new Node();
 
                 node->setType( 1 ); // hardcoded for task
@@ -276,6 +276,7 @@ bool readCSV( GanttTable* model, KDGantt::View* view, const QString &filename) {
             foreach(QString str, dependTask.keys()){
                 view->constraintModel()->addConstraint(KDGantt::Constraint(model->index(dependTask.value(currentString),0,QModelIndex()),
                                                                            model->index(dependTask.value(dependString),0,QModelIndex())));
+
             }
             return true;
         } else {
