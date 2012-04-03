@@ -4,8 +4,10 @@
 #include <KDGanttGlobal>
 #include <KDGanttStyleOptionGanttItem>
 #include <KDGanttConstraintModel>
+#include <KDGanttItemDelegate>
 #include <QItemSelectionModel>
 
+using namespace KDGantt;
 
 
 GanttTable::GanttTable( QObject* parent ): QAbstractItemModel( parent )
@@ -330,5 +332,74 @@ void GanttTable::appendRow( GanttTable* model, KDGantt::View* view )
     } else {
         model->insertRows( model->rowCount( view->rootIndex() ), 1, view->rootIndex() );
     }
+}
+
+ItemTypeComboBox::ItemTypeComboBox( QWidget* parent )
+    : QComboBox( parent )
+{
+    addItem( tr( "Task" ), QVariant( KDGantt::TypeTask ) );
+    addItem( tr( "Event" ), QVariant( KDGantt::TypeEvent ) );
+    addItem( tr( "Summary" ), QVariant( KDGantt::TypeSummary ) );
+}
+
+KDGantt::ItemType ItemTypeComboBox::itemType() const
+{
+    return static_cast<KDGantt::ItemType>( itemData( currentIndex() ).toInt() );
+}
+
+void ItemTypeComboBox::setItemType( KDGantt::ItemType typ )
+{
+    setCurrentIndex( typ-1 );
+}
+
+MyItemDelegate::MyItemDelegate( QObject* parent )
+    : KDGantt::ItemDelegate( parent )
+{
+}
+
+QWidget* MyItemDelegate::createEditor( QWidget* parent,
+                                       const QStyleOptionViewItem& option,
+                                       const QModelIndex& idx ) const
+{
+    qDebug() << "MyItemDelegate::createEditor("<<parent<<idx<<")";
+    if ( idx.isValid() && idx.column() == 1 )
+      return new ItemTypeComboBox(parent);
+    return ItemDelegate::createEditor( parent, option, idx );
+}
+
+void MyItemDelegate::setEditorData ( QWidget* editor, const QModelIndex& index ) const
+{
+  ItemTypeComboBox* c;
+  if( (c = qobject_cast<ItemTypeComboBox*>(editor)) && index.isValid() ) {
+      c->setItemType(static_cast<KDGantt::ItemType>(index.data(Qt::EditRole).toInt()));
+  } else {
+      ItemDelegate::setEditorData(editor,index);
+  }
+}
+
+void MyItemDelegate::setModelData ( QWidget* editor, QAbstractItemModel* model,
+                  const QModelIndex & index ) const
+{
+  ItemTypeComboBox* c;
+  if( (c = qobject_cast<ItemTypeComboBox*>(editor)) && index.isValid() ) {
+      model->setData(index,c->itemType());
+  } else {
+      KDGantt::ItemDelegate::setModelData(editor,model,index);
+  }
+}
+
+void MyItemDelegate::drawDisplay( QPainter* painter, const QStyleOptionViewItem& option,
+                  const QRect& rect, const QString& text ) const
+{
+  //qDebug() << "MyItemDelegate::drawDisplay(" <<painter<<rect<<text<<")";
+  KDGantt::ItemType typ = static_cast<KDGantt::ItemType>(text.toInt());
+  QString str;
+  switch(typ){
+      case KDGantt::TypeTask: str = tr("Task"); break;
+      case KDGantt::TypeEvent: str = tr("Event"); break;
+      case KDGantt::TypeSummary: str = tr("Summary"); break;
+      default: str = tr("None"); break;
+  }
+  ItemDelegate::drawDisplay(painter,option,rect,str);
 }
 

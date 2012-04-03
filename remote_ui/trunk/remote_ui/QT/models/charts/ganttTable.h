@@ -5,6 +5,14 @@
 #include <KDGanttView>
 
 #include <QAbstractItemModel>
+#include <QComboBox>
+#include <KDGanttGlobal>
+#include <KDGanttView>
+#include <KDGanttItemDelegate>
+#include <KDGanttDateTimeGrid>
+#include <KDGanttStyleOptionGanttItem>
+#include <KDGanttConstraintModel>
+#include <KDGanttGraphicsView>
 
 class GanttTable : public QAbstractItemModel {
 
@@ -18,7 +26,7 @@ public:
         TASK_NUMBER,
         DEPEND_TASK
     };
-
+public:
     explicit GanttTable( QObject* parent = 0 );
     ~GanttTable();
 
@@ -43,6 +51,34 @@ public:
 
 private:
     Node* m_root;
+};
+
+class ItemTypeComboBox : public QComboBox {
+    Q_OBJECT
+    Q_PROPERTY( KDGantt::ItemType itemType READ itemType WRITE setItemType )
+public:
+    explicit ItemTypeComboBox( QWidget* parent=0 );
+
+    KDGantt::ItemType itemType() const;
+public slots:
+    void setItemType( KDGantt::ItemType typ );
+};
+
+class MyItemDelegate : public KDGantt::ItemDelegate {
+public:
+    explicit MyItemDelegate( QObject* parent=0 );
+
+    /*reimp*/ QWidget* createEditor( QWidget* parent,
+                                     const QStyleOptionViewItem& option,
+                                     const QModelIndex& idx ) const;
+    /*reimp*/ void setEditorData( QWidget* editor, const QModelIndex& index ) const;
+    /*reimp*/ void setModelData( QWidget* editor, QAbstractItemModel* model,
+                  const QModelIndex & index ) const;
+protected:
+    /*reimp*/void drawDisplay( QPainter* painter, const QStyleOptionViewItem & option,
+                   const QRect& rect, const QString& text ) const;
+private:
+    bool m_isitemtype; // Nasty!
 };
 
 #endif // GANTTTABLE_H
