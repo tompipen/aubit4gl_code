@@ -105,6 +105,10 @@ public slots:
    void updateSectionWidth(int logicalIndex, int oldSize, int newSize);
    void resetSettings();
    void playkey(QKeyEvent*);
+   void copyRow();
+   void copyTable();
+   void copyCell();
+   void copyColumn();
 
 protected:
    QModelIndex mouseindex;

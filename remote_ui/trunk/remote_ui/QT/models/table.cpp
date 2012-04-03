@@ -55,6 +55,7 @@ MainFrame::vdcdebug("TableView","TableView", "QWidget *parent");
    header->setSortIndicatorShown(true);
    header->setSortIndicator(0, Qt::AscendingOrder);
    header->installEventFilter(this);
+   this->setContextMenuPolicy(Qt::CustomContextMenu);
 
    connect(this, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(accept()));
    connect(this, SIGNAL(entered(QModelIndex)), this, SLOT(setMousePos(QModelIndex)));
@@ -184,6 +185,65 @@ void TableView::updateSectionWidth(int logicalIndex, int, int newSize)
         }
 
         }*/
+}
+
+void TableView::copyRow()
+{
+    QString columnText;
+    foreach(const QModelIndex& index, this->selectedIndexes())
+    {
+        columnText.append(index.data().toString() + "\t");
+    }
+
+    QApplication::clipboard()->setText(columnText);
+
+}
+
+void TableView::copyTable()
+{
+    QString tableText;
+    int rows = this->model()->rowCount(QModelIndex());
+    int columns = this->model()->columnCount(QModelIndex());
+
+    for(int i=0; i < rows; i++)
+    {
+        for(int j=0; j < columns; j++)
+        {
+            QModelIndex index = this->model()->index(i, j);
+            tableText.append(index.data().toString() + "\t");
+
+            if(j+1 == columns)
+            {
+                tableText.append("\n");
+            }
+        }
+    }
+    QApplication::clipboard()->setText(tableText);
+}
+
+void TableView::copyCell()
+{
+    int column = mouseindex.column();
+    int row = mouseindex.row();
+    QString cellText;
+
+
+    cellText = this->model()->index(row, column).data().toString();
+
+    QApplication::clipboard()->setText(cellText);
+}
+
+void TableView::copyColumn()
+{
+    QString tableText;
+    int rows = this->model()->rowCount(QModelIndex());
+
+    for(int i=0; i < rows; i++)
+    {
+        tableText.append(this->model()->index(i, mouseindex.column()).data().toString() + "\n");
+    }
+
+    QApplication::clipboard()->setText(tableText);
 }
 
 

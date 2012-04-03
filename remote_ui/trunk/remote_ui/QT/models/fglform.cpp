@@ -944,6 +944,7 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
              }
          }
       } else if (mev->button() == Qt::RightButton){
+          qDebug() << "obj: " << obj->parent();
           if(!input() && !construct() && !screenRecord()){
               if(LineEdit *le = qobject_cast<LineEdit*> (obj))
               {
@@ -971,6 +972,25 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
                       rightClick->exec(QCursor::pos());
                   }
               }
+          } else if(TableView *tv = qobject_cast<TableView*> (obj->parent()))
+          {
+              QMenu *rightClick = new QMenu(this);
+
+              QAction *copyTable = new QAction("copy table", this);
+              rightClick->addAction(copyTable);
+              connect(copyTable, SIGNAL(triggered()), tv, SLOT(copyTable()));
+              QAction *copyRow = new QAction("copy row", this);
+              rightClick->addAction(copyRow);
+              connect(copyRow, SIGNAL(triggered()), tv, SLOT(copyRow()));
+              QAction *copyCell = new QAction("copy cell", this);
+              rightClick->addAction(copyCell);
+              connect(copyCell, SIGNAL(triggered()), tv, SLOT(copyCell()));
+              QAction *copyColumn = new QAction("copy column", this);
+              connect(copyColumn, SIGNAL(triggered()), tv, SLOT(copyColumn()));
+              rightClick->addAction(copyColumn);
+              rightClick->exec(QCursor::pos());
+              //tv->copyRow(tv->getMouseModelIndex());
+
           }
 
       }
