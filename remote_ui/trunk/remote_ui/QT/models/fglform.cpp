@@ -3074,6 +3074,7 @@ MainFrame::vdcdebug("FglForm","createContextMenu", "const QPoint &pos");
             ql_actions << actions().at(i);
    }
 */
+   QList<QPushButton*> menuButtons = menu()->buttons();
 
    foreach(QAction *action, ql_actions)
    {
@@ -3081,7 +3082,16 @@ MainFrame::vdcdebug("FglForm","createContextMenu", "const QPoint &pos");
        {
            action->setVisible(false);
        }
-       contextMenu->addAction(action);
+       for(int i=0; i < menuButtons.count(); i++)
+       {
+           if(menuButtons.at(i)->text().contains(action->text()))
+           {
+               if(menuButtons.at(i)->isVisible())
+               {
+                   contextMenu->addAction(action);
+               }
+           }
+       }
    }
 //   contextMenu->addActions(ql_actions);
 
