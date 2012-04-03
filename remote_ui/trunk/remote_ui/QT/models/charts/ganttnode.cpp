@@ -12,7 +12,6 @@ Node::Node( Node* parent )
       m_position( KDGantt::StyleOptionGanttItem::Right )
 {
     if ( m_parent ) m_parent->addChild( this );
-    qDebug()<<"new Node " << getLabel();
 }
 
 Node::~Node()
