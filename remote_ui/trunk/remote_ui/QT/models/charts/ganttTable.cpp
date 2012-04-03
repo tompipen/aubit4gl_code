@@ -245,6 +245,7 @@ bool GanttTable::readCSV( GanttTable* model, KDGantt::View* view, QString &filen
                     }
                     if( column == 3 ) {  // completion
                         node->setCompletion(strWert.toInt( &ok, 10));
+                        qDebug()<<node->getCompletion();
                     }
                     if( column == 4 ) { // number of current task
                         if( strWert.toInt( &ok, 10)) {
@@ -269,8 +270,7 @@ bool GanttTable::readCSV( GanttTable* model, KDGantt::View* view, QString &filen
                 model->setData(model->index(row, GanttTable::END_TIME, QModelIndex()),
                                                 qVariantFromValue( node->getEndTime() ),KDGantt::EndTimeRole);
                 model->setData(model->index(row, GanttTable::COMPLETION, QModelIndex()),
-                                                qVariantFromValue( node->getCompletion() ), KDGantt::TaskCompletionRole);
-
+                                                qVariantFromValue( node->getCompletion() ) );
             }
             //  set constraints
             foreach(QString str, dependTask.keys()){
