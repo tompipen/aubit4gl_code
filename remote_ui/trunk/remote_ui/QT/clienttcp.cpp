@@ -1009,6 +1009,7 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
 
             setFieldHidden(fieldName, hidden);
          }
+         #ifdef KDChart_Version
          if(qs_name == "ui.gantt.create")
          {
             emit createGantt();
@@ -1036,6 +1037,7 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
              emit setGanttTitle(params.at(0).toInt(), params.at(1));
              expect = 0;
          }
+         #endif
          if(qs_name == "ui.browser.create")
          {
              QStringList params;
