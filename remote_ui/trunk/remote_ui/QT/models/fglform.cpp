@@ -944,7 +944,7 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
              }
          }
       } else if (mev->button() == Qt::RightButton){
-          qDebug() << "obj: " << obj->parent();
+          qDebug() << "obj: " << obj;
           if(!input() && !construct() && !screenRecord()){
               if(LineEdit *le = qobject_cast<LineEdit*> (obj))
               {
@@ -991,6 +991,20 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
               rightClick->exec(QCursor::pos());
               //tv->copyRow(tv->getMouseModelIndex());
 
+          } else {
+              if(LineEdit *le = qobject_cast<LineEdit*> (obj))
+              {
+                  QMenu *rightClick = le->createStandardContextMenu();
+                  rightClick->addSeparator();
+                  rightClick->addMenu(createMenuHideShowFields(obj));
+                  rightClick->exec(QCursor::pos());
+              } else if(TextEdit *le = qobject_cast<TextEdit*> (obj->parent()))
+              {
+                  QMenu *rightClick = le->createStandardContextMenu();
+                  rightClick->addSeparator();
+                  rightClick->addMenu(createMenuHideShowFields(obj));
+                  rightClick->exec(QCursor::pos());
+              }
           }
 
       }
@@ -1559,7 +1573,7 @@ MainFrame::vdcdebug("FglForm","setFormLayout", "const QDomDocument& docLayout");
       if(LineEdit *lineEdit = qobject_cast<LineEdit *> (ql_formelements.at(i))){
          connect(lineEdit, SIGNAL(fieldEvent(Fgl::Event)), this, SLOT(fieldEvent(Fgl::Event)));
          connect(lineEdit, SIGNAL(nextField()), this, SLOT(nextfield()));
-         connect(lineEdit, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(createContextMenu(const QPoint&)));
+         //connect(lineEdit, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(createContextMenu(const QPoint&)));
          connect(lineEdit, SIGNAL(error(const QString&)), this, SLOT(error(const QString&)));
          connect(lineEdit, SIGNAL(textEdited(QString)), this, SLOT(setBufferTouched()));
          connect(lineEdit, SIGNAL(editingFinished()), this, SLOT(checkField()));
@@ -1575,7 +1589,7 @@ MainFrame::vdcdebug("FglForm","setFormLayout", "const QDomDocument& docLayout");
       if(TextEdit *textEdit = qobject_cast<TextEdit *> (ql_formelements.at(i))){
        //  connect(textEdit, SIGNAL(returnPressed()), this, SLOT(nextfield()));
          connect(textEdit, SIGNAL(cursorPositionChanged()), this, SLOT(setLastCursor()));
-         connect(textEdit, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(createContextMenu(const QPoint&)));
+         //connect(textEdit, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(createContextMenu(const QPoint&)));
          textEdit->installEventFilter(this);
       }
 

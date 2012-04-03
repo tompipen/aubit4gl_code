@@ -292,7 +292,7 @@ LineEdit::LineEdit(QWidget *parent)
 {
    setProperty("touched", false);
    this->setFixedHeight(defHeight);
-   setContextMenuPolicy(Qt::CustomContextMenu);
+   this->setContextMenuPolicy(Qt::CustomContextMenu);
 /*   QFont textFont;
    textFont.setPixelSize(12);
    QFontMetrics fm(textFont);
