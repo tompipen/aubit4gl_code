@@ -478,6 +478,8 @@ dtype :
 		} 
 	|  UIBROWSER {
          $$=new_variable_object("ui.browser");
+      } |  UIGANTT {
+         $$=new_variable_object("ui.gantt");
       }
    |  STRING {
 			if (A4GL_isyes(acl_getenv("STRING_AS_OBJECT"))) {
