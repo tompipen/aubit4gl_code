@@ -32,6 +32,9 @@ class FglForm;
 #ifdef KDChart_Version
 #include "models/charts/chartInterface.h"
 #include "models/charts/chartTableModel.h"
+#include "models/charts/ganttTable.h"
+#include "models/charts/ganttnode.h"
+#include "models/charts/ganttWidget.h"
 #endif
 #include "models/webbrowser.h"
 #include <QVector>
@@ -62,6 +65,10 @@ public:
    QList<WebBrowser*> ql_browser;
    QStringList qsl_activeFieldNames;
    QStringList qsl_triggereds;
+
+   #ifdef KDChart_Version
+   QList<GanttWidget*> ql_ganttWidget;
+   #endif
 
    bool b_menuEnabled;
    //QStringList qsl_arrayValues;
@@ -124,7 +131,6 @@ private:
    void checkFields();
    bool b_newForm;
 
-
    QWidget *p_screenRecord;
    void initForm(int);
 
@@ -148,6 +154,9 @@ public slots:
    void addChartValue(QString, QString);
    void addChartValue(const chartVector &name, const chartVector &wert);
    void displayChart(QString, int);
+   void createGantt();
+   void setTitle(int, const QString);
+   void readCsv(int, QString);
    #endif
    void createBrowser();
    void setUrl(int id, const QUrl &http);

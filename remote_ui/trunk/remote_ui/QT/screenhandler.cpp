@@ -3261,6 +3261,7 @@ void ScreenHandler::setRuninfo(int mode, QString cmd, int runcnt, bool start)
 
 
 #ifdef KDChart_Version
+
 void ScreenHandler::createChart(QString chart2)
 {
     qDebug() << "chart2:" << chart2;
@@ -3314,6 +3315,31 @@ void ScreenHandler::displayChart(QString fileName, int diag_state)
     }
 
 }
+
+void ScreenHandler::createGantt()
+{
+    qDebug() << "createGantt";
+    int next = ql_ganttWidget.size();
+    GanttWidget *p_gantt = new GanttWidget();
+    p_gantt->createGanttWidget();
+    p_gantt->show();
+    ql_ganttWidget << p_gantt;
+    fglFormResponse("<TRIGGERED ID=\"-123\"><SVS><SV>" + QString::number(next) + "</SV></SVS></TRIGGERED>");
+}
+
+void ScreenHandler::setTitle(int ganttId, const QString title)
+{
+    qDebug() << "setTitle";
+    fglFormResponse("<TRIGGERED ID=\"-123\"><SVS><SV>" + QString::number(ganttId) + "</SV></SVS></TRIGGERED>");
+}
+
+void ScreenHandler::readCsv(int ganttId, QString fileName)
+{
+    qDebug() << "readCsv";
+    ql_ganttWidget.at(ganttId)->readCsv(fileName);
+    fglFormResponse("<TRIGGERED ID=\"-123\"><SVS><SV>" + QString::number(ganttId) + "</SV></SVS></TRIGGERED>");
+}
+
 #endif
 
 void ScreenHandler::createBrowser()

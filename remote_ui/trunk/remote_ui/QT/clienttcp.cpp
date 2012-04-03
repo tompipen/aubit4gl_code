@@ -357,6 +357,10 @@ ClientSocket::ClientSocket(QObject *parent, QString name, QString pass, QString 
    connect(&ph, SIGNAL(setUrl(int, QUrl)), p_currScreenHandler, SLOT(setUrl(int, QUrl)));
    connect(&ph, SIGNAL(createBrowser()), p_currScreenHandler, SLOT(createBrowser()));
    connect(&ph, SIGNAL(closeBrowser(int)), p_currScreenHandler, SLOT(closeBrowser(int)));
+
+   connect(&ph, SIGNAL(setGanttTitle(int,QString)), p_currScreenHandler, SLOT(setTitle(int,QString)));
+   connect(&ph, SIGNAL(createGantt()), p_currScreenHandler, SLOT(createGantt()));
+   connect(&ph, SIGNAL(ganttReadCsv(int,QString)), p_currScreenHandler, SLOT(readCsv(int,QString)));
 }
 
 
@@ -1004,6 +1008,33 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
             }
 
             setFieldHidden(fieldName, hidden);
+         }
+         if(qs_name == "ui.gantt.create")
+         {
+            emit createGantt();
+
+            expect = 0;
+         }
+         if(qs_name == "ui.gantt.readCsv")
+         {
+             QStringList params;
+              for(int k=0; k<paramsElement.childNodes().count(); k++){
+                 QDomElement valuesElement = paramsElement.childNodes().at(k).toElement();
+                 params << valuesElement.text();
+              }
+              emit ganttReadCsv(params.at(0).toInt(), params.at(1));
+
+              expect = 0;
+         }
+         if(qs_name == "ui.gantt.setTitle")
+         {
+             QStringList params;
+             for(int k=0; k<paramsElement.childNodes().count(); k++){
+                QDomElement valuesElement = paramsElement.childNodes().at(k).toElement();
+                params << valuesElement.text();
+             }
+             emit setGanttTitle(params.at(0).toInt(), params.at(1));
+             expect = 0;
          }
          if(qs_name == "ui.browser.create")
          {

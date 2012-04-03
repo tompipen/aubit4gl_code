@@ -167,6 +167,13 @@ signals:
    void activeWindow(QString);
    void fileBrowser(QString, QString, QString, QString, QString);
 
+
+   #ifdef KDChart_Version
+   void createGantt();
+   void setGanttTitle(int, const QString);
+   void ganttReadCsv(int, QString);
+   #endif
+
 public slots:
    void fglFormResponse(QString);
 
