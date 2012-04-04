@@ -182,11 +182,28 @@ bool GanttTable::setData( const QModelIndex& index,  const QVariant& value, int 
         switch( role ) {
         case Qt::DisplayRole:
         case Qt::EditRole:
+        case KDGantt::TaskCompletionRole:
             node->setCompletion(value.toInt());
             emit dataChanged( index, index );
             break;
         }
-    }// save constraints to constraint model
+    } else if ( index.column() == TASK_NUMBER ) {
+        switch( role ) {
+        case Qt::DisplayRole:
+        case Qt::EditRole:
+            node->setTaskNr(value.toString());
+            emit dataChanged( index, index );
+            break;
+        }
+    } else if ( index.column() == DEPEND_TASK ) {
+        switch( role ) {
+        case Qt::DisplayRole:
+        case Qt::EditRole:
+            node->setDependTask(value.toString());
+            emit dataChanged( index, index );
+            break;
+        }
+    }
 
     return true;
 }
