@@ -1016,13 +1016,14 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
 
             expect = 0;
          }
-         if(qs_name == "ui.gantt.readCsv")
+         if(qs_name == "ui.gantt.readcsv")
          {
              QStringList params;
               for(int k=0; k<paramsElement.childNodes().count(); k++){
                  QDomElement valuesElement = paramsElement.childNodes().at(k).toElement();
                  params << valuesElement.text();
               }
+              qDebug() << "bin dran!";
               emit ganttReadCsv(params.at(0).toInt(), params.at(1));
 
               expect = 0;

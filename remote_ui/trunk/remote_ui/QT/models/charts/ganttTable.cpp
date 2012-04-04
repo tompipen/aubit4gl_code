@@ -210,7 +210,7 @@ bool GanttTable::insertRows( int row, int count, const QModelIndex& parent )
 }
 
 bool GanttTable::readCSV( GanttTable* model, KDGantt::View* view, QString &filename) {
-    QFile datei(filename);
+    QFile datei(QDir::tempPath() + "/" + filename);
     QStringList strList;
     QHash<QString, int> currentTask, dependTask;
     QString dependString, currentString;
@@ -291,6 +291,8 @@ bool GanttTable::readCSV( GanttTable* model, KDGantt::View* view, QString &filen
         } else {
             return false;
         }
+    } else {
+        qDebug() << "Datei nicht gefunden.";
     }
     return false;
 }
