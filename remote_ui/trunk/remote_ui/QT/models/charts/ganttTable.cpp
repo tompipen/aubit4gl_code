@@ -282,10 +282,14 @@ bool GanttTable::readCSV( GanttTable* model, KDGantt::View* view, QString &filen
                                                 qVariantFromValue( node->getDependTask() ) );
             }
             //  set constraints
+            QHash<QString,int>::iterator it;
             foreach(QString str, dependTask.keys()){
-                view->constraintModel()->addConstraint(KDGantt::Constraint(model->index(dependTask.value(currentString),0,QModelIndex()),
-                                                                           model->index(dependTask.value(dependString),0,QModelIndex())));
-
+                for(it = currentTask.begin(); it != currentTask.end(); it++) {
+                    if( str == it.key()){
+                        view->constraintModel()->addConstraint(KDGantt::Constraint(model->index(dependTask.value(it.key()),0,QModelIndex()),
+                                                                                   model->index(it.value(),0,QModelIndex())));
+                    }
+                }
             }
             return true;
         } else {
