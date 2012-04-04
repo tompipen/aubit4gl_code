@@ -57,12 +57,25 @@ FglForm::FglForm(QString windowName, QWidget *parent) : QMainWindow(parent){
        b_dummy = true;
    }
 
+   QWidget *qw_framewidget = new QWidget(this);
+   qw_colorbar = new QWidget(this);
+   qw_colorbar->setAutoFillBackground(true);
+   qw_colorbar->setVisible(false); // hidden until 4cf show it
+   QVBoxLayout *hb_lay = new QVBoxLayout(qw_framewidget);
+   hb_lay->setMargin(0);
+   hb_lay->setSpacing(2);
+   qw_framewidget->setLayout(hb_lay);
+   qw_colorbar->setFixedHeight(4);
    this->setAccessibleName("FGLFORM");
    this->setObjectName("FGLFORM");
-   QSplitter *formSplitter = new QSplitter;
-   formSplitter->setChildrenCollapsible(false);
-   formSplitter->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-   setCentralWidget(formSplitter);
+   p_splitter = new QSplitter;
+   hb_lay->addWidget(p_splitter);
+   hb_lay->addWidget(qw_colorbar);
+   p_splitter->setChildrenCollapsible(false);
+   p_splitter->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+   setCentralWidget(qw_framewidget);
+
+
 
    setState(Fgl::IDLE);
 
@@ -377,15 +390,14 @@ MainFrame::vdcdebug("FglForm","setMenu", "RingMenu* p_menu");
 
    ql_menus << p_menu;
 
-   if(QSplitter *formSplitter = qobject_cast<QSplitter *> (this->centralWidget())){
-      formSplitter->addWidget(p_menu);
+      p_splitter->addWidget(p_menu);
       setRingMenuPosition(getRingMenuPosition());
 
 /*
       connect(p_menu, SIGNAL(menuButtonPressed(QString)),
               this, SLOT(buttonClicked(QString)));
 */
-   }
+
 }
 
 //------------------------------------------------------------------------------
@@ -473,8 +485,7 @@ MainFrame::vdcdebug("FglForm","setActionMenu", "ActionMenu* menu");
 
    p_actionMenu = menu;
 
-   QSplitter *formSplitter = (QSplitter*) this->centralWidget();
-   formSplitter->addWidget(menu);
+   p_splitter->addWidget(menu);
 
 /*
    connect(menu, SIGNAL(menuButtonPressed(QString)),
@@ -1574,7 +1585,6 @@ MainFrame::vdcdebug("FglForm","setFormLayout", "const QDomDocument& docLayout");
    formWidget = formParser->getFormWidget();
    //formWidget->setEnabled(false);
 
-   QSplitter *formSplitter = (QSplitter*) this->centralWidget();
    /*
    if(formSplitter->count() > 0){
       QWidget *widget = formSplitter->widget(0);
@@ -1583,7 +1593,7 @@ MainFrame::vdcdebug("FglForm","setFormLayout", "const QDomDocument& docLayout");
    }
    */
    //formSplitter->insertWidget(0,formWidget);
-   formSplitter->addWidget(formWidget);
+   p_splitter->addWidget(formWidget);
    //formParser->getFormWidget()->show();
 
    this->ql_formFields << formParser->getFieldList();
@@ -1805,8 +1815,7 @@ MainFrame::vdcdebug("FglForm","setStartMenu", "const QDomDocument &doc");
    connect(xml2Menu, SIGNAL(sendMenuCommand(QString)), this, SLOT(sendMenuCommand(QString)));
 
    if(property("startMenuPosition") == "tree"){
-      QSplitter *formSplitter = (QSplitter*) this->centralWidget();
-      formSplitter->addWidget(xml2Menu->getMenu());
+      p_splitter->addWidget(xml2Menu->getMenu());
    }
 
    if(property("startMenuPosition") == "menu"){
@@ -1892,7 +1901,7 @@ MainFrame::vdcdebug("FglForm","setRingMenuPosition", "const QString &sm");
    }
    
 
-   if(QSplitter *p_splitter = qobject_cast<QSplitter *> (centralWidget())){
+
       if(sm == "top" ||
          sm == "bottom"){
          p_splitter->setOrientation(Qt::Vertical);
@@ -1918,7 +1927,6 @@ MainFrame::vdcdebug("FglForm","setRingMenuPosition", "const QString &sm");
             }
          }
       }
-   }
 }
 
 //------------------------------------------------------------------------------
@@ -1943,8 +1951,6 @@ MainFrame::vdcdebug("FglForm","setActionPanelPosition", "const QString &sm");
       return;
    }
 
-
-   if(QSplitter *p_splitter = qobject_cast<QSplitter *> (centralWidget())){
       if(sm == "top" ||
          sm == "bottom"){
          p_splitter->setOrientation(Qt::Vertical);
@@ -1970,7 +1976,6 @@ MainFrame::vdcdebug("FglForm","setActionPanelPosition", "const QString &sm");
             }
          }
       }
-   }
 }
 
 //------------------------------------------------------------------------------
@@ -4171,6 +4176,17 @@ void FglForm::setUserInputEnabled(bool enabled)
 
 }
 
+void FglForm::setFormName(QString name)
+{
+  this->qs_formfile = name.trimmed();
+}
+
+QString FglForm::formName()
+{
+  return this->qs_formfile;
+}
+
+
 /*
 QSize FglForm::sizeHint() const
 {
@@ -4185,3 +4201,12 @@ QSize FglForm::sizeHint() const
   return QSize(width, height);
 }
 */
+
+void FglForm::showColorBar(QString color)
+{
+
+  QPalette pal = qw_colorbar->palette();
+  pal.setColor(QPalette::All, QPalette::Window, QColor(color));
+  qw_colorbar->setPalette(pal);
+  qw_colorbar->setVisible(true);
+}

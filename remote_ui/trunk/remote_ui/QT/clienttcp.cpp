@@ -214,8 +214,8 @@ ClientSocket::ClientSocket(QObject *parent, QString name, QString pass, QString 
    connect(&ph, SIGNAL(setUpdatesEnabled(bool)),
            p_currScreenHandler, SLOT(setUpdatesEnabled(bool)));
    // OPEN FORM
-   connect(&ph, SIGNAL(createWindow(QString, QString, int, int, int, int, QString)), 
-           p_currScreenHandler, SLOT(createWindow(QString, QString, int, int, int, int, QString)));
+   connect(&ph, SIGNAL(createWindow(QString, QString, int, int, int, int, QString, QString)),
+           p_currScreenHandler, SLOT(createWindow(QString, QString, int, int, int, int, QString, QString)));
    // PROMPT
    connect(&ph, SIGNAL(createPrompt(QString, int, int, QString)), 
            p_currScreenHandler, SLOT(createPrompt(QString, int, int, QString)));
@@ -240,6 +240,9 @@ ClientSocket::ClientSocket(QObject *parent, QString name, QString pass, QString 
    // transfer the received action defaults (4ad file) to the screen handler
    connect(&ph, SIGNAL(handleXMLActions(QString)), 
            p_currScreenHandler, SLOT(handleXMLActions(QString)));
+
+   connect(&ph, SIGNAL(handleXMLColors(QString)),
+           p_currScreenHandler, SLOT(handleXMLColors(QString)));
 
    // transfer the received styles (4st file) to the screen handler
    connect(&ph, SIGNAL(handleXMLStyles(QString)), 
@@ -719,8 +722,23 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
            }
           
       }
+
+      QFile colorFile(QString("%1.4cf").arg(programName));
+      if (colorFile.open(QIODevice::ReadOnly | QIODevice::Text)){
+          QString qs_defaultColors = colorFile.readAll();
+          handleXMLColors(qs_defaultColors);
+      }
+      else{
+          colorFile.setFileName("default.4cf");
+           if (colorFile.open(QIODevice::ReadOnly | QIODevice::Text)){
+               QString qs_defaultColors = colorFile.readAll();
+               handleXMLColors(qs_defaultColors);
+           }
+
+      }
+
       QString id = childElement.attribute("ID");
-      createWindow("dummy_ventas", "", 0, 0, 100, 100, id);
+      createWindow("dummy_ventas", "", 0, 0, 100, 100, "", id);
       return;
    }
 
@@ -788,6 +806,16 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
          handleXMLStyles(xmlFileString);
          return;
       }
+
+      // VENTAS Color Bars XML-FILE (4cf)
+      if(fileName.trimmed().endsWith(".4cf")){
+         QDomDocument xmlFile = encodeXMLFile(childElement.text());
+         QString xmlFileString = xmlFile.toString();
+         handleXMLColors(xmlFileString);
+         return;
+      }
+
+
 
       // 4JS StartMenu XML File
       if(fileName.trimmed().endsWith(".4sm")){
@@ -1428,14 +1456,14 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
       int message_line = childElement.attribute("MESSAGE_LINE").toInt();
       */
 
-      createWindow(window, style, x, y, h, w, id);
+      createWindow(window, style, x, y, h, w, source,id);
       return;
    }
 
    if(childElement.nodeName() == "OPENFORM"){
       QString window = childElement.attribute("FORMNAME");
 
-      createWindow(window, "", 0, 0, 0, 0, 0);
+      createWindow(window, "", 0, 0, 0, 0, "", "");
 
       if(childElement.firstChildElement().nodeName() == "XMLFORM"){
         QDomDocument xmlForm = encodeXMLFile(childElement.text());
@@ -1514,7 +1542,7 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
       int message_line = childElement.attribute("MESSAGE_LINE").toInt();
       */
 
-      createWindow(window, style, x, y, 0, 0, id);
+      createWindow(window, style, x, y, 0, 0, source,id);
 
       if(childElement.firstChildElement().nodeName() == "XMLFORM"){
         QDomDocument xmlForm = encodeXMLFile(childElement.text());

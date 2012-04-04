@@ -136,7 +136,7 @@ MainFrame::vdcdebug("ScreenHandler","getCurrWindow", "");
 // Filename     : screenhandler.cpp
 // Description  : creates the Form. prepares for displaying it
 //------------------------------------------------------------------------------
-void ScreenHandler::createWindow(QString windowTitle,QString style, int x, int y, int h, int w, QString id)
+void ScreenHandler::createWindow(QString windowTitle,QString style, int x, int y, int h, int w, QString formfile, QString id)
 {
 MainFrame::vdcdebug("ScreenHandler","createWindow", "QString windowTitle,QString style, int x, int y, int h, int w, QString id");
    Q_UNUSED(x);
@@ -162,6 +162,7 @@ MainFrame::vdcdebug("ScreenHandler","createWindow", "QString windowTitle,QString
    //p_fglform = new FglForm(windowTitle, parentWidget);
    //p_fglform = new FglForm(windowTitle, p_fglform);
    p_fglform = new FglForm(windowTitle);
+   p_fglform->setFormName(formfile);
    p_fglform->installEventFilter(this);
    p_fglform->setScreenHandler(this);
    if(windowTitle == "dummy_ventas")
@@ -214,6 +215,8 @@ MainFrame::vdcdebug("ScreenHandler","createWindow", "QString windowTitle,QString
       p_fglform->setActions(formsActions1);
    }
 
+
+   checkColors();
 }
 
 FglForm* ScreenHandler::currForm()
@@ -377,6 +380,67 @@ MainFrame::vdcdebug("ScreenHandler","handleXMLActions", "QString xmlFileString")
    }
 }
 
+void ScreenHandler::handleXMLColors(QString xmlFileString)
+{
+MainFrame::vdcdebug("ScreenHandler","handleXMLFormColors", "QString xmlFileString");
+
+   QDomDocument xmlFile;
+   QString errorMsg;
+   int errorLine, errorCol;
+   if (!xmlFile.setContent(xmlFileString, &errorMsg, &errorLine, &errorCol)){
+      QString str = errorMsg + "\n" +
+                    "Line:" + QString::number(errorLine) + "\n" +
+                    "Column" + QString::number(errorCol) + "\n\n" +
+                    "Protocol : " + "\n" +
+                    xmlFileString;
+      MsgBox("Protocol Error",str,"Warning","Ok","Ok",0);
+   }
+
+
+
+   if(xmlFile.firstChild().nodeName().toUpper() ==  "FORMS")
+   {
+       QDomNodeList children = xmlFile.firstChild().childNodes();
+
+       for(int i=0; i<children.count(); ++i){
+          QDomNode child = children.at(i);
+
+          QDomElement ele = child.toElement();
+
+          if(ele.nodeName().toUpper() == "FORM"){
+              QString form = ele.attribute("name");
+              QString color = ele.attribute("color");
+
+              qh_formcolors[form] = color;
+            }
+   }
+
+}
+   checkColors();
+}
+
+void ScreenHandler::checkColors()
+{
+  if(ql_fglForms.size() > 0)
+  {
+      for(int i = 0; i<ql_fglForms.size(); i++)
+      {
+
+          QString form = ql_fglForms.at(i)->formName();
+          if(form.length() > 0)
+          {
+              QString color = qh_formcolors[form];
+              if(color.length() > 0)
+              {
+                 ql_fglForms.at(i)->showColorBar(color);
+              }
+          }
+
+      }
+  }
+}
+
+
 //------------------------------------------------------------------------------
 // Method       : handleXMLStyles(QString xmlFile)
 // Filename     : screenhandler.cpp
@@ -387,7 +451,16 @@ void ScreenHandler::handleXMLStyles(QString xmlFileString)
 MainFrame::vdcdebug("ScreenHandler","handleXMLStyles", "QString xmlFileString");
 
    QDomDocument xmlFile;
-   xmlFile.setContent(xmlFileString);
+   QString errorMsg;
+   int errorLine, errorCol;
+   if (!xmlFile.setContent(xmlFileString, &errorMsg, &errorLine, &errorCol)){
+      QString str = errorMsg + "\n" +
+                    "Line:" + QString::number(errorLine) + "\n" +
+                    "Column" + QString::number(errorCol) + "\n\n" +
+                    "Protocol : " + "\n" +
+                    xmlFileString;
+      MsgBox("Protocol Error",str,"Warning","Ok","Ok",0);
+   }
 
    formsStyles = xmlFile;
 }

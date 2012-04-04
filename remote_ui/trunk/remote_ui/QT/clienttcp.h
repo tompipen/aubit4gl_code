@@ -103,7 +103,7 @@ signals:
    void closeBrowser(int);
 
    // ProtocolHandler -> ScreenHandler (WorkerThread -> GuiThread)
-   void createWindow(QString, QString, int, int, int, int, QString);
+   void createWindow(QString, QString, int, int, int, int, QString,QString);
    void setWindowTitle(QString);
 
    void createPrompt(QString, int, int, QString);
@@ -137,6 +137,7 @@ signals:
    void handleXMLStartMenu(QString);
    void handleXMLActions(QString);
    void handleXMLStyles(QString);
+   void handleXMLColors(QString);
 
 
    void setFieldBuffer(QStringList, QStringList, int);

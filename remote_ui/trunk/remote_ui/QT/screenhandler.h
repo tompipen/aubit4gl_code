@@ -112,6 +112,7 @@ private:
    QHash<QString, QLayout* > qh_fglLayouts;
    QHash<QString, QString > qh_formFiles;
    QHash<int, QList<QWidget*> > qh_formFields;
+   QHash<QString, QString> qh_formcolors;
 
    QHash<int, ActionMenu*> qh_formActionMenus;
    //QWidget *startMenu;
@@ -121,6 +122,7 @@ private:
    QDomDocument formsActions;
    QDomDocument formsActions1;
    QDomDocument formsStyles;
+   QDomDocument formsColors;
    int cnt_form;
 
    void createDialog(QString, QString, QString, QString);
@@ -129,6 +131,7 @@ private:
    void createPulldownButton(int, QString, QString);
    void createDialogAction(int, QString);
    void checkFields();
+   void checkColors();
    bool b_newForm;
 
    QWidget *p_screenRecord;
@@ -139,7 +142,7 @@ private:
    bool clearFieldEvents;
 
 public slots:
-   void createWindow(QString, QString = "", int=0, int=0, int = 0, int = 0, QString = "");
+   void createWindow(QString, QString = "", int=0, int=0, int = 0, int = 0, QString = "",QString = "");
    void createPrompt(QString, int, int, QString);
    void handleAubitForm(QString, QString, bool);
    void handleXMLForm(QString, QString, bool);
@@ -148,6 +151,7 @@ public slots:
    void handleXMLStartMenu(QString); 
    void activeFocus();
    void handleXMLActions(QString);
+   void handleXMLColors(QString);
    void setProgramName(QString);
    #ifdef KDChart_Version
    void createChart(QString);

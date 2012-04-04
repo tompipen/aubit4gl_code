@@ -90,6 +90,7 @@ public:
    void replayKeyboard();
    void clearKeyboardBuffer();
    bool b_getch_swin;
+   bool b_layout;
    bool b_allowClose;
    bool b_dummy;
    void jumpToField(QWidget*, bool b_after=true);
@@ -131,6 +132,9 @@ public:
    //void setCurrentField(QWidget* widget = NULL) { widget->setFocus(); currentWidget = widget; };
    void setCurrentField(QString, bool sendEvents = true);
    QMenu* createMenuHideShowFields(QObject*);
+   QString formName();
+   void setFormName(QString);
+   void showColorBar(QString);
 
 
    bool input() { return (ql_states.last() == Fgl::INPUT); };
@@ -312,6 +316,8 @@ private:
    int i_lastCursor;
    QString qs_currentFieldBuffer;
    QString qs_formfile;
+   QWidget *qw_colorbar;
+   QSplitter *p_splitter;
 
    int gridHeight;
  //  virtual QSize sizeHint() const;
