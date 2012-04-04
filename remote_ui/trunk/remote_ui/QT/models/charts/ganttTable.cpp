@@ -288,7 +288,7 @@ bool GanttTable::readCSV( GanttTable* model, KDGantt::View* view, QString &filen
                 model->setData(model->index(row, GanttTable::END_TIME, QModelIndex()),
                                                 qVariantFromValue( node->getEndTime() ),KDGantt::EndTimeRole);
                 model->setData(model->index(row, GanttTable::COMPLETION, QModelIndex()),
-                                                qVariantFromValue( node->getCompletion() ) );
+                                                qVariantFromValue( node->getCompletion() ),KDGantt::TaskCompletionRole );
                 model->setData(model->index(row, GanttTable::TASK_NUMBER, QModelIndex()),
                                                 qVariantFromValue( node->getTaskNr() ) );
                 model->setData(model->index(row, GanttTable::DEPEND_TASK, QModelIndex()),
