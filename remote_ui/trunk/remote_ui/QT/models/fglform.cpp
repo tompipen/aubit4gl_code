@@ -1001,6 +1001,27 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
                   QMenu *rightClick = le->createStandardContextMenu();
                   rightClick->addSeparator();
                   rightClick->addMenu(createMenuHideShowFields(obj));
+                  rightClick->addSeparator();
+
+                  for(int i=0; i < actions().count(); i++)
+                  {
+                      QString text;
+                      QAction *formAction = actions().at(i);
+                      if(actions().at(i)->objectName().contains(QRegExp("[0-9]")))
+                      {
+                          if(actions().at(i)->shortcut() && actions().at(i)->isEnabled())
+                          {
+                              text.append("F-" + QString::number(QString(actions().at(i)->objectName()).toInt() - 2999));
+                              if(!actions().at(i)->text().isEmpty()) {
+                                  text.append(QString(" - " + actions().at(i)->text()));
+                              }
+                              QAction *action = new QAction(text, this);
+                              rightClick->addAction(action);
+                              connect(action, SIGNAL(triggered()), formAction, SLOT(trigger()));
+
+                          }
+                      }
+                  }
                   rightClick->exec(QCursor::pos());
               } else if(TextEdit *le = qobject_cast<TextEdit*> (obj->parent()))
               {
