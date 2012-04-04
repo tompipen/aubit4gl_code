@@ -1158,9 +1158,10 @@ MainFrame::vdcdebug("ScreenHandler","setFieldEnabled", "QString fieldName, bool 
    
    // For fieldlist = table.*
    int index = fieldName.indexOf(".*");
+   QWidget *widget = NULL;
    if(index < 0){
       // No wildcard
-      QWidget *widget = p_fglform->findFieldByName(fieldName);
+      widget = p_fglform->findFieldByName(fieldName);
       if(widget != NULL){
          //widget->setEnabled(enable);
          if(enable) {
@@ -1175,7 +1176,7 @@ MainFrame::vdcdebug("ScreenHandler","setFieldEnabled", "QString fieldName, bool 
    else{
       QList<QWidget*> ql_fields = p_fglform->findFieldsByName(fieldName);
       for(int i=0; i<ql_fields.count(); i++){
-         QWidget *widget = ql_fields.at(i);
+         widget = ql_fields.at(i);
          if(widget != NULL){
             //widget->setEnabled(enable);
             if(enable) {
@@ -1187,6 +1188,11 @@ MainFrame::vdcdebug("ScreenHandler","setFieldEnabled", "QString fieldName, bool 
             qFatal("No such Field %s", qPrintable(fieldName));
          }
       }
+   }
+
+   if(context->fieldList().size() == 1)
+   {
+      p_fglform->setCurrentWidget(widget);
    }
 
 }
@@ -2015,7 +2021,8 @@ if(qsl_triggereds.size() > 0)
          if(TableView *tableView = qobject_cast<TableView *> (p_fglform->currentField())){
              if(p_fglform->inputArray())
              {
-                 tableView->eventfield = QModelIndex();                 tableView->b_ignoreFocus = false;
+                 tableView->eventfield = QModelIndex();
+                 tableView->b_ignoreFocus = false;
 
                  if(tableView->curr_editor != NULL)
                  {
@@ -2581,19 +2588,24 @@ void ScreenHandler::setScreenRecordEnabled(QString fieldName, bool enable, bool 
 MainFrame::vdcdebug("ScreenHandler","setScreenRecordEnabled", "QString fieldName, bool enable, bool input");
    Q_UNUSED(enable);
    Context *context = getCurrentContext();
-
+   QWidget *widget = NULL;
    QList<QWidget*> ql_fields = p_fglform->findFieldsByName(fieldName);
    for(int i=0; i< ql_fields.count(); i++){
 
-      QWidget *widget = ql_fields.at(i);
+      widget = ql_fields.at(i);
 
       if(LineEditDelegate *de = qobject_cast<LineEditDelegate *> (widget)){
          if(TableView *tableView = qobject_cast<TableView *> (de->parent())){
-            
             context->addScreenRecord(tableView, input);
+            break;
          }
       }
    }
+   if(context->fieldList().size() == 1)
+   {
+       p_fglform->setCurrentWidget(widget);
+   }
+
 }
 
 //------------------------------------------------------------------------------

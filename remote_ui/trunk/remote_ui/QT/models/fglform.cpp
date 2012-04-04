@@ -722,6 +722,10 @@ void FglForm::replayKeyboard()
 
   if(!currentField())
   {
+      if(ql_keybuffer.size() > 0)
+      {
+          qFatal("No Target for Keybuffer!");
+      }
      return;
   }
 
@@ -1998,7 +2002,9 @@ MainFrame::vdcdebug("FglForm","setWindowType", "const QString &sm");
 
 void FglForm::setCurrentWidget(QWidget *qw)
 {
+
   currentWidget = qw;
+
   if(context)
      this->context->setLastFocusWidget(qw);
 
@@ -2400,7 +2406,7 @@ MainFrame::vdcdebug("FglForm","prevfield", "");
        QWidget *prev = NULL;
        QWidget *tmp  = NULL;
        int i_currpos = context->fieldList().indexOf(currentField()) - 1;
-       for(int i=i_currpos; i>0; i--){
+       for(int i=i_currpos; i>=0; i--){
           tmp = context->fieldList().at(i);
           if(tmp->isEnabled() && tmp->isVisible())
           {
