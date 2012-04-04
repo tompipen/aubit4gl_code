@@ -81,7 +81,7 @@ QVariant GanttTable::data( const QModelIndex& index, int role ) const
     }
 
     Node* node = static_cast<Node*>( index.internalPointer() );
-    ;
+
     if ( index.column() == NAME ) {
         switch( role ) {
         case Qt::DisplayRole:
@@ -118,21 +118,17 @@ QVariant GanttTable::data( const QModelIndex& index, int role ) const
         case Qt::EditRole:
             return node->getCompletion();
         }
-    } else if ( index.column() == 5 ) {
+    } else if ( index.column() == TASK_NUMBER ) {
         switch( role ) {
         case Qt::DisplayRole:
         case Qt::EditRole:
-            return node->getLabel();
-        case KDGantt::ItemTypeRole:
-            return node->getType();
-        case KDGantt::StartTimeRole:
-            return node->getStartTime();
-        case KDGantt::EndTimeRole:
-            return node->getEndTime();
-        case KDGantt::TaskCompletionRole:
-            if ( node->getCompletion() >= 0 )
-                return node->getCompletion();
-            break;
+            return node->getTaskNr();
+        }
+    } else if ( index.column() == DEPEND_TASK ) {
+        switch( role ) {
+        case Qt::DisplayRole:
+        case Qt::EditRole:
+            return node->getDependTask();
         }
     }
     return QVariant();
