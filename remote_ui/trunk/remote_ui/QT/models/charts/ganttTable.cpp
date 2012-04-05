@@ -339,6 +339,12 @@ bool GanttTable::saveCSV(GanttTable* model, QString &filename){
     }
 }
 
+
+/*--------------------------------------------------------------
+     because tasks and constraints have not the same model
+     you have to use this method before saving to reflect
+     the changing of constraints
+  --------------------------------------------------------------*/
 bool GanttTable::saveConstraintToModel(GanttTable* model, KDGantt::View* view){
 
     QList<Constraint> constraintList = view->constraintModel()->constraints();
@@ -346,11 +352,14 @@ bool GanttTable::saveConstraintToModel(GanttTable* model, KDGantt::View* view){
         int startIdx = static_cast<int>(cons.startIndex().row());
         int endIdx = static_cast<int>(cons.endIndex().row());
         QModelIndex taskIdx = model->index( startIdx, TASK_NUMBER, QModelIndex());
-        QModelIndex dependIdx = model->index( endIdx, DEPEND_TASK, QModelIndex());
+        QModelIndex taskDependIdx = model->index( startIdx, DEPEND_TASK, QModelIndex());
+        QModelIndex dependDataIdx = model->index(endIdx, TASK_NUMBER, QModelIndex());
 
-        model->setData( taskIdx, qVariantFromValue(model->data(taskIdx, Qt::DisplayRole ) ) );
-        model->setData( dependIdx, qVariantFromValue(model->data(dependIdx, Qt::DisplayRole ) ) );
+        QVariant taskData = qVariantFromValue(model->data(taskIdx, Qt::DisplayRole ) );
+        QVariant dependData = qVariantFromValue(model->data(dependDataIdx, Qt::DisplayRole ) );
 
+        model->setData( taskIdx, taskData);
+        model->setData( taskDependIdx, dependData);
     }
     return true;
 }
