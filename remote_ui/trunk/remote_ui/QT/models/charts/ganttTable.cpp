@@ -314,6 +314,22 @@ bool GanttTable::readCSV( GanttTable* model, KDGantt::View* view, QString &filen
     return false;
 }
 
+bool GanttTable::saveConstraintToModel(GanttTable* model, KDGantt::View* view){
+
+    QList<Constraint> constraintList = view->constraintModel()->constraints();
+    foreach( Constraint cons, constraintList){
+        int startIdx = static_cast<int>(cons.startIndex().row());
+        int endIdx = static_cast<int>(cons.endIndex().row());
+        QModelIndex taskIdx = model->index( startIdx, TASK_NUMBER, QModelIndex());
+        QModelIndex dependIdx = model->index( endIdx, DEPEND_TASK, QModelIndex());
+
+        model->setData( taskIdx, qVariantFromValue(model->data(taskIdx, Qt::DisplayRole ) ) );
+        model->setData( dependIdx, qVariantFromValue(model->data(dependIdx, Qt::DisplayRole ) ) );
+
+    }
+    return true;
+}
+
 Qt::ItemFlags GanttTable::flags( const QModelIndex& index ) const
 {
     Qt::ItemFlags flags = QAbstractItemModel::flags( index );

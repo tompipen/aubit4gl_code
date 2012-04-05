@@ -48,6 +48,7 @@ public:
     Qt::ItemFlags flags( const QModelIndex& ) const;
 
     QModelIndex indexForNode(Node *node) const;
+    bool saveConstraintToModel(GanttTable* model, KDGantt::View* view);
 
 private:
     Node* m_root;
