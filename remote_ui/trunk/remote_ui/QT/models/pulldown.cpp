@@ -27,7 +27,7 @@
 RingMenuPulldown::RingMenuPulldown(QString title, QString comment, QString style, QString image,
                                    QWidget *parent) : QGroupBox(parent)
 {
-
+   b_hideButtons = true;
    this->setAlignment(Qt::AlignRight | Qt::AlignTop);
    // disable widget until it it gets called
     this->setTitle(title);
@@ -51,7 +51,7 @@ RingMenuPulldown::RingMenuPulldown(QString title, QString comment, QString style
    int mh = 100;
 
    this->move(mw, mh);
-   this->setWindowFlags(Qt::FramelessWindowHint);
+   //this->setWindowFlags(Qt::FramelessWindowHint);
 
 }
 
@@ -117,6 +117,51 @@ MainFrame::vdcdebug("RingMenu","createButton", "int id, QString text, QString to
    }
 
    buttonGroup->addButton(button, id);
+}
+
+void RingMenuPulldown::hideButton(QString name)
+{
+MainFrame::vdcdebug("RingMenu","hideButton", "QString name");
+   for(int i=0; i<buttonGroup->buttons().size(); i++){
+      if(QPushButton *button = qobject_cast<QPushButton *> (buttonGroup->buttons().at(i))){
+         QString text = button->text();
+         if(text.indexOf("&") > -1){
+            text.remove(text.indexOf("&"), 1);
+         }
+
+         if(text == name){
+            if(b_hideButtons){
+               button->setVisible(false);
+            }
+            else{
+               button->setEnabled(false);
+            }
+            return;
+         }
+      }
+   }
+}
+
+void RingMenuPulldown::showButton(QString name)
+{
+MainFrame::vdcdebug("RingMenu","showButton", "QString name");
+   for(int i=0; i<buttonGroup->buttons().size(); i++){
+      if(QPushButton *button = qobject_cast<QPushButton *> (buttonGroup->buttons().at(i))){
+         QString text = button->text();
+         if(text.indexOf("&") > -1){
+            text.remove(text.indexOf("&"), 1);
+         }
+
+         if(text == name){
+            if(b_hideButtons){
+               button->setVisible(true);
+            }
+            else{
+               button->setEnabled(true);
+            }
+         }
+      }
+   }
 }
 
 QAction* RingMenuPulldown::getAction(QString name)

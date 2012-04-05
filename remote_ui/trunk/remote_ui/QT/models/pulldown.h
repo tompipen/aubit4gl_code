@@ -36,10 +36,13 @@ public:
     QAction* getAction(QString);
     void showWindow();
     void closeWindow();
+    void hideButton(QString);
+    void showButton(QString name);
 
 private:
     QButtonGroup *buttonGroup;
     QLayout *layout;
+    bool b_hideButtons;
 
 };
 

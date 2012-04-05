@@ -620,8 +620,8 @@ MainFrame::vdcdebug("ScreenHandler","hideOption", "QString name");
       return;
    }
 
-   if(p_fglform->pulldown() != NULL){
-       //p_fglform->pulldown()->hideAction(name);
+   if(p_fglform->ringMenuPulldown() != NULL){
+      p_fglform->ringMenuPulldown()->hideButton(name);
        return;
    }
 
@@ -646,8 +646,8 @@ MainFrame::vdcdebug("ScreenHandler","showOption", "QString name");
       p_fglform->dialog()->showButton(name);
       return;
    }
-   if(p_fglform->pulldown() != NULL){
-       //p_fglform->pulldown()->showAction(name);
+   if(p_fglform->ringMenuPulldown() != NULL){
+       p_fglform->ringMenuPulldown()->showButton(name);
        return;
    }
 
