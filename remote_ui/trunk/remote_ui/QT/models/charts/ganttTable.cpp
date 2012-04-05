@@ -243,34 +243,35 @@ bool GanttTable::readCSV( GanttTable* model, KDGantt::View* view, QString &filen
                 model->appendRow( model , view);
                 QStringList zeilenLeiste = strList.at( row ).split( QString( "|" ));
                 Node *node = new Node();
-
-                node->setType( 1 ); // hardcoded for task
                 bool ok;
 
                 QDateTime time;
 
                 for( int column = 0; column < zeilenLeiste.size(); column++ ) {
                     QString strWert ( zeilenLeiste.at(column).simplified());
-                    if( column == 0 ) {
+                    if( column == NAME ) {
                         node->setLabel(strWert);
                     }
-                    if( column == 1 ) {
+                    if( column == TYPE ) {
+                        node->setType(strWert.toInt());
+                    }
+                    if( column == START_TIME ) {
                         node->setStartTime(time.fromString(strWert, "dd.MM.yyyy"));
                     }
-                    if( column == 2 ) {
+                    if( column == END_TIME ) {
                         node->setEndTime(time.fromString(strWert, "dd.MM.yyyy"));
                     }
-                    if( column == 3 ) {  // completion
+                    if( column == COMPLETION ) {
                         node->setCompletion(strWert.toInt( &ok, 10));
                     }
-                    if( column == 4 ) { // number of current task
+                    if( column == TASK_NUMBER ) {
                         if( strWert.toInt( &ok, 10)) {
                             node->setTaskNr( strWert );
                             currentString = strWert;
                             currentTask.insert(currentString, row);
                         }
                     }
-                    if( column == 5 ) { // number of depending task
+                    if( column == DEPEND_TASK ) {
                         if( strWert.toInt( &ok, 10)) {
                             node->setDependTask( strWert );
                             dependString = strWert;
