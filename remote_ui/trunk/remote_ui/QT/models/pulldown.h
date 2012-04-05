@@ -18,10 +18,30 @@
 #define Pulldown_H
 
 #include <QMenu>
+#include <QGroupBox>
 #include <QLayout>
 #include <QButtonGroup>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
+
+class RingMenuPulldown : public QGroupBox
+{
+    Q_OBJECT
+
+public:
+    RingMenuPulldown(QString, QString, QString, QString, QWidget* parent = 0);
+    RingMenuPulldown(QWidget* parent = 0);
+    void createButton(int id, QString text, QString tooltip);
+    void createAction(int id = 0, QString text = "");
+    QAction* getAction(QString);
+    void showWindow();
+    void closeWindow();
+
+private:
+    QButtonGroup *buttonGroup;
+    QLayout *layout;
+
+};
 
 class Pulldown : public QMenu
 {

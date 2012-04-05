@@ -515,7 +515,7 @@ MainFrame::vdcdebug("ScreenHandler","createMenuButton", "int buttonId, QString t
       return;
   }
 
-   if(p_fglform->pulldown() != NULL){
+   if(p_fglform->ringMenuPulldown() != NULL){
       this->createPulldownButton(buttonId, text, desc);
       return;
    }
@@ -560,7 +560,7 @@ MainFrame::vdcdebug("ScreenHandler","createMenuAction", "int buttonId, QString t
       return;
    }
 
-   if(p_fglform->pulldown() != NULL){
+   if(p_fglform->ringMenuPulldown() != NULL){
        createPulldownButton(buttonId,text,"");
        return;
    }
@@ -621,7 +621,7 @@ MainFrame::vdcdebug("ScreenHandler","hideOption", "QString name");
    }
 
    if(p_fglform->pulldown() != NULL){
-       p_fglform->pulldown()->hideAction(name);
+       //p_fglform->pulldown()->hideAction(name);
        return;
    }
 
@@ -647,7 +647,7 @@ MainFrame::vdcdebug("ScreenHandler","showOption", "QString name");
       return;
    }
    if(p_fglform->pulldown() != NULL){
-       p_fglform->pulldown()->showAction(name);
+       //p_fglform->pulldown()->showAction(name);
        return;
    }
 
@@ -680,7 +680,7 @@ MainFrame::vdcdebug("ScreenHandler","nextOption", "QString name, int context");
    if(p_fglform->dialog() != NULL){
       return;
    }
-   if(p_fglform->pulldown() != NULL){
+   if(p_fglform->ringMenuPulldown() != NULL){
        return;
    }
 
@@ -751,9 +751,9 @@ MainFrame::vdcdebug("ScreenHandler","createDialog", "QString title, QString comm
       return;
 
    //Dialog *p_dialog = new Dialog(title, comment, style, image, p_fglform);
-   Pulldown *pulldown = new Pulldown(title, comment, style, image, p_fglform);
-   connect(pulldown, SIGNAL(closeEvent()), p_fglform, SLOT(reopenPulldown()));
-   p_fglform->setPulldown(pulldown);
+   RingMenuPulldown *pulldown = new RingMenuPulldown(title, comment, style, image); //, p_fglform);
+   //connect(pulldown, SIGNAL(clicked()), p_fglform, SLOT(close()));
+   p_fglform->setRingMenuPulldown(pulldown);
    connect(pulldown, SIGNAL(destroyed()), this, SLOT(activeFocus()));
    clearEvents();
 
@@ -770,14 +770,16 @@ MainFrame::vdcdebug("ScreenHandler","createPulldownButton", "int buttonId, QStri
 
   int i_Frm = getCurrForm();
 
-   Pulldown* pulldown = p_fglform->pulldown();
+   RingMenuPulldown* pulldown = p_fglform->ringMenuPulldown();
    if(p_fglform == NULL)
       return;
 
    if(pulldown == NULL)
       return;
 
-   pulldown->createAction(buttonId, text);
+   pulldown->createButton(buttonId, text, desc);
+   QAction *action = pulldown->getAction(text.toLower());
+   connect(action, SIGNAL(triggered()), p_fglform, SLOT(actionTriggered()));
 
    Fgl::Event event;
    event.type = Fgl::MENUACTION_EVENT;
@@ -1856,8 +1858,8 @@ MainFrame::vdcdebug("ScreenHandler","setFormOpts", "QString type, bool value, in
             p_fglform->ql_dialogEvents.clear();
             return;
          }
-         if(p_fglform->pulldown() != NULL){
-            p_fglform->pulldown()->close();
+         if(p_fglform->ringMenuPulldown() != NULL){
+            p_fglform->ringMenuPulldown()->closeWindow();
             p_fglform->setPulldown(NULL);
             p_fglform->setEnabled(true);
             p_fglform->revertState(Fgl::MENU);
@@ -2012,7 +2014,7 @@ if(qsl_triggereds.size() > 0)
 
       p_fglform->checkState();
      //Hier evt abfragen ob IDLE und das Menu gesetzt ist. Es sollte aufjedenfall machbarsein ...
-      if(p_fglform->b_newForm && p_fglform->dialog () == NULL && p_fglform->pulldown() == NULL && saveactive->state() != Fgl::IDLE && !p_fglform->b_dummy){
+      if(p_fglform->b_newForm && p_fglform->dialog () == NULL && p_fglform->ringMenuPulldown() == NULL && saveactive->state() != Fgl::IDLE && !p_fglform->b_dummy){
          p_fglform->b_newForm = false;
          //Load the Actions again, before display the form
          p_fglform->checkActions();
@@ -2041,9 +2043,9 @@ if(qsl_triggereds.size() > 0)
             p_fglform->dialog()->adjustSize();
          }
 
-         if(p_fglform->pulldown() != NULL){
+         if(p_fglform->ringMenuPulldown() != NULL){
             p_fglform->checkActions();
-            QString style = QString("QMenu::item:disabled { width: 20px; background-image: url(none); padding-left: 110px; height: 26px; color: #000000;}") + " " + p_fglform->styleSheet();
+            /*QString style = QString("QMenu::item:disabled { width: 20px; background-image: url(none); padding-left: 110px; height: 26px; color: #000000;}") + " " + p_fglform->styleSheet();
             p_fglform->setStyleSheet(style);
 
             int cnt = 0;
@@ -2058,9 +2060,9 @@ if(qsl_triggereds.size() > 0)
                         cnt++;
                     }
                 }
-            }
-
-            p_fglform->pulldown()->popup(QCursor::pos());
+            }*/
+            //p_fglform->ringMenuPulldown()->showWindow();
+            p_fglform->ringMenuPulldown()->show();
          }
       }
    }
@@ -2311,9 +2313,9 @@ MainFrame::vdcdebug("ScreenHandler","free", "QString type");
          p_fglform->revertState(Fgl::MENU);
          return;
       }
-      if(p_fglform->pulldown() != NULL){
-         p_fglform->pulldown()->close();
-         p_fglform->setPulldown(NULL);
+      if(p_fglform->ringMenuPulldown() != NULL){
+         //p_fglform->ringMenuPulldown()->close();
+         p_fglform->setRingMenuPulldown(NULL);
          p_fglform->revertState(Fgl::MENU);
          return;
       }
@@ -3138,7 +3140,7 @@ void ScreenHandler::activeFocus()
         return;
     }
 
-    if(p_fglform->dialog() == NULL && p_fglform->pulldown() == NULL){
+    if(p_fglform->dialog() == NULL && p_fglform->ringMenuPulldown() == NULL){
         p_fglform->setWindowState(Qt::WindowActive);
         p_fglform->raise();
         QApplication::setActiveWindow((QWidget*) p_fglform);

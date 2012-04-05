@@ -94,6 +94,7 @@ FglForm::FglForm(QString windowName, QWidget *parent) : QMainWindow(parent){
    gridWidth = 0;
    p_dialog = NULL;
    p_pulldown = NULL;
+   p_ringMenuPulldown = NULL;
    p_actionMenu = NULL;
    formWidget = NULL;
    b_keybuffer = false;
@@ -660,6 +661,11 @@ MainFrame::vdcdebug("FglForm","setDialog", "Dialog* dialog");
 void FglForm::setPulldown(Pulldown* pulldown)
 {
     p_pulldown = pulldown;
+}
+
+void FglForm::setRingMenuPulldown(RingMenuPulldown *pulldown)
+{
+    p_ringMenuPulldown = pulldown;
 }
 
 //------------------------------------------------------------------------------
@@ -2973,7 +2979,7 @@ void FglForm::revertState(Fgl::State state){
 void FglForm::checkState()
 {
 MainFrame::vdcdebug("FglForm","checkState", "");
-   if(p_dialog != NULL || p_pulldown != NULL){
+   if(p_dialog != NULL || p_ringMenuPulldown != NULL){
       checkActions();
       return;
    }
@@ -3643,6 +3649,26 @@ MainFrame::vdcdebug("FglForm","checkActions", "");
                            if(!fAction->image().isEmpty()){
                               pAction->setIcon(QIcon(QString("pics:%1").arg(fAction->image())));
                               pc_pulldown->refresh();
+                           }
+                        }
+                        break;
+                     }
+                  }
+               }
+            }
+         }
+      if(RingMenuPulldown *pc_pulldown = qobject_cast<RingMenuPulldown *> (ringMenuPulldown())){
+         QList<QAction*> pulldownActions = pc_pulldown->actions();
+
+         for(int i=0; i<pulldownActions.count(); i++){
+            if(Action *pAction = qobject_cast<Action *> (pulldownActions.at(i))){
+               for(int j=0; j<formActions.count(); j++){
+                  if(Action *fAction = qobject_cast<Action *> (formActions.at(j))){
+                     if(pAction->name() == fAction->name()){
+                        fAction->setEnabled(true);
+                           if(!fAction->image().isEmpty()){
+                              pAction->setIcon(QIcon(QString("pics:%1").arg(fAction->image())));
+                              pc_pulldown->update();
                            }
                         }
                         break;

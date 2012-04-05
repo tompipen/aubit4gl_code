@@ -104,8 +104,11 @@ public:
    ActionMenu* actionMenu(){ if(p_actionMenu != NULL) return p_actionMenu; else return NULL;}
    void setDialog(Dialog*);
    void setPulldown(Pulldown*);
+   void setRingMenuPulldown(RingMenuPulldown*);
    Dialog* dialog(){ return p_dialog; };
    Pulldown* pulldown() { return p_pulldown;};
+   RingMenuPulldown* ringMenuPulldown() { return p_ringMenuPulldown;};
+
    void showEvent(QShowEvent *);
    void setToolBar(ToolBar*);
    void setToolBar(QDomDocument);
@@ -282,6 +285,7 @@ private:
    ActionMenu *p_actionMenu;
    Dialog *p_dialog;
    Pulldown *p_pulldown;
+   RingMenuPulldown *p_ringMenuPulldown;
    ToolBar *p_toolBar;
    QAction *rightAct;
    QAction *resetAct;

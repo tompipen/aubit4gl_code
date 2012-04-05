@@ -24,6 +24,178 @@
 #include "fglform.h"
 #include "mainframe.h"
 
+RingMenuPulldown::RingMenuPulldown(QString title, QString comment, QString style, QString image,
+                                   QWidget *parent) : QGroupBox(parent)
+{
+
+   this->setAlignment(Qt::AlignRight | Qt::AlignTop);
+   // disable widget until it it gets called
+    this->setTitle(title);
+   //this->setEnabled(false);
+   this->setVisible(false);
+
+   QVBoxLayout *layout = new QVBoxLayout;
+   layout->setAlignment(Qt::AlignTop);
+   layout->setSpacing(0);
+   buttonGroup = new QButtonGroup(this);
+
+   this->setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Expanding);
+
+   this->layout = layout;
+   this->setLayout(this->layout);
+
+   QWidget *d = QApplication::desktop();
+   int w = d->width();
+   int h = d->height();
+   int mw = 200;
+   int mh = 100;
+
+   this->move(mw, mh);
+   this->setWindowFlags(Qt::FramelessWindowHint);
+
+}
+
+void RingMenuPulldown::closeWindow()
+{
+    this->deleteLater();
+    this->close();
+}
+
+//------------------------------------------------------------------------------
+// Method       : createButton()
+// Filename     : ringmenu.cpp
+// Description  : creates the Buttons and adds them to the RingMenu
+//------------------------------------------------------------------------------
+void RingMenuPulldown::createButton(int id, QString text, QString tooltip)
+{
+MainFrame::vdcdebug("RingMenu","createButton", "int id, QString text, QString tooltip");
+
+   // Make Shortcut for Button
+
+   QString shortcut;
+   QString buttonText;
+   if(text.contains("&")){
+      if(text.length() > text.indexOf("&")){
+         buttonText = text;
+      }
+   }
+   else{
+      buttonText = QString("&%1").arg(text.trimmed());
+   }
+
+   // Create the Button and set Text + ToolTip
+   QPushButton *button = new QPushButton(buttonText);
+   button->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+   button->setToolTip(tooltip);
+   button->setFlat(true);
+   button->installEventFilter(this);
+   button->setStyleSheet("QPushButton {text-align:left;}");
+//   QPushButton *button = new QPushButton(text.trimmed());
+   //button->setIcon(QIcon(QString("pics:blank.png")));
+   button->setIcon(QIcon(QString("pics:%1.png").arg(id)));
+   button->setIconSize(QSize(40,25));
+   button->setShortcut(id);
+
+   Action *action = new Action(text.toLower(), text, button);
+   action->setComment(tooltip);
+   action->setImage(QString(id + ".png"));
+   //action->setAcceleratorName(shortcut);
+   if(text.toLower().trimmed() == "fgl_exit_menu")
+   {
+       button->setVisible(false);
+   }
+   button->addAction(action);
+   connect(button, SIGNAL(clicked()), action, SLOT(trigger()));
+
+   // Add the Button to the Layout
+   if(QHBoxLayout *layout = qobject_cast<QHBoxLayout *> (this->layout)){
+      layout->addWidget(button);
+   }
+
+   if(QVBoxLayout *layout = qobject_cast<QVBoxLayout *> (this->layout)){
+      layout->addWidget(button);
+   }
+
+   buttonGroup->addButton(button, id);
+}
+
+QAction* RingMenuPulldown::getAction(QString name)
+{
+MainFrame::vdcdebug("RingMenu","getAction", "QString name");
+
+   for(int i=0; i<buttonGroup->buttons().size(); i++){
+      if(QPushButton *button = qobject_cast<QPushButton *> (buttonGroup->buttons().at(i))){
+//         if(button->text().toLower() == QString("&%1").arg(name)){
+            QList<QAction*> actions = button->actions();
+            for(int j=0; j<actions.count(); j++){
+               if(Action *action = qobject_cast<Action *> (actions.at(j))){
+                  if(action->name() == name)
+                     return action;
+               }
+            }
+         //}
+      }
+   }
+
+   return new QAction(NULL);
+}
+
+void RingMenuPulldown::showWindow()
+{
+    this->show();
+}
+
+//------------------------------------------------------------------------------
+// Method       : createAction()
+// Filename     : ringmenu.cpp
+// Description  : creates the Buttons and adds them to the RingMenu
+//------------------------------------------------------------------------------
+void RingMenuPulldown::createAction(int id, QString text)
+{
+MainFrame::vdcdebug("RingMenu","createAction", "int id, QString text");
+
+   // Make Shortcut for Button
+   QString pic = text.toLower();
+   //QString shortcut = text.at(0);
+   QString shortcut;
+   if(text.contains("&")){
+      if(text.length() > text.indexOf("&")){
+         shortcut = text.at(text.indexOf("&")+1);
+      }
+   }
+   else{
+      shortcut = text.at(0);
+   }
+
+   // Create the Button and set Text + ToolTip
+   //QPushButton *button = new QPushButton(text.trimmed().prepend("&"));
+   QPushButton *button = new QPushButton(text.trimmed());
+   button->setVisible(false);
+//   button->setShortcut(shortcut);
+   button->setIcon(QIcon(QString("pics:blank.png")));
+   button->setIconSize(QSize(40,25));
+   button->setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Fixed);
+
+   Action *action = new Action(text.toLower(), text, button);
+   action->setImage("blank.png");
+   button->addAction(action);
+   connect(button, SIGNAL(clicked()), action, SLOT(trigger()));
+
+   // Add the Button to the Layout
+   if(QHBoxLayout *layout = qobject_cast<QHBoxLayout *> (this->layout)){
+      layout->addWidget(button);
+   }
+
+   if(QVBoxLayout *layout = qobject_cast<QVBoxLayout *> (this->layout)){
+      layout->addWidget(button);
+   }
+
+   buttonGroup->addButton(button, id);
+   button->setVisible(false);
+
+   //createButton(id, text, "");
+}
+
 //------------------------------------------------------------------------------
 // Method       : Pulldown()
 // Filename     : pulldown.cpp
