@@ -321,6 +321,7 @@ bool TableView::eventFilter(QObject *object, QEvent *event)
         connect(standardAct, SIGNAL(triggered()), this, SLOT(resetSettings()));
         pulldownMenu->addAction(standardAct);
         pulldownMenu->addSeparator();
+        connect(resetAct, SIGNAL(triggered()), this, SLOT(oldSectionOrder()));
         pulldownMenu->addAction(resetAct);
         pulldownMenu->exec(QCursor::pos());
 
