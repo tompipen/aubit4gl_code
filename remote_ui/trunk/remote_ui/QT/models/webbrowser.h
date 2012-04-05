@@ -9,7 +9,7 @@
 
 class WebBrowser : public QMainWindow
 {
-    Q_OBJECT;
+    Q_OBJECT
 
 
 public:
@@ -17,6 +17,8 @@ public:
     void createBrowser();
     void loadUrl(const QUrl&);
     void closeBrowser();
+
+    void setNavigationIcons();
 
 protected slots:
 
@@ -40,6 +42,10 @@ private:
     QWebView* WebView;
     QLineEdit *locationEdit;
     QAction *rotateAction;
+
+    QToolBar *toolBar;
+
+
 
 };
 
