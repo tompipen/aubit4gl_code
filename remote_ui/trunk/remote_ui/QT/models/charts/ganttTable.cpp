@@ -314,6 +314,30 @@ bool GanttTable::readCSV( GanttTable* model, KDGantt::View* view, QString &filen
     return false;
 }
 
+bool GanttTable::saveCSV(GanttTable* model, QString &filename){
+    QFile datei(QDir::tempPath() + "/" + filename);
+    if( datei.open(QIODevice::WriteOnly)) {
+
+        QTextStream stream( &datei );
+        QStringList strList;
+
+        for( int row = 0; row < model->rowCount(QModelIndex()); ++row )
+        {
+            strList.clear();
+            for( int column = 0; column < model->columnCount(QModelIndex()); ++column )
+            {
+                QModelIndex index = model->index(row, column, QModelIndex() );
+                strList << model->data(index, Qt::DisplayRole).toString();
+            }
+            stream << strList.join( "|" )+"\n";
+        }
+        datei.close();
+        return true;
+    } else {
+        return false;
+    }
+}
+
 bool GanttTable::saveConstraintToModel(GanttTable* model, KDGantt::View* view){
 
     QList<Constraint> constraintList = view->constraintModel()->constraints();

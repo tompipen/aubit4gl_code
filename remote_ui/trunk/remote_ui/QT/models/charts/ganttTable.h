@@ -42,6 +42,7 @@ public:
     bool insertRows( int row, int count, const QModelIndex& parent = QModelIndex() );
 
     bool readCSV(GanttTable* model, KDGantt::View* view, QString &filename);
+    bool saveCSV(GanttTable* model, QString &filename);
     void newRow(GanttTable *model, KDGantt::View *view);
     void appendRow(GanttTable* model, KDGantt::View *view);
 
