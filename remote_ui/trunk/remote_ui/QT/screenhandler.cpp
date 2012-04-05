@@ -752,6 +752,7 @@ MainFrame::vdcdebug("ScreenHandler","createDialog", "QString title, QString comm
 
    //Dialog *p_dialog = new Dialog(title, comment, style, image, p_fglform);
    RingMenuPulldown *pulldown = new RingMenuPulldown(title, comment, style, image); //, p_fglform);
+   pulldown->setStyleSheet(p_fglform->styleSheet());
    //connect(pulldown, SIGNAL(clicked()), p_fglform, SLOT(close()));
    p_fglform->setRingMenuPulldown(pulldown);
    connect(pulldown, SIGNAL(destroyed()), this, SLOT(activeFocus()));
