@@ -65,7 +65,7 @@ FglForm::FglForm(QString windowName, QWidget *parent) : QMainWindow(parent){
    hb_lay->setMargin(0);
    hb_lay->setSpacing(2);
    qw_framewidget->setLayout(hb_lay);
-   qw_colorbar->setFixedHeight(4);
+   qw_colorbar->setFixedHeight(3);
    this->setAccessibleName("FGLFORM");
    this->setObjectName("FGLFORM");
    p_splitter = new QSplitter;
