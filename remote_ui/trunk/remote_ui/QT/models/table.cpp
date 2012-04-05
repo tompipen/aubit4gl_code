@@ -62,6 +62,7 @@ MainFrame::vdcdebug("TableView","TableView", "QWidget *parent");
    QObject::connect(header, SIGNAL(sectionClicked(int)),
                     this, SLOT(sortByColumn(int)));
    connect(header, SIGNAL(sectionResized(int,int,int)), this, SLOT(updateSectionWidth(int,int,int)));
+   connect(header, SIGNAL(sectionMoved(int,int,int)), this, SLOT(saveNewSectionOrder(int,int,int)));
 
    QObject::disconnect(header, SIGNAL(sectionPressed(int)),
                        this, SLOT(selectColumn(int)));
@@ -71,6 +72,29 @@ MainFrame::vdcdebug("TableView","TableView", "QWidget *parent");
    this->setInputEnabled(false);
    this->setEnabled(false);
 }
+
+void TableView::saveNewSectionOrder(int, int, int)
+{
+    if(FglForm *fglform = qobject_cast<FglForm*> (p_fglform))
+    {
+        QSettings settings(this->accessibleName(), fglform->windowName);
+        QHeaderView *header = this->horizontalHeader();
+        settings.setValue("state", header->saveState());
+    }
+}
+
+void TableView::oldSectionOrder()
+{
+    if(FglForm *fglform = qobject_cast<FglForm*> (p_fglform))
+    {
+        QSettings settings(this->accessibleName(), fglform->windowName);
+        QHeaderView *header = this->horizontalHeader();
+        header->restoreState(settings.value("oldstate").toByteArray());
+        settings.remove("state");
+        this->update();
+    }
+}
+
 /*
 
 void TableView::restoreViewPalette()

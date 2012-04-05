@@ -109,6 +109,8 @@ public slots:
    void copyTable();
    void copyCell();
    void copyColumn();
+   void saveNewSectionOrder(int, int, int);
+   void oldSectionOrder();
 
 protected:
    QModelIndex mouseindex;

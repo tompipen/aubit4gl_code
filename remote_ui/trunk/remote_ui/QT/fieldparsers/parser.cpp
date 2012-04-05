@@ -513,6 +513,15 @@ void Parser::handleTableColumn(const QDomNode& xmlNode){
       } else {
           header->resizeSection(i, w+1);
       }
+      if(FglForm *fglform = qobject_cast<FglForm*> (p_fglform))
+      {
+          QSettings settings(p_screenRecord->accessibleName(), fglform->windowName);
+          if(settings.value("state").isNull())
+          {
+             settings.setValue("oldstate",header->saveState());
+          }
+          header->restoreState(settings.value("state").toByteArray());
+      }
 
    //   header->resizeSections(QHeaderView::Fixed);
       QHeaderView *vert = p_screenRecord->verticalHeader();

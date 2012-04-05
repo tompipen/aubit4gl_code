@@ -1003,6 +1003,11 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
               QAction *copyColumn = new QAction("copy column", this);
               connect(copyColumn, SIGNAL(triggered()), tv, SLOT(copyColumn()));
               rightClick->addAction(copyColumn);
+              rightClick->addSeparator();
+              QAction *resetState = new QAction("restore Columns", this);
+              connect(resetState, SIGNAL(triggered()), tv, SLOT(oldSectionOrder()));
+              rightClick->addAction(resetState);
+
               rightClick->exec(QCursor::pos());
               //tv->copyRow(tv->getMouseModelIndex());
 
