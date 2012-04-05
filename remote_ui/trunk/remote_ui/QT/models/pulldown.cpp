@@ -72,7 +72,6 @@ MainFrame::vdcdebug("RingMenu","createButton", "int id, QString text, QString to
 
    // Make Shortcut for Button
 
-   QString shortcut;
    QString buttonText;
    if(text.contains("&")){
       if(text.length() > text.indexOf("&")){
@@ -92,13 +91,18 @@ MainFrame::vdcdebug("RingMenu","createButton", "int id, QString text, QString to
    button->setStyleSheet("QPushButton {text-align:left;}");
 //   QPushButton *button = new QPushButton(text.trimmed());
    //button->setIcon(QIcon(QString("pics:blank.png")));
-   button->setIcon(QIcon(QString("pics:%1.png").arg(id)));
+   if(button->text() == "&Ende")
+   {
+       button->setIcon(QIcon("pics:nein.png"));
+   } else {
+       button->setIcon(QIcon(QString("pics:%1.png").arg(id)));
+   }
    button->setIconSize(QSize(40,25));
    button->setShortcut(id);
 
    Action *action = new Action(text.toLower(), text, button);
    action->setComment(tooltip);
-   action->setImage(QString(id + ".png"));
+   action->setImage(QString("%1.png").arg(id));
    //action->setAcceleratorName(shortcut);
    if(text.toLower().trimmed() == "fgl_exit_menu")
    {
