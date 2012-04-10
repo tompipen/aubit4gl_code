@@ -215,29 +215,38 @@ bool RingMenuPulldown::eventFilter(QObject *obj, QEvent *event)
     if(event->type() == QEvent::KeyPress)
     {
         QKeyEvent *keyEvent = (QKeyEvent*) event;
-        int shortcut1 = 0;
+        if(keyEvent->key() <= 57)
+        {
+            int shortcut1 = 0;
         //if(QString::number(mev->button()) <= "9" && QString::number(mev->button()) >= "0")
         //{
         //    shortcut = QString::number(mev->button() - 28);
         //} else {
         //{
-        shortcut1 = keyEvent->key() - 49;
-        //}
-        qDebug() << "tastatur: " << keyEvent->key();
-        qDebug() << "shortcut: " << shortcut1;
-        if(buttonGroup->buttons().count() > shortcut1 && shortcut1 >= 0)
-        {
-           if(QPushButton *button = qobject_cast<QPushButton *> (buttonGroup->buttons().at(shortcut1))){
-               if(button->isVisible())
-               {
-                   button->click();
+            shortcut1 = keyEvent->key() - 49;
+            //}
+            qDebug() << "tastatur: " << keyEvent->key();
+            qDebug() << "shortcut: " << shortcut1;
+            if(buttonGroup->buttons().count() > shortcut1 && shortcut1 >= 0)
+            {
+               if(QPushButton *button = qobject_cast<QPushButton *> (buttonGroup->buttons().at(shortcut1))){
+                   if(button->isVisible())
+                   {
+                       button->click();
+                   }
                }
-           }
+            }
+            return true;
+        } else if (keyEvent->key() == Qt::Key_Return || keyEvent->key() == Qt::Key_Enter)
+        {
+            if(QPushButton *pb = qobject_cast<QPushButton *> (obj))
+            {
+                pb->click();
+            }
+            return false;
         }
-        return true;
-    } else {
-        return false;
     }
+
     return QGroupBox::eventFilter(obj,event);
     //return false;
 }
