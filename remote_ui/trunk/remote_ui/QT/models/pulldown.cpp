@@ -215,19 +215,13 @@ bool RingMenuPulldown::eventFilter(QObject *obj, QEvent *event)
     if(event->type() == QEvent::KeyPress)
     {
         QKeyEvent *keyEvent = (QKeyEvent*) event;
-        QString shortcut;
         int shortcut1 = 0;
         //if(QString::number(mev->button()) <= "9" && QString::number(mev->button()) >= "0")
         //{
         //    shortcut = QString::number(mev->button() - 28);
         //} else {
         //{
-        #ifdef Q_WS_MAC
-        shortcut1 = keyEvent->key() - 1;
-        #endif
-        #ifdef Q_WS_X11
         shortcut1 = keyEvent->key() - 49;
-        #endif
         //}
         qDebug() << "tastatur: " << keyEvent->key();
         qDebug() << "shortcut: " << shortcut1;
