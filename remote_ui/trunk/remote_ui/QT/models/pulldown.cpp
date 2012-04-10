@@ -21,8 +21,8 @@
 
 #include "pulldown.h"
 #include "actions.h"
-#include "fglform.h"
 #include "mainframe.h"
+#include "fglform.h"
 
 RingMenuPulldown::RingMenuPulldown(QString title, QString comment, QString style, QString image,
                                    QWidget *parent) : QGroupBox(parent)
@@ -33,6 +33,7 @@ RingMenuPulldown::RingMenuPulldown(QString title, QString comment, QString style
     this->setTitle(title);
    //this->setEnabled(false);
    this->setVisible(false);
+   this->installEventFilter(this);
 
    QVBoxLayout *layout = new QVBoxLayout;
    layout->setAlignment(Qt::AlignTop);
@@ -57,6 +58,7 @@ RingMenuPulldown::RingMenuPulldown(QString title, QString comment, QString style
 
 void RingMenuPulldown::closeWindow()
 {
+    this->setEnabled(false);
     this->deleteLater();
     this->close();
 }
@@ -98,7 +100,7 @@ MainFrame::vdcdebug("RingMenu","createButton", "int id, QString text, QString to
        button->setIcon(QIcon(QString("pics:%1.png").arg(id)));
    }
    button->setIconSize(QSize(40,25));
-   button->setShortcut(id);
+   button->setShortcut(QString("&%1").arg(id));
 
    Action *action = new Action(text.toLower(), text, button);
    action->setComment(tooltip);
@@ -192,6 +194,49 @@ MainFrame::vdcdebug("RingMenu","getAction", "QString name");
 void RingMenuPulldown::showWindow()
 {
     this->show();
+}
+QList<QAction*> RingMenuPulldown::actions()
+{
+MainFrame::vdcdebug("RingMenu","actions", "");
+
+   QList<QAction*> ql_actions;
+   for(int i=0; i<buttonGroup->buttons().size(); i++){
+      if(QPushButton *button = qobject_cast<QPushButton *> (buttonGroup->buttons().at(i))){
+       //  if(button->isVisible() && button->isEnabled())
+            ql_actions << button->actions();
+      }
+   }
+
+   return ql_actions;
+}
+
+bool RingMenuPulldown::eventFilter(QObject *obj, QEvent *event)
+{
+    if(event->type() == QEvent::KeyPress)
+    {
+        QMouseEvent *mev = (QMouseEvent*) event;
+        QString shortcut;
+        if(QString::number(mev->button()) > "9" && QString::number(mev->button()) <= "38")
+        {
+            shortcut = QString::number(mev->button() - 28);
+        } else {
+            shortcut = QString::number(mev->button() - 10);
+        }
+        if(buttonGroup->buttons().count() > shortcut.toInt())
+        {
+           if(QPushButton *button = qobject_cast<QPushButton *> (buttonGroup->buttons().at(shortcut.toInt()))){
+               if(button->isVisible())
+               {
+                   button->click();
+               }
+           }
+        }
+        return true;
+    } else {
+        return false;
+    }
+    return QGroupBox::eventFilter(obj,event);
+    //return false;
 }
 
 //------------------------------------------------------------------------------

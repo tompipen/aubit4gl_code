@@ -33,11 +33,13 @@ public:
     RingMenuPulldown(QWidget* parent = 0);
     void createButton(int id, QString text, QString tooltip);
     void createAction(int id = 0, QString text = "");
+    QList<QAction*> actions();
     QAction* getAction(QString);
     void showWindow();
     void closeWindow();
     void hideButton(QString);
     void showButton(QString name);
+    bool eventFilter(QObject *, QEvent *);
 
 private:
     QButtonGroup *buttonGroup;
