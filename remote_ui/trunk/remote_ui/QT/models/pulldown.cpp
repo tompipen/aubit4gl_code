@@ -222,9 +222,8 @@ bool RingMenuPulldown::eventFilter(QObject *obj, QEvent *event)
         //} else {
         {
             #ifdef Q_WS_MAC
-            shortcut = QString::number(mev->button());
-            #endif
-            #ifdef Q_WS_X11
+            shortcut = QString::number(mev->button() - 1);
+            #else
             shortcut = QString::number(mev->button() - 10);
             #endif
         }
