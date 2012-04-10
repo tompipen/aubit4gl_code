@@ -216,12 +216,14 @@ bool RingMenuPulldown::eventFilter(QObject *obj, QEvent *event)
     {
         QMouseEvent *mev = (QMouseEvent*) event;
         QString shortcut;
-        if(QString::number(mev->button()) > "9" && QString::number(mev->button()) <= "38")
+        if(QString::number(mev->button()) <= "9")
+        //{
+        //    shortcut = QString::number(mev->button() - 28);
+        //} else {
         {
-            shortcut = QString::number(mev->button() - 28);
-        } else {
             shortcut = QString::number(mev->button() - 10);
         }
+        qDebug() << "tastatur: " << mev->button();
         if(buttonGroup->buttons().count() > shortcut.toInt())
         {
            if(QPushButton *button = qobject_cast<QPushButton *> (buttonGroup->buttons().at(shortcut.toInt()))){
