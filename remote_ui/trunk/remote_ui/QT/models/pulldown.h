@@ -35,6 +35,7 @@ public:
     void createAction(int id = 0, QString text = "");
     QList<QAction*> actions();
     QAction* getAction(QString);
+    QButtonGroup* getButtons() { return buttonGroup;};
     void showWindow();
     void closeWindow();
     void hideButton(QString);
