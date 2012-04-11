@@ -30,10 +30,11 @@ RingMenuPulldown::RingMenuPulldown(QString title, QString comment, QString style
    b_hideButtons = true;
    this->setAlignment(Qt::AlignRight | Qt::AlignTop);
    // disable widget until it it gets called
-    this->setTitle(title);
+   this->setTitle(title.trimmed());
    //this->setEnabled(false);
-   this->setVisible(false);
+   //this->setVisible(false);
    this->installEventFilter(this);
+   this->setWindowFlags(Qt::WindowStaysOnTopHint);
 
    QVBoxLayout *layout = new QVBoxLayout;
    layout->setAlignment(Qt::AlignTop);
@@ -95,7 +96,7 @@ MainFrame::vdcdebug("RingMenu","createButton", "int id, QString text, QString to
    //button->setIcon(QIcon(QString("pics:blank.png")));
    if(button->text() == "&Ende")
    {
-       button->setIcon(QIcon("pics:nein.png"));
+       button->setIcon(QIcon("pics:pulldown-abbrechen.png"));
    } else {
        button->setIcon(QIcon(QString("pics:%1.png").arg(id)));
    }
@@ -208,6 +209,10 @@ MainFrame::vdcdebug("RingMenu","actions", "");
    }
 
    return ql_actions;
+}
+void RingMenuPulldown::moveToPos(QPoint const pos)
+{
+    this->move(pos);
 }
 
 bool RingMenuPulldown::eventFilter(QObject *obj, QEvent *event)

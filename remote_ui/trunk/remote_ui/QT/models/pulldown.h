@@ -41,6 +41,7 @@ public:
     void hideButton(QString);
     void showButton(QString name);
     bool eventFilter(QObject *, QEvent *);
+    void moveToPos(const QPoint pos);
 
 private:
     QButtonGroup *buttonGroup;
