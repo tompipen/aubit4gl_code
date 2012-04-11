@@ -147,7 +147,7 @@ bool Reportgen::startReportTemplate(QString odffile, QString sedfile, QFileInfo 
            content.append(getTemplatePosition(i+1, fileBaseName + "/content.xml"));//.toUtf8());
            for(int j=1; j < varCount; j++) {
                qDebug() << "ergaenze Ebene";
-               qDebug() << j << "von" << wiederholen;
+               qDebug() << j << "von" << varCount;
                content.append(prepareTemplateContent(i+1, j, oldFileName.baseName() + "/content.xml", sedfile));
                xmlsave << content;
                content.clear();
