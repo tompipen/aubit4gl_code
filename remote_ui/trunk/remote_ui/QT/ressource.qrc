@@ -140,6 +140,15 @@
         <file>pics/weiter.png</file>
         <file>pics/weiteres.png</file>
         <file>pics/zurueck.png</file>
+        <file>pics/VENTAS_9_textur_1.png</file>
+        <file>pics/VENTAS_9_gebuersteter_alu.png</file>
+        <file>pics/VENTAS_9_gebuersteter_stahl.png</file>
+        <file>pics/zoom_auswahl.png</file>
+        <file>pics/browser-zurueck.png</file>
+        <file>pics/browser-vor.png</file>
+        <file>pics/browser-neuladen.png</file>
+        <file>pics/browser-abbrechen.png</file>
+        <file>pics/pulldown-abbrechen.png</file>
         <file>pics/1.png</file>
         <file>pics/2.png</file>
         <file>pics/3.png</file>
@@ -150,25 +159,5 @@
         <file>pics/8.png</file>
         <file>pics/9.png</file>
         <file>pics/a.png</file>
-        <file>pics/b.png</file>
-        <file>pics/d.png</file>
-        <file>pics/f.png</file>
-        <file>pics/g.png</file>
-        <file>pics/h.png</file>
-        <file>pics/i.png</file>
-        <file>pics/j.png</file>
-        <file>pics/k.png</file>
-        <file>pics/l.png</file>
-        <file>pics/c.png</file>
-        <file>pics/e.png</file>
-        <file>pics/pulldown-esc.png</file>
-        <file>pics/VENTAS_9_textur_1.png</file>
-        <file>pics/VENTAS_9_gebuersteter_alu.png</file>
-        <file>pics/VENTAS_9_gebuersteter_stahl.png</file>
-        <file>pics/zoom_auswahl.png</file>
-        <file>pics/browser-zurueck.png</file>
-        <file>pics/browser-vor.png</file>
-        <file>pics/browser-neuladen.png</file>
-        <file>pics/browser-abbrechen.png</file>
     </qresource>
 </RCC>
