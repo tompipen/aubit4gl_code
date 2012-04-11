@@ -99,7 +99,7 @@ void TableView::resetSort()
     proxyModel->sort(1, Qt::DescendingOrder);
 }
 
-void TableView::restoreViewPalette()
+/*void TableView::restoreViewPalette()
 {
 
 
