@@ -82,7 +82,6 @@ void TableView::saveNewSectionOrder(int, int, int)
         settings.setValue("state", header->saveState());
     }
 }
-
 void TableView::oldSectionOrder()
 {
     if(FglForm *fglform = qobject_cast<FglForm*> (p_fglform))
@@ -94,8 +93,11 @@ void TableView::oldSectionOrder()
         this->update();
     }
 }
-
-/*
+void TableView::resetSort()
+{
+    QSortFilterProxyModel *proxyModel = static_cast<QSortFilterProxyModel*> (this->model());
+    proxyModel->sort(1, Qt::DescendingOrder);
+}
 
 void TableView::restoreViewPalette()
 {
@@ -283,6 +285,7 @@ bool TableView::eventFilter(QObject *object, QEvent *event)
 
         standardAct = new QAction(tr("Standard Einstellung der Spaltenbreite wiederherstellen"), this);
         resetAct    = new QAction(tr("Standard Reihenfolge der Spalten wiederherstellen"), this);
+        restoreSort   = new QAction(tr("Spaltensortierung wiederherstellen"), this);
 
         //read all Column Names in a QList QLabel and Add the Pulldown Action dynamicly.
         for (i=0; i < table->qsl_colNames.count(); i++)
@@ -323,6 +326,8 @@ bool TableView::eventFilter(QObject *object, QEvent *event)
         pulldownMenu->addSeparator();
         connect(resetAct, SIGNAL(triggered()), this, SLOT(oldSectionOrder()));
         pulldownMenu->addAction(resetAct);
+        connect(restoreSort, SIGNAL(triggered()), this, SLOT(resetSort()));
+        pulldownMenu->addAction(restoreSort);
         pulldownMenu->exec(QCursor::pos());
 
         return true;
@@ -1208,7 +1213,6 @@ void TableModel::setTableView(TableView *tv)
 {
     this->mytv = tv;
 }
-
 QVariant TableModel::headerData ( int section, Qt::Orientation orientation, int role ) const
 {
 //MainFrame::vdcdebug("TableModel","headerData ", " int section, Qt");

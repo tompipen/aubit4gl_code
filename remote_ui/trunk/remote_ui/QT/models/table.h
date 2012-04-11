@@ -43,6 +43,7 @@ public:
    QList<QLabel*> columnLabels;
    QAction *standardAct;
    QAction *resetAct;
+   QAction *restoreSort;
    QPointer<QWidget> curr_editor;
    QAction *columnAct;
    QModelIndex eventfield;
@@ -111,6 +112,7 @@ public slots:
    void copyColumn();
    void saveNewSectionOrder(int, int, int);
    void oldSectionOrder();
+   void resetSort();
 
 protected:
    QModelIndex mouseindex;
