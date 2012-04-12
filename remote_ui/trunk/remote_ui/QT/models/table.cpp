@@ -77,9 +77,15 @@ void TableView::saveNewSectionOrder(int, int, int)
 {
     if(FglForm *fglform = qobject_cast<FglForm*> (p_fglform))
     {
-        QSettings settings(this->accessibleName(), fglform->windowName);
-        QHeaderView *header = this->horizontalHeader();
-        settings.setValue("state", header->saveState());
+        QSortFilterProxyModel *proxyModel = static_cast<QSortFilterProxyModel*> (this->model());
+        TableModel *table = static_cast<TableModel*> (proxyModel->sourceModel());
+
+        if(!table->b_input)
+        {
+            QSettings settings(this->accessibleName(), fglform->windowName);
+            QHeaderView *header = this->horizontalHeader();
+            settings.setValue("state", header->saveState());
+        }
     }
 }
 void TableView::oldSectionOrder()
