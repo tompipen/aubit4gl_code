@@ -301,10 +301,27 @@ void Context::addScreenRecord(QWidget *screenRec, bool input)
                   tableView->selectRow(0);
                 }
               else{
-                  tableView->setCurrentField(1,1);
+
+                //  tableView->setCurrentField(1,1);
                   if(QSortFilterProxyModel *proxyModel = qobject_cast<QSortFilterProxyModel *> (tableView->model())){
                      if(TableModel *table = qobject_cast<TableModel *> (proxyModel->sourceModel())){
-                         QModelIndex tindex = table->index(0,0);
+                         int col = 0;
+                         for(int i = 0; i<table->columnCount(QModelIndex()); i++)
+                         {
+                             if(tableView->isReadOnlyColumn(i) || tableView->isColumnHidden(i))
+                             {
+                                continue;
+                             }
+                             else
+                             {
+                                col = i;
+                                break;
+                             }
+                         }
+
+                         tableView->setCurrentField(1,col+1);
+
+                         QModelIndex tindex = table->index(0,col);
                          QModelIndex index = proxyModel->mapFromSource(tindex);
                          tableView->edit(index);
                        }
