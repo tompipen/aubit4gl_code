@@ -2022,14 +2022,16 @@ if(qsl_triggereds.size() > 0)
          p_fglform->adjustSize();
          //p_fglform->resize(500,500);
 
-         //QSettings settings("VENTAS", p_fglform->windowName);
-      //   if(!settings.value("size").isNull())
-      //   {
-      //       //p_fglform->resize(settings.value("size").toSize());
-       //  } else {
+         QSettings settings("VENTAS", p_fglform->windowName);
+         if(!settings.value("size").isNull())
+         {
+             p_fglform->resize(settings.value("size").toSize());
+             p_fglform->move(settings.value("pos").toPoint());
+             p_fglform->show();
+         } else {
              p_fglform->show();
              p_fglform->adjustSize();
-       //  }
+         }
          if(p_fglform->context != NULL)
          {
              p_fglform->context->checkOptions();
