@@ -582,7 +582,8 @@ public:
 class WebPage : public QWebPage
 {
     virtual QString userAgentForUrl(const QUrl& url) const {
-        return "Chrome/1.0";
+    Q_UNUSED(url);
+       return "Chrome/1.0";
     }
 };
 
