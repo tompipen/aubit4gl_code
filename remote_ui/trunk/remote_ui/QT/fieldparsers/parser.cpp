@@ -513,7 +513,7 @@ void Parser::handleTableColumn(const QDomNode& xmlNode){
       }
       if(FglForm *fglform = qobject_cast<FglForm*> (p_fglform))
       {
-          QSettings settings(p_screenRecord->accessibleName(), fglform->windowName);
+          QSettings settings(p_screenRecord->accessibleName(), fglform->formName());
           if(settings.value("state").isNull())
           {
              settings.setValue("oldstate",header->saveState());

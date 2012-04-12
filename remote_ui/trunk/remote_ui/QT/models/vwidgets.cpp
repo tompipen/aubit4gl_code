@@ -948,7 +948,7 @@ MainFrame::vdcdebug("WidgetHelper","createLabel", "const QDomElement& formField,
       label->setToolTip(comments);
    }
    if(FglForm *p_fglform = qobject_cast<FglForm*> (parent)) {
-       QSettings settings(p_fglform->windowName, label->colName);
+       QSettings settings(p_fglform->formName(), label->colName);
        if(!settings.value("hideColumn").isNull()) {
            label->hide();
        }
@@ -1196,7 +1196,7 @@ MainFrame::vdcdebug("WidgetHelper","createEdit", "const QDomElement& formField, 
    }
 
    if(FglForm *p_fglform = qobject_cast<FglForm*> (parent)) {
-       QSettings settings(p_fglform->windowName, lineEdit->colName);
+       QSettings settings(p_fglform->formName(), lineEdit->colName);
        if(!settings.value("hideColumn").isNull()) {
            lineEdit->hide();
        }
@@ -1270,7 +1270,7 @@ MainFrame::vdcdebug("WidgetHelper","createButtonEdit", "const QDomElement& formF
    }
 
    if(FglForm *p_fglform = qobject_cast<FglForm*> (parent)) {
-       QSettings settings(p_fglform->windowName, lineEdit->colName);
+       QSettings settings(p_fglform->formName(), lineEdit->colName);
        if(!settings.value("hideColumn").isNull()) {
            lineEdit->hide();
        }
@@ -1560,7 +1560,7 @@ MainFrame::vdcdebug("WidgetHelper","createDateEdit", "const QDomElement& formFie
    }
 
    if(FglForm *p_fglform = qobject_cast<FglForm*> (parent)) {
-       QSettings settings(p_fglform->windowName, lineEdit->colName);
+       QSettings settings(p_fglform->formName(), lineEdit->colName);
        if(!settings.value("hideColumn").isNull()) {
            lineEdit->hide();
        }
@@ -1669,7 +1669,7 @@ MainFrame::vdcdebug("WidgetHelper","createTextEdit", "const QDomElement& formFie
    if(height < 1) height = 1;
 
    if(FglForm *p_fglform = qobject_cast<FglForm*> (parent)) {
-       QSettings settings(p_fglform->windowName, textEdit->colName);
+       QSettings settings(p_fglform->formName(), textEdit->colName);
        if(!settings.value("hideColumn").isNull()) {
            textEdit->hide();
        }

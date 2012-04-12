@@ -82,7 +82,7 @@ void TableView::saveNewSectionOrder(int, int, int)
 
         if(!table->b_input)
         {
-            QSettings settings(this->accessibleName(), fglform->windowName);
+            QSettings settings(this->accessibleName(), fglform->formName());
             QHeaderView *header = this->horizontalHeader();
             settings.setValue("state", header->saveState());
         }
@@ -92,7 +92,7 @@ void TableView::oldSectionOrder()
 {
     if(FglForm *fglform = qobject_cast<FglForm*> (p_fglform))
     {
-        QSettings settings(this->accessibleName(), fglform->windowName);
+        QSettings settings(this->accessibleName(), fglform->formName());
         QHeaderView *header = this->horizontalHeader();
         header->restoreState(settings.value("oldstate").toByteArray());
         settings.remove("state");

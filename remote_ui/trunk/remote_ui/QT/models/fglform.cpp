@@ -1240,7 +1240,7 @@ QMenu* FglForm::createMenuHideShowFields(QObject *obj)
         for(int i=0; i < this->ql_fglFields.count(); i++) {
             if(QLabel *la = qobject_cast<QLabel*> (this->findFieldByName(this->ql_fglFields.at(i)->colName())))
             {
-                QSettings settings(windowName, ql_fglFields.at(i)->colName());
+                QSettings settings(formName(), ql_fglFields.at(i)->colName());
                 if(!la->text().isEmpty()) {
                     rightAct = new QAction(la->text(), this);
                     rightAct->setObjectName(ql_fglFields.at(i)->colName());
@@ -1276,7 +1276,7 @@ void FglForm::resetFieldSettings()
 {
 //MainFrame::vdcdebug("Fglform", "resetFieldSettings");
     for(int i=0; i < this->ql_fglFields.count(); i++){
-        QSettings settings(windowName, this->ql_fglFields.at(i)->colName());
+        QSettings settings(formName(), this->ql_fglFields.at(i)->colName());
         if(!settings.value("hideColumn").isNull()) {
             settings.remove("hideColumn");
             p_currscreenhandler->setFieldHidden(this->ql_fglFields.at(i)->colName(), 0);
@@ -1299,7 +1299,7 @@ void FglForm::saveFieldSettings(QAction *action)
             int cnt = 0;
             for (int k = i; k < this->ql_fglFields.count(); k++)
             {
-                QSettings settings(windowName, this->ql_fglFields.at(k)->colName());
+                QSettings settings(formName(), this->ql_fglFields.at(k)->colName());
                 if(settings.value("hideColumn").isNull()) {
                     settings.setValue("hideColumn", 1);
                     p_currscreenhandler->setFieldHidden(this->ql_fglFields.at(k)->colName(), 1);
@@ -1527,10 +1527,11 @@ MainFrame::vdcdebug("FglForm","closeEvent", "QCloseEvent *event");
       event->ignore();
 
    }
-   QSettings settings("VENTAS", windowName);
+   /*
+   QSettings settings("VENTAS", formName());
    settings.setValue("size", size());
    settings.setValue("pos", pos());
-
+*/
    return QMainWindow::closeEvent(event);
   /*
    if(menu() != NULL && menu()->isEnabled()){
@@ -3040,7 +3041,7 @@ void FglForm::writeSettingsLocal()
 {
   return;
 MainFrame::vdcdebug("FglForm","writeSettingsLocal", "");
-QSettings settings("VENTAS", windowName);
+QSettings settings("VENTAS", formName());
 
    //settings.beginGroup(windowName);
    settings.setValue("pos", pos());
@@ -3058,7 +3059,7 @@ void FglForm::readSettingsLocal()
 {
   return;
 MainFrame::vdcdebug("FglForm","readSettingsLocal", "");
-   QSettings settings("VENTAS", windowName);
+   QSettings settings("VENTAS", formName());
    //settings.sync();
                     
 
@@ -4201,6 +4202,7 @@ void FglForm::setFormName(QString name)
 
 QString FglForm::formName()
 {
+
   return this->qs_formfile;
 }
 
