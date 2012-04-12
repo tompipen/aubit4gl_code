@@ -779,9 +779,14 @@ void FglForm::replayKeyboard()
       {
           if(state() == Fgl::MENU)
           {
-              QApplication::postEvent(menu(), key);
+              if(menu())
+                 QApplication::postEvent(menu(), key);
           }
-          QApplication::postEvent(currentField(), key);
+          else
+          {
+
+             QApplication::postEvent(currentField(), key);
+          }
       }
 
       ql_keybuffer.removeOne(key);
@@ -3662,6 +3667,7 @@ MainFrame::vdcdebug("FglForm","checkActions", "");
                }
             }
          }
+      qDebug()<<ringMenuPulldown();
       if(RingMenuPulldown *pc_pulldown = qobject_cast<RingMenuPulldown *> (ringMenuPulldown())){
          QList<QAction*> pulldownActions = pc_pulldown->actions();
 
