@@ -206,17 +206,16 @@ void TableView::updateSectionWidth(int logicalIndex, int, int newSize)
     QSortFilterProxyModel *proxyModel = static_cast<QSortFilterProxyModel*> (this->model());
     TableModel *table = static_cast<TableModel*> (proxyModel->sourceModel());
     columnLabels << getColumnLabel(logicalIndex);
-/*
-    if(isVisible()){
-        if(columnLabels.toVector().at(logicalIndex) != NULL){
-            if(logicalIndex != NULL){
-                QSettings settings(columnLabels.at(logicalIndex)->objectName(), table->mytv->accessibleName());
-                    settings.setValue("width", newSize);
-                    settings.setValue("columnId", logicalIndex);
-            }
+    for(int i=0; i < columnLabels.count(); i++)
+    {
+        if(columnLabels.at(i) != NULL)
+        {
+            QSettings settings(columnLabels.at(i)->objectName(), table->mytv->accessibleName());
+            settings.setValue("width", newSize);
+            settings.setValue("columnId", logicalIndex);
         }
-
-        }*/
+    }
+    columnLabels.clear();
 }
 
 void TableView::copyRow()

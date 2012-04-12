@@ -495,7 +495,6 @@ void Parser::handleTableColumn(const QDomNode& xmlNode){
          p_screenRecord->hideColumn(i);
       // restore if the column is hidden/shown
       if(p_screenRecord->getColumnLabel(i) != NULL) {
-
           QSettings settings(p_screenRecord->getColumnLabel(i)->objectName(), p_screenRecord->accessibleName());
           if(!settings.value("hideColumn").isNull())
           {
@@ -504,9 +503,8 @@ void Parser::handleTableColumn(const QDomNode& xmlNode){
           // restore the width for each column.
           if( !settings.value("width").isNull() && !settings.value("columnId").isNull())
           {
-              header->resizeSection(i, w+1);
-
-//              header->resizeSection(settings.value("columnId").toInt(), settings.value("width").toInt());
+            //header->resizeSection(i, w+1);
+              header->resizeSection(settings.value("columnId").toInt(), settings.value("width").toInt());
           } else {
               header->resizeSection(i, w+1);
           }
