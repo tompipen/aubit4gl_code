@@ -1861,7 +1861,7 @@ MainFrame::vdcdebug("ScreenHandler","setFormOpts", "QString type, bool value, in
          }
          if(p_fglform->ringMenuPulldown() != NULL){
             p_fglform->ringMenuPulldown()->closeWindow();
-            p_fglform->setPulldown(NULL);
+            p_fglform->setRingMenuPulldown(NULL);
             p_fglform->setEnabled(true);
             p_fglform->revertState(Fgl::MENU);
             freeContext(i_context);
