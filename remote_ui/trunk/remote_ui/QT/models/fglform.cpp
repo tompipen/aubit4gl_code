@@ -737,11 +737,14 @@ MainFrame::vdcdebug("FglForm","setToolBar", "QDomDocument xmlFile");
 void FglForm::replayKeyboard()
 {
 
-  if(!currentField())
+
+
+  if(!currentField() && state() != Fgl::MENU)
   {
       if(ql_keybuffer.size() > 0)
       {
-          qFatal("No Target for Keybuffer!");
+          qDebug()<<"Keybufer cleared";
+          clearKeyboardBuffer();
       }
      return;
   }
@@ -777,6 +780,10 @@ void FglForm::replayKeyboard()
       }
       else
       {
+          if(state() == Fgl::MENU)
+          {
+              QApplication::postEvent(menu(), key);
+          }
           QApplication::postEvent(currentField(), key);
       }
 
