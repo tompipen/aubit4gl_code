@@ -743,7 +743,6 @@ void FglForm::replayKeyboard()
   {
       if(ql_keybuffer.size() > 0)
       {
-          qDebug()<<"Keybufer cleared";
           clearKeyboardBuffer();
       }
      return;
@@ -755,8 +754,6 @@ void FglForm::replayKeyboard()
   }
 
   b_keybufferrunning = true;
-
-  qDebug()<<ql_keybuffer;
 
   foreach(QKeyEvent *key, ql_keybuffer)
   {
@@ -773,7 +770,7 @@ void FglForm::replayKeyboard()
 //              tableView->playkey(key);
               //tableView->itemDelegateForColumn(tableView->currentIndex().column())->event(key);
              // QMetaObject::invokeMethod(tableView->itemDelegateForColumn(tableView->currentIndex().column()), "event", Qt::QueuedConnection,Q_ARG(QEvent*, key));
-             QApplication::postEvent(tableView->itemDelegateForColumn(tableView->currentIndex().column()), key);
+              QApplication::postEvent(focusWidget(), key);
 
 
           }
@@ -824,9 +821,9 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
 
   if((event->type() == QEvent::KeyPress || event->type() == 1400) || (event->type() == QEvent::KeyRelease || event->type() == 1401))
   {
-      qDebug()<<event;
 
-      if(b_keybuffer)
+
+      if(b_keybuffer && !b_keybufferrunning)
       {
 
           if((event->type() == QEvent::KeyRelease || event->type() == 1401) && ql_keybuffer.size() < 1)
@@ -972,7 +969,6 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
              }
          }
       } else if (mev->button() == Qt::RightButton){
-          qDebug() << "obj: " << obj;
           if(!input() && !construct() && !screenRecord()){
               if(LineEdit *le = qobject_cast<LineEdit*> (obj))
               {
@@ -1227,6 +1223,8 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
 */
 //   qDebug()<<event->type();
   // qDebug()<<obj->objectName();
+
+
 
    return QMainWindow::eventFilter(obj, event);
 }

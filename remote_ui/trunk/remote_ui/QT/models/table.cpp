@@ -1461,7 +1461,8 @@ bool LineEditDelegate::eventFilter(QObject *object, QEvent *event)
                                        key->text(),
                                        key->isAutoRepeat(),
                                        key->count());
-   return QStyledItemDelegate::eventFilter(object, mykev);
+   QApplication::sendEvent(object, mykev);
+   return true;
   }
 
   if(event->type() == 1401)
@@ -1476,7 +1477,8 @@ bool LineEditDelegate::eventFilter(QObject *object, QEvent *event)
                                        key->text(),
                                        key->isAutoRepeat(),
                                        key->count());
-   return QStyledItemDelegate::eventFilter(object, mykev);
+      QApplication::sendEvent(object, mykev);
+      return true;
   }
 
   //Verhindert beim disablen von p_fglform, das der Editor geschlossen wird. Kommt durch synchronisation des
