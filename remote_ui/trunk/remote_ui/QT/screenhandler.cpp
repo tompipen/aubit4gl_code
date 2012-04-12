@@ -2665,13 +2665,14 @@ MainFrame::vdcdebug("ScreenHandler","setScreenRecordEnabled", "QString fieldName
    Q_UNUSED(enable);
    Context *context = getCurrentContext();
    QWidget *widget = NULL;
+   TableView *tableView = NULL;
    QList<QWidget*> ql_fields = p_fglform->findFieldsByName(fieldName);
    for(int i=0; i< ql_fields.count(); i++){
 
       widget = ql_fields.at(i);
 
       if(LineEditDelegate *de = qobject_cast<LineEditDelegate *> (widget)){
-         if(TableView *tableView = qobject_cast<TableView *> (de->parent())){
+         if(tableView = qobject_cast<TableView *> (de->parent())){
             context->addScreenRecord(tableView, input);
             break;
          }
@@ -2679,7 +2680,7 @@ MainFrame::vdcdebug("ScreenHandler","setScreenRecordEnabled", "QString fieldName
    }
    if(context->fieldList().size() == 1)
    {
-       p_fglform->setCurrentWidget(widget);
+       p_fglform->setCurrentWidget(tableView);
    }
 
 }
