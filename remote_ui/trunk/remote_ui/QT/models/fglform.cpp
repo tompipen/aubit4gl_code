@@ -1277,9 +1277,9 @@ void FglForm::resetFieldSettings()
 {
 //MainFrame::vdcdebug("Fglform", "resetFieldSettings");
     for(int i=0; i < this->ql_fglFields.count(); i++){
-        QSettings settings(formName(), this->ql_fglFields.at(i)->colName());
-        if(!settings.value("hideColumn").isNull()) {
-            settings.remove("hideColumn");
+        int hideColumn = VDC::readSettingsFromIni(formName(), QString(this->ql_fglFields.at(i)->colName() + "/hideColumn")).toInt();
+        if(hideColumn > 0) {
+            VDC::removeSettingsFromIni(formName(), QString(this->ql_fglFields.at(i)->colName() + "/hideColumn"));
             p_currscreenhandler->setFieldHidden(this->ql_fglFields.at(i)->colName(), 0);
         }
     }
