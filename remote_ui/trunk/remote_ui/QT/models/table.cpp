@@ -282,8 +282,10 @@ bool TableView::eventFilter(QObject *object, QEvent *event)
         Pulldown *pulldownMenu = new Pulldown();
         int i =0;
 
-        standardAct = new QAction(tr("Standard Einstellung der Spaltenbreite wiederherstellen"), this);
-        resetAct    = new QAction(tr("Standard Reihenfolge der Spalten wiederherstellen"), this);
+        /*standardAct = new QAction(tr("Standard Einstellung der Spaltenbreite wiederherstellen"), this);
+        resetAct    = new QAction(tr("Standard Reihenfolge der Spalten wiederherstellen"), this);*/
+        standardAct = new QAction(tr("Reset the width of all columns"), this);
+        resetAct    = new QAction(tr("Reset ordner"), this);
         restoreSort   = new QAction(tr("Spaltensortierung wiederherstellen"), this);
 
         //read all Column Names in a QList QLabel and Add the Pulldown Action dynamicly.
