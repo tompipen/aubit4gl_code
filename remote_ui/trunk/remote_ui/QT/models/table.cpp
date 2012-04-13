@@ -352,12 +352,13 @@ void TableView::resetSettings()
 
     for(int i = 0; i < columnLabels.count(); i++)
     {
-        if(columnLabels.at(i) != NULL)
+        if(FglForm *fglform = qobject_cast<FglForm *> (p_fglform))
         {
-            QSettings settings(columnLabels.at(i)->objectName(), table->mytv->accessibleName());
-            settings.remove("width");
+            if(columnLabels.at(i) != NULL)
+            {
+                VDC::removeSettingsFromIni(fglform->formName(), this->accessibleName() + "/" + columnLabels.at(i)->objectName() + "/columnWidth");
+            }
         }
-
     }
 }
 
