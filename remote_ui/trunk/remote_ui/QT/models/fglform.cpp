@@ -1304,7 +1304,6 @@ void FglForm::saveFieldSettings(QAction *action)
                 int hideColumn = VDC::readSettingsFromIni(formName(), QString(this->ql_fglFields.at(k)->colName() + "/hideColumn")).toInt();
                 if(hideColumn == 0) {
                     VDC::saveSettingsToIni(formName(), QString(this->ql_fglFields.at(k)->colName() + "/hideColumn"), QString::number(1));
-                    //settings.setValue("hideColumn", 1);
                     p_currscreenhandler->setFieldHidden(this->ql_fglFields.at(k)->colName(), 1);
                 } else {
                     VDC::removeSettingsFromIni(formName(), QString(this->ql_fglFields.at(k)->colName() + "/hideColumn"));
@@ -1536,11 +1535,6 @@ MainFrame::vdcdebug("FglForm","closeEvent", "QCloseEvent *event");
    VDC::saveSettingsToIni(formName(), "height", QString::number(size().height()));
    VDC::saveSettingsToIni(formName(), "posX", QString::number(pos().x()));
    VDC::saveSettingsToIni(formName(), "posY", QString::number(pos().y()));
-   /*
-   QSettings settings("VENTAS", formName());
-   settings.setValue("size", size());
-   settings.setValue("pos", pos());
-*/
    return QMainWindow::closeEvent(event);
   /*
    if(menu() != NULL && menu()->isEnabled()){
@@ -3050,13 +3044,13 @@ void FglForm::writeSettingsLocal()
 {
   return;
 MainFrame::vdcdebug("FglForm","writeSettingsLocal", "");
-QSettings settings("VENTAS", formName());
+/*QSettings settings("VENTAS", formName());
 
    //settings.beginGroup(windowName);
    settings.setValue("pos", pos());
    settings.setValue("size", size());
    //settings.endGroup();
-   settings.sync();
+   settings.sync();*/
 }
 
 //------------------------------------------------------------------------------
