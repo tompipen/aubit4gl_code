@@ -82,9 +82,8 @@ void TableView::saveNewSectionOrder(int, int, int)
 
         if(!table->b_input)
         {
-            QSettings settings(this->accessibleName(), fglform->formName());
             QHeaderView *header = this->horizontalHeader();
-            settings.setValue("state", header->saveState());
+            VDC::saveSettingsToIni(fglform->formName(), QString(this->accessibleName() + "/state"), header->saveState());
         }
     }
 }
@@ -92,10 +91,9 @@ void TableView::oldSectionOrder()
 {
     if(FglForm *fglform = qobject_cast<FglForm*> (p_fglform))
     {
-        QSettings settings(this->accessibleName(), fglform->formName());
         QHeaderView *header = this->horizontalHeader();
-        header->restoreState(settings.value("oldstate").toByteArray());
-        settings.remove("state");
+        header->restoreState(VDC::readSettingsFromIni1(fglform->formName(), QString(this->accessibleName() + "/oldstate")));
+        VDC::removeSettingsFromIni(fglform->formName(), QString(this->accessibleName() + "/state"));
         this->update();
     }
 }
@@ -210,9 +208,12 @@ void TableView::updateSectionWidth(int logicalIndex, int, int newSize)
     {
         if(columnLabels.at(i) != NULL)
         {
-            QSettings settings(columnLabels.at(i)->objectName(), table->mytv->accessibleName());
+            this->getForm()->formName();
+            VDC::saveSettingsToIni(this->getForm()->formName(), this->accessibleName() + "/" + columnLabels.at(i)->objectName() + "/columnWidth", QString::number(newSize));
+            VDC::saveSettingsToIni(this->getForm()->formName(), this->accessibleName() + "/" + columnLabels.at(i)->objectName() + "/columnWidthId", QString::number(logicalIndex));
+            /*QSettings settings(columnLabels.at(i)->objectName(), table->mytv->accessibleName());
             settings.setValue("width", newSize);
-            settings.setValue("columnId", logicalIndex);
+            settings.setValue("columnId", logicalIndex);*/
         }
     }
     columnLabels.clear();
@@ -295,29 +296,32 @@ bool TableView::eventFilter(QObject *object, QEvent *event)
         //read all Column Names in a QList QLabel and Add the Pulldown Action dynamicly.
         for (i=0; i < table->qsl_colNames.count(); i++)
         {
-            if(getColumnName(i) != NULL)
+            if(FglForm *fglform = qobject_cast<FglForm*> (p_fglform))
             {
-                columnLabels << getColumnLabel(i);
-                if(columnLabels.toVector().at(i) != NULL)
+                if(getColumnName(i) != NULL)
                 {
-                   columnAct = new QAction(columnLabels.at(i)->text(), this);
-                   pulldownMenu->addAction(columnAct);
-                   columnAct->setCheckable(true);
+                    columnLabels << getColumnLabel(i);
+                    if(columnLabels.toVector().at(i) != NULL)
+                    {
+                       columnAct = new QAction(columnLabels.at(i)->text(), this);
+                       pulldownMenu->addAction(columnAct);
+                       columnAct->setCheckable(true);
+                       int hideColumn = VDC::readSettingsFromIni(fglform->formName(), QString(this->accessibleName() + "/" + columnLabels.at(i)->objectName() + "/hideColumn")).toInt();
 
-                   if(!columnLabels.at(i)->objectName().isNull()) {
-                       QSettings settings(columnLabels.at(i)->objectName(), table->mytv->accessibleName());
-                       if(settings.value("hideColumn").isNull())
-                       {
-                       columnAct->setChecked(true);
-                       }
-                   } else {
-                       QSettings settings(columnLabels.at(i)->text(), table->mytv->accessibleName());
-                       if(settings.value("hideColumn").isNull())
-                       {
-                       columnAct->setChecked(true);
-                       }
-                   }
 
+                       if(!columnLabels.at(i)->objectName().isNull()) {
+                           if(hideColumn == 0)
+                           {
+                           columnAct->setChecked(true);
+                           }
+                       } else {
+                           if(hideColumn == 0)
+                           {
+                           columnAct->setChecked(true);
+                           }
+                       }
+
+                    }
                 }
             }
         }
@@ -365,38 +369,52 @@ void TableView::writeSettings(QAction *action)
 
     for(i=0; i < columnLabels.count(); i++)
     {
-        if(columnLabels.at(i) != NULL)
+        if(FglForm *fglform = qobject_cast<FglForm*> (p_fglform))
         {
-            if(columnLabels.at(i)->text() == action->text())
+            if(columnLabels.at(i) != NULL)
             {
-                if(!columnLabels.at(i)->objectName().isNull())
+                if(columnLabels.at(i)->text() == action->text())
                 {
-                    QSettings settings(columnLabels.at(i)->objectName(), table->mytv->accessibleName());
-                    if(settings.value("hideColumn").isNull())
+                    if(!columnLabels.at(i)->objectName().isNull())
                     {
-                        settings.setValue("hideColumn", "1");
-                        settings.setValue("columnId", i);
-                        this->horizontalHeader()->hideSection(i);
-                        return;
+                        qDebug() << "columnLabels.at(i)->text() " << columnLabels.at(i)->objectName();
+                        int hideColumn = VDC::readSettingsFromIni(fglform->formName(), QString(this->accessibleName() + "/" + columnLabels.at(i)->objectName() + "/hideColumn")).toInt();
+                        if(hideColumn == 0)
+                        {
+                            VDC::saveSettingsToIni(fglform->formName(), QString(this->accessibleName() + "/" + columnLabels.at(i)->objectName() + "/hideColumn"), QString::number(1));
+                            VDC::saveSettingsToIni(fglform->formName(), QString(this->accessibleName() + "/" + columnLabels.at(i)->objectName() + "/columnId"), QString::number(i));
+                            //settings.setValue("hideColumn", "1");
+                            //settings.setValue("columnId", i);
+                            this->horizontalHeader()->hideSection(i);
+                            return;
+                        } else {
+                            VDC::removeSettingsFromIni(fglform->formName(), QString(this->accessibleName() + "/" + columnLabels.at(i)->objectName() + "/hideColumn"));
+                            VDC::removeSettingsFromIni(fglform->formName(), QString(this->accessibleName() + "/" + columnLabels.at(i)->objectName() + "/columnId"));
+                            //settings.remove("hideColumn");
+                            //settings.remove("columnId");
+                            this->horizontalHeader()->showSection(i);
+                            return;
+                        }
                     } else {
-                        settings.remove("hideColumn");
-                        settings.remove("columnId");
-                        this->horizontalHeader()->showSection(i);
-                        return;
-                    }
-                } else {
-                    QSettings settings(columnLabels.at(i)->text(), table->mytv->accessibleName());
-                    if(settings.value("hideColumn").isNull())
-                    {
-                        settings.setValue("hideColumn", "1");
-                        settings.setValue("columnId", i);
-                        this->horizontalHeader()->hideSection(i);
-                        return;
-                    } else {
-                        settings.remove("hideColumn");
-                        settings.remove("columnId");
-                        this->horizontalHeader()->showSection(i);
-                        return;
+                        QSettings settings(columnLabels.at(i)->text(), table->mytv->accessibleName());
+                        int hideColumn = VDC::readSettingsFromIni(fglform->formName(), QString(this->accessibleName() + "/hideColumn")).toInt();
+
+                        if(hideColumn == 0)
+                        {
+                            VDC::saveSettingsToIni(fglform->formName(), QString(this->accessibleName() + "/" + columnLabels.at(i)->objectName() + "/hideColumn"), QString::number(1));
+                            VDC::saveSettingsToIni(fglform->formName(), QString(this->accessibleName() + "/" + columnLabels.at(i)->objectName() + "/columnId"), QString::number(i));
+                            //settings.setValue("hideColumn", "1");
+                            //settings.setValue("columnId", i);
+                            this->horizontalHeader()->hideSection(i);
+                            return;
+                        } else {
+                            VDC::removeSettingsFromIni(fglform->formName(), QString(this->accessibleName() + "/" + columnLabels.at(i)->objectName() + "/hideColumn"));
+                            VDC::removeSettingsFromIni(fglform->formName(), QString(this->accessibleName() + "/" + columnLabels.at(i)->objectName() + "/columnId"));
+                            //settings.remove("hideColumn");
+                            //settings.remove("columnId");
+                            this->horizontalHeader()->showSection(i);
+                            return;
+                        }
                     }
                 }
             }

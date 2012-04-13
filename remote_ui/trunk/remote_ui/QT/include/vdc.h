@@ -12,7 +12,9 @@ namespace VDC
   void setFieldSizeFactor(double);
   extern double fieldsizefactor;
   QString readSettingsFromIni(QString, QString);
+  QByteArray readSettingsFromIni1(QString, QString);
   void saveSettingsToIni(QString, QString, QString);
+  void saveSettingsToIni(QString, QString, QByteArray);
   void removeSettingsFromIni(QString group, QString key);
 
 

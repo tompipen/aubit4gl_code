@@ -46,7 +46,26 @@ namespace VDC {
        return value;
    }
 
+   QByteArray readSettingsFromIni1(QString group, QString key)
+   {
+       QByteArray value;
+       QSettings settings(QDir::homePath() + "/.vdc/settings.ini", QSettings::IniFormat);
+
+       settings.beginGroup(group);
+       value.append(settings.value(key).toByteArray());
+       settings.endGroup();
+
+       return value;
+   }
+
    void saveSettingsToIni(QString group, QString key, QString value)
+   {
+       QSettings settings(QDir::homePath() + "/.vdc/settings.ini", QSettings::IniFormat);
+       settings.beginGroup(group);
+       settings.setValue(key, value);
+       settings.endGroup();
+   }
+   void saveSettingsToIni(QString group, QString key, QByteArray value)
    {
        QSettings settings(QDir::homePath() + "/.vdc/settings.ini", QSettings::IniFormat);
        settings.beginGroup(group);

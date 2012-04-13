@@ -494,32 +494,35 @@ void Parser::handleTableColumn(const QDomNode& xmlNode){
       if(hidden)
          p_screenRecord->hideColumn(i);
       // restore if the column is hidden/shown
-      if(p_screenRecord->getColumnLabel(i) != NULL) {
-          QSettings settings(p_screenRecord->getColumnLabel(i)->objectName(), p_screenRecord->accessibleName());
-          if(!settings.value("hideColumn").isNull())
-          {
-              header->hideSection(settings.value("columnId").toInt());
-          }
-          // restore the width for each column.
-          if( !settings.value("width").isNull() && !settings.value("columnId").isNull())
-          {
-            //header->resizeSection(i, w+1);
-              header->resizeSection(settings.value("columnId").toInt(), settings.value("width").toInt());
+      if(FglForm *fglform = qobject_cast<FglForm*> (p_fglform))
+      {
+          if(p_screenRecord->getColumnLabel(i) != NULL) {
+              qDebug() << "p_screenRecord->getColumnLabel(i)->text()" << p_screenRecord->getColumnLabel(i)->objectName();
+              int hideColumn = VDC::readSettingsFromIni(fglform->formName(), QString(p_screenRecord->accessibleName() + "/" + p_screenRecord->getColumnLabel(i)->objectName() + "/hideColumn")).toInt();
+              if(hideColumn > 0)
+              {
+                  header->hideSection(VDC::readSettingsFromIni(fglform->formName(), QString(p_screenRecord->accessibleName() + "/" + p_screenRecord->getColumnLabel(i)->objectName() + "/columnId")).toInt());
+              }
+              // restore the width for each column.
+              int columnId = VDC::readSettingsFromIni(fglform->formName(), QString(p_screenRecord->accessibleName() + "/" + p_screenRecord->getColumnLabel(i)->objectName() + "/columnWidthId")).toInt();
+              int columnWidth = VDC::readSettingsFromIni(fglform->formName(), QString(p_screenRecord->accessibleName() + "/" + p_screenRecord->getColumnLabel(i)->objectName() + "/columnWidth")).toInt();
+              if( columnWidth > 0 && columnId > 0)
+              {
+                //header->resizeSection(i, w+1);
+                  header->resizeSection(columnId, columnWidth);
+              } else {
+                  header->resizeSection(i, w+1);
+              }
           } else {
               header->resizeSection(i, w+1);
           }
-      } else {
-          header->resizeSection(i, w+1);
-      }
-      if(FglForm *fglform = qobject_cast<FglForm*> (p_fglform))
-      {
-          QSettings settings(p_screenRecord->accessibleName(), fglform->formName());
-          if(settings.value("state").isNull())
+          QByteArray state = VDC::readSettingsFromIni1(fglform->formName(), QString(p_screenRecord->accessibleName() + "/state"));
+          if(state.isEmpty())
           {
-             settings.setValue("oldstate",header->saveState());
+              VDC::saveSettingsToIni(fglform->formName(), QString(p_screenRecord->accessibleName() + "/oldstate"), header->saveState());
           }
-          header->restoreState(settings.value("state").toByteArray());
-      }
+          header->restoreState(state);
+       }
 
    //   header->resizeSections(QHeaderView::Fixed);
       QHeaderView *vert = p_screenRecord->verticalHeader();
