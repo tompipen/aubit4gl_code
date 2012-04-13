@@ -329,7 +329,7 @@ bool TableView::eventFilter(QObject *object, QEvent *event)
         connect(resetAct, SIGNAL(triggered()), this, SLOT(oldSectionOrder()));
         pulldownMenu->addAction(resetAct);
         connect(restoreSort, SIGNAL(triggered()), this, SLOT(resetSort()));
-        pulldownMenu->addAction(restoreSort);
+        //pulldownMenu->addAction(restoreSort);
         pulldownMenu->exec(QCursor::pos());
 
         return true;

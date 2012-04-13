@@ -1237,7 +1237,7 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
 
 QMenu* FglForm::createMenuHideShowFields(QObject *obj)
 {
-    QMenu *hideFields = new QMenu("Felder Ein-/Ausblenden");
+    QMenu *hideFields = new QMenu("Show/Hide Fields");
         for(int i=0; i < this->ql_fglFields.count(); i++) {
             if(QLabel *la = qobject_cast<QLabel*> (this->findFieldByName(this->ql_fglFields.at(i)->colName())))
             {
