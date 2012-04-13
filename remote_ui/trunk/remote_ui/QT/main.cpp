@@ -24,6 +24,11 @@
 #include "mainframe.h"
 #include "login.h"
 #include "clienttcp.h"
+#ifdef SSH_USE
+#include <libssh/libssh.h>
+#include <libssh/callbacks.h>
+#endif
+
 
 //--------------------------------------------------------- (C) VENTAS AG 2006 -
 // Filename     : main.cpp
@@ -42,6 +47,10 @@ int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
 
+    #ifdef SSH_USE
+    ssh_threads_set_callbacks(ssh_threads_get_noop());
+    ssh_init();
+    #endif
     QSplashScreen *splash = new QSplashScreen;
     ScreenHandler::setSearchPaths();
     //splash->setPixmap(QPixmap("./pics/splash.png"));

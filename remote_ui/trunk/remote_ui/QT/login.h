@@ -88,6 +88,9 @@ private:
    QGroupBox *bg_connection;
    QRadioButton *rb_proxy;
    QRadioButton *rb_telnet;
+   #ifdef SSH_USE
+   QRadioButton *rb_ssh;
+   #endif
    QLineEdit *usernameLineEdit;
    QLineEdit *passwordLineEdit;
    QLineEdit *serverLineEdit;

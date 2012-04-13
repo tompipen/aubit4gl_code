@@ -29,7 +29,9 @@
 #include "login.h"
 #include "mainframe.h"
 #include "include/vdc.h"
-
+#ifdef SSH_USE
+#include "vssh.h"
+#endif
 
 //------------------------------------------------------------------------------
 // Method       : LoginForm()
@@ -155,16 +157,24 @@ welcomeBar();
    QHBoxLayout *vbox = new QHBoxLayout;
 
    bg_connection = new QGroupBox("Connection Method", this);
-   rb_proxy = new QRadioButton("Proxy", bg_connection);
+   rb_proxy  = new QRadioButton("Proxy", bg_connection);
+   rb_proxy->setChecked(true);
    rb_telnet = new QRadioButton("Telnet", bg_connection);
-
+   #ifdef SSH_USE
+   rb_ssh    = new QRadioButton("SSH", bg_connection);
+   #endif
    vbox->addWidget(rb_proxy);
    vbox->addWidget(rb_telnet);
-   rb_telnet->setChecked(true);
+   #ifdef SSH_USE
+   vbox->addWidget(rb_ssh);
+   #endif SSH_USE
+
    bg_connection->setLayout(vbox);
-   connect(rb_telnet, SIGNAL(clicked()), this, SLOT(disableApp()));
+   connect(rb_telnet, SIGNAL(clicked()), this, SLOT(disableApp())); //Commandline execution works not with telnet atm
    connect(rb_proxy, SIGNAL(clicked()), this, SLOT(enableApp()));
-   bg_connection->hide();
+   #ifdef SSH_USE
+   connect(rb_ssh, SIGNAL(clicked()), this, SLOT(enableApp()));
+   #endif
    loadSettings();
 
 
@@ -794,6 +804,15 @@ MainFrame::vdcdebug("LoginForm","okPressed", "");
    settings.setValue("user", user);
    settings.setValue("password", pass);
    settings.setValue("application", app);
+   if(rb_telnet->isChecked())
+     settings.setValue("checked", "telnet");
+   #ifdef SSH_USE
+   if(rb_ssh->isChecked())
+     settings.setValue("checked", "ssh");
+   #endif
+   if(rb_proxy->isChecked())
+     settings.setValue("checked", "proxy");
+
    settings.sync();
    if(rb_telnet->isChecked())
    {
@@ -802,7 +821,18 @@ MainFrame::vdcdebug("LoginForm","okPressed", "");
       tn->connectToHost(server, 23);
       return;
    }
+   #ifdef SSH_USE
+   if(rb_ssh->isChecked())
+   {
+       //Initiliaze
+       VSSH *ssh = new VSSH(server, user, pass, app, this);
+       ssh->start(QThread::NormalPriority);
+       connect(ssh, SIGNAL(finished()), ssh, SLOT(deleteLater()));
 
+       return;
+
+   }
+   #endif
    ClientSocket *socket = new ClientSocket(0, user, pass, applicationLineEdit->text());
 
    socket->connectToHost(server, 3490);
@@ -856,6 +886,23 @@ MainFrame::vdcdebug("LoginForm","loadSettings", "");
    QString user = settings.value("user").toString();
    QString pass = settings.value("password").toString();
    QString app = settings.value("application").toString();
+
+   QString checked = settings.value("checked").toString();
+
+   if(checked == "ssh")
+   {
+      #ifdef SSH_USE
+      rb_ssh->setChecked(true);
+      #else
+      rb_proxy->setChecked(true);
+      #endif
+   }
+
+   if(checked == "telnet")
+     rb_telnet->setChecked(true);
+
+   if(checked == "proxy")
+     rb_proxy->setChecked(true);
 
    if(!server.isEmpty()){
       serverLineEdit->setText(server);
