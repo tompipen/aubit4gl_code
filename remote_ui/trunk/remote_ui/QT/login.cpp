@@ -167,7 +167,7 @@ welcomeBar();
    vbox->addWidget(rb_telnet);
    #ifdef SSH_USE
    vbox->addWidget(rb_ssh);
-   #endif SSH_USE
+   #endif
 
    bg_connection->setLayout(vbox);
    connect(rb_telnet, SIGNAL(clicked()), this, SLOT(disableApp())); //Commandline execution works not with telnet atm
