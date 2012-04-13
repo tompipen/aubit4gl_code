@@ -20,16 +20,13 @@ namespace VDC {
 
    void setFieldSizeFactor(double s)
    {
-
-     QSettings settings("Ventas AG", "Ventas Desktop Client");
-     settings.setValue("fieldSizeFactor", s);
+     VDC::saveSettingsToIni("Ventas AG", "fieldSizeFactor", QString::number(s));
      fieldsizefactor = s;
    }
 
    double getFieldSizeFactor()
    {
-       QSettings settings("Ventas AG", "Ventas Desktop Client");
-       fieldsizefactor = settings.value("fieldSizeFactor").toDouble();
+       fieldsizefactor = VDC::readSettingsFromIni("Ventas AG", "fieldSizeFactor").toDouble();
        if(fieldsizefactor == 0)
        {
            fieldsizefactor = 1;
@@ -54,6 +51,14 @@ namespace VDC {
        QSettings settings(QDir::homePath() + "/.vdc/settings.ini", QSettings::IniFormat);
        settings.beginGroup(group);
        settings.setValue(key, value);
+       settings.endGroup();
+   }
+
+   void removeSettingsFromIni(QString group, QString key)
+   {
+       QSettings settings(QDir::homePath() + "/.vdc/settings.ini", QSettings::IniFormat);
+       settings.beginGroup(group);
+       settings.remove(key);
        settings.endGroup();
    }
 

@@ -948,8 +948,8 @@ MainFrame::vdcdebug("WidgetHelper","createLabel", "const QDomElement& formField,
       label->setToolTip(comments);
    }
    if(FglForm *p_fglform = qobject_cast<FglForm*> (parent)) {
-       QSettings settings(p_fglform->formName(), label->colName);
-       if(!settings.value("hideColumn").isNull()) {
+       int hideColumn = VDC::readSettingsFromIni(p_fglform->formName(), QString(label->colName + "/hideColumn")).toInt();
+       if(hideColumn > 0) {
            label->hide();
        }
    }
@@ -1270,8 +1270,8 @@ MainFrame::vdcdebug("WidgetHelper","createButtonEdit", "const QDomElement& formF
    }
 
    if(FglForm *p_fglform = qobject_cast<FglForm*> (parent)) {
-       QSettings settings(p_fglform->formName(), lineEdit->colName);
-       if(!settings.value("hideColumn").isNull()) {
+       int hideColumn = VDC::readSettingsFromIni(p_fglform->formName(), QString(lineEdit->colName + "/hideColumn")).toInt();
+       if(hideColumn > 0) {
            lineEdit->hide();
        }
    }
@@ -1560,8 +1560,8 @@ MainFrame::vdcdebug("WidgetHelper","createDateEdit", "const QDomElement& formFie
    }
 
    if(FglForm *p_fglform = qobject_cast<FglForm*> (parent)) {
-       QSettings settings(p_fglform->formName(), lineEdit->colName);
-       if(!settings.value("hideColumn").isNull()) {
+       int hideColumn = VDC::readSettingsFromIni(p_fglform->formName(), QString(lineEdit->colName + "/hideColumn")).toInt();
+       if(hideColumn > 0) {
            lineEdit->hide();
        }
    }
@@ -1669,8 +1669,8 @@ MainFrame::vdcdebug("WidgetHelper","createTextEdit", "const QDomElement& formFie
    if(height < 1) height = 1;
 
    if(FglForm *p_fglform = qobject_cast<FglForm*> (parent)) {
-       QSettings settings(p_fglform->formName(), textEdit->colName);
-       if(!settings.value("hideColumn").isNull()) {
+       int hideColumn = VDC::readSettingsFromIni(p_fglform->formName(), QString(textEdit->colName + "/hideColumn")).toInt();
+       if(hideColumn > 0) {
            textEdit->hide();
        }
    }

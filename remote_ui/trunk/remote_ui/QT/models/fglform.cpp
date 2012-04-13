@@ -1241,12 +1241,12 @@ QMenu* FglForm::createMenuHideShowFields(QObject *obj)
         for(int i=0; i < this->ql_fglFields.count(); i++) {
             if(QLabel *la = qobject_cast<QLabel*> (this->findFieldByName(this->ql_fglFields.at(i)->colName())))
             {
-                QSettings settings(formName(), ql_fglFields.at(i)->colName());
+                int hideColumn = VDC::readSettingsFromIni(formName(), QString(ql_fglFields.at(i)->colName() + "/hideColumn")).toInt();
                 if(!la->text().isEmpty()) {
                     rightAct = new QAction(la->text(), this);
                     rightAct->setObjectName(ql_fglFields.at(i)->colName());
                     rightAct->setCheckable(true);
-                    if(settings.value("hideColumn").isNull()) {
+                    if(hideColumn > 0) {
                         rightAct->setChecked(true);
 
                     } else {
@@ -1300,18 +1300,22 @@ void FglForm::saveFieldSettings(QAction *action)
             int cnt = 0;
             for (int k = i; k < this->ql_fglFields.count(); k++)
             {
-                QSettings settings(formName(), this->ql_fglFields.at(k)->colName());
-                if(settings.value("hideColumn").isNull()) {
-                    settings.setValue("hideColumn", 1);
+                //QSettings settings(formName(), this->ql_fglFields.at(k)->colName());
+                int hideColumn = VDC::readSettingsFromIni(formName(), QString(this->ql_fglFields.at(k)->colName() + "/hideColumn")).toInt();
+                if(hideColumn == 0) {
+                    VDC::saveSettingsToIni(formName(), QString(this->ql_fglFields.at(k)->colName() + "/hideColumn"), QString::number(1));
+                    //settings.setValue("hideColumn", 1);
                     p_currscreenhandler->setFieldHidden(this->ql_fglFields.at(k)->colName(), 1);
                 } else {
-                    settings.remove("hideColumn");
+                    VDC::removeSettingsFromIni(formName(), QString(this->ql_fglFields.at(k)->colName() + "/hideColumn"));
+                    //settings.remove("hideColumn");
                     p_currscreenhandler->setFieldHidden(this->ql_fglFields.at(k)->colName(), 0);
                 }
                 if(Label *la = qobject_cast<Label *> (this->findFieldByName(this->ql_fglFields.at(k)->colName()))) {
                     cnt = cnt + 1;
                     if( cnt == 2) {
-                        settings.remove("hideColumn");
+                        //settings.remove("hideColumn");
+                        VDC::removeSettingsFromIni(formName(), QString(this->ql_fglFields.at(k)->colName() + "/hideColumn"));
                         p_currscreenhandler->setFieldHidden(this->ql_fglFields.at(k)->colName(), 0);
                         break;
                     }
