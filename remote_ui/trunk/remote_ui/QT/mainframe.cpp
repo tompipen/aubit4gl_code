@@ -23,6 +23,7 @@
 #include "confwin.h"
 #include "clienttcp.h"
 #include "login.h"
+#include "include/vdc.h"
 
 
 //------------------------------------------------------------------------------
@@ -888,8 +889,8 @@ MainFrame::vdcdebug("MainFrame","closeEvent", "QCloseEvent *event");
       }
 
       if(quit == 0){
-         QSettings settings("Ventas AG", "Ventas Desktop Client");
-         settings.setValue("pos", pos());
+         VDC::saveSettingsToIni("Ventas AG", "posX", QString::number(pos().x()));
+         VDC::saveSettingsToIni("Ventas AG", "posY", QString::number(pos().y()));
          cleanUp();
          event->accept();
          close();

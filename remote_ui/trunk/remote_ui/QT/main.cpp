@@ -89,8 +89,7 @@ int main(int argc, char *argv[])
     qRegisterMetaType<QModelIndex>("QDomDocument");
     qRegisterMetaType<QModelIndex>("QDomElement");
     MainFrame mainframe;
-    QSettings settings("Ventas AG", "Ventas Desktop Client");
-    mainframe.move(settings.value("pos").toPoint());
+    mainframe.move(VDC::readSettingsFromIni("Ventas AG", "posX").toInt(), VDC::readSettingsFromIni("Ventas AG", "posY").toInt());
     mainframe.show();
     mainframe.adjustSize();
     splash->finish(&mainframe);

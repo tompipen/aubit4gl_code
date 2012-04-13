@@ -826,6 +826,8 @@ void LoginForm::connectToTelnet()
 //------------------------------------------------------------------------------
 void LoginForm::cancelPressed()
 {
+   VDC::saveSettingsToIni("Ventas AG", "posX", QString::number(this->parentWidget()->pos().x()));
+   VDC::saveSettingsToIni("Ventas AG", "posY", QString::number(this->parentWidget()->pos().y()));
    exit(0);
 MainFrame::vdcdebug("LoginForm","cancelPressed", "");
 }

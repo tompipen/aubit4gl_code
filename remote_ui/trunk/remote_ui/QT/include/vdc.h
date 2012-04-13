@@ -11,6 +11,8 @@ namespace VDC
   double getFieldSizeFactor();
   void setFieldSizeFactor(double);
   extern double fieldsizefactor;
+  QString readSettingsFromIni(QString, QString);
+  void saveSettingsToIni(QString, QString, QString);
 
 
 };

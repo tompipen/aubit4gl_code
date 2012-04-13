@@ -125,7 +125,7 @@ FglForm::FglForm(QString windowName, QWidget *parent) : QMainWindow(parent){
 
    this->installEventFilter(this);
 
-   readSettingsLocal();
+   //readSettingsLocal();
 }
 
 FglForm::~FglForm()
@@ -153,6 +153,7 @@ StatusBar *status = new StatusBar(this);
 
 void FglForm::showEvent(QShowEvent *qfe)
 {
+    readSettingsLocal();
 }
 
 //------------------------------------------------------------------------------
@@ -1527,6 +1528,10 @@ MainFrame::vdcdebug("FglForm","closeEvent", "QCloseEvent *event");
       event->ignore();
 
    }
+   VDC::saveSettingsToIni(formName(), "width", QString::number(size().width()));
+   VDC::saveSettingsToIni(formName(), "height", QString::number(size().height()));
+   VDC::saveSettingsToIni(formName(), "posX", QString::number(pos().x()));
+   VDC::saveSettingsToIni(formName(), "posY", QString::number(pos().y()));
    /*
    QSettings settings("VENTAS", formName());
    settings.setValue("size", size());
@@ -3057,16 +3062,9 @@ QSettings settings("VENTAS", formName());
 //------------------------------------------------------------------------------
 void FglForm::readSettingsLocal()
 {
-  return;
 MainFrame::vdcdebug("FglForm","readSettingsLocal", "");
-   QSettings settings("VENTAS", formName());
-   //settings.sync();
-                    
-
-    //settings.beginGroup(windowName);
-    move(settings.value("pos").toPoint());
-    //settings.endGroup();
-
+    QPoint widgetPos(VDC::readSettingsFromIni(formName(), "posX").toInt(), VDC::readSettingsFromIni(formName(), "posY").toInt());
+        move(widgetPos);
     update();
 
 }
