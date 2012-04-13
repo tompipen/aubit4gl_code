@@ -50,7 +50,6 @@ MainFrame::vdcdebug("TableView","TableView", "QWidget *parent");
    this->verticalHeader()->hide();
    QHeaderView *header = this->horizontalHeader();
    header->setDefaultAlignment(Qt::AlignLeft);
-   header->setMovable(true);
    header->setClickable(true);
    header->setSortIndicatorShown(true);
    header->setSortIndicator(0, Qt::AscendingOrder);

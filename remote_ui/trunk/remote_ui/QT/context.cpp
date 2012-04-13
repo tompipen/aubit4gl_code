@@ -285,6 +285,10 @@ void Context::addScreenRecord(QWidget *screenRec, bool input)
                   this, SLOT(screenRecordColumnChanged(const QModelIndex&, const QModelIndex&)));
 
           tableView->setInputEnabled(input);
+          if(!input)
+          {
+            tableView->horizontalHeader()->setMovable(true);
+          }
           /*
           //set palette for inputarrays
           if(input)
