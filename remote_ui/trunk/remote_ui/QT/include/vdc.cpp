@@ -1,5 +1,7 @@
 #include <include/vdc.h>
 #include <QDir>
+#include <QDebug>
+#include <QDesktopServices>
 
 namespace VDC {
    double fieldsizefactor;
@@ -37,8 +39,11 @@ namespace VDC {
    QString readSettingsFromIni(QString group, QString key)
    {
        QString value;
+       #ifdef Q_WS_WIN
+       QSettings settings(QDesktopServices::storageLocation(QDesktopServices::DataLocation) + "/.vdc/settings.ini", QSettings::IniFormat);
+       #else
        QSettings settings(QDir::homePath() + "/.vdc/settings.ini", QSettings::IniFormat);
-
+       #endif
        settings.beginGroup(group);
        value.append(settings.value(key).toString());
        settings.endGroup();
@@ -48,8 +53,12 @@ namespace VDC {
 
    QByteArray readSettingsFromIni1(QString group, QString key)
    {
-       QByteArray value;
-       QSettings settings(QDir::homePath() + "/.vdc/settings.ini", QSettings::IniFormat);
+        QByteArray value;
+        #ifdef Q_WS_WIN
+        QSettings settings(QDesktopServices::storageLocation(QDesktopServices::DataLocation) + "/.vdc/settings.ini", QSettings::IniFormat);
+        #else
+        QSettings settings(QDir::homePath() + "/.vdc/settings.ini", QSettings::IniFormat);
+        #endif
 
        settings.beginGroup(group);
        value.append(settings.value(key).toByteArray());
@@ -60,14 +69,22 @@ namespace VDC {
 
    void saveSettingsToIni(QString group, QString key, QString value)
    {
-       QSettings settings(QDir::homePath() + "/.vdc/settings.ini", QSettings::IniFormat);
+        #ifdef Q_WS_WIN
+        QSettings settings(QDesktopServices::storageLocation(QDesktopServices::DataLocation) + "/.vdc/settings.ini", QSettings::IniFormat);
+        #else
+        QSettings settings(QDir::homePath() + "/.vdc/settings.ini", QSettings::IniFormat);
+        #endif
        settings.beginGroup(group);
        settings.setValue(key, value);
        settings.endGroup();
    }
    void saveSettingsToIni(QString group, QString key, QByteArray value)
    {
-       QSettings settings(QDir::homePath() + "/.vdc/settings.ini", QSettings::IniFormat);
+        #ifdef Q_WS_WIN
+        QSettings settings(QDesktopServices::storageLocation(QDesktopServices::DataLocation) + "/.vdc/settings.ini", QSettings::IniFormat);
+        #else
+        QSettings settings(QDir::homePath() + "/.vdc/settings.ini", QSettings::IniFormat);
+        #endif
        settings.beginGroup(group);
        settings.setValue(key, value);
        settings.endGroup();
@@ -75,7 +92,11 @@ namespace VDC {
 
    void removeSettingsFromIni(QString group, QString key)
    {
-       QSettings settings(QDir::homePath() + "/.vdc/settings.ini", QSettings::IniFormat);
+        #ifdef Q_WS_WIN
+        QSettings settings(QDesktopServices::storageLocation(QDesktopServices::DataLocation) + "/.vdc/settings.ini", QSettings::IniFormat);
+        #else
+        QSettings settings(QDir::homePath() + "/.vdc/settings.ini", QSettings::IniFormat);
+        #endif
        settings.beginGroup(group);
        settings.remove(key);
        settings.endGroup();
