@@ -200,22 +200,16 @@ Color(QPalette::Disabled, QPalette::Background, tablepal.color(QPalette::Backgro
 */
 void TableView::updateSectionWidth(int logicalIndex, int, int newSize)
 {
-    QSortFilterProxyModel *proxyModel = static_cast<QSortFilterProxyModel*> (this->model());
-    TableModel *table = static_cast<TableModel*> (proxyModel->sourceModel());
-    columnLabels << getColumnLabel(logicalIndex);
-    for(int i=0; i < columnLabels.count(); i++)
+    if(getColumnLabel(logicalIndex) != NULL)
     {
-        if(columnLabels.at(i) != NULL)
+        QLabel *columnName = getColumnLabel(logicalIndex);
+        if(columnName != NULL)
         {
-            this->getForm()->formName();
-            VDC::saveSettingsToIni(this->getForm()->formName(), this->accessibleName() + "/" + columnLabels.at(i)->objectName() + "/columnWidth", QString::number(newSize));
-            VDC::saveSettingsToIni(this->getForm()->formName(), this->accessibleName() + "/" + columnLabels.at(i)->objectName() + "/columnWidthId", QString::number(logicalIndex));
-            /*QSettings settings(columnLabels.at(i)->objectName(), table->mytv->accessibleName());
-            settings.setValue("width", newSize);
-            settings.setValue("columnId", logicalIndex);*/
+            VDC::saveSettingsToIni(this->getForm()->formName(), this->accessibleName() + "/" + columnName->objectName() + "/columnWidth", QString::number(newSize));
+            VDC::saveSettingsToIni(this->getForm()->formName(), this->accessibleName() + "/" + columnName->objectName() + "/columnWidthId", QString::number(logicalIndex));
+            qDebug() << "columnName: " << columnName->objectName();
         }
     }
-    columnLabels.clear();
 }
 
 void TableView::copyRow()
