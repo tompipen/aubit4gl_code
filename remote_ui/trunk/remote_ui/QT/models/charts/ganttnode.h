@@ -32,6 +32,10 @@ public:
     void setTaskNr( const QString& str);
     void setDependTask( const QString& str);
 
+    void addDependList( const QString& str);
+    void insertDependList (int index, const QString& str);
+    void clearDependList();
+
     Node* getParent() const;
     QList<Node*> getChildren();
 
@@ -43,6 +47,7 @@ public:
     KDGantt::StyleOptionGanttItem::Position getPosition() const ;
     QString   getTaskNr() const;
     QString   getDependTask() const;
+    QList<QString> getDependList() const;
 
 private:
     Node* m_parent;
@@ -53,6 +58,7 @@ private:
     int m_completion;
     QString m_taskNr, m_dependTask;
     KDGantt::StyleOptionGanttItem::Position m_position;
+    QList<QString> m_dependList;
 
 };
 

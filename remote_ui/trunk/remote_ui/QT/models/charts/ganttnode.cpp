@@ -132,3 +132,22 @@ QString Node::getTaskNr() const {
 QString Node::getDependTask() const {
     return m_dependTask;
 }
+
+QList<QString> Node::getDependList() const {
+    return m_dependList;
+}
+
+/* --------------------------------------
+        other-methods
+----------------------------------------- */
+void Node::addDependList(const QString &str) {
+    m_dependList.append(str);
+}
+
+void Node::clearDependList() {
+    m_dependList.clear();
+}
+
+void Node::insertDependList( int index, const QString &str){
+    m_dependList.insert( index, str);
+}

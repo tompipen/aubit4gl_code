@@ -45,6 +45,7 @@ public:
     bool saveCSV(GanttTable* model, QString &filename);
     void newRow(GanttTable *model, KDGantt::View *view);
     void appendRow(GanttTable* model, KDGantt::View *view);
+    void incrementColumnCount( int newColumns );
 
     Qt::ItemFlags flags( const QModelIndex& ) const;
 
@@ -53,6 +54,7 @@ public:
 
 private:
     Node* m_root;
+    int columns;  // number of columns
 };
 
 class ItemTypeComboBox : public QComboBox {

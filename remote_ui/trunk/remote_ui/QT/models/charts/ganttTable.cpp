@@ -12,6 +12,7 @@ using namespace KDGantt;
 
 GanttTable::GanttTable( QObject* parent ): QAbstractItemModel( parent )
 {
+    columns = 7;      // default number of columns
     m_root = new Node();
 }
 
@@ -30,7 +31,11 @@ int GanttTable::rowCount( const QModelIndex& parent ) const
 int GanttTable::columnCount( const QModelIndex& parent ) const
 {
     Q_UNUSED(parent);
-    return 7;
+    return columns;
+}
+
+void GanttTable::incrementColumnCount(int newColumns){
+    columns += newColumns;
 }
 
 QModelIndex GanttTable::index( int row, int col, const QModelIndex& parent ) const
@@ -69,7 +74,7 @@ QVariant GanttTable::headerData( int section, Qt::Orientation orientation, int r
     case END_TIME:      return tr( "Ende" );
     case COMPLETION:    return tr( "Erledigt %" );
     case TASK_NUMBER:   return tr( "Task_nr");
-    case DEPEND_TASK:   return tr( "next Task" );
+    case DEPEND_TASK:   return tr( "Abhängig" );
     default:            return QVariant();
     }
 }
@@ -124,11 +129,17 @@ QVariant GanttTable::data( const QModelIndex& index, int role ) const
         case Qt::EditRole:
             return node->getTaskNr();
         }
-    } else if ( index.column() == DEPEND_TASK ) {
+    } else if ( index.column() >= DEPEND_TASK ) {
         switch( role ) {
         case Qt::DisplayRole:
         case Qt::EditRole:
-            return node->getDependTask();
+            int count = index.column() - DEPEND_TASK; // an index in dependList
+            QVariant value = "";
+            QList<QString> list = node->getDependList();
+            if ( list.size() > 0 && count <= list.size() -1) {
+                value = qVariantFromValue(list.at( count ) );
+            }
+            return value;
         }
     }
     return QVariant();
@@ -195,12 +206,17 @@ bool GanttTable::setData( const QModelIndex& index,  const QVariant& value, int 
             emit dataChanged( index, index );
             break;
         }
-    } else if ( index.column() == DEPEND_TASK ) {
+    } else if ( index.column() >= DEPEND_TASK ) {
         switch( role ) {
         case Qt::DisplayRole:
         case Qt::EditRole:
-            node->setDependTask(value.toString());
-            emit dataChanged( index, index );
+
+            QList<QString> list = node->getDependList();
+            if( value.toString() != "" && !list.contains(value.toString())) {
+                qDebug() << value.toString() ;
+                node->addDependList(value.toString());
+                emit dataChanged( index, index );
+            }
             break;
         }
     }
@@ -227,7 +243,6 @@ bool GanttTable::readCSV( GanttTable* model, KDGantt::View* view, QString &filen
     QStringList strList;
     QHash<QString, int> currentTask, dependTask;
     QString dependString, currentString;
-    //model->newRow( model, view );
 
     if( datei.open(QIODevice::ReadOnly)){
 
@@ -281,21 +296,21 @@ bool GanttTable::readCSV( GanttTable* model, KDGantt::View* view, QString &filen
                 }
                 // save to model
                 model->setData(model->index(row, GanttTable::NAME, QModelIndex()),
-                                                qVariantFromValue( node->getLabel() ) );
+                               qVariantFromValue( node->getLabel() ) );
                 model->setData(model->index(row, GanttTable::TYPE, QModelIndex()),
-                                                qVariantFromValue( node->getType() ), KDGantt::ItemTypeRole);
+                               qVariantFromValue( node->getType() ), KDGantt::ItemTypeRole);
                 model->setData(model->index(row, GanttTable::START_TIME, QModelIndex()),
-                                                qVariantFromValue( node->getStartTime() ),KDGantt::StartTimeRole);
+                               qVariantFromValue( node->getStartTime() ),KDGantt::StartTimeRole);
                 model->setData(model->index(row, GanttTable::END_TIME, QModelIndex()),
-                                                qVariantFromValue( node->getEndTime() ),KDGantt::EndTimeRole);
+                               qVariantFromValue( node->getEndTime() ),KDGantt::EndTimeRole);
                 model->setData(model->index(row, GanttTable::COMPLETION, QModelIndex()),
-                                                qVariantFromValue( node->getCompletion() ),KDGantt::TaskCompletionRole );
+                               qVariantFromValue( node->getCompletion() ),KDGantt::TaskCompletionRole );
                 model->setData(model->index(row, GanttTable::TASK_NUMBER, QModelIndex()),
-                                                qVariantFromValue( node->getTaskNr() ) );
+                               qVariantFromValue( node->getTaskNr() ) );
                 model->setData(model->index(row, GanttTable::DEPEND_TASK, QModelIndex()),
-                                                qVariantFromValue( node->getDependTask() ) );
+                               qVariantFromValue( node->getDependTask() ) );
             }
-            //  set constraints
+            //  set constraints to constraintModel
             QHash<QString,int>::iterator it;
             foreach(QString str, dependTask.keys()){
                 for(it = currentTask.begin(); it != currentTask.end(); it++) {
@@ -305,12 +320,13 @@ bool GanttTable::readCSV( GanttTable* model, KDGantt::View* view, QString &filen
                     }
                 }
             }
+
             return true;
         } else {
             return false;
         }
     } else {
-        qDebug() << "Datei nicht gefunden.";
+        qDebug() << " file not found ";
     }
     return false;
 }
@@ -347,19 +363,42 @@ bool GanttTable::saveCSV(GanttTable* model, QString &filename){
   --------------------------------------------------------------*/
 bool GanttTable::saveConstraintToModel(GanttTable* model, KDGantt::View* view){
 
+    int dependCounter = 1;   // needed for index when there are multiple constraints
+    QMap<int, int> constraintMap; // multiple values for each constraint possible
     QList<Constraint> constraintList = view->constraintModel()->constraints();
+
+    foreach( Constraint cons, constraintList){           // fill constraintMap
+        int startIdx = static_cast<int>(cons.startIndex().row());
+        int endIdx = static_cast<int>(cons.endIndex().row());
+        constraintMap.insertMulti(startIdx, endIdx);
+    }
+
     foreach( Constraint cons, constraintList){
         int startIdx = static_cast<int>(cons.startIndex().row());
         int endIdx = static_cast<int>(cons.endIndex().row());
-        QModelIndex taskIdx = model->index( startIdx, TASK_NUMBER, QModelIndex());
-        QModelIndex taskDependIdx = model->index( startIdx, DEPEND_TASK, QModelIndex());
-        QModelIndex dependDataIdx = model->index(endIdx, TASK_NUMBER, QModelIndex());
 
-        QVariant taskData = qVariantFromValue(model->data(taskIdx, Qt::DisplayRole ) );
+        QModelIndex dependDataIdx = model->index(endIdx, TASK_NUMBER, QModelIndex());
         QVariant dependData = qVariantFromValue(model->data(dependDataIdx, Qt::DisplayRole ) );
 
-        model->setData( taskIdx, taskData);
-        model->setData( taskDependIdx, dependData);
+        int numberOfConstraints = constraintMap.count( startIdx );
+
+        if( numberOfConstraints > 0 ){
+            int currentColumns = model->columnCount( QModelIndex() );
+            int neededColumns = ( TASK_NUMBER + 1 ) + numberOfConstraints;
+
+            if( currentColumns < neededColumns){  // if additional columns are needed
+                int numberOfNeededColumns = neededColumns - currentColumns;
+                model->insertColumns( currentColumns, numberOfNeededColumns );
+                incrementColumnCount( numberOfNeededColumns );
+            }
+
+            QModelIndex taskDependIdx = model->index( startIdx, DEPEND_TASK + dependCounter, QModelIndex());
+            model->setData( taskDependIdx, dependData );
+
+            dependCounter++;
+        } else {
+            dependCounter=1; // reset dependCounter
+        }
     }
     return true;
 }
@@ -432,43 +471,43 @@ QWidget* MyItemDelegate::createEditor( QWidget* parent,
 {
     qDebug() << "MyItemDelegate::createEditor("<<parent<<idx<<")";
     if ( idx.isValid() && idx.column() == 1 )
-      return new ItemTypeComboBox(parent);
+        return new ItemTypeComboBox(parent);
     return ItemDelegate::createEditor( parent, option, idx );
 }
 
 void MyItemDelegate::setEditorData ( QWidget* editor, const QModelIndex& index ) const
 {
-  ItemTypeComboBox* c;
-  if( (c = qobject_cast<ItemTypeComboBox*>(editor)) && index.isValid() ) {
-      c->setItemType(static_cast<KDGantt::ItemType>(index.data(Qt::EditRole).toInt()));
-  } else {
-      ItemDelegate::setEditorData(editor,index);
-  }
+    ItemTypeComboBox* c;
+    if( (c = qobject_cast<ItemTypeComboBox*>(editor)) && index.isValid() ) {
+        c->setItemType(static_cast<KDGantt::ItemType>(index.data(Qt::EditRole).toInt()));
+    } else {
+        ItemDelegate::setEditorData(editor,index);
+    }
 }
 
 void MyItemDelegate::setModelData ( QWidget* editor, QAbstractItemModel* model,
-                  const QModelIndex & index ) const
+                                    const QModelIndex & index ) const
 {
-  ItemTypeComboBox* c;
-  if( (c = qobject_cast<ItemTypeComboBox*>(editor)) && index.isValid() ) {
-      model->setData(index,c->itemType());
-  } else {
-      KDGantt::ItemDelegate::setModelData(editor,model,index);
-  }
+    ItemTypeComboBox* c;
+    if( (c = qobject_cast<ItemTypeComboBox*>(editor)) && index.isValid() ) {
+        model->setData(index,c->itemType());
+    } else {
+        KDGantt::ItemDelegate::setModelData(editor,model,index);
+    }
 }
 
 void MyItemDelegate::drawDisplay( QPainter* painter, const QStyleOptionViewItem& option,
-                  const QRect& rect, const QString& text ) const
+                                  const QRect& rect, const QString& text ) const
 {
-  //qDebug() << "MyItemDelegate::drawDisplay(" <<painter<<rect<<text<<")";
-  KDGantt::ItemType typ = static_cast<KDGantt::ItemType>(text.toInt());
-  QString str;
-  switch(typ){
-      case KDGantt::TypeTask: str = tr("Task"); break;
-      case KDGantt::TypeEvent: str = tr("Event"); break;
-      case KDGantt::TypeSummary: str = tr("Summary"); break;
-      default: str = tr("None"); break;
-  }
-  ItemDelegate::drawDisplay(painter,option,rect,str);
+    //qDebug() << "MyItemDelegate::drawDisplay(" <<painter<<rect<<text<<")";
+    KDGantt::ItemType typ = static_cast<KDGantt::ItemType>(text.toInt());
+    QString str;
+    switch(typ){
+    case KDGantt::TypeTask: str = tr("Task"); break;
+    case KDGantt::TypeEvent: str = tr("Event"); break;
+    case KDGantt::TypeSummary: str = tr("Summary"); break;
+    default: str = tr("None"); break;
+    }
+    ItemDelegate::drawDisplay(painter,option,rect,str);
 }
 
