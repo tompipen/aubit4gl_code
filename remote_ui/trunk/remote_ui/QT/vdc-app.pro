@@ -20,8 +20,7 @@ win32 {
 VREPGEN_PATH = $$(VREPGEN)
 SSH_PATH     = $$(VSSH)
 
-!isEmpty(SSH_PATH)
-{
+!isEmpty(SSH_PATH) {
 message("Compile with libssh")
 DEFINES += SSH_USE
 LIBS += -lssh -lssh_threads
