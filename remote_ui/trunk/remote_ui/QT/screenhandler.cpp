@@ -2026,10 +2026,11 @@ if(qsl_triggereds.size() > 0)
          if(!widgetSize.isEmpty())
          {
              p_fglform->resize(widgetSize);
+             p_fglform->show();
          } else {
+             p_fglform->show();
              p_fglform->adjustSize();
          }
-         p_fglform->show();
 
          if(p_fglform->context != NULL)
          {
