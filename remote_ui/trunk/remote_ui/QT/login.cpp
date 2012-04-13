@@ -167,6 +167,7 @@ welcomeBar();
    vbox->addWidget(rb_telnet);
    #ifdef SSH_USE
    vbox->addWidget(rb_ssh);
+   rb_ssh->setChecked(true);
    #endif
 
    bg_connection->setLayout(vbox);
