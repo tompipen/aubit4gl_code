@@ -60,9 +60,11 @@ public slots:
    void debugCheck();
    void disableApp();
    void enableApp();
+   #ifdef SSH_USE
    void authfailed(int,QString);
    void connectionfailed(int, QString);
    void commandfailed(int, QString);
+   #endif
    void error(QString);
 
 private slots:
@@ -71,10 +73,12 @@ private slots:
    void saveEdits();
    void showLogin();
    void hideLogin();
+#ifdef SSH_USE
    void m_c_success();
    void m_c_established();
    void m_c_executed(QString cmd);
    void m_c_envset();
+#endif
    void removeCursor();
 
 

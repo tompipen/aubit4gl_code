@@ -751,7 +751,7 @@ MainFrame::vdcdebug("LoginForm","writeFile", "QString qs_filename");
        out.setVersion(QDataStream::Qt_4_1);
    }
 }
-
+   #ifdef SSH_USE
 void LoginForm::authfailed(int rc, QString err)
 {
 
@@ -793,7 +793,7 @@ void LoginForm::connectionfailed(int rc, QString err)
 
   removeCursor();
 }
-
+#endif
 void LoginForm::error(QString err)
 {
   errorMessageLoginForm->showMessage(err);
@@ -983,7 +983,7 @@ void LoginForm::debugCheck()
    toggledebug->setChecked(false);
 MainFrame::vdcdebug("LoginForm","debugCheck", "");
 }
-
+#ifdef SSH_USE
 //Slots for SSH
 
 void LoginForm::m_c_success()
@@ -1006,6 +1006,8 @@ void LoginForm::m_c_envset()
 {
   showMessage("Umgebung wurde gesetzt!");
 }
+
+#endif
 
 void LoginForm::removeCursor()
 {
