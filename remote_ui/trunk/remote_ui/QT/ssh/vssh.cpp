@@ -283,7 +283,7 @@ int VSSH::execute()
       memcpy(l_buffer,"\nlogout\n", 10);
       strcat(exec, cmd);
       strcat(exec, l_buffer);
-      rc = ssh_channel_write(channel, exec, sizeof(exec));
+      rc = ssh_channel_write(channel, exec, strlen(exec));
       rc = ssh_channel_send_eof(channel);
       emit command_executed(executeCommand());
       b_test = false;
