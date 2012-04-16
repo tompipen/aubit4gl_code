@@ -258,9 +258,7 @@ int VSSH::execute()
          !ssh_channel_is_eof(channel))
   {
    // ba_test += buffer;
-    qDebug() << "buffer" << buffer;
     ba_test += buffer;
-
     ba_buffertest = buffer;
 
     if(!ba_buffertest.isEmpty())
@@ -281,7 +279,7 @@ int VSSH::execute()
     {
        // const *char = "/opt/ventas/bin/vdc" + Q;
       char exec[1000] = "";
-      char *l_buffer;
+      char l_buffer[50] = "";
       memcpy(l_buffer,"\nlogout\n", 10);
       strcat(exec, cmd);
       strcat(exec, l_buffer);
