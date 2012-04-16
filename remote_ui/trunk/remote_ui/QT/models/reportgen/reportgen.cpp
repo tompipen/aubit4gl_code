@@ -145,7 +145,7 @@ bool Reportgen::startReportTemplate(QString odffile, QString sedfile, QFileInfo 
        if(oldFileName.completeSuffix() == "ods")
        {
            content.append(getTemplatePosition(i+1, fileBaseName + "/content.xml"));//.toUtf8());
-           for(int j=1; j < varCount; j++) {
+           for(int j=1; j < varCount+1; j++) {
                qDebug() << "ergaenze Ebene";
                qDebug() << j << "von" << varCount;
                content.append(prepareTemplateContent(i+1, j, oldFileName.baseName() + "/content.xml", sedfile));
