@@ -752,6 +752,52 @@ MainFrame::vdcdebug("LoginForm","writeFile", "QString qs_filename");
    }
 }
 
+void LoginForm::authfailed(int rc, QString err)
+{
+
+  QString error = "";
+
+  switch(rc)
+  {
+    case SSH_AUTH_DENIED:
+      error = "Die Kombination aus Usernamen und Password existiert nicht.";
+      break;
+    default:
+      error = "Fehler beim Authentifizieren! Abbruch!";
+      break;
+
+  }
+
+  error.append(" Fehlercode : " + QString::number(rc));
+
+  this->error(error);
+
+  removeCursor();
+
+}
+
+
+void LoginForm::commandfailed(int rc, QString err)
+{
+
+  this->error("Script : " + err + " nicht gefunden!");
+
+  removeCursor();
+}
+
+
+void LoginForm::connectionfailed(int rc, QString err)
+{
+  QString error = "Verbindung zum Host : " + err + " fehlgeschlagen. Fehlercode : " + QString::number(rc);
+  this->error(error);
+
+  removeCursor();
+}
+
+void LoginForm::error(QString err)
+{
+  errorMessageLoginForm->showMessage(err);
+}
 
 //------------------------------------------------------------------------------
 // Method       : void readEditFile()
@@ -794,8 +840,10 @@ void LoginForm::saveEdits(){
 //------------------------------------------------------------------------------
 void LoginForm::okPressed()
 {
+
    //hideLogin();
 MainFrame::vdcdebug("LoginForm","okPressed", "");
+   VDC::waitCursor();
    QSettings settings;
    QString server = serverLineEdit->text();
    QString user   = usernameLineEdit->text();
@@ -820,6 +868,8 @@ MainFrame::vdcdebug("LoginForm","okPressed", "");
       tn = new QtTelnet;
       connect(tn, SIGNAL(loginRequired()), this, SLOT(connectToTelnet()));
       tn->connectToHost(server, 23);
+      connect(tn, SIGNAL(connectionError(QAbstractSocket::SocketError)), this, SLOT(removeCursor()));
+      connect(tn, SIGNAL(loginFailed()), this, SLOT(removeCursor()));
       return;
    }
    #ifdef SSH_USE
@@ -831,6 +881,10 @@ MainFrame::vdcdebug("LoginForm","okPressed", "");
        connect(ssh, SIGNAL(authsuccess()), this, SLOT(m_c_success()));
        connect(ssh, SIGNAL(enviorment_set()), this, SLOT(m_c_envset()));
        connect(ssh, SIGNAL(command_executed(QString)), this, SLOT(m_c_executed(QString)));
+       connect(ssh, SIGNAL(connectionfailed(int,QString)), this, SLOT(connectionfailed(int,QString)));
+       connect(ssh, SIGNAL(authfailed(int,QString)), this, SLOT(authfailed(int,QString)));
+       connect(ssh, SIGNAL(commandnotfound(int,QString)), this, SLOT(commandfailed(int,QString)));
+       connect(ssh, SIGNAL(error(QString)), this, SLOT(error(QString)));
        ssh->start(QThread::NormalPriority);
        connect(ssh, SIGNAL(finished()), ssh, SLOT(deleteLater()));
 
@@ -845,6 +899,7 @@ MainFrame::vdcdebug("LoginForm","okPressed", "");
       QErrorMessage *errorMsg = new QErrorMessage(this);
       errorMsg->showMessage(tr("Could not connect to Host"));
    }
+   VDC::arrowCursor();
 }
 
 void LoginForm::connectToTelnet()
@@ -950,5 +1005,10 @@ void LoginForm::m_c_executed(QString cmd)
 void LoginForm::m_c_envset()
 {
   showMessage("Umgebung wurde gesetzt!");
+}
+
+void LoginForm::removeCursor()
+{
+  VDC::arrowCursor();
 }
 

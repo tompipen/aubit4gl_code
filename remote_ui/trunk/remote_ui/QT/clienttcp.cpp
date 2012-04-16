@@ -91,6 +91,7 @@ MainFrame::vdcdebug("ClientTcp","incomingConnection", "int socketID");
    // to read from network
    //
    socket = new ClientSocket(this);
+   VDC::waitCursor();
    p_arr_socket << socket;
    i_cnt_socket++;
 
@@ -140,6 +141,7 @@ MainFrame::vdcdebug("ClientTcp","incomingConnection", "int socketID");
          int index = args.indexOf("-r");
 
          socket->ph.b_read = true;
+
          if(index < args.count()-1){
             socket->ph.fileName = args.at(index+1);
          }

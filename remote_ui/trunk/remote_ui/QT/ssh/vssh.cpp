@@ -38,12 +38,41 @@ void VSSH::run()
 
   int rc = 0;
   this->loadSettings();
-  this->connect();
-  rc = this->auth();
-  if(rc == SSH_AUTH_SUCCESS)
+  rc = this->connect();
+  //Try again or fail
+  switch(rc)
   {
-      this->execute();
+
+    case SSH_AGAIN:
+       rc = this->connect();
+       break;
+    case SSH_ERROR:
+      emit connectionfailed(rc, host());
+      return;
+
   }
+  //mh again again? fail!
+  if(rc == SSH_ERROR || rc == SSH_AGAIN)
+  {
+      emit connectionfailed(rc, host());
+      emit fail();
+      return;
+  }
+
+  rc = this->auth();
+
+  switch(rc)
+    {
+      case SSH_AUTH_SUCCESS:
+         this->execute();
+         break;
+    default:
+      emit authfailed(rc, user());
+      emit fail();
+      return;
+
+    }
+
 
 }
 
@@ -124,7 +153,13 @@ int VSSH::auth()
       return rc;
   }
 
-  qFatal("SSH METHOD NOT SUPPORTED");
+  QString err = "SSH Method \"" + QString::number(method) + "\" is not supported. Please contact VENTAS.";
+
+
+  emit error(err);
+  emit fail();
+
+  return SSH_ERROR;
 }
 
 int VSSH::auth_pubkey()
@@ -258,13 +293,10 @@ int VSSH::execute()
          !ssh_channel_is_eof(channel))
   {
    // ba_test += buffer;
-    ba_test += buffer;
-    ba_buffertest = buffer;
 
-    if(!ba_buffertest.isEmpty())
-       qDebug()<<buffer;
       /*
 
+    if
 
     if (fwrite(&buffer, 1, nbytes, stdout) != nbytes)
     {
@@ -275,6 +307,23 @@ int VSSH::execute()
 
     memset(buffer, 0, sizeof(buffer));
     nbytes = ssh_channel_read_nonblocking(channel, &buffer, sizeof(buffer), 0);
+    ba_test += buffer;
+    ba_buffertest = buffer;
+
+
+
+
+    if(!ba_buffertest.isEmpty())
+       qDebug()<<buffer;
+
+    QString qs_buffer(ba_buffertest);
+
+    if(qs_buffer.contains("not found") && qs_buffer.contains(executeCommand()))
+    {
+       emit commandnotfound(0, executeCommand());
+       emit fail();
+    }
+
     if(b_test)
     {
        // const *char = "/opt/ventas/bin/vdc" + Q;

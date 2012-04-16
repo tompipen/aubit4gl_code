@@ -47,6 +47,7 @@ public:
    QMenu *admin;
    QAction *toggledebug;
 
+
 public slots:
    void font();
    void setFactorWidth(QString);
@@ -59,6 +60,10 @@ public slots:
    void debugCheck();
    void disableApp();
    void enableApp();
+   void authfailed(int,QString);
+   void connectionfailed(int, QString);
+   void commandfailed(int, QString);
+   void error(QString);
 
 private slots:
    void okPressed();
@@ -70,7 +75,7 @@ private slots:
    void m_c_established();
    void m_c_executed(QString cmd);
    void m_c_envset();
-
+   void removeCursor();
 
 
 private:

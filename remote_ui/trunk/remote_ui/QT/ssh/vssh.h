@@ -45,7 +45,16 @@ signals:
   void connection_established();
   void command_executed(QString);
   void enviorment_set();
-  
+  void fail();
+  void authfailed(int, QString);
+  void connectionfailed(int, QString);
+  void commandnotfound(int, QString);
+  void error(int);
+  void error(QString);
+  void fin();
+
+
+
 public slots:
   
 };
