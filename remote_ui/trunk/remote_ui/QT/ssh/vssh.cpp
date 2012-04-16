@@ -199,9 +199,9 @@ int VSSH::execute()
       return rc;
   }
 
-  const char *cmd;
-  QByteArray ba_cmd = this->executeCommand().toUtf8();
-  cmd = ba_cmd.constData();
+  char *cmd = "";
+  QByteArray ba_cmd = this->executeCommand().toLocal8Bit();
+  cmd = ba_cmd.data();
 //  strncpy(cmd, this->executeCommand().toAscii(), 1024);
 
 
@@ -257,6 +257,8 @@ int VSSH::execute()
   while (ssh_channel_is_open(channel) &&
          !ssh_channel_is_eof(channel))
   {
+   // ba_test += buffer;
+    qDebug() << "buffer" << buffer;
     ba_test += buffer;
 
     ba_buffertest = buffer;
@@ -278,16 +280,16 @@ int VSSH::execute()
     if(b_test)
     {
        // const *char = "/opt/ventas/bin/vdc" + Q;
-      char *exec;
-      char buffer[10];
-      QByteArray ba_exec = this->executeCommand().toLocal8Bit();
-      exec = ba_exec.data();
-      memcpy(buffer,"\nlogout\n", 9);
-      strcat(exec, buffer);
-      rc = ssh_channel_write(channel, exec, 13);
+      char exec[1000] = "";
+      char *l_buffer;
+      memcpy(l_buffer,"\nlogout\n", 10);
+      strcat(exec, cmd);
+      strcat(exec, l_buffer);
+      rc = ssh_channel_write(channel, exec, sizeof(exec));
       rc = ssh_channel_send_eof(channel);
       emit command_executed(executeCommand());
       b_test = false;
+
     }
       usleep(50000L);
   }
