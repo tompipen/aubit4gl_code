@@ -69,6 +69,10 @@ int VSSH::connect()
       qDebug()<<"Connect failed";
       return rc;
   }
+  else
+  {
+      emit connection_established();
+  }
 
   return rc;
 
@@ -91,12 +95,21 @@ int VSSH::auth()
   if(method & SSH_AUTH_METHOD_PASSWORD)
   {
       rc = this->auth_password();
+      if(rc == SSH_OK)
+      {
+          emit authsuccess();
+      }
+
       return rc;
   }
 
   if(method & SSH_AUTH_METHOD_PUBLICKEY)
   {
      rc = this->auth_pubkey();
+     if(rc == SSH_OK)
+     {
+         emit authsuccess();
+     }
      return rc;
   }
 
@@ -104,6 +117,10 @@ int VSSH::auth()
   if(method & SSH_AUTH_METHOD_INTERACTIVE)
   {
       rc = this->auth_interactive();
+      if(rc == SSH_OK)
+      {
+          emit authsuccess();
+      }
       return rc;
   }
 
@@ -202,6 +219,10 @@ int VSSH::execute()
   {
       qDebug()<<"Cannot change PTY size";
   }
+  else
+  {
+
+  }
 
 
   rc = ssh_channel_request_env(channel, "LANG", "de_DE.UTF-8");
@@ -209,6 +230,10 @@ int VSSH::execute()
   if(rc != SSH_OK)
   {
       qDebug()<<"Cannot change PTY size";
+  }
+  else
+  {
+      emit enviorment_set();
   }
 
   rc = ssh_channel_request_shell(channel);
@@ -225,7 +250,7 @@ int VSSH::execute()
   unsigned int nbytes;
 
   QByteArray ba_test;
-
+  QByteArray ba_buffertest;
   memset(buffer, 0, sizeof(buffer));
   nbytes = ssh_channel_read(channel, &buffer, sizeof(buffer), 0);
   bool b_test = true;
@@ -233,7 +258,11 @@ int VSSH::execute()
          !ssh_channel_is_eof(channel))
   {
     ba_test += buffer;
-    qDebug()<<buffer;
+
+    ba_buffertest = buffer;
+
+    if(!ba_buffertest.isEmpty())
+       qDebug()<<buffer;
       /*
 
 
@@ -257,6 +286,7 @@ int VSSH::execute()
       strcat(exec, buffer);
       rc = ssh_channel_write(channel, exec, 13);
       rc = ssh_channel_send_eof(channel);
+      emit command_executed(executeCommand());
       b_test = false;
     }
       usleep(50000L);

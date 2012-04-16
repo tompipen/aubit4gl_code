@@ -40,6 +40,11 @@ private:
 
   
 signals:
+
+  void authsuccess();
+  void connection_established();
+  void command_executed(QString);
+  void enviorment_set();
   
 public slots:
   

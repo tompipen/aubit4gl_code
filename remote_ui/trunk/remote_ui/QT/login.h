@@ -66,6 +66,11 @@ private slots:
    void saveEdits();
    void showLogin();
    void hideLogin();
+   void m_c_success();
+   void m_c_established();
+   void m_c_executed(QString cmd);
+   void m_c_envset();
+
 
 
 private:

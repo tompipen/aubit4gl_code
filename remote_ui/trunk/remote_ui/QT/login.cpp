@@ -827,6 +827,10 @@ MainFrame::vdcdebug("LoginForm","okPressed", "");
    {
        //Initiliaze
        VSSH *ssh = new VSSH(server, user, pass, app, this);
+       connect(ssh, SIGNAL(connection_established()), this, SLOT(m_c_established()));
+       connect(ssh, SIGNAL(authsuccess()), this, SLOT(m_c_success()));
+       connect(ssh, SIGNAL(enviorment_set()), this, SLOT(m_c_envset()));
+       connect(ssh, SIGNAL(command_executed(QString)), this, SLOT(m_c_executed(QString)));
        ssh->start(QThread::NormalPriority);
        connect(ssh, SIGNAL(finished()), ssh, SLOT(deleteLater()));
 
@@ -924,3 +928,27 @@ void LoginForm::debugCheck()
    toggledebug->setChecked(false);
 MainFrame::vdcdebug("LoginForm","debugCheck", "");
 }
+
+//Slots for SSH
+
+void LoginForm::m_c_success()
+{
+  showMessage("Authentifizierung erfolgreich!");
+}
+
+void LoginForm::m_c_established()
+{
+  showMessage("Verbindung hergestellt!");
+}
+
+void LoginForm::m_c_executed(QString cmd)
+{
+  QString message = "Script : \"" + cmd + "\" wird gestartet!";
+  showMessage(message);
+}
+
+void LoginForm::m_c_envset()
+{
+  showMessage("Umgebung wurde gesetzt!");
+}
+
