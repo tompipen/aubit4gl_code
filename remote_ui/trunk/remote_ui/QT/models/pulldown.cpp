@@ -162,6 +162,8 @@ MainFrame::vdcdebug("RingMenu","showButton", "QString name");
          if(text == name){
             if(b_hideButtons){
                button->setVisible(true);
+               ql_buttons << button;
+               button->setIcon(QIcon(QString("pics:%1.png").arg(ql_buttons.count())));
             }
             else{
                button->setEnabled(true);
@@ -232,9 +234,9 @@ bool RingMenuPulldown::eventFilter(QObject *obj, QEvent *event)
             //}
             qDebug() << "tastatur: " << keyEvent->key();
             qDebug() << "shortcut: " << shortcut1;
-            if(buttonGroup->buttons().count() > shortcut1 && shortcut1 >= 0)
+            if(ql_buttons.count() > shortcut1 && shortcut1 >= 0)
             {
-               if(QPushButton *button = qobject_cast<QPushButton *> (buttonGroup->buttons().at(shortcut1))){
+               if(QPushButton *button = qobject_cast<QPushButton *> (ql_buttons.at(shortcut1))){
                    if(button->isVisible())
                    {
                        button->click();

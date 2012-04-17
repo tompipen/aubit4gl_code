@@ -23,6 +23,7 @@
 #include <QButtonGroup>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
+#include <QPushButton>
 
 class RingMenuPulldown : public QGroupBox
 {
@@ -47,6 +48,7 @@ private:
     QButtonGroup *buttonGroup;
     QLayout *layout;
     bool b_hideButtons;
+    QList<QPushButton*> ql_buttons;
 
 };
 

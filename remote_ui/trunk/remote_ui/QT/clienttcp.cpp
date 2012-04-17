@@ -362,10 +362,11 @@ ClientSocket::ClientSocket(QObject *parent, QString name, QString pass, QString 
    connect(&ph, SIGNAL(setUrl(int, QUrl)), p_currScreenHandler, SLOT(setUrl(int, QUrl)));
    connect(&ph, SIGNAL(createBrowser()), p_currScreenHandler, SLOT(createBrowser()));
    connect(&ph, SIGNAL(closeBrowser(int)), p_currScreenHandler, SLOT(closeBrowser(int)));
-
+   #ifdef VKDCHART
    connect(&ph, SIGNAL(setGanttTitle(int,QString)), p_currScreenHandler, SLOT(setTitle(int,QString)));
    connect(&ph, SIGNAL(createGantt()), p_currScreenHandler, SLOT(createGantt()));
    connect(&ph, SIGNAL(ganttReadCsv(int,QString)), p_currScreenHandler, SLOT(readCsv(int,QString)));
+   #endif
 }
 
 
