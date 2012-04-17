@@ -111,7 +111,16 @@ MainFrame::vdcdebug("Actions","parseElement", "QDomNode xmlNode");
           {
               action->setImage(image);
           }
+          qDebug() << "action" << action->parent();
 
+          ql_actions << action;
+      } else if(nodeName == "Shortcut")
+      {
+          QString text = currentElement.attribute("text");
+          QString shortcut = currentElement.attribute("shortcut");
+          Action *action = new Action(text.toLower(), text, p_fglform);
+          qsl_names << text.toLower();
+          action->setAcceleratorName(shortcut);
           ql_actions << action;
       }
    }

@@ -121,6 +121,7 @@ private:
    QDomDocument formsToolBar;
    QDomDocument formsActions;
    QDomDocument formsActions1;
+   QDomDocument formsActions2;
    QDomDocument formsStyles;
    QDomDocument formsColors;
    int cnt_form;
