@@ -493,7 +493,8 @@ MainFrame::vdcdebug("ScreenHandler","createMenu", "QString title, QString commen
    }
    if(i_Frm < 0)
       return;
-   RingMenu *ringMenu = new RingMenu(title, style);
+   QWidget *fglform = p_fglform;
+   RingMenu *ringMenu = new RingMenu(title, fglform, style);
 
    p_fglform->setMenu(ringMenu);
 }

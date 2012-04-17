@@ -21,6 +21,7 @@
 #include "actions.h"
 #include "include/fgl.h"
 #include "mainframe.h"
+#include "fglform.h"
 
 Actions::Actions(QWidget *form, QObject *parent) : QObject(parent)
 {
@@ -118,10 +119,10 @@ MainFrame::vdcdebug("Actions","parseElement", "QDomNode xmlNode");
       {
           QString text = currentElement.attribute("text");
           QString shortcut = currentElement.attribute("shortcut");
-          Action *action = new Action(text.toLower(), text, p_fglform);
-          qsl_names << text.toLower();
-          action->setAcceleratorName2(shortcut);
-          ql_actions << action;
+          if(FglForm *fglform = qobject_cast<FglForm *> (p_fglform))
+          {
+              fglform->ql_shortcuts.append(qMakePair(text, shortcut));
+          }
       }
    }
 }

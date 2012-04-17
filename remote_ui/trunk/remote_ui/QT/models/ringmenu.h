@@ -41,7 +41,7 @@ class RingMenu : public QGroupBox
 
 public:
    RingMenu(QWidget *parent = 0);
-   RingMenu(QString title, QString style = "", QWidget *parent = 0);
+   RingMenu(QString title, QWidget *fglform, QString style = "", QWidget *parent = 0);
 
 
    void createButton(int id = 0, QString text = "", QString desc = "");
@@ -72,6 +72,7 @@ private:
    bool b_hideButtons;
    QList<QAction*> ql_menuCommands;
    QList<QAction*> ql_menuActions;
+   QWidget *ql_fglform;
 
 protected:
    void resizeEvent(QResizeEvent *);

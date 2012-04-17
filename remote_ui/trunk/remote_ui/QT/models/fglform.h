@@ -217,6 +217,7 @@ public:
 
    // enables/disables all user input elements
    void setUserInputEnabled(bool enabled);
+   QList<QPair<QString, QString> > ql_shortcuts;
 
 public slots:
    void buttonClicked(QString);

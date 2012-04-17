@@ -22,6 +22,7 @@
 #include "ringmenu.h"
 #include "actions.h"
 #include "mainframe.h"
+#include "fglform.h"
 
 
 //------------------------------------------------------------------------------
@@ -53,11 +54,12 @@ MainFrame::vdcdebug("RingMenu","RingMenu", "QWidget *parent");
 // Filename     : ringmenu.cpp
 // Description  : Constructs the RingMenu for the MenuButtons
 //------------------------------------------------------------------------------
-RingMenu::RingMenu(QString title, QString style, 
+RingMenu::RingMenu(QString title, QWidget *fglform, QString style,
                    QWidget *parent) : QGroupBox(title, parent)
 {
        //Switch for Hide/Disable
    b_hideButtons = true;
+   this->ql_fglform = fglform;
 
    if(!style.isEmpty()){
       this->setProperty("menuStyle", style);
@@ -136,7 +138,17 @@ MainFrame::vdcdebug("RingMenu","createButton", "int id, QString text, QString to
    //button->setIcon(QIcon(QString("pics:blank.png")));
    button->setIcon(QIcon(QString("pics:%1").arg(image)));
    button->setIconSize(QSize(40,25));
-   button->setShortcut(shortcut);
+   //button->setShortcut(shortcut);
+   if(FglForm *fglform = qobject_cast<FglForm*> (ql_fglform))
+   {
+       for(int i=0; i < fglform->ql_shortcuts.count(); i++)
+       {
+           if(QString("&%1").arg(fglform->ql_shortcuts.at(i).first).contains(buttonText))
+           {
+               button->setShortcut(fglform->ql_shortcuts.at(i).second);
+           }
+       }
+   }
 
    Action *action = new Action(text.toLower(), text, button);
    action->setComment(tooltip);
