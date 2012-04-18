@@ -140,7 +140,7 @@ welcomeBar();
    // instantiating labels and line edits - facilitating user input
    // labels should be filled by text-variables - later
    //
-   usernameLabel       = new QLabel(tr("Username:"));
+   usernameLabel       = new QLabel(tr("User:"));
    usernameLineEdit    = new QLineEdit;
    setFocusProxy(usernameLineEdit);
 
@@ -151,12 +151,12 @@ welcomeBar();
    serverLabel         = new QLabel(tr("Server:"));
    serverLineEdit      = new QLineEdit;
 
-   applicationLabel    = new QLabel(tr("Application"));
+   applicationLabel    = new QLabel(tr("Application:"));
    applicationLineEdit = new QLineEdit;
    applicationLineEdit->setText("");
    QHBoxLayout *vbox = new QHBoxLayout;
 
-   bg_connection = new QGroupBox("Connection Method", this);
+   bg_connection = new QGroupBox("Connection Method:", this);
    rb_proxy  = new QRadioButton("Proxy", bg_connection);
    rb_proxy->setChecked(true);
    rb_telnet = new QRadioButton("Telnet", bg_connection);
