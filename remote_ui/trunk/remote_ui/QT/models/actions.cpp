@@ -107,22 +107,25 @@ MainFrame::vdcdebug("Actions","parseElement", "QDomNode xmlNode");
           qsl_names << text.toLower();
 
           Action *action = new Action(text.toLower(), text, p_fglform);
-
           if(!image.isEmpty())
           {
               action->setImage(image);
           }
-          qDebug() << "action" << action->parent();
 
           ql_actions << action;
       } else if(nodeName == "Shortcut")
       {
           QString text = currentElement.attribute("text");
           QString shortcut = currentElement.attribute("shortcut");
-          if(FglForm *fglform = qobject_cast<FglForm *> (p_fglform))
+          /*if(FglForm *fglform = qobject_cast<FglForm *> (p_fglform))
           {
               fglform->ql_shortcuts.append(qMakePair(text, shortcut));
-          }
+          }*/
+
+          Action *action = new Action(text.toLower(), text, p_fglform);
+          qsl_names << text.toLower();
+          action->setAcceleratorName2(shortcut);
+          ql_actions << action;
       }
    }
 }

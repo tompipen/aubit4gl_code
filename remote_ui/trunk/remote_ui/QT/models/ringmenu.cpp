@@ -138,8 +138,8 @@ MainFrame::vdcdebug("RingMenu","createButton", "int id, QString text, QString to
    //button->setIcon(QIcon(QString("pics:blank.png")));
    button->setIcon(QIcon(QString("pics:%1").arg(image)));
    button->setIconSize(QSize(40,25));
-   //button->setShortcut(shortcut);
-   if(FglForm *fglform = qobject_cast<FglForm*> (ql_fglform))
+   button->setShortcut(shortcut);
+   /*if(FglForm *fglform = qobject_cast<FglForm*> (ql_fglform))
    {
        for(int i=0; i < fglform->ql_shortcuts.count(); i++)
        {
@@ -148,7 +148,7 @@ MainFrame::vdcdebug("RingMenu","createButton", "int id, QString text, QString to
                button->setShortcut(fglform->ql_shortcuts.at(i).second);
            }
        }
-   }
+   }*/
 
    Action *action = new Action(text.toLower(), text, button);
    action->setComment(tooltip);
