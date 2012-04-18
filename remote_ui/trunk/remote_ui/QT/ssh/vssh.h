@@ -3,7 +3,7 @@
 
 #include <QThread>
 #ifdef SSH_USE
-#include <libssh/libssh.h>
+#include "libssh/libssh.h"
 #endif
 
 class VSSH : public QThread

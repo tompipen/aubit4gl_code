@@ -25,8 +25,8 @@
 #include "login.h"
 #include "clienttcp.h"
 #ifdef SSH_USE
-#include <libssh/libssh.h>
-#include <libssh/callbacks.h>
+#include "libssh/libssh.h"
+#include "libssh/callbacks.h"
 #endif
 
 
