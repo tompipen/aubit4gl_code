@@ -3,6 +3,7 @@ HEADERS += \
     models/charts/chartTableModel.h \
     models/charts/ganttTable.h \
     models/charts/ganttnode.h \
+    models/charts/ganttWidget.h \
 
 
 SOURCES +=  \
@@ -10,3 +11,4 @@ SOURCES +=  \
     models/charts/chartTableModel.cpp \
     models/charts/ganttnode.cpp \
     models/charts/ganttTable.cpp \
+    models/charts/ganttWidget.cpp \

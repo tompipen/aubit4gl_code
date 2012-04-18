@@ -15,9 +15,11 @@ class GanttWidget : public QMainWindow
     Q_OBJECT;
 
 public:
+    GanttWidget(QWidget *parent);
     void createGanttWidget();
     void readCsv(QString);
     void closeEvent(QCloseEvent *);
+    QWidget *p_fglform;
 
 private slots:
     void slotFileQuit();

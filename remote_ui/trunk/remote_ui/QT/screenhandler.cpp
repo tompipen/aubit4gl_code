@@ -3417,7 +3417,8 @@ void ScreenHandler::createGantt()
 {
     qDebug() << "createGantt";
     int next = ql_ganttWidget.size();
-    GanttWidget *p_gantt = new GanttWidget();
+    QWidget *widget = p_fglform;
+    GanttWidget *p_gantt = new GanttWidget(p_fglform);
     p_gantt->createGanttWidget();
     ql_ganttWidget << p_gantt;
     fglFormResponse("<TRIGGERED ID=\"-123\"><SVS><SV>" + QString::number(next) + "</SV></SVS></TRIGGERED>");
@@ -3434,7 +3435,7 @@ void ScreenHandler::readCsv(int ganttId, QString fileName)
     qDebug() << "readCsv";
     ql_ganttWidget.at(ganttId)->readCsv(fileName);
     ql_ganttWidget.at(ganttId)->show();
-    fglFormResponse("<TRIGGERED ID=\"-123\"><SVS><SV>" + QString::number(ganttId) + "</SV></SVS></TRIGGERED>");
+    //fglFormResponse("<TRIGGERED ID=\"-123\"><SVS><SV>" + QString::number(ganttId) + "</SV></SVS></TRIGGERED>");
 }
 
 #endif
@@ -3478,5 +3479,11 @@ void ScreenHandler::closeBrowser(int id)
           return;
       }
   }
+}
+
+
+void ScreenHandler::makeFglFormResponse(QString bla)
+{
+    this->fglFormResponse(bla);
 }
 

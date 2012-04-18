@@ -65,6 +65,7 @@ public:
    QList<WebBrowser*> ql_browser;
    QStringList qsl_activeFieldNames;
    QStringList qsl_triggereds;
+   void makeFglFormResponse(QString);
 
    #ifdef KDChart_Version
    QList<GanttWidget*> ql_ganttWidget;

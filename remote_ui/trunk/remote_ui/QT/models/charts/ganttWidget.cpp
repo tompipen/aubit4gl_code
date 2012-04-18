@@ -1,4 +1,12 @@
 #include "models/charts/ganttWidget.h"
+#include "screenhandler.h"
+#include "models/fglform.h"
+
+
+GanttWidget::GanttWidget(QWidget *parent)
+{
+    p_fglform = parent;
+}
 
 void GanttWidget::createGanttWidget()
 {
@@ -67,10 +75,13 @@ void GanttWidget::readCsv(QString fileName)
 }
 void GanttWidget::closeEvent(QCloseEvent *)
 {
-    qDebug() << "Bin dran" << "";
-    emit closeSendResponse("<TRIGGERED ID=\"-123\"><SVS><SV>" + QString::number(0) + "</SV></SVS></TRIGGERED>");
-    //p_fglform
-    //screenhandler->fglFormResponse("<TRIGGERED ID=\"-123\"><SVS><SV>" + QString::number(ganttId) + "</SV></SVS></TRIGGERED>");
+    if(FglForm *fglform = qobject_cast<FglForm *> (p_fglform))
+    {
+        if(ScreenHandler *screen = qobject_cast<ScreenHandler *> (fglform->screenhandler()))
+        {
+            screen->makeFglFormResponse("<TRIGGERED ID=\"-123\"><SVS><SV>" + QString::number(0) + "</SV></SVS></TRIGGERED>");
+        }
+    }
 }
 
 void GanttWidget::slotFileQuit()
