@@ -115,17 +115,25 @@ MainFrame::vdcdebug("Actions","parseElement", "QDomNode xmlNode");
           ql_actions << action;
       } else if(nodeName == "Shortcut")
       {
+          QString name = currentElement.attribute("name");
           QString text = currentElement.attribute("text");
           QString shortcut = currentElement.attribute("shortcut");
           /*if(FglForm *fglform = qobject_cast<FglForm *> (p_fglform))
           {
               fglform->ql_shortcuts.append(qMakePair(text, shortcut));
           }*/
-
-          Action *action = new Action(text.toLower(), text, p_fglform);
-          qsl_names << text.toLower();
-          action->setAcceleratorName2(shortcut);
-          ql_actions << action;
+          if(!name.isEmpty())
+          {
+              Action *action = new Action(name, text, p_fglform);
+              qsl_names << text.toLower();
+              action->setAcceleratorName2(shortcut);
+              ql_actions << action;
+          } else {
+              Action *action = new Action(text.toLower(), text, p_fglform);
+              qsl_names << text.toLower();
+              action->setAcceleratorName2(shortcut);
+              ql_actions << action;
+          }
       }
    }
 }
