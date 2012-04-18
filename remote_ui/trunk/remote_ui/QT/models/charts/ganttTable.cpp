@@ -12,7 +12,7 @@ using namespace KDGantt;
 
 GanttTable::GanttTable( QObject* parent ): QAbstractItemModel( parent )
 {
-    columns = 7;      // default number of columns
+    columns = defaultColumns;      // default number of columns
     m_root = new Node();
 }
 
@@ -36,6 +36,10 @@ int GanttTable::columnCount( const QModelIndex& parent ) const
 
 void GanttTable::incrementColumnCount(int newColumns){
     columns += newColumns;
+}
+
+void GanttTable::decrementColumnCount(){
+    columns--;
 }
 
 QModelIndex GanttTable::index( int row, int col, const QModelIndex& parent ) const
@@ -345,6 +349,7 @@ bool GanttTable::saveCSV(GanttTable* model, QString &filename){
             {
                 QModelIndex index = model->index(row, column, QModelIndex() );
                 strList << model->data(index, Qt::DisplayRole).toString();
+                qDebug()<< model->data(index, Qt::DisplayRole).toString();;
             }
             stream << strList.join( "|" )+"\n";
         }
@@ -371,6 +376,7 @@ bool GanttTable::saveConstraintToModel(GanttTable* model, KDGantt::View* view){
         int startIdx = static_cast<int>(cons.startIndex().row());
         int endIdx = static_cast<int>(cons.endIndex().row());
         constraintMap.insertMulti(startIdx, endIdx);
+
     }
 
     foreach( Constraint cons, constraintList){
@@ -381,8 +387,7 @@ bool GanttTable::saveConstraintToModel(GanttTable* model, KDGantt::View* view){
         QVariant dependData = qVariantFromValue(model->data(dependDataIdx, Qt::DisplayRole ) );
 
         int numberOfConstraints = constraintMap.count( startIdx );
-
-        if( numberOfConstraints > 0 ){
+        if( numberOfConstraints >= 0 ){
             int currentColumns = model->columnCount( QModelIndex() );
             int neededColumns = ( TASK_NUMBER + 1 ) + numberOfConstraints;
 
@@ -394,13 +399,23 @@ bool GanttTable::saveConstraintToModel(GanttTable* model, KDGantt::View* view){
 
             QModelIndex taskDependIdx = model->index( startIdx, DEPEND_TASK + dependCounter, QModelIndex());
             model->setData( taskDependIdx, dependData );
-
             dependCounter++;
+
         } else {
             dependCounter=1; // reset dependCounter
         }
     }
     return true;
+}
+
+// clear m_dependList for every row
+void GanttTable::resetConstraintsInModel(){
+
+    for( int i = 0; i < this->rowCount(QModelIndex()); i++){
+            QModelIndex index = this->index(i,0);
+            Node* node = static_cast<Node*>( index.internalPointer() );
+            node->clearDependList();
+    }
 }
 
 Qt::ItemFlags GanttTable::flags( const QModelIndex& index ) const

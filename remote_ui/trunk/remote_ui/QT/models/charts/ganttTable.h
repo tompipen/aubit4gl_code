@@ -46,6 +46,8 @@ public:
     void newRow(GanttTable *model, KDGantt::View *view);
     void appendRow(GanttTable* model, KDGantt::View *view);
     void incrementColumnCount( int newColumns );
+    void decrementColumnCount();
+    void resetConstraintsInModel();
 
     Qt::ItemFlags flags( const QModelIndex& ) const;
 
@@ -54,7 +56,8 @@ public:
 
 private:
     Node* m_root;
-    int columns;  // number of columns
+    int columns;      // number of columns
+    static const int defaultColumns = 7;
 };
 
 class ItemTypeComboBox : public QComboBox {
