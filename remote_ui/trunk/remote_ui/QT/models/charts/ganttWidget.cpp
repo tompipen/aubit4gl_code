@@ -75,11 +75,23 @@ void GanttWidget::readCsv(QString fileName)
 }
 void GanttWidget::closeEvent(QCloseEvent *)
 {
+    int exit_code = 1;
+    model->resetConstraintsInModel();
+    model->saveConstraintToModel(model, view);
+    QString datei = "testdatei123.csv";
+    model->saveCSV(model,datei);
+
     if(FglForm *fglform = qobject_cast<FglForm *> (p_fglform))
     {
         if(ScreenHandler *screen = qobject_cast<ScreenHandler *> (fglform->screenhandler()))
         {
-            screen->makeFglFormResponse("<TRIGGERED ID=\"-123\"><SVS><SV>" + QString::number(0) + "</SV></SVS></TRIGGERED>");
+            QFile *file = new QFile(QDir::tempPath() + "/testdatei123.csv");
+            if(!file->exists())
+            {
+                exit_code = 404;
+            }
+
+            screen->makeFglFormResponse("<TRIGGERED ID=\"-123\"><SVS><SV>" + QString::number(exit_code) + "</SV></SVS></TRIGGERED>");
         }
     }
 }
