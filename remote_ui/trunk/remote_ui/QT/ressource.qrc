@@ -120,7 +120,7 @@
       <file>pics/m_verkauf.png</file>
       <file>pics/markieren.png</file>
       <file>pics/modulsprung.png</file>
-      <file>pics/modulsprung_system.png</file>
+      <file>pics/m_system.png</file>
       <file>pics/nein.png</file>
       <file>pics/neu.png</file>
       <file>pics/ok.png</file>
@@ -145,4 +145,4 @@
       <file>pics/zoom_auswahl.png</file>
       <file>pics/zurueck.png</file>
    </qresource>
-</RCC
+</RCC>
