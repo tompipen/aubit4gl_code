@@ -31,7 +31,7 @@ namespace VDC {
        fieldsizefactor = VDC::readSettingsFromIni("Ventas AG", "fieldSizeFactor").toDouble();
        if(fieldsizefactor == 0)
        {
-           fieldsizefactor = 1;
+           fieldsizefactor = 1.1;
        }
      return fieldsizefactor;
    }
