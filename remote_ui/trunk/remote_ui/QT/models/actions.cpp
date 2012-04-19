@@ -55,7 +55,6 @@ MainFrame::vdcdebug("Actions","parseElement", "QDomNode xmlNode");
       QString nodeName = currentElement.nodeName();
       
 
-      qDebug() << "nodeName:" << nodeName;
       if(nodeName == "ActionDefault"){
          QList<QKeySequence> ql_shortcutList;
          QString name = currentElement.attribute("name");
@@ -125,7 +124,7 @@ MainFrame::vdcdebug("Actions","parseElement", "QDomNode xmlNode");
           if(!name.isEmpty())
           {
               Action *action = new Action(name, text, p_fglform);
-              qsl_names << text.toLower();
+              qsl_names << name.toLower();
               action->setAcceleratorName2(shortcut);
               ql_actions << action;
           } else {

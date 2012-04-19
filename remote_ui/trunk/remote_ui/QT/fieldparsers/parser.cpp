@@ -497,7 +497,6 @@ void Parser::handleTableColumn(const QDomNode& xmlNode){
       if(FglForm *fglform = qobject_cast<FglForm*> (p_fglform))
       {
           if(p_screenRecord->getColumnLabel(i) != NULL) {
-              qDebug() << "p_screenRecord->getColumnLabel(i)->text()" << p_screenRecord->getColumnLabel(i)->objectName();
               int hideColumn = VDC::readSettingsFromIni(fglform->formName(), QString(p_screenRecord->accessibleName() + "/" + p_screenRecord->getColumnLabel(i)->objectName() + "/hideColumn")).toInt();
               if(hideColumn > 0)
               {

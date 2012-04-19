@@ -3664,7 +3664,6 @@ MainFrame::vdcdebug("FglForm","checkActions", "");
                }
             }
          }
-      qDebug()<<ringMenuPulldown();
       if(RingMenuPulldown *pc_pulldown = qobject_cast<RingMenuPulldown *> (ringMenuPulldown())){
          QList<QAction*> pulldownActions = pc_pulldown->actions();
 
