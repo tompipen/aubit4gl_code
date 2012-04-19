@@ -24,12 +24,12 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.543 2012-03-23 18:21:05 mikeaubury Exp $
+# $Id: compile_c.c,v 1.544 2012-04-19 08:05:18 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
-static char const module_id[] = "$Id: compile_c.c,v 1.543 2012-03-23 18:21:05 mikeaubury Exp $";
+static char const module_id[] = "$Id: compile_c.c,v 1.544 2012-04-19 08:05:18 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -1837,8 +1837,15 @@ real_print_expr (struct expr_str *ptr)
     case ET_EXPR_REPORT_PRINTER:
       printc ("A4GL_push_char(acl_getenv(\"DBPRINT\"));");
       break;
-    case ET_EXPR_REPORT_EMAIL:
-      printc ("A4GL_push_char(A4GL_get_tmp_rep(_module_name,\"%s\"));", ptr->expr_str_u.expr_string);
+
+    case ET_EXPR_REPORT_EMAIL_NEW:
+      if (ptr->expr_str_u.expr_email_report.email_addr) {
+	print_expr(ptr->expr_str_u.expr_email_report.email_addr);
+      	printc("A4GL_setemail_address();");
+      } else {
+      	printc("A4GL_setemail_address_from_env();");
+      }
+      printc ("A4GL_push_char(A4GL_get_tmp_rep(_module_name,\"%s\"));", ptr->expr_str_u.expr_email_report.report_name);
       break;
 
     case ET_EXPR_REPORT_UI:
@@ -5230,6 +5237,7 @@ print_convert_report (char *repname, char *fname, char *otype, char *layout, cha
 
   if (strcmp (file_or_pipe, "EMAIL") == 0)
     {
+	printc("A4GL_setemail_address_from_env();");
       printc ("A4GL_push_int(2);");
     }
   else

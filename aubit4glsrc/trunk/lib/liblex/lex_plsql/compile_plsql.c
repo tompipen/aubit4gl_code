@@ -1452,7 +1452,8 @@ local_get_expr_as_string (struct expr_str *ptr)
       not_in_spl ();
       return acl_strdup ("");
 
-    case ET_EXPR_REPORT_EMAIL:
+    case ET_EXPR_REPORT_EMAIL_NEW:
+
       not_in_spl ();
       return acl_strdup ("");
 

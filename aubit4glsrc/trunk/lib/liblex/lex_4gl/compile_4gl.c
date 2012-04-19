@@ -1845,7 +1845,8 @@ local_get_expr_as_string (struct expr_str *ptr)
       return acl_strdup ("PRINTER");
       break;
 
-    case ET_EXPR_REPORT_EMAIL:
+    case ET_EXPR_REPORT_EMAIL_NEW:
+	
       return acl_strdup ("TO EMAIL");
       break;
 

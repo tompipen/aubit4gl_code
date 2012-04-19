@@ -12,6 +12,7 @@ struct expr_str *A4GL_new_expr_agg (char type,int nagg, expr_str *s1, expr_str *
 struct expr_str *A4GL_new_literal_double_str (char *value);
 struct expr_str *A4GL_new_expr_field_touched(int sid, struct fh_field_list *fl,char *mod,int line);
 struct expr_str *A4GL_new_expr_not_field_touched(int sid, struct fh_field_list *fl,char *mod,int line);
+struct expr_str *A4GL_new_expr_email_report (char *repname, struct expr_str *email_addr);
 struct expr_str *A4GL_new_expr_extend(struct expr_str *ptr,int to);
 struct expr_str *A4GL_new_literal_long_str (char *value);
 struct expr_str_list *expand_variables_in_expr_str_list(expr_str_list *parameters,int err_if_not_var,int err_if_whole_array) ;

@@ -387,3 +387,4 @@
 400|Cannot copy to a record/array of a different size
 402|Invalid operation on a character string (3)
 404|Not an object of type (ui.browser) or not initialized
+406|Not an object of type (ui.gantt) or not initialized

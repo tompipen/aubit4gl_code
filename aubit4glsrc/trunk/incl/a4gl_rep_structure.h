@@ -18,7 +18,7 @@ struct rb_blocks {
     struct BINDING *group_data;
     char output_mode;
     struct expr_str *output_loc; 
-    char output_loc_str[512];
+    char output_loc_str[1024];
     char top_of_page[256];
     FILE *output;
     long page_no;
@@ -44,6 +44,7 @@ struct rb_blocks {
 	/* The rb stack is used to track the push/pop_sections */
 	int rb_stack[8];
 	int rb_stack_level;
+	char emailAddress[1024];
   };
 
 
@@ -59,7 +60,7 @@ struct rb_blocks {
     struct BINDING *group_data;
     char output_mode;
     struct expr_str *output_loc;
-    char output_loc_str[512];
+    char output_loc_str[1024];
     FILE *output;
     int page_no;
     int printed_page_no;
@@ -93,6 +94,7 @@ struct rb_blocks {
 	/* The rb stack is used to track the push/pop_sections */
 	int rb_stack[8];
 	int rb_stack_level;
+	char emailAddress[1024];
   };
 
 #endif

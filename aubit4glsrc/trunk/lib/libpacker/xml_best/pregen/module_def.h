@@ -1,5 +1,5 @@
 /* XML processor/application API for module_def.dtd.
- * Generated 2012/03/28 19:50:03.
+ * Generated 2012/04/19 08:19:18.
  *
  * This program was generated with the FleXML XML processor generator.
  * FleXML is Copyright (C) 1999-2005 Kristoffer Rose.  All rights reserved.
@@ -163,6 +163,8 @@ extern void STag_s_cur_def(void);
 extern void ETag_s_cur_def(void);
 extern void STag_s_dependant_tables(void);
 extern void ETag_s_dependant_tables(void);
+extern void STag_s_email_report(void);
+extern void ETag_s_email_report(void);
 extern void STag_s_exchange_clobber(void);
 extern void ETag_s_exchange_clobber(void);
 extern void STag_s_exported_global_variables(void);
@@ -1431,6 +1433,8 @@ typedef int AT_attrib_nm;
 #define AU_attrib_nm NULL
 typedef int AT_s_expr_tmp_nm;
 #define AU_s_expr_tmp_nm NULL
+typedef int AT_s_email_report_nm;
+#define AU_s_email_report_nm NULL
 typedef int AT_struct_select_cmd_forupdate;
 #define AU_struct_select_cmd_forupdate NULL
 typedef int AT_event_data_idle_n;
@@ -1557,10 +1561,10 @@ typedef int AT_s_pdf_report_definition_n_namespace;
 #define AU_s_pdf_report_definition_n_namespace NULL
 typedef int AT_struct_display_array_cmd_blockid;
 #define AU_struct_display_array_cmd_blockid NULL
-typedef int AT_module_definition_compile_time_sqltype;
-#define AU_module_definition_compile_time_sqltype NULL
 typedef int AT_struct_enable_form_cmd_nm;
 #define AU_struct_enable_form_cmd_nm NULL
+typedef int AT_module_definition_compile_time_sqltype;
+#define AU_module_definition_compile_time_sqltype NULL
 typedef int AT_pdf_startrep_with_page_length;
 #define AU_pdf_startrep_with_page_length NULL
 typedef int AT_s_expr_dynarr_extent_nm;
@@ -1893,6 +1897,8 @@ typedef int AT_struct_pause_cmd_nm;
 #define AU_struct_pause_cmd_nm NULL
 typedef int AT_struct_spl_if_cmd_nm;
 #define AU_struct_spl_if_cmd_nm NULL
+typedef int AT_s_email_report_report_name;
+#define AU_s_email_report_report_name NULL
 typedef int AT_s_two_strings_nm;
 #define AU_s_two_strings_nm NULL
 typedef int AT_s_expr_cached_cache_num;
@@ -2900,6 +2906,8 @@ extern AT_attrib_nm AX_attrib_nm;
 #define A_attrib_nm (bufferstack + AX_attrib_nm)
 extern AT_s_expr_tmp_nm AX_s_expr_tmp_nm;
 #define A_s_expr_tmp_nm (bufferstack + AX_s_expr_tmp_nm)
+extern AT_s_email_report_nm AX_s_email_report_nm;
+#define A_s_email_report_nm (bufferstack + AX_s_email_report_nm)
 extern AT_struct_select_cmd_forupdate AX_struct_select_cmd_forupdate;
 #define A_struct_select_cmd_forupdate (bufferstack + AX_struct_select_cmd_forupdate)
 extern AT_event_data_idle_n AX_event_data_idle_n;
@@ -3026,10 +3034,10 @@ extern AT_s_pdf_report_definition_n_namespace AX_s_pdf_report_definition_n_names
 #define A_s_pdf_report_definition_n_namespace (bufferstack + AX_s_pdf_report_definition_n_namespace)
 extern AT_struct_display_array_cmd_blockid AX_struct_display_array_cmd_blockid;
 #define A_struct_display_array_cmd_blockid (bufferstack + AX_struct_display_array_cmd_blockid)
-extern AT_module_definition_compile_time_sqltype AX_module_definition_compile_time_sqltype;
-#define A_module_definition_compile_time_sqltype (bufferstack + AX_module_definition_compile_time_sqltype)
 extern AT_struct_enable_form_cmd_nm AX_struct_enable_form_cmd_nm;
 #define A_struct_enable_form_cmd_nm (bufferstack + AX_struct_enable_form_cmd_nm)
+extern AT_module_definition_compile_time_sqltype AX_module_definition_compile_time_sqltype;
+#define A_module_definition_compile_time_sqltype (bufferstack + AX_module_definition_compile_time_sqltype)
 extern AT_pdf_startrep_with_page_length AX_pdf_startrep_with_page_length;
 #define A_pdf_startrep_with_page_length (bufferstack + AX_pdf_startrep_with_page_length)
 extern AT_s_expr_dynarr_extent_nm AX_s_expr_dynarr_extent_nm;
@@ -3362,6 +3370,8 @@ extern AT_struct_pause_cmd_nm AX_struct_pause_cmd_nm;
 #define A_struct_pause_cmd_nm (bufferstack + AX_struct_pause_cmd_nm)
 extern AT_struct_spl_if_cmd_nm AX_struct_spl_if_cmd_nm;
 #define A_struct_spl_if_cmd_nm (bufferstack + AX_struct_spl_if_cmd_nm)
+extern AT_s_email_report_report_name AX_s_email_report_report_name;
+#define A_s_email_report_report_name (bufferstack + AX_s_email_report_report_name)
 extern AT_s_two_strings_nm AX_s_two_strings_nm;
 #define A_s_two_strings_nm (bufferstack + AX_s_two_strings_nm)
 extern AT_s_expr_cached_cache_num AX_s_expr_cached_cache_num;

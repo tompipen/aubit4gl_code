@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_incl_4gldef.h,v 1.139 2011-08-30 16:52:48 mikeaubury Exp $
+# $Id: a4gl_incl_4gldef.h,v 1.140 2012-04-19 08:05:17 mikeaubury Exp $
 */
 
 /**
@@ -545,6 +545,10 @@ long A4GL_create_object(char *type, int nparam) ;
 void A4GL_pop_object_n(char *objtype,void *obj,int dtype,int size);
 int A4GL_destroy_object(char *type, long objectID) ;
 int A4GL_get_event_type( struct aclfgl_event_list *evt, int n);
+
+void A4GL_setemail_address_from_env(void) ;
+void A4GL_setemail_address(void) ;
+
 
 #  if __WORDSIZE == 64
 #define int8 long 

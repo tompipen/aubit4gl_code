@@ -26,7 +26,20 @@ start_cmd :
 		set_cmdlineno($<integer_val>3);
 			$<startrep>$=$<startrep>5;
 			$<startrep>$->towhat='M';
-			p=A4GL_new_expr_simple_string($<str>2,ET_EXPR_REPORT_EMAIL);
+			p=A4GL_new_expr_email_report($<str>2,NULL); 
+			$<startrep>$->s1=chk_expr(p);
+			add_feature("USE_REPORT");
+			ADDMAP("Start Report",$<str>2);
+			map_start_report($<str>2);
+
+			$<cmd>$=new_start_cmd($<str>2, $<startrep>$);
+			}
+	| START_REPORT rep_name atline  TO_EMAIL fgl_expr_c op_with_dim {
+			struct expr_str *p;
+		set_cmdlineno($<integer_val>3);
+			$<startrep>$=$<startrep>6;
+			$<startrep>$->towhat='M';
+			p=A4GL_new_expr_email_report($<str>2,$<ptr>5); 
 			$<startrep>$->s1=chk_expr(p);
 			add_feature("USE_REPORT");
 			ADDMAP("Start Report",$<str>2);
@@ -187,6 +200,7 @@ conv_rep_conv:  { $<convert>$=0; }
 		$<convert>$->towhat='F';
 		$<convert>$->s1=$<ptr>2;
 		$<convert>$->filter=0;
+		$<convert>$->emailAddress=0;
 		$<convert>$->conv_type=$<ptr>4;
 	}
 	|  VIA via_functionname {
@@ -195,6 +209,7 @@ conv_rep_conv:  { $<convert>$=0; }
 		$<convert>$->s1=$<ptr>2;
 		$<convert>$->filter=0;
 		$<convert>$->conv_type=0;
+		$<convert>$->emailAddress=0;
 	}
 	| TO_PIPE char_or_var_vl KW_AS char_or_var_vl {
 		$<convert>$=malloc(sizeof(struct convert));
@@ -202,6 +217,7 @@ conv_rep_conv:  { $<convert>$=0; }
 		$<convert>$->s1=$<ptr>2;
 		$<convert>$->filter=0;
 		$<convert>$->conv_type=$<ptr>4;
+		$<convert>$->emailAddress=0;
 	}
 	| TO_PRINTER KW_AS char_or_var_vl {
 		$<convert>$=malloc(sizeof(struct convert));
@@ -209,6 +225,7 @@ conv_rep_conv:  { $<convert>$=0; }
 		$<convert>$->conv_type=$<ptr>2;
 		$<convert>$->s1=0;
 		$<convert>$->filter=0;
+		$<convert>$->emailAddress=0;
 	}
 	| TO_EMAIL KW_AS char_or_var_vl {
 		$<convert>$=malloc(sizeof(struct convert));
@@ -216,6 +233,15 @@ conv_rep_conv:  { $<convert>$=0; }
 		$<convert>$->conv_type=$<ptr>3;
 		$<convert>$->s1=0;
 		$<convert>$->filter=0;
+		$<convert>$->emailAddress=0;
+	}
+	| TO_EMAIL char_or_var_vl KW_AS char_or_var_vl {
+		$<convert>$=malloc(sizeof(struct convert));
+		$<convert>$->towhat='@';
+		$<convert>$->conv_type=$<ptr>4;
+		$<convert>$->s1=0;
+		$<convert>$->filter=0;
+		$<convert>$->emailAddress=$<ptr>2;
 	}
 	| TO_FILE char_or_var_vl KW_AS char_or_var_vl {
 		$<convert>$=malloc(sizeof(struct convert));
@@ -223,6 +249,7 @@ conv_rep_conv:  { $<convert>$=0; }
 		$<convert>$->s1=$<ptr>2;
 		$<convert>$->conv_type=$<ptr>4;
 		$<convert>$->filter=0;
+		$<convert>$->emailAddress=0;
 	}
 	| KW_TO char_or_var_vl KW_AS char_or_var_vl KW_USING char_or_var_vl {
 		$<convert>$=malloc(sizeof(struct convert));
@@ -230,6 +257,7 @@ conv_rep_conv:  { $<convert>$=0; }
 		$<convert>$->s1=$<ptr>2;
 		$<convert>$->conv_type=$<ptr>4;
 		$<convert>$->filter=$<ptr>6;
+		$<convert>$->emailAddress=0;
 	}
 	| TO_FILE char_or_var_vl KW_AS char_or_var_vl KW_USING char_or_var_vl {
 		$<convert>$=malloc(sizeof(struct convert));
@@ -237,6 +265,7 @@ conv_rep_conv:  { $<convert>$=0; }
 		$<convert>$->s1=$<ptr>2;
 		$<convert>$->conv_type=$<ptr>4;
 		$<convert>$->filter=$<ptr>6;
+		$<convert>$->emailAddress=0;
 
 	}
 	| TO_PIPE char_or_var_vl KW_AS char_or_var_vl KW_USING char_or_var_vl {
@@ -245,6 +274,7 @@ conv_rep_conv:  { $<convert>$=0; }
 		$<convert>$->s1=$<ptr>2;
 		$<convert>$->filter=$<ptr>6;
 		$<convert>$->conv_type=$<ptr>4;
+		$<convert>$->emailAddress=0;
 	}
 	| TO_PRINTER KW_AS char_or_var_vl KW_USING char_or_var_vl {
 		$<convert>$=malloc(sizeof(struct convert));
@@ -252,6 +282,7 @@ conv_rep_conv:  { $<convert>$=0; }
 		$<convert>$->s1=0;
 		$<convert>$->filter=$<ptr>5;
 		$<convert>$->conv_type=$<ptr>3;
+		$<convert>$->emailAddress=0;
 	}
 	| TO_EMAIL KW_AS char_or_var_vl KW_USING char_or_var_vl {
 		$<convert>$=malloc(sizeof(struct convert));
@@ -259,6 +290,15 @@ conv_rep_conv:  { $<convert>$=0; }
 		$<convert>$->s1=0;
 		$<convert>$->filter=$<ptr>5;
 		$<convert>$->conv_type=$<ptr>3;
+		$<convert>$->emailAddress=0;
+	}
+	| TO_EMAIL char_or_var_vl KW_AS char_or_var_vl KW_USING char_or_var_vl {
+		$<convert>$=malloc(sizeof(struct convert));
+		$<convert>$->towhat='@';
+		$<convert>$->s1=0;
+		$<convert>$->filter=$<ptr>6;
+		$<convert>$->conv_type=$<ptr>4;
+		$<convert>$->emailAddress=$<ptr>2;
 	}
 ;
 

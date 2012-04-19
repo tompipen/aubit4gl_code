@@ -25,7 +25,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: expr.c,v 1.49 2010-10-06 11:42:47 mikeaubury Exp $
+# $Id: expr.c,v 1.50 2012-04-19 08:05:18 mikeaubury Exp $
 #
 */
 
@@ -78,6 +78,9 @@ expr_name (enum e_expr_type e)
     {
 //case ET_EXPR_CHAR: return "ET_EXPR_CHAR";
 //case ET_EXPR_EXPR: return "ET_EXPR_EXPR";
+case ET_EXPR_REPORT_UI:
+return "ET_EXPR_REPORT_UI";
+
     case ET_EXPR_EXPR_LIST:
       return "ET_EXPR_EXPR_LIST";
 //case ET_EXPR_OP: return "ET_EXPR_OP";
@@ -197,8 +200,8 @@ expr_name (enum e_expr_type e)
       return "ET_EXPR_MEMBER_FCALL_NEW";
     case ET_EXPR_COLUMN:
       return "ET_EXPR_COLUMN";
-    case ET_EXPR_REPORT_EMAIL:
-      return "ET_EXPR_REPORT_EMAIL";
+    case ET_EXPR_REPORT_EMAIL_NEW:
+      return "ET_EXPR_REPORT_EMAIL_NEW";
     case ET_EXPR_REPORT_PRINTER:
       return "ET_EXPR_REPORT_PRINTER";
     case ET_EXPR_QUOTED_STRING:
@@ -596,6 +599,21 @@ A4GL_new_expr_reference (struct expr_str *expr)
   ptr_new = A4GL_new_expr_simple (ET_EXPR_REFERENCE);
   ptr_new->expr_str_u.expr_expr = expr;
   return ptr_new;
+}
+
+
+struct expr_str *
+A4GL_new_expr_email_report (char *repname, struct expr_str *email_addr) {
+//struct s_email_report *r;
+  struct expr_str *ptr_new;
+	//r=malloc(sizeof(s_email_report));
+	//r->email_addr=email_addr;
+	//r->report_name=strdup(repname);
+  ptr_new = A4GL_new_expr_simple (ET_EXPR_REPORT_EMAIL_NEW);
+  ptr_new->expr_str_u.expr_email_report.email_addr = email_addr;
+  ptr_new->expr_str_u.expr_email_report.report_name = strdup(repname);
+  return ptr_new;
+
 }
 
 struct expr_str *

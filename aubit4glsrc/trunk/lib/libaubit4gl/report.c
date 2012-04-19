@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.202 2011-07-22 20:10:00 mikeaubury Exp $
+# $Id: report.c,v 1.203 2012-04-19 08:05:18 mikeaubury Exp $
 #
 */
 
@@ -56,6 +56,7 @@
 //int A4GL_call_4gl_dll (char *filename, char *function, int args);
 static void A4GL_unload_report_table (struct BINDING *b);
 void A4GL_close_report_file (struct rep_structure *rep);
+static char emailAddress[2000]="notset@notset.com";
 //int A4GL_wcswidth(char *mbs); /* utf8 */
 
 #define ENTRY_START 1
@@ -69,7 +70,7 @@ void A4GL_close_report_file (struct rep_structure *rep);
 #define TU_LEN(qual) ((qual>>8) & 0xff)
 
 
-static int email_report (char *fname, char *otype);
+static int email_report (char *fname, char *otype,char *emailAddress);
 static void free_header (struct rep_structure *rep);
 static char *cursor_for_rep_tab (void *b);
 char pdf_encoding[200] = "winansi";
@@ -743,7 +744,7 @@ A4GL_close_report_file (struct rep_structure *rep)
 
 	      if (rep->output_mode == 'M')
 		{
-		  email_report (rep->output_loc_str, 0);
+		  email_report (rep->output_loc_str, 0, rep->emailAddress);
 		}
 	    }
 	  rep->output = 0;
@@ -777,6 +778,9 @@ A4GL_internal_open_report_file (struct rep_structure *rep, int no_param)
 	  if (rep->output_mode == 'F' || rep->output_mode == 'M' || rep->output_mode=='U')
 	    {
 
+		if ( rep->output_mode == 'M' ) {
+			strcpy(rep->emailAddress,emailAddress );
+		}
 
 	      if (strcmp (rep->output_loc_str, "stdout") == 0)
 		{
@@ -2679,7 +2683,8 @@ A4GL_convert_report (struct rep_structure *rep, char *ofile, char *otype, char *
 
   if (to_pipe == 2)
     {
-      email_report (ofile, otype);
+	strcpy(rep->emailAddress, emailAddress);
+      email_report (ofile, otype, rep->emailAddress);
     }
 
   free (ofile);
@@ -2770,9 +2775,8 @@ A4GL_find_report_dim_string (char *type, int value)
 
 
 static int
-email_report (char *fname, char *fhint)
+email_report (char *fname, char *fhint, char*email)
 {
-  char *email;
   if (fhint)
     {
       A4GL_push_char (fhint);
@@ -2784,7 +2788,6 @@ email_report (char *fname, char *fhint)
 
   A4GL_push_char (fname);
 
-  email = acl_getenv ("EMAIL_RECIPIENT");
   if (email)
     {
       if (strlen (email) == 0)
@@ -3516,6 +3519,17 @@ char *A4GL_check_for_tags(char *s) {
 	return s;
 }
 
+
+void A4GL_setemail_address_from_env(void) {
+	strcpy(emailAddress, acl_getenv("EMAIL_RECIPIENT"));
+}
+
+void A4GL_setemail_address(void) {
+char *p;
+	p=A4GL_char_pop();
+	strcpy(emailAddress, p);
+	free(p);
+}
 
 
 

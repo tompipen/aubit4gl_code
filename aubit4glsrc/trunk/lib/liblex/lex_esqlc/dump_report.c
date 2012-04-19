@@ -859,7 +859,7 @@ report_cnt++;
     	printc ("static struct pdf_rep_structure _rep;\n");
   }
   printc ("static char _rout1[256];\n");
-  printc ("static char _rout2[256];\n");
+  printc ("static char _rout2[1024];\n");
   printc ("static int _useddata=0;\n");
   printc ("static int _started=0;\n");
   printc ("static void *_blobdata=0;\n");
@@ -991,7 +991,7 @@ report_cnt++;
 
 
   printc ("if (acl_ctrl==REPORT_START||acl_ctrl==REPORT_RESTART) {\n");
-  printc ("   A4GL_pop_char(_rout2,254);A4GL_trim(_rout2);\n");
+  printc ("   A4GL_pop_char(_rout2,1023);A4GL_trim(_rout2);\n");
   printc ("   A4GL_pop_char(_rout1,254);A4GL_trim(_rout1);\n");
   if (order_by_type == 1)
     {

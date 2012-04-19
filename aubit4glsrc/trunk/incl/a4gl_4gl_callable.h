@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_4gl_callable.h,v 1.75 2012-03-04 18:27:09 mikeaubury Exp $
+# $Id: a4gl_4gl_callable.h,v 1.76 2012-04-19 08:05:17 mikeaubury Exp $
 */
 
 /**
@@ -246,6 +246,8 @@ int A4GL_open_cursor(char* s,int no,void* vibind) ;
 int A4GL_fetch_cursor(char* cursor_name,int fetch_mode,int fetch_when,int nibind,void* ibind) ;
 int A4GL_close_cursor(char* currname,int explicit_) ;
 void A4GL_push_double_str (char *p);
+
+
 //void A4GL_copyback(void *varptr,int sz, struct BINDING *binding, int n);
 
 //int A4GL_fgl_infield (void *inp,char itype,...);

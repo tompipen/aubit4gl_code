@@ -1590,9 +1590,16 @@ print_convert_cmd (struct_convert_cmd * cmd_data)
 		
 		return 1;
   }
+
   if (cmd_data->conv_c->towhat == '@')
     {
       printc ("A4GL_push_int(2);");
+      if (cmd_data->conv_c->emailAddress) {
+	print_expr(cmd_data->conv_c->emailAddress);
+	printc("A4GL_setemail_address();");
+      } else {
+      	printc("A4GL_setemail_address_from_env();");
+      }
     }
   else
     {

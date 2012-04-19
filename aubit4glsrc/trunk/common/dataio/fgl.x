@@ -1,4 +1,4 @@
-/* $Id: fgl.x,v 1.68 2011-08-12 10:58:16 mikeaubury Exp $ */
+/* $Id: fgl.x,v 1.69 2012-04-19 08:05:17 mikeaubury Exp $ */
 typedef string str<>;
 typedef string sql_ident<>;
 
@@ -726,6 +726,7 @@ struct convert {
 	struct expr_str *s1;
 	struct expr_str *conv_type;
 	struct expr_str *filter;
+	struct expr_str *emailAddress;
 };
 
 struct struct_convert_cmd {
@@ -2188,6 +2189,12 @@ struct  s_named_param {
 	struct expr_str *param_value;
 };
 
+
+struct s_email_report {
+	str report_name;
+	struct expr_str *email_addr;
+};
+
 enum e_expr_type {
                 ET_EXPR_EXPR_LIST,
                 ET_EXPR_BINDING,
@@ -2249,7 +2256,7 @@ enum e_expr_type {
                 ET_EXPR_MEMBER_FCALL_NEW,
                 ET_EXPR_DYNARR_FCALL_NEW,
                 ET_EXPR_COLUMN,
-                ET_EXPR_REPORT_EMAIL,
+                ET_EXPR_REPORT_EMAIL_NEW,
                 ET_EXPR_REPORT_PRINTER,
                 ET_EXPR_REPORT_UI,
                 ET_EXPR_QUOTED_STRING,
@@ -2440,12 +2447,13 @@ union expr_str switch ( enum e_expr_type expr_type) {
                 /*! str                                    expr_string; !*/
 	case ET_EXPR_FGL_SIZEOF:
                 /*! str                                    expr_string; !*/
-	case ET_EXPR_REPORT_EMAIL:
-                /*! str                                    expr_string; !*/
 	case ET_EXPR_IDENTIFIER:
                 /*! str                                    expr_string; !*/
 	case ET_EXPR_SQLBLOCK_TEXT: 	
                str                                    expr_string; 
+
+	case ET_EXPR_REPORT_EMAIL_NEW:
+                struct s_email_report            expr_email_report;
 
 	case ET_EXPR_LITERAL_LONG:
                 long                                    expr_long;
