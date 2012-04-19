@@ -872,6 +872,16 @@ if(!p_fglform)
 
        addToQueue(returnevent);
    }
+   else
+   {
+
+       int arrLine = proxyModel->mapToSource(current).row();
+       int scrLine = current.row();
+
+       FglForm *fglform = (FglForm*) p_fglform;
+       fglform->context->setOption("SCRLINE", scrLine);
+       fglform->context->setOption("ARRLINE", arrLine);
+   }
    returnevent.id = "";
    if(!ql_events.isEmpty())
    {
