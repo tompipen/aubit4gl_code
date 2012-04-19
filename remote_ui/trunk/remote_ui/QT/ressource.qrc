@@ -140,5 +140,9 @@
       <file>pics/weiteres.png</file>
       <file>pics/zoom_auswahl.png</file>
       <file>pics/zurueck.png</file>
+      <file>pics/kalkulation.png</file>
+      <file>pics/standort.png</file>
+      <file>pics/kalender.png</file>
+      <file>pics/grafik.png</file>
    </qresource>
 </RCC>
