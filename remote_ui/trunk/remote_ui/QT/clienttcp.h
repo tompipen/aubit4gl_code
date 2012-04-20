@@ -50,6 +50,8 @@ class DebugWindow : public QDialog
       void closeEvent(QCloseEvent *event);
     signals:
       void debugClose();
+    private:
+      QString xml;
 
 };
 

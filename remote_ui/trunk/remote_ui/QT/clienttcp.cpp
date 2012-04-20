@@ -2667,13 +2667,16 @@ MainFrame::vdcdebug("DebugWindow","DebugWindow", "QWidget *parent");
    searchline->addWidget(forward);
    searchline->addWidget(clear);
    setLayout(mainLayout);
+   xml = "";
 }
 
 void DebugWindow::debugOut(QString debugtext)
 {
 MainFrame::vdcdebug("DebugWindow","debugOut", "QString debugtext");
 //debugfull.append(debugtext);
-edit->append(debugtext);
+xml += debugtext;
+if(isVisible())
+    edit->setText(debugtext);
 }
 void DebugWindow::clear()
 {
