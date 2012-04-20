@@ -79,7 +79,7 @@ private:
    QString decodeFile(QString);
    void outputTree(QDomNode);
 
-   QDomDocument encodeXMLFile(QString);
+   QString encodeXMLFile(QString);
    void handleStartup(const QDomNode&);
    void handleDisplayToElement(const QDomNode&, QString parentNodeName = "");
    void handleDisplayArrayElement(const QDomNode&, QString parentNodeName = "");

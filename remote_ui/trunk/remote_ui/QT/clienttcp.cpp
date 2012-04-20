@@ -436,6 +436,7 @@ MainFrame::vdcdebug("ClientSocket","readClient", "");
 
 
    while(ph.isRunning()){
+   usleep(50000L);
    }
 
    if(!request.isNull()){
@@ -750,32 +751,28 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
 
       // 4JS ToolBar XML File
       if(fileName.trimmed().endsWith(".4tb")){
-         QDomDocument xmlFile = encodeXMLFile(childElement.text());
-         QString xmlFileString = xmlFile.toString();
+         QString xmlFileString = encodeXMLFile(childElement.text());
          handleXMLToolBar(xmlFileString);
          return;
       }
 
       // 4JS Actions XML File
       if(fileName.trimmed().endsWith(".4ad")){
-         QDomDocument xmlFile = encodeXMLFile(childElement.text());
-         QString xmlFileString = xmlFile.toString();
+         QString xmlFileString = encodeXMLFile(childElement.text());
          handleXMLActions(xmlFileString);
          return;
       }
 
       // 4JS Style XML File
       if(fileName.trimmed().endsWith(".4st")){
-         QDomDocument xmlFile = encodeXMLFile(childElement.text());
-         QString xmlFileString = xmlFile.toString();
+         QString xmlFileString = encodeXMLFile(childElement.text());
          handleXMLStyles(xmlFileString);
          return;
       }
 
       // 4JS StartMenu XML File
       if(fileName.trimmed().endsWith(".4sm")){
-         QDomDocument xmlFile = encodeXMLFile(childElement.text());
-         QString xmlFileString = xmlFile.toString();
+         QString xmlFileString = encodeXMLFile(childElement.text());
          handleXMLStartMenu(xmlFileString);
          return;
       }
@@ -788,32 +785,28 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
       
       // 4JS ToolBar XML File
       if(fileName.trimmed().endsWith(".4tb")){
-         QDomDocument xmlFile = encodeXMLFile(childElement.text());
-         QString xmlFileString = xmlFile.toString();
+         QString xmlFileString = encodeXMLFile(childElement.text());
          handleXMLToolBar(xmlFileString);
          return;
       }
 
       // 4JS Actions XML File
       if(fileName.trimmed().endsWith(".4ad")){
-         QDomDocument xmlFile = encodeXMLFile(childElement.text());
-         QString xmlFileString = xmlFile.toString();
+         QString xmlFileString = encodeXMLFile(childElement.text());
          handleXMLActions(xmlFileString);
          return;
       }
 
       // 4JS Style XML File
       if(fileName.trimmed().endsWith(".4st")){
-         QDomDocument xmlFile = encodeXMLFile(childElement.text());
-         QString xmlFileString = xmlFile.toString();
+         QString xmlFileString = encodeXMLFile(childElement.text());
          handleXMLStyles(xmlFileString);
          return;
       }
 
       // VENTAS Color Bars XML-FILE (4cf)
       if(fileName.trimmed().endsWith(".4cf")){
-         QDomDocument xmlFile = encodeXMLFile(childElement.text());
-         QString xmlFileString = xmlFile.toString();
+         QString xmlFileString = encodeXMLFile(childElement.text());
          handleXMLColors(xmlFileString);
          return;
       }
@@ -822,8 +815,7 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
 
       // 4JS StartMenu XML File
       if(fileName.trimmed().endsWith(".4sm")){
-         QDomDocument xmlFile = encodeXMLFile(childElement.text());
-         QString xmlFileString = xmlFile.toString();
+         QString xmlFileString = encodeXMLFile(childElement.text());
 /*
          p_currScreenHandler->qh_env["DB_LOCALE"] = "IBM850";
          QTextCodec *codec = QTextCodec::codecForName(qPrintable(p_currScreenHandler->qh_env["DB_LOCALE"]));
@@ -1469,8 +1461,7 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
       createWindow(window, "", 0, 0, 0, 0, "", "");
 
       if(childElement.firstChildElement().nodeName() == "XMLFORM"){
-        QDomDocument xmlForm = encodeXMLFile(childElement.text());
-        QString xmlFormString = xmlForm.toString();
+        QString xmlFormString = encodeXMLFile(childElement.text());
         handleXMLForm(window, xmlFormString, false);
       }
 
@@ -1548,8 +1539,7 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
       createWindow(window, style, x, y, 0, 0, source,id);
 
       if(childElement.firstChildElement().nodeName() == "XMLFORM"){
-        QDomDocument xmlForm = encodeXMLFile(childElement.text());
-        QString xmlFormString = xmlForm.toString();
+        QString xmlFormString = encodeXMLFile(childElement.text());
 
         handleXMLForm(window, xmlFormString, true);
       }
@@ -1827,7 +1817,7 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
 // Filename     : tcpclient.cpp
 // Description  : encodes the decoded XMLFile back to XML
 //------------------------------------------------------------------------------
-QDomDocument ProtocolHandler::encodeXMLFile(QString xmlString)
+QString ProtocolHandler::encodeXMLFile(QString xmlString)
 {
 MainFrame::vdcdebug("ProtocolHandler","encodeXMLFile", "QString xmlString");
    QString textBuffer;
@@ -1869,6 +1859,11 @@ MainFrame::vdcdebug("ProtocolHandler","encodeXMLFile", "QString xmlString");
    xmlString.replace("&#10;"," ");
    */
 
+   return xmlString;
+
+   //We dont need the XML convertion ... its slows the vdc much!
+
+/*
    QString errorMsg;
    int errorLine = 0;
    int errorColumn;
@@ -1885,7 +1880,7 @@ MainFrame::vdcdebug("ProtocolHandler","encodeXMLFile", "QString xmlString");
                << xmlString;
    }
    
-   return xmlDoc;
+   return xmlDoc;*/
 }
 
 //------------------------------------------------------------------------------

@@ -42,7 +42,8 @@ void Actions::parseElement(QDomNode xmlNode)
 {
 MainFrame::vdcdebug("Actions","parseElement", "QDomNode xmlNode");
    QDomNodeList children = xmlNode.childNodes();
-   for(int i=0; i<children.count(); ++i){
+   int cnt_childs = children.count();
+   for(int i=0; i<cnt_childs; ++i){
 
       QDomNode child = children.at(i);
       if(!child.isElement()){

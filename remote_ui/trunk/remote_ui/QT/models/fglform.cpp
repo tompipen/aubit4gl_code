@@ -3404,7 +3404,9 @@ MainFrame::vdcdebug("FglForm","addFormAction", "QAction *qaction");
    if(!action)
       return;
 
-   for(int i=0; i<formActions.count(); i++){
+   int size = formActions.count();
+
+   for(int i=0; i<size; i++){
       if(Action *fAction = qobject_cast<Action *> (formActions.at(i))){
          if(fAction->name() == action->name()){
 

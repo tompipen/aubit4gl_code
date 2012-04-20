@@ -244,8 +244,8 @@ void XML2Menu::createTreeMenu(const QDomNode &domNode)
    // and handle theire attributes 
    //
    bool dummy = false;
-
-   for(int i=0; i<children.count(); ++i){
+   int cnt_childs = children.count();
+   for(int i=0; i<cnt_childs; ++i){
       QDomNode child = children.at(i);
       if(!child.isElement()){
          continue;
