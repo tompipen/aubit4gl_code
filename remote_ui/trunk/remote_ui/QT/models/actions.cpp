@@ -54,7 +54,6 @@ MainFrame::vdcdebug("Actions","parseElement", "QDomNode xmlNode");
       QDomElement currentElement = child.toElement();
 
       QString nodeName = currentElement.nodeName();
-      
 
       if(nodeName == "ActionDefault"){
          QList<QKeySequence> ql_shortcutList;

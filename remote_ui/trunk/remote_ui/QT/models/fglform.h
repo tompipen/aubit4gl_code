@@ -87,6 +87,7 @@ public:
    QString windowName;
    QWidget *currentWidget;
    QPointer<QPushButton> nextclick;
+   Actions *ql_actions;
    void replayKeyboard();
    void clearKeyboardBuffer();
    bool b_getch_swin;

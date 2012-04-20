@@ -208,16 +208,11 @@ MainFrame::vdcdebug("ScreenHandler","createWindow", "QString windowTitle,QString
    p_fglform->setStyles(formsStyles);
 
    p_fglform->initActions();
+   this->handleIconFile(xmlIconDoc);
+   this->handleShortcutsFile(xmlShortcutDoc);
    if(formsActions.hasChildNodes()){
       p_fglform->setActions(formsActions);
    }
-   if(formsActions1.hasChildNodes()){
-      p_fglform->setActions(formsActions1);
-   }
-   if(formsActions2.hasChildNodes()){
-      p_fglform->setActions(formsActions2);
-   }
-
 
    checkColors();
 }
@@ -383,6 +378,21 @@ MainFrame::vdcdebug("ScreenHandler","handleXMLActions", "QString xmlFileString")
    } else {
        formsActions2 = xmlFile;
    }
+}
+
+void ScreenHandler::handleIconFile(QDomDocument xmlFileString)
+{
+    p_fglform->ql_actions = new Actions(p_fglform);
+    p_fglform->ql_actions->parseFile(xmlFileString);
+}
+
+void ScreenHandler::handleShortcutsFile(QDomDocument xmlFileString)
+{
+    if(p_fglform->ql_actions == NULL)
+    {
+        p_fglform->ql_actions = new Actions(p_fglform);
+    }
+    p_fglform->ql_actions->parseFile(xmlFileString);
 }
 
 void ScreenHandler::handleXMLColors(QString xmlFileString)

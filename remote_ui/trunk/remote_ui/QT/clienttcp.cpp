@@ -816,6 +816,20 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
          handleXMLColors(xmlFileString);
          return;
       }
+      if(fileName.trimmed().endsWith(".4id")){
+          QDomDocument doc;
+          QString xmlString = encodeXMLFile(childElement.text());
+          doc.setContent(xmlString);
+         p_currScreenHandler->xmlIconDoc = doc;
+         return;
+      }
+      if(fileName.trimmed().endsWith(".4sc")){
+         QDomDocument doc;
+         QString xmlString = encodeXMLFile(childElement.text());
+         doc.setContent(xmlString);
+         p_currScreenHandler->xmlShortcutDoc = doc;
+         return;
+      }
 
 
 

@@ -235,16 +235,14 @@ MainFrame::vdcdebug("FglForm","setActions", "QDomDocument xmlFile");
    for(int i=0; i<defActions().size(); i++){
       removeAction(defActions().at(i));
    }
-
-   Actions *actions = new Actions(this);
-   actions->parseFile(xmlFile);
+   ql_actions->parseFile(xmlFile);
 
 
-   ql_actionDefaults = actions->actions();
-   QStringList names = actions->names();
+   ql_actionDefaults = ql_actions->actions();
+   QStringList names = ql_actions->names();
    for(int i=0; i<ql_actionDefaults.size(); i++){
       QAction *action = ql_actionDefaults.at(i);
-      QString name = action->objectName();
+      QString name = ql_actions->objectName();
 
       addFormAction(action);
       continue;

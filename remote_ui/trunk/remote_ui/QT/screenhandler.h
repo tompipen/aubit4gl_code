@@ -65,6 +65,8 @@ public:
    QList<WebBrowser*> ql_browser;
    QStringList qsl_activeFieldNames;
    QStringList qsl_triggereds;
+   QDomDocument xmlIconDoc;
+   QDomDocument xmlShortcutDoc;
    void makeFglFormResponse(QString);
 
    #ifdef KDChart_Version
@@ -153,7 +155,9 @@ public slots:
    void handleXMLStartMenu(QString); 
    void activeFocus();
    void handleXMLActions(QString);
-   void handleXMLColors(QString);
+   void handleXMLColors(QString xmlFile);
+   void handleShortcutsFile(QDomDocument xmlFileString);
+   void handleIconFile(QDomDocument);
    void setProgramName(QString);
    #ifdef KDChart_Version
    void createChart(QString);
