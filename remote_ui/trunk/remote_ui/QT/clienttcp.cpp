@@ -510,6 +510,7 @@ MainFrame::vdcdebug("ProtocolHandler","run", "");
       QTextStream in_request(&request);
       in_request.setCodec(codec);
       qs_protocolCommand = in_request.readAll();
+
       qs_protocolCommand = filterUmlauts(qs_protocolCommand);
    }
    else{
@@ -575,8 +576,9 @@ MainFrame::vdcdebug("ProtocolHandler","run", "");
       }
 
       QTextStream in(&file);
+      qs_protocolCommand = "";
       while (!in.atEnd()) {
-            qs_protocolCommand = in.readAll();
+            qs_protocolCommand += in.readLine();
       }
    }
 
@@ -609,7 +611,7 @@ MainFrame::vdcdebug("ProtocolHandler","run", "");
       
    for(int i=0; i<qsl_xmlCommands.size(); i++)
    {
-         QString tmpstring = filterUmlauts(qsl_xmlCommands.takeAt(i));
+         QString tmpstring = qsl_xmlCommands.takeAt(i);
          qsl_xmlCommands.insert(i, tmpstring);
       QString errorMsg;
       int errorLine, errorCol;
@@ -630,9 +632,11 @@ MainFrame::vdcdebug("ProtocolHandler","run", "");
       QTextStream out(&file);
       out << qsl_xmlCommands.at(i);
    }
+
    QString test = doc.toString();
    test = filterUmlauts(test);
    doc.clear();
+
    if (!doc.setContent(test, &errorMsg, &errorLine, &errorCol)){
       QString str = errorMsg + "\n" +
                     "Line:" + QString::number(errorLine) + "\n" +
@@ -640,6 +644,8 @@ MainFrame::vdcdebug("ProtocolHandler","run", "");
       MsgBox("Protocol Error",str,"Warning","Ok","Ok",0);
       break;
    }
+
+
    qDebug()<< qsl_xmlCommands.at(i);
    emit debugtext(QString("<< " + qsl_xmlCommands.at(i)));
          QDomElement envelope = doc.documentElement();

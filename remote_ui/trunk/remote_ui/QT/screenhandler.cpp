@@ -2024,7 +2024,7 @@ if(qsl_triggereds.size() > 0)
       if(p_fglform->b_newForm && p_fglform->dialog () == NULL && p_fglform->ringMenuPulldown() == NULL && saveactive->state() != Fgl::IDLE && !p_fglform->b_dummy){
          p_fglform->b_newForm = false;
          //Load the Actions again, before display the form
-         p_fglform->checkActions();
+        // p_fglform->checkActions(); bullshit its called allready in checkState()
         // p_fglform->adjustSize();
          //p_fglform->resize(500,500);
 
@@ -2047,13 +2047,13 @@ if(qsl_triggereds.size() > 0)
       }
       else{
          if(p_fglform->dialog() != NULL){
-            p_fglform->checkActions();
+         //   p_fglform->checkActions(); allready in checkState
             p_fglform->dialog()->show();
             p_fglform->dialog()->adjustSize();
          }
 
          if(p_fglform->ringMenuPulldown() != NULL){
-            p_fglform->checkActions();
+        //    p_fglform->checkActions(); allredy in checkState
             /*QString style = QString("QMenu::item:disabled { width: 20px; background-image: url(none); padding-left: 110px; height: 26px; color: #000000;}") + " " + p_fglform->styleSheet();
             p_fglform->setStyleSheet(style);
 
