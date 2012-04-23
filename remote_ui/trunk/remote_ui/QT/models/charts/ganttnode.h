@@ -2,8 +2,8 @@
 #define NODE_H
 
 #include <QtCore>
-#include <KDGantt/KDGanttGlobal.h>
-#include <KDGantt/KDGanttStyleOptionGanttItem.h>
+#include <KDGantt/kdganttglobal.h>
+#include <KDGantt/kdganttstyleoptionganttitem.h>
 
 class Node  {
 

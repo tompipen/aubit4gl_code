@@ -108,7 +108,7 @@ QVariant GanttTable::data( const QModelIndex& index, int role ) const
     } else if ( index.column() == START_TIME ) {
         switch( role ) {
         case Qt::DisplayRole:
-            return node->getStartTime().date().toString("dd.MM.yyyy");
+            return node->getStartTime().toString("dd.MM.yyyy hh:mm");
         case Qt::EditRole:
         case KDGantt::StartTimeRole:
             return node->getStartTime();
@@ -116,7 +116,7 @@ QVariant GanttTable::data( const QModelIndex& index, int role ) const
     } else if ( index.column() == END_TIME ) {
         switch( role ) {
         case Qt::DisplayRole:
-            return node->getEndTime().date().toString("dd.MM.yyyy");
+            return node->getEndTime().toString("dd.MM.yyyy hh:mm");
         case Qt::EditRole:
         case KDGantt::EndTimeRole:
             return node->getEndTime();
@@ -137,11 +137,11 @@ QVariant GanttTable::data( const QModelIndex& index, int role ) const
         switch( role ) {
         case Qt::DisplayRole:
         case Qt::EditRole:
-            int count = index.column() - DEPEND_TASK; // an index in dependList
+            int dependListIdx = index.column() - DEPEND_TASK; // an index in dependList
             QVariant value = "";
             QList<QString> list = node->getDependList();
-            if ( list.size() > 0 && count <= list.size() -1) {
-                value = qVariantFromValue(list.at( count ) );
+            if ( list.size() > 0 && dependListIdx <= list.size() -1) {
+                value = qVariantFromValue(list.at( dependListIdx ) );
             }
             return value;
         }
