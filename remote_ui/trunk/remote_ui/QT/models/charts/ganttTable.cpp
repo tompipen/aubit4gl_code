@@ -217,7 +217,7 @@ bool GanttTable::setData( const QModelIndex& index,  const QVariant& value, int 
 
             QList<QString> list = node->getDependList();
             if( value.toString() != "" && !list.contains(value.toString())) {
-                qDebug() << value.toString() ;
+
                 node->addDependList(value.toString());
                 emit dataChanged( index, index );
             }
@@ -292,7 +292,7 @@ bool GanttTable::readCSV( GanttTable* model, KDGantt::View* view, QString &filen
                     }
                     if( column >= DEPEND_TASK ) {
                         if( strWert.toInt( &ok, 10)) {
-                            dependTask.insert( strWert, row);
+                            dependTask.insertMulti( strWert, row );
                             dependList.append( strWert);
                         }
                     }
