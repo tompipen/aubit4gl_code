@@ -78,7 +78,7 @@ QVariant GanttTable::headerData( int section, Qt::Orientation orientation, int r
     case END_TIME:      return tr( "Ende" );
     case COMPLETION:    return tr( "Erledigt %" );
     case TASK_NUMBER:   return tr( "Task_nr");
-    case DEPEND_TASK:   return tr( "Abhängig" );
+    case DEPEND_TASK:   return tr( "Depend" );
     default:            return QVariant();
     }
 }
@@ -261,6 +261,7 @@ bool GanttTable::readCSV( GanttTable* model, KDGantt::View* view, QString &filen
             for( int row = 0; row < strList.size(); row++ ){
                 model->appendRow( model , view);
                 QStringList zeilenLeiste = strList.at( row ).split( QString( "|" ));
+                QList<QString> dependList;
                 Node *node = new Node();
                 bool ok;
 
@@ -275,10 +276,10 @@ bool GanttTable::readCSV( GanttTable* model, KDGantt::View* view, QString &filen
                         node->setType(strWert.toInt());
                     }
                     if( column == START_TIME ) {
-                        node->setStartTime(time.fromString(strWert, "dd.MM.yyyy"));
+                        node->setStartTime(time.fromString(strWert, "dd.MM.yyyy hh:mm"));
                     }
                     if( column == END_TIME ) {
-                        node->setEndTime(time.fromString(strWert, "dd.MM.yyyy"));
+                        node->setEndTime(time.fromString(strWert, "dd.MM.yyyy hh:mm"));
                     }
                     if( column == COMPLETION ) {
                         node->setCompletion(strWert.toInt( &ok, 10));
@@ -286,15 +287,13 @@ bool GanttTable::readCSV( GanttTable* model, KDGantt::View* view, QString &filen
                     if( column == TASK_NUMBER ) {
                         if( strWert.toInt( &ok, 10)) {
                             node->setTaskNr( strWert );
-                            currentString = strWert;
-                            currentTask.insert(currentString, row);
+                            currentTask.insert( strWert, row);
                         }
                     }
                     if( column >= DEPEND_TASK ) {
                         if( strWert.toInt( &ok, 10)) {
-                            node->setDependTask( strWert );
-                            dependString = strWert;
-                            dependTask.insert(dependString, row);
+                            dependTask.insert( strWert, row);
+                            dependList.append( strWert);
                         }
                     }
                 }
@@ -311,20 +310,19 @@ bool GanttTable::readCSV( GanttTable* model, KDGantt::View* view, QString &filen
                                qVariantFromValue( node->getCompletion() ),KDGantt::TaskCompletionRole );
                 model->setData(model->index(row, GanttTable::TASK_NUMBER, QModelIndex()),
                                qVariantFromValue( node->getTaskNr() ) );
-                model->setData(model->index(row, GanttTable::DEPEND_TASK, QModelIndex()),
-                               qVariantFromValue( node->getDependTask() ) );
+                for( int i = 0; i < dependList.size() ; i++ ){
+                    model->setData(model->index(row, GanttTable::DEPEND_TASK + i, QModelIndex()),
+                                   qVariantFromValue( dependList.at( i ) ) );
+                }
             }
             //  set constraints to constraintModel
             QHash<QString,int>::iterator it;
-            foreach(QString str, dependTask.keys()){
-                for(it = currentTask.begin(); it != currentTask.end(); it++) {
-                    if( str == it.key()){
-                        view->constraintModel()->addConstraint(KDGantt::Constraint(model->index(dependTask.value(it.key()),0,QModelIndex()),
-                                                                                   model->index(it.value(),0,QModelIndex())));
-                    }
-                }
+            for(it = dependTask.begin(); it != dependTask.end(); it++) {
+                int taskIdx = it.value();
+                int dependIdx = currentTask.value( it.key() );
+                view->constraintModel()->addConstraint(KDGantt::Constraint(model->index(taskIdx,0,QModelIndex()),
+                                                                           model->index(dependIdx,0,QModelIndex())));
             }
-
             return true;
         } else {
             return false;
