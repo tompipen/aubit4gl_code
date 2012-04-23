@@ -1212,11 +1212,17 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
 
    if(event->type() == QEvent::Move)
    {
-       qDebug() << "pos: " << pos();
+       if(this->isEnabled() && this->isActiveWindow())
+       {
+           qDebug() << "pos: " << pos();
        writeSettingsLocal();
+       }
    } else if(event->type() == QEvent::Resize)
    {
-       writeSettingsLocal();
+       if(this->isEnabled() && this->isActiveWindow())
+       {
+           writeSettingsLocal();
+       }
    }
 
 
@@ -1534,12 +1540,12 @@ void FglForm::writeSettingsLocal()
     {
         QDesktopWidget *widget = new QDesktopWidget();
         qDebug() << "bla: " << widget->size();
-        VDC::saveSettingsToIni(formName(), "width", QString::number(widget->size().width()));
-        VDC::saveSettingsToIni(formName(), "height", QString::number(widget->size().height()-20));
-        VDC::saveSettingsToIni(formName(), "posX", QString::number(pos().x()));
-        VDC::saveSettingsToIni(formName(), "posY", QString::number(pos().y()));
+        VDC::saveSettingsToIni(formName(), "width", QString::number(widget->size().width()-15));
+        VDC::saveSettingsToIni(formName(), "height", QString::number(widget->size().height()-45));
+        VDC::saveSettingsToIni(formName(), "posX", QString::number(0));
+        VDC::saveSettingsToIni(formName(), "posY", QString::number(0));
         this->setWindowState(Qt::WindowMaximized);
-        maximized = 0;
+        maximized = 1;
     }
 
     if(maximized == 0)

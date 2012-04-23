@@ -2581,7 +2581,7 @@ MainFrame::vdcdebug("ScreenHandler","closeWindow", "QString windowName");
          int i_Frm = getCurrForm();
          initForm(i_Frm);
          cnt_form--;
-         form->writeSettingsLocal();
+         //form->writeSettingsLocal();
          ql_fglForms.takeAt(i)->deleteLater();
 //         window->deleteLater();
          i_Frm = getCurrForm();
