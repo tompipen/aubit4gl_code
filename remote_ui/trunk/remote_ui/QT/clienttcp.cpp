@@ -34,6 +34,9 @@
 #include "models/reportgen/reportgen.cpp"
 #endif
 #include <models/fglform.h>
+#ifdef Q_WS_WIN
+#include <unistd.h>
+#endif
 
 //------------------------------------------------------------------------------
 // Method       : ClientTcp()
