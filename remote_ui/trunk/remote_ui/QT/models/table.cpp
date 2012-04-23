@@ -1378,6 +1378,7 @@ QWidget* LineEditDelegate::createEditor(QWidget *parent,
                         cb->removeItem(i);
                         table->cb_removeItem.clear();
                         table->cb_removeItem.remove(cb->itemText(i));
+                        break;
                     }
                 }
             }
