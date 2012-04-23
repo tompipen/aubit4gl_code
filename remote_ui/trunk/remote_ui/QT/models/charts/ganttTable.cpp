@@ -290,7 +290,7 @@ bool GanttTable::readCSV( GanttTable* model, KDGantt::View* view, QString &filen
                             currentTask.insert(currentString, row);
                         }
                     }
-                    if( column == DEPEND_TASK ) {
+                    if( column >= DEPEND_TASK ) {
                         if( strWert.toInt( &ok, 10)) {
                             node->setDependTask( strWert );
                             dependString = strWert;

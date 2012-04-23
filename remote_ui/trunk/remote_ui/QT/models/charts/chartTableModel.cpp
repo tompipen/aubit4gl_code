@@ -23,6 +23,9 @@ ChartTableModel::~ChartTableModel(){
 }
 
 int ChartTableModel::columnCount(const QModelIndex &parent) const {
+
+    Q_UNUSED(parent);
+
     if (dataVector.isEmpty()) {
         return(0);
     } else {
@@ -31,6 +34,8 @@ int ChartTableModel::columnCount(const QModelIndex &parent) const {
 }
 
 int ChartTableModel::rowCount(const QModelIndex &parent) const {
+
+    Q_UNUSED(parent);
     return(dataVector.size());
 }
 
@@ -215,6 +220,8 @@ bool ChartTableModel::addChartData(const QString& name, const QString& wert) {
 
 
 bool ChartTableModel::insertRows(int position, int count, const QModelIndex &parent){
+
+    Q_UNUSED(parent);
 
     int rows = dataVector.size();
 

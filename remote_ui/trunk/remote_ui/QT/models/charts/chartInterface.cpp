@@ -518,6 +518,9 @@ void ChartInterface::removeChart(KDChart::Chart *chart) {
 
 
 bool ChartInterface::setHeader(KDChart::Chart* chart, KDChart::Position position, ChartTableModel &model){
+
+    Q_UNUSED(model);
+
     HeaderFooter* header = new HeaderFooter( chart );
     header->setPosition( position );
     //header->setText( model.getTitelText() );
