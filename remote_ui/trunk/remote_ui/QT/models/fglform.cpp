@@ -1210,6 +1210,16 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
       }
    }
 
+   if(event->type() == QEvent::Move)
+   {
+       qDebug() << "pos: " << pos();
+       writeSettingsLocal();
+   } else if(event->type() == QEvent::Resize)
+   {
+       writeSettingsLocal();
+   }
+
+
 /*
       for(int i=0; i<35; i++){
          int key = 0x01000030 + i;
@@ -1517,6 +1527,35 @@ void FglForm::reopenPulldown()
 //
 //------------------------------------------------------------------------------
 
+void FglForm::writeSettingsLocal()
+{
+    int maximized = 0;
+    if(isMaximized())
+    {
+        QDesktopWidget *widget = new QDesktopWidget();
+        qDebug() << "bla: " << widget->size();
+        VDC::saveSettingsToIni(formName(), "width", QString::number(widget->size().width()));
+        VDC::saveSettingsToIni(formName(), "height", QString::number(widget->size().height()-20));
+        VDC::saveSettingsToIni(formName(), "posX", QString::number(pos().x()));
+        VDC::saveSettingsToIni(formName(), "posY", QString::number(pos().y()));
+        this->setWindowState(Qt::WindowMaximized);
+        maximized = 0;
+    }
+
+    if(maximized == 0)
+    {
+        qDebug() << "size: " << size();
+        qDebug() << "size: " << this->windowName;
+        if(!pos().isNull())
+        {
+            VDC::saveSettingsToIni(formName(), "width", QString::number(size().width()));
+            VDC::saveSettingsToIni(formName(), "height", QString::number(size().height()));
+            VDC::saveSettingsToIni(formName(), "posX", QString::number(pos().x()));
+            VDC::saveSettingsToIni(formName(), "posY", QString::number(pos().y()));
+        }
+    }
+}
+
 void FglForm::closeEvent(QCloseEvent *event)
 {
 MainFrame::vdcdebug("FglForm","closeEvent", "QCloseEvent *event");
@@ -1529,10 +1568,6 @@ MainFrame::vdcdebug("FglForm","closeEvent", "QCloseEvent *event");
       event->ignore();
 
    }
-   VDC::saveSettingsToIni(formName(), "width", QString::number(size().width()));
-   VDC::saveSettingsToIni(formName(), "height", QString::number(size().height()));
-   VDC::saveSettingsToIni(formName(), "posX", QString::number(pos().x()));
-   VDC::saveSettingsToIni(formName(), "posY", QString::number(pos().y()));
    return QMainWindow::closeEvent(event);
   /*
    if(menu() != NULL && menu()->isEnabled()){
@@ -3031,24 +3066,6 @@ MainFrame::vdcdebug("FglForm","checkState", "");
 */
 
    checkActions();
-}
-
-//------------------------------------------------------------------------------
-// Method       : writeSettingsLocal()
-// Filename     : fglform.cpp
-// Description  : 
-//------------------------------------------------------------------------------
-void FglForm::writeSettingsLocal()
-{
-  return;
-MainFrame::vdcdebug("FglForm","writeSettingsLocal", "");
-/*QSettings settings("VENTAS", formName());
-
-   //settings.beginGroup(windowName);
-   settings.setValue("pos", pos());
-   settings.setValue("size", size());
-   //settings.endGroup();
-   settings.sync();*/
 }
 
 //------------------------------------------------------------------------------

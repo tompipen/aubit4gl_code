@@ -276,7 +276,6 @@ public slots:
    void writeSettingsLocal();
    void readSettingsLocal();
 
-
 private:
    QList<Fgl::State> ql_states;
 
