@@ -3291,8 +3291,20 @@ MainFrame::vdcdebug("ScreenHandler","setInterfaceText", "QString text");
 
 void ScreenHandler::addComboBoxItem(int id, QString text, QString value)
 {
+   qDebug() << "p_fglform->findFieldById(id)" << p_fglform->findFieldById(id);
    if(ComboBox *cb = qobject_cast<ComboBox *> (p_fglform->findFieldById(id))){
       cb->addItem(value, text);
+   } else if(LineEditDelegate *le = qobject_cast<LineEditDelegate*> (p_fglform->findFieldById(id)))
+   {
+       if(TableView *tv = qobject_cast<TableView*> (le->parent()))
+       {
+           QSortFilterProxyModel *proxyModel = static_cast<QSortFilterProxyModel*> (tv->model());
+           TableModel *table = static_cast<TableModel*> (proxyModel->sourceModel());
+           QList<QString> itemList;
+
+           itemList << value << text;
+           table->cb_AddItem.append(itemList);
+       }
    }
 }
 
@@ -3305,6 +3317,14 @@ void ScreenHandler::removeComboBoxItem(int id, QString text)
             break;
          }
       }
+   } else if(LineEditDelegate *le = qobject_cast<LineEditDelegate*> (p_fglform->findFieldById(id)))
+   {
+       if(TableView *tv = qobject_cast<TableView*> (le->parent()))
+       {
+           QSortFilterProxyModel *proxyModel = static_cast<QSortFilterProxyModel*> (tv->model());
+           TableModel *table = static_cast<TableModel*> (proxyModel->sourceModel());
+           table->cb_removeItem.append(text);
+       }
    }
 }
 
@@ -3313,6 +3333,14 @@ void ScreenHandler::clearComboBox(int id)
    if(ComboBox *cb = qobject_cast<ComboBox *> (p_fglform->findFieldById(id))){
       cb->clear();
       cb->clearEditText();
+   } else if(LineEditDelegate *le = qobject_cast<LineEditDelegate*> (p_fglform->findFieldById(id)))
+   {
+       if(TableView *tv = qobject_cast<TableView*> (le->parent()))
+       {
+           QSortFilterProxyModel *proxyModel = static_cast<QSortFilterProxyModel*> (tv->model());
+           TableModel *table = static_cast<TableModel*> (proxyModel->sourceModel());
+           table->cb_AddItem.clear();
+       }
    }
 }
 

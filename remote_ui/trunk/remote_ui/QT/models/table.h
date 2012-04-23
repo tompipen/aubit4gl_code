@@ -179,6 +179,9 @@ public:
     QHash<int, Label*> qh_colLabels;
     QStringList qsl_a;
 
+    QList<QList<QString> > cb_AddItem;
+    QString cb_removeItem;
+
 private:
     int columns;
     int rows;

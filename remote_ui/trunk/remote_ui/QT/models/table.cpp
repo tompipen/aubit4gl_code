@@ -1357,7 +1357,31 @@ QWidget* LineEditDelegate::createEditor(QWidget *parent,
    QWidget *editor = WidgetHelper::createFormWidget(this->formElement, parent);
    if(TableView *tv = qobject_cast<TableView*> (parent->parentWidget()))
    {
-            tv->curr_editor = editor;
+       QSortFilterProxyModel *proxyModel = static_cast<QSortFilterProxyModel*> (tv->model());
+       TableModel *table = static_cast<TableModel*> (proxyModel->sourceModel());
+        tv->curr_editor = editor;
+        if(ComboBox *cb = qobject_cast<ComboBox*> (editor))
+        {
+            if(table->cb_AddItem.count())
+            {
+                for(int i=0; i < table->cb_AddItem.count(); i++)
+                {
+                    cb->addItem(table->cb_AddItem.at(i).at(0), table->cb_AddItem.at(i).at(1));
+                }
+            }
+            if(!table->cb_removeItem.isEmpty())
+            {
+                for(int i=0; i < cb->count(); i++)
+                {
+                    if(cb->itemText(i) == table->cb_removeItem)
+                    {
+                        cb->removeItem(i);
+                        table->cb_removeItem.clear();
+                        table->cb_removeItem.remove(cb->itemText(i));
+                    }
+                }
+            }
+        }
    }
 
    editor->setAutoFillBackground(true);
