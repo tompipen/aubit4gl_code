@@ -143,7 +143,6 @@ MainFrame::vdcdebug("ScreenHandler","createWindow", "QString windowTitle,QString
    Q_UNUSED(y);
    Q_UNUSED(h);
    Q_UNUSED(w);
-   VDC::arrowCursor();
    cnt_form++;
    if(p_fglform != NULL)
    {
@@ -2593,10 +2592,10 @@ MainFrame::vdcdebug("ScreenHandler","closeWindow", "QString windowName");
          }
          else{
             p_fglform = dummy_fglform;
+            VDC::arrowCursor();
          }
       }
    }
-   VDC::arrowCursor();
 }
 
 //------------------------------------------------------------------------------
