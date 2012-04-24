@@ -41,6 +41,10 @@ FglForm::FglForm(QString windowName, QWidget *parent) : QMainWindow(parent){
    b_dummy = false;
    context = NULL;
    gridWidth = 0;
+   widgetWidth = 0;
+   widgetHeight = 0;
+   widgetPosX = 0;
+   widgetPosY = 0;
    this->b_newForm = true;
    /*
    if(parent != NULL){
@@ -1215,13 +1219,19 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
        if(this->isEnabled() && this->isActiveWindow())
        {
            qDebug() << "pos: " << pos();
-       writeSettingsLocal();
+           widgetWidth = size().width();
+           widgetHeight = size().height();
+           widgetPosX = pos().x();
+           widgetPosY = pos().y();
        }
    } else if(event->type() == QEvent::Resize)
    {
        if(this->isEnabled() && this->isActiveWindow())
        {
-           writeSettingsLocal();
+           widgetWidth = size().width();
+           widgetHeight = size().height();
+           widgetPosX = pos().x();
+           widgetPosY = pos().y();
        }
    }
 
@@ -1552,12 +1562,12 @@ void FglForm::writeSettingsLocal()
     {
         qDebug() << "size: " << size();
         qDebug() << "size: " << this->windowName;
-        if(!pos().isNull())
+        if(widgetPosX >= 0 && widgetPosY >= 0)
         {
-            VDC::saveSettingsToIni(formName(), "width", QString::number(size().width()));
-            VDC::saveSettingsToIni(formName(), "height", QString::number(size().height()));
-            VDC::saveSettingsToIni(formName(), "posX", QString::number(pos().x()));
-            VDC::saveSettingsToIni(formName(), "posY", QString::number(pos().y()));
+            VDC::saveSettingsToIni(formName(), "width", QString::number(widgetWidth));
+            VDC::saveSettingsToIni(formName(), "height", QString::number(widgetHeight));
+            VDC::saveSettingsToIni(formName(), "posX", QString::number(widgetPosX));
+            VDC::saveSettingsToIni(formName(), "posY", QString::number(widgetPosY));
         }
     }
 }
@@ -1565,6 +1575,7 @@ void FglForm::writeSettingsLocal()
 void FglForm::closeEvent(QCloseEvent *event)
 {
 MainFrame::vdcdebug("FglForm","closeEvent", "QCloseEvent *event");
+   writeSettingsLocal();
    if(!b_allowClose){
       if(QObject::sender() == NULL) //Null when it comes from the
       {
@@ -1572,7 +1583,6 @@ MainFrame::vdcdebug("FglForm","closeEvent", "QCloseEvent *event");
           emit closeAction();
       }
       event->ignore();
-
    }
    return QMainWindow::closeEvent(event);
   /*

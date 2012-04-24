@@ -303,6 +303,10 @@ private:
    //bool b_construct;
 
    //PROPERTIES
+   int widgetWidth;
+   int widgetHeight;
+   int widgetPosX;
+   int widgetPosY;
    QString m_windowType;
    QString m_startMenuPosition;
    QString m_toolBarPosition;
