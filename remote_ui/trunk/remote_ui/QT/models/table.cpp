@@ -1405,6 +1405,7 @@ QWidget* LineEditDelegate::createEditor(QWidget *parent,
        tv->curr_editor = editor;
        if(ComboBox *n_cb = qobject_cast<ComboBox*> (editor))
        {
+           n_cb->setStyleSheet(" QComboBox::drop-down { padding-right: 1px; } ");
           if(LineEditDelegate *le = qobject_cast<LineEditDelegate*> (tv->itemDelegateForColumn(index.column())))
           {
              ComboBox *c_cb = (ComboBox*) le->qw_editor;

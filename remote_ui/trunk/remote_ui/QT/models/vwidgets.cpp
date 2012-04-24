@@ -1779,7 +1779,6 @@ MainFrame::vdcdebug("WidgetHelper","createComboBox", "const QDomElement& formFie
    QFontMetrics fm = comboBox->fontMetrics();
    int width = w*fm.averageCharWidth()*VDC::getFieldSizeFactor()+10;
    comboBox->resize(QSize(width, defHeight*height));
-   comboBox->setStyleSheet(" QComboBox::drop-down { padding-right: 2px; } ");
 
 
    return comboBox;
