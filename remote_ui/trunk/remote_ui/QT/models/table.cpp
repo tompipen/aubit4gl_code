@@ -215,16 +215,14 @@ void TableView::updateSectionWidth(int logicalIndex, int, int newSize)
 void TableView::insertRow()
 {
  int row = -1;
- qDebug()<<"INSERT";
- foreach(const QModelIndex& index, this->selectedIndexes())
- {
-    //In the VDC its only posible to select 1 col or 1 row so its only needed to get the row of the first index
-    row = index.row();
-    break;
- }
+ qDebug()<<"INSERT ROW IN TABLE";
+ row = currentIndex().row();
  //Nothing selected
  if(row == -1)
+ {
+    qDebug() << "NO INDEX FOUND!";
     return;
+ }
 
 
  Fgl::Event ev;
