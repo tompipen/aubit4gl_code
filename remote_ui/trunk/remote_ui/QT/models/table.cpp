@@ -212,6 +212,47 @@ void TableView::updateSectionWidth(int logicalIndex, int, int newSize)
     }
 }
 
+void TableView::insertRow()
+{
+ int row = -1;
+ qDebug()<<"INSERT";
+ foreach(const QModelIndex& index, this->selectedIndexes())
+ {
+    //In the VDC its only posible to select 1 col or 1 row so its only needed to get the row of the first index
+    row = index.row();
+    break;
+ }
+ //Nothing selected
+ if(row == -1)
+    return;
+
+
+ Fgl::Event ev;
+ ev.attribute = "insert";
+ ev.type = Fgl::BEFORE_INSERT_DELETE_EVENT;
+
+ emit fieldEvent(ev);
+
+ QSortFilterProxyModel *proxyModel = static_cast<QSortFilterProxyModel*> (this->model());
+ TableModel *table = static_cast<TableModel*> (proxyModel->sourceModel());
+
+ table->insertRows(row, 1, QModelIndex());
+
+
+ Fgl::Event evn;
+ evn.attribute = "insert";
+ evn.type = Fgl::AFTER_INSERT_DELETE_EVENT;
+
+ emit fieldEvent(evn);
+
+
+}
+
+void TableView::deleteRow()
+{
+
+}
+
 void TableView::copyRow()
 {
     QString columnText;
@@ -676,6 +717,7 @@ MainFrame::vdcdebug("TableView","accept", "");
 }
 
 
+
 void TableView::dragSuccess()
 {
     qDebug()<<"Done";
@@ -1006,9 +1048,9 @@ MainFrame::vdcdebug("TableView","setText", "QString text, int row, int col");
                text = Fgl::usingFunc(widget->format(), text, widget->dataType());
             }
          }
-       
 
-         model()->setData(modelIndex, text);
+
+         model()->setData(modelIndex, text, Qt::DisplayRole);
    }
 }
 
@@ -1074,8 +1116,9 @@ QVariant TableModel::data(const QModelIndex &index, int role) const
    {
       if(this->fields.count() > row){
          if(this->fields[row].count() > column){
-            QString s = this->fields[row][column];
-            return s;
+               QString s = this->fields[row][column];
+               return s;
+
          }
       }
 
@@ -1352,38 +1395,27 @@ MainFrame::vdcdebug("LineEditDelegate","sizeHint", "const QStyleOptionViewItem &
 
 QWidget* LineEditDelegate::createEditor(QWidget *parent,
    const QStyleOptionViewItem &/* option */,
-   const QModelIndex &/* index */) const
+   const QModelIndex &index) const
 {
    QWidget *editor = WidgetHelper::createFormWidget(this->formElement, parent);
    if(TableView *tv = qobject_cast<TableView*> (parent->parentWidget()))
    {
        QSortFilterProxyModel *proxyModel = static_cast<QSortFilterProxyModel*> (tv->model());
        TableModel *table = static_cast<TableModel*> (proxyModel->sourceModel());
-        tv->curr_editor = editor;
-        if(ComboBox *cb = qobject_cast<ComboBox*> (editor))
-        {
-            if(table->cb_AddItem.count())
-            {
-                for(int i=0; i < table->cb_AddItem.count(); i++)
-                {
-                    cb->addItem(table->cb_AddItem.at(i).at(0), table->cb_AddItem.at(i).at(1));
-                }
-            }
-            if(!table->cb_removeItem.isEmpty())
-            {
-                for(int i=0; i < cb->count(); i++)
-                {
-                    if(cb->itemText(i) == table->cb_removeItem)
-                    {
-                        cb->removeItem(i);
-                        table->cb_removeItem.clear();
-                        table->cb_removeItem.remove(cb->itemText(i));
-                        break;
-                    }
-                }
-            }
-        }
+       tv->curr_editor = editor;
+       if(ComboBox *n_cb = qobject_cast<ComboBox*> (editor))
+       {
+          if(LineEditDelegate *le = qobject_cast<LineEditDelegate*> (tv->itemDelegateForColumn(index.column())))
+          {
+             ComboBox *c_cb = (ComboBox*) le->qw_editor;
+
+             n_cb->setModel(c_cb->model());
+          }
+       }
+
    }
+
+
 
    editor->setAutoFillBackground(true);
    editor->setEnabled(true);
@@ -1413,7 +1445,7 @@ QWidget* LineEditDelegate::createEditor(QWidget *parent,
 void LineEditDelegate::setEditorData(QWidget *editor,
                                      const QModelIndex &index) const
 {
-   QString value = index.model()->data(index, Qt::DisplayRole).toString();
+   QString value = index.model()->data(index, Qt::EditRole).toString();
 
    WidgetHelper::setFieldText(editor, value);
 }

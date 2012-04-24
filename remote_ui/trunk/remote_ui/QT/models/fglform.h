@@ -121,6 +121,8 @@ public:
    void checkShortcuts();
    void checkGuiActions();
    bool handleGuiAction(Action*);
+   void remove();
+   void insert();
    ToolBar* toolBar(){ return p_toolBar; };
    Qt::ToolBarArea toolBarPosition();
    void setActions(QDomDocument);

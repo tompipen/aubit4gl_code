@@ -1842,6 +1842,16 @@ MainFrame::vdcdebug("ScreenHandler","setFormOpts", "QString type, bool value, in
          event.attribute = "cancel";
 
          p_fglform->addFormEvent(event);
+
+//insert+delete
+//         event.type = Fgl::GUI_ACTION_EVENT;
+//         event.id = "-1";
+//         event.attribute = "delete";
+
+         p_fglform->addFormEvent(event);
+//
+
+
       }
 
       if(type == "INPUTARRAY"){
@@ -1861,6 +1871,22 @@ MainFrame::vdcdebug("ScreenHandler","setFormOpts", "QString type, bool value, in
          event.attribute = "cancel";
 
          p_fglform->addFormEvent(event);
+
+//insert+delete
+//         event.type = Fgl::GUI_ACTION_EVENT;
+//         event.id = "-1";
+//         event.attribute = "insert";
+
+//         p_fglform->addFormEvent(event);
+
+
+//         event.type = Fgl::GUI_ACTION_EVENT;
+//         event.id = "-1";
+//         event.attribute = "delete";
+
+//         p_fglform->addFormEvent(event);
+
+
       }
    }
    else{
@@ -2596,6 +2622,7 @@ MainFrame::vdcdebug("ScreenHandler","closeWindow", "QString windowName");
          }
       }
    }
+
 }
 
 //------------------------------------------------------------------------------
@@ -3296,14 +3323,9 @@ void ScreenHandler::addComboBoxItem(int id, QString text, QString value)
       cb->addItem(value, text);
    } else if(LineEditDelegate *le = qobject_cast<LineEditDelegate*> (p_fglform->findFieldById(id)))
    {
-       if(TableView *tv = qobject_cast<TableView*> (le->parent()))
+       if(ComboBox *cb = qobject_cast<ComboBox*> (le->qw_editor))
        {
-           QSortFilterProxyModel *proxyModel = static_cast<QSortFilterProxyModel*> (tv->model());
-           TableModel *table = static_cast<TableModel*> (proxyModel->sourceModel());
-           QList<QString> itemList;
-
-           itemList << value << text;
-           table->cb_AddItem.append(itemList);
+          cb->addItem(value, text);
        }
    }
 }
@@ -3319,11 +3341,14 @@ void ScreenHandler::removeComboBoxItem(int id, QString text)
       }
    } else if(LineEditDelegate *le = qobject_cast<LineEditDelegate*> (p_fglform->findFieldById(id)))
    {
-       if(TableView *tv = qobject_cast<TableView*> (le->parent()))
+       if(ComboBox *cb = qobject_cast<ComboBox*> (le->qw_editor))
        {
-           QSortFilterProxyModel *proxyModel = static_cast<QSortFilterProxyModel*> (tv->model());
-           TableModel *table = static_cast<TableModel*> (proxyModel->sourceModel());
-           table->cb_removeItem.append(text);
+           for(int i=0; i<cb->count(); i++){
+              if(cb->itemText(i) == text){
+                 cb->removeItem(i);
+                 break;
+              }
+           }
        }
    }
 }
@@ -3335,11 +3360,10 @@ void ScreenHandler::clearComboBox(int id)
       cb->clearEditText();
    } else if(LineEditDelegate *le = qobject_cast<LineEditDelegate*> (p_fglform->findFieldById(id)))
    {
-       if(TableView *tv = qobject_cast<TableView*> (le->parent()))
+       if(ComboBox *cb = qobject_cast<ComboBox*> (le->qw_editor))
        {
-           QSortFilterProxyModel *proxyModel = static_cast<QSortFilterProxyModel*> (tv->model());
-           TableModel *table = static_cast<TableModel*> (proxyModel->sourceModel());
-           table->cb_AddItem.clear();
+           cb->clear();
+           cb->clearEditText();
        }
    }
 }

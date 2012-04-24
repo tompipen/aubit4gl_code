@@ -1,4 +1,4 @@
-//--------------------------------------------------------- (C) VENTAS AG 2009 -
+ //--------------------------------------------------------- (C) VENTAS AG 2009 -
 // Project      : VENTAS Desktop Client for A4gl
 // Filename     : fglform.cpp
 // Description  : contains the fglform class definition
@@ -368,6 +368,13 @@ MainFrame::vdcdebug("FglForm","initActions", "");
 //   prevFieldA->setAcceleratorName("Shift+Tab");
    addFormAction(prevFieldA);
 
+
+   Action *insertA = new Action("insert", tr("Insert"));
+   addFormAction(insertA);
+
+
+   Action *deleteA = new Action("delete", tr("Delete"));
+   addFormAction(deleteA);
 
    return;
 }
@@ -2657,6 +2664,40 @@ MainFrame::vdcdebug("FglForm","prevfield", "");
    }
 };
 
+
+void FglForm::insert()
+{
+  qDebug()<<"INSERT HERE";
+MainFrame::vdcdebug("FglForm","nextrow", "");
+   //find active screenRecord
+   QList<QWidget*> ql_widgets = formElements();
+   int cnt_ele = ql_widgets.size();
+   for(int i=0; i<cnt_ele; i++){
+      if(ql_widgets.at(i)->inherits("TableView")){
+         TableView *view = (TableView*) ql_widgets.at(i);
+         if(view->isEnabled()){
+           view->insertRow();
+         }
+      }
+   }
+}
+
+void FglForm::remove()
+{
+MainFrame::vdcdebug("FglForm","nextrow", "");
+   //find active screenRecord
+   QList<QWidget*> ql_widgets = formElements();
+   int cnt_ele = ql_widgets.size();
+   for(int i=0; i<cnt_ele; i++){
+   if(ql_widgets.at(i)->inherits("TableView")){
+      TableView *view = (TableView*) ql_widgets.at(i);
+      if(view->isEnabled()){
+        view->deleteRow();
+      }
+   }
+   }
+}
+
 //------------------------------------------------------------------------------
 // Method       : nextrow()
 // Filename     : fglform.cpp
@@ -3726,7 +3767,8 @@ MainFrame::vdcdebug("FglForm","checkActions", "");
             for(int j=0; j<ql_contextEvents.last().count(); j++){
                Fgl::Event ev = ql_contextEvents.last().at(j);
                if(ev.type == Fgl::ONACTION_EVENT ||
-                  ev.type == Fgl::ONKEY_EVENT){
+                  ev.type == Fgl::ONKEY_EVENT ||
+                  ev.type == Fgl::GUI_ACTION_EVENT){
                   if(fAction->name() == ev.attribute){
                      fAction->setEnabled(true);
                      if(fAction->defaultView() == "yes"){
@@ -3870,14 +3912,17 @@ MainFrame::vdcdebug("FglForm","handleGuiAction", "Action* fAction");
    }
 
    if(fAction->name() == "insert"){
+      insert();
       return true;
    }
 
    if(fAction->name() == "append"){
+      insert();
       return true;
    }
 
    if(fAction->name() == "delete"){
+      remove();
       return true;
    }
 
