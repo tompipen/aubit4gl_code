@@ -1756,8 +1756,6 @@ MainFrame::vdcdebug("WidgetHelper","createComboBox", "const QDomElement& formFie
    int height = comboBoxElement.attribute("height").toInt();
    if(height < 1) height = 1;
 
-   comboBox->setFixedHeight(defHeight*height);
-
    QString comments = comboBoxElement.attribute("comments");
    if(!comments.isEmpty()){
       comboBox->setToolTip(comments);
@@ -1780,7 +1778,8 @@ MainFrame::vdcdebug("WidgetHelper","createComboBox", "const QDomElement& formFie
 
    QFontMetrics fm = comboBox->fontMetrics();
    int width = w*fm.averageCharWidth()*VDC::getFieldSizeFactor()+10;
-   comboBox->setFixedWidth(width);
+   comboBox->resize(QSize(width, defHeight*height));
+   comboBox->setStyleSheet(" QComboBox::drop-down { padding-right: 2px; } ");
 
 
    return comboBox;
