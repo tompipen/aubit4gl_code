@@ -118,7 +118,7 @@ MainFrame::vdcdebug("ActionMenu","createButton", "QString id, QString text, QStr
    button->setShortcut(shortcut);
    button->setIcon(QIcon(QString("pics:blank.png")));
    button->setIconSize(QSize(40,25));
-   button->setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Fixed);
+   button->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Fixed);
 
 
    qh_buttonpals[text.trimmed()] = button->palette();
