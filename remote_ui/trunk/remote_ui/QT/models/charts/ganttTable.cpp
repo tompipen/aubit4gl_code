@@ -198,7 +198,11 @@ bool GanttTable::setData( const QModelIndex& index,  const QVariant& value, int 
         case Qt::DisplayRole:
         case Qt::EditRole:
         case KDGantt::TaskCompletionRole:
-            node->setCompletion(value.toInt());
+            int wert = value.toInt();
+            if(wert <= 0){
+                wert = -1;
+            }
+            node->setCompletion(wert);
             emit dataChanged( index, index );
             break;
         }
