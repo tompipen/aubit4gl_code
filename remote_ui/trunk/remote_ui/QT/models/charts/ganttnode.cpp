@@ -12,6 +12,7 @@ Node::Node( Node* parent )
       m_position( KDGantt::StyleOptionGanttItem::Right )
 {
     if ( m_parent ) m_parent->addChild( this );
+    m_taskNr = QString::number(Node::nodeCount++);
 }
 
 Node::~Node()
@@ -19,6 +20,7 @@ Node::~Node()
     qDeleteAll(m_children);
 }
 
+int Node::nodeCount = 0;
 
 void Node::addChild( Node* child )
 {

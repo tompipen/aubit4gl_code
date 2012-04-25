@@ -12,7 +12,7 @@ using namespace KDGantt;
 
 GanttTable::GanttTable( QObject* parent ): QAbstractItemModel( parent )
 {
-    columns = defaultColumns;      // default number of columns
+    columns = defaultColumns;
     m_root = new Node();
 }
 
@@ -250,7 +250,6 @@ bool GanttTable::readCSV( GanttTable* model, KDGantt::View* view, QString &filen
     QFile datei(QDir::tempPath() + "/" + filename);
     QStringList strList;
     QHash<QString, int> currentTask, dependTask;
-    QString dependString, currentString;
 
     if( datei.open(QIODevice::ReadOnly)){
 
@@ -264,6 +263,7 @@ bool GanttTable::readCSV( GanttTable* model, KDGantt::View* view, QString &filen
             view->setSelectionModel( new QItemSelectionModel(model));
             for( int row = 0; row < strList.size(); row++ ){
                 model->appendRow( model , view);
+                Node::nodeCount++;
                 QStringList zeilenLeiste = strList.at( row ).split( QString( "|" ));
                 QList<QString> dependList;
                 Node *node = new Node();
@@ -351,7 +351,6 @@ bool GanttTable::saveCSV(GanttTable* model, QString &filename){
             {
                 QModelIndex index = model->index(row, column, QModelIndex() );
                 strList << model->data(index, Qt::DisplayRole).toString();
-                qDebug()<< model->data(index, Qt::DisplayRole).toString();;
             }
             stream << strList.join( "|" )+"\n";
         }

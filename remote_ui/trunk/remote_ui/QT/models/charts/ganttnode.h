@@ -48,6 +48,7 @@ public:
     QString   getTaskNr() const;
     QString   getDependTask() const;
     QList<QString> getDependList() const;
+    static int nodeCount;
 
 private:
     Node* m_parent;
@@ -59,6 +60,7 @@ private:
     QString m_taskNr, m_dependTask;
     KDGantt::StyleOptionGanttItem::Position m_position;
     QList<QString> m_dependList;
+
 
 };
 
