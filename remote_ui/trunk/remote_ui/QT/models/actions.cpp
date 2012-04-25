@@ -130,7 +130,8 @@ MainFrame::vdcdebug("Actions","parseElement", "QDomNode xmlNode");
           } else {
               Action *action = new Action(text.toLower(), text, p_fglform);
               qsl_names << text.toLower();
-              action->setAcceleratorName2(shortcut);
+              action->setAcceleratorName(shortcut);
+              action->setShortcut(shortcut);
               ql_actions << action;
           }
       }
