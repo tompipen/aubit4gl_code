@@ -2693,12 +2693,14 @@ MainFrame::vdcdebug("DebugWindow","debugOut", "QString debugtext");
 //debugfull.append(debugtext);
 xml += debugtext;
 if(isVisible())
-    edit->setText(debugtext);
+    edit->append(debugtext);
+
 }
 void DebugWindow::clear()
 {
 MainFrame::vdcdebug("DebugWindow","clear", "");
     edit->clear();
+    xml = "";
 }
 void DebugWindow::forwardsearch()
 {
@@ -2729,5 +2731,12 @@ void DebugWindow::closeEvent(QCloseEvent *event)
 {
 MainFrame::vdcdebug("DebugWindow","closeEvent", "QCloseEvent *event");
    Q_UNUSED(event);
+   edit->clear();
    emit debugClose();
+}
+
+void DebugWindow::showEvent(QShowEvent *ev)
+{
+  Q_UNUSED(ev);
+  edit->setText(xml);
 }

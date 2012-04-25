@@ -48,6 +48,7 @@ class DebugWindow : public QDialog
       void clear();
       void backwardsearch();
       void closeEvent(QCloseEvent *event);
+      void showEvent(QShowEvent *ev);
     signals:
       void debugClose();
     private:
