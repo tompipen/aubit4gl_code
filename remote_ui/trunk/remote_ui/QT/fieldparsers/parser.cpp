@@ -513,6 +513,10 @@ void Parser::handleTableColumn(const QDomNode& xmlNode){
              header->resizeSection(i, w+1);
           }
    }
+      else
+      {
+         header->resizeSection(i, w+1);
+      }
 
 
 
