@@ -5,6 +5,10 @@
 
 namespace VDC
 {
+  const int DEFAULT_HEIGHT = 21;
+
+
+
 
   void waitCursor();
   void arrowCursor();
