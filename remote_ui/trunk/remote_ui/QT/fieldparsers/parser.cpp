@@ -393,6 +393,11 @@ void Parser::handleTableColumn(const QDomNode& xmlNode){
    int pageSize = tableElement.attribute("pageSize").toInt();
    QString name = tableElement.attribute("tabName");
    int colCount = tableElement.childNodes().count();
+   QString formName = "";
+   if(FglForm *fglform = qobject_cast<FglForm*> (p_fglform))
+   {
+      formName = fglform->formName();
+   }
 
    TableModel *model = new TableModel(pageSize, colCount);
 
@@ -420,7 +425,12 @@ void Parser::handleTableColumn(const QDomNode& xmlNode){
 
    int recordWidth = 0;
 
+   QHeaderView *vert = p_screenRecord->verticalHeader();
+   vert->setDefaultSectionSize(VDC::DEFAULT_HEIGHT+1);
+   vert->resizeSections(QHeaderView::Fixed);
+
    int height = p_screenRecord->verticalHeader()->defaultSectionSize();
+
 
    for(int i=0; i<pageSize; i++){
        recordHeight += height;
@@ -452,7 +462,6 @@ void Parser::handleTableColumn(const QDomNode& xmlNode){
       ql_fglFields << tableColumn;
       tableColumn->addField(wi);
       int w = wi->width();
-      int h = wi->height();
       delete wi;
  
       //int fieldCount = ql_formFields.count();
@@ -482,6 +491,29 @@ void Parser::handleTableColumn(const QDomNode& xmlNode){
  
       recordWidth += w + 8;
  
+      // restore if the column is hidden/shown
+
+      int hideColumn = VDC::readSettingsFromIni(formName, QString(p_screenRecord->accessibleName() + "/" + p_screenRecord->getColumnLabel(i)->objectName() + "/hideColumn")).toInt();
+      if(hideColumn > 0)
+      {
+          header->hideSection(VDC::readSettingsFromIni(formName, QString(p_screenRecord->accessibleName() + "/" + p_screenRecord->getColumnLabel(i)->objectName() + "/columnId")).toInt());
+      }
+      // restore the width for each column.
+      int columnId = VDC::readSettingsFromIni(formName, QString(p_screenRecord->accessibleName() + "/" + p_screenRecord->getColumnLabel(i)->objectName() + "/columnWidthId")).toInt();
+      int columnWidth = VDC::readSettingsFromIni(formName, QString(p_screenRecord->accessibleName() + "/" + p_screenRecord->getColumnLabel(i)->objectName() + "/columnWidth")).toInt();
+      if( columnWidth > 0 && columnId > 0)
+      {
+        //header->resizeSection(i, w+1);
+          header->resizeSection(columnId, columnWidth);
+      }
+      else
+      {
+         header->resizeSection(i, w+1);
+      }
+
+
+
+
       LineEditDelegate *de = new LineEditDelegate(currentElement, p_screenRecord);
       de->setObjectName(name);
       de->setProperty("fieldId", fieldId);
@@ -493,48 +525,31 @@ void Parser::handleTableColumn(const QDomNode& xmlNode){
 
       if(hidden)
          p_screenRecord->hideColumn(i);
-      // restore if the column is hidden/shown
-      if(FglForm *fglform = qobject_cast<FglForm*> (p_fglform))
-      {
-          if(p_screenRecord->getColumnLabel(i) != NULL) {
-              int hideColumn = VDC::readSettingsFromIni(fglform->formName(), QString(p_screenRecord->accessibleName() + "/" + p_screenRecord->getColumnLabel(i)->objectName() + "/hideColumn")).toInt();
-              if(hideColumn > 0)
-              {
-                  header->hideSection(VDC::readSettingsFromIni(fglform->formName(), QString(p_screenRecord->accessibleName() + "/" + p_screenRecord->getColumnLabel(i)->objectName() + "/columnId")).toInt());
-              }
-              // restore the width for each column.
-              int columnId = VDC::readSettingsFromIni(fglform->formName(), QString(p_screenRecord->accessibleName() + "/" + p_screenRecord->getColumnLabel(i)->objectName() + "/columnWidthId")).toInt();
-              int columnWidth = VDC::readSettingsFromIni(fglform->formName(), QString(p_screenRecord->accessibleName() + "/" + p_screenRecord->getColumnLabel(i)->objectName() + "/columnWidth")).toInt();
-              if( columnWidth > 0 && columnId > 0)
-              {
-                //header->resizeSection(i, w+1);
-                  header->resizeSection(columnId, columnWidth);
-              } else {
-                  header->resizeSection(i, w+1);
-              }
-          } else {
-              header->resizeSection(i, w+1);
-          }
-          QByteArray state = VDC::readSettingsFromIni1(fglform->formName(), QString(p_screenRecord->accessibleName() + "/state"));
-          if(state.isEmpty())
-          {
-              VDC::saveSettingsToIni(fglform->formName(), QString(p_screenRecord->accessibleName() + "/oldstate"), header->saveState());
-          }
-          header->restoreState(state);
-       }
 
    //   header->resizeSections(QHeaderView::Fixed);
-      QHeaderView *vert = p_screenRecord->verticalHeader();
-      vert->setDefaultSectionSize(h+1); 
-      vert->resizeSections(QHeaderView::Fixed);
-
-      for(int i=0; i<vert->count(); i++){
-         vert->resizeSection(i, h+1);
-      }
 
       ql_formFields << (QWidget*) de;
    }
- 
+
+
+/*
+   for(int i=0; i<vert->count(); i++){
+      vert->resizeSection(i, VDC::DEFAULT_HEIGHT);
+   }
+*/
+
+
+   //Its enough to save the state at the end of the creation. otherwise on every column it will be saved all states(with 15 coloumns 15 times)
+   QByteArray state = VDC::readSettingsFromIni1(formName, QString(p_screenRecord->accessibleName() + "/state"));
+   if(state.isEmpty())
+   {
+       VDC::saveSettingsToIni(formName, QString(p_screenRecord->accessibleName() + "/oldstate"), header->saveState());
+   }
+   header->restoreState(state);
+
+
+
+
    //p_screenRecord->setFixedSize(recordWidth, recordHeight);
    //p_screenRecord->resize();
 

@@ -33,7 +33,7 @@
 #include "table.h"
 #include "actions.h"
 
-int defHeight = 21;
+//int defHeight = 21;
 
 FormField::FormField(QObject *parent) : QObject(parent)
 {
@@ -291,7 +291,7 @@ LineEdit::LineEdit(QWidget *parent)
     : QLineEdit(parent)
 {
    setProperty("touched", false);
-   this->setFixedHeight(defHeight);
+   this->setFixedHeight(VDC::DEFAULT_HEIGHT);
    this->setContextMenuPolicy(Qt::CustomContextMenu);
 /*   QFont textFont;
    textFont.setPixelSize(12);
@@ -963,7 +963,7 @@ MainFrame::vdcdebug("WidgetHelper","createLabel", "const QDomElement& formField,
   // QPalette p = label->palette();
   // p.setColor(QPalette::Foreground, Qt::blue);
  //  label->setPalette(p);
-   label->setFixedHeight(defHeight);
+   label->setFixedHeight(VDC::DEFAULT_HEIGHT);
   // label->setFixedWidth(w);
    return label;
 }
@@ -1077,9 +1077,9 @@ MainFrame::vdcdebug("WidgetHelper","createWebView", "const QDomElement& formFiel
    } else {
 	if (h>0) { 
 		// Specified a Line height...
-   		browser->setFixedHeight(defHeight*h);
+		browser->setFixedHeight(VDC::DEFAULT_HEIGHT*h);
 	} else {
-   		browser->setFixedHeight(defHeight);
+		browser->setFixedHeight(VDC::DEFAULT_HEIGHT);
 	}
    }
 
@@ -1184,15 +1184,15 @@ MainFrame::vdcdebug("WidgetHelper","createEdit", "const QDomElement& formField, 
    if(parent != NULL) {
        if(parent->accessibleName() != "FGLFORM") {
            if(parent->isEnabled()) {
-           lineEdit->resize(QSize(width, defHeight));
+           lineEdit->resize(QSize(width, VDC::DEFAULT_HEIGHT));
            }
        } else {
            lineEdit->setFixedWidth(width);
-           lineEdit->setFixedHeight(defHeight);
+           lineEdit->setFixedHeight(VDC::DEFAULT_HEIGHT);
        }
    } else {
        lineEdit->setFixedWidth(width);
-       lineEdit->setFixedHeight(defHeight);
+       lineEdit->setFixedHeight(VDC::DEFAULT_HEIGHT);
    }
 
    if(FglForm *p_fglform = qobject_cast<FglForm*> (parent)) {
@@ -1258,15 +1258,15 @@ MainFrame::vdcdebug("WidgetHelper","createButtonEdit", "const QDomElement& formF
    if(parent != NULL) {
        if(parent->accessibleName() != "FGLFORM") {
            if(parent->isEnabled()) {
-           lineEdit->resize(QSize(width, defHeight));
+           lineEdit->resize(QSize(width, VDC::DEFAULT_HEIGHT));
            }
        } else {
            lineEdit->setFixedWidth(width);
-           lineEdit->setFixedHeight(defHeight);
+           lineEdit->setFixedHeight(VDC::DEFAULT_HEIGHT);
        }
    } else {
        lineEdit->setFixedWidth(width);
-       lineEdit->setFixedHeight(defHeight);
+       lineEdit->setFixedHeight(VDC::DEFAULT_HEIGHT);
    }
 
    if(FglForm *p_fglform = qobject_cast<FglForm*> (parent)) {
@@ -1548,15 +1548,15 @@ MainFrame::vdcdebug("WidgetHelper","createDateEdit", "const QDomElement& formFie
    if(parent != NULL) {
        if(parent->accessibleName() != "FGLFORM") {
            if(parent->isEnabled()) {
-           lineEdit->resize(QSize(width, defHeight));
+           lineEdit->resize(QSize(width, VDC::DEFAULT_HEIGHT));
            }
        } else {
            lineEdit->setFixedWidth(width);
-           lineEdit->setFixedHeight(defHeight);
+           lineEdit->setFixedHeight(VDC::DEFAULT_HEIGHT);
        }
    } else {
        lineEdit->setFixedWidth(width);
-       lineEdit->setFixedHeight(defHeight);
+       lineEdit->setFixedHeight(VDC::DEFAULT_HEIGHT);
    }
 
    if(FglForm *p_fglform = qobject_cast<FglForm*> (parent)) {
@@ -1682,22 +1682,22 @@ MainFrame::vdcdebug("WidgetHelper","createTextEdit", "const QDomElement& formFie
 
    if(stretch == "none")
    {
-      textEdit->setFixedHeight(height*defHeight);
+      textEdit->setFixedHeight(height*VDC::DEFAULT_HEIGHT);
       textEdit->setFixedWidth(width);
 
    }
    if(stretch == "both")
    {
-       textEdit->setMinimumSize(width,defHeight*height);
+       textEdit->setMinimumSize(width,VDC::DEFAULT_HEIGHT*height);
    }
    if(stretch == "y")
    {
-       textEdit->setMinimumHeight(defHeight*height);
+       textEdit->setMinimumHeight(VDC::DEFAULT_HEIGHT*height);
        textEdit->setFixedWidth(width);
    }
    if(stretch == "x")
    {
-       textEdit->setFixedHeight(defHeight*height);
+       textEdit->setFixedHeight(VDC::DEFAULT_HEIGHT*height);
        textEdit->setMinimumWidth(width);
    }
 
@@ -1778,7 +1778,7 @@ MainFrame::vdcdebug("WidgetHelper","createComboBox", "const QDomElement& formFie
 
    QFontMetrics fm = comboBox->fontMetrics();
    int width = w*fm.averageCharWidth()*VDC::getFieldSizeFactor()+10;
-   comboBox->resize(QSize(width, defHeight*height));
+   comboBox->resize(QSize(width, VDC::DEFAULT_HEIGHT*height));
 
 
    return comboBox;
@@ -1841,7 +1841,7 @@ MainFrame::vdcdebug("WidgetHelper","createCheckBox", "const QDomElement& formFie
    int height = checkBoxElement.attribute("height").toInt();
    if(height < 1) height = 1;
 
-   checkBox->setFixedHeight(defHeight*height);
+   checkBox->setFixedHeight(VDC::DEFAULT_HEIGHT*height);
 
    QString comments = checkBoxElement.attribute("comments");
    if(!comments.isEmpty()){
@@ -1900,7 +1900,7 @@ MainFrame::vdcdebug("WidgetHelper","createProgressBar", "const QDomElement& form
    int height = progressBarElement.attribute("height").toInt();
    if(height < 1) height = 1;
 
-   progressBar->setFixedHeight(defHeight*height);
+   progressBar->setFixedHeight(VDC::DEFAULT_HEIGHT*height);
 
    QString comments = progressBarElement.attribute("comments");
    if(!comments.isEmpty()){
