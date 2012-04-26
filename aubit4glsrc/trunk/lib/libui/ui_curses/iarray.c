@@ -24,10 +24,10 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.175 2012-03-28 19:10:29 mikeaubury Exp $
+# $Id: iarray.c,v 1.176 2012-04-26 16:54:42 mikeaubury Exp $
 #*/
 #ifndef lint
-static char const module_id[] = "$Id: iarray.c,v 1.175 2012-03-28 19:10:29 mikeaubury Exp $";
+static char const module_id[] = "$Id: iarray.c,v 1.176 2012-04-26 16:54:42 mikeaubury Exp $";
 #endif
 
 /**
@@ -400,6 +400,7 @@ A4GL_idraw_arr (struct s_inp_arr *inpa, int type, int no)
 			// If this is the current row - just the the "current row display" attribute...
 	      		attr = A4GL_strattr_to_num (inpa->curr_display);
   		}
+		A4GL_debug("MJA SETTING %d to %x [%d]\n", scr_line,attr, type);
 		
 	    	A4GL_set_field_attr_with_attr_already_determined (inpa->field_list[scr_line - 1][a], attr, FGL_CMD_INPUT);
 	}
@@ -2656,6 +2657,7 @@ process_control_stack_internal (struct s_inp_arr *arr,  struct aclfgl_event_list
 #endif
 		  if (arr->curr_line_is_new == 1 && !A4GL_something_in_entire_row_has_changed (arr, arr->scr_line - 1))
 		    {		// They didn't change anything - so not a real insert...
+			A4GL_debug("Abort insert");
 		      arr->no_arr--;
 		      A4GL_set_arr_count (arr->no_arr);	// No new lines ...
 		    }
@@ -3038,8 +3040,13 @@ process_control_stack_internal (struct s_inp_arr *arr,  struct aclfgl_event_list
 		{
 		  if (!A4GL_something_in_entire_row_has_changed (arr, arr->scr_line - 1))
 		    {
+			if (arr->curr_display  ) {
+  		  	A4GL_idraw_arr_all (arr);
+			}
+			A4GL_debug("Abort insert 2");
 		      arr->curr_line_is_new = 0;
 		  arr->no_arr--;
+			
 		  A4GL_set_arr_count (arr->no_arr);	// No new lines ...
 		}
 	    }
