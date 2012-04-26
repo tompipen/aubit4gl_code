@@ -11,6 +11,7 @@
 
 bool Reportgen::startReportTemplate(QString odffile, QString sedfile, QFileInfo zielDatei)
 {
+    //emit createRepgenProgressBar();
     readSedFile(sedfile);
 
     ZipUnzip *p_zipunzip = new ZipUnzip();
@@ -148,6 +149,7 @@ bool Reportgen::startReportTemplate(QString odffile, QString sedfile, QFileInfo 
            for(int j=1; j < varCount+1; j++) {
                qDebug() << "ergaenze Ebene";
                qDebug() << j << "von" << varCount;
+               //emit setRepgenText(QString("Ergaenze Template %1 von %2").arg(j).arg(varCount));
                content.append(prepareTemplateContent(i+1, j, oldFileName.baseName() + "/content.xml", sedfile));
                xmlsave << content;
                content.clear();
@@ -1435,7 +1437,7 @@ bool Reportgen::replaceTemplateVars(QString odffile, QString sedfile, QFileInfo 
                                                 }
                                                 if(sedLine.isEmpty())
                                                 {
-                                                    chartValues1 << "(null)";
+                                                    //chartValues1 << "(null)";
                                                 } else {
                                                     chartValues1 << sedLine;
                                                 }
@@ -1451,6 +1453,7 @@ bool Reportgen::replaceTemplateVars(QString odffile, QString sedfile, QFileInfo 
                                                 sedLine.replace(",",".");
                                             }
                                             chartValues2 << sedLine;
+                                            qDebug() << "chartValues2 "<< sedLine;
                                         }
                                     }
                                 }
@@ -1483,6 +1486,9 @@ bool Reportgen::replaceTemplateVars(QString odffile, QString sedfile, QFileInfo 
     switch(diag_state)
     {
         case 1:
+    {
+        qDebug() << "chartValues1.count()" << chartValues1.count();
+        qDebug() << "chartValues2.count()" << chartValues2.count();
             if(chartValues1.count() > chartValues2.count())
             {
                 wiederholen = chartValues2.count();
@@ -1490,28 +1496,50 @@ bool Reportgen::replaceTemplateVars(QString odffile, QString sedfile, QFileInfo 
             {
                 wiederholen = chartValues1.count();
             }
+            qDebug() << "wiederholen" << wiederholen;
 
-                for(int i=0; i < wiederholen; i++)
+                /*for(int i=0; i < wiederholen; i++)
                 {
                 //qDebug() << "Werte fuer KD Charts: " << chartValues1.at(i) << ","<< chartValues2.at(i);
-                    if(!chartValues1.at(i).isNull() && !chartValues2.at(i).isNull())
+                    if(!chartValues1.at(i).isEmpty() && !chartValues2.at(i).isEmpty())
                     {
+                        //qDebug() << "chartValues1.at(i)" << chartValues1.at(i) << chartValues2.at(i);
                         emit addChartValue(chartValues1.at(i), chartValues2.at(i));
                     }
+                }*/
+            QVector<QVariant> wertList;
+            QVector<QVariant> nameList;
+            if(wertList.isEmpty())
+            {
+                wertList << "VENTAS BAR DIAGRAMM";
+            }
+            for(int i=0; i < wiederholen; i++)
+            {
+                if(!chartValues2.at(i).isEmpty() && !chartValues1.at(i).isEmpty())
+                {
+                    nameList << chartValues1.at(i);
+                    wertList << chartValues2.at(i);
                 }
+
+            }
+            /*qDebug() << "nameList: " << nameList;
+            qDebug() << "wertList: " << wertList;*/
+            emit addChartValue(nameList, wertList);
           break;
+    }
         case 2:
-        QVector<QVariant> wertList;
-        QVector<QVariant> nameList;
-        if(wertList.isEmpty())
+    {
+        QVector<QVariant> wertList1;
+        QVector<QVariant> nameList1;
+        if(wertList1.isEmpty())
         {
-            wertList << "Test Titel";
+            wertList1 << "VENTAS PIE DIAGRAMM";
         }
         for(int i=0; i < chartValues1.count(); i++)
         {
             if(!chartValues2.at(i).isEmpty())
             {
-                wertList << chartValues2.at(i);
+                wertList1 << chartValues2.at(i);
             }
 
         }
@@ -1519,12 +1547,13 @@ bool Reportgen::replaceTemplateVars(QString odffile, QString sedfile, QFileInfo 
         {
             if(!chartValues1.at(i).isEmpty())
             {
-                nameList << chartValues1.at(i);
+                nameList1 << chartValues1.at(i);
             }
         }
-        addChartValue(nameList, wertList);
+        emit addChartValue(nameList1, wertList1);
         break;
 
+    }
     }
 
     if(makeChart == 1)
