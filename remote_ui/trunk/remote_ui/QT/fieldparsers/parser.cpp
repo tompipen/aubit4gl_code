@@ -493,23 +493,26 @@ void Parser::handleTableColumn(const QDomNode& xmlNode){
  
       // restore if the column is hidden/shown
 
-      int hideColumn = VDC::readSettingsFromIni(formName, QString(p_screenRecord->accessibleName() + "/" + p_screenRecord->getColumnLabel(i)->objectName() + "/hideColumn")).toInt();
-      if(hideColumn > 0)
+      if(p_screenRecord->getColumnLabel(i)!= NULL)
       {
-          header->hideSection(VDC::readSettingsFromIni(formName, QString(p_screenRecord->accessibleName() + "/" + p_screenRecord->getColumnLabel(i)->objectName() + "/columnId")).toInt());
-      }
-      // restore the width for each column.
-      int columnId = VDC::readSettingsFromIni(formName, QString(p_screenRecord->accessibleName() + "/" + p_screenRecord->getColumnLabel(i)->objectName() + "/columnWidthId")).toInt();
-      int columnWidth = VDC::readSettingsFromIni(formName, QString(p_screenRecord->accessibleName() + "/" + p_screenRecord->getColumnLabel(i)->objectName() + "/columnWidth")).toInt();
-      if( columnWidth > 0 && columnId > 0)
-      {
-        //header->resizeSection(i, w+1);
-          header->resizeSection(columnId, columnWidth);
-      }
-      else
-      {
-         header->resizeSection(i, w+1);
-      }
+          int hideColumn = VDC::readSettingsFromIni(formName, QString(p_screenRecord->accessibleName() + "/" + p_screenRecord->getColumnLabel(i)->objectName() + "/hideColumn")).toInt();
+          if(hideColumn > 0)
+          {
+              header->hideSection(VDC::readSettingsFromIni(formName, QString(p_screenRecord->accessibleName() + "/" + p_screenRecord->getColumnLabel(i)->objectName() + "/columnId")).toInt());
+          }
+          // restore the width for each column.
+          int columnId = VDC::readSettingsFromIni(formName, QString(p_screenRecord->accessibleName() + "/" + p_screenRecord->getColumnLabel(i)->objectName() + "/columnWidthId")).toInt();
+          int columnWidth = VDC::readSettingsFromIni(formName, QString(p_screenRecord->accessibleName() + "/" + p_screenRecord->getColumnLabel(i)->objectName() + "/columnWidth")).toInt();
+          if( columnWidth > 0 && columnId > 0)
+          {
+            //header->resizeSection(i, w+1);
+              header->resizeSection(columnId, columnWidth);
+          }
+          else
+          {
+             header->resizeSection(i, w+1);
+          }
+   }
 
 
 
