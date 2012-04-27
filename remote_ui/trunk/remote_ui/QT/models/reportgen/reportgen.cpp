@@ -1400,7 +1400,7 @@ bool Reportgen::replaceTemplateVars(QString odffile, QString sedfile, QFileInfo 
                 }
                 qDebug() << "diag_state" << diag_state;
                 emit createChart(temp_var);
-                ausgabe.replace(QString("<text:p>" + temp_var + "</text:p>"), QString("<draw:frame table:end-cell-address=\"Tabelle1.E20\" draw:text-style-name=\"P1\" svg:width=\"16.93cm\" svg:x=\"0.081cm\" draw:style-name=\"gr1\" svg:y=\"0.016cm\" draw:name=\"Graphics 1\" table:end-x=\"2.181cm\" table:end-y=\"0.419cm\" svg:height=\"12.70cm\" draw:z-index=\"0\"><draw:image xlink:type=\"simple\" xlink:show=\"embed\" xlink:href=\"Pictures/" + diag_bild + "\" xlink:actuate=\"onLoad\"> <text:p/></draw:image></draw:frame>"));
+                ausgabe.replace(QString("<text:p>" + temp_var + "</text:p>"), QString("<draw:frame table:end-cell-address=\"Tabelle1.E22\" table:end-x=\"0.6953in\" table:end-y=\"0.0075in\" draw:z-index=\"0\" draw:name=\"Graphics 1\" draw:style-name=\"gr1\" draw:text-style-name=\"P1\" svg:width=\"6.5126in\" svg:height=\"3.8528in\" svg:x=\"0.585in\" svg:y=\"0.0732in\"><draw:image xlink:href=\"Pictures/" + diag_bild + "\" xlink:type=\"simple\" xlink:show=\"embed\" xlink:actuate=\"onLoad\"><text:p/></draw:image></draw:frame>"));
 
                 makeChart = 1;
             }
