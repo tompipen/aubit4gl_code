@@ -42,7 +42,7 @@ public:
     QDateTime getStartTime() const;
     QDateTime getEndTime() const;
     QString   getLabel() const;
-    KDGantt::ItemType getType() const;
+    int getType() const;
     int getCompletion() const;
     KDGantt::StyleOptionGanttItem::Position getPosition() const ;
     QString   getTaskNr() const;
@@ -53,7 +53,7 @@ public:
 private:
     Node* m_parent;
     QList<Node*> m_children;
-    KDGantt::ItemType m_itemType;
+    int m_itemType;
     QDateTime m_startTime, m_endTime;
     QString m_label;
     int m_completion;

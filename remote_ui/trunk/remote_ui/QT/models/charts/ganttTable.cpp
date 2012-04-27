@@ -103,7 +103,7 @@ QVariant GanttTable::data( const QModelIndex& index, int role ) const
         switch( role ) {
         case Qt::DisplayRole:
         case Qt::EditRole:
-            return qVariantFromValue<int>( node->getType() );
+            return node->getType();
         }
     } else if ( index.column() == START_TIME ) {
         switch( role ) {
@@ -171,6 +171,7 @@ bool GanttTable::setData( const QModelIndex& index,  const QVariant& value, int 
         switch( role ) {
         case Qt::DisplayRole:
         case Qt::EditRole:
+        case KDGantt::ItemTypeRole:
             node->setType( value.toInt() );
             emit dataChanged( index, index );
             break;

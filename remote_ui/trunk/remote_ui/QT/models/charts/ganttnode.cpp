@@ -115,7 +115,7 @@ QString Node::getLabel() const {
     return m_label;
 }
 
-KDGantt::ItemType Node::getType() const {
+int Node::getType() const {
     return m_itemType;
 }
 
