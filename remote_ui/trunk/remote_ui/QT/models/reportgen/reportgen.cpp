@@ -38,13 +38,8 @@ bool Reportgen::startReportTemplate(QString odffile, QString sedfile, QFileInfo 
    QFile *file = new QFile(QDir::tempPath() + "/" + fileBaseName + "/1-content.xml");
 
    if(!file->open(QIODevice::WriteOnly | QIODevice::Truncate)) {
-       qDebug() << "(startReport): XML Datei konnte nicht erzeugt werden." << "";
-       QMessageBox msgbox;
-       msgbox.setText("Ventas Report Generator");
-       msgbox.setInformativeText("Es ist ein Fehler aufgetreten beim erzeugen des Dokumentes.");
-       msgbox.setIcon(QMessageBox::Information);
-       msgbox.exec();
-       return false;
+       qDebug() << "1-content.xml Konnte nicht zum schreiben erstellt werden. Permission Problem?";
+       return 404;
    }
 
    QTextStream xmlsave(file);
@@ -60,18 +55,6 @@ bool Reportgen::startReportTemplate(QString odffile, QString sedfile, QFileInfo 
            qDebug() << "gefunden: " << gefunden;
        }
    }
-
-   if(gefunden == 0)
-   {
-       qDebug() << "Es sind keine Ebenen im Dokument vorhanden ABBRUCH!" << "";
-       QMessageBox msgbox;
-       msgbox.setText("Ventas Report Generator");
-       msgbox.setInformativeText("Das Dokument entaehlt keine Ebenen. Falsches Dokument ausgewaehlt?");
-       msgbox.setIcon(QMessageBox::Information);
-       msgbox.exec();
-       return false;
-   }
-
    //Ueberpruefen der SED Datei wie viele eintraege der ersten Variable von der 1ten Ebene vorhanden ist.
 
   for(int j=0; j < sed_fields.count(); j++)
@@ -80,8 +63,6 @@ bool Reportgen::startReportTemplate(QString odffile, QString sedfile, QFileInfo 
           {
               anfang++;
               varCount = varCount + 1;
-              //qDebug() << "sed_fields.at" << sed_fields.at(j);
-              //qDebug() << "QString: " << QString("@%1").arg(anfang);
           }
        qDebug() << "varCount: " << varCount;
   }
@@ -92,7 +73,6 @@ bool Reportgen::startReportTemplate(QString odffile, QString sedfile, QFileInfo 
            i = i + 1;
            for(int k=0; k < sed_fields.count(); k++)
            {
-               qDebug() << "Suche in SED nach Anfang: " << k << "von" << sed_fields.count();
                if(sed_fields.at(k).contains(QString("%1"+ temp_fields.at(i)).arg(ebene1)))
                {
                    ebene1++;
@@ -124,23 +104,6 @@ bool Reportgen::startReportTemplate(QString odffile, QString sedfile, QFileInfo 
    } else {
        wiederholen = wiederholen + ebene1;
    }
-
-   /*for(int i=0; i < temp_fields.count(); i++) {
-       if(temp_fields.at(i).contains("[")) {
-           i = i + 1;
-           if(!temp_fields.at(i).contains("[") && !temp_fields.at(i).contains("]")) {
-               for(int k=0; k<sed_fields.count(); k++) {
-                   for(int j=0; j<sed_fields.count(); j++) {
-                       if(sed_fields.at(j).contains(QString("@%1" + temp_fields.at(i)).arg(k))) {
-                           wiederholen = wiederholen + 1;
-                       }
-                   }
-
-               }
-               break;
-           }
-       }
-   }*/
 
    for(int i=0; i < gefunden; i++) {
        if(oldFileName.completeSuffix() == "ods")
@@ -180,7 +143,12 @@ bool Reportgen::startReportTemplate(QString odffile, QString sedfile, QFileInfo 
        replaceEbene(file, fileBaseName);
    }
 
-   replaceTemplateVars(fileBaseName, sedfile, zielDatei);
+   if(varCount > 0)
+   {
+       replaceTemplateVars(fileBaseName, sedfile, zielDatei);
+   } else {
+       replaceTemplateWithoutPosition(fileBaseName, sedfile, zielDatei);
+   }
 
    return true;
 
@@ -1324,6 +1292,109 @@ bool Reportgen::getTemplateVars(QString filename)
         file->close();
     }
 
+}
+QString Reportgen::getVariable(QString line)
+{
+    int start = 0;
+    QString behalten;
+    for(int i=0; i < line.length(); i++)
+    {
+        if(line.at(i) == QChar('@'))
+        {
+                start = 1;
+        }
+        if(line.at(i) == QChar('<') || line.at(i) == QChar(' '))
+        {
+            start = 0;
+        }
+
+        if(start > 0)
+        {
+            behalten.append(line.at(i));
+        }
+    }
+    return behalten;
+}
+
+bool Reportgen::replaceTemplateWithoutPosition(QString odffile, QString sedFile, QFileInfo zielDatei)
+{
+    QFile *xmlFile = new QFile(QDir::tempPath() + "/" + odffile + "/content.xml");
+    QDomDocument doc;
+    QString xmlString;
+    QString xmlLine;
+    QString xmlOutString;
+    QString xmlVar;
+    QString sedAusgabe;
+
+
+    temp_fields.clear();
+    getTemplateVars(odffile + "/content.xml");
+
+    if(!xmlFile->open(QIODevice::ReadOnly))
+    {
+        qDebug() << "(replaceTemplateWithoutPosition()): Datei konnte nicht zum Schreiben geoeffnet werden";
+        return 404;
+    }
+    doc.setContent(xmlFile);
+
+
+    xmlString = doc.toString();
+    QTextStream streamIn(&xmlString);
+
+    while(!streamIn.atEnd())
+    {
+        xmlLine = streamIn.readLine();
+
+        if(xmlLine.contains("@"))
+        {
+            xmlVar = getVariable(xmlLine);
+            if(checkSedFile(xmlVar, sedFile))
+            {
+                for(int j=0; j < sed_fields.count(); j++)
+                {
+                    if(sed_fields.at(j).contains(xmlVar))
+                    {
+                        sedAusgabe = sed_fields.at(j);
+                        sedAusgabe.remove(QString(xmlVar + "/"));
+                        xmlLine.replace(xmlVar, sedAusgabe);
+                    }
+                }
+            } else {
+                xmlLine.remove(xmlVar);
+            }
+        }
+        if(xmlLine.contains("[P") || xmlLine.contains("]P"))
+        {
+            xmlLine.remove("[P1[");
+            xmlLine.remove("[P2[");
+            xmlLine.remove("[P3[");
+            xmlLine.remove("]P3]");
+            xmlLine.remove("]P2]");
+            xmlLine.remove("]P1]");
+        }
+        xmlOutString.append(xmlLine);
+    }
+
+    if(xmlFile->isOpen())
+    {
+        xmlFile->close();
+    }
+
+    if(!xmlFile->open(QIODevice::WriteOnly))
+    {
+        qDebug() << "(replaceTemplateWithoutPosition()): Konnte Datei nicht zum Schreiben oeffnen.";
+        return 404;
+    }
+
+    QTextStream xmlOut(xmlFile);
+    xmlOut << xmlOutString;
+
+    xmlFile->close();
+
+
+    ZipUnzip *p_zip = new ZipUnzip();
+    p_zip->zipFileArchiv(QDir::tempPath(), odffile, zielDatei);
+    return true;
 }
 
 //------------------------------------------------------------------------------

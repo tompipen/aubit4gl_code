@@ -14,6 +14,7 @@ class Reportgen : public QThread
 public:
     bool createInfoFile(QFileInfo odffile, QFileInfo zieldatei);
     bool replaceTemplateVars(QString odffile, QString sedfile, QFileInfo zielDatei);
+    bool replaceTemplateWithoutPosition(QString odffile, QString sedFile, QFileInfo zielDatei);
     bool startReportTemplate(QString odffile, QString sedfile, QFileInfo zielDatei);
     bool replaceEbene(QFile *file, QString odffile);
     int checkSedFile(QString fieldname, QString filename);
@@ -31,6 +32,7 @@ public:
     bool getTemplateVars(QString filename);
     bool checkMetaFile(QString odffile);
     bool replaceMetaFile(QString odffile);
+    QString getVariable(QString);
 
     typedef QVector<QVariant> chartVector;
 
