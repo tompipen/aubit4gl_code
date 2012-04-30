@@ -1306,13 +1306,11 @@ QMenu* FglForm::createMenuHideShowFields(QObject *obj)
                     } else {
                         rightAct->setChecked(false);
                     }
+                    hideFields->addAction(rightAct);
                  } else {
                     rightAct = new QAction(ql_fglFields.at(i)->colName(), this);
+                    hideFields->addAction(rightAct);
                 }
-            }
-            if(rightAct != NULL)
-            {
-                hideFields->addAction(rightAct);
             }
         }
         hideFields->addSeparator();
