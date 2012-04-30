@@ -1310,7 +1310,10 @@ QMenu* FglForm::createMenuHideShowFields(QObject *obj)
                     rightAct = new QAction(ql_fglFields.at(i)->colName(), this);
                 }
             }
-            hideFields->addAction(rightAct);
+            if(rightAct != NULL)
+            {
+                hideFields->addAction(rightAct);
+            }
         }
         hideFields->addSeparator();
         resetAct = new QAction("Standardeinstellung wiederherstellen", this);
