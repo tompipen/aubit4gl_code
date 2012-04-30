@@ -1139,12 +1139,24 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
           nextfield();
           return true;
       }
-      if(TextEdit *te = qobject_cast<TextEdit *> (obj))
+      /*if(TextEdit *te = qobject_cast<TextEdit *> (obj))
       {
       }
       else
-      {
+      {*/
+      qDebug() << "context->fieldList()" << context->fieldList();
          if(keyEvent->key() == Qt::Key_Up ) {
+             if(TextEdit *te = qobject_cast<TextEdit *> (obj))
+             {
+                 Q_UNUSED(te);
+                 if(!context->fieldList().last()->objectName().contains(obj->objectName()))
+                 {
+                     prevfield();
+                     return true;
+                 } else {
+                     return false;
+                 }
+             }
              if(!obj->inherits("QComboBoxListView"))
              {
                  if(input() || construct())
@@ -1156,6 +1168,17 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
          }
 
          if(keyEvent->key() == Qt::Key_Down) {
+             if(TextEdit *te = qobject_cast<TextEdit *> (obj))
+             {
+                 Q_UNUSED(te);
+                 if(!context->fieldList().last()->objectName().contains(obj->objectName()))
+                 {
+                     nextfield();
+                     return true;
+                 } else {
+                     return false;
+                 }
+             }
              if(!obj->inherits("QComboBoxListView"))
              {
                  if(input() || construct())
@@ -1166,7 +1189,7 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
              }
          }
 
-      }
+      //}
 
       if((keyEvent->modifiers() == 0 ) && (keyEvent->key() == Qt::Key_Return || keyEvent->key() == Qt::Key_Enter))
       {
