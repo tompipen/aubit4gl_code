@@ -1034,7 +1034,10 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
           } else {
               if(LineEdit *le = qobject_cast<LineEdit*> (obj))
               {
-                  QMenu *rightClick = le->createStandardContextMenu();
+                  QMenu *rightClick = new QMenu(this);
+                  QAction *copy = new QAction("copy", this);
+                  rightClick->addAction(copy);
+                  connect(copy, SIGNAL(triggered()), le, SLOT(copyText()));
                   rightClick->addSeparator();
                   rightClick->addMenu(createMenuHideShowFields(obj));
                   rightClick->addSeparator();
