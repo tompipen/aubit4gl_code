@@ -106,10 +106,8 @@ MainFrame::vdcdebug("RingMenu","createButton", "int id, QString text, QString to
    if(text.toLower() == "abbruch" || text.toLower() == "ende")
    {
        connect(button, SIGNAL(clicked()), this, SLOT(close()));
-
    } else {
        Action *action = new Action(text.toLower(), text, button);
-       qDebug() << "text123:" << text;
        action->setComment(tooltip);
        action->setImage(QString("%1.png").arg(id));
        button->addAction(action);
@@ -258,6 +256,9 @@ bool RingMenuPulldown::eventFilter(QObject *obj, QEvent *event)
                 pb->click();
             }
             return false;
+        } else if(keyEvent->key() == Qt::Key_Escape)
+        {
+            this->close();
         }
     }
 
