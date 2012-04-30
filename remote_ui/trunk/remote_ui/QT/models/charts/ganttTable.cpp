@@ -78,6 +78,7 @@ QVariant GanttTable::headerData( int section, Qt::Orientation orientation, int r
     case END_TIME:      return tr( "Ende" );
     case COMPLETION:    return tr( "Erledigt %" );
     case TASK_NUMBER:   return tr( "Task_nr");
+    case PARENT:        return tr( "Parent" );
     case DEPEND_TASK:   return tr( "Depend" );
     default:            return QVariant();
     }
@@ -132,6 +133,12 @@ QVariant GanttTable::data( const QModelIndex& index, int role ) const
         case Qt::DisplayRole:
         case Qt::EditRole:
             return node->getTaskNr();
+        }
+    } else if ( index.column() == PARENT ) {
+        switch( role ) {
+        case Qt::DisplayRole:
+        case Qt::EditRole:
+            return node->getParentNr();
         }
     } else if ( index.column() >= DEPEND_TASK ) {
         switch( role ) {
@@ -215,14 +222,20 @@ bool GanttTable::setData( const QModelIndex& index,  const QVariant& value, int 
             emit dataChanged( index, index );
             break;
         }
+    } else if ( index.column() == PARENT ) {
+        switch( role ) {
+        case Qt::DisplayRole:
+        case Qt::EditRole:
+            node->setParentNr(value.toString());
+            emit dataChanged( index, index );
+            break;
+        }
     } else if ( index.column() >= DEPEND_TASK ) {
         switch( role ) {
         case Qt::DisplayRole:
         case Qt::EditRole:
-
             QList<QString> list = node->getDependList();
             if( value.toString() != "" && !list.contains(value.toString())) {
-
                 node->addDependList(value.toString());
                 emit dataChanged( index, index );
             }
@@ -281,6 +294,7 @@ bool GanttTable::readCSV( GanttTable* model, KDGantt::View* view, QString &filen
                         node->setType(strWert.toInt());
                     }
                     if( column == START_TIME ) {
+
                         node->setStartTime(time.fromString(strWert, "dd.MM.yyyy hh:mm"));
                     }
                     if( column == END_TIME ) {
@@ -295,6 +309,9 @@ bool GanttTable::readCSV( GanttTable* model, KDGantt::View* view, QString &filen
                             currentTask.insert( strWert, row);
                         }
                     }
+                    if( column == PARENT ) {
+                        node->setParentNr(strWert);
+                    }
                     if( column >= DEPEND_TASK ) {
                         if( strWert.toInt( &ok, 10)) {
                             dependTask.insertMulti( strWert, row );
@@ -302,7 +319,7 @@ bool GanttTable::readCSV( GanttTable* model, KDGantt::View* view, QString &filen
                         }
                     }
                 }
-                // save to model
+                // save node to model
                 model->setData(model->index(row, GanttTable::NAME, QModelIndex()),
                                qVariantFromValue( node->getLabel() ) );
                 model->setData(model->index(row, GanttTable::TYPE, QModelIndex()),
@@ -315,6 +332,8 @@ bool GanttTable::readCSV( GanttTable* model, KDGantt::View* view, QString &filen
                                qVariantFromValue( node->getCompletion() ),KDGantt::TaskCompletionRole );
                 model->setData(model->index(row, GanttTable::TASK_NUMBER, QModelIndex()),
                                qVariantFromValue( node->getTaskNr() ) );
+                model->setData(model->index(row, GanttTable::PARENT, QModelIndex()),
+                               qVariantFromValue( node->getParentNr() ) );
                 for( int i = 0; i < dependList.size() ; i++ ){
                     model->setData(model->index(row, GanttTable::DEPEND_TASK + i, QModelIndex()),
                                    qVariantFromValue( dependList.at( i ) ) );
@@ -391,9 +410,9 @@ bool GanttTable::saveConstraintToModel(GanttTable* model, KDGantt::View* view){
         int numberOfConstraints = constraintMap.count( startIdx );
         if( numberOfConstraints >= 0 ){
             int currentColumns = model->columnCount( QModelIndex() );
-            int neededColumns = ( TASK_NUMBER + 1 ) + numberOfConstraints;
+            int neededColumns = ( DEPEND_TASK ) + numberOfConstraints;
 
-            if( currentColumns < neededColumns){  // if additional columns are needed
+            if( currentColumns < neededColumns){  // insert columns if additional columns are needed
                 int numberOfNeededColumns = neededColumns - currentColumns;
                 model->insertColumns( currentColumns, numberOfNeededColumns );
                 incrementColumnCount( numberOfNeededColumns );
@@ -465,6 +484,7 @@ ItemTypeComboBox::ItemTypeComboBox( QWidget* parent )
     addItem( tr( "Task" ), QVariant( KDGantt::TypeTask ) );
     addItem( tr( "Event" ), QVariant( KDGantt::TypeEvent ) );
     addItem( tr( "Summary" ), QVariant( KDGantt::TypeSummary ) );
+    addItem( tr( "Multi") , QVariant( KDGantt::TypeMulti ) );
 }
 
 KDGantt::ItemType ItemTypeComboBox::itemType() const

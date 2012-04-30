@@ -92,6 +92,10 @@ void Node::setDependTask( const QString& str) {
     m_dependTask = str;
 }
 
+void Node::setParentNr(const QString &str) {
+    m_parent_nr = str;
+}
+
 /* --------------------------------------
         getter-methods
 ----------------------------------------- */
@@ -137,6 +141,10 @@ QString Node::getDependTask() const {
 
 QList<QString> Node::getDependList() const {
     return m_dependList;
+}
+
+QString Node::getParentNr() const {
+    return m_parent_nr;
 }
 
 /* --------------------------------------

@@ -24,6 +24,7 @@ public:
         END_TIME,
         COMPLETION,
         TASK_NUMBER,
+        PARENT,
         DEPEND_TASK
     };
 public:
@@ -57,7 +58,7 @@ public:
 private:
     Node* m_root;
     int columns;      // number of columns
-    static const int defaultColumns = 7;
+    static const int defaultColumns = 8;
 };
 
 class ItemTypeComboBox : public QComboBox {
