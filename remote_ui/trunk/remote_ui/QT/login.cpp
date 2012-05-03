@@ -1181,13 +1181,19 @@ void LoginForm::updateReady(QNetworkReply *reply)
         qDebug() << "Cannot write file.";
     }
 
-    file->write(reply->readAll());
-    file->close();
+    qDebug() << "reply->size()" << reply->size();
+    if(reply->size() > 1048576)
+    {
+        file->write(reply->readAll());
+        file->close();
 
-    m_label->setText("Download beendet!");
-    m_progress->setValue(100);
+        m_label->setText("Download beendet!");
+        m_progress->setValue(100);
+        QDesktopServices::openUrl(QUrl(QString("file:///%1").arg(QDir::tempPath() + "/vdc-update.zip")));
 
-    QDesktopServices::openUrl(QUrl(QString("file:///%1").arg(QDir::tempPath() + "/vdc-update.zip")));
+    } else {
+        m_label->setText("Webserver 404: File not found");
+    }
 
 }
 
