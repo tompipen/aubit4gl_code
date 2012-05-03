@@ -1170,7 +1170,7 @@ void LoginForm::loadBinaries()
 
 void LoginForm::updateDownloadProgress(qint64 received,qint64 total)
 {
-    m_label->setText("Downloading file...");
+    m_label->setText("Downloading VDC...");
     m_progress->setValue((double) received * 100 / total);
 }
 void LoginForm::updateReady(QNetworkReply *reply)
