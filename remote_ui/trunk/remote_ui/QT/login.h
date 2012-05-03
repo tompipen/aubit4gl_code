@@ -66,6 +66,8 @@ public slots:
    void commandfailed(int, QString);
    #endif
    void error(QString);
+   void checkForUpdate();
+   void downloadFinished(QNetworkReply*);
 
 private slots:
    void okPressed();
@@ -80,9 +82,16 @@ private slots:
    void m_c_envset();
 #endif
    void removeCursor();
+   void updateDownloadProgress(qint64,qint64);
+   void updateReady(QNetworkReply*);
 
 
 private:
+
+   //Progressbar for Update GUI
+
+   QProgressBar *m_progress;
+   QLabel *m_label;
 
    QList<ClientSocket*> ql_connections;
 
@@ -120,6 +129,8 @@ private:
 
    QString qs_openFilename;
    void loadSettings();
+   QList<QString> checkVersion(QString);
+   void loadBinaries();
 };
 
 class HostsData  : public QDialog

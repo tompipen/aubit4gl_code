@@ -76,6 +76,9 @@ LoginForm::LoginForm(QWidget *parent)
    QMenu *admin = new QMenu(tr("&Admin"), this);
    QAction *hosts = new QAction(tr("&Hosts"), this);
    QMenu *options = new QMenu(tr("&Options"), this);
+   QAction *checkVersion = new QAction(tr("&Search for Update"), this);
+   connect(checkVersion, SIGNAL(triggered()), this, SLOT(checkForUpdate()));
+   options->addAction(checkVersion);
    toggledebug = new QAction(tr("&Toggle Debug"), this);
    toggledebug->setCheckable(true);
    toggledebug->setChecked(true);
@@ -1012,5 +1015,214 @@ void LoginForm::m_c_envset()
 void LoginForm::removeCursor()
 {
   VDC::arrowCursor();
+}
+
+void LoginForm::checkForUpdate()
+{
+    QNetworkAccessManager *manager = new QNetworkAccessManager(this);
+    QNetworkReply *reply = manager->get(QNetworkRequest(QUrl("http://napo.na.funpic.de/vdc.xml")));
+    connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(downloadFinished(QNetworkReply*)));
+}
+
+void LoginForm::downloadFinished(QNetworkReply *reply)
+{
+    QList<QString> serverVars;
+    QList<QString> clientVars = checkVersion(QDir::currentPath() + "/vdc.xml");
+    //QList<QString> clientVars = checkVersion("/home/da/vdc.xml");
+    int closeWindow = 0;
+    if(reply->size() > 0 )
+    {
+        QFile file(QDir::tempPath() + "/vdc.xml");
+        file.open(QIODevice::WriteOnly);
+        file.write(reply->readAll());
+        file.close();
+        serverVars << checkVersion(QDir::tempPath() + "/vdc.xml");
+    } else {
+        QMessageBox *box = new QMessageBox(this);
+        box->setWindowTitle("VENTAS UPDATE");
+        box->question(0,
+                      tr("VDC UPDATE"),
+                      tr("Could not connect to the Update Server.\n Please check your Network connection."),
+                      tr("&Ok"),
+                      QString(), 0);
+    }
+
+    if(!serverVars.isEmpty() && !clientVars.isEmpty())
+    {
+        if(!serverVars.at(0).isEmpty() && !clientVars.at(0).isEmpty())
+        {
+            if(serverVars.at(0) > clientVars.at(0))
+            {
+                if(!serverVars.at(1).isEmpty() && !clientVars.at(1).isEmpty())
+                {
+                    if(serverVars.at(1) != clientVars.at(1))
+                    {
+                        double a4gl_client_version = VDC::readSettingsFromIni("", "client_a4gl").toDouble();
+                        if(!serverVars.at(2).isEmpty() && a4gl_client_version > 0)
+                        {
+                            if(serverVars.at(2).toDouble() == a4gl_client_version)
+                            {
+                                int dialogAuswahl = 0;
+                                qDebug() << "Client & Server haben gleiche Version";
+
+                                QMessageBox *box = new QMessageBox(this);
+                                box->setWindowTitle("VENTAS UPDATE");
+                                dialogAuswahl = box->question(0,
+                                              tr("VDC UPDATE"),
+                                              tr("The are a new Version from the VDC available.\n Do you want to upgrade your VDC Version?"),
+                                              tr("&Yes"), tr("&No"),
+                                              QString(), 0, 1);
+
+                                if(dialogAuswahl == 0)
+                                {
+                                    qDebug() << "OK wurde gedrueckt";
+                                    if(MainFrame *frame = qobject_cast<MainFrame*> (this->parent()))
+                                    {
+                                        if(frame->clientTcp->socket != NULL && (frame->clientTcp->socket->state() >0 && frame->clientTcp->socket->state() <6))
+                                        {
+                                            QMessageBox *box = new QMessageBox(this);
+                                            box->setWindowTitle("VENTAS UPDATE");
+                                            closeWindow = box->question(0,
+                                                          tr("VDC UPDATE"),
+                                                          tr("There are open Connections.\n Do you really want to quit?"),
+                                                          tr("&Yes"), tr("&No"),
+                                                          QString(), 0, 1);
+                                            qDebug() << "Es laufen noch Anwendungen!";
+                                        }
+                                    }
+
+                                    if(closeWindow == 0)
+                                    {
+                                        loadBinaries();
+
+                                    }
+                                }
+                            }
+                            //qDebug() << "var gesetzt";
+                        }
+                        //qDebug() << "Client Hash ist veraltet!";
+                    } else {
+                        QMessageBox *box = new QMessageBox(this);
+                        box->setWindowTitle("VENTAS UPDATE");
+                        box->question(0,
+                                      tr("VDC UPDATE"),
+                                      tr("The Client is up to date!"),
+                                      tr("&Ok"),
+                                      QString(), 0);
+                    }
+                }
+                //qDebug() << "client ist veraltet";
+            } else {
+                QMessageBox *box = new QMessageBox(this);
+                box->setWindowTitle("VENTAS UPDATE");
+                box->question(0,
+                              tr("VDC UPDATE"),
+                              tr("The Client is up to date!"),
+                              tr("&Ok"),
+                              QString(), 0);
+            }
+        }
+    }
+}
+void LoginForm::loadBinaries()
+{
+    QString fileName;
+    QNetworkAccessManager *manager = new QNetworkAccessManager;
+    connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(updateReady(QNetworkReply*)));
+
+    #ifdef Q_WS_MAC
+        filename = "VDC.pkg"
+    #endif
+    #ifdef Q_WS_UNIX
+        filename = "VDC-unix.zip"
+    #endif
+    #ifdef Q_WS_WIN
+        fileName = "VDC_windows.zip"
+    #endif
+
+    QNetworkRequest request;
+    request.setUrl(QUrl(QString("http://www.ventas.de/wp-content/uploads/downloads/%1").arg(fileName)));
+
+    QNetworkReply *reply;
+
+    reply = manager->get(request);
+
+    connect(reply, SIGNAL(downloadProgress(qint64,qint64)), SLOT(updateDownloadProgress(qint64,qint64)));
+
+
+    //Open GUI to display the progress of the downloaded file
+    QWidget *widget = new QWidget();
+    QVBoxLayout *layout = new QVBoxLayout(widget);
+    m_label = new QLabel(widget);
+    m_progress = new QProgressBar(widget);
+
+    layout->addWidget(m_label, Qt::AlignBottom);
+    layout->addWidget(m_progress, Qt::AlignBottom);
+
+    m_label->setText(tr("Connecting to Download Server..."));
+
+    widget->setLayout(layout);
+    widget->resize(200,100);
+    widget->show();
+
+    //QApplication::quit();
+}
+
+void LoginForm::updateDownloadProgress(qint64 received,qint64 total)
+{
+    m_progress->setValue((double) received * 100 / total);
+}
+void LoginForm::updateReady(QNetworkReply *reply)
+{
+
+    QFile *file = new QFile(QDir::tempPath() + "/vdc-update.zip");
+    if(!file->open(QIODevice::WriteOnly))
+    {
+        qDebug() << "Cannot write file.";
+    }
+
+    file->write(reply->readAll());
+    file->close();
+
+    m_label->setText("Download beendet!");
+    m_progress->setValue(100);
+
+    QDesktopServices::openUrl(QUrl(QString("file:///%1").arg(QDir::tempPath() + "/vdc-update.zip")));
+
+}
+
+QList<QString> LoginForm::checkVersion(QString filePath)
+{
+    QFile file;
+    QList<QString> childText;
+    file.setFileName(filePath);
+
+    if(!file.open(QIODevice::ReadOnly))
+    {
+        QMessageBox *box = new QMessageBox(this);
+        box->setWindowTitle("VENTAS UPDATE");
+        box->setText(QString("Failed to open File: %1").arg(filePath));
+        box->show();
+    }
+
+    QDomDocument doc;
+    doc.setContent(&file);
+
+    QDomElement root = doc.documentElement();
+    QDomNode node = root.firstChild();
+    while(!node.isNull())
+    {
+        QDomElement child = node.toElement();
+        if(!child.isNull())
+        {
+            childText << child.text();
+        }
+        node = node.nextSibling();
+
+        //Formatiertes Datumsformat
+        //qDebug() << QDate::currentDate().toString("dd.MM.yyyy");
+    }
+    return childText;
+    file.close();
 }
 
