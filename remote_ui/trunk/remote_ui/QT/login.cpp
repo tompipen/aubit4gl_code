@@ -1057,7 +1057,7 @@ void LoginForm::downloadFinished(QNetworkReply *reply)
                 {
                     if(serverVars.at(1) != clientVars.at(1))
                     {
-                        double a4gl_client_version = VDC::readSettingsFromIni("", "client_a4gl").toDouble();
+                        double a4gl_client_version = VDC::readSettingsFromIni("", "a4gl_version").toDouble();
                         if(!serverVars.at(2).isEmpty() && a4gl_client_version > 0)
                         {
                             if(serverVars.at(2).toDouble() == a4gl_client_version)
@@ -1131,13 +1131,13 @@ void LoginForm::loadBinaries()
     connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(updateReady(QNetworkReply*)));
 
     #ifdef Q_WS_MAC
-        fileName = "VDC.pkg"
+        fileName = "VDC.pkg";
     #endif
     #ifdef Q_WS_UNIX
-        fileName = "VDC-unix.zip"
+        fileName = "VDC-unix.zip";
     #endif
     #ifdef Q_WS_WIN
-        fileName = "VDC_windows.zip"
+        fileName = "VDC_windows.zip";
     #endif
 
     QNetworkRequest request;

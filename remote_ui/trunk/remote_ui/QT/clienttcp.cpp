@@ -690,6 +690,14 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
       QString programName = childElement.attribute("PROGRAMNAME");
       setProgramName(programName);
       MainFrame::check_new_pids();
+      QString a4gl_version_client = VDC::readSettingsFromIni("", "a4gl_version");
+      QString a4gl_version_server = p_currScreenHandler->qh_env["A4GL_VERSION"];
+
+      if(a4gl_version_client.isNull() || a4gl_version_client != a4gl_version_server)
+      {
+          VDC::saveSettingsToIni("", "a4gl_version", a4gl_version_server);
+      }
+
       QFile stylesFile(QString("%1.4st").arg(programName));
       if (stylesFile.open(QIODevice::ReadOnly | QIODevice::Text)){
           QString qs_defaultStyle = stylesFile.readAll();
