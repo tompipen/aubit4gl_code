@@ -1069,7 +1069,7 @@ void LoginForm::downloadFinished(QNetworkReply *reply)
                                 box->setWindowTitle("VENTAS UPDATE");
                                 dialogAuswahl = box->question(0,
                                               tr("VDC UPDATE"),
-                                              tr("The is a new VDC version available.\n Do you want to download an install?"),
+                                              tr("There is a new VDC version available.\n Do you want to download and install?"),
                                               tr("&Yes"), tr("&No"),
                                               QString(), 0, 1);
 
