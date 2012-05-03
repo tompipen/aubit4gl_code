@@ -1131,10 +1131,10 @@ void LoginForm::loadBinaries()
     connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(updateReady(QNetworkReply*)));
 
     #ifdef Q_WS_MAC
-        filename = "VDC.pkg"
+        fileName = "VDC.pkg"
     #endif
     #ifdef Q_WS_UNIX
-        filename = "VDC-unix.zip"
+        fileName = "VDC-unix.zip"
     #endif
     #ifdef Q_WS_WIN
         fileName = "VDC_windows.zip"
