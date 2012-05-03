@@ -1027,8 +1027,8 @@ void LoginForm::checkForUpdate()
 void LoginForm::downloadFinished(QNetworkReply *reply)
 {
     QList<QString> serverVars;
-    //QList<QString> clientVars = checkVersion(QDir::currentPath() + "/versions.xml");
-    QList<QString> clientVars = checkVersion("/home/da/versions.xml");
+    QList<QString> clientVars = checkVersion(QDir::currentPath() + "/versions.xml");
+    //QList<QString> clientVars = checkVersion("/home/da/versions.xml");
     int closeWindow = 0;
     if(reply->size() > 0 )
     {
@@ -1181,12 +1181,11 @@ void LoginForm::updateReady(QNetworkReply *reply)
         qDebug() << "Cannot write file.";
     }
 
-    qDebug() << "reply->size()" << reply->error();
     switch(reply->error())
     {
        default:
             qDebug() << QString("Cannot load File from Server. Error code: %1 ").arg(reply->error());
-             m_label->setText(QString("Cannot load File from Server. Error code: %1 ").arg(reply->error()));
+            m_label->setText(QString("Cannot load File from Server. Error code: %1 ").arg(reply->error()));
     }
 
     if(reply->error() == 0)
