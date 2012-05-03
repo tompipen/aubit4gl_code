@@ -2875,7 +2875,6 @@ void FglForm::jumpToField(QWidget* w, bool b_after){
     int destPos = context->fieldList().indexOf(w);
 
 
-
     if(currPos == -1 || !b_after)
     {
       //  w->setFocus(Qt::OtherFocusReason);
@@ -2896,94 +2895,33 @@ void FglForm::jumpToField(QWidget* w, bool b_after){
         return;
     }
 
-    if(currPos < destPos){
-        for(int i=currPos; i<=destPos; i++){
-            w = context->fieldList().at(i);
-            QList<Fgl::Event> ql_events = ql_contextEvents.last();
-            Fgl::Event beforeField;
-            beforeField.type = Fgl::BEFORE_FIELD_EVENT;
-            beforeField.attribute = w->objectName();
-
-            Fgl::Event afterField;
-            afterField.type = Fgl::AFTER_FIELD_EVENT;
-            afterField.attribute = w->objectName();
-
-            //Look for Before Field Events
-            for(int j=0; j<ql_events.size(); j++){
-                //We dont need Before Field for current field
-                if(currPos == i)
-                    break;
-
-                Fgl::Event event = ql_events.at(j);
-                if(beforeField.type == event.type &&
-                   beforeField.attribute == event.attribute){
-                    ql_responseevents << event;
-                    break;
-                }
-            }
-
-            //Look for After Field Events
-            for(int j=0; j<ql_events.size(); j++){
-                //We dont need After Field for clicked field
-                if(destPos == i)
-                    break;
-
-                Fgl::Event event = ql_events.at(j);
-                if(afterField.type == event.type &&
-                   afterField.attribute == event.attribute){
-                   ql_responseevents << event;
-                    break;
-                }
-            }
-        }
-
-
-
-    }
-    else{
-        for(int i=currPos; i>=destPos; i--){
-            w = context->fieldList().at(i);
-            QList<Fgl::Event> ql_events = ql_contextEvents.last();
-            Fgl::Event beforeField;
-            beforeField.type = Fgl::BEFORE_FIELD_EVENT;
-            beforeField.attribute = w->objectName();
-
-            Fgl::Event afterField;
-            afterField.type = Fgl::AFTER_FIELD_EVENT;
-            afterField.attribute = w->objectName();
-
-            //Look for Before Field Events
-            for(int j=0; j<ql_events.size(); j++){
-                //We dont need Before Field for current field
-                Fgl::Event event = ql_events.at(j);
-
-
-                if(currPos == i)
-                    break;
-
-
-                if(beforeField.type == event.type &&
-                   beforeField.attribute == event.attribute){
-                    ql_responseevents << event;
-                    break;
-                }
-            }
-
-            //Look for After Field Events
-            for(int j=0; j<ql_events.size(); j++){
-                //We dont need After Field for clicked field
-                if(destPos == i)
-                    break;
-
-                Fgl::Event event = ql_events.at(j);
-                if(afterField.type == event.type &&
-                   afterField.attribute == event.attribute){
-                    ql_responseevents << event;
-                    break;
-                }
-            }
+    if(currPos<destPos)
+    {
+      if(destPos-currPos < (context->fieldList().count() / 2))
+        ql_responseevents << getInputEvents(currPos, destPos, false, false, false);
+      else
+        {
+         ql_responseevents << getInputEvents(currPos, 0, true, false, true);
+         ql_responseevents << getInputEvents(context->fieldList().count()-1, destPos, true, true, false);
         }
     }
+    else
+    {
+      if(currPos-destPos < (context->fieldList().count() / 2))
+      {
+          ql_responseevents << getInputEvents(currPos, destPos, true, false, false);
+      }
+      else
+      {
+          ql_responseevents << getInputEvents(currPos, context->fieldList().count()-1, false, false, true);
+          ql_responseevents << getInputEvents(0, destPos, false, true, false);
+      }
+
+    }
+
+
+
+
     setCurrentWidget(w);
     if(!ql_responseevents.isEmpty())
     {
@@ -3018,6 +2956,104 @@ void FglForm::jumpToField(QWidget* w, bool b_after){
                 nextclick = NULL;
         }
     }
+}
+
+QList<Fgl::Event> FglForm::getInputEvents(int start, int end, bool b_backward, bool b_before, bool b_after)
+{
+  QList<Fgl::Event> ql_responseevents;
+
+  if(!b_backward){
+      for(int i=start; i<=end; i++){
+          QWidget *w = context->fieldList().at(i);
+          QList<Fgl::Event> ql_events = ql_contextEvents.last();
+          Fgl::Event beforeField;
+          beforeField.type = Fgl::BEFORE_FIELD_EVENT;
+          beforeField.attribute = w->objectName();
+
+          Fgl::Event afterField;
+          afterField.type = Fgl::AFTER_FIELD_EVENT;
+          afterField.attribute = w->objectName();
+
+          //Look for Before Field Events
+          for(int j=0; j<ql_events.size(); j++){
+              //We dont need Before Field for current field
+              if(i == start && !b_before)
+                  break;
+
+              Fgl::Event event = ql_events.at(j);
+              if(beforeField.type == event.type &&
+                 beforeField.attribute == event.attribute){
+                  ql_responseevents << event;
+                  break;
+              }
+          }
+
+          //Look for After Field Events
+          for(int j=0; j<ql_events.size(); j++){
+              //We dont need After Field for clicked field
+              if(i == end && !b_after)
+                  break;
+
+              Fgl::Event event = ql_events.at(j);
+              if(afterField.type == event.type &&
+                 afterField.attribute == event.attribute){
+                 ql_responseevents << event;
+                  break;
+              }
+          }
+      }
+
+
+
+
+  }
+  else{
+      for(int i=start; i >= end; i--){
+          QWidget *w = context->fieldList().at(i);
+          QList<Fgl::Event> ql_events = ql_contextEvents.last();
+          Fgl::Event beforeField;
+          beforeField.type = Fgl::BEFORE_FIELD_EVENT;
+          beforeField.attribute = w->objectName();
+
+          Fgl::Event afterField;
+          afterField.type = Fgl::AFTER_FIELD_EVENT;
+          afterField.attribute = w->objectName();
+
+          //Look for Before Field Events
+          for(int j=0; j<ql_events.size(); j++){
+              //We dont need Before Field for current field
+              Fgl::Event event = ql_events.at(j);
+
+
+              if(start == i && !b_before)
+                  break;
+
+
+              if(beforeField.type == event.type &&
+                 beforeField.attribute == event.attribute){
+                  ql_responseevents << event;
+                  break;
+              }
+          }
+
+          //Look for After Field Events
+          for(int j=0; j<ql_events.size(); j++){
+              //We dont need After Field for clicked field
+              if(end == i && !b_after)
+                  break;
+
+              Fgl::Event event = ql_events.at(j);
+              if(afterField.type == event.type &&
+                 afterField.attribute == event.attribute){
+                  ql_responseevents << event;
+                  break;
+              }
+          }
+      }
+  }
+
+
+  return ql_responseevents;
 }
 
 //------------------------------------------------------------------------------
@@ -3802,7 +3838,7 @@ MainFrame::vdcdebug("FglForm","checkActions", "");
                         if(ActionMenu *aMenu = qobject_cast<ActionMenu *> (actionMenu())){
                            if(!(fAction == actionMenu()->getAction(fAction->name()))){
                               aMenu->createButton(fAction->name(), fAction->text(), fAction->comment(), fAction);
-                           }
+                            }
                         }
                      }
                      else{
@@ -3940,6 +3976,11 @@ MainFrame::vdcdebug("FglForm","handleGuiAction", "Action* fAction");
 
    if(fAction->name() == "insert"){
       insert();
+      return true;
+   }
+
+   if(fAction->name() == "remove"){
+      remove();
       return true;
    }
 

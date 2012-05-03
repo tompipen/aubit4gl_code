@@ -95,6 +95,7 @@ public:
    bool b_allowClose;
    bool b_dummy;
    void jumpToField(QWidget*, bool b_after=true);
+   QList<Fgl::Event> getInputEvents(int, int, bool, bool, bool);
    QList<Fgl::Event> ql_responseQueue;
    void setMenuEnabled(bool);
    void setMenu(RingMenu*);
