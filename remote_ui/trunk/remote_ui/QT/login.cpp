@@ -1201,7 +1201,9 @@ void LoginForm::updateReady(QNetworkReply *reply)
         m_label->setText("Download beendet!");
         m_progress->setValue(100);
         #ifdef Q_WS_MAC
-        QDesktopServices::openUrl(QUrl(QString("open file:///%1").arg(QDir::tempPath() + "/vdc-update.zip"), QUrl::TolerantMode));
+        QProcess *proc = new QProcess();
+        proc->start(QString("./" + QDir::tempPath() + "/vdc-update.pkg"));
+        //QDesktopServices::openUrl(QUrl(QString("open file:///%1").arg(QDir::tempPath() + "/vdc-update.pkg"), QUrl::TolerantMode));
         #else
            QDesktopServices::openUrl(QUrl(QString("file://%1").arg(QDir::tempPath() + "/vdc-update.zip"), QUrl::TolerantMode));
         #endif
