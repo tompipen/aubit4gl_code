@@ -1170,12 +1170,17 @@ void LoginForm::loadBinaries()
 
 void LoginForm::updateDownloadProgress(qint64 received,qint64 total)
 {
+    m_label->setText("Downloading file...");
     m_progress->setValue((double) received * 100 / total);
 }
 void LoginForm::updateReady(QNetworkReply *reply)
 {
 
+    #ifdef Q_WS_MAC
+    QFile *file = new QFile(QDir::tempPath() + "/vdc-update.pkg");
+    #else
     QFile *file = new QFile(QDir::tempPath() + "/vdc-update.zip");
+    #endif
     if(!file->open(QIODevice::WriteOnly))
     {
         qDebug() << "Cannot write file.";
@@ -1195,7 +1200,11 @@ void LoginForm::updateReady(QNetworkReply *reply)
 
         m_label->setText("Download beendet!");
         m_progress->setValue(100);
-        QDesktopServices::openUrl(QUrl(QString("file:///%1").arg(QDir::tempPath() + "/vdc-update.zip")));
+        #ifdef Q_WS_X11
+           QDesktopServices::openUrl(QUrl(QString("file://%1").arg(QDir::tempPath() + "/vdc-update.zip"), QUrl::TolerantMode));
+        #else
+           QDesktopServices::openUrl(QUrl(QString("file:///%1").arg(QDir::tempPath() + "/vdc-update.zip"), QUrl::TolerantMode));
+        #endif
         QApplication::quit();
 
     }
