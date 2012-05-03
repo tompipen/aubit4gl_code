@@ -1069,7 +1069,7 @@ void LoginForm::downloadFinished(QNetworkReply *reply)
                                 box->setWindowTitle("VENTAS UPDATE");
                                 dialogAuswahl = box->question(0,
                                               tr("VDC UPDATE"),
-                                              tr("There is a new VDC version available.\n Do you want to download and install?"),
+                                              tr("There is a new VDC version available.\n Do you want to download and install it?"),
                                               tr("&Yes"), tr("&No"),
                                               QString(), 0, 1);
 
@@ -1084,7 +1084,7 @@ void LoginForm::downloadFinished(QNetworkReply *reply)
                                             box->setWindowTitle("VENTAS UPDATE");
                                             closeWindow = box->question(0,
                                                           tr("VDC UPDATE"),
-                                                          tr("There are open Connections.\n Do you really want to quit?"),
+                                                          tr("There are modules running.\n You should terminate it. \n Do you really want to continue?"),
                                                           tr("&Yes"), tr("&No"),
                                                           QString(), 0, 1);
                                             qDebug() << "Es laufen noch Anwendungen!";
