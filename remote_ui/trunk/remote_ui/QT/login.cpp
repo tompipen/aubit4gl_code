@@ -1027,8 +1027,8 @@ void LoginForm::checkForUpdate()
 void LoginForm::downloadFinished(QNetworkReply *reply)
 {
     QList<QString> serverVars;
-    QList<QString> clientVars = checkVersion(QDir::currentPath() + "/versions.xml");
-    //QList<QString> clientVars = checkVersion("/home/da/versions.xml");
+    //QList<QString> clientVars = checkVersion(QDir::currentPath() + "/versions.xml");
+    QList<QString> clientVars = checkVersion("/home/da/versions.xml");
     int closeWindow = 0;
     if(reply->size() > 0 )
     {
@@ -1181,8 +1181,15 @@ void LoginForm::updateReady(QNetworkReply *reply)
         qDebug() << "Cannot write file.";
     }
 
-    qDebug() << "reply->size()" << reply->size();
-    if(reply->size() > 1048576)
+    qDebug() << "reply->size()" << reply->error();
+    switch(reply->error())
+    {
+       default:
+            qDebug() << QString("Cannot load File from Server. Error code: %1 ").arg(reply->error());
+             m_label->setText(QString("Cannot load File from Server. Error code: %1 ").arg(reply->error()));
+    }
+
+    if(reply->error() == 0)
     {
         file->write(reply->readAll());
         file->close();
@@ -1190,11 +1197,9 @@ void LoginForm::updateReady(QNetworkReply *reply)
         m_label->setText("Download beendet!");
         m_progress->setValue(100);
         QDesktopServices::openUrl(QUrl(QString("file:///%1").arg(QDir::tempPath() + "/vdc-update.zip")));
+        QApplication::quit();
 
-    } else {
-        m_label->setText("Webserver 404: File not found");
     }
-
 }
 
 QList<QString> LoginForm::checkVersion(QString filePath)
