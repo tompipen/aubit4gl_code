@@ -5,6 +5,9 @@
 TEMPLATE = app
 DEPENDPATH += .
 INCLUDEPATH += .
+CONFIG += shared
+#CONFIG += release
+
 unix:!macx {
 QMAKE_LFLAGS += -Wl,--rpath="$$_PRO_FILE_PWD_/lib"
 }
@@ -38,7 +41,7 @@ LIBS += -L"$$OUT_PWD/quazip/lib" -lquazip
 include("models/reportgen.pri")
 }
 
-#VKDCHART = /usr/local/KDAB/KDChart-2.4.3
+VKDCHART = /usr/local/KDAB/KDChart-2.4.3
 
 !isEmpty(VKDCHART) {
 include("models/chart.pri")
