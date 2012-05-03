@@ -1027,8 +1027,8 @@ void LoginForm::checkForUpdate()
 void LoginForm::downloadFinished(QNetworkReply *reply)
 {
     QList<QString> serverVars;
-    QList<QString> clientVars = checkVersion(QDir::currentPath() + "/vdc.xml");
-    //QList<QString> clientVars = checkVersion("/home/da/vdc.xml");
+    QList<QString> clientVars = checkVersion(QDir::currentPath() + "/versions.xml");
+    //QList<QString> clientVars = checkVersion("/home/da/versions.xml");
     int closeWindow = 0;
     if(reply->size() > 0 )
     {
@@ -1057,10 +1057,10 @@ void LoginForm::downloadFinished(QNetworkReply *reply)
                 {
                     if(serverVars.at(1) != clientVars.at(1))
                     {
-                        double a4gl_client_version = VDC::readSettingsFromIni("", "a4gl_version").toDouble();
+                        QString a4gl_client_version = VDC::readSettingsFromIni("", "a4gl_version");
                         if(!serverVars.at(2).isEmpty() && a4gl_client_version > 0)
                         {
-                            if(serverVars.at(2).toDouble() == a4gl_client_version)
+                            if(serverVars.at(2) == a4gl_client_version)
                             {
                                 int dialogAuswahl = 0;
                                 qDebug() << "Client & Server haben gleiche Version";
