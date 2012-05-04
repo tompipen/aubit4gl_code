@@ -5,8 +5,6 @@
 TEMPLATE = app
 DEPENDPATH += .
 INCLUDEPATH += .
-CONFIG += shared
-#CONFIG += release
 
 unix:!macx {
 QMAKE_LFLAGS += -Wl,--rpath="$$_PRO_FILE_PWD_/lib"
@@ -41,7 +39,7 @@ LIBS += -L"$$OUT_PWD/quazip/lib" -lquazip
 include("models/reportgen.pri")
 }
 
-VKDCHART = /usr/local/KDAB/KDChart-2.4.3
+#VKDCHART = /usr/local/KDAB/KDChart-2.4.3
 
 !isEmpty(VKDCHART) {
 include("models/chart.pri")
@@ -91,7 +89,8 @@ HEADERS += confwin.h \
     qtelnet/qttelnet.h \
     models/xmlreader.h \
     include/vdc.h \
-    models/webbrowser.h
+    models/webbrowser.h \
+    ventasupdate.h
 SOURCES += confwin.cpp \
     main.cpp \
     mainframe.cpp \
@@ -120,7 +119,8 @@ SOURCES += confwin.cpp \
     qtelnet/qttelnet.cpp \
     models/xmlreader.cpp \
     include/vdc.cpp \
-    models/webbrowser.cpp
+    models/webbrowser.cpp \
+    ventasupdate.cpp
 
 RESOURCES += \
     ressource.qrc
