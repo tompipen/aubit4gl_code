@@ -1,12 +1,14 @@
 #include "ventasupdate.h"
 #include <QUrl>
+#include "clienttcp.h"
 
-VentasUpdate::VentasUpdate(int errorDisplay, QWidget *parent)
+VentasUpdate::VentasUpdate(int errorDisplay, QObject *screen, QWidget *parent)
 {
     Q_UNUSED(parent);
     displayErrorDialog = errorDisplay;
     m_box = new QMessageBox(this);
     //m_mainFrame = mFrame;
+    m_screenhandler = screen;
 
     this->setWindowTitle("VENTAS UPDATE");
 }
@@ -115,7 +117,7 @@ void VentasUpdate::readXmlFinished(QNetworkReply *reply)
         if(displayErrorDialog == 1)
         {
             m_box->setWindowTitle("VENTAS UPDATE");
-            m_box->question(0,
+            m_box->critical(0,
                           tr("VDC UPDATE"),
                           tr("Could not connect to the Update Server.\n Please check your Network connection."),
                           tr("&Ok"),
@@ -140,7 +142,7 @@ void VentasUpdate::readXmlFinished(QNetworkReply *reply)
                             {
                                 int dialogAuswahl = 0;
                                 m_box->setWindowTitle("VENTAS UPDATE");
-                                dialogAuswahl = m_box->question(0,
+                                dialogAuswahl = m_box->information(0,
                                               tr("VDC UPDATE"),
                                               tr("There is a new VDC version available.\n Do you want to download and install it?"),
                                               tr("&Yes"), tr("&No"),
@@ -148,20 +150,22 @@ void VentasUpdate::readXmlFinished(QNetworkReply *reply)
 
                                 if(dialogAuswahl == 0)
                                 {
-                                    qDebug() << "OK wurde gedrueckt";
-                                    /*if(MainFrame *frame = qobject_cast<MainFrame*> (this->parent()))
+                                    if(this->m_screenhandler != NULL && this->m_screenhandler->parent() != NULL && this->m_screenhandler->parent()->parent() != NULL)
                                     {
-                                        if(frame->clientTcp->socket != NULL && (frame->clientTcp->socket->state() >0 && frame->clientTcp->socket->state() <6))
+                                         qDebug() << "bla123:" << this->m_screenhandler->parent()->parent();
+                                        if(ClientTcp *cTcp = qobject_cast<ClientTcp *> (this->m_screenhandler->parent()->parent()))
                                         {
-                                            m_box->setWindowTitle("VENTAS UPDATE");
-                                            closeWindow = m_box->question(0,
-                                                          tr("VDC UPDATE"),
-                                                          tr("There are modules running.\n You should terminate it. \n Do you really want to continue?"),
-                                                          tr("&Yes"), tr("&No"),
-                                                          QString(), 0, 1);
-                                            qDebug() << "Es laufen noch Anwendungen!";
+                                            if(cTcp->socket != NULL)
+                                            {
+                                                m_box->setWindowTitle("VENTAS UPDATE");
+                                                closeWindow = m_box->question(0,
+                                                              tr("VDC UPDATE"),
+                                                              tr("There are modules running.\n You should terminate it. \n Do you really want to continue?"),
+                                                              tr("&Yes"), tr("&No"),
+                                                              QString(), 0, 1);
+                                            }
                                         }
-                                    }*/
+                                    }
 
                                     if(closeWindow == 0)
                                     {
@@ -174,7 +178,7 @@ void VentasUpdate::readXmlFinished(QNetworkReply *reply)
                             if(displayErrorDialog == 1)
                             {
                                 m_box->setWindowTitle("VENTAS UPDATE");
-                                m_box->question(0,
+                                m_box->information(0,
                                               tr("VDC UPDATE"),
                                               tr("No A4GL informations found!!"),
                                               tr("&Ok"),
@@ -185,7 +189,7 @@ void VentasUpdate::readXmlFinished(QNetworkReply *reply)
                         if(displayErrorDialog == 1)
                         {
                             m_box->setWindowTitle("VENTAS UPDATE");
-                            m_box->question(0,
+                            m_box->information(0,
                                           tr("VDC UPDATE"),
                                           tr("The Client is up to date!"),
                                           tr("&Ok"),
@@ -197,7 +201,7 @@ void VentasUpdate::readXmlFinished(QNetworkReply *reply)
                 if(displayErrorDialog == 1)
                 {
                     m_box->setWindowTitle("VENTAS UPDATE");
-                    m_box->question(0,
+                    m_box->information(0,
                                   tr("VDC UPDATE"),
                                   tr("The Client is up to date!"),
                                   tr("&Ok"),

@@ -62,7 +62,7 @@ MainFrame::vdcdebug("ScreenHandler","ScreenHandler", "QObject *parent");
    QString a4gl_version_client = VDC::readSettingsFromIni("", "a4gl_version");
    if(!a4gl_version_client.isNull())
    {
-       VentasUpdate *vu = new VentasUpdate(0);
+       VentasUpdate *vu = new VentasUpdate(0, this);
        vu->checkForNewUpdates();
    }
 

@@ -22,7 +22,7 @@ class VentasUpdate : public QWidget
     Q_OBJECT
 
 public:
-    VentasUpdate(int, QWidget *parent = 0);
+    VentasUpdate(int, QObject*, QWidget *parent = 0);
     void checkForNewUpdates();
 private:
     QList<QString> parseXml(QString);
@@ -40,6 +40,7 @@ private:
     QMessageBox *m_box;
     QLabel *m_label;
     QProgressBar *m_progress;
+    QObject *m_screenhandler;
     //MainFrame m_mainFrame;
 };
 
