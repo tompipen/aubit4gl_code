@@ -223,6 +223,7 @@ public slots:
 
    void setUpdatesEnabled(bool);
    void setCurrentFocus(QWidget*, QWidget*);
+   void checkForUpdate();
 
 
 signals:

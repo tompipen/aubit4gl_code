@@ -178,6 +178,8 @@ signals:
    void ganttReadCsv(int, QString);
    #endif
 
+   void checkForUpdate();
+
 public slots:
    void fglFormResponse(QString);
 

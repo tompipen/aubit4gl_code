@@ -58,14 +58,6 @@ MainFrame::vdcdebug("ScreenHandler","ScreenHandler", "QObject *parent");
    b_runinfo = false;
    this->installEventFilter(this);
    QApplication::processEvents();
-
-   QString a4gl_version_client = VDC::readSettingsFromIni("", "a4gl_version");
-   if(!a4gl_version_client.isNull())
-   {
-       VentasUpdate *vu = new VentasUpdate(0, this);
-       vu->checkForNewUpdates();
-   }
-
  }
 
 
@@ -3555,5 +3547,15 @@ void ScreenHandler::closeBrowser(int id)
 void ScreenHandler::makeFglFormResponse(QString bla)
 {
     this->fglFormResponse(bla);
+}
+
+void ScreenHandler::checkForUpdate()
+{
+    QString a4gl_version_client = VDC::readSettingsFromIni("", "a4gl_version");
+    if(!a4gl_version_client.isNull())
+    {
+        VentasUpdate *vu = new VentasUpdate(0, this);
+        vu->checkForNewUpdates();
+    }
 }
 
