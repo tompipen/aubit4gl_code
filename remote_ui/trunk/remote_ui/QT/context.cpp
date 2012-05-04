@@ -10,6 +10,10 @@ Context::Context(QObject *parent) : QObject(parent)
   this->rowChangedCnt = 0;
   this->fgl_state = Fgl::IDLE;
   this->qw_lastfocus = NULL;
+
+  b_arrlinech = false;
+  b_scrlinech = false;
+  b_arrcountch = false;
   sendBeforeEvent();
 }
 
@@ -20,6 +24,7 @@ Context::Context(Fgl::State state, QObject *parent) : QObject(parent)
   this->fgl_state = state;
   b_arrlinech = false;
   b_scrlinech = false;
+  b_arrcountch = false;
   this->qw_lastfocus = NULL;
 
   sendBeforeEvent();
@@ -474,6 +479,12 @@ void Context::setOption(QString name, int value)
   {
      b_scrlinech = true;
   }
+
+  if(name == "ARRCOUNT" && (value != qh_options[name]))
+  {
+     b_arrcountch = true;
+  }
+
 
 
   qh_options[name] = value;

@@ -2694,7 +2694,7 @@ MainFrame::vdcdebug("FglForm","prevfield", "");
 
 void FglForm::insert()
 {
-  qDebug()<<"INSERT HERE";
+
 MainFrame::vdcdebug("FglForm","nextrow", "");
    //find active screenRecord
    QList<QWidget*> ql_widgets = formElements();

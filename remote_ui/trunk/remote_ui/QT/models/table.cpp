@@ -214,41 +214,89 @@ void TableView::updateSectionWidth(int logicalIndex, int, int newSize)
 
 void TableView::insertRow()
 {
- int row = -1;
- qDebug()<<"INSERT ROW IN TABLE";
- row = currentIndex().row();
- //Nothing selected
- if(row == -1)
- {
-    qDebug() << "NO INDEX FOUND!";
-    return;
- }
+  int row = -1;
+  int col = -1;
+
+  row = currentIndex().row();
+  col = currentIndex().column();
+  qDebug()<<row;
+  qDebug()<<col;
+  //Nothing selected
+  if(row == -1)
+  {
+     qDebug() << "NO INDEX FOUND!"; //test, otherwise qdebug
+     return;
+  }
 
 
- Fgl::Event ev;
- ev.attribute = "insert";
- ev.type = Fgl::BEFORE_INSERT_DELETE_EVENT;
-
- emit fieldEvent(ev);
-
- QSortFilterProxyModel *proxyModel = static_cast<QSortFilterProxyModel*> (this->model());
- TableModel *table = static_cast<TableModel*> (proxyModel->sourceModel());
-
- table->insertRows(row, 1, QModelIndex());
+  QSortFilterProxyModel *proxyModel = static_cast<QSortFilterProxyModel*> (this->model());
+  TableModel *table = static_cast<TableModel*> (proxyModel->sourceModel());
+  table->insertRows(row, 1, QModelIndex());
+ // getForm()->context->setOption("ARRCOUNT", getForm()->context->getOption("ARRCOUNT")+1);
+  b_ignoreFocus = true;
+ // setCurrentField(row, col);
 
 
- Fgl::Event evn;
- evn.attribute = "insert";
- evn.type = Fgl::AFTER_INSERT_DELETE_EVENT;
 
- emit fieldEvent(evn);
+  Fgl::Event event, diffevent;
+  QList<Fgl::Event> ql_events;
+  event.id = "-1";
 
+
+  event.type = Fgl::BEFORE_ROW_EVENT;
+  diffevent = getForm()->getFormEvent(event);
+  if(diffevent.id != event.id)
+  {
+    ql_events += diffevent;
+  }
+
+
+  event.type = Fgl::BEFORE_FIELD_EVENT;
+  event.attribute = table->qsl_colNames.at(col);
+  diffevent = getForm()->getFormEvent(event);
+  if(diffevent.id != event.id)
+  {
+  ql_events += diffevent;
+  }
+
+  Fgl::Event returnevent;
+
+  returnevent.id = "";
+  if(!ql_events.isEmpty())
+  {
+      int resp_cnt = ql_events.size();
+      for(int i = 0; i<resp_cnt; i++)
+      {
+
+          returnevent.id += ql_events.at(i).id;
+          if(i+1 != resp_cnt)
+             returnevent.id += ",";
+      }
+
+      addToQueue(returnevent);
+  }
 
 }
 
 void TableView::deleteRow()
 {
+  int row = -1;
 
+  row = currentIndex().row();
+  //Nothing selected
+  if(row == -1)
+  {
+     qDebug() << "NO INDEX FOUND!";
+     return;
+  }
+
+
+
+
+  QSortFilterProxyModel *proxyModel = static_cast<QSortFilterProxyModel*> (this->model());
+  TableModel *table = static_cast<TableModel*> (proxyModel->sourceModel());
+
+  table->removeRows(row, 1, QModelIndex());
 }
 
 void TableView::copyRow()
@@ -1222,14 +1270,13 @@ MainFrame::vdcdebug("TableModel","insertRows", "int position, int rows, const QM
    if(this->rows >= 0){
       this->rows += rows;
 
-      beginInsertRows(QModelIndex(), position, position+rows-1);
-
+      beginInsertRows(QModelIndex(), position, position+rows+1);
+      QVector<QString> colValues;
+      for(int col=0; col < columnCount(QModelIndex()); col++){
+         colValues.insert(col, "");
+      }
       for(int row=0; row < rows; row++){
-         QVector<QString> colValues;
-         for(int col=0; col < columnCount(QModelIndex()); col++){
-            colValues.insert(col, "");
-         }
-         this->fields.insert(this->rows-rows, colValues);
+         this->fields.insert(position+row, colValues);
       }
 
       endInsertRows();

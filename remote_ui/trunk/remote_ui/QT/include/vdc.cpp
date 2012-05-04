@@ -6,6 +6,7 @@
 namespace VDC {
    double fieldsizefactor;
 
+
    void waitCursor()
    {
 

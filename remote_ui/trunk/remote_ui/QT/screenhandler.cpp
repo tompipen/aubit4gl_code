@@ -66,16 +66,16 @@ void ScreenHandler::setCurrentFocus(QWidget *old, QWidget *current)
 
     return;
     if(p_fglform == NULL)
-        return;
-    QWidget *qw_form = (QWidget*) p_fglform;
-    qApp->setActiveWindow(qw_form);
-    if(!p_fglform->isEnabled())
-    {
-        return;
-    }
+      return;
+  QWidget *qw_form = (QWidget*) p_fglform;
+  qApp->setActiveWindow(qw_form);
+  if(!p_fglform->isEnabled())
+  {
+      return;
+  }
 
-    p_fglform->activateWindow();
-    p_fglform->raise();
+  p_fglform->activateWindow();
+  p_fglform->raise();
 }
 
 //------------------------------------------------------------------------------
@@ -1676,6 +1676,16 @@ MainFrame::vdcdebug("ScreenHandler","setEvent", "QString event, QString attribut
       p_fglform->addFormEvent(event);
       return;
    }
+
+
+   if(event == "MENUACTION_EVENT")
+   {
+       Fgl::Event event;
+       event.type      = Fgl::MENUACTION_EVENT;
+       event.id        = id;
+       //event.keys      =
+       return;
+   }
 }
 
 //------------------------------------------------------------------------------
@@ -1844,16 +1854,8 @@ MainFrame::vdcdebug("ScreenHandler","setFormOpts", "QString type, bool value, in
 
          p_fglform->addFormEvent(event);
 
-//insert+delete
-//         event.type = Fgl::GUI_ACTION_EVENT;
-//         event.id = "-1";
-//         event.attribute = "delete";
 
-         p_fglform->addFormEvent(event);
-//
-
-
-      }
+     }
 
       if(type == "INPUTARRAY"){
          p_fglform->setState(Fgl::INPUTARRAY);
@@ -1873,20 +1875,18 @@ MainFrame::vdcdebug("ScreenHandler","setFormOpts", "QString type, bool value, in
 
          p_fglform->addFormEvent(event);
 
-//insert+delete
-//         event.type = Fgl::GUI_ACTION_EVENT;
-//         event.id = "-1";
-//         event.attribute = "insert";
+         event.type = Fgl::GUI_ACTION_EVENT;
+         event.id = "-1";
+         event.attribute = "insert";
 
-//         p_fglform->addFormEvent(event);
+         p_fglform->addFormEvent(event);
 
 
-//         event.type = Fgl::GUI_ACTION_EVENT;
-//         event.id = "-1";
-//         event.attribute = "delete";
+         event.type = Fgl::GUI_ACTION_EVENT;
+         event.id = "-1";
+         event.attribute = "delete";
 
-//         p_fglform->addFormEvent(event);
-
+         p_fglform->addFormEvent(event);
 
       }
    }

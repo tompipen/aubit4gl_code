@@ -22,6 +22,8 @@
 #include "table.h"
 #include "include/fgl.h"
 
+
+
 Response::Response(Fgl::Event id, FglForm* p_currForm, bool cursorPos) : QDomDocument()
 {
 MainFrame::vdcdebug("Response","Response", "QString id, FglForm* p_currForm, bool cursorPos");
@@ -280,7 +282,7 @@ MainFrame::vdcdebug("Response","addScreenRecSyncValues", "");
 
    QDomElement syncRowsElement = this->createElement("SYNCROWS");
    responseElement.appendChild(syncRowsElement);
-   if(id == "ACCEPT")
+   if(id == "ACCEPT" || p_currForm->context->arrcountchanged())
    {
 
 
