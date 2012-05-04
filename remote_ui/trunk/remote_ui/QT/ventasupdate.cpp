@@ -160,7 +160,7 @@ void VentasUpdate::readXmlFinished(QNetworkReply *reply)
                                                 m_box->setWindowTitle("VENTAS UPDATE");
                                                 closeWindow = m_box->question(0,
                                                               tr("VDC UPDATE"),
-                                                              tr("There are modules running.\n You should terminate it. \n Do you really want to continue?"),
+                                                              tr("There are modules running.\n They will be terminated. \n Do you really want to continue?"),
                                                               tr("&Yes"), tr("&No"),
                                                               QString(), 0, 1);
                                             }
