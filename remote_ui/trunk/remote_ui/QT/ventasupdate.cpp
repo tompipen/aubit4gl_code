@@ -74,9 +74,15 @@ QList<QString> VentasUpdate::parseXml(QString filePath)
 
     if(!file.open(QIODevice::ReadOnly))
     {
-        m_box->setWindowTitle("VENTAS UPDATE");
-        m_box->setText(QString("Failed to open File: %1").arg(filePath));
-        m_box->show();
+        if(displayErrorDialog == 1)
+        {
+            m_box->setWindowTitle("VENTAS UPDATE");
+            m_box->critical(0,
+                          tr("VDC UPDATE"),
+                          QString(tr("Failed to open File: %1")).arg(filePath),
+                          tr("&Ok"),
+                          QString(), 0);
+        }
     }
 
     QDomDocument doc;
