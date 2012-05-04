@@ -67,6 +67,7 @@ public slots:
    void commandfailed(int, QString);
    #endif
    void error(QString);
+   void checkForUpdate();
 
 private slots:
    void okPressed();

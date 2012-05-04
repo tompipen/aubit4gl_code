@@ -170,6 +170,16 @@ void VentasUpdate::readXmlFinished(QNetworkReply *reply)
                                     }
                                 }
                             }
+                        } else {
+                            if(displayErrorDialog == 1)
+                            {
+                                m_box->setWindowTitle("VENTAS UPDATE");
+                                m_box->question(0,
+                                              tr("VDC UPDATE"),
+                                              tr("No A4GL informations found!!"),
+                                              tr("&Ok"),
+                                              QString(), 0);
+                            }
                         }
                     } else {
                         if(displayErrorDialog == 1)

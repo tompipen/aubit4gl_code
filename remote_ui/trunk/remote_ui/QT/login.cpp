@@ -1016,3 +1016,9 @@ void LoginForm::removeCursor()
 {
   VDC::arrowCursor();
 }
+
+void LoginForm::checkForUpdate()
+{
+    VentasUpdate *vu = new VentasUpdate(1);
+    vu->checkForNewUpdates();
+}
