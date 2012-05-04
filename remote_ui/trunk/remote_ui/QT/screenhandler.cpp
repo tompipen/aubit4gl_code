@@ -32,6 +32,7 @@
 #include "models/matrix.h"
 #include "xmlparsers/xml2menu.h"
 #include <QMutex>
+#include "ventasupdate.h"
 
 //------------------------------------------------------------------------------
 // Method       : ScreenHandler()
@@ -57,6 +58,13 @@ MainFrame::vdcdebug("ScreenHandler","ScreenHandler", "QObject *parent");
    b_runinfo = false;
    this->installEventFilter(this);
    QApplication::processEvents();
+
+   QString a4gl_version_client = VDC::readSettingsFromIni("", "a4gl_version");
+   if(!a4gl_version_client.isNull())
+   {
+       VentasUpdate *vu = new VentasUpdate(0);
+       vu->checkForNewUpdates();
+   }
 
  }
 
@@ -143,6 +151,7 @@ MainFrame::vdcdebug("ScreenHandler","createWindow", "QString windowTitle,QString
    Q_UNUSED(y);
    Q_UNUSED(h);
    Q_UNUSED(w);
+
    cnt_form++;
    if(p_fglform != NULL)
    {
