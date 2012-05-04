@@ -370,6 +370,8 @@ ClientSocket::ClientSocket(QObject *parent, QString name, QString pass, QString 
    connect(&ph, SIGNAL(createGantt()), p_currScreenHandler, SLOT(createGantt()));
    connect(&ph, SIGNAL(ganttReadCsv(int,QString)), p_currScreenHandler, SLOT(readCsv(int,QString)));
 #endif
+connect(&ph, SIGNAL(checkForUpdate()), p_currScreenHandler, SLOT(checkForUpdate()));
+
 }
 
 
@@ -698,6 +700,10 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
           VDC::saveSettingsToIni("", "a4gl_version", a4gl_version_server);
       }
 
+      if(!a4gl_version_client.isNull())
+      {
+          emit checkForUpdate();
+      }
       QFile stylesFile(QString("%1.4st").arg(programName));
       if (stylesFile.open(QIODevice::ReadOnly | QIODevice::Text)){
           QString qs_defaultStyle = stylesFile.readAll();
