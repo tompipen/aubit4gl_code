@@ -232,7 +232,7 @@ void TableView::insertRow()
   QSortFilterProxyModel *proxyModel = static_cast<QSortFilterProxyModel*> (this->model());
   TableModel *table = static_cast<TableModel*> (proxyModel->sourceModel());
   table->insertRows(row, 1, QModelIndex());
- // getForm()->context->setOption("ARRCOUNT", getForm()->context->getOption("ARRCOUNT")+1);
+  getForm()->context->setOption("ARRCOUNT", getForm()->context->getOption("ARRCOUNT")+1);
   b_ignoreFocus = true;
  // setCurrentField(row, col);
 
