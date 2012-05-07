@@ -283,6 +283,7 @@ void TableView::deleteRow()
   int row = -1;
 
   row = currentIndex().row();
+  qDebug()<<"row:"<<row;
   //Nothing selected
   if(row == -1)
   {
@@ -290,13 +291,40 @@ void TableView::deleteRow()
      return;
   }
 
-
-
-
   QSortFilterProxyModel *proxyModel = static_cast<QSortFilterProxyModel*> (this->model());
   TableModel *table = static_cast<TableModel*> (proxyModel->sourceModel());
 
   table->removeRows(row, 1, QModelIndex());
+
+  Fgl::Event event, diffevent;
+  QList<Fgl::Event> ql_events;
+  event.id = "-1";
+
+
+  event.type = Fgl::BEFORE_ROW_EVENT;
+  diffevent = getForm()->getFormEvent(event);
+  if(diffevent.id != event.id)
+  {
+    ql_events += diffevent;
+  }
+
+
+  Fgl::Event returnevent;
+
+  returnevent.id = "";
+  if(!ql_events.isEmpty())
+  {
+      int resp_cnt = ql_events.size();
+      for(int i = 0; i<resp_cnt; i++)
+      {
+
+          returnevent.id += ql_events.at(i).id;
+          if(i+1 != resp_cnt)
+             returnevent.id += ",";
+      }
+
+      addToQueue(returnevent);
+  }
 }
 
 void TableView::copyRow()
@@ -1290,7 +1318,7 @@ bool TableModel::removeRows(int position, int rows, const QModelIndex &index)
 {
 MainFrame::vdcdebug("TableModel","removeRows", "int position, int rows, const QModelIndex &index");
    Q_UNUSED(index);
-   if(position > rows)
+   if(position > position+rows-1)
    {
        if(this->rows > 0 && this->fields.count() > position+rows-1){
 
@@ -1312,10 +1340,13 @@ MainFrame::vdcdebug("TableModel","removeRows", "int position, int rows, const QM
        if(this->rows >= 0){
           this->rows -= rows;
 
-              beginRemoveRows(QModelIndex(), position, rows-1);
+              beginRemoveRows(QModelIndex(), position, position+rows-1);
 
-              for(int row=1; row < rows; row++){
-                 this->fields.remove(this->rows);
+              for(int row=0; row < rows; row++){
+                 if(this->fields.count() > position)
+                 {
+                     this->fields.remove(position);
+                 }
               }
 
               endRemoveRows();
