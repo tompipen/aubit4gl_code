@@ -1270,7 +1270,7 @@ MainFrame::vdcdebug("TableModel","insertRows", "int position, int rows, const QM
    if(this->rows >= 0){
       this->rows += rows;
 
-      beginInsertRows(QModelIndex(), position, position+rows+1);
+      beginInsertRows(QModelIndex(), position, position+rows-1);
       QVector<QString> colValues;
       for(int col=0; col < columnCount(QModelIndex()); col++){
          colValues.insert(col, "");
