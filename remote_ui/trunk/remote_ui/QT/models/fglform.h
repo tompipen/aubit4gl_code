@@ -223,6 +223,12 @@ public:
    void setUserInputEnabled(bool enabled);
    QList<QPair<QString, QString> > ql_shortcuts;
 
+   //PROPERTIES
+   int widgetWidth;
+   int widgetHeight;
+   int widgetPosX;
+   int widgetPosY;
+
 public slots:
    void buttonClicked(QString);
    void fieldEvent(Fgl::Event, QWidget* = NULL);
@@ -279,6 +285,7 @@ public slots:
    void writeSettingsLocal();
    void readSettingsLocal();
 
+
 private:
    QList<Fgl::State> ql_states;
 
@@ -305,11 +312,6 @@ private:
 
    //bool b_construct;
 
-   //PROPERTIES
-   int widgetWidth;
-   int widgetHeight;
-   int widgetPosX;
-   int widgetPosY;
    QString m_windowType;
    QString m_startMenuPosition;
    QString m_toolBarPosition;

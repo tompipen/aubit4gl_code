@@ -1249,23 +1249,23 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
 
    if(event->type() == QEvent::Move)
    {
-       if(this->isEnabled() && this->isActiveWindow())
+       /*if(this->isEnabled() && this->isActiveWindow())
        {
            qDebug() << "pos: " << pos();
            widgetWidth = size().width();
            widgetHeight = size().height();
            widgetPosX = pos().x();
            widgetPosY = pos().y();
-       }
+       }*/
    } else if(event->type() == QEvent::Resize)
    {
-       if(this->isEnabled() && this->isActiveWindow())
+       /*if(this->isEnabled() && this->isActiveWindow())
        {
            widgetWidth = size().width();
            widgetHeight = size().height();
            widgetPosX = pos().x();
            widgetPosY = pos().y();
-       }
+       }*/
    }
 
 
@@ -1609,6 +1609,10 @@ void FglForm::writeSettingsLocal()
 void FglForm::closeEvent(QCloseEvent *event)
 {
 MainFrame::vdcdebug("FglForm","closeEvent", "QCloseEvent *event");
+   widgetPosX = pos().x();
+   widgetPosY = pos().y();
+   widgetHeight = size().height();
+   widgetWidth = size().width();
    writeSettingsLocal();
    if(!b_allowClose){
       if(QObject::sender() == NULL) //Null when it comes from the
