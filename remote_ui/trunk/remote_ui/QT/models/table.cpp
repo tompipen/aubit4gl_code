@@ -1357,22 +1357,72 @@ QVariant TableModel::headerData ( int section, Qt::Orientation orientation, int 
 bool MyFilter::lessThan(const QModelIndex &left, const QModelIndex &right) const
 {
 MainFrame::vdcdebug("MyFilter","lessThan", "const QModelIndex &left, const QModelIndex &right const");
-   int column = left.column();
-   if (column == 9)
-   {
+
       QVariant v0 = left.data(Qt::DisplayRole);
       QVariant v1 = right.data(Qt::DisplayRole);
-      QString  s0 = v0.toString();
-      QString  s1 = v1.toString();
-      QDate    d0 = dateFromString(s0);
-      QDate    d1 = dateFromString(s1);
 
-      return d0 < d1;
+      qDebug()<<v0<<" "<<v1;
 
-   }else{
+      if(TableModel *model = qobject_cast<TableModel*> (sourceModel()))
+      {
+
+          if(LineEditDelegate *led = qobject_cast<LineEditDelegate*> (model->getTableView()->itemDelegateForColumn(left.column())))
+          {
+
+              if(LineEdit *widget = qobject_cast<LineEdit *> (led->qw_editor)){
+
+                  //Integers
+                  if(widget->dataType() == Fgl::DTYPE_SMINT || widget->dataType() == Fgl::DTYPE_INT || widget->dataType() == Fgl::DTYPE_INT8 || widget->dataType() == Fgl::DTYPE_SERIAL || widget->dataType() == Fgl::DTYPE_SERIAL8) {
+                      //enum DataType { DTYPE_CHAR, DTYPE_SMINT, DTYPE_INT, DTYPE_FLOAT, DTYPE_SMFLOAT, DTYPE_DECIMAL, DTYPE_SERIAL, DTYPE_DATE, DTYPE_MONEY, DTYPE_NULL, DTYPE_DTIME, DTYPE_BYTE, DTYPE_TEXT, DTYPE_VCHAR, DTYPE_INTERVAL, DTYPE_NCHAR, DTYPE_INT8, DTYPE_SERIAL8}
+                      return v0.toInt() < v1.toInt();
+
+              }
+                  //Strings + Chars
+                  if(widget->dataType() == Fgl::DTYPE_CHAR || widget->dataType() == Fgl::DTYPE_BYTE || widget->dataType() == Fgl::DTYPE_NCHAR || widget->dataType() == Fgl::DTYPE_TEXT || widget->dataType() == Fgl::DTYPE_VCHAR) {
+                      //enum DataType { DTYPE_CHAR, DTYPE_SMINT, DTYPE_INT, DTYPE_FLOAT, DTYPE_SMFLOAT, DTYPE_DECIMAL, DTYPE_SERIAL, DTYPE_DATE, DTYPE_MONEY, DTYPE_NULL, DTYPE_DTIME, DTYPE_BYTE, DTYPE_TEXT, DTYPE_VCHAR, DTYPE_INTERVAL, DTYPE_NCHAR, DTYPE_INT8, DTYPE_SERIAL8}
+                      return v0.toString().toLower() < v1.toString().toLower();
+
+              }
+
+                  //Decimal + Float + Money
+                  if(widget->dataType() == Fgl::DTYPE_FLOAT || widget->dataType() == Fgl::DTYPE_DECIMAL || widget->dataType() == Fgl::DTYPE_MONEY || widget->dataType() == Fgl::DTYPE_SMFLOAT) {
+                      //enum DataType { DTYPE_CHAR, DTYPE_SMINT, DTYPE_INT, DTYPE_FLOAT, DTYPE_SMFLOAT, DTYPE_DECIMAL, DTYPE_SERIAL, DTYPE_DATE, DTYPE_MONEY, DTYPE_NULL, DTYPE_DTIME, DTYPE_BYTE, DTYPE_TEXT, DTYPE_VCHAR, DTYPE_INTERVAL, DTYPE_NCHAR, DTYPE_INT8, DTYPE_SERIAL8}
+                      return v0.toFloat() < v1.toFloat();
+
+              }
+
+                  //Date
+                  if(widget->dataType() == Fgl::DTYPE_DATE || widget->dataType() == Fgl::DTYPE_DTIME) {
+                      //enum DataType { DTYPE_CHAR, DTYPE_SMINT, DTYPE_INT, DTYPE_FLOAT, DTYPE_SMFLOAT, DTYPE_DECIMAL, DTYPE_SERIAL, DTYPE_DATE, DTYPE_MONEY, DTYPE_NULL, DTYPE_DTIME, DTYPE_BYTE, DTYPE_TEXT, DTYPE_VCHAR, DTYPE_INTERVAL, DTYPE_NCHAR, DTYPE_INT8, DTYPE_SERIAL8}
+                      QString s0 = v0.toString();
+                      QString s1 = v1.toString();
+                      //dateFromString crashed when the string is null
+                      if(s0.isEmpty())
+                         return true;
+                      if(s1.isEmpty())
+                         return false;
+
+                      QDate d1 = dateFromString(v0.toString());
+                      QDate d2 = dateFromString(v1.toString());
+                      return d1 < d2;
+              }
+
+
+
+              }
+
+          }
+
+
+       }
+
 
       return QSortFilterProxyModel::lessThan(left, right);
-   }
+}
+
+QVariant MyFilter::headerData(int section, Qt::Orientation orientation, int role) const
+{
+  return sourceModel()->headerData(section, orientation, role);
 }
 
 // return number represented by a digit character
