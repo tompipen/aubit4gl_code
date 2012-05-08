@@ -76,12 +76,10 @@ QList<QString> VentasUpdate::parseXml(QString filePath)
     {
         if(displayErrorDialog == 1)
         {
-            m_box->setWindowTitle("VENTAS UPDATE");
-            m_box->critical(0,
-                          tr("VDC UPDATE"),
-                          QString(tr("Failed to open File: %1")).arg(filePath),
-                          tr("&Ok"),
-                          QString(), 0);
+            Dialog *dialog = new Dialog("VENTAS Update", QString("Failed to Open: %1").arg(filePath), "", "stop");
+            dialog->createButton(1, "Ok", "Ok", "ok_gruen.png");
+            connect(dialog->getAction("OK"), SIGNAL(triggered()), dialog, SLOT(close()));
+            dialog->show();
         }
     }
 
@@ -122,12 +120,10 @@ void VentasUpdate::readXmlFinished(QNetworkReply *reply)
     } else {
         if(displayErrorDialog == 1)
         {
-            m_box->setWindowTitle("VENTAS UPDATE");
-            m_box->critical(0,
-                          tr("VDC UPDATE"),
-                          tr("Could not connect to the Update Server.\n Please check your Network connection."),
-                          tr("&Ok"),
-                          QString(), 0);
+            Dialog *dialog = new Dialog("VENTAS Update", "Could not connect to the Update Server.\n Please check your Network connection", "", "stop");
+            dialog->createButton(1, "Ok", "Ok", "ok_gruen.png");
+            connect(dialog->getAction("OK"), SIGNAL(triggered()), dialog, SLOT(close()));
+            dialog->show();
         }
     }
 
@@ -183,35 +179,29 @@ void VentasUpdate::readXmlFinished(QNetworkReply *reply)
                         } else {
                             if(displayErrorDialog == 1)
                             {
-                                m_box->setWindowTitle("VENTAS UPDATE");
-                                m_box->information(0,
-                                              tr("VDC UPDATE"),
-                                              tr("No A4GL informations found!!"),
-                                              tr("&Ok"),
-                                              QString(), 0);
+                                Dialog *dialog = new Dialog("VENTAS Update", "No A4GL informations found!", "", "information");
+                                dialog->createButton(1, "Ok", "Ok", "ok_gruen.png");
+                                connect(dialog->getAction("OK"), SIGNAL(triggered()), dialog, SLOT(close()));
+                                dialog->show();
                             }
                         }
                     } else {
                         if(displayErrorDialog == 1)
                         {
-                            m_box->setWindowTitle("VENTAS UPDATE");
-                            m_box->information(0,
-                                          tr("VDC UPDATE"),
-                                          tr("The Client is up to date!"),
-                                          tr("&Ok"),
-                                          QString(), 0);
+                            Dialog *dialog = new Dialog("VENTAS Update", "The Client is up to date!", "", "information");
+                            dialog->createButton(1, "Ok", "Ok", "ok_gruen.png");
+                            connect(dialog->getAction("OK"), SIGNAL(triggered()), dialog, SLOT(close()));
+                            dialog->show();
                         }
                     }
                 }
             } else {
                 if(displayErrorDialog == 1)
                 {
-                    m_box->setWindowTitle("VENTAS UPDATE");
-                    m_box->information(0,
-                                  tr("VDC UPDATE"),
-                                  tr("The Client is up to date!"),
-                                  tr("&Ok"),
-                                  QString(), 0);
+                    Dialog *dialog = new Dialog("VENTAS Update", "The Client is up to date!", "", "information");
+                    dialog->createButton(1, "Ok", "Ok", "ok_gruen.png");
+                    connect(dialog->getAction("OK"), SIGNAL(triggered()), dialog, SLOT(close()));
+                    dialog->show();
                 }
             }
         }
