@@ -1582,6 +1582,7 @@ A4GL_debug("...");
       send_to_ui ("<ENV NAME=\"%s\" VALUE=\"%s\"/>", nm[a], uilib_xml_escape (acl_getenv (nm[a])));
     }
       send_to_ui ("<ENV NAME=\"A4GL_VERSION\" VALUE=\"%s.%d\"/>",  uilib_xml_escape (A4GL_internal_version ()),A4GL_internal_build());
+      send_to_ui ("<ENV NAME=\"XML_VERSION\" VALUE=\"1.0\"/>");
 
 A4GL_debug("...");
 
