@@ -294,6 +294,13 @@ void TableView::deleteRow()
   QSortFilterProxyModel *proxyModel = static_cast<QSortFilterProxyModel*> (this->model());
   TableModel *table = static_cast<TableModel*> (proxyModel->sourceModel());
 
+  getForm()->context->setOption("ARRCOUNT", getForm()->context->getOption("ARRCOUNT")-1);
+  if(row > 0)
+  {
+      this->setCurrentField(row-1, 1);
+  } else {
+      this->setCurrentField(row+1, 1);
+  }
   table->removeRows(row, 1, QModelIndex());
 
   Fgl::Event event, diffevent;
