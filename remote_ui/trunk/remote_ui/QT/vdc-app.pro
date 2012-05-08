@@ -122,5 +122,7 @@ SOURCES += confwin.cpp \
     models/webbrowser.cpp \
     ventasupdate.cpp
 
+OTHER_FILES += versions.xml
+
 RESOURCES += \
     ressource.qrc
