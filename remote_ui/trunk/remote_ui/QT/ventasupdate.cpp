@@ -142,39 +142,13 @@ void VentasUpdate::readXmlFinished(QNetworkReply *reply)
                         {
                             if(serverVars.at(2) == a4gl_client_version)
                             {
-                                int dialogAuswahl = 0;
-                                m_box->setWindowTitle("VENTAS UPDATE");
-                                dialogAuswahl = m_box->information(0,
-                                              tr("VDC UPDATE"),
-                                              tr("There is a new VDC version available.\n Do you want to download and install it?"),
-                                              tr("&Yes"), tr("&No"),
-                                              QString(), 0, 1);
-
-                                if(dialogAuswahl == 0)
-                                {
-                                    if(this->m_screenhandler != NULL && this->m_screenhandler->parent() != NULL && this->m_screenhandler->parent()->parent() != NULL)
-                                    {
-                                         qDebug() << "bla123:" << this->m_screenhandler->parent()->parent();
-                                        if(ClientTcp *cTcp = qobject_cast<ClientTcp *> (this->m_screenhandler->parent()->parent()))
-                                        {
-                                            if(cTcp->socket != NULL)
-                                            {
-                                                m_box->setWindowTitle("VENTAS UPDATE");
-                                                closeWindow = m_box->question(0,
-                                                              tr("VDC UPDATE"),
-                                                              tr("There are modules running.\n They will be terminated. \n Do you really want to continue?"),
-                                                              tr("&Yes"), tr("&No"),
-                                                              QString(), 0, 1);
-                                            }
-                                        }
-                                    }
-
-                                    if(closeWindow == 0)
-                                    {
-                                        loadFileFromServer();
-
-                                    }
-                                }
+                                Dialog *dialog = new Dialog("VENTAS Update", "There is a new VDC version available.\n Do you want to download and install it?", "", "information");
+                                dialog->createButton(1, "Ok", "Ok", "ok_gruen.png");
+                                dialog->createButton(2, "Abort", "Abort", "abbrechen_rot.png");
+                                connect(dialog->getAction("OK"), SIGNAL(triggered()), this, SLOT(checkOpenConnections()));
+                                connect(dialog->getAction("ABORT"), SIGNAL(triggered()), dialog, SLOT(close()));
+                                dialog->show();
+                                m_dialog = dialog;
                             }
                         } else {
                             if(displayErrorDialog == 1)
@@ -244,4 +218,34 @@ void VentasUpdate::updateReady(QNetworkReply *reply)
         QApplication::quit();
 
     }
+}
+
+void VentasUpdate::checkOpenConnections()
+{
+    qDebug() << "bin dran!";
+    if(this->m_screenhandler != NULL && this->m_screenhandler->parent() != NULL && this->m_screenhandler->parent()->parent() != NULL)
+    {
+        if(ClientTcp *cTcp = qobject_cast<ClientTcp *> (this->m_screenhandler->parent()->parent()))
+        {
+            if(cTcp->socket != NULL)
+            {
+                Dialog *dialog = new Dialog("VENTAS Update", "There are modules running.\n They will be terminated. \n Do you really want to continue?", "", "stop");
+                dialog->createButton(1, "Ok", "Ok", "ok_gruen.png");
+                dialog->createButton(2, "Abort", "Abort", "abbrechen_rot.png");
+                connect(dialog->getAction("OK"), SIGNAL(triggered()), this, SLOT(responseDownload()));
+                connect(dialog->getAction("ABORT"), SIGNAL(triggered()), dialog, SLOT(close()));
+                dialog->show();
+            }
+        }
+    } else {
+        loadFileFromServer();
+    }
+    if(m_dialog != NULL)
+    {
+        m_dialog->close();
+    }
+}
+void VentasUpdate::responseDownload()
+{
+    loadFileFromServer();
 }

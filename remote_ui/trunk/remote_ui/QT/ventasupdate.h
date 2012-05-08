@@ -33,6 +33,8 @@ public slots:
     void readXmlFinished(QNetworkReply*);
     void updateReady(QNetworkReply*);
     void updateDownloadProgress(qint64,qint64);
+    void checkOpenConnections();
+    void responseDownload();
 
 
 private:
@@ -41,6 +43,7 @@ private:
     QLabel *m_label;
     QProgressBar *m_progress;
     QObject *m_screenhandler;
+    Dialog *m_dialog;
     //MainFrame m_mainFrame;
 };
 
