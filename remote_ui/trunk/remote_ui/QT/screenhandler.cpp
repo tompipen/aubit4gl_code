@@ -3391,15 +3391,34 @@ void ScreenHandler::setRuninfo(int mode, QString cmd, int runcnt, bool start)
                    break;
                }
            }
-           VDC::waitCursor();
-           this->cmd = cmd;
-           if(p_fglform != NULL)
+
+           if(this->programm_name_run.isEmpty())
            {
-               p_fglform->setEnabled(false);
+               if(p_fglform)
+               {
+                  timer = new QTimer(p_fglform);
+                  timer->setSingleShot(true);
+                  connect(timer, SIGNAL(timeout()), p_fglform, SLOT(disableForm()));
+                  timer->start(1000);
+               }
+
+              //Timerfall
            }
+           else
+           {
+               if(p_fglform != NULL)
+               {
+                   p_fglform->setEnabled(false);
+               }
+           }
+           VDC::waitCursor();
+
+           this->cmd = cmd;
+
         }
         else
         {
+            this->timer->stop();
             this->programm_name_run = "";
             this->b_runinfo = false;
             this->p_pid_p = 0;

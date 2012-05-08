@@ -529,6 +529,12 @@ MainFrame::vdcdebug("FglForm","setActionMenuEnabled", "bool enable");
 //   p_actionMenu->hideButtons(!enable);
 }
 
+
+void FglForm::disableForm()
+{
+  this->setEnabled(false);
+}
+
 //------------------------------------------------------------------------------
 // Method       : actionTriggered()
 // Filename     : fglform.cpp

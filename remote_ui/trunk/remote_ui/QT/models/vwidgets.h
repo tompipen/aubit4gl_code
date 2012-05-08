@@ -329,8 +329,9 @@ public:
     QString name;
     QString colName;
     bool img;
-
+    QString fieldValue; //Attribute to check that the image is changed(avoiding repaint of the whole mask if the same image is displayed)
     int x,y,w;
+
 };
 
 class ProgressBar : public QProgressBar

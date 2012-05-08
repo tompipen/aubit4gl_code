@@ -230,6 +230,7 @@ public:
    int widgetPosY;
 
 public slots:
+   void disableForm();
    void buttonClicked(QString);
    void fieldEvent(Fgl::Event, QWidget* = NULL);
    Fgl::Event getFormEvent(Fgl::Event, QWidget* widget = NULL);

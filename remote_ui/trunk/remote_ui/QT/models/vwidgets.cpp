@@ -2017,23 +2017,38 @@ MainFrame::vdcdebug("WidgetHelper","setFieldText", "QObject *object, QString fie
    if(Label *widget = qobject_cast<Label *> (object)){
       if(widget->pixmap() == 0 && widget->movie() == 0){
          widget->setText(fieldValue);
+         widget->fieldValue = fieldValue;
       }
       else{
+
+
          if(!QFile::exists(fieldValue))
          {
              fieldValue.prepend(QDir::tempPath().append("/"));
          }
          if(fieldValue.endsWith(".gif",Qt::CaseInsensitive))
          {
+
+             if(widget->fieldValue == fieldValue)
+             {
+                return; // Avoid repaint event
+             }
              QMovie *movie = new QMovie(fieldValue);
              widget->setMovie(movie);
              movie->start();
+             widget->fieldValue = fieldValue;
 
          }
          else
          {
+
+             if(widget->fieldValue == fieldValue)
+             {
+                return; // Avoid repaint event
+             }
              QPixmap pixmap(fieldValue);
              widget->setPixmap(pixmap);
+             widget->fieldValue = fieldValue;
          }
          //widget->setFixedSize(pixmap.size());
       }
@@ -2329,7 +2344,7 @@ Label::Label(const QString &text, QWidget *parent)
    font.setPixelSize(12);
    this->img = false;
    this->setFont(font);
-
+   this->fieldValue = "";
    this->setFocusPolicy(Qt::NoFocus);
    w = 0;
 }
@@ -2371,6 +2386,7 @@ Label::Label(QWidget *parent)
    font.setPixelSize(12);
    this->img = false;
    this->setFont(font);
+   this->fieldValue = "";
 }
 
 PopupCalendar::PopupCalendar(QDate day, QPoint pos,

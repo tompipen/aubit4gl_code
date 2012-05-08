@@ -104,7 +104,7 @@ private:
    KDChart::PieDiagram* m_pie;
    KDChart::BarDiagram* m_bar;
    #endif
-
+   QTimer *timer;
    QList<Context*> contexts;
    bool cursorPos;
    QString qs_interfaceTitle;
