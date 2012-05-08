@@ -374,10 +374,65 @@ char *destfile=NULL;
   return 1;
 }
  
+ 
+ 
+ 
+static int ui_vdc_md5hashfile(long *objectID_IgnoredAsAlways0,int n) {
+int okToProcess=1;
+int _ni=1;
+struct BINDING _ibind[1]={
+    {NULL,0,0,0,0,0,NULL}
+};
+int _no=1;
+struct BINDING _obind[1]={
+    {NULL,0,0,0,0,0,NULL}
+};
+char rval_0[512];
+char *filename=NULL;
+ 
+/* END OF DEFINE SECTION */
+ 
+ 
+  if (n!=1) { 
+    A4GL_pop_args(n);
+    okToProcess=0;
+  }
+ 
+  // Set up input binding for our parameters
+  if (okToProcess) {
+    filename=A4GL_char_pop();
+    _ibind[0].ptr=filename;
+    _ibind[0].size=strlen(filename);
+  }
+ 
+  // Set up output binding for our parameters
+  if (okToProcess) {
+    _obind[0].ptr=&rval_0;
+    _obind[0].size=512;
+  }
+ 
+  if (okToProcess) {
+      A4GL_ui_frontcall("INTERNAL","ui.vdc.md5hashfile",_ibind,_ni,_obind,_no );
+  }
+ 
+ 
+  // Set up output binding for our parameters
+    if (filename ) {
+        free(filename);
+    }
+  if (!okToProcess) {
+    A4GL_push_null(DTYPE_CHAR,1);
+  } else {
+    A4GL_push_char(rval_0);
+  }
+  return 1;
+}
+ 
 void add_ui_vdc_support(void) {
 A4GL_add_object_type("ui.vdc");
   A4GL_add_datatype_function_i (DTYPE_OBJECT, ":ui.vdc.action", (void *)  ui_vdc_action);
   A4GL_add_datatype_function_i (DTYPE_OBJECT, ":ui.vdc.repgen", (void *)  ui_vdc_repgen);
   A4GL_add_datatype_function_i (DTYPE_OBJECT, ":ui.vdc.odftopdf", (void *)  ui_vdc_odftopdf);
   A4GL_add_datatype_function_i (DTYPE_OBJECT, ":ui.vdc.checkodffile", (void *)  ui_vdc_checkodffile);
+  A4GL_add_datatype_function_i (DTYPE_OBJECT, ":ui.vdc.md5hashfile", (void *)  ui_vdc_md5hashfile);
 }
