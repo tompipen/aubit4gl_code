@@ -3418,7 +3418,16 @@ void ScreenHandler::setRuninfo(int mode, QString cmd, int runcnt, bool start)
         }
         else
         {
-            this->timer->stop();
+            if(timer)
+            {
+               if(timer->isActive())
+               {
+                 timer->stop();
+               }
+
+               timer = NULL;
+             }
+
             this->programm_name_run = "";
             this->b_runinfo = false;
             this->p_pid_p = 0;
