@@ -1248,6 +1248,42 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
 
          }  
 
+         //returnvalue: 0 for file not found, otherwiese the hash
+         if(qs_name == "ui.vdc.md5hashfile")
+         {
+
+             QStringList params;
+
+             for(int k=0; k<paramsElement.childNodes().count(); k++){
+                QDomElement valuesElement = paramsElement.childNodes().at(k).toElement();
+                params << valuesElement.text();
+
+             }
+
+             QString filename = params.at(0);
+             QByteArray ba_filedata = "";
+             if(QFile::exists(filename))
+             {
+                 returnvalues << VDC::md5hashfromfile(filename);
+             }
+             else
+             {
+                 filename.prepend(QDir::tempPath().append("/"));
+                 if(QFile::exists(filename))
+                 {
+                     returnvalues << VDC::md5hashfromfile(filename);
+                 }
+                 else
+                 {
+                     returnvalues << "0"; //File not Found
+                 }
+             }
+
+
+
+
+         }
+
          if(qs_name == "ui.interface.settext"){
             QDomElement values = childElement.firstChildElement();
             QDomElement valueElement = values.firstChildElement();

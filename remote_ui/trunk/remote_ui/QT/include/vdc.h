@@ -2,6 +2,7 @@
 #define VDC_H
 #include <QApplication>
 #include <QSettings>
+#include <QCryptographicHash>
 
 namespace VDC
 {
@@ -20,6 +21,7 @@ namespace VDC
   void saveSettingsToIni(QString, QString, QString);
   void saveSettingsToIni(QString, QString, QByteArray);
   void removeSettingsFromIni(QString group, QString key);
+  QString md5hashfromfile(QString);
 
 
 };

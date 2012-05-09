@@ -103,4 +103,23 @@ namespace VDC {
        settings.endGroup();
    }
 
+   QString md5hashfromfile(QString filename)
+   {
+
+     QByteArray ba_filedata;
+     QFile file(filename);
+     if(!file.open(QFile::ReadOnly))
+     {
+         return "-1";
+     }
+
+
+     ba_filedata = file.readAll();
+
+
+     QCryptographicHash hash(QCryptographicHash::Md5);
+     hash.addData(ba_filedata);
+     QByteArray ba_hash = hash.result().toHex();
+     return ba_hash.data();
+   }
 }
