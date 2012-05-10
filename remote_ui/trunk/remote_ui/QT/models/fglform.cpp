@@ -2883,7 +2883,7 @@ void FglForm::jumpToField(QWidget* w, bool b_after){
 
     int currPos = context->fieldList().indexOf(currentField());
     int destPos = context->fieldList().indexOf(w);
-
+    float cnt_fields = context->fieldList().count();
 
     if(currPos == -1 || !b_after)
     {
@@ -2907,23 +2907,23 @@ void FglForm::jumpToField(QWidget* w, bool b_after){
 
     if(currPos<destPos)
     {
-      if(destPos-currPos < (context->fieldList().count() / 2))
+      if(destPos-currPos < (cnt_fields / 2))
         ql_responseevents << getInputEvents(currPos, destPos, false, false, false);
       else
         {
          ql_responseevents << getInputEvents(currPos, 0, true, false, true);
-         ql_responseevents << getInputEvents(context->fieldList().count()-1, destPos, true, true, false);
+         ql_responseevents << getInputEvents(cnt_fields-1, destPos, true, true, false);
         }
     }
     else
     {
-      if(currPos-destPos < (context->fieldList().count() / 2))
+      if(currPos-destPos <= (cnt_fields / 2))
       {
           ql_responseevents << getInputEvents(currPos, destPos, true, false, false);
       }
       else
       {
-          ql_responseevents << getInputEvents(currPos, context->fieldList().count()-1, false, false, true);
+          ql_responseevents << getInputEvents(currPos, cnt_fields-1, false, false, true);
           ql_responseevents << getInputEvents(0, destPos, false, true, false);
       }
 
