@@ -119,7 +119,7 @@ for(int i = 0; i<id.id.size(); i++)
    }
    else
    {
-       QString colName = WidgetHelper::getWidgetColName(p_currForm->currentField());
+       colName = WidgetHelper::getWidgetColName(p_currForm->currentField());
    }
    if(!colName.isNull() && !colName.isEmpty() &&  (p_currForm->dialog() == NULL && (p_currForm->menu() == NULL || !p_currForm->menu()->isEnabled()))){
       responseElement.setAttribute("INFIELD", colName);
