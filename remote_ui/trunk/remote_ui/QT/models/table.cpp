@@ -293,15 +293,10 @@ void TableView::deleteRow()
 
   QSortFilterProxyModel *proxyModel = static_cast<QSortFilterProxyModel*> (this->model());
   TableModel *table = static_cast<TableModel*> (proxyModel->sourceModel());
+  blockSignals(true);
 
-  getForm()->context->setOption("ARRCOUNT", getForm()->context->getOption("ARRCOUNT")-1);
-  if(row > 0)
-  {
-      this->setCurrentField(row-1, 1);
-  } else {
-      this->setCurrentField(row+1, 1);
-  }
   table->removeRows(row, 1, QModelIndex());
+  getForm()->context->setOption("ARRCOUNT", getForm()->context->getOption("ARRCOUNT")-1);
 
   Fgl::Event event, diffevent;
   QList<Fgl::Event> ql_events;
@@ -331,7 +326,9 @@ void TableView::deleteRow()
       }
 
       addToQueue(returnevent);
+
   }
+  blockSignals(false);
 }
 
 void TableView::copyRow()
@@ -993,7 +990,7 @@ if(!p_fglform)
               returnevent.id += ",";
        }
 
-       addToQueue(returnevent);
+        addToQueue(returnevent);
    }
    else
    {
@@ -1016,8 +1013,7 @@ if(!p_fglform)
            if(i+1 != resp_cnt)
               returnevent.id += ",";
        }
-
-       addToQueue(returnevent);
+         addToQueue(returnevent);
    }
 
 
@@ -1391,6 +1387,21 @@ QVariant TableModel::headerData ( int section, Qt::Orientation orientation, int 
 
    return QVariant();
 }
+
+QVariant MyFilter::data(const QModelIndex &index, int role) const
+{
+    if(TableModel *mod = qobject_cast<TableModel*> (sourceModel()))
+    {
+        return mod->data(index, role);
+
+    }
+    else
+    {
+        /*Q_D(const QAbstractProxyModel);
+        return d->model->data(mapToSource(proxyIndex), role);*/
+    }
+    return QVariant();
+   }
 
 bool MyFilter::lessThan(const QModelIndex &left, const QModelIndex &right) const
 {

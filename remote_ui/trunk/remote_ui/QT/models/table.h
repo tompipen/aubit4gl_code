@@ -204,6 +204,7 @@ class MyFilter : public QSortFilterProxyModel
 public:
    bool lessThan (const QModelIndex &left, const QModelIndex &right) const;
    virtual QVariant headerData(int section, Qt::Orientation orientation, int role) const;
+   virtual QVariant data(const QModelIndex &index, int role) const;
 };
 
    // return number represented by a digit character

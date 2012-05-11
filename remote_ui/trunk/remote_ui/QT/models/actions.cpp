@@ -133,10 +133,6 @@ MainFrame::vdcdebug("Actions","parseElement", "QDomNode xmlNode");
           QString name = currentElement.attribute("name");
           QString text = currentElement.attribute("text");
           QString shortcut = currentElement.attribute("shortcut");
-          /*if(FglForm *fglform = qobject_cast<FglForm *> (p_fglform))
-          {
-              fglform->ql_shortcuts.append(qMakePair(text, shortcut));
-          }*/
           if(!name.isEmpty())
           {
               Action *action = new Action(name, text, p_fglform);
@@ -148,7 +144,6 @@ MainFrame::vdcdebug("Actions","parseElement", "QDomNode xmlNode");
               qsl_names << text.toLower();
               action->setAcceleratorName(shortcut);
               action->setShortcut(shortcut);
-              action->setText(text);
               ql_actions << action;
           }
       }
