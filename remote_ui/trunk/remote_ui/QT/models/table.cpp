@@ -1425,7 +1425,7 @@ MainFrame::vdcdebug("MyFilter","lessThan", "const QModelIndex &left, const QMode
                   //Decimal + Float + Money
                   if(widget->dataType() == Fgl::DTYPE_FLOAT || widget->dataType() == Fgl::DTYPE_DECIMAL || widget->dataType() == Fgl::DTYPE_MONEY || widget->dataType() == Fgl::DTYPE_SMFLOAT) {
                       //enum DataType { DTYPE_CHAR, DTYPE_SMINT, DTYPE_INT, DTYPE_FLOAT, DTYPE_SMFLOAT, DTYPE_DECIMAL, DTYPE_SERIAL, DTYPE_DATE, DTYPE_MONEY, DTYPE_NULL, DTYPE_DTIME, DTYPE_BYTE, DTYPE_TEXT, DTYPE_VCHAR, DTYPE_INTERVAL, DTYPE_NCHAR, DTYPE_INT8, DTYPE_SERIAL8}
-                      return v0.toFloat() < v1.toFloat();
+                      return v0.toString().replace(",", ".").toFloat() < v1.toString().replace(",", ".").toFloat();
 
               }
 
