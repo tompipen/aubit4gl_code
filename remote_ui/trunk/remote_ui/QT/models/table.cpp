@@ -281,8 +281,10 @@ void TableView::insertRow()
 void TableView::deleteRow()
 {
   int row = -1;
+  int col = -1;
 
   row = currentIndex().row();
+  col = currentIndex().column();
   qDebug()<<"row:"<<row;
   //Nothing selected
   if(row == -1)
@@ -294,9 +296,15 @@ void TableView::deleteRow()
   QSortFilterProxyModel *proxyModel = static_cast<QSortFilterProxyModel*> (this->model());
   TableModel *table = static_cast<TableModel*> (proxyModel->sourceModel());
   blockSignals(true);
-
   table->removeRows(row, 1, QModelIndex());
+  blockSignals(false);
+
   getForm()->context->setOption("ARRCOUNT", getForm()->context->getOption("ARRCOUNT")-1);
+
+  QModelIndex tindex = table->index(getForm()->context->getOption("ARRCOUNT")+1, col);
+  QModelIndex index = proxyModel->mapFromSource(tindex);
+
+  setCurrentIndex(index);
 
   Fgl::Event event, diffevent;
   QList<Fgl::Event> ql_events;
@@ -328,7 +336,19 @@ void TableView::deleteRow()
       addToQueue(returnevent);
 
   }
-  blockSignals(false);
+
+  QModelIndex tindex1;
+  QModelIndex index1;
+  if(row > 0)
+  {
+      tindex1 = table->index(row-1, col);
+      index1 = proxyModel->mapFromSource(tindex1);
+  } else {
+      tindex1 = table->index(row, col);
+      index1 = proxyModel->mapFromSource(tindex1);
+  }
+
+  setCurrentIndex(index1);
 }
 
 void TableView::copyRow()
