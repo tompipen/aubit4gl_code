@@ -740,12 +740,14 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
       if (actionsFile.open(QIODevice::ReadOnly | QIODevice::Text)){
           QString qs_defaultActions = actionsFile.readAll();
           handleXMLActions(qs_defaultActions);
+          actionsFile.close();
       }
       else{
           actionsFile.setFileName(QDir::tempPath() + "/" +"default.4ad");
            if (actionsFile.open(QIODevice::ReadOnly | QIODevice::Text)){
                QString qs_defaultActions = actionsFile.readAll();
                handleXMLActions(qs_defaultActions);
+               actionsFile.close();
            }
 
 
@@ -753,12 +755,14 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
             if (actionsFile.open(QIODevice::ReadOnly | QIODevice::Text)){
                 QString qs_defaultActions = actionsFile.readAll();
                 handleXMLActions(qs_defaultActions);
+                actionsFile.close();
             }
 
            actionsFile.setFileName(QDir::tempPath() + "/" +"ventas_d.4ad");
             if (actionsFile.open(QIODevice::ReadOnly | QIODevice::Text)){
                 QString qs_defaultActions = actionsFile.readAll();
                 handleXMLActions(qs_defaultActions);
+                actionsFile.close();
             }
           
       }
@@ -767,12 +771,14 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
       if (colorFile.open(QIODevice::ReadOnly | QIODevice::Text)){
           QString qs_defaultColors = colorFile.readAll();
           handleXMLColors(qs_defaultColors);
+          colorFile.close();
       }
       else{
           colorFile.setFileName(QDir::tempPath() + "/" +"vdc.4cf");
            if (colorFile.open(QIODevice::ReadOnly | QIODevice::Text)){
                QString qs_defaultColors = colorFile.readAll();
                handleXMLColors(qs_defaultColors);
+               colorFile.close();
            }
 
       }
@@ -784,6 +790,7 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
           QDomDocument doc;
           doc.setContent(qs_defaultIcons);
           p_currScreenHandler->xmlIconDoc = doc;
+          iconFile.close();
       }
       else{
           iconFile.setFileName(QDir::tempPath() + "/" +"vdc.4id");
@@ -792,6 +799,7 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
                QString qs_defaultIcon = iconFile.readAll();
                doc.setContent(qs_defaultIcon);
                p_currScreenHandler->xmlIconDoc = doc;
+               iconFile.close();
            }
 
       }
@@ -802,6 +810,7 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
           QString qs_defaultShortcuts = shortcutFile.readAll();
           doc.setContent(qs_defaultShortcuts);
           p_currScreenHandler->xmlShortcutDoc = doc;
+          shortcutFile.close();
       }
       else{
           shortcutFile.setFileName(QDir::tempPath() + "/" +"vdc.4sc");
@@ -810,6 +819,7 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
                QString qs_defaultShortcuts = shortcutFile.readAll();
                doc.setContent(qs_defaultShortcuts);
                p_currScreenHandler->xmlShortcutDoc = doc;
+               shortcutFile.close();
            }
            else
            {
