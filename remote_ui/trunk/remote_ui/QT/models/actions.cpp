@@ -103,15 +103,31 @@ MainFrame::vdcdebug("Actions","parseElement", "QDomNode xmlNode");
       {
           QString text = currentElement.attribute("text");
           QString image = currentElement.attribute("icon");
-          qsl_names << text.toLower();
-
-          Action *action = new Action(text.toLower(), text, p_fglform);
-          if(!image.isEmpty())
+          if(!text.contains(","))
           {
-              action->setImage(image);
+              qsl_names << text.toLower();
+
+              Action *action = new Action(text.toLower(), text, p_fglform);
+              if(!image.isEmpty())
+              {
+                  action->setImage(image);
+              }
+              ql_actions << action;
+          } else {
+              QList<QString> ql_text = text.split(",");
+              for(int i=0; i < ql_text.count(); i++)
+              {
+                  qsl_names << text.at(i).toLower();
+                  Action *action = new Action(ql_text.at(i).toLower(), text.at(i), p_fglform);
+                  if(!image.isEmpty())
+                  {
+                      action->setImage(image);
+                  }
+                  qDebug() << "action" << action;
+                  ql_actions << action;
+              }
           }
 
-          ql_actions << action;
       } else if(nodeName == "Shortcut")
       {
           QString name = currentElement.attribute("name");
@@ -132,6 +148,7 @@ MainFrame::vdcdebug("Actions","parseElement", "QDomNode xmlNode");
               qsl_names << text.toLower();
               action->setAcceleratorName(shortcut);
               action->setShortcut(shortcut);
+              action->setText(text);
               ql_actions << action;
           }
       }
