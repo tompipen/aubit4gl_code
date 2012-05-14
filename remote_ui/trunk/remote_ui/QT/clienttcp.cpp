@@ -693,16 +693,29 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
       setProgramName(programName);
       MainFrame::check_new_pids();
       QString a4gl_version_client = VDC::readSettingsFromIni("", "a4gl_version");
+      QString xml_version_client = VDC::readSettingsFromIni("", "xml_version");
       QString a4gl_version_server = p_currScreenHandler->qh_env["A4GL_VERSION"];
+      QString xml_version_server = p_currScreenHandler->qh_env["XML_VERSION"];
 
       if(a4gl_version_client.isNull() || a4gl_version_client != a4gl_version_server)
       {
           VDC::saveSettingsToIni("", "a4gl_version", a4gl_version_server);
       }
 
+      if(xml_version_client.isNull() || xml_version_client != xml_version_server)
+      {
+          if(!xml_version_server.isEmpty())
+          {
+                  VDC::saveSettingsToIni("", "xml_version", xml_version_server);
+          }
+      }
+
       if(!a4gl_version_client.isNull())
       {
-          emit checkForUpdate();
+          if(programName == "./p_master.4ae")
+          {
+              emit checkForUpdate();
+          }
       }
       QFile stylesFile(QString("%1.4st").arg(programName));
       if (stylesFile.open(QIODevice::ReadOnly | QIODevice::Text)){
