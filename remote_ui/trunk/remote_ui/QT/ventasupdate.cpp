@@ -107,8 +107,8 @@ QList<QString> VentasUpdate::parseXml(QString filePath)
 void VentasUpdate::readXmlFinished(QNetworkReply *reply)
 {
     QList<QString> serverVars;
-    QList<QString> clientVars = parseXml(QDir::currentPath() + "/versions.xml");
-    //QList<QString> clientVars = checkVersion("/home/da/versions.xml");
+    //QList<QString> clientVars = parseXml(QDir::currentPath() + "/versions.xml");
+    QList<QString> clientVars = parseXml("/home/da/versions.xml");
     int closeWindow = 0;
     if(reply->error() == 0)
     {
@@ -127,16 +127,19 @@ void VentasUpdate::readXmlFinished(QNetworkReply *reply)
         }
     }
 
-    if(!serverVars.isEmpty() && !clientVars.isEmpty())
+
+    if(!serverVars.isEmpty() && !clientVars.isEmpty() && serverVars.count() >= 3 && clientVars.count() >= 3)
     {
-        if(!serverVars.at(0).isEmpty() && !clientVars.at(0).isEmpty() && serverVars.at(0) > clientVars.at(0))
+        QString a4gl_client_version = VDC::readSettingsFromIni("", "a4gl_version");
+        QString xml_client_version = VDC::readSettingsFromIni("", "xml_version");
+
+        if(a4gl_client_version > 0 && serverVars.at(2) == a4gl_client_version)
         {
-            if(!serverVars.at(1).isEmpty() && !clientVars.at(1).isEmpty() && serverVars.at(1) != clientVars.at(1))
+            if(serverVars.at(3) == xml_client_version)
             {
-                QString a4gl_client_version = VDC::readSettingsFromIni("", "a4gl_version");
-                if(!serverVars.at(2).isEmpty() && a4gl_client_version > 0)
+                if(!serverVars.at(0).isEmpty() && !clientVars.at(0).isEmpty() && serverVars.at(0) > clientVars.at(0))
                 {
-                    if(serverVars.at(2) == a4gl_client_version)
+                    if(serverVars.at(1) != clientVars.at(1))
                     {
                         Dialog *dialog = new Dialog("VENTAS Update", "There is a new VDC version available.\n Do you want to download and install it?", "", "information");
                         dialog->createButton(1, "Ok", "Ok", "ok_gruen.png");
@@ -145,11 +148,19 @@ void VentasUpdate::readXmlFinished(QNetworkReply *reply)
                         connect(dialog->getAction("ABORT"), SIGNAL(triggered()), dialog, SLOT(close()));
                         dialog->show();
                         m_dialog = dialog;
+                    } else {
+                        if(displayErrorDialog == 1)
+                        {
+                            Dialog *dialog = new Dialog("VENTAS Update", "The Client is up to date!", "", "information");
+                            dialog->createButton(1, "Ok", "Ok", "ok_gruen.png");
+                            connect(dialog->getAction("OK"), SIGNAL(triggered()), dialog, SLOT(close()));
+                            dialog->show();
+                        }
                     }
                 } else {
                     if(displayErrorDialog == 1)
                     {
-                        Dialog *dialog = new Dialog("VENTAS Update", "No A4GL informations found!", "", "information");
+                        Dialog *dialog = new Dialog("VENTAS Update", "The Client is up to date!", "", "information");
                         dialog->createButton(1, "Ok", "Ok", "ok_gruen.png");
                         connect(dialog->getAction("OK"), SIGNAL(triggered()), dialog, SLOT(close()));
                         dialog->show();
@@ -158,7 +169,7 @@ void VentasUpdate::readXmlFinished(QNetworkReply *reply)
             } else {
                 if(displayErrorDialog == 1)
                 {
-                    Dialog *dialog = new Dialog("VENTAS Update", "The Client is up to date!", "", "information");
+                    Dialog *dialog = new Dialog("VENTAS Update", "No XML Version found!", "", "information");
                     dialog->createButton(1, "Ok", "Ok", "ok_gruen.png");
                     connect(dialog->getAction("OK"), SIGNAL(triggered()), dialog, SLOT(close()));
                     dialog->show();
@@ -167,7 +178,7 @@ void VentasUpdate::readXmlFinished(QNetworkReply *reply)
         } else {
             if(displayErrorDialog == 1)
             {
-                Dialog *dialog = new Dialog("VENTAS Update", "The Client is up to date!", "", "information");
+                Dialog *dialog = new Dialog("VENTAS Update", "No A4GL informations found!", "", "information");
                 dialog->createButton(1, "Ok", "Ok", "ok_gruen.png");
                 connect(dialog->getAction("OK"), SIGNAL(triggered()), dialog, SLOT(close()));
                 dialog->show();
@@ -175,6 +186,7 @@ void VentasUpdate::readXmlFinished(QNetworkReply *reply)
         }
     }
 }
+
 void VentasUpdate::updateReady(QNetworkReply *reply)
 {
 
