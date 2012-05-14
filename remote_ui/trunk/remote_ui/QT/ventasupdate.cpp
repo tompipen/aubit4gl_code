@@ -24,8 +24,8 @@ void VentasUpdate::checkForNewUpdates()
 void VentasUpdate::loadFileFromServer()
 {
 
-    //QList<QString> clientVars = parseXml(QDir::currentPath() + "/versions.xml");
-    QList<QString> clientVars = parseXml("/home/da/versions.xml");
+    QList<QString> clientVars = parseXml(QDir::currentPath() + "/versions.xml");
+    //QList<QString> clientVars = parseXml("/home/da/versions.xml");
     QDate date = QDate::fromString(clientVars.at(0), "dd.MM.yyyy");
 
     QNetworkAccessManager *manager = new QNetworkAccessManager;
