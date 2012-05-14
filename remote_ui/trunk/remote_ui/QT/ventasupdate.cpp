@@ -18,27 +18,33 @@ void VentasUpdate::checkForNewUpdates()
     QNetworkAccessManager *manager = new QNetworkAccessManager(this);
     manager->get(QNetworkRequest(QUrl("http://www.ventas.de/wp-content/uploads/downloads/vdc.xml")));
     connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(readXmlFinished(QNetworkReply*)));
+
 }
 
 void VentasUpdate::loadFileFromServer()
 {
-    QString fileName;
+
+    //QList<QString> clientVars = parseXml(QDir::currentPath() + "/versions.xml");
+    QList<QString> clientVars = parseXml("/home/da/versions.xml");
+    QDate date = QDate::fromString(clientVars.at(0), "dd.MM.yyyy");
+
     QNetworkAccessManager *manager = new QNetworkAccessManager;
     connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(updateReady(QNetworkReply*)));
 
     #ifdef Q_WS_MAC
-        fileName = "VDC.pkg";
+        m_fileName = QString("WEB_mac_vdc_" + date.toString("ddMMyyyy") + ".zip");
     #endif
-    #ifdef Q_WS_UNIX
-        fileName = "VDC-unix.zip";
+    #ifdef Q_WS_X11
+        m_fileName = QString("WEB_unix_vdc_" + date.toString("ddMMyyyy") + ".zip");
     #endif
     #ifdef Q_WS_WIN
-        fileName = "VDC_windows.zip";
+        m_fileName = QString("WEB_windows_vdc_" + date.toString("ddMMyyyy") + ".zip");
     #endif
 
     QNetworkRequest request;
-    request.setUrl(QUrl(QString("http://www.ventas.de/wp-content/uploads/downloads/%1").arg(fileName)));
+    request.setUrl(QUrl(QString("http://www.ventas.de/wp-content/uploads/downloads/%1").arg(m_fileName)));
 
+    qDebug() << "fileName" << m_fileName;
     QNetworkReply *reply;
 
     reply = manager->get(request);
@@ -109,7 +115,6 @@ void VentasUpdate::readXmlFinished(QNetworkReply *reply)
     QList<QString> serverVars;
     //QList<QString> clientVars = parseXml(QDir::currentPath() + "/versions.xml");
     QList<QString> clientVars = parseXml("/home/da/versions.xml");
-    int closeWindow = 0;
     if(reply->error() == 0)
     {
         QFile file(QDir::tempPath() + "/vdc.xml");
@@ -127,53 +132,64 @@ void VentasUpdate::readXmlFinished(QNetworkReply *reply)
         }
     }
 
-
     if(!serverVars.isEmpty() && !clientVars.isEmpty() && serverVars.count() >= 3 && clientVars.count() >= 3)
     {
         QString a4gl_client_version = VDC::readSettingsFromIni("", "a4gl_version");
         QString xml_client_version = VDC::readSettingsFromIni("", "xml_version");
 
-        if(a4gl_client_version > 0 && serverVars.at(2) == a4gl_client_version)
+        if(!a4gl_client_version.isEmpty())
         {
-            if(serverVars.at(3) == xml_client_version)
+            if(serverVars.at(2) == a4gl_client_version)
             {
-                if(!serverVars.at(0).isEmpty() && !clientVars.at(0).isEmpty() && serverVars.at(0) > clientVars.at(0))
+                if(!xml_client_version.isEmpty())
                 {
-                    if(serverVars.at(1) != clientVars.at(1))
+                    if(serverVars.at(3) == xml_client_version)
                     {
-                        Dialog *dialog = new Dialog("VENTAS Update", "There is a new VDC version available.\n Do you want to download and install it?", "", "information");
-                        dialog->createButton(1, "Ok", "Ok", "ok_gruen.png");
-                        dialog->createButton(2, "Abort", "Abort", "abbrechen_rot.png");
-                        connect(dialog->getAction("OK"), SIGNAL(triggered()), this, SLOT(checkOpenConnections()));
-                        connect(dialog->getAction("ABORT"), SIGNAL(triggered()), dialog, SLOT(close()));
-                        dialog->show();
-                        m_dialog = dialog;
-                    } else {
-                        if(displayErrorDialog == 1)
+                        if(!serverVars.at(0).isEmpty() && !clientVars.at(0).isEmpty() && serverVars.at(0) > clientVars.at(0))
                         {
-                            Dialog *dialog = new Dialog("VENTAS Update", "The Client is up to date!", "", "information");
-                            dialog->createButton(1, "Ok", "Ok", "ok_gruen.png");
-                            connect(dialog->getAction("OK"), SIGNAL(triggered()), dialog, SLOT(close()));
-                            dialog->show();
+                            if(serverVars.at(1) != clientVars.at(1))
+                            {
+                                Dialog *dialog = new Dialog("VENTAS Update", "There is a new VDC version available.\n Do you want to download and install it?", "", "information");
+                                dialog->createButton(1, "Ok", "Ok", "ok_gruen.png");
+                                dialog->createButton(2, "Abort", "Abort", "abbrechen_rot.png");
+                                connect(dialog->getAction("OK"), SIGNAL(triggered()), this, SLOT(checkOpenConnections()));
+                                connect(dialog->getAction("ABORT"), SIGNAL(triggered()), dialog, SLOT(close()));
+                                dialog->show();
+                                m_dialog = dialog;
+                            } else {
+                                if(displayErrorDialog == 1)
+                                {
+                                    Dialog *dialog = new Dialog("VENTAS Update", "The Client is up to date!", "", "information");
+                                    dialog->createButton(1, "Ok", "Ok", "ok_gruen.png");
+                                    connect(dialog->getAction("OK"), SIGNAL(triggered()), dialog, SLOT(close()));
+                                    dialog->show();
+                                }
+                            }
+                        } else {
+                            if(displayErrorDialog == 1)
+                            {
+                                Dialog *dialog = new Dialog("VENTAS Update", "The Client is up to date!", "", "information");
+                                dialog->createButton(1, "Ok", "Ok", "ok_gruen.png");
+                                connect(dialog->getAction("OK"), SIGNAL(triggered()), dialog, SLOT(close()));
+                                dialog->show();
+                            }
                         }
+                    } else {
+                        // TODO
+                        // Pruefen ob es für eine andere XML Version ein Download gibt!!!
                     }
                 } else {
                     if(displayErrorDialog == 1)
                     {
-                        Dialog *dialog = new Dialog("VENTAS Update", "The Client is up to date!", "", "information");
+                        Dialog *dialog = new Dialog("VENTAS Update", "No XML Version found!", "", "information");
                         dialog->createButton(1, "Ok", "Ok", "ok_gruen.png");
                         connect(dialog->getAction("OK"), SIGNAL(triggered()), dialog, SLOT(close()));
                         dialog->show();
                     }
                 }
             } else {
-                if(displayErrorDialog == 1)
-                {
-                    Dialog *dialog = new Dialog("VENTAS Update", "No XML Version found!", "", "information");
-                    dialog->createButton(1, "Ok", "Ok", "ok_gruen.png");
-                    connect(dialog->getAction("OK"), SIGNAL(triggered()), dialog, SLOT(close()));
-                    dialog->show();
-                }
+                // TODO
+                // Pruefen ob es für eine andere a4gl version ein download gibt!!!
             }
         } else {
             if(displayErrorDialog == 1)
@@ -205,8 +221,7 @@ void VentasUpdate::updateReady(QNetworkReply *reply)
        case QNetworkReply::NoError:
           break;
        default:
-            qDebug() << QString("Cannot load File from Server. Error code: %1 ").arg(reply->error());
-            m_label->setText(QString("Cannot load File from Server. Error code: %1 ").arg(reply->error()));
+            m_label->setText(QString("Cannot load File from Server: %1.\n Error code: %2 ").arg(m_fileName).arg(reply->error()));
     }
 
     if(reply->error() == 0)

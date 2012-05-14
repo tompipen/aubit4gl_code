@@ -44,6 +44,7 @@ private:
     QProgressBar *m_progress;
     QObject *m_screenhandler;
     Dialog *m_dialog;
+    QString m_fileName;
     //MainFrame m_mainFrame;
 };
 
