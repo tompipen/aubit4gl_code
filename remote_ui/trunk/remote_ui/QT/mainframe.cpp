@@ -97,7 +97,7 @@ void MainFrame::check_new_pids()
                     continue;
                 }
 
-                if(l_ql_screenhandler->at(j)->programm_name.contains(l_ql_screenhandler->at(i)->programm_name_run))
+                if(l_ql_screenhandler->at(j)->programm_name.contains(l_ql_screenhandler->at(i)->programm_name_run + "."))
                 {
                     if(l_ql_screenhandler->at(i)->programm_name_run.isEmpty())
                     {
