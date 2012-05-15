@@ -109,6 +109,7 @@ private:
    bool cursorPos;
    QString qs_interfaceTitle;
    FglForm *dummy_fglform;
+   int i_runcnt;
 
 
 //   QList<QWidget*> ql_formFields;

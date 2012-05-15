@@ -3396,10 +3396,14 @@ void ScreenHandler::setRuninfo(int mode, QString cmd, int runcnt, bool start)
            {
                if(p_fglform)
                {
-                  timer = new QTimer(p_fglform);
-                  timer->setSingleShot(true);
-                  connect(timer, SIGNAL(timeout()), p_fglform, SLOT(disableForm()));
-                  timer->start(1000);
+                  if(!timer)
+                  {
+                     timer = new QTimer(p_fglform);
+                     timer->setSingleShot(true);
+                     connect(timer, SIGNAL(timeout()), p_fglform, SLOT(disableForm()));
+                     timer->start(1000);
+                     i_runcnt = runcnt;
+                  }
                }
 
               //Timerfall
@@ -3418,7 +3422,7 @@ void ScreenHandler::setRuninfo(int mode, QString cmd, int runcnt, bool start)
         }
         else
         {
-            if(timer)
+            if(timer && i_runcnt == runcnt)
             {
                if(timer->isActive())
                {
