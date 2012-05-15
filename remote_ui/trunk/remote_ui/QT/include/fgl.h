@@ -28,7 +28,7 @@ namespace Fgl
 
       extern QHash<QString, QString> env;
       DataType decodeDataType(QString);
-      QString usingFunc(QString, QString, DataType);
+      QString usingFunc(QString, QString, DataType, QString picture = "");
       QDate getDate(QString);
 
       QString fgl_using(QString, QString);

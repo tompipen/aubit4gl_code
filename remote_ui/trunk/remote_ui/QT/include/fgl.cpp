@@ -7,7 +7,7 @@
 namespace Fgl {
    QHash<QString, QString> env;
 
-   QString usingFunc(QString fmt, QString value, DataType dataType)
+   QString usingFunc(QString fmt, QString value, DataType dataType, QString picture)
    {
        //just do nothing atm
        //return value;
@@ -63,6 +63,8 @@ namespace Fgl {
          case DTYPE_TEXT:
          case DTYPE_VCHAR:
          case DTYPE_INTERVAL:
+          if(picture.contains("##:") && value.trimmed().indexOf(":") == 1)
+             value = value.trimmed().prepend("0");
          case DTYPE_NCHAR:
          default:
             if (fmt.contains("dd") || fmt.contains("mm") || fmt.contains("yy") ||
