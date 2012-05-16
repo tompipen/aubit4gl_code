@@ -25,11 +25,16 @@ void VentasUpdate::loadFileFromServer()
 {
 
     QList<QString> clientVars = parseXml(QDir::currentPath() + "/versions.xml");
+    QDate date;
     //QList<QString> clientVars = parseXml("/home/da/versions.xml");
-    QDate date = QDate::fromString(clientVars.at(0), "dd.MM.yyyy");
-
     QNetworkAccessManager *manager = new QNetworkAccessManager;
     connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(updateReady(QNetworkReply*)));
+    if(!clientVars.isEmpty())
+    {
+        date = QDate::fromString(clientVars.at(0), "dd.MM.yyyy");
+    } else {
+        return;
+    }
 
     #ifdef Q_WS_MAC
         m_fileName = QString("WEB_mac_vdc_" + date.toString("ddMMyyyy") + ".zip");
