@@ -24,9 +24,9 @@ void VentasUpdate::checkForNewUpdates()
 void VentasUpdate::loadFileFromServer()
 {
 
-    QList<QString> clientVars = parseXml(QDir::currentPath() + "/versions.xml");
     QDate date;
     //QList<QString> clientVars = parseXml("/home/da/versions.xml");
+    QList<QString> clientVars = parseXml(QDir::currentPath() + "/versions.xml");
     QNetworkAccessManager *manager = new QNetworkAccessManager;
     connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(updateReady(QNetworkReply*)));
     if(!clientVars.isEmpty())
@@ -118,8 +118,8 @@ QList<QString> VentasUpdate::parseXml(QString filePath)
 void VentasUpdate::readXmlFinished(QNetworkReply *reply)
 {
     QList<QString> serverVars;
-    //QList<QString> clientVars = parseXml(QDir::currentPath() + "/versions.xml");
-    QList<QString> clientVars = parseXml("/home/da/versions.xml");
+    QList<QString> clientVars = parseXml(QDir::currentPath() + "/versions.xml");
+    //QList<QString> clientVars = parseXml("/home/da/versions.xml");
     if(reply->error() == 0)
     {
         QFile file(QDir::tempPath() + "/vdc.xml");
