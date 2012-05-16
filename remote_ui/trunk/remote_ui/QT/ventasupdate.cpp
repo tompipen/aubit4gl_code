@@ -25,13 +25,14 @@ void VentasUpdate::loadFileFromServer()
 {
 
     QDate date;
+    QList<QString> serverVars;
     //QList<QString> clientVars = parseXml("/home/da/versions.xml");
-    QList<QString> clientVars = parseXml(QDir::currentPath() + "/versions.xml");
+    serverVars << parseXml(QDir::tempPath() + "/vdc.xml");
     QNetworkAccessManager *manager = new QNetworkAccessManager;
     connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(updateReady(QNetworkReply*)));
-    if(!clientVars.isEmpty())
+    if(!serverVars.isEmpty())
     {
-        date = QDate::fromString(clientVars.at(0), "dd.MM.yyyy");
+        date = QDate::fromString(serverVars.at(0), "dd.MM.yyyy");
     } else {
         return;
     }
