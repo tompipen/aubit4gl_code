@@ -2207,7 +2207,7 @@ if(context == NULL)
          event.type = Fgl::BEFORE_FIELD_EVENT;
          event.attribute = next->objectName();
          //fieldEvent(event);
-         jumpToField(next);
+         jumpToField(next, sendEvents);
          //next->setFocus(Qt::TabFocusReason);
          //currentWidget = next;
       }
@@ -2884,6 +2884,7 @@ void FglForm::jumpToField(QWidget* w, bool b_after){
     int currPos = context->fieldList().indexOf(currentField());
     int destPos = context->fieldList().indexOf(w);
     float cnt_fields = context->fieldList().count();
+
 
     if(currPos == -1 || !b_after)
     {
