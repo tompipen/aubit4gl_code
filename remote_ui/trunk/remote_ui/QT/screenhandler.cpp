@@ -55,6 +55,7 @@ MainFrame::vdcdebug("ScreenHandler","ScreenHandler", "QObject *parent");
    p_fglform = NULL;
    cursorPos = false;
    p_prompt = NULL;
+   timer = NULL;
    b_runinfo = false;
    this->installEventFilter(this);
    QApplication::processEvents();
@@ -3396,7 +3397,7 @@ void ScreenHandler::setRuninfo(int mode, QString cmd, int runcnt, bool start)
            {
                if(p_fglform)
                {
-                  if(!timer)
+                  if(timer == NULL)
                   {
                      timer = new QTimer(p_fglform);
                      timer->setSingleShot(true);
@@ -3422,16 +3423,20 @@ void ScreenHandler::setRuninfo(int mode, QString cmd, int runcnt, bool start)
         }
         else
         {
-            if(timer && i_runcnt == runcnt)
+            delete timer;
+            timer = NULL;
+            /*
+            if(timer != NULL && i_runcnt == runcnt)
             {
                if(timer->isActive())
                {
                  timer->stop();
                }
 
+               delete timer;
                timer = NULL;
              }
-
+*/
             this->programm_name_run = "";
             this->b_runinfo = false;
             this->p_pid_p = 0;
