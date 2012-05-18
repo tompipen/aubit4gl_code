@@ -25,9 +25,10 @@ public:
     VentasUpdate(int, QObject*, QWidget *parent = 0);
     void checkForNewUpdates();
 private:
-    QList<QString> parseXml(QString);
+    QList<QList<QString> > parseXml(QString);
     void readServerXml(QString);
     void loadFileFromServer();
+    void checkServerClient();
 
 public slots:
     void readXmlFinished(QNetworkReply*);
@@ -45,6 +46,7 @@ private:
     QObject *m_screenhandler;
     Dialog *m_dialog;
     QString m_fileName;
+    QString m_dateToDownload;
     //MainFrame m_mainFrame;
 };
 
