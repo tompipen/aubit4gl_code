@@ -1408,7 +1408,7 @@ QVariant TableModel::headerData ( int section, Qt::Orientation orientation, int 
    return QVariant();
 }
 
-QVariant MyFilter::data(const QModelIndex &index, int role) const
+/*QVariant MyFilter::data(const QModelIndex &index, int role) const
 {
     if(TableModel *mod = qobject_cast<TableModel*> (sourceModel()))
     {
@@ -1417,12 +1417,12 @@ QVariant MyFilter::data(const QModelIndex &index, int role) const
     }
     else
     {
-        /*Q_D(const QAbstractProxyModel);
-        return d->model->data(mapToSource(proxyIndex), role);*/
+        Q_D(const QAbstractProxyModel);
+        return d->model->data(mapToSource(proxyIndex), role);
     }
     return QVariant();
    }
-
+*/
 bool MyFilter::lessThan(const QModelIndex &left, const QModelIndex &right) const
 {
 MainFrame::vdcdebug("MyFilter","lessThan", "const QModelIndex &left, const QModelIndex &right const");
