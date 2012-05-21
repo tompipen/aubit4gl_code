@@ -28,6 +28,7 @@ lv_ok=1;
 A4GL_trim(fname);
 x=(SXML *)lv_xml;
 if (sxml_readfile(fname, &x)) lv_ok=0;
+lv_xml = (int) x;
 }
 endcode
 if lv_ok then
