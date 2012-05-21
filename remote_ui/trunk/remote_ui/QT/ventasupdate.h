@@ -36,6 +36,7 @@ public slots:
     void updateDownloadProgress(qint64,qint64);
     void checkOpenConnections();
     void responseDownload();
+    void abortDownload();
 
 
 private:
@@ -48,6 +49,11 @@ private:
     QString m_fileName;
     QString m_dateToDownload;
     //MainFrame m_mainFrame;
+    QNetworkReply *m_reply;
+    Dialog *downloadDialog;
+
+    int mh;
+    int mw;
 };
 
 #endif // VENTSAUPDATE_H
