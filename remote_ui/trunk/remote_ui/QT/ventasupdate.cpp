@@ -171,21 +171,27 @@ void VentasUpdate::checkServerClient()
 
     if(clientVars.isEmpty())
     {
-        Dialog *dialog = new Dialog("VENTAS Update", QString("Cannot open File: %1").arg(QDir::currentPath() + "/versions.xml"), "", "information", this, Qt::WindowStaysOnTopHint);
-        dialog->createButton(1, "Ok", "Ok", "ok_gruen.png");
-        connect(dialog->getAction("OK"), SIGNAL(triggered()), dialog, SLOT(close()));
-        dialog->move(mw,mh);
-        dialog->show();
-        return;
+        if(displayErrorDialog == 1)
+        {
+            Dialog *dialog = new Dialog("VENTAS Update", QString("Cannot open File: %1").arg(QDir::currentPath() + "/versions.xml"), "", "information", this, Qt::WindowStaysOnTopHint);
+            dialog->createButton(1, "Ok", "Ok", "ok_gruen.png");
+            connect(dialog->getAction("OK"), SIGNAL(triggered()), dialog, SLOT(close()));
+            dialog->move(mw,mh);
+            dialog->show();
+            return;
+        }
     }
     if(serverVars.at(0).isEmpty())
     {
-        Dialog *dialog = new Dialog("VENTAS Update", "No Updates found!", "", "information", this, Qt::WindowStaysOnTopHint);
-        dialog->createButton(1, "Ok", "Ok", "ok_gruen.png");
-        connect(dialog->getAction("OK"), SIGNAL(triggered()), dialog, SLOT(close()));
-        dialog->move(mw,mh);
-        dialog->show();
-        return;
+        if(displayErrorDialog == 1)
+        {
+            Dialog *dialog = new Dialog("VENTAS Update", "No Updates found!", "", "information", this, Qt::WindowStaysOnTopHint);
+            dialog->createButton(1, "Ok", "Ok", "ok_gruen.png");
+            connect(dialog->getAction("OK"), SIGNAL(triggered()), dialog, SLOT(close()));
+            dialog->move(mw,mh);
+            dialog->show();
+            return;
+        }
     }
 
     for(int i=(serverVars.count()-1); i >=0; i--)
