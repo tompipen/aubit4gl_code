@@ -46,7 +46,7 @@ void VentasUpdate::loadFileFromServer()
         m_fileName = QString("WEB-Unix-vdc_" + date.toString("ddMMyyyy") + ".zip");
     #endif
     #ifdef Q_WS_WIN
-        m_fileName = QString("WEB-Win-vdc_" + date.toString("ddMMyyyy") + ".exe");
+        m_fileName = QString("WEB-Win-vdc_" + date.toString("ddMMyyyy") + ".zip");
     #endif
 
     QNetworkRequest request;
