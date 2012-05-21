@@ -123,6 +123,9 @@ SOURCES += confwin.cpp \
     ventasupdate.cpp
 
 OTHER_FILES += versions.xml
+OTHER_FILES += appicon.rc
+
+RC_FILE = appicon.rc
 
 RESOURCES += \
     ressource.qrc
