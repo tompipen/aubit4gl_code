@@ -10,15 +10,11 @@ VentasUpdate::VentasUpdate(int errorDisplay, QObject *screen, QWidget *parent)
     //m_mainFrame = mFrame;
     m_screenhandler = screen;
 
-    QWidget *d = QApplication::desktop();
+    /*QWidget *d = QApplication::desktop();
     int w = d->width();
-    int h = d->height();
+    int h = d->height();*/
     mw = 600;
     mh = 400;
-    //this->move(mw, mh);
-
-    qDebug() << "mh: " << mh;
-    qDebug() << "mw: " << mw;
 
     this->setWindowTitle("VENTAS UPDATE");
 }
@@ -178,7 +174,7 @@ void VentasUpdate::checkServerClient()
         Dialog *dialog = new Dialog("VENTAS Update", QString("Cannot open File: %1").arg(QDir::currentPath() + "/versions.xml"), "", "information", this, Qt::WindowStaysOnTopHint);
         dialog->createButton(1, "Ok", "Ok", "ok_gruen.png");
         connect(dialog->getAction("OK"), SIGNAL(triggered()), dialog, SLOT(close()));
-        //dialog->move(mw,mh);
+        dialog->move(mw,mh);
         dialog->show();
         return;
     }
@@ -188,7 +184,7 @@ void VentasUpdate::checkServerClient()
         dialog->createButton(1, "Ok", "Ok", "ok_gruen.png");
         connect(dialog->getAction("OK"), SIGNAL(triggered()), dialog, SLOT(close()));
         dialog->move(mw,mh);
-        dialog->exec();
+        dialog->show();
         return;
     }
 
