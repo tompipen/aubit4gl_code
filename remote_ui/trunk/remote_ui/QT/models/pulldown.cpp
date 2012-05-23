@@ -59,7 +59,7 @@ RingMenuPulldown::RingMenuPulldown(QString title, QString comment, QString style
 
 void RingMenuPulldown::closeWindow()
 {
-    this->setEnabled(false);
+    //this->setEnabled(false);
     //this->deleteLater();
     this->close();
 }
@@ -103,16 +103,16 @@ MainFrame::vdcdebug("RingMenu","createButton", "int id, QString text, QString to
    button->setIconSize(QSize(40,25));
    button->setShortcut(QString("&%1").arg(id));
 
-   if(text.toLower() == "abbruch" || text.toLower() == "ende")
+   /*if(text.toLower() == "abbruch" || text.toLower() == "ende")
    {
        connect(button, SIGNAL(clicked()), this, SLOT(close()));
-   } else {
+   } else {*/
        Action *action = new Action(text.toLower(), text, button);
        action->setComment(tooltip);
        action->setImage(QString("%1.png").arg(id));
        button->addAction(action);
        connect(button, SIGNAL(clicked()), action, SLOT(trigger()));
-   }
+   //}
 
    if(text.toLower().trimmed() == "fgl_exit_menu")
    {
