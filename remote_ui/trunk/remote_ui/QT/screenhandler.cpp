@@ -2450,21 +2450,21 @@ void ScreenHandler::displayError(QString text)
 {
 MainFrame::vdcdebug("ScreenHandler","displayError", "QString text");
 
-   if(p_fglform == NULL)
-      return;
+   if(p_fglform)
+   {
+      StatusBar *statusBar = (StatusBar*) p_fglform->statusBar();
+      statusBar->displayError(text);
+   }
+   else
+   {
+      Dialog *errorDialog = new Dialog(tr("Error"), text, "dialog", "exclamation", p_fglform);
+      errorDialog->setModal(true);
+      errorDialog->createButton(1, "OK", "OK", "ok.png");
+      connect(errorDialog->getAction("OK"), SIGNAL(triggered()), errorDialog, SLOT(close()));
+      errorDialog->show();
+      errorDialog->raise();
+   }
 
-   StatusBar *statusBar = (StatusBar*) p_fglform->statusBar();
-
-   statusBar->displayError(text);
-
-/*
-   Dialog *errorDialog = new Dialog(tr("Error"), text, "dialog", "exclamation", p_fglform);
-   errorDialog->setModal(true);
-   errorDialog->createButton(1, "OK", "OK", "ok.png");
-   connect(errorDialog->getAction("OK"), SIGNAL(triggered()), errorDialog, SLOT(close())); 
-   errorDialog->show();
-   errorDialog->raise();
-*/
 }
 
 //------------------------------------------------------------------------------
