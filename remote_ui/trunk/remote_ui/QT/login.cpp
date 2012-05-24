@@ -156,7 +156,7 @@ welcomeBar();
 
    applicationLabel    = new QLabel(tr("Application:"));
    applicationLineEdit = new QLineEdit;
-   applicationLineEdit->setText("");
+   applicationLineEdit->setText("vdc");
    QHBoxLayout *vbox = new QHBoxLayout;
 
    bg_connection = new QGroupBox("Connection Method:", this);
@@ -956,6 +956,8 @@ MainFrame::vdcdebug("LoginForm","loadSettings", "");
    {
       #ifdef SSH_USE
       rb_ssh->setChecked(true);
+      if(app.isEmpty())
+        app="vdc";
       #else
       rb_proxy->setChecked(true);
       #endif
