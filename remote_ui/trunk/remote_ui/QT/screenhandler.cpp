@@ -2458,7 +2458,7 @@ MainFrame::vdcdebug("ScreenHandler","displayError", "QString text");
    }
    else
    {
-      Dialog *errorDialog = new Dialog(tr("Error"), text, "dialog", "exclamation", NULL);
+      Dialog *errorDialog = new Dialog(tr("Error"), text, "dialog", "stop", NULL);
       errorDialog->setModal(true);
       errorDialog->createButton(1, "OK", "OK", "ok.png");
       QPushButton *qpb = (QPushButton *) errorDialog->getAction("OK")->parent();
@@ -2486,11 +2486,33 @@ void ScreenHandler::displayMessage(QString text)
 {
 MainFrame::vdcdebug("ScreenHandler","displayMessage", "QString text");
 
-   if(p_fglform == NULL)
-      return;
 
-   StatusBar *statusBar = (StatusBar*) p_fglform->statusBar();
-   statusBar->displayMessage(text);
+   if(!p_fglform->b_dummy)
+   {
+      StatusBar *statusBar = (StatusBar*) p_fglform->statusBar();
+      statusBar->displayMessage(text);
+   }
+   else
+   {
+      Dialog *errorDialog = new Dialog(tr("Error"), text, "dialog", "info", NULL);
+      errorDialog->setModal(true);
+      errorDialog->createButton(1, "OK", "OK", "ok.png");
+      QPushButton *qpb = (QPushButton *) errorDialog->getAction("OK")->parent();
+      QString shortcut = "F12";
+      qpb->setShortcut(shortcut);
+      XML2Style *xml2Style = new XML2Style();
+      xml2Style->readXML(formsStyles);
+      errorDialog->setStyleSheet(xml2Style->getStyleSheet());
+      xml2Style->deleteLater();
+      connect(errorDialog->getAction("OK"), SIGNAL(triggered()), errorDialog, SLOT(close()));
+
+      errorDialog->setAttribute(Qt::WA_DeleteOnClose, true);
+      errorDialog->show();
+      errorDialog->raise();
+   }
+
+
+
 }
 
 //------------------------------------------------------------------------------
