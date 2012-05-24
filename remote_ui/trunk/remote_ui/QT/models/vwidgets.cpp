@@ -1487,8 +1487,10 @@ bool WidgetHelper::setDisplayAttributes(int fieldAttribute, QWidget *widget)
             }
 
          if (fieldAttribute & Fgl::AUBIT_ATTR_INVISIBLE)
-   //widget->setEchoMode(QLineEdit::Password);
-
+         {
+             if(LineEdit *le = qobject_cast<LineEdit*> (widget))
+                le->setEchoMode(QLineEdit::Password);
+         }
          if (fieldAttribute & Fgl::AUBIT_ATTR_ALTCHARSET)
             {
             }
