@@ -29,7 +29,7 @@ class XML2Style : public QWidget
    Q_OBJECT
 
 public:
-   XML2Style(FglForm*);
+   XML2Style();
    ~XML2Style();
 
    int readXML(const QDomDocument&);
@@ -40,7 +40,6 @@ private:
    void outputTree(const QDomNode&);
    QString qs_styleName;
    QString qs_styleSheet;
-   FglForm *p_currForm;
 };
 
 

@@ -31,6 +31,7 @@
 #include "models/table.h"
 #include "models/matrix.h"
 #include "xmlparsers/xml2menu.h"
+#include "xmlparsers/xml2style.h"
 #include <QMutex>
 #include "ventasupdate.h"
 
@@ -2450,17 +2451,26 @@ void ScreenHandler::displayError(QString text)
 {
 MainFrame::vdcdebug("ScreenHandler","displayError", "QString text");
 
-   if(p_fglform)
+   if(!p_fglform->b_dummy)
    {
       StatusBar *statusBar = (StatusBar*) p_fglform->statusBar();
       statusBar->displayError(text);
    }
    else
    {
-      Dialog *errorDialog = new Dialog(tr("Error"), text, "dialog", "exclamation", p_fglform);
+      Dialog *errorDialog = new Dialog(tr("Error"), text, "dialog", "exclamation", NULL);
       errorDialog->setModal(true);
       errorDialog->createButton(1, "OK", "OK", "ok.png");
+      QPushButton *qpb = (QPushButton *) errorDialog->getAction("OK")->parent();
+      QString shortcut = "F12";
+      qpb->setShortcut(shortcut);
+      XML2Style *xml2Style = new XML2Style();
+      xml2Style->readXML(formsStyles);
+      errorDialog->setStyleSheet(xml2Style->getStyleSheet());
+      xml2Style->deleteLater();
       connect(errorDialog->getAction("OK"), SIGNAL(triggered()), errorDialog, SLOT(close()));
+
+      errorDialog->setAttribute(Qt::WA_DeleteOnClose, true);
       errorDialog->show();
       errorDialog->raise();
    }

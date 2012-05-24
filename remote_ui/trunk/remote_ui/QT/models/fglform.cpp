@@ -1926,9 +1926,10 @@ MainFrame::vdcdebug("FglForm","setStartMenu", "const QDomDocument &doc");
 void FglForm::setStyles(const QDomDocument& doc)
 {
 MainFrame::vdcdebug("FglForm","setStyles", "const QDomDocument& doc");
-   XML2Style *xml2Style = new XML2Style(this);
+   XML2Style *xml2Style = new XML2Style();
    xml2Style->readXML(doc);
    this->setStyleSheet(xml2Style->getStyleSheet());
+   xml2Style->deleteLater();
 }
 
 //------------------------------------------------------------------------------

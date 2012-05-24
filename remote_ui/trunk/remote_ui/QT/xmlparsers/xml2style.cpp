@@ -24,11 +24,11 @@
 // Description  : constructor for the instances
 //------------------------------------------------------------------------------
 
-XML2Style::XML2Style(FglForm *p_currForm) : QWidget()
+XML2Style::XML2Style() : QWidget()
 {
 MainFrame::vdcdebug("XML2Style","XML2Style", "FglForm *p_currForm");
 
-   this->p_currForm = p_currForm;
+
 }
 
 
