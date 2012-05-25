@@ -1621,31 +1621,37 @@ MainFrame::vdcdebug("FglForm","closeEvent", "QCloseEvent *event");
    widgetWidth = size().width();
    writeSettingsLocal();
    if(!b_allowClose){
-      if(QObject::sender() == NULL) //Null when it comes from the
+      //Dirty Fix until we implement the COMMAND KEY stuff
+      if(state() == Fgl::MENU)
       {
-         connect(this, SIGNAL(closeAction()), this, SLOT(exitMenu()));
-          emit closeAction();
+          bool b_found = false;
+          QList<QPushButton*> buttons = menu()->buttons();
+          for(int i=0; i< buttons.size(); i++){
+             if(buttons.at(i)->text() == "&Ende" || buttons.at(i)->text() == "&Cancle" || buttons.at(i)->text() == "&Abbrechen" || buttons.at(i)->text() == "&Abbruch" || buttons.at(i)->text() == "&Nein" || buttons.at(i)->text() == "&Beenden"){
+                 buttons.at(i)->animateClick();
+                 b_found = true;
+                 event->ignore();
+             }
+          }
+          if(!b_found)
+          {
+              connect(this, SIGNAL(closeAction()), this, SLOT(exitMenu()));
+              emit closeAction();
+              event->ignore();
+          }
+      }else if(construct() || input() || displayArray() || inputArray())
+      {
+          Fgl::Event ievent;
+          ievent.id = "INTERRUPT";
+          addToQueue(ievent);
+          event->ignore();
       }
-      event->ignore();
+
    }
+
+
    return QMainWindow::closeEvent(event);
-  /*
-   if(menu() != NULL && menu()->isEnabled()){
-      QList<QPushButton*> buttons = menu()->buttons();
-      for(int i=0; i< buttons.size(); i++){
-         if(buttons.at(i)->text() == "&Ende"){
-             Fgl::Event ende_event;
-             ende_event.id = QString::number(i+1);
-             addToQueue(ende_event);
-         }
-      }
-   }
-   else{
-      Fgl::Event ievent;
-      ievent.id = "INTERRUPT";
-      addToQueue(ievent);
-   }
-*/
+
 }
 
 //------------------------------------------------------------------------------
