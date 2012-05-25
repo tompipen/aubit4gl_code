@@ -1627,17 +1627,21 @@ MainFrame::vdcdebug("FglForm","closeEvent", "QCloseEvent *event");
           bool b_found = false;
           QList<QPushButton*> buttons = menu()->buttons();
           for(int i=0; i< buttons.size(); i++){
-             if(buttons.at(i)->text() == "&Ende" || buttons.at(i)->text() == "&Cancle" || buttons.at(i)->text() == "&Abbrechen" || buttons.at(i)->text() == "&Abbruch" || buttons.at(i)->text() == "&Nein" || buttons.at(i)->text() == "&Beenden"){
+             if(buttons.at(i)->text() == "&Ende" || buttons.at(i)->text() == "&Cancel" || buttons.at(i)->text() == "&Abbrechen" || buttons.at(i)->text() == "&Abbruch" || buttons.at(i)->text() == "&Nein" || buttons.at(i)->text() == "&Beenden"){
                  buttons.at(i)->animateClick();
                  b_found = true;
+
                  event->ignore();
+                 return;
              }
           }
           if(!b_found)
           {
               connect(this, SIGNAL(closeAction()), this, SLOT(exitMenu()));
               emit closeAction();
+
               event->ignore();
+              return;
           }
       }else if(construct() || input() || displayArray() || inputArray())
       {
@@ -1645,6 +1649,7 @@ MainFrame::vdcdebug("FglForm","closeEvent", "QCloseEvent *event");
           ievent.id = "INTERRUPT";
           addToQueue(ievent);
           event->ignore();
+          return;
       }
 
    }
