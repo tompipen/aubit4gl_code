@@ -215,7 +215,7 @@ MainFrame::vdcdebug("ScreenHandler","createWindow", "QString windowTitle,QString
    if(formsActions.hasChildNodes()){
       p_fglform->setActions(formsActions);
    }
-
+   emit windowCreated();
    checkColors();
 }
 
@@ -2494,7 +2494,7 @@ MainFrame::vdcdebug("ScreenHandler","displayMessage", "QString text");
    }
    else
    {
-      Dialog *errorDialog = new Dialog(tr("Error"), text, "dialog", "info", NULL);
+      Dialog *errorDialog = new Dialog(tr("Message"), text, "dialog", "info", NULL);
       errorDialog->setModal(true);
       errorDialog->createButton(1, "OK", "OK", "ok.png");
       QPushButton *qpb = (QPushButton *) errorDialog->getAction("OK")->parent();
@@ -2505,7 +2505,7 @@ MainFrame::vdcdebug("ScreenHandler","displayMessage", "QString text");
       errorDialog->setStyleSheet(xml2Style->getStyleSheet());
       xml2Style->deleteLater();
       connect(errorDialog->getAction("OK"), SIGNAL(triggered()), errorDialog, SLOT(close()));
-
+      connect(this, SIGNAL(windowCreated()), errorDialog, SLOT(close()));
       errorDialog->setAttribute(Qt::WA_DeleteOnClose, true);
       errorDialog->show();
       errorDialog->raise();
@@ -2707,6 +2707,8 @@ MainFrame::vdcdebug("ScreenHandler","setKeyLabel", "QString label, QString text"
       createActionMenu();
       p_fglform->setMenuEnabled(false);
    }
+
+
 
 
    // If Key has a Text then show it

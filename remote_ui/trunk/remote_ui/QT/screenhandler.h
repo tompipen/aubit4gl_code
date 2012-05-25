@@ -229,6 +229,7 @@ public slots:
 
 signals:
    void fglFormResponse(QString);
+   void windowCreated();
 
 };
 
