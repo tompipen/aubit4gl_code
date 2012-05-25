@@ -1109,7 +1109,7 @@ field_datatype_null :
 		| field_datatype  		{ strcpy($<str>$,$<str>1); }
 ;
 
-field_datatype : {strcpy($<str>$,"0");}
+field_datatype : {strcpy($<str>$,"0"); dtype_size=0;}
 	| 	TYPE LIKE named_or_kw_any DOT named_or_kw_any {
 			sprintf($<str>$,"%d",A4GLF_getdatatype_fcompile($<str>5,$<str>3,1));
 		}
@@ -1655,6 +1655,10 @@ datatype :
 KW_CHAR {
 	strcpy($<str>$,"0");
 	dtype_size=0;
+} 
+| KW_CHAR OPEN_BRACKET NUMBER_VALUE CLOSE_BRACKET {
+	strcpy($<str>$,"0");
+	dtype_size=atol($<str>3);
 } 
 | KW_INT {
 	strcpy($<str>$,"2");
