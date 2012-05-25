@@ -50,6 +50,7 @@ public:
 
 
 public slots:
+   void aboutVDC();
    void font();
    void setFactorWidth(QString);
    void resetFactor();
