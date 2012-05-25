@@ -2459,6 +2459,9 @@ MainFrame::vdcdebug("ScreenHandler","displayError", "QString text");
    }
    else
    {
+
+      if(text.isEmpty())
+        return;
       Dialog *errorDialog = new Dialog(tr("Error"), text, "dialog", "stop", NULL);
       errorDialog->setModal(true);
       errorDialog->createButton(1, "OK", "OK", "ok.png");
@@ -2495,6 +2498,8 @@ MainFrame::vdcdebug("ScreenHandler","displayMessage", "QString text");
    }
    else
    {
+       if(text.isEmpty())
+         return;
       Dialog *errorDialog = new Dialog(tr("Message"), text, "dialog", "info", NULL);
       errorDialog->setModal(true);
       errorDialog->createButton(1, "OK", "OK", "ok.png");
