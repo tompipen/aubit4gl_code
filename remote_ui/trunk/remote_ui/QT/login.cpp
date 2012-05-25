@@ -111,7 +111,8 @@ LoginForm::LoginForm(QWidget *parent)
    admin->addAction(hosts);
    QAction *about = new QAction(tr("&About"), this);
    connect(about, SIGNAL(triggered()), this, SLOT(aboutVDC()));
-   menuBar->addAction(about);
+   options->addAction(about);
+   //menuBar->addAction(about);
    menuBar->addAction(toggledebug);
    connect(hosts, SIGNAL(triggered()), this, SLOT(hosts()));
    }
