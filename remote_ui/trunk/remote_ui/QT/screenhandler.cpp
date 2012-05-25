@@ -215,7 +215,7 @@ MainFrame::vdcdebug("ScreenHandler","createWindow", "QString windowTitle,QString
    if(formsActions.hasChildNodes()){
       p_fglform->setActions(formsActions);
    }
-   emit windowCreated();
+
    checkColors();
 }
 
@@ -2061,6 +2061,7 @@ if(qsl_triggereds.size() > 0)
      //Hier evt abfragen ob IDLE und das Menu gesetzt ist. Es sollte aufjedenfall machbarsein ...
       if(p_fglform->b_newForm && p_fglform->dialog () == NULL && p_fglform->ringMenuPulldown() == NULL && saveactive->state() != Fgl::IDLE && !p_fglform->b_dummy){
          p_fglform->b_newForm = false;
+
          //Load the Actions again, before display the form
         // p_fglform->checkActions(); bullshit its called allready in checkState()
         // p_fglform->adjustSize();
@@ -2081,7 +2082,7 @@ if(qsl_triggereds.size() > 0)
              p_fglform->context->checkOptions();
          }
 
-
+         emit windowCreated();
       }
       else{
          if(p_fglform->dialog() != NULL){
