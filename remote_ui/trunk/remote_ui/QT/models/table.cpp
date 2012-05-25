@@ -784,6 +784,10 @@ MainFrame::vdcdebug("TableView","setColumnName", "int col, QString name");
 QString TableView::getColumnName(int col)
 {
 MainFrame::vdcdebug("TableView","getColumnName", "int col");
+   if(col == -1)
+   {
+       return QString();
+   }
 
    QSortFilterProxyModel *proxyModel = static_cast<QSortFilterProxyModel*> (this->model());
    TableModel *table = static_cast<TableModel*> (proxyModel->sourceModel());
