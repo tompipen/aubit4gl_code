@@ -1,0 +1,13 @@
+Name:  Debian Package
+Parent: aubit4glsrc
+Description: Packages Aubit compiler precompiled binaries into .deb format
+Functionality: Packaging
+Build: make dpkg
+Example:
+Depends: Debian tools - dpkg, debhelper, debconf, etc
+Documentation: Build - none. Usage - "man apt"
+Regressed: No
+Maintainer: AF
+Status:  4
+Todo: Create source code deb package too?
+Notes: Directory named "debian" in Aubit tree root is empty and obsolete. Use etc/debian instead

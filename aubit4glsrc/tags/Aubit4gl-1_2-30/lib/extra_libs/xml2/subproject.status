@@ -1,0 +1,16 @@
+Name: libA4GL_xml2
+Parent: aubit4glsrc
+Description: Low-level XML2 integration
+Functionality: XML2 access 
+Build:
+Example:
+Depends: None
+Documentation:
+Regressed: No
+Maintainer: MA
+Status: 1
+Todo:
+Notes: 
+
+
+

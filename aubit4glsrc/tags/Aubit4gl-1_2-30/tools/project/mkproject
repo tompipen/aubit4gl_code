@@ -1,0 +1,178 @@
+#!/bin/sh
+#set -x
+
+####################################################################
+#
+#   This script creates project.c file
+#
+#
+#
+####################################################################
+
+#Get settings
+. ../../etc/aubitrc
+
+CURRDIR=$PWD
+
+if [ "$AUBITDIR" = "" ]
+then
+	#FIXME: this should be set with autoconf
+	OLD_DIR=`pwd`
+	cd ../..
+    AUBITDIR=`pwd`
+    cd $OLD_DIR
+fi
+
+PROJECTC=$AUBITDIR/lib/generated/project.c
+
+##########################
+#get current build number:
+##########################
+build=`cat $CURRDIR/build`
+
+#############################
+#Get current version number:
+##############################
+version=`cat $CURRDIR/version`
+
+if test "$build" = "" -o "$version" = ""; then 
+	echo "ERROR: cannot read build and/or version number"
+	exit 5
+fi
+
+
+if [ "$1" = "-increase" ]
+then
+	#########################
+	#Increase build counter:
+	#########################
+	#build=`expr $build + 1`
+    let newbuild=build+1
+	echo $newbuild > $CURRDIR/build
+	echo "Increased build from $build to $newbuild"
+	let build=newbuild
+fi
+
+
+######################
+#Write project.c file:
+######################
+
+echo "
+/**********************************************************************
+* (c) 1997-2002 Aubit Computing Ltd.
+*
+*
+* \$Id\$
+*
+* Project : Part Of Aubit 4GL Library Functions
+*
+* Change History :
+*	\$Log\$
+*
+***********************************************************************/
+
+/**
+ * @file
+ * Functions and data to get versions of source files used to build libaubit4gl
+ * 	automatically generated using mkproject script - do not modify
+ *
+ * @todo Take the prototypes here declared. See if the functions are static
+ * or to be externally seen
+ * @todo Doxygen comments to add to functions
+ */
+
+/*
+=====================================================================
+		                    Includes
+=====================================================================
+*/
+
+
+#include <string.h> 			/* strcpy() */
+
+/*
+=====================================================================
+                    Functions prototypes
+=====================================================================
+*/
+
+
+int 		A4GL_internal_build		(void);
+char * 		A4GL_internal_version	(void);
+void 		A4GL_set_version			(int a,char *m,char *id);
+
+/*
+=====================================================================
+                    Functions definitions
+=====================================================================
+*/
+
+
+/**
+ *
+ * @todo Describe function
+ */
+int
+A4GL_internal_build(void)
+{
+	return $build;
+}
+
+/**
+ *
+ * @todo Describe function
+ */
+char *
+A4GL_internal_version(void)
+{
+	return \"$version\";
+}
+
+
+" > $PROJECTC
+
+#######################################################
+#grep all C files in lib to create rest of project.c:
+#######################################################
+
+#cd $CURRDIR/../../lib/libaubit4gl
+cd $AUBITDIR/lib/libaubit4gl
+
+grep "\$Id" *.c | $AWK '
+BEGIN {
+print "struct s_ver_modules { char module[32]; char id[132];} internal_versions[]={"
+}
+{
+mname=substr($0,1,index($0,":")-1)
+
+id=substr($0,index($0,"Id"));
+if (id!="Id$") printf("{\"%s\",\"%s\"},\n",mname,id);
+}
+END {
+print "{\"\",\"0\"}"
+print "};"
+
+
+
+print " "
+print "/**"
+print " *"
+print " * @todo Describe function"
+print " */"
+print "void"
+print "A4GL_set_version(int a,char *m,char *id)"
+print "{"
+print "	strcpy(m,internal_versions[a].module);"
+print "	strcpy(id,internal_versions[a].id);"
+print "}"
+print ""
+print "/* ============================== EOF ============================== */"
+print " "
+
+
+}
+' >> $PROJECTC
+
+# ========================= EOF ===============================
+

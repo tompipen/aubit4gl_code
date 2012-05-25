@@ -1,0 +1,350 @@
+# This script reads a file with the following definition : 
+#
+#     functionname ( PARAMETERNAME DTYPE_Datatype [ PARAMETERNAME DTYPE_Datatype ...] ) RETURN_DTYPE
+# 
+# If functionname begins with a '+' then this is a 'class' method (ie. static) - and does not use the ObjID
+# If the function name does not begin with a '+' - it is an object method and should use the ObjID
+#
+# A special 'RETURN_DTYPE' of THISOBJECT can be used as a sort of constructor to
+# generate the object...
+
+
+
+cat $1.objspec | sed 's/(/ ( /g' | sed 's/)/ ) /g' | sed 's/,/ /'g | tr "[A-Z]" "[a-z]" | awk -v type="$1" '
+
+BEGIN {
+	type_no_dot=type
+	func_cnt=0
+	gsub("[.]","_",type_no_dot)
+	print "#include \"a4gl_libaubit4gl_int.h\""
+
+	print "struct _data {"
+        print "	char data[256];"
+	print "};"
+	print " "
+
+	print "static int new_obj(char *newData) {"
+        print "struct sObject *obj;"
+        print "struct _data *data;"
+
+        print "obj=new_object(\"" type "\");"
+        print "if (obj==NULL) {"
+        print "        A4GL_push_objectID(0);"
+        print "        return 1;"
+        print "}"
+        print "data=malloc(sizeof(struct _data));"
+        print "strcpy(data->data,newData);"
+        print "obj->objData=data;"
+        print "A4GL_push_objectID(obj->objHeapId);"
+        print "return 1;"
+	print " "
+	print "}"
+
+}
+
+{
+	nm=$1
+	if (substr(nm,1,1)=="+") {
+		isClassMethod=1
+		nm=substr(nm,2)
+	} else {
+		isClassMethod=0
+	}
+	functions[func_cnt++]=nm
+	mode=0
+	param_cnt=0
+	delete param
+	delete param_name
+	delete rval
+	rval_cnt=0
+	delete rval
+
+
+	if (!isClassMethod) {
+			param_name[param_cnt]="Data";
+			param[param_cnt]="this";
+			param_cnt++
+	}
+
+	if ($2!="(") {
+		print "Internal error - expecting a ("
+		exit
+	}
+
+	for (a=3;a<=NF;a++) {
+		# Are we at the end of the parameters ? 
+		if ($a==")") { mode=1; continue;}
+		if ($a=="(") { continue;}
+
+		if (mode==0) {
+				param_name[param_cnt]=$a
+				param[param_cnt]=$(a+1)
+				a++
+				param_cnt++;
+		}
+
+		if (mode==1) {
+			rtype=$a
+			if (rtype=="STRING") { rtype="dtype_char"; }
+			if (rtype=="INTEGER") { rtype="dtype_int"; }
+			rval[rval_cnt++]=rtype;
+		}
+
+	}
+	
+	print " "
+	print " "
+	print " "
+	print " "
+
+	# Now generate the C code...
+	if (isClassMethod) {
+		funcname=type "_" nm "(long *objectID_IgnoredAsAlways0,int n)"
+	} else {
+		funcname=type "_" nm "(long *objectID,int n)"
+	}
+	gsub("[.]","_",funcname)
+	print "static int " funcname " {"
+	print "int okToProcess=1;"
+
+	if (!isClassMethod) {
+        	print "struct _data *data;"
+        	print "struct sObject *ptr;"
+
+	}
+
+	ibindname="NULL,0"
+	obindname="NULL,0"
+
+	if (param_cnt) {
+		
+		print "int _ni=" param_cnt ";"
+		print "struct BINDING _ibind[" param_cnt "]={"
+		for (a=0;a<param_cnt;a++) {
+			if (a==param_cnt-1) {
+				print "    {NULL,0,0,0,0,0,NULL}"
+			} else {
+				print "    {NULL,0,0,0,0,0,NULL},"
+			}
+		}
+		print "};"
+		ibindname="_ibind,_ni"
+	}
+
+
+	if (rval_cnt) {
+		print "int _no=" rval_cnt ";"
+		print "struct BINDING _obind[" rval_cnt "]={"
+		for (a=0;a<rval_cnt;a++) {
+			if (a==rval_cnt-1) {
+				print "    {NULL,0,0,0,0,0,NULL}"
+			} else {
+				print "    {NULL,0,0,0,0,0,NULL},"
+			}
+		}
+		print "};"
+		obindname="_obind,_no"
+	}
+
+
+	# Print a define for each return value
+	for (a=0;a<rval_cnt;a++) {
+			# MORE DATATYPES
+		if (rval[a]=="dtype_char") { print "char rval_" a "[512];"}
+		if (rval[a]=="dtype_int") { print "int rval_" a ";"}
+		if (rval[a]=="thisobject") { print "char data[256];"}
+	}
+
+	# Print a define for each parameter
+	for (a=0;a<param_cnt;a++) {
+		# MORE DATATYPES
+		if (param[a]=="this") { continue}
+		if (param[a]=="dtype_char") { print "char *" param_name[a] "=NULL;"}
+		if (param[a]=="dtype_int") { print "int " param_name[a] ";" }
+	}
+	print " "
+	print "/* END OF DEFINE SECTION */"
+	print " "
+
+	if (!isClassMethod) {
+		# Lets populate the Data...
+        	print "  if (!ensureObject(\"" type "\",*objectID,&ptr)) {"
+                print "     A4GL_exitwith(\"Not an object of type (" type ") or not initialized\");"
+                print "     return 0;"
+        	print "  }"
+		print "  data=ptr->objData;"
+
+	}
+	print " "
+
+
+	# Do we have the right number of parameters ? 
+	if (isClassMethod) {
+		print "  if (n!=" param_cnt ") { "
+	} else {
+		print "  if (n!=" (param_cnt-1) ") { "
+	}
+	print "    A4GL_pop_args(n);"
+        print "    okToProcess=0;"
+	print "  }"
+	print " "
+	# assign them
+	
+	if (param_cnt) {
+		print "  // Set up input binding for our parameters"
+		print "  if (okToProcess) {"
+
+		for (a=param_cnt-1;a>=0;a--) {
+			if (a) {
+				print " "
+			}
+			# MORE DATATYPES
+			if (param[a]=="this") { 
+				print "    _ibind[" a "].ptr=data->data;"
+				print "    _ibind[" a "].size=strlen(data->data);"
+				continue
+			}
+			if (param[a]=="dtype_char") { 
+				print "    " param_name[a] "=A4GL_char_pop();"
+				print "    _ibind[" a "].ptr=" param_name[a] ";"
+				print "    _ibind[" a "].size=strlen(" param_name[a] ");"
+				continue
+			}
+
+			if (param[a]=="dtype_int") { 
+				print "    "param_name[a] "=A4GL_pop_long();" 
+				print "    _ibind[" a "].ptr=&" param_name[a] ";"
+				print "    _ibind[" a "].size=4;"
+				print "    _ibind[" a "].dtype=DTYPE_INT;"
+				continue
+			}
+			if (param[a]=="dtype_smallint") { 
+				print "    "param_name[a] "=A4GL_pop_int();" 
+				print "    _ibind[" a "].ptr=&" param_name[a] ";"
+				print "    _ibind[" a "].size=4;"
+				print "    _ibind[" a "].dtype=DTYPE_SMALLINT;"
+				continue
+			}
+			print "Invalid param type : \"" param[a] "\""
+		}
+		print "  }"
+	}
+
+
+	if (rval_cnt) {
+		print " "
+		print "  // Set up output binding for our parameters"
+		print "  if (okToProcess) {"
+		for (a=0;a<rval_cnt;a++) {
+			# MORE DATATYPES
+			if (rval[a]=="thisobject") {
+				print "    _obind[" a "].ptr=&data;"
+				print "    _obind[" a "].size=255;"
+				continue
+			}
+			if (rval[a]=="dtype_char") { 
+				print "    _obind[" a "].ptr=&rval_" a ";"
+				print "    _obind[" a "].size=512;"
+				continue
+			}
+			if (rval[a]=="dtype_int") { 
+				print "    _obind[" a "].ptr=&rval_" a ";"
+				print "    _obind[" a "].size=4;"
+				print "    _obind[" a "].dtype=DTYPE_INT;"
+				continue
+			}
+			if (rval[a]=="dtype_smallint") { 
+				print "    _obind[" a "].ptr=&rval_" a ";"
+				print "    _obind[" a "].size=4;"
+				print "    _obind[" a "].dtype=DTYPE_SMALLINT;"
+				continue
+			}
+			print "Invalid return type : \"" rval[a] "\""
+		}
+		print "  }"
+	}
+	
+	print " "
+
+	# So now the ibind should be set up - time to set up the obind
+	print "  if (okToProcess) {"
+        print "      A4GL_ui_frontcall(\"INTERNAL\",\"" type "." nm "\"," ibindname "," obindname,");"
+	print "  }"
+	print " "
+
+	if (param_cnt) {
+		print " "
+		print "  // Set up output binding for our parameters"
+		for (a=0;a<param_cnt;a++) {
+			# MORE DATATYPES
+			if (param[a]=="dtype_char") { 
+				print "    if (" param_name[a] " ) {"
+				print "        free(" param_name[a] ");"
+				print "    }"
+				continue
+			}
+		}
+	}
+
+
+	if (rval_cnt) {
+		# Did something go wrong somewhere ? 
+		print "  if (!okToProcess) {"
+		for (a=0;a<rval_cnt;a++) {
+			if (rval[a]=="thisobject") {
+				print "    A4GL_push_objectID(0);"
+				continue
+			} else {
+				if (rval[a]=="dtype_char") {
+					print "    A4GL_push_null(DTYPE_CHAR,1);"
+				continue
+				}
+				if (rval[a]=="dtype_int") {
+					print "    A4GL_push_null(DTYPE_INT,0);"
+				continue
+				}
+			}
+			print "Unhandled datatype : " rval[a]
+		}
+		print "  } else {"
+
+		for (a=0;a<rval_cnt;a++) {
+			if (rval[a]=="dtype_int") {
+				print "    A4GL_push_int(rval_" a ");"
+			}
+
+			if (rval[a]=="dtype_char") {
+				print "    A4GL_push_char(rval_" a ");"
+			}
+
+			if (rval[a]=="thisobject") {
+        			print "    if (strlen(data)) {"
+                		print "        A4GL_trim(data);"
+                		print "        return new_obj(data);"
+        			print "    } else {"
+				print "        A4GL_push_objectID(0);"
+        			print "    }"
+			}
+		}
+		print "  }"
+	}
+	
+
+	print "  return " rval_cnt ";"
+	print "}"
+
+}
+
+END {
+	print " "
+	print "void add_" type_no_dot "_support(void) {"
+	print "A4GL_add_object_type(\"" type "\");"
+	for (a=0;a<func_cnt;a++) {
+        	print "  A4GL_add_datatype_function_i (DTYPE_OBJECT, \":" type "." functions[a] "\", (void *)  " type_no_dot "_" functions[a] ");"
+	}
+	print "}"
+
+}
+'
+
+
