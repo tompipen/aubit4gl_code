@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ui.c,v 1.106 2011-12-15 18:04:42 mikeaubury Exp $
+# $Id: ui.c,v 1.107 2012-05-25 06:50:12 mikeaubury Exp $
 #
 */
 
@@ -2433,6 +2433,26 @@ A4GL_find_param (char *name)
     }
 
 }
+
+
+#ifdef NOPE
+void A4GL_sync_fields(struct s_screenio *sio) {
+int a;
+int field_no;
+field_no = sio->curr_attrib;
+
+fld_b = field_buffer (sio->currentfield, 0);
+
+sio->field curr_attrib
+A4GL_pause_execution();
+
+//for (a=0;a<=sio->nfields;a++) {
+	//if (A4GL_fgl_infield(&_sio_2,_inp_io_type,sio->field,0,NULL,0)) {
+	//}
+//}
+
+}
+#endif
 
 
 #ifdef RESERVED_FOR_FUTURE_EXPANSION

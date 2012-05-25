@@ -1,4 +1,4 @@
-/* $Id: fgl.x,v 1.69 2012-04-19 08:05:17 mikeaubury Exp $ */
+/* $Id: fgl.x,v 1.70 2012-05-25 06:50:12 mikeaubury Exp $ */
 typedef string str<>;
 typedef string sql_ident<>;
 
@@ -2042,6 +2042,13 @@ struct s_expr_infield {
                 int line;
 };
 
+struct s_expr_syncfields {
+	int sio_id;
+	str mode;
+        str module;
+        int line;
+};
+
 
 struct s_expr_get_fldbuf {
         int sio_id;
@@ -2285,6 +2292,7 @@ enum e_expr_type {
                 ET_EXPR_TIME_FUNC,
                 ET_EXPR_DTVAL,
                 ET_EXPR_INFIELD,
+                ET_EXPR_SYNCFIELDS,
                 ET_EXPR_FIELD_TOUCHED,
                 ET_EXPR_NOT_FIELD_TOUCHED,
                 ET_EXPR_IVAL_VAL,
@@ -2430,6 +2438,9 @@ union expr_str switch ( enum e_expr_type expr_type) {
 	case ET_EXPR_SPL_TRACE_PROCEDURE: /*! void; !*/
 	case ET_EXPR_LAST:
 		void;
+
+        case ET_EXPR_SYNCFIELDS: 
+		struct s_expr_syncfields *expr_syncfields;
 
 	case ET_EXPR_PARAMETER:
 		struct s_expr_parameter  expr_param;

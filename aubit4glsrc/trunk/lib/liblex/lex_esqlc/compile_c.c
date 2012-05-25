@@ -24,12 +24,12 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.544 2012-04-19 08:05:18 mikeaubury Exp $
+# $Id: compile_c.c,v 1.545 2012-05-25 06:50:13 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
-static char const module_id[] = "$Id: compile_c.c,v 1.544 2012-04-19 08:05:18 mikeaubury Exp $";
+static char const module_id[] = "$Id: compile_c.c,v 1.545 2012-05-25 06:50:13 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -3445,6 +3445,15 @@ real_print_func_call (t_expr_str * fcall)
 
       return;
     }
+
+  if (fcall->expr_type==ET_EXPR_SYNCFIELDS){ 
+	if (fcall->expr_str_u.expr_syncfields->mode[0]!='I') {
+			A4GL_assertion(1,"SYNCFIELDS only works for INPUT atm");
+	}
+      printc ("{int _retvars=0;A4GL_set_status(0,0);\n");
+	printc("A4GL_sync_fields(&_sio_%d);",fcall->expr_str_u.expr_syncfields->sio_id);
+	return;
+  }
 
   A4GL_assertion (1, "Internal error - expecting a function call");
 }

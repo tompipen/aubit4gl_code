@@ -24,10 +24,10 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.173 2012-01-22 10:37:50 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.174 2012-05-25 06:50:15 mikeaubury Exp $
 #*/
 #ifndef lint
-static char const module_id[] = "$Id: formcntrl.c,v 1.173 2012-01-22 10:37:50 mikeaubury Exp $";
+static char const module_id[] = "$Id: formcntrl.c,v 1.174 2012-05-25 06:50:15 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -537,6 +537,254 @@ check_for_construct_large_for_key (int a)
     return 0;
   return 1;
 }
+
+
+///NormalMode_notSyncMode is true if being used in normal mode
+// will be set to false if we're doing a sync_field to copy the 
+// data to the current field 
+
+static int
+copyCurrentFieldDataToVariable (struct s_screenio *sio, int NormalMode_notSyncMode)
+{
+  int really_ok = 0;
+  int attr;
+  struct struct_scr_field *fprop = 0;
+  fprop = (struct struct_scr_field *) (field_userptr (sio->currentfield));
+
+  char *picture;
+  int field_no;
+  char buff[10024];
+  char *fld_b;
+  field_no = sio->curr_attrib;
+
+  if (NormalMode_notSyncMode && !A4GL_fprop_flag_get (sio->currentfield, FLAG_FIELD_TOUCHED)) return 1;
+  if (sio->currentfield == 0)
+    {
+      A4GL_fgl_die_with_msg (1, "No current field");
+    }
+  fld_b = field_buffer (sio->currentfield, 0);
+  if (fld_b == 0)
+    {
+      A4GL_fgl_die_with_msg (1, "No current field buffer");
+    }
+  strncpy (buff, fld_b, sizeof (buff));
+  buff[10023] = 0;
+  if (strlen (buff) >= 10023)
+    {
+      A4GL_fgl_die_with_msg (1, "Internal error or string too long");
+    }
+
+
+  if (A4GL_has_str_attribute (fprop, FA_S_PICTURE))
+    {
+      int a;
+      int blank = 1;
+      picture = A4GL_get_str_attribute (fprop, FA_S_PICTURE);
+#ifdef DEBUG
+      A4GL_debug ("HAS PICTURE MJA123");
+#endif
+      for (a = 0; a < strlen (buff); a++)
+	{
+	  if (picture[a] == 'X' && buff[a] != ' ')
+	    {
+	      blank = 0;
+	      break;
+	    }
+	  if (picture[a] == 'A' && buff[a] != ' ')
+	    {
+	      blank = 0;
+	      break;
+	    }
+	  if (picture[a] == '#' && buff[a] != ' ')
+	    {
+	      blank = 0;
+	      break;
+	    }
+	}
+      if (blank)
+	strcpy (buff, "");
+    }
+
+
+  if (A4GL_fprop_flag_get (sio->currentfield, FLAG_FIELD_TOUCHED))
+    {
+      fprop = (struct struct_scr_field *) (field_userptr (sio->currentfield));
+
+      if (!A4GL_has_bool_attribute (fprop, FA_B_NOTNULL))
+	{
+	  A4GL_trim (buff);
+	}
+#ifdef DEBUG
+      A4GL_debug ("Buff=%s FA_B_NOTNULL=%d", buff, A4GL_has_bool_attribute (fprop, FA_B_NOTNULL));
+#endif
+
+      if (strlen (buff) || A4GL_has_bool_attribute (fprop, FA_B_NOTNULL))
+	{
+	  char buff2[10024];
+#ifdef DEBUG
+	  A4GL_debug ("Field is not null");
+#endif
+	  if (strlen (buff) == 0)
+	    {
+	      strcpy (buff, "  ");
+	    }
+	  strcpy (buff2, A4GL_fld_data_ignore_format (fprop, buff));
+	  strcpy (buff, buff2);
+	  A4GL_push_char (buff);
+	}
+      else
+	{
+#ifdef DEBUG
+	  A4GL_debug ("Field is null");
+#endif
+	  //if (A4GL_has_bool_attribute(fprop,FA_B_NOTNULL))  {
+	  //A4GL_push_char(" ");
+	  //} else {
+	  A4GL_push_null (DTYPE_CHAR, 0);
+	  //}
+	}
+
+
+#ifdef DEBUG
+      A4GL_debug ("Calling A4GL_pop_var2 : %p dtype=%d size=%d",
+		  sio->vars[field_no].ptr, sio->vars[field_no].dtype, sio->vars[field_no].size);
+#endif
+
+      if ((sio->vars[field_no].dtype & DTYPE_MASK) == DTYPE_CHAR || (sio->vars[field_no].dtype & DTYPE_MASK) == DTYPE_VCHAR)
+	{
+	  fprop = (struct struct_scr_field *) (field_userptr (sio->currentfield));
+	  if (A4GL_has_bool_attribute (fprop, FA_B_WORDWRAP))
+	    {
+	      if (!A4GL_isno (acl_getenv ("TRIMWORDWRAP")))
+		{
+		  A4GL_trim_trailing_in_wordwrap_field_on_stack (A4GL_get_field_width_w (sio->currentfield, 0), buff);
+		}
+	    }
+	}
+
+
+
+      if (A4GL_get_convfmts ()->ui_decfmt.decsep != '.' && A4GL_is_numeric_datatype (sio->vars[field_no].dtype))
+	{
+	  // its a A4GL_get_convfmts()->ui_decfmt.decsep separator not a '.' - lets convert it
+	  A4GL_convert_ui_char_on_stack_decimal_sep ();
+	}
+
+
+
+      A4GL_pop_param (sio->vars[field_no].ptr, sio->vars[field_no].dtype, sio->vars[field_no].size);
+
+
+      if ((sio->vars[field_no].dtype & DTYPE_MASK) == DTYPE_CHAR)
+	{
+#ifdef DEBUG
+	  A4GL_debug ("sio->vars[field_no].ptr=%s", sio->vars[field_no].ptr);
+#endif
+	}
+
+      really_ok = 1;
+      A4GL_trim (buff);
+      if (strlen (buff) && A4GL_isnull (sio->vars[field_no].dtype, sio->vars[field_no].ptr))
+	{
+#ifdef DEBUG
+	  A4GL_debug ("Not empty and var is null");
+#endif
+	  really_ok = 0;
+	}
+
+      if (!A4GL_conversion_ok (-1))
+	{
+#ifdef DEBUG
+	  A4GL_debug ("CONVERSION ERROR");
+#endif
+	  really_ok = 0;
+	}
+
+      if ((sio->vars[field_no].dtype == DTYPE_INT || sio->vars[field_no].dtype == DTYPE_SMINT
+	   || sio->vars[field_no].dtype == DTYPE_SERIAL))
+	{
+	  if (a_strchr (buff, A4GL_get_convfmts ()->ui_decfmt.decsep))
+	    {
+#ifdef DEBUG
+	      A4GL_debug ("%c in an integer", A4GL_get_convfmts ()->ui_decfmt.decsep);
+#endif
+	      really_ok = 0;
+	    }
+	}
+
+
+      if (really_ok == 0)
+	{
+	  if (NormalMode_notSyncMode)
+	    {
+	      // 
+	      A4GL_error_nobox (acl_getenv ("FIELD_ERROR_MSG"), 0);
+	      A4GL_comments (fprop);
+#ifdef DEBUG
+	      A4GL_debug ("Clear Flags");
+#endif
+	      if (A4GL_isyes (acl_getenv ("A4GL_CLR_FIELD_ON_ERROR")))
+		{
+		  A4GL_fprop_flag_clear (sio->currform->currentfield, FLAG_MOVED_IN_FIELD);
+		  A4GL_fprop_flag_set (sio->currform->currentfield, FLAG_MOVING_TO_FIELD);
+		  A4GL_clr_field (sio->currform->currentfield);
+		}
+	      else
+		{
+		  if (A4GL_isyes (acl_getenv ("FIRSTCOL_ONERR")))
+		    {
+		      A4GL_fprop_flag_clear (sio->currform->currentfield, FLAG_MOVED_IN_FIELD);
+		      A4GL_fprop_flag_set (sio->currform->currentfield, FLAG_MOVING_TO_FIELD);
+		      A4GL_int_form_driver (sio->currform->form, REQ_BEG_FIELD);
+		    }
+		}
+
+
+	      set_current_field (sio->currform->form, sio->currform->currentfield);
+	      A4GL_init_control_stack (sio, 0);
+	      return 0;
+	    }
+	  else
+	    {
+	      A4GL_push_null (DTYPE_CHAR, 0);
+	      A4GL_pop_param (sio->vars[field_no].ptr, sio->vars[field_no].dtype, sio->vars[field_no].size);
+
+	    }
+
+	}
+
+
+      if (NormalMode_notSyncMode)
+	{
+
+#ifdef DEBUG
+	  A4GL_debug ("It would appear that '%s' could be put into my variable... type=%d size=%d", buff,
+		      sio->vars[field_no].dtype, sio->vars[field_no].size);
+#endif
+
+	  A4GL_push_char (buff);
+
+#ifdef DEBUG
+	  A4GL_debug ("Calling display_field_contents before : %s", field_buffer (sio->currform->currentfield, 0));
+#endif
+	  A4GL_display_field_contents (sio->currentfield, sio->vars[field_no].dtype + ENCODE_SIZE (sio->vars[field_no].size), sio->vars[field_no].size, sio->vars[field_no].ptr, sio->vars[field_no].dtype + ENCODE_SIZE (sio->vars[field_no].size));	// MJA 2306
+#ifdef DEBUG
+	  A4GL_debug ("Calling display_field_contents after  : %s", field_buffer (sio->currform->currentfield, 0));
+#endif
+
+
+	  fprop = (struct struct_scr_field *) (field_userptr (sio->currentfield));
+	  attr = A4GL_determine_attribute (FGL_CMD_INPUT, sio->attrib, fprop, field_buffer (sio->currentfield, 0));
+	  if (attr != 0)
+	    A4GL_set_field_attr_with_attr (sio->currentfield, attr, FGL_CMD_INPUT);
+	}
+    }
+
+  return 1;
+}
+
+
+
 
 /* 
 * process any waiting actions 
@@ -1359,8 +1607,8 @@ process_control_stack_internal (struct s_screenio *sio, struct aclfgl_event_list
     {
 
       int ffc_rval;
-      struct struct_scr_field *fprop;
-      int attr;
+      //struct struct_scr_field *fprop;
+      //int attr;
 
 #ifdef DEBUG
       A4GL_debug ("AFTER FIELD - mode=%d (construct=%d)", sio->mode, MODE_CONSTRUCT);
@@ -1384,222 +1632,13 @@ process_control_stack_internal (struct s_screenio *sio, struct aclfgl_event_list
 
       if (ffc_rval != -4)
 	{
-	  int really_ok = 0;
 	  new_state = 0;
-	  fprop = (struct struct_scr_field *) (field_userptr (sio->currentfield));
+	  //fprop = (struct struct_scr_field *) (field_userptr (sio->currentfield));
 	  if (sio->mode != MODE_CONSTRUCT)
 	    {
-	      char *picture;
-	      int field_no;
-	      char buff[10024];
-	      char *fld_b;
-	      field_no = sio->curr_attrib;
-	      if (sio->currentfield == 0)
-		{
-		  A4GL_fgl_die_with_msg (1, "No current field");
-		}
-	      fld_b = field_buffer (sio->currentfield, 0);
-	      if (fld_b == 0)
-		{
-		  A4GL_fgl_die_with_msg (1, "No current field buffer");
-		}
-	      strncpy (buff, fld_b, sizeof (buff));
-	      buff[10023] = 0;
-	      if (strlen (buff) >= 10023)
-		{
-		  A4GL_fgl_die_with_msg (1, "Internal error or string too long");
-		}
-
-
-	      if (A4GL_has_str_attribute (fprop, FA_S_PICTURE))
-		{
-		  int a;
-		  int blank = 1;
-		  picture = A4GL_get_str_attribute (fprop, FA_S_PICTURE);
-#ifdef DEBUG
-		  A4GL_debug ("HAS PICTURE MJA123");
-#endif
-		  for (a = 0; a < strlen (buff); a++)
-		    {
-		      if (picture[a] == 'X' && buff[a] != ' ')
-			{
-			  blank = 0;
-			  break;
-			}
-		      if (picture[a] == 'A' && buff[a] != ' ')
-			{
-			  blank = 0;
-			  break;
-			}
-		      if (picture[a] == '#' && buff[a] != ' ')
-			{
-			  blank = 0;
-			  break;
-			}
-		    }
-		  if (blank)
-		    strcpy (buff, "");
-		}
-
-
-	      if (A4GL_fprop_flag_get (sio->currentfield, FLAG_FIELD_TOUCHED))
-		{
-		  fprop = (struct struct_scr_field *) (field_userptr (sio->currentfield));
-
-		  if (!A4GL_has_bool_attribute (fprop, FA_B_NOTNULL))
-		    {
-		      A4GL_trim (buff);
-		    }
-#ifdef DEBUG
-		  A4GL_debug ("Buff=%s FA_B_NOTNULL=%d", buff, A4GL_has_bool_attribute (fprop, FA_B_NOTNULL));
-#endif
-
-		  if (strlen (buff) || A4GL_has_bool_attribute (fprop, FA_B_NOTNULL))
-		    {
-		      char buff2[10024];
-#ifdef DEBUG
-		      A4GL_debug ("Field is not null");
-#endif
-		      if (strlen (buff) == 0)
-			{
-			  strcpy (buff, "  ");
-			}
-		      strcpy (buff2, A4GL_fld_data_ignore_format (fprop, buff));
-		      strcpy (buff, buff2);
-		      A4GL_push_char (buff);
-		    }
-		  else
-		    {
-#ifdef DEBUG
-		      A4GL_debug ("Field is null");
-#endif
-		      //if (A4GL_has_bool_attribute(fprop,FA_B_NOTNULL))  {
-		      //A4GL_push_char(" ");
-		      //} else {
-		      A4GL_push_null (DTYPE_CHAR, 0);
-		      //}
-		    }
-
-
-#ifdef DEBUG
-		  A4GL_debug ("Calling A4GL_pop_var2 : %p dtype=%d size=%d",
-			      sio->vars[field_no].ptr, sio->vars[field_no].dtype, sio->vars[field_no].size);
-#endif
-
-		  if ((sio->vars[field_no].dtype & DTYPE_MASK) == DTYPE_CHAR
-		      || (sio->vars[field_no].dtype & DTYPE_MASK) == DTYPE_VCHAR)
-		    {
-		      fprop = (struct struct_scr_field *) (field_userptr (sio->currentfield));
-		      if (A4GL_has_bool_attribute (fprop, FA_B_WORDWRAP))
-			{
-			  if (!A4GL_isno (acl_getenv ("TRIMWORDWRAP")))
-			    {
-			      A4GL_trim_trailing_in_wordwrap_field_on_stack (A4GL_get_field_width_w (sio->currentfield, 0), buff);
-			    }
-			}
-		    }
-
-
-
-		  if (A4GL_get_convfmts ()->ui_decfmt.decsep != '.' && A4GL_is_numeric_datatype (sio->vars[field_no].dtype))
-		    {
-		      // its a A4GL_get_convfmts()->ui_decfmt.decsep separator not a '.' - lets convert it
-		      A4GL_convert_ui_char_on_stack_decimal_sep ();
-		    }
-
-
-
-		  A4GL_pop_param (sio->vars[field_no].ptr, sio->vars[field_no].dtype, sio->vars[field_no].size);
-
-
-		  if ((sio->vars[field_no].dtype & DTYPE_MASK) == DTYPE_CHAR)
-		    {
-#ifdef DEBUG
-		      A4GL_debug ("sio->vars[field_no].ptr=%s", sio->vars[field_no].ptr);
-#endif
-		    }
-
-		  really_ok = 1;
-		  A4GL_trim (buff);
-		  if (strlen (buff) && A4GL_isnull (sio->vars[field_no].dtype, sio->vars[field_no].ptr))
-		    {
-#ifdef DEBUG
-		      A4GL_debug ("Not empty and var is null");
-#endif
-		      really_ok = 0;
-		    }
-
-		  if (!A4GL_conversion_ok (-1))
-		    {
-#ifdef DEBUG
-		      A4GL_debug ("CONVERSION ERROR");
-#endif
-		      really_ok = 0;
-		    }
-
-		  if ((sio->vars[field_no].dtype == DTYPE_INT || sio->vars[field_no].dtype == DTYPE_SMINT
-		       || sio->vars[field_no].dtype == DTYPE_SERIAL))
-		    {
-		      if (a_strchr (buff, A4GL_get_convfmts ()->ui_decfmt.decsep))
-			{
-#ifdef DEBUG
-			  A4GL_debug ("%c in an integer", A4GL_get_convfmts ()->ui_decfmt.decsep);
-#endif
-			  really_ok = 0;
-			}
-		    }
-
-
-		  if (really_ok == 0)
-		    {
-		      // 
-		      A4GL_error_nobox (acl_getenv ("FIELD_ERROR_MSG"), 0);
-		      A4GL_comments (fprop);
-#ifdef DEBUG
-		      A4GL_debug ("Clear Flags");
-#endif
-		      if (A4GL_isyes (acl_getenv ("A4GL_CLR_FIELD_ON_ERROR")))
-			{
-			  A4GL_fprop_flag_clear (sio->currform->currentfield, FLAG_MOVED_IN_FIELD);
-			  A4GL_fprop_flag_set (sio->currform->currentfield, FLAG_MOVING_TO_FIELD);
-			  A4GL_clr_field (sio->currform->currentfield);
-			}
-		      else
-			{
-			  if (A4GL_isyes (acl_getenv ("FIRSTCOL_ONERR")))
-			    {
-			      A4GL_fprop_flag_clear (sio->currform->currentfield, FLAG_MOVED_IN_FIELD);
-			      A4GL_fprop_flag_set (sio->currform->currentfield, FLAG_MOVING_TO_FIELD);
-			      A4GL_int_form_driver (sio->currform->form, REQ_BEG_FIELD);
-			    }
-			}
-
-
-		      set_current_field (sio->currform->form, sio->currform->currentfield);
-		      A4GL_init_control_stack (sio, 0);
-		      return -1;
-		    }
-
-#ifdef DEBUG
-		  A4GL_debug ("It would appear that '%s' could be put into my variable... type=%d size=%d", buff,
-			      sio->vars[field_no].dtype, sio->vars[field_no].size);
-#endif
-
-		  A4GL_push_char (buff);
-
-#ifdef DEBUG
-		  A4GL_debug ("Calling display_field_contents before : %s", field_buffer (sio->currform->currentfield, 0));
-#endif
-		  A4GL_display_field_contents (sio->currentfield, sio->vars[field_no].dtype + ENCODE_SIZE (sio->vars[field_no].size), sio->vars[field_no].size, sio->vars[field_no].ptr, sio->vars[field_no].dtype + ENCODE_SIZE (sio->vars[field_no].size));	// MJA 2306
-#ifdef DEBUG
-		  A4GL_debug ("Calling display_field_contents after  : %s", field_buffer (sio->currform->currentfield, 0));
-#endif
-
-
-		  fprop = (struct struct_scr_field *) (field_userptr (sio->currentfield));
-		  attr = A4GL_determine_attribute (FGL_CMD_INPUT, sio->attrib, fprop, field_buffer (sio->currentfield, 0));
-		  if (attr != 0)
-		    A4GL_set_field_attr_with_attr (sio->currentfield, attr, FGL_CMD_INPUT);
+		//
+		if (!copyCurrentFieldDataToVariable(sio,1)) {
+			return -1;
 		}
 	    }
 
@@ -3402,3 +3441,9 @@ void reset_insovrmode(FORM *mform) {
   form->insmode=0;
   A4GL_int_form_driver (mform, REQ_OVL_MODE);
 }
+
+void UILIB_A4GL_sync_fields(void *sio) {
+        copyCurrentFieldDataToVariable(sio,0);
+}
+
+

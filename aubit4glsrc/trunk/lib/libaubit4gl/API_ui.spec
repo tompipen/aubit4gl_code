@@ -50,6 +50,7 @@ A4GL_gen_field_list_from_slist void* field_listv void* formdetsv void* listv -> 
 A4GL_form_loop_v2 void* s int init void* evt -> int
 A4GL_push_constr void* s -> int
 A4GL_set_fields void* sio -> int
+A4GL_sync_fields void* sio -> void
 A4GL_display_internal int x int y char* s int a int clr_line -> void
 A4GL_movewin char* winname int absol -> int
 A4GL_hide_window char* winname -> void

@@ -25,7 +25,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: expr.c,v 1.50 2012-04-19 08:05:18 mikeaubury Exp $
+# $Id: expr.c,v 1.51 2012-05-25 06:50:12 mikeaubury Exp $
 #
 */
 
@@ -253,6 +253,8 @@ return "ET_EXPR_REPORT_UI";
       return "ET_EXPR_DTVAL";
     case ET_EXPR_TIME_FUNC:
       return "ET_EXPR_TIME_FUNC";
+case ET_EXPR_SYNCFIELDS:
+	return "ET_EXPR_SYNCFIELDS";
     case ET_EXPR_INFIELD:
       return "ET_EXPR_INFIELD";
     case ET_EXPR_NOT_FIELD_TOUCHED:
@@ -1070,6 +1072,21 @@ A4GL_new_expr_infield (int sid, struct fh_field_list *fl, char *mod, int line)
   return p2;
 }
 
+struct expr_str *
+A4GL_new_expr_syncfields (int sid, char *mode, char *mod, int line)
+{
+  struct s_expr_syncfields *p;
+  struct expr_str *p2;
+  
+  p = malloc (sizeof (struct s_expr_syncfields));
+  p2 = A4GL_new_expr_simple (ET_EXPR_SYNCFIELDS);
+  p->sio_id = sid;
+  p->mode = mode;
+  p->module = mod;
+  p->line = line;
+  p2->expr_str_u.expr_syncfields = p;
+  return p2;
+}
 
 struct expr_str *
 A4GL_new_expr_wordwrap (struct expr_str *ptr, expr_str * wrap_at)

@@ -4098,3 +4098,8 @@ char *fixnumeric;
 
     }
 }
+
+void UILIB_A4GL_sync_fields(void *sio) {
+	// Does nothing
+}
+

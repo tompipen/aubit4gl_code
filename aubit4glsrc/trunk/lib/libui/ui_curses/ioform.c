@@ -24,10 +24,10 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.247 2012-01-22 10:37:50 mikeaubury Exp $
+# $Id: ioform.c,v 1.248 2012-05-25 06:50:15 mikeaubury Exp $
 #*/
 #ifndef lint
-static char const module_id[] = "$Id: ioform.c,v 1.247 2012-01-22 10:37:50 mikeaubury Exp $";
+static char const module_id[] = "$Id: ioform.c,v 1.248 2012-05-25 06:50:15 mikeaubury Exp $";
 #endif
 
 /**
@@ -5772,5 +5772,6 @@ UILIB_A4GL_direct_to_ui (char *t, char *s)
     }
 // Does nothing - require by the API...
 }
+
 
 

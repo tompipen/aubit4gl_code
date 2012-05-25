@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.423 2012-03-19 19:28:05 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.424 2012-05-25 06:50:12 mikeaubury Exp $
 #
 */
 
@@ -1741,6 +1741,7 @@ int A4GL_sock_write_int (char *buf, size_t count);
 
 
 
+
 long a4gl_htonl(long x);
 long a4gl_ntohl(long x);
 
@@ -1760,6 +1761,7 @@ short a4gl_ntohs(long x);
   void A4GL_set_version (int a, char *m, char *id);
   char *A4GL_internal_version (void);
   int A4GL_internal_build (void);
+
 
   /* ============================ rexp2.c ================================= */
   void A4GL_stripnl (char *buff);

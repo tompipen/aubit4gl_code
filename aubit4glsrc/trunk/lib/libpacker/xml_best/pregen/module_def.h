@@ -1,5 +1,5 @@
 /* XML processor/application API for module_def.dtd.
- * Generated 2012/04/19 08:19:18.
+ * Generated 2012/05/25 07:27:52.
  *
  * This program was generated with the FleXML XML processor generator.
  * FleXML is Copyright (C) 1999-2005 Kristoffer Rose.  All rights reserved.
@@ -219,6 +219,8 @@ extern void STag_s_expr_pdf_function_call(void);
 extern void ETag_s_expr_pdf_function_call(void);
 extern void STag_s_expr_shared_function_call(void);
 extern void ETag_s_expr_shared_function_call(void);
+extern void STag_s_expr_syncfields(void);
+extern void ETag_s_expr_syncfields(void);
 extern void STag_s_expr_tag(void);
 extern void ETag_s_expr_tag(void);
 extern void STag_s_expr_tmp(void);
@@ -777,6 +779,8 @@ typedef int AT_if_conds_nm;
 #define AU_if_conds_nm NULL
 typedef int AT_single_option_nm;
 #define AU_single_option_nm NULL
+typedef int AT_s_expr_syncfields_nm;
+#define AU_s_expr_syncfields_nm NULL
 typedef int AT_s_expr_field_touched_nm;
 #define AU_s_expr_field_touched_nm NULL
 typedef int AT_s_select_modifier;
@@ -1169,6 +1173,8 @@ typedef int AT_s_expr_parameter_isReference;
 #define AU_s_expr_parameter_isReference NULL
 typedef int AT_struct_next_option_cmd_nm;
 #define AU_struct_next_option_cmd_nm NULL
+typedef int AT_s_expr_syncfields_sio_id;
+#define AU_s_expr_syncfields_sio_id NULL
 typedef int AT_struct_ext_cmd_block_id;
 #define AU_struct_ext_cmd_block_id NULL
 typedef int AT_report_format_section_lines_in_header;
@@ -1185,6 +1191,8 @@ typedef int AT_struct_run_cmd_wait;
 #define AU_struct_run_cmd_wait NULL
 typedef int AT_struct_prompt_cmd_nm;
 #define AU_struct_prompt_cmd_nm NULL
+typedef int AT_s_expr_syncfields_line;
+#define AU_s_expr_syncfields_line NULL
 typedef int AT_pdf_startrep_with_page_width;
 #define AU_pdf_startrep_with_page_width NULL
 typedef int AT_manyoptions_nm;
@@ -1437,6 +1445,8 @@ typedef int AT_s_email_report_nm;
 #define AU_s_email_report_nm NULL
 typedef int AT_struct_select_cmd_forupdate;
 #define AU_struct_select_cmd_forupdate NULL
+typedef int AT_s_expr_syncfields_mode;
+#define AU_s_expr_syncfields_mode NULL
 typedef int AT_event_data_idle_n;
 #define AU_event_data_idle_n NULL
 typedef int AT_s_expr_function_call_module;
@@ -1945,10 +1955,10 @@ typedef int AT_s_function_definition_comment;
 #define AU_s_function_definition_comment NULL
 typedef int AT_struct_construct_cmd_blockid;
 #define AU_struct_construct_cmd_blockid NULL
-typedef int AT_s_import_datatype_module;
-#define AU_s_import_datatype_module NULL
 typedef int AT_struct_display_b_n_cmd_nm;
 #define AU_struct_display_b_n_cmd_nm NULL
+typedef int AT_s_import_datatype_module;
+#define AU_s_import_datatype_module NULL
 typedef int AT_s_expr_agg_lineno;
 #define AU_s_expr_agg_lineno NULL
 typedef int AT_funcname_list_nm;
@@ -2047,6 +2057,8 @@ typedef int AT_expr_str_si;
 #define AU_expr_str_si NULL
 typedef int AT_struct_goto_cmd_nm;
 #define AU_struct_goto_cmd_nm NULL
+typedef int AT_s_expr_syncfields_module;
+#define AU_s_expr_syncfields_module NULL
 typedef int AT_int_value;
 #define AU_int_value NULL
 typedef int AT_struct_fetch_cmd_nm;
@@ -2250,6 +2262,8 @@ extern AT_if_conds_nm AX_if_conds_nm;
 #define A_if_conds_nm (bufferstack + AX_if_conds_nm)
 extern AT_single_option_nm AX_single_option_nm;
 #define A_single_option_nm (bufferstack + AX_single_option_nm)
+extern AT_s_expr_syncfields_nm AX_s_expr_syncfields_nm;
+#define A_s_expr_syncfields_nm (bufferstack + AX_s_expr_syncfields_nm)
 extern AT_s_expr_field_touched_nm AX_s_expr_field_touched_nm;
 #define A_s_expr_field_touched_nm (bufferstack + AX_s_expr_field_touched_nm)
 extern AT_s_select_modifier AX_s_select_modifier;
@@ -2642,6 +2656,8 @@ extern AT_s_expr_parameter_isReference AX_s_expr_parameter_isReference;
 #define A_s_expr_parameter_isReference (bufferstack + AX_s_expr_parameter_isReference)
 extern AT_struct_next_option_cmd_nm AX_struct_next_option_cmd_nm;
 #define A_struct_next_option_cmd_nm (bufferstack + AX_struct_next_option_cmd_nm)
+extern AT_s_expr_syncfields_sio_id AX_s_expr_syncfields_sio_id;
+#define A_s_expr_syncfields_sio_id (bufferstack + AX_s_expr_syncfields_sio_id)
 extern AT_struct_ext_cmd_block_id AX_struct_ext_cmd_block_id;
 #define A_struct_ext_cmd_block_id (bufferstack + AX_struct_ext_cmd_block_id)
 extern AT_report_format_section_lines_in_header AX_report_format_section_lines_in_header;
@@ -2658,6 +2674,8 @@ extern AT_struct_run_cmd_wait AX_struct_run_cmd_wait;
 #define A_struct_run_cmd_wait (bufferstack + AX_struct_run_cmd_wait)
 extern AT_struct_prompt_cmd_nm AX_struct_prompt_cmd_nm;
 #define A_struct_prompt_cmd_nm (bufferstack + AX_struct_prompt_cmd_nm)
+extern AT_s_expr_syncfields_line AX_s_expr_syncfields_line;
+#define A_s_expr_syncfields_line (bufferstack + AX_s_expr_syncfields_line)
 extern AT_pdf_startrep_with_page_width AX_pdf_startrep_with_page_width;
 #define A_pdf_startrep_with_page_width (bufferstack + AX_pdf_startrep_with_page_width)
 extern AT_manyoptions_nm AX_manyoptions_nm;
@@ -2910,6 +2928,8 @@ extern AT_s_email_report_nm AX_s_email_report_nm;
 #define A_s_email_report_nm (bufferstack + AX_s_email_report_nm)
 extern AT_struct_select_cmd_forupdate AX_struct_select_cmd_forupdate;
 #define A_struct_select_cmd_forupdate (bufferstack + AX_struct_select_cmd_forupdate)
+extern AT_s_expr_syncfields_mode AX_s_expr_syncfields_mode;
+#define A_s_expr_syncfields_mode (bufferstack + AX_s_expr_syncfields_mode)
 extern AT_event_data_idle_n AX_event_data_idle_n;
 #define A_event_data_idle_n (bufferstack + AX_event_data_idle_n)
 extern AT_s_expr_function_call_module AX_s_expr_function_call_module;
@@ -3418,10 +3438,10 @@ extern AT_s_function_definition_comment AX_s_function_definition_comment;
 #define A_s_function_definition_comment (bufferstack + AX_s_function_definition_comment)
 extern AT_struct_construct_cmd_blockid AX_struct_construct_cmd_blockid;
 #define A_struct_construct_cmd_blockid (bufferstack + AX_struct_construct_cmd_blockid)
-extern AT_s_import_datatype_module AX_s_import_datatype_module;
-#define A_s_import_datatype_module (bufferstack + AX_s_import_datatype_module)
 extern AT_struct_display_b_n_cmd_nm AX_struct_display_b_n_cmd_nm;
 #define A_struct_display_b_n_cmd_nm (bufferstack + AX_struct_display_b_n_cmd_nm)
+extern AT_s_import_datatype_module AX_s_import_datatype_module;
+#define A_s_import_datatype_module (bufferstack + AX_s_import_datatype_module)
 extern AT_s_expr_agg_lineno AX_s_expr_agg_lineno;
 #define A_s_expr_agg_lineno (bufferstack + AX_s_expr_agg_lineno)
 extern AT_funcname_list_nm AX_funcname_list_nm;
@@ -3520,6 +3540,8 @@ extern AT_expr_str_si AX_expr_str_si;
 #define A_expr_str_si (bufferstack + AX_expr_str_si)
 extern AT_struct_goto_cmd_nm AX_struct_goto_cmd_nm;
 #define A_struct_goto_cmd_nm (bufferstack + AX_struct_goto_cmd_nm)
+extern AT_s_expr_syncfields_module AX_s_expr_syncfields_module;
+#define A_s_expr_syncfields_module (bufferstack + AX_s_expr_syncfields_module)
 extern AT_int_value AX_int_value;
 #define A_int_value (bufferstack + AX_int_value)
 extern AT_struct_fetch_cmd_nm AX_struct_fetch_cmd_nm;

@@ -531,6 +531,13 @@ function_call_expr:
 			$<ptr>$=A4GL_new_expr_infield(-1,$<field_list>3,A4GL_compiling_module_basename(),lastlineno);
 		}
 	}
+	| FGL_SYNCFIELDS OPEN_BRACKET CLOSE_BRACKET {
+		if (isin_command("INPUT")) { 
+			$<ptr>$=A4GL_new_expr_syncfields(get_sio_id("ALL"),"I",A4GL_compiling_module_basename(),lastlineno);
+		} else {
+			a4gl_yyerror("FGL_SYNCFIELDS can only be used in an INPUT statement");
+		}
+	}
 	| FIELD_TOUCHED OPEN_BRACKET field_name_list_as_struct CLOSE_BRACKET 
 		{ 
 		add_feature("ET_EXPR_FIELD_TOUCHED");
