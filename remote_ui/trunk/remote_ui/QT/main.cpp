@@ -28,6 +28,7 @@
 #include "libssh/libssh.h"
 #include "libssh/callbacks.h"
 #endif
+#include "makeXml/createXml.h"
 
 
 //--------------------------------------------------------- (C) VENTAS AG 2006 -
@@ -104,6 +105,19 @@ int main(int argc, char *argv[])
     splash->finish(&mainframe);
     mainframe.activateWindow();
     mainframe.raise();
+#ifdef Q_WS_WIN32
+    QString progName(QDir::currentPath() + "/makeXml/debug/makeXml.exe");
+#endif
+#ifdef Q_WS_X11
+    QString progName(QDir::currentPath() + "/makeXml/debug/makeXml");
+#endif
+#ifdef Q_WS_MAC
+
+#endif
+
+    QObject *obj = new QObject;
+    QProcess *process = new QProcess(obj);
+    process->execute(progName);
     delete splash;
     return app.exec();
 }

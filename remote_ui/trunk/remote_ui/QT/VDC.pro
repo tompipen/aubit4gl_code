@@ -16,3 +16,4 @@ vdc-app.pro.depends = quazip
 } else {
 SUBDIRS= vdc-app.pro
 }
+SUBDIRS+=makeXml

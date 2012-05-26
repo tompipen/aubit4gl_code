@@ -111,7 +111,7 @@ LoginForm::LoginForm(QWidget *parent)
    admin->addAction(hosts);
    QAction *about = new QAction(tr("&About"), this);
    connect(about, SIGNAL(triggered()), this, SLOT(aboutVDC()));
-   options->addAction(about);
+   menuBar->addAction(about);
    //menuBar->addAction(about);
    menuBar->addAction(toggledebug);
    connect(hosts, SIGNAL(triggered()), this, SLOT(hosts()));
@@ -273,6 +273,7 @@ void LoginForm::aboutVDC()
             dialog->createButton(1, "Ok", "Ok", "ok_gruen.png");
             connect(dialog->getAction("OK"), SIGNAL(triggered()), dialog, SLOT(close()));
             dialog->show();
+            return;
     }
     #ifdef Q_WS_WIN
         clientOs = "WINDOWS";
@@ -312,36 +313,34 @@ void LoginForm::aboutVDC()
     }
 
     file.close();
+    QWidget *widget = new QWidget(widget);
+    QHBoxLayout *layout = new QHBoxLayout(widget);
+    QLabel *labeltext = new QLabel(widget);
+    QLabel *labellogo = new QLabel(widget);
+    QLabel *space = new QLabel(widget);
+    QPixmap pix(":pics/VENTAS_9_logo-about.png");
 
-    if(!returnList.isEmpty())
+    int date = QDate::currentDate().year();
+    //QPixmap qpm = pix.scaled(80,80,Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+    labellogo->setPixmap(pix);
+    labellogo->setAlignment(Qt::AlignTop);
+    space->setFixedWidth(25);
+
+    if(!returnList.at(0).isEmpty())
     {
-        QLabel *labeltext = new QLabel;
-        QLabel *labellogo = new QLabel;
-        QLabel *space = new QLabel;
-        space->setFixedWidth(25);
-        QPixmap pix(":pics/VENTAS_9_logo-about.png");
-        int date = QDate::currentDate().year();
-        //QPixmap qpm = pix.scaled(80,80,Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
-        labellogo->setPixmap(pix);
-        labellogo->setAlignment(Qt::AlignTop);
         labeltext->setText(QString("<p style=\"font-weight: bold;\">VENTAS AG - VDC</p> Release Date: %1<br>A4gl Version: %2<br>XML Protocol Version: %3<br><br>Copyright %4 %5").arg(returnList.at(0).at(0)).arg(returnList.at(0).at(2)).arg(returnList.at(0).at(3)).arg(date) .arg("by VENTAS. Alle Rights reserved.<br><br>The program is provided AS IS with NO WARRANTY OF ANY KIND,<br>INCLUDING THE WARRANTY OF DESIGN,<br>MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE."));
 
-        QWidget *widget = new QWidget();
-        QHBoxLayout *layout = new QHBoxLayout();
-
-        layout->addWidget(labellogo);
-        layout->addWidget(space);
-        layout->addWidget(labeltext);
-        widget->setLayout(layout);
-
-        widget->show();
-        widget->adjustSize();
-        /*Dialog *dialog = new Dialog("About VDC", QString("Release Date: %1\nA4GL Version: %2\nXML Protocol Version: %3\n\nCopyright 2012 by VENTAS. Alle Rights reserved.\n\nThe program is provided AS IS with NO WARRANTY OF ANY KIND,\nINCLUDING THE WARRANTY OF DESIGN,\nMERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.").arg(returnList.at(0).at(0)).arg(returnList.at(0).at(2)).arg(returnList.at(0).at(3)), "", "information", this, Qt::WindowStaysOnTopHint);
-        dialog->createButton(1, "Ok", "Ok", "ok_gruen.png");
-        connect(dialog->getAction("OK"), SIGNAL(triggered()), dialog, SLOT(close()));
-        dialog->setMaximumWidth(100);
-        dialog->show();*/
+    } else {
+        labeltext->setText(QString("<p style=\"font-weight: bold;\">VENTAS AG - VDC</p> Release Date: %1<br>A4gl Version: %2<br>XML Protocol Version: %3<br><br>Copyright %4 %5").arg("unknown").arg("unknown").arg("unknown").arg(date) .arg("by VENTAS. Alle Rights reserved.<br><br>The program is provided AS IS with NO WARRANTY OF ANY KIND,<br>INCLUDING THE WARRANTY OF DESIGN,<br>MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE."));
     }
+
+    layout->addWidget(labellogo);
+    layout->addWidget(space);
+    layout->addWidget(labeltext);
+    widget->setLayout(layout);
+
+    widget->show();
+    widget->adjustSize();
 }
 
 void LoginForm::resetFactor()
