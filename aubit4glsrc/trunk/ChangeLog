@@ -1,4 +1,71 @@
 ---------------------------
+Sun May 27 18:51:14 BST 2012
+---------------------------
+1.2_30 Released
+---------------------------
+	2012-05-25 15:26  mikeaubury
+	
+	2012-05-25 07:50  mikeaubury
+	
+	Add fgl_syncfields() function which can be used in an INPUT to copy
+	the current screen buffer for the current field back into the
+	variable.  This can be used in an ON KEY (..) to ensure the backing
+	variable has the details from the INPUT statement
+	
+	2012-05-21 14:34  mseidel
+	
+	Fixed the return-values of readfile. It was everytime 0, now
+	backcast of x -> lv_xml
+	
+	2012-05-08 12:44  siverly
+	
+	md5hashfile to return the md5 of the file at the client
+	
+	2012-05-08 11:45  mikeaubury
+	
+	2012-05-03 09:00  mikeaubury
+	
+	2012-04-26 17:54  mikeaubury
+	
+	fix issue with input array when moving back up to avoid an insert
+	
+	2012-04-19 09:05  mikeaubury
+	
+	Increase size of buffer for the filename/pipe command for START
+	REPORT etc.  Also - allow an email address to be specified with
+	START REPORT ... TO EMAIL [ "email@address.com" ] If no email
+	address is specified - uses $EMAIL_RECIPIENT as before
+	
+	2012-04-04 09:38  siverly
+	
+	ui_gantt added
+	
+	2012-04-03 14:46  siverly
+	
+	ui.gantt added for 4glpc compiler as object type
+	
+	2012-04-03 10:47  siverly
+	
+	Add UI_OBJECT Gantt Chart for the VDC
+	
+	2012-03-28 20:10  mikeaubury
+	
+	Allow use of fgl_setcurrline from BEFORE INPUT etc (can be turned
+	off with FIXSCRBEFINP=N - will remove the option if no complaints!)
+	
+	2012-03-23 18:22  mikeaubury
+	
+	2012-03-23 18:18  mikeaubury
+	
+	2012-03-23 17:40  mikeaubury
+	
+	Small fixup for substrings
+	
+	2012-03-23 10:03  mikeaubury
+	
+	Force use of 'integer' datatype when binding a serial
+	
+---------------------------
 Fri Mar 23 18:21:59 GMT 2012
 ---------------------------
 1.2_29 Released
