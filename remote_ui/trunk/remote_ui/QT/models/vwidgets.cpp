@@ -2082,7 +2082,7 @@ MainFrame::vdcdebug("WidgetHelper","setFieldText", "QObject *object, QString fie
    }
 
    if(LineEdit *widget = qobject_cast<LineEdit *> (object)){
-       fieldValue = Fgl::usingFunc(widget->format(), fieldValue, widget->dataType());
+       fieldValue = Fgl::usingFunc(widget->format(), fieldValue, widget->dataType(), widget->picture());
 
        if(fieldValue.trimmed() != widget->text()){
          widget->setText(fieldValue.trimmed());
