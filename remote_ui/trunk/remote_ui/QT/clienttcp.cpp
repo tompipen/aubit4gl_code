@@ -457,7 +457,6 @@ MainFrame::vdcdebug("ClientSocket","readClient", "");
    usleep(50000L);
    }
 
-   qDebug()<<request;
 
    if(!request.isNull()){
       ph.request.append(request);
@@ -848,10 +847,6 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
                doc.setContent(qs_defaultShortcuts);
                p_currScreenHandler->xmlShortcutDoc = doc;
                shortcutFile.close();
-           }
-           else
-           {
-               qDebug()<<"FAILED 4sc";
            }
 
       }
