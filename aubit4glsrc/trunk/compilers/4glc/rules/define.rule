@@ -478,7 +478,11 @@ dtype :
 		} 
 	|  UIBROWSER {
          $$=new_variable_object("ui.browser");
-      } |  UIGANTT {
+      }
+	|  UIPROGRESS {
+         $$=new_variable_object("ui.progress");
+      }
+   |  UIGANTT {
          $$=new_variable_object("ui.gantt");
       }
    |  STRING {

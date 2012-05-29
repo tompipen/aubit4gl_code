@@ -25,7 +25,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.202 2012-04-03 09:47:18 siverly Exp $
+# $Id: ops.c,v 1.203 2012-05-29 08:07:21 siverly Exp $
 #
 */
 
@@ -7903,6 +7903,7 @@ DTYPE_SERIAL
   add_ui_vdc_support();
   add_ui_gantt_support();
   add_ui_browser_support();
+  add_ui_progress_support();
   add_ui_curses_support();
   add_dyn_support();
 

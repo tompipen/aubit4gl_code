@@ -49,6 +49,7 @@ void add_ui_gantt_support(void) ;
 void add_ui_vdc_support(void) ;
 void add_ui_curses_support(void);
 void add_ui_browser_support(void);
+void add_ui_progress_support(void);
 void add_dyn_support(void) ;
 char *getSigForTopOfStack(int numberOfObjectsOnStack) ;
 struct s_save_binding {

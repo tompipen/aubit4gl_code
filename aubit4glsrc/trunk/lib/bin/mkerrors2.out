@@ -388,3 +388,4 @@
 402|Invalid operation on a character string (3)
 404|Not an object of type (ui.browser) or not initialized
 406|Not an object of type (ui.gantt) or not initialized
+408|Not an object of type (ui.progress) or not initialized

@@ -68,6 +68,8 @@ int A4GL_check_isobject_name(char *s) {
     return DTYPE_OBJECT;
   if (strcasecmp (s, "ui.browser") == 0)
     return DTYPE_OBJECT;
+  if (strcasecmp (s, "ui.progress") == 0)
+    return DTYPE_OBJECT;
   if (strcasecmp (s, "ui.gantt") == 0)
     return DTYPE_OBJECT;
 
