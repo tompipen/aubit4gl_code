@@ -1271,7 +1271,7 @@ MainFrame::vdcdebug("ScreenHandler","setFieldEnabled", "QString fieldName, bool 
          }
       }
       else{
-         qFatal("No such Field %s", qPrintable(fieldName));
+         qWarning("No such Field %s", qPrintable(fieldName));
       }
    }
    else{
