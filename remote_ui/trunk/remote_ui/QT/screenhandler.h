@@ -37,6 +37,7 @@ class FglForm;
 #include "models/charts/ganttWidget.h"
 #endif
 #include "models/webbrowser.h"
+#include "models/progress.h"
 #include <QVector>
 #include <QVariant>
 
@@ -109,6 +110,7 @@ private:
    bool cursorPos;
    QString qs_interfaceTitle;
    FglForm *dummy_fglform;
+   Progress *w_progress;
    int i_runcnt;
 
 
@@ -225,6 +227,16 @@ public slots:
    void setUpdatesEnabled(bool);
    void setCurrentFocus(QWidget*, QWidget*);
    void checkForUpdate();
+
+   //ui.progress
+
+   void setProgressTitle(int, QString);
+   void setProgressText(int, QString);
+   void setProgressVisible(int, bool);
+   void createProgressWindow();
+   void closeProgressWindow(int obj);
+
+
 
 
 signals:

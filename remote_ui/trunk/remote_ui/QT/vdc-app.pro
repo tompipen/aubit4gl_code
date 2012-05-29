@@ -90,7 +90,8 @@ HEADERS += confwin.h \
     models/xmlreader.h \
     include/vdc.h \
     models/webbrowser.h \
-    ventasupdate.h
+    ventasupdate.h \
+    models/progress.h
 SOURCES += confwin.cpp \
     main.cpp \
     mainframe.cpp \
@@ -120,7 +121,8 @@ SOURCES += confwin.cpp \
     models/xmlreader.cpp \
     include/vdc.cpp \
     models/webbrowser.cpp \
-    ventasupdate.cpp
+    ventasupdate.cpp \
+    models/progress.cpp
 
 OTHER_FILES += versions.xml
 OTHER_FILES += appicon.rc

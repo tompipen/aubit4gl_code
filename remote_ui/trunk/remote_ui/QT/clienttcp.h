@@ -180,6 +180,14 @@ signals:
 
    void checkForUpdate();
 
+
+   //ui.progress
+   void setProgressTitle(int, QString);
+   void setProgressText(int, QString);
+   void setProgressVisible(int, bool);
+   void createProgressWindow();
+   void closeProgressWindow(int);
+
 public slots:
    void fglFormResponse(QString);
 

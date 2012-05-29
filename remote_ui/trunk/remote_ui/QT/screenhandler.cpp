@@ -99,6 +99,12 @@ MainFrame::vdcdebug("ScreenHandler","~ScreenHandler", "");
         }
     }
 
+    if(w_progress)
+    {
+       w_progress->close();
+       w_progress->deleteLater();
+    }
+
     l_ql_screenhandler->removeOne(this);
 
     QApplication::processEvents();
@@ -3635,4 +3641,46 @@ void ScreenHandler::checkForUpdate()
         vu->checkForNewUpdates();
     }
 }
+
+void ScreenHandler::setProgressTitle(int obj, QString title)
+{
+  if(!w_progress)
+    return;
+  w_progress->setTitle(title);
+}
+
+void ScreenHandler::setProgressText(int obj, QString text)
+{
+
+  if(!w_progress)
+    return;
+  w_progress->setText1(text);
+}
+
+void ScreenHandler::setProgressVisible(int obj, bool vis)
+{
+
+  if(!w_progress)
+    return;
+  w_progress->setVisible(vis);
+
+}
+
+void ScreenHandler::createProgressWindow()
+{
+  w_progress = new Progress();
+
+  fglFormResponse("<TRIGGERED ID=\"-123\"><SVS><SV>0</SV></SVS></TRIGGERED>");
+
+}
+
+void ScreenHandler::closeProgressWindow(int obj)
+{
+
+  if(!w_progress)
+    return;
+  w_progress->close();
+  delete w_progress;
+}
+
 

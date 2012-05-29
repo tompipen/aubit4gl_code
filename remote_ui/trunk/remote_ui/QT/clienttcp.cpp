@@ -372,6 +372,19 @@ ClientSocket::ClientSocket(QObject *parent, QString name, QString pass, QString 
 #endif
 connect(&ph, SIGNAL(checkForUpdate()), p_currScreenHandler, SLOT(checkForUpdate()));
 
+
+//Ui.Progress
+connect(&ph, SIGNAL(createProgressWindow()), p_currScreenHandler, SLOT(createProgressWindow()));
+
+connect(&ph, SIGNAL(setProgressText(int,QString)), p_currScreenHandler, SLOT(setProgressText(int,QString)));
+
+connect(&ph, SIGNAL(setProgressTitle(int,QString)), p_currScreenHandler, SLOT(setProgressTitle(int,QString)));
+
+connect(&ph, SIGNAL(closeProgressWindow(int)), p_currScreenHandler, SLOT(closeProgressWindow(int)));
+
+
+connect(&ph, SIGNAL(setProgressVisible(int,bool)), p_currScreenHandler, SLOT(setProgressVisible(int,bool)));
+
 }
 
 
@@ -443,6 +456,8 @@ MainFrame::vdcdebug("ClientSocket","readClient", "");
    while(ph.isRunning()){
    usleep(50000L);
    }
+
+   qDebug()<<request;
 
    if(!request.isNull()){
       ph.request.append(request);
@@ -1524,6 +1539,86 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
 
              }
          }
+
+
+         if(qs_name == "ui.progress.create")
+         {
+             QStringList params;
+              for(int k=0; k<paramsElement.childNodes().count(); k++){
+                 QDomElement valuesElement = paramsElement.childNodes().at(k).toElement();
+                 params << valuesElement.text();
+              }
+
+              emit createProgressWindow();
+              //Important, we want sending the triggered out of the screenhandler, because there we have the initial index for the progress-window.
+              expect = 0;
+
+         }
+
+         if(qs_name == "ui.progress.show")
+         {
+             QStringList params;
+              for(int k=0; k<paramsElement.childNodes().count(); k++){
+                 QDomElement valuesElement = paramsElement.childNodes().at(k).toElement();
+                 params << valuesElement.text();
+              }
+
+              emit setProgressVisible(params.at(0).toInt(), true);
+
+         }
+
+         if(qs_name == "ui.progress.hide")
+         {
+
+             QStringList params;
+              for(int k=0; k<paramsElement.childNodes().count(); k++){
+                 QDomElement valuesElement = paramsElement.childNodes().at(k).toElement();
+                 params << valuesElement.text();
+              }
+
+              emit setProgressVisible(params.at(0).toInt(), false);
+
+         }
+
+         if(qs_name == "ui.progress.settitle")
+         {
+             QStringList params;
+              for(int k=0; k<paramsElement.childNodes().count(); k++){
+                 QDomElement valuesElement = paramsElement.childNodes().at(k).toElement();
+                 params << valuesElement.text();
+              }
+
+              emit setProgressTitle(params.at(0).toInt(), params.at(1));
+
+         }
+
+         if(qs_name == "ui.progress.settext")
+         {
+
+             QStringList params;
+              for(int k=0; k<paramsElement.childNodes().count(); k++){
+                 QDomElement valuesElement = paramsElement.childNodes().at(k).toElement();
+                 params << valuesElement.text();
+              }
+
+              emit setProgressText(params.at(0).toInt(), params.at(1));
+
+         }
+
+         if(qs_name == "ui.progress.close")
+         {
+
+             QStringList params;
+              for(int k=0; k<paramsElement.childNodes().count(); k++){
+                 QDomElement valuesElement = paramsElement.childNodes().at(k).toElement();
+                 params << valuesElement.text();
+              }
+
+              emit closeProgressWindow(params.at(0).toInt());
+         }
+
+
+
 
       }
 
