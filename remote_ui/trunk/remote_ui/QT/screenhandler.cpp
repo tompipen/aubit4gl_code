@@ -57,6 +57,7 @@ MainFrame::vdcdebug("ScreenHandler","ScreenHandler", "QObject *parent");
    cursorPos = false;
    p_prompt = NULL;
    timer = NULL;
+   w_progress = NULL;
    b_runinfo = false;
    this->installEventFilter(this);
    QApplication::processEvents();
@@ -99,10 +100,10 @@ MainFrame::vdcdebug("ScreenHandler","~ScreenHandler", "");
         }
     }
 
-    if(w_progress)
+    if(w_progress != NULL)
     {
-       w_progress->close();
-       w_progress->deleteLater();
+        w_progress->close();
+        w_progress->deleteLater();
     }
 
     l_ql_screenhandler->removeOne(this);
