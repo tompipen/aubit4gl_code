@@ -119,7 +119,7 @@ private:
    QLineEdit *hostLineEdit;
    QLineEdit *applicationLineEdit;
    QLineEdit *protocolLineEdit;
-
+   QCheckBox *cb;
    QErrorMessage *errorMessageLoginForm;
 
    void readEditFile(QString);

@@ -183,6 +183,7 @@ welcomeBar();
    #ifdef SSH_USE
    connect(rb_ssh, SIGNAL(clicked()), this, SLOT(enableApp()));
    #endif
+   cb = new QCheckBox("Save &settings?", this);
    loadSettings();
 
 
@@ -245,6 +246,9 @@ welcomeBar();
        loginLayout->addWidget(applicationLineEdit);
    }
    loginLayout->addWidget(bg_connection);
+
+
+   loginLayout->addWidget(cb);
    loginLayout->addStretch(1);
 
    // putting buttons and line edits in one single layout
@@ -938,14 +942,25 @@ void LoginForm::okPressed()
 MainFrame::vdcdebug("LoginForm","okPressed", "");
    VDC::waitCursor();
    QSettings settings;
+
    QString server = serverLineEdit->text();
    QString user   = usernameLineEdit->text();
    QString pass   = passwordLineEdit->text();
    QString app    = applicationLineEdit->text();
-   settings.setValue("server", server);
-   settings.setValue("user", user);
-   settings.setValue("password", pass);
-   settings.setValue("application", app);
+
+   if(pass.isEmpty())
+   {
+      passwordLineEdit->setFocus();
+      showMessage("Insert a Password!");
+      VDC::arrowCursor();
+      return;
+   }
+   if(cb->isChecked())
+   {
+      settings.setValue("server", server);
+      settings.setValue("user", user);
+   //   settings.setValue("password", pass);
+      settings.setValue("application", app);
    if(rb_telnet->isChecked())
      settings.setValue("checked", "telnet");
    #ifdef SSH_USE
@@ -954,7 +969,16 @@ MainFrame::vdcdebug("LoginForm","okPressed", "");
    #endif
    if(rb_proxy->isChecked())
      settings.setValue("checked", "proxy");
-
+   settings.setValue("save", "yes");
+     }
+   else
+   {
+       settings.setValue("checked", "");
+       settings.setValue("server", "");
+       settings.setValue("application", "");
+       settings.setValue("user", "");
+       settings.setValue("save", "no");
+   }
    settings.sync();
    if(rb_telnet->isChecked())
    {
@@ -1034,13 +1058,20 @@ MainFrame::vdcdebug("LoginForm","hideLogin", "");
 void LoginForm::loadSettings()
 {
    QSettings settings;
-MainFrame::vdcdebug("LoginForm","loadSettings", "");
+   MainFrame::vdcdebug("LoginForm","loadSettings", "");
    QString server = settings.value("server").toString();
    QString user = settings.value("user").toString();
-   QString pass = settings.value("password").toString();
+  // QString pass = settings.value("password").toString();
    QString app = settings.value("application").toString();
 
    QString checked = settings.value("checked").toString();
+
+   QString save = settings.value("save").toString();
+
+   if(save == "yes")
+   {
+      cb->setChecked(true);
+   }
 
    if(checked == "ssh")
    {
@@ -1065,9 +1096,10 @@ MainFrame::vdcdebug("LoginForm","loadSettings", "");
    if(!user.isEmpty()){
       usernameLineEdit->setText(user);
    }
+   /*
    if(!pass.isEmpty()){
       passwordLineEdit->setText(pass);
-   }
+   }*/
 
    if(!app.isEmpty()){
       applicationLineEdit->setText(app);
