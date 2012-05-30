@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                          |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.279 2012-01-19 19:23:58 mikeaubury Exp $
+# $Id: stack.c,v 1.280 2012-05-30 20:21:57 mikeaubury Exp $
 #
 */
 
@@ -516,8 +516,11 @@ if (oldObjectId) {
 			if (strcmp(o->objType,objtype)==0) {
 				*(long *)obj=o->objHeapId;
 				//printf("isFcall=%d\n",isFcall);
-				if (isFcall) {
+				
+				if (isFcall ) {
 					o->refCnt++;
+				} else {
+				A4GL_object_dispose(objId);
 				}
 				//memcpy(obj,o->objData,sizeof(long));
 				A4GL_drop_param();

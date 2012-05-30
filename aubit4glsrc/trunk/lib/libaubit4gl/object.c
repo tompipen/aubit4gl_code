@@ -112,6 +112,7 @@ long objectSlotId;
 	objectSlotId=find_head_slot_forobject_id(objectId);
 	if (objectSlotId==0) {
 		// Object Not found...
+		// 
 		A4GL_assertion(1,"Object not found");
 		return 0;
 	}
@@ -201,11 +202,19 @@ long objectSlotId;
 
 }
 
+
+void A4GL_object_increfcnt(long objectId) {
+int slot;
+	slot=find_head_slot_forobject_id(objectId);
+	if (heapOfObjects[slot].objType!=NULL) {
+		heapOfObjects[slot].refCnt++;
+	}
+}
+
 void A4GL_object_dispose(long objectId) {
 	int slot;
 	slot=find_head_slot_forobject_id(objectId);
 	if (heapOfObjects[slot].objType!=NULL) {
-
 		heapOfObjects[slot].refCnt--;
 		// Is it still in use ? 
 		if ( heapOfObjects[slot].refCnt) return;
