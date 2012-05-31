@@ -13,7 +13,7 @@ int main(int argc, char *argv[])
 
 
     qDebug() << "QDir:: " << QDir::currentPath();
-    QFile *file = new QFile(QDir::currentPath() + "/versions.xml");
+    QFile *file = new QFile(QDir::currentPath() + "../../versions.xml");
     if(!file->open(QIODevice::WriteOnly | QIODevice::Truncate))
     {
         qWarning("Cannot open file!");
@@ -36,7 +36,7 @@ int main(int argc, char *argv[])
 #endif
 
     writer->writeTextElement("VDC_RELEASE_DATE", QDate::currentDate().toString(QString("dd.MM.yyyy")));
-    QFile *fileHash = new QFile(QDir::currentPath() + "/release/VDC.exe");
+    QFile *fileHash = new QFile(QDir::currentPath() + "../../release/VDC.exe");
     if(!fileHash->open(QFile::ReadOnly))
     {
         writer->writeTextElement("VDC_CHECKSUM", "0");
