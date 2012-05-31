@@ -1169,7 +1169,7 @@ MainFrame::vdcdebug("WidgetHelper","createEdit", "const QDomElement& formField, 
       lineEdit->setToolTip(comments);
    }
 
-   QString picture = lineEditElement.attribute("picture");
+   QString picture = lineEditElement.attribute("picture").trimmed();
    lineEdit->setPicture(picture);
 
    QString format = lineEditElement.attribute("format");
