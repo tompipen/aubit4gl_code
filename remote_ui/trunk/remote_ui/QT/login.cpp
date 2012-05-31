@@ -183,7 +183,7 @@ welcomeBar();
    #ifdef SSH_USE
    connect(rb_ssh, SIGNAL(clicked()), this, SLOT(enableApp()));
    #endif
-   cb = new QCheckBox("Save &settings?", this);
+   cb = new QCheckBox("Save &Password?", this);
    loadSettings();
 
 
@@ -957,10 +957,19 @@ MainFrame::vdcdebug("LoginForm","okPressed", "");
    }
    if(cb->isChecked())
    {
-      settings.setValue("server", server);
-      settings.setValue("user", user);
-   //   settings.setValue("password", pass);
-      settings.setValue("application", app);
+       settings.setValue("password", pass);
+       settings.setValue("save", "yes");
+
+   }
+   else
+   {
+       settings.setValue("password", "");
+       settings.setValue("save", "no");
+   }
+
+   settings.setValue("server", server);
+   settings.setValue("user", user);
+   settings.setValue("application", app);
    if(rb_telnet->isChecked())
      settings.setValue("checked", "telnet");
    #ifdef SSH_USE
@@ -969,16 +978,8 @@ MainFrame::vdcdebug("LoginForm","okPressed", "");
    #endif
    if(rb_proxy->isChecked())
      settings.setValue("checked", "proxy");
-   settings.setValue("save", "yes");
-     }
-   else
-   {
-       settings.setValue("checked", "");
-       settings.setValue("server", "");
-       settings.setValue("application", "");
-       settings.setValue("user", "");
-       settings.setValue("save", "no");
-   }
+
+
    settings.sync();
    if(rb_telnet->isChecked())
    {
@@ -1061,7 +1062,7 @@ void LoginForm::loadSettings()
    MainFrame::vdcdebug("LoginForm","loadSettings", "");
    QString server = settings.value("server").toString();
    QString user = settings.value("user").toString();
-  // QString pass = settings.value("password").toString();
+   QString pass = settings.value("password").toString();
    QString app = settings.value("application").toString();
 
    QString checked = settings.value("checked").toString();
@@ -1096,10 +1097,10 @@ void LoginForm::loadSettings()
    if(!user.isEmpty()){
       usernameLineEdit->setText(user);
    }
-   /*
+
    if(!pass.isEmpty()){
       passwordLineEdit->setText(pass);
-   }*/
+   }
 
    if(!app.isEmpty()){
       applicationLineEdit->setText(app);
