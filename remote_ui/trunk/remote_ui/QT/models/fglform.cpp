@@ -2617,6 +2617,12 @@ MainFrame::vdcdebug("FglForm","prevfield", "");
                  {
                       for(int i = column; i>=0;i--)
                       {
+                         if(j == 0 && i == 0 && view->isColumnHidden(i) && view->isReadOnlyColumn(i))
+                         {
+                             field_found = true;
+                             break;
+                         }
+
                          if(view->isColumnHidden(i))
                          {
                             continue;
@@ -2625,9 +2631,12 @@ MainFrame::vdcdebug("FglForm","prevfield", "");
                          {
                              continue;
                          }
-                         column = i;
-                         field_found = true;
-                         break;
+
+                             column = i;
+                             field_found = true;
+                             break;
+
+
                       }
 
                       if(field_found)
@@ -2790,15 +2799,61 @@ MainFrame::vdcdebug("FglForm","prevrow", "");
          TableView *view = (TableView*) formElements().at(i);
          if(view->isEnabled()){
             QModelIndex currentIndex = view->currentIndex();
-            int currentRow = currentIndex.row()+1;
-            int currentColumn = currentIndex.column()+1;
+            int currentRow = currentIndex.row();
+            int currentColumn = currentIndex.column();
+            int column;
+            //First Row
+            if(currentIndex.row() <= 0)
+            {
+                for(int i = 0; i<=view->model()->columnCount(); i++)
+                {
+                    if(view->isColumnHidden(i))
+                    {
+                       continue;
+                    }
+                    if(view->isReadOnlyColumn(i))
+                    {
+                        continue;
+                    }
+                    column = i;
+                    break;
+                }
+            }
+            else //Any other row
+            {
+                if(view->isColumnHidden(currentColumn) || view->isColumnHidden(currentColumn))
+                {
+                    for(int i = 0; i<=view->model()->columnCount(); i++)
+                    {
+                        if(view->isColumnHidden(i))
+                        {
+                           continue;
+                        }
+                        if(view->isReadOnlyColumn(i))
+                        {
+                            continue;
+                        }
+                        column = i;
+                        break;
+                    }
+                }
+                else
+                {
+                   column = currentColumn;
+                }
+
+                currentRow = currentRow - 1;
+
+            }
+
+
             if(!inputArray()){
                if(currentRow <= view->model()->rowCount()){
-                  view->selectRow(currentRow-2);
+                  view->selectRow(currentRow);
                }
             }
             else{
-               view->setCurrentField(currentRow-1, currentColumn);
+               view->setCurrentField(currentRow+1, column+1);
             }
          }
       }
