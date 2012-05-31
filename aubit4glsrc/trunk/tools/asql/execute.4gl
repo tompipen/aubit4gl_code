@@ -392,7 +392,6 @@ endcode
 code
 	
 
-		
 
 		// Is it a select statement ?
 		// @todo - this needs refining as a select .. into temp would get caught..
@@ -519,11 +518,10 @@ end_query: ;
 		sprintf(msg,"Q:%ld %ld - ( %s )",(long)qry_type, (long)raffected, get_qry_msg(qry_type,raffected));
 	}
 endcode
-
 if sqlca.sqlcode>=0 then
 	if exec_mode=0 or exec_mode=2 then
 		message msg clipped
-		display " "
+		#display " "
 	else
 code
 		fflush(stdout);
