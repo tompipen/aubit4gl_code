@@ -20,4 +20,4 @@ SOURCES += main.cpp
 HEADERS +=
 
 #DESTDIR = ../
-QMAKE_POST_LINK = $$OUT_PWD/release/createVersionsXml
+QMAKE_POST_LINK = $$OUT_PWD/createVersionsXml
