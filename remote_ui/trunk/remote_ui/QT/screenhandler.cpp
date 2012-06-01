@@ -102,7 +102,7 @@ MainFrame::vdcdebug("ScreenHandler","~ScreenHandler", "");
 
     if(w_progress != NULL)
     {
-        w_progress->close();
+        w_progress->hide();
         w_progress->deleteLater();
     }
 
@@ -3285,8 +3285,9 @@ bool ScreenHandler::eventFilter(QObject *obj, QEvent *event)
 */
 
 
-    if(event->type() == QEvent::WindowActivate)
-    {
+  if(event->type() == QEvent::WindowActivate)
+  {
+
         if(this->b_runinfo && this->p_pid_p > 0 && this->i_mode != 2)
         {
             MainFrame::setFocusOn(this->p_pid_p);
@@ -3328,7 +3329,6 @@ bool ScreenHandler::eventFilter(QObject *obj, QEvent *event)
             p_fglform->setFocusOnWidget(p_fglform->currentField());
 
         }
-
        // p_fglform->setCurrentField(p_fglform->currentField()->objectName(), false);
 
     }
@@ -3663,6 +3663,9 @@ void ScreenHandler::setProgressVisible(int obj, bool vis)
 
   if(!w_progress)
     return;
+
+  QRect rect = QApplication::desktop()->geometry();
+  w_progress->move(rect.center());
   w_progress->setVisible(vis);
 
 }
@@ -3680,8 +3683,9 @@ void ScreenHandler::closeProgressWindow(int obj)
 
   if(!w_progress)
     return;
-  w_progress->close();
+  w_progress->hide();
   delete w_progress;
+  w_progress = NULL;
 }
 
 
