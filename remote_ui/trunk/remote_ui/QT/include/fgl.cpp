@@ -827,9 +827,15 @@ namespace Fgl {
 
       for(int i=0; i<tmp_dbdate.length(); i++){
 
+          if(arr_mdy.isEmpty() || arr_mdy.at(i) == NULL)
+          {
+             break;
+          }
+
          if(tmp_dbdate.at(i) == 'D'){
             day = arr_mdy.at(i).toInt();
          }
+
 
          if(tmp_dbdate.at(i) == 'M'){
             month = arr_mdy.at(i).toInt();
@@ -987,7 +993,7 @@ namespace Fgl {
                  }
                  else
                  {
-                    dt = getDate(value);
+                    dt = getDate(value.trimmed());
                     if(dt.isValid())
                        ok = true;
                  }
