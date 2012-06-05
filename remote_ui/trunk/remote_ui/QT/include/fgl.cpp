@@ -820,34 +820,68 @@ namespace Fgl {
       int month = -1;
       int day = -1;
 
+      qDebug() << "dbdate: " << dbdate;
+
       QString tmp_dbdate = dbdate;
       tmp_dbdate.remove("4");
       tmp_dbdate.remove("2");
       tmp_dbdate.remove(dbdate_sep);
 
-      for(int i=0; i<tmp_dbdate.length(); i++){
-
-          if(arr_mdy.isEmpty() || arr_mdy.at(i) == NULL)
+      QString tmp_dateFormat;
+      for(int i=0; i < dbdate.count(); i++)
+      {
+          if(dbdate.at(i) == 'Y')
           {
-             break;
+              for(int j=0; j < 4; j++)
+              {
+                  tmp_dateFormat.append(dbdate.at(i).toLower());
+              }
           }
-
-         if(tmp_dbdate.at(i) == 'D'){
-            day = arr_mdy.at(i).toInt();
-         }
-
-
-         if(tmp_dbdate.at(i) == 'M'){
-            month = arr_mdy.at(i).toInt();
-         }
-
-         if(tmp_dbdate.at(i) == 'Y'){
-            year = arr_mdy.at(i).toInt();
-         }
+          if(dbdate.at(i) == 'D')
+          {
+              for(int j=0; j < 2; j++)
+              {
+                  tmp_dateFormat.append(dbdate.at(i).toLower());
+              }
+              tmp_dateFormat.append(sep);
+          }
+          if(dbdate.at(i) == 'M')
+          {
+              for(int j=0; j < 2; j++)
+              {
+                  tmp_dateFormat.append(dbdate.at(i));
+              }
+              tmp_dateFormat.append(sep);
+          }
       }
 
-      QDate date(year, month, day);
-      return date;
+      QDate date1 = QDate::fromString(value, tmp_dateFormat);
+
+      if(!date1.isValid())
+      {
+          qDebug() << "DATE IS INVALID!";
+          return date1;
+      } else {
+
+          for(int i=0; i<tmp_dbdate.length(); i++){
+
+             if(tmp_dbdate.at(i) == 'D'){
+                day = arr_mdy.at(i).toInt();
+             }
+
+
+             if(tmp_dbdate.at(i) == 'M'){
+                month = arr_mdy.at(i).toInt();
+             }
+
+             if(tmp_dbdate.at(i) == 'Y'){
+                year = arr_mdy.at(i).toInt();
+             }
+          }
+
+          QDate date(year, month, day);
+          return date;
+      }
    }
 
    QString dbDateToFormat(QString dbdate){
