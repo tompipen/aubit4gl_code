@@ -25,6 +25,7 @@ int aclfgl_aclfgl_get_pdf_encoding(int n);
 int aclfgl_aclfgl_get_sql_requirement(int n);
 int aclfgl_aclfgl_get_stack_trace(int n);
 int aclfgl_aclfgl_get_user(int n);
+int aclfgl_aclfgl_object_gc(int n);
 int aclfgl_aclfgl_getclientfile(int _nargs);
 int aclfgl_aclfgl_getcwd (int a);
 int aclfgl_aclfgl_parse_csv(int nparam);

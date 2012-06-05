@@ -24,12 +24,12 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.545 2012-05-25 06:50:13 mikeaubury Exp $
+# $Id: compile_c.c,v 1.546 2012-06-05 09:10:16 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
-static char const module_id[] = "$Id: compile_c.c,v 1.545 2012-05-25 06:50:13 mikeaubury Exp $";
+static char const module_id[] = "$Id: compile_c.c,v 1.546 2012-06-05 09:10:16 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -3891,7 +3891,8 @@ printPushFunction (int yylineno)
     {
       return;
     }
-  printc ("A4GLSTK_pushFunction(_functionName,_paramnames,_nargs,_module_name,%d);\n", yylineno);
+  printc ("A4GLSTK_pushFunction_v2(_functionName,_paramnames,_nargs,_module_name,%d,_objData);\n", yylineno);
+
   //printc ("A4GLSTK_setCurrentLine(_module_name,%d);", yylineno);
 }
 
@@ -6280,7 +6281,7 @@ dump_function (struct s_function_definition *function_definition, int ismain)
 	      print_variable_new (function_definition->variables.variables.variables_val[a], E_SCOPE_LOCAL, 0);
 	    }
 	}
-      dump_objdata (&function_definition->variables);
+      dump_objdata (&function_definition->variables,0);
       print_fgllib_start (current_module->mod_dbname, current_module->schema_only == EB_TRUE, current_module->force_ui,
 			  current_module->debug_filename);
       print_function_variable_init (&function_definition->variables);
@@ -6316,17 +6317,17 @@ dump_function (struct s_function_definition *function_definition, int ismain)
       yylineno = function_definition->lineno;
       print_param_g ('f', function_definition->funcname, expanded_params);
 
+      dump_objdata (&function_definition->variables,0);
       if (local_isGenStackInfo ())
 	{
 	  if (!A4GL_doing_pcode ())
 	    {
 	      //printc ("A4GLSTK_setCurrentLine(_module_name,%d);", function_definition->lineno);
-	      printc ("A4GLSTK_pushFunction(_functionName,_paramnames,_nargs,_module_name,%d);\n", function_definition->lineno);
+	      printc ("A4GLSTK_pushFunction_v2(_functionName,_paramnames,_nargs,_module_name,%d,_objData);\n", function_definition->lineno);
 	    }
 	}
 
 
-      dump_objdata (&function_definition->variables);
 
 
       if (A4GL_doing_pcode ())
@@ -6388,7 +6389,7 @@ dump_function (struct s_function_definition *function_definition, int ismain)
   else
     {
       printPopFunction (0, function_definition->lastlineno);
-      printc ("A4GL_dec_refcount(_objData);");
+      //printc ("A4GL_dec_refcount(_objData);");
       printc ("A4GL_copy_back_blobs(_blobdata,0);");
       printc ("return 0;\n");
       tmp_ccnt--;
@@ -8846,10 +8847,14 @@ get_last_cmd (void)
 
 
 void
-dump_objdata (struct variable_list *variables)
+dump_objdata (struct variable_list *variables,int prefix_with_static)
 {
   int a;
+if (prefix_with_static) {
+  printc (" static void *_objData[]={"); // Used for reports
+} else {
   printc (" void *_objData[]={");
+}
   for (a = 0; a < variables->variables.variables_len; a++)
     {
       if (variables->variables.variables_val[a]->var_data.variable_type == VARIABLE_TYPE_OBJECT)

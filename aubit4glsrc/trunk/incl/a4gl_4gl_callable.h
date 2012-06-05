@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_4gl_callable.h,v 1.76 2012-04-19 08:05:17 mikeaubury Exp $
+# $Id: a4gl_4gl_callable.h,v 1.77 2012-06-05 09:10:15 mikeaubury Exp $
 */
 
 /**
@@ -183,7 +183,8 @@ void A4GL_err_continue_log (int lineno, char *fname);
 
 int A4GLSTK_isStackInfo (void);
 char *A4GLSTK_getStackTrace (void);
-void A4GLSTK_pushFunction (const char *functionName, char *params[], int n,char *this_module,int this_line);
+#define  A4GLSTK_pushFunction #error You must recompile your 4gl to remove the A4GLSTK_pushFunction function 
+void A4GLSTK_pushFunction_v2 (const char *functionName, char *params[], int n,char *this_module,int this_line, void *objData[]);
 
 void A4GLSTK_popFunction (void);
 void A4GLSTK_popFunction_nl (int nrets,int yylineno);

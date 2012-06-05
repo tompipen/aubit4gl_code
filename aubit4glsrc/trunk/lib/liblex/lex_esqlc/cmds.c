@@ -56,7 +56,7 @@ switch(cd->type) {
    case E_CMD_SCROLL_CMD           : ok=print_scroll_cmd(&cd->command_data_u.scroll_cmd); break;
    case E_CMD_LABEL_CMD            : ok=print_label_cmd(&cd->command_data_u.label_cmd); break;
    case E_CMD_LET_CMD              : ok=print_let_cmd(&cd->command_data_u.let_cmd); break;
-   case E_CMD_MLET_CMD             : ok=print_mlet_cmd(&cd->command_data_u.let_cmd); break;
+   case E_CMD_MLET_CMD             : ok=print_mlet_cmd(&cd->command_data_u.mlet_cmd); break;
    case E_CMD_LOCATE_CMD           : ok=print_locate_cmd(&cd->command_data_u.locate_cmd); break;
    case E_CMD_AT_TERM_CMD          : ok=print_at_term_cmd(&cd->command_data_u.at_term_cmd); break;
    case E_CMD_RETURN_CMD           : ok=print_return_cmd(&cd->command_data_u.return_cmd); break;

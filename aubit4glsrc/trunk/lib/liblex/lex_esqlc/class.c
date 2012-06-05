@@ -470,7 +470,7 @@ dump_class_function (char *class_name, struct s_function_definition *function_de
   print_param_g ('f', function_definition->funcname, expanded_params);
 
 
-  dump_objdata (&function_definition->variables);
+  dump_objdata (&function_definition->variables,1);
 
   if (function_definition->function_type != E_FTYPE_OBJECT)
     {
@@ -522,7 +522,7 @@ dump_class_function (char *class_name, struct s_function_definition *function_de
   dump_comments (function_definition->lastlineno);
 
   //printPopFunction (0, function_definition->lastlineno);
-  printc ("A4GL_dec_refcount(_objData);");
+  //printc ("A4GL_dec_refcount(_objData);");
   printc ("A4GL_copy_back_blobs(_blobdata,0);");
   printc ("return 0;\n");
   tmp_ccnt--;

@@ -276,7 +276,7 @@ int dump_command(struct command_data *cd);
 int clr_rep_print_entry(void);
 void print_generation_copy_status (void);
 int chk_ibind_select(struct s_select *s);
-void dump_objdata(struct variable_list *variables);
+void dump_objdata(struct variable_list *variables,int isStatic___Only_Used_For_Reports);
 int is_user_dtype(int n) ;
 char *get_user_dtype_string(int n);
 

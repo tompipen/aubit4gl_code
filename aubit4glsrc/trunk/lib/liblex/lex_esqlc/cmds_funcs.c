@@ -1219,7 +1219,7 @@ print_return_cmd (struct_return_cmd * cmd_data)
 */
 
 
-  printc("A4GL_dec_refcount(_objData);");
+  //printc("A4GL_dec_refcount(_objData);");
 
   if (!is_in_report ()) {
     printc("A4GL_copy_back_blobs(_blobdata,%d);",n);

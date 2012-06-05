@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                          |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.280 2012-05-30 20:21:57 mikeaubury Exp $
+# $Id: stack.c,v 1.281 2012-06-05 09:10:16 mikeaubury Exp $
 #
 */
 
@@ -495,11 +495,6 @@ void A4GL_pop_object(char *objtype,void *obj,int dtype,int size,int isFcall) {
 
 long oldObjectId;
 
-oldObjectId=*(long*)obj;
-
-if (oldObjectId) {
-	A4GL_object_dispose(oldObjectId);
-}
 
 	A4GL_get_top_of_stack (1, &d0, &s0, (void *) &pi);
 
@@ -519,8 +514,6 @@ if (oldObjectId) {
 				
 				if (isFcall ) {
 					o->refCnt++;
-				} else {
-				A4GL_object_dispose(objId);
 				}
 				//memcpy(obj,o->objData,sizeof(long));
 				A4GL_drop_param();
@@ -553,6 +546,7 @@ if (oldObjectId) {
 		
 	}
 
+	freeOrphanObjects();
 
 	return ;
 }
@@ -5226,14 +5220,10 @@ void A4GL_dec_refcount( void **objects) {
 	int a;
 	long objId;
 
-	if (objects==NULL) return;
-
-	for (a=0;objects[a];a++) {
-		objId=*(long *)objects[a];
-		A4GL_object_dispose(objId);
-	}
+	freeOrphanObjects();
 
 }
+
 
 
 // Copy back a reference variable

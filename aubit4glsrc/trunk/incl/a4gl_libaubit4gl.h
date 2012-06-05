@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.424 2012-05-25 06:50:12 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.425 2012-06-05 09:10:15 mikeaubury Exp $
 #
 */
 
@@ -1253,7 +1253,10 @@ enum cmd_types {
   char *acl_getenv (const char *);
   char * acl_getenv_not_set_as_0 (const char *s);
   char *A4GLSTK_getStackTrace (void);
-  void A4GLSTK_pushFunction (const char *functionName, char *params[], int n,char *this_module,int this_line);
+  //void A4GLSTK_pushFunction (const char *functionName, char *params[], int n,char *this_module,int this_line);
+#define  A4GLSTK_pushFunction #error You must recompile your 4gl to remove the A4GLSTK_pushFunction function
+void A4GLSTK_pushFunction_v2 (const char *functionName, char *params[], int n,char *this_module,int this_line, void *objData[]);
+
   char *A4GLSTK_topFunction(void);
   void A4GLSTK_popFunction (void);
   void A4GLSTK_popFunction_nl (int nrets,int lineno);

@@ -26,13 +26,11 @@ static void init_objects(void) {
 
 int find_head_slot_forobject_id(long objectId) {
 int a;
-for (a=0;a<MAXOBJECTS;a++) {
         for (a=0;a<MAXOBJECTS;a++) {
                 if (heapOfObjects[a].objHeapId==objectId) {
 			return a;
 		}
 	}
-}
 return 0;
 }
 
@@ -112,7 +110,6 @@ long objectSlotId;
 	objectSlotId=find_head_slot_forobject_id(objectId);
 	if (objectSlotId==0) {
 		// Object Not found...
-		// 
 		A4GL_assertion(1,"Object not found");
 		return 0;
 	}
@@ -202,12 +199,33 @@ long objectSlotId;
 
 }
 
-
+/*
 void A4GL_object_increfcnt(long objectId) {
 int slot;
 	slot=find_head_slot_forobject_id(objectId);
 	if (heapOfObjects[slot].objType!=NULL) {
+		if (A4GL_isyes(acl_getenv("DUMPOBJECT"))) {
+			printf("increment refCnt\n");
+		}
 		heapOfObjects[slot].refCnt++;
+	}
+}
+*/
+
+
+void freeOrphanObjects() {
+int a;
+
+//printf("CHecking for freeOrphanObjects\n");
+//
+	for (a=0;a<MAXOBJECTS;a++) {
+		if (heapOfObjects[a].objType && heapOfObjects[a].objHeapId) {
+			if (!A4GLSTK_chkObjectExists(heapOfObjects[a].objHeapId)) {
+				A4GL_debug("Object ID %d is no longer referenced...\n", heapOfObjects[a].objHeapId);
+				heapOfObjects[a].refCnt=0;
+				A4GL_object_dispose(heapOfObjects[a].objHeapId);
+			}
+		}
 	}
 }
 
@@ -215,9 +233,16 @@ void A4GL_object_dispose(long objectId) {
 	int slot;
 	slot=find_head_slot_forobject_id(objectId);
 	if (heapOfObjects[slot].objType!=NULL) {
+		if (A4GL_isyes(acl_getenv("DUMPOBJECT"))) {
+			printf("object dispose ? %d\n", heapOfObjects[slot].refCnt);
+		}
 		heapOfObjects[slot].refCnt--;
+		
 		// Is it still in use ? 
-		if ( heapOfObjects[slot].refCnt) return;
+		if ( heapOfObjects[slot].refCnt>0) return;
+		if (A4GL_isyes(acl_getenv("DUMPOBJECT"))) {
+			printf("Yes..\n");
+		}
 
 		//if (objectId==2) {
 			//A4GL_pause_execution();

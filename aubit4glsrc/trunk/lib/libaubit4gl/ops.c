@@ -25,7 +25,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.203 2012-05-29 08:07:21 siverly Exp $
+# $Id: ops.c,v 1.204 2012-06-05 09:10:16 mikeaubury Exp $
 #
 */
 
@@ -7450,10 +7450,8 @@ static int A4GL_conv_object_to_object(int d1, void *p1,int d2,void *p2, int size
 // Copy the Object ID across...
 int p;
 p=*(int *)p2;
-if (p) {
-	A4GL_object_dispose(p);
-}
 memcpy(p2,p1,sizeof(long));
+freeOrphanObjects();
 return 1;
 }
 

@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: function_call_stack.c,v 1.46 2011-05-05 20:36:46 mikeaubury Exp $
+# $Id: function_call_stack.c,v 1.47 2012-06-05 09:10:16 mikeaubury Exp $
 #*/
 
 /**
@@ -86,6 +86,7 @@ typedef struct FunctionCall
   const char *params;	    /**< a list of parameters passed to the function */
   int functionCallCnt;
   int started;
+  void **objData;
 }
 FunctionCall;
 
@@ -452,7 +453,7 @@ if (nsec>1) {
  * @param functionName The name of the function called.
  */
 void
-A4GLSTK_pushFunction (const char *functionName, char *params[], int n,char *this_module, int this_line_number)
+A4GLSTK_pushFunction_v2 (const char *functionName, char *params[], int n,char *this_module, int this_line_number, void *objData[])
 {
 	char *fname;
 
@@ -497,6 +498,7 @@ A4GLSTK_pushFunction (const char *functionName, char *params[], int n,char *this
   functionCallStack[functionCallPointer].lineNumber = currentFglLineNumber;
   functionCallStack[functionCallPointer].functionCallCnt = currFunctionCallCnt;
   functionCallStack[functionCallPointer].started =time(NULL);
+  functionCallStack[functionCallPointer].objData=objData;
 
 
 
@@ -588,6 +590,14 @@ A4GLSTK_popFunction_nl (int nrets,int lineno )
   functionCallPointer--;
   if (functionCallPointer < 0)
     functionCallPointer = 0;
+
+  freeOrphanObjects();
+}
+
+
+int aclfgl_aclfgl_object_gc(int n) {
+	freeOrphanObjects();
+return 0;
 }
 
 
@@ -681,6 +691,26 @@ int
 A4GLSTK_isStackInfo (void)
 {
   return stackInfoInitialized;
+}
+
+
+// Traverses the function call stack looking for
+// any reference to the object
+// we'll have to extend this eventually to look for objects 
+// held in STARTed reports - but thats an exercise for 
+// slightly later...
+int A4GLSTK_chkObjectExists(long objectID) {
+int a;
+int b;
+for (a=0;a<functionCallPointer;a++) {
+	for (b=0;functionCallStack[a].objData[b];b++) {
+		long objId;
+	 	objId=*(long *)functionCallStack[a].objData[b];
+		if (objId==objectID) return 1;
+	}
+}
+
+return 0;
 }
 
 /* ============================= EOF ================================ */
