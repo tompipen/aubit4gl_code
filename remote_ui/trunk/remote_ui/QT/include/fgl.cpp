@@ -827,35 +827,7 @@ namespace Fgl {
       tmp_dbdate.remove("2");
       tmp_dbdate.remove(dbdate_sep);
 
-      QString tmp_dateFormat;
-      for(int i=0; i < dbdate.count(); i++)
-      {
-          if(dbdate.at(i) == 'Y')
-          {
-              for(int j=0; j < 4; j++)
-              {
-                  tmp_dateFormat.append(dbdate.at(i).toLower());
-              }
-          }
-          if(dbdate.at(i) == 'D')
-          {
-              for(int j=0; j < 2; j++)
-              {
-                  tmp_dateFormat.append(dbdate.at(i).toLower());
-              }
-              tmp_dateFormat.append(sep);
-          }
-          if(dbdate.at(i) == 'M')
-          {
-              for(int j=0; j < 2; j++)
-              {
-                  tmp_dateFormat.append(dbdate.at(i));
-              }
-              tmp_dateFormat.append(sep);
-          }
-      }
-
-      QDate date1 = QDate::fromString(value, tmp_dateFormat);
+      QDate date1 = QDate::fromString(value, getDateFormat(dbdate, sep));
 
       if(!date1.isValid())
       {
@@ -882,6 +854,38 @@ namespace Fgl {
           QDate date(year, month, day);
           return date;
       }
+   }
+
+   QString getDateFormat(QString dbdate, QString sep)
+   {
+       QString tmp_dateFormat;
+       for(int i=0; i < dbdate.count(); i++)
+       {
+           if(dbdate.at(i) == 'Y')
+           {
+               for(int j=0; j < 4; j++)
+               {
+                   tmp_dateFormat.append(dbdate.at(i).toLower());
+               }
+           }
+           if(dbdate.at(i) == 'D')
+           {
+               for(int j=0; j < 2; j++)
+               {
+                   tmp_dateFormat.append(dbdate.at(i).toLower());
+               }
+               tmp_dateFormat.append(sep);
+           }
+           if(dbdate.at(i) == 'M')
+           {
+               for(int j=0; j < 2; j++)
+               {
+                   tmp_dateFormat.append(dbdate.at(i));
+               }
+               tmp_dateFormat.append(sep);
+           }
+       }
+       return tmp_dateFormat;
    }
 
    QString dbDateToFormat(QString dbdate){

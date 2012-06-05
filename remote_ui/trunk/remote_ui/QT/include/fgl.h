@@ -30,6 +30,7 @@ namespace Fgl
       DataType decodeDataType(QString);
       QString usingFunc(QString, QString, DataType, QString picture = "");
       QDate getDate(QString);
+      QString getDateFormat(QString, QString);
 
       QString fgl_using(QString, QString);
       QString fgl_using_date(QString, QString);
