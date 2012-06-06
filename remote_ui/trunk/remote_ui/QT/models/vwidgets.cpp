@@ -2288,7 +2288,7 @@ MainFrame::vdcdebug("WidgetHelper","defaultFieldText", "QObject *object");
 void WidgetHelper::setValidator(QWidget* widget){
 
    //QRegExpValidator *validator;
-   QString exprString;
+   QString exprString = ".*";
    QString sqlType;
    QString shift;
    int w = 0; 
@@ -2338,9 +2338,10 @@ void WidgetHelper::setValidator(QWidget* widget){
       }
    }
    else{
+       /*
       if(exprString.isEmpty())
          return;
-
+*/
       QRegExpValidator *validator = new QRegExpValidator(regExp, widget);
       if(LineEdit *lineEdit = qobject_cast<LineEdit *> (widget)){
          lineEdit->setValidator(validator);
