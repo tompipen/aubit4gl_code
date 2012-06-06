@@ -53,6 +53,7 @@ Context::~Context()
                   lineEdit->setMaxLength(lineEdit->w);
                   lineEdit->setValidator(lineEdit->getValidator());
                   lineEdit->setInputMask(lineEdit->picture());
+                  lineEdit->resetDataType();
                 }
 
               break;
@@ -263,6 +264,7 @@ void Context::addField(QWidget *field)
               lineEdit->setMaxLength(32767);
               //lineEdit->setValidator(NULL);
               lineEdit->setInputMask(NULL);
+              lineEdit->setSqlType("CHAR");
             }
 
           break;

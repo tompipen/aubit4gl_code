@@ -302,6 +302,7 @@ LineEdit::LineEdit(QWidget *parent)
    b_autoNext = false;
    b_required = false;
    b_compress = false;
+   qs_oldsql  = "";
    this->setDragEnabled(true);
    w = 0;
    valid = NULL;
@@ -352,7 +353,6 @@ void LineEdit::setSqlType(QString sqlType)
 MainFrame::vdcdebug("LineEdit","setSqlType", "QString sqlType");
    Fgl::DataType dataType = Fgl::decodeDataType(sqlType);
 
-
    dt_dataType = dataType;
 
    switch(dt_dataType){
@@ -378,10 +378,20 @@ MainFrame::vdcdebug("LineEdit","setSqlType", "QString sqlType");
        default:
           this->setAlignment(Qt::AlignJustify|Qt::AlignLeft);
    }
+   this->qs_oldsql  = this->qs_sqlType;
    this->qs_sqlType = sqlType;
    WidgetHelper::setValidator(this);
    valid = this->validator();
 } 
+
+void LineEdit::resetDataType()
+{
+  if(!qs_oldsql.isEmpty())
+  {
+     setSqlType(qs_oldsql);
+     qs_oldsql = "";
+  }
+}
 
 void LineEdit::checkNext(const QString &textr){
    QString test = this->text();

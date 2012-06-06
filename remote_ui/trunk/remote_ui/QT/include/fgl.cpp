@@ -65,6 +65,7 @@ namespace Fgl {
          case DTYPE_INTERVAL:
           if(picture.contains("##:") && value.trimmed().indexOf(":") == 1)
              value = value.trimmed().prepend("0");
+             break;
          case DTYPE_NCHAR:
          default:
             if (fmt.contains("dd") || fmt.contains("mm") || fmt.contains("yy") ||

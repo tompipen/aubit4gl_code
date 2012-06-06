@@ -148,6 +148,7 @@ public:
     QString picture() { return qs_picture; };
     void setFormat(QString f) { qs_format = f; };
     QString format() { return qs_format; };
+    void resetDataType();
     void check();
 
     bool b_denyFocus;
@@ -169,6 +170,7 @@ private:
     QString qs_picture;
     QString qs_format;
     Fgl::DataType dt_dataType;
+    QString qs_oldsql;
 
 public slots:
     void isTouched() { setProperty("touched", true); };
