@@ -132,10 +132,39 @@ struct BINDING _obind[2]={
   // Set up output binding for our parameters
   return 1;
 }
+
+
+static int ui_curses_set_ovr(long *objectID_IgnoredAsAlways0,int n) {
+long x=0;
+ 
+  if (n!=0) { 
+    A4GL_pop_args(n);
+  } else {
+      A4GL_ui_frontcall("INTERNAL","ui.curses.setovr",NULL,0,NULL,0 );
+  }
+ 
+  // Set up output binding for our parameters
+  return 0;
+}
+
+static int ui_curses_set_ins(long *objectID_IgnoredAsAlways0,int n) {
+long x=0;
+ 
+  if (n!=0) { 
+    A4GL_pop_args(n);
+  } else {
+      A4GL_ui_frontcall("INTERNAL","ui.curses.setins",NULL,0,NULL,0 );
+  }
+ 
+  // Set up output binding for our parameters
+  return 0;
+}
  
 void add_ui_curses_support(void) {
 A4GL_add_object_type("ui.curses");
   A4GL_add_datatype_function_i (DTYPE_OBJECT, ":ui.curses.define_key", (void *)  ui_curses_define_key);
   A4GL_add_datatype_function_i (DTYPE_OBJECT, ":ui.curses.fgl_setsize", (void *)  ui_curses_fgl_setsize);
   A4GL_add_datatype_function_i (DTYPE_OBJECT, ":ui.curses.getkey", (void *)  ui_curses_getkey);
+  A4GL_add_datatype_function_i (DTYPE_OBJECT, ":ui.curses.setovr", (void *)  ui_curses_set_ovr);
+  A4GL_add_datatype_function_i (DTYPE_OBJECT, ":ui.curses.setins", (void *)  ui_curses_set_ins);
 }

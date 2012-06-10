@@ -1,7 +1,7 @@
 #include "a4gl_lib_ui_tui_int.h"
 #ifndef lint
 	static char const module_id[] =
-		"$Id: generic_ui.c,v 1.69 2012-01-15 10:51:53 mikeaubury Exp $";
+		"$Id: generic_ui.c,v 1.70 2012-06-10 10:42:43 mikeaubury Exp $";
 #endif
 
 static int A4GL_find_shown (ACL_Menu * menu, int chk, int dir);
@@ -1400,6 +1400,20 @@ ibind=vibind;
 		}
 		A4GL_push_int(a);
 		A4GL_pop_param(obind[0].ptr, obind[0].dtype , obind[0].size);
+	}
+	if (strcmp(module,"INTERNAL")==0 && strcmp(name,"ui.curses.setovr")==0 ) {
+		struct s_form_dets *s;
+		s=UILIB_A4GL_get_curr_form(0);
+		if (s) {
+			A4GL_int_form_driver (s->form, REQ_OVL_MODE);
+		}
+	}
+	if (strcmp(module,"INTERNAL")==0 && strcmp(name,"ui.curses.setins")==0 ) {
+		struct s_form_dets *s;
+		s=UILIB_A4GL_get_curr_form(0);
+		if (s) {
+			A4GL_int_form_driver (s->form, REQ_INS_MODE);
+		}
 	}
 
 	if (strcmp(module,"INTERNAL")==0 && strcmp(name,"ui.curses.define_key")==0 ) {
