@@ -330,10 +330,15 @@ void LoginForm::aboutVDC()
     labellogo->setAlignment(Qt::AlignTop);
     space->setFixedWidth(25);
 
-    if(!returnList.at(0).isEmpty())
+    if(!returnList.isEmpty())
     {
-        labeltext->setText(QString("<p style=\"font-weight: bold;\">VENTAS AG - VDC</p> Release Date: %1<br>A4gl Version: %2<br>XML Protocol Version: %3<br><br>Copyright %4 %5").arg(returnList.at(0).at(0)).arg(returnList.at(0).at(2)).arg(returnList.at(0).at(3)).arg(date) .arg("by VENTAS. Alle Rights reserved.<br><br>The program is provided AS IS with NO WARRANTY OF ANY KIND,<br>INCLUDING THE WARRANTY OF DESIGN,<br>MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE."));
+        if(!returnList.at(0).isEmpty())
+        {
+            labeltext->setText(QString("<p style=\"font-weight: bold;\">VENTAS AG - VDC</p> Release Date: %1<br>A4gl Version: %2<br>XML Protocol Version: %3<br><br>Copyright %4 %5").arg(returnList.at(0).at(0)).arg(returnList.at(0).at(2)).arg(returnList.at(0).at(3)).arg(date) .arg("by VENTAS. Alle Rights reserved.<br><br>The program is provided AS IS with NO WARRANTY OF ANY KIND,<br>INCLUDING THE WARRANTY OF DESIGN,<br>MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE."));
 
+        } else {
+            labeltext->setText(QString("<p style=\"font-weight: bold;\">VENTAS AG - VDC</p> Release Date: %1<br>A4gl Version: %2<br>XML Protocol Version: %3<br><br>Copyright %4 %5").arg("unknown").arg("unknown").arg("unknown").arg(date) .arg("by VENTAS. Alle Rights reserved.<br><br>The program is provided AS IS with NO WARRANTY OF ANY KIND,<br>INCLUDING THE WARRANTY OF DESIGN,<br>MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE."));
+        }
     } else {
         labeltext->setText(QString("<p style=\"font-weight: bold;\">VENTAS AG - VDC</p> Release Date: %1<br>A4gl Version: %2<br>XML Protocol Version: %3<br><br>Copyright %4 %5").arg("unknown").arg("unknown").arg("unknown").arg(date) .arg("by VENTAS. Alle Rights reserved.<br><br>The program is provided AS IS with NO WARRANTY OF ANY KIND,<br>INCLUDING THE WARRANTY OF DESIGN,<br>MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE."));
     }
