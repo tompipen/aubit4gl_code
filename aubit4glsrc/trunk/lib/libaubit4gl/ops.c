@@ -25,7 +25,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.204 2012-06-05 09:10:16 mikeaubury Exp $
+# $Id: ops.c,v 1.205 2012-06-13 18:33:58 mikeaubury Exp $
 #
 */
 
@@ -3374,6 +3374,14 @@ A4GL_int_in_ops (int op)
       PRINTF ("Confused... %d != %d\n", d2 & DTYPE_MASK, DTYPE_INTERVAL);
       A4GL_assertion (1, "Invalid datatype");
     }
+
+  if (pi2==NULL) {
+		// Its null - result must be null..
+		A4GL_drop_param();
+     		A4GL_push_null(DTYPE_INT,0);
+		return;
+   }
+
 
   se2 = pi2->stime & 0xf;
 
