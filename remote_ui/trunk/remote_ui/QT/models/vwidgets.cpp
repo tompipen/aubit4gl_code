@@ -455,7 +455,14 @@ void LineEdit::dropEvent(QDropEvent *e)
 void LineEdit::markup()
 {
   this->setCursorPosition(0);
-  this->end(true);
+  if(this->text().isEmpty())
+  {
+     this->home(false);
+  }
+  else
+  {
+     this->end(true);
+  }
 }
 
 void LineEdit::copyText()

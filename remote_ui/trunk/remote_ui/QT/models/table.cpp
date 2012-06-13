@@ -1146,7 +1146,7 @@ MainFrame::vdcdebug("TableView","setText", "QString text, int row, int col");
 
          if(LineEditDelegate *dele = qobject_cast<LineEditDelegate *> (this->itemDelegateForColumn(col))){
             if(LineEdit *widget = qobject_cast<LineEdit *> (dele->qw_editor)){
-               text = Fgl::usingFunc(widget->format(), text, widget->dataType());
+               text = Fgl::usingFunc(widget->format(), text, widget->dataType(), widget->picture());
             }
          }
 
@@ -1261,7 +1261,7 @@ MainFrame::vdcdebug("TableModel","setData", "const QModelIndex &index, const QVa
        int row = index.row();
        int column = index.column();
 
-       this->fields[row][column] = value.toString();
+       this->fields[row][column] = value.toString().trimmed();
 
        emit dataChanged ( index,index );
        return true;
@@ -1434,7 +1434,6 @@ MainFrame::vdcdebug("MyFilter","lessThan", "const QModelIndex &left, const QMode
       QVariant v0 = left.data(Qt::DisplayRole);
       QVariant v1 = right.data(Qt::DisplayRole);
 
-      qDebug()<<v0<<" "<<v1;
 
       if(TableModel *model = qobject_cast<TableModel*> (sourceModel()))
       {
@@ -1607,6 +1606,10 @@ QWidget* LineEditDelegate::createEditor(QWidget *parent,
    connect(editor, SIGNAL(fieldEvent(Fgl::Event)), p_fglform, SLOT(fieldEvent(Fgl::Event)));
    connect(this, SIGNAL(nextfield()), p_fglform, SLOT(nextfield()));
    connect(this, SIGNAL(prevfield()), p_fglform, SLOT(prevfield()));
+   connect(editor, SIGNAL(textEdited(QString)), p_fglform, SLOT(setBufferTouched()));
+   connect(editor, SIGNAL(editingFinished()), p_fglform, SLOT(checkField()));
+   connect(editor, SIGNAL(cursorPositionChanged(int, int)), p_fglform, SLOT(setLastCursor(int, int)));
+
 
    return editor;
 }
@@ -1617,6 +1620,7 @@ void LineEditDelegate::setEditorData(QWidget *editor,
    QString value = index.model()->data(index, Qt::EditRole).toString();
 
    WidgetHelper::setFieldText(editor, value);
+   QMetaObject::invokeMethod(editor, "markup", Qt::QueuedConnection);
 }
 
 
