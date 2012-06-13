@@ -218,6 +218,7 @@ void VentasUpdate::checkServerClient()
                             dialog->show();
                             m_dialog = dialog;
                             m_dateToDownload  = serverVars.at(0).at(0);
+                            return;
                         } else {
                             if(displayErrorDialog == 1)
                             {
@@ -226,6 +227,7 @@ void VentasUpdate::checkServerClient()
                                 connect(dialog->getAction("OK"), SIGNAL(triggered()), dialog, SLOT(close()));
                                 dialog->move(mw,mh);
                                 dialog->show();
+                                return;
                             }
                         }
                         break;
@@ -239,6 +241,7 @@ void VentasUpdate::checkServerClient()
                         connect(dialog->getAction("OK"), SIGNAL(triggered()), dialog, SLOT(close()));
                         dialog->move(mw,mh);
                         dialog->show();
+                        return;
                     }
                 }
             } else {
@@ -249,6 +252,7 @@ void VentasUpdate::checkServerClient()
                     connect(dialog->getAction("OK"), SIGNAL(triggered()), dialog, SLOT(close()));
                     dialog->move(mw,mh);
                     dialog->show();
+                    return;
                 }
             }
         }
