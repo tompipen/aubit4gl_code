@@ -317,7 +317,7 @@ void LoginForm::aboutVDC()
     }
 
     file.close();
-    QWidget *widget = new QWidget(widget);
+    QWidget *widget = new QWidget;
     QHBoxLayout *layout = new QHBoxLayout(widget);
     QLabel *labeltext = new QLabel(widget);
     QLabel *labellogo = new QLabel(widget);
