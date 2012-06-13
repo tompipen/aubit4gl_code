@@ -7704,8 +7704,15 @@ check_expressions_cmd (struct s_commands *cmds)
 	    case E_CMD_OPEN_CURSOR_CMD:
 	    case E_CMD_PUT_CMD:
 	    case E_CMD_EXECUTE_IMMEDIATE_CMD:
+
 	      last_was_sql = 1;
 	      break;
+
+ 	    case E_CMD_IF_CMD:
+ 	    case E_CMD_WHENEVER_CMD:
+		// leave it as it was...
+		break;
+
 	    default:
 	      last_was_sql = 0;
 	      break;

@@ -4024,7 +4024,7 @@ static void add_variable_value(variable_usage *u, expr_str *val) {
 
 	value=evaluate_expr(val,0);
 
-  	if (inIf) {
+  	if (inIf && A4GL_isyes(acl_getenv("TRYTOMARKIFVAREXPRS")) ) {
 		static char buff[10000];
 		//static char varbuff[10000];
 		sprintf(buff,"(%s)",value);
