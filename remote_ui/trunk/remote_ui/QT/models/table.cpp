@@ -413,7 +413,7 @@ void TableView::copyColumn()
 
 bool TableView::eventFilter(QObject *object, QEvent *event)
 {
-
+    Q_UNUSED(object);
     if(event->type() == QEvent::ContextMenu)
     {
         QSortFilterProxyModel *proxyModel = static_cast<QSortFilterProxyModel*> (this->model());
@@ -481,9 +481,6 @@ bool TableView::eventFilter(QObject *object, QEvent *event)
 
 void TableView::resetSettings()
 {
-    QSortFilterProxyModel *proxyModel = static_cast<QSortFilterProxyModel*> (this->model());
-    TableModel *table = static_cast<TableModel*> (proxyModel->sourceModel());
-
     for(int i = 0; i < columnLabels.count(); i++)
     {
         if(FglForm *fglform = qobject_cast<FglForm *> (p_fglform))
@@ -560,7 +557,7 @@ void TableView::writeSettings(QAction *action)
 
 void TableView::playkey(QKeyEvent *ev)
 {
-  QAbstractItemDelegate *led = itemDelegateForColumn(currentIndex().column());
+  //QAbstractItemDelegate *led = itemDelegateForColumn(currentIndex().column());
   QApplication::postEvent(curr_editor, ev, Qt::LowEventPriority);
 }
 
@@ -1131,8 +1128,6 @@ void TableView::setText(QString text, int row, int col)
 {
 MainFrame::vdcdebug("TableView","setText", "QString text, int row, int col");
    if(QSortFilterProxyModel *proxyModel = qobject_cast<QSortFilterProxyModel *> (this->model())){
-         //row-1 cause the proxyModel counts at 0
-       TableModel *table = static_cast<TableModel*> (proxyModel->sourceModel());
        QModelIndex modelIndex;
        modelIndex = proxyModel->index(row, col, QModelIndex());
        /*if(table->b_input)
@@ -1296,6 +1291,7 @@ QStringList TableModel::mimeTypes() const
 
 QMimeData* TableModel::mimeData(const QModelIndexList &indexes) const
 {
+    Q_UNUSED(indexes);
    QMimeData *mimeData = new QMimeData();
   // QByteArray encodedData;
   // encodedData.clear();
@@ -1567,8 +1563,6 @@ QWidget* LineEditDelegate::createEditor(QWidget *parent,
    QWidget *editor = WidgetHelper::createFormWidget(this->formElement, parent);
    if(TableView *tv = qobject_cast<TableView*> (parent->parentWidget()))
    {
-       QSortFilterProxyModel *proxyModel = static_cast<QSortFilterProxyModel*> (tv->model());
-       TableModel *table = static_cast<TableModel*> (proxyModel->sourceModel());
        tv->curr_editor = editor;
        if(ComboBox *n_cb = qobject_cast<ComboBox*> (editor))
        {

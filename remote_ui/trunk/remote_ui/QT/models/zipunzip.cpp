@@ -69,6 +69,7 @@ bool ZipUnzip::unzipArchiv(QString filePath, QString fileName)
 
 bool ZipUnzip::unzipFile(QString filePath, QString fileName)
 {
+    Q_UNUSED(filePath);
     QuaZip zip(fileName);
     QString ausgabe;
 

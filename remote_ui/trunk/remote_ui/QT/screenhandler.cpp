@@ -66,6 +66,8 @@ MainFrame::vdcdebug("ScreenHandler","ScreenHandler", "QObject *parent");
 
 void ScreenHandler::setCurrentFocus(QWidget *old, QWidget *current)
 {
+    Q_UNUSED(old);
+    Q_UNUSED(current);
 
     return;
     if(p_fglform == NULL)
@@ -743,7 +745,7 @@ void ScreenHandler::createDialogButton(int buttonId, QString text, QString desc)
 {
 MainFrame::vdcdebug("ScreenHandler","createDialogButton", "int buttonId, QString text, QString desc");
 
-  int i_Frm = getCurrForm();
+  //int i_Frm = getCurrForm();
 
    Dialog* p_dialog = p_fglform->dialog();
    if(p_fglform == NULL)
@@ -794,7 +796,7 @@ void ScreenHandler::createPulldownButton(int buttonId, QString text, QString des
 {
 MainFrame::vdcdebug("ScreenHandler","createPulldownButton", "int buttonId, QString text, QString desc");
 
-  int i_Frm = getCurrForm();
+  //int i_Frm = getCurrForm();
 
    RingMenuPulldown* pulldown = p_fglform->ringMenuPulldown();
    if(p_fglform == NULL)
@@ -825,7 +827,7 @@ void ScreenHandler::createDialogAction(int buttonId, QString text)
 {
 MainFrame::vdcdebug("ScreenHandler","createDialogAction", "int buttonId, QString text");
 
-  int i_Frm = getCurrForm();
+  //int i_Frm = getCurrForm();
 
    Dialog* p_dialog = p_fglform->dialog();
    if(p_fglform == NULL)
@@ -886,6 +888,7 @@ MainFrame::vdcdebug("ScreenHandler","setFieldBuffer", "QStringList fieldNames, Q
          }
 
          if(LineEditDelegate *led = qobject_cast<LineEditDelegate *> (widget)){
+             Q_UNUSED(led);
             int index2 = fieldName.indexOf("[");
             int index3 = fieldName.indexOf("]")+1;
             int row;
@@ -3645,6 +3648,8 @@ void ScreenHandler::checkForUpdate()
 
 void ScreenHandler::setProgressTitle(int obj, QString title)
 {
+Q_UNUSED(obj);
+
   if(!w_progress)
     return;
   w_progress->setTitle(title);
@@ -3652,6 +3657,7 @@ void ScreenHandler::setProgressTitle(int obj, QString title)
 
 void ScreenHandler::setProgressText(int obj, QString text)
 {
+Q_UNUSED(obj);
 
   if(!w_progress)
     return;
@@ -3660,6 +3666,7 @@ void ScreenHandler::setProgressText(int obj, QString text)
 
 void ScreenHandler::setProgressVisible(int obj, bool vis)
 {
+Q_UNUSED(obj);
 
   if(!w_progress)
     return;
@@ -3680,6 +3687,7 @@ void ScreenHandler::createProgressWindow()
 
 void ScreenHandler::closeProgressWindow(int obj)
 {
+Q_UNUSED(obj);
 
   if(!w_progress)
     return;

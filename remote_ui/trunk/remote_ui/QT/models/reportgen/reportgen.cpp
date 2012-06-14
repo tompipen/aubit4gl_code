@@ -488,7 +488,6 @@ QString Reportgen::getTemplatePosition(int Table, QString odffile)
     stream.setCodec("UTF-8");
     QString ausgabe;
     QString behalten;
-    int cnt = 0;
     int stop = 0;
     int foundTable = 0;
 
@@ -728,6 +727,7 @@ QString Reportgen::prepareTemplateContent(int Table, int Position, QString odffi
 
 QString Reportgen::prepareTemplateContentOdt(int Table, int Position, QString odffile, QString sedfile)
 {
+Q_UNUSED(Table);
 
     QFile *file = new QFile(QDir::tempPath() + "/" + odffile);
 
@@ -747,8 +747,7 @@ QString Reportgen::prepareTemplateContentOdt(int Table, int Position, QString od
 
     int cnt = 0;
     int counter = 0;
-    int ebene = 0;
-    int tableFound = 0;
+    int ebene = 0;;
 
     while(!stream.atEnd()) {
         ausgabe = stream.readLine().trimmed();
@@ -925,7 +924,8 @@ QString Reportgen::prepareTemplateContentOdt(int Table, int Position, QString od
 
 QString Reportgen::prepareTemplateEbene(int Position, int Ebene, int Ebene3, int Ebene4, int Ebene5, int Counter, QDomDocument doc, QString odffile, QString sedfile)
 {
-    QFile *file = new QFile(QDir::tempPath() + "/" + QString("1-" + odffile));
+    Q_UNUSED(odffile);
+    //QFile *file = new QFile(QDir::tempPath() + "/" + QString("1-" + odffile));
     QString ausgabe;
     QString xmlout;
     QString xmlout1;
@@ -1467,6 +1467,7 @@ bool Reportgen::replaceTemplateWithoutPosition(QString odffile, QString sedFile,
 
 bool Reportgen::replaceTemplateVars(QString odffile, QString sedfile, QFileInfo zielDatei)
 {
+    Q_UNUSED(sedfile);
     temp_fields.clear();
     getTemplateVars(odffile + "/1-content.xml");
     QString ausgabe;

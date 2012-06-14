@@ -364,11 +364,11 @@ MainFrame::vdcdebug("LineEdit","setSqlType", "QString sqlType");
           this->setAlignment(Qt::AlignRight);
           if(ButtonEdit *edit = qobject_cast<ButtonEdit *> (this))
           {
-              int left = 0;
+              /*int left = 0;
               int right = 0;
               int top = 0;
               int bottom = 0;
-              /*edit->getTextMargins(&left,&top,&right,&bottom);
+              edit->getTextMargins(&left,&top,&right,&bottom);
               right = edit->getButtonObj()->width();
               edit->setTextMargins(left,top,right,bottom);*/
               edit->setAlignment(Qt::AlignRight);
@@ -1811,15 +1811,17 @@ MainFrame::vdcdebug("WidgetHelper","createCheckBox", "const QDomElement& formFie
 
    QString name    = formField.attribute("name");
    QString colName = formField.attribute("colName");
-   QString tabName = formField.attribute("sqlTabName");
-   QString sqlType = formField.attribute("sqlType");
-   bool hidden   = formField.attribute("hidden").toInt();
+   bool notNull = formField.attribute("notNull").toInt();
+   int w  = checkBoxElement.attribute("width").toInt();
    QString defaultValue = formField.attribute("defaultValue");
 
-   //bool required = formField.attribute("required").toInt();
-   bool notNull = formField.attribute("notNull").toInt();
 
-   int w  = checkBoxElement.attribute("width").toInt();
+   // NOT IMPLENTED AT THIS TIME
+   /*QString tabName = formField.attribute("sqlTabName");
+   QString sqlType = formField.attribute("sqlType");
+   bool hidden   = formField.attribute("hidden").toInt();
+
+   //bool required = formField.attribute("required").toInt();
 
    QString color = checkBoxElement.attribute("color").toLower();
    QString colorCondition = checkBoxElement.attribute("colorCondition");
@@ -1834,7 +1836,7 @@ MainFrame::vdcdebug("WidgetHelper","createCheckBox", "const QDomElement& formFie
    //bool autoNext = checkBoxElement.attribute("autoNext").toInt();
 
    QString sizePolicy = checkBoxElement.attribute("sizePolicy");
-   QString style = checkBoxElement.attribute("style");
+   QString style = checkBoxElement.attribute("style");*/
    QString valueChecked = checkBoxElement.attribute("valueChecked");
    QString valueUnchecked = checkBoxElement.attribute("valueUnchecked");
 

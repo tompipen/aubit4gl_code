@@ -27,6 +27,9 @@
 RingMenuPulldown::RingMenuPulldown(QString title, QString comment, QString style, QString image,
                                    QWidget *parent) : QGroupBox(parent)
 {
+    Q_UNUSED(comment);
+    Q_UNUSED(style);
+    Q_UNUSED(image);
    b_hideButtons = true;
    this->setAlignment(Qt::AlignRight | Qt::AlignTop);
    // disable widget until it it gets called
@@ -46,9 +49,9 @@ RingMenuPulldown::RingMenuPulldown(QString title, QString comment, QString style
    this->layout = layout;
    this->setLayout(this->layout);
 
-   QWidget *d = QApplication::desktop();
+   /*QWidget *d = QApplication::desktop();
    int w = d->width();
-   int h = d->height();
+   int h = d->height();*/
    int mw = 200;
    int mh = 100;
 
@@ -337,6 +340,8 @@ Pulldown::Pulldown(QString title, QString comment, QString style, QString image,
                QWidget *parent) : QMenu(parent)
 {
    Q_UNUSED(style);
+   Q_UNUSED(comment);
+   Q_UNUSED(image);
    this->setTitle(title);
 }
 
@@ -348,10 +353,7 @@ Pulldown::Pulldown(QString title, QString comment, QString style, QString image,
 void Pulldown::createAction(int id, QString text, QString icon)
 {
 MainFrame::vdcdebug("Pulldown","createAction", "int id, QString text");
-   // Make Shortcut for Button
-   QString pic = text.toLower();
-   QString shortcut = text.at(0);
-   QString image = pic + ".png";
+Q_UNUSED(icon);
 
    if(ql_actions.count() < 1) {
           QString title = this->title();

@@ -85,6 +85,7 @@ void WebBrowser::adjustTitle(QString title)
 
 void WebBrowser::setProgress(int p)
 {
+    Q_UNUSED(p);
 }
 
 void WebBrowser::finishLoading(bool)
@@ -222,7 +223,7 @@ void WebBrowser::inittoolbar()
   stop->setIcon(QIcon(st));
 
   //Getting QToolBarButtons
-/*
+
   QWidget *qw_backward = toolBar->widgetForAction(backward);
   QWidget *qw_forward  = toolBar->widgetForAction(forward);
 

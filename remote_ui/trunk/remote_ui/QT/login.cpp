@@ -268,7 +268,8 @@ void LoginForm::aboutVDC()
     QList<QString> textList;
     QList<QList<QString> > returnList;
 
-    file.setFileName(QDir::currentPath() + "/versions.xml");
+    //file.setFileName(QDir::currentPath() + "/versions.xml");
+    file.setFileName("/home/da/versions.xml");
     QString clientOs;
 
     if(!file.open(QIODevice::ReadOnly))

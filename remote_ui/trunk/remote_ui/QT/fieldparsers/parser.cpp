@@ -114,11 +114,11 @@ MainFrame::vdcdebug("Parser","parseElement", "const QDomNode& xmlNode");
    {
 
        int gridWidth      = currentElement.attribute("width").toInt();
-       int gridHeight     = currentElement.attribute("height").toInt();
+       /*int gridHeight     = currentElement.attribute("height").toInt();
        QString delimiters = currentElement.attribute("delimiters");
        QString sqldbname  = currentElement.attribute("sqlDbName");
        QString formname   = currentElement.attribute("name");
-       QString encoding   = currentElement.attribute("encoding");
+       QString encoding   = currentElement.attribute("encoding");*/
 
        this->gridWidth = gridWidth;
 
@@ -603,7 +603,7 @@ void Parser::handleMatrixColumn(const QDomNode& xmlNode){
    int recordWidth = 0;
 
    //int formW = matrixElement.firstChild().toElement().attribute("width").toInt();
-   int gridWidth = matrixElement.firstChild().toElement().attribute("gridWidth").toInt();
+   //int gridWidth = matrixElement.firstChild().toElement().attribute("gridWidth").toInt();
 
    QWidget *wi = WidgetHelper::createFormWidget(matrixElement);
    int w = wi->width();
@@ -633,7 +633,6 @@ void Parser::handleMatrixColumn(const QDomNode& xmlNode){
    for(int i=0; i<vert->count(); i++){
       vert->resizeSection(i, h+2);
    }
-/*
    p_screenRecord->setFixedWidth(recordWidth);
    p_screenRecord->setFixedHeight(recordHeight);
    //p_screenRecord->setFixedSize(recordWidth, recordHeight);

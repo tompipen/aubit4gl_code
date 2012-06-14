@@ -157,6 +157,7 @@ StatusBar *status = new StatusBar(this);
 
 void FglForm::showEvent(QShowEvent *qfe)
 {
+    Q_UNUSED(qfe);
     readSettingsLocal();
 }
 
@@ -723,7 +724,7 @@ MainFrame::vdcdebug("FglForm","setToolBar", "ToolBar *toolBar");
 void FglForm::setToolBar(QDomDocument xmlFile)
 {
 MainFrame::vdcdebug("FglForm","setToolBar", "QDomDocument xmlFile");
-   QSize currSize = this->sizeHint();
+   //QSize currSize = this->sizeHint();
 
    this->p_toolBar = new ToolBar;
    this->p_toolBar->parseFile(xmlFile);
@@ -780,6 +781,7 @@ void FglForm::replayKeyboard()
       }
 
       if(TableView *tableView = qobject_cast<TableView *> (currentField())){
+          Q_UNUSED(tableView);
           if(inputArray())
           {
               //QApplication::postEvent(currentField(), key);
@@ -885,6 +887,7 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
                }
                if(TableView *tv = qobject_cast<TableView*> (obj))
                {
+                   Q_UNUSED(tv);
                    if(!inputArray())
                    {
                        emit sendactivateinputevent();
@@ -961,6 +964,7 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
          if(input() || construct()){
              if(ComboBox *cb = qobject_cast<ComboBox*> (w->parentWidget()))
              {
+                 Q_UNUSED(cb);
                  if(context->fieldList().contains(w->parentWidget())){
                         jumpToField(w->parentWidget());
                     return true;
@@ -1300,6 +1304,7 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
 
 QMenu* FglForm::createMenuHideShowFields(QObject *obj)
 {
+    Q_UNUSED(obj);
     QMenu *hideFields = new QMenu("Show/Hide Fields");
         for(int i=0; i < this->ql_fglFields.count(); i++) {
             if(QLabel *la = qobject_cast<QLabel*> (this->findFieldByName(this->ql_fglFields.at(i)->colName())))
@@ -1375,6 +1380,7 @@ void FglForm::saveFieldSettings(QAction *action)
                     p_currscreenhandler->setFieldHidden(this->ql_fglFields.at(k)->colName(), 0);
                 }
                 if(Label *la = qobject_cast<Label *> (this->findFieldByName(this->ql_fglFields.at(k)->colName()))) {
+                    Q_UNUSED(la);
                     cnt = cnt + 1;
                     if( cnt == 2) {
                         //settings.remove("hideColumn");
@@ -1832,6 +1838,7 @@ void FglForm::clearFieldFocus()
 
 void FglForm::setFocusOnWidget(QWidget *w, Qt::FocusReason reason)
 {
+    Q_UNUSED(reason);
   if(w == focusWidget())
   {
      return;
@@ -2364,7 +2371,7 @@ if(this->context == NULL)
           if(context->fieldList().at(i) == currentField()){
               // fixed segmentation fault fieldlist.count is 0
               if(i >= context->fieldList().count()-1) {
-                next == NULL;
+                next = NULL;
                 break;
               } else {
                   next = context->fieldList().at(i+1);
@@ -2373,7 +2380,7 @@ if(this->context == NULL)
                       for(int j=i; j<context->fieldList().count()-1; j++)
                       {
                           if(j >= context->fieldList().count()-1) {
-                            next == NULL;
+                            next = NULL;
                             break;
                           }
                           next = context->fieldList().at(j+1);
@@ -2522,7 +2529,7 @@ void FglForm::prevfield()
 {
 
 MainFrame::vdcdebug("FglForm","prevfield", "");
-   bool b_sendEvent = (QObject::sender() != NULL); //If called from screenHandler this is NULL
+   //bool b_sendEvent = (QObject::sender() != NULL); //If called from screenHandler this is NULL
                                                    // Programatical change (NEXT FIELD PREVIOUS)-> No AFTER_FIELD_EVENT
    if(this->context == NULL)
    {
@@ -2601,7 +2608,6 @@ MainFrame::vdcdebug("FglForm","prevfield", "");
                    column = view->currentIndex().column()-1;
                }
                int columnCount = table->columnCount(QModelIndex());
-               int counter = 0;
                bool field_found = false;
                switch(state()){
                   case Fgl::INPUTARRAY:
@@ -3288,6 +3294,7 @@ MainFrame::vdcdebug("FglForm","readSettingsLocal", "");
 void FglForm::contextMenuEvent(QContextMenuEvent *ev)
 {
 MainFrame::vdcdebug("FglForm","contextMenuEvent", "QContextMenuEvent *ev");
+Q_UNUSED(ev);
 //ev->accept();
 
 //createContextMenu(ev->globalPos());
@@ -3475,6 +3482,7 @@ MainFrame::vdcdebug("FglForm","findFieldByName", "QString fieldName");
                 //DISPLAY BY NAME Failsafe, if a inputarray have a member with the same field like a edit field
                 if(LineEditDelegate *led = qobject_cast<LineEditDelegate*> (ql_fields.at(link.fieldIdRef)))
                 {
+                    Q_UNUSED(led);
                     continue;
                 }
                 return ql_fields.at(link.fieldIdRef);
