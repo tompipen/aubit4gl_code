@@ -140,6 +140,7 @@ FglForm::~FglForm()
   {
      return;
   }
+delete ql_actions;
 p_currscreenhandler->activeFocus();
 }
 

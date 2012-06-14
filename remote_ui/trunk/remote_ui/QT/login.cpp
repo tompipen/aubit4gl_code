@@ -1150,7 +1150,6 @@ void LoginForm::removeCursor()
 
 void LoginForm::checkForUpdate()
 {
-    QObject *object = 0;
-    VentasUpdate *vu = new VentasUpdate(1, object);
+    VentasUpdate *vu = new VentasUpdate(1, this);
     vu->checkForNewUpdates();
 }

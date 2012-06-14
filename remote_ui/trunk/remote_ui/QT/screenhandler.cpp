@@ -110,6 +110,12 @@ MainFrame::vdcdebug("ScreenHandler","~ScreenHandler", "");
 
     l_ql_screenhandler->removeOne(this);
 
+    foreach(Context *c, contexts)
+    {
+        delete c;
+    }
+    //delete  &contexts;
+
     QApplication::processEvents();
 }
 
@@ -3641,7 +3647,7 @@ void ScreenHandler::checkForUpdate()
     QString a4gl_version_client = VDC::readSettingsFromIni("", "a4gl_version");
     if(!a4gl_version_client.isNull())
     {
-        VentasUpdate *vu = new VentasUpdate(0, this);
+        VentasUpdate *vu = new VentasUpdate(0);
         vu->checkForNewUpdates();
     }
 }

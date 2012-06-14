@@ -22,7 +22,8 @@ class VentasUpdate : public QWidget
     Q_OBJECT
 
 public:
-    VentasUpdate(int, QObject*, QWidget *parent = 0);
+    VentasUpdate(int, QWidget *parent = 0);
+    ~VentasUpdate();
     void checkForNewUpdates();
 private:
     QList<QList<QString> > parseXml(QString);
@@ -51,9 +52,6 @@ private:
     //MainFrame m_mainFrame;
     QNetworkReply *m_reply;
     Dialog *downloadDialog;
-
-    int mh;
-    int mw;
 };
 
 #endif // VENTSAUPDATE_H

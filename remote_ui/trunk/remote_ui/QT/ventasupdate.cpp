@@ -1,22 +1,32 @@
 #include "ventasupdate.h"
 #include <QUrl>
 #include "clienttcp.h"
+#include "mainframe.h"
 
-VentasUpdate::VentasUpdate(int errorDisplay, QObject *screen, QWidget *parent)
+VentasUpdate::VentasUpdate(int errorDisplay,  QWidget *parent) : QWidget(parent)
 {
-    Q_UNUSED(parent);
     displayErrorDialog = errorDisplay;
     m_box = new QMessageBox(this);
     //m_mainFrame = mFrame;
-    m_screenhandler = screen;
+    //m_screenhandler = screen;
 
     /*QWidget *d = QApplication::desktop();
     int w = d->width();
     int h = d->height();*/
-    mw = 600;
-    mh = 400;
 
     this->setWindowTitle("VENTAS UPDATE");
+
+}
+VentasUpdate::~VentasUpdate()
+{
+    delete m_box;
+    delete m_screenhandler;
+    delete m_label;
+    delete m_progress;
+    delete m_dialog;
+    delete downloadDialog;
+    delete m_reply;
+    qDebug() << "ich werde aufgerufen";
 }
 
 void VentasUpdate::checkForNewUpdates()
@@ -24,6 +34,7 @@ void VentasUpdate::checkForNewUpdates()
     QNetworkAccessManager *manager = new QNetworkAccessManager(this);
     manager->get(QNetworkRequest(QUrl("http://www.ventas.de/wp-content/uploads/downloads/autoupdate/vdc.xml")));
     connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(readXmlFinished(QNetworkReply*)));
+    connect(manager, SIGNAL(finished(QNetworkReply*)), manager, SLOT(deleteLater()));
 
 }
 
@@ -94,8 +105,9 @@ QList<QList<QString> > VentasUpdate::parseXml(QString filePath)
             Dialog *dialog = new Dialog("VENTAS Update", QString("Failed to Open: %1").arg(filePath), "", "stop", this, Qt::WindowStaysOnTopHint);
             dialog->createButton(1, "Ok", "Ok", "ok_gruen.png");
             connect(dialog->getAction("OK"), SIGNAL(triggered()), dialog, SLOT(close()));
-            dialog->move(mw,mh);
+            dialog->move(600,400);
             dialog->show();
+            connect(dialog, SIGNAL(finished(int)), dialog, SLOT(deleteLater()));
         }
     }
 
@@ -156,8 +168,9 @@ void VentasUpdate::readXmlFinished(QNetworkReply *reply)
             Dialog *dialog = new Dialog("VENTAS Update", "Could not connect to the Update Server.\n Please check your Network connection", "", "stop", this, Qt::WindowStaysOnTopHint);
             dialog->createButton(1, "Ok", "Ok", "ok_gruen.png");
             connect(dialog->getAction("OK"), SIGNAL(triggered()), dialog, SLOT(close()));
-            dialog->move(mw,mh);
+            dialog->move(600,400);
             dialog->show();
+            connect(dialog, SIGNAL(finished(int)), dialog, SLOT(deleteLater()));
         }
     }
         checkServerClient();
@@ -176,8 +189,9 @@ void VentasUpdate::checkServerClient()
             Dialog *dialog = new Dialog("VENTAS Update", QString("Cannot open File: %1").arg(QDir::currentPath() + "/versions.xml"), "", "information", this, Qt::WindowStaysOnTopHint);
             dialog->createButton(1, "Ok", "Ok", "ok_gruen.png");
             connect(dialog->getAction("OK"), SIGNAL(triggered()), dialog, SLOT(close()));
-            dialog->move(mw,mh);
+            dialog->move(600,400);
             dialog->show();
+            connect(dialog, SIGNAL(finished(int)), dialog, SLOT(deleteLater()));
             return;
         }
     }
@@ -188,7 +202,7 @@ void VentasUpdate::checkServerClient()
             Dialog *dialog = new Dialog("VENTAS Update", "No Updates found!", "", "information", this, Qt::WindowStaysOnTopHint);
             dialog->createButton(1, "Ok", "Ok", "ok_gruen.png");
             connect(dialog->getAction("OK"), SIGNAL(triggered()), dialog, SLOT(close()));
-            dialog->move(mw,mh);
+            dialog->move(600,400);
             dialog->show();
             return;
         }
@@ -214,7 +228,7 @@ void VentasUpdate::checkServerClient()
                             dialog->createButton(2, "Abort", "Abort", "abbrechen_rot.png");
                             connect(dialog->getAction("OK"), SIGNAL(triggered()), this, SLOT(checkOpenConnections()));
                             connect(dialog->getAction("ABORT"), SIGNAL(triggered()), dialog, SLOT(close()));
-                            dialog->move(mw,mh);
+                            dialog->move(600,400);
                             dialog->show();
                             m_dialog = dialog;
                             m_dateToDownload  = serverVars.at(0).at(0);
@@ -225,8 +239,9 @@ void VentasUpdate::checkServerClient()
                                 Dialog *dialog = new Dialog("VENTAS Update", "The Client is up to date!", "", "information", this, Qt::WindowStaysOnTopHint);
                                 dialog->createButton(1, "Ok", "Ok", "ok_gruen.png");
                                 connect(dialog->getAction("OK"), SIGNAL(triggered()), dialog, SLOT(close()));
-                                dialog->move(mw,mh);
+                                dialog->move(600,400);
                                 dialog->show();
+                                connect(dialog, SIGNAL(finished(int)), dialog, SLOT(deleteLater()));
                                 return;
                             }
                         }
@@ -239,8 +254,9 @@ void VentasUpdate::checkServerClient()
                         Dialog *dialog = new Dialog("VENTAS Update", "No XML Version found!", "", "information", this, Qt::WindowStaysOnTopHint);
                         dialog->createButton(1, "Ok", "Ok", "ok_gruen.png");
                         connect(dialog->getAction("OK"), SIGNAL(triggered()), dialog, SLOT(close()));
-                        dialog->move(mw,mh);
+                        dialog->move(600,400);
                         dialog->show();
+                        connect(dialog, SIGNAL(finished(int)), dialog, SLOT(deleteLater()));
                         return;
                     }
                 }
@@ -250,8 +266,9 @@ void VentasUpdate::checkServerClient()
                     Dialog *dialog = new Dialog("VENTAS Update", "No A4GL informations found!", "", "information", this, Qt::WindowStaysOnTopHint);
                     dialog->createButton(1, "Ok", "Ok", "ok_gruen.png");
                     connect(dialog->getAction("OK"), SIGNAL(triggered()), dialog, SLOT(close()));
-                    dialog->move(mw,mh);
+                    dialog->move(600,400);
                     dialog->show();
+                    connect(dialog, SIGNAL(finished(int)), dialog, SLOT(deleteLater()));
                     return;
                 }
             }
@@ -300,28 +317,24 @@ void VentasUpdate::updateReady(QNetworkReply *reply)
 
 void VentasUpdate::checkOpenConnections()
 {
-    if(this->m_screenhandler != NULL && this->m_screenhandler->parent() != NULL && this->m_screenhandler->parent()->parent() != NULL)
+    QList<ScreenHandler*> *ql_screenhandler = MainFrame::ql_screenhandler;
+    if(ql_screenhandler->count()  > 0)
     {
-        if(ClientTcp *cTcp = qobject_cast<ClientTcp *> (this->m_screenhandler->parent()->parent()))
-        {
-            if(cTcp->socket != NULL)
-            {
-                Dialog *dialog = new Dialog("VENTAS Update", "There are modules running.\n They will be terminated. \n Do you really want to continue?", "", "stop", this, Qt::WindowStaysOnTopHint);
-                downloadDialog = dialog;
-                dialog->createButton(1, "Ok", "Ok", "ok_gruen.png");
-                dialog->createButton(2, "Abort", "Abort", "abbrechen_rot.png");
-                connect(dialog->getAction("OK"), SIGNAL(triggered()), this, SLOT(responseDownload()));
-                connect(dialog->getAction("ABORT"), SIGNAL(triggered()), dialog, SLOT(abortDownload()));
-                dialog->move(mw,mh);
-                dialog->show();
-            }
-        }
+        Dialog *dialog = new Dialog("VENTAS Update", "There are modules running.\n They will be terminated. \n Do you really want to continue?", "", "stop", this, Qt::WindowStaysOnTopHint);
+        downloadDialog = dialog;
+        dialog->createButton(1, "Ok", "Ok", "ok_gruen.png");
+        dialog->createButton(2, "Abort", "Abort", "abbrechen_rot.png");
+        connect(dialog->getAction("OK"), SIGNAL(triggered()), this, SLOT(responseDownload()));
+        connect(dialog->getAction("ABORT"), SIGNAL(triggered()), dialog, SLOT(abortDownload()));
+        dialog->move(600,400);
+        dialog->show();
+        connect(dialog, SIGNAL(finished(int)), dialog, SLOT(deleteLater()));
     } else {
         emit responseDownload();
     }
     if(m_dialog != NULL)
     {
-        m_dialog->close();
+        m_dialog->close(); 
     }
 }
 void VentasUpdate::responseDownload()

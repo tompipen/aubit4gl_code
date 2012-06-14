@@ -2337,6 +2337,7 @@ void WidgetHelper::setValidator(QWidget* widget){
          if(LineEdit *lineEdit = qobject_cast<LineEdit *> (widget)){
             lineEdit->setValidator(validator);
          }
+         delete validator;
       }
 
       if(shift == "down"){
@@ -2344,6 +2345,7 @@ void WidgetHelper::setValidator(QWidget* widget){
         if(LineEdit *lineEdit = qobject_cast<LineEdit *> (widget)){
            lineEdit->setValidator(validator);
         }
+        delete validator;
       }
    }
    else{
@@ -2355,6 +2357,7 @@ void WidgetHelper::setValidator(QWidget* widget){
       if(LineEdit *lineEdit = qobject_cast<LineEdit *> (widget)){
          lineEdit->setValidator(validator);
       }
+      delete validator;
 
    }
 }
