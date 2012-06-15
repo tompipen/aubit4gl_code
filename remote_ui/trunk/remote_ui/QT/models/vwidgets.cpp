@@ -2333,11 +2333,10 @@ void WidgetHelper::setValidator(QWidget* widget){
 
    if(!shift.isEmpty()){
       if(shift == "up"){
-         UppercaseValidator *validator = new UppercaseValidator(regExp, widget);
+         UppercaseValidator *validator = new UppercaseValidator(regExp,widget);
          if(LineEdit *lineEdit = qobject_cast<LineEdit *> (widget)){
             lineEdit->setValidator(validator);
          }
-         delete validator;
       }
 
       if(shift == "down"){
@@ -2345,7 +2344,6 @@ void WidgetHelper::setValidator(QWidget* widget){
         if(LineEdit *lineEdit = qobject_cast<LineEdit *> (widget)){
            lineEdit->setValidator(validator);
         }
-        delete validator;
       }
    }
    else{
@@ -2357,7 +2355,6 @@ void WidgetHelper::setValidator(QWidget* widget){
       if(LineEdit *lineEdit = qobject_cast<LineEdit *> (widget)){
          lineEdit->setValidator(validator);
       }
-      delete validator;
 
    }
 }
