@@ -80,7 +80,7 @@ class Actions : public QObject
    Q_OBJECT
 
 public:
-   Actions(QWidget *form, QObject *parent = 0);
+   Actions(QObject *parent = 0);
    Actions(QString title, QObject *parent = 0);
    void parseFile(QDomDocument);
    void parseElement(QDomNode);

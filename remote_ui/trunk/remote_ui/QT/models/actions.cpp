@@ -23,11 +23,11 @@
 #include "mainframe.h"
 #include "fglform.h"
 
-Actions::Actions(QWidget *form, QObject *parent) : QObject(parent)
+Actions::Actions(QObject *parent) : QObject(parent)
 {
 MainFrame::vdcdebug("Actions","Actions", "QWidget *form, QObject *parent");
 
-   this->p_fglform = form;
+   this->p_fglform = (QWidget*) parent;
 
 }
 

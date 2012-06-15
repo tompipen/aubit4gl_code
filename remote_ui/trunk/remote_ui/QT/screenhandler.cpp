@@ -1668,7 +1668,7 @@ MainFrame::vdcdebug("ScreenHandler","setEvent", "QString event, QString attribut
       event.id = id;
       event.attribute = attribute; //Fgl::stringToKey(attribute);
 
-      Action *action = new Action(attribute);
+      Action *action = new Action(attribute, "", p_fglform);
       action->setAcceleratorName(Fgl::keyToString(attribute));
       action->setDefaultView("no");
       p_fglform->addFormAction(action);
@@ -1685,7 +1685,7 @@ MainFrame::vdcdebug("ScreenHandler","setEvent", "QString event, QString attribut
       event.id = id;
       event.attribute = attribute; //Fgl::stringToKey(attribute);
 
-      Action *action = new Action(attribute);
+      Action *action = new Action(attribute, "", p_fglform);
       action->setDefaultView("yes");
       p_fglform->addFormAction(action);
       action->setEnabled(true);
@@ -2489,7 +2489,7 @@ MainFrame::vdcdebug("ScreenHandler","displayError", "QString text");
       errorDialog->setStyleSheet(xml2Style->getStyleSheet());
       xml2Style->deleteLater();
       connect(errorDialog->getAction("OK"), SIGNAL(triggered()), errorDialog, SLOT(close()));
-
+      connect(errorDialog, SIGNAL(finished(int)), errorDialog, SLOT(deleteLater()));
       errorDialog->setAttribute(Qt::WA_DeleteOnClose, true);
       errorDialog->show();
       errorDialog->raise();
@@ -2528,6 +2528,7 @@ MainFrame::vdcdebug("ScreenHandler","displayMessage", "QString text");
       xml2Style->deleteLater();
       connect(errorDialog->getAction("OK"), SIGNAL(triggered()), errorDialog, SLOT(close()));
       connect(this, SIGNAL(windowCreated()), errorDialog, SLOT(close()));
+      connect(errorDialog, SIGNAL(finished(int)), errorDialog, SLOT(deleteLater()));
       errorDialog->setAttribute(Qt::WA_DeleteOnClose, true);
       errorDialog->show();
       errorDialog->raise();

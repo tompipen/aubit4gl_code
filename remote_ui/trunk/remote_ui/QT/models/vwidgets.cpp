@@ -895,7 +895,7 @@ MainFrame::vdcdebug("WidgetHelper","createFormWidget", "const QDomElement& formF
 FormField* WidgetHelper::createFormField(const QDomElement& formField, QWidget *parent)
 {
 MainFrame::vdcdebug("WidgetHelper","createFormField", "const QDomElement& formField, QWidget *parent");
-   Q_UNUSED(parent);
+
 
    QString name    = formField.attribute("name");
    QString colName = formField.attribute("colName");
@@ -913,7 +913,7 @@ MainFrame::vdcdebug("WidgetHelper","createFormField", "const QDomElement& formFi
 
    QString defaultValue = formField.attribute("defaultValue");
 
-   FormField *fField = new FormField;
+   FormField *fField = new FormField(parent);
    fField->setName(name);
    fField->setColName(colName);
    fField->setSqlTabName(tabName);

@@ -458,7 +458,7 @@ void Parser::handleTableColumn(const QDomNode& xmlNode){
  
       int formW = currentElement.firstChild().toElement().attribute("width").toInt();
       QWidget *wi = WidgetHelper::createFormWidget(currentElement);
-      TableColumn *tableColumn = (TableColumn*) WidgetHelper::createFormField(currentElement);
+      TableColumn *tableColumn = (TableColumn*) WidgetHelper::createFormField(currentElement, p_screenRecord);
       ql_fglFields << tableColumn;
       tableColumn->addField(wi);
       int w = wi->width();

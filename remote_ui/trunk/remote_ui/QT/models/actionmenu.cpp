@@ -335,7 +335,7 @@ MainFrame::vdcdebug("ActionMenu","getAction", "QString name");
       }
    }
 
-   return new QAction(NULL);
+   return new QAction(this);
 }
 
 void ActionMenu::setAction(QString name, QAction* action){

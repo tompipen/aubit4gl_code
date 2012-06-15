@@ -344,38 +344,38 @@ MainFrame::vdcdebug("FglForm","setActions", "QDomDocument xmlFile");
 void FglForm::initActions()
 {
 MainFrame::vdcdebug("FglForm","initActions", "");
-   Action *acceptA = new Action("accept", tr("Accept"));
+   Action *acceptA = new Action("accept", tr("Accept"), this);
    acceptA->setAcceleratorName("F12");
    addFormAction(acceptA);
 
-   Action *cancelA = new Action("cancel", tr("Cancel"));
+   Action *cancelA = new Action("cancel", tr("Cancel"), this);
 //   cancelA->setAcceleratorName("Escape");
    addFormAction(cancelA);
 
-   Action *nextRowA = new Action("nextrow", tr("Next Row"));
+   Action *nextRowA = new Action("nextrow", tr("Next Row"), this);
   // nextRowA->setAcceleratorName("Down");
 //   nextRowA->setAcceleratorName2("Down");
    addFormAction(nextRowA);
 
-   Action *prevRowA = new Action("prevrow", tr("Previous Row"));
+   Action *prevRowA = new Action("prevrow", tr("Previous Row"), this);
 //   prevRowA->setAcceleratorName("Shift+Tab");
   // prevRowA->setAcceleratorName("Up");
    addFormAction(prevRowA);
 
-   Action *nextFieldA = new Action("nextfield", tr("Next Field"));
+   Action *nextFieldA = new Action("nextfield", tr("Next Field"), this);
 //   nextFieldA->setAcceleratorName("Tab");
    addFormAction(nextFieldA);
 
-   Action *prevFieldA = new Action("prevfield", tr("Previous Field"));
+   Action *prevFieldA = new Action("prevfield", tr("Previous Field"), this);
 //   prevFieldA->setAcceleratorName("Shift+Tab");
    addFormAction(prevFieldA);
 
 
-   Action *insertA = new Action("insert", tr("Insert"));
+   Action *insertA = new Action("insert", tr("Insert"), this);
    addFormAction(insertA);
 
 
-   Action *deleteA = new Action("delete", tr("Delete"));
+   Action *deleteA = new Action("delete", tr("Delete"), this);
    addFormAction(deleteA);
 
    return;

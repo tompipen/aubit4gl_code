@@ -1255,8 +1255,9 @@ MainFrame::vdcdebug("TableModel","setData", "const QModelIndex &index, const QVa
     {
        int row = index.row();
        int column = index.column();
-
-       this->fields[row][column] = value.toString().trimmed();
+       QString buffer = value.toString();
+       buffer = buffer.trimmed();
+       this->fields[row][column] = buffer;
 
        emit dataChanged ( index,index );
        return true;
