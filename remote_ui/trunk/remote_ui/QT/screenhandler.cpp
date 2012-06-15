@@ -1119,12 +1119,12 @@ void ScreenHandler::setArrayBuffer(int row, QString tabName, QStringList fieldVa
 MainFrame::vdcdebug("ScreenHandler","setArrayBuffer", "int row, QString tabName, QStringList fieldValues");
    int index = tabName.indexOf(".*");
    int cnt_values = 0;
-   TableView *tableView;
+   //TableView *tableView;
    if(index < 0){
       for(int i=0; i<fieldValues.count(); i++){
          if(LineEditDelegate *de = qobject_cast<LineEditDelegate *> (p_fglform->findFieldByName(tabName))){
             int col = de->column();
-            if(tableView = qobject_cast<TableView *> (de->parent())){
+            if(TableView *tableView = qobject_cast<TableView *> (de->parent())){
                //QSortFilterProxyModel *proxyModel = static_cast<QSortFilterProxyModel*> (tableView->model());
                //TableModel *table = static_cast<TableModel*> (proxyModel->sourceModel());
 
@@ -1140,7 +1140,7 @@ MainFrame::vdcdebug("ScreenHandler","setArrayBuffer", "int row, QString tabName,
          QWidget *widget = ql_fields.at(i);
 
          if(LineEditDelegate *de = qobject_cast<LineEditDelegate *> (widget)){
-            if(tableView = qobject_cast<TableView *> (de->parent())){
+            if(TableView *tableView = qobject_cast<TableView *> (de->parent())){
                QSortFilterProxyModel *proxyModel = static_cast<QSortFilterProxyModel*> (tableView->model());
                TableModel *table = static_cast<TableModel*> (proxyModel->sourceModel());
                int col = table->columnCount(QModelIndex())-1;

@@ -1462,6 +1462,7 @@ Fgl::Event FglForm::getFormEvent(Fgl::Event type, QWidget *widget)
           }
           break;
 
+     case Fgl::GUI_ACTION_EVENT:
      case Fgl::ONACTION_EVENT:
      case Fgl::ONKEY_EVENT:
      case Fgl::MENUACTION_EVENT:
@@ -2808,7 +2809,7 @@ MainFrame::vdcdebug("FglForm","prevrow", "");
             QModelIndex currentIndex = view->currentIndex();
             int currentRow = currentIndex.row();
             int currentColumn = currentIndex.column();
-            int column;
+            int column = 0;
             //First Row
             if(currentIndex.row() <= 0)
             {

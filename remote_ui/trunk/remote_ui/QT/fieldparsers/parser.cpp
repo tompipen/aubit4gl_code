@@ -23,7 +23,7 @@
 #include <models/fglform.h>
 #include "mainframe.h"
 
-Parser::Parser(QWidget *p_fglform) : QWidget()
+Parser::Parser(QWidget *p_fglform) : QWidget(p_fglform)
 {
 MainFrame::vdcdebug("Parser","Parser", "QWidget *p_fglform");
    this->setFocusPolicy(Qt::NoFocus);

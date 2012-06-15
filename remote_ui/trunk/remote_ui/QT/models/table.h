@@ -168,7 +168,7 @@ public:
     void setTableView(TableView*);
 
     int pageSize() const{return pagesize;}
-    int setPageSize(int lines){this->pagesize = lines;}
+    void setPageSize(int lines){this->pagesize = lines;}
 
     bool insertRows(int position, int rows, const QModelIndex &index=QModelIndex());
     bool removeRows(int position, int rows, const QModelIndex &index=QModelIndex());
