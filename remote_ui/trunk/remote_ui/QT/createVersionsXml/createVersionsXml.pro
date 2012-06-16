@@ -8,7 +8,8 @@ QT       += core
 
 QT       -= console
 
-TARGET = createVersionsXml
+TARGET = create
+
 CONFIG   += console
 CONFIG   -= app_bundle
 
@@ -19,7 +20,9 @@ SOURCES += main.cpp
 
 HEADERS +=
 
-#DESTDIR = ../
 win32 {
-QMAKE_POST_LINK = $$OUT_PWD/release/createVersionsXml
+QMAKE_POST_LINK = $$OUT_PWD/create
+}
+unix {
+QMAKE_POST_LINK = $$OUT_PWD/create
 }

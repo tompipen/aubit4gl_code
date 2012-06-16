@@ -3,7 +3,7 @@ CONFIG += qt warn_on
 QT -= gui
 DEPENDPATH += .
 INCLUDEPATH += .
-TARGET = ../lib/quazip
+TARGET = $$OUT_PWD/lib/quazip
 DEFINES += QUAZIP_BUILD
 CONFIG(staticlib): DEFINES += QUAZIP_STATIC
 
@@ -43,7 +43,7 @@ win32 {
     target.path=$$PREFIX/lib
     INSTALLS += headers target
 
-    *-g++*: LIBS += -lz.dll
+    *-g++*: LIBS += -lz
     *-msvc*: LIBS += -lzlibwapi
     *-msvc*: QMAKE_LFLAGS += /IMPLIB:$$DESTDIR\\quazip.lib
 }
