@@ -24,27 +24,36 @@ int main(int argc, char *argv[])
 
     writer->writeStartDocument();
     writer->writeStartElement("VDC");
+    QString startElement;
 
-#ifdef Q_WS_WIN32
-    writer->writeStartElement("WINDOWS");
-#endif
-#ifdef Q_WS_MAC
-    writer->writeStartElement("MAC");
-#endif
-#ifdef Q_WS_X11
-    writer->writeStartElement("LINUX");
-#endif
-
-    writer->writeTextElement("VDC_RELEASE_DATE", QDate::currentDate().toString(QString("dd.MM.yyyy")));
+    #ifdef Q_WS_WIN32
+        startElement = "WINDOWS";
+    #endif
+    #ifdef Q_WS_MAC
+        startElement = "MAC";
+    #endif
     #ifdef Q_WS_X11
-    QFile *fileHash = new QFile(QDir::currentPath() + "/VDC");
+        startElement = "LINUX";
+    #endif
+
+    writer->writeStartElement(startElement);
+    writer->writeTextElement("VDC_RELEASE_DATE", QDate::currentDate().toString(QString("dd.MM.yyyy")));
+
+    QString filePath;
+    filePath.append(QDir::currentPath());
+
+    #ifdef Q_WS_X11
+    filePath.append("/VDC");
     #endif
     #ifdef Q_WS_WIN32
-    QFile *fileHash = new QFile(QDir::currentPath() + "/VDC.exe");
+    filePath.append("/VDC.exe");
     #endif
     #ifdef Q_WS_MAX
-    QFile *fileHash = new QFile(QDir::currentPath() + "/VDC.app");
+    filePath.append("/VDC.app");
     #endif
+
+    QFile *fileHash = new QFile(filePath);
+
     if(!fileHash->open(QFile::ReadOnly))
     {
         writer->writeTextElement("VDC_CHECKSUM", "0");
@@ -55,14 +64,13 @@ int main(int argc, char *argv[])
         QByteArray ba_hash = hash.result().toHex();
         writer->writeTextElement("VDC_CHECKSUM", ba_hash.data());
     }
-    writer->writeTextElement("A4GL_VERSION", "1.2.29");
+    writer->writeTextElement("A4GL_VERSION", "1.2.30");
     writer->writeTextElement("XML_VERSION", "1.0");
     writer->writeEndElement();
     writer->writeEndDocument();
 
     file->close();
-
-    qWarning("bin am ende angekommen");
+    delete file;
 
     return 0;
 
