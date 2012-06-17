@@ -21,7 +21,12 @@ SOURCES += main.cpp
 HEADERS +=
 
 win32 {
-QMAKE_POST_LINK = $$OUT_PWD/create
+CONFIG(debug)
+{
+QMAKE_POST_LINK = $$OUT_PWD/debug/create
+} else {
+QMAKE_POST_LINK = $$OUT_PWD/release/create
+}
 }
 unix {
 QMAKE_POST_LINK = $$OUT_PWD/create
