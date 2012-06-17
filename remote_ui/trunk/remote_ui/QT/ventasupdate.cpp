@@ -3,7 +3,7 @@
 #include "clienttcp.h"
 #include "mainframe.h"
 
-VentasUpdate::VentasUpdate(int errorDisplay,  QWidget *parent) : QWidget(parent)
+VentasUpdate::VentasUpdate(int errorDisplay, QWidget *parent) : QWidget(parent)
 {
     displayErrorDialog = errorDisplay;
     m_box = new QMessageBox(this);
@@ -26,7 +26,6 @@ VentasUpdate::~VentasUpdate()
     delete m_dialog;
     delete downloadDialog;
     delete m_reply;
-    qDebug() << "ich werde aufgerufen";
 }
 
 void VentasUpdate::checkForNewUpdates()
@@ -57,7 +56,7 @@ void VentasUpdate::loadFileFromServer()
         m_fileName = QString("WEB-Unix-vdc_" + date.toString("ddMMyyyy") + ".zip");
     #endif
     #ifdef Q_WS_WIN
-        m_fileName = QString("WEB-Win-vdc_" + date.toString("ddMMyyyy") + ".zip");
+        m_fileName = QString("VDCsetup.exe");
     #endif
 
     QNetworkRequest request;
@@ -108,6 +107,7 @@ QList<QList<QString> > VentasUpdate::parseXml(QString filePath)
             dialog->move(600,400);
             dialog->show();
             connect(dialog, SIGNAL(finished(int)), dialog, SLOT(deleteLater()));
+            return returnList;
         }
     }
 
@@ -263,13 +263,12 @@ void VentasUpdate::checkServerClient()
             } else {
                 if(displayErrorDialog == 1)
                 {
-                    Dialog *dialog = new Dialog("VENTAS Update", "No A4GL informations found!", "", "information", this, Qt::WindowStaysOnTopHint);
+                    Dialog *dialog = new Dialog("VENTAS Update", "No new Update found for this A4GL Version.", "", "information", this, Qt::WindowStaysOnTopHint);
                     dialog->createButton(1, "Ok", "Ok", "ok_gruen.png");
                     connect(dialog->getAction("OK"), SIGNAL(triggered()), dialog, SLOT(close()));
                     dialog->move(600,400);
                     dialog->show();
                     connect(dialog, SIGNAL(finished(int)), dialog, SLOT(deleteLater()));
-                    return;
                 }
             }
         }
@@ -282,7 +281,7 @@ void VentasUpdate::updateReady(QNetworkReply *reply)
     #ifdef Q_WS_MAC
        QFile *file = new QFile(QDir::tempPath() + "/vdc-update.pkg");
     #else
-       QFile *file = new QFile(QDir::tempPath() + "/vdc-update.zip");
+       QFile *file = new QFile(QDir::tempPath() + "/VDCSetup.exe");
     #endif
     if(!file->open(QIODevice::WriteOnly))
     {
@@ -308,7 +307,7 @@ void VentasUpdate::updateReady(QNetworkReply *reply)
         #ifdef Q_WS_MAC
            QDesktopServices::openUrl(QUrl(QString("file:///" + QDir::tempPath() + "/vdc-update.pkg"), QUrl::TolerantMode));
         #else
-           QDesktopServices::openUrl(QUrl(QString("file:///%1").arg(QDir::tempPath() + "/vdc-update.zip"), QUrl::TolerantMode));
+           QDesktopServices::openUrl(QUrl(QString("file:///%1").arg(QDir::tempPath() + "/VDCSetup.exe"), QUrl::TolerantMode));
         #endif
         QApplication::quit();
 
