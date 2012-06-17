@@ -1213,7 +1213,7 @@ MainFrame::vdcdebug("WidgetHelper","createEdit", "const QDomElement& formField, 
    }
 
    if(FglForm *p_fglform = qobject_cast<FglForm*> (parent)) {
-       int hideColumn = VDC::readSettingsFromIni(p_fglform->formName(), lineEdit->colName).toInt();
+       int hideColumn = VDC::readSettingsFromIni(p_fglform->formName(), lineEdit->colName+"/hideColumn").toInt();
        if(hideColumn > 0) {
            lineEdit->hide();
        }
