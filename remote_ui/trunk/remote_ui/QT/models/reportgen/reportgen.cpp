@@ -343,6 +343,7 @@ bool Reportgen::replaceEbene(QFile *file, QString odffile)
     temp_file->close();
     temp_file->remove();
     newFile->close();
+    return true;
 }
 QString Reportgen::getTemplateHeader(QString filename, QString endung)
 {
@@ -1258,7 +1259,7 @@ QString Reportgen::getTemplateFooter(int Table, QString filename)
 //
 //------------------------------------------------------------------------------
 
-bool Reportgen::readSedFile(QString sedfile)
+void Reportgen::readSedFile(QString sedfile)
 {
     QFile *file = new QFile(QDir::tempPath() + "/" + sedfile);
     QTextStream stream(file);
@@ -1319,7 +1320,7 @@ int Reportgen::checkSedFile(QString fieldname, QString filename)
 //
 //------------------------------------------------------------------------------
 
-bool Reportgen::getTemplateVars(QString filename)
+void Reportgen::getTemplateVars(QString filename)
 {
 
     QFile *file = new QFile(QDir::tempPath() + "/" + filename);

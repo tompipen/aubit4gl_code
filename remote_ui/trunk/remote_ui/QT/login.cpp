@@ -857,6 +857,7 @@ MainFrame::vdcdebug("LoginForm","writeFile", "QString qs_filename");
    #ifdef SSH_USE
 void LoginForm::authfailed(int rc, QString err)
 {
+  Q_UNUSED(err);
 
   QString error = "";
 
@@ -882,6 +883,7 @@ void LoginForm::authfailed(int rc, QString err)
 
 void LoginForm::commandfailed(int rc, QString err)
 {
+  Q_UNUSED(rc);
 
   this->error("Script : " + err + " nicht gefunden!");
 

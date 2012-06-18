@@ -180,8 +180,8 @@ int VSSH::auth_pubkey()
 
 int VSSH::auth_interactive()
 {
-  int nprompts, iprompt;
-  const char *name, *instruction;
+  /*int nprompts, iprompt;
+  const char *name, *instruction;*/
 
 }
 

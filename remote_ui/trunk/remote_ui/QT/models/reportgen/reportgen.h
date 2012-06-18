@@ -28,8 +28,8 @@ public:
     QString prepareTemplateEbene(int Position, int Ebene, int eben3, int ebene4, int ebene5, int Counter, QDomDocument doc, QString odffile, QString sedfile);
     QString getTemplateFooter(int Table, QString filename);
 
-    bool readSedFile(QString sedfile);
-    bool getTemplateVars(QString filename);
+    void readSedFile(QString sedfile);
+    void getTemplateVars(QString filename);
     bool checkMetaFile(QString odffile);
     bool replaceMetaFile(QString odffile);
     QString getVariable(QString);
