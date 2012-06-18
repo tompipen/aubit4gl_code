@@ -54,6 +54,10 @@ MainFrame::vdcdebug("StatusBar","displayComment", "QString text");
 void StatusBar::displayMessage(QString text)
 {
 MainFrame::vdcdebug("StatusBar","displayMessage", "QString text");
+QPalette pal = errorLabel->palette();
+pal.setColor(errorLabel->backgroundRole(), Qt::black);
+pal.setColor(errorLabel->foregroundRole(), Qt::black);
+errorLabel->setPalette(pal);
    errorLabel->setText(text);
    QTimer::singleShot(5000, errorLabel, SLOT(clear()));
 }
@@ -61,7 +65,12 @@ MainFrame::vdcdebug("StatusBar","displayMessage", "QString text");
 void StatusBar::displayError(QString text)
 {
 MainFrame::vdcdebug("StatusBar","displayError", "QString text");
-   errorLabel->setText("<b><font color=#ff0000>"+text+"</font></b>");
+   QPalette pal = errorLabel->palette();
+   pal.setColor(errorLabel->backgroundRole(), Qt::red);
+   pal.setColor(errorLabel->foregroundRole(), Qt::red);
+   errorLabel->setPalette(pal);
+   errorLabel->setText(text);
+   //errorLabel->setText("<b><font color=#ff0000>"+text+"</font></b>");
    QTimer::singleShot(5000, errorLabel, SLOT(clear()));
 }
 
