@@ -222,13 +222,13 @@ bool Reportgen::replaceEbene(QFile *file, QString odffile)
     if(!temp_file->open())
     {
         qDebug() << "(replaceEbene()): Konnte Tempfile nicht erstellen" << "";
-        return 406;
+        return false;
     }
 
     if(!file->open(QIODevice::ReadOnly))
     {
         qDebug() << "(replaceEbene()): konnte XML nicht lesen" << "";
-        return 405;
+        return false;
     }
 
     QTextStream stream(temp_file);
@@ -244,7 +244,7 @@ bool Reportgen::replaceEbene(QFile *file, QString odffile)
     if(!newFile->open(QIODevice::WriteOnly | QIODevice::Truncate))
     {
         qDebug() << "(replaceEbene()): Konnte XML nicht zum schreiben oeffnen";
-        return 406;
+        return false;
     }
 
     QDomDocument doc;
@@ -343,7 +343,6 @@ bool Reportgen::replaceEbene(QFile *file, QString odffile)
     temp_file->close();
     temp_file->remove();
     newFile->close();
-    return 1;
 }
 QString Reportgen::getTemplateHeader(QString filename, QString endung)
 {
@@ -363,9 +362,7 @@ QString Reportgen::getTemplateHeader(QString filename, QString endung)
     int cnt = 0;
     qDebug() << "endung: " << endung;
     while(!stream.atEnd()) {
-        if(cnt == 0) {
-            header = header + stream.readLine().trimmed();
-        }
+        header = header + stream.readLine().trimmed();
         if(endung == "ods")
         {
             if(header.contains("<office:spreadsheet>")) {
@@ -376,9 +373,16 @@ QString Reportgen::getTemplateHeader(QString filename, QString endung)
                 cnt = 1;
             }
         }
+        /*if(header.contains("<office:body>")) {
+            //header.append("</table:table-row>");
+            cnt = 1;
+        }*/
+
+        if(cnt == 1) {
+            return header;
+        }
     }
    file->close();
-   return header;
 
 }
 
@@ -399,10 +403,7 @@ QString Reportgen::getTemplateHeader(QString filename)
     QString header;
     int cnt = 0;
     while(!stream.atEnd()) {
-        if(cnt == 0)
-        {
-            header = header + stream.readLine().trimmed();
-        }
+        header = header + stream.readLine().trimmed();
 
         if(header.contains("<office:spreadsheet>")) {
             cnt = 1;
@@ -412,9 +413,11 @@ QString Reportgen::getTemplateHeader(QString filename)
             cnt = 1;
         }*/
 
+        if(cnt == 1) {
+            return header;
+        }
     }
    file->close();
-   return header;
 
 }
 
@@ -1264,14 +1267,12 @@ bool Reportgen::readSedFile(QString sedfile)
 
     if(!file->open(QIODevice::ReadOnly)) {
         qDebug() << "(readSed): Konnte SED Datei nicht lesen." << "";
-        return 404;
     }
 
     while(!stream.atEnd()) {
         sed_fields << stream.readLine();
     }
     file->close();
-    return 1;
 }
 
 //------------------------------------------------------------------------------
@@ -1350,9 +1351,6 @@ bool Reportgen::getTemplateVars(QString filename)
             }
         }
         file->close();
-        return 1;
-    } else {
-        return 405;
     }
 
 }
