@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dump_scr.c,v 1.1 2011-02-15 16:05:35 mikeaubury Exp $
+# $Id: dump_scr.c,v 1.2 2012-06-18 16:44:47 mikeaubury Exp $
 #*/
 
 /**
@@ -572,7 +572,7 @@ static char buff[200000];
 char smbuff[200];
 char sm[2];
 int a;
-bool to_used;
+int to_used;
 sm[0]=0;
 sm[1]=0;
 sprintf(buff,"INCLUDE=(");
