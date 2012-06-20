@@ -1800,10 +1800,17 @@ if(inputArray() || displayArray())
     if(TableView *tableView = qobject_cast<TableView *> (currentField())){
        if(tableView->curr_editor != NULL)
        {
-          //Close Editor(needed to get the data in the view)
+          //Close Editor(needed to get the data in the view) !!! CHANGED TO setData (dk)
 
-           //tableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
+           QWidget *w = (QWidget*) tableView->curr_editor;
+           if(LineEdit *le = qobject_cast<LineEdit*> (w))
+           {
+               QSortFilterProxyModel *proxyModel = static_cast<QSortFilterProxyModel*> (tableView->model());
+               TableModel *table = static_cast<TableModel*> (proxyModel->sourceModel());
+               table->setData(tableView->currentIndex(), le->text(), Qt::EditRole);
+           }
           tableView->curr_editor->close();
+          //tableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
           //tableView->setEditTriggers(QAbstractItemView::AllEditTriggers);
           //tableView->setEditTriggers(et);
           Fgl::Event event;
