@@ -50,7 +50,7 @@ public:
 
 
 public slots:
-   void aboutVDC();
+   void aboutVDC(QWidget *parent = 0);
    void font();
    void setFactorWidth(QString);
    void resetFactor();
