@@ -261,7 +261,7 @@ welcomeBar();
 
 }
 
-void LoginForm::aboutVDC()
+void LoginForm::aboutVDC(QWidget *parent)
 {
 
     QFile file;
@@ -318,7 +318,7 @@ void LoginForm::aboutVDC()
     }
 
     file.close();
-    QWidget *widget = new QWidget;
+    QWidget *widget = new QWidget(parent);
     QHBoxLayout *layout = new QHBoxLayout(widget);
     QLabel *labeltext = new QLabel(widget);
     QLabel *labellogo = new QLabel(widget);
