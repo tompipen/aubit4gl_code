@@ -261,10 +261,11 @@ void Context::addField(QWidget *field)
           break;
         case Fgl::CONSTRUCT:
           if(LineEdit *lineEdit = qobject_cast<LineEdit *> (field)){
-              lineEdit->setMaxLength(32767);
+
               //lineEdit->setValidator(NULL);
               lineEdit->setInputMask(NULL);
               lineEdit->setSqlType("CHAR");
+              lineEdit->setMaxLength(32767);
             }
 
           break;
