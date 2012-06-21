@@ -144,5 +144,6 @@
         <file>pics/kalender.png</file>
         <file>pics/grafik.png</file>
         <file>pics/VENTAS_9_logo-about.png</file>
+        <file>pics/progressbar.gif</file>
     </qresource>
 </RCC>
