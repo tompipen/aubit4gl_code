@@ -1163,7 +1163,7 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
          {
              if(le->autoNext() == 1)
              {
-                 if(le->maxLength() >= le->text().length())
+                 if(le->maxLength() <= le->text().length())
                  {
                      if((keyEvent->key() >= 65 && keyEvent->key() <= 90) || (keyEvent->key() >= 49 && keyEvent->key() <= 57))
                      {
@@ -1179,7 +1179,7 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
 
              if(te->autoNext() == 1)
              {
-                 if(te->toPlainText().length() >= WidgetHelper::getLengthBySqlType(sqltype))
+                 if(te->toPlainText().length() <= WidgetHelper::getLengthBySqlType(sqltype))
                  {
                      if((keyEvent->key() >= 65 && keyEvent->key() <= 90) || (keyEvent->key() >= 49 && keyEvent->key() <= 57))
                      {
