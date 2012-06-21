@@ -1158,7 +1158,17 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
       }
       else
       {*/
-      qDebug() << "context->fieldList()" << context->fieldList();
+      //qDebug() << "context->fieldList()" << context->fieldList();
+         if(LineEdit *le = qobject_cast<LineEdit *> (obj))
+         {
+             if(le->autoNext() == 1)
+             {
+                 if(le->maxLength() == le->text().length())
+                 {
+                     nextfield(true);
+                 }
+             }
+         }
          if(keyEvent->key() == Qt::Key_Up ) {
              if(TextEdit *te = qobject_cast<TextEdit *> (obj))
              {
