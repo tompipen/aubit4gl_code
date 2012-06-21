@@ -1317,6 +1317,17 @@ bool WidgetHelper::setDisplayAttributes(int fieldAttribute, QWidget *widget)
             //p.setColor(QPalette::Foreground, col);
             widget->setPalette(p);
             widget->setFont(dummy.font());
+         } else if (LineEdit *le = qobject_cast<LineEdit*> (widget))
+         {
+             LineEdit dummy;
+             dummy.setEnabled(widget->isEnabled());
+             QColor dummycol = dummy.palette().color(QPalette::Text);
+             QPalette p = widget->palette();
+             QColor col(dummycol.red()-30, dummycol.green()-30, dummycol.blue()-30);
+             p.setColor(QPalette::Disabled, QPalette::Text, col);
+             //p.setColor(QPalette::Foreground, col);
+             widget->setPalette(p);
+             widget->setFont(dummy.font());
          }
          else if(LineEditDelegate *led = qobject_cast<LineEditDelegate *> (widget))
          {
