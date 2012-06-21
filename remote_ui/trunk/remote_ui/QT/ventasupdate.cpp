@@ -31,7 +31,7 @@ VentasUpdate::~VentasUpdate()
 void VentasUpdate::checkForNewUpdates()
 {
     QNetworkAccessManager *manager = new QNetworkAccessManager(this);
-    manager->get(QNetworkRequest(QUrl("http://www.ventas.de/wp-content/uploads/downloads/autoupdate/vdcupdate.xml")));
+    manager->get(QNetworkRequest(QUrl("http://www.ventas.de/wp-content/uploads/downloads/autoupdate/vdc.xml")));
     connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(readXmlFinished(QNetworkReply*)));
     connect(manager, SIGNAL(finished(QNetworkReply*)), manager, SLOT(deleteLater()));
 
