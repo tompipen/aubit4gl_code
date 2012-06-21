@@ -31,7 +31,7 @@ VentasUpdate::~VentasUpdate()
 void VentasUpdate::checkForNewUpdates()
 {
     QNetworkAccessManager *manager = new QNetworkAccessManager(this);
-    manager->get(QNetworkRequest(QUrl("http://www.ventas.de/wp-content/uploads/downloads/autoupdate/vdc.xml")));
+    manager->get(QNetworkRequest(QUrl("http://www.ventas.de/wp-content/uploads/downloads/autoupdate/vdcupdate.xml")));
     connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(readXmlFinished(QNetworkReply*)));
     connect(manager, SIGNAL(finished(QNetworkReply*)), manager, SLOT(deleteLater()));
 
@@ -281,7 +281,7 @@ void VentasUpdate::updateReady(QNetworkReply *reply)
     #ifdef Q_WS_MAC
        QFile *file = new QFile(QDir::tempPath() + "/vdc-update.pkg");
     #else
-       QFile *file = new QFile(QDir::tempPath() + "/VDCSetup.exe");
+       QFile *file = new QFile(QDir::tempPath() + "/VDCsetup.exe");
     #endif
     if(!file->open(QIODevice::WriteOnly))
     {
@@ -307,7 +307,7 @@ void VentasUpdate::updateReady(QNetworkReply *reply)
         #ifdef Q_WS_MAC
            QDesktopServices::openUrl(QUrl(QString("file:///" + QDir::tempPath() + "/vdc-update.pkg"), QUrl::TolerantMode));
         #else
-           QDesktopServices::openUrl(QUrl(QString("file:///%1").arg(QDir::tempPath() + "/VDCSetup.exe"), QUrl::TolerantMode));
+           QDesktopServices::openUrl(QUrl(QString("file:///%1").arg(QDir::tempPath() + "/VDCsetup.exe"), QUrl::TolerantMode));
         #endif
         QApplication::quit();
 
