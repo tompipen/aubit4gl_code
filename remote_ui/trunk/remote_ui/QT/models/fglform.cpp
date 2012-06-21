@@ -1165,10 +1165,24 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
              {
                  if(le->maxLength() == le->text().length())
                  {
-                     nextfield(true);
+                     if(keyEvent->key() >= 65 && keyEvent->key() <= 90 || keyEvent->key() >= 49 && keyEvent->key() <= 57)
+                     {
+                         //emit nextfield();
+                         QMetaObject::invokeMethod(this, "nextfield", Qt::QueuedConnection);
+                     }
                  }
              }
          }
+         /*if(TextEdit *te = qobject_cast<TextEdit *> (obj))
+         {
+             if(te->autoNext() == 1)
+             {
+                 if(te->toPlainText().length() == te->t)
+                 {
+                     nextfield(true);
+                 }
+             }
+         }*/
          if(keyEvent->key() == Qt::Key_Up ) {
              if(TextEdit *te = qobject_cast<TextEdit *> (obj))
              {
