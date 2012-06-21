@@ -1163,26 +1163,31 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
          {
              if(le->autoNext() == 1)
              {
-                 if(le->maxLength() == le->text().length())
+                 if(le->maxLength() >= le->text().length())
                  {
-                     if(keyEvent->key() >= 65 && keyEvent->key() <= 90 || keyEvent->key() >= 49 && keyEvent->key() <= 57)
+                     if((keyEvent->key() >= 65 && keyEvent->key() <= 90) || (keyEvent->key() >= 49 && keyEvent->key() <= 57))
                      {
-                         //emit nextfield();
                          QMetaObject::invokeMethod(this, "nextfield", Qt::QueuedConnection);
                      }
                  }
              }
          }
-         /*if(TextEdit *te = qobject_cast<TextEdit *> (obj))
+         if(TextEdit *te = qobject_cast<TextEdit *> (obj))
          {
+             QString sqltype;
+             sqltype = te->sqlType();
+
              if(te->autoNext() == 1)
              {
-                 if(te->toPlainText().length() == te->t)
+                 if(te->toPlainText().length() >= WidgetHelper::getLengthBySqlType(sqltype))
                  {
-                     nextfield(true);
+                     if((keyEvent->key() >= 65 && keyEvent->key() <= 90) || (keyEvent->key() >= 49 && keyEvent->key() <= 57))
+                     {
+                         QMetaObject::invokeMethod(this, "nextfield", Qt::QueuedConnection);
+                     }
                  }
              }
-         }*/
+         }
          if(keyEvent->key() == Qt::Key_Up ) {
              if(TextEdit *te = qobject_cast<TextEdit *> (obj))
              {
