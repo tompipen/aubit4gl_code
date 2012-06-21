@@ -3,7 +3,7 @@
 #include "clienttcp.h"
 #include "mainframe.h"
 
-VentasUpdate::VentasUpdate(int errorDisplay, QWidget *parent) : QWidget(parent)
+VentasUpdate::VentasUpdate(int errorDisplay, QWidget *parent) : QWidget()
 {
     displayErrorDialog = errorDisplay;
     m_box = new QMessageBox(this);
@@ -31,7 +31,7 @@ VentasUpdate::~VentasUpdate()
 void VentasUpdate::checkForNewUpdates()
 {
     QNetworkAccessManager *manager = new QNetworkAccessManager(this);
-    manager->get(QNetworkRequest(QUrl("http://www.ventas.de/wp-content/uploads/downloads/autoupdate/vdcversion.xml")));
+    manager->get(QNetworkRequest(QUrl("http://www.ventas.de/wp-content/uploads/downloads/autoupdate/vdcupdate.xml")));
     connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(readXmlFinished(QNetworkReply*)));
     connect(manager, SIGNAL(finished(QNetworkReply*)), manager, SLOT(deleteLater()));
 
