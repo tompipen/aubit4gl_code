@@ -49,11 +49,11 @@ MainFrame::vdcdebug("*parent,","WindowFlags f)", """");
 
    this->setAttribute(Qt::WA_DeleteOnClose);
 
-   QVBoxLayout *layout = new QVBoxLayout(this);
-   QHBoxLayout *buttonLayout = new QHBoxLayout(this);
+   QVBoxLayout *layout = new QVBoxLayout;
+   QHBoxLayout *buttonLayout = new QHBoxLayout;
    buttonLayout->setAlignment(Qt::AlignCenter);
 
-   buttonGroup = new QButtonGroup(this);
+   buttonGroup = new QButtonGroup;
 /*
    connect(buttonGroup, SIGNAL(buttonClicked(int)),
            this, SLOT(buttonClicked(int)));
@@ -66,9 +66,9 @@ MainFrame::vdcdebug("*parent,","WindowFlags f)", """");
  
    this->setWindowTitle(title);
 
-   QHBoxLayout *pixLayout = new QHBoxLayout(this);
-   QLabel *p_label    = new QLabel(comment, this);
-   QLabel *p_pixLabel = new QLabel(this);
+   QHBoxLayout *pixLayout = new QHBoxLayout;
+   QLabel *p_label    = new QLabel(comment);
+   QLabel *p_pixLabel = new QLabel();
    QString filename   = "pics:";
 
    filename.append(image);
