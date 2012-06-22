@@ -39,7 +39,7 @@ MainFrame::vdcdebug("RingMenu","RingMenu", "QWidget *parent");
    // disable widget until it it gets called
    this->setEnabled(false);
    this->installEventFilter(this);
-   QVBoxLayout *layout = new QVBoxLayout;
+   QVBoxLayout *layout = new QVBoxLayout(this);
    layout->setAlignment(Qt::AlignTop);
    layout->setSpacing(0);
    //layout->setSizeConstraint(QLayout::SetFixedSize);

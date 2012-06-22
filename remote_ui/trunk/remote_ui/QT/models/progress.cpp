@@ -34,10 +34,11 @@ Progress::Progress(QWidget *parent) :
   this->progressbar = new QLabel(this);
   this->progressbar->hide();
 
-  QMovie *movie = new QMovie("pics:progressbar.gif");
+  QMovie *movie = new QMovie(this->progressbar);
+  movie->setFileName("pics:progressbar.gif");
   this->progressbar->setMovie(movie);
   movie->start();
-  QVBoxLayout *information_layout = new QVBoxLayout();
+  QVBoxLayout *information_layout = new QVBoxLayout(this);
   information_layout->addWidget(this->title);
   information_layout->addWidget(this->text1);
 

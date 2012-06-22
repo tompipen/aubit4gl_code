@@ -49,11 +49,11 @@ MainFrame::vdcdebug("*parent,","WindowFlags f)", """");
 
    this->setAttribute(Qt::WA_DeleteOnClose);
 
-   QVBoxLayout *layout = new QVBoxLayout;
-   QHBoxLayout *buttonLayout = new QHBoxLayout;
+   QVBoxLayout *layout = new QVBoxLayout(this);
+   QHBoxLayout *buttonLayout = new QHBoxLayout(this);
    buttonLayout->setAlignment(Qt::AlignCenter);
 
-   buttonGroup = new QButtonGroup;
+   buttonGroup = new QButtonGroup(this);
 /*
    connect(buttonGroup, SIGNAL(buttonClicked(int)),
            this, SLOT(buttonClicked(int)));
@@ -66,9 +66,9 @@ MainFrame::vdcdebug("*parent,","WindowFlags f)", """");
  
    this->setWindowTitle(title);
 
-   QHBoxLayout *pixLayout = new QHBoxLayout;
-   QLabel *p_label    = new QLabel(comment);
-   QLabel *p_pixLabel = new QLabel();
+   QHBoxLayout *pixLayout = new QHBoxLayout(this);
+   QLabel *p_label    = new QLabel(comment, this);
+   QLabel *p_pixLabel = new QLabel(this);
    QString filename   = "pics:";
 
    filename.append(image);
@@ -101,7 +101,7 @@ MainFrame::vdcdebug("Dialog","createButton", "int id, QString text, QString tool
    QString shortcut = text.at(0);
 
    // Create the Button and set Text + ToolTip
-   QPushButton *button = new QPushButton(text.trimmed());
+   QPushButton *button = new QPushButton(text.trimmed(), this);
    button->setShortcut(shortcut);
    if(icon == "")
    {
@@ -160,7 +160,7 @@ MainFrame::vdcdebug("Dialog","createAction", "int id, QString text");
    QString shortcut = text.at(0);
 
    // Create the Button and set Text + ToolTip
-   QPushButton *button = new QPushButton(text.trimmed());
+   QPushButton *button = new QPushButton(text.trimmed(), this);
    button->setVisible(false);
    button->setShortcut(shortcut);
    button->setIcon(QIcon(QString("pics:blank.png")));

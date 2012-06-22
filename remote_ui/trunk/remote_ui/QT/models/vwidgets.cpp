@@ -2065,7 +2065,8 @@ MainFrame::vdcdebug("WidgetHelper","setFieldText", "QObject *object, QString fie
              {
                 return; // Avoid repaint event
              }
-             QMovie *movie = new QMovie(fieldValue);
+             QMovie *movie = new QMovie(widget);
+             movie->setFileName(fieldValue);
              widget->setMovie(movie);
              movie->start();
              widget->fieldValue = fieldValue;
