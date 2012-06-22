@@ -1760,6 +1760,11 @@ MainFrame::vdcdebug("ScreenHandler","createActionMenuButton", "QString text, QSt
 
    Action *fAction = new Action(Fgl::stringToKey(desc), text);
    fAction->setAcceleratorName(desc);
+   /*
+   if(desc.toLower().trimmed() != "insert" && desc.toLower().trimmed() != "delete")
+   {
+      fAction->setAcceleratorName(desc);
+   }*/
    fAction->setDefaultView("yes");
    fAction->setVisible(false);
    p_fglform->addFormAction(fAction);
@@ -3678,8 +3683,9 @@ Q_UNUSED(obj);
   if(!w_progress)
     return;
 
-  QRect rect = QApplication::desktop()->geometry();
-  w_progress->move(rect.center());
+  QRect rect = QApplication::desktop()->screenGeometry();
+  QRect w_p_rect = QRect(0,0, w_progress->sizeHint().width(), w_progress->sizeHint().height());
+  w_progress->move(rect.center() - w_p_rect.center());
   w_progress->setVisible(vis);
 
 }
