@@ -52,10 +52,7 @@ RingMenuPulldown::RingMenuPulldown(QString title, QString comment, QString style
    /*QWidget *d = QApplication::desktop();
    int w = d->width();
    int h = d->height();*/
-   int mw = 200;
-   int mh = 100;
 
-   this->move(mw, mh);
    //this->setWindowFlags(Qt::FramelessWindowHint);
 
 }

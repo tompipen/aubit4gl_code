@@ -2108,6 +2108,29 @@ if(qsl_triggereds.size() > 0)
       else{
          if(p_fglform->dialog() != NULL){
          //   p_fglform->checkActions(); allready in checkState
+              //Not needed under mac, cause the dialog i opend in top of the qmainwindow
+              #ifndef Q_WS_MAC
+             //Noch moven solange es unsichtbar ist
+
+            if(!p_fglform->dialog()->isVisible())
+            {
+               QRect rect;
+               if(p_fglform->b_dummy)
+               {
+
+                 rect = QApplication::desktop()->screenGeometry();
+                 QRect w_p_rect = QRect(0,0, p_fglform->dialog()->sizeHint().width(), p_fglform->dialog()->sizeHint().height());
+                 p_fglform->dialog()->move(rect.center() - w_p_rect.center());
+
+               }
+               else
+               {
+
+                   QPoint pos = p_fglform->mapToGlobal(QPoint(0,0));
+                   p_fglform->dialog()->move(pos + p_fglform->rect().center() - p_fglform->dialog()->rect().center());
+               }
+            }
+            #endif
             p_fglform->dialog()->show();
             p_fglform->dialog()->adjustSize();
          }
@@ -2131,6 +2154,25 @@ if(qsl_triggereds.size() > 0)
                 }
             }*/
             //p_fglform->ringMenuPulldown()->showWindow();
+             //Noch moven solange es unsichtbar ist
+             if(!p_fglform->ringMenuPulldown()->isVisible())
+             {
+                 QRect rect;
+                 if(p_fglform->b_dummy || !p_fglform->isVisible())
+                 {
+
+                   rect = QApplication::desktop()->screenGeometry();
+                   QRect w_p_rect = QRect(0,0, p_fglform->ringMenuPulldown()->sizeHint().width(), p_fglform->ringMenuPulldown()->sizeHint().height());
+                   p_fglform->ringMenuPulldown()->move(rect.center() - w_p_rect.center());
+
+                 }
+                 else
+                 {
+
+                     QPoint pos = p_fglform->mapToGlobal(QPoint(0,0));
+                     p_fglform->ringMenuPulldown()->move(pos + p_fglform->rect().center() - p_fglform->ringMenuPulldown()->rect().center());
+                 }
+             }
             p_fglform->ringMenuPulldown()->show();
          }
       }
@@ -3683,10 +3725,29 @@ Q_UNUSED(obj);
   if(!w_progress)
     return;
 
-  QRect rect = QApplication::desktop()->screenGeometry();
-  QRect w_p_rect = QRect(0,0, w_progress->sizeHint().width(), w_progress->sizeHint().height());
-  w_progress->move(rect.center() - w_p_rect.center());
+  QRect rect;
+  if(p_fglform->b_dummy)
+  {
+
+    rect = QApplication::desktop()->screenGeometry();
+    QRect w_p_rect = QRect(0,0, w_progress->sizeHint().width(), w_progress->sizeHint().height());
+    w_progress->move(rect.center() - w_p_rect.center());
+
+  }
+  else
+  {
+
+      QPoint pos = p_fglform->mapToGlobal(QPoint(0,0));
+      QRect w_p_rect = QRect(0,0, w_progress->sizeHint().width(), w_progress->sizeHint().height());
+      w_progress->move(pos + p_fglform->rect().center() - w_p_rect.center());
+  }
+
+
+
   w_progress->setVisible(vis);
+
+
+
 
 }
 
