@@ -5,15 +5,36 @@
 
 VentasUpdate::VentasUpdate(int errorDisplay, QWidget *parent) : QWidget()
 {
+
+    QFile *XMLfile = new QFile(QDir::tempPath() + "/vdc.xml");
+    QFile *VDCsetup;
+
+    #ifdef Q_WS_WIN32
+        VDCsetup = new QFile(QDir::tempPath() + "/VDCsetup.exe");
+    #endif
+    #ifdef Q_WS_X11
+        VDCsetup = new QFile(QDir::tempPath() + "/VDCsetup.zip");
+    #endif
+    #ifdef Q_WS_MAC
+        VDCsetup = new QFile(QDir::tempPath() + "/VDCsetup.pkg");
+    #endif
+
+
+    if(XMLfile->exists())
+    {
+        XMLfile->close();
+        XMLfile->remove();
+    }
+
+    if(VDCsetup->exists())
+    {
+        VDCsetup->close();
+        VDCsetup->remove();
+    }
+
+
     displayErrorDialog = errorDisplay;
     m_box = new QMessageBox(this);
-    //m_mainFrame = mFrame;
-    //m_screenhandler = screen;
-
-    /*QWidget *d = QApplication::desktop();
-    int w = d->width();
-    int h = d->height();*/
-
     this->setWindowTitle("VENTAS UPDATE");
 
 }
@@ -39,21 +60,14 @@ void VentasUpdate::checkForNewUpdates()
 
 void VentasUpdate::loadFileFromServer()
 {
-    QDate date;
     QNetworkAccessManager *manager = new QNetworkAccessManager;
     connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(updateReady(QNetworkReply*)));
-    if(!m_dateToDownload.isEmpty())
-    {
-        date = QDate::fromString(m_dateToDownload, "dd.MM.yyyy");
-    } else {
-        return;
-    }
 
     #ifdef Q_WS_MAC
-        m_fileName = QString("WEB-Mac-vdc_" + date.toString("ddMMyyyy") + ".pkg");
+        m_fileName = QString("VDCsetup.pkg");
     #endif
     #ifdef Q_WS_X11
-        m_fileName = QString("WEB-Unix-vdc_" + date.toString("ddMMyyyy") + ".zip");
+        m_fileName = QString("VDCsetup.zip");
     #endif
     #ifdef Q_WS_WIN
         m_fileName = QString("VDCsetup.exe");
@@ -87,7 +101,65 @@ void VentasUpdate::updateDownloadProgress(qint64 received,qint64 total)
     m_label->setText("Downloading VDC...");
     m_progress->setValue((double) received * 100 / total);
 }
+QList<QString> VentasUpdate::clientXml(QString filePath)
+{
+    QFile file;
+    QList<QString> clientList;
 
+    file.setFileName(filePath);
+    QString clientOs;
+
+    if(!file.open(QIODevice::ReadOnly))
+    {
+        if(displayErrorDialog == 1)
+        {
+            //Dialog *dialog = new Dialog("VENTAS Update", QString("Failed to Open: %1").arg(filePath), "", "stop", this, Qt::WindowStaysOnTopHint);
+            //dialog->createButton(1, "Ok", "Ok", "ok_gruen.png");
+            //connect(dialog->getAction("OK"), SIGNAL(triggered()), dialog, SLOT(close()));
+            //dialog->move(600,400);
+            //dialog->show();
+            //connect(dialog, SIGNAL(finished(int)), dialog, SLOT(deleteLater()));
+            return clientList;
+        }
+    }
+
+    #ifdef Q_WS_WIN
+        clientOs = "WINDOWS";
+    #endif
+    #ifdef Q_WS_MAC
+        clientOs = "MAC";
+    #endif
+    #ifdef Q_WS_X11
+        clientOs = "LINUX";
+    #endif
+
+        QDomDocument doc;
+        doc.setContent(&file);
+
+        QDomElement root = doc.documentElement();
+        QDomNode node = root.firstChildElement();
+        while(!node.isNull() && node.isElement())
+        {
+            QDomElement secElement = node.toElement();
+            if(!secElement.isNull())
+            {
+                if(secElement.nodeName() == clientOs)
+                {
+                    QDomNode child = secElement.firstChild();
+                    while(!child.isNull())
+                    {
+                        QDomElement text = child.toElement();
+                        clientList << text.text();
+                        child = child.nextSibling();
+                    }
+                }
+
+            }
+            node = node.nextSiblingElement();
+        }
+        return clientList;
+
+}
 QList<QList<QString> > VentasUpdate::parseXml(QString filePath)
 {
     QFile file;
@@ -156,13 +228,8 @@ QList<QList<QString> > VentasUpdate::parseXml(QString filePath)
 
 void VentasUpdate::readXmlFinished(QNetworkReply *reply)
 {
-    if(reply->error() == 0)
+    if(reply->error())
     {
-        QFile file(QDir::tempPath() + "/vdc.xml");
-        file.open(QIODevice::WriteOnly);
-        file.write(reply->readAll());
-        file.close();
-    } else {
         if(displayErrorDialog == 1)
         {
             Dialog *dialog = new Dialog("VENTAS Update", "Could not connect to the Update Server.\n Please check your Network connection", "", "stop", this, Qt::WindowStaysOnTopHint);
@@ -171,7 +238,13 @@ void VentasUpdate::readXmlFinished(QNetworkReply *reply)
             dialog->move(600,400);
             dialog->show();
             connect(dialog, SIGNAL(finished(int)), dialog, SLOT(deleteLater()));
+            return;
         }
+    } else {
+        QFile file(QDir::tempPath() + "/vdc.xml");
+        file.open(QIODevice::WriteOnly);
+        file.write(reply->readAll());
+        file.close();
     }
         checkServerClient();
 
@@ -180,59 +253,72 @@ void VentasUpdate::readXmlFinished(QNetworkReply *reply)
 void VentasUpdate::checkServerClient()
 {
     QList<QList<QString> > serverVars = parseXml(QDir::tempPath() + "/vdc.xml");
-    QList<QList<QString> > clientVars = parseXml(QDir::currentPath() + "/versions.xml");
+    QList<QString> clientVars = clientXml(QDir::currentPath() + "/versions.xml");
+    QString A4glFromClient = VDC::readSettingsFromIni("", "a4gl_version");
+    QString XmlVersionServer = VDC::readSettingsFromIni("", "xml_version");
 
-    if(clientVars.isEmpty())
-    {
-        if(displayErrorDialog == 1)
-        {
-            Dialog *dialog = new Dialog("VENTAS Update", QString("Cannot open File: %1").arg(QDir::currentPath() + "/versions.xml"), "", "information", this, Qt::WindowStaysOnTopHint);
-            dialog->createButton(1, "Ok", "Ok", "ok_gruen.png");
-            connect(dialog->getAction("OK"), SIGNAL(triggered()), dialog, SLOT(close()));
-            dialog->move(600,400);
-            dialog->show();
-            connect(dialog, SIGNAL(finished(int)), dialog, SLOT(deleteLater()));
-            return;
-        }
-    }
-    if(serverVars.at(0).isEmpty())
-    {
-        if(displayErrorDialog == 1)
-        {
-            Dialog *dialog = new Dialog("VENTAS Update", "No Updates found!", "", "information", this, Qt::WindowStaysOnTopHint);
-            dialog->createButton(1, "Ok", "Ok", "ok_gruen.png");
-            connect(dialog->getAction("OK"), SIGNAL(triggered()), dialog, SLOT(close()));
-            dialog->move(600,400);
-            dialog->show();
-            return;
-        }
-    }
 
-    for(int i=(serverVars.count()-1); i >=0; i--)
-    {
-        QString A4glFromClient = VDC::readSettingsFromIni("", "a4gl_version");
-        QString XmlVersionServer = VDC::readSettingsFromIni("", "xml_version");
 
-        if(serverVars.at(i).count() >= 3)
+    if(clientVars.count() > 0 && !clientVars.isEmpty())
+    {
+        if(serverVars.count() > 0)
         {
-            if(serverVars.at(i).at(2) == A4glFromClient)
+            for(int i=0; i < serverVars.count(); i++)
             {
-                if(serverVars.at(i).at(3) == XmlVersionServer)
+                int j=0;
+                if(serverVars.at(i).count() > 0)
                 {
-                    if(serverVars.at(0).at(0) != clientVars.at(0).at(0))
+                    if(clientVars.count() < j)
                     {
-                        if(serverVars.at(0).at(1) != clientVars.at(0).at(1))
+                        return;
+                    }
+                    QDate serverdate = QDate::fromString(serverVars.at(i).at(j), "dd.MM.yyyy");
+                    QDate clientdate = QDate::fromString(clientVars.at(j), "dd.MM.yyyy");
+                    if(serverdate > clientdate)
+                    {
+                        j++;
+                        if(serverVars.at(i).at(j) != clientVars.at(j))
                         {
-                            Dialog *dialog = new Dialog("VENTAS Update", "There is a new VDC version available.\n Do you want to download and install it?", "", "information", this, Qt::WindowStaysOnTopHint);
-                            dialog->createButton(1, "Ok", "Ok", "ok_gruen.png");
-                            dialog->createButton(2, "Abort", "Abort", "abbrechen_rot.png");
-                            connect(dialog->getAction("OK"), SIGNAL(triggered()), this, SLOT(checkOpenConnections()));
-                            connect(dialog->getAction("ABORT"), SIGNAL(triggered()), dialog, SLOT(close()));
-                            dialog->move(600,400);
-                            dialog->show();
-                            m_dialog = dialog;
-                            m_dateToDownload  = serverVars.at(0).at(0);
-                            return;
+                            j++;
+                            if(serverVars.at(i).at(j) <= A4glFromClient)
+                            {
+                                j++;
+                                if(serverVars.at(i).at(j) == XmlVersionServer)
+                                {
+                                    qDebug() << "debug4 ";
+                                    Dialog *dialog = new Dialog("VENTAS Update", "There is a new VDC version available.\n Do you want to download and install it?", "", "information", this, Qt::WindowStaysOnTopHint);
+                                    dialog->createButton(1, "Ok", "Ok", "ok_gruen.png");
+                                    dialog->createButton(2, "Abort", "Abort", "abbrechen_rot.png");
+                                    connect(dialog->getAction("OK"), SIGNAL(triggered()), this, SLOT(checkOpenConnections()));
+                                    connect(dialog->getAction("ABORT"), SIGNAL(triggered()), dialog, SLOT(close()));
+                                    dialog->move(600,400);
+                                    dialog->show();
+                                    m_dialog = dialog;
+                                    //m_dateToDownload  = serverVars.at(0).at(0);
+                                    return;
+                                } else {
+                                    if(displayErrorDialog == 1)
+                                    {
+                                        Dialog *dialog = new Dialog("VENTAS Update", "No new Version for this XML Version!", "", "information", this, Qt::WindowStaysOnTopHint);
+                                        dialog->createButton(1, "Ok", "Ok", "ok_gruen.png");
+                                        connect(dialog->getAction("OK"), SIGNAL(triggered()), dialog, SLOT(close()));
+                                        dialog->move(600,400);
+                                        dialog->show();
+                                        connect(dialog, SIGNAL(finished(int)), dialog, SLOT(deleteLater()));
+                                        return;
+                                    }
+                                }
+                            } else {
+                                if(displayErrorDialog == 1)
+                                {
+                                    Dialog *dialog = new Dialog("VENTAS Update", "No new Update found for this A4GL Version.", "", "information", this, Qt::WindowStaysOnTopHint);
+                                    dialog->createButton(1, "Ok", "Ok", "ok_gruen.png");
+                                    connect(dialog->getAction("OK"), SIGNAL(triggered()), dialog, SLOT(close()));
+                                    dialog->move(600,400);
+                                    dialog->show();
+                                    connect(dialog, SIGNAL(finished(int)), dialog, SLOT(deleteLater()));
+                                }
+                            }
                         } else {
                             if(displayErrorDialog == 1)
                             {
@@ -245,32 +331,38 @@ void VentasUpdate::checkServerClient()
                                 return;
                             }
                         }
-                        break;
+                    } else {
+                        if(displayErrorDialog == 1)
+                        {
+                            Dialog *dialog = new Dialog("VENTAS Update", "The Client is up to date!", "", "information", this, Qt::WindowStaysOnTopHint);
+                            dialog->createButton(1, "Ok", "Ok", "ok_gruen.png");
+                            connect(dialog->getAction("OK"), SIGNAL(triggered()), dialog, SLOT(close()));
+                            dialog->move(600,400);
+                            dialog->show();
+                            connect(dialog, SIGNAL(finished(int)), dialog, SLOT(deleteLater()));
+                            return;
+                        }
                     }
-
                 } else {
-                    if(displayErrorDialog == 1)
-                    {
-                        Dialog *dialog = new Dialog("VENTAS Update", "No XML Version found!", "", "information", this, Qt::WindowStaysOnTopHint);
-                        dialog->createButton(1, "Ok", "Ok", "ok_gruen.png");
-                        connect(dialog->getAction("OK"), SIGNAL(triggered()), dialog, SLOT(close()));
-                        dialog->move(600,400);
-                        dialog->show();
-                        connect(dialog, SIGNAL(finished(int)), dialog, SLOT(deleteLater()));
-                        return;
-                    }
-                }
-            } else {
-                if(displayErrorDialog == 1)
-                {
-                    Dialog *dialog = new Dialog("VENTAS Update", "No new Update found for this A4GL Version.", "", "information", this, Qt::WindowStaysOnTopHint);
+                    Dialog *dialog = new Dialog("VENTAS Update", "Cannot find Serverinformations.", "", "information", this, Qt::WindowStaysOnTopHint);
                     dialog->createButton(1, "Ok", "Ok", "ok_gruen.png");
                     connect(dialog->getAction("OK"), SIGNAL(triggered()), dialog, SLOT(close()));
-                    dialog->move(600,400);
                     dialog->show();
-                    connect(dialog, SIGNAL(finished(int)), dialog, SLOT(deleteLater()));
                 }
             }
+
+        }
+
+    } else {
+        if(displayErrorDialog == 1)
+        {
+            Dialog *dialog = new Dialog("VENTAS Update", QString("Cannot open File: %1").arg(QDir::currentPath() + "/versions.xml"), "", "information", this, Qt::WindowStaysOnTopHint);
+            dialog->createButton(1, "Ok", "Ok", "ok_gruen.png");
+            connect(dialog->getAction("OK"), SIGNAL(triggered()), dialog, SLOT(close()));
+            dialog->move(600,400);
+            dialog->show();
+            connect(dialog, SIGNAL(finished(int)), dialog, SLOT(deleteLater()));
+            return;
         }
     }
 }
@@ -317,20 +409,21 @@ void VentasUpdate::updateReady(QNetworkReply *reply)
 void VentasUpdate::checkOpenConnections()
 {
     QList<ScreenHandler*> *ql_screenhandler = MainFrame::ql_screenhandler;
-    if(ql_screenhandler->count()  > 0)
+    if(ql_screenhandler->count() > 0)
     {
         Dialog *dialog = new Dialog("VENTAS Update", "There are modules running.\n They will be terminated. \n Do you really want to continue?", "", "stop", this, Qt::WindowStaysOnTopHint);
         downloadDialog = dialog;
         dialog->createButton(1, "Ok", "Ok", "ok_gruen.png");
         dialog->createButton(2, "Abort", "Abort", "abbrechen_rot.png");
         connect(dialog->getAction("OK"), SIGNAL(triggered()), this, SLOT(responseDownload()));
-        connect(dialog->getAction("ABORT"), SIGNAL(triggered()), dialog, SLOT(abortDownload()));
+        connect(dialog->getAction("ABORT"), SIGNAL(triggered()), this, SLOT(abortDownload()));
         dialog->move(600,400);
         dialog->show();
         connect(dialog, SIGNAL(finished(int)), dialog, SLOT(deleteLater()));
     } else {
         emit responseDownload();
     }
+
     if(m_dialog != NULL)
     {
         m_dialog->close(); 
@@ -338,12 +431,24 @@ void VentasUpdate::checkOpenConnections()
 }
 void VentasUpdate::responseDownload()
 {
+    QList<ScreenHandler*> *ql_screenhandler = MainFrame::ql_screenhandler;
+    for(int i=0; i < ql_screenhandler->count(); i++)
+    {
+        if(ScreenHandler *screen = qobject_cast<ScreenHandler*> (ql_screenhandler->at(i)))
+        {
+                screen->closeProgramm();
+        }
+    }
+
+    if(downloadDialog)
+    {
+        downloadDialog->close();
+    }
     loadFileFromServer();
 }
 
 void VentasUpdate::abortDownload()
 {
-    m_reply->abort();
     if(downloadDialog)
     {
         downloadDialog->close();

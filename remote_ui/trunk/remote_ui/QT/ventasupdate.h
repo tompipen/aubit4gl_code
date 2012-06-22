@@ -27,6 +27,7 @@ public:
     void checkForNewUpdates();
 private:
     QList<QList<QString> > parseXml(QString);
+    QList<QString> clientXml(QString);
     void readServerXml(QString);
     void loadFileFromServer();
     void checkServerClient();

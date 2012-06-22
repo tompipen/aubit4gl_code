@@ -1319,6 +1319,7 @@ bool WidgetHelper::setDisplayAttributes(int fieldAttribute, QWidget *widget)
             widget->setFont(dummy.font());
          } else if (LineEdit *le = qobject_cast<LineEdit*> (widget))
          {
+             Q_UNUSED(le);
              LineEdit dummy;
              //dummy.setEnabled(widget->isEnabled());
              QColor dummycol = dummy.palette().color(QPalette::Disabled, QPalette::Text);
