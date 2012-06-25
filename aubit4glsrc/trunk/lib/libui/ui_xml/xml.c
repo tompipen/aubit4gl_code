@@ -425,7 +425,7 @@ UILIB_A4GL_disp_fields_ap (int n, int attr, va_list * ap)
 			args[a]=get_data_from_stack(&arg_types[a],NULL);
 		}
     }
-
+  suspend_flush(1);
   send_to_ui ("<DISPLAYTO ATTRIBUTE=\"%d\">", attr);
   send_to_ui ("<FIELDLIST>");
 
@@ -481,6 +481,7 @@ UILIB_A4GL_disp_fields_ap (int n, int attr, va_list * ap)
   free (arg_types);
 
   send_to_ui ("</VS></DISPLAYTO>");
+  suspend_flush(-1);
   return rval;
 }
 
