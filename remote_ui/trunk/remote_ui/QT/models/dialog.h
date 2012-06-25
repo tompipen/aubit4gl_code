@@ -35,8 +35,11 @@ public:
    void createAction(int id = 0, QString text = "");
    void hideButton(QString);
    void showButton(QString);
+   void closeEvent(QCloseEvent *event);
    QList<QAction*> actions();
    QAction* getAction(QString);
+
+   bool b_allowCloseDialog;
 
 private:
    QLayout* layout;

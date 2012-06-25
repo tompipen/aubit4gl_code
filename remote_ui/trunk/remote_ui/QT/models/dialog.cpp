@@ -22,6 +22,7 @@
 #include "dialog.h"
 #include "actions.h"
 #include "mainframe.h"
+#include "fglform.h"
 
 //------------------------------------------------------------------------------
 // Method       : Dialog()
@@ -45,6 +46,8 @@ Dialog::Dialog(QString title, QString comment, QString style, QString image,
 MainFrame::vdcdebug("*parent,","WindowFlags f)", """");
 
    Q_UNUSED(style);
+
+   this->b_allowCloseDialog = false;
    this->setWindowModality(Qt::WindowModal);
 
    this->setAttribute(Qt::WA_DeleteOnClose);
@@ -85,6 +88,52 @@ MainFrame::vdcdebug("*parent,","WindowFlags f)", """");
 
   // this->setModal(true);
    this->adjustSize();
+}
+
+void Dialog::closeEvent(QCloseEvent *event)
+{
+        if(parent())
+        {
+            if(FglForm *fglform = qobject_cast<FglForm*> (parent()))
+            {
+                if(!b_allowCloseDialog)
+                {
+                    if(fglform->state() == Fgl::MENU)
+                    {
+                        bool b_found = false;
+                        for(int i=0; i< buttonGroup->buttons().size(); i++){
+                           if(QPushButton *buttons = qobject_cast<QPushButton*> (buttonGroup->buttons().at(i)))
+                           {
+                                if(buttons->text() == "Ende" || buttons->text() == "Cancel" || buttons->text() == "Abbrechen" || buttons->text() == "Abbruch" || buttons->text() == "Nein" || buttons->text() == "Beenden"){
+                                    buttons->animateClick();
+                                    b_found = true;
+                                    event->ignore();
+                                    return;
+                                }
+                            }
+                        }
+                        if(!b_found)
+                        {
+                            Fgl::Event ev;
+                            ev.type = Fgl::MENUACTION_EVENT;
+                            ev.attribute = "fgl_exit_menu";
+                            emit fglform->fieldEvent(ev);
+                            event->ignore();
+                            return;
+                        }
+                    }else if(fglform->construct() || fglform->input() || fglform->displayArray() || fglform->inputArray())
+                    {
+                        Fgl::Event ievent;
+                        ievent.id = "INTERRUPT";
+                        fglform->addToQueue(ievent);
+                        event->ignore();
+                        return;
+                    }
+                 }
+            }
+    }
+
+    return QDialog::closeEvent(event);
 }
 
 //------------------------------------------------------------------------------

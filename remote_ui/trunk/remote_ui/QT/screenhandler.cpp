@@ -1916,6 +1916,7 @@ MainFrame::vdcdebug("ScreenHandler","setFormOpts", "QString type, bool value, in
    else{
       if(type == "MENU"){
          if(p_fglform->dialog() != NULL){
+            p_fglform->dialog()->b_allowCloseDialog = true;
             p_fglform->dialog()->close();
             p_fglform->setDialog(NULL);
             p_fglform->setEnabled(true);
@@ -2419,6 +2420,7 @@ MainFrame::vdcdebug("ScreenHandler","free", "QString type");
 
    if(type == "MENU"){
       if(p_fglform->dialog() != NULL){
+         p_fglform->dialog()->b_allowCloseDialog = true;
          p_fglform->dialog()->close();
          p_fglform->setDialog(NULL);
          p_fglform->revertState(Fgl::MENU);
