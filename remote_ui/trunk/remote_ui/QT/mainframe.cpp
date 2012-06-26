@@ -24,7 +24,7 @@
 #include "clienttcp.h"
 #include "login.h"
 #include "include/vdc.h"
-
+#include "models/progress.h"
 
 //------------------------------------------------------------------------------
 // Method       : MainFrame()
@@ -82,6 +82,12 @@ bool MainFrame::setFocusOn(int pid)
 void MainFrame::check_new_pids()
 {
     QList<ScreenHandler*> *l_ql_screenhandler = MainFrame::ql_screenhandler;
+
+    if(l_ql_screenhandler->size() <= 1)
+    {
+       return;
+    }
+
     for(int i = l_ql_screenhandler->size()-1; i>=0; i--)
     {
         if(l_ql_screenhandler->at(i) == NULL)
@@ -103,6 +109,10 @@ void MainFrame::check_new_pids()
                     {
                         continue;
                     }
+                    if(l_ql_screenhandler->at(i)->p_pid == l_ql_screenhandler->at(j)->p_pid)
+                    {
+                        continue;
+                    }
                     l_ql_screenhandler->at(i)->p_pid_p = l_ql_screenhandler->at(j)->p_pid;
                     //Focus of windows, when kind closes active the Focus of the Parent Window
                     connect(l_ql_screenhandler->at(i), SIGNAL(destroyed()), l_ql_screenhandler->at(j), SLOT(activeFocus()));
@@ -112,6 +122,8 @@ void MainFrame::check_new_pids()
     }
 }
 
+
+
 MainFrame::MainFrame(QWidget *parent) : QMainWindow(parent)
 {
 MainFrame::vdcdebug("MainFrame","MainFrame", "QWidget *parent");
@@ -119,7 +131,6 @@ MainFrame::vdcdebug("MainFrame","MainFrame", "QWidget *parent");
    int port=1350;
    mainFrameToolBar = NULL;
    connectionsTab = NULL;
-
    errorMessageMainFrame = new QErrorMessage(this);
   QStringList parameter;
   parameter = QCoreApplication::arguments();
