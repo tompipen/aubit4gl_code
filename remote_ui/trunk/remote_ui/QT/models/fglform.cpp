@@ -2310,7 +2310,10 @@ if(context == NULL)
                   case Fgl::INPUTARRAY:
                   case Fgl::INPUT:
 
-                     view->setCurrentField(row, column);
+                     if(!view->isReadOnlyColumn(column))
+                     {
+                        view->setCurrentField(row, column);
+                     }
                      break;
                   case Fgl::DISPLAYARRAY:
                      break;
