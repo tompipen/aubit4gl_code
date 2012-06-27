@@ -192,7 +192,7 @@ A4GL_init_default_formats ()
  * @return       buf or a newly allocated buffer
  */
 char *
-A4GL_decstr_convert (char *buf, s_decfmt from, s_decfmt to, int newbuf, int trim, int maxlen)
+A4GL_decstr_convert (char *buf_o, s_decfmt from, s_decfmt to, int newbuf, int trim, int maxlen)
 {
 #define MAX_DECSTR_SIZE 512	// should be sufficient for any weird string, even
   // padded with lot of whitespace
@@ -209,15 +209,27 @@ A4GL_decstr_convert (char *buf, s_decfmt from, s_decfmt to, int newbuf, int trim
   };
   enum e_state st = DEC_STATE_S_0;
   char b[MAX_DECSTR_SIZE + 2];
+  char buf[20000];
   int dpos;
   int i, c, o;
   char *optr;
   char sign = 0;
-  // find a decimal separator
+  
+  strcpy(buf,buf_o);
+
+// Do we have a trailing decimal point ? eg 1.  or 342.
+  A4GL_trim(buf);
+  if(buf[strlen(buf)-1]==from.decsep) {
+		buf[strlen(buf)-1]=0;
+	}
+
+
 #ifdef DEBUG
   A4GL_debug ("Converting \"%s\" %c%c->%c%c", buf,
 	      from.decsep, from.thsep ? from.thsep : 'N', to.decsep, to.thsep ? to.thsep : 'N');
 #endif
+  // find a decimal separator
+  //
   for (dpos = 0; buf[dpos]; ++dpos)
     {
       if (buf[dpos] == from.decsep)
@@ -467,8 +479,8 @@ A4GL_decstr_convert (char *buf, s_decfmt from, s_decfmt to, int newbuf, int trim
 #endif
   if (newbuf)
     return strdup (optr);
-  strcpy (buf, optr);
-  return buf;
+  strcpy (buf_o, optr);
+  return buf_o;
 }
 
 
