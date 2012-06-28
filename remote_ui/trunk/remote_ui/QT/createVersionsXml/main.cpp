@@ -48,17 +48,17 @@ int main(int argc, char *argv[])
     #ifdef Q_WS_WIN32
     filePath.append("/VDC.exe");
     #endif
-    #ifdef Q_WS_MAX
-    filePath.append("/VDC.app");
+    #ifdef Q_WS_MAC
+    filePath.append("/VDC.app/Contents/MacOS/VDC");
     #endif
 
-    QFile *fileHash = new QFile(filePath);
+    QFile fileHash(filePath);
 
-    if(!fileHash->open(QFile::ReadOnly))
+    if(!fileHash.open(QFile::ReadOnly))
     {
         writer->writeTextElement("VDC_CHECKSUM", "0");
     } else {
-        ba_file = fileHash->readAll();
+        ba_file = fileHash.readAll();
         QCryptographicHash hash(QCryptographicHash::Md5);
         hash.addData(ba_file);
         QByteArray ba_hash = hash.result().toHex();
@@ -69,8 +69,8 @@ int main(int argc, char *argv[])
     writer->writeEndElement();
     writer->writeEndDocument();
 
+    fileHash.close();
     file->close();
-    delete file;
 
     return 0;
 
