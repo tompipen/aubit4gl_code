@@ -3,3 +3,4 @@
 +odftopdf ( srcfile DTYPE_CHAR, destfile DTYPE_CHAR) DTYPE_INT DTYPE_CHAR
 +checkOdfFile (odffile DTYPE_CHAR, destfile DTYPE_CHAR) DTYPE_INT
 +md5hashfile(filename DTYPE_CHAR) DTYPE_CHAR
++printpdf(filename DTYPE_CHAR) DTYPE_INT
