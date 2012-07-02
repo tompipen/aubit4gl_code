@@ -145,5 +145,6 @@
         <file>pics/grafik.png</file>
         <file>pics/VENTAS_9_logo-about.png</file>
         <file>pics/progressbar.gif</file>
+        <file>pics/browser-drucken.png</file>
     </qresource>
 </RCC>

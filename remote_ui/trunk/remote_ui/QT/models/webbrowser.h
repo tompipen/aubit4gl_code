@@ -20,8 +20,9 @@ public:
 
     void setNavigationIcons();
 
-protected slots:
 
+protected slots:
+    void printpage();
     void adjustLocation();
     void changeLocation();
     void adjustTitle(QString title);

@@ -94,6 +94,18 @@ void WebBrowser::finishLoading(bool)
 
 }
 
+void WebBrowser::printpage()
+{
+  QPrinter printer(QPrinter::HighResolution);
+
+  QPrintDialog dialog(&printer, this);
+
+  if(dialog.exec() == QDialog::Accepted)
+  {
+     WebView->print(&printer);
+  }
+}
+
 void WebBrowser::highlightAllLinks()
 {
     QString code = "$('a').each( function () { $(this).css('background-color', 'yellow') } )";
@@ -142,6 +154,7 @@ void MainWindow::removeEmbeddedElements()
 void WebBrowser::setNavigationIcons()
 {
   //Getting Actions
+  QAction *print = new QAction("Drucken", this);
   QAction *backward = WebView->pageAction(QWebPage::Back);
   QAction *forward = WebView->pageAction(QWebPage::Forward);
   QAction *reload = WebView->pageAction(QWebPage::Reload);
@@ -152,6 +165,7 @@ void WebBrowser::setNavigationIcons()
   QPixmap forw(("pics:browser-vor.png"));
   QPixmap relo(("pics:browser-neuladen.png"));
   QPixmap st(("pics:browser-abbrechen.png"));
+  QPixmap dr(("pics:browser-drucken.png"));
 
 
   //Override
@@ -160,9 +174,10 @@ void WebBrowser::setNavigationIcons()
   forward->setIcon(QIcon(forw));
   reload->setIcon(QIcon(relo));
   stop->setIcon(QIcon(st));
+  print->setIcon(QIcon(dr));
 
 
-
+  connect(print, SIGNAL(triggered()), this, SLOT(printpage()));
 
 
 
@@ -170,6 +185,7 @@ void WebBrowser::setNavigationIcons()
   toolBar->addAction(forward);
   toolBar->addAction(reload);
   toolBar->addAction(stop);
+  toolBar->addAction(print);
 
   QWidget *qw_backward = toolBar->widgetForAction(backward);
   QWidget *qw_forward  = toolBar->widgetForAction(forward);
