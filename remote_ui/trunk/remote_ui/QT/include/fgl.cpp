@@ -412,8 +412,9 @@ namespace Fgl {
 
       if(f_cnt < n_cnt + (hasMoney?1:0)){
          int a = fmt.length();
+
          if(a > s){
-            a = s;
+             a = s;
          }
 
          if(n_cnt > a)
@@ -492,6 +493,7 @@ namespace Fgl {
                      qs_str[a] = ')';
                      continue;
                   }
+
                   qs_str[a] = fm1.at(a);
                   continue;
                }
@@ -509,6 +511,11 @@ namespace Fgl {
                else{
                   qs_str[a] = QChar((char)0x01);
                }
+            }
+            if(qs_buffInteger.at(def) == '-' && qs_str.at(a) == ',')
+            {
+                qs_str[a] = '-';
+                def--;
             }
          }
       }
