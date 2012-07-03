@@ -3034,7 +3034,7 @@ void FglForm::jumpToField(QWidget* w, bool b_after){
     {
       if(currPos-destPos <= (cnt_fields / 2))
       {
-          ql_responseevents << getInputEvents(currPos, destPos, true, false, false);
+          ql_responseevents << getInputEvents(currPos, destPos, true, false, b_after);
       }
       else
       {
