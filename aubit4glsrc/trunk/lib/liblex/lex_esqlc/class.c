@@ -495,7 +495,7 @@ dump_class_function (char *class_name, struct s_function_definition *function_de
 
   printc ("if (_nargs!=%d) {A4GL_set_status(-3002,0);A4GL_pop_args(_nargs);return -1;}\n", expanded_params->list.list_len);
 
-  printc ("A4GLSTK_pushFunction(_functionName,_paramnames,_nargs,_module_name,%d);", expanded_params->list.list_len);
+  printc ("A4GLSTK_pushFunction_v2(_functionName,_paramnames,_nargs,_module_name,%d,_objData);", expanded_params->list.list_len);
   tmp_ccnt++;
   print_function_variable_init (&function_definition->variables);
   printc ("{int _lstatus=a4gl_status;");

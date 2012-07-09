@@ -595,7 +595,7 @@ print_connect_cmd (struct_connect_cmd * cmd_data)
       printc ("A4GL_init_session_with_sqltype(%s,", get_ident_as_string (cmd_data->conn_name,'M'));
     }
 
-  print_ident (cmd_data->conn_dbname);
+  print_ident(cmd_data->conn_dbname);
 
   if (cmd_data->username)
     {
