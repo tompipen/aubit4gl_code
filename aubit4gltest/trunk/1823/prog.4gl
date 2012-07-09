@@ -15,8 +15,10 @@ open session s1 to database test1
 display "ok1"
 open session s2 to database "test1"
 display "ok2"
-open session s3 to database w_t1a
+open session _variable("s3") to database test1
 display "ok3"
-open session s3 to database w_t1b
+open session s4 to database w_t1a
 display "ok4"
+open session s5 to database w_t1b
+display "ok5"
 end main
