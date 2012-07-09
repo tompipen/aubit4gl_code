@@ -262,6 +262,11 @@ MainFrame::vdcdebug("RingMenu","selectButton", "QString name");
    }
 }
 
+void RingMenu::setFocusName(QString name)
+{
+    this->focusName = name;
+}
+
 
 //------------------------------------------------------------------------------
 // Method       : buttons()

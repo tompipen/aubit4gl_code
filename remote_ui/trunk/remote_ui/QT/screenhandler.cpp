@@ -718,10 +718,11 @@ MainFrame::vdcdebug("ScreenHandler","nextOption", "QString name, int context");
    }
 
    if(p_fglform->menu() != NULL){
-       p_fglform->menu()->selectButton(name);
-      return;
-   }
-}
+      // p_fglform->menu()->selectButton(name);
+       p_fglform->menu()->setFocusName(name);
+       return;
+    }
+ }
 
 //------------------------------------------------------------------------------
 // Method       : createDialog(QString title, QString FieldValue)
@@ -2175,6 +2176,11 @@ if(qsl_triggereds.size() > 0)
                  }
              }
             p_fglform->ringMenuPulldown()->show();
+         }
+
+         if(p_fglform->menu() != NULL)
+         {
+             p_fglform->menu()->selectButton(p_fglform->menu()->getFocusName());
          }
       }
    }

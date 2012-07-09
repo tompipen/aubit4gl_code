@@ -49,6 +49,8 @@ public:
    void hideButton(QString);
    void showButton(QString);
    void selectButton(QString);
+   void setFocusName (QString);
+   QString getFocusName() const { return focusName; };
    QList<QPushButton*> buttons();
    int buttonId(QPushButton* button){ return buttonGroup->id(button); };
    void createAction(int id = 0, QString text = "");
@@ -73,6 +75,7 @@ private:
    QList<QAction*> ql_menuCommands;
    QList<QAction*> ql_menuActions;
    QWidget *ql_fglform;
+   QString focusName;
 
 protected:
    void resizeEvent(QResizeEvent *);
