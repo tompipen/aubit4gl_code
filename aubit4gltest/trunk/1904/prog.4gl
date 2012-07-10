@@ -18,6 +18,6 @@ DISPLAY "Test"
 END WHILE
 
 
-CALL aclfgl_dump_screen("out")
+#CALL aclfgl_dump_screen("out")
 
 END MAIN

@@ -26,5 +26,5 @@ FOR i = 1 TO str.getLength()
 
 END FOR
 
-CALL aclfgl_dump_screen("out")
+#CALL aclfgl_dump_screen("out")
 END MAIN

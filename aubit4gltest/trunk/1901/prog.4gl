@@ -13,14 +13,18 @@ LET b = ASCII(32)
 
 IF a = b
    THEN DISPLAY "FALSE1"
+	exit program 1
 END IF
 
 IF a = ASCII(10)
    THEN DISPLAY "TRUE1"
+else
+	exit program 1
 END IF
 
 IF a = ASCII(32)
    THEN DISPLAY "FALSE2"
+	exit program 1
 END IF
 
 END MAIN
