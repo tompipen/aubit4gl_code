@@ -639,6 +639,9 @@ A4GLSQLLIB_A4GLSQL_init_connection_internal (char *dbName)
 
 
   A4GL_set_connection_username(u);
+  if (conn) {
+	mysql_close(conn);
+  }
 
   if (strcmp (dbname, "DEFAULT") == 0)
     {
@@ -731,7 +734,13 @@ A4GLSQLLIB_A4GLSQL_close_session_internal (char *sessname)
 #ifdef MYSQL_EMBEDDED
 	mysql_server_end(); 	//Should be called before your program exits.
 #endif
-	
+  if (strcmp(sessname,"default")==0) {
+	if (conn) {
+		mysql_close(conn);
+		conn=NULL;
+		isconnected=0;
+	}
+  }
   A4GL_assertion (1, "Close session not implemented");
   return 0;
 }
