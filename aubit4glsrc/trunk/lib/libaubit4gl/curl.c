@@ -251,7 +251,7 @@ url_fopen (char *url, const char *operation)
 
   memset (file, 0, sizeof (URL_FILE));
 
-  if ((file->handle.file = gzfopen (url, operation)))
+  if ((file->handle.file = A4GL_gzfopen (url, operation)))
     {
       file->type = CFTYPE_FILE;	/* marked as URL */
     }
@@ -309,7 +309,7 @@ url_fclose (URL_FILE * file)
   switch (file->type)
     {
     case CFTYPE_FILE:
-      ret = gzfclose (file->handle.file);	/* passthrough */
+      ret = A4GL_gzfclose (file->handle.file);	/* passthrough */
       break;
 
     case CFTYPE_CURL:
@@ -344,7 +344,7 @@ url_feof (URL_FILE * file)
   switch (file->type)
     {
     case CFTYPE_FILE:
-      ret = gzfeof (file->handle.file);
+      ret = A4GL_gzfeof (file->handle.file);
       break;
 
     case CFTYPE_CURL:
@@ -368,7 +368,7 @@ url_fread (void *ptr, size_t size, size_t nmemb, URL_FILE * file)
   switch (file->type)
     {
     case CFTYPE_FILE:
-      want = gzfread (ptr, size, nmemb, file->handle.file);
+      want = A4GL_gzfread (ptr, size, nmemb, file->handle.file);
       break;
 
     case CFTYPE_CURL:
@@ -415,7 +415,7 @@ url_fgets (char *ptr, int size, URL_FILE * file)
   switch (file->type)
     {
     case CFTYPE_FILE:
-      ptr = gzfgets (ptr, size, file->handle.file);
+      ptr = A4GL_gzfgets (ptr, size, file->handle.file);
       break;
 
     case CFTYPE_CURL:
