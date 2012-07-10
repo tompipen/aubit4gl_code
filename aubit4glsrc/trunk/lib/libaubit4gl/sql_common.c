@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql_common.c,v 1.103 2011-09-19 18:03:02 mikeaubury Exp $
+# $Id: sql_common.c,v 1.104 2012-07-10 08:52:47 mikeaubury Exp $
 #
 */
 
@@ -560,10 +560,12 @@ int
 A4GL_init_session_with_sqltype (char *sessname, char *dsn,  char *usr, char *pwd,char *sqltype)
 {
   int rc;
-
+  char *dsnclipped;
   setSqltype(sqltype);
-
-  rc = A4GLSQL_init_session_internal (sessname, dsn, usr, pwd);
+dsnclipped=strdup(dsn);
+A4GL_trim(dsnclipped);
+  rc = A4GLSQL_init_session_internal (sessname, dsnclipped, usr, pwd);
+free(dsnclipped);
   if (rc == 0) {
     A4GL_apisql_add_sess (sessname,sqltype);
 	run_default_sql();
