@@ -82,8 +82,8 @@ main (int argc, char *argv[])
     {
       int a;
       // We just want to copy from report-file-name to output...
-      FILE *fin;
-      FILE *fout;
+      gzPtr fin;
+      gzPtr fout;
       fin = gzfopen (argv[2 + off], "r");
       if (fin == 0)
 	{
