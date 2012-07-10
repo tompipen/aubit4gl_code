@@ -8,8 +8,8 @@
 
 
 
-#ifndef gzfread
-#error gzfread should be a macro
+#ifndef A4GL_gzfread
+#error A4GL_gzfread should be a macro
 #endif
 
 
@@ -18,7 +18,11 @@ static int debug=0;
 
 void read_entry(struct r_report_block *block) ;
 
-FILE *gzfin=0;
+#if HAVE_LIBCURL
+FILE * gzfin=0;
+#else
+A4GL_gzPtr gzfin=0;
+#endif
 static int lvl;
 int ok;
 
@@ -38,7 +42,7 @@ int a;
 #if HAVE_LIBCURL
   a=url_fread (&n, sizeof (n), 1, gzfin);
 #else
-  a=gzfread (&n, sizeof (n), 1, gzfin);
+  a=A4GL_gzfread (&n, sizeof (n), 1, gzfin);
 #endif
     if (a<1 ) { 
 		A4GL_assertion(1,"Failed to read int");
@@ -58,7 +62,7 @@ static char read_char (void)
 #if HAVE_LIBCURL
   	a=url_fread (&n, sizeof (n), 1, gzfin);
 #else
-  	a=gzfread (&n, sizeof (n), 1, gzfin);
+  	a=A4GL_gzfread (&n, sizeof (n), 1, gzfin);
 #endif
 
 	A4GL_assertion(a<0,"Failed to read character");
@@ -83,7 +87,7 @@ static char * read_string (void)
 #if HAVE_LIBCURL
   a=url_fread (p, n, 1, gzfin);
 #else
-  a=gzfread (p, n, 1, gzfin);
+  a=A4GL_gzfread (p, n, 1, gzfin);
 #endif
 
   if (a<1) { 
@@ -137,7 +141,7 @@ struct r_report *read_report_output(char *fname) {
 #if HAVE_LIBCURL
   gzfin = url_fopen (fname, "rz");
 #else
-  gzfin = gzfopen (fname, "r");
+  gzfin = A4GL_gzfopen (fname, "r");
 #endif
   max_page_no = -1;
   max_line_no = -1;
@@ -211,7 +215,7 @@ struct r_report *read_report_output(char *fname) {
 #if HAVE_LIBCURL
       if (url_feof (gzfin)) break;
 #else
-      if (gzfeof (gzfin)) break;
+      if (A4GL_gzfeof (gzfin)) break;
 #endif
 
       if (buff_c != ENTRY_BLOCK)
@@ -255,7 +259,7 @@ static void read_block ()
 #if HAVE_LIBCURL
 	if (url_feof (gzfin)) { 
 #else
-	if (gzfeof (gzfin)) { 
+	if (A4GL_gzfeof (gzfin)) { 
 #endif
 		printf ("Unexpected EOF\n"); ok=0; return; 
 	}
@@ -266,7 +270,7 @@ static void read_block ()
 #if HAVE_LIBCURL
 	if (url_feof (gzfin)) { 
 #else
-	if (gzfeof (gzfin)) { 
+	if (A4GL_gzfeof (gzfin)) { 
 #endif
 		printf ("Unexpected EOF\n"); ok=0; return; }
 	if (debug) printf("where=%c\n",report->blocks[cblock].where);
@@ -275,7 +279,7 @@ static void read_block ()
 #if HAVE_LIBCURL
 	if (url_feof (gzfin)) { 
 #else
-	if (gzfeof (gzfin)) { 
+	if (A4GL_gzfeof (gzfin)) { 
 #endif
 
 		printf ("Unexpected EOF\n"); ok=0;return; }
@@ -286,7 +290,7 @@ static void read_block ()
 #if HAVE_LIBCURL
 	if (url_feof (gzfin)) { 
 #else
-	if (gzfeof (gzfin)) { 
+	if (A4GL_gzfeof (gzfin)) { 
 #endif
 
 		printf ("Unexpected EOF\n"); ok=0; return; }

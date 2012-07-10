@@ -82,9 +82,9 @@ main (int argc, char *argv[])
     {
       int a;
       // We just want to copy from report-file-name to output...
-      gzPtr fin;
-      gzPtr fout;
-      fin = gzfopen (argv[2 + off], "r");
+      A4GL_gzPtr fin;
+      A4GL_gzPtr fout;
+      fin = A4GL_gzfopen (argv[2 + off], "r");
       if (fin == 0)
 	{
 	  printf ("Unable to open report output\n");
@@ -96,16 +96,16 @@ main (int argc, char *argv[])
 	  exit (1);
 	}
 
-      fout = gzfopen (ofile, "w");
+      fout = A4GL_gzfopen (ofile, "w");
       while (1)
 	{
-	  a = gzfgetc (fin);
+	  a = A4GL_gzfgetc (fin);
 	  if (a==EOF) break;
 	  //if (gzfeof (fin)) break;
-	  gzfputc (a, fout);	// Slow - but it'll do for now..
+	  A4GL_gzfputc (a, fout);	// Slow - but it'll do for now..
 	}
-      gzfclose (fin);
-      gzfclose (fout);
+      A4GL_gzfclose (fin);
+      A4GL_gzfclose (fout);
       exit (0);
     }
 

@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.425 2012-06-05 09:10:15 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.426 2012-07-10 11:36:32 mikeaubury Exp $
 #
 */
 
@@ -2578,28 +2578,30 @@ void A4GLSQLCV_add_temp_table(char *tabname);
 #if HAVE_ZLIB
 
 #include <zlib.h>
-#define gzfopen gzopen
-#define gzfwrite(a,b,c,d) gzwrite(d,a,b*c)
-#define gzfprintf gzprintf
-#define gzfread(a,b,c,d) gzread(d,a,b*c)
-#define gzfeof(f) gzeof(f)
-#define gzfgets( buf,len,f) gzgets(f, buf,len)
-#define gzfclose(a) gzclose(a)
-#define gzfgetc(a) gzgetc(a)
-#define gzfputc(a,b) gzputc(b,a)
+#define A4GL_gzPtr gzFile
+#define A4GL_gzfopen gzopen
+#define A4GL_gzfwrite(a,b,c,d) gzwrite(d,a,b*c)
+#define A4GL_gzfprintf gzprintf
+#define A4GL_gzfread(a,b,c,d) gzread(d,a,b*c)
+#define A4GL_gzfeof(f) gzeof(f)
+#define A4GL_gzfgets( buf,len,f) gzgets(f, buf,len)
+#define A4GL_gzfclose(a) gzclose(a)
+#define A4GL_gzfgetc(a) gzgetc(a)
+#define A4GL_gzfputc(a,b) gzputc(b,a)
 #else
-#define gzfopen fopen
-#define gzfwrite(a,b,c,d) fwrite(a,b,c,d)
-#define gzfread(a,b,c,d) fread(a,b,c,d)
-#define gzfprintf fprintf
-#define gzftell(a) tell(a)
-#define gzfseek(a,b,c) seek(a,b,c)
-#define gzrewind(a) rewind(a)
-#define gzfclose(a) fclose(a)
-#define gzfgets(buf,len,f) fgets(buf,len,f)
-#define gzfeof(f) feof(f)
-#define gzfgetc(a) fgetc(a)
-#define gzfputc(a,b) fputc(a,b)
+#define A4GL_gzPtr FILE *
+#define A4GL_gzfopen fopen
+#define A4GL_gzfwrite(a,b,c,d) fwrite(a,b,c,d)
+#define A4GL_gzfread(a,b,c,d) fread(a,b,c,d)
+#define A4GL_gzfprintf fprintf
+#define A4GL_gzftell(a) tell(a)
+#define A4GL_gzfseek(a,b,c) seek(a,b,c)
+#define A4GL_gzrewind(a) rewind(a)
+#define A4GL_gzfclose(a) fclose(a)
+#define A4GL_gzfgets(buf,len,f) fgets(buf,len,f)
+#define A4GL_gzfeof(f) feof(f)
+#define A4GL_gzfgetc(a) fgetc(a)
+#define A4GL_gzfputc(a,b) fputc(a,b)
 #endif
 #endif
 

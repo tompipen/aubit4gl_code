@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: function_call_stack.c,v 1.47 2012-06-05 09:10:16 mikeaubury Exp $
+# $Id: function_call_stack.c,v 1.48 2012-07-10 11:36:33 mikeaubury Exp $
 #*/
 
 /**
@@ -709,7 +709,6 @@ for (a=0;a<functionCallPointer;a++) {
 		if (objId==objectID) return 1;
 	}
 }
-
 return 0;
 }
 

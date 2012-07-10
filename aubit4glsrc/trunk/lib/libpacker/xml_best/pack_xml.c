@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pack_xml.c,v 1.4 2010-03-17 19:02:38 mikeaubury Exp $
+# $Id: pack_xml.c,v 1.5 2012-07-10 11:36:33 mikeaubury Exp $
 #*/
 
 /**
@@ -160,9 +160,9 @@ A4GLPacker_A4GL_pack_all (char *name, void *s, char *filename)
 		if (!strstr(buff,".gz")) {
 			strcat(buff,".gz");
 		}
-		ofile=gzfopen(buff,"wb");
+		ofile=A4GL_gzfopen(buff,"wb");
 #else
-		ofile=gzfopen(buff,"wb");
+		ofile=A4GL_gzfopen(buff,"wb");
 #endif
 
 		if (ofile) {
@@ -170,8 +170,8 @@ A4GLPacker_A4GL_pack_all (char *name, void *s, char *filename)
 			struct variable_list *v;
 			struct variable_list *v2;
 			int c;
-			gzfprintf(ofile,"<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"); 
-			gzfprintf(ofile,"<!DOCTYPE module_definition SYSTEM \"module_def.dtd\">\n");
+			A4GL_gzfprintf(ofile,"<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"); 
+			A4GL_gzfprintf(ofile,"<!DOCTYPE module_definition SYSTEM \"module_def.dtd\">\n");
 			int b=0;
 			
 			m=s;
@@ -192,7 +192,7 @@ A4GLPacker_A4GL_pack_all (char *name, void *s, char *filename)
 	
 	
 			XMLWrite_module_definition(0,s);
-			gzfclose(ofile);
+			A4GL_gzfclose(ofile);
 		} else {
 			return 0;
 		}
@@ -224,14 +224,14 @@ A4GLPacker_A4GL_unpack_all (char *name, void *s, char *filename)
 #endif
 
 		strcpy(buff,filename); 
-		f=gzfopen(buff,"r"); // try it as it is...
+		f=A4GL_gzfopen(buff,"r"); // try it as it is...
 
 		if (f==0) {
 			// Well - that didn't work..
 			if (!strstr(buff,".xml")) { // Does it have a '.xml' in it ? 
 				// Nope- well - lets try adding one - see if that makes a difference...
 				strcat(buff,".xml");
-				f=gzfopen(buff,"r");
+				f=A4GL_gzfopen(buff,"r");
 			}
 		}
 
@@ -240,10 +240,10 @@ A4GLPacker_A4GL_unpack_all (char *name, void *s, char *filename)
 	
 		if (!yylex()) {
 			memcpy(s,last_module,sizeof(t_module_definition));
-			gzfclose(f);
+			A4GL_gzfclose(f);
 			return 1;
         	} else {
-			gzfclose(f);
+			A4GL_gzfclose(f);
 			return 0;
         	}
 	}
@@ -261,7 +261,7 @@ void Call_Callback(char *s,char *n,void *data ) {
 void gzoutstr(FILE *o, char *name, char *value) {
 char buff[100000];
 	sprintf(buff," %s='%s' ",name,value);
-	gzfwrite(buff,strlen(buff),1,o);
+	A4GL_gzfwrite(buff,strlen(buff),1,o);
 }
 
 char *xml_encode(char *su) {
