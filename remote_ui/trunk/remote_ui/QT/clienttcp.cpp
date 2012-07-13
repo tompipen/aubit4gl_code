@@ -1369,6 +1369,56 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
 
          }
 
+         if(qs_name == "ui.vdc.execute")
+         {
+
+             QStringList params;
+
+             for(int k=0; k<paramsElement.childNodes().count(); k++){
+                QDomElement valuesElement = paramsElement.childNodes().at(k).toElement();
+                params << valuesElement.text();
+
+             }
+             QString fileName = params.at(0);
+
+             QString fileLockName = QString(".~lock.%1#").arg(fileName);
+             fileName = QDir::tempPath() + "/" + fileName;
+             QFileInfo fileInfo(fileName);
+
+             #ifdef Q_WS_X11
+                if(QDesktopServices::openUrl(QUrl(QString("file://" + fileInfo.absoluteFilePath()), QUrl::TolerantMode)))
+                {
+                    sleep(7);
+                    for(int i=0; i < 10; i++)
+                    {
+                        QFile file(QDir::tempPath() + "/" + fileLockName);
+                        if(!file.exists())
+                        {
+                            returnvalues << "1";
+                            break;
+                        }
+                        sleep(2);
+                    }
+                }
+             #else
+                if(QDesktopServices::openUrl(QUrl(QString("file:///" + fileInfo.absoluteFilePath()), QUrl::TolerantMode)))
+                {
+                sleep(7);
+                    for(int i=0; i < 10; i++)
+                    {
+                        QFile file(fileName);
+
+                        if(file.open(QIODevice::ReadWrite))
+                        {
+                            returnvalues << "1";
+                            break;
+                        }
+                        sleep(2);
+                    }
+                }
+             #endif
+         }
+
          if(qs_name == "ui.interface.settext"){
             QDomElement values = childElement.firstChildElement();
             QDomElement valueElement = values.firstChildElement();
