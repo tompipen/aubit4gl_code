@@ -1388,8 +1388,8 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
              #ifdef Q_WS_X11
                 if(QDesktopServices::openUrl(QUrl(QString("file://" + fileInfo.absoluteFilePath()), QUrl::TolerantMode)))
                 {
-                    sleep(7);
-                    for(int i=0; i < 10; i++)
+                    sleep(10);
+                    for(int i=0; i < 10000; i++)
                     {
                         QFile file(QDir::tempPath() + "/" + fileLockName);
                         if(!file.exists())
@@ -1403,8 +1403,8 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
              #else
                 if(QDesktopServices::openUrl(QUrl(QString("file:///" + fileInfo.absoluteFilePath()), QUrl::TolerantMode)))
                 {
-                sleep(7);
-                    for(int i=0; i < 10; i++)
+                sleep(10);
+                    for(int i=0; i < 10000; i++)
                     {
                         QFile file(fileName);
 
