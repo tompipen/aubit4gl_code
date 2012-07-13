@@ -25,7 +25,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.205 2012-06-13 18:33:58 mikeaubury Exp $
+# $Id: ops.c,v 1.206 2012-07-13 10:18:18 siverly Exp $
 #
 */
 
@@ -3346,7 +3346,7 @@ A4GL_smfloat_float_ops (int op)
 void
 A4GL_int_in_ops (int op)
 {
-  int a;
+  long a;
   struct ival in2;
   struct ival *pi2;
   int ival_data[10];
@@ -3586,7 +3586,7 @@ A4GL_int_in_ops (int op)
 void
 A4GL_in_int_ops (int op)
 {
-  int a;
+  long a;
   struct ival in;
   int ival_data[10];
   int isneg_ival;
