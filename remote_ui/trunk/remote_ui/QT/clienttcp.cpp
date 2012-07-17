@@ -1440,22 +1440,38 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
                         sleep(2);
                     }
                 }
-             #else
-                if(QDesktopServices::openUrl(QUrl(QString("file:///" + fileInfo.absoluteFilePath()), QUrl::TolerantMode)))
-                {
-                sleep(10);
-                    for(int i=0; i < 10000; i++)
-                    {
-                        QFile file(fileName);
-
-                        if(file.open(QIODevice::ReadWrite))
+                #endif
+                #ifdef Q_WS_MAC
+                   if(QDesktopServices::openUrl(QUrl(QString("file:///" + fileInfo.absoluteFilePath()), QUrl::TolerantMode)))
+                   {
+                       sleep(10);
+                       for(int i=0; i < 10000; i++)
+                       {
+                           QFile file(QDir::tempPath() + "/" + fileLockName);
+                           if(!file.exists())
+                           {
+                               returnvalues << "1";
+                               break;
+                           }
+                           sleep(2);
+                       }
+                   }
+                #endif
+                #ifdef Q_WS_WIN
+                    QProcess process;
+                    process.startDetached(QString("rundll32 url.dll,FileProtocolHandler \"%1\"").arg( fileInfo.absoluteFilePath()));
+                    sleep(10);
+                        for(int i=0; i < 10000; i++)
                         {
-                            returnvalues << "1";
-                            break;
+                            QFile file(fileName);
+
+                            if(file.open(QIODevice::ReadWrite))
+                            {
+                                returnvalues << "1";
+                                break;
+                            }
+                            sleep(2);
                         }
-                        sleep(2);
-                    }
-                }
              #endif
          }
 
