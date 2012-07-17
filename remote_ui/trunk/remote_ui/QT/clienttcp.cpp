@@ -1030,8 +1030,13 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
 */
       #ifdef Q_WS_X11      
          QDesktopServices::openUrl(QUrl(QString("file://" + fileInfo.absoluteFilePath()), QUrl::TolerantMode));
-      #else
+      #endif
+      #ifdef Q_WS_MAC
          QDesktopServices::openUrl(QUrl(QString("file:///" + fileInfo.absoluteFilePath()), QUrl::TolerantMode));
+      #endif
+      #ifdef Q_WS_WIN
+         QProcess process;
+         process.startDetached(QString("rundll32 url.dll,FileProtocolHandler \"%1\"").arg( fileInfo.absoluteFilePath()));
       #endif
       //sleep(3);
       return;
