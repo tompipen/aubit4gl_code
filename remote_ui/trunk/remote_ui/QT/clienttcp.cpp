@@ -385,6 +385,27 @@ connect(&ph, SIGNAL(closeProgressWindow(int)), p_currScreenHandler, SLOT(closePr
 
 connect(&ph, SIGNAL(setProgressVisible(int,bool)), p_currScreenHandler, SLOT(setProgressVisible(int,bool)));
 
+
+connect(&ph, SIGNAL(printpdf(QString)), p_currScreenHandler, SLOT(printpdf(QString)));
+
+//UI-Combobox
+
+connect(&ph, SIGNAL(fornameComboBox(QString)), p_currScreenHandler, SLOT(fornameComboBox(QString)));
+
+connect(&ph, SIGNAL(getColumnNameComboBox(int)), p_currScreenHandler, SLOT(getColumnNameComboBox(int)));
+
+connect(&ph, SIGNAL(clearComboBox(int)), p_currScreenHandler, SLOT(clearComboBox(int)));
+connect(&ph, SIGNAL(addComboBoxItem(int, QString, QString)), p_currScreenHandler, SLOT(addComboBoxItem(int, QString, QString)));
+connect(&ph, SIGNAL(removeComboBoxItem(int, QString)), p_currScreenHandler, SLOT(removeComboBoxItem(int, QString)));
+connect(&ph, SIGNAL(getItemNameComboBox(int,int)), p_currScreenHandler, SLOT(getItemNameComboBox(int,int)));
+connect(&ph, SIGNAL(getItemCountComboBox(int)), p_currScreenHandler, SLOT(getItemCountComboBox(int)));
+connect(&ph, SIGNAL(getItemTextComboBox(int, int)), p_currScreenHandler, SLOT(getItemTextComboBox(int,int)));
+connect(&ph, SIGNAL(getTableNameComboBox(int)), p_currScreenHandler, SLOT(getTableNameComboBox(int)));
+connect(&ph, SIGNAL(getIndexOfComboBox(int,QString)), p_currScreenHandler, SLOT(getIndexOfComboBox(int,QString)));
+
+
+
+
 }
 
 
@@ -634,7 +655,9 @@ MainFrame::vdcdebug("ProtocolHandler","run", "");
          qsl_xmlCommands.insert(i, tmpstring);
       QString errorMsg;
       int errorLine, errorCol;
+
       if (!doc.setContent(qsl_xmlCommands.at(i), &errorMsg, &errorLine, &errorCol)){
+         qDebug()<<"MISSMATCH : "<<qsl_xmlCommands.at(i);
          QString str = errorMsg + "\n" +
                        "Line:" + QString::number(errorLine) + "\n" +
                        "Column" + QString::number(errorCol);
@@ -1231,6 +1254,18 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
             returnvalues <<"Test"; 
          }
 
+         if(qs_name == "ui.vdc.printpdf"){
+             QStringList params;
+             for(int k=0; k<paramsElement.childNodes().count(); k++){
+                QDomElement valuesElement = paramsElement.childNodes().at(k).toElement();
+                params << valuesElement.text();
+             }
+             emit printpdf(params.at(0));
+             //We open the qprintdialog in the screenhandler so we have only there the returncode
+             expect = 0;
+
+           }
+
          if(qs_name == "ui.vdc.repgen"){
 
            QStringList params;
@@ -1446,7 +1481,7 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
                   value = valuesElement.text();
                }
             }
-            p_currScreenHandler->addComboBoxItem(id, text, value);
+            addComboBoxItem(id, text, value);
          }
 
          if(qs_name == "ui.combobox.removeitem"){
@@ -1463,7 +1498,7 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
                   text = valuesElement.text();
                }
             }
-            p_currScreenHandler->removeComboBoxItem(id, text);
+            removeComboBoxItem(id, text);
          }
 
          if(qs_name == "ui.combobox.clear"){
@@ -1477,14 +1512,19 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
             QDomElement values = childElement.firstChildElement();
             QDomElement valueElement = values.firstChildElement();
             QString value = valueElement.text();
-            returnvalues << QString::number(p_currScreenHandler->currForm()->findFieldIdByName(value));
+            //returnvalues << QString::number(p_currScreenHandler->currForm()->findFieldIdByName(value));
+            fornameComboBox(value);
+            //Important, threadsafe
+            expect = 0;
          }
 
          if(qs_name == "ui.combobox.getcolumnname"){
             QDomElement values = childElement.firstChildElement();
             QDomElement valueElement = values.firstChildElement();
             int id = valueElement.text().toInt();
-            returnvalues <<  WidgetHelper::getWidgetColName(p_currScreenHandler->currForm()->findFieldById(id));
+        //    returnvalues <<  WidgetHelper::getWidgetColName(p_currScreenHandler->currForm()->findFieldById(id));
+            getColumnNameComboBox(id);
+            expect = 0;
          }
 
          if(qs_name == "ui.combobox.getitemname"){
@@ -1500,19 +1540,18 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
                   pos = valuesElement.text().toInt();
                }
             }
-            if(ComboBox *cb = qobject_cast<ComboBox *> (p_currScreenHandler->currForm()->findFieldById(id))){
-               returnvalues << cb->itemData(pos-1).toString();
-            }
+            getItemNameComboBox(id, pos);
+
+
+            expect = 0;
          }
 
          if(qs_name == "ui.combobox.getitemcount"){
             QDomElement values = childElement.firstChildElement();
             QDomElement valueElement = values.firstChildElement();
             int id = valueElement.text().toInt();
-            if(ComboBox *cb = qobject_cast<ComboBox *> (p_currScreenHandler->currForm()->findFieldById(id))){
-
-                returnvalues << QString::number(cb->count());
-            }
+            getItemCountComboBox(id);
+            expect = 0;
          }
 
          if(qs_name == "ui.combobox.getitemtext"){
@@ -1528,16 +1567,17 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
                   pos = valuesElement.text().toInt();
                }
             }
-            if(ComboBox *cb = qobject_cast<ComboBox *> (p_currScreenHandler->currForm()->findFieldById(id))){
-               returnvalues << cb->itemText(pos-1);
-            }
+
+            getItemTextComboBox(id, pos);
+            expect = 0;
          }
 
          if(qs_name == "ui.combobox.gettablename"){
             QDomElement values = childElement.firstChildElement();
             QDomElement valueElement = values.firstChildElement();
             int id = valueElement.text().toInt();
-            returnvalues << WidgetHelper::getWidgetTabName(p_currScreenHandler->currForm()->findFieldById(id));
+            getTableNameComboBox(id);
+            expect = 0;
          }
 
          if(qs_name == "ui.combobox.gettag"){
@@ -1556,9 +1596,9 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
                    text = valuesElement.text();
                 }
              }
-             if(ComboBox *cb = qobject_cast<ComboBox *> (p_currScreenHandler->currForm()->findFieldById(id))){
-                 returnvalues << QString::number(cb->findText(text));
-             }
+             getIndexOfComboBox(id, text);
+             expect = 0;
+
          }
 
          if(qs_name == "ui.menu.showhide"){

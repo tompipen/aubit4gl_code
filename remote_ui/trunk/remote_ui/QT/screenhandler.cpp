@@ -3482,6 +3482,63 @@ void ScreenHandler::clearComboBox(int id)
    }
 }
 
+void ScreenHandler::fornameComboBox(QString fieldname)
+{
+        fglFormResponse("<TRIGGERED ID=\"-123\"><SVS><SV>" + QString::number(currForm()->findFieldIdByName(fieldname)) + "</SV></SVS></TRIGGERED>");
+}
+
+void ScreenHandler::getColumnNameComboBox(int id)
+{
+    fglFormResponse("<TRIGGERED ID=\"-123\"><SVS><SV>" + WidgetHelper::getWidgetColName(currForm()->findFieldById(id)) + "</SV></SVS></TRIGGERED>");
+}
+
+void ScreenHandler::getItemNameComboBox(int id, int pos)
+{
+    QString ret = "";
+
+    if(ComboBox *cb = qobject_cast<ComboBox *> (currForm()->findFieldById(id))){
+       ret = cb->itemData(pos-1).toString();
+    }
+
+    fglFormResponse("<TRIGGERED ID=\"-123\"><SVS><SV>" + ret + "</SV></SVS></TRIGGERED>");
+}
+
+void ScreenHandler::getItemCountComboBox(int id)
+{
+    QString ret = "-1";
+    if(ComboBox *cb = qobject_cast<ComboBox *> (currForm()->findFieldById(id))){
+        ret =  QString::number(cb->count());
+    }
+
+    fglFormResponse("<TRIGGERED ID=\"-123\"><SVS><SV>" + ret + "</SV></SVS></TRIGGERED>");
+}
+
+void ScreenHandler::getItemTextComboBox(int id, int pos)
+{
+    QString ret = "";
+    if(ComboBox *cb = qobject_cast<ComboBox *> (currForm()->findFieldById(id))){
+       ret =  cb->itemText(pos-1);
+    }
+    fglFormResponse("<TRIGGERED ID=\"-123\"><SVS><SV>" + ret + "</SV></SVS></TRIGGERED>");
+
+}
+
+void ScreenHandler::getTableNameComboBox(int id)
+{
+    fglFormResponse("<TRIGGERED ID=\"-123\"><SVS><SV>" + WidgetHelper::getWidgetTabName(currForm()->findFieldById(id)) + "</SV></SVS></TRIGGERED>");
+}
+
+void ScreenHandler::getIndexOfComboBox(int id, QString text)
+{
+    QString ret = "-1";
+    if(ComboBox *cb = qobject_cast<ComboBox *> (currForm()->findFieldById(id))){
+        ret = QString::number(cb->findText(text));
+    }
+    fglFormResponse("<TRIGGERED ID=\"-123\"><SVS><SV>" + ret + "</SV></SVS></TRIGGERED>");
+
+}
+
+
 void ScreenHandler::setRuninfo(int mode, QString cmd, int runcnt, bool start)
 {
     /*
@@ -3776,6 +3833,121 @@ Q_UNUSED(obj);
   w_progress->hide();
   delete w_progress;
   w_progress = NULL;
+}
+
+void ScreenHandler::printpdf(QString filename)
+{
+/*
+
+  QFile pdffile(filename);
+  if(!pdffile.open(QFile::ReadOnly))
+  {
+      QFile tmppdffile(QDir::tempPath() + "/" + filename);
+      if(!tmppdffile.open(QFile::ReadOnly))
+      {
+         return; // File not found
+      }
+      else
+      {
+         filename = QDir::tempPath() + "/" + filename;
+      }
+      tmppdffile.close();
+  }
+
+  pdffile.close();
+
+  Poppler::Document *pdf = Poppler::Document::load(filename);
+
+
+//  pdf->setRenderHint(Poppler::Document::Antialiasing);
+ // pdf->setRenderHint(Poppler::Document::TextAntialiasing);
+
+  qDebug()<<pdf->renderBackend();
+
+  pdf->setRenderBackend(Poppler::Document::ArthurBackend);
+  QPrinter printer(QPrinter::ScreenResolution);
+  QPrintDialog printdialog(&printer, p_fglform);
+
+
+  printdialog.setMinMax(1, pdf->numPages());
+
+
+  if(printdialog.exec() == QDialog::Accepted)
+  {
+
+  int start = printdialog.fromPage()-1;
+  int end   = printdialog.toPage();
+
+  if(start == -1)
+    start = 0;
+
+  if(end == 0)
+  {
+     end = pdf->numPages();
+  }
+
+
+  int print_dpi_y = printer.physicalDpiY();
+
+  int print_dpi_x = printer.physicalDpiX();
+
+
+
+  int pagewidth = printerrect.wi
+
+  //QPainter painter;
+
+  QPainter *painter = new QPainter();
+
+  painter->begin(&printer);
+//  painter.setRenderHint(QPainter::Antialiasing);
+ // painter.setRenderHint(QPainter::TextAntialiasing);
+
+  for(int i = start; i<end; i++)
+  {
+      if(i != start)
+      {
+          printer.newPage();
+      }
+
+      Poppler::Page *page = pdf->page(i);
+
+
+      if(page->renderToPainter(painter, print_dpi_x, print_dpi_y))
+      {
+          qDebug()<<"Lübt";
+      }
+      else
+      {
+          qDebug()<<"Fail";
+      }
+
+     //  QImage img = page->renderToImage(print_dpi_x, print_dpi_y);
+   //   QPixmap pix = QPixmap::fromImage(img, Qt::AutoColor);
+  //    int pixWidth = printerrect.width();
+  //    int pixHeight = printerrect.height();
+  //    pix = pix.scaled(pixWidth, pixHeight, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+     // QLabel *label = new QLabel();
+
+    //  label->setPixmap(pix);
+    //  label->show();
+      //painter.drawImage(0,0,img);
+      //painter.drawPixmap(0, 0, pix);
+      //painter.drawImage(painter.window(), img, QRectF(0,0, img.width(), img.height()));
+
+      delete page;
+  }
+
+ // delete painter;
+  painter->end();
+
+
+}
+
+
+
+  delete pdf;
+*/
 }
 
 

@@ -121,6 +121,8 @@ signals:
    void showOption(QString);
    void nextOption(QString, int context);
 
+   void printpdf(QString);
+
 
    void displayError(QString);
    void displayMessage(QString);
@@ -171,6 +173,16 @@ signals:
    void activeWindow(QString);
    void fileBrowser(QString, QString, QString, QString, QString);
 
+   void fornameComboBox(QString);
+   void getColumnNameComboBox(int);
+   void clearComboBox(int);
+   void addComboBoxItem(int, QString, QString);
+   void removeComboBoxItem(int, QString);
+   void getItemNameComboBox(int, int);
+   void getItemCountComboBox(int);
+   void getItemTextComboBox(int, int);
+   void getTableNameComboBox(int);
+   void getIndexOfComboBox(int, QString);
 
    #ifdef KDChart_Version
    void createGantt();

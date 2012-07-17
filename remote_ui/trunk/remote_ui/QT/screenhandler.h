@@ -40,6 +40,7 @@ class FglForm;
 #include "models/progress.h"
 #include <QVector>
 #include <QVariant>
+//#include <poppler/qt4/poppler-qt4.h>
 
 class ScreenHandler : public QObject
 {
@@ -89,9 +90,7 @@ public:
    void setEnv(QString, QString);
    void setInterfaceText(QString);
 
-   void addComboBoxItem(int, QString, QString);
-   void removeComboBoxItem(int, QString);
-   void clearComboBox(int);
+
       FglForm *p_fglform;
    typedef QVector<QVariant> chartVector;
 
@@ -236,6 +235,22 @@ public slots:
    void createProgressWindow();
    void closeProgressWindow(int obj);
 
+
+   //ui.vdc.printpdf
+   void printpdf(QString);
+
+
+   void fornameComboBox(QString);
+   void getColumnNameComboBox(int);
+
+   void clearComboBox(int);
+   void addComboBoxItem(int, QString, QString);
+   void removeComboBoxItem(int, QString);
+   void getItemNameComboBox(int, int);
+   void getItemCountComboBox(int);
+   void getItemTextComboBox(int, int);
+   void getTableNameComboBox(int);
+   void getIndexOfComboBox(int, QString);
 
 
 
