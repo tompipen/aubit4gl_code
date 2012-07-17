@@ -2180,7 +2180,10 @@ if(qsl_triggereds.size() > 0)
 
          if(p_fglform->menu() != NULL)
          {
-             p_fglform->menu()->selectButton(p_fglform->menu()->getFocusName());
+             if(!p_fglform->inputArray())
+             {
+                 p_fglform->menu()->selectButton(p_fglform->menu()->getFocusName());
+             }
          }
       }
    }
