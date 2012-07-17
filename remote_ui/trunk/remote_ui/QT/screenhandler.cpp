@@ -2180,7 +2180,7 @@ if(qsl_triggereds.size() > 0)
 
          if(p_fglform->menu() != NULL)
          {
-             if(!p_fglform->inputArray())
+             if(p_fglform->state() == Fgl::MENU )
              {
                  p_fglform->menu()->selectButton(p_fglform->menu()->getFocusName());
              }
