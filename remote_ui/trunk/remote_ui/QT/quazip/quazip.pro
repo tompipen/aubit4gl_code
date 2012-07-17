@@ -3,7 +3,7 @@ CONFIG += qt warn_on
 QT -= gui
 DEPENDPATH += .
 INCLUDEPATH += .
-TARGET = $$OUT_PWD/lib/quazip
+TARGET = ../lib/quazip
 DEFINES += QUAZIP_BUILD
 CONFIG(staticlib): DEFINES += QUAZIP_STATIC
 
