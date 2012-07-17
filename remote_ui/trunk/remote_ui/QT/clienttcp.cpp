@@ -1424,20 +1424,26 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
              QString fileLockName = QString(".~lock.%1#").arg(fileName);
              fileName = QDir::tempPath() + "/" + fileName;
              QFileInfo fileInfo(fileName);
+             int cnt = 0;
 
              #ifdef Q_WS_X11
                 if(QDesktopServices::openUrl(QUrl(QString("file://" + fileInfo.absoluteFilePath()), QUrl::TolerantMode)))
                 {
-                    sleep(10);
-                    for(int i=0; i < 10000; i++)
+                    //sleep(10);
+                    for(int i=0; i < 10000000; i++)
                     {
                         QFile file(QDir::tempPath() + "/" + fileLockName);
                         if(!file.exists())
                         {
-                            returnvalues << "1";
-                            break;
+                            if(cnt == 1)
+                            {
+                                returnvalues << "1";
+                                break;
+                            }
+                        } else {
+                            cnt = 1;
                         }
-                        sleep(2);
+                        usleep(50000L);
                     }
                 }
                 #endif
