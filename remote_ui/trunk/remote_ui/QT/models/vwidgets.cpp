@@ -1809,7 +1809,9 @@ MainFrame::vdcdebug("WidgetHelper","createComboBox", "const QDomElement& formFie
 
    QFontMetrics fm = comboBox->fontMetrics();
    int width = w*fm.averageCharWidth()*VDC::getFieldSizeFactor()+10;
-   comboBox->resize(QSize(width, VDC::DEFAULT_HEIGHT*height));
+   //  comboBox->resize(QSize(width, VDC::DEFAULT_HEIGHT*height));
+   comboBox->setFixedWidth(width);
+   comboBox->setFixedHeight(VDC::DEFAULT_HEIGHT*height);
 
 
    return comboBox;
