@@ -2536,6 +2536,12 @@ MainFrame::vdcdebug("ScreenHandler","displayError", "QString text");
 
       if(text.isEmpty())
         return;
+      if(FglForm *form = qobject_cast<FglForm*> (QApplication::activeWindow()))
+      {
+         StatusBar *sb = (StatusBar*) form->statusBar();
+         sb->displayError(text);
+         return;
+      }
       Dialog *errorDialog = new Dialog(tr("Error"), text, "dialog", "stop", NULL);
       errorDialog->setModal(true);
       errorDialog->createButton(1, "OK", "OK", "ok.png");
@@ -2574,7 +2580,13 @@ MainFrame::vdcdebug("ScreenHandler","displayMessage", "QString text");
    {
        if(text.isEmpty())
          return;
-      Dialog *errorDialog = new Dialog(tr("Message"), text, "dialog", "info", NULL);
+       if(FglForm *form = qobject_cast<FglForm*> (QApplication::activeWindow()))
+       {
+          StatusBar *sb = (StatusBar*) form->statusBar();
+          sb->displayError(text);
+          return;
+       }
+       Dialog *errorDialog = new Dialog(tr("Message"), text, "dialog", "info", NULL);
       errorDialog->setModal(true);
       errorDialog->createButton(1, "OK", "OK", "ok.png");
       QPushButton *qpb = (QPushButton *) errorDialog->getAction("OK")->parent();
