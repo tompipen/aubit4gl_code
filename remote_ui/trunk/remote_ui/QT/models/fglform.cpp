@@ -1159,13 +1159,13 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
       else
       {*/
       //qDebug() << "context->fieldList()" << context->fieldList();
-         if(LineEdit *le = qobject_cast<LineEdit *> (obj))
+        if(LineEdit *le = qobject_cast<LineEdit *> (obj))
          {
              if(le->autoNext() == 1)
              {
-                 if(le->maxLength() <= le->text().length())
+                 if(le->maxLength() <= le->text().length()+1 && !le->hasSelectedText())
                  {
-                     if((keyEvent->key() >= 65 && keyEvent->key() <= 90) || (keyEvent->key() >= 49 && keyEvent->key() <= 57))
+                     if((keyEvent->key() >= 65 && keyEvent->key() <= 90) || (keyEvent->key() >= 48 && keyEvent->key() <= 57))
                      {
                          QMetaObject::invokeMethod(this, "nextfield", Qt::QueuedConnection);
                      }
