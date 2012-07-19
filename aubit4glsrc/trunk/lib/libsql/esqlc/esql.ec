@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.257 2012-03-23 10:03:46 mikeaubury Exp $
+# $Id: esql.ec,v 1.258 2012-07-19 11:33:56 mikeaubury Exp $
 #
 */
 
@@ -188,7 +188,7 @@ static loc_t *add_blob(struct s_sid *sid, int n, struct s_extra_info *e,fglbyte 
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.257 2012-03-23 10:03:46 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.258 2012-07-19 11:33:56 mikeaubury Exp $";
 #endif
 
 
@@ -2378,10 +2378,12 @@ deallocateDescriptors (struct s_sid *sid)
 
   if (sid->obind != (struct BINDING *) 0 && sid->no > 0)
     {
-      descriptorName = sid->outputDescriptorName;
-      EXEC SQL DEALLOCATE DESCRIPTOR:descriptorName;
-      free (descriptorName);
-      sid->outputDescriptorName = 0;
+	if (sid->outputDescriptorName) {
+      		descriptorName = sid->outputDescriptorName;
+      		EXEC SQL DEALLOCATE DESCRIPTOR:descriptorName;
+      		free (descriptorName);
+      		sid->outputDescriptorName = 0;
+	}
     }
 	sqlca.sqlwarn.sqlwarn0=buff[0]; sqlca.sqlwarn.sqlwarn1=buff[1]; sqlca.sqlwarn.sqlwarn2=buff[2]; sqlca.sqlwarn.sqlwarn3=buff[3]; sqlca.sqlwarn.sqlwarn4=buff[4]; sqlca.sqlwarn.sqlwarn5=buff[5];
   if (isSqlError ())
