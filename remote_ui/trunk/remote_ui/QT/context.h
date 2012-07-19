@@ -41,6 +41,7 @@ public:
    void setPaletteForWidget(QWidget*);
    */
 
+   void refreshInputArrayAttributes();
 private:
    Fgl::State fgl_state;
    QList<QWidget*> ql_fieldList;

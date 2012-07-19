@@ -944,7 +944,7 @@ if(!p_fglform)
             diffevent = getForm()->getFormEvent(event);
             if(diffevent.id != event.id)
             {
-            ql_events += diffevent;
+               ql_events += diffevent;
             }
         //    i_arrLine = current.row()+1;
         //    i_scrLine = current.row()+1;
@@ -958,7 +958,7 @@ if(!p_fglform)
       diffevent = getForm()->getFormEvent(event);
       if(diffevent.id != event.id)
       {
-      ql_events += diffevent;
+         ql_events += diffevent;
       }
       
       // only allow focus for fields that have a focus policy
@@ -1035,6 +1035,7 @@ if(!p_fglform)
               returnevent.id += ",";
        }
          addToQueue(returnevent);
+         targetfield = current;
    }
 
 

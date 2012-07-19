@@ -47,6 +47,7 @@ public:
    QPointer<QWidget> curr_editor;
    QAction *columnAct;
    QModelIndex eventfield;
+   QModelIndex targetfield;
    /*
    void setViewPalette();
    void restoreViewPalette();

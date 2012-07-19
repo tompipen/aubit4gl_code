@@ -277,6 +277,25 @@ void Context::addField(QWidget *field)
     }
 }
 
+
+void Context::refreshInputArrayAttributes()
+{
+    //Only Inputarray
+    if(fgl_state != Fgl::INPUTARRAY && fgl_state != Fgl::DISPLAYARRAY)
+        return;
+
+    for(int i=0; i<ql_fieldList.count(); i++){
+
+        if(TableView *tableView = qobject_cast<TableView *> (ql_fieldList.at(i))){
+            this->screenRecordRowChanged(tableView->targetfield, tableView->targetfield);
+            tableView->targetfield = QModelIndex();
+            return;
+        }
+    }
+}
+
+
+
 void Context::addScreenRecord(QWidget *screenRec, bool input)
 {
   MainFrame::vdcdebug("Context","addScreenRecord", "QWidget *screenRec, bool input");

@@ -90,6 +90,11 @@ for(int i = 0; i<id.id.size(); i++)
                currEvent.attribute = ev.attribute;
 
            }
+
+           if((ev.type == Fgl::BEFORE_FIELD_EVENT || ev.type == Fgl::BEFORE_ROW_EVENT) && (p_currForm->state() == Fgl::INPUTARRAY || p_currForm->state() == Fgl::DISPLAYARRAY))
+           {
+               p_currForm->context->refreshInputArrayAttributes();
+           }
            break;
        }
 
@@ -136,6 +141,9 @@ for(int i = 0; i<id.id.size(); i++)
 
       int arrLine = p_currForm->context->getOption("ARRLINE")+1;
       if(arrLine <= 0) arrLine = 1;
+
+
+
 
       responseElement.setAttribute("SCRLINE", scrLine);
 
