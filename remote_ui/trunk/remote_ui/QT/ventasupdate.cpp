@@ -13,10 +13,10 @@ VentasUpdate::VentasUpdate(int errorDisplay, QWidget *parent) : QWidget()
         VDCsetup = new QFile(QDir::tempPath() + "/VDCsetup.exe");
     #endif
     #ifdef Q_WS_X11
-        VDCsetup = new QFile(QDir::tempPath() + "/VDCsetup.zip");
+        VDCsetup = new QFile(QDir::tempPath() + "/VDCsetup.deb");
     #endif
     #ifdef Q_WS_MAC
-        VDCsetup = new QFile(QDir::tempPath() + "/VDCsetup.pkg");
+        VDCsetup = new QFile(QDir::tempPath() + "/VDCsetup.dmg");
     #endif
 
 
@@ -64,10 +64,10 @@ void VentasUpdate::loadFileFromServer()
     connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(updateReady(QNetworkReply*)));
 
     #ifdef Q_WS_MAC
-        m_fileName = QString("VDCsetup.pkg");
+        m_fileName = QString("VDCsetup.dmg");
     #endif
     #ifdef Q_WS_X11
-        m_fileName = QString("VDCsetup.zip");
+        m_fileName = QString("VDCsetup.deb");
     #endif
     #ifdef Q_WS_WIN
         m_fileName = QString("VDCsetup.exe");
@@ -371,8 +371,12 @@ void VentasUpdate::updateReady(QNetworkReply *reply)
 {
 
     #ifdef Q_WS_MAC
-       QFile *file = new QFile(QDir::tempPath() + "/vdc-update.pkg");
-    #else
+       QFile *file = new QFile(QDir::tempPath() + "/vdc-update.dmg");
+    #endif
+    #ifdef Q_WS_X11
+       QFile *file = new QFile(QDir::tempPath() + "/vdc-update.deb");
+    #endif
+    #ifdef Q_WS_WIN32
        QFile *file = new QFile(QDir::tempPath() + "/VDCsetup.exe");
     #endif
     if(!file->open(QIODevice::WriteOnly))
@@ -397,8 +401,12 @@ void VentasUpdate::updateReady(QNetworkReply *reply)
         m_label->setText("Download beendet!");
         m_progress->setValue(100);
         #ifdef Q_WS_MAC
-           QDesktopServices::openUrl(QUrl(QString("file:///" + QDir::tempPath() + "/vdc-update.pkg"), QUrl::TolerantMode));
-        #else
+           QDesktopServices::openUrl(QUrl(QString("file:///" + QDir::tempPath() + "/vdc-update.dmg"), QUrl::TolerantMode));
+        #endif
+        #ifdef Q_WS_X11
+            QDesktopServices::openUrl(QUrl(QString("file:///%1").arg(QDir::tempPath() + "/VDCsetup.deb"), QUrl::TolerantMode));
+        #endif
+        #ifdef Q_WS_WIN32
            QDesktopServices::openUrl(QUrl(QString("file:///%1").arg(QDir::tempPath() + "/VDCsetup.exe"), QUrl::TolerantMode));
         #endif
         QApplication::quit();
