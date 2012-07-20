@@ -65,7 +65,7 @@ int main(int argc, char *argv[])
         writer->writeTextElement("VDC_CHECKSUM", ba_hash.data());
     }
     writer->writeTextElement("A4GL_VERSION", "1.2.30");
-    writer->writeTextElement("XML_VERSION", "1.0");
+    writer->writeTextElement("XML_VERSION", "1.1");
     writer->writeEndElement();
     writer->writeEndDocument();
 

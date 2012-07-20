@@ -253,7 +253,11 @@ void VentasUpdate::readXmlFinished(QNetworkReply *reply)
 void VentasUpdate::checkServerClient()
 {
     QList<QList<QString> > serverVars = parseXml(QDir::tempPath() + "/vdc.xml");
-    QList<QString> clientVars = clientXml(QDir::currentPath() + "/versions.xml");
+    #ifdef Q_WS_MAC
+        QList<QString> clientVars = clientXml(QDir::currentPath() + "VDC.app/Content/MacOS/versions.xml");
+    #else
+        QList<QString> clientVars = clientXml(QDir::currentPath() + "/versions.xml");
+    #endif
     QString A4glFromClient = VDC::readSettingsFromIni("", "a4gl_version");
     QString XmlVersionServer = VDC::readSettingsFromIni("", "xml_version");
 
@@ -356,7 +360,14 @@ void VentasUpdate::checkServerClient()
     } else {
         if(displayErrorDialog == 1)
         {
-            Dialog *dialog = new Dialog("VENTAS Update", QString("Cannot open File: %1").arg(QDir::currentPath() + "/versions.xml"), "", "information", this, Qt::WindowStaysOnTopHint);
+
+            QString filePath;
+            #ifdef Q_WS_MAC
+                filePath = QString(QDir::currentPath() + "VDC.app/Content/MacOS/versions.xml");
+            #else
+                filePath = QString((QDir::currentPath() + "/versions.xml"));
+            #endif
+            Dialog *dialog = new Dialog("VENTAS Update", QString("Cannot open File: %1").arg(filePath), "", "information", this, Qt::WindowStaysOnTopHint);
             dialog->createButton(1, "Ok", "Ok", "ok_gruen.png");
             connect(dialog->getAction("OK"), SIGNAL(triggered()), dialog, SLOT(close()));
             dialog->move(600,400);
