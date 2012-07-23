@@ -1085,7 +1085,7 @@ MainFrame::vdcdebug("WidgetHelper","createWebView", "const QDomElement& formFiel
    	browser->setFixedWidth(wPixel);
    } else {
    	QFontMetrics fm = browser->fontMetrics();
-        int width = w*fm.averageCharWidth()*VDC::getFieldSizeFactor()*+10;
+        int width = w*fm.averageCharWidth()*VDC::getFieldSizeFactor()+10;
    	browser->setFixedWidth(width);
    }
    if (hPixel>0) {
