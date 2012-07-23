@@ -3022,7 +3022,7 @@ void FglForm::jumpToField(QWidget* w, bool b_after){
 
     if(currPos<destPos)
     {
-      if(destPos-currPos < (cnt_fields / 2))
+      if(destPos-currPos < (cnt_fields / 2) || !this->context->getOption("WRAP"))
         ql_responseevents << getInputEvents(currPos, destPos, false, false, false);
       else
         {
@@ -3032,7 +3032,7 @@ void FglForm::jumpToField(QWidget* w, bool b_after){
     }
     else
     {
-      if(currPos-destPos <= (cnt_fields / 2))
+      if(currPos-destPos <= (cnt_fields / 2) || !this->context->getOption("WRAP"))
       {
           ql_responseevents << getInputEvents(currPos, destPos, true, false, b_after);
       }
