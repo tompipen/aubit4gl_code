@@ -14,7 +14,7 @@ void WebBrowser::createBrowser()
     jQuery = file.readAll();
     file.close();
     //QUrl url = QUrl("http://www.google.de");
-
+    _scalefactor = 1;
     QNetworkProxyFactory::setUseSystemConfiguration(true);
 
     WebView = new QWebView(this);
@@ -39,7 +39,7 @@ void WebBrowser::createBrowser()
 
     setCentralWidget(WebView);
     setUnifiedTitleAndToolBarOnMac(true);
-
+   // openSearch();
     this->show();
 }
 void WebBrowser::loadUrl(const QUrl &http)
@@ -112,6 +112,39 @@ void WebBrowser::highlightAllLinks()
     WebView->page()->mainFrame()->evaluateJavaScript(code);
 }
 
+
+void WebBrowser::openSearch()
+{
+    /*
+    QToolBar *tb = new QToolBar(this);
+
+    QAction *close_tb = new QAction("X", tb);
+
+    QLineEdit *search_field = new QLineEdit(this);
+
+
+    tb->addAction(close_tb);
+
+    tb->addWidget(search_field);
+
+    connect(close_tb, SIGNAL(triggered()), tb, SLOT(close()));
+    connect(close_tb, SIGNAL(triggered()), this, SLOT(search(QString)));
+
+    connect(search_field, SIGNAL(textChanged(QString)), this, SLOT(search(QString)));
+
+    this->addToolBar(Qt::BottomToolBarArea, tb);
+*/
+
+
+
+}
+
+void WebBrowser::search(QString search = "")
+{
+    this->WebView->page()->findText(search, QWebPage::HighlightAllOccurrences | QWebPage::FindWrapsAroundDocument);
+
+}
+
 /*void MainWindow::rotateImages(bool invert)
 {
     QString code;
@@ -151,6 +184,9 @@ void MainWindow::removeEmbeddedElements()
     view->page()->mainFrame()->evaluateJavaScript(code);
 }*/
 
+
+
+
 void WebBrowser::setNavigationIcons()
 {
   //Getting Actions
@@ -159,6 +195,10 @@ void WebBrowser::setNavigationIcons()
   QAction *forward = WebView->pageAction(QWebPage::Forward);
   QAction *reload = WebView->pageAction(QWebPage::Reload);
   QAction *stop = WebView->pageAction(QWebPage::Stop);
+  QAction *plus = new QAction("Zoom +", this);
+  QAction *minus = new QAction("Zoom -", this);
+  QAction *reset = new QAction("Zoom reset", this);
+
 
 
   QPixmap back(("pics:browser-zurueck.png"));
@@ -166,7 +206,9 @@ void WebBrowser::setNavigationIcons()
   QPixmap relo(("pics:browser-neuladen.png"));
   QPixmap st(("pics:browser-abbrechen.png"));
   QPixmap dr(("pics:browser-drucken.png"));
-
+  QPixmap mi(("pics:browser-kleiner.png"));
+  QPixmap pl(("pics:browser-groesser.png"));
+  QPixmap re(("pics:browser-reset.png"));
 
   //Override
 
@@ -175,8 +217,13 @@ void WebBrowser::setNavigationIcons()
   reload->setIcon(QIcon(relo));
   stop->setIcon(QIcon(st));
   print->setIcon(QIcon(dr));
+  minus->setIcon(QIcon(mi));
+  reset->setIcon(QIcon(re));
+  plus->setIcon(QIcon(pl));
 
-
+  connect(minus, SIGNAL(triggered()), this, SLOT(decreaseSize()));
+  connect(plus, SIGNAL(triggered()), this, SLOT(increaseSize()));
+  connect(reset, SIGNAL(triggered()), this, SLOT(resetSize()));
   connect(print, SIGNAL(triggered()), this, SLOT(printpage()));
 
 
@@ -186,6 +233,9 @@ void WebBrowser::setNavigationIcons()
   toolBar->addAction(reload);
   toolBar->addAction(stop);
   toolBar->addAction(print);
+  toolBar->addAction(minus);
+  toolBar->addAction(reset);
+  toolBar->addAction(plus);
 
   QWidget *qw_backward = toolBar->widgetForAction(backward);
   QWidget *qw_forward  = toolBar->widgetForAction(forward);
@@ -208,6 +258,23 @@ void WebBrowser::setNavigationIcons()
   toolBar->addWidget(locationEdit);
 
 }
+
+void WebBrowser::increaseSize()
+{
+  WebView->setZoomFactor(WebView->zoomFactor() + 0.1);
+}
+
+void WebBrowser::decreaseSize()
+{
+
+  WebView->setZoomFactor(WebView->zoomFactor() - 0.1);
+}
+
+void WebBrowser::resetSize()
+{
+  WebView->setZoomFactor(1);
+}
+
 /*
 void WebBrowser::inittoolbar()
 {

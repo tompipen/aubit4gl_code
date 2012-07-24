@@ -21,13 +21,19 @@ public:
     void setNavigationIcons();
 
 
+    void openSearch();
+
 protected slots:
     void printpage();
+    void search(QString search);
     void adjustLocation();
     void changeLocation();
     void adjustTitle(QString title);
     void setProgress(int p);
     void finishLoading(bool);
+    void increaseSize();
+    void decreaseSize();
+    void resetSize();
 
     //void slotSourceDownloaded();
 
@@ -45,6 +51,8 @@ private:
     QAction *rotateAction;
 
     QToolBar *toolBar;
+
+    qreal _scalefactor;
 
 
 

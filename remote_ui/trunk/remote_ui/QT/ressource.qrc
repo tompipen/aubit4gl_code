@@ -148,5 +148,8 @@
         <file>pics/browser-drucken.png</file>
         <file>pics/route_von.png</file>
         <file>pics/route_zu.png</file>
+        <file>pics/browser-kleiner.png</file>
+        <file>pics/browser-reset.png</file>
+        <file>pics/browser-groesser.png</file>
     </qresource>
 </RCC>
