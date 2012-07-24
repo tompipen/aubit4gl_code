@@ -354,6 +354,7 @@ void TableView::deleteRow()
 void TableView::copyRow()
 {
     QString columnText;
+
     foreach(const QModelIndex& index, this->selectedIndexes())
     {
         columnText.append(index.data().toString() + "\t");
@@ -387,12 +388,12 @@ void TableView::copyTable()
 
 void TableView::copyCell()
 {
-    int column = mouseindex.column();
-    int row = mouseindex.row();
+    int row = currentIndex().row();
+    int col = currentIndex().column();
     QString cellText;
 
 
-    cellText = this->model()->index(row, column).data().toString();
+    cellText = this->model()->index(row, col).data().toString();
 
     QApplication::clipboard()->setText(cellText);
 }
@@ -401,10 +402,11 @@ void TableView::copyColumn()
 {
     QString tableText;
     int rows = this->model()->rowCount(QModelIndex());
+    int col = currentIndex().column();
 
     for(int i=0; i < rows; i++)
     {
-        tableText.append(this->model()->index(i, mouseindex.column()).data().toString() + "\n");
+        tableText.append(this->model()->index(i, col).data().toString() + "\n");
     }
 
     QApplication::clipboard()->setText(tableText);
