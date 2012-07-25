@@ -268,17 +268,26 @@ void LoginForm::aboutVDC(QWidget *parent)
     QList<QString> textList;
     QList<QList<QString> > returnList;
 
-    file.setFileName(QDir::currentPath() + "/versions.xml");
-    //file.setFileName("/home/da/versions.xml");
+    #ifdef Q_WS_MAC
+        file.setFileName(QDir::currentPath() + "VDC.app/Contents/MacOS/versions.xml");
+    #else
+        file.setFileName(QDir::currentPath() + "/versions.xml");
+    #endif
+
     QString clientOs;
 
     if(!file.open(QIODevice::ReadOnly))
     {
+        #ifdef Q_WS_MAC
+            Dialog *dialog = new Dialog("VENTAS Update", QString("Failed to Open: %1").arg(QDir::currentPath() + "VDC.app/Contents/MacOS/versions.xml"), "", "stop", this, Qt::WindowStaysOnTopHint);
+        #else
             Dialog *dialog = new Dialog("VENTAS Update", QString("Failed to Open: %1").arg(QDir::currentPath() + "/versions.xml"), "", "stop", this, Qt::WindowStaysOnTopHint);
-            dialog->createButton(1, "Ok", "Ok", "ok_gruen.png");
-            connect(dialog->getAction("OK"), SIGNAL(triggered()), dialog, SLOT(close()));
-            dialog->show();
-            return;
+        #endif
+
+        dialog->createButton(1, "Ok", "Ok", "ok_gruen.png");
+        connect(dialog->getAction("OK"), SIGNAL(triggered()), dialog, SLOT(close()));
+        dialog->show();
+        return;
     }
     #ifdef Q_WS_WIN
         clientOs = "WINDOWS";
