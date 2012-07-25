@@ -1,4 +1,4 @@
-/* $Id: fgl.x,v 1.70 2012-05-25 06:50:12 mikeaubury Exp $ */
+/* $Id: fgl.x,v 1.71 2012-07-25 09:01:13 mikeaubury Exp $ */
 typedef string str<>;
 typedef string sql_ident<>;
 
@@ -1936,6 +1936,7 @@ union u_pragmas switch (enum e_pragmas pragma_type) {
 
 struct globals_definition {
 	str mod_dbname;
+        str hash;
 	str external_datatypes<>;
 	u_pragmas pragmas<>;
 	str used_object_types<>;
@@ -1958,6 +1959,7 @@ struct s_source_code {
 
 struct module_definition {
 	str mod_dbname;
+        str hash;
 	str n_namespace;
 	str force_ui;
 	str debug_filename;
@@ -1977,6 +1979,7 @@ struct module_definition {
 	struct s_module_variables module_variables;
 	struct s_imported_global_variables  imported_global_variables;
 	struct s_exported_global_variables  exported_global_variables;
+	struct str_list imported_global_files_hashes;
 	module_entry_ptr module_entries<>;
 	str full_path_filename;
 	struct s_source_code source_code;
