@@ -864,7 +864,7 @@ void LoginForm::authfailed(int rc, QString err)
   switch(rc)
   {
     case SSH_AUTH_DENIED:
-      error = "Die Kombination aus Usernamen und Password existiert nicht.";
+      error = "Die Kombination aus Username und Passwort existiert nicht.";
       break;
     default:
       error = "Fehler beim Authentifizieren! Abbruch!";
