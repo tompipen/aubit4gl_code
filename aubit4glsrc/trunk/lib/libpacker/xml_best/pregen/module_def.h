@@ -1,5 +1,5 @@
 /* XML processor/application API for module_def.dtd.
- * Generated 2012/07/05 07:50:26.
+ * Generated 2012/07/25 10:19:08.
  *
  * This program was generated with the FleXML XML processor generator.
  * FleXML is Copyright (C) 1999-2005 Kristoffer Rose.  All rights reserved.
@@ -1069,6 +1069,8 @@ typedef int AT_command_colno;
 #define AU_command_colno NULL
 typedef int AT_s_expr_external_call_without_waiting;
 #define AU_s_expr_external_call_without_waiting NULL
+typedef int AT_globals_definition_hash;
+#define AU_globals_definition_hash NULL
 typedef int AT_variable_usage_variable_id;
 #define AU_variable_usage_variable_id NULL
 typedef int AT_s_exported_global_variables_nm;
@@ -1297,6 +1299,8 @@ typedef int AT_struct_while_cmd_nm;
 #define AU_struct_while_cmd_nm NULL
 typedef int AT_str_nm;
 #define AU_str_nm NULL
+typedef int AT_module_definition_hash;
+#define AU_module_definition_hash NULL
 typedef int AT_sql_statement_nobind;
 #define AU_sql_statement_nobind NULL
 typedef int AT_sql_statement_nibind;
@@ -2552,6 +2556,8 @@ extern AT_command_colno AX_command_colno;
 #define A_command_colno (bufferstack + AX_command_colno)
 extern AT_s_expr_external_call_without_waiting AX_s_expr_external_call_without_waiting;
 #define A_s_expr_external_call_without_waiting (bufferstack + AX_s_expr_external_call_without_waiting)
+extern AT_globals_definition_hash AX_globals_definition_hash;
+#define A_globals_definition_hash (bufferstack + AX_globals_definition_hash)
 extern AT_variable_usage_variable_id AX_variable_usage_variable_id;
 #define A_variable_usage_variable_id (bufferstack + AX_variable_usage_variable_id)
 extern AT_s_exported_global_variables_nm AX_s_exported_global_variables_nm;
@@ -2780,6 +2786,8 @@ extern AT_struct_while_cmd_nm AX_struct_while_cmd_nm;
 #define A_struct_while_cmd_nm (bufferstack + AX_struct_while_cmd_nm)
 extern AT_str_nm AX_str_nm;
 #define A_str_nm (bufferstack + AX_str_nm)
+extern AT_module_definition_hash AX_module_definition_hash;
+#define A_module_definition_hash (bufferstack + AX_module_definition_hash)
 extern AT_sql_statement_nobind AX_sql_statement_nobind;
 #define A_sql_statement_nobind (bufferstack + AX_sql_statement_nobind)
 extern AT_sql_statement_nibind AX_sql_statement_nibind;

@@ -220,8 +220,11 @@ int a;
 //
 	for (a=0;a<MAXOBJECTS;a++) {
 		if (heapOfObjects[a].objType && heapOfObjects[a].objHeapId) {
-			if (!A4GLSTK_chkObjectExists(heapOfObjects[a].objHeapId)) {
+			//if (!A4GLSTK_chkObjectExists(heapOfObjects[a].objHeapId)) {
+			
+			if (!A4GLSTK_chkObjectExists(heapOfObjects[a].objHeapId) && heapOfObjects[a].refCnt==0) {
 				A4GL_debug("Object ID %d is no longer referenced...\n", heapOfObjects[a].objHeapId);
+					//A4GL_pause_execution();
 				heapOfObjects[a].refCnt=0;
 				A4GL_object_dispose(heapOfObjects[a].objHeapId);
 			}

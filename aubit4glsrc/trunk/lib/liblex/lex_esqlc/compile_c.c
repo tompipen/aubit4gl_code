@@ -24,12 +24,12 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.547 2012-07-09 15:25:45 mikeaubury Exp $
+# $Id: compile_c.c,v 1.548 2012-07-25 09:57:09 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
-static char const module_id[] = "$Id: compile_c.c,v 1.547 2012-07-09 15:25:45 mikeaubury Exp $";
+static char const module_id[] = "$Id: compile_c.c,v 1.548 2012-07-25 09:57:09 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -6166,9 +6166,39 @@ merge_files (void)
 }
 
 
+static void
+print_global_variable_init (module_definition *m, variable_list * gvars,char *hash)
+{
+int a;
+  set_suppress_lines ("x6");
+  if (!A4GL_doing_pcode ())
+    {
+      printc ("#");
+      printc ("static int _done_init_global_variables=1;\n");
+      printc ("A4GL_INTERNAL_FUNCTION void init_global_variables_%s(void) {",hash);
+      dump_objdata(gvars,1);
+      tmp_ccnt++;
+      printc ("if (_done_init_global_variables==0) return;");
+      printc ("_done_init_global_variables=0;");
+      printc ("A4GL_register_global_objects(_module_name, _objData);");
+
+      printc ("A4GL_check_version(_module_name,\"%s\",%d);", A4GL_internal_version (), A4GL_internal_build ());
+      printc ("A4GL_check_dependant_tables(_module_name, _CompileTimeSQLType, _dependantTables);");
+      print_load_datatypes();
+      print_nullify (E_SCOPE_EXPORTED_GLOBAL, gvars);
+      tmp_ccnt--;
+  	for (a=0;a<m->used_object_types.used_object_types_len;a++) {
+			printh("void Object_%s(void);\n", m->used_object_types.used_object_types_val[a]);
+			printc("Object_%s();\n", m->used_object_types.used_object_types_val[a]);
+  	}
+      printc ("}");
+      printc ("#");
+    }
+  clr_suppress_lines ();
+}
 
 static void
-print_module_variable_init (module_definition *m, variable_list * mvars)
+print_module_variable_init (module_definition *m, variable_list * mvars,char *hash)
 {
 int a;
   set_suppress_lines ("x6");
@@ -6177,14 +6207,27 @@ int a;
       printc ("#");
       printc ("static int _done_init_module_variables=1;\n");
       printc ("A4GL_INTERNAL_FUNCTION static void init_module_variables(void) {");
+      dump_objdata(mvars,1);
+	
       tmp_ccnt++;
       printc ("if (_done_init_module_variables==0) return;");
       printc ("_done_init_module_variables=0;");
+      printc ("A4GL_register_module_objects(_module_name, _objData);");
 
       printc ("A4GL_check_version(_module_name,\"%s\",%d);", A4GL_internal_version (), A4GL_internal_build ());
       printc ("A4GL_check_dependant_tables(_module_name, _CompileTimeSQLType, _dependantTables);");
       print_load_datatypes();
       print_nullify (E_SCOPE_MODULE, mvars);
+      printc("// Initialise the current global variables");
+      printc ("init_global_variables_%s();",hash);
+      printc("// Initialise any other global variables");
+
+      for (a=0;a<m->imported_global_files_hashes.str_list_entry.str_list_entry_len;a++) {
+		printh("void init_global_variables_%s(void);\n", 
+				m->imported_global_files_hashes.str_list_entry.str_list_entry_val[a]);
+		printc("init_global_variables_%s();", 
+				m->imported_global_files_hashes.str_list_entry.str_list_entry_val[a]);
+      }
       tmp_ccnt--;
   	for (a=0;a<m->used_object_types.used_object_types_len;a++) {
 			printh("void Object_%s(void);\n", m->used_object_types.used_object_types_val[a]);
@@ -6614,7 +6657,8 @@ LEXLIB_A4GL_write_generated_code (struct module_definition *m)
     }
 
 
-  print_module_variable_init (m,&m->module_variables.variables);
+  print_global_variable_init (m,&m->exported_global_variables.variables,m->hash);
+  print_module_variable_init (m,&m->module_variables.variables,m->hash);
 
 
   for (a = 0; a < m->module_entries.module_entries_len; a++)

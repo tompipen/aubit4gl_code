@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: function_call_stack.c,v 1.48 2012-07-10 11:36:33 mikeaubury Exp $
+# $Id: function_call_stack.c,v 1.49 2012-07-25 09:57:08 mikeaubury Exp $
 #*/
 
 /**
@@ -693,6 +693,8 @@ A4GLSTK_isStackInfo (void)
   return stackInfoInitialized;
 }
 
+void ***ObjData=0;
+int nObjData=0;
 
 // Traverses the function call stack looking for
 // any reference to the object
@@ -702,14 +704,50 @@ A4GLSTK_isStackInfo (void)
 int A4GLSTK_chkObjectExists(long objectID) {
 int a;
 int b;
+
+for (a=0;a<nObjData;a++) {
+	if (ObjData[a]==0)    continue;
+	if (ObjData[a][0]==0) continue;
+	void **o=ObjData[a];
+	for (b=0;o[b];b++) {
+		long objId;
+		//printf("b=%d o[b]=%p\n",b,o[b]);
+	 	objId=*(long *)o[b];
+		if (objId==objectID) {
+			A4GL_debug("Object is referenced by a module or global variable\n");
+			return 1;
+		}
+	}
+	
+}
+
 for (a=0;a<functionCallPointer;a++) {
 	for (b=0;functionCallStack[a].objData[b];b++) {
 		long objId;
 	 	objId=*(long *)functionCallStack[a].objData[b];
-		if (objId==objectID) return 1;
+		if (objId==objectID) {
+			A4GL_debug("Object is referenced by a local variable\n");
+			return 1;
+		}
 	}
 }
 return 0;
+}
+
+
+
+void A4GL_register_global_objects(char *modulename,  void **objData) {
+	nObjData++;
+	ObjData=realloc(ObjData,sizeof (ObjData[0])*nObjData);
+	ObjData[nObjData-1]=objData;
+}
+
+void A4GL_register_module_objects(char *modulename,  void **objData) {
+	nObjData++;
+	ObjData=realloc(ObjData,sizeof (ObjData[0])*nObjData);
+	ObjData[nObjData-1]=objData;
+
+		
 }
 
 /* ============================= EOF ================================ */

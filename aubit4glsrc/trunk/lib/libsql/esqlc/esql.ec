@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.258 2012-07-19 11:33:56 mikeaubury Exp $
+# $Id: esql.ec,v 1.259 2012-07-25 09:57:10 mikeaubury Exp $
 #
 */
 
@@ -188,7 +188,7 @@ static loc_t *add_blob(struct s_sid *sid, int n, struct s_extra_info *e,fglbyte 
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.258 2012-07-19 11:33:56 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.259 2012-07-25 09:57:10 mikeaubury Exp $";
 #endif
 
 
@@ -754,7 +754,7 @@ int
 A4GLSQLLIB_A4GLSQL_init_session_internal (char *sessname, char *dsn, char *usr, char *pwd)
 {
   EXEC SQL begin declare section;
-  char *dbName = dsn;
+  char *dbName=dsn;
   char *userName;
   char *password;
   char *connectionName = sessname;
@@ -766,7 +766,7 @@ A4GLSQLLIB_A4GLSQL_init_session_internal (char *sessname, char *dsn, char *usr, 
       A4GL_exitwith ("Database name not set");
       return 1;
     }
-
+  
 
   /** @todo : Even if the connection exist it should not be the default one */
   /* See if its allready opened. */
