@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile.c,v 1.143 2011-08-10 09:26:11 mikeaubury Exp $
+# $Id: compile.c,v 1.144 2012-07-25 09:14:13 mikeaubury Exp $
 #*/
 
 /**
@@ -1334,6 +1334,8 @@ compiled_4gl++;
   this_module.exported_global_variables.variables.variables.variables_len = 0;
   this_module.exported_global_variables.variables.variables.variables_val = 0;
 
+this_module.imported_global_files_hashes.str_list_entry.str_list_entry_len =0;
+this_module.imported_global_files_hashes.str_list_entry.str_list_entry_val =0;
 
   this_module.imported_global_variables.variables.variables.variables_len = 0;
   this_module.imported_global_variables.variables.variables.variables_val = 0;

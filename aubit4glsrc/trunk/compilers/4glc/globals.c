@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: globals.c,v 1.70 2010-08-23 17:23:21 mikeaubury Exp $
+# $Id: globals.c,v 1.71 2012-07-25 09:14:13 mikeaubury Exp $
 #
 */
 
@@ -487,7 +487,13 @@ read_glob (char *s)
   // We need to change the scope on these imported globals - as they'll
   // be marked as 'external globals' in the file that exports them ;-)
   set_variable_scope_for_variable_list(&g.exported_global_variables.variables,E_SCOPE_IMPORTED_GLOBAL);
+
   merge_variable_list(&this_module.imported_global_variables.variables, &g.exported_global_variables.variables);
+
+  this_module.imported_global_files_hashes.str_list_entry.str_list_entry_len++;
+  this_module.imported_global_files_hashes.str_list_entry.str_list_entry_val=realloc(this_module.imported_global_files_hashes.str_list_entry.str_list_entry_val, this_module.imported_global_files_hashes.str_list_entry.str_list_entry_len*sizeof(char *));
+  this_module.imported_global_files_hashes.str_list_entry.str_list_entry_val[this_module.imported_global_files_hashes.str_list_entry.str_list_entry_len-1]=strdup(g.hash);
+
 
   if (XMLBEST) {
 	//printf("Reset\n");
@@ -499,6 +505,40 @@ read_glob (char *s)
 
 
 
+static char *mkhash(char *name, struct variable_list *vlist) {
+static char buff[300];
+char nm[300];
+int b=0;
+int a;
+int sl;
+long hash=0;
+sl=strlen(name);
+
+for (a=0;a<sl;a++) {
+	if (name[a]>='a' && name[a]<='z') {
+		nm[b++]=name[a];
+	}
+	if (name[a]>='A' && name[a]<='Z') {
+		nm[b++]=name[a];
+	}
+	if (name[a]>='0' && name[a]<='9') {
+		nm[b++]=name[a];
+	}
+}
+nm[b]=0;
+hash=vlist->variables.variables_len;
+for(a=0;a<vlist->variables.variables_len;a++) {
+	char *p;
+	p=vlist->variables.variables_val[a]->names.names.names_val[0].name;
+	for (b=0;b<strlen(p);b++) {
+		hash+=p[b]*(b+1);
+	}
+	
+}
+
+sprintf(buff,"%s_%lx",nm,hash);
+return strdup(buff);
+}
 
 /**
  *
@@ -514,6 +554,7 @@ dump_gvars (void)
   //struct variable *v;
   struct globals_definition *g;
 
+  this_module.hash= mkhash(this_module.module_name, &this_module.exported_global_variables.variables);
 
   if (!only_doing_globals() ) return;
 
@@ -541,6 +582,8 @@ dump_gvars (void)
   memset(g,0,sizeof(*g));
 
   g->mod_dbname=this_module.mod_dbname;
+  g->hash=this_module.hash;
+
   g->external_datatypes.external_datatypes_len=this_module.external_datatypes.external_datatypes_len;
   g->external_datatypes.external_datatypes_val=this_module.external_datatypes.external_datatypes_val;
   g->schema_only=this_module.schema_only;
