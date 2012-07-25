@@ -1015,6 +1015,11 @@ namespace Fgl {
                //remove tdelimiter
                value.replace(tdel, "");
 
+               if(value.trimmed().isEmpty())
+               {
+                   return true;
+               }
+
                value.toDouble(&ok);
                if(ok)
                {
