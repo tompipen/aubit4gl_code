@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: globals.c,v 1.71 2012-07-25 09:14:13 mikeaubury Exp $
+# $Id: globals.c,v 1.72 2012-07-26 10:06:07 mikeaubury Exp $
 #
 */
 
@@ -515,6 +515,10 @@ long hash=0;
 sl=strlen(name);
 
 for (a=0;a<sl;a++) {
+	if (name[a]=='/' || name[a]=='\\') {
+		// reset on any leading path separator
+		b=0; continue;
+	}
 	if (name[a]>='a' && name[a]<='z') {
 		nm[b++]=name[a];
 	}
