@@ -4422,6 +4422,54 @@ MainFrame::vdcdebug("FglForm","checkField", "");
             emit error("ERROR in Character conversion");
             WidgetHelper::setFieldText(widget, "");
          }
+      }else if(state() == Fgl::CONSTRUCT)
+      {
+          QString fieldValue;
+          QList<QString> dates;
+          QString text = WidgetHelper::fieldText(widget);
+
+          text.remove("<");
+          text.remove(">");
+          text.remove("=");
+          QRegExp regExpDate("[a-z]");
+          QRegExp regExpDateCaps("[A-Z]");
+
+          if(!text.contains(regExpDate) && !text.contains(regExpDateCaps) && !text.isEmpty())
+          {
+              if(text.contains(":"))
+              {
+                  dates = text.split(":");
+                  qDebug() << dates;
+
+                  for(int i=0; i < dates.count(); i++)
+                  {
+
+                  }
+              } else if (text.contains("|"))
+              {
+                  dates = text.split("|");
+              }
+              if(dates.count() < 2)
+              {
+                  fieldValue = Fgl::usingFunc(widget->format(), text, Fgl::DataType(7), widget->picture());
+                  qDebug() << "fieldValue" << fieldValue;
+
+                  if(fieldValue.isEmpty())
+                  {
+                      this->error("Date Field is not Valide.");
+                  }
+              } else {
+                  for(int i=0; i < dates.count(); i++)
+                  {
+                      fieldValue = Fgl::usingFunc(widget->format(), dates.at(i), Fgl::DataType(7), widget->picture());
+                      if(fieldValue.isEmpty())
+                      {
+                          this->error("Date Field is not Valide.");
+                      }
+                  }
+              }
+              fieldValue.clear();
+          }
       }
    }
 }
