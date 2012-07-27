@@ -51,6 +51,8 @@ public:
 
 public slots:
    void aboutVDC(QWidget *parent = 0);
+   void removeIni();
+   void clearIniFile();
    void font();
    void setFactorWidth(QString);
    void resetFactor();

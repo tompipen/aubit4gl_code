@@ -73,6 +73,8 @@ LoginForm::LoginForm(QWidget *parent)
    QAction *feldplus = new QAction(tr("Fieldwidth + "), this);
    QAction *feldminus = new QAction(tr("Fieldwidth - "), this);
    QAction *feldreset = new QAction(tr("Default Fieldwidth"), this);
+   QAction *removeIni = new QAction(tr("Reset Screen Forms"), this);
+   connect(removeIni, SIGNAL(triggered()), this, SLOT(removeIni()));
    QMenu *admin = new QMenu(tr("&Admin"), this);
    QAction *hosts = new QAction(tr("&Hosts"), this);
    QMenu *options = new QMenu(tr("&Options"), this);
@@ -89,6 +91,7 @@ LoginForm::LoginForm(QWidget *parent)
    options->addAction(feldplus);
    options->addAction(feldminus);
    options->addAction(feldreset);
+   options->addAction(removeIni);
    QSignalMapper* signalMapper = new QSignalMapper (this) ;
    connect(feldplus, SIGNAL(triggered()), signalMapper, SLOT(map()));
    connect(feldminus, SIGNAL(triggered()), signalMapper, SLOT(map()));
@@ -259,6 +262,28 @@ welcomeBar();
    //
    setLayout(loginLayout);
 
+}
+
+void LoginForm::removeIni()
+{
+    Dialog *dialog = new Dialog("Reset Screen Forms ", "Do you realy want to reset all Screen Forms?", "", "critical", this, Qt::WindowStaysOnTopHint);
+    dialog->createButton(1, "Yes", "YES", "ok_gruen.png");
+    dialog->createButton(2, "No", "NO", "abbrechen_rot.png");
+    connect(dialog->getAction("YES"), SIGNAL(triggered()), this, SLOT(clearIniFile()));
+    connect(dialog->getAction("YES"), SIGNAL(triggered()), dialog, SLOT(close()));
+    connect(dialog->getAction("NO"), SIGNAL(triggered()), dialog, SLOT(close()));
+    dialog->show();
+
+}
+void LoginForm::clearIniFile()
+{
+    #ifdef Q_WS_WIN
+        QSettings settings(QDesktopServices::storageLocation(QDesktopServices::DataLocation) + "/.vdc/settings.ini", QSettings::IniFormat);
+    #else
+        QSettings settings(QDir::homePath() + "/.vdc/settings.ini", QSettings::IniFormat);
+    #endif
+
+    settings.remove("");
 }
 
 void LoginForm::aboutVDC(QWidget *parent)
