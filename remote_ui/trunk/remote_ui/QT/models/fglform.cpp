@@ -4452,11 +4452,12 @@ MainFrame::vdcdebug("FglForm","checkField", "");
               if(dates.count() < 2)
               {
                   fieldValue = Fgl::usingFunc(widget->format(), text, Fgl::DataType(7), widget->picture());
-                  qDebug() << "fieldValue" << fieldValue;
 
                   if(fieldValue.isEmpty())
                   {
                       this->error("Date Field is not Valide.");
+                      this->setFocusOnWidget(widget, Qt::OtherFocusReason);
+                      this->jumpToField(widget, false);
                   }
               } else {
                   for(int i=0; i < dates.count(); i++)
@@ -4465,6 +4466,8 @@ MainFrame::vdcdebug("FglForm","checkField", "");
                       if(fieldValue.isEmpty())
                       {
                           this->error("Date Field is not Valide.");
+                          this->setFocusOnWidget(widget, Qt::OtherFocusReason);
+                          this->jumpToField(widget, false);
                       }
                   }
               }
