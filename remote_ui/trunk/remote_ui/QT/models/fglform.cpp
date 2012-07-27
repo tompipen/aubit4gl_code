@@ -4455,7 +4455,7 @@ MainFrame::vdcdebug("FglForm","checkField", "");
 
                   if(fieldValue.isEmpty())
                   {
-                      this->error("Date Field is not Valide.");
+                      this->error("Date Field is not Valid.");
                       this->setFocusOnWidget(widget, Qt::OtherFocusReason);
                       this->jumpToField(widget, false);
                   }
@@ -4465,7 +4465,7 @@ MainFrame::vdcdebug("FglForm","checkField", "");
                       fieldValue = Fgl::usingFunc(widget->format(), dates.at(i), Fgl::DataType(7), widget->picture());
                       if(fieldValue.isEmpty())
                       {
-                          this->error("Date Field is not Valide.");
+                          this->error("Date Field is not Valid.");
                           this->setFocusOnWidget(widget, Qt::OtherFocusReason);
                           this->jumpToField(widget, false);
                       }
