@@ -24,12 +24,12 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.548 2012-07-25 09:57:09 mikeaubury Exp $
+# $Id: compile_c.c,v 1.549 2012-07-30 11:03:02 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
-static char const module_id[] = "$Id: compile_c.c,v 1.548 2012-07-25 09:57:09 mikeaubury Exp $";
+static char const module_id[] = "$Id: compile_c.c,v 1.549 2012-07-30 11:03:02 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -6223,6 +6223,8 @@ int a;
       printc("// Initialise any other global variables");
 
       for (a=0;a<m->imported_global_files_hashes.str_list_entry.str_list_entry_len;a++) {
+		if (strcmp(m->imported_global_files_hashes.str_list_entry.str_list_entry_val[a],"[EMPTY]")==0) { continue;}
+
 		printh("void init_global_variables_%s(void);\n", 
 				m->imported_global_files_hashes.str_list_entry.str_list_entry_val[a]);
 		printc("init_global_variables_%s();", 

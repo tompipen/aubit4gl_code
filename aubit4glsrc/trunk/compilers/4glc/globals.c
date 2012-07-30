@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: globals.c,v 1.72 2012-07-26 10:06:07 mikeaubury Exp $
+# $Id: globals.c,v 1.73 2012-07-30 11:02:43 mikeaubury Exp $
 #
 */
 
@@ -490,9 +490,13 @@ read_glob (char *s)
 
   merge_variable_list(&this_module.imported_global_variables.variables, &g.exported_global_variables.variables);
 
-  this_module.imported_global_files_hashes.str_list_entry.str_list_entry_len++;
-  this_module.imported_global_files_hashes.str_list_entry.str_list_entry_val=realloc(this_module.imported_global_files_hashes.str_list_entry.str_list_entry_val, this_module.imported_global_files_hashes.str_list_entry.str_list_entry_len*sizeof(char *));
-  this_module.imported_global_files_hashes.str_list_entry.str_list_entry_val[this_module.imported_global_files_hashes.str_list_entry.str_list_entry_len-1]=strdup(g.hash);
+ this_module.imported_global_files_hashes.str_list_entry.str_list_entry_len++;
+ this_module.imported_global_files_hashes.str_list_entry.str_list_entry_val=realloc(this_module.imported_global_files_hashes.str_list_entry.str_list_entry_val, this_module.imported_global_files_hashes.str_list_entry.str_list_entry_len*sizeof(char *));
+  if (g.exported_global_variables.variables.variables.variables_len>0) {
+  	this_module.imported_global_files_hashes.str_list_entry.str_list_entry_val[this_module.imported_global_files_hashes.str_list_entry.str_list_entry_len-1]=strdup(g.hash);
+  } else {
+  	this_module.imported_global_files_hashes.str_list_entry.str_list_entry_val[this_module.imported_global_files_hashes.str_list_entry.str_list_entry_len-1]="[EMPTY]";
+  }
 
 
   if (XMLBEST) {
