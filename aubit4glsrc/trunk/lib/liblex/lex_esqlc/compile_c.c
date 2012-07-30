@@ -24,12 +24,12 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.549 2012-07-30 11:03:02 mikeaubury Exp $
+# $Id: compile_c.c,v 1.550 2012-07-30 11:55:19 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
-static char const module_id[] = "$Id: compile_c.c,v 1.549 2012-07-30 11:03:02 mikeaubury Exp $";
+static char const module_id[] = "$Id: compile_c.c,v 1.550 2012-07-30 11:55:19 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -6224,7 +6224,7 @@ int a;
 
       for (a=0;a<m->imported_global_files_hashes.str_list_entry.str_list_entry_len;a++) {
 		if (strcmp(m->imported_global_files_hashes.str_list_entry.str_list_entry_val[a],"[EMPTY]")==0) { continue;}
-
+		if (A4GL_isyes(acl_getenv("IGNGLOBINIT"))) continue;
 		printh("void init_global_variables_%s(void);\n", 
 				m->imported_global_files_hashes.str_list_entry.str_list_entry_val[a]);
 		printc("init_global_variables_%s();", 
