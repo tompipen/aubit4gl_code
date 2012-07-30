@@ -416,6 +416,8 @@ void TableView::copyColumn()
 bool TableView::eventFilter(QObject *object, QEvent *event)
 {
     Q_UNUSED(object);
+
+
     if(event->type() == QEvent::ContextMenu)
     {
         QSortFilterProxyModel *proxyModel = static_cast<QSortFilterProxyModel*> (this->model());
@@ -633,7 +635,7 @@ QModelIndex TableView::getMouseModelIndex()
 
 void TableView::setMousePos(QModelIndex mousepos)
 {
-   this->setMouseModelIndex(mousepos);
+    this->setMouseModelIndex(mousepos);
 }
 
 
@@ -912,7 +914,7 @@ if(!p_fglform)
 
    QList<Fgl::Event> ql_events = QList<Fgl::Event>();
    QList<Fgl::Event> ql_events2 = QList<Fgl::Event>();
-   if(prev.column() > -1){
+   if(prev.column() > -1 && this->b_sendevents){
       // ignore field event if the before field was also ignored
       if(!b_ignoreFocus){
          event.type = Fgl::AFTER_FIELD_EVENT;
@@ -966,7 +968,7 @@ if(!p_fglform)
       // only allow focus for fields that have a focus policy
       if(table->b_input && isReadOnlyColumn(current.column())){
 //         if(current.column() > prev.column() || (current.row() > prev.row())){
-             emit nextfield();
+    //         emit nextfield();
  /*        }
          else{
             emit prevfield();
@@ -1092,7 +1094,7 @@ MainFrame::vdcdebug("TableView","setCurrentColumn", "int col");
    }
 }
 
-void TableView::setCurrentField(int row, int col)
+void TableView::setCurrentField(int row, int col, bool b_sendevents)
 {
 MainFrame::vdcdebug("TableView","setCurrentField", "int row, int col");
    if(QSortFilterProxyModel *proxyModel = qobject_cast<QSortFilterProxyModel *> (this->model())){
@@ -1100,6 +1102,9 @@ MainFrame::vdcdebug("TableView","setCurrentField", "int row, int col");
       if(TableModel *table = qobject_cast<TableModel *> (proxyModel->sourceModel())){
          QModelIndex tindex = table->index(row-1, col-1);
          QModelIndex index = proxyModel->mapFromSource(tindex);
+
+         this->b_sendevents = b_sendevents;
+
          //If fieldchange is not emitted, run before field
 
          if(this->currentIndex() == index){
@@ -1652,6 +1657,11 @@ bool LineEditDelegate::eventFilter(QObject *object, QEvent *event)
 
 //Events sollen im fglform abgefangen werden. Die Signale dürfen nicht zum QStyledItemDelegate Eventfilter, da diese dann
 //auf die Steuerung der View zugreift
+
+
+
+
+
   if(event->type() == QEvent::KeyPress || event->type() == QEvent::KeyRelease)
   {
 

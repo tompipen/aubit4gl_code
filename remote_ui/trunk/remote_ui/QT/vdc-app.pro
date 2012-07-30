@@ -83,7 +83,7 @@ HEADERS += confwin.h \
     context.h \ # fieldparsers/aubit2fields.h \
 # fieldparsers/xml2fields.h \
 # fieldparsers/xml2form.h \
-    fieldparsers/parser.h \
+    fieldparsers/xmlparser.h \
     xmlparsers/xml2menu.h \
     xmlparsers/xml2style.h \
     qtelnet/qttelnet.h \
@@ -113,7 +113,7 @@ SOURCES += confwin.cpp \
     context.cpp \ # fieldparsers/aubit2fields.cpp \
 # fieldparsers/xml2fields.cpp \
 # fieldparsers/xml2form.cpp \
-    fieldparsers/parser.cpp \
+    fieldparsers/xmlparser.cpp \
     xmlparsers/xml2menu.cpp \
     xmlparsers/xml2style.cpp \
     models/ringmenu.cpp \

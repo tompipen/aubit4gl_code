@@ -68,7 +68,7 @@ public:
     void setScrLine(int);
     void setArrLine(int);
     void setCurrentColumn(int);
-    void setCurrentField(int, int);
+    void setCurrentField(int, int, bool b_sendevents = true);
     void setText(QString, int, int);
     virtual QSize sizeHint () const;
 
@@ -86,6 +86,7 @@ private:
     int i_arrLine;
     int i_scrLine;
     int i_maxArrSize;
+    bool b_sendevents;
   //  bool b_palette;
 
     bool b_ignoreRowChange;

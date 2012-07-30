@@ -23,7 +23,7 @@
 #include <models/toolbar.h>
 #include <fieldparsers/xml2fields.h>
 #include <fieldparsers/xml2form.h>
-#include <fieldparsers/parser.h>
+#include <fieldparsers/xmlparser.h>
 #include <xmlparsers/xml2menu.h>
 #include <xmlparsers/xml2style.h>
 
@@ -184,7 +184,7 @@ MainFrame::vdcdebug("FglForm","buttonClicked", "QString id");
             return;
          }
       }
-      
+
       addToQueue(id);
 */
    qFatal("::buttonClicked called");
@@ -840,6 +840,52 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
 //MainFrame::vdcdebug("FglForm","eventFilter", "QObject *obj, QEvent *event");
 
 
+    if(event->type() == QEvent::MouseButtonRelease)
+    {
+        if(TableView *tv = qobject_cast<TableView*> (obj))
+        {
+            QModelIndex idx = tv->getMouseModelIndex();
+
+            if(tv->isReadOnlyColumn(idx.column()))
+            {
+
+               QSortFilterProxyModel *proxyModel = qobject_cast<QSortFilterProxyModel *> (tv->model());
+               TableModel *table = qobject_cast<TableModel *> (proxyModel->sourceModel());
+
+               int col = table->columnCount(QModelIndex());
+
+
+
+                if(tv->currentIndex().row() != idx.row())
+                {
+
+                    for(int i = 0; i<col;i++)
+                    {
+                       if(tv->isColumnHidden(i))
+                       {
+                          continue;
+                       }
+                       if(tv->isReadOnlyColumn(i))
+                       {
+                           continue;
+                       }
+
+                       tv->setCurrentField(idx.row()+1, i+1);
+                       break;
+                    }
+                }
+                else
+                {
+                    tv->selectionModel()->setCurrentIndex(tv->currentIndex(), QItemSelectionModel::NoUpdate);
+                }
+
+            }
+
+
+
+
+        }
+    }
 
    //Keyboardbuffer
 
@@ -1159,12 +1205,13 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
       else
       {*/
       //qDebug() << "context->fieldList()" << context->fieldList();
-        if(LineEdit *le = qobject_cast<LineEdit *> (obj))
+         if(LineEdit *le = qobject_cast<LineEdit *> (obj))
          {
              if(le->autoNext() == 1)
              {
                  if(le->maxLength() <= le->text().length()+1 && !le->hasSelectedText())
                  {
+
                      if((keyEvent->key() >= 65 && keyEvent->key() <= 90) || (keyEvent->key() >= 48 && keyEvent->key() <= 57))
                      {
                          QMetaObject::invokeMethod(this, "nextfield", Qt::QueuedConnection);
@@ -1181,7 +1228,7 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
              {
                  if(te->toPlainText().length() <= WidgetHelper::getLengthBySqlType(sqltype))
                  {
-                     if((keyEvent->key() >= 65 && keyEvent->key() <= 90) || (keyEvent->key() >= 49 && keyEvent->key() <= 57))
+                     if((keyEvent->key() >= 65 && keyEvent->key() <= 90) || (keyEvent->key() >= 48 && keyEvent->key() <= 57))
                      {
                          QMetaObject::invokeMethod(this, "nextfield", Qt::QueuedConnection);
                      }
@@ -1722,7 +1769,7 @@ MainFrame::vdcdebug("FglForm","sendMenuCommand", "QString cmd");
 void FglForm::setFormLayout(const QDomDocument& docLayout)
 {
 MainFrame::vdcdebug("FglForm","setFormLayout", "const QDomDocument& docLayout");
-   Parser *formParser = new Parser(this);
+   XmlParser *formParser = new XmlParser(this);
    formParser->parseForm(docLayout);
    formWidget = formParser->getFormWidget();
    //formWidget->setEnabled(false);
@@ -2310,10 +2357,14 @@ if(context == NULL)
                   case Fgl::INPUTARRAY:
                   case Fgl::INPUT:
 
-                     if(!view->isReadOnlyColumn(column))
-                     {
-                        view->setCurrentField(row, column);
-                     }
+
+
+                   // if(!view->isReadOnlyColumn(column))
+                   //  {
+                        view->setCurrentField(row, column, sendEvents);
+                   //  }
+
+
                      break;
                   case Fgl::DISPLAYARRAY:
                      break;
@@ -2506,7 +2557,7 @@ if(this->context == NULL)
                         {
 
 
-                            view->setCurrentField(j+1, column+1);
+                            view->setCurrentField(j+1, column+1, change);
                             return;
                         }
                         column = 0;
@@ -2521,7 +2572,7 @@ if(this->context == NULL)
 
                            view->setCurrentIndex(index);
 */
-                           view->setCurrentField(row, column+1);
+                           view->setCurrentField(row, column+1, change);
                            return;
                         }
                         else{
@@ -2533,7 +2584,7 @@ if(this->context == NULL)
 
                               view->setCurrentIndex(index);
 */
-                              view->setCurrentField(row+1, 1);
+                              view->setCurrentField(row+1, 1, change);
                            }
                            else{
                               //CHANGE TO FIRST ROW
@@ -3019,6 +3070,8 @@ void FglForm::jumpToField(QWidget* w, bool b_after){
         setCurrentWidget(w);
         return;
     }
+
+
 
     if(currPos<destPos)
     {
@@ -3667,6 +3720,8 @@ MainFrame::vdcdebug("FglForm","addFormAction", "QAction *qaction");
       return;
 
    int size = formActions.count();
+
+
 
    for(int i=0; i<size; i++){
       if(Action *fAction = qobject_cast<Action *> (formActions.at(i))){
