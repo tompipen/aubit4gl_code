@@ -573,3 +573,17 @@ QWidget* Context::lastFocusWidget()
   return qw_lastfocus;
 }
 
+
+void Context::focusChanged()
+{
+    if(QObject::sender())
+    {
+        if(QPushButton *pe = qobject_cast<QPushButton*> (QObject::sender()))
+        {
+            this->setLastFocusWidget(pe);
+        }
+    }
+}
+
+
+

@@ -42,6 +42,7 @@ public:
    */
 
    void refreshInputArrayAttributes();
+
 private:
    Fgl::State fgl_state;
    QList<QWidget*> ql_fieldList;
@@ -55,6 +56,7 @@ private:
 public slots:
    void screenRecordRowChanged(const QModelIndex &current, const QModelIndex &previous);
    void screenRecordColumnChanged(const QModelIndex &current, const QModelIndex &previous);
+   void focusChanged();
 
 signals:
    void fieldEvent(Fgl::Event);

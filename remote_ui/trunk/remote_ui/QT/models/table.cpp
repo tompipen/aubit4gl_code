@@ -1096,9 +1096,8 @@ MainFrame::vdcdebug("TableView","setCurrentColumn", "int col");
 
 void TableView::setCurrentField(int row, int col, bool b_sendevents)
 {
-MainFrame::vdcdebug("TableView","setCurrentField", "int row, int col");
+   MainFrame::vdcdebug("TableView","setCurrentField", "int row, int col");
    if(QSortFilterProxyModel *proxyModel = qobject_cast<QSortFilterProxyModel *> (this->model())){
-
       if(TableModel *table = qobject_cast<TableModel *> (proxyModel->sourceModel())){
          QModelIndex tindex = table->index(row-1, col-1);
          QModelIndex index = proxyModel->mapFromSource(tindex);
@@ -1107,12 +1106,13 @@ MainFrame::vdcdebug("TableView","setCurrentField", "int row, int col");
 
          //If fieldchange is not emitted, run before field
 
-         if(this->currentIndex() == index){
+         if(this->currentIndex() == index) {
              Fgl::Event event;
              event.type = Fgl::BEFORE_FIELD_EVENT;
              event.attribute = table->qsl_colNames.at(index.column());
              emit fieldEvent(event);
          }
+
          selectionModel()->setCurrentIndex(index, QItemSelectionModel::NoUpdate);
 
 

@@ -560,9 +560,10 @@ MainFrame::vdcdebug("ScreenHandler","createMenuButton", "int buttonId, QString t
       return;
    RingMenu *ringMenu = p_fglform->menu();
 
-   ringMenu->createButton(buttonId, text, desc);
+   QPushButton *pb = ringMenu->createButton(buttonId, text, desc);
    QAction *action = ringMenu->getAction(text.toLower());
    connect(action, SIGNAL(triggered()), p_fglform, SLOT(actionTriggered()));
+   connect(pb, SIGNAL(clicked()), p_fglform->context, SLOT(focusChanged()));
 
    Fgl::Event event;
    event.type = Fgl::MENUACTION_EVENT;
@@ -719,7 +720,7 @@ MainFrame::vdcdebug("ScreenHandler","nextOption", "QString name, int context");
 
    if(p_fglform->menu() != NULL){
       // p_fglform->menu()->selectButton(name);
-       p_fglform->menu()->setFocusName(name);
+       p_fglform->menu()->setFocusName(name.trimmed());
        return;
     }
  }
@@ -815,6 +816,7 @@ MainFrame::vdcdebug("ScreenHandler","createPulldownButton", "int buttonId, QStri
    pulldown->createButton(buttonId, text, desc);
    QAction *action = pulldown->getAction(text.toLower());
    connect(action, SIGNAL(triggered()), p_fglform, SLOT(actionTriggered()));
+
 
    Fgl::Event event;
    event.type = Fgl::MENUACTION_EVENT;
@@ -2276,6 +2278,22 @@ if(qsl_triggereds.size() > 0)
    }
    if(p_fglform->ql_responseQueue.size() == 0)
    {
+       if(p_fglform->state() == Fgl::INPUTARRAY)
+       {
+           if(TableView *tv = qobject_cast<TableView*> (p_fglform->currentWidget))
+           {
+               int col = tv->currentIndex().column();
+               if(tv->isReadOnlyColumn(col) || tv->isColumnHidden(col))
+               {
+                   p_fglform->b_getch_swin = true;
+                   p_fglform->nextfield();
+                   return;
+               }
+
+           }
+       }
+
+
      p_fglform->b_getch_swin = true;
      p_fglform->replayKeyboard();
 

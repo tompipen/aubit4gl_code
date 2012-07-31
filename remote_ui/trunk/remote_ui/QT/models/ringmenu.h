@@ -44,7 +44,7 @@ public:
    RingMenu(QString title, QWidget *fglform, QString style = "", QWidget *parent = 0);
 
 
-   void createButton(int id = 0, QString text = "", QString desc = "");
+   QPushButton* createButton(int id = 0, QString text = "", QString desc = "");
    void hideButton(int);
    void hideButton(QString);
    void showButton(QString);

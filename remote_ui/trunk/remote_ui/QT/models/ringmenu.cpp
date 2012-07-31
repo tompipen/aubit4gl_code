@@ -96,7 +96,7 @@ RingMenu::RingMenu(QString title, QWidget *fglform, QString style,
 // Filename     : ringmenu.cpp
 // Description  : creates the Buttons and adds them to the RingMenu
 //------------------------------------------------------------------------------
-void RingMenu::createButton(int id, QString text, QString tooltip)
+QPushButton* RingMenu::createButton(int id, QString text, QString tooltip)
 {
 MainFrame::vdcdebug("RingMenu","createButton", "int id, QString text, QString tooltip");
 
@@ -167,6 +167,8 @@ MainFrame::vdcdebug("RingMenu","createButton", "int id, QString text, QString to
    }
 
    buttonGroup->addButton(button, id);
+
+   return button;
 }
 
 //------------------------------------------------------------------------------
