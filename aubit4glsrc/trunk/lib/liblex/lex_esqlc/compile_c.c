@@ -24,12 +24,12 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.550 2012-07-30 11:55:19 mikeaubury Exp $
+# $Id: compile_c.c,v 1.551 2012-07-31 07:09:36 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
-static char const module_id[] = "$Id: compile_c.c,v 1.550 2012-07-30 11:55:19 mikeaubury Exp $";
+static char const module_id[] = "$Id: compile_c.c,v 1.551 2012-07-31 07:09:36 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -6171,6 +6171,9 @@ print_global_variable_init (module_definition *m, variable_list * gvars,char *ha
 {
 int a;
   set_suppress_lines ("x6");
+  if (gvars->variables.variables_len==0) {
+		return;
+	}
   if (!A4GL_doing_pcode ())
     {
       printc ("#");
@@ -6219,7 +6222,11 @@ int a;
       print_load_datatypes();
       print_nullify (E_SCOPE_MODULE, mvars);
       printc("// Initialise the current global variables");
-      printc ("init_global_variables_%s();",hash);
+      if (hash==0 || strcmp(hash,"[EMPTY]")==0 ) {
+		printc("// No global variables in use");
+	} else {
+      		printc ("init_global_variables_%s();",hash);
+	}
       printc("// Initialise any other global variables");
 
       for (a=0;a<m->imported_global_files_hashes.str_list_entry.str_list_entry_len;a++) {
@@ -6660,7 +6667,11 @@ LEXLIB_A4GL_write_generated_code (struct module_definition *m)
 
 
   print_global_variable_init (m,&m->exported_global_variables.variables,m->hash);
-  print_module_variable_init (m,&m->module_variables.variables,m->hash);
+  if (m->exported_global_variables.variables.variables.variables_len) {
+  	print_module_variable_init (m,&m->module_variables.variables,m->hash);
+  } else {
+  	print_module_variable_init (m,&m->module_variables.variables,NULL);
+  }
 
 
   for (a = 0; a < m->module_entries.module_entries_len; a++)
