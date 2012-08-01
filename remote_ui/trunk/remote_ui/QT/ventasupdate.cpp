@@ -254,7 +254,7 @@ void VentasUpdate::checkServerClient()
 {
     QList<QList<QString> > serverVars = parseXml(QDir::tempPath() + "/vdc.xml");
     #ifdef Q_WS_MAC
-        QList<QString> clientVars = clientXml(QDir::currentPath() + "VDC.app/Contents/MacOS/versions.xml");
+        QList<QString> clientVars = clientXml(QDir::currentPath() + "/VDC.app/Contents/MacOS/versions.xml");
     #else
         QList<QString> clientVars = clientXml(QDir::currentPath() + "/versions.xml");
     #endif
@@ -363,7 +363,7 @@ void VentasUpdate::checkServerClient()
 
             QString filePath;
             #ifdef Q_WS_MAC
-                filePath = QString(QDir::currentPath() + "VDC.app/Contents/MacOS/versions.xml");
+                filePath = QString(QDir::currentPath() + "/VDC.app/Contents/MacOS/versions.xml");
             #else
                 filePath = QString((QDir::currentPath() + "/versions.xml"));
             #endif
