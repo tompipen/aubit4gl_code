@@ -108,7 +108,15 @@ FglForm::FglForm(QString windowName, QWidget *parent) : QMainWindow(parent){
    setCurrentWidget(NULL);
 
    // Default Propertys/Styleattributes (can be overridden in *.4st files);
-   setProperty("startMenuPosition", "tree");
+
+   QString menuType = VDC::readSettingsFromIni("","startMenuPosition");
+
+   if(!menuType.isEmpty())
+   {
+       setProperty("startMenuPosition", menuType);
+   } else {
+       setProperty("startMenuPosition", "tree");
+   }
    setProperty("windowType", "normal");
    setProperty("startMenuShortcut", QString());
    setProperty("ringMenuButtonSize", QString());

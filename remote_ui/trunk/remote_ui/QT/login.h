@@ -71,6 +71,7 @@ public slots:
    #endif
    void error(QString);
    void checkForUpdate();
+   void setMainMenu();
 
 private slots:
    void okPressed();
@@ -95,6 +96,7 @@ private:
    QLabel *m_label;
 
    QList<ClientSocket*> ql_connections;
+   QAction *m_mainMenu;
 
    QLabel *textLabel;
    QLabel *criticalLabel;

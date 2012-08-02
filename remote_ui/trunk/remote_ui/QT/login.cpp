@@ -69,36 +69,58 @@ LoginForm::LoginForm(QWidget *parent)
    // MenuBar
 
    QMenuBar *menuBar = mainFrame->menuBar(); //new QMenuBar(0);
-   QAction *font = new QAction(tr("&Font"), this);
+
+   QMenu *admin = new QMenu(tr("&Admin"), this);
+   QMenu *options = new QMenu(tr("&Options"), this);
+
+   QSignalMapper* signalMapper = new QSignalMapper (this);
+
    QAction *feldplus = new QAction(tr("Fieldwidth + "), this);
+   connect(feldplus, SIGNAL(triggered()), signalMapper, SLOT(map()));
+   signalMapper->setMapping(feldplus,  "0.1");
+   options->addAction(feldplus);
+
    QAction *feldminus = new QAction(tr("Fieldwidth - "), this);
+   connect(feldminus, SIGNAL(triggered()), signalMapper, SLOT(map()));
+   signalMapper->setMapping(feldminus, "-0.1");
+   options->addAction(feldminus);
+
    QAction *feldreset = new QAction(tr("Default Fieldwidth"), this);
+   connect(feldreset, SIGNAL(triggered()), this, SLOT(resetFactor()));
+   options->addAction(feldreset);
+
    QAction *removeIni = new QAction(tr("Reset Screen Forms"), this);
    connect(removeIni, SIGNAL(triggered()), this, SLOT(removeIni()));
-   QMenu *admin = new QMenu(tr("&Admin"), this);
-   QAction *hosts = new QAction(tr("&Hosts"), this);
-   QMenu *options = new QMenu(tr("&Options"), this);
+   options->addAction(removeIni);
+
    QAction *checkVersion = new QAction(tr("&Search for Update"), this);
    connect(checkVersion, SIGNAL(triggered()), this, SLOT(checkForUpdate()));
    options->addAction(checkVersion);
+
+   QString menuType = VDC::readSettingsFromIni("", "startMenuPosition");
+
+   if(menuType == "tree" || menuType.isEmpty())
+   {
+       m_mainMenu = new QAction(tr("Main menu horizontal"), this);
+       connect(m_mainMenu, SIGNAL(triggered()), this, SLOT(setMainMenu()));
+       options->addAction(m_mainMenu);
+   } else if(menuType == "menu") {
+       m_mainMenu = new QAction(tr("Main menu vertical"), this);
+       connect(m_mainMenu, SIGNAL(triggered()), this, SLOT(setMainMenu()));
+       options->addAction(m_mainMenu);
+   }
+
    toggledebug = new QAction(tr("&Toggle Debug"), this);
    toggledebug->setCheckable(true);
    toggledebug->setChecked(true);
+
+   QAction *font = new QAction(tr("&Font"), this);
    font->setStatusTip(tr("Opens the Font Settings"));
-   hosts->setStatusTip(tr("Opens the Hosts Data Settings"));
    connect(font, SIGNAL(triggered()), this, SLOT(font()));
    options->addAction(font);
-   options->addAction(feldplus);
-   options->addAction(feldminus);
-   options->addAction(feldreset);
-   options->addAction(removeIni);
-   QSignalMapper* signalMapper = new QSignalMapper (this) ;
-   connect(feldplus, SIGNAL(triggered()), signalMapper, SLOT(map()));
-   connect(feldminus, SIGNAL(triggered()), signalMapper, SLOT(map()));
-   connect(feldreset, SIGNAL(triggered()), this, SLOT(resetFactor()));
 
-   signalMapper->setMapping(feldplus,  "0.1");
-   signalMapper->setMapping(feldminus, "-0.1");
+   QAction *hosts = new QAction(tr("&Hosts"), this);
+   hosts->setStatusTip(tr("Opens the Hosts Data Settings"));
 
    connect(signalMapper, SIGNAL(mapped(QString)), this, SLOT(setFactorWidth(QString)));
 
@@ -1188,4 +1210,19 @@ void LoginForm::checkForUpdate()
 {
     VentasUpdate *vu = new VentasUpdate(1, this);
     vu->checkForNewUpdates();
+}
+
+void LoginForm::setMainMenu()
+{
+    QString menuType = VDC::readSettingsFromIni("", "startMenuPosition");
+
+    if(menuType == "tree" || menuType.isEmpty())
+    {
+        VDC::saveSettingsToIni(QString(""), QString("startMenuPosition"), QString("menu"));
+        m_mainMenu->setText("Main Menu vertical");
+    } else if (menuType == "menu")
+    {
+        VDC::saveSettingsToIni(QString(""), QString("startMenuPosition"), QString("tree"));
+        m_mainMenu->setText("Main Menu horizontal");
+    }
 }

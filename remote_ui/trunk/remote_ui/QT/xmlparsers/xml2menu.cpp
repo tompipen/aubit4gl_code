@@ -22,6 +22,7 @@
 #include <QTreeWidget>
 
 #include "xml2menu.h"
+#include "include/vdc.h"
 
 
 //------------------------------------------------------------------------------
@@ -210,13 +211,14 @@ void XML2Menu::outputTree(const QDomNode& domNode)
 int XML2Menu::readXML(const QDomDocument& doc)
 {
 
-   QString menu = doc.firstChild().toElement().attribute("type");
+   QString menu;
+   QString menuType = VDC::readSettingsFromIni("","startMenuPosition");
 
-   if(menu.isEmpty() || menu != "tree" || menu != "menu"){
-      menu = this->menu;
-   }
-   else{
-      this->menu = menu;
+   if(!menuType.isEmpty())
+   {
+       menu = menuType;
+   } else {
+       menu = "tree";
    }
 
    if(menu == "tree"){
