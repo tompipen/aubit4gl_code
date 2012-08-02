@@ -333,7 +333,7 @@ void XML2Menu::createActionMenu(const QDomNode &domNode)
 
       QDomElement childElement = child.toElement();
       if(childElement.nodeName() == "StartMenuGroup"){
-         menuWidgetItem = new QMenu(childElement.attribute("text"));
+         menuWidgetItem = new QMenu("&" + childElement.attribute("text"));
          if(i_cnt != 0){
             if(i_cntGroup > 0){
                if(i_cntTopLevel>1){
@@ -367,7 +367,7 @@ void XML2Menu::createActionMenu(const QDomNode &domNode)
       else{
             parentMenuItem = parentMenuItems.at(i_cntFolder);
          }
-         menuWidgetAction = new QAction(childElement.attribute("text"),this);
+         menuWidgetAction = new QAction("&" + childElement.attribute("text"),this);
          parentMenuItem->addAction(menuWidgetAction);
          connect(menuWidgetAction, SIGNAL(triggered()), this, SLOT(execAction()));
          menuCommands << menuWidgetAction;
