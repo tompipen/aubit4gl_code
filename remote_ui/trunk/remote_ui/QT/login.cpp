@@ -74,6 +74,7 @@ LoginForm::LoginForm(QWidget *parent)
    QMenu *options = new QMenu(tr("&Options"), this);
 
    QAction *checkVersion = new QAction(tr("&Search for Update"), this);
+   checkVersion->setStatusTip(tr("Looks for a new Update for the VDC"));
    connect(checkVersion, SIGNAL(triggered()), this, SLOT(checkForUpdate()));
    options->addAction(checkVersion);
    options->addSeparator();
@@ -88,21 +89,25 @@ LoginForm::LoginForm(QWidget *parent)
 
    QAction *feldplus = new QAction(tr("Fieldwidth + "), this);
    connect(feldplus, SIGNAL(triggered()), signalMapper, SLOT(map()));
+   feldplus->setStatusTip(tr("Increase the FormField width in the Screen Forms"));
    signalMapper->setMapping(feldplus,  "0.1");
    options->addAction(feldplus);
 
    QAction *feldminus = new QAction(tr("Fieldwidth - "), this);
    connect(feldminus, SIGNAL(triggered()), signalMapper, SLOT(map()));
+   feldminus->setStatusTip(tr("Decrease the FormField width in the Screen Forms"));
    signalMapper->setMapping(feldminus, "-0.1");
    options->addAction(feldminus);
 
    QAction *feldreset = new QAction(tr("Default Fieldwidth"), this);
    connect(feldreset, SIGNAL(triggered()), this, SLOT(resetFactor()));
+   feldreset->setStatusTip(tr("Restore the default Fieldwidth settings for thr Screen Forms"));
    options->addAction(feldreset);
    options->addSeparator();
 
    QAction *removeIni = new QAction(tr("Reset Screen Forms"), this);
    connect(removeIni, SIGNAL(triggered()), this, SLOT(removeIni()));
+   removeIni->setStatusTip(tr("Remove the settings.ini from the VDC."));
    options->addAction(removeIni);
    options->addSeparator();
 
