@@ -73,6 +73,17 @@ LoginForm::LoginForm(QWidget *parent)
    QMenu *admin = new QMenu(tr("&Admin"), this);
    QMenu *options = new QMenu(tr("&Options"), this);
 
+   QAction *checkVersion = new QAction(tr("&Search for Update"), this);
+   connect(checkVersion, SIGNAL(triggered()), this, SLOT(checkForUpdate()));
+   options->addAction(checkVersion);
+   options->addSeparator();
+
+   QAction *font = new QAction(tr("&Font"), this);
+   font->setStatusTip(tr("Opens the Font Settings"));
+   connect(font, SIGNAL(triggered()), this, SLOT(font()));
+   options->addAction(font);
+   options->addSeparator();
+
    QSignalMapper* signalMapper = new QSignalMapper (this);
 
    QAction *feldplus = new QAction(tr("Fieldwidth + "), this);
@@ -88,14 +99,12 @@ LoginForm::LoginForm(QWidget *parent)
    QAction *feldreset = new QAction(tr("Default Fieldwidth"), this);
    connect(feldreset, SIGNAL(triggered()), this, SLOT(resetFactor()));
    options->addAction(feldreset);
+   options->addSeparator();
 
    QAction *removeIni = new QAction(tr("Reset Screen Forms"), this);
    connect(removeIni, SIGNAL(triggered()), this, SLOT(removeIni()));
    options->addAction(removeIni);
-
-   QAction *checkVersion = new QAction(tr("&Search for Update"), this);
-   connect(checkVersion, SIGNAL(triggered()), this, SLOT(checkForUpdate()));
-   options->addAction(checkVersion);
+   options->addSeparator();
 
    QString menuType = VDC::readSettingsFromIni("", "startMenuPosition");
 
@@ -113,11 +122,6 @@ LoginForm::LoginForm(QWidget *parent)
    toggledebug = new QAction(tr("&Toggle Debug"), this);
    toggledebug->setCheckable(true);
    toggledebug->setChecked(true);
-
-   QAction *font = new QAction(tr("&Font"), this);
-   font->setStatusTip(tr("Opens the Font Settings"));
-   connect(font, SIGNAL(triggered()), this, SLOT(font()));
-   options->addAction(font);
 
    QAction *hosts = new QAction(tr("&Hosts"), this);
    hosts->setStatusTip(tr("Opens the Hosts Data Settings"));
