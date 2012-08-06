@@ -822,20 +822,31 @@ namespace Fgl {
       }
 
       QStringList arr_mdy;
+      QString validateDate;
       arr_mdy = value.split(sep);
+
+      for(int i=0; i < arr_mdy.count(); i++)
+      {
+          if(arr_mdy.at(i).length() < 2)
+          {
+              arr_mdy[i] = "0" + arr_mdy.at(i);
+          }
+          validateDate.append(arr_mdy[i]);
+      }
+
+      validateDate.insert(2, sep);
+      validateDate.insert(5, sep);
 
       int year = -1;
       int month = -1;
       int day = -1;
-
-      qDebug() << "dbdate: " << dbdate;
 
       QString tmp_dbdate = dbdate;
       tmp_dbdate.remove("4");
       tmp_dbdate.remove("2");
       tmp_dbdate.remove(dbdate_sep);
 
-      QDate date1 = QDate::fromString(value, getDateFormat(dbdate, sep));
+      QDate date1 = QDate::fromString(validateDate, getDateFormat(dbdate, sep));
 
       if(!date1.isValid())
       {
