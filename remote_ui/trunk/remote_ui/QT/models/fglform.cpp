@@ -4502,19 +4502,13 @@ MainFrame::vdcdebug("FglForm","checkField", "");
               if(text.contains(":"))
               {
                   dates = text.split(":");
-                  qDebug() << dates;
-
-                  for(int i=0; i < dates.count(); i++)
-                  {
-
-                  }
               } else if (text.contains("|"))
               {
                   dates = text.split("|");
               }
               if(dates.count() < 2)
               {
-                  fieldValue = Fgl::usingFunc(widget->format(), text, Fgl::DataType(7), widget->picture());
+                  fieldValue = Fgl::usingFunc(widget->format(), text, Fgl::DTYPE_DATE, widget->picture());
 
                   if(fieldValue.isEmpty())
                   {
@@ -4525,7 +4519,7 @@ MainFrame::vdcdebug("FglForm","checkField", "");
               } else {
                   for(int i=0; i < dates.count(); i++)
                   {
-                      fieldValue = Fgl::usingFunc(widget->format(), dates.at(i), Fgl::DataType(7), widget->picture());
+                      fieldValue = Fgl::usingFunc(widget->format(), dates.at(i), Fgl::DTYPE_DATE, widget->picture());
                       if(fieldValue.isEmpty())
                       {
                           this->error("Date Field is not Valid.");
