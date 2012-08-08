@@ -3336,7 +3336,7 @@ void ScreenHandler::activeFocus()
     if(p_fglform->dialog() == NULL && p_fglform->ringMenuPulldown() == NULL){
         p_fglform->setWindowState(Qt::WindowActive);
         p_fglform->raise();
-        QApplication::setActiveWindow((QWidget*) p_fglform->ringMenuPulldown());
+        QApplication::setActiveWindow((QWidget*) p_fglform);
         p_fglform->activateWindow();
         //Qt3 weg, static QMetaobject::invokeMethod in zukunft
         QApplication::postEvent(this, new QEvent((QEvent::Type)1337));
@@ -3345,6 +3345,12 @@ void ScreenHandler::activeFocus()
     if(p_fglform->dialog() != NULL)
     {
         QApplication::setActiveWindow((QWidget*) p_fglform->dialog());
+        p_fglform->dialog()->raise();
+        p_fglform->dialog()->activateWindow();
+    }
+    if(p_fglform->ringMenuPulldown() != NULL)
+    {
+        QApplication::setActiveWindow((QWidget*) p_fglform->ringMenuPulldown());
         p_fglform->dialog()->raise();
         p_fglform->dialog()->activateWindow();
     }
