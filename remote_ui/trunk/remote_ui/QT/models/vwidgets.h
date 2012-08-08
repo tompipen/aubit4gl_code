@@ -126,6 +126,7 @@ public:
     int w;
 
 
+    QString getSqlType() { return qs_oldsql; };
     void setNoEntry(bool ro);
     bool noEntry() { return b_noEntry; };
     void setAutoNext(bool ro) { b_autoNext = ro; };

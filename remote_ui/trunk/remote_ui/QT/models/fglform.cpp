@@ -4487,20 +4487,28 @@ MainFrame::vdcdebug("FglForm","checkField", "");
          }
       }else if(state() == Fgl::CONSTRUCT)
       {
+          QString text = WidgetHelper::fieldText(widget);
+          if(widget->getSqlType() == "INTEGER")
+          {
+              if(Fgl::isValidForType(Fgl::DTYPE_INT, text, widget->format())){
+                  WidgetHelper::setFieldText(widget, text);
+              }
+              else{
+                 emit error("ERROR in Character conversion");
+                 WidgetHelper::setFieldText(widget, "");
+              }
+
+          }
           if(DateEdit *edit = qobject_cast<DateEdit*> (widget))
           {
               Q_UNUSED(edit);
               QString fieldValue;
               QList<QString> dates;
-              QString text = WidgetHelper::fieldText(widget);
 
               text.remove("<");
               text.remove(">");
               text.remove("=");
-              QRegExp regExpDate("[a-z]");
-              QRegExp regExpDateCaps("[A-Z]");
-
-              if(!text.contains(regExpDate) && !text.contains(regExpDateCaps) && !text.isEmpty())
+              if(!text.isEmpty())
               {
                   if(text.contains(":"))
                   {
