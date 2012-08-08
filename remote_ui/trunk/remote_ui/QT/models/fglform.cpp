@@ -4487,48 +4487,52 @@ MainFrame::vdcdebug("FglForm","checkField", "");
          }
       }else if(state() == Fgl::CONSTRUCT)
       {
-          QString fieldValue;
-          QList<QString> dates;
-          QString text = WidgetHelper::fieldText(widget);
-
-          text.remove("<");
-          text.remove(">");
-          text.remove("=");
-          QRegExp regExpDate("[a-z]");
-          QRegExp regExpDateCaps("[A-Z]");
-
-          if(!text.contains(regExpDate) && !text.contains(regExpDateCaps) && !text.isEmpty())
+          if(DateEdit *edit = qobject_cast<DateEdit*> (widget))
           {
-              if(text.contains(":"))
-              {
-                  dates = text.split(":");
-              } else if (text.contains("|"))
-              {
-                  dates = text.split("|");
-              }
-              if(dates.count() < 2)
-              {
-                  fieldValue = Fgl::usingFunc(widget->format(), text, Fgl::DTYPE_DATE, widget->picture());
+              Q_UNUSED(edit);
+              QString fieldValue;
+              QList<QString> dates;
+              QString text = WidgetHelper::fieldText(widget);
 
-                  if(fieldValue.isEmpty())
+              text.remove("<");
+              text.remove(">");
+              text.remove("=");
+              QRegExp regExpDate("[a-z]");
+              QRegExp regExpDateCaps("[A-Z]");
+
+              if(!text.contains(regExpDate) && !text.contains(regExpDateCaps) && !text.isEmpty())
+              {
+                  if(text.contains(":"))
                   {
-                      this->error("Date Field is not Valid.");
-                      this->setFocusOnWidget(widget, Qt::OtherFocusReason);
-                      this->jumpToField(widget, false);
+                      dates = text.split(":");
+                  } else if (text.contains("|"))
+                  {
+                      dates = text.split("|");
                   }
-              } else {
-                  for(int i=0; i < dates.count(); i++)
+                  if(dates.count() < 2)
                   {
-                      fieldValue = Fgl::usingFunc(widget->format(), dates.at(i), Fgl::DTYPE_DATE, widget->picture());
+                      fieldValue = Fgl::usingFunc(widget->format(), text, Fgl::DTYPE_DATE, widget->picture());
+
                       if(fieldValue.isEmpty())
                       {
                           this->error("Date Field is not Valid.");
                           this->setFocusOnWidget(widget, Qt::OtherFocusReason);
                           this->jumpToField(widget, false);
                       }
+                  } else {
+                      for(int i=0; i < dates.count(); i++)
+                      {
+                          fieldValue = Fgl::usingFunc(widget->format(), dates.at(i), Fgl::DTYPE_DATE, widget->picture());
+                          if(fieldValue.isEmpty())
+                          {
+                              this->error("Date Field is not Valid.");
+                              this->setFocusOnWidget(widget, Qt::OtherFocusReason);
+                              this->jumpToField(widget, false);
+                          }
+                      }
                   }
+                  fieldValue.clear();
               }
-              fieldValue.clear();
           }
       }
    }
