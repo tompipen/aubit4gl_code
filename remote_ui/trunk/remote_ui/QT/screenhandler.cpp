@@ -1914,6 +1914,14 @@ MainFrame::vdcdebug("ScreenHandler","setFormOpts", "QString type, bool value, in
 
          p_fglform->addFormEvent(event);
 
+         for(int i=0; i<context->fieldList().count(); i++){
+             if(TableView *tv = qobject_cast<TableView*> (context->fieldList().at(i)))
+             {
+                 tv->setIgnoreRowChange(false);
+            }
+         }
+
+
       }
    }
    else{
@@ -1965,16 +1973,14 @@ MainFrame::vdcdebug("ScreenHandler","setFormOpts", "QString type, bool value, in
       {
          if(p_fglform->inputArray()){
 //            QList<QWidget*> ql_fields = p_fglform->formElements();
-/*
+
             for(int i=0; i<context->fieldList().count(); i++){
-               QWidget *widget = p_fglform->findFieldByName(context->fieldList().at(i));
-               if(LineEditDelegate *de = qobject_cast<LineEditDelegate *> (widget)){
-                  if(TableView *tableView = qobject_cast<TableView *> (de->parent())){
-                     tableView->setEnabled(false);
+                  if(TableView *tableView = qobject_cast<TableView *> (context->fieldList().at(i))){
+                     tableView->setCurrentField(0,0, false);
                   }
                }
-            }
-*/
+
+
             p_fglform->revertState(Fgl::INPUTARRAY);
             freeContext(i_context);
             p_fglform->ql_responseQueue.clear();
@@ -2555,6 +2561,7 @@ MainFrame::vdcdebug("ScreenHandler","displayError", "QString text");
       if(text.isEmpty())
         return;
       if(FglForm *form = qobject_cast<FglForm*> (QApplication::activeWindow()))
+    //  if(FglForm *form = qobject_cast<FglForm*> (MainFrame::getTopLevelPointerOfParent(this->p_pid_p)))
       {
          StatusBar *sb = (StatusBar*) form->statusBar();
          sb->displayError(text);
@@ -2599,6 +2606,7 @@ MainFrame::vdcdebug("ScreenHandler","displayMessage", "QString text");
        if(text.isEmpty())
          return;
        if(FglForm *form = qobject_cast<FglForm*> (QApplication::activeWindow()))
+//       if(FglForm *form = qobject_cast<FglForm*> (MainFrame::getTopLevelPointerOfParent(this->p_pid_p)))
        {
           StatusBar *sb = (StatusBar*) form->statusBar();
           sb->displayError(text);
@@ -3056,13 +3064,14 @@ void ScreenHandler::setScrLine(int line)
 MainFrame::vdcdebug("ScreenHandler","setScrLine", "int line");
    if(p_fglform == NULL)
       return;
-Context *context = getCurrentContext();
-//   QList<QWidget*> ql_fields = p_fglform->formElements();
-   QList<QWidget*> ql_fields = p_fglform->ql_formFields;
-   for(int i=0; i<ql_fields.size(); i++){
-      if(TableView *tableView = qobject_cast<TableView *> (ql_fields.at(i))){
-         tableView->setScrLine(line-1);
-         context->setOption("SCRLINE", line-1);
+   Context *context = getCurrentContext();
+   if(context == NULL)
+      return;
+
+   for(int i=0; i<context->fieldList().count(); i++){
+      if(TableView *tableView = qobject_cast<TableView *> (context->fieldList().at(i))){
+            tableView->setScrLine(line-1);
+            context->setOption("SCRLINE", line-1);
       }
    }
 }
@@ -3133,6 +3142,10 @@ MainFrame::vdcdebug("ScreenHandler","freeContext", "int i_context");
 
              QModelIndex current = tableView->currentIndex();
              tableView->closePersistentEditor(current);
+                if(QSortFilterProxyModel *proxyModel = qobject_cast<QSortFilterProxyModel *> (tableView->model())){
+                   QModelIndex proxyIndex = proxyModel->index(0, 0);
+                   tableView->selectionModel()->setCurrentIndex(current, QItemSelectionModel::Clear);
+             }
 
          }
          if(LineEdit *le = qobject_cast<LineEdit *> (field)){
@@ -3338,7 +3351,7 @@ void ScreenHandler::activeFocus()
         p_fglform->raise();
         QApplication::setActiveWindow((QWidget*) p_fglform);
         p_fglform->activateWindow();
-        //Qt3 weg, static QMetaobject::invokeMethod in zukunft
+        //Qt3 weg, static QMetaobject::invokeoMethod in zukunft
         QApplication::postEvent(this, new QEvent((QEvent::Type)1337));
 
     }
@@ -3660,7 +3673,9 @@ void ScreenHandler::setRuninfo(int mode, QString cmd, int runcnt, bool start)
 //}
     void ScreenHandler::setProgramName(QString pn)
     {
+
         this->programm_name = pn;
+        MainFrame::check_new_pids();
     }
 
 

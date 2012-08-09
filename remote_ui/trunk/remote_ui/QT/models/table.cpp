@@ -1060,8 +1060,9 @@ MainFrame::vdcdebug("TableView","setScrLine", "int line");
    if(QSortFilterProxyModel *proxyModel = qobject_cast<QSortFilterProxyModel *> (this->model())){
 
       //if(TableModel *table = qobject_cast<TableModel *> (proxyModel->sourceModel())){
-         QModelIndex proxyIndex = proxyModel->index(currentIndex().column(), line);
-         setCurrentIndex(proxyIndex);
+         QModelIndex proxyIndex = proxyModel->index(line, currentIndex().column());
+        // setCurrentIndex(proxyIndex);
+         selectionModel()->setCurrentIndex(proxyModel->mapToSource(proxyIndex), QItemSelectionModel::NoUpdate);
     //  }
 
    }
@@ -1073,9 +1074,9 @@ MainFrame::vdcdebug("TableView","setArrLine", "int line");
    if(QSortFilterProxyModel *proxyModel = qobject_cast<QSortFilterProxyModel *> (this->model())){
 
 //      if(TableModel *table = qobject_cast<TableModel *> (proxyModel->sourceModel())){
-         QModelIndex proxyIndex = proxyModel->index(currentIndex().column(), line);
+         QModelIndex proxyIndex = proxyModel->index(line, currentIndex().column());
          QModelIndex index = proxyModel->mapToSource(proxyIndex);
-         setCurrentIndex(index);
+         selectionModel()->setCurrentIndex(index, QItemSelectionModel::NoUpdate);
 //      }
 
    }
@@ -1087,7 +1088,7 @@ MainFrame::vdcdebug("TableView","setCurrentColumn", "int col");
    if(QSortFilterProxyModel *proxyModel = qobject_cast<QSortFilterProxyModel *> (this->model())){
 
       //if(TableModel *table = qobject_cast<TableModel *> (proxyModel->sourceModel())){
-         QModelIndex proxyIndex = proxyModel->index(col, currentIndex().row());
+         QModelIndex proxyIndex = proxyModel->index(currentIndex().row(), col);
          QModelIndex index = proxyModel->mapToSource(proxyIndex);
          setCurrentIndex(index);
      // }
