@@ -65,6 +65,7 @@ namespace Fgl {
          case DTYPE_INTERVAL:
           if(picture.contains("##:") && value.trimmed().indexOf(":") == 1)
              value = value.trimmed().prepend("0");
+             qDebug() << "value: " << value;
              break;
          case DTYPE_NCHAR:
          default:
