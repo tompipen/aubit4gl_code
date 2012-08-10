@@ -563,7 +563,7 @@ MainFrame::vdcdebug("ScreenHandler","createMenuButton", "int buttonId, QString t
    QPushButton *pb = ringMenu->createButton(buttonId, text, desc);
    QAction *action = ringMenu->getAction(text.toLower());
    connect(action, SIGNAL(triggered()), p_fglform, SLOT(actionTriggered()));
-   connect(pb, SIGNAL(clicked()), p_fglform->context, SLOT(focusChanged()));
+   connect(pb, SIGNAL(pressed()), p_fglform->context, SLOT(focusChanged()));
 
    Fgl::Event event;
    event.type = Fgl::MENUACTION_EVENT;
