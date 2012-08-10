@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.191 2012-02-27 20:46:40 mikeaubury Exp $
+# $Id: conv.c,v 1.192 2012-08-10 12:18:57 mikeaubury Exp $
 #
 */
 
@@ -668,7 +668,7 @@ A4GL_ctoint (void *a_char, void *b_int, int size_b)
 {
   int data[256];
   struct ival *d;
-  struct ival d2;
+  //struct ival d2;
   int v1, v2, v3;
   char localchar[65];
   int is_neg = 0;
@@ -4575,6 +4575,8 @@ if (a==((size >>4)&0xf) && b==(size&0xf) ){
 
   for (i = a; i <= b; i++)
     {
+
+
 #ifdef DEBUG
       A4GL_debug ("i=%d i-a=%d\n", i, i - a);
 #endif
@@ -4592,6 +4594,8 @@ if (a==((size >>4)&0xf) && b==(size&0xf) ){
 	}
       else
 	{
+    		if (ptr[i-a][0]==':') { return 0; }
+    		if (ptr[i-a][0]=='.') { return 0; }
 	  data[i - 1] = atoi (ptr[i - a]);
 	}
 
@@ -4599,6 +4603,7 @@ if (a==((size >>4)&0xf) && b==(size&0xf) ){
       A4GL_debug ("%s -> '%s'\n", A4GL_null_as_null (codes[i]), A4GL_null_as_null (ptr[i - a]));
 #endif
     }
+
   has_yr_month = 0;
   has_rest = 0;
   if (data[0] || data[1])
