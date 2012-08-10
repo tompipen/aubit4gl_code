@@ -1234,7 +1234,7 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
 
              if(te->autoNext() == 1)
              {
-                 if(te->toPlainText().length() <= WidgetHelper::getLengthBySqlType(sqltype))
+                 if( WidgetHelper::getLengthBySqlType(sqltype) <= te->toPlainText().length())
                  {
                      if((keyEvent->key() >= 65 && keyEvent->key() <= 90) || (keyEvent->key() >= 48 && keyEvent->key() <= 57))
                      {
