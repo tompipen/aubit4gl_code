@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                          |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.281 2012-06-05 09:10:16 mikeaubury Exp $
+# $Id: stack.c,v 1.282 2012-08-14 14:22:28 mikeaubury Exp $
 #
 */
 
@@ -493,7 +493,8 @@ void A4GL_pop_object(char *objtype,void *obj,int dtype,int size,int isFcall) {
 	int s0;
 	char *pi;
 
-long oldObjectId;
+
+//long oldObjectId;
 
 
 	A4GL_get_top_of_stack (1, &d0, &s0, (void *) &pi);
@@ -3144,7 +3145,6 @@ A4GL_params_on_stack (char *_paramnames[], int n)
 		case DTYPE_OBJECT:
 			{
 	  		char *(*function) (void *, int, char *, int);
-			char *s;
 	  		function = A4GL_get_datatype_function_i (DTYPE_OBJECT, ">STRING");
 	  		buff = strdup(function (params[a].ptr, params[a].size, 0, 0));
 			}
@@ -3184,6 +3184,127 @@ A4GL_params_on_stack (char *_paramnames[], int n)
       		z = add_to_z (z, _paramnames[a]);
       		z = add_to_z (z, "=");
 	}
+
+      z = add_to_z (z, buff2);
+
+      free (buff);
+    }
+#ifdef DEBUG
+  A4GL_debug ("Generated : %s", A4GL_null_as_null (z));
+#endif
+  return z;
+}
+
+
+
+
+char *
+A4GL_binding_as_string_for_debug (void *vibind, int n)
+{
+  int a;
+  char *buff;
+  char *buff2;
+  char *z = 0;
+  int sz;
+struct BINDING *ibind;
+
+ibind=vibind;
+
+  if (n == 0)
+    return 0;
+
+
+#ifdef DEBUG
+  A4GL_debug ("Generating parameter list n=%d", n);
+#endif
+
+  for (a = 0; a < n; a++)
+    {
+
+      if (n > 20)
+	{
+	  z = add_to_z (z, "...");
+	  break;
+	}
+
+
+      if ((ibind[a].dtype & DTYPE_MASK) != DTYPE_CHAR)
+	{
+	  sz = 30;
+#ifdef DEBUG
+	  A4GL_debug ("not char - sz=30");
+#endif
+	}
+      else
+	{
+	  sz = ibind[a].size;
+#ifdef DEBUG
+	  A4GL_debug ("char - sz=%d", sz);
+#endif
+	}
+
+#ifdef DEBUG
+      A4GL_debug ("Calling conv...");
+#endif
+
+
+	switch (ibind[a].dtype & DTYPE_MASK) {
+		case DTYPE_CHAR:
+		case DTYPE_SMINT:
+		case DTYPE_INT:
+		case DTYPE_FLOAT:
+		case DTYPE_SMFLOAT:
+		case DTYPE_DECIMAL:
+		case DTYPE_SERIAL:
+		case DTYPE_DATE:
+		case DTYPE_MONEY:
+		case DTYPE_NULL:
+		case DTYPE_DTIME:
+		case DTYPE_BYTE:
+		case DTYPE_TEXT:
+		case DTYPE_VCHAR:
+		case DTYPE_INTERVAL :
+		case DTYPE_NCHAR:
+		case DTYPE_NVCHAR:
+		case DTYPE_INT8:
+		case DTYPE_SERIAL8:
+      			buff = acl_malloc2 (sz + 10);
+      			A4GL_conv (ibind[a].dtype & DTYPE_MASK, ibind[a].ptr, 0, buff, sz);
+			break;
+
+		case DTYPE_OBJECT:
+			{
+	  		char *(*function) (void *, int, char *, int);
+	  		function = A4GL_get_datatype_function_i (DTYPE_OBJECT, ">STRING");
+	  		buff = strdup(function (ibind[a].ptr, ibind[a].size, 0, 0));
+			}
+			break;
+
+		default:
+			buff=strdup("Not printable");
+			break;
+	}
+
+#ifdef DEBUG
+      A4GL_debug ("Conv gives us '%s'", A4GL_null_as_null (buff));
+#endif
+
+      buff2 = buff;
+      buff2 = A4GL_lrtrim (buff);
+
+
+#ifdef DEBUG
+      A4GL_debug ("buff2=%s\n", buff2);
+#endif
+
+      if (a)
+	{
+	  z = add_to_z (z, ",");
+	}
+
+#ifdef DEBUG
+      A4GL_debug ("1. z=%s", A4GL_null_as_null (z));
+#endif
 
       z = add_to_z (z, buff2);
 
@@ -5217,8 +5338,6 @@ void A4GL_pushIntGE (int a, int b)
 
 
 void A4GL_dec_refcount( void **objects) {
-	int a;
-	long objId;
 
 	freeOrphanObjects();
 

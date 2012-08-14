@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.427 2012-07-25 09:57:08 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.428 2012-08-14 14:22:28 mikeaubury Exp $
 #
 */
 
@@ -2981,6 +2981,8 @@ char *A4GL_get_start_tag(char *tag_type) ;
 void A4GL_dec_refcount(void **obj);
 char *getDatatypeSig(int dtype,int size,char *objectType) ;
 char *formatDouble(double d,int useExponent);
+char * A4GL_binding_as_string_for_debug (void *vibind, int n);
+
 
 #ifdef MOVED
 struct sObject { // Also in a4gl_incl_4gldef.h

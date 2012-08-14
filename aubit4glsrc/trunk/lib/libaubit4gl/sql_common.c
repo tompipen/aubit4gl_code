@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql_common.c,v 1.104 2012-07-10 08:52:47 mikeaubury Exp $
+# $Id: sql_common.c,v 1.105 2012-08-14 14:22:28 mikeaubury Exp $
 #
 */
 
@@ -174,12 +174,14 @@ buff[b]=0;
   return buff;
 }
 
-static void log_sql(char *type, char *nm, char *sql, double tm, char *mod,int line) {
+static void log_sql(char *type, char *nm, char *sql, double tm, char *mod,int line,void *vi, int ni) {
   static char logfname[255];
   static long logfnameset = 0;
   char *fname;
   FILE *fout = 0;
   char buff[256];
+  char *params=0;
+
 
   if (mod && strcmp(mod,"__internal_report")==0) {
 		mod=0;
@@ -264,9 +266,24 @@ static void log_sql(char *type, char *nm, char *sql, double tm, char *mod,int li
       return;
     }
 
+  if (vi && ni) {
+	params=A4GL_binding_as_string_for_debug (vi,ni);
+	while (1) {
+		char *ptr;
+		ptr=strchr(params,'|');
+		if (ptr) *ptr='!';
+		else break;
+	}
+	
+  } else {
+	params=strdup("");
+  }
+
   // if we've got to here - we've got a file to write to...
   //
-  FPRINTF (fout, "%s|%d|%s|%s|%s|%s|%d|%lf|%ld|%s\n",A4GL_get_running_program (), getpid (), type,nm, cleanup(sql),mod,line,tm,(long)a4gl_sqlca.sqlcode, A4GL_getTimecode());
+  FPRINTF (fout, "%s|%d|%s|%s|%s|%s|%d|%lf|%ld|%s|%s|\n",A4GL_get_running_program (), getpid (), type,nm, cleanup(sql),mod,line,tm,(long)a4gl_sqlca.sqlcode, A4GL_getTimecode(),params);
+
+  free(params);
   fclose (fout);
 
 }
@@ -738,7 +755,7 @@ A4GL_prepare_select (struct BINDING *ibind, int ni, struct BINDING *obind, int n
   t1=get_now_as_double();
   sid = A4GLSQL_prepare_select_internal (ibind, ni, obind, no, s, new_uniqId, singleton);
   t2=get_now_as_double()-t1;
-  log_sql("PREPARE"," ",s,t2,mod,line);
+  log_sql("PREPARE"," ",s,t2,mod,line,ibind,ni);
 
 
   if (sid) {
@@ -857,7 +874,7 @@ double t2;
   	t1=get_now_as_double();
         rval=A4GLSQL_execute_implicit_sql (sid, 0, ni, ibind);
   	t2=get_now_as_double()-t1;
-  	log_sql("EXECUTE",pname,sid->select,t2,NULL,0); 
+  	log_sql("EXECUTE",pname,sid->select,t2,NULL,0,ibind,ni); 
 	return rval;
     }
   else
@@ -880,7 +897,7 @@ int A4GL_execute_implicit_sql(void* vsid,int singleton,int no,void* ibind) {
 	}
 	rval=A4GLSQL_execute_implicit_sql(vsid,singleton,no,ibind);
   	t2=get_now_as_double()-t1;
-  	log_sql("EXECUTE"," ",buff,t2,NULL,0); 
+  	log_sql("EXECUTE"," ",buff,t2,NULL,0,0,0); 
 	return rval;
 }
 
@@ -896,7 +913,7 @@ int A4GL_execute_implicit_select(void* vsid,int singleton) {
         t1=get_now_as_double();
 	rval=A4GLSQL_execute_implicit_select(vsid,singleton) ;
   	t2=get_now_as_double()-t1;
-  	log_sql("EXECUTE"," ",buff,t2,NULL,0); 
+  	log_sql("EXECUTE"," ",buff,t2,NULL,0,0,0); 
 	return rval;
 }
 
@@ -2134,7 +2151,7 @@ int A4GL_fetch_cursor(char* cursor_name,int fetch_mode,int fetch_when,int nibind
 	if (cid) {
 		if (cid->statement) {
 			if (cid->statement->select) {
-  				log_sql("FETCH",cursor_name,cid->statement->select,t2,NULL,0); 
+  				log_sql("FETCH",cursor_name,cid->statement->select,t2,NULL,0,ibind,nibind); 
 			}
 		}
 	}
@@ -2165,7 +2182,7 @@ int A4GL_open_cursor(char* s,int no,void* vibind) {
 	if (cid) {
 		if (cid->statement) {
 			if (cid->statement->select) {
-  			log_sql("OPEN",s,cid->statement->select,t2,NULL,0); 
+  			log_sql("OPEN",s,cid->statement->select,t2,NULL,0,vibind,no); 
 			}
 		}
 	}
@@ -2325,7 +2342,7 @@ sid=vsid;
   	t1=get_now_as_double();
 	cid=A4GLSQL_declare_cursor_internal(upd_hold,sid,scroll,cursname);
   	t2=get_now_as_double()-t1;
-  	log_sql("DECLARE",cursname,sid->select,t2,NULL,0); 
+  	log_sql("DECLARE",cursname,sid->select,t2,NULL,0,0,0); 
 
 	sid->refcnt|=REF_CNT_DECLARE;
 
@@ -2354,7 +2371,7 @@ void A4GL_put_insert(void* ibind,int n) {
 	if (cid) {
 		if (cid->statement) {
 			if (cid->statement->select) {
-  				log_sql("PUT",cursorName,cid->statement->select,t2,NULL,0); 
+  				log_sql("PUT",cursorName,cid->statement->select,t2,NULL,0,ibind,n); 
 			}
 		}
 	}
@@ -2749,7 +2766,7 @@ void A4GL_logsql(int lineno,char *module, char *s,char *type,char *cursor) {
 	if(esql_cmd_start==0) {
 		esql_cmd_start=get_now_as_double();
 	}
-  	log_sql(type,cursor,cleanup(s),get_now_as_double()-esql_cmd_start,module,lineno);
+  	log_sql(type,cursor,cleanup(s),get_now_as_double()-esql_cmd_start,module,lineno,0,0);
 }
 
 

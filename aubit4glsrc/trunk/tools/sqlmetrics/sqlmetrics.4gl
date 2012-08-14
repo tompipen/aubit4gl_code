@@ -57,6 +57,7 @@ defer interrupt
 		message "sqlmetrics database created" sleep 1
 		message " "
 	end if
+	call ensureTableHasParams()
 		
 	call main_menu()
 end main
@@ -87,7 +88,8 @@ create table sql_log
    lineno int,     --  is the line number in the 4gl where this SQL is located
    elatime float,  --  is the execution of this statement in seconds
    sql_code int,   --  sqlca.sqlcode
-   curtime datetime year to fraction(3)  --  timestamp
+   curtime datetime year to fraction(3),  --  timestamp
+   params varchar(2048)
   )
 
 if sqlca.sqlcode<0 then
@@ -104,8 +106,9 @@ if sqlca.sqlcode<0 then
    	module varchar(30), --  is the modulename of the 4gl where this SQL is located
    	lineno int, --  is the line number in the 4gl where this SQL is located
    	elatime float, --    is the execution of this statement in seconds
-    sql_code int,   --  sqlca.sqlcode
-    curtime datetime year to fraction(3)  --  timestamp
+    	sql_code int,   --  sqlca.sqlcode
+    	curtime datetime year to fraction(3),  --  timestamp
+   	params char(2048)
   	)
 
 	if sqlca.sqlcode<0 then
@@ -204,4 +207,23 @@ end function
 
 function set_and_display_banner() 
 	call display_banner()
+end function
+
+function ensureTableHasParams()
+define i integer
+whenever error continue
+select count(*) from sql_log where params is null
+let i=sqlca.sqlcode
+whenever error stop
+
+if i<0 then
+	display " "
+	display "You seem to have the old schema for the sql_log table"
+	display "Can you add an extra column 'params' to that table"
+	display "(it should just be a large character string)"
+	display "Or drop the table and a new table with the current schema"
+	display "will be created automatically"
+	exit program 1
+end if
+sleep 10
 end function
