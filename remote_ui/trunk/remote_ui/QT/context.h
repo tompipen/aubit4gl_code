@@ -35,6 +35,7 @@ public:
    void checkOptions();
    void setLastFocusWidget(QWidget*);
    QWidget *lastFocusWidget();
+   QList<Fgl::Event> ql_pandingevents;
    /*
    void restoreFieldPalette();
    void setPaletteList();

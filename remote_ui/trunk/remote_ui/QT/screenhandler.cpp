@@ -740,7 +740,7 @@ MainFrame::vdcdebug("ScreenHandler","createDialog", "QString title, QString comm
    Dialog *p_dialog = new Dialog(title, comment, style, image, p_fglform);
    connect(p_dialog, SIGNAL(destroyed()), this, SLOT(activeFocus()));
    p_fglform->setDialog(p_dialog);
-   clearEvents();
+   //clearEvents();
 
 }
 
@@ -791,7 +791,7 @@ MainFrame::vdcdebug("ScreenHandler","createDialog", "QString title, QString comm
    //connect(pulldown, SIGNAL(clicked()), p_fglform, SLOT(close()));
    p_fglform->setRingMenuPulldown(pulldown);
    connect(pulldown, SIGNAL(destroyed()), this, SLOT(activeFocus()));
-   clearEvents();
+   //clearEvents();
 
 }
 
@@ -3082,6 +3082,15 @@ MainFrame::vdcdebug("ScreenHandler","getContext", "int i_context");
    int contextCount = contexts.count()-1;
 
    for(int i=contextCount; i<i_context; i++){
+       //Speichere die Events im Context, da sie wenn der Context aktiv werden wieder abgearbeitet werden sollen
+       if(p_fglform)
+       {
+           if(p_fglform->context)
+           {
+               p_fglform->context->ql_pandingevents += p_fglform->ql_responseQueue;
+               p_fglform->ql_responseQueue.clear();
+           }
+       }
       Context *context = new Context;
       if(!contexts.isEmpty())
       {
@@ -3108,6 +3117,7 @@ MainFrame::vdcdebug("ScreenHandler","getContext", "int i_context");
               }
           }
       }
+
       contexts << context;
    }
 
@@ -3158,6 +3168,8 @@ MainFrame::vdcdebug("ScreenHandler","freeContext", "int i_context");
       delete context;
 
       context = getCurrentContext();
+      if(!context->ql_pandingevents.isEmpty())
+         p_fglform->ql_responseQueue += context->ql_pandingevents;
       p_fglform->context = context;
 
       if(p_fglform)
