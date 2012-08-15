@@ -3168,8 +3168,12 @@ MainFrame::vdcdebug("ScreenHandler","freeContext", "int i_context");
       delete context;
 
       context = getCurrentContext();
-      if(!context->ql_pandingevents.isEmpty())
-         p_fglform->ql_responseQueue += context->ql_pandingevents;
+      if(context)
+      {
+          if(!context->ql_pandingevents.isEmpty())
+             p_fglform->ql_responseQueue += context->ql_pandingevents;
+      }
+
       p_fglform->context = context;
 
       if(p_fglform)
