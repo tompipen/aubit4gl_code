@@ -2250,6 +2250,9 @@ if(qsl_triggereds.size() > 0)
        if(TableView *tableView = qobject_cast<TableView *> (p_fglform->currentField())){
            if(p_fglform->inputArray())
            {
+               //Fuer p_veinswb mit der kranken BeforeField/Nextfield Logik über mehrere Zeilen... Sah zwischen den Events einfach scheisse aus mit der Feldselektierung.
+               tableView->setUpdatesEnabled(true);
+
                tableView->eventfield = QModelIndex();
 
                tableView->b_ignoreFocus = false;

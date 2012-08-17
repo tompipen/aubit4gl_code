@@ -412,7 +412,6 @@ void TableView::copyColumn()
     QApplication::clipboard()->setText(tableText);
 }
 
-
 bool TableView::eventFilter(QObject *object, QEvent *event)
 {
     Q_UNUSED(object);
@@ -1103,6 +1102,9 @@ void TableView::setCurrentField(int row, int col, bool b_sendevents)
          QModelIndex tindex = table->index(row-1, col-1);
          QModelIndex index = proxyModel->mapFromSource(tindex);
 
+         //Fuer p_veinswb mit der kranken BeforeField/Nextfield Logik über mehrere Zeilen... Sah zwischen den Events einfach scheisse aus mit der Feldselektierung.
+         this->setUpdatesEnabled(false);
+
          this->b_sendevents = b_sendevents;
 
          //If fieldchange is not emitted, run before field
@@ -1658,9 +1660,6 @@ bool LineEditDelegate::eventFilter(QObject *object, QEvent *event)
 
 //Events sollen im fglform abgefangen werden. Die Signale dürfen nicht zum QStyledItemDelegate Eventfilter, da diese dann
 //auf die Steuerung der View zugreift
-
-
-
 
 
   if(event->type() == QEvent::KeyPress || event->type() == QEvent::KeyRelease)
