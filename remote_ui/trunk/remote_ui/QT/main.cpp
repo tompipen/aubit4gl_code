@@ -24,6 +24,8 @@
 #include "mainframe.h"
 #include "login.h"
 #include "clienttcp.h"
+#include <string>
+#include <iostream>
 
 #ifdef SSH_USE
 #include "libssh/libssh.h"
@@ -71,11 +73,21 @@ int main(int argc, char *argv[])
     ssh_init();
     #endif
 
+    QString crashdumpTmp = QDir::currentPath() + "/crashreport";
+    const std::string &clientTmpDir = crashdumpTmp.toStdString();
+
+    QDir dir(crashdumpTmp);
+
+    if(!dir.exists())
+    {
+        dir.mkdir(crashdumpTmp);
+    }
+
     #ifdef Q_WS_X11
-    QString creashdumpDir = QDir::currentPath() + "/crashreport";
-    google_breakpad::MinidumpDescriptor md(creashdumpDir);
+    google_breakpad::MinidumpDescriptor md(clientTmpDir);
     google_breakpad::ExceptionHandler eh(md, NULL, dumpCallback, NULL, true, -1);
     #endif
+
     QSplashScreen *splash = new QSplashScreen;
     ScreenHandler::setSearchPaths();
     //splash->setPixmap(QPixmap("./pics/splash.png"));
