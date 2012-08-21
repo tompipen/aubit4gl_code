@@ -8,12 +8,16 @@ macx {
    DEFINES += VREPGEN_USE
 }
 
+unix:!macx{
+    SUBDIRS += breakpad
+}
+
 !isEmpty(VREPGEN_PATH) {
 DEFINES += VREPGEN_USE
 message("Setze VDC Makro")
-SUBDIRS= quazip vdc-app.pro
+SUBDIRS += quazip vdc-app.pro
 vdc-app.pro.depends = quazip
 } else {
-SUBDIRS= vdc-app.pro
+SUBDIRS += vdc-app.pro
 }
 #SUBDIRS += createVersionsXml

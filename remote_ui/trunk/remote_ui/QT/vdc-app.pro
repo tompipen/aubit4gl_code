@@ -7,7 +7,10 @@ DEPENDPATH += .
 INCLUDEPATH += .
 
 unix:!macx {
-QMAKE_LFLAGS += -Wl,--rpath="$$_PRO_FILE_PWD_/lib"
+    QMAKE_LFLAGS += -Wl,--rpath="$$_PRO_FILE_PWD_/lib"
+    INCLUDEPATH += ./breakpad/src/
+    LIBS += -L"$$_PRO_FILE_PWD_/lib" -lbreakpad_client
+    LIBS += -L"$$OUT_PWD/lib" -lbreakpad_client
 }
 TARGET = VDC
 QT += network

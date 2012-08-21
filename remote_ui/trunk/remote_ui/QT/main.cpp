@@ -30,6 +30,24 @@
 #include "libssh/callbacks.h"
 #endif
 
+#ifdef Q_WS_X11
+#include "client/linux/handler/exception_handler.h"
+
+static bool dumpCallback(const google_breakpad::MinidumpDescriptor &md,
+                         void* context,
+                         bool succeeded)
+{
+     printf("Dump path: %s\n", md.path());
+     return succeeded;
+}
+
+void crash()
+{
+  volatile int* a = (int*)(NULL);
+  *a = 1;
+}
+#endif
+
 
 //--------------------------------------------------------- (C) VENTAS AG 2006 -
 // Filename     : main.cpp
@@ -51,6 +69,12 @@ int main(int argc, char *argv[])
     #ifdef SSH_USE
     ssh_threads_set_callbacks(ssh_threads_get_noop());
     ssh_init();
+    #endif
+
+    #ifdef Q_WS_X11
+    QString creashdumpDir = QDir::currentPath() + "/crashreport";
+    google_breakpad::MinidumpDescriptor md(creashdumpDir);
+    google_breakpad::ExceptionHandler eh(md, NULL, dumpCallback, NULL, true, -1);
     #endif
     QSplashScreen *splash = new QSplashScreen;
     ScreenHandler::setSearchPaths();
