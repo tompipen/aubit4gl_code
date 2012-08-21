@@ -2250,9 +2250,11 @@ if(qsl_triggereds.size() > 0)
        if(TableView *tableView = qobject_cast<TableView *> (p_fglform->currentField())){
            if(p_fglform->inputArray())
            {
+               //Unter Mac enfernt er das gesammte TableView wenn nen PaintEvent kommt... Das sieht noch beschissener aus als so eine dumme Feldselektierung. Deswegen für Mac raus
+               #ifndef Q_WS_MAC
                //Fuer p_veinswb mit der kranken BeforeField/Nextfield Logik über mehrere Zeilen... Sah zwischen den Events einfach scheisse aus mit der Feldselektierung.
                tableView->setUpdatesEnabled(true);
-
+               #endif
                tableView->eventfield = QModelIndex();
 
                tableView->b_ignoreFocus = false;
