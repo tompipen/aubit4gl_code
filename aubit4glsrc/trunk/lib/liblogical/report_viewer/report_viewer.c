@@ -21,8 +21,8 @@
 
 int fontSIZE(GtkWidget *parent, char *str, int type, PangoFontDescription * desc);
 
-GtkWidget *window;
-GtkWidget *notebook;
+static GtkWidget *window;
+static GtkWidget *notebook;
 
 FILE *fin;
 
