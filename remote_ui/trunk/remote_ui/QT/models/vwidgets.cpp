@@ -2377,10 +2377,10 @@ void WidgetHelper::setValidator(QWidget* widget){
 Label::Label(const QString &text, QWidget *parent)
     : QLabel(text, parent)
 {
-   QFont font;
-   font.setPixelSize(12);
+   //QFont font;
+  // font.setPixelSize(12);
    this->img = false;
-   this->setFont(font);
+  // this->setFont(font);
    this->fieldValue = "";
    this->setFocusPolicy(Qt::NoFocus);
    w = 0;
@@ -2419,10 +2419,10 @@ void WidgetHelper::setFieldAttribute(QObject* object){
 Label::Label(QWidget *parent)
     : QLabel(parent)
 {
-   QFont font;
-   font.setPixelSize(12);
+ //  QFont font;
+  // font.setPixelSize(12);
    this->img = false;
-   this->setFont(font);
+  // this->setFont(font);
    this->fieldValue = "";
 }
 
