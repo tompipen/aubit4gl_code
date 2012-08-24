@@ -8,9 +8,9 @@ macx {
    DEFINES += VREPGEN_USE
 }
 
-unix:!macx {
-    SUBDIRS += breakpad
-}
+#unix:!macx {
+#    SUBDIRS += breakpad
+#}
 
 !isEmpty(VREPGEN_PATH) {
     DEFINES += VREPGEN_USE
@@ -22,7 +22,7 @@ unix:!macx {
     SUBDIRS += vdc-app.pro
 }
 
-unix:!macx {
-            vdc-app.pro.depends += breakpad
-}
+#unix:!macx {
+#    vdc-app.pro.depends += breakpad
+#}
 #SUBDIRS += createVersionsXml
