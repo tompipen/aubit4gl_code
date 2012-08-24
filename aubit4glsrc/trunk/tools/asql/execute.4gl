@@ -116,13 +116,14 @@ char buff[300];
 A4GL_trim(fname);
 f=fopen(fname,"r");
 outlines=0;
-if (!f)  return;
+if (!f)  return 0;
 while (1) {
 	fgets(buff,300,f);
 	if (feof(f)) break;
 	outlines++;
 }
 fclose(f);
+return 1;
 }
 
 endcode
