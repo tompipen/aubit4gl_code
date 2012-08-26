@@ -24,7 +24,6 @@
 #include <fieldparsers/xml2fields.h>
 #include <fieldparsers/xml2form.h>
 #include <fieldparsers/xmlparser.h>
-#include <xmlparsers/xml2menu.h>
 #include <xmlparsers/xml2style.h>
 
 //------------------------------------------------------------------------------
@@ -1702,6 +1701,56 @@ void FglForm::writeSettingsLocal()
             VDC::saveSettingsToIni(formName(), "posY", QString::number(widgetPosY));
         }
     }
+
+    if(mXmlMenu)
+    {
+        XML2Menu *treeMenu = mXmlMenu;
+        if(QTreeWidget *tWidget = qobject_cast<QTreeWidget*>(treeMenu->getMenu()))
+        {
+            for(int i=0; i < tWidget->topLevelItemCount(); i++)
+            {
+                if(tWidget->topLevelItem(i))
+                {
+                    QTreeWidgetItem *tWidgetItem = tWidget->topLevelItem(i);
+                    for(int j=0; j < tWidgetItem->childCount(); j++)
+                    {
+                        if(tWidgetItem->isExpanded())
+                        {
+                            VDC::saveSettingsToIni(formName(), QString(tWidgetItem->text(0) + "/setAutoExpanded"), QString::number(tWidgetItem->isExpanded()));
+                        }
+
+                        if(tWidgetItem->child(j))
+                        {
+                            QTreeWidgetItem *childWidgetItem = tWidgetItem->child(j);
+                            if(childWidgetItem->isExpanded())
+                            {
+                                VDC::saveSettingsToIni(formName(), QString(tWidgetItem->text(0) + "/" + childWidgetItem->text(0) + "/setAutoExpanded"), QString::number(childWidgetItem->isExpanded()));
+                            }
+
+                            if(childWidgetItem->child(j))
+                            {
+                                QTreeWidgetItem *child2WidgetItem = childWidgetItem->child(j);
+                                if(child2WidgetItem->isExpanded())
+                                {
+                                    VDC::saveSettingsToIni(formName(), QString(tWidgetItem->text(0) + "/" + childWidgetItem->text(0) + "/" + child2WidgetItem->text(0) + "/setAutoExpanded"), QString::number(child2WidgetItem->isExpanded()));
+                                }
+
+                                if(child2WidgetItem->child(j))
+                                {
+                                    QTreeWidgetItem *child3WidgetItem = child2WidgetItem->child(j);
+                                    if(child3WidgetItem->isExpanded())
+                                    {
+                                        VDC::saveSettingsToIni(formName(), QString(tWidgetItem->text(0) + "/" + childWidgetItem->text(0) + "/" + child2WidgetItem->text(0) + "/" + child3WidgetItem->text(0) + "/setAutoExpanded"), QString::number(child3WidgetItem->isExpanded()));
+
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
 
 void FglForm::closeEvent(QCloseEvent *event)
@@ -2021,11 +2070,42 @@ MainFrame::vdcdebug("FglForm","setStartMenu", "const QDomDocument &doc");
 
    if(property("startMenuPosition") == "tree"){
       p_splitter->addWidget(xml2Menu->getMenu());
+      if(QTreeWidget *tWidget = qobject_cast<QTreeWidget*>(xml2Menu->getMenu()))
+      {
+          for(int i=0; i < tWidget->topLevelItemCount(); i++)
+          {
+              if(tWidget->topLevelItem(i))
+              {
+                  QTreeWidgetItem *tWidgetItem = tWidget->topLevelItem(i);
+                  for(int j=0; j < tWidgetItem->childCount(); j++)
+                  {
+                      tWidgetItem->setExpanded(VDC::readSettingsFromIni(formName(), QString(tWidgetItem->text(0) + "/setAutoExpanded")).toInt());
+                      if(tWidgetItem->child(j))
+                      {
+                          QTreeWidgetItem *childWidgetItem = tWidgetItem->child(j);
+                          childWidgetItem->setExpanded(VDC::readSettingsFromIni(formName(), QString(tWidgetItem->text(0) + "/" + childWidgetItem->text(0) + "/setAutoExpanded")).toInt());
+
+                          if(childWidgetItem->child(j))
+                          {
+                              QTreeWidgetItem *child2WidgetItem = childWidgetItem->child(j);
+                              child2WidgetItem->setExpanded(VDC::readSettingsFromIni(formName(), QString(tWidgetItem->text(0) + "/" + childWidgetItem->text(0) + "/" + child2WidgetItem->text(0) + "/setAutoExpanded")).toInt());
+                              if(child2WidgetItem->child(j))
+                              {
+                                  QTreeWidgetItem *child3WidgetItem = child2WidgetItem->child(j);
+                                  child3WidgetItem->setExpanded(VDC::readSettingsFromIni(formName(), QString(tWidgetItem->text(0) + "/" + childWidgetItem->text(0) + "/" + child2WidgetItem->text(0) + "/" + child3WidgetItem->text(0) + "/setAutoExpanded")).toInt());
+                              }
+                          }
+                      }
+                  }
+              }
+          }
+      }
    }
 
    if(property("startMenuPosition") == "menu"){
       this->setMenuBar((QMenuBar*) xml2Menu->getMenu());
    }
+   mXmlMenu = xml2Menu;
 }
 
 //------------------------------------------------------------------------------

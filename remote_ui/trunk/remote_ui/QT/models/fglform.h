@@ -37,6 +37,7 @@
 #include "table.h"
 #include <include/fgl.h>
 #include <context.h>
+#include <xmlparsers/xml2menu.h>
 #include <QPointer>
 
 class FglForm : public QMainWindow
@@ -87,6 +88,7 @@ public:
    QString windowName;
    QWidget *currentWidget;
    QPointer<QPushButton> nextclick;
+   QPointer<XML2Menu> mXmlMenu;
    Actions *ql_actions;
    void replayKeyboard();
    void clearKeyboardBuffer();
