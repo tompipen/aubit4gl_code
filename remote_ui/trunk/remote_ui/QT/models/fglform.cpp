@@ -1727,21 +1727,14 @@ void FglForm::writeSettingsLocal()
                                 VDC::saveSettingsToIni(formName(), QString(tWidgetItem->text(0) + "/" + childWidgetItem->text(0) + "/setAutoExpanded"), QString::number(childWidgetItem->isExpanded()));
                             }
 
-                            if(childWidgetItem->child(j))
+                            for(int k=0; k < childWidgetItem->childCount(); k++)
                             {
-                                QTreeWidgetItem *child2WidgetItem = childWidgetItem->child(j);
-                                if(child2WidgetItem->isExpanded())
+                                if(childWidgetItem->child(k))
                                 {
-                                    VDC::saveSettingsToIni(formName(), QString(tWidgetItem->text(0) + "/" + childWidgetItem->text(0) + "/" + child2WidgetItem->text(0) + "/setAutoExpanded"), QString::number(child2WidgetItem->isExpanded()));
-                                }
-
-                                if(child2WidgetItem->child(j))
-                                {
-                                    QTreeWidgetItem *child3WidgetItem = child2WidgetItem->child(j);
-                                    if(child3WidgetItem->isExpanded())
+                                    QTreeWidgetItem *child2WidgetItem = childWidgetItem->child(k);
+                                    if(child2WidgetItem->isExpanded())
                                     {
-                                        VDC::saveSettingsToIni(formName(), QString(tWidgetItem->text(0) + "/" + childWidgetItem->text(0) + "/" + child2WidgetItem->text(0) + "/" + child3WidgetItem->text(0) + "/setAutoExpanded"), QString::number(child3WidgetItem->isExpanded()));
-
+                                        VDC::saveSettingsToIni(formName(), QString(tWidgetItem->text(0) + "/" + childWidgetItem->text(0) + "/" + child2WidgetItem->text(0) + "/setAutoExpanded"), QString::number(child2WidgetItem->isExpanded()));
                                     }
                                 }
                             }
@@ -2085,14 +2078,12 @@ MainFrame::vdcdebug("FglForm","setStartMenu", "const QDomDocument &doc");
                           QTreeWidgetItem *childWidgetItem = tWidgetItem->child(j);
                           childWidgetItem->setExpanded(VDC::readSettingsFromIni(formName(), QString(tWidgetItem->text(0) + "/" + childWidgetItem->text(0) + "/setAutoExpanded")).toInt());
 
-                          if(childWidgetItem->child(j))
+                          for(int k=0; k < childWidgetItem->childCount(); k++)
                           {
-                              QTreeWidgetItem *child2WidgetItem = childWidgetItem->child(j);
-                              child2WidgetItem->setExpanded(VDC::readSettingsFromIni(formName(), QString(tWidgetItem->text(0) + "/" + childWidgetItem->text(0) + "/" + child2WidgetItem->text(0) + "/setAutoExpanded")).toInt());
-                              if(child2WidgetItem->child(j))
+                              if(childWidgetItem->child(k))
                               {
-                                  QTreeWidgetItem *child3WidgetItem = child2WidgetItem->child(j);
-                                  child3WidgetItem->setExpanded(VDC::readSettingsFromIni(formName(), QString(tWidgetItem->text(0) + "/" + childWidgetItem->text(0) + "/" + child2WidgetItem->text(0) + "/" + child3WidgetItem->text(0) + "/setAutoExpanded")).toInt());
+                                  QTreeWidgetItem *child2WidgetItem = childWidgetItem->child(k);
+                                  child2WidgetItem->setExpanded(VDC::readSettingsFromIni(formName(), QString(tWidgetItem->text(0) + "/" + childWidgetItem->text(0) + "/" + child2WidgetItem->text(0) + "/setAutoExpanded")).toInt());
                               }
                           }
                       }
