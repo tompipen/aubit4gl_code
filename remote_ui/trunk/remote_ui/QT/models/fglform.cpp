@@ -853,6 +853,7 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
         {
             QModelIndex idx = tv->getMouseModelIndex();
 
+
             if(tv->isReadOnlyColumn(idx.column()))
             {
 
@@ -863,7 +864,7 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
 
 
 
-                if(tv->currentIndex().row() != idx.row())
+                if(tv->currentIndex().row() != idx.row() && idx.row != -1)
                 {
 
                     for(int i = 0; i<col;i++)
