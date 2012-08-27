@@ -864,7 +864,7 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
 
 
 
-                if(tv->currentIndex().row() != idx.row() && idx.row != -1)
+                if(tv->currentIndex().row() != idx.row() && idx.row() != -1 && state() == Fgl::INPUTARRAY)
                 {
 
                     for(int i = 0; i<col;i++)
