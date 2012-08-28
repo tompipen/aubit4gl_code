@@ -436,6 +436,13 @@ void XmlParser::handleTableColumn(const QDomNode& xmlNode){
        recordHeight += height;
    }
 
+   //Its enough to save the state at the end of the creation. otherwise on every column it will be saved all states(with 15 coloumns 15 times)
+   QByteArray state = VDC::readSettingsFromIni1(formName, QString(p_screenRecord->accessibleName() + "/state"));
+   if(state.isEmpty())
+   {
+       VDC::saveSettingsToIni(formName, QString(p_screenRecord->accessibleName() + "/oldstate"), header->saveState());
+   }
+   header->restoreState(state);
 
    QDomNodeList children = xmlNode.childNodes();
    for(int i=0; i<children.count(); ++i){
@@ -544,17 +551,6 @@ void XmlParser::handleTableColumn(const QDomNode& xmlNode){
       vert->resizeSection(i, VDC::DEFAULT_HEIGHT);
    }
 */
-
-
-   //Its enough to save the state at the end of the creation. otherwise on every column it will be saved all states(with 15 coloumns 15 times)
-   QByteArray state = VDC::readSettingsFromIni1(formName, QString(p_screenRecord->accessibleName() + "/state"));
-   if(state.isEmpty())
-   {
-       VDC::saveSettingsToIni(formName, QString(p_screenRecord->accessibleName() + "/oldstate"), header->saveState());
-   }
-   header->restoreState(state);
-
-
 
 
    //p_screenRecord->setFixedSize(recordWidth, recordHeight);
