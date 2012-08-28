@@ -200,14 +200,15 @@ Color(QPalette::Disabled, QPalette::Background, tablepal.color(QPalette::Backgro
 */
 void TableView::updateSectionWidth(int logicalIndex, int, int newSize)
 {
-    if(getColumnLabel(logicalIndex) != NULL)
+
+    if(getColumnLabel(logicalIndex) != NULL && logicalIndex > -1 && this->isEnabled())
     {
         QLabel *columnName = getColumnLabel(logicalIndex);
         if(columnName != NULL)
         {
             VDC::saveSettingsToIni(this->getForm()->formName(), this->accessibleName() + "/" + columnName->objectName() + "/columnWidth", QString::number(newSize));
             VDC::saveSettingsToIni(this->getForm()->formName(), this->accessibleName() + "/" + columnName->objectName() + "/columnWidthId", QString::number(logicalIndex));
-            qDebug() << "columnName: " << columnName->objectName();
+            //qDebug() << "columnName: " << columnName->objectName();
         }
     }
 }
