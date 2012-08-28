@@ -256,7 +256,7 @@ void VentasUpdate::checkServerClient()
     #ifdef Q_WS_MAC
         QList<QString> clientVars = clientXml(QDir::currentPath() + "/VDC.app/Contents/MacOS/versions.xml");
     #else
-        QList<QString> clientVars = clientXml(QDir::currentPath() + "/versions.xml");
+        QList<QString> clientVars = clientXml(QApplication::applicationDirPath() + "/versions.xml");
     #endif
     QString A4glFromClient = VDC::readSettingsFromIni("", "a4gl_version");
     QString XmlVersionServer = VDC::readSettingsFromIni("", "xml_version");
@@ -365,7 +365,7 @@ void VentasUpdate::checkServerClient()
             #ifdef Q_WS_MAC
                 filePath = QString(QDir::currentPath() + "/VDC.app/Contents/MacOS/versions.xml");
             #else
-                filePath = QString((QDir::currentPath() + "/versions.xml"));
+                filePath = QString(QApplication::applicationDirPath() + "/versions.xml");
             #endif
             Dialog *dialog = new Dialog("VENTAS Update", QString("Cannot open File: %1").arg(filePath), "", "information", this, Qt::WindowStaysOnTopHint);
             dialog->createButton(1, "Ok", "Ok", "ok_gruen.png");
