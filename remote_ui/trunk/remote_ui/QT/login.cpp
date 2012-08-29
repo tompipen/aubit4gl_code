@@ -671,8 +671,8 @@ for(int i=0; i < dateiarray.count(); i++)
 
 void HostsData::saveHost()
 {
-   QFile file(hostspath);
 MainFrame::vdcdebug("HostsData","saveHost", "");
+   QFile file(hostspath);
    if (!file.open(QIODevice::WriteOnly))
    return;
 
@@ -702,8 +702,18 @@ MainFrame::vdcdebug("HostsData","saveHost", "");
 
 void HostsData::addHost()
 {
-        QDialog *hostsAdd = new QDialog(this);
 MainFrame::vdcdebug("HostsData","addHost", "");
+    QFile file(hostspath);
+    if(!file.isWritable())
+    {
+        Dialog *p_dialog = new Dialog("Warning", "Please start the VDC with Adminstrator privileges to edit the hosts file.", "dialog", "stop", NULL);
+        p_dialog->createButton(1, "Ok", "Ok", "ok_gruen.png");
+        connect(p_dialog->getAction("OK"), SIGNAL(triggered()), p_dialog, SLOT(close()));
+        p_dialog->setAttribute(Qt::WA_DeleteOnClose, true);
+        p_dialog->show();
+        return;
+    }
+        QDialog *hostsAdd = new QDialog(this);
         QVBoxLayout *mainLayoutAdd = new QVBoxLayout;
         QHBoxLayout *ipfeld = new QHBoxLayout;
         QHBoxLayout *ipfeldv4 = new QHBoxLayout;
