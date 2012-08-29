@@ -39,7 +39,11 @@ void WebBrowser::createBrowser()
 
     setCentralWidget(WebView);
     setUnifiedTitleAndToolBarOnMac(true);
-   // openSearch();
+
+    QAction *sAction = new QAction(tr("Search"), this);
+    sAction->setShortcut(Qt::CTRL + Qt::Key_F);
+    this->addAction(sAction);
+    connect(sAction, SIGNAL(triggered()), this, SLOT(openSearch()));
     this->show();
 }
 void WebBrowser::loadUrl(const QUrl &http)
@@ -115,33 +119,70 @@ void WebBrowser::highlightAllLinks()
 
 void WebBrowser::openSearch()
 {
-    /*
-    QToolBar *tb = new QToolBar(this);
+    if(mTb)
+    {
+        mTb->close();
+        mTb = NULL;
+        return;
+    }
+    mTb = new QToolBar(this);
 
-    QAction *close_tb = new QAction("X", tb);
+    QAction *close_tb = new QAction("X", mTb);
 
     QLineEdit *search_field = new QLineEdit(this);
+    QSignalMapper *sMapper = new QSignalMapper;
+
+    QPushButton *fButton = new QPushButton(tr(">"), this);
+    fButton->setMaximumWidth(50);
+    connect(fButton, SIGNAL(pressed()), sMapper, SLOT(map()));
+    sMapper->setMapping(fButton, "forward");
+
+    QPushButton *bButton = new QPushButton(tr("<"), this);
+    bButton->setMaximumWidth(50);
+    connect(bButton, SIGNAL(pressed()), sMapper, SLOT(map()));
+    sMapper->setMapping(bButton, "backward");
+
+    connect(sMapper, SIGNAL(mapped(QString)), this, SLOT(forBackSearch(QString)));
 
 
-    tb->addAction(close_tb);
+    mTb->addAction(close_tb);
 
-    tb->addWidget(search_field);
+    mTb->addWidget(search_field);
+    mTb->addWidget(fButton);
+    mTb->addWidget(bButton);
 
-    connect(close_tb, SIGNAL(triggered()), tb, SLOT(close()));
-    connect(close_tb, SIGNAL(triggered()), this, SLOT(search(QString)));
+    connect(close_tb, SIGNAL(triggered()), mTb, SLOT(close()));
+    //connect(close_tb, SIGNAL(triggered()), this, SLOT(search(QString)));
 
-    connect(search_field, SIGNAL(textChanged(QString)), this, SLOT(search(QString)));
+    connect(search_field, SIGNAL(textChanged(QString)), this, SLOT(searchForward(QString)));
+    this->addToolBar(Qt::BottomToolBarArea, mTb);
 
-    this->addToolBar(Qt::BottomToolBarArea, tb);
-*/
-
-
+    search_field->setFocus();
 
 }
 
-void WebBrowser::search(QString search = "")
+void WebBrowser::forBackSearch(QString searchRichtung)
 {
-    this->WebView->page()->findText(search, QWebPage::HighlightAllOccurrences | QWebPage::FindWrapsAroundDocument);
+    if(searchRichtung == "forward")
+    {
+        emit searchForward(mSearchString);
+    }else if(searchRichtung == "backward")
+    {
+        emit searchBackward(mSearchString);
+    }
+}
+
+void WebBrowser::searchBackward(QString search = "")
+{
+    mSearchString = search;
+    this->WebView->page()->findText(search, QWebPage::FindWrapsAroundDocument | QWebPage::FindBackward);
+
+}
+
+void WebBrowser::searchForward(QString search = "")
+{
+    mSearchString = search;
+    this->WebView->page()->findText(search, QWebPage::FindWrapsAroundDocument);
 
 }
 

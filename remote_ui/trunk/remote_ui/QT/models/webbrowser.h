@@ -20,12 +20,10 @@ public:
 
     void setNavigationIcons();
 
-
-    void openSearch();
-
 protected slots:
     void printpage();
-    void search(QString search);
+    void searchForward(QString search);
+    void searchBackward(QString search);
     void adjustLocation();
     void changeLocation();
     void adjustTitle(QString title);
@@ -34,6 +32,8 @@ protected slots:
     void increaseSize();
     void decreaseSize();
     void resetSize();
+    void openSearch();
+    void forBackSearch(QString);
 
     //void slotSourceDownloaded();
 
@@ -53,6 +53,8 @@ private:
     QToolBar *toolBar;
 
     qreal _scalefactor;
+    QString mSearchString;
+    QToolBar *mTb;
 
 
 
