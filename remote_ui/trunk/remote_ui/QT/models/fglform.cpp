@@ -1692,8 +1692,8 @@ void FglForm::writeSettingsLocal()
 
     if(maximized == 0)
     {
-        qDebug() << "size: " << size();
-        qDebug() << "size: " << this->windowName;
+        //qDebug() << "size: " << size();
+        //qDebug() << "size: " << this->windowName;
         if(widgetPosX >= 0 && widgetPosY >= 0)
         {
             VDC::saveSettingsToIni(formName(), "width", QString::number(widgetWidth));
@@ -1706,6 +1706,7 @@ void FglForm::writeSettingsLocal()
     if(mXmlMenu)
     {
         XML2Menu *treeMenu = mXmlMenu;
+        VDC::removeSettingsKeysWith(formName(), "setAutoExpanded");
         if(QTreeWidget *tWidget = qobject_cast<QTreeWidget*>(treeMenu->getMenu()))
         {
             for(int i=0; i < tWidget->topLevelItemCount(); i++)

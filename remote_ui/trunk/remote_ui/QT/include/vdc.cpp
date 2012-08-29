@@ -37,6 +37,25 @@ namespace VDC {
      return fieldsizefactor;
    }
 
+   void removeSettingsKeysWith(QString group, QString text)
+   {
+    #ifdef Q_WS_WIN
+    QSettings settings(QDesktopServices::storageLocation(QDesktopServices::DataLocation) + "/.vdc/settings.ini", QSettings::IniFormat);
+    #else
+    QSettings settings(QDir::homePath() + "/.vdc/settings.ini", QSettings::IniFormat);
+    #endif
+
+    settings.beginGroup(group);
+    foreach(QString value, settings.allKeys())
+    {
+        if(value.contains(text))
+        {
+            settings.remove(value);
+        }
+    }
+    settings.endGroup();
+   }
+
    QString readSettingsFromIni(QString group, QString key)
    {
        QString value;
