@@ -500,7 +500,7 @@ void TableView::resetSettings()
 
 void TableView::writeSettings(QAction *action)
 {
-    QSortFilterProxyModel *proxyModel = static_cast<QSortFilterProxyModel*> (this->model());
+    //QSortFilterProxyModel *proxyModel = static_cast<QSortFilterProxyModel*> (this->model());
     //TableModel *table = static_cast<TableModel*> (proxyModel->sourceModel());
     int i = 0;
 
