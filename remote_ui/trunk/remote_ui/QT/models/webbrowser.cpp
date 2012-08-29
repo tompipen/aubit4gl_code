@@ -132,13 +132,15 @@ void WebBrowser::openSearch()
     QLineEdit *search_field = new QLineEdit(this);
     QSignalMapper *sMapper = new QSignalMapper;
 
-    QPushButton *fButton = new QPushButton(tr(">"), this);
+    QPushButton *fButton = new QPushButton(tr(""), this);
+    fButton->setIcon(QIcon(":/pics/vor.png"));
     fButton->setMaximumWidth(50);
     connect(fButton, SIGNAL(pressed()), sMapper, SLOT(map()));
     sMapper->setMapping(fButton, "forward");
 
-    QPushButton *bButton = new QPushButton(tr("<"), this);
+    QPushButton *bButton = new QPushButton(tr(""), this);
     bButton->setMaximumWidth(50);
+    bButton->setIcon(QIcon(":/pics/zurueck.png"));
     connect(bButton, SIGNAL(pressed()), sMapper, SLOT(map()));
     sMapper->setMapping(bButton, "backward");
 
