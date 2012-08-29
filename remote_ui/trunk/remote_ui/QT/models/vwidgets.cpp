@@ -1714,7 +1714,7 @@ MainFrame::vdcdebug("WidgetHelper","createTextEdit", "const QDomElement& formFie
 
    if(stretch == "none")
    {
-      textEdit->setFixedHeight(height*fm.height()+8);
+      textEdit->setFixedHeight(height*fm.height()+6);
       //textEdit->setFixedHeight(height*VDC::DEFAULT_HEIGHT);
       textEdit->setFixedWidth(width);
 
@@ -1722,12 +1722,12 @@ MainFrame::vdcdebug("WidgetHelper","createTextEdit", "const QDomElement& formFie
    if(stretch == "both")
    {
        //textEdit->setMinimumSize(width,VDC::DEFAULT_HEIGHT*height);
-       textEdit->setMinimumSize(width,height*fm.height()+8);
+       textEdit->setMinimumSize(width,height*fm.height()+6);
    }
    if(stretch == "y")
    {
        //textEdit->setMinimumHeight(VDC::DEFAULT_HEIGHT*height);
-       textEdit->setMinimumHeight(height*fm.height()+8);
+       textEdit->setMinimumHeight(height*fm.height()+6);
        textEdit->setFixedWidth(width);
    }
    if(stretch == "x")
