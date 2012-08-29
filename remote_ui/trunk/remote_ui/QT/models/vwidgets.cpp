@@ -1709,21 +1709,25 @@ MainFrame::vdcdebug("WidgetHelper","createTextEdit", "const QDomElement& formFie
       textEdit->setVisible(false);
 
    QFontMetrics fm = textEdit->fontMetrics();
+
    int width = w*fm.averageCharWidth()*VDC::getFieldSizeFactor()+10;
 
    if(stretch == "none")
    {
-      textEdit->setFixedHeight(height*VDC::DEFAULT_HEIGHT);
+      textEdit->setFixedHeight(height*fm.height()+8);
+      //textEdit->setFixedHeight(height*VDC::DEFAULT_HEIGHT);
       textEdit->setFixedWidth(width);
 
    }
    if(stretch == "both")
    {
-       textEdit->setMinimumSize(width,VDC::DEFAULT_HEIGHT*height);
+       //textEdit->setMinimumSize(width,VDC::DEFAULT_HEIGHT*height);
+       textEdit->setMinimumSize(width,height*fm.height()+8);
    }
    if(stretch == "y")
    {
-       textEdit->setMinimumHeight(VDC::DEFAULT_HEIGHT*height);
+       //textEdit->setMinimumHeight(VDC::DEFAULT_HEIGHT*height);
+       textEdit->setMinimumHeight(height*fm.height()+8);
        textEdit->setFixedWidth(width);
    }
    if(stretch == "x")
