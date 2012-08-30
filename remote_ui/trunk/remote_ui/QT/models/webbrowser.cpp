@@ -127,19 +127,19 @@ void WebBrowser::openSearch()
     }
     mTb = new QToolBar(this);
 
-    QAction *close_tb = new QAction("X", mTb);
+    QAction *close_tb = new QAction("Schliessen", mTb);
     close_tb->setIcon(QIcon(":/pics/abbrechen_rot.png"));
 
     QLineEdit *search_field = new QLineEdit(this);
     search_field->setMaximumWidth(200);
     QSignalMapper *sMapper = new QSignalMapper;
 
-    QAction *fAction = new QAction(tr("Forward"), mTb);
+    QAction *fAction = new QAction(tr("Vorwaerts"), mTb);
     fAction->setIcon(QIcon(":/pics/vor.png"));
     connect(fAction, SIGNAL(triggered()), sMapper, SLOT(map()));
     sMapper->setMapping(fAction, "forward");
 
-    QAction *bAction = new QAction(tr("backward"), mTb);
+    QAction *bAction = new QAction(tr("Zurueck"), mTb);
     bAction->setIcon(QIcon(":/pics/zurueck.png"));
     connect(bAction, SIGNAL(triggered()), sMapper, SLOT(map()));
     sMapper->setMapping(bAction, "backward");
@@ -237,10 +237,11 @@ void WebBrowser::setNavigationIcons()
   QAction *backward = WebView->pageAction(QWebPage::Back);
   QAction *forward = WebView->pageAction(QWebPage::Forward);
   QAction *reload = WebView->pageAction(QWebPage::Reload);
+  reload->setToolTip("Neu laden");
   QAction *stop = WebView->pageAction(QWebPage::Stop);
   QAction *plus = new QAction("Zoom +", this);
   QAction *minus = new QAction("Zoom -", this);
-  QAction *reset = new QAction("Zoom reset", this);
+  QAction *reset = new QAction("Zoom Loeschen", this);
 
 
 
