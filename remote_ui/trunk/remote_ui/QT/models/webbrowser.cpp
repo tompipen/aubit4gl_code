@@ -128,6 +128,7 @@ void WebBrowser::openSearch()
     mTb = new QToolBar(this);
 
     QAction *close_tb = new QAction("X", mTb);
+    close_tb->setIcon(QIcon(":/pics/abbrechen_rot.png"));
 
     QLineEdit *search_field = new QLineEdit(this);
     search_field->setMaximumWidth(200);
