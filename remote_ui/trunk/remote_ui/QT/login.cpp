@@ -327,7 +327,7 @@ void LoginForm::aboutVDC(QWidget *parent)
     #ifdef Q_WS_MAC
         file.setFileName(QDir::currentPath() + "VDC.app/Contents/MacOS/versions.xml");
     #else
-        file.setFileName(QDir::currentPath() + "/versions.xml");
+        file.setFileName(QApplication::applicationDirPath() + "/versions.xml");
     #endif
 
     QString clientOs;
