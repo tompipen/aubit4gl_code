@@ -151,5 +151,6 @@
         <file>pics/browser-kleiner.png</file>
         <file>pics/browser-reset.png</file>
         <file>pics/browser-groesser.png</file>
+        <file>pics/browser-suchen.png</file>
     </qresource>
 </RCC>

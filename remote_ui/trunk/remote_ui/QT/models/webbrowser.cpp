@@ -130,19 +130,18 @@ void WebBrowser::openSearch()
     QAction *close_tb = new QAction("X", mTb);
 
     QLineEdit *search_field = new QLineEdit(this);
+    search_field->setMaximumWidth(200);
     QSignalMapper *sMapper = new QSignalMapper;
 
-    QPushButton *fButton = new QPushButton(tr(""), this);
-    fButton->setIcon(QIcon(":/pics/vor.png"));
-    fButton->setMaximumWidth(50);
-    connect(fButton, SIGNAL(pressed()), sMapper, SLOT(map()));
-    sMapper->setMapping(fButton, "forward");
+    QAction *fAction = new QAction(tr("Forward"), mTb);
+    fAction->setIcon(QIcon(":/pics/vor.png"));
+    connect(fAction, SIGNAL(triggered()), sMapper, SLOT(map()));
+    sMapper->setMapping(fAction, "forward");
 
-    QPushButton *bButton = new QPushButton(tr(""), this);
-    bButton->setMaximumWidth(50);
-    bButton->setIcon(QIcon(":/pics/zurueck.png"));
-    connect(bButton, SIGNAL(pressed()), sMapper, SLOT(map()));
-    sMapper->setMapping(bButton, "backward");
+    QAction *bAction = new QAction(tr("backward"), mTb);
+    bAction->setIcon(QIcon(":/pics/zurueck.png"));
+    connect(bAction, SIGNAL(triggered()), sMapper, SLOT(map()));
+    sMapper->setMapping(bAction, "backward");
 
     connect(sMapper, SIGNAL(mapped(QString)), this, SLOT(forBackSearch(QString)));
 
@@ -150,8 +149,8 @@ void WebBrowser::openSearch()
     mTb->addAction(close_tb);
 
     mTb->addWidget(search_field);
-    mTb->addWidget(fButton);
-    mTb->addWidget(bButton);
+    mTb->addAction(bAction);
+    mTb->addAction(fAction);
 
     connect(close_tb, SIGNAL(triggered()), mTb, SLOT(close()));
     //connect(close_tb, SIGNAL(triggered()), this, SLOT(search(QString)));
@@ -297,8 +296,13 @@ void WebBrowser::setNavigationIcons()
   qw_reload->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
   qw_stop->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
+  QAction *sAction = new QAction(tr("Suchen"), this);
+  sAction->setIcon(QIcon(":/pics/browser-suchen.png"));
+  connect(sAction, SIGNAL(triggered()), this, SLOT(openSearch()));
+
 
   toolBar->addWidget(locationEdit);
+  toolBar->addAction(sAction);
 
 }
 
