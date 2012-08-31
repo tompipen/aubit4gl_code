@@ -3454,16 +3454,6 @@ bool ScreenHandler::eventFilter(QObject *obj, QEvent *event)
   }
 */
 
-    if((int)QThread::currentThreadId() != i_currthread)
-    {
-
-        if((int)QThread::currentThreadId() == (int)QApplication::instance()->thread()->currentThreadId())
-        {
-            qDebug()<<"Ja setze neu";
-            setParent(qApp);
-        }
-
-    }
 
 
     if(event->type() == QEvent::WindowActivate)
