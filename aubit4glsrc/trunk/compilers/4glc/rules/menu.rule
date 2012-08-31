@@ -9,7 +9,7 @@ menu_cmd	:	MENU atline {
 				map_ui("MENU");
    				push_blockcommand("MENU");
 				$<integer_val>$=get_sio_id("MENU");
-				//clr_menu_attribs();
+				clr_menu_attribs();
 			}
 			menu_title op_menu_attribs events_menu END_MENU 
 {
@@ -53,7 +53,7 @@ menu_cmd	:	MENU atline {
 ;
 
 op_menu_attribs:  { 
-			$<menu_attrib>$=malloc(sizeof(struct menu_attrib));
+	$<menu_attrib>$=malloc(sizeof(struct menu_attrib));
       $<menu_attrib>$->attrib=0;
          $<menu_attrib>$->menu_attrib_comment=0;
          $<menu_attrib>$->menu_attrib_style=0;
@@ -62,6 +62,7 @@ op_menu_attribs:  {
          $<menu_attrib>$->menu_attrib_highlight=0;
 }
 	| ATTRIBUTES OPEN_BRACKET menu_attribs CLOSE_BRACKET {	
+
 			$<menu_attrib>$=malloc(sizeof(struct menu_attrib));
 			$<menu_attrib>$->attrib=0; 
          $<menu_attrib>$->menu_attrib_comment=get_menu_attrib('C');
