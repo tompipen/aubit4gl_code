@@ -69,7 +69,7 @@ int main(int argc, char *argv[])
     QApplication app(argc, argv);
 
     #ifdef SSH_USE
-    ssh_threads_set_callbacks(ssh_threads_get_noop());
+    ssh_threads_set_callbacks(ssh_threads_get_pthread());
     ssh_init();
     #endif
 

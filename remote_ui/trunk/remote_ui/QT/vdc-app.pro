@@ -27,7 +27,7 @@ SSH_PATH     = $$(VSSH)
 !isEmpty(SSH_PATH) {
 message("Compile with libssh")
 DEFINES += SSH_USE
-LIBS += -lssh
+LIBS += -lssh -lssh_threads
 include("ssh/ssh.pri")
 }
 

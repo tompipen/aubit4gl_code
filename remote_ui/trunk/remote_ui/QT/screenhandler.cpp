@@ -47,6 +47,8 @@ MainFrame::vdcdebug("ScreenHandler","ScreenHandler", "QObject *parent");
    ScreenHandler::cnt_screenhandler++;
    QString test = QString::number(ScreenHandler::cnt_screenhandler);
    this->setObjectName(test);
+   //QList<ScreenHandler*> *l_ql_screenhandler =  QList<ScreenHandler*> MainFrame::ql_screenhandler;
+   MainFrame::ql_screenhandler->append(this);
    p_pid_p = 0;
    i_mode = 0;
    p_pid = 0;
@@ -61,8 +63,17 @@ MainFrame::vdcdebug("ScreenHandler","ScreenHandler", "QObject *parent");
    b_runinfo = false;
    this->installEventFilter(this);
    QApplication::processEvents();
+   i_currthread = (int)QThread::currentThreadId();
  }
 
+
+void ScreenHandler::closeAllWindows()
+{
+    for(int i=ql_fglForms.size()-1; i>=0; i--){
+       this->closeWindow(ql_fglForms.at(i)->windowName);
+    }
+
+}
 
 void ScreenHandler::setCurrentFocus(QWidget *old, QWidget *current)
 {
@@ -290,7 +301,11 @@ void ScreenHandler::closeProgramm()
    {
       QString qs_pid;
       qs_pid.number(this->pid);
-      fglFormResponse("<TRIGGERED ID=\"-999\" ENVELOPEID=\""+qs_pid+"\"/>");
+      QString qs_resp = "<TRIGGERED ID=\"-999\" ENVELOPEID=\""+qs_pid+"\"/>";
+      if(this->ph)
+          QMetaObject::invokeMethod(this->ph, "fglFormResponse", Qt::DirectConnection, Q_ARG(QString, qs_resp));
+      else
+        fglFormResponse(qs_resp);
    }
 }
 
@@ -2375,7 +2390,10 @@ Fgl::Event id;
       if(qs_resp.isEmpty())
          return;
 
-      fglFormResponse(qs_resp);
+      if(this->ph)
+          QMetaObject::invokeMethod(this->ph, "fglFormResponse", Qt::DirectConnection, Q_ARG(QString, qs_resp));
+      else
+        fglFormResponse(qs_resp);
    }
    else{
        QDomNodeList qdl_node;
@@ -2406,7 +2424,10 @@ Fgl::Event id;
        p_fglform->b_svs = true;
        if(qs_resp.isEmpty())
           return;
-       fglFormResponse(qs_resp);
+       if(this->ph)
+           QMetaObject::invokeMethod(this->ph, "fglFormResponse", Qt::DirectConnection, Q_ARG(QString, qs_resp));
+       else
+         fglFormResponse(qs_resp);
    }
 
 
@@ -2432,6 +2453,9 @@ if(p_fglform != NULL)
 
   p_fglform->b_getch_swin = false;
 }
+if(this->ph)
+    QMetaObject::invokeMethod(this->ph, "fglFormResponse", Qt::DirectConnection, Q_ARG(QString, cmd));
+else
   fglFormResponse(cmd);
 
 
@@ -2741,7 +2765,12 @@ MainFrame::vdcdebug("ScreenHandler","MsgBox ", "QString title, QString text, QSt
    }
 
    if (reply) {
-      fglFormResponse("<TRIGGERED ID=\""+rstr+"\" ENVELOPEID=\""+this->pid+"\"/>");
+       QString cmd = "<TRIGGERED ID=\""+rstr+"\" ENVELOPEID=\""+this->pid+"\"/>";
+       if(this->ph)
+           QMetaObject::invokeMethod(this->ph, "fglFormResponse", Qt::DirectConnection, Q_ARG(QString, cmd));
+       else
+         fglFormResponse(cmd);
+     // fglFormResponse("<TRIGGERED ID=\""+rstr+"\" ENVELOPEID=\""+this->pid+"\"/>");
    }
    //return rstr;
 }
@@ -2753,7 +2782,7 @@ int ScreenHandler::cnt_screenhandler = 0;
 //------------------------------------------------------------------------------
 void ScreenHandler::closeWindow(QString windowName)
 {
-MainFrame::vdcdebug("ScreenHandler","closeWindow", "QString windowName");
+    MainFrame::vdcdebug("ScreenHandler","closeWindow", "QString windowName");
    VDC::waitCursor();
    for(int i=0; i<ql_fglForms.size(); i++){
       FglForm *form = ql_fglForms.at(i);
@@ -3271,7 +3300,10 @@ MainFrame::vdcdebug("ScreenHandler","fileBrowser", "QString function, QString de
    syncValuesElement.appendChild(paramElement);
 
    qs_resp = doc.toString();
-   fglFormResponse(qs_resp);
+   if(this->ph)
+       QMetaObject::invokeMethod(this->ph, "fglFormResponse", Qt::DirectConnection, Q_ARG(QString, qs_resp));
+   else
+     fglFormResponse(qs_resp);
    p_fglform->b_getch_swin = false;
 }
 
@@ -3423,10 +3455,20 @@ bool ScreenHandler::eventFilter(QObject *obj, QEvent *event)
   }
 */
 
+    if((int)QThread::currentThreadId() != i_currthread)
+    {
 
-  if(event->type() == QEvent::WindowActivate)
-  {
+        if((int)QThread::currentThreadId() == (int)QApplication::instance()->thread()->currentThreadId())
+        {
+            qDebug()<<"Ja setze neu";
+            setParent(qApp);
+        }
 
+    }
+
+
+    if(event->type() == QEvent::WindowActivate)
+    {
         if(this->b_runinfo && this->p_pid_p > 0 && this->i_mode != 2)
         {
             MainFrame::setFocusOn(this->p_pid_p);
@@ -3558,12 +3600,22 @@ void ScreenHandler::clearComboBox(int id)
 
 void ScreenHandler::fornameComboBox(QString fieldname)
 {
-        fglFormResponse("<TRIGGERED ID=\"-123\"><SVS><SV>" + QString::number(currForm()->findFieldIdByName(fieldname)) + "</SV></SVS></TRIGGERED>");
+    QString qs_resp = "<TRIGGERED ID=\"-123\"><SVS><SV>" + QString::number(currForm()->findFieldIdByName(fieldname)) + "</SV></SVS></TRIGGERED>";
+    if(this->ph)
+        QMetaObject::invokeMethod(this->ph, "fglFormResponse", Qt::DirectConnection, Q_ARG(QString, qs_resp));
+    else
+      fglFormResponse(qs_resp);
+
 }
 
 void ScreenHandler::getColumnNameComboBox(int id)
 {
-    fglFormResponse("<TRIGGERED ID=\"-123\"><SVS><SV>" + WidgetHelper::getWidgetColName(currForm()->findFieldById(id)) + "</SV></SVS></TRIGGERED>");
+    QString qs_resp = "<TRIGGERED ID=\"-123\"><SVS><SV>" + WidgetHelper::getWidgetColName(currForm()->findFieldById(id)) + "</SV></SVS></TRIGGERED>";
+    if(this->ph)
+        QMetaObject::invokeMethod(this->ph, "fglFormResponse", Qt::DirectConnection, Q_ARG(QString, qs_resp));
+    else
+      fglFormResponse(qs_resp);
+
 }
 
 void ScreenHandler::getItemNameComboBox(int id, int pos)
@@ -3574,7 +3626,12 @@ void ScreenHandler::getItemNameComboBox(int id, int pos)
        ret = cb->itemData(pos-1).toString();
     }
 
-    fglFormResponse("<TRIGGERED ID=\"-123\"><SVS><SV>" + ret + "</SV></SVS></TRIGGERED>");
+    QString qs_resp = "<TRIGGERED ID=\"-123\"><SVS><SV>" + ret + "</SV></SVS></TRIGGERED>";
+    if(this->ph)
+        QMetaObject::invokeMethod(this->ph, "fglFormResponse", Qt::DirectConnection, Q_ARG(QString, qs_resp));
+    else
+      fglFormResponse(qs_resp);
+
 }
 
 void ScreenHandler::getItemCountComboBox(int id)
@@ -3583,8 +3640,12 @@ void ScreenHandler::getItemCountComboBox(int id)
     if(ComboBox *cb = qobject_cast<ComboBox *> (currForm()->findFieldById(id))){
         ret =  QString::number(cb->count());
     }
+    QString qs_resp = "<TRIGGERED ID=\"-123\"><SVS><SV>" + ret + "</SV></SVS></TRIGGERED>";
+    if(this->ph)
+        QMetaObject::invokeMethod(this->ph, "fglFormResponse", Qt::DirectConnection, Q_ARG(QString, qs_resp));
+    else
+      fglFormResponse(qs_resp);
 
-    fglFormResponse("<TRIGGERED ID=\"-123\"><SVS><SV>" + ret + "</SV></SVS></TRIGGERED>");
 }
 
 void ScreenHandler::getItemTextComboBox(int id, int pos)
@@ -3593,13 +3654,24 @@ void ScreenHandler::getItemTextComboBox(int id, int pos)
     if(ComboBox *cb = qobject_cast<ComboBox *> (currForm()->findFieldById(id))){
        ret =  cb->itemText(pos-1);
     }
-    fglFormResponse("<TRIGGERED ID=\"-123\"><SVS><SV>" + ret + "</SV></SVS></TRIGGERED>");
+
+    QString qs_resp = "<TRIGGERED ID=\"-123\"><SVS><SV>" + ret + "</SV></SVS></TRIGGERED>";
+    if(this->ph)
+        QMetaObject::invokeMethod(this->ph, "fglFormResponse", Qt::DirectConnection, Q_ARG(QString, qs_resp));
+    else
+      fglFormResponse(qs_resp);
+
 
 }
 
 void ScreenHandler::getTableNameComboBox(int id)
 {
-    fglFormResponse("<TRIGGERED ID=\"-123\"><SVS><SV>" + WidgetHelper::getWidgetTabName(currForm()->findFieldById(id)) + "</SV></SVS></TRIGGERED>");
+    QString qs_resp = "<TRIGGERED ID=\"-123\"><SVS><SV>" + WidgetHelper::getWidgetTabName(currForm()->findFieldById(id)) + "</SV></SVS></TRIGGERED>";
+    if(this->ph)
+        QMetaObject::invokeMethod(this->ph, "fglFormResponse", Qt::DirectConnection, Q_ARG(QString, qs_resp));
+    else
+      fglFormResponse(qs_resp);
+
 }
 
 void ScreenHandler::getIndexOfComboBox(int id, QString text)
@@ -3608,7 +3680,12 @@ void ScreenHandler::getIndexOfComboBox(int id, QString text)
     if(ComboBox *cb = qobject_cast<ComboBox *> (currForm()->findFieldById(id))){
         ret = QString::number(cb->findText(text));
     }
-    fglFormResponse("<TRIGGERED ID=\"-123\"><SVS><SV>" + ret + "</SV></SVS></TRIGGERED>");
+
+    QString qs_resp = "<TRIGGERED ID=\"-123\"><SVS><SV>" + ret + "</SV></SVS></TRIGGERED>";
+    if(this->ph)
+        QMetaObject::invokeMethod(this->ph, "fglFormResponse", Qt::DirectConnection, Q_ARG(QString, qs_resp));
+    else
+      fglFormResponse(qs_resp);
 
 }
 
@@ -3639,10 +3716,10 @@ void ScreenHandler::setRuninfo(int mode, QString cmd, int runcnt, bool start)
            if(this->programm_name_run.isEmpty())
            {
                if(p_fglform)
-               {
+               {                   
                   if(timer == NULL)
                   {
-                     timer = new QTimer(p_fglform);
+                     timer = new QTimer(this);
                      timer->setSingleShot(true);
                      connect(timer, SIGNAL(timeout()), p_fglform, SLOT(disableForm()));
                      timer->start(1000);
@@ -3765,13 +3842,21 @@ void ScreenHandler::createGantt()
     GanttWidget *p_gantt = new GanttWidget(p_fglform);
     p_gantt->createGanttWidget();
     ql_ganttWidget << p_gantt;
-    fglFormResponse("<TRIGGERED ID=\"-123\"><SVS><SV>" + QString::number(next) + "</SV></SVS></TRIGGERED>");
+    QString qs_resp = "<TRIGGERED ID=\"-123\"><SVS><SV>" + QString::number(next) + "</SV></SVS></TRIGGERED>";
+    if(this->ph)
+        QMetaObject::invokeMethod(this->ph, "fglFormResponse", Qt::DirectConnection, Q_ARG(QString, qs_resp));
+    else
+      fglFormResponse(qs_resp);
 }
 
 void ScreenHandler::setTitle(int ganttId, const QString title)
 {
     qDebug() << "setTitle";
-    fglFormResponse("<TRIGGERED ID=\"-123\"><SVS><SV>" + QString::number(ganttId) + "</SV></SVS></TRIGGERED>");
+    QString qs_resp = "<TRIGGERED ID=\"-123\"><SVS><SV>" + QString::number(ganttId) + "</SV></SVS></TRIGGERED>";
+    if(this->ph)
+        QMetaObject::invokeMethod(this->ph, "fglFormResponse", Qt::DirectConnection, Q_ARG(QString, qs_resp));
+    else
+      fglFormResponse(qs_resp);
 }
 
 void ScreenHandler::readCsv(int ganttId, QString fileName)
@@ -3779,6 +3864,7 @@ void ScreenHandler::readCsv(int ganttId, QString fileName)
     qDebug() << "readCsv";
     ql_ganttWidget.at(ganttId)->readCsv(fileName);
     ql_ganttWidget.at(ganttId)->show();
+
     //fglFormResponse("<TRIGGERED ID=\"-123\"><SVS><SV>" + QString::number(ganttId) + "</SV></SVS></TRIGGERED>");
 }
 
@@ -3792,7 +3878,11 @@ void ScreenHandler::createBrowser()
     p_browser->createBrowser();
     ql_browser << p_browser;
 
-    fglFormResponse("<TRIGGERED ID=\"-123\"><SVS><SV>" + QString::number(next) + "</SV></SVS></TRIGGERED>");
+    QString qs_resp = "<TRIGGERED ID=\"-123\"><SVS><SV>" + QString::number(next) + "</SV></SVS></TRIGGERED>";
+    if(this->ph)
+        QMetaObject::invokeMethod(this->ph, "fglFormResponse", Qt::DirectConnection, Q_ARG(QString, qs_resp));
+    else
+      fglFormResponse(qs_resp);
 
 }
 void ScreenHandler::setUrl(int id, const QUrl &http)
@@ -3810,7 +3900,12 @@ void ScreenHandler::setUrl(int id, const QUrl &http)
         }
     }
 
-    fglFormResponse("<TRIGGERED ID=\"-123\"><SVS><SV>" + QString::number(code) + "</SV></SVS></TRIGGERED>");
+    QString qs_resp = "<TRIGGERED ID=\"-123\"><SVS><SV>" + QString::number(code) + "</SV></SVS></TRIGGERED>";
+    if(this->ph)
+        QMetaObject::invokeMethod(this->ph, "fglFormResponse", Qt::DirectConnection, Q_ARG(QString, qs_resp));
+    else
+      fglFormResponse(qs_resp);
+
 
 }
 void ScreenHandler::closeBrowser(int id)
@@ -3828,7 +3923,10 @@ void ScreenHandler::closeBrowser(int id)
 
 void ScreenHandler::makeFglFormResponse(QString bla)
 {
-    this->fglFormResponse(bla);
+    if(this->ph)
+        QMetaObject::invokeMethod(this->ph, "fglFormResponse", Qt::DirectConnection, Q_ARG(QString, bla));
+    else
+      fglFormResponse(bla);
 }
 
 void ScreenHandler::checkForUpdate()
@@ -3896,8 +3994,11 @@ void ScreenHandler::createProgressWindow()
 {
   w_progress = new Progress();
 
-  fglFormResponse("<TRIGGERED ID=\"-123\"><SVS><SV>0</SV></SVS></TRIGGERED>");
-
+  QString qs_resp = "<TRIGGERED ID=\"-123\"><SVS><SV>0</SV></SVS></TRIGGERED>";
+  if(this->ph)
+      QMetaObject::invokeMethod(this->ph, "fglFormResponse", Qt::DirectConnection, Q_ARG(QString, qs_resp));
+  else
+    fglFormResponse(qs_resp);
 }
 
 void ScreenHandler::closeProgressWindow(int obj)

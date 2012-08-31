@@ -27,7 +27,7 @@
 
 #include <QDomNode>
 #include <QDomDocument>
-
+#include <QMutex>
 #include "screenhandler.h"
 
 class DebugWindow : public QDialog
@@ -68,15 +68,20 @@ public:
    // Holds the XMLProtocolString
    QByteArray request;
    DebugWindow *dw;
+   QHash<int,ScreenHandler*> qh_screenhandler;
    ScreenHandler *p_currScreenHandler;
    QString qs_shortCutUser;
    QString qs_shortCutPass;
    QString qs_shortCutProgram;
    QString fileName;
    bool b_read;
+   QString qs_dblocale;
+   QMutex protocol_mutex;
+
    bool b_write;
    int pid;
    int id;
+   QThread *t_tunnel;
 
 private:
    QString decodeFile(QString);
@@ -202,6 +207,7 @@ signals:
 
 public slots:
    void fglFormResponse(QString);
+   void closeAllScreenHandler();
 
 };
 

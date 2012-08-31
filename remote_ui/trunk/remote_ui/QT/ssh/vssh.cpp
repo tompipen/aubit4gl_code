@@ -1,4 +1,6 @@
 #include "vssh.h"
+#include "mainframe.h"
+#include "sshtunnel.h"
 #include <QDebug>
 
 VSSH::VSSH(QString host, QString user, QString password, QString exec, QObject *parent) :
@@ -6,6 +8,7 @@ VSSH::VSSH(QString host, QString user, QString password, QString exec, QObject *
 {
 
 
+  tunnelport = 0;
   session = ssh_new();
 
   if(!session)
@@ -31,20 +34,27 @@ VSSH::VSSH(QString host, QString user, QString password, QString exec, QObject *
 VSSH::~VSSH()
 {
   ssh_free(session);
+  session = NULL;
 }
 
 void VSSH::run()
 {
 
+
+  cnt_tunnel = 0;
+
+  QTime now = QTime::currentTime();
+  qsrand(now.second() + now.msec());
+
   int rc = 0;
   this->loadSettings();
-  rc = this->connect();
+  rc = this->connectToHost();
   //Try again or fail
   switch(rc)
   {
 
     case SSH_AGAIN:
-       rc = this->connect();
+       rc = this->connectToHost();
        break;
     case SSH_ERROR:
       emit connectionfailed(rc, host());
@@ -61,10 +71,43 @@ void VSSH::run()
 
   rc = this->auth();
 
+  if(rc == SSH_ERROR)
+  {
+      return;
+  }
+
+  //rc = this->tunnel();
+/*
+  t_sshtunnel = new SSHTunnel;
+  t_sshtunnel->tunnelport = 0;
+  t_sshtunnel->base_session = session;
+  t_sshtunnel->sctunnel = NULL;
+  t_sshtunnel->start(QThread::NormalPriority);
+*/
+  ssh_mutex.lock();
+  int port=0;
+  rc = ssh_forward_listen(session, NULL, 0, &port);
+  ssh_mutex.unlock();
+  /*
+  while(t_sshtunnel->tunnelport == 0)
+  {
+      usleep(500000);
+  }
+
+  int port = t_sshtunnel->tunnelport;
+*/
+  if(port == -1)
+  {
+      //Fehler beim Forwarding
+      return;
+  }
+
+
+
   switch(rc)
     {
       case SSH_AUTH_SUCCESS:
-         this->execute();
+         this->execute(port);
          break;
     default:
       emit authfailed(rc, user());
@@ -73,10 +116,15 @@ void VSSH::run()
 
     }
 
+  ssh_mutex.lock();
+  ssh_free(session);
+  session = NULL;
+  ssh_mutex.unlock();
+
 
 }
 
-int VSSH::connect()
+int VSSH::connectToHost()
 {
 
 
@@ -209,9 +257,10 @@ int VSSH::auth_password()
 
 }
 
-int VSSH::execute()
-{
 
+int VSSH::execute(int port = 0)
+{
+  int rc = 0;
   if(!session)
   {
 
@@ -219,8 +268,9 @@ int VSSH::execute()
       return -1;
   }
 
+
   ssh_channel channel;
-  int rc = 0;
+
 
   channel = ssh_channel_new(session);
   if(channel == NULL) return SSH_ERROR;
@@ -237,17 +287,7 @@ int VSSH::execute()
   char *cmd = "";
   QByteArray ba_cmd = this->executeCommand().toLocal8Bit();
   cmd = ba_cmd.data();
-//  strncpy(cmd, this->executeCommand().toAscii(), 1024);
 
-
-/*
-  rc = ssh_channel_request_pty(channel);
-
-  if(rc != SSH_OK)
-  {
-      qDebug()<<"PTY cannot requested";
-  }
-*/
   rc = ssh_channel_request_pty_size(channel, "xterm", 80, 24);
 
   if(rc != SSH_OK)
@@ -281,7 +321,7 @@ int VSSH::execute()
     return rc;
   }
 
-  char buffer[256];
+  char buffer[512];
   unsigned int nbytes;
 
   QByteArray ba_test;
@@ -292,21 +332,12 @@ int VSSH::execute()
   while (ssh_channel_is_open(channel) &&
          !ssh_channel_is_eof(channel))
   {
-   // ba_test += buffer;
 
-      /*
-
-    if
-
-    if (fwrite(&buffer, 1, nbytes, stdout) != nbytes)
-    {
-      ssh_channel_close(channel);
-      ssh_channel_free(channel);
-      return SSH_ERROR;
-    }*/
 
     memset(buffer, 0, sizeof(buffer));
+    ssh_mutex.lock();
     nbytes = ssh_channel_read_nonblocking(channel, &buffer, sizeof(buffer), 0);
+    ssh_mutex.unlock();
     ba_test += buffer;
     ba_buffertest = buffer;
 
@@ -326,19 +357,36 @@ int VSSH::execute()
 
     if(b_test)
     {
-       // const *char = "/opt/ventas/bin/vdc" + Q;
       char exec[1000] = "";
       char l_buffer[50] = "";
       memcpy(l_buffer,"\nlogout\n", 10);
+      if(port > 0)
+      {
+          char afglport[35] = "";
+          sprintf(afglport, "export AFGLPORT=%i\n", port);
+          strcat(exec, afglport);
+
+      }
       strcat(exec, cmd);
       strcat(exec, l_buffer);
+      ssh_mutex.lock();
       rc = ssh_channel_write(channel, exec, strlen(exec));
       rc = ssh_channel_send_eof(channel);
+      ssh_mutex.unlock();
       emit command_executed(executeCommand());
+      this->requestNewThread();
+      //t_sshtunnel->programm_not_started = false;
       b_test = false;
 
     }
       usleep(50000L);
+  }
+
+  for(int i=0; i<ql_tunnelthreads.size(); i++)
+  {
+    //  QMetaObject::invokeMethod(ql_tunnelthreads.at(i), "interrupt", Qt::QueuedConnection);
+      ql_tunnelthreads.at(i)->exit(0);
+      ql_tunnelthreads.at(i)->session_mutex = NULL;
   }
 
 
@@ -474,6 +522,8 @@ void VSSH::loadSettings()
   ssh_options_set(session, SSH_OPTIONS_USER, user);
   ssh_options_set(session, SSH_OPTIONS_LOG_VERBOSITY, &verbose);
   ssh_options_set(session, SSH_OPTIONS_PORT, &port);
+  ssh_options_set(session, SSH_OPTIONS_COMPRESSION, "zlib@openssh.com");
+  ssh_options_set(session, SSH_OPTIONS_COMPRESSION_LEVEL, "9");
 
 
 
@@ -507,6 +557,7 @@ void VSSH::setPassword(QString p)
 
 void VSSH::setExecuteCommand(QString e)
 {
+
   this->qs_exec = e;
 }
 
@@ -518,4 +569,22 @@ QString VSSH::executeCommand()
 QString VSSH::password()
 {
   return this->qs_pass;
+}
+
+void VSSH::requestNewThread()
+{
+
+    ssh_mutex.lock();
+    SSHTunnel *l_t_sshtunnel = new SSHTunnel;
+
+    l_t_sshtunnel->base_session = session;
+    l_t_sshtunnel->sctunnel = NULL;
+    l_t_sshtunnel->session_mutex = &ssh_mutex;
+    l_t_sshtunnel->setObjectName(QString::number(cnt_tunnel));
+    cnt_tunnel++;
+    l_t_sshtunnel->start(QThread::NormalPriority);
+    connect(l_t_sshtunnel, SIGNAL(bound()), this, SLOT(requestNewThread()));
+    ql_tunnelthreads.append(l_t_sshtunnel);
+    ssh_mutex.unlock();
+
 }
