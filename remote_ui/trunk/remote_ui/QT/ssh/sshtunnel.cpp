@@ -105,6 +105,7 @@ void SSHTunnel::run()
       ssh_channel_free(sctunnel);
 
       ph.closeAllScreenHandler();
+      VDC::arrowCursor();
 
 }
 
