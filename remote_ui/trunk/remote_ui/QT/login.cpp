@@ -127,9 +127,9 @@ LoginForm::LoginForm(QWidget *parent)
     #ifdef SSH_USE
    QAction *sshCompAction = new QAction(tr("SSH Compression"), this);
    connect(sshCompAction, SIGNAL(triggered()), this, SLOT(openCompOptions()));
-    #endif
    options->addSeparator();
    options->addAction(sshCompAction);
+   #endif
 
    toggledebug = new QAction(tr("&Toggle Debug"), this);
    toggledebug->setCheckable(true);
