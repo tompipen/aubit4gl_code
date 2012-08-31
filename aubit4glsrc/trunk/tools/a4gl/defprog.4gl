@@ -130,7 +130,9 @@ code
    }
    /* remove spaces at the beginning */
    while (strncmp(lv_names[a-1]," ", 1) == 0) {
-      strcpy(lv_names[a-1], lv_names[a-1]+1);
+	char buff[3000];
+	strcpy(buff, lv_names[a-1]+1);
+        strcpy(lv_names[a-1], buff);
    }
    /* cut on '#' */
    ptr=strchr(lv_names[a-1],'#');
