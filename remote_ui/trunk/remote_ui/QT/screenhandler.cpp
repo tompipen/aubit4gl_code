@@ -63,7 +63,6 @@ MainFrame::vdcdebug("ScreenHandler","ScreenHandler", "QObject *parent");
    b_runinfo = false;
    this->installEventFilter(this);
    QApplication::processEvents();
-   i_currthread = (int)QThread::currentThreadId();
  }
 
 
