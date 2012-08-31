@@ -1162,6 +1162,9 @@ if lv_dynamically_found_libs_cnt then
 	end for
 end if
 
+if fgl_getenv("NEEDLIBAUBIT4GL")="Y" THEN
+		call channel::write("make","LIBS+= -laubit4gl")
+end if
 
 if fgl_getenv("VMAKE")!= " " then
    if not has_lib("common") then
