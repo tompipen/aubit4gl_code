@@ -33,8 +33,11 @@ VSSH::VSSH(QString host, QString user, QString password, QString exec, QObject *
 
 VSSH::~VSSH()
 {
-  ssh_free(session);
-  session = NULL;
+  if(session)
+  {
+     ssh_free(session);
+     session = NULL;
+  }
 }
 
 void VSSH::run()
@@ -66,6 +69,7 @@ void VSSH::run()
   {
       emit connectionfailed(rc, host());
       emit fail();
+      VDC::arrowCursor();
       return;
   }
 
@@ -73,6 +77,7 @@ void VSSH::run()
 
   if(rc == SSH_ERROR)
   {
+      VDC::arrowCursor();
       return;
   }
 
@@ -84,10 +89,7 @@ void VSSH::run()
   t_sshtunnel->sctunnel = NULL;
   t_sshtunnel->start(QThread::NormalPriority);
 */
-  ssh_mutex.lock();
-  int port=0;
-  rc = ssh_forward_listen(session, NULL, 0, &port);
-  ssh_mutex.unlock();
+
   /*
   while(t_sshtunnel->tunnelport == 0)
   {
@@ -96,22 +98,32 @@ void VSSH::run()
 
   int port = t_sshtunnel->tunnelport;
 */
-  if(port == -1)
-  {
-      //Fehler beim Forwarding
-      return;
-  }
 
 
 
+  int port=0;
   switch(rc)
     {
       case SSH_AUTH_SUCCESS:
+         ssh_mutex.lock();
+         rc = ssh_forward_listen(session, NULL, 0, &port);
+         ssh_mutex.unlock();
+         if(port == -1)
+         {
+             //Fehler beim Forwarding
+             QString err = "Portforwarding konnte nicht auf dem Server initialisiert werden";
+             emit error(err);
+             emit fail();
+             VDC::arrowCursor();
+             return;
+         }
+         else
          this->execute(port);
          break;
     default:
       emit authfailed(rc, user());
       emit fail();
+      VDC::arrowCursor();
       return;
 
     }
