@@ -43,7 +43,8 @@ void SSHTunnel::run()
         QByteArray ba_readssh;
         char buffer[256];
         int nbytes = 1; //Damit er wieder in die While geht
-        std::fill( buffer, buffer+ sizeof(buffer)/sizeof(buffer[0]), 0 );
+      //  std::fill( buffer, buffer+ sizeof(buffer)/sizeof(buffer[0]), 0 );
+        memset(buffer, 0, sizeof buffer);
         while(nbytes > 0)
         {
              if(!base_session)
@@ -54,12 +55,14 @@ void SSHTunnel::run()
              nbytes = ssh_channel_read_nonblocking(sctunnel, &buffer, sizeof(buffer)-1, 0);
              session_mutex->unlock();
 
-            QApplication::processEvents();
+
             ba_readssh += buffer;
             //Leere Buffer
-            std::fill( buffer, buffer+ sizeof(buffer)/sizeof(buffer[0]), 0 );
+            memset(buffer, 0, sizeof buffer);
+        //    std::fill( buffer, buffer+ sizeof(buffer)/sizeof(buffer[0]), 0 );
         }
 
+        QApplication::processEvents();
 
         while(ph.isRunning())
         {
