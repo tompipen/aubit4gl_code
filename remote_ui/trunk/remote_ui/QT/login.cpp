@@ -124,6 +124,13 @@ LoginForm::LoginForm(QWidget *parent)
        options->addAction(m_mainMenu);
    }
 
+    #ifdef SSH_USE
+   QAction *sshCompAction = new QAction(tr("SSH Compression"), this);
+   connect(sshCompAction, SIGNAL(triggered()), this, SLOT(openCompOptions()));
+    #endif
+   options->addSeparator();
+   options->addAction(sshCompAction);
+
    toggledebug = new QAction(tr("&Toggle Debug"), this);
    toggledebug->setCheckable(true);
    toggledebug->setChecked(true);
@@ -315,6 +322,32 @@ void LoginForm::clearIniFile()
     #endif
 
     settings.remove("");
+}
+
+void LoginForm::openCompOptions()
+{
+    QWidget *widget = new QWidget();
+    QVBoxLayout *vLayout = new QVBoxLayout(widget);
+    QSlider *compLevel = new QSlider(Qt::Horizontal, widget);
+    QPushButton *okButton = new QPushButton(tr("OK"), widget);
+
+    connect(compLevel, SIGNAL(valueChanged(int)), this, SLOT(saveCompression(int)));
+    connect(okButton, SIGNAL(pressed()), widget, SLOT(close()));
+    okButton->setMaximumWidth(100);
+    compLevel->setRange(0, 4);
+
+    vLayout->addWidget(compLevel);
+    vLayout->addWidget(okButton, 0, Qt::AlignHCenter);
+
+    widget->setLayout(vLayout);
+
+    widget->show();
+
+}
+void LoginForm::saveCompression(int value)
+{
+    int factor = 2.25*value;
+    VDC::setSSHCompressionsLevel(factor);
 }
 
 void LoginForm::aboutVDC(QWidget *parent)

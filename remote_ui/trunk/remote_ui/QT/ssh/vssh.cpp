@@ -525,6 +525,11 @@ void VSSH::loadSettings()
   //Set connection details
   const char* server;
   const char* user;
+  const char* compression;
+
+  QByteArray ba_compression = QString::number(VDC::getSSHCompressionLevel()).toLocal8Bit();
+  compression = ba_compression.constData();
+
   QByteArray ba_host = this->host().toLocal8Bit();
   QByteArray ba_user = this->user().toLocal8Bit();
   //std::string server = host().toStdString();
@@ -535,7 +540,10 @@ void VSSH::loadSettings()
   ssh_options_set(session, SSH_OPTIONS_LOG_VERBOSITY, &verbose);
   ssh_options_set(session, SSH_OPTIONS_PORT, &port);
   ssh_options_set(session, SSH_OPTIONS_COMPRESSION, "zlib@openssh.com");
-  ssh_options_set(session, SSH_OPTIONS_COMPRESSION_LEVEL, "9");
+  ssh_options_set(session, SSH_OPTIONS_COMPRESSION_LEVEL, compression);
+  ssh_options_set(session, SSH_OPTIONS_COMPRESSION_S_C, "yes");
+  //ssh_options_set(session, SSH_OPTIONS_COMPRESSION_C_S, "yes");
+
 
 
 

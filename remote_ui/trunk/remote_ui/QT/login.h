@@ -50,6 +50,7 @@ public:
 
 
 public slots:
+   void saveCompression(int);
    void aboutVDC(QWidget *parent = 0);
    void removeIni();
    void clearIniFile();
@@ -79,6 +80,8 @@ private slots:
    void saveEdits();
    void showLogin();
    void hideLogin();
+   void openCompOptions();
+
 #ifdef SSH_USE
    void m_c_success();
    void m_c_established();
