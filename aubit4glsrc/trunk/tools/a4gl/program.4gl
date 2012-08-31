@@ -1162,7 +1162,8 @@ if lv_dynamically_found_libs_cnt then
 	end for
 end if
 
-if fgl_getenv("NEEDLIBAUBIT4GL")!="N" THEN
+if  fgl_getenv("NEEDLIBAUBIT4GL")="N" THEN
+ELSE
 		call channel::write("make","LIBS+= -laubit4gl")
 end if
 
