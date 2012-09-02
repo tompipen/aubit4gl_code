@@ -995,6 +995,9 @@ struct struct_scr_field fprop1;
 struct struct_scr_field *fprop;
 
 strcpy(buff,"");
+if (layout->id && strlen(layout->id )) {
+	sprintf(buff,"Id=\"%s\"",layout->id);
+}
 	if (layout->attrib==0) return;
 	fprop=&fprop1;
 	fprop1.bool_attribs.bool_attribs_len=layout->attrib->bool_attribs.bool_attribs_len;
