@@ -169,6 +169,61 @@ static int ui_form_setelementhidden(long *objectID, int nParam) {
 	return 0;
 }
 
+
+static int ui_form_setattributes(long *objectID, int n) {
+int okToProcess=1;
+int _ni=3;
+struct BINDING _ibind[3]={
+    {NULL,0,0,0,0,0,NULL},
+    {NULL,0,0,0,0,0,NULL},
+    {NULL,0,0,0,0,0,NULL}
+};
+char *fieldname=NULL;
+char *attributename=NULL;
+char *value=NULL;
+
+/* END OF DEFINE SECTION */
+
+
+  if (n!=3) {
+    A4GL_pop_args(n);
+    okToProcess=0;
+  }
+
+  // Set up input binding for our parameters
+  if (okToProcess) {
+
+    value=A4GL_char_pop();
+    _ibind[2].ptr=value;
+    _ibind[2].size=strlen(value);
+
+    attributename=A4GL_char_pop();
+    _ibind[1].ptr=attributename;
+    _ibind[1].size=strlen(attributename);
+
+    fieldname=A4GL_char_pop();
+    _ibind[0].ptr=fieldname;
+    _ibind[0].size=strlen(fieldname);
+  }
+
+  if (okToProcess) {
+      A4GL_ui_frontcall("INTERNAL","ui.form.setattributes",_ibind,_ni,NULL,0 );
+  }
+
+
+  // Set up output binding for our parameters
+    if (fieldname ) {
+        free(fieldname);
+    }
+    if (attributename ) {
+        free(attributename);
+    }
+    if (value ) {
+        free(value);
+    }
+  return 0;
+}
+
 static int ui_form_setfieldhidden(long *objectID, int nParam) {
         struct ui_form_data *data;
         struct sObject *ptr;
@@ -243,6 +298,51 @@ static int ui_window_settext(long *objectID, int nParam) {
 	return 0;
 }
 
+static int ui_form_setpagetitle(long *objectID_IgnoredAsAlways0,int n) {
+int okToProcess=1;
+int _ni=2;
+struct BINDING _ibind[2]={
+    {NULL,0,0,0,0,0,NULL},
+    {NULL,0,0,0,0,0,NULL}
+};
+char *pagename=NULL;
+char *title=NULL;
+
+/* END OF DEFINE SECTION */
+
+
+  if (n!=2) {
+    A4GL_pop_args(n);
+    okToProcess=0;
+  }
+
+  // Set up input binding for our parameters
+  if (okToProcess) {
+
+    title=A4GL_char_pop();
+    _ibind[1].ptr=title;
+    _ibind[1].size=strlen(title);
+    pagename=A4GL_char_pop();
+    _ibind[0].ptr=pagename;
+    _ibind[0].size=strlen(pagename);
+  }
+
+  if (okToProcess) {
+      A4GL_ui_frontcall("INTERNAL","ui.form.setpagetitle",_ibind,_ni,NULL,0 );
+  }
+
+
+  // Set up output binding for our parameters
+    if (pagename ) {
+        free(pagename);
+    }
+    if (title ) {
+        free(title);
+    }
+  return 0;
+}
+
+
 void add_ui_window_support(void) {
 	A4GL_add_object_type("ui.window");
 	A4GL_add_object_type("ui.form");
@@ -253,4 +353,6 @@ void add_ui_window_support(void) {
 	A4GL_add_datatype_function_i (DTYPE_OBJECT, ":ui.window.repgen", (void *) ui_window_repgen);
 	A4GL_add_datatype_function_i (DTYPE_OBJECT, ":ui.form.setelementhidden", (void *) ui_form_setelementhidden);
 	A4GL_add_datatype_function_i (DTYPE_OBJECT, ":ui.form.setfieldhidden", (void *) ui_form_setfieldhidden);
+	A4GL_add_datatype_function_i (DTYPE_OBJECT, ":ui.form.setattributes", (void *) ui_form_setattributes);
+        A4GL_add_datatype_function_i (DTYPE_OBJECT, ":ui.form.setpagetitle", (void *)  ui_form_setpagetitle);
 }
