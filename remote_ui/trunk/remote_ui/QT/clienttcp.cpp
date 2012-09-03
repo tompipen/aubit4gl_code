@@ -1227,6 +1227,29 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
          }
 
 
+         if(qs_name == "ui.form.setattributes")
+         {
+             qDebug() << "bin hier";
+             QString fieldName;
+             QString attribute;
+             QString value;
+             for(int k=0; k<paramsElement.childNodes().count(); k++){
+                QDomElement valuesElement = paramsElement.childNodes().at(k).toElement();
+                if(k == 0){
+                   fieldName = valuesElement.text();
+                }
+
+                if(k == 1){
+                   attribute = valuesElement.text();
+                }
+
+                if(k == 2){
+                   value = valuesElement.text();
+                }
+             }
+             QMetaObject::invokeMethod(p_currScreenHandler, "setAttributes", Qt::QueuedConnection, Q_ARG(QString, fieldName), Q_ARG(QString, attribute), Q_ARG(QString, value));
+
+         }
          if(qs_name == "ui.form.setelementhidden"){
             int form = -1;
             QString fieldName;
@@ -1245,7 +1268,7 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
                   hidden = valuesElement.text().toInt();
                }
             }
-            QMetaObject::invokeMethod(p_currScreenHandler, "setElementHidden", Qt::QueuedConnection, Q_ARG(QString, fieldName), Q_ARG(int, hidden));
+            QMetaObject::invokeMethod(p_currScreenHandler, "setElementHidden", Qt::QueuedConnection, Q_ARG(QString, fieldName), Q_ARG(bool, hidden));
           //  setElementHidden(fieldName, hidden);
          }
 
@@ -1267,7 +1290,7 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
                   hidden = valuesElement.text().toInt();
                }
             }
-            QMetaObject::invokeMethod(p_currScreenHandler, "setFieldHidden", Qt::QueuedConnection, Q_ARG(QString, fieldName), Q_ARG(int, hidden));
+            QMetaObject::invokeMethod(p_currScreenHandler, "setFieldHidden", Qt::QueuedConnection, Q_ARG(QString, fieldName), Q_ARG(bool, hidden));
 //            setFieldHidden(fieldName, hidden);
          }
          #ifdef KDChart_Version

@@ -1447,6 +1447,17 @@ MainFrame::vdcdebug("ScreenHandler","setFieldHidden", "QString fieldName, bool h
    
 }
 
+void ScreenHandler::setAttributes(QString fieldName, QString attribute, QString value)
+{
+    if(Edit *widget = qobject_cast<Edit*> (p_fglform->findFieldByName(fieldName)))
+    {
+        if(attribute == "picture")
+        {
+                widget->setPicture(value);
+        }
+    }
+}
+
 //------------------------------------------------------------------------------
 // Method       : setFieldFocus(String FieldName )
 // Filename     : screenhandler.cpp
