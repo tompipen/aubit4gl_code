@@ -1090,20 +1090,22 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
       {
           openLocalFile = 1;
       }
-      if(openLocalFile== 1)
+
+      if(openLocalFile == 0)
       {
          //If we want to open a Email Programm or a Website.
         #ifdef Q_WS_X11
-           QDesktopServices::openUrl(QUrl(QString("file://" + fileName), QUrl::TolerantMode));
+           QDesktopServices::openUrl(QUrl(fileName, QUrl::TolerantMode));
         #endif
         #ifdef Q_WS_MAC
-           QDesktopServices::openUrl(QUrl(QString("file:///" + fileName), QUrl::TolerantMode));
+           QDesktopServices::openUrl(QUrl(fileName, QUrl::TolerantMode));
         #endif
         #ifdef Q_WS_WIN
            QProcess process;
            process.startDetached(QString("rundll32 url.dll,FileProtocolHandler \"%1\"").arg( fileName));
         #endif
-      } else {
+        return;
+      } else if (openLocalFile == 1){
 
           //Open File local
           fileName = QDir::tempPath() + "/" + fileName;
