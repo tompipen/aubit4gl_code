@@ -1447,6 +1447,28 @@ MainFrame::vdcdebug("ScreenHandler","setFieldHidden", "QString fieldName, bool h
    
 }
 
+void ScreenHandler::setNewTabName(QString oldTabName, QString newTabName)
+{
+    qDebug() << "findFieldsByName" << p_fglform->ql_formFields;
+    QList<QTabWidget*> ql_tabList = p_fglform->findChildren<QTabWidget*>();
+
+    qDebug() << "test: " << ql_tabList;
+
+    for(int i=0; i < ql_tabList.count(); i++)
+    {
+        qDebug() << "count:" << ql_tabList.at(i)->count();
+        for(int j=0; j < ql_tabList.at(i)->count(); j++)
+        {
+            qDebug() << "name: " << ql_tabList.at(i)->tabText(j);
+            if(oldTabName == ql_tabList.at(i)->tabText(j))
+            {
+                ql_tabList.at(i)->setTabText(j, newTabName);
+            }
+        }
+    }
+
+}
+
 void ScreenHandler::setAttributes(QString fieldName, QString attribute, QString value)
 {
     if(Edit *widget = qobject_cast<Edit*> (p_fglform->findFieldByName(fieldName)))

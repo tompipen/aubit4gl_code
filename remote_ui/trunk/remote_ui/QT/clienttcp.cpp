@@ -1226,10 +1226,25 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
              #endif
          }
 
+         if(qs_name == "ui.form.setpagetitle")
+         {
+             QString oldTabName;
+             QString newTabName;
+             QString value;
+             for(int k=0; k<paramsElement.childNodes().count(); k++){
+                QDomElement valuesElement = paramsElement.childNodes().at(k).toElement();
+                if(k == 0){
+                   oldTabName = valuesElement.text();
+                }
 
+                if(k == 1){
+                   newTabName = valuesElement.text();
+                }
+             }
+             QMetaObject::invokeMethod(p_currScreenHandler, "setNewTabName", Qt::QueuedConnection, Q_ARG(QString, oldTabName), Q_ARG(QString, newTabName));
+         }
          if(qs_name == "ui.form.setattributes")
          {
-             qDebug() << "bin hier";
              QString fieldName;
              QString attribute;
              QString value;
