@@ -1084,30 +1084,43 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
    
    if(childElement.nodeName() == "EXECUTE"){
       QString fileName = childElement.text();
-      fileName = QDir::tempPath() + "/" + fileName;
-      QFileInfo fileInfo(fileName);
+      int openLocalFile = 0;
 
-/*
-      //QString prog = "xdg-open";
-      QString prog = "finder";
-      QStringList args;
-      args << fileInfo.absoluteFilePath();
-      QProcess process;
-      qDebug() << "RUN: " << prog << args;
-      process.execute(prog, args);
-*/
-      #ifdef Q_WS_X11      
-         QDesktopServices::openUrl(QUrl(QString("file://" + fileInfo.absoluteFilePath()), QUrl::TolerantMode));
-      #endif
-      #ifdef Q_WS_MAC
-         QDesktopServices::openUrl(QUrl(QString("file:///" + fileInfo.absoluteFilePath()), QUrl::TolerantMode));
-      #endif
-      #ifdef Q_WS_WIN
-         QProcess process;
-         process.startDetached(QString("rundll32 url.dll,FileProtocolHandler \"%1\"").arg( fileInfo.absoluteFilePath()));
-      #endif
-      //sleep(3);
-      return;
+      if(!fileName.contains("mailto:") && !fileName.contains("http:"))
+      {
+          openLocalFile = 1;
+      }
+      if(openLocalFile== 1)
+      {
+         //If we want to open a Email Programm or a Website.
+        #ifdef Q_WS_X11
+           QDesktopServices::openUrl(QUrl(QString("file://" + fileName), QUrl::TolerantMode));
+        #endif
+        #ifdef Q_WS_MAC
+           QDesktopServices::openUrl(QUrl(QString("file:///" + fileName), QUrl::TolerantMode));
+        #endif
+        #ifdef Q_WS_WIN
+           QProcess process;
+           process.startDetached(QString("rundll32 url.dll,FileProtocolHandler \"%1\"").arg( fileName));
+        #endif
+      } else {
+
+          //Open File local
+          fileName = QDir::tempPath() + "/" + fileName;
+          QFileInfo fileInfo(fileName);
+
+          #ifdef Q_WS_X11
+             QDesktopServices::openUrl(QUrl(QString("file://" + fileInfo.absoluteFilePath()), QUrl::TolerantMode));
+          #endif
+          #ifdef Q_WS_MAC
+             QDesktopServices::openUrl(QUrl(QString("file:///" + fileInfo.absoluteFilePath()), QUrl::TolerantMode));
+          #endif
+          #ifdef Q_WS_WIN
+             QProcess process;
+             process.startDetached(QString("rundll32 url.dll,FileProtocolHandler \"%1\"").arg( fileInfo.absoluteFilePath()));
+          #endif
+          return;
+       }
    }
 
    if(childElement.nodeName() == "CALL"){
