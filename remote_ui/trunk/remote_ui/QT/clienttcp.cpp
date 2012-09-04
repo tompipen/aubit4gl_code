@@ -480,9 +480,9 @@ MainFrame::vdcdebug("ClientSocket","readClient", "");
 
 
    if(!request.isNull()){
-      ph.protocol_mutex.lock();
+      //ph.protocol_mutex.lock();
       ph.request.append(request);
-      ph.protocol_mutex.unlock();
+      //ph.protocol_mutex.unlock();
       ph.start();
    }
 }
