@@ -188,6 +188,8 @@ public slots:
    void setScrLine(int);
    void setFieldEnabled(QString, bool, bool, int = 0);
    void setFieldFocus(QString);
+   void setNewTabName(QString, QString);
+   void setAttributes(QString, QString, QString);
    void setFieldHidden(QString, bool);
    void setElementHidden(QString, bool);
    void setArrayFocus(QWidget*, QString);

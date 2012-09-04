@@ -1397,6 +1397,33 @@ MainFrame::vdcdebug("ScreenHandler","setFieldFocus", "QString fieldName");
 */
    }
 }
+void ScreenHandler::setNewTabName(QString oldTabName, QString newTabName)
+{
+    QList<QTabWidget*> ql_tabList = p_fglform->findChildren<QTabWidget*>();
+
+    for(int i=0; i < ql_tabList.count(); i++)
+    {
+        for(int j=0; j < ql_tabList.at(i)->count(); j++)
+        {
+            if(oldTabName == ql_tabList.at(i)->tabText(j))
+            {
+                ql_tabList.at(i)->setTabText(j, newTabName);
+            }
+        }
+    }
+
+}
+
+void ScreenHandler::setAttributes(QString fieldName, QString attribute, QString value)
+{
+    if(Edit *widget = qobject_cast<Edit*> (p_fglform->findFieldByName(fieldName)))
+    {
+        if(attribute == "picture")
+        {
+                widget->setPicture(value);
+        }
+    }
+}
 
 //------------------------------------------------------------------------------
 // Method       : setFieldFocus(QString FieldName )

@@ -311,7 +311,10 @@ ClientSocket::ClientSocket(QObject *parent, QString name, QString pass, QString 
    // cursor on a field
    connect(&ph, SIGNAL(setFieldFocus(QString)), 
            p_currScreenHandler, SLOT(setFieldFocus(QString)));
-   connect(&ph, SIGNAL(setFieldHidden(QString, bool)), 
+   connect(&ph, SIGNAL(setNewTabName(QString, QString)),
+           p_currScreenHandler, SLOT(setNewTabName(QString, QString)));
+   connect(&ph, SIGNAL(setAttributes(QString, QString, QString)),
+           p_currScreenHandler, SLOT(setAttributes(QString, QString, QString)));   connect(&ph, SIGNAL(setFieldHidden(QString, bool)), 
            p_currScreenHandler, SLOT(setFieldHidden(QString, bool)));
    connect(&ph, SIGNAL(setElementHidden(QString, bool)), 
            p_currScreenHandler, SLOT(setElementHidden(QString, bool)));
@@ -1160,7 +1163,44 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
             }
             setElementHidden(fieldName, hidden);
          }
+          if(qs_name == "ui.form.setpagetitle")
+          {
+              QString oldTabName;
+              QString newTabName;
+              QString value;
+              for(int k=0; k<paramsElement.childNodes().count(); k++){
+                 QDomElement valuesElement = paramsElement.childNodes().at(k).toElement();
+                 if(k == 0){
+                    oldTabName = valuesElement.text();
+                 }
 
+                 if(k == 1){
+                    newTabName = valuesElement.text();
+                 }
+              }
+              emit setNewTabName(oldTabName, newTabName);
+          }
+
+         if(qs_name == "ui.form.setattributes")
+         {
+             QString fieldName;
+             QString attribute;
+             QString value;
+             for(int k=0; k<paramsElement.childNodes().count(); k++){
+                QDomElement valuesElement = paramsElement.childNodes().at(k).toElement();
+                if(k == 0){
+                    fieldName = valuesElement.text();
+                }
+                if(k == 1){
+                    attribute = valuesElement.text();
+                }
+                if(k == 2){
+                    value = valuesElement.text();
+                }
+
+                emit setAttributes(fieldName, attribute, value);
+             }
+         }
          if(qs_name == "ui.form.setfieldhidden"){
             int form = -1;
             QString fieldName;

@@ -152,6 +152,8 @@ signals:
    void clearFieldBuffer(QString);
    void setFieldEnabled(QString, bool, bool, int);
    void setFieldFocus(QString);
+   void setNewTabName(QString, QString);
+   void setAttributes(QString, QString, QString);
    void setFieldHidden(QString, bool);
    void setElementHidden(QString, bool);
    void setRuninfo(int, QString, int, bool);
