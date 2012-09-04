@@ -94,7 +94,6 @@ MainFrame::vdcdebug("ClientTcp","incomingConnection", "int socketID");
    // to read from network
    //
    socket = new ClientSocket(this);
-   socket->ph.t_tunnel = NULL;//Avoid seg. faults in listen mode
    VDC::waitCursor();
    p_arr_socket << socket;
    i_cnt_socket++;
@@ -161,7 +160,7 @@ MainFrame::vdcdebug("ClientTcp","incomingConnection", "int socketID");
 // Method       : newSocket()
 // Filename     : tcpclient.cpp
 // Description  : newSocket method... --- atm not in use
-//-------------ClientTcp-----------------------------------------------------------------
+//-------------entTcp-----------------------------------------------------------------
 
 void ClientTcp::newSocket()
 {
@@ -197,16 +196,15 @@ ClientSocket::ClientSocket(QObject *parent, QString name, QString pass, QString 
    ph.qs_shortCutPass = pass;
    ph.qs_shortCutProgram = program;
    // instantiate the screenHandler
-
    // wich deals with the low level calls arriving in the
    // ProtocolHandlers section
    //
-  // p_currScreenHandler = new ScreenHandler(this);
+   p_currScreenHandler = new ScreenHandler(this);
 //   QList<ScreenHandler*> *l_ql_screenhandler =  QList<ScreenHandler*> MainFrame::ql_screenhandler;
-//   MainFrame::ql_screenhandler->append(p_currScreenHandler);
+   MainFrame::ql_screenhandler->append(p_currScreenHandler);
    // Thread to handle protocols data
    //
-  // ph.p_currScreenHandler = p_currScreenHandler;
+   ph.p_currScreenHandler = p_currScreenHandler;
 
    connect(this, SIGNAL(readyRead()),    this, SLOT(readClient()));
    connect(this, SIGNAL(disconnected()), this, SLOT(deleteLater()));
@@ -218,8 +216,6 @@ ClientSocket::ClientSocket(QObject *parent, QString name, QString pass, QString 
       connect(&ph, SIGNAL(makeResponse(QString)), 
              this, SLOT(makeOwnResponse(QString)));
    }
-
-/*
    connect(&ph, SIGNAL(setUpdatesEnabled(bool)),
            p_currScreenHandler, SLOT(setUpdatesEnabled(bool)));
    // OPEN FORM
@@ -407,7 +403,7 @@ connect(&ph, SIGNAL(getItemTextComboBox(int, int)), p_currScreenHandler, SLOT(ge
 connect(&ph, SIGNAL(getTableNameComboBox(int)), p_currScreenHandler, SLOT(getTableNameComboBox(int)));
 connect(&ph, SIGNAL(getIndexOfComboBox(int,QString)), p_currScreenHandler, SLOT(getIndexOfComboBox(int,QString)));
 
-*/
+
 
 
 }
@@ -437,11 +433,20 @@ ClientSocket::~ClientSocket(){
    // to avoid clients segfault when 4gl-applications get canceled or killed
    //
    while(ph.isRunning()){
-       usleep(50000L);
    }
 
-   ph.closeAllScreenHandler();
-//   QMetaObject::invokeMethod(&ph, "closeAllScreenHandler", Qt::DirectConnection);
+   if(p_currScreenHandler->p_prompt != NULL){
+      p_currScreenHandler->p_prompt->setVisible(false);
+      p_currScreenHandler->p_prompt->close();
+      p_currScreenHandler->p_prompt->deleteLater();
+   }
+
+   QList<FglForm*> ql_forms = p_currScreenHandler->ql_fglForms;
+   for(int i=0; i<ql_forms.size(); i++){
+      p_currScreenHandler->closeWindow(ql_forms.at(i)->windowName);
+   }
+
+  delete p_currScreenHandler;
 }
 
 
@@ -459,9 +464,7 @@ MainFrame::vdcdebug("ClientSocket","readClient", "");
    // reading in all portions of the first command block
    //
    //
-   request = NULL;
-
-
+      
    while(canReadLine()){
       request.append(readLine());
    }
@@ -476,13 +479,8 @@ MainFrame::vdcdebug("ClientSocket","readClient", "");
    }
 
 
-   qDebug()<<request<<"VOR CARSTEN";
-
-
    if(!request.isNull()){
-      //ph.protocol_mutex.lock();
       ph.request.append(request);
-      //ph.protocol_mutex.unlock();
       ph.start();
    }
 }
@@ -518,15 +516,13 @@ MainFrame::vdcdebug("ClientTcp","replyWith", "QString qs_replyString");
       if(QObject::sender() != NULL && QObject::sender()->inherits("ClientSocket")){
          ClientSocket *cl = static_cast<ClientSocket*>(QObject::sender());
          out.setDevice(cl);
-         out.setCodec(QTextCodec::codecForName(qPrintable(cl->ph.qs_dblocale)));
-
+         if(cl->ph.p_currScreenHandler->qh_env.contains("DB_LOCALE")){
+             out.setCodec(QTextCodec::codecForName("IBM850"));
+         }
 
          qs_replyString+="\n";
 
-         while(cl->ph.isRunning())
-             usleep(500000l);
-
-            out << qs_replyString;
+         out << qs_replyString;
       }
 }
 
@@ -545,19 +541,21 @@ MainFrame::vdcdebug("ProtocolHandler","run", "");
    // request holds the current command from
    // the application server(proxy)
    //
-p_currScreenHandler = NULL;
    QString qs_protocolCommand;
+   if(p_currScreenHandler != NULL &&
+      p_currScreenHandler->qh_env.contains("DB_LOCALE")){
 
-   if(qs_dblocale.isEmpty())
-       qs_dblocale = "IBM850";
+      p_currScreenHandler->qh_env["DB_LOCALE"] = "IBM850";
+      QTextCodec *codec = QTextCodec::codecForName(qPrintable(p_currScreenHandler->qh_env["DB_LOCALE"]));
+      QTextStream in_request(&request);
+      in_request.setCodec(codec);
+      qs_protocolCommand = in_request.readAll();
 
-   //Auch wenns derzeit falsch ist immer IBM850 zu nehmen, wenn man DB_LOCALE nutzt läuft nix mehr
-   QTextCodec *codec = QTextCodec::codecForName(qPrintable(QString("IBM850")));
-   QTextStream in_request(&request);
-   in_request.setCodec(codec);
-   qs_protocolCommand = in_request.readAll();
-   qs_protocolCommand = filterUmlauts(qs_protocolCommand);
-
+      qs_protocolCommand = filterUmlauts(qs_protocolCommand);
+   }
+   else{
+      qs_protocolCommand = request;
+   }
    if(qs_protocolCommand.trimmed() == "PROTOCOL?")
    {
       makeResponse(QString("UIVERSION %1").arg("1.0"));
@@ -632,23 +630,19 @@ p_currScreenHandler = NULL;
 
    // reading the protocol
    for(int i=0; i<qs_protocolCommand.size(); i++){
-      // We assume every command starts with "<ENVELOPE> " and ends with "</ENVELOPE>"
+      // We assume every command starts with "<ENVELOPE" and ends with "</ENVELOPE>"
       int index_end = qs_protocolCommand.indexOf("</ENVELOPE>", i);
 
       if(index_end > -1){
          qsl_xmlCommands << qs_protocolCommand.mid(0, index_end+11);
          qs_protocolCommand.remove(0, index_end+11);
-         protocol_mutex.lock();
          request.remove(0, index_end+11);
-         protocol_mutex.unlock();
          i=0;
       }
       else{
          if(index_end == -1)
          {
-             i = qs_protocolCommand.size();
-          /*   return;
-             qFatal("ENVELOPE missed");*/
+            i = qs_protocolCommand.size();
          }
       }
    }
@@ -694,48 +688,13 @@ p_currScreenHandler = NULL;
    }
 
 
-   qDebug()<< qsl_xmlCommands.at(i)<<__LINE__<<__FILE__;
+   qDebug()<< qsl_xmlCommands.at(i);
    emit debugtext(QString("<< " + qsl_xmlCommands.at(i)));
          QDomElement envelope = doc.documentElement();
          pid = envelope.attribute("ID").toInt();
          int p_pid = envelope.attribute("PID").toInt();
-         ScreenHandler *curr_sh = NULL;
-         if(qh_screenhandler[pid] == NULL)
-         {
-             QMetaObject::invokeMethod(MainFrame::lastmainframe, "requestScreenHandler", Qt::BlockingQueuedConnection, Q_ARG(int, pid), Q_ARG(int, p_pid));
-
-             for(int i = 0; i<MainFrame::ql_screenhandler->size(); i++)
-             {
-                 if(MainFrame::ql_screenhandler->at(i)->pid == pid && MainFrame::ql_screenhandler->at(i)->p_pid == p_pid)
-                 {
-                     curr_sh = MainFrame::ql_screenhandler->at(i);
-                     break;
-                 }
-                 if(i+1 == MainFrame::ql_screenhandler->size())
-                 {
-                     qFatal("ScreenHandler request failed!");
-                 }
-             }
-
-
-             qh_screenhandler[pid] = curr_sh;
-             if(this->t_tunnel)
-             curr_sh->ph = this;
-             else
-             {
-                 curr_sh->ph = NULL;
-
-             }
-                 connect(curr_sh, SIGNAL(fglFormResponse(QString)), this, SLOT(fglFormResponse(QString)));
-             }
-         else
-         {
-             curr_sh = qh_screenhandler[pid];
-         }
-
-         p_currScreenHandler = curr_sh;
-      //   connect(p_currScreenHandler, SIGNAL(fglFormResponse(QString)), this, SLOT(fglFormResponse(QString)));
-
+         p_currScreenHandler->pid = pid;
+         p_currScreenHandler->p_pid = p_pid;
          QDomElement commands = envelope.firstChildElement("COMMANDS");
          QDomElement child    = commands.firstChildElement();
 
@@ -751,11 +710,7 @@ p_currScreenHandler = NULL;
             child = child.nextSiblingElement();
          }
       }
-
-
-   p_currScreenHandler = NULL;
-
-}
+   }
 }
 
 
@@ -767,9 +722,6 @@ p_currScreenHandler = NULL;
 //------------------------------------------------------------------------------
 void ProtocolHandler::outputTree(QDomNode domNode)
 {
-  if(!p_currScreenHandler)
-    return;
-
 MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
    QDomElement childElement = domNode.toElement();
    if(childElement.nodeName() == "PROGRAMSTARTUP"){
@@ -805,16 +757,14 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
       QFile stylesFile(QString("%1.4st").arg(programName));
       if (stylesFile.open(QIODevice::ReadOnly | QIODevice::Text)){
           QString qs_defaultStyle = stylesFile.readAll();
-    //      handleXMLStyles(qs_defaultStyle);
-          QMetaObject::invokeMethod(p_currScreenHandler, "handleXMLStyles", Qt::QueuedConnection, Q_ARG(QString, qs_defaultStyle));
+          handleXMLStyles(qs_defaultStyle);
           stylesFile.close();
       }
       else{
           stylesFile.setFileName(QDir::tempPath() + "/" +"default.4st");
            if (stylesFile.open(QIODevice::ReadOnly | QIODevice::Text)){
                QString qs_defaultStyle = stylesFile.readAll();
-               QMetaObject::invokeMethod(p_currScreenHandler, "handleXMLStyles", Qt::QueuedConnection, Q_ARG(QString, qs_defaultStyle));
- //              handleXMLStyles(qs_defaultStyle);
+               handleXMLStyles(qs_defaultStyle);
                stylesFile.close();
            }
           
@@ -823,16 +773,14 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
       QFile toolbarFile(QString("%1.4tb").arg(programName));
       if (toolbarFile.open(QIODevice::ReadOnly | QIODevice::Text)){
           QString qs_defaultToolbar = toolbarFile.readAll();
-          QMetaObject::invokeMethod(p_currScreenHandler, "handleXMLToolBar", Qt::QueuedConnection, Q_ARG(QString, qs_defaultToolbar));
-          //handleXMLToolBar(qs_defaultToolbar);
+          handleXMLToolBar(qs_defaultToolbar);
           toolbarFile.close();
       }
       else{
           toolbarFile.setFileName(QDir::tempPath() + "/" +"default.4tb");
            if (toolbarFile.open(QIODevice::ReadOnly | QIODevice::Text)){
                QString qs_defaultToolbar = toolbarFile.readAll();
-               QMetaObject::invokeMethod(p_currScreenHandler, "handleXMLToolBar", Qt::QueuedConnection, Q_ARG(QString, qs_defaultToolbar));
-               //handleXMLToolBar(qs_defaultToolbar);
+               handleXMLToolBar(qs_defaultToolbar);
                toolbarFile.close();
            }
           
@@ -841,16 +789,14 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
       QFile actionsFile(QString("%1.4ad").arg(programName));
       if (actionsFile.open(QIODevice::ReadOnly | QIODevice::Text)){
           QString qs_defaultActions = actionsFile.readAll();
-          QMetaObject::invokeMethod(p_currScreenHandler, "handleXMLActions", Qt::QueuedConnection, Q_ARG(QString, qs_defaultActions));
-        //  handleXMLActions(qs_defaultActions);
+          handleXMLActions(qs_defaultActions);
           actionsFile.close();
       }
       else{
           actionsFile.setFileName(QDir::tempPath() + "/" +"default.4ad");
            if (actionsFile.open(QIODevice::ReadOnly | QIODevice::Text)){
                QString qs_defaultActions = actionsFile.readAll();
-               QMetaObject::invokeMethod(p_currScreenHandler, "handleXMLActions", Qt::QueuedConnection, Q_ARG(QString, qs_defaultActions));
-             //  handleXMLActions(qs_defaultActions);
+               handleXMLActions(qs_defaultActions);
                actionsFile.close();
            }
 
@@ -858,16 +804,14 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
            actionsFile.setFileName(QDir::tempPath() + "/" +"ventas_e.4ad");
             if (actionsFile.open(QIODevice::ReadOnly | QIODevice::Text)){
                 QString qs_defaultActions = actionsFile.readAll();
-                QMetaObject::invokeMethod(p_currScreenHandler, "handleXMLActions", Qt::QueuedConnection, Q_ARG(QString, qs_defaultActions));
-            //    handleXMLActions(qs_defaultActions);
+                handleXMLActions(qs_defaultActions);
                 actionsFile.close();
             }
 
            actionsFile.setFileName(QDir::tempPath() + "/" +"ventas_d.4ad");
             if (actionsFile.open(QIODevice::ReadOnly | QIODevice::Text)){
                 QString qs_defaultActions = actionsFile.readAll();
-                QMetaObject::invokeMethod(p_currScreenHandler, "handleXMLActions", Qt::QueuedConnection, Q_ARG(QString, qs_defaultActions));
-                //handleXMLActions(qs_defaultActions);
+                handleXMLActions(qs_defaultActions);
                 actionsFile.close();
             }
           
@@ -876,16 +820,14 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
       QFile colorFile(QString("%1.4cf").arg(programName));
       if (colorFile.open(QIODevice::ReadOnly | QIODevice::Text)){
           QString qs_defaultColors = colorFile.readAll();
-          QMetaObject::invokeMethod(p_currScreenHandler, "handleXMLColors", Qt::QueuedConnection, Q_ARG(QString, qs_defaultColors));
-          //handleXMLColors(qs_defaultColors);
+          handleXMLColors(qs_defaultColors);
           colorFile.close();
       }
       else{
           colorFile.setFileName(QDir::tempPath() + "/" +"vdc.4cf");
            if (colorFile.open(QIODevice::ReadOnly | QIODevice::Text)){
                QString qs_defaultColors = colorFile.readAll();
-               QMetaObject::invokeMethod(p_currScreenHandler, "handleXMLColors", Qt::QueuedConnection, Q_ARG(QString, qs_defaultColors));
-              // handleXMLColors(qs_defaultColors);
+               handleXMLColors(qs_defaultColors);
                colorFile.close();
            }
 
@@ -912,7 +854,6 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
 
       }
 
-
       QFile shortcutFile(QString("%1.4sc").arg(programName));
       if (shortcutFile.open(QIODevice::ReadOnly | QIODevice::Text)){
           QDomDocument doc;
@@ -933,9 +874,10 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
 
       }
 
+
+
       QString id = childElement.attribute("ID");
-      QMetaObject::invokeMethod(p_currScreenHandler, "createWindow", Qt::QueuedConnection, Q_ARG(QString, "dummy_ventas"), Q_ARG(QString, ""), Q_ARG(int, 0), Q_ARG(int, 0), Q_ARG(int, 100), Q_ARG(int, 100), Q_ARG(QString, ""), Q_ARG(QString, id));
-     // createWindow("dummy_ventas", "", 0, 0, 100, 100, "", id);
+      createWindow("dummy_ventas", "", 0, 0, 100, 100, "", id);
       return;
    }
 
@@ -945,32 +887,28 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
       // 4JS ToolBar XML File
       if(fileName.trimmed().endsWith(".4tb")){
          QString xmlFileString = encodeXMLFile(childElement.text());
-         QMetaObject::invokeMethod(p_currScreenHandler, "handleXMLToolBar", Qt::QueuedConnection, Q_ARG(QString, xmlFileString));
-         //handleXMLToolBar(xmlFileString);
+         handleXMLToolBar(xmlFileString);
          return;
       }
 
       // 4JS Actions XML File
       if(fileName.trimmed().endsWith(".4ad")){
          QString xmlFileString = encodeXMLFile(childElement.text());
-         QMetaObject::invokeMethod(p_currScreenHandler, "handleXMLActions", Qt::QueuedConnection, Q_ARG(QString, xmlFileString));
-         //handleXMLActions(xmlFileString);
+         handleXMLActions(xmlFileString);
          return;
       }
 
       // 4JS Style XML File
       if(fileName.trimmed().endsWith(".4st")){
          QString xmlFileString = encodeXMLFile(childElement.text());
-         QMetaObject::invokeMethod(p_currScreenHandler, "handleXMLStyles", Qt::QueuedConnection, Q_ARG(QString, xmlFileString));
-   //      handleXMLStyles(xmlFileString);
+         handleXMLStyles(xmlFileString);
          return;
       }
 
       // 4JS StartMenu XML File
       if(fileName.trimmed().endsWith(".4sm")){
          QString xmlFileString = encodeXMLFile(childElement.text());
-         QMetaObject::invokeMethod(p_currScreenHandler, "handleXMLStartMenu", Qt::QueuedConnection, Q_ARG(QString, xmlFileString));
-//         handleXMLStartMenu(xmlFileString);
+         handleXMLStartMenu(xmlFileString);
          return;
       }
       return;
@@ -983,29 +921,25 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
       // 4JS ToolBar XML File
       if(fileName.trimmed().endsWith(".4tb")){
          QString xmlFileString = encodeXMLFile(childElement.text());
-         QMetaObject::invokeMethod(p_currScreenHandler, "handleXMLToolBar", Qt::QueuedConnection, Q_ARG(QString, xmlFileString));
-         //handleXMLToolBar(xmlFileString);
+         handleXMLToolBar(xmlFileString);
           }
 
       // 4JS Actions XML File
       if(fileName.trimmed().endsWith(".4ad")){
          QString xmlFileString = encodeXMLFile(childElement.text());
-         QMetaObject::invokeMethod(p_currScreenHandler, "handleXMLActions", Qt::QueuedConnection, Q_ARG(QString, xmlFileString));
-//         handleXMLActions(xmlFileString);
+         handleXMLActions(xmlFileString);
       }
 
       // 4JS Style XML File
       if(fileName.trimmed().endsWith(".4st")){
          QString xmlFileString = encodeXMLFile(childElement.text());
-         QMetaObject::invokeMethod(p_currScreenHandler, "handleXMLStyles", Qt::QueuedConnection, Q_ARG(QString, xmlFileString));
-    //     handleXMLStyles(xmlFileString);
+         handleXMLStyles(xmlFileString);
       }
 
       // VENTAS Color Bars XML-FILE (4cf)
       if(fileName.trimmed().endsWith(".4cf")){
          QString xmlFileString = encodeXMLFile(childElement.text());
-         QMetaObject::invokeMethod(p_currScreenHandler, "handleXMLColors", Qt::QueuedConnection, Q_ARG(QString, xmlFileString));
-         //handleXMLColors(xmlFileString);
+         handleXMLColors(xmlFileString);
       }
       if(fileName.trimmed().endsWith(".4id")){
           QDomDocument doc;
@@ -1040,10 +974,10 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
          xmlFileString = in_request.readAll();
 */
          xmlFileString = filterUmlauts(xmlFileString);
-         QMetaObject::invokeMethod(p_currScreenHandler, "handleXMLStartMenu", Qt::QueuedConnection, Q_ARG(QString, xmlFileString));
-         //handleXMLStartMenu(xmlFileString);
-      return;
-        }
+
+         handleXMLStartMenu(xmlFileString);
+         return;
+      }
       //Old Mini-Autoupdater
 /*
       if(fileName.trimmed() == "Client"){
@@ -1064,7 +998,6 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
       if(saveFile(childElement)){
       }
 
-
       return;
    }
 
@@ -1073,8 +1006,7 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
       QString cmd = childElement.attribute("CMD");
       int runcnt = childElement.attribute("RUNCNT").toInt();
       int mode = childElement.attribute("MODE").toInt();
-      QMetaObject::invokeMethod(p_currScreenHandler, "setRuninfo", Qt::QueuedConnection, Q_ARG(int, mode), Q_ARG(QString, cmd), Q_ARG(int, runcnt), Q_ARG(bool, startstop));
-    //  setRuninfo(mode, cmd, runcnt, startstop);
+      setRuninfo(mode, cmd, runcnt, startstop);
    }
 
    if(childElement.nodeName() == "REQUESTFILE"){
@@ -1084,45 +1016,30 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
    
    if(childElement.nodeName() == "EXECUTE"){
       QString fileName = childElement.text();
-      int openLocalFile = 0;
+      fileName = QDir::tempPath() + "/" + fileName;
+      QFileInfo fileInfo(fileName);
 
-      if(!fileName.contains("mailto:") && !fileName.contains("http:"))
-      {
-          openLocalFile = 1;
-      }
-
-      if(openLocalFile == 0)
-      {
-         //If we want to open a Email Programm or a Website.
-        #ifdef Q_WS_X11
-           QDesktopServices::openUrl(QUrl(fileName, QUrl::TolerantMode));
-        #endif
-        #ifdef Q_WS_MAC
-           QDesktopServices::openUrl(QUrl(fileName, QUrl::TolerantMode));
-        #endif
-        #ifdef Q_WS_WIN
-           QProcess process;
-           process.startDetached(QString("rundll32 url.dll,FileProtocolHandler \"%1\"").arg( fileName));
-        #endif
-        return;
-      } else if (openLocalFile == 1){
-
-          //Open File local
-          fileName = QDir::tempPath() + "/" + fileName;
-          QFileInfo fileInfo(fileName);
-
-          #ifdef Q_WS_X11
-             QDesktopServices::openUrl(QUrl(QString("file://" + fileInfo.absoluteFilePath()), QUrl::TolerantMode));
-          #endif
-          #ifdef Q_WS_MAC
-             QDesktopServices::openUrl(QUrl(QString("file:///" + fileInfo.absoluteFilePath()), QUrl::TolerantMode));
-          #endif
-          #ifdef Q_WS_WIN
-             QProcess process;
-             process.startDetached(QString("rundll32 url.dll,FileProtocolHandler \"%1\"").arg( fileInfo.absoluteFilePath()));
-          #endif
-          return;
-       }
+/*
+      //QString prog = "xdg-open";
+      QString prog = "finder";
+      QStringList args;
+      args << fileInfo.absoluteFilePath();
+      QProcess process;
+      qDebug() << "RUN: " << prog << args;
+      process.execute(prog, args);
+*/
+      #ifdef Q_WS_X11      
+         QDesktopServices::openUrl(QUrl(QString("file://" + fileInfo.absoluteFilePath()), QUrl::TolerantMode));
+      #endif
+      #ifdef Q_WS_MAC
+         QDesktopServices::openUrl(QUrl(QString("file:///" + fileInfo.absoluteFilePath()), QUrl::TolerantMode));
+      #endif
+      #ifdef Q_WS_WIN
+         QProcess process;
+         process.startDetached(QString("rundll32 url.dll,FileProtocolHandler \"%1\"").arg( fileInfo.absoluteFilePath()));
+      #endif
+      //sleep(3);
+      return;
    }
 
    if(childElement.nodeName() == "CALL"){
@@ -1146,9 +1063,7 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
       if(qs_function == "opendir" ||
          qs_function == "openfile" ||
          qs_function == "savefile"){
-          QMetaObject::invokeMethod(p_currScreenHandler, "fileBrowser", Qt::QueuedConnection, Q_ARG(QString, qs_function), Q_ARG(QString, qs_defPath), Q_ARG(QString, qs_fileNames), Q_ARG(QString, qs_fileTypes), Q_ARG(QString, qs_caption));
-
-  //       fileBrowser(qs_function,qs_defPath, qs_fileNames, qs_fileTypes, qs_caption);
+         fileBrowser(qs_function,qs_defPath, qs_fileNames, qs_fileTypes, qs_caption);
       }
    }
 
@@ -1179,9 +1094,7 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
             QDomElement values = childElement.firstChildElement();
             QDomElement valueElement = values.firstChildElement().nextSiblingElement();
             QString value =  valueElement.text();
-            QMetaObject::invokeMethod(p_currScreenHandler, "setWindowTitle", Qt::QueuedConnection, Q_ARG(QString, value));
-
-            //setWindowTitle(value);
+            setWindowTitle(value);
          }
 
          if(qs_name == "ui.window.repgen") {
@@ -1226,45 +1139,7 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
              #endif
          }
 
-         if(qs_name == "ui.form.setpagetitle")
-         {
-             QString oldTabName;
-             QString newTabName;
-             QString value;
-             for(int k=0; k<paramsElement.childNodes().count(); k++){
-                QDomElement valuesElement = paramsElement.childNodes().at(k).toElement();
-                if(k == 0){
-                   oldTabName = valuesElement.text();
-                }
 
-                if(k == 1){
-                   newTabName = valuesElement.text();
-                }
-             }
-             QMetaObject::invokeMethod(p_currScreenHandler, "setNewTabName", Qt::QueuedConnection, Q_ARG(QString, oldTabName), Q_ARG(QString, newTabName));
-         }
-         if(qs_name == "ui.form.setattributes")
-         {
-             QString fieldName;
-             QString attribute;
-             QString value;
-             for(int k=0; k<paramsElement.childNodes().count(); k++){
-                QDomElement valuesElement = paramsElement.childNodes().at(k).toElement();
-                if(k == 0){
-                   fieldName = valuesElement.text();
-                }
-
-                if(k == 1){
-                   attribute = valuesElement.text();
-                }
-
-                if(k == 2){
-                   value = valuesElement.text();
-                }
-             }
-             QMetaObject::invokeMethod(p_currScreenHandler, "setAttributes", Qt::QueuedConnection, Q_ARG(QString, fieldName), Q_ARG(QString, attribute), Q_ARG(QString, value));
-
-         }
          if(qs_name == "ui.form.setelementhidden"){
             int form = -1;
             QString fieldName;
@@ -1283,8 +1158,7 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
                   hidden = valuesElement.text().toInt();
                }
             }
-            QMetaObject::invokeMethod(p_currScreenHandler, "setElementHidden", Qt::QueuedConnection, Q_ARG(QString, fieldName), Q_ARG(bool, hidden));
-          //  setElementHidden(fieldName, hidden);
+            setElementHidden(fieldName, hidden);
          }
 
          if(qs_name == "ui.form.setfieldhidden"){
@@ -1305,14 +1179,13 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
                   hidden = valuesElement.text().toInt();
                }
             }
-            QMetaObject::invokeMethod(p_currScreenHandler, "setFieldHidden", Qt::QueuedConnection, Q_ARG(QString, fieldName), Q_ARG(bool, hidden));
-//            setFieldHidden(fieldName, hidden);
+
+            setFieldHidden(fieldName, hidden);
          }
          #ifdef KDChart_Version
          if(qs_name == "ui.gantt.create")
          {
-             QMetaObject::invokeMethod(p_currScreenHandler, "createGantt", Qt::QueuedConnection);
-//            emit createGantt();
+            emit createGantt();
 
             expect = 0;
          }
@@ -1324,8 +1197,7 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
                  params << valuesElement.text();
               }
               qDebug() << "bin dran!";
-              QMetaObject::invokeMethod(p_currScreenHandler, "ganttReadCsv", Qt::QueuedConnection, Q_ARG(int, params.at(0).toInt()), Q_ARG(QString, params.at(1)));
-              //emit ganttReadCsv(params.at(0).toInt(), params.at(1));
+              emit ganttReadCsv(params.at(0).toInt(), params.at(1));
 
               expect = 0;
          }
@@ -1336,9 +1208,7 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
                 QDomElement valuesElement = paramsElement.childNodes().at(k).toElement();
                 params << valuesElement.text();
              }
-             QMetaObject::invokeMethod(p_currScreenHandler, "setGanttTitle", Qt::QueuedConnection, Q_ARG(int, params.at(0).toInt()), Q_ARG(QString, params.at(1)));
-
-//             emit setGanttTitle(params.at(0).toInt(), params.at(1));
+             emit setGanttTitle(params.at(0).toInt(), params.at(1));
              expect = 0;
          }
          #endif
@@ -1349,8 +1219,8 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
                  QDomElement valuesElement = paramsElement.childNodes().at(k).toElement();
                  params << valuesElement.text();
               }
-              QMetaObject::invokeMethod(p_currScreenHandler, "createBrowser", Qt::QueuedConnection);
-              //emit createBrowser();
+
+              emit createBrowser();
               //Important, we want sending the triggered out of the screenhandler, because there we have the initial index for the browser.
               expect = 0;
 
@@ -1362,8 +1232,7 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
                  QDomElement valuesElement = paramsElement.childNodes().at(k).toElement();
                  params << valuesElement.text();
               }
-           //   emit setUrl(params.at(0).toInt(), QUrl(params.at(1)));
-              QMetaObject::invokeMethod(p_currScreenHandler, "setUrl", Qt::QueuedConnection, Q_ARG(int, params.at(0).toInt()), Q_ARG(QUrl, QUrl(params.at(1))));
+              emit setUrl(params.at(0).toInt(), QUrl(params.at(1)));
               //Important, we want sending the triggered out of the screenhandler, because there we have the errorcodes.
               expect = 0;
 
@@ -1375,9 +1244,8 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
                  QDomElement valuesElement = paramsElement.childNodes().at(k).toElement();
                  params << valuesElement.text();
               }
-              QMetaObject::invokeMethod(p_currScreenHandler, "closeBrowser", Qt::QueuedConnection, Q_ARG(int, params.at(0).toInt()));
 
-             // emit closeBrowser(params.at(0).toInt());
+              emit closeBrowser(params.at(0).toInt());
          }
          if(qs_name == "ui.vdc.action"){
            qDebug() << "werde aufgerufen!!!" << "";
@@ -1397,8 +1265,7 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
                 QDomElement valuesElement = paramsElement.childNodes().at(k).toElement();
                 params << valuesElement.text();
              }
-             QMetaObject::invokeMethod(p_currScreenHandler, "printpdf", Qt::QueuedConnection, Q_ARG(QString, params.at(0)));
-           //  emit printpdf(params.at(0));
+             emit printpdf(params.at(0));
              //We open the qprintdialog in the screenhandler so we have only there the returncode
              expect = 0;
 
@@ -1618,8 +1485,8 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
             QDomElement values = childElement.firstChildElement();
             QDomElement valueElement = values.firstChildElement();
             QString value = valueElement.text();
-             QMetaObject::invokeMethod(p_currScreenHandler, "setInterfaceText", Qt::QueuedConnection, Q_ARG(QString, value));
-       //     p_currScreenHandler->setInterfaceText(value);
+
+            p_currScreenHandler->setInterfaceText(value);
          }
 
 
@@ -1641,8 +1508,7 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
                   value = valuesElement.text();
                }
             }
-            QMetaObject::invokeMethod(p_currScreenHandler, "addComboBoxItem", Qt::QueuedConnection, Q_ARG(int, id), Q_ARG(QString, text), Q_ARG(QString, value));
-        //    addComboBoxItem(id, text, value);
+            addComboBoxItem(id, text, value);
          }
 
          if(qs_name == "ui.combobox.removeitem"){
@@ -1659,16 +1525,14 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
                   text = valuesElement.text();
                }
             }
-             QMetaObject::invokeMethod(p_currScreenHandler, "removeComboBoxItem", Qt::QueuedConnection, Q_ARG(int, id), Q_ARG(QString, text));
-         //   removeComboBoxItem(id, text);
+            removeComboBoxItem(id, text);
          }
 
          if(qs_name == "ui.combobox.clear"){
             QDomElement values = childElement.firstChildElement();
             QDomElement valueElement = values.firstChildElement();
             id = valueElement.text().toInt();
-            QMetaObject::invokeMethod(p_currScreenHandler, "clearComboBox", Qt::QueuedConnection, Q_ARG(int, id));
-            //p_currScreenHandler->clearComboBox(id);
+            p_currScreenHandler->clearComboBox(id);
          }
 
          if(qs_name == "ui.combobox.forname"){
@@ -1676,8 +1540,7 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
             QDomElement valueElement = values.firstChildElement();
             QString value = valueElement.text();
             //returnvalues << QString::number(p_currScreenHandler->currForm()->findFieldIdByName(value));
-            //fornameComboBox(value);
-            QMetaObject::invokeMethod(p_currScreenHandler, "fornameComboBox", Qt::QueuedConnection, Q_ARG(QString, value));
+            fornameComboBox(value);
             //Important, threadsafe
             expect = 0;
          }
@@ -1687,8 +1550,7 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
             QDomElement valueElement = values.firstChildElement();
             int id = valueElement.text().toInt();
         //    returnvalues <<  WidgetHelper::getWidgetColName(p_currScreenHandler->currForm()->findFieldById(id));
-            QMetaObject::invokeMethod(p_currScreenHandler, "getColumnNameComboBox", Qt::QueuedConnection, Q_ARG(int, id));
-         //   getColumnNameComboBox(id);
+            getColumnNameComboBox(id);
             expect = 0;
          }
 
@@ -1705,8 +1567,7 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
                   pos = valuesElement.text().toInt();
                }
             }
-            QMetaObject::invokeMethod(p_currScreenHandler, "getItemNameComboBox", Qt::QueuedConnection, Q_ARG(int, id), Q_ARG(int, pos));
-         //   getItemNameComboBox(id, pos);
+            getItemNameComboBox(id, pos);
 
 
             expect = 0;
@@ -1742,8 +1603,7 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
             QDomElement values = childElement.firstChildElement();
             QDomElement valueElement = values.firstChildElement();
             int id = valueElement.text().toInt();
-            QMetaObject::invokeMethod(p_currScreenHandler, "getTableNameComboBox", Qt::QueuedConnection, Q_ARG(int, id));
-      //      getTableNameComboBox(id);
+            getTableNameComboBox(id);
             expect = 0;
          }
 
@@ -1763,8 +1623,7 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
                    text = valuesElement.text();
                 }
              }
-             QMetaObject::invokeMethod(p_currScreenHandler, "getIndexOfComboBox", Qt::QueuedConnection, Q_ARG(int, id), Q_ARG(QString, text));
-//             getIndexOfComboBox(id, text);
+             getIndexOfComboBox(id, text);
              expect = 0;
 
          }
@@ -1781,12 +1640,10 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
                  }
                  else{
                      if(valueElement.text() == "Y"){
-                         QMetaObject::invokeMethod(p_currScreenHandler, "showOption", Qt::QueuedConnection, Q_ARG(QString, commandName));
-//                         showOption(commandName);
+                         showOption(commandName);
                          commandName = "";
                      }
                      else{
-                         QMetaObject::invokeMethod(p_currScreenHandler, "hideOption", Qt::QueuedConnection, Q_ARG(QString, commandName));
                          hideOption(commandName);
                          commandName = "";
                      }
@@ -1804,8 +1661,7 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
                  params << valuesElement.text();
               }
 
-              QMetaObject::invokeMethod(p_currScreenHandler, "createProgressWindow", Qt::QueuedConnection);
-            //  emit createProgressWindow();
+              emit createProgressWindow();
               //Important, we want sending the triggered out of the screenhandler, because there we have the initial index for the progress-window.
               expect = 0;
 
@@ -1818,8 +1674,8 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
                  QDomElement valuesElement = paramsElement.childNodes().at(k).toElement();
                  params << valuesElement.text();
               }
-              QMetaObject::invokeMethod(p_currScreenHandler, "setProgressVisible", Qt::QueuedConnection, Q_ARG(int, params.at(0).toInt()), Q_ARG(bool, true));
-              //emit setProgressVisible(params.at(0).toInt(), true);
+
+              emit setProgressVisible(params.at(0).toInt(), true);
 
          }
 
@@ -1831,8 +1687,8 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
                  QDomElement valuesElement = paramsElement.childNodes().at(k).toElement();
                  params << valuesElement.text();
               }
-              QMetaObject::invokeMethod(p_currScreenHandler, "setProgressVisible", Qt::QueuedConnection, Q_ARG(int, params.at(0).toInt()), Q_ARG(bool, false));
-            //  emit setProgressVisible(params.at(0).toInt(), false);
+
+              emit setProgressVisible(params.at(0).toInt(), false);
 
          }
 
@@ -1843,8 +1699,8 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
                  QDomElement valuesElement = paramsElement.childNodes().at(k).toElement();
                  params << valuesElement.text();
               }
-              QMetaObject::invokeMethod(p_currScreenHandler, "setProgressTitle", Qt::QueuedConnection, Q_ARG(int, params.at(0).toInt()), Q_ARG(QString, params.at(1)));
-              //emit setProgressTitle(params.at(0).toInt(), params.at(1));
+
+              emit setProgressTitle(params.at(0).toInt(), params.at(1));
 
          }
 
@@ -1856,8 +1712,8 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
                  QDomElement valuesElement = paramsElement.childNodes().at(k).toElement();
                  params << valuesElement.text();
               }
-              QMetaObject::invokeMethod(p_currScreenHandler, "setProgressText", Qt::QueuedConnection, Q_ARG(int, params.at(0).toInt()), Q_ARG(QString, params.at(1)));
-     //         emit setProgressText(params.at(0).toInt(), params.at(1));
+
+              emit setProgressText(params.at(0).toInt(), params.at(1));
 
          }
 
@@ -1869,8 +1725,8 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
                  QDomElement valuesElement = paramsElement.childNodes().at(k).toElement();
                  params << valuesElement.text();
               }
-              QMetaObject::invokeMethod(p_currScreenHandler, "closeProgressWindow", Qt::QueuedConnection, Q_ARG(int, params.at(0).toInt()));
-             // emit closeProgressWindow(params.at(0).toInt());
+
+              emit closeProgressWindow(params.at(0).toInt());
          }
 
 
@@ -1896,9 +1752,9 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
 
          QString returnString = doc.toString();
 
-        // makeResponse(returnString.trimmed());
-         QMetaObject::invokeMethod(p_currScreenHandler, "sendDirect", Qt::AutoConnection, Q_ARG(QString, returnString.trimmed()));
-        // p_currScreenHandler->sendDirect(returnString.trimmed());
+         //makeResponse(returnString.trimmed());
+         QMetaObject::invokeMethod(p_currScreenHandler, "sendDirect", Q_ARG(QString, returnString.trimmed()));
+         //p_currScreenHandler->sendDirect(returnString.trimmed());
       }
       
    }
@@ -1950,8 +1806,7 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
       int message_line = childElement.attribute("MESSAGE_LINE").toInt();
       */
 
-      QMetaObject::invokeMethod(p_currScreenHandler, "createWindow", Qt::QueuedConnection, Q_ARG(QString, window), Q_ARG(QString, style), Q_ARG(int, x), Q_ARG(int, y), Q_ARG(int, h), Q_ARG(int, w), Q_ARG(QString, source), Q_ARG(QString, id));
-     // createWindow(window, style, x, y, h, w, source,id);
+      createWindow(window, style, x, y, h, w, source,id);
       return;
    }
 
@@ -1959,13 +1814,10 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
       QString window = childElement.attribute("FORMNAME");
 
       createWindow(window, "", 0, 0, 0, 0, "", "");
-      QMetaObject::invokeMethod(p_currScreenHandler, "createWindow", Qt::QueuedConnection, Q_ARG(QString, window), Q_ARG(QString, ""), Q_ARG(int, 0), Q_ARG(int, 0), Q_ARG(int, 0), Q_ARG(int, 0), Q_ARG(QString, ""), Q_ARG(QString, ""));
-
 
       if(childElement.firstChildElement().nodeName() == "XMLFORM"){
         QString xmlFormString = encodeXMLFile(childElement.text());
-        QMetaObject::invokeMethod(p_currScreenHandler, "handleXMLForm", Qt::QueuedConnection, Q_ARG(QString, window), Q_ARG(QString, xmlFormString), Q_ARG(bool, false));
-//        handleXMLForm(window, xmlFormString, false);
+        handleXMLForm(window, xmlFormString, false);
       }
 
       if(childElement.firstChildElement().nodeName() == "FORM"){
@@ -1973,8 +1825,7 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
          xmlForm.appendChild(childElement.firstChildElement());
          
          QString xmlFormString = xmlForm.toString();
-     //    handleAubitForm(window, xmlFormString, false);
-         QMetaObject::invokeMethod(p_currScreenHandler, "handleAubitForm", Qt::QueuedConnection, Q_ARG(QString, window), Q_ARG(QString, xmlFormString), Q_ARG(bool, false));
+         handleAubitForm(window, xmlFormString, false);
       }
 
       QDomNodeList ql_nodes = childElement.childNodes();
@@ -1984,16 +1835,14 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
             xmlForm.appendChild(ql_nodes.at(k));
          
             QString xmlFormString = xmlForm.toString();
-            QMetaObject::invokeMethod(p_currScreenHandler, "handleAubitForm", Qt::QueuedConnection, Q_ARG(QString, window), Q_ARG(QString, xmlFormString), Q_ARG(bool, false));
-//            handleAubitForm(window, xmlFormString, false);
+            handleAubitForm(window, xmlFormString, false);
          }
       }
       return;
    }
 
    if(childElement.nodeName() == "DISPLAYFORM"){
-//      displayForm( childElement.attribute("FORMNAME"));
-      QMetaObject::invokeMethod(p_currScreenHandler, "displayForm", Qt::QueuedConnection, Q_ARG(QString, childElement.attribute("FORMNAME")));
+      displayForm(childElement.attribute("FORMNAME"));
    }
 
    if(childElement.nodeName() == "OPENWINDOWWITHFORM"){
@@ -2042,14 +1891,12 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
       int message_line = childElement.attribute("MESSAGE_LINE").toInt();
       */
 
-     // createWindow(window, style, x, y, 0, 0, source,id);
-      QMetaObject::invokeMethod(p_currScreenHandler, "createWindow", Qt::QueuedConnection, Q_ARG(QString, window), Q_ARG(QString, style), Q_ARG(int, x), Q_ARG(int, y), Q_ARG(int, 0), Q_ARG(int, 0), Q_ARG(QString, source), Q_ARG(QString, id));
+      createWindow(window, style, x, y, 0, 0, source,id);
 
       if(childElement.firstChildElement().nodeName() == "XMLFORM"){
         QString xmlFormString = encodeXMLFile(childElement.text());
 
-        QMetaObject::invokeMethod(p_currScreenHandler, "handleXMLForm", Qt::QueuedConnection, Q_ARG(QString, window), Q_ARG(QString, xmlFormString), Q_ARG(bool, true));
-       // handleXMLForm(window, xmlFormString, true);
+        handleXMLForm(window, xmlFormString, true);
       }
 
       if(childElement.firstChildElement().nodeName() == "FORM"){
@@ -2057,8 +1904,7 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
          xmlForm.appendChild(childElement.firstChildElement());
          
          QString xmlFormString = xmlForm.toString();
-         QMetaObject::invokeMethod(p_currScreenHandler, "handleAubitForm", Qt::QueuedConnection, Q_ARG(QString, window), Q_ARG(QString, xmlFormString), Q_ARG(bool, true));
-      //   handleAubitForm(window, xmlFormString, true);
+         handleAubitForm(window, xmlFormString, true);
       }
 
       QDomNodeList ql_nodes = childElement.childNodes();
@@ -2068,8 +1914,7 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
             xmlForm.appendChild(ql_nodes.at(k));
          
             QString xmlFormString = xmlForm.toString();
-      //      handleAubitForm(window, xmlFormString, true);
-            QMetaObject::invokeMethod(p_currScreenHandler, "handleAubitForm", Qt::QueuedConnection, Q_ARG(QString, window), Q_ARG(QString, xmlFormString), Q_ARG(bool, true));
+            handleAubitForm(window, xmlFormString, true);
          }
       }
       return;
@@ -2090,24 +1935,22 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
    if(childElement.nodeName() == "SETWINDOWTITLE"){
       QString title = childElement.attribute("TEXT");
       //setWindowTitle(title);
-      QMetaObject::invokeMethod(p_currScreenHandler, "setInterfaceText", Qt::QueuedConnection, Q_ARG(QString, title));
-      //p_currScreenHandler->setInterfaceText(title);
+      p_currScreenHandler->setInterfaceText(title);
       return;
    }
 
    if(childElement.nodeName() == "CURRENTWINDOW"){
       QString name = childElement.attribute("WINDOW");
-      QMetaObject::invokeMethod(p_currScreenHandler, "activeWindow", Qt::QueuedConnection, Q_ARG(QString, name));
-     // activeWindow(name);
+      activeWindow(name);
       return;
    }
 
 
    if(childElement.nodeName() == "MENU"){
       int context = childElement.attribute("CONTEXT").toInt();
-      QMetaObject::invokeMethod(p_currScreenHandler, "setFormOpts", Qt::QueuedConnection, Q_ARG(QString, childElement.nodeName()), Q_ARG(bool, true), Q_ARG(int, context));
-    //  setFormOpts(childElement.nodeName(), true, context);
-      this->handleMenuElement(childElement);
+
+      setFormOpts(childElement.nodeName(), true, context);
+      handleMenuElement(childElement);
       return;
    }
 
@@ -2115,8 +1958,7 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
       //TODO
       int context = childElement.attribute("CONTEXT").toInt();
       QString name = childElement.attribute("OPTION").trimmed();
-      QMetaObject::invokeMethod(p_currScreenHandler, "nextOption", Qt::QueuedConnection, Q_ARG(QString, name), Q_ARG(int, context));
-      //nextOption(name, context);
+      nextOption(name, context);
       return;
    }
 
@@ -2130,8 +1972,8 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
       int fieldAttribute = childElement.attribute("FIELDATTRIBUTE").toInt();
       QString attributeStyle = childElement.attribute("ATTRIB_STYLE");
       QString attributeText = childElement.attribute("ATTRIB_TEXT");
-      QMetaObject::invokeMethod(p_currScreenHandler, "createPrompt", Qt::QueuedConnection, Q_ARG(QString, text), Q_ARG(int, charMode), Q_ARG(int, fieldAttribute), Q_ARG(QString, attributeStyle));
-     // createPrompt(text, charMode, fieldAttribute, attributeStyle);
+
+      createPrompt(text, charMode, fieldAttribute, attributeStyle);
       return;
    }
 
@@ -2141,43 +1983,38 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
       //int dialog = childElement.attribute("DIALOG").toInt();
       QString label = childElement.attribute("LABEL");
       QString text  = childElement.attribute("TEXT").trimmed();
-      QMetaObject::invokeMethod(p_currScreenHandler, "setKeyLabel", Qt::QueuedConnection, Q_ARG(QString, label), Q_ARG(QString, text));
-     // setKeyLabel(label, text);
+
+      setKeyLabel(label, text);
       return;
    }
 
    if(childElement.nodeName() == "SETCURSOR"){
       int position = childElement.attribute("POSITION").toInt();
-      QMetaObject::invokeMethod(p_currScreenHandler, "setCursorPosition", Qt::QueuedConnection, Q_ARG(int, position-1));
-      //setCursorPosition(position-1);
+      setCursorPosition(position-1);
       return;
    }
 
    if(childElement.nodeName() == "ERROR"){
       QString text = childElement.text();
- //     displayError(text);
-      QMetaObject::invokeMethod(p_currScreenHandler, "displayError", Qt::QueuedConnection, Q_ARG(QString, text));
+      displayError(text);
       return;
    }
 
    if(childElement.nodeName() == "MESSAGE"){
       QString text = childElement.text();
-    //  displayMessage(text);
-      QMetaObject::invokeMethod(p_currScreenHandler, "displayMessage", Qt::QueuedConnection, Q_ARG(QString, text));
+      displayMessage(text);
       return;
    }
 
    if(childElement.nodeName() == "HIDEOPTION"){
       QString id = childElement.attribute("OPTION");
-      QMetaObject::invokeMethod(p_currScreenHandler, "hideOption", Qt::QueuedConnection, Q_ARG(QString, id));
-      //hideOption(id);
+      hideOption(id);
       return;
    }
 
    if(childElement.nodeName() == "SHOWOPTION"){
       QString id = childElement.attribute("OPTION");
-      QMetaObject::invokeMethod(p_currScreenHandler, "showOption", Qt::QueuedConnection, Q_ARG(QString, id));
-     // showOption(id);
+      showOption(id);
       return;
    }
 
@@ -2188,8 +2025,7 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
 
    if(childElement.nodeName() == "DISPLAYARRAY"){
       int context = childElement.attribute("CONTEXT").toInt();
-      QMetaObject::invokeMethod(p_currScreenHandler, "setFormOpts", Qt::QueuedConnection, Q_ARG(QString, "DISPLAYARRAY"), Q_ARG(bool, true), Q_ARG(int, context));
- //     setFormOpts("DISPLAYARRAY", true, context);
+      setFormOpts("DISPLAYARRAY", true, context);
       handleEventsElement(childElement);
       handleDisplayArrayElement(childElement);
       return;
@@ -2207,54 +2043,47 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
    //SET ARR LINE FOR SCREEN RECORD
    if(childElement.nodeName() == "SETARRLINE"){
       int line = childElement.attribute("LINE").toInt();
-      QMetaObject::invokeMethod(p_currScreenHandler, "setArrLine", Qt::QueuedConnection, Q_ARG(int, line));
-     // setArrLine(line);
+      setArrLine(line);
    }
    
    //SET SCR LINE FOR SCREEN RECORD
    if(childElement.nodeName() == "SETSCRLINE"){
       int line = childElement.attribute("LINE").toInt();
-      QMetaObject::invokeMethod(p_currScreenHandler, "setScrLine", Qt::QueuedConnection, Q_ARG(int, line));
-    //  setScrLine(line);
+      setScrLine(line);
    }
 
 
    if(childElement.nodeName() == "INPUT"){
       int context = childElement.attribute("CONTEXT").toInt();
-      QMetaObject::invokeMethod(p_currScreenHandler, "setFormOpts", Qt::QueuedConnection, Q_ARG(QString, "INPUT"), Q_ARG(bool, true), Q_ARG(int, context));
-      //setFormOpts("INPUT", true, context);
+
+      setFormOpts("INPUT", true, context);
       handleEventsElement(childElement);
       handleInputElement(childElement);
-      QMetaObject::invokeMethod(p_currScreenHandler, "setFieldOrder", Qt::QueuedConnection, Q_ARG(QStringList, qsl_fieldList));
-     // setFieldOrder(qsl_fieldList);
-      QMetaObject::invokeMethod(p_currScreenHandler, "setFieldFocus", Qt::QueuedConnection, Q_ARG(QString, qsl_fieldList.first()));
-     // setFieldFocus(qsl_fieldList.first());
+      setFieldOrder(qsl_fieldList);
+      setFieldFocus(qsl_fieldList.first());
       return;
    }
 
    if(childElement.nodeName() == "CONSTRUCT"){
       int context = childElement.attribute("CONTEXT").toInt();
-      QMetaObject::invokeMethod(p_currScreenHandler, "setFormOpts", Qt::QueuedConnection, Q_ARG(QString, childElement.nodeName()), Q_ARG(bool, true), Q_ARG(int, context));
-//      setFormOpts(childElement.nodeName(), true, context);
+
+      setFormOpts(childElement.nodeName(), true, context);
       handleEventsElement(childElement);
-     // createActionMenu();
-      QMetaObject::invokeMethod(p_currScreenHandler, "createActionMenu", Qt::QueuedConnection);
+      createActionMenu();
 /*
       createActionMenuButton("ACCEPT", "ACCEPT", "");
       createActionMenuButton("CANCEL", "CANCEL", "");
 */
       handleConstructElement(childElement);
-      QMetaObject::invokeMethod(p_currScreenHandler, "setFieldOrder", Qt::QueuedConnection, Q_ARG(QStringList, qsl_fieldList));
-     // setFieldOrder(qsl_fieldList);
-      QMetaObject::invokeMethod(p_currScreenHandler, "setFieldFocus", Qt::QueuedConnection, Q_ARG(QString, qsl_fieldList.first()));
-     // setFieldFocus(qsl_fieldList.first());
+      setFieldOrder(qsl_fieldList);
+      setFieldFocus(qsl_fieldList.first());
+
       return;
    }
 
    if(childElement.nodeName() == "NEXTFIELD"){
       QString field = childElement.attribute("FIELD");
-      QMetaObject::invokeMethod(p_currScreenHandler, "setFieldFocus", Qt::QueuedConnection, Q_ARG(QString, field));
-      //setFieldFocus(field);
+      setFieldFocus(field);
       return;
    }
 
@@ -2268,16 +2097,14 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
       QString type = childElement.attribute("TYPE");
       p_currScreenHandler->qsl_activeFieldNames.clear();
       int context = childElement.attribute("CONTEXT").toInt();
-   //   setFormOpts(type, false, context);
-      QMetaObject::invokeMethod(p_currScreenHandler, "setFormOpts", Qt::QueuedConnection, Q_ARG(QString, type), Q_ARG(bool, false), Q_ARG(int, context));
+      setFormOpts(type, false, context);
       return;
    }
 
    
    if(childElement.nodeName() == "CLOSEWINDOW"){
       QString name = childElement.attribute("WINDOW");
-      QMetaObject::invokeMethod(p_currScreenHandler, "closeWindow", Qt::QueuedConnection, Q_ARG(QString, name));
-    //  closeWindow(name);
+      closeWindow(name);
       return;
    }
 
@@ -2292,8 +2119,8 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
               defaultBtn = childElement.attribute("DEFAULT");
               possibleButtons = childElement.attribute("POS");
               icon = childElement.attribute("ICON");
-            //  MsgBox(title,text,icon,possibleButtons,defaultBtn,1);
-              QMetaObject::invokeMethod(p_currScreenHandler, "MsgBox", Qt::QueuedConnection, Q_ARG(QString, title), Q_ARG(QString, text), Q_ARG(QString, icon), Q_ARG(QString, possibleButtons), Q_ARG(QString, defaultBtn), Q_ARG(int, 1));
+              MsgBox(title,text,icon,possibleButtons,defaultBtn,1);
+
               //makeResponse("<TRIGGERED ID=\""+ret+"\"/>");
 
       return;
@@ -2328,8 +2155,7 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
          }
 
          file.close();
-         QMetaObject::invokeMethod(p_currScreenHandler, "MsgBox", Qt::QueuedConnection, Q_ARG(QString, "Program stopped"), Q_ARG(QString, str), Q_ARG(QString, "Warning"), Q_ARG(QString, "Ok"), Q_ARG(QString, "Ok"), Q_ARG(int, 0));
-        // MsgBox("Program stopped",str,"Warning","Ok","Ok",0);
+         MsgBox("Program stopped",str,"Warning","Ok","Ok",0);
 
       }
 
@@ -2341,7 +2167,6 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
 
    
 }
-
 //------------------------------------------------------------------------------
 // Method       : encodeXMLFile(QString)
 // Filename     : tcpclient.cpp
@@ -2433,13 +2258,8 @@ MainFrame::vdcdebug("ProtocolHandler","handleStartup", "const QDomNode& domNode"
          QString value = currentElement.attribute("VALUE");
 
          p_currScreenHandler->qh_env[name] = value;
-         QMetaObject::invokeMethod(p_currScreenHandler, "setEnv", Qt::QueuedConnection, Q_ARG(QString, name), Q_ARG(QString, value));
-         //p_currScreenHandler->setEnv(name, value);
+         p_currScreenHandler->setEnv(name, value);
 
-         if(name == "DB_LOCALE")
-         {
-             this->qs_dblocale = value;
-         }
          /*
          if(name == "DBPATH"){
             //p_currScreenHandler->setSearchPaths();
@@ -2545,13 +2365,11 @@ MainFrame::vdcdebug("ProtocolHandler","handleDisplayToElement", "const QDomNode&
    }
 
    if(qsl_fieldNames.count() > 0){
-       QMetaObject::invokeMethod(p_currScreenHandler, "setFieldBuffer", Qt::QueuedConnection, Q_ARG(QStringList, qsl_fieldNames), Q_ARG(QStringList, qsl_fieldValues), Q_ARG(int, attribute));
-    //  setFieldBuffer(qsl_fieldNames, qsl_fieldValues, attribute);
+      setFieldBuffer(qsl_fieldNames, qsl_fieldValues, attribute);
    }
    else{
       for(int i=0; i<qsl_fieldValues.count(); i++){
-         QMetaObject::invokeMethod(p_currScreenHandler, "setFieldBuffer", Qt::QueuedConnection, Q_ARG(int, i), Q_ARG(QString, qsl_fieldValues.at(i)), Q_ARG(int, attribute));
-         //setFieldBuffer(i,qsl_fieldValues.at(i), attribute);
+         setFieldBuffer(i,qsl_fieldValues.at(i), attribute);
       }
    }
 }
@@ -2590,17 +2408,6 @@ MainFrame::vdcdebug("ProtocolHandler","handleDisplayArrayElement", "const QDomNo
          input = true;
       }
 
-      QMetaObject::invokeMethod(p_currScreenHandler, "setFormOpts", Qt::QueuedConnection, Q_ARG(QString, arrayElement.nodeName()), Q_ARG(QString, QString("ARRCOUNT")), Q_ARG(int, arrCount));
-      QMetaObject::invokeMethod(p_currScreenHandler, "setFormOpts", Qt::QueuedConnection, Q_ARG(QString, arrayElement.nodeName()), Q_ARG(QString, QString("ARRVARIABLES")), Q_ARG(int, arrVariables));
-      QMetaObject::invokeMethod(p_currScreenHandler, "setFormOpts", Qt::QueuedConnection, Q_ARG(QString, arrayElement.nodeName()), Q_ARG(QString, QString("MAXARRSIZE")), Q_ARG(int, maxArrSize));
-      QMetaObject::invokeMethod(p_currScreenHandler, "setFormOpts", Qt::QueuedConnection, Q_ARG(QString, arrayElement.nodeName()), Q_ARG(QString, QString("WITHOUT_DEFAULTS")), Q_ARG(int, withoutDefaults));
-      QMetaObject::invokeMethod(p_currScreenHandler, "setFormOpts", Qt::QueuedConnection, Q_ARG(QString, arrayElement.nodeName()), Q_ARG(QString, QString("ALLOWINSERT")), Q_ARG(int, allowInsert));
-      QMetaObject::invokeMethod(p_currScreenHandler, "setFormOpts", Qt::QueuedConnection, Q_ARG(QString, arrayElement.nodeName()), Q_ARG(QString, QString("ALLOWDELETE")), Q_ARG(int, allowDelete));
-      QMetaObject::invokeMethod(p_currScreenHandler, "setFormOpts", Qt::QueuedConnection, Q_ARG(QString, arrayElement.nodeName()), Q_ARG(QString, QString("NONEWLINES")), Q_ARG(int, noNewLines));
-      QMetaObject::invokeMethod(p_currScreenHandler, "setFormOpts", Qt::QueuedConnection, Q_ARG(QString, arrayElement.nodeName()), Q_ARG(QString, QString("WRAP")), Q_ARG(int, wrap));
-
-     /*
-
       setFormOpts(arrayElement.nodeName(), QString("ARRCOUNT"), arrCount);
       setFormOpts(arrayElement.nodeName(), QString("ARRVARIABLES"), arrVariables);
       setFormOpts(arrayElement.nodeName(), QString("MAXARRSIZE"), maxArrSize);
@@ -2609,9 +2416,8 @@ MainFrame::vdcdebug("ProtocolHandler","handleDisplayArrayElement", "const QDomNo
       setFormOpts(arrayElement.nodeName(), QString("ALLOWDELETE"), allowDelete);
       setFormOpts(arrayElement.nodeName(), QString("NONEWLINES"), noNewLines);
       setFormOpts(arrayElement.nodeName(), QString("WRAP"), wrap);
-*/
-      QMetaObject::invokeMethod(p_currScreenHandler, "createActionMenu", Qt::QueuedConnection);
-     // createActionMenu();
+
+      createActionMenu();
 /*
       createActionMenuButton("ACCEPT", "ACCEPT", "");
       createActionMenuButton("CANCEL", "CANCEL", "");
@@ -2642,8 +2448,7 @@ MainFrame::vdcdebug("ProtocolHandler","handleDisplayArrayElement", "const QDomNo
 
                if(arrayElement.nodeName() == "DISPLAYARRAY" ||
                   arrayElement.nodeName() == "INPUTARRAY"){
-                  QMetaObject::invokeMethod(p_currScreenHandler, "setScreenRecordEnabled", Qt::QueuedConnection, Q_ARG(QString, screenRecordName), Q_ARG(bool, true), Q_ARG(bool, input));
-                  //setScreenRecordEnabled(screenRecordName, true, input);
+                  setScreenRecordEnabled(screenRecordName, true, input);
                }
             }
          }
@@ -2680,12 +2485,10 @@ MainFrame::vdcdebug("ProtocolHandler","handleDisplayArrayElement", "const QDomNo
                }
 
                if(screenRecordName.count() > 0){
-                  QMetaObject::invokeMethod(p_currScreenHandler, "setArrayBuffer", Qt::QueuedConnection, Q_ARG(int, row), Q_ARG(QString, screenRecordName), Q_ARG(QStringList, qsl_arrayValues));
-           //       setArrayBuffer(row, screenRecordName, qsl_arrayValues);
+                  setArrayBuffer(row, screenRecordName, qsl_arrayValues);
                }
                else{
-                  QMetaObject::invokeMethod(p_currScreenHandler, "setArrayBuffer", Qt::QueuedConnection, Q_ARG(int, row), Q_ARG(QStringList, qsl_arrayValues));
-               //   setArrayBuffer(row, qsl_arrayValues);
+                  setArrayBuffer(row, qsl_arrayValues);
                }
             }
          }
@@ -2719,15 +2522,10 @@ MainFrame::vdcdebug("ProtocolHandler","handleInputElement", "const QDomNode& dom
       int withoutDefaults = currentElement.attribute("WITHOUT_DEFAULTS").toInt();
       int wrap = currentElement.attribute("WRAP").toInt();
       attribute = currentElement.attribute("ATTRIBUTE").toInt();
-      QMetaObject::invokeMethod(p_currScreenHandler, "setFormOpts", Qt::QueuedConnection, Q_ARG(QString, nodeName), Q_ARG(QString, QString("WITHOUT_DEFAULTS")), Q_ARG(int, withoutDefaults));
-      QMetaObject::invokeMethod(p_currScreenHandler, "setFormOpts", Qt::QueuedConnection, Q_ARG(QString, nodeName), Q_ARG(QString, QString("WRAP")), Q_ARG(int, wrap));
-      QMetaObject::invokeMethod(p_currScreenHandler, "setFormOpts", Qt::QueuedConnection, Q_ARG(QString, nodeName), Q_ARG(QString, QString("ATTRIBUTE")), Q_ARG(int, attribute));
-
-      //setFormOpts(nodeName, QString("WITHOUT_DEFAULTS"), withoutDefaults);
-      //setFormOpts(nodeName, QString("WRAP"), wrap);
-      //setFormOpts(nodeName, QString("ATTRIBUTE"), attribute);
-      QMetaObject::invokeMethod(p_currScreenHandler, "createActionMenu", Qt::QueuedConnection);
-//      createActionMenu();
+      setFormOpts(nodeName, QString("WITHOUT_DEFAULTS"), withoutDefaults);
+      setFormOpts(nodeName, QString("WRAP"), wrap);
+      setFormOpts(nodeName, QString("ATTRIBUTE"), attribute);
+      createActionMenu();
 /*
       createActionMenuButton("ACCEPT", "ACCEPT", "");
       createActionMenuButton("CANCEL", "CANCEL", "");
@@ -2758,8 +2556,7 @@ MainFrame::vdcdebug("ProtocolHandler","handleInputElement", "const QDomNode& dom
 
          QString field = currentElement.attribute("NAME");
          qsl_fieldList << field;
-         QMetaObject::invokeMethod(p_currScreenHandler, "setFieldEnabled", Qt::QueuedConnection, Q_ARG(QString, field), Q_ARG(bool, true), Q_ARG(bool, false), Q_ARG(int, attribute));
-         //setFieldEnabled(field, true, false, attribute);
+         setFieldEnabled(field, true, false, attribute);
       }
 
       handleInputElement(currentElement, attribute);
@@ -2780,10 +2577,8 @@ MainFrame::vdcdebug("ProtocolHandler","handleConstructElement", "const QDomNode&
    if(nodeName == "CONSTRUCT"){
       int wrap = currentElement.attribute("WRAP").toInt();
       attribute = currentElement.attribute("ATTRIBUTE").toInt();
-      QMetaObject::invokeMethod(p_currScreenHandler, "setFormOpts", Qt::QueuedConnection, Q_ARG(QString, nodeName), Q_ARG(QString, QString("WRAP")), Q_ARG(int, wrap));
-      QMetaObject::invokeMethod(p_currScreenHandler, "setFormOpts", Qt::QueuedConnection, Q_ARG(QString, nodeName), Q_ARG(QString, QString("ATTRIBUTE")), Q_ARG(int, attribute));
-     // setFormOpts(nodeName, QString("WRAP"), wrap);
-     // setFormOpts(nodeName, QString("ATTRIBUTE"), attribute);
+      setFormOpts(nodeName, QString("WRAP"), wrap);
+      setFormOpts(nodeName, QString("ATTRIBUTE"), attribute);
    }
 
    QDomNodeList children = domNode.childNodes();
@@ -2810,8 +2605,7 @@ MainFrame::vdcdebug("ProtocolHandler","handleConstructElement", "const QDomNode&
 
          QString field = currentElement.attribute("NAME");
          qsl_fieldList << field;
-         QMetaObject::invokeMethod(p_currScreenHandler, "setFieldEnabled", Qt::QueuedConnection, Q_ARG(QString, field), Q_ARG(bool, true), Q_ARG(bool, focus), Q_ARG(int, attribute));
-      //   setFieldEnabled(field, true, focus, attribute);
+         setFieldEnabled(field, true, focus, attribute);
       }
 
       /*
@@ -2863,8 +2657,8 @@ MainFrame::vdcdebug("ProtocolHandler","handleMenuElement", "const QDomNode& domN
 
       // Image to Show (only used for Dialogs ( MENU inside INPUT etc) )
       QString image   = currentElement.attribute("IMAGE");
-      QMetaObject::invokeMethod(p_currScreenHandler, "createMenu", Qt::QueuedConnection, Q_ARG(QString, title), Q_ARG(QString, comment), Q_ARG(QString, style), Q_ARG(QString, image));
-      //createMenu(title, comment, style, image);
+
+      createMenu(title, comment, style, image);
    }
 
    QDomNodeList children = domNode.childNodes();
@@ -2900,8 +2694,7 @@ MainFrame::vdcdebug("ProtocolHandler","handleMenuElement", "const QDomNode& domN
 
          // TODO: Implement KEYS (text is NULL)
          if(!text.isEmpty()){
-            QMetaObject::invokeMethod(p_currScreenHandler, "createMenuButton", Qt::QueuedConnection, Q_ARG(int, id), Q_ARG(QString, text), Q_ARG(QString, desc), Q_ARG(QStringList, keys));
-            //createMenuButton(id, text, desc, keys);
+            createMenuButton(id, text, desc, keys);
          }
       }
 
@@ -2918,8 +2711,7 @@ MainFrame::vdcdebug("ProtocolHandler","handleMenuElement", "const QDomNode& domN
 
          // TODO: Implement KEYS (text is NULL)
          if(!text.isEmpty()){
-            QMetaObject::invokeMethod(p_currScreenHandler, "createMenuAction", Qt::QueuedConnection, Q_ARG(int, id), Q_ARG(QString, text));
-           // createMenuAction(id, text);
+            createMenuAction(id, text);
          }
       }
 
@@ -2954,45 +2746,41 @@ MainFrame::vdcdebug("ProtocolHandler","handleEventsElement", "const QDomNode& do
          nodeName == "BEFORE_CONSTRUCT_EVENT" ||
          nodeName == "BEFORE_DISPLAY_EVENT"){
          QString id = currentElement.attribute("ID");
-         QMetaObject::invokeMethod(p_currScreenHandler, "setEvent", Qt::QueuedConnection, Q_ARG(QString, nodeName), Q_ARG(QString, ""), Q_ARG(QString, id));
- //        setEvent(nodeName, QString(), id);
+         setEvent(nodeName, QString(), id);
       }
 
       if(nodeName == "AFTER_INPUT_EVENT" ||
          nodeName == "AFTER_CONSTRUCT_EVENT" ||
          nodeName == "AFTER_DISPLAY_EVENT"){
          QString id = currentElement.attribute("ID");
-         QMetaObject::invokeMethod(p_currScreenHandler, "setEvent", Qt::QueuedConnection, Q_ARG(QString, nodeName), Q_ARG(QString, ""), Q_ARG(QString, id));
-         //setEvent(nodeName, QString(), id);
+         setEvent(nodeName, QString(), id);
       }
 
       if(nodeName == "BEFORE_FIELD_EVENT" || 
          nodeName == "AFTER_FIELD_EVENT"){
          QString field = currentElement.attribute("FIELD");
          QString id = currentElement.attribute("ID");
-         QMetaObject::invokeMethod(p_currScreenHandler, "setEvent", Qt::QueuedConnection, Q_ARG(QString, nodeName), Q_ARG(QString, field), Q_ARG(QString, id));
-      //   setEvent(nodeName, field, id);
+         setEvent(nodeName, field, id);
       }
 
       if(nodeName == "BEFORE_ROW_EVENT" || 
          nodeName == "AFTER_ROW_EVENT"){
          QString id = currentElement.attribute("ID");
-         QMetaObject::invokeMethod(p_currScreenHandler, "setEvent", Qt::QueuedConnection, Q_ARG(QString, nodeName), Q_ARG(QString, ""), Q_ARG(QString, id));
-         //setEvent(nodeName, QString(), id);
+         setEvent(nodeName, QString(), id);
       }
 
       if(nodeName == "ONKEY_EVENT"){
          QString id  = currentElement.attribute("ID");
          int key = currentElement.attribute("KEY").toInt();
-         QMetaObject::invokeMethod(p_currScreenHandler, "setEvent", Qt::QueuedConnection, Q_ARG(QString, nodeName), Q_ARG(QString, QString::number(key)), Q_ARG(QString, id));
-         //setEvent(nodeName, QString::number(key), id);
+
+         setEvent(nodeName, QString::number(key), id);
       }
 
       if(nodeName == "ON_ACTION_EVENT"){
          QString id  = currentElement.attribute("ID");
          QString key = currentElement.attribute("ACTION");
-         QMetaObject::invokeMethod(p_currScreenHandler, "setEvent", Qt::QueuedConnection, Q_ARG(QString, nodeName), Q_ARG(QString, key), Q_ARG(QString, id));
-      //   setEvent(nodeName, key, id);
+
+         setEvent(nodeName, key, id);
       }
 
       if(nodeName == "EVENTS"){
@@ -3034,7 +2822,7 @@ MainFrame::vdcdebug("ProtocolHandler","handleWaitForEventElement", "const QDomNo
       }
    }
 
-   QMetaObject::invokeMethod(p_currScreenHandler, "waitForEvent", Qt::QueuedConnection);
+   waitForEvent();
 
    return;
 }
@@ -3055,46 +2843,9 @@ MainFrame::vdcdebug("ProtocolHandler","fglFormResponse", "QString qs_id");
  //  qs_id = doc.toString();
    qs_id = qs_id.replace("&amp;#x0A;", "&#x0A;");
  //  qs_id.replace("\n","");
-   if(this->t_tunnel)
-   {
-       QMetaObject::invokeMethod(t_tunnel, "sendData", Qt::DirectConnection, Q_ARG(QString, qs_id));
-   }
-   else
-   {
-       makeResponse(qs_id);
-   }
+   makeResponse(qs_id);
    qDebug()<<qs_id;
    emit debugtext(QString(">> " + qs_id));
-}
-
-void ProtocolHandler::closeAllScreenHandler()
-{
-
-  foreach(p_currScreenHandler, qh_screenhandler)
-  {
-      /*
-      if(p_currScreenHandler->p_prompt != NULL){
-         p_currScreenHandler->p_prompt->setVisible(false);
-         p_currScreenHandler->p_prompt->close();
-         p_currScreenHandler->p_prompt->deleteLater();
-      }
-
-      QList<FglForm*> ql_forms = p_currScreenHandler->ql_fglForms;
-      for(int i=0; i<ql_forms.size(); i++){
-         p_currScreenHandler->closeWindow(ql_forms.at(i)->windowName);
-      }
-
-     delete p_currScreenHandler;*/
-
-      int pid = p_currScreenHandler->pid;
-      int p_pid = p_currScreenHandler->p_pid;
-      if(t_tunnel)
-          QMetaObject::invokeMethod(MainFrame::lastmainframe, "deleteScreenHandler", Qt::QueuedConnection, Q_ARG(int, pid), Q_ARG(int, p_pid));
-          else
-      QMetaObject::invokeMethod(MainFrame::lastmainframe, "deleteScreenHandler", Qt::DirectConnection, Q_ARG(int, pid), Q_ARG(int, p_pid));
-
-  }
-
 }
 
 //------------------------------------------------------------------------------

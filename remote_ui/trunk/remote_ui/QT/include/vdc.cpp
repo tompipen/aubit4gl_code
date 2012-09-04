@@ -5,7 +5,6 @@
 
 namespace VDC {
    double fieldsizefactor;
-   int sshCompressionLevel;
 
 
    void waitCursor()
@@ -20,22 +19,6 @@ namespace VDC {
    void arrowCursor()
    {
        QApplication::restoreOverrideCursor();
-   }
-
-   int getSSHCompressionLevel()
-   {
-       sshCompressionLevel = VDC::readSettingsFromIni("Ventas AG", "sshCompressionLevel").toInt();
-       if(sshCompressionLevel == 0 )
-       {
-           sshCompressionLevel = 2;
-       } else {
-           return sshCompressionLevel;
-       }
-   }
-
-   void setSSHCompressionsLevel(int value)
-   {
-       VDC::saveSettingsToIni("Ventas AG", "sshCompressionLevel", QString::number(value));
    }
 
    void setFieldSizeFactor(double s)

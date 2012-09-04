@@ -38,11 +38,9 @@ class FglForm;
 #endif
 #include "models/webbrowser.h"
 #include "models/progress.h"
-class ProtocolHandler;
 #include <QVector>
 #include <QVariant>
 //#include <poppler/qt4/poppler-qt4.h>
-
 
 class ScreenHandler : public QObject
 {
@@ -71,7 +69,6 @@ public:
    QStringList qsl_triggereds;
    QDomDocument xmlIconDoc;
    QDomDocument xmlShortcutDoc;
-   ProtocolHandler *ph;
    void makeFglFormResponse(QString);
 
    #ifdef KDChart_Version
@@ -90,14 +87,13 @@ public:
 
    QHash<QString, QString> qh_env;
    static void setSearchPaths();
-
-
+   void setEnv(QString, QString);
+   void setInterfaceText(QString);
 
 
       FglForm *p_fglform;
    typedef QVector<QVariant> chartVector;
 
-      void closeAllWindows();
 protected:
    bool eventFilter(QObject *obj, QEvent *ev);
 
@@ -115,7 +111,6 @@ private:
    FglForm *dummy_fglform;
    Progress *w_progress;
    int i_runcnt;
-   int i_currthread;
 
 
 //   QList<QWidget*> ql_formFields;
@@ -164,7 +159,6 @@ public slots:
    void handleXMLActions(QString);
    void handleXMLColors(QString xmlFile);
    void handleShortcutsFile(QDomDocument xmlFileString);
-   void setEnv(QString, QString);
    void handleIconFile(QDomDocument);
    void setProgramName(QString);
    #ifdef KDChart_Version
@@ -194,8 +188,6 @@ public slots:
    void setScrLine(int);
    void setFieldEnabled(QString, bool, bool, int = 0);
    void setFieldFocus(QString);
-   void setNewTabName(QString, QString);
-   void setAttributes(QString, QString, QString);
    void setFieldHidden(QString, bool);
    void setElementHidden(QString, bool);
    void setArrayFocus(QWidget*, QString);
@@ -234,7 +226,7 @@ public slots:
    void setUpdatesEnabled(bool);
    void setCurrentFocus(QWidget*, QWidget*);
    void checkForUpdate();
-   void setInterfaceText(QString);
+
    //ui.progress
 
    void setProgressTitle(int, QString);

@@ -124,13 +124,6 @@ LoginForm::LoginForm(QWidget *parent)
        options->addAction(m_mainMenu);
    }
 
-    #ifdef SSH_USE
-   QAction *sshCompAction = new QAction(tr("SSH Compression"), this);
-   connect(sshCompAction, SIGNAL(triggered()), this, SLOT(openCompOptions()));
-   options->addSeparator();
-   options->addAction(sshCompAction);
-   #endif
-
    toggledebug = new QAction(tr("&Toggle Debug"), this);
    toggledebug->setCheckable(true);
    toggledebug->setChecked(true);
@@ -322,60 +315,6 @@ void LoginForm::clearIniFile()
     #endif
 
     settings.remove("");
-}
-
-void LoginForm::openCompOptions()
-{
-    QWidget *widget = new QWidget();
-    QVBoxLayout *vLayout = new QVBoxLayout(widget);
-    QHBoxLayout *hLayout = new QHBoxLayout(widget);
-    QHBoxLayout *hLayout1 = new QHBoxLayout(widget);
-    QSlider *compLevel = new QSlider(Qt::Horizontal, widget);
-    QPushButton *okButton = new QPushButton(tr("OK"), widget);
-
-    QLabel *infoLabel = new QLabel("Lowest ");
-    QLabel *infoLabel1 = new QLabel("Hightest ");
-
-    QLabel *label0 = new QLabel(tr("0"));
-    label0->setMaximumWidth(25);
-    QLabel *label1 = new QLabel(tr("1"));
-    label1->setMaximumWidth(25);
-    QLabel *label2 = new QLabel(tr("2"));
-    label2->setMaximumWidth(25);
-    QLabel *label3 = new QLabel(tr("3"));
-    label3->setMaximumWidth(25);
-    QLabel *label4 = new QLabel(tr("4"));
-    label4->setMaximumWidth(25);
-
-    hLayout1->addWidget(infoLabel, 0, Qt::AlignLeft);
-    hLayout1->addWidget(infoLabel1, 0, Qt::AlignRight);
-
-    hLayout->addWidget(label0);
-    hLayout->addWidget(label1);
-    hLayout->addWidget(label2);
-    hLayout->addWidget(label3);
-    hLayout->addWidget(label4);
-
-    connect(compLevel, SIGNAL(valueChanged(int)), this, SLOT(saveCompression(int)));
-    connect(okButton, SIGNAL(pressed()), widget, SLOT(close()));
-    okButton->setMaximumWidth(100);
-    compLevel->setRange(0, 4);
-    compLevel->setMaximumWidth(150);
-
-    vLayout->addLayout(hLayout1);
-    vLayout->addLayout(hLayout);
-    vLayout->addWidget(compLevel);
-    vLayout->addWidget(okButton, 0, Qt::AlignHCenter);
-
-    //widget->setLayout(vLayout);
-
-    widget->show();
-
-}
-void LoginForm::saveCompression(int value)
-{
-    int factor = 2.25*value;
-    VDC::setSSHCompressionsLevel(factor);
 }
 
 void LoginForm::aboutVDC(QWidget *parent)

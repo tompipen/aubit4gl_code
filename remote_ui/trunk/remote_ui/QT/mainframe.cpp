@@ -50,7 +50,6 @@ MainFrame::vdcdebug("MainFrame","ReadSettings", "");
 }
 
 bool MainFrame::b_debugmodus = false;
-MainFrame* MainFrame::lastmainframe = NULL;
 QList<ScreenHandler*> *MainFrame::ql_screenhandler = new QList<ScreenHandler*>();
 
 bool MainFrame::setFocusOn(int pid)
@@ -128,7 +127,6 @@ void MainFrame::check_new_pids()
 MainFrame::MainFrame(QWidget *parent) : QMainWindow(parent)
 {
 MainFrame::vdcdebug("MainFrame","MainFrame", "QWidget *parent");
-   MainFrame::lastmainframe = this;
    p_currOpenNetwork=NULL;
    int port=1350;
    mainFrameToolBar = NULL;
@@ -728,8 +726,6 @@ MainFrame::vdcdebug("MainFrame","tcpListener", "int port");
 }
 
 
-
-
 //------------------------------------------------------------------------------
 // Method       : updateListBox()
 // Filename     : mainframe.cpp
@@ -914,36 +910,5 @@ MainFrame::vdcdebug("MainFrame","closeEvent", "QCloseEvent *event");
 void MainFrame::debugClose()
 {
 MainFrame::vdcdebug("MainFrame","debugClose", "");
-emit debugSignal();
+    emit debugSignal();
 }
-
-void MainFrame::requestScreenHandler(int pid, int p_pid)
-{
-    ScreenHandler *sh = new ScreenHandler(this);
-    sh->pid = pid;
-    sh->p_pid = p_pid;
-
-}
-
-void MainFrame::deleteScreenHandler(int pid, int p_pid)
-{
-    for(int i=0; i<ql_screenhandler->size();i++)
-    {
-        if(ql_screenhandler->at(i)->pid == pid && ql_screenhandler->at(i)->p_pid == p_pid)
-        {
-            ScreenHandler *p_currScreenHandler = ql_screenhandler->at(i);
-
-            if(p_currScreenHandler->p_prompt != NULL){
-               p_currScreenHandler->p_prompt->setVisible(false);
-               p_currScreenHandler->p_prompt->close();
-               p_currScreenHandler->p_prompt->deleteLater();
-            }
-
-            p_currScreenHandler->closeAllWindows();
-           delete p_currScreenHandler;
-        }
-    }
-
-}
-
-

@@ -14,8 +14,6 @@ namespace VDC
   void waitCursor();
   void arrowCursor();
   double getFieldSizeFactor();
-  int getSSHCompressionLevel();
-  void setSSHCompressionsLevel(int);
   void setFieldSizeFactor(double);
   extern double fieldsizefactor;
   void removeSettingsKeysWith(QString, QString);
