@@ -123,44 +123,46 @@ void WebBrowser::openSearch()
     {
         mTb->close();
         mTb = NULL;
+        delete mTb;
         return;
+    } else {
+
+        mTb = new QToolBar(this);
+
+        QAction *close_tb = new QAction("Schliessen", mTb);
+        close_tb->setIcon(QIcon(":/pics/abbrechen_rot.png"));
+
+        QLineEdit *search_field = new QLineEdit(this);
+        search_field->setMaximumWidth(200);
+        QSignalMapper *sMapper = new QSignalMapper;
+
+        QAction *fAction = new QAction(tr("Vorwaerts"), mTb);
+        fAction->setIcon(QIcon(":/pics/vor.png"));
+        connect(fAction, SIGNAL(triggered()), sMapper, SLOT(map()));
+        sMapper->setMapping(fAction, "forward");
+
+        QAction *bAction = new QAction(tr("Zurueck"), mTb);
+        bAction->setIcon(QIcon(":/pics/zurueck.png"));
+        connect(bAction, SIGNAL(triggered()), sMapper, SLOT(map()));
+        sMapper->setMapping(bAction, "backward");
+
+        connect(sMapper, SIGNAL(mapped(QString)), this, SLOT(forBackSearch(QString)));
+
+
+        mTb->addAction(close_tb);
+
+        mTb->addWidget(search_field);
+        mTb->addAction(bAction);
+        mTb->addAction(fAction);
+
+        connect(close_tb, SIGNAL(triggered()), mTb, SLOT(close()));
+        //connect(close_tb, SIGNAL(triggered()), this, SLOT(search(QString)));
+
+        connect(search_field, SIGNAL(textChanged(QString)), this, SLOT(searchForward(QString)));
+        this->addToolBar(Qt::BottomToolBarArea, mTb);
+
+        search_field->setFocus();
     }
-    mTb = new QToolBar(this);
-
-    QAction *close_tb = new QAction("Schliessen", mTb);
-    close_tb->setIcon(QIcon(":/pics/abbrechen_rot.png"));
-
-    QLineEdit *search_field = new QLineEdit(this);
-    search_field->setMaximumWidth(200);
-    QSignalMapper *sMapper = new QSignalMapper;
-
-    QAction *fAction = new QAction(tr("Vorwaerts"), mTb);
-    fAction->setIcon(QIcon(":/pics/vor.png"));
-    connect(fAction, SIGNAL(triggered()), sMapper, SLOT(map()));
-    sMapper->setMapping(fAction, "forward");
-
-    QAction *bAction = new QAction(tr("Zurueck"), mTb);
-    bAction->setIcon(QIcon(":/pics/zurueck.png"));
-    connect(bAction, SIGNAL(triggered()), sMapper, SLOT(map()));
-    sMapper->setMapping(bAction, "backward");
-
-    connect(sMapper, SIGNAL(mapped(QString)), this, SLOT(forBackSearch(QString)));
-
-
-    mTb->addAction(close_tb);
-
-    mTb->addWidget(search_field);
-    mTb->addAction(bAction);
-    mTb->addAction(fAction);
-
-    connect(close_tb, SIGNAL(triggered()), mTb, SLOT(close()));
-    //connect(close_tb, SIGNAL(triggered()), this, SLOT(search(QString)));
-
-    connect(search_field, SIGNAL(textChanged(QString)), this, SLOT(searchForward(QString)));
-    this->addToolBar(Qt::BottomToolBarArea, mTb);
-
-    search_field->setFocus();
-
 }
 
 void WebBrowser::forBackSearch(QString searchRichtung)
