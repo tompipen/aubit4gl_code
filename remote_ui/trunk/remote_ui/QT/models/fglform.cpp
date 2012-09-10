@@ -2922,17 +2922,38 @@ MainFrame::vdcdebug("FglForm","nextrow", "");
 void FglForm::remove()
 {
 MainFrame::vdcdebug("FglForm","nextrow", "");
-   //find active screenRecord
-   QList<QWidget*> ql_widgets = formElements();
-   int cnt_ele = ql_widgets.size();
-   for(int i=0; i<cnt_ele; i++){
-   if(ql_widgets.at(i)->inherits("TableView")){
-      TableView *view = (TableView*) ql_widgets.at(i);
-      if(view->isEnabled()){
-        view->deleteRow();
-      }
-   }
-   }
+Fgl::Event event;
+int found = 0;
+
+qDebug() << "size: " << ql_formEvents.size();
+for(int i=0; i < ql_formEvents.size(); i++)
+{
+    qDebug() << "name:" << ql_formEvents.at(i).attribute;
+    qDebug() << "key:" << Fgl::stringToKey(ql_formEvents.at(i).attribute);
+    if(ql_formEvents.at(i).attribute == "2015")
+    {
+        found = 1;
+        break;
+    }
+}
+
+if(found == 1)
+{
+    event.type = Fgl::GUI_ACTION_EVENT;
+    event.attribute = "2015";
+    fieldEvent(event);
+} else {
+       QList<QWidget*> ql_widgets = formElements();
+       int cnt_ele = ql_widgets.size();
+       for(int i=0; i<cnt_ele; i++){
+           if(ql_widgets.at(i)->inherits("TableView")){
+              TableView *view = (TableView*) ql_widgets.at(i);
+              if(view->isEnabled()){
+                view->deleteRow();
+              }
+           }
+       }
+}
 }
 
 //------------------------------------------------------------------------------
