@@ -382,7 +382,7 @@ MainFrame::vdcdebug("FglForm","initActions", "");
    addFormAction(insertA);
 
 
-   Action *deleteA = new Action("delete", tr("Delete"), this);
+   Action *deleteA = new Action("deleteRow", tr("Delete"), this);
    addFormAction(deleteA);
 
    return;
@@ -4182,7 +4182,7 @@ MainFrame::vdcdebug("FglForm","checkGuiActions", "");
          if(fAction->name() == "append")
             fAction->setEnabled(inputArray());
 
-         if(fAction->name() == "delete")
+         if(fAction->name() == "deleteRow")
             fAction->setEnabled(inputArray());
 
          if(fAction->name() == "editcopy")
@@ -4273,7 +4273,7 @@ MainFrame::vdcdebug("FglForm","handleGuiAction", "Action* fAction");
       return true;
    }
 
-   if(fAction->name() == "delete"){
+   if(fAction->name() == "deleteRow"){
       remove();
       return true;
    }
