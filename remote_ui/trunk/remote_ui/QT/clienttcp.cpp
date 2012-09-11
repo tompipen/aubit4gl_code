@@ -1197,9 +1197,8 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
                 if(k == 2){
                     value = valuesElement.text();
                 }
-
-                emit setAttributes(fieldName, attribute, value);
              }
+             emit setAttributes(fieldName, attribute, value);
          }
          if(qs_name == "ui.form.setfieldhidden"){
             int form = -1;

@@ -152,5 +152,7 @@
         <file>pics/browser-reset.png</file>
         <file>pics/browser-groesser.png</file>
         <file>pics/browser-suchen.png</file>
+        <file>pics/frame_right.jpg</file>
+        <file>pics/ventas.jpg</file>
     </qresource>
 </RCC>

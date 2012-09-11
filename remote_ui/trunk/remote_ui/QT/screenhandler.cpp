@@ -1423,6 +1423,14 @@ void ScreenHandler::setAttributes(QString fieldName, QString attribute, QString 
                 widget->setPicture(value);
         }
     }
+    if(Label *widget = qobject_cast<Label*> (p_fglform->findFieldByName(fieldName)))
+    {
+        if(attribute == "defaultImage")
+        {
+               QPixmap pix(QString(":pics/%1").arg(value));
+                widget->setPixmap(pix);
+        }
+    }
 }
 
 //------------------------------------------------------------------------------
