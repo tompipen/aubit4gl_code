@@ -8,6 +8,7 @@
 
 void WebBrowser::createBrowser()
 {
+    mTb = NULL;
     QFile file;
     file.setFileName(":/jquery.min.js");
     file.open(QIODevice::ReadOnly);
