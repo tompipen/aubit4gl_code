@@ -1055,11 +1055,15 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
                   if(!le->isEnabled())
                   {
                       QMenu *rightClick = new QMenu(this);
+
                       QAction *copy = new QAction("copy", this);
-                      rightClick->addAction(copy);
                       connect(copy, SIGNAL(triggered()), le, SLOT(copyText()));
+                      rightClick->addAction(copy);
+
                       rightClick->addSeparator();
+
                       rightClick->addMenu(createMenuHideShowFields(obj));
+
                       rightClick->exec(QCursor::pos());
                   }
 
@@ -1068,11 +1072,15 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
                   if(!te->isEnabled())
                   {
                       QMenu *rightClick = new QMenu(this);
+
                       QAction *copy = new QAction("copy", this);
-                      rightClick->addAction(copy);
                       connect(copy, SIGNAL(triggered()), te, SLOT(copyText()));
+                      rightClick->addAction(copy);
+
                       rightClick->addSeparator();
+
                       rightClick->addMenu(createMenuHideShowFields(obj));
+
                       rightClick->exec(QCursor::pos());
                   }
               }
@@ -1081,14 +1089,17 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
               QMenu *rightClick = new QMenu(this);
 
               QAction *copyTable = new QAction("copy table", this);
-              rightClick->addAction(copyTable);
               connect(copyTable, SIGNAL(triggered()), tv, SLOT(copyTable()));
+              rightClick->addAction(copyTable);
+
               QAction *copyRow = new QAction("copy row", this);
-              rightClick->addAction(copyRow);
               connect(copyRow, SIGNAL(triggered()), tv, SLOT(copyRow()));
+              rightClick->addAction(copyRow);
+
               QAction *copyCell = new QAction("copy cell", this);
-              rightClick->addAction(copyCell);
               connect(copyCell, SIGNAL(triggered()), tv, SLOT(copyCell()));
+              rightClick->addAction(copyCell);
+
               QAction *copyColumn = new QAction("copy column", this);
               connect(copyColumn, SIGNAL(triggered()), tv, SLOT(copyColumn()));
               rightClick->addAction(copyColumn);
@@ -1100,18 +1111,30 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
               if(LineEdit *le = qobject_cast<LineEdit*> (obj))
               {
                   QMenu *rightClick = new QMenu(this);
+
                   QAction *copy = new QAction("copy", this);
-                  rightClick->addAction(copy);
                   connect(copy, SIGNAL(triggered()), le, SLOT(copyText()));
+                  rightClick->addAction(copy);
+
+                  QAction *paste = new QAction("paste", this);
+                  connect(paste, SIGNAL(triggered()), le, SLOT(pasteText()));
+                  rightClick->addAction(paste);
+
                   rightClick->addSeparator();
+
                   rightClick->addMenu(createMenuHideShowFields(obj));
+
                   rightClick->addSeparator();
+
                   rightClick->exec(QCursor::pos());
               } else if(TextEdit *le = qobject_cast<TextEdit*> (obj->parent()))
               {
                   QMenu *rightClick = le->createStandardContextMenu();
+
                   rightClick->addSeparator();
+
                   rightClick->addMenu(createMenuHideShowFields(obj));
+
                   rightClick->exec(QCursor::pos());
               }
           }
