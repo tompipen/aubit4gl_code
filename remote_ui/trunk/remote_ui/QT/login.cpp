@@ -143,9 +143,9 @@ LoginForm::LoginForm(QWidget *parent)
 //   timer->start(3000);
    menuBar->addMenu(admin);
    admin->addAction(hosts);
-   QAction *about = new QAction(tr("&About"), this);
+   QAction *about = new QAction(tr("&About VDC"), this);
    connect(about, SIGNAL(triggered()), this, SLOT(aboutVDC()));
-   menuBar->addAction(about);
+   admin->addAction(about);
    //menuBar->addAction(about);
    menuBar->addAction(toggledebug);
    connect(hosts, SIGNAL(triggered()), this, SLOT(hosts()));
@@ -400,13 +400,13 @@ void LoginForm::aboutVDC(QWidget *parent)
     {
         if(!returnList.at(0).isEmpty())
         {
-            labeltext->setText(QString("<p style=\"font-weight: bold;\">VENTAS AG - VDC</p> Release Date: %1<br>A4gl Version: %2<br>XML Protocol Version: %3<br><br>Copyright %4 %5").arg(returnList.at(0).at(0)).arg(returnList.at(0).at(2)).arg(returnList.at(0).at(3)).arg(date) .arg("by VENTAS. Alle Rights reserved.<br><br>The program is provided AS IS with NO WARRANTY OF ANY KIND,<br>INCLUDING THE WARRANTY OF DESIGN,<br>MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE."));
+            labeltext->setText(QString("<p style=\"font-weight: bold;\">VENTAS AG - VDC</p>Qt Version %1<br> Release Date: %2<br>A4gl Version: %3<br>XML Protocol Version: %4<br><br>Copyright %5 %6").arg(QT_VERSION_STR).arg(returnList.at(0).at(0)).arg(returnList.at(0).at(2)).arg(returnList.at(0).at(3)).arg(date) .arg("by VENTAS. Alle Rights reserved.<br><br>The program is provided AS IS with NO WARRANTY OF ANY KIND,<br>INCLUDING THE WARRANTY OF DESIGN,<br>MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE."));
 
         } else {
-            labeltext->setText(QString("<p style=\"font-weight: bold;\">VENTAS AG - VDC</p> Release Date: %1<br>A4gl Version: %2<br>XML Protocol Version: %3<br><br>Copyright %4 %5").arg("unknown").arg("unknown").arg("unknown").arg(date) .arg("by VENTAS. Alle Rights reserved.<br><br>The program is provided AS IS with NO WARRANTY OF ANY KIND,<br>INCLUDING THE WARRANTY OF DESIGN,<br>MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE."));
+            labeltext->setText(QString("<p style=\"font-weight: bold;\">VENTAS AG - VDC</p>Qt Version %1 <br>Release Date: %2<br>A4gl Version: %3<br>XML Protocol Version: %4<br><br>Copyright %5 %6").arg(QT_VERSION_STR).arg("unknown").arg("unknown").arg("unknown").arg(date) .arg("by VENTAS. Alle Rights reserved.<br><br>The program is provided AS IS with NO WARRANTY OF ANY KIND,<br>INCLUDING THE WARRANTY OF DESIGN,<br>MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE."));
         }
     } else {
-        labeltext->setText(QString("<p style=\"font-weight: bold;\">VENTAS AG - VDC</p> Release Date: %1<br>A4gl Version: %2<br>XML Protocol Version: %3<br><br>Copyright %4 %5").arg("unknown").arg("unknown").arg("unknown").arg(date) .arg("by VENTAS. Alle Rights reserved.<br><br>The program is provided AS IS with NO WARRANTY OF ANY KIND,<br>INCLUDING THE WARRANTY OF DESIGN,<br>MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE."));
+        labeltext->setText(QString("<p style=\"font-weight: bold;\">VENTAS AG - VDC</p>QT version %1 <br>Release Date: %2<br>A4gl Version: %3<br>XML Protocol Version: %4<br><br>Copyright %5 %6").arg(QT_VERSION_STR).arg("unknown").arg("unknown").arg("unknown").arg(date) .arg("by VENTAS. Alle Rights reserved.<br><br>The program is provided AS IS with NO WARRANTY OF ANY KIND,<br>INCLUDING THE WARRANTY OF DESIGN,<br>MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE."));
     }
 
     layout->addWidget(labellogo);
