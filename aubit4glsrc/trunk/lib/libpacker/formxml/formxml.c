@@ -2180,6 +2180,7 @@ void convertMatrix(struct_form *f) {
                struct s_layout *layout;
                layout=malloc(sizeof(struct s_layout));
                layout->layout_type = LAYOUT_VBOX;
+		layout->id="";
                layout->children.children_len = 0;
                layout->attrib = 0;
                layout->screen_no = 0;
@@ -2193,6 +2194,7 @@ void convertMatrix(struct_form *f) {
             struct s_layout *grid_layout;
             grid_layout=malloc(sizeof(struct s_layout));
             grid_layout->layout_type = LAYOUT_GRID;
+		grid_layout->id="";
             grid_layout->attrib = 0;
             grid_layout->screen_no = scr;
             grid_layout->children.children_len = 0;
@@ -2213,6 +2215,7 @@ void convertMatrix(struct_form *f) {
                struct s_layout *layout;
                layout=malloc(sizeof(struct s_layout));
                layout->layout_type = LAYOUT_VBOX;
+		layout->id="";
                layout->children.children_len = 0;
                layout->attrib = 0;
                layout->screen_no = 0;
@@ -2226,6 +2229,7 @@ void convertMatrix(struct_form *f) {
             struct s_layout *table_layout;
             table_layout=malloc(sizeof(struct s_layout));
             table_layout->layout_type = LAYOUT_TABLE;
+		table_layout->id="";
             table_layout->attrib = 0;
             table_layout->screen_no = scr;
             table_layout->children.children_len = 0;
