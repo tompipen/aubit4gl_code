@@ -204,6 +204,7 @@ A4GL_rm_associated_mem (void *orig, void *newbytes)
   struct mem_extra *ptr = 0;
   //void *newblock=0;
   int a;
+//printf("A4GL_rm_associated_mem..\n");
 
   if (last_orig != orig)
     {
@@ -230,10 +231,13 @@ A4GL_rm_associated_mem (void *orig, void *newbytes)
       return;
     }
 
+//printf("Search : %d\n", ptr->nmemalloc);
+//
   for (a = 0; a < ptr->nmemalloc; a++)
     {
       if (ptr->ptr[a] == newbytes)
 	{
+	
 	  ptr->ptr[a] = 0;
 	  return;
 	}
@@ -258,6 +262,7 @@ A4GL_set_associated_mem (void *orig, void *newbytes)
   if (orig == 0)
     return 0;
 
+///printf("A4GL_set_associated_mem..\n");
   if (last_orig != orig)
     {
       SPRINTF1 (buff, "%p", orig);
@@ -287,13 +292,23 @@ A4GL_set_associated_mem (void *orig, void *newbytes)
       // ptr will be set to point to the last one already...
     }
   A4GL_assertion (ptr == 0, "No pointer set...");
-  ptr->nmemalloc++;
-  nelem = ptr->nmemalloc;
-  // ptr will point to our mem_extra area now..
-  ptr->ptr = realloc (ptr->ptr, sizeof (void *) * nelem);
-  newblock = newbytes;
-  ptr->ptr[nelem - 1] = newblock;
-  return ptr->ptr[nelem - 1];
+
+  int a;
+  for (a=0;a<ptr->nmemalloc;a++) {
+		if (ptr->ptr[a]==0) {
+			ptr->ptr[nelem - 1] = newblock;
+			return ptr->ptr[a];
+		}
+
+  }
+  	ptr->nmemalloc++;
+  	nelem = ptr->nmemalloc;
+  	// ptr will point to our mem_extra area now..
+  	ptr->ptr = realloc (ptr->ptr, sizeof (void *) * nelem);
+  	newblock = newbytes;
+//printf("Set @ %d\n", nelem);
+  	ptr->ptr[nelem - 1] = newblock;
+  	return ptr->ptr[nelem - 1];
 }
 
 
@@ -338,6 +353,26 @@ A4GL_alloc_associated_mem (void *orig, int nbytes)
       ptr = last_ptr;
       // ptr will be set to point to the last one already...
     }
+
+
+  int a;
+  for (a=0;a<ptr->nmemalloc;a++) {
+	if (ptr->ptr[a]==0) {
+  if (nbytes)
+    {
+      newblock = malloc (nbytes);
+    }
+  else
+    {
+      newblock = 0;
+    }
+
+  ptr->ptr[a] = newblock;
+  return ptr->ptr[a];
+		
+	}
+  }
+
   ptr->nmemalloc++;
   nelem = ptr->nmemalloc;
   // ptr will point to our mem_extra area now..

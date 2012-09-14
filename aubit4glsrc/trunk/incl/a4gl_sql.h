@@ -27,6 +27,7 @@ extern "C"
     void *hstmt;                            /**< A pointer to the statement handle */
     char statementName[256];                    /**< The name of the SQL statement */
     void *extra_info;                       /**< A space for sql driver specific info */
+    char extra_space[1024];                       /**< A space for sql driver specific info */
     int refcnt; /* reference counter to check if being used by a cursor (or more than one ;-) ) */
   };
 

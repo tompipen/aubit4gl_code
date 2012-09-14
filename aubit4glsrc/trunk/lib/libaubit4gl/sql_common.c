@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql_common.c,v 1.105 2012-08-14 14:22:28 mikeaubury Exp $
+# $Id: sql_common.c,v 1.106 2012-09-14 08:22:22 mikeaubury Exp $
 #
 */
 
@@ -631,6 +631,10 @@ A4GL_close_session (char *sessname)
 }
 
 
+int
+A4GLSQL_close_session (char *sessname) {
+	return A4GL_close_session(sessname);
+}
 
 
 static char *

@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.259 2012-07-25 09:57:10 mikeaubury Exp $
+# $Id: esql.ec,v 1.260 2012-09-14 08:22:24 mikeaubury Exp $
 #
 */
 
@@ -188,7 +188,7 @@ static loc_t *add_blob(struct s_sid *sid, int n, struct s_extra_info *e,fglbyte 
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.259 2012-07-25 09:57:10 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.260 2012-09-14 08:22:24 mikeaubury Exp $";
 #endif
 
 
@@ -2277,7 +2277,7 @@ processPreStatementBinds (struct s_sid *sid)
 
 
   if (!sid->extra_info) {
-  	ei=A4GL_alloc_associated_mem(sid, sizeof(struct s_extra_info));
+  	ei=(struct s_extra_info *) sid->extra_space;    //A4GL_alloc_associated_mem(sid, sizeof(struct s_extra_info));
 	
   	sid->extra_info=ei;
   	ei->raw_blobs=0;
@@ -2285,6 +2285,7 @@ processPreStatementBinds (struct s_sid *sid)
   } else {
 	ei= sid->extra_info;
 	free_blobs(ei);
+	
 	sid->extra_info=0;
   }
 
@@ -2487,9 +2488,9 @@ if (n) {
 	struct s_extra_info *p;
 	p=sid->extra_info;
 	
-	A4GL_rm_associated_mem(sid,p);
+	//A4GL_rm_associated_mem(sid,p);
 	free_blobs(p);
-	free(p);
+	//free(p);
 
 	sid->extra_info=0;
   }

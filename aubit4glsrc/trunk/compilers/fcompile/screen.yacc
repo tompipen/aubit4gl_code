@@ -285,7 +285,9 @@ page:
 
 opt_layout_ident: 
 	{strcpy($<str>$,"");}
-	 |  named_or_kw_any
+	 |  named_or_kw_any {
+		{strcpy($<str>$,$<str>1);}
+	}
 ;
 
 grid_section:

@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.344 2011-11-25 10:07:27 mikeaubury Exp $
+# $Id: mod.c,v 1.345 2012-09-14 08:22:21 mikeaubury Exp $
 #
 */
 
@@ -2878,7 +2878,8 @@ void clr_menu_attribs(void) {
 menu_attrib_comment=0;
 menu_attrib_style=0;
 menu_attrib_image=0;
-
+menu_attrib_highlight=0;
+menu_attrib_normal=0;
 }
 
 struct expr_str * get_menu_attrib(char type) {
