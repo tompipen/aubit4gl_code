@@ -1313,8 +1313,7 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
          }
 
       //}
-
-      if((keyEvent->modifiers() == 0 ) && (keyEvent->key() == Qt::Key_Return || keyEvent->key() == Qt::Key_Enter))
+      if(keyEvent->key() == Qt::Key_Return || keyEvent->key() == Qt::Key_Enter)
       {
           if(TextEdit *te = qobject_cast<TextEdit *> (obj))
           {
