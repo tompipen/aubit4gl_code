@@ -6,10 +6,6 @@ MasterUpdate::MasterUpdate(QObject *parent) : QWidget()
 {
     Q_UNUSED(parent);
 }
-/*MasterUpdate::~MasterUpdate()
-{
-
-}*/
 
 void MasterUpdate::start()
 {

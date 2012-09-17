@@ -15,7 +15,6 @@ class MasterUpdate : public QWidget
 
 public:
     MasterUpdate(QObject *parent = 0);
-    //~MasterUpdate();
     void start();
 
 public slots:
