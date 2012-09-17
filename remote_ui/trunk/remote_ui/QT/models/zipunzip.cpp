@@ -10,29 +10,32 @@ ZipUnzip::~ZipUnzip()
 
 }*/
 
-bool ZipUnzip::unzipArchiv(QString filePath, QString fileName)
+bool ZipUnzip::unzipArchiv(QString filePath, QString fileName, QString destFilePath)
 {
-    QFile fileBaseName(QDir::tempPath() + "/" + fileName);
+    qDebug() << "file: " << QDir::tempPath() + "/" + fileName;
+    qDebug() << "destFilePath: " << destFilePath;
+    //QFile fileBaseName(QDir::tempPath() + "/" + fileName);
+    QFile fileBaseName(destFilePath + "/" + fileName);
     QFileInfo infoFileBaseName(fileBaseName);
 
-    QuaZip zip(QString(filePath + "/" + fileName));
+    QuaZip zipArchiv(QString(filePath + "/" + fileName));
 
-    if( !zip.open( QuaZip::mdUnzip ) )
+    if( !zipArchiv.open( QuaZip::mdUnzip ) )
     {
         qWarning ( "(unzipArchiv()): Datei konnte nicht geöffnet werden. Fehlermeldung: " );
         return false;
     }
 
-    for( bool more=zip.goToFirstFile(); more; more=zip.goToNextFile() )
+    for( bool more=zipArchiv.goToFirstFile(); more; more=zipArchiv.goToNextFile() )
     {
-        QuaZipFile file( &zip );
+        QuaZipFile file( &zipArchiv );
 
-        QString name = zip.getCurrentFileName();
-        QFile meminfo( QDir::tempPath() + "/" + infoFileBaseName.baseName() + "/" + name );
+        QString name = zipArchiv.getCurrentFileName();
+        QFile meminfo( destFilePath + "/" + name );
 
         QFileInfo infofile(meminfo);
 
-        QDir extract( QDir::tempPath() + "/" + infoFileBaseName.baseName() );
+        QDir extract( destFilePath );
 
         if( !extract.mkpath( infofile.absolutePath() ) )
         {
@@ -41,12 +44,22 @@ bool ZipUnzip::unzipArchiv(QString filePath, QString fileName)
         }
 
             if(name.contains(".")) {
-                if( !file.open( QIODevice::ReadOnly ) && file.isReadable() ) {
+                if( !file.open( QIODevice::ReadOnly ) && file.isReadable() && !file.isWritable()  ) {
                     qDebug() << "nich lesbar" << "";
                     return false;
                 }
 
-                QFile *destdir = new QFile(QString(QDir::tempPath() + "/" + infoFileBaseName.baseName() + "/" + zip.getCurrentFileName()));
+                QFile *destdir = new QFile(QString(destFilePath + "/" + zipArchiv.getCurrentFileName()));
+
+                if(destdir->exists())
+                {
+                    if(QFile::remove(destdir->fileName()))
+                    {
+                        qDebug() << "erfolgreich" << destdir->fileName();
+                    } else {
+                        qDebug() << "fehlgeschlagen" << destdir->fileName();
+                    }
+                }
 
                 if( destdir->open( QIODevice::WriteOnly | QIODevice::Truncate) )
                 {
@@ -54,15 +67,17 @@ bool ZipUnzip::unzipArchiv(QString filePath, QString fileName)
                     stream.setCodec("ISO-8859-1");
                     stream << file.readAll();
                 } else {
-                    return false;
+                    qDebug() << "konnte ned zum schreiben oeffnen" << zipArchiv.getZipError();
+                    //return false;
                 }
 
+                //destdir->setPermissions(QFile::ReadOther | QFile::WriteOther | QFile::ReadOwner | QFile::WriteOwner);
+                //destdir->close();
+                meminfo.close();
                 file.close();
-                destdir->setPermissions(QFile::ReadOther | QFile::WriteOther | QFile::ReadOwner | QFile::WriteOwner);
-                destdir->close();
             }
     }
-    zip.close();
+    zipArchiv.close();
     return true;
 }
 

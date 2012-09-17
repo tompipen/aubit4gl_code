@@ -15,8 +15,9 @@ bool Reportgen::startReportTemplate(QString odffile, QString sedfile, QFileInfo 
     readSedFile(sedfile);
 
     ZipUnzip *p_zipunzip = new ZipUnzip();
+    QFileInfo odfFileInfo = odffile;
 
-    if(p_zipunzip->unzipArchiv(QDir::tempPath(), QString(odffile)) == FALSE)
+    if(!p_zipunzip->unzipArchiv(QDir::tempPath(), odffile, QString(QDir::tempPath() + "/" + odfFileInfo.baseName())))
     {
         qDebug() << "Es ist ein Fehler beim entpacken aufgetreten" << "";
         return false;
@@ -1806,7 +1807,7 @@ bool Reportgen::createInfoFile(QFileInfo odffile, QFileInfo zieldatei)
 
     ZipUnzip *p_zipunzip = new ZipUnzip();
 
-    if(p_zipunzip->unzipArchiv(QDir::tempPath(), QString(odffile.fileName())) == FALSE)
+    if(!p_zipunzip->unzipArchiv(QDir::tempPath(), QString(odffile.fileName()), QString(QDir::tempPath() + "/" + odffile.fileName())))
     {
         qDebug() << "Es ist ein Fehler beim entpacken aufgetreten" << "";
         return false;

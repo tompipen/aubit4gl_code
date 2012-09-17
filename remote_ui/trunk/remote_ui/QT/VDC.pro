@@ -1,16 +1,11 @@
 CONFIG += ordered
 TEMPLATE=subdirs
 
-
 VREPGEN_PATH = $$(VREPGEN)
 
 macx {
    DEFINES += VREPGEN_USE
 }
-
-#unix:!macx {
-#    SUBDIRS += breakpad
-#}
 
 !isEmpty(VREPGEN_PATH) {
     DEFINES += VREPGEN_USE
@@ -22,7 +17,5 @@ macx {
     SUBDIRS += vdc-app.pro
 }
 
-#unix:!macx {
-#    vdc-app.pro.depends += breakpad
-#}
-#SUBDIRS += createVersionsXml
+SUBDIRS += patcher.pro copybinaries.pro
+patcher.pro.depends = quazip copybinaries.pro

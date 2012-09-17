@@ -94,7 +94,9 @@ HEADERS += confwin.h \
     include/vdc.h \
     models/webbrowser.h \
     ventasupdate.h \
-    models/progress.h
+    models/progress.h \
+    masterupdate.h
+
 SOURCES += confwin.cpp \
     main.cpp \
     mainframe.cpp \
@@ -125,7 +127,8 @@ SOURCES += confwin.cpp \
     include/vdc.cpp \
     models/webbrowser.cpp \
     ventasupdate.cpp \
-    models/progress.cpp
+    models/progress.cpp \
+    masterupdate.cpp
 
 OTHER_FILES += versions.xml
 OTHER_FILES += appicon.rc

@@ -1,230 +1,28 @@
 #include "ventasupdate.h"
-#include <QUrl>
+#include "include/vdc.h"
 #include "clienttcp.h"
 #include "mainframe.h"
+#include "models/fglform.h"
+#ifdef Q_WS_WIN
+#include "windows.h"
+#include <unistd.h>
+#include <stdlib.h>
+#endif
 
-VentasUpdate::VentasUpdate(int errorDisplay, QWidget *parent) : QWidget()
+VentasUpdate::VentasUpdate(QWidget *parent) :
+    QWidget(parent)
 {
-
-    QFile *XMLfile = new QFile(QDir::tempPath() + "/vdc.xml");
-    QFile *VDCsetup;
-
-    #ifdef Q_WS_WIN32
-        VDCsetup = new QFile(QDir::tempPath() + "/VDCsetup.exe");
-    #endif
-    #ifdef Q_WS_X11
-        VDCsetup = new QFile(QDir::tempPath() + "/VDCsetup.zip");
-    #endif
-    #ifdef Q_WS_MAC
-        VDCsetup = new QFile(QDir::tempPath() + "/VDCsetup.dmg");
-    #endif
-
-
-    if(XMLfile->exists())
-    {
-        XMLfile->close();
-        XMLfile->remove();
-    }
-
-    if(VDCsetup->exists())
-    {
-        VDCsetup->close();
-        VDCsetup->remove();
-    }
-
-
-    displayErrorDialog = errorDisplay;
-    m_box = new QMessageBox(this);
-    this->setWindowTitle("VENTAS UPDATE");
+    m_dialog = NULL;
 
 }
-VentasUpdate::~VentasUpdate()
+void VentasUpdate::start()
 {
-    delete m_box;
-    delete m_screenhandler;
-    delete m_label;
-    delete m_progress;
-    delete m_dialog;
-    delete downloadDialog;
-    delete m_reply;
-}
-
-void VentasUpdate::checkForNewUpdates()
-{
+    displayErrorDialog = 0;
     QNetworkAccessManager *manager = new QNetworkAccessManager(this);
     manager->get(QNetworkRequest(QUrl("http://www.ventas.de/wp-content/uploads/downloads/autoupdate/vdcupdate.xml")));
     connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(readXmlFinished(QNetworkReply*)));
-    connect(manager, SIGNAL(finished(QNetworkReply*)), manager, SLOT(deleteLater()));
-
 }
 
-void VentasUpdate::loadFileFromServer()
-{
-    QNetworkAccessManager *manager = new QNetworkAccessManager;
-    connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(updateReady(QNetworkReply*)));
-
-    #ifdef Q_WS_MAC
-        m_fileName = QString("VDCsetup.dmg");
-    #endif
-    #ifdef Q_WS_X11
-        m_fileName = QString("VDCsetup.zip");
-    #endif
-    #ifdef Q_WS_WIN
-        m_fileName = QString("VDCsetup.exe");
-    #endif
-
-    QNetworkRequest request;
-    request.setUrl(QUrl(QString("http://www.ventas.de/wp-content/uploads/downloads/autoupdate/binaries/%1").arg(m_fileName)));
-
-    QNetworkReply *m_reply;
-
-    m_reply = manager->get(request);
-
-    connect(m_reply, SIGNAL(downloadProgress(qint64,qint64)), SLOT(updateDownloadProgress(qint64,qint64)));
-
-    //Open GUI to display the progress of the downloaded file
-    QVBoxLayout *layout = new QVBoxLayout(this);
-    m_label = new QLabel(this);
-    m_progress = new QProgressBar(this);
-
-    layout->addWidget(m_label, Qt::AlignBottom);
-    layout->addWidget(m_progress, Qt::AlignBottom);
-
-    m_label->setText(tr("Connecting to Download Server..."));
-
-    this->setLayout(layout);
-    this->resize(200,100);
-    this->show();
-}
-void VentasUpdate::updateDownloadProgress(qint64 received,qint64 total)
-{
-    m_label->setText("Downloading VDC...");
-    m_progress->setValue((double) received * 100 / total);
-}
-QList<QString> VentasUpdate::clientXml(QString filePath)
-{
-    QFile file;
-    QList<QString> clientList;
-
-    file.setFileName(filePath);
-    QString clientOs;
-
-    if(!file.open(QIODevice::ReadOnly))
-    {
-        if(displayErrorDialog == 1)
-        {
-            //Dialog *dialog = new Dialog("VENTAS Update", QString("Failed to Open: %1").arg(filePath), "", "stop", this, Qt::WindowStaysOnTopHint);
-            //dialog->createButton(1, "Ok", "Ok", "ok_gruen.png");
-            //connect(dialog->getAction("OK"), SIGNAL(triggered()), dialog, SLOT(close()));
-            //dialog->move(600,400);
-            //dialog->show();
-            //connect(dialog, SIGNAL(finished(int)), dialog, SLOT(deleteLater()));
-            return clientList;
-        }
-    }
-
-    #ifdef Q_WS_WIN
-        clientOs = "WINDOWS";
-    #endif
-    #ifdef Q_WS_MAC
-        clientOs = "MAC";
-    #endif
-    #ifdef Q_WS_X11
-        clientOs = "LINUX";
-    #endif
-
-        QDomDocument doc;
-        doc.setContent(&file);
-
-        QDomElement root = doc.documentElement();
-        QDomNode node = root.firstChildElement();
-        while(!node.isNull() && node.isElement())
-        {
-            QDomElement secElement = node.toElement();
-            if(!secElement.isNull())
-            {
-                if(secElement.nodeName() == clientOs)
-                {
-                    QDomNode child = secElement.firstChild();
-                    while(!child.isNull())
-                    {
-                        QDomElement text = child.toElement();
-                        clientList << text.text();
-                        child = child.nextSibling();
-                    }
-                }
-
-            }
-            node = node.nextSiblingElement();
-        }
-        return clientList;
-
-}
-QList<QList<QString> > VentasUpdate::parseXml(QString filePath)
-{
-    QFile file;
-    QList<QString> textList;
-    QList<QList<QString> > returnList;
-
-    file.setFileName(filePath);
-    QString clientOs;
-
-    if(!file.open(QIODevice::ReadOnly))
-    {
-        if(displayErrorDialog == 1)
-        {
-            Dialog *dialog = new Dialog("VENTAS Update", QString("Failed to Open: %1").arg(filePath), "", "stop", this, Qt::WindowStaysOnTopHint);
-            dialog->createButton(1, "Ok", "Ok", "ok_gruen.png");
-            connect(dialog->getAction("OK"), SIGNAL(triggered()), dialog, SLOT(close()));
-            dialog->move(600,400);
-            dialog->show();
-            connect(dialog, SIGNAL(finished(int)), dialog, SLOT(deleteLater()));
-            return returnList;
-        }
-    }
-
-    #ifdef Q_WS_WIN
-        clientOs = "WINDOWS";
-    #endif
-    #ifdef Q_WS_MAC
-        clientOs = "MAC";
-    #endif
-    #ifdef Q_WS_X11
-        clientOs = "LINUX";
-    #endif
-
-    QDomDocument doc;
-    doc.setContent(&file);
-
-    QDomElement root = doc.documentElement();
-    QDomNode node = root.firstChildElement();
-    while(!node.isNull() && node.isElement())
-    {
-        QDomElement secElement = node.toElement();
-        if(!secElement.isNull())
-        {
-            if(secElement.nodeName() == clientOs)
-            {
-                QDomNode child = secElement.firstChild();
-                while(!child.isNull())
-                {
-                    QDomElement text = child.toElement();
-                    textList << text.text();
-                    child = child.nextSibling();
-                }
-                returnList.insert(returnList.count(), textList);
-                textList.clear();
-            }
-
-        }
-        node = node.nextSiblingElement();
-
-        //Formatiertes Datumsformat
-        //qDebug() << QDate::currentDate().toString("dd.MM.yyyy");
-    }
-    file.close();
-    return returnList;
-}
 
 void VentasUpdate::readXmlFinished(QNetworkReply *reply)
 {
@@ -250,6 +48,7 @@ void VentasUpdate::readXmlFinished(QNetworkReply *reply)
 
 
 }
+
 void VentasUpdate::checkServerClient()
 {
     QList<QList<QString> > serverVars = parseXml(QDir::tempPath() + "/vdc.xml");
@@ -289,7 +88,6 @@ void VentasUpdate::checkServerClient()
                                 j++;
                                 if(serverVars.at(i).at(j) == XmlVersionServer)
                                 {
-                                    qDebug() << "debug4 ";
                                     Dialog *dialog = new Dialog("VENTAS Update", "There is a new VDC version available.\n Do you want to download and install it?", "", "information", this, Qt::WindowStaysOnTopHint);
                                     dialog->createButton(1, "Ok", "Ok", "ok_gruen.png");
                                     dialog->createButton(2, "Abort", "Abort", "abbrechen_rot.png");
@@ -298,7 +96,6 @@ void VentasUpdate::checkServerClient()
                                     dialog->move(600,400);
                                     dialog->show();
                                     m_dialog = dialog;
-                                    //m_dateToDownload  = serverVars.at(0).at(0);
                                     return;
                                 } else {
                                     if(displayErrorDialog == 1)
@@ -378,98 +175,202 @@ void VentasUpdate::checkServerClient()
     }
 }
 
-void VentasUpdate::updateReady(QNetworkReply *reply)
-{
-
-    #ifdef Q_WS_MAC
-       QFile *file = new QFile(QDir::tempPath() + "/vdc-update.dmg");
-    #endif
-    #ifdef Q_WS_X11
-       QFile *file = new QFile(QDir::tempPath() + "/vdc-update.deb");
-    #endif
-    #ifdef Q_WS_WIN32
-       QFile *file = new QFile(QDir::tempPath() + "/VDCsetup.exe");
-    #endif
-    if(!file->open(QIODevice::WriteOnly))
-    {
-        qDebug() << "Cannot write file.";
-    }
-
-    switch(reply->error())
-    {
-       case QNetworkReply::NoError:
-          break;
-       default:
-          m_label->setText(QString("Cannot load File from Server: %1.\n Error code: %2 ").arg(m_fileName).arg(reply->error()));
-          break;
-    }
-
-    if(reply->error() == 0)
-    {
-        file->write(reply->readAll());
-        file->close();
-
-        m_label->setText("Download beendet!");
-        m_progress->setValue(100);
-        #ifdef Q_WS_MAC
-           QDesktopServices::openUrl(QUrl(QString("file:///" + QDir::tempPath() + "/vdc-update.dmg"), QUrl::TolerantMode));
-        #endif
-        #ifdef Q_WS_X11
-            QDesktopServices::openUrl(QUrl(QString("file:///%1").arg(QDir::tempPath() + "/VDCsetup.zip"), QUrl::TolerantMode));
-        #endif
-        #ifdef Q_WS_WIN32
-           QDesktopServices::openUrl(QUrl(QString("file:///%1").arg(QDir::tempPath() + "/VDCsetup.exe"), QUrl::TolerantMode));
-        #endif
-        QApplication::quit();
-
-    }
-}
-
 void VentasUpdate::checkOpenConnections()
 {
     QList<ScreenHandler*> *ql_screenhandler = MainFrame::ql_screenhandler;
-    if(ql_screenhandler->count() > 0)
+    if(ql_screenhandler)
     {
-        Dialog *dialog = new Dialog("VENTAS Update", "There are modules running.\n They will be terminated. \n Do you really want to continue?", "", "stop", this, Qt::WindowStaysOnTopHint);
-        downloadDialog = dialog;
-        dialog->createButton(1, "Ok", "Ok", "ok_gruen.png");
-        dialog->createButton(2, "Abort", "Abort", "abbrechen_rot.png");
-        connect(dialog->getAction("OK"), SIGNAL(triggered()), this, SLOT(responseDownload()));
-        connect(dialog->getAction("ABORT"), SIGNAL(triggered()), this, SLOT(abortDownload()));
-        dialog->move(600,400);
-        dialog->show();
-        connect(dialog, SIGNAL(finished(int)), dialog, SLOT(deleteLater()));
-    } else {
-        emit responseDownload();
-    }
+        if(ql_screenhandler->count() > 0)
+        {
+            if(m_dialog)
+            {
+                m_dialog->close();
+                m_dialog = NULL;
+            }
 
-    if(m_dialog != NULL)
-    {
-        m_dialog->close(); 
+            Dialog *dialog = new Dialog("VENTAS Update", "There are modules running.\n They will be terminated. \n Do you really want to continue?", "", "stop", this, Qt::WindowStaysOnTopHint);
+            dialog->createButton(1, "Ok", "Ok", "ok_gruen.png");
+            dialog->createButton(2, "Abort", "Abort", "abbrechen_rot.png");
+            connect(dialog->getAction("OK"), SIGNAL(triggered()), this, SLOT(downloadBinarie()));
+            connect(dialog->getAction("ABORT"), SIGNAL(triggered()), dialog, SLOT(close()));
+            dialog->move(600,400);
+            dialog->show();
+            m_dialog = dialog;
+        } else {
+            emit downloadBinarie();
+        }
+    } else {
+        emit downloadBinarie();
     }
 }
-void VentasUpdate::responseDownload()
+
+void VentasUpdate::downloadBinarie()
 {
     QList<ScreenHandler*> *ql_screenhandler = MainFrame::ql_screenhandler;
-    for(int i=0; i < ql_screenhandler->count(); i++)
+    QFile file;
+
+    if(m_dialog)
     {
-        if(ScreenHandler *screen = qobject_cast<ScreenHandler*> (ql_screenhandler->at(i)))
+        m_dialog->close();
+        m_dialog = NULL;
+    }
+
+    if(ql_screenhandler)
+    {
+        for(int i=0; i < ql_screenhandler->count(); i++)
         {
-                screen->closeProgramm();
+
+            if(ScreenHandler *screen = qobject_cast<ScreenHandler*> (ql_screenhandler->at(i)))
+            {
+                if(screen->p_fglform)
+                {
+                    if(FglForm *p_fglform = qobject_cast<FglForm*> (screen->p_fglform))
+                    {
+                        p_fglform->close();
+                    }
+                }
+            }
         }
     }
 
-    if(downloadDialog)
+
+    #ifdef Q_WS_WIN
+        file.setFileName(QApplication::applicationDirPath() + "/update.exe");
+    #else
+        file.setFileName(QApplication::applicationDirPath() + "/update");
+    #endif
+
+    if(file.exists())
     {
-        downloadDialog->close();
+        #ifdef Q_WS_WIN
+        Sleep(1500);
+        QApplication::quit();
+        #endif
+        QDesktopServices::openUrl(QUrl(QString("file:///" + file.fileName()), QUrl::TolerantMode));
+    } else {
+        qDebug() << QString("Datei nicht gefunden: %1").arg(file.fileName());
     }
-    loadFileFromServer();
 }
 
-void VentasUpdate::abortDownload()
+QList<QList<QString> > VentasUpdate::parseXml(QString filePath)
 {
-    if(downloadDialog)
+    QFile file;
+    QList<QString> textList;
+    QList<QList<QString> > returnList;
+
+    file.setFileName(filePath);
+    QString clientOs;
+
+    if(!file.open(QIODevice::ReadOnly))
     {
-        downloadDialog->close();
+        if(displayErrorDialog == 1)
+        {
+            Dialog *dialog = new Dialog("VENTAS Update", QString("Failed to Open: %1").arg(filePath), "", "stop", this, Qt::WindowStaysOnTopHint);
+            dialog->createButton(1, "Ok", "Ok", "ok_gruen.png");
+            connect(dialog->getAction("OK"), SIGNAL(triggered()), dialog, SLOT(close()));
+            dialog->move(600,400);
+            dialog->show();
+            connect(dialog, SIGNAL(finished(int)), dialog, SLOT(deleteLater()));
+            return returnList;
+        }
     }
+
+    #ifdef Q_WS_WIN
+        clientOs = "WINDOWS";
+    #endif
+    #ifdef Q_WS_MAC
+        clientOs = "MAC";
+    #endif
+    #ifdef Q_WS_X11
+        clientOs = "LINUX";
+    #endif
+
+    QDomDocument doc;
+    doc.setContent(&file);
+
+    QDomElement root = doc.documentElement();
+    QDomNode node = root.firstChildElement();
+    while(!node.isNull() && node.isElement())
+    {
+        QDomElement secElement = node.toElement();
+        if(!secElement.isNull())
+        {
+            if(secElement.nodeName() == clientOs)
+            {
+                QDomNode child = secElement.firstChild();
+                while(!child.isNull())
+                {
+                    QDomElement text = child.toElement();
+                    textList << text.text();
+                    child = child.nextSibling();
+                }
+                returnList.insert(returnList.count(), textList);
+                textList.clear();
+            }
+
+        }
+        node = node.nextSiblingElement();
+    }
+    file.close();
+    return returnList;
+}
+
+QList<QString> VentasUpdate::clientXml(QString filePath)
+{
+    QFile file;
+    QList<QString> clientList;
+
+    file.setFileName(filePath);
+    QString clientOs;
+
+    if(!file.open(QIODevice::ReadOnly))
+    {
+        if(displayErrorDialog == 1)
+        {
+            //Dialog *dialog = new Dialog("VENTAS Update", QString("Failed to Open: %1").arg(filePath), "", "stop", this, Qt::WindowStaysOnTopHint);
+            //dialog->createButton(1, "Ok", "Ok", "ok_gruen.png");
+            //connect(dialog->getAction("OK"), SIGNAL(triggered()), dialog, SLOT(close()));
+            //dialog->move(600,400);
+            //dialog->show();
+            //connect(dialog, SIGNAL(finished(int)), dialog, SLOT(deleteLater()));
+            return clientList;
+        }
+    }
+
+    #ifdef Q_WS_WIN
+        clientOs = "WINDOWS";
+    #endif
+    #ifdef Q_WS_MAC
+        clientOs = "MAC";
+    #endif
+    #ifdef Q_WS_X11
+        clientOs = "LINUX";
+    #endif
+
+        QDomDocument doc;
+        doc.setContent(&file);
+
+        QDomElement root = doc.documentElement();
+        QDomNode node = root.firstChildElement();
+        while(!node.isNull() && node.isElement())
+        {
+            QDomElement secElement = node.toElement();
+            if(!secElement.isNull())
+            {
+                if(secElement.nodeName() == clientOs)
+                {
+                    QDomNode child = secElement.firstChild();
+                    while(!child.isNull())
+                    {
+                        QDomElement text = child.toElement();
+                        clientList << text.text();
+                        child = child.nextSibling();
+                    }
+                }
+
+            }
+            node = node.nextSiblingElement();
+        }
+        return clientList;
+
 }

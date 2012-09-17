@@ -12,7 +12,7 @@ public:
 
    /* ~ZipUnzip();
     ZipUnzip();*/
-    bool unzipArchiv(QString filePath, QString fileName);
+    bool unzipArchiv(QString filePath, QString fileName, QString destFilePath);
     bool unzipFile(QString filePath, QString fileName);
     bool zipFileArchiv(QString filePath, QString FileName, QFileInfo zielDatei);
 
