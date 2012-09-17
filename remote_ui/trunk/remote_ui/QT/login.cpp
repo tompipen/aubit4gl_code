@@ -1229,45 +1229,11 @@ void LoginForm::removeCursor()
 
 void LoginForm::checkForUpdate()
 {
-
-
     MasterUpdate mUpdate;
     mUpdate.start();
 
-    QList<ScreenHandler*> *ql_screenhandler = MainFrame::ql_screenhandler;
-    if(ql_screenhandler)
-    {
-        if(ql_screenhandler->count() > 0)
-        {
-            Dialog *dialog = new Dialog("VENTAS Update", "There are modules running.\n They will be terminated. \n Do you really want to continue?", "", "stop", this, Qt::WindowStaysOnTopHint);
-            dialog->createButton(1, "Ok", "Ok", "ok_gruen.png");
-            dialog->createButton(2, "Abort", "Abort", "abbrechen_rot.png");
-            qDebug() << "test:" << dialog->exec();
-        }
-    }
-
-    QFile file;
-    QProcess *proc = new QProcess;
-    QStringList args;
-    args << "-autoupdate";
-
-    #ifdef Q_WS_WIN
-        file.setFileName(QApplication::applicationDirPath() + "/update.exe");
-    #else
-        file.setFileName(QApplication::applicationDirPath() + "/update");
-    #endif
-
-    qDebug() << "file: " << file.fileName();
-    if(file.exists())
-    {
-        #ifdef Q_WS_WIN
-        QApplication::quit();
-        #endif
-        //proc->start("./" + file.fileName(), args);
-        QDesktopServices::openUrl(QUrl(QString("file:///" + file.fileName()), QUrl::TolerantMode));
-    } else {
-        qDebug() << QString("Datei nicht gefunden: %1").arg(file.fileName());
-    }
+    VentasUpdate *vUpdate = new VentasUpdate;
+    vUpdate->start();
 }
 
 void LoginForm::setMainMenu()
