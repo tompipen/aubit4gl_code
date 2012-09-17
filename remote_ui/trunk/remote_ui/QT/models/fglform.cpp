@@ -1213,6 +1213,7 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
       StatusBar *status = (StatusBar*) statusBar();
       QString keyEventString;
       keyEventString = keyEvent->text();
+
       if(keyEvent->key() == Qt::Key_Backtab)
       {
               prevfield();
@@ -1230,6 +1231,7 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
           nextfield();
           return true;
       }
+
       /*if(TextEdit *te = qobject_cast<TextEdit *> (obj))
       {
       }
@@ -1356,6 +1358,54 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
 
           }
       }
+      if(keyEvent->key() == Qt::Key_Home)
+      {
+          if(this->currentWidget)
+          {
+              if(TableView *tv = qobject_cast<TableView*> (this->currentWidget))
+              {
+                  QSortFilterProxyModel *proxyModel = qobject_cast<QSortFilterProxyModel *> (tv->model());
+                  TableModel *table = qobject_cast<TableModel *> (proxyModel->sourceModel());
+                  for(int i=0; i < table->columnCount(QModelIndex()); i++)
+                  {
+                      if(!tv->isReadOnlyColumn(i) && !tv->isColumnHidden(i))
+                      {
+                          QModelIndex tindex1;
+                          QModelIndex index1;
+                          tindex1 = table->index(tv->currentIndex().row(), i);
+                          index1 = proxyModel->mapFromSource(tindex1);
+                          tv->setCurrentIndex(index1);
+                          break;
+                      }
+                  }
+              }
+          }
+      }
+
+      if(keyEvent->key() == Qt::Key_End)
+      {
+          if(this->currentWidget)
+          {
+              if(TableView *tv = qobject_cast<TableView*> (this->currentWidget))
+              {
+                  QSortFilterProxyModel *proxyModel = qobject_cast<QSortFilterProxyModel *> (tv->model());
+                  TableModel *table = qobject_cast<TableModel *> (proxyModel->sourceModel());
+                  for(int i=table->columnCount(QModelIndex())-1; i > 0; i--)
+                  {
+                      if(!tv->isReadOnlyColumn(i) && !tv->isColumnHidden(i))
+                      {
+                          QModelIndex tindex1;
+                          QModelIndex index1;
+                          tindex1 = table->index(tv->currentIndex().row(), i);
+                          index1 = proxyModel->mapFromSource(tindex1);
+                          tv->setCurrentIndex(index1);
+                          break;
+                      }
+                  }
+              }
+          }
+      }
+
       if(!status->b_overwrite)
       {
          if(TextEdit *te = qobject_cast<TextEdit *> (obj))
