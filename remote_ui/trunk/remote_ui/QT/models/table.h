@@ -241,6 +241,7 @@ public:
    void setColumn(int c) { i_column = c; };
    int column() { return i_column; } ;
    bool readOnly() { return b_readOnly; };
+   bool setReadOnly(bool value) { b_readOnly = value; };
    QWidget *qw_editor;
 
 protected:

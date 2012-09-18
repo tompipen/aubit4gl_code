@@ -1431,6 +1431,16 @@ void ScreenHandler::setAttributes(QString fieldName, QString attribute, QString 
                 widget->setPixmap(pix);
         }
     }
+
+    QWidget *widget = p_fglform->findFieldByName(fieldName);
+    if(LineEditDelegate *le = qobject_cast<LineEditDelegate*> (widget))
+    {
+        if(attribute.toLower() == "noentry")
+        {
+            bool value1 = value.toInt();
+            le->setReadOnly(value1);
+        }
+    }
 }
 
 //------------------------------------------------------------------------------
