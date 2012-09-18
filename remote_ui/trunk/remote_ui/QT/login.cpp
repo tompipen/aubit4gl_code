@@ -1232,7 +1232,7 @@ void LoginForm::checkForUpdate()
     MasterUpdate mUpdate;
     mUpdate.start();
 
-    VentasUpdate *vUpdate = new VentasUpdate;
+    VentasUpdate *vUpdate = new VentasUpdate(1);
     vUpdate->start();
 }
 

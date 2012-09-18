@@ -18,7 +18,7 @@ class VentasUpdate : public QWidget
     Q_OBJECT
 
 public:
-    VentasUpdate(QWidget *parent = 0);
+    VentasUpdate(int, QWidget *parent = 0);
     void start();
     void checkServerClient();
 

@@ -9,15 +9,15 @@
 #include <stdlib.h>
 #endif
 
-VentasUpdate::VentasUpdate(QWidget *parent) :
+VentasUpdate::VentasUpdate(int errorMsg, QWidget *parent) :
     QWidget(parent)
 {
+    displayErrorDialog = errorMsg;
     m_dialog = NULL;
 
 }
 void VentasUpdate::start()
 {
-    displayErrorDialog = 0;
     QNetworkAccessManager *manager = new QNetworkAccessManager(this);
     manager->get(QNetworkRequest(QUrl("http://www.ventas.de/wp-content/uploads/downloads/autoupdate/vdcupdate.xml")));
     connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(readXmlFinished(QNetworkReply*)));
