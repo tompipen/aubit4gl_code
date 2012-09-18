@@ -57,6 +57,7 @@ void VentasUpdate::checkServerClient()
     #else
         QList<QString> clientVars = clientXml(QApplication::applicationDirPath() + "/versions.xml");
     #endif
+        qDebug() << "clientVars" << QApplication::applicationDirPath() + "/versions.xml";
     QString A4glFromClient = VDC::readSettingsFromIni("", "a4gl_version");
     QString XmlVersionServer = VDC::readSettingsFromIni("", "xml_version");
 
@@ -246,7 +247,11 @@ void VentasUpdate::downloadBinarie()
         Sleep(1500);
         QApplication::quit();
         #endif
-        QDesktopServices::openUrl(QUrl(QString("file:///" + file.fileName()), QUrl::TolerantMode));
+        #ifdef Q_WS_X11
+           QDesktopServices::openUrl(QUrl(QString("file://" + file.fileName()), QUrl::TolerantMode));
+        #else
+           QDesktopServices::openUrl(QUrl(QString("file:///" + file.fileName()), QUrl::TolerantMode));
+        #endif
     } else {
         qDebug() << QString("Datei nicht gefunden: %1").arg(file.fileName());
     }

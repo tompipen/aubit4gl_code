@@ -10,12 +10,11 @@ macx {
 !isEmpty(VREPGEN_PATH) {
     DEFINES += VREPGEN_USE
     message("Setze VDC Makro")
-    SUBDIRS += quazip vdc-app.pro
+    SUBDIRS += quazip vdc-app.pro patcher.pro copybinaries.pro
     vdc-app.pro.depends += \
         quazip
 } else {
     SUBDIRS += vdc-app.pro
 }
 
-SUBDIRS += patcher.pro copybinaries.pro
 patcher.pro.depends = quazip copybinaries.pro

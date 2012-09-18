@@ -103,13 +103,15 @@ void CopyBinaries::copyBinaries(QString tmpDirPath, QString newDirPath)
         }
     }
 
-    //QProcess *prozess = new QProcess;
-    QString prog = QString(QApplication::applicationDirPath() + "/VDC");
-    //QStringList args;
-    logMessage(QString("[DEBUG] Starte VDC erneut mit Path: %1").arg(prog));
-    //prozess->start(prog, args);
+    QString prog ;
+#ifdef Q_WS_X11
+    prog = QString(QApplication::applicationDirPath() + "/VDC.sh");
+#else
+    prog = QString(QApplication::applicationDirPath() + "/VDC");
+#endif
     QProcess process;
     process.startDetached(QString("rundll32 url.dll,FileProtocolHandler \"%1\"").arg( prog));
+    logMessage(QString("[DEBUG] Starte VDC erneut mit Path: %1").arg(prog));
 
     //exit(0);
 }

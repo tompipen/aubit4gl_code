@@ -366,7 +366,7 @@ void VDCUpdate::loadBinarieFinished(QNetworkReply *reply)
             #ifdef Q_WS_WIN
                 prog = QString(QApplication::applicationDirPath() + "/updatecp.exe");
             #else
-                prog = QString(QDir::tempPath() + "/VDC/updatecp");
+                prog = QString(QApplication::applicationDirPath() + "/updatecp");
             #endif
 
             logMessage(QString("[DEBUG] oeffne: %1").arg(prog));
