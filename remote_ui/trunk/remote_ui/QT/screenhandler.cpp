@@ -1418,27 +1418,32 @@ void ScreenHandler::setAttributes(QString fieldName, QString attribute, QString 
 {
     if(Edit *widget = qobject_cast<Edit*> (p_fglform->findFieldByName(fieldName)))
     {
-        if(attribute == "picture")
+        if(attribute.toLower() == "picture")
         {
                 widget->setPicture(value);
         }
     }
     if(Label *widget = qobject_cast<Label*> (p_fglform->findFieldByName(fieldName)))
     {
-        if(attribute == "defaultImage")
+        if(attribute.toLower() == "defaultimage")
         {
                QPixmap pix(QString(":pics/%1").arg(value));
                 widget->setPixmap(pix);
         }
     }
 
-    QWidget *widget = p_fglform->findFieldByName(fieldName);
-    if(LineEditDelegate *le = qobject_cast<LineEditDelegate*> (widget))
+    for(int i=0; i < p_fglform->ql_formFields.count(); i++)
     {
-        if(attribute.toLower() == "noentry")
+        if(p_fglform->ql_formFields.at(i)->objectName() == fieldName)
         {
-            bool value1 = value.toInt();
-            le->setReadOnly(value1);
+            if(LineEditDelegate *le = qobject_cast<LineEditDelegate*> (p_fglform->ql_formFields.at(i)))
+            {
+                if(attribute.toLower() == "noentry")
+                {
+                    bool value1 = value.toInt();
+                    le->setReadOnly(value1);
+                }
+            }
         }
     }
 }
