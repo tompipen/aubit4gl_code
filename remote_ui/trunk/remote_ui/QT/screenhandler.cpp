@@ -59,6 +59,7 @@ MainFrame::vdcdebug("ScreenHandler","ScreenHandler", "QObject *parent");
    timer = NULL;
    w_progress = NULL;
    b_runinfo = false;
+   openFileSuccess = 0;
    this->installEventFilter(this);
    QApplication::processEvents();
  }
@@ -3962,6 +3963,74 @@ Q_UNUSED(obj);
   w_progress->hide();
   delete w_progress;
   w_progress = NULL;
+}
+
+void ScreenHandler::executeFile(int waitforFinish, QString fileName)
+{
+
+    QString fileLockName = QString(".~lock.%1#").arg(fileName);
+    //fileName = QDir::tempPath() + "/" + fileName;
+    QFileInfo fileInfo(fileName);
+
+#ifdef Q_WS_X11
+   if(QDesktopServices::openUrl(QUrl(QString("file://" + fileInfo.absoluteFilePath()), QUrl::TolerantMode)))
+   {
+       int cnt = 0;
+       waitTimer::sleep(10);
+       for(int i=0; i < 10000000; i++)
+       {
+           QFile file(QDir::tempPath() + "/" + fileLockName);
+           if(!file.exists())
+           {
+               if(cnt == 1)
+               {
+                   openFileSuccess = 1;
+                   break;
+               }
+           } else {
+               cnt = 1;
+           }
+           waitTimer::sleep(2);
+       }
+   }
+   #endif
+   #ifdef Q_WS_MAC
+      if(QDesktopServices::openUrl(QUrl(QString("file:///" + fileInfo.absoluteFilePath()), QUrl::TolerantMode)))
+      {
+          waitTimer::sleep(10);
+          for(int i=0; i < 10000; i++)
+          {
+              QFile file(QDir::tempPath() + "/" + fileLockName);
+              if(!file.exists())
+              {
+                  openFileSuccess = 1;
+                  break;
+              }
+              waitTimer::sleep(2);
+          }
+      }
+   #endif
+   #ifdef Q_WS_WIN
+       QProcess process;
+       openFileSuccess = process.startDetached(QString("rundll32 url.dll,FileProtocolHandler \"%1\"").arg( fileInfo.absoluteFilePath()));
+       if(waitforFinish == 1)
+       {
+           waitTimer::sleep(10);
+           for(int i=0; i < 10000; i++)
+           {
+               QFile file(fileName);
+
+               if(file.open(QIODevice::ReadWrite))
+               {
+                   openFileSuccess = 1;
+                   break;
+               }
+               waitTimer::sleep(2);
+           }
+       } else {
+           openFileSuccess = 1;
+       }
+#endif
 }
 
 void ScreenHandler::printpdf(QString filename)

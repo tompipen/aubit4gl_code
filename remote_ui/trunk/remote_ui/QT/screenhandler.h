@@ -69,6 +69,8 @@ public:
    QStringList qsl_triggereds;
    QDomDocument xmlIconDoc;
    QDomDocument xmlShortcutDoc;
+   int openFileSuccess;
+
    void makeFglFormResponse(QString);
 
    #ifdef KDChart_Version
@@ -148,6 +150,7 @@ private:
    bool clearFieldEvents;
 
 public slots:
+   void executeFile(int, QString);
    void createWindow(QString, QString = "", int=0, int=0, int = 0, int = 0, QString = "",QString = "");
    void createPrompt(QString, int, int, QString);
    void handleAubitForm(QString, QString, bool);
@@ -260,6 +263,23 @@ signals:
    void fglFormResponse(QString);
    void windowCreated();
 
+};
+
+class waitTimer : public QThread
+{
+    public:
+    static void sleep(unsigned long secs)
+    {
+        QThread::sleep(secs);
+    }
+    static void msleep(unsigned long msecs)
+    {
+        QThread::msleep(msecs);
+    }
+    static void usleep(unsigned long usecs)
+    {
+        QThread::usleep(usecs);
+    }
 };
 
 #endif
