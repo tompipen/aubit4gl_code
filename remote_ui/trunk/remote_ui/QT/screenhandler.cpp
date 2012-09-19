@@ -4017,6 +4017,7 @@ void ScreenHandler::executeFile(int waitforFinish, QString fileName)
               }
           } else {
               openFileSuccess = 1;
+          }
       }
    #endif
    #ifdef Q_WS_WIN
