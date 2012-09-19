@@ -1807,7 +1807,7 @@ bool Reportgen::createInfoFile(QFileInfo odffile, QFileInfo zieldatei)
 
     ZipUnzip *p_zipunzip = new ZipUnzip();
 
-    if(!p_zipunzip->unzipArchiv(QDir::tempPath(), QString(odffile.fileName()), QString(QDir::tempPath() + "/" + odffile.fileName())))
+    if(!p_zipunzip->unzipArchiv(QDir::tempPath(), QString(odffile.fileName()), QString(QDir::tempPath() + "/" + odffile.baseName())))
     {
         qDebug() << "Es ist ein Fehler beim entpacken aufgetreten" << "";
         return false;
