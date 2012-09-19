@@ -3977,20 +3977,25 @@ void ScreenHandler::executeFile(int waitforFinish, QString fileName)
    {
        int cnt = 0;
        waitTimer::sleep(10);
-       for(int i=0; i < 10000000; i++)
+       if(waitforFinish == 1)
        {
-           QFile file(QDir::tempPath() + "/" + fileLockName);
-           if(!file.exists())
+           for(int i=0; i < 10000000; i++)
            {
-               if(cnt == 1)
+               QFile file(QDir::tempPath() + "/" + fileLockName);
+               if(!file.exists())
                {
-                   openFileSuccess = 1;
-                   break;
+                   if(cnt == 1)
+                   {
+                       openFileSuccess = 1;
+                       break;
+                   }
+               } else {
+                   cnt = 1;
                }
-           } else {
-               cnt = 1;
+               waitTimer::sleep(2);
            }
-           waitTimer::sleep(2);
+       } else {
+           openFileSuccess = 1;
        }
    }
    #endif
@@ -3998,16 +4003,20 @@ void ScreenHandler::executeFile(int waitforFinish, QString fileName)
       if(QDesktopServices::openUrl(QUrl(QString("file:///" + fileInfo.absoluteFilePath()), QUrl::TolerantMode)))
       {
           waitTimer::sleep(10);
-          for(int i=0; i < 10000; i++)
+          if(waitforFinish == 1)
           {
-              QFile file(QDir::tempPath() + "/" + fileLockName);
-              if(!file.exists())
+              for(int i=0; i < 10000; i++)
               {
-                  openFileSuccess = 1;
-                  break;
+                  QFile file(QDir::tempPath() + "/" + fileLockName);
+                  if(!file.exists())
+                  {
+                      openFileSuccess = 1;
+                      break;
+                  }
+                  waitTimer::sleep(2);
               }
-              waitTimer::sleep(2);
-          }
+          } else {
+              openFileSuccess = 1;
       }
    #endif
    #ifdef Q_WS_WIN
