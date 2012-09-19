@@ -13,8 +13,8 @@ macx {
     SUBDIRS += quazip vdc-app.pro patcher.pro copybinaries.pro
     vdc-app.pro.depends += \
         quazip
+patcher.pro.depends = quazip copybinaries.pro
 } else {
     SUBDIRS += vdc-app.pro
 }
 
-patcher.pro.depends = quazip copybinaries.pro

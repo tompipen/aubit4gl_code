@@ -99,7 +99,6 @@ private:
 
 
 signals:
-   void executeFile(int, QString);
    void makeResponse(QString);
    void setUpdatesEnabled(bool);
    void createBrowser();

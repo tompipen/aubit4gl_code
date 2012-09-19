@@ -70,7 +70,7 @@ public:
    QDomDocument xmlIconDoc;
    QDomDocument xmlShortcutDoc;
    int openFileSuccess;
-
+   void executeFile(int, QString);
    void makeFglFormResponse(QString);
 
    #ifdef KDChart_Version
@@ -150,7 +150,6 @@ private:
    bool clearFieldEvents;
 
 public slots:
-   void executeFile(int, QString);
    void createWindow(QString, QString = "", int=0, int=0, int = 0, int = 0, QString = "",QString = "");
    void createPrompt(QString, int, int, QString);
    void handleAubitForm(QString, QString, bool);

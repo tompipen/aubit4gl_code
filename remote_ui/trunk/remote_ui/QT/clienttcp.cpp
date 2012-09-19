@@ -211,7 +211,7 @@ ClientSocket::ClientSocket(QObject *parent, QString name, QString pass, QString 
 
    connect(&ph, SIGNAL(makeResponse(QString)), 
           this, SIGNAL(makeResponse(QString)));
-
+   
    if(parent == NULL){
       connect(&ph, SIGNAL(makeResponse(QString)), 
              this, SLOT(makeOwnResponse(QString)));
@@ -222,8 +222,6 @@ ClientSocket::ClientSocket(QObject *parent, QString name, QString pass, QString 
    connect(&ph, SIGNAL(createWindow(QString, QString, int, int, int, int, QString, QString)),
            p_currScreenHandler, SLOT(createWindow(QString, QString, int, int, int, int, QString, QString)));
    // PROMPT
-   connect(&ph, SIGNAL(createPrompt(QString, int, int, QString)), 
-           p_currScreenHandler, SLOT(createPrompt(QString, int, int, QString)));
    // Title line of the screen form
    connect(&ph, SIGNAL(setWindowTitle(QString)), 
            p_currScreenHandler, SLOT(setWindowTitle(QString)));
@@ -1464,37 +1462,38 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
              fileName = QDir::tempPath() + "/" + fileName;
              QFileInfo fileInfo(fileName);
              int foundFormat = 0;
+             qDebug() << "bin dran";
 
              if(fileInfo.suffix() == "ods")
              {
-                 emit executeFile(1, fileName);
+                 p_currScreenHandler->executeFile(1, fileName);
                  returnvalues << QString::number(p_currScreenHandler->openFileSuccess);
                  foundFormat = 1;
              }
 
              if(fileInfo.suffix() == "odt")
              {
-                 emit executeFile(1, fileName);
+                 p_currScreenHandler->executeFile(1, fileName);
                  returnvalues << QString::number(p_currScreenHandler->openFileSuccess);
                  foundFormat = 1;
              }
              if(fileInfo.suffix() == "xls")
              {
-                 emit executeFile(1, fileName);
+                 p_currScreenHandler->executeFile(1, fileName);
                  returnvalues << QString::number(p_currScreenHandler->openFileSuccess);
                  foundFormat = 1;
              }
 
              if(fileInfo.suffix() == "doc")
              {
-                 executeFile(1, fileName);
+                 p_currScreenHandler->executeFile(1, fileName);
                  returnvalues << QString::number(p_currScreenHandler->openFileSuccess);
                  foundFormat = 1;
              }
 
              if(fileInfo.suffix() == "rtf")
              {
-                 executeFile(1, fileName);
+                 p_currScreenHandler->executeFile(1, fileName);
                  returnvalues << QString::number(p_currScreenHandler->openFileSuccess);
                  foundFormat = 1;
              }
@@ -1502,15 +1501,16 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
              if(fileInfo.suffix() == "csv")
              {
                  returnvalues << QString::number(p_currScreenHandler->openFileSuccess);
-                 executeFile(1, fileName);
+                 p_currScreenHandler->executeFile(1, fileName);
                  foundFormat = 1;
              }
 
              if(foundFormat == 0)
              {
-                 executeFile(0, fileName);
+                 p_currScreenHandler->executeFile(0, fileName);
                  returnvalues << "1";
              }
+             qDebug() << "bin auch dran" << foundFormat;
 
          }
 
