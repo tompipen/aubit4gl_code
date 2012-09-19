@@ -1460,64 +1460,58 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
              }
              QString fileName = params.at(0);
 
-             QString fileLockName = QString(".~lock.%1#").arg(fileName);
+
              fileName = QDir::tempPath() + "/" + fileName;
              QFileInfo fileInfo(fileName);
-             int cnt = 0;
+             int foundFormat = 0;
 
-             #ifdef Q_WS_X11
-                if(QDesktopServices::openUrl(QUrl(QString("file://" + fileInfo.absoluteFilePath()), QUrl::TolerantMode)))
-                {
-                    //sleep(10);
-                    for(int i=0; i < 10000000; i++)
-                    {
-                        QFile file(QDir::tempPath() + "/" + fileLockName);
-                        if(!file.exists())
-                        {
-                            if(cnt == 1)
-                            {
-                                returnvalues << "1";
-                                break;
-                            }
-                        } else {
-                            cnt = 1;
-                        }
-                        usleep(50000L);
-                    }
-                }
-                #endif
-                #ifdef Q_WS_MAC
-                   if(QDesktopServices::openUrl(QUrl(QString("file:///" + fileInfo.absoluteFilePath()), QUrl::TolerantMode)))
-                   {
-                       sleep(10);
-                       for(int i=0; i < 10000; i++)
-                       {
-                           QFile file(QDir::tempPath() + "/" + fileLockName);
-                           if(!file.exists())
-                           {
-                               returnvalues << "1";
-                               break;
-                           }
-                           sleep(2);
-                       }
-                   }
-                #endif
-                #ifdef Q_WS_WIN
-                    QProcess process;
-                    process.startDetached(QString("rundll32 url.dll,FileProtocolHandler \"%1\"").arg( fileInfo.absoluteFilePath()));
-                    sleep(10);
-                        for(int i=0; i < 10000; i++)
-                        {
-                            QFile file(fileName);
+             if(fileInfo.suffix() == "ods")
+             {
+                 emit executeFile(1, fileName);
+                 returnvalues << QString::number(p_currScreenHandler->openFileSuccess);
+                 foundFormat = 1;
+             }
 
-                            if(file.open(QIODevice::ReadWrite))
-                            {
-                                returnvalues << "1";
-                                break;
-                            }
-                            sleep(2);
-                        }
-             #endif
+             if(fileInfo.suffix() == "odt")
+             {
+                 emit executeFile(1, fileName);
+                 returnvalues << QString::number(p_currScreenHandler->openFileSuccess);
+                 foundFormat = 1;
+             }
+             if(fileInfo.suffix() == "xls")
+             {
+                 emit executeFile(1, fileName);
+                 returnvalues << QString::number(p_currScreenHandler->openFileSuccess);
+                 foundFormat = 1;
+             }
+
+             if(fileInfo.suffix() == "doc")
+             {
+                 executeFile(1, fileName);
+                 returnvalues << QString::number(p_currScreenHandler->openFileSuccess);
+                 foundFormat = 1;
+             }
+
+             if(fileInfo.suffix() == "rtf")
+             {
+                 executeFile(1, fileName);
+                 returnvalues << QString::number(p_currScreenHandler->openFileSuccess);
+                 foundFormat = 1;
+             }
+
+             if(fileInfo.suffix() == "csv")
+             {
+                 returnvalues << QString::number(p_currScreenHandler->openFileSuccess);
+                 executeFile(1, fileName);
+                 foundFormat = 1;
+             }
+
+             if(foundFormat == 0)
+             {
+                 executeFile(0, fileName);
+                 returnvalues << "1";
+             }
+
          }
 
          if(qs_name == "ui.interface.settext"){
