@@ -1466,34 +1466,34 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
 
              if(fileInfo.suffix() == "ods")
              {
-                 p_currScreenHandler->executeFile(1, fileName);
+                 executeFile(1, fileName);
                  returnvalues << QString::number(p_currScreenHandler->openFileSuccess);
                  foundFormat = 1;
              }
 
              if(fileInfo.suffix() == "odt")
              {
-                 p_currScreenHandler->executeFile(1, fileName);
+                 executeFile(1, fileName);
                  returnvalues << QString::number(p_currScreenHandler->openFileSuccess);
                  foundFormat = 1;
              }
              if(fileInfo.suffix() == "xls")
              {
-                 p_currScreenHandler->executeFile(1, fileName);
+                 executeFile(1, fileName);
                  returnvalues << QString::number(p_currScreenHandler->openFileSuccess);
                  foundFormat = 1;
              }
 
              if(fileInfo.suffix() == "doc")
              {
-                 p_currScreenHandler->executeFile(1, fileName);
+                 executeFile(1, fileName);
                  returnvalues << QString::number(p_currScreenHandler->openFileSuccess);
                  foundFormat = 1;
              }
 
              if(fileInfo.suffix() == "rtf")
              {
-                 p_currScreenHandler->executeFile(1, fileName);
+                 executeFile(1, fileName);
                  returnvalues << QString::number(p_currScreenHandler->openFileSuccess);
                  foundFormat = 1;
              }
@@ -1501,13 +1501,13 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
              if(fileInfo.suffix() == "csv")
              {
                  returnvalues << QString::number(p_currScreenHandler->openFileSuccess);
-                 p_currScreenHandler->executeFile(1, fileName);
+                 executeFile(1, fileName);
                  foundFormat = 1;
              }
 
              if(foundFormat == 0)
              {
-                 p_currScreenHandler->executeFile(0, fileName);
+                 executeFile(0, fileName);
                  returnvalues << "1";
              }
              qDebug() << "bin auch dran" << foundFormat;
@@ -2200,6 +2200,84 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
 
    
 }
+void ProtocolHandler::executeFile(int waitforFinish, QString fileName)
+{
+
+    QString fileLockName = QString(".~lock.%1#").arg(fileName);
+    //fileName = QDir::tempPath() + "/" + fileName;
+    QFileInfo fileInfo(fileName);
+
+#ifdef Q_WS_X11
+   if(QDesktopServices::openUrl(QUrl(QString("file://" + fileInfo.absoluteFilePath()), QUrl::TolerantMode)))
+   {
+       int cnt = 0;
+       if(waitforFinish == 1)
+       {
+           sleep(10);
+           for(int i=0; i < 10000000; i++)
+           {
+               QFile file(QDir::tempPath() + "/" + fileLockName);
+               if(!file.exists())
+               {
+                   if(cnt == 1)
+                   {
+                       openFileSuccess = 1;
+                       break;
+                   }
+               } else {
+                   cnt = 1;
+               }
+               sleep(2);
+           }
+       } else {
+           openFileSuccess = 1;
+       }
+   }
+   #endif
+   #ifdef Q_WS_MAC
+      if(QDesktopServices::openUrl(QUrl(QString("file:///" + fileInfo.absoluteFilePath()), QUrl::TolerantMode)))
+      {
+          if(waitforFinish == 1)
+          {
+              sleep(10);
+              for(int i=0; i < 10000; i++)
+              {
+                  QFile file(QDir::tempPath() + "/" + fileLockName);
+                  if(!file.exists())
+                  {
+                      openFileSuccess = 1;
+                      break;
+                  }
+                  sleep(2);
+              }
+          } else {
+              openFileSuccess = 1;
+          }
+      }
+   #endif
+   #ifdef Q_WS_WIN
+       QProcess process;
+       openFileSuccess = process.startDetached(QString("rundll32 url.dll,FileProtocolHandler \"%1\"").arg( fileInfo.absoluteFilePath()));
+       if(waitforFinish == 1)
+       {
+           sleep(10);
+           for(int i=0; i < 10000; i++)
+           {
+               QFile file(fileName);
+
+               if(file.open(QIODevice::ReadWrite))
+               {
+                   openFileSuccess = 1;
+                   break;
+               }
+               sleep(2);
+           }
+       } else {
+           openFileSuccess = 1;
+       }
+#endif
+}
+
 //------------------------------------------------------------------------------
 // Method       : encodeXMLFile(QString)
 // Filename     : tcpclient.cpp
