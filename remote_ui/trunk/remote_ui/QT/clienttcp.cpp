@@ -542,6 +542,7 @@ MainFrame::vdcdebug("ProtocolHandler","run", "");
    // request holds the current command from
    // the application server(proxy)
    //
+   int openFileSuccess = 0;
    QString qs_protocolCommand;
    if(p_currScreenHandler != NULL &&
       p_currScreenHandler->qh_env.contains("DB_LOCALE")){
@@ -1467,40 +1468,40 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
              if(fileInfo.suffix() == "ods")
              {
                  executeFile(1, fileName);
-                 returnvalues << QString::number(p_currScreenHandler->openFileSuccess);
+                 returnvalues << QString::number(openFileSuccess);
                  foundFormat = 1;
              }
 
              if(fileInfo.suffix() == "odt")
              {
                  executeFile(1, fileName);
-                 returnvalues << QString::number(p_currScreenHandler->openFileSuccess);
+                 returnvalues << QString::number(openFileSuccess);
                  foundFormat = 1;
              }
              if(fileInfo.suffix() == "xls")
              {
                  executeFile(1, fileName);
-                 returnvalues << QString::number(p_currScreenHandler->openFileSuccess);
+                 returnvalues << QString::number(openFileSuccess);
                  foundFormat = 1;
              }
 
              if(fileInfo.suffix() == "doc")
              {
                  executeFile(1, fileName);
-                 returnvalues << QString::number(p_currScreenHandler->openFileSuccess);
+                 returnvalues << QString::number(openFileSuccess);
                  foundFormat = 1;
              }
 
              if(fileInfo.suffix() == "rtf")
              {
                  executeFile(1, fileName);
-                 returnvalues << QString::number(p_currScreenHandler->openFileSuccess);
+                 returnvalues << QString::number(openFileSuccess);
                  foundFormat = 1;
              }
 
              if(fileInfo.suffix() == "csv")
              {
-                 returnvalues << QString::number(p_currScreenHandler->openFileSuccess);
+                 returnvalues << QString::number(openFileSuccess);
                  executeFile(1, fileName);
                  foundFormat = 1;
              }
