@@ -79,7 +79,7 @@ public:
    int id;
 
 private:
-   int openFileSuccess
+   int openFileSuccess;
    QString decodeFile(QString);
    void outputTree(QDomNode);
    void executeFile(int,QString);
