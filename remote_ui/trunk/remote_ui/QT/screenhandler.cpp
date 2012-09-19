@@ -3976,9 +3976,9 @@ void ScreenHandler::executeFile(int waitforFinish, QString fileName)
    if(QDesktopServices::openUrl(QUrl(QString("file://" + fileInfo.absoluteFilePath()), QUrl::TolerantMode)))
    {
        int cnt = 0;
-       waitTimer::sleep(10);
        if(waitforFinish == 1)
        {
+           waitTimer::sleep(10);
            for(int i=0; i < 10000000; i++)
            {
                QFile file(QDir::tempPath() + "/" + fileLockName);
@@ -4002,9 +4002,9 @@ void ScreenHandler::executeFile(int waitforFinish, QString fileName)
    #ifdef Q_WS_MAC
       if(QDesktopServices::openUrl(QUrl(QString("file:///" + fileInfo.absoluteFilePath()), QUrl::TolerantMode)))
       {
-          waitTimer::sleep(10);
           if(waitforFinish == 1)
           {
+              waitTimer::sleep(10);
               for(int i=0; i < 10000; i++)
               {
                   QFile file(QDir::tempPath() + "/" + fileLockName);
