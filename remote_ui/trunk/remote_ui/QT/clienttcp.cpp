@@ -2203,8 +2203,8 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
 }
 void ProtocolHandler::executeFile(int waitforFinish, QString fileName)
 {
-
-    QString fileLockName = QString(".~lock.%1#").arg(fileName);
+    QFileInfo fileNameInfo = fileName;
+    QString fileLockName = QString(".~lock.%1#").arg(fileNameInfo.baseName());
     //fileName = QDir::tempPath() + "/" + fileName;
     QFileInfo fileInfo(fileName);
 
