@@ -312,6 +312,7 @@ private:
    bool b_menu;
    bool b_input;
    bool b_screenRecord;
+   QTimer *saveTimer;
 
    //bool b_construct;
 
@@ -343,6 +344,7 @@ private:
 private slots:
    void actionTriggered();
    void toolBarActionTriggered();
+   void saveWindowPos();
 
 signals:
    void processResponse();

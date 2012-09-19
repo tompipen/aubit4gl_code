@@ -44,6 +44,7 @@ FglForm::FglForm(QString windowName, QWidget *parent) : QMainWindow(parent){
    widgetHeight = 0;
    widgetPosX = 0;
    widgetPosY = 0;
+   saveTimer = NULL;
    this->b_newForm = true;
    /*
    if(parent != NULL){
@@ -1416,26 +1417,21 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
 
    if(event->type() == QEvent::Move)
    {
-       /*if(this->isEnabled() && this->isActiveWindow())
-       {
-           qDebug() << "pos: " << pos();
-           widgetWidth = size().width();
-           widgetHeight = size().height();
-           widgetPosX = pos().x();
-           widgetPosY = pos().y();
-       }*/
-   } else if(event->type() == QEvent::Resize)
-   {
-       /*if(this->isEnabled() && this->isActiveWindow())
+       if(this->isEnabled() && this->isActiveWindow())
        {
            widgetWidth = size().width();
            widgetHeight = size().height();
            widgetPosX = pos().x();
            widgetPosY = pos().y();
-       }*/
+           if(!saveTimer)
+           {
+               saveTimer = new QTimer(this);
+               saveTimer->setSingleShot(true);
+               connect(saveTimer, SIGNAL(timeout()), this, SLOT(saveWindowPos()));
+               saveTimer->start(1000);
+           }
+       }
    }
-
-
 /*
       for(int i=0; i<35; i++){
          int key = 0x01000030 + i;
@@ -1746,6 +1742,13 @@ void FglForm::reopenPulldown()
 // Description  :
 //
 //------------------------------------------------------------------------------
+
+void FglForm::saveWindowPos()
+{
+    VDC::saveSettingsToIni(formName(), "posX", QString::number(widgetPosX));
+    VDC::saveSettingsToIni(formName(), "posY", QString::number(widgetPosY));
+    saveTimer = NULL;
+}
 
 void FglForm::writeSettingsLocal()
 {
