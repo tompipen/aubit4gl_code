@@ -1877,6 +1877,7 @@ bool Reportgen::createInfoFile(QFileInfo odffile, QFileInfo zieldatei)
                 if(ausgabe.at(i) == QChar('<') || ausgabe.at(i) == QChar(' '))
                 {
                     startAppend = 0;
+
                 }
 
                 if(startAppend == 1)
@@ -1885,7 +1886,7 @@ bool Reportgen::createInfoFile(QFileInfo odffile, QFileInfo zieldatei)
                 }
             }
 
-            str.replace("@",QString("%1:").arg(counter)).trimmed();
+            str.replace("@",QString("\n%1:").arg(counter)).trimmed();
 
             if(!fields.isEmpty())
             {
