@@ -14,6 +14,7 @@ Context::Context(QObject *parent) : QObject(parent)
   b_arrlinech = false;
   b_scrlinech = false;
   b_arrcountch = false;
+  b_constrained = false;
   sendBeforeEvent();
 }
 
@@ -483,7 +484,14 @@ QList<QWidget*> Context::fieldList()
 {
     return QList<QWidget*> ql_tmp;
 }*/
-  return ql_fieldList;
+  if(!b_constrained)
+  {
+      qDebug() << "ich werde returned";
+      return ql_fieldList;
+  } else {
+      qDebug() << "nein ich";
+      return ql_formFields;
+  }
 }
 
 void Context::setOption(QString name, int value)

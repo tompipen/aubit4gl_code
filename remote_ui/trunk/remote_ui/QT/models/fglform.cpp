@@ -45,6 +45,7 @@ FglForm::FglForm(QString windowName, QWidget *parent) : QMainWindow(parent){
    widgetPosX = 0;
    widgetPosY = 0;
    saveTimer = NULL;
+   b_constrained = false;
    this->b_newForm = true;
    /*
    if(parent != NULL){
@@ -1914,6 +1915,7 @@ MainFrame::vdcdebug("FglForm","setFormLayout", "const QDomDocument& docLayout");
 
    this->ql_formFields << formParser->getFieldList();
    this->ql_fglFields << formParser->getFglFields();
+   this->ql_formFieldsConst << formParser->getFieldListConst();
 
 
 
@@ -2567,6 +2569,40 @@ void FglForm::editpaste()
 {
 MainFrame::vdcdebug("FglForm","editpaste", "");
 }
+
+QList<QWidget*> FglForm::getConstrainList()
+{
+    QList <QWidget*> tmpList;
+    for(int i=0; i < this->ql_formFieldsConst.count(); i++)
+    {
+        if(!this->ql_formFieldsConst.at(i)->isHidden() && this->ql_formFieldsConst.at(i)->isEnabled() && this->ql_formFieldsConst.at(i)->isVisible())
+        {
+            if(Edit *edit = qobject_cast<Edit*> (this->ql_formFieldsConst.at(i)))
+            {
+                if(!edit->noEntry())
+                {
+                    tmpList << this->ql_formFieldsConst.at(i);
+                }
+            }
+            if(ButtonEdit *edit = qobject_cast<ButtonEdit*> (this->ql_formFieldsConst.at(i)))
+            {
+                if(!edit->noEntry())
+                {
+                    tmpList << this->ql_formFieldsConst.at(i);
+                }
+            }
+            if(TextEdit *edit = qobject_cast<TextEdit*> (this->ql_formFieldsConst.at(i)))
+            {
+                if(!edit->noEntry())
+                {
+                    tmpList << this->ql_formFieldsConst.at(i);
+                }
+            }
+        }
+    }
+    return tmpList;
+}
+
 //------------------------------------------------------------------------------
 // Method       : nextfield()
 // Filename     : fglform.cpp
@@ -2580,6 +2616,16 @@ if(this->context == NULL)
 {
     return;
 }
+if(context)
+{
+    if(b_constrained)
+    {
+        context->b_constrained = b_constrained;
+        context->ql_formFields = getConstrainList();
+    }
+
+}
+qDebug() << "context->fieldList()" << context->fieldList();
 
    bool b_sendEvent = (QObject::sender() != NULL); //If called from screenHandler this is NULL
    b_sendEvent = change;
@@ -4778,6 +4824,12 @@ QSize FglForm::sizeHint() const
   return QSize(width, height);
 }
 */
+
+void FglForm::setConstrained(bool value)
+{
+    qDebug() << "ich werde ausgefuehrt";
+    b_constrained = value;
+}
 
 void FglForm::showColorBar(QString color)
 {

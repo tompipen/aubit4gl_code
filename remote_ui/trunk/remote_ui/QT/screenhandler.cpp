@@ -4044,6 +4044,17 @@ void ScreenHandler::executeFile(int waitforFinish, QString fileName)
 #endif
 }
 
+void ScreenHandler::setOptions(QString type, QString value)
+{
+
+    if(type == "f")
+    {
+        bool constrain = value.toInt();
+        p_fglform->setConstrained(constrain);
+    }
+
+}
+
 void ScreenHandler::printpdf(QString filename)
 {
 /*

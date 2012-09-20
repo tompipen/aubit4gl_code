@@ -49,6 +49,11 @@ MainFrame::vdcdebug("Parser","getFormWidget", "");
    return this;
 }
 
+QList<QWidget*> XmlParser::getFieldListConst()
+{
+MainFrame::vdcdebug("Parser","getFieldListConst", "");
+   return ql_formFieldsConst;
+}
 
 QList<QWidget*> XmlParser::getFieldList()
 {
@@ -651,7 +656,16 @@ MainFrame::vdcdebug("Parser","addWidgets", "QWidget *widget, bool add, int x, in
 
 
    if(add)
+   {
+      if(Label *la = qobject_cast<Label*> (widget))
+      {
+
+      } else {
+          ql_formFieldsConst << widget;
+      }
+
       ql_formFields << widget;
+   }
 
 
    if(QGridLayout *layout = qobject_cast<QGridLayout *> (currentLayout)){

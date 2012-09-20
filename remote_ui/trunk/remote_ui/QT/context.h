@@ -30,11 +30,13 @@ public:
    bool b_arrlinech;
    bool b_scrlinech;
    bool b_arrcountch;
+   bool b_constrained;
    void sendBeforeEvent();
    void sendAfterEvent();
    void checkOptions();
    void setLastFocusWidget(QWidget*);
    QWidget *lastFocusWidget();
+   QList<QWidget*> ql_formFields;
    QList<Fgl::Event> ql_pandingevents;
    /*
    void restoreFieldPalette();

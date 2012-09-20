@@ -150,6 +150,7 @@ private:
    bool clearFieldEvents;
 
 public slots:
+   void setOptions(QString, QString);
    void createWindow(QString, QString = "", int=0, int=0, int = 0, int = 0, QString = "",QString = "");
    void createPrompt(QString, int, int, QString);
    void handleAubitForm(QString, QString, bool);

@@ -195,6 +195,10 @@ MainFrame::vdcdebug("Response","addSyncValues", "");
    QDomElement syncValuesElement = this->createElement("SVS");
    responseElement.appendChild(syncValuesElement);
 
+   if(p_currForm->getConstrained())
+   {
+       p_currForm->context->b_constrained = false;
+   }
    for(int i=0; i<p_currForm->context->fieldList().count(); i++){
       QDomElement syncValueElement = this->createElement("SV");
       QWidget *widget = p_currForm->context->fieldList().at(i);

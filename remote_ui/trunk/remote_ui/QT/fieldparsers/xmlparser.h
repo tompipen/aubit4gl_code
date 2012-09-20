@@ -33,9 +33,11 @@ public:
    QWidget* getFormWidget();
    QList<QWidget*> getFieldList();
    QList<FormField*> getFglFields();
+   QList<QWidget*> getFieldListConst();
 private:
    QHBoxLayout* layout;
    QWidget *p_fglform;
+   QList<QWidget*> ql_formFieldsConst;
    QList<QWidget*> ql_formFields;
    QList<FormField*> ql_fglFields;
    QColor qcol_BaseColor;

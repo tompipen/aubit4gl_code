@@ -113,6 +113,7 @@ public:
    Pulldown* pulldown() { return p_pulldown;};
    RingMenuPulldown* ringMenuPulldown() { return p_ringMenuPulldown;};
 
+   void setConstrained(bool value);
    void showEvent(QShowEvent *);
    void setToolBar(ToolBar*);
    void setToolBar(QDomDocument);
@@ -179,6 +180,7 @@ public:
    QList<Fgl::Event> ql_formEvents;
    QList< QList<Fgl::Event> > ql_contextEvents;
    QList<QWidget*> ql_formFields;
+   QList<QWidget*> ql_formFieldsConst;
 
    // Contains all Fieldnames in the order they get their focus
    QStringList qsl_activeFields;
@@ -240,6 +242,7 @@ public slots:
    void setLastCursor(int,int);
    void setLastCursor();
    void setBufferNotTouched() { b_bufferTouched = false; };
+   bool getConstrained() { return b_constrained; };
 
    //action defaults
    void cancelTriggered();
@@ -252,6 +255,7 @@ public slots:
    void editcopy();
    void editcut();
    void editpaste();
+   QList<QWidget*> getConstrainList();
    void nextfield(bool change=true);
    void prevfield();
    void nextrow();
@@ -309,6 +313,7 @@ private:
    QList<FormField*> ql_fglFields;
    void createStatusBar();
 
+   bool b_constrained;
    bool b_menu;
    bool b_input;
    bool b_screenRecord;

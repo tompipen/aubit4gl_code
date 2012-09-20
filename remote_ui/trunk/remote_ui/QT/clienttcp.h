@@ -107,6 +107,7 @@ signals:
    void closeBrowser(int);
 
    // ProtocolHandler -> ScreenHandler (WorkerThread -> GuiThread)
+   void setOptions(QString, QString);
    void createWindow(QString, QString, int, int, int, int, QString,QString);
    void setWindowTitle(QString);
 
