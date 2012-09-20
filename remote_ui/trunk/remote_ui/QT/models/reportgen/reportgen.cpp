@@ -1863,28 +1863,46 @@ bool Reportgen::createInfoFile(QFileInfo odffile, QFileInfo zieldatei)
             counter = counter - 1;
         }
 
-        if( ausgabe.contains("@") )
+        if(ausgabe.contains("@"))
         {
-            ausgabe.replace( "<text:p>", "" );
-            ausgabe.remove("<text:p text:style-name=\"Standard\">");
-            ausgabe.replace( "</text:p>", "" );
-            ausgabe.replace( "@", QString("%1:" ).arg( counter ) ).trimmed();
+            QString str;
+            int startAppend = 0;
+            for(int i=0; i < ausgabe.length(); i++)
+            {
+                if(ausgabe.at(i) == QChar('@'))
+                {
+                    startAppend = 1;
+                }
+
+                if(ausgabe.at(i) == QChar('<') || ausgabe.at(i) == QChar(' '))
+                {
+                    startAppend = 0;
+                }
+
+                if(startAppend == 1)
+                {
+                    str.append(ausgabe.at(i));
+                }
+            }
+
+            str.replace("@",QString("%1:").arg(counter)).trimmed();
+
             if(!fields.isEmpty())
             {
                 for(int i=0; i < fields.count(); i++)
                 {
-                    if(fields.at(i).contains(ausgabe))
+                    if(fields.at(i).contains(str))
                     {
                         found = found + 1;
                     }
                 }
                 if(found == 0)
                 {
-                    fields << ausgabe;
+                    fields << str;
                 }
                 found = 0;
             } else {
-                fields << ausgabe;
+                fields << str;
             }
         }
     }
