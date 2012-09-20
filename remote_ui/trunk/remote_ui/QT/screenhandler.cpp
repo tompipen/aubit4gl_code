@@ -1417,29 +1417,30 @@ void ScreenHandler::setNewTabName(QString oldTabName, QString newTabName)
 
 void ScreenHandler::setAttributes(QString fieldName, QString attribute, QString value)
 {
-    if(Edit *widget = qobject_cast<Edit*> (p_fglform->findFieldByName(fieldName)))
+    if(attribute.toLower() == "picture")
     {
-        if(attribute.toLower() == "picture")
+        if(Edit *widget = qobject_cast<Edit*> (p_fglform->findFieldByName(fieldName)))
         {
                 widget->setPicture(value);
         }
     }
-    if(Label *widget = qobject_cast<Label*> (p_fglform->findFieldByName(fieldName)))
+
+    if(attribute.toLower() == "defaultimage")
     {
-        if(attribute.toLower() == "defaultimage")
+        if(Label *widget = qobject_cast<Label*> (p_fglform->findFieldByName(fieldName)))
         {
                QPixmap pix(QString(":pics/%1").arg(value));
                 widget->setPixmap(pix);
         }
     }
 
-    for(int i=0; i < p_fglform->ql_formFields.count(); i++)
+    if(attribute.toLower() == "noentry")
     {
-        if(p_fglform->ql_formFields.at(i)->objectName() == fieldName)
+        for(int i=0; i < p_fglform->ql_formFields.count(); i++)
         {
-            if(LineEditDelegate *le = qobject_cast<LineEditDelegate*> (p_fglform->ql_formFields.at(i)))
+            if(p_fglform->ql_formFields.at(i)->objectName().contains(fieldName))
             {
-                if(attribute.toLower() == "noentry")
+                if(LineEditDelegate *le = qobject_cast<LineEditDelegate*> (p_fglform->ql_formFields.at(i)))
                 {
                     bool value1 = value.toInt();
                     le->setReadOnly(value1);
