@@ -542,7 +542,7 @@ MainFrame::vdcdebug("ProtocolHandler","run", "");
    // request holds the current command from
    // the application server(proxy)
    //
-   int openFileSuccess = 0;
+   openFileSuccess = 0;
    QString qs_protocolCommand;
    if(p_currScreenHandler != NULL &&
       p_currScreenHandler->qh_env.contains("DB_LOCALE")){
@@ -1963,6 +1963,7 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
    if(childElement.nodeName() == "OPTIONS"){
       QString type = childElement.attribute("TYPE");
       QString value = childElement.attribute("VALUE");
+      emit setOptions(type, value);
       return;
    }
 
