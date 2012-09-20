@@ -1460,7 +1460,7 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
              QString fileName = params.at(0);
 
 
-             fileName = QDir::tempPath() + "/" + fileName;
+             //fileName = QDir::tempPath() + "/" + fileName;
              QFileInfo fileInfo(fileName);
              int foundFormat = 0;
              qDebug() << "bin dran";
@@ -2201,15 +2201,18 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
 
    
 }
+
 void ProtocolHandler::executeFile(int waitforFinish, QString fileName)
 {
-    QFileInfo fileNameInfo = fileName;
-    QString fileLockName = QString(".~lock.%1#").arg(fileNameInfo.baseName());
-    //fileName = QDir::tempPath() + "/" + fileName;
-    QFileInfo fileInfo(fileName);
+
+    QString fileLockName = QString(".~lock.%1#").arg(fileName);
+    qDebug() << "bla: " << fileLockName;
+    fileName = QDir::tempPath() + "/" + fileName;
+    QFileInfo fileNameInfo(fileName);
+    qDebug() << "fileName: " << fileNameInfo.absoluteFilePath();
 
 #ifdef Q_WS_X11
-   if(QDesktopServices::openUrl(QUrl(QString("file://" + fileInfo.absoluteFilePath()), QUrl::TolerantMode)))
+   if(QDesktopServices::openUrl(QUrl(QString("file://" + fileNameInfo.absoluteFilePath()), QUrl::TolerantMode)))
    {
        int cnt = 0;
        if(waitforFinish == 1)
@@ -2236,7 +2239,7 @@ void ProtocolHandler::executeFile(int waitforFinish, QString fileName)
    }
    #endif
    #ifdef Q_WS_MAC
-      if(QDesktopServices::openUrl(QUrl(QString("file:///" + fileInfo.absoluteFilePath()), QUrl::TolerantMode)))
+      if(QDesktopServices::openUrl(QUrl(QString("file:///" + fileNameInfo.absoluteFilePath()), QUrl::TolerantMode)))
       {
           if(waitforFinish == 1)
           {
@@ -2258,13 +2261,13 @@ void ProtocolHandler::executeFile(int waitforFinish, QString fileName)
    #endif
    #ifdef Q_WS_WIN
        QProcess process;
-       openFileSuccess = process.startDetached(QString("rundll32 url.dll,FileProtocolHandler \"%1\"").arg( fileInfo.absoluteFilePath()));
+       openFileSuccess = process.startDetached(QString("rundll32 url.dll,FileProtocolHandler \"%1\"").arg( fileNameInfo.absoluteFilePath()));
        if(waitforFinish == 1)
        {
            sleep(10);
            for(int i=0; i < 10000; i++)
            {
-               QFile file(fileName);
+               QFile file(fileNameInfo.absoluteFilePath());
 
                if(file.open(QIODevice::ReadWrite))
                {
