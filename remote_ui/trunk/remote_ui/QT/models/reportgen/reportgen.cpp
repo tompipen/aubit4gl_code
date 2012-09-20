@@ -1343,13 +1343,31 @@ void Reportgen::getTemplateVars(QString filename)
                 counter = counter + 1;
             }
 
-            if(ausgabe.contains("@") || ausgabe.contains("[") || ausgabe.contains("]")) {
-                ausgabe.remove("<text:p text:style-name=\"Normal\">");
-                ausgabe.remove("<text:p text:style-name=\"Standard\">");
-                ausgabe.remove("<text:p>");
-                ausgabe.remove("</text:p>");
-                ausgabe.remove("@");
-                temp_fields << ausgabe.trimmed();
+            if(ausgabe.contains("@") || ausgabe.contains("[") || ausgabe.contains("]"))
+            {
+                QString str;
+                int startAppend;
+                for(int i=0; i < ausgabe.length(); i++)
+                {
+                    if(ausgabe.at(i) == QChar('@') || ausgabe.at(i) == QChar('['))
+                    {
+                        startAppend = 1;
+                    }
+                    if(ausgabe.at(i) == QChar('<') || ausgabe.at(i) == QChar(' ') || ausgabe.at(i) == QChar(']'))
+                    {
+                        startAppend = 0;
+                    }
+
+                    if(startAppend == 1)
+                    {
+                        str.append(ausgabe.at(i));
+                    }
+                }
+                str.remove("@");
+                if(!str.isNull())
+                {
+                        temp_fields << str.trimmed();
+                }
             }
         }
         file->close();
