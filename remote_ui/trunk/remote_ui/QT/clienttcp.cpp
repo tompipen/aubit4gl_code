@@ -403,7 +403,7 @@ connect(&ph, SIGNAL(getItemCountComboBox(int)), p_currScreenHandler, SLOT(getIte
 connect(&ph, SIGNAL(getItemTextComboBox(int, int)), p_currScreenHandler, SLOT(getItemTextComboBox(int,int)));
 connect(&ph, SIGNAL(getTableNameComboBox(int)), p_currScreenHandler, SLOT(getTableNameComboBox(int)));
 connect(&ph, SIGNAL(getIndexOfComboBox(int,QString)), p_currScreenHandler, SLOT(getIndexOfComboBox(int,QString)));
-
+connect(&ph, SIGNAL(setOptions(QString,QString)), p_currScreenHandler, SLOT(setOptions(QString,QString)));
 
 
 
