@@ -1356,17 +1356,18 @@ void Reportgen::getTemplateVars(QString filename)
                     if(ausgabe.at(i) == QChar('<') || ausgabe.at(i) == QChar(' ') || ausgabe.at(i) == QChar(']'))
                     {
                         startAppend = 0;
+                        if(!str.isNull())
+                        {
+                                str.remove("@");
+                                temp_fields << str.trimmed();
+                                str.clear();
+                        }
                     }
 
                     if(startAppend == 1)
                     {
                         str.append(ausgabe.at(i));
                     }
-                }
-                str.remove("@");
-                if(!str.isNull())
-                {
-                        temp_fields << str.trimmed();
                 }
             }
         }
