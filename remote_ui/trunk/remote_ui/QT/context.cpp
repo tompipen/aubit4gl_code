@@ -486,10 +486,8 @@ QList<QWidget*> Context::fieldList()
 }*/
   if(!b_constrained)
   {
-      qDebug() << "ich werde returned";
       return ql_fieldList;
   } else {
-      qDebug() << "nein ich";
       return ql_formFields;
   }
 }
