@@ -106,7 +106,20 @@ char *A4GL_get_current_comments(int lineno,int colno) {
 		return "";	
 	}
 	ptr=A4GL_has_comment(lineno,colno);
+
+
+   int sl=0;
+
+
+
 	while (ptr) {
+      sl+=strlen(ptr)+1;
+      if (sl>=sizeof(buff)) {
+               //char wn[200];
+                  //sprintf(wn,"Size of comment is too large @ line %d", lineno);
+                  A4GL_warn("Size of comment is too large" );
+                 break;
+      }
 		if (strlen(buff)) strcat(buff,"\n");
 		strcat(buff, ptr);
 		ptr=A4GL_has_comment(lineno,colno);
