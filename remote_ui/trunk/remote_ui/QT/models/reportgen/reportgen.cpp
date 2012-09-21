@@ -1558,7 +1558,7 @@ bool Reportgen::replaceTemplateVars(QString odffile, QString sedfile, QFileInfo 
                 if(ausgabe.at(i) == QChar('<') || ausgabe.at(i) == QChar(' '))
                 {
                     startStr = 0;
-                    if(!str.isNull())
+                    if(!str.isEmpty())
                     {
                         temp_var = str;
                         str.clear();
@@ -1593,7 +1593,9 @@ bool Reportgen::replaceTemplateVars(QString odffile, QString sedfile, QFileInfo 
                 for (int i=0; i < sed_fields.count(); i++)
                 {
                     //qDebug() << "Verbleibende Datensaetze: " << sed_fields.count();
-                    if(sed_fields.at(i).contains(temp_var.trimmed() + "/"))
+                    qDebug() << "bla: " << temp_var;
+                    qDebug() << "sed_fields.at(i)" << sed_fields.at(i);
+                    if(sed_fields.at(i).contains(temp_var + "/"))
                     {
                         qDebug() << "Es wurde gefunden: " << sed_fields.at(i);
                         sedLine = sed_fields.at(i).trimmed();
