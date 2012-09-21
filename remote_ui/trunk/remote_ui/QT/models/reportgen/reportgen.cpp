@@ -1369,6 +1369,7 @@ void Reportgen::getTemplateVars(QString filename)
                         str.append(ausgabe.at(i));
                     }
                 }
+
             }
         }
         file->close();
@@ -1492,8 +1493,8 @@ bool Reportgen::replaceTemplateVars(QString odffile, QString sedfile, QFileInfo 
     temp_fields.clear();
     getTemplateVars(odffile + "/1-content.xml");
     QString ausgabe;
-    QString temp_var;
     QString sedLine;
+    QString temp_var;
     int cnt = 0;
     int makeChart = 0;
     int wiederholen = 0;
@@ -1536,10 +1537,38 @@ bool Reportgen::replaceTemplateVars(QString odffile, QString sedfile, QFileInfo 
         ausgabe = stream.readLine().trimmed();
         if(ausgabe.contains("@"))
         {
-            temp_var = ausgabe;
+            int startStr = 0;
+            QString str = "";
+            /*temp_var = ausgabe;
             temp_var.replace("<text:p>", "");
             temp_var.remove("<text:p text:style-name=\"Standard\">");
-            temp_var.replace("</text:p>", "");
+            temp_var.remove("<text:p text:style-name=\"P3\">");
+            temp_var.remove("<text:p text:style-name=\"P4\">");
+            temp_var.remove("<text:p text:style-name=\"P14\">");
+            temp_var.remove("<text:p text:style-name=\"P6\">");
+            temp_var.remove("<text:p text:style-name=\"P7\">");
+            temp_var.replace("</text:p>", "");*/
+            for(int i=0; i < ausgabe.count(); i++)
+            {
+                if(ausgabe.at(i) == QChar('@'))
+                {
+                    startStr = 1;
+                }
+
+                if(ausgabe.at(i) == QChar('<') || ausgabe.at(i) == QChar(' '))
+                {
+                    startStr = 0;
+                    if(!str.isNull())
+                    {
+                        temp_var = str;
+                        str.clear();
+                    }
+                }
+                if(startStr == 1)
+                {
+                    str.append(ausgabe.at(i));
+                }
+            }
             //qDebug() << "Suche nach: " << temp_var;
 
             if(temp_var.contains("@DIAG_"))
@@ -1568,8 +1597,9 @@ bool Reportgen::replaceTemplateVars(QString odffile, QString sedfile, QFileInfo 
                     {
                         qDebug() << "Es wurde gefunden: " << sed_fields.at(i);
                         sedLine = sed_fields.at(i).trimmed();
-                        sedLine.replace(QString(temp_var.trimmed() + "/"), "");
-                        ausgabe.replace(temp_var.trimmed(), sedLine);
+                        sedLine.replace(QString(temp_var + "/"), "");
+                        ausgabe.replace(temp_var, sedLine);
+
                         if(!temp_var.endsWith("1"))
                         {
                            sed_fields.removeAt(i);
