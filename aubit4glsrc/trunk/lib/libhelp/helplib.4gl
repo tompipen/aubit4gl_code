@@ -335,7 +335,7 @@ code
 	A4GL_trim(filename);
 
 	if (strlen(filename)) {
-		infile = fopen( filename, "rb" );
+		infile = A4GL_open_file_dbpath( filename );
 	} else {
 		infile = NULL;
 	}
