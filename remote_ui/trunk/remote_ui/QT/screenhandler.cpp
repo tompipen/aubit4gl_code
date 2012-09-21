@@ -1417,7 +1417,7 @@ void ScreenHandler::setNewTabName(QString oldTabName, QString newTabName)
 
 void ScreenHandler::setAttributes(QString fieldName, QString attribute, QString value)
 {
-    if(Edit *widget = qobject_cast<Edit*> (p_fglform->findFieldByName(fieldName)))
+    if(Edit *widget = qobject_cast<Edit*> (p_fglform->findFieldByName(fieldName.toLower())))
     {
         if(attribute.toLower() == "picture")
         {
@@ -1430,7 +1430,7 @@ void ScreenHandler::setAttributes(QString fieldName, QString attribute, QString 
         }
     }
 
-    if(Label *widget = qobject_cast<Label*> (p_fglform->findFieldByName(fieldName)))
+    if(Label *widget = qobject_cast<Label*> (p_fglform->findFieldByName(fieldName.toLower())))
     {
         if(attribute.toLower() == "defaultimage")
         {
