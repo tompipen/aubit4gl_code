@@ -4723,6 +4723,8 @@ MainFrame::vdcdebug("FglForm","checkField", "");
               text.remove("<");
               text.remove(">");
               text.remove("=");
+              text = text.trimmed();
+
               if(!text.isEmpty())
               {
                   if(text.contains(":"))
@@ -4734,7 +4736,7 @@ MainFrame::vdcdebug("FglForm","checkField", "");
                   }
                   if(dates.count() < 2)
                   {
-                      fieldValue = Fgl::usingFunc(widget->format(), text, Fgl::DTYPE_DATE, widget->picture());
+                      fieldValue = Fgl::usingFunc(widget->format(), text, Fgl::DTYPE_DATE, widget->picture()).trimmed();
 
                       if(fieldValue.isEmpty())
                       {
