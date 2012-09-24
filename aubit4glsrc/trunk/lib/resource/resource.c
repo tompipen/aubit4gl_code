@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.170 2012-03-28 19:10:29 mikeaubury Exp $
+# $Id: resource.c,v 1.171 2012-09-24 17:51:54 mikeaubury Exp $
 #
 */
 
@@ -169,6 +169,7 @@ struct str_resource builtin_resource[] = {
   {"EMBEDBARCODE", "Y","internal"},
   {"FORCE_ROLLBACK_AT_EXIT","Y","internal"},
   {"TRANMODE","1","internal"},
+  {"TRACEIGNORELIST",".trace.ignore","internal"},
 #ifdef __WIN32__
   {"DBEDIT", "notepad.exe","internal"},
 #else
