@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: function_call_stack.c,v 1.49 2012-07-25 09:57:08 mikeaubury Exp $
+# $Id: function_call_stack.c,v 1.50 2012-09-24 20:05:47 mikeaubury Exp $
 #*/
 
 /**
@@ -49,6 +49,10 @@
 
 #include "a4gl_libaubit4gl_int.h"
 
+#define TRACE_MODE_DOT  1
+#define TRACE_MODE_FLAT 2
+
+static int traceMode=TRACE_MODE_DOT;
 
 /*
 =====================================================================
@@ -65,6 +69,9 @@
 */
 
 static const char * html_escape_int (const char *s);
+static char *getTraceFname(void) ;
+static int isIgnoreTrace(const char *functionName) ;
+void A4GL_cv_replacestr (char *p, int n, char *s);
 
 
 /*
@@ -187,14 +194,20 @@ A4GLSTK_lastSeenLine (void)
   return buff;
 }
 
-
+static char *getspaces(int n) {
+static char buff[200];
+if (n>100) n=100;
+memset(buff,' ',100);
+buff[n]=0;
+return buff;
+}
 void
-A4GLSTK_program_end (char*errMsg)
+A4GLSTK_program_end (char *errMsg)
 {
-  if (acl_getenv_not_set_as_0 ("TRACE4GLEXEC"))
+  char *fname;
+  fname = getTraceFname ();
+  if (fname)
     {
-      char *fname;
-      fname = acl_getenv_not_set_as_0 ("TRACE4GLEXEC");
 
       if (functionCallPointer >= 1)
 	{
@@ -205,43 +218,61 @@ A4GLSTK_program_end (char*errMsg)
 	  if (execprog)
 	    {
 	      int a;
-
-		if (errMsg) {
-	      		fprintf (execprog,
-		       "node_%d->ABEND [ fontsize=8 label=< <table border=\"0\"><tr><td>Line %d</td></tr></table> > ]\n",
-		       functionCallStack[functionCallPointer - 1].functionCallCnt, currentFglLineNumber );
-
-	      		fprintf (execprog,
-		       		"ABEND [ fontsize=8 shape=record, label=< <table border=\"0\"><tr><td>ABNORMAL EXIT</td></tr><tr><td>%s</td></tr></table> > ]\n",
-		       		html_escape_int(errMsg) );
-		} else {
-	      	fprintf (execprog,
-		       "node_%d->EXITPROGRAM [ fontsize=8 label=< <table border=\"0\"><tr><td>Line %d</td></tr></table> > ]\n",
-		       functionCallStack[functionCallPointer - 1].functionCallCnt, currentFglLineNumber);
+	      if (traceMode == TRACE_MODE_FLAT)
+		{
+		  if (errMsg)
+		    {
+		      fprintf (execprog, "%sABEND @ line %d %s\n", getspaces (functionCallPointer - 1), currentFglLineNumber, errMsg);
+		    }
+		  else
+		    {
+		      fprintf (execprog, "%sEXIT PROGRAM @ line %d\n", getspaces (functionCallPointer - 1), currentFglLineNumber);
+		    }
 		}
 
-
-	      if (functionCallPointer > 1)
+	      if (traceMode == TRACE_MODE_DOT)
 		{
-		  for (a = functionCallPointer - 1; a >= 1; a--)
+		  if (errMsg)
 		    {
-		      print_node (execprog, a, 0, NULL);
+		      fprintf (execprog,
+			       "node_%d->ABEND [ fontsize=8 label=< <table border=\"0\"><tr><td>Line %d</td></tr></table> > ]\n",
+			       functionCallStack[functionCallPointer - 1].functionCallCnt, currentFglLineNumber);
+
+		      fprintf (execprog,
+			       "ABEND [ fontsize=8 shape=record, label=< <table border=\"0\"><tr><td>ABNORMAL EXIT</td></tr><tr><td>%s</td></tr></table> > ]\n",
+			       html_escape_int (errMsg));
+		    }
+		  else
+		    {
+		      fprintf (execprog,
+			       "node_%d->EXITPROGRAM [ fontsize=8 label=< <table border=\"0\"><tr><td>Line %d</td></tr></table> > ]\n",
+			       functionCallStack[functionCallPointer - 1].functionCallCnt, currentFglLineNumber);
 		    }
 
-		  for (a = functionCallPointer; a >= 1; a--)
-		    {
 
-		      if (a > 1)
+
+		  if (functionCallPointer > 1)
+		    {
+		      for (a = functionCallPointer - 1; a >= 1; a--)
 			{
-			  fprintf (execprog, "node_%d->node_%d [ fontsize=8 label= <  Line:%d > ]\n",
-				   functionCallStack[a - 2].functionCallCnt, functionCallStack[a - 1].functionCallCnt,
-				   functionCallStack[a - 1].lineNumber);
+			  print_node (execprog, a, 0, NULL);
+			}
+
+		      for (a = functionCallPointer; a >= 1; a--)
+			{
+
+			  if (a > 1)
+			    {
+			      fprintf (execprog, "node_%d->node_%d [ fontsize=8 label= <  Line:%d > ]\n",
+				       functionCallStack[a - 2].functionCallCnt, functionCallStack[a - 1].functionCallCnt,
+				       functionCallStack[a - 1].lineNumber);
+			    }
 			}
 		    }
+
+
+		  fprintf (execprog, "}\n");
 		}
-
-
-	      fprintf (execprog, "}\n");
 	      fclose (execprog);
 	    }
 	}
@@ -253,16 +284,19 @@ A4GLSTK_program_end (char*errMsg)
 
 	  if (execprog)
 	    {
-	      fprintf (execprog, "node_%d->END [ fontsize=8 label=< <table border=\"0\"><tr><td>Line %d</td></tr></table> > ]\n",
-		       functionCallStack[0].functionCallCnt, currentFglLineNumber);
+	      if (traceMode == TRACE_MODE_DOT)
+		{
+		  fprintf (execprog,
+			   "node_%d->END [ fontsize=8 label=< <table border=\"0\"><tr><td>Line %d</td></tr></table> > ]\n",
+			   functionCallStack[0].functionCallCnt, currentFglLineNumber);
 
-	      fprintf (execprog, "}\n");
+		  fprintf (execprog, "}\n");
+		}
 	      fclose (execprog);
 	    }
 	}
     }
 }
-
 
 
 static const char * html_escape_int (const char *s)
@@ -425,6 +459,8 @@ if (nsec>1) {
 				sprintf(funcname,"%s(%s)",functionCallStack[cnt].functionName, html_escape(functionCallStack[cnt].params?functionCallStack[cnt].params:""));
 			}
 
+	      if (traceMode == TRACE_MODE_DOT)
+		{
 			if (rets) {
 				fprintf(execprog,"node_%d [  fontsize=8 shape=record, label=< <table border=\"0\"  ><tr><td bgcolor=\"%s\">%s</td></tr><tr><td align=\"left\">%s:%d</td></tr><tr><td align=\"left\">Returns Line %d</td></tr><tr><td align=\"left\">%s</td></tr>%s</table> > ]\n",
 				functionCallStack[cnt].functionCallCnt,
@@ -442,9 +478,53 @@ if (nsec>1) {
 				functionCallStack[cnt].funcModuleName,
 				functionCallStack[cnt].funcLineNumber, totalTime);
 			}
+		}
 	}
 				
 
+}
+
+
+static void setTraceMode(void) {
+	if (A4GL_isyes(acl_getenv("TRACEMODEFLAT"))) {
+		traceMode=TRACE_MODE_FLAT;
+	}
+}
+static int inHiddenFunction=0;
+static int ignoreListRead=0;
+static char **ignoreList=0;
+static int nIgnoreList;
+static void loadIgnoreTraceList(void) {
+if (ignoreListRead) return;
+ignoreListRead=1;
+FILE *fIgnore;
+fIgnore=fopen(acl_getenv("TRACEIGNORELIST"),"r");
+if (fIgnore) {
+	while (1) {
+	char buff[200];
+		buff[0]=0;
+		fgets(buff,132,fIgnore);
+		if (strlen(buff)) {
+			nIgnoreList++;
+			ignoreList=realloc(ignoreList,sizeof(char*)*nIgnoreList);
+			A4GL_trim_nl(buff);
+			ignoreList[nIgnoreList-1]=strdup(buff);
+		}
+		if (feof(fIgnore)) break;
+	}
+	fclose(fIgnore);
+}
+
+}
+
+
+static int isIgnoreTrace(const char *functionName) {
+int a;
+	if (!ignoreListRead) loadIgnoreTraceList();
+	for (a=0;a<nIgnoreList;a++) {
+		if (strcmp(ignoreList[a],functionName)==0) return 1;
+	}
+	return 0;
 }
 
 /**
@@ -501,6 +581,9 @@ A4GLSTK_pushFunction_v2 (const char *functionName, char *params[], int n,char *t
   functionCallStack[functionCallPointer].objData=objData;
 
 
+  if (isIgnoreTrace(functionName)) {
+		inHiddenFunction++;
+  }
 
   if (n && params[0] == 0)
     {
@@ -511,16 +594,36 @@ A4GLSTK_pushFunction_v2 (const char *functionName, char *params[], int n,char *t
       functionCallStack[functionCallPointer].params = A4GL_params_on_stack (params, n);
     }
 
-  fname=acl_getenv_not_set_as_0("TRACE4GLEXEC");
+  fname=getTraceFname();
   if (fname) {
 	if (functionCallPointer==0) {
 		FILE *execprog;
+		setTraceMode();
 		execprog=fopen(fname,"w");
+
 		if (execprog) {
-			fprintf(execprog,"digraph { // process with 'dot' - eg :   dot -o callgraph.gif -Tgif callgraph.dot\n");
-			fprintf(execprog,"rankdir=LR;\n");
-			fprintf(execprog,"ratio=fill;\n");
-			print_node(execprog, 0,0, NULL);
+			if (traceMode==TRACE_MODE_DOT) {
+				fprintf(execprog,"digraph { // process with 'dot' - eg :   dot -o callgraph.gif -Tgif callgraph.dot\n");
+				fprintf(execprog,"rankdir=LR;\n");
+				fprintf(execprog,"ratio=fill;\n");
+				print_node(execprog, 0,0, NULL);
+				fclose(execprog);
+			}
+		}
+	}
+
+	if (traceMode==TRACE_MODE_FLAT && !inHiddenFunction) {
+		FILE *execprog;
+		execprog=fopen(fname,"a");
+		if (execprog) {
+			if (functionCallPointer==0) { // MAIN
+				fprintf(execprog,"%sMAIN(%s)\n", getspaces(functionCallPointer),A4GL_get_args_string());
+			} else {
+				fprintf(execprog,"%sCALL %s(%s)@ %s:%d\n",getspaces(functionCallPointer),functionCallStack[functionCallPointer].functionName, functionCallStack[functionCallPointer].params?functionCallStack[functionCallPointer].params:"", 
+functionCallStack[functionCallPointer].moduleName,
+functionCallStack[functionCallPointer].lineNumber
+);
+			}
 			fclose(execprog);
 		}
 	}
@@ -539,47 +642,133 @@ void A4GLSTK_popFunction (void) {
 }
 
 
+static void Rpl(char *src, char *find, char *replace) {
+char *ptr=strstr(src,find);
+if (ptr) {
+	A4GL_cv_replacestr(ptr,strlen(find),replace);
+}
+}
+
+
+
+
+
+/* Generate a filename based on the TRACE4GLEXEC
+ * this should be an environment variable - and can contain [pid] or [app] as special words
+ * If these are in the name - they will be replaced by the current processID and the currently
+ * running program name (minus any known extension
+ */
+static char *getTraceFname() {
+char *fname;
+char pidS[200];
+fname = acl_getenv_not_set_as_0("TRACE4GLEXEC");
+if (fname==NULL) return NULL;
+static char buff[23000];
+strcpy(buff,fname);
+sprintf(pidS,"%d",getpid());
+Rpl(buff,"[pid]",pidS);
+char buff_running_program[2000];
+strcpy(buff_running_program,A4GL_get_running_program());
+char *bname=0;
+#if defined (_WIN32) && defined (__CYGWIN__)
+bname=strrchr(buff_running_program,'\\');
+#else
+bname=strrchr(buff_running_program,'/');
+#endif
+if (bname) {
+	bname++;
+	char b2[2000];
+	strcpy(b2,bname);
+	strcpy(buff_running_program,b2);
+}
+char *ext;
+ext=strstr(buff_running_program,".4ae"); if (ext) *ext=0;
+ext=strstr(buff_running_program,".4ge"); if (ext) *ext=0;
+ext=strstr(buff_running_program,".exe"); if (ext) *ext=0;
+Rpl(buff,"[app]",buff_running_program);
+A4GL_trim(buff);
+return buff;
+}
+
 
 /**
  * Pop the last function from the stack.
  */
 void
-A4GLSTK_popFunction_nl (int nrets,int lineno )
+A4GLSTK_popFunction_nl (int nrets, int lineno)
 {
 
-      char *fname;
-      fname = acl_getenv_not_set_as_0 ("TRACE4GLEXEC");
+  char *fname;
+  fname = getTraceFname ();
 
-      if (fname)
+  if (isIgnoreTrace (functionCallStack[functionCallPointer - 1].functionName) || inHiddenFunction)
+    {
+      fname = 0;
+    }
+
+  if (fname)
+    {
+      if (functionCallPointer > 1)
 	{
-
-	  if (functionCallPointer > 1)
+	  FILE *execprog;
+	  execprog = fopen (fname, "a");
+	  if (execprog)
 	    {
-	      FILE *execprog;
-	      execprog = fopen (fname, "a");
-	      if (execprog)
+	      if (traceMode == TRACE_MODE_DOT)
 		{
-
-		if (nrets) {
-			print_node(execprog, functionCallPointer-1, lineno, html_escape(A4GL_params_on_stack (NULL,nrets)));
-		  fprintf (execprog, "node_%d->node_%d [ fontsize=8 dir=both label= < Line:%d > ]\n",
-			   functionCallStack[functionCallPointer - 2].functionCallCnt,
-			   functionCallStack[functionCallPointer-1].functionCallCnt, 
-			   	functionCallStack[functionCallPointer-1].lineNumber
-			);
-		} else {
-			print_node(execprog, functionCallPointer-1, 0, NULL);
-		  fprintf (execprog, "node_%d->node_%d [ fontsize=8 label= <  Line:%d > ]\n",
-			   functionCallStack[functionCallPointer - 2].functionCallCnt,
-			   functionCallStack[functionCallPointer-1].functionCallCnt, 
-			   	functionCallStack[functionCallPointer-1].lineNumber
-				);
-
+		  if (nrets)
+		    {
+		      print_node (execprog, functionCallPointer - 1, lineno, html_escape (A4GL_params_on_stack (NULL, nrets)));
+		      fprintf (execprog, "node_%d->node_%d [ fontsize=8 dir=both label= < Line:%d > ]\n",
+			       functionCallStack[functionCallPointer - 2].functionCallCnt,
+			       functionCallStack[functionCallPointer - 1].functionCallCnt,
+			       functionCallStack[functionCallPointer - 1].lineNumber);
+		    }
+		  else
+		    {
+		      print_node (execprog, functionCallPointer - 1, 0, NULL);
+		      fprintf (execprog, "node_%d->node_%d [ fontsize=8 label= <  Line:%d > ]\n",
+			       functionCallStack[functionCallPointer - 2].functionCallCnt,
+			       functionCallStack[functionCallPointer - 1].functionCallCnt,
+			       functionCallStack[functionCallPointer - 1].lineNumber);
+		    }
 		}
-		  fclose (execprog);
-		}
+
+
+
+	      fclose (execprog);
 	    }
 	}
+
+
+      if (traceMode == TRACE_MODE_FLAT)
+	{
+	  FILE *execprog;
+	  execprog = fopen (fname, "a");
+	  if (execprog)
+	    {
+		if (!inHiddenFunction) {
+			if (nrets) {
+	      			fprintf (execprog, "%s<-%s returns %s @ %d\n", getspaces(functionCallPointer-1), functionCallStack[functionCallPointer - 1].functionName,
+			nrets?  A4GL_params_on_stack (NULL, nrets):"",
+	lineno
+);	//functionCallStack[functionCallPointer - 2].function
+		} else {
+	      			fprintf (execprog, "%s<-%s returns @ %d\n", getspaces(functionCallPointer-1), functionCallStack[functionCallPointer - 1].functionName,
+			lineno
+);
+}
+		}
+	      fclose (execprog);
+	    }
+	}
+    }
+
+
+  if (isIgnoreTrace (functionCallStack[functionCallPointer - 1].functionName))
+    {
+      inHiddenFunction--;
+    }
 
   if (functionCallStack[functionCallPointer - 1].params)
     {
@@ -591,7 +780,7 @@ A4GLSTK_popFunction_nl (int nrets,int lineno )
   if (functionCallPointer < 0)
     functionCallPointer = 0;
 
-  freeOrphanObjects();
+  freeOrphanObjects ();
 }
 
 
@@ -751,3 +940,11 @@ void A4GL_register_module_objects(char *modulename,  void **objData) {
 }
 
 /* ============================= EOF ================================ */
+/*
+		printf("pushing %s - inHiddenFunction was %d\n", functionName, inHiddenFunction);
+     		if (isIgnoreTrace(functionName)) {
+			execprog=0;
+			inHiddenFunction++;
+		}
+		printf("             inHiddenFunction now %d\n",  inHiddenFunction);
+*/
