@@ -91,5 +91,7 @@ void MasterUpdate::extractPatcher(QNetworkReply *reply)
                 return;
             }
         }
+    } else {
+        qDebug() << "Datei auf Webserver nicht gefunden!";
     }
 }
