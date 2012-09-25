@@ -85,7 +85,7 @@ void MasterUpdate::extractPatcher(QNetworkReply *reply)
         {
             ZipUnzip *p_zipunzip = new ZipUnzip();
 
-            if(!p_zipunzip->unzipArchiv(QDir::tempPath(), "masterpatch.zip", QApplication::applicationDirPath()))
+            if(!p_zipunzip->unzipArchiv(QDir::tempPath(), patchFileName, QApplication::applicationDirPath()))
             {
                 qDebug() << "archiv konnte nicht entpackt werden";
                 return;
