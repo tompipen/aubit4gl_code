@@ -9,15 +9,16 @@ MasterUpdate::MasterUpdate(QObject *parent) : QWidget()
 
 void MasterUpdate::start()
 {
-    QNetworkAccessManager *manager = new QNetworkAccessManager(this);
+    qDebug() << "Lade update.xml vom Server";
+    QNetworkAccessManager *manager = new QNetworkAccessManager;
     manager->get(QNetworkRequest(QUrl("http://www.ventas.de/wp-content/uploads/downloads/autoupdate/update.xml")));
     connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(finish(QNetworkReply*)));
-    connect(manager, SIGNAL(finished(QNetworkReply*)), manager, SLOT(deleteLater()));
 
 }
 
 void MasterUpdate::finish(QNetworkReply *reply)
 {
+    qDebug() << "Ueberpruefe hash Summe";
     QString md5Hash;
     if(!reply->error())
     {
@@ -35,12 +36,24 @@ void MasterUpdate::finish(QNetworkReply *reply)
 
         if(clientMd5 != md5Hash)
         {
+            QString patchFileName;
+            #ifdef Q_WS_WIN
+                patchFileName = "masterwin.zip";
+            #endif
+            #ifdef Q_WS_X11
+                patchFileName = "masterlin.zip";
+            #endif
+            #ifdef Q_WS_MAC
+                patchFileName = "mastermac.zip";
+            #endif
             qDebug() << "Hash ist unterschiedlich, starte Patchvorgang für Patcher.";
             QNetworkAccessManager *manager = new QNetworkAccessManager;
-            manager->get(QNetworkRequest(QUrl("http://www.ventas.de/wp-content/uploads/downloads/autoupdate/binaries/masterpatch.zip")));
+            manager->get(QNetworkRequest(QUrl(QString("http://www.ventas.de/wp-content/uploads/downloads/autoupdate/binaries/%1").arg(patchFileName))));
             connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(extractPatcher(QNetworkReply*)));
         }
         return;
+    } else {
+        qDebug() << "Network error!";
     }
 }
 
@@ -48,7 +61,17 @@ void MasterUpdate::extractPatcher(QNetworkReply *reply)
 {
     if(!reply->error())
     {
-        QFile file(QDir::tempPath() + "/masterpatch.zip");
+        QString patchFileName;
+        #ifdef Q_WS_WIN
+            patchFileName = "masterwin.zip";
+        #endif
+        #ifdef Q_WS_X11
+            patchFileName = "masterlin.zip";
+        #endif
+        #ifdef Q_WS_MAC
+            patchFileName = "mastermac.zip";
+        #endif
+        QFile file(QString(QDir::tempPath() + "/%1").arg(patchFileName));
 
         if(!file.open(QIODevice::WriteOnly))
         {
