@@ -66,6 +66,7 @@ void A4GL_object_dispose(long objectId);
 //void A4GL_add_object_type(char *s);
 void A4GL_set_setdtype (int dtype, void *ptr);
 void A4GL_clear_current_conversion_rules(void);
+void A4GL_trace_log_run(char *runCmd, int exitStatus);
 #endif /* #ifndef _AUBIT_LIB_INCL_INT_ */
 
 

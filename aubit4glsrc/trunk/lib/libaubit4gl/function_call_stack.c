@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: function_call_stack.c,v 1.50 2012-09-24 20:05:47 mikeaubury Exp $
+# $Id: function_call_stack.c,v 1.51 2012-09-26 07:31:37 mikeaubury Exp $
 #*/
 
 /**
@@ -650,6 +650,23 @@ if (ptr) {
 }
 
 
+void A4GL_trace_log_run(char *runCmd, int exitStatus) {
+char *fname;
+  fname=getTraceFname();
+  if (fname && traceMode == TRACE_MODE_FLAT) {
+	  FILE *execprog;
+	  execprog = fopen (fname, "a");
+	  if (execprog) {
+		if (runCmd) {
+			fprintf(execprog,"%sRUN %s\n",getspaces(functionCallPointer),runCmd);
+		} else {
+			fprintf(execprog,"%s<-exits with %d\n",getspaces(functionCallPointer),exitStatus);
+		}
+		fclose(execprog);
+	  }
+  }
+
+}
 
 
 

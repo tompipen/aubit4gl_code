@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.167 2012-03-28 19:10:28 mikeaubury Exp $
+# $Id: fglwrap.c,v 1.168 2012-09-26 07:31:37 mikeaubury Exp $
 #
 */
 
@@ -441,11 +441,15 @@ A4GL_system_run (int a)
   runcnt++;
 
   A4GL_ui_run_info(a, s,runcnt,1);
+  A4GL_trace_log_run(s,0);
   ret = system (s);
   A4GL_ui_run_info(a, s,runcnt,0);
 
   if (A4GL_env_option_set ("FIXSYSTEM"))
     ret = ret >> 8;
+
+  A4GL_trace_log_run(NULL,ret);
+
 #ifdef DEBUG
   A4GL_debug (">>returns %x", ret);
 #endif
