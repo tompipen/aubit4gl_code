@@ -248,8 +248,11 @@ void VentasUpdate::downloadBinarie()
         QApplication::quit();
         #endif
         #ifdef Q_WS_X11
-           QDesktopServices::openUrl(QUrl(QString("file://" + file.fileName()), QUrl::TolerantMode));
-        #else
+           QProcess *proc = new QProcess;
+           proc->start(file.fileName());
+           //QDesktopServices::openUrl(QUrl(QString("file://" + file.fileName()), QUrl::TolerantMode));
+        #endif
+        #ifdef Q_WS_MAC
            QDesktopServices::openUrl(QUrl(QString("file:///" + file.fileName()), QUrl::TolerantMode));
         #endif
     } else {
