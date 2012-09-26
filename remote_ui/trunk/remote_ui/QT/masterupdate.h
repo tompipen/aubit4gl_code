@@ -8,14 +8,16 @@
 #include <QFile>
 #include <QApplication>
 #include <QDir>
+#include <QThread>
 
-class MasterUpdate : public QWidget
+class MasterUpdate : public QThread
 {
     Q_OBJECT
 
 public:
     MasterUpdate(QObject *parent = 0);
     void start();
+    void run();
 
 public slots:
     void finish(QNetworkReply*);

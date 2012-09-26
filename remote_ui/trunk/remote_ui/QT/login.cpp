@@ -1230,7 +1230,9 @@ void LoginForm::removeCursor()
 void LoginForm::checkForUpdate()
 {
     MasterUpdate *mUpdate = new MasterUpdate;
-    mUpdate->start();
+    //mUpdate->start();
+    mUpdate->run();
+    mUpdate->wait();
 
     VentasUpdate *vUpdate = new VentasUpdate(1);
     vUpdate->start();

@@ -2,9 +2,13 @@
 #include "models/zipunzip.h"
 #include <QDebug>
 
-MasterUpdate::MasterUpdate(QObject *parent) : QWidget()
+MasterUpdate::MasterUpdate(QObject *parent) : QThread()
 {
     Q_UNUSED(parent);
+}
+void MasterUpdate::run()
+{
+    this->start();
 }
 
 void MasterUpdate::start()
