@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: function_call_stack.c,v 1.51 2012-09-26 07:31:37 mikeaubury Exp $
+# $Id: function_call_stack.c,v 1.52 2012-09-26 07:42:32 mikeaubury Exp $
 #*/
 
 /**
@@ -643,9 +643,18 @@ void A4GLSTK_popFunction (void) {
 
 
 static void Rpl(char *src, char *find, char *replace) {
+char buff[20000];
 char *ptr=strstr(src,find);
 if (ptr) {
-	A4GL_cv_replacestr(ptr,strlen(find),replace);
+	strcpy(buff,src);
+	char *optr;
+	optr=strstr(src,find);
+	ptr=strstr(buff,find);
+	char *rest=optr+strlen(find);
+	*ptr=0; // Copy up to our 'find'
+	strcat(ptr,replace); // copy our replaced text
+	strcat(ptr,rest);
+	strcpy(src,buff);
 }
 }
 
