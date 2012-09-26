@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: function_call_stack.c,v 1.52 2012-09-26 07:42:32 mikeaubury Exp $
+# $Id: function_call_stack.c,v 1.53 2012-09-26 14:38:14 mikeaubury Exp $
 #*/
 
 /**
@@ -661,6 +661,9 @@ if (ptr) {
 
 void A4GL_trace_log_run(char *runCmd, int exitStatus) {
 char *fname;
+  if (inHiddenFunction) return;
+
+
   fname=getTraceFname();
   if (fname && traceMode == TRACE_MODE_FLAT) {
 	  FILE *execprog;
