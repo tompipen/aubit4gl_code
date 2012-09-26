@@ -243,17 +243,19 @@ void VentasUpdate::downloadBinarie()
 
     if(file.exists())
     {
+        QProcess *proc = new QProcess;
         #ifdef Q_WS_WIN
-        Sleep(1500);
-        QApplication::quit();
+            proc->start(file.fileName());
+            Sleep(1500);
+            QApplication::quit();
         #endif
         #ifdef Q_WS_X11
-           QProcess *proc = new QProcess;
            proc->start(file.fileName());
            //QDesktopServices::openUrl(QUrl(QString("file://" + file.fileName()), QUrl::TolerantMode));
         #endif
         #ifdef Q_WS_MAC
-           QDesktopServices::openUrl(QUrl(QString("file:///" + file.fileName()), QUrl::TolerantMode));
+           proc->start(file.fileName());
+           //QDesktopServices::openUrl(QUrl(QString("file:///" + file.fileName()), QUrl::TolerantMode));
         #endif
     } else {
         qDebug() << QString("Datei nicht gefunden: %1").arg(file.fileName());
