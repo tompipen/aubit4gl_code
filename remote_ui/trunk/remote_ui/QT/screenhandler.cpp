@@ -34,6 +34,7 @@
 #include "xmlparsers/xml2style.h"
 #include <QMutex>
 #include "ventasupdate.h"
+#include "masterupdate.h"
 
 //------------------------------------------------------------------------------
 // Method       : ScreenHandler()
