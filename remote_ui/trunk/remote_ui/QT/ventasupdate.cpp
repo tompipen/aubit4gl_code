@@ -255,6 +255,7 @@ void VentasUpdate::downloadBinarie()
            //QDesktopServices::openUrl(QUrl(QString("file://" + file.fileName()), QUrl::TolerantMode));
         #endif
         #ifdef Q_WS_MAC
+           setenv("DYLD_LIBRARY_PATH", "/Applications/VENTAS-Software/VDC.app/Contents/Frameworks/", 1);
            proc->start(file.fileName());
            //QDesktopServices::openUrl(QUrl(QString("file:///" + file.fileName()), QUrl::TolerantMode));
         #endif
