@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.428 2012-08-14 14:22:28 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.429 2012-09-27 12:07:16 mikeaubury Exp $
 #
 */
 
@@ -1256,6 +1256,9 @@ enum cmd_types {
   //void A4GLSTK_pushFunction (const char *functionName, char *params[], int n,char *this_module,int this_line);
 #define  A4GLSTK_pushFunction #error You must recompile your 4gl to remove the A4GLSTK_pushFunction function
 void A4GLSTK_pushFunction_v2 (const char *functionName, char *params[], int n,char *this_module,int this_line, void *objData[]);
+void A4GLSTK_pushFunction_v3 (const char *functionName, char *params[], int n,char *this_module,int this_line, void *objData[],char functionOrReport);
+
+
 void A4GL_register_global_objects(char *modulename,  void **objData) ;
 void A4GL_register_module_objects(char *modulename,  void **objData) ;
 

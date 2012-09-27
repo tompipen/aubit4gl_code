@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_incl_4gldef.h,v 1.140 2012-04-19 08:05:17 mikeaubury Exp $
+# $Id: a4gl_incl_4gldef.h,v 1.141 2012-09-27 12:07:16 mikeaubury Exp $
 */
 
 /**
@@ -271,6 +271,7 @@ struct s_constr_list {char *tabname;char *colname;char *value;char*fldbuf;};
     char *mnimage;
     char *mnnormal;
     char *mnhighlight;
+    int explicitFirstOption; // Set if the user has set a NEXT OPTION in the BEFORE MENU
   }
   ACL_Menu;
 

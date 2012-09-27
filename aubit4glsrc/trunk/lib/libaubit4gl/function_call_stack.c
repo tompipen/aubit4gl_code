@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: function_call_stack.c,v 1.53 2012-09-26 14:38:14 mikeaubury Exp $
+# $Id: function_call_stack.c,v 1.54 2012-09-27 12:07:15 mikeaubury Exp $
 #*/
 
 /**
@@ -93,6 +93,7 @@ typedef struct FunctionCall
   const char *params;	    /**< a list of parameters passed to the function */
   int functionCallCnt;
   int started;
+  int functionType;
   void **objData;
 }
 FunctionCall;
@@ -391,6 +392,7 @@ static const char * html_escape_int (const char *s)
 	  buff[b++] = ';';
 	  continue;
 	}
+     
       if (s[a] < 31 || s[a] > 126)
 	{
 	  int z1;
@@ -456,7 +458,11 @@ if (nsec>1) {
 				sprintf(funcname,"MAIN(%s)", A4GL_get_args_string());
 			} else {
 				color="#c0c0f0";
+				if (functionCallStack[cnt].functionType=='F') {
 				sprintf(funcname,"%s(%s)",functionCallStack[cnt].functionName, html_escape(functionCallStack[cnt].params?functionCallStack[cnt].params:""));
+				} else {
+				sprintf(funcname,"REPORT %s",functionCallStack[cnt].functionName);
+				}
 			}
 
 	      if (traceMode == TRACE_MODE_DOT)
@@ -527,14 +533,19 @@ int a;
 	return 0;
 }
 
+void
+A4GLSTK_pushFunction_v2 (const char *functionName, char *params[], int n,char *this_module, int this_line_number, void *objData[]) {
+	A4GLSTK_pushFunction_v3(functionName, params,n,this_module,this_line_number,objData,'F');
+}
 /**
  * Push a function called to the function stack.
  *
  * @param functionName The name of the function called.
  */
 void
-A4GLSTK_pushFunction_v2 (const char *functionName, char *params[], int n,char *this_module, int this_line_number, void *objData[])
+A4GLSTK_pushFunction_v3 (const char *functionName, char *params[], int n,char *this_module, int this_line_number, void *objData[], char type)
 {
+
 	char *fname;
 
   if (!A4GL_has_initialized ())
@@ -579,6 +590,7 @@ A4GLSTK_pushFunction_v2 (const char *functionName, char *params[], int n,char *t
   functionCallStack[functionCallPointer].functionCallCnt = currFunctionCallCnt;
   functionCallStack[functionCallPointer].started =time(NULL);
   functionCallStack[functionCallPointer].objData=objData;
+  functionCallStack[functionCallPointer].functionType=type;
 
 
   if (isIgnoreTrace(functionName)) {
@@ -619,10 +631,18 @@ A4GLSTK_pushFunction_v2 (const char *functionName, char *params[], int n,char *t
 			if (functionCallPointer==0) { // MAIN
 				fprintf(execprog,"%sMAIN(%s)\n", getspaces(functionCallPointer),A4GL_get_args_string());
 			} else {
-				fprintf(execprog,"%sCALL %s(%s)@ %s:%d\n",getspaces(functionCallPointer),functionCallStack[functionCallPointer].functionName, functionCallStack[functionCallPointer].params?functionCallStack[functionCallPointer].params:"", 
-functionCallStack[functionCallPointer].moduleName,
-functionCallStack[functionCallPointer].lineNumber
-);
+				if ( functionCallStack[functionCallPointer].functionType=='F') {
+				fprintf(execprog,"%sCALL %s(%s)@ %s:%d\n",getspaces(functionCallPointer),
+					functionCallStack[functionCallPointer].functionName, 
+					functionCallStack[functionCallPointer].params?functionCallStack[functionCallPointer].params:"", 
+					functionCallStack[functionCallPointer].moduleName,
+					functionCallStack[functionCallPointer].lineNumber);
+				} else {
+				fprintf(execprog,"%sREPORT %s@ %s:%d\n",getspaces(functionCallPointer),
+					functionCallStack[functionCallPointer].functionName, 
+					functionCallStack[functionCallPointer].moduleName,
+					functionCallStack[functionCallPointer].lineNumber);
+				}
 			}
 			fclose(execprog);
 		}
@@ -853,12 +873,11 @@ A4GLSTK_getStackTrace (void)
 	strcat (stackTrace, (char *) functionCallStack[i].functionName);
       else
 	{
-	  SPRINTF3 (tmpStackTrace,
-		    "%s (Line %d) calls  %s",
-		    functionCallStack[i].moduleName, functionCallStack[i].lineNumber,
-		    //functionCallStack[i].funcModuleName, functionCallStack[i].funcLineNumber,
- 			functionCallStack[i].functionName
-			);
+	  if ( functionCallStack[i].functionType=='F') {
+	  SPRINTF3 (tmpStackTrace, "%s (Line %d) calls  %s", functionCallStack[i].moduleName, functionCallStack[i].lineNumber, functionCallStack[i].functionName);
+	} else {
+	  SPRINTF3 (tmpStackTrace, "%s (Line %d) calls REPORT %s", functionCallStack[i].moduleName, functionCallStack[i].lineNumber, functionCallStack[i].functionName);
+	}
 
 	  if (strlen (stackTrace) + strlen (tmpStackTrace) < sizeof (stackTrace) + 5)
 	    {
@@ -871,7 +890,7 @@ A4GLSTK_getStackTrace (void)
 	}
 
       /* Don't put the brackets on for a MAIN */
-      if (strcmp (functionCallStack[i].functionName, "MAIN") != 0)
+      if (strcmp (functionCallStack[i].functionName, "MAIN") != 0 && functionCallStack[i].functionType=='F')
 	{
 	  strcat (stackTrace, "(");
 

@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.204 2012-07-10 11:36:33 mikeaubury Exp $
+# $Id: report.c,v 1.205 2012-09-27 12:07:15 mikeaubury Exp $
 #
 */
 
@@ -2419,7 +2419,7 @@ A4GL_pdf_push_report_section (struct pdf_rep_structure *rep, char *mod, char *re
 int
 A4GL_push_report_section (struct rep_structure *rep, char *mod, char *repname, int lineno, char where, char *why, int rb)
 {
-
+char buff[200];
   // Maintain the report block (rb) stack - normally this is just needed for when the PAGE HEADER
   // or PAGE TRAILER triggers in the middle of print in an ON EVERY ROW or BEFORE/AFTER GROUP etc
   // Although - this is only used for CONVERTIBLE reports anyway...
@@ -2444,6 +2444,8 @@ A4GL_push_report_section (struct rep_structure *rep, char *mod, char *repname, i
   rep->curr_rb = rb;
 
   lvl++;
+  A4GLSTK_pushFunction_v3(repname,0,0,mod,lineno,NULL,'R');
+
   return rb;
 }
 
@@ -2466,7 +2468,7 @@ A4GL_pop_report_section (struct rep_structure *rep, int rb)
 
 
   rep->curr_rb =-1;
-
+  A4GLSTK_popFunction_nl(0,0);
 }
 
 
