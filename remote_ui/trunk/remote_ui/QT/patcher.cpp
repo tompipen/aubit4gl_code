@@ -97,7 +97,7 @@ void VDCUpdate::beginReadXml()
 {
     QList<QList<QString> > serverVars = readServerXml(QDir::tempPath() + "/vdc.xml");
     #ifdef Q_WS_MAC
-        QList<QString> clientVars = readClientXml(QDir::currentPath() + "/VDC.app/Contents/MacOS/versions.xml");
+        QList<QString> clientVars = readClientXml(QApplication::applicationDirPath() + "/versions.xml");
     #else
         QList<QString> clientVars = readClientXml(QApplication::applicationDirPath() + "/versions.xml");
     #endif
@@ -170,7 +170,7 @@ void VDCUpdate::beginReadXml()
     } else {
         QString filePath;
         #ifdef Q_WS_MAC
-            filePath = QString(QDir::currentPath() + "/VDC.app/Contents/MacOS/versions.xml");
+            filePath = QString(QApplication::applicationDirPath() + "/versions.xml");
         #else
             filePath = QString((QApplication::applicationDirPath() + "/versions.xml"));
         #endif
