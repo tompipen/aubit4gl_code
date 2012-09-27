@@ -3907,11 +3907,12 @@ void ScreenHandler::checkForUpdate()
     QString a4gl_version_client = VDC::readSettingsFromIni("", "a4gl_version");
     if(!a4gl_version_client.isNull())
     {
-        VentasUpdate *vUpdate = new VentasUpdate(0);
-        vUpdate->start();
+        MasterUpdate *mUpdate = new MasterUpdate;
+        mUpdate->run();
+        mUpdate->wait();
 
-        /*VentasUpdate *vu = new VentasUpdate(0);
-        vu->checkForNewUpdates();*/
+        VentasUpdate *vUpdate = new VentasUpdate(1);
+        vUpdate->start();
     }
 }
 
