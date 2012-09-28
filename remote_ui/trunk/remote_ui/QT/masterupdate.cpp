@@ -49,7 +49,7 @@ void MasterUpdate::finish(QNetworkReply *reply)
         }
         QString clientMd5 = file.readAll().trimmed();
 
-        if(clientMd5 != md5Hash)
+        if(clientMd5 != md5Hash.trimmed())
         {
             QString patchFileName;
             #ifdef Q_WS_WIN
