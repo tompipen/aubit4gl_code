@@ -105,10 +105,10 @@ void CopyBinaries::copyBinaries(QString tmpDirPath, QString newDirPath)
 
     QString prog ;
 #ifdef Q_WS_X11
-    setEnv("LD_LIBRARY_PATH", QApplication::applicationDirPath(), 1);
+    //setEnv("LD_LIBRARY_PATH", QApplication::applicationDirPath(), 1);
 #endif
 #ifdef Q_WS_MAC
-    setEnv("DYLD_LIBRARY_PATH", "/Applications/VENTAS-Software/VDC.app/Contents/Frameworks/", 1);
+    //setEnv("DYLD_LIBRARY_PATH", "/Applications/VENTAS-Software/VDC.app/Contents/Frameworks/", 1);
 #endif
     prog = QString(QApplication::applicationDirPath() + "/VDC");
     QProcess process;
