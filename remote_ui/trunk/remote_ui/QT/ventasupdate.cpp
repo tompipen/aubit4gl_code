@@ -245,10 +245,10 @@ void VentasUpdate::downloadBinarie()
     if(file.exists())
     {
         QProcess *proc = new QProcess;
+        QApplication::quit();
         #ifdef Q_WS_WIN
             proc->start(file.fileName());
             Sleep(1500);
-            QApplication::quit();
         #endif
         #ifdef Q_WS_X11
            proc->start(file.fileName());
