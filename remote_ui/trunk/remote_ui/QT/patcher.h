@@ -36,6 +36,7 @@ private:
     QNetworkReply *mReply;
     QPushButton *mPushbutton;
     QTextEdit *mTextEdit;
+    QPushButton *cButton;
 
 public slots:
     void updateDownloadProgress(qint64,qint64);

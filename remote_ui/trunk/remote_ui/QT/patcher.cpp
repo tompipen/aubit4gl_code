@@ -33,7 +33,7 @@ VDCUpdate::VDCUpdate() : QWidget()
     mProgress = new QProgressBar(this);
     mTextEdit = new QTextEdit(this);
     mReply = NULL;
-    QPushButton *cButton = new QPushButton(tr("Abort"), this);
+    cButton = new QPushButton(tr("&Abort"), this);
     connect(cButton, SIGNAL(clicked()), this, SLOT(abort()));
     //QPushButton *showLogButton = new QPushButton(tr("Show Log"), this);
     //showLogButton->setEnabled(false);
@@ -353,9 +353,10 @@ void VDCUpdate::loadBinarieFinished(QNetworkReply *reply)
 
         if(p_zipunzip->unzipArchiv(QDir::tempPath(), findPackage(), QString(QDir::tempPath() + "/VDC")))
         {
+            cButton->setText("&Close");
             logMessage("[DEBUG] Entpacken war erfolgreich.");
             getTextEdit()->append(tr("Extracting finished."));
-            getTextEdit()->append(tr("Coping files to working directorie."));
+            getTextEdit()->append(tr("Copy files to workdirectory."));
             getProgressBar()->setValue(100);
 
             QProcess *proc = new QProcess;
