@@ -13,9 +13,20 @@ void MasterUpdate::run()
 
 void MasterUpdate::start()
 {
+    QString patcherXmlFile;
+    #ifdef Q_WS_MAC
+        patcherXmlFile = "patchermac.xml";
+    #endif
+    #ifdef Q_WS_X11
+        patcherXmlFile = "patcherlin.xml";
+    #endif
+    #ifdef Q_WS_WIN
+        patcherXmlFile = "patcherwin.xml";
+    #endif
+
     qDebug() << "Lade update.xml vom Server";
     QNetworkAccessManager *manager = new QNetworkAccessManager;
-    manager->get(QNetworkRequest(QUrl("http://www.ventas.de/wp-content/uploads/downloads/autoupdate/update.xml")));
+    manager->get(QNetworkRequest(QUrl(QString("http://www.ventas.de/wp-content/uploads/downloads/autoupdate/%1").arg(patcherXmlFile))));
     connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(finish(QNetworkReply*)));
 
 }
