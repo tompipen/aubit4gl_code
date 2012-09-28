@@ -380,9 +380,7 @@ void VDCUpdate::loadBinarieFinished(QNetworkReply *reply)
             {
                 if(proc->waitForStarted(6000))
                 {
-                    #ifdef Q_WS_WIN
-                        QApplication::quit();
-                    #endif
+                    QApplication::quit();
                 } else {
                     getTextEdit()->append(QString("Datei konnte nicht ausgefuehrt: %1").arg(prog));
                 }
