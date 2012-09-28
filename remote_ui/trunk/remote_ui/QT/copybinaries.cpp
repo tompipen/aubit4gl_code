@@ -112,7 +112,11 @@ void CopyBinaries::copyBinaries(QString tmpDirPath, QString newDirPath)
 #endif
     prog = QString(QApplication::applicationDirPath() + "/VDC");
     QProcess process;
+#ifdef Q_WS_WIN
     process.startDetached(QString("rundll32 url.dll,FileProtocolHandler \"%1\"").arg( prog));
+#else
+    process.start(prog);
+#endif
     logMessage(QString("[DEBUG] Starte VDC erneut mit Path: %1").arg(prog));
 
     //exit(0);
