@@ -323,25 +323,16 @@ void LoginForm::aboutVDC(QWidget *parent)
 {
 
     QFile file;
+    QString clientOs;
     QList<QString> textList;
     QList<QList<QString> > returnList;
 
-    #ifdef Q_WS_MAC
-        file.setFileName(QDir::currentPath() + "/VDC.app/Contents/MacOS/versions.xml");
-    #else
-        file.setFileName(QApplication::applicationDirPath() + "/versions.xml");
-    #endif
-
-    QString clientOs;
+    file.setFileName(QApplication::applicationDirPath() + "/versions.xml");
 
     if(!file.open(QIODevice::ReadOnly))
     {
-        #ifdef Q_WS_MAC
-            Dialog *dialog = new Dialog("VENTAS Update", QString("Failed to Open: %1").arg(QDir::currentPath() + "VDC.app/Contents/MacOS/versions.xml"), "", "stop", this, Qt::WindowStaysOnTopHint);
-        #else
-            Dialog *dialog = new Dialog("VENTAS Update", QString("Failed to Open: %1").arg(QDir::currentPath() + "/versions.xml"), "", "stop", this, Qt::WindowStaysOnTopHint);
-        #endif
 
+        Dialog *dialog = new Dialog("VENTAS Update", QString("Failed to Open: %1").arg(QApplication::applicationDirPath() + "/versions.xml"), "", "stop", this, Qt::WindowStaysOnTopHint);
         dialog->createButton(1, "Ok", "Ok", "ok_gruen.png");
         connect(dialog->getAction("OK"), SIGNAL(triggered()), dialog, SLOT(close()));
         dialog->show();
@@ -397,18 +388,20 @@ void LoginForm::aboutVDC(QWidget *parent)
     labellogo->setPixmap(pix);
     labellogo->setAlignment(Qt::AlignTop);
     space->setFixedWidth(25);
+    QString a4glVersionClient = VDC::readSettingsFromIni("", "a4gl_version");
+    QString xmlVersionClient = VDC::readSettingsFromIni("", "xml_version");
 
     if(!returnList.isEmpty())
     {
         if(!returnList.at(0).isEmpty())
         {
-            labeltext->setText(QString("<p style=\"font-weight: bold;\">VDC - Ventas Desktop Client for A4GL</p>Release Date: %2<br>A4GL Version: %3<br>XML Protocol Version: %4<br>Qt Version: %1<br><br>Copyright %5 %6").arg(QT_VERSION_STR).arg(returnList.at(0).at(0)).arg(returnList.at(0).at(2)).arg(returnList.at(0).at(3)).arg(date) .arg("by VENTAS AG hamburg. All Rights Reserved.<br><br>The program is provided as is with no warranty of any kind,<br>including the warranty of design,<br>merchantability and fitness for a particular purpose. <br>You can get professional support (info@ventas.de)"));
+            labeltext->setText(QString("<p style=\"font-weight: bold;\">VDC - Ventas Desktop Client for A4GL</p>Release Date: %2<br>A4GL Version: %3<br>XML Protocol Version: %4<br>Qt Version: %1<br><br>Copyright %5 %6").arg(QT_VERSION_STR).arg(returnList.at(0).at(0)).arg(a4glVersionClient).arg(xmlVersionClient).arg(date) .arg("by VENTAS AG hamburg. All Rights Reserved.<br><br>The program is provided as is with no warranty of any kind,<br>including the warranty of design,<br>merchantability and fitness for a particular purpose. <br>You can get professional support (info@ventas.de)"));
 
         } else {
-            labeltext->setText(QString("<p style=\"font-weight: bold;\">VDC - Ventas Desktop Client for A4GL</p>Release Date: %2<br>A4gl Version: %3<br>XML Protocol Version: %4<br>Qt Version: %1 <br><br>Copyright %5 %6").arg(QT_VERSION_STR).arg("unknown").arg("unknown").arg("unknown").arg(date) .arg("by VENTAS AG hamburg. All Rights Reserved.<br><br>The program is provided as is with no warranty of any kind,<br>including the warranty of design,<br>merchantability and fitness for a particular purpose. <br>You can get professional support (info@ventas.de)"));
+            labeltext->setText(QString("<p style=\"font-weight: bold;\">VDC - Ventas Desktop Client for A4GL</p>Release Date: %2<br>A4gl Version: %3<br>XML Protocol Version: %4<br>Qt Version: %1 <br><br>Copyright %5 %6").arg(QT_VERSION_STR).arg("unknown").arg(a4glVersionClient).arg(xmlVersionClient).arg(date) .arg("by VENTAS AG hamburg. All Rights Reserved.<br><br>The program is provided as is with no warranty of any kind,<br>including the warranty of design,<br>merchantability and fitness for a particular purpose. <br>You can get professional support (info@ventas.de)"));
         }
     } else {
-        labeltext->setText(QString("<p style=\"font-weight: bold;\">VDC - Ventas Desktop Client for A4GL</p>Release Date: %2<br>A4gl Version: %3<br>XML Protocol Version: %4<br>Qt Version: %1 <br><br>Copyright %5 %6").arg(QT_VERSION_STR).arg("unknown").arg("unknown").arg("unknown").arg(date) .arg("by VENTAS AG hamburg. All Rights Reserved.<br><br>The program is provided as is with no warranty of any kind,<br>including the warranty of design,<br>merchantability and fitness for a particular purpose.<br>You can get professional support (info@ventas.de)"));
+        labeltext->setText(QString("<p style=\"font-weight: bold;\">VDC - Ventas Desktop Client for A4GL</p>Release Date: %2<br>A4gl Version: %3<br>XML Protocol Version: %4<br>Qt Version: %1 <br><br>Copyright %5 %6").arg(QT_VERSION_STR).arg("unknown").arg(a4glVersionClient).arg(xmlVersionClient).arg(date) .arg("by VENTAS AG hamburg. All Rights Reserved.<br><br>The program is provided as is with no warranty of any kind,<br>including the warranty of design,<br>merchantability and fitness for a particular purpose.<br>You can get professional support (info@ventas.de)"));
     }
 
     layout->addWidget(labellogo);
