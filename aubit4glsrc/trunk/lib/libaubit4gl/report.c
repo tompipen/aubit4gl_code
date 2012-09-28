@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.205 2012-09-27 12:07:15 mikeaubury Exp $
+# $Id: report.c,v 1.206 2012-09-28 07:14:54 mikeaubury Exp $
 #
 */
 
@@ -2444,7 +2444,7 @@ char buff[200];
   rep->curr_rb = rb;
 
   lvl++;
-  A4GLSTK_pushFunction_v3(repname,0,0,mod,lineno,NULL,'R');
+  //A4GLSTK_pushFunction_v3(repname,0,0,mod,lineno,NULL,'R');
 
   return rb;
 }
@@ -2468,7 +2468,7 @@ A4GL_pop_report_section (struct rep_structure *rep, int rb)
 
 
   rep->curr_rb =-1;
-  A4GLSTK_popFunction_nl(0,0);
+  //A4GLSTK_popFunction_nl(0,0);
 }
 
 
