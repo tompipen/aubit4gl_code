@@ -329,53 +329,48 @@ void LoginForm::aboutVDC(QWidget *parent)
 
     file.setFileName(QApplication::applicationDirPath() + "/versions.xml");
 
-    if(!file.open(QIODevice::ReadOnly))
+    if(file.open(QIODevice::ReadOnly))
     {
+        #ifdef Q_WS_WIN
+            clientOs = "WINDOWS";
+        #endif
+        #ifdef Q_WS_MAC
+            clientOs = "MAC";
+        #endif
+        #ifdef Q_WS_X11
+            clientOs = "LINUX";
+        #endif
 
-        Dialog *dialog = new Dialog("VENTAS Update", QString("Failed to Open: %1").arg(QApplication::applicationDirPath() + "/versions.xml"), "", "stop", this, Qt::WindowStaysOnTopHint);
-        dialog->createButton(1, "Ok", "Ok", "ok_gruen.png");
-        connect(dialog->getAction("OK"), SIGNAL(triggered()), dialog, SLOT(close()));
-        dialog->show();
-        return;
-    }
-    #ifdef Q_WS_WIN
-        clientOs = "WINDOWS";
-    #endif
-    #ifdef Q_WS_MAC
-        clientOs = "MAC";
-    #endif
-    #ifdef Q_WS_X11
-        clientOs = "LINUX";
-    #endif
+        QDomDocument doc;
+        doc.setContent(&file);
 
-    QDomDocument doc;
-    doc.setContent(&file);
-
-    QDomElement root = doc.documentElement();
-    QDomNode node = root.firstChildElement();
-    while(!node.isNull() && node.isElement())
-    {
-        QDomElement secElement = node.toElement();
-        if(!secElement.isNull())
+        QDomElement root = doc.documentElement();
+        QDomNode node = root.firstChildElement();
+        while(!node.isNull() && node.isElement())
         {
-            if(secElement.nodeName() == clientOs)
+            QDomElement secElement = node.toElement();
+            if(!secElement.isNull())
             {
-                QDomNode child = secElement.firstChild();
-                while(!child.isNull())
+                if(secElement.nodeName() == clientOs)
                 {
-                    QDomElement text = child.toElement();
-                    textList << text.text();
-                    child = child.nextSibling();
+                    QDomNode child = secElement.firstChild();
+                    while(!child.isNull())
+                    {
+                        QDomElement text = child.toElement();
+                        textList << text.text();
+                        child = child.nextSibling();
+                    }
+                    returnList.insert(returnList.count(), textList);
+                    textList.clear();
                 }
-                returnList.insert(returnList.count(), textList);
-                textList.clear();
-            }
 
+            }
+            node = node.nextSiblingElement();
         }
-        node = node.nextSiblingElement();
+
+        file.close();
     }
 
-    file.close();
     QWidget *widget = new QWidget(parent);
     QHBoxLayout *layout = new QHBoxLayout(widget);
     QLabel *labeltext = new QLabel(widget);
