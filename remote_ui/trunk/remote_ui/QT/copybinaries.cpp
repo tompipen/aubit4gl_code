@@ -114,8 +114,13 @@ void CopyBinaries::copyBinaries(QString tmpDirPath, QString newDirPath)
     QProcess process;
 #ifdef Q_WS_WIN
     process.startDetached(QString("rundll32 url.dll,FileProtocolHandler \"%1\"").arg( prog));
-#else
+#endif
+#ifdef Q_WS_MAC
     process.start(prog);
+#endif
+#ifdef Q_WS_X11
+    QStringList list = prog;
+    process.start("/bin/sh/ -c", list);
 #endif
     logMessage(QString("[DEBUG] Starte VDC erneut mit Path: %1").arg(prog));
 
