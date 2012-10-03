@@ -21,7 +21,7 @@ DEFINE len                INTEGER
 DEFINE msgcount           INTEGER
 DEFINE msgerrcnt          INTEGER
 
-DEFINE msgerror ARRAY[17] OF RECORD
+DEFINE msgerror ARRAY[20] OF RECORD
        errline            CHAR(256)
 END RECORD
 
@@ -198,7 +198,7 @@ DEFINE l_msg              CHAR(36)
             EXIT WHILE
         END IF
 
-        IF i>16 THEN
+        IF i>20 THEN
             EXIT WHILE
         END IF
 
@@ -208,7 +208,7 @@ DEFINE l_msg              CHAR(36)
         DISPLAY msgerror[i].errline,"" AT i+3,1
     END WHILE
 
-    WHILE i<=17
+    WHILE i<=20
 
         # to s_help[i].helpline
         DISPLAY " ","" AT i+3,1
@@ -224,7 +224,7 @@ END FUNCTION
 
 {----------------------------------------------------------
 
-	mynextpage()	Display up to 16 lines of help on form
+	mynextpage()	Display up to 20 lines of help on form
 
 }
 LOCAL FUNCTION mynextpage (l_count,l_msg)
@@ -261,7 +261,7 @@ DEFINE i                  INTEGER
             DISPLAY l_msg,"" AT i+3,1
         END IF
 
-        IF l_count>=msglen OR i>=16 THEN
+        IF l_count>=msglen OR i>=20 THEN
             EXIT WHILE
         END IF
 
@@ -270,18 +270,8 @@ DEFINE i                  INTEGER
 
     END WHILE
 
-    WHILE i<16
-        LET i=i+1
-
-        #clear s_help[i].helpline -- doesn't work?
-        #to s_help[i].helpline
-        DISPLAY " ","" AT i+3,1
-    END WHILE
-
     IF charcount>=msglen THEN
-
-        # to s_help[17].helpline
-        DISPLAY "(End of help message)" AT 20,1
+        display "End of help message" AT 24,1 attribute(reverse)
     END IF
 
     SET PAUSE MODE OFF
@@ -501,6 +491,7 @@ A4GL_debug("filename=%s",filename);
 
 endcode
 
+    options menu line 1 # In case the running program has something else set
     OPEN WINDOW a4gl_helpw1 AT 1,1 WITH 24 ROWS, 80 COLUMNS
 
     CALL aclfgl_openiem(filename,n)
@@ -520,6 +511,10 @@ endcode
     SET PAUSE MODE OFF
 
     MENU "Help"
+        before menu
+            if charcount>=msglen then
+                next option "Resume"
+            end if
 
         COMMAND "Screen" "Displays next page of help"
 
