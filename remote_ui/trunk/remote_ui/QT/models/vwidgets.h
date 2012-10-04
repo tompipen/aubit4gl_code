@@ -334,6 +334,7 @@ public:
     bool img;
     QString fieldValue; //Attribute to check that the image is changed(avoiding repaint of the whole mask if the same image is displayed)
     int x,y,w;
+    int isFormHidden;
 
 };
 

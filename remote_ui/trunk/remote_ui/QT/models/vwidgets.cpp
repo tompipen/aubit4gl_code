@@ -959,6 +959,7 @@ MainFrame::vdcdebug("WidgetHelper","createLabel", "const QDomElement& formField,
    label->colName = colName;
    label->sqlTabName = tabName;
    label->w = w;
+   label->isFormHidden = hidden;
 
    QString comments = labelElement.attribute("comments");
    if(!comments.isEmpty()){

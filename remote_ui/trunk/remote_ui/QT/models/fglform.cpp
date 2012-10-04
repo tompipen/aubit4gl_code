@@ -1461,23 +1461,26 @@ QMenu* FglForm::createMenuHideShowFields(QObject *obj)
     Q_UNUSED(obj);
     QMenu *hideFields = new QMenu("Show/Hide Fields");
         for(int i=0; i < this->ql_fglFields.count(); i++) {
-            if(QLabel *la = qobject_cast<QLabel*> (this->findFieldByName(this->ql_fglFields.at(i)->colName())))
+            if(Label *la = qobject_cast<Label*> (this->findFieldByName(this->ql_fglFields.at(i)->colName())))
             {
-                int hideColumn = VDC::readSettingsFromIni(formName(), QString(ql_fglFields.at(i)->colName() + "/hideColumn")).toInt();
-                if(!la->text().isEmpty()) {
-                    rightAct = new QAction(la->text(), this);
-                    rightAct->setObjectName(ql_fglFields.at(i)->colName());
-                    rightAct->setCheckable(true);
-                    if(hideColumn > 0) {
-                        rightAct->setChecked(true);
+                if(!la->isFormHidden)
+                {
+                    int hideColumn = VDC::readSettingsFromIni(formName(), QString(ql_fglFields.at(i)->colName() + "/hideColumn")).toInt();
+                    if(!la->text().isEmpty()) {
+                        rightAct = new QAction(la->text(), this);
+                        rightAct->setObjectName(ql_fglFields.at(i)->colName());
+                        rightAct->setCheckable(true);
+                        if(hideColumn > 0) {
+                            rightAct->setChecked(true);
 
-                    } else {
-                        rightAct->setChecked(false);
+                        } else {
+                            rightAct->setChecked(false);
+                        }
+                        hideFields->addAction(rightAct);
+                     } else {
+                        rightAct = new QAction(ql_fglFields.at(i)->colName(), this);
+                        hideFields->addAction(rightAct);
                     }
-                    hideFields->addAction(rightAct);
-                 } else {
-                    rightAct = new QAction(ql_fglFields.at(i)->colName(), this);
-                    hideFields->addAction(rightAct);
                 }
             }
         }
