@@ -491,8 +491,8 @@ A4GL_debug("filename=%s",filename);
 
 endcode
 
-    options menu line 1 # In case the running program has something else set
-    OPEN WINDOW a4gl_helpw1 AT 1,1 WITH 24 ROWS, 80 COLUMNS
+    #options menu line 1 # In case the running program has something else set
+    OPEN WINDOW a4gl_helpw1 AT 1,1 WITH 24 ROWS, 80 COLUMNS ATTRIBUTES (menu line 1)
 
     CALL aclfgl_openiem(filename,n)
      RETURNING l_count,l_msg
