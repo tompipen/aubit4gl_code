@@ -45,7 +45,7 @@ void WebBrowser::createBrowser()
     sAction->setShortcut(Qt::CTRL + Qt::Key_F);
     this->addAction(sAction);
     connect(sAction, SIGNAL(triggered()), this, SLOT(openSearch()));
-    this->show();
+    //this->show();
 }
 void WebBrowser::loadUrl(const QUrl &http)
 {

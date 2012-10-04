@@ -3887,6 +3887,7 @@ void ScreenHandler::setUrl(int id, const QUrl &http)
             p_fglform->setBrowser(p_browser);
             code = 0;
             p_browser->loadUrl(http);
+            p_fglform->getBrowser()->show();
             break;
         }
     }
