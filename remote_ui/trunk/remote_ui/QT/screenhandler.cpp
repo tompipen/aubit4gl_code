@@ -2657,6 +2657,7 @@ MainFrame::vdcdebug("ScreenHandler","displayError", "QString text");
       connect(errorDialog->getAction("OK"), SIGNAL(triggered()), errorDialog, SLOT(close()));
       connect(errorDialog, SIGNAL(finished(int)), errorDialog, SLOT(deleteLater()));
       errorDialog->setAttribute(Qt::WA_DeleteOnClose, true);
+      errorDialog->setWindowFlags(Qt::WindowStaysOnTopHint);
       errorDialog->show();
       errorDialog->raise();
    }
@@ -2703,6 +2704,7 @@ MainFrame::vdcdebug("ScreenHandler","displayMessage", "QString text");
       connect(this, SIGNAL(windowCreated()), errorDialog, SLOT(close()));
       connect(errorDialog, SIGNAL(finished(int)), errorDialog, SLOT(deleteLater()));
       errorDialog->setAttribute(Qt::WA_DeleteOnClose, true);
+      errorDialog->setWindowFlags(Qt::WindowStaysOnTopHint);
       errorDialog->show();
       errorDialog->raise();
    }
