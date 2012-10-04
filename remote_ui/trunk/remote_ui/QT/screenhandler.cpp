@@ -2287,6 +2287,12 @@ if(qsl_triggereds.size() > 0)
 */
    p_fglform->raise();
 
+   if(p_fglform->getBrowser() != NULL)
+   {
+       p_fglform->getBrowser()->activateWindow();
+       p_fglform->getBrowser()->raise();
+   }
+
    //p_fglform->checkState();
 
 
@@ -3878,6 +3884,7 @@ void ScreenHandler::setUrl(int id, const QUrl &http)
     {
         if(QString::number(id) == p_browser->objectName())
         {
+            p_fglform->setBrowser(p_browser);
             code = 0;
             p_browser->loadUrl(http);
             break;
@@ -3894,6 +3901,7 @@ void ScreenHandler::closeBrowser(int id)
       if(QString::number(id) == p_browser->objectName())
       {
           p_browser->closeBrowser();
+          p_fglform->setBrowser(NULL);
           return;
       }
   }

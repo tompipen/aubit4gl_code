@@ -112,6 +112,8 @@ public:
    Dialog* dialog(){ return p_dialog; };
    Pulldown* pulldown() { return p_pulldown;};
    RingMenuPulldown* ringMenuPulldown() { return p_ringMenuPulldown;};
+   WebBrowser* setBrowser(WebBrowser *webBrowser) { b_browser = webBrowser; };
+   WebBrowser* getBrowser() { return b_browser; };
 
    void setConstrained(bool value);
    void showEvent(QShowEvent *);
@@ -304,6 +306,7 @@ private:
    Dialog *p_dialog;
    Pulldown *p_pulldown;
    RingMenuPulldown *p_ringMenuPulldown;
+   WebBrowser *b_browser;
    ToolBar *p_toolBar;
    QAction *rightAct;
    QAction *resetAct;

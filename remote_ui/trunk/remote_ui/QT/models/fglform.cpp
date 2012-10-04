@@ -101,6 +101,7 @@ FglForm::FglForm(QString windowName, QWidget *parent) : QMainWindow(parent){
    p_pulldown = NULL;
    p_ringMenuPulldown = NULL;
    p_actionMenu = NULL;
+   b_browser = NULL;
    formWidget = NULL;
    b_keybuffer = false;
    b_keybufferrunning = false;
