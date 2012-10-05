@@ -2055,6 +2055,11 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
       return;
    }
 
+   if(childElement.nodeName() == "CLEAR"){
+      clearDisplayArray(childElement);
+      return;
+   }
+
    if(childElement.nodeName() == "DISPLAYTO"){
       handleDisplayToElement(childElement);
       return;
