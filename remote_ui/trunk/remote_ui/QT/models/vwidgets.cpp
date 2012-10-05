@@ -2142,8 +2142,11 @@ MainFrame::vdcdebug("WidgetHelper","setFieldText", "QObject *object, QString fie
    }
 
    if(ComboBox *widget = qobject_cast<ComboBox *> (object)){
-      int index = widget->findData(fieldValue.trimmed());
-      widget->setCurrentIndex(index);
+      if(!fieldValue.trimmed().isEmpty())
+      {
+          int index = widget->findData(fieldValue.trimmed());
+        widget->setCurrentIndex(index);
+      }
 }
 
    if(ProgressBar *widget = qobject_cast<ProgressBar *> (object)){
