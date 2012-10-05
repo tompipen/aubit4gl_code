@@ -285,6 +285,8 @@ ClientSocket::ClientSocket(QObject *parent, QString name, QString pass, QString 
            p_currScreenHandler, SLOT(setFormOpts(QString, bool, int)));
    connect(&ph, SIGNAL(setFormOpts(QString, QString, int)), 
            p_currScreenHandler, SLOT(setFormOpts(QString, QString, int)));
+   connect(&ph, SIGNAL(clearDisplayArrayRows(QStringList)),
+           p_currScreenHandler, SLOT(clearDisplayArrayRows(QStringList)));
    // DISPLAY variable TO field (for example)
    connect(&ph, SIGNAL(setFieldBuffer(int, QString, int)),
            p_currScreenHandler, SLOT(setFieldBuffer(int, QString, int)));
@@ -2488,6 +2490,37 @@ MainFrame::vdcdebug("ProtocolHandler","handleDisplayToElement", "const QDomNode&
          setFieldBuffer(i,qsl_fieldValues.at(i), attribute);
       }
    }
+}
+
+void ProtocolHandler::clearDisplayArray(const QDomNode &domNode, QString parentNodeName)
+{
+    QDomElement currentElement = domNode.firstChild().toElement();
+
+    QStringList qsl_fieldNames;
+
+    while(!currentElement.isNull()){
+       QString nodeName = currentElement.nodeName();
+
+       if(nodeName == "FIELDLIST"){
+          QDomNodeList children = currentElement.childNodes();
+          for(int i=0; i<children.count(); ++i){
+             QDomNode child = children.at(i);
+             if(!child.isElement()){
+                continue;
+             }
+
+             QDomElement fieldElement = child.toElement();
+
+             if(fieldElement.nodeName() == "FIELD"){
+                qsl_fieldNames << fieldElement.attribute("NAME");
+             }
+          }
+       }
+       currentElement = currentElement.nextSiblingElement();
+
+       //emit clearDisplayArrayRows(qsl_fieldNames);
+    }
+    emit clearDisplayArrayRows(qsl_fieldNames);
 }
 
 //------------------------------------------------------------------------------
