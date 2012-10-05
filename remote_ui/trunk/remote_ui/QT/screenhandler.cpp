@@ -875,6 +875,63 @@ MainFrame::vdcdebug("ScreenHandler","createPrompt", "QString text, int charMode,
    connect(p_prompt, SIGNAL(sendDirect(QString)), this, SLOT(sendDirect(QString)));
 }
 
+void ScreenHandler::clearDisplayArrayRows(QStringList fieldNames)
+{
+    if(p_fglform == NULL)
+    {
+        return;
+    }
+
+    int indexRow = 0;
+
+    for(int i=0; i < fieldNames.count(); i++)
+    {
+        QString fieldName = fieldNames.at(i);
+        QString name;
+        int index2 = fieldName.indexOf("[");
+        int index3 = fieldName.indexOf("]")+1;
+
+        for(int j=0; j < fieldName.length(); j++)
+        {
+            if(QChar('[') == fieldName.at(j))
+            {
+                break;
+            }
+            name.append(fieldName.at(j));
+
+        }
+
+        if(!fieldName.contains("["))
+        {
+            indexRow = 1;
+        } else {
+            indexRow = fieldName.mid(index2+1, index3-index2-1-1).toInt();
+        }
+
+        if(!name.isEmpty())
+        {
+            QList<QWidget*> widget = p_fglform->findFieldsByName(name);
+            for(int k=0; k < widget.count(); k++)
+            {
+                if(LineEditDelegate *le = qobject_cast<LineEditDelegate*> (widget.at(k)))
+                {
+                    if(TableView *tv = qobject_cast<TableView*> (le->parent()))
+                    {
+                        if(indexRow > 0 && tv->model()->rowCount(QModelIndex()) > 0)
+                        {
+                            if(tv->isVisible())
+                            {
+                                tv->setText("", indexRow-1, le->column());
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+}
+
 //------------------------------------------------------------------------------
 // Method       : setFieldBuffer(QStringList FieldNames, QStringList FieldValues)
 // Filename     : screenhandler.cpp
@@ -1951,7 +2008,6 @@ MainFrame::vdcdebug("ScreenHandler","setFormOpts", "QString type, bool value, in
          event.attribute = "cancel";
 
          p_fglform->addFormEvent(event);
-
 
      }
 

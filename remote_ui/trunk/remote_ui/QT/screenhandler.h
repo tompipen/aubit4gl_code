@@ -257,6 +257,7 @@ public slots:
    void getTableNameComboBox(int);
    void getIndexOfComboBox(int, QString);
 
+   void clearDisplayArrayRows(QStringList fieldNames);
 
 
 signals:

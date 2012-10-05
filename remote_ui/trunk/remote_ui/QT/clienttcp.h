@@ -87,6 +87,7 @@ private:
    void handleStartup(const QDomNode&);
    void handleDisplayToElement(const QDomNode&, QString parentNodeName = "");
    void handleDisplayArrayElement(const QDomNode&, QString parentNodeName = "");
+   void clearDisplayArray(const QDomNode&, QString parentNodeName = "");
    void handleInputElement(const QDomNode&, int attribute = 0);
    void handleConstructElement(const QDomNode&);
    void handleWaitForEventElement(const QDomNode&);
@@ -147,6 +148,7 @@ signals:
    void handleXMLColors(QString);
 
 
+   void clearDisplayArrayRows(QStringList);
    void setFieldBuffer(QStringList, QStringList, int);
    void setFieldBuffer(int, QString, int);
    void setArrayBuffer(int, QString, QStringList);
