@@ -2681,20 +2681,20 @@ qDebug() << "context->fieldList()" << context->fieldList();
                             next = NULL;
                             break;
                           }
-                          next = context->fieldList().at(j+1);
-                          if(next->isEnabled() && !next->isHidden())
+
+                          if(next->isEnabled() && next->isVisible())
                           {
+                              next = context->fieldList().at(j+1);
                               break;
                           }
 
                       }
+                      next = NULL;
                       break;
                   }
               }
           }
       }
-
-
 
       if(next == NULL){ //no next field -> go to first field
           if(context->fieldList().isEmpty())
@@ -2858,7 +2858,15 @@ MainFrame::vdcdebug("FglForm","prevfield", "");
            {
                return;
            } else {
-               prev = context->fieldList().last();
+               for(int i=context->fieldList().count()-1; i > 0; i--)
+               {
+                   QWidget *field = context->fieldList().at(i);
+                   if(field->isEnabled() && field->isVisible())
+                   {
+                       prev = context->fieldList().at(i);
+                       break;
+                   }
+               }
            }
        }
        jumpToField(prev);
