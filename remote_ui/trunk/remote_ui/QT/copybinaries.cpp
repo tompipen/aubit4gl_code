@@ -119,7 +119,7 @@ void CopyBinaries::copyBinaries(QString tmpDirPath, QString newDirPath)
     process.start(prog);
 #endif
 #ifdef Q_WS_X11
-    QStringList list = prog;
+    QStringList list;// = prog;
     process.start("/bin/sh/ -c", list);
 #endif
     logMessage(QString("[DEBUG] Starte VDC erneut mit Path: %1").arg(prog));
