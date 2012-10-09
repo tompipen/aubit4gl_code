@@ -247,7 +247,8 @@ void VentasUpdate::downloadBinarie()
         QProcess *proc = new QProcess;
         QApplication::quit();
         #ifdef Q_WS_WIN
-            proc->start(file.fileName());
+            QProcess process;
+            process.startDetached(QString("rundll32 url.dll,FileProtocolHandler \"%1\"").arg( file.fileName()));
             Sleep(1500);
         #endif
         #ifdef Q_WS_X11
