@@ -3979,7 +3979,7 @@ void ScreenHandler::checkForUpdate()
         mUpdate->run();
         mUpdate->wait();
 
-        VentasUpdate *vUpdate = new VentasUpdate(1);
+        VentasUpdate *vUpdate = new VentasUpdate(0);
         vUpdate->start();
     }
 }
