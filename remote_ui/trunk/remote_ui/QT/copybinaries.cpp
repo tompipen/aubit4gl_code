@@ -107,11 +107,9 @@ void CopyBinaries::copyBinaries(QString tmpDirPath, QString newDirPath)
 #ifdef Q_WS_X11
     //setEnv("LD_LIBRARY_PATH", QApplication::applicationDirPath(), 1);
 #endif
-#ifdef Q_WS_MAC
-    //setEnv("DYLD_LIBRARY_PATH", "/Applications/VENTAS-Software/VDC.app/Contents/Frameworks/", 1);
-#endif
     prog = QString(QApplication::applicationDirPath() + "/VDC");
     QProcess process;
+
 #ifdef Q_WS_WIN
     process.startDetached(QString("rundll32 url.dll,FileProtocolHandler \"%1\"").arg( prog));
 #endif
@@ -119,8 +117,8 @@ void CopyBinaries::copyBinaries(QString tmpDirPath, QString newDirPath)
     process.start(prog);
 #endif
 #ifdef Q_WS_X11
-    QStringList list;// = prog;
-    process.start("/bin/sh/ -c", list);
+    QProcess *proc = new QProcess;
+    proc->start(prog);
 #endif
     logMessage(QString("[DEBUG] Starte VDC erneut mit Path: %1").arg(prog));
 
