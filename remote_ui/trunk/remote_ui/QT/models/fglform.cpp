@@ -3457,7 +3457,8 @@ QList<Fgl::Event> FglForm::getInputEvents(int start, int end, bool b_backward, b
 
               Fgl::Event event = ql_events.at(j);
               if(afterField.type == event.type &&
-                 afterField.attribute == event.attribute){
+                 afterField.attribute == event.attribute &&
+                 currentField()->objectName() == afterField.attribute){
                   ql_responseevents << event;
                   break;
               }
