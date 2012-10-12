@@ -1417,7 +1417,7 @@ MainFrame::vdcdebug("ScreenHandler","setFieldFocus", "QString fieldName");
               }
           }
       }
-      p_fglform->setCurrentField(fieldName, false);
+      p_fglform->setCurrentField(fieldName, true);
 
 /*
       // For fieldlist = table.*
