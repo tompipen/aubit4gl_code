@@ -1024,8 +1024,11 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
              {
                  Q_UNUSED(cb);
                  if(context->fieldList().contains(w->parentWidget())){
+                    if(currentWidget != w->parentWidget())
+                    {
                         jumpToField(w->parentWidget());
-                    return true;
+                        return true;
+                    }
                  }
              }
             if(w == currentField())
