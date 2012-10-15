@@ -2038,7 +2038,7 @@ MainFrame::vdcdebug("ScreenHandler","setFormOpts", "QString type, bool value, in
 
          event.type = Fgl::GUI_ACTION_EVENT;
          event.id = "-1";
-         event.attribute = "deleteRow";
+         event.attribute = "delete";
 
          p_fglform->addFormEvent(event);
 

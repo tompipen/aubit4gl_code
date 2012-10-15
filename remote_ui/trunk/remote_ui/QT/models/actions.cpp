@@ -103,6 +103,7 @@ MainFrame::vdcdebug("Actions","parseElement", "QDomNode xmlNode");
       {
           QString text = currentElement.attribute("text");
           QString image = currentElement.attribute("icon");
+
           if(!text.contains(","))
           {
               qsl_names << text.toLower();

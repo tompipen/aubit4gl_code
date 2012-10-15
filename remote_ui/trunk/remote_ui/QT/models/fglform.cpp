@@ -385,7 +385,7 @@ MainFrame::vdcdebug("FglForm","initActions", "");
    addFormAction(insertA);
 
 
-   Action *deleteA = new Action("deleteRow", tr("Delete"), this);
+   Action *deleteA = new Action("delete", tr("Delete"), this);
    addFormAction(deleteA);
 
    return;
@@ -4150,7 +4150,6 @@ MainFrame::vdcdebug("FglForm","checkActions", "");
    for(int i=0; i<formActions.count(); i++){
       formActions.at(i)->setEnabled(false);
    }
-
    checkGuiActions();
 //Comment out because the 4ad is not loaded.
   // if(state() == Fgl::MENU){
@@ -4319,7 +4318,7 @@ MainFrame::vdcdebug("FglForm","checkGuiActions", "");
          if(fAction->name() == "append")
             fAction->setEnabled(inputArray());
 
-         if(fAction->name() == "deleteRow")
+         if(fAction->name() == "delete")
             fAction->setEnabled(inputArray());
 
          if(fAction->name() == "editcopy")
@@ -4410,7 +4409,7 @@ MainFrame::vdcdebug("FglForm","handleGuiAction", "Action* fAction");
       return true;
    }
 
-   if(fAction->name() == "deleteRow"){
+   if(fAction->name() == "delete"){
       remove();
       return true;
    }
