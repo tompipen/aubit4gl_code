@@ -24,10 +24,10 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.248 2012-05-25 06:50:15 mikeaubury Exp $
+# $Id: ioform.c,v 1.249 2012-10-15 13:13:10 locbook Exp $
 #*/
 #ifndef lint
-static char const module_id[] = "$Id: ioform.c,v 1.248 2012-05-25 06:50:15 mikeaubury Exp $";
+static char const module_id[] = "$Id: ioform.c,v 1.249 2012-10-15 13:13:10 locbook Exp $";
 #endif
 
 /**
@@ -775,7 +775,7 @@ A4GL_set_field_colour_attr (FIELD * field, int do_reverse, int colour)
   int fg;
   int bg;
   int a1, a2;
-  char mm[20000];
+  //char mm[20000];
   f = (struct struct_scr_field *) (field_userptr (field));
 #ifdef DEBUG
   A4GL_debug ("set_field_colour_attr - do_reverse=%d colour=%d - %d\n", do_reverse, colour, A4GL_decode_colour_attr_aubit (colour));
@@ -806,8 +806,13 @@ A4GL_set_field_colour_attr (FIELD * field, int do_reverse, int colour)
 #endif
 
 // Redisplay the field to ensure the field attributes are use...
-  strcpy (mm, field_buffer (field, 0));
-  set_field_buffer (field, 0, mm);
+  //strcpy (mm, field_buffer (field, 0));
+  // cdl 2012-10-15 This set_field_buffer causes input to be limited to a 
+  //                single character in an input array field with an attribute
+  //                set. The man page says the buffer is set as a side effect 
+  //                of any editing operations on the corresponding field. 
+  //                So it shouldn't be needed...
+  //set_field_buffer (field, 0, mm);
 
   return;
 }
