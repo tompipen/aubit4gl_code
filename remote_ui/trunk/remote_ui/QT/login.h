@@ -72,6 +72,8 @@ public slots:
    void error(QString);
    void checkForUpdate();
    void setMainMenu();
+   void setOfficeInstallation();
+   void saveOfficeInstallation();
 
 private slots:
    void okPressed();
@@ -89,6 +91,8 @@ private slots:
 
 
 private:
+
+   QComboBox *mOfficeComboBox;
 
    //Progressbar for Update GUI
 

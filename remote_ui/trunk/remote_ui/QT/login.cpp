@@ -81,6 +81,10 @@ LoginForm::LoginForm(QWidget *parent)
    options->addAction(checkVersion);
    options->addSeparator();
 
+   QAction *ooStdProg = new QAction(tr("&Office standard installation"), this);
+   connect(ooStdProg, SIGNAL(triggered()), this, SLOT(setOfficeInstallation()));
+   options->addAction(ooStdProg);
+
    QAction *font = new QAction(tr("&Font"), this);
    font->setStatusTip(tr("Opens the Font Settings"));
    connect(font, SIGNAL(triggered()), this, SLOT(font()));
@@ -1213,6 +1217,48 @@ void LoginForm::m_c_envset()
 void LoginForm::removeCursor()
 {
   VDC::arrowCursor();
+}
+
+void LoginForm::setOfficeInstallation()
+{
+    QWidget *widget = new QWidget;
+    mOfficeComboBox = new QComboBox;
+    QLabel *label = new QLabel;
+    QVBoxLayout *vLayout = new QVBoxLayout();
+    QHBoxLayout *hLayout = new QHBoxLayout();
+    QPushButton *closeButton = new QPushButton(tr("&Close"));
+    connect(closeButton, SIGNAL(clicked()), widget, SLOT(close()));
+    QPushButton *saveButton = new QPushButton(tr("&Apply"));
+    connect(saveButton, SIGNAL(clicked()), this, SLOT(saveOfficeInstallation()));
+    connect(saveButton, SIGNAL(clicked()), widget, SLOT(close()));
+
+    label->setText("Please choose a Office installation: ");
+    mOfficeComboBox->addItem("Please choose...");
+    mOfficeComboBox->addItem("MS Office");
+    mOfficeComboBox->addItem("OpenOffice");
+
+    vLayout->addWidget(label);
+    vLayout->addWidget(mOfficeComboBox);
+
+    hLayout->addWidget(closeButton);
+    hLayout->addWidget(saveButton);
+    vLayout->addLayout(hLayout);
+
+    widget->setLayout(vLayout);
+    widget->show();
+}
+
+void LoginForm::saveOfficeInstallation()
+{
+    if(mOfficeComboBox)
+    {
+        if(mOfficeComboBox->currentIndex() > 0)
+        {
+            VDC::saveSettingsToIni("","officeStdProg", QString::number(mOfficeComboBox->currentIndex()));
+        } else {
+            emit setOfficeInstallation();
+        }
+    }
 }
 
 void LoginForm::checkForUpdate()
