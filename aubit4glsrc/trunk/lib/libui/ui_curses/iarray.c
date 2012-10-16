@@ -24,10 +24,10 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.176 2012-04-26 16:54:42 mikeaubury Exp $
+# $Id: iarray.c,v 1.177 2012-10-16 17:20:10 locbook Exp $
 #*/
 #ifndef lint
-static char const module_id[] = "$Id: iarray.c,v 1.176 2012-04-26 16:54:42 mikeaubury Exp $";
+static char const module_id[] = "$Id: iarray.c,v 1.177 2012-10-16 17:20:10 locbook Exp $";
 #endif
 
 /**
@@ -2725,6 +2725,7 @@ process_control_stack_internal (struct s_inp_arr *arr,  struct aclfgl_event_list
 	  A4GL_debug ("DO EXIT_INPUT_ABORT");
 #endif
 	  A4GL_add_to_control_stack (arr, FORMCONTROL_AFTER_INPUT, 0, 0, 0);
+          A4GL_add_to_control_stack (arr, FORMCONTROL_AFTER_ROW, arr->currentfield, 0, 0);
 	  rval = 0;
 	  new_state = 10;
 	}
