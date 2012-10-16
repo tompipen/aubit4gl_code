@@ -1,7 +1,7 @@
 #include "a4gl_lib_ui_tui_int.h"
 #ifndef lint
 	static char const module_id[] =
-		"$Id: generic_ui.c,v 1.70 2012-06-10 10:42:43 mikeaubury Exp $";
+		"$Id: generic_ui.c,v 1.71 2012-10-16 06:51:44 mikeaubury Exp $";
 #endif
 
 static int A4GL_find_shown (ACL_Menu * menu, int chk, int dir);
@@ -497,6 +497,8 @@ void
   ACL_Menu *menu;
   int matches=0;
   menu = vmenu;
+
+  menu->explicitFirstOption=1;
   A4GL_h_disp_opt (menu, menu->curr_option, menu->menu_offset, menu->mn_offset,
               NORM);
   A4GL_trim (nextopt);
@@ -1148,11 +1150,6 @@ void UILIB_A4GL_ensure_menu_option (int optno, void* menuv, char *txt, char *key
 
 
 
-
-
-
-
-
 void
  UILIB_A4GL_finish_create_menu (void* menuv)
 {
@@ -1181,6 +1178,7 @@ void
  if (menu->evt) { A4GL_clr_evt_timeouts(menu->evt); }
 
 
+  menu->explicitFirstOption=0;
 
 #ifdef DEBUG
   A4GL_debug ("Current option=%p", menu->curr_option);
@@ -1359,6 +1357,7 @@ int UILIB_aclfgl_aclfgl_add_to_toolbar (int n) {
 }
 
 void UILIB_A4GL_ui_cancel(int type){
+	A4GL_assertion(1,"CANCEL INSERT/CANCEL DELETE not implemented for this UI");
 	// does nothing for this UI 
 }
 

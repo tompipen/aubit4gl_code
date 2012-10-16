@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.178 2011-12-15 18:04:44 mikeaubury Exp $
+# $Id: curslib.c,v 1.179 2012-10-16 06:51:44 mikeaubury Exp $
 #*/
 
 /**
@@ -41,7 +41,7 @@
  */
 #ifndef lint
 static char const module_id[] =
-  "$Id: curslib.c,v 1.178 2011-12-15 18:04:44 mikeaubury Exp $";
+  "$Id: curslib.c,v 1.179 2012-10-16 06:51:44 mikeaubury Exp $";
 #endif
 /*
 =====================================================================
@@ -929,6 +929,22 @@ UILIB_A4GL_disp_h_menu (void *menuv)
   A4GL_display_menu (menu);
 }
 
+
+static void setFirstAvailableOption(ACL_Menu *menu) {
+
+ menu->curr_option=(ACL_Menu_Opts *) menu->first;
+
+  while (menu->curr_option->attributes & ACL_MN_HIDE)
+    {
+      if (menu->curr_option == menu->last)
+        break;
+      menu->curr_option =
+        (ACL_Menu_Opts *) menu->curr_option->next_option;
+    }
+
+}
+
+
 /**
  * 4GL CALL
  * @todo Describe function
@@ -945,6 +961,13 @@ UILIB_A4GL_menu_loop_v2 (void *menuv, void *vevt)
   ACL_Menu *menu;
 
   menu = menuv;
+
+if ( menu->explicitFirstOption!=2) {
+  if ( menu->explicitFirstOption==0) {
+	setFirstAvailableOption(menu);
+  }
+ menu->explicitFirstOption=2;
+}
   A4GL_chkwin ();
   A4GL_menu_setcolor (menu, NORMAL_TEXT);
   A4GL_current_window (menu->parent_window_name);
