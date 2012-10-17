@@ -16,7 +16,6 @@
 //------------------------------------------------------------------------------
 #include <QDebug>
 #include <QPushButton>
-#include <QLabel>
 #include <QKeyEvent>
 
 #include "dialog.h"
@@ -70,7 +69,7 @@ MainFrame::vdcdebug("*parent,","WindowFlags f)", """");
    this->setWindowTitle(title);
 
    QHBoxLayout *pixLayout = new QHBoxLayout;
-   QLabel *p_label    = new QLabel(comment);
+   mLabel    = new QLabel(comment);
    QLabel *p_pixLabel = new QLabel();
    QString filename   = "pics:";
 
@@ -79,7 +78,7 @@ MainFrame::vdcdebug("*parent,","WindowFlags f)", """");
 
    p_pixLabel->setPixmap(filename);
    pixLayout->addWidget(p_pixLabel);
-   pixLayout->addWidget(p_label);
+   pixLayout->addWidget(mLabel);
    pixLayout->addStretch();
 
    layout->addLayout(pixLayout);
@@ -88,6 +87,11 @@ MainFrame::vdcdebug("*parent,","WindowFlags f)", """");
 
   // this->setModal(true);
    this->adjustSize();
+}
+
+void Dialog::setText(QString text)
+{
+    mLabel->setText(text);
 }
 
 void Dialog::closeEvent(QCloseEvent *event)

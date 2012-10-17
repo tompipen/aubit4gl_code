@@ -102,6 +102,7 @@ protected:
 
 private:
 
+   Dialog *mDummyMessageDialogBox;
    QComboBox *mOfficeComboBox;
    #ifdef KDChart_Version
    ChartInterface *m_chart;
@@ -153,6 +154,7 @@ private:
    bool clearFieldEvents;
 public slots:
 
+   void closeErrorDialog();
    void saveOfficeInstallation();
    void createStdProgWindow();
    void setOptions(QString, QString);

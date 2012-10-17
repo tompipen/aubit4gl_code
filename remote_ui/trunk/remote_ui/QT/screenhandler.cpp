@@ -62,6 +62,7 @@ MainFrame::vdcdebug("ScreenHandler","ScreenHandler", "QObject *parent");
    b_runinfo = false;
    openFileSuccess = 0;
    stdOfficeProg = 0;
+   mDummyMessageDialogBox = NULL;
    this->installEventFilter(this);
    QApplication::processEvents();
  }
@@ -2707,22 +2708,28 @@ MainFrame::vdcdebug("ScreenHandler","displayError", "QString text");
          sb->displayError(text);
          return;
       }
-      Dialog *errorDialog = new Dialog(tr("Error"), text, "dialog", "stop", NULL);
-      errorDialog->setModal(true);
-      errorDialog->createButton(1, "OK", "OK", "ok.png");
-      QPushButton *qpb = (QPushButton *) errorDialog->getAction("OK")->parent();
-      QString shortcut = "F12";
-      qpb->setShortcut(shortcut);
-      XML2Style *xml2Style = new XML2Style();
-      xml2Style->readXML(formsStyles);
-      errorDialog->setStyleSheet(xml2Style->getStyleSheet());
-      xml2Style->deleteLater();
-      connect(errorDialog->getAction("OK"), SIGNAL(triggered()), errorDialog, SLOT(close()));
-      connect(errorDialog, SIGNAL(finished(int)), errorDialog, SLOT(deleteLater()));
-      errorDialog->setAttribute(Qt::WA_DeleteOnClose, true);
-      errorDialog->setWindowFlags(Qt::WindowStaysOnTopHint);
-      errorDialog->show();
-      errorDialog->raise();
+
+      if(!mDummyMessageDialogBox)
+      {
+          mDummyMessageDialogBox = new Dialog(tr("Error"), "", "dialog", "stop", NULL);
+          mDummyMessageDialogBox->setModal(true);
+          mDummyMessageDialogBox->createButton(1, "OK", "OK", "ok.png");
+          QPushButton *qpb = (QPushButton *) mDummyMessageDialogBox->getAction("OK")->parent();
+          QString shortcut = "F12";
+          qpb->setShortcut(shortcut);
+          XML2Style *xml2Style = new XML2Style();
+          xml2Style->readXML(formsStyles);
+          mDummyMessageDialogBox->setStyleSheet(xml2Style->getStyleSheet());
+          xml2Style->deleteLater();
+          connect(mDummyMessageDialogBox->getAction("OK"), SIGNAL(triggered()), mDummyMessageDialogBox, SLOT(close()));
+          connect(mDummyMessageDialogBox->getAction("OK"), SIGNAL(triggered()), this, SLOT(closeErrorDialog()));
+          connect(mDummyMessageDialogBox, SIGNAL(finished(int)), mDummyMessageDialogBox, SLOT(deleteLater()));
+          mDummyMessageDialogBox->setAttribute(Qt::WA_DeleteOnClose, true);
+          mDummyMessageDialogBox->setWindowFlags(Qt::WindowStaysOnTopHint);
+          mDummyMessageDialogBox->show();
+          mDummyMessageDialogBox->raise();
+      }
+      mDummyMessageDialogBox->setText(text);
    }
 
 }
@@ -2753,27 +2760,34 @@ MainFrame::vdcdebug("ScreenHandler","displayMessage", "QString text");
           sb->displayError(text);
           return;
        }
-       Dialog *errorDialog = new Dialog(tr("Message"), text, "dialog", "info", NULL);
-      errorDialog->setModal(true);
-      errorDialog->createButton(1, "OK", "OK", "ok.png");
-      QPushButton *qpb = (QPushButton *) errorDialog->getAction("OK")->parent();
-      QString shortcut = "F12";
-      qpb->setShortcut(shortcut);
-      XML2Style *xml2Style = new XML2Style();
-      xml2Style->readXML(formsStyles);
-      errorDialog->setStyleSheet(xml2Style->getStyleSheet());
-      xml2Style->deleteLater();
-      connect(errorDialog->getAction("OK"), SIGNAL(triggered()), errorDialog, SLOT(close()));
-      connect(this, SIGNAL(windowCreated()), errorDialog, SLOT(close()));
-      connect(errorDialog, SIGNAL(finished(int)), errorDialog, SLOT(deleteLater()));
-      errorDialog->setAttribute(Qt::WA_DeleteOnClose, true);
-      errorDialog->setWindowFlags(Qt::WindowStaysOnTopHint);
-      errorDialog->show();
-      errorDialog->raise();
+       if(!mDummyMessageDialogBox){
+          mDummyMessageDialogBox = new Dialog(tr("Message"), "", "dialog", "info", NULL);
+          mDummyMessageDialogBox->setModal(true);
+          mDummyMessageDialogBox->createButton(1, "OK", "OK", "ok.png");
+          QPushButton *qpb = (QPushButton *) mDummyMessageDialogBox->getAction("OK")->parent();
+          QString shortcut = "F12";
+          qpb->setShortcut(shortcut);
+          XML2Style *xml2Style = new XML2Style();
+          xml2Style->readXML(formsStyles);
+          mDummyMessageDialogBox->setStyleSheet(xml2Style->getStyleSheet());
+          xml2Style->deleteLater();
+          connect(mDummyMessageDialogBox->getAction("OK"), SIGNAL(triggered()), mDummyMessageDialogBox, SLOT(close()));
+          connect(mDummyMessageDialogBox->getAction("OK"), SIGNAL(triggered()), this, SLOT(closeErrorDialog()));
+          connect(this, SIGNAL(windowCreated()), mDummyMessageDialogBox, SLOT(close()));
+          connect(mDummyMessageDialogBox, SIGNAL(finished(int)), mDummyMessageDialogBox, SLOT(deleteLater()));
+          mDummyMessageDialogBox->setAttribute(Qt::WA_DeleteOnClose, true);
+          mDummyMessageDialogBox->setWindowFlags(Qt::WindowStaysOnTopHint);
+          mDummyMessageDialogBox->show();
+          mDummyMessageDialogBox->raise();
+       }
+
+       mDummyMessageDialogBox->setText(text);
    }
+}
 
-
-
+void ScreenHandler::closeErrorDialog()
+{
+    mDummyMessageDialogBox = NULL;
 }
 
 //------------------------------------------------------------------------------

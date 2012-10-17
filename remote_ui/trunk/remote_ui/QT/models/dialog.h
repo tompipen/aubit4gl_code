@@ -18,6 +18,7 @@
 #define DIALOG_H
 
 #include <QDialog>
+#include <QLabel>
 #include <QLayout>
 #include <QButtonGroup>
 #include <QVBoxLayout>
@@ -36,6 +37,7 @@ public:
    void hideButton(QString);
    void showButton(QString);
    void closeEvent(QCloseEvent *event);
+   void setText(QString);
    QList<QAction*> actions();
    QAction* getAction(QString);
 
@@ -45,6 +47,7 @@ private:
    QLayout* layout;
    QLayout* buttonLayout;
    QButtonGroup *buttonGroup;
+   QLabel *mLabel;
 
 protected:
    void keyPressEvent(QKeyEvent *event);
