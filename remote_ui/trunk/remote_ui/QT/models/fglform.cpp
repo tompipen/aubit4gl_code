@@ -4728,6 +4728,15 @@ MainFrame::vdcdebug("FglForm","checkField", "");
                  WidgetHelper::setFieldText(widget, "");
               }
 
+          } else if(widget->getSqlType() == "SERIAL")
+          {
+              if(Fgl::isValidForType(Fgl::DTYPE_SERIAL, text, widget->format())){
+                  WidgetHelper::setFieldText(widget, text);
+              }
+              else{
+                 emit error("ERROR in Character conversion");
+                 WidgetHelper::setFieldText(widget, "");
+              }
           }
           if(DateEdit *edit = qobject_cast<DateEdit*> (widget))
           {
