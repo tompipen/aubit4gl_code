@@ -4748,7 +4748,11 @@ MainFrame::vdcdebug("FglForm","checkField", "");
               text.remove(">");
               text.remove("=");
               text = text.trimmed();
-
+              if(text.contains("."))
+              {
+                  this->error("Date Field is not Valid.");
+                  WidgetHelper::setFieldText(widget, "");
+              }
               if(!text.isEmpty())
               {
                   if(text.contains(":"))
