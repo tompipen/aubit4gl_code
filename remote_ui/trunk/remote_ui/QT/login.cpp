@@ -1234,8 +1234,8 @@ void LoginForm::setOfficeInstallation()
 
     label->setText("Please choose a Office installation: ");
     mOfficeComboBox->addItem("Please choose...");
-    mOfficeComboBox->addItem("MS Office");
-    mOfficeComboBox->addItem("OpenOffice");
+    mOfficeComboBox->addItem("Microsoft Office");
+    mOfficeComboBox->addItem("Open/Libre Office");
 
     vLayout->addWidget(label);
     vLayout->addWidget(mOfficeComboBox);
