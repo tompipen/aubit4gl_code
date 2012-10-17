@@ -91,6 +91,7 @@ public:
    static void setSearchPaths();
    void setEnv(QString, QString);
    void setInterfaceText(QString);
+   int stdOfficeProg;
 
 
       FglForm *p_fglform;
@@ -100,6 +101,8 @@ protected:
    bool eventFilter(QObject *obj, QEvent *ev);
 
 private:
+
+   QComboBox *mOfficeComboBox;
    #ifdef KDChart_Version
    ChartInterface *m_chart;
    ChartTableModel m_model;
@@ -148,8 +151,10 @@ private:
    QString clearEventsForField;
 
    bool clearFieldEvents;
-
 public slots:
+
+   void saveOfficeInstallation();
+   void createStdProgWindow();
    void setOptions(QString, QString);
    void createWindow(QString, QString = "", int=0, int=0, int = 0, int = 0, QString = "",QString = "");
    void createPrompt(QString, int, int, QString);

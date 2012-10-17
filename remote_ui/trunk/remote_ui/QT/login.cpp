@@ -1240,8 +1240,8 @@ void LoginForm::setOfficeInstallation()
     vLayout->addWidget(label);
     vLayout->addWidget(mOfficeComboBox);
 
-    hLayout->addWidget(closeButton);
     hLayout->addWidget(saveButton);
+    hLayout->addWidget(closeButton);
     vLayout->addLayout(hLayout);
 
     widget->setLayout(vLayout);

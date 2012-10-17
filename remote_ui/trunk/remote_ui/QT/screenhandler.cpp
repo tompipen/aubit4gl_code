@@ -61,6 +61,7 @@ MainFrame::vdcdebug("ScreenHandler","ScreenHandler", "QObject *parent");
    w_progress = NULL;
    b_runinfo = false;
    openFileSuccess = 0;
+   stdOfficeProg = 0;
    this->installEventFilter(this);
    QApplication::processEvents();
  }
@@ -4141,6 +4142,55 @@ void ScreenHandler::setOptions(QString type, QString value)
         p_fglform->setConstrained(constrain);
     }
 
+}
+
+void ScreenHandler::createStdProgWindow()
+{
+    stdOfficeProg = VDC::readSettingsFromIni("","officeStdProg").toInt();
+
+    if(stdOfficeProg == 0)
+    {
+        qDebug() << "bin dran";
+        QWidget *widget = new QWidget();
+        mOfficeComboBox = new QComboBox;
+        QLabel *label = new QLabel;
+        QVBoxLayout *vLayout = new QVBoxLayout();
+        QHBoxLayout *hLayout = new QHBoxLayout();
+        QPushButton *closeButton = new QPushButton(tr("&Close"));
+        connect(closeButton, SIGNAL(clicked()), widget, SLOT(close()));
+        QPushButton *saveButton = new QPushButton(tr("&Apply"));
+        connect(saveButton, SIGNAL(clicked()), this, SLOT(saveOfficeInstallation()));
+        connect(saveButton, SIGNAL(clicked()), widget, SLOT(close()));
+
+        label->setText("Please choose a Office installation: ");
+        mOfficeComboBox->addItem("Please choose...");
+        mOfficeComboBox->addItem("Microsoft Office");
+        mOfficeComboBox->addItem("Open/Libre Office");
+
+        vLayout->addWidget(label);
+        vLayout->addWidget(mOfficeComboBox);
+
+        hLayout->addWidget(saveButton);
+        hLayout->addWidget(closeButton);
+        vLayout->addLayout(hLayout);
+
+        widget->setLayout(vLayout);
+        widget->setWindowFlags(Qt::WindowStaysOnTopHint);
+        widget->show();
+    }
+}
+void ScreenHandler::saveOfficeInstallation()
+{
+    if(mOfficeComboBox)
+    {
+        if(mOfficeComboBox->currentIndex() > 0)
+        {
+            VDC::saveSettingsToIni("","officeStdProg", QString::number(mOfficeComboBox->currentIndex()));
+            stdOfficeProg = mOfficeComboBox->currentIndex();
+        } else {
+            emit createStdProgWindow();
+        }
+    }
 }
 
 void ScreenHandler::printpdf(QString filename)
