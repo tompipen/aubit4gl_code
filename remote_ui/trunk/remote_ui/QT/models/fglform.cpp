@@ -4750,8 +4750,31 @@ MainFrame::vdcdebug("FglForm","checkField", "");
               text = text.trimmed();
               if(text.contains("."))
               {
-                  this->error("Date Field is not Valid.");
-                  WidgetHelper::setFieldText(widget, "");
+                  int indexOfPoint = 0;
+                  int i=0;
+                  int found = 0;
+
+                  while(i<text.length()-1)
+                  {
+                      if(text.at(i) == QChar('.'))
+                      {
+                          indexOfPoint = i;
+                          found++;
+
+                          if(found > 1)
+                          {
+                              indexOfPoint--;
+                          }
+
+                          if(indexOfPoint != 2 && indexOfPoint != 4)
+                          {
+                              this->error("Date Field is not Valid.");
+                              WidgetHelper::setFieldText(widget, "");
+                          }
+                      }
+                      i++;
+                  }
+                  text.remove(".");
               }
               if(!text.isEmpty())
               {
