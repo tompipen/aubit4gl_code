@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: eval_field.c,v 1.13 2010-02-16 13:16:27 mikeaubury Exp $
+# $Id: eval_field.c,v 1.14 2012-10-17 20:25:00 mikeaubury Exp $
 #
 */
 
@@ -53,12 +53,12 @@ A4GL_evaluate_field_colour (char *field_contents, struct struct_scr_field *fprop
 #ifdef DEBUG
   A4GL_debug ("CHECKING FOR A FIELD EXPRESSION MATCH");
 #endif
-  if (fprop->colours.colours_len == 0 || field_contents == 0)
+  if (fprop->colours.colours_len == 0) 
     {
-//A4GL_debug("CHECKING FOR A FIELD EXPRESSION MATCH : %d",fprop->colour);
       return -1;
-      //return fprop->colour;
     }
+
+
 
 #ifdef DEBUG
   A4GL_debug ("CHECKING FOR A FIELD EXPRESSION MATCH ...");
@@ -101,12 +101,12 @@ field_expr_is_true (char *s, struct u_expression *expr)
 
 
 static int
-evaluate_field_expr (char *s, u_expression * expr, long *value, int *is_char)
+evaluate_field_expr (char *field_contents, u_expression * expr, long *value, int *is_char)
 {
 
 
 #ifdef DEBUG
-  A4GL_debug ("Evaludate field_expr - s=%s exprtype = %d", s, expr->itemtype);
+  A4GL_debug ("Evaludate field_expr - s=%s exprtype = %d", field_contents, expr->itemtype);
 #endif
 
   if (expr->itemtype == ITEMTYPE_INT)
@@ -148,9 +148,9 @@ evaluate_field_expr (char *s, u_expression * expr, long *value, int *is_char)
   if (expr->itemtype == ITEMTYPE_FIELD)
     {
 #ifdef DEBUG
-      A4GL_debug ("TYPE FIELD %s", s);
+      A4GL_debug ("TYPE FIELD %s",field_contents);
 #endif
-      *value = (long) s;
+      *value = (long) field_contents;
       *is_char = 1;
       return 1;
     }
@@ -170,7 +170,7 @@ evaluate_field_expr (char *s, u_expression * expr, long *value, int *is_char)
       long na;
       int nd;
       int ok;
-      ok = evaluate_field_expr (s, expr->u_expression_u.notexpr, &na, &nd);
+      ok = evaluate_field_expr (field_contents, expr->u_expression_u.notexpr, &na, &nd);
       if (!ok)
 	return 0;
       if (na)
@@ -272,16 +272,20 @@ evaluate_field_expr (char *s, u_expression * expr, long *value, int *is_char)
 
       if (straightforward)
 	{
-	  ok = evaluate_field_expr (s, left, &na1, &nd1);
+	  ok = evaluate_field_expr (field_contents, left, &na1, &nd1);
 	  if (ok == 0)
 	    return 0;
-	  ok = evaluate_field_expr (s, right, &na2, &nd2);
+	  ok = evaluate_field_expr (field_contents, right, &na2, &nd2);
 	  if (ok == 0)
 	    return 0;
 
 	  if (nd1)
 	    {
-	      A4GL_push_char ((char *) na1);
+		 if (na1) {
+	      		A4GL_push_char ((char *) na1);
+		} else {
+			A4GL_push_char("");
+		}
 	    }
 	  else
 	    {
@@ -289,7 +293,11 @@ evaluate_field_expr (char *s, u_expression * expr, long *value, int *is_char)
 	    }
 	  if (nd2)
 	    {
+		if (na2) {
 	      A4GL_push_char ((char *) na2);
+		} else {
+		A4GL_push_char("");
+		}
 	    }
 	  else
 	    {
@@ -349,7 +357,7 @@ evaluate_field_expr (char *s, u_expression * expr, long *value, int *is_char)
 
       if (compid == 104)
 	{			// ISNULL
-	  ok = evaluate_field_expr (s, left, &na1, &nd1);
+	  ok = evaluate_field_expr (field_contents, left, &na1, &nd1);
 	  if (ok == 0)
 	    return 0;
 	  if (nd1)
@@ -369,7 +377,7 @@ evaluate_field_expr (char *s, u_expression * expr, long *value, int *is_char)
 
       if (compid == 105)
 	{			// ISNOTNULL
-	  ok = evaluate_field_expr (s, left, &na1, &nd1);
+	  ok = evaluate_field_expr (field_contents, left, &na1, &nd1);
 	  if (ok == 0)
 	    return 0;
 	  if (nd1)
@@ -388,10 +396,10 @@ evaluate_field_expr (char *s, u_expression * expr, long *value, int *is_char)
 
       if (compid == 102)
 	{			// AND
-	  ok = evaluate_field_expr (s, left, &na1, &nd1);
+	  ok = evaluate_field_expr (field_contents, left, &na1, &nd1);
 	  if (ok == 0)
 	    return 0;
-	  ok = evaluate_field_expr (s, right, &na2, &nd2);
+	  ok = evaluate_field_expr (field_contents, right, &na2, &nd2);
 	  if (ok == 0)
 	    return 0;
 
@@ -404,10 +412,10 @@ evaluate_field_expr (char *s, u_expression * expr, long *value, int *is_char)
 
       if (compid == 103)
 	{			// OR
-	  ok = evaluate_field_expr (s, left, &na1, &nd1);
+	  ok = evaluate_field_expr (field_contents, left, &na1, &nd1);
 	  if (ok == 0)
 	    return 0;
-	  ok = evaluate_field_expr (s, right, &na2, &nd2);
+	  ok = evaluate_field_expr (field_contents , right, &na2, &nd2);
 	  if (ok == 0)
 	    return 0;
 

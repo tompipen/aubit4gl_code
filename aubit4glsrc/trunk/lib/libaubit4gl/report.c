@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.206 2012-09-28 07:14:54 mikeaubury Exp $
+# $Id: report.c,v 1.207 2012-10-17 20:25:00 mikeaubury Exp $
 #
 */
 
@@ -724,7 +724,7 @@ A4GL_close_report_file (struct rep_structure *rep)
     {
       if (rep->output)
 	{
-	  A4GL_gzfclose (rep->output);
+	  A4GL_gzfclose ((void*)rep->output);
 	  rep->output = 0;
 	}
     }
@@ -763,7 +763,7 @@ A4GL_internal_open_report_file (struct rep_structure *rep, int no_param)
 	{
 	  tmpnam (rep->output_loc_str);
 
-	  rep->output = A4GL_gzfopen (rep->output_loc_str, "w");
+	  rep->output = (void*)A4GL_gzfopen (rep->output_loc_str, "w");
 	  if (rep->output == 0)
 	    {
 	      A4GL_exitwith ("Could not open report output");
@@ -2341,7 +2341,7 @@ print_report_block_start (struct rep_structure *rep, char *mod, char *repname, i
     {
       print_gzlvl (rep, lvl);
       A4GL_assertion(rb<0,"rb<0");
-      A4GL_gzfprintf (rep->output, "<ACL_ENTRY_BLOCK line=%d where=%c why=\"%s\" block=%d>\n", lineno, where, why, rb);
+      A4GL_gzfprintf ((void*)rep->output, "<ACL_ENTRY_BLOCK line=%d where=%c why=\"%s\" block=%d>\n", lineno, where, why, rb);
     }
   else
     {
@@ -2362,7 +2362,7 @@ print_report_block_end (struct rep_structure *rep, int rb)
   if (A4GL_isyes (acl_getenv ("TRACE_AS_TEXT")))
     {
       print_gzlvl (rep, lvl);
-      A4GL_gzfprintf (rep->output, "</ACL_ENTRY_BLOCK block=%d>\n", rb);
+      A4GL_gzfprintf ((void*)rep->output, "</ACL_ENTRY_BLOCK block=%d>\n", rb);
     }
   else
     {
@@ -2419,7 +2419,7 @@ A4GL_pdf_push_report_section (struct pdf_rep_structure *rep, char *mod, char *re
 int
 A4GL_push_report_section (struct rep_structure *rep, char *mod, char *repname, int lineno, char where, char *why, int rb)
 {
-char buff[200];
+//char buff[200];
   // Maintain the report block (rb) stack - normally this is just needed for when the PAGE HEADER
   // or PAGE TRAILER triggers in the middle of print in an ON EVERY ROW or BEFORE/AFTER GROUP etc
   // Although - this is only used for CONVERTIBLE reports anyway...
@@ -2444,7 +2444,10 @@ char buff[200];
   rep->curr_rb = rb;
 
   lvl++;
-  //A4GLSTK_pushFunction_v3(repname,0,0,mod,lineno,NULL,'R');
+
+  if (A4GL_isyes (acl_getenv ("TRACEREPORTS")))  {
+   	A4GLSTK_pushFunction_v3(repname,0,0,mod,lineno,NULL,'R');
+  }
 
   return rb;
 }
@@ -2468,7 +2471,9 @@ A4GL_pop_report_section (struct rep_structure *rep, int rb)
 
 
   rep->curr_rb =-1;
-  //A4GLSTK_popFunction_nl(0,0);
+  if (A4GL_isyes (acl_getenv ("TRACEREPORTS"))) {
+    A4GLSTK_popFunction_nl(0,0);
+  }
 }
 
 
@@ -2482,7 +2487,7 @@ print_gzlvl (struct rep_structure *rep, int lvl)
 
   for (a = 0; a < lvl; a++)
     {
-      A4GL_gzfprintf (rep->output, "  ");
+      A4GL_gzfprintf ((void*)rep->output, "  ");
     }
 }
 
@@ -2527,7 +2532,7 @@ print_data (struct rep_structure *rep, char *buff, int entry)
       if (strlen (s) && strcmp (s, "\n") != 0 && istop == 0)
 	{
 	  print_gzlvl (rep, lvl);
-	  A4GL_gzfprintf (rep->output, "<CDATA page=%d line=%d col=%d entry=%d>%s</CDATA>\n",
+	  A4GL_gzfprintf ((void*)rep->output, "<CDATA page=%d line=%d col=%d entry=%d>%s</CDATA>\n",
 		     rep->page_no, rep->line_no, rep->col_no, entry, s);
 	}
     }
@@ -2554,13 +2559,13 @@ report_write_int (struct rep_structure *rep, int n)
 // Forget optimising for now...
 
   n = a4gl_htonl (n);
-  A4GL_gzfwrite (&n, sizeof (n), 1, rep->output);
+  A4GL_gzfwrite (&n, sizeof (n), 1, (void*)rep->output);
 }
 
 static void
 report_write_char (struct rep_structure *rep, unsigned char n)
 {
-  A4GL_gzfwrite (&n, sizeof (n), 1, rep->output);
+  A4GL_gzfwrite (&n, sizeof (n), 1, (void*)rep->output);
 }
 
 static void
@@ -2569,7 +2574,7 @@ report_write_string (struct rep_structure *rep, char *s)
   int n;
   n = strlen (s);
   report_write_int (rep, n);
-  A4GL_gzfwrite (s, n, 1, rep->output);
+  A4GL_gzfwrite (s, n, 1, (void*)rep->output);
 }
 
 
@@ -2608,7 +2613,7 @@ report_write_entry (struct rep_structure *rep, char type)
     {
       if (type == ENTRY_START)
 	{
-	  A4GL_gzfprintf (rep->output,
+	  A4GL_gzfprintf ((void *)rep->output,
 		     "<LAYOUT module=\"%s\" name=\"%s\" top=%d bottom=%d left=%d right=%d length=%d time=%ld />\n",
 		     rep->modName, rep->repName, rep->top_margin,
 		     rep->bottom_margin, rep->left_margin, rep->right_margin, rep->page_length, (long) time (0));

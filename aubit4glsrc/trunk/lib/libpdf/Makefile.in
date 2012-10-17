@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.31 2011-11-18 14:15:59 mikeaubury Exp $
+# $Id: Makefile.in,v 1.32 2012-10-17 20:28:40 mikeaubury Exp $
 #
 
 ROOT        =../..
@@ -97,7 +97,7 @@ ${PLUGINDIR}/libEXREPORT_HARU${SO_EXT}: ${OBJECTS_HARU}
 	${LD}  $(SO_LDFLAGS) ${OBJECTS_HARU} -o $@ ${LINKLIBS} ${HARU_L_FLAGS}  ${QRLIB} -lpdf
 
 ${PLUGINDIR}/libEXREPORT_HARUs${SO_EXT}: ${OBJECTS_HARU}
-	${LD}  $(SO_LDFLAGS) ${OBJECTS_HARU} -o $@ ${LINKLIBS} /usr/local/lib/libhpdf.a  ${QRLIB} -lpng14
+	${LD}  $(SO_LDFLAGS) ${OBJECTS_HARU} -o $@ ${LINKLIBS} /usr/local/lib/libhpdf.a  ${QRLIB} -lpng
 
 
 clean:

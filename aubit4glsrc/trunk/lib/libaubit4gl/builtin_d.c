@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin_d.c,v 1.119 2012-06-05 09:10:16 mikeaubury Exp $
+# $Id: builtin_d.c,v 1.120 2012-10-17 20:25:00 mikeaubury Exp $
 #
 */
 
@@ -415,7 +415,7 @@ A4GL_push_double_str (char *p)
   double *ptr;
   char *cp;
   char *pdot;
-double d;
+//double d;
 
 // This will always be in "." format - never "," 
 //char buff[3000];
