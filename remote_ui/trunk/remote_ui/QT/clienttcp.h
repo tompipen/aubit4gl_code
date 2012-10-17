@@ -189,6 +189,7 @@ signals:
    void getItemTextComboBox(int, int);
    void getTableNameComboBox(int);
    void getIndexOfComboBox(int, QString);
+   void createStdProgWindow();
 
    #ifdef KDChart_Version
    void createGantt();

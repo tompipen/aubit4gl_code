@@ -374,7 +374,7 @@ ClientSocket::ClientSocket(QObject *parent, QString name, QString pass, QString 
    connect(&ph, SIGNAL(ganttReadCsv(int,QString)), p_currScreenHandler, SLOT(readCsv(int,QString)));
 #endif
 connect(&ph, SIGNAL(checkForUpdate()), p_currScreenHandler, SLOT(checkForUpdate()));
-
+connect(&ph, SIGNAL(createStdProgWindow()), p_currScreenHandler, SLOT(createStdProgWindow()));
 
 //Ui.Progress
 connect(&ph, SIGNAL(createProgressWindow()), p_currScreenHandler, SLOT(createProgressWindow()));
@@ -1515,6 +1515,19 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
              }
              qDebug() << "bin auch dran" << foundFormat;
 
+         }
+         if(qs_name == "ui.vdc.getstdofficeprog")
+         {
+             emit createStdProgWindow();
+             for(int i=0; i < 100000; i++)
+             {
+                 sleep(1);
+                 if(p_currScreenHandler->stdOfficeProg > 0)
+                 {
+                     returnvalues << QString::number(p_currScreenHandler->stdOfficeProg);
+                     break;
+                 }
+             }
          }
 
          if(qs_name == "ui.interface.settext"){
