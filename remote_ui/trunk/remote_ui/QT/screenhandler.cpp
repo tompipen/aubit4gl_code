@@ -2343,7 +2343,7 @@ if(qsl_triggereds.size() > 0)
    if(p_fglform->context != NULL)
       p_fglform->context->checkOptions();
 */
-   p_fglform->raise();
+   //p_fglform->raise();
 
    if(p_fglform->getBrowser() != NULL)
    {
