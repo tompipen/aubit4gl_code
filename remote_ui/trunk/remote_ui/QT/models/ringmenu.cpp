@@ -488,10 +488,55 @@ bool RingMenu::eventFilter(QObject *obj, QEvent *event)
        }
 
        if(keyEvent->key() == Qt::Key_Up) {
-
+           if(QPushButton *bt = qobject_cast<QPushButton*> (obj))
+           {
+               if(buttonGroup->buttons().first()->text() == bt->text())
+               {
+                   if(!buttonGroup->buttons().last()->isVisible())
+                   {
+                       for(int i=buttonGroup->buttons().size()-1; i > 0; i--)
+                       {
+                           if(buttonGroup->buttons().at(i)->isVisible())
+                           {
+                               QMetaObject::invokeMethod(buttonGroup->buttons().at(i), "setFocus", Qt::QueuedConnection);
+                               break;
+                           }
+                       }
+                   } else {
+                       QMetaObject::invokeMethod(buttonGroup->buttons().last(), "setFocus", Qt::QueuedConnection);
+                   }
+               }
+           }
        }
 
        if(keyEvent->key() == Qt::Key_Down) {
+           if(QPushButton *bt = qobject_cast<QPushButton*> (obj))
+           {
+               for(int j=buttonGroup->buttons().size()-1; j > 0; j--)
+               {
+                   if(buttonGroup->buttons().at(j)->isVisible())
+                   {
+                       if(buttonGroup->buttons().at(j)->text() == bt->text())
+                       {
+                           if(!buttonGroup->buttons().first()->isVisible())
+                           {
+                               for(int i=0; i < buttonGroup->buttons().size()-1; i++)
+                               {
+                                   qDebug() << i;
+                                   if(buttonGroup->buttons().at(i)->isVisible())
+                                   {
+                                       QMetaObject::invokeMethod(buttonGroup->buttons().at(i), "setFocus", Qt::QueuedConnection);
+                                       break;
+                                   }
+                               }
+                           } else {
+                               QMetaObject::invokeMethod(buttonGroup->buttons().first(), "setFocus", Qt::QueuedConnection);
+                           }
+                       }
+                       break;
+                   }
+               }
+           }
        }
     }
 
