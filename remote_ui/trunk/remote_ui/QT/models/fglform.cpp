@@ -1369,6 +1369,10 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
           {
               if(TableView *tv = qobject_cast<TableView*> (this->currentWidget))
               {
+                  if(!tv->hasFocus())
+                  {
+                      tv->setFocus();
+                  }
                   QSortFilterProxyModel *proxyModel = qobject_cast<QSortFilterProxyModel *> (tv->model());
                   TableModel *table = qobject_cast<TableModel *> (proxyModel->sourceModel());
                   for(int i=0; i < table->columnCount(QModelIndex()); i++)
@@ -1393,6 +1397,10 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
           {
               if(TableView *tv = qobject_cast<TableView*> (this->currentWidget))
               {
+                  if(!tv->hasFocus())
+                  {
+                      tv->setFocus();
+                  }
                   QSortFilterProxyModel *proxyModel = qobject_cast<QSortFilterProxyModel *> (tv->model());
                   TableModel *table = qobject_cast<TableModel *> (proxyModel->sourceModel());
                   for(int i=table->columnCount(QModelIndex())-1; i > 0; i--)
