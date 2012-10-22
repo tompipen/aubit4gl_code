@@ -3131,15 +3131,42 @@ QString ProtocolHandler::hexToString(QString qs_text)
 {
     if(qs_text.contains("&#x94;"))
     {
-        qs_text.replace("&#x94;", "�");
+        qs_text.replace("&#x94;", "ö");
     }
+
     if(qs_text.contains("&#x81;"))
     {
-        qs_text.replace("&#x81;", "�");
+        qs_text.replace("&#x81;", "ü");
     }
+
     if(qs_text.contains("&#x84;"))
     {
-        qs_text.replace("&#x84;", "�");
+        qs_text.replace("&#x84;", "ä");
+    }
+
+    if(qs_text.contains("&#x8E;"))
+    {
+        qs_text.replace("&#x8E;", "Ä");
+    }
+
+    if(qs_text.contains("&#x99;"))
+    {
+        qs_text.replace("&#x99;", "Ö");
+    }
+
+    if(qs_text.contains("&#x9A;"))
+    {
+        qs_text.replace("&#x9A;", "Ü");
+    }
+
+    if(qs_text.contains("&#xE1;"))
+    {
+        qs_text.replace("&#xE1;", "ß");
+    }
+
+    if(qs_text.contains("&#xA0;"))
+    {
+        qs_text.replace("&#xA0;", "á");
     }
     return qs_text;
 }
