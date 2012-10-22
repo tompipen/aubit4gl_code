@@ -519,9 +519,9 @@ MainFrame::vdcdebug("ClientTcp","replyWith", "QString qs_replyString");
       if(QObject::sender() != NULL && QObject::sender()->inherits("ClientSocket")){
          ClientSocket *cl = static_cast<ClientSocket*>(QObject::sender());
          out.setDevice(cl);
-         if(cl->ph.p_currScreenHandler->qh_env.contains("DB_LOCALE")){
+         /*if(cl->ph.p_currScreenHandler->qh_env.contains("DB_LOCALE")){
              out.setCodec(QTextCodec::codecForName("IBM850"));
-         }
+         }*/
 
          qs_replyString+="\n";
 
@@ -555,7 +555,6 @@ MainFrame::vdcdebug("ProtocolHandler","run", "");
       in_request.setCodec(codec);
       qs_protocolCommand = in_request.readAll();
 
-      qs_protocolCommand = filterUmlauts(qs_protocolCommand);
    }
    else{
       qs_protocolCommand = request;
@@ -655,8 +654,8 @@ MainFrame::vdcdebug("ProtocolHandler","run", "");
       
    for(int i=0; i<qsl_xmlCommands.size(); i++)
    {
-         QString tmpstring = qsl_xmlCommands.takeAt(i);
-         qsl_xmlCommands.insert(i, tmpstring);
+      QString tmpstring = hexToString(qsl_xmlCommands.takeAt(i));
+      qsl_xmlCommands.insert(i, tmpstring);
       QString errorMsg;
       int errorLine, errorCol;
 
@@ -679,7 +678,7 @@ MainFrame::vdcdebug("ProtocolHandler","run", "");
       out << qsl_xmlCommands.at(i);
    }
 
-   QString test = doc.toString();
+   /*QString test = doc.toString();
    test = filterUmlauts(test);
    doc.clear();
 
@@ -689,7 +688,7 @@ MainFrame::vdcdebug("ProtocolHandler","run", "");
                     "Column" + QString::number(errorCol);
       MsgBox("Protocol Error",str,"Warning","Ok","Ok",0);
       break;
-   }
+   }*/
 
 
    qDebug()<< qsl_xmlCommands.at(i);
@@ -3127,6 +3126,23 @@ MainFrame::vdcdebug("ProtocolHandler","saveFile", "const QDomNode &domNode, QStr
 
 }
 
+
+QString ProtocolHandler::hexToString(QString qs_text)
+{
+    if(qs_text.contains("&#x94;"))
+    {
+        qs_text.replace("&#x94;", "ö");
+    }
+    if(qs_text.contains("&#x81;"))
+    {
+        qs_text.replace("&#x81;", "ü");
+    }
+    if(qs_text.contains("&#x84;"))
+    {
+        qs_text.replace("&#x84;", "ä");
+    }
+    return qs_text;
+}
 
 QString ProtocolHandler::filterUmlauts(QString qs_text)
 {
