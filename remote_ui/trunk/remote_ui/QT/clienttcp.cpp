@@ -554,7 +554,7 @@ MainFrame::vdcdebug("ProtocolHandler","run", "");
       QTextStream in_request(&request);
       in_request.setCodec(codec);
       qs_protocolCommand = in_request.readAll();
-
+      qs_protocolCommand = filterUmlauts(qs_protocolCommand);
    }
    else{
       qs_protocolCommand = request;
