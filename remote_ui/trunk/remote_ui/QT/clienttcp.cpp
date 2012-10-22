@@ -519,9 +519,9 @@ MainFrame::vdcdebug("ClientTcp","replyWith", "QString qs_replyString");
       if(QObject::sender() != NULL && QObject::sender()->inherits("ClientSocket")){
          ClientSocket *cl = static_cast<ClientSocket*>(QObject::sender());
          out.setDevice(cl);
-         /*if(cl->ph.p_currScreenHandler->qh_env.contains("DB_LOCALE")){
+         if(cl->ph.p_currScreenHandler->qh_env.contains("DB_LOCALE")){
              out.setCodec(QTextCodec::codecForName("IBM850"));
-         }*/
+         }
 
          qs_replyString+="\n";
 
