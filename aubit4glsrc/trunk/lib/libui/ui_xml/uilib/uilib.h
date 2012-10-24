@@ -98,3 +98,5 @@ int uilib_get_input_array_count(int n);
 char *get_data_from_stack(int *d1,int *s1);
 char *getlastkey(void);
 int uilib_trace (int n);
+char *char_encode(char *s); // convert from local (server) character set to client character set
+char *char_decode(char *s); // convert from client character set to server character set

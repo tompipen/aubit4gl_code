@@ -9,6 +9,10 @@
 #include "comms.h"
 #include "fglsys.h"
 
+#ifndef WIN32
+#include <iconv.h>
+#endif
+
 char * A4GL_lrtrim (char *str);
 char *A4GL_pull_off_data_for_display (int n, int display_type);
 
@@ -203,6 +207,77 @@ fprintf(stderr,"b=%d allocated=%d l=%d\n", b,allocated,l);
   return buff;
 }
 
+
+#ifdef WIN32 
+char *char_encode(char *s) {
+	return s;
+}
+#else
+
+int set_iconv=0;
+
+iconv_t convin=(iconv_t)-1;
+iconv_t convout=(iconv_t)-1;
+
+
+static void set_encode(void) {
+	if (set_iconv) {
+		return;
+	}
+	set_iconv=1;
+	char *client=getenv("A4GL_CLIENTENCODING");
+	char *server=getenv("A4GL_SERVERENCODING");
+	if (client && strlen(client) && server && strlen(server)) {
+			convout=iconv_open(client,server);
+			convin=iconv_open(server,client);
+	}
+}
+
+static char *char_encode_internal(char *s,char direction) {
+	if (!set_iconv) {
+		set_encode();
+	}
+	if (( convout!=(iconv_t)-1 && direction=='o') || (convin!=(iconv_t)-1 && direction=='i') ) {
+		size_t l;
+		size_t rval=-1;
+		size_t obuffsz;
+		static char *obuff[10]={0,0,0,0,0,0,0,0,0,0};
+		static int obuffcnt=-1;
+		char *optr;
+		obuffcnt++;
+		if (obuff[obuffcnt]) free(obuff[obuffcnt]);
+		l=strlen(s);
+		obuffsz=l*4+1;
+
+		obuff[obuffcnt]=malloc(obuffsz);
+		memset(obuff[obuffcnt],0,obuffsz);
+		optr=obuff[obuffcnt];
+		if (direction=='o') {
+			rval=iconv(convout,&s,&l,&optr,&obuffsz);
+			//printf("DIRO - rval=%d l=%d obuffsz=%d:%s\n",rval,l,obuffsz, obuff[obuffcnt]);
+		} 
+		if (direction=='i') {
+			rval=iconv(convin,&s,&l,&optr,&obuffsz);
+			//printf("DIRI - rval=%d\n",rval);
+		}
+		if (rval<0) {
+			return s;
+		}
+
+		return obuff[obuffcnt];
+	}
+	return s;
+}
+
+char *char_encode(char *s) {
+	return char_encode_internal(s,'o');
+}
+
+char *char_decode(char *s) {
+	return char_encode_internal(s,'i');
+}
+
+#endif
 
 
 static char *
@@ -512,9 +587,9 @@ uilib_display_values (int nargs)
   for (a = nargs - 1; a >= 0; a--)
     {
 	if (args_dtypes[a]!=-1) {
-      		send_to_ui ("<TEXT DTYPE=\"%d\">%s</TEXT>", args_dtypes[a], xml_escape (args[a]));
+      		send_to_ui ("<TEXT DTYPE=\"%d\">%s</TEXT>", args_dtypes[a], xml_escape (char_encode(args[a])));
 	} else {
-      		send_to_ui ("<TEXT>%s</TEXT>", xml_escape (args[a]));
+      		send_to_ui ("<TEXT>%s</TEXT>", xml_escape (char_encode(args[a])));
 	}
       free (args[a]);
     }
@@ -595,7 +670,7 @@ uilib_error (int nargs)
   char *a = "";
   //a = charpop ();
   s = charpop ();
-  send_to_ui ("<ERROR ATTRIBUTE=\"%s\">%s</ERROR>", a, xml_escape (s));
+  send_to_ui ("<ERROR ATTRIBUTE=\"%s\">%s</ERROR>", a, xml_escape (char_encode(s)));
   free (s);
   return 0;
 }
@@ -612,7 +687,7 @@ uilib_message (int nargs)
   wait=POPint();
   a = charpop ();
   s = charpop ();
-  send_to_ui ("<MESSAGE ATTRIBUTE=\"%s\" WAIT=\"%d\">%s</MESSAGE>", a, wait, xml_escape (s));
+  send_to_ui ("<MESSAGE ATTRIBUTE=\"%s\" WAIT=\"%d\">%s</MESSAGE>", a, wait, xml_escape (char_encode(s)));
   free (s);
   free (a);
   return 0;
@@ -633,7 +708,7 @@ uilib_displayat (int nargs)
   y = POPint ();
   a = charpop ();
   s = charpop ();
-  send_to_ui ("<DISPLAYAT X=\"%d\" Y=\"%d\" ATTRIBUTE=\"%d\">%s</DISPLAYAT>", x, y, a, xml_escape (s));
+  send_to_ui ("<DISPLAYAT X=\"%d\" Y=\"%d\" ATTRIBUTE=\"%d\">%s</DISPLAYAT>", x, y, a, xml_escape (char_encode(s)));
   free (s);
   free (a);
   return 0;
@@ -650,7 +725,7 @@ uilib_display (int nargs)
 {
   char *s;
   s = charpop ();
-  send_to_ui ("<DISPLAY>%s</DISPLAY>", xml_escape (s));
+  send_to_ui ("<DISPLAY>%s</DISPLAY>", xml_escape (char_encode(s)));
   free (s);
   return 0;
 }
@@ -831,7 +906,7 @@ int dtype;
   suspend_flush (1);
   send_to_ui
     ("<PROMPT CONTEXT=\"%d\" PROMPTATTRIBUTE=\"%s\" FIELDATTRIBUTE=\"%s\" TEXT=\"%s\" CHARMODE=\"%d\" HELPNO=\"%d\" ATTRIB_STYLE=\"%s\" ATTRIB_TEXT=\"%s\" DTYPE_HINT=\"%d\">",
-     cprompt, prompt_attr, field_attr, xml_escape(promptstr), charmode, helpno, xml_escape(style), xml_escape(text), dtype);
+     cprompt, prompt_attr, field_attr, xml_escape(char_encode(promptstr)), charmode, helpno, xml_escape(char_encode(style)), xml_escape(char_encode(text)), dtype);
   free (field_attr);
   free (prompt_attr);
   free (promptstr);
@@ -891,7 +966,7 @@ uilib_prompt_loop (int n)
   if (last_attr->sync.nvalues)
     {
       // Got a prompt result...
-      contexts[context].ui.prompt.promptresult = last_attr->sync.vals[0].value;
+      contexts[context].ui.prompt.promptresult = char_decode(last_attr->sync.vals[0].value);
     }
   pushint (i);
   return 1;
@@ -908,7 +983,7 @@ int a;
         }
 
 	for (a=0;a<last_attr->sync.nvalues;a++) {
-		PUSHquote(last_attr->sync.vals[a].value);
+		PUSHquote(char_decode(last_attr->sync.vals[a].value));
 	}
 	return last_attr->sync.nvalues;
 }
@@ -1099,7 +1174,7 @@ uilib_menu_add (int nargs)
   context = POPint ();
   send_to_ui
     ("<MENUCOMMAND CONTEXT=\"%d\" KEYS=\"%s\" ID=\"%d\" TEXT=\"%s\" DESCRIPTION=\"%s\" HELPNO=\"%d\"/>",
-     context, xml_escape(keys), id, xml_escape(mn), xml_escape(desc), helpno);
+     context, xml_escape(char_encode(keys)), id, xml_escape(char_encode(mn)), xml_escape(char_encode(desc)), helpno);
   return 0;
 }
 
@@ -1117,7 +1192,7 @@ uilib_menu_set (int nargs)
   id = POPint ();
   context = POPint ();
 
-  send_to_ui ("<MENUSET CONTEXT=\"%d\" ID=\"%d\" TEXT=\"%s\" DESCRIPTION=\"%s\"/>", context, id, xml_escape(mn), xml_escape(desc));
+  send_to_ui ("<MENUSET CONTEXT=\"%d\" ID=\"%d\" TEXT=\"%s\" DESCRIPTION=\"%s\"/>", context, id, xml_escape(char_encode(mn)), xml_escape(char_encode(desc)));
   return 0;
 }
 
@@ -1221,8 +1296,8 @@ uilib_menu_start (int nargs)
   UIdebug (5, "Menu start context=%d for %s %d\n", cmenu, mod, ln);
   pushint (cmenu);
   suspend_flush (1);
-  send_to_ui ("<MENU CONTEXT=\"%d\" TITLE=\"%s\" COMMENT=\"%s\" STYLE=\"%s\" IMAGE=\"%s\">\n<MENUCOMMANDS>", cmenu, mt, xml_escape(comment),
-	      xml_escape(style), xml_escape(image));
+  send_to_ui ("<MENU CONTEXT=\"%d\" TITLE=\"%s\" COMMENT=\"%s\" STYLE=\"%s\" IMAGE=\"%s\">\n<MENUCOMMANDS>", cmenu, mt, xml_escape(char_encode(comment)),
+	      xml_escape(char_encode(style)), xml_escape(char_encode(image)));
 
   return 0;
 }
@@ -1454,7 +1529,7 @@ UIdebug(5, "init=%d changed=%d\n", init, changed);
       for (a = 0; a < contexts[context].ui.input.nfields; a++)
 	{
 	  send_to_ui ("  <V CHANGED=\"%d\">%s</V>",
-		      contexts[context].ui.input.changed[a], xml_escape (contexts[context].ui.input.variable_data[a]));
+		      contexts[context].ui.input.changed[a], xml_escape (char_encode(contexts[context].ui.input.variable_data[a])));
 	}
       send_to_ui (" </VS>");
       if (contexts[context].ui.input.setfield)
@@ -1507,7 +1582,7 @@ UIdebug(5, "init=%d changed=%d\n", init, changed);
 	    }
 
 	//printf("Setting to : %s\n",  last_attr->sync.vals[a].value);
-	  contexts[context].ui.input.variable_data[a] = last_attr->sync.vals[a].value;
+	  contexts[context].ui.input.variable_data[a] = char_decode(last_attr->sync.vals[a].value);
 	  contexts[context].ui.input.touched[a] = last_attr->sync.vals[a].touched;
 
 
@@ -1695,7 +1770,7 @@ uilib_next_field (int nargs)
       return 0;
     }
 
-  send_to_ui ("<NEXTFIELD CONTEXT=\"%d\" FIELD=\"%s\"/>", context, xml_escape(opt));
+  send_to_ui ("<NEXTFIELD CONTEXT=\"%d\" FIELD=\"%s\"/>", context, xml_escape(char_encode(opt)));
 
   free (opt);
   return 0;
@@ -1811,7 +1886,7 @@ uilib_construct_loop (int nargs)
     {
       int a;
       /* Got a construct result... */
-      contexts[context].ui.construct.constr_clause = last_attr->sync.vals[0].value;
+      contexts[context].ui.construct.constr_clause = char_decode(last_attr->sync.vals[0].value);
 	if (last_attr->sync.nvalues> contexts[context].ui.construct.num_field_data) {
 		fprintf(stderr,"Critical internal error : Too many values returned\n");
 		exit(5);
@@ -1828,7 +1903,7 @@ uilib_construct_loop (int nargs)
 	      free (contexts[context].ui.construct.field_data[a]);
 	      contexts[context].ui.construct.field_data[a] = 0;
 	    }
-	  contexts[context].ui.construct.field_content_data[a] = last_attr->sync.vals[a].value;
+	  contexts[context].ui.construct.field_content_data[a] = char_decode(last_attr->sync.vals[a].value);
 	  contexts[context].ui.construct.touched[a]=last_attr->sync.vals[a].touched;
 	  contexts[context].ui.construct.field_data[a] = last_attr->sync.vals[a].fieldname;
 	}
@@ -2139,7 +2214,7 @@ uilib_display_array_line (int nargs)
   send_to_ui ("  <VS>");
   for (a = 0; a < nargs - 1; a++)
     {
-      send_to_ui ("   <V>%s</V>", xml_escape (args[a])); // MJA1
+      send_to_ui ("   <V>%s</V>", xml_escape (char_encode(args[a]))); // MJA1
     }
   send_to_ui ("  </VS>");
   send_to_ui (" </ROW>");
@@ -2310,7 +2385,7 @@ send_input_array_change (int ci)
       send_to_ui ("<VS>");
       for (b = 0; b < contexts[ci].ui.inputarray.nvals; b++)
 	{
-	  send_to_ui (" <V>%s</V>", xml_escape (contexts[ci].ui.inputarray.variable_data[a][b]));
+	  send_to_ui (" <V>%s</V>", xml_escape (char_encode(contexts[ci].ui.inputarray.variable_data[a][b])));
 	}
       send_to_ui ("</VS>");
       send_to_ui (" </ROW>");
@@ -2445,7 +2520,7 @@ uilib_input_array_loop (int n)
 		{
 		  free (p[b]);
 		}
-	      p[b] = strdup (last_attr->rows.row[a].sync.vals[b].value);
+	      p[b] = strdup (char_decode(last_attr->rows.row[a].sync.vals[b].value));
 	    }
 	}
     }
@@ -2531,7 +2606,7 @@ uilib_save_file (char *id, char *s)
   FILE *f;
   int i;
 
-  send_to_ui ("<REQUESTFILE FILEID='%s'/>", uilib_xml_escape (id));
+  send_to_ui ("<REQUESTFILE FILEID='%s'/>", uilib_xml_escape (char_encode(id)));
   flush_ui ();
   i = get_event_from_ui (NULL);
 
@@ -3070,7 +3145,7 @@ if (no) {
   if (last_attr->sync.nvalues==no) {
 
   	for (a = 0; a < last_attr->sync.nvalues; a++) {
-		PUSHquote(last_attr->sync.vals[a].value);
+		PUSHquote(char_decode(last_attr->sync.vals[a].value));
   	}
 	return 1;
   } else {
