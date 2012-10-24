@@ -105,6 +105,7 @@ FglForm::FglForm(QString windowName, QWidget *parent) : QMainWindow(parent){
    formWidget = NULL;
    b_keybuffer = false;
    b_keybufferrunning = false;
+   ql_actions = NULL;
 
    //currentWidget = NULL;
    setCurrentWidget(NULL);
@@ -251,6 +252,11 @@ MainFrame::vdcdebug("FglForm","setActions", "QDomDocument xmlFile");
    for(int i=0; i<defActions().size(); i++){
       removeAction(defActions().at(i));
    }
+   if(!ql_actions)
+   {
+       ql_actions = new Actions(this);
+   }
+
    ql_actions->parseFile(xmlFile);
 
 
@@ -3967,8 +3973,6 @@ MainFrame::vdcdebug("FglForm","addFormAction", "QAction *qaction");
       return;
 
    int size = formActions.count();
-
-
 
    for(int i=0; i<size; i++){
       if(Action *fAction = qobject_cast<Action *> (formActions.at(i))){
