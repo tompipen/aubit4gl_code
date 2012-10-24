@@ -839,10 +839,11 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
 
       QFile iconFile(QString("%1.4id").arg(programName));
       if (iconFile.open(QIODevice::ReadOnly | QIODevice::Text)){
-          QString qs_defaultIcons = iconFile.readAll();
+          QString qs_defaultIcon = iconFile.readAll();
           QDomDocument doc;
-          doc.setContent(qs_defaultIcons);
-          p_currScreenHandler->xmlIconDoc = doc;
+          //doc.setContent(qs_defaultIcons);
+          //p_currScreenHandler->xmlIconDoc = doc;
+          handleXMLActions(qs_defaultIcon);
           iconFile.close();
       }
       else{
@@ -850,10 +851,35 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
            if (iconFile.open(QIODevice::ReadOnly | QIODevice::Text)){
                QDomDocument doc;
                QString qs_defaultIcon = iconFile.readAll();
-               doc.setContent(qs_defaultIcon);
-               p_currScreenHandler->xmlIconDoc = doc;
+               //doc.setContent(qs_defaultIcon);
+               //p_currScreenHandler->xmlIconDoc = doc;
+               handleXMLActions(qs_defaultIcon);
                iconFile.close();
            }
+
+            iconFile.setFileName(QDir::tempPath() + "/" +"vdc_de.4id");
+            if (iconFile.open(QIODevice::ReadOnly | QIODevice::Text)){
+                QDomDocument doc;
+                QString qs_defaultIcon = iconFile.readAll();
+                handleXMLActions(qs_defaultIcon);
+                iconFile.close();
+            }
+            
+            iconFile.setFileName(QDir::tempPath() + "/" +"vdc_en.4id");
+            if (iconFile.open(QIODevice::ReadOnly | QIODevice::Text)){
+                QDomDocument doc;
+                QString qs_defaultIcon = iconFile.readAll();
+                handleXMLActions(qs_defaultIcon);
+                iconFile.close();
+            }
+
+            iconFile.setFileName(QDir::tempPath() + "/" +"vdc_fr.4id");
+             if (iconFile.open(QIODevice::ReadOnly | QIODevice::Text)){
+                 QDomDocument doc;
+                 QString qs_defaultIcon = iconFile.readAll();
+                 handleXMLActions(qs_defaultIcon);
+                 iconFile.close();
+             }
 
       }
 
