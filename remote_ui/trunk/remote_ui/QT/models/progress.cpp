@@ -50,7 +50,7 @@ Progress::Progress(QWidget *parent) :
 
   showProgressBar(true);
  // this->setWindowFlags(Qt::FramelessWindowHint | Qt::Popup);
-  this->setWindowFlags(Qt::Tool | Qt::FramelessWindowHint);
+  //this->setWindowFlags(Qt::Tool | Qt::FramelessWindowHint);
 
   this->setFrameStyle(QFrame::Panel | QFrame::Raised);
   this->setLineWidth(3);
