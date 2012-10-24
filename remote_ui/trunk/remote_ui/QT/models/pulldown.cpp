@@ -266,6 +266,21 @@ bool RingMenuPulldown::eventFilter(QObject *obj, QEvent *event)
     //return false;
 }
 
+void RingMenuPulldown::closeEvent(QCloseEvent *event)
+{
+    for(int i=buttonGroup->buttons().count()-1; i > 0; i--)
+    {
+        if(QPushButton *bt = qobject_cast<QPushButton *> (buttonGroup->buttons().at(i)))
+        {
+            if(bt->text() == "&Ende" || bt->text() == "&Abbruch" || bt->text() == "&Quit")
+            {
+                bt->animateClick();
+                break;
+            }
+        }
+    }
+}
+
 //------------------------------------------------------------------------------
 // Method       : createAction()
 // Filename     : ringmenu.cpp

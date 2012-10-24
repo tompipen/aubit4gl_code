@@ -43,6 +43,7 @@ public:
     void showButton(QString name);
     bool eventFilter(QObject *, QEvent *);
     void moveToPos(const QPoint pos);
+    void closeEvent(QCloseEvent *);
 
 private:
     QButtonGroup *buttonGroup;
