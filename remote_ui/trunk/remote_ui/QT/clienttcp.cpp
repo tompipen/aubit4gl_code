@@ -1064,8 +1064,7 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
          QDesktopServices::openUrl(QUrl(QString("file:///" + fileInfo.absoluteFilePath()), QUrl::TolerantMode));
       #endif
       #ifdef Q_WS_WIN
-         QProcess process;
-         process.startDetached(QString("rundll32 url.dll,FileProtocolHandler \"%1\"").arg( fileInfo.absoluteFilePath()));
+         QProcess::startDetached(QString("rundll32 url.dll,FileProtocolHandler \"%1\"").arg( fileInfo.absoluteFilePath()));
       #endif
       //sleep(3);
       return;
@@ -2306,8 +2305,7 @@ void ProtocolHandler::executeFile(int waitforFinish, QString fileName)
       }
    #endif
    #ifdef Q_WS_WIN
-       QProcess process;
-       openFileSuccess = process.startDetached(QString("rundll32 url.dll,FileProtocolHandler \"%1\"").arg( fileNameInfo.absoluteFilePath()));
+       QProcess::startDetached(QString("rundll32 url.dll,FileProtocolHandler \"%1\"").arg( fileNameInfo.absoluteFilePath()));
        if(waitforFinish == 1)
        {
            sleep(10);
