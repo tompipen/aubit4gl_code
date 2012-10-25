@@ -535,6 +535,42 @@ char *filename=NULL;
   }
   return 1;
 }
+
+static int ui_vdc_getstdofficeprog(long *objectID_IgnoredAsAlways0,int n) {
+int okToProcess=1;
+int _no=1;
+struct BINDING _obind[1]={
+    {NULL,0,0,0,0,0,NULL}
+};
+int data;
+
+/* END OF DEFINE SECTION */
+
+
+  if (n!=0) {
+    A4GL_pop_args(n);
+    okToProcess=0;
+  }
+
+
+  // Set up output binding for our parameters
+  if (okToProcess) {
+    _obind[0].ptr=&data;
+    _obind[0].size=4;
+    _obind[0].dtype=DTYPE_INT;
+  }
+
+  if (okToProcess) {
+      A4GL_ui_frontcall("INTERNAL","ui.vdc.getstdofficeprog",NULL,0,_obind,_no );
+  }
+
+    if (!okToProcess) {
+    A4GL_push_null(DTYPE_INT,0);
+  } else {
+    A4GL_push_int(data);
+  }
+  return 1;
+}
  
 void add_ui_vdc_support(void) {
 A4GL_add_object_type("ui.vdc");
@@ -545,4 +581,5 @@ A4GL_add_object_type("ui.vdc");
   A4GL_add_datatype_function_i (DTYPE_OBJECT, ":ui.vdc.md5hashfile", (void *)  ui_vdc_md5hashfile);
   A4GL_add_datatype_function_i (DTYPE_OBJECT, ":ui.vdc.printpdf", (void *)  ui_vdc_printpdf);
   A4GL_add_datatype_function_i (DTYPE_OBJECT, ":ui.vdc.execute", (void *)  ui_vdc_execute);
+  A4GL_add_datatype_function_i (DTYPE_OBJECT, ":ui.vdc.getstdofficeprog", (void *)  ui_vdc_getstdofficeprog);
 }

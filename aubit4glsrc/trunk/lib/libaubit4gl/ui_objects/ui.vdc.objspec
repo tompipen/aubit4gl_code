@@ -5,4 +5,5 @@
 +md5hashfile(filename DTYPE_CHAR) DTYPE_CHAR
 +printpdf(filename DTYPE_CHAR) DTYPE_INT
 +execute(filename DTYPE_CHAR) DTYPE_INT
++getstdofficeprog () DTYPE_INT
 
