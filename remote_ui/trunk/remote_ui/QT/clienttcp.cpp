@@ -790,7 +790,7 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
       }
 
       QFile actionsFile(QString("%1.4ad").arg(programName));
-      if (actionsFile.open(QIODevice::ReadOnly | QIODevice::Text)){
+      /*if (actionsFile.open(QIODevice::ReadOnly | QIODevice::Text)){
           QString qs_defaultActions = actionsFile.readAll();
           handleXMLActions(qs_defaultActions);
           actionsFile.close();
@@ -818,7 +818,7 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
                 actionsFile.close();
             }
           
-      }
+      }*/
 
       QFile colorFile(QString("%1.4cf").arg(programName));
       if (colorFile.open(QIODevice::ReadOnly | QIODevice::Text)){
