@@ -519,9 +519,9 @@ MainFrame::vdcdebug("ClientTcp","replyWith", "QString qs_replyString");
       if(QObject::sender() != NULL && QObject::sender()->inherits("ClientSocket")){
          ClientSocket *cl = static_cast<ClientSocket*>(QObject::sender());
          out.setDevice(cl);
-         if(cl->ph.p_currScreenHandler->qh_env.contains("DB_LOCALE")){
+         /*if(cl->ph.p_currScreenHandler->qh_env.contains("DB_LOCALE")){
              out.setCodec(QTextCodec::codecForName("IBM850"));
-         }
+         }*/
 
          qs_replyString+="\n";
 
@@ -549,11 +549,11 @@ MainFrame::vdcdebug("ProtocolHandler","run", "");
    if(p_currScreenHandler != NULL &&
       p_currScreenHandler->qh_env.contains("DB_LOCALE")){
 
-      p_currScreenHandler->qh_env["DB_LOCALE"] = "UTF-8";
-      QTextCodec *codec = QTextCodec::codecForName(qPrintable(p_currScreenHandler->qh_env["DB_LOCALE"]));
-      QTextCodec::setCodecForCStrings(QTextCodec::codecForName(qPrintable(p_currScreenHandler->qh_env["DB_LOCALE"])));
+      //p_currScreenHandler->qh_env["DB_LOCALE"] = "UTF-8";
+      //QTextCodec *codec = QTextCodec::codecForName(qPrintable(p_currScreenHandler->qh_env["DB_LOCALE"]));
+      //QTextCodec::setCodecForCStrings(QTextCodec::codecForName(qPrintable(p_currScreenHandler->qh_env["DB_LOCALE"])));
       QTextStream in_request(&request);
-      in_request.setCodec(codec);
+      //in_request.setCodec(codec);
       qs_protocolCommand = in_request.readAll();
    }
    else{
@@ -654,7 +654,7 @@ MainFrame::vdcdebug("ProtocolHandler","run", "");
       
    for(int i=0; i<qsl_xmlCommands.size(); i++)
    {
-      QString tmpstring = hexToString(qsl_xmlCommands.takeAt(i));
+      QString tmpstring = qsl_xmlCommands.takeAt(i);
       qsl_xmlCommands.insert(i, tmpstring);
       QString errorMsg;
       int errorLine, errorCol;
