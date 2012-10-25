@@ -549,11 +549,11 @@ MainFrame::vdcdebug("ProtocolHandler","run", "");
    if(p_currScreenHandler != NULL &&
       p_currScreenHandler->qh_env.contains("DB_LOCALE")){
 
-      //p_currScreenHandler->qh_env["DB_LOCALE"] = "UTF-8";
-      //QTextCodec *codec = QTextCodec::codecForName(qPrintable(p_currScreenHandler->qh_env["DB_LOCALE"]));
+      p_currScreenHandler->qh_env["DB_LOCALE"] = "UTF-8";
+      QTextCodec *codec = QTextCodec::codecForName(qPrintable(p_currScreenHandler->qh_env["DB_LOCALE"]));
       //QTextCodec::setCodecForCStrings(QTextCodec::codecForName(qPrintable(p_currScreenHandler->qh_env["DB_LOCALE"])));
       QTextStream in_request(&request);
-      //in_request.setCodec(codec);
+      in_request.setCodec(codec);
       qs_protocolCommand = in_request.readAll();
    }
    else{
