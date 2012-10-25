@@ -101,6 +101,10 @@ MainFrame::vdcdebug("Actions","parseElement", "QDomNode xmlNode");
          ql_actions << action;
       } else if( nodeName == "Icon")
       {
+
+          Action *action;
+
+          QString name = currentElement.attribute("name");
           QString text = currentElement.attribute("text");
           QString image = currentElement.attribute("icon");
 
@@ -108,7 +112,12 @@ MainFrame::vdcdebug("Actions","parseElement", "QDomNode xmlNode");
           {
               qsl_names << text.toLower();
 
-              Action *action = new Action(text.toLower(), text, p_fglform);
+              if(!name.isEmpty())
+              {
+                  action = new Action(name.toLower(), text, p_fglform);
+              } else {
+                  action = new Action(text.toLower(), text, p_fglform);
+              }
               if(!image.isEmpty())
               {
                   action->setImage(image);
