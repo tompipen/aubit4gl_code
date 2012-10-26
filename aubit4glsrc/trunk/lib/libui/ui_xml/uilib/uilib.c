@@ -245,7 +245,11 @@ static char *char_encode_internal(char *s,char direction) {
 		static int obuffcnt=-1;
 		char *optr;
 		obuffcnt++;
-		if (obuff[obuffcnt]) free(obuff[obuffcnt]);
+		if (obuffcnt>=10) obuffcnt=0;
+		if (obuff[obuffcnt]) {
+			free(obuff[obuffcnt]);
+			obuff[obuffcnt]=0;
+		}
 		l=strlen(s);
 		obuffsz=l*4+1;
 
@@ -263,7 +267,6 @@ static char *char_encode_internal(char *s,char direction) {
 		if (rval<0) {
 			return s;
 		}
-
 		return obuff[obuffcnt];
 	}
 	return s;
@@ -285,7 +288,7 @@ xml_escape (char *s) {
 char *rval;
 static int n=0;
 static char *buff[5]={NULL,NULL,NULL,NULL,NULL};
-
+A4GL_assertion(n<0||n>=5, "Buffer out of range - memory corruption?");
 if (buff[n]) {
 	free(buff[n]); 
 	buff[n]=0;
