@@ -248,9 +248,9 @@ bool RingMenuPulldown::eventFilter(QObject *obj, QEvent *event)
             //}
             qDebug() << "tastatur: " << keyEvent->key();
             qDebug() << "shortcut: " << shortcut1;
-            if(ql_buttons.count() > shortcut1 && shortcut1 >= 0)
+            if(buttonGroup->buttons().count() > shortcut1 && shortcut1 >= 0)
             {
-               if(QPushButton *button = qobject_cast<QPushButton *> (ql_buttons.at(shortcut1))){
+               if(QPushButton *button = qobject_cast<QPushButton *> (buttonGroup->buttons().at(shortcut1))){
                    if(button->isVisible())
                    {
                        closeWindowInt = 0;
