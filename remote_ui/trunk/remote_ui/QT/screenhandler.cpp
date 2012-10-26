@@ -2343,7 +2343,10 @@ if(qsl_triggereds.size() > 0)
    if(p_fglform->context != NULL)
       p_fglform->context->checkOptions();
 */
-   //p_fglform->raise();
+    //Mac needs the raise here to start in front of the terminal
+    #ifdef Q_WS_MAC
+        p_fglform->raise();
+    #endif
 
    if(p_fglform->getBrowser() != NULL)
    {

@@ -45,11 +45,15 @@ public:
     void moveToPos(const QPoint pos);
     void closeEvent(QCloseEvent *);
 
+public slots:
+    void closeWindowAndTrigger();
+
 private:
     QButtonGroup *buttonGroup;
     QLayout *layout;
     bool b_hideButtons;
     QList<QPushButton*> ql_buttons;
+    int closeWindowInt;
 
 };
 

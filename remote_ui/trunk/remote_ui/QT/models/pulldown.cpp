@@ -54,6 +54,7 @@ RingMenuPulldown::RingMenuPulldown(QString title, QString comment, QString style
    int h = d->height();*/
 
    //this->setWindowFlags(Qt::FramelessWindowHint);
+   closeWindowInt = 1;
 
 }
 
@@ -224,6 +225,14 @@ void RingMenuPulldown::moveToPos(QPoint const pos)
 
 bool RingMenuPulldown::eventFilter(QObject *obj, QEvent *event)
 {
+    qDebug() << "obj" << obj;
+    if(event->type() == QEvent::MouseButtonPress)
+    {
+        if(QPushButton *button = qobject_cast<QPushButton *> (obj))
+        {
+            closeWindowInt = 0;
+        }
+    }
     if(event->type() == QEvent::KeyPress)
     {
         QKeyEvent *keyEvent = (QKeyEvent*) event;
@@ -244,6 +253,7 @@ bool RingMenuPulldown::eventFilter(QObject *obj, QEvent *event)
                if(QPushButton *button = qobject_cast<QPushButton *> (ql_buttons.at(shortcut1))){
                    if(button->isVisible())
                    {
+                       closeWindowInt = 0;
                        button->click();
                    }
                }
@@ -253,12 +263,13 @@ bool RingMenuPulldown::eventFilter(QObject *obj, QEvent *event)
         {
             if(QPushButton *pb = qobject_cast<QPushButton *> (obj))
             {
+                closeWindowInt = 0;
                 pb->click();
             }
             return false;
         } else if(keyEvent->key() == Qt::Key_Escape)
         {
-            this->close();
+            emit closeWindowAndTrigger();
         }
     }
 
@@ -268,14 +279,28 @@ bool RingMenuPulldown::eventFilter(QObject *obj, QEvent *event)
 
 void RingMenuPulldown::closeEvent(QCloseEvent *event)
 {
-    for(int i=buttonGroup->buttons().count()-1; i > 0; i--)
+    //event->ignore();
+    if(closeWindowInt > 0)
     {
-        if(QPushButton *bt = qobject_cast<QPushButton *> (buttonGroup->buttons().at(i)))
+        emit closeWindowAndTrigger();
+    }
+}
+
+void RingMenuPulldown::closeWindowAndTrigger()
+{
+    if(closeWindowInt > 0)
+    {
+        for(int i=buttonGroup->buttons().count()-1; i > 0; i--)
         {
-            if(bt->text() == "&Ende" || bt->text() == "&Abbruch" || bt->text() == "&Quit")
+            if(QPushButton *bt = qobject_cast<QPushButton *> (buttonGroup->buttons().at(i)))
             {
-                bt->animateClick();
-                break;
+                if(bt->text() == "&Ende" || bt->text() == "&Abbruch" || bt->text() == "&Quit")
+                {
+                    bt->animateClick();
+                    closeWindowInt = 0;
+                    this->close();
+                    break;
+                }
             }
         }
     }
