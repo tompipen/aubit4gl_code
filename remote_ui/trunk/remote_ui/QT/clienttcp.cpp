@@ -519,13 +519,12 @@ MainFrame::vdcdebug("ClientTcp","replyWith", "QString qs_replyString");
       if(QObject::sender() != NULL && QObject::sender()->inherits("ClientSocket")){
          ClientSocket *cl = static_cast<ClientSocket*>(QObject::sender());
          out.setDevice(cl);
-         /*if(cl->ph.p_currScreenHandler->qh_env.contains("DB_LOCALE")){
-             out.setCodec(QTextCodec::codecForName("IBM850"));
-         }*/
+         if(cl->ph.p_currScreenHandler->qh_env.contains("DB_LOCALE")){
+             out.setCodec(QTextCodec::codecForName("ISO-8859-1"));
+         }
 
          qs_replyString+="\n";
-
-         out << qs_replyString;
+         out << qs_replyString.toLatin1();
       }
 }
 
