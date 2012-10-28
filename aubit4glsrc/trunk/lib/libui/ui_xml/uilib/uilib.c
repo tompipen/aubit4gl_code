@@ -212,6 +212,11 @@ fprintf(stderr,"b=%d allocated=%d l=%d\n", b,allocated,l);
 char *char_encode(char *s) {
 	return s;
 }
+
+char *char_decode(char *s) {
+	return s;
+}
+
 #else
 
 int set_iconv=0;
