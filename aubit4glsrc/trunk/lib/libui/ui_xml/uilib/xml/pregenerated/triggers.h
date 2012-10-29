@@ -1,5 +1,5 @@
 /* XML processor/application API for triggers.dtd.
- * Generated 2012/10/18 08:39:34.
+ * Generated 2012/10/28 14:35:56.
  *
  * This program was generated with the FleXML XML processor generator.
  * FleXML is Copyright (C) 1999-2005 Kristoffer Rose.  All rights reserved.

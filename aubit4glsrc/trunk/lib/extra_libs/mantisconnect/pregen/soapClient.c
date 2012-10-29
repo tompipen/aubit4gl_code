@@ -14,16 +14,16 @@
 extern "C" {
 #endif
 
-SOAP_SOURCE_STAMP("@(#) soapClient.c ver 2.8.1 2012-09-13 16:30:48 GMT")
+SOAP_SOURCE_STAMP("@(#) soapClient.c ver 2.8.1 2012-10-28 14:36:32 GMT")
 
 
 SOAP_FMAC5 int SOAP_FMAC6 soap_call_ns1__mc_USCOREversion(struct soap *soap, const char *soap_endpoint, const char *soap_action, char **return_)
 {	struct ns1__mc_USCOREversion soap_tmp_ns1__mc_USCOREversion;
 	struct ns1__mc_USCOREversionResponse *soap_tmp_ns1__mc_USCOREversionResponse;
 	if (!soap_endpoint)
-		soap_endpoint = "http://aubit.com/mantis/api/soap/mantisconnect.php";
+		soap_endpoint = "http://www.aubit.com/mantis/api/soap/mantisconnect.php";
 	if (!soap_action)
-		soap_action = "http://aubit.com/mantis/api/soap/mantisconnect.php/mc_version";
+		soap_action = "http://www.aubit.com/mantis/api/soap/mantisconnect.php/mc_version";
 	soap->encodingStyle = "http://schemas.xmlsoap.org/soap/encoding/";
 	soap_begin(soap);
 	soap_serializeheader(soap);
@@ -75,9 +75,9 @@ SOAP_FMAC5 int SOAP_FMAC6 soap_call_ns1__mc_USCOREversion(struct soap *soap, con
 SOAP_FMAC5 int SOAP_FMAC6 soap_call_ns1__mc_USCOREenum_USCOREstatus(struct soap *soap, const char *soap_endpoint, const char *soap_action, char *username, char *password, struct ns1__mc_USCOREenum_USCOREstatusResponse *_param_1)
 {	struct ns1__mc_USCOREenum_USCOREstatus soap_tmp_ns1__mc_USCOREenum_USCOREstatus;
 	if (!soap_endpoint)
-		soap_endpoint = "http://aubit.com/mantis/api/soap/mantisconnect.php";
+		soap_endpoint = "http://www.aubit.com/mantis/api/soap/mantisconnect.php";
 	if (!soap_action)
-		soap_action = "http://aubit.com/mantis/api/soap/mantisconnect.php/mc_enum_status";
+		soap_action = "http://www.aubit.com/mantis/api/soap/mantisconnect.php/mc_enum_status";
 	soap->encodingStyle = "http://schemas.xmlsoap.org/soap/encoding/";
 	soap_tmp_ns1__mc_USCOREenum_USCOREstatus.username = username;
 	soap_tmp_ns1__mc_USCOREenum_USCOREstatus.password = password;
@@ -129,9 +129,9 @@ SOAP_FMAC5 int SOAP_FMAC6 soap_call_ns1__mc_USCOREenum_USCOREstatus(struct soap 
 SOAP_FMAC5 int SOAP_FMAC6 soap_call_ns1__mc_USCOREenum_USCOREpriorities(struct soap *soap, const char *soap_endpoint, const char *soap_action, char *username, char *password, struct ns1__mc_USCOREenum_USCOREprioritiesResponse *_param_2)
 {	struct ns1__mc_USCOREenum_USCOREpriorities soap_tmp_ns1__mc_USCOREenum_USCOREpriorities;
 	if (!soap_endpoint)
-		soap_endpoint = "http://aubit.com/mantis/api/soap/mantisconnect.php";
+		soap_endpoint = "http://www.aubit.com/mantis/api/soap/mantisconnect.php";
 	if (!soap_action)
-		soap_action = "http://aubit.com/mantis/api/soap/mantisconnect.php/mc_enum_priorities";
+		soap_action = "http://www.aubit.com/mantis/api/soap/mantisconnect.php/mc_enum_priorities";
 	soap->encodingStyle = "http://schemas.xmlsoap.org/soap/encoding/";
 	soap_tmp_ns1__mc_USCOREenum_USCOREpriorities.username = username;
 	soap_tmp_ns1__mc_USCOREenum_USCOREpriorities.password = password;
@@ -183,9 +183,9 @@ SOAP_FMAC5 int SOAP_FMAC6 soap_call_ns1__mc_USCOREenum_USCOREpriorities(struct s
 SOAP_FMAC5 int SOAP_FMAC6 soap_call_ns1__mc_USCOREenum_USCOREseverities(struct soap *soap, const char *soap_endpoint, const char *soap_action, char *username, char *password, struct ns1__mc_USCOREenum_USCOREseveritiesResponse *_param_3)
 {	struct ns1__mc_USCOREenum_USCOREseverities soap_tmp_ns1__mc_USCOREenum_USCOREseverities;
 	if (!soap_endpoint)
-		soap_endpoint = "http://aubit.com/mantis/api/soap/mantisconnect.php";
+		soap_endpoint = "http://www.aubit.com/mantis/api/soap/mantisconnect.php";
 	if (!soap_action)
-		soap_action = "http://aubit.com/mantis/api/soap/mantisconnect.php/mc_enum_severities";
+		soap_action = "http://www.aubit.com/mantis/api/soap/mantisconnect.php/mc_enum_severities";
 	soap->encodingStyle = "http://schemas.xmlsoap.org/soap/encoding/";
 	soap_tmp_ns1__mc_USCOREenum_USCOREseverities.username = username;
 	soap_tmp_ns1__mc_USCOREenum_USCOREseverities.password = password;
@@ -237,9 +237,9 @@ SOAP_FMAC5 int SOAP_FMAC6 soap_call_ns1__mc_USCOREenum_USCOREseverities(struct s
 SOAP_FMAC5 int SOAP_FMAC6 soap_call_ns1__mc_USCOREenum_USCOREreproducibilities(struct soap *soap, const char *soap_endpoint, const char *soap_action, char *username, char *password, struct ns1__mc_USCOREenum_USCOREreproducibilitiesResponse *_param_4)
 {	struct ns1__mc_USCOREenum_USCOREreproducibilities soap_tmp_ns1__mc_USCOREenum_USCOREreproducibilities;
 	if (!soap_endpoint)
-		soap_endpoint = "http://aubit.com/mantis/api/soap/mantisconnect.php";
+		soap_endpoint = "http://www.aubit.com/mantis/api/soap/mantisconnect.php";
 	if (!soap_action)
-		soap_action = "http://aubit.com/mantis/api/soap/mantisconnect.php/mc_enum_reproducibilities";
+		soap_action = "http://www.aubit.com/mantis/api/soap/mantisconnect.php/mc_enum_reproducibilities";
 	soap->encodingStyle = "http://schemas.xmlsoap.org/soap/encoding/";
 	soap_tmp_ns1__mc_USCOREenum_USCOREreproducibilities.username = username;
 	soap_tmp_ns1__mc_USCOREenum_USCOREreproducibilities.password = password;
@@ -291,9 +291,9 @@ SOAP_FMAC5 int SOAP_FMAC6 soap_call_ns1__mc_USCOREenum_USCOREreproducibilities(s
 SOAP_FMAC5 int SOAP_FMAC6 soap_call_ns1__mc_USCOREenum_USCOREprojections(struct soap *soap, const char *soap_endpoint, const char *soap_action, char *username, char *password, struct ns1__mc_USCOREenum_USCOREprojectionsResponse *_param_5)
 {	struct ns1__mc_USCOREenum_USCOREprojections soap_tmp_ns1__mc_USCOREenum_USCOREprojections;
 	if (!soap_endpoint)
-		soap_endpoint = "http://aubit.com/mantis/api/soap/mantisconnect.php";
+		soap_endpoint = "http://www.aubit.com/mantis/api/soap/mantisconnect.php";
 	if (!soap_action)
-		soap_action = "http://aubit.com/mantis/api/soap/mantisconnect.php/mc_enum_projections";
+		soap_action = "http://www.aubit.com/mantis/api/soap/mantisconnect.php/mc_enum_projections";
 	soap->encodingStyle = "http://schemas.xmlsoap.org/soap/encoding/";
 	soap_tmp_ns1__mc_USCOREenum_USCOREprojections.username = username;
 	soap_tmp_ns1__mc_USCOREenum_USCOREprojections.password = password;
@@ -345,9 +345,9 @@ SOAP_FMAC5 int SOAP_FMAC6 soap_call_ns1__mc_USCOREenum_USCOREprojections(struct 
 SOAP_FMAC5 int SOAP_FMAC6 soap_call_ns1__mc_USCOREenum_USCOREetas(struct soap *soap, const char *soap_endpoint, const char *soap_action, char *username, char *password, struct ns1__mc_USCOREenum_USCOREetasResponse *_param_6)
 {	struct ns1__mc_USCOREenum_USCOREetas soap_tmp_ns1__mc_USCOREenum_USCOREetas;
 	if (!soap_endpoint)
-		soap_endpoint = "http://aubit.com/mantis/api/soap/mantisconnect.php";
+		soap_endpoint = "http://www.aubit.com/mantis/api/soap/mantisconnect.php";
 	if (!soap_action)
-		soap_action = "http://aubit.com/mantis/api/soap/mantisconnect.php/mc_enum_etas";
+		soap_action = "http://www.aubit.com/mantis/api/soap/mantisconnect.php/mc_enum_etas";
 	soap->encodingStyle = "http://schemas.xmlsoap.org/soap/encoding/";
 	soap_tmp_ns1__mc_USCOREenum_USCOREetas.username = username;
 	soap_tmp_ns1__mc_USCOREenum_USCOREetas.password = password;
@@ -399,9 +399,9 @@ SOAP_FMAC5 int SOAP_FMAC6 soap_call_ns1__mc_USCOREenum_USCOREetas(struct soap *s
 SOAP_FMAC5 int SOAP_FMAC6 soap_call_ns1__mc_USCOREenum_USCOREresolutions(struct soap *soap, const char *soap_endpoint, const char *soap_action, char *username, char *password, struct ns1__mc_USCOREenum_USCOREresolutionsResponse *_param_7)
 {	struct ns1__mc_USCOREenum_USCOREresolutions soap_tmp_ns1__mc_USCOREenum_USCOREresolutions;
 	if (!soap_endpoint)
-		soap_endpoint = "http://aubit.com/mantis/api/soap/mantisconnect.php";
+		soap_endpoint = "http://www.aubit.com/mantis/api/soap/mantisconnect.php";
 	if (!soap_action)
-		soap_action = "http://aubit.com/mantis/api/soap/mantisconnect.php/mc_enum_resolutions";
+		soap_action = "http://www.aubit.com/mantis/api/soap/mantisconnect.php/mc_enum_resolutions";
 	soap->encodingStyle = "http://schemas.xmlsoap.org/soap/encoding/";
 	soap_tmp_ns1__mc_USCOREenum_USCOREresolutions.username = username;
 	soap_tmp_ns1__mc_USCOREenum_USCOREresolutions.password = password;
@@ -453,9 +453,9 @@ SOAP_FMAC5 int SOAP_FMAC6 soap_call_ns1__mc_USCOREenum_USCOREresolutions(struct 
 SOAP_FMAC5 int SOAP_FMAC6 soap_call_ns1__mc_USCOREenum_USCOREaccess_USCORElevels(struct soap *soap, const char *soap_endpoint, const char *soap_action, char *username, char *password, struct ns1__mc_USCOREenum_USCOREaccess_USCORElevelsResponse *_param_8)
 {	struct ns1__mc_USCOREenum_USCOREaccess_USCORElevels soap_tmp_ns1__mc_USCOREenum_USCOREaccess_USCORElevels;
 	if (!soap_endpoint)
-		soap_endpoint = "http://aubit.com/mantis/api/soap/mantisconnect.php";
+		soap_endpoint = "http://www.aubit.com/mantis/api/soap/mantisconnect.php";
 	if (!soap_action)
-		soap_action = "http://aubit.com/mantis/api/soap/mantisconnect.php/mc_enum_access_levels";
+		soap_action = "http://www.aubit.com/mantis/api/soap/mantisconnect.php/mc_enum_access_levels";
 	soap->encodingStyle = "http://schemas.xmlsoap.org/soap/encoding/";
 	soap_tmp_ns1__mc_USCOREenum_USCOREaccess_USCORElevels.username = username;
 	soap_tmp_ns1__mc_USCOREenum_USCOREaccess_USCORElevels.password = password;
@@ -507,9 +507,9 @@ SOAP_FMAC5 int SOAP_FMAC6 soap_call_ns1__mc_USCOREenum_USCOREaccess_USCORElevels
 SOAP_FMAC5 int SOAP_FMAC6 soap_call_ns1__mc_USCOREenum_USCOREproject_USCOREstatus(struct soap *soap, const char *soap_endpoint, const char *soap_action, char *username, char *password, struct ns1__mc_USCOREenum_USCOREproject_USCOREstatusResponse *_param_9)
 {	struct ns1__mc_USCOREenum_USCOREproject_USCOREstatus soap_tmp_ns1__mc_USCOREenum_USCOREproject_USCOREstatus;
 	if (!soap_endpoint)
-		soap_endpoint = "http://aubit.com/mantis/api/soap/mantisconnect.php";
+		soap_endpoint = "http://www.aubit.com/mantis/api/soap/mantisconnect.php";
 	if (!soap_action)
-		soap_action = "http://aubit.com/mantis/api/soap/mantisconnect.php/mc_enum_project_status";
+		soap_action = "http://www.aubit.com/mantis/api/soap/mantisconnect.php/mc_enum_project_status";
 	soap->encodingStyle = "http://schemas.xmlsoap.org/soap/encoding/";
 	soap_tmp_ns1__mc_USCOREenum_USCOREproject_USCOREstatus.username = username;
 	soap_tmp_ns1__mc_USCOREenum_USCOREproject_USCOREstatus.password = password;
@@ -561,9 +561,9 @@ SOAP_FMAC5 int SOAP_FMAC6 soap_call_ns1__mc_USCOREenum_USCOREproject_USCOREstatu
 SOAP_FMAC5 int SOAP_FMAC6 soap_call_ns1__mc_USCOREenum_USCOREproject_USCOREview_USCOREstates(struct soap *soap, const char *soap_endpoint, const char *soap_action, char *username, char *password, struct ns1__mc_USCOREenum_USCOREproject_USCOREview_USCOREstatesResponse *_param_10)
 {	struct ns1__mc_USCOREenum_USCOREproject_USCOREview_USCOREstates soap_tmp_ns1__mc_USCOREenum_USCOREproject_USCOREview_USCOREstates;
 	if (!soap_endpoint)
-		soap_endpoint = "http://aubit.com/mantis/api/soap/mantisconnect.php";
+		soap_endpoint = "http://www.aubit.com/mantis/api/soap/mantisconnect.php";
 	if (!soap_action)
-		soap_action = "http://aubit.com/mantis/api/soap/mantisconnect.php/mc_enum_project_view_states";
+		soap_action = "http://www.aubit.com/mantis/api/soap/mantisconnect.php/mc_enum_project_view_states";
 	soap->encodingStyle = "http://schemas.xmlsoap.org/soap/encoding/";
 	soap_tmp_ns1__mc_USCOREenum_USCOREproject_USCOREview_USCOREstates.username = username;
 	soap_tmp_ns1__mc_USCOREenum_USCOREproject_USCOREview_USCOREstates.password = password;
@@ -615,9 +615,9 @@ SOAP_FMAC5 int SOAP_FMAC6 soap_call_ns1__mc_USCOREenum_USCOREproject_USCOREview_
 SOAP_FMAC5 int SOAP_FMAC6 soap_call_ns1__mc_USCOREenum_USCOREview_USCOREstates(struct soap *soap, const char *soap_endpoint, const char *soap_action, char *username, char *password, struct ns1__mc_USCOREenum_USCOREview_USCOREstatesResponse *_param_11)
 {	struct ns1__mc_USCOREenum_USCOREview_USCOREstates soap_tmp_ns1__mc_USCOREenum_USCOREview_USCOREstates;
 	if (!soap_endpoint)
-		soap_endpoint = "http://aubit.com/mantis/api/soap/mantisconnect.php";
+		soap_endpoint = "http://www.aubit.com/mantis/api/soap/mantisconnect.php";
 	if (!soap_action)
-		soap_action = "http://aubit.com/mantis/api/soap/mantisconnect.php/mc_enum_view_states";
+		soap_action = "http://www.aubit.com/mantis/api/soap/mantisconnect.php/mc_enum_view_states";
 	soap->encodingStyle = "http://schemas.xmlsoap.org/soap/encoding/";
 	soap_tmp_ns1__mc_USCOREenum_USCOREview_USCOREstates.username = username;
 	soap_tmp_ns1__mc_USCOREenum_USCOREview_USCOREstates.password = password;
@@ -669,9 +669,9 @@ SOAP_FMAC5 int SOAP_FMAC6 soap_call_ns1__mc_USCOREenum_USCOREview_USCOREstates(s
 SOAP_FMAC5 int SOAP_FMAC6 soap_call_ns1__mc_USCOREenum_USCOREcustom_USCOREfield_USCOREtypes(struct soap *soap, const char *soap_endpoint, const char *soap_action, char *username, char *password, struct ns1__mc_USCOREenum_USCOREcustom_USCOREfield_USCOREtypesResponse *_param_12)
 {	struct ns1__mc_USCOREenum_USCOREcustom_USCOREfield_USCOREtypes soap_tmp_ns1__mc_USCOREenum_USCOREcustom_USCOREfield_USCOREtypes;
 	if (!soap_endpoint)
-		soap_endpoint = "http://aubit.com/mantis/api/soap/mantisconnect.php";
+		soap_endpoint = "http://www.aubit.com/mantis/api/soap/mantisconnect.php";
 	if (!soap_action)
-		soap_action = "http://aubit.com/mantis/api/soap/mantisconnect.php/mc_enum_custom_field_types";
+		soap_action = "http://www.aubit.com/mantis/api/soap/mantisconnect.php/mc_enum_custom_field_types";
 	soap->encodingStyle = "http://schemas.xmlsoap.org/soap/encoding/";
 	soap_tmp_ns1__mc_USCOREenum_USCOREcustom_USCOREfield_USCOREtypes.username = username;
 	soap_tmp_ns1__mc_USCOREenum_USCOREcustom_USCOREfield_USCOREtypes.password = password;
@@ -724,9 +724,9 @@ SOAP_FMAC5 int SOAP_FMAC6 soap_call_ns1__mc_USCOREenum_USCOREget(struct soap *so
 {	struct ns1__mc_USCOREenum_USCOREget soap_tmp_ns1__mc_USCOREenum_USCOREget;
 	struct ns1__mc_USCOREenum_USCOREgetResponse *soap_tmp_ns1__mc_USCOREenum_USCOREgetResponse;
 	if (!soap_endpoint)
-		soap_endpoint = "http://aubit.com/mantis/api/soap/mantisconnect.php";
+		soap_endpoint = "http://www.aubit.com/mantis/api/soap/mantisconnect.php";
 	if (!soap_action)
-		soap_action = "http://aubit.com/mantis/api/soap/mantisconnect.php/mc_enum_get";
+		soap_action = "http://www.aubit.com/mantis/api/soap/mantisconnect.php/mc_enum_get";
 	soap->encodingStyle = "http://schemas.xmlsoap.org/soap/encoding/";
 	soap_tmp_ns1__mc_USCOREenum_USCOREget.username = username;
 	soap_tmp_ns1__mc_USCOREenum_USCOREget.password = password;
@@ -782,9 +782,9 @@ SOAP_FMAC5 int SOAP_FMAC6 soap_call_ns1__mc_USCOREissue_USCOREexists(struct soap
 {	struct ns1__mc_USCOREissue_USCOREexists soap_tmp_ns1__mc_USCOREissue_USCOREexists;
 	struct ns1__mc_USCOREissue_USCOREexistsResponse *soap_tmp_ns1__mc_USCOREissue_USCOREexistsResponse;
 	if (!soap_endpoint)
-		soap_endpoint = "http://aubit.com/mantis/api/soap/mantisconnect.php";
+		soap_endpoint = "http://www.aubit.com/mantis/api/soap/mantisconnect.php";
 	if (!soap_action)
-		soap_action = "http://aubit.com/mantis/api/soap/mantisconnect.php/mc_issue_exists";
+		soap_action = "http://www.aubit.com/mantis/api/soap/mantisconnect.php/mc_issue_exists";
 	soap->encodingStyle = "http://schemas.xmlsoap.org/soap/encoding/";
 	soap_tmp_ns1__mc_USCOREissue_USCOREexists.username = username;
 	soap_tmp_ns1__mc_USCOREissue_USCOREexists.password = password;
@@ -839,9 +839,9 @@ SOAP_FMAC5 int SOAP_FMAC6 soap_call_ns1__mc_USCOREissue_USCOREexists(struct soap
 SOAP_FMAC5 int SOAP_FMAC6 soap_call_ns1__mc_USCOREissue_USCOREget(struct soap *soap, const char *soap_endpoint, const char *soap_action, char *username, char *password, char *issue_USCOREid, struct ns1__mc_USCOREissue_USCOREgetResponse *_param_13)
 {	struct ns1__mc_USCOREissue_USCOREget soap_tmp_ns1__mc_USCOREissue_USCOREget;
 	if (!soap_endpoint)
-		soap_endpoint = "http://aubit.com/mantis/api/soap/mantisconnect.php";
+		soap_endpoint = "http://www.aubit.com/mantis/api/soap/mantisconnect.php";
 	if (!soap_action)
-		soap_action = "http://aubit.com/mantis/api/soap/mantisconnect.php/mc_issue_get";
+		soap_action = "http://www.aubit.com/mantis/api/soap/mantisconnect.php/mc_issue_get";
 	soap->encodingStyle = "http://schemas.xmlsoap.org/soap/encoding/";
 	soap_tmp_ns1__mc_USCOREissue_USCOREget.username = username;
 	soap_tmp_ns1__mc_USCOREissue_USCOREget.password = password;
@@ -895,9 +895,9 @@ SOAP_FMAC5 int SOAP_FMAC6 soap_call_ns1__mc_USCOREissue_USCOREget_USCOREbiggest_
 {	struct ns1__mc_USCOREissue_USCOREget_USCOREbiggest_USCOREid soap_tmp_ns1__mc_USCOREissue_USCOREget_USCOREbiggest_USCOREid;
 	struct ns1__mc_USCOREissue_USCOREget_USCOREbiggest_USCOREidResponse *soap_tmp_ns1__mc_USCOREissue_USCOREget_USCOREbiggest_USCOREidResponse;
 	if (!soap_endpoint)
-		soap_endpoint = "http://aubit.com/mantis/api/soap/mantisconnect.php";
+		soap_endpoint = "http://www.aubit.com/mantis/api/soap/mantisconnect.php";
 	if (!soap_action)
-		soap_action = "http://aubit.com/mantis/api/soap/mantisconnect.php/mc_issue_get_biggest_id";
+		soap_action = "http://www.aubit.com/mantis/api/soap/mantisconnect.php/mc_issue_get_biggest_id";
 	soap->encodingStyle = "http://schemas.xmlsoap.org/soap/encoding/";
 	soap_tmp_ns1__mc_USCOREissue_USCOREget_USCOREbiggest_USCOREid.username = username;
 	soap_tmp_ns1__mc_USCOREissue_USCOREget_USCOREbiggest_USCOREid.password = password;
@@ -953,9 +953,9 @@ SOAP_FMAC5 int SOAP_FMAC6 soap_call_ns1__mc_USCOREissue_USCOREget_USCOREid_USCOR
 {	struct ns1__mc_USCOREissue_USCOREget_USCOREid_USCOREfrom_USCOREsummary soap_tmp_ns1__mc_USCOREissue_USCOREget_USCOREid_USCOREfrom_USCOREsummary;
 	struct ns1__mc_USCOREissue_USCOREget_USCOREid_USCOREfrom_USCOREsummaryResponse *soap_tmp_ns1__mc_USCOREissue_USCOREget_USCOREid_USCOREfrom_USCOREsummaryResponse;
 	if (!soap_endpoint)
-		soap_endpoint = "http://aubit.com/mantis/api/soap/mantisconnect.php";
+		soap_endpoint = "http://www.aubit.com/mantis/api/soap/mantisconnect.php";
 	if (!soap_action)
-		soap_action = "http://aubit.com/mantis/api/soap/mantisconnect.php/mc_issue_get_id_from_summary";
+		soap_action = "http://www.aubit.com/mantis/api/soap/mantisconnect.php/mc_issue_get_id_from_summary";
 	soap->encodingStyle = "http://schemas.xmlsoap.org/soap/encoding/";
 	soap_tmp_ns1__mc_USCOREissue_USCOREget_USCOREid_USCOREfrom_USCOREsummary.username = username;
 	soap_tmp_ns1__mc_USCOREissue_USCOREget_USCOREid_USCOREfrom_USCOREsummary.password = password;
@@ -1011,9 +1011,9 @@ SOAP_FMAC5 int SOAP_FMAC6 soap_call_ns1__mc_USCOREissue_USCOREadd(struct soap *s
 {	struct ns1__mc_USCOREissue_USCOREadd soap_tmp_ns1__mc_USCOREissue_USCOREadd;
 	struct ns1__mc_USCOREissue_USCOREaddResponse *soap_tmp_ns1__mc_USCOREissue_USCOREaddResponse;
 	if (!soap_endpoint)
-		soap_endpoint = "http://aubit.com/mantis/api/soap/mantisconnect.php";
+		soap_endpoint = "http://www.aubit.com/mantis/api/soap/mantisconnect.php";
 	if (!soap_action)
-		soap_action = "http://aubit.com/mantis/api/soap/mantisconnect.php/mc_issue_add";
+		soap_action = "http://www.aubit.com/mantis/api/soap/mantisconnect.php/mc_issue_add";
 	soap->encodingStyle = "http://schemas.xmlsoap.org/soap/encoding/";
 	soap_tmp_ns1__mc_USCOREissue_USCOREadd.username = username;
 	soap_tmp_ns1__mc_USCOREissue_USCOREadd.password = password;
@@ -1069,9 +1069,9 @@ SOAP_FMAC5 int SOAP_FMAC6 soap_call_ns1__mc_USCOREissue_USCOREupdate(struct soap
 {	struct ns1__mc_USCOREissue_USCOREupdate soap_tmp_ns1__mc_USCOREissue_USCOREupdate;
 	struct ns1__mc_USCOREissue_USCOREupdateResponse *soap_tmp_ns1__mc_USCOREissue_USCOREupdateResponse;
 	if (!soap_endpoint)
-		soap_endpoint = "http://aubit.com/mantis/api/soap/mantisconnect.php";
+		soap_endpoint = "http://www.aubit.com/mantis/api/soap/mantisconnect.php";
 	if (!soap_action)
-		soap_action = "http://aubit.com/mantis/api/soap/mantisconnect.php/mc_issue_update";
+		soap_action = "http://www.aubit.com/mantis/api/soap/mantisconnect.php/mc_issue_update";
 	soap->encodingStyle = "http://schemas.xmlsoap.org/soap/encoding/";
 	soap_tmp_ns1__mc_USCOREissue_USCOREupdate.username = username;
 	soap_tmp_ns1__mc_USCOREissue_USCOREupdate.password = password;
@@ -1128,9 +1128,9 @@ SOAP_FMAC5 int SOAP_FMAC6 soap_call_ns1__mc_USCOREissue_USCOREdelete(struct soap
 {	struct ns1__mc_USCOREissue_USCOREdelete soap_tmp_ns1__mc_USCOREissue_USCOREdelete;
 	struct ns1__mc_USCOREissue_USCOREdeleteResponse *soap_tmp_ns1__mc_USCOREissue_USCOREdeleteResponse;
 	if (!soap_endpoint)
-		soap_endpoint = "http://aubit.com/mantis/api/soap/mantisconnect.php";
+		soap_endpoint = "http://www.aubit.com/mantis/api/soap/mantisconnect.php";
 	if (!soap_action)
-		soap_action = "http://aubit.com/mantis/api/soap/mantisconnect.php/mc_issue_delete";
+		soap_action = "http://www.aubit.com/mantis/api/soap/mantisconnect.php/mc_issue_delete";
 	soap->encodingStyle = "http://schemas.xmlsoap.org/soap/encoding/";
 	soap_tmp_ns1__mc_USCOREissue_USCOREdelete.username = username;
 	soap_tmp_ns1__mc_USCOREissue_USCOREdelete.password = password;
@@ -1186,9 +1186,9 @@ SOAP_FMAC5 int SOAP_FMAC6 soap_call_ns1__mc_USCOREissue_USCOREnote_USCOREadd(str
 {	struct ns1__mc_USCOREissue_USCOREnote_USCOREadd soap_tmp_ns1__mc_USCOREissue_USCOREnote_USCOREadd;
 	struct ns1__mc_USCOREissue_USCOREnote_USCOREaddResponse *soap_tmp_ns1__mc_USCOREissue_USCOREnote_USCOREaddResponse;
 	if (!soap_endpoint)
-		soap_endpoint = "http://aubit.com/mantis/api/soap/mantisconnect.php";
+		soap_endpoint = "http://www.aubit.com/mantis/api/soap/mantisconnect.php";
 	if (!soap_action)
-		soap_action = "http://aubit.com/mantis/api/soap/mantisconnect.php/mc_issue_note_add";
+		soap_action = "http://www.aubit.com/mantis/api/soap/mantisconnect.php/mc_issue_note_add";
 	soap->encodingStyle = "http://schemas.xmlsoap.org/soap/encoding/";
 	soap_tmp_ns1__mc_USCOREissue_USCOREnote_USCOREadd.username = username;
 	soap_tmp_ns1__mc_USCOREissue_USCOREnote_USCOREadd.password = password;
@@ -1245,9 +1245,9 @@ SOAP_FMAC5 int SOAP_FMAC6 soap_call_ns1__mc_USCOREissue_USCOREnote_USCOREdelete(
 {	struct ns1__mc_USCOREissue_USCOREnote_USCOREdelete soap_tmp_ns1__mc_USCOREissue_USCOREnote_USCOREdelete;
 	struct ns1__mc_USCOREissue_USCOREnote_USCOREdeleteResponse *soap_tmp_ns1__mc_USCOREissue_USCOREnote_USCOREdeleteResponse;
 	if (!soap_endpoint)
-		soap_endpoint = "http://aubit.com/mantis/api/soap/mantisconnect.php";
+		soap_endpoint = "http://www.aubit.com/mantis/api/soap/mantisconnect.php";
 	if (!soap_action)
-		soap_action = "http://aubit.com/mantis/api/soap/mantisconnect.php/mc_issue_note_delete";
+		soap_action = "http://www.aubit.com/mantis/api/soap/mantisconnect.php/mc_issue_note_delete";
 	soap->encodingStyle = "http://schemas.xmlsoap.org/soap/encoding/";
 	soap_tmp_ns1__mc_USCOREissue_USCOREnote_USCOREdelete.username = username;
 	soap_tmp_ns1__mc_USCOREissue_USCOREnote_USCOREdelete.password = password;
@@ -1303,9 +1303,9 @@ SOAP_FMAC5 int SOAP_FMAC6 soap_call_ns1__mc_USCOREissue_USCORErelationship_USCOR
 {	struct ns1__mc_USCOREissue_USCORErelationship_USCOREadd soap_tmp_ns1__mc_USCOREissue_USCORErelationship_USCOREadd;
 	struct ns1__mc_USCOREissue_USCORErelationship_USCOREaddResponse *soap_tmp_ns1__mc_USCOREissue_USCORErelationship_USCOREaddResponse;
 	if (!soap_endpoint)
-		soap_endpoint = "http://aubit.com/mantis/api/soap/mantisconnect.php";
+		soap_endpoint = "http://www.aubit.com/mantis/api/soap/mantisconnect.php";
 	if (!soap_action)
-		soap_action = "http://aubit.com/mantis/api/soap/mantisconnect.php/mc_issue_relationship_add";
+		soap_action = "http://www.aubit.com/mantis/api/soap/mantisconnect.php/mc_issue_relationship_add";
 	soap->encodingStyle = "http://schemas.xmlsoap.org/soap/encoding/";
 	soap_tmp_ns1__mc_USCOREissue_USCORErelationship_USCOREadd.username = username;
 	soap_tmp_ns1__mc_USCOREissue_USCORErelationship_USCOREadd.password = password;
@@ -1362,9 +1362,9 @@ SOAP_FMAC5 int SOAP_FMAC6 soap_call_ns1__mc_USCOREissue_USCORErelationship_USCOR
 {	struct ns1__mc_USCOREissue_USCORErelationship_USCOREdelete soap_tmp_ns1__mc_USCOREissue_USCORErelationship_USCOREdelete;
 	struct ns1__mc_USCOREissue_USCORErelationship_USCOREdeleteResponse *soap_tmp_ns1__mc_USCOREissue_USCORErelationship_USCOREdeleteResponse;
 	if (!soap_endpoint)
-		soap_endpoint = "http://aubit.com/mantis/api/soap/mantisconnect.php";
+		soap_endpoint = "http://www.aubit.com/mantis/api/soap/mantisconnect.php";
 	if (!soap_action)
-		soap_action = "http://aubit.com/mantis/api/soap/mantisconnect.php/mc_issue_relationship_delete";
+		soap_action = "http://www.aubit.com/mantis/api/soap/mantisconnect.php/mc_issue_relationship_delete";
 	soap->encodingStyle = "http://schemas.xmlsoap.org/soap/encoding/";
 	soap_tmp_ns1__mc_USCOREissue_USCORErelationship_USCOREdelete.username = username;
 	soap_tmp_ns1__mc_USCOREissue_USCORErelationship_USCOREdelete.password = password;
@@ -1421,9 +1421,9 @@ SOAP_FMAC5 int SOAP_FMAC6 soap_call_ns1__mc_USCOREissue_USCOREattachment_USCOREa
 {	struct ns1__mc_USCOREissue_USCOREattachment_USCOREadd soap_tmp_ns1__mc_USCOREissue_USCOREattachment_USCOREadd;
 	struct ns1__mc_USCOREissue_USCOREattachment_USCOREaddResponse *soap_tmp_ns1__mc_USCOREissue_USCOREattachment_USCOREaddResponse;
 	if (!soap_endpoint)
-		soap_endpoint = "http://aubit.com/mantis/api/soap/mantisconnect.php";
+		soap_endpoint = "http://www.aubit.com/mantis/api/soap/mantisconnect.php";
 	if (!soap_action)
-		soap_action = "http://aubit.com/mantis/api/soap/mantisconnect.php/mc_issue_attachment_add";
+		soap_action = "http://www.aubit.com/mantis/api/soap/mantisconnect.php/mc_issue_attachment_add";
 	soap->encodingStyle = "http://schemas.xmlsoap.org/soap/encoding/";
 	soap_tmp_ns1__mc_USCOREissue_USCOREattachment_USCOREadd.username = username;
 	soap_tmp_ns1__mc_USCOREissue_USCOREattachment_USCOREadd.password = password;
@@ -1482,9 +1482,9 @@ SOAP_FMAC5 int SOAP_FMAC6 soap_call_ns1__mc_USCOREissue_USCOREattachment_USCOREd
 {	struct ns1__mc_USCOREissue_USCOREattachment_USCOREdelete soap_tmp_ns1__mc_USCOREissue_USCOREattachment_USCOREdelete;
 	struct ns1__mc_USCOREissue_USCOREattachment_USCOREdeleteResponse *soap_tmp_ns1__mc_USCOREissue_USCOREattachment_USCOREdeleteResponse;
 	if (!soap_endpoint)
-		soap_endpoint = "http://aubit.com/mantis/api/soap/mantisconnect.php";
+		soap_endpoint = "http://www.aubit.com/mantis/api/soap/mantisconnect.php";
 	if (!soap_action)
-		soap_action = "http://aubit.com/mantis/api/soap/mantisconnect.php/mc_issue_attachment_delete";
+		soap_action = "http://www.aubit.com/mantis/api/soap/mantisconnect.php/mc_issue_attachment_delete";
 	soap->encodingStyle = "http://schemas.xmlsoap.org/soap/encoding/";
 	soap_tmp_ns1__mc_USCOREissue_USCOREattachment_USCOREdelete.username = username;
 	soap_tmp_ns1__mc_USCOREissue_USCOREattachment_USCOREdelete.password = password;
@@ -1540,9 +1540,9 @@ SOAP_FMAC5 int SOAP_FMAC6 soap_call_ns1__mc_USCOREissue_USCOREattachment_USCOREg
 {	struct ns1__mc_USCOREissue_USCOREattachment_USCOREget soap_tmp_ns1__mc_USCOREissue_USCOREattachment_USCOREget;
 	struct ns1__mc_USCOREissue_USCOREattachment_USCOREgetResponse *soap_tmp_ns1__mc_USCOREissue_USCOREattachment_USCOREgetResponse;
 	if (!soap_endpoint)
-		soap_endpoint = "http://aubit.com/mantis/api/soap/mantisconnect.php";
+		soap_endpoint = "http://www.aubit.com/mantis/api/soap/mantisconnect.php";
 	if (!soap_action)
-		soap_action = "http://aubit.com/mantis/api/soap/mantisconnect.php/mc_issue_attachment_get";
+		soap_action = "http://www.aubit.com/mantis/api/soap/mantisconnect.php/mc_issue_attachment_get";
 	soap->encodingStyle = "http://schemas.xmlsoap.org/soap/encoding/";
 	soap_tmp_ns1__mc_USCOREissue_USCOREattachment_USCOREget.username = username;
 	soap_tmp_ns1__mc_USCOREissue_USCOREattachment_USCOREget.password = password;
@@ -1598,9 +1598,9 @@ SOAP_FMAC5 int SOAP_FMAC6 soap_call_ns1__mc_USCOREproject_USCOREadd(struct soap 
 {	struct ns1__mc_USCOREproject_USCOREadd soap_tmp_ns1__mc_USCOREproject_USCOREadd;
 	struct ns1__mc_USCOREproject_USCOREaddResponse *soap_tmp_ns1__mc_USCOREproject_USCOREaddResponse;
 	if (!soap_endpoint)
-		soap_endpoint = "http://aubit.com/mantis/api/soap/mantisconnect.php";
+		soap_endpoint = "http://www.aubit.com/mantis/api/soap/mantisconnect.php";
 	if (!soap_action)
-		soap_action = "http://aubit.com/mantis/api/soap/mantisconnect.php/mc_project_add";
+		soap_action = "http://www.aubit.com/mantis/api/soap/mantisconnect.php/mc_project_add";
 	soap->encodingStyle = "http://schemas.xmlsoap.org/soap/encoding/";
 	soap_tmp_ns1__mc_USCOREproject_USCOREadd.username = username;
 	soap_tmp_ns1__mc_USCOREproject_USCOREadd.password = password;
@@ -1656,9 +1656,9 @@ SOAP_FMAC5 int SOAP_FMAC6 soap_call_ns1__mc_USCOREproject_USCOREdelete(struct so
 {	struct ns1__mc_USCOREproject_USCOREdelete soap_tmp_ns1__mc_USCOREproject_USCOREdelete;
 	struct ns1__mc_USCOREproject_USCOREdeleteResponse *soap_tmp_ns1__mc_USCOREproject_USCOREdeleteResponse;
 	if (!soap_endpoint)
-		soap_endpoint = "http://aubit.com/mantis/api/soap/mantisconnect.php";
+		soap_endpoint = "http://www.aubit.com/mantis/api/soap/mantisconnect.php";
 	if (!soap_action)
-		soap_action = "http://aubit.com/mantis/api/soap/mantisconnect.php/mc_project_delete";
+		soap_action = "http://www.aubit.com/mantis/api/soap/mantisconnect.php/mc_project_delete";
 	soap->encodingStyle = "http://schemas.xmlsoap.org/soap/encoding/";
 	soap_tmp_ns1__mc_USCOREproject_USCOREdelete.username = username;
 	soap_tmp_ns1__mc_USCOREproject_USCOREdelete.password = password;
@@ -1713,9 +1713,9 @@ SOAP_FMAC5 int SOAP_FMAC6 soap_call_ns1__mc_USCOREproject_USCOREdelete(struct so
 SOAP_FMAC5 int SOAP_FMAC6 soap_call_ns1__mc_USCOREproject_USCOREget_USCOREissues(struct soap *soap, const char *soap_endpoint, const char *soap_action, char *username, char *password, char *project_USCOREid, char *page_USCOREnumber, char *per_USCOREpage, struct ns1__mc_USCOREproject_USCOREget_USCOREissuesResponse *_param_14)
 {	struct ns1__mc_USCOREproject_USCOREget_USCOREissues soap_tmp_ns1__mc_USCOREproject_USCOREget_USCOREissues;
 	if (!soap_endpoint)
-		soap_endpoint = "http://aubit.com/mantis/api/soap/mantisconnect.php";
+		soap_endpoint = "http://www.aubit.com/mantis/api/soap/mantisconnect.php";
 	if (!soap_action)
-		soap_action = "http://aubit.com/mantis/api/soap/mantisconnect.php/mc_project_get_issues";
+		soap_action = "http://www.aubit.com/mantis/api/soap/mantisconnect.php/mc_project_get_issues";
 	soap->encodingStyle = "http://schemas.xmlsoap.org/soap/encoding/";
 	soap_tmp_ns1__mc_USCOREproject_USCOREget_USCOREissues.username = username;
 	soap_tmp_ns1__mc_USCOREproject_USCOREget_USCOREissues.password = password;
@@ -1770,9 +1770,9 @@ SOAP_FMAC5 int SOAP_FMAC6 soap_call_ns1__mc_USCOREproject_USCOREget_USCOREissues
 SOAP_FMAC5 int SOAP_FMAC6 soap_call_ns1__mc_USCOREproject_USCOREget_USCOREissue_USCOREheaders(struct soap *soap, const char *soap_endpoint, const char *soap_action, char *username, char *password, char *project_USCOREid, char *page_USCOREnumber, char *per_USCOREpage, struct ns1__mc_USCOREproject_USCOREget_USCOREissue_USCOREheadersResponse *_param_15)
 {	struct ns1__mc_USCOREproject_USCOREget_USCOREissue_USCOREheaders soap_tmp_ns1__mc_USCOREproject_USCOREget_USCOREissue_USCOREheaders;
 	if (!soap_endpoint)
-		soap_endpoint = "http://aubit.com/mantis/api/soap/mantisconnect.php";
+		soap_endpoint = "http://www.aubit.com/mantis/api/soap/mantisconnect.php";
 	if (!soap_action)
-		soap_action = "http://aubit.com/mantis/api/soap/mantisconnect.php/mc_project_get_issue_headers";
+		soap_action = "http://www.aubit.com/mantis/api/soap/mantisconnect.php/mc_project_get_issue_headers";
 	soap->encodingStyle = "http://schemas.xmlsoap.org/soap/encoding/";
 	soap_tmp_ns1__mc_USCOREproject_USCOREget_USCOREissue_USCOREheaders.username = username;
 	soap_tmp_ns1__mc_USCOREproject_USCOREget_USCOREissue_USCOREheaders.password = password;
@@ -1827,9 +1827,9 @@ SOAP_FMAC5 int SOAP_FMAC6 soap_call_ns1__mc_USCOREproject_USCOREget_USCOREissue_
 SOAP_FMAC5 int SOAP_FMAC6 soap_call_ns1__mc_USCOREproject_USCOREget_USCOREusers(struct soap *soap, const char *soap_endpoint, const char *soap_action, char *username, char *password, char *project_USCOREid, char *access, struct ns1__mc_USCOREproject_USCOREget_USCOREusersResponse *_param_16)
 {	struct ns1__mc_USCOREproject_USCOREget_USCOREusers soap_tmp_ns1__mc_USCOREproject_USCOREget_USCOREusers;
 	if (!soap_endpoint)
-		soap_endpoint = "http://aubit.com/mantis/api/soap/mantisconnect.php";
+		soap_endpoint = "http://www.aubit.com/mantis/api/soap/mantisconnect.php";
 	if (!soap_action)
-		soap_action = "http://aubit.com/mantis/api/soap/mantisconnect.php/mc_project_get_users";
+		soap_action = "http://www.aubit.com/mantis/api/soap/mantisconnect.php/mc_project_get_users";
 	soap->encodingStyle = "http://schemas.xmlsoap.org/soap/encoding/";
 	soap_tmp_ns1__mc_USCOREproject_USCOREget_USCOREusers.username = username;
 	soap_tmp_ns1__mc_USCOREproject_USCOREget_USCOREusers.password = password;
@@ -1883,9 +1883,9 @@ SOAP_FMAC5 int SOAP_FMAC6 soap_call_ns1__mc_USCOREproject_USCOREget_USCOREusers(
 SOAP_FMAC5 int SOAP_FMAC6 soap_call_ns1__mc_USCOREprojects_USCOREget_USCOREuser_USCOREaccessible(struct soap *soap, const char *soap_endpoint, const char *soap_action, char *username, char *password, struct ns1__mc_USCOREprojects_USCOREget_USCOREuser_USCOREaccessibleResponse *_param_17)
 {	struct ns1__mc_USCOREprojects_USCOREget_USCOREuser_USCOREaccessible soap_tmp_ns1__mc_USCOREprojects_USCOREget_USCOREuser_USCOREaccessible;
 	if (!soap_endpoint)
-		soap_endpoint = "http://aubit.com/mantis/api/soap/mantisconnect.php";
+		soap_endpoint = "http://www.aubit.com/mantis/api/soap/mantisconnect.php";
 	if (!soap_action)
-		soap_action = "http://aubit.com/mantis/api/soap/mantisconnect.php/mc_projects_get_user_accessible";
+		soap_action = "http://www.aubit.com/mantis/api/soap/mantisconnect.php/mc_projects_get_user_accessible";
 	soap->encodingStyle = "http://schemas.xmlsoap.org/soap/encoding/";
 	soap_tmp_ns1__mc_USCOREprojects_USCOREget_USCOREuser_USCOREaccessible.username = username;
 	soap_tmp_ns1__mc_USCOREprojects_USCOREget_USCOREuser_USCOREaccessible.password = password;
@@ -1937,9 +1937,9 @@ SOAP_FMAC5 int SOAP_FMAC6 soap_call_ns1__mc_USCOREprojects_USCOREget_USCOREuser_
 SOAP_FMAC5 int SOAP_FMAC6 soap_call_ns1__mc_USCOREproject_USCOREget_USCOREcategories(struct soap *soap, const char *soap_endpoint, const char *soap_action, char *username, char *password, char *project_USCOREid, struct ns1__mc_USCOREproject_USCOREget_USCOREcategoriesResponse *_param_18)
 {	struct ns1__mc_USCOREproject_USCOREget_USCOREcategories soap_tmp_ns1__mc_USCOREproject_USCOREget_USCOREcategories;
 	if (!soap_endpoint)
-		soap_endpoint = "http://aubit.com/mantis/api/soap/mantisconnect.php";
+		soap_endpoint = "http://www.aubit.com/mantis/api/soap/mantisconnect.php";
 	if (!soap_action)
-		soap_action = "http://aubit.com/mantis/api/soap/mantisconnect.php/mc_project_get_categories";
+		soap_action = "http://www.aubit.com/mantis/api/soap/mantisconnect.php/mc_project_get_categories";
 	soap->encodingStyle = "http://schemas.xmlsoap.org/soap/encoding/";
 	soap_tmp_ns1__mc_USCOREproject_USCOREget_USCOREcategories.username = username;
 	soap_tmp_ns1__mc_USCOREproject_USCOREget_USCOREcategories.password = password;
@@ -1992,9 +1992,9 @@ SOAP_FMAC5 int SOAP_FMAC6 soap_call_ns1__mc_USCOREproject_USCOREget_USCOREcatego
 SOAP_FMAC5 int SOAP_FMAC6 soap_call_ns1__mc_USCOREproject_USCOREget_USCOREversions(struct soap *soap, const char *soap_endpoint, const char *soap_action, char *username, char *password, char *project_USCOREid, struct ns1__mc_USCOREproject_USCOREget_USCOREversionsResponse *_param_19)
 {	struct ns1__mc_USCOREproject_USCOREget_USCOREversions soap_tmp_ns1__mc_USCOREproject_USCOREget_USCOREversions;
 	if (!soap_endpoint)
-		soap_endpoint = "http://aubit.com/mantis/api/soap/mantisconnect.php";
+		soap_endpoint = "http://www.aubit.com/mantis/api/soap/mantisconnect.php";
 	if (!soap_action)
-		soap_action = "http://aubit.com/mantis/api/soap/mantisconnect.php/mc_project_get_versions";
+		soap_action = "http://www.aubit.com/mantis/api/soap/mantisconnect.php/mc_project_get_versions";
 	soap->encodingStyle = "http://schemas.xmlsoap.org/soap/encoding/";
 	soap_tmp_ns1__mc_USCOREproject_USCOREget_USCOREversions.username = username;
 	soap_tmp_ns1__mc_USCOREproject_USCOREget_USCOREversions.password = password;
@@ -2048,9 +2048,9 @@ SOAP_FMAC5 int SOAP_FMAC6 soap_call_ns1__mc_USCOREproject_USCOREversion_USCOREad
 {	struct ns1__mc_USCOREproject_USCOREversion_USCOREadd soap_tmp_ns1__mc_USCOREproject_USCOREversion_USCOREadd;
 	struct ns1__mc_USCOREproject_USCOREversion_USCOREaddResponse *soap_tmp_ns1__mc_USCOREproject_USCOREversion_USCOREaddResponse;
 	if (!soap_endpoint)
-		soap_endpoint = "http://aubit.com/mantis/api/soap/mantisconnect.php";
+		soap_endpoint = "http://www.aubit.com/mantis/api/soap/mantisconnect.php";
 	if (!soap_action)
-		soap_action = "http://aubit.com/mantis/api/soap/mantisconnect.php/mc_project_version_add";
+		soap_action = "http://www.aubit.com/mantis/api/soap/mantisconnect.php/mc_project_version_add";
 	soap->encodingStyle = "http://schemas.xmlsoap.org/soap/encoding/";
 	soap_tmp_ns1__mc_USCOREproject_USCOREversion_USCOREadd.username = username;
 	soap_tmp_ns1__mc_USCOREproject_USCOREversion_USCOREadd.password = password;
@@ -2106,9 +2106,9 @@ SOAP_FMAC5 int SOAP_FMAC6 soap_call_ns1__mc_USCOREproject_USCOREversion_USCOREup
 {	struct ns1__mc_USCOREproject_USCOREversion_USCOREupdate soap_tmp_ns1__mc_USCOREproject_USCOREversion_USCOREupdate;
 	struct ns1__mc_USCOREproject_USCOREversion_USCOREupdateResponse *soap_tmp_ns1__mc_USCOREproject_USCOREversion_USCOREupdateResponse;
 	if (!soap_endpoint)
-		soap_endpoint = "http://aubit.com/mantis/api/soap/mantisconnect.php";
+		soap_endpoint = "http://www.aubit.com/mantis/api/soap/mantisconnect.php";
 	if (!soap_action)
-		soap_action = "http://aubit.com/mantis/api/soap/mantisconnect.php/mc_project_version_update";
+		soap_action = "http://www.aubit.com/mantis/api/soap/mantisconnect.php/mc_project_version_update";
 	soap->encodingStyle = "http://schemas.xmlsoap.org/soap/encoding/";
 	soap_tmp_ns1__mc_USCOREproject_USCOREversion_USCOREupdate.username = username;
 	soap_tmp_ns1__mc_USCOREproject_USCOREversion_USCOREupdate.password = password;
@@ -2165,9 +2165,9 @@ SOAP_FMAC5 int SOAP_FMAC6 soap_call_ns1__mc_USCOREproject_USCOREversion_USCOREde
 {	struct ns1__mc_USCOREproject_USCOREversion_USCOREdelete soap_tmp_ns1__mc_USCOREproject_USCOREversion_USCOREdelete;
 	struct ns1__mc_USCOREproject_USCOREversion_USCOREdeleteResponse *soap_tmp_ns1__mc_USCOREproject_USCOREversion_USCOREdeleteResponse;
 	if (!soap_endpoint)
-		soap_endpoint = "http://aubit.com/mantis/api/soap/mantisconnect.php";
+		soap_endpoint = "http://www.aubit.com/mantis/api/soap/mantisconnect.php";
 	if (!soap_action)
-		soap_action = "http://aubit.com/mantis/api/soap/mantisconnect.php/mc_project_version_delete";
+		soap_action = "http://www.aubit.com/mantis/api/soap/mantisconnect.php/mc_project_version_delete";
 	soap->encodingStyle = "http://schemas.xmlsoap.org/soap/encoding/";
 	soap_tmp_ns1__mc_USCOREproject_USCOREversion_USCOREdelete.username = username;
 	soap_tmp_ns1__mc_USCOREproject_USCOREversion_USCOREdelete.password = password;
@@ -2222,9 +2222,9 @@ SOAP_FMAC5 int SOAP_FMAC6 soap_call_ns1__mc_USCOREproject_USCOREversion_USCOREde
 SOAP_FMAC5 int SOAP_FMAC6 soap_call_ns1__mc_USCOREproject_USCOREget_USCOREreleased_USCOREversions(struct soap *soap, const char *soap_endpoint, const char *soap_action, char *username, char *password, char *project_USCOREid, struct ns1__mc_USCOREproject_USCOREget_USCOREreleased_USCOREversionsResponse *_param_20)
 {	struct ns1__mc_USCOREproject_USCOREget_USCOREreleased_USCOREversions soap_tmp_ns1__mc_USCOREproject_USCOREget_USCOREreleased_USCOREversions;
 	if (!soap_endpoint)
-		soap_endpoint = "http://aubit.com/mantis/api/soap/mantisconnect.php";
+		soap_endpoint = "http://www.aubit.com/mantis/api/soap/mantisconnect.php";
 	if (!soap_action)
-		soap_action = "http://aubit.com/mantis/api/soap/mantisconnect.php/mc_project_get_released_versions";
+		soap_action = "http://www.aubit.com/mantis/api/soap/mantisconnect.php/mc_project_get_released_versions";
 	soap->encodingStyle = "http://schemas.xmlsoap.org/soap/encoding/";
 	soap_tmp_ns1__mc_USCOREproject_USCOREget_USCOREreleased_USCOREversions.username = username;
 	soap_tmp_ns1__mc_USCOREproject_USCOREget_USCOREreleased_USCOREversions.password = password;
@@ -2277,9 +2277,9 @@ SOAP_FMAC5 int SOAP_FMAC6 soap_call_ns1__mc_USCOREproject_USCOREget_USCOREreleas
 SOAP_FMAC5 int SOAP_FMAC6 soap_call_ns1__mc_USCOREproject_USCOREget_USCOREunreleased_USCOREversions(struct soap *soap, const char *soap_endpoint, const char *soap_action, char *username, char *password, char *project_USCOREid, struct ns1__mc_USCOREproject_USCOREget_USCOREunreleased_USCOREversionsResponse *_param_21)
 {	struct ns1__mc_USCOREproject_USCOREget_USCOREunreleased_USCOREversions soap_tmp_ns1__mc_USCOREproject_USCOREget_USCOREunreleased_USCOREversions;
 	if (!soap_endpoint)
-		soap_endpoint = "http://aubit.com/mantis/api/soap/mantisconnect.php";
+		soap_endpoint = "http://www.aubit.com/mantis/api/soap/mantisconnect.php";
 	if (!soap_action)
-		soap_action = "http://aubit.com/mantis/api/soap/mantisconnect.php/mc_project_get_unreleased_versions";
+		soap_action = "http://www.aubit.com/mantis/api/soap/mantisconnect.php/mc_project_get_unreleased_versions";
 	soap->encodingStyle = "http://schemas.xmlsoap.org/soap/encoding/";
 	soap_tmp_ns1__mc_USCOREproject_USCOREget_USCOREunreleased_USCOREversions.username = username;
 	soap_tmp_ns1__mc_USCOREproject_USCOREget_USCOREunreleased_USCOREversions.password = password;
@@ -2332,9 +2332,9 @@ SOAP_FMAC5 int SOAP_FMAC6 soap_call_ns1__mc_USCOREproject_USCOREget_USCOREunrele
 SOAP_FMAC5 int SOAP_FMAC6 soap_call_ns1__mc_USCOREproject_USCOREget_USCOREattachments(struct soap *soap, const char *soap_endpoint, const char *soap_action, char *username, char *password, char *project_USCOREid, struct ns1__mc_USCOREproject_USCOREget_USCOREattachmentsResponse *_param_22)
 {	struct ns1__mc_USCOREproject_USCOREget_USCOREattachments soap_tmp_ns1__mc_USCOREproject_USCOREget_USCOREattachments;
 	if (!soap_endpoint)
-		soap_endpoint = "http://aubit.com/mantis/api/soap/mantisconnect.php";
+		soap_endpoint = "http://www.aubit.com/mantis/api/soap/mantisconnect.php";
 	if (!soap_action)
-		soap_action = "http://aubit.com/mantis/api/soap/mantisconnect.php/mc_project_get_attachments";
+		soap_action = "http://www.aubit.com/mantis/api/soap/mantisconnect.php/mc_project_get_attachments";
 	soap->encodingStyle = "http://schemas.xmlsoap.org/soap/encoding/";
 	soap_tmp_ns1__mc_USCOREproject_USCOREget_USCOREattachments.username = username;
 	soap_tmp_ns1__mc_USCOREproject_USCOREget_USCOREattachments.password = password;
@@ -2387,9 +2387,9 @@ SOAP_FMAC5 int SOAP_FMAC6 soap_call_ns1__mc_USCOREproject_USCOREget_USCOREattach
 SOAP_FMAC5 int SOAP_FMAC6 soap_call_ns1__mc_USCOREproject_USCOREget_USCOREcustom_USCOREfields(struct soap *soap, const char *soap_endpoint, const char *soap_action, char *username, char *password, char *project_USCOREid, struct ns1__mc_USCOREproject_USCOREget_USCOREcustom_USCOREfieldsResponse *_param_23)
 {	struct ns1__mc_USCOREproject_USCOREget_USCOREcustom_USCOREfields soap_tmp_ns1__mc_USCOREproject_USCOREget_USCOREcustom_USCOREfields;
 	if (!soap_endpoint)
-		soap_endpoint = "http://aubit.com/mantis/api/soap/mantisconnect.php";
+		soap_endpoint = "http://www.aubit.com/mantis/api/soap/mantisconnect.php";
 	if (!soap_action)
-		soap_action = "http://aubit.com/mantis/api/soap/mantisconnect.php/mc_project_get_custom_fields";
+		soap_action = "http://www.aubit.com/mantis/api/soap/mantisconnect.php/mc_project_get_custom_fields";
 	soap->encodingStyle = "http://schemas.xmlsoap.org/soap/encoding/";
 	soap_tmp_ns1__mc_USCOREproject_USCOREget_USCOREcustom_USCOREfields.username = username;
 	soap_tmp_ns1__mc_USCOREproject_USCOREget_USCOREcustom_USCOREfields.password = password;
@@ -2443,9 +2443,9 @@ SOAP_FMAC5 int SOAP_FMAC6 soap_call_ns1__mc_USCOREproject_USCOREattachment_USCOR
 {	struct ns1__mc_USCOREproject_USCOREattachment_USCOREget soap_tmp_ns1__mc_USCOREproject_USCOREattachment_USCOREget;
 	struct ns1__mc_USCOREproject_USCOREattachment_USCOREgetResponse *soap_tmp_ns1__mc_USCOREproject_USCOREattachment_USCOREgetResponse;
 	if (!soap_endpoint)
-		soap_endpoint = "http://aubit.com/mantis/api/soap/mantisconnect.php";
+		soap_endpoint = "http://www.aubit.com/mantis/api/soap/mantisconnect.php";
 	if (!soap_action)
-		soap_action = "http://aubit.com/mantis/api/soap/mantisconnect.php/mc_project_attachment_get";
+		soap_action = "http://www.aubit.com/mantis/api/soap/mantisconnect.php/mc_project_attachment_get";
 	soap->encodingStyle = "http://schemas.xmlsoap.org/soap/encoding/";
 	soap_tmp_ns1__mc_USCOREproject_USCOREattachment_USCOREget.username = username;
 	soap_tmp_ns1__mc_USCOREproject_USCOREattachment_USCOREget.password = password;
@@ -2501,9 +2501,9 @@ SOAP_FMAC5 int SOAP_FMAC6 soap_call_ns1__mc_USCOREproject_USCOREattachment_USCOR
 {	struct ns1__mc_USCOREproject_USCOREattachment_USCOREadd soap_tmp_ns1__mc_USCOREproject_USCOREattachment_USCOREadd;
 	struct ns1__mc_USCOREproject_USCOREattachment_USCOREaddResponse *soap_tmp_ns1__mc_USCOREproject_USCOREattachment_USCOREaddResponse;
 	if (!soap_endpoint)
-		soap_endpoint = "http://aubit.com/mantis/api/soap/mantisconnect.php";
+		soap_endpoint = "http://www.aubit.com/mantis/api/soap/mantisconnect.php";
 	if (!soap_action)
-		soap_action = "http://aubit.com/mantis/api/soap/mantisconnect.php/mc_project_attachment_add";
+		soap_action = "http://www.aubit.com/mantis/api/soap/mantisconnect.php/mc_project_attachment_add";
 	soap->encodingStyle = "http://schemas.xmlsoap.org/soap/encoding/";
 	soap_tmp_ns1__mc_USCOREproject_USCOREattachment_USCOREadd.username = username;
 	soap_tmp_ns1__mc_USCOREproject_USCOREattachment_USCOREadd.password = password;
@@ -2564,9 +2564,9 @@ SOAP_FMAC5 int SOAP_FMAC6 soap_call_ns1__mc_USCOREproject_USCOREattachment_USCOR
 {	struct ns1__mc_USCOREproject_USCOREattachment_USCOREdelete soap_tmp_ns1__mc_USCOREproject_USCOREattachment_USCOREdelete;
 	struct ns1__mc_USCOREproject_USCOREattachment_USCOREdeleteResponse *soap_tmp_ns1__mc_USCOREproject_USCOREattachment_USCOREdeleteResponse;
 	if (!soap_endpoint)
-		soap_endpoint = "http://aubit.com/mantis/api/soap/mantisconnect.php";
+		soap_endpoint = "http://www.aubit.com/mantis/api/soap/mantisconnect.php";
 	if (!soap_action)
-		soap_action = "http://aubit.com/mantis/api/soap/mantisconnect.php/mc_project_attachment_delete";
+		soap_action = "http://www.aubit.com/mantis/api/soap/mantisconnect.php/mc_project_attachment_delete";
 	soap->encodingStyle = "http://schemas.xmlsoap.org/soap/encoding/";
 	soap_tmp_ns1__mc_USCOREproject_USCOREattachment_USCOREdelete.username = username;
 	soap_tmp_ns1__mc_USCOREproject_USCOREattachment_USCOREdelete.password = password;
@@ -2621,9 +2621,9 @@ SOAP_FMAC5 int SOAP_FMAC6 soap_call_ns1__mc_USCOREproject_USCOREattachment_USCOR
 SOAP_FMAC5 int SOAP_FMAC6 soap_call_ns1__mc_USCOREfilter_USCOREget(struct soap *soap, const char *soap_endpoint, const char *soap_action, char *username, char *password, char *project_USCOREid, struct ns1__mc_USCOREfilter_USCOREgetResponse *_param_24)
 {	struct ns1__mc_USCOREfilter_USCOREget soap_tmp_ns1__mc_USCOREfilter_USCOREget;
 	if (!soap_endpoint)
-		soap_endpoint = "http://aubit.com/mantis/api/soap/mantisconnect.php";
+		soap_endpoint = "http://www.aubit.com/mantis/api/soap/mantisconnect.php";
 	if (!soap_action)
-		soap_action = "http://aubit.com/mantis/api/soap/mantisconnect.php/mc_filter_get";
+		soap_action = "http://www.aubit.com/mantis/api/soap/mantisconnect.php/mc_filter_get";
 	soap->encodingStyle = "http://schemas.xmlsoap.org/soap/encoding/";
 	soap_tmp_ns1__mc_USCOREfilter_USCOREget.username = username;
 	soap_tmp_ns1__mc_USCOREfilter_USCOREget.password = password;
@@ -2676,9 +2676,9 @@ SOAP_FMAC5 int SOAP_FMAC6 soap_call_ns1__mc_USCOREfilter_USCOREget(struct soap *
 SOAP_FMAC5 int SOAP_FMAC6 soap_call_ns1__mc_USCOREfilter_USCOREget_USCOREissues(struct soap *soap, const char *soap_endpoint, const char *soap_action, char *username, char *password, char *project_USCOREid, char *filter_USCOREid, char *page_USCOREnumber, char *per_USCOREpage, struct ns1__mc_USCOREfilter_USCOREget_USCOREissuesResponse *_param_25)
 {	struct ns1__mc_USCOREfilter_USCOREget_USCOREissues soap_tmp_ns1__mc_USCOREfilter_USCOREget_USCOREissues;
 	if (!soap_endpoint)
-		soap_endpoint = "http://aubit.com/mantis/api/soap/mantisconnect.php";
+		soap_endpoint = "http://www.aubit.com/mantis/api/soap/mantisconnect.php";
 	if (!soap_action)
-		soap_action = "http://aubit.com/mantis/api/soap/mantisconnect.php/mc_filter_get_issues";
+		soap_action = "http://www.aubit.com/mantis/api/soap/mantisconnect.php/mc_filter_get_issues";
 	soap->encodingStyle = "http://schemas.xmlsoap.org/soap/encoding/";
 	soap_tmp_ns1__mc_USCOREfilter_USCOREget_USCOREissues.username = username;
 	soap_tmp_ns1__mc_USCOREfilter_USCOREget_USCOREissues.password = password;
@@ -2734,9 +2734,9 @@ SOAP_FMAC5 int SOAP_FMAC6 soap_call_ns1__mc_USCOREfilter_USCOREget_USCOREissues(
 SOAP_FMAC5 int SOAP_FMAC6 soap_call_ns1__mc_USCOREfilter_USCOREget_USCOREissue_USCOREheaders(struct soap *soap, const char *soap_endpoint, const char *soap_action, char *username, char *password, char *project_USCOREid, char *filter_USCOREid, char *page_USCOREnumber, char *per_USCOREpage, struct ns1__mc_USCOREfilter_USCOREget_USCOREissue_USCOREheadersResponse *_param_26)
 {	struct ns1__mc_USCOREfilter_USCOREget_USCOREissue_USCOREheaders soap_tmp_ns1__mc_USCOREfilter_USCOREget_USCOREissue_USCOREheaders;
 	if (!soap_endpoint)
-		soap_endpoint = "http://aubit.com/mantis/api/soap/mantisconnect.php";
+		soap_endpoint = "http://www.aubit.com/mantis/api/soap/mantisconnect.php";
 	if (!soap_action)
-		soap_action = "http://aubit.com/mantis/api/soap/mantisconnect.php/mc_filter_get_issue_headers";
+		soap_action = "http://www.aubit.com/mantis/api/soap/mantisconnect.php/mc_filter_get_issue_headers";
 	soap->encodingStyle = "http://schemas.xmlsoap.org/soap/encoding/";
 	soap_tmp_ns1__mc_USCOREfilter_USCOREget_USCOREissue_USCOREheaders.username = username;
 	soap_tmp_ns1__mc_USCOREfilter_USCOREget_USCOREissue_USCOREheaders.password = password;
@@ -2793,9 +2793,9 @@ SOAP_FMAC5 int SOAP_FMAC6 soap_call_ns1__mc_USCOREconfig_USCOREget_USCOREstring(
 {	struct ns1__mc_USCOREconfig_USCOREget_USCOREstring soap_tmp_ns1__mc_USCOREconfig_USCOREget_USCOREstring;
 	struct ns1__mc_USCOREconfig_USCOREget_USCOREstringResponse *soap_tmp_ns1__mc_USCOREconfig_USCOREget_USCOREstringResponse;
 	if (!soap_endpoint)
-		soap_endpoint = "http://aubit.com/mantis/api/soap/mantisconnect.php";
+		soap_endpoint = "http://www.aubit.com/mantis/api/soap/mantisconnect.php";
 	if (!soap_action)
-		soap_action = "http://aubit.com/mantis/api/soap/mantisconnect.php/mc_config_get_string";
+		soap_action = "http://www.aubit.com/mantis/api/soap/mantisconnect.php/mc_config_get_string";
 	soap->encodingStyle = "http://schemas.xmlsoap.org/soap/encoding/";
 	soap_tmp_ns1__mc_USCOREconfig_USCOREget_USCOREstring.username = username;
 	soap_tmp_ns1__mc_USCOREconfig_USCOREget_USCOREstring.password = password;
@@ -2851,9 +2851,9 @@ SOAP_FMAC5 int SOAP_FMAC6 soap_call_ns1__mc_USCOREissue_USCOREcheckin(struct soa
 {	struct ns1__mc_USCOREissue_USCOREcheckin soap_tmp_ns1__mc_USCOREissue_USCOREcheckin;
 	struct ns1__mc_USCOREissue_USCOREcheckinResponse *soap_tmp_ns1__mc_USCOREissue_USCOREcheckinResponse;
 	if (!soap_endpoint)
-		soap_endpoint = "http://aubit.com/mantis/api/soap/mantisconnect.php";
+		soap_endpoint = "http://www.aubit.com/mantis/api/soap/mantisconnect.php";
 	if (!soap_action)
-		soap_action = "http://aubit.com/mantis/api/soap/mantisconnect.php/mc_issue_checkin";
+		soap_action = "http://www.aubit.com/mantis/api/soap/mantisconnect.php/mc_issue_checkin";
 	soap->encodingStyle = "http://schemas.xmlsoap.org/soap/encoding/";
 	soap_tmp_ns1__mc_USCOREissue_USCOREcheckin.username = username;
 	soap_tmp_ns1__mc_USCOREissue_USCOREcheckin.password = password;

@@ -1,4 +1,247 @@
 ---------------------------
+Thu Oct 18 08:36:02 BST 2012
+---------------------------
+1.2_31 Released
+---------------------------
+	2012-10-17 21:28  mikeaubury
+	
+	2012-10-17 21:25  mikeaubury
+	
+	2012-10-16 18:20  locbook
+	
+	AFTER ROW should run on interrupt
+	
+	2012-10-16 07:51  mikeaubury
+	
+	menu fixup
+	
+	2012-10-16 07:49  mikeaubury
+	
+	2012-10-15 14:13  locbook
+	
+	Fixed input array with attribute limiting to a single character on
+	input.
+	
+	2012-10-04 06:45  mikeaubury
+	
+	Remove old/unused form file
+	
+	2012-10-04 06:41  mikeaubury
+	
+	move the MENU LINE into the attributes
+	
+	2012-10-03 22:03  locbook
+	
+	Increased displayed help lines to 20
+	
+	2012-10-03 21:17  locbook
+	
+	Increased displayed help lines to 20
+	
+	2012-10-03 21:15  locbook
+	
+	Increased displayed help lines to 20, force menu line to 1 default
+	menu option to "Resume" on single page help messages
+	
+	2012-09-28 08:14  mikeaubury
+	
+	2012-09-27 13:07  mikeaubury
+	
+	More tracing fixups
+	
+	2012-09-26 15:38  mikeaubury
+	
+	dont trace RUNs in ignored functions
+	
+	2012-09-26 08:42  mikeaubury
+	
+	Fixup length problem with trace filenames
+	
+	2012-09-26 08:31  mikeaubury
+	
+	Add tracing of RUN commands to the flat TRACE4GLEXEC output
+	
+	2012-09-24 21:05  mikeaubury
+	
+	Major TRACE4GLEXEC runtime tracing improvements 1) Add 'flat'
+	output mode - by setting TRACEMODEFLAT=Y    This generates a plain
+	text file which can be used to view the execution of the program.
+	If this isn't set - it uses the current 'dot' format which can be
+	turned into a nice chart
+	
+	2) Added options to set the filename better via the
+	TRACE4GLEXEC variable.	   The variable can now contain the special
+	"terms" [app] and [pid] which will be replaced by the currently
+	executing program and the process ID - which should help create
+	unique files when "chaining" 4gl executables  eg.
+	
+	export TRACE4GLEXEC="trace[app]_[pid].out"
+	
+	3) Add an '.trace.ignore" file - which list a list of
+	function names (one per line) which *wont* get logged, so you can
+	excluded helper functions you're not interested in. The actual
+	filename defaults to ".trace.ignore" but can be set to	  another
+	name setting "TRACEIGNORELIST" to point to a different file
+	
+	2012-09-24 18:51  mikeaubury
+	
+	2012-09-24 13:21  siverly
+	
+	After some changes in different functions in the last weeks (for
+	picture attribute handling for example) we need a new versionnumber
+	
+	2012-09-21 16:56  mikeaubury
+	
+	fix help files to allow access via DBPATH
+	
+	2012-09-20 12:14  siverly
+	
+	fix oversized comments in compilation
+	
+	2012-09-14 13:24  mikeaubury
+	
+	2012-09-14 09:22  mikeaubury
+	
+	Change to stop using dynamically allocated memory for the
+	"extra_info" for prepared statements.  Uses "extra_space" - which
+	is just some pre-allocated buffer..  Also - made a change to reuse
+	any freed associated memory slots in set_associated_memory and
+	friends
+	
+	2012-09-02 17:31  mikeaubury
+	
+	Add server side support for :  call
+	ui.form.setattributes("fieldname","[name]","[value]")
+	( eg call ui.form.setattributes("fieldname","picture","###&.&&") )
+	and  call ui.form.setpagetitle("page1","Title")
+	
+	2012-09-02 17:30  mikeaubury
+	
+	Add Id field to layouts
+	
+	2012-08-31 13:17  mikeaubury
+	
+	2012-08-31 11:07  mikeaubury
+	
+	2012-08-31 10:53  mikeaubury
+	
+	2012-08-31 10:26  mikeaubury
+	
+	2012-08-24 14:09  mikeaubury
+	
+	2012-08-24 13:37  mikeaubury
+	
+	2012-08-23 14:37  mikeaubury
+	
+	2012-08-14 15:22  mikeaubury
+	
+	Add sql parameters to sqlmetrics output
+	
+	2012-08-10 13:18  mikeaubury
+	
+	make sure strings  like ":" are not converted to valid intervals
+	
+	2012-07-31 08:09  mikeaubury
+	
+	More fixes for the init_globals_...
+	
+	2012-07-30 12:55  mikeaubury
+	
+	Add "IGNGLOBINIT" to remove the global initiazation routine
+	
+	2012-07-30 12:02  mikeaubury
+	
+	Remove call to initialization function for empty globals files
+	
+	2012-07-26 11:06  mikeaubury
+	
+	2012-07-25 10:57  mikeaubury
+	
+	2012-07-25 10:14  mikeaubury
+	
+	2012-07-25 10:02  mikeaubury
+	
+	2012-07-25 10:01  mikeaubury
+	
+	Add hash for globals files - so we can initialize global variables
+	with at least a small degree of certainty that having files in
+	different directories with the same name wont cause duplicate
+	function names
+	
+	2012-07-19 12:33  mikeaubury
+	
+	2012-07-16 14:00  siverly
+	
+	new xml protocol function because we added a new ui.vdc function
+	
+	2012-07-13 11:18  siverly
+	
+	Datetype Interval hour to minute fixed on mac (Mike)
+	
+	2012-07-13 10:59  siverly
+	
+	addet new ui.vdc.execute function
+	
+	2012-07-10 19:09  mikeaubury
+	
+	2012-07-10 18:15  mikeaubury
+	
+	2012-07-10 17:36  mikeaubury
+	
+	2012-07-10 15:24  mikeaubury
+	
+	2012-07-10 12:36  mikeaubury
+	
+	2012-07-10 09:52  mikeaubury
+	
+	2012-07-10 07:52  mikeaubury
+	
+	2012-07-09 16:25  mikeaubury
+	
+	2012-06-29 11:07  siverly
+	
+	printpdf for the vdc
+	
+	2012-06-27 16:15  mikeaubury
+	
+	Fix an issue with trailing decimal separator..
+	
+	2012-06-25 10:51  mikeaubury
+	
+	2012-06-18 17:44  mikeaubury
+	
+	2012-06-13 19:34  mikeaubury
+	
+	2012-06-13 19:33  mikeaubury
+	
+	Interval fixup for Alain
+	
+	2012-06-10 11:42  mikeaubury
+	
+	add ui.curses.setins and ui.curses.setovr to set the
+	insert/overtype modes in a form
+	
+	2012-06-05 10:10  mikeaubury
+	
+	More object reference counting
+	
+	2012-05-31 12:52  mikeaubury
+	
+	Small patch to remove an extraneous "DISPLAY" which is causing a
+	screen redraw
+	
+	2012-05-30 21:21  mikeaubury
+	
+	Object reference count fixup (WIP)
+	
+	2012-05-29 09:07  siverly
+	
+	ui.progress to inform the user what happend in the background(runs,
+	big sql statements etc)
+	
+	2012-05-27 18:51  mikeaubury
+	
+---------------------------
 Sun May 27 18:51:14 BST 2012
 ---------------------------
 1.2_30 Released
