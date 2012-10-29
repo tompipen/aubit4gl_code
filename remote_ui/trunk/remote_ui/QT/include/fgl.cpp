@@ -856,17 +856,20 @@ namespace Fgl {
 
           for(int i=0; i<tmp_dbdate.length(); i++){
 
-             if(tmp_dbdate.at(i) == 'D'){
-                day = arr_mdy.at(i).toInt();
-             }
+             if(arr_mdy.count() > i)
+             {
+                 if(tmp_dbdate.at(i) == 'D'){
+                    day = arr_mdy.at(i).toInt();
+                 }
 
 
-             if(tmp_dbdate.at(i) == 'M'){
-                month = arr_mdy.at(i).toInt();
-             }
+                 if(tmp_dbdate.at(i) == 'M'){
+                    month = arr_mdy.at(i).toInt();
+                 }
 
-             if(tmp_dbdate.at(i) == 'Y'){
-                year = arr_mdy.at(i).toInt();
+                 if(tmp_dbdate.at(i) == 'Y'){
+                    year = arr_mdy.at(i).toInt();
+                 }
              }
           }
 
