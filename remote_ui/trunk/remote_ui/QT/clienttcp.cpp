@@ -520,7 +520,7 @@ MainFrame::vdcdebug("ClientTcp","replyWith", "QString qs_replyString");
          ClientSocket *cl = static_cast<ClientSocket*>(QObject::sender());
          out.setDevice(cl);
          if(cl->ph.p_currScreenHandler->qh_env.contains("DB_LOCALE")){
-             out.setCodec(QTextCodec::codecForName("ISO-8859-1"));
+             out.setCodec(QTextCodec::codecForName("IBM850"));
          }
 
          qs_replyString+="\n";
@@ -548,12 +548,14 @@ MainFrame::vdcdebug("ProtocolHandler","run", "");
    if(p_currScreenHandler != NULL &&
       p_currScreenHandler->qh_env.contains("DB_LOCALE")){
 
-      p_currScreenHandler->qh_env["DB_LOCALE"] = "UTF-8";
+      p_currScreenHandler->qh_env["DB_LOCALE"] = "IBM-850";
       QTextCodec *codec = QTextCodec::codecForName(qPrintable(p_currScreenHandler->qh_env["DB_LOCALE"]));
       //QTextCodec::setCodecForCStrings(QTextCodec::codecForName(qPrintable(p_currScreenHandler->qh_env["DB_LOCALE"])));
       QTextStream in_request(&request);
       in_request.setCodec(codec);
       qs_protocolCommand = in_request.readAll();
+      
+      qs_protocolCommand = filterUmlauts(qs_protocolCommand);
    }
    else{
       qs_protocolCommand = request;
@@ -677,7 +679,7 @@ MainFrame::vdcdebug("ProtocolHandler","run", "");
       out << qsl_xmlCommands.at(i);
    }
 
-   /*QString test = doc.toString();
+   QString test = doc.toString();
    test = filterUmlauts(test);
    doc.clear();
 
@@ -687,7 +689,7 @@ MainFrame::vdcdebug("ProtocolHandler","run", "");
                     "Column" + QString::number(errorCol);
       MsgBox("Protocol Error",str,"Warning","Ok","Ok",0);
       break;
-   }*/
+   }
 
 
    qDebug()<< qsl_xmlCommands.at(i);
