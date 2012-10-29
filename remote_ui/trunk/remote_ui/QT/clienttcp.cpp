@@ -548,7 +548,7 @@ MainFrame::vdcdebug("ProtocolHandler","run", "");
    if(p_currScreenHandler != NULL &&
       p_currScreenHandler->qh_env.contains("DB_LOCALE")){
 
-      p_currScreenHandler->qh_env["DB_LOCALE"] = "IBM-850";
+      p_currScreenHandler->qh_env["DB_LOCALE"] = "IBM850";
       QTextCodec *codec = QTextCodec::codecForName(qPrintable(p_currScreenHandler->qh_env["DB_LOCALE"]));
       //QTextCodec::setCodecForCStrings(QTextCodec::codecForName(qPrintable(p_currScreenHandler->qh_env["DB_LOCALE"])));
       QTextStream in_request(&request);
