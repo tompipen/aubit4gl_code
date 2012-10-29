@@ -296,7 +296,7 @@ A4GL_set_associated_mem (void *orig, void *newbytes)
   int a;
   for (a=0;a<ptr->nmemalloc;a++) {
 		if (ptr->ptr[a]==0) {
-			ptr->ptr[nelem - 1] = newblock;
+			ptr->ptr[a] = newblock;
 			return ptr->ptr[a];
 		}
 
