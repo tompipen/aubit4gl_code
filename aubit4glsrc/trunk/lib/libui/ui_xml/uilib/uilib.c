@@ -1897,7 +1897,7 @@ uilib_construct_loop (int nargs)
       int a;
       /* Got a construct result... */
       contexts[context].ui.construct.constr_clause = strdup(char_decode(last_attr->sync.vals[0].value));
-	free(last_attr->sync.vals[0].value);
+	//free(last_attr->sync.vals[0].value);
 
 	if (last_attr->sync.nvalues> contexts[context].ui.construct.num_field_data) {
 		fprintf(stderr,"Critical internal error : Too many values returned\n");
