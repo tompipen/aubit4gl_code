@@ -1893,7 +1893,7 @@ UILIB_A4GL_direct_to_ui (char *what, char *string)
       char *p2;
       p2 = A4GL_char_pop ();
       p1 = A4GL_char_pop ();
-      send_to_ui ("<SETKEYLABEL DIALOG=\"1\" LABEL=\"%s\"  TEXT=\"%s\"/>", p1, ignull (p2));
+      send_to_ui ("<SETKEYLABEL DIALOG=\"1\" LABEL=\"%s\"  TEXT=\"%s\"/>", uilib_xml_escape(char_encode(p1)), uilib_xml_escape(char_encode(ignull (p2))));
       free (p1);
       free (p2);
       return;
@@ -1924,7 +1924,7 @@ UILIB_A4GL_direct_to_ui (char *what, char *string)
       char *p2;
       p2 = A4GL_char_pop ();
       p1 = A4GL_char_pop ();
-      send_to_ui ("<SETKEYLABEL DIALOG=\"0\" LABEL=\"%s\"  TEXT=\"%s\"/>", p1, ignull (p2));
+      send_to_ui ("<SETKEYLABEL DIALOG=\"0\" LABEL=\"%s\"  TEXT=\"%s\"/>", uilib_xml_escape(char_encode(p1)), uilib_xml_escape(char_encode(ignull (p2))));
       free (p1);
       free (p2);
       return;
