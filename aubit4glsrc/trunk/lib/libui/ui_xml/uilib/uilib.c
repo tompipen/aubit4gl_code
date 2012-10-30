@@ -974,7 +974,8 @@ uilib_prompt_loop (int n)
   if (last_attr->sync.nvalues)
     {
       // Got a prompt result...
-      contexts[context].ui.prompt.promptresult = char_decode(last_attr->sync.vals[0].value);
+      contexts[context].ui.prompt.promptresult = strdup(char_decode(last_attr->sync.vals[0].value));
+	free(last_attr->sync.vals[0].value);
     }
   pushint (i);
   return 1;
@@ -1590,8 +1591,9 @@ UIdebug(5, "init=%d changed=%d\n", init, changed);
 	    }
 
 	//printf("Setting to : %s\n",  last_attr->sync.vals[a].value);
-	  contexts[context].ui.input.variable_data[a] = char_decode(last_attr->sync.vals[a].value);
+	  contexts[context].ui.input.variable_data[a] = strdup(char_decode(last_attr->sync.vals[a].value));
 	  contexts[context].ui.input.touched[a] = last_attr->sync.vals[a].touched;
+	  free(last_attr->sync.vals[a].value);
 
 
 	  if (contexts[context].ui.input.field_data)
@@ -1894,7 +1896,9 @@ uilib_construct_loop (int nargs)
     {
       int a;
       /* Got a construct result... */
-      contexts[context].ui.construct.constr_clause = char_decode(last_attr->sync.vals[0].value);
+      contexts[context].ui.construct.constr_clause = strdup(char_decode(last_attr->sync.vals[0].value));
+	free(last_attr->sync.vals[0].value);
+
 	if (last_attr->sync.nvalues> contexts[context].ui.construct.num_field_data) {
 		fprintf(stderr,"Critical internal error : Too many values returned\n");
 		exit(5);
@@ -1911,7 +1915,8 @@ uilib_construct_loop (int nargs)
 	      free (contexts[context].ui.construct.field_data[a]);
 	      contexts[context].ui.construct.field_data[a] = 0;
 	    }
-	  contexts[context].ui.construct.field_content_data[a] = char_decode(last_attr->sync.vals[a].value);
+	  contexts[context].ui.construct.field_content_data[a] = strdup(char_decode(last_attr->sync.vals[a].value));
+	  free(last_attr->sync.vals[a].value);
 	  contexts[context].ui.construct.touched[a]=last_attr->sync.vals[a].touched;
 	  contexts[context].ui.construct.field_data[a] = last_attr->sync.vals[a].fieldname;
 	}
