@@ -1916,7 +1916,7 @@ uilib_construct_loop (int nargs)
 	      contexts[context].ui.construct.field_data[a] = 0;
 	    }
 	  contexts[context].ui.construct.field_content_data[a] = strdup(char_decode(last_attr->sync.vals[a].value));
-	  free(last_attr->sync.vals[a].value);
+	  //free(last_attr->sync.vals[a].value);
 	  contexts[context].ui.construct.touched[a]=last_attr->sync.vals[a].touched;
 	  contexts[context].ui.construct.field_data[a] = last_attr->sync.vals[a].fieldname;
 	}
