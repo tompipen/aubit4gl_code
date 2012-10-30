@@ -229,10 +229,11 @@ MainFrame::vdcdebug("ScreenHandler","createWindow", "QString windowTitle,QString
    p_fglform->setStyles(formsStyles);
 
    p_fglform->initActions();
-//   this->handleIconFile(xmlIconDoc);
+   //this->handleIconFile(xmlIconDoc);
    //this->handleShortcutsFile(xmlShortcutDoc);
    if(formsActions.hasChildNodes() && windowTitle != "dummy_ventas"){
       p_fglform->setActions(formsActions);
+      p_fglform->setActions(xmlShortcutDoc);
    }
 
    checkColors();
@@ -413,7 +414,7 @@ void ScreenHandler::handleShortcutsFile(QDomDocument xmlFileString)
     {
         p_fglform->ql_actions = new Actions(p_fglform);
     }
-    p_fglform->ql_actions->parseFile(xmlFileString);
+        p_fglform->ql_actions->parseFile(xmlFileString);
 }
 
 void ScreenHandler::handleXMLColors(QString xmlFileString)
