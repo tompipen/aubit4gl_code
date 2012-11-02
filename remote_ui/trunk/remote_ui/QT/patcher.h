@@ -43,6 +43,7 @@ public slots:
     void loadServerXmlFinished(QNetworkReply*);
     void loadBinarieFinished(QNetworkReply*);
     void abort();
+    void setUpdateComplete();
 
 private:
     void loadServerXml();

@@ -357,7 +357,11 @@ void VDCUpdate::loadBinarieFinished(QNetworkReply *reply)
             logMessage("[DEBUG] Entpacken war erfolgreich.");
             getTextEdit()->append(tr("Extracting finished."));
             getTextEdit()->append(tr("Copy files to workdirectory."));
-            getProgressBar()->setValue(100);
+            getProgressBar()->setValue(90);
+            QTimer *timer = new QTimer;
+            connect(timer, SIGNAL(timeout()), this, SLOT(setUpdateComplete()));
+            timer->setSingleShot(true);
+            timer->start(2000);
 
             QProcess *proc = new QProcess;
             QString prog;
@@ -397,6 +401,12 @@ void VDCUpdate::loadBinarieFinished(QNetworkReply *reply)
         }
 
     }
+}
+
+void VDCUpdate::setUpdateComplete()
+{
+    getTextEdit()->append(tr("Update successfull. Starting VDC binarie."));
+    getProgressBar()->setValue(100);
 }
 
 void VDCUpdate::updateDownloadProgress(qint64 received, qint64 total)
