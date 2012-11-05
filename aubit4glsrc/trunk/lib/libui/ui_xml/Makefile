@@ -7,6 +7,11 @@ ifneq "${COMSPEC}" ""
         LINKLIBS        =-lwsock32
 endif
 
+ifeq "${TARGET_OS}" "darwin"
+      LINKLIBS+=-liconv
+endif
+
+
 
 CFLAGS+=-I$(ROOT)/incl -I. -I./uilib  -I./aubit4gl -Wall
 
