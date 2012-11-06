@@ -2694,6 +2694,8 @@ qDebug() << "context->fieldList()" << context->fieldList();
                   {
                       for(int j=i; j<context->fieldList().count()-1; j++)
                       {
+                          next = context->fieldList().at(j+1);
+
                           if(j >= context->fieldList().count()-1) {
                             next = NULL;
                             break;
@@ -2706,7 +2708,7 @@ qDebug() << "context->fieldList()" << context->fieldList();
                           }
 
                       }
-                      next = NULL;
+                      //next = NULL;
                       break;
                   }
               }
