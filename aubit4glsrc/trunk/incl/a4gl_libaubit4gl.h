@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.429 2012-09-27 12:07:16 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.430 2012-11-07 14:45:34 mikeaubury Exp $
 #
 */
 
@@ -1261,6 +1261,7 @@ void A4GLSTK_pushFunction_v3 (const char *functionName, char *params[], int n,ch
 
 void A4GL_register_global_objects(char *modulename,  void **objData) ;
 void A4GL_register_module_objects(char *modulename,  void **objData) ;
+void A4GL_register_report_objects(char *reportname,  void **objData) ;
 
   char *A4GLSTK_topFunction(void);
   void A4GLSTK_popFunction (void);

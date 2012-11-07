@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_4gl_callable.h,v 1.79 2012-09-27 12:07:16 mikeaubury Exp $
+# $Id: a4gl_4gl_callable.h,v 1.80 2012-11-07 14:45:34 mikeaubury Exp $
 */
 
 /**
@@ -250,6 +250,7 @@ int A4GL_close_cursor(char* currname,int explicit_) ;
 void A4GL_push_double_str (char *p);
 void A4GL_register_global_objects(char *modulename,  void **objData) ;
 void A4GL_register_module_objects(char *modulename,  void **objData) ;
+void A4GL_register_report_objects(char *reportname,  void **objData) ;
 
 
 //void A4GL_copyback(void *varptr,int sz, struct BINDING *binding, int n);

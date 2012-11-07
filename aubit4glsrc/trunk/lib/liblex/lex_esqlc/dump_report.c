@@ -876,6 +876,7 @@ report_cnt++;
   	print_bind_set_value_g(report_orderby_section->variables,'O'); 
   }
   printc("}");
+  printc("A4GL_register_module_objects(_reportName, _objData);");
 
 
   printc ("if (acl_ctrl==REPORT_SENDDATA&&_started==0&&fgl_rep_orderby!=1) {");

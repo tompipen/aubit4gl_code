@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: function_call_stack.c,v 1.55 2012-11-07 12:43:54 mikeaubury Exp $
+# $Id: function_call_stack.c,v 1.56 2012-11-07 14:45:34 mikeaubury Exp $
 #*/
 
 /**
@@ -832,9 +832,9 @@ A4GLSTK_popFunction_nl (int nrets, int lineno)
   if (functionCallPointer < 0)
     functionCallPointer = 0;
 
-  if (isFunction) {
-  	freeOrphanObjects ();
-  }
+  //if (isFunction) {
+  freeOrphanObjects ();
+  //}
 }
 
 
@@ -935,7 +935,12 @@ A4GLSTK_isStackInfo (void)
   return stackInfoInitialized;
 }
 
-void ***ObjData=0;
+struct globalObjData {
+	void **ptr;
+	char *name;
+};
+
+struct globalObjData *ObjData=0;
 int nObjData=0;
 
 // Traverses the function call stack looking for
@@ -948,9 +953,9 @@ int a;
 int b;
 
 for (a=0;a<nObjData;a++) {
-	if (ObjData[a]==0)    continue;
-	if (ObjData[a][0]==0) continue;
-	void **o=ObjData[a];
+	if (ObjData[a].ptr==0)    continue;
+	if (ObjData[a].ptr[0]==0) continue;
+	void **o=ObjData[a].ptr;
 	for (b=0;o[b];b++) {
 		long objId;
 		//printf("b=%d o[b]=%p\n",b,o[b]);
@@ -964,12 +969,14 @@ for (a=0;a<nObjData;a++) {
 }
 
 for (a=0;a<functionCallPointer;a++) {
-	for (b=0;functionCallStack[a].objData[b];b++) {
-		long objId;
-	 	objId=*(long *)functionCallStack[a].objData[b];
-		if (objId==objectID) {
-			A4GL_debug("Object is referenced by a local variable\n");
-			return 1;
+	if (functionCallStack[a].objData) {
+		for (b=0;functionCallStack[a].objData[b];b++) {
+			long objId;
+	 		objId=*(long *)functionCallStack[a].objData[b];
+			if (objId==objectID) {
+				A4GL_debug("Object is referenced by a local variable\n");
+				return 1;
+			}
 		}
 	}
 }
@@ -981,15 +988,32 @@ return 0;
 void A4GL_register_global_objects(char *modulename,  void **objData) {
 	nObjData++;
 	ObjData=realloc(ObjData,sizeof (ObjData[0])*nObjData);
-	ObjData[nObjData-1]=objData;
+	ObjData[nObjData-1].ptr=objData;
+	ObjData[nObjData-1].name=strdup(modulename);
 }
 
 void A4GL_register_module_objects(char *modulename,  void **objData) {
 	nObjData++;
 	ObjData=realloc(ObjData,sizeof (ObjData[0])*nObjData);
-	ObjData[nObjData-1]=objData;
+	ObjData[nObjData-1].ptr=objData;
+	ObjData[nObjData-1].name=strdup(modulename);
+}
 
-		
+void A4GL_register_report_objects(char *reportname,  void **objData) {
+	int a;
+	char buff[2000];
+	sprintf(buff,"RPT %s" ,reportname);
+	for (a=0;a<nObjData;a++) {
+		if (strcmp(buff,ObjData[a].name)==0) {
+			// already registered...
+			return ;
+		}
+	}
+
+	nObjData++;
+	ObjData=realloc(ObjData,sizeof (ObjData[0])*nObjData);
+	ObjData[nObjData-1].ptr=objData;
+	ObjData[nObjData-1].name=strdup(buff);
 }
 
 /* ============================= EOF ================================ */
