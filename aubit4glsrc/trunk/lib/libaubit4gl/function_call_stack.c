@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: function_call_stack.c,v 1.54 2012-09-27 12:07:15 mikeaubury Exp $
+# $Id: function_call_stack.c,v 1.55 2012-11-07 12:43:54 mikeaubury Exp $
 #*/
 
 /**
@@ -748,8 +748,11 @@ A4GLSTK_popFunction_nl (int nrets, int lineno)
 {
 
   char *fname;
-  fname = getTraceFname ();
+  int isFunction;
 
+  fname = getTraceFname ();
+  isFunction=(functionCallStack[functionCallPointer-1].functionType=='F');
+  
   if (isIgnoreTrace (functionCallStack[functionCallPointer - 1].functionName) || inHiddenFunction)
     {
       fname = 0;
@@ -829,7 +832,9 @@ A4GLSTK_popFunction_nl (int nrets, int lineno)
   if (functionCallPointer < 0)
     functionCallPointer = 0;
 
-  freeOrphanObjects ();
+  if (isFunction) {
+  	freeOrphanObjects ();
+  }
 }
 
 
