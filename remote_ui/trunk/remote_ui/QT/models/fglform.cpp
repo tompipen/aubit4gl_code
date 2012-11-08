@@ -1381,18 +1381,12 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
                   }
                   QSortFilterProxyModel *proxyModel = qobject_cast<QSortFilterProxyModel *> (tv->model());
                   TableModel *table = qobject_cast<TableModel *> (proxyModel->sourceModel());
-                  for(int i=0; i < table->columnCount(QModelIndex()); i++)
-                  {
-                      if(!tv->isReadOnlyColumn(i) && !tv->isColumnHidden(i))
-                      {
-                          QModelIndex tindex1;
-                          QModelIndex index1;
-                          tindex1 = table->index(tv->currentIndex().row(), i);
-                          index1 = proxyModel->mapFromSource(tindex1);
-                          tv->setCurrentIndex(index1);
-                          break;
-                      }
-                  }
+
+                  QModelIndex tindex1 = table->index(0, 0);
+                  QModelIndex index1 = proxyModel->mapFromSource(tindex1);
+                  tv->setCurrentIndex(index1);
+
+                  return true;
               }
           }
       }
@@ -1409,18 +1403,13 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
                   }
                   QSortFilterProxyModel *proxyModel = qobject_cast<QSortFilterProxyModel *> (tv->model());
                   TableModel *table = qobject_cast<TableModel *> (proxyModel->sourceModel());
-                  for(int i=table->columnCount(QModelIndex())-1; i > 0; i--)
-                  {
-                      if(!tv->isReadOnlyColumn(i) && !tv->isColumnHidden(i))
-                      {
-                          QModelIndex tindex1;
-                          QModelIndex index1;
-                          tindex1 = table->index(tv->currentIndex().row(), i);
-                          index1 = proxyModel->mapFromSource(tindex1);
-                          tv->setCurrentIndex(index1);
-                          break;
-                      }
-                  }
+
+                  QModelIndex tindex1 = table->index(tv->model()->rowCount(QModelIndex())-1, 0);
+                  QModelIndex index1 = proxyModel->mapFromSource(tindex1);
+                  tv->setCurrentIndex(index1);
+                  //break;
+
+                  return true;
               }
           }
       }
