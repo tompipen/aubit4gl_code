@@ -1973,16 +1973,18 @@ bool Reportgen::createInfoFile(QFileInfo odffile, QFileInfo zieldatei)
     switch(ebenen)
     {
     case 1:
-        stream1 << QString( "0" ) << QString( "%1" ).arg( ebenen ) << "\n";
+        stream1 << QString( "0" ) << QString( "%1" ).arg( ebenen );
         break;
     case 2:
-        stream1 << QString( "0" ) << QString ( "1" ) << QString( "%1" ).arg( ebenen ) << "\n";
+        stream1 << QString( "0" ) << QString ( "1" ) << QString( "%1" ).arg( ebenen );
         break;
     case 3:
-        stream1 << QString( "0" ) << QString ( "1" ) << QString ( "2" ) << QString( "%1" ).arg( ebenen ) << "\n";
+        stream1 << QString( "0" ) << QString ( "1" ) << QString ( "2" ) << QString( "%1" ).arg( ebenen );
         break;
 
     }
+
+    stream1 << "\n";
 
     qSort(fields);
 
