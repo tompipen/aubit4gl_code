@@ -369,6 +369,7 @@ ClientSocket::ClientSocket(QObject *parent, QString name, QString pass, QString 
    connect(&ph, SIGNAL(createBrowser()), p_currScreenHandler, SLOT(createBrowser()));
    connect(&ph, SIGNAL(closeBrowser(int)), p_currScreenHandler, SLOT(closeBrowser(int)));
 #ifdef KDChart_Version
+   connect(&ph, SIGNAL(openChartWindow(QString)), p_currScreenHandler, SLOT(openChartWindow(QString)));
    connect(&ph, SIGNAL(setGanttTitle(int,QString)), p_currScreenHandler, SLOT(setTitle(int,QString)));
    connect(&ph, SIGNAL(createGantt()), p_currScreenHandler, SLOT(createGantt()));
    connect(&ph, SIGNAL(ganttReadCsv(int,QString)), p_currScreenHandler, SLOT(readCsv(int,QString)));
@@ -1310,6 +1311,17 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
               }
 
               emit closeBrowser(params.at(0).toInt());
+         }
+         if(qs_name == "ui.vdc.openchartwindow")
+         {
+             QStringList params;
+              for(int k=0; k<paramsElement.childNodes().count(); k++){
+                 QDomElement valuesElement = paramsElement.childNodes().at(k).toElement();
+                 params << valuesElement.text();
+              }
+              emit openChartWindow(params.at(0));
+
+              returnvalues << "0";
          }
          if(qs_name == "ui.vdc.action"){
            qDebug() << "werde aufgerufen!!!" << "";
