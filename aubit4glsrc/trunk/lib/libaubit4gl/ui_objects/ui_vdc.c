@@ -536,6 +536,59 @@ char *filename=NULL;
   return 1;
 }
 
+static int ui_vdc_openchartwindow(long *objectID_IgnoredAsAlways0,int n) {
+int okToProcess=1;
+
+int _ni=1;
+struct BINDING _ibind[1]={
+    {NULL,0,0,0,0,0,NULL}
+};
+
+int _no=1;
+struct BINDING _obind[1]={
+    {NULL,0,0,0,0,0,NULL}
+};
+int rval_0;
+char *filename=NULL;
+
+/* END OF DEFINE SECTION */
+
+
+  if (n!=1) {
+    A4GL_pop_args(n);
+    okToProcess=0;
+  }
+
+  if (okToProcess) {
+    filename=A4GL_char_pop();
+    _ibind[0].ptr=filename;
+    _ibind[0].size=strlen(filename);
+  }
+
+  // Set up output binding for our parameters
+  if (okToProcess) {
+    _obind[0].ptr=&rval_0;
+    _obind[0].size=4;
+    _obind[0].dtype=DTYPE_INT;
+  }
+
+  if (okToProcess) {
+      A4GL_ui_frontcall("INTERNAL","ui.vdc.openchartwindow",_ibind,_ni,_obind,_no );
+  }
+  
+   // Set up output binding for our parameters
+    if (filename ) {
+        free(filename);
+    }
+
+    if (!okToProcess) {
+    A4GL_push_null(DTYPE_INT,0);
+  } else {
+    A4GL_push_int(rval_0);
+  }
+  return 1;
+}
+
 static int ui_vdc_getstdofficeprog(long *objectID_IgnoredAsAlways0,int n) {
 int okToProcess=1;
 int _no=1;
@@ -582,4 +635,5 @@ A4GL_add_object_type("ui.vdc");
   A4GL_add_datatype_function_i (DTYPE_OBJECT, ":ui.vdc.printpdf", (void *)  ui_vdc_printpdf);
   A4GL_add_datatype_function_i (DTYPE_OBJECT, ":ui.vdc.execute", (void *)  ui_vdc_execute);
   A4GL_add_datatype_function_i (DTYPE_OBJECT, ":ui.vdc.getstdofficeprog", (void *)  ui_vdc_getstdofficeprog);
+  A4GL_add_datatype_function_i (DTYPE_OBJECT, ":ui.vdc.openchartwindow", (void *)  ui_vdc_openchartwindow);
 }
