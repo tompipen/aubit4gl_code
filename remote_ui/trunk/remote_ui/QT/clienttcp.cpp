@@ -2300,7 +2300,7 @@ void ProtocolHandler::executeFile(int waitforFinish, QString fileName)
       {
           if(waitforFinish == 1)
           {
-              sleep(1);
+              sleep(3);
               for(int i=0; i < 10000; i++)
               {
                   QFile file(QDir::tempPath() + "/" + fileLockName);
