@@ -179,11 +179,11 @@ public slots:
    void createGantt();
    void setTitle(int, const QString);
    void readCsv(int, QString);
+   void openChartWindow(QString);
    #endif
    void createBrowser();
    void setUrl(int id, const QUrl &http);
    void closeBrowser(int id);
-   void openChartWindow(QString);
    void handleXMLStyles(QString);
    //void setFieldBuffer(QString, QString);
    void setFieldBuffer(int, QString, int);
