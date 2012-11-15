@@ -107,6 +107,7 @@ signals:
    void createBrowser();
    void setUrl(int, const QUrl);
    void closeBrowser(int);
+   void openChartWindow(QString);
 
    // ProtocolHandler -> ScreenHandler (WorkerThread -> GuiThread)
    void setOptions(QString, QString);

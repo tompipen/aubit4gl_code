@@ -183,6 +183,7 @@ public slots:
    void createBrowser();
    void setUrl(int id, const QUrl &http);
    void closeBrowser(int id);
+   void openChartWindow(QString);
    void handleXMLStyles(QString);
    //void setFieldBuffer(QString, QString);
    void setFieldBuffer(int, QString, int);

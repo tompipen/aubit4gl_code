@@ -3937,6 +3937,11 @@ void ScreenHandler::readCsv(int ganttId, QString fileName)
     //fglFormResponse("<TRIGGERED ID=\"-123\"><SVS><SV>" + QString::number(ganttId) + "</SV></SVS></TRIGGERED>");
 }
 
+void ScreenHandler::openChartWindow(QString filename)
+{
+    //Hier der Quelltext fuer Charterstellung & darstellung
+}
+
 #endif
 
 void ScreenHandler::createBrowser()
