@@ -1232,7 +1232,7 @@ void LoginForm::setOfficeInstallation()
     connect(saveButton, SIGNAL(clicked()), this, SLOT(saveOfficeInstallation()));
     connect(saveButton, SIGNAL(clicked()), widget, SLOT(close()));
 
-    label->setText("Please choose a Office installation: ");
+    label->setText("Please choose an Office installation: ");
     mOfficeComboBox->addItem("Please choose...");
     mOfficeComboBox->addItem("Microsoft Office");
     mOfficeComboBox->addItem("Open/Libre Office");
