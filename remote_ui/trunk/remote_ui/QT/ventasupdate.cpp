@@ -218,7 +218,7 @@ void VentasUpdate::downloadBinarie()
 
     if(ql_screenhandler)
     {
-        for(int i=0; i < ql_screenhandler->count(); i++)
+        for(int i=ql_screenhandler->count()-1; i >= 0; i--)
         {
 
             if(ScreenHandler *screen = qobject_cast<ScreenHandler*> (ql_screenhandler->at(i)))
@@ -230,10 +230,10 @@ void VentasUpdate::downloadBinarie()
                         p_fglform->close();
                     }
                 }
+            screen->closeProgramm();
             }
         }
     }
-
 
     #ifdef Q_WS_WIN
         file.setFileName(QApplication::applicationDirPath() + "/update.exe");
@@ -242,14 +242,14 @@ void VentasUpdate::downloadBinarie()
     #endif
 
         qDebug() << "file: " << file.fileName();
+
     if(file.exists())
     {
         QProcess *proc = new QProcess;
-        QApplication::quit();
         #ifdef Q_WS_WIN
             QProcess process;
             process.startDetached(QString("rundll32 url.dll,FileProtocolHandler \"%1\"").arg( file.fileName()));
-            Sleep(1500);
+            //Sleep(1500);
         #endif
         #ifdef Q_WS_X11
            proc->start(file.fileName());
@@ -260,6 +260,8 @@ void VentasUpdate::downloadBinarie()
            proc->start(file.fileName());
            //QDesktopServices::openUrl(QUrl(QString("file:///" + file.fileName()), QUrl::TolerantMode));
         #endif
+        exit(0);
+        //QApplication::quit();
     } else {
         qDebug() << QString("Datei nicht gefunden: %1").arg(file.fileName());
     }
