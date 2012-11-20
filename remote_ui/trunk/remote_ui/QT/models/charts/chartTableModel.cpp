@@ -1,5 +1,6 @@
 #include "chartTableModel.h"
 #include <QFile>
+#include <QDir>
 #include <QStringList>
 #include <QDebug>
 #include <iostream>
@@ -72,25 +73,26 @@ QString ChartTableModel::getTitelText(){
 
 
 bool ChartTableModel::loadData( const QString &filename ) {
-    QFile datei(filename);
-    QStringList strList;
+    QString datei_path = QDir::tempPath() + "/" + filename;
+    QFile datei(datei_path);
 
+    QStringList strList;
+    clear(); // Ruecksetzung von h_AxisText, v_AxisText und dataVektor
+    qDebug() << "loadData " << datei_path;
 
     if( datei.open(QIODevice::ReadOnly)){
 
         while( !datei.atEnd() ) {
             QString str = QString::fromUtf8( datei.readLine() );
             strList.append( str );
-            qDebug() << str << "size: " << strList.size() << endl;
         }
-
         if( strList.size() > 0 ) {
-             this->dataVector.resize ( strList.size() - 1 ); // minus horizontal header
+            this->dataVector.resize ( strList.size() - 1 ); // minus horizontal header
 
             for( int row = 0; row < strList.size(); row++ ){
-                QStringList zeilenLeiste = strList.at( row ).split( QString( "," ));// Zeile zerteilen
+                QStringList zeilenLeiste = strList.at( row ).split( QString( "|" ));// Zeile zerteilen
 
-                QVector<QVariant> werteVector( zeilenLeiste.size()-1 ); // minus vertical header
+                QVector<QVariant> werteVector( zeilenLeiste.size() -1 ); // minus vertical header
 
                 for( int column = 0; column < zeilenLeiste.size(); column++ ) {
                     QString strWert ( zeilenLeiste.at(column).simplified());
@@ -108,31 +110,25 @@ bool ChartTableModel::loadData( const QString &filename ) {
                         } else {
                             // interpret cell values as floating point:
                             bool Ok = false;
-
                             double datenWert = strWert.toDouble( &Ok );
-                            qDebug() << Ok;
+
                             if(Ok){ // konvertiert zu double
-                                qDebug() << " QVariant: " << QVariant(datenWert);
                                 werteVector[column-1] = QVariant(datenWert);
-                                qDebug() << "Vector: "<< row <<" " << werteVector;
                             } else {
                                 werteVector[column-1] = QVariant(strWert);
-
                             }
                         }
                     }
-
                 }
                 if( row > 0 ){
-                    this->dataVector[row -1 ] = werteVector;
-                    qDebug() << "datavektor:" << dataVector;
+                    this->dataVector[row-1] = werteVector;
                 }
             }
-
         reset();
         }
         return true;
     } else {
+         qDebug() << "loadData return false ";
         return false;  //Dateifehler
     }
 
