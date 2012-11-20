@@ -3939,7 +3939,19 @@ void ScreenHandler::readCsv(int ganttId, QString fileName)
 
 void ScreenHandler::openChartWindow(QString filename)
 {
-    //Hier der Quelltext fuer Charterstellung & darstellung
+    qDebug() << "openChartWindow";
+
+    ChartInterface *chart = new ChartInterface(ChartInterface::DIAG_LINE);
+
+    QVBoxLayout *layout = new QVBoxLayout();
+    layout->addWidget( chart->chart() );
+
+    chart->setModel(&m_model);
+    m_model.loadData(filename);
+    chart->addAxis(KDChart::CartesianAxis::Left);
+    chart->addAxis(KDChart::CartesianAxis::Bottom);
+    chart->addLegend(KDChart::Position::North, KDChart::Legend::LinesOnly, Qt::Vertical,"  Waehrung  ");
+    chart->displayChart();
 }
 
 #endif
