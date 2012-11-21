@@ -230,6 +230,10 @@ bool RingMenuPulldown::eventFilter(QObject *obj, QEvent *event)
     {
         if(QPushButton *button = qobject_cast<QPushButton *> (obj))
         {
+            if(button->text() == "&Ende")
+            {
+                emit closeWindowAndTrigger();
+            }
             closeWindowInt = 0;
         }
     }
