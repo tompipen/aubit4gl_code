@@ -61,7 +61,17 @@ void VentasUpdate::checkServerClient()
     QString A4glFromClient = VDC::readSettingsFromIni("", "a4gl_version");
     QString XmlVersionServer = VDC::readSettingsFromIni("", "xml_version");
 
-
+    if(clientVars.count() >= 3)
+    {
+        if(clientVars.at(3) != XmlVersionServer)
+        {
+            Dialog *dialog = new Dialog("VENTAS Update", QString("Incompatible VDC Version found. \n\nClient Version: %1 \nServer Version %2 \n\nPlease contact the VENTAS Support Team: support@ventas.de").arg(clientVars.at(3)).arg(XmlVersionServer), "", "stop", this, Qt::WindowStaysOnTopHint);
+            dialog->createButton(1, "Ok", "Ok", "ok_gruen.png");
+            connect(dialog->getAction("OK"), SIGNAL(triggered()), dialog, SLOT(close()));
+            dialog->move(600,400);
+            dialog->show();
+        }
+    }
 
     if(clientVars.count() > 0 && !clientVars.isEmpty())
     {

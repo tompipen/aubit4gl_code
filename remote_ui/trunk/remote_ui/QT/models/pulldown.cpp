@@ -232,9 +232,9 @@ bool RingMenuPulldown::eventFilter(QObject *obj, QEvent *event)
         {
             if(button->text() == "&Ende")
             {
-                emit closeWindowAndTrigger();
+                closeWindowInt = 0;
+                this->close();
             }
-            closeWindowInt = 0;
         }
     }
     if(event->type() == QEvent::KeyPress)
