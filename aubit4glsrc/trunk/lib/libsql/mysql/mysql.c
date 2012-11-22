@@ -1,5 +1,5 @@
 // mysql interface file
-// (c) 2006 Aubit Computing Ltd
+// Copyright (c) 2006-2012 Aubit Computing Ltd
 //
 
 #include <stdio.h>
@@ -378,153 +378,93 @@ A4GLSQLLIB_SQL_initlib (void)
 	A4GL_debug ("**MySQL embedded**");
 	/*
 	see 
-		* http://dev.mysql.com/doc/refman/5.1/en/libmysqld-overview.html
+                * http://dev.mysql.com/doc/refman/5.1/en/libmysqld.html
+                * http://dev.mysql.com/doc/refman/5.1/en/mysql-library-init.html
 		* http://dev.mysql.com/doc/refman/5.1/en/libmysqld-example.html
-		* http://dev.mysql.com/tech-resources/articles/embedding-mysql-server.html
-		* http://forums.mysql.com/list.php?58
-		* http://mysqluc.com/presentations/mysql06/winstead_embedding.pdf
 
-	
-	We dont seem to use mysql_close() so we cant use  mysql_server_end();
-	as we should?
 
-	mysql_server_init() must be called before any other mysql
-	functions.
+	mysql_library_init() must be called before any other mysql functions.
+
 
 	NOTES:
-		- be carefull that your data directory as seen by MySQL embedded is not the 
-			same one used by a running MYSQL server - mysql_server_init() will just
-			silently exit.
+		- Tested on Linux with MySQL 5.5.27 which was compiled to 
+			include the embedded library libmysqld.a using
+			WITH_EMBEDDED_SERVER=ON 
 		- On windows, 4.1 ALLWAYS reads c:\my.cnf and must find
-			enough initialization there under the keys you've specified
-			(ie [server]) to make it happy. It will need to find at
-			least the datadir and language dir.
+			enough initialization there under the keys 
+			you've specified (ie [server]) to make it happy.
+			It will need to find at least the datadir and 
+			language dir.
 		-The parser for my.cnf requires path names with
 			forward slashes even on windows.
 		-Any failures in the initialization process cause a silent
 			and immediate exit. Great.
 		- Contents in the distributed share directory should be copied 
 			to basedir for MySQL to find charactersets and etc.
-		- The 5.0 releases do not contain binaries of the embedded library.
-			You can build it from sources but use it with caution - it's not very stable, yet.
-			You might fare better with 4.1.
 
-	We may want to provide our default my.cnf in $AUBITDIR/etc
-	We will also need ot provide all language files?
-	We should prevent users from passing my.cnf as parameter, that is obviously
-	used by real MySQL server (like on Linux /etc/my.cnf)
-	<mysql-data-dir>/my.cnf (typically in /var/lib/mysql) or ~/.my.cnf
+        */
 
-	*/
 
-	/*
-	The NULL-terminated list of strings in groups selects which groups in 
-	the option files are active. See Section 4.3.2, “Using Option Files”. 
-	For convenience, groups may be NULL, in which case the [server] and 
-	[embedded]  groups are active.
+
+        /*
+        The groups argument is an array of strings that indicate the groups in
+        option files (my.cnf) from which to read options. Make the final entry
+        in the array NULL. For convenience, if the groups argument itself is 
+        NULL, the [server] and [embedded] groups are used
+        by default. 
+
+        See http://dev.mysql.com/doc/mysql/en/server-options.html or try 
+        'mysql --verbose --help' for full list of possible options
 	*/
 	const char *server_groups[] = { 
-			//We can add our own settings group, that will be read only by 
-			//Aubit plug-in (if we use config files at all)
 			"Aubit-mysql_embedded", 
 			"embedded", 
 			"server",
 			NULL };
 
 	/*
-	See http://dev.mysql.com/doc/mysql/en/server-options.html or try 
-	'mysqld --verbose --help' for full list of possible options
-	static or const???
-	*/
-	
-	///tmp/mysql-unpack-tmp/mysql-debug-4.1.21-pc-linux-gnu-i686-glibc23
-	///tmp/mysql-unpack-tmp/mysql-standard-4.1.21-pc-linux-gnu-i686-glibc23
+        int mysql_library_init(int argc, char **argv, char **groups)
+
+        When arguments are to be passed (argc is greater than 0), the first
+        element of argv is ignored (it typically contains the program name).
+        mysql_library_init() makes a copy of the arguments so it is safe to
+        destroy argv or groups after the call.
+        */
 	
 	const char *server_options[] = {
-			//The first element of argv is ignored (it typically contains the program name)
-			"Aubit-mysql_embedded",
-			//we can specify config file:
-			//"--defaults-file=/etc/my.cnf",
-			//"--defaults-file=./my.cnf",
-			"--defaults-file=/usr/src/aubit/aubit4glsrc/lib/libsql/mysql/my.cnf",
-			
-			//Don't read default options from any options file
-//			"--no-defaults", ///WATNING! MUST BE FIRST ARG!!!
-			//"--default-character-set=utf8",
-			//"--default-character-set=latin1", 
-			//Path to installation directory. All paths are usually 
-			//resolved relative to this (defualt /usr/)
-			//"--basedir=/home/aubit/aubit4gl/tools/db",
-			//"--basedir=/usr/",
-			"--basedir=/tmp/mysql-unpack-tmp/mysql-debug-4.1.21-pc-linux-gnu-i686-glibc23",
-			//Path to the database root (default /var/lib/mysql/)
-			//"--datadir=/tmp",
-			//The data folder should contain the system table files system.MYI and system.MYD 
-			//"--datadir=/var/lib/mysql/",  //   /var/lib/mysql/test1
-			//"--datadir=/tmp/mysql-data/",
-			"--datadir=/usr/src/aubit/aubit4glsrc/lib/libsql/mysql/data",
+			"Aubit-mysql_embedded",  /* this string is not used */
+			//"--datadir=/var/lib/mysql/",
 			//"--datadir=./data/",
-			//Directory for language files;
-			//We need to distribute this with Aubit (only one file there: errmsg.sys):
 			//"--language=/usr/share/mysql/english",
-			"--language=/tmp/mysql-unpack-tmp/mysql-debug-4.1.21-pc-linux-gnu-i686-glibc23/share/mysql/english",
-			"--skip-innodb",
-			//By default, the embedded server doesn't require user authentication. 
-			//However, you could require the user to authenticate if you'd like:
+			//"--skip-innodb",
+			// By default, the embedded server doesn't require 
+                        // user authentication. However, you could require the
+                        // user to authenticate if you'd like:
 			//"--with-embedded-privilege-control",
-			"--log-error=/tmp/mysqld-emb.log",
-			//Must be last:
-			//"--print-defaults", [ERROR] mysql_embedded: unknown option '--print-defaults'
-			NULL };
+                        // Default options are read from the following files
+                        // in the given order: /etc/my.cnf /etc/mysql/my.cnf
+                        // /usr/etc/my.cnf ~/.my.cnf
+                        // but to ensure the embedded server uses its own 
+			// use config file relative to pwd at compile time
+                        // and runtime
+                        "--defaults-file=./my.cnf"
+			};
 	
-/*
-
-With file: (libmysql/default.c)
-#0  0xb7a04f7f in load_defaults ()
-   from /usr/src/aubit/aubit4glsrc/plugins-1.00_3/libSQL_mysqldb4.so
-#1  0xb78a12f3 in init_common_variables ()
-   from /usr/src/aubit/aubit4glsrc/plugins-1.00_3/libSQL_mysqldb4.so
-#2  0xb789ffb7 in init_embedded_server ()
-   from /usr/src/aubit/aubit4glsrc/plugins-1.00_3/libSQL_mysqldb4.so
-#3  0xb78a35f7 in mysql_server_init ()
-   from /usr/src/aubit/aubit4glsrc/plugins-1.00_3/libSQL_mysqldb4.so
-#4  0xb789ac61 in A4GLSQLLIB_SQL_initlib ()
-			
-
-With --no-defailts: (libmysql/my_getopt.c)
-#0  0xb7a02870 in handle_options ()
-   from /usr/src/aubit/aubit4glsrc/plugins-1.00_3/libSQL_mysqldb4.so
-#1  0xb7895797 in get_options ()
-   from /usr/src/aubit/aubit4glsrc/plugins-1.00_3/libSQL_mysqldb4.so
-#2  0xb7894338 in init_common_variables ()
-   from /usr/src/aubit/aubit4glsrc/plugins-1.00_3/libSQL_mysqldb4.so
-#3  0xb7892fe7 in init_embedded_server ()
-   from /usr/src/aubit/aubit4glsrc/plugins-1.00_3/libSQL_mysqldb4.so
-#4  0xb7896627 in mysql_server_init ()
-   from /usr/src/aubit/aubit4glsrc/plugins-1.00_3/libSQL_mysqldb4.so
-#5  0xb788dc91 in A4GLSQLLIB_SQL_initlib ()
-
-
-
-*/
 			
 			
 	/*
-	If you want to connect to an external server without starting the embedded 
-	server, you can specify a negative value for num_elements (argc)
+        For embedded applications, if you want to connect to an external server
+        without starting the embedded server, you have to specify a negative
+        value for argc.     
 	*/
 	int num_elements = sizeof(server_options)/ sizeof(char *);
 	
-	A4GL_debug ("Calling mysql_server_init()");
+	A4GL_debug ("Calling mysql_library_init()");
 
-//	if (mysql_server_init(num_elements, (char **)server_options, (char **)server_groups)) {
-	if (mysql_server_init(num_elements, server_options, server_groups)) {	
-		A4GL_debug ("mysql_server_init() failed");
+	if (mysql_library_init(num_elements, server_options, server_groups)) {	
+		A4GL_debug ("mysql_library_init() failed");
 		A4GL_exitwith ("Could not start MySQL embedded server");
-	} else {
-		A4GL_exitwith ("Started MySQL embedded server");
 	}
-	
 	
 #endif
 
@@ -551,8 +491,6 @@ With --no-defailts: (libmysql/my_getopt.c)
 	//MYSQL_OPT_USE_REMOTE_CONNECTION
 	//MYSQL_OPT_GUESS_CONNECTION
 	//MYSQL_SET_CLIENT_IP
-	
-	
 
 #endif
   
@@ -733,7 +671,7 @@ int
 A4GLSQLLIB_A4GLSQL_close_session_internal (char *sessname)
 {
 #ifdef MYSQL_EMBEDDED
-	mysql_server_end(); 	//Should be called before your program exits.
+	mysql_library_end(); 	//Should be called before your program exits.
 #endif
   if (strcmp(sessname,"default")==0) {
 	if (conn) {
