@@ -1,6 +1,9 @@
 #include "a4gl_libaubit4gl_int.h"
 #include <stdio.h>
 
+static char * (*assertCallback)(const char *s, char *mod, int ln)=NULL;
+
+
 void
 A4GL_assertion_failed (const char *s)
 {
@@ -84,7 +87,18 @@ A4GL_assertion_full (int a, const char *s, char *mod, int ln)
   if (a)
     {
       char buff[2000];
-      SPRINTF3 (buff, "%s (File:%s Line:%d)", s, mod, ln);
+      char *assertCallbackString="";
+	if (assertCallback) {
+		assertCallbackString=assertCallback(s,mod,ln);
+	}
+      SPRINTF4 (buff, "%s (File:%s Line:%d)%s", s, mod, ln, assertCallbackString);
       A4GL_assertion_failed (buff);
+
     }
+}
+
+
+
+void registerAssertionCallback(void *p) {
+	assertCallback=p;
 }

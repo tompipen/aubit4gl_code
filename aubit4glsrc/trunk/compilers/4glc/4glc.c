@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: 4glc.c,v 1.77 2009-07-04 12:40:09 mikeaubury Exp $
+# $Id: 4glc.c,v 1.78 2012-11-27 20:46:09 mikeaubury Exp $
 #
 */
 
@@ -81,6 +81,13 @@ extern int initArguments (int argc, char *argv[]);
 #endif
 
 
+static char *assertCallback(char *exception, char *module, char *ln) {
+extern int yylineno;
+static char buff[2000];
+sprintf(buff,"\n4gl compiler: while compiling around line %d in %s",yylineno,infilename);
+return buff;
+}
+
 /**
  * The main entry point function of 4glc compiler.
  *
@@ -107,6 +114,7 @@ main (int argc, char *argv[])
   A4GL_debug ("Initializing 4glc\n");
 #endif
   memset(infilename,0,sizeof(infilename));
+  registerAssertionCallback(assertCallback);
    //init_blk();
   //init_states ();
   

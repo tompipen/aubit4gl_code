@@ -37,7 +37,7 @@ then
 	cat /tmp/changes  | mail -s "New version released : $A4GL_VERSION_STRING" aubit4gl-developers@lists.sourceforge.net aubit4gl-announce@lists.sourceforge.net
 	cat $AUBITDIR/ChangeLog >> /tmp/changes
 	mv  /tmp/changes $AUBITDIR/ChangeLog
-	scp $AUBITDIR/ChangeLog aubit@www.aubit.com:/home/aubit/public_html/aubit4gl/ChangeLog
+	scp $AUBITDIR/ChangeLog aubit_upload@www.aubit.com:/httpdocs/aubit4gl/ChangeLog
 else
 	cat /tmp/out.2
 fi

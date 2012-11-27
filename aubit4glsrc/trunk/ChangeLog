@@ -1,4 +1,53 @@
 ---------------------------
+Tue Nov 27 20:29:37 GMT 2012
+---------------------------
+1.2_32 Released
+---------------------------
+	2012-11-27 18:34  locbook
+	
+	Added MySQL embedded library to be installed by 'make install'
+	
+	2012-11-27 17:47  locbook
+	
+	Fixed segfault on MySQL embedded 'close database' statement
+	
+	2012-11-22 22:44  locbook
+	
+	Fixups for MySQL Embedded
+	
+	2012-11-15 09:11  siverly
+	
+	Added new function to display charts
+	
+	2012-11-07 10:17  siverly
+	
+	encoding activated. new vdc version needed
+	
+	2012-11-05 09:49  mikeaubury
+	
+	Add -liconv for MacOSX
+	
+	2012-10-30 08:16  siverly
+	
+	added encoding to setkeylabel
+	
+	2012-10-25 13:16  siverly
+	
+	Added a new function to read the standard office program
+	
+	2012-10-24 18:52  mikeaubury
+	
+	First attempt at converting on the wire protocol to UTF8 from local
+	character set encoding for use with the VDC
+	
+	Eg.  export A4GL_CLIENTENCODING=UTF8 export
+	A4GL_SERVERENCODING=ISO_8859-1
+	
+	You can use iconv --list to get a list of the available
+	encoding types. I think (at least in the very near future) the
+	client encoding should always be UTF8
+	
+---------------------------
 Thu Oct 18 08:36:02 BST 2012
 ---------------------------
 1.2_31 Released

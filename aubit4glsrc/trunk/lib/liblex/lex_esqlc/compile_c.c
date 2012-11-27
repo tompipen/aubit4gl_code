@@ -24,12 +24,12 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.551 2012-07-31 07:09:36 mikeaubury Exp $
+# $Id: compile_c.c,v 1.552 2012-11-27 20:46:10 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
-static char const module_id[] = "$Id: compile_c.c,v 1.551 2012-07-31 07:09:36 mikeaubury Exp $";
+static char const module_id[] = "$Id: compile_c.c,v 1.552 2012-11-27 20:46:10 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -8099,6 +8099,10 @@ local_find_variable_from_usage (struct variable_usage *u)
       A4GL_assertion (1, "Variable name doesnt match");
     }
 
+if (strcmp(u->variable_name,"v_assertion")==0) {
+	 A4GL_assertion (1, "Variable name is v_assertion");
+
+}
 
   if (u->next)
     {
