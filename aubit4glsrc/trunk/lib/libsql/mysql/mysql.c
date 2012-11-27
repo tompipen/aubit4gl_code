@@ -617,7 +617,6 @@ A4GLSQLLIB_A4GLSQL_init_connection_internal (char *dbName)
 	}
     }
 
-
   has_connect = 1;
   isconnected = 1;
   strcpy (curr_dbname, dbname);
@@ -670,18 +669,31 @@ A4GLSQLLIB_A4GLSQL_commit_rollback (int mode)
 int
 A4GLSQLLIB_A4GLSQL_close_session_internal (char *sessname)
 {
-#ifdef MYSQL_EMBEDDED
-	mysql_library_end(); 	//Should be called before your program exits.
-#endif
   if (strcmp(sessname,"default")==0) {
 	if (conn) {
 		mysql_close(conn);
 		conn=NULL;
 		isconnected=0;
+
+                /*
+                Should be called after disconnecting from the server.
+                For a client program linked against the libmysqlclient library,
+                mysql_library_end() performs some memory management to clean up.
+                For an embedded server application linked against the libmysqld
+                library, it shuts down the embedded server and then cleans up. 
+                If you don't call mysql_library_end(), a block of memory
+                remains allocated. (This does not increase the amount of
+                memory used by the application, but some memory leak 
+                detectors will complain about it.) 
+                */
+                // 'close database' in a running program with embedded server
+                //  doesn't like this, such as changing databases in `adbaccess'
+#ifndef MYSQL_EMBEDDED
+                mysql_library_end();
+#endif
 		conn = mysql_init (NULL);
 	}
   }
-  //A4GL_assertion (1, "Close session not implemented");
   return 0;
 }
 
@@ -2116,14 +2128,13 @@ A4GLSQLLIB_A4GLSQL_execute_implicit_select (void *vsid, int singleton)
   if (sid == 0)
     {
 #ifdef DEBUG
-      A4GL_debug ("A4GLSQL_execute_implicit_sql: internal error sid=0");
+      A4GL_debug ("A4GLSQL_execute_implicit_select: internal error sid=0");
 #endif
       return 0;
     }
 #ifdef DEBUG
-  A4GL_debug ("A4GLSQL_execute_implicit_sql: no=%d ni=%d sql=%s", sid->no,
+  A4GL_debug ("A4GLSQL_execute_implicit_select: no=%d ni=%d sql=%s", sid->no,
 	      sid->ni, sid->select);
-  A4GL_debug ("Calling proc_bind()");
 #endif
 
 
@@ -2231,7 +2242,6 @@ A4GLSQLLIB_A4GLSQL_execute_implicit_sql (void *vsid, int singleton,int ni,void *
 #ifdef DEBUG
   A4GL_debug ("A4GLSQL_execute_implicit_sql: no=%d ni=%d sql=%s", sid->no,
 	      sid->ni, sid->select);
-  A4GL_debug ("Calling proc_bind()");
 #endif
 
   if (ni) { 
@@ -2257,7 +2267,6 @@ A4GLSQLLIB_A4GLSQL_execute_implicit_sql (void *vsid, int singleton,int ni,void *
   truncated = 0;
   if (execute_sql (sid->hstmt, sid->select, ibind, nibind, 0, 0))
     {
-
       if (singleton)
 	{
 	  A4GL_free_associated_mem (sid->hstmt);
@@ -2329,6 +2338,10 @@ A4GLSQLLIB_A4GLSQL_open_cursor_internal (char *s, int ni, void *vibind)
   ibind = vibind;
   A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (0);
   cid = A4GL_find_cursor (s);
+
+#ifdef DEBUG
+      A4GL_debug ("A4GLSQLLIB_A4GLSQL_open_cursor_internal");
+#endif
 
   if (cid == 0)
     {
@@ -2698,6 +2711,10 @@ A4GLSQLLIB_A4GLSQL_unload_data_internal (char *fname, char *delims,
   stmt = mysql_stmt_init (conn);
 
   f = fopen (fname, "w");
+
+#ifdef DEBUG
+      A4GL_debug ("A4GLSQLLIB_A4GLSQL_unload_data_internal");
+#endif
 
   if (f == 0)
     {
