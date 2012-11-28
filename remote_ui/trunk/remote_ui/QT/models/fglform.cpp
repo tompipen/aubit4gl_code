@@ -4721,6 +4721,13 @@ MainFrame::vdcdebug("FglForm","checkField", "");
       }else if(state() == Fgl::CONSTRUCT)
       {
           QString text = WidgetHelper::fieldText(widget);
+
+          if(text.contains("\n"))
+          {
+              text.remove("\n");
+              WidgetHelper::setFieldText(widget, text);
+          }
+
           if(widget->getSqlType() == "INTEGER")
           {
               if(Fgl::isValidForType(Fgl::DTYPE_INT, text, widget->format())){
