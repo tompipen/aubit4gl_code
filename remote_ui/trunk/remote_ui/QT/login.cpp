@@ -1221,6 +1221,7 @@ void LoginForm::removeCursor()
 
 void LoginForm::setOfficeInstallation()
 {
+    int stdOfficeProg = VDC::readSettingsFromIni("","officeStdProg").toInt();
     QWidget *widget = new QWidget;
     mOfficeComboBox = new QComboBox;
     QLabel *label = new QLabel;
@@ -1236,6 +1237,8 @@ void LoginForm::setOfficeInstallation()
     mOfficeComboBox->addItem("Please choose...");
     mOfficeComboBox->addItem("Microsoft Office");
     mOfficeComboBox->addItem("Open/Libre Office");
+
+    mOfficeComboBox->setCurrentIndex(stdOfficeProg);
 
     vLayout->addWidget(label);
     vLayout->addWidget(mOfficeComboBox);
