@@ -344,6 +344,13 @@ bool Reportgen::replaceEbene(QFile *file, QString odffile)
     temp_file->close();
     temp_file->remove();
     newFile->close();
+
+    QFile *file1 = new QFile(QDir::tempPath() + "/" + odffile + "/1-content.xml");
+
+    if(file1->exists())
+    {
+       file1->remove();
+    }
     return true;
 }
 QString Reportgen::getTemplateHeader(QString filename, QString endung)
