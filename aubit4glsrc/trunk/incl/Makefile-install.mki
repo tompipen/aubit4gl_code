@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-install.mki,v 1.123 2011-08-30 16:52:48 mikeaubury Exp $
+# $Id: Makefile-install.mki,v 1.124 2012-11-29 14:10:19 fortiz Exp $
 #
 
 #This file is included from both source distribution root make file and
@@ -738,10 +738,13 @@ PDFLIB_INFO			=http://www.pdflib.com
 #http://www.pdflib.com/binaries/PDFlib/704/PDFlib-Lite-7.0.4p4.tar.gz
 #Unix source code:
 #PDFLIB_PATH                    =http://www.pdflib.com/binaries/PDFlib/703
-PDFLIB_PATH                     =http://www.pdflib.com/binaries/PDFlib/704
+#PDFLIB_PATH                     =http://www.pdflib.com/binaries/PDFlib/704
+PDFLIB_PATH                     =http://www.pdflib.com/binaries/PDFlib/705
 #PDFLIB_SRC          =PDFlib-Lite-7.0.3
-PDFLIB_SRC          =PDFlib-Lite-7.0.4p4
+#PDFLIB_SRC          =PDFlib-Lite-7.0.4p4
+PDFLIB_SRC          =PDFlib-Lite-7.0.5p3
 PDFLIB_SRC_TGZ          =${PDFLIB_SRC}.tar.gz
+
 
 
 
