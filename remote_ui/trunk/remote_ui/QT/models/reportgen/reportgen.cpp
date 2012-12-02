@@ -1817,27 +1817,22 @@ bool Reportgen::replaceTemplateVars(QString odffile, QString sedfile, QFileInfo 
 
     replaceMetaFile(odffile);
 
+    QFile file3(QDir::tempPath() + "/" + odffile + "/content.xml");
+
+    if(!file3.open(QIODevice::ReadOnly))
+    {
+        qDebug() << "open file fails to read";
+    }
+
+    content = file3.readAll();
+    file3.close();
+
+
     for (int i=0; i < tableCellList.count(); i++)
     {
-        qDebug() << "sedList" << sedList;
+
         if(sedList.count() > i)
         {
-            QString tablecellNewReplace;
-            tablecellNewReplace = tableCellList.at(i);
-            tablecellNewReplace.replace("\"string\"", "\"float\" office:value=\"" + sedList.at(i) + "\"");
-            //tablecellNewReplace.replace("\"string\"", "\"float\"");
-
-
-            QFile file3(QDir::tempPath() + "/" + odffile + "/content.xml");
-
-            if(!file3.open(QIODevice::ReadOnly))
-            {
-                qDebug() << "open file fails to read";
-            }
-
-            content = file3.readAll();
-            content.replace(tableCellList.at(i), tablecellNewReplace);
-            file3.close();
 
             QFile file4(QDir::tempPath() + "/" + odffile + "/content.xml");
 
@@ -1846,9 +1841,19 @@ bool Reportgen::replaceTemplateVars(QString odffile, QString sedfile, QFileInfo 
                 qDebug() << "open file fails to set datatype";
             }
 
+            QString tablecellNewReplace;
+            tablecellNewReplace = tableCellList.at(i);
+            tablecellNewReplace.replace("\"string\"", "\"float\" office:value=\"" + sedList.at(i) + "\"");
+
+            content.replace(tableCellList.at(i), tablecellNewReplace);
+
+            sedList.removeAt(i);
+            tableCellList.removeAt(i);
+
             QTextStream streamout(&file4);
 
             streamout << content;
+
             file4.close();
         }
 
