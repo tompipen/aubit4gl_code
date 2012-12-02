@@ -1834,13 +1834,6 @@ bool Reportgen::replaceTemplateVars(QString odffile, QString sedfile, QFileInfo 
         if(sedList.count() > i)
         {
 
-            QFile file4(QDir::tempPath() + "/" + odffile + "/content.xml");
-
-            if(!file4.open(QIODevice::WriteOnly | QIODevice::Truncate))
-            {
-                qDebug() << "open file fails to set datatype";
-            }
-
             QString tablecellNewReplace;
             tablecellNewReplace = tableCellList.at(i);
             tablecellNewReplace.replace("\"string\"", "\"float\" office:value=\"" + sedList.at(i) + "\"");
@@ -1849,15 +1842,20 @@ bool Reportgen::replaceTemplateVars(QString odffile, QString sedfile, QFileInfo 
 
             sedList.removeAt(i);
             tableCellList.removeAt(i);
-
-            QTextStream streamout(&file4);
-
-            streamout << content;
-
-            file4.close();
         }
 
     }
+
+    QFile file4(QDir::tempPath() + "/" + odffile + "/content.xml");
+
+    if(!file4.open(QIODevice::WriteOnly | QIODevice::Truncate))
+    {
+        qDebug() << "open file fails to set datatype";
+    }
+
+    QTextStream streamout(&file4);
+    streamout << content;
+    file4.close();
 
     QFile *newContent = new QFile(QDir::tempPath() + "/" + odffile + "/1-content.xml" );
 
