@@ -1832,8 +1832,8 @@ bool Reportgen::replaceTemplateVars(QString odffile, QString sedfile, QFileInfo 
 
             content.replace(tableCellList.at(i), tablecellNewReplace);
 
-            sedList.removeAt(i);
-            tableCellList.removeAt(i);
+            //sedList.removeAt(i);
+            //tableCellList.removeAt(i);
         }
 
     }
