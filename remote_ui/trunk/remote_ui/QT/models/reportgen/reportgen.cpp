@@ -344,14 +344,8 @@ bool Reportgen::replaceEbene(QFile *file, QString odffile)
     temp_file->close();
     temp_file->remove();
     newFile->close();
-
-    QFile *file1 = new QFile(QDir::tempPath() + "/" + odffile + "/1-content.xml");
-
-    if(file1->exists())
-    {
-       file1->remove();
-    }
     return true;
+
 }
 QString Reportgen::getTemplateHeader(QString filename, QString endung)
 {
@@ -1481,6 +1475,13 @@ bool Reportgen::replaceTemplateWithoutPosition(QString odffile, QString sedFile,
 
     xmlFile->close();
 
+    QFile *file1 = new QFile(QDir::tempPath() + "/" + odffile + "/1-content.xml");
+
+    if(file1->exists())
+    {
+       file1->remove();
+    }
+
 
     ZipUnzip *p_zip = new ZipUnzip();
     p_zip->zipFileArchiv(QDir::tempPath(), odffile, zielDatei);
@@ -1497,21 +1498,27 @@ bool Reportgen::replaceTemplateWithoutPosition(QString odffile, QString sedFile,
 bool Reportgen::replaceTemplateVars(QString odffile, QString sedfile, QFileInfo zielDatei)
 {
     Q_UNUSED(sedfile);
+
     temp_fields.clear();
     getTemplateVars(odffile + "/1-content.xml");
+
     QString ausgabe;
     QString sedLine;
     QString temp_var;
+    QString diag_bild = "DIAG_BAR.png";
+    QString content;
+    QString tableCell;
+
+    QStringList sedList;
+    QStringList tableCellList;
+
     int cnt = 0;
     int makeChart = 0;
     int wiederholen = 0;
     int diag_state = 0;
+
     QFile *file = new QFile(QDir::tempPath() + "/" + odffile + "/1-content.xml");
     QFile *file1 = new QFile(QDir::tempPath() + "/" + odffile + "/content.xml");
-
-    //String diag_pfad = "/home/da/";
-    //Kompilierbar gemacht behebt einer aus den Repgen teeam bitte den fehler
-    QString diag_bild = "DIAG_BAR.png";
 
     if(!file->open(QIODevice::ReadOnly)) {
         qDebug() << "cannot open content1.xml (ersetzung)";
@@ -1542,6 +1549,12 @@ bool Reportgen::replaceTemplateVars(QString odffile, QString sedfile, QFileInfo 
 
     while(!stream.atEnd()) {
         ausgabe = stream.readLine().trimmed();
+
+        if(ausgabe.contains("office:value-type"))
+        {
+            tableCell = ausgabe;
+        }
+
         if(ausgabe.contains("@"))
         {
             int startStr = 0;
@@ -1608,6 +1621,16 @@ bool Reportgen::replaceTemplateVars(QString odffile, QString sedfile, QFileInfo 
                         sedLine = sed_fields.at(i).trimmed();
                         sedLine.replace(QString(temp_var + "/"), "");
                         ausgabe.replace(temp_var, sedLine);
+
+                        if(!sedLine.isEmpty())
+                        {
+                            if((sedLine.at(0) == QChar(' ') || sedLine.at(0) == QChar('-')) && (sedLine.at(1) >= 0 || sedLine.at(1) < 9))
+                            {
+                                tableCellList << tableCell.trimmed() + ausgabe.trimmed();
+                                sedLine.replace(",",".");
+                                sedList << sedLine.trimmed();
+                            }
+                        }
 
                         if(!temp_var.endsWith("1"))
                         {
@@ -1793,6 +1816,44 @@ bool Reportgen::replaceTemplateVars(QString odffile, QString sedfile, QFileInfo 
 
 
     replaceMetaFile(odffile);
+
+    for (int i=0; i < tableCellList.count(); i++)
+    {
+        qDebug() << "sedList" << sedList;
+        if(sedList.count() > i)
+        {
+            QString tablecellNewReplace;
+            tablecellNewReplace = tableCellList.at(i);
+            tablecellNewReplace.replace("\"string\"", "\"float\" office:value=\"" + sedList.at(i) + "\"");
+            //tablecellNewReplace.replace("\"string\"", "\"float\"");
+
+
+            QFile file3(QDir::tempPath() + "/" + odffile + "/content.xml");
+
+            if(!file3.open(QIODevice::ReadOnly))
+            {
+                qDebug() << "open file fails to read";
+            }
+
+            content = file3.readAll();
+            content.replace(tableCellList.at(i), tablecellNewReplace);
+            file3.close();
+
+            QFile file4(QDir::tempPath() + "/" + odffile + "/content.xml");
+
+            if(!file4.open(QIODevice::WriteOnly | QIODevice::Truncate))
+            {
+                qDebug() << "open file fails to set datatype";
+            }
+
+            QTextStream streamout(&file4);
+
+            streamout << content;
+            file4.close();
+        }
+
+    }
+
     QFile *newContent = new QFile(QDir::tempPath() + "/" + odffile + "/1-content.xml" );
 
     if(newContent->exists())
