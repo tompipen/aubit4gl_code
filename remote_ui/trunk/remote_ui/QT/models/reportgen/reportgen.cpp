@@ -53,7 +53,6 @@ bool Reportgen::startReportTemplate(QString odffile, QString sedfile, QFileInfo 
        if(temp_fields.at(i).contains("[P1["))
        {
            gefunden = gefunden + 1;
-           qDebug() << "gefunden: " << gefunden;
        }
    }
    //Ueberpruefen der SED Datei wie viele eintraege der ersten Variable von der 1ten Ebene vorhanden ist.
@@ -65,7 +64,6 @@ bool Reportgen::startReportTemplate(QString odffile, QString sedfile, QFileInfo 
               anfang++;
               varCount = varCount + 1;
           }
-       qDebug() << "varCount: " << varCount;
   }
 
    for(int i=1; i < temp_fields.count(); i++)
@@ -111,8 +109,7 @@ bool Reportgen::startReportTemplate(QString odffile, QString sedfile, QFileInfo 
        {
            content.append(getTemplatePosition(i+1, fileBaseName + "/content.xml"));//.toUtf8());
            for(int j=1; j < varCount+1; j++) {
-               qDebug() << "ergaenze Ebene";
-               qDebug() << j << "von" << varCount;
+               qDebug() << "ergaenze Ebene" << j << "von" << varCount;
                //emit setRepgenText(QString("Ergaenze Template %1 von %2").arg(j).arg(varCount));
                content.append(prepareTemplateContent(i+1, j, oldFileName.baseName() + "/content.xml", sedfile));
                xmlsave << content;
@@ -122,8 +119,7 @@ bool Reportgen::startReportTemplate(QString odffile, QString sedfile, QFileInfo 
        } else if(oldFileName.completeSuffix() == "odt"){
            content.append(getTemplatePosition( fileBaseName + "/content.xml" ));//.toUtf8());
            for(int j=1; j < varCount+1; j++) {
-               qDebug() << "ergaenze Ebene";
-               qDebug() << j << "von" << varCount;
+               qDebug() << "ergaenze Ebene" << j << "von" << varCount;
                content.append(prepareTemplateContentOdt(i+1, j, oldFileName.baseName() + "/content.xml", sedfile));
                xmlsave << content;
                content.clear();
@@ -359,11 +355,13 @@ QString Reportgen::getTemplateHeader(QString filename, QString endung)
     doc.setContent(file);
 
     QString xml = doc.toString();
+    QString header;
+
+    int cnt = 0;
+
     QTextStream stream(&xml);
     stream.setCodec("UTF-8");
-    QString header;
-    int cnt = 0;
-    qDebug() << "endung: " << endung;
+
     while(!stream.atEnd()) {
         header = header + stream.readLine().trimmed();
         if(endung == "ods")
@@ -476,7 +474,6 @@ QString Reportgen::getTemplatePosition(QString odffile)
 QString Reportgen::getTemplatePosition(int Table, QString odffile)
 {
 
-    //qDebug() << "odf: " << odffile;
     QFile *file = new QFile(QDir::tempPath() + "/" + odffile);
 
     if(!file->open(QIODevice::ReadOnly)) {
@@ -573,7 +570,6 @@ QString Reportgen::prepareTemplateContent(int Table, int Position, QString odffi
         {
             tableFound = tableFound + 1;
             counter = 0;
-            //qDebug() << "tableFound: " << tableFound;
         }
 
         if(ausgabe.contains("[P1[")) {
@@ -586,7 +582,7 @@ QString Reportgen::prepareTemplateContent(int Table, int Position, QString odffi
             if(ausgabe.contains("[")) {
                 ebene = ebene + 1;
             }
-            //qDebug() << ebene;
+
             if(ausgabe.contains("@") && ebene == 1) {
                 for(int i=0; i < temp_fields.count(); i++) {
                     if(ausgabe.contains(temp_fields.at(i))) {
@@ -665,7 +661,6 @@ QString Reportgen::prepareTemplateContent(int Table, int Position, QString odffi
                             i = i +1;
                             //ausgabe.append("</table:table-cell></table:table-row>");
                             for(int j=2; j < (temp_fields.count() *1000); j++) {
-                                //qDebug() << j << "von" << temp_fields.count() * 1000 << " moeglichen Datensaetze. Aktuelle Position in Ebene2: " << Position;
                                 found = checkSedFile(QString("@%1_%2" + temp_fields.at(i)).arg(Position).arg(j), sedfile);
                                 if(found > 0) {
                                     ausgabe.append(prepareTemplateEbene(Position, ebene, 1, 1, 1, j, doc, odffile, sedfile));
@@ -693,7 +688,6 @@ QString Reportgen::prepareTemplateContent(int Table, int Position, QString odffi
                                 {
                                     int found1 = 0;
                                     qDebug() << "von" << temp_fields.count() * 1000 << " moeglichen Datensaetze";
-                                    qDebug() << "found123: " << QString("@%1_%2_%3" + temp_fields.at(i)).arg(Position).arg(1).arg(k);
                                     found1 = checkSedFile(QString("@%1_%2_%3" + temp_fields.at(i)).arg(Position).arg(1).arg(k), sedfile);
                                     qDebug() << "found: " << found;
                                     if(found1 > 0) {
@@ -764,7 +758,6 @@ Q_UNUSED(Table);
         }*/
 
         if(ausgabe.contains("[P1[")) {
-            qDebug() << ausgabe;
         //if(ausgabe.contains("<table:table-row")) {
             counter = counter + 1;
         }
@@ -882,7 +875,6 @@ Q_UNUSED(Table);
                                 {
                                     int found1 = 0;
                                     qDebug() << "von" << temp_fields.count() * 1000 << " moeglichen Datensaetze";
-                                    qDebug() << "found123: " << QString("@%1_%2_%3" + temp_fields.at(i)).arg(Position).arg(1).arg(k);
                                     found1 = checkSedFile(QString("@%1_%2_%3" + temp_fields.at(i)).arg(Position).arg(1).arg(k), sedfile);
                                     qDebug() << "found: " << found;
                                     if(found1 > 0) {
@@ -1617,7 +1609,7 @@ bool Reportgen::replaceTemplateVars(QString odffile, QString sedfile, QFileInfo 
                     //qDebug() << "sed_fields.at(i)" << sed_fields.at(i);
                     if(sed_fields.at(i).contains(temp_var + "/"))
                     {
-                        qDebug() << "Es wurde gefunden: " << sed_fields.at(i);
+                        //qDebug() << "Es wurde gefunden: " << sed_fields.at(i);
                         sedLine = sed_fields.at(i).trimmed();
                         sedLine.replace(QString(temp_var + "/"), "");
                         ausgabe.replace(temp_var, sedLine);
