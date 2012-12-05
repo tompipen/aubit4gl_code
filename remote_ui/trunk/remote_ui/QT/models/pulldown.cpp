@@ -225,18 +225,27 @@ void RingMenuPulldown::moveToPos(QPoint const pos)
 
 bool RingMenuPulldown::eventFilter(QObject *obj, QEvent *event)
 {
-    qDebug() << "obj" << obj;
     if(event->type() == QEvent::MouseButtonPress)
     {
         if(QPushButton *button = qobject_cast<QPushButton *> (obj))
         {
             if(button->text() == "&Ende")
             {
-                closeWindowInt = 0;
+                //closeWindowInt = 0;
                 this->close();
+                return true;
+            }
+
+            if(QPushButton *button = qobject_cast<QPushButton *> (obj)){
+                if(button->isVisible())
+                {
+                    closeWindowInt = 0;
+                    button->click();
+                }
             }
         }
     }
+
     if(event->type() == QEvent::KeyPress)
     {
         QKeyEvent *keyEvent = (QKeyEvent*) event;
@@ -270,7 +279,7 @@ bool RingMenuPulldown::eventFilter(QObject *obj, QEvent *event)
                 closeWindowInt = 0;
                 pb->click();
             }
-            return false;
+            return true;
         } else if(keyEvent->key() == Qt::Key_Escape)
         {
             emit closeWindowAndTrigger();
@@ -283,11 +292,13 @@ bool RingMenuPulldown::eventFilter(QObject *obj, QEvent *event)
 
 void RingMenuPulldown::closeEvent(QCloseEvent *event)
 {
+
     //event->ignore();
     if(closeWindowInt > 0)
     {
         emit closeWindowAndTrigger();
     }
+
 }
 
 void RingMenuPulldown::closeWindowAndTrigger()
@@ -457,7 +468,7 @@ void Pulldown::hideEvent(QHideEvent *e)
         e->accept();
         return QMenu::hideEvent(e);
     }
-    emit closeEvent();
+    //emit closeEvent();
 
 }
 
