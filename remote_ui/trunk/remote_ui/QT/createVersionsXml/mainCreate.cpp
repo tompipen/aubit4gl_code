@@ -64,8 +64,8 @@ int main(int argc, char *argv[])
         QByteArray ba_hash = hash.result().toHex();
         writer->writeTextElement("VDC_CHECKSUM", ba_hash.data());
     }
-    writer->writeTextElement("A4GL_VERSION", "1.2.30");
-    writer->writeTextElement("XML_VERSION", "1.2");
+    writer->writeTextElement("A4GL_VERSION", "1.2.32");
+    writer->writeTextElement("XML_VERSION", "1.3");
     writer->writeEndElement();
     writer->writeEndDocument();
 
