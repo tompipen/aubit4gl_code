@@ -1609,7 +1609,7 @@ bool Reportgen::replaceTemplateVars(QString odffile, QString sedfile, QFileInfo 
                     //qDebug() << "sed_fields.at(i)" << sed_fields.at(i);
                     if(sed_fields.at(i).contains(temp_var + "/"))
                     {
-                        //qDebug() << "Es wurde gefunden: " << sed_fields.at(i);
+                        //qDebug() << "Es wurde gefunden: "  << temp_var << ": " << sed_fields.at(i);
                         sedLine = sed_fields.at(i).trimmed();
                         sedLine.replace(QString(temp_var + "/"), "");
                         ausgabe.replace(temp_var, sedLine);
@@ -1846,6 +1846,7 @@ bool Reportgen::replaceTemplateVars(QString odffile, QString sedfile, QFileInfo 
     }
 
     QTextStream streamout(&file4);
+    streamout.setCodec("ISO-8859-1");
     streamout << content;
     file4.close();
 
