@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                          |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.282 2012-08-14 14:22:28 mikeaubury Exp $
+# $Id: stack.c,v 1.283 2012-12-10 16:43:13 mikeaubury Exp $
 #
 */
 
@@ -177,7 +177,7 @@ int nset[MAX_DTYPE][9] = {
 int nset[MAX_DTYPE][9] = {
   {0x0, 0x0, IGN, IGN, IGN, IGN, IGN, IGN, IGN},    // CHAR
   {0x80, 0x0, IGN, IGN, IGN, IGN, IGN, IGN, IGN},   // SMINT
-  {0x80, 0x0, 0x0, 0x00, 0x0, 0x0, 0x0, 0x0, 0x0},  // INT
+  {0x80, 0x0, 0x0, 0x00, 0x0, 0x0, 0x0, 0x0, IGN},  // INT
   {0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, IGN},    // FLOAT
   {0xff, 0xff, 0xff, 0xff, IGN, IGN, IGN, IGN, IGN},    // SMFLOAT
   {IGN, IGN, 0x00, 0x00, 0x0, 0x0, IGN, IGN, IGN},  // DECIMAL
