@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.192 2012-08-10 12:18:57 mikeaubury Exp $
+# $Id: conv.c,v 1.193 2012-12-12 13:06:07 mikeaubury Exp $
 #
 */
 
@@ -409,6 +409,7 @@ A4GL_inttoint (void *a, void *b, int size)
 #ifdef DEBUG
   A4GL_debug ("Got Interval as : '%s'\n", A4GL_null_as_null (buff));
 #endif
+
   ok = A4GL_ctoint (buff, b, size);
   if (ok)
     {
@@ -417,7 +418,8 @@ A4GL_inttoint (void *a, void *b, int size)
       else
 	d->is_neg = 0;
     } else {
-	printf("not ok\n");
+
+	//printf("not ok\n");
 #ifdef DEBUG
 	A4GL_debug("Not ok\n");
 #endif

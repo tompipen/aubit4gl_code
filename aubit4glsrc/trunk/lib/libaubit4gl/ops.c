@@ -25,7 +25,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.206 2012-07-13 10:18:18 siverly Exp $
+# $Id: ops.c,v 1.207 2012-12-12 13:06:07 mikeaubury Exp $
 #
 */
 
@@ -5782,6 +5782,7 @@ A4GL_dt_dt_ops (int op)
   //int ok = 0;
   char buff_7[256];
   int cnt;
+int minSpec=-1;
   //int start;
   //char *ptr;
   //double d_d1;
@@ -5997,6 +5998,12 @@ if (dt2.stime>0) {
 	    }
 	  // Same - look lower down..
 	}
+      for (cnt = 0; cnt < 6; cnt++)
+	{
+	if (dtime_data1[a] || dtime_data2[a]) {
+			minSpec=a;
+		}
+	}
 
       if (inverted)
 	{
@@ -6114,7 +6121,8 @@ if (dt2.stime>0) {
 
       if (op == (OP_SUB))
 	{
-	  if (dtime_data2[0] || dtime_data2[1])
+	  if ((dtime_data2[0] || dtime_data2[1]) || (minSpec<=1 
+			&& !dtime_data2[2] && !dtime_data2[3] && !dtime_data2[4] && !dtime_data2[5] && !dtime_data2[6]))
 	    {
 	      // YEAR TO MONTH interval
 	      SPRINTF2 (buff_7, "%4d-%02d", dtime_data2[0], dtime_data2[1]);
