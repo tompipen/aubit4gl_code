@@ -1,0 +1,314 @@
+
+/*
+=====================================================================
+                        Source: update.rule
+=====================================================================
+*/
+
+
+update_statement_c:
+	KW_UPDATE table_name_not_for_column_prefix  set_clause_list_uc  where_upd_p {
+		// chk_for_update_on_serial($<str>2);
+		if ($<ptr>4==0) {
+		 	A4GL_warn("UPDATE with no WHERE clause"); 
+		}
+		$<update_cmd>$=$<update_cmd>3;
+		$<update_cmd>$->table=strdup($<str>2);
+		$<update_cmd>$->where_clause=$<ptr>4;
+		$<update_cmd>$->value_list=expand_slil($<update_cmd>$->value_list);
+
+		if ($<update_cmd>$->column_list==0) {
+			char colname[200];
+			int idtype;
+			int isize;
+			int rval;
+			rval = A4GLSQL_get_columns ($<str>2, colname, &idtype, &isize);
+			if (rval) {
+				$<update_cmd>$->column_list=generate_update_column_list_for($<str>2,  $<update_cmd>$->value_list);
+			}
+		}
+		//debug_update_cmd($<update_cmd>$);
+	}
+;
+
+
+
+where_upd_p : {
+		$<ptr>$=0;
+	}
+	| WHERE_CURRENT_OF fetch_cursor_name_p { 
+		if (A4GLSQLCV_check_requirement("NO_FOR_UPDATE"))  {
+			a4gl_yyerror("Your database cannot seem to handle FOR UPDATE");
+		} else {
+
+		//rm_quotes($<str>2);
+		// THIS IS HIGHLY DANGEROUS - NEVER SET DROP_WHERE_CURRENT_OF 
+		// UNLESS YOU REALLY KNOW WHAT YOU ARE DOING!!!!
+		if (A4GL_isyes(acl_getenv("DROP_WHERE_CURRENT_OF"))) {
+			$<ptr>$=0;
+		} else {
+			$<ptr>$=A4GL_new_expr_simple_expr($<ptr>2, ET_EXPR_WHERE_CURRENT_OF);
+			A4GL_cursor_current($<ptr>2);
+		}
+		add_feature("UPDATE_WHERE_CURRENT_OF");
+		}
+	}
+	| WHERE search_condition_sli {
+		$<ptr>$=A4GL_new_select_list_item_expr($<s_select_list_item>2);
+	}
+	;
+
+where_del_p : {
+		$<ptr>$=0;
+	}
+	| WHERE_CURRENT_OF fetch_cursor_name_p { 
+		if (A4GLSQLCV_check_requirement("NO_FOR_UPDATE"))  {
+			a4gl_yyerror("Your database cannot seem to handle FOR UPDATE");
+		} else {
+
+		//rm_quotes($<str>2);
+		// THIS IS HIGHLY DANGEROUS - NEVER SET DROP_WHERE_CURRENT_OF 
+		// UNLESS YOU REALLY KNOW WHAT YOU ARE DOING!!!!
+		if (A4GL_isyes(acl_getenv("DROP_WHERE_CURRENT_OF"))) {
+				$<ptr>$=0;
+		} else {
+			$<ptr>$=A4GL_new_expr_simple_expr($<ptr>2, ET_EXPR_WHERE_CURRENT_OF);
+                        A4GL_cursor_current($<ptr>2);
+		}
+		add_feature("DELETE_WHERE_CURRENT_OF");
+		}
+	}
+	| WHERE search_condition_sli {
+		 $<ptr>$=A4GL_new_select_list_item_expr($<s_select_list_item>2);
+	}
+;
+
+set_clause_list_uc: 
+    XSET_OPEN_BRACKET upd_col_list_sl CLOSE_BRACKET EQUAL OPEN_BRACKET upd_val_list_slil CLOSE_BRACKET {
+		add_feature("UPDATE_COLUMNLIST_EQ_VALUELIST");
+		$<update_cmd>$=malloc(sizeof(struct struct_update_cmd));
+		$<update_cmd>$->connid=0;
+		$<update_cmd>$->table=0;
+		$<update_cmd>$->column_list=$<str_list>2;
+		$<update_cmd>$->value_list=$<s_select_list_item_list>6;
+		$<update_cmd>$->where_clause=0;
+    }
+    | XSET_MULTIPLY_EQUAL_OPEN_BRACKET upd_val_list_slil CLOSE_BRACKET {	
+		$<update_cmd>$=malloc(sizeof(struct struct_update_cmd));
+		$<update_cmd>$->connid=0;
+		$<update_cmd>$->table=0;
+		$<update_cmd>$->column_list=0; 		/* A column list of 0 means .* */
+		$<update_cmd>$->value_list=$<s_select_list_item_list>2;
+		$<update_cmd>$->where_clause=0;
+		add_feature("UPDATE_SET_STAR");
+    }
+    | XSET_ident_DOT_MULTIPLY_EQUAL_OPEN_BRACKET upd_val_list_slil CLOSE_BRACKET {	
+		$<update_cmd>$=malloc(sizeof(struct struct_update_cmd));
+		$<update_cmd>$->connid=0;
+		$<update_cmd>$->table=0;
+		$<update_cmd>$->column_list=0; 		/* A column list of 0 means .* */
+		$<update_cmd>$->value_list=$<s_select_list_item_list>2;
+		$<update_cmd>$->where_clause=0;
+		 add_feature("UPDATE_SET_STAR");
+    }
+    | XSET upd_columns_uc  {
+		$<update_cmd>$=$<update_cmd>2;
+		add_feature("UPDATE_COLUMN_EQ_VALUE_LIST");
+    }
+
+
+
+    | XSET_MULTIPLY_EQUAL upd_val_list_slil {
+		char buff[200];
+		SPRINTF1(buff,"%s.*", $<str>2);
+#ifdef SQLCOMPILER
+		$<sql_string>$=strdup("IMPOSSIBLE") ;
+#else
+		$<update_cmd>$=malloc(sizeof(struct struct_update_cmd));
+		$<update_cmd>$->connid=0;
+		$<update_cmd>$->table=0;
+		$<update_cmd>$->column_list=0; 		//* A column list of 0 means .* 
+		$<update_cmd>$->value_list=$<s_select_list_item_list>2;
+		$<update_cmd>$->where_clause=0;
+
+#endif
+	}
+    | XSET_ident_DOT_MULTIPLY_EQUAL upd_val_list_slil  {
+		char buff[200];
+		SPRINTF1(buff,"%s.*", $<str>2);
+#ifdef SQLCOMPILER
+		$<sql_string>$=strdup("IMPOSSIBLE") ;
+#else
+		$<update_cmd>$=malloc(sizeof(struct struct_update_cmd));
+		$<update_cmd>$->connid=0;
+		$<update_cmd>$->table=0;
+		$<update_cmd>$->column_list=0; 		//* A column list of 0 means .*
+		$<update_cmd>$->value_list=$<s_select_list_item_list>2;
+		//$<update_cmd>$->value_list=make_select_list_item_list_from_variable_record(buff); 
+		$<update_cmd>$->where_clause=0;
+#endif
+	}
+
+/*
+    | XSET_MULTIPLY_EQUAL identifier KW_DOT KW_MULTIPLY  {
+		char buff[200];
+		SPRINTF1(buff,"%s.*", $<str>2);
+#ifdef SQLCOMPILER
+		$<sql_string>$=strdup("IMPOSSIBLE") ;
+#else
+		$<update_cmd>$=malloc(sizeof(struct struct_update_cmd));
+		$<update_cmd>$->connid=0;
+		$<update_cmd>$->table=0;
+		$<update_cmd>$->column_list=0; 		//* A column list of 0 means .* 
+		$<update_cmd>$->value_list=make_select_list_item_list_from_variable_record(buff); 
+		$<update_cmd>$->where_clause=0;
+
+#endif
+	}
+    | XSET_ident_DOT_MULTIPLY_EQUAL identifier KW_DOT KW_MULTIPLY  {
+		char buff[200];
+		SPRINTF1(buff,"%s.*", $<str>2);
+#ifdef SQLCOMPILER
+		$<sql_string>$=strdup("IMPOSSIBLE") ;
+#else
+		$<update_cmd>$=malloc(sizeof(struct struct_update_cmd));
+		$<update_cmd>$->connid=0;
+		$<update_cmd>$->table=0;
+		$<update_cmd>$->column_list=0; 		//* A column list of 0 means .* 
+		$<update_cmd>$->value_list=make_select_list_item_list_from_variable_record(buff); 
+		$<update_cmd>$->where_clause=0;
+#endif
+	}
+*/
+
+
+;
+
+
+
+
+upd_columns_uc : 
+	col_1_up  {
+		$<update_cmd>$=malloc(sizeof(struct_update_cmd));
+		$<update_cmd>$->column_list=new_str_list($<upd_pair>1->column_name);
+		$<update_cmd>$->value_list=0;
+		$<update_cmd>$->where_clause=0;
+		$<update_cmd>$->value_list=local_new_select_list_item_list($<upd_pair>1->value);
+	}
+	| upd_columns_uc KW_COMMA col_1_up {
+		$<update_cmd>$=$<update_cmd>1;
+		add_str_list($<update_cmd>$->column_list, $<upd_pair>3->column_name);
+		local_add_select_list_item_list($<update_cmd>$->value_list, $<upd_pair>3->value);
+	}
+;
+
+
+
+
+upd_column_name :
+        upd_column_name_specific {
+                strcpy($<str>$,$<str>1);
+        }
+        | ATSIGN upd_column_name_specific {
+                strcpy($<str>$,$<str>2);
+        }
+;
+
+upd_column_name_specific: identifier op_col_arr {
+                struct ilist *i;
+                i=&$<int_list>2;
+                if (strcmp($<str>1,"rowid")==0) { add_feature("ROWID"); }
+                ADDMAP("Use Column",$<str>1);
+                strcpy($<str>$,A4GLSQLCV_make_substr(A4GL_confirm_colname(current_upd_table,$<str>1), i->i0,i->i1,i->i2));
+        }
+        | identifier KW_DOT identifier op_col_arr {
+                struct ilist *i;
+                if (strcmp($<str>3,"rowid")==0) { add_feature("ROWID"); }
+                if (A4GLSQLCV_check_requirement("NO_UPDATE_TABLE")) {
+                        strcpy($<str>$,$<str>3);
+                } else {
+                        if (A4GLSQLCV_check_requirement("OMIT_UPDATE_TABLE")) {
+                                SPRINTF1($<str>$,"%s",A4GLSQLCV_check_colname(current_upd_table,$<str>3));
+                        } else {
+                                SPRINTF1($<str>$,"%s",A4GLSQLCV_check_colname(A4GLSQLCV_ownerize_tablename(NULL,$<str>1),$<str>3));
+                        }
+                }
+
+                ADDMAP("Use Column",$<str>$);
+                i=&$<int_list>4;
+                strcpy($<str>$,A4GLSQLCV_make_substr($<str>$,i->i0,i->i1,i->i2));
+        }
+        | identifier KW_DOT identifier  KW_DOT identifier op_col_arr {
+                struct ilist *i;
+                if (strcmp($<str>5,"rowid")==0) { add_feature("ROWID"); }
+                if (A4GLSQLCV_check_requirement("NO_UPDATE_TABLE")) {
+                        strcpy($<str>$,$<str>5);
+                } else {
+                        if (A4GLSQLCV_check_requirement("OMIT_UPDATE_TABLE")) {
+                                SPRINTF1($<str>$,"%s",A4GLSQLCV_check_colname(current_upd_table,$<str>5));
+                        } else {
+                                SPRINTF1($<str>$,"%s",A4GLSQLCV_check_colname(A4GLSQLCV_ownerize_tablename($<str>1,$<str>3),$<str>5));
+                        }
+                }
+
+                ADDMAP("Use Column",$<str>$);
+                i=&$<int_list>6;
+                strcpy($<str>$,A4GLSQLCV_make_substr($<str>$,i->i0,i->i1,i->i2));
+        }
+        | identifier  KW_DOT KW_MULTIPLY {
+                if (A4GLSQLCV_check_requirement("NO_UPDATE_TABLE")) {
+                        strcpy($<str>$,"*");
+                } else {
+                if (A4GLSQLCV_check_requirement("OMIT_UPDATE_TABLE")) {
+                        SPRINTF1($<str>$,"%s",A4GLSQLCV_check_colname(current_upd_table,"*"));
+                } else {
+                        SPRINTF1($<str>$,"%s",A4GLSQLCV_check_colname(A4GLSQLCV_ownerize_tablename(NULL,$<str>1),"*"));
+                }
+                }
+
+                ADDMAP("Use Column",$<str>$);
+        }
+;
+
+
+
+
+
+
+col_1_up : 
+	upd_column_name EQUAL upd_val_sli {
+		$<upd_pair>$=malloc(sizeof(struct s_update_pair));
+		$<upd_pair>$->column_name=acl_strdup($<str>1);
+		$<upd_pair>$->value=$<s_select_list_item>3;
+	}
+;
+
+
+
+upd_col_list_sl  : upd_column_name	{
+			$<str_list>$=new_str_list($<str>1);
+		} 
+		| upd_col_list_sl KW_COMMA upd_column_name {
+			$<str_list>$=add_str_list($<str_list>1, $<str>3);
+		}
+;
+
+
+
+upd_val_list_slil  : 
+	upd_val_sli { 
+		$<s_select_list_item_list>$=local_new_select_list_item_list($<s_select_list_item>1);
+	}
+	| upd_val_list_slil KW_COMMA upd_val_sli { 
+		$<s_select_list_item_list>$=local_add_select_list_item_list($<s_select_list_item_list>1,$<s_select_list_item>3);
+	} 
+;
+
+
+
+upd_val_sli : 
+	value_expression_sli  {$<s_select_list_item>$=$<s_select_list_item>1;}
+	| KW_NULL  {$<s_select_list_item>$=new_select_list_item_builtin_const(E_SLI_BUILTIN_CONST_NULL); }
+;
+
+

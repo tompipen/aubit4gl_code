@@ -1,0 +1,43 @@
+Name: libUI_server
+Parent: aubit4glsrc
+Description: Thin Client plug-in using shared High Level library
+Functionality: UI
+Build:
+Example:
+Depends: Other UI modules
+Documentation:
+Regressed:
+Maintainer:
+Status:
+Todo: 
+Notes: Provides a remoting mechanism for calling the lowlevel routines from the HL_.. suite of libraries
+
+
+
+Name: server_tui
+Parent: aubit4glsrc
+Description: TUI linkage for thin client UI server
+Functionality: UI
+Build: make in the remote_client directory
+Example:
+Depends:
+Documentation:
+Regressed:
+Maintainer:  MA
+Status: 2
+Todo:
+Notes:
+
+Name: server_gtk
+Parent: aubit4glsrc
+Description: GTL linkage for thin client UI server
+Functionality: UI
+Build: make in the remote_client directory
+Example:
+Depends:
+Documentation:
+Regressed:
+Maintainer:  MA
+Status: 2
+Todo:
+Notes:

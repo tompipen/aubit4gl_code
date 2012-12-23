@@ -1,0 +1,28 @@
+Name: Gentoo Ebuild
+Parent: aubit4glsrc
+Description: Packages Aubit compiler source code in Gentoo format
+Functionality: Packaging
+Build:
+Example:
+Depends: Gentoo Ebuild tools
+Documentation:
+Regressed:
+Maintainer: 
+Status: 0
+Todo: implementation
+Notes: Need to modify configure to not alter FS outside of Aubit src tree
+
+Name: Normal Build
+Parent: aubit4glsrc
+Description: Enables Aubit compiler to be compiled on various platforms and in various configurations; consists of Autoconf scripts, makefiles, and various scripts
+Functionality: Build system
+Build: N/A
+Example: configure; make; make install
+Depends: GNU Make, awk, Perl, Bash, sed
+Documentation:
+Regressed: N/A
+Maintainer: AF
+Status:
+Todo:
+Notes: Does not use automake or libtool. Currently does not support cross-compiling or parallel builds
+

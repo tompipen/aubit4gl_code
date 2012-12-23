@@ -1,0 +1,71 @@
+
+Name: libESQL_INFORMIX
+Parent: aubit4glsrc
+Description: Collection of internal utility functions for use with ESQL/C compiler output
+Functionality: Internal ESQL/C languages support library
+Build:
+Example:
+Depends: Appropriate ESQL/C compiler
+Documentation:
+Regressed:
+Maintainer: MA
+Status: 4
+Todo:
+Notes: Library is used by programs compiled using LEXTYPE=EC at runtime to perform datatype conversions
+
+Name: libESQL_POSTGRES
+Parent: aubit4glsrc
+Description: Collection of internal utility functions for use with ESQL/C compiler output
+Functionality: Internal ESQL/C languages support library
+Build:
+Example:
+Depends: Appropriate ESQL/C compiler
+Documentation:
+Regressed:
+Maintainer: MA
+Status: 4
+Todo:
+Notes: Library is used by programs compiled using LEXTYPE=EC at runtime to perform datatype conversions
+
+Name: libESQL_SAP
+Parent: aubit4glsrc
+Description: Collection of internal utility functions for use with ESQL/C compiler output
+Functionality: Internal ESQL/C languages support library
+Build:
+Example:
+Depends: Appropriate ESQL/C compiler
+Documentation:
+Regressed:
+Maintainer: MA
+Status: 3
+Todo:
+Notes: Library is used by programs compiled using LEXTYPE=EC at runtime to perform datatype conversions
+
+Name: libESQL_QUERIX
+Parent: aubit4glsrc
+Description: Collection of internal utility functions for use with ESQL/C compiler output
+Functionality: Internal ESQL/C languages support library
+Build:
+Example:
+Depends: Appropriate ESQL/C compiler
+Documentation:
+Regressed:
+Maintainer: MA
+Status: 3
+Todo:
+Notes: Library is used by programs compiled using LEXTYPE=EC at runtime to perform datatype conversions
+
+
+Name: libESQL_INGRES
+Parent: aubit4glsrc
+Description: Collection of internal utility functions for use with ESQL/C compiler output
+Functionality: Internal ESQL/C languages support library
+Build:
+Example:
+Depends: Appropriate ESQL/C compiler
+Documentation:
+Regressed:
+Maintainer: MA
+Status: 2
+Todo:
+Notes: Library is used by programs compiled using LEXTYPE=EC at runtime to perform datatype conversions

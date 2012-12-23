@@ -1,0 +1,61 @@
+%token <str> NAME
+%left KW_COMMA
+%right KW_ASCII COLUMN KW_SPACES KW_USING KW_WORDWRAP
+%left WHERE
+%left KW_OR         
+%left KW_AND        
+%right KW_CLIPPED 
+%left KW_NOT
+%left IS_NULL IS_NOT_NULL
+%left GREATER_THAN_EQ LESS_THAN GREATER_THAN EQUAL LESS_THAN_EQ NOT_EQUAL
+%right MATCHES NOT_MATCHES LIKE NOT_LIKE
+%left KW_MINUS KW_PLUS
+%left KW_DIVIDE KW_MULTIPLY
+%left KW_POWER KW_MOD
+/* %left KW_UNITS */
+%left UMINUS
+%left OPEN_BRACKET CLOSE_BRACKET
+%left TYPECAST
+
+%right COMMAND
+%token NUMBER_VALUE
+%token CHAR_VALUE
+%token CHAR_VALUE_TRANSLATED
+%token INT_VALUE
+%token NAMED_GEN
+/* %token COMMENT */
+%token CLINE
+%token SQLLINE
+%token KW_CSTART
+%token KW_CEND
+%token USER_DTYPE_ORIG
+%token USER_DTYPE_NEW
+%token SQL_TEXT
+%token KW_WHENEVER_SET
+%token KW_LOADED_OBJECT_NAME
+%token COMMENT
+
+%type <variable_list_ptr> define_multiple define_section def_part define_set def_part2 op_private_define_section  spl_define_stmt spl_define_stmts spl_op_define_stmts spl_return_dtype_list spl_opt_returning  define_global_spl_stmt  define_spl_stmt  spl_parameters spl_parameter  op_spl_parameters spl_returning
+%type <variable_ptr>  dtype array_variable record_variable dtype2 dtype_ident time_dtypes define_constant spl_dtype_explicit spl_dtype spl_return_dtype_list_item  spl_dtype_with_references
+%type <str> define_ident constant_value var_def_name  op_char define_table_name like_var spl_vname spl_proc_name spl_cursor_name identifier
+%type <str_list> var_def_list  link_to_pk_list opt_spl_returning 
+%type <int_list> number_arr_list
+%type <integer_val> datetime_qual interval_qual interval_qual_i dtime_start dtime_val dtime_end opt_frac opt_unit_size dtfrac int_start int_start_unit int_end number_arr_assoc ranking number_value_arr   op_spl_with_resume spl_neg_int_value spl_opt_with_hold
+%type <module_entry> class_entry
+%type <module_entry_list> class_entries
+%type <module_entry> class_definition
+%type <ptr> spl_condition spl_op_default op_spl_listing  spl_execute_procedure_param  spl_expression spl_for_list_val spl_for_list_val_loop
+ 
+%type <ptr_list> op_spl_document expanded_fgl_expr_list_ptr spl_execute_procedure_param_list spl_expression_list spl_let_sources spl_for_list   spl_call_parameters
+%type <cmd> sql_create_procedure_cmd 
+%type <create_procedure> create_procedure spl_proc_rest spl_func_rest
+%type <commands> spl_commands op_spl_commands
+%type <cmd> spl_command spl_call_command   spl_continue_command sql_commands        spl_exit_command   spl_for_command   spl_foreach_command spl_if_command      spl_let_command     spl_on_exception_command spl_raise_exception_command spl_return_command         spl_system_command        spl_trace_command        spl_while_command       spl_begin_command      select_cmd            set_cmd              sql_transact_cmd    sql_bound_cmd    
+
+%type <list_of_integers> spl_raise_exception_list  spl_raise_exception_num_list
+%type <str_list> spl_vname_list opt_spl_into spl_raise_exception_set
+%type <spl_execute> spl_execute_procedure
+%type <s_select> opt_spl_select_into
+%type <splblock> spl_block
+%type <spl_if_conds> spl_if_rest
+%type <integer_val> sigtype 

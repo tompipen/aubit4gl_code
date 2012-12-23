@@ -1,0 +1,15 @@
+Name: libA4GL_urlfile
+Parent: aubit4glsrc
+Description: File access functions using CURL. 
+Functionality: CURL Files manipulation library
+Build:
+Example:
+Depends: None
+Documentation:
+Regressed: mostly
+Maintainer: MA
+Status: 5
+Todo:
+Notes: 
+
+
