@@ -25,7 +25,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.207 2012-12-12 13:06:07 mikeaubury Exp $
+# $Id: ops.c,v 1.208 2013-01-08 08:05:27 mikeaubury Exp $
 #
 */
 
@@ -6000,8 +6000,8 @@ if (dt2.stime>0) {
 	}
       for (cnt = 0; cnt < 6; cnt++)
 	{
-	if (dtime_data1[a] || dtime_data2[a]) {
-			minSpec=a;
+	if (dtime_data1[cnt] || dtime_data2[cnt]) {
+			minSpec=cnt;
 		}
 	}
 
