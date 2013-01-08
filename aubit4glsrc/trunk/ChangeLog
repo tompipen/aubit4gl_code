@@ -1,4 +1,37 @@
 ---------------------------
+Tue Jan  8 07:42:48 GMT 2013
+---------------------------
+1.2_33 Released
+---------------------------
+	2012-12-23 11:14  mikeaubury
+	
+	2012-12-12 13:06  mikeaubury
+	
+	2012-12-10 16:43  mikeaubury
+	
+	Fix for AIX by Stanislav LOFAJ
+	
+	2012-11-29 16:31  fortiz
+	
+	Printing some very large XML data ...
+	
+	2012-11-29 14:10  fortiz
+	
+	pfdlib lite version 7.0.5
+	
+	2012-11-27 20:46  mikeaubury
+	
+	2012-11-27 18:38  locbook
+	
+	2012-11-27 18:34  locbook
+	
+	Added MySQL embedded library to be installed by 'make install'
+	
+	2012-11-27 17:47  locbook
+	
+	Fixed segfault on MySQL embedded 'close database' statement
+	
+---------------------------
 Tue Nov 27 20:29:37 GMT 2012
 ---------------------------
 1.2_32 Released
