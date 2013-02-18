@@ -706,12 +706,24 @@ static int get_exit_loop (char *cmd_type)
   int ccnt;
   int g = 0;
   int printed = 0;
+int depth;
   ccnt = A4GL_get_ccnt ();
 
+depth=0;
   for (a = ccnt - 1; a >= 0; a--)
     {
+	depth++;
       if (strcmp (command_type_for_stack_pos(a), cmd_type) == 0)
         {
+	if (A4GL_isyes(acl_getenv("SHOWDEPTH"))) {
+	if (depth>1) {
+		printf("EXIT DEPTH : %d %s [%d]\n", depth, cmd_type,yylineno );
+		int b;
+  		for (b = ccnt - 1; b >= a; b--) {
+			printf("   %s\n", command_type_for_stack_pos(b));
+		}
+	}
+	}
           g = 1;
           break;
         }
