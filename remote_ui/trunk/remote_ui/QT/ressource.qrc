@@ -154,5 +154,11 @@
         <file>pics/browser-suchen.png</file>
         <file>pics/frame_right.jpg</file>
         <file>pics/ventas.jpg</file>
+        <file>pics/editor-beenden-ohne-speichern.png</file>
+        <file>pics/editor-drucken.png</file>
+        <file>pics/editor-oeffnen.png</file>
+        <file>pics/editor-speichern.png</file>
+        <file>pics/editor-speichern-unter.png</file>
+        <file>pics/editor-suchen.png</file>
     </qresource>
 </RCC>

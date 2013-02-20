@@ -233,7 +233,7 @@ bool RingMenuPulldown::eventFilter(QObject *obj, QEvent *event)
             {
                 //closeWindowInt = 0;
                 this->close();
-                return true;
+                //return true;
             }
 
             if(QPushButton *button = qobject_cast<QPushButton *> (obj)){
@@ -241,6 +241,7 @@ bool RingMenuPulldown::eventFilter(QObject *obj, QEvent *event)
                 {
                     closeWindowInt = 0;
                     button->click();
+                    return true;
                 }
             }
         }
@@ -268,6 +269,7 @@ bool RingMenuPulldown::eventFilter(QObject *obj, QEvent *event)
                    {
                        closeWindowInt = 0;
                        button->click();
+                       return true;
                    }
                }
             }
@@ -278,8 +280,9 @@ bool RingMenuPulldown::eventFilter(QObject *obj, QEvent *event)
             {
                 closeWindowInt = 0;
                 pb->click();
+                return true;
             }
-            return true;
+            //return true;
         } else if(keyEvent->key() == Qt::Key_Escape)
         {
             emit closeWindowAndTrigger();

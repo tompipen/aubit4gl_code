@@ -9,6 +9,8 @@ QMutex mutex;
 
 void SSHTunnel::run()
 {
+
+    int counter = 0;
     programm_not_started = true;
     int rc = 0;
 
@@ -29,9 +31,16 @@ void SSHTunnel::run()
        {
            return;
        }
-       session_mutex->lock();
+       if(session_mutex)
+       {
+           session_mutex->lock();
+       }
+
        sctunnel = ssh_forward_accept(base_session, 10);
-       session_mutex->unlock();
+       if(session_mutex)
+       {
+           session_mutex->unlock();
+       }
        usleep(500000L);
     }
 
@@ -51,9 +60,29 @@ void SSHTunnel::run()
              {
                 return;
              }
-             session_mutex->lock();
+             if(session_mutex)
+             {
+                 session_mutex->lock();
+             }
              nbytes = ssh_channel_read_nonblocking(sctunnel, &buffer, sizeof(buffer)-1, 0);
-             session_mutex->unlock();
+             usleep(3);
+             if(session_mutex)
+             {
+                 session_mutex->unlock();
+             }
+
+
+             if(nbytes == 0)
+             {
+                 counter++;
+
+                 if(counter >= 50000)
+                 {
+                     usleep(10000L);
+                 }
+             } else {
+                 counter = 0;
+             }
 
 
             ba_readssh += buffer;

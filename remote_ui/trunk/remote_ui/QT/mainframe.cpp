@@ -29,7 +29,7 @@
 //------------------------------------------------------------------------------
 // Method       : MainFrame()
 // Filename     : mainframe.cpp
-// Description  : starts first screen window, starts tcp server (tcpListener)  
+// Description  : starts first screen window, starts tcp server (tcpListener)
 //------------------------------------------------------------------------------
 
 void MainFrame::ReadSettings()
@@ -50,6 +50,7 @@ MainFrame::vdcdebug("MainFrame","ReadSettings", "");
 }
 
 bool MainFrame::b_debugmodus = false;
+MainFrame* MainFrame::lastmainframe = NULL;
 QList<ScreenHandler*> *MainFrame::ql_screenhandler = new QList<ScreenHandler*>();
 
 bool MainFrame::setFocusOn(int pid)
@@ -127,6 +128,7 @@ void MainFrame::check_new_pids()
 MainFrame::MainFrame(QWidget *parent) : QMainWindow(parent)
 {
 MainFrame::vdcdebug("MainFrame","MainFrame", "QWidget *parent");
+   MainFrame::lastmainframe = this;
    p_currOpenNetwork=NULL;
    int port=1350;
    mainFrameToolBar = NULL;
@@ -147,9 +149,9 @@ MainFrame::vdcdebug("MainFrame","MainFrame", "QWidget *parent");
 
      if (parameter.at(i) == "-p")
      {
-	 i++;
+     i++;
          port= parameter.at(i).toInt();
-	qDebug() << "Using non-standard port:"<< port;
+    qDebug() << "Using non-standard port:"<< port;
      }
 
      if (parameter.at(i) == "-a")
@@ -189,7 +191,7 @@ MainFrame::vdcdebug("MainFrame","MainFrame", "QWidget *parent");
       mainFrameToolBar->setAllowedAreas(Qt::BottomToolBarArea|Qt::TopToolBarArea);
       addToolBar(Qt::TopToolBarArea, mainFrameToolBar);
 
-          
+
 
       // making the statusbar
       //
@@ -477,7 +479,7 @@ MainFrame::vdcdebug("OptionsTab","writeSettings", "");
 // Description  : calling programs for testing
 //------------------------------------------------------------------------------
 
-ShortcutsTab::ShortcutsTab(MainFrame *mf, 
+ShortcutsTab::ShortcutsTab(MainFrame *mf,
 QWidget *parent) : QWidget(parent)
 {
    errorMessageMainFrame = new QErrorMessage(this);
@@ -509,14 +511,14 @@ QWidget *parent) : QWidget(parent)
    QPushButton *addButton     = new QPushButton(tr("Add"));
    QPushButton *delButton     = new QPushButton(tr("Delete"));
 
-   connectButton->setFocus(); 
+   connectButton->setFocus();
    connectButton->update();
 
    connect(connectButton, SIGNAL(clicked()), this, SLOT(requestApplication()));
    connect(addButton,     SIGNAL(clicked()), this, SLOT(addConfwin()));
    connect(delButton,     SIGNAL(clicked()), this, SLOT(delConfwin()));
 
-   connect(shortcutsListBox, SIGNAL(itemDoubleClicked(QListWidgetItem *)),  
+   connect(shortcutsListBox, SIGNAL(itemDoubleClicked(QListWidgetItem *)),
            this, SLOT(editConfwin(QListWidgetItem *)));
 
    QHBoxLayout *buttonLayout = new QHBoxLayout;
@@ -547,7 +549,7 @@ MainFrame::vdcdebug("ShortcutsTab","editConfwin", "QListWidgetItem *p_currWidget
    if(p_currWidgetItem==NULL){
        errorMessageMainFrame->showMessage(
           tr("Error: shortcutsListBox->currentItem() "
-	     "       returned a NULL-Pointer!!!"));
+         "       returned a NULL-Pointer!!!"));
    }else{
 
        // now we can instantiate this class without fear
@@ -658,7 +660,7 @@ MainFrame::vdcdebug("ShortcutsTab","readFile", "QString p_cFilename, int i");
        QDataStream in(&file);
        in.setVersion(QDataStream::Qt_4_1);
 
-       in >> n >> u_Shortcuts.qs_Username 
+       in >> n >> u_Shortcuts.qs_Username
                >> u_Shortcuts.qs_Password
                >> u_Shortcuts.qs_Application
                >> u_Shortcuts.qs_Protocol
@@ -724,6 +726,8 @@ MainFrame::vdcdebug("MainFrame","tcpListener", "int port");
       connect(clientTcp,SIGNAL(newConnection()),connectionsTab,SLOT(addConnection()));
    }
 }
+
+
 
 
 //------------------------------------------------------------------------------
@@ -823,7 +827,7 @@ void ShortcutsTab::processFin(int i_exitCode, QProcess::ExitStatus exitStatus){
 void ShortcutsTab::lookupForIP()
 {
 MainFrame::vdcdebug("ShortcutsTab","lookupForIP", "");
-   QHostInfo::lookupHost(QHostInfo::localHostName(), 
+   QHostInfo::lookupHost(QHostInfo::localHostName(),
                          this, SLOT(ipLookupResults(QHostInfo)));
 
 }
@@ -910,5 +914,36 @@ MainFrame::vdcdebug("MainFrame","closeEvent", "QCloseEvent *event");
 void MainFrame::debugClose()
 {
 MainFrame::vdcdebug("MainFrame","debugClose", "");
-    emit debugSignal();
+emit debugSignal();
 }
+
+void MainFrame::requestScreenHandler(int pid, int p_pid)
+{
+    ScreenHandler *sh = new ScreenHandler(this->lastmainframe);
+    sh->moveToThread(QApplication::instance()->thread());
+    sh->pid = pid;
+    sh->p_pid = p_pid;
+
+}
+
+void MainFrame::deleteScreenHandler(int pid, int p_pid)
+{
+    for(int i=0; i<ql_screenhandler->size();i++)
+    {
+        if(ql_screenhandler->at(i)->pid == pid && ql_screenhandler->at(i)->p_pid == p_pid)
+        {
+            ScreenHandler *p_currScreenHandler = ql_screenhandler->at(i);
+
+            if(p_currScreenHandler->p_prompt != NULL){
+               p_currScreenHandler->p_prompt->setVisible(false);
+               p_currScreenHandler->p_prompt->close();
+               p_currScreenHandler->p_prompt->deleteLater();
+            }
+
+            p_currScreenHandler->closeAllWindows();
+           delete p_currScreenHandler;
+        }
+    }
+
+}
+

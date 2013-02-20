@@ -63,14 +63,33 @@ void VentasUpdate::checkServerClient()
 
     if(clientVars.count() >= 3)
     {
-        if(clientVars.at(3) != XmlVersionServer)
+        /*if(clientVars.at(3) != XmlVersionServer)
         {
             Dialog *dialog = new Dialog("VENTAS Update", QString("Incompatible VDC Version found. \n\nClient Version: %1 \nServer Version %2 \n\nPlease contact the VENTAS Support Team: support@ventas.de").arg(clientVars.at(3)).arg(XmlVersionServer), "", "stop", this, Qt::WindowStaysOnTopHint);
             dialog->createButton(1, "Ok", "Ok", "ok_gruen.png");
             connect(dialog->getAction("OK"), SIGNAL(triggered()), dialog, SLOT(close()));
             dialog->move(600,400);
             dialog->show();
+        }*/
+        if(clientVars.at(3) > XmlVersionServer)
+        {
+            Dialog *dialog = new Dialog("VENTAS Update", QString("Incompatible VDC Version found.\n\nPlease Update the VENTAS Server.\n\nClient Version: %1 \nServer Version %2 \n\nPlease contact the VENTAS Support Team: support@ventas.de").arg(clientVars.at(3)).arg(XmlVersionServer), "", "stop", this, Qt::WindowStaysOnTopHint);
+            dialog->createButton(1, "Ok", "Ok", "ok_gruen.png");
+            connect(dialog->getAction("OK"), SIGNAL(triggered()), dialog, SLOT(close()));
+            dialog->move(600,400);
+            dialog->show();
         }
+
+        if(clientVars.at(3) < XmlVersionServer)
+                {
+                    Dialog *dialog = new Dialog("VENTAS Update", QString("Incompatible VDC Version found.\n\nIt's strongly recommended to update the VDC.\n\nClient Version: %1 \nServer Version %2 \n\nPlease contact the VENTAS Support Team: support@ventas.de").arg(clientVars.at(3)).arg(XmlVersionServer), "", "stop", this, Qt::WindowStaysOnTopHint);
+                    dialog->createButton(1, "Update", "Update", "ok_gruen.png");
+                    dialog->createButton(1, "Quit", "Quit", "abbrechen_rot.png");
+                    connect(dialog->getAction("UPDATE"), SIGNAL(triggered()), this, SLOT(checkOpenConnections()));
+                    connect(dialog->getAction("QUIT"), SIGNAL(triggered()), this, SLOT(closeVdc()));
+                    dialog->move(600,400);
+                    dialog->show();
+                }
     }
 
     if(clientVars.count() > 0 && !clientVars.isEmpty())
@@ -398,4 +417,8 @@ QList<QString> VentasUpdate::clientXml(QString filePath)
         }
         return clientList;
 
+}
+void VentasUpdate::closeVdc()
+{
+    exit(0);
 }

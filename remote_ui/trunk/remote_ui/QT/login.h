@@ -50,6 +50,8 @@ public:
 
 
 public slots:
+   void saveCompression(int);
+   void openCompOptions();
    void aboutVDC(QWidget *parent = 0);
    void removeIni();
    void clearIniFile();

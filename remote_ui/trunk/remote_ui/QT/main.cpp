@@ -64,6 +64,26 @@ void crash()
  * \version 1.0
  */
 
+
+void crashingMessageHandler(QtMsgType type, const char *msg)
+{
+    switch (type) {
+    case QtDebugMsg:
+        fprintf(stderr, "Debug: %s\n", msg);
+        break;
+    case QtWarningMsg:
+        fprintf(stderr, "Warning: %s\n", msg);
+        break;
+    case QtCriticalMsg:
+        fprintf(stderr, "Critical: %s\n", msg);
+        break;
+    case QtFatalMsg:
+        fprintf(stderr, "Fatal: %s\n", msg);
+        __asm("int3");
+        abort();
+  }
+}
+
 int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
@@ -151,6 +171,8 @@ int main(int argc, char *argv[])
     splash->finish(&mainframe);
     mainframe.activateWindow();
     mainframe.raise();
+
+    qInstallMsgHandler(crashingMessageHandler);
     delete splash;
     return app.exec();
 }

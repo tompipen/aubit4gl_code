@@ -38,6 +38,8 @@ class FglForm;
 #endif
 #include "models/webbrowser.h"
 #include "models/progress.h"
+#include "models/texteditor.h"
+class ProtocolHandler;
 #include <QVector>
 #include <QVariant>
 //#include <poppler/qt4/poppler-qt4.h>
@@ -65,12 +67,14 @@ public:
    QList<QSize*> ql_formSizes;
    QList<FglForm*> ql_fglForms;
    QList<WebBrowser*> ql_browser;
+   TextEditorWidget *mTextEditor;
    QStringList qsl_activeFieldNames;
    QStringList qsl_triggereds;
    QDomDocument xmlIconDoc;
    QDomDocument xmlShortcutDoc;
    int openFileSuccess;
    void executeFile(int, QString);
+   ProtocolHandler *ph;
    void makeFglFormResponse(QString);
 
    #ifdef KDChart_Version
@@ -89,14 +93,14 @@ public:
 
    QHash<QString, QString> qh_env;
    static void setSearchPaths();
-   void setEnv(QString, QString);
-   void setInterfaceText(QString);
+   //void setInterfaceText(QString);
    int stdOfficeProg;
 
 
       FglForm *p_fglform;
    typedef QVector<QVariant> chartVector;
 
+      void closeAllWindows();
 protected:
    bool eventFilter(QObject *obj, QEvent *ev);
 
@@ -117,6 +121,7 @@ private:
    FglForm *dummy_fglform;
    Progress *w_progress;
    int i_runcnt;
+   int i_currthread;
 
 
 //   QList<QWidget*> ql_formFields;
@@ -154,6 +159,9 @@ private:
    bool clearFieldEvents;
 public slots:
 
+   void getItemCountComboBox(int);
+
+   void setEnv(QString, QString);
    void closeErrorDialog();
    void saveOfficeInstallation();
    void createStdProgWindow();
@@ -169,6 +177,7 @@ public slots:
    void handleXMLActions(QString);
    void handleXMLColors(QString xmlFile);
    void handleShortcutsFile(QDomDocument xmlFileString);
+   //void setEnv(QString, QString);
    void handleIconFile(QDomDocument);
    void setProgramName(QString);
    #ifdef KDChart_Version
@@ -181,6 +190,7 @@ public slots:
    void readCsv(int, QString);
    void openChartWindow(QString);
    #endif
+   void createTextEditor(QString);
    void createBrowser();
    void setUrl(int id, const QUrl &http);
    void closeBrowser(int id);
@@ -239,14 +249,15 @@ public slots:
    void setUpdatesEnabled(bool);
    void setCurrentFocus(QWidget*, QWidget*);
    void checkForUpdate();
-
+   void setInterfaceText(QString);
    //ui.progress
 
    void setProgressTitle(int, QString);
    void setProgressText(int, QString);
    void setProgressVisible(int, bool);
-   void createProgressWindow();
+   void createProgressWindow(int);
    void closeProgressWindow(int obj);
+   int isProgressWindowOpen();
 
 
    //ui.vdc.printpdf
@@ -260,7 +271,6 @@ public slots:
    void addComboBoxItem(int, QString, QString);
    void removeComboBoxItem(int, QString);
    void getItemNameComboBox(int, int);
-   void getItemCountComboBox(int);
    void getItemTextComboBox(int, int);
    void getTableNameComboBox(int);
    void getIndexOfComboBox(int, QString);

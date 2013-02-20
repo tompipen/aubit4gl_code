@@ -27,7 +27,7 @@ SSH_PATH     = $$(VSSH)
 !isEmpty(SSH_PATH) {
 message("Compile with libssh")
 DEFINES += SSH_USE
-LIBS += -lssh
+LIBS += -lssh -lpthread
 include("ssh/ssh.pri")
 }
 
@@ -93,6 +93,7 @@ HEADERS += confwin.h \
     models/xmlreader.h \
     include/vdc.h \
     models/webbrowser.h \
+    models/texteditor.h \
     ventasupdate.h \
     models/progress.h \
     masterupdate.h
@@ -126,6 +127,7 @@ SOURCES += confwin.cpp \
     models/xmlreader.cpp \
     include/vdc.cpp \
     models/webbrowser.cpp \
+    models/texteditor.cpp \
     ventasupdate.cpp \
     models/progress.cpp \
     masterupdate.cpp

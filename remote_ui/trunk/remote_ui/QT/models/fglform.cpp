@@ -1382,7 +1382,14 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
                   QSortFilterProxyModel *proxyModel = qobject_cast<QSortFilterProxyModel *> (tv->model());
                   TableModel *table = qobject_cast<TableModel *> (proxyModel->sourceModel());
 
-                  QModelIndex tindex1 = table->index(0, 0);
+                  QModelIndex tindex1;
+
+                  if(tv->currentIndex().column())
+                  {
+                     tindex1 = table->index(0, tv->currentIndex().column());
+                  } else {
+                     tindex1 = table->index(0, 0);
+                  }
                   QModelIndex index1 = proxyModel->mapFromSource(tindex1);
                   tv->setCurrentIndex(index1);
 
@@ -1404,7 +1411,15 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
                   QSortFilterProxyModel *proxyModel = qobject_cast<QSortFilterProxyModel *> (tv->model());
                   TableModel *table = qobject_cast<TableModel *> (proxyModel->sourceModel());
 
-                  QModelIndex tindex1 = table->index(tv->model()->rowCount(QModelIndex())-1, 0);
+                  QModelIndex tindex1;
+
+                  if(tv->currentIndex().column())
+                  {
+                     tindex1 = table->index(tv->model()->rowCount(QModelIndex())-1, tv->currentIndex().column());
+                  } else {
+                     tindex1 = table->index(tv->model()->rowCount(QModelIndex())-1, 0);
+                  }
+
                   QModelIndex index1 = proxyModel->mapFromSource(tindex1);
                   tv->setCurrentIndex(index1);
                   //break;
@@ -3921,10 +3936,15 @@ MainFrame::vdcdebug("FglForm","findFieldIdByName", "QString fieldName");
 
 QWidget* FglForm::findFieldById(int id)
 {
+    if(id == -1)
+    {
+        qDebug() << "bin da";
+    }
+
        QList<QWidget*> ql_fields = ql_formFields;
        if(ql_formFields.size() <= 0)
        {
-           if(p_currscreenhandler->getContexts().last() != context)
+           if(p_currscreenhandler->getContexts().last()->fieldList().count() >= id)
            {
                return p_currscreenhandler->getContexts().last()->fieldList().at(id);
            }
@@ -4718,7 +4738,19 @@ MainFrame::vdcdebug("FglForm","checkField", "");
             emit error("ERROR in Character conversion");
             WidgetHelper::setFieldText(widget, "");
          }
-      }else if(state() == Fgl::CONSTRUCT)
+      }
+
+      if(state() == Fgl::INPUT)
+      {
+          QString text = WidgetHelper::fieldText(widget);
+          if(text.contains("\n"))
+          {
+              text.remove("\n");
+              WidgetHelper::setFieldText(widget, text);
+          }
+      }
+
+      if(state() == Fgl::CONSTRUCT)
       {
           QString text = WidgetHelper::fieldText(widget);
 
@@ -4758,7 +4790,7 @@ MainFrame::vdcdebug("FglForm","checkField", "");
               text.remove(">");
               text.remove("=");
               text = text.trimmed();
-              if(text.contains("."))
+              /*if(text.contains("."))
               {
                   int indexOfPoint = 0;
                   int i=0;
@@ -4785,7 +4817,7 @@ MainFrame::vdcdebug("FglForm","checkField", "");
                       i++;
                   }
                   text.remove(".");
-              }
+              }*/
               if(!text.isEmpty())
               {
                   if(text.contains(":"))

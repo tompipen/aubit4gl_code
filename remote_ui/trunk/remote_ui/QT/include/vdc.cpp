@@ -6,6 +6,21 @@
 namespace VDC {
    double fieldsizefactor;
 
+   int getSSHCompressionLevel()
+   {
+        int sshCompressionLevel = VDC::readSettingsFromIni("Ventas AG", "sshCompressionLevel").toInt();
+        if(sshCompressionLevel == 0 )
+        {
+          sshCompressionLevel = 2;
+        }
+
+   return sshCompressionLevel;
+   }
+
+   void setSSHCompressionsLevel(int value)
+   {
+        VDC::saveSettingsToIni("Ventas AG", "sshCompressionLevel", QString::number(value));
+   }
 
    void waitCursor()
    {

@@ -8,9 +8,199 @@
 // Description  : Main function to handle the append and replace of each Template.
 //
 //--------------------------------------------------------------------------------
-
-bool Reportgen::startReportTemplate(QString odffile, QString sedfile, QFileInfo zielDatei)
+Reportgen::Reportgen(ScreenHandler *parent)
 {
+    p_screenHandler = parent;
+
+    if(p_screenHandler)
+    {
+        QMetaObject::invokeMethod(p_screenHandler, "setProgressTitle", Qt::QueuedConnection, Q_ARG(int, 0), Q_ARG(QString, "VDC - Reportgenerator"));
+
+        if(!p_screenHandler->isProgressWindowOpen())
+        {
+            QMetaObject::invokeMethod(p_screenHandler, "createProgressWindow", Qt::QueuedConnection, Q_ARG(int, 0));
+            QMetaObject::invokeMethod(p_screenHandler, "setProgressVisible", Qt::QueuedConnection, Q_ARG(int, 0), Q_ARG(bool, true));
+        }
+    }
+}
+Reportgen::Reportgen()
+{
+    p_screenHandler = NULL;
+}
+
+void Reportgen::run()
+{
+
+    connect(this, SIGNAL(finished()), this, SLOT(finished()));
+    int wiederholen = 0;
+    int ebene1 = 1;
+    int ebene2 = 1;
+    int positionGefunden = 0;
+    int variablesCounter = 1;
+    int variableFound = 0;
+    int ebene1Count = 0;
+    mExitCode = 1;
+
+    QString content;
+    QFileInfo oldFileName = mOdfFile;
+    QString fileBaseName = oldFileName.baseName();
+
+    checkMetaFile(fileBaseName);
+    readSedFile(mSedFile);
+
+    ZipUnzip *p_zipunzip = new ZipUnzip();
+    QFileInfo odfFileInfo = mOdfFile;
+
+    if(!p_zipunzip->unzipArchiv(QDir::tempPath(), mOdfFile, QString(QDir::tempPath() + "/" + odfFileInfo.baseName())))
+    {
+        this->logMessage("Zip Archiv konnte nicht entpackt werden.");
+        mExitCode = 408;
+        return;
+    }
+
+    QFile contentXml(QDir::tempPath() + "/" + fileBaseName + "/content.xml");
+    QFile contentXmlAlt(QDir::tempPath() + "/" + fileBaseName + "/content-alt.xml");
+
+    if(!contentXml.open(QIODevice::ReadOnly)) {
+        this->logMessage("1-content.xml konnte nicht zum schreiben angelegt werden.");
+        mExitCode = 404;
+        return;
+    }
+
+    if(!contentXmlAlt.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
+        this->logMessage("1-content.xml konnte nicht zum schreiben angelegt werden.");
+        mExitCode = 404;
+        return;
+    }
+
+    QTextStream stream(&contentXmlAlt);
+    stream.setCodec("ISO-8859-1");
+    stream << contentXml.readAll();
+
+    contentXmlAlt.close();
+    contentXml.close();
+
+
+    for(int j=0; j < sed_fields.count(); j++)
+    {
+            if(sed_fields.at(j).contains(QString("@%1").arg(variablesCounter)))
+            {
+                variableFound = variablesCounter;
+                variablesCounter++;
+            }
+    }
+
+    /*QTextStream xmlsave(&contentXml);
+    xmlsave.setCodec("UTF-8");*/
+    getTemplateVars(fileBaseName + "/content-alt.xml");
+
+    replaceHeaderVariables();
+
+    for(int i=0; i < temp_fields.count(); i++)
+    {
+        if(temp_fields.at(i).contains("[P1["))
+        {
+            positionGefunden++;
+        }
+    }
+
+    for(int i=0; i < temp_fields.count(); i++)
+    {
+        if(temp_fields.at(i).contains("[P1["))
+        {
+            ebene1Count++;
+        }
+    }
+
+    //for(int i=0; i < ebene1Count; i++) {
+        if(oldFileName.completeSuffix() == "ods")
+        {
+            createXmlFile(1, variableFound, oldFileName.baseName(), mSedFile);
+        } else if(oldFileName.completeSuffix() == "odt"){
+            content.append(getTemplatePosition( fileBaseName + "/content.xml" ));//.toUtf8());
+            for(int j=1; j < variableFound+1; j++) {
+                qDebug() << "Ebene " << j << " von " << variableFound;
+
+                content.append(prepareTemplateContentOdt(1, j, oldFileName.baseName() + "/content.xml", mSedFile));
+                //xmlsave << content;
+                content.clear();
+            }
+        }
+    //}
+}
+
+void Reportgen::replaceHeaderVariables()
+{
+    QFileInfo fileInfo(mOdfFile);
+    QFile fileRead(QDir::tempPath() + "/" + fileInfo.baseName() + "/content-alt.xml");
+
+    if(!fileRead.open(QIODevice::ReadOnly))
+    {
+        this->logMessage(QString("(replaceHeaderVariables) ERROR: fehler beim oeffnen content-alt.xml"));
+    }
+
+    QTextStream in(&fileRead);
+    in.setCodec("ISO-8859-1");
+
+    QString xmlFile = in.readAll();
+    QString sedValue;
+
+    fileRead.close();
+
+    QStringList variables = getHeaderVariables();
+
+    for(int j=0; j < variables.count(); j++)
+    {
+        for(int i=0; i < sed_fields.count(); i++)
+        {
+            if(sed_fields.at(i).contains("@" + variables.at(j)))
+            {
+                sedValue = sed_fields.at(i);
+                sedValue.remove("@" + variables.at(j) + "%/");
+                xmlFile.replace("@" + variables.at(j), sedValue);
+                break;
+            }
+        }
+    }
+
+    QFile fileWrite(QDir::tempPath() + "/" + fileInfo.baseName() + "/content-alt.xml");
+
+    if(!fileWrite.open(QIODevice::WriteOnly | QIODevice::Truncate))
+    {
+        this->logMessage(QString("(replaceHeaderVariables) ERROR: fehler beim oeffnen content-alt.xml"));
+    }
+
+    QTextStream out(&fileWrite);
+    out.setCodec("ISO-8859-1");
+    out << xmlFile;
+    fileWrite.close();
+
+}
+
+QStringList Reportgen::getHeaderVariables()
+{
+    QStringList headerList;
+    for(int i=0; i < temp_fields.count(); i++)
+    {
+        if(temp_fields.at(i).contains("[P1["))
+        {
+            break;
+        }
+        headerList << temp_fields.at(i);
+    }
+
+    return headerList;
+}
+
+/*bool Reportgen::startReportTemplate(QString odffile, QString sedfile, QFileInfo zielDatei)
+{
+    int wiederholen = 0;
+    int ebene1 = 1;
+    int ebene2 = 1;
+    int gefunden = 0;
+    int varCount = 1;
+    int anfang = 0;
+
     //emit createRepgenProgressBar();
     readSedFile(sedfile);
 
@@ -26,13 +216,6 @@ bool Reportgen::startReportTemplate(QString odffile, QString sedfile, QFileInfo 
    QString content;
    QFileInfo oldFileName = odffile;
    QString fileBaseName = oldFileName.baseName();
-
-   int wiederholen = 0;
-   int ebene1 = 1;
-   int ebene2 = 1;
-   int gefunden = 0;
-   int varCount = 0;
-   int anfang = 1;
 
    checkMetaFile(fileBaseName);
 
@@ -149,7 +332,7 @@ bool Reportgen::startReportTemplate(QString odffile, QString sedfile, QFileInfo 
 
    return true;
 
-}
+}*/
 
 bool Reportgen::checkMetaFile(QString odffile)
 {
@@ -211,7 +394,7 @@ bool Reportgen::checkMetaFile(QString odffile)
 //
 //-------------------------------------------------------------------------------
 
-bool Reportgen::replaceEbene(QFile *file, QString odffile)
+bool Reportgen::replaceEbene(QFile file, QString odffile)
 {
 
     QTemporaryFile *temp_file = new QTemporaryFile(QDir::tempPath() + "/" + odffile + "/tmp.xml");
@@ -222,7 +405,7 @@ bool Reportgen::replaceEbene(QFile *file, QString odffile)
         return false;
     }
 
-    if(!file->open(QIODevice::ReadOnly))
+    if(!file.open(QIODevice::ReadOnly))
     {
         qDebug() << "(replaceEbene()): konnte XML nicht lesen" << "";
         return false;
@@ -231,14 +414,14 @@ bool Reportgen::replaceEbene(QFile *file, QString odffile)
     QTextStream stream(temp_file);
     stream.setCodec("UTF-8");
 
-    stream << file->readAll();
+    stream << file.readAll();
 
     temp_file->close();
-    file->close();
+    file.close();
 
-    QFile *newFile = new QFile(QDir::tempPath() + "/" + odffile + "/1-content.xml");
+    QFile newFile(QDir::tempPath() + "/" + odffile + "/1-content.xml");
 
-    if(!newFile->open(QIODevice::WriteOnly | QIODevice::Truncate))
+    if(!newFile.open(QIODevice::WriteOnly | QIODevice::Truncate))
     {
         qDebug() << "(replaceEbene()): Konnte XML nicht zum schreiben oeffnen";
         return false;
@@ -250,7 +433,7 @@ bool Reportgen::replaceEbene(QFile *file, QString odffile)
     xml = doc.toString();
     QTextStream stream1(&xml);
     stream1.setCodec("UTF-8");
-    QTextStream xmlsave1(newFile);
+    QTextStream xmlsave1(&newFile);
     xmlsave1.setCodec("UTF-8");
     QString xmlsave;
     QString ausgabe;
@@ -339,7 +522,7 @@ bool Reportgen::replaceEbene(QFile *file, QString odffile)
     xmlsave1 << "</office:spreadsheet></office:body></office:document-content>";
     temp_file->close();
     temp_file->remove();
-    newFile->close();
+    newFile.close();
     return true;
 
 }
@@ -380,23 +563,23 @@ QString Reportgen::getTemplateHeader(QString filename, QString endung)
         }*/
 
         if(cnt == 1) {
+            file->close();
             return header;
         }
     }
-   file->close();
 
 }
 
 QString Reportgen::getTemplateHeader(QString filename)
 {
-    QFile *file = new QFile(QDir::tempPath() + "/" + filename );
+    QFile file(QDir::tempPath() + "/" + filename );
 
-    if(!file->open(QIODevice::ReadOnly)) {
+    if(!file.open(QIODevice::ReadOnly)) {
         qDebug() << "Konnte Template file nicht oeffnen" << "";
     }
 
     QDomDocument doc;
-    doc.setContent(file);
+    doc.setContent(&file);
 
     QString xml = doc.toString();
     QTextStream stream(&xml);
@@ -418,7 +601,7 @@ QString Reportgen::getTemplateHeader(QString filename)
             return header;
         }
     }
-   file->close();
+   file.close();
 
 }
 
@@ -530,6 +713,105 @@ QString Reportgen::getTemplatePosition(int Table, QString odffile)
     return behalten;
 }
 
+QString Reportgen::getXmlStringFromEbene(int ebene, QString odffile)
+{
+    QFile file(QDir::tempPath() + "/" + odffile + "/content-alt.xml");
+
+    if(file.exists())
+    {
+        if(!file.open(QIODevice::ReadOnly))
+        {
+            this->logMessage("Konnte Template Vorlage nicht zum lesen oeffnen.");
+            mExitCode = 404;
+            return "";
+        }
+    } else {
+        this->logMessage("Template nicht vorhanden.");
+        mExitCode = 404;
+        return "0";
+    }
+
+    QString xmlLine;
+    QString xmlString;
+
+    QDomDocument doc;
+    doc.setContent(&file);
+
+    QString domString = doc.toString();
+    QTextStream stream(&domString);
+    stream.setCodec("UTF-8");
+
+    //xmlString.append("<table:table-row><table:table-cell>");
+
+    int merkeString = 0;
+
+    while(!stream.atEnd())
+    {
+        xmlLine = stream.readLine().simplified();
+
+        if(xmlLine.contains("<table:table-cell office:value"))
+        {
+            if(!tableCell.contains(xmlLine))
+            {
+                    tableCell << xmlLine;
+            }
+        }
+
+        if(xmlLine.contains("[P" + QString::number(ebene) + "["))
+        {
+            merkeString = 1;
+        }
+        if(xmlLine.contains("]P2]"))
+        {
+            replaceEbene2 = xmlLine;
+        }
+
+        if(xmlLine.contains("]P3]"))
+        {
+            replaceEbene3 = xmlLine;
+        }
+
+        if(merkeString > 0)
+        {
+            xmlString.append(xmlLine);
+        }
+
+        if(xmlLine.contains("]P" + QString::number(ebene) + "]"))
+        {
+            merkeString = 0;
+        }
+    }
+
+    /*xmlString.remove("[P" + QString::number(ebene) + "[");
+    xmlString.remove("]P" + QString::number(ebene) + "]");*/
+
+    //xmlString.append("</table:table-cell></table:table-row>");
+
+    file.close();
+
+    return xmlString;
+}
+
+QString Reportgen::getEbeneVariable(int ebene)
+{
+    QString returnVariable;
+    for(int i=0; i < temp_fields.count(); i++)
+    {
+        if (temp_fields.at(i).contains("[P" + QString::number(ebene) + "["))
+        {
+            i++;
+            returnVariable = temp_fields.at(i);
+            break;
+        }
+    }
+
+    if(returnVariable.isEmpty())
+    {
+        returnVariable = "NULL";
+    }
+
+    return returnVariable;
+}
 
 //------------------------------------------------------------------------------
 // Method       : prepareTemplateContent(int, Position, QString odffile, QString sedfile)
@@ -538,17 +820,230 @@ QString Reportgen::getTemplatePosition(int Table, QString odffile)
 //
 //------------------------------------------------------------------------------
 
+void Reportgen::createXmlFile(int Table, int Position, QString odffile, QString sedfile)
+{
+    QFile file(QDir::tempPath() + "/" + odffile + "/content.xml");
+
+    QString xmlStringLevel1;
+
+    QString xmlStringLevel2 = getXmlStringFromEbene(2, odffile);
+    QString xmlStringLevel3 = getXmlStringFromEbene(3, odffile);
+
+    qDebug() << "xmlStringLevel2" << xmlStringLevel2;
+
+
+    QString ebeneVariableLevel1 = getEbeneVariable(1);
+    QString ebeneVariableLevel2 = getEbeneVariable(2);
+    QString ebeneVariableLevel3 = getEbeneVariable(3);
+
+    int zaehlerLevel1 = 0;
+    int zaehlerLevel2 = 0;
+    int zaehlerLevel3 = 0;
+    int lastZaehlerLevel2 = 1;
+
+    if(file.exists())
+    {
+        if(!file.open(QIODevice::WriteOnly | QIODevice::Truncate))
+        {
+            this->logMessage("Konnte Template Vorlage nicht zum lesen oeffnen.");
+            mExitCode = 404;
+        }
+    } else {
+        this->logMessage("Template nicht vorhanden.");
+        mExitCode = 404;
+    }
+
+    QTextStream outstream(&file);
+    outstream.setCodec("UTF-8");
+
+    outstream << getTemplateHeader( odffile + "/content-alt.xml", "ods" ); //<< getTemplatePosition( fileBaseName + "/content.xml" ).toUtf8();
+    outstream << getTemplatePosition(1, odffile + "/content-alt.xml");
+
+
+    for(int i=0; i < sed_fields.count(); i++)
+    {
+        if(sed_fields.at(i).contains(ebeneVariableLevel1))
+        {
+            if(!xmlStringLevel1.isEmpty())
+            {
+                xmlStringLevel1.remove("[P1[");
+                xmlStringLevel1.remove("[P2[");
+                xmlStringLevel1.remove("[P3[");
+                xmlStringLevel1.remove("]P1]");
+                xmlStringLevel1.remove("]P2]");
+                xmlStringLevel1.remove("]P3]");
+                xmlStringLevel1.remove("|");
+
+                outstream << xmlStringLevel1;
+
+                if(p_screenHandler)
+                {
+                    QMetaObject::invokeMethod(p_screenHandler, "setProgressText", Qt::QueuedConnection, Q_ARG(int, 0), Q_ARG(QString, QString("Verarbeite %1 von %2").arg(zaehlerLevel1).arg(Position)));
+                }
+                qDebug() << "Verarbeite Saetze" << zaehlerLevel1 << "von " << Position;
+            }
+            xmlStringLevel1.clear();
+            xmlStringLevel1.append("<table:table-row><table:table-cell>");
+            xmlStringLevel1.append(getXmlStringFromEbene(1, odffile));
+            xmlStringLevel1.append("</table:table-cell></table:table-row>");
+
+            zaehlerLevel1++;
+            lastZaehlerLevel2 = 1;
+            zaehlerLevel2 = 0;
+            zaehlerLevel3 = 0;
+
+        }
+
+        if(sed_fields.at(i).contains(ebeneVariableLevel2))
+        {
+            zaehlerLevel2++;
+            zaehlerLevel3 = 0;
+            if(lastZaehlerLevel2 > zaehlerLevel2)
+            {
+                xmlStringLevel1.remove("]P3]");
+            }
+
+            if(zaehlerLevel2 > 1)
+            {
+                xmlStringLevel1.replace(replaceEbene2, "<text:p></text:p></table:table-cell></table:table-row><table:table-row><table:table-cell>" + xmlStringLevel2);
+            }
+
+        }
+
+        if(sed_fields.at(i).contains(ebeneVariableLevel3))
+        {
+            zaehlerLevel3++;
+
+            if(zaehlerLevel3 > 1)
+            {
+                xmlStringLevel1.replace(replaceEbene3, "<text:p></text:p></table:table-cell></table:table-row><table:table-row><table:table-cell>" + xmlStringLevel3);
+            }
+
+            lastZaehlerLevel2 = zaehlerLevel2;
+        }
+
+        for(int j=0; j < temp_fields.count(); j++)
+        {
+            if(!temp_fields.at(j).contains("[") && !temp_fields.at(j).contains("]"))
+            {
+                if (sed_fields.at(i).contains(temp_fields.at(j)))
+                {
+
+                    QString tmp_var = sed_fields.at(i);
+                    /*if(tmp_var.contains("&"))
+                    {
+                        tmp_var.replace("&", "&amp;");
+                    }*/
+
+                    QStringList valueList = tmp_var.split(QRegExp("%/"));
+
+                    switch(valueList.count())
+                    {
+                        case 2:
+                        {
+                            xmlStringLevel1.replace("@" + temp_fields.at(j), valueList.at(1).trimmed());
+                            break;
+                        }
+                        case 3:
+                        {
+                            xmlStringLevel1.replace("@" + temp_fields.at(j), valueList.at(1).trimmed() + "/" + valueList.at(2).trimmed());
+                            break;
+                        }
+                    }
+
+                    QString sedLine = valueList.at(1);
+
+                    if(sedLine.length() > 1)
+                    {
+                        if(!sedLine.isEmpty())
+                        {
+                            if(sedLine[0] == QChar(' ') || sedLine[0] == QChar('-'))
+                            {
+
+                                if(!tableCell.isEmpty())
+                                {
+                                    for(int k=0; k < tableCell.count(); k++)
+                                    {
+                                        QString sucheString = tableCell.at(k) + "<text:p>" + valueList.at(1).simplified();
+                                        QString ersetze = sucheString;
+
+                                        if(xmlStringLevel1.contains(sucheString))
+                                        {
+                                            QString tmp_value = valueList.at(1);
+                                            tmp_value.remove(".");
+                                            tmp_value.replace(",",".");
+
+                                            ersetze.replace("\"string\"", "\"float\" office:value=\"" + tmp_value + "\"");
+                                            xmlStringLevel1.replace(sucheString, ersetze);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    /*if(valueList.count() > 0)
+                    {
+                       xmlStringLevel1.replace("@" + temp_fields.at(j), valueList.at(1));
+                    } else {
+                        xmlStringLevel1.remove("@" + temp_fields.at(j));
+                    }*/
+                }
+            }
+        }
+    }
+
+    if(zaehlerLevel1 == Position)
+    {
+        if(!xmlStringLevel1.isEmpty())
+        {
+            xmlStringLevel1.remove("[P1[");
+            xmlStringLevel1.remove("[P2[");
+            xmlStringLevel1.remove("[P3[");
+            xmlStringLevel1.remove("]P1]");
+            xmlStringLevel1.remove("]P2]");
+            xmlStringLevel1.remove("]P3]");
+            xmlStringLevel1.remove("|");
+
+            outstream << xmlStringLevel1;
+
+            if(p_screenHandler)
+            {
+                QMetaObject::invokeMethod(p_screenHandler, "setProgressText", Qt::QueuedConnection, Q_ARG(int, 0), Q_ARG(QString, QString("Verarbeite %1 von %2").arg(zaehlerLevel1).arg(Position)));
+            }
+            qDebug() << "Verarbeite Saetze" << zaehlerLevel1 << "von " << Position;
+        }
+    }
+
+    outstream << getTemplateFooter(1, odffile + "/content-alt.xml");
+    file.close();
+
+    QFile contentFile(QDir::tempPath() + "/" + odffile + "/content-alt.xml");
+
+    if(contentFile.exists())
+    {
+        contentFile.remove();
+    }
+
+    ZipUnzip *p_zip = new ZipUnzip();
+    p_zip->zipFileArchiv(QDir::tempPath(), odffile, mDestinationFile);
+
+    if(p_screenHandler)
+    {
+        QMetaObject::invokeMethod(p_screenHandler, "setProgressText", Qt::QueuedConnection, Q_ARG(int, 0), Q_ARG(QString, QString("Auswertung abgeschlossen.\nAusgabe auf Bildschirm.")));
+    }
+}
+
 QString Reportgen::prepareTemplateContent(int Table, int Position, QString odffile, QString sedfile)
 {
 
-    QFile *file = new QFile(QDir::tempPath() + "/" + odffile);
+    QFile file(QDir::tempPath() + "/" + odffile);
 
-    if(!file->open(QIODevice::ReadOnly)) {
+    if(!file.open(QIODevice::ReadOnly)) {
         qDebug() << "Template Datei nicht lesbar" << "";
     }
 
     QDomDocument doc;
-    doc.setContent(file);
+    doc.setContent(&file);
     QString xmlfile = doc.toString();
     QTextStream stream(&xmlfile);
     stream.setCodec("UTF-8");
@@ -584,16 +1079,27 @@ QString Reportgen::prepareTemplateContent(int Table, int Position, QString odffi
             }
 
             if(ausgabe.contains("@") && ebene == 1) {
-                for(int i=0; i < temp_fields.count(); i++) {
+                for(int i=0; i < temp_fields.count(); i++){
                     if(ausgabe.contains(temp_fields.at(i))) {
-                        int found = checkSedFile(QString("@%1" + temp_fields.at(i)).arg(QString::number(Position)), sedfile);
-                            if(found > 0)
+
+                        /*for(int j=0; j < sed_fields.count(); j++)
+                        {
+                            if(sed_fields.at(j).contains(QString("@%1" + temp_fields.at(i)).arg(QString::number(Position))))
                             {
                                 ausgabe.replace("@" + temp_fields.at(i), QString("@%1" + temp_fields.at(i)).arg(QString::number(Position)));
-                            } else {
-                                ausgabe.remove("@" + temp_fields.at(i));
+                                sed_fields.removeAt(j);
+                                //qDebug() << "VARIABLE: " << QString("@%1" + temp_fields.at(i)).arg(QString::number(Position));
+                                //int found = 1;
+                                //qDebug() << "zahl: " << zahl;
+                                 //sed_fields.removeOne(QString("@%1" + temp_fields.at(i)).arg(QString::number(Position)));
+                                //qDebug() << "vari: " << QString("@%1" + temp_fields.at(i)).arg(QString::number(Position));
+                                break;
                             }
-                        //ausgabe.replace("@" + temp_fields.at(i), QString("@%1" + temp_fields.at(i)).arg(QString::number(Position)));
+                        }*/
+
+                                //qDebug() << "sed_fields: " << sed_fields.at(j);
+                                //sed_fields.removeAt(j);
+                    break;
                     }
                 }
             }
@@ -718,7 +1224,7 @@ QString Reportgen::prepareTemplateContent(int Table, int Position, QString odffi
             counter = counter - 1;
         }
     }
-    file->close();
+    file.close();
     return xmlout;
 }
 
@@ -1255,19 +1761,19 @@ QString Reportgen::getTemplateFooter(int Table, QString filename)
 
 void Reportgen::readSedFile(QString sedfile)
 {
-    QFile *file = new QFile(QDir::tempPath() + "/" + sedfile);
-    QTextStream stream(file);
+    QFile file(QDir::tempPath() + "/" + sedfile);
+    QTextStream stream(&file);
     stream.setCodec("UTF-8");
 
-
-    if(!file->open(QIODevice::ReadOnly)) {
+    if(!file.open(QIODevice::ReadOnly)) {
         qDebug() << "(readSed): Konnte SED Datei nicht lesen." << "";
+        return;
     }
-
+    sed_fields.clear();
     while(!stream.atEnd()) {
         sed_fields << stream.readLine();
     }
-    file->close();
+    file.close();
 }
 
 //------------------------------------------------------------------------------
@@ -1303,6 +1809,7 @@ int Reportgen::checkSedFile(QString fieldname, QString filename)
             }
         }
     }
+    //suchliste.clear();
     file->close();
     return cnt;
 }
@@ -1473,6 +1980,7 @@ bool Reportgen::replaceTemplateWithoutPosition(QString odffile, QString sedFile,
     {
        file1->remove();
     }
+    file1->close();
 
 
     ZipUnzip *p_zip = new ZipUnzip();
@@ -1619,6 +2127,7 @@ bool Reportgen::replaceTemplateVars(QString odffile, QString sedfile, QFileInfo 
                             if((sedLine.at(0) == QChar(' ') || sedLine.at(0) == QChar('-')) && (sedLine.at(1) >= 0 || sedLine.at(1) < 9))
                             {
                                 tableCellList << tableCell.trimmed() + ausgabe.trimmed();
+                                sedLine.remove(".");
                                 sedLine.replace(",",".");
                                 sedList << sedLine.trimmed();
                             }
@@ -2050,7 +2559,7 @@ bool Reportgen::createInfoFile(QFileInfo odffile, QFileInfo zieldatei)
 
     stream1 << "\n";
 
-    qSort(fields);
+    //qSort(fields);
 
     if(!metaVar.isEmpty())
     {
@@ -2064,4 +2573,29 @@ bool Reportgen::createInfoFile(QFileInfo odffile, QFileInfo zieldatei)
         stream1 << fields.at( i ).trimmed() + "\n";
     }
     return true;
+}
+
+void Reportgen::logMessage(QString str)
+{
+    const int REPGEN_LOG_LEVEL = 1;
+
+    //Not implented write logmessages in file to debug
+
+    if(REPGEN_LOG_LEVEL)
+    {
+        qDebug() << "REPGEN ERROR : " << str;
+    }
+}
+
+void Reportgen::finished()
+{
+
+    sed_fields.clear();
+    temp_fields.clear();
+    metaVar.clear();
+    chartVar.clear();
+    chartValues1.clear();
+    chartValues2.clear();
+
+
 }

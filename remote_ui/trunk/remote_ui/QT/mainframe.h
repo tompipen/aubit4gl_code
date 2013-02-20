@@ -66,14 +66,18 @@ public:
    ClientTcp *clientTcp;
    bool adminMenu;
    static bool b_debugmodus;
+   static MainFrame *lastmainframe;
    static void vdcdebug(QString, QString, QString);
    virtual bool eventFilter(QObject *, QEvent *);
    static QList<ScreenHandler*> *ql_screenhandler;
    static void check_new_pids();
    static bool setFocusOn(int);
+   void requestScreenHandler(int, int);
+
 public slots:
    void cleanUp();
    void debugClose();
+   void deleteScreenHandler(int pid, int p_pid);
 
 private:
    QTabWidget *tabWidget;
@@ -119,7 +123,7 @@ private slots:
    void dispErrToSB();
    void dispStdOut();
 
-private: 
+private:
    bool delFile(QString);
    QErrorMessage *errorMessageMainFrame;
    QListWidget *shortcutsListBox;

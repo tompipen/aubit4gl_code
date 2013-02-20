@@ -6,17 +6,35 @@
 #include <QPair>
 #include <QVector>
 #include <QVariant>
+#include <QStringList>
+#include <screenhandler.h>
 
 class Reportgen : public QThread
 {
     Q_OBJECT;
 
 public:
+
+
+    void run();
+    Reportgen(ScreenHandler*);
+    Reportgen();
+
+    void setOdfFile(QString odfFile) { mOdfFile = odfFile; }
+    void setSedFile(QString sedFile) { mSedFile = sedFile; }
+    void setDestinationFile(QString destinationFile) { mDestinationFile = destinationFile; }
+
+    int getExitCode() { return mExitCode; }
+
+    void createXmlFile(int Table, int Position, QString odffile, QString sedfile);
+    QStringList getHeaderVariables();
+    void replaceHeaderVariables();
+
     bool createInfoFile(QFileInfo odffile, QFileInfo zieldatei);
     bool replaceTemplateVars(QString odffile, QString sedfile, QFileInfo zielDatei);
     bool replaceTemplateWithoutPosition(QString odffile, QString sedFile, QFileInfo zielDatei);
-    bool startReportTemplate(QString odffile, QString sedfile, QFileInfo zielDatei);
-    bool replaceEbene(QFile *file, QString odffile);
+    //bool startReportTemplate(QString odffile, QString sedfile, QFileInfo zielDatei);
+    bool replaceEbene(QFile file, QString odffile);
     int checkSedFile(QString fieldname, QString filename);
 
     QString getTemplateHeader(QString filename);
@@ -36,19 +54,43 @@ public:
 
     typedef QVector<QVariant> chartVector;
 
+
+    void logMessage(QString);
+    QString getXmlStringFromEbene(int, QString);
+    QString getEbeneVariable(int);
+
 private:
-    QList<QString> sed_fields;
+
+    QStringList sed_fields;
     QList<QString> temp_fields;
     QList<QString> metaVar;
     QList<QString> chartVar;
     QList<QString> chartValues1;
     QList<QString> chartValues2;
 
+
+    QString mOdfFile;
+    QString mSedFile;
+    QString mDestinationFile;
+
+    QString replaceEbene2;
+    QString replaceEbene3;
+
+
+    QStringList tableCell;
+
+    ScreenHandler *p_screenHandler;
+
+    int mExitCode;
+
 signals:
     void createChart(QString diag);
     void addChartValue(QString, QString);
     void addChartValue(const chartVector &name , const chartVector &wert);
     void displayChart(QString, int);
+
+public slots:
+    void finished();
 
 
 

@@ -98,13 +98,15 @@ void MasterUpdate::extractPatcher(QNetworkReply *reply)
 
         if(file.exists())
         {
-            ZipUnzip *p_zipunzip = new ZipUnzip();
+            #ifdef VREPGEN_USE
+                ZipUnzip *p_zipunzip = new ZipUnzip();
 
-            if(!p_zipunzip->unzipArchiv(QDir::tempPath(), patchFileName, QApplication::applicationDirPath()))
-            {
-                qDebug() << "archiv konnte nicht entpackt werden";
-                return;
-            }
+                if(!p_zipunzip->unzipArchiv(QDir::tempPath(), patchFileName, QApplication::applicationDirPath()))
+                {
+                    qDebug() << "archiv konnte nicht entpackt werden";
+                    return;
+                }
+            #endif
         }
     } else {
         qDebug() << "Datei auf Webserver nicht gefunden!";

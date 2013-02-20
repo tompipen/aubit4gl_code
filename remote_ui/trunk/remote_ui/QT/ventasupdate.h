@@ -26,6 +26,7 @@ public slots:
     void readXmlFinished(QNetworkReply*);
     void checkOpenConnections();
     void downloadBinarie();
+    void closeVdc();
 
 private:
     QList<QList<QString> > parseXml(QString);

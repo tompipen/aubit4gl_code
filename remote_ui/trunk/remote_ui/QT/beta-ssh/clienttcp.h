@@ -84,13 +84,15 @@ public:
    QThread *t_tunnel;
 
 private:
+   int openFileSuccess;
    QString decodeFile(QString);
    void outputTree(QDomNode);
-
+   void executeFile(int,QString);
    QString encodeXMLFile(QString);
    void handleStartup(const QDomNode&);
    void handleDisplayToElement(const QDomNode&, QString parentNodeName = "");
    void handleDisplayArrayElement(const QDomNode&, QString parentNodeName = "");
+   void clearDisplayArray(const QDomNode&, QString parentNodeName = "");
    void handleInputElement(const QDomNode&, int attribute = 0);
    void handleConstructElement(const QDomNode&);
    void handleWaitForEventElement(const QDomNode&);
@@ -98,6 +100,7 @@ private:
    void handleEventsElement(const QDomNode&);
    bool sendFile(QString name);
    bool saveFile(const QDomNode&, QString fileName = "");
+   QString hexToString(QString);
    QString filterUmlauts(QString);
 
    QStringList qsl_fieldList, qsl_arrayTabNames, qsl_arrayValues, qsl_receivedFiles;
@@ -109,8 +112,10 @@ signals:
    void createBrowser();
    void setUrl(int, const QUrl);
    void closeBrowser(int);
+   void openChartWindow(QString);
 
    // ProtocolHandler -> ScreenHandler (WorkerThread -> GuiThread)
+   void setOptions(QString, QString);
    void createWindow(QString, QString, int, int, int, int, QString,QString);
    void setWindowTitle(QString);
 
@@ -150,6 +155,7 @@ signals:
    void handleXMLColors(QString);
 
 
+   void clearDisplayArrayRows(QStringList);
    void setFieldBuffer(QStringList, QStringList, int);
    void setFieldBuffer(int, QString, int);
    void setArrayBuffer(int, QString, QStringList);
@@ -157,6 +163,8 @@ signals:
    void clearFieldBuffer(QString);
    void setFieldEnabled(QString, bool, bool, int);
    void setFieldFocus(QString);
+   void setNewTabName(QString, QString);
+   void setAttributes(QString, QString, QString);
    void setFieldHidden(QString, bool);
    void setElementHidden(QString, bool);
    void setRuninfo(int, QString, int, bool);
@@ -188,6 +196,7 @@ signals:
    void getItemTextComboBox(int, int);
    void getTableNameComboBox(int);
    void getIndexOfComboBox(int, QString);
+   void createStdProgWindow();
 
    #ifdef KDChart_Version
    void createGantt();

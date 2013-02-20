@@ -84,6 +84,14 @@ LoginForm::LoginForm(QWidget *parent)
    QAction *ooStdProg = new QAction(tr("&Office standard installation"), this);
    connect(ooStdProg, SIGNAL(triggered()), this, SLOT(setOfficeInstallation()));
    options->addAction(ooStdProg);
+   options->addSeparator();
+
+   QAction *sshCompAction = new QAction(tr("SSH Compression"), this);
+   connect(sshCompAction, SIGNAL(triggered()), this, SLOT(openCompOptions()));
+   #ifdef SSH_USE
+       options->addAction(sshCompAction);
+   #endif
+   options->addSeparator();
 
    QAction *font = new QAction(tr("&Font"), this);
    font->setStatusTip(tr("Opens the Font Settings"));
@@ -301,6 +309,71 @@ welcomeBar();
 
 }
 
+void LoginForm::openCompOptions()
+{
+    QWidget *widget = new QWidget();
+    QVBoxLayout *vLayout = new QVBoxLayout(widget);
+    QHBoxLayout *hLayout = new QHBoxLayout(widget);
+    QHBoxLayout *hLayout1 = new QHBoxLayout(widget);
+    QSlider *compLevel = new QSlider(Qt::Horizontal, widget);
+    QPushButton *okButton = new QPushButton(tr("OK"), widget);
+
+    QLabel *infoLabel = new QLabel("Lowest ");
+    QLabel *infoLabel1 = new QLabel("Highest ");
+
+    QLabel *label0 = new QLabel(tr("0"));
+    label0->setMaximumWidth(25);
+
+    QLabel *label1 = new QLabel(tr("1"));
+    label1->setMaximumWidth(25);
+
+    QLabel *label2 = new QLabel(tr("2"));
+    label2->setMaximumWidth(25);
+
+    QLabel *label3 = new QLabel(tr("3"));
+    label3->setMaximumWidth(25);
+
+    QLabel *label4 = new QLabel(tr("4"));
+    label4->setMaximumWidth(25);
+
+    hLayout1->addWidget(infoLabel, 0, Qt::AlignLeft);
+    hLayout1->addWidget(infoLabel1, 0, Qt::AlignRight);
+
+    hLayout->addWidget(label0);
+    hLayout->addWidget(label1);
+    hLayout->addWidget(label2);
+    hLayout->addWidget(label3);
+    hLayout->addWidget(label4);
+
+    connect(compLevel, SIGNAL(valueChanged(int)), this, SLOT(saveCompression(int)));
+    connect(okButton, SIGNAL(pressed()), widget, SLOT(close()));
+    okButton->setMaximumWidth(100);
+    compLevel->setRange(0, 4);
+    compLevel->setMaximumWidth(150);
+
+    vLayout->addLayout(hLayout1);
+    vLayout->addLayout(hLayout);
+    vLayout->addWidget(compLevel);
+    vLayout->addWidget(okButton, 0, Qt::AlignHCenter);
+
+    int sliderValue = VDC::readSettingsFromIni("Ventas AG", "sshSliderValue").toInt();
+    if(sliderValue == 0)
+    {
+        compLevel->setValue(1);
+    } else {
+        compLevel->setValue(sliderValue-1);
+    }
+
+    widget->show();
+
+}
+void LoginForm::saveCompression(int value)
+{
+    int factor = 2.25*value;
+    VDC::setSSHCompressionsLevel(factor);
+    VDC::saveSettingsToIni("Ventas AG", "sshSliderValue", QString::number(value+1));
+}
+
 void LoginForm::removeIni()
 {
     Dialog *dialog = new Dialog("Reset Screen Forms ", "Do you realy want to reset all Screen Forms?", "", "critical", this, Qt::WindowStaysOnTopHint);
@@ -394,13 +467,13 @@ void LoginForm::aboutVDC(QWidget *parent)
     {
         if(!returnList.at(0).isEmpty())
         {
-            labeltext->setText(QString("<p style=\"font-weight: bold;\">VDC - Ventas Desktop Client for A4GL</p>Release Date: %2<br>A4GL Version: %3<br>XML Protocol Version: %4<br>Qt Version: %1<br><br>Copyright %5 %6").arg(QT_VERSION_STR).arg(returnList.at(0).at(0)).arg(a4glVersionClient).arg(xmlVersionClient).arg(date) .arg("by VENTAS AG hamburg. All Rights Reserved.<br><br>The program is provided as is with no warranty of any kind,<br>including the warranty of design,<br>merchantability and fitness for a particular purpose. <br>You can get professional support (info@ventas.de)"));
+            labeltext->setText(QString("<p style=\"font-weight: bold;\">VDC - Ventas Desktop Client for A4GL</p>Release Date: %2<br>A4GL Version: %3<br>XML Protocol Version: %4<br>Qt Version: %1<br><br>Copyright %5 %6").arg(QT_VERSION_STR).arg(returnList.at(0).at(0)).arg(a4glVersionClient).arg(xmlVersionClient).arg(date) .arg("by VENTAS AG Hamburg. All Rights Reserved.<br><br>The program is provided as is with no warranty of any kind,<br>including the warranty of design,<br>merchantability and fitness for a particular purpose. <br>You can get professional support (info@ventas.de)"));
 
         } else {
-            labeltext->setText(QString("<p style=\"font-weight: bold;\">VDC - Ventas Desktop Client for A4GL</p>Release Date: %2<br>A4gl Version: %3<br>XML Protocol Version: %4<br>Qt Version: %1 <br><br>Copyright %5 %6").arg(QT_VERSION_STR).arg("unknown").arg(a4glVersionClient).arg(xmlVersionClient).arg(date) .arg("by VENTAS AG hamburg. All Rights Reserved.<br><br>The program is provided as is with no warranty of any kind,<br>including the warranty of design,<br>merchantability and fitness for a particular purpose. <br>You can get professional support (info@ventas.de)"));
+            labeltext->setText(QString("<p style=\"font-weight: bold;\">VDC - Ventas Desktop Client for A4GL</p>Release Date: %2<br>A4gl Version: %3<br>XML Protocol Version: %4<br>Qt Version: %1 <br><br>Copyright %5 %6").arg(QT_VERSION_STR).arg("unknown").arg(a4glVersionClient).arg(xmlVersionClient).arg(date) .arg("by VENTAS AG Hamburg. All Rights Reserved.<br><br>The program is provided as is with no warranty of any kind,<br>including the warranty of design,<br>merchantability and fitness for a particular purpose. <br>You can get professional support (info@ventas.de)"));
         }
     } else {
-        labeltext->setText(QString("<p style=\"font-weight: bold;\">VDC - Ventas Desktop Client for A4GL</p>Release Date: %2<br>A4gl Version: %3<br>XML Protocol Version: %4<br>Qt Version: %1 <br><br>Copyright %5 %6").arg(QT_VERSION_STR).arg("unknown").arg(a4glVersionClient).arg(xmlVersionClient).arg(date) .arg("by VENTAS AG hamburg. All Rights Reserved.<br><br>The program is provided as is with no warranty of any kind,<br>including the warranty of design,<br>merchantability and fitness for a particular purpose.<br>You can get professional support (info@ventas.de)"));
+        labeltext->setText(QString("<p style=\"font-weight: bold;\">VDC - Ventas Desktop Client for A4GL</p>Release Date: %2<br>A4gl Version: %3<br>XML Protocol Version: %4<br>Qt Version: %1 <br><br>Copyright %5 %6").arg(QT_VERSION_STR).arg("unknown").arg(a4glVersionClient).arg(xmlVersionClient).arg(date) .arg("by VENTAS AG Hamburg. All Rights Reserved.<br><br>The program is provided as is with no warranty of any kind,<br>including the warranty of design,<br>merchantability and fitness for a particular purpose.<br>You can get professional support (info@ventas.de)"));
     }
 
     layout->addWidget(labellogo);

@@ -8,9 +8,8 @@ namespace VDC
 {
   const int DEFAULT_HEIGHT = 21;
 
-
-
-
+  void setSSHCompressionsLevel(int );
+  int getSSHCompressionLevel();
   void waitCursor();
   void arrowCursor();
   double getFieldSizeFactor();
