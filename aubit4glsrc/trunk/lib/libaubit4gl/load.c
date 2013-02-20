@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: load.c,v 1.64 2010-11-24 21:33:26 mikeaubury Exp $
+# $Id: load.c,v 1.65 2013-02-20 20:19:10 mikeaubury Exp $
 #
 */
 
@@ -45,6 +45,7 @@
 */
 
 #include "a4gl_libaubit4gl_int.h"
+#include <ctype.h>
 /*
 =====================================================================
                     Constants definitions
@@ -97,7 +98,26 @@ fglbyte byte_vars[MAXLOADCOLS];
 
 
 
+
 #define LOAD_ORIG
+
+static int isHex(char c) {
+if (c>='0' && c<='9') return 1;
+if (c>='A' && c<='Z') return 1;
+if (c>='a' && c<='z') return 1;
+return 0;
+}
+
+static char mkHex(char c1,char c2) {
+int l;
+int r;
+	c1=tolower(c1);
+	c2=tolower(c2);
+	if (c2>='0' && c2<='9') r=c2-'0'; else { r=c2-'a'+10;}
+	if (c1>='0' && c1<='9') l=c1-'0'; else { l=c1-'a'+10;}
+	return l*16+r;
+}
+
 /**
  * Find the delimiters in the line to be loaded.
  *
@@ -110,7 +130,7 @@ find_delims (char delim)
   int cnt = 1;
   int a;
   int ml;
-
+  char *lbuff;
   ml = strlen (loadbuff);
   /* Convert to unix format - if its msdos */
   if (loadbuff[ml - 2] == '\r' && loadbuff[ml - 1] == '\n')
@@ -120,6 +140,30 @@ find_delims (char delim)
       loadbuff[ml - 1] = 0;
     }
   colptr[0] = &loadbuff[0];
+  int b=0;
+int copiedNonPrintableData=0;
+	// Do we have any non-printable characters ? 
+  if (strchr(loadbuff,'\\')) {
+  	lbuff=malloc(ml+1);
+  	for (a = 0; a <= ml; a++)
+    	{
+		if (a<ml-2 && loadbuff[a]=='\\' && isHex(loadbuff[a+1]) &&  isHex(loadbuff[a+2])) {
+			
+			lbuff[b++]=mkHex(loadbuff[a+1], loadbuff[a+2]);
+			copiedNonPrintableData=1;
+			a+=2;
+			continue;
+		}
+		lbuff[b++]=loadbuff[a];
+    	}
+	if (copiedNonPrintableData) {
+		//printf("Got %s instead of %s\n",lbuff,loadbuff);
+		strcpy(loadbuff, lbuff);
+  		ml = strlen (loadbuff);
+	}
+	free(lbuff);
+  }
+
   for (a = 0; a < ml; a++)
     {
 	
@@ -133,6 +177,8 @@ find_delims (char delim)
 			}
 		}
 	}
+
+
       if ((loadbuff[a] == delim && last_char!='\\') || loadbuff[a] == 0)
 	{
 	  colptr[cnt++] = &loadbuff[a + 1];
