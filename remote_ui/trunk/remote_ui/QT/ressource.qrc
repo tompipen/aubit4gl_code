@@ -160,5 +160,7 @@
         <file>pics/editor-speichern.png</file>
         <file>pics/editor-speichern-unter.png</file>
         <file>pics/editor-suchen.png</file>
+        <file>pics/editor-vor.png</file>
+        <file>pics/editor-zurueck.png</file>
     </qresource>
 </RCC>

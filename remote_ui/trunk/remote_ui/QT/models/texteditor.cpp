@@ -12,6 +12,7 @@
 #include <QLineEdit>
 #include <QSyntaxHighlighter>
 #include "include/vdc.h"
+#include <QSignalMapper>
 
 TextEditorWidget::TextEditorWidget(QMainWindow *parent)
     : QMainWindow(parent)
@@ -19,6 +20,8 @@ TextEditorWidget::TextEditorWidget(QMainWindow *parent)
     mTextEdit = new TextEditor;
     searchToolBar = NULL;
     mIsEditFinished = 0;
+
+    TextHighlighting *syntax = new  TextHighlighting(mTextEdit->document());
 
     this->setCentralWidget(mTextEdit);
     this->setMinimumSize(600, 400);
@@ -89,7 +92,6 @@ void TextEditorWidget::loadFileFromLocal()
         VDC::arrowCursor();
         this->setWindowTitle("VENTAS - Text Editor");
         mTextIsChanged = false;
-
     }
 }
 
@@ -194,8 +196,11 @@ void TextEditorWidget::openSearch()
     if(!searchToolBar)
     {
         searchToolBar = new QToolBar;
+        QSignalMapper *sMapper = new QSignalMapper;
+
 
         QLineEdit *searchLineEdit = new QLineEdit;
+        connect(searchLineEdit, SIGNAL(textChanged(QString)), this, SLOT(searchTextChanged(QString)));
         searchToolBar->addWidget(searchLineEdit);
 
         searchToolBar->addSeparator();
@@ -203,16 +208,60 @@ void TextEditorWidget::openSearch()
         QAction *backAction = new QAction(tr("&Backward"), searchToolBar);
         backAction->setIcon(QIcon(":pics/editor-zurueck.png"));
         searchToolBar->addAction(backAction);
+        connect(backAction, SIGNAL(triggered()), sMapper, SLOT(map()));
+        sMapper->setMapping(backAction, "backward");
 
         QAction *forwardAction = new QAction(tr("&Forward"), searchToolBar);
         forwardAction->setIcon(QIcon(":pics/editor-vor.png"));
         searchToolBar->addAction(forwardAction);
+        connect(forwardAction, SIGNAL(triggered()), sMapper, SLOT(map()));
+        sMapper->setMapping(forwardAction, "forward");
 
         this->addToolBar(Qt::BottomToolBarArea, searchToolBar);
+        searchLineEdit->setFocus();
+
+        connect(sMapper, SIGNAL(mapped(QString)), this, SLOT(forwardBackwardSearch(QString)));
+
+
     } else {
         searchToolBar->close();
         searchToolBar = NULL;
         delete searchToolBar;
+    }
+}
+
+void TextEditorWidget::forwardBackwardSearch(QString value)
+{
+    if(value == "forward")
+    {
+        mTextEdit->find(mSearchText, QTextDocument::FindWholeWords);
+    }
+
+    if(value == "backward")
+    {
+        mTextEdit->find(mSearchText, QTextDocument::FindBackward);
+    }
+}
+
+void TextEditorWidget::searchTextChanged(QString text)
+{
+    mSearchText = text;
+
+    QList<QTextEdit::ExtraSelection> extraSelections;
+
+    if(!mTextEdit->isReadOnly())
+    {
+        mTextEdit->moveCursor(QTextCursor::Start);
+        QColor color = QColor("#C0D9D9");
+        while(mTextEdit->find(text))
+        {
+            QTextEdit::ExtraSelection extra;
+            extra.format.setBackground(color);
+            extra.cursor = mTextEdit->textCursor();
+            extraSelections.append(extra);
+        }
+
+        mTextEdit->setExtraSelections(extraSelections);
     }
 }
 
@@ -237,9 +286,9 @@ void TextEditor::highlightCurrentLine()
     if (!isReadOnly()) {
         QTextEdit::ExtraSelection selection;
 
-        QColor lineColor = QColor(Qt::yellow).lighter(160);
+        //QColor lineColor = QColor(Qt::yellow).lighter(160);
 
-        selection.format.setBackground(lineColor);
+        //selection.format.setBackground(lineColor);
         selection.format.setProperty(QTextFormat::FullWidthSelection, true);
         selection.cursor = textCursor();
         selection.cursor.clearSelection();
@@ -312,4 +361,20 @@ void TextEditor::lineNumberAreaPaintEvent(QPaintEvent *event)
          ++blockNumber;
      }
  }
+
+TextHighlighting::TextHighlighting(QTextDocument *document) :
+    QSyntaxHighlighter(document)
+{
+
+}
+
+void TextHighlighting::highlightBlock(const QString &text) {
+    for (int i=0; i < text.length(); i++)
+    {
+        if(text.mid(i, 2) == "/*")
+        {
+            setFormat(i, text.length() - i, Qt::blue);
+        }
+    }
+}
 

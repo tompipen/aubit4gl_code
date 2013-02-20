@@ -3,6 +3,7 @@
 
 #include <QtGui/QMainWindow>
 #include <QPlainTextEdit>
+#include <QSyntaxHighlighter>
 
 class TextEditorWidget : public QMainWindow
 {
@@ -28,6 +29,8 @@ public slots:
         void saveFile();
         void openFileFromLocal();
         void openSearch();
+        void searchTextChanged(QString);
+        void forwardBackwardSearch(QString);
 
 private:
 
@@ -36,6 +39,7 @@ private:
     QToolBar *searchToolBar;
     int mIsEditFinished;
     QString mFileName;
+    QString mSearchText;
 
 };
 
@@ -81,5 +85,16 @@ class LineNumberArea : public QWidget
  private:
      TextEditor *mTextEditor;
  };
+
+class TextHighlighting : public QSyntaxHighlighter
+{
+public:
+    explicit TextHighlighting(QTextDocument *document);
+protected:
+    void highlightBlock(const QString &text);
+
+private:
+    QTextEdit *mTextEdit;
+};
 
 #endif // TEXTEDITOR_H
