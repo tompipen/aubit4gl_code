@@ -108,6 +108,7 @@ void TextEditorWidget::saveFile()
     }
 
     QTextStream out(&file);
+    out.setCodec("ISO-8859-1");
 
     out << mTextEdit->toPlainText();
     file.close();
@@ -128,6 +129,7 @@ void TextEditorWidget::saveAsFile()
     }
 
     QTextStream out(&file);
+    out.setCodec("ISO-8859-1");
 
     out << mTextEdit->toPlainText();
 
