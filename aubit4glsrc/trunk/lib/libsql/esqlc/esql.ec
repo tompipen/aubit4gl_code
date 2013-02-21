@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.260 2012-09-14 08:22:24 mikeaubury Exp $
+# $Id: esql.ec,v 1.261 2013-02-21 09:32:43 mikeaubury Exp $
 #
 */
 
@@ -188,7 +188,7 @@ static loc_t *add_blob(struct s_sid *sid, int n, struct s_extra_info *e,fglbyte 
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.260 2012-09-14 08:22:24 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.261 2013-02-21 09:32:43 mikeaubury Exp $";
 #endif
 
 
@@ -4915,12 +4915,14 @@ static int stripl (char *str, int len)
   return alen;
 }
 
-
+static int useSlashForUnprintable=-1;
 static int
 charcpy (unsigned char *target, unsigned char *source, long len)
 {
   int rlen = 0;
-
+  if (useSlashForUnprintable==-1) {
+	useSlashForUnprintable=A4GL_isno(acl_getenv("USESLASHFORUNPRINTABLE"));
+  }
 
   while (len)
     {
@@ -4943,15 +4945,13 @@ charcpy (unsigned char *target, unsigned char *source, long len)
 	  processed++;
 	}
 
-      if (!processed && !isprint(*source) && !iscntrl(*source))
-      //if (!processed && (*source < ' ' || *source > '~') )
-	{
-	  /*
-	   * Non-printable, convert to hex. 
-	   */
+
+      if (useSlashForUnprintable) {
+      if (!processed && !isprint(*source) && !iscntrl(*source)) {
 	  target += SPRINTF1 ((char *) target, "\\%2.2x", *source);
 	  processed++;
 	}
+      }
 
       if (!processed)
 	{
