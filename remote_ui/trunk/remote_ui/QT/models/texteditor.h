@@ -23,6 +23,7 @@ public:
 
     void setText(QString);
     void openFile(QString);
+
 public slots:
         void textIsChanged();
         void saveAsFile();
@@ -31,6 +32,7 @@ public slots:
         void openSearch();
         void searchTextChanged(QString);
         void forwardBackwardSearch(QString);
+        void closeEditor();
 
 private:
 
@@ -40,6 +42,7 @@ private:
     int mIsEditFinished;
     QString mFileName;
     QString mSearchText;
+    int mCloseTextEdit;
 
 };
 

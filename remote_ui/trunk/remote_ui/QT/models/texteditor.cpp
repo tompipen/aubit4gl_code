@@ -13,6 +13,7 @@
 #include <QSyntaxHighlighter>
 #include "include/vdc.h"
 #include <QSignalMapper>
+#include "models/dialog.h"
 
 TextEditorWidget::TextEditorWidget(QMainWindow *parent)
     : QMainWindow(parent)
@@ -20,6 +21,7 @@ TextEditorWidget::TextEditorWidget(QMainWindow *parent)
     mTextEdit = new TextEditor;
     searchToolBar = NULL;
     mIsEditFinished = 0;
+    mCloseTextEdit = 0;
 
     TextHighlighting *syntax = new  TextHighlighting(mTextEdit->document());
 
@@ -171,18 +173,38 @@ void TextEditorWidget::openFileFromLocal()
 
 void TextEditorWidget::closeEvent(QCloseEvent *event)
 {
-    if(mTextIsChanged)
+    if(mTextIsChanged && !mCloseTextEdit)
     {
-        if(QMessageBox::warning(this, "File is modified",
-                                "Du you really want to quit the editor?",
-                                QMessageBox::Yes,
-                                QMessageBox::No) == QMessageBox::No)
+        Dialog *dialog = new Dialog("File is modified", "Do you realy want to close the Texteditor?", "", "critical", this, Qt::WindowStaysOnTopHint);
+        dialog->createButton(1, "Ok", "OK", "ok_gruen.png");
+
+        if(QAction *action = qobject_cast<QAction*> (dialog->getAction("OK")))
         {
-            event->ignore();
-            return;
+            action->setShortcut(Qt::Key_F12);
         }
+
+        dialog->createButton(2, "Abbruch", "ABBRUCH", "abbrechen_rot.png");
+
+        if(QAction *action = qobject_cast<QAction*> (dialog->getAction("ABBRUCH")))
+        {
+            action->setShortcut(Qt::Key_Escape);
+        }
+
+        connect(dialog->getAction("OK"), SIGNAL(triggered()), this, SLOT(closeEditor()));
+        connect(dialog->getAction("OK"), SIGNAL(triggered()), dialog, SLOT(close()));
+        connect(dialog->getAction("ABBRUCH"), SIGNAL(triggered()), dialog, SLOT(close()));
+        dialog->show();
+
+        event->ignore();
+        return;
     }
     mIsEditFinished = 1;
+}
+
+void TextEditorWidget::closeEditor()
+{
+    mCloseTextEdit = 1;
+    this->close();
 }
 
 TextEditorWidget::~TextEditorWidget()
