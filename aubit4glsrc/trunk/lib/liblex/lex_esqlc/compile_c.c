@@ -24,12 +24,12 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.552 2012-11-27 20:46:10 mikeaubury Exp $
+# $Id: compile_c.c,v 1.553 2013-02-21 12:29:13 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
-static char const module_id[] = "$Id: compile_c.c,v 1.552 2012-11-27 20:46:10 mikeaubury Exp $";
+static char const module_id[] = "$Id: compile_c.c,v 1.553 2013-02-21 12:29:13 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -6177,7 +6177,11 @@ int a;
   if (!A4GL_doing_pcode ())
     {
       printc ("#");
+      if (A4GL_isyes(acl_getenv("NOGLOBALINIT"))) { //@env "NOGLOBALINIT" , if GLOBALS are specified in more than one file - they can overwrite each other when being initialized. This shouldn't happen if you specify the second (or subsequent) globals via the GLOBALS "filename" - just if they are repeated in "GLOBALS .. END GLOBALS" in two separate files
+      printc ("static int _done_init_global_variables=0; /* NOGLOBALINIT */\n");
+	} else {
       printc ("static int _done_init_global_variables=1;\n");
+	}
       printc ("A4GL_INTERNAL_FUNCTION void init_global_variables_%s(void) {",hash);
       dump_objdata(gvars,1);
       tmp_ccnt++;
@@ -6810,9 +6814,10 @@ void
 print_declare_associate_1 (char *variable, char *size, char *n)
 {
   printc ("DEF_ASS (_usg%s,%s+1);\n", downshift (variable), size);
-  printc
-    ("#define ASSOCIATE_%s(w,rw) %s[A4GL_ass_hash(_usg%s,%s+1,%s,w,sizeof(_usg%s),rw)]\n",
+  printc ("#define ASSOCIATE_%s(w,rw) %s[A4GL_ass_hash(_usg%s,%s+1,%s,w,sizeof(_usg%s),rw)]\n",
      upshift (variable), downshift (variable), downshift (variable), n, size, downshift (variable));
+  printc ("#define ASSOCIATEI_%s(w,rw) %s[A4GL_get_hash_index(_usg%s, %s+1,w)]\n",
+     upshift (variable), downshift (variable), downshift (variable),  size, downshift (variable));
 }
 
 /**
@@ -7737,6 +7742,23 @@ local_expr_as_string (expr_str * s)
 
     case ET_EXPR_ASSOC:
       strcpy (buff_l, local_expr_as_string (s->expr_str_u.expr_assoc_subscript->subscript_value));
+ 	int dtype=simple_expr_datatype(s->expr_str_u.expr_assoc_subscript->subscript_value) & DTYPE_MASK;
+      switch (dtype) {
+      case DTYPE_INT:
+      case DTYPE_DATE:
+	case DTYPE_SERIAL:
+	case DTYPE_SMINT:
+      if (assoc_write)
+	{
+	  sprintf (rbuff, "ASSOCIATEI_%s(%s,0)", s->expr_str_u.expr_assoc_subscript->subscript_string, buff_l);
+	}
+      else
+	{
+	  sprintf (rbuff, "ASSOCIATEI_%s(%s,1)", s->expr_str_u.expr_assoc_subscript->subscript_string, buff_l);
+	}
+	break;
+	default:
+	
       if (assoc_write)
 	{
 	  sprintf (rbuff, "ASSOCIATE_%s(%s,0)", s->expr_str_u.expr_assoc_subscript->subscript_string, buff_l);
@@ -7744,6 +7766,7 @@ local_expr_as_string (expr_str * s)
       else
 	{
 	  sprintf (rbuff, "ASSOCIATE_%s(%s,1)", s->expr_str_u.expr_assoc_subscript->subscript_string, buff_l);
+	}
 	}
       return rbuff;
 
