@@ -33,6 +33,7 @@ public slots:
         void searchTextChanged(QString);
         void forwardBackwardSearch(QString);
         void closeEditor();
+        void closeOnAccept();
 
 private:
 

@@ -70,6 +70,20 @@ void TextEditorWidget::initToolBar()
     connect(searchAction, SIGNAL(triggered()), this, SLOT(openSearch()));
     tb->addAction(searchAction);
 
+    tb->addSeparator();
+
+    QAction *okAction = new QAction(tr("&Ok"), tb);
+    okAction->setShortcut(Qt::Key_F12);
+    okAction->setIcon(QIcon(":pics/editor-ok.png"));
+    connect(okAction, SIGNAL(triggered()), this, SLOT(closeOnAccept()));
+    tb->addAction(okAction);
+
+    QAction *cancAction = new QAction(tr("&Quit"), tb);
+    cancAction->setShortcut(Qt::Key_Escape);
+    cancAction->setIcon(QIcon(":pics/editor-abbrechen.png"));
+    connect(cancAction, SIGNAL(triggered()), this, SLOT(close()));
+    tb->addAction(cancAction);
+
     this->addToolBar(tb);
     this->raise();
     this->activateWindow();
@@ -87,6 +101,7 @@ void TextEditorWidget::loadFileFromLocal()
         {
             qDebug() << "Kann Datei nicht zum lesen oeffnen";
         }
+
         this->mTextEdit->setPlainText(file.readAll());
 
         file.close();
@@ -171,6 +186,11 @@ void TextEditorWidget::openFileFromLocal()
     mTextEdit->setPlainText(file.readAll());
 
     file.close();
+}
+void TextEditorWidget::closeOnAccept()
+{
+    emit saveFile();
+    this->close();
 }
 
 void TextEditorWidget::closeEvent(QCloseEvent *event)

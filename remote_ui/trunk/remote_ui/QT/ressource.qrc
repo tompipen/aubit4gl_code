@@ -162,5 +162,6 @@
         <file>pics/editor-suchen.png</file>
         <file>pics/editor-vor.png</file>
         <file>pics/editor-zurueck.png</file>
+        <file>pics/editor-ok.png</file>
     </qresource>
 </RCC>
