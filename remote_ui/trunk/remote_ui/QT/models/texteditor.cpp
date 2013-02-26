@@ -19,6 +19,8 @@ TextEditorWidget::TextEditorWidget(QMainWindow *parent)
     : QMainWindow(parent)
 {
     mTextEdit = new TextEditor;
+    mTextEdit->setLineWrapMode(QPlainTextEdit::NoWrap);
+    mTextEdit->setFont(QFont("Courier", 9));
     searchToolBar = NULL;
     mIsEditFinished = 0;
     mCloseTextEdit = 0;
@@ -26,7 +28,7 @@ TextEditorWidget::TextEditorWidget(QMainWindow *parent)
     TextHighlighting *syntax = new  TextHighlighting(mTextEdit->document());
 
     this->setCentralWidget(mTextEdit);
-    this->setMinimumSize(600, 400);
+    this->resize(600, 400);
     this->setWindowTitle("VENTAS - Text Editor");
 
     this->initToolBar();
@@ -260,6 +262,11 @@ void TextEditorWidget::openSearch()
         searchToolBar->addAction(forwardAction);
         connect(forwardAction, SIGNAL(triggered()), sMapper, SLOT(map()));
         sMapper->setMapping(forwardAction, "forward");
+
+        QAction *cancAction = new QAction(tr("&Quit"), searchToolBar);
+        cancAction->setIcon(QIcon(":pics/editor-beenden-ohne-speichern.png"));
+        connect(cancAction, SIGNAL(triggered()), searchToolBar, SLOT(close()));
+        searchToolBar->addAction(cancAction);
 
         this->addToolBar(Qt::BottomToolBarArea, searchToolBar);
         searchLineEdit->setFocus();
