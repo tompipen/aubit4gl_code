@@ -104,7 +104,7 @@ void TextEditorWidget::loadFileFromLocal()
             qDebug() << "Kann Datei nicht zum lesen oeffnen";
         }
 
-        this->mTextEdit->setPlainText(file.readAll().trimmed());
+        this->mTextEdit->setPlainText(file.readAll());
 
         file.close();
 
@@ -127,7 +127,7 @@ void TextEditorWidget::saveFile()
     QTextStream out(&file);
     out.setCodec("ISO-8859-1");
 
-    out << mTextEdit->toPlainText().trimmed();
+    out << mTextEdit->toPlainText();
     file.close();
 
     this->setWindowTitle("VENTAS - Text Editor");
@@ -148,7 +148,7 @@ void TextEditorWidget::saveAsFile()
     QTextStream out(&file);
     out.setCodec("ISO-8859-1");
 
-    out << mTextEdit->toPlainText().trimmed();
+    out << mTextEdit->toPlainText();
 
     file.close();
 
@@ -156,7 +156,7 @@ void TextEditorWidget::saveAsFile()
 
 void TextEditorWidget::setText(QString text)
 {
-    mTextEdit->setPlainText(text.trimmed());
+    mTextEdit->setPlainText(text);
 }
 
 void TextEditorWidget::openFile(QString fileName){
@@ -169,7 +169,7 @@ void TextEditorWidget::openFile(QString fileName){
         qDebug() << "konnte Datei nicht zum lesen oeffnen!!!";
     }
 
-    mTextEdit->setPlainText(file.readAll().trimmed());
+    mTextEdit->setPlainText(file.readAll());
 
     file.close();
 }
@@ -185,7 +185,7 @@ void TextEditorWidget::openFileFromLocal()
         qDebug() << "konnte Datei nicht zum lesen oeffnen!!!";
     }
 
-    mTextEdit->setPlainText(file.readAll().trimmed());
+    mTextEdit->setPlainText(file.readAll());
 
     file.close();
 }
