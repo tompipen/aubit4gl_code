@@ -80,7 +80,7 @@ void TextEditorWidget::initToolBar()
 
     QAction *cancAction = new QAction(tr("&Quit"), tb);
     cancAction->setShortcut(Qt::Key_Escape);
-    cancAction->setIcon(QIcon(":pics/editor-abbrechen.png"));
+    cancAction->setIcon(QIcon(":pics/editor-beenden-ohne-speichern.png"));
     connect(cancAction, SIGNAL(triggered()), this, SLOT(close()));
     tb->addAction(cancAction);
 
