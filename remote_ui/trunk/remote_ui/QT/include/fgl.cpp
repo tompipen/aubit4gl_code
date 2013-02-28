@@ -1076,29 +1076,87 @@ namespace Fgl {
            case DTYPE_SERIAL:
            case DTYPE_INT:
               {
-                 bool ok;
-                 qint32 n;
-                 n = value.toInt(&ok);
-                 if(ok && (value.toInt() == n)){
-                    return true;
-                 }
-                 else{
-                    return false;
-                 }
+                  bool ok;
+                  qint32 n;
+                  QStringList valueList;
+
+                  if(value.contains("<"))
+                  {
+                      value.remove("<");
+                  }
+
+                  if(value.contains(">"))
+                  {
+                      value.remove(">");
+                  }
+
+                  if(value.contains("|"))
+                  {
+                      valueList << value.split("|");
+
+                      for(int i=0; i < valueList.count(); i++)
+                      {
+                          if(valueList.at(i).toInt())
+                          {
+                              ok = true;
+                          } else {
+                              ok = false;
+                              break;
+                          }
+                      }
+                      return ok;
+                  }
+
+                  n = value.toInt(&ok);
+                  if(ok && (value.toInt() == n)){
+                     return true;
+                  }
+                  else{
+                     return false;
+                  }
               }
 
            case DTYPE_SERIAL8:
            case DTYPE_INT8:
               {
-                 bool ok;
-                 qint64 n;
-                 n = value.toInt(&ok);
-                 if(ok && (value.toInt() == n)){
-                    return true;
-                 }
-                 else{
-                    return false;
-                 }
+                  bool ok;
+                  qint32 n;
+                  QStringList valueList;
+
+                  if(value.contains("<"))
+                  {
+                      value.remove("<");
+                  }
+
+                  if(value.contains(">"))
+                  {
+                      value.remove(">");
+                  }
+
+                  if(value.contains("|"))
+                  {
+                      valueList << value.split("|");
+
+                      for(int i=0; i < valueList.count(); i++)
+                      {
+                          if(valueList.at(i).toInt())
+                          {
+                              ok = true;
+                          } else {
+                              ok = false;
+                              break;
+                          }
+                      }
+                      return ok;
+                  }
+
+                  n = value.toInt(&ok);
+                  if(ok && (value.toInt() == n)){
+                     return true;
+                  }
+                  else{
+                     return false;
+                  }
               }
 
            case DTYPE_SMINT:
