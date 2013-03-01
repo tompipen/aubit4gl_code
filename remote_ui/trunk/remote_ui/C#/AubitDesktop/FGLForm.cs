@@ -41,7 +41,9 @@ namespace AubitDesktop
         
         public int maxcol;
         public int maxline;
-
+        string detectedType2;
+        bool addedteste = false;
+     
    	public int pixelHeight;
    	public int pixelWidth;
 
@@ -1783,6 +1785,27 @@ namespace AubitDesktop
         }
 
 
+        public List<FGLFoundField> FindFields1(COLUMN[] FIELDLIST)
+        {
+            List<FGLFoundField> fldlist;
+            fldlist = new List<FGLFoundField>();
+
+            foreach (COLUMN f in FIELDLIST)
+            {
+                List<FGLFoundField> flds;
+                flds = FindField(f.NAME, false);
+                if (flds != null)
+                {
+                    foreach (FGLFoundField fld in flds)
+                    {
+                        fldlist.Add(fld);
+                    }
+                }
+            }
+            return fldlist;
+        }
+
+
         public List<FGLFoundField> FindFields(string[] FIELDLIST)
         {
             List<FGLFoundField> fldlist;
@@ -1815,10 +1838,14 @@ namespace AubitDesktop
 
             if (dgCells != null)
             {
-               
-                if (d.VS.Length !=dgCells.Count)
+
+                if (d.VS.Length != dgCells.Count)
                 {
-                    Program.Show("Wrong number of fields");
+                    if (addedteste == false)
+                    {
+                        Program.Show("Wrong number of fields");
+
+                    }
                 }
                 else
                 {
@@ -1847,7 +1874,11 @@ namespace AubitDesktop
                 fldlist = FindFields(d.FIELDLIST);
                 if (d.VS.Length != fldlist.Count)
                 {
-                    Program.Show("Wrong number of fields");
+                    if (addedteste == false)
+                    {
+                        Program.Show("Wrong number of fields");
+
+                    }
                 }
                 else
                 {
@@ -1890,11 +1921,32 @@ namespace AubitDesktop
             foreach (FGLWidget i in fields)
             {
                 i.ContextType = contextType;
+
+                if (contextType == FGLContextType.ContextInputArrayInactive)
+                {
+                    i.onUIEvent = null;
+                    i.onGotFocus = null;
+                    i.fieldValidationFailed = null;
+                }
+
+
+                if (contextType == FGLContextType.ContextConstructArrayInactive)
+                {
+                    i.onUIEvent = null;
+                    i.onGotFocus = null;
+                    i.fieldValidationFailed = null;
+                }
+
                 if (contextType == FGLContextType.ContextNone)
                 {
                     i.onUIEvent = null;
                     i.onGotFocus = null;
                     i.fieldValidationFailed = null;
+                }
+                else
+                {
+                  
+                    //diogo 2011
                 }
             }
             this.thisFormsPanel.ResumeLayout();
@@ -2025,15 +2077,19 @@ namespace AubitDesktop
                 fld.Attribute = -1;
             }
 
-            
 
-                foreach (DictionaryEntry d in grids)
-                {
-                    FormattedGridView f;
-                    f = (FormattedGridView)d.Value;
-                    f.clearDefaultData();
-                }
-               // f.Rows.Clear();
+           try
+           {
+           foreach (DictionaryEntry d in grids)
+            {
+                     FormattedGridView f;
+                     f = (FormattedGridView)d.Value;
+ 
+                     f.clearDefaultData();
+                 }
+
+           }catch {} 
+
         }
 
         int colourCnt = 0;
@@ -2102,6 +2158,48 @@ namespace AubitDesktop
             }
         }
 
+        internal TabPage FindPages(V[] fIELD)
+        {
+
+
+
+
+
+
+            foreach (Control ctrl in _thisFormsPanel.Controls)
+            {
+                if (ctrl is TabControl)
+                {
+                    foreach (TabPage ctrl1 in ctrl.Controls)
+                    {
+                        if (ctrl1.Name == fIELD[0].Text)
+                        {
+                            ctrl1.Text = fIELD[1].Text;
+                            return ctrl1;
+
+                        }
+                    }
+                }
+            }
+
+
+//
+         //   foreach (TabPage txt2 in _thisFormsPanel.Controls.Find(fIELD, true))
+           //     {
+
+                   // return txt2;
+              //  }
+
+
+
+
+            
+            
+            return null;
+        }
+
+
+
         internal List<DataGridViewCell> FindRecordCells(params FIELD[] fIELD)
         {
             string fld;
@@ -2161,12 +2259,17 @@ namespace AubitDesktop
                 {
                     if (!grids.ContainsKey(tabName))
                     {
+
+                        if (colName == "*")
+                        {
+                            addedteste = true;
+                        }
                         return null;
                     }
                 }
 
 
-              //  bool added = false;
+               addedteste = false;
 
                 #region search through screen records
                 // we need to look up the tabName and column from the screen record....
@@ -2197,9 +2300,15 @@ namespace AubitDesktop
                                 else
                                 {
                                   //  added = true;
-
-                                    dgCells.Add(dg.Rows[subscript - 1].Cells[attr+1]);
-                                    
+                                    try
+                                    {
+                                        dgCells.Add(dg.Rows[subscript - 1].Cells[attr + 1]);
+                                    }
+                                    catch
+                                    {
+                                        //subscript = subscript + 1;
+                                      //  dgCells.Add(dg.Rows[subscript - 1].Cells[attr + 1]);
+                                    }
                                 }
 
                             }

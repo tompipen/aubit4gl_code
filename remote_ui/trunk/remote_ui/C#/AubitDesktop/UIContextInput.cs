@@ -30,11 +30,16 @@ namespace AubitDesktop
         private event UIEventHandler EventTriggered;
         private bool _contextIsActive;
         private FGLFoundField setCurrentField;
+        private FGLFoundField setCurrentField_x;
         private FGLFoundField _currentField=null;
         private bool careAboutFocus;
         private bool isBeforeInput;
+        private bool isBeforeField;
+        private bool isacceptfield = false;
+        private bool isnextfield = false;
         private string isInput;
         private FGLFoundField lastFiredBeforeField = null;
+        private FGLFoundField lastFiredBeforeField2 = null;
 
         private FGLFoundField CurrentField
         {
@@ -88,18 +93,18 @@ namespace AubitDesktop
         {
        
 
-            if (afterFieldID != "" && beforeFieldID != "")
-            {
+       //     if (afterFieldID != "" && beforeFieldID != "")
+         //   {
                 // Yah ! - send them both...
 
-                string str = getTriggeredTag(afterFieldID, 1, 2, pCurrentField);
-                    CurrentField = pCurrentField;
-                    str += "\n"+getTriggeredTag(beforeFieldID, 2, 2,newfield);
-                    this.EventTriggered(null, "", str, this);
-                    this.EventTriggered = null;
-            }
-            else
-            {
+//string str = getTriggeredTag(afterFieldID, 1, 2, pCurrentField);
+  //                  CurrentField = pCurrentField;
+    //                str += "\n"+getTriggeredTag(beforeFieldID, 2, 2,newfield);
+      //              this.EventTriggered(null, "", str, this);
+        //            this.EventTriggered = null;
+          //  }
+           // else
+           // {
                 if (afterFieldID != "")
                 {
                     if (this.EventTriggered != null)
@@ -122,7 +127,7 @@ namespace AubitDesktop
                         PendingEvents.Add(beforeFieldID);
                     }
                 }
-            }
+            //}
         }
 
 
@@ -230,9 +235,9 @@ namespace AubitDesktop
                         setCurrentField = fld;
                         fld.fglField.gotFocus();
                         CurrentField = fld;
-                        careAboutFocus = true;
-                        CurrentField.fglField.setFocus();
                         careAboutFocus = false;
+                        CurrentField.fglField.setFocus();
+                      //  careAboutFocus = false;
                         setCurrentField = null;
                         break;
                     }
@@ -275,6 +280,7 @@ namespace AubitDesktop
                     sendTrigger(CurrentField.fglField.afterFieldID);
                 }
 
+                isnextfield = true;
                 sendTrigger("ACCEPT");
             }
         }
@@ -348,12 +354,15 @@ namespace AubitDesktop
         public void setNextField(string fieldName)
         {
             bool found = false;
-            lastFiredBeforeField = null;
+        //    lastFiredBeforeField = null;
+
+          //  isnextfield = true;
             foreach (FGLFoundField f in activeFields)
             {
                 if (found && f.fglField.NoEntry == false)
                 {
                     setCurrentField = f;
+               //     lastFiredBeforeField = f;
                     break;
                 }
 
@@ -362,6 +371,7 @@ namespace AubitDesktop
                     if (f.fglField.NoEntry == false)
                     {
                         setCurrentField = f;
+                   //     lastFiredBeforeField = f;
                         break;
                     }
                     else
@@ -370,6 +380,8 @@ namespace AubitDesktop
                     }
                 }
             }
+
+            isacceptfield = isnextfield;
             PendingEvents.Clear();
         }
 
@@ -413,15 +425,15 @@ namespace AubitDesktop
         }
 
 
-       void inputGotFocus_o(object source, string comment)
+       void inputGotFocus(object source, string comment)
         {
-            bool setField = false;
+           FGLFoundField field=null;
 
-
-            FGLFoundField field=null;
-
+           Boolean l_entrou = false;
+           Boolean l_entrou2 = false;
 
             if (!careAboutFocus) return;
+
 
 
             foreach (FGLFoundField f in activeFields)
@@ -433,43 +445,197 @@ namespace AubitDesktop
                 }
             }
 
+      //      field.fglField.desligacor = 0;
+
+
+            if (comment == "") {} else
+			{
             mainWin.CommentText = comment;
+            }
 
-            if (CurrentField == field) return;
-            if (field == setCurrentField) return;
+           
 
-            if (CurrentField != null)
+
+            if (CurrentField != null && isBeforeField== false && (isBeforeInput == false || CurrentField.fglField.afterFieldID != ""))
             {
+
+                setCurrentField_x = CurrentField;
+              //  CurrentField.fglField.desligacor = 1;
                 if (CurrentField.fglField.afterFieldID != "")
                 {
                     sendTrigger(CurrentField.fglField.afterFieldID);
-                    setField = true;
+                    
+                  
+                    setCurrentField = field;
+                   // setCurrentField_x = field;
+                    l_entrou = true;
+
+                    if (isBeforeInput == true)
+                    {
+                        isBeforeInput = false;
+                    }
+                  //  System.Threading.Thread.Sleep(500);
                 }
                 else
-                {
+                {  
+                   
+                    isBeforeInput = true;
+                    
+                }
+               
+            }
 
-                    // sendTrigger("SETYOURID"); <<<< WTF ?
-                    setField = true;
+           if (field != null && l_entrou == false && isBeforeInput == true)
+            {
+
+                //setCurrentField_x = CurrentField;
+               if (field.fglField.beforeFieldID != "")
+                {
+              
+                    sendTrigger(field.fglField.beforeFieldID);
+                    setCurrentField = field;
+                    CurrentField = field;
+                    setCurrentField_x = field;
+                    l_entrou2 = true;
+                    isBeforeInput = false;
+                  //  System.Threading.Thread.Sleep(500);
+                  
+
                 }
             }
 
-            CurrentField = field;
+           if (l_entrou == false && l_entrou2 == false)
+           {
+               CurrentField = field;
+               isBeforeInput = true;
+           }
 
 
-            if (CurrentField != null)
-            {
-                if (CurrentField.fglField.beforeFieldID != "")
-                {
-                    setField = true;
-                    sendTrigger(CurrentField.fglField.beforeFieldID);
-                }
-            }
 
-            if (setField)
-            {
-                // The context will be deactivated - so we need to say where we're going next...
-                setCurrentField = field;
-            }
+          // careAboutFocus = false;     
+
+       
+        }
+
+
+
+       void inputGotFocus_d(object source, string comment)
+       {
+           bool setField = false;
+
+
+           FGLFoundField field = null;
+
+           //  lastFiredBeforeField = null;
+
+
+           if (!careAboutFocus) return;
+
+
+
+
+           foreach (FGLFoundField f in activeFields)
+           {
+               if (f.fglField == source)
+               {
+                   field = f;
+                   break;
+               }
+           }
+
+           if (comment == "")
+           {
+
+           }
+           else
+           {
+
+               mainWin.CommentText = comment;
+           }
+
+           // if (CurrentField == field) return;
+           if (field == lastFiredBeforeField2) return;
+
+           //   lastFiredBeforeField
+
+           if (lastFiredBeforeField == field) return;
+
+           setCurrentField_x = CurrentField;
+
+           if (CurrentField != null)
+           {
+               if (CurrentField.fglField.afterFieldID != "")
+               {
+                   sendTrigger(CurrentField.fglField.afterFieldID);
+                   setField = true;
+                   lastFiredBeforeField2 = CurrentField;
+                   // lastFiredBeforeField2.fglField.desligacor = 1;
+
+                   //lastFiredBeforeField2.fglField.desligacor = 1;
+
+                   setField = true;
+               }
+               else
+               {
+
+                   // sendTrigger("SETYOURID"); <<<< WTF ?
+
+               }
+
+               lastFiredBeforeField = field;
+
+               CurrentField = field;
+           }
+
+
+           if (field != null)
+           {
+               if (field.fglField.beforeFieldID != "")
+               {
+                   setField = true;
+                   sendTrigger(field.fglField.beforeFieldID);
+                   lastFiredBeforeField2 = field;
+                   //    field.fglField.desligacor = 1;
+
+                   lastFiredBeforeField = null;
+               }
+               else
+               {
+
+                   lastFiredBeforeField = field;
+               }
+
+               CurrentField = field;
+
+
+               if (field.fglField.afterFieldID != "")
+               {
+
+                   lastFiredBeforeField2 = setCurrentField_x;
+                   // CurrentField = setCurrentField_x;
+               }
+
+
+
+           }
+
+
+
+
+
+
+           if (setField)
+           {
+               // The context will be deactivated - so we need to say where we're going next...
+               setCurrentField = field;
+
+
+           }
+           else
+           {
+               lastFiredBeforeField = lastFiredBeforeField2;
+               lastFiredBeforeField2 = null;
+           }
 
         }
 
@@ -478,13 +644,18 @@ namespace AubitDesktop
 
 
 
-        void inputGotFocus(object source, string comment)
+       void inputGotFocus_o(object source, string comment)
         {
             bool setField = false;
 
 
             FGLFoundField field=null;
 
+
+           // if (isnextfield == true) {
+              //  isnextfield = false;
+             //   return;
+           // }
 
             if (!careAboutFocus) return;
  
@@ -498,15 +669,28 @@ namespace AubitDesktop
                 }
             }
 
-            mainWin.CommentText = comment;
-
-            if (lastFiredBeforeField == field) return;
-            
-            if (field == setCurrentField)
+            if (comment == "")
+            {  
+            } else 
             {
-                setCurrentField = null;
-               // return;
+                mainWin.CommentText = comment;
+
             }
+
+         //   MessageBox.Show("teste1");
+
+            if (lastFiredBeforeField2 == field && lastFiredBeforeField == lastFiredBeforeField2)
+            {
+       //         sendTriggers(CurrentField, CurrentField.fglField.afterFieldID, field, field.fglField.beforeFieldID);
+                lastFiredBeforeField = null;
+                lastFiredBeforeField2 = null;
+                return;
+            } 
+         //   if (field == setCurrentField)
+          //  {
+                setCurrentField = field;
+               // return;
+          // }
              
             if (CurrentField != null)
             {
@@ -518,20 +702,45 @@ namespace AubitDesktop
                 else
                 {
 
-                    //sendTrigger("SETYOURID");
+                    //diogo teste sendTrigger("SETYOURID");
                     setField = true;
                 }
             }
 
-            sendTriggers(CurrentField, CurrentField.fglField.afterFieldID, field, field.fglField.beforeFieldID);
+            lastFiredBeforeField = CurrentField;
 
+            if (lastFiredBeforeField2 == setCurrentField)
+            {
+                if (CurrentField.fglField.beforeFieldID != "")
+                {
+
+                    sendTriggers(CurrentField, null, field, field.fglField.beforeFieldID);
+                }
+                lastFiredBeforeField2 =CurrentField ;
+            }
+            else
+            {
+                sendTriggers(CurrentField, CurrentField.fglField.afterFieldID, field, field.fglField.beforeFieldID);
+
+                if (lastFiredBeforeField2 != null)
+                {
+                    lastFiredBeforeField2 = CurrentField;
+                }
+                else
+                {
+                    lastFiredBeforeField2 = field;
+                }
+
+            }
 
             if (setField)
             {
                 // The context will be deactivated - so we need to say where we're going next...
                 setCurrentField = field;
             }
-            lastFiredBeforeField = field;
+
+           
+         
         }
 
 
@@ -547,6 +756,9 @@ namespace AubitDesktop
 
             Console.WriteLine("Activating context..");
 
+            
+       //     mainWin.SetContext(FGLContextType.ContextInput);
+
             if (!_contextIsActive)
             {
                 _contextIsActive = true;
@@ -558,6 +770,9 @@ namespace AubitDesktop
             foreach (FGLFoundField f in activeFields)
             {
                 Console.WriteLine(f.fullName);
+
+              
+
                 if (values == null)
                 {
                     f.fglField.Text = f.fglField.defaultValue;
@@ -682,53 +897,92 @@ namespace AubitDesktop
             }
             #endregion
 
+            isBeforeInput = false;
+            isBeforeField = false;
 
-
-            if (setCurrentField != null) // Next field has been registered..
+            if (setCurrentField != null && isacceptfield == false)  // Next field has been registered..
             {
-                
-                CurrentField = setCurrentField;
-                careAboutFocus = true;
-                CurrentField.fglField.setFocus();
                 careAboutFocus = false;
-                setCurrentField = null;
-}
 
-                if (CurrentField == null)
+                if (setCurrentField == CurrentField)
                 {
-                    CurrentField = activeFields[0];
-                    CurrentField.fglField.setFocus();
-                }
 
-                CurrentField.fglField.setFocus();
-
-
-
-            if (isInput == CurrentField.fglField.beforeFieldID)
-            {
-                isBeforeInput = false;
-            }
-            
-            if (isBeforeInput )
-            {
-                isBeforeInput = false;
-                if (CurrentField.fglField.beforeFieldID!="") { 
-                                        sendTrigger(CurrentField.fglField.beforeFieldID);
-                                        isInput = CurrentField.fglField.beforeFieldID;
+                    if ((setCurrentField_x != setCurrentField) && setCurrentField_x != null)
+                    {
+                        careAboutFocus = true;
+                        isBeforeField = true;
+                        isBeforeInput = true;
+                        setCurrentField_x = setCurrentField;
                     }
 
-              //  isBeforeInput = false;
+
+                }
+                else
+                {
+                    if (setCurrentField.fglField.beforeFieldID != "")
+                    {
+                        careAboutFocus = true;
+                        isBeforeInput = true;
+                        isBeforeField = true;
+                    }
+                    CurrentField = setCurrentField;
+                    //   careAboutFocus = false;
+                }
+
+            }
+            else
+            {
+                //careAboutFocus = true;
+                isBeforeInput = true;
+
+                if (isacceptfield == true)
+                {
+                    CurrentField = setCurrentField;
+                    isacceptfield = false;
+                }
+                    
+       
+
+                if (CurrentField.fglField.beforeFieldID != "")
+                {
+                    sendTrigger(CurrentField.fglField.beforeFieldID);
+
+                    setCurrentField = CurrentField;
+                 
+                }
             }
 
+            if (CurrentField == null)
+            {
+                CurrentField = activeFields[0];
                 careAboutFocus = true;
+                CurrentField.fglField.setFocus();
+               // isBeforeInput = true;
+               // careAboutFocus = false;
+            }
+            else
+            {
+               
+                CurrentField.fglField.setFocus();
+                isBeforeInput = false;
+               // careAboutFocus = false;
+            }
+
+
+          
+
+                careAboutFocus = true;
+
+
+             
+                
+                if (CurrentField.fglField.comment == "")
+                {
+                } else { 
                 mainWin.CommentText = CurrentField.fglField.comment;
+				}
 
-
-
-
-
-
-            //Application.DoEvents();
+             
 
         }
 
@@ -741,19 +995,34 @@ namespace AubitDesktop
             EventTriggered = null;
             if (_contextIsActive)
             {
+            //    mainWin.setActiveToolBarKeys(null, null);
+
+
+             //   mainWin.SetContext(FGLContextType.ContextInput, activeFields, this, KeyList, onActionList, null);
+
+                // MessageBox.Show("teste1");
+
+                //mainWin.setnovatela();
                 mainWin.setActiveToolBarKeys(null, null);
                 mainWin.SetContext(FGLContextType.ContextNone);
+               // frmMainAppWindow.ActiveForm.Focus();
+               // mainWin.Focus();
                 _contextIsActive = false;
                 EventTriggered = null;
-                mainWin.CommentText = "";
+               // mainWin.CommentText = "                   ";                         
             }
+          
         }
 
         public void FreeContext()
         {
-            //mainWin.setActiveToolBarKeys(null);
+          //  mainWin.setnovatela();
+           // mainWin.setActiveToolBarKeys(null, null);
+         //   mainWin.Focus();
+            mainWin.SetContext(FGLContextType.ContextNone);
             _contextIsActive = false;
             EventTriggered = null;
+            mainWin.CommentText = "";
 
         }
     }

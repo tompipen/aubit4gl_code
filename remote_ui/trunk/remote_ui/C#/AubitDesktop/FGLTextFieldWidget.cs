@@ -124,7 +124,9 @@ namespace AubitDesktop
                 t.TabIndex = value;
             }
         }
+        
 
+       
         public override bool hasFocus
         {
             get
@@ -189,7 +191,11 @@ namespace AubitDesktop
             
             t.Focus();
             t.Select();
-            t.SelectionLength = 0;
+
+           
+
+
+           // t.SelectionLength = 0;
         }
 
         override public Color BackColor
@@ -219,7 +225,7 @@ namespace AubitDesktop
 
         }
 
-        private void adjustDisplayPropertiesForContext()
+        /*private void adjustDisplayPropertiesForContext()
         {
             p.BorderStyle = BorderStyle.None;
             t.BackColor = SystemColors.Window;
@@ -240,6 +246,181 @@ namespace AubitDesktop
 
 
             //t.TabStop = true;
+            switch (_ContextType)
+            {
+                case FGLContextType.ContextNone:
+                    t.ReadOnly = true;
+
+                    if (this.NoEntry)
+                    {
+                        t.Enabled = false;
+                        // lblInsteadOfTxtBox.Visible = true;
+                    //    t.ReadOnly = false;
+                    }
+
+                    
+                    if (false)
+                    {
+                         
+                        //lblInsteadOfTxtBox.Visible = true;
+                        t.Visible = false;
+                        t.ReadOnly = true;
+                    }
+                    break;
+
+
+                case FGLContextType.ContextDisplayArray:
+                case FGLContextType.ContextDisplayArrayInactive:
+                    if (t.Visible != true)
+                    {
+                        t.Visible = true;
+                    }
+                    /*
+                    if (lblInsteadOfTxtBox.Visible != false)
+                    {
+                        lblInsteadOfTxtBox.Visible = false;
+                    }
+                     * */
+               /*     if (t.ReadOnly != true)
+                    {
+                        t.ReadOnly = true;
+                    }
+
+                    if (isOnSelectedRow)
+                    {
+                        t.BackColor = SystemColors.Highlight;
+                        t.ForeColor = SystemColors.HighlightText;
+                    }
+                    else
+                    {
+
+                        //p.BackColor = Color.Black;
+                        //p.BorderStyle = BorderStyle.None;
+
+                    }
+                    break;
+
+
+
+                case FGLContextType.ContextConstruct:
+                    if (false)
+                    {
+                        t.Visible = true;
+                        //lblInsteadOfTxtBox.Visible = false;
+                    }
+                    t.ReadOnly = false;
+                    t.MaxLength = 0;
+                    break;
+
+
+                case FGLContextType.ContextInput:
+                    t.MaxLength = _maxLength;
+                    if (this.NoEntry)
+                    {
+                        t.Visible = false;
+                       // lblInsteadOfTxtBox.Visible = true;
+                        t.ReadOnly = false;
+                    }
+                    else
+                    {
+
+                        if (false)
+                        {
+                            t.Visible = true;
+                            //lblInsteadOfTxtBox.Visible = false;
+                        }
+
+                        t.ReadOnly = false;
+                    }
+                    // We can't trap the tabstops if this is true..
+                    //t.TabStop = false;
+                    break;
+
+                case FGLContextType.ContextInputArrayInactive:
+                case FGLContextType.ContextInputArray:
+                    t.MaxLength = _maxLength;
+                    if (this.NoEntry)
+                    {
+                        if (false)
+                        {
+                            t.Visible = false;
+                           // lblInsteadOfTxtBox.Visible = true;
+                        }
+                        t.ReadOnly = false;
+                    }
+                    else
+                    {
+                        if (isOnSelectedRow)
+                        {
+                            if (false)
+                            {
+                                t.Visible = true;
+                                //lblInsteadOfTxtBox.Visible = false;
+                            }
+                            t.ReadOnly = false;
+                        }
+                        else
+                        {
+                            if (false)
+                            {
+                                t.Visible = false;
+                                //lblInsteadOfTxtBox.Visible = true;
+                            }
+                            t.ReadOnly = false;
+                        }
+                    }
+                    break;
+
+                default:
+                    if (this.NoEntry)
+                    {
+                        if (false)
+                        {
+                            t.Visible = false;
+                            //lblInsteadOfTxtBox.Visible = true;
+                        }
+                        t.ReadOnly = false;
+                    }
+                    else
+                    {
+                        if (false)
+                        {
+                            t.Visible = true;
+                           // lblInsteadOfTxtBox.Visible = false;
+                        }
+                        t.ReadOnly = false;
+                    }
+                    break;
+
+            }
+
+
+        }*/
+
+
+        private void adjustDisplayPropertiesForContext()
+        {
+         //   p.BorderStyle = BorderStyle.None;
+
+            // t.BackColor = SystemColors.Info;
+            // l.BackColor = Color.Silver;
+            //l.BackgroundImage = AubitDesktop.Properties.Resources.Background;
+            //l.BackgroundImageLayout = ImageLayout.Stretch;
+            // t.ForeColor = SystemColors.WindowText;
+          //  if (this.Attribute != -1)
+         //   {
+          //      if ((this.Attribute & 4096) > 0)
+          //      { // reverse video 
+            //        t.BackColor = System.Drawing.Color.LightYellow;
+                    //l.BackColor = System.Drawing.Color.Bisque;
+              //  }
+           // }
+
+
+
+            //t.TabStop = true;
+
+            
             switch (_ContextType)
             {
                 case FGLContextType.ContextNone:
@@ -550,6 +731,7 @@ namespace AubitDesktop
             }
 
 
+         
 
             if (edit.comments != null)
             {
@@ -659,6 +841,13 @@ namespace AubitDesktop
             {
                 a.ATTRIB_FORMAT = new ATTRIB_FORMAT();
                 a.ATTRIB_FORMAT.Text = edit.format;
+            }
+
+
+            if (edit.picture != null)
+            {
+                a.ATTRIB_PICTURE = new ATTRIB_PROGRAM();
+                a.ATTRIB_PICTURE.Text = edit.picture;
             }
             
 
@@ -946,11 +1135,18 @@ namespace AubitDesktop
                             t.SelectionLength = t.Text.Length;
                         }
 
+                        }
                     }
                 }
-            }
-            
-  
+                else
+                {
+                    t.SelectionStart = 0;
+                    t.SelectionLength = t.Text.Length;
+                }
+
+               
+
+
         }
 
 
@@ -988,6 +1184,15 @@ namespace AubitDesktop
                 SendKeys.Send("{TAB}");
                  }
            // 
+        }
+		
+		
+		
+		internal void ui_textfield_picture(string mascara)
+        {
+
+           // t.Mask.EditMask = mascara;
+            
         }
 
 

@@ -440,6 +440,27 @@ namespace AubitDesktop
             }
         }
 
+
+        public string picture
+        {
+            get
+            {
+                if (attrib.ATTRIB_PICTURE == null)
+                {
+                    return null;
+                }
+                else
+                {
+                    return attrib.ATTRIB_PICTURE.Text;
+                }
+            }
+            set
+            {
+                attrib.ATTRIB_PICTURE = new ATTRIB_PROGRAM();
+                attrib.ATTRIB_PICTURE.Text = value;
+            }
+        }
+
         public bool AutoNext
         {
             get

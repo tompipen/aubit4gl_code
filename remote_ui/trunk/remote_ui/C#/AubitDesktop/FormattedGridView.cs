@@ -265,7 +265,13 @@ namespace AubitDesktop
             EditingControlShowing += new DataGridViewEditingControlShowingEventHandler(FormattedGridView_EditingControlShowing);
             this.RowsRemoved += new DataGridViewRowsRemovedEventHandler(FormattedGridView_RowsRemoved);
             CellBeginEdit += new DataGridViewCellCancelEventHandler(FormattedGridView_CellBeginEdit);
+            this.DoubleClick += new System.EventHandler(FormattedGridView_Click);
             
+        }
+
+        void FormattedGridView_Click(object sender, EventArgs e)
+        {
+            SendKeys.Send("{F10}");
         }
 
         void FormattedGridView_CellBeginEdit(object sender, DataGridViewCellCancelEventArgs e)

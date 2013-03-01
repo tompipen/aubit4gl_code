@@ -228,27 +228,37 @@ namespace AubitDesktop
                 {
                     if (!isConstructValueValid(dtype, dtype_size, v.Substring(1)))
                     {
-                        return null;
+                      
                     }
-                    srch.Add(colname + ">" + quoteEscape(v.Substring(1), quote));
+                    else
+                    {
+                        srch.Add(colname + ">" + quoteEscape(v.Substring(1), quote));
+
+                    }
                 }
                 if (v.StartsWith("<"))
                 {
                     if (!isConstructValueValid(dtype, dtype_size, v.Substring(1)))
                     {
-                        return null;
+
                     }
-                    srch.Add(colname + "<" + quoteEscape(v.Substring(1), quote));
+                    else
+                    {
+                        srch.Add(colname + "<" + quoteEscape(v.Substring(1), quote));
+
+                    }
                 }
 
 
                 // Drop through to an "=" ...
                 if (!isConstructValueValid(dtype, dtype_size, v))
                 {
-                    return null;
+                    //return null;
                 }
-                srch.Add(colname + "=" + quoteEscape(v, quote));
-
+                else
+                {
+                    srch.Add(colname + "=" + quoteEscape(v, quote));
+                }
             }
 
             if (srch.Count == 0) return "";

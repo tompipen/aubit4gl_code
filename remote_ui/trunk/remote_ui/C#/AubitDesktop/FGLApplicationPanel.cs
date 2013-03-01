@@ -2186,7 +2186,7 @@ namespace AubitDesktop
 
 
 
-                    if (recordFields != null || recordFields!=null)
+                    if (v == null && recordFields != null)
                     {
                         contexts.Insert(Convert.ToInt32(i.CONTEXT), new UIConstructInTableContext(this, i,v,recordFields));
                     }
@@ -2251,7 +2251,14 @@ namespace AubitDesktop
                 if (a is DISPLAY)
                 {
                     DISPLAY theDISPLAY = (DISPLAY)a;
-                    this.TopWindow.AddTextToConsole(theDISPLAY.Text[0]);
+                    try
+                    {
+                        this.TopWindow.AddTextToConsole(theDISPLAY.Text[0]);
+                    }
+                    catch
+                    {
+
+                    }
                     commands.Remove(a);
                     continue;
                 }
@@ -2753,6 +2760,18 @@ namespace AubitDesktop
             return ApplicationWindows.FindRecordCells(fieldlist);
         }
 
+
+        public TabPage FindPages(V[] fieldlist)
+        {
+            return ApplicationWindows.FindPages(fieldlist);
+        }
+
+
+
+
+     
+
+
         public List<FGLFoundField> FindFields(string[] fieldlist)
         {
             return ApplicationWindows.FindFields(fieldlist);
@@ -2981,6 +3000,15 @@ namespace AubitDesktop
             }
         }
 
+
+
+        internal TabPage FindPage(V[] p)
+        {
+            TabPage l;
+         
+            l = FindPages(p);
+            return l;
+        }
     }
 
 }

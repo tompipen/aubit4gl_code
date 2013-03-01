@@ -166,13 +166,13 @@ namespace AubitDesktop
 
             constructGrid.Columns[0].Visible = false;
             constructGrid.DataSource = dt;
-            constructGrid.AutoResizeColumnHeadersHeight();
-            constructGrid.AutoResizeRow(0);
+         //   constructGrid.AutoResizeColumnHeadersHeight();
+         //   constructGrid.AutoResizeRow(0);
 
-            for (int colno = 1; colno < constructGrid.Columns.Count; colno++)
-            {
-                constructGrid.AutoResizeColumn(colno);
-            }
+           // for (int colno = 1; colno < constructGrid.Columns.Count; colno++)
+          //  {
+           //     constructGrid.AutoResizeColumn(colno);
+          //  }
 
             constructGrid.Enabled = false;
             
@@ -182,14 +182,14 @@ namespace AubitDesktop
 
         private void setActiveFields()
         {
-            DataGridViewCellStyle readonlyStyle;
-            DataGridViewCellStyle normalStyle = constructGrid.DefaultCellStyle;
-            readonlyStyle = new DataGridViewCellStyle();
-            readonlyStyle.BackColor = System.Drawing.Color.Gray;
+         //   DataGridViewCellStyle readonlyStyle;
+           DataGridViewCellStyle normalStyle = constructGrid.DefaultCellStyle;
+          //  readonlyStyle = new DataGridViewCellStyle();
+          //  readonlyStyle.BackColor = System.Drawing.Color.Gray;
             for (int colno = 0; colno < constructGrid.Columns.Count; colno++)
             {
                 constructGrid.Columns[colno].ReadOnly = true;
-                constructGrid.Columns[colno].DefaultCellStyle = readonlyStyle;
+                constructGrid.Columns[colno].DefaultCellStyle = normalStyle;
             }
 
             for (int colno = 0; colno < constructGrid.Columns.Count; colno++)
@@ -304,6 +304,9 @@ namespace AubitDesktop
 
         public void ActivateContext(UIEventHandler UIDisplayArrayContext_EventTriggered, V[] values, ROW[] rows)
         {
+
+            mainWin.setActiveToolBarKeys(KeyList, onActionList); //, true,true,false);
+            
             foreach (ON_ACTION_EVENT e in onActionList)
             {
                 foreach (FGLFoundField ffield in mainWin.FindAction(e.ACTION))
@@ -318,7 +321,9 @@ namespace AubitDesktop
             constructGrid.ReadOnly = false;
             constructGrid.Enabled = true;
 
-            mainWin.setActiveToolBarKeys(KeyList, onActionList); //, true,true,false);
+            constructGrid.Focus();
+
+           
 
             setActiveFields();
 
@@ -345,6 +350,13 @@ namespace AubitDesktop
         public void FreeContext()
         {
             _contextIsActive = false;
+
+            mainWin.setActiveToolBarKeys(null, null);
+
+            mainWin.SetContext(FGLContextType.ContextConstructArrayInactive);
+
+
+            constructGrid.context = FGLContextType.ContextConstructArrayInactive;
         }
 
         public void NavigateToTab()

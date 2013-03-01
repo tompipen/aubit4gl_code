@@ -417,6 +417,19 @@ namespace AubitDesktop
 
 
 
+
+
+
+
+        internal TabPage FindPages(V[] fieldlist)
+        {
+
+           return CurrentForm.FindPages(fieldlist);
+        }
+
+
+
+
         internal void setNextField(string NextField)
         {
             CurrentForm.setNextField(NextField);
@@ -565,10 +578,11 @@ namespace AubitDesktop
 
 
 
+
                 internal List<DataGridViewCell> FindRecordCells(FIELD[] fieldlist)
-        {
-            return CurrentForm.FindRecordCells(fieldlist);
-        }
+                {
+                    return CurrentForm.FindRecordCells(fieldlist);
+                }
         
     }
 

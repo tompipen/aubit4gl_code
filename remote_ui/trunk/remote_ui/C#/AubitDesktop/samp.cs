@@ -1319,6 +1319,8 @@ namespace AubitDesktop
         [System.Xml.Serialization.XmlAttributeAttribute(DataType = "NMTOKEN")]
         public string PID;
 
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "NMTOKEN")]
+        public string MESSAGEID;
 
 
         /// <remarks/>
@@ -1490,6 +1492,14 @@ namespace AubitDesktop
         public string Text;
     }
 
+    public class ATTRIB_PICTURE
+    {
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlTextAttribute()]
+        public string Text;
+    }
+
     /// <remarks/>
     public class ATTRIB_COMMENTS
     {
@@ -1556,15 +1566,6 @@ namespace AubitDesktop
 
     /// <remarks/>
     public class ATTRIB_PROGRAM
-    {
-
-        /// <remarks/>
-        [System.Xml.Serialization.XmlTextAttribute()]
-        public string Text;
-    }
-
-    /// <remarks/>
-    public class ATTRIB_PICTURE
     {
 
         /// <remarks/>

@@ -38,6 +38,7 @@ namespace AubitDesktop
     public enum FGLContextType
     {
         ContextNone,
+        ContextInputNone,
         ContextInput,
         ContextConstruct,
         ContextConstructArray,
@@ -590,6 +591,12 @@ namespace AubitDesktop
             return windows[0].FindRecordCells(fieldlist);
         }
 
+
+        internal TabPage FindPages(V[] fieldlist)
+        {
+            return windows[0].FindPages(fieldlist);
+        }
+
         internal List<FGLFoundField> FindFields(FIELD[] fieldlist)
         {
             return windows[0].FindFields(fieldlist);
@@ -860,7 +867,7 @@ namespace AubitDesktop
                 string fullname;
                 if (!a.EndsWith("/") && !a.EndsWith("\\"))
                 {
-                    fullname = a + "/" + f;
+                    fullname = a + "\\" + f;
                 } else {
                     fullname=a+f;
                 }
@@ -905,7 +912,7 @@ namespace AubitDesktop
                 if (i!=null) return i;
 
 
-                i = getImageFromImagePath(name, "C:/aubit4gl;" + Properties.Resources.ImageDirectory);
+                i = getImageFromImagePath(name, Application.StartupPath+";" + Application.StartupPath +"\\icones");
                 try
                 {
                     FileStream stream = File.OpenRead(name);

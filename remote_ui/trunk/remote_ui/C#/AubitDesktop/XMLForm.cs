@@ -167,10 +167,14 @@ namespace AubitDesktop.Xml.XMLForm
             [System.Xml.Serialization.XmlAttributeAttribute(DataType = "int")]
             public int pixelWidth;
 
-            /// <remarks/>
-            [System.Xml.Serialization.XmlElementAttribute("Page")]
-            public Page[] Pages;
-        }
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string Id;
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute("Page")]
+        public Page[] Pages;
+    }
 
 
 
@@ -185,9 +189,13 @@ namespace AubitDesktop.Xml.XMLForm
             [System.Xml.Serialization.XmlAttributeAttribute(DataType = "int")]
             public int pixelWidth;
 
-            /// <remarks/>
-            [System.Xml.Serialization.XmlAttributeAttribute()]
-            public string text;
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string Id;
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string text;
 
             /// <remarks/>
             [System.Xml.Serialization.XmlElementAttribute("Folder", Type = typeof(Folder))]
@@ -206,9 +214,13 @@ namespace AubitDesktop.Xml.XMLForm
             [System.Xml.Serialization.XmlAttributeAttribute(DataType = "int")]
             public int pixelHeight;
 
-            /// <remarks/>
-            [System.Xml.Serialization.XmlAttributeAttribute(DataType = "int")]
-            public int pixelWidth;
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "int")]
+        public int pixelWidth;
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string Id;
 
             [System.Xml.Serialization.XmlAttributeAttribute()]
             public bool border;
@@ -228,9 +240,13 @@ namespace AubitDesktop.Xml.XMLForm
             [System.Xml.Serialization.XmlAttributeAttribute(DataType = "int")]
             public int pixelHeight;
 
-            /// <remarks/>
-            [System.Xml.Serialization.XmlAttributeAttribute(DataType = "int")]
-            public int pixelWidth;
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute(DataType = "int")]
+        public int pixelWidth;
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string Id;
 
 
             [System.Xml.Serialization.XmlAttributeAttribute()]
@@ -264,11 +280,15 @@ namespace AubitDesktop.Xml.XMLForm
             [System.Xml.Serialization.XmlAttributeAttribute()]
             public bool border;
 
-            /// <remarks/>
-            [System.Xml.Serialization.XmlAttributeAttribute()]
-            public string width;
-            [System.Xml.Serialization.XmlAttributeAttribute()]
-            public int autoSize;
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string Id;
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string width;
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public int autoSize;
 
             /// <remarks/>
             [System.Xml.Serialization.XmlElementAttribute("FormField", Type = typeof(FormField))]
@@ -331,24 +351,29 @@ namespace AubitDesktop.Xml.XMLForm
             [System.Xml.Serialization.XmlAttributeAttribute()]
             public string tabIndex;
 
-            /// <remarks/>
-            [System.Xml.Serialization.XmlElementAttribute("ButtonEdit", Type = typeof(ButtonEdit))]
-            [System.Xml.Serialization.XmlElementAttribute("Button", Type = typeof(Button))]
-            [System.Xml.Serialization.XmlElementAttribute("ComboBox", Type = typeof(ComboBox))]
-            [System.Xml.Serialization.XmlElementAttribute("CheckBox", Type = typeof(CheckBox))]
-            [System.Xml.Serialization.XmlElementAttribute("RipRADIO", Type = typeof(RipRADIO))]
-            [System.Xml.Serialization.XmlElementAttribute("Radio", Type = typeof(Radio))]
-            [System.Xml.Serialization.XmlElementAttribute("DateEdit", Type = typeof(DateEdit))]
-            [System.Xml.Serialization.XmlElementAttribute("Edit", Type = typeof(Edit))]
-            [System.Xml.Serialization.XmlElementAttribute("Image", Type = typeof(Image))]
-            [System.Xml.Serialization.XmlElementAttribute("Label", Type = typeof(Label))]
-            [System.Xml.Serialization.XmlElementAttribute("ProgressBar", Type = typeof(ProgressBar))]
-            [System.Xml.Serialization.XmlElementAttribute("RipLABEL", Type = typeof(RipLABEL))]
-            [System.Xml.Serialization.XmlElementAttribute("TextEdit", Type = typeof(TextEdit))]
-            [System.Xml.Serialization.XmlElementAttribute("Widget", Type = typeof(Widget))]
-            [System.Xml.Serialization.XmlElementAttribute("Browser", Type = typeof(Browser))]
-            public object[] Items;
-        }
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string tag;
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute("ButtonEdit", Type = typeof(ButtonEdit))]
+      
+        [System.Xml.Serialization.XmlElementAttribute("Button", Type = typeof(Button))]
+        [System.Xml.Serialization.XmlElementAttribute("ComboBox", Type = typeof(ComboBox))]
+        [System.Xml.Serialization.XmlElementAttribute("CheckBox", Type = typeof(CheckBox))]
+        [System.Xml.Serialization.XmlElementAttribute("RipRADIO", Type = typeof(RipRADIO))]
+        [System.Xml.Serialization.XmlElementAttribute("Radio", Type = typeof(Radio))]
+        [System.Xml.Serialization.XmlElementAttribute("DateEdit", Type = typeof(DateEdit))]
+        [System.Xml.Serialization.XmlElementAttribute("Edit", Type = typeof(Edit))]
+        [System.Xml.Serialization.XmlElementAttribute("Image", Type = typeof(Image))]
+        [System.Xml.Serialization.XmlElementAttribute("Label", Type = typeof(Label))]
+        [System.Xml.Serialization.XmlElementAttribute("ProgressBar", Type = typeof(ProgressBar))]
+        [System.Xml.Serialization.XmlElementAttribute("RipLABEL", Type = typeof(RipLABEL))]
+        [System.Xml.Serialization.XmlElementAttribute("TextEdit", Type = typeof(TextEdit))]
+        [System.Xml.Serialization.XmlElementAttribute("Widget", Type = typeof(Widget))]
+        [System.Xml.Serialization.XmlElementAttribute("Browser", Type = typeof(Browser))]
+        public object[] Items;
+    }
 
         /// <remarks/>
         [System.Xml.Serialization.XmlRootAttribute(Namespace = "", IsNullable = true)]
@@ -1302,10 +1327,14 @@ namespace AubitDesktop.Xml.XMLForm
             [System.Xml.Serialization.XmlAttributeAttribute()]
             public string tabName;
 
-            /// <remarks/>
-            [System.Xml.Serialization.XmlElementAttribute()]
-            public TableColumn[] TableColumn;
-        }
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string Id;
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute()]
+        public TableColumn[] TableColumn;
+    }
 
         /// <remarks/>
         [System.Xml.Serialization.XmlRootAttribute(Namespace = "", IsNullable = true)]
@@ -1354,9 +1383,13 @@ namespace AubitDesktop.Xml.XMLForm
             [System.Xml.Serialization.XmlAttributeAttribute()]
             public string notNull;
 
-            /// <remarks/>
-            [System.Xml.Serialization.XmlAttributeAttribute()]
-            public string sqlType;
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string picture;
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string sqlType;
 
 
             /// <remarks/>
@@ -1367,24 +1400,29 @@ namespace AubitDesktop.Xml.XMLForm
             [System.Xml.Serialization.XmlAttributeAttribute()]
             public string tabIndex;
 
-            /// <remarks/>
-            [System.Xml.Serialization.XmlElementAttribute("ButtonEdit", Type = typeof(ButtonEdit))]
-            [System.Xml.Serialization.XmlElementAttribute("Button", Type = typeof(Button))]
-            [System.Xml.Serialization.XmlElementAttribute("ComboBox", Type = typeof(ComboBox))]
-            [System.Xml.Serialization.XmlElementAttribute("CheckBox", Type = typeof(CheckBox))]
-            [System.Xml.Serialization.XmlElementAttribute("RipRADIO", Type = typeof(RipRADIO))]
-            [System.Xml.Serialization.XmlElementAttribute("Radio", Type = typeof(Radio))]
-            [System.Xml.Serialization.XmlElementAttribute("DateEdit", Type = typeof(DateEdit))]
-            [System.Xml.Serialization.XmlElementAttribute("Edit", Type = typeof(Edit))]
-            [System.Xml.Serialization.XmlElementAttribute("Image", Type = typeof(Image))]
-            [System.Xml.Serialization.XmlElementAttribute("Label", Type = typeof(Label))]
-            [System.Xml.Serialization.XmlElementAttribute("ProgressBar", Type = typeof(ProgressBar))]
-            [System.Xml.Serialization.XmlElementAttribute("RipLABEL", Type = typeof(RipLABEL))]
-            [System.Xml.Serialization.XmlElementAttribute("TextEdit", Type = typeof(TextEdit))]
-            [System.Xml.Serialization.XmlElementAttribute("Browser", Type = typeof(Browser))]
-            [System.Xml.Serialization.XmlElementAttribute("Widget", Type = typeof(Widget))]
-            public object Item;
-        }
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string tag;
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute("ButtonEdit", Type = typeof(ButtonEdit))]
+        
+        [System.Xml.Serialization.XmlElementAttribute("Button", Type = typeof(Button))]
+        [System.Xml.Serialization.XmlElementAttribute("ComboBox", Type = typeof(ComboBox))]
+        [System.Xml.Serialization.XmlElementAttribute("CheckBox", Type = typeof(CheckBox))]
+        [System.Xml.Serialization.XmlElementAttribute("RipRADIO", Type = typeof(RipRADIO))]
+        [System.Xml.Serialization.XmlElementAttribute("Radio", Type = typeof(Radio))]
+        [System.Xml.Serialization.XmlElementAttribute("DateEdit", Type = typeof(DateEdit))]
+        [System.Xml.Serialization.XmlElementAttribute("Edit", Type = typeof(Edit))]
+        [System.Xml.Serialization.XmlElementAttribute("Image", Type = typeof(Image))]
+        [System.Xml.Serialization.XmlElementAttribute("Label", Type = typeof(Label))]
+        [System.Xml.Serialization.XmlElementAttribute("ProgressBar", Type = typeof(ProgressBar))]
+        [System.Xml.Serialization.XmlElementAttribute("RipLABEL", Type = typeof(RipLABEL))]
+        [System.Xml.Serialization.XmlElementAttribute("TextEdit", Type = typeof(TextEdit))]
+        [System.Xml.Serialization.XmlElementAttribute("Browser", Type = typeof(Browser))]
+        [System.Xml.Serialization.XmlElementAttribute("Widget", Type = typeof(Widget))]
+        public object Item;
+    }
 
         /// <remarks/>
         [System.Xml.Serialization.XmlRootAttribute(Namespace = "", IsNullable = true)]
@@ -1427,6 +1465,9 @@ namespace AubitDesktop.Xml.XMLForm
             [System.Xml.Serialization.XmlAttributeAttribute(DataType = "int")]
             public int pixelWidth;
 
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string Id;
 
             /// <remarks/>
             [System.Xml.Serialization.XmlAttributeAttribute()]

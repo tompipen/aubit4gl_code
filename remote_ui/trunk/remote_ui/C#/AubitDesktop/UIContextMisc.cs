@@ -172,6 +172,15 @@ namespace AubitDesktop
                         }
                     }
 
+                    if (name.StartsWith("ui.form."))
+                    {
+                        retStrings = ui_form_frontcall(appPanel, name, values, retStrings);
+                        if (retStrings != null)
+                        {
+                            break;
+                        }
+                    }
+
 
                     MessageBox.Show("Unhandled INTERNAL :" + name + " in frontcall");
                     break;
@@ -396,6 +405,75 @@ namespace AubitDesktop
 
 
 
+        private static string[] ui_form_frontcall(FGLApplicationPanel appPanel, string name, V[] values, string[] retStrings)
+        {
+            switch (name)
+            {
+                case "ui.form.setpagetitle":
+                    {
+                        TabPage f = appPanel.FindPage(values);
+                        
+
+                        
+
+                        if (f == null) return null;
+
+                      
+                       
+                        
+                        return null;
+                    }
+
+                 case "ui.form.setelementhidden":
+                    {
+                        return null;
+                    }
+
+
+                 case "ui.form.setfieldhidden":
+                    {
+
+                        List<FGLFoundField> f = appPanel.FindField(values[0].Text);
+                        if (f == null) return null;
+                        if (f.Count == 0) return null;
+                        
+                        return null;
+                    }
+
+                    
+
+                        
+
+                case "ui.form.setattributes":
+                    {
+                        List<FGLFoundField> f = appPanel.FindField(values[0].Text);
+                        if (f == null) return null;
+                        if (f.Count == 0) return null;
+
+                        if (f[0].fglField is FGLTextFieldWidget)
+                        {
+
+                        
+                        
+                            FGLTextFieldWidget widget = (FGLTextFieldWidget)f[0].fglField;
+                            widget.ui_textfield_picture(values[1].Text);
+                        }
+                        return null; // no return values...
+                    }
+
+         
+
+
+                default:
+                    return null;
+
+            }
+
+            return retStrings;
+        }
+
+
+
         internal static void FrontCallNoReturns(FGLApplicationPanel appPanel, FRONTCALL call)
         {
             switch (call.MODULE)
@@ -404,6 +482,12 @@ namespace AubitDesktop
                     if (call.NAME.StartsWith("ui.combobox."))
                     {
                         ui_combo_frontcall(appPanel, call.NAME, call.VS, null);
+                        return;
+                    }
+
+                    if (call.NAME.StartsWith("ui.form."))
+                    {
+                        ui_form_frontcall(appPanel, call.NAME, call.VS, null);
                         return;
                     }
                 
