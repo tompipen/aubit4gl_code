@@ -40,6 +40,7 @@ class LoginForm  : public QWidget
 public:
 
    LoginForm(QWidget *parent = 0);
+   QString getUserName() { return usernameLineEdit->text(); };
    QLineEdit *fontedit;
    QString fontconv;
    QStringList splitlist;

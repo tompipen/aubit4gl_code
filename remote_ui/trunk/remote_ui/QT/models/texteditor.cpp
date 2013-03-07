@@ -14,6 +14,8 @@
 #include "include/vdc.h"
 #include <QSignalMapper>
 #include "models/dialog.h"
+#include <QDateTime>
+#include "mainframe.h"
 
 TextEditorWidget::TextEditorWidget(QMainWindow *parent)
     : QMainWindow(parent)
@@ -85,6 +87,14 @@ void TextEditorWidget::initToolBar()
     cancAction->setIcon(QIcon(":pics/editor-beenden-ohne-speichern.png"));
     connect(cancAction, SIGNAL(triggered()), this, SLOT(close()));
     tb->addAction(cancAction);
+
+     tb->addSeparator();
+
+     QAction *insertDateAction = new QAction(tr("&Insert Date"), tb);
+    insertDateAction->setIcon(QIcon(":pics/editor-datum.png"));
+    insertDateAction->setShortcut(Qt::Key_F7);
+    connect(insertDateAction, SIGNAL(triggered()), this, SLOT(insertDate()));
+    tb->addAction(insertDateAction);
 
     this->addToolBar(tb);
     this->raise();
@@ -314,6 +324,29 @@ void TextEditorWidget::searchTextChanged(QString text)
 
         mTextEdit->setExtraSelections(extraSelections);
     }
+}
+
+void TextEditorWidget::insertDate()
+{
+    int cursorPos = mTextEdit->textCursor().position();
+    int destPos = cursorPos + 21;
+
+    QDateTime date = QDateTime::currentDateTime();
+
+    QString text = mTextEdit->toPlainText();
+
+    if(MainFrame *main = qobject_cast<MainFrame*> (MainFrame::lastmainframe))
+    {
+        text.insert(cursorPos, date.toString("dd.MM.yyyy hh:mm") + " " + main->getUserName() + ":");
+    } else {
+        text.insert(cursorPos, date.toString("dd.MM.yyyy hh:mm") + " : ");
+    }
+
+    mTextEdit->setPlainText(text);
+
+    QTextCursor cursor = mTextEdit->textCursor();
+    cursor.setPosition(destPos);
+    mTextEdit->setTextCursor(cursor);
 }
 
 TextEditor::TextEditor(QWidget *parent)

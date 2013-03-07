@@ -34,6 +34,7 @@ public slots:
         void forwardBackwardSearch(QString);
         void closeEditor();
         void closeOnAccept();
+        void insertDate();
 
 private:
 

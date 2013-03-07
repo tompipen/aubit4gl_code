@@ -267,6 +267,9 @@ void VentasUpdate::downloadBinarie()
     #ifdef Q_WS_WIN
         file.setFileName(QApplication::applicationDirPath() + "/update.exe");
     #else
+        #ifdef Q_WS_MAC
+        setenv("DYLD_LIBRARY_PATH", "/Applications/VENTAS-Software/VDC.app/Contents/Frameworks/", 1);
+        #endif
         file.setFileName(QApplication::applicationDirPath() + "/update");
     #endif
 

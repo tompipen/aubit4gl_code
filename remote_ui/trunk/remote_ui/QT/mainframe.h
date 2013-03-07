@@ -73,6 +73,7 @@ public:
    static void check_new_pids();
    static bool setFocusOn(int);
    void requestScreenHandler(int, int);
+   QString getUserName() { return userName; };
 
 public slots:
    void cleanUp();
@@ -88,6 +89,7 @@ private:
    QToolBar *mainFrameToolBar;
    ConnectionsTab *connectionsTab;
    void ReadSettings();
+   QString userName;
 
 signals:
        void debugSignal();

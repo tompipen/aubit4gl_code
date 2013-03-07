@@ -200,6 +200,7 @@ MainFrame::vdcdebug("MainFrame","MainFrame", "QWidget *parent");
    else{
       LoginForm *loginForm = new LoginForm(this);
       setCentralWidget(loginForm);
+      userName = loginForm->getUserName();
       connect(this, SIGNAL(debugSignal()), loginForm, SLOT (debugCheck()));
    }
       setWindowTitle(tr("VDC - Ventas Desktop Client"));
