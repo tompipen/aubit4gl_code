@@ -933,7 +933,17 @@ void Reportgen::createXmlFile(int Table, int Position, QString odffile, QString 
                     /*if(tmp_var.contains("&"))
                     {
                         tmp_var.replace("&", "&amp;");
+                    }
+                    if(tmp_var.contains("<"))
+                    {
+                        tmp_var.replace("<", "&lt;");
+                    }
+
+                    if(tmp_var.contains(">"))
+                    {
+                        tmp_var.replace(">", "&gt;");
                     }*/
+
 
                     QStringList valueList = tmp_var.split(QRegExp("%/"));
 
@@ -957,7 +967,7 @@ void Reportgen::createXmlFile(int Table, int Position, QString odffile, QString 
                     {
                         if(!sedLine.isEmpty())
                         {
-                            if(sedLine[0] == QChar(' ') || sedLine[0] == QChar('-'))
+                            if((sedLine[0] == QChar(' ') || sedLine[0] == QChar('-') ) && sedLine[1].isDigit())
                             {
 
                                 if(!tableCell.isEmpty())

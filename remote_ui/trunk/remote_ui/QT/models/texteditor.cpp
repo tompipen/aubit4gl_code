@@ -28,6 +28,7 @@ TextEditorWidget::TextEditorWidget(QMainWindow *parent)
     mCloseTextEdit = 0;
 
     TextHighlighting *syntax = new  TextHighlighting(mTextEdit->document());
+    Q_UNUSED(syntax);
 
     this->setCentralWidget(mTextEdit);
     this->resize(600, 400);
@@ -328,8 +329,9 @@ void TextEditorWidget::searchTextChanged(QString text)
 
 void TextEditorWidget::insertDate()
 {
+    QString user;
     int cursorPos = mTextEdit->textCursor().position();
-    int destPos = cursorPos + 21;
+    int destPos = cursorPos + 19 + user.length();
 
     QDateTime date = QDateTime::currentDateTime();
 
@@ -337,15 +339,15 @@ void TextEditorWidget::insertDate()
 
     if(MainFrame *main = qobject_cast<MainFrame*> (MainFrame::lastmainframe))
     {
-        text.insert(cursorPos, date.toString("dd.MM.yyyy hh:mm") + " " + main->getUserName() + ":");
-    } else {
-        text.insert(cursorPos, date.toString("dd.MM.yyyy hh:mm") + " : ");
+        user = main->getUserName();
     }
+
+    text.insert(cursorPos, date.toString("dd.MM.yyyy hh:mm") + " " + user + ": ");
 
     mTextEdit->setPlainText(text);
 
     QTextCursor cursor = mTextEdit->textCursor();
-    cursor.setPosition(destPos);
+    cursor.setPosition(destPos + user.length());
     mTextEdit->setTextCursor(cursor);
 }
 
