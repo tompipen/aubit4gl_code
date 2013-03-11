@@ -95,7 +95,7 @@ MainFrame::vdcdebug("ClientTcp","incomingConnection", "int socketID");
    //
    socket = new ClientSocket(this);
    socket->ph.t_tunnel = NULL;//Avoid seg. faults in listen mode
-   VDC::waitCursor();
+   //VDC::waitCursor();
    p_arr_socket << socket;
    i_cnt_socket++;
 
