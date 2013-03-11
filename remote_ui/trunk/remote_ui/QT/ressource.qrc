@@ -163,5 +163,6 @@
         <file>pics/editor-vor.png</file>
         <file>pics/editor-zurueck.png</file>
         <file>pics/editor-ok.png</file>
+        <file>pics/editor-anwender-datum.png</file>
     </qresource>
 </RCC>

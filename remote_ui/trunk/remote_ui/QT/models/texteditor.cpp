@@ -77,6 +77,14 @@ void TextEditorWidget::initToolBar()
 
     tb->addSeparator();
 
+    QAction *insertDateAction = new QAction(tr("&Insert Date"), tb);
+    insertDateAction->setIcon(QIcon(":pics/editor-anwender-datum.png"));
+    insertDateAction->setShortcut(Qt::Key_F7);
+    connect(insertDateAction, SIGNAL(triggered()), this, SLOT(insertDate()));
+    tb->addAction(insertDateAction);
+
+    tb->addSeparator();
+
     QAction *okAction = new QAction(tr("&Ok"), tb);
     okAction->setShortcut(Qt::Key_F12);
     okAction->setIcon(QIcon(":pics/editor-ok.png"));
@@ -88,14 +96,6 @@ void TextEditorWidget::initToolBar()
     cancAction->setIcon(QIcon(":pics/editor-beenden-ohne-speichern.png"));
     connect(cancAction, SIGNAL(triggered()), this, SLOT(close()));
     tb->addAction(cancAction);
-
-     tb->addSeparator();
-
-     QAction *insertDateAction = new QAction(tr("&Insert Date"), tb);
-    insertDateAction->setIcon(QIcon(":pics/editor-datum.png"));
-    insertDateAction->setShortcut(Qt::Key_F7);
-    connect(insertDateAction, SIGNAL(triggered()), this, SLOT(insertDate()));
-    tb->addAction(insertDateAction);
 
     this->addToolBar(tb);
     this->raise();
