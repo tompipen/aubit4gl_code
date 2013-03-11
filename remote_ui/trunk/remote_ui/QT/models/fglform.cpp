@@ -2686,6 +2686,7 @@ qDebug() << "context->fieldList()" << context->fieldList();
 
 
       QWidget *next = NULL;
+      QWidget *field = NULL;
       for(int i=0; i<=context->fieldList().count()-1; i++){
           if(context->fieldList().at(i) == currentField()){
               // fixed segmentation fault fieldlist.count is 0
@@ -2707,28 +2708,38 @@ qDebug() << "context->fieldList()" << context->fieldList();
 
                           if(next->isEnabled() && next->isVisible())
                           {
-                              next = context->fieldList().at(j+1);
+                              field = context->fieldList().at(j+1);
                               break;
                           }
-
                       }
                       //next = NULL;
+                      break;
+                  } else {
+                      field = context->fieldList().at(i+1);
                       break;
                   }
               }
           }
       }
 
-      if(next == NULL){ //no next field -> go to first field
+      if(field == NULL){ //no next field -> go to first field
           if(context->fieldList().isEmpty())
           {
              return;
           } else {
-              next = context->fieldList().first();
+              //check if the first field is enabled and visible
+              for (int j=0; j < context->fieldList().count()-1; j++)
+              {
+                  if(context->fieldList().at(j)->isEnabled() && !context->fieldList().at(j)->isHidden())
+                  {
+                      field = context->fieldList().at(j);
+                      break;
+                  }
+              }
           }
       }
 
-      setCurrentField(next->objectName(), b_sendEvent);
+      setCurrentField(field->objectName(), b_sendEvent);
    }
    else{
       for(int i=0; i<context->fieldList().size(); i++){

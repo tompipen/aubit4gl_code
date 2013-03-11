@@ -1513,7 +1513,7 @@ void ScreenHandler::setAttributes(QString fieldName, QString attribute, QString 
         if(attribute.toLower() == "noentry")
         {
             bool bValue = value.toInt();
-            widget->setNoEntry(bValue);
+            widget->setEnabled(!bValue);
         }
     }
 
