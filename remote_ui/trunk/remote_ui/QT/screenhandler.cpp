@@ -1516,6 +1516,21 @@ void ScreenHandler::setAttributes(QString fieldName, QString attribute, QString 
             widget->setEnabled(!bValue);
         }
     }
+    if(TextEdit *widget = qobject_cast<TextEdit*> (p_fglform->findFieldByName(fieldName.toLower())))
+    {
+
+        if(attribute.toLower() == "hidden")
+        {
+            bool bValue = value.toInt();
+            widget->setHidden(bValue);
+        }
+
+        if(attribute.toLower() == "noentry")
+        {
+            bool bValue = value.toInt();
+            widget->setEnabled(!bValue);
+        }
+    }
 
     if(Label *widget = qobject_cast<Label*> (p_fglform->findFieldByName(fieldName.toLower())))
     {
