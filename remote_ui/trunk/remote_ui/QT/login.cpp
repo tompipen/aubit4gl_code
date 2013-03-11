@@ -1022,7 +1022,6 @@ void LoginForm::authfailed(int rc, QString err)
 
 }
 
-
 void LoginForm::commandfailed(int rc, QString err)
 {
   Q_UNUSED(rc);
@@ -1090,7 +1089,8 @@ void LoginForm::okPressed()
 
    //hideLogin();
 MainFrame::vdcdebug("LoginForm","okPressed", "");
-   VDC::waitCursor();
+   this->setCursor(Qt::WaitCursor);
+   //VDC::waitCursor();
    QSettings settings;
 
    QString server = serverLineEdit->text();
@@ -1102,7 +1102,7 @@ MainFrame::vdcdebug("LoginForm","okPressed", "");
    {
       passwordLineEdit->setFocus();
       showMessage("Insert a Password!");
-      VDC::arrowCursor();
+      removeCursor();
       return;
    }
    if(cb->isChecked())
@@ -1155,7 +1155,6 @@ MainFrame::vdcdebug("LoginForm","okPressed", "");
        connect(ssh, SIGNAL(error(QString)), this, SLOT(error(QString)));
        ssh->start(QThread::NormalPriority);
        connect(ssh, SIGNAL(finished()), ssh, SLOT(deleteLater()));
-
        return;
 
    }
@@ -1167,7 +1166,7 @@ MainFrame::vdcdebug("LoginForm","okPressed", "");
       QErrorMessage *errorMsg = new QErrorMessage(this);
       errorMsg->showMessage(tr("Could not connect to Host"));
    }
-   VDC::arrowCursor();
+   removeCursor();
 }
 
 void LoginForm::connectToTelnet()
@@ -1267,6 +1266,7 @@ MainFrame::vdcdebug("LoginForm","debugCheck", "");
 void LoginForm::m_c_success()
 {
   showMessage("Authentifizierung erfolgreich!");
+  //removeCursor();
 }
 
 void LoginForm::m_c_established()
@@ -1278,6 +1278,7 @@ void LoginForm::m_c_executed(QString cmd)
 {
   QString message = "Script : \"" + cmd + "\" wird gestartet!";
   showMessage(message);
+  removeCursor();
 }
 
 void LoginForm::m_c_envset()
@@ -1289,7 +1290,7 @@ void LoginForm::m_c_envset()
 
 void LoginForm::removeCursor()
 {
-  VDC::arrowCursor();
+  this->setCursor(Qt::ArrowCursor);
 }
 
 void LoginForm::setOfficeInstallation()

@@ -1,6 +1,7 @@
 #include "vssh.h"
 #include "mainframe.h"
 #include "sshtunnel.h"
+#include "login.h"
 #include <QDebug>
 
 VSSH::VSSH(QString host, QString user, QString password, QString exec, QObject *parent) :

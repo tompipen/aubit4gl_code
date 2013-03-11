@@ -119,7 +119,7 @@ void TextEditorWidget::loadFileFromLocal()
 
         file.close();
 
-        VDC::arrowCursor();
+        this->setCursor(Qt::ArrowCursor);
         this->setWindowTitle("VENTAS - Text Editor");
         mTextIsChanged = false;
     }

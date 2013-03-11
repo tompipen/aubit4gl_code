@@ -2474,7 +2474,7 @@ if(qsl_triggereds.size() > 0)
      p_fglform->b_getch_swin = true;
      p_fglform->replayKeyboard();
 
-   VDC::arrowCursor();
+   p_fglform->setCursor(Qt::ArrowCursor);
 }
    else
    {
@@ -2516,7 +2516,7 @@ Fgl::Event id;
        id = p_fglform->ql_responseQueue.takeFirst();
 
          setUpdatesEnabled(false);
-         VDC::waitCursor();
+         p_fglform->setCursor(Qt::WaitCursor);
          }
 /*
    if(!p_fglform->context == NULL)
@@ -2949,11 +2949,11 @@ int ScreenHandler::cnt_screenhandler = 0;
 void ScreenHandler::closeWindow(QString windowName)
 {
     MainFrame::vdcdebug("ScreenHandler","closeWindow", "QString windowName");
-   VDC::waitCursor();
    for(int i=0; i<ql_fglForms.size(); i++){
       FglForm *form = ql_fglForms.at(i);
 
       if(form->windowName == windowName){
+         form->setCursor(Qt::WaitCursor);
          form->b_allowClose = true;
          form->close();
          int i_Frm = getCurrForm();
@@ -2971,7 +2971,7 @@ void ScreenHandler::closeWindow(QString windowName)
          }
          else{
             p_fglform = dummy_fglform;
-            VDC::arrowCursor();
+            p_fglform->setCursor(Qt::ArrowCursor);
          }
       }
    }
@@ -3897,7 +3897,7 @@ void ScreenHandler::setRuninfo(int mode, QString cmd, int runcnt, bool start)
                    p_fglform->setEnabled(false);
                }
            }
-           VDC::waitCursor();
+           p_fglform->setCursor(Qt::WaitCursor);
 
            this->cmd = cmd;
 
@@ -3926,7 +3926,7 @@ void ScreenHandler::setRuninfo(int mode, QString cmd, int runcnt, bool start)
             {
                 p_fglform->setEnabled(true);
             }
-            VDC::arrowCursor();
+            p_fglform->setCursor(Qt::ArrowCursor);
 
         }
     }
