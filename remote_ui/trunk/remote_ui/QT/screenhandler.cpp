@@ -1509,6 +1509,12 @@ void ScreenHandler::setAttributes(QString fieldName, QString attribute, QString 
             bool bValue = value.toInt();
             widget->setHidden(bValue);
         }
+
+        if(attribute.toLower() == "noentry")
+        {
+            bool bValue = value.toInt();
+            widget->setNoEntry(bValue);
+        }
     }
 
     if(Label *widget = qobject_cast<Label*> (p_fglform->findFieldByName(fieldName.toLower())))
