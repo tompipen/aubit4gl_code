@@ -1498,6 +1498,24 @@ void ScreenHandler::setNewTabName(QString oldTabName, QString newTabName)
 
 void ScreenHandler::setAttributes(QString fieldName, QString attribute, QString value)
 {
+    if(ButtonEdit *widget = qobject_cast<ButtonEdit*> (p_fglform->findFieldByName(fieldName.toLower())))
+    {
+        if(attribute.toLower() == "picture")
+        {
+            widget->setPicture(value);
+        }
+        if(attribute.toLower() == "hidden")
+        {
+            bool bValue = value.toInt();
+            widget->setHidden(bValue);
+        }
+
+        if(attribute.toLower() == "noentry")
+        {
+            bool bValue = value.toInt();
+            widget->setNoEntry(bValue);
+        }
+    }
     if(Edit *widget = qobject_cast<Edit*> (p_fglform->findFieldByName(fieldName.toLower())))
     {
         if(attribute.toLower() == "picture")
