@@ -2723,7 +2723,7 @@ qDebug() << "context->fieldList()" << context->fieldList();
       }
 
       if(field == NULL){ //no next field -> go to first field
-          if(context->fieldList().isEmpty())
+          if(context->fieldList().isEmpty() || context->fieldList().count() < 2)
           {
              return;
           } else {
