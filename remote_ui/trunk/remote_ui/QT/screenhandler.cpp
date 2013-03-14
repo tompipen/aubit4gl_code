@@ -247,10 +247,15 @@ MainFrame::vdcdebug("ScreenHandler","createWindow", "QString windowTitle,QString
    p_fglform->initActions();
    //this->handleIconFile(xmlIconDoc);
    //this->handleShortcutsFile(xmlShortcutDoc);
-   if(formsActions.hasChildNodes() && windowTitle != "dummy_ventas"){
-      p_fglform->setActions(formsActions);
-      p_fglform->setActions(xmlShortcutDoc);
-   }
+     if(xmlIconDoc.hasChildNodes())
+     {
+         p_fglform->setActions(xmlIconDoc);
+     }
+
+     if(xmlShortcutDoc.hasChildNodes())
+     {
+         p_fglform->setActions(xmlShortcutDoc);
+     }
 
    checkColors();
 }
