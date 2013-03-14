@@ -523,7 +523,7 @@ void VSSH::loadSettings()
   }
 
   int port    = 22; //Todo: Eingabemaske
-  int verbose = SSH_LOG_PROTOCOL;
+  int verbose = SSH_LOG_NOLOG;
 
 
 

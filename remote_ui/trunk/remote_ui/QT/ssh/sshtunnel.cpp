@@ -65,7 +65,7 @@ void SSHTunnel::run()
                  session_mutex->lock();
              }
              nbytes = ssh_channel_read_nonblocking(sctunnel, &buffer, sizeof(buffer)-1, 0);
-             usleep(3);
+             //usleep(3);
              if(session_mutex)
              {
                  session_mutex->unlock();
