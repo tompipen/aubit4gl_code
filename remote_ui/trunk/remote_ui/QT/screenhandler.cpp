@@ -3646,26 +3646,31 @@ bool ScreenHandler::eventFilter(QObject *obj, QEvent *event)
 
 
     if(event->type() == QEvent::WindowActivate)
-    {
-        for (int i=0; i < MainFrame::ql_screenhandler->size()-1; i++)
-        {
-            if(MainFrame::ql_screenhandler->at(i+1)->b_runinfo && MainFrame::ql_screenhandler->at(i+1)->p_pid_p > 0 && MainFrame::ql_screenhandler->at(i+1)->i_mode != 2)
+      {
+
+            if(this->b_runinfo && this->p_pid_p > 0 && this->i_mode != 2)
             {
-                MainFrame::setFocusOn(MainFrame::ql_screenhandler->at(i+1)->p_pid_p);
-            } else {
-                if(MainFrame::ql_screenhandler->at(i+1)->b_runinfo && MainFrame::ql_screenhandler->at(i+1)->i_mode != 2)
+                MainFrame::setFocusOn(this->p_pid_p);
+                //emit changefocus();
+            }
+            else
+            {
+                if(this->b_runinfo && this->i_mode != 2)
                 {
                     MainFrame::check_new_pids();
-                    if(MainFrame::ql_screenhandler->at(i+1)->b_runinfo && MainFrame::ql_screenhandler->at(i+1)->p_pid_p > 0)
+                    if(this->b_runinfo && this->p_pid_p > 0)
                     {
-                        MainFrame::setFocusOn(MainFrame::ql_screenhandler->at(i+1)->p_pid_p);
+                        MainFrame::setFocusOn(this->p_pid_p);
                     }
-                } else {
-                   MainFrame::ql_screenhandler->at(i+1)->activeFocus();
+                }
+                else
+                {
+                   this->activeFocus();
+
                 }
             }
+
         }
-    }
     if(p_fglform != NULL && event->type() == 1337)
     if(!p_fglform->b_dummy && p_fglform->isEnabled()&&p_fglform->currentField() != NULL && (p_fglform->state() == Fgl::CONSTRUCT || p_fglform->state() == Fgl::INPUT || p_fglform->state() == Fgl::INPUTARRAY))
     {
