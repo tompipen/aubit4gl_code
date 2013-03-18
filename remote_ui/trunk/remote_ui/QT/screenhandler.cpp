@@ -2320,6 +2320,8 @@ if(qsl_triggereds.size() > 0)
             #endif
             p_fglform->dialog()->show();
             p_fglform->dialog()->adjustSize();
+            p_fglform->activateWindow();
+            p_fglform->raise();
          }
 
          if(p_fglform->ringMenuPulldown() != NULL){
