@@ -267,25 +267,22 @@ void VentasUpdate::downloadBinarie()
     #ifdef Q_WS_WIN
         file.setFileName(QApplication::applicationDirPath() + "/update.exe");
     #else
-        #ifdef Q_WS_MAC
-        setenv("DYLD_LIBRARY_PATH", "/Applications/VENTAS-Software/VDC.app/Contents/Frameworks/", 1);
-        #endif
         file.setFileName(QApplication::applicationDirPath() + "/update");
     #endif
 
-        qDebug() << "file: " << file.fileName();
+    qDebug() << "file: " << file.fileName();
 
     if(file.exists())
     {
-        #ifdef Q_WS_MAC
-           setenv("DYLD_LIBRARY_PATH", "/Applications/VENTAS-Software/VDC.app/Contents/Frameworks/", 1);
-        #endif
         #ifdef Q_WS_WIN
             QProcess process;
             process.startDetached(QString("rundll32 url.dll,FileProtocolHandler \"%1\"").arg( file.fileName()));
             //Sleep(1500);
         #else
            QProcess *proc = new QProcess;
+           QStringList env = QProcess::systemEnvironment();;
+           env << "DYLD_LIBRARY_PATH=/Applications/VENTAS-Software/VDC.app/Contents/Frameworks/"
+           process.setEnvironment(env);
            proc->start(file.fileName());
         #endif
         exit(0);
