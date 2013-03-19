@@ -246,6 +246,7 @@ int VSSH::auth_interactive()
 {
   /*int nprompts, iprompt;
   const char *name, *instruction;*/
+   return 0;
 
 }
 
@@ -300,9 +301,8 @@ int VSSH::execute(int port = 0)
       return rc;
   }
 
-  char *cmd = "";
   QByteArray ba_cmd = this->executeCommand().toLocal8Bit();
-  cmd = ba_cmd.data();
+  const char *cmd = ba_cmd.data();
 
   rc = ssh_channel_request_pty_size(channel, "xterm", 80, 24);
 

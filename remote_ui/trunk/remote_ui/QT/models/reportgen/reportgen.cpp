@@ -32,9 +32,6 @@ void Reportgen::run()
 {
 
     connect(this, SIGNAL(finished()), this, SLOT(finished()));
-    int wiederholen = 0;
-    int ebene1 = 1;
-    int ebene2 = 1;
     int positionGefunden = 0;
     int variablesCounter = 1;
     int variableFound = 0;
@@ -90,8 +87,6 @@ void Reportgen::run()
             }
     }
 
-    /*QTextStream xmlsave(&contentXml);
-    xmlsave.setCodec("UTF-8");*/
     getTemplateVars(fileBaseName + "/content-alt.xml");
 
     replaceHeaderVariables();
@@ -112,21 +107,18 @@ void Reportgen::run()
         }
     }
 
-    //for(int i=0; i < ebene1Count; i++) {
-        if(oldFileName.completeSuffix() == "ods")
-        {
-            createXmlFile(1, variableFound, oldFileName.baseName(), mSedFile);
-        } else if(oldFileName.completeSuffix() == "odt"){
-            content.append(getTemplatePosition( fileBaseName + "/content.xml" ));//.toUtf8());
-            for(int j=1; j < variableFound+1; j++) {
-                qDebug() << "Ebene " << j << " von " << variableFound;
+    if(oldFileName.completeSuffix() == "ods")
+    {
+        createXmlFile(1, variableFound, oldFileName.baseName(), mSedFile);
+    } else if(oldFileName.completeSuffix() == "odt"){
+        content.append(getTemplatePosition( fileBaseName + "/content.xml" ));//.toUtf8());
+        for(int j=1; j < variableFound+1; j++) {
+            qDebug() << "Ebene " << j << " von " << variableFound;
 
-                content.append(prepareTemplateContentOdt(1, j, oldFileName.baseName() + "/content.xml", mSedFile));
-                //xmlsave << content;
-                content.clear();
-            }
+            content.append(prepareTemplateContentOdt(1, j, oldFileName.baseName() + "/content.xml", mSedFile));
+            content.clear();
         }
-    //}
+    }
 }
 
 void Reportgen::replaceHeaderVariables()
@@ -563,11 +555,11 @@ QString Reportgen::getTemplateHeader(QString filename, QString endung)
         }*/
 
         if(cnt == 1) {
-            file->close();
-            return header;
+            break;
         }
     }
-
+    file->close();
+    return header;
 }
 
 QString Reportgen::getTemplateHeader(QString filename)
@@ -592,16 +584,13 @@ QString Reportgen::getTemplateHeader(QString filename)
         if(header.contains("<office:spreadsheet>")) {
             cnt = 1;
         }
-        /*if(header.contains("<office:body>")) {
-            //header.append("</table:table-row>");
-            cnt = 1;
-        }*/
 
         if(cnt == 1) {
-            return header;
+        break;
         }
     }
    file.close();
+   return header;
 
 }
 

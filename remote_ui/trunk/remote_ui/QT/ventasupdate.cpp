@@ -277,23 +277,18 @@ void VentasUpdate::downloadBinarie()
 
     if(file.exists())
     {
-        QProcess *proc = new QProcess;
+        #ifdef Q_WS_MAC
+           setenv("DYLD_LIBRARY_PATH", "/Applications/VENTAS-Software/VDC.app/Contents/Frameworks/", 1);
+        #endif
         #ifdef Q_WS_WIN
             QProcess process;
             process.startDetached(QString("rundll32 url.dll,FileProtocolHandler \"%1\"").arg( file.fileName()));
             //Sleep(1500);
-        #endif
-        #ifdef Q_WS_X11
+        #else
+           QProcess *proc = new QProcess;
            proc->start(file.fileName());
-           //QDesktopServices::openUrl(QUrl(QString("file://" + file.fileName()), QUrl::TolerantMode));
-        #endif
-        #ifdef Q_WS_MAC
-           setenv("DYLD_LIBRARY_PATH", "/Applications/VENTAS-Software/VDC.app/Contents/Frameworks/", 1);
-           proc->start(file.fileName());
-           //QDesktopServices::openUrl(QUrl(QString("file:///" + file.fileName()), QUrl::TolerantMode));
         #endif
         exit(0);
-        //QApplication::quit();
     } else {
         qDebug() << QString("Datei nicht gefunden: %1").arg(file.fileName());
     }

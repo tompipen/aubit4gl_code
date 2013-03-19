@@ -659,7 +659,7 @@ MainFrame::vdcdebug("Parser","addWidgets", "QWidget *widget, bool add, int x, in
    {
       if(Label *la = qobject_cast<Label*> (widget))
       {
-
+          Q_UNUSED(la);
       } else {
           ql_formFieldsConst << widget;
       }

@@ -112,7 +112,7 @@ public:
    Dialog* dialog(){ return p_dialog; };
    Pulldown* pulldown() { return p_pulldown;};
    RingMenuPulldown* ringMenuPulldown() { return p_ringMenuPulldown;};
-   WebBrowser* setBrowser(WebBrowser *webBrowser) { b_browser = webBrowser; };
+   void setBrowser(WebBrowser *webBrowser) { b_browser = webBrowser; };
    WebBrowser* getBrowser() { return b_browser; };
 
    void setConstrained(bool value);
