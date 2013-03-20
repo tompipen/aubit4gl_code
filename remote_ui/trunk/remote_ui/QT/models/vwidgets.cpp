@@ -2121,14 +2121,22 @@ MainFrame::vdcdebug("WidgetHelper","setFieldText", "QObject *object, QString fie
    }
 
    if(LineEdit *widget = qobject_cast<LineEdit *> (object)){
-       fieldValue = Fgl::usingFunc(widget->format(), fieldValue, widget->dataType(), widget->picture());
+       fieldValue = Fgl::usingFunc(widget->format(), fieldValue, widget->dataType(), widget->picture()).trimmed();
 
-       if(fieldValue.trimmed() != widget->text()){
-          widget->setText(fieldValue.trimmed());
-          if(!widget->isEnabled())
-          {
-             widget->setCursorPosition(1);
-          }
+       if(fieldValue != widget->text()){
+           //a4gl removed ,0 and ,00 but we need it for display in the field.
+           if(widget->dataType() == Fgl::DTYPE_FLOAT)
+           {
+               if(!fieldValue.contains(","))
+               {
+                   fieldValue = fieldValue + ",0";
+               }
+           }
+           widget->setText(fieldValue);
+           if(!widget->isEnabled())
+           {
+              widget->setCursorPosition(1);
+           }
        }
       return;
    }
