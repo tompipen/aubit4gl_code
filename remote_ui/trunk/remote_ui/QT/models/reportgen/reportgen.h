@@ -26,6 +26,7 @@ public:
 
     int getExitCode() { return mExitCode; }
 
+    QString createFirstTable(QString odffile, int wiederholen);
     void createXmlFile(int Table, int Position, QString odffile, QString sedfile);
     QStringList getHeaderVariables();
     void replaceHeaderVariables();
@@ -56,7 +57,7 @@ public:
 
 
     void logMessage(QString);
-    QString getXmlStringFromEbene(int, QString);
+    QString getXmlStringFromEbene(int, int, QString);
     QString getEbeneVariable(int);
 
 private:

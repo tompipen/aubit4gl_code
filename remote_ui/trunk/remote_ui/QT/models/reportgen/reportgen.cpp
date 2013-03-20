@@ -109,7 +109,7 @@ void Reportgen::run()
 
     if(oldFileName.completeSuffix() == "ods")
     {
-        createXmlFile(1, variableFound, oldFileName.baseName(), mSedFile);
+        createXmlFile(positionGefunden, variableFound, oldFileName.baseName(), mSedFile);
     } else if(oldFileName.completeSuffix() == "odt"){
         content.append(getTemplatePosition( fileBaseName + "/content.xml" ));//.toUtf8());
         for(int j=1; j < variableFound+1; j++) {
@@ -702,7 +702,7 @@ QString Reportgen::getTemplatePosition(int Table, QString odffile)
     return behalten;
 }
 
-QString Reportgen::getXmlStringFromEbene(int ebene, QString odffile)
+QString Reportgen::getXmlStringFromEbene(int Table, int ebene, QString odffile)
 {
     QFile file(QDir::tempPath() + "/" + odffile + "/content-alt.xml");
 
@@ -730,6 +730,8 @@ QString Reportgen::getXmlStringFromEbene(int ebene, QString odffile)
     QTextStream stream(&domString);
     stream.setCodec("UTF-8");
 
+    int tableFound = 0;
+
     //xmlString.append("<table:table-row><table:table-cell>");
 
     int merkeString = 0;
@@ -737,6 +739,11 @@ QString Reportgen::getXmlStringFromEbene(int ebene, QString odffile)
     while(!stream.atEnd())
     {
         xmlLine = stream.readLine().simplified();
+
+        if(xmlLine.contains("<table:table "))
+        {
+                tableFound++;
+        }
 
         if(xmlLine.contains("<table:table-cell office:value"))
         {
@@ -760,7 +767,7 @@ QString Reportgen::getXmlStringFromEbene(int ebene, QString odffile)
             replaceEbene3 = xmlLine;
         }
 
-        if(merkeString > 0)
+        if(merkeString > 0 && tableFound == Table)
         {
             xmlString.append(xmlLine);
         }
@@ -808,6 +815,92 @@ QString Reportgen::getEbeneVariable(int ebene)
 // Description  : Create the content of each Template.
 //
 //------------------------------------------------------------------------------
+QString Reportgen::createFirstTable(QString odffile, int wiederholen)
+{
+    QFile file(QDir::tempPath() + "/" + odffile + "/content-alt.xml");
+
+    if(!file.open(QIODevice::ReadOnly))
+    {
+        qDebug() << "(createFirstTable()): Konnte content.xml nicht zum lesen oeffnen.";
+    }
+
+    QDomDocument doc;
+    doc.setContent(&file);
+    QString xmlfile = doc.toString();
+    QTextStream stream(&xmlfile);
+    stream.setCodec("UTF-8");
+
+    QString readLine;
+    QString behalten;
+
+    QString anhaengen;
+
+    int istErgaenzt = 0;
+
+    int merkeString = 0;
+
+    while(!stream.atEnd())
+    {
+        readLine = stream.readLine();
+
+        if(readLine.contains("<table:table "))
+        {
+            merkeString = 1;
+        }
+
+        if(readLine.contains("@"))
+        {
+            if(readLine.contains("@DIAG_BAR"))
+            {
+            #ifdef KDChart_Version
+                //Hier weitermachen grafik einbinden
+            #else
+                readLine.remove("@DIAG_BAR");
+            #endif
+            }
+            for (int i=0; i < temp_fields.count(); i++)
+            {
+                if(readLine.contains(temp_fields.at(i)))
+                {
+                    for(int j=0; j < sed_fields.count(); j++)
+                    {
+                        if(sed_fields.at(j).contains(temp_fields.at(i)))
+                        {
+                            QString sedValue = sed_fields.at(j);
+                            sedValue.replace("@1" + temp_fields.at(i) + "%/", "");
+                            readLine.replace("@" + temp_fields.at(i), sedValue);
+                        }
+                    }
+                    qDebug() << "GEFUNDEN!!! " << temp_fields.at(i);
+                    break;
+                }
+            }
+        }
+
+        if(readLine.contains("]P1]"))
+        {
+            //if(istErgaenzt < wiederholen)
+            //{
+            //QString ergaenzeXml = "</text:p></table:table-cell></table:table-row><table:table-row><table:table-cell> " + getXmlStringFromEbene(1, 1, odffile) + "</table:table-cell></table:table-row><table:table-row><table:table-cell><text:p>";
+            //readLine.replace("]P1]", ergaenzeXml);
+            //    istErgaenzt++;
+            //}
+        }
+
+        if(merkeString == 1)
+        {
+            behalten = behalten + readLine;
+        }
+        if(readLine.contains("</table:table>"))
+        {
+            merkeString = 0;
+            break;
+        }
+    }
+    file.close();
+    return behalten;
+}
+
 
 void Reportgen::createXmlFile(int Table, int Position, QString odffile, QString sedfile)
 {
@@ -815,11 +908,8 @@ void Reportgen::createXmlFile(int Table, int Position, QString odffile, QString 
 
     QString xmlStringLevel1;
 
-    QString xmlStringLevel2 = getXmlStringFromEbene(2, odffile);
-    QString xmlStringLevel3 = getXmlStringFromEbene(3, odffile);
-
-    qDebug() << "xmlStringLevel2" << xmlStringLevel2;
-
+    QString xmlStringLevel2 = getXmlStringFromEbene(Table, 2, odffile);
+    QString xmlStringLevel3 = getXmlStringFromEbene(Table, 3, odffile);
 
     QString ebeneVariableLevel1 = getEbeneVariable(1);
     QString ebeneVariableLevel2 = getEbeneVariable(2);
@@ -846,7 +936,12 @@ void Reportgen::createXmlFile(int Table, int Position, QString odffile, QString 
     outstream.setCodec("UTF-8");
 
     outstream << getTemplateHeader( odffile + "/content-alt.xml", "ods" ); //<< getTemplatePosition( fileBaseName + "/content.xml" ).toUtf8();
-    outstream << getTemplatePosition(1, odffile + "/content-alt.xml");
+    if(Table > 1)
+    {
+        outstream << createFirstTable(odffile, Position);
+    }
+
+    outstream << getTemplatePosition(Table, odffile + "/content-alt.xml");
 
 
     for(int i=0; i < sed_fields.count(); i++)
@@ -873,7 +968,7 @@ void Reportgen::createXmlFile(int Table, int Position, QString odffile, QString 
             }
             xmlStringLevel1.clear();
             xmlStringLevel1.append("<table:table-row><table:table-cell>");
-            xmlStringLevel1.append(getXmlStringFromEbene(1, odffile));
+            xmlStringLevel1.append(getXmlStringFromEbene(Table, 1, odffile));
             xmlStringLevel1.append("</table:table-cell></table:table-row>");
 
             zaehlerLevel1++;
@@ -2572,7 +2667,12 @@ bool Reportgen::createInfoFile(QFileInfo odffile, QFileInfo zieldatei)
     {
         stream1 << fields.at( i ).trimmed() + "\n";
     }
+
+    file->close();
+    file1->close();
+
     return true;
+
 }
 
 void Reportgen::logMessage(QString str)
