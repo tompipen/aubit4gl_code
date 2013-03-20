@@ -871,7 +871,6 @@ QString Reportgen::createFirstTable(QString odffile, int wiederholen)
                             readLine.replace("@" + temp_fields.at(i), sedValue);
                         }
                     }
-                    qDebug() << "GEFUNDEN!!! " << temp_fields.at(i);
                     break;
                 }
             }
@@ -898,6 +897,8 @@ QString Reportgen::createFirstTable(QString odffile, int wiederholen)
         }
     }
     file.close();
+    behalten.remove("[P1[");
+    behalten.remove("]P1]");
     return behalten;
 }
 
