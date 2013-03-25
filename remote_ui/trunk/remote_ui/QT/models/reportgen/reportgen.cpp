@@ -1015,10 +1015,10 @@ void Reportgen::createXmlFile(int Table, int Position, QString odffile, QString 
                 {
 
                     QString tmp_var = sed_fields.at(i);
-                    /*if(tmp_var.contains("&"))
+                    if(tmp_var.contains("&"))
                     {
                         tmp_var.replace("&", "&amp;");
-                    }*/
+                    }
 
                     if(tmp_var.contains("<"))
                     {

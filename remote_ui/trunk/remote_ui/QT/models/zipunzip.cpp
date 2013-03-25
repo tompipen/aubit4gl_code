@@ -72,7 +72,7 @@ bool ZipUnzip::unzipArchiv(QString filePath, QString fileName, QString destFileP
                 }
 
                 destdir->setPermissions(QFile::ReadOwner|QFile::WriteOwner|QFile::ExeOwner|QFile::ReadGroup|QFile::ExeGroup|QFile::ReadOther|QFile::ExeOther);
-                //destdir->close();
+                destdir->close();
                 meminfo.close();
                 file.close();
             }
