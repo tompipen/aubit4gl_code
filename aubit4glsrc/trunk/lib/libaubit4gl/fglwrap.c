@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.168 2012-09-26 07:31:37 mikeaubury Exp $
+# $Id: fglwrap.c,v 1.169 2013-03-25 12:58:40 mikeaubury Exp $
 #
 */
 
@@ -904,6 +904,22 @@ static void
 ass_clrmem (char **a, int sz)
 {
   memset (a, 0, sz);
+}
+
+
+char *lasthashindex=0;
+int A4GL_get_hash_index(char **a, int sz, int idx) {
+	lasthashindex=a[idx];
+ 	return idx;
+}
+
+int aclfgl_aclfgl_get_last_hash(int n) {
+	if (lasthashindex) {
+		A4GL_push_char(lasthashindex);
+	} else {
+		A4GL_push_null(0,0);
+	}
+return 1;
 }
 
 /**

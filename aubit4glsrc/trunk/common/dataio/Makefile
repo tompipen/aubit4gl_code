@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile,v 1.14 2010-08-12 11:43:12 mikeaubury Exp $
+# $Id: Makefile,v 1.15 2013-03-25 12:58:39 mikeaubury Exp $
 #
 
 ROOT        =../..
@@ -186,7 +186,7 @@ npcode.xo.c npcode.xi.c npcode.xio.c: npcode.x  x_versions
 	cp npcode.xs.h $(ROOT)/incl/dataio/npcode.xs.h
 
 fgl.xo.c fgl.xi.c fgl.xio.c fgl.x.h: fgl.x  x_versions
-	EXPECT_VERSION="$(VERSION_fgl)" ${XGENEXE}  $< module_definition globals_definition
+	EXPECT_VERSION="$(VERSION_fgl)" ${XGENEXE}  $< module_definition globals_definition s_plsql_package
 	cp fgl.xs.h $(ROOT)/incl/dataio/fgl.xs.h
 
 

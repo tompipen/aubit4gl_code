@@ -24,6 +24,13 @@ int istypedef(char *s) {
 	if (strcmp(s,"single_option_ptr")==0) return 1;
 	if (strcmp(s,"variable_ptr")==0) return 1;
 	if (strcmp(s,"when_ptr")==0) return 1;
+
+        if (strcmp(s,"s_plsql_caseEntry_ptr")==0) return 1;
+        if (strcmp(s,"s_plsql_defineStmt_ptr")==0) return 1;
+        if (strcmp(s,"s_plsql_exceptionHandler_ptr")==0) return 1;
+        if (strcmp(s,"s_plsql_packageEntries_ptr")==0) return 1;
+        if (strcmp(s,"s_plsql_parameter_ptr")==0) return 1;
+        if (strcmp(s,"s_plsql_specs_ptr")==0) return 1;
 	return 0;
 }
 
@@ -41,6 +48,13 @@ int check_for_ptr(char *s, char *d, int context) {
 	if (strcmp(d,"module_entry_ptr")==0) return 1;
 	if (strcmp(d,"elements_ptr")==0) return 1;
 	if (strcmp(d,"s_table_list_element_ptr")==0) return 1;
+
+        if (strcmp(d,"s_plsql_caseEntry_ptr")==0) return 1;
+        if (strcmp(d,"s_plsql_defineStmt_ptr")==0) return 1;
+        if (strcmp(d,"s_plsql_exceptionHandler_ptr")==0) return 1;
+        if (strcmp(d,"s_plsql_packageEntries_ptr")==0) return 1;
+        if (strcmp(d,"s_plsql_parameter_ptr")==0) return 1;
+        if (strcmp(d,"s_plsql_specs_ptr")==0) return 1;
 return 0;
 }
 
@@ -1080,6 +1094,12 @@ if (!istypedef(s)) {
 	if (strcmp(s,"elements_ptr")==0) return "s_select_list_item";
 	if (strcmp(s,"s_table_list_element_ptr")==0) return "s_table_list_element_ptr";
 
+        if (strcmp(s,"s_plsql_caseEntry_ptr")==0) return "s_plsql_caseEntry";
+        if (strcmp(s,"s_plsql_defineStmt_ptr")==0) return "s_plsql_defineStmt";
+        if (strcmp(s,"s_plsql_exceptionHandler_ptr")==0) return "s_plsql_exceptionHandler";
+        if (strcmp(s,"s_plsql_packageEntries_ptr")==0) return "s_plsql_packageEntries";
+        if (strcmp(s,"s_plsql_parameter_ptr")==0) return "s_plsql_parameter";
+        if (strcmp(s,"s_plsql_specs_ptr")==0) return "s_plsql_specs";
 
 
 

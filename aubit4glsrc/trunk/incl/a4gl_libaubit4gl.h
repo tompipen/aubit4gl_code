@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.431 2012-11-27 20:46:10 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.432 2013-03-25 12:58:40 mikeaubury Exp $
 #
 */
 
@@ -1820,9 +1820,11 @@ int A4GL_conversion_ok(int a);
 #ifndef SIMPLIFIED
  #include "../common/dataio/form_x.x.h"        /* struct_form */
  #include "../common/dataio/fgl.x.h"        /* struct_form */
+#define have_fgl_x
 #else
  #include "form_x.x.h"       /* struct_form */
  #include "fgl.x.h"
+#define have_fgl_x
 #endif
 #endif
 
@@ -1834,12 +1836,14 @@ int A4GL_conversion_ok(int a);
 
 
 #ifndef _NO_FORM_X_H_		/* if we don't include form_x.h, this would generate errors : */
+#ifndef NO_FGL_X
   int A4GL_find_srec (struct struct_form * fd, char *name);
   /* struct struct_scr_field defined in fcompile/form_x.h */
   int A4GL_has_str_attribute (struct struct_scr_field *f, int str);
   int A4GL_attr_name_match (struct struct_scr_field *field, char *s);
   char *A4GL_get_str_attribute (struct struct_scr_field *f, int str);
 int A4GL_evaluate_field_colour(char *field_contents, struct struct_scr_field *fprop);
+#endif
 #endif
   void A4GL_set_last_key (int a);
   char *A4GL_strip_quotes (char *s);
@@ -2638,6 +2642,7 @@ char *A4GL_confirm_colname(char *t,char *c);
 //int output_str(char *n, char * r, int isptr, int arr);
 
 #ifndef _NO_FORM_X_H_
+#ifndef  NO_FGL_X
 #include "dataio/fgl.xs.h"
 
 typedef struct expr_str t_expr_str;
@@ -2745,6 +2750,7 @@ int A4GLSQLPARSE_from_outer_clause (struct s_select *select, char *left, struct 
 int A4GLSQLPARSE_from_clause(struct s_select *select, struct s_table *t,char *fill,struct s_table_list *tl) ;
 int A4GLSQLPARSE_from_clause_join (struct s_select *select, struct s_table *t, char *fill, struct s_table_list *tl);
 #include "a4gl_API_sql.h"
+#endif
 #endif
 
 
@@ -3001,6 +3007,7 @@ void A4GL_add_object_type(char *s);
 char A4GL_get_dbdate_separator(void);
 void A4GL_set_ignore_error_list(int n, ...) ;
 void A4GL_clr_ignore_error_list(void);
+int A4GL_get_hash_index(char **a, int sz, int idx);
 int A4GL_return_0_on_null_compare(void );
 void registerAssertionCallback(void *p) ;
 //

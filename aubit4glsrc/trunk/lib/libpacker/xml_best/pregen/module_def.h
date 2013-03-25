@@ -1,5 +1,5 @@
 /* XML processor/application API for module_def.dtd.
- * Generated 2012/11/27 20:35:47.
+ * Generated 2013/03/21 09:30:46.
  *
  * This program was generated with the FleXML XML processor generator.
  * FleXML is Copyright (C) 1999-2005 Kristoffer Rose.  All rights reserved.
@@ -265,6 +265,80 @@ extern void STag_s_onaction(void);
 extern void ETag_s_onaction(void);
 extern void STag_s_pdf_report_definition(void);
 extern void ETag_s_pdf_report_definition(void);
+extern void STag_s_plsql_assign_cmd(void);
+extern void ETag_s_plsql_assign_cmd(void);
+extern void STag_s_plsql_block_cmd(void);
+extern void ETag_s_plsql_block_cmd(void);
+extern void STag_s_plsql_call_cmd(void);
+extern void ETag_s_plsql_call_cmd(void);
+extern void STag_s_plsql_caseEntry(void);
+extern void ETag_s_plsql_caseEntry(void);
+extern void STag_s_plsql_case_cmd(void);
+extern void ETag_s_plsql_case_cmd(void);
+extern void STag_s_plsql_defineStmt(void);
+extern void ETag_s_plsql_defineStmt(void);
+extern void STag_s_plsql_defineStmt_cursor(void);
+extern void ETag_s_plsql_defineStmt_cursor(void);
+extern void STag_s_plsql_defineStmt_define(void);
+extern void ETag_s_plsql_defineStmt_define(void);
+extern void STag_s_plsql_defineStmt_function(void);
+extern void ETag_s_plsql_defineStmt_function(void);
+extern void STag_s_plsql_defineStmt_record(void);
+extern void ETag_s_plsql_defineStmt_record(void);
+extern void STag_s_plsql_defineStmt_subtype(void);
+extern void ETag_s_plsql_defineStmt_subtype(void);
+extern void STag_s_plsql_defineStmt_table(void);
+extern void ETag_s_plsql_defineStmt_table(void);
+extern void STag_s_plsql_delete_cmd(void);
+extern void ETag_s_plsql_delete_cmd(void);
+extern void STag_s_plsql_dtypeAndDefault(void);
+extern void ETag_s_plsql_dtypeAndDefault(void);
+extern void STag_s_plsql_exceptionHandler(void);
+extern void ETag_s_plsql_exceptionHandler(void);
+extern void STag_s_plsql_execute_immediate_cmd(void);
+extern void ETag_s_plsql_execute_immediate_cmd(void);
+extern void STag_s_plsql_exit_cmd(void);
+extern void ETag_s_plsql_exit_cmd(void);
+extern void STag_s_plsql_for_cmd(void);
+extern void ETag_s_plsql_for_cmd(void);
+extern void STag_s_plsql_for_cursor_cmd(void);
+extern void ETag_s_plsql_for_cursor_cmd(void);
+extern void STag_s_plsql_function(void);
+extern void ETag_s_plsql_function(void);
+extern void STag_s_plsql_function_body(void);
+extern void ETag_s_plsql_function_body(void);
+extern void STag_s_plsql_if_cmd(void);
+extern void ETag_s_plsql_if_cmd(void);
+extern void STag_s_plsql_if_cond(void);
+extern void ETag_s_plsql_if_cond(void);
+extern void STag_s_plsql_if_conds(void);
+extern void ETag_s_plsql_if_conds(void);
+extern void STag_s_plsql_insert_cmd(void);
+extern void ETag_s_plsql_insert_cmd(void);
+extern void STag_s_plsql_label_cmd(void);
+extern void ETag_s_plsql_label_cmd(void);
+extern void STag_s_plsql_loop_cmd(void);
+extern void ETag_s_plsql_loop_cmd(void);
+extern void STag_s_plsql_package(void);
+extern void ETag_s_plsql_package(void);
+extern void STag_s_plsql_packageEntries(void);
+extern void ETag_s_plsql_packageEntries(void);
+extern void STag_s_plsql_parameter(void);
+extern void ETag_s_plsql_parameter(void);
+extern void STag_s_plsql_return_cmd(void);
+extern void ETag_s_plsql_return_cmd(void);
+extern void STag_s_plsql_rollback_cmd(void);
+extern void ETag_s_plsql_rollback_cmd(void);
+extern void STag_s_plsql_savepoint_cmd(void);
+extern void ETag_s_plsql_savepoint_cmd(void);
+extern void STag_s_plsql_select_cmd(void);
+extern void ETag_s_plsql_select_cmd(void);
+extern void STag_s_plsql_specs(void);
+extern void ETag_s_plsql_specs(void);
+extern void STag_s_plsql_update_cmd(void);
+extern void ETag_s_plsql_update_cmd(void);
+extern void STag_s_plsql_while_cmd(void);
+extern void ETag_s_plsql_while_cmd(void);
 extern void STag_s_report_definition(void);
 extern void ETag_s_report_definition(void);
 extern void STag_s_report_orderby_section(void);
@@ -645,6 +719,12 @@ typedef int AT_struct_sleep_cmd_nm;
 #define AU_struct_sleep_cmd_nm NULL
 typedef int AT_struct_start_cmd_repname;
 #define AU_struct_start_cmd_repname NULL
+typedef int AT_s_plsql_while_cmd_nm;
+#define AU_s_plsql_while_cmd_nm NULL
+typedef int AT_s_plsql_caseEntry_nm;
+#define AU_s_plsql_caseEntry_nm NULL
+typedef int AT_s_plsql_label_cmd_nm;
+#define AU_s_plsql_label_cmd_nm NULL
 typedef int AT_s_expr_cast_notnull;
 #define AU_s_expr_cast_notnull NULL
 typedef int AT_field_fieldname;
@@ -685,6 +765,8 @@ typedef int AT_constant_data_e_constant_type;
 #define AU_constant_data_e_constant_type NULL
 typedef int AT_struct_foreach_cmd_nm;
 #define AU_struct_foreach_cmd_nm NULL
+typedef int AT_s_plsql_for_cmd_variable;
+#define AU_s_plsql_for_cmd_variable NULL
 typedef int AT_struct_show_menu_cmd_menuname;
 #define AU_struct_show_menu_cmd_menuname NULL
 typedef int AT_struct_skip_to_cmd_nm;
@@ -697,14 +779,20 @@ typedef int AT_struct_sql_cmd_sql;
 #define AU_struct_sql_cmd_sql NULL
 typedef int AT_s_expr_function_call_n_namespace;
 #define AU_s_expr_function_call_n_namespace NULL
+typedef int AT_s_plsql_execute_immediate_cmd_nm;
+#define AU_s_plsql_execute_immediate_cmd_nm NULL
 typedef int AT_s_sli_cast_datatype;
 #define AU_s_sli_cast_datatype NULL
 typedef int AT_struct_return_cmd_with_resume;
 #define AU_struct_return_cmd_with_resume NULL
 typedef int AT_struct_whenever_signal_cmd_sigtype;
 #define AU_struct_whenever_signal_cmd_sigtype NULL
+typedef int AT_s_plsql_exceptionHandler_names;
+#define AU_s_plsql_exceptionHandler_names NULL
 typedef int AT_int_nm;
 #define AU_int_nm NULL
+typedef int AT_s_plsql_defineStmt_define_dtype;
+#define AU_s_plsql_defineStmt_define_dtype NULL
 typedef int AT_assoc_subscript_subscript_string;
 #define AU_assoc_subscript_subscript_string NULL
 typedef int AT_struct_open_statusbox_cmd_nm;
@@ -713,8 +801,12 @@ typedef int AT_s_select_list_item_regex_nm;
 #define AU_s_select_list_item_regex_nm NULL
 typedef int AT_struct_whenever_cmd_whencode;
 #define AU_struct_whenever_cmd_whencode NULL
+typedef int AT_s_plsql_defineStmt_subtype_typeName;
+#define AU_s_plsql_defineStmt_subtype_typeName NULL
 typedef int AT_pdf_startrep_towhat;
 #define AU_pdf_startrep_towhat NULL
+typedef int AT_s_plsql_package_isBody;
+#define AU_s_plsql_package_isBody NULL
 typedef int AT_u_pragmas_nm;
 #define AU_u_pragmas_nm NULL
 typedef int AT_s_substring_end_nm;
@@ -739,6 +831,8 @@ typedef int AT_short_value;
 #define AU_short_value NULL
 typedef int AT_s_expr_form_is_compiled_nm;
 #define AU_s_expr_form_is_compiled_nm NULL
+typedef int AT_s_plsql_defineStmt_table_typeName;
+#define AU_s_plsql_defineStmt_table_typeName NULL
 typedef int AT_s_select_list_item_data_e_sli;
 #define AU_s_select_list_item_data_e_sli NULL
 typedef int AT_field_subscript;
@@ -767,6 +861,8 @@ typedef int AT_s_function_definition_nm;
 #define AU_s_function_definition_nm NULL
 typedef int AT_s_expr_field_touched_line;
 #define AU_s_expr_field_touched_line NULL
+typedef int AT_s_plsql_dtypeAndDefault_dtype;
+#define AU_s_plsql_dtypeAndDefault_dtype NULL
 typedef int AT_struct_run_cmd_nm;
 #define AU_struct_run_cmd_nm NULL
 typedef int AT_s_sli_cast_nm;
@@ -781,12 +877,16 @@ typedef int AT_single_option_nm;
 #define AU_single_option_nm NULL
 typedef int AT_s_expr_syncfields_nm;
 #define AU_s_expr_syncfields_nm NULL
+typedef int AT_s_plsql_call_cmd_nm;
+#define AU_s_plsql_call_cmd_nm NULL
 typedef int AT_s_expr_field_touched_nm;
 #define AU_s_expr_field_touched_nm NULL
 typedef int AT_s_select_modifier;
 #define AU_s_select_modifier NULL
 typedef int AT_s_formhandler_definition_formhandler_name;
 #define AU_s_formhandler_definition_formhandler_name NULL
+typedef int AT_s_plsql_specs_nm;
+#define AU_s_plsql_specs_nm NULL
 typedef int AT_struct_foreach_cmd_block_id;
 #define AU_struct_foreach_cmd_block_id NULL
 typedef int AT_menuoption_nm;
@@ -815,8 +915,14 @@ typedef int AT_s_select_list_item_sq_expression_type;
 #define AU_s_select_list_item_sq_expression_type NULL
 typedef int AT_struct_sql_debug_file_cmd_nm;
 #define AU_struct_sql_debug_file_cmd_nm NULL
+typedef int AT_s_plsql_packageEntries_nm;
+#define AU_s_plsql_packageEntries_nm NULL
+typedef int AT_s_plsql_select_cmd_nm;
+#define AU_s_plsql_select_cmd_nm NULL
 typedef int AT_spl_if_cond_nm;
 #define AU_spl_if_cond_nm NULL
+typedef int AT_s_plsql_specs_initialValue;
+#define AU_s_plsql_specs_initialValue NULL
 typedef int AT_struct_locate_cmd_nm;
 #define AU_struct_locate_cmd_nm NULL
 typedef int AT_s_expr_cast_force;
@@ -881,6 +987,8 @@ typedef int AT_s_table_outer_type;
 #define AU_s_table_outer_type NULL
 typedef int AT_struct_start_cmd_n_namespace;
 #define AU_struct_start_cmd_n_namespace NULL
+typedef int AT_s_plsql_delete_cmd_table;
+#define AU_s_plsql_delete_cmd_table NULL
 typedef int AT_s_commands_last_lineno;
 #define AU_s_commands_last_lineno NULL
 typedef int AT_struct_uncheck_menu_cmd_nm;
@@ -891,14 +999,20 @@ typedef int AT_s_expr_get_fldbuf_sio_id;
 #define AU_s_expr_get_fldbuf_sio_id NULL
 typedef int AT_struct_spl_for_cmd_vname;
 #define AU_struct_spl_for_cmd_vname NULL
+typedef int AT_s_plsql_exit_cmd_label;
+#define AU_s_plsql_exit_cmd_label NULL
 typedef int AT_user_details_nm;
 #define AU_user_details_nm NULL
 typedef int AT_variable_list_nm;
 #define AU_variable_list_nm NULL
+typedef int AT_s_plsql_specs_dataType;
+#define AU_s_plsql_specs_dataType NULL
 typedef int AT_variable_usage_escope;
 #define AU_variable_usage_escope NULL
 typedef int AT_struct_update_cmd_table;
 #define AU_struct_update_cmd_table NULL
+typedef int AT_s_plsql_rollback_cmd_savePointName;
+#define AU_s_plsql_rollback_cmd_savePointName NULL
 typedef int AT_s_imported_global_variables_nm;
 #define AU_s_imported_global_variables_nm NULL
 typedef int AT_when_lineno;
@@ -909,6 +1023,8 @@ typedef int AT_s_expr_pdf_function_call_line;
 #define AU_s_expr_pdf_function_call_line NULL
 typedef int AT_s_expr_cached_nm;
 #define AU_s_expr_cached_nm NULL
+typedef int AT_s_plsql_for_cursor_cmd_parameters;
+#define AU_s_plsql_for_cursor_cmd_parameters NULL
 typedef int AT_when_nm;
 #define AU_when_nm NULL
 typedef int AT_struct_input_array_cmd_slice_start;
@@ -923,14 +1039,22 @@ typedef int AT_s_import_legacy_definition_module;
 #define AU_s_import_legacy_definition_module NULL
 typedef int AT_locate_pos_e_location;
 #define AU_locate_pos_e_location NULL
+typedef int AT_s_plsql_parameter_name;
+#define AU_s_plsql_parameter_name NULL
+typedef int AT_s_plsql_loop_cmd_name;
+#define AU_s_plsql_loop_cmd_name NULL
 typedef int AT_struct_spl_foreach_select_cmd_withHold;
 #define AU_struct_spl_foreach_select_cmd_withHold NULL
+typedef int AT_s_plsql_defineStmt_table_nm;
+#define AU_s_plsql_defineStmt_table_nm NULL
 typedef int AT_s_expr_shared_function_call_nm;
 #define AU_s_expr_shared_function_call_nm NULL
 typedef int AT_struct_convert_cmd_repname;
 #define AU_struct_convert_cmd_repname NULL
 typedef int AT_form_field_form;
 #define AU_form_field_form NULL
+typedef int AT_s_plsql_if_cmd_nm;
+#define AU_s_plsql_if_cmd_nm NULL
 typedef int AT_s_expr_bound_fcall_line;
 #define AU_s_expr_bound_fcall_line NULL
 typedef int AT_attrib_bold;
@@ -969,6 +1093,8 @@ typedef int AT_s_expr_dynarr_function_call_n_nm;
 #define AU_s_expr_dynarr_function_call_n_nm NULL
 typedef int AT_struct_run_waiting_for_cmd_nm;
 #define AU_struct_run_waiting_for_cmd_nm NULL
+typedef int AT_s_plsql_dtypeAndDefault_defaultValue;
+#define AU_s_plsql_dtypeAndDefault_defaultValue NULL
 typedef int AT_s_class_definition_nm;
 #define AU_s_class_definition_nm NULL
 typedef int AT_event_data_interval_n;
@@ -979,6 +1105,8 @@ typedef int AT_s_exchange_clobber_nm;
 #define AU_s_exchange_clobber_nm NULL
 typedef int AT_whens_nm;
 #define AU_whens_nm NULL
+typedef int AT_s_plsql_defineStmt_function_nm;
+#define AU_s_plsql_defineStmt_function_nm NULL
 typedef int AT_startrep_with_right_margin;
 #define AU_startrep_with_right_margin NULL
 typedef int AT_s_expr_external_call_n_namespace;
@@ -987,16 +1115,22 @@ typedef int AT_struct_update_cmd_nm;
 #define AU_struct_update_cmd_nm NULL
 typedef int AT_struct_skip_cmd_nm;
 #define AU_struct_skip_cmd_nm NULL
+typedef int AT_s_plsql_insert_cmd_nm;
+#define AU_s_plsql_insert_cmd_nm NULL
 typedef int AT_s_cur_def_nm;
 #define AU_s_cur_def_nm NULL
 typedef int AT_struct_next_field_cmd_rel;
 #define AU_struct_next_field_cmd_rel NULL
 typedef int AT_struct_let_cmd_nm;
 #define AU_struct_let_cmd_nm NULL
+typedef int AT_s_plsql_defineStmt_cursor_name;
+#define AU_s_plsql_defineStmt_cursor_name NULL
 typedef int AT_struct_msg_box_cmd_nm;
 #define AU_struct_msg_box_cmd_nm NULL
 typedef int AT_s_spl_block_nm;
 #define AU_s_spl_block_nm NULL
+typedef int AT_s_plsql_package_packageName;
+#define AU_s_plsql_package_packageName NULL
 typedef int AT_pdf_startrep_pageheadersize;
 #define AU_pdf_startrep_pageheadersize NULL
 typedef int AT_attrib_dim;
@@ -1033,6 +1167,8 @@ typedef int AT_s_select_list_item_sli_expr_nm;
 #define AU_s_select_list_item_sli_expr_nm NULL
 typedef int AT_s_expr_shared_function_call_functionname;
 #define AU_s_expr_shared_function_call_functionname NULL
+typedef int AT_s_plsql_dtypeAndDefault_nm;
+#define AU_s_plsql_dtypeAndDefault_nm NULL
 typedef int AT_s_two_strings_string1;
 #define AU_s_two_strings_string1 NULL
 typedef int AT_s_report_definition_nm;
@@ -1045,6 +1181,8 @@ typedef int AT_s_expr_extend_nm;
 #define AU_s_expr_extend_nm NULL
 typedef int AT_struct_close_cmd_nm;
 #define AU_struct_close_cmd_nm NULL
+typedef int AT_s_plsql_defineStmt_record_nm;
+#define AU_s_plsql_defineStmt_record_nm NULL
 typedef int AT_dt_display_caption;
 #define AU_dt_display_caption NULL
 typedef int AT_s_select_list_item_regex_escape;
@@ -1069,6 +1207,8 @@ typedef int AT_command_colno;
 #define AU_command_colno NULL
 typedef int AT_s_expr_external_call_without_waiting;
 #define AU_s_expr_external_call_without_waiting NULL
+typedef int AT_s_plsql_assign_cmd_placeHolder;
+#define AU_s_plsql_assign_cmd_placeHolder NULL
 typedef int AT_globals_definition_hash;
 #define AU_globals_definition_hash NULL
 typedef int AT_variable_usage_variable_id;
@@ -1125,8 +1265,12 @@ typedef int AT_s_expr_member_function_call_n_line;
 #define AU_s_expr_member_function_call_n_line NULL
 typedef int AT_s_expr_cast_target_dtype;
 #define AU_s_expr_cast_target_dtype NULL
+typedef int AT_s_plsql_insert_cmd_table;
+#define AU_s_plsql_insert_cmd_table NULL
 typedef int AT_struct_msg_box_cmd_icon;
 #define AU_struct_msg_box_cmd_icon NULL
+typedef int AT_s_plsql_defineStmt_define_initialValue;
+#define AU_s_plsql_defineStmt_define_initialValue NULL
 typedef int AT_flist_name;
 #define AU_flist_name NULL
 typedef int AT_report_format_section_entry_lineno;
@@ -1167,6 +1311,8 @@ typedef int AT_flist_nm;
 #define AU_flist_nm NULL
 typedef int AT_struct_display_array_cmd_slice;
 #define AU_struct_display_array_cmd_slice NULL
+typedef int AT_s_plsql_defineStmt_define_name;
+#define AU_s_plsql_defineStmt_define_name NULL
 typedef int AT_struct_set_database_cmd_exclusive_mode;
 #define AU_struct_set_database_cmd_exclusive_mode NULL
 typedef int AT_s_pdf_report_definition_function_type;
@@ -1195,6 +1341,8 @@ typedef int AT_struct_prompt_cmd_nm;
 #define AU_struct_prompt_cmd_nm NULL
 typedef int AT_s_expr_syncfields_line;
 #define AU_s_expr_syncfields_line NULL
+typedef int AT_s_plsql_delete_cmd_nm;
+#define AU_s_plsql_delete_cmd_nm NULL
 typedef int AT_pdf_startrep_with_page_width;
 #define AU_pdf_startrep_with_page_width NULL
 typedef int AT_manyoptions_nm;
@@ -1207,6 +1355,8 @@ typedef int AT_clear_data_e_clear;
 #define AU_clear_data_e_clear NULL
 typedef int AT_s_expr_agg_in_group;
 #define AU_s_expr_agg_in_group NULL
+typedef int AT_s_plsql_packageEntries_s_plsql_packageEntries_type;
+#define AU_s_plsql_packageEntries_s_plsql_packageEntries_type NULL
 typedef int AT_struct_message_cmd_wait;
 #define AU_struct_message_cmd_wait NULL
 typedef int AT_s_table_alias;
@@ -1253,6 +1403,8 @@ typedef int AT_menuoption_helpno;
 #define AU_menuoption_helpno NULL
 typedef int AT_variable_usage_datatype_length;
 #define AU_variable_usage_datatype_length NULL
+typedef int AT_s_plsql_defineStmt_table_index;
+#define AU_s_plsql_defineStmt_table_index NULL
 typedef int AT_s_func_n_namespace;
 #define AU_s_func_n_namespace NULL
 typedef int AT_s_fh_field_entry_field_nm;
@@ -1263,6 +1415,8 @@ typedef int AT_bluebar_r;
 #define AU_bluebar_r NULL
 typedef int AT_s_import_legacy_definition_colno;
 #define AU_s_import_legacy_definition_colno NULL
+typedef int AT_s_plsql_rollback_cmd_nm;
+#define AU_s_plsql_rollback_cmd_nm NULL
 typedef int AT_s_limit_offset;
 #define AU_s_limit_offset NULL
 typedef int AT_pdf_startrep_with_right_margin;
@@ -1281,6 +1435,8 @@ typedef int AT_struct_ext_cmd_what;
 #define AU_struct_ext_cmd_what NULL
 typedef int AT_windowtype_e_wintype;
 #define AU_windowtype_e_wintype NULL
+typedef int AT_s_plsql_defineStmt_s_plsql_defineStmt_types;
+#define AU_s_plsql_defineStmt_s_plsql_defineStmt_types NULL
 typedef int AT_struct_spl_raise_exception_cmd_nm;
 #define AU_struct_spl_raise_exception_cmd_nm NULL
 typedef int AT_str_value;
@@ -1299,6 +1455,8 @@ typedef int AT_struct_while_cmd_nm;
 #define AU_struct_while_cmd_nm NULL
 typedef int AT_str_nm;
 #define AU_str_nm NULL
+typedef int AT_s_plsql_exceptionHandler_nm;
+#define AU_s_plsql_exceptionHandler_nm NULL
 typedef int AT_module_definition_hash;
 #define AU_module_definition_hash NULL
 typedef int AT_sql_statement_nobind;
@@ -1323,10 +1481,14 @@ typedef int AT_struct_construct_cmd_without_defaults;
 #define AU_struct_construct_cmd_without_defaults NULL
 typedef int AT_s_call_list_nm;
 #define AU_s_call_list_nm NULL
+typedef int AT_s_plsql_case_cmd_nm;
+#define AU_s_plsql_case_cmd_nm NULL
 typedef int AT_ilist_i1;
 #define AU_ilist_i1 NULL
 typedef int AT_s_expr_field_touched_sio_id;
 #define AU_s_expr_field_touched_sio_id NULL
+typedef int AT_s_plsql_function_body_nm;
+#define AU_s_plsql_function_body_nm NULL
 typedef int AT_report_format_section_nm;
 #define AU_report_format_section_nm NULL
 typedef int AT_expr_str_s;
@@ -1335,12 +1497,16 @@ typedef int AT_struct_case_cmd_nm;
 #define AU_struct_case_cmd_nm NULL
 typedef int AT_s_limit_end;
 #define AU_s_limit_end NULL
+typedef int AT_s_plsql_label_cmd_name;
+#define AU_s_plsql_label_cmd_name NULL
 typedef int AT_struct_next_field_cmd_nm;
 #define AU_struct_next_field_cmd_nm NULL
 typedef int AT_ilist_nm;
 #define AU_ilist_nm NULL
 typedef int AT_struct_cancel_cmd_nm;
 #define AU_struct_cancel_cmd_nm NULL
+typedef int AT_s_plsql_update_cmd_table;
+#define AU_s_plsql_update_cmd_table NULL
 typedef int AT_struct_show_menu_cmd_menuhandler;
 #define AU_struct_show_menu_cmd_menuhandler NULL
 typedef int AT_struct_free_rep_cmd_n_namespace;
@@ -1371,6 +1537,10 @@ typedef int AT_s_expr_aligned_nm;
 #define AU_s_expr_aligned_nm NULL
 typedef int AT_struct_display_array_cmd_sio;
 #define AU_struct_display_array_cmd_sio NULL
+typedef int AT_s_plsql_defineStmt_define_isConstant;
+#define AU_s_plsql_defineStmt_define_isConstant NULL
+typedef int AT_s_plsql_function_functionName;
+#define AU_s_plsql_function_functionName NULL
 typedef int AT_struct_next_form_cmd_field;
 #define AU_struct_next_form_cmd_field NULL
 typedef int AT_s_commands_nm;
@@ -1383,14 +1553,18 @@ typedef int AT_bluebar_nm;
 #define AU_bluebar_nm NULL
 typedef int AT_s_import_package_module;
 #define AU_s_import_package_module NULL
+typedef int AT_s_plsql_exit_cmd_nm;
+#define AU_s_plsql_exit_cmd_nm NULL
 typedef int AT_struct_declare_cmd_nm;
 #define AU_struct_declare_cmd_nm NULL
+typedef int AT_s_plsql_if_conds_nm;
+#define AU_s_plsql_if_conds_nm NULL
 typedef int AT_object_variable_class_name;
 #define AU_object_variable_class_name NULL
-typedef int AT_s_create_proc_data_p_nm;
-#define AU_s_create_proc_data_p_nm NULL
 typedef int AT_startrep_with_page_length;
 #define AU_startrep_with_page_length NULL
+typedef int AT_s_create_proc_data_p_nm;
+#define AU_s_create_proc_data_p_nm NULL
 typedef int AT_struct_start_cmd_nm;
 #define AU_struct_start_cmd_nm NULL
 typedef int AT_s_sli_case_element_nm;
@@ -1413,6 +1587,8 @@ typedef int AT_s_expr_member_function_call_n_funcName;
 #define AU_s_expr_member_function_call_n_funcName NULL
 typedef int AT_bluebar_g;
 #define AU_bluebar_g NULL
+typedef int AT_s_select_bulk_into;
+#define AU_s_select_bulk_into NULL
 typedef int AT_s_expr_shared_function_call_n_namespace;
 #define AU_s_expr_shared_function_call_n_namespace NULL
 typedef int AT_struct_output_cmd_repname;
@@ -1431,10 +1607,10 @@ typedef int AT_struct_print_img_cmd_nm;
 #define AU_struct_print_img_cmd_nm NULL
 typedef int AT_s_expr_op_nm;
 #define AU_s_expr_op_nm NULL
-typedef int AT_cmd_int_list_nm;
-#define AU_cmd_int_list_nm NULL
 typedef int AT_struct_construct_cmd_helpno;
 #define AU_struct_construct_cmd_helpno NULL
+typedef int AT_cmd_int_list_nm;
+#define AU_cmd_int_list_nm NULL
 typedef int AT_struct_term_rep_cmd_repname;
 #define AU_struct_term_rep_cmd_repname NULL
 typedef int AT_struct_input_array_cmd_slice_end;
@@ -1455,10 +1631,10 @@ typedef int AT_event_data_idle_n;
 #define AU_event_data_idle_n NULL
 typedef int AT_s_expr_function_call_module;
 #define AU_s_expr_function_call_module NULL
-typedef int AT_ilist_i3;
-#define AU_ilist_i3 NULL
 typedef int AT_struct_display_array_cmd_helpno;
 #define AU_struct_display_array_cmd_helpno NULL
+typedef int AT_ilist_i3;
+#define AU_ilist_i3 NULL
 typedef int AT_pdf_startrep_nm;
 #define AU_pdf_startrep_nm NULL
 typedef int AT_report_block_data_nm;
@@ -1501,6 +1677,8 @@ typedef int AT_s_expr_datetime_extend;
 #define AU_s_expr_datetime_extend NULL
 typedef int AT_s_expr_external_call_line;
 #define AU_s_expr_external_call_line NULL
+typedef int AT_s_plsql_if_cond_nm;
+#define AU_s_plsql_if_cond_nm NULL
 typedef int AT_single_option_option;
 #define AU_single_option_option NULL
 typedef int AT_u_pragmas_e_pragmas;
@@ -1517,12 +1695,16 @@ typedef int AT_struct_label_cmd_label;
 #define AU_struct_label_cmd_label NULL
 typedef int AT_s_expr_form_is_compiled_line;
 #define AU_s_expr_form_is_compiled_line NULL
+typedef int AT_s_plsql_defineStmt_record_typeName;
+#define AU_s_plsql_defineStmt_record_typeName NULL
 typedef int AT_s_two_strings_string2;
 #define AU_s_two_strings_string2 NULL
 typedef int AT_struct_whenever_cmd_nm;
 #define AU_struct_whenever_cmd_nm NULL
 typedef int AT_short_nm;
 #define AU_short_nm NULL
+typedef int AT_s_plsql_defineStmt_nm;
+#define AU_s_plsql_defineStmt_nm NULL
 typedef int AT_s_select_list_item_complex_expr_nm;
 #define AU_s_select_list_item_complex_expr_nm NULL
 typedef int AT_flist_type;
@@ -1541,12 +1723,16 @@ typedef int AT_single_option_isKey;
 #define AU_single_option_isKey NULL
 typedef int AT_struct_set_database_cmd_nm;
 #define AU_struct_set_database_cmd_nm NULL
-typedef int AT_attrib_nonewlines;
-#define AU_attrib_nonewlines NULL
+typedef int AT_s_plsql_for_cursor_cmd_variable;
+#define AU_s_plsql_for_cursor_cmd_variable NULL
 typedef int AT_single_option_value;
 #define AU_single_option_value NULL
+typedef int AT_attrib_nonewlines;
+#define AU_attrib_nonewlines NULL
 typedef int AT_s_class_definition_classname;
 #define AU_s_class_definition_classname NULL
+typedef int AT_s_plsql_defineStmt_table_typeSpec;
+#define AU_s_plsql_defineStmt_table_typeSpec NULL
 typedef int AT_struct_move_cmd_relative;
 #define AU_struct_move_cmd_relative NULL
 typedef int AT_s_fetch_place_nm;
@@ -1611,12 +1797,18 @@ typedef int AT_str_list_nm;
 #define AU_str_list_nm NULL
 typedef int AT_s_import_function_definition_colno;
 #define AU_s_import_function_definition_colno NULL
+typedef int AT_s_plsql_block_cmd_nm;
+#define AU_s_plsql_block_cmd_nm NULL
+typedef int AT_s_plsql_package_nm;
+#define AU_s_plsql_package_nm NULL
 typedef int AT_s_exchange_clobber_important;
 #define AU_s_exchange_clobber_important NULL
 typedef int AT_struct_convert_cmd_nm;
 #define AU_struct_convert_cmd_nm NULL
 typedef int AT_struct_execute_procedure_cmd_nm;
 #define AU_struct_execute_procedure_cmd_nm NULL
+typedef int AT_s_plsql_defineStmt_function_placeHolder;
+#define AU_s_plsql_defineStmt_function_placeHolder NULL
 typedef int AT_s_select_list_item_agg_expr_aud;
 #define AU_s_select_list_item_agg_expr_aud NULL
 typedef int AT_s_select_list_item_slil_expr_nm;
@@ -1713,12 +1905,16 @@ typedef int AT_struct_label_cmd_nm;
 #define AU_struct_label_cmd_nm NULL
 typedef int AT_struct_cancel_cmd_c;
 #define AU_struct_cancel_cmd_c NULL
+typedef int AT_s_plsql_savepoint_cmd_savePointName;
+#define AU_s_plsql_savepoint_cmd_savePointName NULL
+typedef int AT_s_plsql_specs_name;
+#define AU_s_plsql_specs_name NULL
 typedef int AT_struct_print_cmd_semi;
 #define AU_struct_print_cmd_semi NULL
-typedef int AT_record_variable_nm;
-#define AU_record_variable_nm NULL
 typedef int AT_struct_disable_menu_cmd_nm;
 #define AU_struct_disable_menu_cmd_nm NULL
+typedef int AT_record_variable_nm;
+#define AU_record_variable_nm NULL
 typedef int AT_expr_str_expr_long;
 #define AU_expr_str_expr_long NULL
 typedef int AT_struct_show_cmd_nm;
@@ -1727,6 +1923,8 @@ typedef int AT_struct_todo_cmd_nm;
 #define AU_struct_todo_cmd_nm NULL
 typedef int AT_report_format_section_lines_in_first_header;
 #define AU_report_format_section_lines_in_first_header NULL
+typedef int AT_s_plsql_function_returnDtype;
+#define AU_s_plsql_function_returnDtype NULL
 typedef int AT_s_table_list_element_tabname;
 #define AU_s_table_list_element_tabname NULL
 typedef int AT_attrib_reverse;
@@ -1735,10 +1933,10 @@ typedef int AT_struct_set_session_cmd_nm;
 #define AU_struct_set_session_cmd_nm NULL
 typedef int AT_struct_open_cursor_cmd_nm;
 #define AU_struct_open_cursor_cmd_nm NULL
-typedef int AT_pdf_startrep_fontsize;
-#define AU_pdf_startrep_fontsize NULL
 typedef int AT_struct_call_shared_cmd_nm;
 #define AU_struct_call_shared_cmd_nm NULL
+typedef int AT_pdf_startrep_fontsize;
+#define AU_pdf_startrep_fontsize NULL
 typedef int AT_struct_input_cmd_without_defaults;
 #define AU_struct_input_cmd_without_defaults NULL
 typedef int AT_struct_for_cmd_nm;
@@ -1755,10 +1953,10 @@ typedef int AT_struct_declare_cmd_isstmt;
 #define AU_struct_declare_cmd_isstmt NULL
 typedef int AT_struct_ext_cmd_nm;
 #define AU_struct_ext_cmd_nm NULL
-typedef int AT_s_function_definition_lineno;
-#define AU_s_function_definition_lineno NULL
 typedef int AT_struct_construct_cmd_sio;
 #define AU_struct_construct_cmd_sio NULL
+typedef int AT_s_function_definition_lineno;
+#define AU_s_function_definition_lineno NULL
 typedef int AT_struct_whenever_signal_cmd_function_name;
 #define AU_struct_whenever_signal_cmd_function_name NULL
 typedef int AT_struct_hide_cmd_nm;
@@ -1769,20 +1967,24 @@ typedef int AT_s_pdf_report_definition_comment;
 #define AU_s_pdf_report_definition_comment NULL
 typedef int AT_s_expr_dynarr_extent_n;
 #define AU_s_expr_dynarr_extent_n NULL
-typedef int AT_s_import_package_lineno;
-#define AU_s_import_package_lineno NULL
 typedef int AT_struct_clear_cmd_todefaults;
 #define AU_struct_clear_cmd_todefaults NULL
+typedef int AT_s_import_package_lineno;
+#define AU_s_import_package_lineno NULL
+typedef int AT_s_plsql_savepoint_cmd_nm;
+#define AU_s_plsql_savepoint_cmd_nm NULL
 typedef int AT_s_function_definition_module;
 #define AU_s_function_definition_module NULL
 typedef int AT_s_import_function_definition_lineno;
 #define AU_s_import_function_definition_lineno NULL
-typedef int AT_assoc_array_variable_size;
-#define AU_assoc_array_variable_size NULL
 typedef int AT_sql_statement_stmt_type;
 #define AU_sql_statement_stmt_type NULL
+typedef int AT_assoc_array_variable_size;
+#define AU_assoc_array_variable_size NULL
 typedef int AT_s_select_list_item_alias;
 #define AU_s_select_list_item_alias NULL
+typedef int AT_s_plsql_defineStmt_subtype_nm;
+#define AU_s_plsql_defineStmt_subtype_nm NULL
 typedef int AT_s_report_definition_lastlineno;
 #define AU_s_report_definition_lastlineno NULL
 typedef int AT_struct_execute_cmd_nm;
@@ -1793,6 +1995,8 @@ typedef int AT_pdf_startrep_isdefault;
 #define AU_pdf_startrep_isdefault NULL
 typedef int AT_s_expr_dynarr_function_call_n_module;
 #define AU_s_expr_dynarr_function_call_n_module NULL
+typedef int AT_s_plsql_for_cursor_cmd_cursorname;
+#define AU_s_plsql_for_cursor_cmd_cursorname NULL
 typedef int AT_long_nm;
 #define AU_long_nm NULL
 typedef int AT_attrib_normal;
@@ -1831,12 +2035,12 @@ typedef int AT_struct_input_array_cmd_slice;
 #define AU_struct_input_array_cmd_slice NULL
 typedef int AT_struct_todo_cmd_block_id;
 #define AU_struct_todo_cmd_block_id NULL
+typedef int AT_struct_declare_cmd_with_hold;
+#define AU_struct_declare_cmd_with_hold NULL
 typedef int AT_s_expr_infield_sio_id;
 #define AU_s_expr_infield_sio_id NULL
 typedef int AT_s_onaction_actionName;
 #define AU_s_onaction_actionName NULL
-typedef int AT_struct_declare_cmd_with_hold;
-#define AU_struct_declare_cmd_with_hold NULL
 typedef int AT_struct_whenever_cmd_whento;
 #define AU_struct_whenever_cmd_whento NULL
 typedef int AT_globals_definition_schema_only;
@@ -1873,10 +2077,16 @@ typedef int AT_module_definition_n_namespace;
 #define AU_module_definition_n_namespace NULL
 typedef int AT_s_fetch_nm;
 #define AU_s_fetch_nm NULL
+typedef int AT_s_plsql_for_cmd_nm;
+#define AU_s_plsql_for_cmd_nm NULL
 typedef int AT_s_report_definition_module;
 #define AU_s_report_definition_module NULL
 typedef int AT_s_select_nm;
 #define AU_s_select_nm NULL
+typedef int AT_s_plsql_defineStmt_cursor_nm;
+#define AU_s_plsql_defineStmt_cursor_nm NULL
+typedef int AT_s_plsql_execute_immediate_cmd_usingBlock;
+#define AU_s_plsql_execute_immediate_cmd_usingBlock NULL
 typedef int AT_convert_nm;
 #define AU_convert_nm NULL
 typedef int AT_struct_call_cmd_nm;
@@ -1907,6 +2117,10 @@ typedef int AT_struct_close_sql_cmd_cl_type;
 #define AU_struct_close_sql_cmd_cl_type NULL
 typedef int AT_lint_warning_nm;
 #define AU_lint_warning_nm NULL
+typedef int AT_s_plsql_function_nm;
+#define AU_s_plsql_function_nm NULL
+typedef int AT_s_plsql_loop_cmd_nm;
+#define AU_s_plsql_loop_cmd_nm NULL
 typedef int AT_struct_pause_cmd_nm;
 #define AU_struct_pause_cmd_nm NULL
 typedef int AT_struct_spl_if_cmd_nm;
@@ -1921,10 +2135,10 @@ typedef int AT_s_unexpanded_list_nm;
 #define AU_s_unexpanded_list_nm NULL
 typedef int AT_on_event_colno;
 #define AU_on_event_colno NULL
-typedef int AT_s_import_datatype_dtype_name;
-#define AU_s_import_datatype_dtype_name NULL
 typedef int AT_struct_declare_cmd_scroll;
 #define AU_struct_declare_cmd_scroll NULL
+typedef int AT_s_import_datatype_dtype_name;
+#define AU_s_import_datatype_dtype_name NULL
 typedef int AT_module_definition_moduleIsInLibrary;
 #define AU_module_definition_moduleIsInLibrary NULL
 typedef int AT_s_expr_member_function_call_n_nm;
@@ -1969,6 +2183,8 @@ typedef int AT_funcname_list_nm;
 #define AU_funcname_list_nm NULL
 typedef int AT_globals_definition_compiled_time;
 #define AU_globals_definition_compiled_time NULL
+typedef int AT_s_plsql_update_cmd_nm;
+#define AU_s_plsql_update_cmd_nm NULL
 typedef int AT_struct_prepare_cmd_nm;
 #define AU_struct_prepare_cmd_nm NULL
 typedef int AT_struct_input_cmd_nm;
@@ -1981,6 +2197,10 @@ typedef int AT_cons_list_entry_colname;
 #define AU_cons_list_entry_colname NULL
 typedef int AT_module_definition_debug_filename;
 #define AU_module_definition_debug_filename NULL
+typedef int AT_s_plsql_for_cursor_cmd_nm;
+#define AU_s_plsql_for_cursor_cmd_nm NULL
+typedef int AT_s_plsql_return_cmd_nm;
+#define AU_s_plsql_return_cmd_nm NULL
 typedef int AT_assoc_array_variable_nm;
 #define AU_assoc_array_variable_nm NULL
 typedef int AT_s_source_code_nm;
@@ -2027,6 +2247,8 @@ typedef int AT_variable_user_system;
 #define AU_variable_user_system NULL
 typedef int AT_struct_spl_on_exception_cmd_nm;
 #define AU_struct_spl_on_exception_cmd_nm NULL
+typedef int AT_s_plsql_call_cmd_placeHolder;
+#define AU_s_plsql_call_cmd_placeHolder NULL
 typedef int AT_variable_usage;
 #define AU_variable_usage NULL
 typedef int AT_expr_str_e_expr_type;
@@ -2067,10 +2289,10 @@ typedef int AT_int_value;
 #define AU_int_value NULL
 typedef int AT_struct_fetch_cmd_nm;
 #define AU_struct_fetch_cmd_nm NULL
-typedef int AT_s_expr_bound_fcall_n_namespace;
-#define AU_s_expr_bound_fcall_n_namespace NULL
 typedef int AT_struct_disable_cmd_nm;
 #define AU_struct_disable_cmd_nm NULL
+typedef int AT_s_expr_bound_fcall_n_namespace;
+#define AU_s_expr_bound_fcall_n_namespace NULL
 typedef int AT_variable_assigned;
 #define AU_variable_assigned NULL
 typedef int AT_struct_input_array_cmd_helpno;
@@ -2083,6 +2305,8 @@ typedef int AT_s_select_list_item_fcall_nm;
 #define AU_s_select_list_item_fcall_nm NULL
 typedef int AT_s_select_list_item_extend_from;
 #define AU_s_select_list_item_extend_from NULL
+typedef int AT_s_plsql_defineStmt_define_nm;
+#define AU_s_plsql_defineStmt_define_nm NULL
 typedef int AT_windowtype_nm;
 #define AU_windowtype_nm NULL
 typedef int AT_struct_disable_form_cmd_nm;
@@ -2097,10 +2321,14 @@ typedef int AT_s_func_nm;
 #define AU_s_func_nm NULL
 typedef int AT_struct_continue_cmd_nm;
 #define AU_struct_continue_cmd_nm NULL
+typedef int AT_s_plsql_assign_cmd_nm;
+#define AU_s_plsql_assign_cmd_nm NULL
 typedef int AT_s_expr_function_call_functionname;
 #define AU_s_expr_function_call_functionname NULL
 typedef int AT_s_import_function_definition_module;
 #define AU_s_import_function_definition_module NULL
+typedef int AT_s_plsql_parameter_nm;
+#define AU_s_plsql_parameter_nm NULL
 typedef int AT_fgl_comment_colno;
 #define AU_fgl_comment_colno NULL
 typedef int AT_ilist_i4;
@@ -2115,6 +2343,8 @@ typedef int AT_struct_need_cmd_nm;
 #define AU_struct_need_cmd_nm NULL
 typedef int AT_command_nm;
 #define AU_command_nm NULL
+typedef int AT_s_plsql_parameter_inOut;
+#define AU_s_plsql_parameter_inOut NULL
 typedef int AT_struct_print_img_cmd_img_type;
 #define AU_struct_print_img_cmd_img_type NULL
 
@@ -2132,6 +2362,12 @@ extern AT_struct_sleep_cmd_nm AX_struct_sleep_cmd_nm;
 #define A_struct_sleep_cmd_nm (bufferstack + AX_struct_sleep_cmd_nm)
 extern AT_struct_start_cmd_repname AX_struct_start_cmd_repname;
 #define A_struct_start_cmd_repname (bufferstack + AX_struct_start_cmd_repname)
+extern AT_s_plsql_while_cmd_nm AX_s_plsql_while_cmd_nm;
+#define A_s_plsql_while_cmd_nm (bufferstack + AX_s_plsql_while_cmd_nm)
+extern AT_s_plsql_caseEntry_nm AX_s_plsql_caseEntry_nm;
+#define A_s_plsql_caseEntry_nm (bufferstack + AX_s_plsql_caseEntry_nm)
+extern AT_s_plsql_label_cmd_nm AX_s_plsql_label_cmd_nm;
+#define A_s_plsql_label_cmd_nm (bufferstack + AX_s_plsql_label_cmd_nm)
 extern AT_s_expr_cast_notnull AX_s_expr_cast_notnull;
 #define A_s_expr_cast_notnull (bufferstack + AX_s_expr_cast_notnull)
 extern AT_field_fieldname AX_field_fieldname;
@@ -2172,6 +2408,8 @@ extern AT_constant_data_e_constant_type AX_constant_data_e_constant_type;
 #define A_constant_data_e_constant_type (bufferstack + AX_constant_data_e_constant_type)
 extern AT_struct_foreach_cmd_nm AX_struct_foreach_cmd_nm;
 #define A_struct_foreach_cmd_nm (bufferstack + AX_struct_foreach_cmd_nm)
+extern AT_s_plsql_for_cmd_variable AX_s_plsql_for_cmd_variable;
+#define A_s_plsql_for_cmd_variable (bufferstack + AX_s_plsql_for_cmd_variable)
 extern AT_struct_show_menu_cmd_menuname AX_struct_show_menu_cmd_menuname;
 #define A_struct_show_menu_cmd_menuname (bufferstack + AX_struct_show_menu_cmd_menuname)
 extern AT_struct_skip_to_cmd_nm AX_struct_skip_to_cmd_nm;
@@ -2184,14 +2422,20 @@ extern AT_struct_sql_cmd_sql AX_struct_sql_cmd_sql;
 #define A_struct_sql_cmd_sql (bufferstack + AX_struct_sql_cmd_sql)
 extern AT_s_expr_function_call_n_namespace AX_s_expr_function_call_n_namespace;
 #define A_s_expr_function_call_n_namespace (bufferstack + AX_s_expr_function_call_n_namespace)
+extern AT_s_plsql_execute_immediate_cmd_nm AX_s_plsql_execute_immediate_cmd_nm;
+#define A_s_plsql_execute_immediate_cmd_nm (bufferstack + AX_s_plsql_execute_immediate_cmd_nm)
 extern AT_s_sli_cast_datatype AX_s_sli_cast_datatype;
 #define A_s_sli_cast_datatype (bufferstack + AX_s_sli_cast_datatype)
 extern AT_struct_return_cmd_with_resume AX_struct_return_cmd_with_resume;
 #define A_struct_return_cmd_with_resume (bufferstack + AX_struct_return_cmd_with_resume)
 extern AT_struct_whenever_signal_cmd_sigtype AX_struct_whenever_signal_cmd_sigtype;
 #define A_struct_whenever_signal_cmd_sigtype (bufferstack + AX_struct_whenever_signal_cmd_sigtype)
+extern AT_s_plsql_exceptionHandler_names AX_s_plsql_exceptionHandler_names;
+#define A_s_plsql_exceptionHandler_names (bufferstack + AX_s_plsql_exceptionHandler_names)
 extern AT_int_nm AX_int_nm;
 #define A_int_nm (bufferstack + AX_int_nm)
+extern AT_s_plsql_defineStmt_define_dtype AX_s_plsql_defineStmt_define_dtype;
+#define A_s_plsql_defineStmt_define_dtype (bufferstack + AX_s_plsql_defineStmt_define_dtype)
 extern AT_assoc_subscript_subscript_string AX_assoc_subscript_subscript_string;
 #define A_assoc_subscript_subscript_string (bufferstack + AX_assoc_subscript_subscript_string)
 extern AT_struct_open_statusbox_cmd_nm AX_struct_open_statusbox_cmd_nm;
@@ -2200,8 +2444,12 @@ extern AT_s_select_list_item_regex_nm AX_s_select_list_item_regex_nm;
 #define A_s_select_list_item_regex_nm (bufferstack + AX_s_select_list_item_regex_nm)
 extern AT_struct_whenever_cmd_whencode AX_struct_whenever_cmd_whencode;
 #define A_struct_whenever_cmd_whencode (bufferstack + AX_struct_whenever_cmd_whencode)
+extern AT_s_plsql_defineStmt_subtype_typeName AX_s_plsql_defineStmt_subtype_typeName;
+#define A_s_plsql_defineStmt_subtype_typeName (bufferstack + AX_s_plsql_defineStmt_subtype_typeName)
 extern AT_pdf_startrep_towhat AX_pdf_startrep_towhat;
 #define A_pdf_startrep_towhat (bufferstack + AX_pdf_startrep_towhat)
+extern AT_s_plsql_package_isBody AX_s_plsql_package_isBody;
+#define A_s_plsql_package_isBody (bufferstack + AX_s_plsql_package_isBody)
 extern AT_u_pragmas_nm AX_u_pragmas_nm;
 #define A_u_pragmas_nm (bufferstack + AX_u_pragmas_nm)
 extern AT_s_substring_end_nm AX_s_substring_end_nm;
@@ -2226,6 +2474,8 @@ extern AT_short_value AX_short_value;
 #define A_short_value (bufferstack + AX_short_value)
 extern AT_s_expr_form_is_compiled_nm AX_s_expr_form_is_compiled_nm;
 #define A_s_expr_form_is_compiled_nm (bufferstack + AX_s_expr_form_is_compiled_nm)
+extern AT_s_plsql_defineStmt_table_typeName AX_s_plsql_defineStmt_table_typeName;
+#define A_s_plsql_defineStmt_table_typeName (bufferstack + AX_s_plsql_defineStmt_table_typeName)
 extern AT_s_select_list_item_data_e_sli AX_s_select_list_item_data_e_sli;
 #define A_s_select_list_item_data_e_sli (bufferstack + AX_s_select_list_item_data_e_sli)
 extern AT_field_subscript AX_field_subscript;
@@ -2254,6 +2504,8 @@ extern AT_s_function_definition_nm AX_s_function_definition_nm;
 #define A_s_function_definition_nm (bufferstack + AX_s_function_definition_nm)
 extern AT_s_expr_field_touched_line AX_s_expr_field_touched_line;
 #define A_s_expr_field_touched_line (bufferstack + AX_s_expr_field_touched_line)
+extern AT_s_plsql_dtypeAndDefault_dtype AX_s_plsql_dtypeAndDefault_dtype;
+#define A_s_plsql_dtypeAndDefault_dtype (bufferstack + AX_s_plsql_dtypeAndDefault_dtype)
 extern AT_struct_run_cmd_nm AX_struct_run_cmd_nm;
 #define A_struct_run_cmd_nm (bufferstack + AX_struct_run_cmd_nm)
 extern AT_s_sli_cast_nm AX_s_sli_cast_nm;
@@ -2268,12 +2520,16 @@ extern AT_single_option_nm AX_single_option_nm;
 #define A_single_option_nm (bufferstack + AX_single_option_nm)
 extern AT_s_expr_syncfields_nm AX_s_expr_syncfields_nm;
 #define A_s_expr_syncfields_nm (bufferstack + AX_s_expr_syncfields_nm)
+extern AT_s_plsql_call_cmd_nm AX_s_plsql_call_cmd_nm;
+#define A_s_plsql_call_cmd_nm (bufferstack + AX_s_plsql_call_cmd_nm)
 extern AT_s_expr_field_touched_nm AX_s_expr_field_touched_nm;
 #define A_s_expr_field_touched_nm (bufferstack + AX_s_expr_field_touched_nm)
 extern AT_s_select_modifier AX_s_select_modifier;
 #define A_s_select_modifier (bufferstack + AX_s_select_modifier)
 extern AT_s_formhandler_definition_formhandler_name AX_s_formhandler_definition_formhandler_name;
 #define A_s_formhandler_definition_formhandler_name (bufferstack + AX_s_formhandler_definition_formhandler_name)
+extern AT_s_plsql_specs_nm AX_s_plsql_specs_nm;
+#define A_s_plsql_specs_nm (bufferstack + AX_s_plsql_specs_nm)
 extern AT_struct_foreach_cmd_block_id AX_struct_foreach_cmd_block_id;
 #define A_struct_foreach_cmd_block_id (bufferstack + AX_struct_foreach_cmd_block_id)
 extern AT_menuoption_nm AX_menuoption_nm;
@@ -2302,8 +2558,14 @@ extern AT_s_select_list_item_sq_expression_type AX_s_select_list_item_sq_express
 #define A_s_select_list_item_sq_expression_type (bufferstack + AX_s_select_list_item_sq_expression_type)
 extern AT_struct_sql_debug_file_cmd_nm AX_struct_sql_debug_file_cmd_nm;
 #define A_struct_sql_debug_file_cmd_nm (bufferstack + AX_struct_sql_debug_file_cmd_nm)
+extern AT_s_plsql_packageEntries_nm AX_s_plsql_packageEntries_nm;
+#define A_s_plsql_packageEntries_nm (bufferstack + AX_s_plsql_packageEntries_nm)
+extern AT_s_plsql_select_cmd_nm AX_s_plsql_select_cmd_nm;
+#define A_s_plsql_select_cmd_nm (bufferstack + AX_s_plsql_select_cmd_nm)
 extern AT_spl_if_cond_nm AX_spl_if_cond_nm;
 #define A_spl_if_cond_nm (bufferstack + AX_spl_if_cond_nm)
+extern AT_s_plsql_specs_initialValue AX_s_plsql_specs_initialValue;
+#define A_s_plsql_specs_initialValue (bufferstack + AX_s_plsql_specs_initialValue)
 extern AT_struct_locate_cmd_nm AX_struct_locate_cmd_nm;
 #define A_struct_locate_cmd_nm (bufferstack + AX_struct_locate_cmd_nm)
 extern AT_s_expr_cast_force AX_s_expr_cast_force;
@@ -2368,6 +2630,8 @@ extern AT_s_table_outer_type AX_s_table_outer_type;
 #define A_s_table_outer_type (bufferstack + AX_s_table_outer_type)
 extern AT_struct_start_cmd_n_namespace AX_struct_start_cmd_n_namespace;
 #define A_struct_start_cmd_n_namespace (bufferstack + AX_struct_start_cmd_n_namespace)
+extern AT_s_plsql_delete_cmd_table AX_s_plsql_delete_cmd_table;
+#define A_s_plsql_delete_cmd_table (bufferstack + AX_s_plsql_delete_cmd_table)
 extern AT_s_commands_last_lineno AX_s_commands_last_lineno;
 #define A_s_commands_last_lineno (bufferstack + AX_s_commands_last_lineno)
 extern AT_struct_uncheck_menu_cmd_nm AX_struct_uncheck_menu_cmd_nm;
@@ -2378,14 +2642,20 @@ extern AT_s_expr_get_fldbuf_sio_id AX_s_expr_get_fldbuf_sio_id;
 #define A_s_expr_get_fldbuf_sio_id (bufferstack + AX_s_expr_get_fldbuf_sio_id)
 extern AT_struct_spl_for_cmd_vname AX_struct_spl_for_cmd_vname;
 #define A_struct_spl_for_cmd_vname (bufferstack + AX_struct_spl_for_cmd_vname)
+extern AT_s_plsql_exit_cmd_label AX_s_plsql_exit_cmd_label;
+#define A_s_plsql_exit_cmd_label (bufferstack + AX_s_plsql_exit_cmd_label)
 extern AT_user_details_nm AX_user_details_nm;
 #define A_user_details_nm (bufferstack + AX_user_details_nm)
 extern AT_variable_list_nm AX_variable_list_nm;
 #define A_variable_list_nm (bufferstack + AX_variable_list_nm)
+extern AT_s_plsql_specs_dataType AX_s_plsql_specs_dataType;
+#define A_s_plsql_specs_dataType (bufferstack + AX_s_plsql_specs_dataType)
 extern AT_variable_usage_escope AX_variable_usage_escope;
 #define A_variable_usage_escope (bufferstack + AX_variable_usage_escope)
 extern AT_struct_update_cmd_table AX_struct_update_cmd_table;
 #define A_struct_update_cmd_table (bufferstack + AX_struct_update_cmd_table)
+extern AT_s_plsql_rollback_cmd_savePointName AX_s_plsql_rollback_cmd_savePointName;
+#define A_s_plsql_rollback_cmd_savePointName (bufferstack + AX_s_plsql_rollback_cmd_savePointName)
 extern AT_s_imported_global_variables_nm AX_s_imported_global_variables_nm;
 #define A_s_imported_global_variables_nm (bufferstack + AX_s_imported_global_variables_nm)
 extern AT_when_lineno AX_when_lineno;
@@ -2396,6 +2666,8 @@ extern AT_s_expr_pdf_function_call_line AX_s_expr_pdf_function_call_line;
 #define A_s_expr_pdf_function_call_line (bufferstack + AX_s_expr_pdf_function_call_line)
 extern AT_s_expr_cached_nm AX_s_expr_cached_nm;
 #define A_s_expr_cached_nm (bufferstack + AX_s_expr_cached_nm)
+extern AT_s_plsql_for_cursor_cmd_parameters AX_s_plsql_for_cursor_cmd_parameters;
+#define A_s_plsql_for_cursor_cmd_parameters (bufferstack + AX_s_plsql_for_cursor_cmd_parameters)
 extern AT_when_nm AX_when_nm;
 #define A_when_nm (bufferstack + AX_when_nm)
 extern AT_struct_input_array_cmd_slice_start AX_struct_input_array_cmd_slice_start;
@@ -2410,14 +2682,22 @@ extern AT_s_import_legacy_definition_module AX_s_import_legacy_definition_module
 #define A_s_import_legacy_definition_module (bufferstack + AX_s_import_legacy_definition_module)
 extern AT_locate_pos_e_location AX_locate_pos_e_location;
 #define A_locate_pos_e_location (bufferstack + AX_locate_pos_e_location)
+extern AT_s_plsql_parameter_name AX_s_plsql_parameter_name;
+#define A_s_plsql_parameter_name (bufferstack + AX_s_plsql_parameter_name)
+extern AT_s_plsql_loop_cmd_name AX_s_plsql_loop_cmd_name;
+#define A_s_plsql_loop_cmd_name (bufferstack + AX_s_plsql_loop_cmd_name)
 extern AT_struct_spl_foreach_select_cmd_withHold AX_struct_spl_foreach_select_cmd_withHold;
 #define A_struct_spl_foreach_select_cmd_withHold (bufferstack + AX_struct_spl_foreach_select_cmd_withHold)
+extern AT_s_plsql_defineStmt_table_nm AX_s_plsql_defineStmt_table_nm;
+#define A_s_plsql_defineStmt_table_nm (bufferstack + AX_s_plsql_defineStmt_table_nm)
 extern AT_s_expr_shared_function_call_nm AX_s_expr_shared_function_call_nm;
 #define A_s_expr_shared_function_call_nm (bufferstack + AX_s_expr_shared_function_call_nm)
 extern AT_struct_convert_cmd_repname AX_struct_convert_cmd_repname;
 #define A_struct_convert_cmd_repname (bufferstack + AX_struct_convert_cmd_repname)
 extern AT_form_field_form AX_form_field_form;
 #define A_form_field_form (bufferstack + AX_form_field_form)
+extern AT_s_plsql_if_cmd_nm AX_s_plsql_if_cmd_nm;
+#define A_s_plsql_if_cmd_nm (bufferstack + AX_s_plsql_if_cmd_nm)
 extern AT_s_expr_bound_fcall_line AX_s_expr_bound_fcall_line;
 #define A_s_expr_bound_fcall_line (bufferstack + AX_s_expr_bound_fcall_line)
 extern AT_attrib_bold AX_attrib_bold;
@@ -2456,6 +2736,8 @@ extern AT_s_expr_dynarr_function_call_n_nm AX_s_expr_dynarr_function_call_n_nm;
 #define A_s_expr_dynarr_function_call_n_nm (bufferstack + AX_s_expr_dynarr_function_call_n_nm)
 extern AT_struct_run_waiting_for_cmd_nm AX_struct_run_waiting_for_cmd_nm;
 #define A_struct_run_waiting_for_cmd_nm (bufferstack + AX_struct_run_waiting_for_cmd_nm)
+extern AT_s_plsql_dtypeAndDefault_defaultValue AX_s_plsql_dtypeAndDefault_defaultValue;
+#define A_s_plsql_dtypeAndDefault_defaultValue (bufferstack + AX_s_plsql_dtypeAndDefault_defaultValue)
 extern AT_s_class_definition_nm AX_s_class_definition_nm;
 #define A_s_class_definition_nm (bufferstack + AX_s_class_definition_nm)
 extern AT_event_data_interval_n AX_event_data_interval_n;
@@ -2466,6 +2748,8 @@ extern AT_s_exchange_clobber_nm AX_s_exchange_clobber_nm;
 #define A_s_exchange_clobber_nm (bufferstack + AX_s_exchange_clobber_nm)
 extern AT_whens_nm AX_whens_nm;
 #define A_whens_nm (bufferstack + AX_whens_nm)
+extern AT_s_plsql_defineStmt_function_nm AX_s_plsql_defineStmt_function_nm;
+#define A_s_plsql_defineStmt_function_nm (bufferstack + AX_s_plsql_defineStmt_function_nm)
 extern AT_startrep_with_right_margin AX_startrep_with_right_margin;
 #define A_startrep_with_right_margin (bufferstack + AX_startrep_with_right_margin)
 extern AT_s_expr_external_call_n_namespace AX_s_expr_external_call_n_namespace;
@@ -2474,16 +2758,22 @@ extern AT_struct_update_cmd_nm AX_struct_update_cmd_nm;
 #define A_struct_update_cmd_nm (bufferstack + AX_struct_update_cmd_nm)
 extern AT_struct_skip_cmd_nm AX_struct_skip_cmd_nm;
 #define A_struct_skip_cmd_nm (bufferstack + AX_struct_skip_cmd_nm)
+extern AT_s_plsql_insert_cmd_nm AX_s_plsql_insert_cmd_nm;
+#define A_s_plsql_insert_cmd_nm (bufferstack + AX_s_plsql_insert_cmd_nm)
 extern AT_s_cur_def_nm AX_s_cur_def_nm;
 #define A_s_cur_def_nm (bufferstack + AX_s_cur_def_nm)
 extern AT_struct_next_field_cmd_rel AX_struct_next_field_cmd_rel;
 #define A_struct_next_field_cmd_rel (bufferstack + AX_struct_next_field_cmd_rel)
 extern AT_struct_let_cmd_nm AX_struct_let_cmd_nm;
 #define A_struct_let_cmd_nm (bufferstack + AX_struct_let_cmd_nm)
+extern AT_s_plsql_defineStmt_cursor_name AX_s_plsql_defineStmt_cursor_name;
+#define A_s_plsql_defineStmt_cursor_name (bufferstack + AX_s_plsql_defineStmt_cursor_name)
 extern AT_struct_msg_box_cmd_nm AX_struct_msg_box_cmd_nm;
 #define A_struct_msg_box_cmd_nm (bufferstack + AX_struct_msg_box_cmd_nm)
 extern AT_s_spl_block_nm AX_s_spl_block_nm;
 #define A_s_spl_block_nm (bufferstack + AX_s_spl_block_nm)
+extern AT_s_plsql_package_packageName AX_s_plsql_package_packageName;
+#define A_s_plsql_package_packageName (bufferstack + AX_s_plsql_package_packageName)
 extern AT_pdf_startrep_pageheadersize AX_pdf_startrep_pageheadersize;
 #define A_pdf_startrep_pageheadersize (bufferstack + AX_pdf_startrep_pageheadersize)
 extern AT_attrib_dim AX_attrib_dim;
@@ -2520,6 +2810,8 @@ extern AT_s_select_list_item_sli_expr_nm AX_s_select_list_item_sli_expr_nm;
 #define A_s_select_list_item_sli_expr_nm (bufferstack + AX_s_select_list_item_sli_expr_nm)
 extern AT_s_expr_shared_function_call_functionname AX_s_expr_shared_function_call_functionname;
 #define A_s_expr_shared_function_call_functionname (bufferstack + AX_s_expr_shared_function_call_functionname)
+extern AT_s_plsql_dtypeAndDefault_nm AX_s_plsql_dtypeAndDefault_nm;
+#define A_s_plsql_dtypeAndDefault_nm (bufferstack + AX_s_plsql_dtypeAndDefault_nm)
 extern AT_s_two_strings_string1 AX_s_two_strings_string1;
 #define A_s_two_strings_string1 (bufferstack + AX_s_two_strings_string1)
 extern AT_s_report_definition_nm AX_s_report_definition_nm;
@@ -2532,6 +2824,8 @@ extern AT_s_expr_extend_nm AX_s_expr_extend_nm;
 #define A_s_expr_extend_nm (bufferstack + AX_s_expr_extend_nm)
 extern AT_struct_close_cmd_nm AX_struct_close_cmd_nm;
 #define A_struct_close_cmd_nm (bufferstack + AX_struct_close_cmd_nm)
+extern AT_s_plsql_defineStmt_record_nm AX_s_plsql_defineStmt_record_nm;
+#define A_s_plsql_defineStmt_record_nm (bufferstack + AX_s_plsql_defineStmt_record_nm)
 extern AT_dt_display_caption AX_dt_display_caption;
 #define A_dt_display_caption (bufferstack + AX_dt_display_caption)
 extern AT_s_select_list_item_regex_escape AX_s_select_list_item_regex_escape;
@@ -2556,6 +2850,8 @@ extern AT_command_colno AX_command_colno;
 #define A_command_colno (bufferstack + AX_command_colno)
 extern AT_s_expr_external_call_without_waiting AX_s_expr_external_call_without_waiting;
 #define A_s_expr_external_call_without_waiting (bufferstack + AX_s_expr_external_call_without_waiting)
+extern AT_s_plsql_assign_cmd_placeHolder AX_s_plsql_assign_cmd_placeHolder;
+#define A_s_plsql_assign_cmd_placeHolder (bufferstack + AX_s_plsql_assign_cmd_placeHolder)
 extern AT_globals_definition_hash AX_globals_definition_hash;
 #define A_globals_definition_hash (bufferstack + AX_globals_definition_hash)
 extern AT_variable_usage_variable_id AX_variable_usage_variable_id;
@@ -2612,8 +2908,12 @@ extern AT_s_expr_member_function_call_n_line AX_s_expr_member_function_call_n_li
 #define A_s_expr_member_function_call_n_line (bufferstack + AX_s_expr_member_function_call_n_line)
 extern AT_s_expr_cast_target_dtype AX_s_expr_cast_target_dtype;
 #define A_s_expr_cast_target_dtype (bufferstack + AX_s_expr_cast_target_dtype)
+extern AT_s_plsql_insert_cmd_table AX_s_plsql_insert_cmd_table;
+#define A_s_plsql_insert_cmd_table (bufferstack + AX_s_plsql_insert_cmd_table)
 extern AT_struct_msg_box_cmd_icon AX_struct_msg_box_cmd_icon;
 #define A_struct_msg_box_cmd_icon (bufferstack + AX_struct_msg_box_cmd_icon)
+extern AT_s_plsql_defineStmt_define_initialValue AX_s_plsql_defineStmt_define_initialValue;
+#define A_s_plsql_defineStmt_define_initialValue (bufferstack + AX_s_plsql_defineStmt_define_initialValue)
 extern AT_flist_name AX_flist_name;
 #define A_flist_name (bufferstack + AX_flist_name)
 extern AT_report_format_section_entry_lineno AX_report_format_section_entry_lineno;
@@ -2654,6 +2954,8 @@ extern AT_flist_nm AX_flist_nm;
 #define A_flist_nm (bufferstack + AX_flist_nm)
 extern AT_struct_display_array_cmd_slice AX_struct_display_array_cmd_slice;
 #define A_struct_display_array_cmd_slice (bufferstack + AX_struct_display_array_cmd_slice)
+extern AT_s_plsql_defineStmt_define_name AX_s_plsql_defineStmt_define_name;
+#define A_s_plsql_defineStmt_define_name (bufferstack + AX_s_plsql_defineStmt_define_name)
 extern AT_struct_set_database_cmd_exclusive_mode AX_struct_set_database_cmd_exclusive_mode;
 #define A_struct_set_database_cmd_exclusive_mode (bufferstack + AX_struct_set_database_cmd_exclusive_mode)
 extern AT_s_pdf_report_definition_function_type AX_s_pdf_report_definition_function_type;
@@ -2682,6 +2984,8 @@ extern AT_struct_prompt_cmd_nm AX_struct_prompt_cmd_nm;
 #define A_struct_prompt_cmd_nm (bufferstack + AX_struct_prompt_cmd_nm)
 extern AT_s_expr_syncfields_line AX_s_expr_syncfields_line;
 #define A_s_expr_syncfields_line (bufferstack + AX_s_expr_syncfields_line)
+extern AT_s_plsql_delete_cmd_nm AX_s_plsql_delete_cmd_nm;
+#define A_s_plsql_delete_cmd_nm (bufferstack + AX_s_plsql_delete_cmd_nm)
 extern AT_pdf_startrep_with_page_width AX_pdf_startrep_with_page_width;
 #define A_pdf_startrep_with_page_width (bufferstack + AX_pdf_startrep_with_page_width)
 extern AT_manyoptions_nm AX_manyoptions_nm;
@@ -2694,6 +2998,8 @@ extern AT_clear_data_e_clear AX_clear_data_e_clear;
 #define A_clear_data_e_clear (bufferstack + AX_clear_data_e_clear)
 extern AT_s_expr_agg_in_group AX_s_expr_agg_in_group;
 #define A_s_expr_agg_in_group (bufferstack + AX_s_expr_agg_in_group)
+extern AT_s_plsql_packageEntries_s_plsql_packageEntries_type AX_s_plsql_packageEntries_s_plsql_packageEntries_type;
+#define A_s_plsql_packageEntries_s_plsql_packageEntries_type (bufferstack + AX_s_plsql_packageEntries_s_plsql_packageEntries_type)
 extern AT_struct_message_cmd_wait AX_struct_message_cmd_wait;
 #define A_struct_message_cmd_wait (bufferstack + AX_struct_message_cmd_wait)
 extern AT_s_table_alias AX_s_table_alias;
@@ -2740,6 +3046,8 @@ extern AT_menuoption_helpno AX_menuoption_helpno;
 #define A_menuoption_helpno (bufferstack + AX_menuoption_helpno)
 extern AT_variable_usage_datatype_length AX_variable_usage_datatype_length;
 #define A_variable_usage_datatype_length (bufferstack + AX_variable_usage_datatype_length)
+extern AT_s_plsql_defineStmt_table_index AX_s_plsql_defineStmt_table_index;
+#define A_s_plsql_defineStmt_table_index (bufferstack + AX_s_plsql_defineStmt_table_index)
 extern AT_s_func_n_namespace AX_s_func_n_namespace;
 #define A_s_func_n_namespace (bufferstack + AX_s_func_n_namespace)
 extern AT_s_fh_field_entry_field_nm AX_s_fh_field_entry_field_nm;
@@ -2750,6 +3058,8 @@ extern AT_bluebar_r AX_bluebar_r;
 #define A_bluebar_r (bufferstack + AX_bluebar_r)
 extern AT_s_import_legacy_definition_colno AX_s_import_legacy_definition_colno;
 #define A_s_import_legacy_definition_colno (bufferstack + AX_s_import_legacy_definition_colno)
+extern AT_s_plsql_rollback_cmd_nm AX_s_plsql_rollback_cmd_nm;
+#define A_s_plsql_rollback_cmd_nm (bufferstack + AX_s_plsql_rollback_cmd_nm)
 extern AT_s_limit_offset AX_s_limit_offset;
 #define A_s_limit_offset (bufferstack + AX_s_limit_offset)
 extern AT_pdf_startrep_with_right_margin AX_pdf_startrep_with_right_margin;
@@ -2768,6 +3078,8 @@ extern AT_struct_ext_cmd_what AX_struct_ext_cmd_what;
 #define A_struct_ext_cmd_what (bufferstack + AX_struct_ext_cmd_what)
 extern AT_windowtype_e_wintype AX_windowtype_e_wintype;
 #define A_windowtype_e_wintype (bufferstack + AX_windowtype_e_wintype)
+extern AT_s_plsql_defineStmt_s_plsql_defineStmt_types AX_s_plsql_defineStmt_s_plsql_defineStmt_types;
+#define A_s_plsql_defineStmt_s_plsql_defineStmt_types (bufferstack + AX_s_plsql_defineStmt_s_plsql_defineStmt_types)
 extern AT_struct_spl_raise_exception_cmd_nm AX_struct_spl_raise_exception_cmd_nm;
 #define A_struct_spl_raise_exception_cmd_nm (bufferstack + AX_struct_spl_raise_exception_cmd_nm)
 extern AT_str_value AX_str_value;
@@ -2786,6 +3098,8 @@ extern AT_struct_while_cmd_nm AX_struct_while_cmd_nm;
 #define A_struct_while_cmd_nm (bufferstack + AX_struct_while_cmd_nm)
 extern AT_str_nm AX_str_nm;
 #define A_str_nm (bufferstack + AX_str_nm)
+extern AT_s_plsql_exceptionHandler_nm AX_s_plsql_exceptionHandler_nm;
+#define A_s_plsql_exceptionHandler_nm (bufferstack + AX_s_plsql_exceptionHandler_nm)
 extern AT_module_definition_hash AX_module_definition_hash;
 #define A_module_definition_hash (bufferstack + AX_module_definition_hash)
 extern AT_sql_statement_nobind AX_sql_statement_nobind;
@@ -2810,10 +3124,14 @@ extern AT_struct_construct_cmd_without_defaults AX_struct_construct_cmd_without_
 #define A_struct_construct_cmd_without_defaults (bufferstack + AX_struct_construct_cmd_without_defaults)
 extern AT_s_call_list_nm AX_s_call_list_nm;
 #define A_s_call_list_nm (bufferstack + AX_s_call_list_nm)
+extern AT_s_plsql_case_cmd_nm AX_s_plsql_case_cmd_nm;
+#define A_s_plsql_case_cmd_nm (bufferstack + AX_s_plsql_case_cmd_nm)
 extern AT_ilist_i1 AX_ilist_i1;
 #define A_ilist_i1 (bufferstack + AX_ilist_i1)
 extern AT_s_expr_field_touched_sio_id AX_s_expr_field_touched_sio_id;
 #define A_s_expr_field_touched_sio_id (bufferstack + AX_s_expr_field_touched_sio_id)
+extern AT_s_plsql_function_body_nm AX_s_plsql_function_body_nm;
+#define A_s_plsql_function_body_nm (bufferstack + AX_s_plsql_function_body_nm)
 extern AT_report_format_section_nm AX_report_format_section_nm;
 #define A_report_format_section_nm (bufferstack + AX_report_format_section_nm)
 extern AT_expr_str_s AX_expr_str_s;
@@ -2822,12 +3140,16 @@ extern AT_struct_case_cmd_nm AX_struct_case_cmd_nm;
 #define A_struct_case_cmd_nm (bufferstack + AX_struct_case_cmd_nm)
 extern AT_s_limit_end AX_s_limit_end;
 #define A_s_limit_end (bufferstack + AX_s_limit_end)
+extern AT_s_plsql_label_cmd_name AX_s_plsql_label_cmd_name;
+#define A_s_plsql_label_cmd_name (bufferstack + AX_s_plsql_label_cmd_name)
 extern AT_struct_next_field_cmd_nm AX_struct_next_field_cmd_nm;
 #define A_struct_next_field_cmd_nm (bufferstack + AX_struct_next_field_cmd_nm)
 extern AT_ilist_nm AX_ilist_nm;
 #define A_ilist_nm (bufferstack + AX_ilist_nm)
 extern AT_struct_cancel_cmd_nm AX_struct_cancel_cmd_nm;
 #define A_struct_cancel_cmd_nm (bufferstack + AX_struct_cancel_cmd_nm)
+extern AT_s_plsql_update_cmd_table AX_s_plsql_update_cmd_table;
+#define A_s_plsql_update_cmd_table (bufferstack + AX_s_plsql_update_cmd_table)
 extern AT_struct_show_menu_cmd_menuhandler AX_struct_show_menu_cmd_menuhandler;
 #define A_struct_show_menu_cmd_menuhandler (bufferstack + AX_struct_show_menu_cmd_menuhandler)
 extern AT_struct_free_rep_cmd_n_namespace AX_struct_free_rep_cmd_n_namespace;
@@ -2858,6 +3180,10 @@ extern AT_s_expr_aligned_nm AX_s_expr_aligned_nm;
 #define A_s_expr_aligned_nm (bufferstack + AX_s_expr_aligned_nm)
 extern AT_struct_display_array_cmd_sio AX_struct_display_array_cmd_sio;
 #define A_struct_display_array_cmd_sio (bufferstack + AX_struct_display_array_cmd_sio)
+extern AT_s_plsql_defineStmt_define_isConstant AX_s_plsql_defineStmt_define_isConstant;
+#define A_s_plsql_defineStmt_define_isConstant (bufferstack + AX_s_plsql_defineStmt_define_isConstant)
+extern AT_s_plsql_function_functionName AX_s_plsql_function_functionName;
+#define A_s_plsql_function_functionName (bufferstack + AX_s_plsql_function_functionName)
 extern AT_struct_next_form_cmd_field AX_struct_next_form_cmd_field;
 #define A_struct_next_form_cmd_field (bufferstack + AX_struct_next_form_cmd_field)
 extern AT_s_commands_nm AX_s_commands_nm;
@@ -2870,14 +3196,18 @@ extern AT_bluebar_nm AX_bluebar_nm;
 #define A_bluebar_nm (bufferstack + AX_bluebar_nm)
 extern AT_s_import_package_module AX_s_import_package_module;
 #define A_s_import_package_module (bufferstack + AX_s_import_package_module)
+extern AT_s_plsql_exit_cmd_nm AX_s_plsql_exit_cmd_nm;
+#define A_s_plsql_exit_cmd_nm (bufferstack + AX_s_plsql_exit_cmd_nm)
 extern AT_struct_declare_cmd_nm AX_struct_declare_cmd_nm;
 #define A_struct_declare_cmd_nm (bufferstack + AX_struct_declare_cmd_nm)
+extern AT_s_plsql_if_conds_nm AX_s_plsql_if_conds_nm;
+#define A_s_plsql_if_conds_nm (bufferstack + AX_s_plsql_if_conds_nm)
 extern AT_object_variable_class_name AX_object_variable_class_name;
 #define A_object_variable_class_name (bufferstack + AX_object_variable_class_name)
-extern AT_s_create_proc_data_p_nm AX_s_create_proc_data_p_nm;
-#define A_s_create_proc_data_p_nm (bufferstack + AX_s_create_proc_data_p_nm)
 extern AT_startrep_with_page_length AX_startrep_with_page_length;
 #define A_startrep_with_page_length (bufferstack + AX_startrep_with_page_length)
+extern AT_s_create_proc_data_p_nm AX_s_create_proc_data_p_nm;
+#define A_s_create_proc_data_p_nm (bufferstack + AX_s_create_proc_data_p_nm)
 extern AT_struct_start_cmd_nm AX_struct_start_cmd_nm;
 #define A_struct_start_cmd_nm (bufferstack + AX_struct_start_cmd_nm)
 extern AT_s_sli_case_element_nm AX_s_sli_case_element_nm;
@@ -2900,6 +3230,8 @@ extern AT_s_expr_member_function_call_n_funcName AX_s_expr_member_function_call_
 #define A_s_expr_member_function_call_n_funcName (bufferstack + AX_s_expr_member_function_call_n_funcName)
 extern AT_bluebar_g AX_bluebar_g;
 #define A_bluebar_g (bufferstack + AX_bluebar_g)
+extern AT_s_select_bulk_into AX_s_select_bulk_into;
+#define A_s_select_bulk_into (bufferstack + AX_s_select_bulk_into)
 extern AT_s_expr_shared_function_call_n_namespace AX_s_expr_shared_function_call_n_namespace;
 #define A_s_expr_shared_function_call_n_namespace (bufferstack + AX_s_expr_shared_function_call_n_namespace)
 extern AT_struct_output_cmd_repname AX_struct_output_cmd_repname;
@@ -2918,10 +3250,10 @@ extern AT_struct_print_img_cmd_nm AX_struct_print_img_cmd_nm;
 #define A_struct_print_img_cmd_nm (bufferstack + AX_struct_print_img_cmd_nm)
 extern AT_s_expr_op_nm AX_s_expr_op_nm;
 #define A_s_expr_op_nm (bufferstack + AX_s_expr_op_nm)
-extern AT_cmd_int_list_nm AX_cmd_int_list_nm;
-#define A_cmd_int_list_nm (bufferstack + AX_cmd_int_list_nm)
 extern AT_struct_construct_cmd_helpno AX_struct_construct_cmd_helpno;
 #define A_struct_construct_cmd_helpno (bufferstack + AX_struct_construct_cmd_helpno)
+extern AT_cmd_int_list_nm AX_cmd_int_list_nm;
+#define A_cmd_int_list_nm (bufferstack + AX_cmd_int_list_nm)
 extern AT_struct_term_rep_cmd_repname AX_struct_term_rep_cmd_repname;
 #define A_struct_term_rep_cmd_repname (bufferstack + AX_struct_term_rep_cmd_repname)
 extern AT_struct_input_array_cmd_slice_end AX_struct_input_array_cmd_slice_end;
@@ -2942,10 +3274,10 @@ extern AT_event_data_idle_n AX_event_data_idle_n;
 #define A_event_data_idle_n (bufferstack + AX_event_data_idle_n)
 extern AT_s_expr_function_call_module AX_s_expr_function_call_module;
 #define A_s_expr_function_call_module (bufferstack + AX_s_expr_function_call_module)
-extern AT_ilist_i3 AX_ilist_i3;
-#define A_ilist_i3 (bufferstack + AX_ilist_i3)
 extern AT_struct_display_array_cmd_helpno AX_struct_display_array_cmd_helpno;
 #define A_struct_display_array_cmd_helpno (bufferstack + AX_struct_display_array_cmd_helpno)
+extern AT_ilist_i3 AX_ilist_i3;
+#define A_ilist_i3 (bufferstack + AX_ilist_i3)
 extern AT_pdf_startrep_nm AX_pdf_startrep_nm;
 #define A_pdf_startrep_nm (bufferstack + AX_pdf_startrep_nm)
 extern AT_report_block_data_nm AX_report_block_data_nm;
@@ -2988,6 +3320,8 @@ extern AT_s_expr_datetime_extend AX_s_expr_datetime_extend;
 #define A_s_expr_datetime_extend (bufferstack + AX_s_expr_datetime_extend)
 extern AT_s_expr_external_call_line AX_s_expr_external_call_line;
 #define A_s_expr_external_call_line (bufferstack + AX_s_expr_external_call_line)
+extern AT_s_plsql_if_cond_nm AX_s_plsql_if_cond_nm;
+#define A_s_plsql_if_cond_nm (bufferstack + AX_s_plsql_if_cond_nm)
 extern AT_single_option_option AX_single_option_option;
 #define A_single_option_option (bufferstack + AX_single_option_option)
 extern AT_u_pragmas_e_pragmas AX_u_pragmas_e_pragmas;
@@ -3004,12 +3338,16 @@ extern AT_struct_label_cmd_label AX_struct_label_cmd_label;
 #define A_struct_label_cmd_label (bufferstack + AX_struct_label_cmd_label)
 extern AT_s_expr_form_is_compiled_line AX_s_expr_form_is_compiled_line;
 #define A_s_expr_form_is_compiled_line (bufferstack + AX_s_expr_form_is_compiled_line)
+extern AT_s_plsql_defineStmt_record_typeName AX_s_plsql_defineStmt_record_typeName;
+#define A_s_plsql_defineStmt_record_typeName (bufferstack + AX_s_plsql_defineStmt_record_typeName)
 extern AT_s_two_strings_string2 AX_s_two_strings_string2;
 #define A_s_two_strings_string2 (bufferstack + AX_s_two_strings_string2)
 extern AT_struct_whenever_cmd_nm AX_struct_whenever_cmd_nm;
 #define A_struct_whenever_cmd_nm (bufferstack + AX_struct_whenever_cmd_nm)
 extern AT_short_nm AX_short_nm;
 #define A_short_nm (bufferstack + AX_short_nm)
+extern AT_s_plsql_defineStmt_nm AX_s_plsql_defineStmt_nm;
+#define A_s_plsql_defineStmt_nm (bufferstack + AX_s_plsql_defineStmt_nm)
 extern AT_s_select_list_item_complex_expr_nm AX_s_select_list_item_complex_expr_nm;
 #define A_s_select_list_item_complex_expr_nm (bufferstack + AX_s_select_list_item_complex_expr_nm)
 extern AT_flist_type AX_flist_type;
@@ -3028,12 +3366,16 @@ extern AT_single_option_isKey AX_single_option_isKey;
 #define A_single_option_isKey (bufferstack + AX_single_option_isKey)
 extern AT_struct_set_database_cmd_nm AX_struct_set_database_cmd_nm;
 #define A_struct_set_database_cmd_nm (bufferstack + AX_struct_set_database_cmd_nm)
-extern AT_attrib_nonewlines AX_attrib_nonewlines;
-#define A_attrib_nonewlines (bufferstack + AX_attrib_nonewlines)
+extern AT_s_plsql_for_cursor_cmd_variable AX_s_plsql_for_cursor_cmd_variable;
+#define A_s_plsql_for_cursor_cmd_variable (bufferstack + AX_s_plsql_for_cursor_cmd_variable)
 extern AT_single_option_value AX_single_option_value;
 #define A_single_option_value (bufferstack + AX_single_option_value)
+extern AT_attrib_nonewlines AX_attrib_nonewlines;
+#define A_attrib_nonewlines (bufferstack + AX_attrib_nonewlines)
 extern AT_s_class_definition_classname AX_s_class_definition_classname;
 #define A_s_class_definition_classname (bufferstack + AX_s_class_definition_classname)
+extern AT_s_plsql_defineStmt_table_typeSpec AX_s_plsql_defineStmt_table_typeSpec;
+#define A_s_plsql_defineStmt_table_typeSpec (bufferstack + AX_s_plsql_defineStmt_table_typeSpec)
 extern AT_struct_move_cmd_relative AX_struct_move_cmd_relative;
 #define A_struct_move_cmd_relative (bufferstack + AX_struct_move_cmd_relative)
 extern AT_s_fetch_place_nm AX_s_fetch_place_nm;
@@ -3098,12 +3440,18 @@ extern AT_str_list_nm AX_str_list_nm;
 #define A_str_list_nm (bufferstack + AX_str_list_nm)
 extern AT_s_import_function_definition_colno AX_s_import_function_definition_colno;
 #define A_s_import_function_definition_colno (bufferstack + AX_s_import_function_definition_colno)
+extern AT_s_plsql_block_cmd_nm AX_s_plsql_block_cmd_nm;
+#define A_s_plsql_block_cmd_nm (bufferstack + AX_s_plsql_block_cmd_nm)
+extern AT_s_plsql_package_nm AX_s_plsql_package_nm;
+#define A_s_plsql_package_nm (bufferstack + AX_s_plsql_package_nm)
 extern AT_s_exchange_clobber_important AX_s_exchange_clobber_important;
 #define A_s_exchange_clobber_important (bufferstack + AX_s_exchange_clobber_important)
 extern AT_struct_convert_cmd_nm AX_struct_convert_cmd_nm;
 #define A_struct_convert_cmd_nm (bufferstack + AX_struct_convert_cmd_nm)
 extern AT_struct_execute_procedure_cmd_nm AX_struct_execute_procedure_cmd_nm;
 #define A_struct_execute_procedure_cmd_nm (bufferstack + AX_struct_execute_procedure_cmd_nm)
+extern AT_s_plsql_defineStmt_function_placeHolder AX_s_plsql_defineStmt_function_placeHolder;
+#define A_s_plsql_defineStmt_function_placeHolder (bufferstack + AX_s_plsql_defineStmt_function_placeHolder)
 extern AT_s_select_list_item_agg_expr_aud AX_s_select_list_item_agg_expr_aud;
 #define A_s_select_list_item_agg_expr_aud (bufferstack + AX_s_select_list_item_agg_expr_aud)
 extern AT_s_select_list_item_slil_expr_nm AX_s_select_list_item_slil_expr_nm;
@@ -3200,12 +3548,16 @@ extern AT_struct_label_cmd_nm AX_struct_label_cmd_nm;
 #define A_struct_label_cmd_nm (bufferstack + AX_struct_label_cmd_nm)
 extern AT_struct_cancel_cmd_c AX_struct_cancel_cmd_c;
 #define A_struct_cancel_cmd_c (bufferstack + AX_struct_cancel_cmd_c)
+extern AT_s_plsql_savepoint_cmd_savePointName AX_s_plsql_savepoint_cmd_savePointName;
+#define A_s_plsql_savepoint_cmd_savePointName (bufferstack + AX_s_plsql_savepoint_cmd_savePointName)
+extern AT_s_plsql_specs_name AX_s_plsql_specs_name;
+#define A_s_plsql_specs_name (bufferstack + AX_s_plsql_specs_name)
 extern AT_struct_print_cmd_semi AX_struct_print_cmd_semi;
 #define A_struct_print_cmd_semi (bufferstack + AX_struct_print_cmd_semi)
-extern AT_record_variable_nm AX_record_variable_nm;
-#define A_record_variable_nm (bufferstack + AX_record_variable_nm)
 extern AT_struct_disable_menu_cmd_nm AX_struct_disable_menu_cmd_nm;
 #define A_struct_disable_menu_cmd_nm (bufferstack + AX_struct_disable_menu_cmd_nm)
+extern AT_record_variable_nm AX_record_variable_nm;
+#define A_record_variable_nm (bufferstack + AX_record_variable_nm)
 extern AT_expr_str_expr_long AX_expr_str_expr_long;
 #define A_expr_str_expr_long (bufferstack + AX_expr_str_expr_long)
 extern AT_struct_show_cmd_nm AX_struct_show_cmd_nm;
@@ -3214,6 +3566,8 @@ extern AT_struct_todo_cmd_nm AX_struct_todo_cmd_nm;
 #define A_struct_todo_cmd_nm (bufferstack + AX_struct_todo_cmd_nm)
 extern AT_report_format_section_lines_in_first_header AX_report_format_section_lines_in_first_header;
 #define A_report_format_section_lines_in_first_header (bufferstack + AX_report_format_section_lines_in_first_header)
+extern AT_s_plsql_function_returnDtype AX_s_plsql_function_returnDtype;
+#define A_s_plsql_function_returnDtype (bufferstack + AX_s_plsql_function_returnDtype)
 extern AT_s_table_list_element_tabname AX_s_table_list_element_tabname;
 #define A_s_table_list_element_tabname (bufferstack + AX_s_table_list_element_tabname)
 extern AT_attrib_reverse AX_attrib_reverse;
@@ -3222,10 +3576,10 @@ extern AT_struct_set_session_cmd_nm AX_struct_set_session_cmd_nm;
 #define A_struct_set_session_cmd_nm (bufferstack + AX_struct_set_session_cmd_nm)
 extern AT_struct_open_cursor_cmd_nm AX_struct_open_cursor_cmd_nm;
 #define A_struct_open_cursor_cmd_nm (bufferstack + AX_struct_open_cursor_cmd_nm)
-extern AT_pdf_startrep_fontsize AX_pdf_startrep_fontsize;
-#define A_pdf_startrep_fontsize (bufferstack + AX_pdf_startrep_fontsize)
 extern AT_struct_call_shared_cmd_nm AX_struct_call_shared_cmd_nm;
 #define A_struct_call_shared_cmd_nm (bufferstack + AX_struct_call_shared_cmd_nm)
+extern AT_pdf_startrep_fontsize AX_pdf_startrep_fontsize;
+#define A_pdf_startrep_fontsize (bufferstack + AX_pdf_startrep_fontsize)
 extern AT_struct_input_cmd_without_defaults AX_struct_input_cmd_without_defaults;
 #define A_struct_input_cmd_without_defaults (bufferstack + AX_struct_input_cmd_without_defaults)
 extern AT_struct_for_cmd_nm AX_struct_for_cmd_nm;
@@ -3242,10 +3596,10 @@ extern AT_struct_declare_cmd_isstmt AX_struct_declare_cmd_isstmt;
 #define A_struct_declare_cmd_isstmt (bufferstack + AX_struct_declare_cmd_isstmt)
 extern AT_struct_ext_cmd_nm AX_struct_ext_cmd_nm;
 #define A_struct_ext_cmd_nm (bufferstack + AX_struct_ext_cmd_nm)
-extern AT_s_function_definition_lineno AX_s_function_definition_lineno;
-#define A_s_function_definition_lineno (bufferstack + AX_s_function_definition_lineno)
 extern AT_struct_construct_cmd_sio AX_struct_construct_cmd_sio;
 #define A_struct_construct_cmd_sio (bufferstack + AX_struct_construct_cmd_sio)
+extern AT_s_function_definition_lineno AX_s_function_definition_lineno;
+#define A_s_function_definition_lineno (bufferstack + AX_s_function_definition_lineno)
 extern AT_struct_whenever_signal_cmd_function_name AX_struct_whenever_signal_cmd_function_name;
 #define A_struct_whenever_signal_cmd_function_name (bufferstack + AX_struct_whenever_signal_cmd_function_name)
 extern AT_struct_hide_cmd_nm AX_struct_hide_cmd_nm;
@@ -3256,20 +3610,24 @@ extern AT_s_pdf_report_definition_comment AX_s_pdf_report_definition_comment;
 #define A_s_pdf_report_definition_comment (bufferstack + AX_s_pdf_report_definition_comment)
 extern AT_s_expr_dynarr_extent_n AX_s_expr_dynarr_extent_n;
 #define A_s_expr_dynarr_extent_n (bufferstack + AX_s_expr_dynarr_extent_n)
-extern AT_s_import_package_lineno AX_s_import_package_lineno;
-#define A_s_import_package_lineno (bufferstack + AX_s_import_package_lineno)
 extern AT_struct_clear_cmd_todefaults AX_struct_clear_cmd_todefaults;
 #define A_struct_clear_cmd_todefaults (bufferstack + AX_struct_clear_cmd_todefaults)
+extern AT_s_import_package_lineno AX_s_import_package_lineno;
+#define A_s_import_package_lineno (bufferstack + AX_s_import_package_lineno)
+extern AT_s_plsql_savepoint_cmd_nm AX_s_plsql_savepoint_cmd_nm;
+#define A_s_plsql_savepoint_cmd_nm (bufferstack + AX_s_plsql_savepoint_cmd_nm)
 extern AT_s_function_definition_module AX_s_function_definition_module;
 #define A_s_function_definition_module (bufferstack + AX_s_function_definition_module)
 extern AT_s_import_function_definition_lineno AX_s_import_function_definition_lineno;
 #define A_s_import_function_definition_lineno (bufferstack + AX_s_import_function_definition_lineno)
-extern AT_assoc_array_variable_size AX_assoc_array_variable_size;
-#define A_assoc_array_variable_size (bufferstack + AX_assoc_array_variable_size)
 extern AT_sql_statement_stmt_type AX_sql_statement_stmt_type;
 #define A_sql_statement_stmt_type (bufferstack + AX_sql_statement_stmt_type)
+extern AT_assoc_array_variable_size AX_assoc_array_variable_size;
+#define A_assoc_array_variable_size (bufferstack + AX_assoc_array_variable_size)
 extern AT_s_select_list_item_alias AX_s_select_list_item_alias;
 #define A_s_select_list_item_alias (bufferstack + AX_s_select_list_item_alias)
+extern AT_s_plsql_defineStmt_subtype_nm AX_s_plsql_defineStmt_subtype_nm;
+#define A_s_plsql_defineStmt_subtype_nm (bufferstack + AX_s_plsql_defineStmt_subtype_nm)
 extern AT_s_report_definition_lastlineno AX_s_report_definition_lastlineno;
 #define A_s_report_definition_lastlineno (bufferstack + AX_s_report_definition_lastlineno)
 extern AT_struct_execute_cmd_nm AX_struct_execute_cmd_nm;
@@ -3280,6 +3638,8 @@ extern AT_pdf_startrep_isdefault AX_pdf_startrep_isdefault;
 #define A_pdf_startrep_isdefault (bufferstack + AX_pdf_startrep_isdefault)
 extern AT_s_expr_dynarr_function_call_n_module AX_s_expr_dynarr_function_call_n_module;
 #define A_s_expr_dynarr_function_call_n_module (bufferstack + AX_s_expr_dynarr_function_call_n_module)
+extern AT_s_plsql_for_cursor_cmd_cursorname AX_s_plsql_for_cursor_cmd_cursorname;
+#define A_s_plsql_for_cursor_cmd_cursorname (bufferstack + AX_s_plsql_for_cursor_cmd_cursorname)
 extern AT_long_nm AX_long_nm;
 #define A_long_nm (bufferstack + AX_long_nm)
 extern AT_attrib_normal AX_attrib_normal;
@@ -3318,12 +3678,12 @@ extern AT_struct_input_array_cmd_slice AX_struct_input_array_cmd_slice;
 #define A_struct_input_array_cmd_slice (bufferstack + AX_struct_input_array_cmd_slice)
 extern AT_struct_todo_cmd_block_id AX_struct_todo_cmd_block_id;
 #define A_struct_todo_cmd_block_id (bufferstack + AX_struct_todo_cmd_block_id)
+extern AT_struct_declare_cmd_with_hold AX_struct_declare_cmd_with_hold;
+#define A_struct_declare_cmd_with_hold (bufferstack + AX_struct_declare_cmd_with_hold)
 extern AT_s_expr_infield_sio_id AX_s_expr_infield_sio_id;
 #define A_s_expr_infield_sio_id (bufferstack + AX_s_expr_infield_sio_id)
 extern AT_s_onaction_actionName AX_s_onaction_actionName;
 #define A_s_onaction_actionName (bufferstack + AX_s_onaction_actionName)
-extern AT_struct_declare_cmd_with_hold AX_struct_declare_cmd_with_hold;
-#define A_struct_declare_cmd_with_hold (bufferstack + AX_struct_declare_cmd_with_hold)
 extern AT_struct_whenever_cmd_whento AX_struct_whenever_cmd_whento;
 #define A_struct_whenever_cmd_whento (bufferstack + AX_struct_whenever_cmd_whento)
 extern AT_globals_definition_schema_only AX_globals_definition_schema_only;
@@ -3360,10 +3720,16 @@ extern AT_module_definition_n_namespace AX_module_definition_n_namespace;
 #define A_module_definition_n_namespace (bufferstack + AX_module_definition_n_namespace)
 extern AT_s_fetch_nm AX_s_fetch_nm;
 #define A_s_fetch_nm (bufferstack + AX_s_fetch_nm)
+extern AT_s_plsql_for_cmd_nm AX_s_plsql_for_cmd_nm;
+#define A_s_plsql_for_cmd_nm (bufferstack + AX_s_plsql_for_cmd_nm)
 extern AT_s_report_definition_module AX_s_report_definition_module;
 #define A_s_report_definition_module (bufferstack + AX_s_report_definition_module)
 extern AT_s_select_nm AX_s_select_nm;
 #define A_s_select_nm (bufferstack + AX_s_select_nm)
+extern AT_s_plsql_defineStmt_cursor_nm AX_s_plsql_defineStmt_cursor_nm;
+#define A_s_plsql_defineStmt_cursor_nm (bufferstack + AX_s_plsql_defineStmt_cursor_nm)
+extern AT_s_plsql_execute_immediate_cmd_usingBlock AX_s_plsql_execute_immediate_cmd_usingBlock;
+#define A_s_plsql_execute_immediate_cmd_usingBlock (bufferstack + AX_s_plsql_execute_immediate_cmd_usingBlock)
 extern AT_convert_nm AX_convert_nm;
 #define A_convert_nm (bufferstack + AX_convert_nm)
 extern AT_struct_call_cmd_nm AX_struct_call_cmd_nm;
@@ -3394,6 +3760,10 @@ extern AT_struct_close_sql_cmd_cl_type AX_struct_close_sql_cmd_cl_type;
 #define A_struct_close_sql_cmd_cl_type (bufferstack + AX_struct_close_sql_cmd_cl_type)
 extern AT_lint_warning_nm AX_lint_warning_nm;
 #define A_lint_warning_nm (bufferstack + AX_lint_warning_nm)
+extern AT_s_plsql_function_nm AX_s_plsql_function_nm;
+#define A_s_plsql_function_nm (bufferstack + AX_s_plsql_function_nm)
+extern AT_s_plsql_loop_cmd_nm AX_s_plsql_loop_cmd_nm;
+#define A_s_plsql_loop_cmd_nm (bufferstack + AX_s_plsql_loop_cmd_nm)
 extern AT_struct_pause_cmd_nm AX_struct_pause_cmd_nm;
 #define A_struct_pause_cmd_nm (bufferstack + AX_struct_pause_cmd_nm)
 extern AT_struct_spl_if_cmd_nm AX_struct_spl_if_cmd_nm;
@@ -3408,10 +3778,10 @@ extern AT_s_unexpanded_list_nm AX_s_unexpanded_list_nm;
 #define A_s_unexpanded_list_nm (bufferstack + AX_s_unexpanded_list_nm)
 extern AT_on_event_colno AX_on_event_colno;
 #define A_on_event_colno (bufferstack + AX_on_event_colno)
-extern AT_s_import_datatype_dtype_name AX_s_import_datatype_dtype_name;
-#define A_s_import_datatype_dtype_name (bufferstack + AX_s_import_datatype_dtype_name)
 extern AT_struct_declare_cmd_scroll AX_struct_declare_cmd_scroll;
 #define A_struct_declare_cmd_scroll (bufferstack + AX_struct_declare_cmd_scroll)
+extern AT_s_import_datatype_dtype_name AX_s_import_datatype_dtype_name;
+#define A_s_import_datatype_dtype_name (bufferstack + AX_s_import_datatype_dtype_name)
 extern AT_module_definition_moduleIsInLibrary AX_module_definition_moduleIsInLibrary;
 #define A_module_definition_moduleIsInLibrary (bufferstack + AX_module_definition_moduleIsInLibrary)
 extern AT_s_expr_member_function_call_n_nm AX_s_expr_member_function_call_n_nm;
@@ -3456,6 +3826,8 @@ extern AT_funcname_list_nm AX_funcname_list_nm;
 #define A_funcname_list_nm (bufferstack + AX_funcname_list_nm)
 extern AT_globals_definition_compiled_time AX_globals_definition_compiled_time;
 #define A_globals_definition_compiled_time (bufferstack + AX_globals_definition_compiled_time)
+extern AT_s_plsql_update_cmd_nm AX_s_plsql_update_cmd_nm;
+#define A_s_plsql_update_cmd_nm (bufferstack + AX_s_plsql_update_cmd_nm)
 extern AT_struct_prepare_cmd_nm AX_struct_prepare_cmd_nm;
 #define A_struct_prepare_cmd_nm (bufferstack + AX_struct_prepare_cmd_nm)
 extern AT_struct_input_cmd_nm AX_struct_input_cmd_nm;
@@ -3468,6 +3840,10 @@ extern AT_cons_list_entry_colname AX_cons_list_entry_colname;
 #define A_cons_list_entry_colname (bufferstack + AX_cons_list_entry_colname)
 extern AT_module_definition_debug_filename AX_module_definition_debug_filename;
 #define A_module_definition_debug_filename (bufferstack + AX_module_definition_debug_filename)
+extern AT_s_plsql_for_cursor_cmd_nm AX_s_plsql_for_cursor_cmd_nm;
+#define A_s_plsql_for_cursor_cmd_nm (bufferstack + AX_s_plsql_for_cursor_cmd_nm)
+extern AT_s_plsql_return_cmd_nm AX_s_plsql_return_cmd_nm;
+#define A_s_plsql_return_cmd_nm (bufferstack + AX_s_plsql_return_cmd_nm)
 extern AT_assoc_array_variable_nm AX_assoc_array_variable_nm;
 #define A_assoc_array_variable_nm (bufferstack + AX_assoc_array_variable_nm)
 extern AT_s_source_code_nm AX_s_source_code_nm;
@@ -3514,6 +3890,8 @@ extern AT_variable_user_system AX_variable_user_system;
 #define A_variable_user_system (bufferstack + AX_variable_user_system)
 extern AT_struct_spl_on_exception_cmd_nm AX_struct_spl_on_exception_cmd_nm;
 #define A_struct_spl_on_exception_cmd_nm (bufferstack + AX_struct_spl_on_exception_cmd_nm)
+extern AT_s_plsql_call_cmd_placeHolder AX_s_plsql_call_cmd_placeHolder;
+#define A_s_plsql_call_cmd_placeHolder (bufferstack + AX_s_plsql_call_cmd_placeHolder)
 extern AT_variable_usage AX_variable_usage;
 #define A_variable_usage (bufferstack + AX_variable_usage)
 extern AT_expr_str_e_expr_type AX_expr_str_e_expr_type;
@@ -3554,10 +3932,10 @@ extern AT_int_value AX_int_value;
 #define A_int_value (bufferstack + AX_int_value)
 extern AT_struct_fetch_cmd_nm AX_struct_fetch_cmd_nm;
 #define A_struct_fetch_cmd_nm (bufferstack + AX_struct_fetch_cmd_nm)
-extern AT_s_expr_bound_fcall_n_namespace AX_s_expr_bound_fcall_n_namespace;
-#define A_s_expr_bound_fcall_n_namespace (bufferstack + AX_s_expr_bound_fcall_n_namespace)
 extern AT_struct_disable_cmd_nm AX_struct_disable_cmd_nm;
 #define A_struct_disable_cmd_nm (bufferstack + AX_struct_disable_cmd_nm)
+extern AT_s_expr_bound_fcall_n_namespace AX_s_expr_bound_fcall_n_namespace;
+#define A_s_expr_bound_fcall_n_namespace (bufferstack + AX_s_expr_bound_fcall_n_namespace)
 extern AT_variable_assigned AX_variable_assigned;
 #define A_variable_assigned (bufferstack + AX_variable_assigned)
 extern AT_struct_input_array_cmd_helpno AX_struct_input_array_cmd_helpno;
@@ -3570,6 +3948,8 @@ extern AT_s_select_list_item_fcall_nm AX_s_select_list_item_fcall_nm;
 #define A_s_select_list_item_fcall_nm (bufferstack + AX_s_select_list_item_fcall_nm)
 extern AT_s_select_list_item_extend_from AX_s_select_list_item_extend_from;
 #define A_s_select_list_item_extend_from (bufferstack + AX_s_select_list_item_extend_from)
+extern AT_s_plsql_defineStmt_define_nm AX_s_plsql_defineStmt_define_nm;
+#define A_s_plsql_defineStmt_define_nm (bufferstack + AX_s_plsql_defineStmt_define_nm)
 extern AT_windowtype_nm AX_windowtype_nm;
 #define A_windowtype_nm (bufferstack + AX_windowtype_nm)
 extern AT_struct_disable_form_cmd_nm AX_struct_disable_form_cmd_nm;
@@ -3584,10 +3964,14 @@ extern AT_s_func_nm AX_s_func_nm;
 #define A_s_func_nm (bufferstack + AX_s_func_nm)
 extern AT_struct_continue_cmd_nm AX_struct_continue_cmd_nm;
 #define A_struct_continue_cmd_nm (bufferstack + AX_struct_continue_cmd_nm)
+extern AT_s_plsql_assign_cmd_nm AX_s_plsql_assign_cmd_nm;
+#define A_s_plsql_assign_cmd_nm (bufferstack + AX_s_plsql_assign_cmd_nm)
 extern AT_s_expr_function_call_functionname AX_s_expr_function_call_functionname;
 #define A_s_expr_function_call_functionname (bufferstack + AX_s_expr_function_call_functionname)
 extern AT_s_import_function_definition_module AX_s_import_function_definition_module;
 #define A_s_import_function_definition_module (bufferstack + AX_s_import_function_definition_module)
+extern AT_s_plsql_parameter_nm AX_s_plsql_parameter_nm;
+#define A_s_plsql_parameter_nm (bufferstack + AX_s_plsql_parameter_nm)
 extern AT_fgl_comment_colno AX_fgl_comment_colno;
 #define A_fgl_comment_colno (bufferstack + AX_fgl_comment_colno)
 extern AT_ilist_i4 AX_ilist_i4;
@@ -3602,6 +3986,8 @@ extern AT_struct_need_cmd_nm AX_struct_need_cmd_nm;
 #define A_struct_need_cmd_nm (bufferstack + AX_struct_need_cmd_nm)
 extern AT_command_nm AX_command_nm;
 #define A_command_nm (bufferstack + AX_command_nm)
+extern AT_s_plsql_parameter_inOut AX_s_plsql_parameter_inOut;
+#define A_s_plsql_parameter_inOut (bufferstack + AX_s_plsql_parameter_inOut)
 extern AT_struct_print_img_cmd_img_type AX_struct_print_img_cmd_img_type;
 #define A_struct_print_img_cmd_img_type (bufferstack + AX_struct_print_img_cmd_img_type)
 

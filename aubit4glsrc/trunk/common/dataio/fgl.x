@@ -1,6 +1,12 @@
-/* $Id: fgl.x,v 1.71 2012-07-25 09:01:13 mikeaubury Exp $ */
+/* $Id: fgl.x,v 1.72 2013-03-25 12:58:40 mikeaubury Exp $ */
 typedef string str<>;
 typedef string sql_ident<>;
+typedef struct s_plsql_packageEntries * s_plsql_packageEntries_ptr;
+typedef struct s_plsql_exceptionHandler * s_plsql_exceptionHandler_ptr;
+typedef struct s_plsql_specs * s_plsql_specs_ptr;
+typedef struct s_plsql_parameter * s_plsql_parameter_ptr;
+typedef struct s_plsql_caseEntry * s_plsql_caseEntry_ptr;
+typedef struct s_plsql_defineStmt *s_plsql_defineStmt_ptr;
 
 
 enum dt_display_type {
@@ -202,7 +208,27 @@ E_CMD_TODO_CMD,
 E_CMD_DONE_CMD,
 E_CMD_MLET_CMD,
 E_CMD_WHENEVER_SIGNAL_CMD,
-
+E_CMD_PLSQL_ASSIGN_CMD,
+E_CMD_PLSQL_BLOCK_CMD,
+E_CMD_PLSQL_CALL_CMD,
+E_CMD_PLSQL_CASE_CMD,
+E_CMD_PLSQL_EXIT_CMD,
+E_CMD_PLSQL_FOR_CMD,
+E_CMD_PLSQL_FOR_CURSOR_CMD,
+E_CMD_PLSQL_LABEL_CMD,
+E_CMD_PLSQL_LOOP_CMD,
+E_CMD_PLSQL_NULL_CMD,
+E_CMD_PLSQL_RETURN_CMD,
+E_CMD_PLSQL_ROLLBACK_CMD,
+E_CMD_PLSQL_SAVEPOINT_CMD,
+E_CMD_PLSQL_WHILE_CMD,
+E_CMD_PLSQL_EXECUTE_IMMEDIATE_CMD,
+E_CMD_PLSQL_SELECT_CMD,
+E_CMD_PLSQL_DELETE_CMD,
+E_CMD_PLSQL_UPDATE_CMD,
+E_CMD_PLSQL_INSERT_CMD,
+E_CMD_PLSQL_IF_CMD,
+E_CMD_PLSQL_BUSINESS_RULE_CMD,
 E_CMD_LAST
 };
 
@@ -316,7 +342,6 @@ struct struct_update_cmd {
 	struct expr_str *where_clause;
 };
 
-
 struct s_update_pair {
 		str column_name;
 	        struct s_select_list_item *value;
@@ -330,12 +355,12 @@ struct struct_insert_cmd {
 	struct s_select *subselect;
 };
 
-struct struct_delete_cmd {
-	struct expr_str *connid;
-	str table;
-	struct expr_str *where_clause;
-};
 
+struct struct_delete_cmd {
+        struct expr_str *connid;
+        str table;
+        struct expr_str *where_clause;
+};
 
 /* ***************************************************** */
 
@@ -425,9 +450,6 @@ struct struct_goto_cmd {
 	str label;
 };
 
-struct struct_label_cmd {
-	str label;
-};
 
 
 struct struct_error_cmd {
@@ -1679,12 +1701,292 @@ struct struct_whenever_signal_cmd {
 
 };
 
+
+/* -- PLSQL START */
+
+/*
+ s_plsql_defineStmt_ptr define<>;
+ command_ptr cmds<>;
+ s_plsql_exceptionHandler_ptr exceptions<>;
+*/
+struct s_plsql_defineStmt_table {
+	str typeName;
+	str typeSpec;
+	str index;
+};
+
+
+struct s_plsql_select_cmd {
+	struct s_select *sql;
+};
+
+struct s_plsql_update_cmd {
+ 	struct expr_str *connid;
+        str table;
+        str_list *column_list;
+        struct s_select_list_item_list *value_list;
+        struct expr_str *where_clause;
+};
+
+struct s_plsql_delete_cmd {
+	str table;
+        struct expr_str *where_clause;
+};
+
+struct s_plsql_insert_cmd {
+        str table;
+        str_list *column_list;
+        struct s_select_list_item_list *value_list;
+        struct s_select *subselect;
+};
+
+struct s_plsql_caseEntry {
+	struct s_select_list_item *condition;
+	s_commands commands;
+};
+
+struct s_plsql_execute_immediate_cmd {
+	struct s_select_list_item *sql;
+	str usingBlock;
+};
+
+struct s_plsql_assign_cmd {
+	struct s_select_list_item *variable;
+	struct s_select_list_item *value;
+};
+
+
+struct s_plsql_call_cmd {
+	str call;
+	struct s_select_list_item_list *parameters;
+};
+
+
+struct s_plsql_case_cmd {
+	struct s_select_list_item *masterCondition;
+	s_plsql_caseEntry_ptr entries<>;
+	s_commands elseEntryCommands;
+};
+
+struct s_plsql_rollback_cmd {
+	str savePointName;
+};
+
+struct s_plsql_savepoint_cmd {
+	str savePointName;
+};
+
+struct s_plsql_while_cmd {
+	struct s_select_list_item *condition;
+	s_commands commands;
+};
+
+
+
+struct s_plsql_defineStmt_record {
+	str typeName;
+	s_plsql_specs_ptr specs<>;
+};
+
+struct s_plsql_defineStmt_subtype {
+	str typeName;
+	struct s_plsql_specs *spec;
+};
+
+
+struct s_plsql_defineStmt_define {
+	str name;
+	str dtype;
+	int isConstant;
+	struct s_select_list_item *initialValue;
+};
+
+struct s_plsql_defineStmt_cursor {
+	str name;
+	struct s_select *selectStmt;
+	s_plsql_parameter_ptr parameters<>;
+};
+
+enum s_plsql_defineStmt_types {
+	EDS_TYPETABLE,
+	EDS_TYPERECORD,
+	EDS_SUBTYPE,
+	EDS_DEFINE,
+	EDS_CURSOR
+};
+
+union s_plsql_defineStmt switch (enum s_plsql_defineStmt_types type) {
+
+	case EDS_TYPETABLE:
+		struct s_plsql_defineStmt_table table;
+
+	case EDS_TYPERECORD:
+		struct s_plsql_defineStmt_record record;
+
+	case EDS_SUBTYPE:
+		struct s_plsql_defineStmt_subtype subtype;
+
+	case EDS_DEFINE:
+		struct s_plsql_defineStmt_define define;
+
+	case EDS_CURSOR:
+		struct s_plsql_defineStmt_cursor cursor;
+};
+
+
+
+struct s_plsql_block_cmd {
+	s_plsql_defineStmt_ptr define<>;
+	s_commands commands;
+	s_plsql_exceptionHandler_ptr exceptions<>;
+};
+
+
+struct s_plsql_if_cond {
+	struct s_select_list_item* test_expr;
+	s_commands commands;
+};
+
+struct s_plsql_if_conds {
+	s_plsql_if_cond conditions<>;
+};
+
+struct  s_plsql_if_cmd {
+	s_plsql_if_conds conditions;
+};
+
+
+struct struct_label_cmd {
+	str label;
+};
+
+struct s_plsql_package {
+	str packageName;
+ 	int isBody;
+	s_plsql_defineStmt_ptr define<>;
+	s_plsql_packageEntries_ptr entries<>;
+};
+
+
+
+
+
+
+
+struct s_plsql_exceptionHandler {
+	str names;
+	s_commands commands;
+};
+
+
+
+
+enum s_plsql_packageEntries_type {
+	PE_FUNCTION,
+	PE_PROCEDURE,
+	PE_DEFINE,
+	PE_CMD
+};
+
+struct s_plsql_function_body {
+	s_plsql_defineStmt_ptr define<>;
+	s_commands commands;
+	s_plsql_exceptionHandler_ptr exceptions<>;
+};
+
+struct s_plsql_function {
+	str functionName;
+	s_plsql_parameter_ptr parameters<>;
+	str returnDtype;
+	s_plsql_function_body *functionBody;
+};
+
+
+union s_plsql_packageEntries switch (enum s_plsql_packageEntries_type type) {
+	case PE_FUNCTION:
+		 /*!  struct s_plsql_function function; !*/
+
+	case PE_PROCEDURE:
+		 struct s_plsql_function function;
+
+	case PE_DEFINE:
+		struct s_plsql_defineStmt *define;
+
+	case PE_CMD:
+		struct command *cmd;
+	
+};
+
+struct s_plsql_dtypeAndDefault  {
+	str dtype;
+	struct s_select_list_item *defaultValue;
+};
+
+struct s_plsql_parameter {
+	str name;
+	str inOut;
+	struct s_plsql_dtypeAndDefault *dtypeAndDefault;
+};
+
+
+
+
+
+
+struct s_plsql_specs {
+	str name;
+	str dataType;
+	struct s_select_list_item * initialValue;
+};
+
+struct s_plsql_business_rule_cmd {
+	str comment_text;
+};
+
+struct s_plsql_exit_cmd {
+	str label;
+	struct s_select_list_item *exit_condition;
+};
+
+struct s_plsql_return_cmd {
+	struct s_select_list_item_list *rvals;
+};
+
+struct s_plsql_label_cmd {
+	str name;
+	s_plsql_defineStmt_ptr define<>;
+	s_commands commands;
+	s_plsql_exceptionHandler_ptr exceptions<>;
+};
+
+
+struct s_plsql_loop_cmd {
+	str name;
+	struct s_select_list_item *condition;
+	s_commands commands;
+};
+
+struct s_plsql_for_cmd {
+	str variable;
+	struct s_select_list_item *from;
+	struct s_select_list_item *to;
+	s_commands commands;
+};
+
+struct s_plsql_for_cursor_cmd {
+	str variable;
+	str cursorname;
+	struct s_select_list_item_list *parameters;
+	s_commands commands;
+};
+
 union command_data switch (enum cmd_type type) {
 	case E_CMD_STOP_RPC_CMD: void;
 	case E_CMD_PAUSE_SCREEN_ON_CMD: void;
 	case E_CMD_PAUSE_SCREEN_OFF_CMD: void;
 	case E_CMD_SKIP_TO_TOP_CMD: void;
 	case E_CMD_DONE_CMD: void;
+	case E_CMD_PLSQL_NULL_CMD: void;
 
 	case E_CMD_LAST: void;
 	
@@ -1780,6 +2082,10 @@ union command_data switch (enum cmd_type type) {
 	case E_CMD_SQL_CMD: struct_sql_cmd sql_cmd;
 	case E_CMD_SQL_TRANSACT_CMD: struct_sql_transact_cmd sql_transact_cmd;
 	case E_CMD_SELECT_CMD: struct_select_cmd select_cmd;
+	case E_CMD_PLSQL_SELECT_CMD: s_plsql_select_cmd plsql_select_cmd;
+	case E_CMD_PLSQL_UPDATE_CMD: s_plsql_update_cmd plsql_update_cmd;
+	case E_CMD_PLSQL_INSERT_CMD: s_plsql_insert_cmd plsql_insert_cmd;
+	case E_CMD_PLSQL_DELETE_CMD: s_plsql_delete_cmd plsql_delete_cmd;
 	case E_CMD_FLUSH_CMD: struct_flush_cmd flush_cmd;
 	case E_CMD_DECLARE_CMD: struct_declare_cmd declare_cmd;
 	case E_CMD_SET_DATABASE_CMD: struct_set_database_cmd set_database_cmd;
@@ -1820,6 +2126,24 @@ union command_data switch (enum cmd_type type) {
 	case E_CMD_TODO_CMD: struct_todo_cmd todo_cmd;
 
 	case E_CMD_WHENEVER_SIGNAL_CMD: struct_whenever_signal_cmd whenever_signal_cmd ;
+
+	case E_CMD_PLSQL_BUSINESS_RULE_CMD: s_plsql_business_rule_cmd plsql_business_rule;
+	case E_CMD_PLSQL_EXIT_CMD: s_plsql_exit_cmd plsql_exit;
+	case E_CMD_PLSQL_IF_CMD: s_plsql_if_cmd plsql_if;
+	case E_CMD_PLSQL_RETURN_CMD: s_plsql_return_cmd plsql_return;
+	case E_CMD_PLSQL_LABEL_CMD: s_plsql_label_cmd plsql_label;
+	case E_CMD_PLSQL_LOOP_CMD: s_plsql_loop_cmd plsql_loop;
+	case E_CMD_PLSQL_FOR_CMD: s_plsql_for_cmd plsql_for;
+	case E_CMD_PLSQL_FOR_CURSOR_CMD: s_plsql_for_cursor_cmd plsql_for_cursor;
+	case E_CMD_PLSQL_EXECUTE_IMMEDIATE_CMD: s_plsql_execute_immediate_cmd plsql_execute_immediate;
+
+	case E_CMD_PLSQL_ASSIGN_CMD: s_plsql_assign_cmd plsql_assign;
+	case E_CMD_PLSQL_BLOCK_CMD: s_plsql_block_cmd plsql_block;
+	case E_CMD_PLSQL_CALL_CMD: s_plsql_call_cmd plsql_call;
+	case E_CMD_PLSQL_CASE_CMD: s_plsql_case_cmd plsql_case;
+	case E_CMD_PLSQL_ROLLBACK_CMD: s_plsql_rollback_cmd plsql_rollback;
+	case E_CMD_PLSQL_SAVEPOINT_CMD: s_plsql_savepoint_cmd plsql_savepoint;
+	case E_CMD_PLSQL_WHILE_CMD: s_plsql_while_cmd plsql_while;
 
 };
 
@@ -2795,6 +3119,9 @@ enum subtype {
 
 
 
+
+/* -- PLSQL END */
+
 enum e_sli {
         E_SLI_CHAR,
         E_SLI_COLUMN,
@@ -2987,7 +3314,7 @@ struct s_select {
                 struct s_select_list_item_list *select_list;
                 struct s_select_list_item_list list_of_items;
 
-
+		struct s_select_list_item_list * bulk_into; /* plsql */
                 /* Pointer to first table */
                 struct s_table *first;
 

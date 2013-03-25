@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pack_xml.c,v 1.5 2012-07-10 11:36:33 mikeaubury Exp $
+# $Id: pack_xml.c,v 1.6 2013-03-25 12:58:41 mikeaubury Exp $
 #*/
 
 /**
@@ -132,6 +132,49 @@ A4GLPacker_A4GL_close_packer (char dir)
 int
 A4GLPacker_A4GL_pack_all (char *name, void *s, char *filename)
 {
+
+	if (strcmp(name,"s_plsql_package")==0) {
+		char buff[256];
+		char *override;
+			override=acl_getenv_not_set_as_0 ("OVERRIDE_PACKER_OUTPUT");
+		if (!override) {
+			override=acl_getenv_not_set_as_0("OVERRIDE_OUTPUT");
+		}
+
+		if (override) {
+			strcpy(buff,override);
+		} else {	
+			if (!A4GL_env_option_set ("A4GL_LOCALOUTPUT")) {
+				strcpy(buff,filename);
+			} else {
+				char *ptr;
+			      ptr = filename;
+      				if (rindex (ptr, '/')) {
+          				ptr = rindex (ptr, '/') + 1;
+        			}
+				strcpy(buff,ptr);
+
+			}
+			strcat(buff,".xml");
+		}
+#ifdef HAVE_ZLIB
+		if (!strstr(buff,".gz")) {
+			strcat(buff,".gz");
+		}
+		ofile=A4GL_gzfopen(buff,"wb");
+#else
+		ofile=A4GL_gzfopen(buff,"wb");
+#endif
+
+		if (ofile) {
+			A4GL_gzfprintf(ofile,"<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"); 
+			XMLWrite_s_plsql_package_std(0,s);
+			A4GL_gzfclose(ofile);
+		} else {
+			return 0;
+		}
+	}
+
 	if (strcmp(name,"module_definition")==0) {
 		char buff[256];
 		char *override;

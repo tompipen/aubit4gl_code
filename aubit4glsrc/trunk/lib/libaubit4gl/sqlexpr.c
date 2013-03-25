@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlexpr.c,v 1.102 2011-10-24 18:52:25 mikeaubury Exp $
+# $Id: sqlexpr.c,v 1.103 2013-03-25 12:58:41 mikeaubury Exp $
 #
 */
 
@@ -815,6 +815,7 @@ get_select_list_item (struct s_select *select, struct s_select_list_item *p)
 	  rval = make_sql_string_and_free (rval, acl_strdup_With_Context (" "), acl_strdup_With_Context (p->alias), NULL);
 	}
     }
+//printf("get_select_list_item->%s\n", rval);
   return rval;
 }
 

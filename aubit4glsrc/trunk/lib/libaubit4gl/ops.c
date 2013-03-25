@@ -25,7 +25,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.208 2013-01-08 08:05:27 mikeaubury Exp $
+# $Id: ops.c,v 1.209 2013-03-25 12:58:41 mikeaubury Exp $
 #
 */
 
@@ -4922,7 +4922,7 @@ A4GL_date_char_ops (int op)
   strncpy (buff, ptr, 255);
   buff[255] = 0;
 
-  if (A4GL_isnull (DTYPE_INT, (void *) &a) || A4GL_isnull (DTYPE_CHAR, (void *) &ptr))
+  if (A4GL_isnull (DTYPE_INT, (void *) &a) || A4GL_isnull (DTYPE_CHAR, (void *) ptr))
     {
       free (ptr);
 #ifdef DEBUG

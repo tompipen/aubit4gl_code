@@ -19,6 +19,32 @@ int XMLWrite_single_option_ptr(char *nm, single_option_ptr p) {
 }
 
 
+int XMLWrite_s_plsql_caseEntry_ptr (char *nm, s_plsql_caseEntry_ptr p) {
+        return XMLWrite_s_plsql_caseEntry_std(nm, p);
+}
+
+int XMLWrite_s_plsql_defineStmt_ptr (char *nm, s_plsql_defineStmt_ptr p) {
+        return XMLWrite_s_plsql_defineStmt_std(nm, p);
+}
+
+int XMLWrite_s_plsql_exceptionHandler_ptr (char *nm, s_plsql_exceptionHandler_ptr p) {
+        return XMLWrite_s_plsql_exceptionHandler_std(nm, p);
+}
+
+int XMLWrite_s_plsql_packageEntries_ptr (char *nm, s_plsql_packageEntries_ptr p) {
+        return XMLWrite_s_plsql_packageEntries_std(nm, p);
+}
+
+int XMLWrite_s_plsql_parameter_ptr (char *nm, s_plsql_parameter_ptr p) {
+        return XMLWrite_s_plsql_parameter_std(nm, p);
+}
+
+int XMLWrite_s_plsql_specs_ptr (char *nm, s_plsql_specs_ptr p) {
+        return XMLWrite_s_plsql_specs_std(nm, p);
+}
+
+
+
 int XMLWrite_report_format_section_entry_ptr(char *nm, report_format_section_entry_ptr p) {
 	return XMLWrite_report_format_section_entry_std(nm, p);
 }

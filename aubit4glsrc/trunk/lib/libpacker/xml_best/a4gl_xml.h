@@ -13,6 +13,13 @@ int XMLWrite_on_event_ptr(char *nm, on_event_ptr p) ;
 int XMLWrite_cons_list_entry_ptr(char *nm, cons_list_entry_ptr p) ;
 int XMLWrite_module_entry_ptr(char *nm, module_entry_ptr p) ;
 int XMLWrite_int(char *nm, int *l) ;
+int XMLWrite_s_plsql_caseEntry_ptr (char *nm, s_plsql_caseEntry_ptr p) ;
+int XMLWrite_s_plsql_defineStmt_ptr (char *nm, s_plsql_defineStmt_ptr p) ;
+int XMLWrite_s_plsql_exceptionHandler_ptr (char *nm, s_plsql_exceptionHandler_ptr p) ;
+int XMLWrite_s_plsql_packageEntries_ptr (char *nm, s_plsql_packageEntries_ptr p) ;
+int XMLWrite_s_plsql_parameter_ptr (char *nm, s_plsql_parameter_ptr p) ;
+int XMLWrite_s_plsql_specs_ptr (char *nm, s_plsql_specs_ptr p) ;
+
 char *xml_encode_char(char c);
 int XMLWrite_str(char *nm, str *val);
 int XMLWrite_elements_ptr(char *nm, elements_ptr p);

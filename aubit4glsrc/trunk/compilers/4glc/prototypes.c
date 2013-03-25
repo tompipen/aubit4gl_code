@@ -13,6 +13,7 @@ char *funcprefix="aclfgl_";
 #define MODE_TRY 0
 #define MODE_BUY 1
 
+#define MINIMIZE 1
 //static int indent = 0;
 char currfunc[2000];
 char currmod[2000];
@@ -730,6 +731,16 @@ get_var_lit (expr_str * x)
 #endif
 
 
+
+static int isInt(int dtype) {
+switch (dtype) {
+	case DTYPE_INT:
+	case DTYPE_SERIAL:
+		return 1;
+}
+return 0;
+}
+
 static void
 add_rettypes (int funcno, struct rettypes *rl)
 {
@@ -748,6 +759,10 @@ add_rettypes (int funcno, struct rettypes *rl)
 	}
       for (b = 0; b < rl->nreturns; b++)
 	{
+	  if (functions[funcno].return_datatypes[a]->returns[b]==DTYPE_SMINT &&  isInt(rl->returns[b])) {
+		functions[funcno].return_datatypes[a]->returns[b]=DTYPE_INT;
+	  }
+
 	  if (functions[funcno].return_datatypes[a]->returns[b] != rl->returns[b])
 	    {
 	      found = 0;

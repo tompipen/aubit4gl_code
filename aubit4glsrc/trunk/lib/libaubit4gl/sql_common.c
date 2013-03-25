@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql_common.c,v 1.106 2012-09-14 08:22:22 mikeaubury Exp $
+# $Id: sql_common.c,v 1.107 2013-03-25 12:58:41 mikeaubury Exp $
 #
 */
 
@@ -1176,7 +1176,6 @@ struct s_table *
 A4GLSQLPARSE_new_tablename (char *tname, char *alias)
 {
   struct s_table *ptr;
-
   ptr = acl_malloc2 (sizeof (struct s_table));
   ptr->tabname = acl_strdup_With_Context (tname);
   if (alias)

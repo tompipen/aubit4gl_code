@@ -3,10 +3,6 @@ Tue Jan  8 07:42:48 GMT 2013
 ---------------------------
 1.2_33 Released
 ---------------------------
-	2012-12-23 11:14  mikeaubury
-	
-	2012-12-12 13:06  mikeaubury
-	
 	2012-12-10 16:43  mikeaubury
 	
 	Fix for AIX by Stanislav LOFAJ
@@ -18,10 +14,6 @@ Tue Jan  8 07:42:48 GMT 2013
 	2012-11-29 14:10  fortiz
 	
 	pfdlib lite version 7.0.5
-	
-	2012-11-27 20:46  mikeaubury
-	
-	2012-11-27 18:38  locbook
 	
 	2012-11-27 18:34  locbook
 	
@@ -85,10 +77,6 @@ Thu Oct 18 08:36:02 BST 2012
 ---------------------------
 1.2_31 Released
 ---------------------------
-	2012-10-17 21:28  mikeaubury
-	
-	2012-10-17 21:25  mikeaubury
-	
 	2012-10-16 18:20  locbook
 	
 	AFTER ROW should run on interrupt
@@ -96,8 +84,6 @@ Thu Oct 18 08:36:02 BST 2012
 	2012-10-16 07:51  mikeaubury
 	
 	menu fixup
-	
-	2012-10-16 07:49  mikeaubury
 	
 	2012-10-15 14:13  locbook
 	
@@ -165,8 +151,6 @@ Thu Oct 18 08:36:02 BST 2012
 	filename defaults to ".trace.ignore" but can be set to	  another
 	name setting "TRACEIGNORELIST" to point to a different file
 	
-	2012-09-24 18:51  mikeaubury
-	
 	2012-09-24 13:21  siverly
 	
 	After some changes in different functions in the last weeks (for
@@ -179,8 +163,6 @@ Thu Oct 18 08:36:02 BST 2012
 	2012-09-20 12:14  siverly
 	
 	fix oversized comments in compilation
-	
-	2012-09-14 13:24  mikeaubury
 	
 	2012-09-14 09:22  mikeaubury
 	
@@ -200,20 +182,6 @@ Thu Oct 18 08:36:02 BST 2012
 	2012-09-02 17:30  mikeaubury
 	
 	Add Id field to layouts
-	
-	2012-08-31 13:17  mikeaubury
-	
-	2012-08-31 11:07  mikeaubury
-	
-	2012-08-31 10:53  mikeaubury
-	
-	2012-08-31 10:26  mikeaubury
-	
-	2012-08-24 14:09  mikeaubury
-	
-	2012-08-24 13:37  mikeaubury
-	
-	2012-08-23 14:37  mikeaubury
 	
 	2012-08-14 15:22  mikeaubury
 	
@@ -235,22 +203,12 @@ Thu Oct 18 08:36:02 BST 2012
 	
 	Remove call to initialization function for empty globals files
 	
-	2012-07-26 11:06  mikeaubury
-	
-	2012-07-25 10:57  mikeaubury
-	
-	2012-07-25 10:14  mikeaubury
-	
-	2012-07-25 10:02  mikeaubury
-	
 	2012-07-25 10:01  mikeaubury
 	
 	Add hash for globals files - so we can initialize global variables
 	with at least a small degree of certainty that having files in
 	different directories with the same name wont cause duplicate
 	function names
-	
-	2012-07-19 12:33  mikeaubury
 	
 	2012-07-16 14:00  siverly
 	
@@ -264,22 +222,6 @@ Thu Oct 18 08:36:02 BST 2012
 	
 	addet new ui.vdc.execute function
 	
-	2012-07-10 19:09  mikeaubury
-	
-	2012-07-10 18:15  mikeaubury
-	
-	2012-07-10 17:36  mikeaubury
-	
-	2012-07-10 15:24  mikeaubury
-	
-	2012-07-10 12:36  mikeaubury
-	
-	2012-07-10 09:52  mikeaubury
-	
-	2012-07-10 07:52  mikeaubury
-	
-	2012-07-09 16:25  mikeaubury
-	
 	2012-06-29 11:07  siverly
 	
 	printpdf for the vdc
@@ -287,12 +229,6 @@ Thu Oct 18 08:36:02 BST 2012
 	2012-06-27 16:15  mikeaubury
 	
 	Fix an issue with trailing decimal separator..
-	
-	2012-06-25 10:51  mikeaubury
-	
-	2012-06-18 17:44  mikeaubury
-	
-	2012-06-13 19:34  mikeaubury
 	
 	2012-06-13 19:33  mikeaubury
 	
@@ -328,8 +264,6 @@ Sun May 27 18:51:14 BST 2012
 ---------------------------
 1.2_30 Released
 ---------------------------
-	2012-05-25 15:26  mikeaubury
-	
 	2012-05-25 07:50  mikeaubury
 	
 	Add fgl_syncfields() function which can be used in an INPUT to copy
@@ -345,10 +279,6 @@ Sun May 27 18:51:14 BST 2012
 	2012-05-08 12:44  siverly
 	
 	md5hashfile to return the md5 of the file at the client
-	
-	2012-05-08 11:45  mikeaubury
-	
-	2012-05-03 09:00  mikeaubury
 	
 	2012-04-26 17:54  mikeaubury
 	
@@ -377,10 +307,6 @@ Sun May 27 18:51:14 BST 2012
 	
 	Allow use of fgl_setcurrline from BEFORE INPUT etc (can be turned
 	off with FIXSCRBEFINP=N - will remove the option if no complaints!)
-	
-	2012-03-23 18:22  mikeaubury
-	
-	2012-03-23 18:18  mikeaubury
 	
 	2012-03-23 17:40  mikeaubury
 	
