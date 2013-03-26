@@ -281,7 +281,7 @@ void VentasUpdate::downloadBinarie()
         #else
            QProcess *proc = new QProcess;
            QStringList env = QProcess::systemEnvironment();;
-           env << "DYLD_LIBRARY_PATH=/Applications/VENTAS-Software/VDC.app/Contents/Frameworks/"
+           env << "DYLD_LIBRARY_PATH=/Applications/VENTAS-Software/VDC.app/Contents/Frameworks/";
            proc->setEnvironment(env);
            proc->start(file.fileName());
         #endif
