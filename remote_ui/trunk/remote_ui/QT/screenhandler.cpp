@@ -54,6 +54,7 @@ MainFrame::vdcdebug("ScreenHandler","ScreenHandler", "QObject *parent");
    i_mode = 0;
    p_pid = 0;
    cnt_form = 0;
+   hasWindow = 0;
    b_menuEnabled = false;
    p_screenRecord = NULL;
    p_fglform = NULL;
@@ -208,6 +209,8 @@ MainFrame::vdcdebug("ScreenHandler","createWindow", "QString windowTitle,QString
        p_fglform->b_dummy = true;
        dummy_fglform = p_fglform;
        cnt_form--;
+   } else {
+       hasWindow = 1;
    }
    p_fglform->setId(id);
    connect(p_fglform, SIGNAL(processResponse()), this, SLOT(processResponse()));
@@ -536,6 +539,11 @@ void ScreenHandler::createMenu(QString title, QString comment, QString style, QS
 {
 MainFrame::vdcdebug("ScreenHandler","createMenu", "QString title, QString comment, QString style, QString image");
    int i_Frm = getCurrForm();
+
+   if(hasWindow == 0)
+   {
+       style = "dialog";
+   }
 
 
    // If menustyle is dialog

@@ -122,6 +122,7 @@ private:
    Progress *w_progress;
    int i_runcnt;
    int i_currthread;
+   int hasWindow;
 
 
 //   QList<QWidget*> ql_formFields;
