@@ -983,7 +983,8 @@ void Reportgen::createXmlFile(int Table, int Position, QString odffile, QString 
         {
             zaehlerLevel2++;
             zaehlerLevel3 = 0;
-            if(lastZaehlerLevel2 > zaehlerLevel2)
+
+            if(lastZaehlerLevel2 < zaehlerLevel2)
             {
                 xmlStringLevel1.remove("]P3]");
             }
@@ -992,6 +993,7 @@ void Reportgen::createXmlFile(int Table, int Position, QString odffile, QString 
             {
                 xmlStringLevel1.replace(replaceEbene2, "<text:p></text:p></table:table-cell></table:table-row><table:table-row><table:table-cell>" + xmlStringLevel2);
             }
+            lastZaehlerLevel2 = zaehlerLevel2;
 
         }
 
@@ -1003,8 +1005,6 @@ void Reportgen::createXmlFile(int Table, int Position, QString odffile, QString 
             {
                 xmlStringLevel1.replace(replaceEbene3, "<text:p></text:p></table:table-cell></table:table-row><table:table-row><table:table-cell>" + xmlStringLevel3);
             }
-
-            lastZaehlerLevel2 = zaehlerLevel2;
         }
 
         for(int j=0; j < temp_fields.count(); j++)
