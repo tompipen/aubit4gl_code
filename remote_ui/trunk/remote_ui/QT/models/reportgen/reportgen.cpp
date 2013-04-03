@@ -89,8 +89,6 @@ void Reportgen::run()
 
     getTemplateVars(fileBaseName + "/content-alt.xml");
 
-    replaceHeaderVariables();
-
     for(int i=0; i < temp_fields.count(); i++)
     {
         if(temp_fields.at(i).contains("[P1["))
@@ -121,10 +119,10 @@ void Reportgen::run()
     }
 }
 
-void Reportgen::replaceHeaderVariables()
+void Reportgen::replaceHeaderFooterVariables(int Table)
 {
     QFileInfo fileInfo(mOdfFile);
-    QFile fileRead(QDir::tempPath() + "/" + fileInfo.baseName() + "/content-alt.xml");
+    QFile fileRead(QDir::tempPath() + "/" + fileInfo.baseName() + "/content.xml");
 
     if(!fileRead.open(QIODevice::ReadOnly))
     {
@@ -139,7 +137,7 @@ void Reportgen::replaceHeaderVariables()
 
     fileRead.close();
 
-    QStringList variables = getHeaderVariables();
+    QStringList variables = getHeaderFooterVariables(Table, "head");
 
     for(int j=0; j < variables.count(); j++)
     {
@@ -149,13 +147,28 @@ void Reportgen::replaceHeaderVariables()
             {
                 sedValue = sed_fields.at(i);
                 sedValue.remove("@" + variables.at(j) + "%/");
-                xmlFile.replace("@" + variables.at(j), sedValue);
+                xmlFile.replace("@" + variables.at(j), sedValue.simplified());
+                break;
+            }
+        }
+    }
+    variables = getHeaderFooterVariables(Table, "foot");
+
+    for(int j=0; j < variables.count(); j++)
+    {
+        for(int i=0; i < sed_fields.count(); i++)
+        {
+            if(sed_fields.at(i).contains("@" + variables.at(j)))
+            {
+                sedValue = sed_fields.at(i);
+                sedValue.remove("@" + variables.at(j) + "%/");
+                xmlFile.replace("@" + variables.at(j), sedValue.simplified());
                 break;
             }
         }
     }
 
-    QFile fileWrite(QDir::tempPath() + "/" + fileInfo.baseName() + "/content-alt.xml");
+    QFile fileWrite(QDir::tempPath() + "/" + fileInfo.baseName() + "/content.xml");
 
     if(!fileWrite.open(QIODevice::WriteOnly | QIODevice::Truncate))
     {
@@ -169,19 +182,42 @@ void Reportgen::replaceHeaderVariables()
 
 }
 
-QStringList Reportgen::getHeaderVariables()
+QStringList Reportgen::getHeaderFooterVariables(int Table, QString value)
 {
-    QStringList headerList;
-    for(int i=0; i < temp_fields.count(); i++)
-    {
-        if(temp_fields.at(i).contains("[P1["))
-        {
-            break;
-        }
-        headerList << temp_fields.at(i);
-    }
+    QStringList variableList;
+    int tableFound;
+    int start;
 
-    return headerList;
+    if(value == "head")
+    {
+        for(int i=0; i < temp_fields.count(); i++)
+        {
+            if(temp_fields.at(i).contains("[P1["))
+            {
+                break;
+            }
+            variableList << temp_fields.at(i);
+        }
+    } else if (value == "foot")
+    {
+        for(int i=0; i < temp_fields.count(); i++)
+        {
+            if(temp_fields.at(i).contains("]P1]"))
+            {
+                tableFound++;
+                if(tableFound == Table)
+                {
+                    start = 1;
+                }
+            }
+
+            if(start = 1)
+            {
+                variableList << temp_fields.at(i);
+            }
+        }
+    }
+    return variableList;
 }
 
 /*bool Reportgen::startReportTemplate(QString odffile, QString sedfile, QFileInfo zielDatei)
@@ -945,6 +981,7 @@ void Reportgen::createXmlFile(int Table, int Position, QString odffile, QString 
     outstream << getTemplatePosition(Table, odffile + "/content-alt.xml");
 
 
+
     for(int i=0; i < sed_fields.count(); i++)
     {
         if(sed_fields.at(i).contains(ebeneVariableLevel1))
@@ -1110,7 +1147,7 @@ void Reportgen::createXmlFile(int Table, int Position, QString odffile, QString 
         }
     }
 
-    outstream << getTemplateFooter(1, odffile + "/content-alt.xml");
+    outstream << getTemplateFooter(Table, odffile + "/content-alt.xml");
     file.close();
 
     QFile contentFile(QDir::tempPath() + "/" + odffile + "/content-alt.xml");
@@ -1119,6 +1156,8 @@ void Reportgen::createXmlFile(int Table, int Position, QString odffile, QString 
     {
         contentFile.remove();
     }
+
+    replaceHeaderFooterVariables(Table);
 
     ZipUnzip *p_zip = new ZipUnzip();
     p_zip->zipFileArchiv(QDir::tempPath(), odffile, mDestinationFile);
@@ -1945,11 +1984,11 @@ void Reportgen::getTemplateVars(QString filename)
                 int startAppend;
                 for(int i=0; i < ausgabe.length(); i++)
                 {
-                    if(ausgabe.at(i) == QChar('@') || ausgabe.at(i) == QChar('['))
+                    if(ausgabe.at(i) == QChar('@') || ausgabe.at(i) == QChar('[') || ausgabe.at(i) == QChar(']'))
                     {
                         startAppend = 1;
                     }
-                    if(ausgabe.at(i) == QChar('<') || ausgabe.at(i) == QChar(' ') || ausgabe.at(i) == QChar(']'))
+                    if(ausgabe.at(i) == QChar('<') || ausgabe.at(i) == QChar(' '))
                     {
                         startAppend = 0;
                         if(!str.isNull())

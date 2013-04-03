@@ -28,8 +28,8 @@ public:
 
     QString createFirstTable(QString odffile, int wiederholen);
     void createXmlFile(int Table, int Position, QString odffile, QString sedfile);
-    QStringList getHeaderVariables();
-    void replaceHeaderVariables();
+    QStringList getHeaderFooterVariables(int, QString);
+    void replaceHeaderFooterVariables(int );
 
     bool createInfoFile(QFileInfo odffile, QFileInfo zieldatei);
     bool replaceTemplateVars(QString odffile, QString sedfile, QFileInfo zielDatei);
