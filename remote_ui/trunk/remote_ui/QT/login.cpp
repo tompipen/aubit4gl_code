@@ -564,7 +564,7 @@ MainFrame::vdcdebug("HostsData","HostsData", "QWidget *parent");
        if (!hostspath.at(0).isNumber())
           {
           QLabel *description = new QLabel(tr("<h2>Host Data</h2>"));
-          QLabel *description2 = new QLabel(tr("<b>CAUTION :</b> Are you sure that you want to login as admin/root <br> otherwise you can't edit these settings"));
+          QLabel *description2 = new QLabel(tr("<b>NOTE :</b> If you are not logged in as admin/root <br> you cannot edit these settings"));
           QVBoxLayout *mainLayout = new QVBoxLayout;
           hostsTable = new QTableWidget(this);
           QStringList labels;
