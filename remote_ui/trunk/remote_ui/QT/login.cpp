@@ -76,12 +76,12 @@ LoginForm::LoginForm(QWidget *parent)
    QMenu *options = new QMenu(tr("&Options"), this);
 
    QAction *checkVersion = new QAction(tr("&Search for Update"), this);
-   checkVersion->setStatusTip(tr("Looks for a new Update for the VDC"));
+   checkVersion->setStatusTip(tr("Checks for a new VDC Update"));
    connect(checkVersion, SIGNAL(triggered()), this, SLOT(checkForUpdate()));
    options->addAction(checkVersion);
    options->addSeparator();
 
-   QAction *ooStdProg = new QAction(tr("&Office standard installation"), this);
+   QAction *ooStdProg = new QAction(tr("&Change Default Office Software"), this);
    connect(ooStdProg, SIGNAL(triggered()), this, SLOT(setOfficeInstallation()));
    options->addAction(ooStdProg);
    options->addSeparator();
@@ -94,7 +94,7 @@ LoginForm::LoginForm(QWidget *parent)
    options->addSeparator();
 
    QAction *font = new QAction(tr("&Font"), this);
-   font->setStatusTip(tr("Opens the Font Settings"));
+   font->setStatusTip(tr("Opens the font settings"));
    connect(font, SIGNAL(triggered()), this, SLOT(font()));
    options->addAction(font);
    options->addSeparator();
@@ -103,25 +103,25 @@ LoginForm::LoginForm(QWidget *parent)
 
    QAction *feldplus = new QAction(tr("Fieldwidth + "), this);
    connect(feldplus, SIGNAL(triggered()), signalMapper, SLOT(map()));
-   feldplus->setStatusTip(tr("Increase the FormField width in the Screen Forms"));
+   feldplus->setStatusTip(tr("Increase the form field width in the screen forms"));
    signalMapper->setMapping(feldplus,  "0.1");
    options->addAction(feldplus);
 
    QAction *feldminus = new QAction(tr("Fieldwidth - "), this);
    connect(feldminus, SIGNAL(triggered()), signalMapper, SLOT(map()));
-   feldminus->setStatusTip(tr("Decrease the FormField width in the Screen Forms"));
+   feldminus->setStatusTip(tr("Decrease the form field width in the screen forms"));
    signalMapper->setMapping(feldminus, "-0.1");
    options->addAction(feldminus);
 
    QAction *feldreset = new QAction(tr("Default Fieldwidth"), this);
    connect(feldreset, SIGNAL(triggered()), this, SLOT(resetFactor()));
-   feldreset->setStatusTip(tr("Restore the default Fieldwidth settings for thr Screen Forms"));
+   feldreset->setStatusTip(tr("Restore the default fieldwidth settings for the screen forms"));
    options->addAction(feldreset);
    options->addSeparator();
 
    QAction *removeIni = new QAction(tr("Reset Screen Forms"), this);
    connect(removeIni, SIGNAL(triggered()), this, SLOT(removeIni()));
-   removeIni->setStatusTip(tr("Remove the settings.ini from the VDC."));
+   removeIni->setStatusTip(tr("Remove the settings.ini from the VDC"));
    options->addAction(removeIni);
    options->addSeparator();
 
@@ -129,11 +129,11 @@ LoginForm::LoginForm(QWidget *parent)
 
    if(menuType == "tree" || menuType.isEmpty())
    {
-       m_mainMenu = new QAction(tr("Main menu horizontal"), this);
+       m_mainMenu = new QAction(tr("Main Menu: Pulldown"), this);
        connect(m_mainMenu, SIGNAL(triggered()), this, SLOT(setMainMenu()));
        options->addAction(m_mainMenu);
    } else if(menuType == "menu") {
-       m_mainMenu = new QAction(tr("Main menu vertical"), this);
+       m_mainMenu = new QAction(tr("Main Menu: Explorer"), this);
        connect(m_mainMenu, SIGNAL(triggered()), this, SLOT(setMainMenu()));
        options->addAction(m_mainMenu);
    }
@@ -151,7 +151,7 @@ LoginForm::LoginForm(QWidget *parent)
    connect(toggledebug, SIGNAL(toggled(bool)), this, SLOT(debugToggle(bool)));
    if (adminMenu == true)
    {
-   statusBar->showMessage("Login Screen started in Admin Mode", 3000);
+   statusBar->showMessage("Login Screen Started in Admin Mode", 3000);
 //   QTimer *timer = new QTimer(this);
 //   connect(timer, SIGNAL(timeout()), this, SLOT(welcomeBar()));
 //   timer->start(3000);
@@ -356,7 +356,7 @@ void LoginForm::openCompOptions()
     vLayout->addWidget(compLevel);
     vLayout->addWidget(okButton, 0, Qt::AlignHCenter);
 
-    int sliderValue = VDC::readSettingsFromIni("Ventas AG", "sshSliderValue").toInt();
+    int sliderValue = VDC::readSettingsFromIni("VENTAS AG", "sshSliderValue").toInt();
     if(sliderValue == 0)
     {
         compLevel->setValue(1);
@@ -371,12 +371,12 @@ void LoginForm::saveCompression(int value)
 {
     int factor = 2.25*value;
     VDC::setSSHCompressionsLevel(factor);
-    VDC::saveSettingsToIni("Ventas AG", "sshSliderValue", QString::number(value+1));
+    VDC::saveSettingsToIni("VENTAS AG", "sshSliderValue", QString::number(value+1));
 }
 
 void LoginForm::removeIni()
 {
-    Dialog *dialog = new Dialog("Reset Screen Forms ", "Do you realy want to reset all Screen Forms?", "", "critical", this, Qt::WindowStaysOnTopHint);
+    Dialog *dialog = new Dialog("Reset Screen Forms ", "Do you really want to reset all screen forms?", "", "critical", this, Qt::WindowStaysOnTopHint);
     dialog->createButton(1, "Yes", "YES", "ok_gruen.png");
     dialog->createButton(2, "No", "NO", "abbrechen_rot.png");
     connect(dialog->getAction("YES"), SIGNAL(triggered()), this, SLOT(clearIniFile()));
@@ -467,13 +467,13 @@ void LoginForm::aboutVDC(QWidget *parent)
     {
         if(!returnList.at(0).isEmpty())
         {
-            labeltext->setText(QString("<p style=\"font-weight: bold;\">VDC - Ventas Desktop Client for A4GL</p>Release Date: %2<br>A4GL Version: %3<br>XML Protocol Version: %4<br>Qt Version: %1<br><br>Copyright %5 %6").arg(QT_VERSION_STR).arg(returnList.at(0).at(0)).arg(a4glVersionClient).arg(xmlVersionClient).arg(date) .arg("by VENTAS AG Hamburg. All Rights Reserved.<br><br>The program is provided as is with no warranty of any kind,<br>including the warranty of design,<br>merchantability and fitness for a particular purpose. <br>You can get professional support (info@ventas.de)"));
+            labeltext->setText(QString("<p style=\"font-weight: bold;\">VDC - VENTAS Desktop Client for A4GL</p>Release Date: %2<br>A4GL Version: %3<br>XML Protocol Version: %4<br>Qt Version: %1<br><br>Copyright %5 %6").arg(QT_VERSION_STR).arg(returnList.at(0).at(0)).arg(a4glVersionClient).arg(xmlVersionClient).arg(date) .arg("by VENTAS AG Hamburg. All Rights Reserved.<br><br>The program is provided as is with no warranty of any kind,<br>including the warranty of design,<br>merchantability and fitness for a particular purpose. <br>You can get professional support (info@ventas.de)"));
 
         } else {
-            labeltext->setText(QString("<p style=\"font-weight: bold;\">VDC - Ventas Desktop Client for A4GL</p>Release Date: %2<br>A4gl Version: %3<br>XML Protocol Version: %4<br>Qt Version: %1 <br><br>Copyright %5 %6").arg(QT_VERSION_STR).arg("unknown").arg(a4glVersionClient).arg(xmlVersionClient).arg(date) .arg("by VENTAS AG Hamburg. All Rights Reserved.<br><br>The program is provided as is with no warranty of any kind,<br>including the warranty of design,<br>merchantability and fitness for a particular purpose. <br>You can get professional support (info@ventas.de)"));
+            labeltext->setText(QString("<p style=\"font-weight: bold;\">VDC - VENTAS Desktop Client for A4GL</p>Release Date: %2<br>A4gl Version: %3<br>XML Protocol Version: %4<br>Qt Version: %1 <br><br>Copyright %5 %6").arg(QT_VERSION_STR).arg("unknown").arg(a4glVersionClient).arg(xmlVersionClient).arg(date) .arg("by VENTAS AG Hamburg. All Rights Reserved.<br><br>The program is provided as is with no warranty of any kind,<br>including the warranty of design,<br>merchantability and fitness for a particular purpose. <br>You can get professional support (info@ventas.de)"));
         }
     } else {
-        labeltext->setText(QString("<p style=\"font-weight: bold;\">VDC - Ventas Desktop Client for A4GL</p>Release Date: %2<br>A4gl Version: %3<br>XML Protocol Version: %4<br>Qt Version: %1 <br><br>Copyright %5 %6").arg(QT_VERSION_STR).arg("unknown").arg(a4glVersionClient).arg(xmlVersionClient).arg(date) .arg("by VENTAS AG Hamburg. All Rights Reserved.<br><br>The program is provided as is with no warranty of any kind,<br>including the warranty of design,<br>merchantability and fitness for a particular purpose.<br>You can get professional support (info@ventas.de)"));
+        labeltext->setText(QString("<p style=\"font-weight: bold;\">VDC - VENTAS Desktop Client for A4GL</p>Release Date: %2<br>A4gl Version: %3<br>XML Protocol Version: %4<br>Qt Version: %1 <br><br>Copyright %5 %6").arg(QT_VERSION_STR).arg("unknown").arg(a4glVersionClient).arg(xmlVersionClient).arg(date) .arg("by VENTAS AG Hamburg. All Rights Reserved.<br><br>The program is provided as is with no warranty of any kind,<br>including the warranty of design,<br>merchantability and fitness for a particular purpose.<br>You can get professional support (info@ventas.de)"));
     }
 
     layout->addWidget(labellogo);
@@ -564,7 +564,7 @@ MainFrame::vdcdebug("HostsData","HostsData", "QWidget *parent");
        if (!hostspath.at(0).isNumber())
           {
           QLabel *description = new QLabel(tr("<h2>Host Data</h2>"));
-          QLabel *description2 = new QLabel(tr("<b>CAUTION :</b> Be sure that you login as Admin/root <br> otherwise you can't edit these Settings"));
+          QLabel *description2 = new QLabel(tr("<b>CAUTION :</b> Are you sure that you want to login as admin/root <br> otherwise you can't edit these settings"));
           QVBoxLayout *mainLayout = new QVBoxLayout;
           hostsTable = new QTableWidget(this);
           QStringList labels;
@@ -594,7 +594,7 @@ MainFrame::vdcdebug("HostsData","HostsData", "QWidget *parent");
           {
           QString errorout;
           QVBoxLayout *errorlay   = new QVBoxLayout(this);
-          errorout = "Your OS is not supported. Please contact us! \n Error No. : ";
+          errorout = "Your operanting system is not supported. Please contact us! \n Error No. : ";
           errorout.append(hostspath);
           QLabel *errorlabel = new QLabel(errorout);
           errorlay->addWidget(errorlabel);
@@ -773,7 +773,7 @@ MainFrame::vdcdebug("HostsData","addHost", "");
     QFile file(hostspath);
     if(!file.isWritable())
     {
-        Dialog *p_dialog = new Dialog("Warning", "Please start the VDC with Adminstrator privileges to edit the hosts file.", "dialog", "stop", NULL);
+        Dialog *p_dialog = new Dialog("Warning", "Please start the VDC with adminstrator privileges to edit the hosts file.", "dialog", "stop", NULL);
         p_dialog->createButton(1, "Ok", "Ok", "ok_gruen.png");
         connect(p_dialog->getAction("OK"), SIGNAL(triggered()), p_dialog, SLOT(close()));
         p_dialog->setAttribute(Qt::WA_DeleteOnClose, true);
