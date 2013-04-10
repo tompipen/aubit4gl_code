@@ -594,7 +594,7 @@ MainFrame::vdcdebug("HostsData","HostsData", "QWidget *parent");
           {
           QString errorout;
           QVBoxLayout *errorlay   = new QVBoxLayout(this);
-          errorout = "Your operanting system is not supported. Please contact us! \n Error No. : ";
+          errorout = "Your operating system is not supported. Please contact us! \n Error No. : ";
           errorout.append(hostspath);
           QLabel *errorlabel = new QLabel(errorout);
           errorlay->addWidget(errorlabel);
