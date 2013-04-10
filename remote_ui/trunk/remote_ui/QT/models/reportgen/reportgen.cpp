@@ -1028,6 +1028,7 @@ void Reportgen::createXmlFile(int Table, int Position, QString odffile, QString 
 
             if(zaehlerLevel2 > 1)
             {
+                xmlStringLevel2 = getXmlStringFromEbene(Table, 2, odffile);
                 xmlStringLevel1.replace(replaceEbene2, "<text:p></text:p></table:table-cell></table:table-row><table:table-row><table:table-cell>" + xmlStringLevel2);
             }
             lastZaehlerLevel2 = zaehlerLevel2;
@@ -1040,87 +1041,69 @@ void Reportgen::createXmlFile(int Table, int Position, QString odffile, QString 
 
             if(zaehlerLevel3 > 1)
             {
+                xmlStringLevel3 = getXmlStringFromEbene(Table, 3, odffile);
                 xmlStringLevel1.replace(replaceEbene3, "<text:p></text:p></table:table-cell></table:table-row><table:table-row><table:table-cell>" + xmlStringLevel3);
             }
         }
 
+        QString variable;
+        int aktuelleEbene = 0;
+        int counterEbene2 = 1;
+        int counterEbene3 = 1;
         for(int j=0; j < temp_fields.count(); j++)
         {
-            if(!temp_fields.at(j).contains("[") && !temp_fields.at(j).contains("]"))
+            if(temp_fields.at(j).contains("[P1["))
             {
-                if (sed_fields.at(i).contains(temp_fields.at(j)))
-                {
+                aktuelleEbene = 1;
+            }
 
-                    QString tmp_var = sed_fields.at(i);
-                    if(tmp_var.contains("&"))
-                    {
-                        tmp_var.replace("&", "&amp;");
-                    }
+            if(temp_fields.at(j).contains("[P2["))
+            {
+                aktuelleEbene = 2;
+            }
 
-                    if(tmp_var.contains("<"))
-                    {
-                        tmp_var.replace("<", "&lt;");
-                    }
+            if(temp_fields.at(j).contains("[P3["))
+            {
+                aktuelleEbene = 3;
+            }
 
-                    if(tmp_var.contains(">"))
-                    {
-                        tmp_var.replace(">", "&gt;");
-                    }
+            if(temp_fields.at(j).contains("]P3]"))
+            {
+                aktuelleEbene = 2;
+            }
+            if(temp_fields.at(j).contains("]P2]"))
+            {
+                aktuelleEbene = 1;
+            }
 
+            if(zaehlerLevel2 > 0)
+            {
+                counterEbene2 = zaehlerLevel2;
+            }
+            if(zaehlerLevel3 > 0)
+            {
+                counterEbene3 = zaehlerLevel3;
+            }
 
-                    QStringList valueList = tmp_var.split(QRegExp("%/"));
+            switch(aktuelleEbene)
+            {
+            case 1:
+                variable = "@" + QString::number(zaehlerLevel1) + temp_fields.at(j);
+                break;
+            case 2:
+                variable = "@" + QString::number(zaehlerLevel1) + "_" + QString::number(counterEbene2) + temp_fields.at(j);
+                break;
+            case 3:
+                variable = "@" + QString::number(zaehlerLevel1) + "_" + QString::number(counterEbene2) + "_" + QString::number(counterEbene3) + temp_fields.at(j);
+                break;
+            default:
+                break;
+            }
 
-                    switch(valueList.count())
-                    {
-                        case 2:
-                        {
-                            xmlStringLevel1.replace("@" + temp_fields.at(j), valueList.at(1).trimmed());
-                            break;
-                        }
-                        case 3:
-                        {
-                            xmlStringLevel1.replace("@" + temp_fields.at(j), valueList.at(1).trimmed() + "/" + valueList.at(2).trimmed());
-                            break;
-                        }
-                    }
-
-                    QString sedLine = valueList.at(1);
-
-                    if(sedLine.length() > 1)
-                    {
-                        if(!sedLine.isEmpty())
-                        {
-                            if((sedLine[0] == QChar(' ') || sedLine[0] == QChar('-') ) && sedLine[1].isDigit())
-                            {
-
-                                if(!tableCell.isEmpty())
-                                {
-                                    for(int k=0; k < tableCell.count(); k++)
-                                    {
-                                        QString sucheString = tableCell.at(k) + "<text:p>" + valueList.at(1).simplified();
-                                        QString ersetze = sucheString;
-
-                                        if(xmlStringLevel1.contains(sucheString))
-                                        {
-                                            QString tmp_value = valueList.at(1);
-                                            tmp_value.remove(".");
-                                            tmp_value.replace(",",".");
-
-                                            ersetze.replace("\"string\"", "\"float\" office:value=\"" + tmp_value + "\"");
-                                            xmlStringLevel1.replace(sucheString, ersetze);
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    /*if(valueList.count() > 0)
-                    {
-                       xmlStringLevel1.replace("@" + temp_fields.at(j), valueList.at(1));
-                    } else {
-                        xmlStringLevel1.remove("@" + temp_fields.at(j));
-                    }*/
-                }
+            if(!variable.isEmpty() && zaehlerLevel1 > 0 && !variable.contains("["))
+            {
+                QString ersetze = "@" + temp_fields.at(j);
+                xmlStringLevel1.replace(ersetze, variable);
             }
         }
     }
@@ -1150,14 +1133,81 @@ void Reportgen::createXmlFile(int Table, int Position, QString odffile, QString 
     outstream << getTemplateFooter(Table, odffile + "/content-alt.xml");
     file.close();
 
-    QFile contentFile(QDir::tempPath() + "/" + odffile + "/content-alt.xml");
+    QFile file1(QDir::tempPath() + "/" + odffile + "/content.xml");
+    QFile fileSave(QDir::tempPath() + "/" + odffile + "/content-test.xml");
+
+    if(!fileSave.open(QIODevice::WriteOnly | QIODevice::Truncate))
+    {
+        qDebug() << "konnte file ned oeffnen!!!!!111";
+        return;
+    }
+
+    QTextStream out(&fileSave);
+    out.setCodec("UTF-8");
+
+    if(!file1.open(QIODevice::ReadOnly))
+    {
+        qDebug() << "konnte file ned oeffnen!!!!!";
+        return;
+    }
+
+    if(p_screenHandler)
+    {
+        QMetaObject::invokeMethod(p_screenHandler, "setProgressText", Qt::QueuedConnection, Q_ARG(int, 0), Q_ARG(QString, "Ersetze Variablen mit Inhalt.<br>Dies kann bis zu einigen Minuten dauern..."));
+    }
+
+    QString readLine = file1.readAll();
+
+    for(int i=0; i < sed_fields.count(); i++)
+    {
+        QStringList valueList = sed_fields.at(i).split(QRegExp("%/"));
+
+        QString sedValue = valueList.at(1);
+
+        if(sedValue.contains("&"))
+        {
+            sedValue.replace("&", "&amp;");
+        }
+
+        if(sedValue.contains("<"))
+        {
+            sedValue.replace("<", "&lt;");
+        }
+
+        if(sedValue.contains(">"))
+        {
+            sedValue.replace(">", "&gt;");
+        }
+
+        readLine.replace(valueList.at(0), sedValue);
+    }
+    out << readLine;
+    file1.close();
+    fileSave.close();
+    readLine.clear();
+
+    QFile contentOldFile(QDir::tempPath() + "/" + odffile + "/content-alt.xml");
+
+    if(contentOldFile.exists())
+    {
+        contentOldFile.remove();
+    }
+
+    QFile contentFile(QDir::tempPath() + "/" + odffile + "/content.xml");
 
     if(contentFile.exists())
     {
         contentFile.remove();
     }
 
-    replaceHeaderFooterVariables(Table);
+    QFile contentReplacedFile(QDir::tempPath() + "/" + odffile + "/content-test.xml");
+
+    if(contentReplacedFile.exists())
+    {
+        contentReplacedFile.rename(QDir::tempPath() + "/" + odffile + "/content.xml");
+    }
+
+    //replaceHeaderFooterVariables(Table);
 
     ZipUnzip *p_zip = new ZipUnzip();
     p_zip->zipFileArchiv(QDir::tempPath(), odffile, mDestinationFile);
