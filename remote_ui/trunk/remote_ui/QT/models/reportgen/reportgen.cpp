@@ -1162,24 +1162,32 @@ void Reportgen::createXmlFile(int Table, int Position, QString odffile, QString 
     {
         QStringList valueList = sed_fields.at(i).split(QRegExp("%/"));
 
-        QString sedValue = valueList.at(1);
+        QString sedValue;
 
-        if(sedValue.contains("&"))
+        if(valueList.count() >= 2)
         {
-            sedValue.replace("&", "&amp;");
-        }
+            sedValue = valueList.at(1);
 
-        if(sedValue.contains("<"))
-        {
-            sedValue.replace("<", "&lt;");
-        }
+            if(sedValue.contains("&"))
+            {
+                sedValue.replace("&", "&amp;");
+            }
 
-        if(sedValue.contains(">"))
-        {
-            sedValue.replace(">", "&gt;");
-        }
+            if(sedValue.contains("<"))
+            {
+                sedValue.replace("<", "&lt;");
+            }
 
-        readLine.replace(valueList.at(0), sedValue);
+            if(sedValue.contains(">"))
+            {
+                sedValue.replace(">", "&gt;");
+            }
+
+            if(!valueList.at(0).isEmpty())
+            {
+                    readLine.replace(valueList.at(0), sedValue);
+            }
+        }
     }
     out << readLine;
     file1.close();
