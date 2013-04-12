@@ -1168,6 +1168,11 @@ void Reportgen::createXmlFile(int Table, int Position, QString odffile, QString 
         {
             sedValue = valueList.at(1);
 
+            if(sedValue.contains("<text:line-break/>"))
+            {
+                sedValue.replace("<text:line-break/>", "\n");
+            }
+
             if(sedValue.contains("&"))
             {
                 sedValue.replace("&", "&amp;");
