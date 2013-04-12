@@ -970,15 +970,15 @@ void Reportgen::createXmlFile(int Table, int Position, QString odffile, QString 
     }
 
     QTextStream outstream(&file);
-    outstream.setCodec("UTF-8");
+    outstream.setCodec("ISO-8859-1");
 
-    outstream << getTemplateHeader( odffile + "/content-alt.xml", "ods" ); //<< getTemplatePosition( fileBaseName + "/content.xml" ).toUtf8();
+    outstream << getTemplateHeader( odffile + "/content-alt.xml", "ods" ).toAscii(); //<< getTemplatePosition( fileBaseName + "/content.xml" ).toUtf8();
     if(Table > 1)
     {
         outstream << createFirstTable(odffile, Position);
     }
 
-    outstream << getTemplatePosition(Table, odffile + "/content-alt.xml");
+    outstream << getTemplatePosition(Table, odffile + "/content-alt.xml").toAscii();
 
 
 
@@ -1120,7 +1120,7 @@ void Reportgen::createXmlFile(int Table, int Position, QString odffile, QString 
             xmlStringLevel1.remove("]P3]");
             xmlStringLevel1.remove("|");
 
-            outstream << xmlStringLevel1;
+            outstream << xmlStringLevel1.toAscii();
 
             if(p_screenHandler)
             {
@@ -1130,7 +1130,7 @@ void Reportgen::createXmlFile(int Table, int Position, QString odffile, QString 
         }
     }
 
-    outstream << getTemplateFooter(Table, odffile + "/content-alt.xml");
+    outstream << getTemplateFooter(Table, odffile + "/content-alt.xml").toAscii();
     file.close();
 
     QFile file1(QDir::tempPath() + "/" + odffile + "/content.xml");
