@@ -1225,6 +1225,45 @@ void Reportgen::createXmlFile(int Table, int Position, QString odffile, QString 
     ZipUnzip *p_zip = new ZipUnzip();
     p_zip->zipFileArchiv(QDir::tempPath(), odffile, mDestinationFile);
 
+    QDir dir;
+    dir.setPath(QDir::tempPath() + "/" + odffile);
+
+    QList<QString> fileEntrys = dir.entryList( QDir::NoDotAndDotDot | QDir::Dirs | QDir::Files);
+
+    for(int i=0; i < fileEntrys.count(); i++)
+    {
+        QFile file(dir.path() + "/" + fileEntrys.at(i));
+        QFileInfo fileInfo(dir.path() + "/" + fileEntrys.at(i));
+
+        if(fileInfo.isFile())
+        {
+            if(file.exists())
+            {
+                file.remove();
+            }
+        } else if(fileInfo.isDir())
+        {
+            QDir dir1;
+            dir1.setPath(QDir::tempPath() + "/" + odffile + "/" + fileEntrys.at(i));
+
+            QList<QString> fileEntrys1 = dir1.entryList( QDir::NoDotAndDotDot | QDir::Dirs | QDir::Files);
+
+            for(int j=0; j < fileEntrys1.count(); j++)
+            {
+                QFile file1(dir1.path() + "/" + fileEntrys1.at(j));
+                QFileInfo fileInfo1(dir1.path() + "/" + fileEntrys1.at(j));
+
+                if(fileInfo1.isFile())
+                {
+                    if(file1.exists())
+                    {
+                        file1.remove();
+                    }
+                }
+            }
+        }
+    }
+
     if(p_screenHandler)
     {
         QMetaObject::invokeMethod(p_screenHandler, "setProgressText", Qt::QueuedConnection, Q_ARG(int, 0), Q_ARG(QString, QString("Auswertung abgeschlossen.\nAusgabe auf Bildschirm.")));
