@@ -1266,7 +1266,7 @@ void Reportgen::createXmlFile(int Table, int Position, QString odffile, QString 
 
     if(p_screenHandler)
     {
-        QMetaObject::invokeMethod(p_screenHandler, "setProgressText", Qt::QueuedConnection, Q_ARG(int, 0), Q_ARG(QString, QString("Auswertung abgeschlossen.\nAusgabe auf Bildschirm.")));
+        QMetaObject::invokeMethod(p_screenHandler, "setProgressText", Qt::QueuedConnection, Q_ARG(int, 0), Q_ARG(QString, QString("Auswertung abgeschlossen.")));
     }
 }
 
