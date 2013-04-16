@@ -99,7 +99,13 @@ MainFrame::vdcdebug("RingMenu","createButton", "int id, QString text, QString to
    {
        button->setIcon(QIcon("pics:pulldown-abbrechen.png"));
    } else {
-       button->setIcon(QIcon(QString("pics:%1.png").arg(id)));
+       if(id <= 9)
+       {
+          button->setIcon(QIcon(QString("pics:%1.png").arg(id)));
+       } else {
+          id = id + 55;
+          button->setIcon(QIcon(QString("pics:%1.png").arg(QChar(id).toLower())));
+       }
    }
    button->setIconSize(QSize(40,25));
    button->setShortcut(QString("&%1").arg(id));
@@ -110,7 +116,15 @@ MainFrame::vdcdebug("RingMenu","createButton", "int id, QString text, QString to
    } else {*/
        Action *action = new Action(text.toLower(), text, button);
        action->setComment(tooltip);
-       action->setImage(QString("%1.png").arg(id));
+
+       if(id <= 9)
+       {
+          action->setImage(QString("%1.png").arg(id));
+       } else {
+          id = id + 55;
+          action->setImage(QString("%1.png").arg(QChar(id).toLower()));
+       }
+
        button->addAction(action);
        connect(button, SIGNAL(clicked()), action, SLOT(trigger()));
    //}
@@ -250,6 +264,78 @@ bool RingMenuPulldown::eventFilter(QObject *obj, QEvent *event)
     if(event->type() == QEvent::KeyPress)
     {
         QKeyEvent *keyEvent = (QKeyEvent*) event;
+
+        if(keyEvent->key() == Qt::Key_Up) {
+            if(QPushButton *bt = qobject_cast<QPushButton*> (obj))
+            {
+                if(buttonGroup->buttons().first()->text() == bt->text())
+                {
+                    if(!buttonGroup->buttons().last()->isVisible())
+                    {
+                        for(int i=buttonGroup->buttons().size()-1; i > 0; i--)
+                        {
+                            if(buttonGroup->buttons().at(i)->isVisible())
+                            {
+                                QMetaObject::invokeMethod(buttonGroup->buttons().at(i), "setFocus", Qt::QueuedConnection);
+                                break;
+                            }
+                        }
+                    } else {
+                        QMetaObject::invokeMethod(buttonGroup->buttons().last(), "setFocus", Qt::QueuedConnection);
+                    }
+                }
+            }
+        }
+
+        if(keyEvent->key() == Qt::Key_Down) {
+            if(QPushButton *bt = qobject_cast<QPushButton*> (obj))
+            {
+                for(int j=buttonGroup->buttons().size()-1; j > 0; j--)
+                {
+                    if(buttonGroup->buttons().at(j)->isVisible())
+                    {
+                        if(buttonGroup->buttons().at(j)->text() == bt->text())
+                        {
+                            if(!buttonGroup->buttons().first()->isVisible())
+                            {
+                                for(int i=0; i < buttonGroup->buttons().size()-1; i++)
+                                {
+                                    qDebug() << i;
+                                    if(buttonGroup->buttons().at(i)->isVisible())
+                                    {
+                                        QMetaObject::invokeMethod(buttonGroup->buttons().at(i), "setFocus", Qt::QueuedConnection);
+                                        break;
+                                    }
+                                }
+                            } else {
+                                QMetaObject::invokeMethod(buttonGroup->buttons().first(), "setFocus", Qt::QueuedConnection);
+                            }
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+
+
+        if(keyEvent->key() >= 65 && keyEvent->key() <= 91)
+        {
+            int shortcut1 = keyEvent->key() - 56;
+
+            if(buttonGroup->buttons().count() > shortcut1 && shortcut1 >= 0)
+            {
+               if(QPushButton *button = qobject_cast<QPushButton *> (buttonGroup->buttons().at(shortcut1))){
+                   if(button->isVisible())
+                   {
+                       closeWindowInt = 0;
+                       button->click();
+                       return true;
+                   }
+               }
+            }
+            return true;
+        }
+
         if(keyEvent->key() <= 57)
         {
             int shortcut1 = 0;
