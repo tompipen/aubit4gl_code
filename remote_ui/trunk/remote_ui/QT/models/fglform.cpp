@@ -1026,6 +1026,11 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
          mev->ignore();
          QWidget *w = (QWidget*) obj;
          if(input() || construct()){
+             if(obj->inherits("QComboBoxListView"))
+             {
+                nextfield();
+             }
+
              if(ComboBox *cb = qobject_cast<ComboBox*> (w->parentWidget()))
              {
                  Q_UNUSED(cb);
@@ -1242,6 +1247,14 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
           }
           nextfield();
           return true;
+      }
+
+      if(obj->inherits("QComboBoxListView"))
+      {
+          if(keyEvent->key() == Qt::Key_Enter || keyEvent->key() == Qt::Key_Return)
+          {
+              nextfield();
+          }
       }
 
       /*if(TextEdit *te = qobject_cast<TextEdit *> (obj))
