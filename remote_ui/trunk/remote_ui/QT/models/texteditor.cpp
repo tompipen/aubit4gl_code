@@ -115,7 +115,10 @@ void TextEditorWidget::loadFileFromLocal()
             qDebug() << "Kann Datei nicht zum lesen oeffnen";
         }
 
-        this->mTextEdit->setPlainText(file.readAll());
+        QTextStream in(&file);
+        in.setCodec("ISO-8859-15");
+
+        this->mTextEdit->setPlainText(in.readAll());
 
         file.close();
 
@@ -180,7 +183,10 @@ void TextEditorWidget::openFile(QString fileName){
         qDebug() << "konnte Datei nicht zum lesen oeffnen!!!";
     }
 
-    mTextEdit->setPlainText(file.readAll());
+    QTextStream in(&file);
+    in.setCodec("ISO-8859-15");
+
+    mTextEdit->setPlainText(in.readAll());
 
     file.close();
 }
