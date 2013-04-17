@@ -118,9 +118,15 @@ void SSHTunnel::run()
           if(!resp.isEmpty())
           {
              resp.append("\n");
-             session_mutex->lock();
+             if(session_mutex)
+             {
+                 session_mutex->lock();
+             }
              bytes_written = ssh_channel_write(sctunnel, resp.toAscii().constData(), strlen(resp.toAscii().constData()));
-             session_mutex->unlock();
+             if(session_mutex)
+             {
+                 session_mutex->unlock();
+             }
              if(bytes_written < 1)
              {
                  qDebug()<<"ERROR";
@@ -130,8 +136,18 @@ void SSHTunnel::run()
 
       }
 
-      ssh_channel_send_eof(sctunnel);
-      ssh_channel_free(sctunnel);
+      sleep(1);
+
+      if(sctunnel)
+      {
+          //ssh_channel_send_eof(sctunnel);
+          if(ssh_channel_is_open(sctunnel))
+          {
+             ssh_channel_send_eof(sctunnel);
+             ssh_channel_free(sctunnel);
+             sctunnel = NULL;
+          }
+      }
 
       ph.closeAllScreenHandler();
 
@@ -140,9 +156,15 @@ void SSHTunnel::run()
 void SSHTunnel::sendData(QString str)
 {
     str = str.replace("&amp;#x0A;", "&#x0A;");
-    session_mutex->lock();
+    if(session_mutex)
+    {
+        session_mutex->lock();
+    }
     qsl_sendqueue.append(str);
-    session_mutex->unlock();
+    if(session_mutex)
+    {
+        session_mutex->unlock();
+    }
 }
 
 void SSHTunnel::interrupt()

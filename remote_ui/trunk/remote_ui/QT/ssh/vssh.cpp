@@ -36,6 +36,7 @@ VSSH::~VSSH()
 {
   if(session)
   {
+     //ssh_disconnect(session);
      ssh_free(session);
      session = NULL;
   }
@@ -129,14 +130,18 @@ void VSSH::run()
 
     }
 
-  ssh_mutex.lock();
-  if(session)
-  {
-      ssh_free(session);
-  }
-  session = NULL;
-  ssh_mutex.unlock();
 
+      ssh_mutex.lock();
+      if(session != NULL)
+      {
+          //ssh_disconnect(session);
+          if(ssh_is_connected(session))
+          {
+              ssh_disconnect(session);
+          }
+          session = NULL;
+      }
+      ssh_mutex.unlock();
 
 }
 
