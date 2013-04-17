@@ -136,7 +136,7 @@ void TextEditorWidget::saveFile()
     }
 
     QTextStream out(&file);
-    out.setCodec("IBM850");
+    out.setCodec("ISO-8859-15");
 
     out << mTextEdit->toPlainText();
     file.close();
