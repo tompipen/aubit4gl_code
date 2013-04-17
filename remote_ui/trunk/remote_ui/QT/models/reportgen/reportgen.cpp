@@ -738,7 +738,7 @@ QString Reportgen::getTemplatePosition(int Table, QString odffile)
     return behalten;
 }
 
-QString Reportgen::getXmlStringFromEbene(int Table, int ebene, QString odffile)
+QString Reportgen::getXmlStringFromEbene(int Table, int ebene, QString odffile, int counterLevel1, int counterLevel2, int counterLevel3)
 {
     QFile file(QDir::tempPath() + "/" + odffile + "/content-alt.xml");
 
@@ -767,10 +767,25 @@ QString Reportgen::getXmlStringFromEbene(int Table, int ebene, QString odffile)
     stream.setCodec("UTF-8");
 
     int tableFound = 0;
-
-    //xmlString.append("<table:table-row><table:table-cell>");
+    int ebene2 = 0;
+    int ebene3 = 0;
 
     int merkeString = 0;
+
+    if(counterLevel1 == 0)
+    {
+        counterLevel1 = 1;
+    }
+
+    if(counterLevel2 == 0)
+    {
+        counterLevel2 = 1;
+    }
+
+    if(counterLevel3 == 0)
+    {
+        counterLevel3 = 1;
+    }
 
     while(!stream.atEnd())
     {
@@ -793,18 +808,47 @@ QString Reportgen::getXmlStringFromEbene(int Table, int ebene, QString odffile)
         {
             merkeString = 1;
         }
+
+        if(xmlLine.contains("[P2["))
+        {
+            ebene2 = 1;
+        }
+
+        if(xmlLine.contains("[P3["))
+        {
+            ebene3 = 1;
+            ebene2 = 0;
+        }
+
         if(xmlLine.contains("]P2]"))
         {
             replaceEbene2 = xmlLine;
+            ebene2 = 0;
         }
 
         if(xmlLine.contains("]P3]"))
         {
             replaceEbene3 = xmlLine;
+            ebene3 = 0;
+            ebene2 = 1;
         }
 
         if(merkeString > 0 && tableFound == Table)
         {
+
+            if(xmlLine.contains("@"))
+            {
+                if(ebene2 == 1)
+                {
+                    xmlLine.replace("@", QString("@" + QString::number(counterLevel1) + "_" + QString::number(counterLevel2)));
+                }
+
+                if(ebene3 == 1)
+                {
+                    xmlLine.replace("@", QString("@" + QString::number(counterLevel1) + "_" + QString::number(counterLevel2) + "_" + QString::number(counterLevel3)));
+                }
+            }
+
             xmlString.append(xmlLine);
         }
 
@@ -945,8 +989,8 @@ void Reportgen::createXmlFile(int Table, int Position, QString odffile, QString 
 
     QString xmlStringLevel1;
 
-    QString xmlStringLevel2 = getXmlStringFromEbene(Table, 2, odffile);
-    QString xmlStringLevel3 = getXmlStringFromEbene(Table, 3, odffile);
+    QString xmlStringLevel2 = getXmlStringFromEbene(Table, 2, odffile, 1, 1, 1);
+    QString xmlStringLevel3 = getXmlStringFromEbene(Table, 3, odffile, 1, 1, 1);
 
     QString ebeneVariableLevel1 = getEbeneVariable(1);
     QString ebeneVariableLevel2 = getEbeneVariable(2);
@@ -1006,7 +1050,7 @@ void Reportgen::createXmlFile(int Table, int Position, QString odffile, QString 
             }
             xmlStringLevel1.clear();
             xmlStringLevel1.append("<table:table-row><table:table-cell>");
-            xmlStringLevel1.append(getXmlStringFromEbene(Table, 1, odffile));
+            xmlStringLevel1.append(getXmlStringFromEbene(Table, 1, odffile, zaehlerLevel1+1, 1, 1));
             xmlStringLevel1.append("</table:table-cell></table:table-row>");
 
             zaehlerLevel1++;
@@ -1028,7 +1072,62 @@ void Reportgen::createXmlFile(int Table, int Position, QString odffile, QString 
 
             if(zaehlerLevel2 > 1)
             {
-                xmlStringLevel2 = getXmlStringFromEbene(Table, 2, odffile);
+                xmlStringLevel2 = getXmlStringFromEbene(Table, 2, odffile, zaehlerLevel1, zaehlerLevel2, zaehlerLevel3);
+
+                QString variable;
+                int aktuelleEbene = 0;
+                int counterEbene2 = 1;
+                int counterEbene3 = 1;
+                for(int j=0; j < temp_fields.count(); j++)
+                {
+                    if(temp_fields.at(j).contains("[P1["))
+                    {
+                        aktuelleEbene = 1;
+                    }
+
+                    if(temp_fields.at(j).contains("[P2["))
+                    {
+                        aktuelleEbene = 2;
+                    }
+
+                    if(temp_fields.at(j).contains("[P3["))
+                    {
+                        aktuelleEbene = 3;
+                    }
+
+                    if(temp_fields.at(j).contains("]P3]"))
+                    {
+                        aktuelleEbene = 2;
+                    }
+                    if(temp_fields.at(j).contains("]P2]"))
+                    {
+                        aktuelleEbene = 1;
+                    }
+
+                    if(zaehlerLevel2 > 0)
+                    {
+                        counterEbene2 = zaehlerLevel2;
+                    }
+
+                    switch(aktuelleEbene)
+                    {
+                    case 2:
+                        variable = "@" + QString::number(zaehlerLevel1) + "_" + QString::number(counterEbene2) + temp_fields.at(j);
+                        break;
+                    default:
+                        break;
+                    }
+
+                    if(!variable.isEmpty() && zaehlerLevel1 > 0 && !variable.contains("["))
+                    {
+                        if(aktuelleEbene == 2)
+                        {
+                            QString ersetze = "@" + temp_fields.at(j);
+                            xmlStringLevel2.replace(ersetze, variable);
+                        }
+                    }
+                }
+
                 xmlStringLevel1.replace(replaceEbene2, "<text:p></text:p></table:table-cell></table:table-row><table:table-row><table:table-cell>" + xmlStringLevel2);
             }
             lastZaehlerLevel2 = zaehlerLevel2;
@@ -1041,7 +1140,61 @@ void Reportgen::createXmlFile(int Table, int Position, QString odffile, QString 
 
             if(zaehlerLevel3 > 1)
             {
-                xmlStringLevel3 = getXmlStringFromEbene(Table, 3, odffile);
+                xmlStringLevel3 = getXmlStringFromEbene(Table, 3, odffile, zaehlerLevel1, zaehlerLevel2, zaehlerLevel3);
+                QString variable;
+                int aktuelleEbene = 0;
+                int counterEbene2 = 1;
+                int counterEbene3 = 1;
+                for(int j=0; j < temp_fields.count(); j++)
+                {
+                    if(temp_fields.at(j).contains("[P1["))
+                    {
+                        aktuelleEbene = 1;
+                    }
+
+                    if(temp_fields.at(j).contains("[P2["))
+                    {
+                        aktuelleEbene = 2;
+                    }
+
+                    if(temp_fields.at(j).contains("[P3["))
+                    {
+                        aktuelleEbene = 3;
+                    }
+
+                    if(temp_fields.at(j).contains("]P3]"))
+                    {
+                        aktuelleEbene = 2;
+                    }
+                    if(temp_fields.at(j).contains("]P2]"))
+                    {
+                        aktuelleEbene = 1;
+                    }
+
+                    if(zaehlerLevel3 > 0)
+                    {
+                        counterEbene3 = zaehlerLevel3;
+                    }
+
+                    switch(aktuelleEbene)
+                    {
+                    case 3:
+                        variable = "@" + QString::number(zaehlerLevel1) + "_" + QString::number(counterEbene2) + "_" + QString::number(counterEbene3) + temp_fields.at(j);
+                        break;
+                    default:
+                        break;
+                    }
+
+                    if(!variable.isEmpty() && zaehlerLevel1 > 0 && !variable.contains("["))
+                    {
+                        if(aktuelleEbene == 3)
+                        {
+                            QString ersetze = "@" + temp_fields.at(j);
+                            xmlStringLevel3.replace(ersetze, variable);
+                        }
+                    }
+                }
+
                 xmlStringLevel1.replace(replaceEbene3, "<text:p></text:p></table:table-cell></table:table-row><table:table-row><table:table-cell>" + xmlStringLevel3);
             }
         }
@@ -1090,20 +1243,17 @@ void Reportgen::createXmlFile(int Table, int Position, QString odffile, QString 
             case 1:
                 variable = "@" + QString::number(zaehlerLevel1) + temp_fields.at(j);
                 break;
-            case 2:
-                variable = "@" + QString::number(zaehlerLevel1) + "_" + QString::number(counterEbene2) + temp_fields.at(j);
-                break;
-            case 3:
-                variable = "@" + QString::number(zaehlerLevel1) + "_" + QString::number(counterEbene2) + "_" + QString::number(counterEbene3) + temp_fields.at(j);
-                break;
             default:
                 break;
             }
 
             if(!variable.isEmpty() && zaehlerLevel1 > 0 && !variable.contains("["))
             {
-                QString ersetze = "@" + temp_fields.at(j);
-                xmlStringLevel1.replace(ersetze, variable);
+                if(aktuelleEbene == 1)
+                {
+                    QString ersetze = "@" + temp_fields.at(j);
+                    xmlStringLevel1.replace(ersetze, variable);
+                }
             }
         }
     }
@@ -1190,7 +1340,7 @@ void Reportgen::createXmlFile(int Table, int Position, QString odffile, QString 
 
             if(!valueList.at(0).isEmpty())
             {
-                    readLine.replace(valueList.at(0), sedValue);
+               readLine.replace(valueList.at(0), sedValue);
             }
         }
     }

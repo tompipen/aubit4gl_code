@@ -57,7 +57,7 @@ public:
 
 
     void logMessage(QString);
-    QString getXmlStringFromEbene(int, int, QString);
+    QString getXmlStringFromEbene(int, int, QString, int, int, int);
     QString getEbeneVariable(int);
 
 private:
