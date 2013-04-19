@@ -1111,12 +1111,17 @@ namespace Fgl {
                       return ok;
                   }
 
-                  n = value.toInt(&ok);
-                  if(ok && (value.toInt() == n)){
+                  if(!value.isEmpty())
+                  {
+                      n = value.toInt(&ok);
+                      if(ok && (value.toInt() == n)){
+                         return true;
+                      }
+                      else{
+                         return false;
+                      }
+                  } else {
                      return true;
-                  }
-                  else{
-                     return false;
                   }
               }
 
