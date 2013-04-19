@@ -143,10 +143,29 @@ void SSHTunnel::run()
           //ssh_channel_send_eof(sctunnel);
           if(ssh_channel_is_open(sctunnel))
           {
-             ssh_channel_send_eof(sctunnel);
-             ssh_channel_free(sctunnel);
-             sctunnel = NULL;
+              if(session_mutex)
+              {
+                  session_mutex->lock();
+              }
+              ssh_channel_send_eof(sctunnel);
+              if(session_mutex)
+              {
+                  session_mutex->unlock();
+              }
+             if(sctunnel)
+             {
+                 if(session_mutex)
+                 {
+                     session_mutex->lock();
+                 }
+                 ssh_channel_free(sctunnel);
+                 if(session_mutex)
+                 {
+                     session_mutex->unlock();
+                 }
+             }
           }
+          sctunnel = NULL;
       }
 
       ph.closeAllScreenHandler();
