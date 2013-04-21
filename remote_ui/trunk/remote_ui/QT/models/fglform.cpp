@@ -1081,6 +1081,11 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
 
                       rightClick->addMenu(createMenuHideShowFields(obj));
 
+                      rightClick->addSeparator();
+                      QAction *screenAction = new QAction(tr("&HardCopy"), this);
+                      connect(screenAction, SIGNAL(triggered()), this, SLOT(saveScreenshot()));
+                      rightClick->addAction(screenAction);
+
                       rightClick->exec(QCursor::pos());
                   }
 
@@ -1097,6 +1102,11 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
                       rightClick->addSeparator();
 
                       rightClick->addMenu(createMenuHideShowFields(obj));
+
+                      rightClick->addSeparator();
+                      QAction *screenAction = new QAction(tr("&HardCopy"), this);
+                      connect(screenAction, SIGNAL(triggered()), this, SLOT(saveScreenshot()));
+                      rightClick->addAction(screenAction);
 
                       rightClick->exec(QCursor::pos());
                   }
@@ -1121,8 +1131,12 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
               connect(copyColumn, SIGNAL(triggered()), tv, SLOT(copyColumn()));
               rightClick->addAction(copyColumn);
 
+              rightClick->addSeparator();
+              QAction *screenAction = new QAction(tr("&HardCopy"), this);
+              connect(screenAction, SIGNAL(triggered()), this, SLOT(saveScreenshot()));
+              rightClick->addAction(screenAction);
+
               rightClick->exec(QCursor::pos());
-              //tv->copyRow(tv->getMouseModelIndex());
 
           } else {
               if(LineEdit *le = qobject_cast<LineEdit*> (obj))
@@ -1142,6 +1156,10 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
                   rightClick->addMenu(createMenuHideShowFields(obj));
 
                   rightClick->addSeparator();
+
+                  QAction *screenAction = new QAction(tr("&HardCopy"), this);
+                  connect(screenAction, SIGNAL(triggered()), this, SLOT(saveScreenshot()));
+                  rightClick->addAction(screenAction);
 
                   rightClick->exec(QCursor::pos());
               } else if(TextEdit *le = qobject_cast<TextEdit*> (obj->parent()))
@@ -3749,7 +3767,6 @@ MainFrame::vdcdebug("FglForm","createContextMenu", "const QPoint &pos");
            }
        }
    }
-//   contextMenu->addActions(ql_actions);
 
    if(contextMenu->actions().count() > 0){
       contextMenu->exec(menuPos);
@@ -4957,4 +4974,23 @@ void FglForm::showColorBar(QString color)
   pal.setColor(QPalette::All, QPalette::Window, QColor(color));
   qw_colorbar->setPalette(pal);
   qw_colorbar->setVisible(true);
+}
+
+void FglForm::saveScreenshot()
+{
+    QString dirPath = QApplication::applicationDirPath() + "/Screenshots/";
+    QString fileName = QString("Screenshot-%1.png").arg(QDateTime::currentDateTime().toString("dd-MM-yyyy_hh-mm-ss"));
+
+    QDir screenDir(dirPath);
+
+    if(!screenDir.exists())
+    {
+        screenDir.mkdir(dirPath);
+    }
+
+    if(this)
+    {
+        QPixmap p = QPixmap::grabWidget(this);
+        p.save(dirPath + fileName);
+    }
 }

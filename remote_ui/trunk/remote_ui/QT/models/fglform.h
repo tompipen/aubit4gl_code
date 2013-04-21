@@ -148,7 +148,6 @@ public:
    void setFormName(QString);
    void showColorBar(QString);
 
-
    bool input() { return (ql_states.last() == Fgl::INPUT); };
    bool construct() { return (ql_states.last() == Fgl::CONSTRUCT); };
    bool screenRecord() { return (ql_states.last() == Fgl::DISPLAYARRAY || ql_states.last() == Fgl::INPUTARRAY); };
@@ -236,6 +235,8 @@ public:
    int widgetPosY;
 
 public slots:
+
+   void saveScreenshot();
    void disableForm();
    void buttonClicked(QString);
    void fieldEvent(Fgl::Event, QWidget* = NULL);
