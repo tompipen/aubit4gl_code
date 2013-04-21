@@ -4978,19 +4978,23 @@ void FglForm::showColorBar(QString color)
 
 void FglForm::saveScreenshot()
 {
-    QString dirPath = QApplication::applicationDirPath() + "/Screenshots/";
-    QString fileName = QString("Screenshot-%1.png").arg(QDateTime::currentDateTime().toString("dd-MM-yyyy_hh-mm-ss"));
-
-    QDir screenDir(dirPath);
-
-    if(!screenDir.exists())
-    {
-        screenDir.mkdir(dirPath);
-    }
+    QFileDialog fileDialog(this, "Choose a file to save");
+    fileDialog.setFileMode(QFileDialog::AnyFile);
+    fileDialog.setAcceptMode(QFileDialog::AcceptSave);
+    fileDialog.setDirectory(".");
+    QString fileName = fileDialog.getSaveFileName();
 
     if(this)
     {
-        QPixmap p = QPixmap::grabWidget(this);
-        p.save(dirPath + fileName);
+        if(!fileName.isEmpty())
+        {
+            if(!fileName.contains("."))
+            {
+                fileName.append(".png");
+            }
+
+            QPixmap p = QPixmap::grabWidget(this);
+            p.save(fileName);
+        }
     }
 }
