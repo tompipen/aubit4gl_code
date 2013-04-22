@@ -1457,6 +1457,16 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
 
               returnvalues << "0";
          }
+         if(qs_name == "ui.vdc.get_last_sort")
+         {
+             QStringList params;
+              for(int k=0; k<paramsElement.childNodes().count(); k++){
+                 QDomElement valuesElement = paramsElement.childNodes().at(k).toElement();
+                 params << valuesElement.text();
+              }
+              returnvalues << VDC::readSettingsFromIni(params.at(0), "sortColumn") + " " + VDC::readSettingsFromIni(params.at(0), "sortIndecator");;
+         }
+
          if(qs_name == "ui.vdc.action"){
            qDebug() << "werde aufgerufen!!!" << "";
            QStringList params;
