@@ -6,4 +6,5 @@
 +printpdf(filename DTYPE_CHAR) DTYPE_INT
 +execute(filename DTYPE_CHAR) DTYPE_INT
 +getstdofficeprog () DTYPE_INT
++get_last_sort(modulname DTYPE_CHAR) DTYPE_CHAR
 
