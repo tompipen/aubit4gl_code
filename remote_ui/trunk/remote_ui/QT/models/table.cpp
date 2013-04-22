@@ -60,6 +60,10 @@ MainFrame::vdcdebug("TableView","TableView", "QWidget *parent");
    connect(this, SIGNAL(entered(QModelIndex)), this, SLOT(setMousePos(QModelIndex)));
    QObject::connect(header, SIGNAL(sectionClicked(int)),
                     this, SLOT(sortByColumn(int)));
+
+   QObject::connect(header, SIGNAL(sortIndicatorChanged(int,Qt::SortOrder)),
+                    this, SLOT(saveSortOrder(int, Qt::SortOrder)));
+
    connect(header, SIGNAL(sectionResized(int,int,int)), this, SLOT(updateSectionWidth(int,int,int)));
    connect(header, SIGNAL(sectionMoved(int,int,int)), this, SLOT(saveNewSectionOrder(int,int,int)));
 
@@ -70,6 +74,58 @@ MainFrame::vdcdebug("TableView","TableView", "QWidget *parent");
    this->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
    this->setInputEnabled(false);
    this->setEnabled(false);
+}
+
+void TableView::restoreSortOrder()
+{
+    int logicalIndex = 0;
+    QString sortIndecator;
+
+    if(FglForm *fglform = qobject_cast<FglForm*> (p_fglform))
+    {
+        logicalIndex = VDC::readSettingsFromIni(fglform->formName(), "sortLogicalIndex").toInt();
+        sortIndecator = VDC::readSettingsFromIni(fglform->formName(), "sortIndecator");
+    }
+
+    if(logicalIndex > 0 && !sortIndecator.isEmpty())
+    {
+        if(sortIndecator.contains("ASC"))
+        {
+            this->sortByColumn(logicalIndex, Qt::AscendingOrder);
+        } else if(sortIndecator.contains("DESC"))
+        {
+            this->sortByColumn(logicalIndex, Qt::DescendingOrder);
+        }
+    }
+}
+
+
+void TableView::saveSortOrder(int logicalIndex, Qt::SortOrder sortOrder)
+{
+    if(this->isEnabled() && this->isVisible())
+    {
+        QString sortIndecator;
+
+        switch (sortOrder)
+        {
+        case Qt::AscendingOrder:
+            sortIndecator = "ASC";
+            break;
+        case Qt::DescendingOrder:
+            sortIndecator = "DESC";
+            break;
+        default:
+            break;
+        }
+
+        if(FglForm *fglform = qobject_cast<FglForm*> (p_fglform))
+        {
+            VDC::saveSettingsToIni(fglform->formName(), "sortColumn", this->getColumnName(logicalIndex));
+            VDC::saveSettingsToIni(fglform->formName(), "sortIndecator", sortIndecator);
+            VDC::saveSettingsToIni(fglform->formName(), "sortLogicalIndex", QString::number(logicalIndex));
+
+        }
+    }
 }
 
 void TableView::saveNewSectionOrder(int, int, int)
@@ -1461,7 +1517,7 @@ MainFrame::vdcdebug("MyFilter","lessThan", "const QModelIndex &left, const QMode
                   //Decimal + Float + Money
                   if(widget->dataType() == Fgl::DTYPE_FLOAT || widget->dataType() == Fgl::DTYPE_DECIMAL || widget->dataType() == Fgl::DTYPE_MONEY || widget->dataType() == Fgl::DTYPE_SMFLOAT) {
                       //enum DataType { DTYPE_CHAR, DTYPE_SMINT, DTYPE_INT, DTYPE_FLOAT, DTYPE_SMFLOAT, DTYPE_DECIMAL, DTYPE_SERIAL, DTYPE_DATE, DTYPE_MONEY, DTYPE_NULL, DTYPE_DTIME, DTYPE_BYTE, DTYPE_TEXT, DTYPE_VCHAR, DTYPE_INTERVAL, DTYPE_NCHAR, DTYPE_INT8, DTYPE_SERIAL8}
-                      return v0.toString().replace(",", ".").toFloat() < v1.toString().replace(",", ".").toFloat();
+                      return v0.toString().remove(".").replace(",", ".").toFloat() < v1.toString().remove(".").replace(",", ".").toFloat();
 
               }
 

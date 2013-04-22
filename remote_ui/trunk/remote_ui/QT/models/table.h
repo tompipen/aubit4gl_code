@@ -80,6 +80,8 @@ public:
     QModelIndex getMouseModelIndex();
     bool eventFilter(QObject *, QEvent *);
 
+    void restoreSortOrder();
+
 
 private:
     int i_arrCount;
@@ -100,6 +102,8 @@ private:
     QPalette scrollbars;
 */
 public slots:
+
+   void saveSortOrder(int, Qt::SortOrder);
    void fieldChanged(QModelIndex, QModelIndex);
    void accept();
    void setMousePos(QModelIndex);
