@@ -2429,9 +2429,8 @@ if(qsl_triggereds.size() > 0)
               //      tableView->curr_editor->setFocus(Qt::OtherFocusReason);
                     //p_fglform->setFocusOnWidget(tableView->curr_editor);
                  }
-             } else {
-                if(p_fglform->displayArray())
-                {
+             } else if(p_fglform->displayArray())
+             {
                     tableView->restoreSortOrder();
              }
          }
