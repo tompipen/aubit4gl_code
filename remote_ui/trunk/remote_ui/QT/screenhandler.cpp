@@ -2282,15 +2282,22 @@ if(qsl_triggereds.size() > 0)
         // p_fglform->checkActions(); bullshit its called allready in checkState()
         // p_fglform->adjustSize();
          //p_fglform->resize(500,500);
+         int maximized = VDC::readSettingsFromIni(p_fglform->formName(), "windowIsMaximized").toInt();
 
-         QSize widgetSize (VDC::readSettingsFromIni(p_fglform->formName(), "width").toInt(), VDC::readSettingsFromIni(p_fglform->formName(), "height").toInt());
-         if(!widgetSize.isEmpty())
+         if(maximized == 1)
          {
-             p_fglform->resize(widgetSize);
              p_fglform->show();
+             p_fglform->showMaximized();
          } else {
-             p_fglform->show();
-             p_fglform->adjustSize();
+             QSize widgetSize (VDC::readSettingsFromIni(p_fglform->formName(), "width").toInt(), VDC::readSettingsFromIni(p_fglform->formName(), "height").toInt());
+             if(!widgetSize.isEmpty())
+             {
+                 p_fglform->resize(widgetSize);
+                 p_fglform->show();
+             } else {
+                 p_fglform->show();
+                 p_fglform->adjustSize();
+             }
          }
 
          if(p_fglform->context != NULL)
@@ -3600,13 +3607,11 @@ void ScreenHandler::activeFocus()
     }
 
     if(p_fglform->dialog() == NULL && p_fglform->ringMenuPulldown() == NULL){
-        p_fglform->setWindowState(Qt::WindowActive);
         p_fglform->raise();
         QApplication::setActiveWindow((QWidget*) p_fglform);
         p_fglform->activateWindow();
         //Qt3 weg, static QMetaobject::invokeoMethod in zukunft
         QApplication::postEvent(this, new QEvent((QEvent::Type)1337));
-
     }
     if(p_fglform->dialog() != NULL)
     {
@@ -3680,7 +3685,6 @@ bool ScreenHandler::eventFilter(QObject *obj, QEvent *event)
 
                 }
             }
-
         }
     if(p_fglform != NULL && event->type() == 1337)
     if(!p_fglform->b_dummy && p_fglform->isEnabled()&&p_fglform->currentField() != NULL && (p_fglform->state() == Fgl::CONSTRUCT || p_fglform->state() == Fgl::INPUT || p_fglform->state() == Fgl::INPUTARRAY))
@@ -3721,7 +3725,6 @@ bool ScreenHandler::eventFilter(QObject *obj, QEvent *event)
       }
    }
 */
-
    return QObject::eventFilter(obj, event);
 
 }

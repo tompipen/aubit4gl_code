@@ -1807,32 +1807,36 @@ void FglForm::saveWindowPos()
     saveTimer = NULL;
 }
 
+void FglForm::changeEvent(QEvent *event)
+{
+
+    if(event->type() == QEvent::WindowStateChange)
+    {
+        if(this->isMaximized() && this->isVisible())
+        {
+            VDC::saveSettingsToIni(formName(), "windowIsMaximized", QString::number(1));
+        }
+
+        /*if(!this->isMaximized() && this->isVisible())
+        {
+            VDC::removeSettingsFromIni(formName(), "windowIsMaximized");
+        }*/
+    }
+}
+
 void FglForm::writeSettingsLocal()
 {
-    int maximized = 0;
-    if(isMaximized())
+    if(!this->isMaximized())
     {
-        QDesktopWidget *widget = new QDesktopWidget();
-        qDebug() << "bla: " << widget->size();
-        VDC::saveSettingsToIni(formName(), "width", QString::number(widget->size().width()-15));
-        VDC::saveSettingsToIni(formName(), "height", QString::number(widget->size().height()-45));
-        VDC::saveSettingsToIni(formName(), "posX", QString::number(0));
-        VDC::saveSettingsToIni(formName(), "posY", QString::number(0));
-        this->setWindowState(Qt::WindowMaximized);
-        maximized = 1;
+        VDC::removeSettingsFromIni(formName(), "windowIsMaximized");
     }
 
-    if(maximized == 0)
+    if(widgetPosX >= 0 && widgetPosY >= 0)
     {
-        //qDebug() << "size: " << size();
-        //qDebug() << "size: " << this->windowName;
-        if(widgetPosX >= 0 && widgetPosY >= 0)
-        {
-            VDC::saveSettingsToIni(formName(), "width", QString::number(widgetWidth));
-            VDC::saveSettingsToIni(formName(), "height", QString::number(widgetHeight));
-            VDC::saveSettingsToIni(formName(), "posX", QString::number(widgetPosX));
-            VDC::saveSettingsToIni(formName(), "posY", QString::number(widgetPosY));
-        }
+        VDC::saveSettingsToIni(formName(), "width", QString::number(widgetWidth));
+        VDC::saveSettingsToIni(formName(), "height", QString::number(widgetHeight));
+        VDC::saveSettingsToIni(formName(), "posX", QString::number(widgetPosX));
+        VDC::saveSettingsToIni(formName(), "posY", QString::number(widgetPosY));
     }
 
     if(mXmlMenu)

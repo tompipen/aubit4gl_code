@@ -156,6 +156,7 @@ public:
 
    bool bufferTouched() { return b_bufferTouched; };
    int lastCursor() { return i_lastCursor; };
+   void changeEvent(QEvent *);
 
    /*
    void setConstructEnabled(bool enable ) { b_construct = enable; };
