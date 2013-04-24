@@ -1338,9 +1338,30 @@ void Reportgen::createXmlFile(int Table, int Position, QString odffile, QString 
                 sedValue.replace(">", "&gt;");
             }
 
-            if(!valueList.at(0).isEmpty())
+            if(!valueList.isEmpty())
             {
-               readLine.replace(valueList.at(0), sedValue);
+                if(!sedValue.isEmpty())
+                {
+                    if((sedValue.at(0) == QChar(' ') || sedValue.at(0) == QChar('-')) && (sedValue.at(1) >= 0 || sedValue.at(1) < 9))
+                    {
+                        for(int j=0; j < tableCell.count(); j++)
+                        {
+                            QString newTablecell = tableCell.at(j);
+                            QString suchString = tableCell.at(j) + "<text:p>" + valueList.at(0);
+
+                            if(readLine.contains(suchString))
+                            {
+                                newTablecell.replace("\"string\"", "\"float\" office:value=\"" + sedValue.simplified() + "\"");
+                                newTablecell.append("<text:p>" + valueList.at(0));
+                                newTablecell.remove(".");
+                                newTablecell.replace(",",".");
+                                readLine.replace(suchString, newTablecell);
+                                break;
+                            }
+                        }
+                    }
+                }
+                readLine.replace(valueList.at(0), sedValue.simplified());
             }
         }
     }
