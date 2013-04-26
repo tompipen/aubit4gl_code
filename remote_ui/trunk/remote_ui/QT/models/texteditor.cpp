@@ -163,7 +163,7 @@ void TextEditorWidget::saveAsFile()
     QTextStream out(&file);
     out.setCodec("ISO-8859-15");
 
-    out << mTextEdit->toPlainText().trimmed();
+    out << mTextEdit->toPlainText();
 
     file.close();
 
