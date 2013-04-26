@@ -2113,11 +2113,13 @@ void FglForm::clearFieldFocus()
 void FglForm::setFocusOnWidget(QWidget *w, Qt::FocusReason reason)
 {
     Q_UNUSED(reason);
-  if(w == focusWidget())
-  {
-     return;
-  }
-
+    if(LineEdit *le = qobject_cast<LineEdit*>(w))
+    {
+        if(w == focusWidget() && le->isReadOnly())
+        {
+           return;
+        }
+    }
   currentField()->clearFocus();
   this->clearFieldFocus();
   QMetaObject::invokeMethod(w, "setFocus", Qt::QueuedConnection);
