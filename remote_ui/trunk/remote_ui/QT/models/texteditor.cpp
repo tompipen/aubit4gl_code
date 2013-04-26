@@ -133,7 +133,7 @@ void TextEditorWidget::saveFile()
     QString fileName = QDir::tempPath() + "/" + mFileName;
 
     QFile file(fileName);
-    if(!file.open(QIODevice::WriteOnly))
+    if(!file.open(QIODevice::WriteOnly | QIODevice::Text))
     {
         qDebug() << "Kann Datei nicht zum lesen oeffnen";
     }
@@ -150,19 +150,20 @@ void TextEditorWidget::saveFile()
 
 void TextEditorWidget::saveAsFile()
 {
-    QFileDialog fileDialog(this, "Choose a file to save");
-    QString fileName = fileDialog.getSaveFileName();
+    QString fileName = QFileDialog::getSaveFileName(this, tr("Save File"),
+                                                    "ASCII-Report.txt",
+                                                    tr("Text Files(*.txt *.html)"));
     QFile file(fileName);
 
-    if(!file.open(QIODevice::WriteOnly))
+    if(!file.open(QIODevice::WriteOnly | QIODevice::Text))
     {
         qDebug() << "Kann Datei nicht zum lesen oeffnen";
     }
 
     QTextStream out(&file);
-    out.setCodec("ISO-8859-1");
+    out.setCodec("ISO-8859-15");
 
-    out << mTextEdit->toPlainText();
+    out << mTextEdit->toPlainText().trimmed();
 
     file.close();
 
@@ -359,6 +360,7 @@ void TextEditorWidget::insertDate()
 
 TextEditor::TextEditor(QWidget *parent)
 {
+    Q_UNUSED(parent);
 
     lineNumberArea = new LineNumberArea(this);
 

@@ -11,14 +11,8 @@ int main(int argc, char *argv[])
     QCoreApplication::setOrganizationDomain("ventas.de");
     QCoreApplication::setApplicationName("VDC - Ventas Desktop Client");
 
-    QString arg;
-    if(argv[1] != "")
-    {
-        arg = argv[1];
-    }
-
     VDCUpdate *mVentas = new VDCUpdate();
-    mVentas->start(arg);
+    mVentas->start();
 
     return app.exec();
 }
@@ -55,7 +49,7 @@ VDCUpdate::VDCUpdate() : QWidget()
     this->setLayout(vLayout);
 
 }
-void VDCUpdate::start(QString param)
+void VDCUpdate::start()
 {
         this->show();
         this->adjustSize();

@@ -2127,7 +2127,7 @@ MainFrame::vdcdebug("WidgetHelper","setFieldText", "QObject *object, QString fie
            widget->setText(fieldValue);
            if(!widget->isEnabled())
            {
-              widget->setCursorPosition(1);
+              widget->setCursorPosition(0);
            }
        }
       return;

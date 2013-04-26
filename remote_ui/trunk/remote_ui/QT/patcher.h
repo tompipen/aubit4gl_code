@@ -25,7 +25,7 @@ class VDCUpdate : public QWidget
 public:
     VDCUpdate();
     ~VDCUpdate();
-    void start(QString);
+    void start();
     void logMessage(QString);
 
 private:

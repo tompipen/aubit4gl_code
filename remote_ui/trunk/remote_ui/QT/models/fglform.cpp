@@ -4984,21 +4984,13 @@ void FglForm::showColorBar(QString color)
 
 void FglForm::saveScreenshot()
 {
-    QFileDialog fileDialog(this, "Choose a file to save");
-    fileDialog.setFileMode(QFileDialog::AnyFile);
-    fileDialog.setAcceptMode(QFileDialog::AcceptSave);
-    fileDialog.setDirectory(".");
-    QString fileName = fileDialog.getSaveFileName();
-
+    QString fileName = QFileDialog::getSaveFileName(this, tr("Save File"),
+                                                    "Screenshot.png",
+                                                    tr("Image File(*.png *.gif *.jpg *.jpeg)"));
     if(this)
     {
         if(!fileName.isEmpty())
         {
-            if(!fileName.contains("."))
-            {
-                fileName.append(".png");
-            }
-
             QPixmap p = QPixmap::grabWidget(this);
             p.save(fileName);
         }

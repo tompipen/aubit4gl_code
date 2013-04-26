@@ -4404,6 +4404,7 @@ void ScreenHandler::saveOfficeInstallation()
 
 void ScreenHandler::printpdf(QString filename)
 {
+    Q_UNUSED(filename);
 /*
 
   QFile pdffile(filename);

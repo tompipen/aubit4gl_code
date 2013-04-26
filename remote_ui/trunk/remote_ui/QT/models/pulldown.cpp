@@ -381,7 +381,7 @@ bool RingMenuPulldown::eventFilter(QObject *obj, QEvent *event)
 
 void RingMenuPulldown::closeEvent(QCloseEvent *event)
 {
-
+    Q_UNUSED(event);
     //event->ignore();
     if(closeWindowInt > 0)
     {
