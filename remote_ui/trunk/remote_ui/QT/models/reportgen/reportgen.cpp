@@ -107,7 +107,7 @@ void Reportgen::run()
 
     if(oldFileName.completeSuffix() == "ods")
     {
-        createXmlFile(positionGefunden, variableFound, oldFileName.baseName(), mSedFile);
+        createXmlFile(positionGefunden, variableFound, oldFileName.baseName());
     } else if(oldFileName.completeSuffix() == "odt"){
         content.append(getTemplatePosition( fileBaseName + "/content.xml" ));//.toUtf8());
         for(int j=1; j < variableFound+1; j++) {
@@ -211,7 +211,7 @@ QStringList Reportgen::getHeaderFooterVariables(int Table, QString value)
                 }
             }
 
-            if(start = 1)
+            if(start == 1)
             {
                 variableList << temp_fields.at(i);
             }
@@ -895,7 +895,7 @@ QString Reportgen::getEbeneVariable(int ebene)
 // Description  : Create the content of each Template.
 //
 //------------------------------------------------------------------------------
-QString Reportgen::createFirstTable(QString odffile, int wiederholen)
+QString Reportgen::createFirstTable(QString odffile)
 {
     QFile file(QDir::tempPath() + "/" + odffile + "/content-alt.xml");
 
@@ -912,10 +912,6 @@ QString Reportgen::createFirstTable(QString odffile, int wiederholen)
 
     QString readLine;
     QString behalten;
-
-    QString anhaengen;
-
-    int istErgaenzt = 0;
 
     int merkeString = 0;
 
@@ -983,7 +979,7 @@ QString Reportgen::createFirstTable(QString odffile, int wiederholen)
 }
 
 
-void Reportgen::createXmlFile(int Table, int Position, QString odffile, QString sedfile)
+void Reportgen::createXmlFile(int Table, int Position, QString odffile)
 {
     QFile file(QDir::tempPath() + "/" + odffile + "/content.xml");
 
@@ -1019,7 +1015,7 @@ void Reportgen::createXmlFile(int Table, int Position, QString odffile, QString 
     outstream << getTemplateHeader( odffile + "/content-alt.xml", "ods" ).toAscii(); //<< getTemplatePosition( fileBaseName + "/content.xml" ).toUtf8();
     if(Table > 1)
     {
-        outstream << createFirstTable(odffile, Position);
+        outstream << createFirstTable(odffile);
     }
 
     outstream << getTemplatePosition(Table, odffile + "/content-alt.xml").toAscii();
@@ -1077,7 +1073,6 @@ void Reportgen::createXmlFile(int Table, int Position, QString odffile, QString 
                 QString variable;
                 int aktuelleEbene = 0;
                 int counterEbene2 = 1;
-                int counterEbene3 = 1;
                 for(int j=0; j < temp_fields.count(); j++)
                 {
                     if(temp_fields.at(j).contains("[P1["))
@@ -1340,7 +1335,7 @@ void Reportgen::createXmlFile(int Table, int Position, QString odffile, QString 
 
             if(!valueList.isEmpty())
             {
-                if(!sedValue.isEmpty())
+                if(!sedValue.isEmpty() && sedValue.length() >= 2)
                 {
                     if((sedValue.at(0) == QChar(' ') || sedValue.at(0) == QChar('-')) && (sedValue.at(1) >= 0 || sedValue.at(1) < 9))
                     {
@@ -2685,7 +2680,7 @@ bool Reportgen::replaceTemplateVars(QString odffile, QString sedfile, QFileInfo 
     {
         emit displayChart(diag_bild, diag_state);
         sleep(2);
-        if(QFile::exists(QString(QDir::tempPath() + "/" + diag_bild)));
+        if(QFile::exists(QString(QDir::tempPath() + "/" + diag_bild)))
         {
             if(QFile::copy(QString(QDir::tempPath() + "/" + diag_bild), QString( QDir::tempPath() + "/" + odffile + "/Pictures/" + diag_bild )))
             {

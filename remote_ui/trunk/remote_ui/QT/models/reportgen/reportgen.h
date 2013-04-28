@@ -26,8 +26,8 @@ public:
 
     int getExitCode() { return mExitCode; }
 
-    QString createFirstTable(QString odffile, int wiederholen);
-    void createXmlFile(int Table, int Position, QString odffile, QString sedfile);
+    QString createFirstTable(QString odffile);
+    void createXmlFile(int Table, int Position, QString odffile);
     QStringList getHeaderFooterVariables(int, QString);
     void replaceHeaderFooterVariables(int );
 
