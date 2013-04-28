@@ -3366,7 +3366,8 @@ MainFrame::vdcdebug("ProtocolHandler","fglFormResponse", "QString qs_id");
        makeResponse(qs_id);
    }
    qDebug()<<qs_id;
-   emit debugtext(QString(">> " + qs_id));
+   QMetaObject::invokeMethod(MainFrame::lastmainframe, "debugText", Q_ARG(QString, ">> " + qs_id));
+   //emit debugtext(QString(">> " + qs_id));
 }
 
 void ProtocolHandler::closeAllScreenHandler()
