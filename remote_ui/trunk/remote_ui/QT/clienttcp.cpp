@@ -706,7 +706,8 @@ p_currScreenHandler = NULL;
 
 
    qDebug()<< qsl_xmlCommands.at(i)<<__LINE__<<__FILE__;
-   emit debugtext(QString("<< " + qsl_xmlCommands.at(i)));
+   QMetaObject::invokeMethod(MainFrame::lastmainframe, "debugText", Q_ARG(QString, "<< " + qsl_xmlCommands.at(i)));
+   //emit debugtext(QString("<< " + qsl_xmlCommands.at(i)));
          QDomElement envelope = doc.documentElement();
          pid = envelope.attribute("ID").toInt();
          int p_pid = envelope.attribute("PID").toInt();
