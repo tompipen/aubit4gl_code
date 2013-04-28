@@ -115,6 +115,7 @@ MainFrame::vdcdebug("ScreenHandler","~ScreenHandler", "");
         {
             //Reset Runinfo
             l_ql_screenhandler->at(i)->setRuninfo(0, "", 0, false);
+            MainFrame::ql_screenhandler->removeOne(this);
         }
     }
 
