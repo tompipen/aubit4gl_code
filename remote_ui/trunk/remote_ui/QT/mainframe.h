@@ -76,12 +76,14 @@ public:
    void requestScreenHandler(int, int);
    QString getUserName() { return userName; };
 
+
 public slots:
    void cleanUp();
    void debugClose();
    void deleteScreenHandler(int pid, int p_pid);
    void trayIconClicked(QSystemTrayIcon::ActivationReason);
    void closeAction();
+   void debugText(QString text);
 
 private:
    QTabWidget *tabWidget;

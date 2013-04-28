@@ -42,6 +42,8 @@ class DebugWindow : public QDialog
       QString debugfull;
       QLineEdit *search;
 
+      void append(QString text) { edit->append(text); }
+
     public slots:
       void debugOut(QString);
       void forwardsearch();
