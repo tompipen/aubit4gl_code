@@ -35,18 +35,36 @@
 void MainFrame::ReadSettings()
 {
 MainFrame::vdcdebug("MainFrame","ReadSettings", "");
-  QSettings settings("Ventas AG", "Ventas Desktop Client");
-  QVariant fontsetting = settings.value("font");
-  QString fontsetting2;
-  fontsetting2 = fontsetting.toString();
-  QFont fontsetting3;
-  fontsetting3.fromString(fontsetting2);
+    QSettings settings("Ventas AG", "Ventas Desktop Client");
+    QVariant fontsetting = settings.value("font");
+    QString fontsetting2;
+    fontsetting2 = fontsetting.toString();
+    QFont fontsetting3;
+    fontsetting3.fromString(fontsetting2);
 
-  QApplication::setFont(fontsetting3);
-  if(fontsetting2 == "" || fontsetting2.contains("Liberation"))
-  {
+    QApplication::setFont(fontsetting3);
+    if(fontsetting2 == "" || fontsetting2.contains("Liberation"))
+    {
       QApplication::setFont(QFont("Arial", 8));
-  }
+    }
+
+    mTray = new QSystemTrayIcon(this);
+    mTray->setIcon(QIcon("pics:vdc.png"));
+
+    QMenu *menu = new QMenu;
+    QAction *showAction = menu->addAction("Show Login Window");
+    connect(showAction, SIGNAL(triggered()), this, SLOT(show()));
+
+    QAction *hideAction = menu->addAction("Hide Login Window");
+    connect(hideAction, SIGNAL(triggered()), this, SLOT(hide()));
+
+    QAction *exitAction = menu->addAction("Exit");
+    connect(exitAction, SIGNAL(triggered()), this, SLOT(closeAction()));
+
+    mTray->setContextMenu(menu);
+    connect(mTray, SIGNAL(activated(QSystemTrayIcon::ActivationReason)), this, SLOT(trayIconClicked(QSystemTrayIcon::ActivationReason)));
+
+    mTray->show();
 }
 
 bool MainFrame::b_debugmodus = false;
@@ -882,6 +900,42 @@ MainFrame::vdcdebug("MainFrame","cleanUp", "");
    }
 }
 
+void MainFrame::trayIconClicked(QSystemTrayIcon::ActivationReason reason)
+{
+    if(reason == QSystemTrayIcon::Trigger)
+    {
+        if(!this->isVisible())
+        {
+            this->show();
+        } else {
+            this->hide();
+        }
+    }
+}
+void MainFrame::closeAction()
+{
+    int closeApplication = 0;
+    if(this->ql_screenhandler)
+    {
+        if(ql_screenhandler->count() > 0)
+        {
+           closeApplication = QMessageBox::question(0,
+                                       tr("VDC - Ventas Desktop Client"),
+                                       tr("There are open Connections.\n"
+                                          "Do you really want to quit?"),
+                                       tr("&Yes"), tr("&No"),
+                                       QString(), 0, 1);
+        }
+    }
+
+    if(closeApplication == 0){
+       VDC::saveSettingsToIni("Ventas AG", "posX", QString::number(pos().x()));
+       VDC::saveSettingsToIni("Ventas AG", "posY", QString::number(pos().y()));
+       cleanUp();
+       exit(0);
+    }
+}
+
 //------------------------------------------------------------------------------
 // Method       : closeEvent()
 // Filename     : mainframe.cpp
@@ -890,27 +944,12 @@ MainFrame::vdcdebug("MainFrame","cleanUp", "");
 void MainFrame::closeEvent(QCloseEvent *event)
 {
 MainFrame::vdcdebug("MainFrame","closeEvent", "QCloseEvent *event");
-   event->ignore();
-   QMessageBox *messagebox = new QMessageBox();
-   int quit = 0;
-
-      if(clientTcp->socket != NULL && (clientTcp->socket->state() >0 && clientTcp->socket->state() <6))
-      {
-         quit = messagebox->question(0,
-                                     tr("VDC - Ventas Desktop Client"),
-                                     tr("There are open Connections.\n"
-                                        "Do you really want to quit?"),
-                                     tr("&Yes"), tr("&No"),
-                                     QString(), 0, 1);
-      }
-
-      if(quit == 0){
-         VDC::saveSettingsToIni("Ventas AG", "posX", QString::number(pos().x()));
-         VDC::saveSettingsToIni("Ventas AG", "posY", QString::number(pos().y()));
-         cleanUp();
-         event->accept();
-         close();
-      }
+    if (mTray->isVisible())
+    {
+        mTray->showMessage("Ventas Desktop Client", "The VDC runs in System Tray");
+        this->hide();
+        event->ignore();
+    }
 }
 void MainFrame::debugClose()
 {
@@ -920,6 +959,8 @@ emit debugSignal();
 
 void MainFrame::requestScreenHandler(int pid, int p_pid)
 {
+MainFrame::vdcdebug("MainFrame","requestScreenHandler", "int pid, int p_pid");
+
     ScreenHandler *sh = new ScreenHandler(this->lastmainframe);
     sh->moveToThread(QApplication::instance()->thread());
     sh->pid = pid;
@@ -929,7 +970,8 @@ void MainFrame::requestScreenHandler(int pid, int p_pid)
 
 void MainFrame::deleteScreenHandler(int pid, int p_pid)
 {
-    for(int i=0; i<ql_screenhandler->size();i++)
+MainFrame::vdcdebug("MainFrame","deleteScreenHandler", "int pid, int p_pid");
+for(int i=0; i<ql_screenhandler->size();i++)
     {
         if(ql_screenhandler->at(i)->pid == pid && ql_screenhandler->at(i)->p_pid == p_pid)
         {

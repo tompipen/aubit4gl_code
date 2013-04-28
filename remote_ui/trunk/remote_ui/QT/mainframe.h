@@ -28,6 +28,7 @@
 #include <QMainWindow>
 #include <QHostInfo>
 #include <QTableWidget>
+#include <QSystemTrayIcon>
 
 #include "clienttcp.h"
 #include "include/fgl.h"
@@ -79,6 +80,8 @@ public slots:
    void cleanUp();
    void debugClose();
    void deleteScreenHandler(int pid, int p_pid);
+   void trayIconClicked(QSystemTrayIcon::ActivationReason);
+   void closeAction();
 
 private:
    QTabWidget *tabWidget;
@@ -90,6 +93,7 @@ private:
    ConnectionsTab *connectionsTab;
    void ReadSettings();
    QString userName;
+   QSystemTrayIcon *mTray;
 
 signals:
        void debugSignal();

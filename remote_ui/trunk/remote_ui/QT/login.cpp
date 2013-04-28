@@ -49,21 +49,6 @@ LoginForm::LoginForm(QWidget *parent)
    bool adminMenu = mainFrame->adminMenu;
    QStatusBar *statusBar = mainFrame->statusBar();
 
-    QSystemTrayIcon *trayIcon = new QSystemTrayIcon(this);
-   trayIcon->setIcon(QIcon("pics:vdc.png"));
-
-   QMenu *menu = new QMenu;
-   QAction *showAction = menu->addAction("Show Login Window");
-   connect(showAction, SIGNAL(triggered()), this, SLOT(showLogin()));
-   QAction *hideAction = menu->addAction("Hide Login Window");
-   connect(hideAction, SIGNAL(triggered()), this, SLOT(hideLogin()));
-   QAction *exitAction = menu->addAction("Exit");
-   connect(exitAction, SIGNAL(triggered()), this, SLOT(cancelPressed()));
-
-   trayIcon->setContextMenu(menu);
-
-   trayIcon->show();
-
    b_savefile=false;
 
    errorMessageLoginForm = new QErrorMessage(this);
@@ -1183,16 +1168,34 @@ void LoginForm::connectToTelnet()
 //------------------------------------------------------------------------------
 void LoginForm::cancelPressed()
 {
-   VDC::saveSettingsToIni("Ventas AG", "posX", QString::number(this->parentWidget()->pos().x()));
-   VDC::saveSettingsToIni("Ventas AG", "posY", QString::number(this->parentWidget()->pos().y()));
-   exit(0);
 MainFrame::vdcdebug("LoginForm","cancelPressed", "");
+    QList<ScreenHandler*> *ql_screenhandler = MainFrame::ql_screenhandler;
+    int closeApplication = 0;
+
+    if(ql_screenhandler)
+    {
+        if(ql_screenhandler->count() > 0)
+        {
+           closeApplication = QMessageBox::question(0,
+                                       tr("VDC - Ventas Desktop Client"),
+                                       tr("There are open Connections.\n"
+                                          "Do you really want to quit?"),
+                                       tr("&Yes"), tr("&No"),
+                                       QString(), 0, 1);
+        }
+    }
+
+    if(closeApplication == 0){
+       VDC::saveSettingsToIni("Ventas AG", "posX", QString::number(this->parentWidget()->pos().x()));
+       VDC::saveSettingsToIni("Ventas AG", "posY", QString::number(this->parentWidget()->pos().y()));
+       exit(0);
+    }
 }
 
 void LoginForm::showLogin()
 {
-   if(QWidget *mainWin = qobject_cast<QWidget *> (parent())){
 MainFrame::vdcdebug("LoginForm","showLogin", "");
+   if(QWidget *mainWin = qobject_cast<QWidget *> (parent())){
       mainWin->setHidden(false);
    }
 }
