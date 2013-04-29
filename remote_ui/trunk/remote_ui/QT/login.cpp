@@ -1269,6 +1269,8 @@ MainFrame::vdcdebug("LoginForm","debugCheck", "");
 void LoginForm::m_c_success()
 {
   showMessage("Authentifizierung erfolgreich!");
+  MainFrame *frame = qobject_cast<MainFrame*> (MainFrame::lastmainframe);
+  frame->close();
   //removeCursor();
 }
 
