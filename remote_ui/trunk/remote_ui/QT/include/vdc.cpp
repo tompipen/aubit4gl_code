@@ -2,6 +2,7 @@
 #include <QDir>
 #include <QDebug>
 #include <QDesktopServices>
+#include <QDesktopWidget>
 
 namespace VDC {
    double fieldsizefactor;
@@ -155,5 +156,24 @@ namespace VDC {
      hash.addData(ba_filedata);
      QByteArray ba_hash = hash.result().toHex();
      return ba_hash.data();
+   }
+
+   QPoint widgetPositionValidate(int posX, int posY)
+   {
+       QDesktopWidget *desktop = new QDesktopWidget();
+       if((posX > desktop->screen()->width()) || (posX < 0))
+       {
+           qDebug() << "Invalid PosX: " << posX;
+           posX = 0;
+
+       }
+
+       if((posY > desktop->screen()->height()) || ( posY < 0))
+       {
+           qDebug() << "Invalid PosY: " << posY;
+           posY = 0;
+       }
+
+       return QPoint(posX, posY);
    }
 }

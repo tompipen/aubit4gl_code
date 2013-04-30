@@ -23,6 +23,8 @@ namespace VDC
   void removeSettingsFromIni(QString group, QString key);
   QString md5hashfromfile(QString);
 
+  QPoint widgetPositionValidate(int, int);
+
 
 };
 
