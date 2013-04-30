@@ -67,21 +67,52 @@ void crash()
 
 void crashingMessageHandler(QtMsgType type, const char *msg)
 {
-    switch (type) {
-    case QtDebugMsg:
-        fprintf(stderr, "Debug: %s\n", msg);
-        break;
-    case QtWarningMsg:
-        fprintf(stderr, "Warning: %s\n", msg);
-        break;
-    case QtCriticalMsg:
-        fprintf(stderr, "Critical: %s\n", msg);
-        break;
-    case QtFatalMsg:
-        fprintf(stderr, "Fatal: %s\n", msg);
-        __asm("int3");
-        abort();
-  }
+
+    QString text = "";
+    const int USE_DEBUG_FILE = 0;
+
+    if(USE_DEBUG_FILE == 1)
+    {
+        switch(type)
+        {
+            case QtDebugMsg:
+                text = QString("Debug %1").arg(msg);
+                break;
+            case QtWarningMsg:
+                text = QString("Warning: %1").arg(msg);
+                break;
+            case QtCriticalMsg:
+                text = QString("Critical: %1").arg(msg);
+                break;
+            case QtFatalMsg:
+                text = QString("Fatal: %1").arg(msg);
+                break;
+        }
+
+        QFile file(QDir::currentPath() + "/debug.txt");
+        file.open(QIODevice::WriteOnly | QIODevice::Append);
+
+        QTextStream outStream(&file);
+        outStream << text << endl;
+    }
+    else
+    {
+        switch (type) {
+            case QtDebugMsg:
+                fprintf(stderr, "Debug: %s\n", msg);
+                break;
+            case QtWarningMsg:
+                fprintf(stderr, "Warning: %s\n", msg);
+                break;
+            case QtCriticalMsg:
+                fprintf(stderr, "Critical1: %s\n", msg);
+                break;
+            case QtFatalMsg:
+                fprintf(stderr, "Fatal: %s\n", msg);
+                __asm("int3");
+                abort();
+          }
+    }
 }
 
 int main(int argc, char *argv[])
@@ -93,40 +124,16 @@ int main(int argc, char *argv[])
     ssh_init();
     #endif
 
-/*    QString crashdumpTmp = QDir::currentPath() + "/crashreport";
-    const std::string &clientTmpDir = crashdumpTmp.toStdString();
-
-    QDir dir(crashdumpTmp);
-
-    if(!dir.exists())
-    {
-        dir.mkdir(crashdumpTmp);
-    }
-
-    #ifdef Q_WS_X11
-    google_breakpad::MinidumpDescriptor md(clientTmpDir);
-    google_breakpad::ExceptionHandler eh(md, NULL, dumpCallback, NULL, true, -1);
-    #endif
-*/
-
     QSplashScreen *splash = new QSplashScreen;
     ScreenHandler::setSearchPaths();
     //splash->setPixmap(QPixmap("./pics/splash.png"));
     splash->setPixmap(QPixmap("pics:VENTAS_9_splashscreen.png"));
-    QEvent::registerEventType(1337);
-    //Event to seperate Keys for the Puffers(same like KeyPress)
-    QEvent::registerEventType(1400);
-    //Event to seperate Keys for the Puffers(same like KeyRelease)
-    QEvent::registerEventType(1401);
 
     splash->show();
-    QString fileName; 
+
     QCoreApplication::setOrganizationName("VENTAS");
     QCoreApplication::setOrganizationDomain("ventas.de");
     QCoreApplication::setApplicationName("VDC - Ventas Desktop Client");
-
-    //sleep(3);
-
 
     QString translatorFileName = QLatin1String("qt_");
     translatorFileName += QLocale::system().name();
@@ -155,6 +162,12 @@ int main(int argc, char *argv[])
 
     app.setWindowIcon(ventasLogo);
 
+    QEvent::registerEventType(1337);
+    //Event to seperate Keys for the Puffers(same like KeyPress)
+    QEvent::registerEventType(1400);
+    //Event to seperate Keys for the Puffers(same like KeyRelease)
+    QEvent::registerEventType(1401);
+
     // we need to register the QStringList with the meta-object system
     // to make it usable for signal/slot connections
     //
@@ -162,15 +175,19 @@ int main(int argc, char *argv[])
     qRegisterMetaType<QModelIndex>("QModelIndex");
     qRegisterMetaType<QModelIndex>("QDomDocument");
     qRegisterMetaType<QModelIndex>("QDomElement");
+
+    int posX = VDC::readSettingsFromIni("Ventas AG", "posX").toInt();
+    int posY = VDC::readSettingsFromIni("Ventas AG", "posY").toInt();
+
     MainFrame mainframe;
-    mainframe.move(VDC::readSettingsFromIni("Ventas AG", "posX").toInt(), VDC::readSettingsFromIni("Ventas AG", "posY").toInt());
+    mainframe.move(VDC::widgetPositionValidate(posX, posY));
+
     mainframe.show();
     mainframe.adjustSize();
-
-
-    splash->finish(&mainframe);
     mainframe.activateWindow();
     mainframe.raise();
+
+    splash->finish(&mainframe);
 
     qInstallMsgHandler(crashingMessageHandler);
     delete splash;
