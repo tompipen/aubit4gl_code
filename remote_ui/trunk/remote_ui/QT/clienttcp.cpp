@@ -36,6 +36,9 @@
 #include <models/fglform.h>
 #ifdef Q_WS_WIN
 #include <unistd.h>
++#include <windows.h>
+#include <stdio.h>
+#include <tchar.h>
 #endif
 
 //------------------------------------------------------------------------------
@@ -2591,7 +2594,73 @@ void ProtocolHandler::executeFile(int waitforFinish, QString fileName)
       }
    #endif
    #ifdef Q_WS_WIN
-       QProcess::startDetached(QString("rundll32 url.dll,FileProtocolHandler \"%1\"").arg( fileNameInfo.absoluteFilePath()));
+      STARTUPINFO si;
+      PROCESS_INFORMATION pi;
+      LPWSTR szCommandLine;
+      QString defaultProg = "";
+      QString regValue = "";
+      openFileSuccess = 1;
+
+      ZeroMemory( &si, sizeof(si));
+      si.cb = sizeof(si);
+      ZeroMemory( &pi, sizeof(pi));
+
+      QSettings *settings = new QSettings("HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\FileExts\\." + fileNameInfo.completeSuffix() + "\\UserChoice", QSettings::NativeFormat);
+      regValue = settings->value("Progid").toString();
+
+      if(regValue.isEmpty())
+      {
+          qDebug() << "regValue is empty";
+          settings = new QSettings("HKEY_CLASSES_ROOT\\." + fileNameInfo.completeSuffix(), QSettings::NativeFormat);
+          qDebug() << "HKEY_CLASSES_ROOT\\" + fileNameInfo.completeSuffix();
+          regValue = settings->value(".").toString();
+      }
+
+      settings = new QSettings("HKEY_CLASSES_ROOT\\" + regValue + "\\Shell\\open\\command", QSettings::NativeFormat);
+      defaultProg = settings->value(".").toString();
+
+      if(defaultProg.contains("%1"))
+      {
+          defaultProg.replace("%1", "\"" + fileNameInfo.absoluteFilePath() + "\"");
+      }
+      else
+      {
+          defaultProg.append(" \"" + fileNameInfo.absoluteFilePath() + "\"");
+      }
+
+      if(defaultProg.contains("%SystemRoot%"))
+      {
+          defaultProg.replace("%SystemRoot%", getenv("SystemRoot"));
+      }
+
+      szCommandLine = (LPWSTR)defaultProg.data();
+
+      if(sizeof(szCommandLine) > 0)
+      {
+          if(!CreateProcess( NULL,
+                             szCommandLine,
+                             NULL,
+                             NULL,
+                             FALSE,
+                             0,
+                             NULL,
+                             NULL,
+                             &si,
+                             &pi ))
+          {
+              //HIER FEHLERAUSGABE REIN (MSgBox)
+              QMetaObject::invokeMethod(p_currScreenHandler, "MsgBox", Qt::QueuedConnection, Q_ARG(QString, "ERROR"), Q_ARG(QString, "Can not found a default Program for this file."), Q_ARG(QString, "Critical"), Q_ARG(QString, "Ok"), Q_ARG(QString, "Ok"), Q_ARG(int, 0));
+              openFileSuccess = 0;
+
+          }
+          WaitForSingleObject( pi.hProcess, INFINITE );
+
+          CloseHandle(pi.hProcess);
+          CloseHandle(pi.hThread);
+      }
+
+      delete settings;
+      /* QProcess::startDetached(QString("rundll32 url.dll,FileProtocolHandler \"%1\"").arg( fileNameInfo.absoluteFilePath()));
        if(waitforFinish == 1)
        {
            sleep(10);
@@ -2608,7 +2677,7 @@ void ProtocolHandler::executeFile(int waitforFinish, QString fileName)
            }
        } else {
            openFileSuccess = 1;
-       }
+       }*/
 #endif
 }
 
