@@ -1700,16 +1700,21 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
 
              if(fileInfo.suffix() == "xlsx")
              {
+             #ifndef Q_WS_WIN
                  ExecuteFile *exec = new ExecuteFile;
                  exec->setFileName(fileName);
                  exec->start();
-                 foundFormat = 1;
- 
+
                  while(!exec->isFinished())
                  {
                      usleep(50000L);
                  }
-             }
+             #else
+                 executeFile(1, fileName);
+                 returnvalues << QString::number(openFileSuccess);
+             #endif
+                 foundFormat = 1;
+            }
 
              if(fileInfo.suffix() == "doc")
              {
@@ -1720,22 +1725,26 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
 
              if(fileInfo.suffix() == "docx")
              {
+             #ifndef Q_WS_WIN
                  ExecuteFile *exec = new ExecuteFile;
                  exec->setFileName(fileName);
                  exec->start();
-                 foundFormat = 1;
 
                  while(!exec->isFinished())
                  {
                      usleep(50000L);
                  }
+             #else
+                 executeFile(1, fileName);
+                 returnvalues << QString::number(openFileSuccess);
+             #endif
+                 foundFormat = 1;
              }
 
              if(fileInfo.suffix() == "rtf")
              {
                  executeFile(1, fileName);
                  returnvalues << QString::number(openFileSuccess);
-                 foundFormat = 1;
              }
 
              if(fileInfo.suffix() == "csv")
@@ -1760,7 +1769,6 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
                  executeFile(0, fileName);
                  returnvalues << "1";
              }
-             qDebug() << "bin auch dran" << foundFormat;
 
          }
          if(qs_name == "ui.vdc.getstdofficeprog")
