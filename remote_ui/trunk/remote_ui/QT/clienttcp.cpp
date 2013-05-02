@@ -36,7 +36,7 @@
 #include <models/fglform.h>
 #ifdef Q_WS_WIN
 #include <unistd.h>
-+#include <windows.h>
+#include <windows.h>
 #include <stdio.h>
 #include <tchar.h>
 #endif
