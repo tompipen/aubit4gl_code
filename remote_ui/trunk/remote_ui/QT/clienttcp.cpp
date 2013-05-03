@@ -1745,6 +1745,7 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
              {
                  executeFile(1, fileName);
                  returnvalues << QString::number(openFileSuccess);
+		 foundFormat = 1;
              }
 
              if(fileInfo.suffix() == "csv")
