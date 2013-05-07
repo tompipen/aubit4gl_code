@@ -237,6 +237,7 @@ void WebBrowser::setNavigationIcons()
 {
   //Getting Actions
   QAction *print = new QAction("Drucken", this);
+  QAction *saveAs = new QAction("Save As", this);
   QAction *backward = WebView->pageAction(QWebPage::Back);
   QAction *forward = WebView->pageAction(QWebPage::Forward);
   QAction *reload = WebView->pageAction(QWebPage::Reload);
@@ -256,6 +257,7 @@ void WebBrowser::setNavigationIcons()
   QPixmap mi(("pics:browser-kleiner.png"));
   QPixmap pl(("pics:browser-groesser.png"));
   QPixmap re(("pics:browser-reset.png"));
+  QPixmap sa(("pics:editor-speichern-unter.png"));
 
   //Override
 
@@ -267,19 +269,25 @@ void WebBrowser::setNavigationIcons()
   minus->setIcon(QIcon(mi));
   reset->setIcon(QIcon(re));
   plus->setIcon(QIcon(pl));
+  saveAs->setIcon(QIcon(sa));
 
   connect(minus, SIGNAL(triggered()), this, SLOT(decreaseSize()));
   connect(plus, SIGNAL(triggered()), this, SLOT(increaseSize()));
   connect(reset, SIGNAL(triggered()), this, SLOT(resetSize()));
   connect(print, SIGNAL(triggered()), this, SLOT(printpage()));
+  connect(saveAs, SIGNAL(triggered()), this, SLOT(saveAsFile()));
 
 
 
   toolBar->addAction(backward);
   toolBar->addAction(forward);
+  toolBar->addSeparator();
   toolBar->addAction(reload);
   toolBar->addAction(stop);
+  toolBar->addSeparator();
   toolBar->addAction(print);
+  toolBar->addAction(saveAs);
+  toolBar->addSeparator();
   toolBar->addAction(minus);
   toolBar->addAction(reset);
   toolBar->addAction(plus);
@@ -308,6 +316,28 @@ void WebBrowser::setNavigationIcons()
 
   toolBar->addWidget(locationEdit);
   toolBar->addAction(sAction);
+
+}
+
+void WebBrowser::saveAsFile()
+{
+    QString fileName = QFileDialog::getSaveFileName(this, tr("Save File"),
+                                                    "ASCII-Report.txt",
+                                                    tr("Text Files(*.txt *.html)"));
+    QFile file(fileName);
+
+    if(!file.open(QIODevice::WriteOnly | QIODevice::Text))
+    {
+        return;
+    }
+
+    QTextStream out(&file);
+    out.setCodec("ISO-8859-15");
+
+    out << WebView->page()->mainFrame()->toPlainText();
+
+    //QFile oldFile (this->locationEdit->text());
+
 
 }
 

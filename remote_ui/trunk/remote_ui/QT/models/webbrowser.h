@@ -29,6 +29,7 @@ protected slots:
     void adjustTitle(QString title);
     void setProgress(int p);
     void finishLoading(bool);
+    void saveAsFile();
     void increaseSize();
     void decreaseSize();
     void resetSize();
