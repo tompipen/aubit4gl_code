@@ -1296,11 +1296,6 @@ void Reportgen::createXmlFile(int Table, int Position, QString odffile)
         return;
     }
 
-    if(p_screenHandler)
-    {
-        QMetaObject::invokeMethod(p_screenHandler, "setProgressText", Qt::QueuedConnection, Q_ARG(int, 0), Q_ARG(QString, "Ersetze Variablen mit Inhalt.<br>Dies kann bis zu einigen Minuten dauern..."));
-    }
-
     QString readLine = file1.readAll();
 
     for(int i=0; i < sed_fields.count(); i++)
@@ -1356,7 +1351,15 @@ void Reportgen::createXmlFile(int Table, int Position, QString odffile)
                         }
                     }
                 }
+
                 readLine.replace(valueList.at(0), sedValue.simplified());
+
+                int prozent = i * 100 / sed_fields.count();
+
+                if(p_screenHandler)
+                {
+                    QMetaObject::invokeMethod(p_screenHandler, "setProgressText", Qt::QueuedConnection, Q_ARG(int, 0), Q_ARG(QString, QString("Ersetze Variablen mit Inhalt %1 %").arg(prozent)));
+                }
             }
         }
     }
