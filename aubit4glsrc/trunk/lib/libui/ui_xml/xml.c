@@ -837,7 +837,7 @@ UILIB_A4GL_menu_hide_ap (void *menu, va_list * ap)
   while ((argp = va_arg (*ap, char *)))
     {
       A4GL_trim (argp);
-      send_to_ui ("<HIDEOPTION CONTEXT=\"%d\" OPTION=\"%s\"/>", context, argp);
+      send_to_ui ("<HIDEOPTION CONTEXT=\"%d\" OPTION=\"%s\"/>", context, uilib_xml_escape (char_encode(argp)));
     }
   return rval;
 }
@@ -854,7 +854,7 @@ UILIB_A4GL_menu_show_ap (void *menu, va_list * ap)
   while ((argp = va_arg (*ap, char *)))
     {
       A4GL_trim (argp);
-      send_to_ui ("<SHOWOPTION CONTEXT=\"%d\" OPTION=\"%s\"/>", context, argp);
+      send_to_ui ("<SHOWOPTION CONTEXT=\"%d\" OPTION=\"%s\"/>", context, uilib_xml_escape (char_encode(argp)));
     }
   return 0;
 }
