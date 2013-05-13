@@ -2636,6 +2636,11 @@ void ProtocolHandler::executeFile(int waitforFinish, QString fileName)
       {
           defaultProg.append(" \"" + fileNameInfo.absoluteFilePath() + "\"");
       }
+      
+      if(defaultProg.contains("%ProgramFiles%"))
+      {
+          defaultProg.replace("%ProgramFiles%", getenv("ProgramFiles"));
+      }
 
       if(defaultProg.contains("%SystemRoot%"))
       {
