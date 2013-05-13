@@ -61,23 +61,22 @@ void WebBrowser::loadUrl(const QUrl &http)
       #endif
   }
 
-  QFile fileRead(file);
-
-  locationEdit->setText(file);
-
-  if(!fileRead.open(QIODevice::ReadOnly))
-  {
-      qDebug() << "WEBBROWSER: Cannot open file";
-  }
-
   if(!file.contains("http://") && !file.contains("wwww."))
   {
+      QFile fileRead(file);
+
+      if(!fileRead.open(QIODevice::ReadOnly))
+      {
+          qDebug() << QString("WEBBROWSER: Cannot open file %").arg(file);
+      }
+
       WebView->page()->mainFrame()->setContent(fileRead.readAll());
   } else {
         QUrl nurl(file, QUrl::TolerantMode);
         WebView->setUrl(nurl);
   }
-  emit adjustLocation();
+
+  locationEdit->setText(file);
 }
 
 void WebBrowser::adjustLocation()
