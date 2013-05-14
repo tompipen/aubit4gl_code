@@ -2603,7 +2603,7 @@ void ProtocolHandler::executeFile(int waitforFinish, QString fileName)
       }
    #endif
    #ifdef Q_WS_WIN
-      if (waitForFinish == 1)
+      if (waitforFinish == 1)
       {
          STARTUPINFO si;
          PROCESS_INFORMATION pi;
@@ -2672,13 +2672,13 @@ void ProtocolHandler::executeFile(int waitforFinish, QString fileName)
 
              CloseHandle(pi.hProcess);
              CloseHandle(pi.hThread);
+             delete settings;
          }
       } else {
          QProcess::startDetached(QString("rundll32 url.dll,FileProtocolHandler \"%1\"").arg( fileNameInfo.absoluteFilePath()));
          openFileSuccess = 1;
       }
 
-      delete settings;
       /* QProcess::startDetached(QString("rundll32 url.dll,FileProtocolHandler \"%1\"").arg( fileNameInfo.absoluteFilePath()));
        if(waitforFinish == 1)
        {
