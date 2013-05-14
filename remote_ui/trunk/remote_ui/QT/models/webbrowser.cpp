@@ -18,7 +18,7 @@ void WebBrowser::createBrowser()
     _scalefactor = 1;
     QNetworkProxyFactory::setUseSystemConfiguration(true);
 
-    WebView = new QWebView(this);
+    WebView = new MyWebBrowser(this);
     //WebView->load(url);
     connect(WebView, SIGNAL(loadFinished(bool)), SLOT(adjustLocation()));
     connect(WebView, SIGNAL(titleChanged(QString)), SLOT(adjustTitle(QString)));
@@ -331,6 +331,29 @@ void WebBrowser::setNavigationIcons()
   toolBar->addWidget(locationEdit);
   toolBar->addAction(sAction);
 
+}
+
+MyWebBrowser::MyWebBrowser(QWidget *parent)
+{
+
+}
+void MyWebBrowser::contextMenuEvent(QContextMenuEvent *event)
+{
+    QMenu *menu = new QMenu();
+
+    QAction *reload = this->pageAction(QWebPage::Reload);
+    reload->setToolTip("Neu laden");
+    QAction *selectAll = this->pageAction(QWebPage::SelectAll);
+    selectAll->setToolTip("Select All");
+    QAction *copySelected = this->pageAction(QWebPage::Copy);
+    selectAll->setToolTip("Copy selected Text");
+
+    menu->addAction(reload);
+    menu->addSeparator();
+    menu->addAction(selectAll);
+    menu->addAction(copySelected);
+
+    menu->exec(event->globalPos());
 }
 
 void WebBrowser::saveAsFile()

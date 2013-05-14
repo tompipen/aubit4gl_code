@@ -5,6 +5,14 @@
 #include <QtWebKit>
 #include <QUrl>
 
+class MyWebBrowser : public QWebView
+{
+    Q_OBJECT;
+public:
+    MyWebBrowser(QWidget *parent=0);
+    void contextMenuEvent(QContextMenuEvent *);
+};
+
 
 
 class WebBrowser : public QMainWindow
