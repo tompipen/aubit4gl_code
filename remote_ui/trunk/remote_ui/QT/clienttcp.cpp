@@ -2603,74 +2603,79 @@ void ProtocolHandler::executeFile(int waitforFinish, QString fileName)
       }
    #endif
    #ifdef Q_WS_WIN
-      STARTUPINFO si;
-      PROCESS_INFORMATION pi;
-      LPWSTR szCommandLine;
-      QString defaultProg = "";
-      QString regValue = "";
-      openFileSuccess = 1;
-
-      ZeroMemory( &si, sizeof(si));
-      si.cb = sizeof(si);
-      ZeroMemory( &pi, sizeof(pi));
-
-      QSettings *settings = new QSettings("HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\FileExts\\." + fileNameInfo.completeSuffix() + "\\UserChoice", QSettings::NativeFormat);
-      regValue = settings->value("Progid").toString();
-
-      if(regValue.isEmpty())
+      if (waitForFinish == 1)
       {
-          qDebug() << "regValue is empty";
-          settings = new QSettings("HKEY_CLASSES_ROOT\\." + fileNameInfo.completeSuffix(), QSettings::NativeFormat);
-          qDebug() << "HKEY_CLASSES_ROOT\\" + fileNameInfo.completeSuffix();
-          regValue = settings->value(".").toString();
-      }
+         STARTUPINFO si;
+         PROCESS_INFORMATION pi;
+         LPWSTR szCommandLine;
+         QString defaultProg = "";
+         QString regValue = "";
+         openFileSuccess = 1;
 
-      settings = new QSettings("HKEY_CLASSES_ROOT\\" + regValue + "\\Shell\\open\\command", QSettings::NativeFormat);
-      defaultProg = settings->value(".").toString();
+         ZeroMemory( &si, sizeof(si));
+         si.cb = sizeof(si);
+         ZeroMemory( &pi, sizeof(pi));
 
-      if(defaultProg.contains("%1"))
-      {
-          defaultProg.replace("%1", "\"" + fileNameInfo.absoluteFilePath() + "\"");
-      }
-      else
-      {
-          defaultProg.append(" \"" + fileNameInfo.absoluteFilePath() + "\"");
-      }
+         QSettings *settings = new QSettings("HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\FileExts\\." + fileNameInfo.completeSuffix() + "\\UserChoice", QSettings::NativeFormat);
+         regValue = settings->value("Progid").toString();
+
+         if(regValue.isEmpty())
+         {
+             qDebug() << "regValue is empty";
+             settings = new QSettings("HKEY_CLASSES_ROOT\\." + fileNameInfo.completeSuffix(), QSettings::NativeFormat);
+             qDebug() << "HKEY_CLASSES_ROOT\\" + fileNameInfo.completeSuffix();
+             regValue = settings->value(".").toString();
+         }
+
+         settings = new QSettings("HKEY_CLASSES_ROOT\\" + regValue + "\\Shell\\open\\command", QSettings::NativeFormat);
+         defaultProg = settings->value(".").toString();
+
+         if(defaultProg.contains("%1"))
+         {
+             defaultProg.replace("%1", "\"" + fileNameInfo.absoluteFilePath() + "\"");
+         }
+         else
+         {
+             defaultProg.append(" \"" + fileNameInfo.absoluteFilePath() + "\"");
+         }
       
-      if(defaultProg.contains("%ProgramFiles%"))
-      {
-          defaultProg.replace("%ProgramFiles%", getenv("ProgramFiles"));
-      }
+         if(defaultProg.contains("%ProgramFiles%"))
+         {
+            defaultProg.replace("%ProgramFiles%", getenv("ProgramFiles"));
+         }
 
-      if(defaultProg.contains("%SystemRoot%"))
-      {
-          defaultProg.replace("%SystemRoot%", getenv("SystemRoot"));
-      }
+         if(defaultProg.contains("%SystemRoot%"))
+         {
+             defaultProg.replace("%SystemRoot%", getenv("SystemRoot"));
+         }
 
-      szCommandLine = (LPWSTR)defaultProg.data();
+         szCommandLine = (LPWSTR)defaultProg.data();
 
-      if(sizeof(szCommandLine) > 0)
-      {
-          if(!CreateProcess( NULL,
-                             szCommandLine,
-                             NULL,
-                             NULL,
-                             FALSE,
-                             0,
-                             NULL,
-                             NULL,
-                             &si,
-                             &pi ))
-          {
-              //HIER FEHLERAUSGABE REIN (MSgBox)
-              QMetaObject::invokeMethod(p_currScreenHandler, "MsgBox", Qt::QueuedConnection, Q_ARG(QString, "ERROR"), Q_ARG(QString, "Can not found a default Program for this file."), Q_ARG(QString, "Critical"), Q_ARG(QString, "Ok"), Q_ARG(QString, "Ok"), Q_ARG(int, 0));
-              openFileSuccess = 0;
+         if(sizeof(szCommandLine) > 0)
+         {
+             if(!CreateProcess( NULL,
+                                szCommandLine,
+                                NULL,
+                                NULL,
+                                FALSE,
+                                0,
+                                NULL,
+                                NULL,
+                                &si,
+                                &pi ))
+             {
+                 QMetaObject::invokeMethod(p_currScreenHandler, "MsgBox", Qt::QueuedConnection, Q_ARG(QString, "ERROR"), Q_ARG(QString, "Can not found a default Program for this file."), Q_ARG(QString, "Critical"), Q_ARG(QString, "Ok"), Q_ARG(QString, "Ok"), Q_ARG(int, 0));
+                 openFileSuccess = 0;
 
-          }
-          WaitForSingleObject( pi.hProcess, INFINITE );
+             }
+             WaitForSingleObject( pi.hProcess, INFINITE );
 
-          CloseHandle(pi.hProcess);
-          CloseHandle(pi.hThread);
+             CloseHandle(pi.hProcess);
+             CloseHandle(pi.hThread);
+         }
+      } else {
+         QProcess::startDetached(QString("rundll32 url.dll,FileProtocolHandler \"%1\"").arg( fileNameInfo.absoluteFilePath()));
+         openFileSuccess = 1;
       }
 
       delete settings;
