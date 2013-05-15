@@ -4805,102 +4805,118 @@ MainFrame::vdcdebug("FglForm","checkField", "");
       {
           QString text = WidgetHelper::fieldText(widget);
 
-          if(text.contains("\n"))
+          if(!text.isEmpty())
           {
-              text.remove("\n");
-              WidgetHelper::setFieldText(widget, text);
-          }
-
-          if(widget->getSqlType() == "INTEGER")
-          {
-              if(Fgl::isValidForType(Fgl::DTYPE_INT, text, widget->format())){
+              if(text.contains("\n"))
+              {
+                  text.remove("\n");
                   WidgetHelper::setFieldText(widget, text);
               }
-              else{
-                 emit error("ERROR in Character conversion");
-                 WidgetHelper::setFieldText(widget, "");
-              }
 
-          } else if(widget->getSqlType() == "SERIAL")
-          {
-              if(Fgl::isValidForType(Fgl::DTYPE_SERIAL, text, widget->format())){
-                  WidgetHelper::setFieldText(widget, text);
-              }
-              else{
-                 emit error("ERROR in Character conversion");
-                 WidgetHelper::setFieldText(widget, "");
-              }
-          }
-          if(DateEdit *edit = qobject_cast<DateEdit*> (widget))
-          {
-              Q_UNUSED(edit);
-              QString fieldValue;
-              QList<QString> dates;
-
-              text.remove("<");
-              text.remove(">");
-              text.remove("=");
-              text = text.trimmed();
-              /*if(text.contains("."))
+              if(widget->getSqlType().contains("DECIMAL"))
               {
-                  int indexOfPoint = 0;
-                  int i=0;
-                  int found = 0;
-
-                  while(i<text.length()-1)
+                  QString temptext = text;
+                  if(temptext.contains(">"))
                   {
-                      if(text.at(i) == QChar('.'))
-                      {
-                          indexOfPoint = i;
-                          found++;
-
-                          if(found > 1)
-                          {
-                              indexOfPoint--;
-                          }
-
-                          if(indexOfPoint != 2 && indexOfPoint != 4)
-                          {
-                              this->error("Date Field is not Valid.");
-                              WidgetHelper::setFieldText(widget, "");
-                          }
-                      }
-                      i++;
+                      temptext.remove(">");
                   }
-                  text.remove(".");
-              }*/
-              if(!text.isEmpty())
+
+                  if(temptext.contains("<"))
+                  {
+                      temptext.remove("<");
+                  }
+
+                  if(temptext.contains("="))
+                  {
+                      temptext.remove("=");
+                  }
+
+                  if(temptext.contains("|"))
+                  {
+                      temptext.remove("|");
+                  }
+
+                  if(temptext.contains(":"))
+                  {
+                      temptext.remove(":");
+                  }
+
+                  if(Fgl::isValidForType(Fgl::DTYPE_DECIMAL, temptext, widget->format())){
+                      WidgetHelper::setFieldText(widget, text);
+                  }
+                  else{
+                     emit error("ERROR in Character conversion");
+                     WidgetHelper::setFieldText(widget, "");
+                  }
+
+              }
+
+              if(widget->getSqlType() == "INTEGER")
               {
-                  if(text.contains(":"))
-                  {
-                      dates = text.split(":");
-                  } else if (text.contains("|"))
-                  {
-                      dates = text.split("|");
+                  if(Fgl::isValidForType(Fgl::DTYPE_INT, text, widget->format())){
+                      WidgetHelper::setFieldText(widget, text);
                   }
-                  if(dates.count() < 2)
-                  {
-                      fieldValue = Fgl::usingFunc(widget->format(), text, Fgl::DTYPE_DATE, widget->picture()).trimmed();
+                  else{
+                     emit error("ERROR in Character conversion");
+                     WidgetHelper::setFieldText(widget, "");
+                  }
 
-                      if(fieldValue.isEmpty())
+              }
+
+              if(widget->getSqlType() == "SERIAL")
+              {
+                  if(Fgl::isValidForType(Fgl::DTYPE_SERIAL, text, widget->format())){
+                      WidgetHelper::setFieldText(widget, text);
+                  }
+                  else{
+                     emit error("ERROR in Character conversion");
+                     WidgetHelper::setFieldText(widget, "");
+                  }
+              }
+              if(DateEdit *edit = qobject_cast<DateEdit*> (widget))
+              {
+                  Q_UNUSED(edit);
+                  QString fieldValue;
+                  QList<QString> dates;
+
+                  text.remove("<");
+                  text.remove(">");
+                  text.remove("=");
+                  text = text.trimmed();
+
+                  if(!text.isEmpty())
+                  {
+                      if(text.contains(":"))
                       {
-                          this->error("Date Field is not Valid.");
-                          this->setFocusOnWidget(widget, Qt::OtherFocusReason);
-                          this->jumpToField(widget, false);
+                          dates = text.split(":");
+                      } else if (text.contains("|"))
+                      {
+                          dates = text.split("|");
                       }
-                  } else {
-                      for(int i=0; i < dates.count(); i++)
+                      if(dates.count() < 2)
                       {
-                          fieldValue = Fgl::usingFunc(widget->format(), dates.at(i), Fgl::DTYPE_DATE, widget->picture());
+                          fieldValue = Fgl::usingFunc(widget->format(), text, Fgl::DTYPE_DATE, widget->picture()).trimmed();
+
                           if(fieldValue.isEmpty())
                           {
                               this->error("Date Field is not Valid.");
                               this->setFocusOnWidget(widget, Qt::OtherFocusReason);
                               this->jumpToField(widget, false);
                           }
+                      } else {
+                          for(int i=0; i < dates.count(); i++)
+                          {
+                              fieldValue = Fgl::usingFunc(widget->format(), dates.at(i), Fgl::DTYPE_DATE, widget->picture());
+                              if(fieldValue.isEmpty())
+                              {
+                                  this->error("Date Field is not Valid.");
+                                  this->setFocusOnWidget(widget, Qt::OtherFocusReason);
+                                  this->jumpToField(widget, false);
+                              }
+                          }
                       }
+                      fieldValue.clear();
                   }
-                  fieldValue.clear();
               }
           }
       }
