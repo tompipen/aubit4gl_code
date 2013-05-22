@@ -51,16 +51,6 @@ void WebBrowser::loadUrl(const QUrl &http)
 {
   QString file = http.toString();
 
-
-  if(QFile::exists(QDir::tempPath() + "/" + file))
-  {
-      #ifdef Q_WS_WIN
-         file = QDir::tempPath() + "/" + file;
-      #else
-         file = "file://" +  QDir::tempPath() + "/" + file;
-      #endif
-  }
-
   if(!file.contains("http://") && !file.contains("wwww."))
   {
       QFile fileRead(file);
@@ -72,6 +62,14 @@ void WebBrowser::loadUrl(const QUrl &http)
 
       WebView->page()->mainFrame()->setContent(fileRead.readAll());
   } else {
+      if(QFile::exists(QDir::tempPath() + "/" + file))
+      {
+          #ifdef Q_WS_WIN
+             file = QDir::tempPath() + "/" + file;
+          #else
+             file = "file://" +  QDir::tempPath() + "/" + file;
+          #endif
+      }
         QUrl nurl(file, QUrl::TolerantMode);
         WebView->setUrl(nurl);
   }
