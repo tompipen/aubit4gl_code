@@ -4206,21 +4206,24 @@ Q_UNUSED(obj);
   if(!w_progress)
     return;
 
-  QRect rect;
-  if(p_fglform->b_dummy)
+  if(vis)
   {
+      QRect rect;
+      if(p_fglform->b_dummy)
+      {
 
-    rect = QApplication::desktop()->screenGeometry();
-    QRect w_p_rect = QRect(0,0, w_progress->sizeHint().width(), w_progress->sizeHint().height());
-    w_progress->move(rect.center() - w_p_rect.center());
+        rect = QApplication::desktop()->screenGeometry();
+        QRect w_p_rect = QRect(0,0, w_progress->sizeHint().width(), w_progress->sizeHint().height());
+        w_progress->move(rect.center() - w_p_rect.center());
 
-  }
-  else
-  {
+      }
+      else
+      {
 
-      QPoint pos = p_fglform->mapToGlobal(QPoint(0,0));
-      QRect w_p_rect = QRect(0,0, w_progress->sizeHint().width(), w_progress->sizeHint().height());
-      w_progress->move(pos + p_fglform->rect().center() - w_p_rect.center());
+          QPoint pos = p_fglform->mapToGlobal(QPoint(0,0));
+          QRect w_p_rect = QRect(0,0, w_progress->sizeHint().width(), w_progress->sizeHint().height());
+          w_progress->move(pos + p_fglform->rect().center() - w_p_rect.center());
+      }
   }
 
 
