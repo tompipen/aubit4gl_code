@@ -438,20 +438,39 @@ QStringList Context::getScreenRecordValues(int row)
       if(TableView *tableView = qobject_cast<TableView *> (ql_fieldList.at(i))){
           for(int j=0; j<tableView->model()->columnCount(); j++){
               QModelIndex currIndex = tableView->model()->index(row, j);
+              QString val;
               if(LineEditDelegate *dele = qobject_cast<LineEditDelegate *> (tableView->itemDelegateForColumn(j))){
                   Fgl::DataType sqlType = Fgl::DTYPE_CHAR;
                   QString format = "";
 
-                  if(LineEdit *le = qobject_cast<LineEdit*> (dele->qw_editor))
+                  // Damit der Text nicht verloren geht z.b vapos -> F10
+                  if(dele->qw_editor->objectName() == tableView->curr_editor->objectName())
+                  {
+                      if(LineEdit *le = qobject_cast<LineEdit*> (tableView->curr_editor))
+                      {
+                        sqlType = le->dataType();
+                        format  = le->format();
+                        val = le->text();
+                        if(!le->text().isEmpty())
+                        {
+                            tableView->setText(le->text(), row, j);
+                        }
+                      }
+                  }
+
+                    if(LineEdit *le = qobject_cast<LineEdit*> (dele->qw_editor))
                     {
                       sqlType = le->dataType();
                       format  = le->format();
                     }
 
-
-
-                  QString val = tableView->model()->data(currIndex).toString();
-                  fieldValues << Fgl::vdc_to_fgl(format, val, sqlType);
+                  //QWidget *widget = ql_fieldList.at(i);
+                  //QString val = tableView->model()->data(currIndex).toString();
+                  if(val.isEmpty())
+                  {
+                      val = tableView->model()->data(currIndex).toString();
+                  }
+                 fieldValues << Fgl::vdc_to_fgl(format, val, sqlType);
                 }
             }
         }
