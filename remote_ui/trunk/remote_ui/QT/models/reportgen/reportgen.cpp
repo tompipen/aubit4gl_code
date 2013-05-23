@@ -109,13 +109,7 @@ void Reportgen::run()
     {
         createXmlFile(positionGefunden, variableFound, oldFileName.baseName());
     } else if(oldFileName.completeSuffix() == "odt"){
-        content.append(getTemplatePosition( fileBaseName + "/content.xml" ));//.toUtf8());
-        for(int j=1; j < variableFound+1; j++) {
-            qDebug() << "Ebene " << j << " von " << variableFound;
-
-            content.append(prepareTemplateContentOdt(1, j, oldFileName.baseName() + "/content.xml", mSedFile));
-            content.clear();
-        }
+        startReportTemplate(mOdfFile, mSedFile, mDestinationFile);
     }
 }
 
@@ -220,7 +214,7 @@ QStringList Reportgen::getHeaderFooterVariables(int Table, QString value)
     return variableList;
 }
 
-/*bool Reportgen::startReportTemplate(QString odffile, QString sedfile, QFileInfo zielDatei)
+bool Reportgen::startReportTemplate(QString odffile, QString sedfile, QFileInfo zielDatei)
 {
     int wiederholen = 0;
     int ebene1 = 1;
@@ -334,6 +328,7 @@ QStringList Reportgen::getHeaderFooterVariables(int Table, QString value)
                content.append(prepareTemplateContentOdt(i+1, j, oldFileName.baseName() + "/content.xml", sedfile));
                xmlsave << content;
                content.clear();
+               xmlsave << getTemplateFooter( i+1, fileBaseName + "/content.xml" );
            }
        }
    }
@@ -348,7 +343,7 @@ QStringList Reportgen::getHeaderFooterVariables(int Table, QString value)
    file->close();
    if(oldFileName.completeSuffix() == "ods")
    {
-       replaceEbene(file, fileBaseName);
+       replaceEbene(odffile, fileBaseName);
    }
 
    if(varCount > 0)
@@ -360,7 +355,7 @@ QStringList Reportgen::getHeaderFooterVariables(int Table, QString value)
 
    return true;
 
-}*/
+}
 
 bool Reportgen::checkMetaFile(QString odffile)
 {
@@ -422,9 +417,10 @@ bool Reportgen::checkMetaFile(QString odffile)
 //
 //-------------------------------------------------------------------------------
 
-bool Reportgen::replaceEbene(QFile file, QString odffile)
+bool Reportgen::replaceEbene(QString fileOdf, QString odffile)
 {
 
+    QFile file(QDir::tempPath() + "/" + odffile + "/1-content.xml");
     QTemporaryFile *temp_file = new QTemporaryFile(QDir::tempPath() + "/" + odffile + "/tmp.xml");
 
     if(!temp_file->open())
@@ -2521,11 +2517,11 @@ bool Reportgen::replaceTemplateVars(QString odffile, QString sedfile, QFileInfo 
                     //qDebug() << "Verbleibende Datensaetze: " << sed_fields.count();
                     //qDebug() << "bla: " << temp_var;
                     //qDebug() << "sed_fields.at(i)" << sed_fields.at(i);
-                    if(sed_fields.at(i).contains(temp_var + "/"))
+                    if(sed_fields.at(i).contains(temp_var + "%/"))
                     {
                         //qDebug() << "Es wurde gefunden: "  << temp_var << ": " << sed_fields.at(i);
                         sedLine = sed_fields.at(i).trimmed();
-                        sedLine.replace(QString(temp_var + "/"), "");
+                        sedLine.replace(QString(temp_var + "%/"), "");
                         ausgabe.replace(temp_var, sedLine);
 
                         if(!sedLine.isEmpty())
@@ -2743,9 +2739,9 @@ bool Reportgen::replaceTemplateVars(QString odffile, QString sedfile, QFileInfo 
 
             QString tablecellNewReplace;
             tablecellNewReplace = tableCellList.at(i);
-            tablecellNewReplace.replace("\"string\"", "\"float\" office:value=\"" + sedList.at(i) + "\"");
+            //tablecellNewReplace.replace("\"string\"", "\"float\" office:value=\"" + sedList.at(i) + "\"");
 
-            content.replace(tableCellList.at(i), tablecellNewReplace);
+            //content.replace(tableCellList.at(i), tablecellNewReplace);
 
             //sedList.removeAt(i);
             //tableCellList.removeAt(i);
@@ -2766,6 +2762,7 @@ bool Reportgen::replaceTemplateVars(QString odffile, QString sedfile, QFileInfo 
     file4.close();
 
     QFile *newContent = new QFile(QDir::tempPath() + "/" + odffile + "/1-content.xml" );
+    QFile oldContent(QDir::tempPath() + "/" + odffile + "/content-alt.xml" );
 
     if(newContent->exists())
     {
@@ -2777,6 +2774,11 @@ bool Reportgen::replaceTemplateVars(QString odffile, QString sedfile, QFileInfo 
         //buffer = newContent->readAll().trimmed();
     }
 
+    if(oldContent.exists())
+    {
+        oldContent.remove();
+    }
+
     /*if(oldContent->exists()) {
         if(oldContent->open(QIODevice::WriteOnly | QIODevice::Truncate))
         {
@@ -2786,6 +2788,7 @@ bool Reportgen::replaceTemplateVars(QString odffile, QString sedfile, QFileInfo 
         }
 
     }*/
+
     ZipUnzip *p_zip = new ZipUnzip();
     p_zip->zipFileArchiv(QDir::tempPath(), odffile, zielDatei);
 
