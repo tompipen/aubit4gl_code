@@ -444,17 +444,20 @@ QStringList Context::getScreenRecordValues(int row)
                   QString format = "";
 
                   // Damit der Text nicht verloren geht z.b vapos -> F10
-                  if(dele->qw_editor->objectName() == tableView->curr_editor->objectName())
+                  if(tableView->curr_editor)
                   {
-                      if(LineEdit *le = qobject_cast<LineEdit*> (tableView->curr_editor))
+                      if(dele->qw_editor->objectName() == tableView->curr_editor->objectName())
                       {
-                        sqlType = le->dataType();
-                        format  = le->format();
-                        val = le->text();
-                        if(!le->text().isEmpty())
-                        {
-                            tableView->setText(le->text(), row, j);
-                        }
+                          if(LineEdit *le = qobject_cast<LineEdit*> (tableView->curr_editor))
+                          {
+                            sqlType = le->dataType();
+                            format  = le->format();
+                            val = le->text();
+                            if(!le->text().isEmpty())
+                            {
+                                tableView->setText(le->text(), row, j);
+                            }
+                          }
                       }
                   }
 
