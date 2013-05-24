@@ -1600,6 +1600,25 @@ LineEditDelegate::LineEditDelegate(QDomElement formElement, QObject *parent)
    }
 }
 
+void LineEditDelegate::textChanged(QString text)
+{
+    if(FglForm *fglform = qobject_cast<FglForm*> (p_fglform))
+    {
+        if(TableView *view = qobject_cast<TableView*> (fglform->currentField()))
+        {
+           if(view->curr_editor && fglform->inputArray())
+            {
+                if(LineEdit *edit = qobject_cast<LineEdit*> (view->curr_editor))
+                {
+                    int pos = edit->cursorPosition();
+                    view->model()->setData(view->currentIndex(), text);
+                    edit->setCursorPosition(pos);
+                }
+            }
+        }
+    }
+}
+
 QSize LineEditDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
 MainFrame::vdcdebug("LineEditDelegate","sizeHint", "const QStyleOptionViewItem &option, const QModelIndex &index const");
@@ -1665,6 +1684,7 @@ QWidget* LineEditDelegate::createEditor(QWidget *parent,
    connect(editor, SIGNAL(textEdited(QString)), p_fglform, SLOT(setBufferTouched()));
    connect(editor, SIGNAL(editingFinished()), p_fglform, SLOT(checkField()));
    connect(editor, SIGNAL(cursorPositionChanged(int, int)), p_fglform, SLOT(setLastCursor(int, int)));
+   connect(editor, SIGNAL(textEdited(QString)), this, SLOT(textChanged(QString)));
 
 
    return editor;
@@ -1676,7 +1696,7 @@ void LineEditDelegate::setEditorData(QWidget *editor,
    QString value = index.model()->data(index, Qt::EditRole).toString();
 
    WidgetHelper::setFieldText(editor, value);
-   QMetaObject::invokeMethod(editor, "markup", Qt::QueuedConnection);
+   //QMetaObject::invokeMethod(editor, "markup", Qt::QueuedConnection);
 }
 
 

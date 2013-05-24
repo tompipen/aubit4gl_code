@@ -255,6 +255,8 @@ signals:
    void fieldEvent(Fgl::Event, QWidget*);
    void nextfield();
    void prevfield();
+public slots:
+   void textChanged(QString text);
 
 private:
    QWidget *p_fglform;

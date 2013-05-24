@@ -443,32 +443,13 @@ QStringList Context::getScreenRecordValues(int row)
                   Fgl::DataType sqlType = Fgl::DTYPE_CHAR;
                   QString format = "";
 
-                  // Damit der Text nicht verloren geht z.b vapos -> F10
-                  if(tableView->curr_editor)
-                  {
-                      if(dele->qw_editor->objectName() == tableView->curr_editor->objectName() && tableView->isEnabled())
-                      {
-                          if(LineEdit *le = qobject_cast<LineEdit*> (tableView->curr_editor))
-                          {
-                            sqlType = le->dataType();
-                            format  = le->format();
-                            val = le->text();
-                          }
-                      }
-                  }
-
                     if(LineEdit *le = qobject_cast<LineEdit*> (dele->qw_editor))
                     {
                       sqlType = le->dataType();
                       format  = le->format();
                     }
 
-                  //QWidget *widget = ql_fieldList.at(i);
-                  //QString val = tableView->model()->data(currIndex).toString();
-                  if(val.isEmpty())
-                  {
-                      val = tableView->model()->data(currIndex).toString();
-                  }
+                 val = tableView->model()->data(currIndex).toString();
                  fieldValues << Fgl::vdc_to_fgl(format, val, sqlType);
                 }
             }
