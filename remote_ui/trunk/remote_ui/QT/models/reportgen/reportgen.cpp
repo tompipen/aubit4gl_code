@@ -320,7 +320,7 @@ bool Reportgen::startReportTemplate(QString odffile, QString sedfile, QFileInfo 
                xmlsave << content;
                content.clear();
            }
-           xmlsave << getTemplateFooter( i+1, fileBaseName + "/content.xml" );
+           xmlsave << getTemplateFooter( i+1, fileBaseName + "/content.xml", ".ods" );
        } else if(oldFileName.completeSuffix() == "odt"){
            content.append(getTemplatePosition( fileBaseName + "/content.xml" ));//.toUtf8());
            for(int j=1; j < varCount+1; j++) {
@@ -328,7 +328,7 @@ bool Reportgen::startReportTemplate(QString odffile, QString sedfile, QFileInfo 
                content.append(prepareTemplateContentOdt(i+1, j, oldFileName.baseName() + "/content.xml", sedfile));
                xmlsave << content;
                content.clear();
-               xmlsave << getTemplateFooter( i+1, fileBaseName + "/content.xml" );
+               xmlsave << getTemplateFooter( i+1, fileBaseName + "/content.xml", ".odt");
            }
        }
    }
@@ -505,7 +505,7 @@ bool Reportgen::replaceEbene(QString fileOdf, QString odffile)
 
         if(merken == 0 && ausgabe.contains("</table:table>"))
         {
-            xmlsave1 << getTemplateFooter(tableEnd+1, odffile + "/content.xml");
+            xmlsave1 << getTemplateFooter(tableEnd+1, odffile + "/content.xml", "");
             tableEnd = tableEnd + 1;
         }
 
@@ -1271,7 +1271,7 @@ void Reportgen::createXmlFile(int Table, int Position, QString odffile)
         }
     }
 
-    outstream << getTemplateFooter(Table, odffile + "/content-alt.xml").toAscii();
+    outstream << getTemplateFooter(Table, odffile + "/content-alt.xml", ".ods").toAscii();
     file.close();
 
     QFile file1(QDir::tempPath() + "/" + odffile + "/content.xml");
@@ -2116,12 +2116,9 @@ bool Reportgen::replaceMetaFile(QString odffile)
 //
 //------------------------------------------------------------------------------
 
-QString Reportgen::getTemplateFooter(int Table, QString filename)
+QString Reportgen::getTemplateFooter(int Table, QString filename, QString suffix)
 {
-    QFile *file = new QFile(QDir::tempPath() + "/" + filename);
-
-    QFileInfo odfFileInfo(QDir::tempPath() + "/" + filename);
-
+   QFile *file = new QFile(QDir::tempPath() + "/" + filename);
    QDomDocument doc;
    doc.setContent(file);
    QString xml = doc.toString();
@@ -2133,7 +2130,7 @@ QString Reportgen::getTemplateFooter(int Table, QString filename)
    int start = 0;
    int tableFound = 0;
 
-    if(odfFileInfo.completeSuffix() == ".ods")
+    if(suffix == ".ods")
     {
            while(!stream.atEnd()) {
                readLine = stream.readLine();

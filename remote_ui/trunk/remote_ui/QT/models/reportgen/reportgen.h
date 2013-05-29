@@ -45,7 +45,7 @@ public:
     QString prepareTemplateContent(int Table, int Position, QString odffile, QString sedfile);
     QString prepareTemplateContentOdt(int Table, int Position, QString odffile, QString sedfile);
     QString prepareTemplateEbene(int Position, int Ebene, int eben3, int ebene4, int ebene5, int Counter, QDomDocument doc, QString odffile, QString sedfile);
-    QString getTemplateFooter(int Table, QString filename);
+    QString getTemplateFooter(int Table, QString filename, QString suffix);
 
     void readSedFile(QString sedfile);
     void getTemplateVars(QString filename);
