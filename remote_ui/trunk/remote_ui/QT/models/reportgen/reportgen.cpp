@@ -2279,10 +2279,7 @@ void Reportgen::getTemplateVars(QString filename)
                         if(!str.isNull())
                         {
                                 str.remove("@");
-                                if(!temp_fields.contains(str.trimmed()))
-                                {
-                                        temp_fields << str.trimmed();
-                                }
+                                temp_fields << str.trimmed();
                                 str.clear();
                         }
                     }
