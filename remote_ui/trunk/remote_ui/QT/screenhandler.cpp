@@ -2817,6 +2817,11 @@ MainFrame::vdcdebug("ScreenHandler","displayError", "QString text");
           mDummyMessageDialogBox->raise();
       }
       mDummyMessageDialogBox->setText(text);
+
+      QTimer *dummyBoxTimer = new QTimer();
+      dummyBoxTimer->start(5000);
+
+      connect(dummyBoxTimer, SIGNAL(timeout()), mDummyMessageDialogBox, SLOT(close()));
    }
 
 }
@@ -2869,6 +2874,10 @@ MainFrame::vdcdebug("ScreenHandler","displayMessage", "QString text");
        }
 
        mDummyMessageDialogBox->setText(text);
+       QTimer *dummyBoxTimer = new QTimer();
+       dummyBoxTimer->start(5000);
+
+       connect(dummyBoxTimer, SIGNAL(timeout()), mDummyMessageDialogBox, SLOT(close()));
    }
 }
 
