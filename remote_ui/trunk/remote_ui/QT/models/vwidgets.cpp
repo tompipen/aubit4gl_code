@@ -496,6 +496,7 @@ ButtonEdit::ButtonEdit(QString iconFileName, QWidget *parent)
 {
    // Set enabled as long as Protocol says to enable it
    this->setEnabled(false);
+    button = NULL;
 
    this->iconFileName = iconFileName;
    if(this->iconFileName != NULL){

@@ -1672,12 +1672,18 @@ QWidget* LineEditDelegate::createEditor(QWidget *parent,
        editor->installEventFilter(p_fglform);
    if(ButtonEdit *be = qobject_cast<ButtonEdit*> (editor))
    {
-      be->getButtonObj()->installEventFilter(p_fglform);
+      if(be->getButtonObj())
+      {
+          be->getButtonObj()->installEventFilter(p_fglform);
+      }
    }
 
    if(DateEdit *de = qobject_cast<DateEdit*> (editor))
    {
-      de->getButtonObj()->installEventFilter(p_fglform);
+      if(de->getButtonObj())
+      {
+          de->getButtonObj()->installEventFilter(p_fglform);
+      }
    }
    connect(editor, SIGNAL(fieldEvent(Fgl::Event)), p_fglform, SLOT(fieldEvent(Fgl::Event)));
    connect(this, SIGNAL(nextfield()), p_fglform, SLOT(nextfield()));

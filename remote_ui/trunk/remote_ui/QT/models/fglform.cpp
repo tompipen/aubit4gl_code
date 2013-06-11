@@ -1360,7 +1360,7 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
       {
           if(TextEdit *te = qobject_cast<TextEdit *> (obj))
           {
-              if(keyEvent->modifiers() == Qt::ShiftModifier && keyEvent->key() == Qt::Key_Return || keyEvent->modifiers() == Qt::ShiftModifier && keyEvent->key() == Qt::Key_Enter)
+              if((keyEvent->modifiers() == Qt::ShiftModifier && keyEvent->key() == Qt::Key_Return) || (keyEvent->modifiers() == Qt::ShiftModifier && keyEvent->key() == Qt::Key_Enter))
               {
                   return false;
               }
