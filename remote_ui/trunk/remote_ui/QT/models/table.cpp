@@ -1613,6 +1613,7 @@ void LineEditDelegate::textChanged(QString text)
                     int pos = edit->cursorPosition();
                     view->model()->setData(view->currentIndex(), text);
                     edit->setCursorPosition(pos);
+                    edit->setText(text);
                 }
             }
         }
