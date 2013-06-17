@@ -381,7 +381,7 @@ int VSSH::execute(int port = 0)
     {
       char exec[1000] = "";
       char l_buffer[50] = "";
-      memcpy(l_buffer,"\nlogout\n", 10);
+      memcpy(l_buffer,"\n", 2);
       if(port > 0)
       {
           char afglport[35] = "";
