@@ -824,7 +824,10 @@ void FglForm::replayKeyboard()
           }
       }
 
-      ql_keybuffer.removeOne(key);
+      if(ql_keybuffer.contains(key))
+      {
+            ql_keybuffer.removeOne(key);
+      }
   }
 
 
@@ -840,7 +843,7 @@ void FglForm::clearKeyboardBuffer()
   b_keybuffer = false;
   if(ql_keybuffer.size() > 0)
   {
-     ql_keybuffer.clear();
+     //ql_keybuffer.clear();
   }
 
 }
@@ -4369,8 +4372,8 @@ MainFrame::vdcdebug("FglForm","checkActions", "");
       }
    }
 
-   checkShortcuts();
-   checkToolBar();
+   //checkShortcuts();
+   //checkToolBar();
 }
 
 void FglForm::checkGuiActions()

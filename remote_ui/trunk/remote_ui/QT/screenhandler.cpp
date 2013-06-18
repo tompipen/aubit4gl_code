@@ -2443,7 +2443,7 @@ if(qsl_triggereds.size() > 0)
          processResponse();
          return;
      }
-      setUpdatesEnabled(true);
+      //setUpdatesEnabled(true);
 
       QTableView *myTable = p_fglform->findChild<QTableView*>();
 
@@ -2452,7 +2452,7 @@ if(qsl_triggereds.size() > 0)
           //Unter Mac enfernt er das gesammte TableView wenn nen PaintEvent kommt... Das sieht noch beschissener aus als so eine dumme Feldselektierung. Deswegen für Mac raus
           #ifndef Q_WS_MAC
           //Fuer p_veinswb mit der kranken BeforeField/Nextfield Logik über mehrere Zeilen... Sah zwischen den Events einfach scheisse aus mit der Feldselektierung.
-          myTable->setUpdatesEnabled(true);
+          //myTable->setUpdatesEnabled(true);
           #endif
       }
 

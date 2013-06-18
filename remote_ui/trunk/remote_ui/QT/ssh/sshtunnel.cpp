@@ -52,7 +52,7 @@ void SSHTunnel::run()
         QByteArray ba_readssh;
         char buffer[256];
         int nbytes = 1; //Damit er wieder in die While geht
-      //  std::fill( buffer, buffer+ sizeof(buffer)/sizeof(buffer[0]), 0 );
+        //std::fill( buffer, buffer+ sizeof(buffer)/sizeof(buffer[0]), 0 );
         memset(buffer, 0, sizeof buffer);
         while(nbytes > 0)
         {
@@ -76,7 +76,7 @@ void SSHTunnel::run()
              {
                  counter++;
 
-                 if(counter >= 50000)
+                 if(counter >= 500000)
                  {
                      usleep(10000L);
                  }
@@ -88,10 +88,10 @@ void SSHTunnel::run()
             ba_readssh += buffer;
             //Leere Buffer
             memset(buffer, 0, sizeof buffer);
-        //    std::fill( buffer, buffer+ sizeof(buffer)/sizeof(buffer[0]), 0 );
+            //std::fill( buffer, buffer+ sizeof(buffer)/sizeof(buffer[0]), 0 );
         }
 
-        QApplication::processEvents();
+        //QApplication::processEvents();
 
         while(ph.isRunning())
         {
@@ -147,23 +147,25 @@ void SSHTunnel::run()
               {
                   session_mutex->lock();
               }
+
               ssh_channel_send_eof(sctunnel);
+
               if(session_mutex)
               {
                   session_mutex->unlock();
               }
-             if(sctunnel)
-             {
-                 if(session_mutex)
-                 {
-                     session_mutex->lock();
-                 }
-                 ssh_channel_free(sctunnel);
-                 if(session_mutex)
-                 {
-                     session_mutex->unlock();
-                 }
-             }
+
+              if(session_mutex)
+              {
+                  session_mutex->lock();
+              }
+
+              ssh_channel_free(sctunnel);
+
+              if(session_mutex)
+              {
+                  session_mutex->unlock();
+              }
           }
           sctunnel = NULL;
       }

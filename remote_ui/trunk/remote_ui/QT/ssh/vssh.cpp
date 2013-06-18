@@ -411,6 +411,11 @@ int VSSH::execute(int port = 0)
       ql_tunnelthreads.at(i)->session_mutex = NULL;
   }
 
+  char exec[1000] = "";
+  char l_buffer[50] = "";
+  memcpy(l_buffer,"\nlogout\n", 10);
+  rc = ssh_channel_write(channel, l_buffer, strlen(l_buffer));
+  rc = ssh_channel_send_eof(channel);
 
   if (nbytes < 0)
   {
@@ -609,7 +614,7 @@ void VSSH::requestNewThread()
     l_t_sshtunnel->session_mutex = &ssh_mutex;
     l_t_sshtunnel->setObjectName(QString::number(cnt_tunnel));
     cnt_tunnel++;
-    l_t_sshtunnel->start(QThread::NormalPriority);
+    l_t_sshtunnel->start(QThread::HighestPriority);
     connect(l_t_sshtunnel, SIGNAL(bound()), this, SLOT(requestNewThread()));
     ql_tunnelthreads.append(l_t_sshtunnel);
     ssh_mutex.unlock();

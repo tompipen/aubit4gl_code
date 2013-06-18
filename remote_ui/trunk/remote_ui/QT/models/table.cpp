@@ -1153,7 +1153,7 @@ void TableView::setCurrentField(int row, int col, bool b_sendevents)
          #ifndef Q_WS_MAC
          //Fuer p_veinswb mit der kranken BeforeField/Nextfield Logik über mehrere Zeilen... Sah zwischen den Events einfach scheisse aus mit der Feldselektierung.
          //dk: Temporaer deaktiviert da das DISPLAY ARRAY nicht aktualisiert wird.
-         this->setUpdatesEnabled(false);
+         //this->setUpdatesEnabled(false);
          #endif
          this->b_sendevents = b_sendevents;
 
