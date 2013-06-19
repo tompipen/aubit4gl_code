@@ -1208,6 +1208,10 @@ MainFrame::vdcdebug("TableView","setText", "QString text, int row, int col");
 
 
          model()->setData(modelIndex, text, Qt::DisplayRole);
+         if(this->currentIndex().column() == modelIndex.column() && this->currentIndex().row() == modelIndex.row())
+         {
+             QMetaObject::invokeMethod(this->curr_editor, "markup", Qt::QueuedConnection);
+         }
    }
 }
 
@@ -1702,9 +1706,7 @@ void LineEditDelegate::setEditorData(QWidget *editor,
 {
    QString value = index.model()->data(index, Qt::EditRole).toString();
 
-   WidgetHelper::setFieldText(editor, value);
-   //QMetaObject::invokeMethod(editor, "markup", Qt::QueuedConnection);
-}
+   WidgetHelper::setFieldText(editor, value);}
 
 
 void LineEditDelegate::setModelData(QWidget *editor, QAbstractItemModel *model,
