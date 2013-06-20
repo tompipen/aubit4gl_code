@@ -2133,7 +2133,7 @@ void FglForm::setFocusOnWidget(QWidget *w, Qt::FocusReason reason)
   //Mark the LineEdits content if step into the field
   if(LineEdit *le = qobject_cast<LineEdit*> (w))
   {
-      QMetaObject::invokeMethod(le, "markup", Qt::QueuedConnection);
+        QMetaObject::invokeMethod(le, "markup", Qt::QueuedConnection);
   }
 
 }
@@ -4372,7 +4372,7 @@ MainFrame::vdcdebug("FglForm","checkActions", "");
       }
    }
 
-   //checkShortcuts();
+   checkShortcuts();
    //checkToolBar();
 }
 
