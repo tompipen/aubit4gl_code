@@ -1859,6 +1859,7 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
             //fornameComboBox(value);
             //Workaround da a4gl knallt im before row wenn es zu schnell geht
             QMetaObject::invokeMethod(p_currScreenHandler, "fornameComboBox", Qt::DirectConnection, Q_ARG(QString, value));
+            usleep(50000L);
             //Important, threadsafe
             expect = 0;
          }
