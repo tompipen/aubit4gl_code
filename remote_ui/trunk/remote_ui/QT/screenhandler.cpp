@@ -3636,12 +3636,6 @@ void ScreenHandler::activeFocus()
         p_fglform->dialog()->raise();
         p_fglform->dialog()->activateWindow();
     }
-    if(p_fglform->ringMenuPulldown() != NULL)
-    {
-        QApplication::setActiveWindow((QWidget*) p_fglform->ringMenuPulldown());
-        p_fglform->ringMenuPulldown()->raise();
-        p_fglform->ringMenuPulldown()->activateWindow();
-    }
 }
 
 bool ScreenHandler::eventFilter(QObject *obj, QEvent *event)
