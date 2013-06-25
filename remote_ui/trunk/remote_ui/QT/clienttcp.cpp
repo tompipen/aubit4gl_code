@@ -1857,7 +1857,8 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
             QString value = valueElement.text();
             //returnvalues << QString::number(p_currScreenHandler->currForm()->findFieldIdByName(value));
             //fornameComboBox(value);
-            QMetaObject::invokeMethod(p_currScreenHandler, "fornameComboBox", Qt::QueuedConnection, Q_ARG(QString, value));
+            //Workaround da a4gl knallt im before row wenn es zu schnell geht
+            QMetaObject::invokeMethod(p_currScreenHandler, "fornameComboBox", Qt::DirectConnection, Q_ARG(QString, value));
             //Important, threadsafe
             expect = 0;
          }
