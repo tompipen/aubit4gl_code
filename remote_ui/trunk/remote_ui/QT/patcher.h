@@ -15,8 +15,9 @@
 #include <QProgressBar>
 #include <QLabel>
 #include <QDesktopServices>
-#include "mainframe.h"
-
+#include <QTextEdit>
+#include <QPushButton>
+#include <QNetworkReply>
 
 class VDCUpdate : public QWidget
 {

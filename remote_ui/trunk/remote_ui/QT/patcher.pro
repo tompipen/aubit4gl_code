@@ -5,7 +5,7 @@ INCLUDEPATH += .
 TARGET = update
 QT += network
 QT += xml
-QT += webkit
+QT -= webkit
 
 DEFINES += VREPGEN_USE
 INCLUDEPATH += ./quazip/
@@ -14,7 +14,7 @@ LIBS += -L"$$OUT_PWD/lib" -lquazip
 LIBS += -L"$$OUT_PWD/quazip/lib" -lquazip
 
 macx {
-  QMAKE_POST_LINK = DYLD_LIBRARY_PATH=$$OUT_PWD/lib $$PWD/libsintobundle $$OUT_PWD/VDC.app
+  QMAKE_POST_LINK = DYLD_LIBRARY_PATH=$$OUT_PWD/lib $$PWD/libsintobundle $$OUT_PWD/update.app
 }
 
 HEADERS += \
