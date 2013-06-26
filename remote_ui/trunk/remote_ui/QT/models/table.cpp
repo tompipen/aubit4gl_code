@@ -1614,7 +1614,7 @@ void LineEditDelegate::textChanged(QString text)
             {
                 if(LineEdit *edit = qobject_cast<LineEdit*> (view->curr_editor))
                 {
-                    int pos = edit->cursorPosition();
+                    int pos = text.length();
                     view->model()->setData(view->currentIndex(), text);
                     edit->setCursorPosition(pos);
                     edit->setText(text);
@@ -1680,6 +1680,7 @@ QWidget* LineEditDelegate::createEditor(QWidget *parent,
       {
           be->getButtonObj()->installEventFilter(p_fglform);
       }
+      connect(editor, SIGNAL(textEdited(QString)), this, SLOT(textChanged(QString)));
    }
 
    if(DateEdit *de = qobject_cast<DateEdit*> (editor))
@@ -1695,7 +1696,6 @@ QWidget* LineEditDelegate::createEditor(QWidget *parent,
    connect(editor, SIGNAL(textEdited(QString)), p_fglform, SLOT(setBufferTouched()));
    connect(editor, SIGNAL(editingFinished()), p_fglform, SLOT(checkField()));
    connect(editor, SIGNAL(cursorPositionChanged(int, int)), p_fglform, SLOT(setLastCursor(int, int)));
-   connect(editor, SIGNAL(textEdited(QString)), this, SLOT(textChanged(QString)));
 
 
    return editor;
