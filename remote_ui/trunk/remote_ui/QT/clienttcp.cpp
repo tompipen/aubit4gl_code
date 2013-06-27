@@ -1855,13 +1855,11 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
             QDomElement values = childElement.firstChildElement();
             QDomElement valueElement = values.firstChildElement();
             QString value = valueElement.text();
-            //returnvalues << QString::number(p_currScreenHandler->currForm()->findFieldIdByName(value));
+            returnvalues << QString::number(p_currScreenHandler->currForm()->findFieldIdByName(value));
             //fornameComboBox(value);
-            //Workaround da a4gl knallt im before row wenn es zu schnell geht
-            QMetaObject::invokeMethod(p_currScreenHandler, "fornameComboBox", Qt::DirectConnection, Q_ARG(QString, value));
-            usleep(50000L);
+            /*QMetaObject::invokeMethod(p_currScreenHandler, "fornameComboBox", Qt::DirectConnection, Q_ARG(QString, value));
             //Important, threadsafe
-            expect = 0;
+            expect = 0;*/
          }
 
          if(qs_name == "ui.combobox.getcolumnname"){
@@ -2097,7 +2095,7 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
          QString returnString = doc.toString();
 
          //makeResponse(returnString.trimmed());
-         QMetaObject::invokeMethod(p_currScreenHandler, "sendDirect", Qt::AutoConnection, Q_ARG(QString, returnString.trimmed()));
+         QMetaObject::invokeMethod(p_currScreenHandler, "sendDirect", Qt::DirectConnection, Q_ARG(QString, returnString.trimmed()));
          //p_currScreenHandler->sendDirect(returnString.trimmed());
       }
       
