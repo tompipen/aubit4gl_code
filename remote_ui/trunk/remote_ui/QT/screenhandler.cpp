@@ -1428,7 +1428,7 @@ MainFrame::vdcdebug("ScreenHandler","setFieldFocus", "QString fieldName");
    }
 
    if(fieldName.toUpper() == "NEXT"){
-      p_fglform->nextfield(true);
+      p_fglform->nextfield(false);
       return;
    }
 
