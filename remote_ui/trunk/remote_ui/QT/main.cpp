@@ -31,6 +31,17 @@
 #include "libssh/libssh.h"
 #include "libssh/callbacks.h"
 #endif
+#ifdef Q_WS_WIN
+#include "include/dbghelp.h"
+#include <tchar.h>
+#endif
+
+/*#ifdef Q_WS_WIN
+#include "windows.h"
+#include <unistd.h>
+#include <stdlib.h>
+#include <DbgHelp.h>
+#endif*/
 
 /*#ifdef Q_WS_X11
 #include "client/linux/handler/exception_handler.h"
@@ -115,6 +126,59 @@ void crashingMessageHandler(QtMsgType type, const char *msg)
     }
 }
 
+#ifdef Q_WS_WIN
+void CreateMiniDump( EXCEPTION_POINTERS* pep )
+{
+  // Open the file
+typedef BOOL (*PDUMPFN)(
+  HANDLE hProcess,
+  DWORD ProcessId,
+  HANDLE hFile,
+  MINIDUMP_TYPE DumpType,
+  PMINIDUMP_EXCEPTION_INFORMATION ExceptionParam,
+  PMINIDUMP_USER_STREAM_INFORMATION UserStreamParam,
+  PMINIDUMP_CALLBACK_INFORMATION CallbackParam
+
+);
+
+    HANDLE hFile = CreateFileA( _T("MiniDump.dmp"), GENERIC_READ | GENERIC_WRITE,
+    0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL );
+
+    HMODULE h = ::LoadLibrary(L"DbgHelp.dll");
+    PDUMPFN pFn = (PDUMPFN)GetProcAddress(h, "MiniDumpWriteDump");
+
+  if( ( hFile != NULL ) && ( hFile != INVALID_HANDLE_VALUE ) )
+  {
+    // Create the minidump
+
+    MINIDUMP_EXCEPTION_INFORMATION mdei;
+
+    mdei.ThreadId           = GetCurrentThreadId();
+    mdei.ExceptionPointers  = pep;
+    mdei.ClientPointers     = TRUE;
+
+    MINIDUMP_TYPE mdt       = MiniDumpNormal;
+
+    BOOL rv = (*pFn)( GetCurrentProcess(), GetCurrentProcessId(),
+      hFile, mdt, (pep != 0) ? &mdei : 0, 0, 0);
+
+
+
+    // Close the file
+
+    CloseHandle( hFile );
+
+  }
+
+}
+
+LONG WINAPI HandleExceptionFilter(struct _EXCEPTION_POINTERS* ExceptionInfo)
+{
+    CreateMiniDump(ExceptionInfo);
+    return EXCEPTION_EXECUTE_HANDLER;
+}
+#endif
+
 int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
@@ -122,6 +186,10 @@ int main(int argc, char *argv[])
     #ifdef SSH_USE
     ssh_threads_set_callbacks(ssh_threads_get_noop());
     ssh_init();
+    #endif
+
+    #ifdef Q_WS_WIN
+        SetUnhandledExceptionFilter(HandleExceptionFilter);
     #endif
 
     QSplashScreen *splash = new QSplashScreen;

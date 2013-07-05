@@ -149,17 +149,6 @@ void SSHTunnel::run()
               }
 
               ssh_channel_send_eof(sctunnel);
-
-              if(session_mutex)
-              {
-                  session_mutex->unlock();
-              }
-
-              if(session_mutex)
-              {
-                  session_mutex->lock();
-              }
-
               ssh_channel_free(sctunnel);
 
               if(session_mutex)

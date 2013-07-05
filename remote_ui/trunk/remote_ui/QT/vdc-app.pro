@@ -71,6 +71,7 @@ HEADERS += confwin.h \
     clienttcp.h \
     screenhandler.h \
     include/fgl.h \
+    include/dbghelp.h \
     models/fglform.h \
     models/statusbar.h \
     models/vwidgets.h \
