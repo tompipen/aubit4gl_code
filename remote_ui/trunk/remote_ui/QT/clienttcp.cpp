@@ -947,20 +947,20 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
             iconFile.setFileName(QDir::tempPath() + "/" +"vdc_en.4id");
             if (iconFile.open(QIODevice::ReadOnly | QIODevice::Text)){
                 QDomDocument doc;
-                QString qs_defaultIcon = iconFile.readAll();
-                QMetaObject::invokeMethod(p_currScreenHandler, "handleXMLActions", Qt::QueuedConnection, Q_ARG(QString, qs_defaultIcon));
-                //handleXMLActions(qs_defaultIcon);
+                QString qs_defaultShortcuts = iconFile.readAll();
+                doc.setContent(qs_defaultShortcuts);
+                p_currScreenHandler->xmlIconDoc = doc;
                 iconFile.close();
             }
 
             iconFile.setFileName(QDir::tempPath() + "/" +"vdc_fr.4id");
-             if (iconFile.open(QIODevice::ReadOnly | QIODevice::Text)){
-                 QDomDocument doc;
-                 QString qs_defaultIcon = iconFile.readAll();
-                 QMetaObject::invokeMethod(p_currScreenHandler, "handleXMLActions", Qt::QueuedConnection, Q_ARG(QString, qs_defaultIcon));
-                 //handleXMLActions(qs_defaultIcon);
-                 iconFile.close();
-             }
+            if (iconFile.open(QIODevice::ReadOnly | QIODevice::Text)){
+                QDomDocument doc;
+                QString qs_defaultShortcuts = iconFile.readAll();
+                doc.setContent(qs_defaultShortcuts);
+                p_currScreenHandler->xmlIconDoc = doc;
+                iconFile.close();
+            }
 
       }
 
