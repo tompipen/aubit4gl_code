@@ -101,7 +101,7 @@ for(int i = 0; i<id.id.size(); i++)
        //Wenn das Event nicht gefunden wurde, brech hart ab um den Fehler aufzudecken.
        if((i+1) == ql_events.size())
        {
-           qFatal("Event not found");
+           qWarning("Event not found");
        }
    }
 
