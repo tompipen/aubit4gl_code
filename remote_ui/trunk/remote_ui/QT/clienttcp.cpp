@@ -928,8 +928,6 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
            if (iconFile.open(QIODevice::ReadOnly | QIODevice::Text)){
                QDomDocument doc;
                QString qs_defaultIcon = iconFile.readAll();
-               //doc.setContent(qs_defaultIcon);
-               //p_currScreenHandler->xmlIconDoc = doc;
                QMetaObject::invokeMethod(p_currScreenHandler, "handleXMLActions", Qt::QueuedConnection, Q_ARG(QString, qs_defaultIcon));
                //handleXMLActions(qs_defaultIcon);
                iconFile.close();
@@ -946,20 +944,18 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
             
             iconFile.setFileName(QDir::tempPath() + "/" +"vdc_en.4id");
             if (iconFile.open(QIODevice::ReadOnly | QIODevice::Text)){
-                QDomDocument doc;
-                QString qs_defaultShortcuts = iconFile.readAll();
-                doc.setContent(qs_defaultShortcuts);
-                p_currScreenHandler->xmlIconDoc = doc;
+                QString qs_defaultIcon = iconFile.readAll();
+-               QMetaObject::invokeMethod(p_currScreenHandler, "handleXMLActions", Qt::QueuedConnection, Q_ARG(QString, qs_defaultIcon));
+-               //handleXMLActions(qs_defaultIcon);
                 iconFile.close();
             }
 
             iconFile.setFileName(QDir::tempPath() + "/" +"vdc_fr.4id");
             if (iconFile.open(QIODevice::ReadOnly | QIODevice::Text)){
-                QDomDocument doc;
-                QString qs_defaultShortcuts = iconFile.readAll();
-                doc.setContent(qs_defaultShortcuts);
-                p_currScreenHandler->xmlIconDoc = doc;
-                iconFile.close();
+               QString qs_defaultIcon = iconFile.readAll();
+-              QMetaObject::invokeMethod(p_currScreenHandler, "handleXMLActions", Qt::QueuedConnection, Q_ARG(QString, qs_defaultIcon));
+-              //handleXMLActions(qs_defaultIcon);
+               iconFile.close();
             }
 
       }
