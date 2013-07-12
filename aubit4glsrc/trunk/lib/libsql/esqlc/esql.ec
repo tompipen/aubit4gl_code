@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.261 2013-02-21 09:32:43 mikeaubury Exp $
+# $Id: esql.ec,v 1.262 2013-07-12 12:58:26 mikeaubury Exp $
 #
 */
 
@@ -92,15 +92,20 @@ WARNING: Since sqlca is used in many places in Aubit code, is this safe?
 #include <string.h>
 #include <limits.h>
 #include <ctype.h> 
+int aclfgl_aclfgl_unload_csv(int n);
 static void copy_sqlca_Stuff(int warnings) ;
 void A4GL_rm_associated_mem (void *orig, void *newbytes);
 
-#define isSqlError() internal_isSqlError(__FILE__,__LINE__)
+#define isSqlError(xx) internal_isSqlError(xx,__FILE__,__LINE__)
 $include sqlca;
 
 #include "a4gl_incl_4gldef.h"
 #include "a4gl_expr.h"
+
+
 char unloadBuffer[BUFSIZ];
+
+
 #if (defined(__MACH__) && defined(__APPLE__))
 extern sqlca_struct a4gl_sqlca;
 #else
@@ -110,6 +115,9 @@ dll_export sqlca_struct a4gl_sqlca;
 void A4GL_sql_copy_blob(loc_t *infx,  struct fgl_int_loc *a4gl,short * p_indicat,int size,char mode,int dtype) ;
 static void internal_free_cursor (char *s,int reset_Sqlca);
 
+#define NUM_UNLNAMES 2048
+char *unlNames[NUM_UNLNAMES];
+int unlNamesInited=0;
 
 #if defined (WIN32) || defined (__CYGWIN__)
 #define _NO_FORM_H_
@@ -188,7 +196,7 @@ static loc_t *add_blob(struct s_sid *sid, int n, struct s_extra_info *e,fglbyte 
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.261 2013-02-21 09:32:43 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.262 2013-07-12 12:58:26 mikeaubury Exp $";
 #endif
 
 
@@ -305,14 +313,16 @@ sid=vsid;
  *   - 0 : No error
  */
 static int
-internal_isSqlError (char *s,int l)
+internal_isSqlError (int setInLib, char *s,int l)
 {
 #ifdef DEBUG
 A4GL_debug("isSqlError Called from : %s %d",s,l);
 #endif
-  A4GL_set_a4gl_sqlca_sqlcode (sqlca.sqlcode);
-  strcpy(a4gl_sqlca.sqlerrm,sqlca.sqlerrm);
-  strcpy(a4gl_sqlca.sqlerrp,sqlca.sqlerrp);
+  if (setInLib || sqlca.sqlcode<0) {
+  	A4GL_set_a4gl_sqlca_sqlcode (sqlca.sqlcode);
+  	strcpy(a4gl_sqlca.sqlerrm,sqlca.sqlerrm);
+  	strcpy(a4gl_sqlca.sqlerrp,sqlca.sqlerrp);
+  }
 
   if (sqlca.sqlcode<0) {
   A4GL_set_sqlerrmessage(A4GLSQLLIB_A4GLSQL_get_errmsg(sqlca.sqlcode));
@@ -603,7 +613,8 @@ A4GLSQLLIB_A4GLSQL_init_connection_internal (char *dbName)
 
   A4GL_debug ("Sqlca=%d", sqlca.sqlcode);
 
-  if (isSqlError ()) {
+  
+  if (isSqlError (1)) {
     return 1;
   }
 
@@ -638,7 +649,7 @@ A4GLSQLLIB_A4GLSQL_close_session_internal (char *sessname)
       EXEC SQL DISCONNECT:connectionName;
       removeESQLConnection (connectionName);
     }
-  if (isSqlError ())
+  if (isSqlError (1))
     return 1;
   return 0;
 }
@@ -799,7 +810,7 @@ A4GLSQLLIB_A4GLSQL_init_session_internal (char *sessname, char *dsn, char *usr, 
 	}
     }
 
-  if (isSqlError ())
+  if (isSqlError (1))
     retval = 1;
   else {
     addESQLConnection (sessname, dbName, userName, password);
@@ -906,7 +917,7 @@ A4GLSQLLIB_A4GLSQL_set_conn_internal (char *sessname)
     EXEC SQL SET CONNECTION DEFAULT;
   else
   EXEC SQL SET CONNECTION:connectionName;
-  if (isSqlError ()) {
+  if (isSqlError (1)) {
     retval = 1;
 	a4gl_sqlca.sqlcode=sqlca.sqlcode;
   }
@@ -1077,7 +1088,7 @@ static struct s_sid * prepareSqlStatement (struct BINDING *ibind, int ni, struct
 
   copy_sqlca_Stuff(1);
 
-  if (isSqlError ())
+  if (isSqlError (1))
     {
 
 
@@ -1323,7 +1334,7 @@ int d_prec=0;
     {
     EXEC SQL SET DESCRIPTOR:descriptorName VALUE:index TYPE =: dataType, LENGTH =:length, INDICATOR =
 	-1;
-      if (isSqlError ())
+      if (isSqlError (1))
 	return 1;
       return 0;
     }
@@ -1398,31 +1409,17 @@ int d_prec=0;
     case DTYPE_MONEY:
       {
 	char *b;
+	char *dotPtr;
+
 	vptr = (void *) bind[idx].ptr;
 	fgl_decimal = (fgldecimal *) vptr;
 	b = A4GL_dec_to_str ((void *) fgl_decimal, 0);
-	/* 
-	   warning: passing arg 1 of `A4GL_dec_to_str' from incompatible pointer type
-	   char *A4GL_dec_to_str (fgldecimal *dec, int size) ;  
-	   fglmoney *fgl_money;
 
-	   but they are same:
-
-	   typedef struct
-	   {
-	   unsigned char dec_data[64];     
-	   }
-	   fgldecimal;
-
-	   typedef struct
-	   {
-	   unsigned char dec_data[64];     
-	   }
-	   fglmoney;
-
-	   (cant just cast a non-scalar)
-	   So I cast it to void pointer to avoid warning
-	 */
+	dotPtr=strchr(b,'.');
+	if (infxWantsCommaForDecimal && dotPtr) {
+		// Swap it from a '.' to a ','
+		*dotPtr=',';
+        } 
 	if (deccvasc (b, strlen (b), &money_var))
 	  {
 				/** @todo : We need to store this error */
@@ -1494,7 +1491,7 @@ int d_prec=0;
     default:
       A4GL_exitwith ("Invalid data type\n");
     }
-  if (isSqlError ())
+  if (isSqlError (1))
     {
       A4GL_debug ("Problem");
       return 1;
@@ -1530,7 +1527,7 @@ processInputBind (char *descName, int bCount, struct BINDING *bind)
       EXEC SQL ALLOCATE DESCRIPTOR:descriptorName WITH MAX:bindCount;
     }
 
-  if (isSqlError ())
+  if (isSqlError (1))
     {
       return 1;
     }
@@ -1645,7 +1642,7 @@ int dstype;
 	sqlca.sqlwarn.sqlwarn5=buff[5];
 
 
-  if (isSqlError ())
+  if (isSqlError (1))
     {
       A4GL_debug ("Err1");
       return 1;
@@ -1679,7 +1676,7 @@ int dstype;
 	
 		
 	A4GL_debug("1");
-      if (isSqlError ())
+      if (isSqlError (1))
 	return 1;
       char_var = acl_malloc2 (dslength + 1);
       EXEC SQL GET DESCRIPTOR:descriptorName VALUE:index:char_var = DATA;
@@ -1710,7 +1707,7 @@ int dstype;
     EXEC SQL GET DESCRIPTOR: descriptorName VALUE: index: dataType = TYPE,:int_var =
 	DATA;
 
-      if (isSqlError ())
+      if (isSqlError (1))
 	return 1;
 
 	if (int_var>=SHRT_MIN && int_var<=SHRT_MAX) {
@@ -1729,7 +1726,7 @@ int dstype;
 	{
 	iptr=bind[idx].ptr;
 
-      	if (isSqlError ()) return 1;
+      	if (isSqlError (1)) return 1;
       	*iptr = int8_var;
 
 	}
@@ -1738,7 +1735,7 @@ int dstype;
     case DTYPE_SERIAL:
     case DTYPE_INT:
     EXEC SQL GET DESCRIPTOR: descriptorName VALUE: index: dataType = TYPE,:int_var = DATA;
-      if (isSqlError ())
+      if (isSqlError (1))
 	return 1;
 	if (sizeof(int)==sizeof(long)) {
       		*(long *) bind[idx].ptr = int_var;
@@ -1750,14 +1747,14 @@ int dstype;
     case DTYPE_FLOAT:
     EXEC SQL GET DESCRIPTOR: descriptorName VALUE: index: dataType = TYPE,:float_var =
 	DATA;
-      if (isSqlError ())
+      if (isSqlError (1))
 	return 1;
       *(double *) bind[idx].ptr = float_var;
       break;
     case DTYPE_SMFLOAT:
     EXEC SQL GET DESCRIPTOR: descriptorName VALUE: index: dataType = TYPE,:smfloat_var =
 	DATA;
-      if (isSqlError ())
+      if (isSqlError (1))
 	return 1;
       *(float *) bind[idx].ptr = smfloat_var;
       break;
@@ -1772,7 +1769,7 @@ int dstype;
 		sqlca.sqlwarn.sqlwarn4='W';
 	}
       A4GL_debug ("DECIMAL...");
-      if (isSqlError ())
+      if (isSqlError (1))
 	{
 	  A4GL_debug ("isSqlError...");
 	  return 1;
@@ -1798,7 +1795,7 @@ int dstype;
                 sqlca.sqlwarn.sqlwarn4='W';
         }
       A4GL_debug ("MONEY...");
-      if (isSqlError ())
+      if (isSqlError (1))
 	{
 	  A4GL_debug ("isSqlError...");
 	  return 1;
@@ -1822,7 +1819,7 @@ int dstype;
     case DTYPE_DATE:
     	EXEC SQL GET DESCRIPTOR: descriptorName VALUE: index: dataType = TYPE,:date_var = DATA;
 
-      if (isSqlError ())
+      if (isSqlError (1))
 	return 1; 
 	{
 	long *fgl_date;
@@ -1847,7 +1844,7 @@ int dstype;
 	}
 	A4GL_trim(tmpbuff);
        	A4GL_ctodt (tmpbuff, (FglDatetime *) bind[idx].ptr, bind[idx].size);
-        if (isSqlError ()) {
+        if (isSqlError (1)) {
 		return 1;
 	}
       break;
@@ -1856,7 +1853,7 @@ int dstype;
 
     case DTYPE_INTERVAL:
        EXEC SQL GET DESCRIPTOR: descriptorName VALUE: index: dataType = TYPE,:interval_var = DATA;
-       if (isSqlError ())
+       if (isSqlError (1))
 	  return 1;
 
  	A4GL_sql_copy_interval((void *)&interval_var,  bind[idx].ptr,0,bind[idx].size,'o');
@@ -1888,7 +1885,7 @@ int dstype;
 		}
 	}
 
-       if (isSqlError ())
+       if (isSqlError (1))
 	  return 1;
 
 
@@ -1916,7 +1913,7 @@ int dstype;
 		}
 	}
 
-       if (isSqlError ())
+       if (isSqlError (1))
 	  return 1;
       break;
 
@@ -1927,7 +1924,7 @@ int dstype;
 	return 1;
     }
   A4GL_debug ("Got to here");
-  if (isSqlError ())
+  if (isSqlError (1))
     {
       A4GL_debug ("Some isSqlError..");
       return 1;
@@ -1983,7 +1980,7 @@ allocateOutputDescriptor (char *descName, int bCount, struct BINDING *bind)
       EXEC SQL ALLOCATE DESCRIPTOR:descriptorName WITH MAX:bindCount;
     }
   A4GL_debug ("Done");
-  if (isSqlError ())
+  if (isSqlError (1))
     {
       return 1;
     }
@@ -2168,7 +2165,7 @@ executeStatement (struct s_sid *sid)
     }
    A4GL_debug("WARNING flags : %c %c %c %c %c %c (%s)", sqlca.sqlwarn.sqlwarn0, sqlca.sqlwarn.sqlwarn1, sqlca.sqlwarn.sqlwarn2, sqlca.sqlwarn.sqlwarn3, sqlca.sqlwarn.sqlwarn4, sqlca.sqlwarn.sqlwarn5,sid->select);
 
-  if (isSqlError ())
+  if (isSqlError (1))
     rc = 1;
 
   return rc;
@@ -2230,7 +2227,7 @@ static loc_t *add_blob(struct s_sid *sid, int nv,struct s_extra_info *e,fglbyte 
 		EXEC SQL SET DESCRIPTOR:descriptorName VALUE:n DATA=:e2->raw_blobs[e->nblobs-1].ifx_blob;
 
 
-  		if (isSqlError ()) {
+  		if (isSqlError (1)) {
 			return 0;
 		}
 	
@@ -2374,7 +2371,7 @@ deallocateDescriptors (struct s_sid *sid)
       free (descriptorName);
       sid->inputDescriptorName = 0;
     }
-  if (isSqlError ())
+  if (isSqlError (1))
     rc = 1;
 
   if (sid->obind != (struct BINDING *) 0 && sid->no > 0)
@@ -2387,7 +2384,7 @@ deallocateDescriptors (struct s_sid *sid)
 	}
     }
 	sqlca.sqlwarn.sqlwarn0=buff[0]; sqlca.sqlwarn.sqlwarn1=buff[1]; sqlca.sqlwarn.sqlwarn2=buff[2]; sqlca.sqlwarn.sqlwarn3=buff[3]; sqlca.sqlwarn.sqlwarn4=buff[4]; sqlca.sqlwarn.sqlwarn5=buff[5];
-  if (isSqlError ())
+  if (isSqlError (1))
     rc = 1;
   return rc;
 }
@@ -2861,7 +2858,7 @@ A4GLSQLLIB_A4GLSQL_declare_cursor_internal (int upd_hold, void *vsid, int scroll
 	  return (struct s_cid *) 0;
 	}
 
-  if (isSqlError ())
+  if (isSqlError (1))
     {
       A4GL_debug ("Declare failed");
       return (struct s_cid *) 0;
@@ -2954,7 +2951,7 @@ A4GLSQLLIB_A4GLSQL_open_cursor_internal (char *s,int ni,void *vibind)
 
   if (strncasecmp(sid->select,"INSERT",6)==0) {
     EXEC SQL OPEN:cursorName;
-  if (isSqlError ())
+  if (isSqlError (1))
     return 1;
   return 0;
   }
@@ -3010,7 +3007,7 @@ A4GLSQLLIB_A4GLSQL_open_cursor_internal (char *s,int ni,void *vibind)
 		sid->ibind=save_ibind;
 	}
 
-  if (isSqlError ())
+  if (isSqlError (1))
     return 1;
   return 0;
 }
@@ -3174,7 +3171,7 @@ A4GL_debug("A4GLSQL_fetch_cursor\n");
 	return 1;
     }
 
-  if (isSqlError ()) {
+  if (isSqlError (1)) {
    	sid->obind=o1; sid->no=o2;
     return 1;
   }
@@ -3334,7 +3331,7 @@ dataType=p_datatype;
     case DTYPE_SMINT:
 
     EXEC SQL GET DESCRIPTOR: descriptorName VALUE: index:indicator=INDICATOR,: smint_var = DATA;
-      if (isSqlError ())
+      if (isSqlError (1))
 	{
 	  rc = 1;
 	  break;
@@ -3346,7 +3343,7 @@ dataType=p_datatype;
     case DTYPE_SERIAL:
     case DTYPE_INT:
     EXEC SQL GET DESCRIPTOR: descriptorName VALUE: index:indicator=INDICATOR,: int_var = DATA;
-      if (isSqlError ())
+      if (isSqlError (1))
 	{
 	  rc = 1;
 	  break;
@@ -3357,7 +3354,7 @@ dataType=p_datatype;
     case DTYPE_FLOAT:
     EXEC SQL GET DESCRIPTOR: descriptorName VALUE: index:indicator=INDICATOR,: float_var =
 	DATA;
-      if (isSqlError ())
+      if (isSqlError (1))
 	{
 	  rc = 1;
 	  break;
@@ -3368,7 +3365,7 @@ dataType=p_datatype;
     case DTYPE_SMFLOAT:
     EXEC SQL GET DESCRIPTOR: descriptorName VALUE: index:indicator=INDICATOR,: smfloat_var =
 	DATA;
-      if (isSqlError ())
+      if (isSqlError (1))
 	{
 	  rc = 1;
 	  break;
@@ -3379,7 +3376,7 @@ dataType=p_datatype;
     case DTYPE_DECIMAL:
     EXEC SQL GET DESCRIPTOR: descriptorName VALUE: index:indicator=INDICATOR,: decimal_var =
 	DATA;
-      if (isSqlError ())
+      if (isSqlError (1))
 	{
 	  rc = 1;
 	  break;
@@ -3402,7 +3399,7 @@ dataType=p_datatype;
     case DTYPE_DATE:
     EXEC SQL GET DESCRIPTOR: descriptorName VALUE: index:indicator=INDICATOR,: date_var =
 	DATA;
-      if (isSqlError ())
+      if (isSqlError (1))
 	{
 	  rc = 1;
 	  break;
@@ -3417,7 +3414,7 @@ dataType=p_datatype;
     case DTYPE_MONEY:
     EXEC SQL GET DESCRIPTOR: descriptorName VALUE: index:indicator=INDICATOR,: money_var =
 	DATA;
-      if (isSqlError ())
+      if (isSqlError (1))
 	{
 	  rc = 1;
 	  break;
@@ -3436,7 +3433,7 @@ dataType=p_datatype;
     case DTYPE_DTIME:
     EXEC SQL GET DESCRIPTOR: descriptorName VALUE: index:indicator=INDICATOR,: dtime_var =
 	DATA;
-      if (isSqlError ())
+      if (isSqlError (1))
 	{
 	  rc = 1;
 	  break;
@@ -3454,7 +3451,7 @@ dataType=p_datatype;
     case DTYPE_INTERVAL:
     EXEC SQL GET DESCRIPTOR: descriptorName VALUE: index:indicator=INDICATOR,: interval_var =
 	DATA;
-      if (isSqlError ())
+      if (isSqlError (1))
 	{
 	  rc = 1;
 	  break;
@@ -3531,11 +3528,11 @@ A4GLSQLLIB_A4GLSQL_unload_data_internal (char *fname_o, char *delims, char *sqlS
     }
 
   setbuf(unloadFile, unloadBuffer);
-
+  
   A4GL_debug("prepare : %s",strSql);
   EXEC SQL PREPARE stUnload FROM:strSql;
   A4GL_debug("Prepared..");
-  if (isSqlError ()) {
+  if (isSqlError (1)) {
 	free(fname);
     	return;			/* return 1; */
   }
@@ -3544,7 +3541,7 @@ A4GLSQLLIB_A4GLSQL_unload_data_internal (char *fname_o, char *delims, char *sqlS
 
 
   EXEC SQL DESCRIBE stUnload USING SQL DESCRIPTOR 'descUnload';
-  if (isSqlError ())
+  if (isSqlError (1))
     {
       EXEC SQL DEALLOCATE DESCRIPTOR 'descUnload';
 	free(fname);
@@ -3556,7 +3553,7 @@ A4GLSQLLIB_A4GLSQL_unload_data_internal (char *fname_o, char *delims, char *sqlS
 
   EXEC SQL GET DESCRIPTOR 'descUnload':numberOfColumns = COUNT;
 
-  if (isSqlError ())
+  if (isSqlError (1))
     {
       EXEC SQL DEALLOCATE DESCRIPTOR 'descUnload';
 	free(fname);
@@ -3568,7 +3565,7 @@ A4GLSQLLIB_A4GLSQL_unload_data_internal (char *fname_o, char *delims, char *sqlS
   EXEC SQL DECLARE crUnload CURSOR FOR stUnload;
   A4GL_debug("Declared : %d",sqlca.sqlcode);
 
-  if (isSqlError ())
+  if (isSqlError (1))
     {
       EXEC SQL DEALLOCATE DESCRIPTOR 'descUnload';
 	free(fname);
@@ -3593,7 +3590,7 @@ A4GLSQLLIB_A4GLSQL_unload_data_internal (char *fname_o, char *delims, char *sqlS
 
   A4GL_debug ("Here4");
 
-  if (isSqlError ())
+  if (isSqlError (1))
     {
       EXEC SQL DEALLOCATE DESCRIPTOR 'descUnload';
 	free(fname);
@@ -3623,13 +3620,14 @@ A4GLSQLLIB_A4GLSQL_unload_data_internal (char *fname_o, char *delims, char *sqlS
 		}
   }
 
+
   /* Get the data */
   while (1)
     {
 	if (a4gl_status<0) break;
 
       EXEC SQL FETCH crUnload USING SQL DESCRIPTOR 'descUnload';
-      if (isSqlError ())
+      if (isSqlError (1))
 	{
 	  EXEC SQL DEALLOCATE DESCRIPTOR 'descUnload';
 	  free(fname);
@@ -3673,7 +3671,7 @@ A4GLSQLLIB_A4GLSQL_unload_data_internal (char *fname_o, char *delims, char *sqlS
 
 	A4GL_debug("Close down");
   EXEC SQL DEALLOCATE DESCRIPTOR 'descUnload';
-  if (isSqlError ()) {rc = 1;}
+  if (isSqlError (1)) {rc = 1;}
   if (sstatus<0) {
 		a4gl_status=sstatus;
  }
@@ -3788,7 +3786,7 @@ A4GLSQLLIB_A4GLSQL_get_columns (char *tabname, char *colname, int *dtype, int *s
   A4GL_debug ("strSelect : %s\n", strSelect);
   EXEC SQL PREPARE stReadAllColumns FROM:strSelect;
   A4GL_debug("sqlca.sqlcode=%d\n",sqlca.sqlcode);
-  if (isSqlError ())
+  if (isSqlError (1))
     {
 #ifdef DEBUG
       A4GL_debug ("Error in EXEC SQL PREPARE");
@@ -3803,7 +3801,7 @@ A4GLSQLLIB_A4GLSQL_get_columns (char *tabname, char *colname, int *dtype, int *s
       EXEC SQL DEALLOCATE DESCRIPTOR 'descReadAllColumns';
       EXEC SQL ALLOCATE DESCRIPTOR 'descReadAllColumns'  WITH MAX 3000;
     }
-  if (isSqlError ())
+  if (isSqlError (1))
     {
 #ifdef DEBUG
       A4GL_debug ("Error in EXEC SQL ALLOCATE DESCRIPTOR");
@@ -3813,7 +3811,7 @@ A4GLSQLLIB_A4GLSQL_get_columns (char *tabname, char *colname, int *dtype, int *s
 
   EXEC SQL DESCRIBE stReadAllColumns USING SQL DESCRIPTOR
     'descReadAllColumns';
-  if (isSqlError ())
+  if (isSqlError (1))
     {
 #ifdef DEBUG
       A4GL_debug ("Error in EXEC SQL DESCRIBE");
@@ -3822,7 +3820,7 @@ A4GLSQLLIB_A4GLSQL_get_columns (char *tabname, char *colname, int *dtype, int *s
     }
 
   EXEC SQL GET DESCRIPTOR 'descReadAllColumns':numberOfColumns = COUNT;
-  if (isSqlError ())
+  if (isSqlError (1))
     {
 #ifdef DEBUG
       A4GL_debug ("Error in EXEC SQL GET DESCRIPTOR, numberOfColumns = %s",
@@ -3953,7 +3951,7 @@ A4GLSQLLIB_A4GLSQL_next_column (char **colname, int *dtype, int *size)
   nullable=0;
   EXEC SQL GET DESCRIPTOR 'descReadAllColumns' VALUE:idx:columnName =
     NAME,:dataType = TYPE,:length = LENGTH, :nullable=NULLABLE;
-  if (isSqlError ())
+  if (isSqlError (1))
     return 0;
 
   if (dataType==15) dataType=DTYPE_CHAR; /* NCHAR */
@@ -3981,7 +3979,7 @@ int
 A4GLSQLLIB_A4GLSQL_end_get_columns (void)
 {
   EXEC SQL DEALLOCATE DESCRIPTOR 'descReadAllColumns';
-  if (isSqlError ())
+  if (isSqlError (1))
     {
       return 0;
     }
@@ -4017,7 +4015,7 @@ int lstatus;
   lstatus=a4gl_sqlca.sqlcode;
 
   EXEC SQL CLOSE   :cursorName;
-  if (isSqlError ())
+  if (isSqlError (1))
     return 1;
   if (lstatus<0 && sqlca.sqlcode==0) {
 		A4GL_set_status(lstatus,1);
@@ -4532,13 +4530,14 @@ EXEC SQL END DECLARE SECTION;
 FILE *unloadFile=0;
 static char *xbuff=0;
 
-#define ISSQLERROR if (isSqlError()) { if (unloadFile) {fclose(unloadFile); unloadFile=0;}free(fname); return; }
+#define ISSQLERROR if (isSqlError(1)) { if (unloadFile) {fclose(unloadFile); unloadFile=0;}free(fname); return; }
+#define ISSQLERROR_DONTSET if (isSqlError(0)) { if (unloadFile) {fclose(unloadFile); unloadFile=0;}free(fname); return; }
 
 
 static int strip (char *str, int len);
 static int stripl (char *str, int len);
 static int charcpy (unsigned char *target, unsigned char *source, long len);
-static int dumprec (FILE *output, struct sqlda *ldesc,int n);
+static int dumprec (FILE *output, struct sqlda *ldesc,int n, void *filterFunc);
 
 
 #ifndef IN_A4GL
@@ -4548,27 +4547,41 @@ main() {
 }
 #endif
 
-void A4GLSQLLIB_A4GLSQL_unload_data_internal (char *fname_o, char *delims, char *sqlStr, int nbind, void *vibind) {
+void
+A4GLSQLLIB_A4GLSQL_unload_data_internal (char *fname_o, char *delims, void *filterFunc, char *sqlStr, int nbind, void *vibind)
+{
   int pos;
   char *cp;
   int i, j;
   struct sqlda *udesc;
   struct sqlvar_struct *col;
-  long  reccount = 0;
-  static loc_t *locat=0;
-  static char **bufary=0;
-  static short *ipary=0;
-  static int nd=0;
-  static short *colszs=0;
-  char *fname=0;
+  long reccount = 0;
+  static loc_t *locat = 0;
+  static char **bufary = 0;
+  static short *ipary = 0;
+  static int nd = 0;
+  static short *colszs = 0;
+  char *fname = 0;
   struct BINDING *ibind;
   ibind = vibind;
 
-	setWhatInformixWants() ;
+  setWhatInformixWants ();
 
-  if (ipary)  {free(ipary);ipary=0;}
-  if (fname)  {free(fname);fname=0;}
-  if (colszs) {free(colszs);colszs=0;}
+  if (ipary)
+    {
+      free (ipary);
+      ipary = 0;
+    }
+  if (fname)
+    {
+      free (fname);
+      fname = 0;
+    }
+  if (colszs)
+    {
+      free (colszs);
+      colszs = 0;
+    }
 
 
 
@@ -4579,38 +4592,44 @@ void A4GLSQLLIB_A4GLSQL_unload_data_internal (char *fname_o, char *delims, char 
 
   a4gl_status = 0;
 
-  delim[0]=delims[0];
-  delim[1]=0;
+  if (delims) {
+  	delim[0] = delims[0];
+  	delim[1] = 0;
+  }
 
   if (unloadFile == (FILE *) 0)
     {
     /** @todo : Generate some error code compatible with informix 4gl */
 
-      if (fname) {
-		free (fname);
-		fname=0;
+      if (fname)
+	{
+	  free (fname);
+	  fname = 0;
 	}
       A4GL_exitwith ("Unable to open file for unload");
       return;
     }
 
+
+A4GL_debug("Calling setbuf");
+
   setbuf (unloadFile, unloadBuffer);
+
+
+
+  A4GL_debug("Here...");
   EXEC SQL PREPARE fetcher FROM:strSql;
+  A4GL_debug("Here 2");
+  ISSQLERROR EXEC SQL DESCRIBE fetcher INTO udesc;
 
   ISSQLERROR
-
-  EXEC SQL DESCRIBE fetcher INTO udesc;
-
-  ISSQLERROR
-
-  /*
-   * Step 1: analyze udesc to determine type and memory requirements *
-   *       of each item in the select list.  rtypalign() returns a *
-   *     pointer to the next appropriate boundary (starting at *
-   * pos) for the indicated data type. 
-   */
-
-  pos = 0;
+    /*
+     * Step 1: analyze udesc to determine type and memory requirements *
+     *       of each item in the select list.  rtypalign() returns a *
+     *     pointer to the next appropriate boundary (starting at *
+     * pos) for the indicated data type. 
+     */
+    pos = 0;
 
   /*
    * Allocate pointer array to hold the fetch array pointers. 
@@ -4702,9 +4721,10 @@ void A4GLSQLLIB_A4GLSQL_unload_data_internal (char *fname_o, char *delims, char 
 	   * type. 
 	   */
 	  A4GL_exitwith ("Invalid datatype");
-		A4GL_debug("Early abort - bad datatype");
+	  A4GL_debug ("Early abort - bad datatype");
 	  fclose (unloadFile);
-	  free (fname);fname=0;
+	  free (fname);
+	  fname = 0;
 	  return;
 	}
 
@@ -4715,18 +4735,19 @@ void A4GLSQLLIB_A4GLSQL_unload_data_internal (char *fname_o, char *delims, char 
 	  break;
 	case CDECIMALTYPE:
 	  break;
-	default: ;
+	default:;
 	}
-      pos = (int) rtypalign (pos, col->sqltype) +rtypmsize(col->sqltype, col->sqllen);
+      pos = (int) rtypalign (pos, col->sqltype) + rtypmsize (col->sqltype, col->sqllen);
     }
 
-  if (xbuff) {
-	free(xbuff);
-	xbuff=0;
-  }
-  xbuff=acl_malloc2(pos);
-  
-  memset(xbuff,0, pos);
+  if (xbuff)
+    {
+      free (xbuff);
+      xbuff = 0;
+    }
+  xbuff = acl_malloc2 (pos);
+
+  memset (xbuff, 0, pos);
   /*
    * Step 2: Allocate memory to receive rows of the table returned *
    *     by the SELECT statement.  The variable pos has an integer *
@@ -4746,7 +4767,14 @@ void A4GLSQLLIB_A4GLSQL_unload_data_internal (char *fname_o, char *delims, char 
    * Array of indicators for fetch sqldat structure. 
    */
   ipary = (short *) acl_malloc2 (udesc->sqld * sizeof (short));
-  if (ipary == NULL || colszs == NULL) { A4GL_exitwith("Out of memory 1"); fclose(unloadFile); free(fname); fname=0;return; }
+  if (ipary == NULL || colszs == NULL)
+    {
+      A4GL_exitwith ("Out of memory 1");
+      fclose (unloadFile);
+      free (fname);
+      fname = 0;
+      return;
+    }
 
 
   /*
@@ -4760,9 +4788,9 @@ void A4GLSQLLIB_A4GLSQL_unload_data_internal (char *fname_o, char *delims, char 
 
 
 
-  nd=udesc->sqld;
-  pos=0;
-  for (col = udesc->sqlvar,  i = 0; i < udesc->sqld;  col++, i++)
+  nd = udesc->sqld;
+  pos = 0;
+  for (col = udesc->sqlvar, i = 0; i < udesc->sqld; col++, i++)
     {
 
       colszs[i] = col->sqllen;
@@ -4770,7 +4798,7 @@ void A4GLSQLLIB_A4GLSQL_unload_data_internal (char *fname_o, char *delims, char 
        * Allocate Fetch array for this column. 
        */
       bufary[i] = &xbuff[pos];
-      pos = (int) rtypalign (pos, col->sqltype) +rtypmsize(col->sqltype, col->sqllen);
+      pos = (int) rtypalign (pos, col->sqltype) + rtypmsize (col->sqltype, col->sqllen);
       /*
        * Allocate indicator array for this column. 
        */
@@ -4781,7 +4809,7 @@ void A4GLSQLLIB_A4GLSQL_unload_data_internal (char *fname_o, char *delims, char 
        * Assign indicator addresses. 
        */
       col->sqlind = &ipary[i];
-      ipary[i]=0;
+      ipary[i] = 0;
       /*
        * Assign the data pointers. 
        */
@@ -4810,6 +4838,17 @@ void A4GLSQLLIB_A4GLSQL_unload_data_internal (char *fname_o, char *delims, char 
       cp += col->sqllen;
     }
 
+
+  if (filterFunc==aclfgl_aclfgl_unload_csv) {
+	int colcnt;
+  	for (colcnt=0;colcnt< udesc->sqld;colcnt++) {
+		if (colcnt) fprintf(unloadFile,",");
+		fprintf(unloadFile, "\"%s\"",udesc->sqlvar[colcnt].sqlname);
+	}
+	fprintf(unloadFile,"\n");
+	
+  }
+
   /*
    * Step 4: Fetch each row of the query, convert to ASCII format, and * 
    * write to the output file. 
@@ -4817,41 +4856,42 @@ void A4GLSQLLIB_A4GLSQL_unload_data_internal (char *fname_o, char *delims, char 
   EXEC SQL DECLARE fetch_curs CURSOR WITH HOLD FOR fetcher;	/* Why the With Hold ? */
 
 
-  ISSQLERROR 
-if (nbind)
+  ISSQLERROR if (nbind)
     {
 #ifdef IN_A4GL
       processInputBind ("descInpUnload", nbind, ibind);
       EXEC SQL OPEN fetch_curs USING SQL DESCRIPTOR 'descInpUnload';
-  ISSQLERROR
+      ISSQLERROR
 #endif
     }
   else
     {
       EXEC SQL OPEN fetch_curs;
-  ISSQLERROR
-    }
-		A4GL_debug("Opened");
-    /*
-     * OK, the source connection and statement are setup, now set up the
-     * target connection and statement. 
-     */
+    ISSQLERROR}
+  A4GL_debug ("Opened");
+  /*
+   * OK, the source connection and statement are setup, now set up the
+   * target connection and statement. 
+   */
 
-    for (;;)
+  for (;;)
     {
 
 
       EXEC SQL FETCH fetch_curs USING DESCRIPTOR udesc;
-		A4GL_debug("Fetch : %d",sqlca.sqlcode);
-      ISSQLERROR 
-	if (sqlca.sqlcode == 100) {
-		A4GL_debug("NOT FOUND");
-		break;
+      A4GL_debug ("Fetch : %d", sqlca.sqlcode);
+      ISSQLERROR if (sqlca.sqlcode == 100)
+	{
+	  A4GL_debug ("NOT FOUND");
+	  break;
 	}
-	
+
 
       reccount += 1;
-	dumprec(unloadFile,udesc,i);
+	 if (!dumprec (unloadFile, udesc, i,filterFunc)) {
+		break;
+	}
+
 
     }				/*
 				 * end fetch loop 
@@ -4862,16 +4902,14 @@ if (nbind)
    * Flush any unflushed rows in the buffer (s/b none). 
    */
   EXEC SQL CLOSE fetch_curs;
-  ISSQLERROR 
-
+  ISSQLERROR_DONTSET 
   EXEC SQL FREE fetch_curs;
-  ISSQLERROR 
-
+  ISSQLERROR_DONTSET 
   EXEC SQL FREE fetcher;
-  ISSQLERROR
-  A4GL_set_a4gl_sqlca_errd(2,reccount);
-  fflush(unloadFile);
-  fclose(unloadFile);
+  ISSQLERROR_DONTSET 
+  A4GL_set_a4gl_sqlca_errd (2, reccount);
+  fflush (unloadFile);
+  fclose (unloadFile);
 
 }
 
@@ -4992,7 +5030,9 @@ if (infxWantsCommaForDecimal) {
 
 }
 
-static int dumprec (FILE* outputfile, struct sqlda *ldesc,int row)
+
+static int
+dumprec (FILE * outputfile, struct sqlda *ldesc, int row, void *filterFunc)
 {
   static char *iobuf = (char *) NULL;
   static int iobsz = 10240;
@@ -5003,94 +5043,170 @@ static int dumprec (FILE* outputfile, struct sqlda *ldesc,int row)
   int i, slen = 0, flen = 0, alen;
   void *ptr;
 
-
+  if (!unlNamesInited)
+    {
+      for (i = 0; i < NUM_UNLNAMES; i++)
+	{
+	  unlNames[i] = 0;
+	}
+      unlNamesInited = 1;
+    }
+  else
+    {
+      for (i = 0; i < NUM_UNLNAMES; i++)
+	{
+	  if (unlNames[i])
+	    {
+	      free (unlNames[i]);
+	    }
+	}
+    }
 
   if (iobuf == (char *) NULL)
     {
       iobuf = (char *) acl_malloc2 (iobsz);
       if (!iobuf)
 	{
-	A4GL_exitwith("Out of memory2"); return 0; }
+	  A4GL_exitwith ("Out of memory2");
+	  return 0;
+	}
     }
 
   for (col = ldesc->sqlvar, i = 0; i < ldesc->sqld; col++, i++)
     {
-	
-	ptr=ldesc->sqlvar[i].sqldata ; 
-	ind=*ldesc->sqlvar[i].sqlind ;
 
+      ptr = ldesc->sqlvar[i].sqldata;
+      ind = *ldesc->sqlvar[i].sqlind;
+      unlNames[i] = strdup (ldesc->sqlvar[i].sqlname);
 
       errno = 0;
-	
 
 
-      if (ind==-1)
+
+      if (ind == -1)
 	{
 	  flen = 0;
 	  string[0] = (char) 0;
+	  A4GL_push_null (0, 0);
 	}
       else
 	{
 	  switch (col->sqltype)
 	    {
 	    case CFLOATTYPE:
-		strcpy(string,formatDouble((double) *(float *) ptr,1));
-	      flen = strlen(string); // SPRINTF1 (string, "%f", (double) *(float *) ptr);
-		chk_for_decimal_point(string);
+	      if (filterFunc)
+		{
+		  A4GL_push_double ((double) *(float *) ptr);
+		}
+	      else
+		{
+		  strcpy (string, formatDouble ((double) *(float *) ptr, 1));
+		  flen = strlen (string);	// SPRINTF1 (string, "%f", (double) *(float *) ptr);
+		  chk_for_decimal_point (string);
+		}
 	      break;
 
 	    case CDOUBLETYPE:
-		strcpy(string,formatDouble(*(double*) ptr,1));
-	      flen = strlen(string);
-		chk_for_decimal_point(string);
+	      if (filterFunc)
+		{
+		  A4GL_push_double ((double) *(double *) ptr);
+		}
+	      else
+		{
+		  strcpy (string, formatDouble (*(double *) ptr, 1));
+		  flen = strlen (string);
+		  chk_for_decimal_point (string);
+		}
 	      break;
 
 	    case CDECIMALTYPE:
+
 	      dectoasc ((dec_t *) ptr, tstring, 1025, -1);
 	      strip (tstring, 1024);
-	      flen = SPRINTF1 (string, "%s", tstring);
+	      if (filterFunc)
+		{
+		  chk_for_decimal_point (string);
+		  A4GL_push_decimal_str (tstring);
+		}
+	      else
+		{
+		  flen = SPRINTF1 (string, "%s", tstring);
+		}
 	      break;
 
 	    case CLONGTYPE:
 	    case CINTTYPE:
-	      flen = SPRINTF1 (string, "%ld", *(long *) ptr);
+	      if (filterFunc)
+		{
+		  A4GL_push_long (*(long *) ptr);
+		}
+	      else
+		{
+		  flen = SPRINTF1 (string, "%ld", *(long *) ptr);
+		}
 	      break;
 
 	    case CSHORTTYPE:
-	      flen = SPRINTF1 (string, "%hd", *(short *) ptr);
+	      if (filterFunc)
+		{
+		  A4GL_push_long (*(short *) ptr);
+		}
+	      else
+		{
+		  flen = SPRINTF1 (string, "%hd", *(short *) ptr);
+		}
 	      break;
 
 	    case CFIXCHARTYPE:
-	        alen = strip((char *) ptr, col->sqllen);
-	        flen = charcpy ((unsigned char *) string, (unsigned char *) ptr, alen);
+	      alen = strip ((char *) ptr, col->sqllen);
+	      flen = charcpy ((unsigned char *) string, (unsigned char *) ptr, alen);
+	      if (filterFunc)
+		{
+		  A4GL_push_char (string);
+		}
 	      break;
 
 #ifdef CLVCHARTYPE
 	    case CLVCHARTYPE:
 #endif
 	    case CVCHARTYPE:
-		{
-		int blen=0;
-	        alen = stripl((char *) ptr, col->sqllen);
+	      {
+		int blen = 0;
+		alen = stripl ((char *) ptr, col->sqllen);
 		/* sqllen seems to retain the maximum size used so far which isnt what we want
-		 use the length instead... */
-		blen=strlen(ptr);
-	        flen = charcpy ((unsigned char *) string, (unsigned char *) ptr, blen);
-		}
-		
+		   use the length instead... */
+		blen = strlen (ptr);
+		flen = charcpy ((unsigned char *) string, (unsigned char *) ptr, blen);
+		if (filterFunc)
+		  {
+		    A4GL_push_char (string);
+		  }
+	      }
+
 	      break;
 
 
 	    case CCHARTYPE:
 	      alen = strip ((char *) ptr, col->sqllen);
 	      flen = charcpy ((unsigned char *) string, (unsigned char *) ptr, alen);
+	      if (filterFunc)
+		{
+		  A4GL_push_char (string);
+		}
 	      break;
 
 	    case CDATETYPE:
-		if (sizeof(int)==sizeof(long)) {
-	      		rdatestr (*(long *)ptr, tstring);
-		} else {
-	      		rdatestr (*(int *)ptr, tstring);
+	      if (sizeof (int) == sizeof (long))
+		{
+		  rdatestr (*(long *) ptr, tstring);
+		}
+	      else
+		{
+		  rdatestr (*(int *) ptr, tstring);
+		}
+	      if (filterFunc)
+		{
+		  A4GL_push_date_in_char (string);
 		}
 	      flen = SPRINTF1 (string, "%s", tstring);
 	      break;
@@ -5098,30 +5214,43 @@ static int dumprec (FILE* outputfile, struct sqlda *ldesc,int row)
 	    case CDTIMETYPE:
 	      dttoasc ((dtime_t *) ptr, tstring);
 	      flen = SPRINTF1 (string, "%s", tstring);
-		chk_for_decimal_point(string);
+	      chk_for_decimal_point (string);
+	      if (filterFunc)
+		{
+		  A4GL_push_datetime_in_char (string);
+		}
 	      break;
 
 	    case CINVTYPE:
 	      intoasc ((intrvl_t *) ptr, tstring);
 	      flen = SPRINTF1 (string, "%s", tstring);
-		chk_for_decimal_point(string);
+	      chk_for_decimal_point (string);
+	      if (filterFunc)
+		{
+		  A4GL_push_char (string);
+		}
 	      break;
 
 
 
 	    case CLOCATORTYPE:
 	      loc = (loc_t *) ptr;
+	      if (filterFunc)
+		{
+		  A4GL_exitwith ("Cant use blobs with FILTERed UNLOAD");
+		  return 0;
+		}
+
 	      if (iobsz < (3 * loc->loc_size))
 		{
 		  iobsz = 3 * loc->loc_size;
 		  iobuf = realloc (iobuf, iobsz);
 		}
-	      flen = charcpy ((unsigned char *) iobuf,
-			      (unsigned char *) loc->loc_buffer,
-			      loc->loc_size);
+	      flen = charcpy ((unsigned char *) iobuf, (unsigned char *) loc->loc_buffer, loc->loc_size);
 	      if (!fwrite (iobuf, flen, 1, outputfile))
 		{
-			A4GL_exitwith("Internal Error"); return 0;
+		  A4GL_exitwith ("Internal Error");
+		  return 0;
 		}
 
 	      if (fputs (delim, outputfile) == EOF)
@@ -5134,20 +5263,59 @@ static int dumprec (FILE* outputfile, struct sqlda *ldesc,int row)
 	      continue;
 
 	    default:
-		A4GL_exitwith("Invalid Datatype"); return 0;
+	      A4GL_exitwith ("Invalid Datatype");
+	      return 0;
 	    }
 	}
 
-      if (FPRINTF (outputfile, "%s%s", string, delim) <= 0)
+      if (!filterFunc)
 	{
-	A4GL_exitwith("Internal error"); return 0;
+	  if (FPRINTF (outputfile, "%s%s", string, delim) <= 0)
+	    {
+	      A4GL_exitwith ("Internal error");
+	      return 0;
+	    }
 	}
 
       slen += flen + 1;
     }
-  slen += FPRINTF (outputfile, "\n");
+
+
+  if (filterFunc)
+    {
+      int (*func) (int);
+      func = filterFunc;
+      int a;
+
+      a4gl_status = 0;
+      a = func (i);
+      if (a4gl_status != 0)
+	{
+	  //aclfgli_clr_err_flg();
+	  //A4GL_exitwith("Error in filterfunc");
+	  return 0;
+	}
+      if (a == 1)
+	{
+	  char *p = A4GL_char_pop ();
+	  if (strlen(p)) {
+	  FPRINTF (outputfile, "%s", p);
+		}
+	  free (p);
+	
+	}
+      else
+	{
+	  A4GL_exitwith ("Filter function did not return exactly one value");
+	}
+    }
+  else
+    {
+      slen += FPRINTF (outputfile, "\n");
+    }
   return 1;
 }
+
 
 /*
 ********************************************************************************
