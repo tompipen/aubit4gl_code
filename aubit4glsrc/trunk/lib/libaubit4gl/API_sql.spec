@@ -66,9 +66,9 @@ A4GLSQL_get_currdbname -> char*
 
 A4GLSQL_put_insert_internal char* cursorname void* ibind int n -> void
 A4GLSQL_set_sqlca_sqlcode int a -> void
-A4GLSQL_unload_data_internal char* fname char* delims char* sql1 int nbind void* ibind -> void
+A4GLSQL_unload_data_internal char* fname char* delims void* filterfunc char* sql1 int nbind void* ibind -> void
 A4GLSQL_get_errmsg int a -> char* errmsg
-
+A4GLSQL_getUnlFieldName int a -> char* fieldName
 
 
 * Optional

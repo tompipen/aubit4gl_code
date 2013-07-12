@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql.c,v 1.248 2012-02-03 13:41:16 mikeaubury Exp $
+# $Id: sql.c,v 1.249 2013-07-12 13:00:53 mikeaubury Exp $
 #
 */
 
@@ -4867,7 +4867,7 @@ A4GLSQLLIB_A4GLSQL_commit_rollback (int mode)
  * @param sql1 Sql select text to generate the unload data.
  */
 void
-A4GLSQLLIB_A4GLSQL_unload_data_internal (char *fname, char *delims,
+A4GLSQLLIB_A4GLSQL_unload_data_internal (char *fname, char *delims, void *filterFunc,
                                            char *sql1, int nbind, void *vibind)
 {
     HSTMT hstmt;

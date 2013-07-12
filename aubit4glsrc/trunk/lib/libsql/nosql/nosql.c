@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: nosql.c,v 1.52 2010-01-12 09:01:49 mikeaubury Exp $
+# $Id: nosql.c,v 1.53 2013-07-12 13:00:53 mikeaubury Exp $
 #*/
 
 /**
@@ -110,7 +110,7 @@ void A4GLSQLLIB_A4GLSQL_flush_cursor_internal(char* cursor) NOPE
 void A4GLSQLLIB_A4GLSQL_free_cursor_internal(char* cursor_name) NOPE
 void A4GLSQLLIB_A4GLSQL_put_insert_internal(char *cursorname, void* ibind,int n) NOPE
 void A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode(int a) NOPE
-void A4GLSQLLIB_A4GLSQL_unload_data_internal(char* fname,char* delims,char* sql1,int nbind,void* ibind) NOPE
+void A4GLSQLLIB_A4GLSQL_unload_data_internal(char* fname,char* delims,void *filterFunc, char* sql1,int nbind,void* ibind) NOPE
 
 void* A4GLSQLLIB_A4GLSQL_declare_cursor_internal(int upd_hold,void* sid,int scroll,char* cursname) NOPE0
 t_expr_str_list* A4GLSQLLIB_A4GLSQL_get_validation_expr(char* tabname,char* colname) NOPE0

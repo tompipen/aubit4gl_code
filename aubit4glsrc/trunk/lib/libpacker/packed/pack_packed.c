@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pack_packed.c,v 1.51 2010-02-16 13:17:11 mikeaubury Exp $
+# $Id: pack_packed.c,v 1.52 2013-07-12 13:00:31 mikeaubury Exp $
 #*/
 
 /**
@@ -461,7 +461,7 @@ A4GLPacker_output_end_union (char *s, char *en, int e,char *n)
  * @todo Describe function
  */
 int
-A4GLPacker_output_enum (char *rn, char *name, char *s, int d)
+A4GLPacker_output_enum (char *rn, char *name, char *s, int d,int arr)
 {
   return A4GLPacker_output_int (name, d, 0, -1);
 }

@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.444 2012-11-27 18:34:44 locbook Exp $
+dnl # $Id: configure.in,v 1.445 2013-07-12 13:00:23 mikeaubury Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -48,7 +48,7 @@ export LD_LIBRARY_PATH=/lib:$LD_LIBRARY_PATH
 
 #We need autoconf at least version 2.50
 AC_PREREQ(2.50)
-AC_REVISION($Id: configure.in,v 1.444 2012-11-27 18:34:44 locbook Exp $)
+AC_REVISION($Id: configure.in,v 1.445 2013-07-12 13:00:23 mikeaubury Exp $)
 
 #FIXME: Some versions of autoconf are complaining that $AUBIT_VERSION and 
 #$AUBIT_BUILD are not constants. Maybe we should drop stuff in tools/project 
@@ -4027,7 +4027,8 @@ AC_ARG_WITH(mysql,
 	if test "$withval" != "no"; then
 
 		if test "$withval" = "yes"; then
-    			withval=/usr/local
+			detectedMysqlLib=`mysql_config --libs`
+			withval=`expr "$detectedMysqlLib" : '.*-L\(.*/mysql\) -l.*'`
 		    	CUSTOM_WITHVAL=0
 		else
 			#user specified custom withval
@@ -11318,7 +11319,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure.in,v 1.444 2012-11-27 18:34:44 locbook Exp $
+| $Id: configure.in,v 1.445 2013-07-12 13:00:23 mikeaubury Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

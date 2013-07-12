@@ -81,7 +81,7 @@ enum e_cursor_state
   int A4GL_set_conn (char *sessname);
   void A4GL_set_dialect (char *dialect);
   int A4GL_close_session (char *sessname);
-  void A4GL_unload_data (char *fname, char *delims, char *sql1,int nbind,struct BINDING *ibind,int converted);
+  void A4GL_unload_data2 (char *fname, char *delims,void *filterFunc, char *sql1,int nbind,struct BINDING *ibind,int converted);
   int A4GL_set_status (int a, int sql);
   void A4GL_set_sqlerrd(int a0,int a1,int a2,int a3,int a4,int a5);
   int A4GLSQL_execute_sql_from_ptr (char *pname, int ni, char **ibind);

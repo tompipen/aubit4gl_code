@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pg8.c,v 1.120 2011-04-14 17:00:47 mikeaubury Exp $
+# $Id: pg8.c,v 1.121 2013-07-12 13:00:54 mikeaubury Exp $
 #*/
 
 
@@ -1319,7 +1319,7 @@ return buff;
 /*      void A4GLSQL_unload_data(char *fname,char *delims, char *sql1); */
 /* int */
 void
-A4GLSQLLIB_A4GLSQL_unload_data_internal (char *fname_o, char *delims,
+A4GLSQLLIB_A4GLSQL_unload_data_internal (char *fname_o, char *delims, void* filterFunc,
 					 char *sqlStr_o, int nbind,
 					 void *vibind)
 {

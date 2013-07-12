@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_4gl_callable.h,v 1.81 2013-03-25 12:58:40 mikeaubury Exp $
+# $Id: a4gl_4gl_callable.h,v 1.82 2013-07-12 13:00:25 mikeaubury Exp $
 */
 
 /**
@@ -252,6 +252,11 @@ void A4GL_register_global_objects(char *modulename,  void **objData) ;
 void A4GL_register_module_objects(char *modulename,  void **objData) ;
 void A4GL_register_report_objects(char *reportname,  void **objData) ;
 int A4GL_get_hash_index(char **s, int sz, int idx);
+void A4GL_unload_data2 (char *fname, char *delims,void *filterFunc, char *sql1,int nbind,struct BINDING *ibind,int converted);
+int A4GL_execute_implicit_sql(void* sid,int singleton,int no,void* ibind) ;
+//int aclfgl_aclfgl_unload_csv_no_headers(int n);
+//int aclfgl_aclfgl_unload_csv(int n);
+
 
 //void A4GL_copyback(void *varptr,int sz, struct BINDING *binding, int n);
 

@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.208 2012-11-29 16:31:08 fortiz Exp $
+# $Id: report.c,v 1.209 2013-07-12 13:00:29 mikeaubury Exp $
 #
 */
 
@@ -1779,7 +1779,7 @@ A4GL_unload_report_table (struct BINDING *b)
   if (A4GL_isyes (acl_getenv ("UNLOADREPDBG")))
     {
       SPRINTF1 (buff, "SELECT * FROM %s", gen_rep_tab_name (b, 0));
-      A4GL_unload_data ("zz9pa", "|", buff, 0, ibind, 0);
+      A4GL_unload_data2 ("zz9pa", "|", 0,buff, 0, ibind, 0);
     }
 }
 

@@ -2702,7 +2702,7 @@ A4GLSQLLIB_A4GLSQL_flush_cursor_internal (char *cursor)
 }
 
 void
-A4GLSQLLIB_A4GLSQL_unload_data_internal (char *fname, char *delims,
+A4GLSQLLIB_A4GLSQL_unload_data_internal (char *fname, char *delims, void *filterFunc,
 					 char *sql1, int nbind, void *ibind)
 {
 

@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql_common.c,v 1.107 2013-03-25 12:58:41 mikeaubury Exp $
+# $Id: sql_common.c,v 1.108 2013-07-12 13:00:30 mikeaubury Exp $
 #
 */
 
@@ -498,7 +498,7 @@ A4GL_get_status (void)
  */
 /* int -- void in sql;.c */
 void
-A4GL_unload_data (char *fname, char *delims, char *sql1, int nbind, struct BINDING *ibind, int converted)
+A4GL_unload_data2 (char *fname, char *delims, void *filterfunc, char *sql1, int nbind, struct BINDING *ibind, int converted)
 {
   if (must_convert)
     {
@@ -509,7 +509,7 @@ A4GL_unload_data (char *fname, char *delims, char *sql1, int nbind, struct BINDI
       sql1 = A4GL_convert_sql_new (source_dialect, curr_sess->dbms_dialect, sql1, converted);
     }
   A4GL_trim (fname);
-  A4GLSQL_unload_data_internal (fname, delims, sql1, nbind, ibind);
+  A4GLSQL_unload_data_internal (fname, delims, filterfunc, sql1, nbind, ibind);
 }
 
 
@@ -2888,7 +2888,18 @@ static int new_ident_cnt=0;
 }
 
 
-
+int  aclfgl_aclfgl_getunlfieldname(int n) {
+char *s;
+int i;
+	i=A4GL_pop_long();
+	s=A4GLSQL_getUnlFieldName(i-1);
+	if (s) {
+		A4GL_push_char(s);
+	} else {
+		A4GL_push_null(2,0);
+	}
+	return 1;
+}
 
 char *A4GL_get_ident(char *module,char *identifier, char *original_clobbered_name) {
 //if (strlen(original_clobbered_name)<=18)  { return original_clobbered_name; }

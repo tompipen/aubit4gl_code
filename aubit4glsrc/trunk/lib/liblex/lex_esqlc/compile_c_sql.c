@@ -700,6 +700,7 @@ print_unload_cmd (struct_unload_cmd * cmd_data)
   printc ("{char *_sql;\n");
   printc ("char *_filename;");
   printc ("char *_delimiter=\"|\";");
+  printc ("void *_filterfunc=NULL;");
 
 // cmd_data->sql will contain a E_SLI_QUERY (within a ET_EXPR_SELECT_LIST_ITEM) or a variable usage
 //
@@ -762,11 +763,21 @@ print_unload_cmd (struct_unload_cmd * cmd_data)
   printc ("_filename=A4GL_char_pop();");
   if (cmd_data->delimiter)
     {
-      print_expr (cmd_data->delimiter);
-      printc ("_delimiter=A4GL_char_pop();");
+      if (cmd_data->delimiter->expr_type == ET_EXPR_FUNC)
+        {
+          add_function_to_header (cmd_data->delimiter->expr_str_u.expr_func.funcname,
+                                  cmd_data->delimiter->expr_str_u.expr_func.n_namespace, 1, 0);
+          printc ("_filterfunc=%s%s;", cmd_data->delimiter->expr_str_u.expr_func.n_namespace,
+                  cmd_data->delimiter->expr_str_u.expr_func.funcname);
+          printc ("_delimiter=0;");
+
+        } else {
+      		print_expr (cmd_data->delimiter);
+      		printc ("_delimiter=A4GL_char_pop();");
+	}
     }
 
-  printc ("A4GL_unload_data(_filename,_delimiter, _sql,%s,%d);\n", ibindstr, converted);
+  printc ("A4GL_unload_data2(_filename,_delimiter,_filterfunc, _sql,%s,%d);\n", ibindstr, converted);
   printc ("free(_filename);");
   if (cmd_data->delimiter)
     {

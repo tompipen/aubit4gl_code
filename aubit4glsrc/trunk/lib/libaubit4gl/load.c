@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: load.c,v 1.65 2013-02-20 20:19:10 mikeaubury Exp $
+# $Id: load.c,v 1.66 2013-07-12 13:00:29 mikeaubury Exp $
 #
 */
 
@@ -453,7 +453,7 @@ if (strstr(tabname,"\".")) {
 #endif
 
   for (a=0;a<cnt;a++) {
-	int idtype;
+	//int idtype;
 	int isize;
 	col_list_types[a]=DTYPE_CHAR;
 	A4GL_read_columns (tabname, col_list[a], &col_list_types[a], &isize);
@@ -483,7 +483,7 @@ if (strstr(tabname,"\".")) {
 
    for (a = 0; a < cnt; a++)
 	{
-	int b;
+	//int b;
 	
 #ifdef DEBUG
 	  A4GL_debug ("Binding %s @ %d", colptr[a], a);
@@ -625,7 +625,7 @@ if (strstr(tabname,"\".")) {
 
       for (a = 0; a < cnt; a++)
 	{
-	int b;
+	//int b;
 	
 #ifdef DEBUG
 	  A4GL_debug ("Binding %s @ %d", colptr[a], a);
@@ -1244,7 +1244,109 @@ char nullbuff[200];
 
 #define LBUFSIZ 1000
 
+int aclfgl_aclfgl_unload_csv_no_headers(int n) {
+char **buff;
+static char buffRet[200000];
+int a;
+int *type;
+buff=malloc(sizeof(char *)*n);
+type=malloc(sizeof(int)*n);
 
+A4GL_debug_print_stack();
+strcpy(buffRet,"");
+
+for (a=n-1;a>=0;a--) {
+	int d1;
+	int s1;
+	void *ptr1;
+	A4GL_get_top_of_stack (1, &d1, &s1, (void *) &ptr1);
+	switch (d1&DTYPE_MASK) {
+		case DTYPE_INT:
+		case DTYPE_SMINT:
+		case DTYPE_FLOAT:
+		case DTYPE_SMFLOAT:
+		case DTYPE_DECIMAL:
+			type[a]=0;
+			break;
+		default:
+			type[a]=1;
+			break;
+	}
+	buff[a]=A4GL_char_pop();
+}
+
+
+for (a=0;a<n;a++) {
+	if (a) { strcat(buffRet,","); }
+	if (type[a]) { strcat(buffRet,"\""); }
+	else {
+		A4GL_trim(buff[a]);
+	}
+	strcat(buffRet,buff[a]);
+	if (type[a]) { strcat(buffRet,"\""); }
+	free(buff[a]);
+}
+
+strcat(buffRet,"\n");
+
+free(buff);
+free(type);
+A4GL_push_char(buffRet);
+return 1;
+}
+
+
+
+int aclfgl_aclfgl_unload_csv(int n) {
+char **buff;
+static char buffRet[200000];
+int a;
+int *type;
+buff=malloc(sizeof(char *)*n);
+type=malloc(sizeof(int)*n);
+
+A4GL_debug_print_stack();
+strcpy(buffRet,"");
+
+for (a=n-1;a>=0;a--) {
+	int d1;
+	int s1;
+	void *ptr1;
+	A4GL_get_top_of_stack (1, &d1, &s1, (void *) &ptr1);
+	switch (d1&DTYPE_MASK) {
+		case DTYPE_INT:
+		case DTYPE_SMINT:
+		case DTYPE_FLOAT:
+		case DTYPE_SMFLOAT:
+		case DTYPE_DECIMAL:
+			type[a]=0;
+			break;
+		default:
+			type[a]=1;
+			break;
+	}
+	buff[a]=A4GL_char_pop();
+}
+
+
+for (a=0;a<n;a++) {
+	if (a) { strcat(buffRet,","); }
+	if (type[a]) { strcat(buffRet,"\""); }
+	else {
+		A4GL_trim(buff[a]);
+	}
+	strcat(buffRet,buff[a]);
+	if (type[a]) { strcat(buffRet,"\""); }
+	free(buff[a]);
+}
+
+strcat(buffRet,"\n");
+
+free(buff);
+free(type);
+A4GL_push_char(buffRet);
+return 1;
+}
 
 int
 aclfgl_aclfgl_parse_csv (int n)

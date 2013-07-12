@@ -88,7 +88,6 @@ char *sw_elem_unions[1000]={"expr_type",0};
 int unions_cnt=1;
 
 static void add_as_union(char *s) {
-        //sw_elem_unions[unions_cnt]=strdup(sw_elem_dtd);
         unions[unions_cnt++]=strdup(s);
 
         if (unions_cnt>1000) {
@@ -104,12 +103,10 @@ int a;
 
 for (a=0;a<unions_cnt;a++) {
         if (strcmp(unions[a],s)==0) {
-                //sw_elem_last=sw_elem_unions[a];
                 return 1;
         }
 }
 if (strcmp(s,"expr_str")==0) {
-                //sw_elem_last="expr_type";
         return 1;
 }
 return 0;
@@ -198,7 +195,6 @@ sprintf(buff,"%s%s /* cu_cnt=%d */",cu[cu_cnt],m.name,cu_cnt);
 		if (m.pointer==0) fprintf(cfo,"   if (!output_%s(\"%s\",r.%s,0,-1)) return 0;\n",s,m.name,buff);
 		if (m.pointer==1) {
 			fprintf(cfo,"   if (r.%s) {output_okptr(\"%s\");if (!output_%s(\"%s\",*r.%s,1,-1)) return 0;}\n",buff,m.name,s,m.name,buff);
-			//fprintf(cfo,"   else      {if (!output_nullptr(\"%s\")) return 0;}\n",m.name);
 			fprintf(cfo,"   else      {if (!output_nullptr(\"%s\",\"%s\",%d)) return 0;}\n",m.name, s, is_union(s));
 
 			/*to prevent control reaches end of non-void function warning: */
@@ -218,12 +214,10 @@ sprintf(buff,"%s%s /* cu_cnt=%d */",cu[cu_cnt],m.name,cu_cnt);
 			fprintf(cfo,"   if (r.%s.%s_val[cnt]) {output_okptr(\"%s\");if (!output_%s(\"%s\",*r.%s.%s_val[cnt],1,cnt)) return 0;}\n",
 				buff,m.name,m.name,
 				s,m.name,buff,m.name);
-			//fprintf(cfo,"   else     { if (!output_nullptr(\"%s\")) return 0;}\n",m.name);
 			fprintf(cfo,"   else      {if (!output_nullptr(\"%s\",\"%s\",%d)) return 0;}\n",m.name, s, is_union(s));
 		}
 	        fprintf(cfo,"      }\n");
 		fprintf(cfo,"   }\n");
-		//fprintf(cfo,"   if (!output_end_array(\"%s\",1)) return 0;\n",s);
 		fprintf(cfo,"   if (!output_end_array(\"%s\",1,r.%s.%s_len)) return 0;\n",m.name,buff,m.name);
 		/*to prevent control reaches end of non-void function warning: */
 		/*fprintf(cfo,"return 98;\n"); */
@@ -240,15 +234,12 @@ sprintf(buff,"%s%s /* cu_cnt=%d */",cu[cu_cnt],m.name,cu_cnt);
 		if (m.pointer==0) fprintf(cfo,"   if (!output_%s(\"%s\",r.%s[cnt],0,-1)) return 0;\n",s,m.name,m.name);
 		if (m.pointer==1) {
 			fprintf(cfo,"   if (r.%s[cnt]) {output_okptr(\"\");if (!output_%s(\"%s\",*r.%s[cnt],0,cnt)) return 0;}\n",m.name,s,m.name,m.name);
-			//fprintf(cfo,"   else      {if (!output_nullptr(\"%s\")) return 0;}\n",m.name);
 			fprintf(cfo,"   else      {if (!output_nullptr(\"%s\",\"%s\",%d)) return 0;}\n",m.name, s, is_union(s));
 		}
 		fprintf(cfo,"      }\n");
 		fprintf(cfo,"   }\n");
-		//fprintf(cfo,"   if (!output_end_array(\"%s\",2)) return 0;\n",s);
 		fprintf(cfo,"   if (!output_end_array(\"%s\",2,%d)) return 0;\n",m.name,m.size);
 		/*to prevent control reaches end of non-void function warning: */
-		/*fprintf(cfo,"return 97;\n"); */
 		return;
 	}
 
@@ -260,7 +251,6 @@ sprintf(buff,"%s%s /* cu_cnt=%d */",cu[cu_cnt],m.name,cu_cnt);
         }
 		if (m.pointer==1) {
 			fprintf(cfo,"   if (r) {output_okptr(\"%s\");if (!output_%s(\"%s\",*r,1,-1)) return 0;}\n",m.name, buff,s); /* ,m.name,buff); */
-			//fprintf(cfo,"   else      {if (!output_nullptr(\"%s\")) return 0;}\n",m.name);
 			fprintf(cfo,"   else      {if (!output_nullptr(\"%s\",\"%s\",%d)) return 0;}\n",m.name, s, is_union(s));
 
 			/*to prevent control reaches end of non-void function warning: (OK) */
@@ -472,13 +462,13 @@ typedef_elem:
 	| INT NAMED { fprintf(hsf,"typedef %s %s;\n",$<str>1,$<str>2); }
 	| LONG NAMED { fprintf(hsf,"typedef %s %s;\n",$<str>1,$<str>2); }
 	| STRING NAMED LESS_THAN GREATER_THAN {
-			fprintf(hf,"int input_%s(char *rn,char **r,int isptr,int arr);\n",$<str>2,$<str>2);
-			fprintf(cfi,"int input_%s(char *rn,char **r,int isptr,int arr) {\n",$<str>2,$<str>2);
+			fprintf(hf,"int input_%s(char *rn,char **r,int isptr,int arr);\n",$<str>2);
+			fprintf(cfi,"int input_%s(char *rn,char **r,int isptr,int arr) {\n",$<str>2);
 			fprintf(cfi,"return input_string(rn,r,isptr,arr);\n");
 			fprintf(cfi,"}\n");
 			
-			fprintf(hf,"int output_%s(char *rn,char *r,int isptr,int arr);\n",$<str>2,$<str>2);
-			fprintf(cfo,"int output_%s(char *rn,char *r,int isptr,int arr) {\n",$<str>2,$<str>2);
+			fprintf(hf,"int output_%s(char *rn,char *r,int isptr,int arr);\n",$<str>2);
+			fprintf(cfo,"int output_%s(char *rn,char *r,int isptr,int arr) {\n",$<str>2);
 			fprintf(cfo,"if (rn==0) rn=\"\";\n");
 			fprintf(cfo,"return output_string(rn,r,isptr,arr);\n");
 			fprintf(cfo,"}\n");
@@ -533,13 +523,8 @@ enum_list: enum_element | enum_list COMMA enum_element
 
 enum_element: NAMED {
 		fprintf(cfo,"if (r==%d) {\n", enumv);
-		//fprintf(cfo,"  if (!output_enum(name,\"%s\",%d)) return 0;\n",$<str>1,enumv);
-		fprintf(cfo,"  if (!output_enum(rn, name,\"%s\",%d)) return 0;\n",$<str>1,enumv);
+		fprintf(cfo,"  if (!output_enum(rn, name,\"%s\",%d,arr)) return 0;\n",$<str>1,enumv);
 		fprintf(cfo,"}\n");
-
-		/*fprintf(cfi,"if (r==%d) {\n", enumv); */
-		/*fprintf(cfi,"  if (!input_enum(name,\"%s\",%d)) return 0;\n",$<str>1,enumv); */
-		/*fprintf(cfi,"}\n"); */
 
 		if (enumv) fprintf(hsf,",\n");
 		else       fprintf(hsf,"\n");
@@ -552,13 +537,9 @@ enum_element: NAMED {
 	| NAMED EQUAL INT_VAL {
 		enumv=atoi($<str>3);
 		fprintf(cfo,"if (r==%d) {\n", enumv);
-		//fprintf(cfo,"  if (!output_enum(name,\"%s\",%d)) return 0;\n",$<str>1,enumv);
-		fprintf(cfo,"  if (!output_enum(rn, name,\"%s\",%d)) return 0;\n",$<str>1,enumv);
+		fprintf(cfo,"  if (!output_enum(rn, name,\"%s\",%d,arr)) return 0;\n",$<str>1,enumv);
 		fprintf(cfo,"}\n");
 
-		/*fprintf(cfi,"if (r==%d) {\n", enumv); */
-		/*fprintf(cfi,"  if (!input_enum(name,\"%s\",%d)) return 0;\n",$<str>1,enumv); */
-		/*fprintf(cfi,"}\n"); */
 		
 		if (enumv) fprintf(hsf,",\n");
 		else       fprintf(hsf,"\n");
@@ -587,9 +568,6 @@ struct: STRUCT NAMED {
 	fprintf(hsf,"struct %s {\n",$<str>2);
 	fprintf(hf,"int output_%s(char *rn,%s r,int isptr,int arr);\n",$<str>2,$<str>2);
 	fprintf(cfo,"int output_%s(char *rn,%s r,int isptr,int arr) {\n",$<str>2,$<str>2);
-	
-/*	fprintf(cfo,"char *name=\"%s\";\n",$<str>2); */
-
     /* sepatately defining and initialising to prevent compiler watnings about
     unised variable: */
 	fprintf(cfo,"char *name;\n");
@@ -672,7 +650,6 @@ struct_element : element SEMICOLON
 element:
 	ENUM NAMED vname  	{ print_elem("enum",$<str>2,$<mode>3); }
 	| STRUCT NAMED vname 	{ print_elem("struct",$<str>2,$<mode>3); }
-	/* | UNION NAMED vname 	{ print_elem("struct",$<str>2,$<mode>3); } */
 	| NAMED vname 		{ print_elem("istypedefed",$<str>1,$<mode>2); }
 	| BOOL vname 		{ print_elem("bool","bool",$<mode>2); }
 	| INT vname 		{ print_elem("int","int",$<mode>2); }
@@ -732,7 +709,6 @@ union: UNION NAMED SWITCH OPEN_BRACKET  {
 			dumping_command_data++;
 		}
 	}
-	//printf("sw_elem=%s\n", sw_elem);
 	if (!strncmp(sw_elem,"int ",4)==0) {
 		char buff[2000];
 		char *ptr;

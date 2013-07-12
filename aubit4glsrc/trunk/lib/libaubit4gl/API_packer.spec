@@ -19,7 +19,7 @@ output_start_union char* s char* enumname int enum_val char* n,int ptr,int isarr
 output_nullptr char* s char* structname int isunion -> int
 output_okptr char* s -> int
 output_end_union char* s,char* en,int e,char* n -> int
-output_enum char* rn char* name,char* s,int d -> int
+output_enum char* rn char* name,char* s,int d int isarr -> int
 output_start_array char* s,int type,int len -> int
 output_end_array char* s,int type int len -> int
 input_int char* name,int* val,int ptr,int isarr -> int

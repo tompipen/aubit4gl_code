@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_incl_4gldef.h,v 1.141 2012-09-27 12:07:16 mikeaubury Exp $
+# $Id: a4gl_incl_4gldef.h,v 1.142 2013-07-12 13:00:26 mikeaubury Exp $
 */
 
 /**
@@ -512,6 +512,9 @@ int A4GL_get_user_dtype(char *name) ;
 void A4GL_push_user_dtype(char *type, void *data, int dtype_length);
 void A4GL_init_userdtype(char *type, void *data);
 void A4GL_pop_user_dtype(char *type, void *data, int dtype, int dtype_length) ;
+
+int aclfgl_aclfgl_unload_csv_no_headers(int n);
+int aclfgl_aclfgl_unload_csv(int n);
 
 #include "a4gl_rep_structure.h"
 

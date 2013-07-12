@@ -24,10 +24,10 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.250 2012-10-16 06:49:13 mikeaubury Exp $
+# $Id: ioform.c,v 1.251 2013-07-12 13:00:54 mikeaubury Exp $
 #*/
 #ifndef lint
-static char const module_id[] = "$Id: ioform.c,v 1.250 2012-10-16 06:49:13 mikeaubury Exp $";
+static char const module_id[] = "$Id: ioform.c,v 1.251 2013-07-12 13:00:54 mikeaubury Exp $";
 #endif
 
 /**
@@ -178,6 +178,9 @@ A4GL_make_label (int frow, int fcol, char *label)
   FIELD *f;
   int l;
   int is_graphics = 0;
+  if (strlen(label)==0) {
+	A4GL_assertion(1,"Zero length label - does the form have an empty delimiters?");
+  }
   //l = strlen (label);
   l = A4GL_wcswidth (label);
 #ifdef DEBUG
@@ -424,11 +427,16 @@ UILIB_A4GL_read_metrics (void *formdetsv)
 	  formdets->form_fields[cnt++] = (FIELD *) formdets->fileform->metrics.metrics_val[a].field;
 	  A4GL_assertion (cnt >= MAX_FORM_FIELDS, "Ran out of form_fields...");
 	  formdets->form_fields[cnt] = 0;
+
+	if (strlen(delims[0])) {
 	  formdets->fileform->metrics.metrics_val[a].dlm1 = (long) A4GL_make_label (y, x - 1, delims[0]);
 	  formdets->form_fields[cnt++] = (FIELD *) formdets->fileform->metrics.metrics_val[a].dlm1;
 	  A4GL_assertion (cnt >= MAX_FORM_FIELDS, "Ran out of form_fields...");
+	} 
+	if (strlen(delims[1])) {
 	  formdets->fileform->metrics.metrics_val[a].dlm2 = (long) A4GL_make_label (y, x + w, delims[1]);
 	  formdets->form_fields[cnt++] = (FIELD *) formdets->fileform->metrics.metrics_val[a].dlm2;
+	}
 	  A4GL_assertion (cnt >= MAX_FORM_FIELDS, "Ran out of form_fields...");
 	  formdets->form_fields[cnt] = 0;
 	}

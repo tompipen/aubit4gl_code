@@ -314,7 +314,7 @@ void A4GLSQLLIB_A4GLSQL_put_insert_internal(char* cursorname,void* ibind,int n) 
 }
 void A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode(int a){
 }
-void A4GLSQLLIB_A4GLSQL_unload_data_internal(char* fname,char* delims,char* sql1,int nbind,void* ibind){
+void A4GLSQLLIB_A4GLSQL_unload_data_internal(char* fname,char* delims,void *filterfunc, char* sql1,int nbind,void* ibind){
 }
 long A4GLSQLLIB_A4GLSQL_describe_stmt(char* stmt,int colno,int type){
 return 0;

@@ -2460,6 +2460,7 @@ set_suppress_lines("E23");
   printc("char *_sql=0;\n");
   printc("char _filename[512];");
   printc("char *_delimiter=\"|\";");
+  printc("char *_filterfunc=\"|\";");
   printc ("\nEXEC SQL END DECLARE SECTION;\n");
 clr_suppress_lines();
   clr_bindings();
@@ -2469,8 +2470,15 @@ clr_suppress_lines();
   printc("A4GL_pop_char(_filename,511);");
   printc ("A4GL_trim(_filename);");
   if (cmd_data->delimiter) {
-	print_expr(cmd_data->delimiter);
-	printc("_delimiter=A4GL_char_pop();");
+	///
+        if (cmd_data->delimiter->expr_type==ET_EXPR_FUNC) {
+                add_function_to_header(cmd_data->delimiter->expr_str_u.expr_func.funcname,cmd_data->delimiter->expr_str_u.expr_func.n_namespace,1,0);
+                printc("_filterfunc=%s%s;",cmd_data->delimiter->expr_str_u.expr_func.n_namespace,cmd_data->delimiter->expr_str_u.expr_func.funcname);
+      		printc ("_delimiter=0;");
+	} else {
+		print_expr(cmd_data->delimiter);
+		printc("_delimiter=A4GL_char_pop();");
+	}
   }
 
 
@@ -2614,11 +2622,11 @@ switch (cmd_data->sql->expr_type) {
 
       if (isvar == 0)
 	{
-	  printc ("A4GL_unload_data(_filename,_delimiter, \"%s\",%s,0);\n", escape_quotes_and_remove_nl (sql), ibindstr);
+	  printc ("A4GL_unload_data2(_filename,_delimiter,_filterfunc, \"%s\",%s,0);\n", escape_quotes_and_remove_nl (sql), ibindstr);
 	}
       else
 	{
-	  printc ("A4GL_unload_data(_filename,_delimiter, _sql,%s,0);\n",  ibindstr);
+	  printc ("A4GL_unload_data2(_filename,_delimiter,_filterfunc, _sql,%s,0);\n",  ibindstr);
 	  
 	}
   	tmp_ccnt--;

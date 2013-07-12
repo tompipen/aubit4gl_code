@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: simple.c,v 1.47 2011-01-16 18:24:30 mikeaubury Exp $
+# $Id: simple.c,v 1.48 2013-07-12 13:00:54 mikeaubury Exp $
 #*/
 
 
@@ -832,7 +832,7 @@ exec sql get descriptor descExec value:index:TYPE = type,: LENGTH = length,: OCT
 /*      void A4GLSQL_unload_data(char *fname,char *delims, char *sql1); */
 /* int */
 void
-A4GLSQLLIB_A4GLSQL_unload_data_internal (char *fname_o, char *delims,
+A4GLSQLLIB_A4GLSQL_unload_data_internal (char *fname_o, char *delims, void *filterFunc,
 					 char *sqlStr_o, int nbind,
 					 void *vibind)
 {
