@@ -2460,9 +2460,9 @@ set_suppress_lines("E23");
   printc("char *_sql=0;\n");
   printc("char _filename[512];");
   printc("char *_delimiter=\"|\";");
-  printc("char *_filterfunc=\"|\";");
   printc ("\nEXEC SQL END DECLARE SECTION;\n");
-clr_suppress_lines();
+  printc("void *_filterfunc=NULL;");
+  clr_suppress_lines();
   clr_bindings();
 
 
