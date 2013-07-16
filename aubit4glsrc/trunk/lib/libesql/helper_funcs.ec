@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper_funcs.ec,v 1.84 2009-05-11 15:30:05 mikeaubury Exp $
+# $Id: helper_funcs.ec,v 1.85 2013-07-16 11:37:37 mikeaubury Exp $
 #
 */
 
@@ -267,12 +267,17 @@ A4GL_assertion((mode!='o'&&mode!='i'),"Invalid ESQL copy mode");
 		if (A4GL_isnull(DTYPE_DECIMAL,(void *)a4gl) && p_indicat) {if (p_indicat) *p_indicat=-1; return;}
 		if (A4GL_isnull(DTYPE_DECIMAL,(void *)a4gl)) {rsetnull(CDECIMALTYPE,(void *)infx);return;}
 		A4GL_debug("A4GL_copy_decimal 'i' %x",(size<<16)+5);
+
+		/*
 		A4GL_push_variable(a4gl,(size<<16)+5);
 	   	A4GL_pop_var2(&b,0,0x28);
 		if (A4GL_isyes(acl_getenv("DEBUG_DECIMAL"))) {
 			A4GL_debug(">b='%s'\n",b);
 		}
-		A4GL_trim(b);
+		*/
+		strcpy(b,A4GL_dec_to_str(a4gl, 0x28));
+		A4GL_decstr_convert(b, a4gl_convfmts.posix_decfmt, a4gl_convfmts.ui_decfmt,0,1,-1);
+
 		A4GL_debug("calling deccvasc with '%s'",b);
 		deccvasc(b,strlen(b),infx);
 		if (A4GL_isyes(acl_getenv("DEBUG_DECIMAL"))) {
@@ -337,10 +342,11 @@ A4GL_assertion((mode!='o'&&mode!='i'),"Invalid ESQL copy mode");
 				return;
 		}
 		A4GL_debug("A4GL_copy_decimal 'i' %x",(size<<16)+5);
-		A4GL_push_variable(a4gl,(size<<16)+5);
-	   	A4GL_pop_var2(&b,0,0x28);
-		A4GL_debug("Ptr=%s\n",b);
-		A4GL_trim(b);
+		strcpy(b,A4GL_dec_to_str(a4gl, 0x28));
+		A4GL_decstr_convert(b, a4gl_convfmts.posix_decfmt, a4gl_convfmts.ui_decfmt,0,1,-1);
+		//A4GL_push_variable(a4gl,(size<<16)+5);
+	   	//A4GL_pop_var2(&b,0,0x28);
+		//A4GL_trim(b);
 		deccvasc(b,strlen(b),infx);
 	}
 
