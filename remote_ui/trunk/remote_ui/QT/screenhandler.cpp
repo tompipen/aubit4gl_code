@@ -1417,6 +1417,7 @@ MainFrame::vdcdebug("ScreenHandler","setFieldFocus", "QString fieldName");
    fieldName = fieldName.trimmed();
 
    int i_Frm = getCurrForm();
+   bool b_found = false;
 
    if(i_Frm < 0)
       return;
@@ -1447,10 +1448,21 @@ MainFrame::vdcdebug("ScreenHandler","setFieldFocus", "QString fieldName");
        {
           for(int i = 0; i<p_fglform->ql_formFields.size(); i++)
           {
-              if(p_fglform->ql_formFields.at(i)->objectName() == fieldName)
+              if(p_fglform->ql_formFields.at(i)->objectName() == fieldName && !p_fglform->ql_formFields.at(i)->isHidden())
               {
                      p_fglform->jumpToField(p_fglform->ql_formFields.at(i), false);
+                     b_found = true;
                      return;
+              }
+
+              if(!b_found)
+              {
+                if(!p_fglform->ql_formFields.at(i)->isHidden() && !p_fglform->ql_formFields.at(i)->objectName().contains("txx_"))
+                {
+                    p_fglform->jumpToField(p_fglform->ql_formFields.at(i), false);
+                    fieldName = p_fglform->ql_formFields.at(i)->objectName();
+                    return;
+                }
               }
           }
       }
