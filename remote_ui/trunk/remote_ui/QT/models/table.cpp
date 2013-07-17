@@ -1255,6 +1255,15 @@ QVariant TableModel::data(const QModelIndex &index, int role) const
    int row = index.row();
    int column = index.column();
 
+   if(role == Qt::DecorationRole)
+   {
+       if(index.data().toString().contains(".png") || index.data().toString().contains(".jpg") || index.data().toString().contains(".jpeg") || index.data().toString().contains(".gif"))
+       {
+           QPixmap pix("pics:" + index.data().toString());
+           return pix;
+       }
+   }
+
    if(LineEditDelegate *dele = qobject_cast<LineEditDelegate *> (getTableView()->itemDelegateForColumn(column))){
        if(LineEdit *widget = qobject_cast<LineEdit *> (dele->qw_editor)){
            if(widget->dataType() == 2 || widget->dataType() == 3 || widget->dataType() == 5 || widget->dataType() == 6) {
