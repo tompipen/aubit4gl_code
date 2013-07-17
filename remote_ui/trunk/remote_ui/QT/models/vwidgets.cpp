@@ -2056,14 +2056,18 @@ void WidgetHelper::setFieldText(QObject *object, QString fieldValue)
 MainFrame::vdcdebug("WidgetHelper","setFieldText", "QObject *object, QString fieldValue");
 
    if(Label *widget = qobject_cast<Label *> (object)){
-      if(widget->pixmap() == 0 && widget->movie() == 0){
+       if(widget->pixmap() == 0 && widget->movie() == 0 && !fieldValue.contains(".png") && !fieldValue.contains(".jpg") && !fieldValue.contains(".jepg") && !fieldValue.contains(".gif")){
          widget->setText(fieldValue);
          widget->fieldValue = fieldValue;
       }
       else{
 
 
-         if(!QFile::exists(fieldValue))
+         if(QFile::exists("pics:" + fieldValue))
+         {
+                 fieldValue = "pics:" + fieldValue;
+         }
+         else if(!QFile::exists(fieldValue))
          {
              fieldValue.prepend(QDir::tempPath().append("/"));
          }
