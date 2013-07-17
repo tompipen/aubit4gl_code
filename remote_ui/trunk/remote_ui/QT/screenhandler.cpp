@@ -67,6 +67,7 @@ MainFrame::vdcdebug("ScreenHandler","ScreenHandler", "QObject *parent");
    openFileSuccess = 0;
    stdOfficeProg = 0;
    mDummyMessageDialogBox = NULL;
+   b_found = false;
    this->installEventFilter(this);
    QApplication::processEvents();
  }
@@ -1417,7 +1418,6 @@ MainFrame::vdcdebug("ScreenHandler","setFieldFocus", "QString fieldName");
    fieldName = fieldName.trimmed();
 
    int i_Frm = getCurrForm();
-   bool b_found = false;
 
    if(i_Frm < 0)
       return;

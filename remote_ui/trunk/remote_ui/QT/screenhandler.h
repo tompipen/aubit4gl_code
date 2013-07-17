@@ -123,6 +123,7 @@ private:
    int i_runcnt;
    int i_currthread;
    int hasWindow;
+   bool b_found;
 
 
 //   QList<QWidget*> ql_formFields;
