@@ -24,10 +24,10 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.177 2012-10-16 17:20:10 locbook Exp $
+# $Id: iarray.c,v 1.178 2013-07-18 10:42:41 mikeaubury Exp $
 #*/
 #ifndef lint
-static char const module_id[] = "$Id: iarray.c,v 1.177 2012-10-16 17:20:10 locbook Exp $";
+static char const module_id[] = "$Id: iarray.c,v 1.178 2013-07-18 10:42:41 mikeaubury Exp $";
 #endif
 
 /**
@@ -277,6 +277,9 @@ insert_line_in_array (struct s_inp_arr *inpa)
 	  A4GL_debug ("default from form to '%s'", A4GL_get_str_attribute (prop, FA_S_DEFAULT));
 #endif
 	  A4GL_push_char (A4GL_replace_sql_var (A4GL_strip_quotes (A4GL_get_str_attribute (prop, FA_S_DEFAULT))));
+
+
+
 	  A4GL_pop_var2 ((char *) inpa->binding[a].ptr + ((inpa->arr_line - 1) * inpa->arr_elemsize), inpa->binding[a].dtype,
 			 inpa->binding[a].size);
 

@@ -24,10 +24,10 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.251 2013-07-12 13:00:54 mikeaubury Exp $
+# $Id: ioform.c,v 1.252 2013-07-18 10:42:41 mikeaubury Exp $
 #*/
 #ifndef lint
-static char const module_id[] = "$Id: ioform.c,v 1.251 2013-07-12 13:00:54 mikeaubury Exp $";
+static char const module_id[] = "$Id: ioform.c,v 1.252 2013-07-18 10:42:41 mikeaubury Exp $";
 #endif
 
 /**
@@ -1947,6 +1947,19 @@ UILIB_A4GL_set_fields (void *vsio)
 #endif
 	      dtype = sio->vars[a].dtype + ENCODE_SIZE (sio->vars[a].size);
 	      defval = A4GL_replace_sql_var (A4GL_strip_quotes (A4GL_get_str_attribute (prop, FA_S_DEFAULT)));
+
+  if (A4GL_is_numeric_datatype (prop->datatype) )
+    {
+      char *tmpptr;
+      tmpptr = strdup (defval);
+
+      A4GL_decstr_convert (tmpptr, A4GL_get_convfmts ()->posix_decfmt, A4GL_get_convfmts ()->ui_decfmt, 0, 1, -1);	// validate
+      if (tmpptr[0] != 0)	//conversion succesful
+	strcpy (defval, tmpptr);
+
+      free (tmpptr);
+    }
+
 	      // We're passing in the default value as a character string - even if its not really
 	      // supposed to be a character string...
 	      A4GL_set_init_value (field_list[a], defval, DTYPE_CHAR, sio->vars[a].dtype + ENCODE_SIZE (sio->vars[a].size));
@@ -4604,9 +4617,23 @@ UILIB_A4GL_clr_form (int to_default)
 	    {
 	      struct struct_scr_field *prop;
 	      prop = (struct struct_scr_field *) field_userptr (f);
-	      A4GL_mja_set_field_buffer (f, 0,
-					 (char *) A4GL_replace_sql_var
-					 ((char *) A4GL_strip_quotes (A4GL_get_str_attribute (prop, FA_S_DEFAULT))));
+
+		char *defval;
+
+	      defval = A4GL_replace_sql_var (A4GL_strip_quotes (A4GL_get_str_attribute (prop, FA_S_DEFAULT)));
+
+  if (A4GL_is_numeric_datatype (prop->datatype) )
+    {
+      char *tmpptr;
+      tmpptr = strdup (defval);
+
+      A4GL_decstr_convert (tmpptr, A4GL_get_convfmts ()->posix_decfmt, A4GL_get_convfmts ()->ui_decfmt, 0, 1, -1);	// validate
+      if (tmpptr[0] != 0)	//conversion succesful
+	strcpy (defval, tmpptr);
+
+      free (tmpptr);
+    }
+	      A4GL_mja_set_field_buffer (f, 0, defval);
 	    }
 	}
 

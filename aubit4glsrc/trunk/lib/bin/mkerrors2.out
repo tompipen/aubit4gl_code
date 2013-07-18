@@ -391,3 +391,4 @@
 408|Not an object of type (ui.progress) or not initialized
 410|Cant use blobs with FILTERed UNLOAD
 411|Filter function did not return exactly one value
+412|Error in filterfunc

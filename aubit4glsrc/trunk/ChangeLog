@@ -1,4 +1,50 @@
 ---------------------------
+Sat Jul 13 09:30:24 BST 2013
+---------------------------
+1.2_34 Released
+---------------------------
+	2013-07-12 13:59  mikeaubury
+	
+	Allow filter callback function in an UNLOAD
+	
+	2013-07-12 13:58  mikeaubury
+	
+	Allow filters on an UNLOAD Small fixup for MONEY datatype
+	
+	2013-05-08 12:38  siverly
+	
+	Added character encoding for command "HIDE OPTION"
+	
+	2013-04-22 14:07  siverly
+	
+	Added new function to get the ORDER BY clausel from the client for
+	DISPLAY ARRAYS.
+	
+	2013-03-25 13:05  mikeaubury
+	
+	2013-03-25 12:58  mikeaubury
+	
+	Add some PL/SQL parsing backend stuff for commercial plsql compiler
+	
+	2013-03-22 11:51  mikeaubury
+	
+	2013-02-21 12:29  mikeaubury
+	
+	2013-02-21 09:32  mikeaubury
+	
+	2013-02-20 20:19  mikeaubury
+	
+	allow proper loading of \xx hex encodings
+	
+	2013-02-18 10:30  mikeaubury
+	
+	Add A4GL_SHOWDEPTH
+	
+	2013-01-08 08:05  mikeaubury
+	
+	2013-01-08 07:44  mikeaubury
+	
+---------------------------
 Tue Jan  8 07:42:48 GMT 2013
 ---------------------------
 1.2_33 Released
