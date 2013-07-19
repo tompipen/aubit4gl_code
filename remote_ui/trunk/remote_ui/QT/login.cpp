@@ -189,8 +189,11 @@ LoginForm::LoginForm(QWidget *parent)
 
     tabWidgetLayout->addWidget(tWidget);
 
-    this->setLayout(tabWidgetLayout);
+    QPalette palette;
+    palette.setBrush(this->backgroundRole(), QBrush(QImage("pics:VENTAS_9_alu_1080p.png")));
+    parent->setPalette(palette);
 
+    this->setLayout(tabWidgetLayout);
 }
 
 void LoginForm::createMenu(QMenuBar *menu)
