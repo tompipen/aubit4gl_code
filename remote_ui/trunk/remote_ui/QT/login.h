@@ -40,7 +40,7 @@ class LoginForm  : public QWidget
 public:
 
    LoginForm(QWidget *parent = 0);
-   void createMenu(QMenuBar*, bool);
+   void createMenu(QMenuBar*);
    QString getUserName() { return usernameLineEdit->text(); };
    QLineEdit *fontedit;
    QString fontconv;

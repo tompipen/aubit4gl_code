@@ -110,6 +110,7 @@ LoginForm::LoginForm(QWidget *parent)
     serverLayout->addWidget(serverLineEdit);
 
     adminLayout->addLayout(connectionLayout);
+    adminLayout->addLayout(serverLayout);
     adminLayout->addLayout(labelLayout);
     adminLayout->addLayout(applicationLayout);
     adminLayout->addWidget(cb);
