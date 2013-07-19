@@ -40,6 +40,7 @@ class LoginForm  : public QWidget
 public:
 
    LoginForm(QWidget *parent = 0);
+   void createMenu(QMenuBar*, bool);
    QString getUserName() { return usernameLineEdit->text(); };
    QLineEdit *fontedit;
    QString fontconv;
@@ -117,6 +118,7 @@ private:
    QLabel *serverLabel;
    QLabel *hostLabel;
    QLabel *applicationLabel;
+   QLabel *portLabel;
    QLabel *protocolLabel;
    QGroupBox *bg_connection;
    QRadioButton *rb_proxy;
@@ -129,6 +131,7 @@ private:
    QLineEdit *serverLineEdit;
    QLineEdit *hostLineEdit;
    QLineEdit *applicationLineEdit;
+   QLineEdit *portLineEdit;
    QLineEdit *protocolLineEdit;
    QCheckBox *cb;
    QErrorMessage *errorMessageLoginForm;

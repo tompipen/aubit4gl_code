@@ -45,253 +45,231 @@
 LoginForm::LoginForm(QWidget *parent)
     : QWidget(parent)
 {
-   MainFrame *mainFrame = (MainFrame*) parent;
-   bool adminMenu = mainFrame->adminMenu;
-   QStatusBar *statusBar = mainFrame->statusBar();
 
-   b_savefile=false;
+    MainFrame *mainFrame = (MainFrame*) parent;
+    bool adminMenu = mainFrame->adminMenu;
+    QMenuBar *menuBar = mainFrame->menuBar();
 
-   errorMessageLoginForm = new QErrorMessage(this);
+    QTabWidget *tWidget = new QTabWidget(this);
+    QWidget *userWidget = new QWidget();
+    QWidget *adminWidget = new QWidget();
 
-   // MenuBar
+    QVBoxLayout *loginLayout = new QVBoxLayout;
+    QVBoxLayout *tabWidgetLayout = new QVBoxLayout;
+    QHBoxLayout *buttonLayout = new QHBoxLayout;
+    QHBoxLayout *mainLayout = new QHBoxLayout;
+    QVBoxLayout *adminLayout = new QVBoxLayout;
+    QHBoxLayout *labelLayout = new QHBoxLayout;
+    QHBoxLayout *connectionLayout = new QHBoxLayout;
+    QHBoxLayout *methodLayout = new QHBoxLayout;
 
-   QMenuBar *menuBar = mainFrame->menuBar(); //new QMenuBar(0);
 
-   QMenu *admin = new QMenu(tr("&Admin"), this);
-   QMenu *options = new QMenu(tr("&Options"), this);
+    createMenu(menuBar, adminMenu);
 
-   QAction *checkVersion = new QAction(tr("&Search for Update"), this);
-   checkVersion->setStatusTip(tr("Checks for a new VDC Update"));
-   connect(checkVersion, SIGNAL(triggered()), this, SLOT(checkForUpdate()));
-   options->addAction(checkVersion);
-   options->addSeparator();
+    portLabel           = new QLabel(tr("Port: (Default 22)"));
+    portLineEdit        = new QLineEdit();
 
-   QAction *ooStdProg = new QAction(tr("&Change Default Office Software"), this);
-   connect(ooStdProg, SIGNAL(triggered()), this, SLOT(setOfficeInstallation()));
-   options->addAction(ooStdProg);
-   options->addSeparator();
-
-   QAction *sshCompAction = new QAction(tr("SSH Compression"), this);
-   connect(sshCompAction, SIGNAL(triggered()), this, SLOT(openCompOptions()));
-   #ifdef SSH_USE
-       options->addAction(sshCompAction);
-   #endif
-   options->addSeparator();
-
-   QAction *font = new QAction(tr("&Font"), this);
-   font->setStatusTip(tr("Opens the font settings"));
-   connect(font, SIGNAL(triggered()), this, SLOT(font()));
-   options->addAction(font);
-   options->addSeparator();
-
-   QSignalMapper* signalMapper = new QSignalMapper (this);
-
-   QAction *feldplus = new QAction(tr("Fieldwidth + "), this);
-   connect(feldplus, SIGNAL(triggered()), signalMapper, SLOT(map()));
-   feldplus->setStatusTip(tr("Increase the form field width in the screen forms"));
-   signalMapper->setMapping(feldplus,  "0.1");
-   options->addAction(feldplus);
-
-   QAction *feldminus = new QAction(tr("Fieldwidth - "), this);
-   connect(feldminus, SIGNAL(triggered()), signalMapper, SLOT(map()));
-   feldminus->setStatusTip(tr("Decrease the form field width in the screen forms"));
-   signalMapper->setMapping(feldminus, "-0.1");
-   options->addAction(feldminus);
-
-   QAction *feldreset = new QAction(tr("Default Fieldwidth"), this);
-   connect(feldreset, SIGNAL(triggered()), this, SLOT(resetFactor()));
-   feldreset->setStatusTip(tr("Restore the default fieldwidth settings for the screen forms"));
-   options->addAction(feldreset);
-   options->addSeparator();
-
-   QAction *removeIni = new QAction(tr("Reset Screen Forms"), this);
-   connect(removeIni, SIGNAL(triggered()), this, SLOT(removeIni()));
-   removeIni->setStatusTip(tr("Remove the settings.ini from the VDC"));
-   options->addAction(removeIni);
-   options->addSeparator();
-
-   QString menuType = VDC::readSettingsFromIni("", "startMenuPosition");
-
-   if(menuType == "tree" || menuType.isEmpty())
-   {
-       m_mainMenu = new QAction(tr("Main Menu: Pulldown"), this);
-       connect(m_mainMenu, SIGNAL(triggered()), this, SLOT(setMainMenu()));
-       options->addAction(m_mainMenu);
-   } else if(menuType == "menu") {
-       m_mainMenu = new QAction(tr("Main Menu: Explorer"), this);
-       connect(m_mainMenu, SIGNAL(triggered()), this, SLOT(setMainMenu()));
-       options->addAction(m_mainMenu);
-   }
-
-   toggledebug = new QAction(tr("&Toggle Debug"), this);
-   toggledebug->setCheckable(true);
-   toggledebug->setChecked(true);
-
-   QAction *hosts = new QAction(tr("&Hosts"), this);
-   hosts->setStatusTip(tr("Opens the Hosts Data Settings"));
-
-   connect(signalMapper, SIGNAL(mapped(QString)), this, SLOT(setFactorWidth(QString)));
-
-   menuBar->addMenu(options);
-   connect(toggledebug, SIGNAL(toggled(bool)), this, SLOT(debugToggle(bool)));
-   if (adminMenu == true)
-   {
-   statusBar->showMessage("Login Screen Started in Admin Mode", 3000);
-//   QTimer *timer = new QTimer(this);
-//   connect(timer, SIGNAL(timeout()), this, SLOT(welcomeBar()));
-//   timer->start(3000);
-   menuBar->addMenu(admin);
-   admin->addAction(hosts);
-   QAction *about = new QAction(tr("&About VDC"), this);
-   connect(about, SIGNAL(triggered()), this, SLOT(aboutVDC()));
-   admin->addAction(about);
-   //menuBar->addAction(about);
-   menuBar->addAction(toggledebug);
-   connect(hosts, SIGNAL(triggered()), this, SLOT(hosts()));
-   }
-   if (MainFrame::b_debugmodus && adminMenu)
-   {
-       admin->addAction(toggledebug);
-   }
-   if (MainFrame::b_debugmodus && !adminMenu)
-   {
-       menuBar->addAction(toggledebug);
-   }
-else
+    if(portLineEdit->text().isEmpty())
     {
-//       QTimer *timer = new QTimer(this);
-//       connect(timer, SIGNAL(timeout()), this, SLOT(welcomeBar()));
-//       timer->start(3000);
-welcomeBar();
+        portLineEdit->setText("22");
+    }
+
+    bg_connection = new QGroupBox("Connection Method:");
+    rb_proxy  = new QRadioButton("Proxy", bg_connection);
+    rb_proxy->setChecked(true);
+    rb_telnet = new QRadioButton("Telnet", bg_connection);
+    #ifdef SSH_USE
+    rb_ssh    = new QRadioButton("SSH", bg_connection);
+    #endif
+
+    methodLayout->addWidget(rb_proxy);
+    methodLayout->addWidget(rb_telnet);
+    methodLayout->addWidget(rb_ssh);
+    bg_connection->setLayout(methodLayout);
+
+    connectionLayout->addWidget(bg_connection);
+
+    labelLayout->addWidget(portLabel);
+    labelLayout->addWidget(portLineEdit);
+
+    adminLayout->addLayout(connectionLayout);
+    adminLayout->addLayout(labelLayout);
+    adminWidget->setLayout(adminLayout);
+
+    //User TabWidget
+
+    usernameLabel       = new QLabel(tr("User:"));
+    usernameLineEdit    = new QLineEdit;
+    setFocusProxy(usernameLineEdit);
+
+    passwordLabel       = new QLabel(tr("Password:"));
+    passwordLineEdit    = new QLineEdit;
+    passwordLineEdit->setEchoMode(QLineEdit::Password);
+
+    serverLabel         = new QLabel(tr("Server:"));
+    serverLineEdit      = new QLineEdit;
+
+    applicationLabel    = new QLabel(tr("Application:"));
+    applicationLineEdit = new QLineEdit;
+    applicationLineEdit->setText("vdc");
+
+    //User TabWidget
+
+    cb = new QCheckBox("Save &Password?", this);
+    loadSettings();
+
+    loginLayout->addWidget(serverLabel);
+    loginLayout->addWidget(serverLineEdit);
+    loginLayout->addWidget(usernameLabel);
+    loginLayout->addWidget(usernameLineEdit);
+    loginLayout->addWidget(passwordLabel);
+    loginLayout->addWidget(passwordLineEdit);
+    loginLayout->addWidget(cb);
+    loginLayout->addLayout(buttonLayout);
+
+    QList<QKeySequence> ql_shortcuts;
+    ql_shortcuts << QKeySequence("Return");
+    ql_shortcuts << QKeySequence("Enter");
+
+    QAction *okAction = new QAction("Connect", NULL);
+    okAction->setShortcutContext(Qt::WidgetShortcut);
+    okAction->setShortcuts(ql_shortcuts);
+    connect(okAction, SIGNAL(triggered()), this, SLOT(okPressed()));
+
+    QAction *cancelAction = new QAction("Cancel", NULL);
+    cancelAction->setShortcutContext(Qt::WidgetShortcut);
+    cancelAction->setShortcuts(ql_shortcuts);
+    connect(cancelAction, SIGNAL(triggered()), this, SLOT(cancelPressed()));
+
+    usernameLineEdit->addAction(okAction);
+    passwordLineEdit->addAction(okAction);
+    serverLineEdit->addAction(okAction);
+    applicationLineEdit->addAction(okAction);
+
+
+    // instantiating the buttons
+    //
+    QPushButton *okButton     = new QPushButton(tr("OK"));
+    okButton->addAction(okAction);
+    QPushButton *cancelButton = new QPushButton(tr("Cancel"));
+    cancelButton->addAction(cancelAction);
+
+
+    // functionalize the buttons by using connect
+    // accept and reject are predefined by qt, so we can use them
+    // without declaration
+    //
+    connect(okButton, SIGNAL(pressed()), this, SLOT(okPressed()));
+    connect(cancelButton, SIGNAL(pressed()), this, SLOT(cancelPressed()));
+
+    buttonLayout->addWidget(okButton);
+    buttonLayout->addStretch(1);
+    buttonLayout->addWidget(cancelButton);
+
+    mainLayout->addLayout(loginLayout);
+
+    userWidget->setLayout(mainLayout);
+
+    tWidget->addTab(userWidget, "User");
+    tWidget->addTab(adminWidget, "Admin");
+
+    tabWidgetLayout->addWidget(tWidget);
+
+    this->setLayout(tabWidgetLayout);
+
+
 }
 
+void LoginForm::createMenu(QMenuBar *menu, bool adminMenu)
+{
+    QMenu *admin = new QMenu(tr("&Admin"), this);
+    QMenu *options = new QMenu(tr("&Options"), this);
+    QAction *checkVersion = new QAction(tr("&Search for Update"), this);
+    checkVersion->setStatusTip(tr("Checks for a new VDC Update"));
+    connect(checkVersion, SIGNAL(triggered()), this, SLOT(checkForUpdate()));
+    options->addAction(checkVersion);
+    options->addSeparator();
 
+    QAction *ooStdProg = new QAction(tr("&Change Default Office Software"), this);
+    connect(ooStdProg, SIGNAL(triggered()), this, SLOT(setOfficeInstallation()));
+    options->addAction(ooStdProg);
+    options->addSeparator();
 
-    // Add the DebugMenu
-//  if (debugModus == true)
-//{
-//      statusBar->showMessage("Login Screen started in Debug Mode");
-//      QAction *debug = new QAction(tr("&Debug"), this);
-//      admin->addAction(debug);
-//      connect(debug, SIGNAL(triggered()), this, SLOT(debug()));
-//  }
+    QAction *sshCompAction = new QAction(tr("SSH Compression"), this);
+    connect(sshCompAction, SIGNAL(triggered()), this, SLOT(openCompOptions()));
+    #ifdef SSH_USE
+        options->addAction(sshCompAction);
+    #endif
+    options->addSeparator();
 
+    QAction *font = new QAction(tr("&Font"), this);
+    font->setStatusTip(tr("Opens the font settings"));
+    connect(font, SIGNAL(triggered()), this, SLOT(font()));
+    options->addAction(font);
+    options->addSeparator();
 
-   // instantiating labels and line edits - facilitating user input
-   // labels should be filled by text-variables - later
-   //
-   usernameLabel       = new QLabel(tr("User:"));
-   usernameLineEdit    = new QLineEdit;
-   setFocusProxy(usernameLineEdit);
+    QSignalMapper* signalMapper = new QSignalMapper (this);
 
-   passwordLabel       = new QLabel(tr("Password:"));
-   passwordLineEdit    = new QLineEdit;
-   passwordLineEdit->setEchoMode(QLineEdit::Password);
+    QAction *feldplus = new QAction(tr("Fieldwidth + "), this);
+    connect(feldplus, SIGNAL(triggered()), signalMapper, SLOT(map()));
+    feldplus->setStatusTip(tr("Increase the form field width in the screen forms"));
+    signalMapper->setMapping(feldplus,  "0.1");
+    options->addAction(feldplus);
 
-   serverLabel         = new QLabel(tr("Server:"));
-   serverLineEdit      = new QLineEdit;
+    QAction *feldminus = new QAction(tr("Fieldwidth - "), this);
+    connect(feldminus, SIGNAL(triggered()), signalMapper, SLOT(map()));
+    feldminus->setStatusTip(tr("Decrease the form field width in the screen forms"));
+    signalMapper->setMapping(feldminus, "-0.1");
+    options->addAction(feldminus);
 
-   applicationLabel    = new QLabel(tr("Application:"));
-   applicationLineEdit = new QLineEdit;
-   applicationLineEdit->setText("vdc");
-   QHBoxLayout *vbox = new QHBoxLayout;
+    QAction *feldreset = new QAction(tr("Default Fieldwidth"), this);
+    connect(feldreset, SIGNAL(triggered()), this, SLOT(resetFactor()));
+    feldreset->setStatusTip(tr("Restore the default fieldwidth settings for the screen forms"));
+    options->addAction(feldreset);
+    options->addSeparator();
 
-   bg_connection = new QGroupBox("Connection Method:", this);
-   rb_proxy  = new QRadioButton("Proxy", bg_connection);
-   rb_proxy->setChecked(true);
-   rb_telnet = new QRadioButton("Telnet", bg_connection);
-   #ifdef SSH_USE
-   rb_ssh    = new QRadioButton("SSH", bg_connection);
-   #endif
-   vbox->addWidget(rb_proxy);
-   vbox->addWidget(rb_telnet);
-   #ifdef SSH_USE
-   vbox->addWidget(rb_ssh);
-   rb_ssh->setChecked(true);
-   #endif
+    QAction *removeIni = new QAction(tr("Reset Screen Forms"), this);
+    connect(removeIni, SIGNAL(triggered()), this, SLOT(removeIni()));
+    removeIni->setStatusTip(tr("Remove the settings.ini from the VDC"));
+    options->addAction(removeIni);
+    options->addSeparator();
 
-   bg_connection->setLayout(vbox);
-   connect(rb_telnet, SIGNAL(clicked()), this, SLOT(disableApp())); //Commandline execution works not with telnet atm
-   connect(rb_proxy, SIGNAL(clicked()), this, SLOT(enableApp()));
-   #ifdef SSH_USE
-   connect(rb_ssh, SIGNAL(clicked()), this, SLOT(enableApp()));
-   #endif
-   cb = new QCheckBox("Save &Password?", this);
-   loadSettings();
+    QString menuType = VDC::readSettingsFromIni("", "startMenuPosition");
 
+    if(menuType == "tree" || menuType.isEmpty())
+    {
+        m_mainMenu = new QAction(tr("Main Menu: Pulldown"), this);
+        connect(m_mainMenu, SIGNAL(triggered()), this, SLOT(setMainMenu()));
+        options->addAction(m_mainMenu);
+    } else if(menuType == "menu") {
+        m_mainMenu = new QAction(tr("Main Menu: Explorer"), this);
+        connect(m_mainMenu, SIGNAL(triggered()), this, SLOT(setMainMenu()));
+        options->addAction(m_mainMenu);
+    }
 
-   QList<QKeySequence> ql_shortcuts;
-   ql_shortcuts << QKeySequence("Return");
-   ql_shortcuts << QKeySequence("Enter");
+    toggledebug = new QAction(tr("&Toggle Debug"), this);
+    connect(toggledebug, SIGNAL(toggled(bool)), this, SLOT(debugToggle(bool)));
+    toggledebug->setCheckable(true);
 
-   QAction *okAction = new QAction("Connect", NULL);
-   okAction->setShortcutContext(Qt::WidgetShortcut);
-   okAction->setShortcuts(ql_shortcuts);
-   connect(okAction, SIGNAL(triggered()), this, SLOT(okPressed()));
+    connect(signalMapper, SIGNAL(mapped(QString)), this, SLOT(setFactorWidth(QString)));
 
-   QAction *cancelAction = new QAction("Cancel", NULL);
-   cancelAction->setShortcutContext(Qt::WidgetShortcut);
-   cancelAction->setShortcuts(ql_shortcuts);
-   connect(cancelAction, SIGNAL(triggered()), this, SLOT(cancelPressed()));
+    menu->addMenu(options);
 
-   usernameLineEdit->addAction(okAction);
-   passwordLineEdit->addAction(okAction);
-   serverLineEdit->addAction(okAction);
-   applicationLineEdit->addAction(okAction);
+    if (adminMenu == true)
+    {
+        menu->addMenu(admin);
 
+        QAction *hosts = new QAction(tr("&Hosts"), this);
+        hosts->setStatusTip(tr("Opens the Hosts Data Settings"));
+        connect(hosts, SIGNAL(triggered()), this, SLOT(hosts()));
+        admin->addAction(hosts);
 
-   // instantiating the buttons
-   //
-   QPushButton *okButton     = new QPushButton(tr("OK"));
-   okButton->addAction(okAction);
-   QPushButton *cancelButton = new QPushButton(tr("Cancel"));
-   cancelButton->addAction(cancelAction);
+        QAction *about = new QAction(tr("&About VDC"), this);
+        connect(about, SIGNAL(triggered()), this, SLOT(aboutVDC()));
+        admin->addAction(about);
 
-
-   // functionalize the buttons by using connect
-   // accept and reject are predefined by qt, so we can use them
-   // without declaration
-   //
-   connect(okButton, SIGNAL(pressed()), this, SLOT(okPressed()));
-   connect(cancelButton, SIGNAL(pressed()), this, SLOT(cancelPressed()));
-
-   // setup the buttons layout for the form / widget
-   //
-   QHBoxLayout *buttonLayout = new QHBoxLayout;
-
-   buttonLayout->addWidget(okButton);
-   buttonLayout->addStretch(1);
-   buttonLayout->addWidget(cancelButton);
-
-   // setup the labels layout for the form / widget
-   //
-   QVBoxLayout *loginLayout = new QVBoxLayout;
- //  loginLayout->setMenuBar(menuBar);
-   loginLayout->addWidget(usernameLabel);
-   loginLayout->addWidget(usernameLineEdit);
-   loginLayout->addWidget(passwordLabel);
-   loginLayout->addWidget(passwordLineEdit);
-   if(adminMenu == true)
-   {
-       loginLayout->addWidget(serverLabel);
-       loginLayout->addWidget(serverLineEdit);
-       loginLayout->addWidget(applicationLabel);
-       loginLayout->addWidget(applicationLineEdit);
-   }
-   loginLayout->addWidget(bg_connection);
-
-
-   loginLayout->addWidget(cb);
-   loginLayout->addStretch(1);
-
-   // putting buttons and line edits in one single layout
-   //
-   loginLayout->addLayout(buttonLayout);
-
-   // layout is ready for use, so we can set it.
-   //
-   setLayout(loginLayout);
-
+        menu->addAction(toggledebug);
+    }
 }
 
 void LoginForm::openCompOptions()
