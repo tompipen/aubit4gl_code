@@ -347,6 +347,7 @@ void LoginForm::saveCompression(int value)
 void LoginForm::removeIni()
 {
     Dialog *dialog = new Dialog("Reset Screen Forms ", "Do you really want to reset all screen forms?", "", "critical", this, Qt::WindowStaysOnTopHint);
+    dialog->setStyleSheet("QPushButton { border-image: url(pics:VENTAS_9_knopf_menu_inaktiv.png); padding-top: -1; padding-right: 10; text-align: left; height: 36px; min-width: 50px; }");
     dialog->createButton(1, "Yes", "YES", "ok_gruen.png");
     dialog->createButton(2, "No", "NO", "abbrechen_rot.png");
     connect(dialog->getAction("YES"), SIGNAL(triggered()), this, SLOT(clearIniFile()));
