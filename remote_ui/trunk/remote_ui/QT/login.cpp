@@ -483,6 +483,9 @@ void LoginForm::aboutVDC(QWidget *parent)
     mainlayout->addWidget(okButton, 0, Qt::AlignCenter);
     widget->setLayout(mainlayout);
 
+    QPalette palette;
+    palette.setBrush(this->backgroundRole(), QBrush(QImage("pics:VENTAS_9_alu_1080p.png")));
+    widget->setPalette(palette);
 
     widget->setStyleSheet("QPushButton { border-image: url(pics:VENTAS_9_knopf_menu_inaktiv.png); padding-top: -1; padding-right: 10; text-align: left; height: 36px; min-width: 50px; }");
     widget->show();
