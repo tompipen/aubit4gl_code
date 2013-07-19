@@ -59,15 +59,22 @@ LoginForm::LoginForm(QWidget *parent)
     QHBoxLayout *buttonLayout = new QHBoxLayout;
     QHBoxLayout *mainLayout = new QHBoxLayout;
     QVBoxLayout *adminLayout = new QVBoxLayout;
-    QHBoxLayout *labelLayout = new QHBoxLayout;
+    QVBoxLayout *labelLayout = new QVBoxLayout;
     QHBoxLayout *connectionLayout = new QHBoxLayout;
     QHBoxLayout *methodLayout = new QHBoxLayout;
+    QVBoxLayout *applicationLayout = new QVBoxLayout;
 
 
     createMenu(menuBar, adminMenu);
 
     portLabel           = new QLabel(tr("Port: (Default 22)"));
     portLineEdit        = new QLineEdit();
+
+    applicationLabel    = new QLabel(tr("Application:"));
+    applicationLineEdit = new QLineEdit;
+    applicationLineEdit->setText("vdc");
+
+    cb = new QCheckBox("Save &Password?", this);
 
     if(portLineEdit->text().isEmpty())
     {
@@ -92,8 +99,14 @@ LoginForm::LoginForm(QWidget *parent)
     labelLayout->addWidget(portLabel);
     labelLayout->addWidget(portLineEdit);
 
+    applicationLayout->addWidget(applicationLabel);
+    applicationLayout->addWidget(applicationLineEdit);
+
     adminLayout->addLayout(connectionLayout);
     adminLayout->addLayout(labelLayout);
+    adminLayout->addLayout(applicationLayout);
+    adminLayout->addWidget(cb);
+
     adminWidget->setLayout(adminLayout);
 
     //User TabWidget
@@ -109,13 +122,8 @@ LoginForm::LoginForm(QWidget *parent)
     serverLabel         = new QLabel(tr("Server:"));
     serverLineEdit      = new QLineEdit;
 
-    applicationLabel    = new QLabel(tr("Application:"));
-    applicationLineEdit = new QLineEdit;
-    applicationLineEdit->setText("vdc");
-
     //User TabWidget
 
-    cb = new QCheckBox("Save &Password?", this);
     loadSettings();
 
     loginLayout->addWidget(serverLabel);
@@ -124,7 +132,6 @@ LoginForm::LoginForm(QWidget *parent)
     loginLayout->addWidget(usernameLineEdit);
     loginLayout->addWidget(passwordLabel);
     loginLayout->addWidget(passwordLineEdit);
-    loginLayout->addWidget(cb);
     loginLayout->addLayout(buttonLayout);
 
     QList<QKeySequence> ql_shortcuts;
@@ -150,17 +157,17 @@ LoginForm::LoginForm(QWidget *parent)
     // instantiating the buttons
     //
     QPushButton *okButton     = new QPushButton(tr("OK"));
+    connect(okButton, SIGNAL(pressed()), this, SLOT(okPressed()));
+    okButton->setIcon(QIcon(QString("pics:ok_gruen.png")));
+    okButton->setIconSize(QSize(40,25));
+    okButton->setStyleSheet("QPushButton { border-image: url(pics:VENTAS_9_knopf_menu_inaktiv.png); padding-top: -1; padding-right: 10; text-align: left; height: 36px; min-width: 50px; }");
     okButton->addAction(okAction);
     QPushButton *cancelButton = new QPushButton(tr("Cancel"));
-    cancelButton->addAction(cancelAction);
-
-
-    // functionalize the buttons by using connect
-    // accept and reject are predefined by qt, so we can use them
-    // without declaration
-    //
-    connect(okButton, SIGNAL(pressed()), this, SLOT(okPressed()));
     connect(cancelButton, SIGNAL(pressed()), this, SLOT(cancelPressed()));
+    cancelButton->setIcon(QIcon(QString("pics:nein.png")));
+    cancelButton->setIconSize(QSize(40,25));
+    cancelButton->setStyleSheet("QPushButton { border-image: url(pics:VENTAS_9_knopf_menu_inaktiv.png); padding-top: -1; padding-right: 10; text-align: left; height: 36px; min-width: 50px; }");
+    cancelButton->addAction(cancelAction);
 
     buttonLayout->addWidget(okButton);
     buttonLayout->addStretch(1);
@@ -176,7 +183,6 @@ LoginForm::LoginForm(QWidget *parent)
     tabWidgetLayout->addWidget(tWidget);
 
     this->setLayout(tabWidgetLayout);
-
 
 }
 
