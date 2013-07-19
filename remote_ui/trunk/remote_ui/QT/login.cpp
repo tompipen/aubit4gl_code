@@ -171,7 +171,7 @@ LoginForm::LoginForm(QWidget *parent)
     okButton->addAction(okAction);
     QPushButton *cancelButton = new QPushButton(tr("Cancel"));
     connect(cancelButton, SIGNAL(pressed()), this, SLOT(cancelPressed()));
-    cancelButton->setIcon(QIcon(QString("pics:nein.png")));
+    cancelButton->setIcon(QIcon(QString("pics:escape.png")));
     cancelButton->setIconSize(QSize(40,25));
     cancelButton->setStyleSheet("QPushButton { border-image: url(pics:VENTAS_9_knopf_menu_inaktiv.png); padding-top: -1; padding-right: 10; text-align: left; height: 36px; min-width: 50px; }");
     cancelButton->addAction(cancelAction);
