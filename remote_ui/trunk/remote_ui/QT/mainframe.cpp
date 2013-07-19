@@ -370,9 +370,24 @@ OptionsTab::OptionsTab(QWidget *parent)
 
        QGroupBox *fontbox = new QGroupBox(tr("Font"));
        QLabel *fontlabel = new QLabel(tr("Font : "));
+
        QPushButton *select = new QPushButton("&Select",this);
+       select->setIcon(QIcon(QString("pics:vor.png")));
+       select->setIconSize(QSize(40,25));
+
        QPushButton *reset = new QPushButton("&Reset",this);
-       QPushButton *close = new QPushButton("Save && &Close", this);
+       reset->setIcon(QIcon(QString("pics:loeschen.png")));
+       reset->setIconSize(QSize(40,25));
+
+       QPushButton *close = new QPushButton("&Close", this);
+       close->setIcon(QIcon(QString("pics:nein.png")));
+       close->setIconSize(QSize(40,25));
+       close->setShortcut(Qt::Key_Escape);
+
+       QPushButton *save = new QPushButton("Save", this);
+       save->setIcon(QIcon(QString("pics:ok_gruen.png")));
+       save->setIconSize(QSize(40,25));
+       save->setShortcut(Qt::Key_F12);
 
        fontedit = new QLineEdit;
        fontedit->setReadOnly(true);
@@ -394,6 +409,7 @@ OptionsTab::OptionsTab(QWidget *parent)
 
        buttonlayout->addWidget(select);
        buttonlayout->addWidget(reset);
+       buttonlayout->addWidget(save);
        buttonlayout->addWidget(close);
        buttonlayout->setSpacing(5);
 
@@ -410,6 +426,7 @@ OptionsTab::OptionsTab(QWidget *parent)
 
        connect(select,SIGNAL(clicked()), this,SLOT(fontdialog()));
        connect(reset,SIGNAL(clicked()), this,SLOT(reset()));
+       connect(save,SIGNAL(clicked()), this,SLOT(close()));
        connect(close,SIGNAL(clicked()), this,SLOT(close()));
      //LineEdit
 QFont fontload;

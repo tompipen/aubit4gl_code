@@ -36,6 +36,7 @@ void VentasUpdate::readXmlFinished(QNetworkReply *reply)
             dialog->setPalette(palette);
             dialog->setStyleSheet("QPushButton { border-image: url(pics:VENTAS_9_knopf_menu_inaktiv.png); padding-top: -1; padding-right: 10; text-align: left; height: 36px; min-width: 50px; }");
             dialog->createButton(1, "Ok", "Ok", "ok_gruen.png");
+            dialog->getAction("OK")->setShortcut(Qt::Key_F12);
             connect(dialog->getAction("OK"), SIGNAL(triggered()), dialog, SLOT(close()));
             dialog->move(600,400);
             dialog->show();
@@ -67,14 +68,6 @@ void VentasUpdate::checkServerClient()
 
     if(clientVars.count() >= 3)
     {
-        /*if(clientVars.at(3) != XmlVersionServer)
-        {
-            Dialog *dialog = new Dialog("VENTAS Update", QString("Incompatible VDC Version found. \n\nClient Version: %1 \nServer Version %2 \n\nPlease contact the VENTAS Support Team: support@ventas.de").arg(clientVars.at(3)).arg(XmlVersionServer), "", "stop", this, Qt::WindowStaysOnTopHint);
-            dialog->createButton(1, "Ok", "Ok", "ok_gruen.png");
-            connect(dialog->getAction("OK"), SIGNAL(triggered()), dialog, SLOT(close()));
-            dialog->move(600,400);
-            dialog->show();
-        }*/
         if(clientVars.at(3) > XmlVersionServer)
         {
             Dialog *dialog = new Dialog("VENTAS Update", QString("Incompatible VDC Version found.\n\nPlease Update the VENTAS Server.\n\nClient Version: %1 \nServer Version %2 \n\nPlease contact the VENTAS Support Team: support@ventas.de").arg(clientVars.at(3)).arg(XmlVersionServer), "", "stop", this, Qt::WindowStaysOnTopHint);
@@ -83,6 +76,7 @@ void VentasUpdate::checkServerClient()
             dialog->setPalette(palette);
             dialog->setStyleSheet("QPushButton { border-image: url(pics:VENTAS_9_knopf_menu_inaktiv.png); padding-top: -1; padding-right: 10; text-align: left; height: 36px; min-width: 50px; }");
             dialog->createButton(1, "Ok", "Ok", "ok_gruen.png");
+            dialog->getAction("OK")->setShortcut(Qt::Key_F12);
             connect(dialog->getAction("OK"), SIGNAL(triggered()), dialog, SLOT(close()));
             dialog->move(600,400);
             dialog->show();
@@ -96,9 +90,10 @@ void VentasUpdate::checkServerClient()
                     dialog->setPalette(palette);
                     dialog->setStyleSheet("QPushButton { border-image: url(pics:VENTAS_9_knopf_menu_inaktiv.png); padding-top: -1; padding-right: 10; text-align: left; height: 36px; min-width: 50px; }");
                     dialog->createButton(1, "Update", "Update", "ok_gruen.png");
-                    dialog->createButton(1, "Quit", "Quit", "abbrechen_rot.png");
+                    dialog->createButton(1, "CANCEL", "CANCEL", "escape.png");
+                    dialog->getAction("CANCEL")->setShortcut(Qt::Key_Escape);
                     connect(dialog->getAction("UPDATE"), SIGNAL(triggered()), this, SLOT(checkOpenConnections()));
-                    connect(dialog->getAction("QUIT"), SIGNAL(triggered()), this, SLOT(closeVdc()));
+                    connect(dialog->getAction("CANCEL"), SIGNAL(triggered()), this, SLOT(closeVdc()));
                     dialog->move(600,400);
                     dialog->show();
                 }
@@ -136,9 +131,11 @@ void VentasUpdate::checkServerClient()
                                     dialog->setPalette(palette);
                                     dialog->setStyleSheet("QPushButton { border-image: url(pics:VENTAS_9_knopf_menu_inaktiv.png); padding-top: -1; padding-right: 10; text-align: left; height: 36px; min-width: 50px; }");
                                     dialog->createButton(1, "Ok", "Ok", "ok_gruen.png");
-                                    dialog->createButton(2, "Abort", "Abort", "abbrechen_rot.png");
+                                    dialog->getAction("OK")->setShortcut(Qt::Key_F12);
+                                    dialog->createButton(2, "Cancel", "Cancel", "escape.png");
+                                    dialog->getAction("CANCEL")->setShortcut(Qt::Key_Escape);
                                     connect(dialog->getAction("OK"), SIGNAL(triggered()), this, SLOT(checkOpenConnections()));
-                                    connect(dialog->getAction("ABORT"), SIGNAL(triggered()), dialog, SLOT(close()));
+                                    connect(dialog->getAction("CANCEL"), SIGNAL(triggered()), dialog, SLOT(close()));
                                     dialog->move(600,400);
                                     dialog->show();
                                     m_dialog = dialog;
@@ -152,6 +149,7 @@ void VentasUpdate::checkServerClient()
                                         dialog->setPalette(palette);
                                         dialog->setStyleSheet("QPushButton { border-image: url(pics:VENTAS_9_knopf_menu_inaktiv.png); padding-top: -1; padding-right: 10; text-align: left; height: 36px; min-width: 50px; }");
                                         dialog->createButton(1, "Ok", "Ok", "ok_gruen.png");
+                                        dialog->getAction("OK")->setShortcut(Qt::Key_F12);
                                         connect(dialog->getAction("OK"), SIGNAL(triggered()), dialog, SLOT(close()));
                                         dialog->move(600,400);
                                         dialog->show();
@@ -168,6 +166,7 @@ void VentasUpdate::checkServerClient()
                                     dialog->setPalette(palette);
                                     dialog->setStyleSheet("QPushButton { border-image: url(pics:VENTAS_9_knopf_menu_inaktiv.png); padding-top: -1; padding-right: 10; text-align: left; height: 36px; min-width: 50px; }");
                                     dialog->createButton(1, "Ok", "Ok", "ok_gruen.png");
+                                    dialog->getAction("OK")->setShortcut(Qt::Key_F12);
                                     connect(dialog->getAction("OK"), SIGNAL(triggered()), dialog, SLOT(close()));
                                     dialog->move(600,400);
                                     dialog->show();
@@ -183,6 +182,7 @@ void VentasUpdate::checkServerClient()
                                 dialog->setPalette(palette);
                                 dialog->setStyleSheet("QPushButton { border-image: url(pics:VENTAS_9_knopf_menu_inaktiv.png); padding-top: -1; padding-right: 10; text-align: left; height: 36px; min-width: 50px; }");
                                 dialog->createButton(1, "Ok", "Ok", "ok_gruen.png");
+                                dialog->getAction("OK")->setShortcut(Qt::Key_F12);
                                 connect(dialog->getAction("OK"), SIGNAL(triggered()), dialog, SLOT(close()));
                                 dialog->move(600,400);
                                 dialog->show();
@@ -200,6 +200,7 @@ void VentasUpdate::checkServerClient()
                             dialog->setStyleSheet("QPushButton { border-image: url(pics:VENTAS_9_knopf_menu_inaktiv.png); padding-top: -1; padding-right: 10; text-align: left; height: 36px; min-width: 50px; }");
                             dialog->createButton(1, "Ok", "Ok", "ok_gruen.png");
                             connect(dialog->getAction("OK"), SIGNAL(triggered()), dialog, SLOT(close()));
+                            dialog->getAction("OK")->setShortcut(Qt::Key_F12);
                             dialog->move(600,400);
                             dialog->show();
                             connect(dialog, SIGNAL(finished(int)), dialog, SLOT(deleteLater()));
@@ -213,6 +214,7 @@ void VentasUpdate::checkServerClient()
                     dialog->setPalette(palette);
                     dialog->setStyleSheet("QPushButton { border-image: url(pics:VENTAS_9_knopf_menu_inaktiv.png); padding-top: -1; padding-right: 10; text-align: left; height: 36px; min-width: 50px; }");
                     dialog->createButton(1, "Ok", "Ok", "ok_gruen.png");
+                    dialog->getAction("OK")->setShortcut(Qt::Key_F12);
                     connect(dialog->getAction("OK"), SIGNAL(triggered()), dialog, SLOT(close()));
                     dialog->show();
                 }
@@ -237,6 +239,7 @@ void VentasUpdate::checkServerClient()
             dialog->setStyleSheet("QPushButton { border-image: url(pics:VENTAS_9_knopf_menu_inaktiv.png); padding-top: -1; padding-right: 10; text-align: left; height: 36px; min-width: 50px; }");
             dialog->createButton(1, "Ok", "Ok", "ok_gruen.png");
             connect(dialog->getAction("OK"), SIGNAL(triggered()), dialog, SLOT(close()));
+            dialog->getAction("OK")->setShortcut(Qt::Key_F12);
             dialog->move(600,400);
             dialog->show();
             connect(dialog, SIGNAL(finished(int)), dialog, SLOT(deleteLater()));
@@ -264,9 +267,11 @@ void VentasUpdate::checkOpenConnections()
             dialog->setPalette(palette);
             dialog->setStyleSheet("QPushButton { border-image: url(pics:VENTAS_9_knopf_menu_inaktiv.png); padding-top: -1; padding-right: 10; text-align: left; height: 36px; min-width: 50px; }");
             dialog->createButton(1, "Ok", "Ok", "ok_gruen.png");
-            dialog->createButton(2, "Abort", "Abort", "abbrechen_rot.png");
+            dialog->getAction("OK")->setShortcut(Qt::Key_F12);
+            dialog->createButton(2, "Cancel", "Cancel", "escape.png");
+            dialog->getAction("CANCEL")->setShortcut(Qt::Key_Escape);
             connect(dialog->getAction("OK"), SIGNAL(triggered()), this, SLOT(downloadBinarie()));
-            connect(dialog->getAction("ABORT"), SIGNAL(triggered()), dialog, SLOT(close()));
+            connect(dialog->getAction("CANCEL"), SIGNAL(triggered()), dialog, SLOT(close()));
             dialog->move(600,400);
             dialog->show();
             m_dialog = dialog;
@@ -355,6 +360,7 @@ QList<QList<QString> > VentasUpdate::parseXml(QString filePath)
             dialog->setPalette(palette);
             dialog->setStyleSheet("QPushButton { border-image: url(pics:VENTAS_9_knopf_menu_inaktiv.png); padding-top: -1; padding-right: 10; text-align: left; height: 36px; min-width: 50px; }");
             dialog->createButton(1, "Ok", "Ok", "ok_gruen.png");
+            dialog->getAction("OK")->setShortcut(Qt::Key_F12);
             connect(dialog->getAction("OK"), SIGNAL(triggered()), dialog, SLOT(close()));
             dialog->move(600,400);
             dialog->show();
@@ -415,12 +421,6 @@ QList<QString> VentasUpdate::clientXml(QString filePath)
     {
         if(displayErrorDialog == 1)
         {
-            //Dialog *dialog = new Dialog("VENTAS Update", QString("Failed to Open: %1").arg(filePath), "", "stop", this, Qt::WindowStaysOnTopHint);
-            //dialog->createButton(1, "Ok", "Ok", "ok_gruen.png");
-            //connect(dialog->getAction("OK"), SIGNAL(triggered()), dialog, SLOT(close()));
-            //dialog->move(600,400);
-            //dialog->show();
-            //connect(dialog, SIGNAL(finished(int)), dialog, SLOT(deleteLater()));
             return clientList;
         }
     }

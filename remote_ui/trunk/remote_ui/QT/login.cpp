@@ -287,6 +287,14 @@ void LoginForm::openCompOptions()
     QHBoxLayout *hLayout1 = new QHBoxLayout(widget);
     QSlider *compLevel = new QSlider(Qt::Horizontal, widget);
     QPushButton *okButton = new QPushButton(tr("OK"), widget);
+    okButton->setIcon(QIcon(QString("pics:ok_gruen.png")));
+    okButton->setIconSize(QSize(40,25));
+
+
+    QPalette palette;
+    palette.setBrush(this->backgroundRole(), QBrush(QImage("pics:VENTAS_9_alu_1080p.png")));
+    widget->setPalette(palette);
+    widget->setStyleSheet("QPushButton { border-image: url(pics:VENTAS_9_knopf_menu_inaktiv.png); padding-top: -1; padding-right: 10; text-align: left; height: 36px; min-width: 50px; }");
 
     QLabel *infoLabel = new QLabel("Lowest ");
     QLabel *infoLabel1 = new QLabel("Highest ");
@@ -318,6 +326,7 @@ void LoginForm::openCompOptions()
     connect(compLevel, SIGNAL(valueChanged(int)), this, SLOT(saveCompression(int)));
     connect(okButton, SIGNAL(pressed()), widget, SLOT(close()));
     okButton->setMaximumWidth(100);
+    okButton->setShortcut(Qt::Key_F12);
     compLevel->setRange(0, 4);
     compLevel->setMaximumWidth(150);
 
@@ -355,10 +364,12 @@ void LoginForm::removeIni()
     dialog->setStyleSheet("QPushButton { border-image: url(pics:VENTAS_9_knopf_menu_inaktiv.png); padding-top: -1; padding-right: 10; text-align: left; height: 36px; min-width: 50px; }");
 
     dialog->createButton(1, "Yes", "YES", "ok_gruen.png");
+    dialog->getAction("YES")->setShortcut(Qt::Key_F12);
     connect(dialog->getAction("YES"), SIGNAL(triggered()), this, SLOT(clearIniFile()));
     connect(dialog->getAction("YES"), SIGNAL(triggered()), dialog, SLOT(close()));
 
     dialog->createButton(2, "No", "NO", "abbrechen_rot.png");
+    dialog->getAction("NO")->setShortcut(Qt::Key_Escape);
     connect(dialog->getAction("NO"), SIGNAL(triggered()), dialog, SLOT(close()));
     dialog->show();
 
@@ -427,11 +438,19 @@ void LoginForm::aboutVDC(QWidget *parent)
     }
 
     QWidget *widget = new QWidget(parent);
-    QHBoxLayout *layout = new QHBoxLayout(widget);
-    QLabel *labeltext = new QLabel(widget);
-    QLabel *labellogo = new QLabel(widget);
+    QHBoxLayout *layout = new QHBoxLayout();
+    QVBoxLayout *mainlayout = new QVBoxLayout();
+    QLabel *labeltext = new QLabel();
+    QLabel *labellogo = new QLabel();
     QLabel *space = new QLabel(widget);
     QPixmap pix(":pics/VENTAS_9_logo-about.png");
+
+    QPushButton *okButton = new QPushButton("&OK");
+    okButton->setIcon(QIcon(QString("pics:ok_gruen.png")));
+    okButton->setIconSize(QSize(40,25));
+    okButton->setShortcut(Qt::Key_F12);
+    okButton->setFixedWidth(75);
+    connect(okButton, SIGNAL(clicked()), widget, SLOT(close()));
 
     int date = QDate::currentDate().year();
     //QPixmap qpm = pix.scaled(80,80,Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
@@ -457,8 +476,12 @@ void LoginForm::aboutVDC(QWidget *parent)
     layout->addWidget(labellogo);
     layout->addWidget(space);
     layout->addWidget(labeltext);
-    widget->setLayout(layout);
+    mainlayout->addLayout(layout);
+    mainlayout->addWidget(okButton, 0, Qt::AlignCenter);
+    widget->setLayout(mainlayout);
 
+
+    widget->setStyleSheet("QPushButton { border-image: url(pics:VENTAS_9_knopf_menu_inaktiv.png); padding-top: -1; padding-right: 10; text-align: left; height: 36px; min-width: 50px; }");
     widget->show();
     widget->adjustSize();
 }
@@ -1302,9 +1325,10 @@ void LoginForm::setOfficeInstallation()
     palette.setBrush(this->backgroundRole(), QBrush(QImage("pics:VENTAS_9_alu_1080p.png")));
     widget->setPalette(palette);
 
-    QPushButton *closeButton = new QPushButton(tr("&Close"));
-    closeButton->setIcon(QIcon(QString("pics:nein.png")));
+    QPushButton *closeButton = new QPushButton(tr("&Cancel"));
+    closeButton->setIcon(QIcon(QString("pics:escape.png")));
     closeButton->setIconSize(QSize(40,25));
+    closeButton->setShortcut(Qt::Key_Escape);
     closeButton->setStyleSheet("QPushButton { border-image: url(pics:VENTAS_9_knopf_menu_inaktiv.png); padding-top: -1; padding-right: 10; text-align: left; height: 36px; min-width: 50px; }");
     connect(closeButton, SIGNAL(clicked()), widget, SLOT(close()));
 
@@ -1312,6 +1336,7 @@ void LoginForm::setOfficeInstallation()
     saveButton->setIcon(QIcon(QString("pics:ok_gruen.png")));
     saveButton->setIconSize(QSize(40,25));
     saveButton->setStyleSheet("QPushButton { border-image: url(pics:VENTAS_9_knopf_menu_inaktiv.png); padding-top: -1; padding-right: 10; text-align: left; height: 36px; min-width: 50px; }");
+    saveButton->setShortcut(Qt::Key_F12);
     connect(saveButton, SIGNAL(clicked()), this, SLOT(saveOfficeInstallation()));
     connect(saveButton, SIGNAL(clicked()), widget, SLOT(close()));
 
