@@ -63,9 +63,10 @@ LoginForm::LoginForm(QWidget *parent)
     QHBoxLayout *connectionLayout = new QHBoxLayout;
     QHBoxLayout *methodLayout = new QHBoxLayout;
     QVBoxLayout *applicationLayout = new QVBoxLayout;
+    QVBoxLayout *serverLayout = new QVBoxLayout;
 
 
-    createMenu(menuBar, adminMenu);
+    createMenu(menuBar);
 
     portLabel           = new QLabel(tr("Port: (Default 22)"));
     portLineEdit        = new QLineEdit();
@@ -73,6 +74,9 @@ LoginForm::LoginForm(QWidget *parent)
     applicationLabel    = new QLabel(tr("Application:"));
     applicationLineEdit = new QLineEdit;
     applicationLineEdit->setText("vdc");
+
+    serverLabel         = new QLabel(tr("Server:"));
+    serverLineEdit      = new QLineEdit;
 
     cb = new QCheckBox("Save &Password?", this);
 
@@ -102,6 +106,9 @@ LoginForm::LoginForm(QWidget *parent)
     applicationLayout->addWidget(applicationLabel);
     applicationLayout->addWidget(applicationLineEdit);
 
+    serverLayout->addWidget(serverLabel);
+    serverLayout->addWidget(serverLineEdit);
+
     adminLayout->addLayout(connectionLayout);
     adminLayout->addLayout(labelLayout);
     adminLayout->addLayout(applicationLayout);
@@ -114,24 +121,23 @@ LoginForm::LoginForm(QWidget *parent)
     usernameLabel       = new QLabel(tr("User:"));
     usernameLineEdit    = new QLineEdit;
     setFocusProxy(usernameLineEdit);
+    usernameLineEdit->setMaximumWidth(125);
+
 
     passwordLabel       = new QLabel(tr("Password:"));
     passwordLineEdit    = new QLineEdit;
     passwordLineEdit->setEchoMode(QLineEdit::Password);
-
-    serverLabel         = new QLabel(tr("Server:"));
-    serverLineEdit      = new QLineEdit;
+    passwordLineEdit->setMaximumWidth(125);
 
     //User TabWidget
 
     loadSettings();
 
-    loginLayout->addWidget(serverLabel);
-    loginLayout->addWidget(serverLineEdit);
     loginLayout->addWidget(usernameLabel);
     loginLayout->addWidget(usernameLineEdit);
     loginLayout->addWidget(passwordLabel);
     loginLayout->addWidget(passwordLineEdit);
+    loginLayout->addStretch(1);
     loginLayout->addLayout(buttonLayout);
 
     QList<QKeySequence> ql_shortcuts;
@@ -186,10 +192,10 @@ LoginForm::LoginForm(QWidget *parent)
 
 }
 
-void LoginForm::createMenu(QMenuBar *menu, bool adminMenu)
+void LoginForm::createMenu(QMenuBar *menu)
 {
-    QMenu *admin = new QMenu(tr("&Admin"), this);
     QMenu *options = new QMenu(tr("&Options"), this);
+
     QAction *checkVersion = new QAction(tr("&Search for Update"), this);
     checkVersion->setStatusTip(tr("Checks for a new VDC Update"));
     connect(checkVersion, SIGNAL(triggered()), this, SLOT(checkForUpdate()));
@@ -253,6 +259,11 @@ void LoginForm::createMenu(QMenuBar *menu, bool adminMenu)
         options->addAction(m_mainMenu);
     }
 
+    options->addSeparator();
+    QAction *about = new QAction(tr("&About VDC"), this);
+    connect(about, SIGNAL(triggered()), this, SLOT(aboutVDC()));
+    options->addAction(about);
+
     toggledebug = new QAction(tr("&Toggle Debug"), this);
     connect(toggledebug, SIGNAL(toggled(bool)), this, SLOT(debugToggle(bool)));
     toggledebug->setCheckable(true);
@@ -260,22 +271,8 @@ void LoginForm::createMenu(QMenuBar *menu, bool adminMenu)
     connect(signalMapper, SIGNAL(mapped(QString)), this, SLOT(setFactorWidth(QString)));
 
     menu->addMenu(options);
+    menu->addAction(toggledebug);
 
-    if (adminMenu == true)
-    {
-        menu->addMenu(admin);
-
-        QAction *hosts = new QAction(tr("&Hosts"), this);
-        hosts->setStatusTip(tr("Opens the Hosts Data Settings"));
-        connect(hosts, SIGNAL(triggered()), this, SLOT(hosts()));
-        admin->addAction(hosts);
-
-        QAction *about = new QAction(tr("&About VDC"), this);
-        connect(about, SIGNAL(triggered()), this, SLOT(aboutVDC()));
-        admin->addAction(about);
-
-        menu->addAction(toggledebug);
-    }
 }
 
 void LoginForm::openCompOptions()
