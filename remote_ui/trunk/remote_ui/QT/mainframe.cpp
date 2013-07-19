@@ -363,6 +363,11 @@ for(int i=0; i<listpruef.count(); i++) {
 OptionsTab::OptionsTab(QWidget *parent)
     : QWidget(parent)
 {
+
+       QPalette palette;
+       palette.setBrush(this->backgroundRole(), QBrush(QImage("pics:VENTAS_9_alu_1080p.png")));
+       this->setPalette(palette);
+
        QGroupBox *fontbox = new QGroupBox(tr("Font"));
        QLabel *fontlabel = new QLabel(tr("Font : "));
        QPushButton *select = new QPushButton("&Select",this);
@@ -398,7 +403,8 @@ OptionsTab::OptionsTab(QWidget *parent)
 
        QVBoxLayout *mainlayout = new QVBoxLayout;
        mainlayout->addWidget(fontbox);
-       //mainlayout->addSpacing(1000);
+
+       setStyleSheet("QPushButton { border-image: url(pics:VENTAS_9_knopf_menu_inaktiv.png); padding-top: -1; padding-right: 10; text-align: left; height: 36px; min-width: 50px; }");
        setLayout(mainlayout);
 
 

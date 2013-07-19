@@ -347,11 +347,18 @@ void LoginForm::saveCompression(int value)
 void LoginForm::removeIni()
 {
     Dialog *dialog = new Dialog("Reset Screen Forms ", "Do you really want to reset all screen forms?", "", "critical", this, Qt::WindowStaysOnTopHint);
+
+    QPalette palette;
+    palette.setBrush(this->backgroundRole(), QBrush(QImage("pics:VENTAS_9_alu_1080p.png")));
+    dialog->setPalette(palette);
+
     dialog->setStyleSheet("QPushButton { border-image: url(pics:VENTAS_9_knopf_menu_inaktiv.png); padding-top: -1; padding-right: 10; text-align: left; height: 36px; min-width: 50px; }");
+
     dialog->createButton(1, "Yes", "YES", "ok_gruen.png");
-    dialog->createButton(2, "No", "NO", "abbrechen_rot.png");
     connect(dialog->getAction("YES"), SIGNAL(triggered()), this, SLOT(clearIniFile()));
     connect(dialog->getAction("YES"), SIGNAL(triggered()), dialog, SLOT(close()));
+
+    dialog->createButton(2, "No", "NO", "abbrechen_rot.png");
     connect(dialog->getAction("NO"), SIGNAL(triggered()), dialog, SLOT(close()));
     dialog->show();
 
@@ -1290,9 +1297,21 @@ void LoginForm::setOfficeInstallation()
     QLabel *label = new QLabel;
     QVBoxLayout *vLayout = new QVBoxLayout();
     QHBoxLayout *hLayout = new QHBoxLayout();
+
+    QPalette palette;
+    palette.setBrush(this->backgroundRole(), QBrush(QImage("pics:VENTAS_9_alu_1080p.png")));
+    widget->setPalette(palette);
+
     QPushButton *closeButton = new QPushButton(tr("&Close"));
+    closeButton->setIcon(QIcon(QString("pics:nein.png")));
+    closeButton->setIconSize(QSize(40,25));
+    closeButton->setStyleSheet("QPushButton { border-image: url(pics:VENTAS_9_knopf_menu_inaktiv.png); padding-top: -1; padding-right: 10; text-align: left; height: 36px; min-width: 50px; }");
     connect(closeButton, SIGNAL(clicked()), widget, SLOT(close()));
+
     QPushButton *saveButton = new QPushButton(tr("&Apply"));
+    saveButton->setIcon(QIcon(QString("pics:ok_gruen.png")));
+    saveButton->setIconSize(QSize(40,25));
+    saveButton->setStyleSheet("QPushButton { border-image: url(pics:VENTAS_9_knopf_menu_inaktiv.png); padding-top: -1; padding-right: 10; text-align: left; height: 36px; min-width: 50px; }");
     connect(saveButton, SIGNAL(clicked()), this, SLOT(saveOfficeInstallation()));
     connect(saveButton, SIGNAL(clicked()), widget, SLOT(close()));
 
