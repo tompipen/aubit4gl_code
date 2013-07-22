@@ -16,7 +16,7 @@
 #
 ###########################################################################
 
-	 $Id: channel.4gl,v 1.26 2009-07-10 11:55:45 mikeaubury Exp $
+	 $Id: channel.4gl,v 1.27 2013-07-22 14:31:27 mikeaubury Exp $
 }
 
 {**
@@ -245,13 +245,19 @@ end function
 function set_delimiter(handle,delim)
 ########################################
 define handle char(64)
-define delim char(1)
+define delim varchar(255)
 code
 	A4GL_trim(handle);
 	if (A4GL_has_pointer(handle,CHANNEL_DELIM)) {
 		A4GL_del_pointer(handle,CHANNEL_DELIM);
 	}
-	A4GL_add_pointer(handle,CHANNEL_DELIM, (void *)((int)delim[0]));
+
+	if (A4GL_isyes(acl_getenv("EXTENDEDDELIM"))){
+		A4GL_trim(delim);
+		A4GL_add_pointer(handle,CHANNEL_DELIM, (void *)strdup(delim));
+	} else {
+		A4GL_add_pointer(handle,CHANNEL_DELIM, (void *)((int)delim[0]));
+	}
 endcode
 end function
 
@@ -316,6 +322,8 @@ char buff[20000];
 struct BINDING *obind=NULL;
 FILE *f;
 char delim_c;
+char *delim_long;
+int delim_long_sz;
 int d;
 int no;
 char *ptr;
@@ -337,7 +345,11 @@ if (!A4GL_pop_binding_from_stack(&obind,&no,'o')) { // Its an output binding whe
 	A4GL_trim(handle);
 
 	if (A4GL_has_pointer(handle,CHANNEL_DELIM)) {
-		delim_c=(char )((int)A4GL_find_pointer(handle,CHANNEL_DELIM));
+		if (A4GL_isyes(acl_getenv("EXTENDEDDELIM"))){
+			delim_long=A4GL_find_pointer(handle,CHANNEL_DELIM);
+			delim_long_sz=strlen(delim_long);
+		}
+		delim_c=0;
 	} else {
 		delim_c=' ';
 	}
@@ -387,7 +399,12 @@ if (!A4GL_pop_binding_from_stack(&obind,&no,'o')) { // Its an output binding whe
 			char *optr;
 			optr=ptr;
 			// Split on delim_c
-			ptr=strchr(optr,delim_c);
+			if (A4GL_isyes(acl_getenv("EXTENDEDDELIM"))){
+				ptr=strstr(optr,delim_long);
+			} else {
+				ptr=strchr(optr,delim_c);
+			}
+
 			if (ptr==0) {
 				A4GL_push_char(optr);
 				A4GL_pop_param(obind[a].ptr,obind[a].dtype,obind[a].size);
@@ -396,7 +413,12 @@ if (!A4GL_pop_binding_from_stack(&obind,&no,'o')) { // Its an output binding whe
 				*ptr=0;
 				A4GL_push_char(optr);
 				A4GL_pop_param(obind[a].ptr,obind[a].dtype,obind[a].size);
-				ptr++;
+				if (A4GL_isyes(acl_getenv("EXTENDEDDELIM"))){
+					ptr+=delim_long_sz;
+				} else {
+
+					ptr++;
+				}
 			}
 		}
 		
@@ -422,7 +444,8 @@ int l=0;
 int d;
 char delim_c;
 int a;
-char ds[2];
+char ds[65];
+char *delim_long;
 
 
 if (!A4GL_pop_binding_from_stack(&ibind,&ni,'o')) { // Its an output binding when reading...
@@ -433,13 +456,23 @@ handle=A4GL_char_pop();
 A4GL_trim(handle);
 
 if (A4GL_has_pointer(handle,CHANNEL_DELIM)) {
+if (A4GL_isyes(acl_getenv("EXTENDEDDELIM"))){
+	delim_long=A4GL_find_pointer(handle,CHANNEL_DELIM);
+} else {
 		delim_c=(char )((int)A4GL_find_pointer(handle,CHANNEL_DELIM));
+}
 } else {
 	delim_c=' ';
 }
 
-	ds[1]=0;
+if (A4GL_isyes(acl_getenv("EXTENDEDDELIM"))){
+	strncpy(ds, delim_long,64);
+	// just make sure its not too long...
+	ds[64]=0;
+} else {
 	ds[0]=delim_c;
+	ds[1]=0;
+}
 
 
 
