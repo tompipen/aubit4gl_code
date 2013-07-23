@@ -427,6 +427,16 @@ void TableView::copyTable()
     int rows = this->model()->rowCount(QModelIndex());
     int columns = this->model()->columnCount(QModelIndex());
 
+    for(int i=0; i < columns; i++)
+    {
+        if(getColumnLabel(i) != NULL)
+        {
+                tableText.append(getColumnLabel(i)->text());
+        }
+        tableText.append("\t");
+    }
+    tableText.append("\n");
+
     for(int i=0; i < rows; i++)
     {
         for(int j=0; j < columns; j++)
