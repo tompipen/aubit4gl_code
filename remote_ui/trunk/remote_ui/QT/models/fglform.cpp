@@ -1058,7 +1058,8 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
              if(LineEdit *le = qobject_cast<LineEdit*> (obj))
              {
                  if(!le->isEnabled())
-                     createContextMenu(mev->globalPos());
+                     //createContextMenu(mev->globalPos());
+                     emit sendactivateinputevent();
 
              } else if(TextEdit *te = qobject_cast<TextEdit*> (obj))
              {
