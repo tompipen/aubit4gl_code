@@ -72,6 +72,8 @@ public:
    QStringList qsl_triggereds;
    QDomDocument xmlIconDocDe;
    QDomDocument xmlIconDocEn;
+   QDomDocument xmlIconDocSp;
+   QDomDocument xmlIconDocFr;
    QDomDocument xmlShortcutDoc;
    int openFileSuccess;
    void executeFile(int, QString);

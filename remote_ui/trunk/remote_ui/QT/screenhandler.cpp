@@ -255,15 +255,28 @@ MainFrame::vdcdebug("ScreenHandler","createWindow", "QString windowTitle,QString
      {
          p_fglform->setActions(xmlIconDocDe);
      }
+
      if(xmlIconDocEn.hasChildNodes())
      {
          p_fglform->setActions(xmlIconDocEn);
+     }
+
+     if(xmlIconDocSp.hasChildNodes())
+     {
+         p_fglform->setActions(xmlIconDocSp);
+     }
+
+     if(xmlIconDocFr.hasChildNodes())
+     {
+         p_fglform->setActions(xmlIconDocFr);
      }
 
      if(xmlShortcutDoc.hasChildNodes())
      {
          p_fglform->setActions(xmlShortcutDoc);
      }
+
+
 
    checkColors();
 }
