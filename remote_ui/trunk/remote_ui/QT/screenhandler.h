@@ -70,7 +70,8 @@ public:
    TextEditorWidget *mTextEditor;
    QStringList qsl_activeFieldNames;
    QStringList qsl_triggereds;
-   QDomDocument xmlIconDoc;
+   QDomDocument xmlIconDocDe;
+   QDomDocument xmlIconDocEn;
    QDomDocument xmlShortcutDoc;
    int openFileSuccess;
    void executeFile(int, QString);

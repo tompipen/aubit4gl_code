@@ -251,9 +251,13 @@ MainFrame::vdcdebug("ScreenHandler","createWindow", "QString windowTitle,QString
    p_fglform->initActions();
    //this->handleIconFile(xmlIconDoc);
    //this->handleShortcutsFile(xmlShortcutDoc);
-     if(xmlIconDoc.hasChildNodes())
+     if(xmlIconDocDe.hasChildNodes())
      {
-         p_fglform->setActions(xmlIconDoc);
+         p_fglform->setActions(xmlIconDocDe);
+     }
+     if(xmlIconDocEn.hasChildNodes())
+     {
+         p_fglform->setActions(xmlIconDocEn);
      }
 
      if(xmlShortcutDoc.hasChildNodes())
