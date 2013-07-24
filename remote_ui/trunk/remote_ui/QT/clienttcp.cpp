@@ -948,6 +948,7 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
                 QString qs_defaultShortcuts = iconFile.readAll();
                 doc.setContent(qs_defaultShortcuts);
                 p_currScreenHandler->xmlIconDocDe = doc;
+                iconFile.close();
             }
 
             iconFile.setFileName(QDir::tempPath() + "/" +"vdc_fr.4id");
@@ -956,6 +957,7 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
                 QString qs_defaultShortcuts = iconFile.readAll();
                 doc.setContent(qs_defaultShortcuts);
                 p_currScreenHandler->xmlIconDocFr = doc;
+                iconFile.close();
             }
 
             iconFile.setFileName(QDir::tempPath() + "/" +"vdc_sp.4id");
@@ -964,6 +966,7 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
                 QString qs_defaultShortcuts = iconFile.readAll();
                 doc.setContent(qs_defaultShortcuts);
                 p_currScreenHandler->xmlIconDocSp = doc;
+                iconFile.close();
             }
 
       }
