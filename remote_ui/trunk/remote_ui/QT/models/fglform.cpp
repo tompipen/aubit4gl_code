@@ -365,7 +365,7 @@ MainFrame::vdcdebug("FglForm","initActions", "");
    addFormAction(acceptA);
 
    Action *cancelA = new Action("cancel", tr("Cancel"), this);
-//   cancelA->setAcceleratorName("Escape");
+   //cancelA->setAcceleratorName("Escape");
    addFormAction(cancelA);
 
    Action *nextRowA = new Action("nextrow", tr("Next Row"), this);
@@ -1418,18 +1418,16 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
                       tv->setFocus();
                   }
                   QSortFilterProxyModel *proxyModel = qobject_cast<QSortFilterProxyModel *> (tv->model());
-                  TableModel *table = qobject_cast<TableModel *> (proxyModel->sourceModel());
 
                   QModelIndex tindex1;
 
                   if(tv->currentIndex().column())
                   {
-                     tindex1 = table->index(0, tv->currentIndex().column());
+                     tindex1 = proxyModel->index(0, tv->currentIndex().column());
                   } else {
-                     tindex1 = table->index(0, 0);
+                     tindex1 = proxyModel->index(0, 0);
                   }
-                  QModelIndex index1 = proxyModel->mapFromSource(tindex1);
-                  tv->setCurrentIndex(index1);
+                  tv->setCurrentIndex(tindex1);
 
                   return true;
               }
@@ -1453,15 +1451,12 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
 
                   if(tv->currentIndex().column())
                   {
-                     tindex1 = table->index(tv->model()->rowCount(QModelIndex())-1, tv->currentIndex().column());
+                     tindex1 = proxyModel->index(table->rowCount(tv->currentIndex())-1, tv->currentIndex().column());
                   } else {
-                     tindex1 = table->index(tv->model()->rowCount(QModelIndex())-1, 0);
+                     tindex1 = proxyModel->index(table->rowCount(tv->currentIndex())-1, 0);
                   }
 
-                  QModelIndex index1 = proxyModel->mapFromSource(tindex1);
-                  tv->setCurrentIndex(index1);
-                  //break;
-
+                  tv->setCurrentIndex(tindex1);
                   return true;
               }
           }
