@@ -933,21 +933,21 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
                iconFile.close();
            }
 
-            iconFile.setFileName(QDir::tempPath() + "/" +"vdc_de.4id");
+            iconFile.setFileName(QDir::tempPath() + "/" +"vdc_en.4id");
             if (iconFile.open(QIODevice::ReadOnly | QIODevice::Text)){
                 QDomDocument doc;
                 QString qs_defaultShortcuts = iconFile.readAll();
                 doc.setContent(qs_defaultShortcuts);
-                p_currScreenHandler->xmlIconDoc = doc;
+                p_currScreenHandler->xmlIconDocEn = doc;
                 iconFile.close();
             }
             
-            iconFile.setFileName(QDir::tempPath() + "/" +"vdc_en.4id");
+            iconFile.setFileName(QDir::tempPath() + "/" +"vdc_Dn.4id");
             if (iconFile.open(QIODevice::ReadOnly | QIODevice::Text)){
-                QString qs_defaultIcon = iconFile.readAll();
-                QMetaObject::invokeMethod(p_currScreenHandler, "handleXMLActions", Qt::QueuedConnection, Q_ARG(QString, qs_defaultIcon));
-                //handleXMLActions(qs_defaultIcon);
-                iconFile.close();
+                QDomDocument doc;
+                QString qs_defaultShortcuts = iconFile.readAll();
+                doc.setContent(qs_defaultShortcuts);
+                p_currScreenHandler->xmlIconDocDe = doc;
             }
 
             iconFile.setFileName(QDir::tempPath() + "/" +"vdc_fr.4id");
@@ -1060,7 +1060,7 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
           QDomDocument doc;
           QString xmlString = encodeXMLFile(childElement.text());
           doc.setContent(xmlString);
-         p_currScreenHandler->xmlIconDoc = doc;
+         p_currScreenHandler->xmlIconDocDe = doc;
       }
 
       if(fileName.trimmed().endsWith(".4sc")){
