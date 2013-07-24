@@ -85,6 +85,7 @@ private slots:
    void saveEdits();
    void showLogin();
    void hideLogin();
+   void closeVDC();
 #ifdef SSH_USE
    void m_c_success();
    void m_c_established();
