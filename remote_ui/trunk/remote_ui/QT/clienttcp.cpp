@@ -942,7 +942,7 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
                 iconFile.close();
             }
             
-            iconFile.setFileName(QDir::tempPath() + "/" +"vdc_Dn.4id");
+            iconFile.setFileName(QDir::tempPath() + "/" +"vdc_de.4id");
             if (iconFile.open(QIODevice::ReadOnly | QIODevice::Text)){
                 QDomDocument doc;
                 QString qs_defaultShortcuts = iconFile.readAll();
