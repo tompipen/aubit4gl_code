@@ -2,7 +2,7 @@
 
 struct channel_data {
 	char filename[512];
-	char delimiter[2];
+	char delimiter[512];
 	char dir;
 	FILE *handle;
 };
@@ -44,8 +44,13 @@ static int base_channel_setdelimiter(long *objectID, int nParam) {
 	}
 	data=ptr->objData;
 	delim=A4GL_char_pop();
-	strncpy(data->delimiter,delim,1);
-	data->delimiter[1]=0;
+	if (A4GL_isyes(acl_getenv("EXTENDEDDELIM"))){
+		strcpy(data->delimiter,delim);
+		A4GL_trim(data->delimiter);
+	} else {
+		strncpy(data->delimiter,delim,1);
+		data->delimiter[1]=0;
+	}
 
 	return 0;
 }
@@ -152,7 +157,12 @@ static int base_channel_read (long *objectID,  int nParam) {
                 for (a=0;a<no;a++) {
                         char *optr;
                         optr=ptrBuff;
-                        ptrBuff=strchr(optr,data->delimiter[0]);
+		if (A4GL_isyes(acl_getenv("EXTENDEDDELIM"))){
+		A4GL_pause_execution();
+                        ptrBuff=strstr(optr,data->delimiter); 
+		} else {
+                        ptrBuff=strchr(optr,data->delimiter[0]); 
+		}
                         if (ptrBuff==0) {
                                 A4GL_push_char(optr);
                                 A4GL_pop_param(obind[a].ptr,obind[a].dtype,obind[a].size);
@@ -161,7 +171,11 @@ static int base_channel_read (long *objectID,  int nParam) {
                                 *ptrBuff=0;
                                 A4GL_push_char(optr);
                                 A4GL_pop_param(obind[a].ptr,obind[a].dtype,obind[a].size);
+		if (A4GL_isyes(acl_getenv("EXTENDEDDELIM"))){
+                                ptrBuff+=strlen(data->delimiter);
+			} else {
                                 ptrBuff++;
+			}
                         }
                 }
 
@@ -208,7 +222,13 @@ static int base_channel_write (long *objectID, int nParam) {
 
  	for (a=0;a<ni;a++) {
 	char *ptrBuff;
-                if (a>=1) fprintf(data->handle,"%c",data->delimiter[0]);
+                if (a>=1) {
+			if (A4GL_isyes(acl_getenv("EXTENDEDDELIM"))){
+				fprintf(data->handle,"%s",data->delimiter);
+			} else {
+				fprintf(data->handle,"%c",data->delimiter[0]);
+			}
+		}
                 A4GL_push_param(ibind[a].ptr,ibind[a].dtype+ENCODE_SIZE(ibind[a].size));
                 ptrBuff=A4GL_char_pop();
                         A4GL_trim(ptrBuff);
