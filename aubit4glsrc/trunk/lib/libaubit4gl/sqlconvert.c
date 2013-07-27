@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.178 2012-01-30 09:03:54 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.179 2013-07-27 06:43:41 mikeaubury Exp $
 #
 */
 
@@ -4561,22 +4561,36 @@ int aclfgl_aclfgl_replace_in_string(int n)  {
 char *sub_in;
 char *old_string;
 char *new_string;
-char buff[10000];
+char buff[10000]="";
 int cnt;
 new_string=A4GL_char_pop();
 old_string=A4GL_char_pop();
 sub_in=A4GL_char_pop();
 cnt=0;
-memset(buff,' ',1000);
-strncpy(buff,sub_in,strlen(sub_in));
-while (1) {
-	char *ptr;
-	ptr=strstr(buff,old_string);
-	if (ptr==0) break;
-	A4GL_cv_replacestr(ptr,strlen(old_string),new_string);
- 	if (cnt>100) {A4GL_exitwith("Recurrsive replacement?");}
+//memset(buff,' ',1000);
+int sl;
+
+sl=strlen(sub_in);
+//printf("sub_in=%s oldstring=%s new=%s\n",sub_in,old_string, new_string);
+//strncpy(buff,sub_in,sl);
+//buff[sl]=0;
+int ol;
+ol=strlen(old_string);
+int l=0;
+int a;
+int nl;
+nl=strlen(new_string);
+int bcnt=0;
+for (a=0;a<sl;a++) {
+	char *ptr=&sub_in[a];
+	if (strncmp(ptr,old_string,ol)==0) {
+		strcat(buff,new_string);
+		bcnt+=nl;
+	} else {
+		buff[bcnt++]=*ptr;
+		buff[bcnt]=0;
+	}
 }
-A4GL_trim(buff);
 A4GL_push_char(buff);
 return 1;
 }
