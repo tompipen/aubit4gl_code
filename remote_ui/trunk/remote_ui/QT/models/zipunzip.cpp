@@ -43,39 +43,37 @@ bool ZipUnzip::unzipArchiv(QString filePath, QString fileName, QString destFileP
             return false;
         }
 
-            if(name.contains(".")) {
-                if( !file.open( QIODevice::ReadOnly ) && file.isReadable() && !file.isWritable()  ) {
-                    qDebug() << "nich lesbar" << "";
-                    return false;
-                }
+        if( !file.open( QIODevice::ReadOnly ) && file.isReadable() && !file.isWritable()  ) {
+            qDebug() << "nich lesbar" << "";
+            return false;
+        }
 
-                QFile *destdir = new QFile(QString(destFilePath + "/" + zipArchiv.getCurrentFileName()));
+        QFile *destdir = new QFile(QString(destFilePath + "/" + zipArchiv.getCurrentFileName()));
 
-                if(destdir->exists())
-                {
-                    if(QFile::remove(destdir->fileName()))
-                    {
-                        qDebug() << "erfolgreich" << destdir->fileName();
-                    } else {
-                        qDebug() << "fehlgeschlagen" << destdir->fileName();
-                    }
-                }
-
-                if( destdir->open( QIODevice::WriteOnly | QIODevice::Truncate) )
-                {
-                    QTextStream stream( destdir );
-                    stream.setCodec("ISO-8859-1");
-                    stream << file.readAll();
-                } else {
-                    qDebug() << "konnte ned zum schreiben oeffnen" << zipArchiv.getZipError();
-                    //return false;
-                }
-
-                destdir->setPermissions(QFile::ReadOwner|QFile::WriteOwner|QFile::ExeOwner|QFile::ReadGroup|QFile::ExeGroup|QFile::ReadOther|QFile::ExeOther);
-                destdir->close();
-                meminfo.close();
-                file.close();
+        if(destdir->exists())
+        {
+            if(QFile::remove(destdir->fileName()))
+            {
+                qDebug() << "erfolgreich" << destdir->fileName();
+            } else {
+                qDebug() << "fehlgeschlagen" << destdir->fileName();
             }
+        }
+
+        if( destdir->open( QIODevice::WriteOnly | QIODevice::Truncate) )
+        {
+            QTextStream stream( destdir );
+            stream.setCodec("ISO-8859-1");
+            stream << file.readAll();
+        } else {
+            qDebug() << "konnte ned zum schreiben oeffnen" << zipArchiv.getZipError();
+            //return false;
+        }
+
+        destdir->setPermissions(QFile::ReadOwner|QFile::WriteOwner|QFile::ExeOwner|QFile::ReadGroup|QFile::ExeGroup|QFile::ReadOther|QFile::ExeOther);
+        destdir->close();
+        meminfo.close();
+        file.close();
     }
     zipArchiv.close();
     return true;
