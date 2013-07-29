@@ -3,6 +3,12 @@
 #include <QApplication>
 #include <QSettings>
 #include <QCryptographicHash>
+#include <QDir>
+#include <QDebug>
+#include <QDesktopServices>
+#include <QDesktopWidget>
+#include <QTime>
+#include <QDate>
 
 namespace VDC
 {
@@ -24,6 +30,8 @@ namespace VDC
   QString md5hashfromfile(QString);
 
   QPoint widgetPositionValidate(int, int);
+
+  void logMessage(QString, QString);
 
 
 };

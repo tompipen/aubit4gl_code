@@ -1,8 +1,4 @@
 #include <include/vdc.h>
-#include <QDir>
-#include <QDebug>
-#include <QDesktopServices>
-#include <QDesktopWidget>
 
 namespace VDC {
    double fieldsizefactor;
@@ -175,5 +171,28 @@ namespace VDC {
        }
 
        return QPoint(posX, posY);
+   }
+   void logMessage(QString type, QString text)
+   {
+       if(type == "VDC")
+       {
+           QDir dir(QApplication::applicationDirPath() + "/logs");
+
+           if(!dir.exists())
+           {
+               dir.mkdir(QApplication::applicationDirPath() + "/logs");
+           }
+
+           QFile file(QApplication::applicationDirPath() + "/logs/VDC.log");
+
+           if(!file.open(QIODevice::WriteOnly | QIODevice::Append))
+           {
+               qDebug() << "cannot open file to log VDC messages.";
+           }
+
+           QTextStream stream(&file);
+           stream << "[" + QTime::currentTime().toString("HH:mm") + " - " + QDate::currentDate().toString("dd.MM.yyyy") + "] " + text + "\n";
+           file.close();
+       }
    }
 }

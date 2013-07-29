@@ -50,6 +50,8 @@ LoginForm::LoginForm(QWidget *parent)
     bool adminMenu = mainFrame->adminMenu;
     QMenuBar *menuBar = mainFrame->menuBar();
 
+    errorMessageLoginForm = new QErrorMessage(this);
+
     QTabWidget *tWidget = new QTabWidget(this);
     QWidget *userWidget = new QWidget();
     QWidget *adminWidget = new QWidget();
@@ -62,6 +64,7 @@ LoginForm::LoginForm(QWidget *parent)
     QVBoxLayout *labelLayout = new QVBoxLayout;
     QHBoxLayout *connectionLayout = new QHBoxLayout;
     QHBoxLayout *methodLayout = new QHBoxLayout;
+    QHBoxLayout *debugLayout = new QHBoxLayout;
     QVBoxLayout *applicationLayout = new QVBoxLayout;
     QVBoxLayout *serverLayout = new QVBoxLayout;
 
@@ -78,7 +81,12 @@ LoginForm::LoginForm(QWidget *parent)
     serverLabel         = new QLabel(tr("Server:"));
     serverLineEdit      = new QLineEdit;
 
-    cb = new QCheckBox("Save &Password?", this);
+    QGroupBox *gb_debug = new QGroupBox("Debugging:");
+    logVDC         = new QCheckBox("VDC", gb_debug);
+    showTerminal        = new QCheckBox("Terminal", gb_debug);
+
+    cb                  = new QCheckBox("Save &Password?", this);
+
 
     if(portLineEdit->text().isEmpty())
     {
@@ -98,6 +106,10 @@ LoginForm::LoginForm(QWidget *parent)
     methodLayout->addWidget(rb_ssh);
     bg_connection->setLayout(methodLayout);
 
+    debugLayout->addWidget(logVDC);
+    debugLayout->addWidget(showTerminal);
+    gb_debug->setLayout(debugLayout);
+
     connectionLayout->addWidget(bg_connection);
 
     labelLayout->addWidget(portLabel);
@@ -114,6 +126,7 @@ LoginForm::LoginForm(QWidget *parent)
     adminLayout->addLayout(labelLayout);
     adminLayout->addLayout(applicationLayout);
     adminLayout->addWidget(cb);
+    adminLayout->addWidget(gb_debug);
 
     adminWidget->setLayout(adminLayout);
 
@@ -1112,6 +1125,21 @@ MainFrame::vdcdebug("LoginForm","okPressed", "");
       removeCursor();
       return;
    }
+
+   if(logVDC->isChecked())
+   {
+      VDC::logMessage("VDC", "- - - Begin log VDC messages");
+   }
+
+   if(showTerminal->isChecked())
+   {
+       if(showTerminal->isChecked())
+       {
+
+       }
+
+   }
+
    if(cb->isChecked())
    {
        settings.setValue("password", pass);
