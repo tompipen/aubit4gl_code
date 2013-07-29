@@ -79,7 +79,42 @@ void crash()
 void crashingMessageHandler(QtMsgType type, const char *msg)
 {
 
-    QString text = "";
+    if(VDC::readSettingsFromIni("", "debugVDC") == "yes")
+    {
+        switch(type)
+        {
+            case QtDebugMsg:
+               VDC::logMessage("VDC", QString("[Debug] - %1").arg(msg));
+               break;
+            case QtWarningMsg:
+               VDC::logMessage("VDC", QString("[WARNING] - %1").arg(msg));
+               break;
+            case QtCriticalMsg:
+               VDC::logMessage("VDC", QString("[CRITICAL] - %1").arg(msg));
+               break;
+            case QtFatalMsg:
+               VDC::logMessage("VDC", QString("[FATAL] - %1").arg(msg));
+               break;
+        }
+    } else {
+        switch (type) {
+            case QtDebugMsg:
+                fprintf(stderr, "Debug: %s\n", msg);
+                break;
+            case QtWarningMsg:
+                fprintf(stderr, "Warning: %s\n", msg);
+                break;
+            case QtCriticalMsg:
+                fprintf(stderr, "Critical1: %s\n", msg);
+                break;
+            case QtFatalMsg:
+                fprintf(stderr, "Fatal: %s\n", msg);
+                __asm("int3");
+                abort();
+          }
+    }
+
+    /*QString text = "";
     const int USE_DEBUG_FILE = 0;
 
     if(USE_DEBUG_FILE == 1)
@@ -123,7 +158,7 @@ void crashingMessageHandler(QtMsgType type, const char *msg)
                 __asm("int3");
                 abort();
           }
-    }
+    }*/
 }
 
 #ifdef Q_WS_WIN

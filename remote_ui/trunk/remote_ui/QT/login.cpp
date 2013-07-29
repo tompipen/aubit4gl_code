@@ -93,6 +93,11 @@ LoginForm::LoginForm(QWidget *parent)
         portLineEdit->setText("22");
     }
 
+    if(VDC::readSettingsFromIni("", "debugVDC") == "yes")
+    {
+        logVDC->setChecked(true);
+    }
+
     bg_connection = new QGroupBox("Connection Method:");
     rb_proxy  = new QRadioButton("Proxy", bg_connection);
     rb_proxy->setChecked(true);
@@ -1129,6 +1134,9 @@ MainFrame::vdcdebug("LoginForm","okPressed", "");
    if(logVDC->isChecked())
    {
       VDC::logMessage("VDC", "- - - Begin log VDC messages");
+      VDC::saveSettingsToIni(QString(""), QString("debugVDC"), QString("yes"));
+   } else {
+      VDC::saveSettingsToIni(QString(""), QString("debugVDC"), QString("no"));
    }
 
    if(showTerminal->isChecked())
