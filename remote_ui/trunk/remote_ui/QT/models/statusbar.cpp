@@ -40,6 +40,7 @@ MainFrame::vdcdebug("StatusBar","StatusBar", "QWidget *parent");
    //addWidget(commentLabel, 10);
    addWidget(errorLabel, 10);
 
+
    addPermanentWidget(writeModeLabel);
 }
 
@@ -74,6 +75,7 @@ MainFrame::vdcdebug("StatusBar","displayError", "QString text");
    pal.setColor(errorLabel->foregroundRole(), Qt::red);
    errorLabel->setPalette(pal);
    errorLabel->setText(text.trimmed());
+   this->setStyleSheet("QStatusBar { background-color: #FFF6A5; }");
    //errorLabel->setText("<b><font color=#ff0000>"+text+"</font></b>");
    QTimer::singleShot(5000, errorLabel, SLOT(clear()));
 }
