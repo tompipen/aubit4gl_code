@@ -37,7 +37,7 @@ MainFrame::vdcdebug("StatusBar","StatusBar", "QWidget *parent");
    writeModeLabel = new QLabel("OVR", this);
    writeModeLabel->setEnabled(b_overwrite);
 
-   addWidget(commentLabel, 10);
+   //addWidget(commentLabel, 10);
    addWidget(errorLabel, 10);
 
    addPermanentWidget(writeModeLabel);
@@ -47,8 +47,8 @@ MainFrame::vdcdebug("StatusBar","StatusBar", "QWidget *parent");
 void StatusBar::displayComment(QString text)
 {
 MainFrame::vdcdebug("StatusBar","displayComment", "QString text");
-   commentLabel->setText(text);
-   QTimer::singleShot(5000, commentLabel, SLOT(clear()));
+   errorLabel->setText(text);
+   QTimer::singleShot(5000, errorLabel, SLOT(clear()));
 }
 
 void StatusBar::displayMessage(QString text)
