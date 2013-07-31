@@ -1327,7 +1327,16 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
                      return false;
                  }
              }
-             if(!obj->inherits("QComboBoxListView") && !obj->parent()->inherits("QComboBox"))
+             if(obj->parent())
+             {
+                 if(obj->parent()->inherits("QComboBox"))
+                 {
+                     event->ignore();
+                     return false;
+                 }
+             }
+
+             if(!obj->inherits("QComboBoxListView"))
              {
                  if(input() || construct())
                    prevfield();
@@ -1349,7 +1358,17 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
                      return false;
                  }
              }
-             if(!obj->inherits("QComboBoxListView") && !obj->parent()->inherits("QComboBox"))
+
+             if(obj->parent())
+             {
+                 if(obj->parent()->inherits("QComboBox"))
+                 {
+                     event->ignore();
+                     return false;
+                 }
+             }
+
+             if(!obj->inherits("QComboBoxListView"))
              {
                  if(input() || construct())
                    nextfield();
