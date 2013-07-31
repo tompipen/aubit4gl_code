@@ -194,5 +194,26 @@ namespace VDC {
            stream << "[" + QTime::currentTime().toString("HH:mm") + " - " + QDate::currentDate().toString("dd.MM.yyyy") + "] " + text + "\n";
            file.close();
        }
+
+       if(type == "CALLTREE")
+       {
+           QDir dir(QApplication::applicationDirPath() + "/logs");
+
+           if(!dir.exists())
+           {
+               dir.mkdir(QApplication::applicationDirPath() + "/logs");
+           }
+
+           QFile file(QApplication::applicationDirPath() + "/logs/calltree.log");
+
+           if(!file.open(QIODevice::WriteOnly | QIODevice::Append))
+           {
+               qDebug() << "cannot open file to log VDC messages.";
+           }
+
+           QTextStream stream(&file);
+           stream << "[" + QTime::currentTime().toString("HH:mm") + " - " + QDate::currentDate().toString("dd.MM.yyyy") + "] " + text + "\n";
+           file.close();
+       }
    }
 }
