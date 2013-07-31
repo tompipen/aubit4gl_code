@@ -48,8 +48,13 @@ MainFrame::vdcdebug("StatusBar","StatusBar", "QWidget *parent");
 void StatusBar::displayComment(QString text)
 {
 MainFrame::vdcdebug("StatusBar","displayComment", "QString text");
-   errorLabel->setText(text);
+   QPalette pal = errorLabel->palette();
+   pal.setColor(QPalette::Background, QColor("#ffffff"));
+   pal.setColor(errorLabel->foregroundRole(), Qt::red);
+   errorLabel->setAutoFillBackground(true);
+   errorLabel->setText(" " + text);
    QTimer::singleShot(5000, errorLabel, SLOT(clear()));
+   QTimer::singleShot(5000, this, SLOT(clearStylesheet()));
 }
 
 void StatusBar::displayMessage(QString text)
@@ -63,21 +68,27 @@ MainFrame::vdcdebug("StatusBar","displayMessage", "QString text");
        pal.setColor(errorLabel->foregroundRole(), Qt::black);
        errorLabel->setPalette(pal);
    }
-   errorLabel->setText(text.trimmed());
+   errorLabel->setText(" " + text.trimmed());
    QTimer::singleShot(5000, errorLabel, SLOT(clear()));
+   QTimer::singleShot(5000, this, SLOT(clearStylesheet()));
 }
 
 void StatusBar::displayError(QString text)
 {
 MainFrame::vdcdebug("StatusBar","displayError", "QString text");
    QPalette pal = errorLabel->palette();
-   pal.setColor(errorLabel->backgroundRole(), Qt::red);
+   pal.setColor(QPalette::Background, QColor("#ffffff"));
    pal.setColor(errorLabel->foregroundRole(), Qt::red);
+   errorLabel->setAutoFillBackground(true);
    errorLabel->setPalette(pal);
-   errorLabel->setText(text.trimmed());
-   this->setStyleSheet("QStatusBar { background-color: #FFF6A5; }");
-   //errorLabel->setText("<b><font color=#ff0000>"+text+"</font></b>");
+   errorLabel->setText(" " + text.trimmed());
    QTimer::singleShot(5000, errorLabel, SLOT(clear()));
+   QTimer::singleShot(5000, this, SLOT(clearStylesheet()));
+}
+
+void StatusBar::clearStylesheet()
+{
+    errorLabel->setAutoFillBackground(false);
 }
 
 void StatusBar::toggleOverwriteMode()

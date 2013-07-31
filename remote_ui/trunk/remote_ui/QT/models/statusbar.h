@@ -34,6 +34,9 @@ public:
    void toggleOverwriteMode();
    bool b_overwrite;
 
+public slots:
+   void clearStylesheet();
+
 private:
    QLabel *commentLabel;
    QLabel *messageLabel;
