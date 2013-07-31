@@ -61,13 +61,10 @@ void StatusBar::displayMessage(QString text)
 {
 MainFrame::vdcdebug("StatusBar","displayMessage", "QString text");
    QPalette pal = errorLabel->palette();
-
-   if(this->palette().foreground().color() != errorLabel->palette().foreground().color())
-   {
-       pal.setColor(errorLabel->backgroundRole(), Qt::black);
-       pal.setColor(errorLabel->foregroundRole(), Qt::black);
-       errorLabel->setPalette(pal);
-   }
+   pal.setColor(QPalette::Background, QColor("#ffffff"));
+   pal.setColor(errorLabel->foregroundRole(), Qt::red);
+   errorLabel->setAutoFillBackground(true);
+   errorLabel->setPalette(pal);
    errorLabel->setText(" " + text.trimmed());
    QTimer::singleShot(5000, errorLabel, SLOT(clear()));
    QTimer::singleShot(5000, this, SLOT(clearStylesheet()));
