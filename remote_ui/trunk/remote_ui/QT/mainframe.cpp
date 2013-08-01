@@ -246,11 +246,6 @@ void MainFrame::vdcdebug(QString obj, QString funk, QString uebergabe)
     {
        qDebug() << obj + "::" + funk + "(" + uebergabe + ")";
     }
-
-    if(VDC::readSettingsFromIni("", "debugVDC") == "yes")
-    {
-        VDC::logMessage("CALLTREE", obj + "::" + funk + "(" + uebergabe + ")");
-    }
 }
 
 
