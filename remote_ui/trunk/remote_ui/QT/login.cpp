@@ -81,7 +81,7 @@ LoginForm::LoginForm(QWidget *parent)
     serverLabel         = new QLabel(tr("Server:"));
     serverLineEdit      = new QLineEdit;
 
-    logVDC         = new QCheckBox("VDC");
+    logVDC         = new QCheckBox("Debug");
     cb                  = new QCheckBox("Save &Password?", this);
 
 
