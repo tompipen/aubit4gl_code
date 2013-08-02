@@ -81,8 +81,9 @@ LoginForm::LoginForm(QWidget *parent)
     serverLabel         = new QLabel(tr("Server:"));
     serverLineEdit      = new QLineEdit;
 
-    logVDC         = new QCheckBox("Debug");
-    cb                  = new QCheckBox("Save &Password?", this);
+    QGroupBox *bg_other = new QGroupBox("");
+    logVDC              = new QCheckBox("Debug", bg_other);
+    cb                  = new QCheckBox("Save &Password?", bg_other);
 
 
     if(portLineEdit->text().isEmpty())
@@ -110,6 +111,7 @@ LoginForm::LoginForm(QWidget *parent)
 
     debugLayout->addWidget(cb);
     debugLayout->addWidget(logVDC);
+    bg_other->setLayout(debugLayout);
 
     connectionLayout->addWidget(bg_connection);
 
@@ -126,7 +128,7 @@ LoginForm::LoginForm(QWidget *parent)
     adminLayout->addLayout(serverLayout);
     adminLayout->addLayout(labelLayout);
     adminLayout->addLayout(applicationLayout);
-    adminLayout->addLayout(debugLayout);
+    adminLayout->addWidget(bg_other);
 
     adminWidget->setLayout(adminLayout);
 
