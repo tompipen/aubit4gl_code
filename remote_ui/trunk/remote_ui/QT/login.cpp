@@ -81,10 +81,7 @@ LoginForm::LoginForm(QWidget *parent)
     serverLabel         = new QLabel(tr("Server:"));
     serverLineEdit      = new QLineEdit;
 
-    QGroupBox *gb_debug = new QGroupBox("Debugging:");
-    logVDC         = new QCheckBox("VDC", gb_debug);
-    showTerminal        = new QCheckBox("Terminal", gb_debug);
-
+    logVDC         = new QCheckBox("VDC");
     cb                  = new QCheckBox("Save &Password?", this);
 
 
@@ -111,9 +108,8 @@ LoginForm::LoginForm(QWidget *parent)
     methodLayout->addWidget(rb_ssh);
     bg_connection->setLayout(methodLayout);
 
+    debugLayout->addWidget(cb);
     debugLayout->addWidget(logVDC);
-    debugLayout->addWidget(showTerminal);
-    gb_debug->setLayout(debugLayout);
 
     connectionLayout->addWidget(bg_connection);
 
@@ -130,8 +126,7 @@ LoginForm::LoginForm(QWidget *parent)
     adminLayout->addLayout(serverLayout);
     adminLayout->addLayout(labelLayout);
     adminLayout->addLayout(applicationLayout);
-    adminLayout->addWidget(cb);
-    adminLayout->addWidget(gb_debug);
+    adminLayout->addLayout(debugLayout);
 
     adminWidget->setLayout(adminLayout);
 
@@ -162,15 +157,14 @@ LoginForm::LoginForm(QWidget *parent)
     QList<QKeySequence> ql_shortcuts;
     ql_shortcuts << QKeySequence("Return");
     ql_shortcuts << QKeySequence("Enter");
+    ql_shortcuts << QKeySequence("F12");
 
-    QAction *okAction = new QAction("Connect", NULL);
-    okAction->setShortcutContext(Qt::WidgetShortcut);
+    QAction *okAction = new QAction("Connect", this);
     okAction->setShortcuts(ql_shortcuts);
     connect(okAction, SIGNAL(triggered()), this, SLOT(okPressed()));
 
-    QAction *cancelAction = new QAction("Cancel", NULL);
-    cancelAction->setShortcutContext(Qt::WidgetShortcut);
-    cancelAction->setShortcuts(ql_shortcuts);
+    QAction *cancelAction = new QAction("Cancel", this);
+    cancelAction->setShortcut(Qt::Key_F12);
     connect(cancelAction, SIGNAL(triggered()), this, SLOT(cancelPressed()));
 
     usernameLineEdit->addAction(okAction);
@@ -186,7 +180,6 @@ LoginForm::LoginForm(QWidget *parent)
     okButton->setIcon(QIcon(QString("pics:ok_gruen.png")));
     okButton->setIconSize(QSize(40,25));
     okButton->setStyleSheet("QPushButton { border-image: url(pics:VENTAS_9_knopf_menu_inaktiv.png); padding-top: -1; padding-right: 10; text-align: left; height: 36px; min-width: 50px; }");
-    okButton->setShortcut(Qt::Key_F12);
     okButton->addAction(okAction);
 
     QPushButton *cancelButton = new QPushButton(tr("Cancel"));
@@ -466,12 +459,21 @@ void LoginForm::aboutVDC(QWidget *parent)
     QLabel *space = new QLabel(widget);
     QPixmap pix(":pics/VENTAS_9_logo-about.png");
 
+    QList<QKeySequence> ql_shortcuts;
+    ql_shortcuts << QKeySequence("F12");
+    ql_shortcuts << QKeySequence("Enter");
+    ql_shortcuts << QKeySequence("Return");
+
     QPushButton *okButton = new QPushButton("&OK");
     okButton->setIcon(QIcon(QString("pics:ok_gruen.png")));
     okButton->setIconSize(QSize(40,25));
-    okButton->setShortcut(Qt::Key_F12);
+    //okButton->setShortcut(Qt::Key_F12);
     okButton->setFixedWidth(75);
-    connect(okButton, SIGNAL(clicked()), widget, SLOT(close()));
+    QAction *action = new QAction("&OK", this);
+    action->setShortcuts(ql_shortcuts);
+    okButton->addAction(action);
+    connect(action, SIGNAL(triggered()), widget, SLOT(close()));
+    //connect(okButton, SIGNAL(clicked()), widget, SLOT(close()));
 
     int date = QDate::currentDate().year();
     //QPixmap qpm = pix.scaled(80,80,Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
@@ -1139,15 +1141,6 @@ MainFrame::vdcdebug("LoginForm","okPressed", "");
       VDC::saveSettingsToIni(QString(""), QString("debugVDC"), QString("no"));
    }
 
-   if(showTerminal->isChecked())
-   {
-       if(showTerminal->isChecked())
-       {
-
-       }
-
-   }
-
    if(cb->isChecked())
    {
        settings.setValue("password", pass);
@@ -1387,12 +1380,21 @@ void LoginForm::setOfficeInstallation()
     connect(closeButton, SIGNAL(clicked()), widget, SLOT(close()));
 
     QPushButton *saveButton = new QPushButton(tr("&Apply"));
+
+    QList<QKeySequence> ql_okShortcuts;
+    ql_okShortcuts << QKeySequence("F12");
+    ql_okShortcuts << QKeySequence("Enter");
+    ql_okShortcuts << QKeySequence("Return");
+
+    QAction *okAction = new QAction("&Apply", this);
+    okAction->setShortcuts(ql_okShortcuts);
+
     saveButton->setIcon(QIcon(QString("pics:ok_gruen.png")));
     saveButton->setIconSize(QSize(40,25));
     saveButton->setStyleSheet("QPushButton { border-image: url(pics:VENTAS_9_knopf_menu_inaktiv.png); padding-top: -1; padding-right: 10; text-align: left; height: 36px; min-width: 50px; }");
-    saveButton->setShortcut(Qt::Key_F12);
-    connect(saveButton, SIGNAL(clicked()), this, SLOT(saveOfficeInstallation()));
-    connect(saveButton, SIGNAL(clicked()), widget, SLOT(close()));
+    saveButton->addAction(okAction);
+    connect(okAction, SIGNAL(triggered()), this, SLOT(saveOfficeInstallation()));
+    connect(okAction, SIGNAL(triggered()), widget, SLOT(close()));
 
     label->setText("Please choose an Office installation: ");
     mOfficeComboBox->addItem("Please choose...");

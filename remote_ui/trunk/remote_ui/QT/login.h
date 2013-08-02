@@ -136,7 +136,6 @@ private:
    QLineEdit *protocolLineEdit;
    QCheckBox *cb;
    QCheckBox *logVDC;
-   QCheckBox *showTerminal;
    QErrorMessage *errorMessageLoginForm;
 
    void readEditFile(QString);
