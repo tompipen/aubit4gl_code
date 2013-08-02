@@ -2188,6 +2188,22 @@ MainFrame::vdcdebug("ScreenHandler","setFormOpts", "QString type, bool value, in
             freeContext(i_context);
             p_fglform->ql_responseQueue.clear();
             p_fglform->ql_formEvents.clear();
+            QList<QAction*> ql_actions = p_fglform->actions();
+
+            for(int i=0; i<ql_actions.size(); i++){
+               if(Action *a = qobject_cast<Action *> (ql_actions.at(i))){
+                 if(ActionMenu *aMenu = qobject_cast<ActionMenu *> (p_fglform->actionMenu())){
+                    QString text = a->objectName();
+                    if(text != "accept" && text != "cancel")
+                    {
+                       if(aMenu->getAction(a->text())){
+                          aMenu->removeButton(a->text());
+                          a->setDefaultView("no");
+                       }
+                    }
+                  }
+               }
+            }
             return;
          }
       }
