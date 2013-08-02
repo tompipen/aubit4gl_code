@@ -1169,7 +1169,7 @@ void TableView::setCurrentField(int row, int col, bool b_sendevents)
 
          //If fieldchange is not emitted, run before field
 
-         if(this->currentIndex() == index) {
+         if(this->currentIndex() == index && index.column() != -1) {
              Fgl::Event event;
              event.type = Fgl::BEFORE_FIELD_EVENT;
              event.attribute = table->qsl_colNames.at(index.column());
