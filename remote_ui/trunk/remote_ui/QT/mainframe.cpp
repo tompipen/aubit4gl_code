@@ -982,7 +982,10 @@ emit debugSignal();
 
 void MainFrame::debugText(QString text)
 {
-    this->clientTcp->dw->append(text);
+    if(this->clientTcp->dw->isVisible())
+    {
+        this->clientTcp->dw->append(text);
+    }
 }
 
 void MainFrame::requestScreenHandler(int pid, int p_pid)

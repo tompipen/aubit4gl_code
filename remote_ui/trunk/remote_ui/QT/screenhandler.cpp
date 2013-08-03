@@ -2313,7 +2313,7 @@ if(qsl_triggereds.size() > 0)
          p_fglform->b_newForm = false;
 
          //Load the Actions again, before display the form
-        // p_fglform->checkActions(); bullshit its called allready in checkState()
+          p_fglform->checkActions();
         // p_fglform->adjustSize();
          //p_fglform->resize(500,500);
          int maximized = VDC::readSettingsFromIni(p_fglform->formName(), "windowIsMaximized").toInt();

@@ -3692,7 +3692,7 @@ MainFrame::vdcdebug("FglForm","checkState", "");
    }
 */
 
-   checkActions();
+   //checkActions();
 }
 
 //------------------------------------------------------------------------------
