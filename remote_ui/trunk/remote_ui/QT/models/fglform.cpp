@@ -543,7 +543,6 @@ MainFrame::vdcdebug("FglForm","setActionMenuEnabled", "bool enable");
 
 
 
-
 //   p_actionMenu->hideButtons(!enable);
 }
 
@@ -3692,7 +3691,7 @@ MainFrame::vdcdebug("FglForm","checkState", "");
    }
 */
 
-   //checkActions();
+   checkActions();
 }
 
 //------------------------------------------------------------------------------
