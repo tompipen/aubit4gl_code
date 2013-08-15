@@ -1750,9 +1750,19 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
 
              if(fileInfo.suffix() == "rtf")
              {
+                 ExecuteFile *exec = new ExecuteFile;
+                 exec->setFileName(fileName);
+                 exec->start();
+
+                 while(!exec->isFinished())
+                 {
+                     usleep(50000L);
+                 }
+             #else
                  executeFile(1, fileName);
                  returnvalues << QString::number(openFileSuccess);
-		 foundFormat = 1;
+             #endif
+                 foundFormat = 1;
              }
 
              if(fileInfo.suffix() == "csv")
