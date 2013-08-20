@@ -2685,15 +2685,18 @@ void ProtocolHandler::executeFile(int waitforFinish, QString fileName)
                                 &pi ))
              {
                  QMetaObject::invokeMethod(p_currScreenHandler, "MsgBox", Qt::QueuedConnection, Q_ARG(QString, "ERROR"), Q_ARG(QString, "Can not found a default Program for this file."), Q_ARG(QString, "Critical"), Q_ARG(QString, "Ok"), Q_ARG(QString, "Ok"), Q_ARG(int, 0));
+                 qDebug() << "FEHLER BEI PROZESS ERSTELLEN!!!!";
                  openFileSuccess = 0;
 
+             } else {
+                Sleep(10000);
+                qDebug() << "Prozess wurde erstellt.";
+                WaitForSingleObject( pi.hProcess, INFINITE );
+                CloseHandle(pi.hProcess);
+                CloseHandle(pi.hThread);
+                delete settings;
              }
-             WaitForSingleObject( pi.hProcess, INFINITE );
-
-             CloseHandle(pi.hProcess);
-             CloseHandle(pi.hThread);
-             delete settings;
-         }
+          }
       } else {
          QProcess::startDetached(QString("rundll32 url.dll,FileProtocolHandler \"%1\"").arg( fileNameInfo.absoluteFilePath()));
          openFileSuccess = 1;
