@@ -2567,11 +2567,11 @@ void ProtocolHandler::executeFile(int waitforFinish, QString fileName)
 {
 
     QString fileLockName = QString(".~lock.%1#").arg(fileName);
-    qDebug() << "bla: " << fileLockName;
     fileName = QDir::tempPath() + "/" + fileName;
     QFileInfo fileNameInfo(fileName);
+    qDebug() << "LockFile: " << fileLockName;
     qDebug() << "fileName: " << fileNameInfo.absoluteFilePath();
-
+    qDebug() << "waitForFinish: " << QString::number(waitforFinish);
 #ifdef Q_WS_X11
    if(QDesktopServices::openUrl(QUrl(QString("file://" + fileNameInfo.absoluteFilePath()), QUrl::TolerantMode)))
    {
@@ -2666,6 +2666,8 @@ void ProtocolHandler::executeFile(int waitforFinish, QString fileName)
          {
              defaultProg.replace("%SystemRoot%", getenv("SystemRoot"));
          }
+
+         qDebug() << "Open File with Program: " << defaultProg;
 
          szCommandLine = (LPWSTR)defaultProg.data();
 
