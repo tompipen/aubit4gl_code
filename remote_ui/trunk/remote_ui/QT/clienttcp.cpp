@@ -1750,19 +1750,8 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
 
              if(fileInfo.suffix() == "rtf")
              {
-             #ifndef Q_WS_WIN
-                 ExecuteFile *exec = new ExecuteFile;
-                 exec->setFileName(fileName);
-                 exec->start();
-
-                 while(!exec->isFinished())
-                 {
-                     usleep(50000L);
-                 }
-             #else
                  executeFile(1, fileName);
                  returnvalues << QString::number(openFileSuccess);
-             #endif
                  foundFormat = 1;
              }
 
