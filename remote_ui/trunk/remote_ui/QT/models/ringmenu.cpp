@@ -80,7 +80,7 @@ RingMenu::RingMenu(QString title, QWidget *fglform, QString style,
    //layout->setSizeConstraint(QLayout::SetFixedSize);
    buttonGroup = new QButtonGroup(this);
 
-   this->setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Expanding);
+   this->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
 
 /*
    connect(buttonGroup, SIGNAL(buttonClicked(int)), 
@@ -129,7 +129,7 @@ MainFrame::vdcdebug("RingMenu","createButton", "int id, QString text, QString to
 
    // Create the Button and set Text + ToolTip
    QPushButton *button = new QPushButton(buttonText);
-   button->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+   button->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
    button->setToolTip(tooltip);
    button->setFlat(true);
    button->installEventFilter(this);
@@ -330,7 +330,7 @@ MainFrame::vdcdebug("RingMenu","createAction", "int id, QString text");
 //   button->setShortcut(shortcut);
    button->setIcon(QIcon(QString("pics:blank.png")));
    button->setIconSize(QSize(40,25));
-   button->setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Fixed);
+   button->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
 
    Action *action = new Action(text.toLower(), text, button);
    action->setImage("blank.png");
