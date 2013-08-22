@@ -293,6 +293,7 @@ LineEdit::LineEdit(QWidget *parent)
    setProperty("touched", false);
    this->setFixedHeight(VDC::DEFAULT_HEIGHT);
    this->setContextMenuPolicy(Qt::CustomContextMenu);
+
 /*   QFont textFont;
    textFont.setPixelSize(12);
    QFontMetrics fm(textFont);
@@ -1324,10 +1325,18 @@ bool WidgetHelper::setDisplayAttributes(int fieldAttribute, QWidget *widget)
              Q_UNUSED(le);
              LineEdit dummy;
              //dummy.setEnabled(widget->isEnabled());
-             QColor dummycol = dummy.palette().color(QPalette::Disabled, QPalette::Text);
              QPalette p = widget->palette();
-             QColor col(dummycol.red()-30, dummycol.green()-30, dummycol.blue()-30);
-             p.setColor(QPalette::Disabled, QPalette::Text, col);
+             p.setColor(QPalette::Disabled, QPalette::Text, p.color(QPalette::Active, QPalette::Text));
+             //p.setColor(QPalette::Foreground, col);
+             widget->setPalette(p);
+             widget->setFont(dummy.font());
+         }else if (TextEdit *le = qobject_cast<TextEdit*> (widget))
+         {
+             Q_UNUSED(le);
+             LineEdit dummy;
+             //dummy.setEnabled(widget->isEnabled());
+             QPalette p = widget->palette();
+             p.setColor(QPalette::Disabled, QPalette::Text, p.color(QPalette::Active, QPalette::Text));
              //p.setColor(QPalette::Foreground, col);
              widget->setPalette(p);
              widget->setFont(dummy.font());
