@@ -358,7 +358,7 @@ int VSSH::execute(int port = 0)
     memset(buffer, 0, sizeof(buffer));
     ssh_mutex.lock();
     nbytes = ssh_channel_read_nonblocking(channel, &buffer, sizeof(buffer), 0);
-    usleep(3);
+    //usleep(3);
     ssh_mutex.unlock();
     ba_test += buffer;
     ba_buffertest = buffer;

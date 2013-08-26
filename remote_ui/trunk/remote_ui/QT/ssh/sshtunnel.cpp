@@ -78,7 +78,7 @@ void SSHTunnel::run()
 
                  if(counter >= 500000)
                  {
-                     usleep(10000L);
+                     usleep(5000L);
                  }
              } else {
                  counter = 0;
