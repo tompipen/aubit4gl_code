@@ -152,6 +152,7 @@ int VSSH::connectToHost()
   if(!session)
   {
       qDebug()<<"Session is not established";
+      qDebug() << "Error: ", ssh_get_error(session);
       return -1;
      //Todo: msgbox auslagern das es abstract ist und hier fehler ausgeben
   }
@@ -165,6 +166,7 @@ int VSSH::connectToHost()
   if(rc != SSH_OK)
   {
       qDebug()<<"Connect failed";
+      qDebug() << "Error: ", ssh_get_error(session);
       return rc;
   }
   else
@@ -184,6 +186,7 @@ int VSSH::auth()
   if(!session)
   {
       qDebug()<<"Session not established";
+      qDebug() << "Error: ", ssh_get_error(session);
       return -1;
   }
 
@@ -222,6 +225,7 @@ int VSSH::auth()
       return rc;
   }
 
+  qDebug() << "Error: ", ssh_get_error(session);
   QString err = "SSH Method \"" + QString::number(method) + "\" is not supported. Please contact VENTAS.";
 
 
@@ -265,6 +269,7 @@ int VSSH::auth_password()
   {
 
       qDebug()<<"Session not established";
+      qDebug() << "Error: ", ssh_get_error(session);
       return -1;
   }
   QByteArray ba_user = this->user().toLocal8Bit();
@@ -421,6 +426,7 @@ int VSSH::execute(int port = 0)
   {
     ssh_channel_close(channel);
     ssh_channel_free(channel);
+    qDebug() << "Error: ", ssh_get_error(session);
     return SSH_ERROR;
   }
 
@@ -429,6 +435,7 @@ int VSSH::execute(int port = 0)
 
       ssh_channel_close(channel);
       ssh_channel_free(channel);
+      qDebug() << "Error: ", ssh_get_error(session);
       return SSH_ERROR;
 
   }
