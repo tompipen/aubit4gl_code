@@ -17,7 +17,7 @@ void SSHTunnel::run()
     if(rc != SSH_OK)
     {
         tunnelport = -1;
-        qDebug() << "SSH Error: ", ssh_get_error(session);
+        qDebug() << "SSH Error: ", ssh_get_error(base_session);
         return; //
     }
 
@@ -26,7 +26,7 @@ void SSHTunnel::run()
     {
        if(!base_session)
        {
-           qDebug() << "SSH Error: ", ssh_get_error(session);
+           qDebug() << "SSH Error: ", ssh_get_error(base_session);
            return;
        }
        if(!session_mutex)
@@ -60,7 +60,7 @@ void SSHTunnel::run()
         {
              if(!base_session)
              {
-                qDebug() << "SSH Error: ", ssh_get_error(session);
+                qDebug() << "SSH Error: ", ssh_get_error(base_session);
                 return;
              }
              if(session_mutex)
