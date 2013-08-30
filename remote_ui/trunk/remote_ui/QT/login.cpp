@@ -295,6 +295,16 @@ void LoginForm::createMenu(QMenuBar *menu)
 
 }
 
+void LoginForm::compression()
+{
+    if(compCb->isChecked())
+    {
+        VDC::saveSettingsToIni("", "compression", QString::number(2));
+    } else {
+        VDC::saveSettingsToIni("", "compression", QString::number(1));
+    }
+}
+
 void LoginForm::openCompOptions()
 {
     QWidget *widget = new QWidget();
@@ -306,6 +316,12 @@ void LoginForm::openCompOptions()
     okButton->setIcon(QIcon(QString("pics:ok_gruen.png")));
     okButton->setIconSize(QSize(40,25));
 
+    compCb = new QCheckBox(tr("Enable Compression"));
+
+    if(VDC::readSettingsFromIni("", "compression").toInt() == 0 || VDC::readSettingsFromIni("", "compression").toInt() == 2)
+    {
+        compCb->setChecked(true);
+    }
 
     QPalette palette;
     palette.setBrush(this->backgroundRole(), QBrush(QImage("pics:VENTAS_9_alu_1080p.png")));
@@ -340,6 +356,7 @@ void LoginForm::openCompOptions()
     hLayout->addWidget(label4);
 
     connect(compLevel, SIGNAL(valueChanged(int)), this, SLOT(saveCompression(int)));
+    connect(okButton, SIGNAL(pressed()), this, SLOT(compression()));
     connect(okButton, SIGNAL(pressed()), widget, SLOT(close()));
     okButton->setMaximumWidth(100);
     okButton->setShortcut(Qt::Key_F12);
@@ -349,6 +366,7 @@ void LoginForm::openCompOptions()
     vLayout->addLayout(hLayout1);
     vLayout->addLayout(hLayout);
     vLayout->addWidget(compLevel);
+    vLayout->addWidget(compCb);
     vLayout->addWidget(okButton, 0, Qt::AlignHCenter);
 
     int sliderValue = VDC::readSettingsFromIni("VENTAS AG", "sshSliderValue").toInt();

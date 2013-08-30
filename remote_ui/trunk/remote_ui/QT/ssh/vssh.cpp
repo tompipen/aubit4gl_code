@@ -572,9 +572,14 @@ void VSSH::loadSettings()
   ssh_options_set(session, SSH_OPTIONS_USER, user);
   ssh_options_set(session, SSH_OPTIONS_LOG_VERBOSITY, &verbose);
   ssh_options_set(session, SSH_OPTIONS_PORT, &port);
-  ssh_options_set(session, SSH_OPTIONS_COMPRESSION, "zlib@openssh.com");
-  ssh_options_set(session, SSH_OPTIONS_COMPRESSION_LEVEL, compression);
-  ssh_options_set(session, SSH_OPTIONS_COMPRESSION_S_C, "yes");
+
+  if(VDC::readSettingsFromIni("", "compression").toInt() != 1)
+  {
+      qDebug() << "Enabling compression...";
+      ssh_options_set(session, SSH_OPTIONS_COMPRESSION, "zlib@openssh.com");
+      ssh_options_set(session, SSH_OPTIONS_COMPRESSION_LEVEL, compression);
+      ssh_options_set(session, SSH_OPTIONS_COMPRESSION_S_C, "yes");
+  }
 
 }
 

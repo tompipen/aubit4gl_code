@@ -54,6 +54,7 @@ public:
 public slots:
    void saveCompression(int);
    void openCompOptions();
+   void compression();
    void aboutVDC(QWidget *parent = 0);
    void removeIni();
    void clearIniFile();
@@ -98,6 +99,7 @@ private slots:
 private:
 
    QComboBox *mOfficeComboBox;
+   QCheckBox *compCb;
 
    //Progressbar for Update GUI
 
