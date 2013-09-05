@@ -1089,9 +1089,15 @@ namespace Fgl {
                   {
                       value.remove(">");
                   }
+
                   if(value.contains("="))
                   {
                       value.remove("=");
+                  }
+
+                  if(value.contains(":"))
+                  {
+                      value.remove(":");
                   }
 
                   if(value.contains("|"))
