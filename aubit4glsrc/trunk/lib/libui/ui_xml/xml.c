@@ -1566,9 +1566,7 @@ UILIB_A4GLUI_ui_init (int argc, char **argv)
     {
       win_stack[a] = 0;
     }
-A4GL_debug("ui_init");
   add_window ("screen", 80, 24, 0);
-A4GL_debug("added window 'screen'");
   if (generate_xml_forms==-1) {
 	if (A4GL_isyes(acl_getenv("ALWAYSUSEXMLFORMS"))) {
 		generate_xml_forms=1;
@@ -1576,7 +1574,8 @@ A4GL_debug("added window 'screen'");
 		generate_xml_forms=0;
 	}
   }
-A4GL_debug("...");
+
+
   send_to_ui ("<PROGRAMSTARTUP PROGRAMNAME=\"%s\" ID=\"%d\">", argv[0], get_ui_id ('r'));
   for (a = 0; nm[a]; a++)
     {
@@ -1585,19 +1584,16 @@ A4GL_debug("...");
       send_to_ui ("<ENV NAME=\"A4GL_VERSION\" VALUE=\"%s.%d\"/>",  uilib_xml_escape (char_encode(A4GL_internal_version ())),A4GL_internal_build());
       send_to_ui ("<ENV NAME=\"XML_VERSION\" VALUE=\"1.3\"/>");
 
-A4GL_debug("...");
 
   send_to_ui ("</PROGRAMSTARTUP>");
-A4GL_debug("...");
   tmpnam (stderr_fname);
-A4GL_debug("...");
   def_stderr = fopen (stderr_fname, "w");
-A4GL_debug("...");
+
+
   if (def_stderr)
     {
       A4GL_set_stderr (def_stderr);
     }
-A4GL_debug("...");
   flush_ui ();
   A4GL_debug("Done ui_init...");
   return 1;

@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_incl_4gldef.h,v 1.142 2013-07-12 13:00:26 mikeaubury Exp $
+# $Id: a4gl_incl_4gldef.h,v 1.143 2013-09-09 19:41:33 mikeaubury Exp $
 */
 
 /**
@@ -525,6 +525,7 @@ int A4GL_init_agg(void **aggptr, int type);
 
 int A4GL_push_substr (char *ca, int dtype, int a, int b, ...) ;
 int A4GL_report_lineno(struct rep_structure *rep);
+int A4GL_pdf_report_lineno(struct pdf_rep_structure *rep);
 void A4GL_convert_report (struct rep_structure *rep, char *ofile, char *otype, char *layout, int to_pipe);
 
 int A4GL_pdf_pdffunc(void* p,char* fname,int n) ;

@@ -24,12 +24,12 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.553 2013-02-21 12:29:13 mikeaubury Exp $
+# $Id: compile_c.c,v 1.554 2013-09-09 19:41:34 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
-static char const module_id[] = "$Id: compile_c.c,v 1.553 2013-02-21 12:29:13 mikeaubury Exp $";
+static char const module_id[] = "$Id: compile_c.c,v 1.554 2013-09-09 19:41:34 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -1545,7 +1545,7 @@ real_print_expr (struct expr_str *ptr)
     case ET_EXPR_LINENO:
       if (is_in_report ())
 	{
-	  printc ("{static long _ln; _ln=A4GL_report_lineno(&_rep);A4GL_push_long(_ln);}");
+	  printc ("{static long _ln; _ln=A4GL_%sreport_lineno(&_rep);A4GL_push_long(_ln);}",generate_ispdf ());
 	}
       else
 	{

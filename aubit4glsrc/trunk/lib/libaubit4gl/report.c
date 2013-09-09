@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.209 2013-07-12 13:00:29 mikeaubury Exp $
+# $Id: report.c,v 1.210 2013-09-09 19:41:34 mikeaubury Exp $
 #
 */
 
@@ -1230,6 +1230,18 @@ A4GL_report_lineno (struct rep_structure *rep)
       return 0;
     }
   return rep->line_no - 1;
+}
+
+
+int
+A4GL_pdf_report_lineno (struct pdf_rep_structure *rep)
+{
+  if (rep->line_no > rep->page_length - rep->bottom_margin || rep->line_no==0)
+    {
+      return 0;
+    }
+  return ((int)(rep->line_no /rep->font_size))-1;
+;
 }
 
 /**
