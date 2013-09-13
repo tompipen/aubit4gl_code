@@ -442,7 +442,7 @@ void TableView::copyTable()
         for(int j=0; j < columns; j++)
         {
             QModelIndex index = this->model()->index(i, j);
-            tableText.append(index.data().toString() + "\t");
+            tableText.append(index.data().toString().remove("\n") + "\t");
 
             if(j+1 == columns)
             {
