@@ -24,10 +24,10 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.252 2013-07-18 10:42:41 mikeaubury Exp $
+# $Id: ioform.c,v 1.253 2013-09-20 15:00:15 mikeaubury Exp $
 #*/
 #ifndef lint
-static char const module_id[] = "$Id: ioform.c,v 1.252 2013-07-18 10:42:41 mikeaubury Exp $";
+static char const module_id[] = "$Id: ioform.c,v 1.253 2013-09-20 15:00:15 mikeaubury Exp $";
 #endif
 
 /**
@@ -144,7 +144,7 @@ static int A4GL_get_metric_for (struct s_form_dets *form, FIELD * f);
 //int A4GL_wcswidth(char *mbs);         /* utf8 */
 
 static int local_chk_field (struct s_form_dets *form, FIELD * f, int allfields, int var_dtype, char *contents);
-char* create_field_contents (FIELD * field, int d1_ptr, int s1, char *ptr1, int dtype_field);
+char *create_field_contents (FIELD * field, int d1_ptr, int s1, char *ptr1, int dtype_field);
 
 /*
 =====================================================================
@@ -152,9 +152,12 @@ char* create_field_contents (FIELD * field, int d1_ptr, int s1, char *ptr1, int 
 =====================================================================
 */
 
-static int is_number_datatype(int dtype) {
-	dtype=dtype&DTYPE_MASK;
-	return dtype == DTYPE_DECIMAL || dtype == DTYPE_FLOAT || dtype == DTYPE_SMFLOAT || dtype == DTYPE_MONEY || dtype==DTYPE_SERIAL || dtype==DTYPE_INT || dtype==DTYPE_SMINT;
+static int
+is_number_datatype (int dtype)
+{
+  dtype = dtype & DTYPE_MASK;
+  return dtype == DTYPE_DECIMAL || dtype == DTYPE_FLOAT || dtype == DTYPE_SMFLOAT || dtype == DTYPE_MONEY || dtype == DTYPE_SERIAL
+    || dtype == DTYPE_INT || dtype == DTYPE_SMINT;
 }
 
 /**
@@ -178,9 +181,10 @@ A4GL_make_label (int frow, int fcol, char *label)
   FIELD *f;
   int l;
   int is_graphics = 0;
-  if (strlen(label)==0) {
-	A4GL_assertion(1,"Zero length label - does the form have an empty delimiters?");
-  }
+  if (strlen (label) == 0)
+    {
+      A4GL_assertion (1, "Zero length label - does the form have an empty delimiters?");
+    }
   //l = strlen (label);
   l = A4GL_wcswidth (label);
 #ifdef DEBUG
@@ -428,15 +432,17 @@ UILIB_A4GL_read_metrics (void *formdetsv)
 	  A4GL_assertion (cnt >= MAX_FORM_FIELDS, "Ran out of form_fields...");
 	  formdets->form_fields[cnt] = 0;
 
-	if (strlen(delims[0])) {
-	  formdets->fileform->metrics.metrics_val[a].dlm1 = (long) A4GL_make_label (y, x - 1, delims[0]);
-	  formdets->form_fields[cnt++] = (FIELD *) formdets->fileform->metrics.metrics_val[a].dlm1;
-	  A4GL_assertion (cnt >= MAX_FORM_FIELDS, "Ran out of form_fields...");
-	} 
-	if (strlen(delims[1])) {
-	  formdets->fileform->metrics.metrics_val[a].dlm2 = (long) A4GL_make_label (y, x + w, delims[1]);
-	  formdets->form_fields[cnt++] = (FIELD *) formdets->fileform->metrics.metrics_val[a].dlm2;
-	}
+	  if (strlen (delims[0]))
+	    {
+	      formdets->fileform->metrics.metrics_val[a].dlm1 = (long) A4GL_make_label (y, x - 1, delims[0]);
+	      formdets->form_fields[cnt++] = (FIELD *) formdets->fileform->metrics.metrics_val[a].dlm1;
+	      A4GL_assertion (cnt >= MAX_FORM_FIELDS, "Ran out of form_fields...");
+	    }
+	  if (strlen (delims[1]))
+	    {
+	      formdets->fileform->metrics.metrics_val[a].dlm2 = (long) A4GL_make_label (y, x + w, delims[1]);
+	      formdets->form_fields[cnt++] = (FIELD *) formdets->fileform->metrics.metrics_val[a].dlm2;
+	    }
 	  A4GL_assertion (cnt >= MAX_FORM_FIELDS, "Ran out of form_fields...");
 	  formdets->form_fields[cnt] = 0;
 	}
@@ -505,12 +511,12 @@ A4GL_default_attributes (FIELD * f, int dtype)
   struct struct_scr_field *fprop;
 
   int done = 0;
-int isStatic=0;
+  int isStatic = 0;
 
 
   fprop = (struct struct_scr_field *) (field_userptr (f));
 
-isStatic=local_field_opts(f)& O_STATIC;
+  isStatic = local_field_opts (f) & O_STATIC;
 
 #ifdef DEBUG
   A4GL_debug ("In def attrib f=%p", f);
@@ -543,7 +549,7 @@ isStatic=local_field_opts(f)& O_STATIC;
 #ifdef DEBUG
 	  A4GL_debug ("ZZZZ - SET OPTS");
 #endif
-	  local_set_field_opts (f, O_VISIBLE | O_ACTIVE | O_PUBLIC | O_EDIT  | isStatic);
+	  local_set_field_opts (f, O_VISIBLE | O_ACTIVE | O_PUBLIC | O_EDIT | isStatic);
 	  local_field_opts_off (f, O_BLANK);
 	}
       else
@@ -809,12 +815,13 @@ A4GL_set_field_colour_attr (FIELD * field, int do_reverse, int colour)
 
   fg = A4GL_decode_aubit_attr (colour, 'f');
   bg = A4GL_decode_aubit_attr (colour, 'B');
-  old_fg=field_fore(field);
-  old_bg=field_back(field);
-  if (fg==old_fg && bg==old_bg) {
-	// Already set...
-	return;
-  }
+  old_fg = field_fore (field);
+  old_bg = field_back (field);
+  if (fg == old_fg && bg == old_bg)
+    {
+      // Already set...
+      return;
+    }
   a1 = set_field_fore (field, fg);
   a2 = set_field_back (field, bg);
 
@@ -1032,7 +1039,8 @@ A4GL_form_field_chk (struct s_screenio *sio, int m)
       if (form->currentfield != 0)
 	{
 	  int rval;
-	  rval = local_chk_field (form, form->currentfield, 0, sio->vars[sio->curr_attrib].dtype, field_buffer(form->currentfield, 0));
+	  rval =
+	    local_chk_field (form, form->currentfield, 0, sio->vars[sio->curr_attrib].dtype, field_buffer (form->currentfield, 0));
 	  if (rval == -4)
 	    {
 	      set_current_field (mform, form->currentfield);
@@ -1054,32 +1062,32 @@ chk_all_fields (struct s_screenio *sio)
   if (sio->mode != MODE_CONSTRUCT)
     {
       // Might need to do something similar for construct ? 
-      int checkvar=A4GL_isyes (acl_getenv ("A4GL_CHECK_VARIABLE_AFTER_INPUT"));
+      int checkvar = A4GL_isyes (acl_getenv ("A4GL_CHECK_VARIABLE_AFTER_INPUT"));
       for (a = 0; a <= sio->nfields; a++)
 	{
-          FIELD *f = sio->field_list[a];
-          char *contents;
-          if(checkvar)
-            {
-              int size = sio->vars[a].size;
-              int dtype = sio->vars[a].dtype + ENCODE_SIZE (size);
-              A4GL_push_param (sio->vars[a].ptr, dtype);
-              contents = create_field_contents (f, dtype, size, sio->vars[a].ptr, dtype);
-              if(contents == NULL)
-                {
-                  return a;
-                }
-            }
-          else
-            {
-              contents = field_buffer(f,0);
-            }
+	  FIELD *f = sio->field_list[a];
+	  char *contents;
+	  if (checkvar)
+	    {
+	      int size = sio->vars[a].size;
+	      int dtype = sio->vars[a].dtype + ENCODE_SIZE (size);
+	      A4GL_push_param (sio->vars[a].ptr, dtype);
+	      contents = create_field_contents (f, dtype, size, sio->vars[a].ptr, dtype);
+	      if (contents == NULL)
+		{
+		  return a;
+		}
+	    }
+	  else
+	    {
+	      contents = field_buffer (f, 0);
+	    }
 	  int chk = local_chk_field (sio->currform, f, 1, sio->vars[a].dtype, contents);
-          if(checkvar)
-            {
-              acl_free (contents);
-            }
-          if(chk == -4)
+	  if (checkvar)
+	    {
+	      acl_free (contents);
+	    }
+	  if (chk == -4)
 	    {
 	      return a;
 	    }
@@ -1306,7 +1314,7 @@ local_chk_field (struct s_form_dets *form, FIELD * f, int allfields, int var_dty
 	    }
 
 
-	  strcpy (buff3, contents); 
+	  strcpy (buff3, contents);
 
 	  if (A4GL_has_str_attribute (fprop, FA_S_PICTURE))
 	    {
@@ -1948,17 +1956,17 @@ UILIB_A4GL_set_fields (void *vsio)
 	      dtype = sio->vars[a].dtype + ENCODE_SIZE (sio->vars[a].size);
 	      defval = A4GL_replace_sql_var (A4GL_strip_quotes (A4GL_get_str_attribute (prop, FA_S_DEFAULT)));
 
-  if (A4GL_is_numeric_datatype (prop->datatype) )
-    {
-      char *tmpptr;
-      tmpptr = strdup (defval);
+	      if (A4GL_is_numeric_datatype (prop->datatype))
+		{
+		  char *tmpptr;
+		  tmpptr = strdup (defval);
 
-      A4GL_decstr_convert (tmpptr, A4GL_get_convfmts ()->posix_decfmt, A4GL_get_convfmts ()->ui_decfmt, 0, 1, -1);	// validate
-      if (tmpptr[0] != 0)	//conversion succesful
-	strcpy (defval, tmpptr);
+		  A4GL_decstr_convert (tmpptr, A4GL_get_convfmts ()->posix_decfmt, A4GL_get_convfmts ()->ui_decfmt, 0, 1, -1);	// validate
+		  if (tmpptr[0] != 0)	//conversion succesful
+		    strcpy (defval, tmpptr);
 
-      free (tmpptr);
-    }
+		  free (tmpptr);
+		}
 
 	      // We're passing in the default value as a character string - even if its not really
 	      // supposed to be a character string...
@@ -2894,7 +2902,7 @@ A4GL_set_field_pop_attr (FIELD * field, int attr, int cmd_type)
   int d1;
   int s1;
   void *ptr1;
-int newdtype;
+  int newdtype;
 
 
   A4GL_get_top_of_stack (1, &d1, &s1, (void **) &ptr1);
@@ -2947,8 +2955,8 @@ int newdtype;
 	      JUSTIFY_CENTER);
 #endif
 
-	 newdtype=d1 + ENCODE_SIZE (s1);
-  A4GL_debug("Newtype : %x", newdtype);
+  newdtype = d1 + ENCODE_SIZE (s1);
+  A4GL_debug ("Newtype : %x", newdtype);
   A4GL_display_field_contents (field, d1, s1, ptr1, newdtype);
 
 
@@ -3049,18 +3057,19 @@ void
 A4GL_display_field_contents (FIELD * field, int d1_ptr, int s1, char *ptr1, int dtype_field)
 {
   char *ff;
-  ff=create_field_contents (field, d1_ptr, s1, ptr1, dtype_field);
-  if(ff != NULL){
-    A4GL_mja_set_field_buffer (field, 0, ff);
-    acl_free (ff);
-  }
+  ff = create_field_contents (field, d1_ptr, s1, ptr1, dtype_field);
+  if (ff != NULL)
+    {
+      A4GL_mja_set_field_buffer (field, 0, ff);
+      acl_free (ff);
+    }
 }
 
 
 /**
  * @todo Describe function
  */
-char*
+char *
 create_field_contents (FIELD * field, int d1_ptr, int s1, char *ptr1, int dtype_field)
 {
   int field_width;
@@ -3071,7 +3080,7 @@ create_field_contents (FIELD * field, int d1_ptr, int s1, char *ptr1, int dtype_
   char *ff;
   int isStatic;
 
-  isStatic=field_opts(field) & O_STATIC;
+  isStatic = field_opts (field) & O_STATIC;
 
 
   field_width = A4GL_get_field_width_w (field, 1);
@@ -3079,16 +3088,17 @@ create_field_contents (FIELD * field, int d1_ptr, int s1, char *ptr1, int dtype_
   f = (struct struct_scr_field *) (field_userptr (field));
 #ifdef DEBUG
   A4GL_debug ("In display_field_contents field width=%d dtype_field=%x (%x) ", field_width, dtype_field, dtype_field & DTYPE_MASK);
-  A4GL_debug("f->dynamic=%d isStatic=%d\n", f->dynamic, isStatic);
+  A4GL_debug ("f->dynamic=%d isStatic=%d\n", f->dynamic, isStatic);
 #endif
 
 
-  if ( !isStatic && f->dynamic==0 && is_number_datatype(dtype_field&DTYPE_MASK) ) { //&& A4GL_is_numeric_datatype(d1_ptr&DTYPE_MASK)) {
-	
-	// Looks like its really a CONSTRUCT atm..
-	A4GL_debug("Looks like a construct - using a CHAR instead..");
-	dtype_field=DTYPE_CHAR;
-  }
+  if (!isStatic && f->dynamic == 0 && is_number_datatype (dtype_field & DTYPE_MASK))
+    {				//&& A4GL_is_numeric_datatype(d1_ptr&DTYPE_MASK)) {
+
+      // Looks like its really a CONSTRUCT atm..
+      A4GL_debug ("Looks like a construct - using a CHAR instead..");
+      dtype_field = DTYPE_CHAR;
+    }
 
 
   ff = acl_malloc2 (field_width + 1);
@@ -3218,18 +3228,18 @@ create_field_contents (FIELD * field, int d1_ptr, int s1, char *ptr1, int dtype_
     {
       A4GL_replace_tab_with_spaces_on_stack ();
 #ifdef WIDEMODE
-	{
+      {
 	char tmp[50000];
 	//char *ptr;
-	free(ff);
-	A4GL_pop_var2(&tmp,DTYPE_NCHAR,field_width);
-	ff=strdup(tmp);
-	}
+	free (ff);
+	A4GL_pop_var2 (&tmp, DTYPE_NCHAR, field_width);
+	ff = strdup (tmp);
+      }
 #else
       A4GL_pop_char (ff, field_width);
 #endif
 
-	A4GL_debug("Popped : %s\n",ff);
+      A4GL_debug ("Popped : %s\n", ff);
     }
   else
     {
@@ -3553,21 +3563,21 @@ A4GL_mja_set_field_buffer (FIELD * field, int nbuff, char *buff)
 
   if (local_field_opts (field) & O_STATIC)
     {
-A4GL_debug("Before trim:%s",buff2);
+      A4GL_debug ("Before trim:%s", buff2);
       // Trim to size...
 #ifdef WIDEMODE
-       {
-       char tmp[50000];
+      {
+	char tmp[50000];
 	int sl;
-	A4GL_push_char(buff2);
-        A4GL_pop_var2(&tmp,DTYPE_NCHAR,b);
-	sl=strlen(tmp);
-      	buff2[sl] = 0;
-        }
+	A4GL_push_char (buff2);
+	A4GL_pop_var2 (&tmp, DTYPE_NCHAR, b);
+	sl = strlen (tmp);
+	buff2[sl] = 0;
+      }
 #else
       buff2[b] = 0;
 #endif
-A4GL_debug("after trim:%s",buff2);
+      A4GL_debug ("after trim:%s", buff2);
     }
 
 
@@ -4618,21 +4628,21 @@ UILIB_A4GL_clr_form (int to_default)
 	      struct struct_scr_field *prop;
 	      prop = (struct struct_scr_field *) field_userptr (f);
 
-		char *defval;
+	      char *defval;
 
 	      defval = A4GL_replace_sql_var (A4GL_strip_quotes (A4GL_get_str_attribute (prop, FA_S_DEFAULT)));
 
-  if (A4GL_is_numeric_datatype (prop->datatype) )
-    {
-      char *tmpptr;
-      tmpptr = strdup (defval);
+	      if (A4GL_is_numeric_datatype (prop->datatype))
+		{
+		  char *tmpptr;
+		  tmpptr = strdup (defval);
 
-      A4GL_decstr_convert (tmpptr, A4GL_get_convfmts ()->posix_decfmt, A4GL_get_convfmts ()->ui_decfmt, 0, 1, -1);	// validate
-      if (tmpptr[0] != 0)	//conversion succesful
-	strcpy (defval, tmpptr);
+		  A4GL_decstr_convert (tmpptr, A4GL_get_convfmts ()->posix_decfmt, A4GL_get_convfmts ()->ui_decfmt, 0, 1, -1);	// validate
+		  if (tmpptr[0] != 0)	//conversion succesful
+		    strcpy (defval, tmpptr);
 
-      free (tmpptr);
-    }
+		  free (tmpptr);
+		}
 	      A4GL_mja_set_field_buffer (f, 0, defval);
 	    }
 	}
@@ -4777,9 +4787,9 @@ UILIB_A4GL_fgl_fieldtouched_input_array_ap (void *sv, va_list * ap)
          for (a = 0; a <= c; a++)
          {
          found = 0;
-#ifdef DEBUG
+         #ifdef DEBUG
          A4GL_debug ("fieldtouched FIELD : %p a=%d c=%d - status=%d\n",
-#endif
+         #endif
          field_list[a], a, c, field_status (field_list[a]));
 
          // Have a look to see if we are currently inputing this one...
@@ -4988,8 +4998,10 @@ UILIB_A4GL_clr_fields_ap (int to_defaults, va_list * ap)
 
       attr = A4GL_determine_attribute (FGL_CMD_CLEAR, attr, f, 0);
 
-      if (attr & AUBIT_ATTR_REVERSE) r = 1;
-      else r = 0;
+      if (attr & AUBIT_ATTR_REVERSE)
+	r = 1;
+      else
+	r = 0;
       A4GL_set_field_colour_attr (field_list[a], r, attr);
       A4GL_mja_set_field_buffer (field_list[a], 0, "");
 
@@ -5733,17 +5745,23 @@ A4GL_check_and_copy_field_to_data_area (struct s_form_dets *form,
     {
       dsize = fprop->dtype_size;
     }
-  if ((fprop->datatype & DTYPE_MASK)==DTYPE_SMINT) { 
-	long lval;
-  	pprval = A4GL_pop_param ((void *)&lval, DTYPE_INT, dsize);
-	if (lval>SHRT_MAX || lval<SHRT_MIN) {
-		return 0;
-	} else {
-		(*(short *)data_area)=lval;
+  if ((fprop->datatype & DTYPE_MASK) == DTYPE_SMINT)
+    {
+      long lval;
+      pprval = A4GL_pop_param ((void *) &lval, DTYPE_INT, dsize);
+      if (lval > SHRT_MAX || lval < SHRT_MIN)
+	{
+	  return 0;
 	}
-  } else {
-  	pprval = A4GL_pop_param (data_area, fprop->datatype, dsize);
-  }
+      else
+	{
+	  (*(short *) data_area) = lval;
+	}
+    }
+  else
+    {
+      pprval = A4GL_pop_param (data_area, fprop->datatype, dsize);
+    }
 
   if (pprval)
     {
@@ -5816,6 +5834,3 @@ UILIB_A4GL_direct_to_ui (char *t, char *s)
     }
 // Does nothing - require by the API...
 }
-
-
-
