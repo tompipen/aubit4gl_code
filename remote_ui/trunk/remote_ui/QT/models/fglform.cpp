@@ -951,6 +951,13 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
                        emit sendactivateinputevent();
                    }
                }
+               if(TextEdit *le = qobject_cast<TextEdit*> (w))
+               {
+                   if(!le->isEnabled()|| le->isReadOnly())
+                   {
+                       emit sendactivateinputevent();
+                   }
+               }
                if(TableView *tv = qobject_cast<TableView*> (obj))
                {
                    Q_UNUSED(tv);
@@ -1064,7 +1071,7 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
              {
                  if(!te->isEnabled())
                  {
-                     createContextMenu(mev->globalPos());
+                     emit sendactivateinputevent();
                  }
              }
          }
