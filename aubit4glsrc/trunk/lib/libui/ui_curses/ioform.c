@@ -24,10 +24,10 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.253 2013-09-20 15:00:15 mikeaubury Exp $
+# $Id: ioform.c,v 1.254 2013-09-28 16:53:08 mikeaubury Exp $
 #*/
 #ifndef lint
-static char const module_id[] = "$Id: ioform.c,v 1.253 2013-09-20 15:00:15 mikeaubury Exp $";
+static char const module_id[] = "$Id: ioform.c,v 1.254 2013-09-28 16:53:08 mikeaubury Exp $";
 #endif
 
 /**
@@ -1983,7 +1983,12 @@ UILIB_A4GL_set_fields (void *vsio)
 	      A4GL_debug ("99  set_init_value as nothing...");
 #endif
 	      changed = 1;
-	      A4GL_set_init_value (field_list[a], 0, 0, 0);
+//A4GL_pause_execution();
+	      //if (A4GL_isyes(acl_getenv("USESPCDEFAULT")) && A4GL_has_bool_attribute (prop, FA_B_NOTNULL) && !A4GL_is_numeric_datatype (prop->datatype)) {
+	      	    //A4GL_set_init_value (field_list[a], " ", DTYPE_CHAR, sio->vars[a].dtype + ENCODE_SIZE (sio->vars[a].size));
+              //} else {
+	            A4GL_set_init_value (field_list[a], 0, 0, 0);
+              //}
 	    }
 	}
 

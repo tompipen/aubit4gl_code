@@ -135,6 +135,9 @@ opt_help_no_i		:	{$<integer_val>$=0; } | KW_HELP INT_VALUE {$<integer_val>$=atoi
 identifier	:  NAMED  { 
 			strcpy($<str>$,downshift($<str>1)) ;
 }
+| BACKQUOTE NAMED BACKQUOTE  { 
+			strcpy($<str>$,$<str>2) ;
+}
 ;
 
 

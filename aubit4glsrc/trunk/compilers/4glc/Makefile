@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.73 2011-11-25 10:05:00 mikeaubury Exp $
+# $Id: Makefile,v 1.74 2013-09-28 16:52:47 mikeaubury Exp $
 #
 
 ROOT		=../..
@@ -211,7 +211,7 @@ endif
 #	${MAKE} -C rules $(MKNAME)
 
 rules/generated/y.tab.o: ${Y_TAB_C} ${Y_TAB_H}
-	${BISON_CC} ${CFLAGS} -c -o $@ ${Y_TAB_C} ${YYDEBUG} -I${ROOT}/lib/liblex/lex_c -I.
+	${BISON_CC}  ${CFLAGS} -c -o $@ ${Y_TAB_C} ${YYDEBUG} -I${ROOT}/lib/liblex/lex_c -I.
 
 rules/generated/mk_states.o:  rules/generated/mk_states.c
 	${CC} ${CFLAGS} -O2 -c -o $@ $< -I. -Irules/generated

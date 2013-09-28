@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: lexer.c,v 1.142 2010-08-23 20:26:07 mikeaubury Exp $
+# $Id: lexer.c,v 1.143 2013-09-28 16:52:47 mikeaubury Exp $
 #*/
 
 /**
@@ -1549,7 +1549,7 @@ a4gl_yylex (void *pyylval, int yystate, void *yys1, void *yys2)
 		char*buff2;
 		buff2=acl_strdup(buff);
 		if (a==NAMED_GEN) {
-			downshift(buff2);
+			//downshift(buff2);
 		} else {
 			upshift(buff2);
 		}
