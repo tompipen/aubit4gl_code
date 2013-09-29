@@ -17,8 +17,11 @@
 %x escaped
 %option yylineno
 /*%option interactive*/
+ID [a-zA-Z‰ﬂ£_]+[a-zA-Z\_0-9]*
+IDEXT [a-zA-Z‰ﬂ£\_0-9]+[a-zA-Z\_0-9]*
 
 %%
+
 [\r] ;
 [\n] 	{ if (ignorekw==1) {graphics_mode=0;return KW_NL;} else {graphics_mode=0;yylineno--;REJECT; }}
 <escaped>[\n] 	{ if (ignorekw==1) {graphics_mode=0;return KW_NL;} else {graphics_mode=0;REJECT; }}
@@ -380,9 +383,23 @@ on[	 ]beginning 	{if (ign_kw(yystate, KW_ON_BEGINNING)||doing_4gl()) REJECT;strc
 
 
 
+`{ID}` {
+/* [a-zA-Z‰ﬂ£_]+[a-zA-Z\_0-9]*	 */
+	char buff[20000];
+	if (ignorekw) REJECT;
+	strcpy(buff,&yytext[1]);
+	char *ptr=strchr(buff,'`');
+	if (ptr) *ptr=0;
+	strcpy(yylval.str, buff);
+#ifdef DEBUG
+	A4GL_debug("NAMED : %s\n",buff);
+#endif
+	if (yydebug) {printf("NAMED: %s\n",buff); fflush(stdout);}
+ 	return(NAMED_CASE_SPECIFIC);
+}
 
-
-[a-zA-Z‰ﬂ£_]+[a-zA-Z\_0-9]*	{
+{ID} {
+/* [a-zA-Z‰ﬂ£_]+[a-zA-Z\_0-9]*	 */
 	if (ignorekw) REJECT;
 	strcpy(yylval.str, yytext);
 #ifdef DEBUG
@@ -391,7 +408,9 @@ on[	 ]beginning 	{if (ign_kw(yystate, KW_ON_BEGINNING)||doing_4gl()) REJECT;strc
 	if (yydebug) {printf("NAMED: %s\n",yytext); fflush(stdout);}
  	return(NAMED);
 }
-[a-zA-Z‰ﬂ£\_0-9]+[a-zA-Z\_0-9]*	{
+
+{IDEXT} {
+/*[a-zA-Z‰ﬂ£\_0-9]+[a-zA-Z\_0-9]*	*/
 if (ignorekw!=1) REJECT;
 
         if (graphics_mode) {

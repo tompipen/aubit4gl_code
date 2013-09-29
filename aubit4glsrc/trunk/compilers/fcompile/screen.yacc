@@ -113,7 +113,7 @@ char *chk_alias(char *s);
 %token CH
 %token GRAPH_CH
 %token KW_COMPOSITES 
-%token INSTRUCTIONS ATTRIBUTES DATABASE BY KW_SCREEN_TITLE KW_SCREEN KW_SIZE OPEN_SQUARE KW_END CLOSE_SQUARE NUMBER_VALUE NAMED  OPEN_BRACE CLOSE_BRACE TITLE
+%token INSTRUCTIONS ATTRIBUTES DATABASE BY KW_SCREEN_TITLE KW_SCREEN KW_SIZE OPEN_SQUARE KW_END CLOSE_SQUARE NUMBER_VALUE NAMED  OPEN_BRACE CLOSE_BRACE TITLE NAMED_CASE_SPECIFIC
 FORMONLY COMMENT
 %token DYNAMIC COLON ATSIGN DOT WITHOUT KW_NULL INPUT TABLES PIPE EQUAL CHAR_VALUE CHARACTER_ENCODING
 %token SEMICOLON LOOKUP JOINING LOOKUP_FROM
@@ -167,7 +167,7 @@ database_section :
 DATABASE FORMONLY {the_form.dbname=acl_strdup("formonly");
 the_form.allowNullInput=1;
 }
-| DATABASE dbname WITHOUT KW_NULL INPUT {the_form.dbname=acl_strdup(downshift($<str>2));
+| DATABASE dbname WITHOUT KW_NULL INPUT {the_form.dbname=acl_strdup($<str>2);
 if (A4GLF_open_db(the_form.dbname)) {
 		yyerror("Unable to connect to database\n");
 }
@@ -176,7 +176,7 @@ the_form.allowNullInput=0;
 | DATABASE FORMONLY WITHOUT KW_NULL INPUT {the_form.dbname=("formonly");
 the_form.allowNullInput=0;
 }
-| DATABASE dbname {the_form.dbname=acl_strdup(downshift($<str>2));
+| DATABASE dbname {the_form.dbname=acl_strdup($<str>2);
 if (A4GLF_open_db(the_form.dbname)) {
 		yyerror("Unable to connect to database\n");
 }
@@ -185,19 +185,33 @@ the_form.allowNullInput=1;
 ;
 
 
-named_or_kw_st :
-	NAMED   
+
+named_or_kw_st_pc : 
+	NAMED {strcpy($<str>$,$<str>1);A4GL_make_downshift($<str>$); }
+	| NAMED_CASE_SPECIFIC {strcpy($<str>$,$<str>1); }
 ;
 
-named_or_kw_any :
-	NAMED   
+
+named_or_kw_any_pc : 
+	NAMED {strcpy($<str>$,$<str>1);A4GL_make_downshift($<str>$); }
+	| NAMED_CASE_SPECIFIC {strcpy($<str>$,$<str>1); }
 ;
+
+named_or_kw_any_tag : 
+	NAMED {strcpy($<str>$,$<str>1);
+ 		if (tagCaseInsensitive) {
+                		A4GL_make_downshift($<str>$);
+        		}
+	}
+	| NAMED_CASE_SPECIFIC {strcpy($<str>$,$<str>1); }
+;
+
 
 dbname : 
 	SPECIAL_DBNAME {strcpy($<str>$,acl_getenv("DBNAME"));} 
-	| SPECIAL_DBNAME ATSIGN named_or_kw_any  {strcpy($<str>$,acl_getenv("DBNAME"));} 
-	| named_or_kw_st
-	| named_or_kw_st ATSIGN named_or_kw_any {SPRINTF2($<str>$,"%s@%s",$<str>1,$<str>3);}
+	| SPECIAL_DBNAME ATSIGN named_or_kw_any_pc  {strcpy($<str>$,acl_getenv("DBNAME"));} 
+	| named_or_kw_st_pc 
+	| named_or_kw_st_pc ATSIGN named_or_kw_any_pc {SPRINTF2($<str>$,"%s@%s",$<str>1,$<str>3);}
 ;
 
 
@@ -285,7 +299,7 @@ page:
 
 opt_layout_ident: 
 	{strcpy($<str>$,"");}
-	 |  named_or_kw_any {
+	 |  named_or_kw_any_pc {
 		{strcpy($<str>$,$<str>1);}
 	}
 ;
@@ -503,7 +517,7 @@ screen_element
 | screen_layout screen_element
 ;
 
-some_text: named_or_kw_any {
+some_text: NAMED {
 	int a;
 	static char buff[256];
 	strcpy(buff,$<str>1);
@@ -666,9 +680,7 @@ table_def
 | table_def_list COMMA table_def
 ;
 
-table_def : named_or_kw_any opequal { 
-A4GL_make_downshift($<str>1);
-A4GL_make_downshift($<str>2);
+table_def : named_or_kw_any_pc opequal { 
 clr_status();
 A4GL_add_table($<str>2,$<str>1); 
 err_on_status();
@@ -679,13 +691,13 @@ opequal :  {strcpy($<str>$,"");}
 | EQUAL table_qualifier  {strcpy($<str>$,$<str>2); }
 ;
 
-table_qualifier : named_or_kw_any {sprintf($<str>$,"%s", $<str>1);}
-| named_or_kw_any COLON named_or_kw_any {sprintf($<str>$,"%s%s%s", $<str>1, $<str>2, $<str>3);}
-| named_or_kw_any ATSIGN named_or_kw_any 
+table_qualifier : named_or_kw_any_pc {sprintf($<str>$,"%s", $<str>1);}
+| named_or_kw_any_pc COLON named_or_kw_any_pc {sprintf($<str>$,"%s%s%s", $<str>1, $<str>2, $<str>3);}
+| named_or_kw_any_pc ATSIGN named_or_kw_any_pc
         {sprintf($<str>$,"%s%s%s", $<str>1, $<str>2, $<str>3);}
-| named_or_kw_any ATSIGN named_or_kw_any COLON named_or_kw_any {sprintf($<str>$,"%s%s%s%s%s", $<str>1, $<str>2, $<str>3,$<str>4,$<str>5);}
-| named_or_kw_any DOT named_or_kw_any {sprintf($<str>$,"%s%s%s", $<str>1, $<str>2, $<str>3);}
-| CHAR_VALUE DOT named_or_kw_any
+| named_or_kw_any_pc ATSIGN named_or_kw_any_pc COLON named_or_kw_any_pc {sprintf($<str>$,"%s%s%s%s%s", $<str>1, $<str>2, $<str>3,$<str>4,$<str>5);}
+| named_or_kw_any_pc DOT named_or_kw_any_pc {sprintf($<str>$,"%s%s%s", $<str>1, $<str>2, $<str>3);}
+| CHAR_VALUE DOT named_or_kw_any_pc
 ;
 
 
@@ -761,10 +773,10 @@ field_type op_att
 {
 				struct struct_scr_field *fld;
 				fld=A4GL_get_fld();
-	if (fld->tabname) {
-		A4GL_make_downshift(fld->tabname);
-	}
-	A4GL_make_downshift(fld->colname);
+	//if (fld->tabname) {
+		//A4GL_make_downshift(fld->tabname);
+	//}
+	//A4GL_make_downshift(fld->colname);
 	fld->colours.colours_len=0;
 	fld->colours.colours_val=0;
 #ifdef DEBUG
@@ -1112,10 +1124,10 @@ field_datatype_null :
 ;
 
 field_datatype : {strcpy($<str>$,"0"); dtype_size=0;}
-	| 	TYPE LIKE named_or_kw_any DOT named_or_kw_any {
+	| 	TYPE LIKE named_or_kw_any_pc DOT named_or_kw_any_pc {
 			sprintf($<str>$,"%d",A4GLF_getdatatype_fcompile($<str>5,$<str>3,1));
 		}
-	| 	TYPE LIKE named_or_kw_any {
+	| 	TYPE LIKE named_or_kw_any_pc {
 			sprintf($<str>$,"%d",A4GLF_getdatatype_fcompile($<str>3,"",1));
 		}
 	| 	TYPE datatype {
@@ -1162,7 +1174,7 @@ field_type : FORMONLY DOT field_name field_datatype_null {
         fld->datatype=atoi($<str>4)&0xff;
         fld->dtype_size=dtype_size;
 }
-| named_or_kw_any DOT named_or_kw_any {
+| named_or_kw_any_pc DOT named_or_kw_any_pc {
 				struct struct_scr_field *fld;
 				fld=A4GL_get_fld();
 	fld->tabname=acl_strdup($<str>1); 
@@ -1171,7 +1183,7 @@ field_type : FORMONLY DOT field_name field_datatype_null {
         fld->datatype=A4GLF_getdatatype_fcompile(fld->colname,fld->tabname,0);
         fld->dtype_size=A4GL_get_dtype_size();
 }
-| named_or_kw_any {
+| named_or_kw_any_pc {
 	struct struct_scr_field *fld;
 	char *tab;
 	fld=A4GL_get_fld();
@@ -1193,7 +1205,7 @@ field_type : FORMONLY DOT field_name field_datatype_null {
 	}
 }
 
-| STAR named_or_kw_any DOT named_or_kw_any {
+| STAR named_or_kw_any_pc DOT named_or_kw_any_pc {
 				struct struct_scr_field *fld;
 				fld=A4GL_get_fld();
 	fld->tabname=acl_strdup($<str>2); 
@@ -1202,7 +1214,7 @@ field_type : FORMONLY DOT field_name field_datatype_null {
         fld->datatype=A4GLF_getdatatype_fcompile(fld->colname,fld->tabname,0);
         fld->dtype_size=A4GL_get_dtype_size();
 }
-| STAR named_or_kw_any {
+| STAR named_or_kw_any_pc {
 				struct struct_scr_field *fld;
 				fld=A4GL_get_fld();
 	fld->colname=acl_strdup($<str>2);
@@ -1252,19 +1264,19 @@ lu_ft_eq_c_i:
 
 lu_ft: field_tag_name ;
 
-lu_fc: 	named_or_kw_any DOT named_or_kw_any {
+lu_fc: 	named_or_kw_any_pc DOT named_or_kw_any_pc {
 			sprintf($<str>$,"%s.%s", $<str>1,$<str>3);
 		}
-	| named_or_kw_any {
+	| named_or_kw_any_pc {
 			sprintf($<str>$,"%s", $<str>1);
 	}
 ;
 
 lu_joincol:
- 	named_or_kw_any DOT named_or_kw_any {sprintf($<str>$,"%s.%s", $<str>1,$<str>3);}
-	| named_or_kw_any {sprintf($<str>$,"%s",$<str>1);}
- 	| STAR named_or_kw_any DOT named_or_kw_any {sprintf($<str>$,"*%s.%s", $<str>2,$<str>4);}
-	| STAR named_or_kw_any {sprintf($<str>$,"*%s",$<str>2);}
+ 	named_or_kw_any_pc DOT named_or_kw_any_pc {sprintf($<str>$,"%s.%s", $<str>1,$<str>3);}
+	| named_or_kw_any_pc {sprintf($<str>$,"%s",$<str>1);}
+ 	| STAR named_or_kw_any_pc DOT named_or_kw_any_pc {sprintf($<str>$,"*%s.%s", $<str>2,$<str>4);}
+	| STAR named_or_kw_any_pc {sprintf($<str>$,"*%s",$<str>2);}
 ;
 
 lu_join: JOINING 
@@ -1342,22 +1354,22 @@ A4GL_add_bool_attr(fld,FA_B_AUTONEXT); }
 | COMMENTS EQUAL CHAR_VALUE { A4GL_add_str_attr(A4GL_get_fld(),FA_S_COMMENTS,$<str>3); }
 | DEFAULT EQUAL def_val { A4GL_add_str_attr(A4GL_get_fld(),FA_S_DEFAULT,$<str>3); }
 | OPTIONS EQUAL def_val { A4GL_add_str_attr(A4GL_get_fld(),FA_S_OPTIONS,$<str>3); }
-| DISPLAY LIKE named_or_kw_any {	
+| DISPLAY LIKE named_or_kw_any_pc {	
 #ifdef DEBUG
 A4GL_debug("WARNING : DISPLAY LIKE not really implemented");
 #endif
 }
-| DISPLAY LIKE named_or_kw_any DOT named_or_kw_any {	
+| DISPLAY LIKE named_or_kw_any_pc DOT named_or_kw_any_pc {	
 #ifdef DEBUG
 A4GL_debug("WARNING : DISPLAY LIKE not really implemented");
 #endif
 }
-| VALIDATE LIKE named_or_kw_any {	
+| VALIDATE LIKE named_or_kw_any_pc {	
 #ifdef DEBUG
 A4GL_debug("WARNING : VALIDATE LIKE not really implemented");
 #endif
 }
-| VALIDATE LIKE named_or_kw_any DOT named_or_kw_any {	
+| VALIDATE LIKE named_or_kw_any_pc DOT named_or_kw_any_pc {	
 #ifdef DEBUG
 A4GL_debug("WARNING : VALIDATE LIKE not really implemented");
 #endif
@@ -1368,7 +1380,7 @@ A4GL_debug("WARNING : VALIDATE LIKE not really implemented");
 | INCLUDE EQUAL OPEN_BRACKET incl_list CLOSE_BRACKET { sprintf($<str>$,"\n%s",$<str>4); A4GL_add_str_attr(A4GL_get_fld(),FA_S_INCLUDE,$<str>$); }
 | WIDGET EQUAL CHAR_VALUE { A4GL_add_str_attr(A4GL_get_fld(),FA_S_WIDGET,$<str>3); }
 | CONFIG EQUAL CHAR_VALUE { A4GL_add_str_attr(A4GL_get_fld(),FA_S_CONFIG,$<str>3); }
-| KW_ACTION EQUAL named_or_kw_any { A4GL_add_str_attr(A4GL_get_fld(),FA_S_ACTION,$<str>3); }
+| KW_ACTION EQUAL named_or_kw_any_pc { A4GL_add_str_attr(A4GL_get_fld(),FA_S_ACTION,$<str>3); }
 | INVISIBLE { A4GL_add_bool_attr(A4GL_get_fld(),FA_B_INVISIBLE); }
 | DYNAMIC KW_SIZE EQUAL NUMBER_VALUE { A4GL_get_fld()->dynamic=atoi($<str>4); 
 #ifdef DEBUG
@@ -1557,10 +1569,10 @@ op_star: {$<intval>$=0;} | STAR {$<intval>$=1;}
 
 op_semi: | SEMICOLON;
 
-srec_dim : named_or_kw_any  {
+srec_dim : named_or_kw_any_pc  {
    A4GL_set_dim_srec($<str>1,1);
 }
-| named_or_kw_any OPEN_SQUARE NUMBER_VALUE CLOSE_SQUARE {
+| named_or_kw_any_pc OPEN_SQUARE NUMBER_VALUE CLOSE_SQUARE {
    A4GL_set_dim_srec($<str>1,atoi($<str>3));
 };
 
@@ -1578,19 +1590,19 @@ op_comma :
 ;
 
 field_list_item :
-named_or_kw_any	
+named_or_kw_any_pc
 {A4GL_add_srec_attribute("",$<str>1,"");
 if (A4GL_getFormErr()) {a4gl_form_yyerror(A4GL_get_fcompile_err());}
  }
-| named_or_kw_any DOT named_or_kw_any
+| named_or_kw_any_pc DOT named_or_kw_any_pc
 {A4GL_add_srec_attribute($<str>1,$<str>3,""); 
 if (A4GL_getFormErr()) {a4gl_form_yyerror(A4GL_get_fcompile_err());}
 }
-| FORMONLY DOT named_or_kw_any
+| FORMONLY DOT named_or_kw_any_pc
 {A4GL_add_srec_attribute("formonly",$<str>3,""); 
 if (A4GL_getFormErr()) {a4gl_form_yyerror(A4GL_get_fcompile_err());}
 }
-| named_or_kw_any DOT STAR 
+| named_or_kw_any_pc DOT STAR 
 {A4GL_add_srec_attribute($<str>1,"*",""); 
 if (A4GL_getFormErr()) {a4gl_form_yyerror(A4GL_get_fcompile_err());}
 }
@@ -1605,7 +1617,7 @@ field_list_item  | field_list_item THROUGH field_list_item {A4GL_add_srec_attrib
 ;
 
 
-field_name : named_or_kw_any {
+field_name : named_or_kw_any_pc {
 	strcpy($<str>$,$<str>1);
 }
 	| KW_END { strcpy($<str>$,$<str>1); }
@@ -1633,23 +1645,27 @@ ws_elem:
 
 
 field_tag_name : 
-named_or_kw_any  {
+named_or_kw_any_tag  {
 	strcpy($<str>$,$<str>1);
+/*
 	if (tagCaseInsensitive) {
 		A4GL_make_downshift($<str>$);
 	}
+*/
 	colno+=strlen($<str>1);
 	}
 ;
 
 field_tag_name_scr : 
-op_ws named_or_kw_any {
+op_ws named_or_kw_any_tag {
 	colno+=strlen($<str>2);
 } op_ws {
 	strcpy($<str>$,$<str>2);
+	/*
 	if (tagCaseInsensitive) {
 		A4GL_make_downshift($<str>$);
 	}
+*/
 }
 ;
 
@@ -1920,7 +1936,7 @@ if (strcasecmp(currftag,$<str>1)!=0) {
 }
 ;
 
-fieldidentifier : NAMED 
+fieldidentifier : NAMED  
 ;
 
 value_list : value {
@@ -1988,10 +2004,10 @@ comp_item : table_name DOT column_name {
 
 ;
 
-table_name : named_or_kw_any
+table_name : named_or_kw_any_pc
 ;
 
-column_name : named_or_kw_st
+column_name : named_or_kw_st_pc
 ;
 
 control_block :
@@ -2259,7 +2275,7 @@ master_of:
 	}
 ;
 
-func_call: KW_CALL named_or_kw_any OPEN_BRACKET {
+func_call: KW_CALL named_or_kw_any_pc OPEN_BRACKET {
 			$<fcall>$=malloc(sizeof(struct s_at_call));
 			memset($<fcall>$,0,sizeof(struct s_at_call));
 			$<fcall>$->fname=strdup($<str>2);
@@ -2355,7 +2371,7 @@ single_expression:
 	| expression KWNOT KWIN OPEN_BRACKET evalue_list CLOSE_BRACKET { $<expr>$=create_expr_comp_expr($<expr>1,$<expr>5,"NOTIN"); }
 ;
 
-fcall_name: named_or_kw_any
+fcall_name: named_or_kw_any_pc
 ;
 
 evalue : field_tag_name  { $<expr>$=create_field_expr($<str>1); }
