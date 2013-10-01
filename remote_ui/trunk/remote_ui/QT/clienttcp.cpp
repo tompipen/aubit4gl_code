@@ -2687,6 +2687,10 @@ void ProtocolHandler::executeFile(int waitforFinish, QString fileName)
                 CloseHandle(pi.hThread);
                 delete settings;
         }
+    } else if(waitforFinish == 0)
+    {
+       qDebug() << "Starte Prozess ohne warten.";
+       QProcess::startDetached(QString("rundll32 url.dll,FileProtocolHandler \"%1\"").arg( fileNameInfo.absoluteFilePath()));
     }
 
       /* QProcess::startDetached(QString("rundll32 url.dll,FileProtocolHandler \"%1\"").arg( fileNameInfo.absoluteFilePath()));
