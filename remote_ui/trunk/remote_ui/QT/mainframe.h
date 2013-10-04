@@ -75,6 +75,7 @@ public:
    static bool setFocusOn(int);
    void requestScreenHandler(int, int);
    QString getUserName() { return userName; };
+   bool debugVDC;
 
 
 public slots:
