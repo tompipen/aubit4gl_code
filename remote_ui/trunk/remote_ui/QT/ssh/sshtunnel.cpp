@@ -98,7 +98,7 @@ void SSHTunnel::run()
 
         while(ph.isRunning())
         {
-          usleep(50000L);
+          usleep(5000L);
         }
 
 

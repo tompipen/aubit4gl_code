@@ -1156,9 +1156,15 @@ MainFrame::vdcdebug("LoginForm","okPressed", "");
    if(logVDC->isChecked())
    {
       VDC::logMessage("VDC", "- - - Begin log VDC messages");
-      VDC::saveSettingsToIni(QString(""), QString("debugVDC"), QString("yes"));
+      if(MainFrame *main = qobject_cast<MainFrame*> (MainFrame::lastmainframe))
+      {
+          main->debugVDC = true;
+      }
    } else {
-      VDC::saveSettingsToIni(QString(""), QString("debugVDC"), QString("no"));
+       if(MainFrame *main = qobject_cast<MainFrame*> (MainFrame::lastmainframe))
+       {
+           main->debugVDC = false;
+       }
    }
 
    if(cb->isChecked())
