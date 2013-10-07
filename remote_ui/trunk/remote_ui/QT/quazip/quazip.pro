@@ -1,5 +1,5 @@
 TEMPLATE = lib
-CONFIG += qt warn_on
+CONFIG += qt warn_on release
 QT -= gui
 DEPENDPATH += .
 INCLUDEPATH += .
@@ -45,7 +45,7 @@ win32 {
 
     *-g++*: LIBS += -lz
     *-msvc*: LIBS += -lzlibwapi
-    *-msvc*: QMAKE_LFLAGS += /IMPLIB:$$DESTDIR\\quazip.lib
+    *-msvc*: QMAKE_LFLAGS += /IMPLIB:../lib/quazip.lib
 }
 
 
