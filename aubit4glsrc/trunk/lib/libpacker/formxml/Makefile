@@ -26,7 +26,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile,v 1.6 2008-09-26 15:01:57 mikeaubury Exp $
+# $Id: Makefile,v 1.7 2013-10-07 20:39:58 mikeaubury Exp $
 #
 
 ROOT        =../../..
@@ -38,9 +38,11 @@ include ${ROOT}/incl/Makefile-common
 ##                    		Settings
 ## ==================================================================
 
-CMODS   	= formxml.c wrapper.c
+CMODS   	= formxml.c wrapper.c 
+CMODS_JSON      = formjson.c wrapper_json.c
 OBJS		=${CMODS:.c=.o}
-ALL 		=${PLUGINDIR}/libPACKER_FORMXML${SO_EXT}
+OBJS_JSON	=${CMODS_JSON:.c=.o}
+ALL 		=${PLUGINDIR}/libPACKER_FORMXML${SO_EXT} ${PLUGINDIR}/libPACKER_FORMJSON${SO_EXT}
 
 LOCAL_IFLAGS=-I..
 
@@ -59,6 +61,8 @@ ALL: ${ALL}
 
 ${PLUGINDIR}/libPACKER_FORMXML${SO_EXT}: ${OBJS}
 	${LD} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS}
+${PLUGINDIR}/libPACKER_FORMJSON${SO_EXT}: ${OBJS_JSON}
+	${LD} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS}
 
 #ifeq "${SO_EXT}" ".dll"
 #	${MV} TMP${SOEXP_EXT} $@.a
@@ -69,7 +73,7 @@ ${PLUGINDIR}/libPACKER_FORMXML${SO_EXT}: ${OBJS}
 ## ==================================================================
 
 clean:
-	${RM} ${PLUGINDIR}/libPACKER_FORMXML${SO_EXT} *.bak *.o
+	${RM} ${PLUGINDIR}/libPACKER_FORMXML${SO_EXT} ${PLUGINDIR}/libPACKER_FORMJSON${SO_EXT}  *.bak *.o
 
 ## ==================================================================
 ##                         Other Targets

@@ -398,7 +398,7 @@ static char leadin[400];
 			printf("n=%d getMyId=%d\n", n,getMyId());
 			exit(2);
 		}
- 		SPRINTF (leadin, "<ENVELOPE ID=\"%d\" PID=\"%d\">\n<COMMANDS>\n",id,getpid());
+ 		SPRINTF (leadin, "{ \"ID\":\"%d\",\"PID\":\"%d\",\"Commands\": [\n",id,getpid());
 		return leadin;
    } else {
 		return "";
@@ -447,7 +447,8 @@ pipe_flush (int sockfd)
       char buff[2000]="";
       pipe_sock_write (sockfd, sock_buff[sockfd], strlen (sock_buff[sockfd]));
 	if (!handshaking) {
-      		SPRINTF(buff,"</COMMANDS>\n</ENVELOPE>\n");
+      		SPRINTF(buff,"   null]\n}\n\n");
+		
      }
      
       pipe_sock_write (sockfd, buff, strlen (buff));
