@@ -1826,7 +1826,7 @@ bool LineEditDelegate::eventFilter(QObject *object, QEvent *event)
                                        key->text(),
                                        key->isAutoRepeat(),
                                        key->count());
-   QApplication::sendEvent(object, mykev);
+   QApplication::postEvent(p_fglform, mykev);
    return true;
   }
 
@@ -1842,7 +1842,7 @@ bool LineEditDelegate::eventFilter(QObject *object, QEvent *event)
                                        key->text(),
                                        key->isAutoRepeat(),
                                        key->count());
-      QApplication::sendEvent(object, mykev);
+      QApplication::postEvent(p_fglform, mykev);
       return true;
   }
 
