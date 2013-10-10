@@ -150,7 +150,6 @@
         <file>pics/browser-reset.png</file>
         <file>pics/browser-groesser.png</file>
         <file>pics/browser-suchen.png</file>
-        <file>pics/frame_right.jpg</file>
         <file>pics/ventas.jpg</file>
         <file>pics/editor-beenden-ohne-speichern.png</file>
         <file>pics/editor-drucken.png</file>
@@ -164,5 +163,6 @@
         <file>pics/editor-anwender-datum.png</file>
         <file>pics/VENTAS_9_splashscreen.png</file>
         <file>pics/VENTAS_9_titel.jpg</file>
+        <file>pics/frame_right.jpg</file>
     </qresource>
 </RCC>
