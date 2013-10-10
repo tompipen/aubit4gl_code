@@ -92,7 +92,7 @@ hex_digit (int n)
 
 
 static char *
-json_escape_int (char *s)
+xml_escape_int (char *s)
 {
   static char *buff = 0;
   static int last_len = 0;
@@ -110,7 +110,7 @@ sl=strlen(s);
   c = 0;
   //if (s==0) return "";
   for (a=0;a<sl;a++) {
-  		if (s[a]=='&' || s[a]=='\'' ) {
+  		if (s[a]=='&' || s[a]=='<' || s[a]=='>' || s[a]=='"' || s[a]=='\'' || s[a]=='\n'  || s[a]=='\r' || s[a] < 31 || s[a] > 126) {
 				c++;
 			 break;
 		}
@@ -136,12 +136,38 @@ sl=strlen(s);
   b = 0;
   for (a = 0; a < l; a++)
     {
+      if (s[a] == '>')
+	{
+	  buff[b++] = '&';
+	  buff[b++] = 'g';
+	  buff[b++] = 't';
+	  buff[b++] = ';';
+	  continue;
+	}
+      if (s[a] == '<')
+	{
+	  buff[b++] = '&';
+	  buff[b++] = 'l';
+	  buff[b++] = 't';
+	  buff[b++] = ';';
+	  continue;
+	}
       if (s[a] == '&')
 	{
 	  buff[b++] = '&';
 	  buff[b++] = 'a';
 	  buff[b++] = 'm';
 	  buff[b++] = 'p';
+	  buff[b++] = ';';
+	  continue;
+	}
+      if (s[a] == '"')
+	{
+	  buff[b++] = '&';
+	  buff[b++] = 'q';
+	  buff[b++] = 'u';
+	  buff[b++] = 'o';
+	  buff[b++] = 't';
 	  buff[b++] = ';';
 	  continue;
 	}
@@ -153,6 +179,18 @@ sl=strlen(s);
 	  buff[b++] = 'o';
 	  buff[b++] = 's';
 	  buff[b++] = ';';
+	  continue;
+	}
+      if (s[a] < 31 || s[a] > 126)
+	{
+	  int z1;
+	  char buff2[20];
+	  z1 = ((unsigned char) s[a]);
+	  sprintf (buff2, "&#x%02X;", z1);
+	  for (z1 = 0; z1 < strlen (buff2); z1++)
+	    {
+	      buff[b++] = buff2[z1];
+	    }
 	  continue;
 	}
       buff[b++] = s[a];
@@ -261,7 +299,7 @@ if (buff[n]) {
 	buff[n]=0;
 }
 
-buff[n]=strdup(json_escape_int(s));
+buff[n]=strdup(xml_escape_int(s));
 
 
 rval=buff[n];
@@ -271,33 +309,6 @@ return rval;
 
 }
 
-
-static char *
-json_escape (char *s) {
-char *rval;
-static int n=0;
-static char *buff[5]={NULL,NULL,NULL,NULL,NULL};
-A4GL_assertion(n<0||n>=5, "Buffer out of range - memory corruption?");
-if (buff[n]) {
-	free(buff[n]); 
-	buff[n]=0;
-}
-
-buff[n]=strdup(json_escape_int(s));
-
-
-rval=buff[n];
-n++;
-if (n>=5)  n=0;
-return rval;
-
-}
-
-char *
-uilib_json_escape (char *s)
-{
-  return xml_escape (s);
-}
 char *
 uilib_xml_escape (char *s)
 {
@@ -448,7 +459,7 @@ uilib_start (int nargs)
       return 1;
     }
   s = charpop ();
-  send_to_ui ("      {\"type\":\"PROGRAMSTARTUP\", \"PROGRAMNAME\":\"%s\",\"ID\":%d},", s, get_ui_id ('r'));
+  send_to_ui ("<PROGRAMSTARTUP PROGRAMNAME=\"%s\" ID=\"%d\"/>", s, get_ui_id ('r'));
   flush_ui ();
   free (s);
   pushint (1);
@@ -464,7 +475,7 @@ uilib_program_exit (int nargs)
 {
   int n;
   n = POPint ();
-  send_to_ui ("      {\"type\":\"PROGRAMSTOP\", \"EXITCODE\":%d,\"ID\":%d},", n, get_ui_id ('r'));
+  send_to_ui ("<PROGRAMSTOP EXITCODE=\"%d\" ID=\"%d\"/>", n, get_ui_id ('r'));
   flush_ui ();
   return 0;
 
@@ -476,7 +487,7 @@ uilib_program_exit (int nargs)
 int
 uilib_clear_screen (int nargs)
 {
-  send_to_ui ("      {\"type\":\"CLEARSCREEN\"},");
+  send_to_ui ("<CLEARSCREEN/>");
   return 0;
 }
 
@@ -488,7 +499,7 @@ uilib_clear_window (int nargs)
 {
   char *s;
   s = charpop ();
-  send_to_ui ("      {\"type\":\"CLEARWINDOW\", \"WINDOW\":\"%s\"},", s);
+  send_to_ui ("<CLEARWINDOW WINDOW=\"%s\"/>", s);
   free (s);
   return 0;
 }
@@ -531,15 +542,15 @@ uilib_set_field_list (int nargs)
     free (last_field_list);
   buffer = malloc (l);
   last_field_list = buffer;
-  sprintf (buffer, "\"Fields\":[\n");
+  sprintf (buffer, "<FIELDLIST>\n");
   for (a = nargs - 1; a >= 0; a--)
     {
       char smbuff[256];
-      sprintf (smbuff, " { \"Name\"=\"%s\"},/>\n", args[a]);
+      sprintf (smbuff, " <FIELD NAME=\"%s\"/>\n", args[a]);
       free (args[a]);
       strcat (buffer, smbuff);
     }
-  strcat (buffer, "null]\n");
+  strcat (buffer, "</FIELDLIST>\n");
   free (args);
   return 0;
 }
@@ -580,18 +591,18 @@ uilib_display_values (int nargs)
 
     }
 
-  send_to_ui ("      {\"type\":\"DISPLAYTO\", \"ATTRIBUTE\":\"%s\",%s, \"Values\":[", attr, last_field_list);
+  send_to_ui ("<DISPLAYTO ATTRIBUTE=\"%s\">%s<VALUES>", attr, last_field_list);
   for (a = nargs - 1; a >= 0; a--)
     {
 	if (args_dtypes[a]!=-1) {
-      		send_to_ui ("{\"Dtype\":\"%d\", \"Data\":\"%s\"},", args_dtypes[a], xml_escape (char_encode(args[a])));
+      		send_to_ui ("<TEXT DTYPE=\"%d\">%s</TEXT>", args_dtypes[a], xml_escape (char_encode(args[a])));
 	} else {
-      		send_to_ui ("{\"Data\":\"%s\"},", xml_escape (char_encode(args[a])));
+      		send_to_ui ("<TEXT>%s</TEXT>", xml_escape (char_encode(args[a])));
 	}
       free (args[a]);
     }
 
-  send_to_ui ("null]},");
+  send_to_ui ("</VALUES></DISPLAYTO>");
 
   free (args);
   free (args_dtypes);
@@ -607,7 +618,7 @@ uilib_display_values (int nargs)
 int
 uilib_clear_fields (int nargs)
 {
-  send_to_ui ("      {\"type\":\"CLEAR\", %s },", last_field_list);
+  send_to_ui ("<CLEAR>%s</CLEAR>", last_field_list);
   return 0;
 }
 
@@ -621,11 +632,11 @@ uilib_clear_form (int nargs)
   n = POPint ();
   if (n)
     {
-      send_to_ui ("      {\"type\":\"CLEARFORM\", \"TODEFAULTS\":true},");
+      send_to_ui ("<CLEARFORM TODEFAULTS=\"1\"/>");
     }
   else
     {
-      send_to_ui ("      {\"type\":\"CLEARFORM\", \"TODEFAULTS\":false},");
+      send_to_ui ("<CLEARFORM TODEFAULTS=\"0\"/>");
     }
   return 0;
 }
@@ -639,7 +650,7 @@ uilib_close_form (int nargs)
 {
   char *s;
   s = charpop ();
-  send_to_ui ("      {\"type\":\"CLOSEFORM\", \"FORM\":\"%s\"},", s);
+  send_to_ui ("<CLOSEFORM FORM=\"%s\"/>", s);
   free (s);
   return 0;
 }
@@ -652,7 +663,7 @@ uilib_close_window (int nargs)
 {
   char *s;
   s = charpop ();
-  send_to_ui ("      {\"type\":\"CLOSEWINDOW\", \"WINDOW\":\"%s\"},", s);
+  send_to_ui ("<CLOSEWINDOW WINDOW=\"%s\"/>", s);
   free (s);
   return 0;
 }
@@ -667,7 +678,7 @@ uilib_error (int nargs)
   char *a = "";
   //a = charpop ();
   s = charpop ();
-  send_to_ui ("      {\"type\":\"ERROR\", \"ATTRIBUTE\":\"%s\",\"Data\":\"%s\"},", a, xml_escape (char_encode(s)));
+  send_to_ui ("<ERROR ATTRIBUTE=\"%s\">%s</ERROR>", a, xml_escape (char_encode(s)));
   free (s);
   return 0;
 }
@@ -684,7 +695,7 @@ uilib_message (int nargs)
   wait=POPint();
   a = charpop ();
   s = charpop ();
-  send_to_ui ("      {\"type\":\"MESSAGE\", \"ATTRIBUTE\":\"%s\",\"WAIT\":%d,\"Data\":\"%s\"},", a, wait, xml_escape (char_encode(s)));
+  send_to_ui ("<MESSAGE ATTRIBUTE=\"%s\" WAIT=\"%d\">%s</MESSAGE>", a, wait, xml_escape (char_encode(s)));
   free (s);
   free (a);
   return 0;
@@ -705,7 +716,7 @@ uilib_displayat (int nargs)
   y = POPint ();
   a = charpop ();
   s = charpop ();
-  send_to_ui ("      {\"type\":\"DISPLAYAT\", \"X\":%d,\"Y\":%d,\"ATTRIBUTE\":%d,\"Data\":\"%s\"},", x, y, a, xml_escape (char_encode(s)));
+  send_to_ui ("<DISPLAYAT X=\"%d\" Y=\"%d\" ATTRIBUTE=\"%d\">%s</DISPLAYAT>", x, y, a, xml_escape (char_encode(s)));
   free (s);
   free (a);
   return 0;
@@ -722,7 +733,7 @@ uilib_display (int nargs)
 {
   char *s;
   s = charpop ();
-  send_to_ui ("      {\"type\":\"DISPLAY\",\"Data\"=\"%s\"},", xml_escape (char_encode(s)));
+  send_to_ui ("<DISPLAY>%s</DISPLAY>", xml_escape (char_encode(s)));
   free (s);
   return 0;
 }
@@ -738,7 +749,7 @@ uilib_options (int nargs)
   char *v;
   v = charpop ();
   s = charpop ();
-  send_to_ui ("      {\"type\":\"OPTIONS\", \"option\":\"%s\",\"value\":\"%s\"},", s, v);
+  send_to_ui ("<OPTIONS TYPE=\"%s\" VALUE=\"%s\"/>", s, v);
   free (s);
   free (v);
   return 0;
@@ -754,7 +765,7 @@ uilib_open_form (int nargs)
   char *fname;
   fname = charpop ();
   src = charpop ();
-  send_to_ui ("      {\"type\":\"OPENFORM\", \"FORM\":\"%s\",\"SOURCE\":\"%s\"},", src, fname);
+  send_to_ui ("<OPENFORM FORM=\"%s\" SOURCE=\"%s\"/>", src, fname);
   free (src);
   free (fname);
   return 0;
@@ -770,7 +781,7 @@ uilib_display_form (int nargs)
   char *attrib;
   attrib = charpop ();
   fname = charpop ();
-  send_to_ui ("      {\"type\":\"DISPLAYFORM\", \"FORM\":\"%s\",\"ATTRIBUTE\":\"%s\"},", fname, attrib);
+  send_to_ui ("<DISPLAYFORM FORM=\"%s\" ATTRIBUTE=\"%s\"/>", fname, attrib);
   free (fname);
   free (attrib);
   return 0;
@@ -784,7 +795,7 @@ uilib_current_window (int nargs)
 {
   char *wname;
   wname = charpop ();
-  send_to_ui ("      {\"type\":\"CURRENTWINDOW\", \"WINDOW\":\"%s\"},", wname);
+  send_to_ui ("<CURRENTWINDOW WINDOW=\"%s\"/>", wname);
   free (wname);
   return 0;
 }
@@ -798,7 +809,7 @@ uilib_sleep (int nargs)
 {
   int n;
   n = POPint ();
-  send_to_ui ("      {\"type\":\"SLEEP\" \"PAUSE\":%d},", n);
+  send_to_ui ("<SLEEP PAUSE=\"%d\"/>", n);
   flush_ui ();
 #ifdef __WIN32__
   Sleep (n);
@@ -828,7 +839,7 @@ uilib_open_window_with_form (int n)
   y = POPint ();
   w = charpop ();
 
-  send_to_ui ("      {\"type\":\"OPENWINDOWWITHFORM\",\"WINDOW\":\"%s\",\"X\":%d,\"Y\":%d,\"ATTRIBUTE\":\"%s\",\"SOURCE\":\"%s\"},", w, x, y, a, f);
+  send_to_ui ("<OPENWINDOWWITHFORM WINDOW=\"%s\" X=\"%d\" Y=\"%d\" ATTRIBUTE=\"%s\" SOURCE=\"%s\"/>", w, x, y, a, f);
   free (f);
   free (a);
   free (w);
@@ -856,7 +867,7 @@ uilib_open_window (int n)
   x = POPint ();
   y = POPint ();
   w = charpop ();
-  send_to_ui ("      {\"type\":\"OPENWINDOW\",\"WINDOW\":\"%s\",\"X\":%d,\"Y\":%d,\"ROWS\":%d,\"COLUMNS\":%d,\"ATTRIBUTE\":\"%s\"},", w, x, y, r, c, a);
+  send_to_ui ("<OPENWINDOW WINDOW=\"%s\" X=\"%d\" Y=\"%d\" ROWS=\"%d\" COLUMNS=\"%d\" ATTRIBUTE=\"%s\"/>", w, x, y, r, c, a);
   free (a);
   return 0;
 }
@@ -902,7 +913,7 @@ int dtype;
   contexts[cprompt].ui.prompt.promptresult = 0;
   suspend_flush (1);
   send_to_ui
-    ("      {\"type\":\"PROMPT\", \"CONTEXT\":%d,\"PROMPTATTRIBUTE\":\"%s\",\"FIELDATTRIBUTE\":\"%s\",\"TEXT\":\"%s\",\"CHARMODE\":%d,\"HELPNO\":%d,\"ATTRIB_STYLE\":\"%s\",\"ATTRIB_TEXT\":\"%s\",\"DTYPE_HINT\":%d,",
+    ("<PROMPT CONTEXT=\"%d\" PROMPTATTRIBUTE=\"%s\" FIELDATTRIBUTE=\"%s\" TEXT=\"%s\" CHARMODE=\"%d\" HELPNO=\"%d\" ATTRIB_STYLE=\"%s\" ATTRIB_TEXT=\"%s\" DTYPE_HINT=\"%d\">",
      cprompt, prompt_attr, field_attr, xml_escape(char_encode(promptstr)), charmode, helpno, xml_escape(char_encode(style)), xml_escape(char_encode(text)), dtype);
   free (field_attr);
   free (prompt_attr);
@@ -915,7 +926,7 @@ int
 uilib_prompt_initialised (int n)
 {
   suspend_flush (-1);
-  send_to_ui ("      },");
+  send_to_ui ("</PROMPT>");
   return 0;
 }
 
@@ -946,7 +957,7 @@ uilib_prompt_loop (int n)
       return 1;
     }
 
-  send_to_ui ("      {\"type\":\"WAITFOREVENT\", \"CONTEXT\":%d,\"CACHED\":%d},", context,havePendingTriggers(&contexts[context]));
+  send_to_ui ("<WAITFOREVENT CONTEXT=\"%d\" CACHED=\"%d\"/>", context,havePendingTriggers(&contexts[context]));
   flush_ui ();
 
   while (1)
@@ -956,7 +967,7 @@ uilib_prompt_loop (int n)
       mLastKey = last_attr->lastkey;
       if (i != -1)
 	break;
-      send_to_ui ("      {\"type\":\"WAITFOREVENT\", \"CONTEXT\":%d,\"ERR\":\"BAD RESPONSE\"},", context);
+      send_to_ui ("<WAITFOREVENT CONTEXT=\"%d\" ERR=\"BAD RESPONSE\"/>", context);
       flush_ui ();
     }
 
@@ -965,7 +976,6 @@ uilib_prompt_loop (int n)
       // Got a prompt result...
       contexts[context].ui.prompt.promptresult = strdup(char_decode(last_attr->sync.vals[0].value));
 	free(last_attr->sync.vals[0].value);
-	last_attr->sync.vals[0].value=0;
     }
   pushint (i);
   return 1;
@@ -1020,7 +1030,7 @@ uilib_free_prompt (int nargs)
       free (contexts[context].ui.prompt.promptresult);
     }
   contexts[context].state = UI_FREE;
-  send_to_ui ("      {\"type\":\"FREE\", \"UITYPE\":\"PROMPT\",\"CONTEXT\":%d},", context);
+  send_to_ui ("<FREE TYPE=\"PROMPT\" CONTEXT=\"%d\"/>", context);
   return 0;
 }
 
@@ -1031,7 +1041,7 @@ uilib_free_display (int nargs)
   int context;
   context = POPint ();
   contexts[context].state = UI_FREE;
-  send_to_ui ("      {\"type\":\"FREE\", \"UITYPE\":\"DISPLAY\",\"CONTEXT\":%d},", context);
+  send_to_ui ("<FREE TYPE=\"DISPLAY\" CONTEXT=\"%d\"/>", context);
   return 0;
 }
 
@@ -1066,7 +1076,6 @@ uilib_event (int nargs)
   char *evt_type;
   int event_id;
   field_or_key = charpop ();
-A4GL_trim(field_or_key);
   evt_type = charpop ();
   event_id = POPint ();
 
@@ -1074,25 +1083,25 @@ A4GL_trim(field_or_key);
     {
       if (strcmp (evt_type, "ONKEY") == 0)
 	{
-	  send_to_ui ("            {\"event\":\"%s\", \"KEY\":\"%s\",\"ID\":%d},", no_space (evt_type),  field_or_key, event_id);
+	  send_to_ui (" <%s_EVENT KEY=\"%s\" ID=\"%d\"/>", no_space (evt_type), field_or_key, event_id);
 	}
       else
 	{
 	  if (strcmp (evt_type, "ON ACTION") == 0)
 	    {
-	      send_to_ui ("            {\"event\":\"%s\",\"ACTION\":\"%s\",\"ID\":%d},", no_space (evt_type), field_or_key, event_id);
+	      send_to_ui (" <%s_EVENT ACTION=\"%s\" ID=\"%d\"/>", no_space (evt_type), field_or_key, event_id);
 
 	    }
 	  else
 	    {
-	      send_to_ui ("            {\"event\":\"%s\", \"FIELD\":\"%s\",\"ID\":%d},", no_space (evt_type), field_or_key, event_id);
+	      send_to_ui (" <%s_EVENT FIELD=\"%s\" ID=\"%d\"/>", no_space (evt_type), field_or_key, event_id);
 	    }
 
 	}
     }
   else
     {
-      send_to_ui ("            {\"event\":\"%s\",\"ID\":%d},", no_space (evt_type), event_id);
+      send_to_ui (" <%s_EVENT ID=\"%d\"/>", no_space (evt_type), event_id);
     }
   return 0;
 }
@@ -1100,7 +1109,7 @@ A4GL_trim(field_or_key);
 int
 uilib_start_events (int nargs)
 {
-  send_to_ui ("         \"Events\":[");
+  send_to_ui ("<EVENTS>");
   return 0;
 }
 
@@ -1109,7 +1118,7 @@ uilib_start_events (int nargs)
 int
 uilib_end_events (int nargs)
 {
-  send_to_ui ("         null]");
+  send_to_ui ("</EVENTS>");
   return 0;
 }
 
@@ -1124,7 +1133,7 @@ uilib_hide_option (int nargs)
   int context;
   opt = charpop ();
   context = POPint ();
-  send_to_ui ("      {\"type\":\"HIDEOPTION\", \"CONTEXT\":%d,\"OPTION\":\"%s\"},", context, opt);
+  send_to_ui ("<HIDEOPTION CONTEXT=\"%d\" OPTION=\"%s\"/>", context, opt);
   free (opt);
   return 0;
 }
@@ -1136,7 +1145,7 @@ uilib_show_option (int n)
   int context;
   opt = charpop ();
   context = POPint ();
-  send_to_ui ("      {\"type\":\"SHOWOPTION\", \"CONTEXT\":%d,\"OPTION\":\"%s\"},", context, opt);
+  send_to_ui ("<SHOWOPTION CONTEXT=\"%d\" OPTION=\"%s\"/>", context, opt);
   free (opt);
   return 0;
 }
@@ -1148,7 +1157,7 @@ uilib_next_option (int n)
   int context;
   opt = charpop ();
   context = POPint ();
-  send_to_ui ("      {\"type\":\"NEXTOPTION\", \"CONTEXT\":%d,\"OPTION\":\"%s\"},", context, opt);
+  send_to_ui ("<NEXTOPTION CONTEXT=\"%d\" OPTION=\"%s\"/>", context, opt);
   free (opt);
   return 0;
 }
@@ -1173,8 +1182,8 @@ uilib_menu_add (int nargs)
 
   context = POPint ();
   send_to_ui
-    ("         {\"CONTEXT\":%d,\"KEYS\":\"%s\",\"ID\":%d,\"TEXT\":\"%s\",\"DESCRIPTION\":\"%s\",\"HELPNO\":%d}, ",
-     context, json_escape(char_encode(keys)), id, json_escape(char_encode(mn)), json_escape(char_encode(desc)), helpno);
+    ("<MENUCOMMAND CONTEXT=\"%d\" KEYS=\"%s\" ID=\"%d\" TEXT=\"%s\" DESCRIPTION=\"%s\" HELPNO=\"%d\"/>",
+     context, xml_escape(char_encode(keys)), id, xml_escape(char_encode(mn)), xml_escape(char_encode(desc)), helpno);
   return 0;
 }
 
@@ -1203,7 +1212,7 @@ uilib_free_menu (int nargs)
   int context;
   context = POPint ();
   UIdebug (6, "free menu : context = %d", context);
-  send_to_ui ("      {\"type\":\"FREE\", \"UITYPE\":\"MENU\",\"CONTEXT\":%d},", context);
+  send_to_ui ("<FREE TYPE=\"MENU\" CONTEXT=\"%d\"/>", context);
   contexts[context].state = UI_FREE;
   free (contexts[context].ui.menu.menutitle);
   return 0;
@@ -1246,7 +1255,7 @@ uilib_menu_loop (int nargs)
 
 
   // if we've got to here - we're in our menu loop proper...
-  send_to_ui ("      {\"type\":\"WAITFOREVENT\",\"CONTEXT\":%d,\"CACHED\":%d},", context, havePendingTriggers(&contexts[context]));
+  send_to_ui ("<WAITFOREVENT CONTEXT=\"%d\" CACHED=\"%d\"/>", context, havePendingTriggers(&contexts[context]));
   flush_ui ();
   while (1)
     {
@@ -1254,7 +1263,7 @@ uilib_menu_loop (int nargs)
       mLastKey = last_attr->lastkey;
       if (i != -1)
 	break;
-      send_to_ui ("      {\"type\":\"WAITFOREVENT\", \"CONTEXT\":%d,\"ERR\":\"BAD RESPONSE\"},", context);
+      send_to_ui ("<WAITFOREVENT CONTEXT=\"%d\" ERR=\"BAD RESPONSE\"/>", context);
       flush_ui ();
     }
   pushint (i);
@@ -1296,7 +1305,8 @@ uilib_menu_start (int nargs)
   UIdebug (5, "Menu start context=%d for %s %d\n", cmenu, mod, ln);
   pushint (cmenu);
   suspend_flush (1);
-  send_to_ui ("      {\"type\":\"MENU\", \"CONTEXT\":%d,\"TITLE\":\"%s\",\"COMMENT\":\"%s\",\"STYLE\":\"%s\",\"IMAGE\":\"%s\", \"MenuCommands\" :[", cmenu, mt, xml_escape(char_encode(comment)), xml_escape(char_encode(style)), xml_escape(char_encode(image)));
+  send_to_ui ("<MENU CONTEXT=\"%d\" TITLE=\"%s\" COMMENT=\"%s\" STYLE=\"%s\" IMAGE=\"%s\">\n<MENUCOMMANDS>", cmenu, mt, xml_escape(char_encode(comment)),
+	      xml_escape(char_encode(style)), xml_escape(char_encode(image)));
 
   return 0;
 }
@@ -1307,7 +1317,7 @@ uilib_menu_initialised (int nargs)
   int context;
   context = POPint ();
   suspend_flush (-1);
-  send_to_ui ("         null]\n      },");
+  send_to_ui ("</MENUCOMMANDS>\n</MENU>");
   return 0;
 }
 
@@ -1345,7 +1355,7 @@ uilib_free_input (int nargs)
 
 
 
-  send_to_ui ("      {\"type\":\"FREE\", \"UITYPE\":\"INPUT\",\"CONTEXT\":%d},", context);
+  send_to_ui ("<FREE TYPE=\"INPUT\" CONTEXT=\"%d\"/>", context);
   return 0;
 }
 
@@ -1521,29 +1531,29 @@ UIdebug(5, "init=%d changed=%d\n", init, changed);
   if (changed || init==0 )			// Although only a single field has changed - we'll send the whole lot
     // we can always change this later...
     {
-      send_to_ui ("      {\"type\":\"WAITFOREVENT\", \"CONTEXT\":%d,\"CHANGED\":%d,\"CACHED\":%d, \"Values\":[", context,changed, havePendingTriggers(&contexts[context]));
+      send_to_ui ("<WAITFOREVENT CONTEXT=\"%d\" CHANGED=\"%d\" CACHED=\"%d\">", context,changed, havePendingTriggers(&contexts[context]));
 	
       // Changed data...
+      send_to_ui (" <VS>");
       for (a = 0; a < contexts[context].ui.input.nfields; a++)
 	{
-	  send_to_ui ("  { \"Changed\"=\"%d\",\"Data\"=\"%s\"},",
+	  send_to_ui ("  <V CHANGED=\"%d\">%s</V>",
 		      contexts[context].ui.input.changed[a], xml_escape (char_encode(contexts[context].ui.input.variable_data[a])));
 	}
-	send_to_ui("null],");
-
+      send_to_ui (" </VS>");
       if (contexts[context].ui.input.setfield)
 	{
-	  send_to_ui (",\"SETFIELD\":\"%s\"", contexts[context].ui.input.setfield);
+	  send_to_ui ("<SETFIELD FIELD=\"%s\"/>", contexts[context].ui.input.setfield);
 	  free (contexts[context].ui.input.setfield);
 	  contexts[context].ui.input.setfield = 0;
 	}
 
-      send_to_ui ("}");
+      send_to_ui ("</WAITFOREVENT>");
       flush_ui ();
     }
   else
     {
-      send_to_ui ("      {\"type\":\"WAITFOREVENT\", \"CONTEXT\":%d,\"CACHED\":%d},", context,havePendingTriggers(&contexts[context]));
+      send_to_ui ("<WAITFOREVENT CONTEXT=\"%d\" CACHED=\"%d\"/>", context,havePendingTriggers(&contexts[context]));
       flush_ui ();
     }
 
@@ -1553,7 +1563,7 @@ UIdebug(5, "init=%d changed=%d\n", init, changed);
       mLastKey = last_attr->lastkey;
       if (i != -1)
 	break;
-      send_to_ui ("      {\"type\":\"WAITFOREVENT\", \"CONTEXT\":%d,\"ERR\":\"BAD RESPONSE\"},", context);
+      send_to_ui ("<WAITFOREVENT CONTEXT=\"%d\" ERR=\"BAD RESPONSE\"/>", context);
       flush_ui ();
     }
 
@@ -1584,7 +1594,6 @@ UIdebug(5, "init=%d changed=%d\n", init, changed);
 	  contexts[context].ui.input.variable_data[a] = strdup(char_decode(last_attr->sync.vals[a].value));
 	  contexts[context].ui.input.touched[a] = last_attr->sync.vals[a].touched;
 	  free(last_attr->sync.vals[a].value);
-	  last_attr->sync.vals[a].value=0;
 
 
 	  if (contexts[context].ui.input.field_data)
@@ -1689,7 +1698,7 @@ uilib_input_start (int nargs)
       contexts[cinput].ui.input.touched[a] = 0;
     }
   suspend_flush (1);
-  send_to_ui ("      {\"type\":\"INPUT\", \"CONTEXT\":%d,\"ATTRIBUTE\":\"%s\",\"WITHOUT_DEFAULTS\":%d,\"WRAP\":%d, %s, ", cinput, attr, todefs, wrap, last_field_list);
+  send_to_ui ("<INPUT CONTEXT=\"%d\" ATTRIBUTE=\"%s\" WITHOUT_DEFAULTS=\"%d\" WRAP=\"%d\">\n%s", cinput, attr, todefs, wrap, last_field_list);
 
 	free(attr);
 //free(mod);
@@ -1702,7 +1711,7 @@ int
 uilib_input_initialised (int nargs)
 {
 
-  send_to_ui ("      },");
+  send_to_ui ("</INPUT>");
   suspend_flush (-1);
   return 0;
 }
@@ -1771,7 +1780,7 @@ uilib_next_field (int nargs)
       return 0;
     }
 
-  send_to_ui ("      {\"type\":\"NEXTFIELD\", \"CONTEXT\":%d,\"FIELD\":\"%s\"},", context, xml_escape(char_encode(opt)));
+  send_to_ui ("<NEXTFIELD CONTEXT=\"%d\" FIELD=\"%s\"/>", context, xml_escape(char_encode(opt)));
 
   free (opt);
   return 0;
@@ -1819,13 +1828,13 @@ uilib_construct_start (int nargs)
   UIdebug (5, "Construct - state=%d", contexts[cconstruct].state);
   suspend_flush (1);
   UIdebug (5, "Construct start - state=%d", contexts[cconstruct].state);
-  send_to_ui ("      {\"type\":\"CONSTRUCT,\"CONTEXT\":%d,\"ATTRIBUTE\":\"%s\",\"WRAP\":%d,%s,", cconstruct, attr, wrap,last_field_list);
-  send_to_ui ("         \"Columns\":[");
+  send_to_ui ("<CONSTRUCT CONTEXT=\"%d\" ATTRIBUTE=\"%s\" WRAP=\"%d\">%s", cconstruct, attr, wrap,last_field_list);
+  send_to_ui ("<COLUMNS>");
   for (a = 2; a < nargs; a++)
     {
-      send_to_ui ("            {\"Name\":\"%s\"},", args[a]);
+      send_to_ui ("<COLUMN NAME=\"%s\"/>", args[a]);
     }
-  send_to_ui ("         ],");
+  send_to_ui ("</COLUMNS>");
   nfields = nargs - 1;
 
   contexts[cconstruct].ui.construct.num_field_data = nfields;
@@ -1871,7 +1880,7 @@ uilib_construct_loop (int nargs)
     }
 
   UIdebug (5, "construct wait for event\n");
-  send_to_ui ("      {\"type\":\"WAITFOREVENT\",\"CONTEXT\":%d,\"CACHED\":%d},", context,havePendingTriggers(&contexts[context]));
+  send_to_ui ("<WAITFOREVENT CONTEXT=\"%d\" CACHED=\"%d\"/>", context,havePendingTriggers(&contexts[context]));
   flush_ui ();
   while (1)
     {
@@ -1879,7 +1888,7 @@ uilib_construct_loop (int nargs)
       mLastKey = last_attr->lastkey;
       if (i != -1)
 	break;
-      send_to_ui ("      {\"type\":\"WAITFOREVENT\", \"CONTEXT\":%d,\"ERR\":\"BAD RESPONSE\"},", context);
+      send_to_ui ("<WAITFOREVENT CONTEXT=\"%d\" ERR=\"BAD RESPONSE\"/>", context);
       flush_ui ();
     }
 
@@ -1968,7 +1977,7 @@ uilib_free_construct (int nargs)
     }
 
 
-  send_to_ui ("      {\"type\":\"FREE\", \"UITYPE\":\"CONSTRUCT\",\"CONTEXT\":%d},", context);
+  send_to_ui ("<FREE TYPE=\"CONSTRUCT\" CONTEXT=\"%d\"/>", context);
   return 0;
 }
 
@@ -1978,7 +1987,7 @@ uilib_construct_initialised (int nargs)
   UIdebug (5, "uilib_construct_initialised called");
   suspend_flush (-1);
 
-  send_to_ui ("      },");
+  send_to_ui ("</CONSTRUCT>");
   return 0;
 }
 
@@ -2044,7 +2053,7 @@ uilib_get_context (int nargs)
 int
 uilib_clear (int nargs)
 {
-  send_to_ui ("      {\"type\":\"CLEAR\", %s },", last_field_list);
+  send_to_ui ("<CLEAR>%s</CLEAR>", last_field_list);
   return 0;
 }
 
@@ -2052,7 +2061,7 @@ uilib_clear (int nargs)
 int
 uilib_clear_to_defaults (int nargs)
 {
-  send_to_ui ("      {\"type\":\"CLEAR\", \"TODEFAULTS\":true,%s },", last_field_list);
+  send_to_ui ("<CLEARTODEFAULTS>%s</CLEARTODEFAULTS>", last_field_list);
   return 0;
 }
 
@@ -2114,7 +2123,7 @@ uilib_display_array_start (int nargs)
   m_scr_line = 1;
 
   suspend_flush (1);
-  send_to_ui ("      {\"type\":\"DISPLAYARRAY\", \"CONTEXT\":%d,\"ATTRIBUTE\":\"%s\",\"ARRCOUNT\":%d,\"ARRVARIABLES\":%d, %s,", ci, attr, m_arr_count, nbind,last_field_list);
+  send_to_ui ("<DISPLAYARRAY CONTEXT=\"%d\" ATTRIBUTE=\"%s\" ARRCOUNT=\"%d\" ARRVARIABLES=\"%d\">\n%s", ci, attr, m_arr_count, nbind,last_field_list);
   //pushint (cinput);
   return 0;
 }
@@ -2137,7 +2146,7 @@ uilib_array_lines_end (int nargs)
 int
 uilib_display_array_initialised (int nargs)
 {
-  send_to_ui ("      },");
+  send_to_ui ("</DISPLAYARRAY>");
   suspend_flush (-1);
   return 0;
 }
@@ -2169,7 +2178,7 @@ uilib_display_array_loop (int n)
       return 1;
     }
 
-  send_to_ui ("      {\"type\":\"WAITFOREVENT\", \"CONTEXT\":%d,\"CACHED\":%d},", context, havePendingTriggers(&contexts[context]));
+  send_to_ui ("<WAITFOREVENT CONTEXT=\"%d\" CACHED=\"%d\"/>", context, havePendingTriggers(&contexts[context]));
   flush_ui ();
 
   while (1)
@@ -2178,7 +2187,7 @@ uilib_display_array_loop (int n)
       mLastKey = last_attr->lastkey;
       if (i != -1)
 	break;
-      send_to_ui ("      {\"type\":\"WAITFOREVENT\", \"CONTEXT\":%d,\"ERR\":\"BAD RESPONSE\"},", context);
+      send_to_ui ("<WAITFOREVENT CONTEXT=\"%d\" ERR=\"BAD RESPONSE\"/>", context);
       flush_ui ();
     }
   if (last_attr->scrline)
@@ -2296,7 +2305,7 @@ allow_insert=POPint();
     }
 
   suspend_flush (1);
-  send_to_ui ("      {\"type\":\"INPUTARRAY\", \"CONTEXT\":%d,\"ATTRIBUTE\":\"%s\",\"ARRCOUNT\":%d,\"MAXARRSIZE\":%d,\"WITHOUT_DEFAULTS\":%d,\"ARRVARIABLES\":%d,\"ALLOWINSERT\":%d,\"ALLOWDELETE\":%d,\"NONEWLINES\":%d,\"WRAP\":%d, %s, ", ci,
+  send_to_ui ("<INPUTARRAY CONTEXT=\"%d\" ATTRIBUTE=\"%s\" ARRCOUNT=\"%d\" MAXARRSIZE=\"%d\" WITHOUT_DEFAULTS=\"%d\" ARRVARIABLES=\"%d\" ALLOWINSERT=\"%d\" ALLOWDELETE=\"%d\" NONEWLINES=\"%d\" WRAP=\"%d\">\n%s", ci,
 	      attr, m_arr_count, arrsize, todefs, nvals,
 		allow_insert,allow_delete,inp_flags, wrap,
 last_field_list);
@@ -2306,7 +2315,7 @@ last_field_list);
 int
 uilib_input_array_initialised (int nargs)
 {
-  send_to_ui ("      },");
+  send_to_ui ("</INPUTARRAY>");
   suspend_flush (-1);
   return 0;
 }
@@ -2429,9 +2438,9 @@ uilib_input_array_loop (int n)
       return 1;
     }
 
-  send_to_ui ("      {\"type\":\"WAITFOREVENT\", \"CONTEXT\":%d,\"CACHED\":%d,", context,havePendingTriggers(&contexts[context]));
+  send_to_ui ("<WAITFOREVENT CONTEXT=\"%d\" CACHED=\"%d\">", context,havePendingTriggers(&contexts[context]));
   send_input_array_change (context);
-  send_to_ui ("   },");
+  send_to_ui ("</WAITFOREVENT>");
   flush_ui ();
   while (1)
     {
@@ -2439,7 +2448,7 @@ uilib_input_array_loop (int n)
       mLastKey = last_attr->lastkey;
       if (i != -1)
 	break;
-      send_to_ui ("      {\"type\":\"WAITFOREVENT\", \"CONTEXT\":%d,\"ERR\":\"BAD RESPONSE\"},", context);
+      send_to_ui ("<WAITFOREVENT CONTEXT=\"%d\" ERR=\"BAD RESPONSE\"/>", context);
       flush_ui ();
     }
 
@@ -2581,7 +2590,7 @@ uilib_input_get_array_values (int n)
   p = contexts[context].ui.inputarray.variable_data[arrline];
   for (b = 0; b < contexts[context].ui.inputarray.nvals; b++)
     {
-      UIdebug (6, "Pushing : \"%s\"", p[b]);
+      UIdebug (6, "Pushing : '%s'", p[b]);
 
       if (strlen (p[b]) == 0)
         {
@@ -2610,7 +2619,7 @@ uilib_save_file (char *id, char *s)
   FILE *f;
   int i;
 
-  send_to_ui ("      {\"type\":\"REQUESTFILE\",\"FILEID\":\"%s\"},", uilib_xml_escape (char_encode(id)));
+  send_to_ui ("<REQUESTFILE FILEID='%s'/>", uilib_xml_escape (char_encode(id)));
   flush_ui ();
   i = get_event_from_ui (NULL);
 
@@ -2698,7 +2707,7 @@ uilib_free_input_array (int nargs)
   int context;
   context = POPint ();
   contexts[context].state = UI_FREE;
-  send_to_ui ("      {\"type\":\"FREE\", \"FREETYPE\":\"INPUTARRAY\",\"CONTEXT\":%d},", context);
+  send_to_ui ("<FREE TYPE=\"INPUTARRAY\" CONTEXT=\"%d\"/>", context);
   return 0;
 }
 
@@ -2996,7 +3005,7 @@ char *ptr_b;
     return 0;
   if (b == 0)
     return 0;
-  UIdebug (5, "Field  name match : \"%s\" \"%s\" : ", a, b);
+  UIdebug (5, "Field  name match : '%s' '%s' : ", a, b);
 
   if (strcmp (a, b) == 0) {
 	UIdebug(5,"Match\n");
@@ -3138,7 +3147,7 @@ int uilib_do_frontcall(char *s,int no) {
 
 if (no) {
 	// We only need to wait if we are expecting some result
-  send_to_ui ("      {\"type\":\"WAITFOREVENT\"},");
+  send_to_ui ("<WAITFOREVENT/>");
   flush_ui ();
   a=get_event_from_ui (NULL);
 	if (a!=ID_FRONTCALLRETURN) {
@@ -3214,12 +3223,3 @@ if (s1==NULL) s1=&s;
                         }
 return ptr;
 }
-
-
-/*
-struct s_attr *json_parse(char *s) {
-	printf("--->%s\n",s);
-	exit(2);
-	return NULL;
-}
-*/

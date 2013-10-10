@@ -33,7 +33,7 @@
 #endif /* win32 */
 #endif /* NOPROXY */
 
-#include "attr.h"
+#include "xml/attr.h"
 #include "../debug.h"
 #include "../pipe.h"
 #include "comms.h"
@@ -540,18 +540,12 @@ get_event_from_ui (struct ui_context *context)
   last_attr = 0;
   UIdebug (4, "Get_event_from_ui\n");
 
-  attr=getTriggeredAttribute(clientui_sock_read);
-
-
-#ifdef BLAH
-
-
 // If the frontend  sent back a lot of  TRIGGEREDs all in one go - then we might have some pending..
 // // use these first...
   if (context && havePendingTriggers (context))
     {
-      UIdebug(6,"Having pending...");
-      attr = json_parse (popPendingTriggered (context));
+	UIdebug(6,"Having pending...");
+      attr = xml_parse (popPendingTriggered (context));
     }
   else
     {
@@ -563,7 +557,7 @@ get_event_from_ui (struct ui_context *context)
 	
 	UIdebug(5,"Got it..:%s\n",localbuf);
 	// process the buffer..
-        attr = json_parse (localbuf);
+        attr = xml_parse (localbuf);
 		
 	if (attr) {
 		UIdebug(7,"attr->maxcnt =%d\n",attr->maxcnt );
@@ -578,9 +572,8 @@ get_event_from_ui (struct ui_context *context)
 		}
 	}
     }
-#endif
 
-      if (attr && attr->yourId)
+      if (attr->yourId)
 	{
 	  if (strlen (attr->yourId))
 	    {
@@ -594,7 +587,7 @@ get_event_from_ui (struct ui_context *context)
   //printf("Got bufferTouched=%d\n", attr->bufferTouched);
 
 
-  if (attr && attr->id)
+  if (attr->id)
     {
       int n = -1;
       if (strcmp (attr->id, "DIE") == 0 || strcmp (attr->id, "-999") == 0)
