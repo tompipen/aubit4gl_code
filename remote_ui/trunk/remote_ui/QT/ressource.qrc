@@ -25,9 +25,7 @@
         <file>pics/VENTAS_9_knopf_aktion_inaktiv.png</file>
         <file>pics/VENTAS_9_knopf_menu_aktiv.png</file>
         <file>pics/VENTAS_9_knopf_menu_inaktiv.png</file>
-        <file>pics/VENTAS_9_splashscreen.png</file>
         <file>pics/VENTAS_9_textur_1.png</file>
-        <file>pics/VENTAS_9_titel.jpg</file>
         <file>pics/a.png</file>
         <file>pics/abbrechen.png</file>
         <file>pics/abbrechen_rot.png</file>
@@ -164,5 +162,7 @@
         <file>pics/editor-zurueck.png</file>
         <file>pics/editor-ok.png</file>
         <file>pics/editor-anwender-datum.png</file>
+        <file>pics/VENTAS_9_splashscreen.png</file>
+        <file>pics/VENTAS_9_titel.jpg</file>
     </qresource>
 </RCC>
