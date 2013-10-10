@@ -6,7 +6,7 @@ include ${ROOT}/incl/Makefile-common
 
 
 NAME=`uname | tr '-' '_'`
-CFLAGS+=-I$(ROOT)/lib/libui/ui_xml -I$(ROOT)/lib/libui/ui_xml/uilib -I$(ROOT)/lib/libui/ui_xml/uilib/aubit4gl -Wall -I../json/libjson/libjson-0.8 
+CFLAGS+=-I$(ROOT)/lib/libui/ui_xml -I$(ROOT)/lib/libui/ui_xml/uilib -I$(ROOT)/lib/libui/ui_xml/uilib/aubit4gl -Wall 
 
 USE_AR=${AR}
 USE_RANLIB=ranlib
