@@ -291,7 +291,7 @@ LineEdit::LineEdit(QWidget *parent)
     : QLineEdit(parent)
 {
    setProperty("touched", false);
-   this->setFixedHeight(VDC::DEFAULT_HEIGHT);
+   //this->setFixedHeight(VDC::DEFAULT_HEIGHT);
    this->setContextMenuPolicy(Qt::CustomContextMenu);
 
 /*   QFont textFont;
@@ -983,7 +983,7 @@ MainFrame::vdcdebug("WidgetHelper","createLabel", "const QDomElement& formField,
   // QPalette p = label->palette();
   // p.setColor(QPalette::Foreground, Qt::blue);
  //  label->setPalette(p);
-   label->setFixedHeight(VDC::DEFAULT_HEIGHT);
+   //label->setFixedHeight(VDC::DEFAULT_HEIGHT);
   // label->setFixedWidth(w);
    return label;
 }
@@ -1208,11 +1208,9 @@ MainFrame::vdcdebug("WidgetHelper","createEdit", "const QDomElement& formField, 
            }
        } else {
            lineEdit->setFixedWidth(width);
-           lineEdit->setFixedHeight(VDC::DEFAULT_HEIGHT);
        }
    } else {
        lineEdit->setFixedWidth(width);
-       lineEdit->setFixedHeight(VDC::DEFAULT_HEIGHT);
    }
 
    if(FglForm *p_fglform = qobject_cast<FglForm*> (parent)) {
@@ -1282,11 +1280,11 @@ MainFrame::vdcdebug("WidgetHelper","createButtonEdit", "const QDomElement& formF
            }
        } else {
            lineEdit->setFixedWidth(width);
-           lineEdit->setFixedHeight(VDC::DEFAULT_HEIGHT);
+           //lineEdit->setFixedHeight(VDC::DEFAULT_HEIGHT);
        }
    } else {
        lineEdit->setFixedWidth(width);
-       lineEdit->setFixedHeight(VDC::DEFAULT_HEIGHT);
+       //lineEdit->setFixedHeight(VDC::DEFAULT_HEIGHT);
    }
 
    if(FglForm *p_fglform = qobject_cast<FglForm*> (parent)) {
@@ -1594,11 +1592,11 @@ MainFrame::vdcdebug("WidgetHelper","createDateEdit", "const QDomElement& formFie
            }
        } else {
            lineEdit->setFixedWidth(width);
-           lineEdit->setFixedHeight(VDC::DEFAULT_HEIGHT);
+           //lineEdit->setFixedHeight(VDC::DEFAULT_HEIGHT);
        }
    } else {
        lineEdit->setFixedWidth(width);
-       lineEdit->setFixedHeight(VDC::DEFAULT_HEIGHT);
+       //lineEdit->setFixedHeight(VDC::DEFAULT_HEIGHT);
    }
 
    if(FglForm *p_fglform = qobject_cast<FglForm*> (parent)) {
