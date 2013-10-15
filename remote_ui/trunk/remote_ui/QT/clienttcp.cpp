@@ -1593,7 +1593,7 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
             
              }
             #ifdef VREPGEN_USE
-             Reportgen *p_reportgen = new Reportgen(p_currScreenHandler);
+             Reportgen *p_reportgen = new Reportgen();
              QFileInfo odffile(params.at(0));
              QFileInfo zieldatei(params.at(1));
              QFile *file = new QFile(QDir::tempPath() + "/" + odffile.baseName() + "." + odffile.completeSuffix());
