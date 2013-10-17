@@ -4093,3 +4093,18 @@ void UILIB_A4GL_sync_fields(void *sio) {
 	// Does nothing
 }
 
+
+void UILIB_A4GL_report_pause(char*s) {
+  send_to_ui ("<REPORTPAUSE>%s</REPORTPAUSE>",  uilib_xml_escape (char_encode(s)));
+}
+
+int UILIB_A4GL_show_help_within_ui(int helpno) {
+  send_to_ui ("<SHOWHELP HelpId=\"%d\"/>", helpno);
+        return 1;
+}
+int UILIB_A4GL_set_help_file_within_ui(char *s) {
+  	send_to_ui ("<SETHELPFILE FileName=\"%s\"/>", s);
+        // Get Aubit4GL to show the help...
+        return 0;
+}
+
