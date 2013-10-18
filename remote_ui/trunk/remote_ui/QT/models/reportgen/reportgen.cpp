@@ -1311,7 +1311,11 @@ void Reportgen::createXmlFile(int Table, int Position, QString odffile)
 
             if(sedValue.contains("&"))
             {
-                sedValue.replace("&", "&amp;");
+                sedValue.replace("&", "&#038;");
+            }
+            if(sedValue.contains("&amp;"))
+            {
+                sedValue.replace("&amp;", "&#038;");
             }
 
             if(sedValue.contains("<"))
@@ -1322,6 +1326,10 @@ void Reportgen::createXmlFile(int Table, int Position, QString odffile)
             if(sedValue.contains(">"))
             {
                 sedValue.replace(">", "&gt;");
+            }
+            if(sedValue.contains("\""))
+            {
+                sedValue.replace("\"", "");
             }
 
             if(!valueList.isEmpty())
