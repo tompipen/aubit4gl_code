@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: console.c,v 1.60 2012-05-25 06:50:14 mikeaubury Exp $
+# $Id: console.c,v 1.61 2013-10-18 09:36:54 mikeaubury Exp $
 #*/
 
 /**
@@ -864,6 +864,20 @@ void UILIB_A4GL_ui_run_info(int mode, char*cmdline, int runcnt, int startstop) {
 
 void UILIB_A4GL_sync_fields(void *sio) {
 }
+
+void UILIB_A4GL_report_pause(char*s) {
+}
+
+
+int UILIB_A4GL_show_help_within_ui(int helpno) {
+        // Get Aubit4GL to show the help...
+        return 0;
+}
+int UILIB_A4GL_set_help_file_within_ui(char *s) {
+        // Get Aubit4GL to show the help...
+        return 0;
+}
+
 
 /* ========================== EOF =============================== */
 

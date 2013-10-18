@@ -24,11 +24,11 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: prompt.c,v 1.82 2011-03-23 20:29:28 mikeaubury Exp $
+# $Id: prompt.c,v 1.83 2013-10-18 09:36:55 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: prompt.c,v 1.82 2011-03-23 20:29:28 mikeaubury Exp $";
+		"$Id: prompt.c,v 1.83 2013-10-18 09:36:55 mikeaubury Exp $";
 #endif
 
 /**
@@ -784,5 +784,13 @@ if (p)
 }
 
 
+void UILIB_A4GL_report_pause(char*s) {
+int a;
+  A4GL_push_char (s);
+  A4GL_push_int (-1);
+  A4GL_push_int (-1);
+  A4GL_display_at (1, 0);
+  a = A4GL_get_key (-1);
+}
 
 /* ============================== EOF ============================== */

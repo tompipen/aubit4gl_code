@@ -557,6 +557,7 @@ getTriggeredAttribute (int  sock_read)
   } else {
 	  if (triggeredValue.attribute.sync.vals)
 	    {
+	#ifdef SHOULDBEFREEDBYINPUTORCONSTRUCTETC
 	      int a;
 	      for (a = 0; a < triggeredValue.attribute.sync.nvalues; a++)
 		{
@@ -571,6 +572,7 @@ getTriggeredAttribute (int  sock_read)
 		}
 	      free (triggeredValue.attribute.sync.vals);
 	      triggeredValue.attribute.sync.vals=0;
+	#endif
 	    }
 	  triggeredValue.attribute.sync.vals = 0;
 	  triggeredValue.attribute.sync.nvalues = 0;
@@ -612,7 +614,7 @@ getTriggeredAttribute (int  sock_read)
       if (json_parser_is_done (&parser))
 	break;
     }
-  printf ("Got full packet\n");
+  fprintf (stderr,"Got full packet\n");
   //printPacket (&triggeredValue.attribute);
 
   json_parser_free(&parser);

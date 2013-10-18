@@ -12,6 +12,8 @@ static char *get_field_with_subscript_as_string(char *field, int i);
 FILE *def_stderr = NULL;
 char stderr_fname[2000]="";
 char *set_current_display_delims = 0;
+char *uilib_json_escape(char *s);
+void write_json_form(FILE *ofile, char *fname, struct_form *f) ;
 
 int generate_xml_forms=1; // Automatically generate XML form files where no XML file exists
 
@@ -209,7 +211,7 @@ free(buff);
       char b[300];
       strncpy (b, &fbuff[a], 256);
       b[256] = 0;
-      send_to_ui ("%s", uilib_xml_escape (b));
+      send_to_ui ("%s", uilib_json_escape (b));
     }
 */
   send_to_ui ("null]}");
@@ -229,7 +231,7 @@ A4GL_JSON_opening_form (char *formfile, char *formname,int append_xml)
 
   last_h=1; last_w=1;
   if (append_xml) {
-  	strcat (buff, ".xml");
+  	strcat (buff, ".json");
   }
   f = A4GL_open_file_dbpath (buff);
 
@@ -431,25 +433,31 @@ UILIB_A4GL_disp_fields_ap (int n, int attr, va_list * ap)
   send_to_ui ("      {\"type\":\"DISPLAYTO\", \"ATTRIBUTE\":%d, ", attr);
   send_to_ui ("         \"Fields\":[");
 
+  int printed=0;
   while ((argp = va_arg (*ap, char *)))
     {
       int i;
       i = va_arg (*ap, int);
       A4GL_trim (argp);
+	if (printed) send_to_ui(",");
+	printed=1;
       if (i == 1)
 	{
-	  send_to_ui ("            { \"Name\":\"%s\"},", argp);
+	  send_to_ui ("            { \"Name\":\"%s\"}", argp);
 	}
       else
 	{
-	  send_to_ui ("            { \"Name\":\"%s\"},", get_field_with_subscript_as_string(argp, i));
+	  send_to_ui ("            { \"Name\":\"%s\"}", get_field_with_subscript_as_string(argp, i));
 	}
     }
   send_to_ui ("         ],");
 
   send_to_ui ("         \"Values\":[", attr, field_list);
+	printed=0;
   for (a = n - 1; a >= 0; a--)
     {
+	if (printed) send_to_ui(",");
+		printed=1;
 		if (arg_types[a]==DTYPE_BYTE || arg_types[a]==DTYPE_TEXT) {
 			fglbyte *b;
 			fglbyte **bp;
@@ -461,7 +469,7 @@ UILIB_A4GL_disp_fields_ap (int n, int attr, va_list * ap)
 				int l;
 				int cnt=0;
 				char buff2[300];
-      				send_to_ui_no_nl ("         {\"TYPE\":\"BLOB\" \"Text\"=\"");
+      				send_to_ui_no_nl ("         {\"TYPE\":\"BLOB\",\"Text\":\"");
 				l=strlen(ptr);
   				while (cnt<l) {
 					strncpy(buff2,ptr,256);
@@ -470,19 +478,19 @@ UILIB_A4GL_disp_fields_ap (int n, int attr, va_list * ap)
 					cnt+=256;
 					ptr+=256;
   				}
-				send_to_ui("\"},", ptr);
+				send_to_ui("\"}", ptr);
 			} else {
-      				send_to_ui ("         { \"TYPE\":\"BLOB\"},"); // Empty blob - maybe it couldn't be loaded etc..
+      				send_to_ui ("         { \"TYPE\":\"BLOB\"}"); // Empty blob - maybe it couldn't be loaded etc..
 			}
 		} else {
-      			send_to_ui ("         {\"TYPE\"=%d \"Text\"=\"%s\"},", arg_types[a] & DTYPE_MASK, uilib_xml_escape (char_encode(args[a])));
+      			send_to_ui ("         {\"TYPE\":%d,\"Text\":\"%s\"}", arg_types[a] & DTYPE_MASK, uilib_json_escape (char_encode(args[a])));
 		}
       free (args[a]);
     }
   free (args);
   free (arg_types);
 
-  send_to_ui ("         null]},");
+  send_to_ui ("         ]},");
   suspend_flush(-1);
   return rval;
 }
@@ -839,7 +847,7 @@ UILIB_A4GL_menu_hide_ap (void *menu, va_list * ap)
   while ((argp = va_arg (*ap, char *)))
     {
       A4GL_trim (argp);
-      send_to_ui ("      {\"type\":\"HIDEOPTION\", \"CONTEXT\":%d,\"OPTION\":\"%s\"},", context, uilib_xml_escape (char_encode(argp)));
+      send_to_ui ("      {\"type\":\"HIDEOPTION\", \"CONTEXT\":%d,\"OPTION\":\"%s\"},", context, uilib_json_escape (char_encode(argp)));
     }
   return rval;
 }
@@ -856,7 +864,7 @@ UILIB_A4GL_menu_show_ap (void *menu, va_list * ap)
   while ((argp = va_arg (*ap, char *)))
     {
       A4GL_trim (argp);
-      send_to_ui ("      {\"type\":\"SHOWOPTION\",\"CONTEXT\":%d,\"OPTION\":\"%s\"},", context, uilib_xml_escape (char_encode(argp)));
+      send_to_ui ("      {\"type\":\"SHOWOPTION\",\"CONTEXT\":%d,\"OPTION\":\"%s\"},", context, uilib_json_escape (char_encode(argp)));
     }
   return 0;
 }
@@ -1151,6 +1159,7 @@ static void
 dump_events (struct aclfgl_event_list *e)
 {
   int a;
+int printed=0;
   int b;
   //int *keys;
   uilib_start_events (0);
@@ -1158,18 +1167,20 @@ dump_events (struct aclfgl_event_list *e)
     {
       char **fields;
 
-	if (a>0) send_to_ui(",");
 
       if (e[a].event_type == A4GL_EVENT_AFTER_INP_CLEAN || e[a].event_type == A4GL_EVENT_BEFORE_INP)
 	{
 	  continue;
 	}
+
       if (e[a].event_type == A4GL_EVENT_KEY_PRESS)
 	{
+	if (printed) send_to_ui(",");
 	  //keys = get_key_codes (e[a].field);
 	  A4GL_push_int (e[a].block);
 	  A4GL_push_char ("ONKEY");
 	  A4GL_push_int (e[a].keycode);
+printed++;
 	  uilib_event (3);
 	  continue;
 	}
@@ -1178,9 +1189,11 @@ dump_events (struct aclfgl_event_list *e)
 
       if (e[a].field == 0)
 	{
+	if (printed) send_to_ui(",");
 	  A4GL_push_int (e[a].block);
 	  A4GL_push_char (decode_event_id (e[a].event_type));
 	  A4GL_push_empty_char ();
+printed++;
 	  uilib_event (3);
 	  continue;
 	}
@@ -1191,9 +1204,11 @@ dump_events (struct aclfgl_event_list *e)
 	{
 	  if (strlen (fields[b]) != 0)
 	    {
+	if (printed) send_to_ui(",");
 	      A4GL_push_int (e[a].block);
 	      A4GL_push_char (decode_event_id (e[a].event_type));
 	      A4GL_push_char (fields[b]);
+printed++;
 	      uilib_event (3);
 	      //printf ("CALL UILIB_EVENT(%d,\"%s\",%s)", a + 1,  decode_event_id (e[a].event_type), fields[b]);
 	    }
@@ -1201,17 +1216,21 @@ dump_events (struct aclfgl_event_list *e)
 	    {
 	      if (e[a].event_type == A4GL_EVENT_BEFORE_INP || e[a].event_type == A4GL_EVENT_AFTER_INP_CLEAN)
 		{
+	if (printed) send_to_ui(",");
 		  //printc ("CALL UILIB_EVENT(%d,\"%s\",\"\")", a + 1, decode_event_id (event_id));
 		  A4GL_push_int (e[a].block);
 		  A4GL_push_char (decode_event_id (e[a].event_type));
 		  A4GL_push_empty_char ();
+printed++;
 		  uilib_event (3);
 		}
 	      else
 		{
+	if (printed) send_to_ui(",");
 		  A4GL_push_int (e[a].block);
 		  A4GL_push_char (decode_event_id (e[a].event_type));
 		  A4GL_push_empty_char ();
+printed++;
 		  uilib_event (3);
 		  //printf ("CALL UILIB_EVENT(%d,\"%s\",\"\")", a + 1, decode_event_id (e[a].event_type));
 		}
@@ -1515,7 +1534,7 @@ UILIB_aclfgl_aclfgl_add_to_toolbar (int n)
   tag = A4GL_char_pop ();
   send_to_ui
     ("      {\"type\":\"ADDTOTOOLBAR\",\"TAG\":\"%s\",\"BUTTON\":\"%s\",\"IMAGE\":\"%s\",\"TOOLTIP\":\"%s\",\"KEYVAL\":\"%s\",\"ALWAYSSHOW\":%d},",
-     uilib_xml_escape (char_encode(tag)), uilib_xml_escape (char_encode(buttonText)), uilib_xml_escape (char_encode(img)), uilib_xml_escape (char_encode(toolTip)), keyval, alwaysShow);
+     uilib_json_escape (char_encode(tag)), uilib_json_escape (char_encode(buttonText)), uilib_json_escape (char_encode(img)), uilib_json_escape (char_encode(toolTip)), keyval, alwaysShow);
 
 
 
@@ -1588,9 +1607,9 @@ A4GL_debug("...");
   send_to_ui ("   { \"type\":\"PROGRAMSTARTUP\",\"ProgramName\":\"%s\",\"ID\":%d, \"EnvironmentVariables\":[", argv[0], get_ui_id ('r'));
   for (a = 0; nm[a]; a++)
     {
-      send_to_ui ("      { \"name\":\"%s\",\"value\":\"%s\"},", nm[a], uilib_xml_escape (char_encode(acl_getenv (nm[a]))));
+      send_to_ui ("      { \"name\":\"%s\",\"value\":\"%s\"},", nm[a], uilib_json_escape (char_encode(acl_getenv (nm[a]))));
     }
-      send_to_ui ("      { \"name\":\"A4GL_VERSION\",\"value\":\"%s.%d\"},",  uilib_xml_escape (char_encode(A4GL_internal_version ())),A4GL_internal_build());
+      send_to_ui ("      { \"name\":\"A4GL_VERSION\",\"value\":\"%s.%d\"},",  uilib_json_escape (char_encode(A4GL_internal_version ())),A4GL_internal_build());
       send_to_ui ("      { \"name\":\"XML_VERSION\",\"value\":\"1.3\"}");
 
   send_to_ui ("   ]},");
@@ -1651,7 +1670,7 @@ int cnt;
   if (remotename==0) {
   	send_to_ui_no_nl ("      {\"type\":\"FILE\",\"NAME\":\"%s\",\"Data\"=[", filename);
   } else {
-  	send_to_ui_no_nl ("      {\"type\":\"FILE\",\"NAME\":\"%s\",\"CLIENTNAME\":\"%s\",\"Data\"=[", uilib_xml_escape(char_encode(filename)),uilib_xml_escape(char_encode(remotename))) ;
+  	send_to_ui_no_nl ("      {\"type\":\"FILE\",\"NAME\":\"%s\",\"CLIENTNAME\":\"%s\",\"Data\"=[", uilib_json_escape(char_encode(filename)),uilib_json_escape(char_encode(remotename))) ;
   }
   cnt=0;
   A4GL_base64_encode(fbuff,len,&buff);
@@ -1798,7 +1817,7 @@ int a;
 		A4GL_trim(params[n-a-1]);
 	}
 	for (a=0;a<n;a++) {
-		sprintf(smbuff,"<PARAM NO=\"%d\">%s</PARAM>",a+1,uilib_xml_escape(params[a]));
+		sprintf(smbuff,"<PARAM NO=\"%d\">%s</PARAM>",a+1,uilib_json_escape(params[a]));
 		strcat(buff,smbuff);
 		free(params[a]);
 	}
@@ -1815,7 +1834,7 @@ UILIB_A4GL_direct_to_ui (char *what, char *string)
 {
   if (strcmp (what, "SEND") == 0)
     {
-      send_to_ui ("      {\"type\":\"UIDIRECT\",\"Data\"=\"%s\"},", uilib_xml_escape (char_encode(string)));
+      send_to_ui ("      {\"type\":\"UIDIRECT\",\"Data\"=\"%s\"},", uilib_json_escape (char_encode(string)));
       return;
     }
 
@@ -1834,8 +1853,8 @@ UILIB_A4GL_direct_to_ui (char *what, char *string)
 	char buff2[2000];
 	val=A4GL_char_pop();
 	name=A4GL_char_pop();
-	strcpy(buff1, uilib_xml_escape (char_encode(name)));
-	strcpy(buff2, uilib_xml_escape (char_encode(val)));
+	strcpy(buff1, uilib_json_escape (char_encode(name)));
+	strcpy(buff2, uilib_json_escape (char_encode(val)));
 	free(name);
 	free(val);
 	
@@ -1884,7 +1903,7 @@ UILIB_A4GL_direct_to_ui (char *what, char *string)
     }
 
   if (strcmp(what,"EXECUTE")==0) {
-      send_to_ui ("      {\"type\":\"EXECUTE\" \"Data\"=\"%s\"},",uilib_xml_escape( char_encode(string)));
+      send_to_ui ("      {\"type\":\"EXECUTE\" \"Data\"=\"%s\"},",uilib_json_escape( char_encode(string)));
 	return;
   }
 
@@ -1896,7 +1915,7 @@ UILIB_A4GL_direct_to_ui (char *what, char *string)
       char *p2;
       p2 = A4GL_char_pop ();
       p1 = A4GL_char_pop ();
-      send_to_ui ("      {\"type\":\"SETKEYLABEL\", \"DIALOG\":\"1\",\"LABEL\":\"%s\", \"TEXT\":\"%s\"},", uilib_xml_escape(char_encode(p1)), uilib_xml_escape(char_encode(ignull (p2))));
+      send_to_ui ("      {\"type\":\"SETKEYLABEL\", \"DIALOG\":\"1\",\"LABEL\":\"%s\", \"TEXT\":\"%s\"},", uilib_json_escape(char_encode(p1)), uilib_json_escape(char_encode(ignull (p2))));
       free (p1);
       free (p2);
       return;
@@ -1912,7 +1931,7 @@ UILIB_A4GL_direct_to_ui (char *what, char *string)
       p3 = A4GL_char_pop ();
       p2 = A4GL_char_pop ();
       p1 = A4GL_char_pop ();
-      send_to_ui ("      {\"type\":\"FGL_DIALOG_SETICON\",\"ICON\":\"%s\",\"TEXT\":\"%s\", \"COMMAND_OR_KEY\":\"%s\"},", uilib_xml_escape(char_encode(p1)), uilib_xml_escape (char_encode(p2)),uilib_xml_escape(char_encode(p3)));
+      send_to_ui ("      {\"type\":\"FGL_DIALOG_SETICON\",\"ICON\":\"%s\",\"TEXT\":\"%s\", \"COMMAND_OR_KEY\":\"%s\"},", uilib_json_escape(char_encode(p1)), uilib_json_escape (char_encode(p2)),uilib_json_escape(char_encode(p3)));
       free (p1);
       free (p2);
       free (p3);
@@ -1927,7 +1946,7 @@ UILIB_A4GL_direct_to_ui (char *what, char *string)
       char *p2;
       p2 = A4GL_char_pop ();
       p1 = A4GL_char_pop ();
-      send_to_ui ("      {\"type\":\"SETKEYLABEL\",\"DIALOG\":\"0\",\"LABEL\":\"%s\",\"TEXT\":\"%s\"},", uilib_xml_escape(char_encode(p1)), uilib_xml_escape(char_encode(ignull (p2))));
+      send_to_ui ("      {\"type\":\"SETKEYLABEL\",\"DIALOG\":\"0\",\"LABEL\":\"%s\",\"TEXT\":\"%s\"},", uilib_json_escape(char_encode(p1)), uilib_json_escape(char_encode(ignull (p2))));
       free (p1);
       free (p2);
       return;
@@ -1974,7 +1993,7 @@ UILIB_A4GL_ui_exit (int exitstatus)
 	      send_to_ui ("\"%s\",", buf);
 	    }
 	}
-      send_to_ui ("       null]}");
+      send_to_ui ("       null]},");
 	fclose(def_stderr);
       unlink (stderr_fname);
     }
@@ -2190,7 +2209,7 @@ UILIB_aclfgl_set_window_title (int nargs)
 {
   char *s;
   s = A4GL_char_pop ();
-  send_to_ui ("      {\"type\":\"SETWINDOWTITLE\",\"TEXT\":\"%s\"},", uilib_xml_escape (char_encode(ignull (s))));
+  send_to_ui ("      {\"type\":\"SETWINDOWTITLE\",\"TEXT\":\"%s\"},", uilib_json_escape (char_encode(ignull (s))));
   free (s);
   return 0;
 }
@@ -2201,7 +2220,7 @@ UILIB_aclfgl_aclfgl_set_application_xml (int nargs)
 {
   char *s;
   s = A4GL_char_pop ();
-  send_to_ui ("      {\"type\":\"SETAPPLICATIONLAUNCHERXML\",\"FILE\":\"%s\"},", uilib_xml_escape (char_encode(ignull (s))));
+  send_to_ui ("      {\"type\":\"SETAPPLICATIONLAUNCHERXML\",\"FILE\":\"%s\"},", uilib_json_escape (char_encode(ignull (s))));
   free (s);
   return 0;
 }
@@ -2672,7 +2691,7 @@ UILIB_A4GL_ui_fgl_winquestion (char *title, char *text, char *def, char *pos, ch
   int a;
   send_to_ui
     ("      {\"type\":\"WINQUESTION\", \"TITLE\":\"%s\",\"TEXT\":\"%s\",\"DEFAULT\":\"%s\",\"POS\":\"%s\",\"ICON\":\"%s\",\"DANGER\":%d,\"BUTTON\":%d },",
-     ignull (title), uilib_xml_escape (char_encode(ignull (text))), def, pos, icon, danger, winbutton);
+     ignull (title), uilib_json_escape (char_encode(ignull (text))), def, pos, icon, danger, winbutton);
 
   send_to_ui ("      {\"type\":\"WAITFOREVENT\"},");
   flush_ui ();
@@ -2805,11 +2824,11 @@ static void
 A4GL_make_field (int frow, int fcol, int rows, int cols, char *widget,
 		 char *config, char *inc, void *id, char *tab_and_col, char *action, int attr_no)
 {
-  	send_to_ui ("      {\"ROW\":%d, \"COLUMN\":%d, \"ROWS\":%d, \"COLS\":%d, \"WIDGET\":\"%s\"",frow, fcol, rows, cols, uilib_xml_escape (char_encode(widget)));
- 	send_to_ui("           , \"CONFIG\":\"%s\"",uilib_xml_escape (char_encode(config)));
-	send_to_ui("           , \"INC\":\"%s\",\"ID\":%d",uilib_xml_escape (char_encode(inc)), (long) id);
-	send_to_ui("           , \"TABCOL\":\"%s\"",uilib_xml_escape (char_encode(tab_and_col)));
-	send_to_ui("           , \"ACTION\":\"%s\",\"ATTRIBUTE_NO\":%d},", uilib_xml_escape (char_encode(action)), attr_no);
+  	send_to_ui ("      {\"ROW\":%d, \"COLUMN\":%d, \"ROWS\":%d, \"COLS\":%d, \"WIDGET\":\"%s\"",frow, fcol, rows, cols, uilib_json_escape (char_encode(widget)));
+ 	send_to_ui("           , \"CONFIG\":\"%s\"",uilib_json_escape (char_encode(config)));
+	send_to_ui("           , \"INC\":\"%s\",\"ID\":%d",uilib_json_escape (char_encode(inc)), (long) id);
+	send_to_ui("           , \"TABCOL\":\"%s\"",uilib_json_escape (char_encode(tab_and_col)));
+	send_to_ui("           , \"ACTION\":\"%s\",\"ATTRIBUTE_NO\":%d},", uilib_json_escape (char_encode(action)), attr_no);
 }
 
 
@@ -3074,22 +3093,22 @@ fprintf(stderr,"not using XML form...\n");
 	      break;
 
 	    case FA_S_PICTURE:
-	      send_to_ui (",\"PICTURE\":\"%s\"", uilib_xml_escape (char_encode(f->str_attribs.str_attribs_val[b].value)));
+	      send_to_ui (",\"PICTURE\":\"%s\"", uilib_json_escape (char_encode(f->str_attribs.str_attribs_val[b].value)));
 	      break;
 	    case FA_S_FORMAT:
-	      send_to_ui (",\"FORMAT\":\"%s\"", uilib_xml_escape (char_encode(f->str_attribs.str_attribs_val[b].value)));
+	      send_to_ui (",\"FORMAT\":\"%s\"", uilib_json_escape (char_encode(f->str_attribs.str_attribs_val[b].value)));
 	      break;
 	    case FA_S_DEFAULT:
-	      send_to_ui (",\"DEFAULT\":\"%s\"", uilib_xml_escape (char_encode(f->str_attribs.str_attribs_val[b].value)));
+	      send_to_ui (",\"DEFAULT\":\"%s\"", uilib_json_escape (char_encode(f->str_attribs.str_attribs_val[b].value)));
 	      break;
 	    case FA_S_PROGRAM:
-	      send_to_ui (",\"PROGRAM\":\"%s\"", uilib_xml_escape (char_encode(f->str_attribs.str_attribs_val[b].value)));
+	      send_to_ui (",\"PROGRAM\":\"%s\"", uilib_json_escape (char_encode(f->str_attribs.str_attribs_val[b].value)));
 	      break;
 	    case FA_S_COMMENTS:
-	      send_to_ui (",\"COMMENTS\":\"%s\"", uilib_xml_escape (char_encode(f->str_attribs.str_attribs_val[b].value)));
+	      send_to_ui (",\"COMMENTS\":\"%s\"", uilib_json_escape (char_encode(f->str_attribs.str_attribs_val[b].value)));
 	      break;
 	    case FA_S_CLASS:
-	      send_to_ui (",\"CLASS\":\"%s\"", uilib_xml_escape (char_encode(f->str_attribs.str_attribs_val[b].value)));
+	      send_to_ui (",\"CLASS\":\"%s\"", uilib_json_escape (char_encode(f->str_attribs.str_attribs_val[b].value)));
 	      break;
 	default: 
 		break;
@@ -3710,7 +3729,7 @@ for (a=0;a<nfields;a++) {
 	get_label(a,&label,&x,&y);
   send_to_ui ("      { \"ROW\":%d,\"COLUMN\":%d,\"Data\":\"%s\"},", 
 			y,
-			x, uilib_xml_escape (char_encode(label)));
+			x, uilib_json_escape (char_encode(label)));
 }
 
 }
@@ -3996,7 +4015,7 @@ return buff;
 int UILIB_aclfgl_aclfgl_set_display_field_delimiters(int n) {
 	char *s;
 	s=A4GL_char_pop();
-	send_to_ui("      {\"type\":\"FIELDDELIMITERS\", \"DELIMS\":\"%s\"},",uilib_xml_escape(char_encode(s)));
+	send_to_ui("      {\"type\":\"FIELDDELIMITERS\", \"DELIMS\":\"%s\"},",uilib_json_escape(char_encode(s)));
 	return 0;
 }
 
@@ -4008,7 +4027,7 @@ char buff[100000];
 char smbuff[20000];
 obind=vobind;
 ibind=vibind;
-sprintf(buff,"      {\"type\":\"FRONTCALL\", MODULE:\"%s\",NAME:\"%s\",EXPECT:%d,",uilib_xml_escape(char_encode(module)),uilib_xml_escape(char_encode(name)),no);
+sprintf(buff,"      {\"type\":\"FRONTCALL\", MODULE:\"%s\",NAME:\"%s\",EXPECT:%d,",uilib_json_escape(char_encode(module)),uilib_json_escape(char_encode(name)),no);
 if (ni) {
 	int a;
 	strcat(buff,"\"Parameters\":[");
@@ -4017,7 +4036,7 @@ if (ni) {
 		A4GL_push_param (ibind[a].ptr, ibind[a].dtype + ENCODE_SIZE (ibind[a].size));
 		ptr=A4GL_char_pop();
 		A4GL_trim(ptr);
-		sprintf(smbuff,"\"%s\",",uilib_xml_escape(char_encode(ptr)));
+		sprintf(smbuff,"\"%s\",",uilib_json_escape(char_encode(ptr)));
 		strcat(buff,smbuff);
 		free(ptr);
 	}
@@ -4050,7 +4069,7 @@ void UILIB_A4GL_ui_run_info(int mode, char*cmdline, int runcnt, int startstop) {
 	if (!A4GL_isno(acl_getenv("SENDRUNINFO"))) {
 
 		send_to_ui("      {\"type\":\"RUNINFO\", \"MODE\":%d, \"CMD\":\"%s\", \"RUNCNT\":%d, \"STARTSTOP\":%d },", mode,
-			uilib_xml_escape(char_encode(cmdline)),
+			uilib_json_escape(char_encode(cmdline)),
 				runcnt,
 				startstop);
   		flush_ui ();
@@ -4095,3 +4114,21 @@ void UILIB_A4GL_sync_fields(void *sio) {
 	// Does nothing
 }
 
+
+void UILIB_A4GL_report_pause(char*s) {
+  send_to_ui ("      {\"type\":\"REPORTPAUSE\",Data:\"%s\"},",  uilib_json_escape (char_encode(s)));
+}
+
+
+int UILIB_A4GL_show_help_within_ui(int helpno) {
+//return 0;
+  send_to_ui ("      {\"type\":\"SHOWHELP\",\"HelpId\":%d},", helpno);
+        return 1;
+}
+
+int UILIB_A4GL_set_help_file_within_ui(char *s) {
+//return 0;
+        send_to_ui ("      {\"type\":\"SETHELPFILE\", \"FileName\":\"%s\"},", uilib_json_escape (char_encode(s)));
+	return 1;
+}
+       

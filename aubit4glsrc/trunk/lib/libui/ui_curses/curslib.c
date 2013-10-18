@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.179 2012-10-16 06:51:44 mikeaubury Exp $
+# $Id: curslib.c,v 1.180 2013-10-18 09:36:54 mikeaubury Exp $
 #*/
 
 /**
@@ -41,7 +41,7 @@
  */
 #ifndef lint
 static char const module_id[] =
-  "$Id: curslib.c,v 1.179 2012-10-16 06:51:44 mikeaubury Exp $";
+  "$Id: curslib.c,v 1.180 2013-10-18 09:36:54 mikeaubury Exp $";
 #endif
 /*
 =====================================================================
@@ -2437,4 +2437,12 @@ void UILIB_A4GL_ui_run_info(int mode, char*cmdline, int runcnt, int startstop) {
   // Does nothing - needed by api..
 }
 
+int UILIB_A4GL_show_help_within_ui(int helpno) {
+	// Get Aubit4GL to show the help...
+	return 0;
+}
+int UILIB_A4GL_set_help_file_within_ui(char *s) {
+	// Get Aubit4GL to show the help...
+	return 0;
+}
 /* ============================== EOF ============================== */

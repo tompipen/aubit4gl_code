@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include <sys/types.h>
 #include <string.h>
-
+#include <ctype.h>
 
 #include "sock_xml.h"
 #include "contexts.h"
@@ -331,8 +331,24 @@ if (needyourid) {
 
 
 
+int openedLog=-1;
+FILE *logSentTraffic=NULL;
 
 
+void uilib(char *s) {
+	if (openedLog==-1) {
+		openedLog=0;
+		char *logit=local_acl_getenv("LOGXMLSENT");
+		if (logit && tolower(logit[0])=='y') {
+			logSentTraffic=fopen("/tmp/logUI.txt","w");
+		}
+	}
+	if (logSentTraffic) {
+		fprintf(logSentTraffic,"%s", s);
+		fflush(logSentTraffic);
+	}
+	
+}
 
 
 void
@@ -341,10 +357,12 @@ send_to_ui (char *s, ...)
   static va_list args;
   struct timeval tn={0,0};
   char buff[20000];
+
   va_start (args, s);
   vsprintf (buff, s, args);
   strcat (buff, "\n");
   UIdebug (4,"[[%s]]\n", buff);
+  uilog(buff);
   pipe_sock_puts ( clientui_sock_write, buff);
   something++;
   gettimeofday(&tn,0);
@@ -363,6 +381,7 @@ send_to_ui_no_nl (char *s, ...)
   char buff[1000000];
   va_start (args, s);
   vsprintf (buff, s, args);
+  uilog(buff);
   UIdebug (4,"[[%s]]\n", buff);
   pipe_sock_puts ( clientui_sock_write, buff);
 	something++;

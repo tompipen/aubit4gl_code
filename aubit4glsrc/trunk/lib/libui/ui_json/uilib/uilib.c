@@ -103,14 +103,17 @@ json_escape_int (char *s)
   int allocated;
 int sl;
 
-A4GL_assertion(s==NULL,"Null pointer passed to xml_escape_int");
+A4GL_assertion(s==NULL,"Null pointer passed to json_escape_int");
 
 sl=strlen(s);
 
   c = 0;
   //if (s==0) return "";
   for (a=0;a<sl;a++) {
-  		if (s[a]=='&' || s[a]=='\'' ) {
+  		if (s[a]=='\n'  ) { c++;}
+  		if (s[a]=='\r'  ) { c++;}
+  		if (s[a]=='"'  ) {
+
 				c++;
 			 break;
 		}
@@ -136,23 +139,22 @@ sl=strlen(s);
   b = 0;
   for (a = 0; a < l; a++)
     {
-      if (s[a] == '&')
+      if (s[a] == '"')
 	{
-	  buff[b++] = '&';
-	  buff[b++] = 'a';
-	  buff[b++] = 'm';
-	  buff[b++] = 'p';
-	  buff[b++] = ';';
+	  buff[b++] = '\\';
+	  buff[b++] = '"';
 	  continue;
 	}
-      if (s[a] == '\'')
+      if (s[a] == '\n')
 	{
-	  buff[b++] = '&';
-	  buff[b++] = 'a';
-	  buff[b++] = 'p';
-	  buff[b++] = 'o';
-	  buff[b++] = 's';
-	  buff[b++] = ';';
+	  buff[b++] = '\\';
+	  buff[b++] = 'n';
+	  continue;
+	}
+      if (s[a] == '\r')
+	{
+	  buff[b++] = '\\';
+	  buff[b++] = 'r';
 	  continue;
 	}
       buff[b++] = s[a];
@@ -251,28 +253,6 @@ char *char_decode(char *s) {
 
 
 static char *
-xml_escape (char *s) {
-char *rval;
-static int n=0;
-static char *buff[5]={NULL,NULL,NULL,NULL,NULL};
-A4GL_assertion(n<0||n>=5, "Buffer out of range - memory corruption?");
-if (buff[n]) {
-	free(buff[n]); 
-	buff[n]=0;
-}
-
-buff[n]=strdup(json_escape_int(s));
-
-
-rval=buff[n];
-n++;
-if (n>=5)  n=0;
-return rval;
-
-}
-
-
-static char *
 json_escape (char *s) {
 char *rval;
 static int n=0;
@@ -293,15 +273,33 @@ return rval;
 
 }
 
+/*
+static char *
+json_escape (char *s) {
+char *rval;
+static int n=0;
+static char *buff[5]={NULL,NULL,NULL,NULL,NULL};
+A4GL_assertion(n<0||n>=5, "Buffer out of range - memory corruption?");
+if (buff[n]) {
+	free(buff[n]); 
+	buff[n]=0;
+}
+
+buff[n]=strdup(json_escape_int(s));
+
+
+rval=buff[n];
+n++;
+if (n>=5)  n=0;
+return rval;
+
+}
+*/
+
 char *
 uilib_json_escape (char *s)
 {
-  return xml_escape (s);
-}
-char *
-uilib_xml_escape (char *s)
-{
-  return xml_escape (s);
+  return json_escape (s);
 }
 
 /*
@@ -535,7 +533,7 @@ uilib_set_field_list (int nargs)
   for (a = nargs - 1; a >= 0; a--)
     {
       char smbuff[256];
-      sprintf (smbuff, " { \"Name\"=\"%s\"},/>\n", args[a]);
+      sprintf (smbuff, " { \"Name\":\"%s\"},/>\n", args[a]);
       free (args[a]);
       strcat (buffer, smbuff);
     }
@@ -584,9 +582,9 @@ uilib_display_values (int nargs)
   for (a = nargs - 1; a >= 0; a--)
     {
 	if (args_dtypes[a]!=-1) {
-      		send_to_ui ("{\"Dtype\":\"%d\", \"Data\":\"%s\"},", args_dtypes[a], xml_escape (char_encode(args[a])));
+      		send_to_ui ("{\"Dtype\":\"%d\", \"Data\":\"%s\"},", args_dtypes[a], json_escape (char_encode(args[a])));
 	} else {
-      		send_to_ui ("{\"Data\":\"%s\"},", xml_escape (char_encode(args[a])));
+      		send_to_ui ("{\"Data\":\"%s\"},", json_escape (char_encode(args[a])));
 	}
       free (args[a]);
     }
@@ -667,7 +665,7 @@ uilib_error (int nargs)
   char *a = "";
   //a = charpop ();
   s = charpop ();
-  send_to_ui ("      {\"type\":\"ERROR\", \"ATTRIBUTE\":\"%s\",\"Data\":\"%s\"},", a, xml_escape (char_encode(s)));
+  send_to_ui ("      {\"type\":\"ERROR\", \"ATTRIBUTE\":\"%s\",\"Data\":\"%s\"},", a, json_escape (char_encode(s)));
   free (s);
   return 0;
 }
@@ -684,7 +682,7 @@ uilib_message (int nargs)
   wait=POPint();
   a = charpop ();
   s = charpop ();
-  send_to_ui ("      {\"type\":\"MESSAGE\", \"ATTRIBUTE\":\"%s\",\"WAIT\":%d,\"Data\":\"%s\"},", a, wait, xml_escape (char_encode(s)));
+  send_to_ui ("      {\"type\":\"MESSAGE\", \"ATTRIBUTE\":\"%s\",\"WAIT\":%d,\"Data\":\"%s\"},", a, wait, json_escape (char_encode(s)));
   free (s);
   free (a);
   return 0;
@@ -705,7 +703,7 @@ uilib_displayat (int nargs)
   y = POPint ();
   a = charpop ();
   s = charpop ();
-  send_to_ui ("      {\"type\":\"DISPLAYAT\", \"X\":%d,\"Y\":%d,\"ATTRIBUTE\":%d,\"Data\":\"%s\"},", x, y, a, xml_escape (char_encode(s)));
+  send_to_ui ("      {\"type\":\"DISPLAYAT\", \"X\":%d,\"Y\":%d,\"ATTRIBUTE\":%d,\"Data\":\"%s\"},", x, y, a, json_escape (char_encode(s)));
   free (s);
   free (a);
   return 0;
@@ -722,7 +720,7 @@ uilib_display (int nargs)
 {
   char *s;
   s = charpop ();
-  send_to_ui ("      {\"type\":\"DISPLAY\",\"Data\"=\"%s\"},", xml_escape (char_encode(s)));
+  send_to_ui ("      {\"type\":\"DISPLAY\",\"Data\":\"%s\"},", json_escape (char_encode(s)));
   free (s);
   return 0;
 }
@@ -903,7 +901,7 @@ int dtype;
   suspend_flush (1);
   send_to_ui
     ("      {\"type\":\"PROMPT\", \"CONTEXT\":%d,\"PROMPTATTRIBUTE\":\"%s\",\"FIELDATTRIBUTE\":\"%s\",\"TEXT\":\"%s\",\"CHARMODE\":%d,\"HELPNO\":%d,\"ATTRIB_STYLE\":\"%s\",\"ATTRIB_TEXT\":\"%s\",\"DTYPE_HINT\":%d,",
-     cprompt, prompt_attr, field_attr, xml_escape(char_encode(promptstr)), charmode, helpno, xml_escape(char_encode(style)), xml_escape(char_encode(text)), dtype);
+     cprompt, prompt_attr, field_attr, json_escape(char_encode(promptstr)), charmode, helpno, json_escape(char_encode(style)), json_escape(char_encode(text)), dtype);
   free (field_attr);
   free (prompt_attr);
   free (promptstr);
@@ -1192,7 +1190,7 @@ uilib_menu_set (int nargs)
   id = POPint ();
   context = POPint ();
 
-  send_to_ui ("<MENUSET CONTEXT=\"%d\" ID=\"%d\" TEXT=\"%s\" DESCRIPTION=\"%s\"/>", context, id, xml_escape(char_encode(mn)), xml_escape(char_encode(desc)));
+  send_to_ui ("<MENUSET CONTEXT=\"%d\" ID=\"%d\" TEXT=\"%s\" DESCRIPTION=\"%s\"/>", context, id, json_escape(char_encode(mn)), json_escape(char_encode(desc)));
   return 0;
 }
 
@@ -1296,7 +1294,7 @@ uilib_menu_start (int nargs)
   UIdebug (5, "Menu start context=%d for %s %d\n", cmenu, mod, ln);
   pushint (cmenu);
   suspend_flush (1);
-  send_to_ui ("      {\"type\":\"MENU\", \"CONTEXT\":%d,\"TITLE\":\"%s\",\"COMMENT\":\"%s\",\"STYLE\":\"%s\",\"IMAGE\":\"%s\", \"MenuCommands\" :[", cmenu, mt, xml_escape(char_encode(comment)), xml_escape(char_encode(style)), xml_escape(char_encode(image)));
+  send_to_ui ("      {\"type\":\"MENU\", \"CONTEXT\":%d,\"TITLE\":\"%s\",\"COMMENT\":\"%s\",\"STYLE\":\"%s\",\"IMAGE\":\"%s\", \"MenuCommands\" :[", cmenu, mt, json_escape(char_encode(comment)), json_escape(char_encode(style)), json_escape(char_encode(image)));
 
   return 0;
 }
@@ -1526,10 +1524,10 @@ UIdebug(5, "init=%d changed=%d\n", init, changed);
       // Changed data...
       for (a = 0; a < contexts[context].ui.input.nfields; a++)
 	{
-	  send_to_ui ("  { \"Changed\"=\"%d\",\"Data\"=\"%s\"},",
-		      contexts[context].ui.input.changed[a], xml_escape (char_encode(contexts[context].ui.input.variable_data[a])));
+	  send_to_ui ("  %s{ \"Changed\":\"%d\",\"Data\":\"%s\"}",a?",":"",
+		      contexts[context].ui.input.changed[a], json_escape (char_encode(contexts[context].ui.input.variable_data[a])));
 	}
-	send_to_ui("null],");
+	send_to_ui("]");
 
       if (contexts[context].ui.input.setfield)
 	{
@@ -1538,7 +1536,7 @@ UIdebug(5, "init=%d changed=%d\n", init, changed);
 	  contexts[context].ui.input.setfield = 0;
 	}
 
-      send_to_ui ("}");
+      send_to_ui ("},");
       flush_ui ();
     }
   else
@@ -1745,7 +1743,7 @@ int uilib_input_set_value_and_datatype(int nargs) {
 	initval=charpop();
 	context=POPint();
 	
- 	send_to_ui("<INPUTVARIABLE DATATYPE=\"%d\" SCALE=\"%d\">%s</INPUTVARIABLE>",dtype,scale,xml_escape(initval));
+ 	send_to_ui("<INPUTVARIABLE DATATYPE=\"%d\" SCALE=\"%d\">%s</INPUTVARIABLE>",dtype,scale,json_escape(initval));
 	contexts[context].ui.input.nfields++;
 	contexts[context].ui.input.variable_data=realloc(contexts[context].ui.input.variable_data,sizeof(char *) * contexts[context].ui.input.nfields) ;
 	contexts[context].ui.input.variable_data[contexts[context].ui.input.nfields-1]=initval;
@@ -1771,7 +1769,7 @@ uilib_next_field (int nargs)
       return 0;
     }
 
-  send_to_ui ("      {\"type\":\"NEXTFIELD\", \"CONTEXT\":%d,\"FIELD\":\"%s\"},", context, xml_escape(char_encode(opt)));
+  send_to_ui ("      {\"type\":\"NEXTFIELD\", \"CONTEXT\":%d,\"FIELD\":\"%s\"},", context, json_escape(char_encode(opt)));
 
   free (opt);
   return 0;
@@ -2123,14 +2121,14 @@ uilib_display_array_start (int nargs)
 int
 uilib_array_lines_start (int nargs)
 {
-  send_to_ui ("<ROWS>");
+  send_to_ui ("\"Rows\":[");
   return 0;
 }
 
 int
 uilib_array_lines_end (int nargs)
 {
-  send_to_ui ("</ROWS>");
+  send_to_ui ("null],");
   return 0;
 }
 
@@ -2214,14 +2212,14 @@ uilib_display_array_line (int nargs)
   int a;
   args = get_args (nargs - 1);
   row = POPint ();
-  send_to_ui (" <ROW SUBSCRIPT=\"%d\">", row+1);
-  send_to_ui ("  <VS>");
+  send_to_ui (" {\"SUBSCRIPT\":\"%d\", \"Data\" :[", row+1);
   for (a = 0; a < nargs - 1; a++)
     {
-      send_to_ui ("   <V>%s</V>", xml_escape (char_encode(args[a]))); // MJA1
+		if (a) send_to_ui(",");
+      		send_to_ui ("   \"%s\"", json_escape (char_encode(args[a]))); // MJA1
     }
-  send_to_ui ("  </VS>");
-  send_to_ui (" </ROW>");
+  send_to_ui ("  ]");
+  send_to_ui (" },");
   free_args (args);
   return 0;
 }
@@ -2389,7 +2387,7 @@ send_input_array_change (int ci)
       send_to_ui ("<VS>");
       for (b = 0; b < contexts[ci].ui.inputarray.nvals; b++)
 	{
-	  send_to_ui (" <V>%s</V>", xml_escape (char_encode(contexts[ci].ui.inputarray.variable_data[a][b])));
+	  send_to_ui (" <V>%s</V>", json_escape (char_encode(contexts[ci].ui.inputarray.variable_data[a][b])));
 	}
       send_to_ui ("</VS>");
       send_to_ui (" </ROW>");
@@ -2610,7 +2608,7 @@ uilib_save_file (char *id, char *s)
   FILE *f;
   int i;
 
-  send_to_ui ("      {\"type\":\"REQUESTFILE\",\"FILEID\":\"%s\"},", uilib_xml_escape (char_encode(id)));
+  send_to_ui ("      {\"type\":\"REQUESTFILE\",\"FILEID\":\"%s\"},", uilib_json_escape (char_encode(id)));
   flush_ui ();
   i = get_event_from_ui (NULL);
 

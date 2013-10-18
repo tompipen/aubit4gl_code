@@ -70,3 +70,22 @@ A4GL_get_metric_for (struct s_form_dets *form, void *f)
   A4GL_debug ("NO current metric !");
   return -1;
 }
+
+
+void UILIB_A4GL_report_pause(char*s) {
+int a;
+  A4GL_push_char (s);
+  A4GL_push_int (-1);
+  A4GL_push_int (-1);
+  A4GL_display_at (1, 0);
+  a = A4GL_get_key (-1);
+}
+int UILIB_A4GL_show_help_within_ui(int helpno) {
+        // Get Aubit4GL to show the help...
+        return 0;
+}
+int UILIB_A4GL_set_help_file_within_ui(char *s) {
+        // Get Aubit4GL to show the help...
+        return 0;
+}
+
