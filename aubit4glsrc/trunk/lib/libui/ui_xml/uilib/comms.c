@@ -335,7 +335,7 @@ int openedLog=-1;
 FILE *logSentTraffic=NULL;
 
 
-void uilib(char *s) {
+static void uilog(char *s) {
 	if (openedLog==-1) {
 		openedLog=0;
 		char *logit=local_acl_getenv("LOGXMLSENT");
