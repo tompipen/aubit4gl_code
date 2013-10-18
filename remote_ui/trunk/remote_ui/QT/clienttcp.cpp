@@ -2163,8 +2163,8 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
    if(childElement.nodeName() == "OPENFORM"){
       QString window = childElement.attribute("FORMNAME");
 
-      createWindow(window, "", 0, 0, 0, 0, "", "");
-      QMetaObject::invokeMethod(p_currScreenHandler, "createWindow", Qt::QueuedConnection, Q_ARG(QString, window), Q_ARG(QString, ""), Q_ARG(int, 0), Q_ARG(int, 0), Q_ARG(int, 0), Q_ARG(int, 0), Q_ARG(QString, ""), Q_ARG(QString, ""));
+      //createWindow(window, "", 0, 0, 0, 0, "", "");
+      //QMetaObject::invokeMethod(p_currScreenHandler, "createWindow", Qt::QueuedConnection, Q_ARG(QString, window), Q_ARG(QString, ""), Q_ARG(int, 0), Q_ARG(int, 0), Q_ARG(int, 0), Q_ARG(int, 0), Q_ARG(QString, ""), Q_ARG(QString, ""));
 
 
       if(childElement.firstChildElement().nodeName() == "XMLFORM"){
