@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlexpr.c,v 1.103 2013-03-25 12:58:41 mikeaubury Exp $
+# $Id: sqlexpr.c,v 1.104 2013-10-18 12:57:38 mikeaubury Exp $
 #
 */
 
@@ -540,6 +540,7 @@ new_empty_select (void)
   p->limit.start = -1;
   p->limit.end = -1;
   p->limit.offset = -1;
+  p->bulk_into=0;
   p->ncolumns = 0;
   p->select_list = 0;
   p->first = 0;
