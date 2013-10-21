@@ -43,7 +43,7 @@ void SSHTunnel::run()
        {
            session_mutex->unlock();
        }
-       usleep(500000L);
+       waitTimer::msleep(10);
     }
 
     emit bound();
@@ -81,7 +81,7 @@ void SSHTunnel::run()
 
                  if(counter >= 500000)
                  {
-                     usleep(5000L);
+                     waitTimer::msleep(1);
                  }
              } else {
                  counter = 0;
@@ -98,7 +98,8 @@ void SSHTunnel::run()
 
         while(ph.isRunning())
         {
-          usleep(5000L);
+          //QApplication::processEvents();
+          waitTimer::msleep(1);
         }
 
 
