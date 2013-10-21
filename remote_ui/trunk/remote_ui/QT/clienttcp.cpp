@@ -35,7 +35,6 @@
 #endif
 #include <models/fglform.h>
 #ifdef Q_WS_WIN
-#include <unistd.h>
 #include <windows.h>
 #include <stdio.h>
 #include <tchar.h>
@@ -448,7 +447,7 @@ ClientSocket::~ClientSocket(){
    // to avoid clients segfault when 4gl-applications get canceled or killed
    //
    while(ph.isRunning()){
-       usleep(50000L);
+   waitTimer::msleep(5);
    }
 
    ph.closeAllScreenHandler();
@@ -483,7 +482,7 @@ MainFrame::vdcdebug("ClientSocket","readClient", "");
 
 
    while(ph.isRunning()){
-   usleep(50000L);
+   waitTimer::msleep(5);
    }
 
 
@@ -1562,11 +1561,11 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
                         reportgen->setSedFile(params.at(1));
                         reportgen->setDestinationFile(params.at(2));
 
-                        reportgen->start(QThread::HighestPriority);
+                        reportgen->start(QThread::NormalPriority);
 
                         while(reportgen->isRunning())
                         {
-                            usleep(50000L);
+                            waitTimer::msleep(5);
                         }
 
                         returnvalues << QString::number(reportgen->getExitCode());
@@ -1714,7 +1713,7 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
 
                  while(!exec->isFinished())
                  {
-                     usleep(50000L);
+                     waitTimer::msleep(5);
                  }
              #else
                  executeFile(1, fileName);
@@ -1739,7 +1738,7 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
 
                  while(!exec->isFinished())
                  {
-                     usleep(50000L);
+                     waitTimer::msleep(5);
                  }
              #else
                  executeFile(1, fileName);
@@ -1767,7 +1766,7 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
                  QMetaObject::invokeMethod(p_currScreenHandler, "createTextEditor", Qt::BlockingQueuedConnection, Q_ARG(QString, fileName));
                  while(!p_currScreenHandler->mTextEditor->getIsEditorFinished())
                  {
-                     usleep(50000L);
+                     waitTimer::msleep(5);
                  }
 
                  foundFormat = 1;
@@ -2680,7 +2679,7 @@ void ProtocolHandler::executeFile(int waitforFinish, QString fileName)
 
              }
                 qDebug() << "Prozess wurde erstellt.";
-                usleep(50000L);
+                waitTimer::msleep(5);
                 WaitForSingleObject( pi.hProcess, INFINITE );
 
                 CloseHandle(pi.hProcess);
