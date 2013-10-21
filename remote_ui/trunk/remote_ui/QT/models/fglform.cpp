@@ -24,6 +24,7 @@
 #include <fieldparsers/xml2fields.h>
 #include <fieldparsers/xml2form.h>
 #include <fieldparsers/xmlparser.h>
+#include <xmlparsers/xml2menu.h>
 #include <xmlparsers/xml2style.h>
 
 //------------------------------------------------------------------------------
