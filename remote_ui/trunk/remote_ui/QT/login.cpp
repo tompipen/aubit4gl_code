@@ -483,17 +483,18 @@ void LoginForm::aboutVDC(QWidget *parent)
     ql_shortcuts << QKeySequence("F12");
     ql_shortcuts << QKeySequence("Enter");
     ql_shortcuts << QKeySequence("Return");
+    ql_shortcuts << QKeySequence("Escape");
 
     QPushButton *okButton = new QPushButton("&OK");
     okButton->setIcon(QIcon(QString("pics:ok_gruen.png")));
     okButton->setIconSize(QSize(40,25));
-    //okButton->setShortcut(Qt::Key_F12);
     okButton->setFixedWidth(75);
     QAction *action = new QAction("&OK", this);
     action->setShortcuts(ql_shortcuts);
     okButton->addAction(action);
     connect(action, SIGNAL(triggered()), widget, SLOT(close()));
-    //connect(okButton, SIGNAL(clicked()), widget, SLOT(close()));
+    connect(okButton, SIGNAL(clicked()), widget, SLOT(close()));
+
 
     int date = QDate::currentDate().year();
     //QPixmap qpm = pix.scaled(80,80,Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
@@ -1421,6 +1422,9 @@ void LoginForm::setOfficeInstallation()
     saveButton->addAction(okAction);
     connect(okAction, SIGNAL(triggered()), this, SLOT(saveOfficeInstallation()));
     connect(okAction, SIGNAL(triggered()), widget, SLOT(close()));
+
+    connect(saveButton, SIGNAL(clicked()), this, SLOT(saveOfficeInstallation()));
+    connect(saveButton, SIGNAL(clicked()), widget, SLOT(close()));
 
     label->setText("Please choose an Office installation: ");
     mOfficeComboBox->addItem("Please choose...");
