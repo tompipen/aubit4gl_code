@@ -111,7 +111,7 @@ void crashingMessageHandler(QtMsgType type, const char *msg)
                     break;
                 case QtFatalMsg:
                     fprintf(stderr, "Fatal: %s\n", msg);
-                    __asm("int3");
+                    //__asm("int3");
                     abort();
               }
         }
