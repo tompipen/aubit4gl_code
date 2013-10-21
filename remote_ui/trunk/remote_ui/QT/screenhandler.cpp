@@ -2303,9 +2303,9 @@ if(qsl_triggereds.size() > 0)
    }
 
 
-   for(int i= 0; i < this->ql_fglForms.count(); i++)
-   {
-      p_fglform = ql_fglForms.at(i);
+   //for(int i= 0; i < this->ql_fglForms.count(); i++)
+   //{
+      p_fglform = ql_fglForms.last();
 
       p_fglform->checkState();
      //Hier evt abfragen ob IDLE und das Menu gesetzt ist. Es sollte aufjedenfall machbarsein ...
@@ -2422,7 +2422,7 @@ if(qsl_triggereds.size() > 0)
              }
          }
       }
-   }
+   //}
    p_fglform = saveactive;
    /*
    if(p_fglform->inputArray() || p_fglform->construct() || p_fglform->input() || p_fglform->displayArray())

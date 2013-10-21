@@ -3699,7 +3699,10 @@ MainFrame::vdcdebug("FglForm","checkState", "");
    }
 */
 
-   checkActions();
+    if(state != Fgl::IDLE)
+    {
+        checkActions();
+    }
 }
 
 //------------------------------------------------------------------------------
