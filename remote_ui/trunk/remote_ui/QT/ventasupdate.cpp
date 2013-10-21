@@ -5,7 +5,6 @@
 #include "models/fglform.h"
 #ifdef Q_WS_WIN
 #include "windows.h"
-#include <unistd.h>
 #include <stdlib.h>
 #endif
 

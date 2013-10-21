@@ -636,7 +636,7 @@ void VSSH::requestNewThread()
     l_t_sshtunnel->session_mutex = &ssh_mutex;
     l_t_sshtunnel->setObjectName(QString::number(cnt_tunnel));
     cnt_tunnel++;
-    l_t_sshtunnel->start(QThread::HighestPriority);
+    l_t_sshtunnel->start(QThread::NormalPriority);
     connect(l_t_sshtunnel, SIGNAL(bound()), this, SLOT(requestNewThread()));
     ql_tunnelthreads.append(l_t_sshtunnel);
     ssh_mutex.unlock();
