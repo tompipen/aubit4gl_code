@@ -106,7 +106,9 @@ LoginForm::LoginForm(QWidget *parent)
 
     methodLayout->addWidget(rb_proxy);
     methodLayout->addWidget(rb_telnet);
-    methodLayout->addWidget(rb_ssh);
+#ifdef SSH_USE
+	methodLayout->addWidget(rb_ssh);
+#endif
     bg_connection->setLayout(methodLayout);
 
     debugLayout->addWidget(cb);

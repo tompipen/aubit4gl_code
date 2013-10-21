@@ -32,6 +32,7 @@
 #include "libssh/callbacks.h"
 #endif
 #ifdef Q_WS_WIN
+#include "windows.h"
 #include "include/dbghelp.h"
 #include <tchar.h>
 #endif
