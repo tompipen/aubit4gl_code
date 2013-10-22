@@ -3161,10 +3161,12 @@ MainFrame::vdcdebug("ScreenHandler","setScreenRecordEnabled", "QString fieldName
       widget = ql_fields.at(i);
 
       if(LineEditDelegate *de = qobject_cast<LineEditDelegate *> (widget)){
-         if(tableView = qobject_cast<TableView *> (de->parent())){
-            context->addScreenRecord(tableView, input);
-            break;
-         }
+            tableView = qobject_cast<TableView *> (de->parent());
+            if(tableView)
+            {
+                context->addScreenRecord(tableView, input);
+                break;
+            }
       }
    }
    if(context->fieldList().size() == 1)
