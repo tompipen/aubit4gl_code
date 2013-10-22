@@ -47,7 +47,6 @@ LoginForm::LoginForm(QWidget *parent)
 {
 
     MainFrame *mainFrame = (MainFrame*) parent;
-    bool adminMenu = mainFrame->adminMenu;
     QMenuBar *menuBar = mainFrame->menuBar();
 
     errorMessageLoginForm = new QErrorMessage(this);
@@ -1250,7 +1249,6 @@ void LoginForm::cancelPressed()
 {
 MainFrame::vdcdebug("LoginForm","cancelPressed", "");
     QList<ScreenHandler*> *ql_screenhandler = MainFrame::ql_screenhandler;
-    int closeApplication = 0;
 
     if(ql_screenhandler)
     {

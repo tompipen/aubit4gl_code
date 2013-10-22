@@ -425,7 +425,7 @@ int VSSH::execute(int port = 0)
       ql_tunnelthreads.at(i)->session_mutex = NULL;
   }
 
-  char exec[1000] = "";
+  //char exec[1000] = "";
   char l_buffer[50] = "";
   memcpy(l_buffer,"\nlogout\n", 10);
   rc = ssh_channel_write(channel, l_buffer, strlen(l_buffer));

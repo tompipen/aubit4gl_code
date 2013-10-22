@@ -199,6 +199,7 @@ typedef BOOL (*PDUMPFN)(
 
     BOOL rv = (*pFn)( GetCurrentProcess(), GetCurrentProcessId(),
       hFile, mdt, (pep != 0) ? &mdei : 0, 0, 0);
+    Q_UNUSED(rv);
 
 
 
