@@ -91,10 +91,7 @@ MainFrame::vdcdebug("*parent,","WindowFlags f)", """");
 
 void Dialog::setText(QString text)
 {
-    if(mLabel)
-    {
-        mLabel->setText(text);
-    }
+    mLabel->setText(text);
 }
 
 void Dialog::closeEvent(QCloseEvent *event)
