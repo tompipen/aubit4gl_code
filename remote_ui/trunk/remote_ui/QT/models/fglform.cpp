@@ -38,6 +38,7 @@
   */
 FglForm::FglForm(QString windowName, QWidget *parent) : QMainWindow(parent){
 
+   this->setAttribute(Qt::WA_PaintOnScreen);
    b_dummy = false;
    context = NULL;
    gridWidth = 0;

@@ -83,7 +83,8 @@ public:
 
    FglForm(QString windowName = "", QWidget *parent=0);
    ~FglForm();
-   //Flag for Response. Only sending the values of the first triggered, rest blanked
+   QPaintEngine* paintEngine() { return 0; }
+//Flag for Response. Only sending the values of the first triggered, rest blanked
    bool b_svs;
    QString windowName;
    QWidget *currentWidget;
