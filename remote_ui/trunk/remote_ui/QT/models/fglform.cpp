@@ -2060,7 +2060,7 @@ MainFrame::vdcdebug("FglForm","setFormLayout", "const QDomDocument& docLayout");
 QList<QWidget*> FglForm::formElements()
 {
 MainFrame::vdcdebug("FglForm","formElements", "");
-   return formWidget == NULL ? QList<QWidget*>() : formWidget->findChildren<QWidget*>();
+   return formWidget->findChildren<QWidget*>();
 }
 
 //------------------------------------------------------------------------------
@@ -2125,6 +2125,7 @@ void FglForm::clearFieldFocus()
 {
   if(currentField())
      currentField()->clearFocus();
+  return;
 
   QList<QWidget*> ql_widgets = formElements();
   int cnt_elements = ql_widgets.size();
@@ -4397,7 +4398,10 @@ MainFrame::vdcdebug("FglForm","checkActions", "");
       }
    }
 
-   checkShortcuts();
+   if(!this->inputArray())
+   {
+       checkShortcuts();
+   }
    //checkToolBar();
 }
 
