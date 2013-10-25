@@ -199,19 +199,29 @@ void RingMenu::hideButton(QString name)
 MainFrame::vdcdebug("RingMenu","hideButton", "QString name");
    for(int i=0; i<buttonGroup->buttons().size(); i++){
       if(QPushButton *button = qobject_cast<QPushButton *> (buttonGroup->buttons().at(i))){
-         QString text = button->text();
-         if(text.indexOf("&") > -1){
-            text.remove(text.indexOf("&"), 1);
-         }
+         if(name.toLower() == "_all_")
+         {
+             if(b_hideButtons){
+                button->setVisible(false);
+             }
+             else{
+                button->setEnabled(false);
+             }
+         } else {
+             QString text = button->text();
+             if(text.indexOf("&") > -1){
+                text.remove(text.indexOf("&"), 1);
+             }
 
-         if(text == name){
-            if(b_hideButtons){
-               button->setVisible(false);
-            }
-            else{
-               button->setEnabled(false);
-            }
-            return;
+             if(text == name){
+                if(b_hideButtons){
+                   button->setVisible(false);
+                }
+                else{
+                   button->setEnabled(false);
+                }
+                return;
+             }
          }
       }
    }
@@ -227,19 +237,33 @@ void RingMenu::showButton(QString name)
 MainFrame::vdcdebug("RingMenu","showButton", "QString name");
    for(int i=0; i<buttonGroup->buttons().size(); i++){
       if(QPushButton *button = qobject_cast<QPushButton *> (buttonGroup->buttons().at(i))){
-         QString text = button->text();
-         if(text.indexOf("&") > -1){
-            text.remove(text.indexOf("&"), 1);
-         }
+          if(name.toLower() == "_all_")
+          {
+              if(button->text() != "fgl_exit_menu")
+              {
+                  if(b_hideButtons)
+                  {
+                     button->setVisible(true);
+                  }
+                  else{
+                     button->setEnabled(true);
+                  }
+              }
+          } else {
+              QString text = button->text();
+             if(text.indexOf("&") > -1){
+                text.remove(text.indexOf("&"), 1);
+             }
 
-         if(text == name){
-            if(b_hideButtons){
-               button->setVisible(true);
-            }
-            else{
-               button->setEnabled(true);
-            }
-         }
+             if(text == name){
+                if(b_hideButtons){
+                   button->setVisible(true);
+                }
+                else{
+                   button->setEnabled(true);
+                }
+             }
+          }
       }
    }
 }
