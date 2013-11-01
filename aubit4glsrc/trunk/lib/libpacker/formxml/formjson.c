@@ -738,7 +738,7 @@ char posbuf[200];
 	}
 
 	if (oldstyle) {
-			fprintf(ofile, "        {\"type\":\"RipLABEL\",width:%d %s },\n", 
+			fprintf(ofile, "        {\"type\":\"RipLABEL\",width:%d %s }\n", 
 			f->metrics.metrics_val[metric_no].w,posbuf);
 
         } else {
@@ -751,7 +751,7 @@ char posbuf[200];
 		strcat(buff,smbuff);
         	//if (A4GL_has_str_attribute(fprop, FA_S_TEXT)) { sprintf(smbuff, " text=\"%s\"", xml_escape(A4GL_get_str_attribute (fprop, FA_S_TEXT))); strcat(buff,smbuff);}
 
-		fprintf(ofile, "        {\"type\":\"Label\" width:%d %s %s },\n", 
+		fprintf(ofile, "        {\"type\":\"Label\" width:%d %s %s }\n", 
 				f->metrics.metrics_val[metric_no].w,	buff,
 				posbuf);
         }
@@ -963,7 +963,7 @@ print_field_attribute (struct_form * f, int metric_no, int attr_no)
       print_widget (f, metric_no, attr_no,"FormField");
 
 	if (!isLabel) {
-      		fprintf (ofile, "},\n");
+      		fprintf (ofile, "}\n");
 	}
     }
 }
@@ -1067,9 +1067,10 @@ int a;
 	get_layout_attribs(layout,buff);
 	fprintf(ofile,"{\"type\":\"Folder\" %s, \"items\":[\n",buff);
 	for (a=0;a<layout->children.children_len;a++) {
+		if (a) fprintf(ofile,",");
 		dump_layout(f, layout->children.children_val[a]);
 	}
-	fprintf(ofile,"null]},\n");
+	fprintf(ofile,"]}\n");
 }
 
 
@@ -1079,20 +1080,22 @@ int a;
 	get_layout_attribs(layout,buff);
 	fprintf(ofile,"{\"type\":\"Page\" %s, \"items\":[\n",buff);
 	for (a=0;a<layout->children.children_len;a++) {
+		if (a) fprintf(ofile,",");
 		dump_layout(f, layout->children.children_val[a]);
 	}
-	fprintf(ofile,"null]},\n");
+	fprintf(ofile,"]}\n");
 }
 
 void dump_vbox(struct_form *f, struct s_layout *layout) {
 char buff[2000];
 int a;
 	get_layout_attribs(layout,buff);
-	fprintf(ofile,"{\"type\":\"VBox\" %s, \"items\":[\n",buff);
+	fprintf(ofile,"{\"type\":\"VBox\" %s, \"items\":[ \n",buff);
 	for (a=0;a<layout->children.children_len;a++) {
+		if (a) fprintf(ofile,",");
 		dump_layout(f, layout->children.children_val[a]);
 	}
-	fprintf(ofile,"null]},\n");
+	fprintf(ofile,"]}\n");
 }
 
 void dump_hbox(struct_form *f, struct s_layout *layout) {
@@ -1101,9 +1104,10 @@ int a;
 	get_layout_attribs(layout,buff);
 	fprintf(ofile,"{\"type\":\"HBox\" %s, \"items\":[\n",buff);
 	for (a=0;a<layout->children.children_len;a++) {
+		if (a) fprintf(ofile,",");
 		dump_layout(f, layout->children.children_val[a]);
 	}
-	fprintf(ofile,"null]},\n");
+	fprintf(ofile,"]}\n");
 }
 
 void dump_grid(struct_form *f, struct s_layout *layout) {
@@ -1160,7 +1164,7 @@ topLine[511]=0;
 		
 
 
-    	fprintf (ofile, "<Table pageSize=%d tabName=\"%s\" %s>\n",dim, scrname,buff);
+    	fprintf (ofile, "{\"type\":\"Table\",\"pageSize\":%d,\"tabName\":\"%s\" %s,\"items\":[\n",dim, scrname,buff);
 
 
 // Lets set up our 'topline' with any labels on line 0...
@@ -1178,6 +1182,7 @@ topLine[511]=0;
 //A4GL_trim(topLine);
 //printf("TopLine=%s\n",topLine);
 
+int printed=0;
   for (a = 0; a < f->metrics.metrics_len; a++) {
 		int attr_no;
 		char *txt;
@@ -1192,15 +1197,20 @@ topLine[511]=0;
   		tabIndex++;
 
 	 	fieldNo=attr_no;
+		if (printed) {
+			fprintf(ofile,",\n");
+		}
+		printed=1;
 	
 		get_attribs(f, attr_no, buff_tabcol,0,a);
+	printf("Find label : %d %d\n", f->metrics.metrics_val[a].x,f->metrics.metrics_val[a].y);
 		txt=find_label (f->metrics.metrics_val[a].x,f->metrics.metrics_val[a].y);
 		if (txt) {
-			sprintf(nmbuff," text=\"%s\"",xml_escape( txt));
+			sprintf(nmbuff,",\"text\":\"%s\"",xml_escape( txt));
 		} else {
 			strcpy(nmbuff,"");
 		}
-      		fprintf (ofile, "<TableColumn name=\"%s.%s\" colName=\"%s\" fieldId=%d sqlTabName=\"%s\" %s tabIndex=%d%s>\n", 
+      		fprintf (ofile, "      { \"name\":\"%s.%s\",\"colName\":\"%s\",\"fieldId\":%d,\"sqlTabName\":\"%s\" %s,\"tabIndex\":%d%s,\"widget\":", 
 
 	       			f->attributes.attributes_val[attr_no].tabname, f->attributes.attributes_val[attr_no].colname,
 	       			f->attributes.attributes_val[attr_no].colname, fieldNo, f->attributes.attributes_val[attr_no].tabname, buff_tabcol,
@@ -1208,9 +1218,9 @@ topLine[511]=0;
 
       		print_widget (f, a, attr_no,"Table");
 
-      		fprintf (ofile, "</TableColumn>\n");
+      		fprintf (ofile, "      }");
    }
-  fprintf (ofile, "</Table>\n");
+  fprintf (ofile, "]}\n");
 	
 }
 
@@ -1249,6 +1259,7 @@ void dump_layout(struct_form *f, struct s_layout *layout) {
 void dump_form_layout(struct_form *f) {
 int n=0;
 
+fprintf(ofile,",\"layout\":[");
 	if (f->layout->layout_type==LAYOUT_TABLE) {
 		fprintf(ofile,"<VBox >\n");
 		n++;
@@ -1257,6 +1268,7 @@ int n=0;
 	if (n) {
 		fprintf(ofile,"</VBox>\n");
 	}
+fprintf(ofile,"]");
 }
 
 
@@ -1268,6 +1280,7 @@ new_field (int y, int x, int w, char because_of, int fstart)
   char buff[2000];
   strcpy (buff, &screen[y][x]);
   buff[w] = 0;
+printf("new field: %d\n",nfields);
 
   nfields++;
   screen_convert_fields = realloc (screen_convert_fields, sizeof (struct s_field) * nfields);
@@ -1537,8 +1550,10 @@ void make_screen (struct_form * f,int scr)
 static char * find_label (int x, int y)
 {
   int a;
+printf("nfields=%d\n",nfields);
   for (a = 0; a < nfields; a++)
     {
+	printf("%s - %d %d\n",  screen_convert_fields[a].label,screen_convert_fields[a].y, screen_convert_fields[a].field_start );
       if (screen_convert_fields[a].y == y && screen_convert_fields[a].field_start == x)
         {
           return screen_convert_fields[a].label;
@@ -1562,11 +1577,16 @@ int merge_labels(struct_form *f, int scr) {
 
 int dump_xml_labels() {
 int a;
+int printed=0;
 for (a=0;a<nfields;a++) {
 	
+	if (printed) {
+		fprintf(ofile,",\n");
+	}
+	printed++;
 	  if (isline (screen_convert_fields[a].label))
 	    {
-	      fprintf (ofile, "      {\"type\":\"HLine\", \"posY\":\"%ld\",\"posX\":\"%ld\",\"gridWidth\":\"%ld\"},\n", (long)screen_convert_fields[a].y,
+	      fprintf (ofile, "      {\"type\":\"HLine\", \"posY\":\"%ld\",\"posX\":\"%ld\",\"gridWidth\":\"%ld\"}", (long)screen_convert_fields[a].y,
 		       (long)screen_convert_fields[a].x, (long)strlen (screen_convert_fields[a].label));
 	    }
 	  else
@@ -1575,13 +1595,13 @@ for (a=0;a<nfields;a++) {
 
 		if (has_label_ending( screen_convert_fields[a].x+ screen_convert_fields[a].w, screen_convert_fields[a].y)) guess_align='R';
 
-	        fprintf (ofile, "      {\"type\":\"Label\",\"text\":\"%s\",\"posY\":%d,\"posX\":%d,\"gridWidth\":\"%ld\",\"guessAlign\":\"%c\"},\n",
+	        fprintf (ofile, "      {\"type\":\"Label\",\"text\":\"%s\",\"posY\":%d,\"posX\":%d,\"gridWidth\":\"%ld\",\"guessAlign\":\"%c\"}",
 		       xml_escape (screen_convert_fields[a].label), screen_convert_fields[a].y, screen_convert_fields[a].x,
 		       (long)strlen (screen_convert_fields[a].label), guess_align);
 	    }
 	
 }
-return 1;
+return printed;
 }
 
 
@@ -1604,8 +1624,9 @@ dump_screen (struct_form * f, int scr, enum e_scrmodes scrmode,char *extra)
 			break;
     }
   merge_labels(f, scr);
-  dump_xml_labels();
-  
+int printed;
+  printed=dump_xml_labels();
+  //printed=0;
   for (a = 0; a < f->metrics.metrics_len; a++)
     {
 	
@@ -1618,6 +1639,10 @@ dump_screen (struct_form * f, int scr, enum e_scrmodes scrmode,char *extra)
 	}
       else
 	{
+	if (printed) {
+		fprintf(ofile,",");
+		}
+	printed++;
 	  // Its a field...
 	  print_field (f, a);
 	}
@@ -1625,10 +1650,10 @@ dump_screen (struct_form * f, int scr, enum e_scrmodes scrmode,char *extra)
 
    switch(scrmode) {
 	case SCRMODE_SCREEN:
-      		fprintf (ofile, "null]}\n");
+      		fprintf (ofile, "]}\n");
 		break;
   	case SCRMODE_GRID:
-      		fprintf (ofile, "null]}\n");
+      		fprintf (ofile, "]}\n");
 		break;
     }
 }
