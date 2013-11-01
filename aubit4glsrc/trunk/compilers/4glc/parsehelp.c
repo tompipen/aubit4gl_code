@@ -1806,6 +1806,7 @@ int a;
 			vu_next->next->substrings_end.substrings_end=0;
 			vu_next->next->next=0;
 			vu_next->next->datatype=-1;
+			vu_next->next->datatype_length=0;
 			vu_next->next->object_type="";
 			vu_next->next->escope=E_SCOPE_NOTSET;
 			vu_next->next->variable_id=-1;

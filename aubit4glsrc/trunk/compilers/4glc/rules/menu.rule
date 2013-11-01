@@ -24,6 +24,8 @@ menu_cmd	:	MENU atline {
 					cmd= new_ext_cmd(EBC_MENU); 
                				cmds=malloc(sizeof(s_commands));
                 			cmds->cmds.cmds_len=1;
+					cmds->first_lineno=0;
+					cmds->last_lineno=0;
                 			cmds->cmds.cmds_val=malloc(sizeof(cmds->cmds.cmds_val[0]) * cmds->cmds.cmds_len);
                 			cmds->cmds.cmds_val[cmds->cmds.cmds_len-1]=cmd;
 
