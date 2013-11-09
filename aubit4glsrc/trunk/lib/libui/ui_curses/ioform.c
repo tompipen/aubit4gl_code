@@ -24,10 +24,10 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.254 2013-09-28 16:53:08 mikeaubury Exp $
+# $Id: ioform.c,v 1.255 2013-11-09 14:28:26 mikeaubury Exp $
 #*/
 #ifndef lint
-static char const module_id[] = "$Id: ioform.c,v 1.254 2013-09-28 16:53:08 mikeaubury Exp $";
+static char const module_id[] = "$Id: ioform.c,v 1.255 2013-11-09 14:28:26 mikeaubury Exp $";
 #endif
 
 /**
@@ -5709,6 +5709,11 @@ A4GL_check_and_copy_field_to_data_area (struct s_form_dets *form,
 {
   int pprval;
   int dsize;
+
+
+  if ((fprop->datatype & DTYPE_MASK) == DTYPE_BYTE || (fprop->datatype &DTYPE_MASK) == DTYPE_TEXT) {
+	return 1;
+  }
 
   fld_data = A4GL_fld_data_ignore_format (fprop, fld_data);
   if (fld_data == 0)
