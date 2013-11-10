@@ -1,0 +1,108 @@
+# +----------------------------------------------------------------------+
+# | Aubit 4gl Language Compiler Version $.0   lib/libgui makefile		 |
+# +----------------------------------------------------------------------+
+# | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
+# +----------------------------------------------------------------------+
+# | This program is free software; you can redistribute it and/or modify |
+# | it under the terms of one of the following licenses:                 |
+# |                                                                      |
+# |  A) the GNU General Public License as published by the Free Software |
+# |     Foundation; either version 2 of the License, or (at your option) |
+# |     any later version.                                               |
+# |                                                                      |
+# |  B) the Aubit License as published by the Aubit Development Team and |
+# |     included in the distribution in the file: LICENSE                |
+# |                                                                      |
+# | This program is distributed in the hope that it will be useful,      |
+# | but WITHOUT ANY WARRANTY; without even the implied warranty of       |
+# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        |
+# | GNU General Public License for more details.                         |
+# |                                                                      |
+# | You should have received a copy of both licenses referred to here.   |
+# | If you did not, or have any questions about Aubit licensing, please  |
+# | contact afalout@ihug.co.nz                                           |
+# +----------------------------------------------------------------------+
+
+#
+# $Id: Makefile.in,v 1.32 2012-10-17 20:28:40 mikeaubury Exp $
+#
+
+ROOT        =../..
+
+#All stuff common to more then one Aubit compiler make file is there:
+include ${ROOT}/incl/Makefile-common
+## ==================================================================
+##                              Options
+## ==================================================================
+
+
+# C compiler to use with pdflib...
+CC_GO=$(CC)
+  
+CFLAGS			+=-I${LIBROOT}/libincl -I${ROOT}/compilers/fcompile \
+				@PDFLIB_I_FLAGS@ @PDFLIB_L_FLAGS@
+
+ALL 			=${PLUGINDIR}/libEXREPORT_NOPDF${SO_EXT}
+
+ifneq "${PDFBUILD}" "no"
+	ALL 		+=${PLUGINDIR}/libEXREPORT_PDF${SO_EXT}
+endif
+
+ifneq "${COMSPEC}" ""
+	LINKLIBS	=-L${LIBROOT} -l${AUBITLIBFULL}
+endif
+ifeq "${HAVE_LIBQRENCODE}" "1"
+	QRLIB=-lqrencode
+else 	
+	QRLIB=
+endif
+
+OBJECTS_NOPDF	=nopdf.o
+OBJECTS_PDF		=has_pdf.g.o ../liblogical/pdf/process/pdf_barcode.g.o
+OBJECTS_HARU          =haru.o ../liblogical/pdf/process/pdf_barcode.o
+HARU_L_FLAGS=-L/usr/local/lib -lhpdf
+
+## ==================================================================
+##                              Targets
+## ==================================================================
+
+all: ${ALL}
+
+ifeq "${HAVE_STDCPP}" "0"
+STDCPP=
+else
+STDCPP=-lstdc++
+endif
+
+%.g.o:%.c
+	$(CC_GO) $(CFLAGS) -c -o$@ $< 
+
+${PLUGINDIR}/libEXREPORT_PDF${SO_EXT}: ${OBJECTS_PDF}
+#WARNING: On Windows libs must be et the end
+	${LD} @PDFLIB_L_FLAGS@ $(SO_LDFLAGS) ${OBJECTS_PDF} -o $@ ${LINKLIBS} -lpdf ${QRLIB} ${STDCPP}
+
+${PLUGINDIR}/libEXREPORT_NOPDF${SO_EXT}: ${OBJECTS_NOPDF}
+	${LD} $(SO_LDFLAGS) ${OBJECTS_NOPDF} -o $@ ${LINKLIBS}
+
+## ==================================================================
+##                              Clean
+## ==================================================================
+
+
+haru.test:
+	ls -l  ${PLUGINDIR}/libEXREPORT_HARU${SO_EXT} ${PLUGINDIR}/libEXREPORT_HARUs${SO_EXT}
+haru.dummy: ${PLUGINDIR}/libEXREPORT_HARU${SO_EXT} ${PLUGINDIR}/libEXREPORT_HARUs${SO_EXT}
+
+${PLUGINDIR}/libEXREPORT_HARU${SO_EXT}: ${OBJECTS_HARU}
+	${LD}  $(SO_LDFLAGS) ${OBJECTS_HARU} -o $@ ${LINKLIBS} ${HARU_L_FLAGS}  ${QRLIB} -lpdf
+
+${PLUGINDIR}/libEXREPORT_HARUs${SO_EXT}: ${OBJECTS_HARU}
+	${LD}  $(SO_LDFLAGS) ${OBJECTS_HARU} -o $@ ${LINKLIBS} /usr/local/lib/libhpdf.a  ${QRLIB} -lpng
+
+
+clean:
+	${RM} *.o ${PLUGINDIR}/libEXREPORT_PDF${SO_EXT} ${PLUGINDIR}/libEXREPORT_NOPDF${SO_EXT} *.bak *.base *.dll *.def *.exp *.a ${PLUGINDIR}/libEXREPORT_HARU${SO_EXT} ${PLUGINDIR}/libEXREPORT_HARUs${SO_EXT}
+
+
+
+# ----------------------------- EOF ---------------------------------

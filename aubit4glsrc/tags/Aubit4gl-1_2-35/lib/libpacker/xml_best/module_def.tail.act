@@ -1,0 +1,56 @@
+<end tag='str'>
+<![CDATA[
+{
+char *p;
+p=strdup({value});
+SetParent({nm},XMLGetTopOfStack(), &p);
+}
+]]>
+</end>
+
+<end tag='funcname'>
+<![CDATA[
+{
+char *p;
+p=strdup({value});
+SetParent({nm},XMLGetTopOfStack(), &p);
+}
+]]>
+</end>
+
+
+<end tag='short'>
+<![CDATA[
+{
+short p;
+p=atoi({value});
+SetParent({nm},XMLGetTopOfStack(), &p);
+}
+]]>
+</end>
+
+
+<end tag='long'>
+<![CDATA[
+{
+long p;
+p=atol({value});
+SetParent({nm},XMLGetTopOfStack(), &p);
+}
+]]>
+</end>
+
+<end tag='int'>
+<![CDATA[
+{
+long p;
+p=atol({value});
+SetParent({nm},XMLGetTopOfStack(), &p);
+}
+]]>
+</end>
+
+
+
+
+</actions>

@@ -1,0 +1,130 @@
+op_param_var_list	<PARAMETERS>
+obind_var_list_ord	<variable_list>
+define_section	<DEFINE SECTION>
+record_variable <RECORD VARIABLE>
+array_variable <ARRAY VARIABLE>
+dtype	<DATATYPE>
+cast_dtype	<DATATYPE>
+pdf_report_def	<PDF REPORT>
+pdf_op_output_section	<PDF OUTPUT SECTION>
+op_output_section	<OUTPUT SECTION>
+nval	<PDF dimension>
+rep_order_by	<Report ORDER BY>
+report_def	<Report Definition>
+report_only_expr	<report specific expression>
+fgl_expr_c	<expression>
+variable_entry	<variable>
+in_select_statement	<in_select_statement>
+function_call_expr	<function call>
+module	<module>
+module_entry	<module_entry>
+pragma	<pragma>
+import_package	<import package>
+module_globals_section	<globals section>
+module_define_section	<define section>
+module_import	<module_import>
+module_code	<module_code>
+with_list	<with_list>
+arr_expr_e	<array_expression>
+field_name_as_struct	<field name>
+from_clause_ts	<From clause>
+where_clause_sli	<where clause>
+group_by_clause_slil	<group by>
+having_clause_sli	<having>
+sel_p2_select	<sel_p2_select>
+tname	<table name>
+table_reference_list	<table_reference_list>
+search_condition_sli	<search_condition_sli>
+op_not	<op_not>
+comparison_predicate_sli	<comparison_predicate_sli>
+value_expression_sli	<value_expression_sli>
+pattern_sli	<pattern_sli>
+op_ilike_escape	<op_ilike_escape>
+op_like_escape	<op_like_escape>
+comp_op	<comparison_operator>
+units_qual_i	<units_qual_i>
+value_expression_complex_sli	<value_expression_complex_sli>
+datetime_value_qualified	<datetime_value_qualified>
+interval_value_qualified	<interval_value_qualified>
+extend_qual_sli	<extend_qual_sli>
+var_ident_vl	<var_ident_vl>
+boolean_term_sli	<boolean_term_sli>
+predicate_sli	<predicate_sli>
+select_list_slil	<select_list_slil>
+misc_infx_stmt	<misc_infx_stmt>
+schema_ss	<schema_ss>
+schema_element_ss	<schema_element_ss>
+misc_sql	<misc_sql>
+drops_statement	<drops_statement>
+create_statement_ss	<create_statement_ss>
+alter_statement_ss	<alter_statement_ss>
+opt_cr_table_extra	<opt_cr_table_extra>
+table_element_list_ss	<table_element_list_ss>
+alter_clause_ss	<alter_clause_ss>
+alter_add_constraint_clause	<alter_add_constraint_clause>
+alter_modify_clause_ss	<alter_modify_clause_ss>
+modify_column_clause_ss	<modify_column_clause_ss>
+column_name	<column_name>
+value_expression_sli	<value_expression_sli>
+value_expression_pls_sli	<value_expression_pls_sli>
+sort_spec_sli	<sort_spec_sli>
+table_name_not_for_column_prefix	<tablename>
+table_name	<tablename>
+conn_id_p	<ConnectionID>
+callback_function	<Callback function name>
+expanded_ibind_var_list	[variable_list]
+variable_usage	[variable]
+variable_usage_expression	[variable]
+vi_column_name	[column name]
+select_statement_ss_select	<select_statement_ss_select>
+union_select_statement2_ss	<union_select_statement2_ss>
+query_specification_select	<query_specification_select>
+subquery_sli	<subquery_sli>
+table_name_i	<table_name_i>
+table_name_not_for_column_prefix_i	<table_name_not_for_column_prefix_i>
+column_name_sli	<column_name_sli>
+value_expression_initial_sli_nocast	<value_expression_initial_sli_nocast>
+fkey_keys	<function keys>
+control_keys	<control_keys>
+single_keys	<single_keys>
+dtime_fcall_expr	<dtime_fcall_expr>
+op_datetime_qual_i	<op_datetime_qual_i>
+interval_qual	<interval_qual>
+pf_char_or_var	[character-expression]
+NAMED	identifier
+identifier	identifier
+INT_VALUE	<integer value>
+NUMBER_VALUE	<numeric value>
+USER_DTYPE_NEW	<userdefined datatype>
+USER_DTYPE_ORIG	<olduserdefinedtype>
+KW_CSTART	code
+CLINE	<embedded c code>
+KW_CEND	endcode
+CHAR_VALUE	character-string
+val_number	number_value
+data_type	<datatype>
+curr_clause	<CURRENT value>
+INTERVAL_VALUE	<interval value>
+DATETIME_VALUE	<datetime value>
+interval_func_params	<interval>
+op_extend_di	<datetime specifier>
+default_clause	<default clause>
+column_constraint_list_ss	<column constraint>
+declare_cursor_name_and_clr_p	<cursor name>
+cursor_specification1_ins_ss	<insert statement>
+cursor_specification1_all_ss	<sql statement>
+opt_use2_p	<use session>
+key_value	<key>
+spl_opt_returning	<returning>
+spl_return_dtype_list	<datatype list>
+spl_block	<spl_block>
+spl_command	<spl_command>
+spl_proc_name	<procedure name>
+op_spl_parameters	<procedure parameters>
+spl_dtype_with_reference	<spl datatype with reference>
+spl_vname	<spl variable>
+win_attributes	<windows attribute>
+spl_dtype	<spl datatype>
+var_ident_qchar_e	<variable_or_identifier>
+attribs_sec	<attributes>
+events_construct	<Construct Events>

@@ -1,0 +1,103 @@
+
+export AUBITDIR=c:/gnu/cygwin/usr/src/aubit/aubit4glsrc
+#export AUBITDIR=/usr/src/aubit/aubit4glsrc
+
+
+cd /usr/src/aubit/aubit4glsrc
+export CFLAGS=-g
+
+if [ "$1" = "Clean" ]
+then
+	rm /usr/bin/aubit-config.exe
+	rm /usr/bin/aubit
+	rm /usr/src/aubit/aubit4glsrc/bin/aubit-config.exe
+	rm $AUBITDIR/bin/*.exe
+	/usr/bin/find lib -name "*.a" -exec rm {} \;
+	/usr/bin/find bin -name "*.a" -exec rm {} \;
+	/usr/bin/find . -name "*.dll" -exec rm {} \;
+	/usr/bin/find . -name "*.o" -exec rm {} \;
+
+	rm /usr/bin/aubit-config $AUBITDIR/bin/aubit-config
+	#rm $AUBITDIR/lib/generated/*
+	
+	rm /usr/lib/libaubit4gl*
+	rm /usr/lib/lib4glc*
+	rm -r plugins-*
+	make -k cleanall
+
+
+	./configure --with-pdcurses=/cygdrive/c/gnu/pdc27_ming_w32 --with-sqlite=/cygdrive/c/gnu/sqlite-3_3_5 --enable-ac-debug --with-pdcurses=/cygdrive/c/gnu/pdc27_ming_w32 --with-sqlite=/cygdrive/c/gnu/sqlite-3_3_5 --enable-ac-debug --prefix=/usr/src/aubit/aubit4glbin
+
+fi
+
+
+
+if [ "$1" != "Copy" ]
+then
+
+	if make
+	then
+	
+		echo "Making normal curses library"
+		cd /usr/src/aubit/aubit4glsrc/lib/libui/ui_curses
+		make -f makefile.win32
+	
+	
+		echo "Making TUIw curses library"
+		cd /usr/src/aubit/aubit4glsrc/lib/libui/ui_highlevel
+		make TUIw
+		
+		echo "Making ESQL/C connector library"
+		cd /usr/src/aubit/aubit4glsrc/lib/libsql/esqlc
+		make
+	
+		echo "Making LEX_WRITE library"
+		cd /usr/src/aubit/aubit4glsrc/lib/liblex/lex_write
+		make
+	
+		echo "Making UI_XML library"
+		cd /usr/src/aubit/aubit4glsrc/lib/libui/ui_xml
+		make
+	
+	
+		echo "Making SQL_MYSQL library"
+		cd /usr/src/aubit/aubit4glsrc/lib/libsql/mysql
+		make -f makefile.win32
+		
+		echo "Making ESQL/C helper library"
+		cd /usr/src/aubit/aubit4glsrc/lib/libesql
+		make
+	
+		echo "Making fgllint and fglcalltree"
+		cd /usr/src/aubit/aubit4glsrc/compilers/4glc
+		make fgllint fglcalltree
+		
+		echo "Making static libaubit4gl library"
+		cd /usr/src/aubit/aubit4glsrc/lib/libaubit4gl
+		make -f makefile.static
+		
+		cd /usr/src/aubit/aubit4glsrc/tools/quickguide
+		make 
+		cd /usr/src/aubit/aubit4glsrc/tools/asql
+		
+	
+		export PATH="c:/gnu/cygwin/usr/src/aubit/aubit4glsrc/bin:c:/gnu/cygwin/usr/src/aubit/aubit4glsrc/lib:/usr/src/aubit/aubit4glsrc/bin:/usr/src/aubit/aubit4glsrc/lib:/usr/bin:/cygdrive/c/gnu/GTK/bin:/cygdrive/c/gnu/MinGW/bin:C:/gnu/pdc27_vc_w32:/cygdrive/c/gnu/GTK/bin:/cygdrive/c/WINDOWS/system32:/cygdrive/c/WINDOWS:/cygdrive/c/WINDOWS/System32/Wbem:/cygdrive/c/gnu/pdc27_vc_w32:/cygdrive/c/Program Files/IBM/Informix/Client-SDK/bin:/cygdrive/c/WINDOWS/system32::/usr/local/bin:/usr/bin:/bin:/usr/X11R6/bin:/lib:/bin/custom:/usr/sbin"
+	
+		cp /usr/src/aubit/aubit4glsrc/lib/lib4glc.dll /usr/src/aubit/aubit4glsrc/bin
+	
+		sh makestatic_win32.sh 4gl
+		cp asql_si.exe /usr/src/aubit/aubit4glsrc/bin
+		cp /usr/src/aubit/aubit4glsrc/lib/libaubit4gl*.dll /usr/src/aubit/aubit4glsrc/bin
+		rm /usr/bin/aubit-config.exe
+		rm /usr/bin/aubit
+		#scp -r /usr/src/aubit/aubit4glsrc aubit4gl@192.168.2.217:/tmp/aubit4glsrc.win32
+	else
+		echo "Make failed"
+		exit
+	fi
+fi
+
+
+
+export PATH="c:/gnu/cygwin/usr/src/aubit/aubit4glsrc/bin:c:/gnu/cygwin/usr/src/aubit/aubit4glsrc/lib:/usr/src/aubit/aubit4glsrc/bin:/usr/src/aubit/aubit4glsrc/lib:/usr/bin:/cygdrive/c/gnu/GTK/bin:/cygdrive/c/gnu/MinGW/bin:C:/gnu/pdc27_vc_w32:/cygdrive/c/gnu/GTK/bin:/cygdrive/c/WINDOWS/system32:/cygdrive/c/WINDOWS:/cygdrive/c/WINDOWS/System32/Wbem:/cygdrive/c/gnu/pdc27_vc_w32:/cygdrive/c/Program Files/IBM/Informix/Client-SDK/bin:/cygdrive/c/WINDOWS/system32::/usr/local/bin:/usr/bin:/bin:/usr/X11R6/bin:/lib:/bin/custom:/usr/sbin"
+sh /usr/src/aubit/aubit4glsrc/win32bin

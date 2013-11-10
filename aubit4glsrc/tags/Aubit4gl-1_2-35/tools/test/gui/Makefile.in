@@ -1,0 +1,84 @@
+# +----------------------------------------------------------------------+
+# | Aubit 4gl Language Compiler Version $.0                              |
+# +----------------------------------------------------------------------+
+# | Copyright (c) 2000-1 Aubit Development Team (See Credits file)       |
+# +----------------------------------------------------------------------+
+# | This program is free software; you can redistribute it and/or modify |
+# | it under the terms of one of the following licenses:                 |
+# |                                                                      |
+# |  A) the GNU General Public License as published by the Free Software |
+# |     Foundation; either version 2 of the License, or (at your option) |
+# |     any later version.                                               |
+# |                                                                      |
+# |  B) the Aubit License as published by the Aubit Development Team and |
+# |     included in the distribution in the file: LICENSE                |
+# |                                                                      |
+# | This program is distributed in the hope that it will be useful,      |
+# | but WITHOUT ANY WARRANTY; without even the implied warranty of       |
+# | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        |
+# | GNU General Public License for more details.                         |
+# |                                                                      |
+# | You should have received a copy of both licenses referred to here.   |
+# | If you did not, or have any questions about Aubit licensing, please  |
+# | contact afalout@ihug.co.nz                                           |
+# +----------------------------------------------------------------------+
+#
+# $Id: Makefile.in,v 1.10 2003-09-30 10:32:09 mikeaubury Exp $
+#
+
+ROOT    =../../..
+
+#All stuff common to more then one Aubit compiler make file is there:
+include ${ROOT}/incl/Makefile-common
+
+
+#rules for making Aubit targets:
+include ${ROOT}/incl/a4gl.mk
+
+## ==================================================================
+##                              Options
+## ==================================================================
+
+#no longer needed? (CHECK!)
+#ADDFLAGS=-fnative-struct
+
+ALL			=forms 4gl
+
+IMAGES		=aubit.xpm img1.xpm linux.xpm
+
+FORMS.per	=gui.per widget.per radio.per multi.per form-gui.per calc.per list.per
+
+FORMS.frm	=${FORMS.per:.per=${A4GL_FRM_EXT}}
+
+FILES.4gl   =hello-gui.4gl gui.4gl calc.4gl
+
+.PHONY: 	${ALL} clean help forms 4gl all
+
+## ==================================================================
+##                              Targets
+## ==================================================================
+
+all: ${ALL}
+
+4gl: hello-gui.4ae game.4ae calc.4ae
+
+game.4ae: gui.4gl
+	${FGLPCEXEC} $^ -o $@ ${ADDFLAGS}
+
+forms: ${FORMS.frm}
+
+help:
+	@echo "use 'make' to compile examples with GTK GUI functionality"
+
+## ==================================================================
+##                              Clean
+## ==================================================================
+
+clean:
+	$(RM) *.BAK *.bak core *~ *.ln *.output *.out *.h *.c *.o *.4ae \
+	*.hlp *.exe *.stackdump *.err *.glb *${A4GL_FRM_EXT} ${FILES.4gl:.4gl=.h} \
+    calc game *.frm.xml *.afr.xml *.afr.dat
+
+
+
+#------------------------------- EOF ---------------------------

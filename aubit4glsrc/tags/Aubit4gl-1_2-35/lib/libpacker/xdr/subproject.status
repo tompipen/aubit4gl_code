@@ -1,0 +1,14 @@
+Name: libPACKER_XDR
+Parent: aubit4glsrc
+Description: XDR generic packer - produces files in sun onc/rpc XDR format
+Functionality: PACKER
+Build:
+Example: A4GL_PACKER
+Depends: Sun RPC
+Documentation:
+Regressed:
+Maintainer: MA
+Status: 4
+Todo:
+Notes: XDR format should be a compact, platform independant format
+

@@ -1,0 +1,32 @@
+Scripts that act like DBIMPORT and DBEXPORT
+kindly provided by Ing. Pablo Sanabria <psanabria@dromayor.com.co>
+
+You need the sys views created by the pg8.sql in the parent directory : 
+
+create view syscolumns as 
+select attrelid as tabid,
+       attname as colname,
+       attnum as colno,
+       atttypid as coltype,
+       attlen as collength
+from pg_attribute;
+create view systables as 
+select oid as tabid,
+       0 as nrows,
+      'T'::char(1) as tabtype,
+      relnatts as ncols,
+      relname as tabname
+from pg_class where relhasoids='t' ;
+create view sysindexes as 
+select oid as tabid,
+       0 as nrows,
+      'I'::char(1) as idxtype,
+      relnatts as ncols,
+      relname as idxname
+from pg_class where relhasoids!='t' ;
+create view sysusers as
+select usename as username,
+       'D'::char(1) as usertype,
+       9::smallint as priority,
+       passwd as password
+from pg_user;
