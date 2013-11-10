@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pg8.c,v 1.121 2013-07-12 13:00:54 mikeaubury Exp $
+# $Id: pg8.c,v 1.122 2013-11-10 09:28:21 mikeaubury Exp $
 #*/
 
 
@@ -1050,6 +1050,15 @@ FILE *errd;
       else
 	{
 	  *s = 255;
+          if (A4GLSQLCV_check_requirement("PG_UNLIMITED_VARCHAR_AS_TEXT"))
+            {
+              *d = DTYPE_TEXT;
+              *s = 0x0;
+            }
+          else
+            {
+             *s = 255;
+            }
 	}
 
     }
