@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.210 2013-09-09 19:41:34 mikeaubury Exp $
+# $Id: report.c,v 1.211 2013-11-10 09:53:49 mikeaubury Exp $
 #
 */
 
@@ -2244,12 +2244,15 @@ void
 A4GL_pause (char *s)
 {
   int a;
+  A4GL_report_pause(s);
+
+/*
   A4GL_push_char (s);
   A4GL_push_int (-1);
   A4GL_push_int (-1);
   A4GL_display_at (1, 0);
-  //getchar ();                 // Not the best idea in the world....
   a = A4GL_get_key (-1);
+*/
 }
 
 

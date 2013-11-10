@@ -144,6 +144,7 @@ code
 	{
 		fgets(msgline, 255, infile);
 		msgline[HELPMAXLEN-1] = 0;
+		A4GL_trim_nl(msgline);
 		A4GL_debug(">>>%s<<<",msgline); fflush(stdout);
 	}
 	if(ok && ferror(infile)) ok = -1;
@@ -442,7 +443,9 @@ indexrec[7]);
 	{
 		fgets(msgline, 255, infile);
 		msgline[HELPMAXLEN-1] = 0;
+		A4GL_trim_nl(msgline);
 		charcount = strlen(msgline);
+		A4GL_trim_nl(msgline);
 	}
 	else if( msgnotfound )
 	{

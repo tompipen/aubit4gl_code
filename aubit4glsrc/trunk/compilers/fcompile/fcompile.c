@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fcompile.c,v 1.78 2011-11-06 10:54:52 mikeaubury Exp $
+# $Id: fcompile.c,v 1.79 2013-11-10 09:53:48 mikeaubury Exp $
 #*/
 
 /**
@@ -72,6 +72,7 @@ extern char *outputfilename;	/* defined in libaubit4gl */
 extern struct struct_scr_field *fld;	/* defined in libaubit4gl */
 dll_import struct struct_form the_form;	/* defined in libaubit4gl */
 int asXML=0;
+int asJSON=0;
 int asXAML=0;
 int silent=0;
 char outputfile[132];
@@ -196,6 +197,14 @@ main (int argc, char *argv[])
 	  	continue;
 	}
 
+
+      if (strcmp (argv[cnt], "-json") == 0)
+	{
+		asJSON=1;
+		A4GL_setenv("A4GL_PACKER","FORMJSON",1);
+	  	continue;
+	}
+
       if (strcmp (argv[cnt], "-xaml") == 0)
 	{
 		asXAML=1;
@@ -271,13 +280,19 @@ main (int argc, char *argv[])
       outputfilename = acl_strdup (d);
     }
 
-    if (asXML || asXAML) {
+    if (asXML || asXAML || asJSON) {
 	char buff[2000];
 	if (acl_getenv_not_set_as_0("A4GL_OVERRIDE_PACKER_OUTPUT")==0) {
+		sprintf(buff,"%s.ext",outputfilename);
+
 		if (asXML) {
 			sprintf(buff,"%s.xml",outputfilename);
-		} else {
+		}
+		if (asXAML) {
 			sprintf(buff,"%s.xaml",outputfilename);
+		}
+		if (asJSON) {
+			sprintf(buff,"%s.json",outputfilename);
 		}
 		A4GL_setenv("A4GL_OVERRIDE_PACKER_OUTPUT",buff,1);
 	}

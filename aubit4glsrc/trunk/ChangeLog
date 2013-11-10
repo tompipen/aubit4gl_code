@@ -1,4 +1,88 @@
 ---------------------------
+Sun Nov 10 09:56:54 GMT 2013
+---------------------------
+1.2_35 Released
+---------------------------
+	2013-11-10 09:53  mikeaubury
+	
+	2013-11-10 09:28  mikeaubury
+	
+	Add Walter Haslbecks fixup for "varchar without lenght" as "text"
+	
+	2013-11-09 14:28  mikeaubury
+	
+	Fix blob conversion error
+	
+	2013-11-01 16:08  mikeaubury
+	
+	2013-11-01 14:54  mikeaubury
+	
+	2013-10-18 13:57  mikeaubury
+	
+	2013-10-18 13:45  mikeaubury
+	
+	2013-10-18 11:24  mikeaubury
+	
+	2013-10-18 10:36  mikeaubury
+	
+	2013-10-17 11:42  mikeaubury
+	
+	2013-10-10 08:50  mikeaubury
+	
+	2013-10-10 08:47  mikeaubury
+	
+	2013-10-10 08:43  mikeaubury
+	
+	2013-10-10 08:37  mikeaubury
+	
+	Fix bad commit
+	
+	2013-10-07 21:43  mikeaubury
+	
+	2013-10-07 21:39  mikeaubury
+	
+	2013-09-29 17:46  mikeaubury
+	
+	2013-09-28 17:52  mikeaubury
+	
+	Add backtick escaping for identifiers to preserve case eg.
+	
+	select * from `Accounts`
+	
+	This is useful for backend databases which are case
+	specific
+	
+	2013-09-20 16:00  mikeaubury
+	
+	Indentation only
+	
+	2013-09-09 20:42  mikeaubury
+	
+	2013-09-09 20:41  mikeaubury
+	
+	fix Lineno support for PDF reports
+	
+	2013-07-27 07:43  mikeaubury
+	
+	Fix aclfgl_replace_in_string
+	
+	2013-07-25 11:00  mikeaubury
+	
+	2013-07-23 02:28  afalout
+	
+	TEsting commit rightsx
+	
+	2013-07-22 15:31  mikeaubury
+	
+	Allow multi character delimiters in channel::read/write streams
+	
+	2013-07-18 11:42  mikeaubury
+	
+	2013-07-16 12:37  mikeaubury
+	
+	2013-07-16 11:30  mikeaubury
+	
+---------------------------
 Sat Jul 13 09:30:24 BST 2013
 ---------------------------
 1.2_34 Released

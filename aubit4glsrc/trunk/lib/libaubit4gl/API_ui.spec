@@ -28,6 +28,8 @@ A4GL_new_menu_create_with_attr char* title int x int y int mn_type int help_no c
 A4GL_add_menu_option void* menu char* txt char* keys char* desc int helpno int attr -> void
 A4GL_ensure_menu_title char* title -> void
 A4GL_ensure_menu_option int optno void* menu char* txt char* keys char* desc int helpno int attr -> void
+A4GL_show_help_within_ui int helpno -> int
+A4GL_set_help_file_within_ui char* filename -> int
 A4GL_add_menu_timeout void* menu char timeout_type int timeoutlen int cmd_no_on_timeout long* timeoutvar -> void
 A4GL_add_menu_action void* menu char* action int cmd_no_on_timeout -> void
 A4GL_finish_create_menu void* menu -> void
@@ -99,6 +101,7 @@ A4GL_create_menu void* m char* id int mode void* handler -> void*
 A4GL_reset_state_for void* sio char* siotype -> void
 aclfgl_fgl_set_arrline int nparam -> int
 aclfgl_fgl_set_scrline int nparam -> int
+A4GL_report_pause char* s -> void
 A4GL_reset_delims void* vformdets void* field char* delims -> void
 A4GLUI_set_intr -> void
 A4GL_screen_mode int sm -> int
