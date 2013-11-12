@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.193 2012-12-12 13:06:07 mikeaubury Exp $
+# $Id: conv.c,v 1.194 2013-11-12 07:06:01 whaslbeck Exp $
 #
 */
 
@@ -159,6 +159,8 @@ int A4GL_mdectos (void *z, void *w, int size);
 int A4GL_ltodec (void *a, void *z, int size);
 
 int A4GL_btob (void *a, void *b, int size);
+int A4GL_ctob (void *a, void *b, int size);
+int A4GL_vtob (void *a, void *b, int size);
 
 int A4GL_dtos (void *aa, void *zz, int size);
 //int A4GL_dttoc (void *a, void *b, int size);
@@ -302,7 +304,7 @@ A4GL_setc, A4GL_seti, A4GL_setl, A4GL_setf,
 int (*convmatrix[MAX_DTYPE][MAX_DTYPE]) (void *ptr1, void *ptr2, int size) =
 {
   {
-  A4GL_ctoc, A4GL_stoi, A4GL_stol, A4GL_stof, A4GL_stosf, A4GL_stodec, A4GL_stol, A4GL_stod, A4GL_stomdec, NO, A4GL_ctodt, NO, NO, A4GL_ctovc, A4GL_ctoint},
+  A4GL_ctoc, A4GL_stoi, A4GL_stol, A4GL_stof, A4GL_stosf, A4GL_stodec, A4GL_stol, A4GL_stod, A4GL_stomdec, NO, A4GL_ctodt, A4GL_ctob, A4GL_ctob, A4GL_ctovc, A4GL_ctoint},
   {
   A4GL_itoc, A4GL_itoi, A4GL_itol, A4GL_itof, A4GL_itosf, A4GL_itodec, A4GL_itol, A4GL_itod, A4GL_itomdec, NO, NO, NO, NO,
       A4GL_itovc, A4GL_itoint},
@@ -337,7 +339,7 @@ int (*convmatrix[MAX_DTYPE][MAX_DTYPE]) (void *ptr1, void *ptr2, int size) =
   NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, A4GL_btob, NO, NO},
   {
   A4GL_vctoc, A4GL_vctoi, A4GL_vctol, A4GL_vctof, A4GL_vctosf, A4GL_vctodec, A4GL_vctol, A4GL_vctod, A4GL_vctomdec, NO,
-      A4GL_vctodt, NO, NO, A4GL_vctovc, A4GL_vctoint},
+      A4GL_vctodt,  A4GL_vtob,  A4GL_vtob, A4GL_vctovc, A4GL_vctoint},
   {
   A4GL_inttoc, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, NO, A4GL_inttoint},
 };
@@ -1153,6 +1155,73 @@ A4GL_btob (void *a, void *b, int size)
   strcpy (lb->filename, la->filename);
   lb->ptr = la->ptr;
   return 1;
+}
+
+/* 
+ * Copy Char to blob
+ *
+ * @param a A pointer to the source char
+ * @param b A pointer to the destination blob.
+ * @param size
+ * @return Allways 1
+ */
+int
+A4GL_ctob (void *a, void *b, int size)
+{
+
+#ifdef DEBUG
+      A4GL_debug ("A4GL_ctob called, source CHAR=%s", a);
+#endif
+
+  struct fgl_int_loc *lb;
+  lb = (struct fgl_int_loc *) b;
+
+  if ( lb->where == 'M' ) 
+    { 
+#ifdef DEBUG
+      A4GL_debug ("dst located in memory");
+#endif
+
+      if ( lb->ptr != NULL)
+        {
+          free (lb->ptr);
+        }
+	lb->ptr = strdup(a);
+        lb->memsize = strlen(a);
+    }
+  else
+   {
+#ifdef DEBUG
+      A4GL_debug ("dst located in file, filename: %s", lb->filename);
+#endif
+     FILE *f;
+     f = fopen ( lb->filename, "w");
+     if (f)
+       {
+         fwrite ( a, 1, strlen (a), f);
+         fclose (f);
+       }
+    else
+       {
+         A4GL_exitwith("Unable to create blobfile");
+       }
+   }
+   
+  return 1;
+}
+
+/* 
+ * Copy Varchar to Text / Blob
+ *
+ * @param a A pointer to the source varchar
+ * @param b A pointer to the destination blob.
+ * @param size
+ * @return Allways 1
+ */
+int
+A4GL_vtob (void *a, void *b, int size)
+{
+  return A4GL_ctob(a, b, size);
 }
 
 /**
