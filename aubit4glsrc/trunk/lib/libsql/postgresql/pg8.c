@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pg8.c,v 1.122 2013-11-10 09:28:21 mikeaubury Exp $
+# $Id: pg8.c,v 1.123 2013-11-12 12:24:08 whaslbeck Exp $
 #*/
 
 
@@ -620,6 +620,29 @@ char *ptr;
   if (!loaded) {
 	loaded++;
 	A4GLSQLCV_load_convert("INFORMIX","POSTGRES8");
+  }
+
+  // with PG_INITSQL an default schema can be set
+  // e.g export PG_INITSQL="SET SEARCH_PATH TO myschema1, myschema2, public"
+  char *initsql = acl_getenv ("PG_INITSQL");
+  if ( initsql ) {
+#ifdef DEBUG
+    A4GL_debug ("PG_INITSQL = %s", initsql);
+#endif
+    PGresult *result = PQexec(current_con, initsql);
+    if ( result == NULL ) {
+      A4GL_exitwith_sql ("error while executing PG_INITSQL");
+    }
+    ExecStatusType t = PQresultStatus(result);
+    if ( t != PGRES_COMMAND_OK ) {
+      char *err = PQresultErrorMessage(result);
+      char msg[500];
+      snprintf(msg, sizeof(msg),
+               "PG_INITSQL - Unexpected return from PQexec(%s): %d (%s)",
+               initsql, t, err);
+      A4GL_exitwith(msg);
+    }
+
   }
 
   strcpy(currentConName, "default");
