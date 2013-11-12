@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pg8.c,v 1.123 2013-11-12 12:24:08 whaslbeck Exp $
+# $Id: pg8.c,v 1.124 2013-11-12 13:21:31 whaslbeck Exp $
 #*/
 
 
@@ -625,7 +625,7 @@ char *ptr;
   // with PG_INITSQL an default schema can be set
   // e.g export PG_INITSQL="SET SEARCH_PATH TO myschema1, myschema2, public"
   char *initsql = acl_getenv ("PG_INITSQL");
-  if ( initsql ) {
+  if ( initsql && strlen(initsql) > 0 ) {
 #ifdef DEBUG
     A4GL_debug ("PG_INITSQL = %s", initsql);
 #endif
