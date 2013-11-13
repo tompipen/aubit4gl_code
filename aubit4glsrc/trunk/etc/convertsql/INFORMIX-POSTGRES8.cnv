@@ -319,3 +319,4 @@ ENDIF
 IF A4GL_PGVERSION ge 80400
 DEFAULT_SQL 1 = SET intervalstyle TO 'postgres_verbose';
 ENDIF
+

@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.179 2013-07-27 06:43:41 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.180 2013-11-13 08:22:12 mikeaubury Exp $
 #
 */
 
@@ -140,7 +140,7 @@ int ncolumn_mappings = 0;
 =====================================================================
 */
 
-static void A4GL_cv_fnlist (char *source, char *target, char *name);
+static void A4GL_cv_fnlist (char *source, char *target, char *name,int onlyDefaultSql);
 //int A4GL_cv_str_to_func (char *p, int len,int warnifnotfound);
 int A4GL_strwscmp (char *a, char *b);
 //int A4GL_strcasestr (char *h, char *n);
@@ -460,6 +460,7 @@ void
 A4GLSQLCV_load_convert (char *source_dialect, char *target_dialect)
 {
   char buff[256];
+int onlyDefaultSQL=0;
 //void *p=0;
 
   SPRINTF2 (buff, "%s_%s", source_dialect, target_dialect);
@@ -472,12 +473,14 @@ A4GLSQLCV_load_convert (char *source_dialect, char *target_dialect)
       // The following function will return 0 
       // IFF - we're compiling 
       //       AND we're not compiling to ESQL/C code
-      if (!A4GL_compile_time_convert ())
-	return;
+      if (!A4GL_compile_time_convert ()) {
+		onlyDefaultSQL=1;
+       }
     }
+
   if (!A4GL_has_pointer (buff, SQL_CONVERSION))
     {
-      A4GL_cv_fnlist (source_dialect, target_dialect, buff);
+      A4GL_cv_fnlist (source_dialect, target_dialect, buff,onlyDefaultSQL);
     }
 
 
@@ -504,10 +507,18 @@ cnfopen (char *path, char *buff_sm)
 }
 
 
+static ignoreRule(int type, int onlyDefaultSql) {
+	if (onlyDefaultSql==0) return 0;
+
+	// We're doing a compile - and we only want the DEFAULT_SQL rules running...
+	if (type==CVSQL_DEFAULT_SQL) return 0;
+	return 1;
+}
+
 static void
-read_conversion_file (FILE * fh, char *name)
+read_conversion_file (FILE * fh, char *name,int onlyDefaultSql)
 {
-  char buff[201];
+  char buff[501];
   char *t;
   int len;
   int line = 0;
@@ -520,7 +531,7 @@ int sz;
   /* each line of the file consists of a function name and
    * optional arguments.  Ignore lines starting with "#".
    */
-  while (fgets (buff, 200, fh))
+  while (fgets (buff, 500, fh))
     {
       line++;
       if ((t = A4GL_cv_next_token (buff, &len, 0)) == NULL)
@@ -844,28 +855,37 @@ int sz;
 	      A4GL_assertion (1, "Unable to open sql convertion file used in an INCLUDE");
 	    }
 	  // If we get to here - we should be ok to read the file...
-	  read_conversion_file (fh_new, name);	// It'll be closed by the time we get back...
+	  read_conversion_file (fh_new, name, onlyDefaultSql);	// It'll be closed by the time we get back...
 	  continue;
 	}
 
 
 
-      conversion_rules_cnt++;
+      int type=A4GL_cv_str_to_func (t, len, 1);
+      int ignore;
+
+     ignore=ignoreRule(type, onlyDefaultSql);
+   
+     
+      if (!ignore) {
+      	conversion_rules_cnt++;
 	//printf("Malloc : %d\n",sz);
 	sz=sizeof (conversion_rules[0]) * conversion_rules_cnt;
-      conversion_rules = acl_realloc (conversion_rules, sz);
+      	conversion_rules = acl_realloc (conversion_rules, sz);
+      	conversion_rules[conversion_rules_cnt - 1].type = type;
+      	conversion_rules[conversion_rules_cnt - 1].data.from = 0;
+      	conversion_rules[conversion_rules_cnt - 1].data.to = 0;
+      }
 
 
-
-      conversion_rules[conversion_rules_cnt - 1].type = A4GL_cv_str_to_func (t, len, 1);
-      conversion_rules[conversion_rules_cnt - 1].data.from = 0;
-      conversion_rules[conversion_rules_cnt - 1].data.to = 0;
       if (t)
 	{
 #ifdef DEBUG
+	if (!ignore) {
 	  A4GL_debug ("Loaded convertion ---> %d %s\n",
 		      conversion_rules[conversion_rules_cnt - 1].type,
 		      cvsql_names[conversion_rules[conversion_rules_cnt - 1].type]);
+		}
 #endif
 	}
       A4GL_trim (t);
@@ -905,14 +925,20 @@ int sz;
 		  while (*right == '=' || *right == ' ' || *right == '\t')
 		    right++;
 		  A4GL_trim (right);
-		  conversion_rules[conversion_rules_cnt - 1].data.to = acl_strdup (right);
+			if (!ignore) {
+		  		conversion_rules[conversion_rules_cnt - 1].data.to = acl_strdup (right);
+			}
 		}
 	      else
 		{
+			if (!ignore) {
 		  conversion_rules[conversion_rules_cnt - 1].data.to = 0;
+			}
 		}
 	      A4GL_trim (left);
+			if (!ignore) {
 	      conversion_rules[conversion_rules_cnt - 1].data.from = acl_strdup (left);
+			}
 	    }
 	}
 
@@ -934,7 +960,7 @@ int sz;
 
 
 static void
-A4GL_cv_fnlist (char *source, char *target, char *name)
+A4GL_cv_fnlist (char *source, char *target, char *name,int onlyDefaultSQL)
 {
   char path[201];
   char buff_sm[201];
@@ -981,7 +1007,7 @@ A4GL_cv_fnlist (char *source, char *target, char *name)
       return;			/* NULL */
     }
 
-  read_conversion_file (fh, name);
+  read_conversion_file (fh, name,onlyDefaultSQL);
 }
 
 
