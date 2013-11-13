@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.180 2013-11-13 08:22:12 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.181 2013-11-13 09:36:19 mikeaubury Exp $
 #
 */
 
@@ -970,6 +970,7 @@ A4GL_cv_fnlist (char *source, char *target, char *name,int onlyDefaultSQL)
   if (target==0) return;
   if (strlen(target)==0) return;
   if (strcmp(target,"FILE")==0) return;
+  if (strcmp(source,"INFORMIX")==0 && strcmp(target,"default")==0) return;
 
   SPRINTF2 (buff_sm, "/%s-%s.cnv", source, target);
 
