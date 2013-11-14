@@ -18,6 +18,16 @@ foreach_cmd	:	opt_use2_p FOREACH fetch_cursor_name_p atline opt_foreach_using_pa
 				inc_var_usage_from_binding_list($<ptr_list>5);
 				inc_var_assigned_from_binding_list($<ptr_list>6);
 			} 
+			|  opt_use2_p FOREACH select_statement_ss_select  atline {
+                                       add_feature("FOREACH"); push_blockcommand("FOREACH");
+                                       lastlineno=yylineno;
+                                }
+                                commands_as_list END_FOREACH {
+                                set_cmdlineno($<integer_val>4);
+                                pop_blockcommand("FOREACH");
+                                $<cmd>$=new_foreach_with_select_cmd($<ptr>1,$<s_select>3,$<commands>6);
+			}
+
 ;
 
 

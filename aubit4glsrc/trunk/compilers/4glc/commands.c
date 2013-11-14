@@ -1460,6 +1460,16 @@ struct command *c;
    return c;
 }
 
+struct command *new_foreach_with_select_cmd(expr_str *p_connid, s_select * select,s_commands *p_cmds) {
+struct command *c;
+   c=new_command(E_CMD_FOREACH_WITH_SELECT_CMD);
+   c->cmd_data.command_data_u.foreach_with_select_cmd.select=select;
+   c->cmd_data.command_data_u.foreach_with_select_cmd.foreach_commands=p_cmds;
+   c->cmd_data.command_data_u.foreach_with_select_cmd.block_id=get_block_no(A4GL_get_ccnt());
+   c->cmd_data.command_data_u.foreach_with_select_cmd.connid=p_connid;
+   return c;
+}
+
 struct command *new_connect_cmd(struct expr_str *p_dbname,struct expr_str *p_conn_name,struct expr_str *p_username,struct expr_str *p_password,struct expr_str *p_sqltype) {
 struct command *c;
    c=new_command(E_CMD_CONNECT_CMD);

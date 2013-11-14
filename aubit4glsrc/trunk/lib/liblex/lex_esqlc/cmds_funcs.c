@@ -3019,6 +3019,40 @@ printc("END_BLOCK_%d:    ;   /* add_continue */",cmd_data->blockid);
 }
 
 
+int print_foreach_with_select_cmd(struct_foreach_with_select_cmd *cmd_data) {
+struct expr_str *fakeCursorName;
+char buff[200];
+static int cnt=0;
+struct s_cur_def dets;
+sprintf(buff,"fkSWC_%d",cnt++);
+struct_declare_cmd c1;
+struct_foreach_cmd c2;
+c1.connid=cmd_data->connid;
+fakeCursorName= A4GL_new_expr_simple_string(buff, ET_EXPR_IDENTIFIER);
+c1.cursorname=fakeCursorName;
+c1.with_hold=EB_FALSE;
+c1.scroll=EB_FALSE;
+c1.isstmt=EB_TRUE;
+c1.cursor_type='S';
+dets.forUpdate="";
+dets.insert_cmd=NULL;
+dets.ident=NULL;
+dets.select=cmd_data->select;
+c1.declare_dets=&dets;
+c2.connid=cmd_data->connid;
+c2.cursorname=fakeCursorName;
+c2.inputvals=0;
+c2.outputvals=0;
+c2.foreach_commands=cmd_data->foreach_commands;
+c2.block_id=cmd_data->block_id;
+//line_for_cmd=0;
+print_declare_cmd(&c1);
+print_foreach_cmd(&c2);
+
+return 1;
+
+}
+
 /******************************************************************************/
 int
 print_prompt_cmd (struct_prompt_cmd * cmd_data)

@@ -126,6 +126,7 @@ struct command *new_todo_cmd(expr_str* p_todo_expr,struct whens *p_whens,s_comma
 struct command *new_validate_cmd(expr_str_list* p_list, str_list* p_tablist);
 struct command *new_display_b_n_cmd(expr_str_list* p_vars, attrib *p_attributes);
 struct command *new_foreach_cmd(expr_str *connid, expr_str * p_cursorname, expr_str_list* p_inputvals, expr_str_list* p_outputvals, s_commands *p_cmds);
+struct command *new_foreach_with_select_cmd(expr_str *connid, s_select * p_select, s_commands *p_cmds);
 struct command *new_if_cmd(if_conds *p_truths,s_commands *p_whenfalse,int else_lineno, int last_lineno);
 struct command *new_pdf_call_cmd(expr_str* p_fcall,expr_str_list* p_returning);
 struct command *new_pdf_specific_cmd (char *p_type, struct expr_str_list *return_values, ...);

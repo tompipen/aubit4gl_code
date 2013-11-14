@@ -392,3 +392,4 @@
 410|Cant use blobs with FILTERed UNLOAD
 411|Filter function did not return exactly one value
 412|Error in filterfunc
+414|Unable to create blobfile

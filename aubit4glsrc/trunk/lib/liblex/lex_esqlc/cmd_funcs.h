@@ -39,6 +39,7 @@ int print_finish_cmd(struct_finish_cmd *cmd_data);
 int print_flush_cmd(struct_flush_cmd *cmd_data);
 int print_for_cmd(struct_for_cmd *cmd_data);
 int print_foreach_cmd(struct_foreach_cmd *cmd_data);
+int print_foreach_with_select_cmd(struct_foreach_with_select_cmd *cmd_data);
 int print_free_cmd(struct_free_cmd *cmd_data);
 int print_free_rep_cmd(struct_free_rep_cmd *cmd_data);
 int print_goto_cmd(struct_goto_cmd *cmd_data);
