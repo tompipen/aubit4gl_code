@@ -164,5 +164,7 @@
         <file>pics/VENTAS_9_splashscreen.png</file>
         <file>pics/VENTAS_9_titel.jpg</file>
         <file>pics/frame_right.jpg</file>
+        <file>pics/yes.png</file>
+        <file>pics/no.png</file>
     </qresource>
 </RCC>
