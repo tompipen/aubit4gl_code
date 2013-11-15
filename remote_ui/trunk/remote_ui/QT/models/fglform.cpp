@@ -4020,6 +4020,7 @@ QWidget* FglForm::findFieldById(int id)
     if(id == -1)
     {
         qDebug() << "bin da";
+        return NULL;
     }
 
        QList<QWidget*> ql_fields = ql_formFields;
