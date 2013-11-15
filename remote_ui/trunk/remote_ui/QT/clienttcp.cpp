@@ -859,7 +859,7 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
       }
 
       QFile actionsFile(QString("%1.4ad").arg(programName));
-      /*if (actionsFile.open(QIODevice::ReadOnly | QIODevice::Text)){
+      if (actionsFile.open(QIODevice::ReadOnly | QIODevice::Text)){
           QString qs_defaultActions = actionsFile.readAll();
           QMetaObject::invokeMethod(p_currScreenHandler, "handleXMLActions", Qt::QueuedConnection, Q_ARG(QString, qs_defaultActions));
         //  handleXMLActions(qs_defaultActions);
@@ -873,9 +873,9 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
              //  handleXMLActions(qs_defaultActions);
                actionsFile.close();
            }
+      }
 
-
-           actionsFile.setFileName(QDir::tempPath() + "/" +"ventas_e.4ad");
+           /*actionsFile.setFileName(QDir::tempPath() + "/" +"ventas_e.4ad");
             if (actionsFile.open(QIODevice::ReadOnly | QIODevice::Text)){
                 QString qs_defaultActions = actionsFile.readAll();
                 QMetaObject::invokeMethod(p_currScreenHandler, "handleXMLActions", Qt::QueuedConnection, Q_ARG(QString, qs_defaultActions));
