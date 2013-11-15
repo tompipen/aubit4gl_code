@@ -298,13 +298,13 @@ MainFrame::vdcdebug("Response","addScreenRecSyncValues", "");
    {
 
 
-   for(int i=0; i<arrCount; i++){
+   //for(int i=0; i<arrCount; i++){
       QDomElement syncRowElement = this->createElement("ROW");
-      syncRowElement.setAttribute("SUBSCRIPT", QString::number(i+1));
+      syncRowElement.setAttribute("SUBSCRIPT", QString::number(arrCount+1));
       syncRowsElement.appendChild(syncRowElement);
       QDomElement syncValuesElement = this->createElement("SVS");
       syncRowElement.appendChild(syncValuesElement);
-      QStringList values = p_currForm->context->getScreenRecordValues(i);
+      QStringList values = p_currForm->context->getScreenRecordValues(arrCount);
       for(int j=0; j<values.count(); j++){
          QDomElement syncValueElement = this->createElement("SV");
          QString text = values.at(j);
@@ -314,7 +314,7 @@ MainFrame::vdcdebug("Response","addScreenRecSyncValues", "");
          }
          syncValuesElement.appendChild(syncValueElement);
       }
-   }
+   //}
    }
    else
    {
