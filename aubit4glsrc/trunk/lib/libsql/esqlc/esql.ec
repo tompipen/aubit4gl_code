@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.262 2013-07-12 12:58:26 mikeaubury Exp $
+# $Id: esql.ec,v 1.263 2013-11-15 12:18:14 mikeaubury Exp $
 #
 */
 
@@ -196,7 +196,7 @@ static loc_t *add_blob(struct s_sid *sid, int n, struct s_extra_info *e,fglbyte 
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.262 2013-07-12 12:58:26 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.263 2013-11-15 12:18:14 mikeaubury Exp $";
 #endif
 
 
@@ -5058,6 +5058,7 @@ dumprec (FILE * outputfile, struct sqlda *ldesc, int row, void *filterFunc)
 	  if (unlNames[i])
 	    {
 	      free (unlNames[i]);
+		unlNames[i]=0;
 	    }
 	}
     }
