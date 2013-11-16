@@ -4036,8 +4036,7 @@ QWidget* FglForm::findFieldById(int id)
        }
        if(id < 0)
        {
-           qWarnung("Invalid FieldId");
-           return NULL;
+           qWarning("Invalid FieldId");
        }
        return ql_fields.at(id);
       
