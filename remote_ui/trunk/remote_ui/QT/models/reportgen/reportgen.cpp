@@ -25,6 +25,7 @@ Reportgen::Reportgen(ScreenHandler *parent)
         }
     }
 }
+
 Reportgen::Reportgen()
 {
     p_screenHandler = NULL;
@@ -317,6 +318,7 @@ bool Reportgen::startReportTemplate(QString odffile, QString sedfile, QFileInfo 
            content.append(getTemplatePosition(i+1, fileBaseName + "/content.xml"));//.toUtf8());
            for(int j=1; j < varCount+1; j++) {
                qDebug() << "ergaenze Ebene" << j << "von" << varCount;
+               QMetaObject::invokeMethod(p_screenHandler, "setProgressText", Qt::QueuedConnection, Q_ARG(int, 0), Q_ARG(QString, QString("Verarbeite %1 von %2").arg(j).arg(varCount)));
                //emit setRepgenText(QString("Ergaenze Template %1 von %2").arg(j).arg(varCount));
                content.append(prepareTemplateContent(i+1, j, oldFileName.baseName() + "/content.xml", sedfile));
                xmlsave << content;
@@ -355,7 +357,7 @@ bool Reportgen::startReportTemplate(QString odffile, QString sedfile, QFileInfo 
    } else {
        replaceTemplateWithoutPosition(fileBaseName, sedfile, zielDatei);
    }
-
+   QMetaObject::invokeMethod(p_screenHandler, "setProgressVisible", Qt::QueuedConnection, Q_ARG(int, 0), Q_ARG(bool, false));
    return true;
 
 }
