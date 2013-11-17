@@ -113,7 +113,7 @@ void VentasUpdate::checkServerClient()
                     }
                     QDate serverdate = QDate::fromString(serverVars.at(i).at(j), "dd.MM.yyyy");
                     QDate clientdate = QDate::fromString(clientVars.at(j), "dd.MM.yyyy");
-                    if(serverdate > clientdate)
+                    if(serverdate >= clientdate)
                     {
                         j++;
                         if(serverVars.at(i).at(j) != clientVars.at(j))
