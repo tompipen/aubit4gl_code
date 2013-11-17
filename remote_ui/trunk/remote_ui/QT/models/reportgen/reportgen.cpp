@@ -223,7 +223,7 @@ bool Reportgen::startReportTemplate(QString odffile, QString sedfile, QFileInfo 
     int ebene2 = 1;
     int gefunden = 0;
     int varCount = 1;
-    int anfang = 0;
+    int anfang = 1;
 
     //emit createRepgenProgressBar();
     readSedFile(sedfile);
@@ -328,10 +328,10 @@ bool Reportgen::startReportTemplate(QString odffile, QString sedfile, QFileInfo 
            for(int j=1; j < varCount+1; j++) {
                qDebug() << "ergaenze Ebene" << j << "von" << varCount;
                content.append(prepareTemplateContentOdt(i+1, j, oldFileName.baseName() + "/content.xml", sedfile));
-               xmlsave << content;
-               content.clear();
-               xmlsave << getTemplateFooter( i+1, fileBaseName + "/content.xml", ".odt");
            }
+           xmlsave << content;
+           //content.clear();
+           xmlsave << getTemplateFooter( i+1, fileBaseName + "/content.xml", ".odt");
        }
    }
 
