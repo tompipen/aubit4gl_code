@@ -322,18 +322,19 @@ bool Reportgen::startReportTemplate(QString odffile, QString sedfile, QFileInfo 
                xmlsave << content;
                content.clear();
            }
-           xmlsave << getTemplateFooter( i+1, fileBaseName + "/content.xml", ".ods" );
-       } else if(oldFileName.completeSuffix() == "odt"){
+           //xmlsave << getTemplateFooter( i+1, fileBaseName + "/content.xml", ".ods" );
+       }
+   }
+   if(oldFileName.completeSuffix() == "odt"){
            content.append(getTemplatePosition( fileBaseName + "/content.xml" ));//.toUtf8());
-           for(int j=1; j < varCount+1; j++) {
+           for(int j=1; j < varCount; j++) {
                qDebug() << "ergaenze Ebene" << j << "von" << varCount;
-               content.append(prepareTemplateContentOdt(i+1, j, oldFileName.baseName() + "/content.xml", sedfile));
+               content.append(prepareTemplateContentOdt(1, j, oldFileName.baseName() + "/content.xml", sedfile));
            }
            xmlsave << content;
            //content.clear();
-           xmlsave << getTemplateFooter( i+1, fileBaseName + "/content.xml", ".odt");
+           xmlsave << getTemplateFooter( 1, fileBaseName + "/content.xml", ".odt");
        }
-   }
 
    if(oldFileName.completeSuffix() == "ods")
    {
