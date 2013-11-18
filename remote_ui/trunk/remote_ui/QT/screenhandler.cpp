@@ -264,7 +264,6 @@ MainFrame::vdcdebug("ScreenHandler","createWindow", "QString windowTitle,QString
      {
          p_fglform->setActions(formsActions2);
      }
-
      if(xmlIconDocDe.hasChildNodes())
      {
          p_fglform->setActions(xmlIconDocDe);
@@ -2645,27 +2644,27 @@ Fgl::Event id;
        QDomNodeList qdl_node;
        QStringList qsl_ids = id.id.split(",");
        QString qs_resp;
-       //for(int i=0; i<qsl_ids.size(); i++){
+       for(int i=0; i<qsl_ids.size(); i++){
            Fgl::Event fevent;
-           fevent.id = qsl_ids.last();
-           if((qsl_ids.size()+1) == qsl_ids.size())
+           fevent.id = qsl_ids.at(i);
+           if((i+1) == qsl_ids.size())
            {
                fevent.field = id.field;
            }
-           if(qsl_ids.size()>0)
+           if(i>0)
            {
                p_fglform->b_svs = false;
            }
            Response resp(fevent, p_fglform, cursorPos);
-           resp.firstChildElement().setAttribute("CNT", qsl_ids.size()+1);
+           resp.firstChildElement().setAttribute("CNT", i+1);
            resp.firstChildElement().setAttribute("MAXCNT", qsl_ids.size());
            resp.firstChildElement().setAttribute("ENVELOPEID", pid);
 
            qs_resp.append(resp.toString().replace("\n",""));
-           /*if(qsl_ids.last()+1<qsl_ids.size()){
+           if(i+1<qsl_ids.size()){
                qs_resp.append("\n");
-           }*/
-       //}
+           }
+       }
 
        p_fglform->b_svs = true;
        if(qs_resp.isEmpty())
