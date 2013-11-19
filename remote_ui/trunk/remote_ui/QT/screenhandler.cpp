@@ -2898,7 +2898,7 @@ MainFrame::vdcdebug("ScreenHandler","displayMessage", "QString text");
           sb->displayError(text);
           return;
        }
-       if(!mDummyMessageDialogBox){
+       /*if(!mDummyMessageDialogBox){
           mDummyMessageDialogBox = new Dialog(tr("Message"), "", "dialog", "info", NULL);
           mDummyMessageDialogBox->setModal(true);
           mDummyMessageDialogBox->createButton(1, "OK", "OK", "ok.png");
@@ -2923,7 +2923,7 @@ MainFrame::vdcdebug("ScreenHandler","displayMessage", "QString text");
        QTimer *dummyBoxTimer = new QTimer();
        dummyBoxTimer->start(5000);
 
-       connect(dummyBoxTimer, SIGNAL(timeout()), mDummyMessageDialogBox, SLOT(close()));
+       connect(dummyBoxTimer, SIGNAL(timeout()), mDummyMessageDialogBox, SLOT(close()));*/
    }
 }
 
