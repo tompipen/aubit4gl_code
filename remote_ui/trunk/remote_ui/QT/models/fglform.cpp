@@ -4887,6 +4887,10 @@ MainFrame::vdcdebug("FglForm","checkField", "");
                   {
                       temptext.remove(":");
                   }
+                  if(temptext.contains(","))
+                  {
+                      temptext.remove(",");
+                  }
 
                   if(Fgl::isValidForType(Fgl::DTYPE_DECIMAL, temptext, widget->format())){
                       WidgetHelper::setFieldText(widget, text);
