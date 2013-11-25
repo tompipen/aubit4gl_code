@@ -30,6 +30,7 @@ TableView::TableView(QWidget *parent) : QTableView(parent)
 {
 MainFrame::vdcdebug("TableView","TableView", "QWidget *parent");
 
+   this->setAttribute(Qt::WA_PaintOnScreen);
    this->setFocusPolicy(Qt::NoFocus);
    this->p_fglform = parent;
    i_arrCount = 0;

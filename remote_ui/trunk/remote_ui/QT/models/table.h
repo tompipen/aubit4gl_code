@@ -32,6 +32,7 @@ class TableView : public QTableView
 
 public:
    TableView(QWidget *parent = 0);
+   QPaintEngine* paintEngine() { return 0; }
    bool isReadOnlyColumn(int);
    int pageSize;
    QString tabName;

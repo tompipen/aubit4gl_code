@@ -1606,6 +1606,7 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
                 qDebug() << "Datei nicht geoffnet" << "";
                 returnvalues << "O";
              }
+             file->close();
             #endif
             #ifndef VREPGEN_USE
                 qDebug() << "Umgebungsvariable nicht gesetzt: benutz export VREPGEN=YES ";
@@ -2666,7 +2667,7 @@ void ProtocolHandler::executeFile(int waitforFinish, QString fileName)
                                 NULL,
                                 NULL,
                                 FALSE,
-                                0,
+                                NORMAL_PRIORITY_CLASS,
                                 NULL,
                                 NULL,
                                 &si,
@@ -2679,7 +2680,7 @@ void ProtocolHandler::executeFile(int waitforFinish, QString fileName)
 
              }
                 qDebug() << "Prozess wurde erstellt.";
-                waitTimer::msleep(5);
+                Sleep(5);
                 WaitForSingleObject( pi.hProcess, INFINITE );
 
                 CloseHandle(pi.hProcess);
