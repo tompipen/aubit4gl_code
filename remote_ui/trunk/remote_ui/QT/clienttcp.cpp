@@ -1862,6 +1862,23 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
             QDomElement values = childElement.firstChildElement();
             QDomElement valueElement = values.firstChildElement();
             QString value = valueElement.text();
+
+            while(p_currScreenHandler->currForm() == NULL)
+            {
+                waitTimer::msleep(100);
+            }
+            int waitcounter = 0;
+
+            while(p_currScreenHandler->currForm()->findFieldIdByName(value) == -1)
+            {
+                waitTimer::msleep(100);
+                waitcounter++;
+                if(waitcounter > 10)
+                {
+                    break;
+                }
+            }
+
             returnvalues << QString::number(p_currScreenHandler->currForm()->findFieldIdByName(value));
             //fornameComboBox(value);
             /*QMetaObject::invokeMethod(p_currScreenHandler, "fornameComboBox", Qt::DirectConnection, Q_ARG(QString, value));

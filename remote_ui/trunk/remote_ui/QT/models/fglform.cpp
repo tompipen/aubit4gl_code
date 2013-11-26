@@ -3904,7 +3904,7 @@ MainFrame::vdcdebug("FglForm","createContextMenu", "const QPoint &pos");
 QWidget* FglForm::findFieldByName(QString fieldName)
 {
 MainFrame::vdcdebug("FglForm","findFieldByName", "QString fieldName");
-   QList<QWidget*> ql_fields = ql_formFields;
+   //QList<QWidget*> ql_fields = ql_formFields;
 
    int index = fieldName.indexOf(".");
    int index2 = fieldName.indexOf("[");
