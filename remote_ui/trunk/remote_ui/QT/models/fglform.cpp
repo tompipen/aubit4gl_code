@@ -3223,7 +3223,9 @@ MainFrame::vdcdebug("FglForm","nextrow", "");
                }
             }
             else{
-               view->setCurrentField(currentRow+1, currentColumn);
+               if(currentRow <= view->model()->rowCount()){
+                   view->setCurrentField(currentRow+1, currentColumn);
+               }
             }
          }
       }
