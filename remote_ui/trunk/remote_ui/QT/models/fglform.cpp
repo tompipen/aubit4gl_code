@@ -3210,9 +3210,10 @@ void FglForm::nextrow()
 {
 MainFrame::vdcdebug("FglForm","nextrow", "");
    //find active screenRecord
-   for(int i=0; i<formElements().size(); i++){
-      if(formElements().at(i)->inherits("TableView")){
-         TableView *view = (TableView*) formElements().at(i);
+   QList<QWidget*> ql_formElements = formElements();
+   for(int i=0; i<ql_formElements.size(); i++){
+      if(ql_formElements.at(i)->inherits("TableView")){
+         TableView *view = (TableView*) ql_formElements.at(i);
          if(view->isEnabled()){
             QModelIndex currentIndex = view->currentIndex();
             int currentRow = currentIndex.row()+1;
@@ -3241,9 +3242,10 @@ void FglForm::prevrow()
 {
 MainFrame::vdcdebug("FglForm","prevrow", "");
    //find active screenRecord
-   for(int i=0; i<formElements().size(); i++){
-      if(formElements().at(i)->inherits("TableView")){
-         TableView *view = (TableView*) formElements().at(i);
+   QList<QWidget*> ql_formElements = formElements();
+   for(int i=0; i<ql_formElements.size(); i++){
+      if(ql_formElements.at(i)->inherits("TableView")){
+         TableView *view = (TableView*) ql_formElements.at(i);
          if(view->isEnabled()){
             QModelIndex currentIndex = view->currentIndex();
             int currentRow = currentIndex.row();
