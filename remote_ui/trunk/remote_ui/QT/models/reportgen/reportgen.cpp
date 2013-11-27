@@ -1299,7 +1299,7 @@ void Reportgen::createXmlFile(int Table, int Position, QString odffile)
 
     QString readLine = file1.readAll();
 
-    for(int i=0; i < sed_fields.count(); i++)
+    for(int i=sed_fields.count()-1; i > 0; i--)
     {
         QStringList valueList = sed_fields.at(i).split(QRegExp("%/"));
 
