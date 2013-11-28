@@ -294,7 +294,7 @@ MainFrame::vdcdebug("Response","addScreenRecSyncValues", "");
 
    QDomElement syncRowsElement = this->createElement("SYNCROWS");
    responseElement.appendChild(syncRowsElement);
-   if(id == "ACCEPT")
+   if(id == "ACCEPT" || id == "1" || id == "INTERRUPT")
    {
 
    for(int i=0; i<arrCount; i++){
@@ -316,21 +316,21 @@ MainFrame::vdcdebug("Response","addScreenRecSyncValues", "");
    }
    } else if(p_currForm->context->arrcountchanged())
    {
-             QDomElement syncRowElement = this->createElement("ROW");
-             syncRowElement.setAttribute("SUBSCRIPT", QString::number(arrCount+1));
-             syncRowsElement.appendChild(syncRowElement);
-             QDomElement syncValuesElement = this->createElement("SVS");
-             syncRowElement.appendChild(syncValuesElement);
-             QStringList values = p_currForm->context->getScreenRecordValues(arrCount);
-             for(int j=0; j<values.count(); j++){
-                QDomElement syncValueElement = this->createElement("SV");
-                QString text = values.at(j);
-                if(!text.isEmpty()){
-                   QDomText syncValueText = this->createTextNode(text);
-                   syncValueElement.appendChild(syncValueText);
-                }
-                syncValuesElement.appendChild(syncValueElement);
-             }
+       QDomElement syncRowElement = this->createElement("ROW");
+       syncRowElement.setAttribute("SUBSCRIPT", QString::number(arrCount));
+       syncRowsElement.appendChild(syncRowElement);
+       QDomElement syncValuesElement = this->createElement("SVS");
+       syncRowElement.appendChild(syncValuesElement);
+       QStringList values = p_currForm->context->getScreenRecordValues(arrCount);
+       for(int j=0; j<values.count(); j++){
+          QDomElement syncValueElement = this->createElement("SV");
+          QString text = values.at(j);
+          if(!text.isEmpty()){
+             QDomText syncValueText = this->createTextNode(text);
+             syncValueElement.appendChild(syncValueText);
+          }
+          syncValuesElement.appendChild(syncValueElement);
+       }
    }
    else
    {
