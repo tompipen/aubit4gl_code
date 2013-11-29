@@ -2609,6 +2609,7 @@ Fgl::Event id;
 
        id = p_fglform->ql_responseQueue.takeFirst();
 
+         setUpdatesEnabled(false);
          p_fglform->setCursor(Qt::WaitCursor);
          }
 /*
