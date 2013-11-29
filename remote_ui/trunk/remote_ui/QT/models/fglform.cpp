@@ -931,6 +931,11 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
                                            kev->isAutoRepeat(),
                                            kev->count());
           ql_keybuffer << mykev;
+          if(QLineEdit *edit = qobject_cast<QLineEdit*> (obj))
+          {
+              edit->setCursorPosition(0);
+              edit->setFocus();
+          }
           return true;
 
 
