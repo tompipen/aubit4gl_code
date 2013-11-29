@@ -176,6 +176,10 @@ expr_as_string_when_possible (expr_str * e)
       return ET_EXPR_VARIABLE_USAGE_call (e->expr_str_u.expr_variable_usage);
       break;
 
+    case ET_EXPR_VARIABLE_USAGE_WITH_ASC_DESC:
+      return ET_EXPR_VARIABLE_USAGE_call (e->expr_str_u.expr_variable_usage_with_asc_desc->var_usage);
+      break;
+
     case ET_EXPR_BRACKET:
       {
 	static char smbuff[1024];

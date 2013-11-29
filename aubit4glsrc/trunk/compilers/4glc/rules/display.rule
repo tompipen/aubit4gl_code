@@ -103,6 +103,8 @@ display_array_cmd : DISPLAY_ARRAY atline {
 			opt_scroll display_attr
 		{
                  if (!check_input_or_display_array_variable($<ptr>4)) {
+				  set_yytext(expr_as_string_when_possible($<ptr>4));
+
                                     a4gl_yyerror("Variable cannot be used for an DISPLAY ARRAY");
                  }
 	inc_var_usage($<ptr>4);

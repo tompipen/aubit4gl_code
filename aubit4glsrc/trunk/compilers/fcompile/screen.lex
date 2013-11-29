@@ -325,6 +325,7 @@ master[ 	]+of 	{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KW_MASTER
 "fixed"		{if (ign_kw(yystate, KW_FIXED)) REJECT;strcpy(yylval.str,yytext); return KW_FIXED;}
 "variable"		{if (ign_kw(yystate, KW_VARIABLE)) REJECT;strcpy(yylval.str,yytext); return KW_VARIABLE;}
 "wantnoreturns"		{if (ign_kw(yystate, KW_WANTNORETURNS)) REJECT;strcpy(yylval.str,yytext); return KW_WANTNORETURNS;}
+"wantreturns"		{if (ign_kw(yystate, KW_WANTRETURNS)) REJECT;strcpy(yylval.str,yytext); return KW_WANTRETURNS;}
 "wanttabs"		{if (ign_kw(yystate, KW_WANTTABS)) REJECT;strcpy(yylval.str,yytext); return KW_WANTTABS;}
 "autoscale"		{if (ign_kw(yystate, KW_AUTOSCALE)) REJECT;strcpy(yylval.str,yytext); return KW_AUTOSCALE;}
 "pixelwidth"		{if (ign_kw(yystate, KW_PIXELWIDTH)) REJECT;strcpy(yylval.str,yytext); return KW_PIXELWIDTH;}

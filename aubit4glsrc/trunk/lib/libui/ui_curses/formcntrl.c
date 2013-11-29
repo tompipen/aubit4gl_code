@@ -24,10 +24,10 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.174 2012-05-25 06:50:15 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.175 2013-11-29 14:45:28 mikeaubury Exp $
 #*/
 #ifndef lint
-static char const module_id[] = "$Id: formcntrl.c,v 1.174 2012-05-25 06:50:15 mikeaubury Exp $";
+static char const module_id[] = "$Id: formcntrl.c,v 1.175 2013-11-29 14:45:28 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -115,6 +115,20 @@ char *ops[] = {
   "FORMCONTROL_AFTER_ROW",	//            13
   0
 };
+
+
+
+static char *removeCharAt(char *s, int n) {
+	static char buff[20000];
+	int a;
+	int b=0;
+	int sl;
+	sl=strlen(s);
+	for (a=0;a<sl;a++) {
+		if (a!=n) buff[b++]=s[a];
+	}
+	return buff;
+}
 
 /* 
 * This function adds a value to the control stack
@@ -653,7 +667,7 @@ copyCurrentFieldDataToVariable (struct s_screenio *sio, int NormalMode_notSyncMo
       if ((sio->vars[field_no].dtype & DTYPE_MASK) == DTYPE_CHAR || (sio->vars[field_no].dtype & DTYPE_MASK) == DTYPE_VCHAR)
 	{
 	  fprop = (struct struct_scr_field *) (field_userptr (sio->currentfield));
-	  if (A4GL_has_bool_attribute (fprop, FA_B_WORDWRAP))
+	  if (A4GL_has_bool_attribute (fprop, FA_B_WORDWRAP) && !A4GL_has_bool_attribute (fprop, FA_B_WANTRETURNS))
 	    {
 	      if (!A4GL_isno (acl_getenv ("TRIMWORDWRAP")))
 		{
@@ -2477,7 +2491,55 @@ A4GL_proc_key_input (int a, FORM * mform, struct s_screenio *s)
 	{
 	  if (!has_picture)
 	    {
-	      A4GL_int_form_driver (mform, REQ_DEL_CHAR);
+  		if (A4GL_has_bool_attribute (fprop, FA_B_WANTRETURNS) && isWordWrap) {
+			 int pos;
+			 pos=A4GL_get_curr_field_col(mform);
+			 A4GL_debug("FIeld Buffer : col=%d row=%d %s", pos, mform->currow, field_buffer (f, 0));
+			int a;
+			int w;
+			int spacesToDelete=0;
+			char *fld;
+			fld=field_buffer(f,0);
+			int hasAfters=0;
+			w=A4GL_get_field_width_w(f,0);
+			for (a=pos;a<w;a++) {
+				int b;
+				b=(mform->currow*w)+a;
+				if (fld[b]!=' ') {
+					hasAfters=1;
+				}
+				spacesToDelete++;
+			}
+
+			if (hasAfters) {
+			    	A4GL_int_form_driver (mform, REQ_DEL_CHAR);
+			} else {
+				int cline;
+				char buff1[20000];
+				strcpy(buff1,fld);
+				cline=mform->currow;
+				while (spacesToDelete) {
+					char buff2[20000];
+					strcpy(buff2,  removeCharAt(buff1,(mform->currow*w)+pos));
+					strcpy(buff1,buff2);
+					spacesToDelete--;
+				}
+				//strcpy(fld,buff1);
+				set_field_buffer(f,0, buff1);
+				A4GL_debug("Setting field buffer to : %s", buff1);
+	      			while (mform->currow < cline)
+				{
+		  			A4GL_int_form_driver (mform, REQ_NEXT_LINE);
+				}
+	      			while (mform->curcol < pos)
+				{
+		  			A4GL_int_form_driver (mform, REQ_NEXT_CHAR);
+				}
+			}
+		
+		} else {
+	      		A4GL_int_form_driver (mform, REQ_DEL_CHAR);
+		}
 #ifdef DEBUG
 	      A4GL_debug ("Flags|=FLAG_FIELD_TOUCHED");
 #endif
@@ -2612,6 +2674,17 @@ A4GL_proc_key_input (int a, FORM * mform, struct s_screenio *s)
 
 
     case 13:
+  if (A4GL_has_bool_attribute (fprop, FA_B_WANTRETURNS) && isWordWrap) {
+		// Insert a new line instead...
+	  int oldmode=form->insmode;
+	  if (!form->insmode) {
+	  	A4GL_int_form_driver (mform, REQ_INS_MODE);
+	  }
+	  A4GL_int_form_driver (mform, REQ_NEW_LINE);
+	  if (oldmode!=REQ_INS_MODE) {
+	  	A4GL_int_form_driver (mform, REQ_OVL_MODE);
+	  }
+	} else {
       if (A4GL_get_dbscr_inputmode () == 0 && A4GL_curr_metric_is_used_last_s_screenio (s, f))
 	{
 #ifdef DEBUG
@@ -2626,6 +2699,7 @@ A4GL_proc_key_input (int a, FORM * mform, struct s_screenio *s)
 #endif
       //A4GL_newMovement (s, s->curr_attrib + 1);
       A4GL_newMovement (s, getNextAttribute (s->field_list, s->nfields, s->curr_attrib, 'R'));
+	}
       break;
 
 
@@ -3445,5 +3519,6 @@ void reset_insovrmode(FORM *mform) {
 void UILIB_A4GL_sync_fields(void *sio) {
         copyCurrentFieldDataToVariable(sio,0);
 }
+
 
 
