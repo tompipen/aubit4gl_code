@@ -7,6 +7,9 @@ QT += network
 QT += xml
 QT -= webkit
 
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+greaterThan(QT_MAJOR_VERSION, 4): QT += webkitwidgets
+
 DEFINES += VREPGEN_USE
 INCLUDEPATH += ./quazip/
 LIBS += -L"$$_PRO_FILE_PWD_/lib" -lquazip

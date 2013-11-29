@@ -1,7 +1,12 @@
 #ifndef PATCHER_H
 #define PATCHER_H
 
+#include <qglobal.h>
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 #include <QWidget>
+#else
+#include <QtWidgets/QtWidgets>
+#endif
 #include <QNetworkAccessManager>
 #include <QNetworkRequest>
 #include <QNetworkReply>
