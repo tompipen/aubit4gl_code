@@ -77,7 +77,8 @@
 #include <QtCore/QBuffer>
 #include <QtCore/QVarLengthArray>
 
-#ifdef Q_WS_WIN
+//#ifdef Q_OS_WIN
+#ifdef Q_OS_WIN
 #  include <winsock2.h>
 #endif
 #if defined (Q_OS_UNIX)

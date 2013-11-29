@@ -17,6 +17,8 @@ QT += network
 QT += xml
 QT += webkit
 QT += svg
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+greaterThan(QT_MAJOR_VERSION, 4): QT += webkitwidgets
 win32 {
   LIBS += -lwsock32
 }

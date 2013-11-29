@@ -3,6 +3,9 @@
 
 #include <QWidget>
 #include <QtGui>
+#include <QFrame>
+#include <QHBoxLayout>
+#include <QLabel>
 
 class Progress : public QFrame
 {

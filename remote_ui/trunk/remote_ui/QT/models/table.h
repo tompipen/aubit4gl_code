@@ -21,6 +21,7 @@
 #include <QStyledItemDelegate>
 #include <QDate>
 #include <QDomElement>
+#include <QHeaderView>
 #include <models/fglform.h>
 #include "vwidgets.h"
 #include <include/fgl.h>

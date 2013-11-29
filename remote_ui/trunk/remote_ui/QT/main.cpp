@@ -31,20 +31,20 @@
 #include "libssh/libssh.h"
 #include "libssh/callbacks.h"
 #endif
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
 #include "windows.h"
 #include "include/dbghelp.h"
 #include <tchar.h>
 #endif
 
-/*#ifdef Q_WS_WIN
+/*#ifdef Q_OS_WIN
 #include "windows.h"
 #include <unistd.h>
 #include <stdlib.h>
 #include <DbgHelp.h>
 #endif*/
 
-/*#ifdef Q_WS_X11
+/*#ifdef Q_OS_LINUX
 #include "client/linux/handler/exception_handler.h"
 
 static bool dumpCallback(const google_breakpad::MinidumpDescriptor &md,
@@ -77,6 +77,7 @@ void crash()
  */
 
 
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 void crashingMessageHandler(QtMsgType type, const char *msg)
 {
 
@@ -163,8 +164,53 @@ void crashingMessageHandler(QtMsgType type, const char *msg)
           }
     }*/
 }
+#else
+void crashingMessageHandler(QtMsgType type, const QMessageLogContext &ctx, const QString &msg)
+{
 
-#ifdef Q_WS_WIN
+    if(MainFrame *main = qobject_cast<MainFrame*> (MainFrame::lastmainframe))
+    {
+        if(main->debugVDC)
+        {
+            switch(type)
+            {
+                case QtDebugMsg:
+                    VDC::logMessage("VDC", QString("[Debug] - %1").arg(msg));
+                   break;
+                case QtWarningMsg:
+                   VDC::logMessage("VDC", QString("[WARNING] - %1").arg(msg));
+                   break;
+                case QtCriticalMsg:
+                   VDC::logMessage("VDC", QString("[CRITICAL] - %1").arg(msg));
+                   break;
+                case QtFatalMsg:
+                   VDC::logMessage("VDC", QString("[FATAL] - %1").arg(msg));
+                   break;
+            }
+        } else {
+            QByteArray ba = msg.toLocal8Bit();
+            const char *cd = ba.data();
+            switch (type) {
+                case QtDebugMsg:
+                    fprintf(stderr, "Debug: %s\n", cd);
+                    break;
+                case QtWarningMsg:
+                    fprintf(stderr, "Warning: %s\n", cd);
+                    break;
+                case QtCriticalMsg:
+                    fprintf(stderr, "Critical1: %s\n", cd);
+                    break;
+                case QtFatalMsg:
+                    fprintf(stderr, "Fatal: %s\n", cd);
+                    //__asm("int3");
+                    abort();
+              }
+        }
+    }
+}
+#endif
+
+#ifdef Q_OS_WIN
 void CreateMiniDump( EXCEPTION_POINTERS* pep )
 {
   // Open the file
@@ -227,7 +273,7 @@ int main(int argc, char *argv[])
     ssh_init();
     #endif
 
-    #ifdef Q_WS_WIN
+    #ifdef Q_OS_WIN
         SetUnhandledExceptionFilter(HandleExceptionFilter);
     #endif
 
@@ -261,7 +307,7 @@ int main(int argc, char *argv[])
     app.setFont(yavcFont);
 
 
-    #ifdef Q_WS_MAC
+    #ifdef Q_OS_MAC
        QIcon ventasLogo("pics:vdc.icns");
     #else
        QIcon ventasLogo("pics:vdc.png");
@@ -296,7 +342,11 @@ int main(int argc, char *argv[])
 
     splash->finish(&mainframe);
 
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
     qInstallMsgHandler(crashingMessageHandler);
+#else
+    qInstallMessageHandler(crashingMessageHandler);
+#endif
     delete splash;
     return app.exec();
 }

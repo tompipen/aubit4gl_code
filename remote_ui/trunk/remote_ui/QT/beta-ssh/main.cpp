@@ -32,7 +32,7 @@
 #include "libssh/callbacks.h"
 #endif
 
-/*#ifdef Q_WS_X11
+/*#ifdef Q_OS_LINUX
 #include "client/linux/handler/exception_handler.h"
 
 static bool dumpCallback(const google_breakpad::MinidumpDescriptor &md,
@@ -83,7 +83,7 @@ int main(int argc, char *argv[])
         dir.mkdir(crashdumpTmp);
     }
 
-    #ifdef Q_WS_X11
+    #ifdef Q_OS_LINUX
     google_breakpad::MinidumpDescriptor md(clientTmpDir);
     google_breakpad::ExceptionHandler eh(md, NULL, dumpCallback, NULL, true, -1);
     #endif
@@ -127,7 +127,7 @@ int main(int argc, char *argv[])
     app.setFont(yavcFont);
 
 
-    #ifdef Q_WS_MAC
+    #ifdef Q_OS_MAC
        QIcon ventasLogo("pics:vdc.icns");
     #else
        QIcon ventasLogo("pics:vdc.png");

@@ -18,6 +18,11 @@
 #include <QFile>
 #include <QStatusBar>
 #include <QHBoxLayout>
+#include <QMenu>
+#include <QHeaderView>
+#include <QFontDialog>
+#include <QInputDialog>
+#include <QMessageBox>
 
 #include "mainframe.h"
 #include "confwin.h"

@@ -226,7 +226,7 @@ void VentasUpdate::checkServerClient()
         {
 
             QString filePath;
-            #ifdef Q_WS_MAC
+            #ifdef Q_OS_MAC
                 filePath = QString(QApplication::applicationDirPath() + "/versions.xml");
             #else
                 filePath = QString(QApplication::applicationDirPath() + "/versions.xml");
@@ -312,7 +312,7 @@ void VentasUpdate::downloadBinarie()
         }
     }
 
-    #ifdef Q_WS_WIN
+    #ifdef Q_OS_WIN
         file.setFileName(QApplication::applicationDirPath() + "/update.exe");
     #else
         file.setFileName(QApplication::applicationDirPath() + "/update");
@@ -322,7 +322,7 @@ void VentasUpdate::downloadBinarie()
 
     if(file.exists())
     {
-        #ifdef Q_WS_WIN
+        #ifdef Q_OS_WIN
             //QProcess process;
             //process.startDetached(QString("rundll32 url.dll,FileProtocolHandler \"%1\"").arg( file.fileName()));
             QDesktopServices::openUrl(QUrl::fromLocalFile(file.fileName()));
@@ -368,13 +368,13 @@ QList<QList<QString> > VentasUpdate::parseXml(QString filePath)
         }
     }
 
-    #ifdef Q_WS_WIN
+    #ifdef Q_OS_WIN
         clientOs = "WINDOWS";
     #endif
-    #ifdef Q_WS_MAC
+    #ifdef Q_OS_MAC
         clientOs = "MAC";
     #endif
-    #ifdef Q_WS_X11
+    #ifdef Q_OS_LINUX
         clientOs = "LINUX";
     #endif
 
@@ -424,13 +424,13 @@ QList<QString> VentasUpdate::clientXml(QString filePath)
         }
     }
 
-    #ifdef Q_WS_WIN
+    #ifdef Q_OS_WIN
         clientOs = "WINDOWS";
     #endif
-    #ifdef Q_WS_MAC
+    #ifdef Q_OS_MAC
         clientOs = "MAC";
     #endif
-    #ifdef Q_WS_X11
+    #ifdef Q_OS_LINUX
         clientOs = "LINUX";
     #endif
 

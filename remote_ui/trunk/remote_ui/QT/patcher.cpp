@@ -90,7 +90,7 @@ void VDCUpdate::loadServerXmlFinished(QNetworkReply *nReply)
 void VDCUpdate::beginReadXml()
 {
     QList<QList<QString> > serverVars = readServerXml(QDir::tempPath() + "/vdc.xml");
-    #ifdef Q_WS_MAC
+    #ifdef Q_OS_MAC
         QList<QString> clientVars = readClientXml(QApplication::applicationDirPath() + "/versions.xml");
     #else
         QList<QString> clientVars = readClientXml(QApplication::applicationDirPath() + "/versions.xml");
@@ -115,7 +115,7 @@ void VDCUpdate::beginReadXml()
                     }
                     QDate serverdate = QDate::fromString(serverVars.at(i).at(j), "dd.MM.yyyy");
                     QDate clientdate = QDate::fromString(clientVars.at(j), "dd.MM.yyyy");
-                    if(serverdate >= clientdate)
+                    if(serverdate > clientdate)
                     {
                         j++;
                         if(serverVars.at(i).at(j) != clientVars.at(j))
@@ -163,7 +163,7 @@ void VDCUpdate::beginReadXml()
 
     } else {
         QString filePath;
-        #ifdef Q_WS_MAC
+        #ifdef Q_OS_MAC
             filePath = QString(QApplication::applicationDirPath() + "/versions.xml");
         #else
             filePath = QString((QApplication::applicationDirPath() + "/versions.xml"));
@@ -202,13 +202,13 @@ QList<QString> VDCUpdate::readClientXml(QString filePath)
         return clientList;
     }
 
-    #ifdef Q_WS_WIN
+    #ifdef Q_OS_WIN
         clientOs = "WINDOWS";
     #endif
-    #ifdef Q_WS_MAC
+    #ifdef Q_OS_MAC
         clientOs = "MAC";
     #endif
-    #ifdef Q_WS_X11
+    #ifdef Q_OS_LINUX
         clientOs = "LINUX";
     #endif
 
@@ -258,13 +258,13 @@ QList<QList<QString> > VDCUpdate::readServerXml(QString filePath)
         return returnList;
     }
 
-    #ifdef Q_WS_WIN
+    #ifdef Q_OS_WIN
         clientOs = "WINDOWS";
     #endif
-    #ifdef Q_WS_MAC
+    #ifdef Q_OS_MAC
         clientOs = "MAC";
     #endif
-    #ifdef Q_WS_X11
+    #ifdef Q_OS_LINUX
         clientOs = "LINUX";
     #endif
 
@@ -362,7 +362,7 @@ void VDCUpdate::loadBinarieFinished(QNetworkReply *reply)
             QStringList args;
 
             args << QString(QDir::tempPath() + "/VDC") << QString(QApplication::applicationDirPath());
-            #ifdef Q_WS_WIN
+            #ifdef Q_OS_WIN
                 prog = QString(QApplication::applicationDirPath() + "/updatecp.exe");
             #else
                 prog = QString(QApplication::applicationDirPath() + "/updatecp");
@@ -410,13 +410,13 @@ void VDCUpdate::updateDownloadProgress(qint64 received, qint64 total)
 QString VDCUpdate::findPackage()
 {
     QString packageName;
-    #ifdef Q_WS_MAC
+    #ifdef Q_OS_MAC
         packageName = QString("VDCUpdateMac.zip");
     #endif
-    #ifdef Q_WS_X11
+    #ifdef Q_OS_LINUX
         packageName = QString("VDCUpdateLin.zip");
     #endif
-    #ifdef Q_WS_WIN
+    #ifdef Q_OS_WIN
         packageName = QString("VDCUpdateWin.zip");
     #endif
 

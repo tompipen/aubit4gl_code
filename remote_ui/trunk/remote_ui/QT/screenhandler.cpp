@@ -2358,7 +2358,7 @@ if(qsl_triggereds.size() > 0)
          if(p_fglform->dialog() != NULL){
          //   p_fglform->checkActions(); allready in checkState
               //Not needed under mac, cause the dialog i opend in top of the qmainwindow
-              #ifndef Q_WS_MAC
+              #ifndef Q_OS_MAC
              //Noch moven solange es unsichtbar ist
 
             if(!p_fglform->dialog()->isVisible())
@@ -2455,7 +2455,7 @@ if(qsl_triggereds.size() > 0)
       p_fglform->context->checkOptions();
 */
     //Mac needs the raise here to start in front of the terminal
-    #ifdef Q_WS_MAC
+    #ifdef Q_OS_MAC
         p_fglform->raise();
     #endif
 
@@ -2496,7 +2496,7 @@ if(qsl_triggereds.size() > 0)
       if(myTable)
       {
           //Unter Mac enfernt er das gesammte TableView wenn nen PaintEvent kommt... Das sieht noch beschissener aus als so eine dumme Feldselektierung. Deswegen für Mac raus
-          #ifndef Q_WS_MAC
+          #ifndef Q_OS_MAC
           //Fuer p_veinswb mit der kranken BeforeField/Nextfield Logik über mehrere Zeilen... Sah zwischen den Events einfach scheisse aus mit der Feldselektierung.
           //myTable->setUpdatesEnabled(true);
           #endif
@@ -4327,7 +4327,7 @@ void ScreenHandler::executeFile(int waitforFinish, QString fileName)
     //fileName = QDir::tempPath() + "/" + fileName;
     QFileInfo fileInfo(fileName);
 
-#ifdef Q_WS_X11
+#ifdef Q_OS_LINUX
    if(QDesktopServices::openUrl(QUrl(QString("file://" + fileInfo.absoluteFilePath()), QUrl::TolerantMode)))
    {
        int cnt = 0;
@@ -4354,7 +4354,7 @@ void ScreenHandler::executeFile(int waitforFinish, QString fileName)
        }
    }
    #endif
-   #ifdef Q_WS_MAC
+   #ifdef Q_OS_MAC
       if(QDesktopServices::openUrl(QUrl(QString("file:///" + fileInfo.absoluteFilePath()), QUrl::TolerantMode)))
       {
           if(waitforFinish == 1)
@@ -4375,7 +4375,7 @@ void ScreenHandler::executeFile(int waitforFinish, QString fileName)
           }
       }
    #endif
-   #ifdef Q_WS_WIN
+   #ifdef Q_OS_WIN
        QProcess process;
        openFileSuccess = process.startDetached(QString("rundll32 url.dll,FileProtocolHandler \"%1\"").arg( fileInfo.absoluteFilePath()));
        if(waitforFinish == 1)

@@ -1,7 +1,12 @@
 #ifndef TEXTEDITOR_H
 #define TEXTEDITOR_H
 
+#include <qglobal.h>
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 #include <QtGui/QMainWindow>
+#else
+#include <QtWidgets/QMainWindow>
+#endif
 #include <QPlainTextEdit>
 #include <QSyntaxHighlighter>
 

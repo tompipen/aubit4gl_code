@@ -17,6 +17,7 @@
 #include <QStatusBar>
 #include <QDomDocument>
 #include <QSplitter>
+#include <QFileDialog>
 #include <mainframe.h>
 #include <models/fglform.h>
 #include <models/statusbar.h>

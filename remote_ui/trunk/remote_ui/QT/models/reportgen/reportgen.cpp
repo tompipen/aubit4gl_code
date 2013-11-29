@@ -1,7 +1,7 @@
 #include <QDomDocument>
 #include "models/reportgen/reportgen.h"
 #include "models/zipunzip.h"
-#ifndef Q_WS_WIN
+#ifndef Q_OS_WIN
 #include "libgen.h"
 #endif
 //--------------------------------------------------------------------------------
@@ -1013,13 +1013,13 @@ void Reportgen::createXmlFile(int Table, int Position, QString odffile)
     QTextStream outstream(&file);
     outstream.setCodec("ISO-8859-1");
 
-    outstream << getTemplateHeader( odffile + "/content-alt.xml", "ods" ).toAscii(); //<< getTemplatePosition( fileBaseName + "/content.xml" ).toUtf8();
+    outstream << getTemplateHeader( odffile + "/content-alt.xml", "ods" ).toLatin1(); //<< getTemplatePosition( fileBaseName + "/content.xml" ).toUtf8();
     if(Table > 1)
     {
         outstream << createFirstTable(odffile);
     }
 
-    outstream << getTemplatePosition(Table, odffile + "/content-alt.xml").toAscii();
+    outstream << getTemplatePosition(Table, odffile + "/content-alt.xml").toLatin1();
 
 
 
@@ -1266,7 +1266,7 @@ void Reportgen::createXmlFile(int Table, int Position, QString odffile)
             xmlStringLevel1.remove("]P3]");
             xmlStringLevel1.remove("|");
 
-            outstream << xmlStringLevel1.toAscii();
+            outstream << xmlStringLevel1.toLatin1();
 
             if(p_screenHandler)
             {
@@ -1276,7 +1276,7 @@ void Reportgen::createXmlFile(int Table, int Position, QString odffile)
         }
     }
 
-    outstream << getTemplateFooter(Table, odffile + "/content-alt.xml", ".ods").toAscii();
+    outstream << getTemplateFooter(Table, odffile + "/content-alt.xml", ".ods").toLatin1();
     file.close();
 
     QFile file1(QDir::tempPath() + "/" + odffile + "/content.xml");

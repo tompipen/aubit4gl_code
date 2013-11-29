@@ -64,25 +64,25 @@ MainFrame::vdcdebug("Actions","parseElement", "QDomNode xmlNode");
 
          QKeySequence shortcut(currentElement.attribute("acceleratorName"));
          if(!shortcut.isEmpty()){
-            action->setAcceleratorName(shortcut);
+            action->setAcceleratorName(shortcut.toString());
             ql_shortcutList << shortcut;
          }
 
          QKeySequence shortcut2(currentElement.attribute("acceleratorName2"));
          if(!shortcut2.isEmpty()){
-            action->setAcceleratorName2(shortcut2);
+             action->setAcceleratorName2(shortcut2.toString());
             ql_shortcutList << shortcut2;
          }
 
          QKeySequence shortcut3(currentElement.attribute("acceleratorName3"));
          if(!shortcut3.isEmpty()){
-            action->setAcceleratorName3(shortcut3);
+            action->setAcceleratorName3(shortcut3.toString());
             ql_shortcutList << shortcut3;
          }
 
          QKeySequence shortcut4(currentElement.attribute("acceleratorName4"));
          if(!shortcut4.isEmpty()){
-            action->setAcceleratorName4(shortcut4);
+            action->setAcceleratorName4(shortcut4.toString());
             ql_shortcutList << shortcut4;
          }
 

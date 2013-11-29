@@ -164,7 +164,10 @@ MainFrame::vdcdebug("ActionMenu","hideButton", "QString name");
    for(int i=0; i<buttonGroup->buttons().size(); i++){
       if(QPushButton *button = qobject_cast<QPushButton *> (buttonGroup->buttons().at(i))){
          if(button->text() == name)
+         {
             button->setVisible(false);
+            break;
+         }
       }
    }
 }
@@ -344,6 +347,7 @@ void ActionMenu::setAction(QString name, QAction* action){
       if(QPushButton *button = qobject_cast<QPushButton *> (buttonGroup->buttons().at(i))){
          if(button->text().toLower() == QString("%1").arg(name)){
             button->addAction(action);
+            break;
          }
       }
    }

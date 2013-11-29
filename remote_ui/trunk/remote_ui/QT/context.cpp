@@ -315,7 +315,11 @@ void Context::addScreenRecord(QWidget *screenRec, bool input)
           tableView->setInputEnabled(input);
           if(!input)
           {
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
             tableView->horizontalHeader()->setMovable(true);
+#else
+			tableView->horizontalHeader()->setSectionsMovable(true);
+#endif
           }
           /*
           //set palette for inputarrays

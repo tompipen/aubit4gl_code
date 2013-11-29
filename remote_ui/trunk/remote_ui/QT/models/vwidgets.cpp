@@ -2118,7 +2118,7 @@ MainFrame::vdcdebug("WidgetHelper","setFieldText", "QObject *object, QString fie
 
        if(QFile::exists(QDir::tempPath() + "/" + fieldValue.split("?").at(0)))
        {
-           #ifdef Q_WS_WIN
+           #ifdef Q_OS_WIN
               fieldValue = QDir::tempPath() + "/" + fieldValue;
            #else
               fieldValue = "file://" +  QDir::tempPath() + "/" + fieldValue;

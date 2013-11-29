@@ -24,6 +24,7 @@
 #include <QDomDocument>
 #include <QKeyEvent>
 #include <QPointer>
+#include <QSplitter>
 
 //class ScreenHandler;
 #include "screenhandler.h"

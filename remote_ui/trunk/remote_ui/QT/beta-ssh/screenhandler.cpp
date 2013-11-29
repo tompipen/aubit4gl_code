@@ -2161,7 +2161,7 @@ if(qsl_triggereds.size() > 0)
          if(p_fglform->dialog() != NULL){
          //   p_fglform->checkActions(); allready in checkState
               //Not needed under mac, cause the dialog i opend in top of the qmainwindow
-              #ifndef Q_WS_MAC
+              #ifndef Q_OS_MAC
              //Noch moven solange es unsichtbar ist
 
             if(!p_fglform->dialog()->isVisible())
@@ -2293,7 +2293,7 @@ if(qsl_triggereds.size() > 0)
            if(p_fglform->inputArray())
            {
                //Unter Mac enfernt er das gesammte TableView wenn nen PaintEvent kommt... Das sieht noch beschissener aus als so eine dumme Feldselektierung. Deswegen für Mac raus
-               #ifndef Q_WS_MAC
+               #ifndef Q_OS_MAC
                //Fuer p_veinswb mit der kranken BeforeField/Nextfield Logik über mehrere Zeilen... Sah zwischen den Events einfach scheisse aus mit der Feldselektierung.
                tableView->setUpdatesEnabled(true);
                #endif

@@ -14,13 +14,13 @@ void MasterUpdate::run()
 void MasterUpdate::start()
 {
     QString patcherXmlFile;
-    #ifdef Q_WS_MAC
+    #ifdef Q_OS_MAC
         patcherXmlFile = "patchermac.xml";
     #endif
-    #ifdef Q_WS_X11
+    #ifdef Q_OS_LINUX
         patcherXmlFile = "patcherlin.xml";
     #endif
-    #ifdef Q_WS_WIN
+    #ifdef Q_OS_WIN
         patcherXmlFile = "patcherwin.xml";
     #endif
 
@@ -52,13 +52,13 @@ void MasterUpdate::finish(QNetworkReply *reply)
         if(clientMd5 != md5Hash.trimmed())
         {
             QString patchFileName;
-            #ifdef Q_WS_WIN
+            #ifdef Q_OS_WIN
                 patchFileName = "masterwin.zip";
             #endif
-            #ifdef Q_WS_X11
+            #ifdef Q_OS_LINUX
                 patchFileName = "masterlin.zip";
             #endif
-            #ifdef Q_WS_MAC
+            #ifdef Q_OS_MAC
                 patchFileName = "mastermac.zip";
             #endif
             qDebug() << "Hash ist unterschiedlich, starte Patchvorgang für Patcher.";
@@ -77,13 +77,13 @@ void MasterUpdate::extractPatcher(QNetworkReply *reply)
     if(!reply->error())
     {
         QString patchFileName;
-        #ifdef Q_WS_WIN
+        #ifdef Q_OS_WIN
             patchFileName = "masterwin.zip";
         #endif
-        #ifdef Q_WS_X11
+        #ifdef Q_OS_LINUX
             patchFileName = "masterlin.zip";
         #endif
-        #ifdef Q_WS_MAC
+        #ifdef Q_OS_MAC
             patchFileName = "mastermac.zip";
         #endif
         QFile file(QString(QDir::tempPath() + "/%1").arg(patchFileName));

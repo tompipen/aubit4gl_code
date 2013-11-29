@@ -26,13 +26,13 @@ int main(int argc, char *argv[])
     writer->writeStartElement("VDC");
     QString startElement;
 
-    #ifdef Q_WS_WIN32
+    #ifdef Q_OS_WIN
         startElement = "WINDOWS";
     #endif
-    #ifdef Q_WS_MAC
+    #ifdef Q_OS_MAC
         startElement = "MAC";
     #endif
-    #ifdef Q_WS_X11
+    #ifdef Q_OS_LINUX
         startElement = "LINUX";
     #endif
 
@@ -42,13 +42,13 @@ int main(int argc, char *argv[])
     QString filePath;
     filePath.append(QDir::currentPath());
 
-    #ifdef Q_WS_X11
+    #ifdef Q_OS_LINUX
     filePath.append("/VDC");
     #endif
-    #ifdef Q_WS_WIN32
+    #ifdef Q_OS_WIN
     filePath.append("/VDC.exe");
     #endif
-    #ifdef Q_WS_MAC
+    #ifdef Q_OS_MAC
     filePath.append("/VDC.app/Contents/MacOS/VDC");
     #endif
 

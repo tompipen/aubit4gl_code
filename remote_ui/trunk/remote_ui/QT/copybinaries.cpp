@@ -104,21 +104,21 @@ void CopyBinaries::copyBinaries(QString tmpDirPath, QString newDirPath)
     }
 
     QString prog ;
-#ifdef Q_WS_X11
+#ifdef Q_OS_LINUX
     //setEnv("LD_LIBRARY_PATH", QApplication::applicationDirPath(), 1);
 #endif
     prog = QString(QApplication::applicationDirPath() + "/VDC");
     QProcess process;
 
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
     prog = QString(QApplication::applicationDirPath() + "/VDC.exe");
     QDesktopServices::openUrl(QUrl::fromLocalFile(prog));
 
 #endif
-#ifdef Q_WS_MAC
+#ifdef Q_OS_MAC
     process.start(prog);
 #endif
-#ifdef Q_WS_X11
+#ifdef Q_OS_LINUX
     QProcess *proc = new QProcess;
     proc->start(prog);
 #endif

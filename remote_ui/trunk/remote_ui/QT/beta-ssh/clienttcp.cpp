@@ -34,7 +34,7 @@
 #include "models/reportgen/reportgen.cpp"
 #endif
 #include <models/fglform.h>
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
 #include <unistd.h>
 #endif
 
@@ -1094,13 +1094,13 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
       if(openLocalFile == 0)
       {
          //If we want to open a Email Programm or a Website.
-        #ifdef Q_WS_X11
+        #ifdef Q_OS_LINUX
            QDesktopServices::openUrl(QUrl(fileName, QUrl::TolerantMode));
         #endif
-        #ifdef Q_WS_MAC
+        #ifdef Q_OS_MAC
            QDesktopServices::openUrl(QUrl(fileName, QUrl::TolerantMode));
         #endif
-        #ifdef Q_WS_WIN
+        #ifdef Q_OS_WIN
            QProcess process;
            process.startDetached(QString("rundll32 url.dll,FileProtocolHandler \"%1\"").arg( fileName));
         #endif
@@ -1111,13 +1111,13 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
           fileName = QDir::tempPath() + "/" + fileName;
           QFileInfo fileInfo(fileName);
 
-          #ifdef Q_WS_X11
+          #ifdef Q_OS_LINUX
              QDesktopServices::openUrl(QUrl(QString("file://" + fileInfo.absoluteFilePath()), QUrl::TolerantMode));
           #endif
-          #ifdef Q_WS_MAC
+          #ifdef Q_OS_MAC
              QDesktopServices::openUrl(QUrl(QString("file:///" + fileInfo.absoluteFilePath()), QUrl::TolerantMode));
           #endif
-          #ifdef Q_WS_WIN
+          #ifdef Q_OS_WIN
              QProcess process;
              process.startDetached(QString("rundll32 url.dll,FileProtocolHandler \"%1\"").arg( fileInfo.absoluteFilePath()));
           #endif
@@ -1559,7 +1559,7 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
              QFileInfo fileInfo(fileName);
              int cnt = 0;
 
-             #ifdef Q_WS_X11
+             #ifdef Q_OS_LINUX
                 if(QDesktopServices::openUrl(QUrl(QString("file://" + fileInfo.absoluteFilePath()), QUrl::TolerantMode)))
                 {
                     //sleep(10);
@@ -1580,7 +1580,7 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
                     }
                 }
                 #endif
-                #ifdef Q_WS_MAC
+                #ifdef Q_OS_MAC
                    if(QDesktopServices::openUrl(QUrl(QString("file:///" + fileInfo.absoluteFilePath()), QUrl::TolerantMode)))
                    {
                        sleep(10);
@@ -1596,7 +1596,7 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
                        }
                    }
                 #endif
-                #ifdef Q_WS_WIN
+                #ifdef Q_OS_WIN
                     QProcess process;
                     process.startDetached(QString("rundll32 url.dll,FileProtocolHandler \"%1\"").arg( fileInfo.absoluteFilePath()));
                     sleep(10);

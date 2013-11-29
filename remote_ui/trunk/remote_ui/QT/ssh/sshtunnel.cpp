@@ -126,7 +126,7 @@ void SSHTunnel::run()
              {
                  session_mutex->lock();
              }
-             bytes_written = ssh_channel_write(sctunnel, resp.toAscii().constData(), strlen(resp.toAscii().constData()));
+             bytes_written = ssh_channel_write(sctunnel, resp.toLatin1().constData(), strlen(resp.toLatin1().constData()));
              if(session_mutex)
              {
                  session_mutex->unlock();

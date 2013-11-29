@@ -19,6 +19,8 @@
 #include <QSystemTrayIcon>
 #include <QIcon>
 #include <QMenu>
+#include <QMenuBar>
+#include <QHeaderView>
 #include <QAction>
 #include <QLineEdit>
 #include <QTcpSocket>

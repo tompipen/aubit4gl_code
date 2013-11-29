@@ -51,7 +51,11 @@ MainFrame::vdcdebug("TableView","TableView", "QWidget *parent");
    this->verticalHeader()->hide();
    QHeaderView *header = this->horizontalHeader();
    header->setDefaultAlignment(Qt::AlignLeft);
-   header->setClickable(true);
+   #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+      header->setClickable(true);
+   #else
+      header->setSectionsClickable(true);
+   #endif
    header->setSortIndicatorShown(true);
    header->setSortIndicator(0, Qt::AscendingOrder);
    header->installEventFilter(this);
@@ -1161,7 +1165,7 @@ void TableView::setCurrentField(int row, int col, bool b_sendevents)
          QModelIndex tindex = table->index(row-1, col-1);
          QModelIndex index = proxyModel->mapFromSource(tindex);
          //Unter Mac enfernt er das gesammte TableView wenn nen PaintEvent kommt... Das sieht noch beschissener aus als so eine dumme Feldselektierung. Deswegen für Mac raus
-         #ifndef Q_WS_MAC
+         #ifndef Q_OS_MAC
          //Fuer p_veinswb mit der kranken BeforeField/Nextfield Logik über mehrere Zeilen... Sah zwischen den Events einfach scheisse aus mit der Feldselektierung.
          //dk: Temporaer deaktiviert da das DISPLAY ARRAY nicht aktualisiert wird.
          //this->setUpdatesEnabled(false);
