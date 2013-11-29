@@ -2600,16 +2600,15 @@ Fgl::Event id;
    else
    {
 
-       if(!p_fglform->b_getch_swin)
-       {
-          return;
+      if(!p_fglform->b_getch_swin)
+      {
+         return;
       }
 
        p_fglform->b_getch_swin = false;
 
        id = p_fglform->ql_responseQueue.takeFirst();
 
-         setUpdatesEnabled(false);
          p_fglform->setCursor(Qt::WaitCursor);
          }
 /*
