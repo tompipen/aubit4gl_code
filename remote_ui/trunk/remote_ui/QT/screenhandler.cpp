@@ -3897,7 +3897,7 @@ void ScreenHandler::getItemNameComboBox(int id, int pos)
 
 }
 
-void Screenhandler::checkFglformState()
+void ScreenHandler::checkFglformState()
 {
    p_fglform->checkState();
 }
