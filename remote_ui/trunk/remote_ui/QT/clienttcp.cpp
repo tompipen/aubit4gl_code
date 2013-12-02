@@ -2364,7 +2364,8 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
       QString label = childElement.attribute("LABEL");
       QString text  = childElement.attribute("TEXT").trimmed();
       QMetaObject::invokeMethod(p_currScreenHandler, "setKeyLabel", Qt::QueuedConnection, Q_ARG(QString, label), Q_ARG(QString, text));
-     // setKeyLabel(label, text);
+      QMetaObject::invokeMethod(p_currScreenHandler, "checkFglformState", Qt::QueuedConnection);
+      // setKeyLabel(label, text);
       return;
    }
 

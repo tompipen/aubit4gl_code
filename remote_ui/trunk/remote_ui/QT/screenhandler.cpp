@@ -1258,7 +1258,10 @@ MainFrame::vdcdebug("ScreenHandler","setArrayBuffer", "int row, QString tabName,
                //TableModel *table = static_cast<TableModel*> (proxyModel->sourceModel());
 
                QString fieldValue = fieldValues.at(i);
-               tableView->setText(fieldValue, row, col);
+               if(!fieldValue.isEmpty())
+               {
+                  tableView->setText(fieldValue, row, col);
+               }
             }
          }
       }
@@ -1283,7 +1286,10 @@ MainFrame::vdcdebug("ScreenHandler","setArrayBuffer", "int row, QString tabName,
                */
    
                QString fieldValue = fieldValues.at(i);
-               tableView->setText(fieldValue, row, col);
+               if(!fieldValue.isEmpty())
+               {
+                  tableView->setText(fieldValue, row, col);
+               }
             }
             cnt_values++;
          }
@@ -3889,6 +3895,11 @@ void ScreenHandler::getItemNameComboBox(int id, int pos)
     else
       fglFormResponse(qs_resp);
 
+}
+
+void Screenhandler::checkFglformState()
+{
+   p_fglform->checkState();
 }
 
 void ScreenHandler::getItemCountComboBox(int id)

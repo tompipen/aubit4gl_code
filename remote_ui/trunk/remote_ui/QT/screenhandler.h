@@ -163,6 +163,7 @@ private:
    bool clearFieldEvents;
 public slots:
 
+   void checkFglformState()
    void getItemCountComboBox(int);
 
    void setEnv(QString, QString);
