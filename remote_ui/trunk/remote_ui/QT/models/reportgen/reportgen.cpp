@@ -2441,7 +2441,7 @@ bool Reportgen::replaceTemplateVars(QString odffile, QString sedfile, QFileInfo 
 
     QString ausgabe;
     QString sedLine;
-    QString temp_var;
+    QStringList temp_varList;
     QString diag_bild = "DIAG_BAR.png";
     QString content;
     QString tableCell;
@@ -2517,7 +2517,7 @@ bool Reportgen::replaceTemplateVars(QString odffile, QString sedfile, QFileInfo 
                     startStr = 0;
                     if(!str.isEmpty())
                     {
-                        temp_var = str;
+                        temp_varList << str;
                         str.clear();
                     }
                 }
@@ -2527,96 +2527,99 @@ bool Reportgen::replaceTemplateVars(QString odffile, QString sedfile, QFileInfo 
                 }
             }
             //qDebug() << "Suche nach: " << temp_var;
-
-            if(temp_var.contains("@DIAG_"))
+            foreach (QString temp_var, temp_varList)
             {
-                qDebug() << temp_var;
-                if(temp_var == "@DIAG_BAR")
+                if(temp_var.contains("@DIAG_"))
                 {
-                    diag_state = 1;
-                } else if(temp_var == "@DIAG_PIE")
-                {
-                    diag_state = 2;
-                }
-                qDebug() << "diag_state" << diag_state;
-                emit createChart(temp_var);
-                ausgabe.replace(QString("<text:p>" + temp_var + "</text:p>"), QString("<draw:frame table:end-cell-address=\"Tabelle1.E22\" table:end-x=\"0.6953in\" table:end-y=\"0.0075in\" draw:z-index=\"0\" draw:name=\"Graphics 1\" draw:style-name=\"gr1\" draw:text-style-name=\"P1\" svg:width=\"6.5126in\" svg:height=\"3.8528in\" svg:x=\"0.585in\" svg:y=\"0.0732in\"><draw:image xlink:href=\"Pictures/" + diag_bild + "\" xlink:type=\"simple\" xlink:show=\"embed\" xlink:actuate=\"onLoad\"><text:p/></draw:image></draw:frame>"));
-
-                makeChart = 1;
-            }
-
-            if(cnt < temp_fields.count())
-            {
-                for (int i=0; i < sed_fields.count(); i++)
-                {
-                    //qDebug() << "Verbleibende Datensaetze: " << sed_fields.count();
-                    //qDebug() << "bla: " << temp_var;
-                    //qDebug() << "sed_fields.at(i)" << sed_fields.at(i);
-                    if(sed_fields.at(i).contains(temp_var + "%/"))
+                    qDebug() << temp_var;
+                    if(temp_var == "@DIAG_BAR")
                     {
-                        //qDebug() << "Es wurde gefunden: "  << temp_var << ": " << sed_fields.at(i);
-                        sedLine = sed_fields.at(i).trimmed();
-                        sedLine.replace(QString(temp_var + "%/"), "");
-                        ausgabe.replace(temp_var, sedLine);
+                        diag_state = 1;
+                    } else if(temp_var == "@DIAG_PIE")
+                    {
+                        diag_state = 2;
+                    }
+                    qDebug() << "diag_state" << diag_state;
+                    emit createChart(temp_var);
+                    ausgabe.replace(QString("<text:p>" + temp_var + "</text:p>"), QString("<draw:frame table:end-cell-address=\"Tabelle1.E22\" table:end-x=\"0.6953in\" table:end-y=\"0.0075in\" draw:z-index=\"0\" draw:name=\"Graphics 1\" draw:style-name=\"gr1\" draw:text-style-name=\"P1\" svg:width=\"6.5126in\" svg:height=\"3.8528in\" svg:x=\"0.585in\" svg:y=\"0.0732in\"><draw:image xlink:href=\"Pictures/" + diag_bild + "\" xlink:type=\"simple\" xlink:show=\"embed\" xlink:actuate=\"onLoad\"><text:p/></draw:image></draw:frame>"));
 
-                        if(!sedLine.isEmpty())
-                        {
-                            if((sedLine.at(0) == QChar(' ') || sedLine.at(0) == QChar('-')) && (sedLine.at(1) >= 0 || sedLine.at(1) < 9))
-                            {
-                                tableCellList << tableCell.trimmed() + ausgabe.trimmed();
-                                sedLine.remove(".");
-                                sedLine.replace(",",".");
-                                sedList << sedLine.trimmed();
-                            }
-                        }
+                    makeChart = 1;
+                }
 
-                        if(!temp_var.endsWith("1"))
+                if(cnt < temp_fields.count())
+                {
+                    for (int i=0; i < sed_fields.count(); i++)
+                    {
+                        //qDebug() << "Verbleibende Datensaetze: " << sed_fields.count();
+                        //qDebug() << "bla: " << temp_var;
+                        //qDebug() << "sed_fields.at(i)" << sed_fields.at(i);
+                        if(sed_fields.at(i).contains(temp_var + "%/"))
                         {
-                           sed_fields.removeAt(i);
-                        } else {
-                            if(!chartVar.isEmpty())
+                            //qDebug() << "Es wurde gefunden: "  << temp_var << ": " << sed_fields.at(i);
+                            sedLine = sed_fields.at(i).trimmed();
+                            sedLine.replace(QString(temp_var + "%/"), "");
+                            ausgabe.replace(temp_var, sedLine);
+
+                            if(!sedLine.isEmpty())
                             {
-                                qDebug() << "chartVar: " << chartVar;
-                                for(int j=0; j < chartVar.count(); j++)
+                                if((sedLine.at(0) == QChar(' ') || sedLine.at(0) == QChar('-')) && (sedLine.at(1) >= 0 || sedLine.at(1) < 9))
                                 {
-                                    if(temp_var.contains(chartVar.at(j)))
+                                    tableCellList << tableCell.trimmed() + ausgabe.trimmed();
+                                    sedLine.remove(".");
+                                    sedLine.replace(",",".");
+                                    sedList << sedLine.trimmed();
+                                }
+                            }
+
+                            if(!temp_var.endsWith("1"))
+                            {
+                               sed_fields.removeAt(i);
+                            } else {
+                                if(!chartVar.isEmpty())
+                                {
+                                    qDebug() << "chartVar: " << chartVar;
+                                    for(int j=0; j < chartVar.count(); j++)
                                     {
-                                        if(j == 0)
+                                        if(temp_var.contains(chartVar.at(j)))
                                         {
-                                            if(!chartValues1.contains(sedLine))
+                                            if(j == 0)
                                             {
+                                                if(!chartValues1.contains(sedLine))
+                                                {
+                                                    if(sedLine.contains(","))
+                                                    {
+                                                        sedLine.replace(",",".");
+                                                    }
+                                                    if(sedLine.isEmpty())
+                                                    {
+                                                        //chartValues1 << "(null)";
+                                                    } else {
+                                                        chartValues1 << sedLine;
+                                                    }
+                                                }
+                                            } else if(j == 1)
+                                            {
+                                                if(sedLine.contains("."))
+                                                {
+                                                    sedLine.remove(".");
+                                                }
                                                 if(sedLine.contains(","))
                                                 {
                                                     sedLine.replace(",",".");
                                                 }
-                                                if(sedLine.isEmpty())
-                                                {
-                                                    //chartValues1 << "(null)";
-                                                } else {
-                                                    chartValues1 << sedLine;
-                                                }
+                                                chartValues2 << sedLine;
+                                                qDebug() << "chartValues2 "<< sedLine;
                                             }
-                                        } else if(j == 1)
-                                        {
-                                            if(sedLine.contains("."))
-                                            {
-                                                sedLine.remove(".");
-                                            }
-                                            if(sedLine.contains(","))
-                                            {
-                                                sedLine.replace(",",".");
-                                            }
-                                            chartValues2 << sedLine;
-                                            qDebug() << "chartValues2 "<< sedLine;
                                         }
                                     }
                                 }
                             }
+                            break;
                         }
-                        break;
                     }
                 }
             }
+            temp_varList.clear();
         } else if(ausgabe.contains("["))
         {
             ausgabe.remove("[P1[");
