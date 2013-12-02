@@ -2326,6 +2326,11 @@ if(qsl_triggereds.size() > 0)
    //{
       p_fglform = ql_fglForms.last();
 
+      if(!p_fglform->input() && !p_fglform->inputArray())
+      {
+          p_fglform->checkState();
+      }
+
      //Hier evt abfragen ob IDLE und das Menu gesetzt ist. Es sollte aufjedenfall machbarsein ...
       if(p_fglform->b_newForm && p_fglform->dialog () == NULL && p_fglform->ringMenuPulldown() == NULL && saveactive->state() != Fgl::IDLE && !p_fglform->b_dummy){
          p_fglform->b_newForm = false;
@@ -3683,7 +3688,6 @@ void ScreenHandler::activeFocus()
         p_fglform->activateWindow();
         //Qt3 weg, static QMetaobject::invokeoMethod in zukunft
         QApplication::postEvent(this, new QEvent((QEvent::Type)1337));
-        p_fglform->checkState();
     }
     if(p_fglform->dialog() != NULL)
     {
