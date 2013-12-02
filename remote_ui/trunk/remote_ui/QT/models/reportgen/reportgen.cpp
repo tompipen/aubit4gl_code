@@ -220,8 +220,8 @@ QStringList Reportgen::getHeaderFooterVariables(int Table, QString value)
 bool Reportgen::startReportTemplate(QString odffile, QString sedfile, QFileInfo zielDatei)
 {
     int wiederholen = 0;
-    int ebene1 = 1;
-    int ebene2 = 1;
+    int ebene1 = 0;
+    int ebene2 = 0;
     int gefunden = 0;
     int varCount = 1;
     int anfang = 1;
@@ -256,6 +256,7 @@ bool Reportgen::startReportTemplate(QString odffile, QString sedfile, QFileInfo 
    xmlsave << getTemplateHeader( fileBaseName + "/content.xml", oldFileName.completeSuffix() ); //<< getTemplatePosition( fileBaseName + "/content.xml" ).toUtf8();
    getTemplateVars(fileBaseName + "/content.xml");
 
+
    for(int i=0; i < temp_fields.count(); i++)
    {
        if(temp_fields.at(i).contains("[P1["))
@@ -280,7 +281,7 @@ bool Reportgen::startReportTemplate(QString odffile, QString sedfile, QFileInfo 
            i = i + 1;
            for(int k=0; k < sed_fields.count(); k++)
            {
-               if(sed_fields.at(k).contains(QString("%1"+ temp_fields.at(i)).arg(ebene1)))
+               if(sed_fields.at(k).contains(QString("@%1"+ temp_fields.at(i)).arg(ebene1)))
                {
                    ebene1++;
                }
@@ -334,7 +335,7 @@ bool Reportgen::startReportTemplate(QString odffile, QString sedfile, QFileInfo 
                content.append(prepareTemplateContentOdt(1, j, oldFileName.baseName() + "/content.xml", sedfile));
            }
            xmlsave << content;
-           //content.clear();
+           content.clear();
            xmlsave << getTemplateFooter( 1, fileBaseName + "/content.xml", ".odt");
        }
 
@@ -1713,7 +1714,7 @@ Q_UNUSED(Table);
                         {
                             ausgabe.replace("@" + temp_fields.at(i), QString("@%1_1" + temp_fields.at(i)).arg(QString::number(Position)));
                         } else {
-                            ausgabe.remove("@" + temp_fields.at(i));
+                            //ausgabe.remove("@" + temp_fields.at(i));
                         }
                     }
                 }
@@ -1771,7 +1772,7 @@ Q_UNUSED(Table);
                                 //qDebug() << j << "von" << temp_fields.count() * 1000 << " moeglichen Datensaetze. Aktuelle Position in Ebene2: " << Position;
                                 found = checkSedFile(QString("@%1_%2" + temp_fields.at(i)).arg(Position).arg(j), sedfile);
                                 if(found > 0) {
-                                    ausgabe.append(prepareTemplateEbene(Position, ebene, 1, j, 1, 1, doc, odffile, sedfile));
+                                    ausgabe.append(prepareTemplateEbene(Position, ebene, 1, 1, 1, j, doc, odffile, sedfile));
                                 } else {
                                     break;
                                 }
@@ -2231,14 +2232,16 @@ int Reportgen::checkSedFile(QString fieldname, QString filename)
     }
 
     while(!stream.atEnd()) {
-        ausgabe = stream.readAll();
-        suchliste << ausgabe.split("/g");
+        ausgabe = stream.readLine();
+        suchliste << ausgabe;
 
-        if(!suchliste.isEmpty()) {
-            for(int i=0; i < suchliste.count(); i++) {
-                if(suchliste.at(i).contains(fieldname)) {
-                    cnt = cnt + 1;
-                }
+    }
+    if(!suchliste.isEmpty()) {
+        for(int i=0; i < suchliste.count(); i++) {
+            if(suchliste.at(i).contains(fieldname)) {
+                cnt = cnt + 1;
+                file->close();
+                return cnt;
             }
         }
     }
@@ -2258,6 +2261,7 @@ void Reportgen::getTemplateVars(QString filename)
 {
 
     QFile *file = new QFile(QDir::tempPath() + "/" + filename);
+    temp_fields.clear();
 
     if(file->open(QIODevice::ReadOnly)) {
 
