@@ -3112,6 +3112,7 @@ MainFrame::vdcdebug("ScreenHandler","activeWindow", "QString windowName");
       if(form->windowName == windowName){
          p_fglform = form;
          form->setEnabled(true);
+         form->setMenuEnabled(true);
          form->raise();
       }
 
