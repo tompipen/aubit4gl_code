@@ -933,7 +933,7 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
           ql_keybuffer << mykev;
           if(QLineEdit *edit = qobject_cast<QLineEdit*> (obj))
           {
-              edit->setCursorPosition(0);
+              /*edit->setCursorPosition(0);*/
               edit->setFocus();
           }
           return true;
@@ -1471,7 +1471,7 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
                   } else {
                      tindex1 = proxyModel->index(0, 0);
                   }
-                  tv->setCurrentIndex(tindex1);
+                  tv->selectionModel()->setCurrentIndex(tindex1, QItemSelectionModel::NoUpdate);
 
                   return true;
               }
@@ -1500,7 +1500,7 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
                      tindex1 = proxyModel->index(table->rowCount(tv->currentIndex())-1, 0);
                   }
 
-                  tv->setCurrentIndex(tindex1);
+                  tv->selectionModel()->setCurrentIndex(tindex1, QItemSelectionModel::NoUpdate);
                   return true;
               }
           }
@@ -3117,7 +3117,7 @@ MainFrame::vdcdebug("FglForm","prevfield", "");
                            QModelIndex tindex = table->index(row, column-1);
                            QModelIndex index = proxyModel->mapFromSource(tindex);
 
-                           view->setCurrentIndex(index);
+                           view->selectionModel()->setCurrentIndex(index, QItemSelectionModel::NoUpdate);
                         }
                         else{
                            if(row > 0){
@@ -3125,14 +3125,14 @@ MainFrame::vdcdebug("FglForm","prevfield", "");
                               QModelIndex tindex = table->index(row-1, columnCount-1);
                               QModelIndex index = proxyModel->mapFromSource(tindex);
 
-                              view->setCurrentIndex(index);
+                              view->selectionModel()->setCurrentIndex(index, QItemSelectionModel::NoUpdate);
                            }
                            else{
                               //CHANGE TO LAST ROW
                               QModelIndex tindex = table->index(rowCount-1,columnCount-1);
                               QModelIndex index = proxyModel->mapFromSource(tindex);
 
-                              view->setCurrentIndex(index);
+                              view->selectionModel()->setCurrentIndex(index, QItemSelectionModel::NoUpdate);
                            }
                         }
 
