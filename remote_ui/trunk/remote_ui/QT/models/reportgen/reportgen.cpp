@@ -2573,7 +2573,7 @@ bool Reportgen::replaceTemplateVars(QString odffile, QString sedfile, QFileInfo 
 
                             if(!temp_var.endsWith("1"))
                             {
-                               sed_fields.removeAt(i);
+                               //sed_fields.removeAt(i);
                             } else {
                                 if(!chartVar.isEmpty())
                                 {
