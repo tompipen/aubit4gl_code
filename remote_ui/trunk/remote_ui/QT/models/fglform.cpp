@@ -2734,7 +2734,7 @@ if(context)
     }
 
 }
-qDebug() << "context->fieldList()" << context->fieldList();
+//qDebug() << "context->fieldList()" << context->fieldList();
 
    bool b_sendEvent = (QObject::sender() != NULL); //If called from screenHandler this is NULL
    b_sendEvent = change;
