@@ -2420,6 +2420,7 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
  //     setFormOpts("DISPLAYARRAY", true, context);
       handleEventsElement(childElement);
       handleDisplayArrayElement(childElement);
+      QMetaObject::invokeMethod(p_currScreenHandler, "checkFglformState", Qt::QueuedConnection);
       return;
    }
 
@@ -2457,6 +2458,7 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
      // setFieldOrder(qsl_fieldList);
       QMetaObject::invokeMethod(p_currScreenHandler, "setFieldFocus", Qt::QueuedConnection, Q_ARG(QString, qsl_fieldList.first()));
      // setFieldFocus(qsl_fieldList.first());
+      QMetaObject::invokeMethod(p_currScreenHandler, "checkFglformState", Qt::QueuedConnection);
       return;
    }
 
@@ -2475,6 +2477,7 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
       QMetaObject::invokeMethod(p_currScreenHandler, "setFieldOrder", Qt::QueuedConnection, Q_ARG(QStringList, qsl_fieldList));
      // setFieldOrder(qsl_fieldList);
       QMetaObject::invokeMethod(p_currScreenHandler, "setFieldFocus", Qt::QueuedConnection, Q_ARG(QString, qsl_fieldList.first()));
+      QMetaObject::invokeMethod(p_currScreenHandler, "checkFglformState", Qt::QueuedConnection);
      // setFieldFocus(qsl_fieldList.first());
       return;
    }
