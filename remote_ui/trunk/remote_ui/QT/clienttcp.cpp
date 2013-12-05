@@ -2430,6 +2430,7 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
 
       handleEventsElement(childElement);
       handleDisplayArrayElement(childElement);
+      QMetaObject::invokeMethod(p_currScreenHandler, "checkFglformState", Qt::QueuedConnection);
       return;
    }
 
