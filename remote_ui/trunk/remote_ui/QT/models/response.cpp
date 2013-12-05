@@ -317,7 +317,7 @@ MainFrame::vdcdebug("Response","addScreenRecSyncValues", "");
    } else if(p_currForm->context->arrcountchanged())
    {
        QDomElement syncRowElement = this->createElement("ROW");
-       syncRowElement.setAttribute("SUBSCRIPT", QString::number(arrCount));
+       syncRowElement.setAttribute("SUBSCRIPT", QString::number(arrCount+1));
        syncRowsElement.appendChild(syncRowElement);
        QDomElement syncValuesElement = this->createElement("SVS");
        syncRowElement.appendChild(syncValuesElement);
