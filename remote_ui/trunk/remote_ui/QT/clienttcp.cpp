@@ -1753,6 +1753,17 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
                  executeFile(1, fileName);
                  returnvalues << QString::number(openFileSuccess);
                  foundFormat = 1;
+                
+                 while(true)
+                 {
+                     QFile file(QDir::tempPath() + "/" + fileName);
+
+                     if(file.open(QIODevice::WriteOnly))
+                     {
+                         break;
+                     }
+                     waitTimer::msleep(100);
+                 }
              }
 
              if(fileInfo.suffix() == "csv")
