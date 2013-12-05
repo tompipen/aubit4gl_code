@@ -1,5 +1,5 @@
 /* XML processor/application API for module_def.dtd.
- * Generated 2013/11/10 10:00:17.
+ * Generated 2013/12/05 17:22:30.
  *
  * This program was generated with the FleXML XML processor generator.
  * FleXML is Copyright (C) 1999-2005 Kristoffer Rose.  All rights reserved.
@@ -513,6 +513,8 @@ extern void STag_struct_for_cmd(void);
 extern void ETag_struct_for_cmd(void);
 extern void STag_struct_foreach_cmd(void);
 extern void ETag_struct_foreach_cmd(void);
+extern void STag_struct_foreach_with_select_cmd(void);
+extern void ETag_struct_foreach_with_select_cmd(void);
 extern void STag_struct_free_blob_cmd(void);
 extern void ETag_struct_free_blob_cmd(void);
 extern void STag_struct_free_cmd(void);
@@ -769,6 +771,8 @@ typedef int AT_s_plsql_for_cmd_variable;
 #define AU_s_plsql_for_cmd_variable NULL
 typedef int AT_struct_show_menu_cmd_menuname;
 #define AU_struct_show_menu_cmd_menuname NULL
+typedef int AT_struct_foreach_with_select_cmd_block_id;
+#define AU_struct_foreach_with_select_cmd_block_id NULL
 typedef int AT_struct_skip_to_cmd_nm;
 #define AU_struct_skip_to_cmd_nm NULL
 typedef int AT_s_expr_bound_fcall_nm;
@@ -1699,6 +1703,8 @@ typedef int AT_s_select_list_item_complex_expr_nm;
 #define AU_s_select_list_item_complex_expr_nm NULL
 typedef int AT_flist_type;
 #define AU_flist_type NULL
+typedef int AT_struct_foreach_with_select_cmd_nm;
+#define AU_struct_foreach_with_select_cmd_nm NULL
 typedef int AT_sq_subquery_aud;
 #define AU_sq_subquery_aud NULL
 typedef int AT_s_expr_member_function_call_n_module;
@@ -2400,6 +2406,8 @@ extern AT_s_plsql_for_cmd_variable AX_s_plsql_for_cmd_variable;
 #define A_s_plsql_for_cmd_variable (bufferstack + AX_s_plsql_for_cmd_variable)
 extern AT_struct_show_menu_cmd_menuname AX_struct_show_menu_cmd_menuname;
 #define A_struct_show_menu_cmd_menuname (bufferstack + AX_struct_show_menu_cmd_menuname)
+extern AT_struct_foreach_with_select_cmd_block_id AX_struct_foreach_with_select_cmd_block_id;
+#define A_struct_foreach_with_select_cmd_block_id (bufferstack + AX_struct_foreach_with_select_cmd_block_id)
 extern AT_struct_skip_to_cmd_nm AX_struct_skip_to_cmd_nm;
 #define A_struct_skip_to_cmd_nm (bufferstack + AX_struct_skip_to_cmd_nm)
 extern AT_s_expr_bound_fcall_nm AX_s_expr_bound_fcall_nm;
@@ -3330,6 +3338,8 @@ extern AT_s_select_list_item_complex_expr_nm AX_s_select_list_item_complex_expr_
 #define A_s_select_list_item_complex_expr_nm (bufferstack + AX_s_select_list_item_complex_expr_nm)
 extern AT_flist_type AX_flist_type;
 #define A_flist_type (bufferstack + AX_flist_type)
+extern AT_struct_foreach_with_select_cmd_nm AX_struct_foreach_with_select_cmd_nm;
+#define A_struct_foreach_with_select_cmd_nm (bufferstack + AX_struct_foreach_with_select_cmd_nm)
 extern AT_sq_subquery_aud AX_sq_subquery_aud;
 #define A_sq_subquery_aud (bufferstack + AX_sq_subquery_aud)
 extern AT_s_expr_member_function_call_n_module AX_s_expr_member_function_call_n_module;

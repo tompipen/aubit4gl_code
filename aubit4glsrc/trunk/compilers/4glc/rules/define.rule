@@ -515,7 +515,10 @@ dtype :
 			add_feature("DEFINE_DECIMAL");
 		} 
 	|	KW_DECIMAL OPEN_BRACKET INT_VALUE CLOSE_BRACKET {
-			$$=new_simple_variable(NULL,DTYPE_DECIMAL,atoi($<str>3)*256+2,0);
+			// Informix uses 255 for the number of decimals for this
+			int n;
+			n=atol(acl_getenv("A4GL_DEFDECPREC"));
+			$$=new_simple_variable(NULL,DTYPE_DECIMAL,atoi($<str>3)*256+n,0);
 			add_feature("DEFINE_DECIMAL");
 		   
 		} 

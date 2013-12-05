@@ -25,7 +25,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.210 2013-11-10 09:53:49 mikeaubury Exp $
+# $Id: ops.c,v 1.211 2013-12-05 20:27:08 mikeaubury Exp $
 #
 */
 
@@ -7981,7 +7981,11 @@ A4GL_make_using_tostring (char *ptr, int d, int n)
 //dig=NUM_DIG(ptr)*2;
 //dec=NUM_DEC(ptr);
   dig = d;
-  dec = n;
+  if (n==255) {
+  	dec = 2;
+  } else {
+  	dec = n;
+  }
 
 //if (dig%2==1) another=1;
 
@@ -8011,6 +8015,10 @@ int orig_sz;
   A4GL_debug ("make_using_sz - size=%d num dec = %d dig=%d", sz, dec, dig);
 #endif
   orig_sz=sz;
+
+
+  if (dec==255) dec=2;
+
   if (sz==-1) {
 	sz=dig+1;
   }

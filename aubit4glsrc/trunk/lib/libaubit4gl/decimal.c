@@ -661,6 +661,11 @@ A4GL_str_to_dec (char *str_orig, fgldecimal * dec)
   A4GL_debug ("digits=%d decimals=%d\n", digits, decimals);
 #endif
 
+  if (decimals==255) {
+	A4GL_debug("Resetting decimals to %d\n", strlen(tail));
+	decimals=strlen(tail);
+  }
+
   head_len = digits - decimals;
   if (head_len < 0)
     {
