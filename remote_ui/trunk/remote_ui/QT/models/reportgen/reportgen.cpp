@@ -2636,6 +2636,64 @@ bool Reportgen::replaceTemplateVars(QString odffile, QString sedfile, QFileInfo 
     file1->close();
     file->close();
 
+    QFile *fileStylesXml = new QFile(QDir::tempPath() + "/" + odffile + "/styles.xml");
+
+    if(!fileStylesXml->open(QIODevice::ReadOnly))
+    {
+        qDebug() << "(replaceMetaFile(): Konnte META.xml nicht lesen.";
+        return false;
+    }
+    QDomDocument stylesDoc;
+    stylesDoc.setContent(fileStylesXml);
+    QString stylesXml = stylesDoc.toString();
+    QString ausgabeXml;
+    QString outStylesString;
+    int startStr = 0;
+    QString str;
+
+    QTextStream stylesXmlStream(&stylesXml);
+
+    getTemplateVars(odffile + "/styles.xml");
+
+    while(!stylesXmlStream.atEnd())
+    {
+        ausgabeXml = stylesXmlStream.readLine();
+
+        if(ausgabeXml.contains("@"))
+        {
+            for(int j=0; j < sed_fields.count(); j++)
+            {
+                for(int k=0; k < temp_fields.count(); k++)
+                {
+                    if(sed_fields.at(j).contains(temp_fields.at(k)))
+                    {
+                        QString sedString = sed_fields.at(j);
+                        sedString.replace("@" + temp_fields.at(k) + "%/", "");
+                        ausgabeXml.replace("@" + temp_fields.at(k), sedString);
+                        break;
+                    }
+                }
+            }
+        }
+        outStylesString = outStylesString + ausgabeXml;
+    }
+
+    fileStylesXml->close();
+
+    QFile *outStylesFile = new QFile(QDir::tempPath() + "/" + odffile + "/styles.xml");
+    if(!outStylesFile->open(QIODevice::WriteOnly | QIODevice::Truncate))
+    {
+        qDebug() << "(replaceMetaFile()): Konnte meta.xml nicht zum schreiben öffnen";
+        return false;
+    }
+
+    QTextStream outStream(outStylesFile);
+
+    outStream << outStylesString;
+    outStylesString.clear();
+
+    outStylesFile->close();
+
     //if(chartValues1.count() == chartValues2.count())
     //{
 
