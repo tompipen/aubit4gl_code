@@ -15,6 +15,7 @@ extern int token_read_on_col;
 extern int rep_type;
 
 struct s_commands * linearise_commands(struct s_commands *master_list, struct s_commands *cmds) ;
+void linearise_expression(expr_str_list *l,  expr_str *e );
 //static char *get_expr_list_as_string(struct expr_str_list *l) ;
 //static void linearise_commands_from_events(struct s_commands *master_list, struct on_events* evt_list) ;
 //char *A4GL_get_current_comments();
@@ -2610,6 +2611,75 @@ struct command *c;
    return c;
 }
 
+static int
+check_for_non_parameter_variables (expr_str_list * p_parameters, expr_str_list * exprs,int lineno)
+{
+  int a;
+  // Go through all the expressions looking for any VARIABLE_USAGE
+  for (a = 0; a < exprs->list.list_len; a++)
+    {
+      if (exprs->list.list_val[a]->expr_type == ET_EXPR_VARIABLE_USAGE)
+	{
+	  // Got a variable usage
+	  // as a quick hack - get the variable as a string
+	  // and check it against the string parameter name we have..
+	  char *str = cmds_get_variable_usage_as_string (exprs->list.list_val[a]->expr_str_u.expr_variable_usage);
+	  char *ptr;
+	  ptr = strchr (str, '[');
+	  if (ptr)
+	    *ptr = 0;
+	  ptr = strchr (str, '.');
+	  if (ptr)
+	    *ptr = 0;
+	  int b;
+	  int ok=0;
+	  for (b = 0; b < p_parameters->list.list_len; b++)
+	    {
+
+	      if (strcmp (p_parameters->list.list_val[b]->expr_str_u.expr_param.expr_string, str) == 0)
+		{
+		  ok = 1;
+		  break;
+		}
+
+	    }
+	  free (str);
+	  if (!ok) {
+	  	char *str = cmds_get_variable_usage_as_string (exprs->list.list_val[a]->expr_str_u.expr_variable_usage);
+		char buff[100000];
+		int n;
+		n=yylineno;
+		yylineno=lineno;
+			sprintf(buff,"Possibly dangerous variable usage in aggregate (%s)",str);
+			A4GL_warn(buff);
+		yylineno=n;
+	  }
+	}
+    }
+  return 0;
+}
+
+static void check_agg_for_non_parameter_variables(expr_str_list* p_parameters, expr_str_ptr* aggregateExpressions, int aggregateExpressions_len) {
+	int a;
+	for (a=0;a<aggregateExpressions_len;a++) {
+		if (aggregateExpressions[a]->expr_type==ET_EXPR_AGGREGATE)  {
+			 struct s_expr_agg *expr_agg;
+			expr_agg=aggregateExpressions[a]->expr_str_u.expr_agg;
+			expr_str_list l;
+			l.list.list_len=0;
+			l.list.list_val=0;
+			if (expr_agg->agg_expr) {
+			 	linearise_expression(&l, expr_agg->agg_expr);
+			} 
+			if ( expr_agg->expr_where) {
+			 	linearise_expression(&l, expr_agg->expr_where);
+			}
+			check_for_non_parameter_variables(p_parameters, &l, expr_agg->lineno);
+		} else {
+			A4GL_debug("Odd - expecting an aggregate..");
+		}
+	}
+}
 
 struct module_entry *new_pdf_report_definition(char * p_funcname,e_function_type p_function_type,expr_str_list* p_parameters,pdf_startrep* p_report_output_section,s_report_orderby_section *p_report_orderby_section,report_format_section *p_report_format_section,int lineno ,char *doc4glcomment) {
 struct module_entry *c;
@@ -2649,6 +2719,11 @@ struct module_entry *c;
   //this_module.expression_list.expression_list_val=0;
    c->module_entry_u.report_definition.aggregates.list.list_len=list_of_aggregates.list.list_len;
    c->module_entry_u.report_definition.aggregates.list.list_val=list_of_aggregates.list.list_val;
+
+   if (A4GL_isyes(acl_getenv("A4GL_WARNAGG"))) {
+    check_agg_for_non_parameter_variables(p_parameters, list_of_aggregates.list.list_val, list_of_aggregates.list.list_len);
+  }
+
    c->module_entry_u.report_definition.aggregates.unexpanded_list.list.list_len=list_of_aggregates.unexpanded_list.list.list_len;
    c->module_entry_u.report_definition.aggregates.unexpanded_list.list.list_val=list_of_aggregates.unexpanded_list.list.list_val;
 	list_of_aggregates.list.list_len=0;
@@ -2693,6 +2768,10 @@ struct module_entry *c;
    c->module_entry_u.report_definition.aggregates.list.list_len=list_of_aggregates.list.list_len;
    c->module_entry_u.report_definition.aggregates.list.list_val=list_of_aggregates.list.list_val;
 
+
+   if (A4GL_isyes(acl_getenv("A4GL_WARNAGG"))) {
+   	check_agg_for_non_parameter_variables(p_parameters, list_of_aggregates.list.list_val, list_of_aggregates.list.list_len);
+   }
 
 
 	list_of_aggregates.list.list_len=0;

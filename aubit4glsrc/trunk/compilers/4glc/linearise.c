@@ -7,7 +7,7 @@
 #include "lint.h"
 #include "linearise.h"
 
-static void linearise_expression(expr_str_list *l,  expr_str *e ) ;
+void linearise_expression(expr_str_list *l,  expr_str *e ) ;
 static void linearise_expression_list(expr_str_list *l1, expr_str_list *srclist) ;
 
 
@@ -190,7 +190,7 @@ linearise_module (struct s_commands *all_cmds, module_definition * d)
 
 
 
-static void linearise_expression(expr_str_list *l,  expr_str *e ) {
+void linearise_expression(expr_str_list *l,  expr_str *e ) {
   if (e==NULL) return;
 
   A4GL_new_append_ptr_list(l,e);
