@@ -800,14 +800,13 @@ void FglForm::replayKeyboard()
       }
 
       if(TableView *tableView = qobject_cast<TableView *> (currentField())){
-          Q_UNUSED(tableView);
           if(inputArray())
           {
-              //QApplication::postEvent(currentField(), key);
-//              tableView->playkey(key);
+              //QApplication::sendEvent(currentField(), key);
+              tableView->playkey(key);
               //tableView->itemDelegateForColumn(tableView->currentIndex().column())->event(key);
-             // QMetaObject::invokeMethod(tableView->itemDelegateForColumn(tableView->currentIndex().column()), "event", Qt::QueuedConnection,Q_ARG(QEvent*, key));
-              QApplication::postEvent(focusWidget(), key);
+             //QMetaObject::invokeMethod(tableView->itemDelegateForColumn(tableView->currentIndex().column()), "event", Qt::QueuedConnection,Q_ARG(QEvent*, key));
+              //QApplication::postEvent(focusWidget(), key);
 
 
           }

@@ -1018,7 +1018,7 @@ if(!p_fglform)
       }
    }
 
-   if(current.column() > -1 && current.row() > -1){
+   if(current.column() > -1 && current.row() > -1 && current.column() <= table->qsl_colNames.count()){
       event.type = Fgl::BEFORE_FIELD_EVENT;
       event.attribute = table->qsl_colNames.at(current.column());
       diffevent = getForm()->getFormEvent(event);
@@ -1771,56 +1771,67 @@ bool LineEditDelegate::eventFilter(QObject *object, QEvent *event)
       QKeyEvent *key = (QKeyEvent*) event;
 
 
-      if(key->key() == Qt::Key_Down || key->key() == Qt::Key_Up || key->key() == Qt::Key_Tab || key->key() == Qt::Key_Enter || key->key() == Qt::Key_Backtab || key->key() == Qt::Key_Return || key->key() == Qt::Key_Escape)
+      if((event->type() == QEvent::KeyPress || event->type() == 1400) || (event->type() == QEvent::KeyRelease || event->type() == 1401))
       {
-          QKeyEvent *mykev = new QKeyEvent(key->type(),
-                                           key->key(),
-                                           key->modifiers(),
-                                           key->text(),
-                                           key->isAutoRepeat(),
-                                           key->count());
-             QApplication::postEvent(p_fglform, mykev);
-             return true;
-      }
-
-
-      if(FglForm *form = qobject_cast<FglForm*> (p_fglform))
-      {
-
-          if(form->b_keybuffer)
+          if(FglForm *form = qobject_cast<FglForm*> (p_fglform))
           {
+             if(form->b_keybuffer && !form->b_keybufferrunning)
+             {
+                 if((event->type() == QEvent::KeyRelease || event->type() == 1401) && form->ql_keybuffer.size() < 1)
+                 {
+                    return true;
+                 }
 
-              if(event->type() == QEvent::KeyPress)
+
+                  if(key->key() == Qt::Key_Down || key->key() == Qt::Key_Up || key->key() == Qt::Key_Tab || key->key() == Qt::Key_Enter || key->key() == Qt::Key_Backtab || key->key() == Qt::Key_Return || key->key() == Qt::Key_Escape)
+                  {
+                      QKeyEvent *mykev = new QKeyEvent(key->type(),
+                                                       key->key(),
+                                                       key->modifiers(),
+                                                       key->text(),
+                                                       key->isAutoRepeat(),
+                                                       key->count());
+
+                     form->ql_keybuffer << mykev;
+                     return true;
+                  }
+             }
+
+              if(form->b_keybuffer)
               {
-                  QKeyEvent *mykev = new QKeyEvent(((QEvent::Type) 1400),
-                                                   key->key(),
-                                                   key->modifiers(),
-                                                   key->text(),
-                                                   key->isAutoRepeat(),
-                                                   key->count());
 
-                  QApplication::postEvent(p_fglform, mykev);
+                  if(event->type() == QEvent::KeyPress)
+                  {
+                      QKeyEvent *mykev = new QKeyEvent(((QEvent::Type) 1400),
+                                                       key->key(),
+                                                       key->modifiers(),
+                                                       key->text(),
+                                                       key->isAutoRepeat(),
+                                                       key->count());
+
+                      form->ql_keybuffer << mykev;
+                  }
+
+                  if(event->type() == QEvent::KeyRelease)
+                  {
+                      QKeyEvent *mykev = new QKeyEvent(((QEvent::Type) 1401),
+                                                       key->key(),
+                                                       key->modifiers(),
+                                                       key->text(),
+                                                       key->isAutoRepeat(),
+                                                       key->count());
+
+                      form->ql_keybuffer << mykev;
+                  }
+                  return true;
               }
-
-              if(event->type() == QEvent::KeyRelease)
-              {
-                  QKeyEvent *mykev = new QKeyEvent(((QEvent::Type) 1401),
-                                                   key->key(),
-                                                   key->modifiers(),
-                                                   key->text(),
-                                                   key->isAutoRepeat(),
-                                                   key->count());
-
-                  QApplication::postEvent(p_fglform, mykev);
-              }
-              return true;
-          }
+         }
 
       }
 
   }
   //Type wieder glätten für die weitere Verarbeitung
-  if(event->type() == 1400)
+  /*if(event->type() == 1400)
   {
       QKeyEvent *key = (QKeyEvent*) event;
 
@@ -1831,7 +1842,7 @@ bool LineEditDelegate::eventFilter(QObject *object, QEvent *event)
                                        key->text(),
                                        key->isAutoRepeat(),
                                        key->count());
-   QApplication::postEvent(p_fglform, mykev);
+   QApplication::postEvent(QApplication::focusWidget(), mykev);
    return true;
   }
 
@@ -1847,9 +1858,9 @@ bool LineEditDelegate::eventFilter(QObject *object, QEvent *event)
                                        key->text(),
                                        key->isAutoRepeat(),
                                        key->count());
-      QApplication::postEvent(p_fglform, mykev);
+      QApplication::sendEvent(QApplication::focusWidget(), mykev);
       return true;
-  }
+  }*/
 
   //Verhindert beim disablen von p_fglform, das der Editor geschlossen wird. Kommt durch synchronisation des
   //Protokolls.
@@ -1875,4 +1886,3 @@ bool LineEditDelegate::eventFilter(QObject *object, QEvent *event)
 
    return QStyledItemDelegate::eventFilter(object, event);
 }
-
