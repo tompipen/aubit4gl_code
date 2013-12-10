@@ -663,7 +663,13 @@ A4GL_str_to_dec (char *str_orig, fgldecimal * dec)
 
   if (decimals==255) {
 	A4GL_debug("Resetting decimals to %d\n", strlen(tail));
+	int reserve=digits;
+	reserve-=strlen(head);
 	decimals=strlen(tail);
+	if (decimals>reserve) {
+		decimals=reserve;
+	}
+	A4GL_debug("%d %d\n", digits,decimals);
   }
 
   head_len = digits - decimals;
