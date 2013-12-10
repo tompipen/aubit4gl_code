@@ -16,7 +16,7 @@
 #
 ###########################################################################
 
-	 $Id: channel.4gl,v 1.27 2013-07-22 14:31:27 mikeaubury Exp $
+	 $Id: channel.4gl,v 1.28 2013-12-10 08:21:11 mikeaubury Exp $
 }
 
 {**
@@ -322,7 +322,7 @@ char buff[20000];
 struct BINDING *obind=NULL;
 FILE *f;
 char delim_c;
-char *delim_long;
+char *delim_long=0;
 int delim_long_sz;
 int d;
 int no;
@@ -399,7 +399,7 @@ if (!A4GL_pop_binding_from_stack(&obind,&no,'o')) { // Its an output binding whe
 			char *optr;
 			optr=ptr;
 			// Split on delim_c
-			if (A4GL_isyes(acl_getenv("EXTENDEDDELIM"))){
+			if (delim_long && A4GL_isyes(acl_getenv("EXTENDEDDELIM"))){
 				ptr=strstr(optr,delim_long);
 			} else {
 				ptr=strchr(optr,delim_c);
@@ -413,7 +413,7 @@ if (!A4GL_pop_binding_from_stack(&obind,&no,'o')) { // Its an output binding whe
 				*ptr=0;
 				A4GL_push_char(optr);
 				A4GL_pop_param(obind[a].ptr,obind[a].dtype,obind[a].size);
-				if (A4GL_isyes(acl_getenv("EXTENDEDDELIM"))){
+				if (delim_long && A4GL_isyes(acl_getenv("EXTENDEDDELIM"))){
 					ptr+=delim_long_sz;
 				} else {
 
@@ -445,7 +445,7 @@ int d;
 char delim_c;
 int a;
 char ds[65];
-char *delim_long;
+char *delim_long=0;
 
 
 if (!A4GL_pop_binding_from_stack(&ibind,&ni,'o')) { // Its an output binding when reading...
@@ -465,7 +465,7 @@ if (A4GL_isyes(acl_getenv("EXTENDEDDELIM"))){
 	delim_c=' ';
 }
 
-if (A4GL_isyes(acl_getenv("EXTENDEDDELIM"))){
+if (delim_long && A4GL_isyes(acl_getenv("EXTENDEDDELIM"))){
 	strncpy(ds, delim_long,64);
 	// just make sure its not too long...
 	ds[64]=0;
