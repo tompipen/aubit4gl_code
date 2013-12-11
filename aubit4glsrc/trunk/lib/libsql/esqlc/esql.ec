@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.263 2013-11-15 12:18:14 mikeaubury Exp $
+# $Id: esql.ec,v 1.264 2013-12-11 12:10:49 mikeaubury Exp $
 #
 */
 
@@ -196,7 +196,7 @@ static loc_t *add_blob(struct s_sid *sid, int n, struct s_extra_info *e,fglbyte 
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.263 2013-11-15 12:18:14 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.264 2013-12-11 12:10:49 mikeaubury Exp $";
 #endif
 
 
@@ -3879,6 +3879,8 @@ Infx_dt_to_A4gl_dt (int n)
  * @param dtype The data type.
  * @return The lnegth calculated.
  */
+
+static int decPrec=-1;
 static long
 fixlength (int dtype, int length)
 {
@@ -3890,10 +3892,19 @@ fixlength (int dtype, int length)
 	int a1,a2;
 	a1=length&0xff;
 	a2=length>>8;
+
 	if (a1==0xff) {
-		a1=2; a2+=5; 
-		if (a2>32) a2=32;
-		length=(a2<<8)+a1; 
+		if (decPrec==-1) {
+		    decPrec=atol(acl_getenv("A4GL_DEFDECPREC"));
+		} 
+		if (decPrec==255) {
+			// Do nothing...
+		} else {
+			a1=decPrec; 
+			a2+=decPrec+3; 
+			if (a2>32) a2=32;
+			length=(a2<<8)+a1; 
+		}
 		return length;
 	}
 
