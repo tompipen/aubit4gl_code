@@ -2,7 +2,11 @@
 #include <QFile>
 #include <QDir>
 #include <QDebug>
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 #include <QApplication>
+#else
+#include <QtWidgets/QApplication>
+#endif
 #include <QProcess>
 #include <QDesktopServices>
 #include <QUrl>
