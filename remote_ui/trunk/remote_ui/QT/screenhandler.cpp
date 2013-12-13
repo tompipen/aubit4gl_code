@@ -3677,7 +3677,7 @@ void ScreenHandler::activeFocus()
         return;
     }
 
-    if(p_fglform->dialog() == NULL && p_fglform->ringMenuPulldown() == NULL){
+    if(p_fglform->dialog() == NULL && p_fglform->ringMenuPulldown() == NULL && !p_fglform->isActiveWindow()){
         p_fglform->raise();
         QApplication::setActiveWindow((QWidget*) p_fglform);
         p_fglform->activateWindow();
@@ -4160,6 +4160,14 @@ void ScreenHandler::createTextEditor(QString fileName)
     mTextEditor->setFileName(fileName);
     mTextEditor->loadFileFromLocal();
     mTextEditor->show();
+}
+
+void ScreenHandler::createEditor(QString fileName)
+{
+    mHtmlEditor = new HtmlEditor;
+    mHtmlEditor->setFileName(fileName);
+    mHtmlEditor->loadIntoEditor();
+    mHtmlEditor->show();
 }
 
 void ScreenHandler::createBrowser()

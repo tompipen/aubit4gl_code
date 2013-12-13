@@ -39,6 +39,7 @@ class FglForm;
 #include "models/webbrowser.h"
 #include "models/progress.h"
 #include "models/texteditor.h"
+#include "tools/htmleditor.h"
 class ProtocolHandler;
 #include <QVector>
 #include <QVariant>
@@ -68,6 +69,7 @@ public:
    QList<FglForm*> ql_fglForms;
    QList<WebBrowser*> ql_browser;
    TextEditorWidget *mTextEditor;
+   HtmlEditor *mHtmlEditor;
    QStringList qsl_activeFieldNames;
    QStringList qsl_triggereds;
    QDomDocument xmlIconDocDe;
@@ -196,6 +198,7 @@ public slots:
    void openChartWindow(QString);
    #endif
    void createTextEditor(QString);
+   void createEditor(QString);
    void createBrowser();
    void setUrl(int id, const QUrl &http);
    void closeBrowser(int id);
