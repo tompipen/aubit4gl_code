@@ -7,7 +7,11 @@
 #include <QTextCharFormat>
 #include <QTextCursor>
 #include <QFontDatabase>
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+#include <QApplication>
+#else
 #include <QtWidgets/QApplication>
+#endif
 #include <QLabel>
 #include <QColorDialog>
 #include <QFileDialog>

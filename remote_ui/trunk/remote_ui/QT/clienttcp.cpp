@@ -1501,6 +1501,21 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
              expect = 0;
 
            }
+         if(qs_name == "ui.vdc.openeditor")
+         {
+             QStringList params;
+              for(int k=0; k<paramsElement.childNodes().count(); k++){
+                 QDomElement valuesElement = paramsElement.childNodes().at(k).toElement();
+                 params << valuesElement.text();
+              }
+
+              QMetaObject::invokeMethod(p_currScreenHandler, "createEditor", Qt::QueuedConnection, Q_ARG(QString, params.at(1)));
+              while(!p_currScreenHandler->mHtmlEditor->getEditorStatus())
+              {
+                  waitTimer::msleep(100);
+              }
+              returnvalues << "0";
+         }
 
          if(qs_name == "ui.vdc.repgen"){
 
