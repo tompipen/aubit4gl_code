@@ -7,4 +7,4 @@
 +execute(filename DTYPE_CHAR) DTYPE_INT
 +getstdofficeprog () DTYPE_INT
 +get_last_sort(modulname DTYPE_CHAR) DTYPE_CHAR
-
++openeditor(type DTYPE_CHAR, htmlfile DTYPE_CHAR) DTYPE_INT
