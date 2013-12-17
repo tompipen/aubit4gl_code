@@ -2285,8 +2285,15 @@ MainFrame::vdcdebug("WidgetHelper","setDefaultFieldText", "QObject *object");
 
    if(ComboBox *widget = qobject_cast<ComboBox *> (object)){
       QString fieldValue = widget->defaultValue();
-      widget->addItem(fieldValue);
-      return;
+         for (int idx = 0; idx <= widget->count(); idx++)
+         {
+            if (widget->itemText(idx) == fieldValue )
+            {
+               widget->setCurrentIndex(idx);
+               break;
+            }
+         }
+         return;
    }
 
    if(ProgressBar *widget = qobject_cast<ProgressBar *> (object)){
