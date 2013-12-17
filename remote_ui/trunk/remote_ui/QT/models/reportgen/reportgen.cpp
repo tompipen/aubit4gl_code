@@ -704,7 +704,7 @@ QString Reportgen::getTemplatePosition(int Table, QString odffile)
     while(!stream.atEnd()) {
         ausgabe = stream.readLine();
 
-        if(ausgabe.contains("<table:table table:name"))
+        if(ausgabe.contains("<table:table table:name") || ausgabe.contains("table:table table:style-name="))
         {
             foundTable = foundTable + 1;
             stop = 0;
@@ -733,7 +733,10 @@ QString Reportgen::getTemplatePosition(int Table, QString odffile)
 
     }
 
-    behalten.append("</table:table-cell></table:table-row>");
+    if(!behalten.isEmpty())
+    {
+        behalten.append("</table:table-cell></table:table-row>");
+    }
 
     file->close();
 
@@ -1020,7 +1023,14 @@ void Reportgen::createXmlFile(int Table, int Position, QString odffile)
         outstream << createFirstTable(odffile);
     }
 
-    outstream << getTemplatePosition(Table, odffile + "/content-alt.xml").toLatin1();
+    QString templatePosition = getTemplatePosition(Table, odffile + "/content-alt.xml").toLatin1();
+
+    if(templatePosition.isEmpty())
+    {
+        outstream << "table:table>";
+    } else {
+        outstream << templatePosition;
+    }
 
 
 
@@ -1277,7 +1287,15 @@ void Reportgen::createXmlFile(int Table, int Position, QString odffile)
         }
     }
 
-    outstream << getTemplateFooter(Table, odffile + "/content-alt.xml", ".ods").toLatin1();
+    QString footer = getTemplateFooter(Table, odffile + "/content-alt.xml", ".ods").toLatin1();
+
+    if(footer.isEmpty())
+    {
+        outstream << "</table:table></office:spreadsheet></office:body></office:document-content>";
+    } else {
+        outstream << footer;
+    }
+
     file.close();
 
     QFile file1(QDir::tempPath() + "/" + odffile + "/content.xml");
