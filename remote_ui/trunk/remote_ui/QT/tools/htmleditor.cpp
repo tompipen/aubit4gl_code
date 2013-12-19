@@ -31,6 +31,7 @@ HtmlEditor::HtmlEditor(QWidget *parent)
     : QMainWindow(parent)
 {
     mEdit = new QTextEdit();
+    mEdit->setFont (QFont("Verdana", 11));
     mFontSizeCombo = new QComboBox();
 
     mTextIsModified  = 0;
@@ -227,7 +228,7 @@ void HtmlEditor::loadIntoEditor()
         qDebug() << "cannot open file for read";
     }
 
-    mEdit->setHtml(in.readAll());
+    mEdit->insertHtml(in.readAll());
 
 }
 
