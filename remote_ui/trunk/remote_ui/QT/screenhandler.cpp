@@ -63,6 +63,7 @@ MainFrame::vdcdebug("ScreenHandler","ScreenHandler", "QObject *parent");
    timer = NULL;
    w_progress = NULL;
    mTextEditor = NULL;
+   mHtmlEditor = NULL;
    b_runinfo = false;
    openFileSuccess = 0;
    stdOfficeProg = 0;
