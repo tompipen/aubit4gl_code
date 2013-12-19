@@ -25,6 +25,7 @@
 #include <QUrl>
 #include <QCloseEvent>
 #include <QAction>
+#include "models/webbrowser.h"
 
 HtmlEditor::HtmlEditor(QWidget *parent)
     : QMainWindow(parent)
@@ -97,6 +98,7 @@ void HtmlEditor::showPreview()
     QFile file(fileName);
 
     QTextStream stream(&file);
+    stream.setCodec("ISO-8859-1");
 
     if(!file.open(QIODevice::WriteOnly))
     {
@@ -105,8 +107,10 @@ void HtmlEditor::showPreview()
 
     stream << mEdit->toHtml();
     file.close();
-
-    QDesktopServices::openUrl(QUrl("file:///" + fileName));
+    WebBrowser *p_browser = new WebBrowser();
+    p_browser->createBrowser();
+    p_browser->loadUrl(QUrl(fileName));
+    p_browser->show();
 }
 
 void HtmlEditor::textIsChanged()
@@ -216,6 +220,7 @@ void HtmlEditor::loadIntoEditor()
 {
     QFile file(QDir::tempPath() + "/" + mFileName);
     QTextStream in(&file);
+    in.setCodec("ISO-8859-1");
 
     if(!file.open(QIODevice::ReadOnly))
     {
@@ -247,6 +252,7 @@ void HtmlEditor::closeEvent(QCloseEvent *event)
 
         connect(dialog->getAction("OK"), SIGNAL(triggered()), this, SLOT(closeEditor()));
         connect(dialog->getAction("OK"), SIGNAL(triggered()), dialog, SLOT(close()));
+        connect(dialog->getAction("CANCEL"), SIGNAL(triggered()), this, SLOT(closeEditorWithoutSave()));
         connect(dialog->getAction("CANCEL"), SIGNAL(triggered()), dialog, SLOT(close()));
         dialog->show();
 
@@ -266,9 +272,18 @@ void HtmlEditor::closeEditor()
     }
 
     QTextStream outStream(&file);
+    outStream.setCodec("ISO-8859-1");
     outStream << mEdit->toHtml();
     file.close();
 
+    mCloseEditor = 1;
+    mTextIsModified = 0;
+    editorIsFinished = 1;
+    this->close();
+}
+
+void HtmlEditor::closeEditorWithoutSave()
+{
     mCloseEditor = 1;
     mTextIsModified = 0;
     editorIsFinished = 1;

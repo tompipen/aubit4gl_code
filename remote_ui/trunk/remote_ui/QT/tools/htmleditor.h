@@ -28,6 +28,7 @@ public slots:
     void textIsChanged();
     void showPreview();
     void closeEditor();
+    void closeEditorWithoutSave();
 
 private:
     QTextEdit *mEdit;
