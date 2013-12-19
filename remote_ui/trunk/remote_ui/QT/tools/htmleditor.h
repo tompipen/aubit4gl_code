@@ -14,7 +14,7 @@ public:
     HtmlEditor(QWidget *parent = 0);
     void closeEvent(QCloseEvent *);
     int getEditorStatus() { return editorIsFinished; }
-    void setFileName(QString name ) { mFileName = name; };
+    void setFileName(QString fileName) { mFileName = fileName; };
     void loadIntoEditor();
 
     ~HtmlEditor();

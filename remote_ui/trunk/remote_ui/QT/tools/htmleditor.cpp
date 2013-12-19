@@ -29,14 +29,13 @@
 HtmlEditor::HtmlEditor(QWidget *parent)
     : QMainWindow(parent)
 {
+    mEdit = new QTextEdit();
+    mFontSizeCombo = new QComboBox();
 
     mTextIsModified  = 0;
     imageCounter     = 1;
     editorIsFinished = 0;
     mCloseEditor     = 0;
-
-    mEdit = new QTextEdit();
-    mFontSizeCombo = new QComboBox();
 
     QToolBar *toolbar = new QToolBar();
     QVBoxLayout *vLayout = new QVBoxLayout();
