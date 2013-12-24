@@ -87,6 +87,80 @@ void ClientTcp::socketDisconnected(){
 // Description  : starts communication socket between server and client 
 //------------------------------------------------------------------------------
 
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+void ClientTcp::incomingConnection(int socketID)
+{
+MainFrame::vdcdebug("ClientTcp","incomingConnection", "int socketID");
+//   qDebug("incomingConnection - open socket with id: %d", socketID);
+
+   // creates a QTcpSocket child for the QTcpServer parent
+   // to read from network
+   //
+   socket = new ClientSocket(this);
+   socket->ph.t_tunnel = NULL;//Avoid seg. faults in listen mode
+   //VDC::waitCursor();
+   p_arr_socket << socket;
+   i_cnt_socket++;
+
+
+   // when socket gets data the server has to reply
+   //
+   connect(&socket->ph, SIGNAL(debugtext(const QString&)) ,dw , SLOT(debugOut(const QString&)));
+
+   connect(socket, SIGNAL(makeResponse(QString)),
+           this, SLOT(clientReturn(QString)));
+
+   connect(socket, SIGNAL(disconnected()), this, SLOT(socketDisconnected()));
+
+// ---------------------------------------------------
+
+   socket->setSocketDescriptor(socketID);
+
+   {
+      //Initialize the protocolhandler debug variables
+      socket->ph.b_read = false;
+      socket->ph.b_write = false;
+
+      //Commandline arguments for Debugging
+      QStringList args = QApplication::arguments();
+
+//      if(args.contains("-D")){
+//         //graphical debug (open Debug window)
+//          //qsl_xmlCommands.at(i);
+//      qDebug() << "-D läuft";
+//      }
+
+      if(args.contains("-d")){
+         //non-graphical debug (write to file)
+         int index = args.indexOf("-d");
+
+         socket->ph.b_write = true;
+         if(index < args.count()-1){
+            socket->ph.fileName = args.at(index+1);
+         }
+         else{
+            socket->ph.fileName = "debug.out";
+         }
+      }
+
+      if(args.contains("-r")){
+         //read from debug file
+         int index = args.indexOf("-r");
+
+         socket->ph.b_read = true;
+
+         if(index < args.count()-1){
+            socket->ph.fileName = args.at(index+1);
+         }
+         else{
+            socket->ph.fileName = "debug.in";
+         }
+      }
+   }
+
+}
+
+#else
 void ClientTcp::incomingConnection(qintptr socketID)
 {
 MainFrame::vdcdebug("ClientTcp","incomingConnection", "int socketID");
@@ -158,7 +232,7 @@ MainFrame::vdcdebug("ClientTcp","incomingConnection", "int socketID");
    }
 
 }
-
+#endif
 //------------------------------------------------------------------------------
 // Method       : newSocket()
 // Filename     : tcpclient.cpp

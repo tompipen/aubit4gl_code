@@ -280,7 +280,11 @@ class ClientTcp : public QTcpServer
 
 
    protected:
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
       void incomingConnection(int socketID);
+#else
+      void incomingConnection(qintptr socketID)
+#endif
 };
 
 class ExecuteFile : public QThread {
