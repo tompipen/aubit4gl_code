@@ -151,7 +151,7 @@ void TableView::oldSectionOrder()
     if(FglForm *fglform = qobject_cast<FglForm*> (p_fglform))
     {
         QHeaderView *header = this->horizontalHeader();
-        //header->restoreState(VDC::readSettingsFromIni1(fglform->formName(), QString(this->accessibleName() + "/oldstate")));
+        header->restoreState(VDC::readSettingsFromIni1(fglform->formName(), QString(this->accessibleName() + "/oldstate")));
         VDC::removeSettingsFromIni(fglform->formName(), QString(this->accessibleName() + "/state"));
         this->update();
     }

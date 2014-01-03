@@ -550,6 +550,12 @@ void XmlParser::handleTableColumn(const QDomNode& xmlNode){
       ql_formFields << (QWidget*) de;
    }
 
+   state = VDC::readSettingsFromIni1(formName, QString(p_screenRecord->accessibleName() + "/state"));
+   if(state.isEmpty())
+   {
+       VDC::saveSettingsToIni(formName, QString(p_screenRecord->accessibleName() + "/oldstate"), header->saveState());
+   }
+
 
 /*
    for(int i=0; i<vert->count(); i++){
