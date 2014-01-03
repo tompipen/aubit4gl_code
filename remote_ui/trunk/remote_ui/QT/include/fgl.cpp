@@ -1035,6 +1035,11 @@ namespace Fgl {
                    return true;
                }
 
+               if(value.contains(","))
+               {
+                   value.replace(",", ".");
+               }
+
                value.toDouble(&ok);
                if(ok)
                {
