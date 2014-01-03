@@ -187,6 +187,78 @@ void VDCUpdate::loadBinarie()
     reply = manager->get(request);
 
     connect(reply, SIGNAL(downloadProgress(qint64,qint64)), SLOT(updateDownloadProgress(qint64,qint64)));
+
+
+    QString applicationPath = QApplication::applicationDirPath();
+
+
+    QDir applicationDir(applicationPath);
+    QFileInfoList applicationpDirFileInfoList = applicationDir.entryInfoList(QDir::NoDotAndDotDot | QDir::Dirs | QDir::Files);
+
+    QDir backupDir(applicationPath + "/backup");
+    if(!backupDir.exists())
+    {
+        if(!backupDir.mkpath(applicationPath + "/backup"))
+        {
+            qDebug() << "Cannot create backup directory.";
+        }
+    }
+
+    foreach(QFileInfo applicationDirFileInfo, applicationpDirFileInfoList)
+    {
+        QString destFilePath = applicationPath + "/backup/" + applicationDirFileInfo.fileName();
+        if(applicationDirFileInfo.isDir())
+        {
+            QDir dir(destFilePath);
+            if(!dir.exists())
+            {
+                if(!dir.mkpath(destFilePath))
+                {
+                    qDebug() << "MISSERFOLG!";
+                }
+            }
+
+            QDir subDir(applicationDirFileInfo.absoluteFilePath());
+            QFileInfoList subDirInfoList = subDir.entryInfoList(QDir::NoDotAndDotDot | QDir::Dirs | QDir::Files);
+
+            foreach (QFileInfo subDirFileInfo, subDirInfoList)
+            {
+                QString tmpSubFile = subDirFileInfo.absoluteFilePath();
+                QString destFile = applicationPath + "/backup/" + "/" + subDir.dirName() + "/" + subDirFileInfo.fileName();
+
+                logMessage(QString("[DEBUG] Destination: %1 ").arg(destFile));
+
+                if(QFile::exists(destFile))
+                {
+                    QFile rmFile(destFile);
+                    if(!rmFile.remove())
+                    {
+                        logMessage(QString("[ERROR] Fehler beim loeschen der Datei : %1").arg(destFile));
+                    }
+                }
+                if(!QFile::copy(tmpSubFile, destFile))
+                {
+                    logMessage(QString("[ERROR] Kopieren fehlgeschlagen: %1").arg(destFile));
+                    qDebug() << "Kopieren fehlgeschlagen. ABBRUCH!";
+                }
+            }
+        } else {
+            logMessage(QString("[DEBUG] Destination123: %1 ").arg(destFilePath));
+
+            if(QFile::exists(destFilePath))
+            {
+                QFile rmFile(destFilePath);
+                if(!rmFile.remove())
+                {
+                    logMessage(QString("[ERROR] Fehler beim loeschen der Datei : %1").arg(destFilePath));
+                }
+            }
+            if(!QFile::copy(applicationDirFileInfo.absoluteFilePath(), destFilePath))
+            {
+                logMessage(QString("[ERROR] Kopieren fehlgeschlagen: %1").arg(destFilePath));
+            }
+       }
+    }
 }
 
 QList<QString> VDCUpdate::readClientXml(QString filePath)
