@@ -13,7 +13,8 @@ BEGIN  {
 	print "const int *token_groups[]={" > "mk_fstates_1.h";
 }
 
-/^state/ {
+/^State.*conflicts:/ {next}
+/^[sS]tate/ {
 	if (state!="") {
 		val=""
 		for (a in arr) {
