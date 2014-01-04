@@ -9,8 +9,8 @@ BEGIN  {
 	print "#endif"
 	print "const int *token_groups[]={" > "rules/generated/mk_states_1.h";
 }
-
-/^state/ {
+/^States.*conflicts:/ {next}
+/^[sS]tate/ {
 	if (state!="") {
 		val=""
 		for (a in arr) {
