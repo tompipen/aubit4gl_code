@@ -1591,6 +1591,11 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
               returnvalues << "0";
          }
 
+         if(qs_name == "ui.vdc.getdevice")
+         {
+              returnvalues << "desktop" << QString::number(QApplication::desktop()->width()) + "x" + QString::number(QApplication::desktop()->height());;
+         }
+
          if(qs_name == "ui.vdc.repgen"){
 
            QStringList params;
