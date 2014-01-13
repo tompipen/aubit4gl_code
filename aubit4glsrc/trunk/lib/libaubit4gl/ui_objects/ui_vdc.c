@@ -482,8 +482,10 @@ char *filename=NULL;
   }
   return 1;
 }
-
-
+ 
+ 
+ 
+ 
 static int ui_vdc_execute(long *objectID_IgnoredAsAlways0,int n) {
 int okToProcess=1;
 int _ni=1;
@@ -535,96 +537,49 @@ char *filename=NULL;
   }
   return 1;
 }
-
-static int ui_vdc_openchartwindow(long *objectID_IgnoredAsAlways0,int n) {
-int okToProcess=1;
-
-int _ni=1;
-struct BINDING _ibind[1]={
-    {NULL,0,0,0,0,0,NULL}
-};
-
-int _no=1;
-struct BINDING _obind[1]={
-    {NULL,0,0,0,0,0,NULL}
-};
-int rval_0;
-char *filename=NULL;
-
-/* END OF DEFINE SECTION */
-
-
-  if (n!=1) {
-    A4GL_pop_args(n);
-    okToProcess=0;
-  }
-
-  if (okToProcess) {
-    filename=A4GL_char_pop();
-    _ibind[0].ptr=filename;
-    _ibind[0].size=strlen(filename);
-  }
-
-  // Set up output binding for our parameters
-  if (okToProcess) {
-    _obind[0].ptr=&rval_0;
-    _obind[0].size=4;
-    _obind[0].dtype=DTYPE_INT;
-  }
-
-  if (okToProcess) {
-      A4GL_ui_frontcall("INTERNAL","ui.vdc.openchartwindow",_ibind,_ni,_obind,_no );
-  }
-  
-   // Set up output binding for our parameters
-    if (filename ) {
-        free(filename);
-    }
-
-    if (!okToProcess) {
-    A4GL_push_null(DTYPE_INT,0);
-  } else {
-    A4GL_push_int(rval_0);
-  }
-  return 1;
-}
-
+ 
+ 
+ 
+ 
 static int ui_vdc_getstdofficeprog(long *objectID_IgnoredAsAlways0,int n) {
 int okToProcess=1;
 int _no=1;
 struct BINDING _obind[1]={
     {NULL,0,0,0,0,0,NULL}
 };
-int data;
-
+int rval_0;
+ 
 /* END OF DEFINE SECTION */
-
-
-  if (n!=0) {
+ 
+ 
+  if (n!=0) { 
     A4GL_pop_args(n);
     okToProcess=0;
   }
-
-
+ 
+ 
   // Set up output binding for our parameters
   if (okToProcess) {
-    _obind[0].ptr=&data;
+    _obind[0].ptr=&rval_0;
     _obind[0].size=4;
     _obind[0].dtype=DTYPE_INT;
   }
-
+ 
   if (okToProcess) {
       A4GL_ui_frontcall("INTERNAL","ui.vdc.getstdofficeprog",NULL,0,_obind,_no );
   }
-
-    if (!okToProcess) {
+ 
+  if (!okToProcess) {
     A4GL_push_null(DTYPE_INT,0);
   } else {
-    A4GL_push_int(data);
+    A4GL_push_int(rval_0);
   }
   return 1;
 }
-
+ 
+ 
+ 
+ 
 static int ui_vdc_get_last_sort(long *objectID_IgnoredAsAlways0,int n) {
 int okToProcess=1;
 int _ni=1;
@@ -637,73 +592,74 @@ struct BINDING _obind[1]={
 };
 char rval_0[512];
 char *modulname=NULL;
-
+ 
 /* END OF DEFINE SECTION */
-
-
-  if (n!=1) {
+ 
+ 
+  if (n!=1) { 
     A4GL_pop_args(n);
     okToProcess=0;
   }
-
+ 
   // Set up input binding for our parameters
   if (okToProcess) {
     modulname=A4GL_char_pop();
     _ibind[0].ptr=modulname;
     _ibind[0].size=strlen(modulname);
   }
-
+ 
   // Set up output binding for our parameters
   if (okToProcess) {
     _obind[0].ptr=&rval_0;
     _obind[0].size=512;
-    _obind[0].dtype=DTYPE_CHAR;
   }
-
+ 
   if (okToProcess) {
       A4GL_ui_frontcall("INTERNAL","ui.vdc.get_last_sort",_ibind,_ni,_obind,_no );
   }
-
-
+ 
+ 
   // Set up output binding for our parameters
-    if (modulname) {
-         free(modulname);
+    if (modulname ) {
+        free(modulname);
     }
-
-    if (!okToProcess) {
+  if (!okToProcess) {
     A4GL_push_null(DTYPE_CHAR,1);
   } else {
     A4GL_push_char(rval_0);
   }
   return 1;
 }
-
+ 
+ 
+ 
+ 
 static int ui_vdc_openeditor(long *objectID_IgnoredAsAlways0,int n) {
 int okToProcess=1;
 int _ni=2;
 struct BINDING _ibind[2]={
     {NULL,0,0,0,0,0,NULL},
-    {NULL,0,0,0,0,0,NULL},
+    {NULL,0,0,0,0,0,NULL}
 };
 int _no=1;
 struct BINDING _obind[1]={
-    {NULL,0,0,0,0,0,NULL},
+    {NULL,0,0,0,0,0,NULL}
 };
 int rval_0;
 char *type=NULL;
 char *htmlfile=NULL;
-
+ 
 /* END OF DEFINE SECTION */
-
-
-  if (n!=2) {
+ 
+ 
+  if (n!=2) { 
     A4GL_pop_args(n);
     okToProcess=0;
   }
-
+ 
   // Set up input binding for our parameters
   if (okToProcess) {
-
+ 
     htmlfile=A4GL_char_pop();
     _ibind[1].ptr=htmlfile;
     _ibind[1].size=strlen(htmlfile);
@@ -711,19 +667,19 @@ char *htmlfile=NULL;
     _ibind[0].ptr=type;
     _ibind[0].size=strlen(type);
   }
-
+ 
   // Set up output binding for our parameters
   if (okToProcess) {
     _obind[0].ptr=&rval_0;
     _obind[0].size=4;
     _obind[0].dtype=DTYPE_INT;
   }
-
+ 
   if (okToProcess) {
       A4GL_ui_frontcall("INTERNAL","ui.vdc.openeditor",_ibind,_ni,_obind,_no );
   }
-
-
+ 
+ 
   // Set up output binding for our parameters
     if (type ) {
         free(type);
@@ -738,50 +694,53 @@ char *htmlfile=NULL;
   }
   return 1;
 }
-
+ 
+ 
+ 
+ 
 static int ui_vdc_getdevice(long *objectID_IgnoredAsAlways0,int n) {
 int okToProcess=1;
 int _ni=1;
 struct BINDING _ibind[1]={
-    {NULL,0,0,0,0,0,NULL},
+    {NULL,0,0,0,0,0,NULL}
 };
 int _no=2;
 struct BINDING _obind[2]={
     {NULL,0,0,0,0,0,NULL},
-    {NULL,0,0,0,0,0,NULL},
+    {NULL,0,0,0,0,0,NULL}
 };
 char rval_0[512];
 char rval_1[512];
 char *htmlfile=NULL;
+ 
 /* END OF DEFINE SECTION */
-
-
-  if (n!=1) {
+ 
+ 
+  if (n!=1) { 
     A4GL_pop_args(n);
     okToProcess=0;
   }
-
+ 
   // Set up input binding for our parameters
   if (okToProcess) {
-
     htmlfile=A4GL_char_pop();
-    _ibind[1].ptr=htmlfile;
-    _ibind[1].size=strlen(htmlfile);
+    _ibind[0].ptr=htmlfile;
+    _ibind[0].size=strlen(htmlfile);
   }
-
+ 
   // Set up output binding for our parameters
   if (okToProcess) {
-    _obind[1].ptr=&rval_1;
-    _obind[1].size=512;
     _obind[0].ptr=&rval_0;
     _obind[0].size=512;
+    _obind[1].ptr=&rval_1;
+    _obind[1].size=512;
   }
-
+ 
   if (okToProcess) {
       A4GL_ui_frontcall("INTERNAL","ui.vdc.getdevice",_ibind,_ni,_obind,_no );
   }
-
-
+ 
+ 
   // Set up output binding for our parameters
     if (htmlfile ) {
         free(htmlfile);
@@ -795,8 +754,45 @@ char *htmlfile=NULL;
   }
   return 2;
 }
-
-
+ 
+ 
+ 
+ 
+static int ui_vdc_setclipboard(long *objectID_IgnoredAsAlways0,int n) {
+int okToProcess=1;
+int _ni=1;
+struct BINDING _ibind[1]={
+    {NULL,0,0,0,0,0,NULL}
+};
+char *content=NULL;
+ 
+/* END OF DEFINE SECTION */
+ 
+ 
+  if (n!=1) { 
+    A4GL_pop_args(n);
+    okToProcess=0;
+  }
+ 
+  // Set up input binding for our parameters
+  if (okToProcess) {
+    content=A4GL_char_pop();
+    _ibind[0].ptr=content;
+    _ibind[0].size=strlen(content);
+  }
+ 
+  if (okToProcess) {
+      A4GL_ui_frontcall("INTERNAL","ui.vdc.setclipboard",_ibind,_ni,NULL,0 );
+  }
+ 
+ 
+  // Set up output binding for our parameters
+    if (content ) {
+        free(content);
+    }
+  return 0;
+}
+ 
 void add_ui_vdc_support(void) {
 A4GL_add_object_type("ui.vdc");
   A4GL_add_datatype_function_i (DTYPE_OBJECT, ":ui.vdc.action", (void *)  ui_vdc_action);
@@ -806,9 +802,9 @@ A4GL_add_object_type("ui.vdc");
   A4GL_add_datatype_function_i (DTYPE_OBJECT, ":ui.vdc.md5hashfile", (void *)  ui_vdc_md5hashfile);
   A4GL_add_datatype_function_i (DTYPE_OBJECT, ":ui.vdc.printpdf", (void *)  ui_vdc_printpdf);
   A4GL_add_datatype_function_i (DTYPE_OBJECT, ":ui.vdc.execute", (void *)  ui_vdc_execute);
-  A4GL_add_datatype_function_i (DTYPE_OBJECT, ":ui.vdc.get_last_sort", (void *)  ui_vdc_get_last_sort);
   A4GL_add_datatype_function_i (DTYPE_OBJECT, ":ui.vdc.getstdofficeprog", (void *)  ui_vdc_getstdofficeprog);
-  A4GL_add_datatype_function_i (DTYPE_OBJECT, ":ui.vdc.openchartwindow", (void *)  ui_vdc_openchartwindow);
+  A4GL_add_datatype_function_i (DTYPE_OBJECT, ":ui.vdc.get_last_sort", (void *)  ui_vdc_get_last_sort);
   A4GL_add_datatype_function_i (DTYPE_OBJECT, ":ui.vdc.openeditor", (void *)  ui_vdc_openeditor);
   A4GL_add_datatype_function_i (DTYPE_OBJECT, ":ui.vdc.getdevice", (void *)  ui_vdc_getdevice);
+  A4GL_add_datatype_function_i (DTYPE_OBJECT, ":ui.vdc.setclipboard", (void *)  ui_vdc_setclipboard);
 }
