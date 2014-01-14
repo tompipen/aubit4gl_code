@@ -488,8 +488,12 @@ void LoginForm::removeIni()
 }
 void LoginForm::clearIniFile()
 {
-    #ifdef Q_WS_WIN
-        QSettings settings(QDesktopServices::storageLocation(QDesktopServices::DataLocation) + "/.vdc/settings.ini", QSettings::IniFormat);
+    #ifdef Q_OS_WIN
+        #if QT_VERSION < QT_VERSION_CHECK(5,0,9)
+           QSettings settings(QDesktopServices::storageLocation(QDesktopServices::DataLocation) + "/.vdc/settings.ini", QSettings::IniFormat);
+        #else
+           QSettings settings(QStandardPaths::writableLocation(QStandardPaths::DataLocation) + "/.vdc/settings.ini", QSettings::IniFormat);
+        #endif
     #else
         QSettings settings(QDir::homePath() + "/.vdc/settings.ini", QSettings::IniFormat);
     #endif
@@ -509,13 +513,13 @@ void LoginForm::aboutVDC(QWidget *parent)
 
     if(file.open(QIODevice::ReadOnly))
     {
-        #ifdef Q_WS_WIN
+        #ifdef Q_OS_WIN
             clientOs = "WINDOWS";
         #endif
-        #ifdef Q_WS_MAC
+        #ifdef Q_OS_MAC
             clientOs = "MAC";
         #endif
-        #ifdef Q_WS_X11
+        #ifdef Q_OS_LINUX
             clientOs = "LINUX";
         #endif
 
@@ -735,7 +739,7 @@ QString HostsData::checkOS()
    QString pfad;
 MainFrame::vdcdebug("HostsData","checkOS", "");
    pfad = "";
-   #ifdef Q_WS_WIN
+   #ifdef Q_OS_WIN
    int windows = QSysInfo::WindowsVersion;
    #if QT_VERSION >= 0x040600
       if(windows == QSysInfo::WV_VISTA){
@@ -764,12 +768,12 @@ MainFrame::vdcdebug("HostsData","checkOS", "");
     return pfad;
     #endif
 
-   #ifdef Q_WS_MAC
+   #ifdef Q_OS_MAC
    pfad = "/private/etc/hosts";
    return pfad;
    #endif
 
-   #ifdef Q_WS_X11
+   #ifdef Q_OS_LINUX
    pfad = "/etc/hosts";
    return pfad;
    #endif

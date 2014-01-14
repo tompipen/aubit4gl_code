@@ -3,7 +3,7 @@
 #include "clienttcp.h"
 #include "mainframe.h"
 #include "models/fglform.h"
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
 #include "windows.h"
 #include <stdlib.h>
 #endif
@@ -56,7 +56,7 @@ void VentasUpdate::readXmlFinished(QNetworkReply *reply)
 void VentasUpdate::checkServerClient()
 {
     QList<QList<QString> > serverVars = parseXml(QDir::tempPath() + "/vdc.xml");
-    #ifdef Q_WS_MAC
+    #ifdef Q_OS_MAC
         QList<QString> clientVars = clientXml(QApplication::applicationDirPath() + "/versions.xml");
     #else
         QList<QString> clientVars = clientXml(QApplication::applicationDirPath() + "/versions.xml");
