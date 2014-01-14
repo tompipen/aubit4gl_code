@@ -1595,6 +1595,15 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
          {
               returnvalues << "desktop" << QString::number(QApplication::desktop()->width()) + "x" + QString::number(QApplication::desktop()->height());;
          }
+         if(qs_name == "ui.vdc.setclipboard")
+         {
+             QStringList params;
+             for(int k=0; k<paramsElement.childNodes().count(); k++){
+                 QDomElement valuesElement = paramsElement.childNodes().at(k).toElement();
+                 params << valuesElement.text();
+             }
+             QMetaObject::invokeMethod(p_currScreenHandler, "setClipboard", Qt::QueuedConnection, Q_ARG(QString, params.at(0)));
+         } 
 
          if(qs_name == "ui.vdc.repgen"){
 
