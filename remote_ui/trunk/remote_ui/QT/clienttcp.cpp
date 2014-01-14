@@ -1226,7 +1226,7 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
       if(openLocalFile == 0)
       {
          //If we want to open a Email Programm or a Website.
-        #ifdef Q_OS_X11
+        #ifdef Q_OS_LINUX
            QDesktopServices::openUrl(QUrl(fileName, QUrl::TolerantMode));
         #endif
         #ifdef Q_OS_MAC
@@ -1243,7 +1243,7 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
       fileName = QDir::tempPath() + "/" + fileName;
       QFileInfo fileInfo(fileName);
 
-          #ifdef Q_OS_X11
+          #ifdef Q_OS_LINUX
              QDesktopServices::openUrl(QUrl(QString("file://" + fileInfo.absoluteFilePath()), QUrl::TolerantMode));
           #endif
           #ifdef Q_OS_MAC
@@ -2689,7 +2689,7 @@ void ProtocolHandler::executeFile(int waitforFinish, QString fileName)
     qDebug() << "LockFile: " << fileLockName;
     qDebug() << "fileName: " << fileNameInfo.absoluteFilePath();
     qDebug() << "waitForFinish: " << QString::number(waitforFinish);
-#ifdef Q_OS_X11
+#ifdef Q_OS_LINUX
    if(QDesktopServices::openUrl(QUrl(QString("file://" + fileNameInfo.absoluteFilePath()), QUrl::TolerantMode)))
    {
        int cnt = 0;
