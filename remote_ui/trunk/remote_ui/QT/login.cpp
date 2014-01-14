@@ -243,6 +243,81 @@ void LoginForm::createMenu(QMenuBar *menu)
     options->addAction(font);
     options->addSeparator();
 
+    options->addSeparator();
+
+    QString screenFormat = VDC::readSettingsFromIni("","screenFormat");
+    QString seperator = VDC::readSettingsFromIni("","setDBMONEY");
+
+    QMenu *format = new QMenu(tr("&Format in screen forms"), this);
+    format->setStatusTip(tr("Set the Format"));
+
+    QSignalMapper* formatSignalMapper = new QSignalMapper (this);
+
+    format1 = new QAction(tr("&1.234,56"), this);
+    format1->setCheckable(true);
+    connect(format1, SIGNAL(triggered()), formatSignalMapper, SLOT(map()));
+    formatSignalMapper->setMapping(format1, "#,###,##&.&&|,");
+
+    format->addAction(format1);
+
+    format2 = new QAction(tr("&1,234.56"), this);
+    format2->setCheckable(true);
+    connect(format2, SIGNAL(triggered()), formatSignalMapper, SLOT(map()));
+    formatSignalMapper->setMapping(format2, "#,###,##&.&&|.");
+
+    format->addAction(format2);
+
+    format3 = new QAction(tr("&1234,56"), this);
+    format3->setCheckable(true);
+    connect(format3, SIGNAL(triggered()), formatSignalMapper, SLOT(map()));
+    formatSignalMapper->setMapping(format3, "-|,");
+
+    format->addAction(format3);
+
+    format4 = new QAction(tr("&1234.56"), this);
+    format4->setCheckable(true);
+    connect(format4, SIGNAL(triggered()), formatSignalMapper, SLOT(map()));
+    formatSignalMapper->setMapping(format4, "--|.");
+
+    format->addAction(format4);
+
+    if(screenFormat == "#,###,##&.&&" && seperator == ",")
+    {
+        format1->setChecked(true);
+        format2->setChecked(false);
+        format3->setChecked(false);
+        format4->setChecked(false);
+    }
+
+    if(screenFormat == "#,###,##&.&&" && seperator == ".")
+    {
+        format1->setChecked(false);
+        format2->setChecked(true);
+        format3->setChecked(false);
+        format4->setChecked(false);
+    }
+
+    if(screenFormat == "-")
+    {
+        format1->setChecked(false);
+        format2->setChecked(false);
+        format3->setChecked(true);
+        format4->setChecked(false);
+    }
+
+    if(screenFormat == "--")
+    {
+        format1->setChecked(false);
+        format2->setChecked(false);
+        format3->setChecked(false);
+        format4->setChecked(true);
+    }
+
+    connect(formatSignalMapper, SIGNAL(mapped(QString)), this, SLOT(setFormat(QString)));
+
+    options->addMenu(format);
+    options->addSeparator();
+
     QSignalMapper* signalMapper = new QSignalMapper (this);
 
     QAction *feldplus = new QAction(tr("Fieldwidth + "), this);
@@ -996,6 +1071,55 @@ MainFrame::vdcdebug("HostsData","writeHost", "");
   dia->close();
 
 }
+void LoginForm::setFormat(QString format)
+{
+    qDebug() << "format: " << format;
+
+    QList<QString> params = format.split("|");
+    if(params.at(0) != "-" && params.at(0) != "--")
+    {
+        VDC::saveSettingsToIni("","screenFormat", params.at(0));
+    } else {
+        VDC::saveSettingsToIni("","screenFormat", QString(""));
+    }
+    if(params.count() > 0)
+    {
+        VDC::saveSettingsToIni("","setDBMONEY", params.at(1));
+    }
+
+    if(params.at(0) == "#,###,##&.&&" && params.at(1) == ",")
+    {
+        format1->setChecked(true);
+        format2->setChecked(false);
+        format3->setChecked(false);
+        format4->setChecked(false);
+    }
+
+    if(params.at(0) == "#,###,##&.&&" && params.at(1) == ".")
+    {
+        format1->setChecked(false);
+        format2->setChecked(true);
+        format3->setChecked(false);
+        format4->setChecked(false);
+    }
+
+    if(params.at(0) == "-")
+    {
+        format1->setChecked(false);
+        format2->setChecked(false);
+        format3->setChecked(true);
+        format4->setChecked(false);
+    }
+
+    if(params.at(0) == "--")
+    {
+        format1->setChecked(false);
+        format2->setChecked(false);
+        format3->setChecked(false);
+        format4->setChecked(true);
+    }
+}
+
 void LoginForm::font()
 {
        OptionsTab *optionsTab = new OptionsTab();

@@ -51,8 +51,12 @@ namespace VDC {
 
    void removeSettingsKeysWith(QString group, QString text)
    {
-    #ifdef Q_WS_WIN
-    QSettings settings(QDesktopServices::storageLocation(QDesktopServices::DataLocation) + "/.vdc/settings.ini", QSettings::IniFormat);
+    #ifdef Q_OS_WIN
+        #if QT_VERSION < QT_VERSION_CHECK(5,0,9)
+           QSettings settings(QDesktopServices::storageLocation(QDesktopServices::DataLocation) + "/.vdc/settings.ini", QSettings::IniFormat);
+        #else
+           QSettings settings(QStandardPaths::writableLocation(QStandardPaths::DataLocation) + "/.vdc/settings.ini", QSettings::IniFormat);
+        #endif
     #else
     QSettings settings(QDir::homePath() + "/.vdc/settings.ini", QSettings::IniFormat);
     #endif
@@ -71,9 +75,13 @@ namespace VDC {
    QString readSettingsFromIni(QString group, QString key)
    {
        QString value;
-       #ifdef Q_WS_WIN
-       QSettings settings(QDesktopServices::storageLocation(QDesktopServices::DataLocation) + "/.vdc/settings.ini", QSettings::IniFormat);
-       #else
+        #ifdef Q_OS_WIN
+            #if QT_VERSION < QT_VERSION_CHECK(5,0,9)
+               QSettings settings(QDesktopServices::storageLocation(QDesktopServices::DataLocation) + "/.vdc/settings.ini", QSettings::IniFormat);
+            #else
+               QSettings settings(QStandardPaths::writableLocation(QStandardPaths::DataLocation) + "/.vdc/settings.ini", QSettings::IniFormat);
+            #endif
+        #else
        QSettings settings(QDir::homePath() + "/.vdc/settings.ini", QSettings::IniFormat);
        #endif
        settings.beginGroup(group);
@@ -86,8 +94,12 @@ namespace VDC {
    QByteArray readSettingsFromIni1(QString group, QString key)
    {
         QByteArray value;
-        #ifdef Q_WS_WIN
-        QSettings settings(QDesktopServices::storageLocation(QDesktopServices::DataLocation) + "/.vdc/settings.ini", QSettings::IniFormat);
+        #ifdef Q_OS_WIN
+            #if QT_VERSION < QT_VERSION_CHECK(5,0,9)
+               QSettings settings(QDesktopServices::storageLocation(QDesktopServices::DataLocation) + "/.vdc/settings.ini", QSettings::IniFormat);
+            #else
+               QSettings settings(QStandardPaths::writableLocation(QStandardPaths::DataLocation) + "/.vdc/settings.ini", QSettings::IniFormat);
+            #endif
         #else
         QSettings settings(QDir::homePath() + "/.vdc/settings.ini", QSettings::IniFormat);
         #endif
@@ -101,8 +113,12 @@ namespace VDC {
 
    void saveSettingsToIni(QString group, QString key, QString value)
    {
-        #ifdef Q_WS_WIN
-        QSettings settings(QDesktopServices::storageLocation(QDesktopServices::DataLocation) + "/.vdc/settings.ini", QSettings::IniFormat);
+        #ifdef Q_OS_WIN
+            #if QT_VERSION < QT_VERSION_CHECK(5,0,9)
+               QSettings settings(QDesktopServices::storageLocation(QDesktopServices::DataLocation) + "/.vdc/settings.ini", QSettings::IniFormat);
+            #else
+               QSettings settings(QStandardPaths::writableLocation(QStandardPaths::DataLocation) + "/.vdc/settings.ini", QSettings::IniFormat);
+            #endif
         #else
         QSettings settings(QDir::homePath() + "/.vdc/settings.ini", QSettings::IniFormat);
         #endif
@@ -112,8 +128,12 @@ namespace VDC {
    }
    void saveSettingsToIni(QString group, QString key, QByteArray value)
    {
-        #ifdef Q_WS_WIN
-        QSettings settings(QDesktopServices::storageLocation(QDesktopServices::DataLocation) + "/.vdc/settings.ini", QSettings::IniFormat);
+        #ifdef Q_OS_WIN
+            #if QT_VERSION < QT_VERSION_CHECK(5,0,9)
+               QSettings settings(QDesktopServices::storageLocation(QDesktopServices::DataLocation) + "/.vdc/settings.ini", QSettings::IniFormat);
+            #else
+               QSettings settings(QStandardPaths::writableLocation(QStandardPaths::DataLocation) + "/.vdc/settings.ini", QSettings::IniFormat);
+            #endif
         #else
         QSettings settings(QDir::homePath() + "/.vdc/settings.ini", QSettings::IniFormat);
         #endif
@@ -124,8 +144,12 @@ namespace VDC {
 
    void removeSettingsFromIni(QString group, QString key)
    {
-        #ifdef Q_WS_WIN
-        QSettings settings(QDesktopServices::storageLocation(QDesktopServices::DataLocation) + "/.vdc/settings.ini", QSettings::IniFormat);
+        #ifdef Q_OS_WIN
+            #if QT_VERSION < QT_VERSION_CHECK(5,0,9)
+               QSettings settings(QDesktopServices::storageLocation(QDesktopServices::DataLocation) + "/.vdc/settings.ini", QSettings::IniFormat);
+            #else
+               QSettings settings(QStandardPaths::writableLocation(QStandardPaths::DataLocation) + "/.vdc/settings.ini", QSettings::IniFormat);
+            #endif
         #else
         QSettings settings(QDir::homePath() + "/.vdc/settings.ini", QSettings::IniFormat);
         #endif

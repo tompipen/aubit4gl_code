@@ -58,6 +58,7 @@ public slots:
    void aboutVDC(QWidget *parent = 0);
    void removeIni();
    void clearIniFile();
+   void setFormat(QString);
    void font();
    void setFactorWidth(QString);
    void resetFactor();
@@ -140,6 +141,10 @@ private:
    QCheckBox *logVDC;
    QErrorMessage *errorMessageLoginForm;
 
+   QAction *format1;
+   QAction *format2;
+   QAction *format3;
+   QAction *format4;
    void readEditFile(QString);
    void writeFile(QString);
    bool b_savefile;

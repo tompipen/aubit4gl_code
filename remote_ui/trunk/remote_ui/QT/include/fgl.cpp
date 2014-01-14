@@ -3,6 +3,7 @@
 #include <QDebug>
 #include <QProcessEnvironment>
 #include <cstdlib>
+#include "vdc.h"
 
 namespace Fgl {
    QHash<QString, QString> env;
@@ -88,6 +89,7 @@ namespace Fgl {
    {
       bool isNeg = false;
       bool ok = false;
+
       qreal dec = value.toDouble(&ok);
 
       if(ok){
@@ -215,6 +217,13 @@ namespace Fgl {
       canFloatHead << '*' << '-' << '+' << '(' << '$';
       QList<QChar> repDigit;
       repDigit << '*' << '&' << '#' << '<' << '-' << '+' << '(' << ')' << '$';
+
+      QString dbmoney1 = VDC::readSettingsFromIni("", "setDBMONEY");
+
+      /*if(!dbmoney1.isEmpty())
+      {
+          dbmoney = dbmoney1;
+      }*/
       int def = 30;
 
       int lb = 0, cb = 0;
@@ -300,10 +309,19 @@ namespace Fgl {
 
       bool ok = false;
 
-      value.toDouble(&ok);
+      QString value1 = value;
+
+      if(value1.contains(","))
+      {
+          value1.replace(",", ".");
+      }
+
+      value1.toDouble(&ok);
 
       if(!ok)
-         return value;
+      {
+          return value;
+      }
 
       int num_places = 0;
       QString fm1;
@@ -334,7 +352,7 @@ namespace Fgl {
       bool decFound = false;
       for(int i=0; i<value.length(); i++){
           //DBMONEY ggf. einbauen
-          if(value.at(i) == ','){
+          if(value.at(i) == QChar(',')){
             decFound = true;
             continue;
          }
@@ -597,11 +615,14 @@ namespace Fgl {
       QString suffix;
    //   const QString DBMONEY = dbmoney.isEmpty() ? dbmoney : env["DBMONEY"];
       QString DBMONEY;
+
+      dbmoney = VDC::readSettingsFromIni("", "setDBMONEY");
+
       if(dbmoney.isEmpty()) {
-          DBMONEY = env["DBMONEY"];
+         DBMONEY = env["DBMONEY"];
       }
       else{
-          DBMONEY = dbmoney;
+         DBMONEY = dbmoney;
       }
 
       decFound = false;
