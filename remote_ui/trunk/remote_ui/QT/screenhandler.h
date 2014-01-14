@@ -285,6 +285,8 @@ public slots:
 
    void clearDisplayArrayRows(QStringList fieldNames);
 
+   void setClipboard(QString);
+
 
 signals:
    void fglFormResponse(QString);

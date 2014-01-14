@@ -4484,6 +4484,11 @@ void ScreenHandler::saveOfficeInstallation()
     }
 }
 
+void ScreenHandler::setClipboard(QString content)
+{
+    QApplication::clipboard()->setText(content);
+}
+
 void ScreenHandler::printpdf(QString filename)
 {
     Q_UNUSED(filename);
