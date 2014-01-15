@@ -510,28 +510,28 @@ printPacket (struct s_attr *attribute)
 {
 int a;
 int b;
-printf("id=%s envelopeid=%s yourid=%s data=%s type=%s\n",attribute->id, attribute->envelopeId, attribute->yourId, attribute->data, attribute->type);
-printf("arrline=%d scrline=%d arrcount=%d\n", attribute->arrline, attribute->scrline, attribute->arrcount);
-printf("lastcursor=%d lastkey=%s infield=%s bufferTouched=%d\n", attribute->lastcursor ,attribute->lastkey,attribute->infield, attribute->bufferTouched);
-printf("fileid=%s filelen=%d\n",attribute->fileid,attribute->filelen);
-printf("programname=%s\n",attribute->programname);
-printf("Cnt=%d of %d\n", attribute->cnt, attribute->maxcnt);
+fprintf(stderr, "id=%s envelopeid=%s yourid=%s data=%s type=%s\n",attribute->id, attribute->envelopeId, attribute->yourId, attribute->data, attribute->type);
+fprintf(stderr, "arrline=%d scrline=%d arrcount=%d\n", attribute->arrline, attribute->scrline, attribute->arrcount);
+fprintf(stderr, "lastcursor=%d lastkey=%s infield=%s bufferTouched=%d\n", attribute->lastcursor ,attribute->lastkey,attribute->infield, attribute->bufferTouched);
+fprintf(stderr, "fileid=%s filelen=%d\n",attribute->fileid,attribute->filelen);
+fprintf(stderr, "programname=%s\n",attribute->programname);
+fprintf(stderr, "Cnt=%d of %d\n", attribute->cnt, attribute->maxcnt);
 
 if (attribute->sync.nvalues) {
 	for (a=0;a<attribute->sync.nvalues;a++) {
-		printf("%s %s %d %d\n", attribute->sync.vals[a].value, attribute->sync.vals[a].fieldname, attribute->sync.vals[a].touched, attribute->sync.vals[a].fieldtype);
+		fprintf(stderr, "%s %s %d %d\n", attribute->sync.vals[a].value, attribute->sync.vals[a].fieldname, attribute->sync.vals[a].touched, attribute->sync.vals[a].fieldtype);
 	}
 }
 if (attribute->rows.nrows) {
 	for (b=0;b<attribute->rows.nrows;b++) {
-		printf("Row : %d\n",attribute->rows.row[b].rownum);
+		fprintf(stderr,"Row : %d\n",attribute->rows.row[b].rownum);
 		for (a=0;a<attribute->rows.row[b].sync.nvalues;a++) {
-			printf("   %s %s %d %d\n", attribute->rows.row[b].sync.vals[a].value, attribute->rows.row[b].sync.vals[a].fieldname, attribute->rows.row[b].sync.vals[a].touched, attribute->rows.row[b].sync.vals[a].fieldtype);
+			fprintf(stderr,"   %s %s %d %d\n", attribute->rows.row[b].sync.vals[a].value, attribute->rows.row[b].sync.vals[a].fieldname, attribute->rows.row[b].sync.vals[a].touched, attribute->rows.row[b].sync.vals[a].fieldtype);
 		}
 		
 	}
 }
-printf("-----------------\n");
+fprintf(stderr,"-----------------\n");
 }
 
 struct s_attr *

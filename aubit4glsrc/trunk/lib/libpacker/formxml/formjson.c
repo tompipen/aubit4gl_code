@@ -1203,7 +1203,7 @@ int printed=0;
 		printed=1;
 	
 		get_attribs(f, attr_no, buff_tabcol,0,a);
-	printf("Find label : %d %d\n", f->metrics.metrics_val[a].x,f->metrics.metrics_val[a].y);
+	fprintf(stderr, "Find label : %d %d\n", f->metrics.metrics_val[a].x,f->metrics.metrics_val[a].y);
 		txt=find_label (f->metrics.metrics_val[a].x,f->metrics.metrics_val[a].y);
 		if (txt) {
 			sprintf(nmbuff,",\"text\":\"%s\"",xml_escape( txt));
@@ -1280,7 +1280,7 @@ new_field (int y, int x, int w, char because_of, int fstart)
   char buff[2000];
   strcpy (buff, &screen[y][x]);
   buff[w] = 0;
-printf("new field: %d\n",nfields);
+//printf("new field: %d\n",nfields);
 
   nfields++;
   screen_convert_fields = realloc (screen_convert_fields, sizeof (struct s_field) * nfields);
@@ -1376,7 +1376,7 @@ void make_screen (struct_form * f,int scr)
 
   if (f->maxcol > 400 || f->maxline > 400)
     {
-      printf ("Too wide or too long\n");
+      fprintf (stderr, "Too wide or too long\n");
       exit (1);
     }
   for (y = 0; y < f->maxline; y++)
@@ -1550,10 +1550,10 @@ void make_screen (struct_form * f,int scr)
 static char * find_label (int x, int y)
 {
   int a;
-printf("nfields=%d\n",nfields);
+fprintf(stderr, "nfields=%d\n",nfields);
   for (a = 0; a < nfields; a++)
     {
-	printf("%s - %d %d\n",  screen_convert_fields[a].label,screen_convert_fields[a].y, screen_convert_fields[a].field_start );
+	fprintf(stderr, "%s - %d %d\n",  screen_convert_fields[a].label,screen_convert_fields[a].y, screen_convert_fields[a].field_start );
       if (screen_convert_fields[a].y == y && screen_convert_fields[a].field_start == x)
         {
           return screen_convert_fields[a].label;
@@ -2155,7 +2155,7 @@ static char * get_sql_dtype ( int dtype)
 
 
     default:
-      printf ("Unhandled define in module variable removal... variable dtype : %d (%x)\n", dtype, dtype);
+      fprintf (stderr, "Unhandled define in module variable removal... variable dtype : %d (%x)\n", dtype, dtype);
       A4GL_assertion (1, "Unhandled define in module variable removal...");
 
     }

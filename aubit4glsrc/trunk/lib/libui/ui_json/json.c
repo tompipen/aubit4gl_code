@@ -188,6 +188,7 @@ int l;
 char *ptr;
 
   int cnt;
+
   send_to_ui ("         {\"Name\":\"%s\",\"File\":\"%s\", \"Data\":[", formname, formfile);
 
   cnt=0;
@@ -224,6 +225,7 @@ A4GL_JSON_opening_form (char *formfile, char *formname,int append_xml)
   char *fbuff;
   char buff[2000];
   char buff_formname[2000];
+
   strcpy (buff, formfile);
   A4GL_trim (buff);
   strcpy (buff_formname, formname);
@@ -251,7 +253,7 @@ A4GL_JSON_opening_form (char *formfile, char *formname,int append_xml)
     }
   else
     {
-      //printf ("Unable to open file \"%s\"\n", buff);
+      fprintf (stderr, "Unable to open file \"%s\"\n", buff);
       return 0;
     }
 }
@@ -521,6 +523,9 @@ UILIB_A4GL_open_form (char *name)
       // this will callback to our UILIB_A4GL_read_metrics function..
 	set_reading_form(buff,name);
       form = A4GL_read_form (buff, name);
+	if (!form) {
+			send_to_ui ("null");
+	}
     }
     send_to_ui ("      },");
   suspend_flush (-1);
@@ -1401,7 +1406,6 @@ UILIB_A4GL_form_loop_v2 (void *s, int init, void *evt)
 	}
       a = A4GL_pop_int ();
 
-	
       if (a == 0)
 	{
 	  if (A4GL_has_event (A4GL_EVENT_BEFORE_INP, evt))
@@ -1433,7 +1437,7 @@ UILIB_A4GL_form_loop_v2 (void *s, int init, void *evt)
 	}
 
       if (sreal->mode == MODE_CONSTRUCT ) {
-      if (last_attr->sync.nvalues)
+      if (last_attr->sync.nvalues>1)
 	{
 	  set_construct_clause (Context, generate_construct_result (sreal));
 	}
@@ -1446,6 +1450,7 @@ UILIB_A4GL_form_loop_v2 (void *s, int init, void *evt)
 
       if (a == -100)
 	{			// Accept...
+
 		/*
 	  if (sreal->mode == MODE_CONSTRUCT)
 	    {
@@ -1468,7 +1473,7 @@ UILIB_A4GL_form_loop_v2 (void *s, int init, void *evt)
 
 	  if (A4GL_has_event (A4GL_EVENT_AFTER_INP_CLEAN, evt))
 	    {
-	      return A4GL_has_event (A4GL_EVENT_AFTER_INP_CLEAN, evt);
+	       return A4GL_has_event (A4GL_EVENT_AFTER_INP_CLEAN, evt);
 	    }
 	}
 
