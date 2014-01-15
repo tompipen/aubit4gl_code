@@ -1196,18 +1196,26 @@ MainFrame::vdcdebug("WidgetHelper","createEdit", "const QDomElement& formField, 
 
    QString screenFormat = VDC::readSettingsFromIni("","screenFormat");
 
-   if(!screenFormat.isEmpty())
+   switch(lineEdit->dataType())
    {
-       if(screenFormat != "-" && screenFormat != "--")
-       {
-           lineEdit->setFormat(screenFormat);
-       } else {
-           lineEdit->setFormat("");
-       }
-   } else {
-       lineEdit->setFormat(format);
+   case Fgl::DTYPE_SMFLOAT:
+   case Fgl::DTYPE_FLOAT:
+   case Fgl::DTYPE_DECIMAL:
+      if(!screenFormat.isEmpty())
+      {
+          if(screenFormat != "-" && screenFormat != "--")
+          {
+              lineEdit->setFormat(screenFormat);
+          } else {
+              lineEdit->setFormat("##&.&&");
+          }
+      } else {
+          lineEdit->setFormat(format);
+      }
+      break;
+   default:
+       break;
    }
-
 
    QFontMetrics fm = lineEdit->fontMetrics();
 
