@@ -79,6 +79,7 @@ if (selfonly) {
         } else {
 		print "    if (libptr) {dlclose(libptr);}"
 		print "    libptr=0;"
+		print "    strcpy(currentLib,\"\");"
 	}
 	print "    clrcachedptrs();"
 }

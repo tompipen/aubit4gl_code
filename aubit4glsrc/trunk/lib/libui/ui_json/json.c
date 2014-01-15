@@ -374,7 +374,7 @@ UILIB_A4GL_cr_window_form (char *name, int iswindow, int form_line,
   A4GL_trim (fname);
   send_to_ui ("      {\"type\":\"OPENWINDOWWITHFORM\",\"WINDOW\":\"%s\",\"X\":%d,\"Y\":%d,\"ATTRIBUTE\":%d,\"SOURCE\":\"%s\"", name, x, y, attrib, fname);
       send_to_ui
-	(",\"TEXT\":\"%s\",\"STYLE\":\"%s\",\"ERROR_LINE\":%d,\"PROMPT_LINE\":%d,\"MENU_LINE\":%d,\"BORDER\":%d,\"COMMENT_LINE\":%d,\"MESSAGE_LINE\":%d,\"FORM_LINE\":%d,",
+	(",\"TEXT\":\"%s\",\"STYLE\":\"%s\",\"ERROR_LINE\":%d,\"PROMPT_LINE\":%d,\"MENU_LINE\":%d,\"BORDER\":%d,\"COMMENT_LINE\":%d,\"MESSAGE_LINE\":%d,\"FORM_LINE\":%d,\"FORM\":",
 	 ignull (text), ignull (style), error_line, prompt_line, menu_line, border, comment_line, message_line,form_line);
 
 
