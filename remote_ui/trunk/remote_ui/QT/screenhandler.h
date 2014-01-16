@@ -287,6 +287,9 @@ public slots:
 
    void setClipboard(QString);
 
+   void setWaitCursor();
+   void showWindow();
+
 
 signals:
    void fglFormResponse(QString);
