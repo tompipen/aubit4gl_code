@@ -4488,7 +4488,10 @@ void ScreenHandler::showWindow()
 {
     p_fglform->show();
     p_fglform->checkState();
-    p_fglform->menu()->setEnabled(false);
+    if(p_fglform->menu() != NULL)
+    {
+        p_fglform->menu()->setEnabled(false);
+    }
 }
 
 void ScreenHandler::setWaitCursor()
