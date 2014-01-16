@@ -119,8 +119,13 @@ namespace Fgl {
    QString vdc_to_fgl(QString fmt, QString value, DataType dt)
    {
        QString tdel = "";
-       QString dbmoney = env["DBMONEY"].trimmed();
+       QString dbmoney = VDC::readSettingsFromIni("","setDBMONEY");
        QString a4gl_numeric = env["A4GL_NUMERIC"].trimmed();
+
+      if(dbmoney.isEmpty())
+      {
+          dbmoney = env["DBMONEY"].trimmed();
+      }
 
        if(dbmoney == ",")
        {
@@ -313,7 +318,7 @@ namespace Fgl {
 
       if(value1.contains(","))
       {
-          value1.replace(",", ".");
+          value1.remove(",");
       }
 
       value1.toDouble(&ok);
@@ -1058,7 +1063,7 @@ namespace Fgl {
 
                if(value.contains(","))
                {
-                   value.replace(",", ".");
+                   value.remove(",");
                }
 
                value.toDouble(&ok);
