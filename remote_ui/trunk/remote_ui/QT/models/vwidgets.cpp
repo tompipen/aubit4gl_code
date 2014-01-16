@@ -1207,12 +1207,22 @@ MainFrame::vdcdebug("WidgetHelper","createEdit", "const QDomElement& formField, 
           {
               lineEdit->setFormat(screenFormat);
           } else {
-              lineEdit->setFormat("##&.&&");
+              lineEdit->setFormat("######&.&&");
           }
       } else {
           lineEdit->setFormat(format);
       }
       break;
+   case Fgl::DTYPE_INT:
+       if(!screenFormat.isEmpty())
+       {
+           QString screenFormat1 = "##,###,##&";
+           lineEdit->setFormat(screenFormat1);
+       } else {
+           lineEdit->setFormat(format);
+       }
+       break;
+
    default:
        break;
    }

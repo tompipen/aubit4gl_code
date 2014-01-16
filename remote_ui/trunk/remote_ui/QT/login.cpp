@@ -1080,12 +1080,8 @@ void LoginForm::setFormat(QString format)
     qDebug() << "format: " << format;
 
     QList<QString> params = format.split("|");
-    if(params.at(0) != "-" && params.at(0) != "--")
-    {
-        VDC::saveSettingsToIni("","screenFormat", params.at(0));
-    } else {
-        VDC::saveSettingsToIni("","screenFormat", QString(""));
-    }
+    VDC::saveSettingsToIni("","screenFormat", params.at(0));
+
     if(params.count() > 0)
     {
         VDC::saveSettingsToIni("","setDBMONEY", params.at(1));
