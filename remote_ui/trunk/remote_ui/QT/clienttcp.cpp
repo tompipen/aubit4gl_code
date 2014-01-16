@@ -2444,8 +2444,9 @@ MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
       QMetaObject::invokeMethod(p_currScreenHandler, "setFormOpts", Qt::QueuedConnection, Q_ARG(QString, childElement.nodeName()), Q_ARG(bool, true), Q_ARG(int, context));
     //  setFormOpts(childElement.nodeName(), true, context);
       this->handleMenuElement(childElement);
-      QMetaObject::invokeMethod(p_currScreenHandler, "waitForEvent", Qt::QueuedConnection);
-      return;
+      QMetaObject::invokeMethod(p_currScreenHandler, "showWindow", Qt::QueuedConnection);
+      QMetaObject::invokeMethod(p_currScreenHandler, "setWaitCursor", Qt::QueuedConnection);
+return;
    }
 
    if(childElement.nodeName() == "NEXTOPTION"){
