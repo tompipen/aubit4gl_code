@@ -684,6 +684,15 @@ namespace Fgl {
             }
          }
       }
+
+      if(fm2.isEmpty())
+      {
+            if(qs_str.contains(dbmoney) && dbmoney == ",")
+            {
+                qs_str.replace(",",".");
+            }
+      }
+
       return qs_str.trimmed();
    }
 
