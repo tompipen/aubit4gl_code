@@ -4486,6 +4486,11 @@ void ScreenHandler::saveOfficeInstallation()
 }
 void ScreenHandler::showWindow()
 {
+    if(p_fglform->windowName == "dummy_ventas")
+    {
+        return;
+    }
+
     p_fglform->show();
     p_fglform->checkState();
     if(p_fglform->menu() != NULL)
