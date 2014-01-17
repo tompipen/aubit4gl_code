@@ -1213,6 +1213,7 @@ MainFrame::vdcdebug("WidgetHelper","createEdit", "const QDomElement& formField, 
           lineEdit->setFormat(format);
       }
       break;
+   case Fgl::DTYPE_SMINT:
    case Fgl::DTYPE_INT:
        if(!screenFormat.isEmpty() && screenFormat != "-" && screenFormat != "--")
        {
@@ -1305,10 +1306,18 @@ MainFrame::vdcdebug("WidgetHelper","createButtonEdit", "const QDomElement& formF
           {
               lineEdit->setFormat(screenFormat);
           } else {
-              lineEdit->setFormat("##&.&&");
+             lineEdit->setFormat("######&.&&");
           }
       }
       break;
+   case Fgl::DTYPE_SMINT:
+   case Fgl::DTYPE_INT:
+       if(!screenFormat.isEmpty() && screenFormat != "-" && screenFormat != "--")
+       {
+           QString screenFormat1 = "-,---,---";
+           lineEdit->setFormat(screenFormat1);
+       }
+       break;
    default:
        break;
    }
