@@ -1292,6 +1292,27 @@ MainFrame::vdcdebug("WidgetHelper","createButtonEdit", "const QDomElement& formF
    lineEdit->setSqlType(sqlType);
    lineEdit->setDefaultValue(defaultValue);
 
+   QString screenFormat = VDC::readSettingsFromIni("","screenFormat");
+
+   switch(lineEdit->dataType())
+   {
+   case Fgl::DTYPE_SMFLOAT:
+   case Fgl::DTYPE_FLOAT:
+   case Fgl::DTYPE_DECIMAL:
+      if(!screenFormat.isEmpty())
+      {
+          if(screenFormat != "-" && screenFormat != "--")
+          {
+              lineEdit->setFormat(screenFormat);
+          } else {
+              lineEdit->setFormat("##&.&&");
+          }
+      }
+      break;
+   default:
+       break;
+   }
+
    QString comments = lineEditElement.attribute("comments");
    if(!comments.isEmpty()){
       lineEdit->setToolTip(comments);
