@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: function_call_stack.c,v 1.56 2012-11-07 14:45:34 mikeaubury Exp $
+# $Id: function_call_stack.c,v 1.57 2014-01-19 23:08:01 mikeaubury Exp $
 #*/
 
 /**
@@ -447,7 +447,7 @@ int nsec;
 
 nsec=time(NULL)-functionCallStack[cnt].started;
 if (nsec>1) {
-	sprintf(totalTime,"<tr><td>Time: %d</tr></td>",nsec);
+	sprintf(totalTime,"<tr><td>Time: %d</td></tr>",nsec);
 } else {
 	strcpy(totalTime,"");
 }
