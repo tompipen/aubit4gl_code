@@ -1721,14 +1721,67 @@ void LineEditDelegate::setEditorData(QWidget *editor,
 {
    QString value = index.model()->data(index, Qt::EditRole).toString();
 
-   WidgetHelper::setFieldText(editor, value);}
+   QString dbmoney = VDC::readSettingsFromIni("", "setDBMONEY");
+   QString format;
+
+   int indexOfValue = value.indexOf(",");
+   int indexOfValuePoint = value.indexOf(".");
+   int valueLength = value.length();
+   int position = valueLength - indexOfValue;
+   int positionPoint = valueLength - indexOfValuePoint;
+   if(LineEdit *edit = qobject_cast<LineEdit*> (editor))
+   {
+       format = edit->format();
+       edit->setFormat("");
+   }
+
+   if(value.contains(",") && position != 3 && dbmoney == ".")
+   {
+       value.remove(",");
+       value.replace(".", ",");
+   }
+
+   if(value.contains(".") && positionPoint != 3 && dbmoney == ",")
+   {
+       value.remove(".");
+       value.replace(",", ".");
+   }
+
+   WidgetHelper::setFieldText(editor, value);
+   if(LineEdit *edit = qobject_cast<LineEdit*> (editor))
+   {
+       edit->setFormat(format);
+   }
+}
 
 
 void LineEditDelegate::setModelData(QWidget *editor, QAbstractItemModel *model,
                                     const QModelIndex &index) const
 {
-//   LineEdit *lineEdit = static_cast<LineEdit*>(editor);
-   QString value = WidgetHelper::fieldText(editor); //lineEdit->text();
+   LineEdit *lineEdit = static_cast<LineEdit*>(editor);
+   //QString value = WidgetHelper::fieldText(editor); //lineEdit->text();
+  QString value;
+   if(lineEdit != NULL)
+   {
+       value = lineEdit->text();
+       QString dbmoney = VDC::readSettingsFromIni("", "setDBMONEY");
+
+       int indexOfValue = value.indexOf(",");
+       int valueLength = value.length();
+       int position = valueLength - indexOfValue;
+
+       if(value.contains(",") && position != 3 && dbmoney == ".")
+       {
+           value.remove(",");
+       }
+   }
+   if(value.isEmpty())
+   {
+       value = WidgetHelper::fieldText(editor);
+   }
+
+   value = Fgl::usingFunc(lineEdit->format(), value, lineEdit->dataType()), lineEdit->picture();
+
 
    model->setData(index, value);
 }
