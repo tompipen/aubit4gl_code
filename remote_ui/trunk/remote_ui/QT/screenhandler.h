@@ -128,6 +128,9 @@ private:
    int i_runcnt;
    int i_currthread;
    int hasWindow;
+   QTimer *protocolTimer;
+   QString lastProtocolCmd;
+   int protocolCnt;
 
 
 //   QList<QWidget*> ql_formFields;
@@ -290,6 +293,10 @@ public slots:
    void setWaitCursor();
    void showWindow();
 
+   void startProtocolTimer(QString cmd);
+   void stopProtocolTimer(QString);
+   void protocolTimeout();
+   void resetProtocolCnt();
 
 signals:
    void fglFormResponse(QString);
