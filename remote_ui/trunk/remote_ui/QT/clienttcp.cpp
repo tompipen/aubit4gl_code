@@ -741,7 +741,8 @@ p_currScreenHandler = NULL;
    }
 
    QDomDocument doc;
-      
+   QMetaObject::invokeMethod(p_currScreenHandler, "stopProtocolTimer", Qt::QueuedConnection, Q_ARG(QString, qs_protocolCommand));
+   
    for(int i=0; i<qsl_xmlCommands.size(); i++)
    {
       QString tmpstring = qsl_xmlCommands.takeAt(i);
@@ -865,7 +866,8 @@ void ProtocolHandler::outputTree(QDomNode domNode)
 
 MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
    QDomElement childElement = domNode.toElement();
-   if(childElement.nodeName() == "PROGRAMSTARTUP"){
+   QMetaObject::invokeMethod(p_currScreenHandler, "stopProtocolTimer", Qt::QueuedConnection, Q_ARG(QString, "bla"));
+if(childElement.nodeName() == "PROGRAMSTARTUP"){
       handleStartup(childElement);
       QString programName = childElement.attribute("PROGRAMNAME");
       setProgramName(programName);
