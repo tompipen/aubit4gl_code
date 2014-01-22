@@ -4556,7 +4556,7 @@ void ScreenHandler::protocolTimeout()
     }
     protocolCnt++;
 
-    if(protocolCnt >= 2)
+    if(protocolCnt >= 10)
     {
         if(protocolTimer)
         {
