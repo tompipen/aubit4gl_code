@@ -4540,17 +4540,14 @@ void ScreenHandler::startProtocolTimer(QString cmd)
 void ScreenHandler::protocolTimeout()
 {
 
-    if(!this->isProgressWindowOpen())
+    if(protocolCnt == 0)
     {
-        QMetaObject::invokeMethod(this, "createProgressWindow", Qt::QueuedConnection, Q_ARG(int, 0));
+        QMetaObject::invokeMethod(p_fglform, "setMessageWithIcon", Qt::QueuedConnection, Q_ARG(QString, "Waiting for Server."), Q_ARG(QString, "pics:progressbar.gif"));
     }
-    QMetaObject::invokeMethod(this, "setProgressTitle", Qt::QueuedConnection, Q_ARG(int, 0), Q_ARG(QString, "VDC "));
-    QMetaObject::invokeMethod(this, "setProgressText", Qt::QueuedConnection, Q_ARG(int, 0), Q_ARG(QString, QString("Waiting for Network connection.")));
-    QMetaObject::invokeMethod(this, "setProgressVisible", Qt::QueuedConnection, Q_ARG(int, 0), Q_ARG(bool, true));
 
-    if(this->ph && !lastProtocolCmd.isEmpty())
+    if(this->ph && !lastProtocolCmd.isEmpty() && protocolCnt >= 2)
     {
-        QMetaObject::invokeMethod(this->ph, "fglFormResponse", Qt::DirectConnection, Q_ARG(QString, lastProtocolCmd));
+        QMetaObject::invokeMethod(this->ph, "fglFormResponse", Qt::QueuedConnection, Q_ARG(QString, lastProtocolCmd));
     } else {
       fglFormResponse(lastProtocolCmd);
     }
@@ -4562,26 +4559,6 @@ void ScreenHandler::protocolTimeout()
         {
             protocolTimer->stop();
         }
-        QMetaObject::invokeMethod(this, "setProgressVisible", Qt::QueuedConnection, Q_ARG(int, 0), Q_ARG(bool, false));
-        Dialog *dialog = new Dialog(QString("VENTAS"), QString("Failed to contact the Server.\nPlease check your Network connection."), QString(""), QString("information"), p_fglform, Qt::WindowStaysOnTopHint);
-        QPalette palette;
-        palette.setBrush(p_fglform->backgroundRole(), QBrush(QImage("pics:VENTAS_9_alu_1080p.png")));
-        dialog->setPalette(palette);
-        dialog->setStyleSheet("QPushButton { border-image: url(pics:VENTAS_9_knopf_menu_inaktiv.png); padding-top: -1; padding-right: 10; text-align: left; height: 36px; min-width: 50px; }");
-        dialog->createButton(1, "Cancel", "Cancel", "ok_gruen.png");
-        dialog->createButton(2, "Ok", "Ok", "escape.png");
-        dialog->getAction("RETRY")->setShortcut(Qt::Key_F12);
-        dialog->getAction("CANCEL")->setShortcut(Qt::Key_Escape);
-        connect(dialog->getAction("CANCEL"), SIGNAL(triggered()), dialog, SLOT(hide()));
-        connect(dialog->getAction("CANCEL"), SIGNAL(triggered()), p_fglform, SLOT(hide()));
-
-        connect(dialog->getAction("RETRY"), SIGNAL(triggered()), this, SLOT(resetProtocolCnt()));
-        connect(dialog->getAction("RETRY"), SIGNAL(triggered()), dialog, SLOT(hide()));
-
-
-        dialog->move(600,400);
-        dialog->show();
-        return;
     }
 
 }
@@ -4605,14 +4582,10 @@ void ScreenHandler::stopProtocolTimer(QString bla)
         if(protocolTimer->isActive())
         {
             protocolTimer->stop();
-            protocolTimer = NULL;
         }
     }
-    if(this->isProgressWindowOpen())
-    {
-        QMetaObject::invokeMethod(this, "closeProgressWindow", Qt::QueuedConnection, Q_ARG(int, 0));
-    }
     protocolCnt = 0;
+    QMetaObject::invokeMethod(p_fglform, "closeMessageWithIcon", Qt::QueuedConnection);
 }
 
 void ScreenHandler::printpdf(QString filename)

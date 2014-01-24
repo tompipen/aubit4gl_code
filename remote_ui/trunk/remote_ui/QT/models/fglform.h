@@ -293,12 +293,19 @@ public slots:
    void createContextMenu(const QPoint&);
    void setScreenRecordArrLine(int);
    void error(const QString&);
+   void setMessageWithIcon(const QString&, const QString&);
    void checkField();
    void writeSettingsLocal();
    void readSettingsLocal();
 
+   void closeMessageWithIcon();
+
 
 private:
+
+   QLabel *textLabel;
+   QLabel *iconLabel;
+
    QList<Fgl::State> ql_states;
 
    QWidget *formWidget;

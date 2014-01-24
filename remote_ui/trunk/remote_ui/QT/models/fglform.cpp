@@ -4081,6 +4081,38 @@ void FglForm::error(const QString& text){
    StatusBar *statusBar = (StatusBar*) this->statusBar();
    statusBar->displayError(text);
 }
+void FglForm::setMessageWithIcon(const QString &message , const QString &statusIcon)
+{
+    QHBoxLayout  *statusLayout = new QHBoxLayout();
+    textLabel = new QLabel;
+    textLabel->setText(message);
+    textLabel->setMaximumSize(textLabel->sizeHint());
+    iconLabel = new QLabel;
+    QMovie *movie = new QMovie(iconLabel);
+    iconLabel->setMovie(movie);
+    movie->setFileName(statusIcon);
+    StatusBar *statusBar = (StatusBar*) this->statusBar();
+    movie->start();
+
+    statusLayout->addWidget(textLabel);
+    statusLayout->addWidget(iconLabel);
+    statusBar->addWidget(textLabel, 0);
+    statusBar->addWidget(iconLabel, 1);
+    statusBar->adjustSize();
+}
+
+void FglForm::closeMessageWithIcon()
+{
+    StatusBar *statusBar = (StatusBar*) this->statusBar();
+    if(iconLabel)
+    {
+        statusBar->removeWidget(iconLabel);
+    }
+    if(textLabel)
+    {
+        statusBar->removeWidget(textLabel);
+    }
+}
 
 void FglForm::addFormAction(QAction *qaction)
 {
