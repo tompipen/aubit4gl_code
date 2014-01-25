@@ -781,10 +781,10 @@ rep_expr_p : fgl_expr_c op_wordwrap {
 ;
 
 rep_agg : 
-	KW_SUM atline OPEN_BRACKET fgl_expr_c CLOSE_BRACKET  rep_where
+	SUM_OB atline fgl_expr_c CLOSE_BRACKET  rep_where
 		{
 		long a;
-		$<ptr>$=add_report_agg('S',$<ptr>4,$<ptr>6,racnt,&a,$<integer_val>2);
+		$<ptr>$=add_report_agg('S',$<ptr>3,$<ptr>5,racnt,&a,$<integer_val>2);
 		racnt+=a;
 		}
 	| COUNT_MULTIPLY atline rep_where
@@ -793,40 +793,34 @@ rep_agg :
 		$<ptr>$=add_report_agg('C',0,$<ptr>3,racnt,&a,$<integer_val>2);
 		racnt+=a;
 		}
-	| COUNT atline OPEN_BRACKET KW_MULTIPLY CLOSE_BRACKET rep_where
+	| COUNT_OB atline KW_MULTIPLY CLOSE_BRACKET rep_where
 		{
 		long a;
-		$<ptr>$=add_report_agg('C',0,$<ptr>6,racnt,&a,$<integer_val>2);
+		$<ptr>$=add_report_agg('C',0,$<ptr>5,racnt,&a,$<integer_val>2);
 		racnt+=a;
 		}
-	| PERCENT   atline OPEN_BRACKET KW_MULTIPLY CLOSE_BRACKET  rep_where
+	| PERCENT_OB atline KW_MULTIPLY CLOSE_BRACKET  rep_where
 		{
 		long a;
-		$<ptr>$=add_report_agg('P',$<ptr>4,$<ptr>6,racnt,&a,$<integer_val>2);
+		$<ptr>$=add_report_agg('P',$<ptr>3,$<ptr>5,racnt,&a,$<integer_val>2);
 		racnt+=a;
 	}
-	| AVERAGE  atline  OPEN_BRACKET fgl_expr_c CLOSE_BRACKET  rep_where
+	| AVG_OB atline fgl_expr_c CLOSE_BRACKET  rep_where
 		{
 		long a;
-		$<ptr>$=add_report_agg('A',$<ptr>4,$<ptr>6,racnt,&a,$<integer_val>2);
+		$<ptr>$=add_report_agg('A',$<ptr>3,$<ptr>5,racnt,&a,$<integer_val>2);
 		racnt+=a;
 		}
-	| AVG  atline  OPEN_BRACKET fgl_expr_c CLOSE_BRACKET  rep_where
+	| XMIN_OB atline fgl_expr_c CLOSE_BRACKET  rep_where
 		{
 		long a;
-		$<ptr>$=add_report_agg('A',$<ptr>4,$<ptr>6,racnt,&a,$<integer_val>2);
+		$<ptr>$=add_report_agg('N',$<ptr>3,$<ptr>5,racnt,&a,$<integer_val>2);
 		racnt+=a;
 		}
-	| XMIN    atline    OPEN_BRACKET fgl_expr_c CLOSE_BRACKET  rep_where
+	| XMAX_OB atline fgl_expr_c CLOSE_BRACKET  rep_where
 		{
 		long a;
-		$<ptr>$=add_report_agg('N',$<ptr>4,$<ptr>6,racnt,&a,$<integer_val>2);
-		racnt+=a;
-		}
-	| XMAX    atline    OPEN_BRACKET fgl_expr_c CLOSE_BRACKET  rep_where
-		{
-		long a;
-		$<ptr>$=add_report_agg('X',$<ptr>4,$<ptr>6,racnt,&a,$<integer_val>2);
+		$<ptr>$=add_report_agg('X',$<ptr>3,$<ptr>5,racnt,&a,$<integer_val>2);
 		racnt+=a;
 		}
 ;
