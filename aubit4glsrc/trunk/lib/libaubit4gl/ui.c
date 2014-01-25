@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ui.c,v 1.107 2012-05-25 06:50:12 mikeaubury Exp $
+# $Id: ui.c,v 1.108 2014-01-25 11:47:20 mikeaubury Exp $
 #
 */
 
@@ -1718,6 +1718,10 @@ A4GL_attr_name_match (struct struct_scr_field *field, char *s_x)
 #endif
 
 
+A4GL_assertion(!field->tabname,"field->tabname not set") ;
+A4GL_assertion(!field->colname,"field->colname not set") ;
+//A4GL_assertion(!tabname,"tabname not set") ;
+//A4GL_assertion(!colname,"colname not set") ;
   aa = strcmp (field->tabname, tabname);
   ab = strcmp (field->colname, colname);
   if ((ab == 0) || (colname[0] == '*'))
