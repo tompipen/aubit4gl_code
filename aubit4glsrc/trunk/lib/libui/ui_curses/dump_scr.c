@@ -3,14 +3,14 @@
 
 #ifndef lint
 	static char const module_id[] =
-		"$Id: dump_scr.c,v 1.13 2010-02-16 13:17:15 mikeaubury Exp $";
+		"$Id: dump_scr.c,v 1.14 2014-01-25 11:50:11 mikeaubury Exp $";
 #endif
 
 FILE *f;
 
 
 int
- UILIB_aclfgl_aclfgl_dump_screen (int n)
+UILIB_aclfgl_aclfgl_dump_screen (int n)
 {
   int sh;
   int sw;
@@ -20,6 +20,9 @@ int
   WINDOW *w;
   int mode = 1;
   char *buff;
+  int needPclose = 0;
+  int starty = 0;
+  int stopy=0;
 
 //w=find_pointer ("screen", WINCODE);
   w = curscr;
@@ -37,9 +40,26 @@ int
       ptr = A4GL_char_pop ();
     }
 
-  if (n!=0) {
-	A4GL_trim (ptr);
-  }
+
+  if (n == 3)
+    {
+      starty = A4GL_pop_int ();
+      mode = A4GL_pop_int ();
+      ptr = A4GL_char_pop ();
+    }
+  if (n == 4)
+    {
+      stopy = A4GL_pop_int ()+1;
+      starty = A4GL_pop_int ();
+      mode = A4GL_pop_int ();
+      ptr = A4GL_char_pop ();
+    }
+
+  if (n != 0)
+    {
+	A4GL_assertion(!ptr,"ptr not set");
+      	A4GL_trim (ptr);
+    }
 
   if (mode == 3)
     {
@@ -79,34 +99,43 @@ int
 	sw = 132;
     }
 
-  if (n==0) {
+  if (n == 0)
+    {
 #ifdef DEBUG
-	A4GL_debug("AUTO PRINT...");
+      A4GL_debug ("AUTO PRINT...");
 #endif
-		// We want to dump to to PRINTSCRFILE
-		ptr=acl_getenv("A4GL_PRINTSCRFILE");
-		if (ptr) {
-			if (strlen(ptr)==0) ptr=0;
-		}
-		if (ptr==0) {
+      // We want to dump to to PRINTSCRFILE
+      ptr = acl_getenv ("A4GL_PRINTSCRFILE");
+      if (ptr)
+	{
+	  if (strlen (ptr) == 0)
+	    ptr = 0;
+	}
+      if (ptr == 0)
+	{
 #ifdef DEBUG
-			A4GL_debug("No PRINTSCRFILE - ignored print dump request");
+	  A4GL_debug ("No PRINTSCRFILE - ignored print dump request");
 #endif
-			return 0;
-		}
-		if (ptr[0]=='|') {
-			f=popen(&ptr[1],"w");
-		} else {
-			if (ptr[0]=='+') {
-				f=fopen(&ptr[1],"a");
-			} else {
-				f=fopen(ptr,"w");
-			}
-		}
-  } else {
-  	f = fopen (ptr, "w");
-  }
+	  return 0;
+	}
+    }
 
+  if (ptr[0] == '|')
+    {
+      f = popen (&ptr[1], "w");
+      needPclose = 1;
+    }
+  else
+    {
+      if (ptr[0] == '+')
+	{
+	  f = fopen (&ptr[1], "a");
+	}
+      else
+	{
+	  f = fopen (ptr, "w");
+	}
+    }
 
 
   if (f == 0)
@@ -117,7 +146,11 @@ int
       return 0;
     }
 
-  for (y = 0; y < sh; y++)
+
+//fprintf(f, "---> %d %d\n", starty, stopy);
+
+
+  for (y = starty; y < sh-stopy; y++)
     {
       for (x = 0; x < sw; x++)
 	{
@@ -135,27 +168,27 @@ int
 	    {
 
 
-	      if ((attr&0xff) == (ACS_VLINE&0xff) && (attr&A_ALTCHARSET))
+	      if ((attr & 0xff) == (ACS_VLINE & 0xff) && (attr & A_ALTCHARSET))
 		{
 		  attr = (int) '|';
 		}
-	      if ((attr&0xff) == (ACS_HLINE&0xff) && (attr&A_ALTCHARSET))
+	      if ((attr & 0xff) == (ACS_HLINE & 0xff) && (attr & A_ALTCHARSET))
 		{
 		  attr = (int) '-';
 		}
-	      if ((attr&0xff) == (ACS_LLCORNER&0xff) && (attr&A_ALTCHARSET))
+	      if ((attr & 0xff) == (ACS_LLCORNER & 0xff) && (attr & A_ALTCHARSET))
 		{
 		  attr = (int) '+';
 		}
-	      if ((attr&0xff) == (ACS_LRCORNER&0xff) && (attr&A_ALTCHARSET))
+	      if ((attr & 0xff) == (ACS_LRCORNER & 0xff) && (attr & A_ALTCHARSET))
 		{
 		  attr = (int) '+';
 		}
-	      if ((attr&0xff) == (ACS_URCORNER&0xff) && (attr&A_ALTCHARSET))
+	      if ((attr & 0xff) == (ACS_URCORNER & 0xff) && (attr & A_ALTCHARSET))
 		{
 		  attr = (int) '+';
 		}
-	      if ((attr&0xff) == (ACS_ULCORNER&0xff) && (attr&A_ALTCHARSET))
+	      if ((attr & 0xff) == (ACS_ULCORNER & 0xff) && (attr & A_ALTCHARSET))
 		{
 		  attr = (int) '+';
 		}
@@ -164,6 +197,15 @@ int
 	}
       fprintf (f, "\n");
     }
-  fclose (f);
+
+
+  if (needPclose)
+    {
+      pclose (f);
+    }
+  else
+    {
+      fclose (f);
+    }
   return 0;
 }
