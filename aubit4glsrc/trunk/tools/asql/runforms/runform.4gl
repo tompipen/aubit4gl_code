@@ -569,8 +569,6 @@ code
 
   constr_flds[lv_cnt].tabname=0;
   constr_flds[lv_cnt].colname=0;
-  
-
   while (_fld_dr != 0)
     {
       if (_exec_block == 0)
@@ -709,6 +707,23 @@ call get_and_display_row()
 message mv_acurrent_position[mv_table_cnt] using "<<<<", " of ",mv_max_rows[mv_table_cnt]  using "<<<<<"
 END FUNCTION
 
+
+
+################################################################################
+FUNCTION get_first_row()
+IF mv_max_rows[mv_table_cnt]=0 then
+	error "No Results!"
+	return
+end if
+
+if mv_acurrent_position[mv_table_cnt]=1 then
+	return
+end if
+
+let mv_acurrent_position[mv_table_cnt]=1
+call get_and_display_row()
+message mv_acurrent_position[mv_table_cnt] using "<<<<", " of ",mv_max_rows[mv_table_cnt]  using "<<<<<"
+END FUNCTION
 
 ################################################################################
 FUNCTION get_and_display_row()
@@ -994,6 +1009,11 @@ define lv_format char(1)
 
 	let int_flag=false
 
+	if mv_max_rows[mv_table_cnt]=0 then
+		error "No results!"
+		return
+	end if
+
 	prompt "Enter output file (default is aperform.out):" for lv_fname
 
 	if int_Flag=true then	
@@ -1014,9 +1034,9 @@ define lv_format char(1)
 
 	menu "Output File List"
 		command "Current-list" mv_taglines[24]
-			let lv_what="A" exit menu
+			let lv_what="L" exit menu
 		command "One-page" mv_taglines[25]
-			let lv_what="A" exit menu
+			let lv_what="O" exit menu
 	end menu
 
 	menu "Format"
@@ -1027,8 +1047,118 @@ define lv_format char(1)
 			let lv_format="U" exit menu
 	end menu
 	
-	error "That was a little pointless - not implemented"
+
+
+	case lv_format
+		when "S"
+			call dump_data_screen(lv_fname, lv_mode, lv_what)
+		when "U"
+			call dump_data_unload(lv_fname, lv_mode, lv_what)
+	end case
+
 end function
+
+
+function dump_data_screen(lv_fname,lv_mode, lv_what)
+define lv_fname char(255)
+# lv_mode = A (append) = C (create)
+# lv_what= "L" (list) = O (One)
+define lv_mode, lv_what char(1)
+define lv_rowcnt integer
+if lv_mode="C" then
+	call aclfgl_delete_file(lv_fname)
+end if
+if lv_what="L" then
+	for lv_rowcnt=1 to mv_max_rows[mv_table_cnt]
+		let mv_acurrent_position[mv_table_cnt]=lv_rowcnt
+		call get_and_display_row()
+		call dump_data_single_screen(lv_fname)
+	end for
+else
+	call dump_data_single_screen(lv_fname)
+end if
+
+end function
+
+
+function dump_data_single_screen(lv_fname)
+define lv_fname char(255)
+define lv_tmpfile char(256)
+let lv_tmpfile="+"||lv_fname
+# append to file , mode 1 - start on 3rd line, skip last 2 lines (these are base 0 - so add 1)
+call aclfgl_dump_screen(lv_tmpfile, 1, 2,1);
+end function
+
+
+function dump_data_unload(lv_fname,lv_mode, lv_what)
+define lv_fname char(255)
+define lv_mode, lv_what char(1)
+define lv_start, lv_end INTEGER
+define lv_rowcnt integer
+define lv_fileOk integer
+define a integer
+code
+FILE *fout;
+endcode
+
+let lv_fileOk=false
+if lv_mode="C" then
+	call aclfgl_delete_file(lv_fname)
+end if
+
+code
+A4GL_trim(lv_fname);
+fout=fopen(lv_fname,"a");
+if (fout) {
+	lv_fileok=1;
+}
+endcode
+
+if not lv_fileok then
+	error "Unable to open unload file"
+	return
+end if
+
+IF lv_what="O" THEN
+	LET lv_start= mv_acurrent_position[mv_table_cnt]
+	LET lv_end= mv_acurrent_position[mv_table_cnt]
+ELSE
+	LET lv_start=1
+	LET lv_end=mv_max_rows[mv_table_cnt]
+END IF
+# lv_mode = A (append) = C (create)
+# lv_what= "L" (list) = O (One)
+
+FOR lv_rowcnt=lv_start to lv_end
+
+
+let mv_acurrent_position[mv_table_cnt]=lv_rowcnt
+call get_and_display_row()
+
+FOR a=1 TO gv_fields
+
+code
+{
+	char *s;
+	A4GL_push_param((void *)gv_field_data[a-1],gv_edtype[a-1]);
+	s=A4GL_char_pop();
+	A4GL_trim(s);
+	fprintf(fout,"%s|",s);
+	acl_free(s);
+}
+endcode
+
+END FOR
+code
+#if (defined __WIN32__ ) && (! defined __CYGWIN__)
+fprintf(fout,"\r\n");
+#else
+fprintf(fout,"\n");
+#endif
+endcode
+END FOR
+
+END FUNCTION
 
 
 ################################################################################

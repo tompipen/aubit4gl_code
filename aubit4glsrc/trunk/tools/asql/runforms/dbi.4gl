@@ -110,7 +110,8 @@ if sqlca.sqlcode<0 then
 end if
 
 if sqlca.sqlcode=100 then
-	error "NOT FOUND ....lv_c=",lv_c clipped," lv_id=",lv_id," sql=",lv_sql clipped  sleep 1
+	error "NOT FOUND ....lv_c=",lv_c clipped," lv_id=",lv_id," sql=",lv_sql clipped  
+	sleep 1
 end if
 
 END FUNCTION
