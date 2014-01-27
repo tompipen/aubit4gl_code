@@ -1731,6 +1731,11 @@ void LineEditDelegate::setEditorData(QWidget *editor,
    int positionPoint = valueLength - indexOfValuePoint;
    if(LineEdit *edit = qobject_cast<LineEdit*> (editor))
    {
+       if(edit->sqlType().contains("CHAR"))
+       {
+           WidgetHelper::setFieldText(editor, value);
+           return;
+       }
        format = edit->format();
        edit->setFormat("");
    }
