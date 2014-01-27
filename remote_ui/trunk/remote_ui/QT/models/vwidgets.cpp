@@ -1181,7 +1181,11 @@ MainFrame::vdcdebug("WidgetHelper","createEdit", "const QDomElement& formField, 
    lineEdit->setShift(shift);
    lineEdit->setNoEntry(noEntry);
    lineEdit->setAutoNext(autoNext);
-   lineEdit->setSqlType(sqlType);
+   //deactivated temporarily for smallint because problems mit tab in qt5
+   if(sqlType != "SMALLINT")
+   {
+       lineEdit->setSqlType(sqlType);
+   }
    lineEdit->setDefaultValue(defaultValue);
 
    QString comments = lineEditElement.attribute("comments");
