@@ -4545,12 +4545,6 @@ void ScreenHandler::protocolTimeout()
         QMetaObject::invokeMethod(p_fglform, "setMessageWithIcon", Qt::QueuedConnection, Q_ARG(QString, "Waiting for Server."), Q_ARG(QString, "pics:progressbar.gif"));
     }
 
-    if(this->ph && !lastProtocolCmd.isEmpty() && protocolCnt >= 2)
-    {
-        QMetaObject::invokeMethod(this->ph, "fglFormResponse", Qt::QueuedConnection, Q_ARG(QString, lastProtocolCmd));
-    } else {
-      fglFormResponse(lastProtocolCmd);
-    }
     protocolCnt++;
 
     if(protocolCnt >= 10)
