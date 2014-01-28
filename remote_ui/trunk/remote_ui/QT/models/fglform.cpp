@@ -50,6 +50,8 @@ FglForm::FglForm(QString windowName, QWidget *parent) : QMainWindow(parent){
    saveTimer = NULL;
    b_constrained = false;
    this->b_newForm = true;
+   textLabel = NULL;
+   iconLabel = NULL;
    /*
    if(parent != NULL){
        setWindowModality(Qt::WindowModal);
@@ -4084,6 +4086,7 @@ void FglForm::error(const QString& text){
 void FglForm::setMessageWithIcon(const QString &message , const QString &statusIcon)
 {
     QHBoxLayout  *statusLayout = new QHBoxLayout();
+    StatusBar *statusBar = (StatusBar*) this->statusBar();
     textLabel = new QLabel;
     textLabel->setText(message);
     textLabel->setMaximumSize(textLabel->sizeHint());
@@ -4091,26 +4094,26 @@ void FglForm::setMessageWithIcon(const QString &message , const QString &statusI
     QMovie *movie = new QMovie(iconLabel);
     iconLabel->setMovie(movie);
     movie->setFileName(statusIcon);
-    StatusBar *statusBar = (StatusBar*) this->statusBar();
     movie->start();
 
     statusLayout->addWidget(textLabel);
     statusLayout->addWidget(iconLabel);
-    statusBar->addWidget(textLabel, 0);
+    textLabel->setAlignment(Qt::AlignLeft);
+    iconLabel->setAlignment(Qt::AlignLeft);
+    statusBar->addWidget(textLabel, 1);
     statusBar->addWidget(iconLabel, 1);
-    statusBar->adjustSize();
+    //statusBar->adjustSize();
 }
 
 void FglForm::closeMessageWithIcon()
 {
-    StatusBar *statusBar = (StatusBar*) this->statusBar();
     if(iconLabel)
     {
-        statusBar->removeWidget(iconLabel);
+        iconLabel->clear();
     }
     if(textLabel)
     {
-        statusBar->removeWidget(textLabel);
+        textLabel->clear();
     }
 }
 
