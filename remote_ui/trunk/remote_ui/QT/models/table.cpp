@@ -1731,29 +1731,30 @@ void LineEditDelegate::setEditorData(QWidget *editor,
 void LineEditDelegate::setModelData(QWidget *editor, QAbstractItemModel *model,
                                     const QModelIndex &index) const
 {
-    LineEdit *lineEdit = static_cast<LineEdit*>(editor);
+    //LineEdit *lineEdit = static_cast<LineEdit*>(editor);
     //QString value = WidgetHelper::fieldText(editor); //lineEdit->text();
    QString value;
-    if(lineEdit != NULL)
+    if(LineEdit *edit = qobject_cast<LineEdit*> (editor))
     {
-        value = lineEdit->text();
-    }
-    if(value.isEmpty())
-    {
-        value = WidgetHelper::fieldText(editor);
-    }
+       value = edit->text();
 
-    switch(lineEdit->dataType())
-    {
-    case Fgl::DTYPE_CHAR:
-    case Fgl::DTYPE_DATE:
-    case Fgl::DTYPE_DTIME:
-    case Fgl::DTYPE_INT:
-    case Fgl::DTYPE_SMINT:
-          value = Fgl::usingFunc(lineEdit->format(), value, lineEdit->dataType()), lineEdit->picture();
-          break;
-    default:
-        break;
+        if(value.isEmpty())
+        {
+            value = WidgetHelper::fieldText(editor);
+
+            switch(edit->dataType())
+            {
+            case Fgl::DTYPE_CHAR:
+            case Fgl::DTYPE_DATE:
+            case Fgl::DTYPE_DTIME:
+            case Fgl::DTYPE_INT:
+            case Fgl::DTYPE_SMINT:
+                  value = Fgl::usingFunc(edit->format(), value, edit->dataType(), edit->picture());
+                  break;
+            default:
+                break;
+            }
+        }
     }
 
     model->setData(index, value);
@@ -1787,7 +1788,20 @@ bool LineEditDelegate::eventFilter(QObject *object, QEvent *event)
       QKeyEvent *key = (QKeyEvent*) event;
 
 
-      if((event->type() == QEvent::KeyPress || event->type() == 1400) || (event->type() == QEvent::KeyRelease || event->type() == 1401))
+      if(key->key() == Qt::Key_Down || key->key() == Qt::Key_Up || key->key() == Qt::Key_Tab || key->key() == Qt::Key_Enter || key->key() == Qt::Key_Backtab || key->key() == Qt::Key_Return || key->key() == Qt::Key_Escape)
+      {
+          QKeyEvent *mykev = new QKeyEvent(key->type(),
+                                           key->key(),
+                                           key->modifiers(),
+                                           key->text(),
+                                           key->isAutoRepeat(),
+                                           key->count());
+
+         QApplication::postEvent(p_fglform, mykev);
+         return true;
+      }
+
+          if((event->type() == QEvent::KeyPress || event->type() == 1400) || (event->type() == QEvent::KeyRelease || event->type() == 1401))
       {
           if(FglForm *form = qobject_cast<FglForm*> (p_fglform))
           {
