@@ -1787,6 +1787,21 @@ bool LineEditDelegate::eventFilter(QObject *object, QEvent *event)
 
       QKeyEvent *key = (QKeyEvent*) event;
 
+      if(key->key() == Qt::Key_Left)
+      {
+          if(LineEdit *edit = qobject_cast<LineEdit*> (object))
+          {
+              edit->setCursorPosition(edit->cursorPosition()-1);
+          }
+      }
+      if(key->key() == Qt::Key_Right)
+      {
+          if(LineEdit *edit = qobject_cast<LineEdit*> (object))
+          {
+              edit->setCursorPosition(edit->cursorPosition()+1);
+          }
+      }
+
 
       if(key->key() == Qt::Key_Down || key->key() == Qt::Key_Up || key->key() == Qt::Key_Tab || key->key() == Qt::Key_Enter || key->key() == Qt::Key_Backtab || key->key() == Qt::Key_Return || key->key() == Qt::Key_Escape)
       {
