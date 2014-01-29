@@ -42,7 +42,10 @@ void WebBrowser::createBrowser()
     setUnifiedTitleAndToolBarOnMac(true);
 
     QAction *sAction = new QAction(tr("Search"), this);
-    sAction->setShortcut(Qt::CTRL + Qt::Key_F);
+    QList<QKeySequence> shortcuts;
+    shortcuts << Qt::CTRL + Qt::Key_F;
+    shortcuts << Qt::Key_F9;
+    sAction->setShortcuts(shortcuts);
     this->addAction(sAction);
     connect(sAction, SIGNAL(triggered()), this, SLOT(openSearch()));
     //this->show();
