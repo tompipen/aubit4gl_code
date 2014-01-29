@@ -1731,32 +1731,32 @@ void LineEditDelegate::setEditorData(QWidget *editor,
 void LineEditDelegate::setModelData(QWidget *editor, QAbstractItemModel *model,
                                     const QModelIndex &index) const
 {
-   /*LineEdit *lineEdit = static_cast<LineEdit*>(editor);
-   //QString value = WidgetHelper::fieldText(editor); //lineEdit->text();
-  QString value;
-   if(lineEdit != NULL)
-   {
-       value = lineEdit->text();
-       QString dbmoney = VDC::readSettingsFromIni("", "setDBMONEY");
+    LineEdit *lineEdit = static_cast<LineEdit*>(editor);
+    //QString value = WidgetHelper::fieldText(editor); //lineEdit->text();
+   QString value;
+    if(lineEdit != NULL)
+    {
+        value = lineEdit->text();
+    }
+    if(value.isEmpty())
+    {
+        value = WidgetHelper::fieldText(editor);
+    }
 
-       int indexOfValue = value.indexOf(",");
-       int valueLength = value.length();
-       int position = valueLength - indexOfValue;
+    switch(lineEdit->dataType())
+    {
+    case Fgl::DTYPE_CHAR:
+    case Fgl::DTYPE_DATE:
+    case Fgl::DTYPE_DTIME:
+    case Fgl::DTYPE_INT:
+    case Fgl::DTYPE_SMINT:
+          value = Fgl::usingFunc(lineEdit->format(), value, lineEdit->dataType()), lineEdit->picture();
+          break;
+    default:
+        break;
+    }
 
-       if(value.contains(",") && position != 3 && dbmoney == ".")
-       {
-           value.remove(",");
-       }
-   }
-   if(value.isEmpty())
-   {
-       value = WidgetHelper::fieldText(editor);
-   }
-
-   value = Fgl::usingFunc(lineEdit->format(), value, lineEdit->dataType()), lineEdit->picture();*/
-
-   //QString value = WidgetHelper::fieldText(editor);
-   //model->setData(index, value);
+    model->setData(index, value);
 }
 
 

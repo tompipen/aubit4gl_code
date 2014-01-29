@@ -1182,7 +1182,7 @@ MainFrame::vdcdebug("WidgetHelper","createEdit", "const QDomElement& formField, 
    lineEdit->setNoEntry(noEntry);
    lineEdit->setAutoNext(autoNext);
    //deactivated temporarily for smallint because problems mit tab in qt5
-   if(sqlType != "SMALLINT")
+   if(sqlType != "SMALLINT" && sqlType != "INTEGER")
    {
        lineEdit->setSqlType(sqlType);
    }
@@ -1217,17 +1217,6 @@ MainFrame::vdcdebug("WidgetHelper","createEdit", "const QDomElement& formField, 
           lineEdit->setFormat(format);
       }
       break;
-   case Fgl::DTYPE_SMINT:
-   case Fgl::DTYPE_INT:
-       if(!screenFormat.isEmpty() && screenFormat != "-" && screenFormat != "--")
-       {
-           QString screenFormat1 = "-,---,---";
-           lineEdit->setFormat(screenFormat1);
-       } else {
-           lineEdit->setFormat(format);
-       }
-       break;
-
    default:
        break;
    }
