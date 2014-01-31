@@ -2533,7 +2533,7 @@ if(qsl_triggereds.size() > 0)
                }
            } else if(p_fglform->displayArray())
            {
-                  tableView->restoreSortOrder();
+                  //tableView->restoreSortOrder();
            }
        }
        else
