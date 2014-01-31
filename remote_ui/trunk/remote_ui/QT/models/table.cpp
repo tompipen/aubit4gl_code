@@ -1098,7 +1098,7 @@ if(!p_fglform)
    {
 
        int arrLine;
-       int scrLine;
+       int scrLine = current.row();
        QString currentString = proxyModel->data(current).toString();
 
        if(unsortedFields.count() > 0)
@@ -1110,7 +1110,6 @@ if(!p_fglform)
                if(currentString == str.trimmed())
                {
                    arrLine = i;
-                   scrLine = i;
                    break;
                }
            }
