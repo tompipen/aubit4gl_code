@@ -391,8 +391,8 @@ void Context::screenRecordRowChanged(const QModelIndex & current, const QModelIn
               int arrLine = proxyModel->mapToSource(tableView->currentIndex()).row();
               int scrLine = tableView->currentIndex().row();
 
-              setOption("SCRLINE", scrLine);
-              setOption("ARRLINE", arrLine);
+              //setOption("SCRLINE", scrLine);
+              //setOption("ARRLINE", arrLine);
 
               /*
             if(fgl_state == Fgl::INPUTARRAY){

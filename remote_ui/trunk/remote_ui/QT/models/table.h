@@ -82,6 +82,8 @@ public:
     bool eventFilter(QObject *, QEvent *);
 
     void restoreSortOrder();
+    void setUnsortedFields(int, QStringList);
+    void clearUnsortedFields();
 
 
 private:
@@ -90,6 +92,7 @@ private:
     int i_scrLine;
     int i_maxArrSize;
     bool b_sendevents;
+    QVector< QVector<QString> >unsortedFields;
   //  bool b_palette;
 
     bool b_ignoreRowChange;
@@ -190,6 +193,8 @@ public:
 
     QList<QList<QString> > cb_AddItem;
     QString cb_removeItem;
+
+    QVector< QVector<QString> > getFields() { return fields; }
 
 private:
     int columns;

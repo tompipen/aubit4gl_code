@@ -1292,6 +1292,21 @@ MainFrame::vdcdebug("ScreenHandler","setArrayBuffer", "int row, QString tabName,
             cnt_values++;
          }
       }
+      for(int i=0; i < ql_fields.count(); i++)
+      {
+          QWidget *widget = ql_fields.at(i);
+          if(LineEditDelegate *de = qobject_cast<LineEditDelegate *> (widget)){
+             if(TableView *tableView = qobject_cast<TableView *> (de->parent())){
+                 if(row == 0)
+                 {
+                     tableView->clearUnsortedFields();
+                 }
+                tableView->setUnsortedFields(row, fieldValues);
+                break;
+             }
+          }
+      }
+
    }
 
    //Edit wurde für jede zeile ausgeführt, so ging der fokus kaputt und immer diese

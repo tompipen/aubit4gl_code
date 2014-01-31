@@ -1097,8 +1097,24 @@ if(!p_fglform)
    else
    {
 
-       int arrLine = proxyModel->mapToSource(current).row();
-       int scrLine = current.row();
+       int arrLine;
+       int scrLine;
+       QString currentString = proxyModel->data(current).toString();
+
+       if(unsortedFields.count() > 0)
+       {
+           for(int i=0; i < unsortedFields.count(); i++)
+           {
+               QString str = unsortedFields[i][current.column()];
+
+               if(currentString == str.trimmed())
+               {
+                   arrLine = i;
+                   scrLine = i;
+                   break;
+               }
+           }
+       }
 
        FglForm *fglform = (FglForm*) p_fglform;
        fglform->context->setOption("SCRLINE", scrLine);
@@ -1235,6 +1251,21 @@ MainFrame::vdcdebug("TableView","setText", "QString text, int row, int col");
              QMetaObject::invokeMethod(this->curr_editor, "markup", Qt::QueuedConnection);
          }
    }
+}
+
+void TableView::setUnsortedFields(int row,QStringList values)
+{
+    QVector<QString> myString;
+    for(int i=0; i < values.count(); i++)
+    {
+        myString << values.at(i);
+    }
+    unsortedFields.insert(row, myString);
+}
+
+void TableView::clearUnsortedFields()
+{
+    unsortedFields.clear();
 }
 
 bool TableView::checkBounds(const QModelIndex current){
