@@ -91,7 +91,17 @@ void TableView::restoreSortOrder()
         sortIndecator = VDC::readSettingsFromIni(fglform->formName(), "sortIndecator");
     }
 
-    if(logicalIndex > 0 && !sortIndecator.isEmpty())
+    if(sortIndecator == "ASC")
+    {
+        this->horizontalHeader()->setSortIndicator(logicalIndex,Qt::AscendingOrder);
+    }
+
+    if(sortIndecator == "DESC")
+    {
+        this->horizontalHeader()->setSortIndicator(logicalIndex,Qt::DescendingOrder);
+    }
+
+    /*if(logicalIndex > 0 && !sortIndecator.isEmpty())
     {
         if(sortIndecator.contains("ASC"))
         {
@@ -100,7 +110,7 @@ void TableView::restoreSortOrder()
         {
             this->sortByColumn(logicalIndex, Qt::DescendingOrder);
         }
-    }
+    }*/
 }
 
 
@@ -127,6 +137,12 @@ void TableView::saveSortOrder(int logicalIndex, Qt::SortOrder sortOrder)
             VDC::saveSettingsToIni(fglform->formName(), "sortColumn", this->getColumnName(logicalIndex));
             VDC::saveSettingsToIni(fglform->formName(), "sortIndecator", sortIndecator);
             VDC::saveSettingsToIni(fglform->formName(), "sortLogicalIndex", QString::number(logicalIndex));
+
+            Fgl::Event event;
+            event.type = Fgl::ONKEY_EVENT;
+            event.attribute = "3028";
+            emit fieldEvent(event);
+            return;
 
         }
     }
