@@ -2480,7 +2480,6 @@ if(qsl_triggereds.size() > 0)
 */
     //Mac needs the raise here to start in front of the terminal
     #ifdef Q_OS_MAC
-        [NSApp activateIgnoringOtherApps:YES];
         p_fglform->raise();
     #endif
 
