@@ -1299,14 +1299,6 @@ MainFrame::vdcdebug("WidgetHelper","createButtonEdit", "const QDomElement& formF
           }
       }
       break;
-   case Fgl::DTYPE_SMINT:
-   case Fgl::DTYPE_INT:
-       if(!screenFormat.isEmpty() && screenFormat != "-" && screenFormat != "--")
-       {
-           QString screenFormat1 = "-,---,---";
-           lineEdit->setFormat(screenFormat1);
-       }
-       break;
    default:
        break;
    }
