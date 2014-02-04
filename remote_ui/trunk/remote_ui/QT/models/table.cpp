@@ -1554,7 +1554,7 @@ bool MyFilter::lessThan(const QModelIndex &left, const QModelIndex &right) const
 {
 MainFrame::vdcdebug("MyFilter","lessThan", "const QModelIndex &left, const QModelIndex &right const");
 
-      QVariant v0 = left.data(Qt::DisplayRole);
+ /*     QVariant v0 = left.data(Qt::DisplayRole);
       QVariant v1 = right.data(Qt::DisplayRole);
 
 
@@ -1612,7 +1612,7 @@ MainFrame::vdcdebug("MyFilter","lessThan", "const QModelIndex &left, const QMode
        }
 
 
-      return QSortFilterProxyModel::lessThan(left, right);
+      return QSortFilterProxyModel::lessThan(left, right);*/
 }
 
 QVariant MyFilter::headerData(int section, Qt::Orientation orientation, int role) const
