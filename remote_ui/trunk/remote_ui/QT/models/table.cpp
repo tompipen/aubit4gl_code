@@ -91,6 +91,7 @@ void TableView::restoreSortOrder()
         sortIndecator = VDC::readSettingsFromIni(fglform->formName(), "sortIndecator");
     }
 
+    this->setSortingEnabled(false);
     if(sortIndecator == "ASC")
     {
         this->horizontalHeader()->setSortIndicator(logicalIndex,Qt::AscendingOrder);
@@ -100,6 +101,7 @@ void TableView::restoreSortOrder()
     {
         this->horizontalHeader()->setSortIndicator(logicalIndex,Qt::DescendingOrder);
     }
+    this->setSortingEnabled(true);
 
     /*if(logicalIndex > 0 && !sortIndecator.isEmpty())
     {
