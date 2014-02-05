@@ -61,7 +61,7 @@ MainFrame::vdcdebug("TableView","TableView", "QWidget *parent");
 
    connect(this, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(accept()));
    connect(this, SIGNAL(entered(QModelIndex)), this, SLOT(setMousePos(QModelIndex)));
-   QObject::connect(header, SIGNAL(sectionClicked(int)),
+  QObject::connect(header, SIGNAL(sectionClicked(int)),
                     this, SLOT(sortByColumn(int)));
 
    QObject::connect(header, SIGNAL(sortIndicatorChanged(int,Qt::SortOrder)),
@@ -93,14 +93,15 @@ void TableView::restoreSortOrder()
     this->setSortingEnabled(false);
     if(sortIndecator == "ASC")
     {
-        //this->horizontalHeader()->setSortIndicator(logicalIndex,Qt::AscendingOrder);
+        this->horizontalHeader()->setSortIndicator(logicalIndex,Qt::AscendingOrder);
     }
 
     if(sortIndecator == "DESC")
     {
-        //this->horizontalHeader()->setSortIndicator(logicalIndex,Qt::DescendingOrder);
+        this->horizontalHeader()->setSortIndicator(logicalIndex,Qt::DescendingOrder);
     }
     this->setSortingEnabled(true);
+
     /*if(logicalIndex > 0 && !sortIndecator.isEmpty())
     {
         if(sortIndecator.contains("ASC"))
@@ -143,7 +144,6 @@ void TableView::saveSortOrder(int logicalIndex, Qt::SortOrder sortOrder)
             event.attribute = "3028";
             emit fieldEvent(event);
             return;
-
         }
     }
 }
@@ -1097,7 +1097,7 @@ if(!p_fglform)
    else
    {
 
-       int arrLine = proxyModel->mapToSource(current).row();
+       int arrLine = current.row();
        int scrLine = current.row();
        //QString currentString = proxyModel->data(current).toString();
 
@@ -1227,7 +1227,7 @@ void TableView::setText(QString text, int row, int col)
 MainFrame::vdcdebug("TableView","setText", "QString text, int row, int col");
    if(QSortFilterProxyModel *proxyModel = qobject_cast<QSortFilterProxyModel *> (this->model())){
        QModelIndex modelIndex;
-       modelIndex = proxyModel->index(row, col, QModelIndex());
+       modelIndex = this->model()->index(row, col, QModelIndex());
        /*if(table->b_input)
        {
 
@@ -1550,11 +1550,17 @@ QVariant TableModel::headerData ( int section, Qt::Orientation orientation, int 
     return QVariant();
    }
 */
+
+void MyFilter::sort(int column, Qt::SortOrder order)
+{
+    return;
+}
+
 bool MyFilter::lessThan(const QModelIndex &left, const QModelIndex &right) const
 {
 MainFrame::vdcdebug("MyFilter","lessThan", "const QModelIndex &left, const QModelIndex &right const");
 
- /*     QVariant v0 = left.data(Qt::DisplayRole);
+      QVariant v0 = left.data(Qt::DisplayRole);
       QVariant v1 = right.data(Qt::DisplayRole);
 
 
@@ -1612,7 +1618,7 @@ MainFrame::vdcdebug("MyFilter","lessThan", "const QModelIndex &left, const QMode
        }
 
 
-      return QSortFilterProxyModel::lessThan(left, right);*/
+      return QSortFilterProxyModel::lessThan(left, right);
 }
 
 QVariant MyFilter::headerData(int section, Qt::Orientation orientation, int role) const
