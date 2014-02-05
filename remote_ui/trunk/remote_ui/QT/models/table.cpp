@@ -56,7 +56,6 @@ MainFrame::vdcdebug("TableView","TableView", "QWidget *parent");
       header->setSectionsClickable(true);
    #endif
    header->setSortIndicatorShown(true);
-   header->setSortIndicator(0, Qt::AscendingOrder);
    header->installEventFilter(this);
    this->setContextMenuPolicy(Qt::CustomContextMenu);
 
@@ -94,15 +93,14 @@ void TableView::restoreSortOrder()
     this->setSortingEnabled(false);
     if(sortIndecator == "ASC")
     {
-        this->horizontalHeader()->setSortIndicator(logicalIndex,Qt::AscendingOrder);
+        //this->horizontalHeader()->setSortIndicator(logicalIndex,Qt::AscendingOrder);
     }
 
     if(sortIndecator == "DESC")
     {
-        this->horizontalHeader()->setSortIndicator(logicalIndex,Qt::DescendingOrder);
+        //this->horizontalHeader()->setSortIndicator(logicalIndex,Qt::DescendingOrder);
     }
     this->setSortingEnabled(true);
-
     /*if(logicalIndex > 0 && !sortIndecator.isEmpty())
     {
         if(sortIndecator.contains("ASC"))
@@ -1099,11 +1097,11 @@ if(!p_fglform)
    else
    {
 
-       int arrLine;
+       int arrLine = proxyModel->mapToSource(current).row();
        int scrLine = current.row();
-       QString currentString = proxyModel->data(current).toString();
+       //QString currentString = proxyModel->data(current).toString();
 
-       if(unsortedFields.count() > 0)
+       /*if(unsortedFields.count() > 0)
        {
            for(int i=0; i < unsortedFields.count(); i++)
            {
@@ -1115,7 +1113,7 @@ if(!p_fglform)
                    break;
                }
            }
-       }
+       }*/
 
        FglForm *fglform = (FglForm*) p_fglform;
        fglform->context->setOption("SCRLINE", scrLine);
