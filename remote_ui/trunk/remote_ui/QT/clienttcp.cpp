@@ -608,7 +608,11 @@ MainFrame::vdcdebug("ClientTcp","replyWith", "QString qs_replyString");
          /*while(cl->ph.isRunning())
              usleep(500000l);
          */
-            out << qs_replyString.toLatin1();
+            #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+               out << qs_replyString.toLatin1();
+            #else
+               out << qs_replyString;
+            #endif 
       }
 }
 
