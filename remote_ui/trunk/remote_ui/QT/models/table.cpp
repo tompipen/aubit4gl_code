@@ -1096,26 +1096,17 @@ if(!p_fglform)
    }
    else
    {
-
-       int arrLine = current.row();
-       int scrLine = current.row();
-       //QString currentString = proxyModel->data(current).toString();
-
-       /*if(unsortedFields.count() > 0)
-       {
-           for(int i=0; i < unsortedFields.count(); i++)
-           {
-               QString str = unsortedFields[i][current.column()];
-
-               if(currentString == str.trimmed())
-               {
-                   arrLine = i;
-                   break;
-               }
-           }
-       }*/
-
        FglForm *fglform = (FglForm*) p_fglform;
+       int arrLine;
+
+       if(fglform->mIsSortAllowed)
+       {
+           arrLine = proxyModel->mapToSource(current).row();
+       } else {
+           arrLine = current.row();
+       }
+       int scrLine = current.row();
+
        fglform->context->setOption("SCRLINE", scrLine);
        fglform->context->setOption("ARRLINE", arrLine);
    }
