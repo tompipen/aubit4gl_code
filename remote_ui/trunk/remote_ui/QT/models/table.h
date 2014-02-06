@@ -214,10 +214,13 @@ class MyFilter : public QSortFilterProxyModel
    Q_OBJECT
 
 public:
+    MyFilter(QWidget*);
    bool lessThan (const QModelIndex &left, const QModelIndex &right) const;
    virtual QVariant headerData(int section, Qt::Orientation orientation, int role) const;
    void sort(int column, Qt::SortOrder order);
    //virtual QVariant data(const QModelIndex &index, int role) const;
+private:
+   QWidget *p_fglform;
 };
 
    // return number represented by a digit character

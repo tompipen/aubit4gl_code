@@ -236,6 +236,8 @@ public:
    int widgetPosX;
    int widgetPosY;
 
+   bool mIsSortAllowed;
+
 public slots:
 
    void saveScreenshot();

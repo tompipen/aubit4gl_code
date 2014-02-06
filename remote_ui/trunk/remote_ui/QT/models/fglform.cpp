@@ -52,6 +52,8 @@ FglForm::FglForm(QString windowName, QWidget *parent) : QMainWindow(parent){
    this->b_newForm = true;
    textLabel = NULL;
    iconLabel = NULL;
+   mIsSortAllowed = TRUE;
+
    /*
    if(parent != NULL){
        setWindowModality(Qt::WindowModal);
@@ -4226,6 +4228,11 @@ void FglForm::addFormEvent(Fgl::Event newEvent)
 {
 MainFrame::vdcdebug("FglForm","addFormEvent", "Fgl");
    QList<Fgl::Event> ql_events = ql_contextEvents.last();
+
+   if(newEvent.attribute == "3028")
+   {
+       mIsSortAllowed = FALSE;
+   }
 
 //old
 /*

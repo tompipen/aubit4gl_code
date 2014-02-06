@@ -102,7 +102,7 @@ void TableView::restoreSortOrder()
     }
     this->setSortingEnabled(true);
 
-    /*if(logicalIndex > 0 && !sortIndecator.isEmpty())
+    if(logicalIndex > 0 && !sortIndecator.isEmpty())
     {
         if(sortIndecator.contains("ASC"))
         {
@@ -111,7 +111,7 @@ void TableView::restoreSortOrder()
         {
             this->sortByColumn(logicalIndex, Qt::DescendingOrder);
         }
-    }*/
+    }
 }
 
 
@@ -1551,9 +1551,21 @@ QVariant TableModel::headerData ( int section, Qt::Orientation orientation, int 
    }
 */
 
+MyFilter::MyFilter(QWidget *widget)
+{
+    p_fglform = widget;
+
+}
+
 void MyFilter::sort(int column, Qt::SortOrder order)
 {
-    return;
+    if(FglForm *fglform = qobject_cast<FglForm*> (p_fglform))
+    {
+        if(fglform->mIsSortAllowed)
+        {
+            QSortFilterProxyModel::sort(column, order);
+        }
+    }
 }
 
 bool MyFilter::lessThan(const QModelIndex &left, const QModelIndex &right) const

@@ -416,7 +416,7 @@ void XmlParser::handleTableColumn(const QDomNode& xmlNode){
    p_screenRecord->setObjectName(name);
 
    p_screenRecord->setEditTriggers(QAbstractItemView::AllEditTriggers);
-   QSortFilterProxyModel *proxy = new MyFilter();
+   QSortFilterProxyModel *proxy = new MyFilter(p_fglform);
    proxy->setSourceModel(model);
 
    p_screenRecord->setModel(proxy);
@@ -588,7 +588,7 @@ void XmlParser::handleMatrixColumn(const QDomNode& xmlNode){
    p_screenRecord->setObjectName(name);
 
    p_screenRecord->setEditTriggers(QAbstractItemView::AllEditTriggers);
-   QSortFilterProxyModel *proxy = new MyFilter();
+   QSortFilterProxyModel *proxy = new MyFilter(p_fglform);
    proxy->setSourceModel(model);
 
    p_screenRecord->setModel(proxy);
