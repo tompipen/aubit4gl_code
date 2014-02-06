@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.194 2013-11-12 07:06:01 whaslbeck Exp $
+# $Id: conv.c,v 1.195 2014-02-06 08:05:55 mikeaubury Exp $
 #
 */
 
@@ -1458,7 +1458,7 @@ A4GL_ftodec (void *a, void *z, int size)
 
 
 
-      if (A4GL_isyes (acl_getenv ("DBL2DEC_USING")))
+      if (A4GL_isyes (acl_getenv ("DBL2DEC_USING")) && t!=255)
 	{
 	  ptr = A4GL_make_using_tostring ("", h, t);
 	  strcpy (fmt, ptr);
@@ -1470,14 +1470,20 @@ A4GL_ftodec (void *a, void *z, int size)
 	}
       else
 	{
+	  int tailDigits;
+	  tailDigits=t;
+	  if (t==255) {
+		tailDigits=h;
+	  }
+		
 	  //set format to the number of digits needed, to force round-off
 	  if (A4GL_isyes (acl_getenv ("INFORMIX_ROUNDING")))
 	    {
-	      SPRINTF1 (fmt, "%%-32.%df", t);
+	      SPRINTF1 (fmt, "%%-32.%df", tailDigits);
 	    }
 	  else
 	    {
-	      SPRINTF1 (fmt, "%%-32.%df", t + 1);
+	      SPRINTF1 (fmt, "%%-32.%df", tailDigits + 1);
 	    }
 #ifdef DEBUG
 	  A4GL_debug ("Format=%s", A4GL_null_as_null (fmt));
