@@ -1087,15 +1087,23 @@ static long
 fixlength (int dtype, int length)
 {
   int n1, n2,n3;
+  int decPrec=-1;
+
   if (dtype > 255)
     dtype -= 256;
+
   A4GL_debug ("Got datatype : %d length %d\n", dtype, length);
-  if (dtype==DTYPE_DECIMAL||dtype==DTYPE_MONEY) {
+
+
+  if  (dtype==DTYPE_DECIMAL||dtype==DTYPE_MONEY) {
+	if (decPrec==-1) {
+		decPrec=atol(acl_getenv("A4GL_DEFDECPREC"));
+	}
         int a1,a2;
         a1=length&0xff;
         a2=length>>8;
-        if (a1==0xff) {
-                a1=2; a2+=5;
+        if (a1==0xff && decPrec!=255) {
+                a1=decPrec; a2+=5;
                 if (a2>32) a2=32;
                 length=(a2<<8)+a1;
                 return length;
