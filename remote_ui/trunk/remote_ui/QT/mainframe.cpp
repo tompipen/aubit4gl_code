@@ -154,7 +154,7 @@ MainFrame::vdcdebug("MainFrame","MainFrame", "QWidget *parent");
    MainFrame::lastmainframe = this;
    p_currOpenNetwork=NULL;
    int port=1350;
-   int closeSSH = 0;
+   closeSSH = 0;
    mainFrameToolBar = NULL;
    connectionsTab = NULL;
    errorMessageMainFrame = new QErrorMessage(this);
