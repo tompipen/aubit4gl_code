@@ -154,6 +154,7 @@ MainFrame::vdcdebug("MainFrame","MainFrame", "QWidget *parent");
    MainFrame::lastmainframe = this;
    p_currOpenNetwork=NULL;
    int port=1350;
+   int closeSSH = 0;
    mainFrameToolBar = NULL;
    connectionsTab = NULL;
    errorMessageMainFrame = new QErrorMessage(this);
@@ -959,8 +960,17 @@ void MainFrame::closeAction()
     if(closeApplication == 0){
        VDC::saveSettingsToIni("Ventas AG", "posX", QString::number(pos().x()));
        VDC::saveSettingsToIni("Ventas AG", "posY", QString::number(pos().y()));
-       cleanUp();
-       exit(0);
+       for(int i=0; ql_screenhandler->count(); i++)
+       {
+           if(ql_screenhandler->at(i))
+           {
+              deleteScreenHandler(ql_screenhandler->at(i)->pid, ql_screenhandler->at(i)->p_pid);
+
+           }
+       }
+       closeSSH = 1;
+       waitTimer::msleep(100);
+       exit(EXIT_SUCCESS);
     }
 }
 

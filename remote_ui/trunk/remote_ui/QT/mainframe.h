@@ -76,6 +76,7 @@ public:
    void requestScreenHandler(int, int);
    QString getUserName() { return userName; };
    bool debugVDC;
+   int closeSSH;
 
 
 public slots:

@@ -372,6 +372,13 @@ int VSSH::execute(int port = 0)
 
 
     memset(buffer, 0, sizeof(buffer));
+    MainFrame *main = qobject_cast<MainFrame*> (MainFrame::lastmainframe);
+    if(main->closeSSH == 1)
+    {
+        ssh_channel_send_eof(channel);
+        ssh_channel_close(channel);
+        quit();
+    }
     ssh_mutex.lock();
     nbytes = ssh_channel_read_nonblocking(channel, &buffer, sizeof(buffer), 0);
     //usleep(3);

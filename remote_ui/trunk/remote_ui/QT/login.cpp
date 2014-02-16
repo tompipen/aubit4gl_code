@@ -170,7 +170,7 @@ LoginForm::LoginForm(QWidget *parent)
 
     QAction *cancelAction = new QAction("Cancel", this);
     cancelAction->setShortcut(Qt::Key_F12);
-    connect(cancelAction, SIGNAL(triggered()), this, SLOT(cancelPressed()));
+    connect(cancelAction, SIGNAL(triggered()), mainFrame, SLOT(closeAction()));
 
     usernameLineEdit->addAction(okAction);
     passwordLineEdit->addAction(okAction);
@@ -188,7 +188,7 @@ LoginForm::LoginForm(QWidget *parent)
     okButton->addAction(okAction);
 
     QPushButton *cancelButton = new QPushButton(tr("Cancel"));
-    connect(cancelButton, SIGNAL(pressed()), this, SLOT(cancelPressed()));
+    connect(cancelButton, SIGNAL(pressed()), mainFrame, SLOT(closeAction()));
     cancelButton->setIcon(QIcon(QString("pics:escape.png")));
     cancelButton->setIconSize(QSize(40,25));
     cancelButton->setShortcut(Qt::Key_Escape);
@@ -1403,9 +1403,11 @@ MainFrame::vdcdebug("LoginForm","cancelPressed", "");
 
 void LoginForm::closeVDC()
 {
+    MainFrame *mainFrame = (MainFrame*) parent();
     VDC::saveSettingsToIni("Ventas AG", "posX", QString::number(this->parentWidget()->pos().x()));
     VDC::saveSettingsToIni("Ventas AG", "posY", QString::number(this->parentWidget()->pos().y()));
-    exit(0);
+    mainFrame->closeSSH = 1;
+    exit(EXIT_SUCCESS);
 }
 
 void LoginForm::showLogin()

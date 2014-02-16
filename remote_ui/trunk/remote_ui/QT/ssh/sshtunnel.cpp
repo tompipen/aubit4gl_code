@@ -1,4 +1,5 @@
 #include "sshtunnel.h"
+#include "mainframe.h"
 /*
 SSHTunnel::SSHTunnel(QObject *parent) :
     QThread(parent)
@@ -24,6 +25,11 @@ void SSHTunnel::run()
 
     while(!sctunnel)
     {
+        MainFrame *main = qobject_cast<MainFrame*> (MainFrame::lastmainframe);
+        if(main->closeSSH == 1)
+        {
+            quit();
+        }
        if(!base_session)
        {
            qDebug() << "SSH Error 2: ", ssh_get_error(base_session);
