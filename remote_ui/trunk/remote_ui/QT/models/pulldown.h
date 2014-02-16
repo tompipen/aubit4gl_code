@@ -25,7 +25,7 @@
 #include <QHBoxLayout>
 #include <QPushButton>
 
-class RingMenuPulldown : public QGroupBox
+class RingMenuPulldown : public QWidget
 {
     Q_OBJECT
 

@@ -25,15 +25,15 @@
 #include "fglform.h"
 
 RingMenuPulldown::RingMenuPulldown(QString title, QString comment, QString style, QString image,
-                                   QWidget *parent) : QGroupBox(parent)
+                                   QWidget *parent) : QWidget()
 {
     Q_UNUSED(comment);
     Q_UNUSED(style);
     Q_UNUSED(image);
    b_hideButtons = true;
-   this->setAlignment(Qt::AlignRight | Qt::AlignTop);
+   //this->setAlignment(Qt::AlignRight | Qt::AlignTop);
    // disable widget until it it gets called
-   this->setTitle(title.trimmed());
+   this->setWindowTitle(title.trimmed());
    //this->setEnabled(false);
    //this->setVisible(false);
    this->installEventFilter(this);
@@ -55,6 +55,7 @@ RingMenuPulldown::RingMenuPulldown(QString title, QString comment, QString style
 
    //this->setWindowFlags(Qt::FramelessWindowHint);
    closeWindowInt = 1;
+   this->adjustSize();
 
 }
 
@@ -375,7 +376,7 @@ bool RingMenuPulldown::eventFilter(QObject *obj, QEvent *event)
         }
     }
 
-    return QGroupBox::eventFilter(obj,event);
+    return QWidget::eventFilter(obj,event);
     //return false;
 }
 
