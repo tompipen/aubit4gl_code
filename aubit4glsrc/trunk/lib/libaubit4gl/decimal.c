@@ -992,7 +992,6 @@ a4gl_decadd (fgldecimal * d1, fgldecimal * d2, fgldecimal * sum)
 
   set_fgl_decimal_precision_from_apm_decimal(sum,mres);
 
-
   m_apm_to_fixpt_string (buff, sum->dec_data[1], mres);
   A4GL_str_dot_to_dec (buff, sum);
 

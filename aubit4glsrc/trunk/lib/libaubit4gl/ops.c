@@ -25,7 +25,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.211 2013-12-05 20:27:08 mikeaubury Exp $
+# $Id: ops.c,v 1.212 2014-02-17 17:45:31 mikeaubury Exp $
 #
 */
 
@@ -573,20 +573,30 @@ A4GL_dec_dec_ops (int op)
     case OP_ADD:
       if (res_dig > 31)
 	res_dig = 31;
+	if (res_dec!=255) {
       if (res_dec > res_dig)
 	res_dec = 0;
 
       A4GL_init_dec (&dc, res_dig + 1, res_dec);
+	} else {
+      A4GL_init_dec (&dc, res_dig + 16, 16);
+	}
       a4gl_decadd (&a, &b, &dc);
       A4GL_push_dec_dec (&dc, 0, 32);
       return;
 
     case OP_SUB:
+
       if (res_dig > 31)
 	res_dig = 31;
-      if (res_dec > res_dig)
-	res_dec = 0;
-      A4GL_init_dec (&dc, res_dig + 1, res_dec);
+	if (res_dec!=255) {
+      		if (res_dec > res_dig )
+			res_dec = 0;
+	
+      		A4GL_init_dec (&dc, res_dig + 1, res_dec);
+	} else {
+      		A4GL_init_dec (&dc, res_dig + 16, 16);
+	}
       a4gl_decsub (&a, &b, &dc);
       A4GL_push_dec_dec (&dc, 0, 32);
       return;
@@ -630,9 +640,15 @@ A4GL_dec_dec_ops (int op)
     case OP_MOD:
       if (res_dig > 31)
 	res_dig = 31;
+	/*
+	if (res_dec!=255) {
       if (res_dec > res_dig)
 	res_dec = 0;
       A4GL_init_dec (&dc, res_dig + 1, res_dec);
+	} else {
+      A4GL_init_dec (&dc, res_dig + 16, res_dec);
+	}
+	*/
       a4gl_dectolong (&a, &l1);
       a4gl_dectolong (&b, &l2);
       A4GL_push_long (l1 % l2);
