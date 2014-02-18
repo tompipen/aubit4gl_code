@@ -693,6 +693,23 @@ namespace Fgl {
             }
       }
 
+      for(int i=qs_str.length()-1; i > 0; i--)
+      {
+          int indexOfComa = qs_str.indexOf(",");
+
+          if(i == (indexOfComa+2))
+          {
+              break;
+          }
+
+          if(qs_str.at(i) == '0')
+          {
+              qs_str.remove(i, 1);
+          } else {
+              break;
+          }
+      }
+
       return qs_str.trimmed();
    }
 
