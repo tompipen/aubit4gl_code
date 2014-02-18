@@ -29,3 +29,10 @@ SOURCES += \
     patcher.cpp \
     include/vdc.cpp \
     models/zipunzip.cpp
+
+OTHER_FILES += appicon.rc
+
+RC_FILE = appicon.rc
+
+RESOURCES += \
+    ressource.qrc

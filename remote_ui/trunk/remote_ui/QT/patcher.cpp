@@ -19,34 +19,35 @@ int main(int argc, char *argv[])
 
 VDCUpdate::VDCUpdate() : QWidget()
 {
-    logMessage(QString("[DEBUG] ###START: Initialisiere Patchlauf - %1").arg(QDate::currentDate().toString()));
     QVBoxLayout *vLayout = new QVBoxLayout();
-    QHBoxLayout *hLayout = new QHBoxLayout();
+    QLabel *iconLabel = new QLabel();
+    QPixmap pix(QString(":pics/VENTAS_9_splashscreen.png"));
 
+
+    iconLabel->setPixmap(pix);
     mLabel = new QLabel(this);
     mProgress = new QProgressBar(this);
-    mTextEdit = new QTextEdit(this);
     mReply = NULL;
-    cButton = new QPushButton(tr("&Abort"), this);
+    cButton = new QPushButton(tr("&Cancel"), this);
+    cButton->setIcon(QIcon(QString(":pics/escape.png")));
+    cButton->setIconSize(QSize(40,25));
+    cButton->setShortcut(Qt::Key_Escape);
+    cButton->setStyleSheet("QPushButton { border-image: url(:pics/VENTAS_9_knopf_menu_inaktiv.png); padding-top: -1; padding-right: 10; text-align: left; height: 36px; min-width: 50px; }");
+
     connect(cButton, SIGNAL(clicked()), this, SLOT(abort()));
-    //QPushButton *showLogButton = new QPushButton(tr("Show Log"), this);
-    //showLogButton->setEnabled(false);
 
-
-    hLayout->addWidget(getProgressBar(), Qt::AlignRight);
-    vLayout->addLayout(hLayout);
-    vLayout->addWidget(getLabel(), Qt::AlignBottom);
-    vLayout->addWidget(getTextEdit());
+    vLayout->addWidget(iconLabel);
+    vLayout->addWidget(mLabel, Qt::AlignLeft);
+    vLayout->addWidget(getProgressBar(), Qt::AlignRight);
     vLayout->addWidget(cButton, 0, Qt::AlignRight);
-    //vLayout->addWidget(showLogButton, 0, Qt::AlignRight);
-    getTextEdit()->append(tr("Connecting to Download Server..."));
-    getProgressBar()->setFixedWidth(200);
-    getProgressBar()->setValue(1);
 
-    getTextEdit()->setReadOnly(true);
-    getTextEdit()->append("Starting Patch progress");
+    mLabel->setText(tr("Connecting to Download Server..."));
+
+    getProgressBar()->setValue(0);
+    getProgressBar()->setStyleSheet("QProgressBar { font-weight: bold; text-align: center; } ");
 
     this->setLayout(vLayout);
+    logMessage(QString("[DEBUG] ###START: Initialisiere Patchlauf - %1").arg(QDate::currentDate().toString()));
 
 }
 void VDCUpdate::start()
@@ -73,11 +74,13 @@ void VDCUpdate::loadServerXmlFinished(QNetworkReply *nReply)
     {
         logMessage("[DEBUG] XML konnte nicht vom Server geholt werden");
         getProgressBar()->setValue(100);
-       getTextEdit()->append(tr("Could not connect to the Update Server.\n Please check your Network connection."));
+        mLabel->setText(tr("Could not connect to the Update Server. Please check your Network connection."));
+        mLabel->setStyleSheet("QLabel { color: red; font-weight: bold; }");
+
         return;
     } else {
         logMessage("[DEBUG] Datei erfolgreich geholt.");
-        getTextEdit()->append(tr("Xml file successfully loaded."));
+        mLabel->setText(tr("Xml file successfully loaded."));
         QFile file(QDir::tempPath() + "/vdc.xml");
         file.open(QIODevice::WriteOnly);
         file.write(nReply->readAll());
@@ -126,34 +129,34 @@ void VDCUpdate::beginReadXml()
                                 j++;
                                 if(serverVars.at(i).at(j) == XmlVersionServer)
                                 {
-                                    // TODO: HIER WEITERMACHEN BINARIE HERUNTERLADEN
                                     logMessage("[DEBUG] Lade Paket herunter.");
-                                    getTextEdit()->append(tr("Attempt to download the Package..."));
+                                    mLabel->setText(tr("Attempt to download the Package..."));
                                     loadBinarie();
                                     return;
                                 } else {
-                                    getTextEdit()->append(tr("No new Version for this XML Version."));
+                                    mLabel->setText(tr("No new Version for this XML Version."));
                                     getProgressBar()->setValue(100);
                                     return;
                                 }
                             } else {
-                                getTextEdit()->append(tr("No new Update found for this A4GL Version."));
+                                mLabel->setText(tr("No new Update found for this A4GL Version."));
                                 getProgressBar()->setValue(100);
                             }
                         } else {
                             logMessage("[DEBUG] Der Client ist aktuell.");
-                            getTextEdit()->append(tr("The Client is up to date."));
+                            mLabel->setText(tr("The Client is up to date."));
                             getProgressBar()->setValue(100);
                             return;
                         }
                     } else {
                         logMessage("[DEBUG] Der Client ist aktuell.");
-                        getTextEdit()->append(tr("The Client is up to date."));
+                        mLabel->setText(tr("The Client is up to date."));
                         getProgressBar()->setValue(100);
                         return;
                     }
                 } else {
-                    getTextEdit()->append(tr("No Serverinformations found."));
+                    mLabel->setText(tr("No Serverinformations found. Update failed"));
+                    mLabel->setStyleSheet("QLabel { color: red; font-weight: bold; }");
                     getProgressBar()->setValue(100);
                     return;
                 }
@@ -168,7 +171,8 @@ void VDCUpdate::beginReadXml()
         #else
             filePath = QString((QApplication::applicationDirPath() + "/versions.xml"));
         #endif
-        getTextEdit()->append(QString("Cannot open File: %1").arg(filePath));
+        mLabel->setText(QString("Cannot open File: %1").arg(filePath));
+        mLabel->setStyleSheet("QLabel { color: red; font-weight: bold; }");
         getProgressBar()->setValue(100);
         return;
     }
@@ -324,7 +328,7 @@ QList<QList<QString> > VDCUpdate::readServerXml(QString filePath)
     if(!file.open(QIODevice::ReadOnly))
     {
         logMessage(QString("[DEBUG] XML Datei konnte nicht geoeffnet werden: %1").arg(filePath));
-        getTextEdit()->append(QString("Failed to Open: %1").arg(filePath));
+        mLabel->setText(QString("Failed to Open: %1").arg(filePath));
         getProgressBar()->setValue(100);
 
         return returnList;
@@ -373,7 +377,7 @@ QList<QList<QString> > VDCUpdate::readServerXml(QString filePath)
 void VDCUpdate::requestFileFromServer()
 {
     QString fileName = findPackage();
-    getTextEdit()->append(tr("Request Package from Server"));
+    mLabel->setText(tr("Request Package from Server"));
 
     QNetworkRequest nRequest;
     nRequest.setUrl(QUrl(QString("http://www.ventas.de/wp-content/uploads/downloads/autoupdate/binaries/%1").arg(fileName)));
@@ -391,7 +395,7 @@ void VDCUpdate::loadBinarieFinished(QNetworkReply *reply)
     QFile *file = new QFile(QDir::tempPath() + "/" + findPackage());
     if(!file->open(QIODevice::WriteOnly))
     {
-        getTextEdit()->append(tr("Cannot write file to disk. Abort!"));
+        mLabel->setText(tr("Cannot write file to disk."));
         getProgressBar()->setValue(100);
     }
 
@@ -401,7 +405,7 @@ void VDCUpdate::loadBinarieFinished(QNetworkReply *reply)
           break;
        default:
         logMessage(QString("[DEBUG] Datei auf Webserver nicht gefunden: %1 Error Code: %2").arg(findPackage()).arg(reply->error()));
-          getTextEdit()->append(QString("Cannot load File from Server: %1.\n Error code: %2 ").arg(findPackage()).arg(reply->error()));
+          mLabel->setText(tr("Cannot load File from Server: %1. Error code: %2 ").arg(findPackage()).arg(reply->error()));
           getProgressBar()->setValue(100);
           break;
     }
@@ -412,7 +416,7 @@ void VDCUpdate::loadBinarieFinished(QNetworkReply *reply)
         file->close();
 
         logMessage("[DEBUG] Dateien werden Entpackt.");
-        getTextEdit()->append(tr("Extracting Files...\n This can take a while."));
+        mLabel->setText(tr("Unzip files. This can take a while."));
         getProgressBar()->setValue(1);
 
         ZipUnzip *p_zipunzip = new ZipUnzip();
@@ -421,9 +425,8 @@ void VDCUpdate::loadBinarieFinished(QNetworkReply *reply)
         {
             cButton->setText("&Close");
             logMessage("[DEBUG] Entpacken war erfolgreich.");
-            getTextEdit()->append(tr("Extracting finished."));
-            getTextEdit()->append(tr("Copy files to workdirectory."));
-            getProgressBar()->setValue(90);
+            mLabel->setText(tr("Copy files to workdirectory."));
+            getProgressBar()->setValue(50);
             QTimer *timer = new QTimer;
             connect(timer, SIGNAL(timeout()), this, SLOT(setUpdateComplete()));
             timer->setSingleShot(true);
@@ -450,19 +453,16 @@ void VDCUpdate::loadBinarieFinished(QNetworkReply *reply)
             {
                 if(proc->waitForStarted(6000))
                 {
-                    //QApplication::quit();
                 } else {
-                    getTextEdit()->append(QString("Datei konnte nicht ausgefuehrt: %1").arg(prog));
+                    mLabel->setText(QString("Datei konnte nicht ausgefuehrt: %1").arg(prog));
                 }
             } else {
-                getTextEdit()->append(QString("Datei konnte nicht gefunden werden: <b>%1</b>").arg(prog));
+                mLabel->setText(QString("Datei konnte nicht gefunden werden: <b>%1</b>").arg(prog));
             }
-            //CopyBinaries *cBinaries = new CopyBinaries;
-            //cBinaries->start(QString(QDir::tempPath() + "/VDC"),   QString(QApplication::applicationDirPath()));
-
         } else {
             logMessage("[DEBUG] Entpacken ist fehlgeschlagen.");
-            getTextEdit()->append(tr("Extracting failed."));
+            mLabel->setText(tr("Unzip failed."));
+            mLabel->setStyleSheet("QLabel { color: red; font-weight: bold; }");
             getProgressBar()->setValue(100);
         }
 
@@ -471,7 +471,7 @@ void VDCUpdate::loadBinarieFinished(QNetworkReply *reply)
 
 void VDCUpdate::setUpdateComplete()
 {
-    getTextEdit()->append(tr("Update successfull. Starting VDC binarie."));
+    mLabel->setText(tr("Update successfull. Wait until the VDC has been started."));
     getProgressBar()->setValue(100);
 }
 
@@ -482,6 +482,7 @@ void VDCUpdate::updateDownloadProgress(qint64 received, qint64 total)
 QString VDCUpdate::findPackage()
 {
     QString packageName;
+
     #ifdef Q_OS_MAC
         packageName = QString("VDCUpdateMac.zip");
     #endif
@@ -493,7 +494,6 @@ QString VDCUpdate::findPackage()
     #endif
 
     return packageName;
-
 }
 void VDCUpdate::logMessage(QString msg)
 {
@@ -528,4 +528,10 @@ void VDCUpdate::abort()
 
 VDCUpdate::~VDCUpdate()
 {
+    delete mBox;
+    delete mLabel;
+    delete mProgress;
+    delete mReply;
+    delete mPushbutton;
+    delete cButton;
 }
