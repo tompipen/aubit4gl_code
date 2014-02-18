@@ -89,7 +89,7 @@ MainFrame::vdcdebug("RingMenu","createButton", "int id, QString text, QString to
 
    // Create the Button and set Text + ToolTip
    QPushButton *button = new QPushButton(buttonText);
-   button->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+   button->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
    button->setToolTip(tooltip);
    button->setFlat(true);
    button->installEventFilter(this);
@@ -110,6 +110,8 @@ MainFrame::vdcdebug("RingMenu","createButton", "int id, QString text, QString to
    }
    button->setIconSize(QSize(40,25));
    button->setShortcut(QString("&%1").arg(id));
+   button->setMinimumWidth(text.length() + 200);
+   this->setMinimumWidth(text.length() + 200);
 
    /*if(text.toLower() == "abbruch" || text.toLower() == "ende")
    {
