@@ -571,7 +571,7 @@ fprop=&f->attributes.attributes_val[attr_no];
 			fprintf(ofile, "        {\"type\":\"RipRADIO\" %s,\"width\":%d %s\n", buff, f->metrics.metrics_val[metric_no].w, posbuf);
 
         } else {
-			fprintf(ofile, "        {\"type\":\"Radio\" %s,width:%d %s\n", buff, f->metrics.metrics_val[metric_no].w, posbuf);
+			fprintf(ofile, "        {\"type\":\"Radio\" %s,\"width\":%d %s\n", buff, f->metrics.metrics_val[metric_no].w, posbuf);
 	// print the items...
 	if (A4GL_has_str_attribute(fprop, FA_S_ITEMS)) { 
 			char *ptr;
@@ -696,31 +696,31 @@ void print_textedit_attr(struct_form *f, int metric_no, int attr_no,int oldstyle
 //char *s;
 char buff[2000];
 char posbuf[200];
-	sprintf(posbuf," \"posY\":%d,\"posX\":%d, \"gridWidth\":%d", f->metrics.metrics_val[metric_no].y, f->metrics.metrics_val[metric_no].x, f->metrics.metrics_val[metric_no].w);
+	sprintf(posbuf,",\"posY\":%d,\"posX\":%d, \"gridWidth\":%d", f->metrics.metrics_val[metric_no].y, f->metrics.metrics_val[metric_no].x, f->metrics.metrics_val[metric_no].w);
 	if (strcmp(why,"Table")==0) {
 		strcpy(posbuf,""); // posX and posY are not used for tables...
 	}
 //printf("Heigh=%d\n",  f->metrics.metrics_val[metric_no].h);
         get_attribs(f, attr_no, buff,1,metric_no);
- 	if (strstr(buff, " scroll=")==0 && oldstyle!=2) { 
+ 	if (strstr(buff, ",\"scroll\":")==0 && oldstyle!=2) { 
 		// Seems to always have scroll=1
-		strcat(buff," scroll=\"1\"");
+		strcat(buff,",\"scroll\":true");
 	}
 	if (f->metrics.metrics_val[metric_no].h!=1) {
 		char smbuff[200];
-		sprintf(smbuff," height=%d", f->metrics.metrics_val[metric_no].h);
+		sprintf(smbuff,",\"height\"=%d", f->metrics.metrics_val[metric_no].h);
 		strcat(buff,smbuff);
 	}
 
 	if (oldstyle) {
 		if (oldstyle==2) {
-			fprintf(ofile, "  <TextEdit %s width=%d scrollBars=\"none\" %s />\n", buff, f->metrics.metrics_val[metric_no].w,posbuf);
+			fprintf(ofile, "        {\"type\":\"TextEdit\" %s,\"width\":%d,\"scrollBars\":\"none\" %s }\n", buff, f->metrics.metrics_val[metric_no].w,posbuf);
 		} else {
-			fprintf(ofile, "  <TextEdit %s width=%d %s />\n", buff, f->metrics.metrics_val[metric_no].w,posbuf);
+			fprintf(ofile, "        {\"type\":\"TextEdit\" %s,\"width\":%d %s }\n", buff, f->metrics.metrics_val[metric_no].w,posbuf);
 		}
 
         } else {
-			fprintf(ofile, "  <TextEdit %s width=%d %s />\n", 
+			fprintf(ofile, "        {\"type\":\"TextEdit\" %s,\"width\":%d %s }\n", 
 				buff,
 				f->metrics.metrics_val[metric_no].w, posbuf);
         }
