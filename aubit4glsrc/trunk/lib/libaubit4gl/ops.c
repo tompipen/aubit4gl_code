@@ -25,7 +25,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.212 2014-02-17 17:45:31 mikeaubury Exp $
+# $Id: ops.c,v 1.213 2014-02-19 17:46:27 mikeaubury Exp $
 #
 */
 
@@ -6973,8 +6973,12 @@ A4GL_display_decimal (void *ptr, int size, int string_sz, struct struct_scr_fiel
 	  ptr2 = ptr;
 	  n = NUM_DIG (ptr2);
 	  l = NUM_DEC (ptr2);
-	  n = n - l + 1;
-	  string_sz = n + 1;
+	  if (l==255) {
+		string_sz=n+2;
+          } else {
+	  	n = n - l + 1;
+	  	string_sz = n + 1;
+	  }
 	}
 
       A4GL_push_char (A4GL_make_using_tostring (ptr, size >> 8, size & 255));
@@ -7066,6 +7070,15 @@ A4GL_display_decimal (void *ptr, int size, int string_sz, struct struct_scr_fiel
 	  fgldec = (fgldecimal *) ptr;
 	  ndig = NUM_DIG (fgldec->dec_data);
 	  ndec = NUM_DEC (fgldec->dec_data);
+		if (ndec==255) {
+			static char buff[256];
+      			A4GL_push_dec (ptr, 0, size);
+			A4GL_pop_char(buff,ndig+2);
+			A4GL_lrtrim(buff);
+      			A4GL_decstr_convert (buff, a4gl_convfmts.using_decfmt, a4gl_convfmts.ui_decfmt, 0, 0, strlen(buff));
+			return buff;
+			//printf("-->%s:\n", buff);
+		}
 		if (string_sz<=0) {
 			string_sz=ndig+1;
 		}
