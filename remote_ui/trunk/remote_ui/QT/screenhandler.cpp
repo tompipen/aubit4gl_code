@@ -4596,6 +4596,53 @@ void ScreenHandler::stopProtocolTimer(QString bla)
     QMetaObject::invokeMethod(p_fglform, "closeMessageWithIcon", Qt::QueuedConnection);
 }
 
+void ScreenHandler::openLocalFile(QString fileName)
+{
+/*#ifdef Q_OS_LINUX
+        fileName.prepend("file://");
+#endif
+#ifdef Q_OS_MAC
+    fileName.prepend("file:///");
+#endif
+    fileName = QDir::tempPath() + "/" + fileName;
+    QFileInfo fileInfo(fileName);
+
+#ifdef Q_OS_WIN
+        QProcess process;
+        process.startDetached(QString("rundll32 url.dll,FileProtocolHandler \"%1\"").arg( fileInfo.absoluteFilePath()));
+#else*/
+    fileName = QDir::tempPath() + "/" + fileName;
+    QFileInfo fileInfo(fileName);
+    QDesktopServices::openUrl(QUrl::fromLocalFile(fileInfo.absoluteFilePath()));
+//#endif
+
+}
+
+void ScreenHandler::openEmailWithAttach(QString fileName)
+{
+#ifdef Q_OS_WIN
+    QProcess process;
+    QSettings *settings = new QSettings("HKEY_CURRENT_USER\\Software\\Classes\\mailto\\shell\\open\\command\\", QSettings::NativeFormat);
+    QString emailProgram = settings->value(".").toString();
+
+    emailProgram.replace("%1", fileName);
+    emailProgram.replace("attachment=", "attachment=" + QDir::toNativeSeparators(QDir::tempPath() + "\\"));
+    process.startDetached(emailProgram);
+#endif
+#ifdef Q_OS_MAC
+    QProcess process;
+    fileName.replace("attachment=", "attachment=" + QDir::tempPath() + "/");
+    QString prog = "/Applications/Thunderbird.app/Contents/MacOS $ thunderbird -compose " + fileName + "\"";
+    process.start(prog);
+
+#endif
+}
+
+void ScreenHandler::openEmail(QString mailtoUrl)
+{
+    QDesktopServices::openUrl(QUrl(mailtoUrl));
+}
+
 void ScreenHandler::printpdf(QString filename)
 {
     Q_UNUSED(filename);

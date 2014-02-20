@@ -1222,14 +1222,36 @@ if(childElement.nodeName() == "PROGRAMSTARTUP"){
    
    if(childElement.nodeName() == "EXECUTE"){
       QString fileName = childElement.text();
-      int openLocalFile = 0;
+      int openFileType = 1;
 
-      if(!fileName.contains("mailto:") && !fileName.contains("http:"))
+      if (fileName.contains("to=") && !fileName.contains("http:"))
       {
-          openLocalFile = 1;
+          openFileType = 2;
       }
 
-      if(openLocalFile == 0)
+      if(fileName.contains("mailto:") && !fileName.contains("http:"))
+      {
+          openFileType = 3;
+      }
+
+
+      switch(openFileType)
+      {
+      case 1:
+          QMetaObject::invokeMethod(p_currScreenHandler, "openLocalFile", Qt::QueuedConnection, Q_ARG(QString, fileName));
+          break;
+      case 2:
+          QMetaObject::invokeMethod(p_currScreenHandler, "openEmailWithAttach", Qt::QueuedConnection, Q_ARG(QString, fileName));
+          break;
+      case 3:
+          QMetaObject::invokeMethod(p_currScreenHandler, "openEmail", Qt::QueuedConnection, Q_ARG(QString, fileName));
+          break;
+      default:
+          break;
+      }
+
+      //Auslagern in Screenhandler
+      /*if(openLocalFile == 0)
       {
          //If we want to open a Email Programm or a Website.
         #ifdef Q_OS_LINUX
@@ -1260,7 +1282,7 @@ if(childElement.nodeName() == "PROGRAMSTARTUP"){
              process.startDetached(QString("rundll32 url.dll,FileProtocolHandler \"%1\"").arg( fileInfo.absoluteFilePath()));
           #endif
       return;
-   }
+   }*/
    }
 
    if(childElement.nodeName() == "CALL"){

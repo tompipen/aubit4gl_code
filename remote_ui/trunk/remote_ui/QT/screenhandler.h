@@ -298,6 +298,10 @@ public slots:
    void protocolTimeout();
    void resetProtocolCnt();
 
+   void openLocalFile(QString);
+   void openEmailWithAttach(QString);
+   void openEmail(QString);
+
 signals:
    void fglFormResponse(QString);
    void windowCreated();
