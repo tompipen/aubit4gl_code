@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.195 2014-02-06 08:05:55 mikeaubury Exp $
+# $Id: conv.c,v 1.196 2014-02-20 09:38:40 mikeaubury Exp $
 #
 */
 
@@ -741,7 +741,6 @@ A4GL_ctoint (void *a_char, void *b_int, int size_b)
 #endif
       A4GL_conv_invdatatoc (data, v1, v2, v3, d);
 #ifdef DEBUG
-//printf("---->Y %d M %d D %d H %d M %d S %d\n", data[0],data[1],data[2],data[3],data[4],data[5]);
       A4GL_debug ("CHECK2 :  d->stime=%d d->ltime=%d d->isneg=%d", d->stime, d->ltime,d->is_neg);
 #endif
       return 1;
@@ -1954,7 +1953,7 @@ A4GL_mdectof (void *zz, void *aa, int sz_ignore)
   z = (fgldecimal *) zz;
 
   strcpy (buff, A4GL_dec_to_str (z, 0));
-  return A4GL_stof (buff, a, 0);
+  return A4GL_posix_stof (buff, a, 0);
 }
 
 /**
@@ -2028,6 +2027,51 @@ A4GL_stof (void *aa, void *zz, int sz_ignore)
   char *eptr;
 
   a = A4GL_decstr_convert ((char *) aa, a4gl_convfmts.ui_decfmt, a4gl_convfmts.scanf_decfmt, 1, 1, -1);
+  ok = (sscanf (a, "%lf", (double *) zz) == 1);
+#ifdef DEBUG
+  A4GL_debug ("stof: %s->%16.16lf; OK=%d", A4GL_null_as_null (a), *(double *) zz, ok);
+#endif
+
+  if (!ok && !A4GL_isno (acl_getenv ("ALLOWDBLCRUD")))
+    {
+      b = strtod ((char *) aa, &eptr);
+      if (eptr != aa)
+	{
+	  *(double *) zz = b;
+	  ok = 1;
+	}
+      else
+	{
+	  ok = 1;
+	  *(double *) zz = 0;
+	}
+    }
+
+
+  free (a);
+  return ok;
+}
+
+
+/**
+ * Convert a string value to float.
+ *
+ * @param zz The double value.
+ * @param aa A pointer where to the string value.
+ * @param sz_ignore Not used.
+ * @return
+ *   - 0 : Value invalid or error.
+ *   - 1 : Value converted.
+ */
+int
+A4GL_posix_stof (void *aa, void *zz, int sz_ignore)
+{
+  char *a;
+  int ok;
+  double b;
+  char *eptr;
+
+  a = A4GL_decstr_convert ((char *) aa, a4gl_convfmts.posix_decfmt, a4gl_convfmts.scanf_decfmt, 1, 1, -1);
   ok = (sscanf (a, "%lf", (double *) zz) == 1);
 #ifdef DEBUG
   A4GL_debug ("stof: %s->%16.16lf; OK=%d", A4GL_null_as_null (a), *(double *) zz, ok);
@@ -2225,7 +2269,7 @@ A4GL_dectof (void *zz, void *aa, int sz_ignore)
   z = (char *) zz;
 
   A4GL_dectos (z, buff, 64);
-  return A4GL_stof (buff, a, 0);
+  return A4GL_posix_stof (buff, a, 0);
 }
 
 /**
@@ -3418,7 +3462,7 @@ A4GL_mdectovc (void *a, void *b, int size)
 int
 A4GL_vctof (void *a, void *b, int size)
 {
-  return A4GL_stof (a, b, size);
+  return A4GL_posix_stof (a, b, size);
 }
 
 int

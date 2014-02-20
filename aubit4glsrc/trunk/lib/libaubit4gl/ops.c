@@ -25,7 +25,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.213 2014-02-19 17:46:27 mikeaubury Exp $
+# $Id: ops.c,v 1.214 2014-02-20 09:38:40 mikeaubury Exp $
 #
 */
 
@@ -7075,7 +7075,9 @@ A4GL_display_decimal (void *ptr, int size, int string_sz, struct struct_scr_fiel
       			A4GL_push_dec (ptr, 0, size);
 			A4GL_pop_char(buff,ndig+2);
 			A4GL_lrtrim(buff);
-      			A4GL_decstr_convert (buff, a4gl_convfmts.using_decfmt, a4gl_convfmts.ui_decfmt, 0, 0, strlen(buff));
+			if (a4gl_convfmts.posix_decfmt.decsep!= a4gl_convfmts.ui_decfmt.decsep) {
+      				A4GL_decstr_convert (buff, a4gl_convfmts.posix_decfmt, a4gl_convfmts.ui_decfmt, 0, 0, strlen(buff));
+			}
 			return buff;
 			//printf("-->%s:\n", buff);
 		}

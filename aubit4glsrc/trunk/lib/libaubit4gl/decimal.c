@@ -776,7 +776,7 @@ A4GL_str_to_dec (char *str_orig, fgldecimal * dec)
  *
  * @param dec a pointer to the decimal that will be converted.
  * @param size The total size of the decimal
- * @return A pointer to a static buffer that contains the decimal.
+ * @return A pointer to a static buffer that contains the decimal in posix format
  */
 char *
 A4GL_dec_to_str (fgldecimal * dec, int size)

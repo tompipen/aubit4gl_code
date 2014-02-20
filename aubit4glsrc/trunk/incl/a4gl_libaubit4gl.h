@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.432 2013-03-25 12:58:40 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.433 2014-02-20 09:38:40 mikeaubury Exp $
 #
 */
 
@@ -2189,6 +2189,7 @@ void A4GL_process_stack_op_other (int d);
 void *A4GL_pop_binding (int *n);
 int A4GL_push_binding (void *ptr, int num);
 int A4GL_stof (void *aa, void *zz, int sz_ignore);
+int A4GL_posix_stof (void *aa, void *zz, int sz_ignore);
 int A4GL_nullfunc (void);
 int A4GL_chk_params (struct BINDING *b, int nb, struct BINDING *o, int no);
 char *A4GLSQLCV_generate_ins_string(char *current_ins_table,char *s,  int is_select_into);
