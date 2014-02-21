@@ -4630,11 +4630,37 @@ void ScreenHandler::openEmailWithAttach(QString fileName)
     process.startDetached(emailProgram);
 #endif
 #ifdef Q_OS_MAC
+
+    QFile file("/Applications/Thunderbird.app/Contents/MacOS/thunderbird");
+
+    if(!file.exists())
+    {
+        displayError("Cannot find Thunderbird installation.");
+        return;
+    }
+
     QProcess process;
     fileName.replace("attachment=", "attachment=" + QDir::tempPath() + "/");
     QString prog = "/Applications/Thunderbird.app/Contents/MacOS/thunderbird -compose \"" + fileName + "\"";
     qDebug() << "prog:" << prog;
     process.start(prog);
+    waitTimer::msleep(5000);
+#endif
+#ifdef Q_OS_LINUX
+
+    QFile file("/usr/bin/thunderbird");
+
+    if(!file.exists())
+    {
+        displayError("Cannot find Thunderbird installation.");
+        return;
+    }
+
+    QProcess *process = new QProcess();
+    fileName.replace("attachment=", "attachment=" + QDir::tempPath() + "/");
+    QString prog = "/usr/bin/thunderbird -compose \"" + fileName + "\"";
+    qDebug() << "prog:" << prog;
+    process->start(prog);
     waitTimer::msleep(5000);
 #endif
 }
