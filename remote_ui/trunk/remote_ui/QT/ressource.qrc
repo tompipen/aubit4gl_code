@@ -166,5 +166,7 @@
         <file>pics/frame_right.jpg</file>
         <file>pics/yes.png</file>
         <file>pics/no.png</file>
+        <file>pics/master10.png</file>
+        <file>pics/VENTAS_10_splashscreen.png</file>
     </qresource>
 </RCC>

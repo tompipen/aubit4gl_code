@@ -280,7 +280,7 @@ int main(int argc, char *argv[])
     QSplashScreen *splash = new QSplashScreen;
     ScreenHandler::setSearchPaths();
     //splash->setPixmap(QPixmap("./pics/splash.png"));
-    splash->setPixmap(QPixmap("pics:VENTAS_9_splashscreen.png"));
+    splash->setPixmap(QPixmap("pics:VENTAS_10_splashscreen.png"));
 
     splash->show();
 
@@ -334,6 +334,8 @@ int main(int argc, char *argv[])
 
     MainFrame mainframe;
     mainframe.move(VDC::widgetPositionValidate(posX, posY));
+
+    waitTimer::msleep(2000);
 
     mainframe.show();
     mainframe.adjustSize();

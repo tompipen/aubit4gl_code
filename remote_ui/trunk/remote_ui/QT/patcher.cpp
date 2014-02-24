@@ -21,7 +21,7 @@ VDCUpdate::VDCUpdate() : QWidget()
 {
     QVBoxLayout *vLayout = new QVBoxLayout();
     QLabel *iconLabel = new QLabel();
-    QPixmap pix(QString(":pics/VENTAS_9_splashscreen.png"));
+    QPixmap pix(QString(":pics/VENTAS_10_splashscreen.png"));
 
 
     iconLabel->setPixmap(pix);
