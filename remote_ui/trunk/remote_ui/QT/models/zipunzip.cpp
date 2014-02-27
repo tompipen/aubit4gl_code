@@ -63,7 +63,7 @@ bool ZipUnzip::unzipArchiv(QString filePath, QString fileName, QString destFileP
         if( destdir->open( QIODevice::WriteOnly | QIODevice::Truncate) )
         {
             QTextStream stream( destdir );
-            stream.setCodec("ISO-8859-1");
+            stream.setCodec("UTF-8");
             stream << file.readAll();
         } else {
             qDebug() << "konnte ned zum schreiben oeffnen" << zipArchiv.getZipError();
@@ -134,7 +134,7 @@ bool ZipUnzip::zipFileArchiv(QString filePath, QString FileName, QFileInfo zielD
     //absolutFilePath.append("123.ods");
 
     QuaZip zip( filePath + "/" + zielDatei.fileName() );
-    zip.setFileNameCodec("IBM866");
+    zip.setFileNameCodec("IBM850");
 
     if( !zip.open(QuaZip::mdCreate ) )
     {

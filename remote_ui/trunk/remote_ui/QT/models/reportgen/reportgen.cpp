@@ -74,12 +74,11 @@ void Reportgen::run()
     }
 
     QTextStream stream(&contentXmlAlt);
-    stream.setCodec("ISO-8859-1");
+    stream.setCodec("UTF-8");
     stream << contentXml.readAll();
 
     contentXmlAlt.close();
     contentXml.close();
-
 
     for(int j=0; j < sed_fields.count(); j++)
     {
@@ -127,7 +126,7 @@ void Reportgen::replaceHeaderFooterVariables(int Table)
     }
 
     QTextStream in(&fileRead);
-    in.setCodec("ISO-8859-1");
+    in.setCodec("UTF-8");
 
     QString xmlFile = in.readAll();
     QString sedValue;
@@ -1015,15 +1014,15 @@ void Reportgen::createXmlFile(int Table, int Position, QString odffile)
     }
 
     QTextStream outstream(&file);
-    outstream.setCodec("ISO-8859-1");
+    outstream.setCodec("UTF-8");
 
-    outstream << getTemplateHeader( odffile + "/content-alt.xml", "ods" ).toLatin1(); //<< getTemplatePosition( fileBaseName + "/content.xml" ).toUtf8();
+    outstream << getTemplateHeader( odffile + "/content-alt.xml", "ods" ); //<< getTemplatePosition( fileBaseName + "/content.xml" ).toUtf8();
     if(Table > 1)
     {
         outstream << createFirstTable(odffile);
     }
 
-    QString templatePosition = getTemplatePosition(Table, odffile + "/content-alt.xml").toLatin1();
+    QString templatePosition = getTemplatePosition(Table, odffile + "/content-alt.xml");
 
     if(templatePosition.isEmpty())
     {
@@ -1287,7 +1286,7 @@ void Reportgen::createXmlFile(int Table, int Position, QString odffile)
         }
     }
 
-    QString footer = getTemplateFooter(Table, odffile + "/content-alt.xml", ".ods").toLatin1();
+    QString footer = getTemplateFooter(Table, odffile + "/content-alt.xml", ".ods");
 
     if(footer.isEmpty())
     {
