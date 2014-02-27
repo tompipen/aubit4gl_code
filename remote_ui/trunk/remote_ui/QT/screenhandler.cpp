@@ -4639,11 +4639,11 @@ void ScreenHandler::openEmailWithAttach(QString fileName)
         return;
     }
 
-    QProcess process;
+    QProcess *process = new QProcess();;
     fileName.replace("attachment=", "attachment=" + QDir::tempPath() + "/");
     QString prog = "/Applications/Thunderbird.app/Contents/MacOS/thunderbird -compose \"" + fileName + "\"";
     qDebug() << "prog:" << prog;
-    process.start(prog);
+    process->start(prog);
     waitTimer::msleep(5000);
 #endif
 #ifdef Q_OS_LINUX
