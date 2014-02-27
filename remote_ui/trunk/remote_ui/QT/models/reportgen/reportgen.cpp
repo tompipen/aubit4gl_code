@@ -2214,7 +2214,7 @@ void Reportgen::readSedFile(QString sedfile)
 {
     QFile file(QDir::tempPath() + "/" + sedfile);
     QTextStream stream(&file);
-    stream.setCodec("ISO-8859-1");
+    stream.setCodec("UTF-8");
 
     if(!file.open(QIODevice::ReadOnly)) {
         qDebug() << "(readSed): Konnte SED Datei nicht lesen." << "";
@@ -2669,7 +2669,7 @@ bool Reportgen::replaceTemplateVars(QString odffile, QString sedfile, QFileInfo 
     QString str;
 
     QTextStream stylesXmlStream(&stylesXml);
-    stylesXmlStream.setCodec("ISO-8859-1");
+    stylesXmlStream.setCodec("UTF-8");
 
     getTemplateVars(odffile + "/styles.xml");
 
@@ -2706,7 +2706,7 @@ bool Reportgen::replaceTemplateVars(QString odffile, QString sedfile, QFileInfo 
     }
 
     QTextStream outStream(outStylesFile);
-    outStream.setCodec("ISO-8859-1");
+    outStream.setCodec("UTF-8");
 
     outStream << outStylesString;
     outStylesString.clear();
@@ -2872,7 +2872,7 @@ bool Reportgen::replaceTemplateVars(QString odffile, QString sedfile, QFileInfo 
     }
 
     QTextStream streamout(&file4);
-    streamout.setCodec("ISO-8859-1");
+    streamout.setCodec("UTF-8");
     streamout << content;
     file4.close();
 
