@@ -56,6 +56,7 @@ MainFrame::vdcdebug("TableView","TableView", "QWidget *parent");
       header->setSectionsClickable(true);
    #endif
    header->setSortIndicatorShown(true);
+   header->setSortIndicator(1, Qt::DescendingOrder);
    header->installEventFilter(this);
    this->setContextMenuPolicy(Qt::CustomContextMenu);
 
@@ -101,17 +102,6 @@ void TableView::restoreSortOrder()
         this->horizontalHeader()->setSortIndicator(logicalIndex,Qt::DescendingOrder);
     }
     this->setSortingEnabled(true);
-
-    if(logicalIndex > 0 && !sortIndecator.isEmpty())
-    {
-        if(sortIndecator.contains("ASC"))
-        {
-            this->sortByColumn(logicalIndex, Qt::AscendingOrder);
-        } else if(sortIndecator.contains("DESC"))
-        {
-            this->sortByColumn(logicalIndex, Qt::DescendingOrder);
-        }
-    }
 }
 
 
