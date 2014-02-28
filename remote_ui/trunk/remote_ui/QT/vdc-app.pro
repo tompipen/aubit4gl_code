@@ -3,22 +3,28 @@
 # #####################################################################
 
 TEMPLATE = app
+TARGET = VDC
+
 DEPENDPATH += .
 INCLUDEPATH += .
 
-unix:!macx {
-    QMAKE_LFLAGS += -Wl,--rpath="$$_PRO_FILE_PWD_/lib"
-#    INCLUDEPATH += ./breakpad/src/
-#    LIBS += -L"$$_PRO_FILE_PWD_/lib" -lbreakpad_client
-#    LIBS += -L"$$OUT_PWD/lib" -lbreakpad_client
-}
-TARGET = VDC
 QT += network
 QT += xml
 QT += webkit
 QT += svg
+
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 greaterThan(QT_MAJOR_VERSION, 4): QT += webkitwidgets
+
+unix:!macx {
+    QMAKE_LFLAGS += -Wl,--rpath="$$_PRO_FILE_PWD_/lib"
+}
+
+macx {
+  ICON = pics/vdc.icns
+  QMAKE_POST_LINK = DYLD_LIBRARY_PATH=$$OUT_PWD/lib $$PWD/libsintobundle $$OUT_PWD/VDC.app
+}
+
 win32 {
   LIBS += -lwsock32
 }
@@ -62,11 +68,6 @@ message( $$INCLUDEPATH )
 }
 }
 
-macx {
-  ICON = pics/vdc.icns
-  QMAKE_POST_LINK = DYLD_LIBRARY_PATH=$$OUT_PWD/lib $$PWD/libsintobundle $$OUT_PWD/VDC.app
-}
-# Input
 HEADERS += confwin.h \
     login.h \
     mainframe.h \
