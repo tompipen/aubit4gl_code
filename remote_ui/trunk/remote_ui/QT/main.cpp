@@ -1,3 +1,4 @@
+/*
 //--------------------------------------------------------- (C) VENTAS AG 2009 -
 // Project      : VENTAS Desktop Client for A4gl
 // File name    : main.cpp
@@ -14,6 +15,16 @@
 // Enjoy using it!
 //
 //------------------------------------------------------------------------------
+*/
+
+
+/*!
+ * \mainpage Ventas Desktop Client for Aubit4GL
+ * \author Ventas AG 2006-2014
+ * \date Februar 2012
+ * \version 2.0
+ */
+
 #include <QApplication>
 #include <QDebug>
 #include <QLineEdit>
@@ -36,46 +47,6 @@
 #include "include/dbghelp.h"
 #include <tchar.h>
 #endif
-
-/*#ifdef Q_OS_WIN
-#include "windows.h"
-#include <unistd.h>
-#include <stdlib.h>
-#include <DbgHelp.h>
-#endif*/
-
-/*#ifdef Q_OS_LINUX
-#include "client/linux/handler/exception_handler.h"
-
-static bool dumpCallback(const google_breakpad::MinidumpDescriptor &md,
-                         void* context,
-                         bool succeeded)
-{
-     printf("Dump path: %s\n", md.path());
-     return succeeded;
-}
-
-void crash()
-{
-  volatile int* a = (int*)(NULL);
-  *a = 1;
-}
-#endif
-*/
-
-//--------------------------------------------------------- (C) VENTAS AG 2006 -
-// Filename     : main.cpp
-// Function     : main()
-// Description  : starts the application
-//                starts main frame (so called damon)
-//------------------------------------------------------------------------------
-/*!
- * \mainpage Ventas Desktop Client for Aubit4GL
- * \author Ventas AG 2006-2012
- * \date Februar 2012
- * \version 1.0
- */
-
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 void crashingMessageHandler(QtMsgType type, const char *msg)
@@ -264,6 +235,15 @@ LONG WINAPI HandleExceptionFilter(struct _EXCEPTION_POINTERS* ExceptionInfo)
 }
 #endif
 
+
+
+//--------------------------------------------------------- (C) VENTAS AG 2006 -
+// Filename     : main.cpp
+// Function     : main()
+// Description  : starts the application
+//                starts main frame (so called damon)
+//------------------------------------------------------------------------------
+
 int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
@@ -279,7 +259,6 @@ int main(int argc, char *argv[])
 
     QSplashScreen *splash = new QSplashScreen;
     ScreenHandler::setSearchPaths();
-    //splash->setPixmap(QPixmap("./pics/splash.png"));
     splash->setPixmap(QPixmap("pics:VENTAS_10_splashscreen.png"));
 
     splash->show();
@@ -294,11 +273,6 @@ int main(int argc, char *argv[])
 
     if (translator->load(translatorFileName, QLibraryInfo::location(QLibraryInfo::TranslationsPath)))
        app.installTranslator(translator);
-
-
-//    if(argc >= 2 &&
-//       QString(argv[1]) == "-l")
-//       loginForm = true;
 
     QFontDatabase::addApplicationFont(":/font/LiberationMono-Regular.ttf");
     QFont yavcFont("Arial", 8);
@@ -323,7 +297,7 @@ int main(int argc, char *argv[])
 
     // we need to register the QStringList with the meta-object system
     // to make it usable for signal/slot connections
-    //
+
     qRegisterMetaType<QStringList>("QStringList");
     qRegisterMetaType<QModelIndex>("QModelIndex");
     qRegisterMetaType<QModelIndex>("QDomDocument");
