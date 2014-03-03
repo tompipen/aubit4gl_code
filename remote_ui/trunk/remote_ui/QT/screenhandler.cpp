@@ -1595,6 +1595,44 @@ void ScreenHandler::setAttributes(QString fieldName, QString attribute, QString 
         }
     }
 
+    if(p_fglform->menu())
+    {
+        if(attribute == "HIDEOPTION")
+        {
+            QStringList fieldList;
+
+            if(!fieldName.contains("|"))
+            {
+                if(value == "N")
+                {
+                   showOption(fieldName);
+                }
+
+                if(value == "Y")
+                {
+                    hideOption(fieldName);
+                }
+                return;
+            }
+
+            fieldList = fieldName.split("|");
+
+            for(int i=0; i < fieldList.count(); i++)
+            {
+                if(value == "N")
+                {
+                   showOption(fieldList.at(i));
+                }
+
+                if(value == "Y")
+                {
+                    hideOption(fieldList.at(i));
+                }
+            }
+            return;
+         }
+    }
+
     if(Label *widget = qobject_cast<Label*> (p_fglform->findFieldByName(fieldName.toLower())))
     {
         if(attribute.toLower() == "defaultimage")
