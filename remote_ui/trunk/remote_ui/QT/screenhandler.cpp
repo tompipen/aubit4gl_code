@@ -2493,7 +2493,10 @@ if(qsl_triggereds.size() > 0)
          {
              if(p_fglform->state() == Fgl::MENU )
              {
-                 p_fglform->menu()->selectButton(p_fglform->menu()->getFocusName());
+                 if(!p_fglform->menu()->getFocusName().isEmpty())
+                 {
+                     p_fglform->menu()->selectButton(p_fglform->menu()->getFocusName());
+                 }
              }
          }
       }

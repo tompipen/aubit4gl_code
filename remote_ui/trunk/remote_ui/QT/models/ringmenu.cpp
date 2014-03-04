@@ -500,8 +500,20 @@ MainFrame::vdcdebug("RingMenu","isActionButton", "QPushButton* button");
 bool RingMenu::eventFilter(QObject *obj, QEvent *event)
 {
 
+    if(event->type() == QEvent::MouseButtonRelease)
+    {
+        if(QPushButton *btn = qobject_cast<QPushButton *> (obj)){
+           focusName = btn->text().remove("&");
+        }
+    }
+
     if(event->type() == QEvent::KeyPress){
        QKeyEvent *keyEvent = (QKeyEvent*) event;
+
+       if(QPushButton *btn = qobject_cast<QPushButton *> (obj)){
+          focusName = btn->text().remove("&");
+       }
+
        if(keyEvent->key() == Qt::Key_Backtab)
        {
 
