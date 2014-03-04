@@ -4917,35 +4917,6 @@ MainFrame::vdcdebug("FglForm","checkField", "");
                   WidgetHelper::setFieldText(widget, text);
               }
 
-              if(widget->getSqlType().contains("DATE"))
-              {
-                  QString fieldValue;
-                  for(int i=0; i < text.length(); i++)
-                  {
-                      if(text.at(i) == '<')
-                      {
-                          fieldValue.append("<");
-                      }
-                      if(text.at(i) == '>')
-                      {
-                          fieldValue.append(">");
-                      }
-                      if(text.at(i) == '=')
-                      {
-                          fieldValue.append("=");
-                      }
-                  }
-                  text.remove("<");
-                  text.remove(">");
-                  text.remove("=");
-
-                  fieldValue.append(Fgl::usingFunc(widget->format(), text, Fgl::DTYPE_DATE, widget->picture()).trimmed());
-
-                  if(Fgl::isValidForType(widget->dataType(), text, widget->format())){
-                      WidgetHelper::setFieldText(widget, fieldValue);
-                  }
-              }
-
               if(widget->getSqlType().contains("DECIMAL"))
               {
                   QString temptext = text;
