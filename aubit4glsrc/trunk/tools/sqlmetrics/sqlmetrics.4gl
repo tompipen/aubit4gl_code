@@ -3,6 +3,8 @@ define mc_version constant 0.1
 
 main
 define lv_dialect char(20)
+define a integer
+define lv_str char(256)
 defer interrupt
 
 	call form_is_compiled(splash,"MEMPACKED","GENERIC")
@@ -17,6 +19,10 @@ defer interrupt
 	# we dont want to log the SQLs we're using to analyse
 	# the SQLs we want to analyse :-)
 	call aclfgl_setenv("IGNORE_SQLMETRICS","Y") 
+	let lv_str=arg_val(1)
+	if lv_str="-?" or lv_str="--help" or lv_str="-help"  then
+		call usage_and_exit()
+	end if
 
 	call copyright_banner()
 
@@ -59,6 +65,28 @@ defer interrupt
 	end if
 	call ensureTableHasParams()
 		
+	if num_args()>0 then
+		for a=1 to num_args()
+			let lv_str=arg_val(a)
+			if lv_str="-?" or lv_str="--help" or lv_str="-help"  then
+				call usage_and_exit()
+			end if
+			if lv_str="-c" then
+				call delete_all_rows()
+			end if
+		end for
+
+		for a=1 to num_args()
+			let lv_str=arg_val(a)
+			if lv_str="-c" then
+				continue for
+			end if
+
+			if not load_file(" ",lv_str) then
+				exit program 1
+			end if
+		end for
+	end if
 	call main_menu()
 end main
 
@@ -225,5 +253,14 @@ if i<0 then
 	display "will be created automatically"
 	exit program 1
 end if
-sleep 10
 end function
+
+
+function usage_and_exit()
+display "Usage :"
+display "sqlmatrics.4ae "
+display "sqlmatrics.4ae file.log       load file into db"
+display "sqlmatrics.4ae -c file.log    clear db and then load file"
+exit program
+end function
+

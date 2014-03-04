@@ -2,6 +2,7 @@ define mv_lastused char(512)
 
 ################################################################################
 function load_menu()
+define lv_ok integer
   	call clear_screen_portion()
 		MENU "Load SQLMetrics"
 			command "All" "Load all *.log files (Directory mode)"
@@ -16,8 +17,10 @@ function load_menu()
 
 			command "File" "Use A4GL_SQLMETRICS in file mode"
 				message "Loading..."
-				call load_file(" ",fgl_getenv("A4GL_SQLMETRICS") clipped) 
-				message "Loaded"
+				call load_file(" ",fgl_getenv("A4GL_SQLMETRICS") clipped)  returning lv_ok
+				if lv_ok then
+					message "Loaded"
+				end if
 		
 			command key(esc,"E") "Exit"  "Return to main menu"
 				exit menu
@@ -42,6 +45,7 @@ function load_all()
 define lv_file char(512)
 define lv_path varchar(512)
 define a integer
+define lv_ok integer
 LET lv_path = fgl_getenv("A4GL_SQLMETRICS") CLIPPED
 code
 {
@@ -51,7 +55,7 @@ code
         for (a=0;dir[a];a++) {
             strcpy(lv_file,dir[a]);
 endcode
-            call load_file(lv_path,lv_file);
+            call load_file(lv_path,lv_file) returning lv_ok
 code
         }
     A4GL_free_directory();
@@ -67,6 +71,7 @@ define lv_file char(512)
 define lv_path varchar(512)
 define a integer
 define lv_more char(3)
+define lv_ok integer
 LET lv_path = fgl_getenv("A4GL_SQLMETRICS") CLIPPED
 code
 {
@@ -90,7 +95,7 @@ while lv_more = "Yes"
     call set_picked_option(mv_lastused)
     call prompt_pick_and_say("Load >> ","","Choose a file to load") returning lv_file
     if lv_file is not null then
-         call load_file(lv_path,lv_file);
+         call load_file(lv_path,lv_file) returning lv_ok
          let mv_lastused = lv_file
     end if
     call more_yes_no() returning lv_more
@@ -116,24 +121,23 @@ define lr record
 	curtime datetime year to fraction(3), --	 timestamp
 	params char(2048)
     end record
-if lv_path !=" " then
+if lv_path !=" " and lv_path is not null then
 	let lv_filename = lv_path clipped, "/", lv_file clipped, ".log"
 else
 	let lv_filename =  lv_file clipped, ".log"
 end if
 
+# Try again - but without appending .log...
 if not aclfgl_file_exists(lv_filename) THEN
-
-if lv_path !=" " then
-	let lv_filename = lv_path clipped, "/", lv_file clipped
-else
-	let lv_filename =  lv_file clipped
-end if
+	if lv_path !=" " and lv_path is not null then
+		let lv_filename = lv_path clipped, "/", lv_file clipped
+	else
+		let lv_filename =  lv_file clipped
+	end if
 END IF
-
 if not aclfgl_file_exists(lv_filename) THEN
 	ERROR "Unable to open input file:", lv_filename clipped
-	RETURN 
+	RETURN FALSE
 END IF
 
 
@@ -144,7 +148,8 @@ display "loading ... ", lv_filename clipped
 call channel::open_file("log",lv_filename,"r")
 call channel::set_delimiter("log","|")
 while channel::read("log",[lr.*])
-    insert into sql_log (application, pid, type, cursorname, sql, module, lineno, elatime, sql_code, curtime) values (lr.*)
+    insert into sql_log (application, pid, type, cursorname, sql, module, lineno, elatime, sql_code, curtime,params) values (lr.*)
 end while
 call channel::close("log")
+RETURN TRUE
 end function
