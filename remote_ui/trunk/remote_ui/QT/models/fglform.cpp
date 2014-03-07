@@ -1090,6 +1090,13 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
                  {
                      emit sendactivateinputevent();
                  }
+             } else if(TableView *tv = qobject_cast<TableView*> (obj))
+             {
+                 Q_UNUSED(tv);
+                 if(!inputArray())
+                 {
+                     emit sendactivateinputevent();
+                 }
              }
          }
       } else if (mev->button() == Qt::RightButton){
