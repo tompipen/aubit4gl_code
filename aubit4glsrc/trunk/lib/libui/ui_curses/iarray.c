@@ -24,10 +24,10 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.178 2013-07-18 10:42:41 mikeaubury Exp $
+# $Id: iarray.c,v 1.179 2014-03-10 20:30:42 locbook Exp $
 #*/
 #ifndef lint
-static char const module_id[] = "$Id: iarray.c,v 1.178 2013-07-18 10:42:41 mikeaubury Exp $";
+static char const module_id[] = "$Id: iarray.c,v 1.179 2014-03-10 20:30:42 locbook Exp $";
 #endif
 
 /**
@@ -2443,6 +2443,7 @@ if (allFieldsAreNoEntry(arr)) { arr->arr_line=1; arr->scr_line=1; arr->curr_attr
 
   if (arr_line != arr->arr_line)
     {
+      // Different array line...
       struct s_movement ptr;
 
       if (!A4GL_double_chk_line (arr, arr->scr_line - 1, why))
@@ -2472,9 +2473,13 @@ if (allFieldsAreNoEntry(arr)) { arr->arr_line=1; arr->scr_line=1; arr->curr_attr
       A4GL_debug ("Add aftr controls ?  - %p", last_field);
 #endif
 
+      // After row block was not running when a 'next field next' put us in the
+      // same field on a different row.  It should always run when moving
+      // to a different row, so we don't need to check for last_field or why
+      A4GL_add_to_control_stack (arr, FORMCONTROL_AFTER_ROW, last_field, 0, 0);
+
       if (last_field || why == 'Q')
 	{
-	  A4GL_add_to_control_stack (arr, FORMCONTROL_AFTER_ROW, last_field, 0, 0);
 #ifdef DEBUG
 	  A4GL_debug ("arr->curr_line_is_new=%d", arr->curr_line_is_new);
 #endif
