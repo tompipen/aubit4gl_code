@@ -24,10 +24,10 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.179 2014-03-10 20:30:42 locbook Exp $
+# $Id: iarray.c,v 1.180 2014-03-11 17:23:41 locbook Exp $
 #*/
 #ifndef lint
-static char const module_id[] = "$Id: iarray.c,v 1.179 2014-03-10 20:30:42 locbook Exp $";
+static char const module_id[] = "$Id: iarray.c,v 1.180 2014-03-11 17:23:41 locbook Exp $";
 #endif
 
 /**
@@ -2473,13 +2473,15 @@ if (allFieldsAreNoEntry(arr)) { arr->arr_line=1; arr->scr_line=1; arr->curr_attr
       A4GL_debug ("Add aftr controls ?  - %p", last_field);
 #endif
 
-      // After row block was not running when a 'next field next' put us in the
-      // same field on a different row.  It should always run when moving
-      // to a different row, so we don't need to check for last_field or why
-      A4GL_add_to_control_stack (arr, FORMCONTROL_AFTER_ROW, last_field, 0, 0);
 
-      if (last_field || why == 'Q')
+      if (last_field || why == 'Q' || why == 'D' || why == 'U' || why == 'R')
 	{
+          // To prevent after row from running when first entering the array
+          // it needs to be in this block.  Also checking movement reason
+          // because last_field is being set to 0 when a 'next field next'
+          // puts us on a different row, which was preventing the after row.
+          A4GL_add_to_control_stack (arr, FORMCONTROL_AFTER_ROW, last_field, 0, 0);
+
 #ifdef DEBUG
 	  A4GL_debug ("arr->curr_line_is_new=%d", arr->curr_line_is_new);
 #endif
