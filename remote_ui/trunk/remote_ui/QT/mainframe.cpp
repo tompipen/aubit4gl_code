@@ -943,35 +943,58 @@ void MainFrame::trayIconClicked(QSystemTrayIcon::ActivationReason reason)
 }
 void MainFrame::closeAction()
 {
-    int closeApplication = 0;
-    if(this->ql_screenhandler)
+    QList<ScreenHandler*> *ql_screenhandler = MainFrame::ql_screenhandler;
+
+    if(ql_screenhandler)
     {
         if(ql_screenhandler->count() > 0)
         {
-           closeApplication = QMessageBox::question(0,
-                                       tr("VDC - Ventas Desktop Client"),
-                                       tr("There are open Connections.\n"
-                                          "Do you really want to quit?"),
-                                       tr("&Yes"), tr("&No"),
-                                       QString(), 0, 1);
+            Dialog *dialog = new Dialog("VDC - Ventas Desktop Client", "There are open Connections.\nDo you really want to quit?", "", "stop", this, Qt::WindowStaysOnTopHint);
+            QPalette palette;
+            palette.setBrush(this->backgroundRole(), QBrush(QImage("pics:VENTAS_9_alu_1080p.png")));
+            dialog->setPalette(palette);
+            dialog->setStyleSheet("QPushButton { border-image: url(pics:VENTAS_9_knopf_menu_inaktiv.png); padding-top: -1; padding-right: 10; text-align: left; height: 36px; min-width: 50px; }");
+            dialog->createButton(1, "Yes", "Yes", "ja.png");
+            dialog->getAction("Yes")->setShortcut(Qt::Key_F12);
+            dialog->createButton(2, "No", "No", "escape.png");
+            dialog->getAction("No")->setShortcut(Qt::Key_Escape);
+            connect(dialog->getAction("YES"), SIGNAL(triggered()), this, SLOT(closeVDC()));
+            connect(dialog->getAction("NO"), SIGNAL(triggered()), dialog, SLOT(close()));
+            dialog->move(600,400);
+            dialog->show();
+        } else {
+            closeSSH = 1;
+            waitTimer::msleep(200);
+            exit(EXIT_SUCCESS);
+        }
+    } else {
+        closeSSH = 1;
+        waitTimer::msleep(200);
+        exit(EXIT_SUCCESS);
+    }
+}
+
+void MainFrame::closeVDC()
+{
+    VDC::saveSettingsToIni("Ventas AG", "posX", QString::number(pos().x()));
+    VDC::saveSettingsToIni("Ventas AG", "posY", QString::number(pos().y()));
+
+    if(ql_screenhandler)
+    {
+        for(int i=0; ql_screenhandler->count(); i++)
+        {
+            if(ql_screenhandler->at(i))
+            {
+               deleteScreenHandler(ql_screenhandler->at(i)->pid, ql_screenhandler->at(i)->p_pid);
+
+            }
         }
     }
 
-    if(closeApplication == 0){
-       VDC::saveSettingsToIni("Ventas AG", "posX", QString::number(pos().x()));
-       VDC::saveSettingsToIni("Ventas AG", "posY", QString::number(pos().y()));
-       for(int i=0; ql_screenhandler->count(); i++)
-       {
-           if(ql_screenhandler->at(i))
-           {
-              deleteScreenHandler(ql_screenhandler->at(i)->pid, ql_screenhandler->at(i)->p_pid);
+    closeSSH = 1;
+    waitTimer::msleep(200);
+    exit(EXIT_SUCCESS);
 
-           }
-       }
-       closeSSH = 1;
-       waitTimer::msleep(100);
-       exit(EXIT_SUCCESS);
-    }
 }
 
 //------------------------------------------------------------------------------

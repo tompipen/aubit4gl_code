@@ -86,6 +86,7 @@ public slots:
    void trayIconClicked(QSystemTrayIcon::ActivationReason);
    void closeAction();
    void debugText(QString text);
+   void closeVDC();
 
 private:
    QTabWidget *tabWidget;
