@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: has_pdf.c,v 1.75 2011-01-16 12:40:29 mikeaubury Exp $
+# $Id: has_pdf.c,v 1.76 2014-03-12 17:21:33 mikeaubury Exp $
 #*/
 
 /**
@@ -1504,6 +1504,324 @@ A4GLPDFREP_A4GL_pdf_pdffunc_internal (void *vp, char *fname, int nargs)
       A4GL_push_double ((double) c);
       return 1;
     }
+
+
+// PDG START
+
+/**
+ * arc (x, y, r, alpha, beta)
+ * arcn(x, y, r, alpha, beta)
+ *
+ * Draw a counterclockwise(arc) or clockwise(arcn) circular arc segment.
+ *
+ * x, y         The coordinates of the center of the circular arc segment.
+ * r            The radius of the circular arc segment. r must be nonnegative.
+ * alpha, beta  The start and end angles of the circular arc segment in degrees.
+ *
+ */
+
+  if (strcmp (fname, "arc")  == 0 || strcmp (fname, "arc_top")  == 0 ||
+      strcmp (fname, "arcn") == 0 || strcmp (fname, "arcn_top") == 0)
+    {
+      double x;
+      double y;
+      double r;
+      double a;
+      double b;
+
+      b = A4GL_pop_double ();
+      a = A4GL_pop_double ();
+      r = A4GL_pop_double ();
+      y = A4GL_pop_double ();
+      x = A4GL_pop_double ();
+
+      if (strcmp (fname, "arc_top") == 0 || strcmp (fname, "arcn_top") == 0) {
+        y = p->page_length - y;
+      }
+
+      // r must be nonnegative
+      if (r < 0) r = 0 - r;
+
+      if (strcmp (fname, "arc") == 0 || strcmp (fname, "arc_top") == 0) {
+        // counterclockwise
+        PDF_arc ((PDF *)p->pdf_ptr, x, y, r, a, b);
+      } else {
+        // clockwise
+        PDF_arcn((PDF *)p->pdf_ptr, x, y, r, a, b);
+      }
+
+      return 0;
+    }
+
+/**
+ * circle (x, y, r)
+ *
+ * Draw a circle.
+ *
+ * x, y         The coordinates of the center of the circle.
+ * r            The radius of the circle.
+ *
+ */
+
+  if (strcmp (fname, "circle") == 0 || strcmp (fname, "circle_top") == 0)
+    {
+      double x;
+      double y;
+      double r;
+
+      r = A4GL_pop_double ();
+      y = A4GL_pop_double ();
+      x = A4GL_pop_double ();
+
+      if (strcmp (fname, "circle_top") == 0) {
+        y = p->page_length - y;
+      }
+
+      // r must be nonnegative
+      if (r < 0) r = 0 - r;
+
+      PDF_circle ((PDF *)p->pdf_ptr, x, y, r);
+
+      return 0;
+    }
+
+/**
+ * closepath()
+ *
+ * Close the current path.
+ *
+ */
+
+  if (strcmp (fname, "closepath") == 0)
+    {
+      PDF_closepath ((PDF *)p->pdf_ptr);
+
+      return 0;
+    }
+
+/** 
+ * rect_rounded(x, y, w, h, r, corners)
+ *
+ * Draws a rectangle with selectable rounded corners.
+ *
+ * x, y         The coordinates of the center of the circle.
+ * w, h         The width and height of the rectangle.
+ * r            The radius of the corners.
+ * corners      Four character string representing which corners are to be rounded.
+ *              0 = square, 1 = rounded. Order is Top Left, Top Right, Bottom Right, Bottom Left
+ *
+ */
+
+  if (strcmp (fname, "rect_rounded") == 0 || strcmp (fname, "rect_rounded_top") == 0)
+    {
+      double x, y, w, h, r;
+      char *corners = "1111";
+
+      if (nargs >= 6) {
+        corners = A4GL_char_pop();
+      }
+
+      r = A4GL_pop_double ();
+      h = A4GL_pop_double ();
+      w = A4GL_pop_double ();
+      y = A4GL_pop_double ();
+      x = A4GL_pop_double ();
+
+      if (strcmp (fname, "rect_rounded_top") == 0) {
+        y = p->page_length - y;
+      }
+
+      // r must be nonnegative
+      if (r < 0) r = 0 - r;
+
+      if (strcmp (corners, "0000") == 0 || r == 0) {
+        // square corners only
+        PDF_rect ((PDF *)p->pdf_ptr, x, y, w, h);
+      } else {
+        // 1 or more rounded corners required
+
+        // start at bottom left
+        if (corners[3] == '1') {
+          PDF_arc    ((PDF *)p->pdf_ptr, x + r, y + r, r, 180, 270);
+        } else {
+          PDF_moveto ((PDF *)p->pdf_ptr, x    , y);
+        }
+        // bottom right
+        if (corners[2] == '1') {
+          PDF_lineto ((PDF *)p->pdf_ptr, x + w - r, y);
+          PDF_arc    ((PDF *)p->pdf_ptr, x + w - r, y + r, r, 270, 360);
+        } else {
+          PDF_lineto ((PDF *)p->pdf_ptr, x + w, y);
+        }
+        // top right
+        if (corners[1] == '1') {
+          PDF_lineto ((PDF *)p->pdf_ptr, x + w    , y + h - r);
+          PDF_arc    ((PDF *)p->pdf_ptr, x + w - r, y + h - r, r, 0, 90);
+        } else {
+          PDF_lineto ((PDF *)p->pdf_ptr, x + w, y + h);
+        }
+        // top left
+        if (corners[0] == '1') {
+          PDF_lineto ((PDF *)p->pdf_ptr, x + r, y + h);
+          PDF_arc    ((PDF *)p->pdf_ptr, x + r, y + h - r, r, 90, 180);
+        } else {
+          PDF_lineto ((PDF *)p->pdf_ptr, x, y + h);
+        }
+        // close the rectangle
+        PDF_closepath ((PDF *)p->pdf_ptr);
+      }
+
+      return 0;
+    }
+
+/**
+ * set_info(key, value)
+ *
+ * Fill document information field key with value.
+ *
+ * key          (Name string) The name of the document info field, which may be any of the standard
+ *              names, or an arbitrary custom name (see Table 12.1). There is no limit for the number
+ *              of custom fields. Regarding the use and semantics of custom document information
+ *              fields, PDFlib users are encouraged to take a look at the Dublin Core Metadata element
+ *              set.1
+ *
+ * value        (Hypertext string) The string to which the key parameter will be set. Acrobat imposes
+ *              a maximum length of value of 255 bytes. Note that due to a bug in Adobe Reader 6
+ *              for Windows the & character does not display properly in some info strings.
+ *
+ * key                      explanation
+ * Subject                  Subject of the document
+ * Title                    Title of the document
+ * Creator                  Software used to create the document (as opposed to the Producer of the PDF output,
+ *                          which is always PDFlib). Acrobat will display this entry as »Application«.
+ * Author                   Author of the document
+ * Keywords                 Keywords describing the contents of the document
+ * Trapped                  Indicates whether trapping has been applied to the document. Allowed values are
+ *                          True, False, and Unknown. In PDF/X mode Unknown is not allowed.
+ * any name other           User-defined field. PDFlib supports an arbitrary number of fields. A custom field
+ * than CreationDate,       name should only be supplied once. With multiple occurrences of the same field
+ * Producer, ModDate,       name the last one will be used. See also moddate option of PDF_begin/end_document( ).
+ * GTS_PDFXVersion,         Custom document info fields must not contain any space character if XMP meta-
+ * GTS_PDFXConformance,     data is created (via the autoxmp or metadata options).
+ * ISO_PDFEVersion
+ *
+ */
+
+  if (strcmp (fname, "set_info") == 0)
+    {
+      char *key;
+      char *value;
+
+      value = A4GL_char_pop ();
+      key = A4GL_char_pop ();
+
+      PDF_set_info ((PDF *)p->pdf_ptr, key, value);
+
+      acl_free (key);
+      acl_free (value);
+
+      return 0;
+    }
+
+/**
+ * setdash(b, w)
+ *
+ * Set the current dash pattern.
+ * 
+ * b, w         The number of alternating black and white units. b and w must be non-negative
+ *              numbers.
+ *
+ */
+
+  if (strcmp (fname, "setdash") == 0)
+    {
+      double b;
+      double w;
+
+      w = A4GL_pop_double ();
+      b = A4GL_pop_double ();
+
+      // must be nonnegative
+      if (b < 0) b = 0 - b;
+      if (w < 0) w = 0 - w;
+
+      PDF_setdash ((PDF *)p->pdf_ptr, b, w);
+
+      return 0;
+    }
+
+/**
+ * setlinecap(linecap)
+ *
+ * Set the linecap parameter.
+ *
+ * linecap      Controls the shape at the end of a path with respect to stroking.
+ *
+ * 0 = Butt end caps
+ * 1 = Round end caps
+ * 2 = Projecting square end caps
+ *
+ */
+
+  if (strcmp (fname, "setlinecap") == 0)
+    {
+      int a;
+
+      a = A4GL_pop_int ();
+      // a must be 0, 1 or 2, if not set it to default
+      if (a != 0 && a != 1 && a != 2) a = 0;
+
+      PDF_setlinecap ((PDF *)p->pdf_ptr, a);
+
+      return 0;
+    }
+
+/**
+ * setlinejoin(linejoin)
+ *
+ * Set the linejoin style.
+ *
+ * linejoin     Specifies the shape at the corners of paths that are stroked.
+ *
+ * 0 = Mitre joins
+ * 1 = Round joins
+ * 2 = Bevel joins
+ *
+ */
+
+  if (strcmp (fname, "setlinejoin") == 0)
+    {
+      int a;
+
+      a = A4GL_pop_int ();
+      // a must be 0, 1 or 2, if not set it to default
+      if (a != 0 && a != 1 && a != 2) a = 0;
+
+      PDF_setlinejoin ((PDF *)p->pdf_ptr, a);
+
+      return 0;
+    }
+
+/**
+ * setlinewidth(width)
+ *
+ * Set the current line width.
+ * 
+ * width        The line width in units of the current user coordinate system.
+ *
+ */
+
+  if (strcmp (fname, "setlinewidth") == 0)
+    {
+      d = A4GL_pop_double ();
+
+      PDF_setlinewidth ((PDF *)p->pdf_ptr, d);
+
+      return 0;
+    }
+
+// PDG End
+
 
   A4GL_assertion(1,"Unknown PDF function");
 
