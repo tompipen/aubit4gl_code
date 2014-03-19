@@ -144,7 +144,11 @@ code
 	{
 		fgets(msgline, 255, infile);
 		msgline[HELPMAXLEN-1] = 0;
-		A4GL_trim_nl(msgline);
+                // Trimming the newline with A4GL_trim_nl() causes
+                // the help message to also display the first few lines
+                // of the next help message from the help file.
+                // fgets() already adds a terminating  null  byte ('\0').
+		//A4GL_trim_nl(msgline);
 		A4GL_debug(">>>%s<<<",msgline); fflush(stdout);
 	}
 	if(ok && ferror(infile)) ok = -1;
@@ -443,9 +447,9 @@ indexrec[7]);
 	{
 		fgets(msgline, 255, infile);
 		msgline[HELPMAXLEN-1] = 0;
-		A4GL_trim_nl(msgline);
+		//A4GL_trim_nl(msgline);
 		charcount = strlen(msgline);
-		A4GL_trim_nl(msgline);
+		//A4GL_trim_nl(msgline);
 	}
 	else if( msgnotfound )
 	{
