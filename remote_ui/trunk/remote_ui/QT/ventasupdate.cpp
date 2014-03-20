@@ -67,19 +67,6 @@ void VentasUpdate::checkServerClient()
 
     if(clientVars.count() >= 3)
     {
-        if(clientVars.at(3) > XmlVersionServer)
-        {
-            Dialog *dialog = new Dialog("VENTAS Update", QString("Incompatible VDC Version found.\n\nPlease Update the VENTAS Server.\n\nClient Version: %1 \nServer Version %2 \n\nPlease contact the VENTAS Support Team: support@ventas.de").arg(clientVars.at(3)).arg(XmlVersionServer), "", "stop", this, Qt::WindowStaysOnTopHint);
-            QPalette palette;
-            palette.setBrush(this->backgroundRole(), QBrush(QImage("pics:VENTAS_9_alu_1080p.png")));
-            dialog->setPalette(palette);
-            dialog->setStyleSheet("QPushButton { border-image: url(pics:VENTAS_9_knopf_menu_inaktiv.png); padding-top: -1; padding-right: 10; text-align: left; height: 36px; min-width: 50px; }");
-            dialog->createButton(1, "Ok", "Ok", "ok_gruen.png");
-            dialog->getAction("OK")->setShortcut(Qt::Key_F12);
-            connect(dialog->getAction("OK"), SIGNAL(triggered()), dialog, SLOT(close()));
-            dialog->move(600,400);
-            dialog->show();
-        }
 
         if(clientVars.at(3) < XmlVersionServer)
                 {
