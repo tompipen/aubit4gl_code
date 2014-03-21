@@ -79,6 +79,69 @@ bool ZipUnzip::unzipArchiv(QString filePath, QString fileName, QString destFileP
     return true;
 }
 
+bool ZipUnzip::unzipBinarieArchiv(QString filePath, QString fileName, QString destFilePath)
+{
+    qDebug() << "file: " << QDir::tempPath() + "/" + fileName;
+    qDebug() << "destFilePath: " << destFilePath;
+
+    QuaZip zipArchiv(QString(filePath + "/" + fileName));
+
+    if( !zipArchiv.open( QuaZip::mdUnzip ) )
+    {
+        qWarning ( "(unzipArchiv()): Datei konnte nicht geöffnet werden. Fehlermeldung: " );
+        return false;
+    }
+
+    for( bool more=zipArchiv.goToFirstFile(); more; more=zipArchiv.goToNextFile() )
+    {
+        QuaZipFile file( &zipArchiv );
+
+        QString name = zipArchiv.getCurrentFileName();
+        QFile meminfo( destFilePath + "/" + name );
+
+        QFileInfo infofile(meminfo);
+
+        QDir extract( destFilePath );
+
+        if( !extract.mkpath( infofile.absolutePath() ) )
+        {
+            qWarning ( "(unzipArchiv()): Konnte Verzeichnis nicht anlegen: " );
+            return false;
+        }
+
+        if( !file.open( QIODevice::ReadOnly ) && file.isReadable() && !file.isWritable()  ) {
+            qDebug() << "nich lesbar" << "";
+            return false;
+        }
+
+        QFile *destdir = new QFile(QString(destFilePath + "/" + zipArchiv.getCurrentFileName()));
+
+        if(destdir->exists())
+        {
+            if(QFile::remove(destdir->fileName()))
+            {
+                qDebug() << "erfolgreich" << destdir->fileName();
+            } else {
+                qDebug() << "fehlgeschlagen" << destdir->fileName();
+            }
+        }
+
+        if( destdir->open( QIODevice::WriteOnly | QIODevice::Truncate) )
+        {
+            destdir->write(file.readAll());
+        } else {
+            qDebug() << "konnte ned zum schreiben oeffnen" << zipArchiv.getZipError();
+        }
+
+        destdir->setPermissions(QFile::ReadOwner|QFile::WriteOwner|QFile::ExeOwner|QFile::ReadGroup|QFile::ExeGroup|QFile::ReadOther|QFile::ExeOther);
+        destdir->close();
+        meminfo.close();
+        file.close();
+    }
+    zipArchiv.close();
+    return true;
+}
+
 
 bool ZipUnzip::unzipFile(QString filePath, QString fileName)
 {

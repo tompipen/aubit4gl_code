@@ -421,7 +421,7 @@ void VDCUpdate::loadBinarieFinished(QNetworkReply *reply)
 
         ZipUnzip *p_zipunzip = new ZipUnzip();
 
-        if(p_zipunzip->unzipArchiv(QDir::tempPath(), findPackage(), QString(QDir::tempPath() + "/VDC")))
+        if(p_zipunzip->unzipBinarieArchiv(QDir::tempPath(), findPackage(), QString(QDir::tempPath() + "/VDC")))
         {
             cButton->setText("&Close");
             logMessage("[DEBUG] Entpacken war erfolgreich.");
