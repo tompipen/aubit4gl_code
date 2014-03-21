@@ -225,25 +225,28 @@ void VDCUpdate::loadBinarie()
             QDir subDir(applicationDirFileInfo.absoluteFilePath());
             QFileInfoList subDirInfoList = subDir.entryInfoList(QDir::NoDotAndDotDot | QDir::Dirs | QDir::Files);
 
-            foreach (QFileInfo subDirFileInfo, subDirInfoList)
+            if(subDir.dirName() != "backup")
             {
-                QString tmpSubFile = subDirFileInfo.absoluteFilePath();
-                QString destFile = applicationPath + "/backup/" + "/" + subDir.dirName() + "/" + subDirFileInfo.fileName();
-
-                logMessage(QString("[DEBUG] Destination: %1 ").arg(destFile));
-
-                if(QFile::exists(destFile))
+                foreach (QFileInfo subDirFileInfo, subDirInfoList)
                 {
-                    QFile rmFile(destFile);
-                    if(!rmFile.remove())
+                    QString tmpSubFile = subDirFileInfo.absoluteFilePath();
+                    QString destFile = applicationPath + "/backup/" + "/" + subDir.dirName() + "/" + subDirFileInfo.fileName();
+
+                    logMessage(QString("[DEBUG] Destination: %1 ").arg(destFile));
+
+                    if(QFile::exists(destFile))
                     {
-                        logMessage(QString("[ERROR] Fehler beim loeschen der Datei : %1").arg(destFile));
+                        QFile rmFile(destFile);
+                        if(!rmFile.remove())
+                        {
+                            logMessage(QString("[ERROR] Fehler beim loeschen der Datei : %1").arg(destFile));
+                        }
                     }
-                }
-                if(!QFile::copy(tmpSubFile, destFile))
-                {
-                    logMessage(QString("[ERROR] Kopieren fehlgeschlagen: %1").arg(destFile));
-                    qDebug() << "Kopieren fehlgeschlagen. ABBRUCH!";
+                    if(!QFile::copy(tmpSubFile, destFile))
+                    {
+                        logMessage(QString("[ERROR] Kopieren fehlgeschlagen: %1").arg(destFile));
+                        qDebug() << "Kopieren fehlgeschlagen. ABBRUCH!";
+                    }
                 }
             }
         } else {
