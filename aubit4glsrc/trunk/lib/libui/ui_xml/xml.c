@@ -1126,7 +1126,7 @@ get_field_codes (char *fields)
       *k = 0;
       k += 2;
       xcnt++;
-      x = realloc (x, sizeof (int) * xcnt);
+      x = realloc (x, sizeof (char *) * xcnt);
       p = strchr (k1, ',');
       if (p)
 	*p = 0;
