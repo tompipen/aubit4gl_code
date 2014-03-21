@@ -1798,7 +1798,11 @@ incl_item:
 opt_dec_ext : {
 			sprintf($<str>$,"0");
 		}
-	| OPEN_BRACKET NUMBER_VALUE CLOSE_BRACKET {sprintf($<str>$,"%d",((atoi($<str>2)+2)<<8)+2);}
+	| OPEN_BRACKET NUMBER_VALUE CLOSE_BRACKET {
+		int n;
+		 n=atol(acl_getenv("A4GL_DEFDECPREC"));
+		sprintf($<str>$,"%d",((atoi($<str>2))<<8)+n);
+	}
 	| OPEN_BRACKET NUMBER_VALUE COMMA NUMBER_VALUE CLOSE_BRACKET {sprintf($<str>$,"%d",(atoi($<str>2)<<8)+atoi($<str>4));}
 ;
 
