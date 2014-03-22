@@ -1,5 +1,6 @@
 #include "masterupdate.h"
 #include "models/zipunzip.h"
+
 #include <QDebug>
 
 MasterUpdate::MasterUpdate(QObject *parent) : QThread()
@@ -61,7 +62,7 @@ void MasterUpdate::finish(QNetworkReply *reply)
             #ifdef Q_OS_MAC
                 patchFileName = "mastermac.zip";
             #endif
-            qDebug() << "Hash ist unterschiedlich, starte Patchvorgang für Patcher.";
+            qDebug() << "Hash ist unterschiedlich, starte Patchvorgang fuer Patcher.";
             QNetworkAccessManager *manager = new QNetworkAccessManager;
             manager->get(QNetworkRequest(QUrl(QString("http://www.ventas.de/wp-content/uploads/downloads/autoupdate/binaries/%1").arg(patchFileName))));
             connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(extractPatcher(QNetworkReply*)));
