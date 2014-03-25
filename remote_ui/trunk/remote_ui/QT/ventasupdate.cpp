@@ -314,10 +314,18 @@ void VentasUpdate::downloadBinarie()
             //process.startDetached(QString("rundll32 url.dll,FileProtocolHandler \"%1\"").arg( file.fileName()));
             QDesktopServices::openUrl(QUrl::fromLocalFile(file.fileName()));
             //Sleep(1500);
-        #else
+        #endif
+        #ifdef Q_OS_MAC
            QProcess *proc = new QProcess;
            QStringList env = QProcess::systemEnvironment();;
            env << "DYLD_LIBRARY_PATH=/Applications/VENTAS-Software/VDC.app/Contents/Frameworks/";
+           proc->setEnvironment(env);
+           proc->start(file.fileName());
+        #endif
+        #ifdef Q_OS_LINUX
+           QProcess *proc = new QProcess;
+           QStringList env = QProcess::systemEnvironment();;
+           env << QApplication::applicationDirPath();
            proc->setEnvironment(env);
            proc->start(file.fileName());
         #endif
