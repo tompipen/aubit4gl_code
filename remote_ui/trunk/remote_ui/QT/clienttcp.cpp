@@ -1576,7 +1576,7 @@ if(childElement.nodeName() == "PROGRAMSTARTUP"){
                  QDomElement valuesElement = paramsElement.childNodes().at(k).toElement();
                  params << valuesElement.text();
               }
-              returnvalues << VDC::readSettingsFromIni(params.at(0), "sortColumn") + " " + VDC::readSettingsFromIni(params.at(0), "sortIndecator");;
+              returnvalues << getVentasLogicalIndex(VDC::readSettingsFromIni(params.at(0), "sortLogicalIndex").toInt()) + " " + VDC::readSettingsFromIni(params.at(0), "sortIndecator");
          }
 
          if(qs_name == "ui.vdc.action"){
@@ -2718,6 +2718,66 @@ return;
    
 }
 
+QString ProtocolHandler::getVentasLogicalIndex(int index)
+{
+    int logicalIndex = -1;
+    if(FglForm *fglform = qobject_cast<FglForm*> (p_currScreenHandler->p_fglform))
+    {
+        QString form = fglform->formName();
+
+        if(form == "a_vkopf")
+        {
+            logicalIndex = index + 1;
+        }
+
+        if(form == "a_sammel")
+        {
+            logicalIndex = index + 1;
+        }
+
+        if(form == "a_rech1")
+        {
+            logicalIndex = index + 1;
+        }
+
+        if(form == "a_vlkopf")
+        {
+            logicalIndex = index + 1;
+        }
+
+        if(form == "a_lskopf")
+        {
+            logicalIndex = index + 1;
+        }
+
+        if(form == "a_rgko")
+        {
+            logicalIndex = index + 1;
+        }
+
+        if(form == "a_partie")
+        {
+            logicalIndex = index + 1;
+        }
+
+        if(form == "a_job")
+        {
+            logicalIndex = index + 1;
+        }
+
+        if(form == "a_vpos")
+        {
+            logicalIndex = index + 1;
+        }
+    }
+
+    if(logicalIndex == -1)
+    {
+        logicalIndex = index;
+    }
+
+    return QString::number(logicalIndex);
+}
 void ProtocolHandler::executeFile(int waitforFinish, QString fileName)
 {
 

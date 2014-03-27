@@ -133,7 +133,7 @@ void TableView::saveSortOrder(int logicalIndex, Qt::SortOrder sortOrder)
         if(FglForm *fglform = qobject_cast<FglForm*> (p_fglform))
         {
             VDC::saveSettingsToIni(fglform->formName(), "sortIndecator", sortIndecator);
-            VDC::saveSettingsToIni(fglform->formName(), "sortLogicalIndex", getVentasLogicalIndex(logicalIndex));
+            VDC::saveSettingsToIni(fglform->formName(), "sortLogicalIndex", QString::number(logicalIndex));
 
             Fgl::Event event;
             event.type = Fgl::ONKEY_EVENT;
@@ -142,67 +142,6 @@ void TableView::saveSortOrder(int logicalIndex, Qt::SortOrder sortOrder)
             return;
         }
     }
-}
-
-QString TableView::getVentasLogicalIndex(int index)
-{
-    int logicalIndex = -1;
-    if(FglForm *fglform = qobject_cast<FglForm*> (p_fglform))
-    {
-        QString form = fglform->formName();
-
-        if(form == "a_vkopf")
-        {
-            logicalIndex = index + 1;
-        }
-
-        if(form == "a_sammel")
-        {
-            logicalIndex = index + 1;
-        }
-
-        if(form == "a_rech1")
-        {
-            logicalIndex = index + 1;
-        }
-
-        if(form == "a_vlkopf")
-        {
-            logicalIndex = index + 1;
-        }
-
-        if(form == "a_lskopf")
-        {
-            logicalIndex = index + 1;
-        }
-
-        if(form == "a_rgko")
-        {
-            logicalIndex = index + 1;
-        }
-
-        if(form == "a_partie")
-        {
-            logicalIndex = index + 1;
-        }
-
-        if(form == "a_job")
-        {
-            logicalIndex = index + 1;
-        }
-
-        if(form == "a_vpos")
-        {
-            logicalIndex = index + 1;
-        }
-    }
-
-    if(logicalIndex == -1)
-    {
-        logicalIndex = index;
-    }
-
-    return QString::number(logicalIndex);
 }
 
 void TableView::saveNewSectionOrder(int, int, int)
