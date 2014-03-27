@@ -125,9 +125,8 @@ void TableView::saveSortOrder(int logicalIndex, Qt::SortOrder sortOrder)
 
         if(FglForm *fglform = qobject_cast<FglForm*> (p_fglform))
         {
-            VDC::saveSettingsToIni(fglform->formName(), "sortColumn",  getVentasLogicalIndex(logicalIndex));
             VDC::saveSettingsToIni(fglform->formName(), "sortIndecator", sortIndecator);
-            VDC::saveSettingsToIni(fglform->formName(), "sortLogicalIndex", QString::number(logicalIndex));
+            VDC::saveSettingsToIni(fglform->formName(), "sortLogicalIndex", getVentasLogicalIndex(logicalIndex));
 
             Fgl::Event event;
             event.type = Fgl::ONKEY_EVENT;
