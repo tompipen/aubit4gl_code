@@ -2769,6 +2769,11 @@ QString ProtocolHandler::getVentasLogicalIndex(int index)
         {
             logicalIndex = index + 1;
         }
+
+        if(form == "a_vkontr")
+        {
+            logicalIndex = index + 1;
+        }
     }
 
     if(logicalIndex == -1)
