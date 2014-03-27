@@ -139,7 +139,7 @@ void TableView::saveSortOrder(int logicalIndex, Qt::SortOrder sortOrder)
 
 QString TableView::getVentasLogicalIndex(int index)
 {
-    int logicalIndex = 0;
+    int logicalIndex = -1;
     if(FglForm *fglform = qobject_cast<FglForm*> (p_fglform))
     {
         QString form = fglform->formName();
@@ -184,6 +184,15 @@ QString TableView::getVentasLogicalIndex(int index)
             logicalIndex = index + 1;
         }
 
+        if(form == "a_vpos")
+        {
+            logicalIndex = index + 1;
+        }
+    }
+
+    if(logicalIndex == -1)
+    {
+        logicalIndex = index;
     }
 
     return QString::number(logicalIndex);

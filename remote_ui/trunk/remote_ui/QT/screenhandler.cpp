@@ -2414,6 +2414,13 @@ if(qsl_triggereds.size() > 0)
              p_fglform->context->checkOptions();
          }
 
+         if(TableView *tableView = qobject_cast<TableView *> (p_fglform->currentField())){
+             if(p_fglform->displayArray())
+             {
+                    tableView->restoreSortOrder();
+             }
+         }
+
          emit windowCreated();
       }
       else{
@@ -2588,7 +2595,7 @@ if(qsl_triggereds.size() > 0)
                }
            } else if(p_fglform->displayArray())
            {
-                  tableView->restoreSortOrder();
+                  //tableView->restoreSortOrder();
            }
        }
        else
