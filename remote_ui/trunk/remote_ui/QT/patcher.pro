@@ -8,7 +8,7 @@ QT += xml
 QT -= webkit
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
-greaterThan(QT_MAJOR_VERSION, 4): QT += webkitwidgets
+#greaterThan(QT_MAJOR_VERSION, 4): QT += webkitwidgets
 
 DEFINES += VREPGEN_USE
 INCLUDEPATH += ./quazip/

@@ -1,6 +1,8 @@
 CONFIG += ordered
 TEMPLATE=subdirs
 
+cache()
+
 VREPGEN_PATH = $$(VREPGEN)
 
 macx {

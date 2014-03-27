@@ -378,6 +378,7 @@ int VSSH::execute(int port = 0)
         ssh_channel_send_eof(channel);
         ssh_channel_close(channel);
         quit();
+        return SSH_OK;
     }
     ssh_mutex.lock();
     nbytes = ssh_channel_read_nonblocking(channel, &buffer, sizeof(buffer), 0);

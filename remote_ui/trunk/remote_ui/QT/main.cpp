@@ -272,7 +272,9 @@ int main(int argc, char *argv[])
     QTranslator *translator = new QTranslator(&app);
 
     if (translator->load(translatorFileName, QLibraryInfo::location(QLibraryInfo::TranslationsPath)))
+    {
        app.installTranslator(translator);
+    }
 
     QFontDatabase::addApplicationFont(":/font/LiberationMono-Regular.ttf");
     QFont yavcFont("Arial", 8);

@@ -2730,6 +2730,31 @@ QString ProtocolHandler::getVentasLogicalIndex(int index)
             logicalIndex = index + 1;
         }
 
+        if(form == "a_akontr")
+        {
+            logicalIndex = index + 1;
+        }
+
+        if(form == "a_apos")
+        {
+            logicalIndex = index + 1;
+        }
+
+        if(form == "a_akpos")
+        {
+            logicalIndex = index + 1;
+        }
+
+        if(form == "a_dassdok")
+        {
+            logicalIndex = index + 1;
+        }
+
+        if(form == "a_akprov2")
+        {
+            logicalIndex = index + 1;
+        }
+
         if(form == "a_sammel")
         {
             logicalIndex = index + 1;
@@ -2765,12 +2790,162 @@ QString ProtocolHandler::getVentasLogicalIndex(int index)
             logicalIndex = index + 1;
         }
 
+        if(form == "a_jobhis")
+        {
+            logicalIndex = index + 1;
+        }
+
+        if(form == "a_vkposhis")
+        {
+            logicalIndex = index + 1;
+        }
+
         if(form == "a_vpos")
         {
             logicalIndex = index + 1;
         }
 
+        if(form == "a_vkap")
+        {
+            logicalIndex = index + 1;
+        }
+
+        if(form == "a_partie2")
+        {
+            logicalIndex = index + 1;
+        }
+ 
+        if(form == "a_eposhi")
+        {
+            logicalIndex = index + 1;
+        }
+ 
+        if(form == "a_eliefer")
+        {
+            logicalIndex = index + 1;
+        }
+ 
+        if(form == "a_ekvorgng")
+        {
+            logicalIndex = index + 1;
+        }
+ 
+        if(form == "a_ekposhi")
+        {
+            logicalIndex = index + 1;
+        }
+ 
+        if(form == "a_epos")
+        {
+            logicalIndex = index + 1;
+        }
+ 
+        if(form == "a_ekopf")
+        {
+            logicalIndex = index + 1;
+        }
+ 
+        if(form == "a_ekpos")
+        {
+            logicalIndex = index + 1;
+        }
+ 
+        if(form == "a_ekontr")
+        {
+            logicalIndex = index + 1;
+        }
+ 
+        if(form == "a_eapos")
+        {
+            logicalIndex = index + 1;
+        }
+ 
+        if(form == "a_eakopf")
+        {
+            logicalIndex = index + 1;
+        }
+ 
+        if(form == "a_dampfer")
+        {
+            logicalIndex = index + 1;
+        }
+ 
+        if(form == "a_cont")
+        {
+            logicalIndex = index + 1;
+        }
+ 
+        if(form == "a_bl")
+        {
+            logicalIndex = index + 1;
+        }
+ 
+        if(form == "a_bestvo")
+        {
+            logicalIndex = index + 1;
+        }
+ 
+        if(form == "a_banf0")
+        {
+            logicalIndex = index + 1;
+        }
+ 
+        if(form == "a_zuekvk")
+        {
+            logicalIndex = index + 1;
+        }
+ 
+        if(form == "a_vposoffn")
+        {
+            logicalIndex = index + 1;
+        }
+ 
+        if(form == "a_vliefer")
+        {
+            logicalIndex = index + 1;
+        }
+ 
+        if(form == "a_vkwertk")
+        {
+            logicalIndex = index + 1;
+        }
+ 
+        if(form == "a_vkvorg")
+        {
+            logicalIndex = index + 1;
+        }
+ 
+        if(form == "a_vkstdzet")
+        {
+            logicalIndex = index + 1;
+        }
+ 
+        if(form == "a_veinswb")
+        {
+            logicalIndex = index + 1;
+        }
+ 
+        if(form == "a_veinssp")
+        {
+            logicalIndex = index + 1;
+        }
+  
+        if(form == "m_vapos")
+        {
+            logicalIndex = index + 1;
+        }
+   
+        if(form == "a_vakopf")
+        {
+            logicalIndex = index + 1;
+        }
+    
         if(form == "a_vkontr")
+        {
+            logicalIndex = index + 1;
+        }
+
+        if(form == "a_vkpos")
         {
             logicalIndex = index + 1;
         }
