@@ -85,6 +85,9 @@ public:
     void setUnsortedFields(int, QStringList);
     void clearUnsortedFields();
 
+    //
+    QString getVentasLogicalIndex(int);
+
 
 private:
     int i_arrCount;
