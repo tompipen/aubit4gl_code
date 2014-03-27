@@ -82,6 +82,10 @@ MainFrame::vdcdebug("TableView","TableView", "QWidget *parent");
 
 void TableView::restoreSortOrder()
 {
+
+    QHeaderView *header = this->horizontalHeader();
+    QObject::disconnect(header, SIGNAL(sortIndicatorChanged(int,Qt::SortOrder)),
+                     this, SLOT(saveSortOrder(int, Qt::SortOrder)));
     int logicalIndex = 0;
     QString sortIndecator;
 
@@ -102,6 +106,9 @@ void TableView::restoreSortOrder()
         this->horizontalHeader()->setSortIndicator(logicalIndex,Qt::DescendingOrder);
     }
     this->setSortingEnabled(true);
+
+    QObject::connect(header, SIGNAL(sortIndicatorChanged(int,Qt::SortOrder)),
+                     this, SLOT(saveSortOrder(int, Qt::SortOrder)));
 }
 
 
