@@ -65,7 +65,8 @@ void Progress::setText1(QString t1)
 
 void Progress::setTitle(QString t2)
 {
-  this->title->setText(t2);
+  this->setWindowTitle(t2);
+   //this->title->setText(t2);
 }
 
 void Progress::showProgressBar(bool b1)
