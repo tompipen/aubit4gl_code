@@ -3725,7 +3725,7 @@ void ProtocolHandler::executeFile(int waitforFinish, QString fileName)
 
          if(defaultProg.contains("%1"))
          {
-             defaultProg.replace("%1", "\"" + QDir::toNativeSeparators(fileNameInfo.absoluteFilePath()) + "\"");
+             defaultProg.replace("%1", QDir::toNativeSeparators(fileNameInfo.absoluteFilePath()));
          }
          else
          {
