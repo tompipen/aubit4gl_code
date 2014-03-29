@@ -3489,12 +3489,12 @@ QString ProtocolHandler::getVentasLogicalIndex(int index)
         {
             logicalIndex = index + 1;
         }
- 
+/* 
         if(form == "a_partie2")
         {
             logicalIndex = index + 1;
         }
- 
+*/
         if(form == "a_eposhi")
         {
             logicalIndex = index + 1;
