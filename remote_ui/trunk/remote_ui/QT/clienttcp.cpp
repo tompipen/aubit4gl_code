@@ -1576,7 +1576,13 @@ if(childElement.nodeName() == "PROGRAMSTARTUP"){
                  QDomElement valuesElement = paramsElement.childNodes().at(k).toElement();
                  params << valuesElement.text();
               }
-              returnvalues << getVentasLogicalIndex(VDC::readSettingsFromIni(params.at(0), "sortLogicalIndex").toInt()) + " " + VDC::readSettingsFromIni(params.at(0), "sortIndecator");
+              int sortIndex = VDC::readSettingsFromIni(params.at(0), "sortLogicalIndex").toInt();
+
+              if(sortIndex == 0)
+              {
+                  sortIndex = 1;
+              }
+              returnvalues << getVentasLogicalIndex(sortIndex) + " " + VDC::readSettingsFromIni(params.at(0), "sortIndecator");
          }
 
          if(qs_name == "ui.vdc.action"){
@@ -2725,10 +2731,10 @@ QString ProtocolHandler::getVentasLogicalIndex(int index)
     {
         QString form = fglform->formName();
 
-        if(form == "a_vkopf")
+        /*if(form == "a_vkopf")
         {
             logicalIndex = index + 1;
-        }
+        }*/
 
         if(form == "a_akontr")
         {
