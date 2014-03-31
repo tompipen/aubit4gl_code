@@ -105,7 +105,7 @@ private:
    QString hexToString(QString);
    QString filterUmlauts(QString);
 
-   QString getVentasLogicalIndex(int);
+   QString getVentasLogicalIndex(int, QString);
 
    QStringList qsl_fieldList, qsl_arrayTabNames, qsl_arrayValues, qsl_receivedFiles;
 

@@ -1582,7 +1582,7 @@ if(childElement.nodeName() == "PROGRAMSTARTUP"){
               {
                   sortIndex = 1;
               }
-              returnvalues << getVentasLogicalIndex(sortIndex) + " " + VDC::readSettingsFromIni(params.at(0), "sortIndecator");
+              returnvalues << getVentasLogicalIndex(sortIndex, params.at(0)) + " " + VDC::readSettingsFromIni(params.at(0), "sortIndecator");
          }
 
          if(qs_name == "ui.vdc.action"){
@@ -2724,917 +2724,914 @@ return;
    
 }
 
-QString ProtocolHandler::getVentasLogicalIndex(int index)
+QString ProtocolHandler::getVentasLogicalIndex(int index, QString formmask)
 {
     int logicalIndex = -1;
-    if(FglForm *fglform = qobject_cast<FglForm*> (p_currScreenHandler->p_fglform))
+    QString form = formmask;
+
+    if(form == "a_vkopf")
     {
-        QString form = fglform->formName();
+        logicalIndex = index + 1;
+    }
 
-        /*if(form == "a_vkopf")
-        {
-            logicalIndex = index + 1;
-        }*/
+    if(form == "a_akontr")
+    {
+        logicalIndex = index + 1;
+    }
 
-        if(form == "a_akontr")
-        {
-            logicalIndex = index + 1;
-        }
+    if(form == "a_apos")
+    {
+        logicalIndex = index + 1;
+    }
 
-        if(form == "a_apos")
-        {
-            logicalIndex = index + 1;
-        }
+    if(form == "a_akpos")
+    {
+        logicalIndex = index + 1;
+    }
 
-        if(form == "a_akpos")
-        {
-            logicalIndex = index + 1;
-        }
+    if(form == "a_dassdok")
+    {
+        logicalIndex = index + 1;
+    }
 
-        if(form == "a_dassdok")
-        {
-            logicalIndex = index + 1;
-        }
+    if(form == "a_akprov2")
+    {
+        logicalIndex = index + 1;
+    }
 
-        if(form == "a_akprov2")
-        {
-            logicalIndex = index + 1;
-        }
+    if(form == "a_sammel")
+    {
+        logicalIndex = index + 1;
+    }
 
-        if(form == "a_sammel")
-        {
-            logicalIndex = index + 1;
-        }
+    if(form == "a_rech1")
+    {
+        logicalIndex = index + 1;
+    }
 
-        if(form == "a_rech1")
-        {
-            logicalIndex = index + 1;
-        }
+    if(form == "a_vlkopf")
+    {
+        logicalIndex = index + 1;
+    }
 
-        if(form == "a_vlkopf")
-        {
-            logicalIndex = index + 1;
-        }
+    if(form == "a_lskopf")
+    {
+        logicalIndex = index + 1;
+    }
 
-        if(form == "a_lskopf")
-        {
-            logicalIndex = index + 1;
-        }
+    if(form == "a_rgko")
+    {
+        logicalIndex = index + 1;
+    }
 
-        if(form == "a_rgko")
-        {
-            logicalIndex = index + 1;
-        }
+    if(form == "a_partie")
+    {
+        logicalIndex = index + 1;
+    }
 
-        if(form == "a_partie")
-        {
-            logicalIndex = index + 1;
-        }
+    if(form == "a_job")
+    {
+        logicalIndex = index + 1;
+    }
 
-        if(form == "a_job")
-        {
-            logicalIndex = index + 1;
-        }
+    if(form == "a_jobhis")
+    {
+        logicalIndex = index + 1;
+    }
 
-        if(form == "a_jobhis")
-        {
-            logicalIndex = index + 1;
-        }
+    if(form == "a_vkposhis")
+    {
+        logicalIndex = index + 1;
+    }
 
-        if(form == "a_vkposhis")
-        {
-            logicalIndex = index + 1;
-        }
+    if(form == "a_vpos")
+    {
+        logicalIndex = index + 1;
+    }
 
-        if(form == "a_vpos")
-        {
-            logicalIndex = index + 1;
-        }
+    if(form == "a_vkap")
+    {
+        logicalIndex = index + 1;
+    }
 
-        if(form == "a_vkap")
-        {
-            logicalIndex = index + 1;
-        }
+    if(form == "a_pzkopf")
+    {
+        logicalIndex = index + 1;
+    }
 
-        if(form == "a_pzkopf")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_plos")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_pkopf")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_zuord")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_zollsatz")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_zeilenk")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_wrg_kurs")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_wgr2")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_wgr")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_waehrung")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_provwgr")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_vprov")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_vkpr3")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_vkpr_2")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_vkpr2")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_vkpr")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_vers")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_vakopfgrund")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_umrch_e")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_uebkonto")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_tarifmtx")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_tariflz")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_tarif")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_stueck")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_strukt")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_spstext")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_stext")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_stdzetpos")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_stdzet")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_stamm_k3")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_stamm_k2")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_stamm_ky")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_sprache")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_serie")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_histser")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_sdmcds")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_sbreite")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_reklam")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_pzeabwes")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_port")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_police")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_pmasch")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_pmaschwe")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_pmaschar")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_plz")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_platztyp")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_plansch")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_pkschema")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_pkreis")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_pkalend")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_pkalpmas")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_pkalpers_b")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_pkalpers")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_personal")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_persarko")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_periode")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_sppaymen")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_payment")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_spparity")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_parity")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_palette")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_mwst")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_metlstf")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_merkmal")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_ltst")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_ltgr")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_ltgart")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_lohnart")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_lizenz")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_ligen")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_land")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_lagertyp")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_lagerplz")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_lagerfrm")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_lager")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_kzusch")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_ksttr")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_kstst")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_kstart")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_kschema")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_konto")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_konto2")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_konten")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_kond_wertk")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_kombi")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_kgr")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_kdst")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_kdrw")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_kdra")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_kdarvk")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_indkst")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_hpreise")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_spguvpos")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_guvpos")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_gart")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_firma")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_feiertag3")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_feiertag")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_fcmatrix")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_farbe")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_ekpr")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_ekpr3")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_speinhei")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_einheit")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_eig_prg2")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_eig_prg")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_edioption")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_ean")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_drucker")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_datev_sort")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_contyp")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_buchkz")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_bran")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_spbilpos")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_bilpos")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_bdland")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_bank")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_ban2")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_spatext")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_atext")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_arvk")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_sparko")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_arko")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_arliek2")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_arliek")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_arli")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_arko_zl")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_arkolplz")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_arkobez")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_anwend")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_option")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_adrgr")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_adress")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_anspwgr")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_ansp")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_vtst")
-        {
-            logicalIndex = index + 1;
-        }
+    if(form == "a_plos")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_pkopf")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_zuord")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_zollsatz")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_zeilenk")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_wrg_kurs")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_wgr2")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_wgr")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_waehrung")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_provwgr")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_vprov")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_vkpr3")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_vkpr_2")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_vkpr2")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_vkpr")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_vers")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_vakopfgrund")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_umrch_e")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_uebkonto")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_tarifmtx")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_tariflz")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_tarif")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_stueck")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_strukt")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_spstext")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_stext")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_stdzetpos")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_stdzet")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_stamm_k3")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_stamm_k2")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_stamm_ky")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_sprache")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_serie")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_histser")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_sdmcds")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_sbreite")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_reklam")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_pzeabwes")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_port")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_police")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_pmasch")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_pmaschwe")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_pmaschar")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_plz")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_platztyp")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_plansch")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_pkschema")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_pkreis")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_pkalend")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_pkalpmas")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_pkalpers_b")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_pkalpers")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_personal")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_persarko")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_periode")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_sppaymen")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_payment")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_spparity")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_parity")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_palette")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_mwst")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_metlstf")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_merkmal")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_ltst")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_ltgr")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_ltgart")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_lohnart")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_lizenz")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_ligen")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_land")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_lagertyp")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_lagerplz")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_lagerfrm")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_lager")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_kzusch")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_ksttr")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_kstst")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_kstart")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_kschema")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_konto")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_konto2")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_konten")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_kond_wertk")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_kombi")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_kgr")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_kdst")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_kdrw")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_kdra")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_kdarvk")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_indkst")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_hpreise")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_spguvpos")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_guvpos")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_gart")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_firma")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_feiertag3")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_feiertag")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_fcmatrix")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_farbe")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_ekpr")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_ekpr3")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_speinhei")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_einheit")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_eig_prg2")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_eig_prg")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_edioption")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_ean")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_drucker")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_datev_sort")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_contyp")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_buchkz")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_bran")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_spbilpos")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_bilpos")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_bdland")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_bank")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_ban2")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_spatext")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_atext")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_arvk")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_sparko")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_arko")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_arliek2")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_arliek")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_arli")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_arko_zl")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_arkolplz")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_arkobez")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_anwend")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_option")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_adrgr")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_adress")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_anspwgr")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_ansp")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_vtst")
+    {
+        logicalIndex = index + 1;
+    }
 /* 
-        if(form == "a_partie2")
-        {
-            logicalIndex = index + 1;
-        }
+    if(form == "a_partie2")
+    {
+        logicalIndex = index + 1;
+    }
 */
-        if(form == "a_eposhi")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_eliefer")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_ekvorgng")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_ekposhi")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_epos")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_ekopf")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_ekpos")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_ekontr")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_eapos")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_eakopf")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_dampfer")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_cont")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_bl")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_bestvo")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_banf0")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_zuekvk")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_vposoffn")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_vliefer")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_vkwertk")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_vkvorg")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_vkstdzet")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_veinswb")
-        {
-            logicalIndex = index + 1;
-        }
- 
-        if(form == "a_veinssp")
-        {
-            logicalIndex = index + 1;
-        }
-  
-        if(form == "m_vapos")
-        {
-            logicalIndex = index + 1;
-        }
-   
-        if(form == "a_vakopf")
-        {
-            logicalIndex = index + 1;
-        }
-    
-        if(form == "a_vkontr")
-        {
-            logicalIndex = index + 1;
-        }
+    if(form == "a_eposhi")
+    {
+        logicalIndex = index + 1;
+    }
 
-        if(form == "a_vkpos")
-        {
-            logicalIndex = index + 1;
-        }
+    if(form == "a_eliefer")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_ekvorgng")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_ekposhi")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_epos")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_ekopf")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_ekpos")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_ekontr")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_eapos")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_eakopf")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_dampfer")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_cont")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_bl")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_bestvo")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_banf0")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_zuekvk")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_vposoffn")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_vliefer")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_vkwertk")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_vkvorg")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_vkstdzet")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_veinswb")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_veinssp")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "m_vapos")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_vakopf")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_vkontr")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_vkpos")
+    {
+        logicalIndex = index + 1;
     }
 
     if(logicalIndex == -1)
