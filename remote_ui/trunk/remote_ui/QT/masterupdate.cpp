@@ -102,7 +102,7 @@ void MasterUpdate::extractPatcher(QNetworkReply *reply)
             #ifdef VREPGEN_USE
                 ZipUnzip *p_zipunzip = new ZipUnzip();
 
-                if(!p_zipunzip->unzipArchiv(QDir::tempPath(), patchFileName, QApplication::applicationDirPath()))
+                if(!p_zipunzip->unzipBinarieArchiv(QDir::tempPath(), patchFileName, QApplication::applicationDirPath()))
                 {
                     qDebug() << "archiv konnte nicht entpackt werden";
                     return;
