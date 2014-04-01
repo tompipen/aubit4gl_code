@@ -566,7 +566,6 @@ void Context::checkOptions()
                   tableView->setArrCount(qh_options[key]);
                 }
             }
-          return;
         }
   }
 
