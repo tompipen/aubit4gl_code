@@ -1576,13 +1576,22 @@ if(childElement.nodeName() == "PROGRAMSTARTUP"){
                  QDomElement valuesElement = paramsElement.childNodes().at(k).toElement();
                  params << valuesElement.text();
               }
+
+              QMetaObject::invokeMethod(p_currScreenHandler, "checkFormMaskForSort", Qt::QueuedConnection, Q_ARG(QString, params.at(0)));
+
               int sortIndex = VDC::readSettingsFromIni(params.at(0), "sortLogicalIndex").toInt();
+              QString sortIndecator = VDC::readSettingsFromIni(params.at(0), "sortIndecator");
+
+              if(sortIndecator.isEmpty())
+              {
+                  sortIndecator = "DESC";
+              }
 
               if(sortIndex == 0)
               {
                   sortIndex = 1;
               }
-              returnvalues << getVentasLogicalIndex(sortIndex, params.at(0)) + " " + VDC::readSettingsFromIni(params.at(0), "sortIndecator");
+              returnvalues << getVentasLogicalIndex(sortIndex, params.at(0)) + " " + sortIndecator;
          }
 
          if(qs_name == "ui.vdc.action"){
