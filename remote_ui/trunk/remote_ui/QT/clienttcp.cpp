@@ -3532,12 +3532,12 @@ QString ProtocolHandler::getVentasLogicalIndex(int index, QString formmask)
     {
         logicalIndex = index + 1;
     }
-
+/*
     if(form == "a_ekopf")
     {
         logicalIndex = index + 1;
     }
-
+*/
     if(form == "a_ekpos")
     {
         logicalIndex = index + 1;
