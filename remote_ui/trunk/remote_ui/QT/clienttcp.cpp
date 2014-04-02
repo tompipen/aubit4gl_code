@@ -3627,16 +3627,16 @@ QString ProtocolHandler::getVentasLogicalIndex(int index, QString formmask)
     {
         logicalIndex = index + 1;
     }
-
+/*
     if(form == "a_vakopf")
     {
         logicalIndex = index + 1;
     }
-
     if(form == "a_vkontr")
     {
         logicalIndex = index + 1;
     }
+*/
 
     if(form == "a_vkpos")
     {
