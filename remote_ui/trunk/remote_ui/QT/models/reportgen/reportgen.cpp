@@ -1286,10 +1286,11 @@ void Reportgen::createXmlFile(int Table, int Position, QString odffile)
         }
     }
 
-    QString footer = getTemplateFooter(Table, odffile + "/content-alt.xml", ".ods");
+    QString footer = getTemplateFooter(1, odffile + "/content-alt.xml", ".ods");
 
     if(footer.isEmpty())
     {
+        qDebug() << "footer was empty!!!";
         outstream << "</table:table></office:spreadsheet></office:body></office:document-content>";
     } else {
         outstream << footer;
@@ -2150,6 +2151,11 @@ bool Reportgen::replaceMetaFile(QString odffile)
 QString Reportgen::getTemplateFooter(int Table, QString filename, QString suffix)
 {
    QFile *file = new QFile(QDir::tempPath() + "/" + filename);
+
+   if(!file->open(QIODevice::ReadOnly))
+   {
+       qDebug() << "can not open file in getTemplateFooter";
+   }
    QDomDocument doc;
    doc.setContent(file);
    QString xml = doc.toString();
@@ -2183,7 +2189,6 @@ QString Reportgen::getTemplateFooter(int Table, QString filename, QString suffix
                }
 
            }
-           file->close();
     } else {
            while(!stream.atEnd()) {
                readLine = stream.readLine();
