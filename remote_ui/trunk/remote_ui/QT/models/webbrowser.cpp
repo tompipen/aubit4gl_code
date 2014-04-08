@@ -119,7 +119,13 @@ void WebBrowser::printpage()
 
   if(dialog.exec() == QDialog::Accepted)
   {
-     WebView->print(&printer);
+     //WebView->print(&printer);
+
+     QWebFrame *webFrame = WebView->page()->mainFrame();
+
+     QTextDocument htmlDocument;
+     htmlDocument.setHtml(webFrame->toHtml());
+     htmlDocument.print(&printer);
   }
 }
 
