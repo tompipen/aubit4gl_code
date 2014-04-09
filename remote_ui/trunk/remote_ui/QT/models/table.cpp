@@ -56,7 +56,7 @@ MainFrame::vdcdebug("TableView","TableView", "QWidget *parent");
       header->setSectionsClickable(true);
    #endif
    header->setSortIndicatorShown(true);
-   header->setSortIndicator(1, Qt::DescendingOrder);
+   //header->setSortIndicator(1, Qt::DescendingOrder);
    header->installEventFilter(this);
    this->setContextMenuPolicy(Qt::CustomContextMenu);
 
