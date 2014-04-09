@@ -2813,10 +2813,10 @@ QString ProtocolHandler::getVentasLogicalIndex(int index, QString formmask)
         logicalIndex = index + 1;
     }
 
-    if(form == "a_vpos")
+    /*if(form == "a_vpos")
     {
         logicalIndex = index + 1;
-    }
+    }*/
 
     if(form == "a_vkap")
     {
