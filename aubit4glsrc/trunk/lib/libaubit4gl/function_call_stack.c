@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: function_call_stack.c,v 1.57 2014-01-19 23:08:01 mikeaubury Exp $
+# $Id: function_call_stack.c,v 1.58 2014-04-14 08:06:45 mikeaubury Exp $
 #*/
 
 /**
@@ -799,15 +799,16 @@ A4GLSTK_popFunction_nl (int nrets, int lineno)
 	  execprog = fopen (fname, "a");
 	  if (execprog)
 	    {
+		int nsec=time(NULL)-functionCallStack[functionCallPointer - 1].started;
 		if (!inHiddenFunction) {
 			if (nrets) {
-	      			fprintf (execprog, "%s<-%s returns %s @ %d\n", getspaces(functionCallPointer-1), functionCallStack[functionCallPointer - 1].functionName,
+	      			fprintf (execprog, "%s<-%s returns %s @ %d in %ds\n", getspaces(functionCallPointer-1), functionCallStack[functionCallPointer - 1].functionName,
 			nrets?  A4GL_params_on_stack (NULL, nrets):"",
-	lineno
+	lineno, nsec
 );	//functionCallStack[functionCallPointer - 2].function
 		} else {
-	      			fprintf (execprog, "%s<-%s returns @ %d\n", getspaces(functionCallPointer-1), functionCallStack[functionCallPointer - 1].functionName,
-			lineno
+	      			fprintf (execprog, "%s<-%s returns @ %d in %ds\n", getspaces(functionCallPointer-1), functionCallStack[functionCallPointer - 1].functionName,
+			lineno,nsec
 );
 }
 		}

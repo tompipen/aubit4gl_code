@@ -654,7 +654,6 @@ like_var :
 			add_dependant_table(buff);
 		} 
 		|  LIKE identifier KW_DOT col_name  {
-			char buff[200];
 		     SPRINTF2($<str>$,"%s.%s",$<str>2,$<str>4);
 			add_dependant_table($<str>2);
 		}

@@ -4398,15 +4398,15 @@ dump_report (struct s_report_definition *report_definition)
 	  clr_nonewlines ();
 	  break;
 	}
-      printc ("PAGE LENGTH %d", report_definition->report_output_section->with_page_length);
-      printc ("LEFT MARGIN %d", report_definition->report_output_section->with_left_margin);
-      printc ("RIGHT MARGIN %d", report_definition->report_output_section->with_right_margin);
-      printc ("TOP MARGIN %d", report_definition->report_output_section->with_top_margin);
-      printc ("BOTTOM MARGIN %d", report_definition->report_output_section->with_bottom_margin);
+      printc ("PAGE LENGTH "); real_print_expr(report_definition->report_output_section->page_length_e);
+      printc ("LEFT MARGIN "); real_print_expr(report_definition->report_output_section->left_margin_e);
+      printc ("RIGHT MARGIN "); real_print_expr(report_definition->report_output_section->right_margin_e);
+      printc ("TOP MARGIN "); real_print_expr(report_definition->report_output_section->top_margin_e);
+      printc ("BOTTOM MARGIN "); real_print_expr(report_definition->report_output_section->bottom_margin_e);
 
-      if (strlen (report_definition->report_output_section->with_top_of_page))
+      if (strlen (report_definition->report_output_section->top_of_page))
 	{
-	  printc ("TOP OF PAGE %s ", report_definition->report_output_section->with_top_of_page);
+	  printc ("TOP OF PAGE %s ", report_definition->report_output_section->top_of_page);
 	}
 
       tmp_ccnt--;
@@ -5181,6 +5181,12 @@ print_events_as_4gl (on_events * es, struct command *parent)
 
       switch (e->evt_data.event_type)
 	{
+	case EVENT_BEFORE_DIALOG:
+	  printc ("BEFORE DIALOG");
+	  break;
+	case EVENT_AFTER_DIALOG:
+	  printc ("AFTER DIALOG");
+	  break;
 	case EVENT_BEF_ROW:
 	  printc ("BEFORE ROW");
 	  break;
@@ -9087,62 +9093,62 @@ dump_cmd (struct command *r, struct command *parent)
 	      clr_nonewlines ();
 	      break;
 	    }
-	  if (s->with_page_length != -1)
+	  if (s->page_length_e )
 	    with++;
-	  if (s->with_left_margin != -1)
+	  if (s->left_margin_e )
 	    with++;
-	  if (s->with_right_margin != -1)
+	  if (s->right_margin_e )
 	    with++;
-	  if (s->with_top_margin != -1)
+	  if (s->top_margin_e )
 	    with++;
-	  if (s->with_bottom_margin != -1)
+	  if (s->bottom_margin_e )
 	    with++;
-	  if (strcmp (s->with_top_of_page, "") != 0)
+	  if (strcmp (s->top_of_page, "") != 0)
 	    with++;
 
 	  if (with)
 	    {
 	      int printed = 0;
 	      printc (" WITH");
-	      if (s->with_page_length != -1)
+	      if (s->page_length_e )
 		{
-		  printc (" PAGE LEGTH %d", s->with_page_length);
+		  printc (" PAGE LEGTH "); real_print_expr( s->page_length_e);
 		  printed++;
 		}
 
-	      if (s->with_left_margin != -1)
+	      if (s->left_margin_e != -1)
 		{
 		  if (printed)
 		    printc (",");
-		  printc (" LEFT MARGIN %d", s->with_left_margin);
+		  printc (" LEFT MARGIN "); real_print_expr( s->left_margin_e);
 		  printed++;
 		}
-	      if (s->with_right_margin != -1)
+	      if (s->right_margin_e )
 		{
 		  if (printed)
 		    printc (",");
-		  printc ("  RIGHT MARGIN %d", s->with_right_margin);
+		  printc ("  RIGHT MARGIN "); real_print_expr(  s->right_margin_e);
 		  printed++;
 		}
-	      if (s->with_top_margin != -1)
+	      if (s->top_margin_e )
 		{
 		  if (printed)
 		    printc (",");
-		  printc ("  TOP MARGIN %d", s->with_top_margin);
+		  printc ("  TOP MARGIN "); real_print_expr(  s->top_margin_e);
 		  printed++;
 		}
-	      if (s->with_bottom_margin != -1)
+	      if (s->bottom_margin_e )
 		{
 		  if (printed)
 		    printc (",");
-		  printc ("  BOTTOM MARGIN %d", s->with_bottom_margin);
+		  printc ("  BOTTOM MARGIN "); real_print_expr(  s->bottom_margin_e);
 		  printed++;
 		}
-	      if (strcmp (s->with_top_of_page, "") != 0)
+	      if (strcmp (s->top_of_page, "") != 0)
 		{
 		  if (printed)
 		    printc (",");
-		  printc (" TOP OF PAGE %s", s->with_top_of_page);
+		  printc (" TOP OF PAGE %s", s->top_of_page);
 		  printed++;
 		}
 

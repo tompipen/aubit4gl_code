@@ -2349,10 +2349,10 @@ check_report (struct module_definition *d, struct s_report_definition *r)
   if (r->report_output_section==NULL) {
 	  A4GL_lint (module_name, r->lineno, "CS.REPTOP", "Top of Page ^L not used", NULL);
   } else {
-	if (r->report_output_section->with_top_of_page==0) {
+	if (r->report_output_section->top_of_page==0) {
 	  A4GL_lint (module_name, r->lineno, "CS.REPTOP", "Top of Page ^L not used", NULL);
 	} else {
-		if (strstr(r->report_output_section->with_top_of_page,"^L")==0)  {
+		if (strstr(r->report_output_section->top_of_page,"^L")==0)  {
 	  		A4GL_lint (module_name, r->lineno, "CS.REPTOP", "Top of Page ^L not used", NULL);
 		}
 	}
@@ -6105,6 +6105,7 @@ add_severity (char *s, int n)
     }
 }
 
+/*
 static void dump_severities(void) {
 int a;
 for (a=0;a<1000;a++) {
@@ -6116,6 +6117,7 @@ for (a=0;a<1000;a++) {
 	}
 }
 }
+*/
 
 static void
 add_custom_severities (void)

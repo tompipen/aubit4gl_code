@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: extendedmap.c,v 1.13 2010-10-28 20:34:44 mikeaubury Exp $
+# $Id: extendedmap.c,v 1.14 2014-04-14 08:06:43 mikeaubury Exp $
 #*/
 
 
@@ -44,7 +44,7 @@ static void map_select_list_item_list (char *stmttype, char *listtype,
 				       struct s_select *select,
 				       struct s_select_list_item_list *i);
 char *find_tabname_for_alias (struct s_select *select, char *alias);
-int A4GL_has_column (char *t, char *c);
+//int A4GL_has_column (char *t, char *c);
 int indent=1;
 static enum e_mapset get_currmapset(void) ;
 static char *xml_escape(char *s) ;

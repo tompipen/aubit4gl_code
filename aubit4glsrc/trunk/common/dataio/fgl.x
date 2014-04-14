@@ -1,4 +1,4 @@
-/* $Id: fgl.x,v 1.73 2013-11-14 13:18:30 mikeaubury Exp $ */
+/* $Id: fgl.x,v 1.74 2014-04-14 08:06:42 mikeaubury Exp $ */
 typedef string str<>;
 typedef string sql_ident<>;
 typedef struct s_plsql_packageEntries * s_plsql_packageEntries_ptr;
@@ -207,6 +207,7 @@ E_CMD_EXECUTE_PROCEDURE_CMD,
 E_CMD_TODO_CMD,
 E_CMD_DONE_CMD,
 E_CMD_MLET_CMD,
+E_CMD_ACCEPT_CMD, /* ACCEPT DIALOG */
 E_CMD_WHENEVER_SIGNAL_CMD,
 E_CMD_PLSQL_ASSIGN_CMD,
 E_CMD_PLSQL_BLOCK_CMD,
@@ -230,6 +231,7 @@ E_CMD_PLSQL_INSERT_CMD,
 E_CMD_PLSQL_IF_CMD,
 E_CMD_PLSQL_BUSINESS_RULE_CMD,
 	E_CMD_FOREACH_WITH_SELECT_CMD,
+E_CMD_DIALOG_CMD,
 E_CMD_LAST
 };
 
@@ -402,7 +404,7 @@ struct struct_free_blob_cmd {
 
 /* ***************************************************** */
 enum e_block_cmd {
-	EBC_WHILE, EBC_FOR, EBC_INPUT, EBC_FOREACH, EBC_CONSTRUCT, EBC_DISPLAY, EBC_MENU,EBC_PROMPT, EBC_CASE, EBC_TODO,
+	EBC_WHILE, EBC_FOR, EBC_INPUT, EBC_FOREACH, EBC_CONSTRUCT, EBC_DISPLAY, EBC_MENU,EBC_PROMPT, EBC_CASE, EBC_TODO, EBC_DIALOG,
 	EBC_SPL_FOR, EBC_SPL_WHILE, EBC_SPL_FOREACH
 };
 
@@ -703,12 +705,20 @@ struct struct_options_cmd {
 struct startrep {
 	char towhat;
 	struct expr_str* s1;
-        int with_page_length;
-        int with_left_margin;
-        int with_right_margin;
-        int with_top_margin;
-        int with_bottom_margin;
-        str with_top_of_page;
+        struct expr_str* page_length_e;
+        struct expr_str* left_margin_e;
+        struct expr_str* right_margin_e;
+        struct expr_str* top_margin_e;
+        struct expr_str* bottom_margin_e;
+        str top_of_page;
+
+
+	/* Helper stuff for the compiler..  Not used after AST generation */
+	int lines_in_header;
+	int lines_in_first_header;
+	int lines_in_trailer;
+	char output_mode;
+	struct expr_str *output_loc;
 };
 
 enum bluebar_style {
@@ -728,15 +738,15 @@ struct bluebar {
 struct pdf_startrep {
 	char towhat;
 	struct expr_str* s1;
-        double with_page_length;
-        double with_page_width;
-        double with_left_margin;
-        double with_right_margin;
-        double with_top_margin;
-        double with_bottom_margin;
-	str fontname;
-	double fontsize;
-	int papersize;
+        struct expr_str* page_length_e;
+        struct expr_str* left_margin_e;
+        struct expr_str* right_margin_e;
+        struct expr_str* top_margin_e;
+        struct expr_str* bottom_margin_e;
+        struct expr_str* page_width_e;
+	str font_name;
+	double font_size;
+	int paper_size;
 	double pageheadersize;
 	double firstpageheadersize;
 	double pagetrailersize;
@@ -744,6 +754,15 @@ struct pdf_startrep {
 	enum e_boolean ascii_height;
 	enum e_boolean ascii_width;
 	struct bluebar bluebar;
+
+
+	/* Helper stuff for the compiler..  Not used after AST generation */
+	int lines_in_header;
+	int lines_in_first_header;
+	int lines_in_trailer;
+	char output_mode;
+	struct expr_str *output_loc;
+
 }
 ;
 
@@ -1193,7 +1212,9 @@ enum e_event {
 	EVENT_BEFORE_EVENT,
 	EVENT_ON,
 	EVENT_ON_CHANGE,
-	EVENT_AFTER_INP_CLEAN
+	EVENT_AFTER_INP_CLEAN,
+	EVENT_BEFORE_DIALOG,
+	EVENT_AFTER_DIALOG
 };
 
 struct s_onaction {
@@ -1220,6 +1241,10 @@ union event_data switch (enum e_event event_type) {
 	case EVENT_AFTER_INSERT_DELETE: void;
 	case EVENT_AFTER_INP_CLEAN: void;
 	case EVENT_ANYKEY_PRESS: void;
+
+	case EVENT_BEFORE_DIALOG: void;
+	case EVENT_AFTER_DIALOG: void;
+
 	case EVENT_ON_IDLE: int idle_n;
 	case EVENT_ON_INTERVAL: int interval_n;
 	case EVENT_ON_TIME: int time_n;
@@ -1988,12 +2013,26 @@ struct s_plsql_for_cursor_cmd {
 	s_commands commands;
 };
 
+
+/* subset of commands allowed in a dialog */
+union dialog_enabled_command switch (enum cmd_type type) {
+	case E_CMD_INPUT_CMD: struct_input_cmd input_cmd;
+	case E_CMD_INPUT_ARRAY_CMD: struct_input_array_cmd input_array_cmd;
+	case E_CMD_CONSTRUCT_CMD: struct_construct_cmd construct_cmd;
+	case E_CMD_DISPLAY_ARRAY_CMD: struct_display_array_cmd display_array_cmd;
+};
+
+struct struct_dialog_cmd {
+	struct dialog_enabled_command commands<>;
+};
+
 union command_data switch (enum cmd_type type) {
 	case E_CMD_STOP_RPC_CMD: void;
 	case E_CMD_PAUSE_SCREEN_ON_CMD: void;
 	case E_CMD_PAUSE_SCREEN_OFF_CMD: void;
 	case E_CMD_SKIP_TO_TOP_CMD: void;
 	case E_CMD_DONE_CMD: void;
+	case E_CMD_ACCEPT_CMD: void;
 	case E_CMD_PLSQL_NULL_CMD: void;
 
 	case E_CMD_LAST: void;
@@ -2133,6 +2172,9 @@ union command_data switch (enum cmd_type type) {
 	case E_CMD_SPL_BLOCK_CMD: struct_spl_block_cmd spl_block_cmd ;
 	case E_CMD_EXECUTE_PROCEDURE_CMD: struct_execute_procedure_cmd execute_procedure_cmd ;
 	case E_CMD_TODO_CMD: struct_todo_cmd todo_cmd;
+
+
+	case E_CMD_DIALOG_CMD: struct_dialog_cmd dialog_cmd;
 
 	case E_CMD_WHENEVER_SIGNAL_CMD: struct_whenever_signal_cmd whenever_signal_cmd ;
 

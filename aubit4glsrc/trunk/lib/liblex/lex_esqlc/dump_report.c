@@ -450,20 +450,20 @@ struct pdf_startrep rep_default;
 
 
   if (rep==0) {
-  	rep_default.with_top_margin = -36.0;
-  	rep_default.with_bottom_margin = -36.0;
-  	rep_default.with_left_margin = -36.0;
-  	rep_default.with_page_length = -842.0;    /* A4 */
-  	rep_default.with_page_width = -595.0;     /* A4 */
-  	rep_default.with_right_margin = rep_default.with_page_width - (2 * rep_default.with_left_margin);
-  	rep_default.fontsize = 10;
-  	rep_default.papersize = 0;
+  	rep_default.top_margin_e = A4GL_new_literal_long_long( -36);
+  	rep_default.bottom_margin_e =  A4GL_new_literal_long_long(-36);
+  	rep_default.left_margin_e =  A4GL_new_literal_long_long(-36);
+  	rep_default.page_length_e =  A4GL_new_literal_long_long(-842);    /* A4 */
+  	rep_default.page_width_e =  A4GL_new_literal_long_long(-595);     /* A4 */
+  	rep_default.right_margin_e =  A4GL_new_literal_long_long(-595+72); // rep_default.with_page_width - (2 * rep_default.with_left_margin);
+  	rep_default.font_size = 10;
+  	rep_default.paper_size = 0;
 	rep_default.bluebar.style=E_BLUEBAR_NONE;
 	rep_default.bluebar.r=0;
 	rep_default.bluebar.g=0;
 	rep_default.bluebar.b=0;
 
-  	rep_default.fontname= "\"Helvetica\"";
+  	rep_default.font_name= "\"Helvetica\"";
 
         rep_default.towhat='F';
 	rep_default.s1=A4GL_new_literal_string("stdout");
@@ -475,9 +475,28 @@ struct pdf_startrep rep_default;
 
 
   printc ("output_%d:\n", report_cnt);
-  printc ("strcpy(_rep.font_name,%s);\n", rep->fontname);
-  printc ("_rep.font_size=%f;\n", rep->fontsize);
-  printc ("_rep.paper_size=%d;\n", rep->papersize);
+  printc("{");
+  printc ("float _tm; float _bm; float _pw; float _pl; float _lm; float _rm;");
+  print_expr(rep->top_margin_e);
+  printc("_tm=A4GL_pop_float();");
+
+  print_expr(rep->bottom_margin_e);
+  printc("_bm=A4GL_pop_float();");
+
+  print_expr(rep->page_width_e);
+  printc("_pw=A4GL_pop_float();");
+
+  print_expr(rep->page_length_e);
+  printc("_pl=A4GL_pop_float();");
+
+  print_expr(rep->left_margin_e);
+  printc("_lm=A4GL_pop_float();");
+  print_expr(rep->right_margin_e);
+  printc("_rm=A4GL_pop_float();");
+
+  printc ("strcpy(_rep.font_name,%s);\n", rep->font_name);
+  printc ("_rep.font_size=%f;\n", rep->font_size);
+  printc ("_rep.paper_size=%d;\n", rep->paper_size);
   printc ("_rep.header=0;\n");
   printc ("_rep.lines_in_header=-1;\n");
   printc ("_rep.lines_in_trailer=-1;\n");
@@ -497,20 +516,19 @@ struct pdf_startrep rep_default;
   printc ("_rep.repName=_reportName;\n");
   printc ("_rep.modName=_module_name;\n");
 
-  printc ("_rep.top_margin=A4GL_pdf_size(%f,'l',&_rep);\n", rep->with_top_margin);
-  printc ("_rep.bottom_margin=A4GL_pdf_size(%f,'l',&_rep);\n",
-          rep->with_bottom_margin);
-  printc ("_rep.page_length=A4GL_pdf_size(%f,'l',&_rep);\n", rep->with_page_length);
-  printc ("_rep.left_margin=A4GL_pdf_size(%f,'c',&_rep);\n", rep->with_left_margin);
-  printc ("_rep.right_margin=A4GL_pdf_size(%f,'c',&_rep);\n",
-          rep->with_right_margin);
-  printc ("_rep.page_width=A4GL_pdf_size(%f,'c',&_rep);\n", rep->with_page_width);
+  printc ("_rep.top_margin=A4GL_pdf_size(_tm,'l',&_rep);\n");
+  printc ("_rep.bottom_margin=A4GL_pdf_size(_bm,'l',&_rep);\n");
+  printc ("_rep.page_length=A4GL_pdf_size(_pl,'l',&_rep);\n");
+  printc ("_rep.left_margin=A4GL_pdf_size(_lm,'c',&_rep);\n");
+  printc ("_rep.right_margin=A4GL_pdf_size(_rm,'c',&_rep);\n");
+  printc ("_rep.page_width=A4GL_pdf_size(_pw,'c',&_rep);\n");
 
   printc ("_rep.page_no=0;\n");
   printc ("_rep.printed_page_no=0;\n");
 
   printc ("_rep.line_no=0;\n");
   printc ("_rep.col_no=0;\n");
+  printc("}");
 
 
   printc ("if (strlen(_rout2)==0) {\n");
@@ -573,24 +591,38 @@ struct startrep rep_default;
 
         rep_default.towhat='F';
         rep_default.s1=A4GL_new_literal_string("stdout");
-        rep_default.with_page_length=66;
-        rep_default.with_left_margin=5;
-        rep_default.with_right_margin=132;
-        rep_default.with_top_margin=3;
-        rep_default.with_bottom_margin=3;
-        rep_default.with_top_of_page=0;
+        rep_default.page_length_e=A4GL_new_literal_long_long(66);
+        rep_default.left_margin_e=A4GL_new_literal_long_long(5);
+        rep_default.right_margin_e=A4GL_new_literal_long_long(132);
+        rep_default.top_margin_e=A4GL_new_literal_long_long(3);
+        rep_default.bottom_margin_e=A4GL_new_literal_long_long(3);
+        rep_default.top_of_page=0;
 	rep=&rep_default;
   }
 
 
-  printc ("_rep.top_margin= A4GL_set_report_dim_int(\"TOP MARGIN\",%d);\n", rep->with_top_margin);
-  printc ("_rep.bottom_margin= A4GL_set_report_dim_int(\"BOTTOM MARGIN\",%d);\n", rep->with_bottom_margin);
-  printc ("_rep.left_margin= A4GL_set_report_dim_int(\"LEFT MARGIN\",%d);\n", rep->with_left_margin);
-  printc ("_rep.right_margin= A4GL_set_report_dim_int(\"RIGHT MARGIN\",%d);\n", rep->with_right_margin);
-  printc ("_rep.page_length= A4GL_set_report_dim_int(\"PAGE LENGTH\",%d);\n", rep->with_page_length);
+  printc("{");
+  printc("long _pl; int _lm; int _rm; int _tm; int _bm;");
+  print_expr( rep->page_length_e);
+  printc("_pl=A4GL_pop_long();");
 
-  if (rep->with_top_of_page &&strlen(rep->with_top_of_page)) {
-	  printc ("strcpy(_rep.top_of_page, %s);", rep->with_top_of_page); 
+  print_expr( rep->left_margin_e);
+  printc("_lm=A4GL_pop_long();");
+  print_expr( rep->right_margin_e);
+  printc("_rm=A4GL_pop_long();");
+  print_expr( rep->top_margin_e);
+  printc("_tm=A4GL_pop_long();");
+  print_expr( rep->bottom_margin_e);
+  printc("_bm=A4GL_pop_long();");
+
+  printc ("_rep.top_margin= A4GL_set_report_dim_int(\"TOP MARGIN\",_tm);\n");
+  printc ("_rep.bottom_margin= A4GL_set_report_dim_int(\"BOTTOM MARGIN\",_bm);\n");
+  printc ("_rep.left_margin= A4GL_set_report_dim_int(\"LEFT MARGIN\",_lm);\n");
+  printc ("_rep.right_margin= A4GL_set_report_dim_int(\"RIGHT MARGIN\",_rm);\n");
+  printc ("_rep.page_length= A4GL_set_report_dim_int(\"PAGE LENGTH\",_pl);\n");
+
+  if (rep->top_of_page &&strlen(rep->top_of_page)) {
+	  printc ("strcpy(_rep.top_of_page, %s);", rep->top_of_page); 
   } else {
 	  printc ("strcpy(_rep.top_of_page, \"\");"); 
   }
@@ -605,6 +637,7 @@ struct startrep rep_default;
   printc ("_rep.printed_page_no=0;\n");
   printc ("_rep.line_no=0;\n");
   printc ("_rep.col_no=0;\n");
+  printc("}");
 
   printc ("if (strlen(_rout2)==0) {\n");
   if (rep->s1) {

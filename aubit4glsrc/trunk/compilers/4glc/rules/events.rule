@@ -207,3 +207,35 @@ events_construct: event_construct  {
 		$<on_events>$->event.event_val[$<on_events>$->event.event_len-1]=$<on_event>2;
 	}
 ;
+
+
+event_dialog:  BEFORE_DIALOG atline commands_as_list {
+ 		$<on_event>$=new_event(EVENT_BEFORE_DIALOG, NULL,$<commands>3,$<integer_val>2); }
+	| event_action
+	| event_onkey
+	| event_timer
+        | COMMAND opt_key menu_opt_name menu_optional_desc opt_help_no_i atline commands_as_list {
+                $<on_event>$=new_event(EVENT_MENU_COMMAND, (void *)new_menu_option($<str_list>2,$<ptr>3,$<ptr>4,$<integer_val>5),$<commands>7,$<integer_val>6);
+        }
+        | COMMAND opt_key opt_help_no_i atline commands_as_list {
+                $<on_event>$=new_event(EVENT_MENU_COMMAND, (void *)new_menu_option($<str_list>2,0,0,$<integer_val>3),$<commands>5,$<integer_val>4);
+	}
+ 	| AFTER_DIALOG atline commands_as_list {
+		$<on_event>$=new_event(EVENT_AFTER_DIALOG, NULL,$<commands>3,$<integer_val>2); 
+	}
+;
+
+
+events_dialog: event_dialog   {
+   		$<on_events>$=malloc(sizeof(on_events));
+                $<on_events>$->event.event_len=1;
+                $<on_events>$->event.event_val=malloc(sizeof($<on_events>$->event.event_val[0]) * $<on_events>$->event.event_len);
+                $<on_events>$->event.event_val[$<on_events>$->event.event_len-1]=$<on_event>1;
+	}
+	| events_dialog event_dialog {
+		$<on_events>$=$<on_events>1;
+		$<on_events>$->event.event_len=$<on_events>1->event.event_len+1;
+		$<on_events>$->event.event_val=realloc($<on_events>1->event.event_val, sizeof($<on_events>$->event.event_val[0]) * $<on_events>$->event.event_len);
+		$<on_events>$->event.event_val[$<on_events>$->event.event_len-1]=$<on_event>2;
+	}
+;

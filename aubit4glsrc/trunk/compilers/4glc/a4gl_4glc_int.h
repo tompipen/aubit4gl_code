@@ -150,7 +150,7 @@ struct expr_str
   struct expr_str *next;
 };
 */
-void resize_paper (struct pdf_rep_structure *pdf_rep_struct);
+void resize_paper (struct pdf_startrep *pdf_rep_struct);
 void clr_variable (void);
 void inmod (void);
 void setinc (int a);
@@ -190,12 +190,12 @@ int how_many_in_bind (char i);
 //void continue_loop (char *cmd_type);
 void exit_loop (char *cmd_type);
 //void push_report_block (char *why, char whytype,char *variable);
-void init_report_structure (struct rep_structure *rep);
+void init_report_structure (struct startrep *rep);
 int attr_code (char *s);
 void set_mod_level (int a);
 long get_variable_dets (char *s, int *type, int *arrsize,
 			int *size, int *level, char *arr);
-void pdf_init_report_structure (struct pdf_rep_structure *rep);
+void pdf_init_report_structure (struct pdf_startrep *rep);
 
 void reset_attrib (struct form_attr *form_attrib);
 void new_counter (void);

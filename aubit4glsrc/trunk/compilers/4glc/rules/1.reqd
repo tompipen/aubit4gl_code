@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: 1.reqd,v 1.102 2010-08-23 17:23:21 mikeaubury Exp $
+# $Id: 1.reqd,v 1.103 2014-04-14 08:06:43 mikeaubury Exp $
 #
 */
 
@@ -180,11 +180,11 @@ extern struct expr_str *menu_attrib_image;
 
 
 
-extern int with_page_length;
-extern int with_left_margin;
-extern int with_right_margin;
-extern int with_top_margin;
-extern int with_bottom_margin;
+extern struct expr_str * with_page_length_e;
+extern struct expr_str * with_left_margin_e;
+extern struct expr_str * with_right_margin_e;
+extern struct expr_str * with_top_margin_e;
+extern struct expr_str * with_bottom_margin_e;
 extern char *with_top_of_page;
 extern int table_cnt;
 
@@ -225,8 +225,16 @@ extern char mv_parent_class[255];
 extern char *last_style;
 extern char *last_text;
 extern char *into_temp_clause;
-extern struct 		rep_structure rep_struct;
-extern struct 		pdf_rep_structure pdf_rep_struct;
+
+extern struct startrep rep_struct;
+extern struct pdf_startrep pdf_rep_struct;
+
+
+
+//extern struct 		rep_structure rep_struct;
+//extern struct 		pdf_rep_structure pdf_rep_struct;
+
+
 extern struct 		form_attr form_attrib;
 extern struct 		input_array_attribs curr_input_array_attribs;
 //extern int 		if_print_stack[100][2];

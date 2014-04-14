@@ -2104,7 +2104,11 @@ static char * get_sql_dtype ( int dtype)
       break;
 
     case DTYPE_DECIMAL:
-      sprintf (buff_dtype, " DECIMAL(%d,%d)", dtype_sz >> 8, dtype_sz & 255);
+	if ((dtype_sz & 255) ==255) {
+      		sprintf (buff_dtype, " DECIMAL(%d)", dtype_sz >> 8);
+        } else {
+      		sprintf (buff_dtype, " DECIMAL(%d,%d)", dtype_sz >> 8, dtype_sz & 255);
+	}
       break;
 
     case DTYPE_MONEY:

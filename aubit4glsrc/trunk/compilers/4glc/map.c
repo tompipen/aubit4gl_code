@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: map.c,v 1.52 2010-10-28 20:34:44 mikeaubury Exp $
+# $Id: map.c,v 1.53 2014-04-14 08:06:43 mikeaubury Exp $
 #*/
 
 /**
@@ -47,7 +47,7 @@
 //static void map_select_list_item (char *stmttype,struct s_select *select, struct s_select_list_item *p);
 //static void map_select_list_item_list (char *stmttype, char*listtype,struct s_select *select, struct s_select_list_item_list *i);
 
-int A4GL_has_column (char *t, char *c);
+//int A4GL_has_column (char *t, char *c);
 
 /*
 =====================================================================

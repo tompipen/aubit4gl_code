@@ -25,7 +25,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: variables_new.c,v 1.28 2010-08-05 14:37:22 mikeaubury Exp $
+# $Id: variables_new.c,v 1.29 2014-04-14 08:06:43 mikeaubury Exp $
 #
 */
 
@@ -632,7 +632,7 @@ struct variable *new_variable_like(char *tabcol) {
 void set_variable_name(struct variable *v, char *name) {
 
 	if (v->names.names.names_len==0) {
-		char *mapped_name;
+		//char *mapped_name;
                	v->names.names.names_len=1;
                	v->names.names.names_val=malloc(sizeof(vname));
 

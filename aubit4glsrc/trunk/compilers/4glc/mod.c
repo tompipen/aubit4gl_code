@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.345 2012-09-14 08:22:21 mikeaubury Exp $
+# $Id: mod.c,v 1.346 2014-04-14 08:06:43 mikeaubury Exp $
 #
 */
 
@@ -249,11 +249,12 @@ int report_cnt = 1;
 int nblock_no = 1;
 
 /******************************************************************************/
-int with_page_length=-1;
-int with_left_margin=-1;
-int with_right_margin=-1;
-int with_top_margin=-1;
-int with_bottom_margin=-1;
+expr_str * with_page_length_e=NULL;
+expr_str * with_left_margin_e=NULL;
+expr_str * with_right_margin_e=NULL;
+expr_str * with_top_margin_e=NULL;
+expr_str * with_bottom_margin_e=NULL;
+
 char *with_top_of_page="";
 int table_cnt=0;
 char            menuhandler[256];
@@ -291,8 +292,14 @@ char mv_parent_class[255];
 char *last_style=0;
 char *last_text=0;
 char *into_temp_clause=0;
-struct          rep_structure rep_struct;
-struct          pdf_rep_structure pdf_rep_struct;
+
+struct startrep rep_struct;
+struct pdf_startrep pdf_rep_struct;
+
+//struct          rep_structure rep_struct;
+//struct          pdf_rep_structure pdf_rep_struct;
+
+
 struct          form_attr form_attrib;
 /* struct          input_array_attribs curr_input_array_attribs; */
 //int             if_print_stack[100][2];
@@ -1103,57 +1110,57 @@ get_curr_rep ()
  * @param rep The report structure pointer
  */
 void
-init_report_structure (struct rep_structure *rep)
+init_report_structure (struct startrep *rep)
 {
-  memset(rep,0,sizeof(struct rep_structure));
+  memset(rep,0,sizeof(struct startrep));
 
-  rep->top_margin = 3;
-  rep->bottom_margin = 3;
-  rep->left_margin = 5;
-  rep->right_margin = 132;
-  rep->page_length = 66;
-  rep->page_no = 0;
-  rep->printed_page_no = 0;
-  rep->line_no = 0;
-  rep->col_no = 0;
+  rep->top_margin_e=A4GL_new_literal_long_long(3);
+  rep->bottom_margin_e=A4GL_new_literal_long_long(3);
+  rep->left_margin_e=A4GL_new_literal_long_long(5);
+  rep->right_margin_e =A4GL_new_literal_long_long(132);
+  rep->page_length_e=A4GL_new_literal_long_long(66);
+  //rep->page_no = 0;
+  //rep->printed_page_no = 0;
+  //rep->line_no = 0;
+  //rep->col_no = 0;
   rep->output_mode = '-';
   rep->lines_in_header = 0;
   rep->lines_in_first_header = 0;
   rep->lines_in_trailer = 0;
-  strcpy(rep->top_of_page,"");
+  rep->top_of_page="";
   rep->output_loc=0;
 }
 
 
 void
-pdf_init_report_structure (struct pdf_rep_structure *rep)
+pdf_init_report_structure (struct pdf_startrep *rep)
 {
 #ifdef DEBUG
   A4GL_debug ("ZZ1 init structure...");
 #endif
-  rep->top_margin = -36.0;
-  rep->bottom_margin = -36.0;
-  rep->left_margin = -36.0;
+  rep->top_margin_e = A4GL_new_literal_long_long(-36);
+  rep->bottom_margin_e = A4GL_new_literal_long_long(-36.0);
+  rep->left_margin_e = A4GL_new_literal_long_long(-36.0);
 
-  rep->page_length = -842.0;	/* A4 */
-  rep->page_width = -595.0;	/* A4 */
+  rep->page_length_e = A4GL_new_literal_long_long(-842.0);	/* A4 */
+  rep->page_width_e = A4GL_new_literal_long_long(-595.0);	/* A4 */
 
-  rep->right_margin = rep->page_width - (2 * rep->left_margin);
-  rep->bluebar_style=E_BLUEBAR_NONE;
-  rep->bluebar_r=0.9;
-  rep->bluebar_g=0.9;
-  rep->bluebar_b=1.00;
-  rep->page_no = 0;
-  rep->printed_page_no = 0;
-  rep->line_no = 0.0;
-  rep->col_no = 0.0;
+  rep->right_margin_e = A4GL_new_literal_long_long( -595.0 +72); //   rep->page_width - (2 * rep->left_margin);
+  rep->bluebar.style=E_BLUEBAR_NONE;
+  rep->bluebar.r=0.9;
+  rep->bluebar.g=0.9;
+  rep->bluebar.b=1.00;
+  //rep->page_no = 0;
+  //rep->printed_page_no = 0;
+  //rep->line_no = 0.0;
+  //rep->col_no = 0.0;
   rep->output_mode = 'F';
   rep->font_size = 10;
   rep->paper_size = 0;
   rep->lines_in_header = 0;
   rep->lines_in_first_header = 0;
   rep->lines_in_trailer = 0;
-  strcpy (rep->font_name, "\"Helvetica\"");
+  rep->font_name= "\"Helvetica\"";
   rep->output_loc=0;
 }
 
@@ -1163,47 +1170,52 @@ pdf_init_report_structure (struct pdf_rep_structure *rep)
  * @param
  */
 void
-resize_paper (struct pdf_rep_structure *pdf_rep_struct)
+resize_paper (struct pdf_startrep *pdf_rep_struct)
 {
   int portrait = 1;
-  float a;
+  expr_str * a;
 
 #ifdef DEBUG
   A4GL_debug ("ZZ1 Fixing paper size.....");
 #endif
 
-  if (pdf_rep_struct->paper_size != 0)
+
+  int psize=pdf_rep_struct->paper_size;
+
+  if (psize != 0)
     {
 
-      if (pdf_rep_struct->paper_size < 0)
+      if (psize < 0)
 	{
 	  portrait = 0;
-	  pdf_rep_struct->paper_size = 0 - pdf_rep_struct->paper_size;
+	  psize = 0 - psize;
 	}
 
-      switch (pdf_rep_struct->paper_size)
+      switch (psize)
 	{
 	case 1:
-	  pdf_rep_struct->page_length = 0 - a4_height;
-	  pdf_rep_struct->page_width = 0 - a4_width;
+	  pdf_rep_struct->page_length_e = A4GL_new_literal_long_long((int)( 0 - a4_height));
+	  pdf_rep_struct->page_width_e =  A4GL_new_literal_long_long((int)(0 - a4_width));
 	  break;
+
 	case 2:
-	  pdf_rep_struct->page_length = 0 - letter_height;
-	  pdf_rep_struct->page_width = 0 - letter_width;
+	  pdf_rep_struct->page_length_e =  A4GL_new_literal_long_long((int)(0 - letter_height));
+	  pdf_rep_struct->page_width_e =  A4GL_new_literal_long_long((int)(0 - letter_width));
 	  break;
+
 	case 3:
-	  pdf_rep_struct->page_length = 0 - legal_height;
-	  pdf_rep_struct->page_width = 0 - legal_width;
+	  pdf_rep_struct->page_length_e =  A4GL_new_literal_long_long((int)(0 - legal_height));
+	  pdf_rep_struct->page_width_e =  A4GL_new_literal_long_long((int)(0 - legal_width));
 	  break;
 
 	case 4:		/* Not used.... */
-	  pdf_rep_struct->page_length = 0 - a4_height;
-	  pdf_rep_struct->page_width = 0 - a4_width;
+	  pdf_rep_struct->page_length_e =  A4GL_new_literal_long_long((int)(0 - a4_height));
+	  pdf_rep_struct->page_width_e =  A4GL_new_literal_long_long((int)(0 - a4_width));
 	  break;
 
 	case 5:
-	  pdf_rep_struct->page_length = 0 - a5_height;
-	  pdf_rep_struct->page_width = 0 - a5_width;
+	  pdf_rep_struct->page_length_e =  A4GL_new_literal_long_long((int)(0 - a5_height));
+	  pdf_rep_struct->page_width_e =  A4GL_new_literal_long_long((int)(0 - a5_width));
 	  break;
 
 	}
@@ -1212,9 +1224,9 @@ resize_paper (struct pdf_rep_structure *pdf_rep_struct)
 
   if (portrait == 0)		/* Its landscape - swap it around.... */
     {
-      a = pdf_rep_struct->page_length;
-      pdf_rep_struct->page_length = pdf_rep_struct->page_width;
-      pdf_rep_struct->page_width = a;
+      a = pdf_rep_struct->page_length_e;
+      pdf_rep_struct->page_length_e = pdf_rep_struct->page_width_e;
+      pdf_rep_struct->page_width_e = a;
     }
 
 }

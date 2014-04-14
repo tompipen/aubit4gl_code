@@ -1556,14 +1556,27 @@ print_start_cmd (struct_start_cmd * cmd_data)
     	}
   }
 
-  printc ("A4GL_set_report_dim(%d,%d,%d,%d,%d,\"%s\");",
-	  cmd_data->sc_c->with_page_length,
-	  cmd_data->sc_c->with_left_margin,
-	  cmd_data->sc_c->with_right_margin,
-	  cmd_data->sc_c->with_top_margin, cmd_data->sc_c->with_bottom_margin, cmd_data->sc_c->with_top_of_page);
+  printc("{int _pl; int _rm; int _lm; int _tm; int _bm;");
+	print_expr( cmd_data->sc_c->page_length_e);
+	printc("_pl=A4GL_pop_long();");
+
+	print_expr(cmd_data->sc_c->left_margin_e);
+	printc("_lm=A4GL_pop_long();");
+
+	print_expr(cmd_data->sc_c->right_margin_e);
+	printc("_rm=A4GL_pop_long();");
+
+	print_expr(cmd_data->sc_c->top_margin_e);
+	printc("_tm=A4GL_pop_long();");
+
+	print_expr(cmd_data->sc_c->bottom_margin_e);
+	printc("_bm=A4GL_pop_long();");
+
+  printc ("A4GL_set_report_dim(_pl,_lm,_rm,_tm,_bm,\"%s\");", cmd_data->sc_c->top_of_page);
   printc ("%s%s(2,REPORT_START);", cmd_data->n_namespace, cmd_data->repname);
 
   print_copy_status_with_sql (0); /* Can have an ORDER BY which causes a series of SQL statements */
+  printc("}");
   return 1;
 }
 

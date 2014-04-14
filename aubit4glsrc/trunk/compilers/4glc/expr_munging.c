@@ -1,7 +1,7 @@
 #include "expr_munging.h"
 #include "parsehelp.h"
 
-static int madmath (char *module, int lineno, expr_str * p);
+//static int madmath (char *module, int lineno, expr_str * p);
 
 #define FAKE_DTYPE_BOOL 90
 extern int yylineno;
@@ -1759,7 +1759,7 @@ expr_datatype (char *module, int lineno, struct expr_str *p)
 
 
 
-
+#ifdef REMOVED
 int
 madmath (char *module, int lineno, expr_str * p)
 {
@@ -1885,3 +1885,4 @@ madmath (char *module, int lineno, expr_str * p)
 
 
 }
+#endif

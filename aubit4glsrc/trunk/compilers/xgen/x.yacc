@@ -740,10 +740,12 @@ union: UNION NAMED SWITCH OPEN_BRACKET  {
 	fprintf(hsf,"%s;\nunion {\n",sw_elem);
 
 } OPEN_BRACE union_list CLOSE_BRACE SEMICOLON {
+	fprintf(cfo,"default: A4GL_assertion(1,\"Unhandled switch element\");\n");
 	fprintf(cfo,"} /* switch */\n");
 	fprintf(cfo,"if (!output_end_union(\"%s\",\"%s\",r.%s, rn)) return 0;\n",$<str>2,$<str>6, $<str>6);
 	fprintf(cfo," return 1;\n}\n\n");
 
+	fprintf(cfi,"default: A4GL_assertion(1,\"Unhandled switch element\");\n");
 	fprintf(cfi,"} /* switch */\n");
  	fprintf(cfi,"if (!input_end_union(\"%s\",\"%s\",r->%s,rn)) return 0;\n",$<str>2,$<str>6, $<str>6);
 	fprintf(cfi," return 1;\n}\n\n");

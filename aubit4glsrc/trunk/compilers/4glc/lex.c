@@ -39,6 +39,6 @@ void A4GL_lex_printh(char* fmt,... ) {
 
 
 void A4GL_lex_printcomment(char* fmt,... ) {
-va_list ap;
+//va_list ap;
 return;
 }

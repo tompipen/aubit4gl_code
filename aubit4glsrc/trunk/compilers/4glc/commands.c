@@ -667,6 +667,9 @@ int sio_id=0;
 	case EBC_TODO:          // Exit TODO
 		block_no=get_exit_loop("TODO");
 		break;
+	case EBC_DIALOG:          // Exit DIALOG
+		block_no=get_exit_loop("DIALOG");
+		break;
 
 	case EBC_SPL_WHILE:
 	case EBC_SPL_FOREACH:
@@ -794,6 +797,9 @@ int block_no=-1;
 	case EBC_TODO:          // Exit TODO
 		block_no=get_exit_loop("TODO");
 		break;
+	case EBC_DIALOG:          // Exit TODO
+		block_no=get_exit_loop("DIALOG");
+		break;
 	case EBC_SPL_WHILE:
 	case EBC_SPL_FOREACH:
 	case EBC_SPL_FOR:
@@ -811,6 +817,14 @@ struct command *new_defer_cmd(e_defer p_what) { //!
 struct command *c;
    c=new_command(E_CMD_DEFER_CMD);
    c->cmd_data.command_data_u.defer_cmd.what=p_what;
+   return c;
+}
+
+
+
+struct command *new_accept_cmd(void) {
+struct command *c;
+   c=new_command(E_CMD_ACCEPT_CMD);
    return c;
 }
  

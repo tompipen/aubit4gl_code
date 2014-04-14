@@ -132,37 +132,56 @@ start_cmd :
 op_with_dim:
 	{
 			$<startrep>$=malloc(sizeof(startrep));
-			$<startrep>$->with_page_length=-1;
-			/*$<startrep>$->with_page_width=-1; */
-			$<startrep>$->with_left_margin=-1; 
-			$<startrep>$->with_right_margin= -1;
-			$<startrep>$->with_top_margin= -1;
-			$<startrep>$->with_bottom_margin= -1;
-			$<startrep>$->with_top_of_page= strdup("");
-			with_page_length=-1;
-			/* with_page_width=-1; */
-			with_left_margin=-1;
-			with_right_margin=-1;
-			with_top_margin=-1;
-			with_bottom_margin=-1;
+			$<startrep>$->page_length_e=A4GL_new_literal_long_long(-1);
+			$<startrep>$->left_margin_e=A4GL_new_literal_long_long(-1); 
+			$<startrep>$->right_margin_e= A4GL_new_literal_long_long(-1);
+			$<startrep>$->top_margin_e= A4GL_new_literal_long_long(-1);
+			$<startrep>$->bottom_margin_e= A4GL_new_literal_long_long(-1);
+			$<startrep>$->top_of_page= strdup("");
+			with_page_length_e=NULL;
+			with_left_margin_e=NULL;
+			with_right_margin_e=NULL;
+			with_top_margin_e=NULL;
+			with_bottom_margin_e=NULL;
+
 			with_top_of_page="";
 	}
 	| WITH with_list {
 			$<startrep>$=malloc(sizeof(startrep));
-			$<startrep>$->with_page_length=with_page_length;
-			/*$<startrep>$->with_page_width=with_page_width; */
-			$<startrep>$->with_left_margin= with_left_margin;
-			$<startrep>$->with_right_margin= with_right_margin;
-			$<startrep>$->with_top_margin= with_top_margin;
-			$<startrep>$->with_bottom_margin= with_bottom_margin;
-			$<startrep>$->with_top_of_page= strdup(with_top_of_page);
+			if (!with_page_length_e) {
+				with_page_length_e=A4GL_new_literal_long_long(-1);
+			}
+			$<startrep>$->page_length_e=with_page_length_e;
+		
 
-			with_page_length=-1;
-			/*with_page_width=-1; */
-			with_left_margin=-1;
-			with_right_margin=-1;
-			with_top_margin=-1;
-			with_bottom_margin=-1;
+
+			if (!with_left_margin_e) {
+				with_left_margin_e=A4GL_new_literal_long_long(-1);
+			}
+			$<startrep>$->left_margin_e= with_left_margin_e;
+
+			if (!with_right_margin_e) {
+				with_right_margin_e=A4GL_new_literal_long_long(-1);
+			}
+			$<startrep>$->right_margin_e= with_right_margin_e;
+
+			if (!with_top_margin_e) {
+				with_top_margin_e=A4GL_new_literal_long_long(-1);
+			}
+			$<startrep>$->top_margin_e= with_top_margin_e;
+
+			if (!with_bottom_margin_e) {
+				with_bottom_margin_e=A4GL_new_literal_long_long(-1);
+			}
+			$<startrep>$->bottom_margin_e= with_bottom_margin_e;
+
+			$<startrep>$->top_of_page= strdup(with_top_of_page);
+
+			with_page_length_e=NULL;
+			with_left_margin_e=NULL;
+			with_right_margin_e=NULL;
+			with_top_margin_e=NULL;
+			with_bottom_margin_e=NULL;
 			with_top_of_page="";
 	}
 ;
@@ -178,18 +197,18 @@ with_list:
 ;
 
 with_entry:
-	PAGE_LENGTH op_equal INT_VALUE {with_page_length=atoi($<str>3);}
-	| TOP_MARGIN op_equal INT_VALUE {with_top_margin=atoi($<str>3);}
-	| BOTTOM_MARGIN op_equal INT_VALUE {with_bottom_margin=atoi($<str>3);}
-	| LEFT_MARGIN op_equal INT_VALUE {with_left_margin=atoi($<str>3);}
-	| RIGHT_MARGIN op_equal INT_VALUE {with_right_margin=atoi($<str>3);}
+	PAGE_LENGTH op_equal fgl_expr_c {with_page_length_e=$<ptr>3;}
+	| TOP_MARGIN op_equal fgl_expr_c {with_top_margin_e=$<ptr>3;}
+	| BOTTOM_MARGIN op_equal fgl_expr_c {with_bottom_margin_e=$<ptr>3;}
+	| LEFT_MARGIN op_equal fgl_expr_c {with_left_margin_e=$<ptr>3;}
+	| RIGHT_MARGIN op_equal fgl_expr_c {with_right_margin_e=$<ptr>3;}
 	| TOP_OF_PAGE op_equal CHAR_VALUE {with_top_of_page=acl_strdup($<str>3);}
 
-	| PAGE_LENGTH OPEN_BRACKET INT_VALUE CLOSE_BRACKET {with_page_length=atoi($<str>2);}
-	| TOP_MARGIN OPEN_BRACKET INT_VALUE CLOSE_BRACKET {with_top_margin=atoi($<str>2);}
-	| BOTTOM_MARGIN OPEN_BRACKET INT_VALUE CLOSE_BRACKET {with_bottom_margin=atoi($<str>2);}
-	| LEFT_MARGIN OPEN_BRACKET INT_VALUE CLOSE_BRACKET {with_left_margin=atoi($<str>2);}
-	| RIGHT_MARGIN OPEN_BRACKET INT_VALUE CLOSE_BRACKET {with_right_margin=atoi($<str>2);}
+	| PAGE_LENGTH OPEN_BRACKET fgl_expr_c CLOSE_BRACKET {with_page_length_e=$<ptr>3;}
+	| TOP_MARGIN OPEN_BRACKET fgl_expr_c CLOSE_BRACKET {with_top_margin_e=$<ptr>3;}
+	| BOTTOM_MARGIN OPEN_BRACKET fgl_expr_c CLOSE_BRACKET {with_bottom_margin_e=$<ptr>3;}
+	| LEFT_MARGIN OPEN_BRACKET fgl_expr_c CLOSE_BRACKET {with_left_margin_e=$<ptr>3;}
+	| RIGHT_MARGIN OPEN_BRACKET fgl_expr_c CLOSE_BRACKET {with_right_margin_e=$<ptr>3;}
 	| TOP_OF_PAGE OPEN_BRACKET CHAR_VALUE CLOSE_BRACKET {with_top_of_page=acl_strdup($<str>2);}
 ;
 	
@@ -827,12 +846,12 @@ rep_agg :
 
 op_output_section : {$<startrep>$=0;} | OUTPUT output_commands  {
 	                $<startrep>$=malloc(sizeof(startrep));
-                        $<startrep>$->with_page_length=rep_struct.page_length;
-                        $<startrep>$->with_left_margin=rep_struct.left_margin;
-                        $<startrep>$->with_right_margin= rep_struct.right_margin;
-                        $<startrep>$->with_top_margin= rep_struct.top_margin;
-                        $<startrep>$->with_bottom_margin= rep_struct.bottom_margin;
-                        $<startrep>$->with_top_of_page= strdup(rep_struct.top_of_page);
+                        $<startrep>$->page_length_e=rep_struct.page_length_e;
+                        $<startrep>$->left_margin_e=rep_struct.left_margin_e;
+                        $<startrep>$->right_margin_e= rep_struct.right_margin_e;
+                        $<startrep>$->top_margin_e= rep_struct.top_margin_e;
+                        $<startrep>$->bottom_margin_e= rep_struct.bottom_margin_e;
+                        $<startrep>$->top_of_page= strdup(rep_struct.top_of_page);
                         $<startrep>$->towhat=rep_struct.output_mode;
 			$<startrep>$->s1=rep_struct.output_loc;
 }
@@ -841,11 +860,11 @@ op_output_section : {$<startrep>$=0;} | OUTPUT output_commands  {
 output_commands : output_command | output_commands output_command;
 
 output_command : 
-  LEFT_MARGIN INT_VALUE 		{rep_struct.left_margin=atoi($<str>2);}
-| RIGHT_MARGIN INT_VALUE 		{rep_struct.right_margin=atoi($<str>2);}
-| TOP_MARGIN INT_VALUE 			{rep_struct.top_margin=atoi($<str>2);}
-| BOTTOM_MARGIN INT_VALUE 		{rep_struct.bottom_margin=atoi($<str>2);}
-| PAGE_LENGTH INT_VALUE 		{rep_struct.page_length=atoi($<str>2);}
+  LEFT_MARGIN INT_VALUE 		{rep_struct.left_margin_e=A4GL_new_literal_long_str($<str>2);}
+| RIGHT_MARGIN INT_VALUE 		{rep_struct.right_margin_e=A4GL_new_literal_long_str($<str>2);}
+| TOP_MARGIN INT_VALUE 			{rep_struct.top_margin_e=A4GL_new_literal_long_str($<str>2);}
+| BOTTOM_MARGIN INT_VALUE 		{rep_struct.bottom_margin_e=A4GL_new_literal_long_str($<str>2);}
+| PAGE_LENGTH INT_VALUE 		{rep_struct.page_length_e=A4GL_new_literal_long_str($<str>2);}
 | REPORT_TO_PRINTER  			{rep_struct.output_mode='R';rep_struct.output_loc=A4GL_new_expr_simple(ET_EXPR_REPORT_PRINTER);}
 | REPORT_TO_FILE CHAR_VALUE 			{rep_struct.output_mode='F';rep_struct.output_loc=A4GL_new_literal_string(A4GL_strip_quotes($<str>2)); }
 | REPORT_TO CHAR_VALUE 			{rep_struct.output_mode='F';rep_struct.output_loc=A4GL_new_literal_string(A4GL_strip_quotes($<str>2)); }
@@ -853,7 +872,7 @@ output_command :
 | REPORT_TO_PIPE CHAR_VALUE 		{rep_struct.output_mode='P';rep_struct.output_loc=A4GL_new_literal_string(A4GL_strip_quotes($<str>2));} 
 | REPORT_TO_UI  		{rep_struct.output_mode='U';rep_struct.output_loc=A4GL_new_expr_simple(ET_EXPR_REPORT_UI);} 
 | REPORT_TO_PIPE ensured_variable_usage_expression 	{rep_struct.output_mode='P';rep_struct.output_loc=$<ptr>2;}
-| TOP_OF_PAGE CHAR_VALUE 		{strcpy(rep_struct.top_of_page,$<str>2);}
+| TOP_OF_PAGE CHAR_VALUE 		{rep_struct.top_of_page=acl_strdup($<str>2);}
 ;
 
 pdf_output_commands : pdf_output_command | pdf_output_commands pdf_output_command;
@@ -875,19 +894,19 @@ pdf_op_output_section : {$<pdf_startrep>$=0;} | OUTPUT pdf_output_commands
 		$<pdf_startrep>$=malloc(sizeof(pdf_startrep));
 	        $<pdf_startrep>$->towhat=pdf_rep_struct.output_mode;
          	$<pdf_startrep>$->s1=pdf_rep_struct.output_loc;
-         	$<pdf_startrep>$->with_page_length=pdf_rep_struct.page_length;
-         	$<pdf_startrep>$->with_page_width=pdf_rep_struct.page_width;
-        	$<pdf_startrep>$->with_left_margin=pdf_rep_struct.left_margin;
-        	$<pdf_startrep>$->with_right_margin=pdf_rep_struct.right_margin;
-         	$<pdf_startrep>$->with_top_margin=pdf_rep_struct.top_margin;
-         	$<pdf_startrep>$->with_bottom_margin=pdf_rep_struct.bottom_margin;
-         	$<pdf_startrep>$->fontname=strdup(pdf_rep_struct.font_name);
-        	$<pdf_startrep>$->fontsize=pdf_rep_struct.font_size;
-        	$<pdf_startrep>$->papersize=pdf_rep_struct.paper_size;
-		$<pdf_startrep>$->bluebar.style=pdf_rep_struct.bluebar_style;
-		$<pdf_startrep>$->bluebar.r=pdf_rep_struct.bluebar_r;
-		$<pdf_startrep>$->bluebar.g=pdf_rep_struct.bluebar_g;
-		$<pdf_startrep>$->bluebar.b=pdf_rep_struct.bluebar_b;
+         	$<pdf_startrep>$->page_length_e=pdf_rep_struct.page_length_e;
+         	$<pdf_startrep>$->page_width_e=pdf_rep_struct.page_width_e;
+        	$<pdf_startrep>$->left_margin_e=pdf_rep_struct.left_margin_e;
+        	$<pdf_startrep>$->right_margin_e=pdf_rep_struct.right_margin_e;
+         	$<pdf_startrep>$->top_margin_e=pdf_rep_struct.top_margin_e;
+         	$<pdf_startrep>$->bottom_margin_e=pdf_rep_struct.bottom_margin_e;
+         	$<pdf_startrep>$->font_name=strdup(pdf_rep_struct.font_name);
+        	$<pdf_startrep>$->font_size=pdf_rep_struct.font_size;
+        	$<pdf_startrep>$->paper_size=pdf_rep_struct.paper_size;
+		$<pdf_startrep>$->bluebar.style=pdf_rep_struct.bluebar.style;
+		$<pdf_startrep>$->bluebar.r=pdf_rep_struct.bluebar.r;
+		$<pdf_startrep>$->bluebar.g=pdf_rep_struct.bluebar.g;
+		$<pdf_startrep>$->bluebar.b=pdf_rep_struct.bluebar.b;
         	$<pdf_startrep>$->pageheadersize=0.0;
         	$<pdf_startrep>$->firstpageheadersize=0.0;
          	$<pdf_startrep>$->pagetrailersize=0.0;
@@ -899,16 +918,12 @@ pdf_op_output_section : {$<pdf_startrep>$=0;} | OUTPUT pdf_output_commands
 ;
 
 pdf_output_command : 
-  LEFT_MARGIN nval {pdf_rep_struct.left_margin=atof($<str>2);
-#ifdef DEBUG
-A4GL_debug("Left margin=%s\n",$<str>2);
-#endif
-}
-| RIGHT_MARGIN nval {pdf_rep_struct.right_margin=atof($<str>2);}
-| TOP_MARGIN nval {pdf_rep_struct.top_margin=atof($<str>2);}
-| BOTTOM_MARGIN nval {pdf_rep_struct.bottom_margin=atof($<str>2);}
-| PAGE_LENGTH nval {pdf_rep_struct.page_length=atof($<str>2);}
-| PAGE_WIDTH nval {pdf_rep_struct.page_width=atof($<str>2);}
+  LEFT_MARGIN fgl_expr_c {pdf_rep_struct.left_margin_e=$<ptr>2; }
+| RIGHT_MARGIN fgl_expr_c {pdf_rep_struct.right_margin_e=$<ptr>2;}
+| TOP_MARGIN fgl_expr_c {pdf_rep_struct.top_margin_e=$<ptr>2;}
+| BOTTOM_MARGIN fgl_expr_c {pdf_rep_struct.bottom_margin_e=$<ptr>2;}
+| PAGE_LENGTH fgl_expr_c {pdf_rep_struct.page_length_e=$<ptr>2;}
+| PAGE_WIDTH fgl_expr_c {pdf_rep_struct.page_width_e=$<ptr>2;}
 | FONT_NAME CHAR_VALUE {strcpy(pdf_rep_struct.font_name,$<str>2);}
 | FONT_SIZE nval {pdf_rep_struct.font_size=atof($<str>2);}
 
@@ -931,32 +946,32 @@ A4GL_debug("Left margin=%s\n",$<str>2);
 | ASCII_HEIGHT_ALL
 | ASCII_WIDTH_ALL
 | BLUEBAR  {
-		pdf_rep_struct.bluebar_style=E_BLUEBAR_RECTANGLE;
+		pdf_rep_struct.bluebar.style=E_BLUEBAR_RECTANGLE;
 }
 | BLUEBAR_STYLE_EQUAL_RECTANGLE {
-		pdf_rep_struct.bluebar_style=E_BLUEBAR_RECTANGLE;
+		pdf_rep_struct.bluebar.style=E_BLUEBAR_RECTANGLE;
 	}
 | BLUEBAR_STYLE_EQUAL_LINE {
-		pdf_rep_struct.bluebar_style=E_BLUEBAR_5LINE;
+		pdf_rep_struct.bluebar.style=E_BLUEBAR_5LINE;
 	}
 | BLUEBAR_COLOR_EQUAL NUMBER_VALUE KW_COMMA NUMBER_VALUE KW_COMMA NUMBER_VALUE {
-		pdf_rep_struct.bluebar_style=E_BLUEBAR_RECTANGLE;
-		pdf_rep_struct.bluebar_r=atof($<str>2);
-		pdf_rep_struct.bluebar_g=atof($<str>4);
-		pdf_rep_struct.bluebar_b=atof($<str>6);
+		pdf_rep_struct.bluebar.style=E_BLUEBAR_RECTANGLE;
+		pdf_rep_struct.bluebar.r=atof($<str>2);
+		pdf_rep_struct.bluebar.g=atof($<str>4);
+		pdf_rep_struct.bluebar.b=atof($<str>6);
 	
 	}
 | BLUEBAR_STYLE_EQUAL_RECTANGLE_COLOR_EQUAL NUMBER_VALUE KW_COMMA NUMBER_VALUE KW_COMMA NUMBER_VALUE {
-		pdf_rep_struct.bluebar_style=E_BLUEBAR_RECTANGLE;
-		pdf_rep_struct.bluebar_r=atof($<str>2);
-		pdf_rep_struct.bluebar_g=atof($<str>4);
-		pdf_rep_struct.bluebar_b=atof($<str>6);
+		pdf_rep_struct.bluebar.style=E_BLUEBAR_RECTANGLE;
+		pdf_rep_struct.bluebar.r=atof($<str>2);
+		pdf_rep_struct.bluebar.g=atof($<str>4);
+		pdf_rep_struct.bluebar.b=atof($<str>6);
 	}
 | BLUEBAR_STYLE_EQUAL_LINE_COLOR_EQUAL NUMBER_VALUE KW_COMMA NUMBER_VALUE KW_COMMA NUMBER_VALUE {
-		pdf_rep_struct.bluebar_style=E_BLUEBAR_5LINE;
-		pdf_rep_struct.bluebar_r=atof($<str>2);
-		pdf_rep_struct.bluebar_g=atof($<str>4);
-		pdf_rep_struct.bluebar_b=atof($<str>6);
+		pdf_rep_struct.bluebar.style=E_BLUEBAR_5LINE;
+		pdf_rep_struct.bluebar.r=atof($<str>2);
+		pdf_rep_struct.bluebar.g=atof($<str>4);
+		pdf_rep_struct.bluebar.b=atof($<str>6);
 	}
 ;
 

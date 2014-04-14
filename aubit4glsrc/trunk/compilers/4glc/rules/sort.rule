@@ -1,7 +1,7 @@
 
 sort_cmd : SORT variable_usage_expression KW_USING identifier op_sort_limit {
 		expr_str *callback;
-		expr_str_list *params;
+		//expr_str_list *params;
 		if (!check_input_or_display_array_variable($<ptr>2)) {
 			a4gl_yyerror("Variable is not a simple array");
 			$<cmd>$=NULL;
