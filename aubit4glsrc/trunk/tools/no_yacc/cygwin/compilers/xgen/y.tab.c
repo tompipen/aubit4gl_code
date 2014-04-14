@@ -875,10 +875,10 @@ static const yytype_uint16 yyrline[] =
      521,   521,   524,   537,   556,   562,   562,   562,   562,   562,
      565,   565,   605,   605,   608,   614,   620,   626,   632,   638,
      646,   651,   652,   653,   654,   655,   656,   657,   658,   659,
-     660,   666,   674,   678,   685,   697,   685,   765,   765,   768,
-     768,   772,   772,   792,   792,   796,   815,   815,   819,   830,
-     831,   833,   833,   837,   837,   840,   840,   841,   841,   842,
-     845,   850
+     660,   666,   674,   678,   685,   697,   685,   767,   767,   770,
+     770,   774,   774,   794,   794,   798,   817,   817,   821,   832,
+     833,   835,   835,   839,   839,   842,   842,   843,   843,   844,
+     847,   852
 };
 #endif
 
@@ -2406,10 +2406,12 @@ yyreduce:
 /* Line 1464 of yacc.c  */
 #line 742 "x.yacc"
     {
+	fprintf(cfo,"default: A4GL_assertion(1,\"Unhandled switch element\");\n");
 	fprintf(cfo,"} /* switch */\n");
 	fprintf(cfo,"if (!output_end_union(\"%s\",\"%s\",r.%s, rn)) return 0;\n",(yyvsp[(2) - (12)].str),(yyvsp[(6) - (12)].str), (yyvsp[(6) - (12)].str));
 	fprintf(cfo," return 1;\n}\n\n");
 
+	fprintf(cfi,"default: A4GL_assertion(1,\"Unhandled switch element\");\n");
 	fprintf(cfi,"} /* switch */\n");
  	fprintf(cfi,"if (!input_end_union(\"%s\",\"%s\",r->%s,rn)) return 0;\n",(yyvsp[(2) - (12)].str),(yyvsp[(6) - (12)].str), (yyvsp[(6) - (12)].str));
 	fprintf(cfi," return 1;\n}\n\n");
@@ -2431,7 +2433,7 @@ yyreduce:
   case 61:
 
 /* Line 1464 of yacc.c  */
-#line 772 "x.yacc"
+#line 774 "x.yacc"
     {
 	if (dumping_command_data) {
 		char buff[200];
@@ -2453,7 +2455,7 @@ yyreduce:
   case 65:
 
 /* Line 1464 of yacc.c  */
-#line 796 "x.yacc"
+#line 798 "x.yacc"
     {
 	if (dumping_command_data) {
 		fprintf(cmd_file,"); break;\n");
@@ -2476,7 +2478,7 @@ yyreduce:
   case 68:
 
 /* Line 1464 of yacc.c  */
-#line 819 "x.yacc"
+#line 821 "x.yacc"
     {
 	char *ptr;
 	ptr=acl_strdup((yyvsp[(1) - (1)].str));
@@ -2491,7 +2493,7 @@ yyreduce:
 
 
 /* Line 1464 of yacc.c  */
-#line 2495 "y.tab.c"
+#line 2497 "y.tab.c"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);
@@ -2703,7 +2705,7 @@ yyreturn:
 
 
 /* Line 1684 of yacc.c  */
-#line 856 "x.yacc"
+#line 858 "x.yacc"
 
 
 
