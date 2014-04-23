@@ -1,5 +1,5 @@
 #include "models/webbrowser.h"
-
+#include <QTextEdit>
 
 /*WebBrowser::WebBrowser()
 {
@@ -32,6 +32,10 @@ void WebBrowser::createBrowser()
     connect(locationEdit, SIGNAL(returnPressed()), SLOT(changeLocation()));
     setNavigationIcons();
 
+    //WebView->page()->settings()->fontSize(QWebSettings::DefaultFontSize)
+
+    fontSize = WebView->page()->settings()->fontSize(QWebSettings::DefaultFontSize);
+    defaultFontSize = fontSize;
 
     setWindowTitle("VENTAS.browser");
 
@@ -119,12 +123,16 @@ void WebBrowser::printpage()
 
   if(dialog.exec() == QDialog::Accepted)
   {
-     //WebView->print(&printer);
+     //WebView->print(QWebView::print);
 
      QWebFrame *webFrame = WebView->page()->mainFrame();
 
-     QTextDocument htmlDocument;
+     QTextEdit htmlDocument;
      htmlDocument.setHtml(webFrame->toHtml());
+     QFont font;
+     font.setFamily("Courier");
+     font.setPointSize(fontSize-5);
+     htmlDocument.setFont(font);
      htmlDocument.print(&printer);
   }
 }
@@ -383,18 +391,20 @@ void WebBrowser::saveAsFile()
 
 void WebBrowser::increaseSize()
 {
-  WebView->setZoomFactor(WebView->zoomFactor() + 0.1);
+   fontSize = fontSize + 2;
+   WebView->settings()->setFontSize(QWebSettings::DefaultFontSize, fontSize);
 }
 
 void WebBrowser::decreaseSize()
 {
-
-  WebView->setZoomFactor(WebView->zoomFactor() - 0.1);
+    fontSize = fontSize - 2;
+    WebView->settings()->setFontSize(QWebSettings::DefaultFontSize, fontSize);
 }
 
 void WebBrowser::resetSize()
 {
-  WebView->setZoomFactor(1);
+    fontSize = defaultFontSize;
+    WebView->settings()->setFontSize(QWebSettings::DefaultFontSize, fontSize);
 }
 
 /*
@@ -456,3 +466,4 @@ void WebBrowser::inittoolbar()
   hb_lay->addWidget(qpb_stop);
   hb_lay->addWidget(locationEdit);
 }*/
+

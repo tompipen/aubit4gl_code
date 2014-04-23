@@ -79,7 +79,8 @@ private:
     QString mSearchString;
     QToolBar *mTb;
 
-
+    int fontSize;
+    int defaultFontSize;
 
 };
 
