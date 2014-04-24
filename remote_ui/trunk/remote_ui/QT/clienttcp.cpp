@@ -1936,6 +1936,7 @@ if(childElement.nodeName() == "PROGRAMSTARTUP"){
              }
 
          }
+
          if(qs_name == "ui.vdc.getstdofficeprog")
          {
              int stdOfficeProg = VDC::readSettingsFromIni("","officeStdProg").toInt();
@@ -1958,13 +1959,22 @@ if(childElement.nodeName() == "PROGRAMSTARTUP"){
              }
          }
 
-         if(qs_name == "ui.interface.settext"){
-            QDomElement values = childElement.firstChildElement();
-            QDomElement valueElement = values.firstChildElement();
-            QString value = valueElement.text();
-             QMetaObject::invokeMethod(p_currScreenHandler, "setInterfaceText", Qt::QueuedConnection, Q_ARG(QString, value));
-       //     p_currScreenHandler->setInterfaceText(value);
-         }
+        if(qs_name == "ui.vdc.filebrowser")
+        {
+            QStringList params;
+
+            for(int k=0; k<paramsElement.childNodes().count(); k++){
+            QDomElement valuesElement = paramsElement.childNodes().at(k).toElement();
+            params << valuesElement.text();
+            }
+
+            QString function = params.at(0);
+            QString filename = params.at(1);
+
+            QMetaObject::invokeMethod(p_currScreenHandler, "getFileBrowser", Qt::QueuedConnection, Q_ARG(QString, function), Q_ARG(QString, filename));
+            expect = 0;
+
+        }
 
 
          if(qs_name == "ui.combobox.additem"){

@@ -4718,6 +4718,50 @@ void ScreenHandler::openEmail(QString mailtoUrl)
     QDesktopServices::openUrl(QUrl(mailtoUrl));
 }
 
+void ScreenHandler::getFileBrowser(QString function, QString filename)
+{
+    QString destFilePath = "";
+    int exitcode = 0;
+    QString errorMessage = "";
+
+    QFileInfo file(QDir::tempPath() + "/" + filename);
+    if(function == "savefile")
+    {
+        qDebug() << "ich werde ausgefuehrt!!!";
+
+        destFilePath = QFileDialog::getSaveFileName(p_fglform, "Save File",
+                                                   QStandardPaths::writableLocation(QStandardPaths::DesktopLocation) + "/" + filename,
+                                                   QString("%1 (%2)").arg(" ").arg("*." + file.completeSuffix()));
+
+        if(destFilePath.isEmpty())
+        {
+            //Todo fehlerrueckgabe an a4gl
+            exitcode = 2;
+            errorMessage = "Save was aborted.";
+        }
+
+        if(!QFile::exists(QDir::tempPath() + "/" + filename))
+        {
+            qDebug() << "cannot find file";
+            exitcode = 404;
+            errorMessage = "File not found on the Client.";
+        }
+
+        QFile::copy(QDir::tempPath() + "/" + filename, destFilePath);
+
+
+        QString qs_resp = "<TRIGGERED ID=\"-123\"><SVS><SV>" + QString::number(exitcode) +  "</SV><SV>" + errorMessage + "</SV></SVS></TRIGGERED>";
+        if(this->ph)
+        {
+            QMetaObject::invokeMethod(this->ph, "fglFormResponse", Qt::DirectConnection, Q_ARG(QString, qs_resp));
+        }
+        else
+        {
+            fglFormResponse(qs_resp);
+        }
+    }
+}
+
 void ScreenHandler::printpdf(QString filename)
 {
     Q_UNUSED(filename);

@@ -302,6 +302,8 @@ public slots:
    void openEmailWithAttach(QString);
    void openEmail(QString);
 
+   void getFileBrowser(QString, QString);
+
 signals:
    void fglFormResponse(QString);
    void windowCreated();
