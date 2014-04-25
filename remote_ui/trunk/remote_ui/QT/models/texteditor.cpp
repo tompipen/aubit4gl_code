@@ -70,7 +70,11 @@ void TextEditorWidget::initToolBar()
     tb->addSeparator();
 
     QAction *searchAction = new QAction(tr("&Search"), tb);
-    searchAction->setShortcut(Qt::CTRL + Qt::Key_F);
+    //searchAction->setShortcut(Qt::CTRL + Qt::Key_F);
+    QList<QKeySequence> shortcuts;
+    shortcuts << Qt::CTRL + Qt::Key_F;
+    shortcuts << Qt::Key_F9;
+    searchAction->setShortcuts(shortcuts);
     searchAction->setIcon(QIcon(":pics/editor-suchen.png"));
     connect(searchAction, SIGNAL(triggered()), this, SLOT(openSearch()));
     tb->addAction(searchAction);
