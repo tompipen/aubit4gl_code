@@ -1959,6 +1959,13 @@ if(childElement.nodeName() == "PROGRAMSTARTUP"){
              }
          }
 
+         if(qs_name == "ui.interface.settext"){
+            QDomElement values = childElement.firstChildElement();
+            QDomElement valueElement = values.firstChildElement();
+            QString value = valueElement.text();
+            QMetaObject::invokeMethod(p_currScreenHandler, "setInterfaceText", Qt::QueuedConnection, Q_ARG(QString, value));
+         }
+
         if(qs_name == "ui.vdc.filebrowser")
         {
             QStringList params;
