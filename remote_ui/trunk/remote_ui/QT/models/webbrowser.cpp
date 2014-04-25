@@ -117,7 +117,10 @@ void WebBrowser::finishLoading(bool)
 
 void WebBrowser::printpage()
 {
-  QPrinter printer(QPrinter::HighResolution);
+
+  QPrinter printer;
+  printer.setPageSize(QPrinter::Letter);
+  printer.setPageMargins(-0.6, -0.7, -0.8, -0.8, QPrinter::Inch);
 
   QPrintDialog dialog(&printer, this);
 
@@ -131,7 +134,7 @@ void WebBrowser::printpage()
      htmlDocument.setHtml(webFrame->toHtml());
      QFont font;
      font.setFamily("Courier");
-     font.setPointSize(fontSize-5);
+     font.setPointSize(fontSize-8);
      htmlDocument.setFont(font);
      htmlDocument.print(&printer);
   }
