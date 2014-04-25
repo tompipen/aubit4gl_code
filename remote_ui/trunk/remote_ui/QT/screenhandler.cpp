@@ -4760,6 +4760,23 @@ void ScreenHandler::getFileBrowser(QString function, QString filename)
             fglFormResponse(qs_resp);
         }
     }
+
+    if(function == "openfile")
+    {
+        QString filePath = QFileDialog::getOpenFileName(p_fglform, "Open File",
+                                                                                 QStandardPaths::writableLocation(QStandardPaths::DesktopLocation));
+
+        QString qs_resp = "<TRIGGERED ID=\"-123\"><SVS><SV>" + QString::number(exitcode) +  "</SV><SV>" + filePath + "</SV></SVS></TRIGGERED>";
+        if(this->ph)
+        {
+            QMetaObject::invokeMethod(this->ph, "fglFormResponse", Qt::DirectConnection, Q_ARG(QString, qs_resp));
+        }
+        else
+        {
+            fglFormResponse(qs_resp);
+        }
+
+    }
 }
 
 void ScreenHandler::printpdf(QString filename)
