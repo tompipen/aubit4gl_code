@@ -732,10 +732,10 @@ QString Reportgen::getTemplatePosition(int Table, QString odffile)
 
     }
 
-    if(!behalten.isEmpty())
+    /*if(!behalten.isEmpty())
     {
         behalten.append("</table:table-cell></table:table-row>");
-    }
+    }*/
 
     file->close();
 
@@ -1056,7 +1056,10 @@ void Reportgen::createXmlFile(int Table, int Position, QString odffile)
                 qDebug() << "Verarbeite Saetze" << zaehlerLevel1 << "von " << Position;
             }
             xmlStringLevel1.clear();
-            xmlStringLevel1.append("<table:table-row><table:table-cell>");
+            if(zaehlerLevel1 > 0)
+            {
+                xmlStringLevel1.append("<table:table-row><table:table-cell>");
+            }
             xmlStringLevel1.append(getXmlStringFromEbene(Table, 1, odffile, zaehlerLevel1+1, 1, 1));
             xmlStringLevel1.append("</table:table-cell></table:table-row>");
 
