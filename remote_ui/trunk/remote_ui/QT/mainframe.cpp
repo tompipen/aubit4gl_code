@@ -30,6 +30,7 @@
 #include "login.h"
 #include "include/vdc.h"
 #include "models/progress.h"
+#include "models/fglform.h"
 
 //------------------------------------------------------------------------------
 // Method       : MainFrame()
@@ -981,12 +982,19 @@ void MainFrame::closeVDC()
 
     if(ql_screenhandler)
     {
-        for(int i=0; ql_screenhandler->count(); i++)
+        for(int i=ql_screenhandler->count()-1; i >= 0; i--)
         {
-            if(ql_screenhandler->at(i))
-            {
-               deleteScreenHandler(ql_screenhandler->at(i)->pid, ql_screenhandler->at(i)->p_pid);
 
+            if(ScreenHandler *screen = qobject_cast<ScreenHandler*> (ql_screenhandler->at(i)))
+            {
+                if(screen->p_fglform)
+                {
+                    if(FglForm *p_fglform = qobject_cast<FglForm*> (screen->p_fglform))
+                    {
+                        p_fglform->close();
+                    }
+                }
+            screen->closeProgramm();
             }
         }
     }

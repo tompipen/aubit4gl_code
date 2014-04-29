@@ -72,7 +72,7 @@ MainFrame::vdcdebug("ScreenHandler","ScreenHandler", "QObject *parent");
    protocolTimer = NULL;
    lastProtocolCmd = "";
    this->installEventFilter(this);
-   QApplication::processEvents();
+   //QApplication::processEvents();
  }
 
 
@@ -142,7 +142,7 @@ MainFrame::vdcdebug("ScreenHandler","~ScreenHandler", "");
     }
 
 
-    QApplication::processEvents();
+    //QApplication::processEvents();
 }
 
 //------------------------------------------------------------------------------

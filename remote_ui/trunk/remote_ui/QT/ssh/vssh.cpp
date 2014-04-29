@@ -197,6 +197,13 @@ int VSSH::auth()
       return -1;
   }
 
+
+  rc = ssh_userauth_none(session, NULL);
+  if (rc == SSH_AUTH_ERROR) {
+    qDebug() << "SSH Error 121: ", ssh_get_error(session);
+    return rc;
+  }
+
   method = ssh_userauth_list(session, NULL);
 
   qDebug() << "method: " << QString::number(method);
@@ -372,11 +379,12 @@ int VSSH::execute(int port = 0)
 
 
     memset(buffer, 0, sizeof(buffer));
-    MainFrame *main = qobject_cast<MainFrame*> (MainFrame::lastmainframe);
-    if(main->closeSSH == 1)
+    MainFrame *mainframe = qobject_cast<MainFrame*> (MainFrame::lastmainframe);
+    if(mainframe->closeSSH == 1)
     {
         ssh_channel_send_eof(channel);
         ssh_channel_close(channel);
+        ssh_disconnect(session);
         quit();
         return SSH_OK;
     }

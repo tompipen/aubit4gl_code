@@ -104,7 +104,7 @@ void SSHTunnel::run()
 
         while(ph.isRunning())
         {
-          //QApplication::processEvents();
+          QApplication::processEvents();
           waitTimer::msleep(1);
         }
 
