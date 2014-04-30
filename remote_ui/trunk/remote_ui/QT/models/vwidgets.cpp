@@ -428,6 +428,7 @@ void LineEdit::dropEvent(QDropEvent *e)
     //Handle drop for files and directories (paste path into the field (without file://)
     if(e->mimeData()->hasUrls() || e->mimeData()->hasText() ){
         QString text;
+        bool umlautsFound = false;
         if (e->mimeData()->hasUrls() )
         {
            QList<QUrl> listUrls = e->mimeData()->urls();
@@ -439,6 +440,42 @@ void LineEdit::dropEvent(QDropEvent *e)
            text =  e->mimeData()->text();
         }
         text = text.replace("file://","").trimmed();
+
+        if(text.contains("ä"))
+        {
+            umlautsFound = true;
+        }
+        if(text.contains("ö"))
+        {
+            umlautsFound = true;
+        }
+        if(text.contains("ü"))
+        {
+            umlautsFound = true;
+        }
+        if(text.contains("ß"))
+        {
+            umlautsFound = true;
+        }
+
+        if(umlautsFound)
+        {
+            QString newName = text;
+            newName.replace("ä", "ae");
+            newName.replace("ö", "oe");
+            newName.replace("ü", "ue");
+            newName.replace("ß", "ss");
+
+            QFile datei(text);
+            if(!datei.copy(newName))
+            {
+                qDebug() << "failed! "  << datei.errorString();
+            }
+
+            text = newName;
+        }
+
+        //text.replace(" ", "\\ ");
         this->setText(text);
         Fgl::Event event;
         event.type = Fgl::AFTER_FIELD_EVENT;

@@ -1116,9 +1116,12 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
                       rightClick->addMenu(createMenuHideShowFields(obj));
 
                       rightClick->addSeparator();
-                      QAction *screenAction = new QAction(tr("&HardCopy"), this);
+                      QAction *screenAction = new QAction(tr("&HardCopy screenshot"), this);
                       connect(screenAction, SIGNAL(triggered()), this, SLOT(saveScreenshot()));
                       rightClick->addAction(screenAction);
+                      QAction *printscreenAction = new QAction(tr("&HardCopy print"), this);
+                      connect(printscreenAction, SIGNAL(triggered()), this, SLOT(printScreenshot()));
+                      rightClick->addAction(printscreenAction);
 
                       rightClick->exec(QCursor::pos());
                   }
@@ -1138,9 +1141,12 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
                       rightClick->addMenu(createMenuHideShowFields(obj));
 
                       rightClick->addSeparator();
-                      QAction *screenAction = new QAction(tr("&HardCopy"), this);
+                      QAction *screenAction = new QAction(tr("&HardCopy screenshot"), this);
                       connect(screenAction, SIGNAL(triggered()), this, SLOT(saveScreenshot()));
                       rightClick->addAction(screenAction);
+                      QAction *printscreenAction = new QAction(tr("&HardCopy print"), this);
+                      connect(printscreenAction, SIGNAL(triggered()), this, SLOT(printScreenshot()));
+                      rightClick->addAction(printscreenAction);
 
                       rightClick->exec(QCursor::pos());
                   }
@@ -1166,9 +1172,12 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
               rightClick->addAction(copyColumn);
 
               rightClick->addSeparator();
-              QAction *screenAction = new QAction(tr("&HardCopy"), this);
+              QAction *screenAction = new QAction(tr("&HardCopy screenshot"), this);
               connect(screenAction, SIGNAL(triggered()), this, SLOT(saveScreenshot()));
               rightClick->addAction(screenAction);
+              QAction *printscreenAction = new QAction(tr("&HardCopy print"), this);
+              connect(printscreenAction, SIGNAL(triggered()), this, SLOT(printScreenshot()));
+              rightClick->addAction(printscreenAction);
 
               rightClick->exec(QCursor::pos());
 
@@ -1191,9 +1200,12 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
 
                   rightClick->addSeparator();
 
-                  QAction *screenAction = new QAction(tr("&HardCopy"), this);
+                  QAction *screenAction = new QAction(tr("&HardCopy screenshot"), this);
                   connect(screenAction, SIGNAL(triggered()), this, SLOT(saveScreenshot()));
                   rightClick->addAction(screenAction);
+                  QAction *printscreenAction = new QAction(tr("&HardCopy print"), this);
+                  connect(printscreenAction, SIGNAL(triggered()), this, SLOT(printScreenshot()));
+                  rightClick->addAction(printscreenAction);
 
                   rightClick->exec(QCursor::pos());
               } else if(TextEdit *le = qobject_cast<TextEdit*> (obj->parent()))
@@ -5129,5 +5141,16 @@ void FglForm::saveScreenshot()
             QPixmap p = QPixmap::grabWidget(this);
             p.save(fileName);
         }
+    }
+}
+
+void FglForm::printScreenshot()
+{
+    QPrinter screenPrinter;
+    QPrintDialog *printDialog = new QPrintDialog(&screenPrinter, this);
+    if (printDialog->exec() == QDialog::Accepted) {
+        QPainter p(&screenPrinter);
+        QPixmap pm = QPixmap::grabWidget(this);
+        p.drawPixmap(0, 0, pm);
     }
 }

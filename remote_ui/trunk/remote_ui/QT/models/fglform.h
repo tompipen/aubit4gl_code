@@ -241,6 +241,7 @@ public:
 public slots:
 
    void saveScreenshot();
+   void printScreenshot();
    void disableForm();
    void buttonClicked(QString);
    void fieldEvent(Fgl::Event, QWidget* = NULL);
