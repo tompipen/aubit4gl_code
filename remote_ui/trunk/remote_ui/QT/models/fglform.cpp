@@ -1116,7 +1116,7 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
                       rightClick->addMenu(createMenuHideShowFields(obj));
 
                       rightClick->addSeparator();
-                      QAction *screenAction = new QAction(tr("&HardCopy screenshot"), this);
+                      QAction *screenAction = new QAction(tr("&HardCopy save"), this);
                       connect(screenAction, SIGNAL(triggered()), this, SLOT(saveScreenshot()));
                       rightClick->addAction(screenAction);
                       QAction *printscreenAction = new QAction(tr("&HardCopy print"), this);
@@ -1141,7 +1141,7 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
                       rightClick->addMenu(createMenuHideShowFields(obj));
 
                       rightClick->addSeparator();
-                      QAction *screenAction = new QAction(tr("&HardCopy screenshot"), this);
+                      QAction *screenAction = new QAction(tr("&HardCopy save"), this);
                       connect(screenAction, SIGNAL(triggered()), this, SLOT(saveScreenshot()));
                       rightClick->addAction(screenAction);
                       QAction *printscreenAction = new QAction(tr("&HardCopy print"), this);
@@ -1172,7 +1172,7 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
               rightClick->addAction(copyColumn);
 
               rightClick->addSeparator();
-              QAction *screenAction = new QAction(tr("&HardCopy screenshot"), this);
+              QAction *screenAction = new QAction(tr("&HardCopy save"), this);
               connect(screenAction, SIGNAL(triggered()), this, SLOT(saveScreenshot()));
               rightClick->addAction(screenAction);
               QAction *printscreenAction = new QAction(tr("&HardCopy print"), this);
@@ -1200,7 +1200,7 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
 
                   rightClick->addSeparator();
 
-                  QAction *screenAction = new QAction(tr("&HardCopy screenshot"), this);
+                  QAction *screenAction = new QAction(tr("&HardCopy save"), this);
                   connect(screenAction, SIGNAL(triggered()), this, SLOT(saveScreenshot()));
                   rightClick->addAction(screenAction);
                   QAction *printscreenAction = new QAction(tr("&HardCopy print"), this);
