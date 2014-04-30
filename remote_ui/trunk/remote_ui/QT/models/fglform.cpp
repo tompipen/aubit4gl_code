@@ -5147,6 +5147,7 @@ void FglForm::saveScreenshot()
 void FglForm::printScreenshot()
 {
     QPrinter screenPrinter;
+    screenPrinter.setOutputFormat(QPrinter::NativeFormat);
     QPrintDialog *printDialog = new QPrintDialog(&screenPrinter, this);
     if (printDialog->exec() == QDialog::Accepted) {
         QPainter p(&screenPrinter);
