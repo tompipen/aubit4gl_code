@@ -142,7 +142,7 @@ MainFrame::vdcdebug("ScreenHandler","~ScreenHandler", "");
     }
 
 
-    //QApplication::processEvents();
+    QApplication::processEvents();
 }
 
 //------------------------------------------------------------------------------
