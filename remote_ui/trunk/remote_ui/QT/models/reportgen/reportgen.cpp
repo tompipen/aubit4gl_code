@@ -682,7 +682,6 @@ QString Reportgen::getTemplatePosition(QString odffile)
 }
 QString Reportgen::getTemplatePosition(int Table, QString odffile)
 {
-
     QFile *file = new QFile(QDir::tempPath() + "/" + odffile);
 
     if(!file->open(QIODevice::ReadOnly)) {
@@ -703,7 +702,9 @@ QString Reportgen::getTemplatePosition(int Table, QString odffile)
     while(!stream.atEnd()) {
         ausgabe = stream.readLine();
 
-        if(ausgabe.contains("<table:table table:name") || ausgabe.contains("table:table table:style-name="))
+        qDebug() << "ausgabe: " << ausgabe;
+
+        if(ausgabe.contains("<table:table table:name") || ausgabe.contains("table:table table") || ausgabe.contains("table:table table:style-name="))
         {
             foundTable = foundTable + 1;
             stop = 0;
@@ -720,22 +721,7 @@ QString Reportgen::getTemplatePosition(int Table, QString odffile)
             behalten = behalten + ausgabe;
             }
         }
-
-        /*if(ausgabe.contains("<office:body>")) {
-            cnt = 1;
-
-        }*/
-
-        /*if(ausgabe.contains("</table:table-row")) {
-            cnt = 0;
-        }*/
-
     }
-
-    /*if(!behalten.isEmpty())
-    {
-        behalten.append("</table:table-cell></table:table-row>");
-    }*/
 
     file->close();
 
@@ -2174,7 +2160,7 @@ QString Reportgen::getTemplateFooter(int Table, QString filename, QString suffix
     {
            while(!stream.atEnd()) {
                readLine = stream.readLine();
-               if(readLine.contains("<table:table table:name"))
+               if(readLine.contains("<table:table table"))
                {
                     tableFound = tableFound + 1;
                }
