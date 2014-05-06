@@ -1026,7 +1026,7 @@ void Reportgen::createXmlFile(int Table, int Position, QString odffile)
 
     if(templatePosition.isEmpty())
     {
-        outstream << "<table:table>";
+        outstream << "<table:table><table:table-row><table:table-cell>";
     } else {
         outstream << templatePosition;
     }
