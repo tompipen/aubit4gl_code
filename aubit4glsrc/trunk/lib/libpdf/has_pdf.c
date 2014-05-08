@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: has_pdf.c,v 1.76 2014-03-12 17:21:33 mikeaubury Exp $
+# $Id: has_pdf.c,v 1.77 2014-05-08 08:01:40 mikeaubury Exp $
 #*/
 
 /**
@@ -209,14 +209,15 @@ int entry=0;
     }
 
 
-
-  if (a || s == 0 || rep->finishing || entry == -5)
+  if (a || s == 0 || rep->finishing || entry == -5 )
     {
       if (rep->print_section == SECTION_NORMAL)
         {
-          if (rep->line_no >
+//printf("%lf %lf\n", rep->line_no,  rep->page_length -  A4GL_pdf_metric (rep->lines_in_trailer , 'l', rep)   - rep->bottom_margin);
+          if (rep->line_no >=
               rep->page_length -  A4GL_pdf_metric (rep->lines_in_trailer , 'l', rep)   - rep->bottom_margin)
             {
+//printf("Here...\n");
               rep->print_section = SECTION_TRAILER;
               rep->report (0, REPORT_PAGETRAILER);      /* report.c:180: too many arguments to function */
               rep->print_section = SECTION_NORMAL;

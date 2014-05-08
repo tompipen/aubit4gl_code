@@ -351,7 +351,10 @@ print_report_ctrl (int report_cnt, int rord_type, char *curr_rep_name,int rep_ty
   else
     {
       printc
-	("if (acl_ctrl==REPORT_LASTDATA) {if (_useddata) %s(0,REPORT_LASTROW);_started=0;A4GL_pdf_rep_close(&_rep);return;}\n",
+	("if (acl_ctrl==REPORT_LASTDATA) {if (_useddata) %s(0,REPORT_LASTROW);");
+	printc("        _rep.finishing=1; A4GL_pdf_skip_top_of_page(&_rep,999);");
+
+	printc("_started=0;A4GL_pdf_rep_close(&_rep);return;}\n",
 	 curr_rep_name);
 
     }
