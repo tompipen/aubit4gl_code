@@ -1,0 +1,5 @@
+channel open_file
+channel open_pipe
+channel set_delimiter
+channel close
+channel fgl_read

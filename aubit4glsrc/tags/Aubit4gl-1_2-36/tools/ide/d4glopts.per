@@ -1,0 +1,58 @@
+{
+	@(#)$Id: d4glopts.per,v 1.1.1.1 2001-08-20 02:37:08 afalout Exp $
+	@(#)Alternative D4GL Compiler Front-end
+	@(#)Generic data display form
+	@(#)Author: JL
+}
+
+DATABASE FORMONLY
+
+SCREEN
+{
+
+                                                        [f000                ]
+
+Current source file     [f001                                                ]
+D4GL compiler           [f003                                                ]
+D4GL compiler options   [f004                                                ]
+
+Current form file       [f011                                                ]
+Form compiler           [f013                                                ]
+Form compiler options   [f014                                                ]
+
+Current program name    [f002                                                ]
+
+MAKE program            [f005                                                ]
+MAKE target             [f006                                                ]
+MAKE program options    [f007                                                ]
+MAKE makefile           [f008                                                ]
+
+Editor                  [f009                                                ]
+}
+END
+
+ATTRIBUTES
+f000 = FORMONLY.prog_vers TYPE CHAR;
+
+f001 = FORMONLY.file_name TYPE CHAR;
+f003 = FORMONLY.file_prog TYPE CHAR;
+f004 = FORMONLY.file_opts TYPE CHAR;
+
+f011 = FORMONLY.form_name TYPE CHAR;
+f013 = FORMONLY.form_prog TYPE CHAR;
+f014 = FORMONLY.form_opts TYPE CHAR;
+
+f002 = FORMONLY.prog_name TYPE CHAR;
+
+f005 = FORMONLY.make_prog TYPE CHAR;
+f006 = FORMONLY.make_targ TYPE CHAR;
+f007 = FORMONLY.make_opts TYPE CHAR;
+f008 = FORMONLY.make_file TYPE CHAR;
+
+f009 = FORMONLY.edit_prog TYPE CHAR;
+END
+
+INSTRUCTIONS
+DELIMITERS "  "
+END
+

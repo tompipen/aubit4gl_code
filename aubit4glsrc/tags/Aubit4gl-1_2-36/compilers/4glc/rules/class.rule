@@ -1,0 +1,77 @@
+class_definition:
+	KW_CLASS class_name op_extends  { 
+                                clr_variable();
+                                lastlineno=yylineno;
+                                A4GL_clr_extra_warnings();
+                                clr_function_constants ();
+                                clr_call_list();
+		}   op_private_define_section {
+			if ($5) {
+                               set_uses_constants($5);
+			}
+			$5=set_class_variables($5,$<str>2,$<str>3);
+		
+		set_local_variables(NULL);
+	} class_entries END_CLASS {
+		struct module_entry *c;
+   		c=new_module_entry(E_MET_CLASS_DEFINITION);
+		$$=c;
+		c->module_entry_u.class_definition.expression_list.list.list_len=0;
+		c->module_entry_u.class_definition.expression_list.list.list_val=0;
+		c->module_entry_u.class_definition.private_variables.variables.variables_len=0;
+		c->module_entry_u.class_definition.private_variables.variables.variables_val=NULL;
+		c->module_entry_u.class_definition.private_variables.sorted_list=0;
+                merge_variable_list(&$<module_entry>$->module_entry_u.class_definition.private_variables, $5);
+                sort_variables_v(&$<module_entry>$->module_entry_u.class_definition.private_variables);
+		c->module_entry_u.class_definition.classname=strdup($<str>2);
+		c->module_entry_u.class_definition.parentname=strdup($<str>3);
+		c->module_entry_u.class_definition.class_entries.class_entries_val=$<module_entry_list>7->module_entry_ptr_list.module_entry_ptr_list_val;
+		c->module_entry_u.class_definition.class_entries.class_entries_len=$<module_entry_list>7->module_entry_ptr_list.module_entry_ptr_list_len;
+		set_class_variables(NULL,NULL,NULL);
+	}
+;
+
+class_name: identifier  {
+		strcpy($<str>$,downshift($<str>1));
+		}
+	| class_name KW_DOT  identifier {
+		sprintf($<str>$,"%s.%s",$<str>1,downshift($<str>3));
+		}
+;
+
+op_extends: {
+		strcpy($<str>$,"");
+	}
+	| KW_EXTENDS identifier {
+		A4GL_used_object_type(&this_module, downshift($<str>2));
+		/* Should probably read the parent definition here... */
+		strcpy($<str>$,$<str>2);
+	}
+;
+
+op_private_define_section: 
+	/* All variables are private for a class atm.... */
+	/* We may eventually allow public ones - so lets ensure they use the PRIVATE keyword for now */
+	{$$=NULL;}
+	 | KW_PRIVATE define_multiple { $$=$2;}
+;
+
+
+
+
+class_entries :
+	class_entry  {
+		$<module_entry_list>$=new_module_entry_list($1);
+	}
+	| class_entries class_entry {
+		$<module_entry_list>$=append_module_entry_list($1,$2);
+	}
+;
+
+
+class_entry: 
+	func_def  		{$$=$<module_entry>1;}
+	| module_code  		{$$=$<module_entry>1;}
+	| whenever_cmd  	{$$=$<module_entry>1;}
+;
+

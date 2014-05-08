@@ -1,0 +1,3 @@
++create () THISOBJECT
+readCsv(filename DTYPE_CHAR) DTYPE_INT
+setTitle(title DTYPE_CHAR)

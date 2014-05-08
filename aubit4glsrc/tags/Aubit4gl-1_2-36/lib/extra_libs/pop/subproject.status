@@ -1,0 +1,14 @@
+Name: libA4GL_pop
+Parent: aubit4glsrc
+Description: POP interface wrappers. 
+Functionality: POP interface support library
+Build:
+Example:
+Depends: POP libraries (specifically spopc)
+Documentation:
+Regressed: none
+Maintainer: MA
+Status: 4
+Todo: 
+Notes: 
+
