@@ -1,4 +1,210 @@
 ---------------------------
+Mon May 12 16:01:18 BST 2014
+---------------------------
+1.2_36 Released
+---------------------------
+	2014-05-08 09:01  mikeaubury
+	
+	PDF report fixup
+	
+	2014-04-24 13:17  siverly
+	
+	new filebrowser function
+	
+	2014-04-14 09:18  mikeaubury
+	
+	2014-04-14 09:06  mikeaubury
+	
+	Add initial "DIALOG .. END DIALOG" support (WIP) Allow use of
+	expressions for START REPORT .. WITH ...
+	
+	2014-03-21 13:11  mikeaubury
+	
+	2014-03-21 11:27  mikeaubury
+	
+	Add A4GL_DEFDECPREC to fcompile
+	
+	2014-03-20 17:05  siverly
+	
+	increase the xml_version for the new vdc functions (e.g sorting)
+	
+	2014-03-19 12:36  locbook
+	
+	Fixed help messages, which were displaying incorrectly.  When a
+	help message was displayed, the first few lines of the next message
+	from the help file was also displayed.
+	
+	2014-03-12 17:21  mikeaubury
+	
+	Added some PDF report enhancements provided by Paul Gardiner
+	
+	2014-03-11 17:23  locbook
+	
+	Fixed previous after row fixup which was causing the after row to
+	run when first entering an array.
+	
+	2014-03-10 20:30  locbook
+	
+	Array after row block now runs when a next field next moves to the
+	same field in a different row.
+	
+	2014-03-04 10:27  mikeaubury
+	
+	Add loading sql log file from command line
+	
+	sqlmetrics.4ae -c somesql.log
+	
+	This deletes out all existing logs and inserts just the new
+	ones (-c = clear)
+	
+	2014-02-20 21:22  mikeaubury
+	
+	2014-02-20 09:38  mikeaubury
+	
+	2014-02-19 21:23  mikeaubury
+	
+	2014-02-19 17:46  mikeaubury
+	
+	2014-02-17 17:45  mikeaubury
+	
+	A4GL_DEFDECPREC=255 fixup
+	
+	2014-02-13 18:59  mikeaubury
+	
+	Fixup for newer version of bison using "States" rather than
+	"states"
+	
+	2014-02-11 17:22  mikeaubury
+	
+	Fixup A4GL_DEFDECPREC for adbschema
+	
+	2014-02-06 08:05  mikeaubury
+	
+	DECPREC=255 fixup for floats (problem reported by Alain)
+	
+	2014-01-29 19:44  mikeaubury
+	
+	2014-01-25 11:53  mikeaubury
+	
+	Implement "OUTPUT" in runforms
+	
+	2014-01-25 11:53  mikeaubury
+	
+	fix issue with COUNT as a reserved word
+	
+	2014-01-25 11:50  mikeaubury
+	
+	Screen dump extensions
+	
+	2014-01-25 11:47  mikeaubury
+	
+	2014-01-19 23:08  mikeaubury
+	
+	Fix issue with Time in TRACE4GLEXEC
+	
+	2014-01-15 10:46  mikeaubury
+	
+	2014-01-15 09:06  mikeaubury
+	
+	2014-01-13 10:06  whaslbeck
+	
+	added ui.vdc.setclipboard
+	
+	2014-01-13 08:38  siverly
+	
+	new function to check if the program runs under mobile or desktop
+	
+	2014-01-05 12:42  mikeaubury
+	
+	2014-01-05 12:29  mikeaubury
+	
+	2014-01-05 11:35  mikeaubury
+	
+	2014-01-04 10:52  mikeaubury
+	
+	Bison fixup
+	
+	2014-01-04 10:50  mikeaubury
+	
+	Fixup for later version of bison
+	
+	2013-12-13 16:34  siverly
+	
+	added new function for for html editor (vdc)
+	
+	2013-12-11 12:10  mikeaubury
+	
+	Another A4GL_DEFDECPREC fixup
+	
+	2013-12-10 10:56  mikeaubury
+	
+	Fixup for A4GL_DEFDECPREC
+	
+	2013-12-10 08:21  mikeaubury
+	
+	2013-12-08 21:45  mikeaubury
+	
+	Add A4GL_WARNAGG
+	
+	2013-12-06 10:30  mikeaubury
+	
+	2013-12-05 20:27  mikeaubury
+	
+	Decimal with no precision fixups (eg. DECIMAL(16) )
+	
+	2013-11-29 14:45  mikeaubury
+	
+	Add "wantreturns" form field attribute for WORDWRAP fields
+	
+	2013-11-15 12:18  mikeaubury
+	
+	Small fixup for unload
+	
+	2013-11-14 16:14  mikeaubury
+	
+	2013-11-14 13:18  mikeaubury
+	
+	Add
+	
+	FOREACH 	SELECT * FROM ...  ..  END FOREACH
+	
+	to the 4gl syntax for where you dont need any control on
+	the cursor (Internally - it still creates and uses an anonymous
+	cursor)
+	
+	2013-11-13 14:42  whaslbeck
+	
+	removed superfluous PG_INITSQL
+	
+	2013-11-13 09:36  mikeaubury
+	
+	2013-11-13 08:22  mikeaubury
+	
+	Run DEFAULT_SQL code contained in the conversion file even at
+	compile time This can be used to set up things like the Postgresql
+	search_path
+	
+	2013-11-12 13:21  whaslbeck
+	
+	check strlen of env.var.
+	
+	2013-11-12 12:24  whaslbeck
+	
+	new envvar. PG_INITSQL e.g. to set search_path at compile time
+	
+	2013-11-12 07:06  whaslbeck
+	
+	added char-to-blob conversion (fixes blobs in XML UI)
+	
+	2013-11-10 09:58  mikeaubury
+	
+	2013-11-10 09:53  mikeaubury
+	
+	2013-11-10 09:28  mikeaubury
+	
+	Add Walter Haslbecks fixup for "varchar without lenght" as "text"
+	
+---------------------------
 Sun Nov 10 09:56:54 GMT 2013
 ---------------------------
 1.2_35 Released
