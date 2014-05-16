@@ -810,7 +810,7 @@ MainFrame::vdcdebug("ScreenHandler","createDialog", "QString title, QString comm
       return;
 
    //Dialog *p_dialog = new Dialog(title, comment, style, image, p_fglform);
-   Dialog *p_dialog = new Dialog(title, comment, style, image, p_fglform);
+   Dialog *p_dialog = new Dialog(title, comment, style, image, p_fglform, Qt::WindowStaysOnTopHint);
    connect(p_dialog, SIGNAL(destroyed()), this, SLOT(activeFocus()));
    p_fglform->setDialog(p_dialog);
    //clearEvents();
