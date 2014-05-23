@@ -29,7 +29,7 @@ void VentasUpdate::readXmlFinished(QNetworkReply *reply)
     {
         if(displayErrorDialog == 1)
         {
-            Dialog *dialog = new Dialog("VENTAS Update", "Could not connect to the Update Server.\n Please check your Network connection", "", "stop", this, Qt::WindowStaysOnTopHint);
+            Dialog *dialog = new Dialog(tr("VDC Update"), tr("Could not connect to the Update Server.\n Please check your Network connection"), "", "stop", this, Qt::WindowStaysOnTopHint);
             QPalette palette;
             palette.setBrush(this->backgroundRole(), QBrush(QImage("pics:VENTAS_9_alu_1080p.png")));
             dialog->setPalette(palette);
@@ -70,7 +70,7 @@ void VentasUpdate::checkServerClient()
 
         if(clientVars.at(3) < XmlVersionServer)
                 {
-                    Dialog *dialog = new Dialog("VENTAS Update", QString("Incompatible VDC Version found.\n\nIt's strongly recommended to update the VDC.\n\nClient Version: %1 \nServer Version %2 \n\nPlease contact the VENTAS Support Team: support@ventas.de").arg(clientVars.at(3)).arg(XmlVersionServer), "", "stop", this, Qt::WindowStaysOnTopHint);
+                    Dialog *dialog = new Dialog(tr("VDC Update"), QString(tr("Incompatible VDC Version found.\n\nIt's strongly recommended to update the VDC.\n\nClient Version: %1 \nServer Version %2 \n\nPlease contact the VENTAS Support Team: support@ventas.de")).arg(clientVars.at(3)).arg(XmlVersionServer), "", "stop", this, Qt::WindowStaysOnTopHint);
                     QPalette palette;
                     palette.setBrush(this->backgroundRole(), QBrush(QImage("pics:VENTAS_9_alu_1080p.png")));
                     dialog->setPalette(palette);
@@ -111,7 +111,7 @@ void VentasUpdate::checkServerClient()
                                 j++;
                                 if(serverVars.at(i).at(j) == XmlVersionServer)
                                 {
-                                    Dialog *dialog = new Dialog("VENTAS Update", "There is a new VDC version available.\n Do you want to download and install it?", "", "information", this, Qt::WindowStaysOnTopHint);
+                                    Dialog *dialog = new Dialog(tr("VDC Update"), tr("There is a new VDC version available.\n Do you want to download and install it?"), "", "information", this, Qt::WindowStaysOnTopHint);
                                     QPalette palette;
                                     palette.setBrush(this->backgroundRole(), QBrush(QImage("pics:VENTAS_9_alu_1080p.png")));
                                     dialog->setPalette(palette);
@@ -129,7 +129,7 @@ void VentasUpdate::checkServerClient()
                                 } else {
                                     if(displayErrorDialog == 1)
                                     {
-                                        Dialog *dialog = new Dialog("VENTAS Update", "No new Version for this XML Version!", "", "information", this, Qt::WindowStaysOnTopHint);
+                                        Dialog *dialog = new Dialog(tr("VDC Update"), tr("No new Version for this XML Version!"), "", "information", this, Qt::WindowStaysOnTopHint);
                                         QPalette palette;
                                         palette.setBrush(this->backgroundRole(), QBrush(QImage("pics:VENTAS_9_alu_1080p.png")));
                                         dialog->setPalette(palette);
@@ -146,7 +146,7 @@ void VentasUpdate::checkServerClient()
                             } else {
                                 if(displayErrorDialog == 1)
                                 {
-                                    Dialog *dialog = new Dialog("VENTAS Update", "No new Update found for this A4GL Version.", "", "information", this, Qt::WindowStaysOnTopHint);
+                                    Dialog *dialog = new Dialog(tr("VDC Update"), tr("No new Update found for this A4GL Version."), "", "information", this, Qt::WindowStaysOnTopHint);
                                     QPalette palette;
                                     palette.setBrush(this->backgroundRole(), QBrush(QImage("pics:VENTAS_9_alu_1080p.png")));
                                     dialog->setPalette(palette);
@@ -162,7 +162,7 @@ void VentasUpdate::checkServerClient()
                         } else {
                             if(displayErrorDialog == 1)
                             {
-                                Dialog *dialog = new Dialog("VENTAS Update", "The Client is up to date!", "", "information", this, Qt::WindowStaysOnTopHint);
+                                Dialog *dialog = new Dialog(tr("VDC Update"), tr("The Client is up to date!"), "", "information", this, Qt::WindowStaysOnTopHint);
                                 QPalette palette;
                                 palette.setBrush(this->backgroundRole(), QBrush(QImage("pics:VENTAS_9_alu_1080p.png")));
                                 dialog->setPalette(palette);
@@ -179,7 +179,7 @@ void VentasUpdate::checkServerClient()
                     } else {
                         if(displayErrorDialog == 1)
                         {
-                            Dialog *dialog = new Dialog("VENTAS Update", "The Client is up to date!", "", "information", this, Qt::WindowStaysOnTopHint);
+                            Dialog *dialog = new Dialog(tr("VDC Update"), tr("The Client is up to date!"), "", "information", this, Qt::WindowStaysOnTopHint);
                             QPalette palette;
                             palette.setBrush(this->backgroundRole(), QBrush(QImage("pics:VENTAS_9_alu_1080p.png")));
                             dialog->setPalette(palette);
@@ -194,7 +194,7 @@ void VentasUpdate::checkServerClient()
                         }
                     }
                 } else {
-                    Dialog *dialog = new Dialog("VENTAS Update", "Cannot find Serverinformations.", "", "information", this, Qt::WindowStaysOnTopHint);
+                    Dialog *dialog = new Dialog(tr("VDC Update"), tr("Cannot find Serverinformations."), "", "information", this, Qt::WindowStaysOnTopHint);
                     QPalette palette;
                     palette.setBrush(this->backgroundRole(), QBrush(QImage("pics:VENTAS_9_alu_1080p.png")));
                     dialog->setPalette(palette);
@@ -218,7 +218,7 @@ void VentasUpdate::checkServerClient()
             #else
                 filePath = QString(QApplication::applicationDirPath() + "/versions.xml");
             #endif
-            Dialog *dialog = new Dialog("VENTAS Update", QString("Cannot open File: %1").arg(filePath), "", "information", this, Qt::WindowStaysOnTopHint);
+            Dialog *dialog = new Dialog(tr("VDC Update"), QString(tr("Cannot open File: %1")).arg(filePath), "", "information", this, Qt::WindowStaysOnTopHint);
             QPalette palette;
             palette.setBrush(this->backgroundRole(), QBrush(QImage("pics:VENTAS_9_alu_1080p.png")));
             dialog->setPalette(palette);
@@ -247,7 +247,7 @@ void VentasUpdate::checkOpenConnections()
                 m_dialog = NULL;
             }
 
-            Dialog *dialog = new Dialog("VENTAS Update", "There are modules running.\n They will be terminated. \n Do you really want to continue?", "", "stop", this, Qt::WindowStaysOnTopHint);
+            Dialog *dialog = new Dialog(tr("VDC Update"), tr("There are modules running.\n They will be terminated. \n Do you really want to continue?"), "", "stop", this, Qt::WindowStaysOnTopHint);
             QPalette palette;
             palette.setBrush(this->backgroundRole(), QBrush(QImage("pics:VENTAS_9_alu_1080p.png")));
             dialog->setPalette(palette);
@@ -348,7 +348,7 @@ QList<QList<QString> > VentasUpdate::parseXml(QString filePath)
     {
         if(displayErrorDialog == 1)
         {
-            Dialog *dialog = new Dialog("VENTAS Update", QString("Failed to Open: %1").arg(filePath), "", "stop", this, Qt::WindowStaysOnTopHint);
+            Dialog *dialog = new Dialog(tr("VDC Update"), QString(tr("Failed to Open: %1")).arg(filePath), "", "stop", this, Qt::WindowStaysOnTopHint);
             QPalette palette;
             palette.setBrush(this->backgroundRole(), QBrush(QImage("pics:VENTAS_9_alu_1080p.png")));
             dialog->setPalette(palette);

@@ -47,7 +47,7 @@ MainFrame::vdcdebug("*parent,","WindowFlags f)", """");
    Q_UNUSED(style);
 
    this->b_allowCloseDialog = false;
-   this->setWindowModality(Qt::WindowModal);
+   this->setWindowModality(Qt::NonModal);
 
    this->setAttribute(Qt::WA_DeleteOnClose);
 
