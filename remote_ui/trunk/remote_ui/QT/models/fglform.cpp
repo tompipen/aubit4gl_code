@@ -1107,23 +1107,23 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
                   {
                       QMenu *rightClick = new QMenu(this);
 
-                      QAction *copy = new QAction("copy", this);
+                      QAction *copy = new QAction(tr("&Copy"), this);
                       connect(copy, SIGNAL(triggered()), le, SLOT(copyText()));
                       rightClick->addAction(copy);
-
                       rightClick->addSeparator();
-
                       rightClick->addMenu(createMenuHideShowFields(obj));
-
                       rightClick->addSeparator();
+
                       QAction *screenAction = new QAction(tr("&HardCopy save"), this);
                       connect(screenAction, SIGNAL(triggered()), this, SLOT(saveScreenshot()));
                       rightClick->addAction(screenAction);
+
                       QAction *printscreenAction = new QAction(tr("&HardCopy print"), this);
                       connect(printscreenAction, SIGNAL(triggered()), this, SLOT(printScreenshot()));
                       rightClick->addAction(printscreenAction);
 
                       rightClick->exec(QCursor::pos());
+                      return true;
                   }
 
               } else if(TextEdit *te = qobject_cast<TextEdit*> (obj))
@@ -1132,91 +1132,87 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
                   {
                       QMenu *rightClick = new QMenu(this);
 
-                      QAction *copy = new QAction("copy", this);
+                      QAction *copy = new QAction(tr("Copy"), this);
                       connect(copy, SIGNAL(triggered()), te, SLOT(copyText()));
                       rightClick->addAction(copy);
-
                       rightClick->addSeparator();
-
                       rightClick->addMenu(createMenuHideShowFields(obj));
-
                       rightClick->addSeparator();
+
                       QAction *screenAction = new QAction(tr("&HardCopy save"), this);
                       connect(screenAction, SIGNAL(triggered()), this, SLOT(saveScreenshot()));
                       rightClick->addAction(screenAction);
+
                       QAction *printscreenAction = new QAction(tr("&HardCopy print"), this);
                       connect(printscreenAction, SIGNAL(triggered()), this, SLOT(printScreenshot()));
                       rightClick->addAction(printscreenAction);
-
                       rightClick->exec(QCursor::pos());
+                      return true;
                   }
               }
           } else if(TableView *tv = qobject_cast<TableView*> (obj->parent()))
           {
               QMenu *rightClick = new QMenu(this);
 
-              QAction *copyTable = new QAction("copy table", this);
+              QAction *copyTable = new QAction(tr("&Copy table"), this);
               connect(copyTable, SIGNAL(triggered()), tv, SLOT(copyTable()));
               rightClick->addAction(copyTable);
 
-              QAction *copyRow = new QAction("copy row", this);
+              QAction *copyRow = new QAction(tr("&Copy row"), this);
               connect(copyRow, SIGNAL(triggered()), tv, SLOT(copyRow()));
               rightClick->addAction(copyRow);
 
-              QAction *copyCell = new QAction("copy cell", this);
+              QAction *copyCell = new QAction(tr("&Copy cell"), this);
               connect(copyCell, SIGNAL(triggered()), tv, SLOT(copyCell()));
               rightClick->addAction(copyCell);
 
-              QAction *copyColumn = new QAction("copy column", this);
+              QAction *copyColumn = new QAction("&Copy column", this);
               connect(copyColumn, SIGNAL(triggered()), tv, SLOT(copyColumn()));
               rightClick->addAction(copyColumn);
-
               rightClick->addSeparator();
+
               QAction *screenAction = new QAction(tr("&HardCopy save"), this);
               connect(screenAction, SIGNAL(triggered()), this, SLOT(saveScreenshot()));
               rightClick->addAction(screenAction);
+
               QAction *printscreenAction = new QAction(tr("&HardCopy print"), this);
               connect(printscreenAction, SIGNAL(triggered()), this, SLOT(printScreenshot()));
               rightClick->addAction(printscreenAction);
-
               rightClick->exec(QCursor::pos());
+              return true;
 
           } else {
               if(LineEdit *le = qobject_cast<LineEdit*> (obj))
               {
                   QMenu *rightClick = new QMenu(this);
 
-                  QAction *copy = new QAction("copy", this);
+                  QAction *copy = new QAction(tr("Copy"), this);
                   connect(copy, SIGNAL(triggered()), le, SLOT(copyText()));
                   rightClick->addAction(copy);
 
-                  QAction *paste = new QAction("paste", this);
+                  QAction *paste = new QAction(tr("Paste"), this);
                   connect(paste, SIGNAL(triggered()), le, SLOT(pasteText()));
                   rightClick->addAction(paste);
-
                   rightClick->addSeparator();
-
                   rightClick->addMenu(createMenuHideShowFields(obj));
-
                   rightClick->addSeparator();
 
                   QAction *screenAction = new QAction(tr("&HardCopy save"), this);
                   connect(screenAction, SIGNAL(triggered()), this, SLOT(saveScreenshot()));
                   rightClick->addAction(screenAction);
+
                   QAction *printscreenAction = new QAction(tr("&HardCopy print"), this);
                   connect(printscreenAction, SIGNAL(triggered()), this, SLOT(printScreenshot()));
                   rightClick->addAction(printscreenAction);
-
                   rightClick->exec(QCursor::pos());
+                  return true;
               } else if(TextEdit *le = qobject_cast<TextEdit*> (obj->parent()))
               {
                   QMenu *rightClick = le->createStandardContextMenu();
-
                   rightClick->addSeparator();
-
                   rightClick->addMenu(createMenuHideShowFields(obj));
-
                   rightClick->exec(QCursor::pos());
+                  return true;
               }
           }
 
