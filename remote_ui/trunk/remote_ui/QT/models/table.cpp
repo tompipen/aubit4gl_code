@@ -1833,9 +1833,8 @@ bool LineEditDelegate::eventFilter(QObject *object, QEvent *event)
 //Events sollen im fglform abgefangen werden. Die Signale dürfen nicht zum QStyledItemDelegate Eventfilter, da diese dann
 //auf die Steuerung der View zugreift
 
-  if(event->type() == QEvent::KeyPress || event->type() == QEvent::KeyRelease)
+  if(event->type() == QEvent::KeyPress )
   {
-
       QKeyEvent *key = (QKeyEvent*) event;
 
       if(key->key() == Qt::Key_Left)
@@ -1843,6 +1842,7 @@ bool LineEditDelegate::eventFilter(QObject *object, QEvent *event)
           if(LineEdit *edit = qobject_cast<LineEdit*> (object))
           {
               edit->setCursorPosition(edit->cursorPosition()-1);
+              return true;
           }
       }
       if(key->key() == Qt::Key_Right)
@@ -1850,9 +1850,14 @@ bool LineEditDelegate::eventFilter(QObject *object, QEvent *event)
           if(LineEdit *edit = qobject_cast<LineEdit*> (object))
           {
               edit->setCursorPosition(edit->cursorPosition()+1);
+              return true;
           }
       }
+   }
 
+  if(event->type() == QEvent::KeyPress || event->type() == QEvent::KeyRelease)
+  {
+      QKeyEvent *key = (QKeyEvent*) event;
 
       if(key->key() == Qt::Key_Down || key->key() == Qt::Key_Up || key->key() == Qt::Key_Tab || key->key() == Qt::Key_Enter || key->key() == Qt::Key_Backtab || key->key() == Qt::Key_Return || key->key() == Qt::Key_Escape)
       {
