@@ -42,7 +42,7 @@ TextEditorWidget::TextEditorWidget(QMainWindow *parent)
 
 void TextEditorWidget::textIsChanged()
 {
-    this->setWindowTitle("VENTAS - Text Editor - modified");
+    this->setWindowTitle(tr("VENTAS - Text Editor - modified"));
     mTextIsChanged = true;
 }
 
@@ -221,24 +221,29 @@ void TextEditorWidget::closeEvent(QCloseEvent *event)
 {
     if(mTextIsChanged && !mCloseTextEdit)
     {
-        Dialog *dialog = new Dialog("File is modified", "Do you realy want to close the Texteditor?", "", "critical", this, Qt::WindowStaysOnTopHint);
-        dialog->createButton(1, "Ok", "OK", "ok_gruen.png");
+        Dialog *dialog = new Dialog(tr("File is modified"), tr("Do you want to apply the changes before the Editor will be closed?"), "", "stop", this, Qt::WindowStaysOnTopHint);
+        dialog->createButton(1, tr("Apply"), "APPLY", "ok_gruen.png");
 
         if(QAction *action = qobject_cast<QAction*> (dialog->getAction("OK")))
         {
             action->setShortcut(Qt::Key_F12);
         }
 
-        dialog->createButton(2, "Abbruch", "ABBRUCH", "abbrechen_rot.png");
+        dialog->createButton(2, tr("Discard"), "DISCARD", "");
 
-        if(QAction *action = qobject_cast<QAction*> (dialog->getAction("ABBRUCH")))
+        dialog->createButton(2, tr("Cancel"), "CANCEL", "abbrechen_rot.png");
+
+        if(QAction *action = qobject_cast<QAction*> (dialog->getAction("DISCARD")))
         {
             action->setShortcut(Qt::Key_Escape);
         }
 
-        connect(dialog->getAction("OK"), SIGNAL(triggered()), this, SLOT(closeEditor()));
-        connect(dialog->getAction("OK"), SIGNAL(triggered()), dialog, SLOT(close()));
-        connect(dialog->getAction("ABBRUCH"), SIGNAL(triggered()), dialog, SLOT(close()));
+        connect(dialog->getAction("APPLY"), SIGNAL(triggered()), this, SLOT(closeOnAccept()));
+        connect(dialog->getAction("APPLY"), SIGNAL(triggered()), dialog, SLOT(close()));
+        connect(dialog->getAction("DISCARD"), SIGNAL(triggered()), this, SLOT(closeEditor()));
+        connect(dialog->getAction("DISCARD"), SIGNAL(triggered()), dialog, SLOT(close()));
+        connect(dialog->getAction("CANCEL"), SIGNAL(triggered()), dialog, SLOT(close()));
+
         dialog->show();
 
         event->ignore();
