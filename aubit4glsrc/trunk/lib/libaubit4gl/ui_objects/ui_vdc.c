@@ -859,6 +859,67 @@ char *filename=NULL;
   }
   return 2;
 }
+
+static int ui_vdc_openchartwindow(long *objectID_IgnoredAsAlways0,int n) {
+int okToProcess=1;
+int _ni=2;
+struct BINDING _ibind[2]={
+    {NULL,0,0,0,0,0,NULL},
+    {NULL,0,0,0,0,0,NULL}
+};
+int _no=1;
+struct BINDING _obind[1]={
+    {NULL,0,0,0,0,0,NULL}
+};
+int rval_0;
+char *type=NULL;
+char *csvfile=NULL;
+
+/* END OF DEFINE SECTION */
+
+
+  if (n!=2) {
+    A4GL_pop_args(n);
+    okToProcess=0;
+  }
+
+  // Set up input binding for our parameters
+  if (okToProcess) {
+
+    csvfile=A4GL_char_pop();
+    _ibind[1].ptr=csvfile;
+    _ibind[1].size=strlen(csvfile);
+    type=A4GL_char_pop();
+    _ibind[0].ptr=type;
+    _ibind[0].size=strlen(type);
+  }
+
+  // Set up output binding for our parameters
+  if (okToProcess) {
+    _obind[0].ptr=&rval_0;
+    _obind[0].size=4;
+    _obind[0].dtype=DTYPE_INT;
+  }
+
+  if (okToProcess) {
+      A4GL_ui_frontcall("INTERNAL","ui.vdc.openchartwindow",_ibind,_ni,_obind,_no );
+  }
+
+
+  // Set up output binding for our parameters
+    if (type ) {
+        free(type);
+    }
+    if (csvfile ) {
+        free(csvfile);
+    }
+  if (!okToProcess) {
+    A4GL_push_null(DTYPE_INT,0);
+  } else {
+    A4GL_push_int(rval_0);
+  }
+  return 1;
+}
  
 void add_ui_vdc_support(void) {
 A4GL_add_object_type("ui.vdc");
@@ -875,4 +936,5 @@ A4GL_add_object_type("ui.vdc");
   A4GL_add_datatype_function_i (DTYPE_OBJECT, ":ui.vdc.getdevice", (void *)  ui_vdc_getdevice);
   A4GL_add_datatype_function_i (DTYPE_OBJECT, ":ui.vdc.setclipboard", (void *)  ui_vdc_setclipboard);
   A4GL_add_datatype_function_i (DTYPE_OBJECT, ":ui.vdc.filebrowser", (void *)  ui_vdc_filebrowser);
+  A4GL_add_datatype_function_i (DTYPE_OBJECT, ":ui.vdc.openchartwindow", (void *)  ui_vdc_openchartwindow);
 }

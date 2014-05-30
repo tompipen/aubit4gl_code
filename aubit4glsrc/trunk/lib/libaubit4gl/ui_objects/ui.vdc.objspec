@@ -11,3 +11,4 @@
 +getdevice(htmlfile DTYPE_CHAR) DTYPE_CHAR DTYPE_CHAR
 +setclipboard(content DTYPE_CHAR)
 +filebrowser(function DTYPE_CHAR, file DTYPE_CHAR) DTYPE_INT DTYPE_CHAR
++filebrowser(type DTYPE_CHAR, csvfile DTYPE_CHAR) DTYPE_INT
