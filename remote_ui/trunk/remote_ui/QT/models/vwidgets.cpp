@@ -675,8 +675,36 @@ TextEdit::TextEdit(QWidget *parent)
    setContextMenuPolicy(Qt::CustomContextMenu);
   // setAutoFillBackground(true);
 
+   connect(this, SIGNAL(textChanged()), this, SLOT(checkLength()));
 
    setEnabled(false);
+}
+
+void TextEdit::checkLength()
+{
+    if(this->toPlainText().length() > getLengthBySqlType())
+    {
+        this->textCursor().deletePreviousChar();
+    }
+}
+
+int TextEdit::getLengthBySqlType()
+{
+    QString sqlType = this->qs_sqlType;
+
+    if(sqlType.contains("CHAR")){
+       int start = sqlType.indexOf("(");
+       int end   = sqlType.indexOf(")");
+
+       QString result = "";
+       for(int i=start+1;i<end;i++){
+          result.append(sqlType.at(i));
+       }
+
+       return result.toInt();
+    }
+
+    return 0;
 }
 
 void TextEdit::setStretching(QString stretch)

@@ -435,6 +435,8 @@ public:
    void setWantReturns(bool wr);
    bool wantReturns() { return b_wantReturns; };
 
+   int getLengthBySqlType();
+
    bool b_denyFocus;
    int getCursorPosition();
 
@@ -442,6 +444,7 @@ public:
 
 public slots:
    void copyText();
+   void checkLength();
 
 private:
    // Attributes to know wich Validators to use
