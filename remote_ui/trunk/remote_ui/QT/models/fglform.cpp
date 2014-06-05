@@ -1190,9 +1190,13 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
                   connect(copy, SIGNAL(triggered()), le, SLOT(copyText()));
                   rightClick->addAction(copy);
 
-                  QAction *paste = new QAction(tr("Paste"), this);
-                  connect(paste, SIGNAL(triggered()), le, SLOT(pasteText()));
-                  rightClick->addAction(paste);
+                  if(le->isEnabled())
+                  {
+                      QAction *paste = new QAction(tr("Paste"), this);
+                      connect(paste, SIGNAL(triggered()), le, SLOT(pasteText()));
+                      rightClick->addAction(paste);
+                  }
+
                   rightClick->addSeparator();
                   rightClick->addMenu(createMenuHideShowFields(obj));
                   rightClick->addSeparator();
@@ -1206,11 +1210,32 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
                   rightClick->addAction(printscreenAction);
                   rightClick->exec(QCursor::pos());
                   return true;
-              } else if(TextEdit *le = qobject_cast<TextEdit*> (obj->parent()))
+              } else if(TextEdit *te = qobject_cast<TextEdit*> (obj->parent()))
               {
-                  QMenu *rightClick = le->createStandardContextMenu();
+                  QMenu *rightClick = new QMenu(this);
+
+                  QAction *copy = new QAction(tr("Copy"), this);
+                  connect(copy, SIGNAL(triggered()), te, SLOT(copyText()));
+                  rightClick->addAction(copy);
+
+                  if(te->isEnabled())
+                  {
+                      QAction *paste = new QAction(tr("Paste"), this);
+                      connect(paste, SIGNAL(triggered()), te, SLOT(paste()));
+                      rightClick->addAction(paste);
+                  }
+
                   rightClick->addSeparator();
                   rightClick->addMenu(createMenuHideShowFields(obj));
+                  rightClick->addSeparator();
+
+                  QAction *screenAction = new QAction(tr("&HardCopy save"), this);
+                  connect(screenAction, SIGNAL(triggered()), this, SLOT(saveScreenshot()));
+                  rightClick->addAction(screenAction);
+
+                  QAction *printscreenAction = new QAction(tr("&HardCopy print"), this);
+                  connect(printscreenAction, SIGNAL(triggered()), this, SLOT(printScreenshot()));
+                  rightClick->addAction(printscreenAction);
                   rightClick->exec(QCursor::pos());
                   return true;
               }
