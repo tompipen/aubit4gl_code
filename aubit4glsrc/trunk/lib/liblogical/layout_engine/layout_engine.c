@@ -243,7 +243,7 @@ int save_file_internal(char *fname) {
       fout = fopen (fname, "w");
 	if (!fout) {
 		msgbox ("Can't open file", "I can't seem to write that file...");
-		return;
+		return 0;
 	}
       fprintf (fout, "A4GL_LOGICAL_REPORT %s\n", acl_getenv ("LOGREP"));
       fprintf (fout, "%s %s\n", report_internal->repName, report_internal->modName);
