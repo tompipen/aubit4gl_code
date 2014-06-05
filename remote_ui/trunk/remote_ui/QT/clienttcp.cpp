@@ -1921,10 +1921,11 @@ if(childElement.nodeName() == "PROGRAMSTARTUP"){
 
              if(fileInfo.suffix() == "txt")
              {
-                 QMetaObject::invokeMethod(p_currScreenHandler, "createTextEditor", Qt::BlockingQueuedConnection, Q_ARG(QString, fileName));
+                 QMetaObject::invokeMethod(p_currScreenHandler, "createTextEditor", Qt::QueuedConnection, Q_ARG(QString, fileName));
+                 waitTimer::msleep(5000);
                  while(!p_currScreenHandler->mTextEditor->getIsEditorFinished())
                  {
-                     waitTimer::msleep(5);
+                     waitTimer::msleep(1000);
                  }
 
                  foundFormat = 1;
@@ -3451,6 +3452,11 @@ QString ProtocolHandler::getVentasLogicalIndex(int index, QString formmask)
     }
 
     if(form == "a_arko")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_arkd")
     {
         logicalIndex = index + 1;
     }
