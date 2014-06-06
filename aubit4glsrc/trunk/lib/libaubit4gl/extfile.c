@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: extfile.c,v 1.33 2013-11-10 09:53:49 mikeaubury Exp $
+# $Id: extfile.c,v 1.34 2014-06-06 04:56:10 siverly Exp $
 #
 */
 
@@ -303,7 +303,7 @@ aclfgli_show_help (int n)
   long a;
   a = A4GL_pop_long ();
 
-  if (A4GL_show_help_within_ui(a)) return;
+  if (A4GL_show_help_within_ui(a)) return 0;
 
   if (A4GL_has_helpfile ())
     {
