@@ -21,11 +21,11 @@ all: $(ALL)
 index_fileschema.o: fileschema.h index_fileschema.c
 read_fileschema.o: fileschema.h read_fileschema.c 
 
-$(ROOT)/bin/index_fileschema2: index_fileschema.o  io.o fileschema.h
+$(ROOT)/bin/index_fileschema2: index_fileschema.o  io.o 
 	$(CC) $(CFLAGS) -o $(ROOT)/bin/index_fileschema2 index_fileschema.c io.o $(LINKLIBS)
 
 dll:${PLUGINDIR}/libSQL_IDXFILESCHEMA2${SO_EXT}
-${PLUGINDIR}/libSQL_IDXFILESCHEMA2${SO_EXT}: read_fileschema.o io.o fileschema.h
+${PLUGINDIR}/libSQL_IDXFILESCHEMA2${SO_EXT}: read_fileschema.o io.o 
 	${LD} ${SO_LDFLAGS} $^ -o $@  ${SOLINKLIBS}
 
 
