@@ -78,6 +78,8 @@ public:
    bool debugVDC;
    int closeSSH;
 
+   void setSystemTrayMessage(QString title, QString text) { mTray->showMessage(title, text); }
+   //QSystemTrayIcon getSystemTray() {return mTray; }
 
 public slots:
    void cleanUp();

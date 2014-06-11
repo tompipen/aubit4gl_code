@@ -54,23 +54,23 @@ MainFrame::vdcdebug("MainFrame","ReadSettings", "");
       QApplication::setFont(QFont("Arial", 8));
     }
 
-    mTray = new QSystemTrayIcon(this);
-    mTray->setIcon(QIcon("pics:vdc.png"));
-
     QMenu *menu = new QMenu;
-    QAction *showAction = menu->addAction("Show Login Window");
+    QAction *showAction = menu->addAction(tr("Show Login Window"));
     connect(showAction, SIGNAL(triggered()), this, SLOT(show()));
 
-    QAction *hideAction = menu->addAction("Hide Login Window");
+    QAction *hideAction = menu->addAction(tr("Hide Login Window"));
     connect(hideAction, SIGNAL(triggered()), this, SLOT(hide()));
 
-    QAction *exitAction = menu->addAction("Exit");
+    QAction *exitAction = menu->addAction(tr("Exit"));
     connect(exitAction, SIGNAL(triggered()), this, SLOT(closeAction()));
 
+    mTray = new QSystemTrayIcon(this);
+    mTray->setIcon(QIcon("pics:vdc.png"));
     mTray->setContextMenu(menu);
     connect(mTray, SIGNAL(activated(QSystemTrayIcon::ActivationReason)), this, SLOT(trayIconClicked(QSystemTrayIcon::ActivationReason)));
-
     mTray->show();
+
+    QApplication::setQuitOnLastWindowClosed(false);
 }
 
 bool MainFrame::b_debugmodus = false;
@@ -234,6 +234,7 @@ MainFrame::vdcdebug("MainFrame","MainFrame", "QWidget *parent");
    //
    ReadSettings();
    tcpListener(port);
+
 }
 void MainFrame::contextMenuEvent ( QContextMenuEvent * event)
 {
@@ -306,6 +307,7 @@ MainFrame::vdcdebug("MainFrame","createStatusBar", "");
 ConnectionsTab::ConnectionsTab(QWidget *parent)
     : QWidget(parent)
 {
+    MainFrame::vdcdebug("ConnectionsTab","ConnectionsTab", "");
 
     QVBoxLayout *layout = new QVBoxLayout;
     QLabel *connectionLabel = new QLabel(tr("Connections:"));
@@ -324,12 +326,13 @@ ConnectionsTab::ConnectionsTab(QWidget *parent)
 
     layout->addWidget(connectionLabel);
     layout->addWidget(tableWidget);
-MainFrame::vdcdebug("ConnectionsTab","addConnection", "");
     setLayout(layout);
 }
 
 void ConnectionsTab::addConnection()
 {
+    MainFrame::vdcdebug("ConnectionsTab","addConnection", "");
+
     ClientTcp *clientTcp = (ClientTcp*) QObject::sender();
     QObject::connect(clientTcp->socket, SIGNAL(disconnected()), this, SLOT(delConnection()));
 
@@ -343,21 +346,21 @@ void ConnectionsTab::addConnection()
     tableWidget->setItem(listpruef.count(), 0, new QTableWidgetItem(portshow));
     listpruef << port;
     tableWidget->resizeColumnsToContents();
-MainFrame::vdcdebug("ConnectionsTab","delConnection", "");
     tableWidget->horizontalHeader()->setStretchLastSection(true);
 }
 
 void ConnectionsTab::delConnection()
 {
+    MainFrame::vdcdebug("ConnectionsTab","delConnection", "");
 
-ClientSocket *socket = (ClientSocket*) QObject::sender();
-int checkport = socket->peerPort();
-for(int i=0; i<listpruef.count(); i++) {
-    if(listpruef.at(i) == checkport){
-       tableWidget->removeRow(i);
-       listpruef.removeAt(i);
-   }
-}
+    ClientSocket *socket = (ClientSocket*) QObject::sender();
+    int checkport = socket->peerPort();
+    for(int i=0; i<listpruef.count(); i++) {
+        if(listpruef.at(i) == checkport){
+           tableWidget->removeRow(i);
+           listpruef.removeAt(i);
+       }
+    }
 
 }
 
@@ -378,20 +381,20 @@ OptionsTab::OptionsTab(QWidget *parent)
        QGroupBox *fontbox = new QGroupBox(tr("Font"));
        QLabel *fontlabel = new QLabel(tr("Font : "));
 
-       QPushButton *select = new QPushButton("&Select",this);
+       QPushButton *select = new QPushButton(tr("&Select"),this);
        select->setIcon(QIcon(QString("pics:vor.png")));
        select->setIconSize(QSize(40,25));
 
-       QPushButton *reset = new QPushButton("&Reset",this);
+       QPushButton *reset = new QPushButton(tr("&Reset"),this);
        reset->setIcon(QIcon(QString("pics:loeschen.png")));
        reset->setIconSize(QSize(40,25));
 
-       QPushButton *close = new QPushButton("&Close", this);
+       QPushButton *close = new QPushButton(tr("&Close"), this);
        close->setIcon(QIcon(QString("pics:nein.png")));
        close->setIconSize(QSize(40,25));
        close->setShortcut(Qt::Key_Escape);
 
-       QPushButton *save = new QPushButton("Save", this);
+       QPushButton *save = new QPushButton(tr("Save"), this);
        save->setIcon(QIcon(QString("pics:ok_gruen.png")));
        save->setIconSize(QSize(40,25));
        save->setShortcut(Qt::Key_F12);
@@ -473,7 +476,7 @@ QApplication::setFont(base);
 fonteingabe = "Arial,8(Default)";
 fontedit->insert(fonteingabe);
 fonteingabe = "";
-showMessage("Font set to Default");
+showMessage(tr("Font set to Default"));
 writeSettings();
 }
 
@@ -496,7 +499,7 @@ if (fonteingabe == "Arial,8")
 {
 fonteingabe.append("(Default)");
 fontedit->insert(fonteingabe);
-showMessage("Font set to Default");
+showMessage(tr("Font set to Default"));
 }
 else
 {
@@ -917,7 +920,6 @@ MainFrame::vdcdebug("MainFrame","cleanUp", "");
    //
 
    if(p_currOpenNetwork!=NULL){
-
       if(!p_currOpenNetwork->state()==0){
          p_currOpenNetwork->close();
       }
@@ -932,13 +934,11 @@ MainFrame::vdcdebug("MainFrame","cleanUp", "");
 
 void MainFrame::trayIconClicked(QSystemTrayIcon::ActivationReason reason)
 {
-    if(reason == QSystemTrayIcon::Trigger)
-    {
-        if(!this->isVisible())
-        {
-            this->show();
-        } else {
+    if(reason == QSystemTrayIcon::Trigger) {
+        if(this->isVisible()) {
             this->hide();
+        } else {
+            this->show();
         }
     }
 }
@@ -948,16 +948,16 @@ void MainFrame::closeAction()
 
     if(ql_screenhandler)
     {
-        if(ql_screenhandler->count() > 0)
-        {
-            Dialog *dialog = new Dialog("VDC - Ventas Desktop Client", "There are open Connections.\nDo you really want to quit?", "", "stop", this, Qt::WindowStaysOnTopHint);
+        if(ql_screenhandler->count() > 0){
+            Dialog *dialog = new Dialog("VDC - Ventas Desktop Client", tr("There are open Connections.\nDo you really want to quit?"), "", "stop", this, Qt::WindowStaysOnTopHint);
             QPalette palette;
             palette.setBrush(this->backgroundRole(), QBrush(QImage("pics:VENTAS_9_alu_1080p.png")));
+
             dialog->setPalette(palette);
             dialog->setStyleSheet("QPushButton { border-image: url(pics:VENTAS_9_knopf_menu_inaktiv.png); padding-top: -1; padding-right: 10; text-align: left; height: 36px; min-width: 50px; }");
-            dialog->createButton(1, "Yes", "Yes", "ja.png");
+            dialog->createButton(1, tr("Yes"), "Yes", "ja.png");
             dialog->getAction("Yes")->setShortcut(Qt::Key_F12);
-            dialog->createButton(2, "No", "No", "escape.png");
+            dialog->createButton(2, tr("No"), "No", "escape.png");
             dialog->getAction("No")->setShortcut(Qt::Key_Escape);
             connect(dialog->getAction("YES"), SIGNAL(triggered()), this, SLOT(closeVDC()));
             connect(dialog->getAction("NO"), SIGNAL(triggered()), dialog, SLOT(close()));
@@ -982,15 +982,10 @@ void MainFrame::closeVDC()
 
     if(ql_screenhandler)
     {
-        for(int i=ql_screenhandler->count()-1; i >= 0; i--)
-        {
-
-            if(ScreenHandler *screen = qobject_cast<ScreenHandler*> (ql_screenhandler->at(i)))
-            {
-                if(screen->p_fglform)
-                {
-                    if(FglForm *p_fglform = qobject_cast<FglForm*> (screen->p_fglform))
-                    {
+        for(int i=ql_screenhandler->count()-1; i >= 0; i--) {
+            if(ScreenHandler *screen = qobject_cast<ScreenHandler*> (ql_screenhandler->at(i))) {
+                if(screen->p_fglform) {
+                    if(FglForm *p_fglform = qobject_cast<FglForm*> (screen->p_fglform)){
                         p_fglform->close();
                     }
                 }
@@ -1015,7 +1010,7 @@ void MainFrame::closeEvent(QCloseEvent *event)
 MainFrame::vdcdebug("MainFrame","closeEvent", "QCloseEvent *event");
     if (mTray->isVisible())
     {
-        mTray->showMessage("Ventas Desktop Client", "The VDC runs in System Tray");
+        mTray->showMessage("Ventas Desktop Client", tr("The VDC runs in System Tray"));
         this->hide();
         event->ignore();
     }
