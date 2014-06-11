@@ -30,6 +30,7 @@ void CopyBinaries::copyBinaries(QString tmpDirPath, QString newDirPath)
     {
         return;
     }
+
     QDir tmpDir(tmpDirPath);
     QFileInfoList tmpDirFileInfoList = tmpDir.entryInfoList(QDir::NoDotAndDotDot | QDir::Dirs | QDir::Files);
 
@@ -107,26 +108,26 @@ void CopyBinaries::copyBinaries(QString tmpDirPath, QString newDirPath)
         }
     }
 
-    QString prog ;
+    QString program = QApplication::applicationDirPath();
 #ifdef Q_OS_LINUX
     //setEnv("LD_LIBRARY_PATH", QApplication::applicationDirPath(), 1);
 #endif
-    prog = QString(QApplication::applicationDirPath() + "/VDC");
-    QProcess process;
-
 #ifdef Q_OS_WIN
-    prog = QString(QApplication::applicationDirPath() + "/VDC.exe");
-    QDesktopServices::openUrl(QUrl::fromLocalFile(prog));
+    program += "/VDC.exe";
+    QProcess::startDetached(QString("rundll32 url.dll,FileProtocolHandler \"%1\"").arg(program));
+    logMessage(QString("Starte VDC erneut: %1").arg(program));
 
 #endif
 #ifdef Q_OS_MAC
-    process.start(prog);
+    program +=  "/VDC");
+    QProcess process;
+    process.start(program);
 #endif
 #ifdef Q_OS_LINUX
     QProcess *proc = new QProcess;
-    proc->start(prog);
+    proc->start(program);
 #endif
-    logMessage(QString("[DEBUG] Starte VDC erneut mit Path: %1").arg(prog));
+    logMessage(QString("[DEBUG] Starte VDC erneut mit Path: %1").arg(program));
 
     //exit(0);
 }
