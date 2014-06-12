@@ -236,7 +236,7 @@ void HtmlEditor::closeEvent(QCloseEvent *event)
 {
     if(mTextIsModified && !mCloseEditor)
     {
-        Dialog *dialog = new Dialog("File is modified", "Do you want to save changes?", "", "critical", this, Qt::WindowStaysOnTopHint);
+        Dialog *dialog = new Dialog(tr("File is modified"), tr("Do you want to save changes?"), "", "critical", this, Qt::WindowStaysOnTopHint);
         dialog->createButton(1, "Ok", "OK", "ok_gruen.png");
 
         if(QAction *action = qobject_cast<QAction*> (dialog->getAction("OK")))

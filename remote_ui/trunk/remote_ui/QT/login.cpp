@@ -467,7 +467,7 @@ void LoginForm::saveCompression(int value)
 
 void LoginForm::removeIni()
 {
-    Dialog *dialog = new Dialog("Reset Screen Forms ", "Do you really want to reset all screen forms?", "", "critical", this, Qt::WindowStaysOnTopHint);
+    Dialog *dialog = new Dialog(tr("Reset Screen Forms "), tr("Do you really want to reset all screen forms?"), "", "critical", this, Qt::WindowStaysOnTopHint);
 
     QPalette palette;
     palette.setBrush(this->backgroundRole(), QBrush(QImage("pics:VENTAS_9_alu_1080p.png")));
@@ -903,7 +903,7 @@ MainFrame::vdcdebug("HostsData","addHost", "");
     QFile file(hostspath);
     if(!file.isWritable())
     {
-        Dialog *p_dialog = new Dialog("Warning", "Please start the VDC with adminstrator privileges to edit the hosts file.", "dialog", "stop", NULL);
+        Dialog *p_dialog = new Dialog(tr("Warning"), tr("Please start the VDC with adminstrator privileges to edit the hosts file."), "dialog", "stop", NULL);
         p_dialog->createButton(1, "Ok", "Ok", "ok_gruen.png");
         connect(p_dialog->getAction("OK"), SIGNAL(triggered()), p_dialog, SLOT(close()));
         p_dialog->setAttribute(Qt::WA_DeleteOnClose, true);
@@ -1380,7 +1380,7 @@ MainFrame::vdcdebug("LoginForm","cancelPressed", "");
     {
         if(ql_screenhandler->count() > 0)
         {
-            Dialog *dialog = new Dialog("VDC - Ventas Desktop Client", "There are open Connections.\nDo you really want to quit?", "", "stop", this, Qt::WindowStaysOnTopHint);
+            Dialog *dialog = new Dialog("VDC - Ventas Desktop Client", tr("There are open Connections.\nDo you really want to quit?"), "", "stop", this, Qt::WindowStaysOnTopHint);
             QPalette palette;
             palette.setBrush(this->backgroundRole(), QBrush(QImage("pics:VENTAS_9_alu_1080p.png")));
             dialog->setPalette(palette);
