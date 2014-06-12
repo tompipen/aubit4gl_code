@@ -39,8 +39,8 @@ void WebBrowser::createBrowser()
 
     setWindowTitle("VENTAS.browser");
 
-    QMenu *effectMenu = menuBar()->addMenu(tr("&Auswahl"));
-    effectMenu->addAction("Alle Links hervorheben...", this, SLOT(highlightAllLinks()));
+    QMenu *effectMenu = menuBar()->addMenu(tr("&Select"));
+    effectMenu->addAction(tr("Mark all links..."), this, SLOT(highlightAllLinks()));
 
     setCentralWidget(WebView);
     setUnifiedTitleAndToolBarOnMac(true);
@@ -159,7 +159,7 @@ void WebBrowser::openSearch()
 
         mTb = new QToolBar(this);
 
-        QAction *close_tb = new QAction("Schliessen", mTb);
+        QAction *close_tb = new QAction(tr("Close"), mTb);
         close_tb->setIcon(QIcon(":/pics/abbrechen_rot.png"));
 
         QLineEdit *search_field = new QLineEdit(this);
@@ -171,7 +171,7 @@ void WebBrowser::openSearch()
         connect(fAction, SIGNAL(triggered()), sMapper, SLOT(map()));
         sMapper->setMapping(fAction, "forward");
 
-        QAction *bAction = new QAction(tr("Zurueck"), mTb);
+        QAction *bAction = new QAction(tr("Backward"), mTb);
         bAction->setIcon(QIcon(":/pics/zurueck.png"));
         connect(bAction, SIGNAL(triggered()), sMapper, SLOT(map()));
         sMapper->setMapping(bAction, "backward");
@@ -265,7 +265,7 @@ void MainWindow::removeEmbeddedElements()
 void WebBrowser::setNavigationIcons()
 {
   //Getting Actions
-  QAction *print = new QAction("Drucken", this);
+  QAction *print = new QAction(tr("Print"), this);
   QAction *saveAs = new QAction("Save As", this);
   QAction *backward = WebView->pageAction(QWebPage::Back);
   QAction *forward = WebView->pageAction(QWebPage::Forward);
@@ -274,7 +274,7 @@ void WebBrowser::setNavigationIcons()
   QAction *stop = WebView->pageAction(QWebPage::Stop);
   QAction *plus = new QAction("Zoom +", this);
   QAction *minus = new QAction("Zoom -", this);
-  QAction *reset = new QAction("Zoom Loeschen", this);
+  QAction *reset = new QAction(tr("Reset zoom"), this);
 
 
 
@@ -338,7 +338,7 @@ void WebBrowser::setNavigationIcons()
   qw_reload->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
   qw_stop->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
-  QAction *sAction = new QAction(tr("Suchen"), this);
+  QAction *sAction = new QAction(tr("Search"), this);
   sAction->setIcon(QIcon(":/pics/browser-suchen.png"));
   connect(sAction, SIGNAL(triggered()), this, SLOT(openSearch()));
 
@@ -357,11 +357,11 @@ void MyWebBrowser::contextMenuEvent(QContextMenuEvent *event)
     QMenu *menu = new QMenu();
 
     QAction *reload = this->pageAction(QWebPage::Reload);
-    reload->setToolTip("Neu laden");
+    reload->setToolTip("Reload");
     QAction *selectAll = this->pageAction(QWebPage::SelectAll);
-    selectAll->setToolTip("Select All");
+    selectAll->setToolTip(tr("Select All"));
     QAction *copySelected = this->pageAction(QWebPage::Copy);
-    selectAll->setToolTip("Copy selected Text");
+    selectAll->setToolTip(tr("Copy selected Text"));
 
     menu->addAction(reload);
     menu->addSeparator();

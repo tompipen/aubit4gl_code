@@ -164,11 +164,11 @@ LoginForm::LoginForm(QWidget *parent)
     ql_shortcuts << QKeySequence("Enter");
     ql_shortcuts << QKeySequence("F12");
 
-    QAction *okAction = new QAction("Connect", this);
+    QAction *okAction = new QAction(tr("Connect"), this);
     okAction->setShortcuts(ql_shortcuts);
     connect(okAction, SIGNAL(triggered()), this, SLOT(okPressed()));
 
-    QAction *cancelAction = new QAction("Cancel", this);
+    QAction *cancelAction = new QAction(tr("Cancel"), this);
     cancelAction->setShortcut(Qt::Key_F12);
     connect(cancelAction, SIGNAL(triggered()), mainFrame, SLOT(closeAction()));
 
@@ -253,28 +253,28 @@ void LoginForm::createMenu(QMenuBar *menu)
 
     QSignalMapper* formatSignalMapper = new QSignalMapper (this);
 
-    format1 = new QAction(tr("&1.234,56"), this);
+    format1 = new QAction("&1.234,56", this);
     format1->setCheckable(true);
     connect(format1, SIGNAL(triggered()), formatSignalMapper, SLOT(map()));
     formatSignalMapper->setMapping(format1, "##,###,###,###,##&.&&&&&&&&|,");
 
     format->addAction(format1);
 
-    format2 = new QAction(tr("&1,234.56"), this);
+    format2 = new QAction("&1,234.56", this);
     format2->setCheckable(true);
     connect(format2, SIGNAL(triggered()), formatSignalMapper, SLOT(map()));
     formatSignalMapper->setMapping(format2, "##,###,###,###,##&.&&&&&&&&|.");
 
     format->addAction(format2);
 
-    format3 = new QAction(tr("&1234,56"), this);
+    format3 = new QAction("&1234,56", this);
     format3->setCheckable(true);
     connect(format3, SIGNAL(triggered()), formatSignalMapper, SLOT(map()));
     formatSignalMapper->setMapping(format3, "-|,");
 
     format->addAction(format3);
 
-    format4 = new QAction(tr("&1234.56"), this);
+    format4 = new QAction("&1234.56", this);
     format4->setCheckable(true);
     connect(format4, SIGNAL(triggered()), formatSignalMapper, SLOT(map()));
     formatSignalMapper->setMapping(format4, "--|.");
@@ -406,22 +406,22 @@ void LoginForm::openCompOptions()
     widget->setPalette(palette);
     widget->setStyleSheet("QPushButton { border-image: url(pics:VENTAS_9_knopf_menu_inaktiv.png); padding-top: -1; padding-right: 10; text-align: left; height: 36px; min-width: 50px; }");
 
-    QLabel *infoLabel = new QLabel("Lowest ");
-    QLabel *infoLabel1 = new QLabel("Highest ");
+    QLabel *infoLabel = new QLabel(tr("Lowest "));
+    QLabel *infoLabel1 = new QLabel(tr("Highest "));
 
-    QLabel *label0 = new QLabel(tr("0"));
+    QLabel *label0 = new QLabel("0");
     label0->setMaximumWidth(25);
 
-    QLabel *label1 = new QLabel(tr("1"));
+    QLabel *label1 = new QLabel("1");
     label1->setMaximumWidth(25);
 
-    QLabel *label2 = new QLabel(tr("2"));
+    QLabel *label2 = new QLabel("2");
     label2->setMaximumWidth(25);
 
-    QLabel *label3 = new QLabel(tr("3"));
+    QLabel *label3 = new QLabel("3");
     label3->setMaximumWidth(25);
 
-    QLabel *label4 = new QLabel(tr("4"));
+    QLabel *label4 = new QLabel("4");
     label4->setMaximumWidth(25);
 
     hLayout1->addWidget(infoLabel, 0, Qt::AlignLeft);
@@ -571,7 +571,7 @@ void LoginForm::aboutVDC(QWidget *parent)
     okButton->setIcon(QIcon(QString("pics:ok_gruen.png")));
     okButton->setIconSize(QSize(40,25));
     okButton->setFixedWidth(75);
-    QAction *action = new QAction("&OK", this);
+    QAction *action = new QAction(tr("&OK"), this);
     action->setShortcuts(ql_shortcuts);
     okButton->addAction(action);
     connect(action, SIGNAL(triggered()), widget, SLOT(close()));
@@ -724,7 +724,7 @@ MainFrame::vdcdebug("HostsData","HostsData", "QWidget *parent");
           {
           QString errorout;
           QVBoxLayout *errorlay   = new QVBoxLayout(this);
-          errorout = "Your operating system is not supported. Please contact us! \n Error No. : ";
+          errorout = tr("Your operating system is not supported. Please contact us! \n Error No. : ");
           errorout.append(hostspath);
           QLabel *errorlabel = new QLabel(errorout);
           errorlay->addWidget(errorlabel);
@@ -969,29 +969,29 @@ MainFrame::vdcdebug("HostsData","addHost", "");
         //ipfeldv4
 
         ipfeldv4->addWidget(firstip);
-        ipfeldv4->addWidget(new QLabel(tr("<b>.</b>")));
+        ipfeldv4->addWidget(new QLabel("<b>.</b>"));
         ipfeldv4->addWidget(seccondip);
-        ipfeldv4->addWidget(new QLabel(tr("<b>.</b>")));
+        ipfeldv4->addWidget(new QLabel("<b>.</b>"));
         ipfeldv4->addWidget(thirdip);
-        ipfeldv4->addWidget(new QLabel(tr("<b>.</b>")));
+        ipfeldv4->addWidget(new QLabel("<b>.</b>"));
         ipfeldv4->addWidget(fourthip);
 
         //ipfeldv6
 
         ipfeldv6->addWidget(firstipv6);
-        ipfeldv6->addWidget(new QLabel(tr("<b>:</b>")));
+        ipfeldv6->addWidget(new QLabel("<b>:</b>"));
         ipfeldv6->addWidget(seccondipv6);
-        ipfeldv6->addWidget(new QLabel(tr("<b>:</b>")));
+        ipfeldv6->addWidget(new QLabel("<b>:</b>"));
         ipfeldv6->addWidget(thirdipv6);
-        ipfeldv6->addWidget(new QLabel(tr("<b>:</b>")));
+        ipfeldv6->addWidget(new QLabel("<b>:</b>"));
         ipfeldv6->addWidget(fourthipv6);
-        ipfeldv6->addWidget(new QLabel(tr("<b>:</b>")));
+        ipfeldv6->addWidget(new QLabel("<b>:</b>"));
         ipfeldv6->addWidget(fifthipv6);
-        ipfeldv6->addWidget(new QLabel(tr("<b>:</b>")));
+        ipfeldv6->addWidget(new QLabel("<b>:</b>"));
         ipfeldv6->addWidget(sixthipv6);
-        ipfeldv6->addWidget(new QLabel(tr("<b>:</b>")));
+        ipfeldv6->addWidget(new QLabel("<b>:</b>"));
         ipfeldv6->addWidget(seventhipv6);
-        ipfeldv6->addWidget(new QLabel(tr("<b>:</b>")));
+        ipfeldv6->addWidget(new QLabel("<b>:</b>"));
         ipfeldv6->addWidget(eighthipv6);
 
 
@@ -1541,7 +1541,7 @@ void LoginForm::setOfficeInstallation()
     ql_okShortcuts << QKeySequence("Enter");
     ql_okShortcuts << QKeySequence("Return");
 
-    QAction *okAction = new QAction("&Apply", this);
+    QAction *okAction = new QAction(tr("&Apply"), this);
     okAction->setShortcuts(ql_okShortcuts);
 
     saveButton->setIcon(QIcon(QString("pics:ok_gruen.png")));

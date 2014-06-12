@@ -244,7 +244,7 @@ void HtmlEditor::closeEvent(QCloseEvent *event)
             action->setShortcut(Qt::Key_F12);
         }
 
-        dialog->createButton(2, "Cancel", "CANCEL", "abbrechen_rot.png");
+        dialog->createButton(2, tr("Cancel"), "CANCEL", "abbrechen_rot.png");
 
         if(QAction *action = qobject_cast<QAction*> (dialog->getAction("CANCEL")))
         {
