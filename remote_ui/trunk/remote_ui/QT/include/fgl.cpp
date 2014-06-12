@@ -877,12 +877,29 @@ namespace Fgl {
       QStringList arr_mdy;
       QString validateDate;
       arr_mdy = value.split(sep);
+      int cntYear = dbdate.indexOf("Y");
 
       for(int i=0; i < arr_mdy.count(); i++)
       {
           if(arr_mdy.at(i).length() < 2)
           {
               arr_mdy[i] = "0" + arr_mdy.at(i);
+          }
+
+          if(cntYear == i)
+          {
+              int test = dbdate.count();
+              int indexOfYear = dbdate.count() - 2;
+              QString yearDigits;
+              if(indexOfYear >= 0)
+              {
+                  yearDigits = dbdate.at(indexOfYear);
+              }
+
+              if(arr_mdy.at(i).length() < yearDigits.toInt())
+              {
+                  arr_mdy[i].prepend("20");
+              }
           }
           validateDate.append(arr_mdy[i]);
       }
