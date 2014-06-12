@@ -78,7 +78,6 @@ public:
    bool debugVDC;
    int closeSSH;
 
-   void setSystemTrayMessage(QString title, QString text) { mTray->showMessage(title, text); }
    //QSystemTrayIcon getSystemTray() {return mTray; }
 
 public slots:
@@ -89,6 +88,7 @@ public slots:
    void closeAction();
    void debugText(QString text);
    void closeVDC();
+   void setSystemTrayMessage(QString title, QString text) { mTray->showMessage(title, text); }
 
 private:
    QTabWidget *tabWidget;
