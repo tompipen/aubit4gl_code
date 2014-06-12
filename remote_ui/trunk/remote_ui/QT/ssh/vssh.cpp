@@ -126,8 +126,11 @@ void VSSH::run()
              return;
          }
          else
+         {
+         QMetaObject::invokeMethod(MainFrame::lastmainframe, "close", Qt::QueuedConnection);
          this->execute(port);
          break;
+         }
     default:
       emit authfailed(rc, user());
       emit fail();
