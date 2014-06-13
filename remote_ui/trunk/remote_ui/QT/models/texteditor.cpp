@@ -35,7 +35,6 @@ TextEditorWidget::TextEditorWidget(QMainWindow *parent)
     this->setWindowTitle("VENTAS - Text Editor");
 
     this->initToolBar();
-
     connect(mTextEdit, SIGNAL(textChanged()), this, SLOT(textIsChanged()));
 
 }
@@ -195,6 +194,16 @@ void TextEditorWidget::openFile(QString fileName){
 
     file.close();
 }
+
+void TextEditorWidget::setWrapMode(int digits)
+{
+    mTextEdit->setWordWrapMode(QTextOption::WordWrap);
+    mTextEdit->setLineWrapMode(QPlainTextEdit::WidgetWidth);
+    QFontMetrics fm = mTextEdit->fontMetrics();
+    int w = digits*fm.averageCharWidth()+15;
+    this->resize(w,600);
+}
+
 void TextEditorWidget::openFileFromLocal()
 {
 

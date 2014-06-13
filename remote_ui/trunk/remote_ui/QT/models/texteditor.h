@@ -29,6 +29,8 @@ public:
     void setText(QString);
     void openFile(QString);
 
+    void setWrapMode(int);
+
 public slots:
         void textIsChanged();
         void saveAsFile();

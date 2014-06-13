@@ -1558,6 +1558,7 @@ if(childElement.nodeName() == "PROGRAMSTARTUP"){
 
               //emit closeBrowser(params.at(0).toInt());
          }
+
          if(qs_name == "ui.vdc.openchartwindow")
          {
              QStringList params;
@@ -1569,6 +1570,24 @@ if(childElement.nodeName() == "PROGRAMSTARTUP"){
 
               returnvalues << "0";
          }
+
+         if(qs_name == "ui.vdc.texteditor")
+         {
+             QStringList params;
+              for(int k=0; k<paramsElement.childNodes().count(); k++){
+                 QDomElement valuesElement = paramsElement.childNodes().at(k).toElement();
+                 params << valuesElement.text();
+              }
+              QMetaObject::invokeMethod(p_currScreenHandler, "createTextEditor", Qt::QueuedConnection, Q_ARG(QString, params.at(0)), Q_ARG(QString, params.at(1)), Q_ARG(int, params.at(2).toInt()));
+
+              waitTimer::msleep(5000);
+              while(!p_currScreenHandler->mTextEditor->getIsEditorFinished())
+              {
+                  waitTimer::msleep(1000);
+              }
+              returnvalues << "1";
+         }
+
          if(qs_name == "ui.vdc.get_last_sort")
          {
              QStringList params;
@@ -1921,7 +1940,7 @@ if(childElement.nodeName() == "PROGRAMSTARTUP"){
 
              if(fileInfo.suffix() == "txt")
              {
-                 QMetaObject::invokeMethod(p_currScreenHandler, "createTextEditor", Qt::QueuedConnection, Q_ARG(QString, fileName));
+                 QMetaObject::invokeMethod(p_currScreenHandler, "createTextEditor", Qt::QueuedConnection, Q_ARG(QString, fileName), Q_ARG(QString, "nowrap"), Q_ARG(int, 0));
                  waitTimer::msleep(5000);
                  while(!p_currScreenHandler->mTextEditor->getIsEditorFinished())
                  {

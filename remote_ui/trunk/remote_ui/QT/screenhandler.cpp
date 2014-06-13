@@ -4229,11 +4229,17 @@ void ScreenHandler::openChartWindow(QString filename)
 
 #endif
 
-void ScreenHandler::createTextEditor(QString fileName)
+void ScreenHandler::createTextEditor(QString fileName, QString wrap, int digits)
 {
     mTextEditor = new TextEditorWidget;
     mTextEditor->setFileName(fileName);
     mTextEditor->loadFileFromLocal();
+
+    if(wrap == "wordwrap")
+    {
+        mTextEditor->setWrapMode(digits);
+    }
+
     mTextEditor->show();
 }
 
