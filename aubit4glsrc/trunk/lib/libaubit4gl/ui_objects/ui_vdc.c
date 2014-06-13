@@ -920,6 +920,136 @@ char *csvfile=NULL;
   }
   return 1;
 }
+
+static int ui_vdc_systraymessage(long *objectID_IgnoredAsAlways0,int n) {
+int okToProcess=1;
+int _ni=2;
+struct BINDING _ibind[2]={
+    {NULL,0,0,0,0,0,NULL},
+    {NULL,0,0,0,0,0,NULL}
+};
+int _no=1;
+struct BINDING _obind[1]={
+    {NULL,0,0,0,0,0,NULL}
+};
+int rval_0;
+char *title=NULL;
+char *message=NULL;
+
+/* END OF DEFINE SECTION */
+
+
+  if (n!=2) {
+    A4GL_pop_args(n);
+    okToProcess=0;
+  }
+
+  // Set up input binding for our parameters
+  if (okToProcess) {
+
+    message=A4GL_char_pop();
+    _ibind[1].ptr=message;
+    _ibind[1].size=strlen(message);
+    title=A4GL_char_pop();
+    _ibind[0].ptr=title;
+    _ibind[0].size=strlen(title);
+  }
+
+  // Set up output binding for our parameters
+  if (okToProcess) {
+    _obind[0].ptr=&rval_0;
+    _obind[0].size=4;
+    _obind[0].dtype=DTYPE_INT;
+  }
+
+  if (okToProcess) {
+      A4GL_ui_frontcall("INTERNAL","ui.vdc.systraymessage",_ibind,_ni,_obind,_no );
+  }
+
+
+  // Set up output binding for our parameters
+    if (title) {
+        free(title);
+    }
+    if (message) {
+        free(message);
+    }
+  if (!okToProcess) {
+    A4GL_push_null(DTYPE_INT,0);
+  } else {
+    A4GL_push_int(rval_0);
+  }
+  return 1;
+}
+
+static int ui_vdc_texteditor(long *objectID_IgnoredAsAlways0,int n) {
+int okToProcess=1;
+int _ni=3;
+struct BINDING _ibind[3]={
+    {NULL,0,0,0,0,0,NULL},
+    {NULL,0,0,0,0,0,NULL},
+    {NULL,0,0,0,0,0,NULL}
+};
+int _no=1;
+struct BINDING _obind[1]={
+    {NULL,0,0,0,0,0,NULL}
+};
+int rval_0;
+char *file=NULL;
+char *wrap=NULL;
+char *digits=NULL;
+
+/* END OF DEFINE SECTION */
+
+
+  if (n!=3) {
+    A4GL_pop_args(n);
+    okToProcess=0;
+  }
+
+  // Set up input binding for our parameters
+  if (okToProcess) {
+
+    digits=A4GL_char_pop();
+    _ibind[2].ptr=digits;
+    _ibind[2].size=strlen(digits);
+    wrap=A4GL_char_pop();
+    _ibind[1].ptr=wrap;
+    _ibind[1].size=strlen(wrap);
+    file=A4GL_char_pop();
+    _ibind[0].ptr=file;
+    _ibind[0].size=strlen(file);
+  }
+
+  // Set up output binding for our parameters
+  if (okToProcess) {
+    _obind[0].ptr=&rval_0;
+    _obind[0].size=4;
+    _obind[0].dtype=DTYPE_INT;
+  }
+
+  if (okToProcess) {
+      A4GL_ui_frontcall("INTERNAL","ui.vdc.texteditor",_ibind,_ni,_obind,_no );
+  }
+
+
+  // Set up output binding for our parameters
+    if (file) {
+        free(file);
+    }
+    if (digits) {
+        free(digits);
+    }
+    if (wrap) {
+        free(wrap);
+    }
+  if (!okToProcess) {
+    A4GL_push_null(DTYPE_INT,0);
+  } else {
+    A4GL_push_int(rval_0);
+  }
+  return 1;
+}
  
 void add_ui_vdc_support(void) {
 A4GL_add_object_type("ui.vdc");
@@ -937,4 +1067,6 @@ A4GL_add_object_type("ui.vdc");
   A4GL_add_datatype_function_i (DTYPE_OBJECT, ":ui.vdc.setclipboard", (void *)  ui_vdc_setclipboard);
   A4GL_add_datatype_function_i (DTYPE_OBJECT, ":ui.vdc.filebrowser", (void *)  ui_vdc_filebrowser);
   A4GL_add_datatype_function_i (DTYPE_OBJECT, ":ui.vdc.openchartwindow", (void *)  ui_vdc_openchartwindow);
+  A4GL_add_datatype_function_i (DTYPE_OBJECT, ":ui.vdc.systraymessage", (void *)  ui_vdc_systraymessage);
+  A4GL_add_datatype_function_i (DTYPE_OBJECT, ":ui.vdc.texteditor", (void *)  ui_vdc_texteditor);
 }
