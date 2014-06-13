@@ -386,7 +386,11 @@ void WebBrowser::saveAsFile()
     QTextStream out(&file);
     out.setCodec("ISO-8859-15");
 
-    out << WebView->page()->mainFrame()->toPlainText();
+    if(fileName.contains(".html") || fileName.contains(".htm")) {
+        out << WebView->page()->mainFrame()->toHtml();
+    } else {
+        out << WebView->page()->mainFrame()->toPlainText();
+    }
 
     file.close();
 

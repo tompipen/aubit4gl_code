@@ -166,7 +166,11 @@ void TextEditorWidget::saveAsFile()
     QTextStream out(&file);
     out.setCodec("ISO-8859-15");
 
-    out << mTextEdit->toPlainText();
+    if(fileName.contains(".html") || fileName.contains(".htm")) {
+        out << mTextEdit->document()->toHtml();
+    } else {
+        out << mTextEdit->toPlainText();
+    }
 
     file.close();
 
