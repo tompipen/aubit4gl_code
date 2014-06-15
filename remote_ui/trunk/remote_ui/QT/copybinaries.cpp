@@ -119,7 +119,7 @@ void CopyBinaries::copyBinaries(QString tmpDirPath, QString newDirPath)
 
 #endif
 #ifdef Q_OS_MAC
-    program +=  "/VDC");
+    program +=  "/VDC";
     QProcess process;
     process.start(program);
 #endif
