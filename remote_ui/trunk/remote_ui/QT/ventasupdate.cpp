@@ -75,7 +75,7 @@ void VentasUpdate::checkServerClient()
                     palette.setBrush(this->backgroundRole(), QBrush(QImage("pics:VENTAS_9_alu_1080p.png")));
                     dialog->setPalette(palette);
                     dialog->setStyleSheet("QPushButton { border-image: url(pics:VENTAS_9_knopf_menu_inaktiv.png); padding-top: -1; padding-right: 10; text-align: left; height: 36px; min-width: 50px; }");
-                    dialog->createButton(1, "Update", "Update", "ok_gruen.png");
+                    dialog->createButton(1, "Update", "UPDATE", "ok_gruen.png");
                     dialog->createButton(1, "CANCEL", "CANCEL", "escape.png");
                     dialog->getAction("CANCEL")->setShortcut(Qt::Key_Escape);
                     connect(dialog->getAction("UPDATE"), SIGNAL(triggered()), this, SLOT(checkOpenConnections()));
@@ -274,11 +274,11 @@ void VentasUpdate::downloadBinarie()
     QList<ScreenHandler*> *ql_screenhandler = MainFrame::ql_screenhandler;
     QFile file;
 
-    if(m_dialog)
+    /*f(m_dialog)
     {
         m_dialog->close();
         m_dialog = NULL;
-    }
+    }*/
 
     if(ql_screenhandler)
     {
@@ -317,8 +317,11 @@ void VentasUpdate::downloadBinarie()
         #endif
         #ifdef Q_OS_MAC
            QProcess *proc = new QProcess;
-           QStringList env = QProcess::systemEnvironment();;
-           env << "DYLD_LIBRARY_PATH=/Applications/VENTAS-Software/VDC.app/Contents/Frameworks/";
+           QStringList env = QProcess::systemEnvironment();
+           QString library_path = QApplication::applicationDirPath();
+           library_path.replace("MacOS", "Frameworks");
+           library_path.prepend("DYLD_LIBRARY_PATH=");
+           env << library_path;
            proc->setEnvironment(env);
            proc->start(file.fileName());
         #endif
