@@ -47,8 +47,7 @@ MainFrame::vdcdebug("*parent,","WindowFlags f)", """");
    Q_UNUSED(style);
 
    this->b_allowCloseDialog = false;
-   this->setWindowModality(Qt::NonModal);
-
+   this->setWindowModality(Qt::WindowModal);
    this->setAttribute(Qt::WA_DeleteOnClose);
 
    QVBoxLayout *layout = new QVBoxLayout;
