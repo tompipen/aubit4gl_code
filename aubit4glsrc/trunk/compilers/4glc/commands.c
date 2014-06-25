@@ -471,6 +471,7 @@ void clr_attrib(struct attrib *attr ) {
         attr->normal=EB_NOTSET;
         attr->style_expr=NULL;
         attr->currentrowdisplayexpr=NULL;
+        attr->current_field_display=NULL;
         attr->count=0;
         attr->maxcount=0;
         attr->allow_insert=EB_NOTSET;

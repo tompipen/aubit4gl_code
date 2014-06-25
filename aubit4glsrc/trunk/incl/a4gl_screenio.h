@@ -25,6 +25,7 @@
     int processed_onkey;
     void *callback_function;
     struct s_formcontrol fcntrl[CONTROL_STACK_LENGTH];
+    int current_field_display;
   };
 
 #endif

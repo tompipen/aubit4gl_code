@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: data_if.c,v 1.41 2010-02-16 13:16:27 mikeaubury Exp $
+# $Id: data_if.c,v 1.42 2014-06-25 18:02:22 mikeaubury Exp $
 #
 */
 
@@ -98,6 +98,8 @@ get_set_s_screenio (void *ptr, int mode, char *name, long var)
     int processed_onkey;
     void *callback_function;
     struct s_formcontrol fcntrl[CONTROL_STACK_LENGTH];
+    int current_field_display;
+
   };
 
   struct s_s_screenio_1 *val;
@@ -311,6 +313,22 @@ get_set_s_screenio (void *ptr, int mode, char *name, long var)
       if (mode == GETSETSET)
 	{
 	  val->help_no = (int) var;
+	  return (void *) 1;
+	}
+    }
+
+
+  if (strcmp (name, "current_field_display") == 0)
+    {
+      if (mode == GETSETGET)
+	return (void *) (long)val->current_field_display;
+
+      if (mode == GETSETGETPTR)
+	return (void *) &(val->current_field_display);
+
+      if (mode == GETSETSET)
+	{
+	  val->current_field_display = (int) var;
 	  return (void *) 1;
 	}
     }

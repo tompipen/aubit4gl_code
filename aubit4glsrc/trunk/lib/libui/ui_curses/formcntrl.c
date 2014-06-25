@@ -24,10 +24,10 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.175 2013-11-29 14:45:28 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.176 2014-06-25 18:02:34 mikeaubury Exp $
 #*/
 #ifndef lint
-static char const module_id[] = "$Id: formcntrl.c,v 1.175 2013-11-29 14:45:28 mikeaubury Exp $";
+static char const module_id[] = "$Id: formcntrl.c,v 1.176 2014-06-25 18:02:34 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -1490,8 +1490,11 @@ process_control_stack_internal (struct s_screenio *sio, struct aclfgl_event_list
 	  A4GL_mja_pos_form_cursor (sio->currform->form);
 	  fprop = (struct struct_scr_field *) (field_userptr (sio->currentfield));
 
-
+	if (sio->current_field_display) {
+	  attr = A4GL_determine_attribute (FGL_CMD_INPUT, sio->current_field_display, fprop, field_buffer (sio->currentfield, 0));
+	} else {
 	  attr = A4GL_determine_attribute (FGL_CMD_INPUT, sio->attrib, fprop, field_buffer (sio->currentfield, 0));
+	}
 
 	  if (attr != 0)
 	    {
@@ -1621,8 +1624,6 @@ process_control_stack_internal (struct s_screenio *sio, struct aclfgl_event_list
     {
 
       int ffc_rval;
-      //struct struct_scr_field *fprop;
-      //int attr;
 
 #ifdef DEBUG
       A4GL_debug ("AFTER FIELD - mode=%d (construct=%d)", sio->mode, MODE_CONSTRUCT);
@@ -1655,12 +1656,16 @@ process_control_stack_internal (struct s_screenio *sio, struct aclfgl_event_list
 			return -1;
 		}
 	    }
+      if (sio->current_field_display) {
+          int attr;
+      	  struct struct_scr_field *fprop;
+	  fprop = (struct struct_scr_field *) (field_userptr (sio->currentfield));
+	  attr = A4GL_determine_attribute (FGL_CMD_INPUT, sio->attrib, fprop, field_buffer (sio->currentfield, 0));
+	  A4GL_set_field_attr_with_attr (sio->currentfield, attr, FGL_CMD_INPUT);
+      }
 
 	  A4GL_set_infield_from_parameter ((long) sio->currentfield);
 	  last_field_name = sio->fcntrl[a].field_name;
-
-
-
 
 	  rval = A4GL_EVENT_AFTER_FIELD_1;
 	}

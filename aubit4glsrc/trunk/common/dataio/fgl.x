@@ -1,4 +1,4 @@
-/* $Id: fgl.x,v 1.74 2014-04-14 08:06:42 mikeaubury Exp $ */
+/* $Id: fgl.x,v 1.75 2014-06-25 18:02:21 mikeaubury Exp $ */
 typedef string str<>;
 typedef string sql_ident<>;
 typedef struct s_plsql_packageEntries * s_plsql_packageEntries_ptr;
@@ -271,6 +271,7 @@ struct attrib {
 
 /* INPUT/DISPLAY Array.... */
 	struct expr_str *currentrowdisplayexpr;
+	struct expr_str *current_field_display;
 	struct expr_str *count;
 	struct expr_str *maxcount;
 	enum e_boolean allow_insert;
