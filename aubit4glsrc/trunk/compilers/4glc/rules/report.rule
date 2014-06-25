@@ -1248,7 +1248,18 @@ pdf_report_def : op_doc4gl_comment  pdf_rep_or_localrep {
 
 
 pdf_functions_expr :
-	PDF_FUNCTION OPEN_BRACKET CHAR_VALUE KW_COMMA opt_func_call_args CLOSE_BRACKET {
+	PDF_FUNCTION OPEN_BRACKET CHAR_VALUE CLOSE_BRACKET {
+			if (rep_type==REP_TYPE_NORMAL) {
+				a4gl_yyerror("You can't use a pdf function in a non-pdf report");
+				$<ptr>$=0;
+			} else {
+				// REP_TYPE_PDF or REP_TYPE_NOTSET(a function)
+   				ADDMAP("CALL",$<str>3);
+		                $<ptr>$=A4GL_new_expr_pdf_fcall($<str>3,NULL,A4GL_compiling_module_basename(),lastlineno,get_namespace($<str>3));
+			}
+   		}
+
+	| PDF_FUNCTION OPEN_BRACKET CHAR_VALUE KW_COMMA opt_func_call_args CLOSE_BRACKET {
 			if (rep_type==REP_TYPE_NORMAL) {
 				a4gl_yyerror("You can't use a pdf function in a non-pdf report");
 				$<ptr>$=0;
