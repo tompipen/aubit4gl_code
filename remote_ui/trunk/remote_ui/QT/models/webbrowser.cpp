@@ -120,7 +120,7 @@ void WebBrowser::printpage()
 
   QPrinter printer;
   printer.setPageSize(QPrinter::Letter);
-  printer.setPageMargins(-0.6, -0.7, -0.8, -0.8, QPrinter::Inch);
+  printer.setPageMargins(-0.6, -0.4, -0.8, -0.8, QPrinter::Inch);
 
   QPrintDialog dialog(&printer, this);
 
