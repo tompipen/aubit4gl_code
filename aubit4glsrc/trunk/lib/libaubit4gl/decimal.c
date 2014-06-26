@@ -838,6 +838,7 @@ A4GL_debug("ptr=%s\n",ptr);
 	    }
 	}
     }
+  A4GL_lrtrim (buff);
   if (strncmp (buff, "-.", 2) == 0)
     {
       char buff2[2000];
