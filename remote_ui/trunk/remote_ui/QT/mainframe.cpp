@@ -770,8 +770,17 @@ MainFrame::vdcdebug("MainFrame","tcpListener", "int port");
    clientTcp->setDebugModus(MainFrame::b_debugmodus, this);
 
    if(!clientTcp->listen(QHostAddress::Any, port)){
-      errorMessageMainFrame->showMessage(
-            tr("ERROR: VDC already running"));
+      /*errorMessageMainFrame->showMessage(
+            tr("ERROR: VDC already running"));*/
+       Dialog *dialog = new Dialog(tr("VDC"), tr("VDC is already running."), "", "stop", this, Qt::WindowStaysOnTopHint);
+       QPalette palette;
+       palette.setBrush(this->backgroundRole(), QBrush(QImage("pics:VENTAS_9_alu_1080p.png")));
+       dialog->setPalette(palette);
+       dialog->setStyleSheet("QPushButton { border-image: url(pics:VENTAS_9_knopf_menu_inaktiv.png); padding-top: -1; padding-right: 10; text-align: left; height: 36px; min-width: 50px; }");
+       dialog->createButton(1, "Quit", "Quit", "nein.png");
+       connect(dialog->getAction("Quit"), SIGNAL(triggered()), QApplication::instance(), SLOT(quit()));
+       dialog->show();
+
    }
 
    if(connectionsTab != NULL){
