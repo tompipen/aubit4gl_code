@@ -4679,8 +4679,26 @@ void ScreenHandler::openEmailWithAttach(QString fileName)
     QSettings *settings = new QSettings("HKEY_CURRENT_USER\\Software\\Classes\\mailto\\shell\\open\\command\\", QSettings::NativeFormat);
     QString emailProgram = settings->value(".").toString();
 
+    if(emailProgram.isEmpty())
+    {
+        QSettings *settings1 = new QSettings("HKEY_CLASSES_ROOT\\mailto\\shell\\open\\command\\", QSettings::NativeFormat);
+        emailProgram = settings1->value(".").toString();
+
+    }
+
     emailProgram.replace("%1", fileName);
-    emailProgram.replace("attachment=", "attachment=" + QDir::toNativeSeparators(QDir::tempPath() + "\\"));
+
+    if(!emailProgram.contains("OUTLOOK"))
+    {
+        emailProgram.replace("attachment=", "attachment=" + QDir::toNativeSeparators(QDir::tempPath() + "\\"));
+
+    } else {
+        /*emailProgram.replace(",","&");
+        emailProgram.remove("to=");
+        emailProgram.replace("attachment=", "\" /a \"" + QDir::toNativeSeparators(QDir::tempPath() + "\\"));
+        emailProgram.append("\"");*/
+    }
+
     process.startDetached(emailProgram);
 #endif
 #ifdef Q_OS_MAC
