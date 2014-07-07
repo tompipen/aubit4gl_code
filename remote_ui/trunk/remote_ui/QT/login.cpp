@@ -203,8 +203,8 @@ LoginForm::LoginForm(QWidget *parent)
 
     userWidget->setLayout(mainLayout);
 
-    tWidget->addTab(userWidget, "User");
-    tWidget->addTab(adminWidget, "Admin");
+    tWidget->addTab(userWidget, tr("&User"));
+    tWidget->addTab(adminWidget, tr("&Admin"));
 
     tabWidgetLayout->addWidget(tWidget);
 
