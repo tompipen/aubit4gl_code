@@ -1172,7 +1172,19 @@ namespace Fgl {
 
                   if(value.contains(":"))
                   {
-                      value.remove(":");
+                      valueList << value.split(":");
+
+                      for(int i=0; i < valueList.count(); i++)
+                      {
+                          if(valueList.at(i).toInt())
+                          {
+                              ok = true;
+                          } else {
+                              ok = false;
+                              break;
+                          }
+                      }
+                      return ok;
                   }
 
                   if(value.contains("|"))
