@@ -3685,6 +3685,11 @@ QString ProtocolHandler::getVentasLogicalIndex(int index, QString formmask)
         logicalIndex = index + 1;
     }
 
+    if(form == "m2infdk")
+    {
+        logicalIndex = index + 1;
+    }
+
     if(logicalIndex == -1)
     {
         logicalIndex = index;
