@@ -211,6 +211,16 @@ int VSSH::auth()
 
   qDebug() << "method: " << QString::number(method);
 
+  if(method & SSH_AUTH_METHOD_INTERACTIVE)
+  {
+      rc = this->auth_interactive();
+      if(rc == SSH_OK)
+      {
+          emit authsuccess();
+      }
+      return rc;
+  }
+
   if(method & SSH_AUTH_METHOD_PASSWORD)
   {
       rc = this->auth_password();
@@ -230,17 +240,6 @@ int VSSH::auth()
          emit authsuccess();
      }
      return rc;
-  }
-
-
-  if(method & SSH_AUTH_METHOD_INTERACTIVE)
-  {
-      rc = this->auth_interactive();
-      if(rc == SSH_OK)
-      {
-          emit authsuccess();
-      }
-      return rc;
   }
 
   qDebug() << "SSH Error 13: ", ssh_get_error(session);
@@ -271,9 +270,81 @@ int VSSH::auth_pubkey()
 
 int VSSH::auth_interactive()
 {
-  /*int nprompts, iprompt;
-  const char *name, *instruction;*/
-   return 0;
+      int rc = 0;
+      char *password;
+
+      QByteArray ba_password = this->password().toLocal8Bit();
+      password = ba_password.data();
+
+      rc = ssh_userauth_kbdint(session, NULL, NULL);
+      while (rc == SSH_AUTH_INFO) {
+          const char *instruction;
+          const char *name;
+          char buffer[128];
+          int i, n;
+
+          name = ssh_userauth_kbdint_getname(session);
+          instruction = ssh_userauth_kbdint_getinstruction(session);
+          n = ssh_userauth_kbdint_getnprompts(session);
+
+          if (name && strlen(name) > 0) {
+              printf("%s\n", name);
+          }
+
+          if (instruction && strlen(instruction) > 0) {
+              printf("%s\n", instruction);
+          }
+
+          for (i = 0; i < n; i++) {
+              const char *answer;
+              const char *prompt;
+              char echo;
+
+              prompt = ssh_userauth_kbdint_getprompt(session, i, &echo);
+              if (prompt == NULL) {
+                  break;
+              }
+
+              if (echo) {
+                  char *p;
+
+                  printf("%s", prompt);
+
+                  if (fgets(buffer, sizeof(buffer), stdin) == NULL) {
+                      return SSH_AUTH_ERROR;
+                  }
+
+                  buffer[sizeof(buffer) - 1] = '\0';
+                  if ((p = strchr(buffer, '\n'))) {
+                      *p = '\0';
+                  }
+
+                  if (ssh_userauth_kbdint_setanswer(session, i, buffer) < 0) {
+                      return SSH_AUTH_ERROR;
+                  }
+
+                  memset(buffer, 0, strlen(buffer));
+              } else {
+                  if (password && strstr(prompt, "Password:")) {
+                      answer = password;
+                  } else {
+                      buffer[0] = '\0';
+
+                      if (ssh_getpass(prompt, buffer, sizeof(buffer), 0, 0) < 0) {
+                          return SSH_AUTH_ERROR;
+                      }
+                      answer = buffer;
+                  }
+                  rc = ssh_userauth_kbdint_setanswer(session, i, answer);
+                  memset(buffer, 0, sizeof(buffer));
+                  if (rc < 0) {
+                      return SSH_AUTH_ERROR;
+                  }
+              }
+          }
+          rc=ssh_userauth_kbdint(session,NULL,NULL);
+    }
+    return rc;
 
 }
 
