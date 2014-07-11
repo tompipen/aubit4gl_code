@@ -22,7 +22,7 @@ bool ZipUnzip::unzipArchiv(QString filePath, QString fileName, QString destFileP
 
     if( !zipArchiv.open( QuaZip::mdUnzip ) )
     {
-        qWarning ( "(unzipArchiv()): Datei konnte nicht geöffnet werden. Fehlermeldung: " );
+        qWarning ( "(unzipArchiv()): Datei konnte nicht geoeffnet werden. Fehlermeldung: " );
         return false;
     }
 
@@ -62,9 +62,7 @@ bool ZipUnzip::unzipArchiv(QString filePath, QString fileName, QString destFileP
 
         if( destdir->open( QIODevice::WriteOnly | QIODevice::Truncate) )
         {
-            QTextStream stream( destdir );
-            stream.setCodec("UTF-8");
-            stream << file.readAll();
+            destdir->write(file.readAll());
         } else {
             qDebug() << "konnte ned zum schreiben oeffnen" << zipArchiv.getZipError();
             //return false;
@@ -88,7 +86,7 @@ bool ZipUnzip::unzipBinarieArchiv(QString filePath, QString fileName, QString de
 
     if( !zipArchiv.open( QuaZip::mdUnzip ) )
     {
-        qWarning ( "(unzipArchiv()): Datei konnte nicht geöffnet werden. Fehlermeldung: " );
+        qWarning ( "(unzipArchiv()): Datei konnte nicht geoeffnet werden. Fehlermeldung: " );
         return false;
     }
 
@@ -237,7 +235,7 @@ bool ZipUnzip::zipFileArchiv(QString filePath, QString FileName, QFileInfo zielD
                     }
                     if( !out.open(QIODevice::WriteOnly, QuaZipNewInfo(inFile.fileName()/*, QString( filePath + "/" + FileName + "/" ) */) ) )
                     {
-                        qDebug() << "Datei konnte nich zum schreiben geöffnet werde: " << inFile.fileName();
+                        qDebug() << "Datei konnte nich zum schreiben geoeffnet werde: " << inFile.fileName();
                         return false;
                     }
 
@@ -268,7 +266,7 @@ bool ZipUnzip::zipFileArchiv(QString filePath, QString FileName, QFileInfo zielD
             }
             if( !out.open(QIODevice::WriteOnly, QuaZipNewInfo(inFile.fileName() /*QString( filePath + "/" + FileName + "/" )*/ ) ) )
             {
-                qDebug() << "Datei konnte nich zum schreiben geöffnet werde: " << inFile.fileName();
+                qDebug() << "Datei konnte nich zum schreiben geoeffnet werde: " << inFile.fileName();
                 return false;
             }
 
