@@ -211,9 +211,9 @@ int VSSH::auth()
 
   qDebug() << "method: " << QString::number(method);
 
-  if(method & SSH_AUTH_METHOD_INTERACTIVE)
+  if(method & SSH_AUTH_METHOD_PASSWORD)
   {
-      rc = this->auth_interactive();
+      rc = this->auth_password();
       if(rc == SSH_OK)
       {
           emit authsuccess();
@@ -221,9 +221,9 @@ int VSSH::auth()
       }
   }
 
-  if(method & SSH_AUTH_METHOD_PASSWORD)
+  if(method & SSH_AUTH_METHOD_INTERACTIVE)
   {
-      rc = this->auth_password();
+      rc = this->auth_interactive();
       if(rc == SSH_OK)
       {
           emit authsuccess();
