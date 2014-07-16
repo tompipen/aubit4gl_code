@@ -120,11 +120,23 @@ void CopyBinaries::copyBinaries(QString tmpDirPath, QString newDirPath)
 #endif
 #ifdef Q_OS_MAC
     program +=  "/VDC";
-    QProcess process;
-    process.start(program);
+
+    QProcess *proc = new QProcess;
+    QStringList env = QProcess::systemEnvironment();
+    QString library_path = QApplication::applicationDirPath();
+    library_path.replace("MacOS", "Frameworks");
+    library_path.prepend("DYLD_LIBRARY_PATH=");
+    env << library_path;
+    proc->setEnvironment(env);
+    proc->start(program);
 #endif
 #ifdef Q_OS_LINUX
+    program +=  "/VDC";
+
     QProcess *proc = new QProcess;
+    QStringList env = QProcess::systemEnvironment();;
+    env << QApplication::applicationDirPath();
+    proc->setEnvironment(env);
     proc->start(program);
 #endif
     logMessage(QString("[DEBUG] Starte VDC erneut mit Path: %1").arg(program));
