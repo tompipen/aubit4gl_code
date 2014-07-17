@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                          |
 # +----------------------------------------------------------------------+
 #
-# $Id: stack.c,v 1.283 2012-12-10 16:43:13 mikeaubury Exp $
+# $Id: stack.c,v 1.284 2014-07-17 09:51:53 siverly Exp $
 #
 */
 
@@ -127,8 +127,37 @@ int get_null_as_pad_string (void);
 #define BYTE_ALIGN_AIX64
 #endif
 
+
+#if defined( __PPC64__)
+#define BYTE_ALIGN_SET
+#define BYTE_ALIGN_PPC64
+#endif
+
 #ifndef BYTE_ALIGN_SET
 #define BYTE_ALIGN_x86
+#endif
+
+#ifdef BYTE_ALIGN_PPC64
+int nset[MAX_DTYPE][9] = {
+  {0x0, 0x0, IGN, IGN, IGN, IGN, IGN, IGN, IGN},        // CHAR
+  {0x80, 0x0, IGN, IGN, IGN, IGN, IGN, IGN, IGN},       // SMINT
+  {0x80, 0x0, 0x0, 0x00, 0x0, 0x0, 0x0, 0x0, 0x0},      // INT
+  {0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, IGN},        // FLOAT
+  {0xff, 0xff, 0xff, 0xff, IGN, IGN, IGN, IGN, IGN},    // SMFLOAT
+  {IGN, IGN, 0x00, 0x00, 0x0, 0x0, IGN, IGN, IGN},      // DECIMAL
+  {0x80, 0x0, 0x0, 0x00, 0x0, 0x0, 0x0, 0x0, 0x0},      // SERIAL
+  {0x80, 0x0, 0x0, 0x00, 0x0, 0x0, 0x0, 0x0, 0x0},      // DATE
+  {IGN, IGN, 0x00, 0x00, 0x0, 0x0, IGN, IGN, IGN},      // MONEY
+  {IGN, IGN, IGN, IGN, IGN, IGN, IGN, IGN, IGN},        // EMPTY
+  {IGN, IGN, 0x0, 0x0, 0xff, 0xff, 0x0, 0x0, IGN},      // DTIME
+  {IGN, IGN, IGN, IGN, IGN, IGN, IGN, IGN, IGN},        // BYTE
+  {IGN, IGN, IGN, IGN, IGN, IGN, IGN, IGN, IGN},        // TEXT
+ {0x0, 0x0, IGN, IGN, IGN, IGN, IGN, IGN, IGN},        // VCHAR
+  {IGN, IGN, 0x0, 0x0, 0xff, 0xff, 0x0, 0x0, IGN},      // INTERVAL
+  {0x0, 0x0, IGN, IGN, IGN, IGN, IGN, IGN, IGN},        // NCHAR
+  {0x0, 0x0, IGN, IGN, IGN, IGN, IGN, IGN, IGN},        // NVCHAR
+};
+
 #endif
 
 #ifdef BYTE_ALIGN_x86
@@ -3805,7 +3834,7 @@ A4GL_isnull (int type, char *buff)
       {
 	long i1;
 	long i2;
-#if defined(__aix64__)
+#if defined(__aix64__)  || defined(__PPC64__) 
 	if (memcmp(buff, &Aint32union.i_long,sizeof(Aint32union.i_long))==0) {
 		return 1;
 	} else {

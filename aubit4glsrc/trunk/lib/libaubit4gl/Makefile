@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.66 2012-05-29 08:07:21 siverly Exp $
+# $Id: Makefile,v 1.67 2014-07-17 09:51:53 siverly Exp $
 #
 
 ROOT    	=../..
@@ -135,6 +135,11 @@ ifeq "${GCC_MINGW}" "yes"
 	LINK_LIBS		+=-lmoldname
 	#Needed for getservbyname():
 	LINK_LIBS		+=-lwsock32
+endif
+
+ifeq "${TARGET}" "powerpc64-unknown-linux-gnu"
+	CFLAGS+=-D__PPC64__
+
 endif
 
 ifeq "${TARGET_OS}" "darwin"
