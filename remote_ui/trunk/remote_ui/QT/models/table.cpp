@@ -78,6 +78,28 @@ MainFrame::vdcdebug("TableView","TableView", "QWidget *parent");
    this->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
    this->setInputEnabled(false);
    this->setEnabled(false);
+
+   int logicalIndex = 0;
+   QString sortIndecator;
+
+   if(FglForm *fglform = qobject_cast<FglForm*> (p_fglform))
+   {
+       logicalIndex = VDC::readSettingsFromIni(fglform->formName(), "sortLogicalIndex").toInt();
+       sortIndecator = VDC::readSettingsFromIni(fglform->formName(), "sortIndecator");
+   }
+
+   this->setSortingEnabled(false);
+   if(sortIndecator == "ASC")
+   {
+       this->horizontalHeader()->setSortIndicator(logicalIndex,Qt::AscendingOrder);
+   }
+
+   if(sortIndecator == "DESC")
+   {
+       this->horizontalHeader()->setSortIndicator(logicalIndex,Qt::DescendingOrder);
+   }
+   this->setSortingEnabled(true);
+
 }
 
 void TableView::restoreSortOrder()
