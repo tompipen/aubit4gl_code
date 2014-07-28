@@ -88,7 +88,7 @@ MainFrame::vdcdebug("TableView","TableView", "QWidget *parent");
        sortIndecator = VDC::readSettingsFromIni(fglform->formName(), "sortIndecator");
    }
 
-   this->setSortingEnabled(false);
+   horizontalHeader()->blockSignals(true);
    if(sortIndecator == "ASC")
    {
        this->horizontalHeader()->setSortIndicator(logicalIndex,Qt::AscendingOrder);
@@ -98,7 +98,7 @@ MainFrame::vdcdebug("TableView","TableView", "QWidget *parent");
    {
        this->horizontalHeader()->setSortIndicator(logicalIndex,Qt::DescendingOrder);
    }
-   this->setSortingEnabled(true);
+   horizontalHeader()->blockSignals(false);
 
 }
 
