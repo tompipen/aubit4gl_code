@@ -1719,6 +1719,9 @@ DOXY_BIN_ABSPATH
 DOT_PATH
 HAVE_DOT
 DOXYGEN
+HAVE_HARU
+HARU_CFLAGS
+HARU_LIBS
 PDFLIB_L_FLAGS
 PDFLIB_I_FLAGS
 PDFBUILD
@@ -1965,6 +1968,7 @@ with_pop
 with_smtp
 with_zlib
 with_pdf
+with_hpdf
 with_qrencoder
 with_pdflib
 with_cint
@@ -2711,6 +2715,7 @@ Optional Packages:
                           install directory, defaults to /usr/local.
   --with-pdf=DIR          Include PDF support.  DIR is the PDFlib
                           install directory, defaults to /usr/local.
+  --with-hpdf=DIR          Include Haru PDF support.  DIR is the Haru install directory
 --with-qrencoder
 --with-pdflib
   --with-cint=DIR         Include CINT support.  DIR is the Cint base
@@ -13078,6 +13083,11 @@ CC="$lt_save_CC"
 
 
 
+
+
+
+
+
 #DoxyGen
 
 
@@ -21260,6 +21270,83 @@ fi
 if test "$enable_stop_pdf" = "yes" ; then
 	exit
 fi
+
+
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: " >&5
+$as_echo "" >&6; }
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: ${T_MD}Checking for Haru PDF support:${T_ME}" >&5
+$as_echo "${T_MD}Checking for Haru PDF support:${T_ME}" >&6; }
+
+
+
+# Check whether --with-hpdf was given.
+if test "${with_hpdf+set}" = set; then :
+  withval=$with_hpdf;
+    if test "$withval" != "no"; then
+        HARU_DIR=$withval
+        CPPFLAGS="$CPPFLAGS -I$withval/include"
+        LDFLAGS="$LDFLAGS -L$withval/lib"
+    fi
+
+fi
+
+
+
+
+ac_fn_c_check_header_mongrel "$LINENO" "hpdf.h" "ac_cv_header_hpdf_h" "$ac_includes_default"
+if test "x$ac_cv_header_hpdf_h" = xyes; then :
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for HPDF_Page_ShowText in -lhpdf" >&5
+$as_echo_n "checking for HPDF_Page_ShowText in -lhpdf... " >&6; }
+if ${ac_cv_lib_hpdf_HPDF_Page_ShowText+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lhpdf  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char HPDF_Page_ShowText ();
+int
+main ()
+{
+return HPDF_Page_ShowText ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_lib_hpdf_HPDF_Page_ShowText=yes
+else
+  ac_cv_lib_hpdf_HPDF_Page_ShowText=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_hpdf_HPDF_Page_ShowText" >&5
+$as_echo "$ac_cv_lib_hpdf_HPDF_Page_ShowText" >&6; }
+if test "x$ac_cv_lib_hpdf_HPDF_Page_ShowText" = xyes; then :
+
+ 	$as_echo "#define HAVE_HARU 1" >>confdefs.h
+
+        HAVE_HARU=1
+        if test "x$HARU_DIR" != "x"; then
+            HARU_CFLAGS="-I$HARU_DIR/include"
+            HARU_LIBS="-L$HARU_DIR/lib -lhpdf"
+        else
+            HARU_LIBS="-lhpdf"
+        fi
+fi
+
+
+fi
+
 
 
 
@@ -32217,7 +32304,7 @@ test "x$enable_libtool_lock" != xno && enable_libtool_lock=yes
 case $host in
 *-*-irix6*)
   # Find out which ABI we are using.
-  echo '#line 32220 "configure"' > conftest.$ac_ext
+  echo '#line 32307 "configure"' > conftest.$ac_ext
   if { { eval echo "\"\$as_me\":${as_lineno-$LINENO}: \"$ac_compile\""; } >&5
   (eval $ac_compile) 2>&5
   ac_status=$?
@@ -38354,7 +38441,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure,v 1.476 2013-07-12 12:59:47 mikeaubury Exp $
+| $Id: configure,v 1.477 2014-07-29 12:45:09 mikeaubury Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

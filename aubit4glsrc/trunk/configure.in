@@ -23,7 +23,7 @@ dnl # | If you did not, or have any questions about Aubit licensing, please  |
 dnl # | contact afalout@ihug.co.nz                                           |
 dnl # +----------------------------------------------------------------------+
 dnl #
-dnl # $Id: configure.in,v 1.445 2013-07-12 13:00:23 mikeaubury Exp $
+dnl # $Id: configure.in,v 1.446 2014-07-29 12:45:12 mikeaubury Exp $
 dnl #
 dnl #TODO: check that WARN_LD_LIBRARY_PATH is set ONLY if user specified custom withval
 dnl #and then check that it is no already in LD_LIBRARY_PATH or ldconfig file. Only
@@ -48,7 +48,7 @@ export LD_LIBRARY_PATH=/lib:$LD_LIBRARY_PATH
 
 #We need autoconf at least version 2.50
 AC_PREREQ(2.50)
-AC_REVISION($Id: configure.in,v 1.445 2013-07-12 13:00:23 mikeaubury Exp $)
+AC_REVISION($Id: configure.in,v 1.446 2014-07-29 12:45:12 mikeaubury Exp $)
 
 #FIXME: Some versions of autoconf are complaining that $AUBIT_VERSION and 
 #$AUBIT_BUILD are not constants. Maybe we should drop stuff in tools/project 
@@ -595,6 +595,11 @@ AC_SUBST(USE_PDF)
 AC_SUBST(PDFBUILD)
 AC_SUBST(PDFLIB_I_FLAGS)
 AC_SUBST(PDFLIB_L_FLAGS)
+
+
+AC_SUBST(HARU_LIBS)
+AC_SUBST(HARU_CFLAGS)
+AC_SUBST(HAVE_HARU)
 
 #DoxyGen
 AC_SUBST(DOXYGEN)
@@ -5161,6 +5166,33 @@ if test "$enable_stop_pdf" = "yes" ; then
 	exit
 fi
 
+PHP_CONFIGURE_PART(Checking for Haru PDF support:)
+
+AC_ARG_WITH(hpdf,
+[  --with-hpdf[=DIR]          Include Haru PDF support.  DIR is the Haru install directory ],
+[
+    if test "$withval" != "no"; then
+        HARU_DIR=$withval
+        CPPFLAGS="$CPPFLAGS -I$withval/include"
+        LDFLAGS="$LDFLAGS -L$withval/lib"
+    fi
+])
+
+
+
+AC_CHECK_HEADER(hpdf.h,
+    AC_CHECK_LIB([hpdf], [HPDF_Page_ShowText], [
+ 	AC_DEFINE(HAVE_HARU)
+        HAVE_HARU=1
+        if test "x$HARU_DIR" != "x"; then
+            HARU_CFLAGS="-I$HARU_DIR/include"
+            HARU_LIBS="-L$HARU_DIR/lib -lhpdf"
+        else
+            HARU_LIBS="-lhpdf"
+        fi],
+
+)
+)
 
 
 ## ==================================================================
@@ -11319,7 +11351,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure.in,v 1.445 2013-07-12 13:00:23 mikeaubury Exp $
+| $Id: configure.in,v 1.446 2014-07-29 12:45:12 mikeaubury Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X

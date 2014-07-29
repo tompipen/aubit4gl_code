@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.32 2012-10-17 20:28:40 mikeaubury Exp $
+# $Id: Makefile.in,v 1.33 2014-07-29 12:45:33 mikeaubury Exp $
 #
 
 ROOT        =../..
@@ -48,6 +48,11 @@ ifneq "${PDFBUILD}" "no"
 	ALL 		+=${PLUGINDIR}/libEXREPORT_PDF${SO_EXT}
 endif
 
+ifeq "${HAVE_HARU}" "1"
+	ALL 		+=${PLUGINDIR}/libEXREPORT_HARU${SO_EXT}
+	CFLAGS+= ${HARU_CFLAGS}
+endif
+
 ifneq "${COMSPEC}" ""
 	LINKLIBS	=-L${LIBROOT} -l${AUBITLIBFULL}
 endif
@@ -60,7 +65,7 @@ endif
 OBJECTS_NOPDF	=nopdf.o
 OBJECTS_PDF		=has_pdf.g.o ../liblogical/pdf/process/pdf_barcode.g.o
 OBJECTS_HARU          =haru.o ../liblogical/pdf/process/pdf_barcode.o
-HARU_L_FLAGS=-L/usr/local/lib -lhpdf
+#HARU_L_FLAGS=-L/usr/local/lib -lhpdf
 
 ## ==================================================================
 ##                              Targets
@@ -94,7 +99,7 @@ haru.test:
 haru.dummy: ${PLUGINDIR}/libEXREPORT_HARU${SO_EXT} ${PLUGINDIR}/libEXREPORT_HARUs${SO_EXT}
 
 ${PLUGINDIR}/libEXREPORT_HARU${SO_EXT}: ${OBJECTS_HARU}
-	${LD}  $(SO_LDFLAGS) ${OBJECTS_HARU} -o $@ ${LINKLIBS} ${HARU_L_FLAGS}  ${QRLIB} -lpdf
+	${LD}  $(SO_LDFLAGS) ${OBJECTS_HARU} -o $@ ${LINKLIBS} ${HARU_LIBS} ${QRLIB} 
 
 ${PLUGINDIR}/libEXREPORT_HARUs${SO_EXT}: ${OBJECTS_HARU}
 	${LD}  $(SO_LDFLAGS) ${OBJECTS_HARU} -o $@ ${LINKLIBS} /usr/local/lib/libhpdf.a  ${QRLIB} -lpng

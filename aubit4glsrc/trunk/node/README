@@ -1,1 +1,11 @@
 This is the latest code...
+
+By default - runs on port 8080 (see server.js)
+
+
+node server.js
+
+Then connect via browser to 
+
+
+http://[server IP Address]:8080/index.html
