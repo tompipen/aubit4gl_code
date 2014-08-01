@@ -1305,7 +1305,7 @@ uilib_menu_start (int nargs)
   UIdebug (5, "Menu start context=%d for %s %d\n", cmenu, mod, ln);
   pushint (cmenu);
   suspend_flush (1);
-  send_to_ui ("<MENU CONTEXT=\"%d\" TITLE=\"%s\" COMMENT=\"%s\" STYLE=\"%s\" IMAGE=\"%s\">\n<MENUCOMMANDS>", cmenu, mt, xml_escape(char_encode(comment)),
+  send_to_ui ("<MENU CONTEXT=\"%d\" TITLE=\"%s\" COMMENT=\"%s\" STYLE=\"%s\" IMAGE=\"%s\">\n<MENUCOMMANDS>", cmenu, xml_escape(char_encode(mt)), xml_escape(char_encode(comment)),
 	      xml_escape(char_encode(style)), xml_escape(char_encode(image)));
 
   return 0;
