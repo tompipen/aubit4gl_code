@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.175 2014-07-18 11:00:40 pauldgardiner Exp $
+# $Id: resource.c,v 1.176 2014-08-05 13:29:57 pauldgardiner Exp $
 #
 */
 
@@ -122,6 +122,7 @@ struct str_resource builtin_resource[] = {
   {"A4GL_PDFTYPE", "NOPDF","internal"},	/* libEXREPORT_xxxx */
   {"A4GL_HARU_CONVERT_TO_PDFLIB","Y","internal"},
   {"A4GL_PDF_RECT_IS_STROKED","Y","internal"},
+  {"A4GL_PDF_COMPRESSION","6","internal"}, // 0-9
   {"A4GL_LEXTYPE", "C","internal"},
   {"A4GL_LEXDIALECT", "INFORMIX","internal"}, // If they set LEXTYPE TO EC - this is the default
   {"A4GL_RPCTYPE", "NORPC","internal"},
