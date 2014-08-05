@@ -35221,14 +35221,20 @@ PLUGIN_NO_LINKABLE=
 	if test "$PDFBUILD" != "no"; then
 		PLUGIN_YES="$PLUGIN_YES EXREPORT_PDF $LIBLOGICAL_PDF_DEPEND"
 	else
-        PLUGIN_NO="$PLUGIN_NO EXREPORT_PDF $LIBLOGICAL_PDF_DEPEND"
+        	PLUGIN_NO="$PLUGIN_NO EXREPORT_PDF $LIBLOGICAL_PDF_DEPEND"
 		INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL install.pdflib"
+	fi
+
+	if test "$HAVE_HARU" = "1"; then
+		PLUGIN_YES="$PLUGIN_YES EXREPORT_HARU"
+	else
+		PLUGIN_NO="$PLUGIN_NO EXREPORT_HARU"
 	fi
 
 	if test "$PDFBUILD" != "no" -a "$GTK_VERSION" = "2.0"; then
 		PLUGIN_YES="$PLUGIN_YES $LIBLOGICAL_PDF_GTK2_DEPEND"
 	else
-        PLUGIN_NO="$PLUGIN_NO $LIBLOGICAL_PDF_GTK2_DEPEND"
+        	PLUGIN_NO="$PLUGIN_NO $LIBLOGICAL_PDF_GTK2_DEPEND"
 		#INSTALL_MISSING_OPTIONAL="$INSTALL_MISSING_OPTIONAL install.pdflib"
 	fi
 
@@ -38441,7 +38447,7 @@ cat<<X
 | CONFIGURE_COMMAND="$CONFIGURE_COMMAND"
 |                                                                    |
 | CONFIGURE_VERSION:                                                 |
-| $Id: configure,v 1.477 2014-07-29 12:45:09 mikeaubury Exp $
+| $Id: configure,v 1.478 2014-08-05 10:59:54 mikeaubury Exp $
 |                                                                    |
 +--------------------------------------------------------------------+
 X
