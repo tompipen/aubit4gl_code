@@ -373,6 +373,11 @@ void ScreenHandler::displayForm(QString formName)
 MainFrame::vdcdebug("ScreenHandler","displayForm", "QString formName");
    QString xmlFormString = qh_formFiles[formName];
 
+   if(p_fglform->windowName != "dummy_ventas")
+   {
+       p_fglform->b_dummy = false;
+   }
+
    if(!xmlFormString.isEmpty()){
 
       QDomDocument xmlForm;
@@ -386,6 +391,7 @@ MainFrame::vdcdebug("ScreenHandler","displayForm", "QString formName");
    if(!p_fglform->b_dummy)
    {
        p_fglform->show();
+       hasWindow = 1;
    }
 }
 
@@ -2478,9 +2484,9 @@ if(qsl_triggereds.size() > 0)
              if(!p_fglform->ringMenuPulldown()->isVisible())
              {
                  QRect rect;
+                 int pulldownCnt = p_fglform->ringMenuPulldown()->getButtons()->buttons().count();
                  if(p_fglform->b_dummy || !p_fglform->isVisible())
                  {
-
                    rect = QApplication::desktop()->screenGeometry();
                    QRect w_p_rect = QRect(0,0, p_fglform->ringMenuPulldown()->sizeHint().width(), p_fglform->ringMenuPulldown()->sizeHint().height());
                    p_fglform->ringMenuPulldown()->move(rect.center() - w_p_rect.center());
@@ -2489,8 +2495,16 @@ if(qsl_triggereds.size() > 0)
                  else
                  {
 
-                     QPoint pos = p_fglform->mapToGlobal(QPoint(0,0));
-                     p_fglform->ringMenuPulldown()->move(pos + p_fglform->rect().center() - p_fglform->ringMenuPulldown()->rect().center());
+                     if(pulldownCnt <= 10)
+                     {
+                         QPoint pos = p_fglform->mapToGlobal(QPoint(0,0));
+                         p_fglform->ringMenuPulldown()->move(pos + p_fglform->rect().center() - p_fglform->ringMenuPulldown()->rect().center());
+                     } else {
+                         pulldownCnt = pulldownCnt - 10;
+                         QPoint pos = p_fglform->mapToGlobal(QPoint(0,0));
+                         QPoint posHeight = QPoint(0, (25 * pulldownCnt) + 25);
+                         p_fglform->ringMenuPulldown()->move(pos + p_fglform->rect().center() - p_fglform->ringMenuPulldown()->rect().center() - posHeight);
+                     }
                  }
              }
             p_fglform->ringMenuPulldown()->show();
