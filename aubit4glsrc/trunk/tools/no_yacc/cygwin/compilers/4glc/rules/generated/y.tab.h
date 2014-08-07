@@ -38,7 +38,7 @@
    /* Put the tokens into the symbol table, so that GDB and other debuggers
       know about them.  */
    enum yytokentype {
-     NAME = 2276,
+     NAME = 2277,
      KW_COMMA = 1773,
      KW_WORDWRAP = 1551,
      KW_USING = 1705,
@@ -68,26 +68,26 @@
      KW_DIVIDE = 1719,
      KW_MOD = 1787,
      KW_POWER = 1691,
-     UMINUS = 2277,
+     UMINUS = 2278,
      CLOSE_BRACKET = 1560,
      OPEN_BRACKET = 1604,
-     TYPECAST = 2278,
+     TYPECAST = 2279,
      COMMAND = 1562,
-     NUMBER_VALUE = 2279,
-     CHAR_VALUE = 2280,
-     CHAR_VALUE_TRANSLATED = 2281,
-     INT_VALUE = 2282,
-     NAMED_GEN = 2283,
-     CLINE = 2284,
-     SQLLINE = 2285,
-     KW_CSTART = 2286,
-     KW_CEND = 2287,
-     USER_DTYPE_ORIG = 2288,
-     USER_DTYPE_NEW = 2289,
-     SQL_TEXT = 2290,
-     KW_WHENEVER_SET = 2291,
-     KW_LOADED_OBJECT_NAME = 2292,
-     COMMENT = 2293,
+     NUMBER_VALUE = 2280,
+     CHAR_VALUE = 2281,
+     CHAR_VALUE_TRANSLATED = 2282,
+     INT_VALUE = 2283,
+     NAMED_GEN = 2284,
+     CLINE = 2285,
+     SQLLINE = 2286,
+     KW_CSTART = 2287,
+     KW_CEND = 2288,
+     USER_DTYPE_ORIG = 2289,
+     USER_DTYPE_NEW = 2290,
+     SQL_TEXT = 2291,
+     KW_WHENEVER_SET = 2292,
+     KW_LOADED_OBJECT_NAME = 2293,
+     COMMENT = 2294,
      END_DIALOG = 1000,
      ACCEPT_DIALOG = 1001,
      EXIT_DIALOG = 1002,
@@ -1330,11 +1330,12 @@
      KW_IGNORE = 2271,
      COUNT = 2272,
      DIALOG = 2273,
-     SUBDIALOG = 2274
+     SUBDIALOG = 2274,
+     PDF_XY = 2275
    };
 #endif
 /* Tokens.  */
-#define NAME 2276
+#define NAME 2277
 #define KW_COMMA 1773
 #define KW_WORDWRAP 1551
 #define KW_USING 1705
@@ -1364,26 +1365,26 @@
 #define KW_DIVIDE 1719
 #define KW_MOD 1787
 #define KW_POWER 1691
-#define UMINUS 2277
+#define UMINUS 2278
 #define CLOSE_BRACKET 1560
 #define OPEN_BRACKET 1604
-#define TYPECAST 2278
+#define TYPECAST 2279
 #define COMMAND 1562
-#define NUMBER_VALUE 2279
-#define CHAR_VALUE 2280
-#define CHAR_VALUE_TRANSLATED 2281
-#define INT_VALUE 2282
-#define NAMED_GEN 2283
-#define CLINE 2284
-#define SQLLINE 2285
-#define KW_CSTART 2286
-#define KW_CEND 2287
-#define USER_DTYPE_ORIG 2288
-#define USER_DTYPE_NEW 2289
-#define SQL_TEXT 2290
-#define KW_WHENEVER_SET 2291
-#define KW_LOADED_OBJECT_NAME 2292
-#define COMMENT 2293
+#define NUMBER_VALUE 2280
+#define CHAR_VALUE 2281
+#define CHAR_VALUE_TRANSLATED 2282
+#define INT_VALUE 2283
+#define NAMED_GEN 2284
+#define CLINE 2285
+#define SQLLINE 2286
+#define KW_CSTART 2287
+#define KW_CEND 2288
+#define USER_DTYPE_ORIG 2289
+#define USER_DTYPE_NEW 2290
+#define SQL_TEXT 2291
+#define KW_WHENEVER_SET 2292
+#define KW_LOADED_OBJECT_NAME 2293
+#define COMMENT 2294
 #define END_DIALOG 1000
 #define ACCEPT_DIALOG 1001
 #define EXIT_DIALOG 1002
@@ -2627,6 +2628,7 @@
 #define COUNT 2272
 #define DIALOG 2273
 #define SUBDIALOG 2274
+#define PDF_XY 2275
 
 
 
@@ -2645,6 +2647,7 @@ typedef union YYSTYPE
 						/* yyparse in y.tab.c - 3100 in maximum. */
 
 	struct expr_str *ptr;
+	struct expr_str *xy_ptr[2];
 	struct expr_str_list *ptr_list;
 	char *sql_string;
 	struct fh_field_entry *field_entry;
@@ -2742,7 +2745,7 @@ typedef union YYSTYPE
 
 
 /* Line 1685 of yacc.c  */
-#line 2746 "y.tab.h"
+#line 2749 "y.tab.h"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */

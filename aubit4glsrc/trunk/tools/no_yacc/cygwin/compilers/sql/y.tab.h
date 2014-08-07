@@ -38,25 +38,25 @@
    /* Put the tokens into the symbol table, so that GDB and other debuggers
       know about them.  */
    enum yytokentype {
-     INT_VALUE = 2276,
-     NAMED = 2277,
-     NAMED_GEN = 2278,
-     CHAR_VALUE = 2279,
-     NOT_USED_1 = 2280,
-     NOT_USED_2 = 2281,
-     NOT_USED_3 = 2282,
-     NOT_USED_4 = 2283,
-     NOT_USED_5 = 2284,
-     NOT_USED_6 = 2285,
-     NOT_USED_7 = 2286,
-     NOT_USED_8 = 2287,
-     NUMBER_VALUE = 2288,
-     SEMICOLON = 2289,
-     QUESTION_MARK = 2290,
-     CLINE = 2291,
-     CH = 2292,
-     MARK_VAR = 2293,
-     END_MARK_VAR = 2294,
+     INT_VALUE = 2277,
+     NAMED = 2278,
+     NAMED_GEN = 2279,
+     CHAR_VALUE = 2280,
+     NOT_USED_1 = 2281,
+     NOT_USED_2 = 2282,
+     NOT_USED_3 = 2283,
+     NOT_USED_4 = 2284,
+     NOT_USED_5 = 2285,
+     NOT_USED_6 = 2286,
+     NOT_USED_7 = 2287,
+     NOT_USED_8 = 2288,
+     NUMBER_VALUE = 2289,
+     SEMICOLON = 2290,
+     QUESTION_MARK = 2291,
+     CLINE = 2292,
+     CH = 2293,
+     MARK_VAR = 2294,
+     END_MARK_VAR = 2295,
      END_DIALOG = 1000,
      ACCEPT_DIALOG = 1001,
      EXIT_DIALOG = 1002,
@@ -338,29 +338,30 @@
      KWPIPE = 2259,
      COUNT = 2272,
      DIALOG = 2273,
-     SUBDIALOG = 2274
+     SUBDIALOG = 2274,
+     PDF_XY = 2275
    };
 #endif
 /* Tokens.  */
-#define INT_VALUE 2276
-#define NAMED 2277
-#define NAMED_GEN 2278
-#define CHAR_VALUE 2279
-#define NOT_USED_1 2280
-#define NOT_USED_2 2281
-#define NOT_USED_3 2282
-#define NOT_USED_4 2283
-#define NOT_USED_5 2284
-#define NOT_USED_6 2285
-#define NOT_USED_7 2286
-#define NOT_USED_8 2287
-#define NUMBER_VALUE 2288
-#define SEMICOLON 2289
-#define QUESTION_MARK 2290
-#define CLINE 2291
-#define CH 2292
-#define MARK_VAR 2293
-#define END_MARK_VAR 2294
+#define INT_VALUE 2277
+#define NAMED 2278
+#define NAMED_GEN 2279
+#define CHAR_VALUE 2280
+#define NOT_USED_1 2281
+#define NOT_USED_2 2282
+#define NOT_USED_3 2283
+#define NOT_USED_4 2284
+#define NOT_USED_5 2285
+#define NOT_USED_6 2286
+#define NOT_USED_7 2287
+#define NOT_USED_8 2288
+#define NUMBER_VALUE 2289
+#define SEMICOLON 2290
+#define QUESTION_MARK 2291
+#define CLINE 2292
+#define CH 2293
+#define MARK_VAR 2294
+#define END_MARK_VAR 2295
 #define END_DIALOG 1000
 #define ACCEPT_DIALOG 1001
 #define EXIT_DIALOG 1002
@@ -643,6 +644,7 @@
 #define COUNT 2272
 #define DIALOG 2273
 #define SUBDIALOG 2274
+#define PDF_XY 2275
 
 
 
@@ -678,7 +680,7 @@ typedef union YYSTYPE
 
 
 /* Line 1685 of yacc.c  */
-#line 682 "y.tab.h"
+#line 684 "y.tab.h"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */

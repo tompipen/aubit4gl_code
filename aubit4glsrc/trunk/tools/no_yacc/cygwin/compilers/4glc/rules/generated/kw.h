@@ -1279,3 +1279,4 @@ struct s_kw {
 #define COUNT 2272
 #define DIALOG 2273
 #define SUBDIALOG 2274
+#define PDF_XY 2275

@@ -1273,3 +1273,4 @@
 %token COUNT 2272
 %token DIALOG 2273
 %token SUBDIALOG 2274
+%token PDF_XY 2275

@@ -1073,6 +1073,21 @@ rep_where :  { strcpy($<str>$,"");
 ;
 
 
+pdf_Pos: // Defaults to Y,X
+ fgl_expr_c KW_COMMA fgl_expr_c  {
+	$<xy_ptr>$[0]=$<ptr>3; // X in 0
+	$<xy_ptr>$[1]=$<ptr>1; // Y in 1
+}
+| PDF_XY fgl_expr_c KW_COMMA fgl_expr_c {
+	$<xy_ptr>$[0]=$<ptr>2; // X in 0
+	$<xy_ptr>$[1]=$<ptr>4; // Y in 1
+}
+| PDF_XY OPEN_BRACKET fgl_expr_c KW_COMMA fgl_expr_c  CLOSE_BRACKET {
+	$<xy_ptr>$[0]=$<ptr>3; // X in 0
+	$<xy_ptr>$[1]=$<ptr>5; // Y in 1
+}
+;
+
 
 pdf_specific_cmd : 
 	SET_COLOR fgl_expr_c KW_COMMA fgl_expr_c KW_COMMA fgl_expr_c {
@@ -1090,17 +1105,18 @@ pdf_specific_cmd :
 	| SET_PARAMETER fgl_expr_c KW_COMMA fgl_expr_c  {
 			$<cmd>$=new_pdf_specific_cmd("set_parameter",NULL, $<ptr>2,$<ptr>4,NULL);
 	}
-	| MOVE_TO  fgl_expr_c KW_COMMA fgl_expr_c {
-			$<cmd>$=new_pdf_specific_cmd("moveto",NULL, report_position_expr_x($<ptr>4) , report_position_expr_y($<ptr>2),NULL);
+	| MOVE_TO pdf_Pos { 
+			/* fgl_expr_c KW_COMMA fgl_expr_c { */
+			$<cmd>$=new_pdf_specific_cmd("moveto",NULL, report_position_expr_x($<xy_ptr>2[0]) , report_position_expr_y($<xy_ptr>2[1]),NULL);
 	}
-	| MOVE_TO_TOP  fgl_expr_c KW_COMMA fgl_expr_c {
-			$<cmd>$=new_pdf_specific_cmd("moveto_top",NULL, report_position_expr_x($<ptr>4), report_position_expr_y($<ptr>2),NULL);
+	| MOVE_TO_TOP pdf_Pos {
+			$<cmd>$=new_pdf_specific_cmd("moveto_top",NULL, report_position_expr_x($<xy_ptr>2[0]), report_position_expr_y($<xy_ptr>2[1]),NULL);
 	}
-	| LINE_TO  fgl_expr_c KW_COMMA fgl_expr_c {
-			$<cmd>$=new_pdf_specific_cmd("lineto",NULL, report_position_expr_x($<ptr>4), report_position_expr_y($<ptr>2),NULL);
+	| LINE_TO  pdf_Pos {
+			$<cmd>$=new_pdf_specific_cmd("lineto",NULL, report_position_expr_x($<xy_ptr>2[0]), report_position_expr_y($<xy_ptr>2[1]),NULL);
 	}
-	| LINETO_TOP  fgl_expr_c KW_COMMA fgl_expr_c {
-			$<cmd>$=new_pdf_specific_cmd("lineto_top",NULL, report_position_expr_x($<ptr>4), report_position_expr_y($<ptr>2),NULL);
+	| LINETO_TOP  pdf_Pos {
+			$<cmd>$=new_pdf_specific_cmd("lineto_top",NULL, report_position_expr_x($<xy_ptr>2[0]), report_position_expr_y($<xy_ptr>2[1]),NULL);
 	}
 
 	| BOOKMARK fgl_expr_c KW_COMMA fgl_expr_c opt_return {
@@ -1140,21 +1156,21 @@ pdf_specific_cmd :
 				$<ptr>2,
 				 NULL);
 	}
-	| BARCODE fgl_expr_c KW_AT fgl_expr_c KW_COMMA fgl_expr_c KW_WIDTH fgl_expr_c KW_HEIGHT fgl_expr_c {
+	| BARCODE fgl_expr_c KW_AT pdf_Pos  KW_WIDTH fgl_expr_c KW_HEIGHT fgl_expr_c {
 			$<cmd>$=new_pdf_specific_cmd("barcode",NULL, 
-				report_position_expr_x($<ptr>6),
-				report_position_expr_y($<ptr>4),
+				report_position_expr_x($<xy_ptr>4[0]),
+				report_position_expr_y($<xy_ptr>4[1]),
+				$<ptr>6,
 				$<ptr>8,
-				$<ptr>10,
 				$<ptr>2,
 				 NULL);
 	}
-	| BARCODE_NO_TEXT fgl_expr_c KW_AT fgl_expr_c KW_COMMA fgl_expr_c KW_WIDTH fgl_expr_c KW_HEIGHT fgl_expr_c {
+	| BARCODE_NO_TEXT fgl_expr_c KW_AT pdf_Pos KW_WIDTH fgl_expr_c KW_HEIGHT fgl_expr_c {
 			$<cmd>$=new_pdf_specific_cmd("barcode_no_text",NULL,
-				report_position_expr_x($<ptr>6),
-				report_position_expr_y($<ptr>4),
+				report_position_expr_x($<xy_ptr>4[0]),
+				report_position_expr_y($<xy_ptr>4[1]),
+				$<ptr>6,
 				$<ptr>8,
-				$<ptr>10,
  				$<ptr>2,
 				 NULL);
 	}

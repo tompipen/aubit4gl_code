@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: 1.reqd,v 1.103 2014-04-14 08:06:43 mikeaubury Exp $
+# $Id: 1.reqd,v 1.104 2014-08-07 07:48:25 mikeaubury Exp $
 #
 */
 
@@ -295,6 +295,7 @@ extern struct s_report_orderby_section *current_orderby;
 						/* yyparse in y.tab.c - 3100 in maximum. */
 
 	struct expr_str *ptr;
+	struct expr_str *xy_ptr[2];
 	struct expr_str_list *ptr_list;
 	char *sql_string;
 	struct fh_field_entry *field_entry;

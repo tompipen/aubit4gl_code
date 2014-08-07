@@ -1,4 +1,62 @@
 ---------------------------
+Wed Aug  6 16:07:45 BST 2014
+---------------------------
+1.2_37 Released
+---------------------------
+	2014-08-05 14:29  pauldgardiner
+	
+	Added A4GL_PDF_COMPRESSION
+	
+	2014-08-05 11:59  mikeaubury
+	
+	2014-08-01 11:23  siverly
+	
+	fixed problem with umlauts in menutitle
+	
+	2014-07-29 13:45  mikeaubury
+	
+	Add HARU to normal compilation
+	
+	2014-07-18 12:00  pauldgardiner
+	
+	added A4GL_PDF_RECT_IS_STROKED=Y ready for pdf report changes
+	
+	2014-07-17 10:51  siverly
+	
+	added support for ppc
+	
+	2014-06-25 19:02  mikeaubury
+	
+	Initial CURRENT FIELD DISPLAY support for input/construct
+	
+	2014-06-25 13:19  mikeaubury
+	
+	Add A4GL_HARU_CONVERT_TO_PDFLIB setting Allow pdf_func to have no
+	other parameters than the function name
+	
+	2014-06-13 14:39  siverly
+	
+	increase the number of the xml version
+	
+	2014-06-13 14:02  siverly
+	
+	added 2 new functions
+	
+	2014-06-06 07:46  mikeaubury
+	
+	Fix MacOSX compilation
+	
+	2014-06-06 05:56  siverly
+	
+	return 0 was missing
+	
+	2014-05-30 15:15  siverly
+	
+	new function for vdc charts
+	
+	2014-05-12 16:05  mikeaubury
+	
+---------------------------
 Mon May 12 16:01:18 BST 2014
 ---------------------------
 1.2_36 Released
