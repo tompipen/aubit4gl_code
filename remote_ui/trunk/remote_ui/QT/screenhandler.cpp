@@ -4690,7 +4690,7 @@ void ScreenHandler::openEmailWithAttach(QString fileName)
 {
 #ifdef Q_OS_WIN
     QProcess process;
-    QSettings *settings = new QSettings("HKEY_CURRENT_USER\\Software\\Classes\\mailto\\shell\\open\\command\\", QSettings::NativeFormat);
+    QSettings *settings = new QSettings("HKEY_LOCAL_MACHINE\\Software\\Classes\\mailto\\shell\\open\\command\\", QSettings::NativeFormat);
     QString emailProgram = settings->value(".").toString();
 
     if(emailProgram.isEmpty())
@@ -4707,10 +4707,20 @@ void ScreenHandler::openEmailWithAttach(QString fileName)
         emailProgram.replace("attachment=", "attachment=" + QDir::toNativeSeparators(QDir::tempPath() + "\\"));
 
     } else {
-        /*emailProgram.replace(",","&");
+        emailProgram.replace("/mailto", "/m");
+        emailProgram.replace(",","&");
         emailProgram.remove("to=");
         emailProgram.replace("attachment=", "\" /a \"" + QDir::toNativeSeparators(QDir::tempPath() + "\\"));
-        emailProgram.append("\"");*/
+        emailProgram.append("\"");
+
+        if(emailProgram.contains("body=&"))
+        {
+            emailProgram.remove("body=&");
+        }
+        if(emailProgram.contains("subject=&"))
+        {
+            emailProgram.remove("subject=&");
+        }
     }
 
     process.startDetached(emailProgram);
