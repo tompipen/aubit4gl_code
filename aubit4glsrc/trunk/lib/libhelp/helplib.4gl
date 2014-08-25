@@ -240,6 +240,7 @@ DEFINE l_msg              CHAR(256)
 # Normal Variables
 DEFINE i                  INTEGER
 
+    clear window a4gl_helpw1
     SET PAUSE MODE ON
 
     LET i=0
