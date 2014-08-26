@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: makefile,v 1.8 2010-12-16 21:21:10 mikeaubury Exp $
+# $Id: makefile,v 1.9 2014-08-26 16:36:33 locbook Exp $
 #
 
 ROOT    		=../../..
@@ -44,7 +44,7 @@ irunforms: globals.4gl dbi.4gl runform.4gl  list_arr.4gl
 	$(FGLC) $^ -o $@
 
 clean:
-	rm *.ao *.c *.glb *.h runforms *.cpc *.err *.ec *.sc
+	${RM} *.ao *.c *.glb *.glb.dat *.h runforms *.cpc *.err *.ec *.sc
 
 
 

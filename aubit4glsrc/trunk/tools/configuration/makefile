@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: makefile,v 1.13 2008-11-25 09:38:53 mikeaubury Exp $
+# $Id: makefile,v 1.14 2014-08-26 16:36:02 locbook Exp $
 #
 
 ROOT    =../..
@@ -93,7 +93,7 @@ run: ${ALL}
 
 clean:
 	${RM} *.msg *.ao ${ALL} *.bak config.4gl config.c rest.c *.err \
-	*.glb *.h *.warn *~ *.o *.out globals.c
+	*.glb *.h *.warn *~ *.o *.out globals.c *.glb.dat
 
 
 # ================================= EOF =============================
