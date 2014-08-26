@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile,v 1.86 2011-08-30 16:52:47 mikeaubury Exp $
+# $Id: Makefile,v 1.87 2014-08-26 16:38:47 locbook Exp $
 #
 
 #Save initial state of system varables, so we can undo changes 
@@ -611,6 +611,11 @@ cleanall: clean.root clean.bin clean.etc clean.incl clean.docs clean.install \
 		clean.swig clean.project clean.liblogical clean.perl  clean.rest
 	@echo Cleaning Aubit 4gl temporary compiler files and compiled objects...
 	$(MAKE) -C lib clean || true
+	$(MAKE) -C lib/libform/form_generic clean || true
+	$(MAKE) -C lib/libform/form_xdr clean || true
+	$(MAKE) -C lib/libform/noform clean || true
+	$(MAKE) -C lib/libui/ui_xml/uilib/xml clean || true
+	$(MAKE) -C lib/libui/ui_glade clean || true
 	$(MAKE) -C lib/libui/ui_console clean || true
 	$(MAKE) -C lib/libui/ui_curses clean || true
 #	$(MAKE) -C lib/libui/ui_gtk clean || true
@@ -619,6 +624,8 @@ cleanall: clean.root clean.bin clean.etc clean.incl clean.docs clean.install \
 	$(MAKE) -C lib/extra_libs/string clean || true
 	$(MAKE) -C lib/extra_libs/roman clean || true
 	$(MAKE) -C lib/libexdata clean || true
+	$(MAKE) -C lib/libpacker/mempacked clean || true
+	$(MAKE) -C lib/libpacker/gzpacked clean || true
 	$(MAKE) -C lib/libpacker/packed clean || true
 	$(MAKE) -C lib/libpacker/perl clean || true
 	$(MAKE) -C lib/libpacker/xdr clean || true
@@ -644,6 +651,7 @@ cleanall: clean.root clean.bin clean.etc clean.incl clean.docs clean.install \
 	$(MAKE) -C tools/afinderr clean || true
 	$(MAKE) -C tools/configuration clean || true
 	$(MAKE) -C tools/asql clean || true
+	$(MAKE) -C tools/asql/runforms clean || true
 	$(MAKE) -C tools/a4gl clean || true
 	$(MAKE) -C tools/misql clean || true
 	$(MAKE) -C tools/aupscol clean || true
