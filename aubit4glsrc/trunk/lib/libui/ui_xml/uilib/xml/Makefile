@@ -41,4 +41,4 @@ refresh.pregenerated:  triggers_act.c  triggers.c attr.c
 	cp triggers.c triggers_act.c triggers.h  pregenerated
 
 clean : 
-	rm triggers.l triggers.c triggers_act.c triggers.h
+	${RM} triggers.l triggers.c triggers_act.c triggers.h pregenerated/*.o
