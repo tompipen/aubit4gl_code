@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.433 2014-02-20 09:38:40 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.434 2014-09-09 14:23:16 mikeaubury Exp $
 #
 */
 
@@ -2994,6 +2994,8 @@ char *getDatatypeSig(int dtype,int size,char *objectType) ;
 char *formatDouble(double d,int useExponent);
 char * A4GL_binding_as_string_for_debug (void *vibind, int n);
 
+
+int A4GL_md5_file (char *filename, char *output, int asString);
 
 #ifdef MOVED
 struct sObject { // Also in a4gl_incl_4gldef.h

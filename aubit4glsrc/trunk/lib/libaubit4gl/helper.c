@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper.c,v 1.98 2012-01-27 08:56:11 mikeaubury Exp $
+# $Id: helper.c,v 1.99 2014-09-09 14:23:16 mikeaubury Exp $
 #
 */
 
@@ -46,6 +46,7 @@
 #define EXTERN_CONVFMTS
 #include "a4gl_libaubit4gl_int.h"
 #include <ctype.h>
+#include "./md5.h"
 void A4GLPACKER_clrlibptr (void);
 void A4GLFORM_clrlibptr (void);
 static void tea_8c_encipher (const unsigned long *const v, unsigned long *const w, const unsigned long *const k);
@@ -2135,4 +2136,101 @@ char *s;
 	return 1;
 }
 
+
+//void compute_md5(char *str, unsigned char digest[16]) {
+
+
+int
+aclfgl_aclfgl_md5_string (int n)
+{
+  return aclfgl_aclfgl_md5 (n);
+}
+
+
+static void compute_md5(char *str, unsigned char digest[16]) {
+    MD5_CTX ctx;
+    MD5_Init(&ctx);
+    MD5_Update(&ctx, str, strlen(str));
+    MD5_Final(digest, &ctx);
+}
+
+
+int
+aclfgl_aclfgl_md5 (int n)
+{
+  char *c;
+  unsigned char digest[16];
+  char buff[33];
+
+  c = A4GL_char_pop ();
+  compute_md5 (c, digest);
+  sprintf (buff, "%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x",
+	   digest[0], digest[1], digest[2], digest[3],
+	   digest[4], digest[5], digest[6], digest[7],
+	   digest[8], digest[9], digest[10], digest[11], digest[12], digest[13], digest[14], digest[15]);
+
+  acl_free (c);
+  A4GL_push_char (buff);
+  return 1;
+
+}
+
+
+
+int
+A4GL_md5_file (char *filename, char *output, int asString)
+{
+  FILE *file;
+  MD5_CTX context;
+  int len;
+  unsigned char buffer[1024], digest[16];
+
+  strcpy (output, "");
+  if ((file = fopen (filename, "rb")) == NULL)
+    {
+      A4GL_set_errm (filename);
+      A4GL_exitwith ("Cant open file");
+      return FALSE;
+    }
+
+  MD5_Init (&context);
+  while (1) {
+    len = fread (buffer, 1, 1024, file);
+    if (!len) {break;}
+    MD5_Update (&context, buffer, len);
+  }
+  MD5_Final (digest, &context);
+  fclose (file);
+
+
+  if (asString)
+    {
+      sprintf (output, "%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x",
+	       digest[0], digest[1], digest[2], digest[3],
+	       digest[4], digest[5], digest[6], digest[7],
+	       digest[8], digest[9], digest[10], digest[11], digest[12], digest[13], digest[14], digest[15]);
+    } else {
+	memcpy(output,digest,16);
+    }
+
+  return TRUE;
+}
+
+
+int
+aclfgl_aclfgl_md5_file (int n)
+{
+  char *filename;
+  char output[33] = "";
+  filename = A4GL_char_pop ();
+  if (A4GL_md5_file (filename, output, 1))
+    {
+      A4GL_push_char (output);
+    }
+  else
+    {
+      A4GL_push_null (DTYPE_CHAR, 32);
+    }
+return 1;
+}
 /* =================================== EOF ============================= */

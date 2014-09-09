@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.67 2014-07-17 09:51:53 siverly Exp $
+# $Id: Makefile,v 1.68 2014-09-09 14:23:16 mikeaubury Exp $
 #
 
 ROOT    	=../..
@@ -65,7 +65,7 @@ COMMONSRC= \
 	io.c interval.c \
 	keys.c \
 	load.c \
-	match.c maths.c memfile.c \
+	match.c maths.c memfile.c md5.c \
 	ns.c \
 	others.c ops.c outer.c  querix_compat.c \
 	pointers.c parsecommon.c \
