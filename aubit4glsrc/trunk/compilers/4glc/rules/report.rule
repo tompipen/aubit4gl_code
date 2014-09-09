@@ -1190,6 +1190,9 @@ pdf_specific_cmd :
 	| SET_FONT_NAME  fgl_expr_c  {
 			$<cmd>$=new_pdf_specific_cmd("set_font_name",NULL, $<ptr>2,NULL);
 	}
+	| RESUME_PAGE  fgl_expr_c {
+			$<cmd>$=new_pdf_specific_cmd("resume_page",NULL, $<ptr>2,NULL);
+	}
 ;
 
 pause_cmd : 
