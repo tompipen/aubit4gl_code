@@ -213,6 +213,7 @@ struct command *new_spl_if_cmd (spl_if_conds *conditions);
 struct spl_if_conds *append_spl_if_conds(struct spl_if_conds *conditions, spl_if_cond *testcase );
 struct spl_if_cond *new_spl_if_cond (struct expr_str *test_expr, struct s_spl_block *s_commands ) ;
 struct command *new_mlet_cmd(expr_str_list* p_vars,expr_str *p_val);
+struct command *new_for_every_page_cmd(expr_str *var, s_commands *p_cmds) ;
 #endif
 
 

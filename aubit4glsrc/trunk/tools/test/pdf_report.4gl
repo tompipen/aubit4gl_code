@@ -50,6 +50,7 @@ pdfreport r1(t,c,n)
 #########################
 define t,c  char(20)
 define n integer
+define lv_page integer
 #order external  by t,n
 
 format
@@ -60,10 +61,7 @@ first page header
 	set font size 16
 	print column 2 inches,"Table Dump First Page"
 
-page header
-	set font size 14
-	print column 2 inches,"Table Dump", column 6 inches,"Page : ",pageno using "<<<"
-	set font size 10
+#page header
 
 
 on every row
@@ -81,6 +79,17 @@ before group of t
 
 after group of t
 	print column 5 inches, group count(*) using "<<<<"," Columns"
+
+on last row
+	for every page into lv_page
+		move to 1,1
+		resume page lv_page
+		stroke
+		set font size 14
+		print column 2 inches,"Table Dump"
+		set font size 10
+		print column 6 inches,"Page : ",lv_page, " of ", pageno using "<<<"
+	end for
 
 end report
 

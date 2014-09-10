@@ -565,6 +565,15 @@ struct command *c;
 }
 
 
+struct command *new_for_every_page_cmd(expr_str *var, s_commands *p_cmds) {
+struct command *c;
+   c=new_command(E_CMD_FOR_EVERY_PAGE_CMD);
+   c->cmd_data.command_data_u.for_every_page_cmd.commands=p_cmds;
+   c->cmd_data.command_data_u.for_every_page_cmd.var=var;
+   c->cmd_data.command_data_u.for_every_page_cmd.block_id=get_block_no(A4GL_get_ccnt());
+   return c;
+}
+
 struct command *new_execute_procedure_cmd(expr_str *p_connid, char *nm, s_select_list_item_list *parameters) { //!
 struct command *c;
    c=new_command(E_CMD_EXECUTE_PROCEDURE_CMD);
@@ -3203,5 +3212,6 @@ struct spl_if_cond *new_spl_if_cond (struct expr_str *test_expr, struct s_spl_bl
 	p->commands=commands;
 	return p;
 }
+
 
 

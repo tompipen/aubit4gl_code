@@ -1297,5 +1297,37 @@ op_wordwrap:
 	| KW_WORDWRAP RIGHT_MARGIN fgl_expr_c { $<ptr>$=$<ptr>3; }
 ;
 
+
+
+opt_into_var:  {$<ptr>$=NULL;}
+	| INTO ensured_variable_usage_expression {$<ptr>$=$<ptr>2;}
+;
+
+for_every_page_cmd : FOR_EVERY_PAGE opt_into_var { 
+                                push_blockcommand("FOR");
+                                lastlineno=yylineno;
+                } commands_as_list END_FOR {
+        			char wt;
+        			wt=get_curr_report_stack_whytype_1();
+        			pop_blockcommand("FOR");
+				if (rep_type!=REP_TYPE_PDF) {
+                        			a4gl_yyerror("FOR EVERY PAGE can only be used in a PDF Report");
+                        			YYERROR;
+						$<cmd>$=NULL;
+				} else {
+        				if (wt!='L') { /* Page header or trailer */
+                            			a4gl_yyerror("FOR EVERY PAGE can only be used in a ON LAST ROW");
+                            			YYERROR;
+						$<cmd>$=NULL;
+        				} else {
+						$<cmd>$=new_for_every_page_cmd($<ptr>2,$<commands>4);
+					}
+				}
+
+	}
+;
+
+
 /* ============================ report.rule ========================== */
+
 

@@ -1,4 +1,4 @@
-/* $Id: fgl.x,v 1.75 2014-06-25 18:02:21 mikeaubury Exp $ */
+/* $Id: fgl.x,v 1.76 2014-09-10 13:44:23 mikeaubury Exp $ */
 typedef string str<>;
 typedef string sql_ident<>;
 typedef struct s_plsql_packageEntries * s_plsql_packageEntries_ptr;
@@ -232,6 +232,7 @@ E_CMD_PLSQL_IF_CMD,
 E_CMD_PLSQL_BUSINESS_RULE_CMD,
 	E_CMD_FOREACH_WITH_SELECT_CMD,
 E_CMD_DIALOG_CMD,
+E_CMD_FOR_EVERY_PAGE_CMD,
 E_CMD_LAST
 };
 
@@ -628,6 +629,12 @@ struct struct_for_cmd {
 	struct expr_str* end;
 	struct expr_str* step;
 	s_commands *for_commands;
+	int block_id;
+};
+
+struct struct_for_every_page_cmd {
+	s_commands *commands;
+	struct expr_str* var;
 	int block_id;
 };
 
@@ -2060,6 +2067,7 @@ union command_data switch (enum cmd_type type) {
 	case E_CMD_CONTINUE_CMD: struct_continue_cmd continue_cmd;
 	case E_CMD_EXIT_PROG_CMD: struct_exit_prog_cmd exit_prog_cmd;
 	case E_CMD_FOR_CMD: struct_for_cmd for_cmd;
+	case E_CMD_FOR_EVERY_PAGE_CMD: struct_for_every_page_cmd for_every_page_cmd;
 	case E_CMD_FOREACH_CMD: struct_foreach_cmd foreach_cmd;
 	case E_CMD_FOREACH_WITH_SELECT_CMD: struct_foreach_with_select_cmd foreach_with_select_cmd;
 	case E_CMD_FREE_CMD: struct_free_cmd free_cmd;

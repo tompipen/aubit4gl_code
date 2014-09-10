@@ -694,6 +694,35 @@ print_for_cmd (struct_for_cmd * cmd_data)
   return 1;
 }
 
+int
+print_for_every_page_cmd (struct_for_every_page_cmd * cmd_data)
+{
+  char varbuff[2000];
+  print_cmd_start ();
+
+  printc("{");
+  if (cmd_data->var) {
+	strcpy(varbuff, local_expr_as_string (cmd_data->var));
+  } else {
+  	printc("int _i;");
+	strcpy(varbuff,"_i");
+  }
+
+  printc ("for (%s=1;%s<=(_rep.page_no + (_rep.line_no > _rep.page_length ? 1 : 0)) ;%s++) {", varbuff, varbuff, varbuff);
+  tmp_ccnt++;
+   printc("A4GL_push_long(%s);", varbuff);
+   printc("A4GL_pop_args(A4GL_pdf_pdffunc(&_rep,\"resume_page\",1));");
+
+  dump_commands (cmd_data->commands);
+  printc("CONTINUE_BLOCK_%d:    ; ", cmd_data->block_id);
+
+  tmp_ccnt--;
+  printc ("}\n");
+  printc("END_BLOCK_%d:    ; ", cmd_data->block_id);
+  printc ("}\n");
+
+  return 1;
+}
 
 /******************************************************************************/
 int
