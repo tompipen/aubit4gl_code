@@ -51,6 +51,8 @@ pdfreport r1(t,c,n)
 define t,c  char(20)
 define n integer
 define lv_page integer
+define a integer
+define page_x_of_x CHAR(40)
 #order external  by t,n
 
 format
@@ -82,13 +84,18 @@ after group of t
 
 on last row
 	for every page into lv_page
-		move to 1,1
-		resume page lv_page
-		stroke
-		set font size 14
-		print column 2 inches,"Table Dump"
-		set font size 10
-		print column 6 inches,"Page : ",lv_page, " of ", pageno using "<<<"
+            if lv_page > 1 then
+                resume page lv_page
+                skip to 50 points
+                set font size 14
+                print column 2 inches, "Table Dump";
+                set font size 10
+                print column 5.5 inches, "Page : ", lv_page using "##&", " of ", pageno using "##&"
+            end if
+            if lv_page = 1 then resume page lv_page end if
+            set font size 10
+            let page_x_of_x = "Page ", lv_page USING "<<<<<", " of ", PAGENO USING "<<<<<"
+            call pdf_function("show_boxed", page_x_of_x CLIPPED, 595 - 18, 18, 000, 000, "right", "") RETURNING a
 	end for
 
 end report

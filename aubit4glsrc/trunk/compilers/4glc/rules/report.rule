@@ -1105,6 +1105,9 @@ pdf_specific_cmd :
 	| SET_PARAMETER fgl_expr_c KW_COMMA fgl_expr_c  {
 			$<cmd>$=new_pdf_specific_cmd("set_parameter",NULL, $<ptr>2,$<ptr>4,NULL);
 	}
+	| SET_VALUE fgl_expr_c KW_COMMA fgl_expr_c  {
+			$<cmd>$=new_pdf_specific_cmd("set_value",NULL, $<ptr>2,$<ptr>4,NULL);
+	}
 	| MOVE_TO pdf_Pos { 
 			/* fgl_expr_c KW_COMMA fgl_expr_c { */
 			$<cmd>$=new_pdf_specific_cmd("moveto",NULL, report_position_expr_x($<xy_ptr>2[0]) , report_position_expr_y($<xy_ptr>2[1]),NULL);
@@ -1187,8 +1190,8 @@ pdf_specific_cmd :
 	| SET_FONT_SIZE  fgl_expr_c  {
 			$<cmd>$=new_pdf_specific_cmd("set_font_size",NULL, $<ptr>2,NULL);
 	}
-	| SET_FONT_NAME  fgl_expr_c  {
-			$<cmd>$=new_pdf_specific_cmd("set_font_name",NULL, $<ptr>2,NULL);
+	| SET_FONT_NAME  fgl_expr_c opt_embedded {
+			$<cmd>$=new_pdf_specific_cmd("set_font_name",NULL, $<ptr>2, $<ptr>3, NULL);
 	}
 	| RESUME_PAGE  fgl_expr_c {
 			$<cmd>$=new_pdf_specific_cmd("resume_page",NULL, $<ptr>2,NULL);
@@ -1201,10 +1204,16 @@ pdf_specific_cmd :
 	}
 ;
 
+opt_embedded:
+	{               $<ptr>$=A4GL_new_literal_long_long(0); }
+	| KW_EMBEDDED { $<ptr>$=A4GL_new_literal_long_long(1); }
+;
+
+
 pause_cmd : 
 	PAUSE pause_msg {
 		if (!in_command("REPORT")) {
-			a4gl_yyerror("PAUSE can only be used in reportes");
+			a4gl_yyerror("PAUSE can only be used in reports");
 			YYERROR;
         		}
 		$<cmd>$=new_pause_cmd($<ptr>2);
@@ -1335,5 +1344,4 @@ for_every_page_cmd : FOR_EVERY_PAGE opt_into_var {
 
 
 /* ============================ report.rule ========================== */
-
 

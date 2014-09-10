@@ -469,6 +469,7 @@ struct pdf_startrep rep_default;
 
         rep_default.towhat='F';
 	rep_default.s1=A4GL_new_literal_string("stdout");
+
 	rep=&rep_default;
   }
 
@@ -498,6 +499,8 @@ struct pdf_startrep rep_default;
 
   printc ("strcpy(_rep.font_name,%s);\n", rep->font_name);
   printc ("_rep.font_size=%f;\n", rep->font_size);
+  printc ("_rep.fonts_loaded_array=NULL;\n");
+  printc ("_rep.fonts_loaded_count=0;\n");
   printc ("_rep.paper_size=%d;\n", rep->paper_size);
   printc ("_rep.header=0;\n");
   printc ("_rep.lines_in_header=-1;\n");
@@ -515,6 +518,32 @@ struct pdf_startrep rep_default;
   printc ("_rep.bluebar_b=%lf;\n",rep->bluebar.b);
   printc ("_rep.bluebar_style=%d;\n",rep->bluebar.style);
 
+  printc ("_rep.fill_color_r=0.0;\n");
+  printc ("_rep.fill_color_g=0.0;\n");
+  printc ("_rep.fill_color_b=0.0;\n");
+  printc ("_rep.stroke_color_r=0.0;\n");
+  printc ("_rep.stroke_color_g=0.0;\n");
+  printc ("_rep.stroke_color_b=0.0;\n");
+
+  printc ("_rep.openmode_used=0;\n");
+
+  printc ("_rep.parameter.underline=0;\n");
+  printc ("_rep.parameter.overline=0;\n");
+  printc ("_rep.parameter.strikeout=0;\n");
+
+  printc ("_rep.value.horizscaling=100.0;\n");
+  printc ("_rep.value.strokewidth=0.0;\n");
+  printc ("_rep.value.textrendering=0;\n");
+  printc ("_rep.value.textrise=0.0;\n");
+  printc ("_rep.value.underlineposition=-10.0;\n");
+  printc ("_rep.value.underlinewidth=5.0;\n");
+
+  printc ("_rep.bookmarks=NULL;\n");
+  printc ("_rep.bookmarks_count=0;\n");
+
+  printc ("_rep.pages_suspended_array=NULL;\n");
+  printc ("_rep.pages_suspended_count=0;\n");
+
   printc ("_rep.repName=_reportName;\n");
   printc ("_rep.modName=_module_name;\n");
 
@@ -526,6 +555,7 @@ struct pdf_startrep rep_default;
   printc ("_rep.page_width=A4GL_pdf_size(_pw,'c',&_rep);\n");
 
   printc ("_rep.page_no=0;\n");
+  printc ("_rep.current_page_no=0;\n");
   printc ("_rep.printed_page_no=0;\n");
 
   printc ("_rep.line_no=0;\n");
