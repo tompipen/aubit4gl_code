@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: haru.c,v 1.11 2014-09-10 17:09:57 pauldgardiner Exp $
+# $Id: haru.c,v 1.12 2014-09-10 19:57:57 mikeaubury Exp $
 #*/
 
 /**
@@ -3510,9 +3510,11 @@ circle_top
             strcmp (key, "Keywords") == 0)
             HPDF_SetInfoAttr (DOC (rep)->doc, HPDF_INFO_KEYWORDS, value);
 
+#ifdef HPDF_INFO_TRAPPED
         if (strcmp (key, "trapped") == 0 ||
             strcmp (key, "Trapped") == 0)
             HPDF_SetInfoAttr (DOC (rep)->doc, HPDF_INFO_TRAPPED, value);
+#endif
 
         if (strcmp (key, "producer") == 0 ||
             strcmp (key, "Producer") == 0)

@@ -85,17 +85,16 @@ after group of t
 on last row
 	for every page into lv_page
             if lv_page > 1 then
-                resume page lv_page
                 skip to 50 points
                 set font size 14
                 print column 2 inches, "Table Dump";
                 set font size 10
-                print column 5.5 inches, "Page : ", lv_page using "##&", " of ", pageno using "##&"
+                print column 5.5 inches, "Page : "|| lv_page using "<<<<<" || " of "|| pageno using "<<<<<<"
+	    else
+            	set font size 10
+            	let page_x_of_x = "FIRST PAGE OF ", pageno using "<<<<<<"
+            	call pdf_function("show_boxed", page_x_of_x CLIPPED, 595 - 18, 18, 000, 000, "right", "") RETURNING a
             end if
-            if lv_page = 1 then resume page lv_page end if
-            set font size 10
-            let page_x_of_x = "Page ", lv_page USING "<<<<<", " of ", PAGENO USING "<<<<<"
-            call pdf_function("show_boxed", page_x_of_x CLIPPED, 595 - 18, 18, 000, 000, "right", "") RETURNING a
 	end for
 
 end report
