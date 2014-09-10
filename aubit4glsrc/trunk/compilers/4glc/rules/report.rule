@@ -1193,6 +1193,12 @@ pdf_specific_cmd :
 	| RESUME_PAGE  fgl_expr_c {
 			$<cmd>$=new_pdf_specific_cmd("resume_page",NULL, $<ptr>2,NULL);
 	}
+	| SET_UNDERLINE_ON {
+			$<cmd>$=new_pdf_specific_cmd("set_parameter",NULL, A4GL_new_literal_string("underline"),  A4GL_new_literal_string("true"),NULL);
+	}
+	| SET_UNDERLINE_OFF {
+			$<cmd>$=new_pdf_specific_cmd("set_parameter",NULL, A4GL_new_literal_string("underline"),  A4GL_new_literal_string("false"),NULL);
+	}
 ;
 
 pause_cmd : 
