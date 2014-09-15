@@ -192,6 +192,7 @@ int VSSH::auth()
 {
   int rc = 0;
   int method;
+  int methodFound = 0;
 
   if(!session)
   {
@@ -213,6 +214,7 @@ int VSSH::auth()
 
   if(method & SSH_AUTH_METHOD_PASSWORD)
   {
+      methodFound = 1;
       rc = this->auth_password();
       if(rc == SSH_OK)
       {
@@ -223,6 +225,7 @@ int VSSH::auth()
 
   if(method & SSH_AUTH_METHOD_INTERACTIVE)
   {
+      methodFound = 1;
       rc = this->auth_interactive();
       if(rc == SSH_OK)
       {
@@ -233,6 +236,7 @@ int VSSH::auth()
 
   if(method & SSH_AUTH_METHOD_PUBLICKEY)
   {
+     methodFound = 1;
      rc = this->auth_pubkey();
      if(rc == SSH_OK)
      {
@@ -241,9 +245,13 @@ int VSSH::auth()
      }
   }
 
+  if(methodFound > 0) {
+      emit authfailed(SSH_AUTH_DENIED, "");
+      return SSH_ERROR;
+  }
+
   qDebug() << "SSH Error 13: ", ssh_get_error(session);
   QString err = "SSH Method \"" + QString::number(method) + "\" is not supported. Please contact VENTAS.";
-
   emit error(err);
   emit fail();
 
