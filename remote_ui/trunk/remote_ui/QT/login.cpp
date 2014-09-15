@@ -86,11 +86,13 @@ LoginForm::LoginForm(QWidget *parent)
     logVDC              = new QCheckBox("Debug", bg_other);
     cb                  = new QCheckBox("Save &Password?", bg_other);
 
-
-    if(portLineEdit->text().isEmpty())
-    {
-        portLineEdit->setText("22");
+    int port = VDC::readSettingsFromIni("", "sshport").toInt();
+    if(port == 0) {
+        port = 22;
     }
+
+    portLineEdit->setText(QString::number(port));
+
 
     if(VDC::readSettingsFromIni("", "debugVDC") == "yes")
     {
@@ -1334,6 +1336,7 @@ MainFrame::vdcdebug("LoginForm","okPressed", "");
    if(rb_ssh->isChecked())
    {
        //Initiliaze
+       VDC::saveSettingsToIni("", "sshport", portLineEdit->text());
        VSSH *ssh = new VSSH(server, user, pass, app, this);
        connect(ssh, SIGNAL(connection_established()), this, SLOT(m_c_established()));
        connect(ssh, SIGNAL(authsuccess()), this, SLOT(m_c_success()));

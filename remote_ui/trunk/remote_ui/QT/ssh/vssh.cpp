@@ -639,10 +639,13 @@ void VSSH::loadSettings()
       return;
   }
 
-  int port    = 22; //Todo: Eingabemaske
+  int port = VDC::readSettingsFromIni("", "sshport").toInt();
+
+  if(port == 0) {
+      port = 22;
+  }
+
   int verbose = SSH_LOG_NOLOG;
-
-
 
   //Set connection details
   const char* server;
