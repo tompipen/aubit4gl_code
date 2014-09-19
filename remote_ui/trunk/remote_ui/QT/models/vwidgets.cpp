@@ -2174,6 +2174,7 @@ MainFrame::vdcdebug("WidgetHelper","setFieldText", "QObject *object, QString fie
        if(widget->pixmap() == 0 && widget->movie() == 0 && !fieldValue.contains(".png") && !fieldValue.contains(".jpg") && !fieldValue.contains(".jepg") && !fieldValue.contains(".gif")){
          widget->setText(fieldValue);
          widget->fieldValue = fieldValue;
+         widget->repaint();
       }
       else{
 
