@@ -1235,6 +1235,7 @@ MainFrame::vdcdebug("WidgetHelper","createEdit", "const QDomElement& formField, 
 
    bool autoNext = lineEditElement.attribute("autoNext").toInt();
    bool noEntry  = formField.attribute("noEntry").toInt();
+   bool scroll  = lineEditElement.attribute("scroll").toInt();
 
    Edit *lineEdit = new Edit(parent);
    lineEdit->setAccessibleName(name);
@@ -1243,6 +1244,7 @@ MainFrame::vdcdebug("WidgetHelper","createEdit", "const QDomElement& formField, 
    lineEdit->colName = colName;
    lineEdit->sqlTabName = tabName;
    lineEdit->w = w;
+   lineEdit->scroll = scroll;
    lineEdit->setShift(shift);
    lineEdit->setNoEntry(noEntry);
    lineEdit->setAutoNext(autoNext);
@@ -1279,6 +1281,7 @@ MainFrame::vdcdebug("WidgetHelper","createEdit", "const QDomElement& formField, 
       }
       break;
    default:
+       lineEdit->setFormat("");
        break;
    }
 
@@ -2461,8 +2464,14 @@ void WidgetHelper::setValidator(QWidget* widget){
       sqlType = lineEdit->sqlType();
       shift = lineEdit->shift();
       w = getLengthBySqlType(sqlType);
-      if(w <= 0)
+      if(lineEdit->scroll && w < 250) {
+          w = 250;
+      }
+
+      if(w <= 0) {
          w = lineEdit->w;
+      }
+
       lineEdit->setMaxLength(w);
    }
 

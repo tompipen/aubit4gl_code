@@ -124,6 +124,7 @@ public:
     int x;
     int y;
     int w;
+    int scroll;
 
 
     QString getSqlType() { return qs_oldsql; };
