@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fglwrap.c,v 1.169 2013-03-25 12:58:40 mikeaubury Exp $
+# $Id: fglwrap.c,v 1.170 2014-09-29 17:19:08 mikeaubury Exp $
 #
 */
 
@@ -1608,14 +1608,14 @@ A4GL_check_and_show_id (char *program, char *arg1)
 
   if (strcmp (arg1, "-v") == 0)
     {
-      PRINTF ("(c) 1997-2012 Aubit project\n%s\n\n", program);
+      PRINTF ("(c) 1997-2014 Aubit project\n%s\n\n", program);
       PRINTF ("Version       %s\nBuild Level   %d\n", A4GL_internal_version (), A4GL_internal_build ());
       A4GL_fgl_die (0);
     }
 
   if (strcmp (arg1, "-vfull") == 0)
     {
-      PRINTF ("(c) 1997-2012 Aubit project\n%s\n\n", program);
+      PRINTF ("(c) 1997-2014 Aubit project\n%s\n\n", program);
       PRINTF ("Version       %s\nBuild Level   %d\n", A4GL_internal_version (), A4GL_internal_build ());
       for (a = 0;; a++)
 	{
@@ -1631,7 +1631,7 @@ A4GL_check_and_show_id (char *program, char *arg1)
 
   if (strcmp (arg1, "") == 0)
     {
-      PRINTF ("%s (c) 1997-2012 Aubit project - ", program);
+      PRINTF ("%s (c) 1997-2014 Aubit project - ", program);
       PRINTF ("Version %s-%d\n", A4GL_internal_version (), A4GL_internal_build ());
 
     }

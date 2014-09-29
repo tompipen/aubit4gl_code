@@ -1,5 +1,5 @@
 /* XML processor/application API for module_def.dtd.
- * Generated 2014/08/06 16:15:32.
+ * Generated 2014/09/22 16:29:11.
  *
  * This program was generated with the FleXML XML processor generator.
  * FleXML is Copyright (C) 1999-2005 Kristoffer Rose.  All rights reserved.
@@ -515,6 +515,8 @@ extern void STag_struct_flush_cmd(void);
 extern void ETag_struct_flush_cmd(void);
 extern void STag_struct_for_cmd(void);
 extern void ETag_struct_for_cmd(void);
+extern void STag_struct_for_every_page_cmd(void);
+extern void ETag_struct_for_every_page_cmd(void);
 extern void STag_struct_foreach_cmd(void);
 extern void ETag_struct_foreach_cmd(void);
 extern void STag_struct_foreach_with_select_cmd(void);
@@ -2241,6 +2243,8 @@ typedef int AT_struct_while_cmd_block_id;
 #define AU_struct_while_cmd_block_id NULL
 typedef int AT_struct_whenever_signal_cmd_nm;
 #define AU_struct_whenever_signal_cmd_nm NULL
+typedef int AT_struct_for_every_page_cmd_block_id;
+#define AU_struct_for_every_page_cmd_block_id NULL
 typedef int AT_command_module;
 #define AU_command_module NULL
 typedef int AT_s_import_legacy_definition_funcname;
@@ -2265,6 +2269,8 @@ typedef int AT_lint_warning_lineno;
 #define AU_lint_warning_lineno NULL
 typedef int AT_struct_spl_let_cmd_nm;
 #define AU_struct_spl_let_cmd_nm NULL
+typedef int AT_struct_for_every_page_cmd_nm;
+#define AU_struct_for_every_page_cmd_nm NULL
 typedef int AT_funcname_value;
 #define AU_funcname_value NULL
 typedef int AT_s_select_finish_nm;
@@ -3876,6 +3882,8 @@ extern AT_struct_while_cmd_block_id AX_struct_while_cmd_block_id;
 #define A_struct_while_cmd_block_id (bufferstack + AX_struct_while_cmd_block_id)
 extern AT_struct_whenever_signal_cmd_nm AX_struct_whenever_signal_cmd_nm;
 #define A_struct_whenever_signal_cmd_nm (bufferstack + AX_struct_whenever_signal_cmd_nm)
+extern AT_struct_for_every_page_cmd_block_id AX_struct_for_every_page_cmd_block_id;
+#define A_struct_for_every_page_cmd_block_id (bufferstack + AX_struct_for_every_page_cmd_block_id)
 extern AT_command_module AX_command_module;
 #define A_command_module (bufferstack + AX_command_module)
 extern AT_s_import_legacy_definition_funcname AX_s_import_legacy_definition_funcname;
@@ -3900,6 +3908,8 @@ extern AT_lint_warning_lineno AX_lint_warning_lineno;
 #define A_lint_warning_lineno (bufferstack + AX_lint_warning_lineno)
 extern AT_struct_spl_let_cmd_nm AX_struct_spl_let_cmd_nm;
 #define A_struct_spl_let_cmd_nm (bufferstack + AX_struct_spl_let_cmd_nm)
+extern AT_struct_for_every_page_cmd_nm AX_struct_for_every_page_cmd_nm;
+#define A_struct_for_every_page_cmd_nm (bufferstack + AX_struct_for_every_page_cmd_nm)
 extern AT_funcname_value AX_funcname_value;
 #define A_funcname_value (bufferstack + AX_funcname_value)
 extern AT_s_select_finish_nm AX_s_select_finish_nm;

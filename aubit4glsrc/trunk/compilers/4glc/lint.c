@@ -64,10 +64,12 @@ struct s_severities
   "CS.NOOTHERWISE", 1},
   {
   "CS.WRITESQLCA", 2},
-  {
-  "VARNOTUSED", 1},
-  {
-  "VARASSNOTUSED", 1},
+  { "VARNOTUSED", 1},
+  { "VARASSNOTUSED", 1},
+  { "GVARNOTUSED", 1},
+  { "GVARASSNOTUSED", 1},
+  { "GLOBALNOTUSED", 4},
+
   {
   "TOOCOMPLEX", 2},
   {
@@ -3419,11 +3421,38 @@ check_module (struct module_definition *d)
   all_cmds = linearise_commands (0, 0);
   //printf ("Check Module %s\n", d->module_name);
   //fflush (stdout);
+  //
+
   for (a = 0; a < d->imported_global_variables.variables.variables.variables_len; a++)
     {
       check_variable_name (d->module_name, "ImportedGlobal",
 			   d->imported_global_variables.variables.variables.
 			   variables_val[a]);
+
+
+if (d->imported_global_variables.variables.variables.variables_val[a]->user_system=='-') {
+      if (d->imported_global_variables.variables.variables.variables_val[a]->usage == 0
+	  && d->imported_global_variables.variables.variables.variables_val[a]->assigned == 0)
+	{
+	  if (d->imported_global_variables.variables.variables.variables_val[a]->var_data.
+	      variable_type == VARIABLE_TYPE_CONSTANT)
+	    continue;
+	  yylineno = 1;
+	  A4GL_lint (d->module_name, d->imported_global_variables.variables.variables.variables_val[a]->lineno, "GVARNOTUSED", "Global variable is defined but not used",
+		     d->imported_global_variables.variables.variables.variables_val[a]->names.
+		     names.names_val[0].name);
+	}
+
+      if (d->imported_global_variables.variables.variables.variables_val[a]->usage == 0
+	  && d->imported_global_variables.variables.variables.variables_val[a]->assigned)
+	{
+	  yylineno = 1;
+	  A4GL_lint (d->module_name, d->imported_global_variables.variables.variables.variables_val[a]->lineno, "GVARASSNOTUSED",
+		     "Global variable is assigned a value but not used",
+		     d->imported_global_variables.variables.variables.variables_val[a]->names.
+		     names.names_val[0].name);
+	}
+}
     }
 
   for (a = 0; a < d->exported_global_variables.variables.variables.variables_len; a++)
@@ -3441,6 +3470,10 @@ check_module (struct module_definition *d)
 		     d->exported_global_variables.variables.variables.variables_val[a]->
 		     names.names.names_val[0].name);
 	}
+
+	
+
+
     }
 
 

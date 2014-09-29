@@ -1,7 +1,7 @@
 # +----------------------------------------------------------------------+
 # | Aubit SQL Access Program ASQL                                        |
 # +----------------------------------------------------------------------+
-# | Copyright (c) 2003-7 Aubit Computing Ltd                             |
+# | Copyright (c) 2003-2014 Aubit Computing Ltd                          |
 # +----------------------------------------------------------------------+
 # | Production of this software was sponsored by                         |
 # |                 Cassens Transport Company                            |
@@ -135,7 +135,7 @@ if num_args()>0 then
 		end if
 
 		if arg_val(lv_a)="-v" or arg_val(lv_a)="-V" then
-			display "(c) 2003-7 Aubit Computing Ltd"
+			display "(c) 2003-2014 Aubit Computing Ltd"
 			display get_version()
 			exit program
 		end if
