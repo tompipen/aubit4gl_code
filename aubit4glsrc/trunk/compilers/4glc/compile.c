@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile.c,v 1.144 2012-07-25 09:14:13 mikeaubury Exp $
+# $Id: compile.c,v 1.145 2014-09-30 18:02:34 mikeaubury Exp $
 #*/
 
 /**
@@ -2032,6 +2032,11 @@ char buff[256];
 
 
 void A4GL_warn(char *s) {
+	if(A4GL_isyes(acl_getenv("A4GL_ERRONWARN"))) {
+		yylineno--; // Probably close enough
+		a4gl_yyerror(s);
+	}
+
 	if (!A4GL_isyes(acl_getenv("SUPPRESSWARNINGS"))) {
 		fprintf(stderr,"Warning : %s @ line %d\n",s,yylineno);
 	}

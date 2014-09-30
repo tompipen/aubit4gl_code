@@ -102,18 +102,22 @@ insert_value_sli:
 
 
 delete_statement_c:
-	DELETE_FROM table_name_not_for_column_prefix where_del_p {
-			//A4GL_add_crud("DELETE",$<str>2);
+	DELETE_FROM atline table_name_not_for_column_prefix where_del_p {
 
-			if ($<ptr>3==0) { A4GL_warn("DELETE with no WHERE clause"); }
+			if ($<ptr>4==0 && $<integer_val>2>=0) { 
+				if (A4GL_isyes(acl_getenv("A4GL_ERR_DELNOWHERE"))) {
+					yylineno=$<integer_val>2;
+					a4gl_yyerror("DELETE with no WHERE clause"); 
+				} else {
+					A4GL_warn("DELETE with no WHERE clause"); 
+				}
+			}
 			add_feature("ANSI_DELETE");
-
-			/* if (strstr($<sql_string>4," EXISTS ")) { add_feature("DELETE_FROM_WHERE_EXISTS_SUBSELECT"); } */ /* @FIXME - add back in */
 
 			$<delete_cmd>$=malloc(sizeof(struct struct_delete_cmd));
 			$<delete_cmd>$->connid=NULL;
-			$<delete_cmd>$->table=acl_strdup($<str>2);
-			$<delete_cmd>$->where_clause=$<ptr>3;	
+			$<delete_cmd>$->table=acl_strdup($<str>3);
+			$<delete_cmd>$->where_clause=$<ptr>4;	
 			A4GL_set_associated_mem($<delete_cmd>$, $<delete_cmd>$->table);
 			
 		}

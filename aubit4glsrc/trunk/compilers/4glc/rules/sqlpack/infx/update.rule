@@ -7,14 +7,18 @@
 
 
 update_statement_c:
-	KW_UPDATE table_name_not_for_column_prefix  set_clause_list_uc  where_upd_p {
-		// chk_for_update_on_serial($<str>2);
-		if ($<ptr>4==0) {
-		 	A4GL_warn("UPDATE with no WHERE clause"); 
+	KW_UPDATE table_name_not_for_column_prefix  atline set_clause_list_uc  where_upd_p {
+		if ($<ptr>5==0 && $<integer_val>2>=0) {
+   				if (A4GL_isyes(acl_getenv("A4GL_ERR_UPDNOWHERE"))) {
+                                        yylineno=$<integer_val>3;
+                                        a4gl_yyerror("UPDATE with no WHERE clause");
+                                } else {
+		 			A4GL_warn("UPDATE with no WHERE clause"); 
+				}
 		}
-		$<update_cmd>$=$<update_cmd>3;
+		$<update_cmd>$=$<update_cmd>4;
 		$<update_cmd>$->table=strdup($<str>2);
-		$<update_cmd>$->where_clause=$<ptr>4;
+		$<update_cmd>$->where_clause=$<ptr>5;
 		$<update_cmd>$->value_list=expand_slil($<update_cmd>$->value_list);
 
 		if ($<update_cmd>$->column_list==0) {
@@ -27,7 +31,6 @@ update_statement_c:
 				$<update_cmd>$->column_list=generate_update_column_list_for($<str>2,  $<update_cmd>$->value_list);
 			}
 		}
-		//debug_update_cmd($<update_cmd>$);
 	}
 ;
 

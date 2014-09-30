@@ -286,3 +286,6 @@ spl_proc_name:
 ;
 
 
+atline : {
+	$<integer_val>$=-1;
+}
