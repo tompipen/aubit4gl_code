@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.211 2013-11-10 09:53:49 mikeaubury Exp $
+# $Id: report.c,v 1.212 2014-10-01 17:44:53 fortiz Exp $
 #
 */
 
@@ -510,7 +510,7 @@ static void
 report_print (struct rep_structure *rep, int entry, char *fmt, ...)
 {
   va_list ap;
-  char buff[50000];
+  char buff[80000];
 
   if (rep->output == 0)
     {
