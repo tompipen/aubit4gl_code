@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: load.c,v 1.66 2013-07-12 13:00:29 mikeaubury Exp $
+# $Id: load.c,v 1.67 2014-10-01 17:54:18 fortiz Exp $
 #
 */
 
@@ -209,7 +209,7 @@ int copiedNonPrintableData=0;
 static char *
 collist_to_str (int cnt)
 {
-  static char colliststr[32000];
+  static char colliststr[132000];
   int a;
   strcpy (colliststr, "");
   for (a = 0; a < cnt; a++)
@@ -231,7 +231,7 @@ collist_to_str (int cnt)
 static char *
 gen_insert_for_load (char *tabname, int ncols)
 {
-  static char inserttxt[6000];
+  static char inserttxt[16000];
   int a;
   strcpy (inserttxt, "");
   SPRINTF2 (inserttxt, "INSERT INTO %s (%s) values (", tabname, collist_to_str (ncols));
