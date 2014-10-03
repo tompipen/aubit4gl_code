@@ -26,6 +26,9 @@ export A4GL_CORDUMP_ON_PAUSE_EXECUTION=Y
 export A4GL_DUMP_FEATURES=yes
 export A4GL_RESTARTLOG=Y
 export FCOMPILE_SILENT=Y
+# avoid 'local' conversion, use default for test
+unset SQLCNVPATH
+
 
 
 ###########################################
@@ -829,12 +832,6 @@ for a in $FLAGS; do
         fi
 		USE_SQLITE=0; USE_ESQLI=0; USE_ECI=0; USE_PG=0; USE_PG8=1
 		export SKIP_EC_RUN=1; export A4GL_LEXTYPE=C; export A4GL_SQLTYPE=pg8
-		if ! test "$NO_ECHO"; then
-			echo "** "
-			echo "** WARNING:"
-			echo "** PG8 native driver is still in development."
-			echo "** "
-        fi
 		;;
 
     -pg8-new)         	#Create new PostgreSQL database from scripts
