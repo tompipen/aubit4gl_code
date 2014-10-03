@@ -924,7 +924,7 @@ pdf_output_command :
 | BOTTOM_MARGIN fgl_expr_c {pdf_rep_struct.bottom_margin_e=$<ptr>2;}
 | PAGE_LENGTH fgl_expr_c {pdf_rep_struct.page_length_e=$<ptr>2;}
 | PAGE_WIDTH fgl_expr_c {pdf_rep_struct.page_width_e=$<ptr>2;}
-| FONT_NAME CHAR_VALUE {strcpy(pdf_rep_struct.font_name,$<str>2);}
+| FONT_NAME CHAR_VALUE {pdf_rep_struct.font_name=strdup($<str>2);}
 | FONT_SIZE nval {pdf_rep_struct.font_size=atof($<str>2);}
 
 | PAPER_SIZE_IS_A4  {pdf_rep_struct.paper_size=1;}
