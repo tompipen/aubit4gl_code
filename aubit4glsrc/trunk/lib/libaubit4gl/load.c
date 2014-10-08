@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: load.c,v 1.67 2014-10-01 17:54:18 fortiz Exp $
+# $Id: load.c,v 1.68 2014-10-08 14:40:55 fortiz Exp $
 #
 */
 
@@ -54,8 +54,8 @@
 
 /* tuneable */
 #define MAXLOADCOLS 1024
-#define MAXCOLLENGTH 32
-#define LOADBUFFSIZE 64000
+#define MAXCOLLENGTH 64
+#define LOADBUFFSIZE 256000
 
 
 static int doing_load = 0;

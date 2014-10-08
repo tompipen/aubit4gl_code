@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pg8.c,v 1.125 2013-11-13 14:42:49 whaslbeck Exp $
+# $Id: pg8.c,v 1.126 2014-10-08 14:41:15 fortiz Exp $
 #*/
 
 
@@ -3445,7 +3445,7 @@ pgescape_str (char *s,int sl)
 char *
 replace_ibind (char *stmt, int ni, struct BINDING *ibind, int type)
 {
-  static char buff2[64000];
+  static char buff2[256000];
   long bloblen;
   char *blobptr;
   char buff3[200];
