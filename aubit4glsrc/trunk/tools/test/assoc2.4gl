@@ -2,7 +2,6 @@ define lv_rate ASSOCIATE CHAR(3) WITH ARRAY[2000] OF RECORD
 		lv_name CHAR(20),
 		lv_rates float
 end record
-define lv_name ASSOCIATE CHAR(3) WITH ARRAY[2000] OF CHAR(20)
 
 #
 # Data correct on 19/04/2002
