@@ -139,7 +139,8 @@ int db_used=0;
 //char *acl_getenv(char *s);
 
 %}
-%name-prefix="sqlparse_yy"
+%name-prefix "sqlparse_yy"
+%lex-param {yystate}
 %start sql_statement
 %union    {
         char    str[8192];

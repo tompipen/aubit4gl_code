@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: lexer.c,v 1.143 2013-09-28 16:52:47 mikeaubury Exp $
+# $Id: lexer.c,v 1.144 2014-10-15 16:20:34 mikeaubury Exp $
 #*/
 
 /**
@@ -50,6 +50,7 @@
 
 #include <ctype.h>
 
+
 /*prevent a4gl_4glc_int.h from including windows.h that we don't need here, that would*/
 /*mess up constants defined in y.tab.h generated with new version of Bison*/
 /* To Mike: please resist the urge to name constants like "CHAR" "STRING" "COMMA" etc.*/
@@ -71,6 +72,7 @@
 #include "kw.h"
 #endif
 //#include "memfile.h"
+#define DEBUG 1
 
 extern int isin_formhandler;
 
@@ -1343,7 +1345,7 @@ fix_bad_strings (char *s)
  */
 int
 /*yylex (void)*/
-a4gl_yylex (void *pyylval, int yystate, void *yys1, void *yys2)
+a4gl_yylex (void *pyylval, int yystate, void *yys1_xx, void *yys2_xx)
 {
   int a;
   char buff[10240];
@@ -1404,8 +1406,9 @@ a4gl_yylex (void *pyylval, int yystate, void *yys1, void *yys2)
   /*a = NAMED_GEN;*/
 
   if (isin_formhandler) { if (a==KW_INPUT) {a=FINPUT;} }
-
+//extern char *yytext;
   allow = allow_token_state (yystate, a);
+  //printf ("allow %d in state %d=%d (%s)\n", a,yystate,allow, kwords[a].name, yytext);
 #ifdef DEBUG
   A4GL_debug ("Allow_token_State = %d state=%d\n", allow, yystate);
 #endif

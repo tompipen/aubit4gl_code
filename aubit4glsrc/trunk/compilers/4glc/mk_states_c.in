@@ -1,4 +1,4 @@
-@AWK@ '
+cat  rules/generated/y.output  | sed 's/%empty//g' |  @AWK@ '
 BEGIN  {
 	cnt=0
 	print "#include \"a4gl_4glc_int.h\""
@@ -109,5 +109,5 @@ END {
 
    
 
-}' < rules/generated/y.output > rules/generated/mk_states.c
+}'  > rules/generated/mk_states.c
 touch rules/generated/mk_states.h

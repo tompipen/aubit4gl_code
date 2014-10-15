@@ -7,7 +7,7 @@ fi
 
 awkfname=$1
 
-$awkfname '
+cat y.output | sed 's/%empty//g' | $awkfname '
 BEGIN  {
 	cnt=0
 	print "const int *token_groups[]={" > "mk_fstates_1.h";
@@ -110,4 +110,4 @@ END {
 
    
 
-}' < y.output > mk_fstates.c
+}'  > mk_fstates.c
