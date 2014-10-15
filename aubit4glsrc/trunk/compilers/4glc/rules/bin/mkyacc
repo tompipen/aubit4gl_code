@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mkyacc,v 1.26 2009-10-06 15:03:21 mikeaubury Exp $
+# $Id: mkyacc,v 1.27 2014-10-15 07:30:08 mikeaubury Exp $
 #
 
 # This script builds "generated/fgl.yacc" files from several files
@@ -57,7 +57,15 @@ then
 	A4GL_SQLPACK="infx"
 fi
 
-cat [0-8]*.reqd generated/kw.yh 9*.reqd *.rule sqlpack/$A4GL_SQLPACK/*.rule  generated/single_words.rule > $ofile
+bison_version=`bison --version | grep '[0-9]\.[0-9]\.[0-9]' | sed 's/^.* //g'`
+if echo $bison_version | egrep -q '^3'
+then
+	oneReqd=1_bison3.reqd
+else
+	oneReqd=1.reqd
+fi
+
+cat 0.reqd $oneReqd  2.reqd  3.reqd  4.reqd  5.reqd  8.reqd generated/kw.yh 9*.reqd *.rule sqlpack/$A4GL_SQLPACK/*.rule  generated/single_words.rule > $ofile
 echo "/* ========================== from mkyacc =========================== */" >> $ofile
 #echo "commands_xxx : | command1 ;" >> $ofile
 

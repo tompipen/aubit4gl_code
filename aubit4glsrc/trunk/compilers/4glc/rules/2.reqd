@@ -1,0 +1,106 @@
+%union	  {
+
+
+
+	char	str[1024];  /* This would core dump in CygWin on call to */
+						/* yyparse in y.tab.c - 3100 in maximum. */
+
+	struct expr_str *ptr;
+	struct expr_str *xy_ptr[2];
+	struct expr_str_list *ptr_list;
+	char *sql_string;
+	struct fh_field_entry *field_entry;
+	struct fh_field_list *field_list;
+	/* struct generic_entry_list *list; */
+	/* struct generic_entry *entry; */
+	/* struct generic_entry_ident *ident; */
+	/* struct generic_entry_variable *variable; */
+	/* struct generic_entry_literal *literal; */
+	struct variable_usage *var_usg;
+	struct num_list *num_list;
+	struct array_list *array_list;
+	int 	integer_val;
+	float 	float_val;
+	struct sql_statement *sql_stmt;
+	struct s_select_list_item_list *s_select_list_item_list;
+	struct s_select_list_item *s_select_list_item;
+	struct ilist int_list;
+	struct s_table *u_table;
+	struct s_select *s_select;
+	struct dt_display *display;
+	struct s_cur_def curDef;
+        struct list_of_integers *list_of_integers;
+	struct s_formhandler_dets formhandler_dets;
+
+
+
+	/*struct variable_or_literal * variable_or_literal; */
+	struct funcname_list funcname_list;
+	struct windowtype wt;
+
+	/* struct ow_open_window *open_window_type; */
+	/* struct binding_comp *binding_comp_old; */
+
+
+	struct command *cmd;
+	struct s_commands *commands;
+	struct attrib *attrib;
+	struct menu_attrib *menu_attrib;
+
+	//struct binding_list *binding_list;
+	struct s_select_finish *s_select_finish;
+	struct s_fetch_place 	*s_fetch_place;
+	struct s_fetch 	*s_fetch;
+	/* struct binding_comp_list *binding_comp_list; */
+	/* struct binding_comp *binding_comp; */
+	struct str_list *str_list;
+	struct manyoptions *manyoptions;
+	struct single_option *single_option;
+	struct convert *convert;
+	struct startrep *startrep;
+	struct pdf_startrep *pdf_startrep;
+	struct s_pair pair;
+	struct s_pair_expr pair_expr;
+	struct s_pair_expr_list pair_expr_list;
+	struct if_cond *if_cond;
+	struct if_conds *if_conds;
+	struct struct_if_cmd *struct_if_cmd;
+	struct vardets *vardets;
+	struct subscript *subscript;
+	/* variable_or_literal_list *vorl_list; */
+	user_details *user_details;
+	int e_boolean;
+	e_function_type function_type;
+	on_event *on_event;
+	on_events *on_events;
+	struct when *when;
+	struct whens *whens;
+	struct report_format_section_entry *report_format_section_entry;
+	struct report_format_section *report_format_section;
+	struct s_report_orderby_section *report_orderby_section;
+	struct cons_list *cons_list;
+	struct cons_list_entry *cons_list_entry;
+	struct module_entry *module_entry;
+	struct s_full_col s_full_col;
+	struct struct_update_cmd *update_cmd;
+	struct struct_insert_cmd *insert_cmd;
+	struct struct_delete_cmd *delete_cmd;
+	struct s_update_pair *upd_pair;
+
+	struct variable 		*variable_ptr;
+	struct record_variable 		*record_variable_ptr;
+        struct assoc_array_variable 	*v_assoc_ptr;
+        struct constant_data 		*v_const_ptr;
+        struct linked_variable 		*v_linked_ptr;
+	struct variable_list 		*variable_list_ptr;
+	struct s_module_entry_ptr_list  *module_entry_list;
+	struct s_class_definition 	*class_definition;
+	struct cmd_int_list *cmd_int_list;
+	struct create_proc_data *create_procedure;
+	struct s_spl_execute *spl_execute;
+	struct s_spl_block *splblock;
+	struct spl_if_conds *spl_if_conds;
+	}
+
+/* ============================== 1.reqd ============================ */
+
