@@ -200,6 +200,7 @@ public slots:
    void readCsv(int, QString);
    void openChartWindow(QString);
    #endif
+   void openChartWindow(QString, QString);
    void createTextEditor(QString, QString, int);
    void createEditor(QString);
    void createBrowser();

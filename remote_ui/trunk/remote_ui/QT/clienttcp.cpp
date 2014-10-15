@@ -320,7 +320,7 @@ ClientSocket::ClientSocket(QObject *parent, QString name, QString pass, QString 
    connect(&ph, SIGNAL(handleXMLToolBar(QString)),  
            p_currScreenHandler, SLOT(handleXMLToolBar(QString)));
    // transfer the received main menu to the screen handler (4st file)
-   connect(&ph, SIGNAL(handleXMLStartMenu(QString)), 
+   connect(&ph, SIGNAL(handleXML(QString)),
            p_currScreenHandler, SLOT(handleXMLStartMenu(QString)));
    // transfer the received action defaults (4ad file) to the screen handler
    connect(&ph, SIGNAL(handleXMLActions(QString)), 
@@ -1566,10 +1566,10 @@ if(childElement.nodeName() == "PROGRAMSTARTUP"){
                  QDomElement valuesElement = paramsElement.childNodes().at(k).toElement();
                  params << valuesElement.text();
               }
-              QMetaObject::invokeMethod(p_currScreenHandler, "openChartWindow", Qt::QueuedConnection, Q_ARG(QString, params.at(0)));
-
-              returnvalues << "0";
+              QMetaObject::invokeMethod(p_currScreenHandler, "openChartWindow", Qt::QueuedConnection, Q_ARG(QString, params.at(0)), Q_ARG(QString, params.at(1)));
+              expect = 0;
          }
+
 
          if(qs_name == "ui.vdc.texteditor")
          {
@@ -1655,7 +1655,7 @@ if(childElement.nodeName() == "PROGRAMSTARTUP"){
 
          if(qs_name == "ui.vdc.getdevice")
          {
-              returnvalues << "desktop" << QString::number(QApplication::desktop()->width()) + "x" + QString::number(QApplication::desktop()->height());;
+              returnvalues << "desktop" << "max";
          }
          if(qs_name == "ui.vdc.setclipboard")
          {
@@ -3420,6 +3420,16 @@ QString ProtocolHandler::getVentasLogicalIndex(int index, QString formmask)
         logicalIndex = index + 1;
     }
 
+    if(form == "m2zagd")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "m2zagk")
+    {
+        logicalIndex = index + 1;
+    }
+
     if(form == "a_bran")
     {
         logicalIndex = index + 1;
@@ -3466,6 +3476,11 @@ QString ProtocolHandler::getVentasLogicalIndex(int index, QString formmask)
     }
 
     if(form == "a_sparko")
+    {
+        logicalIndex = index + 1;
+    }
+
+    if(form == "a_arkd")
     {
         logicalIndex = index + 1;
     }

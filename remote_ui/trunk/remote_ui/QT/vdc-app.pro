@@ -7,6 +7,7 @@ TARGET = VDC
 
 DEPENDPATH += .
 INCLUDEPATH += .
+INCLUDEPATH += ./tools/qtcharts/
 
 QT += network
 QT += xml
@@ -28,6 +29,7 @@ macx {
 win32 {
   LIBS += -lwsock32
 }
+LIBS += -L"$$_PRO_FILE_PWD_/lib" -lQtCommercialChart_debug
 
 VREPGEN_PATH = $$(VREPGEN)
 SSH_PATH     = $$(VSSH)
@@ -35,7 +37,7 @@ SSH_PATH     = $$(VSSH)
 !isEmpty(SSH_PATH) {
 message("Compile with libssh")
 DEFINES += SSH_USE
-LIBS += -lssh -lpthread
+LIBS += -L"$$_PRO_FILE_PWD/lib" -lssh -lpthread
 include("ssh/ssh.pri")
 }
 
@@ -101,7 +103,8 @@ HEADERS += confwin.h \
     ventasupdate.h \
     models/progress.h \
     masterupdate.h \
-    tools/htmleditor.h
+    tools/htmleditor.h \
+    tools/chartwidget.h 
 
 SOURCES += confwin.cpp \
     main.cpp \
@@ -136,7 +139,8 @@ SOURCES += confwin.cpp \
     ventasupdate.cpp \
     models/progress.cpp \
     masterupdate.cpp \
-    tools/htmleditor.cpp
+    tools/htmleditor.cpp \
+    tools/chartwidget.cpp
 
 OTHER_FILES += versions.xml
 OTHER_FILES += appicon.rc
