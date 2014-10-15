@@ -4,7 +4,7 @@
 #undef YYPURE
 #endif
 #define YYPURE 1
-#define YYLEX_PARAM yystate
+/*#define YYLEX_PARAM yystate */
 #define YY_DECL int yylex(int yystate)
 int tagCaseInsensitive=1;
 int ign_kw(int yystate,int kw);
@@ -77,7 +77,8 @@ char *chk_alias(char *s);
 %}
 %start form_def
 
-%name-prefix="a4gl_form_yy"
+%name-prefix "a4gl_form_yy"
+%lex-param {yystate}
 
 %union	  {
 	char	str[1024];
