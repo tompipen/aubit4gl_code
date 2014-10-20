@@ -102,7 +102,8 @@ HEADERS += confwin.h \
     ventasupdate.h \
     models/progress.h \
     masterupdate.h \
-    tools/htmleditor.h
+    tools/htmleditor.h \
+    tools/vdcupdate.h
 
 SOURCES += confwin.cpp \
     main.cpp \
@@ -137,7 +138,8 @@ SOURCES += confwin.cpp \
     ventasupdate.cpp \
     models/progress.cpp \
     masterupdate.cpp \
-    tools/htmleditor.cpp
+    tools/htmleditor.cpp \
+    tools/vdcupdate.cpp
 
 OTHER_FILES += versions.xml
 OTHER_FILES += appicon.rc

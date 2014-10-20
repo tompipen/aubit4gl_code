@@ -33,7 +33,7 @@
 #include "xmlparsers/xml2menu.h"
 #include "xmlparsers/xml2style.h"
 #include <QMutex>
-#include "ventasupdate.h"
+#include "tools/updateclient/vdcupdate.h"
 #include "masterupdate.h"
 
 //------------------------------------------------------------------------------
@@ -4336,8 +4336,11 @@ void ScreenHandler::checkForUpdate()
         mUpdate->run();
         mUpdate->wait();
 
-        VentasUpdate *vUpdate = new VentasUpdate(0);
-        vUpdate->start();
+        /*VentasUpdate *vUpdate = new VentasUpdate(0);
+        vUpdate->start();*/
+
+        DownloadManager *dlManager = new DownloadManager(false);
+        dlManager->searchForUpdate();
     }
 }
 

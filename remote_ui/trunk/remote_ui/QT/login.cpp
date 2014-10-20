@@ -25,7 +25,7 @@
 #include <QLineEdit>
 #include <QTcpSocket>
 #include "masterupdate.h"
-#include "ventasupdate.h"
+#include "tools/vdcupdate.h"
 #include <qtelnet/qttelnet.h>
 #if QT_VERSION >= 0x040600
 #include <QProcessEnvironment>
@@ -346,6 +346,18 @@ void LoginForm::createMenu(QMenuBar *menu)
     options->addAction(removeIni);
     options->addSeparator();
 
+    autoUpdateAction = new QAction(tr("install update automatically"), this);
+    autoUpdateAction->setCheckable(true);
+
+    if(VDC::readSettingsFromIni("", "updateWithoutAsk").toInt() == 2) {
+        autoUpdateAction->setChecked(false);
+    } else {
+        autoUpdateAction->setChecked(true);
+    }
+    connect(autoUpdateAction, SIGNAL(triggered()), this, SLOT(setAutoUpdate()));
+    options->addAction(autoUpdateAction);
+
+
     QString menuType = VDC::readSettingsFromIni("", "startMenuPosition");
 
     if(menuType == "tree" || menuType.isEmpty())
@@ -486,6 +498,16 @@ void LoginForm::removeIni()
     dialog->getAction("NO")->setShortcut(Qt::Key_Escape);
     connect(dialog->getAction("NO"), SIGNAL(triggered()), dialog, SLOT(close()));
     dialog->show();
+
+}
+
+void LoginForm::setAutoUpdate()
+{
+    if(autoUpdateAction->isChecked()) {
+        VDC::saveSettingsToIni("", "updateWithoutAsk", QString::number(1));
+    } else {
+        VDC::saveSettingsToIni("", "updateWithoutAsk", QString::number(2));
+    }
 
 }
 void LoginForm::clearIniFile()
@@ -1595,8 +1617,8 @@ void LoginForm::checkForUpdate()
     mUpdate->run();
     mUpdate->wait();
 
-    VentasUpdate *vUpdate = new VentasUpdate(1);
-    vUpdate->start();
+    DownloadManager *dlManager = new DownloadManager(true);
+    dlManager->searchForUpdate();
 }
 
 void LoginForm::setMainMenu()

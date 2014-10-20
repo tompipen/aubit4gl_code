@@ -343,3 +343,12 @@ MainFrame::vdcdebug("Dialog","getAction", "QString name");
    return new QAction(NULL);
 }
 
+void Dialog::setVentasStyle()
+{
+    QPalette palette;
+    palette.setBrush(this->backgroundRole(), QBrush(QImage("pics:VENTAS_9_alu_1080p.png")));
+    this->setPalette(palette);
+    this->setStyleSheet("QPushButton { border-image: url(pics:VENTAS_9_knopf_menu_inaktiv.png); padding-top: -1; padding-right: 10; text-align: left; height: 36px; min-width: 50px; }");
+
+}
+

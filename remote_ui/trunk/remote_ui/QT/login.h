@@ -57,6 +57,7 @@ public slots:
    void compression();
    void aboutVDC(QWidget *parent = 0);
    void removeIni();
+   void setAutoUpdate();
    void clearIniFile();
    void setFormat(QString);
    void font();
@@ -145,6 +146,8 @@ private:
    QAction *format2;
    QAction *format3;
    QAction *format4;
+
+   QAction *autoUpdateAction;
    void readEditFile(QString);
    void writeFile(QString);
    bool b_savefile;

@@ -2178,6 +2178,7 @@ QString Reportgen::getTemplateFooter(int Table, QString filename, QString suffix
                }
 
            }
+           file->close();
     } else {
            while(!stream.atEnd()) {
                readLine = stream.readLine();

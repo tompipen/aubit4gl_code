@@ -1941,7 +1941,7 @@ if(childElement.nodeName() == "PROGRAMSTARTUP"){
              if(fileInfo.suffix() == "txt" || fileInfo.suffix().isEmpty())
              {
                  QMetaObject::invokeMethod(p_currScreenHandler, "createTextEditor", Qt::QueuedConnection, Q_ARG(QString, fileName), Q_ARG(QString, "nowrap"), Q_ARG(int, 0));
-                 waitTimer::msleep(5000);
+                 waitTimer::msleep(2000);
                  while(!p_currScreenHandler->mTextEditor->getIsEditorFinished())
                  {
                      waitTimer::msleep(1000);

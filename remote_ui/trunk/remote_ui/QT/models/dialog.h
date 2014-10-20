@@ -43,6 +43,8 @@ public:
 
    bool b_allowCloseDialog;
 
+   void setVentasStyle();
+
 private:
    QLayout* layout;
    QLayout* buttonLayout;
