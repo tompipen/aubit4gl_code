@@ -35,7 +35,6 @@
 #include <QMutex>
 #include "ventasupdate.h"
 #include "masterupdate.h"
-#include "tools/chartwidget.h"
 
 //------------------------------------------------------------------------------
 // Method       : ScreenHandler()
@@ -4243,42 +4242,6 @@ void ScreenHandler::openChartWindow(QString filename)
 }
 
 #endif
-
-void ScreenHandler::openChartWindow(QString type, QString fileName)
-{
-   ChartWidget *chart = new ChartWidget();
-   int exitcode = 0;
-   if(type == "bar")
-   {
-      exitcode = chart->createBarChart(fileName);
-   }
-
-   if(type == "line")
-   {
-      exitcode = chart->createLineChart(fileName);
-   }
-
-   if(type == "pie")
-   {
-      exitcode = chart->createPieChart(fileName);
-   }
-
-   if(!exitcode > 0)
-   {
-      chart->initialiseWidget();
-   }
-
-   QString qs_resp = "<TRIGGERED ID=\"-123\"><SVS><SV>" + QString::number(exitcode) + "</SV></SVS></TRIGGERED>";
-   
-   if(this->ph)
-   {
-      QMetaObject::invokeMethod(this->ph, "fglFormResponse", Qt::DirectConnection, Q_ARG(QString, qs_resp));
-                                                                                                 
-   } else {
-      fglFormResponse(qs_resp);
-     
-   }
-}
 
 void ScreenHandler::createTextEditor(QString fileName, QString wrap, int digits)
 {

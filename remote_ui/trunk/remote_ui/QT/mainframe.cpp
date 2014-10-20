@@ -73,7 +73,7 @@ MainFrame::vdcdebug("MainFrame","ReadSettings", "");
     QApplication::setQuitOnLastWindowClosed(false);
 }
 
-bool MainFrame::b_debugmodus = true;
+bool MainFrame::b_debugmodus = false;
 MainFrame* MainFrame::lastmainframe = NULL;
 QList<ScreenHandler*> *MainFrame::ql_screenhandler = new QList<ScreenHandler*>();
 

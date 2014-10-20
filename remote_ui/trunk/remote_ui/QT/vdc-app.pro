@@ -29,7 +29,6 @@ macx {
 win32 {
   LIBS += -lwsock32
 }
-LIBS += -L"$$_PRO_FILE_PWD_/lib" -lQtCommercialChart_debug
 
 VREPGEN_PATH = $$(VREPGEN)
 SSH_PATH     = $$(VSSH)
@@ -103,8 +102,7 @@ HEADERS += confwin.h \
     ventasupdate.h \
     models/progress.h \
     masterupdate.h \
-    tools/htmleditor.h \
-    tools/chartwidget.h 
+    tools/htmleditor.h
 
 SOURCES += confwin.cpp \
     main.cpp \
@@ -139,8 +137,7 @@ SOURCES += confwin.cpp \
     ventasupdate.cpp \
     models/progress.cpp \
     masterupdate.cpp \
-    tools/htmleditor.cpp \
-    tools/chartwidget.cpp
+    tools/htmleditor.cpp
 
 OTHER_FILES += versions.xml
 OTHER_FILES += appicon.rc

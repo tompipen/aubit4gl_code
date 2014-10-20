@@ -320,7 +320,7 @@ ClientSocket::ClientSocket(QObject *parent, QString name, QString pass, QString 
    connect(&ph, SIGNAL(handleXMLToolBar(QString)),  
            p_currScreenHandler, SLOT(handleXMLToolBar(QString)));
    // transfer the received main menu to the screen handler (4st file)
-   connect(&ph, SIGNAL(handleXML(QString)),
+   connect(&ph, SIGNAL(handleXMLStartMenu(QString)),
            p_currScreenHandler, SLOT(handleXMLStartMenu(QString)));
    // transfer the received action defaults (4ad file) to the screen handler
    connect(&ph, SIGNAL(handleXMLActions(QString)), 
