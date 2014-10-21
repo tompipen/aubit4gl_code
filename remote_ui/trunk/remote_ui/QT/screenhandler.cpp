@@ -33,7 +33,7 @@
 #include "xmlparsers/xml2menu.h"
 #include "xmlparsers/xml2style.h"
 #include <QMutex>
-#include "tools/updateclient/vdcupdate.h"
+#include "tools/vdcupdate.h"
 #include "masterupdate.h"
 
 //------------------------------------------------------------------------------
