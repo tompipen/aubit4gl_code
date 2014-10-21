@@ -93,7 +93,6 @@ LoginForm::LoginForm(QWidget *parent)
 
     portLineEdit->setText(QString::number(port));
 
-
     if(VDC::readSettingsFromIni("", "debugVDC") == "yes")
     {
         logVDC->setChecked(true);
@@ -1311,11 +1310,13 @@ MainFrame::vdcdebug("LoginForm","okPressed", "");
       if(MainFrame *main = qobject_cast<MainFrame*> (MainFrame::lastmainframe))
       {
           main->debugVDC = true;
+          VDC::saveSettingsToIni(QString(""), QString("debugVDC"), QString("yes"));
       }
    } else {
        if(MainFrame *main = qobject_cast<MainFrame*> (MainFrame::lastmainframe))
        {
            main->debugVDC = false;
+           VDC::removeSettingsFromIni("","debugVDC");
        }
    }
 
