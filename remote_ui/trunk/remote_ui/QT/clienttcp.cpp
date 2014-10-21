@@ -3635,6 +3635,11 @@ QString ProtocolHandler::getVentasLogicalIndex(int index, QString formmask)
         logicalIndex = index + 1;
     }
 
+    if(form == "a_bestand")
+    {
+        logicalIndex = index + 1;
+    }
+
     if(form == "a_banf0")
     {
         logicalIndex = index + 1;
