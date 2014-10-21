@@ -355,6 +355,16 @@ void LoginForm::createMenu(QMenuBar *menu)
     }
     connect(autoUpdateAction, SIGNAL(triggered()), this, SLOT(setAutoUpdate()));
     options->addAction(autoUpdateAction);
+    options->addSeparator();
+
+    rememberMenuAction = new QAction(tr("Remember Main Menu"), this);
+    rememberMenuAction->setCheckable(true);
+
+    if(VDC::readSettingsFromIni("","rememberMainMenu").toInt() != 2) {
+        rememberMenuAction->setChecked(true);
+    }
+    connect(rememberMenuAction, SIGNAL(triggered()), this, SLOT(setRememberMenu()));
+    options->addAction(rememberMenuAction);
 
 
     QString menuType = VDC::readSettingsFromIni("", "startMenuPosition");
@@ -506,6 +516,16 @@ void LoginForm::setAutoUpdate()
         VDC::saveSettingsToIni("", "updateWithoutAsk", QString::number(1));
     } else {
         VDC::saveSettingsToIni("", "updateWithoutAsk", QString::number(2));
+    }
+
+}
+
+void LoginForm::setRememberMenu()
+{
+    if(rememberMenuAction->isChecked()) {
+        VDC::removeSettingsFromIni("", "rememberMainMenu");
+    } else {
+        VDC::saveSettingsToIni("", "rememberMainMenu", QString::number(2));
     }
 
 }

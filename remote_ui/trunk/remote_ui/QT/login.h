@@ -58,6 +58,7 @@ public slots:
    void aboutVDC(QWidget *parent = 0);
    void removeIni();
    void setAutoUpdate();
+   void setRememberMenu();
    void clearIniFile();
    void setFormat(QString);
    void font();
@@ -148,6 +149,7 @@ private:
    QAction *format4;
 
    QAction *autoUpdateAction;
+   QAction *rememberMenuAction;
    void readEditFile(QString);
    void writeFile(QString);
    bool b_savefile;

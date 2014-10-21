@@ -1938,6 +1938,14 @@ void FglForm::writeSettingsLocal()
         VDC::saveSettingsToIni(formName(), "posY", QString::number(widgetPosY));
     }
 
+    //If rememberMainMenu is 2 then do not save the expand state from the menu
+    int saveExpand = VDC::readSettingsFromIni("","rememberMainMenu").toInt();
+
+    if(saveExpand == 2)
+    {
+        return;
+    }
+
     if(mXmlMenu)
     {
         XML2Menu *treeMenu = mXmlMenu;
