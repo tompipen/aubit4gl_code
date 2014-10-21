@@ -346,7 +346,7 @@ void LoginForm::createMenu(QMenuBar *menu)
     options->addAction(removeIni);
     options->addSeparator();
 
-    autoUpdateAction = new QAction(tr("install update automatically"), this);
+    autoUpdateAction = new QAction(tr("Install update automatically"), this);
     autoUpdateAction->setCheckable(true);
 
     if(VDC::readSettingsFromIni("", "updateWithoutAsk").toInt() == 2) {
