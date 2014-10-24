@@ -2116,7 +2116,7 @@ bool Reportgen::replaceMetaFile(QString odffile)
     QFile *outFile = new QFile(QDir::tempPath() + "/" + odffile + "/meta.xml");
     if(!outFile->open(QIODevice::WriteOnly | QIODevice::Truncate))
     {
-        qDebug() << "(replaceMetaFile()): Konnte meta.xml nicht zum schreiben öffnen";
+        qDebug() << "(replaceMetaFile()): Konnte meta.xml nicht zum schreiben oeffnen";
         return false;
     }
 
@@ -2298,18 +2298,29 @@ void Reportgen::getTemplateVars(QString filename)
                 int startAppend;
                 for(int i=0; i < ausgabe.length(); i++)
                 {
+                    QString character = ausgabe.at(i);
                     if(ausgabe.at(i) == QChar('@') || ausgabe.at(i) == QChar('[') || ausgabe.at(i) == QChar(']'))
                     {
                         startAppend = 1;
                     }
-                    if(ausgabe.at(i) == QChar('<') || ausgabe.at(i) == QChar(' '))
-                    {
+                    //if(ausgabe.at(i) == QChar('<') || ausgabe.at(i) == QChar(' ') || ausgabe.at(i) == QChar('(') || ausgabe.at(i) == QChar(')'))
+                    if(startAppend == 1 && (!character.contains(QRegExp("^[a-zA-Z0-9@_\]+$")))){
                         startAppend = 0;
                         if(!str.isNull())
                         {
-                                str.remove("@");
-                                temp_fields << str.trimmed();
-                                str.clear();
+                            str.remove("@");
+                            temp_fields << str.trimmed();
+                            str.clear();
+                        }
+
+                        if(character.contains("[")) {
+                            temp_fields << "[P1[";
+                            break;
+                        }
+
+                        if(character.contains("]")) {
+                            temp_fields << "]P1]";
+                            break;
                         }
                     }
 
@@ -2696,7 +2707,7 @@ bool Reportgen::replaceTemplateVars(QString odffile, QString sedfile, QFileInfo 
     QFile *outStylesFile = new QFile(QDir::tempPath() + "/" + odffile + "/styles.xml");
     if(!outStylesFile->open(QIODevice::WriteOnly | QIODevice::Truncate))
     {
-        qDebug() << "(replaceMetaFile()): Konnte meta.xml nicht zum schreiben öffnen";
+        qDebug() << "(replaceMetaFile()): Konnte meta.xml nicht zum schreiben oeffnen";
         return false;
     }
 
