@@ -125,7 +125,7 @@ void TextEditorWidget::loadFileFromLocal()
         QString filterText;
         QTextStream in(&file);
 #ifndef Q_OS_WIN
-        out.setCodec("ISO-8859-15");
+        in.setCodec("ISO-8859-15");
 #endif
 
         if(enableFilter != 2) {
