@@ -56,6 +56,7 @@ public slots:
    void openCompOptions();
    void compression();
    void aboutVDC(QWidget *parent = 0);
+   void convertTextToIso();
    void removeIni();
    void setAutoUpdate();
    void setRememberMenu();
@@ -150,6 +151,7 @@ private:
 
    QAction *autoUpdateAction;
    QAction *rememberMenuAction;
+   QAction *convertText;
    void readEditFile(QString);
    void writeFile(QString);
    bool b_savefile;

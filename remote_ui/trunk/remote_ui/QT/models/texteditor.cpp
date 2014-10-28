@@ -11,11 +11,13 @@
 #include <QTextBlock>
 #include <QLineEdit>
 #include <QSyntaxHighlighter>
-#include "include/vdc.h"
 #include <QSignalMapper>
-#include "models/dialog.h"
 #include <QDateTime>
+
 #include "mainframe.h"
+#include "include/vdc.h"
+#include "models/dialog.h"
+#include "tools/umlauts.h"
 
 TextEditorWidget::TextEditorWidget(QMainWindow *parent)
     : QMainWindow(parent)
@@ -118,10 +120,18 @@ void TextEditorWidget::loadFileFromLocal()
             qDebug() << "Kann Datei nicht zum lesen oeffnen";
         }
 
-        QTextStream in(&file);
-        in.setCodec("ISO-8859-15");
+        int enableFilter = VDC::readSettingsFromIni("","convertText").toInt();
 
-        this->mTextEdit->setPlainText(in.readAll());
+        QString filterText;
+        QTextStream in(&file);
+
+        if(enableFilter != 2) {
+            filterText = Tools::filterUmlauts(in.readAll());
+        } else {
+            filterText = in.readAll();
+        }
+
+        this->mTextEdit->setPlainText(filterText);
 
         file.close();
 
@@ -144,7 +154,17 @@ void TextEditorWidget::saveFile()
     QTextStream out(&file);
     out.setCodec("ISO-8859-15");
 
-    out << mTextEdit->toPlainText();
+    QString filterText;
+
+    int enableFilter = VDC::readSettingsFromIni("","convertText").toInt();
+
+    if(enableFilter != 2) {
+        filterText = Tools::filterUmlauts(mTextEdit->toPlainText());
+    } else {
+        filterText = mTextEdit->toPlainText();
+    }
+
+    out << filterText;
     file.close();
 
     this->setWindowTitle("VENTAS - Text Editor");

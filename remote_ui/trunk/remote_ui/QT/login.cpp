@@ -391,6 +391,17 @@ void LoginForm::createMenu(QMenuBar *menu)
 
     connect(signalMapper, SIGNAL(mapped(QString)), this, SLOT(setFactorWidth(QString)));
 
+    options->addSeparator();
+    convertText = new QAction(tr("Convert UTF-8 to ISO-8859-1"), this);
+    connect(convertText, SIGNAL(triggered()), this, SLOT(convertTextToIso()));
+    convertText->setCheckable(true);
+
+    if(VDC::readSettingsFromIni("","convertText").toInt() != 2) {
+        convertText->setChecked(true);
+    }
+
+    options->addAction(convertText);
+
     menu->addMenu(options);
     menu->addAction(toggledebug);
 
@@ -656,6 +667,16 @@ void LoginForm::aboutVDC(QWidget *parent)
     widget->setStyleSheet("QPushButton { border-image: url(pics:VENTAS_9_knopf_menu_inaktiv.png); padding-top: -1; padding-right: 10; text-align: left; height: 36px; min-width: 50px; }");
     widget->show();
     widget->adjustSize();
+}
+
+void LoginForm::convertTextToIso()
+{
+    if(!convertText->isChecked())
+    {
+        VDC::saveSettingsToIni("","convertText", QString("2"));
+    } else {
+        VDC::removeSettingsFromIni("","convertText");
+    }
 }
 
 void LoginForm::resetFactor()

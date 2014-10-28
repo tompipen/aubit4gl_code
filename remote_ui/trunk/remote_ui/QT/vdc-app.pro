@@ -103,7 +103,8 @@ HEADERS += confwin.h \
     models/progress.h \
     masterupdate.h \
     tools/htmleditor.h \
-    tools/vdcupdate.h
+    tools/vdcupdate.h \
+    tools/umlauts.h
 
 SOURCES += confwin.cpp \
     main.cpp \
@@ -139,7 +140,8 @@ SOURCES += confwin.cpp \
     models/progress.cpp \
     masterupdate.cpp \
     tools/htmleditor.cpp \
-    tools/vdcupdate.cpp
+    tools/vdcupdate.cpp \
+    tools/umlauts.cpp
 
 OTHER_FILES += versions.xml
 OTHER_FILES += appicon.rc
