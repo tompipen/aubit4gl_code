@@ -27,11 +27,13 @@
 #include <QDragEnterEvent>
 #include <QSplitter>
 #include <QSettings>
+
 #include "fglform.h"
 #include "mainframe.h"
 #include "vwidgets.h"
 #include "table.h"
 #include "actions.h"
+#include "tools/umlauts.h"
 
 //int defHeight = 21;
 
@@ -2335,7 +2337,15 @@ MainFrame::vdcdebug("WidgetHelper","fieldText", "QObject *object");
        {
           return widget->toPlainText();//.replace(",",".");
        }
-   */  return widget->toPlainText();
+   */
+       int enableFilter = VDC::readSettingsFromIni("","convertText").toInt();
+
+
+       if(enableFilter != 2) {
+           return Tools::filterUmlauts(widget->toPlainText());
+       } else {
+           return widget->toPlainText();
+       }
    }
 
    if(ComboBox *widget = qobject_cast<ComboBox *> (object)){
