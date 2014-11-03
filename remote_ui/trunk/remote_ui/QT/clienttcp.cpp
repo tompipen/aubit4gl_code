@@ -1898,14 +1898,8 @@ if(childElement.nodeName() == "PROGRAMSTARTUP"){
              if(fileInfo.suffix() == "docx")
              {
              #ifndef Q_OS_WIN
-                 ExecuteFile *exec = new ExecuteFile;
-                 exec->setFileName(fileName);
-                 exec->start();
-
-                 while(!exec->isFinished())
-                 {
-                     waitTimer::msleep(5);
-                 }
+                 executeFile(0, fileName);
+                 returnvalues << "3";
              #else
                  executeFile(1, fileName);
                  returnvalues << QString::number(openFileSuccess);
