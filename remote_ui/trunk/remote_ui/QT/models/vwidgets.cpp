@@ -2342,7 +2342,7 @@ MainFrame::vdcdebug("WidgetHelper","fieldText", "QObject *object");
 
 
        if(enableFilter != 2) {
-           return Tools::filterUmlauts(widget->toPlainText());
+           return Umlauts::replaceUmlauts(widget->toPlainText());
        } else {
            return widget->toPlainText();
        }

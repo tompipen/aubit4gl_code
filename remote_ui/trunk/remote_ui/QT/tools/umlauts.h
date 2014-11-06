@@ -3,8 +3,8 @@
 
 #include <QString>
 
-namespace Tools {
-    QString filterUmlauts(QString);
+namespace Umlauts {
+    QString replaceUmlauts(QString);
 }
 
 #endif // UMLAUTS_H

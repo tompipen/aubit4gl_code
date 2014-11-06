@@ -1,8 +1,8 @@
 #include "tools/umlauts.h"
 
-namespace Tools {
+namespace Umlauts {
 
-    QString filterUmlauts(QString qs_text)
+    QString replaceUmlauts(QString qs_text)
     {
         qs_text.replace(QChar(129), QString::fromUtf8("ü"));
         qs_text.replace(QChar(130), QString::fromUtf8("é"));

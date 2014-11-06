@@ -129,7 +129,7 @@ void TextEditorWidget::loadFileFromLocal()
 #endif
 
         if(enableFilter != 2) {
-            filterText = Tools::filterUmlauts(in.readAll());
+            filterText = Umlauts::replaceUmlauts(in.readAll());
         } else {
             filterText = in.readAll();
         }
@@ -162,7 +162,7 @@ void TextEditorWidget::saveFile()
     int enableFilter = VDC::readSettingsFromIni("","convertText").toInt();
 
     if(enableFilter != 2) {
-        filterText = Tools::filterUmlauts(mTextEdit->toPlainText());
+        filterText = Umlauts::replaceUmlauts(mTextEdit->toPlainText());
     } else {
         filterText = mTextEdit->toPlainText();
     }
