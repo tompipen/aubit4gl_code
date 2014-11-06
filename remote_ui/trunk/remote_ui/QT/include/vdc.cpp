@@ -240,4 +240,35 @@ namespace VDC {
            file.close();
        }
    }
+
+   bool copyRecursive(const QString sourceFilePath, const QString targetFilePath, int overwrite)
+   {
+       QFileInfo srcFileInfo(sourceFilePath);
+       if(srcFileInfo.isDir()) {
+           QDir targetDir(targetFilePath);
+           //move on directory up
+           targetDir.cdUp();
+           targetDir.mkdir(QFileInfo(targetFilePath).fileName());
+
+           QDir sourceDir(sourceFilePath);
+           QStringList fileNames = sourceDir.entryList(QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot | QDir::Hidden | QDir::System);
+
+           foreach (QString file, fileNames) {
+               const QString newSourceFilePath = sourceFilePath + "/" + file;
+               const QString newTargetFilePath = targetFilePath + "/" + file;
+
+               if(!copyRecursive(newSourceFilePath, newTargetFilePath, overwrite)) {
+                   return false;
+               }
+           }
+       } else {
+           if(QFile::exists(targetFilePath) && overwrite == 0) {
+              return true;
+           }
+
+           if(QFile::copy(sourceFilePath, targetFilePath)) {
+               return true;
+           }
+       }
+   }
 }

@@ -29,6 +29,8 @@ namespace VDC
   void removeSettingsFromIni(QString group, QString key);
   QString md5hashfromfile(QString);
 
+  bool copyRecursive(const QString, const QString, int);
+
   QPoint widgetPositionValidate(int, int);
 
   void logMessage(QString, QString);
