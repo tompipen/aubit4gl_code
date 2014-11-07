@@ -2530,12 +2530,14 @@ bool Reportgen::replaceTemplateVars(QString odffile, QString sedfile, QFileInfo 
             temp_var.replace("</text:p>", "");*/
             for(int i=0; i < ausgabe.count(); i++)
             {
+                QString character = ausgabe.at(i);
+
                 if(ausgabe.at(i) == QChar('@'))
                 {
                     startStr = 1;
                 }
 
-                if(ausgabe.at(i) == QChar('<') || ausgabe.at(i) == QChar(' '))
+                if((startStr == 1 && (!character.contains(QRegExp("^[a-zA-Z0-9@_\]+$")))))
                 {
                     startStr = 0;
                     if(!str.isEmpty())
@@ -3023,12 +3025,13 @@ bool Reportgen::createInfoFile(QFileInfo odffile, QFileInfo zieldatei)
             int startAppend = 0;
             for(int i=0; i < ausgabe.length(); i++)
             {
+                QString character = ausgabe.at(i);
                 if(ausgabe.at(i) == QChar('@'))
                 {
                     startAppend = 1;
                 }
 
-                if(ausgabe.at(i) == QChar('<') || ausgabe.at(i) == QChar(' '))
+                if(startAppend == 1 && (!character.contains(QRegExp("^[a-zA-Z0-9@_\]+$"))))
                 {
                     startAppend = 0;
 
