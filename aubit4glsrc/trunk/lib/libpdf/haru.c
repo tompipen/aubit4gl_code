@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: haru.c,v 1.12 2014-09-10 19:57:57 mikeaubury Exp $
+# $Id: haru.c,v 1.13 2014-11-10 15:07:25 pauldgardiner Exp $
 #*/
 
 /**
@@ -98,9 +98,125 @@ void
 error_handler (HPDF_STATUS error_no, HPDF_STATUS detail_no, void *user_data)
 {
     char            buff[2000];
+    char            *error_message;
 
-    printf ("ERROR: error_no=%04X, detail_no=%u\n", (HPDF_UINT) error_no, (HPDF_UINT) detail_no);
-    sprintf (buff, "ERROR: error_no=%04X, detail_no=%u\n", (HPDF_UINT) error_no, (HPDF_UINT) detail_no);
+    switch ((HPDF_UINT) error_no)
+    {
+
+        // {{{ error messages
+        case 0x1001: error_message = "Internal error. The consistency of the data was lost."; break;
+        case 0x1002: error_message = "Internal error. The consistency of the data was lost."; break;
+        case 0x1003: error_message = "Internal error. The consistency of the data was lost."; break;
+        case 0x1004: error_message = "The length of the data exceeds HPDF_LIMIT_MAX_STRING_LEN."; break;
+        case 0x1005: error_message = "Cannot get a pallet data from PNG image."; break;
+
+        case 0x1007: error_message = "The count of elements of a dictionary exceeds HPDF_LIMIT_MAX_DICT_ELEMENT"; break;
+        case 0x1008: error_message = "Internal error. The consistency of the data was lost."; break;
+        case 0x1009: error_message = "Internal error. The consistency of the data was lost."; break;
+        case 0x100A: error_message = "Internal error. The consistency of the data was lost."; break;
+        case 0x100B: error_message = "HPDF_SetPermission() OR HPDF_SetEncryptMode() was called before a password is set."; break;
+        case 0x100C: error_message = "Internal error. The consistency of the data was lost."; break;
+
+        case 0x100E: error_message = "Tried to register a font that has been registered."; break;
+        case 0x100F: error_message = "Cannot register a character to the japanese word wrap characters list."; break;
+        case 0x1011: error_message = "Tried to set the owner password to NULL. The owner password and user password is the same."; break;
+        case 0x1013: error_message = "Internal error. The consistency of the data was lost."; break;
+        case 0x1014: error_message = "The depth of the stack exceeded HPDF_LIMIT_MAX_GSTATE."; break;
+        case 0x1015: error_message = "Memory allocation failed."; break;
+        case 0x1016: error_message = "File processing failed. (A detailed code is set.)"; break;
+        case 0x1017: error_message = "Cannot open a file. (A detailed code is set.)"; break;
+
+        case 0x1019: error_message = "Tried to load a font that has been registered."; break;
+        case 0x101A: error_message = "The format of a font-file is invalid. Internal error. The consistency of the data was lost."; break;
+        case 0x101B: error_message = "Cannot recognize a header of an afm file."; break;
+        case 0x101C: error_message = "The specified annotation handle is invalid."; break;
+
+        case 0x101E: error_message = "Bit-per-component of a image which was set as mask-image is invalid."; break;
+        case 0x101F: error_message = "Cannot recognize char-matrics-data  of an afm file."; break;
+        case 0x1020: error_message = "1. The color_space parameter of HPDF_LoadRawImage is invalid. 2. Color-space of a image which was set as mask-image is invalid. 3. The function which is invalid in the present color-space was invoked."; break;
+        case 0x1021: error_message = "Invalid value was set when invoking HPDF_SetCommpressionMode()."; break;
+        case 0x1022: error_message = "An invalid date-time value was set."; break;
+        case 0x1023: error_message = "An invalid destination handle was set."; break;
+
+        case 0x1025: error_message = "An invalid document handle is set."; break;
+        case 0x1026: error_message = "The function which is invalid in the present state was invoked."; break;
+        case 0x1027: error_message = "An invalid encoder handle is set."; break;
+        case 0x1028: error_message = "A combination between font and encoder is wrong."; break;
+
+        case 0x102B: error_message = "An Invalid encoding name is specified."; break;
+        case 0x102C: error_message = "The lengh of the key of encryption is invalid."; break;
+        case 0x102D: error_message = "1. An invalid font handle was set. 2. Unsupported font format."; break;
+        case 0x102E: error_message = "Internal error. The consistency of the data was lost."; break;
+        case 0x102F: error_message = "A font which has the specified name is not found."; break;
+        case 0x1030: error_message = "Unsupported image format."; break;
+        case 0x1031: error_message = "Unsupported image format."; break;
+        case 0x1032: error_message = "Cannot read a postscript-name from an afm file."; break;
+        case 0x1033: error_message = "1. An invalid object is set. 2. Internal error. The consistency of the data was lost."; break;
+        case 0x1034: error_message = "Internal error. The consistency of the data was lost."; break;
+        case 0x1035: error_message = "1. Invoked HPDF_Image_SetColorMask() against the image-object which was set a mask-image."; break;
+        case 0x1036: error_message = "An invalid outline-handle was specified."; break;
+        case 0x1037: error_message = "An invalid page-handle was specified."; break;
+        case 0x1038: error_message = "An invalid pages-handle was specified. (internel error)"; break;
+        case 0x1039: error_message = "An invalid value is set."; break;
+
+        case 0x103B: error_message = "Invalid PNG image format."; break;
+        case 0x103C: error_message = "Internal error. The consistency of the data was lost."; break;
+        case 0x103D: error_message = "Internal error. The _FILE_NAME entry for delayed loading is missing."; break;
+
+        case 0x103F: error_message = "Invalid .TTC file format."; break;
+        case 0x1040: error_message = "The index parameter was exceed the number of included fonts"; break;
+        case 0x1041: error_message = "Cannot read a width-data from an afm file."; break;
+        case 0x1042: error_message = "Internal error. The consistency of the data was lost."; break;
+        case 0x1043: error_message = "An error has returned from PNGLIB while loading an image."; break;
+        case 0x1044: error_message = "Internal error. The consistency of the data was lost."; break;
+        case 0x1045: error_message = "Internal error. The consistency of the data was lost."; break;
+
+        case 0x1049: error_message = "Internal error. The consistency of the data was lost."; break;
+        case 0x104A: error_message = "Internal error. The consistency of the data was lost."; break;
+        case 0x104B: error_message = "Internal error. The consistency of the data was lost."; break;
+        case 0x104C: error_message = "There are no graphics-states to be restored."; break;
+        case 0x104D: error_message = "Internal error. The consistency of the data was lost."; break;
+        case 0x104E: error_message = "The current font is not set."; break;
+        case 0x104F: error_message = "An invalid font-handle was spacified."; break;
+        case 0x1050: error_message = "An invalid font-size was set."; break;
+        case 0x1051: error_message = "See Graphics mode."; break;
+        case 0x1052: error_message = "Internal error. The consistency of the data was lost."; break;
+        case 0x1053: error_message = "The specified value is not a multiple of 90."; break;
+        case 0x1054: error_message = "An invalid page-size was set."; break;
+        case 0x1055: error_message = "An invalid image-handle was set."; break;
+        case 0x1056: error_message = "The specified value is out of range."; break;
+        case 0x1057: error_message = "The specified value is out of range."; break;
+        case 0x1058: error_message = "Unexpected EOF marker was detected."; break;
+        case 0x1059: error_message = "Internal error. The consistency of the data was lost."; break;
+     
+        case 0x105B: error_message = "The length of the specified text is too long."; break;
+        case 0x105C: error_message = "The execution of a function was skipped because of other errors."; break;
+        case 0x105D: error_message = "This font cannot be embedded. (restricted by license)"; break;
+        case 0x105E: error_message = "Unsupported ttf format. (cannot find unicode cmap.)"; break;
+        case 0x105F: error_message = "Unsupported ttf format."; break;
+        case 0x1060: error_message = "Unsupported ttf format. (cannot find a necessary table)"; break;
+        case 0x1061: error_message = "Internal error. The consistency of the data was lost."; break;
+        case 0x1062: error_message = "1. The library is not configured to use PNGLIB. 2. Internal error. The consistency of the data was lost."; break;
+        case 0x1063: error_message = "Unsupported Jpeg format."; break;
+        case 0x1064: error_message = "Failed to parse .PFB file."; break;
+        case 0x1065: error_message = "Internal error. The consistency of the data was lost."; break;
+        case 0x1066: error_message = "An error has occurred while executing a function of Zlib."; break;
+        case 0x1067: error_message = "An error returned from Zlib."; break;
+        case 0x1068: error_message = "An invalid URI was set."; break;
+        case 0x1069: error_message = "An invalid page-layout was set."; break;
+        case 0x1070: error_message = "An invalid page-mode was set."; break;
+        case 0x1071: error_message = "An invalid page-num-style was set."; break;
+        case 0x1072: error_message = "An invalid icon was set."; break;
+        case 0x1073: error_message = "An invalid border-style was set."; break;
+        case 0x1074: error_message = "An invalid page-direction was set."; break;
+        case 0x1075: error_message = "An invalid font-handle was specified."; break;
+        // }}}
+
+        default:     error_message = "Unknown Error\n"; break;
+    }
+
+    printf ("ERROR: error_no=%04X, detail_no=%u, error_message=%s\n", (HPDF_UINT) error_no, (HPDF_UINT) detail_no, error_message);
+    sprintf (buff, "ERROR: error_no=%04X, detail_no=%u, error_message=%s\n", (HPDF_UINT) error_no, (HPDF_UINT) detail_no, error_message);
     A4GL_set_errm (buff);
     A4GL_exitwith ("PDF Error");
 }
@@ -905,11 +1021,13 @@ A4GL_pdf_set_font_name (struct pdf_rep_structure *rep, char *font_name, int font
 
 #ifdef DEBUG // {{{
                 if (A4GL_PDF_DEBUG)
-                    printf ("search fonts_loaded_array pos=%d looking for=%s font_file=%s\n", c, font_name, rep->fonts_loaded_array[c]->font_file);
-                A4GL_debug ("search fonts_loaded_array pos=%d looking for=%s font_file=%s\n", c, font_name, rep->fonts_loaded_array[c]->font_file);
+                    printf ("search fonts_loaded_array pos=%d looking for=%s font_file=%s font_name=%s\n", c, font_name, rep->fonts_loaded_array[c]->font_file, rep->fonts_loaded_array[c]->font_name);
+                A4GL_debug ("search fonts_loaded_array pos=%d looking for=%s font_file=%s font_name=%s\n", c, font_name, rep->fonts_loaded_array[c]->font_file, rep->fonts_loaded_array[c]->font_name);
 #endif // }}}
 
-                if (strcmp (font_name, rep->fonts_loaded_array[c]->font_file) == 0)
+                // search by name and file
+                if (strcmp (font_name, rep->fonts_loaded_array[c]->font_name) == 0 ||
+                    strcmp (font_name, rep->fonts_loaded_array[c]->font_file) == 0)
                 {
                     found_loaded = 1;
                     break;
@@ -1148,7 +1266,7 @@ A4GL_pdf_set_font_name (struct pdf_rep_structure *rep, char *font_name, int font
                     loaded_font_name = HPDF_LoadTTFontFromFile2 (DOC (rep)->doc, font_file, ttc_index, embedded);
 
                 if (loaded_font_name == NULL)
-                    A4GL_assertion (1, "Failed to load font.");
+                    A4GL_assertion (1, "Failed to load font, or it is already loaded.");
 
 #ifdef DEBUG // {{{
                 if (A4GL_PDF_DEBUG)
