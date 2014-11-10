@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: haru.c,v 1.13 2014-11-10 15:07:25 pauldgardiner Exp $
+# $Id: haru.c,v 1.14 2014-11-10 15:09:03 pauldgardiner Exp $
 #*/
 
 /**
@@ -212,7 +212,7 @@ error_handler (HPDF_STATUS error_no, HPDF_STATUS detail_no, void *user_data)
         case 0x1075: error_message = "An invalid font-handle was specified."; break;
         // }}}
 
-        default:     error_message = "Unknown Error\n"; break;
+        default:     error_message = "Unknown Error."; break;
     }
 
     printf ("ERROR: error_no=%04X, detail_no=%u, error_message=%s\n", (HPDF_UINT) error_no, (HPDF_UINT) detail_no, error_message);
