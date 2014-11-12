@@ -1483,7 +1483,7 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
          status->toggleOverwriteMode();
          return true;
       }
-      if(keyEventString != "" && status->b_overwrite )
+      if(keyEventString != "\010" && keyEventString != "" && status->b_overwrite)
       {
 
           if(LineEdit *le = qobject_cast<LineEdit *> (obj))
