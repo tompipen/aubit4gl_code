@@ -36,9 +36,6 @@ void DownloadManager::createWorkingDir()
         VDC::copyRecursive(vdcInstallDir, workingDirPath, 0);
     }
 
-    QDir backupDir(vdcInstallDir);
-    backupDir.cdUp();
-    backupDir.rename("VDC", "VDC_BACKUP");
 }
 
 void DownloadManager::cleanVdcFolder()

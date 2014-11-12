@@ -192,6 +192,14 @@ void VDCUpdate::loadBinarie()
 
     connect(reply, SIGNAL(downloadProgress(qint64,qint64)), SLOT(updateDownloadProgress(qint64,qint64)));
 
+    const QString vdcInstallDir = VDC::readSettingsFromIni("","vdcInstallDir");
+
+    QDir backupDir(vdcInstallDir);
+    backupDir.cdUp();
+    if(!backupDir.rename("VDC", "VDC_BACKUP")) {
+        qDebug() << "cannot rename VDC to VDC_BACKUP";
+    }
+
 
     /*QString applicationPath = QApplication::applicationDirPath();
 
