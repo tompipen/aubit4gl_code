@@ -38,14 +38,15 @@
 #include <string>
 #include <iostream>
 
-#ifdef SSH_USE
-#include "libssh/libssh.h"
-#include "libssh/callbacks.h"
-#endif
 #ifdef Q_OS_WIN
 #include "windows.h"
 #include "include/dbghelp.h"
 #include <tchar.h>
+#endif
+
+#ifdef SSH_USE
+#include "libssh/libssh.h"
+#include "libssh/callbacks.h"
 #endif
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
@@ -138,6 +139,7 @@ void crashingMessageHandler(QtMsgType type, const char *msg)
 #else
 void crashingMessageHandler(QtMsgType type, const QMessageLogContext &ctx, const QString &msg)
 {
+    Q_UNUSED(ctx);
 
     if(MainFrame *main = qobject_cast<MainFrame*> (MainFrame::lastmainframe))
     {

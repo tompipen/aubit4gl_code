@@ -133,7 +133,6 @@ MainFrame::vdcdebug("ToolBar","parseElement", "QDomNode xmlNode");
 void ToolBar::checkActions(QList<QString> menuActions, bool input)
 {
 MainFrame::vdcdebug("ToolBar","checkActions", "QList<QString> menuActions, bool input");
-   bool ok = true;
 
    QList<QAction* > toolBarActions = this->actions();
    for(int i=0; i<toolBarActions.size(); i++){
@@ -146,7 +145,6 @@ MainFrame::vdcdebug("ToolBar","checkActions", "QList<QString> menuActions, bool 
          QString toolBarAction = toolBarActions.at(k)->text();
          if(menuAction == toolBarAction){
             toolBarActions.at(k)->setEnabled(true);
-            ok = false;
          }
       }
    }

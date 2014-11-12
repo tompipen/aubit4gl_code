@@ -27,6 +27,7 @@
 RingMenuPulldown::RingMenuPulldown(QString title, QString comment, QString style, QString image,
                                    QWidget *parent) : QWidget()
 {
+    Q_UNUSED(parent);
     Q_UNUSED(comment);
     Q_UNUSED(style);
     Q_UNUSED(image);

@@ -1298,21 +1298,6 @@ MainFrame::vdcdebug("ScreenHandler","setArrayBuffer", "int row, QString tabName,
             cnt_values++;
          }
       }
-      for(int i=0; i < ql_fields.count(); i++)
-      {
-          QWidget *widget = ql_fields.at(i);
-          if(LineEditDelegate *de = qobject_cast<LineEditDelegate *> (widget)){
-             if(TableView *tableView = qobject_cast<TableView *> (de->parent())){
-                 /*if(row == 0)
-                 {
-                     tableView->clearUnsortedFields();
-                 }
-                tableView->setUnsortedFields(row, fieldValues);*/
-                break;
-             }
-          }
-      }
-
    }
 
    //Edit wurde für jede zeile ausgeführt, so ging der fokus kaputt und immer diese
@@ -3346,7 +3331,6 @@ MainFrame::vdcdebug("ScreenHandler","loadArrayValues", "QStringList qsl_tabNames
 void ScreenHandler::setFieldOrder(QStringList qsl_fields)
 {
 MainFrame::vdcdebug("ScreenHandler","setFieldOrder", "QStringList qsl_fields");
-   QWidget *widget = NULL;
    QWidget *firstWidget = NULL;
    QWidget *nextWidget = NULL;
 
@@ -3359,7 +3343,6 @@ MainFrame::vdcdebug("ScreenHandler","setFieldOrder", "QStringList qsl_fields");
             if(lineEdit->name == qsl_fields.at(i) || lineEdit->colName == qsl_fields.at(i)){
                if(firstWidget == NULL){
                   firstWidget = lineEdit;
-                  widget = lineEdit;
                   continue;
                 }
 
@@ -3374,7 +3357,6 @@ MainFrame::vdcdebug("ScreenHandler","setFieldOrder", "QStringList qsl_fields");
             if(textEdit->name == qsl_fields.at(i) || textEdit->colName == qsl_fields.at(i)){
                if(firstWidget == NULL){
                   firstWidget = textEdit;
-                  widget = textEdit;
                   continue;
                 }
 
@@ -3553,7 +3535,6 @@ MainFrame::vdcdebug("ScreenHandler","freeContext", "int i_context");
              QModelIndex current = tableView->currentIndex();
              tableView->closePersistentEditor(current);
                 if(QSortFilterProxyModel *proxyModel = qobject_cast<QSortFilterProxyModel *> (tableView->model())){
-                   QModelIndex proxyIndex = proxyModel->index(0, 0);
                    tableView->selectionModel()->setCurrentIndex(current, QItemSelectionModel::Clear);
              }
 

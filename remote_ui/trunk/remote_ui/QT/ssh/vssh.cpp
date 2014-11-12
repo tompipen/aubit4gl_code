@@ -356,7 +356,7 @@ int VSSH::auth_interactive()
 
 int VSSH::auth_password()
 {
-  char *user, *password;
+  char *password;
   int rc = 0;
 
 
@@ -369,7 +369,6 @@ int VSSH::auth_password()
   }
   QByteArray ba_user = this->user().toLocal8Bit();
   QByteArray ba_password = this->password().toLocal8Bit();
-  user = ba_user.data();
   password = ba_password.data();
  // user = (char*) this->user().toStdString();
   //password = (char*) this->password().toStdString();

@@ -888,7 +888,6 @@ namespace Fgl {
 
           if(cntYear == i)
           {
-              int test = dbdate.count();
               int indexOfYear = dbdate.count() - 2;
               QString yearDigits;
               if(indexOfYear >= 0)

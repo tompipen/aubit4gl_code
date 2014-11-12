@@ -348,7 +348,7 @@ bool Reportgen::startReportTemplate(QString odffile, QString sedfile, QFileInfo 
    file->close();
    if(oldFileName.completeSuffix() == "ods")
    {
-       replaceEbene(odffile, fileBaseName);
+       replaceEbene(fileBaseName);
    }
 
    if(varCount > 0)
@@ -422,7 +422,7 @@ bool Reportgen::checkMetaFile(QString odffile)
 //
 //-------------------------------------------------------------------------------
 
-bool Reportgen::replaceEbene(QString fileOdf, QString odffile)
+bool Reportgen::replaceEbene(QString odffile)
 {
 
     QFile file(QDir::tempPath() + "/" + odffile + "/1-content.xml");
@@ -1196,8 +1196,6 @@ void Reportgen::createXmlFile(int Table, int Position, QString odffile)
 
         QString variable;
         int aktuelleEbene = 0;
-        int counterEbene2 = 1;
-        int counterEbene3 = 1;
         for(int j=0; j < temp_fields.count(); j++)
         {
             if(temp_fields.at(j).contains("[P1["))
@@ -1222,15 +1220,6 @@ void Reportgen::createXmlFile(int Table, int Position, QString odffile)
             if(temp_fields.at(j).contains("]P2]"))
             {
                 aktuelleEbene = 1;
-            }
-
-            if(zaehlerLevel2 > 0)
-            {
-                counterEbene2 = zaehlerLevel2;
-            }
-            if(zaehlerLevel3 > 0)
-            {
-                counterEbene3 = zaehlerLevel3;
             }
 
             switch(aktuelleEbene)
@@ -2295,7 +2284,7 @@ void Reportgen::getTemplateVars(QString filename)
             if(ausgabe.contains("@") || ausgabe.contains("[") || ausgabe.contains("]"))
             {
                 QString str;
-                int startAppend;
+                int startAppend = 0;
                 for(int i=0; i < ausgabe.length(); i++)
                 {
                     QString character = ausgabe.at(i);
@@ -2673,8 +2662,6 @@ bool Reportgen::replaceTemplateVars(QString odffile, QString sedfile, QFileInfo 
     QString stylesXml = stylesDoc.toString();
     QString ausgabeXml;
     QString outStylesString;
-    int startStr = 0;
-    QString str;
 
     QTextStream stylesXmlStream(&stylesXml);
     stylesXmlStream.setCodec("UTF-8");
@@ -3031,7 +3018,7 @@ bool Reportgen::createInfoFile(QFileInfo odffile, QFileInfo zieldatei)
                     startAppend = 1;
                 }
 
-                if(startAppend == 1 && (!character.contains(QRegExp("^[a-zA-Z0-9@_\]+$"))))
+                if(startAppend == 1 && (!character.contains(QRegExp("^[a-zA-Z0-9@_]+$"))))
                 {
                     startAppend = 0;
 

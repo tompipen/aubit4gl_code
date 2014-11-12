@@ -350,7 +350,7 @@ void WebBrowser::setNavigationIcons()
 
 MyWebBrowser::MyWebBrowser(QWidget *parent)
 {
-
+    Q_UNUSED(parent);
 }
 void MyWebBrowser::contextMenuEvent(QContextMenuEvent *event)
 {

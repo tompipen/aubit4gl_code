@@ -950,10 +950,6 @@ MainFrame::vdcdebug("TableView","setInputEnabled", "bool enable");
       QSortFilterProxyModel *proxyModel = static_cast<QSortFilterProxyModel*> (this->model());
       TableModel *table = static_cast<TableModel*> (proxyModel->sourceModel());
       table->b_input = enable;
-      //QItemSelectionModel *selection = this->selectionModel();
-      QModelIndex index = table->index(0,0, QModelIndex());
-
-      //selection->select(index, QItemSelectionModel::Clear);
    }
 }
 /*!
@@ -1235,29 +1231,20 @@ void TableView::setText(QString text, int row, int col)
 {
 MainFrame::vdcdebug("TableView","setText", "QString text, int row, int col");
    if(QSortFilterProxyModel *proxyModel = qobject_cast<QSortFilterProxyModel *> (this->model())){
-       QModelIndex modelIndex;
-       modelIndex = this->model()->index(row, col, QModelIndex());
-       /*if(table->b_input)
-       {
-
-       }
-       else
-       {
-                   modelIndex = proxyModel->index(row-1, col, QModelIndex());
-       }*/
-
-         if(LineEditDelegate *dele = qobject_cast<LineEditDelegate *> (this->itemDelegateForColumn(col))){
-            if(LineEdit *widget = qobject_cast<LineEdit *> (dele->qw_editor)){
-               text = Fgl::usingFunc(widget->format(), text, widget->dataType(), widget->picture());
-            }
+      Q_UNUSED(proxyModel);
+      QModelIndex modelIndex;
+      modelIndex = this->model()->index(row, col, QModelIndex());
+      if(LineEditDelegate *dele = qobject_cast<LineEditDelegate *> (this->itemDelegateForColumn(col))){
+         if(LineEdit *widget = qobject_cast<LineEdit *> (dele->qw_editor)){
+            text = Fgl::usingFunc(widget->format(), text, widget->dataType(), widget->picture());
          }
+      }
 
-
-         model()->setData(modelIndex, text, Qt::DisplayRole);
-         if(this->currentIndex().column() == modelIndex.column() && this->currentIndex().row() == modelIndex.row())
-         {
-             QMetaObject::invokeMethod(this->curr_editor, "markup", Qt::QueuedConnection);
-         }
+      model()->setData(modelIndex, text, Qt::DisplayRole);
+      if(this->currentIndex().column() == modelIndex.column() && this->currentIndex().row() == modelIndex.row())
+      {
+          QMetaObject::invokeMethod(this->curr_editor, "markup", Qt::QueuedConnection);
+      }
    }
 }
 

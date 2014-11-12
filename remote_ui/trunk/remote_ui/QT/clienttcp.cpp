@@ -1344,58 +1344,11 @@ if(childElement.nodeName() == "PROGRAMSTARTUP"){
             //setWindowTitle(value);
          }
 
-         if(qs_name == "ui.window.repgen") {
-             QString odffile;
-             QString sedfile;
-             QString temp_datei;
-             QString extension;
-
-             for(int k=0; k < paramsElement.childNodes().count(); k++) {
-                 QDomElement valuesElement = paramsElement.childNodes().at(k).toElement();
-                 if(k == 0) {
-                    odffile = valuesElement.text();
-                 }
-                 if(k == 1) {
-                     sedfile = valuesElement.text();
-                 }
-             }
-             QFileInfo file(odffile);
-             #ifdef VREPGEN_USE
-             Reportgen *p_reportgen = new Reportgen(p_currScreenHandler);
-             temp_datei = file.baseName();
-             extension = file.completeSuffix();
-             QFileInfo zieldatei;
-             //QFileInfo zieldatei = params.at(2);
-             QFile *file1 = new QFile(QDir::tempPath() + "/" + QString(temp_datei + "." + extension));
-
-             if( file.completeSuffix() == "ods" || file.completeSuffix() == "odt" )
-             {
-                 if(!file1->open(QIODevice::ReadOnly)) {
-                     qDebug() << "Datei vom Server nicht empfangen" << "";
-                     returnvalues << QString::number(file1->open(QIODevice::ReadOnly));
-                 } else {
-                     //returnvalues << QString::number(p_reportgen->startReportTemplate(QString(temp_datei + "." + extension), sedfile, zieldatei.baseName() + "." + zieldatei.completeSuffix()));
-                 }
-             } else
-             {
-                 QString error;
-                 error = "Die empfangene Datei ist kein OpenOffice Format :<b>\n" +
-                         odffile;
-                 MsgBox("Unbekanntes Format", error, "Error", "Ok", "Ok", 0);
-             } 
-             #endif
-         }
-
-
          if(qs_name == "ui.form.setelementhidden"){
-            int form = -1;
             QString fieldName;
             int hidden = false;
             for(int k=0; k<paramsElement.childNodes().count(); k++){
                QDomElement valuesElement = paramsElement.childNodes().at(k).toElement();
-               if(k == 0){
-                  form = valuesElement.text().toInt();
-               }
 
                if(k == 1){
                   fieldName = valuesElement.text();
@@ -1446,14 +1399,10 @@ if(childElement.nodeName() == "PROGRAMSTARTUP"){
 
          }
          if(qs_name == "ui.form.setelementhidden"){
-            int form = -1;
             QString fieldName;
             int hidden = false;
             for(int k=0; k<paramsElement.childNodes().count(); k++){
                QDomElement valuesElement = paramsElement.childNodes().at(k).toElement();
-               if(k == 0){
-                  form = valuesElement.text().toInt();
-               }
 
                if(k == 1){
                   fieldName = valuesElement.text();
@@ -1468,15 +1417,10 @@ if(childElement.nodeName() == "PROGRAMSTARTUP"){
          }
 
          if(qs_name == "ui.form.setfieldhidden"){
-            int form = -1;
             QString fieldName;
             int hidden = false;
             for(int k=0; k<paramsElement.childNodes().count(); k++){
                QDomElement valuesElement = paramsElement.childNodes().at(k).toElement();
-               if(k == 0){
-                  form = valuesElement.text().toInt();
-               }
-
                if(k == 1){
                   fieldName = valuesElement.text();
                }
@@ -4089,6 +4033,7 @@ MainFrame::vdcdebug("ProtocolHandler","handleDisplayToElement", "const QDomNode&
 
 void ProtocolHandler::clearDisplayArray(const QDomNode &domNode, QString parentNodeName)
 {
+    Q_UNUSED(parentNodeName);
     QDomElement currentElement = domNode.firstChild().toElement();
 
     QStringList qsl_fieldNames;
@@ -4314,11 +4259,6 @@ MainFrame::vdcdebug("ProtocolHandler","handleInputElement", "const QDomNode& dom
       }
 
       if(nodeName == "FIELD"){
-         // Set focus for the first field in the list
-         bool focus = false;
-         if(i == 0)
-            focus = true;
-
          QString field = currentElement.attribute("NAME");
          qsl_fieldList << field;
          QMetaObject::invokeMethod(p_currScreenHandler, "setFieldEnabled", Qt::QueuedConnection, Q_ARG(QString, field), Q_ARG(bool, true), Q_ARG(bool, false), Q_ARG(int, attribute));
