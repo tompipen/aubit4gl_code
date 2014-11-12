@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: haru.c,v 1.14 2014-11-10 15:09:03 pauldgardiner Exp $
+# $Id: haru.c,v 1.15 2014-11-12 17:36:13 pauldgardiner Exp $
 #*/
 
 /**
@@ -65,6 +65,13 @@
 #define SECTION_NORMAL  0
 #define SECTION_HEADER  1
 #define SECTION_TRAILER 2
+
+#define A4GL_DEFAULT_FONT_NAME "Helvetica"
+#define A4GL_DEFAULT_FONT_SIZE 10
+
+#define A4GL_FONT_NOT_EMBEDDED  0
+#define A4GL_FONT_EMBEDDED      1
+#define A4GL_FONT_EMBEDDED_ONLY 2
 
 #define A4GL_M_PI    3.14159265358979323846
 // degrees to radians = PI / 180
@@ -257,6 +264,7 @@ static void     A4GL_pdf_resume_page (struct pdf_rep_structure *rep, int page);
 static void     A4GL_pdf_set_color (struct pdf_rep_structure *rep, const char *fstype, const char *colorspace, double c1, double c2, double c3, double c4);
 static void     A4GL_pdf_set_compression (struct pdf_rep_structure *rep, int level);
 static int      A4GL_pdf_set_font_name (struct pdf_rep_structure *rep, char *font_name, int font_embedded);
+static void     A4GL_pdf_set_page_defaults (struct pdf_rep_structure *rep);
 static void     A4GL_pdf_show_text_internal (struct pdf_rep_structure *rep, char *text);
 static void     A4GL_pdf_suspend_page (struct pdf_rep_structure *rep);
 static double   A4GL_pdf_text_width (struct pdf_rep_structure *rep, char *text);
@@ -685,7 +693,7 @@ A4GL_pdf_new_page (struct pdf_rep_structure *rep)
     HPDF_Page_SetHeight (DOC (rep)->current_page, rep->page_length);
 
     // ensure a font is always set
-    A4GL_pdf_set_font_name (rep, rep->font_name, 0);
+    A4GL_pdf_set_font_name (rep, rep->font_name, A4GL_FONT_NOT_EMBEDDED);
 
     // reset parameter and value defaults
     rep->parameter.underline = 0;
@@ -1329,6 +1337,40 @@ A4GL_pdf_set_font_name (struct pdf_rep_structure *rep, char *font_name, int font
     }
 
     return 0;
+}
+// }}}
+// A4GL_pdf_set_page_defaults {{{
+/**
+ * Sets commonly used page settings back to their default values
+ */
+static void
+A4GL_pdf_set_page_defaults (struct pdf_rep_structure *rep)
+{
+    rep->parameter.underline = 0;
+    rep->parameter.overline  = 0;
+    rep->parameter.strikeout = 0;
+
+    rep->value.horizscaling  = 100;
+    rep->value.strokewidth   = 0;
+    rep->value.textrendering = 0;
+    rep->value.textrise      = 0;
+
+
+
+
+
+    HPDF_Page_SetHorizontalScalling (DOC_CURRENT_PAGE (rep), rep->value.horizscaling);
+    HPDF_Page_SetTextRenderingMode (DOC_CURRENT_PAGE (rep), HPDF_FILL);
+    HPDF_Page_SetTextRise (DOC_CURRENT_PAGE (rep), rep->value.textrise);
+
+    HPDF_Page_SetLineWidth (DOC_CURRENT_PAGE (rep), 1);
+
+    A4GL_pdf_set_color (rep, "both", "rgb", 0, 0, 0, 0);
+
+    A4GL_pdf_set_font_name (rep, A4GL_DEFAULT_FONT_NAME, A4GL_FONT_NOT_EMBEDDED);
+
+    rep->font_size = A4GL_DEFAULT_FONT_SIZE;
+    HPDF_Page_SetFontAndSize (DOC_CURRENT_PAGE (rep), rep->fontptr, rep->font_size);
 }
 // }}}
 // A4GL_pdf_show_text_internal {{{
@@ -3030,7 +3072,7 @@ circle_top
 #endif // }}}
 
         // setting font_embedded arg to 2 indicates just to load and embed the font, not set it as the current one
-        A4GL_pdf_set_font_name (rep, font_name, 2);
+        A4GL_pdf_set_font_name (rep, font_name, A4GL_FONT_EMBEDDED_ONLY);
 
         acl_free (font_name);
 
@@ -3548,7 +3590,7 @@ circle_top
     if (strcmp (fname, "set_font_name") == 0)
     {
         char     *font_name;
-        int       font_embedded = 0;
+        int       font_embedded = A4GL_FONT_NOT_EMBEDDED;
 
         if (nargs == 2)
             font_embedded = A4GL_pop_int ();
@@ -3640,6 +3682,28 @@ circle_top
 
         acl_free (key);
         acl_free (value);
+
+        return 0;
+    }
+// }}}
+// set_page_defaults {{{
+/**
+ * set_page_defaults ()
+ *
+ * Resets page settings to defaults
+ *
+ */
+
+    if (strcmp (fname, "set_page_defaults") == 0)
+    {
+
+#ifdef DEBUG // {{{
+        if (A4GL_PDF_DEBUG)
+            printf ("args %s\n", fname);
+        A4GL_debug ("args %s\n", fname);
+#endif // }}}
+
+        A4GL_pdf_set_page_defaults (rep);
 
         return 0;
     }
