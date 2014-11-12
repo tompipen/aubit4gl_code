@@ -16,8 +16,10 @@ public:
 
     bool showErrorMessage() { return mShowErrorMsg; }
 
-    QHash<QString,QString> parseXmlFile(QString file);
+    void createWorkingDir();
+    void cleanVdcFolder();
 
+    QHash<QString,QString> parseXmlFile(QString file);
 public slots:
     void readVersionXml(QNetworkReply*);
     void openPatcher();

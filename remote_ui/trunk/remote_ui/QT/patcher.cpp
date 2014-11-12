@@ -439,7 +439,9 @@ void VDCUpdate::loadBinarieFinished(QNetworkReply *reply)
             QString prog;
             QStringList args;
 
-            args << QString(QDir::tempPath() + "/VDC") << QString(QApplication::applicationDirPath());
+            const QString vdcInstallDir = VDC::readSettingsFromIni("","vdcInstallDir");
+
+            args << QString(QDir::tempPath() + "/VDC") << vdcInstallDir;
             #ifdef Q_OS_WIN
                 prog = QString(QApplication::applicationDirPath() + "/updatecp.exe");
             #else

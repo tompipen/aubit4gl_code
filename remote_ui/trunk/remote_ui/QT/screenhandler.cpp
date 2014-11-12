@@ -4332,12 +4332,9 @@ void ScreenHandler::checkForUpdate()
     QString a4gl_version_client = VDC::readSettingsFromIni("", "a4gl_version");
     if(!a4gl_version_client.isNull())
     {
-        MasterUpdate *mUpdate = new MasterUpdate;
+        /*MasterUpdate *mUpdate = new MasterUpdate;
         mUpdate->run();
-        mUpdate->wait();
-
-        /*VentasUpdate *vUpdate = new VentasUpdate(0);
-        vUpdate->start();*/
+        mUpdate->wait();*/
 
         DownloadManager *dlManager = new DownloadManager(false);
         dlManager->searchForUpdate();

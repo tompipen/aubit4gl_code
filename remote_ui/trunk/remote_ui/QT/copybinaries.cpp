@@ -10,6 +10,7 @@
 #include <QProcess>
 #include <QDesktopServices>
 #include <QUrl>
+#include <QSettings>
 
 
 CopyBinaries::CopyBinaries()
@@ -108,7 +109,7 @@ void CopyBinaries::copyBinaries(QString tmpDirPath, QString newDirPath)
         }
     }
 
-    QString program = QApplication::applicationDirPath();
+    QString program = newDirPath;
 #ifdef Q_OS_LINUX
     //setEnv("LD_LIBRARY_PATH", QApplication::applicationDirPath(), 1);
 #endif

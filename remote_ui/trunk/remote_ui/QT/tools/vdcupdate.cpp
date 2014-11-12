@@ -24,6 +24,38 @@ DownloadManager::DownloadManager( bool showError)
     mShowErrorMsg = showError;
 }
 
+void DownloadManager::createWorkingDir()
+{
+
+    const QString workingDirPath = QDir::tempPath() + "/VDC_UPDATE";
+    const QString vdcInstallDir = VDC::readSettingsFromIni("","vdcInstallDir");
+
+    if(!vdcInstallDir.isEmpty())
+    {
+        VDC::copyRecursive(vdcInstallDir, workingDirPath, 0);
+    }
+}
+
+void DownloadManager::cleanVdcFolder()
+{
+    const QString vdcLogsDirPath = VDC::readSettingsFromIni("","vdcInstallDir") + "/logs/";
+    const QString vdcBackupDirPath = VDC::readSettingsFromIni("","vdcInstallDir") + "/backup/";
+    const QString vdcUpdatePath = QDir::tempPath() + "/VDC_UPDATE";
+
+    //Remove VDC.log
+    QDir vdcLogsDir(vdcLogsDirPath);
+    vdcLogsDir.removeRecursively();
+
+    //Remove backup folder
+    QDir vdcBackupDir(vdcBackupDirPath);
+    vdcBackupDir.removeRecursively();
+
+    //VDC Update Diretory
+    QDir vdcUpdateDir(vdcUpdatePath);
+    vdcUpdateDir.removeRecursively();
+
+}
+
 void DownloadManager::searchForUpdate()
 {
     QNetworkAccessManager *manager = new QNetworkAccessManager();
@@ -35,9 +67,11 @@ void DownloadManager::openPatcher()
 {
     QList<ScreenHandler*> *ql_screenhandler = MainFrame::ql_screenhandler;
     QFile file;
+    cleanVdcFolder();
+    createWorkingDir();
 
 #ifdef Q_OS_WIN
-    file.setFileName(QApplication::applicationDirPath() + "/update.exe");
+    file.setFileName(QDir::tempPath() + "/VDC_UPDATE/update.exe");
 #else
     file.setFileName(QApplication::applicationDirPath() + "/update");
 #endif
@@ -59,6 +93,7 @@ void DownloadManager::openPatcher()
         qDebug() << QString("Datei nicht gefunden: %1").arg(file.fileName());
         return;
     }
+
 #ifdef Q_OS_WIN
     QDesktopServices::openUrl(QUrl::fromLocalFile(file.fileName()));
 #endif
