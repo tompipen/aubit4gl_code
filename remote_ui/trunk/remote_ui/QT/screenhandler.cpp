@@ -3535,6 +3535,7 @@ MainFrame::vdcdebug("ScreenHandler","freeContext", "int i_context");
              QModelIndex current = tableView->currentIndex();
              tableView->closePersistentEditor(current);
                 if(QSortFilterProxyModel *proxyModel = qobject_cast<QSortFilterProxyModel *> (tableView->model())){
+                    Q_UNUSED(proxyModel);
                    tableView->selectionModel()->setCurrentIndex(current, QItemSelectionModel::Clear);
              }
 

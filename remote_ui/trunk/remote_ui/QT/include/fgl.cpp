@@ -20,14 +20,13 @@ namespace Fgl {
          case DTYPE_DECIMAL:
          case DTYPE_MONEY:
             {
-            bool isneg = false;
             //QByteArray p = value.toAscii();
             QByteArray p = value.toLatin1();
             for (int a = 0; a < p.size(); a++)
             {
                if (p[a] >= '0' && p[a] <= '9') continue;
                if (p[a] == '.') { p[a] = '.'; continue; }
-               if (p[a] == '-') { p[a] = ' '; isneg = true; continue; }
+               if (p[a] == '-') { p[a] = ' '; continue; }
                p[a] = ' ';
             }
 

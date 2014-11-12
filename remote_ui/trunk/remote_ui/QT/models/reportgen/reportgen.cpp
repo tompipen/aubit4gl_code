@@ -2293,7 +2293,7 @@ void Reportgen::getTemplateVars(QString filename)
                         startAppend = 1;
                     }
                     //if(ausgabe.at(i) == QChar('<') || ausgabe.at(i) == QChar(' ') || ausgabe.at(i) == QChar('(') || ausgabe.at(i) == QChar(')'))
-                    if(startAppend == 1 && (!character.contains(QRegExp("^[a-zA-Z0-9@_\]+$")))){
+                    if(startAppend == 1 && (!character.contains(QRegExp("^[a-zA-Z0-9@_]+$")))){
                         startAppend = 0;
                         if(!str.isNull())
                         {
@@ -2526,7 +2526,7 @@ bool Reportgen::replaceTemplateVars(QString odffile, QString sedfile, QFileInfo 
                     startStr = 1;
                 }
 
-                if((startStr == 1 && (!character.contains(QRegExp("^[a-zA-Z0-9@_\]+$")))))
+                if((startStr == 1 && (!character.contains(QRegExp("^[a-zA-Z0-9@_]+$")))))
                 {
                     startStr = 0;
                     if(!str.isEmpty())
