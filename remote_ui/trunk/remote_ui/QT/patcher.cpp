@@ -193,7 +193,7 @@ void VDCUpdate::loadBinarie()
     connect(reply, SIGNAL(downloadProgress(qint64,qint64)), SLOT(updateDownloadProgress(qint64,qint64)));
 
 
-    QString applicationPath = QApplication::applicationDirPath();
+    /*QString applicationPath = QApplication::applicationDirPath();
 
 
     QDir applicationDir(applicationPath);
@@ -265,7 +265,7 @@ void VDCUpdate::loadBinarie()
                 logMessage(QString("[ERROR] Kopieren fehlgeschlagen: %1").arg(destFilePath));
             }
        }
-    }
+    }*/
 }
 
 QList<QString> VDCUpdate::readClientXml(QString filePath)
