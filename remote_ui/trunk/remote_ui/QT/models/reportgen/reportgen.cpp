@@ -3030,24 +3030,24 @@ bool Reportgen::createInfoFile(QFileInfo odffile, QFileInfo zieldatei)
                 }
             }
 
-            str.replace("@",QString("\n%1:").arg(counter)).trimmed();
+            str.replace("@",QString("%1:").arg(counter)).trimmed();
 
             if(!fields.isEmpty())
             {
                 for(int i=0; i < fields.count(); i++)
                 {
-                    if(fields.at(i).contains(str))
+                    if(fields.at(i).contains(str + "\n"))
                     {
                         found = found + 1;
                     }
                 }
                 if(found == 0)
                 {
-                    fields << str;
+                    fields << str + "\n";
                 }
                 found = 0;
             } else {
-                fields << str;
+                fields << str + "\n";
             }
         }
     }
