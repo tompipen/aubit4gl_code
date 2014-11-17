@@ -429,6 +429,7 @@ void VDCUpdate::loadBinarieFinished(QNetworkReply *reply)
         logMessage("[DEBUG] Dateien werden Entpackt.");
         mLabel->setText(tr("Unzip files. This can take a while."));
         getProgressBar()->setValue(1);
+        cButton->setEnabled(false);
 
         ZipUnzip *p_zipunzip = new ZipUnzip();
 
@@ -484,8 +485,18 @@ void VDCUpdate::loadBinarieFinished(QNetworkReply *reply)
 
 void VDCUpdate::setUpdateComplete()
 {
-    mLabel->setText(tr("Update successfull. Wait until the VDC has been started."));
+    mLabel->setText(tr("Update successfull."));
     getProgressBar()->setValue(100);
+    QTimer *timer = new QTimer;
+    connect(timer, SIGNAL(timeout()), this, SLOT(refreshQuitButton()));
+    timer->setSingleShot(true);
+    timer->start(5000);
+}
+
+void VDCUpdate::refreshQuitButton()
+{
+    cButton->setEnabled(true);
+    cButton->setText(tr("&Quit"));
 }
 
 void VDCUpdate::updateDownloadProgress(qint64 received, qint64 total)

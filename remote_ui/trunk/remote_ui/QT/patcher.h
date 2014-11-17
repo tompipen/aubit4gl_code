@@ -40,6 +40,7 @@ public slots:
     void loadBinarieFinished(QNetworkReply*);
     void abort();
     void setUpdateComplete();
+    void refreshQuitButton();
 
 private:
     void loadServerXml();
