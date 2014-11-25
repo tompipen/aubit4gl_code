@@ -262,12 +262,20 @@ namespace VDC {
                }
            }
        } else {
-           if(QFile::exists(targetFilePath) && overwrite == 0) {
-              return true;
+           if(!QFile::exists(targetFilePath) && overwrite == 0) {
+              return false;
            }
 
-           if(QFile::copy(sourceFilePath, targetFilePath)) {
-               return true;
+           if(QFile::exists(targetFilePath))
+           {
+               if(!QFile::remove(targetFilePath))
+               {
+                   return false;
+               }
+           }
+
+           if(!QFile::copy(sourceFilePath, targetFilePath)) {
+               return false;
            }
        }
        return true;
