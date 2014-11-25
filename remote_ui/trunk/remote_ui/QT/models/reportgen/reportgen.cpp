@@ -225,7 +225,6 @@ bool Reportgen::startReportTemplate(QString odffile, QString sedfile, QFileInfo 
     int varCount = 1;
     int anfang = 1;
 
-    //emit createRepgenProgressBar();
     readSedFile(sedfile);
 
     ZipUnzip *p_zipunzip = new ZipUnzip();
@@ -328,10 +327,10 @@ bool Reportgen::startReportTemplate(QString odffile, QString sedfile, QFileInfo 
        }
    }
    if(oldFileName.completeSuffix() == "odt"){
-           content.append(getTemplatePosition( fileBaseName + "/content.xml" ));//.toUtf8());
-           for(int j=1; j < varCount; j++) {
+           xmlsave << getTemplatePosition( fileBaseName + "/content.xml" );//.toUtf8());
+           for(int j=0; j < varCount; j++) {
                qDebug() << "ergaenze Ebene" << j << "von" << varCount;
-               content.append(prepareTemplateContentOdt(1, j, oldFileName.baseName() + "/content.xml", sedfile));
+               content.append(prepareTemplateContentOdt(1, j+1, oldFileName.baseName() + "/content.xml", sedfile));
            }
            xmlsave << content;
            content.clear();
@@ -342,9 +341,9 @@ bool Reportgen::startReportTemplate(QString odffile, QString sedfile, QFileInfo 
    {
        xmlsave <<  "</office:spreadsheet>";
    } else {
-       xmlsave << "</office:text>";
+       //xmlsave << "</office:text>";
    }
-   xmlsave << "</office:body></office:document-content>";
+   //xmlsave << "</office:body></office:document-content>";
    file->close();
    if(oldFileName.completeSuffix() == "ods")
    {
@@ -655,14 +654,19 @@ QString Reportgen::getTemplatePosition(QString odffile)
     QString ausgabe;
     QString behalten;
     int cnt = 0;
+    int stop = 0;
 
     while(!stream.atEnd()) {
         ausgabe = stream.readLine();
 
         if(ausgabe.contains("[P1["))
         {
-            cnt = 0;
-            return behalten;
+            stop = 1;
+        }
+
+        if(stop == 1 && (ausgabe.contains("</table:table-row>") || ausgabe.contains("<table:table table:")))
+        {
+           cnt = 0;
         }
 
         if(cnt == 1)
@@ -701,8 +705,6 @@ QString Reportgen::getTemplatePosition(int Table, QString odffile)
 
     while(!stream.atEnd()) {
         ausgabe = stream.readLine();
-
-        qDebug() << "ausgabe: " << ausgabe;
 
         if(ausgabe.contains("<table:table table:name") || ausgabe.contains("table:table table") || ausgabe.contains("table:table table:style-name="))
         {
@@ -1642,7 +1644,8 @@ QString Reportgen::prepareTemplateContent(int Table, int Position, QString odffi
 
 QString Reportgen::prepareTemplateContentOdt(int Table, int Position, QString odffile, QString sedfile)
 {
-Q_UNUSED(Table);
+    Q_UNUSED(Table);
+
 
     QFile *file = new QFile(QDir::tempPath() + "/" + odffile);
 
@@ -1656,36 +1659,35 @@ Q_UNUSED(Table);
     QTextStream stream(&xmlfile);
     stream.setCodec("UTF-8");
     QString ausgabe;
-    QString xmlout;
+    QString xmlPositionString;
     QString test;
-    //xmlout.append("<table:table-row><table:table-cell>");
 
     int cnt = 0;
-    int counter = 0;
-    int ebene = 0;;
+    int ebene = 0;
+
+    bool bStart = false;
+    bool bStartRememberString = false;
 
     while(!stream.atEnd()) {
         ausgabe = stream.readLine().trimmed();
 
-
-        /*if(ausgabe.contains("<table:table table:name"))
-        {
-            tableFound = tableFound + 1;
-            counter = 0;
-            //qDebug() << "tableFound: " << tableFound;
-        }*/
-
-        if(ausgabe.contains("[P1[")) {
-        //if(ausgabe.contains("<table:table-row")) {
-            counter = counter + 1;
+        if(ausgabe.contains("[")) {
+            ebene = ebene + 1;
         }
 
-        if(counter > 0) {
+        if(ausgabe.contains("[P1[")) {
+            bStartRememberString = true;
+        }
 
-            if(ausgabe.contains("[")) {
-                ebene = ebene + 1;
-            }
-            //qDebug() << ebene;
+        if(bStartRememberString && ( ausgabe.contains("<table:table table") || ausgabe.contains("<table:table-row"))) {
+            bStart = true;
+        }
+
+        if(!bStartRememberString && ( ausgabe.contains("<table:table table") || ausgabe.contains("</table:table table") || ausgabe.contains("</table:table-row"))) {
+            bStart = false;
+        }
+
+        if(bStart) {
             if(ausgabe.contains("@") && ebene == 1) {
                 for(int i=0; i < temp_fields.count(); i++) {
                     if(ausgabe.contains("@" + temp_fields.at(i))) {
@@ -1697,7 +1699,6 @@ Q_UNUSED(Table);
                         } else {
                             ausgabe.remove("@" + temp_fields.at(i));
                         }
-                        //ausgabe.replace("@" + temp_fields.at(i), QString("@%1" + temp_fields.at(i)).arg(QString::number(Position)));
                     }
                 }
             }
@@ -1710,7 +1711,6 @@ Q_UNUSED(Table);
                         {
                             ausgabe.replace("@" + temp_fields.at(i), QString("@%1_1" + temp_fields.at(i)).arg(QString::number(Position)));
                         } else {
-                            //ausgabe.remove("@" + temp_fields.at(i));
                         }
                     }
                 }
@@ -1763,9 +1763,7 @@ Q_UNUSED(Table);
                         int found = 0;
                         if(temp_fields.at(i).contains(QString("[P%1[").arg(ebene))) {
                             i = i +1;
-                            //ausgabe.append("</table:table-cell></table:table-row>");
                             for(int j=2; j < (temp_fields.count() *1000); j++) {
-                                //qDebug() << j << "von" << temp_fields.count() * 1000 << " moeglichen Datensaetze. Aktuelle Position in Ebene2: " << Position;
                                 found = checkSedFile(QString("@%1_%2" + temp_fields.at(i)).arg(Position).arg(j), sedfile);
                                 if(found > 0) {
                                     ausgabe.append(prepareTemplateEbene(Position, ebene, 1, 1, 1, j, doc, odffile, sedfile));
@@ -1786,7 +1784,6 @@ Q_UNUSED(Table);
                         int found = 0;
                         if(temp_fields.at(i).contains(QString("[P%1[").arg(ebene))) {
                             i = i +1;
-                            //ausgabe.append("</table:table-cell></table:table-row>");
                             found = checkSedFile(QString("@%1_%2_1" + temp_fields.at(i)).arg(Position).arg(1), sedfile);
                             if(found > 0) {
                                 for(int k=2; k < (temp_fields.count() *1000); k++)
@@ -1810,22 +1807,22 @@ Q_UNUSED(Table);
 
                 }
             }
-
-            if(ausgabe.contains("]")) {
-                ebene = ebene -1;
-            }
-
-            xmlout = xmlout + ausgabe;
-            //qDebug() << "xmlout:" << xmlout;
+            xmlPositionString.append(ausgabe);
         }
 
-        if(xmlout.contains("]P1]")) {
-            //ausgabe.append("</table:table-cell></table:table-row>");
-            counter = counter - 1;
+
+        if(ausgabe.contains("]")) {
+            ebene = ebene -1;
+        }
+
+        if(ausgabe.contains("]P1]")) {
+            bStartRememberString = false;
         }
     }
+
     file->close();
-    return xmlout;
+    return xmlPositionString;
+
 }
 
 //-------------------------------------------------------------------------------------------------------------
@@ -2169,17 +2166,29 @@ QString Reportgen::getTemplateFooter(int Table, QString filename, QString suffix
            }
            file->close();
     } else {
-           while(!stream.atEnd()) {
+           //footer.prepend("<text:p><text:span>");
+        int start = 0;
+        while(!stream.atEnd()) {
                readLine = stream.readLine();
                    if(readLine.contains("]P1]")) {
                         cnt = 1;
                    }
-                   if(cnt > 0) {
-                        footer = footer + readLine.trimmed();
-                   }
-                   if(cnt > 0 && readLine.contains("<table:table")) {
+
+                   if(cnt > 0 && readLine.contains("<table:table table:")) {
                         start = 1;
                    }
+
+                   if(start == 1)
+                   {
+                       footer = footer + readLine.trimmed();
+                   }
+
+                   if(cnt > 0 && (readLine.contains("</table:table-row>") || readLine.contains("</table:table>")))
+                   {
+                       start = 1;
+                   }
+
+
                }
 
            }
@@ -2508,15 +2517,6 @@ bool Reportgen::replaceTemplateVars(QString odffile, QString sedfile, QFileInfo 
         {
             int startStr = 0;
             QString str = "";
-            /*temp_var = ausgabe;
-            temp_var.replace("<text:p>", "");
-            temp_var.remove("<text:p text:style-name=\"Standard\">");
-            temp_var.remove("<text:p text:style-name=\"P3\">");
-            temp_var.remove("<text:p text:style-name=\"P4\">");
-            temp_var.remove("<text:p text:style-name=\"P14\">");
-            temp_var.remove("<text:p text:style-name=\"P6\">");
-            temp_var.remove("<text:p text:style-name=\"P7\">");
-            temp_var.replace("</text:p>", "");*/
             for(int i=0; i < ausgabe.count(); i++)
             {
                 QString character = ausgabe.at(i);
@@ -2545,7 +2545,6 @@ bool Reportgen::replaceTemplateVars(QString odffile, QString sedfile, QFileInfo 
             {
                 if(temp_var.contains("@DIAG_"))
                 {
-                    qDebug() << temp_var;
                     if(temp_var == "@DIAG_BAR")
                     {
                         diag_state = 1;
@@ -2883,6 +2882,10 @@ bool Reportgen::replaceTemplateVars(QString odffile, QString sedfile, QFileInfo 
         newContent->remove();
         //buffer = newContent->readAll().trimmed();
     }
+    /*if(QFile::exists(QDir::tempPath() + "/" + odffile + "/1-content.xml")) {
+        QFile::remove(QDir::tempPath() + "/" + odffile + "/content.xml");
+        QFile::rename(QDir::tempPath() + "/" + odffile + "/1-content.xml", QDir::tempPath() + "/" + odffile + "/content.xml");
+    }*/
 
     if(oldContent.exists())
     {
@@ -2940,7 +2943,6 @@ bool Reportgen::replaceTemplateVars(QString odffile, QString sedfile, QFileInfo 
             }
         }
     }
-
     return true;
 }
 
@@ -3018,36 +3020,36 @@ bool Reportgen::createInfoFile(QFileInfo odffile, QFileInfo zieldatei)
                     startAppend = 1;
                 }
 
-                if(startAppend == 1 && (!character.contains(QRegExp("^[a-zA-Z0-9@_]+$"))))
+                if(startAppend == 1 && (!character.contains(QRegExp("^[a-zA-Z0-9@_]+$")) ))
                 {
                     startAppend = 0;
 
+                    str.replace("@",QString("%1:").arg(counter)).trimmed();
+
+                    if(!fields.isEmpty())
+                    {
+                        for(int i=0; i < fields.count(); i++)
+                        {
+                            if(fields.at(i).contains(str + "\n"))
+                            {
+                                found = found + 1;
+                            }
+                        }
+                        if(found == 0)
+                        {
+                            fields << str + "\n";
+                        }
+                        found = 0;
+                    } else {
+                        fields << str + "\n";
+                    }
+                    str.clear();
                 }
 
                 if(startAppend == 1)
                 {
                     str.append(ausgabe.at(i));
                 }
-            }
-
-            str.replace("@",QString("%1:").arg(counter)).trimmed();
-
-            if(!fields.isEmpty())
-            {
-                for(int i=0; i < fields.count(); i++)
-                {
-                    if(fields.at(i).contains(str + "\n"))
-                    {
-                        found = found + 1;
-                    }
-                }
-                if(found == 0)
-                {
-                    fields << str + "\n";
-                }
-                found = 0;
-            } else {
-                fields << str + "\n";
             }
         }
     }
@@ -3090,7 +3092,7 @@ bool Reportgen::createInfoFile(QFileInfo odffile, QFileInfo zieldatei)
     }
     for(int i=0; i < fields.count(); i++)
     {
-        stream1 << fields.at( i ).trimmed() + "\n";
+        stream1 << fields.at(i).trimmed() + "\n";
     }
 
     file->close();
