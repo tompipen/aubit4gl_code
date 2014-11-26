@@ -280,4 +280,16 @@ namespace VDC {
        }
        return true;
    }
+
+   void setTableViewRowHeight(int qs_value)
+   {
+       VDC::saveSettingsToIni("","TableviewRowHeight", QString::number(qs_value));
+   }
+
+   int getTableViewRowHeight()
+   {
+       return VDC::readSettingsFromIni("","TableviewRowHeight").toInt();
+   }
+
+
 }

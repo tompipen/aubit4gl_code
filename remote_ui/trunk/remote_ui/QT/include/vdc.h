@@ -33,6 +33,10 @@ namespace VDC
 
   QPoint widgetPositionValidate(int, int);
 
+  void setTableViewRowHeight(int qs_value);
+  int getTableViewRowHeight();
+
+
   void logMessage(QString, QString);
 
 

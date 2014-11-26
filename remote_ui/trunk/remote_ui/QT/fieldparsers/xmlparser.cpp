@@ -427,12 +427,18 @@ void XmlParser::handleTableColumn(const QDomNode& xmlNode){
    QHeaderView *header = p_screenRecord->horizontalHeader(); 
 
    int recordHeight = header->height()+4;
-
    int recordWidth = 0;
 
    QHeaderView *vert = p_screenRecord->verticalHeader();
-   vert->setDefaultSectionSize(VDC::DEFAULT_HEIGHT+1);
-   vert->resizeSections(QHeaderView::Fixed);
+
+   const int rowHeight = fontMetrics().height() + 2;
+   int rowHeightXml = VDC::getTableViewRowHeight();
+
+   if(rowHeight < rowHeightXml){
+       vert->setDefaultSectionSize(rowHeightXml);
+   } else {
+       vert->setDefaultSectionSize(rowHeight);
+   }
 
    int height = p_screenRecord->verticalHeader()->defaultSectionSize();
 

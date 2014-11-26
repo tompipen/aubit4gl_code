@@ -148,13 +148,17 @@ MainFrame::vdcdebug("XML2Style","outputTree", "const QDomNode& domNode");
                quote = true;
             }
 
-            if(qs_name == "fontSize") {
+            if(qs_name == "fontSize"){
                qs_name = "font-size";
                qs_value.append("px");
             }
 
             if(qs_name == "fontFamily"){
                qs_name = "font-family";
+            }
+
+            if(qs_name == "row-min-height"){
+                VDC::setTableViewRowHeight(qs_value.toInt());
             }
 
             if(quote){
