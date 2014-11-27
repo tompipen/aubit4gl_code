@@ -328,9 +328,9 @@ bool Reportgen::startReportTemplate(QString odffile, QString sedfile, QFileInfo 
    }
    if(oldFileName.completeSuffix() == "odt"){
            xmlsave << getTemplatePosition( fileBaseName + "/content.xml" );//.toUtf8());
-           for(int j=0; j < varCount; j++) {
+           for(int j=1; j < varCount; j++) {
                qDebug() << "ergaenze Ebene" << j << "von" << varCount;
-               content.append(prepareTemplateContentOdt(1, j+1, oldFileName.baseName() + "/content.xml", sedfile));
+               content.append(prepareTemplateContentOdt(1, j, oldFileName.baseName() + "/content.xml", sedfile));
            }
            xmlsave << content;
            content.clear();
@@ -2311,13 +2311,33 @@ void Reportgen::getTemplateVars(QString filename)
                             str.clear();
                         }
 
-                        if(character.contains("[")) {
+                        if(ausgabe.contains("[P1[")) {
                             temp_fields << "[P1[";
                             break;
                         }
 
-                        if(character.contains("]")) {
+                        if(ausgabe.contains("]P1]")) {
                             temp_fields << "]P1]";
+                            break;
+                        }
+
+                        if(ausgabe.contains("[P2[")) {
+                            temp_fields << "[P2[";
+                            break;
+                        }
+
+                        if(ausgabe.contains("]P3]")) {
+                            temp_fields << "]P3]";
+                            break;
+                        }
+
+                        if(ausgabe.contains("[P3[")) {
+                            temp_fields << "[P3[";
+                            break;
+                        }
+
+                        if(ausgabe.contains("]P3]")) {
+                            temp_fields << "]P3]";
                             break;
                         }
                     }
