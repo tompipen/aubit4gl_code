@@ -45,7 +45,7 @@ win32 {
 
     *-g++*: LIBS += -lz
     *-msvc*: LIBS += -lzlibwapi
-    *-msvc*: QMAKE_LFLAGS += /IMPLIB:../lib/quazip.lib
+    *-msvc*: DEFINES += ZLIB_WINAPI NOMINMAX WIN32_LEAN_AND_MEAN
 }
 
 

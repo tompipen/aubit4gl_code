@@ -7,7 +7,6 @@ TARGET = VDC
 
 DEPENDPATH += .
 INCLUDEPATH += .
-INCLUDEPATH += ./tools/qtcharts/
 
 QT += network
 QT += xml
@@ -16,6 +15,7 @@ QT += svg
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 greaterThan(QT_MAJOR_VERSION, 4): QT += webkitwidgets
+greaterThan(QT_MAJOR_VERSION, 4): QT += printsupport
 
 unix:!macx {
     QMAKE_LFLAGS += -Wl,--rpath="$$_PRO_FILE_PWD_/lib"
@@ -27,7 +27,8 @@ macx {
 }
 
 win32 {
-  LIBS += -lwsock32
+    LIBS += -lwsock32
+    *-msvc*: DEFINES += SSH_USE NOMINMAX _WINSOCKAPI_
 }
 
 VREPGEN_PATH = $$(VREPGEN)
@@ -36,7 +37,7 @@ SSH_PATH     = $$(VSSH)
 !isEmpty(SSH_PATH) {
 message("Compile with libssh")
 DEFINES += SSH_USE
-LIBS += -L"$$_PRO_FILE_PWD/lib" -lssh -lpthread
+LIBS += -L"$$_PRO_FILE_PWD/lib" -lssh
 include("ssh/ssh.pri")
 }
 
