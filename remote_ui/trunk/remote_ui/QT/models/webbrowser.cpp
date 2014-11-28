@@ -63,7 +63,7 @@ void WebBrowser::loadUrl(const QUrl &http)
      file = QDir::tempPath() + "/" + file;
   }
 
-  if(!file.contains("https://") && !file.contains("http://") && !file.contains("wwww."))
+  if(!file.contains("https://") && !file.contains("http://") && !file.contains("www."))
   {
       QFile fileRead(file);
 
