@@ -664,14 +664,14 @@ QString Reportgen::getTemplatePosition(QString odffile)
             stop = 1;
         }
 
-        if(stop == 1 && (ausgabe.contains("</table:table-row>") || ausgabe.contains("<table:table table:")))
-        {
-           cnt = 0;
-        }
-
         if(cnt == 1)
         {
             behalten = behalten + ausgabe;
+        }
+
+        if(stop == 1 && ausgabe.contains("</text:p>")/*&& (ausgabe.contains("</table:table-row>") || ausgabe.contains("<table:table table:"))*/)
+        {
+           cnt = 0;
         }
 
         if(ausgabe.contains("<office:body>"))
@@ -1664,6 +1664,7 @@ QString Reportgen::prepareTemplateContentOdt(int Table, int Position, QString od
 
     int cnt = 0;
     int ebene = 0;
+    bool templateHasTable = false;
 
     bool bStart = false;
     bool bStartRememberString = false;
@@ -1677,15 +1678,12 @@ QString Reportgen::prepareTemplateContentOdt(int Table, int Position, QString od
 
         if(ausgabe.contains("[P1[")) {
             bStartRememberString = true;
+            //bStart = true;
         }
 
-        if(bStartRememberString && ( ausgabe.contains("<table:table table") || ausgabe.contains("<table:table-row"))) {
-            bStart = true;
-        }
-
-        if(!bStartRememberString && ( ausgabe.contains("<table:table table") || ausgabe.contains("</table:table table") || ausgabe.contains("</table:table-row"))) {
+        /*if(!bStartRememberString && ( ausgabe.contains("<table:table table") || ausgabe.contains("</table:table table") || ausgabe.contains("</table:table-row"))) {
             bStart = false;
-        }
+        }*/
 
         if(bStart) {
             if(ausgabe.contains("@") && ebene == 1) {
@@ -1815,8 +1813,23 @@ QString Reportgen::prepareTemplateContentOdt(int Table, int Position, QString od
             ebene = ebene -1;
         }
 
+        if(bStartRememberString && xmlPositionString.contains("table:table-row")) {
+            templateHasTable = true;
+        }
+
+
         if(ausgabe.contains("]P1]")) {
             bStartRememberString = false;
+        }
+
+
+       if(bStartRememberString && ausgabe.contains("</text:p>") /*&& ( ausgabe.contains("<table:table table") || ausgabe.contains("<table:table-row"))*/) {
+            bStart = true;
+        }
+
+        if(!bStartRememberString && (ausgabe.contains("</text:p>")))
+        {
+            bStart = false;
         }
     }
 
@@ -2169,26 +2182,19 @@ QString Reportgen::getTemplateFooter(int Table, QString filename, QString suffix
            //footer.prepend("<text:p><text:span>");
         int start = 0;
         while(!stream.atEnd()) {
-               readLine = stream.readLine();
-                   if(readLine.contains("]P1]")) {
-                        cnt = 1;
-                   }
+           readLine = stream.readLine();
+           if(readLine.contains("]P1]")) {
+                cnt = 1;
+           }
 
-                   if(cnt > 0 && readLine.contains("<table:table table:")) {
-                        start = 1;
-                   }
+           if(start == 1)
+           {
+               footer = footer + readLine.trimmed();
+           }
 
-                   if(start == 1)
-                   {
-                       footer = footer + readLine.trimmed();
-                   }
-
-                   if(cnt > 0 && (readLine.contains("</table:table-row>") || readLine.contains("</table:table>")))
-                   {
-                       start = 1;
-                   }
-
-
+           if(cnt > 0 && readLine.contains("</text:p>")) {
+                start = 1;
+           }
                }
 
            }
