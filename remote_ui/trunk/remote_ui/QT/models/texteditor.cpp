@@ -28,6 +28,7 @@ TextEditorWidget::TextEditorWidget(QMainWindow *parent)
     searchToolBar = NULL;
     mIsEditFinished = 0;
     mCloseTextEdit = 0;
+    mSetIsoEncoding = false;
 
     TextHighlighting *syntax = new  TextHighlighting(mTextEdit->document());
     Q_UNUSED(syntax);
@@ -126,6 +127,11 @@ void TextEditorWidget::loadFileFromLocal()
         QTextStream in(&file);
 #ifndef Q_OS_WIN
         in.setCodec("ISO-8859-15");
+#else
+    if(mSetIsoEncoding)
+    {
+        in.setCodec("ISO-8859-15");
+    }
 #endif
 
         if(enableFilter != 2) {

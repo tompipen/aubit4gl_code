@@ -31,6 +31,8 @@ public:
 
     void setWrapMode(int);
 
+    void setIsoEncoding(bool encoding ) { mSetIsoEncoding = encoding; }
+
 public slots:
         void textIsChanged();
         void saveAsFile();
@@ -52,6 +54,8 @@ private:
     QString mFileName;
     QString mSearchText;
     int mCloseTextEdit;
+
+    bool mSetIsoEncoding;
 
 };
 
