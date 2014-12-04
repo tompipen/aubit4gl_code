@@ -1689,10 +1689,10 @@ void LineEditDelegate::textChanged(QString text)
             {
                 if(LineEdit *edit = qobject_cast<LineEdit*> (view->curr_editor))
                 {
-                    int pos = text.length();
+                    int pos = edit->cursorPosition();
                     view->model()->setData(view->currentIndex(), text);
-                    edit->setCursorPosition(pos);
                     edit->setText(text);
+                    edit->setCursorPosition(pos);
                 }
             }
         }
