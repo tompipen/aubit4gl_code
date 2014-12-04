@@ -2349,6 +2349,14 @@ MainFrame::vdcdebug("FglForm","setStartMenu", "const QDomDocument &doc");
 
    if(property("startMenuPosition") == "tree"){
       p_splitter->addWidget(xml2Menu->getMenu());
+
+      int saveExpand = VDC::readSettingsFromIni("","rememberMainMenu").toInt();
+
+      if(saveExpand == 2)
+      {
+          return;
+      }
+
       if(QTreeWidget *tWidget = qobject_cast<QTreeWidget*>(xml2Menu->getMenu()))
       {
           for(int i=0; i < tWidget->topLevelItemCount(); i++)
