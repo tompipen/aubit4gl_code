@@ -917,6 +917,13 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
   if((event->type() == QEvent::KeyPress || event->type() == 1400) || (event->type() == QEvent::KeyRelease || event->type() == 1401))
   {
 
+      QKeyEvent *kev = (QKeyEvent*) event;
+      if(kev->key() == Qt::Key_F9)
+      {
+          if(DateEdit *edit = qobject_cast<DateEdit*> (obj)) {
+              edit->buttonClicked();
+          }
+      }
 
       if(b_keybuffer && !b_keybufferrunning)
       {
