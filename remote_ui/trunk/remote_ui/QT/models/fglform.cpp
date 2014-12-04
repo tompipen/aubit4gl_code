@@ -1153,6 +1153,36 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
                       rightClick->exec(QCursor::pos());
                       return true;
                   }
+              } else if(TableView *tv = qobject_cast<TableView*> (obj->parent()))
+              {
+                  QMenu *rightClick = new QMenu(this);
+
+                  QAction *copyTable = new QAction(tr("&Copy table"), this);
+                  connect(copyTable, SIGNAL(triggered()), tv, SLOT(copyTable()));
+                  rightClick->addAction(copyTable);
+
+                  QAction *copyRow = new QAction(tr("&Copy row"), this);
+                  connect(copyRow, SIGNAL(triggered()), tv, SLOT(copyRow()));
+                  rightClick->addAction(copyRow);
+
+                  QAction *copyCell = new QAction(tr("&Copy cell"), this);
+                  connect(copyCell, SIGNAL(triggered()), tv, SLOT(copyCell()));
+                  rightClick->addAction(copyCell);
+
+                  QAction *copyColumn = new QAction("&Copy column", this);
+                  connect(copyColumn, SIGNAL(triggered()), tv, SLOT(copyColumn()));
+                  rightClick->addAction(copyColumn);
+                  rightClick->addSeparator();
+
+                  QAction *screenAction = new QAction(tr("&HardCopy save"), this);
+                  connect(screenAction, SIGNAL(triggered()), this, SLOT(saveScreenshot()));
+                  rightClick->addAction(screenAction);
+
+                  QAction *printscreenAction = new QAction(tr("&HardCopy print"), this);
+                  connect(printscreenAction, SIGNAL(triggered()), this, SLOT(printScreenshot()));
+                  rightClick->addAction(printscreenAction);
+                  rightClick->exec(QCursor::pos());
+                  return true;
               }
           } else if(TableView *tv = qobject_cast<TableView*> (obj->parent()))
           {
