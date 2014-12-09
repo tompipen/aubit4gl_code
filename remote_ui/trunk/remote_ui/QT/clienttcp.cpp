@@ -1522,7 +1522,7 @@ if(childElement.nodeName() == "PROGRAMSTARTUP"){
                  QDomElement valuesElement = paramsElement.childNodes().at(k).toElement();
                  params << valuesElement.text();
               }
-              QMetaObject::invokeMethod(p_currScreenHandler, "createTextEditor", Qt::QueuedConnection, Q_ARG(QString, params.at(0)), Q_ARG(QString, params.at(1)), Q_ARG(int, params.at(2).toInt()));
+              QMetaObject::invokeMethod(p_currScreenHandler, "createTextEditor", Qt::QueuedConnection, Q_ARG(QString, params.at(0)), Q_ARG(QString, params.at(1)), Q_ARG(int, params.at(2).toInt()), Q_ARG(bool, false));
 
               waitTimer::msleep(5000);
               while(!p_currScreenHandler->mTextEditor->getIsEditorFinished())
@@ -1550,9 +1550,13 @@ if(childElement.nodeName() == "PROGRAMSTARTUP"){
                   sortIndecator = "DESC";
               }
 
-              if(sortIndex == 0)
-              {
-                  sortIndex = 1;
+              if ((params.at(0) == "m2zagk") ||
+                  (params.at(0) == "m2zagd")) {
+                 sortIndex++;
+              } else {
+                 if(sortIndex == 0) {
+                    sortIndex = 1;
+                 }
               }
               returnvalues << getVentasLogicalIndex(sortIndex, params.at(0)) + " " + sortIndecator;
          }
@@ -1878,7 +1882,7 @@ if(childElement.nodeName() == "PROGRAMSTARTUP"){
 
              if(fileInfo.suffix() == "txt" || fileInfo.suffix().isEmpty())
              {
-                 QMetaObject::invokeMethod(p_currScreenHandler, "createTextEditor", Qt::QueuedConnection, Q_ARG(QString, fileName), Q_ARG(QString, "nowrap"), Q_ARG(int, 0));
+                 QMetaObject::invokeMethod(p_currScreenHandler, "createTextEditor", Qt::QueuedConnection, Q_ARG(QString, fileName), Q_ARG(QString, "nowrap"), Q_ARG(int, 0), Q_ARG(bool, true));
                  waitTimer::msleep(2000);
                  while(!p_currScreenHandler->mTextEditor->getIsEditorFinished())
                  {
@@ -3354,16 +3358,6 @@ QString ProtocolHandler::getVentasLogicalIndex(int index, QString formmask)
     }
 
     if(form == "a_buchkz")
-    {
-        logicalIndex = index + 1;
-    }
-
-    if(form == "m2zagd")
-    {
-        logicalIndex = index + 1;
-    }
-
-    if(form == "m2zagk")
     {
         logicalIndex = index + 1;
     }
