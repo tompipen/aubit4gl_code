@@ -26,7 +26,7 @@
  * removed in future.
  */
 
-#include "libssh/libssh.h"
+#include "ssh/libssh/libssh.h"
 
 #ifndef LEGACY_H_
 #define LEGACY_H_

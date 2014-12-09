@@ -41,6 +41,8 @@ namespace Umlauts {
         qs_text.replace("„", "\"");
         qs_text.replace("“", "\"");
 
+        qs_text.replace("\t", "   ");
+
         return qs_text;
     }
 
