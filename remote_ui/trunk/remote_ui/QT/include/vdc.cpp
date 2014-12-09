@@ -262,7 +262,7 @@ namespace VDC {
                }
            }
        } else {
-           if(!QFile::exists(targetFilePath) && overwrite == 0) {
+           if(QFile::exists(targetFilePath) && overwrite == 0) {
               return false;
            }
 

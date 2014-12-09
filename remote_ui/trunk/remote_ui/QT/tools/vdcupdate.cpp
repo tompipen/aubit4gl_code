@@ -33,7 +33,7 @@ void DownloadManager::createWorkingDir()
 
     if(!vdcInstallDir.isEmpty())
     {
-        VDC::copyRecursive(vdcInstallDir, workingDirPath, 0);
+        VDC::copyRecursive(vdcInstallDir, workingDirPath, 1);
     }
 
 }
