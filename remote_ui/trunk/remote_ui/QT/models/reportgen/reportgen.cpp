@@ -2692,27 +2692,52 @@ bool Reportgen::replaceTemplateVars(QString odffile, QString sedfile, QFileInfo 
     stylesXmlStream.setCodec("UTF-8");
 
     getTemplateVars(odffile + "/styles.xml");
+    temp_varList.clear();
 
     while(!stylesXmlStream.atEnd())
     {
         ausgabeXml = stylesXmlStream.readLine();
 
-        if(ausgabeXml.contains("@"))
-        {
-            for(int j=0; j < sed_fields.count(); j++)
+        if(ausgabeXml.contains("@")) {
+            int startStr = 0;
+            QString str = "";
+            for(int i=0; i < ausgabeXml.count(); i++)
             {
-                for(int k=0; k < temp_fields.count(); k++)
+                QString character = ausgabeXml.at(i);
+
+                if(ausgabeXml.at(i) == QChar('@'))
                 {
-                    if(sed_fields.at(j).contains(temp_fields.at(k)))
+                    startStr = 1;
+                }
+
+                if((startStr == 1 && (!character.contains(QRegExp("^[a-zA-Z0-9@_]+$")))))
+                {
+                    startStr = 0;
+                    if(!str.isEmpty())
                     {
-                        QString sedString = sed_fields.at(j);
-                        sedString.replace("@" + temp_fields.at(k) + "%/", "");
-                        ausgabeXml.replace("@" + temp_fields.at(k), sedString);
-                        break;
+                        temp_varList << str;
+                        str.clear();
+                    }
+                }
+                if(startStr == 1)
+                {
+                    str.append(ausgabeXml.at(i));
+                }
+            }
+            foreach (QString temp_var, temp_varList)
+            {
+                for(int j=0; j < sed_fields.count(); j++)
+                {
+                    if(sed_fields.at(j).contains(temp_var + "%/"))
+                    {
+                        sedLine = sed_fields.at(j).trimmed();
+                        sedLine.replace(QString(temp_var + "%/"), "");
+                        ausgabeXml.replace(temp_var, sedLine);
                     }
                 }
             }
         }
+
         outStylesString = outStylesString + ausgabeXml;
     }
 
@@ -2988,9 +3013,76 @@ bool Reportgen::createInfoFile(QFileInfo odffile, QFileInfo zieldatei)
     if( !file->open( QIODevice::ReadOnly ) )
     {
         qDebug() << "konnte datei nicht oeffnen" << "";
-        //qWarning(QString("Konnte Datei nicht zum lesen oeffnen: %1").arg(templateFile).toLatin1());
         return false;
     }
+
+
+    QFile *stylesFile = new QFile( QDir::tempPath() + "/"  + odffile.baseName() + "/styles.xml");
+
+    if(!stylesFile->open(QIODevice::ReadOnly))
+    {
+        qDebug() <<  "konnte styles datei nicht oeffnen";
+    }
+
+    QDomDocument stylesDoc;
+    stylesDoc.setContent(stylesFile);
+
+    QString stylesXml = stylesDoc.toString();
+    QTextStream stylesStream(&stylesXml);
+    QString ausgabeXml;
+    QList<QString> stylesFields;
+    int foundInList = 0;
+
+    while(!stylesStream.atEnd()){
+        ausgabeXml = stylesStream.readLine();
+
+        if(ausgabeXml.contains("@"))
+        {
+            QString str;
+            int startAppend = 0;
+            for(int i=0; i < ausgabeXml.length(); i++)
+            {
+                QString character = ausgabeXml.at(i);
+                if(ausgabeXml.at(i) == QChar('@'))
+                {
+                    startAppend = 1;
+                }
+
+                if(startAppend == 1 && (!character.contains(QRegExp("^[a-zA-Z0-9@_]+$")) ))
+                {
+                    startAppend = 0;
+
+                    str.replace("@", "0:");
+
+                    if(!stylesFields.isEmpty())
+                    {
+                        for(int i=0; i < stylesFields.count(); i++)
+                        {
+                            if(stylesFields.at(i).contains(str + "\n"))
+                            {
+                                foundInList = 1;
+                            }
+                        }
+                        if(foundInList == 0)
+                        {
+                            stylesFields << str + "\n";
+                        }
+                        foundInList = 0;
+                    } else {
+                        stylesFields << str + "\n";
+                    }
+                    str.clear();
+                }
+
+                if(startAppend == 1)
+                {
+                    str.append(ausgabeXml.at(i));
+                }
+            }
+        }
+    }
+
+    stylesFile->close();
 
     checkMetaFile(odffile.baseName());
 
@@ -3012,26 +3104,34 @@ bool Reportgen::createInfoFile(QFileInfo odffile, QFileInfo zieldatei)
         if( ausgabe.contains("[P1["))
         {
             ebenen = 1;
+            counter++;
         }
 
         if( ausgabe.contains("[P2["))
         {
             ebenen = 2;
+            counter++;
         }
 
         if( ausgabe.contains("[P3["))
         {
             ebenen = 3;
+            counter++;
         }
 
-        if( ausgabe.contains("[") )
+        if( ausgabe.contains("]P3]"))
         {
-            counter = counter + 1;
+            counter--;
         }
 
-        if(ausgabe.contains("]"))
+        if( ausgabe.contains("]P2]"))
         {
-            counter = counter - 1;
+            counter--;
+        }
+
+        if( ausgabe.contains("]P1]"))
+        {
+            counter--;
         }
 
         if(ausgabe.contains("@"))
@@ -3116,6 +3216,12 @@ bool Reportgen::createInfoFile(QFileInfo odffile, QFileInfo zieldatei)
             stream1 << "0:" + QString(metaVar.at(i)).replace("@","") + "\n";
         }
     }
+
+    foreach(QString value, stylesFields)
+    {
+        stream1 << value.trimmed()  + "\n";;
+    }
+
     for(int i=0; i < fields.count(); i++)
     {
         stream1 << fields.at(i).trimmed() + "\n";
