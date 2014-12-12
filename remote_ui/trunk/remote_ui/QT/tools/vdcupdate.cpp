@@ -313,6 +313,20 @@ void DownloadManager::readVersionXml(QNetworkReply *reply)
         } else {
             emit openPatcher();
         }
+    } else {
+        if(showErrorMessage()) {
+            Dialog *dialog = new Dialog(tr("VDC Update"), tr("The Client is up to date!"), "", "information", NULL, Qt::WindowStaysOnTopHint);
+            dialog->setVentasStyle();
+
+            dialog->createButton(1, "Ok", "Ok", "ok_gruen.png");
+            dialog->getAction("OK")->setShortcut(Qt::Key_F12);
+
+            connect(dialog->getAction("OK"), SIGNAL(triggered()), dialog, SLOT(close()));
+            connect(dialog, SIGNAL(finished(int)), dialog, SLOT(deleteLater()));
+
+            dialog->move(600,400);
+            dialog->show();
+        }
     }
 
     reply->deleteLater();
