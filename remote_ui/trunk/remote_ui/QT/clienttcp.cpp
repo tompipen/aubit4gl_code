@@ -3734,6 +3734,11 @@ void ProtocolHandler::executeFile(int waitforFinish, QString fileName)
          settings = new QSettings("HKEY_CLASSES_ROOT\\" + regValue + "\\Shell\\open\\command", QSettings::NativeFormat);
          defaultProg = settings->value(".").toString();
 
+         if(defaultProg.contains("/n"))
+         {
+             defaultProg.replace("/n", "/w /n");
+         }
+
          if(defaultProg.contains("%1"))
          {
              defaultProg.replace("%1", QDir::toNativeSeparators(fileNameInfo.absoluteFilePath()));
