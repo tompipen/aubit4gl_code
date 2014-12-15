@@ -77,9 +77,9 @@ io.sockets.on('connection', function (socket) {
 			});
 
 
-			console.log("Starting : " + "baseProgs/"+data.program);
+			console.log("Starting : " + "baseProgs/runProgram.sh "+data.program);
 
-			child = spawn("sh",[ "baseProgs/"+data.program ]);
+			child = spawn("sh",[ "baseProgs/runProgram.sh",data.program ]);
 			child.stdout.setEncoding('utf-8');
 			child.stderr.setEncoding('utf-8');
 			child.stdin.setEncoding('utf-8');

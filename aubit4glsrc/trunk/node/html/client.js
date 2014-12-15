@@ -15,7 +15,7 @@ function initializeSocket(p_username,p_password, p_program , callback) {
 
 	if (!p_username) p_username='mike';
 	if (!p_password) p_password='CM';
-	if (!p_program) p_program='Bibble';
+	if (!p_program) p_program='prog';
 	socket.on('handshake', function () {
 		socket.emit('handshake_response', {
 			username:p_username,
