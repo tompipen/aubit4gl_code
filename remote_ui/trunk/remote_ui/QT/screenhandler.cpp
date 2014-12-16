@@ -4225,10 +4225,11 @@ void ScreenHandler::openChartWindow(QString filename)
 
 #endif
 
-void ScreenHandler::createTextEditor(QString fileName, QString wrap, int digits)
+void ScreenHandler::createTextEditor(QString fileName, QString wrap, int digits, bool setEncodingToIso)
 {
     mTextEditor = new TextEditorWidget;
     mTextEditor->setFileName(fileName);
+    mTextEditor->setIsoEncoding(setEncodingToIso);
     mTextEditor->loadFileFromLocal();
 
     if(wrap == "wordwrap")
