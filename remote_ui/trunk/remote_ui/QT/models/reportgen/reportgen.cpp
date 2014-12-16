@@ -2696,7 +2696,7 @@ bool Reportgen::replaceTemplateVars(QString odffile, QString sedfile, QFileInfo 
 
     while(!stylesXmlStream.atEnd())
     {
-        ausgabeXml = stylesXmlStream.readLine();
+        ausgabeXml = stylesXmlStream.readLine().trimmed();
 
         if(ausgabeXml.contains("@")) {
             int startStr = 0;
