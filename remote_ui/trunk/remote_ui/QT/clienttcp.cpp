@@ -1558,6 +1558,7 @@ if(childElement.nodeName() == "PROGRAMSTARTUP"){
                     sortIndex = 1;
                  }
               }
+
               returnvalues << getVentasLogicalIndex(sortIndex, params.at(0)) + " " + sortIndecator;
          }
 
