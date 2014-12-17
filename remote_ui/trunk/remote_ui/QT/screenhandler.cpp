@@ -581,11 +581,10 @@ void ScreenHandler::createMenu(QString title, QString comment, QString style, QS
 MainFrame::vdcdebug("ScreenHandler","createMenu", "QString title, QString comment, QString style, QString image");
    int i_Frm = getCurrForm();
 
-   if(hasWindow == 0)
+   if(hasWindow == 0 && style.isEmpty())
    {
        style = "dialog";
    }
-
 
    // If menustyle is dialog
    if(style == "dialog"){
@@ -2064,7 +2063,7 @@ MainFrame::vdcdebug("ScreenHandler","setFormOpts", "QString type, bool value, in
        return;
    }
 
-   if(i_Frm < 0 && p_fglform != NULL && p_fglform->dialog() == NULL)
+   if(i_Frm < 0 && p_fglform != NULL && p_fglform->dialog() == NULL && p_fglform->ringMenuPulldown() == NULL)
       return;
 
    Context *context = getContext(i_context);
