@@ -228,7 +228,7 @@ void HtmlEditor::loadIntoEditor()
         qDebug() << "cannot open file for read";
     }
 
-    mEdit->insertHtml(in.readAll());
+    mEdit->setHtml(in.readAll());
 
 }
 
@@ -274,7 +274,18 @@ void HtmlEditor::closeEditor()
 
     QTextStream outStream(&file);
     outStream.setCodec("ISO-8859-1");
-    outStream << mEdit->toHtml();
+
+    QString htmlString = mEdit->toHtml();
+    htmlString.remove("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n");
+    htmlString.remove("<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n");
+    htmlString.remove("</style></head><body style=\" font-family:'Verdana'; font-size:11pt; font-weight:400; font-style:normal;\">\n");
+    htmlString.remove("p, li { white-space: pre-wrap; }");
+    htmlString.remove("</body></html>");
+
+    htmlString.prepend("<!-- placeholder header -->");
+    htmlString.append("\n<!--placeholder footer -->");
+
+    outStream << htmlString;
     file.close();
 
     mCloseEditor = 1;
