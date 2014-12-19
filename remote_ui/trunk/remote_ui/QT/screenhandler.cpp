@@ -2529,14 +2529,11 @@ if(qsl_triggereds.size() > 0)
         p_fglform->raise();
     #endif
 
-   if(p_fglform->getBrowser() != NULL)
+   if(p_fglform->getBrowser() != NULL && p_fglform->getBrowser()->isVisible())
    {
        p_fglform->getBrowser()->activateWindow();
        p_fglform->getBrowser()->raise();
    }
-
-   //p_fglform->checkState();
-
 
 
      if(p_fglform->ql_responseQueue.size() > 0)

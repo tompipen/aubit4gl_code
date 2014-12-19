@@ -31,8 +31,8 @@ HtmlEditor::HtmlEditor(QWidget *parent)
     : QMainWindow(parent)
 {
     mEdit = new QTextEdit();
-    mEdit->setFont (QFont("Verdana", 11));
     mFontSizeCombo = new QComboBox();
+    mUeberschriftCombo = new QComboBox();
 
     mTextIsModified  = 0;
     imageCounter     = 1;
@@ -57,6 +57,15 @@ HtmlEditor::HtmlEditor(QWidget *parent)
     QPushButton *screenshot = new QPushButton("Picture");
     QPushButton *preview = new QPushButton("Preview");
 
+    QAction *okAction = new QAction(tr("&Ok"), toolbar);
+    okAction->setShortcut(Qt::Key_F12);
+    okAction->setIcon(QIcon(":pics/editor-ok.png"));
+
+    QAction *cancAction = new QAction(tr("&Quit"), toolbar);
+    cancAction->setShortcut(Qt::Key_Escape);
+    cancAction->setIcon(QIcon(":pics/editor-beenden-ohne-speichern.png"));
+
+
     connect(screenshot, SIGNAL(clicked()), this, SLOT(appendScreenshot()));
     connect(preview, SIGNAL(clicked()), this, SLOT(showPreview()));
     connect(mFontSizeCombo, SIGNAL(activated(QString)), this, SLOT(textSize(QString)));
@@ -64,6 +73,11 @@ HtmlEditor::HtmlEditor(QWidget *parent)
     connect(italicBold, SIGNAL(clicked()), this, SLOT(italicClicked()));
     connect(fontBold, SIGNAL(clicked()), this, SLOT(boldClicked()));
     connect(mEdit, SIGNAL(textChanged()), this, SLOT(textIsChanged()));
+    connect(mUeberschriftCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(setTitle(int)));
+
+    connect(okAction, SIGNAL(triggered()), this, SLOT(closeEditor()));
+    connect(cancAction, SIGNAL(triggered()), this, SLOT(close()));
+
 
 
     QFontDatabase db;
@@ -73,6 +87,12 @@ HtmlEditor::HtmlEditor(QWidget *parent)
     }
     mFontSizeCombo->setCurrentIndex(mFontSizeCombo->findText(QString::number(QApplication::font().pointSize())));
 
+    for(int i=1; i < 5; i++)
+    {
+        QString value = "Ueberschrift " + QString::number(i);
+        mUeberschriftCombo->addItem(value);
+    }
+
     toolbar->addWidget(fontBold);
     toolbar->addWidget(italicBold);
     toolbar->addSeparator();
@@ -80,9 +100,15 @@ HtmlEditor::HtmlEditor(QWidget *parent)
     toolbar->addSeparator();
     toolbar->addWidget(textColorButton);
     toolbar->addSeparator();
+    toolbar->addWidget(mUeberschriftCombo);
+    toolbar->addSeparator();
     toolbar->addWidget(screenshot);
     toolbar->addSeparator();
     toolbar->addWidget(preview);
+    toolbar->addSeparator();
+    toolbar->addAction(okAction);
+    toolbar->addSeparator();
+    toolbar->addAction(cancAction);
 
     vLayout->addWidget(mEdit);
     vLayout->addWidget(preview,0,Qt::AlignRight);
@@ -91,6 +117,8 @@ HtmlEditor::HtmlEditor(QWidget *parent)
     addToolBar(toolbar);
     setCentralWidget(mEdit);
     resize(800,600);
+
+    mEdit->setStyleSheet("* { color:#000000; text-decoration:none; font-family:'Verdana'; font-weight:350; font-size:15; margin-left:10px; }");
 }
 
 void HtmlEditor::showPreview()
@@ -106,9 +134,9 @@ void HtmlEditor::showPreview()
         qDebug() << "failed to save preview";
     }
 
-    stream << mEdit->toHtml();
+    stream << mEdit->toHtml();;
     file.close();
-    WebBrowser *p_browser = new WebBrowser();
+    WebBrowser *p_browser = new WebBrowser;
     p_browser->createBrowser();
     p_browser->loadUrl(QUrl(fileName));
     p_browser->show();
@@ -228,7 +256,105 @@ void HtmlEditor::loadIntoEditor()
         qDebug() << "cannot open file for read";
     }
 
-    mEdit->setHtml(in.readAll());
+    QString htmlString = ventasFilter(in.readAll());
+
+    mEdit->setHtml(htmlString);
+   this->setWindowTitle("VDC HTML Editor");
+    mTextIsModified = 0;
+
+}
+
+QString HtmlEditor::ventasFilter(QString htmlString)
+{
+    if(htmlString.contains("<h1>"))
+    {
+        htmlString.replace("<h1>", "<font font-size=24px color=#224488 font-family=Verdana margin-top=30><h1>");
+        htmlString.replace("</h1>","</h1></font>");
+    }
+    if(htmlString.contains("<h2>"))
+    {
+        htmlString.replace("<h2>", "<font font-size=20px color=#224488 font-family=Verdana margin-top=20><h2>");
+        htmlString.replace("</h2>","</h2></font>");
+    }
+
+    if(htmlString.contains("<h3>"))
+    {
+        htmlString.replace("<h3>", "<font font-size=18px color=#445599 font-style=italic margin-bottom=5px><h3>");
+        htmlString.replace("</h3>","</h3></font>");
+    }
+
+    if(htmlString.contains("<h4>"))
+    {
+        htmlString.replace("<h4>", "<font font-size=18px color=#ee0000 font-style=italic font-weight=800 margin=10><h4>");
+        htmlString.replace("</h4>","</h4></font>");
+    }
+
+    if(htmlString.contains("<span class=\"rot\">"))
+    {
+        htmlString.replace("class=\"rot\"", "style=\"color:#FF0000;\"");
+    }
+
+    if(htmlString.contains("<span class=\"blau\">"))
+    {
+        htmlString.replace("class=\"blau\"", "style=\"color:#0000FF;\"");
+    }
+
+    if(htmlString.contains("<span class=\"gelb\">"))
+    {
+        htmlString.replace("class=\"gelb\"", "style=\"color:#eecc00;\"");
+    }
+
+    if(htmlString.contains("<span class=\"gruen\">"))
+    {
+        htmlString.replace("class=\"gruen\"", "style=\"color:#00aa00;\"");
+    }
+
+    if(htmlString.contains("<span class=\"butt\">"))
+    {
+        htmlString.replace("class=\"butt\"", "style=\"color:#008989;font-weight:800;\"");
+    }
+
+    if(htmlString.contains("<span class=\"schwarz\">"))
+    {
+        htmlString.replace("class=\"schwarz\"", "style=\"color:#000000;\"");
+    }
+
+    if(htmlString.contains("<span class=\"logolink\">"))
+    {
+        htmlString.replace("class=\"logolink\"", "style=\"text-decoration:underline; color:#006699;\"");
+    }
+
+    if(htmlString.contains("<div id=\"text\">"))
+    {
+        htmlString.replace("id=\"text\"", "style=\"margin-left:30px; color:#000000; text-decoration:none; font-family:'Verdana'; font-weight:400;\"");
+    }
+
+    if(htmlString.contains("<div id=\"achtung\">"))
+    {
+        htmlString.replace("id=\"achtung\"", "style=\"color:#FF0000; font-size:18px; font-weight:800; font-style:italic;\"");
+    }
+
+   if(htmlString.contains("<div id=\"hinweis\">"))
+   {
+       htmlString.replace("id=\"hinweis\"", "style=\"color:#335599; font-size:18px; font-weight:500; font-style:italic;\"");
+   }
+
+   if(htmlString.contains("<div id=\"logo\">"))
+   {
+       htmlString.replace("id=\"logo\"", "style=\"border-top:1px solid #FFdd00;\"");
+   }
+
+   if(htmlString.contains("<li>"))
+   {
+       htmlString.replace("<li>", "<ul><li>");
+   }
+
+   if(htmlString.contains("</li>"))
+   {
+       htmlString.replace("</li>", "</ul></li>");
+   }
+
+   return htmlString;
 
 }
 
@@ -260,6 +386,8 @@ void HtmlEditor::closeEvent(QCloseEvent *event)
         event->ignore();
         return;
     }
+
+    emit closeEditorWithoutSave();
 }
 void HtmlEditor::closeEditor()
 {
@@ -282,8 +410,8 @@ void HtmlEditor::closeEditor()
     htmlString.remove("p, li { white-space: pre-wrap; }");
     htmlString.remove("</body></html>");
 
-    htmlString.prepend("<!-- placeholder header -->");
-    htmlString.append("\n<!--placeholder footer -->");
+    htmlString.prepend("<iframe src=\"kopf.html\" width=\"100%\" min-height=\"200px\" />");
+    htmlString.append("\n<iframe src=\"fuss.html\" width=\"100%\" min-height=\"200px\" />");
 
     outStream << htmlString;
     file.close();
@@ -300,6 +428,13 @@ void HtmlEditor::closeEditorWithoutSave()
     mTextIsModified = 0;
     editorIsFinished = 1;
     this->close();
+}
+
+void HtmlEditor::setTitle(int size)
+{
+    QTextCursor cursor = mEdit->textCursor();
+    QString s=cursor.selectedText();
+    cursor.insertHtml("<h" + QString::number(size) + ">" + s + "</h" + QString::number(size) + ">");
 }
 
 HtmlEditor::~HtmlEditor()

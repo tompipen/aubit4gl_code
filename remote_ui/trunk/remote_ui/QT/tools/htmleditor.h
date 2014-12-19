@@ -16,6 +16,7 @@ public:
     int getEditorStatus() { return editorIsFinished; }
     void setFileName(QString fileName) { mFileName = fileName; };
     void loadIntoEditor();
+    QString ventasFilter(QString);
 
     ~HtmlEditor();
 
@@ -29,10 +30,12 @@ public slots:
     void showPreview();
     void closeEditor();
     void closeEditorWithoutSave();
+    void setTitle(int);
 
 private:
     QTextEdit *mEdit;
     QComboBox *mFontSizeCombo;
+    QComboBox *mUeberschriftCombo;
     QPushButton *textColorButton;
     int mTextIsModified;
     int imageCounter;
