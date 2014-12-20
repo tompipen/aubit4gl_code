@@ -85,6 +85,8 @@ public:
     void setUnsortedFields(int, QStringList);
     void clearUnsortedFields();
 
+    int ignoreFieldChangeEvent;
+
 private:
     int i_arrCount;
     int i_arrLine;

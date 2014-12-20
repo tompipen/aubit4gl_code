@@ -53,6 +53,7 @@ FglForm::FglForm(QString windowName, QWidget *parent) : QMainWindow(parent){
    textLabel = NULL;
    iconLabel = NULL;
    mIsSortAllowed = true;
+   keyTimer = new QElapsedTimer;
 
    /*
    if(parent != NULL){
@@ -909,6 +910,34 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
 
 
 
+        }
+    }
+
+    //Only send the fiel change event if the time beetween key pressed is greter then 300 miliseconds
+
+    QKeyEvent *kev = (QKeyEvent*) event;
+
+    if(inputArray() || displayArray())
+    {
+        if(kev->key() == Qt::Key_Up || kev->key() == Qt::Key_Down || kev->key() == Qt::Key_Tab)
+        {
+            if(event->type() == QEvent::KeyPress)
+            {
+                qDebug() << "elasped: " << QString::number(keyTimer->nsecsElapsed());
+                if( keyTimer->nsecsElapsed() <= 300000000)
+                {
+                    if(TableView *tv = qobject_cast<TableView *> (currentField()))
+                    {
+                        tv->ignoreFieldChangeEvent = true;
+                    }
+                } else {
+                    if(TableView *tv = qobject_cast<TableView *> (currentField()))
+                    {
+                        tv->ignoreFieldChangeEvent = false;
+                    }
+                }
+                keyTimer->restart();
+            }
         }
     }
 

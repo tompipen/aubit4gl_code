@@ -38,6 +38,7 @@ MainFrame::vdcdebug("TableView","TableView", "QWidget *parent");
    i_maxArrSize = 1;
    b_ignoreFocus = false;
    b_ignoreRowChange = false;
+   ignoreFieldChangeEvent = false;
  //  b_palette = false;
    this->setMouseTracking(true);
    const int rowHeight = fontMetrics().height() + 2;
@@ -1135,8 +1136,11 @@ if(!p_fglform)
            if(i+1 != resp_cnt)
               returnevent.id += ",";
        }
-         addToQueue(returnevent);
-         targetfield = current;
+         if(!ignoreFieldChangeEvent)
+         {
+             addToQueue(returnevent);
+             targetfield = current;
+         }
    }
 
 

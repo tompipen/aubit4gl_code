@@ -358,6 +358,8 @@ private:
    QWidget *qw_colorbar;
    QSplitter *p_splitter;
 
+   QElapsedTimer *keyTimer;
+
    int gridHeight;
  //  virtual QSize sizeHint() const;
 
