@@ -1107,7 +1107,10 @@ if(!p_fglform)
               returnevent.id += ",";
        }
 
-        addToQueue(returnevent);
+       if(!ignoreFieldChangeEvent)
+       {
+           addToQueue(returnevent);
+       }
    }
    else
    {
@@ -1139,8 +1142,8 @@ if(!p_fglform)
          if(!ignoreFieldChangeEvent)
          {
              addToQueue(returnevent);
-             targetfield = current;
          }
+         targetfield = current;
    }
 
 
