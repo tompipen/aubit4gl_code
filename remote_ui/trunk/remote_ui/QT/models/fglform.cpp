@@ -54,6 +54,8 @@ FglForm::FglForm(QString windowName, QWidget *parent) : QMainWindow(parent){
    iconLabel = NULL;
    mIsSortAllowed = true;
    keyTimer = new QElapsedTimer;
+   fieldChangeTimer = new QTimer(0);
+   isFieldChangeSend = false;
 
    /*
    if(parent != NULL){
@@ -929,11 +931,15 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
                     if(TableView *tv = qobject_cast<TableView *> (currentField()))
                     {
                         tv->ignoreFieldChangeEvent = true;
+                        connect(fieldChangeTimer, SIGNAL(timeout()), this, SLOT(sendFieldChange()));
+                        fieldChangeTimer->setSingleShot(true);
+                        fieldChangeTimer->start(500);
                     }
                 } else {
                     if(TableView *tv = qobject_cast<TableView *> (currentField()))
                     {
                         tv->ignoreFieldChangeEvent = false;
+                        isFieldChangeSend = false;
                     }
                 }
                 keyTimer->restart();
@@ -5192,6 +5198,21 @@ void FglForm::setUserInputEnabled(bool enabled)
         ringMenu->setEnabled(enabled);
 
 
+}
+
+void FglForm::sendFieldChange()
+{
+    if(!isFieldChangeSend)
+    {
+        if(TableView *tv = qobject_cast<TableView *> (currentField()))
+        {
+            QSortFilterProxyModel *proxyModel = qobject_cast<QSortFilterProxyModel *> (tv->model());
+            TableModel *table = qobject_cast<TableModel *> (proxyModel->sourceModel());
+            tv->ignoreFieldChangeEvent = false;
+            emit tv->fieldChanged(table->index(tv->currentIndex().row()-1,tv->currentIndex().column()), tv->currentIndex());
+            isFieldChangeSend = true;
+        }
+    }
 }
 
 void FglForm::setFormName(QString name)

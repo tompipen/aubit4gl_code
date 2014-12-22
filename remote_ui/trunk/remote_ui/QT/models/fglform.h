@@ -237,9 +237,13 @@ public:
    int widgetPosY;
 
    bool mIsSortAllowed;
+   QElapsedTimer *keyTimer;
+   QTimer *fieldChangeTimer;
+   bool isFieldChangeSend;
 
 public slots:
 
+   void sendFieldChange();
    void saveScreenshot();
    void printScreenshot();
    void disableForm();
@@ -304,6 +308,7 @@ public slots:
    void closeMessageWithIcon();
 
 
+
 private:
 
    QLabel *textLabel;
@@ -357,8 +362,6 @@ private:
    QString qs_formfile;
    QWidget *qw_colorbar;
    QSplitter *p_splitter;
-
-   QElapsedTimer *keyTimer;
 
    int gridHeight;
  //  virtual QSize sizeHint() const;
