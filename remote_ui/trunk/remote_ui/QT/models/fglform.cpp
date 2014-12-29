@@ -926,14 +926,13 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
             if(event->type() == QEvent::KeyPress)
             {
                 qDebug() << "elasped: " << QString::number(keyTimer->nsecsElapsed());
-                if( keyTimer->nsecsElapsed() <= 300000000)
+                if( keyTimer->nsecsElapsed() <= 200000000)
                 {
                     if(TableView *tv = qobject_cast<TableView *> (currentField()))
                     {
                         tv->ignoreFieldChangeEvent = true;
                         connect(fieldChangeTimer, SIGNAL(timeout()), this, SLOT(sendFieldChange()));
-                        fieldChangeTimer->setSingleShot(true);
-                        fieldChangeTimer->start(500);
+                        fieldChangeTimer->start(200);
                     }
                 } else {
                     if(TableView *tv = qobject_cast<TableView *> (currentField()))
@@ -5209,8 +5208,9 @@ void FglForm::sendFieldChange()
             QSortFilterProxyModel *proxyModel = qobject_cast<QSortFilterProxyModel *> (tv->model());
             TableModel *table = qobject_cast<TableModel *> (proxyModel->sourceModel());
             tv->ignoreFieldChangeEvent = false;
-            emit tv->fieldChanged(table->index(tv->currentIndex().row()-1,tv->currentIndex().column()), tv->currentIndex());
+            emit tv->fieldChanged(table->index(tv->currentIndex().row()+1,tv->currentIndex().column()), tv->currentIndex());
             isFieldChangeSend = true;
+            fieldChangeTimer->stop();
         }
     }
 }
