@@ -4645,31 +4645,43 @@ MainFrame::vdcdebug("ProtocolHandler","sendFile", "QString name");
       }
    }
 
-   // Get Filesize
-   qint64 fileSize = file.size();
-
-   QDomElement triggeredElement = doc.createElement("TRIGGERED");
-   triggeredElement.setAttribute("ID", "FILEREQUEST");
-   triggeredElement.setAttribute("FILEID", name);
-   triggeredElement.setAttribute("FILELEN", fileSize);
-   doc.appendChild(triggeredElement);
-
-   QDomElement syncValuesElement = doc.createElement("SVS");
-   triggeredElement.appendChild(syncValuesElement);
-   QDomElement syncValueElement = doc.createElement("SV");
-   syncValuesElement.appendChild(syncValueElement);
-
    while(!file.atEnd()){
       data = file.readAll();
    }
 
    data = data.toBase64();
 
+   //Split the string if bytes are greater then 100000.
+   while(data.count() >= 100000)
+   {
+       QString sendText = data.mid(0, 100000);
+       QString returnString = "<TRIGGERED ID=\"FILEREQUEST\" FILEID=\"";
+       returnString.append(name);
+       returnString.append("\" ");
+       returnString.append("FILELEN=\"");
+       returnString.append(QString::number(-100000));
+       returnString.append("\">");
+       returnString.append("<SVS><SV>");
+       returnString.append(sendText);
+       returnString.append("</SV></SVS></TRIGGERED>");
+
+       if(this->t_tunnel)
+       {
+           QMetaObject::invokeMethod(t_tunnel, "sendData", Qt::DirectConnection, Q_ARG(QString, returnString.trimmed()));
+       }
+       else
+       {
+           makeResponse(returnString.trimmed());
+       }
+       //We dont want to send the characters again
+       data.remove(0, 100000);
+   }
+
    QString returnString = "<TRIGGERED ID=\"FILEREQUEST\" FILEID=\"";
    returnString.append(name);
    returnString.append("\" ");
    returnString.append("FILELEN=\"");
-   returnString.append(QString::number(fileSize));
+   returnString.append(QString::number(data.count()));
    returnString.append("\">");
    returnString.append("<SVS><SV>");
    returnString.append(data);
