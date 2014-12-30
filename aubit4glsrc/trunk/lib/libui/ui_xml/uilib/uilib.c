@@ -2618,8 +2618,6 @@ uilib_save_file (char *id, char *s)
 {
   FILE *f=NULL;
   int i;
-  int first = 0;
-
 
   send_to_ui ("<REQUESTFILE FILEID='%s'/>", uilib_xml_escape (char_encode (id)));
   flush_ui ();
@@ -2645,7 +2643,7 @@ uilib_save_file (char *id, char *s)
 	  return 0;
 	}
 
-      if (first)
+      if (!f)
 	{
 	  f = fopen (s, "w");
 	  if (!f)
