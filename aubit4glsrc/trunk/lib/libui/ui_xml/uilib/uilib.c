@@ -2616,54 +2616,72 @@ brpoint ()
 int
 uilib_save_file (char *id, char *s)
 {
-  FILE *f;
+  FILE *f=NULL;
   int i;
+  int first = 0;
 
-  send_to_ui ("<REQUESTFILE FILEID='%s'/>", uilib_xml_escape (char_encode(id)));
+
+  send_to_ui ("<REQUESTFILE FILEID='%s'/>", uilib_xml_escape (char_encode (id)));
   flush_ui ();
-  i = get_event_from_ui (NULL);
 
-  if (i != -103)
+  while (1)
     {
-      return 0;
-    }
+      unsigned char *buff;
+      int len;
+      int printed = 0;
 
-  if (strcmp (last_attr->fileid, id) != 0)
-    {
-      // Invalid id
-      return 0;
-    }
+      i = get_event_from_ui (NULL);
 
-  f = fopen (s, "w");
-  if (f)
-    {
-	unsigned char *buff;
-	int len;
-	int printed=0;
-
-	if (last_attr->sync.vals!=0) {
-		if (last_attr->sync.vals[0].value!=0) {
-			char *r;
-			if (strlen(last_attr->sync.vals[0].value)>200) {
-				r=strdup(last_attr->sync.vals[0].value);
-				strcpy(&r[80],"...");
-				UIdebug(4,"Saving file %s - len=%d should be %d\n",r, len, last_attr->filelen);
-				free(r);
-			} else {
-				UIdebug(4,"Saving file %s - len=%d should be %d\n",last_attr->sync.vals[0].value, len, last_attr->filelen);
-			}
-			printed++;
-		}
-	} 
-	if (!printed) {
-		fprintf(stderr,"couldnt save file - no synvalue");
-		exit(2);
+      if (i != -103)
+	{
+	  if (f) { fclose(f); }
+	  return 0;
 	}
-	len=A4GL_base64_decode(last_attr->sync.vals[0].value, &buff);
-      //printf("FILELEN : %d\n", last_attr->filelen);
+
+      if (strcmp (last_attr->fileid, id) != 0)
+	{
+	  // Invalid id
+	  if (f) { fclose(f); }
+	  return 0;
+	}
+
+      if (first)
+	{
+	  f = fopen (s, "w");
+	  if (!f)
+	    {
+	      // Couldnt open file
+	      fprintf (stderr, "couldnt save file - file could not be opened");
+	      return 0;
+	    }
+	}
+
+
+
+      if (last_attr->sync.vals != 0)
+	{
+	  if (last_attr->sync.vals[0].value != 0)
+	    {
+	      printed++;
+	    }
+	}
+
+      if (!printed)
+	{
+	  fprintf (stderr, "couldnt save file - no synvalue");
+	  exit (2);
+	}
+      len = A4GL_base64_decode (last_attr->sync.vals[0].value, &buff);
+
       fwrite (buff, len, 1, f);
-	free(buff);
-      fclose (f);
+      free (buff);
+
+      // if last_attr->filelen < 0 then its only part of the file - and we need to carry on...
+      if (last_attr->filelen >= 0)
+	{
+	  fclose (f);
+	  break;
+	}
     }
 
   return 1;
