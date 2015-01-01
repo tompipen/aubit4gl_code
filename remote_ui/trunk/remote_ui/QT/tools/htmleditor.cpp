@@ -118,7 +118,7 @@ HtmlEditor::HtmlEditor(QWidget *parent)
     setCentralWidget(mEdit);
     resize(800,600);
 
-    mEdit->setStyleSheet("* { color:#000000; text-decoration:none; font-family:'Verdana'; font-weight:350; font-size:15; margin-left:10px; }");
+    //mEdit->setStyleSheet("QTextEdit { color:#000000; text-decoration:none; font-family:'Verdana'; font-weight:350; font-size:15; margin-left:10px; }");
 }
 
 void HtmlEditor::showPreview()
@@ -134,7 +134,7 @@ void HtmlEditor::showPreview()
         qDebug() << "failed to save preview";
     }
 
-    stream << mEdit->toHtml();;
+    stream << mEdit->toHtml().remove("images/");
     file.close();
     WebBrowser *p_browser = new WebBrowser;
     p_browser->createBrowser();
@@ -259,34 +259,38 @@ void HtmlEditor::loadIntoEditor()
     QString htmlString = ventasFilter(in.readAll());
 
     mEdit->setHtml(htmlString);
-   this->setWindowTitle("VDC HTML Editor");
+    this->setWindowTitle("VDC HTML Editor");
     mTextIsModified = 0;
 
 }
 
 QString HtmlEditor::ventasFilter(QString htmlString)
 {
+    /*if(htmlString.contains("font-weight:600;"))
+    {
+       htmlString.replace("font-weight:600;", "font-weight:350;");
+    }*/
     if(htmlString.contains("<h1>"))
     {
-        htmlString.replace("<h1>", "<font font-size=24px color=#224488 font-family=Verdana margin-top=30><h1>");
-        htmlString.replace("</h1>","</h1></font>");
+        htmlString.replace("<h1>", "<p style=\"font-size:24px; color:#224488; font-family:Verdana; font-weight:350; margin-top:30;\">");
+        htmlString.replace("</h1>","</p>");
     }
     if(htmlString.contains("<h2>"))
     {
-        htmlString.replace("<h2>", "<font font-size=20px color=#224488 font-family=Verdana margin-top=20><h2>");
-        htmlString.replace("</h2>","</h2></font>");
+        htmlString.replace("<h2>", "<p style=\"font-size:20px; color:#224488; font-family:Verdana; margin-top:20;\">");
+        htmlString.replace("</h2>","</p");
     }
 
     if(htmlString.contains("<h3>"))
     {
-        htmlString.replace("<h3>", "<font font-size=18px color=#445599 font-style=italic margin-bottom=5px><h3>");
-        htmlString.replace("</h3>","</h3></font>");
+        htmlString.replace("<h3>", "<p style=\"font-size:18px; color:#445599; font-style:italic; margin-bottom:5px;\">");
+        htmlString.replace("</h3>","</p>");
     }
 
     if(htmlString.contains("<h4>"))
     {
-        htmlString.replace("<h4>", "<font font-size=18px color=#ee0000 font-style=italic font-weight=800 margin=10><h4>");
-        htmlString.replace("</h4>","</h4></font>");
+        htmlString.replace("<h4>", "<p style=\" font-size:18px; color:#ee0000; font-style:italic; font-weight:800;\">");
+        htmlString.replace("</h4>","</p>");
     }
 
     if(htmlString.contains("<span class=\"rot\">"))
