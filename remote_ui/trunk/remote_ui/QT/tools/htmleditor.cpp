@@ -39,6 +39,9 @@ HtmlEditor::HtmlEditor(QWidget *parent)
     editorIsFinished = 0;
     mCloseEditor     = 0;
 
+    mEdit->setStyleSheet("font: 15 \"Open Sans\"; font-weight: 350px;");
+
+
     QToolBar *toolbar = new QToolBar();
     QVBoxLayout *vLayout = new QVBoxLayout();
 
@@ -118,7 +121,7 @@ HtmlEditor::HtmlEditor(QWidget *parent)
     setCentralWidget(mEdit);
     resize(800,600);
 
-    //mEdit->setStyleSheet("QTextEdit { color:#000000; text-decoration:none; font-family:'Verdana'; font-weight:350; font-size:15; margin-left:10px; }");
+    mEdit->setStyleSheet("QTextEdit { color:#000000; text-decoration:none; font-family:'OpenSans'; font-weight:350; font-size:20; margin-left:10px; }");
 }
 
 void HtmlEditor::showPreview()
@@ -134,7 +137,47 @@ void HtmlEditor::showPreview()
         qDebug() << "failed to save preview";
     }
 
-    stream << mEdit->toHtml().remove("images/");
+    QString htmlString  = mEdit->toHtml().remove("images/");
+
+    if(!mFileName.contains("kopf") && !mFileName.contains("fuss"))
+    {
+
+        htmlString.remove("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n");
+        htmlString.remove("<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n");
+        htmlString.remove("</style></head><body style=\" font-family:'Verdana'; font-size:11pt; font-weight:400; font-style:normal;\">\n");
+        htmlString.remove("p, li { white-space: pre-wrap; }");
+        htmlString.remove("</style></head>");
+        htmlString.remove("</body></html>");
+
+        QFile kopfFile(QDir::tempPath() + "/kopf.html");
+
+        if(!kopfFile.open(QIODevice::ReadOnly))
+        {
+            qDebug() << "Konnte nicht zum lesen oeffnen!!!";
+        }
+
+        QString kopfHtml = kopfFile.readAll();
+        kopfHtml.remove("images/");
+
+        htmlString.prepend(kopfHtml);
+
+        QFile fussFile(QDir::tempPath() + "/fuss.html");
+
+        if(!fussFile.open(QIODevice::ReadOnly))
+        {
+            qDebug() << "Konnte nicht zum lesen oeffnen!!!";
+        }
+
+        QString fussHtml = fussFile.readAll();
+        fussHtml.remove("images/");
+
+        htmlString.append(fussHtml);
+
+        htmlString.remove("<iframe src=\"kopf.html\" width=\"100%\" min-height=\"200px\" />");
+        htmlString.remove("\n<iframe src=\"fuss.html\" width=\"100%\" min-height=\"200px\" />");
+    }
+
+    stream << htmlString;
     file.close();
     WebBrowser *p_browser = new WebBrowser;
     p_browser->createBrowser();
@@ -144,7 +187,8 @@ void HtmlEditor::showPreview()
 
 void HtmlEditor::textIsChanged()
 {
-    this->setWindowTitle("VDC HTML Editor - Modified");
+    QString newTitle = this->windowTitle() + " - Modified";
+    this->setWindowTitle(newTitle);
     mTextIsModified = 1;
 }
 
@@ -259,7 +303,8 @@ void HtmlEditor::loadIntoEditor()
     QString htmlString = ventasFilter(in.readAll());
 
     mEdit->setHtml(htmlString);
-    this->setWindowTitle("VDC HTML Editor");
+    QString newTitle = mFileName + " - " + this->windowTitle();
+    this->setWindowTitle(newTitle);
     mTextIsModified = 0;
 
 }
@@ -272,12 +317,12 @@ QString HtmlEditor::ventasFilter(QString htmlString)
     }*/
     if(htmlString.contains("<h1>"))
     {
-        htmlString.replace("<h1>", "<p style=\"font-size:24px; color:#224488; font-family:Verdana; font-weight:350; margin-top:30;\">");
+        htmlString.replace("<h1>", "<p style=\"font-size:24px; color:#224488; font-family:'Open Sans'; font-weight:350; margin-top:30;\">");
         htmlString.replace("</h1>","</p>");
     }
     if(htmlString.contains("<h2>"))
     {
-        htmlString.replace("<h2>", "<p style=\"font-size:20px; color:#224488; font-family:Verdana; margin-top:20;\">");
+        htmlString.replace("<h2>", "<p style=\"font-size:20px; color:#224488; font-family:'Open Sans'; margin-top:20;\">");
         htmlString.replace("</h2>","</p");
     }
 
@@ -330,7 +375,7 @@ QString HtmlEditor::ventasFilter(QString htmlString)
 
     if(htmlString.contains("<div id=\"text\">"))
     {
-        htmlString.replace("id=\"text\"", "style=\"margin-left:30px; color:#000000; text-decoration:none; font-family:'Verdana'; font-weight:400;\"");
+        htmlString.replace("id=\"text\"", "style=\"margin-left:30px; color:#000000; text-decoration:none; font-family:'Open Sans'; font-weight:400;\"");
     }
 
     if(htmlString.contains("<div id=\"achtung\">"))
@@ -408,14 +453,18 @@ void HtmlEditor::closeEditor()
     outStream.setCodec("ISO-8859-1");
 
     QString htmlString = mEdit->toHtml();
-    htmlString.remove("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n");
-    htmlString.remove("<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n");
-    htmlString.remove("</style></head><body style=\" font-family:'Verdana'; font-size:11pt; font-weight:400; font-style:normal;\">\n");
-    htmlString.remove("p, li { white-space: pre-wrap; }");
-    htmlString.remove("</body></html>");
+    if(!mFileName.contains("kopf") && !mFileName.contains("fuss"))
+    {
+        htmlString.remove("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n");
+        htmlString.remove("<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n");
+        htmlString.remove("</style></head><body style=\" font-family:'Verdana'; font-size:11pt; font-weight:400; font-style:normal;\">\n");
+        htmlString.remove("p, li { white-space: pre-wrap; }");
+        htmlString.remove("</style></head>");
+        htmlString.remove("</body></html>");
 
-    htmlString.prepend("<iframe src=\"kopf.html\" width=\"100%\" min-height=\"200px\" />");
-    htmlString.append("\n<iframe src=\"fuss.html\" width=\"100%\" min-height=\"200px\" />");
+        htmlString.prepend("<iframe src=\"kopf.html\" width=\"100%\" min-height=\"200px\" />");
+        htmlString.append("\n<iframe src=\"fuss.html\" width=\"100%\" min-height=\"200px\" />");
+    }
 
     outStream << htmlString;
     file.close();
