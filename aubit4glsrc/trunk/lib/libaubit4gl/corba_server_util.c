@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: corba_server_util.c,v 1.47 2011-06-26 15:07:25 naurus Exp $
+# $Id: corba_server_util.c,v 1.48 2015-01-05 20:02:53 mikeaubury Exp $
 #
 */
 
@@ -336,7 +336,7 @@ A4GL_strcat (char *dest, const char *src, char *f, int l, int sd)
     {
       if (lsrc >= sd)
 	{
-	  PRINTF ("String overflow detected : %s %d (%d>=%d)", f, l, (int) strlen (src), sd);
+	  PRINTF ("String overflow detected : %s %d (%d>=%d) result=%d", f, l, (int) strlen (src), sd,lsrc);
 #ifdef DEBUG
 	  A4GL_debug ("String overflow detected : %s %d (%d>=%d)", f, l, strlen (src), sd);
 #endif
