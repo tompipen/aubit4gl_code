@@ -135,6 +135,9 @@ bool DownloadManager::checkClientVersion()
     QHash<QString,QString> serverVars = parseXmlFile(serverXmlFile);
     QHash<QString,QString> clientVars = parseXmlFile(clientXmlFile);
 
+    QString A4glFromClient = VDC::readSettingsFromIni("", "a4gl_version");
+    QString XmlVersionServer = VDC::readSettingsFromIni("", "xml_version");
+
     QDate serverdate = QDate::fromString(serverVars["VDC_RELEASE_DATE"], "dd.MM.yyyy");
     QDate clientdate = QDate::fromString(clientVars["VDC_RELEASE_DATE"], "dd.MM.yyyy");
 
@@ -164,8 +167,7 @@ bool DownloadManager::checkClientVersion()
         return false;
     }
 
-    //No Update if a4gl version is not the same
-    if(serverVars["A4GL_VERSION"] < clientVars["A4GL_VERSION"]) {
+    if(serverVars["A4GL_VERSION"] < A4glFromClient) {
         if(showErrorMessage()) {
             Dialog *dialog = new Dialog(tr("VDC Update"), tr("No new Update found for this A4GL Version."), "", "information", NULL, Qt::WindowStaysOnTopHint);
             dialog->setVentasStyle();
@@ -182,8 +184,7 @@ bool DownloadManager::checkClientVersion()
         return false;
     }
 
-    //No Update if xml version is not the same
-    if(serverVars["XML_VERSION"] != clientVars["XML_VERSION"]) {
+    if(serverVars["XML_VERSION"] < XmlVersionServer) {
         if(showErrorMessage()) {
             Dialog *dialog = new Dialog(tr("VDC Update"), tr("No new Version for this XML Version!"), "", "information", NULL, Qt::WindowStaysOnTopHint);
             dialog->setVentasStyle();

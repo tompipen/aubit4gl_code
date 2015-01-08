@@ -54,6 +54,10 @@ HtmlEditor::HtmlEditor(QWidget *parent)
     italicBold->setMaximumWidth(35);
     italicBold->setStyleSheet(" QPushButton { font-style: italic; font-size: 16px;} ");
 
+    QPushButton *underLine = new QPushButton(tr("u"));
+    underLine->setMaximumWidth(35);
+    underLine->setStyleSheet(" QPushButton { font-style: regular; text-decoration: underline; font-size: 16px;} ");
+
     textColorButton = new QPushButton();
     textColorButton->setStyleSheet(" QPushButton { background-color: black;}" );
 
@@ -75,6 +79,7 @@ HtmlEditor::HtmlEditor(QWidget *parent)
     connect(textColorButton, SIGNAL(clicked()), this, SLOT(textColor()));
     connect(italicBold, SIGNAL(clicked()), this, SLOT(italicClicked()));
     connect(fontBold, SIGNAL(clicked()), this, SLOT(boldClicked()));
+    connect(underLine, SIGNAL(clicked()), this, SLOT(underlineClicked()));
     connect(mEdit, SIGNAL(textChanged()), this, SLOT(textIsChanged()));
     connect(mUeberschriftCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(setTitle(int)));
 
@@ -98,6 +103,8 @@ HtmlEditor::HtmlEditor(QWidget *parent)
 
     toolbar->addWidget(fontBold);
     toolbar->addWidget(italicBold);
+    toolbar->addSeparator();
+    toolbar->addWidget(underLine);
     toolbar->addSeparator();
     toolbar->addWidget(mFontSizeCombo);
     toolbar->addSeparator();
@@ -245,14 +252,26 @@ void HtmlEditor::textSize(QString size)
     }
 }
 
+void HtmlEditor::underlineClicked()
+{
+    QTextCharFormat fmt;
+    QTextCursor cursor = mEdit->textCursor();
+
+    if(cursor.charFormat().fontUnderline())
+    {
+        fmt.setFontUnderline(false);
+    } else {
+        fmt.setFontUnderline(true);
+
+    }
+    cursor.mergeCharFormat( fmt );
+    mEdit->mergeCurrentCharFormat(fmt);
+}
+
 void HtmlEditor::boldClicked()
 {
     QTextCharFormat fmt;
     QTextCursor cursor = mEdit->textCursor();
-    if (!cursor.hasSelection())
-    {
-        cursor.select(QTextCursor::WordUnderCursor);
-    }
 
     if( cursor.charFormat().fontWeight() == QFont::Bold  )
     {

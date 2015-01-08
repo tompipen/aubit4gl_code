@@ -921,7 +921,7 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
 
     if(inputArray() || displayArray())
     {
-        if(kev->key() == Qt::Key_Up || kev->key() == Qt::Key_Down || kev->key() == Qt::Key_Tab)
+        if(kev->key() == Qt::Key_Up || kev->key() == Qt::Key_Down)
         {
             if(event->type() == QEvent::KeyPress)
             {

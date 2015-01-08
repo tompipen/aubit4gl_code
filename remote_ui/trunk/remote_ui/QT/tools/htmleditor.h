@@ -21,6 +21,7 @@ public:
     ~HtmlEditor();
 
 public slots:
+    void underlineClicked();
     void boldClicked();
     void italicClicked();
     void textSize(QString);

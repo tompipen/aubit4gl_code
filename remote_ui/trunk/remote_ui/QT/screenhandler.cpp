@@ -1627,7 +1627,7 @@ void ScreenHandler::setAttributes(QString fieldName, QString attribute, QString 
     {
         if(attribute.toLower() == "defaultimage")
         {
-            QPixmap pix(QString(":pics/%1").arg(value));
+            QPixmap pix(QString("pics/%1").arg(value));
             widget->setPixmap(pix);
         }
         if(attribute.toLower() == "hidden")
