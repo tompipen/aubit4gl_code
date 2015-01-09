@@ -23,7 +23,7 @@ int truncated = 0;
 #define PHASE_POST_FETCH 1
 #define STMT_CANT_PREPARE (void *)-1
 #define STMT_DATABASE (void *)-2
-static MYSQL *conn = NULL;
+static MYSQL *current_conn = NULL;
 int isconnected = 0;
 static char curr_dbname[256] = "";
 char last_err[512] = "";
@@ -136,18 +136,111 @@ int
 A4GLSQLLIB_A4GLSQL_init_session_internal (char *sessname, char *dsn,
 					  char *usr, char *pwd)
 {
-  // No sessions atm
-  A4GL_exitwith ("Sessions not implemented");
-  return 0;
+  
+char *u;
+char *p;
+
+  int port=0;
+
+  char *socket=0;
+
+    char uname_acl[256];
+    char passwd_acl[256];
+  A4GL_debug("sessname=%s dsn=%s usr=%s pwd=%s", sessname,dsn,usr,pwd);
+
+  if (acl_getenv_not_set_as_0("MYSQL_PORT")) {
+        port=atol(acl_getenv_not_set_as_0("MYSQL_PORT"));
+  }
+
+  if (acl_getenv_not_set_as_0("MYSQL_SOCKET")) {
+        socket=acl_getenv_not_set_as_0("MYSQL_SOCKET");
+  }
+
+  A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (0);
+
+    if (A4GL_sqlid_from_aclfile (dsn, uname_acl, passwd_acl,NULL))
+    {
+        A4GL_dbg ("Found in ACL File...");
+        u = 0;
+        p = 0;
+        u = acl_getenv_only ("A4GL_SQLUID");
+        p = acl_getenv_only ("A4GL_SQLPWD");
+        if (u && strlen (u) == 0) u = NULL;
+        if (p && strlen (p) == 0) p = NULL;
+        if (!u || !p)
+        {
+            u = uname_acl;
+            p = passwd_acl;
+        }
+    } else {
+        u = acl_getenv_only ("A4GL_SQLUID");
+        p = acl_getenv_only ("A4GL_SQLPWD");
+        if (u && strlen (u) == 0) u = NULL;
+        if (p && strlen (p) == 0) p = NULL;
+    }
+
+  if (usr && strlen(usr)) { u=usr; }
+  if (pwd && strlen(pwd)) { p=pwd; }
+
+
+  current_conn = mysql_init(NULL);
+
+  if (current_conn == NULL)
+    {
+
+      A4GL_set_errm (dsn);
+      A4GL_exitwith_sql ("Could not connect to database");
+      return 1;
+    }
+  A4GL_set_connection_username(u);
+
+  strcpy(curr_conn, sessname);
+  A4GL_add_pointer (sessname, SESSCODE, current_conn);
+
+  A4GL_add_pointer (sessname, SESSDB, strdup(dsn));
+strcpy(curr_dbname, dsn);
+
+      if (!mysql_real_connect
+	  (current_conn, acl_getenv ("MYSQL_SERVER"), u, p, dsn, port,socket, 0))
+	{
+	  strcpy (last_err, (char *) mysql_error (current_conn));
+		A4GL_debug("Error : %s",last_err);
+	  A4GL_set_errm (dsn);
+	  strcpy (sqlerrm, dsn);
+	  A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (-1);
+	  A4GL_exitwith ("Could not connect to database");
+	  has_connect = 0;
+	  isconnected = 0;
+	  return 1;
+	}
+
+  A4GLSQLCV_load_convert ("INFORMIX", A4GLSQLLIB_A4GLSQL_dbms_dialect());
+
+return 0; /* OK */
+
 }
 
 /*****************************************************************************/
 int
 A4GLSQLLIB_A4GLSQL_set_conn_internal (char *sessname)
 {
-  // No sessions atm
-  A4GL_exitwith ("Sessions not implemented");
-  return 0;
+  MYSQL *con=0;
+  A4GL_debug("Set conn %s", sessname);
+  con = (MYSQL *) A4GL_find_pointer (sessname, SESSCODE);
+
+  if (con) {
+        current_conn=con;
+        strcpy(curr_conn, sessname);
+	char *db;
+	db=A4GL_find_pointer (sessname, SESSDB);
+  	strcpy(curr_dbname, db);
+
+        A4GL_debug("Found it - used it..");
+        return 0;
+  }
+A4GL_debug("Not found");
+return 1;
+
 }
 
 
@@ -213,7 +306,7 @@ static int isUTF8=-1;
 
 	if (isUTF8==-1) {
 		if (A4GL_isyes(acl_getenv("A4GL_MYSQLUTF8CHECK"))) {
-		if (strcasecmp("utf8", mysql_character_set_name(conn))==0) {
+		if (strcasecmp("utf8", mysql_character_set_name(current_conn))==0) {
 			isUTF8=1;
 		} else {
 			isUTF8=0;
@@ -469,7 +562,7 @@ A4GLSQLLIB_SQL_initlib (void)
 #endif
 
 	A4GL_debug ("Calling mysql_init()");
-	conn = mysql_init (NULL);
+	current_conn = mysql_init (NULL);
   
 #ifdef MYSQL_EMBEDDED
 	A4GL_debug ("Setting MySQL embedded options...");
@@ -480,13 +573,13 @@ A4GLSQLLIB_SQL_initlib (void)
 	use the options in my.cnf under the group heading [libmysqld_client]
 	as the default group.
 	*/
-	//mysql_options(conn, MYSQL_READ_DEFAULT_GROUP, "libmysqld_client");
+	//mysql_options(current_conn, MYSQL_READ_DEFAULT_GROUP, "libmysqld_client");
 	
 	/*
 	specify explicitly that the client is to use the embedded server and 
 	not a local or remote MySQL server daemon.
 	*/
-	//mysql_options(conn, MYSQL_OPT_USE_EMBEDDED_CONNECTION, NULL);
+	//mysql_options(current_conn, MYSQL_OPT_USE_EMBEDDED_CONNECTION, NULL);
 	
 	//MYSQL_OPT_USE_REMOTE_CONNECTION
 	//MYSQL_OPT_GUESS_CONNECTION
@@ -513,10 +606,12 @@ A4GLSQLLIB_A4GLSQL_init_connection_internal (char *dbName)
   int port=0;
   char *socket=0;
 
-  if (conn && isconnected)  {
+  if (current_conn && isconnected)  {
 	A4GLSQLLIB_A4GLSQL_close_session_internal("default");
   }
   isconnected = 0;
+
+  A4GL_add_pointer ("default", SESSDB, strdup(dbname));
 
   strcpy (dbname, dbName);
   A4GL_trim (dbname);
@@ -585,9 +680,9 @@ A4GLSQLLIB_A4GLSQL_init_connection_internal (char *dbName)
   if (strcmp (dbname, "DEFAULT") == 0)
     {
       if (!mysql_real_connect
-	  (conn, acl_getenv ("MYSQL_SERVER"), u, p, NULL, port, socket, 0))
+	  (current_conn, acl_getenv ("MYSQL_SERVER"), u, p, NULL, port, socket, 0))
 	{
-	  strcpy (last_err, (char *) mysql_error (conn));
+	  strcpy (last_err, (char *) mysql_error (current_conn));
 		A4GL_debug("Error : %s",last_err);
 	  A4GL_set_errm (dbname);
 	  strcpy (sqlerrm, dbname);
@@ -603,9 +698,9 @@ A4GLSQLLIB_A4GLSQL_init_connection_internal (char *dbName)
   else
     {
       if (!mysql_real_connect
-	  (conn, acl_getenv ("MYSQL_SERVER"), u, p, dbname, port,socket, 0))
+	  (current_conn, acl_getenv ("MYSQL_SERVER"), u, p, dbname, port,socket, 0))
 	{
-	  strcpy (last_err, (char *) mysql_error (conn));
+	  strcpy (last_err, (char *) mysql_error (current_conn));
 		A4GL_debug("Error : %s",last_err);
 	  A4GL_set_errm (dbname);
 	  strcpy (sqlerrm, dbname);
@@ -633,7 +728,7 @@ static void
 report_sql_error (void)
 {
 
-  PRINTF ("%d - %s\n", mysql_errno (conn), mysql_error (conn));
+  PRINTF ("%d - %s\n", mysql_errno (current_conn), mysql_error (current_conn));
   A4GL_exitwith ("SQL Transaction Error");
 }
 
@@ -643,21 +738,21 @@ A4GLSQLLIB_A4GLSQL_commit_rollback (int mode)
 {
   if (mode == -1)
     {
-      if (mysql_query (conn, "BEGIN WORK") != 0)
+      if (mysql_query (current_conn, "BEGIN WORK") != 0)
 	{
 	  report_sql_error ();
 	}
     }
   if (mode == 0)
     {
-      if (mysql_query (conn, "ROLLBACK") != 0)
+      if (mysql_query (current_conn, "ROLLBACK") != 0)
 	{
 	  report_sql_error ();
 	}
     }
   if (mode == 1)
     {
-      if (mysql_query (conn, "COMMIT") != 0)
+      if (mysql_query (current_conn, "COMMIT") != 0)
 	{
 	  report_sql_error ();
 	}
@@ -670,9 +765,9 @@ int
 A4GLSQLLIB_A4GLSQL_close_session_internal (char *sessname)
 {
   if (strcmp(sessname,"default")==0) {
-	if (conn) {
-		mysql_close(conn);
-		conn=NULL;
+	if (current_conn) {
+		mysql_close(current_conn);
+		current_conn=NULL;
 		isconnected=0;
 
                 /*
@@ -691,8 +786,15 @@ A4GLSQLLIB_A4GLSQL_close_session_internal (char *sessname)
 #ifndef MYSQL_EMBEDDED
                 mysql_library_end();
 #endif
-		conn = mysql_init (NULL);
+		current_conn = mysql_init (NULL);
 	}
+  } else {
+  	void *con = (MYSQL *) A4GL_find_pointer (sessname, SESSCODE);
+  	if (con)
+    	{
+        	mysql_close (con);
+        	A4GL_del_pointer (sessname, SESSCODE);
+    	}
   }
   return 0;
 }
@@ -718,13 +820,13 @@ A4GLSQLLIB_A4GLSQL_get_errmsg (int a)
 {
   if (a == -1)
     return last_err;
-  if (mysql_errno (conn) == a)
+  if (mysql_errno (current_conn) == a)
     {
-      return (char *) mysql_error (conn);
+      return (char *) mysql_error (current_conn);
     }
 
   // probably about right anyway..
-  return (char *) mysql_error (conn);
+  return (char *) mysql_error (current_conn);
 
 }
 
@@ -1080,7 +1182,7 @@ A4GLSQLLIB_A4GLSQL_prepare_select_internal (void *ibind, int ni, void *obind,
   sid->neo = 0;
 
 //printf("Alloc\n");
-  stmt = mysql_stmt_init (conn);
+  stmt = mysql_stmt_init (current_conn);
 
   if (strncmp(s,"DATABASE ",9)==0 || strncmp(s,"database ",9)==0)  {
       		sid->hstmt = (void *) STMT_DATABASE;
@@ -1116,9 +1218,9 @@ A4GLSQLLIB_A4GLSQL_prepare_select_internal (void *ibind, int ni, void *obind,
       A4GL_debug ("Err : %s (%p)\n", mysql_stmt_error (stmt), stmt);	
 	A4GL_set_errm( (char *)mysql_stmt_error (stmt));
 
-      //A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (mysql_errno (conn));
+      //A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (mysql_errno (current_conn));
 	set_aubit4gl_error();
-      if (mysql_errno (conn) == 1295)
+      if (mysql_errno (current_conn) == 1295)
 	{			// Can't prepare it...
 	  sid->hstmt = (void *) STMT_CANT_PREPARE;
 	  return sid;
@@ -1160,7 +1262,7 @@ A4GL_debug("get_column");
     }
 
 
-  result = mysql_list_fields (conn, tabname, NULL);
+  result = mysql_list_fields (current_conn, tabname, NULL);
 
   if (!result)
     {
@@ -1251,16 +1353,16 @@ A4GL_fill_array_databases (int mx, char *arr1, int szarr1, char *arr2,
   int n;
   int cnt = 0;
 
-  if (conn == 0 || !has_connect)
+  if (current_conn == 0 || !has_connect)
     {
       A4GLSQLLIB_A4GLSQL_init_connection_internal ("DEFAULT");
     }
 
 
-  if (conn == 0)
+  if (current_conn == 0)
     return 0;
 
-  res = mysql_list_dbs (conn, NULL);
+  res = mysql_list_dbs (current_conn, NULL);
 
   if (res == 0)
     {
@@ -1306,7 +1408,7 @@ A4GL_fill_array_tables (int mx, char *arr1, int szarr1, char *arr2,
   if (isconnected == 0)
     return 0;
 
-  res = mysql_list_tables (conn, NULL);
+  res = mysql_list_tables (current_conn, NULL);
 
   if (res == 0)
     return 0;
@@ -1350,10 +1452,10 @@ A4GL_fill_array_columns (int mx, char *arr1, int szarr1, char *arr2,
 A4GL_debug("Get columns for %s", buff_info);
 
 
-  result = mysql_list_fields (conn, buff_info, NULL);
+  result = mysql_list_fields (current_conn, buff_info, NULL);
   if (result==0) {
   	A4GL_convlower(buff_info);
-  	result = mysql_list_fields (conn, buff_info, NULL);
+  	result = mysql_list_fields (current_conn, buff_info, NULL);
   	if (result==0) {
 		return 0;
 	}
@@ -1391,9 +1493,9 @@ A4GL_debug("Get columns for %s", buff_info);
   		MYSQL_RES *r2;
 		char buff[200];
 		sprintf(buff,"SHOW COLUMNS FROM %s LIKE '%s';", buff_info, cn);
-		mysql_query(conn,buff);
+		mysql_query(current_conn,buff);
 	      		//SPRINTF2 (&arr2[cnt * (szarr2 + 1)], "%s", mysql_);
-  		r2=mysql_store_result(conn);
+  		r2=mysql_store_result(current_conn);
 		if (r2) {
 			MYSQL_ROW r;
 			r=mysql_fetch_row(r2);
@@ -1979,7 +2081,7 @@ fetch_from_mysql_to_aubit (MYSQL_STMT * stmt, void *associated_to,
 
   if (x == 1)
     {
-      //A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (mysql_errno (conn));
+      //A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (mysql_errno (current_conn));
 	set_aubit4gl_error();
       return 0;
     }
@@ -2024,18 +2126,18 @@ execute_sql (MYSQL_STMT * stmt, char *sql, struct BINDING *ibind, int ni,
 
   if ((void *) stmt == (void *) STMT_CANT_PREPARE)
     {
-      if (mysql_query (conn, sql) == 0)
+      if (mysql_query (current_conn, sql) == 0)
 	{
 	  A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (0);
 	  return 1;		// OK
 	}
       else
 	{
-	  A4GL_debug ("Error : %s\n", mysql_error (conn));
-	  A4GL_set_errm ((char *) mysql_error (conn));
-	  strcpy (sqlerrm, (char *) mysql_error (conn));
+	  A4GL_debug ("Error : %s\n", mysql_error (current_conn));
+	  A4GL_set_errm ((char *) mysql_error (current_conn));
+	  strcpy (sqlerrm, (char *) mysql_error (current_conn));
 	set_aubit4gl_error();
-	  //A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (mysql_errno (conn));
+	  //A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (mysql_errno (current_conn));
 	  return 0;		// Failed
 	}
     }
@@ -2074,17 +2176,17 @@ execute_sql (MYSQL_STMT * stmt, char *sql, struct BINDING *ibind, int ni,
       A4GL_debug ("Error : %s (%p)\n", mysql_stmt_error (stmt), stmt);
       A4GL_set_errm ((char *) mysql_stmt_error (stmt));
       strcpy (sqlerrm, (char *) mysql_stmt_error (stmt));
-      if (mysql_warning_count (conn))
+      if (mysql_warning_count (current_conn))
 	{
 	  warnings[0] = 'W';
 	  A4GL_copy_sqlca_sqlawarn_string8 (warnings);
 	}
-      //A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (mysql_errno (conn));
+      //A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (mysql_errno (current_conn));
 	set_aubit4gl_error();
       return 0;
     }
 
-  no_warnings = mysql_warning_count (conn);
+  no_warnings = mysql_warning_count (current_conn);
 
 
   A4GL_set_a4gl_sqlca_errd (2, mysql_stmt_affected_rows (stmt));
@@ -2433,11 +2535,18 @@ A4GLSQLLIB_A4GLSQL_fetch_cursor_internal (char *cursor_name, int fetch_mode,
       return 0;
     }
 
+  if (cid->statement==0) {
+	A4GL_set_errm(cursor_name);
+      	A4GL_exitwith_sql ("Cursor not found (%s)");
+	return 0;
+  }
+  
   if (cid->statement->hstmt==0) {
 	A4GL_set_errm(cursor_name);
       	A4GL_exitwith_sql ("Cursor not found (%s)");
 	return 0;
   }
+
   nresultcols = mysql_stmt_field_count (cid->statement->hstmt);
   copy_out_n = nresultcols;
 
@@ -2708,7 +2817,7 @@ A4GLSQLLIB_A4GLSQL_unload_data_internal (char *fname, char *delims, void *filter
 
   FILE *f;
   MYSQL_STMT *stmt;
-  stmt = mysql_stmt_init (conn);
+  stmt = mysql_stmt_init (current_conn);
 
   f = fopen (fname, "w");
 
@@ -2726,7 +2835,7 @@ A4GLSQLLIB_A4GLSQL_unload_data_internal (char *fname, char *delims, void *filter
   if (mysql_stmt_prepare (stmt, sql1, strlen (sql1)))
     {
 	set_aubit4gl_error();
-      //A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (mysql_errno (conn));
+      //A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (mysql_errno (current_conn));
       return;
     }
 
@@ -2948,9 +3057,9 @@ A4GLSQLLIB_A4GLSQL_get_table_checksum (char *s)
     {&version, 0, 100, 0, 0, 0},
   };
 
-  if (conn)
+  if (current_conn)
     {
-      stmt = mysql_stmt_init (conn);
+      stmt = mysql_stmt_init (current_conn);
       sprintf (sqlstmt, "select CREATE_TIME, VERSION FROM INFORMATION_SCHEMA.TABLES WHERE table_name='%s'", s);
       if (mysql_stmt_prepare (stmt, sqlstmt, strlen (sqlstmt))) { // Some error...
 	      	mysql_stmt_close (stmt);
@@ -3017,7 +3126,7 @@ struct s_sid *sid;
 
 void set_aubit4gl_error(void) {
 	int n;
-	n=mysql_errno (conn);
+	n=mysql_errno (current_conn);
 	n=A4GL_remap_nativeerror(n,NULL);
 	A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (n);
 }
