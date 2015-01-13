@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.434 2014-09-09 14:23:16 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.435 2015-01-13 09:09:09 mikeaubury Exp $
 #
 */
 
@@ -327,6 +327,7 @@
 #define S_WINDOWSCODE 		'8'
 #define S_FORMDETSCODE 		'9'
 #define SESSCODE 		'A'
+#define SESSDB 		'$'
 #define RPC_FUNC 		'B'
 #define ATTRIBUTE 		'C'
 #define DROPSHADOW 		'D'
