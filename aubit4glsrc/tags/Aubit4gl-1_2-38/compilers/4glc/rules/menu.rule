@@ -1,0 +1,158 @@
+/*
+=====================================================================
+                        Source: menu.rule
+=====================================================================
+*/
+
+menu_cmd	:	MENU atline {
+				add_feature("UI_MENU");
+				map_ui("MENU");
+   				push_blockcommand("MENU");
+				$<integer_val>$=get_sio_id("MENU");
+				clr_menu_attribs();
+			}
+			menu_title op_menu_attribs events_menu END_MENU 
+{
+				
+
+				if (!A4GL_isno(acl_getenv("ADDEXITMENUACTION"))) {
+                        		struct s_onaction *oa;
+				/* Add an implicit EXIT MENU action for use by the XML UI */
+					struct s_commands *cmds=NULL;
+					struct command *cmd;
+					on_event *oe;
+					cmd= new_ext_cmd(EBC_MENU); 
+               				cmds=malloc(sizeof(s_commands));
+                			cmds->cmds.cmds_len=1;
+					cmds->first_lineno=0;
+					cmds->last_lineno=0;
+                			cmds->cmds.cmds_val=malloc(sizeof(cmds->cmds.cmds_val[0]) * cmds->cmds.cmds_len);
+                			cmds->cmds.cmds_val[cmds->cmds.cmds_len-1]=cmd;
+
+                        		oa=malloc(sizeof( struct s_onaction ));
+                        		oa->key_list=NULL;
+                        		oa->actionName=strdup("fgl_exit_menu");
+
+					oe=new_event(EVENT_ON_ACTION, 
+						(void *)oa,
+						cmds,yylineno);
+					
+                			$<on_events>6->event.event_len=$<on_events>6->event.event_len+1;
+                			$<on_events>6->event.event_val=realloc($<on_events>6->event.event_val, sizeof($<on_events>6->event.event_val[0]) * $<on_events>6->event.event_len);
+                			$<on_events>6->event.event_val[$<on_events>6->event.event_len-1]=oe;
+
+				}
+
+				$<cmd>$=new_menu_cmd($<ptr>4,0 /* $<attrib>5 */,$<on_events>6, $<integer_val>3, 
+                  $<menu_attrib>5->menu_attrib_comment,
+                  $<menu_attrib>5->menu_attrib_style, 
+                     $<menu_attrib>5->menu_attrib_image,
+                     $<menu_attrib>5->menu_attrib_normal,
+                     $<menu_attrib>5->menu_attrib_highlight
+                     );
+   				pop_blockcommand("MENU");
+				}
+;
+
+op_menu_attribs:  { 
+	$<menu_attrib>$=malloc(sizeof(struct menu_attrib));
+      $<menu_attrib>$->attrib=0;
+         $<menu_attrib>$->menu_attrib_comment=0;
+         $<menu_attrib>$->menu_attrib_style=0;
+         $<menu_attrib>$->menu_attrib_image=0;
+         $<menu_attrib>$->menu_attrib_normal=0;
+         $<menu_attrib>$->menu_attrib_highlight=0;
+}
+	| ATTRIBUTES OPEN_BRACKET menu_attribs CLOSE_BRACKET {	
+
+			$<menu_attrib>$=malloc(sizeof(struct menu_attrib));
+			$<menu_attrib>$->attrib=0; 
+         $<menu_attrib>$->menu_attrib_comment=get_menu_attrib('C');
+         $<menu_attrib>$->menu_attrib_style=get_menu_attrib('S');
+         $<menu_attrib>$->menu_attrib_image=get_menu_attrib('I');
+         $<menu_attrib>$->menu_attrib_normal=get_menu_attrib('N');
+         $<menu_attrib>$->menu_attrib_highlight=get_menu_attrib('H');
+		}
+;
+	
+menu_attribs: 
+	menu_attrib
+	| menu_attribs KW_COMMA menu_attrib
+;
+
+menu_attrib : 
+	KW_STYLE   EQUAL fgl_expr_c { set_menu_attrib('S',$<ptr>3); }
+| 	KW_COMMENT EQUAL fgl_expr_c { set_menu_attrib('C',$<ptr>3); }
+| 	KW_IMAGE EQUAL fgl_expr_c   { set_menu_attrib('I',$<ptr>3); }
+| 	KW_HIGHLIGHT EQUAL fgl_expr_c   { set_menu_attrib('H',$<ptr>3); }
+| 	KW_NORMAL EQUAL fgl_expr_c   { set_menu_attrib('N',$<ptr>3); }
+
+;
+
+
+
+
+opt_key	:		{$<str_list>$=malloc(sizeof(str_list)); $<str_list>$->str_list_entry.str_list_entry_len=0; $<str_list>$->str_list_entry.str_list_entry_val=0;}
+	| key_val_sl 	{$<str_list>$=$<str_list>1;}
+;
+
+
+menu_opt_name	: char_or_var_vl
+;
+
+menu_optional_desc	:      {$<ptr>$=0;}
+			| char_or_var_vl 
+;
+
+
+
+
+next_option_cmd : NEXT_OPTION opt_name {
+				map_ui("NEXTOPTION");
+				$<cmd>$=new_next_option_cmd($<ptr>2);
+}
+;
+
+show_option_cmd : SHOW_OPTION opt_name_list {
+	map_ui("SHOWOPTION");
+	$<cmd>$=new_show_option_cmd($<ptr_list>2);
+}
+;
+
+hide_option_cmd : HIDE_OPTION opt_name_list {
+	map_ui("HIDEOPTION");
+	$<cmd>$=new_hide_option_cmd($<ptr_list>2);
+}
+;
+
+opt_name	:	 ALL {
+				$<ptr>$=A4GL_new_expr_simple(ET_EXPR_MENU_ALL);
+			}
+			| CHAR_VALUE {
+			                if (strcmp($<str>1,"\"\"")==0) {
+                        			$<ptr>$=A4GL_new_literal_empty_str ();
+                			} else {
+                        			$<ptr>$=A4GL_new_literal_string($<str>1);
+                			}
+			}
+		 	| ensured_variable_usage_expression  {
+				$<ptr>$=$<ptr>1;
+			}
+	
+;
+
+opt_name_list	:	opt_name {
+				$<ptr_list>$=A4GL_new_ptr_list($<ptr>1);
+		}
+		| 	opt_name_list KW_COMMA opt_name  {
+				$<ptr_list>$=A4GL_new_append_ptr_list($<ptr_list>$,$<ptr>3);
+		}
+
+;
+
+menu_title 	:	char_or_var_vl_or_object 
+;
+
+
+/* =========================== menu.rule ============================= */
+

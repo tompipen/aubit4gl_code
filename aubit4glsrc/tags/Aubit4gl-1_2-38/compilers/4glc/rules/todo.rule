@@ -1,0 +1,43 @@
+todo_cmd : 
+        KW_TODO atline op_todo_while  {
+
+                        push_blockcommand("TODO");
+	}
+	when_unit op_always_command END_TODO {
+ 			int blk;
+                        blk=get_sio_ids("TODO");
+		set_cmdlineno($<integer_val>2);
+		pop_blockcommand("TODO");
+		$<cmd>$=new_todo_cmd(chk_expr($<ptr>3),$<whens>5,$<commands>6,blk);
+	}
+;
+
+
+op_todo_while : 
+		{$<ptr>$=NULL;}
+		| WHILE fgl_expr_c {$<ptr>$=$<ptr>2; }
+;
+
+todo_done_cmd : 
+	KW_DONE  {
+		if (!isin_command("TODO")) {
+			$<cmd>$=NULL;
+			a4gl_yyerror("You cannot use a DONE command outside of a TODO");
+		} else {
+			$<cmd>$=new_done_cmd();
+		}
+	}
+;
+
+
+
+op_always_command : {$<commands>$=0;} | KW_ALWAYS {  lastlineno=yylineno;} commands_as_list { $<commands>$=$<commands>3; }
+;
+
+
+
+/* ================================= todo.rule ============================= */
+
+
+
+

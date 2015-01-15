@@ -1,0 +1,6 @@
++create() THISOBJECT
+show()
+hide()
+setTitle ( title DTYPE_CHAR)
+setText (text DTYPE_CHAR )
+close()

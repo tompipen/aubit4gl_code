@@ -1,0 +1,13 @@
+Name: 4glpc
+Parent: aubit4glsrc
+Description: Provides user friendly front end to 4glc; takes care to compile only changed source files;
+Functionality: 4GL compiler front end
+Build: make in its home dir
+Example: see --help<br>("4glpc --help")
+Depends: Aubit4gl
+Documentation: see --help<br>("4glpc --help")
+Regressed:
+Maintainer: MA
+Status: 4
+Todo:
+Notes: Written in 4GL; When available this should be the main mechanism used for compiling 4GL programs.

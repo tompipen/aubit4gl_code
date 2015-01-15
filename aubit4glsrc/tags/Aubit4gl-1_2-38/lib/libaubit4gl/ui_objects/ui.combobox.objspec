@@ -1,0 +1,12 @@
++forname ( fieldname DTYPE_CHAR ) THISOBJECT
+additem ( name DTYPE_CHAR text DTYPE_CHAR ) 	
+clear ( ) 
+getcolumnname ( )  DTYPE_CHAR
+getindexof ( name DTYPE_CHAR )  DTYPE_CHAR 	
+getitemcount ( )  DTYPE_INT 	
+getitemname ( index DTYPE_INT )  DTYPE_CHAR 	
+getitemtext ( index DTYPE_INT )  DTYPE_CHAR 	
+gettablename ( )  DTYPE_CHAR 
+gettag ( )  DTYPE_CHAR 	
+gettextof ( name DTYPE_CHAR )  DTYPE_CHAR 
+removeitem ( name DTYPE_CHAR ) 	

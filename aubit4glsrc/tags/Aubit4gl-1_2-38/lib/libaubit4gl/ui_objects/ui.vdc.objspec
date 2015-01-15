@@ -1,0 +1,14 @@
++action (param1 DTYPE_CHAR param2 DTYPE_CHAR param3 DTYPE_CHAR param4 DTYPE_CHAR param5 DTYPE_CHAR param6 DTYPE_CHAR param7 DTYPE_CHAR param8 DTYPE_CHAR param9 DTYPE_CHAR param10 DTYPE_CHAR ) DTYPE_INT DTYPE_CHAR
++repgen ( odffile DTYPE_CHAR, sedfile DTYPE_CHAR, destfile DTYPE_CHAR) DTYPE_INT DTYPE_CHAR
++odftopdf ( srcfile DTYPE_CHAR, destfile DTYPE_CHAR) DTYPE_INT DTYPE_CHAR
++checkOdfFile (odffile DTYPE_CHAR, destfile DTYPE_CHAR) DTYPE_INT
++md5hashfile(filename DTYPE_CHAR) DTYPE_CHAR
++printpdf(filename DTYPE_CHAR) DTYPE_INT
++execute(filename DTYPE_CHAR) DTYPE_INT
++getstdofficeprog () DTYPE_INT
++get_last_sort(modulname DTYPE_CHAR) DTYPE_CHAR
++openeditor(type DTYPE_CHAR, htmlfile DTYPE_CHAR) DTYPE_INT
++getdevice(htmlfile DTYPE_CHAR) DTYPE_CHAR DTYPE_CHAR
++setclipboard(content DTYPE_CHAR)
++filebrowser(function DTYPE_CHAR, file DTYPE_CHAR) DTYPE_INT DTYPE_CHAR
++filebrowser(type DTYPE_CHAR, csvfile DTYPE_CHAR) DTYPE_INT

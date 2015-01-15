@@ -1,0 +1,4 @@
+%name-prefix "a4gl_yy"
+%pure-parser
+%lex-param { yystate} {yyssa} {yyssp}
+%start module
