@@ -24,10 +24,10 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.176 2014-06-25 18:02:34 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.177 2015-01-15 19:48:15 mikeaubury Exp $
 #*/
 #ifndef lint
-static char const module_id[] = "$Id: formcntrl.c,v 1.176 2014-06-25 18:02:34 mikeaubury Exp $";
+static char const module_id[] = "$Id: formcntrl.c,v 1.177 2015-01-15 19:48:15 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -788,7 +788,7 @@ copyCurrentFieldDataToVariable (struct s_screenio *sio, int NormalMode_notSyncMo
 
 
 	  fprop = (struct struct_scr_field *) (field_userptr (sio->currentfield));
-	  attr = A4GL_determine_attribute (FGL_CMD_INPUT, sio->attrib, fprop, field_buffer (sio->currentfield, 0));
+	  attr = A4GL_determine_attribute (FGL_CMD_INPUT, sio->attrib, fprop, field_buffer (sio->currentfield, 0), -1);
 	  if (attr != 0)
 	    A4GL_set_field_attr_with_attr (sio->currentfield, attr, FGL_CMD_INPUT);
 	}
@@ -1491,9 +1491,9 @@ process_control_stack_internal (struct s_screenio *sio, struct aclfgl_event_list
 	  fprop = (struct struct_scr_field *) (field_userptr (sio->currentfield));
 
 	if (sio->current_field_display) {
-	  attr = A4GL_determine_attribute (FGL_CMD_INPUT, sio->current_field_display, fprop, field_buffer (sio->currentfield, 0));
+	  attr = A4GL_determine_attribute (FGL_CMD_INPUT, sio->current_field_display, fprop, field_buffer (sio->currentfield, 0),-1);
 	} else {
-	  attr = A4GL_determine_attribute (FGL_CMD_INPUT, sio->attrib, fprop, field_buffer (sio->currentfield, 0));
+	  attr = A4GL_determine_attribute (FGL_CMD_INPUT, sio->attrib, fprop, field_buffer (sio->currentfield, 0),-1);
 	}
 
 	  if (attr != 0)
@@ -1660,7 +1660,7 @@ process_control_stack_internal (struct s_screenio *sio, struct aclfgl_event_list
           int attr;
       	  struct struct_scr_field *fprop;
 	  fprop = (struct struct_scr_field *) (field_userptr (sio->currentfield));
-	  attr = A4GL_determine_attribute (FGL_CMD_INPUT, sio->attrib, fprop, field_buffer (sio->currentfield, 0));
+	  attr = A4GL_determine_attribute (FGL_CMD_INPUT, sio->attrib, fprop, field_buffer (sio->currentfield, 0),-1);
 	  A4GL_set_field_attr_with_attr (sio->currentfield, attr, FGL_CMD_INPUT);
       }
 

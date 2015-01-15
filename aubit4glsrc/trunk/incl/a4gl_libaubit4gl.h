@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.435 2015-01-13 09:09:09 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.436 2015-01-15 19:48:13 mikeaubury Exp $
 #
 */
 
@@ -1843,7 +1843,7 @@ int A4GL_conversion_ok(int a);
   int A4GL_has_str_attribute (struct struct_scr_field *f, int str);
   int A4GL_attr_name_match (struct struct_scr_field *field, char *s);
   char *A4GL_get_str_attribute (struct struct_scr_field *f, int str);
-int A4GL_evaluate_field_colour(char *field_contents, struct struct_scr_field *fprop);
+int A4GL_evaluate_field_colour(char *field_contents, struct struct_scr_field *fprop,int arrline);
 #endif
 #endif
   void A4GL_set_last_key (int a);
@@ -2161,7 +2161,7 @@ void * A4GL_read_form (char *s, char *p);
 int A4GL_load_data_str (char *fname, char *delims, void *filterfunc, char *sqlstmt);
 void A4GL_in_in_ops (int op);
 int A4GL_get_escape_chr (void);
-int A4GL_determine_attribute(int cmd_type, int attrib_curr_int, void *fprop,char *val_for_field);
+int A4GL_determine_attribute(int cmd_type, int attrib_curr_int, void *fprop,char *val_for_field,int arrline);
 void a4gl_basename (char **ppsz);
 void A4GL_error_nobox (char *str,int attr);
 void A4GL_clr_error_nobox (char *dbg_fromwhere);

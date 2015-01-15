@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: where.c,v 1.19 2008-09-29 15:37:25 mikeaubury Exp $
+# $Id: where.c,v 1.20 2015-01-15 19:48:13 mikeaubury Exp $
 #
 */
 
@@ -84,6 +84,23 @@ create_field_expr (char *fieldname)
   ptr = acl_malloc2 (sizeof (t_expression));
   ptr->itemtype = ITEMTYPE_FIELD;
   ptr->u_expression_u.field = acl_strdup (fieldname);
+  return ptr;
+}
+
+
+t_expression * create_expr_oddline ()
+{
+  t_expression *ptr;
+  ptr = acl_malloc2 (sizeof (t_expression));
+  ptr->itemtype = ITEMTYPE_ODDLINE;
+  return ptr;
+}
+
+t_expression * create_expr_evenline ()
+{
+  t_expression *ptr;
+  ptr = acl_malloc2 (sizeof (t_expression));
+  ptr->itemtype = ITEMTYPE_EVENLINE;
   return ptr;
 }
 
@@ -229,6 +246,8 @@ create_expr_expr (t_complex_expr * expr)
   ptr->u_expression_u.complex_expr = expr;
   return ptr;
 }
+
+
 
 /**
  *

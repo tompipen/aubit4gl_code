@@ -24,11 +24,11 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: display_array.c,v 1.42 2009-03-10 12:06:07 mikeaubury Exp $
+# $Id: display_array.c,v 1.43 2015-01-15 19:48:15 mikeaubury Exp $
 #*/
 #ifndef lint
 static char const module_id[] =
-  "$Id: display_array.c,v 1.42 2009-03-10 12:06:07 mikeaubury Exp $";
+  "$Id: display_array.c,v 1.43 2015-01-15 19:48:15 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -1025,7 +1025,7 @@ A4GL_disp_arr_fields_v2 (struct s_disp_arr *disp,int iscurr,  int blank, int att
       nattr =
 	A4GL_determine_attribute (FGL_CMD_DISPLAY_CMD, disp->attribute, f,
 				  (char *)
-				  A4GL_LL_field_buffer (field_list[a], 0));
+				  A4GL_LL_field_buffer (field_list[a], 0),arr_line);
       A4GL_debug ("XXXX3 nattr=%d", nattr);
 
       if (attr & AUBIT_ATTR_REVERSE)

@@ -24,11 +24,11 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: input_array.c,v 1.72 2010-06-02 11:25:17 mikeaubury Exp $
+# $Id: input_array.c,v 1.73 2015-01-15 19:48:15 mikeaubury Exp $
 #*/
 #ifndef lint
 static char const module_id[] =
-  "$Id: input_array.c,v 1.72 2010-06-02 11:25:17 mikeaubury Exp $";
+  "$Id: input_array.c,v 1.73 2015-01-15 19:48:15 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -2551,7 +2551,7 @@ if (a_isprint(arr->fcntrl[a].extent) && arr->fcntrl[a].extent!='\n'&&arr->fcntrl
 	     *) (A4GL_ll_get_field_userptr (arr->currentfield));
 	  attr =
 	    A4GL_determine_attribute (FGL_CMD_INPUT, arr->display_attrib,
-				      fprop, 0);
+				      fprop, 0, -1);
 
 
 
@@ -2810,7 +2810,7 @@ if (A4GL_fprop_flag_get(arr->currentfield,  FLAG_FIELD_TOUCHED)) {
 	     *) (A4GL_ll_get_field_userptr (arr->currentfield));
 	  attr =
 	    A4GL_determine_attribute (FGL_CMD_INPUT, arr->display_attrib,
-				      fprop, 0);
+				      fprop, 0, -1);
 
 
 	  if (arr->highlight)
@@ -2956,12 +2956,12 @@ A4GL_iarr_arr_fields (struct s_inp_arr *arr, int dattr, int arr_line,
 	(struct struct_scr_field
 	 *) (A4GL_ll_get_field_userptr (arr->field_list[scr_line - 1][a]));
 
-      attr = A4GL_determine_attribute (FGL_CMD_DISPLAY_CMD, dattr, fprop, 0);
+      attr = A4GL_determine_attribute (FGL_CMD_DISPLAY_CMD, dattr, fprop, 0, -1);
       da = attr;
 
       if (arr_line == arr->arr_line)
 	{
-	  attr = A4GL_determine_attribute (FGL_CMD_INPUT, dattr, fprop, 0);
+	  attr = A4GL_determine_attribute (FGL_CMD_INPUT, dattr, fprop, 0,-1);
 	  da = attr;
 
 	  if (arr->highlight)

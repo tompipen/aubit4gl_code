@@ -24,10 +24,10 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.255 2013-11-09 14:28:26 mikeaubury Exp $
+# $Id: ioform.c,v 1.256 2015-01-15 19:48:15 mikeaubury Exp $
 #*/
 #ifndef lint
-static char const module_id[] = "$Id: ioform.c,v 1.255 2013-11-09 14:28:26 mikeaubury Exp $";
+static char const module_id[] = "$Id: ioform.c,v 1.256 2015-01-15 19:48:15 mikeaubury Exp $";
 #endif
 
 /**
@@ -741,7 +741,7 @@ A4GL_set_field_attr_with_attr (FIELD * field, int attr, int cmd_type)
   struct struct_scr_field *f;
   f = (struct struct_scr_field *) (field_userptr (field));
 
-  nattr = A4GL_determine_attribute (cmd_type, attr, f, 0);
+  nattr = A4GL_determine_attribute (cmd_type, attr, f, 0,-1);
 
 #ifdef DEBUG
   A4GL_debug ("Passed in attribute: %x, determined attribute should be %x", attr, nattr);
@@ -2040,7 +2040,7 @@ UILIB_A4GL_set_fields (void *vsio)
 
       prop = (struct struct_scr_field *) field_userptr (field_list[a]);
 
-      attr = A4GL_determine_attribute (FGL_CMD_INPUT, sio->attrib, prop, 0);
+      attr = A4GL_determine_attribute (FGL_CMD_INPUT, sio->attrib, prop, 0,-1);
 
       if (attr != 0)
 	A4GL_set_field_attr_with_attr (field_list[a], attr, FGL_CMD_INPUT);
@@ -2975,7 +2975,7 @@ A4GL_set_field_pop_attr (FIELD * field, int attr, int cmd_type)
 #ifdef DEBUG
   A4GL_debug ("Determining attribute - field_buffer=%s", field_buffer (field, 0));
 #endif
-  attr = A4GL_determine_attribute (cmd_type, attr, f, field_buffer (field, 0));
+  attr = A4GL_determine_attribute (cmd_type, attr, f, field_buffer (field, 0),-1);
 
   if (attr != 0 || 1)
     {
@@ -5001,7 +5001,7 @@ UILIB_A4GL_clr_fields_ap (int to_defaults, va_list * ap)
 	A4GL_default_attributes (field_list[a], f->datatype);
 
 
-      attr = A4GL_determine_attribute (FGL_CMD_CLEAR, attr, f, 0);
+      attr = A4GL_determine_attribute (FGL_CMD_CLEAR, attr, f, 0,-1);
 
       if (attr & AUBIT_ATTR_REVERSE)
 	r = 1;

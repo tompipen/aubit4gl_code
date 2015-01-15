@@ -145,6 +145,8 @@ FORMONLY COMMENT
 
 %token KW_SCROLLBARS_BOTH KW_SCROLLBARS_V KW_SCROLLBARS_H KW_STRETCH_Y KW_STRETCH_BOTH KW_ITEMS KW_VALUEMAX KW_VALUEMIN
 %token KW_PROGRESSBAR KW_COMBOBOX OPTIONS KW_BROWSER KW_VALUECHECKED KW_VALUEUNCHECKED KW_CHECKBOX
+%token KW_LINEISODD KW_LINEISEVEN
+
 %%
 
 /* rules */
@@ -1912,8 +1914,13 @@ clauses :
 	}
 ;
 
+
+
+
 clause: 
-	value COMPARISON value { $<expr>$=create_expr_comp_expr($<expr>1,$<expr>3,$<str>2); }
+	KW_LINEISODD { $<expr>$=create_expr_oddline();}
+	| KW_LINEISEVEN { $<expr>$=create_expr_evenline(); }
+	| value COMPARISON value { $<expr>$=create_expr_comp_expr($<expr>1,$<expr>3,$<str>2); }
 	| value LESSTHAN value { $<expr>$=create_expr_comp_expr($<expr>1,$<expr>3,$<str>2); }
 	| value GREATERTHAN value { $<expr>$=create_expr_comp_expr($<expr>1,$<expr>3,$<str>2); }
 	| value LIKE value { $<expr>$=create_expr_comp_expr($<expr>1,$<expr>3,$<str>2); }

@@ -8,7 +8,7 @@
 #include "lowlevel.h"
 #ifndef lint
 static char const module_id[] =
-  "$Id: misc.c,v 1.76 2011-09-08 19:22:16 mikeaubury Exp $";
+  "$Id: misc.c,v 1.77 2015-01-15 19:48:15 mikeaubury Exp $";
 #endif
 
 //void *UILIB_A4GL_get_curr_form (int n);
@@ -923,7 +923,7 @@ int changed=0;
       prop =
 	(struct struct_scr_field *) A4GL_ll_get_field_userptr (field_list[a]);
 
-      attr = A4GL_determine_attribute (FGL_CMD_INPUT, sio->attrib, prop, 0);
+      attr = A4GL_determine_attribute (FGL_CMD_INPUT, sio->attrib, prop, 0, -1);
 
       if (attr != 0)
 	A4GL_set_field_attr_with_attr (field_list[a], attr, FGL_CMD_INPUT);

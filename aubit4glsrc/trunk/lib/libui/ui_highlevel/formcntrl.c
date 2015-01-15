@@ -24,10 +24,10 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.81 2010-06-02 11:25:17 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.82 2015-01-15 19:48:15 mikeaubury Exp $
 #*/
 #ifndef lint
-static char const module_id[] = "$Id: formcntrl.c,v 1.81 2010-06-02 11:25:17 mikeaubury Exp $";
+static char const module_id[] = "$Id: formcntrl.c,v 1.82 2015-01-15 19:48:15 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -1021,7 +1021,7 @@ process_control_stack_single (struct s_screenio *sio, struct aclfgl_event_list *
 	  sio->currform->currentfield = sio->currentfield;
 	  A4GL_LL_set_carat (sio->currform->form);
 	  fprop = (struct struct_scr_field *) (A4GL_ll_get_field_userptr (sio->currentfield));
-	  attr = A4GL_determine_attribute (FGL_CMD_INPUT, sio->attrib, fprop, (char *) A4GL_LL_field_buffer (sio->currentfield, 0));
+	  attr = A4GL_determine_attribute (FGL_CMD_INPUT, sio->attrib, fprop, (char *) A4GL_LL_field_buffer (sio->currentfield, 0), -1);
 	  if (attr != 0)
 	    A4GL_set_field_attr_with_attr (sio->currentfield, attr, FGL_CMD_INPUT);
 	  if (sio->mode != MODE_CONSTRUCT)
@@ -1284,7 +1284,7 @@ process_control_stack_single (struct s_screenio *sio, struct aclfgl_event_list *
 		  A4GL_display_field_contents (sio->currentfield, sio->vars[field_no].dtype + ENCODE_SIZE (sio->vars[field_no].size), sio->vars[field_no].size, sio->vars[field_no].ptr);	// MJA 2306
 
 		  fprop = (struct struct_scr_field *) (A4GL_ll_get_field_userptr (sio->currentfield));
-		  attr = A4GL_determine_attribute (FGL_CMD_INPUT, sio->attrib, fprop, A4GL_LL_field_buffer (sio->currentfield, 0));
+		  attr = A4GL_determine_attribute (FGL_CMD_INPUT, sio->attrib, fprop, A4GL_LL_field_buffer (sio->currentfield, 0), -1);
 		  if (attr != 0)
 		    A4GL_set_field_attr_with_attr (sio->currentfield, attr, FGL_CMD_INPUT);
 		}
@@ -2323,20 +2323,20 @@ A4GL_comments (struct struct_scr_field *fprop)
 
   if (!attr)
     {
-      attr = A4GL_determine_attribute (FGL_CMD_INPUT, 0, 0, 0);
+      attr = A4GL_determine_attribute (FGL_CMD_INPUT, 0, 0, 0,-1);
       A4GL_debug ("Attr2=%x\n", attr);
     }
 
 
   if (A4GL_isyes (acl_getenv ("COMMENT_LIKE_INPUT")))
     {
-      attr = A4GL_determine_attribute (FGL_CMD_INPUT, 0, 0, 0);
+      attr = A4GL_determine_attribute (FGL_CMD_INPUT, 0, 0, 0,-1);
       A4GL_debug ("Attr3=%x\n", attr);
     }
 
   if (A4GL_isyes (acl_getenv ("COMMENT_LIKE_DISPLAY")))
     {
-      attr = A4GL_determine_attribute (FGL_CMD_DISPLAY_CMD, 0, 0, 0);
+      attr = A4GL_determine_attribute (FGL_CMD_DISPLAY_CMD, 0, 0, 0,-1);
       A4GL_debug ("Attr4=%x\n", attr);
     }
 

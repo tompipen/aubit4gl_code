@@ -1560,6 +1560,25 @@ print_ident (struct expr_str *ptr)
       return;
     }
 
+  if (ptr->expr_type == ET_EXPR_SELECT_LIST_ITEM)
+    {
+      if (ptr->expr_str_u.sl_item->data.type == E_SLI_COLUMN)
+        {
+	char buff[2000];
+          if (ptr->expr_str_u.sl_item->data.s_select_list_item_data_u.column.tabname == 0)
+            {
+
+              printc ("\"%s\"", ptr->expr_str_u.sl_item->data.s_select_list_item_data_u.column.colname);
+		return;
+            }
+          else
+            {
+              printc ("\"%s.%s\"", ptr->expr_str_u.sl_item->data.s_select_list_item_data_u.column.tabname,
+                       ptr->expr_str_u.sl_item->data.s_select_list_item_data_u.column.colname);
+		return;
+            }
+        }
+    }
 
   A4GL_assertion (1, "print_ident not implemented yet");
   return;
@@ -2386,7 +2405,10 @@ local_get_expr_as_string (struct expr_str *ptr)
       A4GL_assertion (1, "SHouldn't print these ? ");
       //expr_tmp
       break;
+
     case ET_EXPR_IDENTIFIER:
+	return  ptr->expr_str_u.expr_string;
+
       A4GL_assertion (1, "SHouldn't print these ? ");
       //expr_string
 
@@ -6471,7 +6493,7 @@ static void
 print_connid (struct expr_str *e)
 {
   if (e)
-    {
+    {set_nonewlines();
       printc ("USE SESSION ");
       switch (e->expr_type)
 	{
@@ -6482,6 +6504,7 @@ print_connid (struct expr_str *e)
 	  A4GL_assertion (1, "Can't use anything for a session except ET_EXPR_IDENTIFIER atm");
 	}
       printc (" FOR ");
+clr_nonewlines();
     }
 }
 

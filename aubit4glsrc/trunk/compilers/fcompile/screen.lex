@@ -243,6 +243,10 @@ master[ 	]+of 	{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KW_MASTER
 "smallint" 		{if (ign_kw(yystate, SMALLINT)) REJECT;strcpy(yylval.str,yytext); return SMALLINT;}
 "decimal" 		{if (ign_kw(yystate, KW_DECIMAL)) REJECT;strcpy(yylval.str,yytext); return KW_DECIMAL;}
 "dec" 		{if (ign_kw(yystate, KW_DECIMAL)) REJECT;strcpy(yylval.str,yytext); return KW_DECIMAL;}
+
+"evenlines" 		{if (ign_kw(yystate, KW_LINEISEVEN)) REJECT;strcpy(yylval.str,yytext); return KW_LINEISEVEN;}
+"oddlines" 		{if (ign_kw(yystate, KW_LINEISODD)) REJECT;strcpy(yylval.str,yytext); return KW_LINEISODD;}
+
 "money" 		{if (ign_kw(yystate, MONEY)) REJECT;strcpy(yylval.str,yytext); return MONEY;}
 "widget" 		{if (ign_kw(yystate, WIDGET)) REJECT;strcpy(yylval.str,yytext); return WIDGET;}
 "options" 		{if (ign_kw(yystate, OPTIONS)) REJECT;strcpy(yylval.str,yytext); return OPTIONS;}

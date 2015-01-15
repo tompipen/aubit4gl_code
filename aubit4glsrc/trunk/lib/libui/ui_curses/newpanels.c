@@ -24,11 +24,11 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.192 2012-01-30 18:05:54 mikeaubury Exp $
+# $Id: newpanels.c,v 1.193 2015-01-15 19:48:15 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: newpanels.c,v 1.192 2012-01-30 18:05:54 mikeaubury Exp $";
+		"$Id: newpanels.c,v 1.193 2015-01-15 19:48:15 mikeaubury Exp $";
 #endif
 
 /**
@@ -2302,7 +2302,7 @@ A4GL_debug("determine_attribute seems to be returning %x\n",attr);
 #ifdef DEBUG
 	A4GL_debug("Done");
 #endif
-	nattr=A4GL_determine_attribute(FGL_CMD_DISPLAY_CMD, attr, 0,0);
+	nattr=A4GL_determine_attribute(FGL_CMD_DISPLAY_CMD, attr, 0,0,-1);
 	attr=nattr;
       b = A4GL_xwattr_get (currwin);
       wot=A4GL_window_on_top_ign_menu ();

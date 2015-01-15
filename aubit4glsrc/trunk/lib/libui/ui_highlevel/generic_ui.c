@@ -8,7 +8,7 @@
 #include "formcntrl.h"
 
 #ifndef lint
-static char const module_id[] = "$Id: generic_ui.c,v 1.166 2011-07-22 20:10:00 mikeaubury Exp $";
+static char const module_id[] = "$Id: generic_ui.c,v 1.167 2015-01-15 19:48:15 mikeaubury Exp $";
 #endif
 
 static int A4GL_ll_field_opts_i (void *f);
@@ -1563,7 +1563,7 @@ A4GL_set_field_pop_attr (void *field, int attr, int cmd_type)
     }
 
   A4GL_debug ("Determining attribute - field_buffer=%s", currbuff);
-  attr = A4GL_determine_attribute (cmd_type, attr, f, currbuff);
+  attr = A4GL_determine_attribute (cmd_type, attr, f, currbuff, -1 );
 
   if (attr != 0)
     {
@@ -3584,8 +3584,8 @@ UILIB_A4GL_start_prompt (void *vprompt, int ap, int c, int h, int af, char *text
   promptx->lastkey = 0;
 
 
-  ap = A4GL_determine_attribute (FGL_CMD_DISPLAY_CMD, ap, 0, 0);
-  af = A4GL_determine_attribute (FGL_CMD_INPUT, af, 0, 0);
+  ap = A4GL_determine_attribute (FGL_CMD_DISPLAY_CMD, ap, 0, 0, -1);
+  af = A4GL_determine_attribute (FGL_CMD_INPUT, af, 0, 0, -1);
 
   A4GL_set_status (0, 0);
   x =
@@ -3849,7 +3849,7 @@ UILIB_A4GL_display_internal (int x, int y, char *s, int a, int clr_line)
 	return;
 
       A4GL_chkwin ();
-      nattr = A4GL_determine_attribute (FGL_CMD_DISPLAY_CMD, a, 0, 0);
+      nattr = A4GL_determine_attribute (FGL_CMD_DISPLAY_CMD, a, 0, 0, -1);
       a = nattr;
 
       wot = (void *) A4GL_window_on_top_ign_menu ();

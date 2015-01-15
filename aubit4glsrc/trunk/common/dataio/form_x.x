@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: form_x.x,v 1.34 2013-11-29 14:45:28 mikeaubury Exp $
+# $Id: form_x.x,v 1.35 2015-01-15 19:48:13 mikeaubury Exp $
 #*/
 
 /**
@@ -372,7 +372,9 @@ enum ITEMTYPES {
 	ITEMTYPE_LIST=6,
 	ITEMTYPE_NOT=7,
 	ITEMTYPE_EXITNOW=8,
-	ITEMTYPE_FCALL=9
+	ITEMTYPE_FCALL=9,
+	ITEMTYPE_ODDLINE=10,
+	ITEMTYPE_EVENLINE=11
 };
 
 enum EXPRESSIONTYPES {
@@ -393,6 +395,8 @@ struct listitemlist  {
 
 
 union u_expression switch (enum ITEMTYPES  itemtype) {
+        case ITEMTYPE_ODDLINE: void;
+        case ITEMTYPE_EVENLINE:void;
 	case ITEMTYPE_NULL: void;
 	case ITEMTYPE_EXITNOW: void;
 	case ITEMTYPE_INT     : int intval;

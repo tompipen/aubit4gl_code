@@ -1,6 +1,6 @@
 #ifndef lint
 static char const module_id[] =
-  "$Id: forms.c,v 1.50 2010-01-20 16:30:25 mikeaubury Exp $";
+  "$Id: forms.c,v 1.51 2015-01-15 19:48:15 mikeaubury Exp $";
 #endif
 
 #include "hl_forms.h"
@@ -1617,7 +1617,7 @@ A4GL_set_field_attr_with_attr (void *field, int attr, int cmd_type)
   struct struct_scr_field *f;
   f = (struct struct_scr_field *) (A4GL_ll_get_field_userptr (field));
 
-  nattr = A4GL_determine_attribute (cmd_type, attr, f, 0);
+  nattr = A4GL_determine_attribute (cmd_type, attr, f, 0, -1);
   A4GL_debug ("Passed in attribute: %x, determined attribute should be %x",
 	      attr, nattr);
   attr = nattr;

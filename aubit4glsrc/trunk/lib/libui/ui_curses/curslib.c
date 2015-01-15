@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.180 2013-10-18 09:36:54 mikeaubury Exp $
+# $Id: curslib.c,v 1.181 2015-01-15 19:48:15 mikeaubury Exp $
 #*/
 
 /**
@@ -41,7 +41,7 @@
  */
 #ifndef lint
 static char const module_id[] =
-  "$Id: curslib.c,v 1.180 2013-10-18 09:36:54 mikeaubury Exp $";
+  "$Id: curslib.c,v 1.181 2015-01-15 19:48:15 mikeaubury Exp $";
 #endif
 /*
 =====================================================================
@@ -892,7 +892,7 @@ UILIB_A4GL_disp_h_menu (void *menuv)
 
   attrib = attrib - (attrib & 0x20);
 
-  menu->attrib = A4GL_determine_attribute (FGL_CMD_DISPLAY_CMD, attrib, 0, 0);
+  menu->attrib = A4GL_determine_attribute (FGL_CMD_DISPLAY_CMD, attrib, 0, 0,-1);
 
   menu->w = cw;
   if ((attrib & 0xff) == 0)
@@ -2047,15 +2047,15 @@ A4GL_comments (struct struct_scr_field *fprop)
 
   if (!attr)
     {
-      attr = A4GL_determine_attribute (FGL_CMD_INPUT, 0, 0, 0);
+      attr = A4GL_determine_attribute (FGL_CMD_INPUT, 0, 0, 0,-1);
     }
   if (A4GL_isyes (acl_getenv ("COMMENT_LIKE_INPUT")))
     {
-      attr = A4GL_determine_attribute (FGL_CMD_INPUT, 0, 0, 0);
+      attr = A4GL_determine_attribute (FGL_CMD_INPUT, 0, 0, 0,-1);
     }
   if (A4GL_isyes (acl_getenv ("COMMENT_LIKE_DISPLAY")))
     {
-      attr = A4GL_determine_attribute (FGL_CMD_DISPLAY_CMD, 0, 0, 0);
+      attr = A4GL_determine_attribute (FGL_CMD_DISPLAY_CMD, 0, 0, 0,-1);
     }
   UILIB_A4GL_display_internal (1, cline, buff, attr, 1);
   UILIB_A4GL_zrefresh ();

@@ -24,11 +24,11 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: prompt.c,v 1.83 2013-10-18 09:36:55 mikeaubury Exp $
+# $Id: prompt.c,v 1.84 2015-01-15 19:48:15 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: prompt.c,v 1.83 2013-10-18 09:36:55 mikeaubury Exp $";
+		"$Id: prompt.c,v 1.84 2015-01-15 19:48:15 mikeaubury Exp $";
 #endif
 
 /**
@@ -181,8 +181,8 @@ A4GL_debug("derwin = %p",p);
 #ifdef DEBUG
   A4GL_debug ("ap=%d(%x) af=%d(%x)", ap, ap, af, af);
 #endif
-  ap=A4GL_determine_attribute(FGL_CMD_DISPLAY_CMD , ap,0,0);
-  af=A4GL_determine_attribute(FGL_CMD_INPUT, af,0,0);
+  ap=A4GL_determine_attribute(FGL_CMD_DISPLAY_CMD , ap,0,0,-1);
+  af=A4GL_determine_attribute(FGL_CMD_INPUT, af,0,0,-1);
 
   if (ap)
     {

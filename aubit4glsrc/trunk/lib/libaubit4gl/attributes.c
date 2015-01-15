@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: attributes.c,v 1.48 2011-10-28 18:27:45 mikeaubury Exp $
+# $Id: attributes.c,v 1.49 2015-01-15 19:48:13 mikeaubury Exp $
 #*/
 
 /**
@@ -767,7 +767,7 @@ A4GL_determine_attribute_as_int (int cmd_type, struct s_std_attr *attrib_curr, s
 
 /* This is our main calling point ! */
 int
-A4GL_determine_attribute (int cmd_type, int attrib_curr_int, void *vfprop, char *val_for_field)
+A4GL_determine_attribute (int cmd_type, int attrib_curr_int, void *vfprop, char *val_for_field, int arrline)
 {
   struct s_std_attr *r;
   struct s_std_attr attrib_curr;
@@ -823,7 +823,7 @@ A4GL_determine_attribute (int cmd_type, int attrib_curr_int, void *vfprop, char 
       attrib_field.dim = 0;
       attrib_field.normal = 0;
 
-      a = A4GL_evaluate_field_colour (val_for_field, fprop);
+      a = A4GL_evaluate_field_colour (val_for_field, fprop, arrline);
 
 #ifdef DEBUG
       A4GL_debug ("eval = %d", a);

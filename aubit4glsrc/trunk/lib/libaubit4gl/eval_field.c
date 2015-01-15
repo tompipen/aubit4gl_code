@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: eval_field.c,v 1.14 2012-10-17 20:25:00 mikeaubury Exp $
+# $Id: eval_field.c,v 1.15 2015-01-15 19:48:13 mikeaubury Exp $
 #
 */
 
@@ -34,8 +34,8 @@
 
 
 
-static int evaluate_field_expr (char *s, u_expression * expr, long *value, int *is_char);
-static long field_expr_is_true (char *s, struct u_expression *expr);
+static int evaluate_field_expr (char *s, u_expression * expr, long *value, int *is_char,int arrline);
+static long field_expr_is_true (char *s, struct u_expression *expr,int arrline);
 
 
 
@@ -46,7 +46,7 @@ static long field_expr_is_true (char *s, struct u_expression *expr);
 
 
 int
-A4GL_evaluate_field_colour (char *field_contents, struct struct_scr_field *fprop)
+A4GL_evaluate_field_colour (char *field_contents, struct struct_scr_field *fprop, int arrline)
 {
   int a;
 
@@ -65,7 +65,7 @@ A4GL_evaluate_field_colour (char *field_contents, struct struct_scr_field *fprop
 #endif
   for (a = 0; a < fprop->colours.colours_len; a++)
     {
-      if (field_expr_is_true (field_contents, fprop->colours.colours_val[a].whereexpr))
+      if (field_expr_is_true (field_contents, fprop->colours.colours_val[a].whereexpr, arrline))
 	{
 #ifdef DEBUG
 	  A4GL_debug ("FOUND EXPRESSION MATCH !!! returning %d", fprop->colours.colours_val[a].colour);
@@ -84,12 +84,12 @@ A4GL_evaluate_field_colour (char *field_contents, struct struct_scr_field *fprop
 
 
 static long
-field_expr_is_true (char *s, struct u_expression *expr)
+field_expr_is_true (char *s, struct u_expression *expr,int arrline)
 {
   long a;
   int d;
 
-  evaluate_field_expr (s, expr, &a, &d);
+  evaluate_field_expr (s, expr, &a, &d, arrline);
   if (a)
     return 1;
   return 0;
@@ -101,13 +101,29 @@ field_expr_is_true (char *s, struct u_expression *expr)
 
 
 static int
-evaluate_field_expr (char *field_contents, u_expression * expr, long *value, int *is_char)
+evaluate_field_expr (char *field_contents, u_expression * expr, long *value, int *is_char, int arrline)
 {
 
 
 #ifdef DEBUG
   A4GL_debug ("Evaludate field_expr - s=%s exprtype = %d", field_contents, expr->itemtype);
 #endif
+
+  if (expr->itemtype == ITEMTYPE_ODDLINE)
+    {
+	if (arrline<0) return 0;
+      *value = (arrline%2==1);
+      *is_char = 0;
+      return 1;
+    }
+
+  if (expr->itemtype == ITEMTYPE_EVENLINE)
+    {
+	if (arrline<0) return 0;
+      *value = (arrline%2==0);
+      *is_char = 0;
+      return 1;
+    }
 
   if (expr->itemtype == ITEMTYPE_INT)
     {
@@ -170,7 +186,7 @@ evaluate_field_expr (char *field_contents, u_expression * expr, long *value, int
       long na;
       int nd;
       int ok;
-      ok = evaluate_field_expr (field_contents, expr->u_expression_u.notexpr, &na, &nd);
+      ok = evaluate_field_expr (field_contents, expr->u_expression_u.notexpr, &na, &nd, arrline);
       if (!ok)
 	return 0;
       if (na)
@@ -272,10 +288,10 @@ evaluate_field_expr (char *field_contents, u_expression * expr, long *value, int
 
       if (straightforward)
 	{
-	  ok = evaluate_field_expr (field_contents, left, &na1, &nd1);
+	  ok = evaluate_field_expr (field_contents, left, &na1, &nd1, arrline);
 	  if (ok == 0)
 	    return 0;
-	  ok = evaluate_field_expr (field_contents, right, &na2, &nd2);
+	  ok = evaluate_field_expr (field_contents, right, &na2, &nd2, arrline);
 	  if (ok == 0)
 	    return 0;
 
@@ -357,7 +373,7 @@ evaluate_field_expr (char *field_contents, u_expression * expr, long *value, int
 
       if (compid == 104)
 	{			// ISNULL
-	  ok = evaluate_field_expr (field_contents, left, &na1, &nd1);
+	  ok = evaluate_field_expr (field_contents, left, &na1, &nd1, arrline);
 	  if (ok == 0)
 	    return 0;
 	  if (nd1)
@@ -377,7 +393,7 @@ evaluate_field_expr (char *field_contents, u_expression * expr, long *value, int
 
       if (compid == 105)
 	{			// ISNOTNULL
-	  ok = evaluate_field_expr (field_contents, left, &na1, &nd1);
+	  ok = evaluate_field_expr (field_contents, left, &na1, &nd1,arrline);
 	  if (ok == 0)
 	    return 0;
 	  if (nd1)
@@ -396,10 +412,10 @@ evaluate_field_expr (char *field_contents, u_expression * expr, long *value, int
 
       if (compid == 102)
 	{			// AND
-	  ok = evaluate_field_expr (field_contents, left, &na1, &nd1);
+	  ok = evaluate_field_expr (field_contents, left, &na1, &nd1,arrline);
 	  if (ok == 0)
 	    return 0;
-	  ok = evaluate_field_expr (field_contents, right, &na2, &nd2);
+	  ok = evaluate_field_expr (field_contents, right, &na2, &nd2,arrline);
 	  if (ok == 0)
 	    return 0;
 
@@ -412,10 +428,10 @@ evaluate_field_expr (char *field_contents, u_expression * expr, long *value, int
 
       if (compid == 103)
 	{			// OR
-	  ok = evaluate_field_expr (field_contents, left, &na1, &nd1);
+	  ok = evaluate_field_expr (field_contents, left, &na1, &nd1,arrline);
 	  if (ok == 0)
 	    return 0;
-	  ok = evaluate_field_expr (field_contents , right, &na2, &nd2);
+	  ok = evaluate_field_expr (field_contents , right, &na2, &nd2,arrline);
 	  if (ok == 0)
 	    return 0;
 

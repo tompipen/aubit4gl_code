@@ -24,10 +24,10 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.180 2014-03-11 17:23:41 locbook Exp $
+# $Id: iarray.c,v 1.181 2015-01-15 19:48:15 mikeaubury Exp $
 #*/
 #ifndef lint
-static char const module_id[] = "$Id: iarray.c,v 1.180 2014-03-11 17:23:41 locbook Exp $";
+static char const module_id[] = "$Id: iarray.c,v 1.181 2015-01-15 19:48:15 mikeaubury Exp $";
 #endif
 
 /**
@@ -397,7 +397,7 @@ A4GL_idraw_arr (struct s_inp_arr *inpa, int type, int no)
   	for (a=0;a<inpa->nbind;a++) {
   		struct struct_scr_field *fprop;
  		fprop = (struct struct_scr_field *) (field_userptr (inpa->field_list[scr_line - 1][a]));
-  		attr = A4GL_determine_attribute (FGL_CMD_INPUT, inpa->display_attrib, fprop, 0);
+  		attr = A4GL_determine_attribute (FGL_CMD_INPUT, inpa->display_attrib, fprop, 0, -1);
 
   		if (type==2) {
 			// If this is the current row - just the the "current row display" attribute...
@@ -3897,13 +3897,13 @@ A4GL_iarr_arr_fields (struct s_inp_arr *arr, int dattr, int arr_line, int scr_li
       //               only the current field be set to FGL_CMD_INPUT
 
 
-      attr = A4GL_determine_attribute (FGL_CMD_DISPLAY_CMD, dattr, fprop, 0);
+      attr = A4GL_determine_attribute (FGL_CMD_DISPLAY_CMD, dattr, fprop, 0, arr_line);
 
       da = attr;
 
       if (arr_line == arr->arr_line)
 	{
-	  attr = A4GL_determine_attribute (FGL_CMD_INPUT, dattr, fprop, 0);
+	  attr = A4GL_determine_attribute (FGL_CMD_INPUT, dattr, fprop, 0, arr_line);
 	  da = attr;
 
 	  if (arr->highlight)

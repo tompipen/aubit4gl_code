@@ -9,7 +9,7 @@
 
 #ifndef lint
 static char const module_id[] =
-  "$Id: menu.c,v 1.56 2010-11-24 21:33:26 mikeaubury Exp $";
+  "$Id: menu.c,v 1.57 2015-01-15 19:48:15 mikeaubury Exp $";
 #endif
 
 static void A4GL_h_disp_more (ACL_Menu * menu, int offset, int y, int pos);
@@ -92,7 +92,7 @@ UILIB_A4GL_disp_h_menu (void *menuv)
 
   attrib = attrib - (attrib & 0x20);
 
-  menu->attrib = A4GL_determine_attribute (FGL_CMD_DISPLAY_CMD, attrib, 0, 0);
+  menu->attrib = A4GL_determine_attribute (FGL_CMD_DISPLAY_CMD, attrib, 0, 0,-1);
 
   menu->w = cw;
 
