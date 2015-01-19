@@ -1,4 +1,194 @@
 ---------------------------
+Mon Jan 19 18:33:47 GMT 2015
+---------------------------
+1.2_38 Released
+---------------------------
+	2015-01-15 19:49  mikeaubury
+	
+	refresh.noyacc updates
+	
+	2015-01-15 19:48  mikeaubury
+	
+	Added alternate line attributes for screen forms : eg
+	
+	a		= formonly.f1,
+	color=red reverse where evenlines,
+	color=blue reverse where oddlines;
+	
+	2015-01-13 09:09  mikeaubury
+	
+	2015-01-09 19:38  mikeaubury
+	
+	Add initial Session support for mysql
+	
+	Allows execution of code like :
+	
+	main	define lv_c1, lv_c2 integer	define lv_a integer
+	CONNECT TO test AS con1 USER "aubit4gl" USING "somepassword"
+	delete from testtab	insert into testtab values("1234")
+	
+	CONNECT TO test1 AS con2 USER "aubit4gl" USING
+	"somepassword"
+	
+	delete from testtab
+	
+	use session con1 for select count(*) into lv_c1
+	from testtab;
+	use session con2 for select count(*) into lv_c2
+	from testtab;
+	
+	display lv_c1
+	display lv_c2
+	
+	use session con1 for declare c1 cursor for select *
+	into lv_a from testtab
+	
+	use session con1 for foreach c1
+	display "INSERTING : ", lv_a
+	use session con2 for insert into testtab
+	values (lv_a)
+	end foreach
+	
+	use session con1 for select count(*) into lv_c1
+	from testtab;
+	use session con2 for select count(*) into lv_c2
+	from testtab;
+	
+	display lv_c1
+	display lv_c2
+	
+	end main
+	
+	2015-01-05 20:02  mikeaubury
+	
+	2015-01-05 13:58  siverly
+	
+	Increase XML Version bebause protocol changes in getclientfile()
+	
+	2014-12-30 13:32  mikeaubury
+	
+	2014-12-30 13:30  mikeaubury
+	
+	Allow sending of files from the client in "parts"
+	
+	2014-12-15 13:29  mikeaubury
+	
+	2014-11-12 17:36  pauldgardiner
+	
+	Added pdf_function set_page_defaults. Handy in FOR EVERY PAGE INTO
+	...
+	
+	2014-11-10 15:07  pauldgardiner
+	
+	Added error messages for haru error codes. More font compatibility
+	with haru < 2.3
+	
+	2014-10-15 17:20  mikeaubury
+	
+	Bison3 fixups
+	
+	2014-10-15 17:18  mikeaubury
+	
+	2014-10-15 17:08  mikeaubury
+	
+	Bison3 fixup
+	
+	2014-10-15 08:30  mikeaubury
+	
+	Bison3 fixup
+	
+	2014-10-08 15:40  fortiz
+	
+	load huge base64 encoded object
+	
+	2014-10-03 14:01  fortiz
+	
+	:(
+	
+	2014-10-03 13:59  fortiz
+	
+	,
+	
+	2014-10-03 09:28  mikeaubury
+	
+	Fix FONT NAME in pdf report output section
+	
+	2014-10-01 18:54  fortiz
+	
+	,
+	
+	2014-10-01 18:44  fortiz
+	
+	Very large reports (custom XML with base64 data)
+	
+	2014-09-30 19:02  mikeaubury
+	
+	Add "A4GL_ERR_DELNOWHERE" and "A4GL_ERR_UPDNOWHERE", also add
+	"A4GL_ERRONWARN" to promote all warnings to be errors
+	
+	2014-09-29 18:19  mikeaubury
+	
+	(c) updates
+	
+	2014-09-26 11:26  mikeaubury
+	
+	2014-09-23 13:42  mikeaubury
+	
+	See README - sxml is a wrapper around sxml library - which should
+	provide the .h file We should not be adding it ourselves into our
+	repo
+	
+	2014-09-23 13:35  siverly
+	
+	header file was missing to compile sxml
+	
+	2014-09-22 11:48  mikeaubury
+	
+	2014-09-10 20:56  mikeaubury
+	
+	2014-09-10 18:09  pauldgardiner
+	
+	Major PDF report update. HARU support is now almost up to pdflib
+	level.
+	
+	2014-09-10 15:48  mikeaubury
+	
+	add SET UNDERLINE [ ON | OFF ]
+	
+	2014-09-10 14:44  mikeaubury
+	
+	Add FOR EVERY PAGE [INTO pageNo_variable ] ..  END FOR ,  to pdf
+	reports ON LAST ROW
+	
+	2014-09-09 17:54  mikeaubury
+	
+	Add resume page
+	
+	2014-09-09 15:23  mikeaubury
+	
+	Add md5 checksum generation functions
+	
+	2014-08-26 17:38  locbook
+	
+	Fixup for `make distclean' so a different architecture can be
+	compiled.
+	
+	2014-08-26 17:36  locbook
+	
+	Fixup for `make clean'
+	
+	2014-08-26 17:35  locbook
+	
+	Added objects to be cleaned
+	
+	2014-08-25 21:22  locbook
+	
+	Fixed the display of subsequent help pages which were less than 20
+	lines so the previous page lines are cleared.
+	
+	2014-08-07 08:48  mikeaubury
+	
+---------------------------
 Wed Aug  6 16:07:45 BST 2014
 ---------------------------
 1.2_37 Released
