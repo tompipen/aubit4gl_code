@@ -2607,6 +2607,13 @@ struct expr_str_list *li;
   printc ("SET(\"s_screenio\",_sio_%d,\"mode\",%d);\n",sio_id, MODE_CONSTRUCT);
   printc ("SET(\"s_screenio\",_sio_%d,\"processed_onkey\",0);\n",sio_id);
   printc ("SET(\"s_screenio\",_sio_%d,\"field_list\",0);\n",sio_id);
+   if (cmd_data->attributes && cmd_data->attributes->current_field_display) {
+		printc("{ static char _currAttr[256];");
+		print_expr( cmd_data->attributes->current_field_display);
+		printc("A4GL_pop_var2(&_currAttr,0,255);A4GL_trim(_currAttr);");
+    		printc ("SET(\"s_screenio\",&_sio_%d,\"current_field_display\",A4GL_strattr_to_num(_currAttr));\n",sio_id);
+		printc("}");
+	}
 
   if (cmd_data->callback_function!=NULL) {
               add_function_to_header(cmd_data->callback_function->expr_str_u.expr_func.funcname,cmd_data->callback_function->expr_str_u.expr_func.n_namespace,1,0);
