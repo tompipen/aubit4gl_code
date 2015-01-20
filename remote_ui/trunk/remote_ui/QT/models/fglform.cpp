@@ -54,6 +54,7 @@ FglForm::FglForm(QString windowName, QWidget *parent) : QMainWindow(parent){
    iconLabel = NULL;
    mIsSortAllowed = true;
    keyTimer = new QElapsedTimer;
+   keyTimer->start();
    fieldChangeTimer = new QTimer(0);
    isFieldChangeSend = false;
 
@@ -5208,7 +5209,9 @@ void FglForm::sendFieldChange()
             QSortFilterProxyModel *proxyModel = qobject_cast<QSortFilterProxyModel *> (tv->model());
             TableModel *table = qobject_cast<TableModel *> (proxyModel->sourceModel());
             tv->ignoreFieldChangeEvent = false;
-            emit tv->fieldChanged(table->index(tv->currentIndex().row()+1,tv->currentIndex().column()), tv->currentIndex());
+            QModelIndex prevIndex = table->index(tv->currentIndex().row()-1, tv->currentIndex().column());
+            QModelIndex nextIndex = table->index(tv->currentIndex().row(),tv->currentIndex().column());
+            emit tv->fieldChanged(nextIndex, prevIndex);
             isFieldChangeSend = true;
             fieldChangeTimer->stop();
         }

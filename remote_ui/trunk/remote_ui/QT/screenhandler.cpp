@@ -4797,10 +4797,24 @@ void ScreenHandler::getFileBrowser(QString function, QString filename)
 
     if(function == "openfile")
     {
-        QString filePath = QFileDialog::getOpenFileName(p_fglform, "Open File",
-                                                                                 QStandardPaths::writableLocation(QStandardPaths::DesktopLocation));
 
-        QString qs_resp = "<TRIGGERED ID=\"-123\"><SVS><SV>" + QString::number(exitcode) +  "</SV><SV>" + filePath + "</SV></SVS></TRIGGERED>";
+        int a = 10000;
+        int b = 99999;
+        QString filePath = QFileDialog::getOpenFileName(p_fglform, "Open File",
+                                                        QStandardPaths::writableLocation(QStandardPaths::DesktopLocation));
+
+        QFileInfo oldFile(filePath);
+        QString tmpFileName = QDir::tempPath() + "/" + QString::number(qrand() % ((a + 1) - b) + b) + "." + oldFile.completeSuffix();
+        QFile tmpFile(tmpFileName);
+        qDebug() << "tmpFileName: " << tmpFileName;
+
+        if(tmpFile.exists()) {
+            tmpFile.remove();
+        }
+
+        QFile::copy(filePath, tmpFileName);
+
+        QString qs_resp = "<TRIGGERED ID=\"-123\"><SVS><SV>" + QString::number(exitcode) +  "</SV><SV>" + tmpFileName + "</SV></SVS></TRIGGERED>";
         if(this->ph)
         {
             QMetaObject::invokeMethod(this->ph, "fglFormResponse", Qt::DirectConnection, Q_ARG(QString, qs_resp));
