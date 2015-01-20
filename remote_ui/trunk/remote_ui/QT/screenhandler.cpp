@@ -1627,8 +1627,15 @@ void ScreenHandler::setAttributes(QString fieldName, QString attribute, QString 
     {
         if(attribute.toLower() == "defaultimage")
         {
-            QPixmap pix(QString("pics/%1").arg(value));
-            widget->setPixmap(pix);
+            QFile currentPath(QApplication::applicationDirPath() + "pics/%1");
+            if(currentPath.exists())
+            {
+                QPixmap pix(QString("pics/%1").arg(value));
+                widget->setPixmap(pix);
+            } else {
+                QPixmap pix(QString(":pics/%1").arg(value));
+                widget->setPixmap(pix);
+            }
         }
         if(attribute.toLower() == "hidden")
         {

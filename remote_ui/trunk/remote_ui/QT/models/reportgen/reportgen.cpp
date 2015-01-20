@@ -788,7 +788,7 @@ QString Reportgen::getXmlStringFromEbene(int Table, int ebene, QString odffile, 
                 tableFound++;
         }
 
-        if(xmlLine.contains("<table:table-cell office:value"))
+        if(xmlLine.contains("<table:table-cell office:value") || xmlLine.contains("<table:table-cell table:style-name="))
         {
             if(!tableCell.contains(xmlLine))
             {
