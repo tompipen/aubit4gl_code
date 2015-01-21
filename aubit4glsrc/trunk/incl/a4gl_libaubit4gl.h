@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.436 2015-01-15 19:48:13 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.437 2015-01-21 17:45:21 mikeaubury Exp $
 #
 */
 
@@ -959,6 +959,7 @@ char *A4GLSQLCV_make_substr(char *colname,int nints,int i1,int i2) ;
   char *A4GL_glob_window (int x, int y, int w, int h, int border);
   void *A4GL_find_pointer (const char *pname, char t);
 
+
   struct s_form_attr
   {
     int mode;
@@ -987,6 +988,7 @@ char *A4GLSQLCV_make_substr(char *colname,int nints,int i1,int i2) ;
     int pipe_ui_mode;
     char *inpattr_s;
     char *dispattr_s;
+    int current_field_attribute;
   };
 
 struct s_std_attr
@@ -2038,6 +2040,9 @@ int A4GL_input_required_handling(void) ;
 	/* Slice handling */
     int start_slice;
     int end_slice;
+
+    int current_field_display;
+
   };
 
 

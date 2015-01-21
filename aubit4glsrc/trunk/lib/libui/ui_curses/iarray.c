@@ -24,10 +24,10 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.181 2015-01-15 19:48:15 mikeaubury Exp $
+# $Id: iarray.c,v 1.182 2015-01-21 17:45:31 mikeaubury Exp $
 #*/
 #ifndef lint
-static char const module_id[] = "$Id: iarray.c,v 1.181 2015-01-15 19:48:15 mikeaubury Exp $";
+static char const module_id[] = "$Id: iarray.c,v 1.182 2015-01-21 17:45:31 mikeaubury Exp $";
 #endif
 
 /**
@@ -3297,7 +3297,6 @@ process_control_stack_internal (struct s_inp_arr *arr,  struct aclfgl_event_list
   if (arr->fcntrl[a].op == FORMCONTROL_BEFORE_FIELD)
     {
       struct struct_scr_field *fprop;
-      int attr;
       if (arr->fcntrl[a].state == 99)
 	{
 	  new_state = 50;
@@ -3335,33 +3334,18 @@ process_control_stack_internal (struct s_inp_arr *arr,  struct aclfgl_event_list
 	  A4GL_debug ("Processed after users 'BEFORE FIELD'");
 #endif
 
-
+int attr;
 	  fprop = (struct struct_scr_field *) (field_userptr (arr->currentfield));
-/*
-	  attr = A4GL_determine_attribute (FGL_CMD_INPUT, arr->display_attrib, fprop, 0);
+
+        if (arr->current_field_display) {
+          attr = A4GL_determine_attribute (FGL_CMD_INPUT, arr->current_field_display, fprop, field_buffer (arr->currentfield, 0),-1);
+          if (attr != 0)
+            {
+              A4GL_set_field_attr_with_attr (arr->currentfield, attr, FGL_CMD_INPUT);
+            }
+        }
 
 
-
-	  if (arr->highlight)
-	    {
-	      if (attr & AUBIT_ATTR_REVERSE)
-		attr = attr - AUBIT_ATTR_REVERSE;
-	      else
-		attr = attr + AUBIT_ATTR_REVERSE;
-	    }
-
-	  if (arr->curr_display)
-	    {
-#ifdef DEBUG
-	      A4GL_debug ("Got curr_display : %s\n", arr->curr_display);
-#endif
-	      attr = A4GL_strattr_to_num (arr->curr_display);
-	    }
-
-
-	  if (attr != 0)
-	    A4GL_set_field_attr_with_attr (arr->currentfield, attr, FGL_CMD_INPUT);
-*/
 
 #ifdef DEBUG
 	  A4GL_debug ("has_str_attrib - 2");
@@ -3671,6 +3655,16 @@ process_control_stack_internal (struct s_inp_arr *arr,  struct aclfgl_event_list
 
 	    }
 	  new_state = 0;
+
+
+     if (arr->current_field_display) {
+          int attr;
+          struct struct_scr_field *fprop;
+          fprop = (struct struct_scr_field *) (field_userptr (arr->currentfield));
+          attr = A4GL_determine_attribute (FGL_CMD_INPUT, arr->display_attrib, fprop, field_buffer (arr->currentfield, 0),-1);
+          A4GL_set_field_attr_with_attr (arr->currentfield, attr, FGL_CMD_INPUT);
+      }
+
 	  A4GL_set_infield_from_parameter ((long) arr->currentfield);
 	  last_field_name = arr->fcntrl[a].field_name;
 	  rval = A4GL_EVENT_AFTER_FIELD_1;

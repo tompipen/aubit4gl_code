@@ -1923,6 +1923,16 @@ print_options_cmd (struct_options_cmd * cmd_data)
 		printc("A4GL_set_program_timeout(_timeout);");
 		printc("}");
 		break;
+	case 'c':
+		printc("{long _attr=0;");
+                printc("static char _currAttr[256];");
+		print_expr (o->expr);
+                printc("A4GL_pop_var2(&_currAttr,0,255);A4GL_trim(_currAttr);");
+                printc ("_attr=A4GL_strattr_to_num(_currAttr);\n");
+	  	printc ("A4GL_set_option_value('%c',_attr);\n", i);
+                printc("}");
+
+		break;
 
 	case 'C':		//COMMENT_LINE
 	case 'E':		//ERROR_LINE
@@ -2613,6 +2623,8 @@ struct expr_str_list *li;
 		printc("A4GL_pop_var2(&_currAttr,0,255);A4GL_trim(_currAttr);");
     		printc ("SET(\"s_screenio\",&_sio_%d,\"current_field_display\",A4GL_strattr_to_num(_currAttr));\n",sio_id);
 		printc("}");
+	} else {
+	 	printc ("SET(\"s_screenio\",&_sio_%d,\"current_field_display\",A4GL_get_option_value('c'));\n",sio_id);
 	}
 
   if (cmd_data->callback_function!=NULL) {
@@ -2731,6 +2743,8 @@ int ccc;
 		printc("A4GL_pop_var2(&_currAttr,0,255);A4GL_trim(_currAttr);");
     		printc ("SET(\"s_screenio\",&_sio_%d,\"current_field_display\",A4GL_strattr_to_num(_currAttr));\n",sio_id);
 		printc("}");
+	} else {
+	 	printc ("SET(\"s_screenio\",&_sio_%d,\"current_field_display\",A4GL_get_option_value('c'));\n",sio_id);
 	}
 
   printc ("SET(\"s_screenio\",&_sio_%d,\"currentfield\",0);\n",sio_id);
@@ -2957,6 +2971,15 @@ clr_nonewlines();
   printc ("SET(\"s_inp_arr\",_sio_%d,\"end_slice\",%d);\n",sio_id,cmd_data->slice_end);
 
   printc ("SET(\"s_inp_arr\",_sio_%d,\"mode\",%d);\n",sio_id, MODE_INPUT+ (cmd_data->without_defaults==EB_TRUE));
+   if (cmd_data->attributes && cmd_data->attributes->current_field_display) {
+		printc("{ static char _currAttr[256];");
+		print_expr( cmd_data->attributes->current_field_display);
+		printc("A4GL_pop_var2(&_currAttr,0,255);A4GL_trim(_currAttr);");
+    		printc ("SET(\"s_inp_arr\",&_sio_%d,\"current_field_display\",A4GL_strattr_to_num(_currAttr));\n",sio_id);
+		printc("}");
+	} else {
+	 	printc ("SET(\"s_inp_arr\",&_sio_%d,\"current_field_display\",A4GL_get_option_value('c'));\n",sio_id);
+	}
 
 
 	if (cmd_data->attributes  && cmd_data->attributes->var_attrib) {
