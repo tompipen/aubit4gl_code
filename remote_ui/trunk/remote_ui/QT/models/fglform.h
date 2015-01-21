@@ -240,6 +240,7 @@ public:
    QElapsedTimer *keyTimer;
    QTimer *fieldChangeTimer;
    bool isFieldChangeSend;
+   int lastKeyPressed;
 
 public slots:
 

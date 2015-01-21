@@ -57,6 +57,7 @@ FglForm::FglForm(QString windowName, QWidget *parent) : QMainWindow(parent){
    keyTimer->start();
    fieldChangeTimer = new QTimer(0);
    isFieldChangeSend = false;
+   lastKeyPressed = 0;
 
    /*
    if(parent != NULL){
@@ -920,20 +921,21 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
 
     QKeyEvent *kev = (QKeyEvent*) event;
 
-    if(inputArray() || displayArray())
+    if(event->type() == QEvent::KeyPress)
     {
-        if(kev->key() == Qt::Key_Up || kev->key() == Qt::Key_Down)
+        if(inputArray() || displayArray())
         {
-            if(event->type() == QEvent::KeyPress)
+            if(kev->key() == Qt::Key_Up || kev->key() == Qt::Key_Down)
             {
+
                 qDebug() << "elasped: " << QString::number(keyTimer->nsecsElapsed());
-                if( keyTimer->nsecsElapsed() <= 200000000)
+                if( (keyTimer->nsecsElapsed() <= 200000000) && (kev->key() == lastKeyPressed))
                 {
                     if(TableView *tv = qobject_cast<TableView *> (currentField()))
                     {
-                        tv->ignoreFieldChangeEvent = true;
-                        connect(fieldChangeTimer, SIGNAL(timeout()), this, SLOT(sendFieldChange()));
-                        fieldChangeTimer->start(200);
+                       tv->ignoreFieldChangeEvent = true;
+                       connect(fieldChangeTimer, SIGNAL(timeout()), this, SLOT(sendFieldChange()));
+                       fieldChangeTimer->start(200);
                     }
                 } else {
                     if(TableView *tv = qobject_cast<TableView *> (currentField()))
@@ -941,9 +943,15 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
                         tv->ignoreFieldChangeEvent = false;
                         isFieldChangeSend = false;
                     }
+                    if(fieldChangeTimer->isActive())
+                    {
+                        fieldChangeTimer->stop();
+                    }
                 }
                 keyTimer->restart();
             }
+
+            lastKeyPressed = kev->key();
         }
     }
 
@@ -951,6 +959,7 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
 
   if((event->type() == QEvent::KeyPress || event->type() == 1400) || (event->type() == QEvent::KeyRelease || event->type() == 1401))
   {
+      int test = kev->key();
 
       QKeyEvent *kev = (QKeyEvent*) event;
       if(kev->key() == Qt::Key_F9)
@@ -5209,8 +5218,18 @@ void FglForm::sendFieldChange()
             QSortFilterProxyModel *proxyModel = qobject_cast<QSortFilterProxyModel *> (tv->model());
             TableModel *table = qobject_cast<TableModel *> (proxyModel->sourceModel());
             tv->ignoreFieldChangeEvent = false;
-            QModelIndex prevIndex = table->index(tv->currentIndex().row()-1, tv->currentIndex().column());
-            QModelIndex nextIndex = table->index(tv->currentIndex().row(),tv->currentIndex().column());
+            QModelIndex prevIndex;
+            QModelIndex nextIndex;
+
+            if(tv->currentIndex().row() > 0)
+            {
+                prevIndex = table->index(tv->currentIndex().row()-1, tv->currentIndex().column());
+                nextIndex = table->index(tv->currentIndex().row(),tv->currentIndex().column());
+            } else {
+                prevIndex = table->index(0, 0);
+                nextIndex = table->index(0, 0);
+            }
+
             emit tv->fieldChanged(nextIndex, prevIndex);
             isFieldChangeSend = true;
             fieldChangeTimer->stop();
