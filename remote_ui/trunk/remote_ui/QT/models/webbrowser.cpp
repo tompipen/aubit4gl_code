@@ -63,9 +63,15 @@ void WebBrowser::loadUrl(const QUrl &http)
      file = QDir::tempPath() + "/" + file;
   }
 
+  QFile fileRead(file);
+  if(!fileRead.open(QIODevice::ReadOnly))
+  {
+    qDebug() << QString("WEBBROWSER: Cannot open file %").arg(file);
+  }
+
   if(!file.contains("https://") && !file.contains("http://") && !file.contains("www."))
   {
-      WebView->load(QUrl::fromLocalFile(file));
+      WebView->page()->mainFrame()->setContent(fileRead.readAll());
   } else {
      QUrl nurl(file, QUrl::TolerantMode);
      WebView->setUrl(nurl);
