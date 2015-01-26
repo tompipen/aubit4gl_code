@@ -1551,7 +1551,9 @@ if(childElement.nodeName() == "PROGRAMSTARTUP"){
               }
 
               if ((params.at(0) == "m2zagk") ||
-                  (params.at(0) == "m2zagd")) {
+                  (params.at(0) == "m2zagd") ||
+                  (params.at(0) == "m_mave") ||
+                  (params.at(0) == "m_mave2")) {
                  sortIndex++;
               } else {
                  if(sortIndex == 0) {
