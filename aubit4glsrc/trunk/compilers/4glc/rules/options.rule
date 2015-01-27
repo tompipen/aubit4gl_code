@@ -48,6 +48,7 @@ opt_allopts 	: COMMENT_LINE line_no 		{ $<single_option>$=new_option_expr('C',$<
 		| INPUT_ATTR_FORM        	{ $<single_option>$=new_option('Y',"1",0); map_ui("OPTIONS_INPUT_ATTR_FORM");}
 		| INPUT_ATTR_WINDOW      	{ $<single_option>$=new_option('Y',"2",0); map_ui("OPTIONS_INPUT_ATTR_WINDOW");}
 		| CURRENT_FIELD_DISPLAY fgl_expr_c     	{ $<single_option>$=new_option_expr('c',$<ptr>2,0); map_ui("OPTIONS_CURRENT_FIELD_DISPLAY");} 
+		| CURRENT_ROW_DISPLAY fgl_expr_c     	{ $<single_option>$=new_option_expr('R',$<ptr>2,0); map_ui("OPTIONS_CURRENT_ROW_DISPLAY");} 
 		| KW_DISPLAY attributes_def 	{ 
 						char buff[200];
 						SPRINTF1(buff,"%d", attributes_as_int($<attrib>2));

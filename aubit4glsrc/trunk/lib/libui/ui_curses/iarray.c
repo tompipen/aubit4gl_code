@@ -24,10 +24,10 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.182 2015-01-21 17:45:31 mikeaubury Exp $
+# $Id: iarray.c,v 1.183 2015-01-27 10:19:47 mikeaubury Exp $
 #*/
 #ifndef lint
-static char const module_id[] = "$Id: iarray.c,v 1.182 2015-01-21 17:45:31 mikeaubury Exp $";
+static char const module_id[] = "$Id: iarray.c,v 1.183 2015-01-27 10:19:47 mikeaubury Exp $";
 #endif
 
 /**
@@ -398,11 +398,18 @@ A4GL_idraw_arr (struct s_inp_arr *inpa, int type, int no)
   		struct struct_scr_field *fprop;
  		fprop = (struct struct_scr_field *) (field_userptr (inpa->field_list[scr_line - 1][a]));
   		attr = A4GL_determine_attribute (FGL_CMD_INPUT, inpa->display_attrib, fprop, 0, -1);
-
   		if (type==2) {
 			// If this is the current row - just the the "current row display" attribute...
 	      		attr = A4GL_strattr_to_num (inpa->curr_display);
   		}
+	//A4GL_pause_execution();
+        	if (inpa->current_field_display && a==inpa->curr_attrib ) {
+          		attr = A4GL_determine_attribute (FGL_CMD_INPUT, 
+				inpa->current_field_display, fprop, field_buffer (inpa->currentfield, 0),-1);
+		}
+
+
+
 		A4GL_debug("MJA SETTING %d to %x [%d]\n", scr_line,attr, type);
 		
 	    	A4GL_set_field_attr_with_attr_already_determined (inpa->field_list[scr_line - 1][a], attr, FGL_CMD_INPUT);
@@ -3471,7 +3478,6 @@ int attr;
   if (arr->fcntrl[a].op == FORMCONTROL_AFTER_FIELD)
     {
       struct struct_scr_field *fprop = NULL;
-      int attr;
 
 
 
@@ -3622,31 +3628,6 @@ int attr;
 	      cptr = (char *) arr->binding[attrib].ptr + arr->arr_elemsize * (arr->arr_line - 1);
 
 	      fprop = (struct struct_scr_field *) (field_userptr (arr->currentfield));
-/*
-	      attr = A4GL_determine_attribute (FGL_CMD_INPUT, arr->display_attrib, fprop, 0);
-
-
-	      if (arr->highlight)
-		{
-		  if (attr & AUBIT_ATTR_REVERSE)
-		    attr = attr - AUBIT_ATTR_REVERSE;
-		  else
-		    attr = attr + AUBIT_ATTR_REVERSE;
-		}
-
-	      if (arr->curr_display)
-		{
-#ifdef DEBUG
-		  A4GL_debug ("Got curr_display : %s\n", arr->curr_display);
-#endif
-		  attr = A4GL_strattr_to_num (arr->curr_display); // MJA MJA MJA 1111111
-		}
-
-
-	      if (attr != 0)
-		A4GL_set_field_attr_with_attr (arr->currentfield, attr, FGL_CMD_INPUT);
-*/
-
 
 
 	      A4GL_push_param (cptr, arr->binding[attrib].dtype + ENCODE_SIZE (arr->binding[attrib].size));
@@ -3908,15 +3889,6 @@ A4GL_iarr_arr_fields (struct s_inp_arr *arr, int dattr, int arr_line, int scr_li
 		da = da + AUBIT_ATTR_REVERSE;
 	    }
 
-/*
-	  if (arr->curr_display)
-	    {
-#ifdef DEBUG
-	      A4GL_debug ("Got curr_display : %s\n", arr->curr_display);
-#endif
-	      da = A4GL_strattr_to_num (arr->curr_display);
-	    }
-*/
 	}
 
 #ifdef DEBUG

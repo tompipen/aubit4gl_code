@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: data_if.c,v 1.43 2015-01-21 17:45:21 mikeaubury Exp $
+# $Id: data_if.c,v 1.44 2015-01-27 10:19:47 mikeaubury Exp $
 #
 */
 
@@ -408,6 +408,7 @@ get_set_s_inp_arr (void *ptr, int mode, char *name, long var)
     int start_slice;
     int end_slice;
     int current_field_display;
+    int current_row_display;
 
   };
 
@@ -912,6 +913,18 @@ get_set_s_inp_arr (void *ptr, int mode, char *name, long var)
         }
     }
 
+  if (strcmp (name, "current_row_display") == 0)
+    {
+      if (mode == GETSETGET)
+        return (void *) (long) val->current_row_display;
+      if (mode == GETSETGETPTR)
+        return (void *) &(val->current_row_display);
+      if (mode == GETSETSET)
+        {
+          val->current_row_display = (int) var;
+          return (void *) 1;
+        }
+    }
 
   A4GL_assertion (1, "CRITICAL ERROR - unknown name in GETSET/s_inp_arr");
 #ifdef DEBUG

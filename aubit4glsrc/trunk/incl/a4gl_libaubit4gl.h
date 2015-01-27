@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.437 2015-01-21 17:45:21 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.438 2015-01-27 10:19:47 mikeaubury Exp $
 #
 */
 
@@ -989,6 +989,7 @@ char *A4GLSQLCV_make_substr(char *colname,int nints,int i1,int i2) ;
     char *inpattr_s;
     char *dispattr_s;
     int current_field_attribute;
+    char *current_row_attribute;
   };
 
 struct s_std_attr
