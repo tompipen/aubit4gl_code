@@ -3010,7 +3010,7 @@ clr_nonewlines();
 	}
   else {
     //printc ("SET(\"s_inp_arr\",_sio_%d,\"curr_display\",0);\n",sio_id);
-    printc ("SET(\"s_inp_arr\",_sio_%d,\"curr_display\",(char*)A4GL_get_option_value('R'));\n",sio_id);
+    printc ("SET(\"s_inp_arr\",_sio_%d,\"curr_display\",A4GL_get_option_value('R'));\n",sio_id);
    }
 
 
