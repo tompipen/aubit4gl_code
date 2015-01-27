@@ -1938,7 +1938,7 @@ print_options_cmd (struct_options_cmd * cmd_data)
                 printc("static char _currAttr[256];");
 		print_expr (o->expr);
                 printc("A4GL_pop_var2(&_currAttr,0,255);A4GL_trim(_currAttr);");
-	  	printc ("A4GL_set_option_value('%c',(int)_currAttr);\n", i);
+	  	printc ("A4GL_set_option_value('%c',(long)_currAttr);\n", i);
                 printc("}");
 
 		break;
@@ -2480,7 +2480,7 @@ print_display_array_cmd (struct_display_array_cmd * cmd_data)
    {
 
     	//printc ("SET(\"s_disp_arr\",_sio_%d,\"curr_display\",0);\n",sio_id);
- 	printc ("SET(\"s_disp_arr\",_sio_%d,\"curr_display\",A4GL_get_option_value('R'));\n",sio_id);
+ 	printc ("SET(\"s_disp_arr\",_sio_%d,\"curr_display\",(char*)A4GL_get_option_value('R'));\n",sio_id);
    }
   
 
@@ -3010,7 +3010,7 @@ clr_nonewlines();
 	}
   else {
     //printc ("SET(\"s_inp_arr\",_sio_%d,\"curr_display\",0);\n",sio_id);
-    printc ("SET(\"s_inp_arr\",_sio_%d,\"curr_display\",A4GL_get_option_value('R'));\n",sio_id);
+    printc ("SET(\"s_inp_arr\",_sio_%d,\"curr_display\",(char*)A4GL_get_option_value('R'));\n",sio_id);
    }
 
 

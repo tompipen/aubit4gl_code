@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: keys.c,v 1.50 2015-01-27 10:19:47 mikeaubury Exp $
+# $Id: keys.c,v 1.51 2015-01-27 13:12:05 mikeaubury Exp $
 #
 */
 
@@ -468,7 +468,7 @@ A4GL_set_option_value (char type, long keyval)
       break;
 
     case 'R':
-      std_dbscr.current_row_attribute = keyval;
+      std_dbscr.current_row_attribute = (char *)keyval;
       break;
 
     case 'i':
@@ -493,7 +493,8 @@ A4GL_set_option_value (char type, long keyval)
   A4GL_set_option_value_for_current_window (type, keyval);
 }
 
-int
+
+long
 A4GL_get_option_value (char type)
 {
   A4GL_init_stddbscr ();
@@ -540,7 +541,7 @@ A4GL_get_option_value (char type)
       break;
 
     case 'R':
-      return std_dbscr.current_row_attribute;
+      return (long)std_dbscr.current_row_attribute;
       break;
 
     case 'H':

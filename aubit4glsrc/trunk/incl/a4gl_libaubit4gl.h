@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: a4gl_libaubit4gl.h,v 1.438 2015-01-27 10:19:47 mikeaubury Exp $
+# $Id: a4gl_libaubit4gl.h,v 1.439 2015-01-27 13:12:04 mikeaubury Exp $
 #
 */
 
@@ -2273,8 +2273,7 @@ char *A4GLSQLCV_rentab(char *tabname,char *ntabname) ;
   long int_flag;               /** 4gl interrupt ocurred global flag */
   long quit_flag;              /** 4gl quit ocurred global flag */
 #endif
-
-int A4GL_get_option_value (char type);
+long A4GL_get_option_value (char type);
 
 void A4GL_processed_onkey(void) ;
 void A4GL_reset_processed_onkey(void);
