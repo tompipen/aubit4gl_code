@@ -20,7 +20,7 @@ $(ROOT)/bin/a4gl.4ae: a4gl${A4GL_OBJ_EXT} form${A4GL_OBJ_EXT} main${A4GL_OBJ_EXT
 
 
 %.afr${A4GL_OBJ_EXT}:%.per
-	fcompile -c $<
+	A4GL_FRM_BASE_EXT=.afr fcompile -c $<
 	4glpc -t C -c -o $@ ${subst .per,.afr.c,$<}
 
 
