@@ -4611,10 +4611,7 @@ MainFrame::vdcdebug("FglForm","checkActions", "");
       }
    }
 
-   if(!this->inputArray())
-   {
-       checkShortcuts();
-   }
+    checkShortcuts();
    //checkToolBar();
 }
 
