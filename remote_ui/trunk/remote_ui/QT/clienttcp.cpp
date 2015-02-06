@@ -3785,8 +3785,7 @@ void ProtocolHandler::executeFile(int waitforFinish, QString fileName)
 
              }
                 qDebug() << "Prozess wurde erstellt.";
-                Sleep(5);
-                WaitForSingleObject( pi.hProcess, INFINITE );
+                WaitForSingleObject( pi.hProcess, INFINITE);
 
                 CloseHandle(pi.hProcess);
                 CloseHandle(pi.hThread);
