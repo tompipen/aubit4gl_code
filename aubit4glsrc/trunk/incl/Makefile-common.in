@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.248 2015-02-11 15:59:10 mikeaubury Exp $
+# $Id: Makefile-common.in,v 1.249 2015-02-11 16:17:35 mikeaubury Exp $
 #
 
 #WARNING: __NEVER__ use environment vatiable called "TMP" - Informix
@@ -1628,8 +1628,12 @@ export A4GL_LOCALOUTPUT
 export CFLAGS
 CFLAGS_NOWARN   =$(subst ${CWARN},,${CFLAGS})
 
+#Ensure that the .afr.dat extension is used during compilation
 A4GL_FRM_BASE_EXT=.afr
 export A4GL_FRM_BASE_EXT
+A4GL_PACKED_EXT=
+export A4GL_PACKED_EXT
+
 
 #=================================== EOF ================================
 
