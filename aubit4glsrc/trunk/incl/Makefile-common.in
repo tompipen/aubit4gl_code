@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.247 2014-07-29 12:45:33 mikeaubury Exp $
+# $Id: Makefile-common.in,v 1.248 2015-02-11 15:59:10 mikeaubury Exp $
 #
 
 #WARNING: __NEVER__ use environment vatiable called "TMP" - Informix
@@ -1627,5 +1627,9 @@ export A4GL_LOCALOUTPUT
 
 export CFLAGS
 CFLAGS_NOWARN   =$(subst ${CWARN},,${CFLAGS})
+
+A4GL_FRM_BASE_EXT=.afr
+export A4GL_FRM_BASE_EXT
+
 #=================================== EOF ================================
 
