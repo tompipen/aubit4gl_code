@@ -528,7 +528,8 @@ printField (FILE * outputFile, int idx, char *descName)
   char buffer[32000]="";
   int length;
   int COUNT;
-  long INTVAR, BOOLVAR;
+  int INTVAR;
+  int  BOOLVAR;
   char nvar[100];
   int INDICATOR;
   int TYPE,LENGTH,OCTET_LENGTH,PRECISION,SCALE,NULLABLE,RETURNED_OCTET_LENGTH;
@@ -1068,6 +1069,13 @@ define lv_connstr char(256)
 let lv_uname	=get_username()
 let lv_pass	=get_password()
 
+if lv_uname is null or lv_uname=" " then
+	let lv_uname=fgl_getenv("A4GL_SQLUID")
+end if
+if lv_pass is null or lv_pass=" " then
+	let lv_pass=fgl_getenv("A4GL_SQLPWD")
+end if
+
 IF lv_uname IS NULL OR lv_uname MATCHES " " THEN
 code
 	A4GL_sqlid_from_aclfile("template1", lv_uname, lv_pass,NULL);
@@ -1109,6 +1117,12 @@ define lv_connstr char(256)
 
 let lv_uname	=get_username()
 let lv_pass	=get_password()
+if lv_uname is null or lv_uname=" " then
+	let lv_uname=fgl_getenv("A4GL_SQLUID")
+end if
+if lv_pass is null or lv_pass=" " then
+	let lv_pass=fgl_getenv("A4GL_SQLPWD")
+end if
 
 # If theres nothing been set explicitly - 
 # see if theres anything in the ACL file for
