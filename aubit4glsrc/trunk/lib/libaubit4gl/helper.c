@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper.c,v 1.99 2014-09-09 14:23:16 mikeaubury Exp $
+# $Id: helper.c,v 1.100 2015-02-12 13:11:34 mikeaubury Exp $
 #
 */
 
@@ -44,13 +44,14 @@
 */
 
 #define EXTERN_CONVFMTS
+#include <stdint.h>
 #include "a4gl_libaubit4gl_int.h"
 #include <ctype.h>
 #include "./md5.h"
 void A4GLPACKER_clrlibptr (void);
 void A4GLFORM_clrlibptr (void);
-static void tea_8c_encipher (const unsigned long *const v, unsigned long *const w, const unsigned long *const k);
-static void tea_8c_decipher (const unsigned long *const v, unsigned long *const w, const unsigned long *const k);
+static void tea_8c_encipher (const uint32_t *const v, uint32_t *const w, const uint32_t *const k);
+static void tea_8c_decipher (const uint32_t *const v, uint32_t *const w, const uint32_t *const k);
 
 /*
 =====================================================================
@@ -1495,9 +1496,9 @@ A4GL_tea_string_encipher (char *s)
   static char buff_out[1000];
   char smbuff[20];
   int a;
-  long key[4];
+  uint32_t key[4];
   char rbuff[10];
-  long *x;
+  uint32_t *x;
   //long b[10];
   memset (rbuff, 0, sizeof (rbuff));
 
@@ -1513,8 +1514,8 @@ A4GL_tea_string_encipher (char *s)
 
   for (a = 0; a < strlen (buff); a += 8)
     {
-      x = (long *) rbuff;
-      tea_8c_encipher (( long *) &buff[a], x, key);
+      x = (uint32_t *) rbuff;
+      tea_8c_encipher (( uint32_t *) &buff[a], x, key);
       smbuff[8] = 0;
       smbuff[7] = hex_digit (x[0] & 0xf);
       x[0] = x[0] >> 4;		// 0x???????X
@@ -1588,10 +1589,10 @@ A4GL_tea_string_decipher (char *s)
   static char buff_out[1000];
   char smbuff[15];
   int a;
-  long key[4];
+  uint32_t key[4];
   char rbuff[9];
   int l;
-  long lgptr[2];
+  uint32_t lgptr[2];
 
   memset (&key[0], 0, sizeof (key));
   key[0] = 0x12447469;
@@ -1624,7 +1625,7 @@ A4GL_tea_string_decipher (char *s)
       l = (l * 16) + hexToInt (buff[a + 15]);
       lgptr[1] = l;
 
-      tea_8c_decipher (&lgptr[0], (long *) &rbuff[0], &key[0]);
+      tea_8c_decipher (&lgptr[0], (uint32_t *) &rbuff[0], &key[0]);
       smbuff[0] = rbuff[0];
       smbuff[1] = rbuff[1];
       smbuff[2] = rbuff[2];
@@ -1640,7 +1641,7 @@ A4GL_tea_string_decipher (char *s)
 }
 
 void
-tea_8c_encipher (const unsigned long *v, unsigned long *w, const unsigned long *k)
+tea_8c_encipher (const uint32_t *v, uint32_t *w, const uint32_t *k)
 {
   unsigned long y;
   unsigned long z;
@@ -1668,7 +1669,7 @@ tea_8c_encipher (const unsigned long *v, unsigned long *w, const unsigned long *
 
 
 void
-tea_8c_decipher (const unsigned long *const v, unsigned long *const w, const unsigned long *const k)
+tea_8c_decipher (const uint32_t *const v, uint32_t *const w, const uint32_t *const k)
 {
   register unsigned long y = v[0], z = v[1], sum = 0xC6EF3720, delta = 0x9E3779B9, n = 32;
 
