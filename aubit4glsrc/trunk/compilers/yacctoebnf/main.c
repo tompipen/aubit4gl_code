@@ -325,8 +325,13 @@ int main(int argc,char *argv[]) {
 		kwords[a].token=NULL;
 		kwords[a].text=NULL;
 	}
+
+yyset_debug(1);
+
+
         if (argc>1) {
 		FILE *kwords_file;
+	fprintf(stderr, "opening %s\n",argv[1]);
         	yyin=fopen(argv[1],"r");
 		kwords_file=fopen("keywords","r");
 		if (kwords_file) {
@@ -352,6 +357,7 @@ int main(int argc,char *argv[]) {
 		}
 		
         } else {
+		fprintf(stderr, "opening %s\n","../4glc/rules/generated/fgl.infx.yacc");
         	yyin=fopen("../4glc/rules/generated/fgl.infx.yacc","r");
         }
 

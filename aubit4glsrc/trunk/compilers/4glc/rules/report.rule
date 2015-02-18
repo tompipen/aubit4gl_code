@@ -1073,7 +1073,8 @@ rep_where :  { strcpy($<str>$,"");
 ;
 
 
-pdf_Pos: // Defaults to Y,X
+/* Defaults to Y,X */
+pdf_Pos: 
  fgl_expr_c KW_COMMA fgl_expr_c  {
 	$<xy_ptr>$[0]=$<ptr>3; // X in 0
 	$<xy_ptr>$[1]=$<ptr>1; // Y in 1
@@ -1109,7 +1110,6 @@ pdf_specific_cmd :
 			$<cmd>$=new_pdf_specific_cmd("set_value",NULL, $<ptr>2,$<ptr>4,NULL);
 	}
 	| MOVE_TO pdf_Pos { 
-			/* fgl_expr_c KW_COMMA fgl_expr_c { */
 			$<cmd>$=new_pdf_specific_cmd("moveto",NULL, report_position_expr_x($<xy_ptr>2[0]) , report_position_expr_y($<xy_ptr>2[1]),NULL);
 	}
 	| MOVE_TO_TOP pdf_Pos {

@@ -43,15 +43,6 @@ set_hdrdbname(char *s)
 }
 #endif
 
-//use this set_str() if YYPURE and YYLEX_PARAM are not set
-//void
-//set_str(char *s)
-//	strcpy(yylval.str,s);
-//}
-
-//use this set_str() if YYPURE and YYLEX_PARAM are set
-
-
 void
 FGLPARSE_A4GL_lexer_set_str(void *p, char *s)
 {

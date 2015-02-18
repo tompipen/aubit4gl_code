@@ -6,7 +6,6 @@ int gottocode=0;
 int colno;
 int lineno;
 int ignorekw=0;
-
 char *A4GL_strip_quotes(char *s);
 struct s_parser_start *start;
 %}
