@@ -1365,7 +1365,7 @@ MainFrame::vdcdebug("WidgetHelper","createButtonEdit", "const QDomElement& formF
           {
               lineEdit->setFormat(screenFormat);
           } else {
-             lineEdit->setFormat("######&.&&");
+             lineEdit->setFormat("######&.&&&&&&&&&&&&&&&&");
           }
       }
       break;

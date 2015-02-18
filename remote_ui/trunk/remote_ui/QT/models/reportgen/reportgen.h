@@ -7,7 +7,9 @@
 #include <QVector>
 #include <QVariant>
 #include <QStringList>
-#include <screenhandler.h>
+#include <QElapsedTimer>
+
+#include "screenhandler.h"
 
 class Reportgen : public QThread
 {
@@ -17,12 +19,20 @@ public:
 
 
     void run();
-    Reportgen(ScreenHandler*);
     Reportgen();
+    Reportgen(ScreenHandler*);
 
     void setOdfFile(QString odfFile) { mOdfFile = odfFile; }
     void setSedFile(QString sedFile) { mSedFile = sedFile; }
     void setDestinationFile(QString destinationFile) { mDestinationFile = destinationFile; }
+    void setWorkingDir(QString filePath) { mWorkingDir = filePath; }
+    void setDebugModus(bool debug) { mDebugModus = debug; }
+
+    QString getWorkingDir() { return mWorkingDir; }
+    bool getDebugModus() { return mDebugModus; }
+
+
+    void printMsg(QString text);
 
     int getExitCode() { return mExitCode; }
 
@@ -35,22 +45,25 @@ public:
     bool replaceTemplateVars(QString odffile, QString sedfile, QFileInfo zielDatei);
     bool replaceTemplateWithoutPosition(QString odffile, QString sedFile, QFileInfo zielDatei);
     bool startReportTemplate(QString odffile, QString sedfile, QFileInfo zielDatei);
-    bool replaceEbene(QString odffile);
+    bool replaceEbene(QString file, QString odffile);
     int checkSedFile(QString fieldname, QString filename);
 
     QString getTemplateHeader(QString filename);
     QString getTemplateHeader(QString filename, QString endung);
-    QString getTemplatePosition(int Table, QString odffile);
-    QString getTemplatePosition(QString odffile);
-    QString prepareTemplateContent(int Table, int Position, QString odffile, QString sedfile);
-    QString prepareTemplateContentOdt(int Table, int Position, QString odffile, QString sedfile);
-    QString prepareTemplateEbene(int Position, int Ebene, int eben3, int ebene4, int ebene5, int Counter, QDomDocument doc, QString odffile, QString sedfile);
+    QString getTemplatePosition(int Table, QString TemplateFile);
+    QString getTemplatePosition(QString TemplateFile);
+    QString prepareTemplateContent(int Table, int Position, QString TemplateFile, QString sedfile);
+    QString prepareTemplateContentOdt(int Table, int Position, QString TemplateFile, QString sedfile);
+    QString prepareTemplateEbene(int Position, int Ebene, int eben3, int ebene4, int ebene5, int Counter, QDomDocument doc, QString TemplateFile, QString sedfile);
     QString getTemplateFooter(int Table, QString filename, QString suffix);
+
+    QString filterString(QString);
+    void filterSedFile();
 
     void readSedFile(QString sedfile);
     void getTemplateVars(QString filename);
-    bool checkMetaFile(QString odffile);
-    bool replaceMetaFile(QString odffile);
+    bool checkMetaFile(QString TemplateFile);
+    bool replaceMetaFile(QString TemplateFile);
     QString getVariable(QString);
 
     typedef QVector<QVariant> chartVector;
@@ -69,10 +82,14 @@ private:
     QList<QString> chartValues1;
     QList<QString> chartValues2;
 
+    bool mDebugModus;
+    ScreenHandler *p_screenHandler;
+
 
     QString mOdfFile;
     QString mSedFile;
     QString mDestinationFile;
+    QString mWorkingDir;
 
     QString replaceEbene2;
     QString replaceEbene3;
@@ -80,9 +97,9 @@ private:
 
     QStringList tableCell;
 
-    ScreenHandler *p_screenHandler;
-
     int mExitCode;
+
+    QElapsedTimer *elapsedTimer;
 
 signals:
     void createChart(QString diag);
@@ -92,8 +109,6 @@ signals:
 
 public slots:
     void finished();
-
-
 
 };
 

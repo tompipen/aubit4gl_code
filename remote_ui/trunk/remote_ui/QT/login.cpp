@@ -257,14 +257,14 @@ void LoginForm::createMenu(QMenuBar *menu)
     format1 = new QAction("&1.234,56", this);
     format1->setCheckable(true);
     connect(format1, SIGNAL(triggered()), formatSignalMapper, SLOT(map()));
-    formatSignalMapper->setMapping(format1, "##,###,###,###,##&.&&&&&&&&|,");
+    formatSignalMapper->setMapping(format1, "##,###,###,###,##&.&&&&&&&&&&&&&&&&|,");
 
     format->addAction(format1);
 
     format2 = new QAction("&1,234.56", this);
     format2->setCheckable(true);
     connect(format2, SIGNAL(triggered()), formatSignalMapper, SLOT(map()));
-    formatSignalMapper->setMapping(format2, "##,###,###,###,##&.&&&&&&&&|.");
+    formatSignalMapper->setMapping(format2, "##,###,###,###,##&.&&&&&&&&&&&&&&&&|.");
 
     format->addAction(format2);
 
@@ -282,7 +282,7 @@ void LoginForm::createMenu(QMenuBar *menu)
 
     format->addAction(format4);
 
-    if(screenFormat == "##,###,###,###,##&.&&&&&&&&" && seperator == ",")
+    if(screenFormat == "##,###,###,###,##&.&&&&&&&&&&&&&&&&" && seperator == ",")
     {
         format1->setChecked(true);
         format2->setChecked(false);
@@ -290,7 +290,7 @@ void LoginForm::createMenu(QMenuBar *menu)
         format4->setChecked(false);
     }
 
-    if(screenFormat == "##,###,###,###,##&.&&&&&&&&" && seperator == ".")
+    if(screenFormat == "##,###,###,###,##&.&&&&&&&&&&&&&&&&" && seperator == ".")
     {
         format1->setChecked(false);
         format2->setChecked(true);
@@ -1151,7 +1151,7 @@ void LoginForm::setFormat(QString format)
         VDC::saveSettingsToIni("","setDBMONEY", params.at(1));
     }
 
-    if(params.at(0) == "##,###,###,###,##&.&&&&&&&&" && params.at(1) == ",")
+    if(params.at(0) == "##,###,###,###,##&.&&&&&&&&&&&&&&&&" && params.at(1) == ",")
     {
         format1->setChecked(true);
         format2->setChecked(false);
@@ -1159,7 +1159,7 @@ void LoginForm::setFormat(QString format)
         format4->setChecked(false);
     }
 
-    if(params.at(0) == "##,###,###,###,##&.&&&&&&&&" && params.at(1) == ".")
+    if(params.at(0) == "##,###,###,###,##&.&&&&&&&&&&&&&&&&" && params.at(1) == ".")
     {
         format1->setChecked(false);
         format2->setChecked(true);
