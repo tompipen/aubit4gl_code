@@ -190,6 +190,7 @@ if (mode==0) { // FormField
 	if (A4GL_has_bool_attribute(fprop, FA_B_NOENTRY)) { strcat(buff, ",\"noEntry\":true"); }
 	if (A4GL_has_bool_attribute(fprop, FA_B_REQUIRED)) { strcat(buff, ",\"required\":true"); }
 	if (A4GL_has_bool_attribute(fprop, FA_B_HIDDEN) || A4GL_has_bool_attribute(fprop, FA_B_INVISIBLE) ) { strcat(buff, ",\"hidden\"=true"); }
+	if (A4GL_has_bool_attribute(fprop, FA_B_HIDDEN) ) { strcat(buff, ",\"noshow\"=true"); }
 	if (A4GL_has_str_attribute(fprop, FA_S_INCLUDE)) { 
 			sprintf(smbuff, ",\"include\":\"%s\"", xml_escape(conv_to_xml_include(A4GL_get_str_attribute (fprop, FA_S_INCLUDE)))); 
 			strcat(buff,smbuff);}
@@ -1030,6 +1031,7 @@ if (layout->id && strlen(layout->id )) {
 	if (A4GL_has_bool_attribute(fprop, FA_B_NOENTRY)) { strcat(buff, ",\"noEntry\":true"); }
 	if (A4GL_has_bool_attribute(fprop, FA_B_REQUIRED)) { strcat(buff, ",\"required\":true"); }
 	if (A4GL_has_bool_attribute(fprop, FA_B_HIDDEN) || A4GL_has_bool_attribute(fprop, FA_B_INVISIBLE)) { strcat(buff, ",\"hidden\":true"); }
+	if (A4GL_has_bool_attribute(fprop, FA_B_HIDDEN) ) { strcat(buff, ",\"noshow\"=true"); }
 	if (A4GL_has_bool_attribute(fprop, FA_B_BORDER)) { strcat(buff, ",\"border\":true"); }
 	if (A4GL_has_bool_attribute(fprop, FA_B_UPSHIFT)) { strcat(buff, ",\"shift\":\"up\""); }
 	else {
