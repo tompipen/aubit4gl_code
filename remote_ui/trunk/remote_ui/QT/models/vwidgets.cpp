@@ -305,6 +305,9 @@ LineEdit::LineEdit(QWidget *parent)
    b_autoNext = false;
    b_required = false;
    b_compress = false;
+   b_isHidden = false;
+   b_isOnlyHidden = false;
+
    qs_oldsql  = "";
    //this->setDragEnabled(true);
    w = 0;
@@ -972,6 +975,7 @@ MainFrame::vdcdebug("WidgetHelper","createFormField", "const QDomElement& formFi
    QString sqlType = formField.attribute("sqlType");
 
    bool hidden   = formField.attribute("hidden").toInt();
+   bool noShow   = formField.attribute("noshow").toInt();
    bool noEntry  = formField.attribute("noEntry").toInt();
    bool notNull  = formField.attribute("notNull").toInt();
    bool required  = formField.attribute("required").toInt();
@@ -994,6 +998,8 @@ MainFrame::vdcdebug("WidgetHelper","createFormField", "const QDomElement& formFi
    fField->setFieldId(fieldId);
    fField->setTabIndex(tabIndex);
    fField->setDefaultValue(defaultValue);
+   fField->setIsHidden(hidden);
+   fField->setNoShow(noShow);
 
    //QWidget *childWidget = WidgetHelper::createFormWidget(formField.firstChild().toElement(), fField);
    //QWidget *childWidget = WidgetHelper::createFormWidget(formField, fField);
@@ -1013,6 +1019,7 @@ MainFrame::vdcdebug("WidgetHelper","createLabel", "const QDomElement& formField,
    QString sqlType = formField.attribute("sqlType");
 
    bool hidden   = formField.attribute("hidden").toInt();
+   bool noShow   = formField.attribute("noshow").toInt();
 
    int w  = labelElement.attribute("width").toInt();
 
@@ -1028,7 +1035,9 @@ MainFrame::vdcdebug("WidgetHelper","createLabel", "const QDomElement& formField,
    label->colName = colName;
    label->sqlTabName = tabName;
    label->w = w;
-   label->isFormHidden = hidden;
+   label->setIsHidden(hidden);
+   label->setNoShow(noShow);
+
 
    QString comments = labelElement.attribute("comments");
    if(!comments.isEmpty()){
@@ -1036,11 +1045,11 @@ MainFrame::vdcdebug("WidgetHelper","createLabel", "const QDomElement& formField,
    }
    if(FglForm *p_fglform = qobject_cast<FglForm*> (parent)) {
        int hideColumn = VDC::readSettingsFromIni(p_fglform->formName(), QString(label->colName + "/hideColumn")).toInt();
-       if(hideColumn > 0) {
+       if(hideColumn > 0 || label->getIsHidden()) {
            label->hide();
        }
    }
-   if(hidden){
+   if(hidden || noShow){
       label->setVisible(false);
    }
 
@@ -1226,6 +1235,8 @@ MainFrame::vdcdebug("WidgetHelper","createEdit", "const QDomElement& formField, 
    QString tabName = formField.attribute("sqlTabName");
    QString sqlType = formField.attribute("sqlType");
    bool hidden   = formField.attribute("hidden").toInt();
+   bool noShow   = formField.attribute("noshow").toInt();
+
    QString defaultValue = formField.attribute("defaultValue");
 
    int w  = lineEditElement.attribute("width").toInt();
@@ -1252,6 +1263,8 @@ MainFrame::vdcdebug("WidgetHelper","createEdit", "const QDomElement& formField, 
    lineEdit->setAutoNext(autoNext);
    lineEdit->setSqlType(sqlType);
    lineEdit->setDefaultValue(defaultValue);
+
+   lineEdit->setNoShow(noShow);
 
    QString comments = lineEditElement.attribute("comments");
    if(!comments.isEmpty()){
@@ -1311,7 +1324,7 @@ MainFrame::vdcdebug("WidgetHelper","createEdit", "const QDomElement& formField, 
            lineEdit->hide();
        }
    }
-   if(hidden)
+   if(hidden || noShow)
       lineEdit->setVisible(false);
 
    return lineEdit;

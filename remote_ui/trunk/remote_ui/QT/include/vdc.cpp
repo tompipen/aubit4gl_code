@@ -49,16 +49,29 @@ namespace VDC {
      return fieldsizefactor;
    }
 
+   QString getPathToSettingsIni()
+   {
+        #ifdef Q_OS_WIN
+            #if QT_VERSION < QT_VERSION_CHECK(5,0,9)
+               return QDesktopServices::storageLocation(QDesktopServices::DataLocation) + "/.vdc/";
+            #else
+               return QStandardPaths::writableLocation(QStandardPaths::DataLocation) + "/.vdc/";
+            #endif
+        #else
+        return QDir::homePath() + "/.vdc/";
+        #endif
+   }
+
    void removeSettingsKeysWith(QString group, QString text)
    {
     #ifdef Q_OS_WIN
         #if QT_VERSION < QT_VERSION_CHECK(5,0,9)
-           QSettings settings(QDesktopServices::storageLocation(QDesktopServices::DataLocation) + "/.vdc/settings.ini", QSettings::IniFormat);
+           QSettings settings(getPathToSettingsIni() + "settings.ini", QSettings::IniFormat);
         #else
-           QSettings settings(QStandardPaths::writableLocation(QStandardPaths::DataLocation) + "/.vdc/settings.ini", QSettings::IniFormat);
+           QSettings settings(getPathToSettingsIni() + "settings.ini", QSettings::IniFormat);
         #endif
     #else
-    QSettings settings(QDir::homePath() + "/.vdc/settings.ini", QSettings::IniFormat);
+    QSettings settings(getPathToSettingsIni(), QSettings::IniFormat);
     #endif
 
     settings.beginGroup(group);

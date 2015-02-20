@@ -19,6 +19,7 @@ namespace VDC
   void waitCursor();
   void arrowCursor();
   double getFieldSizeFactor();
+  QString getPathToSettingsIni();
   void setFieldSizeFactor(double);
   extern double fieldsizefactor;
   void removeSettingsKeysWith(QString, QString);

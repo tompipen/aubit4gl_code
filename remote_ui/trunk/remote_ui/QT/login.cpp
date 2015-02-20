@@ -229,6 +229,16 @@ void LoginForm::createMenu(QMenuBar *menu)
     QAction *ooStdProg = new QAction(tr("&Change Default Office Software"), this);
     connect(ooStdProg, SIGNAL(triggered()), this, SLOT(setOfficeInstallation()));
     options->addAction(ooStdProg);
+
+    settingsServer = new QAction(tr("&Form settings on Server"), this);
+    connect(settingsServer, SIGNAL(triggered()), this, SLOT(saveSettingsOnServer()));
+    settingsServer->setCheckable(true);
+    if(VDC::readSettingsFromIni("", "saveSettingsOnServer").toInt() == 0)
+    {
+        settingsServer->setChecked(true);
+    }
+
+    options->addAction(settingsServer);
     options->addSeparator();
 
     QAction *sshCompAction = new QAction(tr("SSH Compression"), this);
@@ -521,6 +531,16 @@ void LoginForm::removeIni()
 
 }
 
+void LoginForm::saveSettingsOnServer()
+{
+    if(!settingsServer->isChecked())
+    {
+        VDC::saveSettingsToIni("", "saveSettingsOnServer", QString::number(1));
+    } else {
+        VDC::removeSettingsFromIni("","saveSettingsOnServer");
+    }
+}
+
 void LoginForm::setAutoUpdate()
 {
     if(autoUpdateAction->isChecked()) {
@@ -528,7 +548,6 @@ void LoginForm::setAutoUpdate()
     } else {
         VDC::saveSettingsToIni("", "updateWithoutAsk", QString::number(2));
     }
-
 }
 
 void LoginForm::setRememberMenu()

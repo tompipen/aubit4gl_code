@@ -955,24 +955,6 @@ if(childElement.nodeName() == "PROGRAMSTARTUP"){
            }
       }
 
-           /*actionsFile.setFileName(QDir::tempPath() + "/" +"ventas_e.4ad");
-            if (actionsFile.open(QIODevice::ReadOnly | QIODevice::Text)){
-                QString qs_defaultActions = actionsFile.readAll();
-                QMetaObject::invokeMethod(p_currScreenHandler, "handleXMLActions", Qt::QueuedConnection, Q_ARG(QString, qs_defaultActions));
-            //    handleXMLActions(qs_defaultActions);
-                actionsFile.close();
-            }
-
-           actionsFile.setFileName(QDir::tempPath() + "/" +"ventas_d.4ad");
-            if (actionsFile.open(QIODevice::ReadOnly | QIODevice::Text)){
-                QString qs_defaultActions = actionsFile.readAll();
-                QMetaObject::invokeMethod(p_currScreenHandler, "handleXMLActions", Qt::QueuedConnection, Q_ARG(QString, qs_defaultActions));
-                //handleXMLActions(qs_defaultActions);
-                actionsFile.close();
-            }
-          
-      }*/
-
       QFile colorFile(QString("%1.4cf").arg(programName));
       if (colorFile.open(QIODevice::ReadOnly | QIODevice::Text)){
           QString qs_defaultColors = colorFile.readAll();
@@ -990,7 +972,6 @@ if(childElement.nodeName() == "PROGRAMSTARTUP"){
            }
 
       }
-
 
       QFile iconFile(QString("%1.4id").arg(programName));
       if (iconFile.open(QIODevice::ReadOnly | QIODevice::Text)){
@@ -1069,8 +1050,6 @@ if(childElement.nodeName() == "PROGRAMSTARTUP"){
            }
 
       }
-
-
 
       QString id = childElement.attribute("ID");
       QMetaObject::invokeMethod(p_currScreenHandler, "createWindow", Qt::QueuedConnection, Q_ARG(QString, "dummy_ventas"), Q_ARG(QString, ""), Q_ARG(int, 0), Q_ARG(int, 0), Q_ARG(int, 100), Q_ARG(int, 100), Q_ARG(QString, ""), Q_ARG(QString, id));
@@ -1160,47 +1139,18 @@ if(childElement.nodeName() == "PROGRAMSTARTUP"){
          p_currScreenHandler->xmlShortcutDoc = doc;
       }
 
-
-
       // 4JS StartMenu XML File
       if(fileName.trimmed().endsWith(".4sm")){
          QString xmlFileString = encodeXMLFile(childElement.text());
-/*
-         p_currScreenHandler->qh_env["DB_LOCALE"] = "IBM850";
-         QTextCodec *codec = QTextCodec::codecForName(qPrintable(p_currScreenHandler->qh_env["DB_LOCALE"]));
-         QFile file("T1.txt");
-         if (!file.open(QIODevice::WriteOnly | QIODevice::Text)){
-            return;
-         }
-         QByteArray ba = xmlFileString.toAscii();
-         QTextStream in_request(&ba);
-         in_request.setCodec(codec);
-         in_request << xmlFileString;
-         xmlFileString = in_request.readAll();
-*/
+
          xmlFileString = xmlFileString;
          QMetaObject::invokeMethod(p_currScreenHandler, "handleXMLStartMenu", Qt::QueuedConnection, Q_ARG(QString, xmlFileString));
          //handleXMLStartMenu(xmlFileString);
       return;
         }
-      //Old Mini-Autoupdater
-/*
-      if(fileName.trimmed() == "Client"){
-         if(saveFile(childElement, "Client.tmp")){
-            QDir dir = QDir::current();
-            QString path = QDir::currentPath();
 
-            QString fileName = "Client";
-            if("Windows" == QString()){
-              fileName += ".exe";
-            }
-            dir.rename(fileName, "Client.bak");
-            dir.rename("Client.tmp", fileName);
-         }
-         return;
-      }
-*/
-      if(saveFile(childElement)){
+      if(saveFile(childElement)) {
+
       }
 
       return;
@@ -1564,6 +1514,12 @@ if(childElement.nodeName() == "PROGRAMSTARTUP"){
               returnvalues << getVentasLogicalIndex(sortIndex, params.at(0)) + " " + sortIndecator;
          }
 
+         if(qs_name == "ui.vdc.settingonserver") {
+             bool value = VDC::readSettingsFromIni("","saveSettingsOnServer").toInt();
+
+             returnvalues << QString::number(!value);
+         }
+
          if(qs_name == "ui.vdc.action"){
            qDebug() << "werde aufgerufen!!!" << "";
            QStringList params;
@@ -1764,6 +1720,8 @@ if(childElement.nodeName() == "PROGRAMSTARTUP"){
              if(QFile::exists(filename))
              {
                  returnvalues << VDC::md5hashfromfile(filename);
+             } else if(QFile::exists(VDC::getPathToSettingsIni() + "settings.ini")) {
+                 returnvalues << VDC::md5hashfromfile(VDC::getPathToSettingsIni() + "settings.ini");
              }
              else
              {
@@ -2445,6 +2403,8 @@ if(childElement.nodeName() == "PROGRAMSTARTUP"){
    if(childElement.nodeName() == "OPTIONS"){
       QString type = childElement.attribute("TYPE");
       QString value = childElement.attribute("VALUE");
+      QMetaObject::invokeMethod(p_currScreenHandler, "setOptions", Qt::QueuedConnection, Q_ARG(QString, type), Q_ARG(QString, value));
+
       return;
    }
 
@@ -4624,18 +4584,23 @@ MainFrame::vdcdebug("ProtocolHandler","ProtocolHandler", "QObject *parent");
 bool ProtocolHandler::sendFile(QString name)
 {
 MainFrame::vdcdebug("ProtocolHandler","sendFile", "QString name");
-   QDomDocument doc;
    QByteArray data;
 
-   
-   if(name.isNull())
+   if(name.isNull()) {
       return false;
+   }
 
    QFile file;
    file.setFileName(name);
 
    if(!QFile::exists(name)) {
        file.setFileName(QString(QDir::tempPath() + "/" + name));
+   }
+
+   if(name == "settings.ini")
+   {
+        QString filePath = VDC::getPathToSettingsIni() + "settings.ini";
+        file.setFileName(filePath);
    }
 
    if(!file.open(QIODevice::ReadOnly | QIODevice::Unbuffered)){
@@ -4709,7 +4674,13 @@ MainFrame::vdcdebug("ProtocolHandler","saveFile", "const QDomNode &domNode, QStr
       if(fileName.isEmpty()){
          QFileInfo fi(currentElement.attribute("NAME").trimmed());
          fileName = fi.fileName();
-         fileName = QDir::tempPath() + "/" + fileName;
+
+
+         if(fileName.contains("settings.ini")) {
+             fileName = VDC::getPathToSettingsIni() + fileName;
+         } else {
+             fileName = QDir::tempPath() + "/" + fileName;
+         }
       }
       QByteArray ba;
       ba.append(currentElement.text());

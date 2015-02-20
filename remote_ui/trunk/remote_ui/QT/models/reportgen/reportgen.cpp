@@ -2275,15 +2275,16 @@ QString Reportgen::filterString(QString string)
 {
     QFileInfo fileName = mOdfFile;
 
+    string.replace("&", "&#038;");
+
     if(fileName.completeSuffix() == "odt")
     {
-        string.replace("&", "&#038;");
+        string.replace("<","&lt;");
+        string.replace(">","&gt;");
         string.replace("\n","<text:line-break/>");
         string.replace("@#<text:line-break/>", "\r\n");
         string.replace("\"", "&quot;");
         string.replace("'", "&apos;");
-        string.replace("<","&lt;");
-        string.replace(">","&gt;");
     }
 
     if(fileName.completeSuffix() == "ods")
@@ -3134,12 +3135,12 @@ bool Reportgen::createInfoFile(QFileInfo odffile, QFileInfo zieldatei)
 
     ZipUnzip *p_zipunzip = new ZipUnzip();
 
-    if(!p_zipunzip->unzipArchiv(getWorkingDir(), QString(odffile.fileName()), QString(getWorkingDir() + "/" + odffile.baseName())))
+    if(!p_zipunzip->unzipArchiv(QDir::tempPath(), QString(odffile.fileName()), QString(QDir::tempPath() + "/" + odffile.baseName())))
     {
         printMsg("Es ist ein Fehler beim entpacken aufgetreten");
         return false;
     }
-    QFile *file = new QFile( getWorkingDir() + "/"  + odffile.baseName() + "/content.xml");
+    QFile *file = new QFile( QDir::tempPath() + "/"  + odffile.baseName() + "/content.xml");
 
     if( !file->open( QIODevice::ReadOnly ) )
     {
@@ -3238,7 +3239,7 @@ bool Reportgen::createInfoFile(QFileInfo odffile, QFileInfo zieldatei)
         }
     }
 
-    QFile *file1 = new QFile( getWorkingDir() + "/" + zieldatei.fileName() );
+    QFile *file1 = new QFile( QDir::tempPath() + "/" + zieldatei.fileName() );
 
     if(!file1->open(QIODevice::WriteOnly | QIODevice::Truncate))
     {

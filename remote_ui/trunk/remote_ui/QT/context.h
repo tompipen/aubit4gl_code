@@ -30,10 +30,11 @@ public:
    bool b_arrlinech;
    bool b_scrlinech;
    bool b_arrcountch;
-   bool b_constrained;
    void sendBeforeEvent();
    void sendAfterEvent();
    void checkOptions();
+   void setConstrained(bool value) { b_constrained = value; }
+   bool getConstrained() { return b_constrained; }
    void setLastFocusWidget(QWidget*);
    QWidget *lastFocusWidget();
    QList<QWidget*> ql_formFields;
@@ -54,7 +55,7 @@ private:
    void setRowChanged();
    int rowChangedCnt;
    QWidget *qw_lastfocus;
-
+   bool b_constrained;
 
 public slots:
    void screenRecordRowChanged(const QModelIndex &current, const QModelIndex &previous);

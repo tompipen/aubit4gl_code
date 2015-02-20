@@ -58,6 +58,7 @@ public slots:
    void aboutVDC(QWidget *parent = 0);
    void convertTextToIso();
    void removeIni();
+   void saveSettingsOnServer();
    void setAutoUpdate();
    void setRememberMenu();
    void clearIniFile();
@@ -149,6 +150,7 @@ private:
    QAction *format3;
    QAction *format4;
 
+   QAction *settingsServer;
    QAction *autoUpdateAction;
    QAction *rememberMenuAction;
    QAction *convertText;

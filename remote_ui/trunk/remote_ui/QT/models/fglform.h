@@ -116,7 +116,7 @@ public:
    void setBrowser(WebBrowser *webBrowser) { b_browser = webBrowser; };
    WebBrowser* getBrowser() { return b_browser; };
 
-   void setConstrained(bool value);
+   void setConstrained(bool value) { b_constrained = value; }
    void showEvent(QShowEvent *);
    void setToolBar(ToolBar*);
    void setToolBar(QDomDocument);
@@ -145,7 +145,7 @@ public:
    //void setCurrentField(QWidget* widget = NULL) { widget->setFocus(); currentWidget = widget; };
    void setCurrentField(QString, bool sendEvents = true);
    QMenu* createMenuHideShowFields(QObject*);
-   QString formName();
+   QString formName() { return this->qs_formfile; }
    void setFormName(QString);
    void showColorBar(QString);
 

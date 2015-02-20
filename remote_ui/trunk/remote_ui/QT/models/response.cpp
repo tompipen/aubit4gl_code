@@ -197,7 +197,7 @@ MainFrame::vdcdebug("Response","addSyncValues", "");
 
    if(p_currForm->getConstrained())
    {
-       p_currForm->context->b_constrained = false;
+       p_currForm->context->setConstrained(false);
    }
    for(int i=0; i<p_currForm->context->fieldList().count(); i++){
       QDomElement syncValueElement = this->createElement("SV");

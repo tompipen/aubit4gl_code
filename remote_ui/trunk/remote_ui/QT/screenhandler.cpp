@@ -1440,7 +1440,8 @@ MainFrame::vdcdebug("ScreenHandler","setFieldEnabled", "QString fieldName, bool 
 
    if(context->fieldList().size() == 1)
    {
-      p_fglform->setCurrentWidget(widget);
+       QWidget *myWidget = p_fglform->context->fieldList().first();
+       p_fglform->setCurrentWidget(myWidget);
    }
 
 }
@@ -2415,6 +2416,17 @@ if(qsl_triggereds.size() > 0)
              if(p_fglform->displayArray())
              {
                     tableView->restoreSortOrder();
+             }
+         }
+
+         if(p_fglform->construct())
+         {
+             if(p_fglform->getConstrained())
+             {
+                 p_fglform->context->setConstrained(p_fglform->getConstrained());
+                 p_fglform->context->ql_formFields = p_fglform->getConstrainList();
+                 QWidget *myWidget = p_fglform->context->fieldList().first();
+                 p_fglform->setCurrentField(myWidget->objectName(), false);
              }
          }
 

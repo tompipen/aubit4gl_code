@@ -71,6 +71,11 @@ public:
    bool touched();
    void setFormat(QString f) { qs_format = f; };
    QString format() { return qs_format; };
+
+   void setNoShow(bool ro) { b_isOnlyHidden = ro; }
+   bool getNoShow() { return b_isOnlyHidden; }
+   void setIsHidden(bool ro) { b_isHidden = ro; }
+   bool getIsHidden() { return b_isHidden; }
 /*
    virtual QString text(int row = 0);
    virtual void setText(QString s = "", int row = 0);
@@ -90,6 +95,8 @@ protected:
    QString qs_sqlTabName;
    QString qs_sqlType;
    QString qs_defaultValue;
+   bool b_isOnlyHidden;
+   bool b_isHidden;
    bool b_noEntry;
    bool b_notNull;
    bool b_required;
@@ -126,6 +133,11 @@ public:
     int w;
     int scroll;
 
+
+    void setNoShow(bool ro) { b_isOnlyHidden = ro; }
+    bool getNoShow() { return b_isOnlyHidden; }
+    void setIsHidden(bool ro) { b_isHidden = ro; }
+    bool getIsHidden() { return b_isHidden; }
 
     QString getSqlType() { return qs_oldsql; };
     void setNoEntry(bool ro);
@@ -166,6 +178,8 @@ private:
     bool b_autoNext;
     bool b_required;
     bool b_compress;
+    bool b_isHidden;
+    bool b_isOnlyHidden;
     QString qs_shift;
     const QValidator* valid;
     QString qs_default;
@@ -335,7 +349,16 @@ public:
     bool img;
     QString fieldValue; //Attribute to check that the image is changed(avoiding repaint of the whole mask if the same image is displayed)
     int x,y,w;
-    int isFormHidden;
+
+    void setIsHidden(bool ro) { b_isHidden = ro; }
+    bool getIsHidden() { return b_isHidden; }
+
+    void setNoShow(bool ro) { b_noshow = ro; }
+    bool getNoShow() { return b_noshow; }
+
+private:
+    bool b_isHidden;
+    bool b_noshow;
 
 };
 
@@ -347,6 +370,7 @@ public:
    ProgressBar(QWidget *parent = 0);
    QString name;
    QString colName;
+
    void setDefaultValue(QString def) { qs_default = def; };
    QString defaultValue() { return qs_default; };
 

@@ -18,13 +18,17 @@
 #include <QDomDocument>
 #include <QSplitter>
 #include <QFileDialog>
+
 #include <mainframe.h>
+
 #include <models/fglform.h>
 #include <models/statusbar.h>
 #include <models/toolbar.h>
+
 #include <fieldparsers/xml2fields.h>
 #include <fieldparsers/xml2form.h>
 #include <fieldparsers/xmlparser.h>
+
 #include <xmlparsers/xml2menu.h>
 #include <xmlparsers/xml2style.h>
 
@@ -1696,7 +1700,7 @@ QMenu* FglForm::createMenuHideShowFields(QObject *obj)
         for(int i=0; i < this->ql_fglFields.count(); i++) {
             if(Label *la = qobject_cast<Label*> (this->findFieldByName(this->ql_fglFields.at(i)->colName())))
             {
-                if(!la->isFormHidden)
+                if(!la->getIsHidden())
                 {
                     int hideColumn = VDC::readSettingsFromIni(formName(), QString(ql_fglFields.at(i)->colName() + "/hideColumn")).toInt();
                     if(!la->text().isEmpty()) {
@@ -1704,10 +1708,10 @@ QMenu* FglForm::createMenuHideShowFields(QObject *obj)
                         rightAct->setObjectName(ql_fglFields.at(i)->colName());
                         rightAct->setCheckable(true);
                         if(hideColumn > 0) {
-                            rightAct->setChecked(true);
+                            rightAct->setChecked(false);
 
                         } else {
-                            rightAct->setChecked(false);
+                            rightAct->setChecked(true);
                         }
                         hideFields->addAction(rightAct);
                      } else {
@@ -1718,7 +1722,7 @@ QMenu* FglForm::createMenuHideShowFields(QObject *obj)
             }
         }
         hideFields->addSeparator();
-        resetAct = new QAction("Standardeinstellung wiederherstellen", this);
+        resetAct = new QAction("show default fields", this);
         connect(resetAct, SIGNAL(triggered()), this, SLOT(resetFieldSettings()));
         hideFields->addAction(resetAct);
         connect(hideFields, SIGNAL(triggered(QAction*)), this, SLOT(saveFieldSettings(QAction*)));
@@ -2879,10 +2883,9 @@ if(context)
 {
     if(b_constrained)
     {
-        context->b_constrained = b_constrained;
+        context->setConstrained(b_constrained);
         context->ql_formFields = getConstrainList();
     }
-
 }
 //qDebug() << "context->fieldList()" << context->fieldList();
 
@@ -3102,7 +3105,11 @@ MainFrame::vdcdebug("FglForm","prevfield", "");
        return;
    }
 
-
+   if(b_constrained)
+   {
+       context->setConstrained(b_constrained);
+       context->ql_formFields = getConstrainList();
+   }
 
 
    if(!screenRecord()){
@@ -5239,13 +5246,6 @@ void FglForm::setFormName(QString name)
   this->qs_formfile = name.trimmed();
 }
 
-QString FglForm::formName()
-{
-
-  return this->qs_formfile;
-}
-
-
 /*
 QSize FglForm::sizeHint() const
 {
@@ -5261,15 +5261,8 @@ QSize FglForm::sizeHint() const
 }
 */
 
-void FglForm::setConstrained(bool value)
-{
-    qDebug() << "ich werde ausgefuehrt";
-    b_constrained = value;
-}
-
 void FglForm::showColorBar(QString color)
 {
-
   QPalette pal = qw_colorbar->palette();
   pal.setColor(QPalette::All, QPalette::Window, QColor(color));
   qw_colorbar->setPalette(pal);
@@ -5281,13 +5274,10 @@ void FglForm::saveScreenshot()
     QString fileName = QFileDialog::getSaveFileName(this, tr("Save File"),
                                                     "Screenshot.png",
                                                     tr("Image File(*.png *.gif *.jpg *.jpeg)"));
-    if(this)
+    if(!fileName.isEmpty())
     {
-        if(!fileName.isEmpty())
-        {
-            QPixmap p = QPixmap::grabWidget(this);
-            p.save(fileName);
-        }
+        QPixmap p = QPixmap::grabWidget(this);
+        p.save(fileName);
     }
 }
 
