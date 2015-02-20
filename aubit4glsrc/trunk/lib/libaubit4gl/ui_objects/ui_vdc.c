@@ -631,9 +631,43 @@ char *modulname=NULL;
   return 1;
 }
  
- 
- 
- 
+static int ui_vdc_settingonserver(long *objectID_IgnoredAsAlways0,int n) {
+int okToProcess=1;
+
+int _no=1;
+struct BINDING _obind[1]={
+    {NULL,0,0,0,0,0,NULL}
+};
+char rval_0[512];
+char *modulname=NULL;
+
+/* END OF DEFINE SECTION */
+
+  if (n!=0) {
+    A4GL_pop_args(n);
+    okToProcess=0;
+  }
+
+  // Set up output binding for our parameters
+  if (okToProcess) {
+    _obind[0].ptr=&rval_0;
+    _obind[0].size=512;
+  }
+
+  if (okToProcess) {
+      A4GL_ui_frontcall("INTERNAL","ui.vdc.settingonserver",NULL,0,_obind,_no );
+  }
+
+
+  // Set up output binding for our parameters
+  if (!okToProcess) {
+    A4GL_push_null(DTYPE_CHAR,1);
+  } else {
+    A4GL_push_char(rval_0);
+  }
+  return 1;
+}
+
 static int ui_vdc_openeditor(long *objectID_IgnoredAsAlways0,int n) {
 int okToProcess=1;
 int _ni=2;
@@ -1062,6 +1096,7 @@ A4GL_add_object_type("ui.vdc");
   A4GL_add_datatype_function_i (DTYPE_OBJECT, ":ui.vdc.execute", (void *)  ui_vdc_execute);
   A4GL_add_datatype_function_i (DTYPE_OBJECT, ":ui.vdc.getstdofficeprog", (void *)  ui_vdc_getstdofficeprog);
   A4GL_add_datatype_function_i (DTYPE_OBJECT, ":ui.vdc.get_last_sort", (void *)  ui_vdc_get_last_sort);
+  A4GL_add_datatype_function_i (DTYPE_OBJECT, ":ui.vdc.settingsonserver", (void *)  ui_vdc_settingonserver);
   A4GL_add_datatype_function_i (DTYPE_OBJECT, ":ui.vdc.openeditor", (void *)  ui_vdc_openeditor);
   A4GL_add_datatype_function_i (DTYPE_OBJECT, ":ui.vdc.getdevice", (void *)  ui_vdc_getdevice);
   A4GL_add_datatype_function_i (DTYPE_OBJECT, ":ui.vdc.setclipboard", (void *)  ui_vdc_setclipboard);
