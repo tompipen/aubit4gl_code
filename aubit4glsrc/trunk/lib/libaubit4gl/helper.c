@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper.c,v 1.100 2015-02-12 13:11:34 mikeaubury Exp $
+# $Id: helper.c,v 1.101 2015-02-23 10:36:35 mikeaubury Exp $
 #
 */
 
@@ -1643,11 +1643,11 @@ A4GL_tea_string_decipher (char *s)
 void
 tea_8c_encipher (const uint32_t *v, uint32_t *w, const uint32_t *k)
 {
-  unsigned long y;
-  unsigned long z;
-  unsigned long sum;
-  unsigned long delta;
-  unsigned long n;
+  uint32_t y;
+  uint32_t z;
+  uint32_t sum;
+  uint32_t delta;
+  uint32_t n;
   //unsigned long l;
   y = v[0];
   z = v[1];
@@ -1671,7 +1671,7 @@ tea_8c_encipher (const uint32_t *v, uint32_t *w, const uint32_t *k)
 void
 tea_8c_decipher (const uint32_t *const v, uint32_t *const w, const uint32_t *const k)
 {
-  register unsigned long y = v[0], z = v[1], sum = 0xC6EF3720, delta = 0x9E3779B9, n = 32;
+  register uint32_t y = v[0], z = v[1], sum = 0xC6EF3720, delta = 0x9E3779B9, n = 32;
 
   /* sum = delta<<5, in general sum = delta * n */
 
