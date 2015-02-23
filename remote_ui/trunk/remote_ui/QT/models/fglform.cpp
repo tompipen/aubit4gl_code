@@ -939,17 +939,13 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
                     {
                        tv->ignoreFieldChangeEvent = true;
                        connect(fieldChangeTimer, SIGNAL(timeout()), this, SLOT(sendFieldChange()));
-                       fieldChangeTimer->start(200);
+                       fieldChangeTimer->start(500);
                     }
                 } else {
                     if(TableView *tv = qobject_cast<TableView *> (currentField()))
                     {
                         tv->ignoreFieldChangeEvent = false;
                         isFieldChangeSend = false;
-                    }
-                    if(fieldChangeTimer->isActive())
-                    {
-                        fieldChangeTimer->stop();
                     }
                 }
                 keyTimer->restart();
@@ -5218,7 +5214,7 @@ void FglForm::sendFieldChange()
     if(!isFieldChangeSend)
     {
         if(TableView *tv = qobject_cast<TableView *> (currentField()))
-        {
+        {            
             QSortFilterProxyModel *proxyModel = qobject_cast<QSortFilterProxyModel *> (tv->model());
             TableModel *table = qobject_cast<TableModel *> (proxyModel->sourceModel());
             tv->ignoreFieldChangeEvent = false;
@@ -5227,11 +5223,11 @@ void FglForm::sendFieldChange()
 
             if(tv->currentIndex().row() > 0)
             {
-                prevIndex = table->index(tv->currentIndex().row()-1, tv->currentIndex().column());
-                nextIndex = table->index(tv->currentIndex().row(),tv->currentIndex().column());
+                prevIndex = proxyModel->mapFromSource(table->index(tv->currentIndex().row()-1, tv->currentIndex().column()));
+                nextIndex = proxyModel->mapFromSource(table->index(tv->currentIndex().row(),tv->currentIndex().column()));
             } else {
-                prevIndex = table->index(0, 0);
-                nextIndex = table->index(0, 0);
+                prevIndex = proxyModel->mapFromSource(table->index(0, 0));
+                nextIndex = proxyModel->mapFromSource(table->index(0, 0));
             }
 
             emit tv->fieldChanged(nextIndex, prevIndex);

@@ -447,13 +447,6 @@ void XmlParser::handleTableColumn(const QDomNode& xmlNode){
        recordHeight += height;
    }
 
-   //Its enough to save the state at the end of the creation. otherwise on every column it will be saved all states(with 15 coloumns 15 times)
-   QByteArray state = VDC::readSettingsFromIni1(formName, QString(p_screenRecord->accessibleName() + "/state"));
-   if(state.isEmpty())
-   {
-       VDC::saveSettingsToIni(formName, QString(p_screenRecord->accessibleName() + "/oldstate"), header->saveState());
-   }
-   header->restoreState(state);
 
    QDomNodeList children = xmlNode.childNodes();
    for(int i=0; i<children.count(); ++i){
@@ -556,10 +549,25 @@ void XmlParser::handleTableColumn(const QDomNode& xmlNode){
       ql_formFields << (QWidget*) de;
    }
 
-   state = VDC::readSettingsFromIni1(formName, QString(p_screenRecord->accessibleName() + "/state"));
+   //Its enough to save the state at the end of the creation. otherwise on every column it will be saved all states(with 15 coloumns 15 times)
+   QByteArray state = VDC::readSettingsFromIni1(formName, QString(p_screenRecord->accessibleName() + "/state"));
    if(state.isEmpty())
    {
        VDC::saveSettingsToIni(formName, QString(p_screenRecord->accessibleName() + "/oldstate"), header->saveState());
+   }
+   if(FglForm *fglform = qobject_cast<FglForm*> (p_fglform))
+   {
+      int lastColumnCount = VDC::readSettingsFromIni(formName, "columnCount").toInt();
+      if(ql_formFields.count() == lastColumnCount+1)
+      {
+          header->restoreState(state);
+      } else {
+          VDC::removeSettingsFromIni(formName, QString(p_screenRecord->accessibleName() + "/state"));
+          for(int i=0; i < ql_formFields.count(); i++)
+          {
+              VDC::removeSettingsFromIni(formName, QString(p_screenRecord->accessibleName() + "/" + ql_formFields.at(i)->objectName() + "/hideColumn"));
+          }
+      }
    }
 
 

@@ -3,6 +3,7 @@
 #include <QUrl>
 #include <QDebug>
 #include <iostream>
+#include <QNetworkProxyQuery>
 
 int main(int argc, char *argv[])
 {
@@ -41,12 +42,28 @@ VDCUpdate::VDCUpdate() : QWidget()
     vLayout->addWidget(getProgressBar(), Qt::AlignRight);
     vLayout->addWidget(cButton, 0, Qt::AlignRight);
 
-    mLabel->setText(tr("Connecting to Download Server..."));
+    mLabel->setText(tr("Searching for Proxy..."));
 
     getProgressBar()->setValue(0);
     getProgressBar()->setStyleSheet("QProgressBar { font-weight: bold; text-align: center; } ");
 
     this->setLayout(vLayout);
+
+
+    QNetworkProxyQuery npq(QUrl("http://www.google.com"));
+    QList<QNetworkProxy> listOfProxies = QNetworkProxyFactory::systemProxyForQuery(npq);
+    foreach(QNetworkProxy proxy, listOfProxies)
+    {
+        if(!proxy.hostName().isEmpty())
+        {
+            QNetworkProxy::setApplicationProxy(proxy);
+            qDebug() << "proxyuser: " << proxy.user();
+            qDebug() << "proxyhost: " <<proxy.hostName();
+            break;
+        }
+    }
+
+    mLabel->setText(tr("Connecting to Download Server..."));
     logMessage(QString("[DEBUG] ###START: Initialisiere Patchlauf - %1").arg(QDate::currentDate().toString()));
 
 }

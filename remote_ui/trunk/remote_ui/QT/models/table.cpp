@@ -617,6 +617,7 @@ void TableView::writeSettings(QAction *action)
             {
                 if(columnLabels.at(i)->objectName() == action->objectName())
                 {
+                    VDC::saveSettingsToIni(fglform->formName(), "columnCount", QString::number(fglform->ql_formFields.count()));
                     if(!columnLabels.at(i)->objectName().isNull())
                     {
                         int hideColumn = VDC::readSettingsFromIni(fglform->formName(), QString(this->accessibleName() + "/" + columnLabels.at(i)->objectName() + "/hideColumn")).toInt();

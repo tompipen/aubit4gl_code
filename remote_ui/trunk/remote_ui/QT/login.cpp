@@ -230,7 +230,7 @@ void LoginForm::createMenu(QMenuBar *menu)
     connect(ooStdProg, SIGNAL(triggered()), this, SLOT(setOfficeInstallation()));
     options->addAction(ooStdProg);
 
-    settingsServer = new QAction(tr("&Form settings on Server"), this);
+    settingsServer = new QAction(tr("&Form Settings on Server"), this);
     connect(settingsServer, SIGNAL(triggered()), this, SLOT(saveSettingsOnServer()));
     settingsServer->setCheckable(true);
     if(VDC::readSettingsFromIni("", "saveSettingsOnServer").toInt() == 0)
