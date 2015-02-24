@@ -447,6 +447,7 @@ void XmlParser::handleTableColumn(const QDomNode& xmlNode){
        recordHeight += height;
    }
 
+   QList<QWidget*> labelList = ql_formFields;
 
    QDomNodeList children = xmlNode.childNodes();
    for(int i=0; i<children.count(); ++i){
@@ -466,7 +467,7 @@ void XmlParser::handleTableColumn(const QDomNode& xmlNode){
       p_screenRecord->setColumnName(i,colName);
  
       QString nodeName = currentElement.nodeName();
- 
+
       int formW = currentElement.firstChild().toElement().attribute("width").toInt();
       QWidget *wi = WidgetHelper::createFormWidget(currentElement);
       TableColumn *tableColumn = (TableColumn*) WidgetHelper::createFormField(currentElement, p_screenRecord);
@@ -555,19 +556,20 @@ void XmlParser::handleTableColumn(const QDomNode& xmlNode){
    {
        VDC::saveSettingsToIni(formName, QString(p_screenRecord->accessibleName() + "/oldstate"), header->saveState());
    }
-   if(FglForm *fglform = qobject_cast<FglForm*> (p_fglform))
+
+   int lastColumnCount = VDC::readSettingsFromIni(formName, "columnCount").toInt();
+   if(lastColumnCount > 0)
    {
-      int lastColumnCount = VDC::readSettingsFromIni(formName, "columnCount").toInt();
-      if(ql_formFields.count() == lastColumnCount+1)
-      {
-          header->restoreState(state);
-      } else {
-          VDC::removeSettingsFromIni(formName, QString(p_screenRecord->accessibleName() + "/state"));
-          for(int i=0; i < ql_formFields.count(); i++)
-          {
-              VDC::removeSettingsFromIni(formName, QString(p_screenRecord->accessibleName() + "/" + ql_formFields.at(i)->objectName() + "/hideColumn"));
-          }
-      }
+       if(labelList.count() == lastColumnCount)
+       {
+           header->restoreState(state);
+       } else {
+           VDC::removeSettingsFromIni(formName, QString(p_screenRecord->accessibleName() + "/state"));
+           for(int i=0; i < ql_formFields.count(); i++)
+           {
+               VDC::removeSettingsFromIni(formName, QString(p_screenRecord->accessibleName() + "/" + ql_formFields.at(i)->objectName() + "/hideColumn"));
+           }
+       }
    }
 
 
