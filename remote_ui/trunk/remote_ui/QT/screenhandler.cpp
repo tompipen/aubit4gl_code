@@ -70,7 +70,7 @@ MainFrame::vdcdebug("ScreenHandler","ScreenHandler", "QObject *parent");
    mDummyMessageDialogBox = NULL;
    protocolCnt = 0;
    protocolTimer = NULL;
-   lastProtocolCmd = "";
+   sendWaitForServer = 1;
    this->installEventFilter(this);
    //QApplication::processEvents();
  }
@@ -2727,7 +2727,7 @@ Fgl::Event id;
       } else {
         fglFormResponse(qs_resp);
       }
-      QMetaObject::invokeMethod(this, "startProtocolTimer", Qt::DirectConnection, Q_ARG(QString, qs_resp));
+      QMetaObject::invokeMethod(this, "startProtocolTimer", Qt::DirectConnection);
    }
    else{
        QDomNodeList qdl_node;
@@ -2764,7 +2764,7 @@ Fgl::Event id;
        } else {
          fglFormResponse(qs_resp);
        }
-       QMetaObject::invokeMethod(this, "startProtocolTimer", Qt::DirectConnection, Q_ARG(QString, qs_resp));
+       QMetaObject::invokeMethod(this, "startProtocolTimer", Qt::DirectConnection);
    }
 
 
@@ -2796,7 +2796,7 @@ if(this->ph)
 } else {
   fglFormResponse(cmd);
 }
-QMetaObject::invokeMethod(this, "startProtocolTimer", Qt::DirectConnection, Q_ARG(QString, cmd));
+QMetaObject::invokeMethod(this, "startProtocolTimer", Qt::DirectConnection);
 
 }
 
@@ -4600,13 +4600,14 @@ void ScreenHandler::setClipboard(QString content)
     QApplication::clipboard()->setText(content);
 }
 
-void ScreenHandler::startProtocolTimer(QString cmd)
+void ScreenHandler::startProtocolTimer()
 {
-    lastProtocolCmd = cmd;
+    sendWaitForServer = 1;
     if(protocolTimer == NULL)
     {
         protocolTimer = new QTimer(0);
         protocolTimer->moveToThread(this->thread());
+        protocolTimer->setSingleShot(true);
         connect(protocolTimer, SIGNAL(timeout()), this, SLOT(protocolTimeout()), Qt::DirectConnection);
         protocolTimer->setInterval(5000);
     }
@@ -4620,37 +4621,16 @@ void ScreenHandler::startProtocolTimer(QString cmd)
 void ScreenHandler::protocolTimeout()
 {
 
-    if(protocolCnt == 0)
+    if(protocolCnt == 0 && sendWaitForServer == 1)
     {
         QMetaObject::invokeMethod(p_fglform, "setMessageWithIcon", Qt::QueuedConnection, Q_ARG(QString, "Waiting for Server."), Q_ARG(QString, "pics:progressbar.gif"));
     }
-
     protocolCnt++;
-
-    if(protocolCnt >= 10)
-    {
-        if(protocolTimer)
-        {
-            protocolTimer->stop();
-        }
-    }
-
 }
 
-void ScreenHandler::resetProtocolCnt()
+void ScreenHandler::stopProtocolTimer()
 {
-            protocolCnt = 0;
-            if(protocolTimer)
-            {
-                protocolTimer->start();
-            }
-}
-
-
-void ScreenHandler::stopProtocolTimer(QString bla)
-{
-    Q_UNUSED(bla);
-    lastProtocolCmd = "";
+    sendWaitForServer = 0;
     if(protocolTimer)
     {
         if(protocolTimer->isActive())

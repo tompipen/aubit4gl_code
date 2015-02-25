@@ -5221,13 +5221,26 @@ void FglForm::sendFieldChange()
             QModelIndex prevIndex;
             QModelIndex nextIndex;
 
-            if(tv->currentIndex().row() > 0)
-            {
-                prevIndex = proxyModel->mapFromSource(table->index(tv->currentIndex().row()-1, tv->currentIndex().column()));
-                nextIndex = proxyModel->mapFromSource(table->index(tv->currentIndex().row(),tv->currentIndex().column()));
-            } else {
-                prevIndex = proxyModel->mapFromSource(table->index(0, 0));
-                nextIndex = proxyModel->mapFromSource(table->index(0, 0));
+            if(inputArray()) {
+                if(tv->currentIndex().row() > 0)
+                {
+                    prevIndex = proxyModel->mapFromSource(table->index(tv->currentIndex().row()-1, tv->currentIndex().column()));
+                    nextIndex = proxyModel->mapFromSource(table->index(tv->currentIndex().row(),tv->currentIndex().column()));
+                } else {
+                    prevIndex = proxyModel->mapFromSource(table->index(0, 0));
+                    nextIndex = proxyModel->mapFromSource(table->index(0, 0));
+                }
+            }
+
+            if(displayArray()) {
+                if(tv->currentIndex().row() > 0)
+                {
+                    prevIndex = table->index(tv->currentIndex().row()-1, tv->currentIndex().column());
+                    nextIndex = table->index(tv->currentIndex().row(),tv->currentIndex().column());
+                } else {
+                    prevIndex = table->index(0, 0);
+                    nextIndex = table->index(0, 0);
+                }
             }
 
             emit tv->fieldChanged(nextIndex, prevIndex);

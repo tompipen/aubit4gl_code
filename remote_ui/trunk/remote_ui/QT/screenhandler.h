@@ -129,7 +129,7 @@ private:
    int i_currthread;
    int hasWindow;
    QTimer *protocolTimer;
-   QString lastProtocolCmd;
+   int sendWaitForServer;
    int protocolCnt;
 
 
@@ -293,10 +293,9 @@ public slots:
    void setWaitCursor();
    void showWindow();
 
-   void startProtocolTimer(QString cmd);
-   void stopProtocolTimer(QString);
+   void startProtocolTimer();
+   void stopProtocolTimer();
    void protocolTimeout();
-   void resetProtocolCnt();
 
    void openLocalFile(QString);
    void openEmailWithAttach(QString);

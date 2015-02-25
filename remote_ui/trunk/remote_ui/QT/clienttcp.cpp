@@ -284,6 +284,12 @@ ClientSocket::ClientSocket(QObject *parent, QString name, QString pass, QString 
    //
   // ph.p_currScreenHandler = p_currScreenHandler;
 
+   QList<ScreenHandler*> *l_ql_screenhandler = MainFrame::ql_screenhandler;
+   if(l_ql_screenhandler->count() > 0)
+   {
+       QMetaObject::invokeMethod(l_ql_screenhandler->last(), "stopProtocolTimer", Qt::QueuedConnection);
+   }
+
    connect(this, SIGNAL(readyRead()),    this, SLOT(readClient()));
    connect(this, SIGNAL(disconnected()), this, SLOT(deleteLater()));
 
@@ -745,7 +751,7 @@ p_currScreenHandler = NULL;
    }
 
    QDomDocument doc;
-   QMetaObject::invokeMethod(p_currScreenHandler, "stopProtocolTimer", Qt::QueuedConnection, Q_ARG(QString, qs_protocolCommand));
+   QMetaObject::invokeMethod(p_currScreenHandler, "stopProtocolTimer", Qt::QueuedConnection);
    
    for(int i=0; i<qsl_xmlCommands.size(); i++)
    {
@@ -870,7 +876,7 @@ void ProtocolHandler::outputTree(QDomNode domNode)
 
 MainFrame::vdcdebug("ProtocolHandler","outputTree", "QDomNode domNode");
    QDomElement childElement = domNode.toElement();
-   QMetaObject::invokeMethod(p_currScreenHandler, "stopProtocolTimer", Qt::QueuedConnection, Q_ARG(QString, "bla"));
+   QMetaObject::invokeMethod(p_currScreenHandler, "stopProtocolTimer", Qt::QueuedConnection);
 if(childElement.nodeName() == "PROGRAMSTARTUP"){
       handleStartup(childElement);
       QString programName = childElement.attribute("PROGRAMNAME");
@@ -1473,7 +1479,6 @@ if(childElement.nodeName() == "PROGRAMSTARTUP"){
                  params << valuesElement.text();
               }
               QMetaObject::invokeMethod(p_currScreenHandler, "createTextEditor", Qt::QueuedConnection, Q_ARG(QString, params.at(0)), Q_ARG(QString, params.at(1)), Q_ARG(int, params.at(2).toInt()), Q_ARG(bool, false));
-
               waitTimer::msleep(5000);
               while(!p_currScreenHandler->mTextEditor->getIsEditorFinished())
               {

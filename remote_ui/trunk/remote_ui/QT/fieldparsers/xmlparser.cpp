@@ -558,19 +558,18 @@ void XmlParser::handleTableColumn(const QDomNode& xmlNode){
    }
 
    int lastColumnCount = VDC::readSettingsFromIni(formName, "columnCount").toInt();
-   if(lastColumnCount > 0)
+   if(labelList.count() == lastColumnCount || lastColumnCount == 0)
    {
-       if(labelList.count() == lastColumnCount)
+       header->restoreState(state);
+   } else {
+       VDC::removeSettingsFromIni(formName, QString(p_screenRecord->accessibleName() + "/state"));
+       for(int i=0; i < ql_formFields.count(); i++)
        {
-           header->restoreState(state);
-       } else {
-           VDC::removeSettingsFromIni(formName, QString(p_screenRecord->accessibleName() + "/state"));
-           for(int i=0; i < ql_formFields.count(); i++)
-           {
-               VDC::removeSettingsFromIni(formName, QString(p_screenRecord->accessibleName() + "/" + ql_formFields.at(i)->objectName() + "/hideColumn"));
-           }
+           VDC::removeSettingsFromIni(formName, QString(p_screenRecord->accessibleName() + "/" + ql_formFields.at(i)->objectName() + "/hideColumn"));
        }
    }
+
+   VDC::saveSettingsToIni(formName, "columnCount", QString::number(labelList.count()));
 
 
 /*
