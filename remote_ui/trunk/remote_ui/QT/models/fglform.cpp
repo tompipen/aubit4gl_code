@@ -580,6 +580,16 @@ MainFrame::vdcdebug("FglForm","actionTriggered", "");
 
    //qDebug() << "ACTION TRIGGERED!" << obj;
    if(Action *action = qobject_cast<Action *> (obj)){
+
+      if(action->acceleratorName() == "return") {
+          Fgl::Event event;
+          event.type = Fgl::AFTER_ROW_EVENT;
+          fieldEvent(event);
+
+          event.type = Fgl::AFTER_INPUT_EVENT;
+          fieldEvent(event);
+      }
+
       if(!handleGuiAction(action)){
 
           Fgl::Event ev;
@@ -1858,6 +1868,7 @@ Fgl::Event FglForm::getFormEvent(Fgl::Event type, QWidget *widget)
           for(int i=0; i<ql_events.size(); i++){
              Fgl::Event event = ql_events.at(i);
              if((event.attribute.toLower() == type.attribute.toLower() ||
+
                  Fgl::keyToString(event.attribute).toLower() == type.attribute.toLower()) && event.id != "-1"){
                 if(event.id.size() > 0){
                     if(type.field.size() > 0)
@@ -2250,6 +2261,14 @@ this->clearFieldFocus();
 }
 if(inputArray() || displayArray())
 {
+
+    Fgl::Event event;
+    event.type = Fgl::AFTER_ROW_EVENT;
+    fieldEvent(event);
+
+    event.type = Fgl::AFTER_INPUT_EVENT;
+    fieldEvent(event);
+
     if(TableView *tableView = qobject_cast<TableView *> (currentField())){
        if(tableView->curr_editor != NULL)
        {
