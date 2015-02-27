@@ -580,16 +580,6 @@ MainFrame::vdcdebug("FglForm","actionTriggered", "");
 
    //qDebug() << "ACTION TRIGGERED!" << obj;
    if(Action *action = qobject_cast<Action *> (obj)){
-
-      if(action->acceleratorName() == "return") {
-          Fgl::Event event;
-          event.type = Fgl::AFTER_ROW_EVENT;
-          fieldEvent(event);
-
-          event.type = Fgl::AFTER_INPUT_EVENT;
-          fieldEvent(event);
-      }
-
       if(!handleGuiAction(action)){
 
           Fgl::Event ev;
@@ -1555,13 +1545,8 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
           } else {
               if (TableView *tv = qobject_cast<TableView*> (obj->findChild<QTableView*>()))
               {
-                  QSortFilterProxyModel *proxyModel = static_cast<QSortFilterProxyModel*> (tv->model());
-                  TableModel *table = static_cast<TableModel*> (proxyModel->sourceModel());
-                  if(!table->b_input)
-                  {
-                      emit accepted();
-                      return true;
-                  }
+                  nextfield();
+                  return true;
               }
               if(!obj->inherits("QComboBoxListView") && !obj->inherits("QComboBoxPrivateContainer")){
                   nextfield();
@@ -2261,14 +2246,6 @@ this->clearFieldFocus();
 }
 if(inputArray() || displayArray())
 {
-
-    Fgl::Event event;
-    event.type = Fgl::AFTER_ROW_EVENT;
-    fieldEvent(event);
-
-    event.type = Fgl::AFTER_INPUT_EVENT;
-    fieldEvent(event);
-
     if(TableView *tableView = qobject_cast<TableView *> (currentField())){
        if(tableView->curr_editor != NULL)
        {
@@ -2290,7 +2267,19 @@ if(inputArray() || displayArray())
           event.attribute = tableView->curr_editor->objectName();
           fieldEvent(event);
         }
+
+       Fgl::Event event;
+       event.type = Fgl::AFTER_ROW_EVENT;
+       fieldEvent(event);
+
     }
+}
+
+if(!inputArray())
+{
+    Fgl::Event event;
+    event.type = Fgl::AFTER_INPUT_EVENT;
+    fieldEvent(event);
 }
 }
 
@@ -2363,9 +2352,18 @@ MainFrame::vdcdebug("FglForm","acceptTriggered", "");
 void FglForm::cancelTriggered()
 {
 MainFrame::vdcdebug("FglForm","cancelTriggered", "");
-   Fgl::Event ievent;
-   ievent.id = "INTERRUPT";
-   addToQueue(ievent);
+    Fgl::Event event;
+    event.type = Fgl::AFTER_ROW_EVENT;
+    fieldEvent(event);
+
+    if(displayArray()) {
+        event.type = Fgl::AFTER_INPUT_EVENT;
+        fieldEvent(event);
+    }
+
+    Fgl::Event ievent;
+    ievent.id = "INTERRUPT";
+    addToQueue(ievent);
 }
 
 //------------------------------------------------------------------------------
