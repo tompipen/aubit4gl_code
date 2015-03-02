@@ -1545,7 +1545,7 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
           } else {
               if (TableView *tv = qobject_cast<TableView*> (obj->findChild<QTableView*>()))
               {
-                  nextfield();
+                  nextrow();
                   return true;
               }
               if(!obj->inherits("QComboBoxListView") && !obj->inherits("QComboBoxPrivateContainer")){
