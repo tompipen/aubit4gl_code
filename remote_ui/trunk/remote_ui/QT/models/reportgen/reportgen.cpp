@@ -1256,19 +1256,6 @@ void Reportgen::createXmlFile(int Table, int Position, QString odffile)
             }
         }
 
-
-        QStringList valueList = sed_fields.at(i).split(QRegExp("%/"));
-        if(valueList.count() >= 2)
-        {
-            QStringList valueList = sed_fields.at(i).split(QRegExp("%/"));
-            QString sedValue = valueList.at(1);
-            QString zaehlerVariable = valueList.at(0);
-
-            zaehlerVariable.replace("@", "@" + QString::number(zaehlerLevel1));
-            xmlStringLevel1.replace(valueList.at(0), sedValue);
-        }
-
-
         QString variable;
         int aktuelleEbene = 0;
         for(int j=0; j < temp_fields.count(); j++)
@@ -1373,7 +1360,7 @@ void Reportgen::createXmlFile(int Table, int Position, QString odffile)
 
     QString readLine = file1.readAll();
 
-    /*for(int i=sed_fields.count()-1; i > 0; i--)
+    for(int i=sed_fields.count()-1; i > 0; i--)
     {
         QStringList valueList = sed_fields.at(i).split(QRegExp("%/"));
 
@@ -1435,13 +1422,13 @@ void Reportgen::createXmlFile(int Table, int Position, QString odffile)
                     }
                 }
 
-                //readLine.replace(valueList.at(0), sedValue.simplified());
+                readLine.replace(valueList.at(0), sedValue.simplified());
 
                 //int prozent = i * 100 / sed_fields.count();
                 //printMsg("Prozent: " + QString::number(prozent) + " %");
             }
         }
-    }*/
+    }
 
     qDebug() << "nach der ersetzung: " << QString::number(elapsedTimer->elapsed() / 1000);
     out << readLine;
