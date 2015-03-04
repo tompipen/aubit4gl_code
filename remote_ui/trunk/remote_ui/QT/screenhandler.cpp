@@ -35,6 +35,7 @@
 #include <QMutex>
 #include "tools/vdcupdate.h"
 #include "masterupdate.h"
+#include "tools/chartwidget.h"
 
 //------------------------------------------------------------------------------
 // Method       : ScreenHandler()
@@ -4348,13 +4349,20 @@ Q_UNUSED(obj);
   w_progress->setTitle(title);
 }
 
-void ScreenHandler::setProgressText(int obj, QString text)
+void ScreenHandler::setProgressText(int obj, QString text, int percent)
 {
 Q_UNUSED(obj);
 
-  if(!w_progress)
-    return;
-  w_progress->setText1(text);
+  if(percent == 0) {
+      if(!w_progress) {
+        return;
+      }
+      w_progress->showImageProgressbar();
+      w_progress->setText1(text);
+  } else {
+      w_progress->showNativeProgressbar();
+      w_progress->setText1(percent,text);
+  }
 }
 
 int ScreenHandler::isProgressWindowOpen()
@@ -4395,8 +4403,6 @@ Q_UNUSED(obj);
           w_progress->move(pos + p_fglform->rect().center() - w_p_rect.center());
       }
   }
-
-
 
   w_progress->setVisible(vis);
 

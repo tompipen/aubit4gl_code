@@ -2176,13 +2176,17 @@ if(childElement.nodeName() == "PROGRAMSTARTUP"){
          {
 
              QStringList params;
-              for(int k=0; k<paramsElement.childNodes().count(); k++){
-                 QDomElement valuesElement = paramsElement.childNodes().at(k).toElement();
-                 params << valuesElement.text();
-              }
-              QMetaObject::invokeMethod(p_currScreenHandler, "setProgressText", Qt::QueuedConnection, Q_ARG(int, params.at(0).toInt()), Q_ARG(QString, params.at(1)));
-     //         emit setProgressText(params.at(0).toInt(), params.at(1));
+             for(int k=0; k<paramsElement.childNodes().count(); k++){
+                QDomElement valuesElement = paramsElement.childNodes().at(k).toElement();
+                params << valuesElement.text();
+             }
 
+             if(params.count() > 2)
+             {
+                 QMetaObject::invokeMethod(p_currScreenHandler, "setProgressText", Qt::QueuedConnection, Q_ARG(int, params.at(0).toInt()), Q_ARG(QString, params.at(1)), Q_ARG(int, params.at(2).toInt()));
+             } else {
+                 QMetaObject::invokeMethod(p_currScreenHandler, "setProgressText", Qt::QueuedConnection, Q_ARG(int, params.at(0).toInt()), Q_ARG(QString, params.at(1)), Q_ARG(int, 0));
+             }
          }
 
          if(qs_name == "ui.progress.close")

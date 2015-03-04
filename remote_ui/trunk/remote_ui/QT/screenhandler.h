@@ -264,7 +264,7 @@ public slots:
    //ui.progress
 
    void setProgressTitle(int, QString);
-   void setProgressText(int, QString);
+   void setProgressText(int, QString, int);
    void setProgressVisible(int, bool);
    void createProgressWindow(int);
    void closeProgressWindow(int obj);
