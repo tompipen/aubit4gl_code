@@ -1,6 +1,6 @@
 +create() THISOBJECT
 show()
 hide()
-setTitle ( title DTYPE_CHAR)
+setTitle ( title DTYPE_CHAR, percent DTYPE_INT)
 setText (text DTYPE_CHAR )
 close()
