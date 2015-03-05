@@ -57,8 +57,8 @@ void Progress::hideImageProgressbar()
 
 void Progress::showNativeProgressbar()
 {
-    progressLabel->setStyleSheet(" QProgressBar {  border: 2px solid #4a4a4a; border-radius: 5px; text-align: center } QProgressBar::chunk { background-color: #fcb10e; } ");
-    progressLabel->resize(250,20);
+    progressLabel->setStyleSheet(" QProgressBar {  border: 2px solid #b9b9b9; border-radius: 5px; text-align: center } QProgressBar::chunk { background-color: #fcb10e; } ");
+    progressLabel->setFixedWidth(250);
     progressLabel->setMaximumHeight(20);
 
     hideImageProgressbar();

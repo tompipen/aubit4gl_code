@@ -35,7 +35,6 @@
 #include <QMutex>
 #include "tools/vdcupdate.h"
 #include "masterupdate.h"
-#include "tools/chartwidget.h"
 
 //------------------------------------------------------------------------------
 // Method       : ScreenHandler()
