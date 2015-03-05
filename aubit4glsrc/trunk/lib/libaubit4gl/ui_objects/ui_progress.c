@@ -198,16 +198,17 @@ static int ui_progress_settext(long *objectID,int n) {
 int okToProcess=1;
 struct _data *data;
 struct sObject *ptr;
-int _ni=3;
-struct BINDING _ibind[3]={
-    {NULL,0,0,0,0,0,NULL},
-    {NULL,0,0,0,0,0,NULL},
-    {NULL,0,0,0,0,0,NULL}
-};
+
+   int _ni=3;
+   struct BINDING _ibind[3]={
+       {NULL,0,0,0,0,0,NULL},
+       {NULL,0,0,0,0,0,NULL},
+       {NULL,0,0,0,0,0,NULL}
+   };
+
 char *text=NULL;
 char *percent=NULL;
 
- 
 /* END OF DEFINE SECTION */
  
   if (!ensureObject("ui.progress",*objectID,&ptr)) {
@@ -216,17 +217,18 @@ char *percent=NULL;
   }
   data=ptr->objData;
  
-  if (n!=2) { 
+  if (n >2) { 
     A4GL_pop_args(n);
     okToProcess=0;
   }
  
   // Set up input binding for our parameters
   if (okToProcess) {
- 
+ if (n == 2) {
     percent=A4GL_char_pop();
     _ibind[2].ptr=percent;
     _ibind[2].size=strlen(percent);
+}
     text=A4GL_char_pop();
     _ibind[1].ptr=text;
     _ibind[1].size=strlen(text);
@@ -240,6 +242,9 @@ char *percent=NULL;
  
  
   // Set up output binding for our parameters
+    if (percent) {
+        free(percent);
+    }
     if (text ) {
         free(text);
     }
