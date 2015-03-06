@@ -1260,6 +1260,7 @@ MainFrame::vdcdebug("WidgetHelper","createEdit", "const QDomElement& formField, 
    lineEdit->scroll = scroll;
    lineEdit->setShift(shift);
    lineEdit->setNoEntry(noEntry);
+   lineEdit->setProperty("noEntry", noEntry);
    lineEdit->setAutoNext(autoNext);
    lineEdit->setSqlType(sqlType);
    lineEdit->setDefaultValue(defaultValue);

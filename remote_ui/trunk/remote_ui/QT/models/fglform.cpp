@@ -1543,10 +1543,11 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
                  return true;
              }
           } else {
-              if (TableView *tv = qobject_cast<TableView*> (obj->findChild<QTableView*>()))
-              {
+              if(inputArray()) {
+                  nextfield();
+              }
+              if(displayArray()) {
                   nextrow();
-                  return true;
               }
               if(!obj->inherits("QComboBoxListView") && !obj->inherits("QComboBoxPrivateContainer")){
                   nextfield();
@@ -2275,7 +2276,7 @@ if(inputArray() || displayArray())
     }
 }
 
-if(!inputArray())
+if(!inputArray() && !input())
 {
     Fgl::Event event;
     event.type = Fgl::AFTER_INPUT_EVENT;
