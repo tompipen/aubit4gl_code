@@ -1411,8 +1411,9 @@ MainFrame::vdcdebug("ScreenHandler","setFieldEnabled", "QString fieldName, bool 
       // No wildcard
       widget = p_fglform->findFieldByName(fieldName);
       if(widget != NULL){
-         bool isFieldnoEntry = widget->property("noEntry").toBool();
-         if(enable && isFieldnoEntry == false) {
+         //TODO: wieder einbauen
+         //bool isFieldnoEntry = widget->property("noEntry").toBool();
+         if(enable) {
             context->addField(widget);
             WidgetHelper::setDisplayAttributes(attr, widget);
          }
@@ -1487,8 +1488,9 @@ MainFrame::vdcdebug("ScreenHandler","setFieldFocus", "QString fieldName");
        {
           for(int i = 0; i<p_fglform->ql_formFields.size(); i++)
           {
-              bool isFieldnoEntry = p_fglform->ql_formFields.at(i)->property("noEntry").toBool();
-              if(p_fglform->ql_formFields.at(i)->objectName() == fieldName && isFieldnoEntry == false)
+              //TODO: wieder einbauen
+              //bool isFieldnoEntry = p_fglform->ql_formFields.at(i)->property("noEntry").toBool();
+              if(p_fglform->ql_formFields.at(i)->objectName() == fieldName)
               {
                      p_fglform->jumpToField(p_fglform->ql_formFields.at(i), false);
                      return;
