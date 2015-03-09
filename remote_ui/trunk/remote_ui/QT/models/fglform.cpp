@@ -1543,11 +1543,15 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
                  return true;
              }
           } else {
-              if(inputArray()) {
-                  nextfield();
-              }
-              if(displayArray()) {
-                  nextrow();
+              if (TableView *tv = qobject_cast<TableView*> (obj->findChild<QTableView*>()))
+              {
+                  QSortFilterProxyModel *proxyModel = static_cast<QSortFilterProxyModel*> (tv->model());
+                  TableModel *table = static_cast<TableModel*> (proxyModel->sourceModel());
+                  if(!table->b_input)
+                  {
+                      emit accepted();
+                      return true;
+                  }
               }
               if(!obj->inherits("QComboBoxListView") && !obj->inherits("QComboBoxPrivateContainer")){
                   nextfield();
