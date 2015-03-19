@@ -52,22 +52,11 @@ LIBS += -L"$$OUT_PWD/quazip/lib" -lquazip
 include("models/reportgen.pri")
 }
 
-#VKDCHART = /usr/local/KDAB/KDChart-2.4.3
-
-!isEmpty(VKDCHART) {
-include("models/chart.pri")
-DEFINES += KDChart_Version
-message( $$VKDCHART )
-
 CONFIG(debug, debug|release) {
-  INCLUDEPATH += $$VKDCHART/include/
-message( $$INCLUDEPATH )
-  !win32:LIBS += -L$$VKDCHART/lib/ -lkdchart
-  win32:LIBS += -L$$VKDCHART/lib/ -lkdchartd
+   !win32:LIBS += -lQt5Charts
+    win32:LIBS += -lQt5Chartsd
 } else {
-  INCLUDEPATH += $$VKDCHART/include/
-  LIBS += -L$$VKDCHART/lib/ -lkdchart
-}
+    LIBS += -lQt5Charts
 }
 
 HEADERS += confwin.h \
@@ -105,7 +94,8 @@ HEADERS += confwin.h \
     masterupdate.h \
     tools/htmleditor.h \
     tools/vdcupdate.h \
-    tools/umlauts.h
+    tools/umlauts.h \
+    tools/chartwidget.h
 
 SOURCES += confwin.cpp \
     main.cpp \
@@ -142,7 +132,8 @@ SOURCES += confwin.cpp \
     masterupdate.cpp \
     tools/htmleditor.cpp \
     tools/vdcupdate.cpp \
-    tools/umlauts.cpp
+    tools/umlauts.cpp \
+    tools/chartwidget.cpp
 
 OTHER_FILES += versions.xml
 OTHER_FILES += appicon.rc

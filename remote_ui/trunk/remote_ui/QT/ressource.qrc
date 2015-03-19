@@ -168,5 +168,8 @@
         <file>pics/no.png</file>
         <file>pics/master10.png</file>
         <file>pics/VENTAS_10_splashscreen.png</file>
+        <file>pics/master_training.png</file>
+        <file>pics/vdc_icon.png</file>
+        <file>pics/vdc_training_icon.png</file>
     </qresource>
 </RCC>

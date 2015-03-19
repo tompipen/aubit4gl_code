@@ -1555,6 +1555,16 @@ void ScreenHandler::setNewTabName(QString oldTabName, QString newTabName)
 
 void ScreenHandler::setAttributes(QString fieldName, QString attribute, QString value)
 {
+
+    if(attribute.toLower() == "setwindowicon")
+    {
+        if(value == "TRAINING") {
+            p_fglform->setWindowIcon(QIcon(":pics/vdc_training_icon.png"));
+        } else if(value == "ECHT")
+        {
+            p_fglform->setWindowIcon(QIcon(":pics/vdc_icon.png"));
+        }
+    }
     if(LineEdit *widget = qobject_cast<LineEdit*> (p_fglform->findFieldByName(fieldName.toLower())))
     {
         if(attribute.toLower() == "picture")
@@ -1631,7 +1641,7 @@ void ScreenHandler::setAttributes(QString fieldName, QString attribute, QString 
     {
         if(attribute.toLower() == "defaultimage")
         {
-            QFile currentPath(QApplication::applicationDirPath() + "pics/%1");
+            QFile currentPath(QApplication::applicationDirPath() + "/pics/%1");
             if(currentPath.exists())
             {
                 QPixmap pix(QString("pics/%1").arg(value));
