@@ -1722,14 +1722,10 @@ if(childElement.nodeName() == "PROGRAMSTARTUP"){
 
              QString filename = params.at(0);
              QByteArray ba_filedata = "";
-             if(QFile::exists(filename))
-             {
+             if(filename == "settings.ini") {
+                 filename.prepend(VDC::getPathToSettingsIni());
                  returnvalues << VDC::md5hashfromfile(filename);
-             } else if(QFile::exists(VDC::getPathToSettingsIni() + "settings.ini")) {
-                 returnvalues << VDC::md5hashfromfile(VDC::getPathToSettingsIni() + "settings.ini");
-             }
-             else
-             {
+             } else {
                  filename.prepend(QDir::tempPath().append("/"));
                  if(QFile::exists(filename))
                  {
