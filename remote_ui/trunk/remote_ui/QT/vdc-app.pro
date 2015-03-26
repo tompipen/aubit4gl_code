@@ -52,13 +52,6 @@ LIBS += -L"$$OUT_PWD/quazip/lib" -lquazip
 include("models/reportgen.pri")
 }
 
-CONFIG(debug, debug|release) {
-   !win32:LIBS += -lQt5Charts
-    win32:LIBS += -lQt5Chartsd
-} else {
-    LIBS += -lQt5Charts
-}
-
 HEADERS += confwin.h \
     login.h \
     mainframe.h \
@@ -94,8 +87,7 @@ HEADERS += confwin.h \
     masterupdate.h \
     tools/htmleditor.h \
     tools/vdcupdate.h \
-    tools/umlauts.h \
-    tools/chartwidget.h
+    tools/umlauts.h
 
 SOURCES += confwin.cpp \
     main.cpp \
@@ -132,8 +124,7 @@ SOURCES += confwin.cpp \
     masterupdate.cpp \
     tools/htmleditor.cpp \
     tools/vdcupdate.cpp \
-    tools/umlauts.cpp \
-    tools/chartwidget.cpp
+    tools/umlauts.cpp
 
 OTHER_FILES += versions.xml
 OTHER_FILES += appicon.rc
