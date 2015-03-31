@@ -1726,20 +1726,18 @@ if(childElement.nodeName() == "PROGRAMSTARTUP"){
                  filename.prepend(VDC::getPathToSettingsIni());
                  returnvalues << VDC::md5hashfromfile(filename);
              } else {
-                 filename.prepend(QDir::tempPath().append("/"));
-                 if(QFile::exists(filename))
-                 {
+                 if(QFile::exists(filename)) {
                      returnvalues << VDC::md5hashfromfile(filename);
-                 }
-                 else
-                 {
-                     returnvalues << "0"; //File not Found
+                 } else {
+                     filename.prepend(QDir::tempPath().append("/"));
+
+                     if(QFile::exists(filename)) {
+                         returnvalues << VDC::md5hashfromfile(filename);
+                     } else {
+                         returnvalues << "0"; //File not Found
+                     }
                  }
              }
-
-
-
-
          }
 
          if(qs_name == "ui.vdc.execute")
