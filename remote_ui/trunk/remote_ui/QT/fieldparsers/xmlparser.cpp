@@ -463,6 +463,7 @@ void XmlParser::handleTableColumn(const QDomNode& xmlNode){
       QString colName = currentElement.attribute("colName");
       QString name = currentElement.attribute("name");
       int hidden = currentElement.attribute("hidden").toInt();
+      bool noshow = currentElement.attribute("noshow").toInt();
       int fieldId = currentElement.attribute("fieldId").toInt();
       p_screenRecord->setColumnName(i,colName);
  
@@ -542,8 +543,16 @@ void XmlParser::handleTableColumn(const QDomNode& xmlNode){
 
       p_screenRecord->setItemDelegateForColumn(i,de);
 
-      if(hidden)
+      if(noshow)
+      {
+          VDC::saveSettingsToIni(formName, QString(p_screenRecord->accessibleName() + "/" + p_screenRecord->getColumnLabel(i)->objectName() + "/hideColumn"), QString::number(1));
+          VDC::saveSettingsToIni(formName, QString(p_screenRecord->accessibleName() + "/" + p_screenRecord->getColumnLabel(i)->objectName() + "/columnId"), QString::number(i));
+      }
+
+      if(hidden || noshow)
+      {
          p_screenRecord->hideColumn(i);
+      }
 
    //   header->resizeSections(QHeaderView::Fixed);
 
