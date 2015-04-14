@@ -132,12 +132,20 @@ start_cmd :
 op_with_dim:
 	{
 			$<startrep>$=malloc(sizeof(startrep));
+			$<startrep>$->towhat=0;
+			$<startrep>$->lines_in_header=0;
+			$<startrep>$->lines_in_first_header=0;
+			$<startrep>$->lines_in_trailer=0;
+			$<startrep>$->output_mode=0;
+
 			$<startrep>$->page_length_e=A4GL_new_literal_long_long(-1);
 			$<startrep>$->left_margin_e=A4GL_new_literal_long_long(-1); 
 			$<startrep>$->right_margin_e= A4GL_new_literal_long_long(-1);
 			$<startrep>$->top_margin_e= A4GL_new_literal_long_long(-1);
 			$<startrep>$->bottom_margin_e= A4GL_new_literal_long_long(-1);
 			$<startrep>$->top_of_page= strdup("");
+			$<startrep>$->output_loc= NULL;
+
 			with_page_length_e=NULL;
 			with_left_margin_e=NULL;
 			with_right_margin_e=NULL;
@@ -847,6 +855,8 @@ rep_agg :
 op_output_section : {$<startrep>$=0;} | OUTPUT output_commands  {
 	                $<startrep>$=malloc(sizeof(startrep));
                         $<startrep>$->page_length_e=rep_struct.page_length_e;
+                        $<startrep>$->output_loc=rep_struct.output_loc;
+                        $<startrep>$->output_mode=rep_struct.output_mode;
                         $<startrep>$->left_margin_e=rep_struct.left_margin_e;
                         $<startrep>$->right_margin_e= rep_struct.right_margin_e;
                         $<startrep>$->top_margin_e= rep_struct.top_margin_e;
@@ -854,6 +864,9 @@ op_output_section : {$<startrep>$=0;} | OUTPUT output_commands  {
                         $<startrep>$->top_of_page= strdup(rep_struct.top_of_page);
                         $<startrep>$->towhat=rep_struct.output_mode;
 			$<startrep>$->s1=rep_struct.output_loc;
+			$<startrep>$->lines_in_header=rep_struct.lines_in_header;
+			$<startrep>$->lines_in_first_header=rep_struct.lines_in_first_header;
+			$<startrep>$->lines_in_trailer=rep_struct.lines_in_trailer;
 }
 ;
 
