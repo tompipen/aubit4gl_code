@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql_common.c,v 1.109 2014-09-26 10:26:26 mikeaubury Exp $
+# $Id: sql_common.c,v 1.110 2015-04-15 07:16:06 mikeaubury Exp $
 #
 */
 
@@ -1250,6 +1250,9 @@ A4GLSQLPARSE_add_table_to_table_list (struct s_table_list *tl, char *t, char *a)
   tl->tables.tables_val = acl_realloc (tl->tables.tables_val, sizeof (struct s_table_list_element) * tl->tables.tables_len);
   tl->tables.tables_val[tl->tables.tables_len - 1].tabname = 0;
   tl->tables.tables_val[tl->tables.tables_len - 1].alias = 0;
+
+  tl->tables.tables_val[tl->tables.tables_len - 1].columns.columns_len=0;
+  tl->tables.tables_val[tl->tables.tables_len - 1].columns.columns_val=0;
   if (t)
     {
       tl->tables.tables_val[tl->tables.tables_len - 1].tabname = acl_strdup_With_Context (t);
