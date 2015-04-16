@@ -251,7 +251,7 @@ bool RingMenuPulldown::eventFilter(QObject *obj, QEvent *event)
             {
                 //closeWindowInt = 0;
                 this->close();
-                //return true;
+                return true;
             }
 
             if(QPushButton *button = qobject_cast<QPushButton *> (obj)){
