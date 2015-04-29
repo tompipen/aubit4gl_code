@@ -2012,10 +2012,11 @@ void FglForm::writeSettingsLocal()
         VDC::removeSettingsFromIni(formName(), "windowIsMaximized");
     }
 
+    VDC::saveSettingsToIni(formName(), "width", QString::number(widgetWidth));
+    VDC::saveSettingsToIni(formName(), "height", QString::number(widgetHeight));
+
     if(widgetPosX >= 0 && widgetPosY >= 0)
     {
-        VDC::saveSettingsToIni(formName(), "width", QString::number(widgetWidth));
-        VDC::saveSettingsToIni(formName(), "height", QString::number(widgetHeight));
         VDC::saveSettingsToIni(formName(), "posX", QString::number(widgetPosX));
         VDC::saveSettingsToIni(formName(), "posY", QString::number(widgetPosY));
     }
