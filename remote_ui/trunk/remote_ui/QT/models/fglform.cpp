@@ -2021,7 +2021,7 @@ void FglForm::writeSettingsLocal()
         VDC::saveSettingsToIni(formName(), "posY", QString::number(widgetPosY));
     }
 
-    //If rememberMainMenu is 2 then do not save the expand state from the menu
+    /*//If rememberMainMenu is 2 then do not save the expand state from the menu
     int saveExpand = VDC::readSettingsFromIni("","rememberMainMenu").toInt();
 
     if(saveExpand == 2)
@@ -2071,7 +2071,7 @@ void FglForm::writeSettingsLocal()
                 }
             }
         }
-    }
+    }*/
 }
 
 void FglForm::closeEvent(QCloseEvent *event)
@@ -2410,7 +2410,7 @@ MainFrame::vdcdebug("FglForm","setStartMenu", "const QDomDocument &doc");
    if(doc.childNodes().count() <= 0)
       return;
 
-   XML2Menu *xml2Menu = new XML2Menu(this->property("startMenuPosition").toString());
+   XML2Menu *xml2Menu = new XML2Menu(this->property("startMenuPosition").toString(), formName());
    xml2Menu->readXML(doc);
    connect(xml2Menu, SIGNAL(sendMenuCommand(QString)), this, SLOT(sendMenuCommand(QString)));
 

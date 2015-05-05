@@ -31,12 +31,13 @@
 // Description  : constructor for the instances
 //------------------------------------------------------------------------------
 
-XML2Menu::XML2Menu(QString startMenuPosition) : QWidget()
+XML2Menu::XML2Menu(QString startMenuPosition, QString name) : QWidget()
 {
    i_cnt = 0;
    i_cntTopLevel = 0;
    i_cntGroup = 0;
    i_cntFolder = 0;
+   mFormName = name;
 
    this->menu = startMenuPosition;
 }
@@ -226,6 +227,8 @@ int XML2Menu::readXML(const QDomDocument& doc)
       treeWidget->setMinimumSize(50*5,20*10);
       createTreeMenu(doc);
       connect(this->treeWidget, SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)), this, SLOT(execAction()));
+      connect(this->treeWidget, SIGNAL(itemExpanded(QTreeWidgetItem*)), this, SLOT(saveExpanded()));
+      connect(this->treeWidget, SIGNAL(itemCollapsed(QTreeWidgetItem*)), this, SLOT(saveExpanded()));
       return 1;
    }
 
@@ -370,6 +373,7 @@ void XML2Menu::createActionMenu(const QDomNode &domNode)
          menuWidgetAction = new QAction("&" + childElement.attribute("text"),this);
          parentMenuItem->addAction(menuWidgetAction);
          connect(menuWidgetAction, SIGNAL(triggered()), this, SLOT(execAction()));
+
          menuCommands << menuWidgetAction;
          menuActions << childElement.attribute("exec");
       }
@@ -414,6 +418,48 @@ void XML2Menu::execAction()
          }
       }
    }
+}
+
+void XML2Menu::saveExpanded()
+{
+    //If rememberMainMenu is 2 then do not save the expand state from the menu
+    int saveExpand = VDC::readSettingsFromIni("","rememberMainMenu").toInt();
+
+    if(saveExpand == 2)
+    {
+        return;
+    }
+
+    if(treeWidget->isVisible())
+    {
+        VDC::removeSettingsKeysWith(getFormName(), "setAutoExpanded");
+        for(int i=0; i < treeWidget->topLevelItemCount(); i++) {
+            if(treeWidget->topLevelItem(i)) {
+                QTreeWidgetItem *tWidgetItem = treeWidget->topLevelItem(i);
+                for(int j=0; j < tWidgetItem->childCount(); j++) {
+                    if(tWidgetItem->isExpanded()) {
+                        VDC::saveSettingsToIni(getFormName(), QString(tWidgetItem->text(0) + "/setAutoExpanded"), QString::number(tWidgetItem->isExpanded()));
+                    }
+
+                    if(tWidgetItem->child(j)) {
+                        QTreeWidgetItem *childWidgetItem = tWidgetItem->child(j);
+                        if(childWidgetItem->isExpanded()) {
+                            VDC::saveSettingsToIni(getFormName(), QString(tWidgetItem->text(0) + "/" + childWidgetItem->text(0) + "/setAutoExpanded"), QString::number(childWidgetItem->isExpanded()));
+                        }
+
+                        for(int k=0; k < childWidgetItem->childCount(); k++) {
+                            if(childWidgetItem->child(k)) {
+                                QTreeWidgetItem *child2WidgetItem = childWidgetItem->child(k);
+                                if(child2WidgetItem->isExpanded()) {
+                                    VDC::saveSettingsToIni(getFormName(), QString(tWidgetItem->text(0) + "/" + childWidgetItem->text(0) + "/" + child2WidgetItem->text(0) + "/setAutoExpanded"), QString::number(child2WidgetItem->isExpanded()));
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
 
 QWidget* XML2Menu::getMenu()

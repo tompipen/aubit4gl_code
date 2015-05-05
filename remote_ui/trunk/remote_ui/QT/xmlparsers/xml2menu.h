@@ -38,7 +38,7 @@ class XML2Menu : public QWidget
    Q_OBJECT
 
 public:
-   XML2Menu(QString);
+   XML2Menu(QString, QString);
    ~XML2Menu();
 
    QLayout *xmlformLayout;
@@ -56,8 +56,11 @@ public:
 
    QWidget* getMenu();
 
+
+   QString getFormName() { return mFormName; }
 private:
 
+   QString mFormName;
    //TreeView
    QTreeWidgetItem *treeWidgetItem;
    QTreeWidgetItem *parentTreeItem;
@@ -85,6 +88,7 @@ private:
 public slots:
    
    void execAction();
+   void saveExpanded();
 
 signals:
 
