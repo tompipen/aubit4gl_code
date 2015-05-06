@@ -1753,33 +1753,41 @@ void FglForm::resetFieldSettings()
 void FglForm::saveFieldSettings(QAction *action)
 {
 //MainFrame::vdcdebug("Fglform", "saveFieldSettings");
-    for(int i=0; i < this->ql_fglFields.count(); i++) {
-        if(this->ql_fglFields.at(i)->colName() == action->objectName())
+
+    int labelTabIndex;
+
+    //hide label
+    if(Label *label = qobject_cast<Label*> (findFieldByName(action->objectName()))) {
+        if(label->isHidden()) {
+            VDC::removeSettingsFromIni(formName(), QString(label->objectName() + "/hideColumn"));
+            p_currscreenhandler->setFieldHidden(label->objectName(), 0);
+        } else {
+            VDC::saveSettingsToIni(formName(), QString(label->objectName() + "/hideColumn"), QString::number(1));
+            p_currscreenhandler->setFieldHidden(label->objectName(), 1);
+        }
+    }
+
+    for(int i=0; i < ql_fglFields.count(); i++) {
+        if(ql_fglFields.at(i)->colName() == action->objectName()) {
+            labelTabIndex = ql_fglFields.at(i)->tabIndex();
+            break;
+        }
+    }
+
+    //hide the input field from the label
+    for (int i=0; i < ql_fglFields.count(); i++) {
+        if(ql_fglFields.at(i)->tabIndex() == labelTabIndex + 1)
         {
-            int cnt = 0;
-            for (int k = i; k < this->ql_fglFields.count(); k++)
+            QWidget *widget = qobject_cast<QWidget*> (findFieldByName(ql_fglFields.at(i)->colName()));
+            if(widget->isHidden())
             {
-                //QSettings settings(formName(), this->ql_fglFields.at(k)->colName());
-                int hideColumn = VDC::readSettingsFromIni(formName(), QString(this->ql_fglFields.at(k)->colName() + "/hideColumn")).toInt();
-                if(hideColumn == 0) {
-                    VDC::saveSettingsToIni(formName(), QString(this->ql_fglFields.at(k)->colName() + "/hideColumn"), QString::number(1));
-                    p_currscreenhandler->setFieldHidden(this->ql_fglFields.at(k)->colName(), 1);
-                } else {
-                    VDC::removeSettingsFromIni(formName(), QString(this->ql_fglFields.at(k)->colName() + "/hideColumn"));
-                    //settings.remove("hideColumn");
-                    p_currscreenhandler->setFieldHidden(this->ql_fglFields.at(k)->colName(), 0);
-                }
-                if(Label *la = qobject_cast<Label *> (this->findFieldByName(this->ql_fglFields.at(k)->colName()))) {
-                    Q_UNUSED(la);
-                    cnt = cnt + 1;
-                    if( cnt == 2) {
-                        //settings.remove("hideColumn");
-                        VDC::removeSettingsFromIni(formName(), QString(this->ql_fglFields.at(k)->colName() + "/hideColumn"));
-                        p_currscreenhandler->setFieldHidden(this->ql_fglFields.at(k)->colName(), 0);
-                        break;
-                    }
-                }
+                VDC::removeSettingsFromIni(formName(), QString(ql_fglFields.at(i)->colName() + "/hideColumn"));
+                p_currscreenhandler->setFieldHidden(ql_fglFields.at(i)->colName(), 0);
+            } else {
+                VDC::saveSettingsToIni(formName(), QString(ql_fglFields.at(i)->colName() + "/hideColumn"), QString::number(1));
+                p_currscreenhandler->setFieldHidden(ql_fglFields.at(i)->colName(), 1);
             }
+            break;
         }
     }
 }
