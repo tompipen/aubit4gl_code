@@ -927,7 +927,7 @@ bool FglForm::eventFilter(QObject *obj, QEvent *event)
 
     if(event->type() == QEvent::KeyPress)
     {
-        if(inputArray() || displayArray())
+        if( displayArray())
         {
             if(kev->key() == Qt::Key_Up || kev->key() == Qt::Key_Down)
             {
@@ -5263,7 +5263,7 @@ void FglForm::sendFieldChange()
                 }
             }
 
-            if(displayArray()) {
+            /*if(displayArray()) {
                 if(tv->currentIndex().row() > 0)
                 {
                     prevIndex = table->index(tv->currentIndex().row()-1, tv->currentIndex().column());
@@ -5272,7 +5272,7 @@ void FglForm::sendFieldChange()
                     prevIndex = table->index(0, 0);
                     nextIndex = table->index(0, 0);
                 }
-            }
+            }*/
 
             emit tv->fieldChanged(nextIndex, prevIndex);
             isFieldChangeSend = true;
