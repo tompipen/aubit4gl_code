@@ -71,7 +71,7 @@ namespace VDC {
            QSettings settings(getPathToSettingsIni() + "settings.ini", QSettings::IniFormat);
         #endif
     #else
-    QSettings settings(getPathToSettingsIni(), QSettings::IniFormat);
+    QSettings settings(getPathToSettingsIni() + "settings.ini", QSettings::IniFormat);
     #endif
 
     settings.beginGroup(group);
@@ -99,6 +99,25 @@ namespace VDC {
        #endif
        settings.beginGroup(group);
        value.append(settings.value(key).toString());
+       settings.endGroup();
+
+       return value;
+   }
+
+   QString readSettingsFromIni(QString group, QString key, QString defaultValue)
+   {
+       QString value;
+        #ifdef Q_OS_WIN
+            #if QT_VERSION < QT_VERSION_CHECK(5,0,9)
+               QSettings settings(QDesktopServices::storageLocation(QDesktopServices::DataLocation) + "/.vdc/settings.ini", QSettings::IniFormat);
+            #else
+               QSettings settings(QStandardPaths::writableLocation(QStandardPaths::DataLocation) + "/.vdc/settings.ini", QSettings::IniFormat);
+            #endif
+        #else
+       QSettings settings(QDir::homePath() + "/.vdc/settings.ini", QSettings::IniFormat);
+       #endif
+       settings.beginGroup(group);
+       value.append(settings.value(key, defaultValue).toString());
        settings.endGroup();
 
        return value;

@@ -448,6 +448,8 @@ void XmlParser::handleTableColumn(const QDomNode& xmlNode){
    }
 
    QList<QWidget*> labelList = ql_formFields;
+   QByteArray state = VDC::readSettingsFromIni1(formName, QString(p_screenRecord->accessibleName() + "/state"));
+   header->restoreState(state);
 
    QDomNodeList children = xmlNode.childNodes();
    for(int i=0; i<children.count(); ++i){
@@ -513,6 +515,7 @@ void XmlParser::handleTableColumn(const QDomNode& xmlNode){
           {
               header->hideSection(VDC::readSettingsFromIni(formName, QString(p_screenRecord->accessibleName() + "/" + p_screenRecord->getColumnLabel(i)->objectName() + "/columnId")).toInt());
           }
+          QString text = p_screenRecord->getColumnLabel(i)->objectName();
           // restore the width for each column.
           int columnId = VDC::readSettingsFromIni(formName, QString(p_screenRecord->accessibleName() + "/" + p_screenRecord->getColumnLabel(i)->objectName() + "/columnWidthId")).toInt();
           int columnWidth = VDC::readSettingsFromIni(formName, QString(p_screenRecord->accessibleName() + "/" + p_screenRecord->getColumnLabel(i)->objectName() + "/columnWidth")).toInt();
@@ -543,34 +546,37 @@ void XmlParser::handleTableColumn(const QDomNode& xmlNode){
 
       p_screenRecord->setItemDelegateForColumn(i,de);
 
-      if(noshow)
+      if(i > 0 && noshow)
       {
-          VDC::saveSettingsToIni(formName, QString(p_screenRecord->accessibleName() + "/" + p_screenRecord->getColumnLabel(i)->objectName() + "/hideColumn"), QString::number(1));
-          VDC::saveSettingsToIni(formName, QString(p_screenRecord->accessibleName() + "/" + p_screenRecord->getColumnLabel(i)->objectName() + "/columnId"), QString::number(i));
+          if(p_screenRecord->getColumnLabel(i)->objectName() != NULL)
+          {
+              int columnIsInvisible = VDC::readSettingsFromIni(formName, QString(p_screenRecord->accessibleName() + "/" + p_screenRecord->getColumnLabel(i)->objectName() + "/hideColumn"), "-1").toInt();
+
+              if(columnIsInvisible == -1){
+                  VDC::saveSettingsToIni(formName, QString(p_screenRecord->accessibleName() + "/" + p_screenRecord->getColumnLabel(i)->objectName() + "/hideColumn"), QString::number(1));
+                  VDC::saveSettingsToIni(formName, QString(p_screenRecord->accessibleName() + "/" + p_screenRecord->getColumnLabel(i)->objectName() + "/columnId"), QString::number(i));
+                  p_screenRecord->hideColumn(i);
+              }
+          }
       }
 
-      if(hidden || noshow)
+      if(hidden)
       {
          p_screenRecord->hideColumn(i);
       }
-
-   //   header->resizeSections(QHeaderView::Fixed);
 
       ql_formFields << (QWidget*) de;
    }
 
    //Its enough to save the state at the end of the creation. otherwise on every column it will be saved all states(with 15 coloumns 15 times)
-   QByteArray state = VDC::readSettingsFromIni1(formName, QString(p_screenRecord->accessibleName() + "/state"));
    if(state.isEmpty())
    {
        VDC::saveSettingsToIni(formName, QString(p_screenRecord->accessibleName() + "/oldstate"), header->saveState());
    }
 
    int lastColumnCount = VDC::readSettingsFromIni(formName, "columnCount").toInt();
-   if(labelList.count() == lastColumnCount || lastColumnCount == 0)
+   if(labelList.count() != lastColumnCount || lastColumnCount > 0)
    {
-       header->restoreState(state);
-   } else {
        VDC::removeSettingsFromIni(formName, QString(p_screenRecord->accessibleName() + "/state"));
        for(int i=0; i < ql_formFields.count(); i++)
        {
