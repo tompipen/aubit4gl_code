@@ -276,4 +276,4 @@ spl_proc_name:
         identifier {strcpy($<str>$,$<str>1);}
         | identifier COLON identifier {sprintf($<str>$,"%s:%s",$<str>1,$<str>3);}
 ;
-
+atline: ;
