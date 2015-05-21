@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.196 2014-02-20 09:38:40 mikeaubury Exp $
+# $Id: conv.c,v 1.197 2015-05-21 19:32:09 mikeaubury Exp $
 #
 */
 
@@ -1975,7 +1975,7 @@ A4GL_mdectosf (void *zz, void *aa, int sz_ignore)
   z = (fgldecimal *) zz;
   a = (float *) aa;
   strcpy (buff, A4GL_dec_to_str (z, 0));
-  return A4GL_stosf (buff, a, 0);
+  return A4GL_posix_stosf (buff, a, 0);
 }
 
 
@@ -2127,6 +2127,25 @@ A4GL_stosf (void *aa, void *zz, int sz_ignore)
   return ok;
 }
 
+int
+A4GL_posix_stosf (void *aa, void *zz, int sz_ignore)
+{
+  char *a;
+  int ok;
+
+  a = A4GL_decstr_convert ((char *) aa, a4gl_convfmts.posix_decfmt, a4gl_convfmts.scanf_decfmt, 1, 1, -1);
+  ok = (sscanf (a, "%f", (float *) zz) == 1);
+#ifdef DEBUG
+  A4GL_debug ("stosf: %s->%f; OK=%d", A4GL_null_as_null (a), *(float *) zz, ok);
+#endif
+  if (ok == 0)
+    {
+      ok = 1;
+      *(float *) zz = 0;
+    }
+  free (a);
+  return ok;
+}
 /**
  * Convert a decimal value to long.
  *
@@ -2288,10 +2307,13 @@ A4GL_dectosf (void *zz, void *aa, int sz_ignore)
   char buff[65];
   char *z;
   float *a;
+  double d;
+  int rval;
   z = (char *) zz;
-  a = (float *) aa;
+  a = (double *) aa;
+
   A4GL_dectos (z, buff, 64);
-  return A4GL_stosf (buff, a, 0);
+  return A4GL_posix_stosf (buff, a, 0);
 }
 
 /**
