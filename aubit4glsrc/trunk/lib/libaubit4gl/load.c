@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: load.c,v 1.68 2014-10-08 14:40:55 fortiz Exp $
+# $Id: load.c,v 1.69 2015-07-02 10:52:32 mikeaubury Exp $
 #
 */
 
@@ -1223,6 +1223,7 @@ char nullbuff[200];
 	  SPRINTF1 (buff, "%d", nfields);
 	  A4GL_set_errm (buff);
 	  A4GL_exitwith ("Error reading load file at line %s");
+	  return 0;
 	}
     }
   fclose (p);
