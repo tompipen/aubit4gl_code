@@ -167,7 +167,11 @@ define lv_err1 char(255)
 define lv_err2 char(255)
 code
 
-//printf("3-->%s\n",mv_errmsg);
+if (lv_code>=-31000 && lv_code<=-30000) {
+	// Its an aubit4gl error
+	int intErrNo=(-1*lv_code);
+	strcpy(lv_err1,A4GL_get_errmsg(intErrNo));
+}
 if (lv_code!=-400) {
 	rgetmsg(sqlca.sqlcode,lv_err1,sizeof(lv_err1));
 	sprintf(lv_err2,lv_err1,sqlca.sqlerrm);
@@ -1768,11 +1772,13 @@ find_delims (char delim)
       if ((loadbuff[a] == delim && loadbuff[a-1]!=CHAR_BACKSLASH) || loadbuff[a] == 0)
         {
           colptr[cnt++] = &loadbuff[a + 1];
+	 if (cnt==MAXLOADCOLS) {
+		return -1;
+	 }
         }
     }
 
   cnt--;
-
   for (a = 1; a <= cnt; a++)
     *(colptr[a] - 1) = 0;
 
@@ -1812,6 +1818,15 @@ int lineno=0;
                 lineno++;
                 stripnlload (loadbuff, LoadUnload_delim[0]);
                 nfields = find_delims (LoadUnload_delim[0]);
+		if (nfields<0) {
+			fclose(loadFile);
+        		loadFile=0;
+			//set_sqlcode(-806); 
+
+			A4GL_exitwith_sql("Too many columns to load using adbaccess");
+			sqlca.sqlcode=a4gl_sqlca.sqlcode;
+			return 0;
+		}
                 strcpy(ins_str,e->stmt);
                 strcat(ins_str," values (");
                 for (a=0;a<nfields;a++) {
@@ -1822,6 +1837,7 @@ int lineno=0;
                 }
                 strcat(ins_str,")");
 		A4GL_set_sqlerrm("",""); 
+
                 EXEC SQL prepare p_loadit from :ins_str;
 
                 if (get_sqlcode()!=0) { 
