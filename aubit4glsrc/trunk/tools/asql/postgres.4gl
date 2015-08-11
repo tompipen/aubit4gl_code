@@ -1752,7 +1752,7 @@ FILE *loadFile=0;
 
 
 
-#define MAXLOADCOLS 256
+#define MAXLOADCOLS 1024
 #define MAXCOLLENGTH 32
 /* Column name list where information is to be loaded */
 char col_list[MAXLOADCOLS][MAXCOLLENGTH];
