@@ -1,8 +1,8 @@
 %!PS-Adobe-3.0 EPSF-3.0
-%%BoundingBox: 0 0 682 1125
+%%BoundingBox: 0 0 700 1129
 %%Title: ebnf--pdf_op_output_section.eps
-%%CreationDate: 21:40:29 Jun 26 2011
-%%Creator:  (using ebnf2ps v4.3)
+%%CreationDate: 11:49:23 Sep 02 2015
+%%Creator: aubit4gl (using ebnf2ps v4.4)
 %%DocumentNeededResources: font Helvetica-Bold
 %%+ font Courier
 %%+ font Helvetica
@@ -15,7 +15,7 @@
 /#ebnf2ps#dict 230 dict def
 #ebnf2ps#dict begin
 
-% Initiliaze variables to avoid name-conflicting with document variables.
+% Initialize variables to avoid name-conflicting with document variables.
 % This is the case when using `bind' operator.
 /-fillp-		0 def		/h		0 def
 /-ox-			0 def		/half		0 def
@@ -287,6 +287,18 @@
 
 % === begin EBNF settings
 
+/Header        () def
+/Footer        () def
+/ShowHeader    false def
+/fH            11.000 /Helvetica-Bold DefFont
+/ForegroundH   [0.000 0.000 0.000] def % Black
+/BackgroundH   [1.000 1.000 1.000] def % White
+/EffectH       0 def
+/ShowFooter    false def
+/fF            7.000 /Helvetica-Bold DefFont
+/ForegroundF   [0.000 0.000 0.000] def % Black
+/BackgroundF   [1.000 1.000 1.000] def % White
+/EffectF       0 def
 /fP            10.000 /Helvetica-Bold DefFont
 /ForegroundP   [0.000 0.000 0.000] def % Black
 /BackgroundP   [1.000 1.000 1.000] def % White
@@ -492,7 +504,7 @@
 
 % --- Corners
 
-%>corner Right Descendent: height arrow corner_RD
+%>corner Right Descendant: height arrow corner_RD
 %   _             | arrow
 %  /   height > 0 |  0 - none
 % |               |  1 - right
@@ -531,7 +543,7 @@
  Gstroke
 }def
 
-%>corner Right Ascendent: height arrow corner_RA
+%>corner Right Ascendant: height arrow corner_RA
 %                 | arrow
 %    | height > 0 |  0 - none
 %   /             |  1 - right
@@ -570,7 +582,7 @@
  Gstroke
 }def
 
-%>corner Left Descendent: height arrow corner_LD
+%>corner Left Descendant: height arrow corner_LD
 %  _              | arrow
 %   \  height > 0 |  0 - none
 %    |            |  1 - right
@@ -609,7 +621,7 @@
  Gstroke
 }def
 
-%>corner Left Ascendent: height arrow corner_LA
+%>corner Left Ascendant: height arrow corner_LA
 %                 | arrow
 % |    height > 0 |  0 - none
 %  \              |  1 - right
@@ -650,8 +662,8 @@
 
 % --- Flow Stuff
 
-% height prepare_height |- line_height corner_height corner_height
-/prepare_height
+% height prepare-height |- line_height corner_height corner_height
+/prepare-height
 {dup 0 gt
  {T sub hT}
  {T add hT neg}ifelse
@@ -677,7 +689,7 @@
   {0.5 mul dup
    1 corner_RA
    0 corner_RD}
-  {prepare_height
+  {prepare-height
    1 corner_RA
    exch 0 exch rlineto
    0 corner_RD
@@ -698,7 +710,7 @@
 %  \
 %   -
 /LLoop
-{prepare_height
+{prepare-height
  3 corner_LA
  exch 0 exch rlineto
  0 corner_RD
@@ -723,7 +735,7 @@
   {0.5 mul dup
    1 corner_LA
    0 corner_LD}
-  {prepare_height
+  {prepare-height
    1 corner_LA
    exch 0 exch rlineto
    0 corner_LD
@@ -744,7 +756,7 @@
 %   /
 %  -
 /RLoop
-{prepare_height
+{prepare-height
  1 corner_RA
  exch 0 exch rlineto
  0 corner_LD
@@ -1242,56 +1254,56 @@ end
 
 %%EndProlog
 
-0 1116.476 #ebnf2ps#begin
-(pdf_op_output_section) 681.424 1095.885 BOP
-15.123 649.470 OP
+0 1120.346 #ebnf2ps#begin
+(pdf_op_output_section) 699.979 1099.754 BOP
+15.123 661.840 OP
 BOS
 (OUTPUT) 49.515 RT
 49.515 hm
-544.073 544.073 569.001 ZM
-528.950 506.441 483.933 461.424 427.661 382.644 348.882 326.373 270.102 180.068 90.034 0.000 -67.525 -112.543 -157.559 -202.576 -236.339 -258.848 -281.356 -303.865 -326.373 -348.882 -371.390 -393.899 -416.407 -438.916 -461.424 -483.933 -506.441 -528.950 30 538.047 AT
+547.942 544.073 581.371 ZM
+528.950 506.441 483.933 461.424 427.661 382.644 348.882 326.373 270.102 180.068 90.034 0.000 -67.525 -112.543 -157.559 -202.576 -236.339 -258.848 -281.356 -303.865 -326.373 -348.882 -371.390 -393.899 -416.407 -438.916 -461.424 -483.933 -506.441 -528.950 30 544.232 AT
 BOS
-(LEFT MARGIN) 245.146 RT
-245.146 hm
-(<PDF dimension>) 261.946 RT
+(LEFT MARGIN) 251.446 RT
+251.446 hm
+(<expression>) 255.646 RT
 EOS
 -22.509 vm
 BOS
-(RIGHT MARGIN) 247.246 RT
-247.246 hm
-(<PDF dimension>) 259.846 RT
+(RIGHT MARGIN) 253.546 RT
+253.546 hm
+(<expression>) 253.546 RT
 EOS
 -22.509 vm
 BOS
-(TOP MARGIN) 243.046 RT
-243.046 hm
-(<PDF dimension>) 264.046 RT
-EOS
--22.509 vm
-BOS
-(BOTTOM MARGIN) 249.346 RT
+(TOP MARGIN) 249.346 RT
 249.346 hm
-(<PDF dimension>) 257.746 RT
+(<expression>) 257.746 RT
+EOS
+-22.509 vm
+BOS
+(BOTTOM MARGIN) 255.646 RT
+255.646 hm
+(<expression>) 251.446 RT
 EOS
 -33.763 vm
 BOS
-11.254 -11.254 2 262.723 AT
-(PAGE LENGTH) 231.769 RT
+11.254 -11.254 2 272.116 AT
+(PAGE LENGTH) 241.162 RT
 -22.509 vm
-(PAPER LENGTH) 231.769 RT
+(PAPER LENGTH) 241.162 RT
 EOS
-262.723 hm
-(<PDF dimension>) 244.369 RT
+272.116 hm
+(<expression>) 234.977 RT
 EOS
 -45.017 vm
 BOS
-11.254 -11.254 2 260.623 AT
-(PAGE WIDTH) 229.669 RT
+11.254 -11.254 2 270.016 AT
+(PAGE WIDTH) 239.062 RT
 -22.509 vm
-(PAPER WIDTH) 229.669 RT
+(PAPER WIDTH) 239.062 RT
 EOS
-260.623 hm
-(<PDF dimension>) 246.469 RT
+270.016 hm
+(<expression>) 237.077 RT
 EOS
 -33.763 vm
 BOS
@@ -1454,8 +1466,8 @@ BOS
 (<numeric value>) 90.815 RT
 EOS
 EOS
-544.073 vm
-538.047 EA
+547.942 vm
+544.232 EA
 EOS
 EOS
 EOS

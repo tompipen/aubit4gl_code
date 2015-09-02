@@ -1,8 +1,8 @@
 %!PS-Adobe-3.0 EPSF-3.0
-%%BoundingBox: 0 0 974 1128
+%%BoundingBox: 0 0 1309 1481
 %%Title: ebnf--pdf_specific_cmd.eps
-%%CreationDate: 21:40:29 Jun 26 2011
-%%Creator:  (using ebnf2ps v4.3)
+%%CreationDate: 11:49:23 Sep 02 2015
+%%Creator: aubit4gl (using ebnf2ps v4.4)
 %%DocumentNeededResources: font Helvetica-Bold
 %%+ font Courier
 %%+ font Helvetica
@@ -15,7 +15,7 @@
 /#ebnf2ps#dict 230 dict def
 #ebnf2ps#dict begin
 
-% Initiliaze variables to avoid name-conflicting with document variables.
+% Initialize variables to avoid name-conflicting with document variables.
 % This is the case when using `bind' operator.
 /-fillp-		0 def		/h		0 def
 /-ox-			0 def		/half		0 def
@@ -287,6 +287,18 @@
 
 % === begin EBNF settings
 
+/Header        () def
+/Footer        () def
+/ShowHeader    false def
+/fH            11.000 /Helvetica-Bold DefFont
+/ForegroundH   [0.000 0.000 0.000] def % Black
+/BackgroundH   [1.000 1.000 1.000] def % White
+/EffectH       0 def
+/ShowFooter    false def
+/fF            7.000 /Helvetica-Bold DefFont
+/ForegroundF   [0.000 0.000 0.000] def % Black
+/BackgroundF   [1.000 1.000 1.000] def % White
+/EffectF       0 def
 /fP            10.000 /Helvetica-Bold DefFont
 /ForegroundP   [0.000 0.000 0.000] def % Black
 /BackgroundP   [1.000 1.000 1.000] def % White
@@ -492,7 +504,7 @@
 
 % --- Corners
 
-%>corner Right Descendent: height arrow corner_RD
+%>corner Right Descendant: height arrow corner_RD
 %   _             | arrow
 %  /   height > 0 |  0 - none
 % |               |  1 - right
@@ -531,7 +543,7 @@
  Gstroke
 }def
 
-%>corner Right Ascendent: height arrow corner_RA
+%>corner Right Ascendant: height arrow corner_RA
 %                 | arrow
 %    | height > 0 |  0 - none
 %   /             |  1 - right
@@ -570,7 +582,7 @@
  Gstroke
 }def
 
-%>corner Left Descendent: height arrow corner_LD
+%>corner Left Descendant: height arrow corner_LD
 %  _              | arrow
 %   \  height > 0 |  0 - none
 %    |            |  1 - right
@@ -609,7 +621,7 @@
  Gstroke
 }def
 
-%>corner Left Ascendent: height arrow corner_LA
+%>corner Left Ascendant: height arrow corner_LA
 %                 | arrow
 % |    height > 0 |  0 - none
 %  \              |  1 - right
@@ -650,8 +662,8 @@
 
 % --- Flow Stuff
 
-% height prepare_height |- line_height corner_height corner_height
-/prepare_height
+% height prepare-height |- line_height corner_height corner_height
+/prepare-height
 {dup 0 gt
  {T sub hT}
  {T add hT neg}ifelse
@@ -677,7 +689,7 @@
   {0.5 mul dup
    1 corner_RA
    0 corner_RD}
-  {prepare_height
+  {prepare-height
    1 corner_RA
    exch 0 exch rlineto
    0 corner_RD
@@ -698,7 +710,7 @@
 %  \
 %   -
 /LLoop
-{prepare_height
+{prepare-height
  3 corner_LA
  exch 0 exch rlineto
  0 corner_RD
@@ -723,7 +735,7 @@
   {0.5 mul dup
    1 corner_LA
    0 corner_LD}
-  {prepare_height
+  {prepare-height
    1 corner_LA
    exch 0 exch rlineto
    0 corner_LD
@@ -744,7 +756,7 @@
 %   /
 %  -
 /RLoop
-{prepare_height
+{prepare-height
  1 corner_RA
  exch 0 exch rlineto
  0 corner_LD
@@ -1242,442 +1254,838 @@ end
 
 %%EndProlog
 
-0 1119.658 #ebnf2ps#begin
-(pdf_specific_cmd) 973.017 566.591 BOP
-540.214 495.197 450.180 416.417 393.908 371.400 348.891 326.383 303.874 149.124 -137.869 -292.620 -315.129 -348.891 -382.654 -416.417 -450.180 -472.688 -495.197 -517.705 -540.214 21 941.063 AT
+0 1472.762 #ebnf2ps#begin
+(pdf_specific_cmd) 1308.089 743.144 BOP
+716.766 671.749 626.732 592.969 570.461 547.952 502.935 435.410 367.884 300.359 119.230 -171.632 -326.383 -348.891 -382.654 -438.925 -506.451 -551.468 -573.976 -596.485 -618.993 -641.502 -671.749 -694.257 -716.766 25 1269.950 AT
 BOS
-11.254 -11.254 2 181.680 AT
-(SET COLOR) 150.726 RT
+11.254 -11.254 2 240.618 AT
+(SET COLOR) 209.664 RT
 -22.509 vm
-(SET COLOUR) 150.726 RT
+(SET COLOUR) 209.664 RT
 EOS
-181.680 hm
-(<expression>) 159.126 RT
-159.126 hm
-( ,  ) 125.526 RT
-125.526 hm
-(<expression>) 159.126 RT
-159.126 hm
-( ,  ) 125.526 RT
-125.526 hm
-(<expression>) 159.126 RT
+240.618 hm
+(<expression>) 211.879 RT
+211.879 hm
+( ,  ) 178.279 RT
+178.279 hm
+(<expression>) 211.879 RT
+211.879 hm
+( ,  ) 178.279 RT
+178.279 hm
+(<expression>) 211.879 RT
 EOS
 -45.017 vm
 BOS
-11.254 -11.254 2 206.180 AT
-(SET STROKE COLOR) 175.226 RT
+11.254 -11.254 2 265.118 AT
+(SET STROKE COLOR) 234.164 RT
 -22.509 vm
-(SET STROKE COLOUR) 175.226 RT
+(SET STROKE COLOUR) 234.164 RT
 EOS
-206.180 hm
-(<expression>) 154.226 RT
-154.226 hm
-( ,  ) 120.626 RT
-120.626 hm
-(<expression>) 154.226 RT
-154.226 hm
-( ,  ) 120.626 RT
-120.626 hm
-(<expression>) 154.226 RT
+265.118 hm
+(<expression>) 206.979 RT
+206.979 hm
+( ,  ) 173.379 RT
+173.379 hm
+(<expression>) 206.979 RT
+206.979 hm
+( ,  ) 173.379 RT
+173.379 hm
+(<expression>) 206.979 RT
 EOS
 -45.017 vm
 BOS
-11.254 -11.254 2 199.180 AT
-(SET FILL COLOR) 168.226 RT
+11.254 -11.254 2 258.118 AT
+(SET FILL COLOR) 227.164 RT
 -22.509 vm
-(SET FILL COLOUR) 168.226 RT
+(SET FILL COLOUR) 227.164 RT
 EOS
-199.180 hm
-(<expression>) 155.626 RT
-155.626 hm
-( ,  ) 122.026 RT
-122.026 hm
-(<expression>) 155.626 RT
-155.626 hm
-( ,  ) 122.026 RT
-122.026 hm
-(<expression>) 155.626 RT
+258.118 hm
+(<expression>) 208.379 RT
+208.379 hm
+( ,  ) 174.779 RT
+174.779 hm
+(<expression>) 208.379 RT
+208.379 hm
+( ,  ) 174.779 RT
+174.779 hm
+(<expression>) 208.379 RT
 EOS
 -33.763 vm
-(STROKE) 910.109 RT
+(STROKE) 1232.811 RT
 -22.509 vm
 BOS
-(SET PARAMETER) 239.077 RT
-239.077 hm
-(<expression>) 234.877 RT
-234.877 hm
-( ,  ) 201.277 RT
-201.277 hm
-(<expression>) 234.877 RT
+(SET PARAMETER) 319.753 RT
+319.753 hm
+(<expression>) 315.553 RT
+315.553 hm
+( ,  ) 281.953 RT
+281.953 hm
+(<expression>) 315.553 RT
 EOS
 -22.509 vm
 BOS
-(MOVE TO) 220.177 RT
-220.177 hm
-(<expression>) 241.177 RT
-241.177 hm
-( ,  ) 207.577 RT
-207.577 hm
-(<expression>) 241.177 RT
+(SET VALUE) 307.153 RT
+307.153 hm
+(<expression>) 319.753 RT
+319.753 hm
+( ,  ) 286.153 RT
+286.153 hm
+(<expression>) 319.753 RT
+EOS
+-45.017 vm
+BOS
+(MOVE TO) 212.726 RT
+212.726 hm
+22.509 0.000 -22.508 3 510.042 AT
+BOS
+(<expression>) 170.896 RT
+170.896 hm
+( ,  ) 137.296 RT
+137.296 hm
+(<expression>) 170.896 RT
 EOS
 -22.509 vm
 BOS
-(MOVE TO TOP) 232.777 RT
-232.777 hm
-(<expression>) 236.977 RT
-236.977 hm
-( ,  ) 203.377 RT
-203.377 hm
-(<expression>) 236.977 RT
+( XY ) 102.972 RT
+102.972 hm
+(<expression>) 136.572 RT
+136.572 hm
+( ,  ) 102.972 RT
+102.972 hm
+(<expression>) 136.572 RT
 EOS
 -22.509 vm
 BOS
-(LINE TO) 220.177 RT
-220.177 hm
-(<expression>) 241.177 RT
-241.177 hm
-( ,  ) 207.577 RT
-207.577 hm
-(<expression>) 241.177 RT
+( XY ) 68.648 RT
+68.648 hm
+( \(  ) 68.648 RT
+68.648 hm
+(<expression>) 102.248 RT
+102.248 hm
+( ,  ) 68.648 RT
+68.648 hm
+(<expression>) 102.248 RT
+102.248 hm
+( \)  ) 68.648 RT
+EOS
+EOS
+510.042 hm
+22.509 0.000 -22.508 3 510.042 AT
+BOS
+(<expression>) 170.896 RT
+170.896 hm
+( ,  ) 137.296 RT
+137.296 hm
+(<expression>) 170.896 RT
 EOS
 -22.509 vm
 BOS
-(LINE TO TOP) 232.777 RT
-232.777 hm
-(<expression>) 236.977 RT
-236.977 hm
-( ,  ) 203.377 RT
-203.377 hm
-(<expression>) 236.977 RT
+( XY ) 102.972 RT
+102.972 hm
+(<expression>) 136.572 RT
+136.572 hm
+( ,  ) 102.972 RT
+102.972 hm
+(<expression>) 136.572 RT
+EOS
+-22.509 vm
+BOS
+( XY ) 68.648 RT
+68.648 hm
+( \(  ) 68.648 RT
+68.648 hm
+(<expression>) 102.248 RT
+102.248 hm
+( ,  ) 68.648 RT
+68.648 hm
+(<expression>) 102.248 RT
+102.248 hm
+( \)  ) 68.648 RT
+EOS
+EOS
+EOS
+-67.526 vm
+BOS
+(MOVE TO TOP) 223.926 RT
+223.926 hm
+22.509 0.000 -22.508 3 504.442 AT
+BOS
+(<expression>) 169.029 RT
+169.029 hm
+( ,  ) 135.429 RT
+135.429 hm
+(<expression>) 169.029 RT
+EOS
+-22.509 vm
+BOS
+( XY ) 101.572 RT
+101.572 hm
+(<expression>) 135.172 RT
+135.172 hm
+( ,  ) 101.572 RT
+101.572 hm
+(<expression>) 135.172 RT
+EOS
+-22.509 vm
+BOS
+( XY ) 67.715 RT
+67.715 hm
+( \(  ) 67.715 RT
+67.715 hm
+(<expression>) 101.315 RT
+101.315 hm
+( ,  ) 67.715 RT
+67.715 hm
+(<expression>) 101.315 RT
+101.315 hm
+( \)  ) 67.715 RT
+EOS
+EOS
+504.442 hm
+22.509 0.000 -22.508 3 504.442 AT
+BOS
+(<expression>) 169.029 RT
+169.029 hm
+( ,  ) 135.429 RT
+135.429 hm
+(<expression>) 169.029 RT
+EOS
+-22.509 vm
+BOS
+( XY ) 101.572 RT
+101.572 hm
+(<expression>) 135.172 RT
+135.172 hm
+( ,  ) 101.572 RT
+101.572 hm
+(<expression>) 135.172 RT
+EOS
+-22.509 vm
+BOS
+( XY ) 67.715 RT
+67.715 hm
+( \(  ) 67.715 RT
+67.715 hm
+(<expression>) 101.315 RT
+101.315 hm
+( ,  ) 67.715 RT
+67.715 hm
+(<expression>) 101.315 RT
+101.315 hm
+( \)  ) 67.715 RT
+EOS
+EOS
+EOS
+-67.526 vm
+BOS
+(LINE TO) 212.726 RT
+212.726 hm
+22.509 0.000 -22.508 3 510.042 AT
+BOS
+(<expression>) 170.896 RT
+170.896 hm
+( ,  ) 137.296 RT
+137.296 hm
+(<expression>) 170.896 RT
+EOS
+-22.509 vm
+BOS
+( XY ) 102.972 RT
+102.972 hm
+(<expression>) 136.572 RT
+136.572 hm
+( ,  ) 102.972 RT
+102.972 hm
+(<expression>) 136.572 RT
+EOS
+-22.509 vm
+BOS
+( XY ) 68.648 RT
+68.648 hm
+( \(  ) 68.648 RT
+68.648 hm
+(<expression>) 102.248 RT
+102.248 hm
+( ,  ) 68.648 RT
+68.648 hm
+(<expression>) 102.248 RT
+102.248 hm
+( \)  ) 68.648 RT
+EOS
+EOS
+510.042 hm
+22.509 0.000 -22.508 3 510.042 AT
+BOS
+(<expression>) 170.896 RT
+170.896 hm
+( ,  ) 137.296 RT
+137.296 hm
+(<expression>) 170.896 RT
+EOS
+-22.509 vm
+BOS
+( XY ) 102.972 RT
+102.972 hm
+(<expression>) 136.572 RT
+136.572 hm
+( ,  ) 102.972 RT
+102.972 hm
+(<expression>) 136.572 RT
+EOS
+-22.509 vm
+BOS
+( XY ) 68.648 RT
+68.648 hm
+( \(  ) 68.648 RT
+68.648 hm
+(<expression>) 102.248 RT
+102.248 hm
+( ,  ) 68.648 RT
+68.648 hm
+(<expression>) 102.248 RT
+102.248 hm
+( \)  ) 68.648 RT
+EOS
+EOS
+EOS
+-67.526 vm
+BOS
+(LINE TO TOP) 223.926 RT
+223.926 hm
+22.509 0.000 -22.508 3 504.442 AT
+BOS
+(<expression>) 169.029 RT
+169.029 hm
+( ,  ) 135.429 RT
+135.429 hm
+(<expression>) 169.029 RT
+EOS
+-22.509 vm
+BOS
+( XY ) 101.572 RT
+101.572 hm
+(<expression>) 135.172 RT
+135.172 hm
+( ,  ) 101.572 RT
+101.572 hm
+(<expression>) 135.172 RT
+EOS
+-22.509 vm
+BOS
+( XY ) 67.715 RT
+67.715 hm
+( \(  ) 67.715 RT
+67.715 hm
+(<expression>) 101.315 RT
+101.315 hm
+( ,  ) 67.715 RT
+67.715 hm
+(<expression>) 101.315 RT
+101.315 hm
+( \)  ) 67.715 RT
+EOS
+EOS
+504.442 hm
+22.509 0.000 -22.508 3 504.442 AT
+BOS
+(<expression>) 169.029 RT
+169.029 hm
+( ,  ) 135.429 RT
+135.429 hm
+(<expression>) 169.029 RT
+EOS
+-22.509 vm
+BOS
+( XY ) 101.572 RT
+101.572 hm
+(<expression>) 135.172 RT
+135.172 hm
+( ,  ) 101.572 RT
+101.572 hm
+(<expression>) 135.172 RT
+EOS
+-22.509 vm
+BOS
+( XY ) 67.715 RT
+67.715 hm
+( \(  ) 67.715 RT
+67.715 hm
+(<expression>) 101.315 RT
+101.315 hm
+( ,  ) 67.715 RT
+67.715 hm
+(<expression>) 101.315 RT
+101.315 hm
+( \)  ) 67.715 RT
+EOS
+EOS
+EOS
+-181.129 vm
+BOS
+(BOOKMARK) 116.271 RT
+116.271 hm
+(<expression>) 133.071 RT
+133.071 hm
+( ,  ) 99.471 RT
+99.471 hm
+(<expression>) 133.071 RT
+133.071 hm
+139.627 750.928 OP
+BOS
+(RETURNING) 91.293 RT
+91.293 hm
+BOS
+124.504 90.741 -22.509 -124.504 4 275.213 AT
+([variable]) 244.259 RT
+-33.763 vm
+BOS
+([variable]) 73.240 RT
+73.240 hm
+11.254 -11.254 2 97.779 AT
+(THROUGH) 66.825 RT
+-22.509 vm
+(THRU) 66.825 RT
+EOS
+97.779 hm
+([variable]) 73.240 RT
+EOS
+-113.250 vm
+79.487 56.271 21.802 -11.961 -34.470 -56.978 -79.487 7 244.259 AT
+(character-string) 213.305 RT
+-23.215 vm
+(CHAR_VALUE_TRANSLATED) 213.305 RNT
+-34.470 vm
+11.254 -11.254 2 213.305 AT
+(<numeric value>) 182.351 RT
+-22.509 vm
+BOS
+( .  ) 68.076 RT
+68.076 hm
+(<integer value>) 114.276 RT
+EOS
+EOS
+-33.763 vm
+(<integer value>) 213.305 RT
+-22.509 vm
+(CURR_LINE_NO) 213.305 RT
+-22.509 vm
+(CURR_FILE_NAME) 213.305 RT
+-22.509 vm
+(SQLERRMESSAGE) 213.305 RT
+EOS
+-101.995 vm
+(NULL) 244.259 RT
+EOS
+275.213 hm
+143.496 139.627 353.468 ZM
+BOS
+BOS
+( ,  ) 51.502 RT
+51.502 hm
+124.504 90.741 -22.509 -124.504 4 271.011 AT
+([variable]) 240.057 RT
+-33.763 vm
+BOS
+([variable]) 71.839 RT
+71.839 hm
+11.254 -11.254 2 96.378 AT
+(THROUGH) 65.424 RT
+-22.509 vm
+(THRU) 65.424 RT
+EOS
+96.378 hm
+([variable]) 71.839 RT
+EOS
+-113.250 vm
+79.487 56.271 21.802 -11.961 -34.470 -56.978 -79.487 7 240.057 AT
+(character-string) 209.103 RT
+-23.215 vm
+(CHAR_VALUE_TRANSLATED) 209.103 RNT
+-34.470 vm
+11.254 -11.254 2 209.103 AT
+(<numeric value>) 178.149 RT
+-22.509 vm
+BOS
+( .  ) 65.975 RT
+65.975 hm
+(<integer value>) 112.175 RT
+EOS
+EOS
+-33.763 vm
+(<integer value>) 209.103 RT
+-22.509 vm
+(CURR_LINE_NO) 209.103 RT
+-22.509 vm
+(CURR_FILE_NAME) 209.103 RT
+-22.509 vm
+(SQLERRMESSAGE) 209.103 RT
+EOS
+-101.995 vm
+(NULL) 240.057 RT
+EOS
+EOS
+EOS
+143.496 vm
+316.329 EA
+EOS
+EOS
+EOS
+EOS
+EOS
+-290.862 vm
+BOS
+(BOOKMARK) 193.784 RT
+193.784 hm
+(<expression>) 210.584 RT
+210.584 hm
+139.627 828.442 OP
+BOS
+(RETURNING) 130.050 RT
+130.050 hm
+BOS
+124.504 90.741 -22.509 -124.504 4 294.592 AT
+([variable]) 263.638 RT
+-33.763 vm
+BOS
+([variable]) 79.700 RT
+79.700 hm
+11.254 -11.254 2 104.239 AT
+(THROUGH) 73.285 RT
+-22.509 vm
+(THRU) 73.285 RT
+EOS
+104.239 hm
+([variable]) 79.700 RT
+EOS
+-113.250 vm
+79.487 56.271 21.802 -11.961 -34.470 -56.978 -79.487 7 263.638 AT
+(character-string) 232.684 RT
+-23.215 vm
+(CHAR_VALUE_TRANSLATED) 232.684 RNT
+-34.470 vm
+11.254 -11.254 2 232.684 AT
+(<numeric value>) 201.730 RT
+-22.509 vm
+BOS
+( .  ) 77.765 RT
+77.765 hm
+(<integer value>) 123.965 RT
+EOS
+EOS
+-33.763 vm
+(<integer value>) 232.684 RT
+-22.509 vm
+(CURR_LINE_NO) 232.684 RT
+-22.509 vm
+(CURR_FILE_NAME) 232.684 RT
+-22.509 vm
+(SQLERRMESSAGE) 232.684 RT
+EOS
+-101.995 vm
+(NULL) 263.638 RT
+EOS
+294.592 hm
+143.496 139.627 372.846 ZM
+BOS
+BOS
+( ,  ) 61.192 RT
+61.192 hm
+124.504 90.741 -22.509 -124.504 4 280.701 AT
+([variable]) 249.747 RT
+-33.763 vm
+BOS
+([variable]) 75.069 RT
+75.069 hm
+11.254 -11.254 2 99.608 AT
+(THROUGH) 68.654 RT
+-22.509 vm
+(THRU) 68.654 RT
+EOS
+99.608 hm
+([variable]) 75.069 RT
+EOS
+-113.250 vm
+79.487 56.271 21.802 -11.961 -34.470 -56.978 -79.487 7 249.747 AT
+(character-string) 218.793 RT
+-23.215 vm
+(CHAR_VALUE_TRANSLATED) 218.793 RNT
+-34.470 vm
+11.254 -11.254 2 218.793 AT
+(<numeric value>) 187.839 RT
+-22.509 vm
+BOS
+( .  ) 70.819 RT
+70.819 hm
+(<integer value>) 117.019 RT
+EOS
+EOS
+-33.763 vm
+(<integer value>) 218.793 RT
+-22.509 vm
+(CURR_LINE_NO) 218.793 RT
+-22.509 vm
+(CURR_FILE_NAME) 218.793 RT
+-22.509 vm
+(SQLERRMESSAGE) 218.793 RT
+EOS
+-101.995 vm
+(NULL) 249.747 RT
+EOS
+EOS
+EOS
+143.496 vm
+335.707 EA
+EOS
+EOS
+EOS
+EOS
 EOS
 -154.751 vm
 BOS
-(BOOKMARK) 57.915 RT
-57.915 hm
+(SET BARCODE TYPE) 624.805 RT
+624.805 hm
+(<expression>) 608.005 RT
+EOS
+-22.509 vm
+BOS
+(PRINT BARCODE) 218.068 RT
+218.068 hm
+(<expression>) 213.868 RT
+213.868 hm
+(WIDTH) 184.468 RT
+184.468 hm
+(<expression>) 213.868 RT
+213.868 hm
+(HEIGHT) 188.668 RT
+188.668 hm
+(<expression>) 213.868 RT
+EOS
+-33.763 vm
+BOS
+11.254 -11.254 2 294.518 AT
+(PRINT BARCODE WITH NO TEXT) 263.564 RT
+-22.509 vm
+(PRINT BARCODE WITHOUT TEXT) 263.564 RT
+EOS
+294.518 hm
+(<expression>) 198.579 RT
+198.579 hm
+(WIDTH) 169.179 RT
+169.179 hm
+(<expression>) 198.579 RT
+198.579 hm
+(HEIGHT) 173.379 RT
+173.379 hm
+(<expression>) 198.579 RT
+EOS
+-56.271 vm
+BOS
+(PRINT BARCODE) 89.109 RT
+89.109 hm
+(<expression>) 84.909 RT
+84.909 hm
+( AT ) 51.309 RT
+51.309 hm
+22.509 0.000 -22.508 3 361.225 AT
+BOS
+(<expression>) 121.290 RT
+121.290 hm
+( ,  ) 87.690 RT
+87.690 hm
+(<expression>) 121.290 RT
+EOS
+-22.509 vm
+BOS
+( XY ) 65.768 RT
+65.768 hm
+(<expression>) 99.368 RT
+99.368 hm
+( ,  ) 65.768 RT
+65.768 hm
+(<expression>) 99.368 RT
+EOS
+-22.509 vm
+BOS
+( XY ) 43.845 RT
+43.845 hm
+( \(  ) 43.845 RT
+43.845 hm
+(<expression>) 77.445 RT
+77.445 hm
+( ,  ) 43.845 RT
+43.845 hm
+(<expression>) 77.445 RT
+77.445 hm
+( \)  ) 43.845 RT
+EOS
+EOS
+361.225 hm
+22.509 0.000 -22.508 3 361.225 AT
+BOS
+(<expression>) 121.290 RT
+121.290 hm
+( ,  ) 87.690 RT
+87.690 hm
+(<expression>) 121.290 RT
+EOS
+-22.509 vm
+BOS
+( XY ) 65.768 RT
+65.768 hm
+(<expression>) 99.368 RT
+99.368 hm
+( ,  ) 65.768 RT
+65.768 hm
+(<expression>) 99.368 RT
+EOS
+-22.509 vm
+BOS
+( XY ) 43.845 RT
+43.845 hm
+( \(  ) 43.845 RT
+43.845 hm
+(<expression>) 77.445 RT
+77.445 hm
+( ,  ) 43.845 RT
+43.845 hm
+(<expression>) 77.445 RT
+77.445 hm
+( \)  ) 43.845 RT
+EOS
+EOS
+361.225 hm
+(WIDTH) 55.509 RT
+55.509 hm
+(<expression>) 84.909 RT
+84.909 hm
+(HEIGHT) 59.709 RT
+59.709 hm
+(<expression>) 84.909 RT
+EOS
+-67.526 vm
+BOS
+11.254 -11.254 2 170.655 AT
+(PRINT BARCODE WITH NO TEXT) 133.515 RT
+-22.509 vm
+(PRINT BARCODE WITHOUT TEXT) 133.515 RT
+EOS
+170.655 hm
+(<expression>) 74.715 RT
+74.715 hm
+( AT ) 41.115 RT
+41.115 hm
+22.509 0.000 -22.508 3 351.032 AT
+BOS
+(<expression>) 115.831 RT
+115.831 hm
+( ,  ) 82.231 RT
+82.231 hm
+(<expression>) 115.831 RT
+EOS
+-22.509 vm
+BOS
+( XY ) 61.673 RT
+61.673 hm
+(<expression>) 95.273 RT
+95.273 hm
+( ,  ) 61.673 RT
+61.673 hm
+(<expression>) 95.273 RT
+EOS
+-22.509 vm
+BOS
+( XY ) 41.115 RT
+41.115 hm
+( \(  ) 41.115 RT
+41.115 hm
 (<expression>) 74.715 RT
 74.715 hm
 ( ,  ) 41.115 RT
 41.115 hm
 (<expression>) 74.715 RT
 74.715 hm
-139.627 661.648 OP
-BOS
-(RETURNING) 62.115 RT
-62.115 hm
-BOS
-124.504 90.741 -22.509 -124.504 4 248.254 AT
-([variable]) 217.300 RT
--33.763 vm
-BOS
-([variable]) 66.315 RT
-66.315 hm
-11.254 -11.254 2 84.669 AT
-(THROUGH) 53.715 RT
--22.509 vm
-(THRU) 53.715 RT
+( \)  ) 41.115 RT
 EOS
-84.669 hm
-([variable]) 66.315 RT
 EOS
--113.250 vm
-79.487 56.271 21.802 -11.961 -34.470 -56.978 -79.487 7 217.300 AT
-(character-string) 186.346 RT
--23.215 vm
-(CHAR_VALUE_TRANSLATED) 186.346 RNT
--34.470 vm
-11.254 -11.254 2 186.346 AT
-(<numeric value>) 155.392 RT
+351.032 hm
+22.509 0.000 -22.508 3 351.032 AT
+BOS
+(<expression>) 115.831 RT
+115.831 hm
+( ,  ) 82.231 RT
+82.231 hm
+(<expression>) 115.831 RT
+EOS
 -22.509 vm
 BOS
-( .  ) 54.596 RT
-54.596 hm
-(<integer value>) 100.796 RT
+( XY ) 61.673 RT
+61.673 hm
+(<expression>) 95.273 RT
+95.273 hm
+( ,  ) 61.673 RT
+61.673 hm
+(<expression>) 95.273 RT
 EOS
-EOS
--33.763 vm
-(<integer value>) 186.346 RT
 -22.509 vm
-(CURR_LINE_NO) 186.346 RT
--22.509 vm
-(CURR_FILE_NAME) 186.346 RT
--22.509 vm
-(SQLERRMESSAGE) 186.346 RT
-EOS
--101.995 vm
-(NULL) 217.300 RT
-EOS
-248.254 hm
-139.627 139.627 320.324 ZM
 BOS
-BOS
+( XY ) 41.115 RT
+41.115 hm
+( \(  ) 41.115 RT
+41.115 hm
+(<expression>) 74.715 RT
+74.715 hm
 ( ,  ) 41.115 RT
 41.115 hm
-124.504 90.741 -22.509 -124.504 4 248.254 AT
-([variable]) 217.300 RT
--33.763 vm
-BOS
-([variable]) 66.315 RT
-66.315 hm
-11.254 -11.254 2 84.669 AT
-(THROUGH) 53.715 RT
+(<expression>) 74.715 RT
+74.715 hm
+( \)  ) 41.115 RT
+EOS
+EOS
+351.032 hm
+(WIDTH) 45.315 RT
+45.315 hm
+(<expression>) 74.715 RT
+74.715 hm
+(HEIGHT) 49.515 RT
+49.515 hm
+(<expression>) 74.715 RT
+EOS
+-45.017 vm
+(FILL STROKE) 1232.811 RT
 -22.509 vm
-(THRU) 53.715 RT
-EOS
-84.669 hm
-([variable]) 66.315 RT
-EOS
--113.250 vm
-79.487 56.271 21.802 -11.961 -34.470 -56.978 -79.487 7 217.300 AT
-(character-string) 186.346 RT
--23.215 vm
-(CHAR_VALUE_TRANSLATED) 186.346 RNT
--34.470 vm
-11.254 -11.254 2 186.346 AT
-(<numeric value>) 155.392 RT
+(FILL) 1232.811 RT
 -22.509 vm
 BOS
-( .  ) 54.596 RT
-54.596 hm
-(<integer value>) 100.796 RT
-EOS
-EOS
--33.763 vm
-(<integer value>) 186.346 RT
--22.509 vm
-(CURR_LINE_NO) 186.346 RT
--22.509 vm
-(CURR_FILE_NAME) 186.346 RT
--22.509 vm
-(SQLERRMESSAGE) 186.346 RT
-EOS
--101.995 vm
-(NULL) 217.300 RT
-EOS
-EOS
-EOS
-139.627 vm
-289.370 EA
-EOS
-EOS
-EOS
-EOS
-EOS
--286.993 vm
-BOS
-(BOOKMARK) 96.526 RT
-96.526 hm
-(<expression>) 113.326 RT
-113.326 hm
-139.627 700.258 OP
-BOS
-(RETURNING) 81.421 RT
-81.421 hm
-BOS
-124.504 90.741 -22.509 -124.504 4 257.907 AT
-([variable]) 226.953 RT
--33.763 vm
-BOS
-([variable]) 69.533 RT
-69.533 hm
-11.254 -11.254 2 87.887 AT
-(THROUGH) 56.933 RT
--22.509 vm
-(THRU) 56.933 RT
-EOS
-87.887 hm
-([variable]) 69.533 RT
-EOS
--113.250 vm
-79.487 56.271 21.802 -11.961 -34.470 -56.978 -79.487 7 226.953 AT
-(character-string) 195.999 RT
--23.215 vm
-(CHAR_VALUE_TRANSLATED) 195.999 RNT
--34.470 vm
-11.254 -11.254 2 195.999 AT
-(<numeric value>) 165.045 RT
--22.509 vm
-BOS
-( .  ) 59.422 RT
-59.422 hm
-(<integer value>) 105.622 RT
-EOS
-EOS
--33.763 vm
-(<integer value>) 195.999 RT
--22.509 vm
-(CURR_LINE_NO) 195.999 RT
--22.509 vm
-(CURR_FILE_NAME) 195.999 RT
--22.509 vm
-(SQLERRMESSAGE) 195.999 RT
-EOS
--101.995 vm
-(NULL) 226.953 RT
-EOS
-257.907 hm
-139.627 139.627 329.976 ZM
-BOS
-BOS
-( ,  ) 45.942 RT
-45.942 hm
-124.504 90.741 -22.509 -124.504 4 253.081 AT
-([variable]) 222.127 RT
--33.763 vm
-BOS
-([variable]) 67.924 RT
-67.924 hm
-11.254 -11.254 2 86.278 AT
-(THROUGH) 55.324 RT
--22.509 vm
-(THRU) 55.324 RT
-EOS
-86.278 hm
-([variable]) 67.924 RT
-EOS
--113.250 vm
-79.487 56.271 21.802 -11.961 -34.470 -56.978 -79.487 7 222.127 AT
-(character-string) 191.173 RT
--23.215 vm
-(CHAR_VALUE_TRANSLATED) 191.173 RNT
--34.470 vm
-11.254 -11.254 2 191.173 AT
-(<numeric value>) 160.219 RT
--22.509 vm
-BOS
-( .  ) 57.009 RT
-57.009 hm
-(<integer value>) 103.209 RT
-EOS
-EOS
--33.763 vm
-(<integer value>) 191.173 RT
--22.509 vm
-(CURR_LINE_NO) 191.173 RT
--22.509 vm
-(CURR_FILE_NAME) 191.173 RT
--22.509 vm
-(SQLERRMESSAGE) 191.173 RT
-EOS
--101.995 vm
-(NULL) 222.127 RT
-EOS
-EOS
-EOS
-139.627 vm
-299.022 EA
-EOS
-EOS
-EOS
-EOS
-EOS
--154.751 vm
-BOS
-(SET BARCODE TYPE) 463.455 RT
-463.455 hm
-(<expression>) 446.655 RT
+(SET TEXT FORMAT) 622.705 RT
+622.705 hm
+(<expression>) 610.105 RT
 EOS
 -22.509 vm
 BOS
-(PRINT BARCODE) 164.285 RT
-164.285 hm
-(<expression>) 160.085 RT
-160.085 hm
-(WIDTH) 130.685 RT
-130.685 hm
-(<expression>) 160.085 RT
-160.085 hm
-(HEIGHT) 134.885 RT
-134.885 hm
-(<expression>) 160.085 RT
-EOS
--33.763 vm
-BOS
-11.254 -11.254 2 235.580 AT
-(PRINT BARCODE WITH NO TEXT) 204.626 RT
--22.509 vm
-(PRINT BARCODE WITHOUT TEXT) 204.626 RT
-EOS
-235.580 hm
-(<expression>) 145.826 RT
-145.826 hm
-(WIDTH) 116.426 RT
-116.426 hm
-(<expression>) 145.826 RT
-145.826 hm
-(HEIGHT) 120.626 RT
-120.626 hm
-(<expression>) 145.826 RT
-EOS
--33.763 vm
-BOS
-(PRINT BARCODE) 106.971 RT
-106.971 hm
-(<expression>) 102.771 RT
-102.771 hm
-( AT ) 69.171 RT
-69.171 hm
-(<expression>) 102.771 RT
-102.771 hm
-( ,  ) 69.171 RT
-69.171 hm
-(<expression>) 102.771 RT
-102.771 hm
-(WIDTH) 73.371 RT
-73.371 hm
-(<expression>) 102.771 RT
-102.771 hm
-(HEIGHT) 77.571 RT
-77.571 hm
-(<expression>) 102.771 RT
-EOS
--33.763 vm
-BOS
-11.254 -11.254 2 183.970 AT
-(PRINT BARCODE WITH NO TEXT) 153.016 RT
--22.509 vm
-(PRINT BARCODE WITHOUT TEXT) 153.016 RT
-EOS
-183.970 hm
-(<expression>) 94.216 RT
-94.216 hm
-( AT ) 60.616 RT
-60.616 hm
-(<expression>) 94.216 RT
-94.216 hm
-( ,  ) 60.616 RT
-60.616 hm
-(<expression>) 94.216 RT
-94.216 hm
-(WIDTH) 64.816 RT
-64.816 hm
-(<expression>) 94.216 RT
-94.216 hm
-(HEIGHT) 69.016 RT
-69.016 hm
-(<expression>) 94.216 RT
-EOS
--33.763 vm
-(FILL STROKE) 910.109 RT
--22.509 vm
-(FILL) 910.109 RT
--22.509 vm
-BOS
-(SET TEXT FORMAT) 461.355 RT
-461.355 hm
-(<expression>) 448.755 RT
+(SET FONT SIZE) 618.505 RT
+618.505 hm
+(<expression>) 614.305 RT
 EOS
 -22.509 vm
 BOS
-(SET FONT SIZE) 457.155 RT
-457.155 hm
-(<expression>) 452.955 RT
+(SET FONT NAME) 409.019 RT
+409.019 hm
+(<expression>) 404.819 RT
+404.819 hm
+15.123 418.973 OP
+(EMBEDDED) 388.019 RT
+EOS
+EOS
+-30.247 vm
+BOS
+(RESUME PAGE) 614.305 RT
+614.305 hm
+(<expression>) 618.505 RT
 EOS
 -22.509 vm
-BOS
-(SET FONT NAME) 457.155 RT
-457.155 hm
-(<expression>) 452.955 RT
-EOS
+(SET UNDERLINE ON) 1232.811 RT
+-22.509 vm
+(SET UNDERLINE OFF) 1232.811 RT
 EOS
 EOS
 #ebnf2ps#end
