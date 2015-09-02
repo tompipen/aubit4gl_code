@@ -14,11 +14,11 @@
 
 if test "$COMSPEC" != ""; then 
 	SOURCES_X=`/bin/find ../.. -name "*.c"`
-	SOURCES_EC=`/bin/find ../.. -name "*.ec"`
+	SOURCES_EC=`/bin/find ../.. -name "*.ec"` `/bin/find ../.. -name "*.cpc"`
 	SORT=/usr/bin/sort
 else
 	SOURCES_X=`find ../.. -name "*.c"`
-	SOURCES_EC=`find ../.. -name "*.ec"`
+	SOURCES_EC=`find ../.. -name "*.ec"` `find ../.. -name "*.cpc"`
 	SORT=sort 
 fi
 
