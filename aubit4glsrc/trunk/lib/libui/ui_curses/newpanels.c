@@ -24,11 +24,11 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.193 2015-01-15 19:48:15 mikeaubury Exp $
+# $Id: newpanels.c,v 1.194 2015-09-02 10:34:38 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: newpanels.c,v 1.193 2015-01-15 19:48:15 mikeaubury Exp $";
+		"$Id: newpanels.c,v 1.194 2015-09-02 10:34:38 mikeaubury Exp $";
 #endif
 
 /**
@@ -155,6 +155,15 @@ static WINDOW *A4GL_display_form_new_win (char *name, struct s_form_dets *f, int
 */
 
 
+void setBorder(WINDOW *w) {
+//wborder_set(stdscr,l,r,t,b,tl,tr,bl,br)
+             	if (A4GL_isyes(acl_getenv("SIMPLE_GRAPHICS")))  {
+                      	wborder (w, '|', '|', '-', '-', '+','+', '+', '+');
+              	} else {
+                      	wborder (w, 0, 0, 0, 0,0, 0, 0, 0);
+                      	//wborder (w, WACS_BTTB, WACS_BTTB, WACS_D_HLINE, WACS_D_HLINE,WACS_D_ULCORNER, WACS_D_URCORNER, WACS_D_LLCORNER, WACS_D_LRCORNER);
+              	}
+}
 
 /**
  * Find the description of the pointer type
@@ -312,11 +321,13 @@ if (A4GL_isyes(acl_getenv("ODDOPTIONS"))) {
 			lw=iw;
 			lh=ih;
                 	winx = newwin (ih + 2, iw + 2, y - 2, x - 2);
+			setBorder(winx);
+/*
                 	if (A4GL_isyes(acl_getenv("SIMPLE_GRAPHICS")))  {
                         	wborder (winx, '|', '|', '-', '-', '+','+', '+', '+');
                 	} else {
                         	wborder (winx, 0, 0, 0, 0, 0, 0, 0, 0);
-                	}
+                	}*/
                 	A4GL_mja_wrefresh (winx);
 			UILIB_A4GL_zrefresh();
                 	delwin (winx);
@@ -489,11 +500,15 @@ if (A4GL_isyes(acl_getenv("ODDOPTIONS"))) {
 #endif
 
       A4GL_set_bkg (win, attrib);
+      setBorder(win);
+
+/*
    if (A4GL_isyes(acl_getenv("SIMPLE_GRAPHICS")))  {
       wborder (win, '|', '|', '-', '-', '+','+', '+', '+');
    } else {
       wborder (win, 0, 0, 0, 0, 0, 0, 0, 0);
    }
+*/
       A4GL_mja_wrefresh (win);
     }
 #ifdef DEBUG
@@ -634,11 +649,14 @@ void
 #ifdef DEBUG
       A4GL_debug ("Clr screen - redraw border");
 #endif
+      setBorder(w);
+/*
    if (A4GL_isyes(acl_getenv("SIMPLE_GRAPHICS")))  {
       wborder (w, '|', '|', '-', '-', '+','+', '+', '+');
    } else {
       wborder (w, 0, 0, 0, 0, 0, 0, 0, 0);
    }
+*/
     }
   UILIB_A4GL_zrefresh ();
   return;
@@ -1346,11 +1364,14 @@ A4GL_display_form (struct s_form_dets *f,int attrib)
 #ifdef DEBUG
       A4GL_debug ("Form has border");
 #endif
+      setBorder(w);
+/*
    if (A4GL_isyes(acl_getenv("SIMPLE_GRAPHICS")))  {
       wborder (w, '|', '|', '-', '-', '+','+', '+', '+');
    } else {
       wborder (w, 0, 0, 0, 0, 0, 0, 0, 0);
    }
+*/
     }
 
   

@@ -25,7 +25,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile-common.in,v 1.249 2015-02-11 16:17:35 mikeaubury Exp $
+# $Id: Makefile-common.in,v 1.250 2015-09-02 10:36:54 mikeaubury Exp $
 #
 
 #WARNING: __NEVER__ use environment vatiable called "TMP" - Informix
@@ -620,7 +620,7 @@ ifeq "${ZLIB_LIB_PATH}" ""
 ZLIB_LIB_PATH		=/usr/lib
 endif
 YYDEBUG             =@YYDEBUG@
-C_DFLAGS			+=${DDEBUG} -DHAVE_CONFIG_H ${YYDEBUG}
+C_DFLAGS			+=${DDEBUG} -DHAVE_CONFIG_H=${YYDEBUG}
 CFLAGS				+=${CWARN} ${AUTOCONF_CFLAGS} ${C_DFLAGS} ${C_IFLAGS} 
 ifneq "${ZLIB_INC_PATH}" ""
 	#CFLAGS+=-I${ZLIB_INC_PATH}

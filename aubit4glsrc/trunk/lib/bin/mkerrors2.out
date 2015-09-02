@@ -394,3 +394,4 @@
 412|Error in filterfunc
 414|Unable to create blobfile
 416|Cant open file
+418|Too many columns to load using adbaccess

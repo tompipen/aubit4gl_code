@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: curslib.c,v 1.181 2015-01-15 19:48:15 mikeaubury Exp $
+# $Id: curslib.c,v 1.182 2015-09-02 10:34:37 mikeaubury Exp $
 #*/
 
 /**
@@ -41,7 +41,7 @@
  */
 #ifndef lint
 static char const module_id[] =
-  "$Id: curslib.c,v 1.181 2015-01-15 19:48:15 mikeaubury Exp $";
+  "$Id: curslib.c,v 1.182 2015-09-02 10:34:37 mikeaubury Exp $";
 #endif
 /*
 =====================================================================
@@ -350,7 +350,7 @@ A4GL_clr_error_nobox (char *dbg_fromwhere)
  *
  * @todo Describe function
  */
-void
+static void
 A4GL_newbox (textarea * area, int l, int t, int r, int b, int typ)
 {
   a4gl_gettext (l, t, r, b, area->buf);
