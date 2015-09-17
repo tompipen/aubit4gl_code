@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.182 2015-09-17 13:52:38 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.183 2015-09-17 17:23:58 mikeaubury Exp $
 #
 */
 
@@ -2408,7 +2408,8 @@ A4GL_strwscmp (char *a, char *b)
   A4GL_trim (o1);
   A4GL_trim (o2);
 
-  if (strstr (o2, "%S"))
+
+  if (strstr (o2, "%s"))
     {
       int r;
       int chars = 0;
