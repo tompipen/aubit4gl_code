@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.181 2013-11-13 09:36:19 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.182 2015-09-17 13:52:38 mikeaubury Exp $
 #
 */
 
@@ -4613,6 +4613,7 @@ for (a=0;a<sl;a++) {
 	if (strncmp(ptr,old_string,ol)==0) {
 		strcat(buff,new_string);
 		bcnt+=nl;
+		if (ol>1) { a+=ol-1; }
 	} else {
 		buff[bcnt++]=*ptr;
 		buff[bcnt]=0;
