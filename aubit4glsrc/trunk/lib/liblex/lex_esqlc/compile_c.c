@@ -24,12 +24,12 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.555 2014-06-27 14:51:20 mikeaubury Exp $
+# $Id: compile_c.c,v 1.556 2015-11-24 09:31:31 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
-static char const module_id[] = "$Id: compile_c.c,v 1.555 2014-06-27 14:51:20 mikeaubury Exp $";
+static char const module_id[] = "$Id: compile_c.c,v 1.556 2015-11-24 09:31:31 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -6347,10 +6347,34 @@ dump_function (struct s_function_definition *function_definition, int ismain)
     }
   else
     {
+      yylineno = function_definition->lineno;
       printc ("\nA4GL_FUNCTION %sint %s%s (int _nargs){ \n",
 	      function_definition->function_type == E_FTYPE_STATIC ? "static " : "", function_definition->n_namespace,
 	      function_definition->funcname);
       printc ("void *_blobdata=0;");
+
+	int default_values_cnt=0;
+	int have_non_default=0;
+	int last_default=0;
+        for(a=function_definition->parameters->list.list_len-1;a>=0;a--) {
+		if (function_definition->parameters->list.list_val[a]->expr_str_u.expr_param.default_value) {
+			struct variable *r;
+		        r = find_variable_quick (function_definition->parameters->list.list_val[a]->expr_str_u.expr_param.expr_string, function_definition->variables.variables.variables_val, function_definition->variables.variables.variables_len,-1);
+			if (r->var_data.variable_type!=VARIABLE_TYPE_SIMPLE) {
+				set_yytext(function_definition->parameters->list.list_val[a]->expr_str_u.expr_param.expr_string);
+				a4gl_yyerror("Default values can only be applied to simple variables");
+				return 0;
+			}
+			if (have_non_default) {
+				a4gl_yyerror("default values for parameters must be at the end of the parameter list");
+				return 0;
+			}
+			default_values_cnt++;
+			last_default=a;
+		} else {
+			have_non_default=1;
+		}
+	}
 
       //printc ("\nstatic char *_functionName = \"%s\";\n", function_definition->funcname);
 
@@ -6368,10 +6392,32 @@ dump_function (struct s_function_definition *function_definition, int ismain)
 	      print_variable_new (function_definition->variables.variables.variables_val[a], E_SCOPE_LOCAL, 0);
 	    }
 	}
+
       printc ("#");
       expanded_params = expand_parameters (&function_definition->variables, function_definition->parameters);
-      yylineno = function_definition->lineno;
       print_param_g ('f', function_definition->funcname, expanded_params);
+
+	if (default_values_cnt) {
+			printc("if (_nargs < %d && _nargs+%d >= %d) {",  expanded_params->list.list_len, default_values_cnt,  expanded_params->list.list_len);
+				int cnt=default_values_cnt;
+        		for(a=last_default;a<function_definition->parameters->list.list_len;a++) {
+		
+				expr_str *ptr=function_definition->parameters->list.list_val[a]->expr_str_u.expr_param.default_value;
+				if (ptr==NULL) {
+					continue;
+				}
+				printc("if (_nargs<%d) {",  expanded_params->list.list_len-cnt+1);
+				real_print_expr(ptr);
+				printc("\n}");
+				cnt--;
+
+			}
+			printc("_nargs=%d;\n", expanded_params->list.list_len);
+			printc("}");
+		
+	}
+
+
 
       dump_objdata (&function_definition->variables,0);
       if (local_isGenStackInfo ())
@@ -6384,7 +6430,7 @@ dump_function (struct s_function_definition *function_definition, int ismain)
 	}
 
 
-
+      //A4GL_pause_execution();
 
       if (A4GL_doing_pcode ())
 	{
