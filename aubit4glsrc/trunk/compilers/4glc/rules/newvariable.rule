@@ -287,19 +287,24 @@ fparam_var_list:        func_def_var {
                         }
 ;
 
+
 func_def_var: 
-		identifier {
+		identifier op_parm_default_value{
 			char *name;
 			name=remap_top_level_variables($<str>1);
 			if (!name) name=$<str>1;
-			$<ptr>$=A4GL_new_expr_param(name, EB_FALSE);
+			$<ptr>$=A4GL_new_expr_param(name, EB_FALSE, $<ptr>2);
 		}
-		| ASCOPY identifier {
+		| ASCOPY identifier op_parm_default_value {
 			char *name;
 			name=remap_top_level_variables($<str>2);
 			if (!name) name=$<str>2;
-			$<ptr>$=A4GL_new_expr_param(name, EB_TRUE);
+			$<ptr>$=A4GL_new_expr_param(name, EB_TRUE,$<ptr>3);
 		}
+;
+
+op_parm_default_value: {$<ptr>$=0;}
+	| EQUAL fgl_expr_c  {$<ptr>$=$<ptr>2;}
 ;
 
 var_ident_qchar_e :
