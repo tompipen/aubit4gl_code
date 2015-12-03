@@ -1,4 +1,4 @@
-/* $Id: fgl.x,v 1.76 2014-09-10 13:44:23 mikeaubury Exp $ */
+/* $Id: fgl.x,v 1.77 2015-12-03 10:04:01 mikeaubury Exp $ */
 typedef string str<>;
 typedef string sql_ident<>;
 typedef struct s_plsql_packageEntries * s_plsql_packageEntries_ptr;
@@ -2776,6 +2776,7 @@ struct s_expr_cached {
 struct s_expr_parameter {
 	  enum e_boolean isReference;
           str  expr_string;
+	struct expr_str *default_value;
 };
 
 /*
