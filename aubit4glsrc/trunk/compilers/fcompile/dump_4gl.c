@@ -25,7 +25,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dump_4gl.c,v 1.23 2009-06-12 11:31:40 mikeaubury Exp $
+# $Id: dump_4gl.c,v 1.24 2015-12-03 10:06:29 mikeaubury Exp $
 #*/
 
 /**
@@ -1531,7 +1531,7 @@ printf("now in input_record\n");
 	      fprintf(fout,"                LET int_flag = FALSE\n");
 	      fprintf(fout,"                LET abort_flag = TRUE\n");
 	      fprintf(fout,"              END IF\n");
-	      fprintf(fout,"          END INPUT\n");
+	      fprintf(fout,"          END INPUT # EI\n");
 	      fprintf(fout,"\n");
 	    }
         }

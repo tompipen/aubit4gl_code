@@ -2,7 +2,7 @@
 | Common Modules                                                       |
 +----------------------------------------------------------------------}
 
-# $Id: common.4gl,v 1.2 2010-01-14 07:41:41 mikeaubury Exp $
+# $Id: common.4gl,v 1.3 2015-12-03 10:06:29 mikeaubury Exp $
 
 
 { global.4gl will be added automagically..}
@@ -122,6 +122,17 @@ DEFINE lv_query, lv_next, lv_prev, lv_add, lv_update, lv_remove,
 	    ELSE
 		CALL display_record()
 	    END IF
+
+	    IF gv_screen_max=1 THEN
+		HIDE OPTION "Screen"
+	    END IF
+	    IF lv_has_master = 0 THEN
+		HIDE OPTION "Master"
+	    END IF 
+	    IF ga_master_of[gv_table_no] = 0 THEN
+		HIDE OPTION "Detail"
+            END IF
+
 	COMMAND "Query" lv_query
 	    LET gv_show_detail = FALSE
 	    CALL query_by_example()
@@ -161,7 +172,7 @@ DEFINE lv_query, lv_next, lv_prev, lv_add, lv_update, lv_remove,
 		END IF
 	    END FOR
 	    IF lv_has_master = 0 THEN
-		CALL err_msg("The current table do not have a master table")
+		CALL err_msg("The current table does not have a master table")
 		CONTINUE MENU
 	    END IF
 	    # first screen to show when switching tables
@@ -174,7 +185,7 @@ DEFINE lv_query, lv_next, lv_prev, lv_add, lv_update, lv_remove,
 		CONTINUE MENU
 	    END IF
 	    IF ga_master_of[gv_table_no] = 0 THEN
-		CALL err_msg("The current table do not have a detail table")
+		CALL err_msg("The current table does not have a detail table")
 		CONTINUE MENU
 	    END IF
 	    LET gv_table_no = ga_master_of[gv_table_no]
@@ -318,10 +329,11 @@ FUNCTION prev_err_msg()
 END FUNCTION
 
 FUNCTION recpos_msg()
-    ERROR ga_table_name[gv_table_no,1] CLIPPED,
+    
+    MESSAGE ga_table_name[gv_table_no,1] CLIPPED,
         " record ", ga_rec_no[gv_table_no] USING "<<<<<",
         " of ", ga_rec_found[gv_table_no] USING "<<<<<"
-	ATTRIBUTE (RED, REVERSE)
+	#ATTRIBUTE (RED, REVERSE)
 END FUNCTION
 
 FUNCTION ok_to_delete()

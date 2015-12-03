@@ -25,7 +25,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: dump_form.c,v 1.28 2012-06-18 16:44:47 mikeaubury Exp $
+# $Id: dump_form.c,v 1.29 2015-12-03 10:06:29 mikeaubury Exp $
 #*/
 
 /**
@@ -1748,6 +1748,7 @@ printf("now in input_record\n");
 			       f->tables.tables_val[t].tabname)!=0) continue;
 		int reject_field=0;
 		for (b=0; b<f->attributes.attributes_val[a].bool_attribs.bool_attribs_len; b++) {
+		  if (f->attributes.attributes_val[a].datatype==DTYPE_SERIAL) reject_field++; 
 		  switch (f->attributes.attributes_val[a].bool_attribs.bool_attribs_val[b]) {
 //		    case FA_B_NOENTRY: reject_field++; break;
 		    case FA_B_NOUPDATE: reject_field++; break;
@@ -1841,7 +1842,7 @@ printf("now in input_record\n");
 	      //fprintf(fout,"                LET int_flag = FALSE\n");
 	      //fprintf(fout,"                LET abort_flag = TRUE\n");
 	      //fprintf(fout,"              END IF\n");
-	      fprintf(fout,"          END INPUT\n");
+	      fprintf(fout,"          END INPUT # dump_form\n");
 	      fprintf(fout,"\n");
 	
 	      fprintf(fout,"          IF int_flag = TRUE THEN\n");
