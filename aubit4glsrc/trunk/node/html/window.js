@@ -19,17 +19,18 @@ var menuLine=Ext.widget("toolbar",{dock:'top', hidden:false, flex:1,height:60 } 
 
 
 var tbMsg=Ext.widget('tbtext', {cls:'msg',  text:''});
-var messageLine=Ext.widget("toolbar",{dock:'bottom', items:[tbMsg],flex:1});
+var messageLine=Ext.widget("toolbar",{cls:'MessageLine', dock:'bottom', items:[tbMsg],flex:1});
 
 
 var tbErr=Ext.widget('tbtext', { cls:'error', text:'!', });
-var errorLine=Ext.widget("toolbar",{dock:'bottom', items:[tbErr], hidden:true, flex:1});
+var errorLine=Ext.widget("toolbar",{cls:'errorLine', dock:'bottom', items:[tbErr], hidden:true, flex:1});
 
 
 var formArea;
 if (frm)  {
 	formArea=Ext.widget('container', 
-		{cls:'formArea', layout:'fit' , items : [ frm ]});
+		
+		{cls:'formArea',  layout:'fit' , items : [ frm ]});
 } else {
 	formArea=Ext.widget('container', {cls:'formArea', layout:'fit' });
 }
@@ -256,12 +257,4 @@ currentApplication.windowsStack.unshift(d.NAME);
 currentApplication.currentWindow=win;
 return win;
 }
-
-
-
-
-
-
-
-
 

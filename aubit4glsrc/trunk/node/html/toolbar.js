@@ -93,6 +93,7 @@ function generateToolbar(context, events, callback) {
 				text: "OK",
 				qtip: "Accept",
 				tooltip: "Accept",
+				formBind:true,
 				handler: function() {
 					callback("ACCEPT","ACCEPT");
 				}

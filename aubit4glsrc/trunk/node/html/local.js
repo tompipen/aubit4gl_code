@@ -3,9 +3,21 @@
 
 function getIconClass(nm, parentFormName, parentWindowName) {
 	console.log("getIconClass : " + nm+" "+parentFormName+" "+parentWindowName);
-
 	
+
         switch(nm) {
+
+		case "Query": return "icon-"+nm;
+		case "Next": return "icon-"+nm;
+		case "Previous": return "icon-"+nm;
+		case "Add": return "icon-"+nm;
+		case "Update": return "icon-"+nm;
+		case "Remove": return "icon-"+nm;
+		case "Screen": return "icon-"+nm;
+		case "Master": return "icon-"+nm;
+		case "Detail": return "icon-"+nm;
+		case "Exit": return "icon-"+nm;
+
 		case "6":
 			if (parentFormName=="custform") {
 				return "hide";

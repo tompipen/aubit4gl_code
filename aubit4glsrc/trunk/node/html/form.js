@@ -154,6 +154,7 @@ return Ext.widget("label", {
 
 
 function afterField(itm) {
+//validateField
 console.log("After Field");
 }
 
@@ -176,10 +177,159 @@ var cfg= {
 		A4GL_tabname: d.sqlTabName,
 		A4GL_sqlType: d.sqlType,
 		A4GL_noentry: d.noEntry,
+		constructName: d.colName,
 		//vtype ? ??
 		readOnly : d.noEntry,
 		tooltip:d.widget.comments,
 		enforceMaxLength:true,
+      fieldValidationFailed:function(widget, txt) {
+		console.log("fieldValidationFailed : " + txt);
+		switch(txt) {
+			case "FIELD_CONSTR_EXPR": txt= "Error in expression";break;
+			case "FIELD_REQD_MSG": txt="This field required an entered value";break;
+			case "FIELD_ERROR_MSG": txt= "Error in field"; break;
+			case "FIELD_INCL_MSG": txt= "This value is not among the valid possibilities";break;
+		}
+		widget._errors.push(txt);
+	},
+      getErrors: function(t1)  {
+		var txt;
+		var me=this;
+	console.log("getErrors...");
+		
+		if (t1===undefined) {
+			txt=me.getFormFieldValue(me);
+		} else {
+			txt=t1;
+		}
+		me._errors=[];
+		if (me.readOnly || me.disabled) {
+		return [];
+		}
+		if (me.validateField(txt)) {
+			return [];
+		}
+
+		if (me._errors.length==0) {
+			console.log("Error List: ");
+			console.dir(me._errors);
+		} else {
+			console.log("No errors!");
+		}
+		return me._errors;
+	},
+      validateField:function(txt)
+        {
+            var me=this;
+	    var s_d=d;
+	    var currentContextType=me.currentContext.contextType;
+
+	    me.datatype=AubitDesktop.FGLConstruct.decode_datatype(me.A4GL_sqlType);
+
+	    me.datatype_length=AubitDesktop.FGLConstruct.decode_datatype_length(me.A4GL_sqlType);
+		console.log("currentContextType="+currentContextType);
+            if (currentContextType == AubitDesktop.FGLContextType.contextConstruct)
+            {
+                var cstr=AubitDesktop.FGLConstruct.getConstructString(me.constructName, txt, me.datatype, me.datatype_length);
+		console.log("cstr="+cstr);
+                if (cstr==null) 
+                {
+                    var ign = false;
+		    if(me.fieldValidationFailed) {
+                    	ign=me.fieldValidationFailed(me, "FIELD_CONSTR_EXPR");
+		    }
+
+                    if (!ign)
+                    {
+                        return false;
+                    }
+                }
+                return true;
+            }
+
+            if (currentContextType == AubitDesktop.FGLContextType.contextInput || currentContextType == AubitDesktop.FGLContextType.contextInputArray)
+            {
+                var ign = false;
+                if (me.Required) //@Fixme
+                {
+                    if (txt.length == 0)
+                    {
+                        if (me.fieldValidationFailed != null)
+                        {
+                            ign=me.fieldValidationFailed(me, "FIELD_REQD_MSG");
+                        }
+                        if (!ign)
+                        {
+                            return false;
+                        }
+                    }
+
+                }
+
+                if (!FGLUtils.IsValidForType(me.datatype, txt, me.format,me.datatype_length))
+                {
+                    if (me.fieldValidationFailed != null)
+                    {
+                        ign=me.fieldValidationFailed(me, "FIELD_ERROR_MSG");
+                    }
+                    if (!ign)
+                    {
+                        return false;
+                    }
+                }
+
+                if (me.includeValues != null)
+                {
+                    var ok = false;
+                    Ext.each(me.includeValues,function(s)
+                    {
+                        if (s.Contains(":"))
+                        {
+                            var l, r;
+                            var arr;
+                            arr = s.Split(':');
+                            l = arr[0];
+                            r = arr[1];
+
+                            if (FGLUtils.compare_range(txt, l, r, me.datatype, me.datatype_length, me.format))
+                            {
+                                ok = true;
+                            }
+                        }
+                        else
+                        {
+                            if (s == "NULL" && txt == "")
+                            {
+                                ok = true;
+				return;
+                            }
+                            if (s == txt)
+                            {
+                                ok = true;
+				return;
+                            }
+                        }
+                    });
+
+                    ign = false;
+                    if (!ok)
+                    {
+                        ign=me.fieldValidationFailed(me, "FIELD_INCL_MSG");
+
+
+                        if (!ign)
+                        {
+                            return false;
+                        }
+                    }
+                }
+            }
+
+
+
+            return true;
+        },
+
 	// These functions can be overridden if we need spcific actions
 	// for a particular widget type...
 		isTouched: function(widget) {
@@ -204,14 +354,41 @@ var cfg= {
 			if (this.A4GL_noentry) return;
 			else {
 				this.setReadOnly(false);
+			//this.setDisabled(false);
 			}
 		},
 		disableField: function(widget) {
 			if (this.A4GL_noentry) return;
+			//this.setDisabled(true);
 			this.setReadOnly(true);
-		}
-		
-
+		},
+    		setCaretPosition: function(pos) {
+        		var el = this.inputEl.dom;
+        		if (typeof(el.selectionStart) === "number") {
+            			el.focus();
+            			el.setSelectionRange(pos, pos);
+        		} else if (el.createTextRange) {
+            			var range = el.createTextRange();
+            			range.move("character", pos);
+            			range.select();
+        		} else {
+            			throw 'setCaretPosition() not supported';
+        		}
+    		},
+	
+    		getCaretPosition: function() {
+        		var el = this.inputEl.dom;
+        		if (typeof(el.selectionStart) === "number") {
+            			return el.selectionStart;
+        		} else if (document.selection && el.createTextRange){
+            			var range = document.selection.createRange();
+            			range.collapse(true);
+            			range.moveStart("character", -el.value.length);
+            			return range.text.length;
+        		} else {
+            			throw 'getCaretPosition() not supported';
+        		}
+    		}
 	};
 	
 if (d.noEntry) {
@@ -232,6 +409,7 @@ if (d.widget && d.widget.shift) {
 			}
 			});
 		 } 
+
 		if (d.widget.shift=="down")  { 
 		    Ext.apply(cfg,{
 			fieldStyle:'text-transform:lowercase', 
@@ -568,10 +746,12 @@ if (lvl) {
 	var frm=Ext.create("Ext.container.Container", {
 			layout:'absolute',
 			flex:1,
+			margin:10,
 			//minHeight: d.height*yMultiplier,
 			//minWidth: d.width*xMultiplier,
-			items : items
+				items : items
 	});
+
 
 	return frm;
 }

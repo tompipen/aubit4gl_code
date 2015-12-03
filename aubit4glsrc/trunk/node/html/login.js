@@ -22,7 +22,14 @@ var win=Ext.create('Ext.window.Window', {
                 			inputType:'password', 
 					value:"aubit4gl",
                 			allowBlank:false 
-          			}
+          			},
+				{
+					xtype:'textfield',
+                			fieldLabel:'Program', 
+                			itemId:'loginProgram', 
+                			name:'loginProgram', 
+                			allowBlank:false 
+            			},
 		]}
 	
 	] ,
@@ -33,7 +40,8 @@ var win=Ext.create('Ext.window.Window', {
 			handler:function () {
 				if (LoginCallback(
 					win.down("#loginUsername").value,
-					win.down("#loginPassword").value 
+					win.down("#loginPassword").value ,
+					win.down("#loginProgram").value 
 				))  {
 					win.close();
 				}

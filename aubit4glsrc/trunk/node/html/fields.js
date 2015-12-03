@@ -62,11 +62,13 @@ function enableActiveFields(currentApplication, fldList, context) {
 			allFields[a].disableField();
 			allFields[a].currentContext=null;
 			allFields[a].el.dom.setAttribute('tabIndex', -1);
+			allFields[a].validate();
 		} else {
 			allFields[a].enableField();
 			allFields[a].currentContext=context;
 			allFields[a].el.dom.setAttribute('tabIndex', a);
 			allFields[a].fieldIsLast=false;
+			allFields[a].validate();
 		}
 	}
 
@@ -86,6 +88,7 @@ function disableAllFields(currentApplication) {
 	for (a=0;a<allFields.length;a++) {
 		allFields[a].disableField();
 		allFields[a].el.dom.setAttribute('tabIndex', -1);
+			allFields[a].validate();
 	}
 	var tabs=currentApplication.currentWindow.activeForm.query("[ScreenRecordName]");
         if (tabs && tabs.length) {

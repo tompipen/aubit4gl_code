@@ -150,25 +150,6 @@ switch (d.type) {
 
 
 
-	case "OPENWINDOWWITHFORM":
-		console.dir([
-		d.WINDOW,
-		d.X,
-		d.Y,
-		d.ATTRIBUTE,
-		d.SOURCE,
-		d.TEXT,
-		d.STYLE,
-		d.ERROR_LINE,
-		d.PROMPT_LINE,
-		d.MENU_LINE,
-		d.COMMENT_LINE,
-		d.MESSAGE_LINE,
-		d.FORM_LINE,
-		d.BORDER,
-		d.FORM.Name,
-		createForm(d.FORM.Data)]);
-		break;
 
 	case "OPENFORM":
 		if (d.Form && d.Form.Data) {
@@ -183,7 +164,11 @@ switch (d.type) {
 
 	case "CURRENTWINDOW":
 		var cwin=d.WINDOW;
-		console.log("@Fixme - current window is " +cwin);
+		var cw_win=currentApplication.windows[cwin];
+
+		if (cw_win) {
+			cw_win.ensureCurrent();
+		}
 		break;
 
 
@@ -206,6 +191,15 @@ switch (d.type) {
 	case  "CREATEWINDOW":
 		createWindow(currentApplication, d);
 		break;
+
+	case "CLOSEWINDOW": 
+		var clsWindow=d.WINDOW;
+		var cls_win=currentApplication.windows[clsWindow];
+		cls_win.closeWindow();
+		break;
+		
+		
+		
 /*
 		, "NAME":"a4gl_helpw1","X":1,"Y":1,"W":80,"H":24,"FORM_LINE":255,"ERROR_LINE":255,"PROMPT_LINE":255,"MENU_LINE":1,"COMMENT_LINE":255,"MESSAGE_LINE":255,"BORDER":0,"ATTRIBUTE":0,"STYLE":"","TEXT":"" },
 */
@@ -280,6 +274,9 @@ switch (d.type) {
 		var c=currentApplication.Contexts["C"+context];
 		c.showOption(d.OPTION);
 		break;
+
+	case "FIELDDELIMITERS": 
+		break;
 		
 	case "OPENWINDOWWITHFORM":
 		var frm=createForm(d.FORM.Data);
@@ -307,7 +304,8 @@ type: "OPENWINDOWWITHFORM"
 */
 
 	default:
-		console.log("Unhandled : " + d);
+		console.log("Unhandled : " + d.type);
+		console.dir(d);
 
 }
 

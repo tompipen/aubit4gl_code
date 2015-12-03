@@ -18,6 +18,7 @@ for (a=0;a<flds.length;a++) {
 construct={
 	first:true,
 	active:false,
+	contextType:  AubitDesktop.FGLContextType.contextConstruct,
 	activeWindow: currentApplication.currentWindow,
 	activeApplication: currentApplication,
 	OriginalFields:d.Fields,
@@ -65,7 +66,7 @@ construct={
 				};
 
 				if (!fieldsValid(construct.Fields,"CONSTRUCT")) {
-					Ext.MessageBox.show("Some fields are invalid!");
+					Ext.MessageBox.alert("Some fields are invalid!");
 					return;
 				}
 

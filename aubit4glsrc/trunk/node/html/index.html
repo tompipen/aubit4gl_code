@@ -18,6 +18,7 @@
         <script src="/window.js"></script>
         <script src="/prompt.js"></script>
         <script src="/form.js"></script>
+        <script src="/AubitDesktop_ext.js"></script>
         <script src="/app.js"></script>
         <script src="/actions.js"></script>
         <script src="/construct.js"></script>
@@ -40,8 +41,8 @@
 
 		});*/
 		showLoginWindow(
-				function(username,password) {
-					return initializeSocket(username,password,null,function(app,d) {
+				function(username,password,prog) {
+					return initializeSocket(username,password,prog,function(app,d) {
 						if(d!=null) {
 							console.log("Processing command:"+d.type);
 						}

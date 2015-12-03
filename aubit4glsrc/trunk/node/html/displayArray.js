@@ -25,6 +25,7 @@ tab.store.loadData(rowData,false);
 displayArray={
 	first:true,
 	active:false,
+ 	contextType:  AubitDesktop.FGLContextType.contextDisplayArray,
 	activeWindow: currentApplication.currentWindow,
         activeApplication: currentApplication,
 	Table: tab,

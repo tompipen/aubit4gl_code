@@ -22,6 +22,7 @@ input={
 	active:false,
 	activeWindow: currentApplication.currentWindow,
         activeApplication: currentApplication,
+ 	contextType:  AubitDesktop.FGLContextType.contextInput,
 	OriginalFields:d.Fields,
 	Fields: flds,
         getLastFocusFieldName:function() {
@@ -83,13 +84,22 @@ input={
 				
 		}
 	},
-	ContextActivate: function() {
+	ContextActivate: function(d) {
 		console.log("Input : ContextActivate");
 		input.active=true;
 		input.activeWindow.ensureCurrent();
 		input.activeWindow.setMenu(toolbar);
 		toolbar.enable();
 		toolbar.setVisible(true);
+		var a;
+		if (d.Values && d.Values.length && d.CHANGED) {
+			for (a=0;a<flds.length;a++) {
+				if (d.Values[a] && d.Values[a].Changed) {
+        				flds[a].setFormFieldValue(flds[a], d.Values[a].Data);
+				}
+			}
+		}
+
 		enableActiveFields(currentApplication, input.Fields, input);
 
 
