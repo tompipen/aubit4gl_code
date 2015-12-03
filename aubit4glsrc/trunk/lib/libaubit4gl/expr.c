@@ -25,7 +25,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: expr.c,v 1.51 2012-05-25 06:50:12 mikeaubury Exp $
+# $Id: expr.c,v 1.52 2015-12-03 10:11:30 mikeaubury Exp $
 #
 */
 
@@ -629,13 +629,14 @@ A4GL_new_expr_funcdef (char *funcname, char *namespace)
 }
 
 struct expr_str *
-A4GL_new_expr_param (char *name, int isReference)
+A4GL_new_expr_param (char *name, int isReference, struct expr_str *default_value)
 {
   struct expr_str *ptr_new;
   ptr_new = A4GL_new_expr_simple (ET_EXPR_PARAMETER);
 
   ptr_new->expr_str_u.expr_param.expr_string = strdup (name);
   ptr_new->expr_str_u.expr_param.isReference = isReference;
+  ptr_new->expr_str_u.expr_param.default_value = default_value;
   return ptr_new;
 }
 
