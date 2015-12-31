@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: mod.c,v 1.346 2014-04-14 08:06:43 mikeaubury Exp $
+# $Id: mod.c,v 1.347 2015-12-31 10:44:48 mikeaubury Exp $
 #
 */
 
@@ -1622,7 +1622,9 @@ reset_constr (void)
 char *
 convstrsql (char *s)
 {
-  static char buff[1024];
+  /* DLM enlarged */
+  /*static char buff[1024];*/
+  static char buff[12288];
   int a;
   int b = 0;
 #ifdef DEBUG

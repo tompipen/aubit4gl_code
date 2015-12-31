@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: lexer.c,v 1.144 2014-10-15 16:20:34 mikeaubury Exp $
+# $Id: lexer.c,v 1.145 2015-12-31 10:44:48 mikeaubury Exp $
 #*/
 
 /**
@@ -120,7 +120,9 @@ char *lastword;
 
 #define MAX_XWORDS 1024
 
-char xwords[MAX_XWORDS][4096];
+/* DLM enlarged */
+/*char xwords[MAX_XWORDS][4096];*/
+char xwords[MAX_XWORDS][12288];
 char idents[256][256];
 long fpos;
 
@@ -275,7 +277,8 @@ ccat (char *s, char a, int instr)
 {
   char buff[3];
 int dm;
-  if (strlen (s) >= 1023)
+  /* DLM commented this out. */
+  if (strlen (s) >= 12288)
     {
       a4gl_yyerror ("Internal error - word overflow..");
     }
@@ -327,7 +330,9 @@ isnum (char *s)
   int a;
   int dp = 0;
   int is_e = 0;
-  char orig[1024];
+  /* DLM enlarged */
+  /*char orig[1024];*/
+  char orig[12288];
   //int exp_n;
   if (strcmp(s,".")==0) return 0;
 
@@ -415,7 +420,9 @@ isnum (char *s)
 static char *
 read_word2 (FILE * f, int *t)
 {
-  static char word[1024] = "";
+  /* DLM enlarged */
+  /*static char word[1024] = "";*/
+  static char word[12288] = "";
   int escp = 0;
   int instrs = 0;
   int instrd = 0;
@@ -1001,8 +1008,11 @@ chk_word (FILE * f, char *str)
 {
   char *p;
   int t;
-  char buff[1024];
-  char trimmed[1024];
+  /* DLM enlarged */
+  /*char buff[1024];
+  char trimmed[1024];*/
+  char buff[12288];
+  char trimmed[12288];
 
   /* read the next word from the 4GL source file */
   p = read_word (f, &t);

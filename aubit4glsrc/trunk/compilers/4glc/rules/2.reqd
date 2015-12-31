@@ -2,7 +2,8 @@
 
 
 
-	char	str[1024];  /* This would core dump in CygWin on call to */
+	/* DLM enlarged */
+	char	str[12288];  /* This would core dump in CygWin on call to */
 						/* yyparse in y.tab.c - 3100 in maximum. */
 
 	struct expr_str *ptr;

@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile.c,v 1.145 2014-09-30 18:02:34 mikeaubury Exp $
+# $Id: compile.c,v 1.146 2015-12-31 10:44:48 mikeaubury Exp $
 #*/
 
 /**
@@ -87,7 +87,9 @@ char pass_options[BIG_STRING] = "";
 int clean_aftercomp = 0;	/* clean intermediate files after compilation */
 char currinfile_dirname[1024] = "";	/* path to 4gl file we are currently compiling - used when compiling global files */
 char errbuff[1024] = "";
-char yytext[1024] = "";
+/* DLM enlarged */
+/* char yytext[1024] = "";*/
+char yytext[12288] = "";
 int globals_only = 0;
 int posterror=0;
 int yyin_len;
