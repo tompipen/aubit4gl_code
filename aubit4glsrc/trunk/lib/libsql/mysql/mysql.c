@@ -29,6 +29,8 @@ static char curr_dbname[256] = "";
 char last_err[512] = "";
 char curr_conn[512] = "default";
 static int has_connect = 0;
+// DLM added
+static char lob_buffer[100*1024]; // 100K for now
 
 struct expr_str_list *A4GL_add_validation_elements_to_expr (struct
 							    expr_str_list
@@ -685,7 +687,9 @@ A4GLSQLLIB_A4GLSQL_init_connection_internal (char *dbName)
 	  strcpy (last_err, (char *) mysql_error (current_conn));
 		A4GL_debug("Error : %s",last_err);
 	  A4GL_set_errm (dbname);
-	  strcpy (sqlerrm, dbname);
+	  // DLM modified
+	  strncpy (sqlerrm, dbname, sizeof(sqlerrm)-1);
+	  sqlerrm[strlen(dbname)]='\0';
 	  A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (-1);
 	  A4GL_exitwith ("Could not connect to database");
 	  isconnected = 0;
@@ -703,7 +707,9 @@ A4GLSQLLIB_A4GLSQL_init_connection_internal (char *dbName)
 	  strcpy (last_err, (char *) mysql_error (current_conn));
 		A4GL_debug("Error : %s",last_err);
 	  A4GL_set_errm (dbname);
-	  strcpy (sqlerrm, dbname);
+	  // DLM modified
+	  strncpy (sqlerrm, dbname, sizeof(sqlerrm)-1);
+	  sqlerrm[strlen(dbname)]='\0';
 	  A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (-1);
 	  A4GL_exitwith ("Could not connect to database");
 	  has_connect = 0;
@@ -729,6 +735,8 @@ report_sql_error (void)
 {
 
   PRINTF ("%d - %s\n", mysql_errno (current_conn), mysql_error (current_conn));
+  // DLM added
+  set_aubit4gl_error();
   A4GL_exitwith ("SQL Transaction Error");
 }
 
@@ -757,6 +765,7 @@ A4GLSQLLIB_A4GLSQL_commit_rollback (int mode)
 	  report_sql_error ();
 	}
     }
+  A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (0);
 }
 
 /*****************************************************************************/
@@ -857,6 +866,11 @@ A4GL_describecolumn (MYSQL_STMT * stmt, int colno, int type)
   int prc;
   MYSQL_FIELD *field;
   int rval=0;
+
+  if (colno < 1) {
+    A4GL_exitwith ("Column out of range");
+    return 0;
+  }
 
   if (type == 6)
     return mysql_stmt_affected_rows (stmt);
@@ -1078,6 +1092,28 @@ rewriteWhereCurrentOf (char *s)
           break;
 
         case DTYPE_DECIMAL:
+          // DLM added
+          {
+            char *ptr;
+            char *c;
+            A4GL_push_dec(obind->ptr,0,obind->size);
+            ptr=A4GL_make_using_tostring(obind->ptr,obind->size>>8,obind->size&255);
+            A4GL_push_char(ptr);
+            A4GL_pushop(OP_USING);
+            ptr = A4GL_char_pop();
+            // The above will convert a decimal to a string using
+            // locale-specific rules, which might use commas for decimal
+            // separators.  SQL requires dots.  So fix those here.
+            for (c=ptr; *c; c++) {
+                if (*c==',') {
+                    *c='.';
+                }
+            }
+            for (c=ptr; *c && *c==' '; c++) {}
+            strcat(newquery,c);
+            free(ptr);
+            break;
+          }
         case DTYPE_MONEY:
         case DTYPE_FLOAT:
           {
@@ -1112,11 +1148,21 @@ rewriteWhereCurrentOf (char *s)
           break;
 
         case DTYPE_DATE:
+          // DLM updated
           {
-            int d, m, y;
-            A4GL_get_date(*(long *)obind->ptr, &d, &m, &y);
+            int d, m, y, first, second;
             char buffer[11];
-            snprintf(buffer, 11, "%04d-%02d-%02d", y, m, d);
+            const char *ddmm;
+            A4GL_get_date(*(long *)obind->ptr, &d, &m, &y);
+            ddmm = acl_getenv ("SQLR_MYSQL_DATE_DDMM");
+            first=m;
+            second=d;
+            if (ddmm && !strcmp(ddmm,"yes"))
+              {
+                first=d;
+                second=m;
+              }
+            snprintf(buffer, 11, "%04d-%02d-%02d", y, first, second);
             strcat(newquery,"'");
             strcat(newquery,buffer);
             strcat(newquery,"'");
@@ -1126,10 +1172,20 @@ rewriteWhereCurrentOf (char *s)
         case DTYPE_DTIME:
           {
             int data[22];
-            A4GL_decode_datetime((struct A4GLSQL_dtime *)obind->ptr, data);
+            int first, second;
             char buffer[22];
+            const char *ddmm;
+            A4GL_decode_datetime((struct A4GLSQL_dtime *)obind->ptr, data);
+            ddmm = acl_getenv ("SQLR_MYSQL_DATE_DDMM");
+            first=data[1];
+            second=data[2];
+            if (ddmm && !strcmp(ddmm,"yes"))
+              {
+                first=data[2];
+                second=data[1];
+              }
             snprintf(buffer, 22, "%04d-%02d-%02d %02d:%02d:%02d",
-			data[0], data[1], data[2], data[3], data[4], data[5]);
+			data[0], first, second, data[3], data[4], data[5]);
             strcat(newquery,"'");
             strcat(newquery,buffer);
             strcat(newquery,"'");
@@ -1137,6 +1193,10 @@ rewriteWhereCurrentOf (char *s)
           break;
 
         case DTYPE_BYTE:
+          strcat(newquery,"'");
+          strncat(newquery,(char *)obind->ptr,obind->size);
+          strcat(newquery,"'");
+          break;
         case DTYPE_TEXT:
           /* not implemented yet */
           break;
@@ -1160,14 +1220,17 @@ A4GLSQLLIB_A4GLSQL_prepare_select_internal (void *ibind, int ni, void *obind,
 					    int no, char *s, char *uniqid, int singleton)
 {
   MYSQL_STMT *stmt;
-  /* DLM added */
+  /* DLM modified a bit in this function */
   char *new_s;
   int prep_result;
   struct s_sid *sid;
-  sid = acl_malloc2 (sizeof (struct s_sid));
 
-  sid->select = strdup (s);
+  sid = acl_malloc2 (sizeof (struct s_sid));
+  new_s = rewriteWhereCurrentOf (s);
+  sid->select = (new_s)?new_s:strdup (s);
+
   sid->hstmt=NULL;
+
   sid->ibind = malloc (sizeof (struct BINDING) * ni);
   memcpy (sid->ibind, ibind, sizeof (struct BINDING) * ni);
 
@@ -1177,14 +1240,10 @@ A4GLSQLLIB_A4GLSQL_prepare_select_internal (void *ibind, int ni, void *obind,
   sid->ni = ni;
   sid->no = no;
 
-  /* DLM added */
   sid->extobind = NULL;
   sid->neo = 0;
 
-//printf("Alloc\n");
-  stmt = mysql_stmt_init (current_conn);
-
-  if (strncmp(s,"DATABASE ",9)==0 || strncmp(s,"database ",9)==0)  {
+  if (strncmp(sid->select,"DATABASE ",9)==0 || strncmp(sid->select,"database ",9)==0)  {
       		sid->hstmt = (void *) STMT_DATABASE;
 		return sid;
   } 
@@ -1199,19 +1258,14 @@ A4GLSQLLIB_A4GLSQL_prepare_select_internal (void *ibind, int ni, void *obind,
   }
 
 
-  if (strlen (s) == 0)
+  if (strlen (sid->select) == 0)
     {
       sid->hstmt = (void *) STMT_CANT_PREPARE;
       return sid;
     }
 
-  /* DLM modified */
-  new_s = rewriteWhereCurrentOf (s);
-  prep_result = mysql_stmt_prepare (stmt, (new_s)?new_s:s, strlen ((new_s)?new_s:s));
-  if (new_s)
-    {
-      free(new_s);
-    }
+  stmt = mysql_stmt_init (current_conn);
+  prep_result = mysql_stmt_prepare (stmt, sid->select, strlen (sid->select));
   if (prep_result != 0)
     {
       // Some error...
@@ -1516,6 +1570,8 @@ A4GL_debug("Get columns for %s", buff_info);
 
       cnt++;
     }
+  // DLM added
+  mysql_free_result (result);
   return cnt;
 }
 
@@ -1746,11 +1802,36 @@ copy_in_single_mysql_bind (MYSQL_STMT * stmt, void *associated_to,
 
 
     case DTYPE_BYTE:
-      A4GL_assertion (1, "Not implemented yet (byte)");
+      // DLM modified
+      /*A4GL_assertion (1, "Not implemented yet (byte)");
       mibind->buffer_type = MYSQL_TYPE_LONG;
       mibind->buffer = ibind->ptr;
       mibind->is_null = ind;
-      mibind->length = 0;
+      mibind->length = 0;*/
+      {
+      long sizetoread;
+      struct fgl_int_loc	*filptr = (struct fgl_int_loc *)ibind->ptr;
+      filptr->f = fopen(filptr->filename,"r");
+      fseek(filptr->f,0,SEEK_END);
+      filptr->memsize = ftell(filptr->f);
+      if (filptr->memsize>sizeof(lob_buffer)) {
+      	filptr->memsize=sizeof(lob_buffer);
+      }
+      fseek(filptr->f,0,SEEK_SET);
+      filptr->ptr = lob_buffer;
+      sizetoread=filptr->memsize;
+      if (sizetoread>sizeof(lob_buffer)) {
+        sizetoread=sizeof(lob_buffer);
+      }
+      fread(filptr->ptr,sizetoread,1,filptr->f);
+      filptr->isnull = 0;
+      fclose(filptr->f);
+
+      mibind->buffer_type = MYSQL_TYPE_BLOB;
+      mibind->buffer = filptr->ptr;
+      mibind->is_null = &filptr->isnull;
+      mibind->length = &filptr->memsize;
+      }
       break;
 
     case DTYPE_TEXT:
@@ -1983,10 +2064,17 @@ copy_out_single_mysql_bind (MYSQL_STMT * stmt, void *associated_to,
 
       if (phase == PHASE_PRE_FETCH)
 	{
+          // DLM modified
+	  fglbyte *x;
+	  x=obind->ptr;
+	  x->where='M';
+	  x->memsize=sizeof(lob_buffer);
+	  x->ptr=lob_buffer;
+
 	  mobind->buffer_type = MYSQL_TYPE_BLOB;
-	  mobind->buffer = A4GL_alloc_associated_mem (associated_to, 10*1024);  
+	  mobind->buffer = x->ptr;
 	  mobind->is_null = ind;
-	  mobind->buffer_length = 10*1024; //obind->size;
+	  mobind->buffer_length = x->memsize;
 	  len = A4GL_alloc_associated_mem (associated_to, sizeof (long));
 	  mobind->length = len;
 	}
@@ -2002,7 +2090,12 @@ copy_out_single_mysql_bind (MYSQL_STMT * stmt, void *associated_to,
                         x->ptr=mobind->buffer;
 		}
 		*/
-		
+
+		// DLM added
+		fglbyte *x;
+		x=obind->ptr;
+		x->memsize=*(mobind->length);
+		x->isnull=(*(mobind->is_null))?'Y':'N';
 	}
       break;
 
@@ -2029,7 +2122,21 @@ fetch_from_mysql_to_aubit (MYSQL_STMT * stmt, void *associated_to,
   int x;
   my_bool *indicators;
 
-  mysql_obind = A4GL_alloc_associated_mem (associated_to, sizeof (MYSQL_BIND) * no);
+  // All of this ntrb stuff allows the bind buffer list to be "NULL-terminated"
+  // and ultimately makes it safe to bind fewer buffers than there are columns
+  // in the result set.
+  const char *ntrb;
+  int ntrbextra;
+  ntrb = acl_getenv ("SQLR_MYSQL_NULL_TERMINATED_RESULT_BINDS");
+  ntrbextra=0;
+  if (no && ntrb && !strcasecmp(ntrb,"yes")) {
+    ntrbextra=1;
+  }
+  mysql_obind = A4GL_alloc_associated_mem (associated_to, sizeof (MYSQL_BIND) * (no + ntrbextra));
+  if (ntrbextra) {
+  	memset(&mysql_obind[no],0, sizeof(MYSQL_BIND)); 
+  }
+
   indicators = A4GL_alloc_associated_mem (associated_to, sizeof (my_bool) * no);
   for (a = 0; a < no; a++)
     {
@@ -2108,6 +2215,10 @@ execute_sql (MYSQL_STMT * stmt, char *sql, struct BINDING *ibind, int ni,
   int id;
   int no_warnings;
 
+  /* DLM Added */
+  const char *ignoretoomanybinds;
+  ignoretoomanybinds = acl_getenv ("MYSQL_IGNORE_TOO_MANY_BINDS");
+
 
 
 
@@ -2135,7 +2246,9 @@ execute_sql (MYSQL_STMT * stmt, char *sql, struct BINDING *ibind, int ni,
 	{
 	  A4GL_debug ("Error : %s\n", mysql_error (current_conn));
 	  A4GL_set_errm ((char *) mysql_error (current_conn));
-	  strcpy (sqlerrm, (char *) mysql_error (current_conn));
+          // DLM modified
+	  strncpy (sqlerrm, (char *) mysql_error (current_conn), sizeof(sqlerrm)-1);
+          sqlerrm[strlen((char *)mysql_error(current_conn))]='\0';
 	set_aubit4gl_error();
 	  //A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (mysql_errno (current_conn));
 	  return 0;		// Failed
@@ -2147,6 +2260,9 @@ execute_sql (MYSQL_STMT * stmt, char *sql, struct BINDING *ibind, int ni,
 	return 0;
 	}
   param_count = mysql_stmt_param_count (stmt);	// Number of paramters...
+  if (ni>param_count && !strcasecmp(ignoretoomanybinds,"yes")) {
+      ni = param_count;
+  }
   if (ni != param_count)
     {
       A4GL_debug ("Got %d params - expecting %d\n", ni, param_count);
@@ -2175,7 +2291,9 @@ execute_sql (MYSQL_STMT * stmt, char *sql, struct BINDING *ibind, int ni,
       // Some error ? 
       A4GL_debug ("Error : %s (%p)\n", mysql_stmt_error (stmt), stmt);
       A4GL_set_errm ((char *) mysql_stmt_error (stmt));
-      strcpy (sqlerrm, (char *) mysql_stmt_error (stmt));
+      // DLM modified
+      strncpy (sqlerrm, (char *) mysql_stmt_error (stmt), sizeof(sqlerrm)-1);
+      sqlerrm[strlen((char *)mysql_error (current_conn))]='\0';
       if (mysql_warning_count (current_conn))
 	{
 	  warnings[0] = 'W';
@@ -2270,6 +2388,11 @@ A4GLSQLLIB_A4GLSQL_execute_implicit_select (void *vsid, int singleton)
       if (nrows == 0)
 	{
 	  A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (100);
+
+	  // DLM added
+	  mysql_stmt_close (sid->hstmt);
+	  sid->hstmt=0;
+
 	  return 0;
 	}
       else
@@ -2278,6 +2401,11 @@ A4GLSQLLIB_A4GLSQL_execute_implicit_select (void *vsid, int singleton)
 	    {
 	      A4GL_set_a4gl_sqlca_errd (0, nrows);
 	      A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (-284);
+
+	      // DLM added
+	      mysql_stmt_close (sid->hstmt);
+	      sid->hstmt=0;
+
 	      return 0;
 	    }
 	}
@@ -2451,6 +2579,25 @@ A4GLSQLLIB_A4GLSQL_open_cursor_internal (char *s, int ni, void *vibind)
       return 1;
     }
 
+  /* If the statement is NULL but the query is non-NULL then the cursor must
+   * have already been declared, opened, closed and now opened again.  In
+   * that case, the statement needs to be re-initialized and re-prepared. */
+  if (cid->statement && !cid->statement->hstmt && cid->statement->select)
+    {
+
+      MYSQL_STMT *stmt;
+      stmt=mysql_stmt_init(current_conn);
+      if (mysql_stmt_prepare(stmt,cid->statement->select,
+				strlen(cid->statement->select))) {
+          A4GL_debug("Err : %s (%p)\n",mysql_stmt_error(stmt),stmt);	
+          A4GL_set_errm((char *)mysql_stmt_error(stmt));
+          set_aubit4gl_error();
+          return 1;
+      }
+      cid->statement->hstmt=stmt;
+      A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode(0);
+    }
+
   cid->currpos = 0;
 
   if (ni != 0)
@@ -2466,7 +2613,7 @@ A4GLSQLLIB_A4GLSQL_open_cursor_internal (char *s, int ni, void *vibind)
 
   strcpy (warnings, "       ");
   A4GL_copy_sqlca_sqlawarn_string8 (warnings);
-  ptr = strdup (cid->statement->select);
+  /*ptr = strdup (cid->statement->select);
   ptr2 = ptr;
   while (*ptr == ' ' || *ptr == '\t')
     {
@@ -2475,13 +2622,13 @@ A4GLSQLLIB_A4GLSQL_open_cursor_internal (char *s, int ni, void *vibind)
 
   A4GL_convupper (ptr);
 
-  if (strncmp (cid->statement->select, "INSERT ", 7) == 0)
+  if (strncmp (ptr, "INSERT ", 7) == 0)
     {
       // Looks like an insert cursor...
       free (ptr2);
       return 0;
     }
-  free (ptr2);
+  free (ptr2);*/
 
   truncated = 0;
   if (!execute_sql (cid->statement->hstmt, cid->statement->select, ibind, ni, 0, 0))
@@ -2494,20 +2641,36 @@ A4GLSQLLIB_A4GLSQL_open_cursor_internal (char *s, int ni, void *vibind)
       warnings[0] = 'W';
       A4GL_copy_sqlca_sqlawarn_string8 (warnings);
     }
-  if (cid->mode & 256)
+  /* DLM added STMT_CANT_PREPARE check */
+  if (cid->mode & 256 && cid->statement->hstmt!=STMT_CANT_PREPARE)
     {				// Scroll cursor...
       mysql_stmt_store_result (cid->statement->hstmt);
       cid->nrows = mysql_stmt_num_rows (cid->statement->hstmt);
     }
-  else
+  else if (cid->statement->hstmt!=STMT_CANT_PREPARE)
     {
       // This effectively makes all cursors scroll cursors
       // but if we don't do it - we get "Commands out of sequence" errors....
       mysql_stmt_store_result (cid->statement->hstmt);
       cid->nrows = -1;
     }
+  else
+    {
+      // This effectively makes all cursors scroll cursors
+      // but if we don't do it - we get "Commands out of sequence" errors....
+      mysql_stmt_store_result (cid->statement->hstmt);
+      cid->nrows = 0;
+    }
 
-  nresultcols = mysql_stmt_field_count (cid->statement->hstmt);
+  /* DLM added STMT_CANT_PREPARE check */
+  if (cid->statement->hstmt!=STMT_CANT_PREPARE)
+    {
+      nresultcols = mysql_stmt_field_count (cid->statement->hstmt);
+    }
+  else
+    {
+      nresultcols = 0;
+    }
 
   cid->sql_no = nresultcols;
 
@@ -2547,7 +2710,15 @@ A4GLSQLLIB_A4GLSQL_fetch_cursor_internal (char *cursor_name, int fetch_mode,
 	return 0;
   }
 
-  nresultcols = mysql_stmt_field_count (cid->statement->hstmt);
+  /* DLM added STMT_CANT_PREPARE check */
+  if (cid->statement->hstmt!=STMT_CANT_PREPARE)
+    {
+      nresultcols = mysql_stmt_field_count (cid->statement->hstmt);
+    }
+  else
+    {
+      nresultcols = 0;
+    }
   copy_out_n = nresultcols;
 
   if (nobind == 0)
@@ -2575,6 +2746,15 @@ A4GLSQLLIB_A4GLSQL_fetch_cursor_internal (char *cursor_name, int fetch_mode,
     {
       // declared as a normal cursor - but they want to scroll ? 
       A4GL_exitwith ("Fetch Relative or Absolute on a non-scroll cursor");
+      return 0;
+    }
+
+
+  /* DLM added */
+  if (cid->statement->hstmt==STMT_CANT_PREPARE)
+    {
+      A4GL_set_a4gl_sqlca_errd (2, 0);
+      A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (100);
       return 0;
     }
 
@@ -2639,7 +2819,8 @@ A4GLSQLLIB_A4GLSQL_fetch_cursor_internal (char *cursor_name, int fetch_mode,
   /* DLM added */
 
   /* now that the column data has been fetched into the obind's, back up and
-   * fetch it again into the "extra" output binds */
+   * fetch it again into the "extra" output binds that we'll use if the
+   * select happened to be "for update" */
 
   /* allocate the array and initialize it */
   if (!cid->statement->extobind)
@@ -2663,13 +2844,16 @@ A4GLSQLLIB_A4GLSQL_fetch_cursor_internal (char *cursor_name, int fetch_mode,
           int size;
           field = mysql_fetch_field_direct (columns, i);
 	  conv_sqldtype (field->type, field->length, field->decimals, field->flags, &(cid->statement->extobind[i].dtype), &prc);
-          switch (field->type)
+          switch (cid->statement->extobind[i].dtype)
             {
 		case DTYPE_NCHAR:
 		case DTYPE_CHAR:
 		case DTYPE_NVCHAR:
 		case DTYPE_VCHAR:
                   size = field->length;
+                  break;
+                case DTYPE_DECIMAL:
+                  size = prc;
                   break;
                 default:
                   /* it has to be big enough to store whatever
@@ -2713,11 +2897,15 @@ A4GLSQLLIB_A4GLSQL_close_cursor_internal (char *currname,int explicit)
       return -1;
     }
 
-  if (ptr->hstmt)
+  // DLM modified
+  if (ptr->statement &&
+	ptr->statement->hstmt &&
+	ptr->statement->hstmt!=STMT_CANT_PREPARE &&
+	ptr->statement->hstmt!=STMT_DATABASE)
     {
-      mysql_stmt_close (ptr->hstmt);
-      A4GL_free_associated_mem (ptr->hstmt);
-	  	ptr->hstmt=0;
+      mysql_stmt_close (ptr->statement->hstmt);
+      A4GL_free_associated_mem (ptr->statement->hstmt);
+      ptr->statement->hstmt=0;
     }
 
 
@@ -2730,38 +2918,21 @@ void
 A4GLSQLLIB_A4GLSQL_free_cursor_internal (char *currname)
 {
   struct s_cid *ptr;
-  A4GLSQLLIB_A4GLSQL_set_sqlca_sqlcode (0);
-  //ptr = A4GL_find_pointer_val (currname, CURCODE);
+
+  // DLM modified this whole function
+  A4GLSQLLIB_A4GLSQL_close_cursor_internal (currname,1);
   
   ptr=A4GL_find_cursor(currname);
-
   if (ptr == 0)
     {
-
   	ptr = A4GL_find_prepare (currname);
-
   	if (ptr == 0)
     	{
 		// Informix doesn't flag this as an error..
 		// so why should we ? 
       		A4GL_debug ("Can't free cursor that hasn't been defined");
 	}
-
-      return;
     }
-
-  if (ptr->hstmt)
-    {
-      mysql_stmt_close (ptr->hstmt);
-      A4GL_free_associated_mem (ptr->hstmt);
-	  	ptr->hstmt=0;
-    }
-
-
-  ptr->hstmt = 0;
-
-  //A4GL_free_associated_mem (ptr);
-  //free (ptr);
 }
 
 
@@ -2859,6 +3030,7 @@ A4GLSQLLIB_A4GLSQL_unload_data_internal (char *fname, char *delims, void *filter
 	  return;		// nothing to do...
 	}
 
+      // why is this done?  column 0 is out of range...
       A4GL_describecolumn (stmt, 0, 0);
 
       if (nresultcols && nrows)
@@ -3106,20 +3278,15 @@ struct s_sid *sid;
 	}
 
 
-	if (sid->hstmt) {
-		if (sid->hstmt==STMT_CANT_PREPARE || sid->hstmt== STMT_DATABASE) ;
-		else {	
-		int a;
-		 	a=mysql_stmt_close(sid->hstmt) ;
-			A4GL_free_associated_mem(sid->hstmt);
-			sid->hstmt=NULL;
-			
-		}
+	// DLM modified
+	if (sid->hstmt &&
+		sid->hstmt!=STMT_CANT_PREPARE &&
+		sid->hstmt!=STMT_DATABASE) {
+
+		mysql_stmt_close(sid->hstmt) ;
+		A4GL_free_associated_mem(sid->hstmt);
+		sid->hstmt=NULL;
 	}
-
-
-
-/* does nothing in this driver */
  }
 
 

@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: helper.c,v 1.101 2015-02-23 10:36:35 mikeaubury Exp $
+# $Id: helper.c,v 1.102 2015-12-31 11:28:45 mikeaubury Exp $
 #
 */
 
@@ -1814,6 +1814,10 @@ A4GL_base64_encode (const char *inp, size_t insize, char **outptr)
   char *indata = (char *) inp;
 
   *outptr = NULL;		/* set to NULL in case of failure before we reach the end */
+
+  // DLM added
+  if (!indata)
+    return 0;
 
   if (0 == insize)
     insize = strlen (indata);

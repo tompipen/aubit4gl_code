@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: function_call_stack.c,v 1.58 2014-04-14 08:06:45 mikeaubury Exp $
+# $Id: function_call_stack.c,v 1.59 2015-12-31 11:28:18 mikeaubury Exp $
 #*/
 
 /**
@@ -69,7 +69,8 @@ static int traceMode=TRACE_MODE_DOT;
 */
 
 static const char * html_escape_int (const char *s);
-static char *getTraceFname(void) ;
+/* DLM made non-static */
+char *getTraceFname(void) ;
 static int isIgnoreTrace(const char *functionName) ;
 void A4GL_cv_replacestr (char *p, int n, char *s);
 
@@ -607,6 +608,17 @@ A4GLSTK_pushFunction_v3 (const char *functionName, char *params[], int n,char *t
     }
 
   fname=getTraceFname();
+
+  /* DLM added time/pidstamp */
+  char timestamp[80];
+  struct timeval tv;
+  gettimeofday(&tv,NULL);
+  struct tm *lt=localtime(&tv.tv_sec);
+  sprintf(timestamp,"[%04d-%02d-%02d %02d:%02d:%02d.%06d %d] ",
+                      lt->tm_year+1900,lt->tm_mon+1,lt->tm_mday,
+                      lt->tm_hour,lt->tm_min,lt->tm_sec,
+                      tv.tv_usec,getpid());
+
   if (fname) {
 	if (functionCallPointer==0) {
 		FILE *execprog;
@@ -615,6 +627,7 @@ A4GLSTK_pushFunction_v3 (const char *functionName, char *params[], int n,char *t
 
 		if (execprog) {
 			if (traceMode==TRACE_MODE_DOT) {
+				fprintf(execprog,"%s",timestamp);
 				fprintf(execprog,"digraph { // process with 'dot' - eg :   dot -o callgraph.gif -Tgif callgraph.dot\n");
 				fprintf(execprog,"rankdir=LR;\n");
 				fprintf(execprog,"ratio=fill;\n");
@@ -628,6 +641,7 @@ A4GLSTK_pushFunction_v3 (const char *functionName, char *params[], int n,char *t
 		FILE *execprog;
 		execprog=fopen(fname,"a");
 		if (execprog) {
+			fprintf(execprog,"%s",timestamp);
 			if (functionCallPointer==0) { // MAIN
 				fprintf(execprog,"%sMAIN(%s)\n", getspaces(functionCallPointer),A4GL_get_args_string());
 			} else {
@@ -707,7 +721,8 @@ char *fname;
  * If these are in the name - they will be replaced by the current processID and the currently
  * running program name (minus any known extension
  */
-static char *getTraceFname() {
+/* DLM made non-static */
+char *getTraceFname() {
 char *fname;
 char pidS[200];
 fname = acl_getenv_not_set_as_0("TRACE4GLEXEC");
@@ -792,6 +807,16 @@ A4GLSTK_popFunction_nl (int nrets, int lineno)
 	    }
 	}
 
+      /* DLM added time/pidstamp */
+      char timestamp[80];
+      struct timeval tv;
+      gettimeofday(&tv,NULL);
+      struct tm *lt=localtime(&tv.tv_sec);
+      sprintf(timestamp,"[%04d-%02d-%02d %02d:%02d:%02d.%06d %d] ",
+                          lt->tm_year+1900,lt->tm_mon+1,lt->tm_mday,
+                          lt->tm_hour,lt->tm_min,lt->tm_sec,
+                          tv.tv_usec,getpid());
+
 
       if (traceMode == TRACE_MODE_FLAT)
 	{
@@ -802,11 +827,13 @@ A4GLSTK_popFunction_nl (int nrets, int lineno)
 		int nsec=time(NULL)-functionCallStack[functionCallPointer - 1].started;
 		if (!inHiddenFunction) {
 			if (nrets) {
+				fprintf (execprog,"%s",timestamp);
 	      			fprintf (execprog, "%s<-%s returns %s @ %d in %ds\n", getspaces(functionCallPointer-1), functionCallStack[functionCallPointer - 1].functionName,
 			nrets?  A4GL_params_on_stack (NULL, nrets):"",
 	lineno, nsec
 );	//functionCallStack[functionCallPointer - 2].function
 		} else {
+				fprintf (execprog,"%s",timestamp);
 	      			fprintf (execprog, "%s<-%s returns @ %d in %ds\n", getspaces(functionCallPointer-1), functionCallStack[functionCallPointer - 1].functionName,
 			lineno,nsec
 );

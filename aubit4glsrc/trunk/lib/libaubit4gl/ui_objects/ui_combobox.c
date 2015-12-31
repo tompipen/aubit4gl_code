@@ -248,7 +248,7 @@ int _no=1;
 struct BINDING _obind[1]={
     {NULL,0,0,0,0,0,NULL}
 };
-char rval_0[512];
+int rval_0;
 char *name=NULL;
  
 /* END OF DEFINE SECTION */
@@ -277,7 +277,8 @@ char *name=NULL;
   // Set up output binding for our parameters
   if (okToProcess) {
     _obind[0].ptr=&rval_0;
-    _obind[0].size=512;
+    _obind[0].size=4;
+    _obind[0].dtype=DTYPE_INT;
   }
  
   if (okToProcess) {
@@ -290,9 +291,9 @@ char *name=NULL;
         free(name);
     }
   if (!okToProcess) {
-    A4GL_push_null(DTYPE_CHAR,1);
+    A4GL_push_null(DTYPE_INT,0);
   } else {
-    A4GL_push_char(rval_0);
+    A4GL_push_int(rval_0);
   }
   return 1;
 }
@@ -349,7 +350,7 @@ int rval_0;
   if (!okToProcess) {
     A4GL_push_null(DTYPE_INT,0);
   } else {
-    A4GL_push_long(rval_0);
+    A4GL_push_int(rval_0);
   }
   return 1;
 }
@@ -389,7 +390,7 @@ int index;
   // Set up input binding for our parameters
   if (okToProcess) {
  
-    index=A4GL_pop_int();
+    index=A4GL_pop_long();
     _ibind[1].ptr=&index;
     _ibind[1].size=4;
     _ibind[1].dtype=DTYPE_INT;
@@ -452,7 +453,7 @@ int index;
   // Set up input binding for our parameters
   if (okToProcess) {
  
-    index=A4GL_pop_int();
+    index=A4GL_pop_long();
     _ibind[1].ptr=&index;
     _ibind[1].size=4;
     _ibind[1].dtype=DTYPE_INT;
@@ -709,6 +710,22 @@ char *name=NULL;
 void add_ui_combobox_support(void) {
 A4GL_add_object_type("ui.combobox");
   A4GL_add_datatype_function_i (DTYPE_OBJECT, ":ui.combobox.forname", (void *)  ui_combobox_forname);
+  /* DLM added these without ui.combobox ahead of them.  This appears to be
+   * necessary if the combobox is part of a record. */
+  A4GL_add_datatype_function_i (DTYPE_OBJECT, ":.additem", (void *)  ui_combobox_additem);
+  A4GL_add_datatype_function_i (DTYPE_OBJECT, ":.clear", (void *)  ui_combobox_clear);
+  /* DLM added clearcombobox, using clear with a combobox that is part of a 
+   * record causes the entire combobox object to be zeroed out  */
+  A4GL_add_datatype_function_i (DTYPE_OBJECT, ":.clearcombobox", (void *)  ui_combobox_clear);
+  A4GL_add_datatype_function_i (DTYPE_OBJECT, ":.getcolumnname", (void *)  ui_combobox_getcolumnname);
+  A4GL_add_datatype_function_i (DTYPE_OBJECT, ":.getindexof", (void *)  ui_combobox_getindexof);
+  A4GL_add_datatype_function_i (DTYPE_OBJECT, ":.getitemcount", (void *)  ui_combobox_getitemcount);
+  A4GL_add_datatype_function_i (DTYPE_OBJECT, ":.getitemname", (void *)  ui_combobox_getitemname);
+  A4GL_add_datatype_function_i (DTYPE_OBJECT, ":.getitemtext", (void *)  ui_combobox_getitemtext);
+  A4GL_add_datatype_function_i (DTYPE_OBJECT, ":.gettablename", (void *)  ui_combobox_gettablename);
+  A4GL_add_datatype_function_i (DTYPE_OBJECT, ":.gettag", (void *)  ui_combobox_gettag);
+  A4GL_add_datatype_function_i (DTYPE_OBJECT, ":.gettextof", (void *)  ui_combobox_gettextof);
+  A4GL_add_datatype_function_i (DTYPE_OBJECT, ":.removeitem", (void *)  ui_combobox_removeitem);
   A4GL_add_datatype_function_i (DTYPE_OBJECT, ":ui.combobox.additem", (void *)  ui_combobox_additem);
   A4GL_add_datatype_function_i (DTYPE_OBJECT, ":ui.combobox.clear", (void *)  ui_combobox_clear);
   A4GL_add_datatype_function_i (DTYPE_OBJECT, ":ui.combobox.getcolumnname", (void *)  ui_combobox_getcolumnname);

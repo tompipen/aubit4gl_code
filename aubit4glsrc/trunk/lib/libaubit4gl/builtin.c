@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin.c,v 1.168 2013-11-10 09:53:49 mikeaubury Exp $
+# $Id: builtin.c,v 1.169 2015-12-31 11:25:55 mikeaubury Exp $
 #
 */
 
@@ -2264,5 +2264,19 @@ char *ptr;
 	return 1;
 }
 
-
-
+/* DLM Added */
+int aclfgl_aclfgl_trace(int n) {
+	char *ptr;
+	ptr=A4GL_char_pop();
+	FILE *execprog;
+	execprog=fopen(getTraceFname(),"a");
+	struct timeval	tv;
+	gettimeofday(&tv,NULL);
+	struct tm *lt=localtime(&tv.tv_sec);
+	fprintf(execprog,"[%04d-%02d-%02d %02d:%02d:%02d.%06d %d] %s\n",
+				lt->tm_year+1900,lt->tm_mon+1,lt->tm_mday,
+				lt->tm_hour,lt->tm_min,lt->tm_sec,
+				tv.tv_usec,getpid(),ptr);
+	fclose(execprog);
+	return 0;
+}
