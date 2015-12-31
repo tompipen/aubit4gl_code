@@ -33,7 +33,8 @@ enum e_scrmodes {
 
 
 
-char screen[400][400];
+/* DLM increased from 400 */
+char screen[1200][1200];
 
 struct s_field
 {
@@ -162,7 +163,9 @@ int b;
 
 void get_attribs(struct_form *f, int attr_no, char *buff,int mode,int metric_no) {
 struct struct_scr_field *fprop;
-char smbuff[200];
+/* DLM enlarged */
+/*char smbuff[200];*/
+char smbuff[2000];
 strcpy(buff, "");
 int formonly;
 
@@ -188,8 +191,9 @@ if (mode==0) { // FormField
 		      strcat(buff,smbuff);
 	if (A4GL_has_bool_attribute(fprop, FA_B_NOENTRY)) { strcat(buff, " noEntry=\"1\""); }
 	if (A4GL_has_bool_attribute(fprop, FA_B_REQUIRED)) { strcat(buff, " required=\"1\""); }
-	if (A4GL_has_bool_attribute(fprop, FA_B_HIDDEN) || A4GL_has_bool_attribute(fprop, FA_B_INVISIBLE) ) { strcat(buff, " hidden=\"1\""); }
-	if (A4GL_has_bool_attribute(fprop, FA_B_NOSHOW) ) { strcat(buff, " noshow=\"1\""); }
+	if (A4GL_has_bool_attribute(fprop, FA_B_HIDDEN)) { strcat(buff, " hidden=\"1\""); }
+	if (A4GL_has_bool_attribute(fprop, FA_B_INVISIBLE) ) { strcat(buff, " invisible=\"1\""); }
+	if (A4GL_has_bool_attribute(fprop, FA_B_NOSHOW)) { strcat(buff, " noshow=\"1\""); }
 	if (A4GL_has_str_attribute(fprop, FA_S_INCLUDE)) { 
 			sprintf(smbuff, " include=\"%s\"", xml_escape(conv_to_xml_include(A4GL_get_str_attribute (fprop, FA_S_INCLUDE)))); 
 			strcat(buff,smbuff);}
@@ -215,7 +219,15 @@ if (mode==1) { // the label/button/field itself
 	if (A4GL_has_str_attribute(fprop, FA_S_STYLE)) { sprintf(smbuff, " style=\"%s\"", xml_escape(A4GL_get_str_attribute (fprop, FA_S_STYLE))); strcat(buff,smbuff);}
 	if (A4GL_has_str_attribute(fprop, FA_S_COMMENTS)) { sprintf(smbuff, " comments=\"%s\"", xml_escape(A4GL_get_str_attribute (fprop, FA_S_COMMENTS))); strcat(buff,smbuff);}
 	if (A4GL_has_str_attribute(fprop, FA_S_PICTURE)) { sprintf(smbuff, " picture=\"%s\"", xml_escape(A4GL_get_str_attribute (fprop, FA_S_PICTURE))); strcat(buff,smbuff);}
-	if (A4GL_has_str_attribute(fprop, FA_S_CONFIG)) { sprintf(smbuff, " config=\"%s\"", xml_escape(A4GL_get_str_attribute (fprop, FA_S_CONFIG))); strcat(buff,smbuff);}
+	if (A4GL_has_str_attribute(fprop, FA_S_CONFIG)) {
+
+		char	*attr=A4GL_get_str_attribute (fprop, FA_S_CONFIG);
+
+		char	*xml=xml_escape(attr);
+
+		sprintf(smbuff, " config=\"%s\"", xml);
+		strcat(buff,smbuff);
+	}
 	if (A4GL_has_bool_attribute(fprop, FA_B_SCROLL)) { strcat(buff, " scroll=\"1\""); }
 	if (A4GL_has_bool_attribute(fprop, FA_B_WANTTABS)) { strcat(buff, " wantTabs=\"1\""); }
 	if (A4GL_has_bool_attribute(fprop, FA_B_WANTNORETURNS)) { strcat(buff, " wantReturns=\"0\""); }
@@ -1344,9 +1356,10 @@ void make_screen (struct_form * f,int scr)
   int fno;
   int b;
 
-  if (f->maxcol > 400 || f->maxline > 400)
+  /* DLM increased from 400 */
+  if (f->maxcol > 1200 || f->maxline > 1200)
     {
-      printf ("Too wide or too long\n");
+      printf ("Too wide or too long (formxml.c)\n");
       exit (1);
     }
   for (y = 0; y < f->maxline; y++)

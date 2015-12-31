@@ -26,7 +26,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile,v 1.7 2013-10-07 20:39:58 mikeaubury Exp $
+# $Id: Makefile,v 1.8 2015-12-31 11:12:05 mikeaubury Exp $
 #
 
 ROOT        =../../..
@@ -46,7 +46,7 @@ ALL 		=${PLUGINDIR}/libPACKER_FORMXML${SO_EXT} ${PLUGINDIR}/libPACKER_FORMJSON${
 
 LOCAL_IFLAGS=-I..
 
-CFLAGS      +=${LOCAL_IFLAGS} 
+CFLAGS      +=${LOCAL_IFLAGS}  -O0
 
 ifneq "${COMSPEC}" ""
 	LINKLIBS	=-L${LIBROOT} -l${AUBITLIBFULL}
