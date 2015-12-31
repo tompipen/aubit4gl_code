@@ -46,7 +46,7 @@ testclient: Client_4gl.c soapC.c soapClient.c
 
 
 clean: 
-	rm $(BINROOT)/wsdl2fgl lex.yy.c lex.yy.o y.tab.o main.o structs.o y.tab.o *.ao *.o *.xml fglserver.nsmap fglserver.h y.output  y.tab.c  y.tab.h testclient.c soapStub.h soapH.h soapClientLib.c soapClient.c soapC.c client_4gl Client_4gl.c
+	rm -f $(BINROOT)/wsdl2fgl lex.yy.c lex.yy.o y.tab.o main.o structs.o y.tab.o *.ao *.o *.xml fglserver.nsmap fglserver.h y.output  y.tab.c  y.tab.h testclient.c soapStub.h soapH.h soapClientLib.c soapClient.c soapC.c client_4gl Client_4gl.c
 
 
 

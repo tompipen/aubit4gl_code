@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sqlconvert.c,v 1.183 2015-09-17 17:23:58 mikeaubury Exp $
+# $Id: sqlconvert.c,v 1.184 2015-12-31 10:59:18 mikeaubury Exp $
 #
 */
 
@@ -965,6 +965,12 @@ A4GL_cv_fnlist (char *source, char *target, char *name,int onlyDefaultSQL)
   char path[201];
   char buff_sm[201];
   FILE *fh;
+
+ if (A4GL_isyes (acl_getenv ("A4GL_RELAY")))
+  {
+    	source = "INFORMIX";
+    	target = "RELAY";
+  }
 
 
   if (target==0) return;

@@ -574,7 +574,10 @@ get_event_from_ui (struct ui_context *context)
 	// Nothing pending - so read from the stream...
 	localbuf=getTriggeredString();
 	
-	UIdebug(5,"Got it..:%s\n",localbuf);
+	// DLM modified
+	// Don't display localbuf, if it is huge, it can cause a crash.
+	//UIdebug(5,"Got it..:%s\n",localbuf);
+	UIdebug(5,"Got it..\n");
 	// process the buffer..
         attr = xml_parse (localbuf);
 		

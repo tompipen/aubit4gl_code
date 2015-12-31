@@ -477,6 +477,8 @@ uilib_program_exit (int nargs)
   n = POPint ();
   send_to_ui ("<PROGRAMSTOP EXITCODE=\"%d\" ID=\"%d\"/>", n, get_ui_id ('r'));
   flush_ui ();
+  // DLM added
+  sleep(1);
   return 0;
 
 }
@@ -679,6 +681,7 @@ uilib_error (int nargs)
   //a = charpop ();
   s = charpop ();
   send_to_ui ("<ERROR ATTRIBUTE=\"%s\">%s</ERROR>", a, xml_escape (char_encode(s)));
+  flush_ui ();
   free (s);
   return 0;
 }
@@ -696,6 +699,7 @@ uilib_message (int nargs)
   a = charpop ();
   s = charpop ();
   send_to_ui ("<MESSAGE ATTRIBUTE=\"%s\" WAIT=\"%d\">%s</MESSAGE>", a, wait, xml_escape (char_encode(s)));
+  flush_ui ();
   free (s);
   free (a);
   return 0;
@@ -2438,9 +2442,16 @@ uilib_input_array_loop (int n)
       return 1;
     }
 
+  // DLM added
+  suspend_flush (1);
+
   send_to_ui ("<WAITFOREVENT CONTEXT=\"%d\" CACHED=\"%d\">", context,havePendingTriggers(&contexts[context]));
   send_input_array_change (context);
   send_to_ui ("</WAITFOREVENT>");
+
+  // DLM added
+  suspend_flush (-1);
+
   flush_ui ();
   while (1)
     {

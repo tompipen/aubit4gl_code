@@ -65,6 +65,9 @@ int aclfgl_aclfgl_md5_string (int n);
 int aclfgl_aclfgl_md5 (int n);
 int aclfgl_aclfgl_md5_file (int n);
 
+/* DLM added */
+int aclfgl_aclfgl_trace(int n);
+
 
 
 

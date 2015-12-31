@@ -43,7 +43,9 @@ DEFINE mv_map             SMALLINT
 DEFINE mv_namespace       CHAR(256)
 DEFINE mv_newest_obj      CHAR(256)
 DEFINE mv_noerrcode       SMALLINT
-DEFINE mv_objects         CHAR(20480)
+# DLM enlarged
+#DEFINE mv_objects         CHAR(20480)
+DEFINE mv_objects         CHAR(32767)
 DEFINE mv_output          CHAR(256)
 DEFINE mv_output_type     CHAR(20)
 DEFINE mv_preprocess      CHAR(256)
