@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: pg8.c,v 1.126 2014-10-08 14:41:15 fortiz Exp $
+# $Id: pg8.c,v 1.127 2016-01-25 18:49:36 mikeaubury Exp $
 #*/
 
 
@@ -3588,11 +3588,17 @@ A4GL_debug("COPY DTYPE : %d\n", ibind[param].dtype &DTYPE_MASK);
 
 		    case DTYPE_MONEY:
 		    case DTYPE_DECIMAL:
-		      A4GL_push_param (ibind[param].ptr, DTYPE_DECIMAL + ENCODE_SIZE (ibind[param].size));
-		      str = A4GL_char_pop ();
-		      A4GL_lrtrim (str);
+			if(!A4GL_isno(acl_getenv("FIXUPPG8IBINDDECIMAL"))) {
+				// Pull it back in posix format...
+		      		str=strdup(A4GL_dec_to_str(ibind[param].ptr,ibind[param].size));
+			} else {
+				// Pull in back in normal A4GL_NUMERIC format
+		       		A4GL_push_param (ibind[param].ptr, DTYPE_DECIMAL + ENCODE_SIZE (ibind[param].size));
+		      		str = A4GL_char_pop ();
+		      	}
+		      	A4GL_lrtrim (str);
 			strcat(buff2,"(");
-		      strcat (buff2, pgescape_str (str, strlen (str)));
+		      	strcat (buff2, pgescape_str (str, strlen (str)));
 			strcat(buff2,")");
 		      free (str);
 		      break;
