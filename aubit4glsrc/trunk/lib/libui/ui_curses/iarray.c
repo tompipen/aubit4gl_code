@@ -24,10 +24,10 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.183 2015-01-27 10:19:47 mikeaubury Exp $
+# $Id: iarray.c,v 1.184 2016-01-26 08:36:07 mikeaubury Exp $
 #*/
 #ifndef lint
-static char const module_id[] = "$Id: iarray.c,v 1.183 2015-01-27 10:19:47 mikeaubury Exp $";
+static char const module_id[] = "$Id: iarray.c,v 1.184 2016-01-26 08:36:07 mikeaubury Exp $";
 #endif
 
 /**
@@ -1296,7 +1296,15 @@ process_key_press (struct s_inp_arr *arr, int a)
       break;
 
     case A4GLKEY_SHTAB:
-      A4GL_newMovement (arr, arr->scr_line, arr->arr_line, arr->curr_attrib - 1, 'L');
+	  if (arr->curr_attrib)
+	    {
+	      A4GL_newMovement (arr, arr->scr_line, arr->arr_line, arr->curr_attrib - 1, 'L');
+	    }
+	  else
+	    {
+	      A4GL_newMovement (arr, arr->scr_line - 1, arr->arr_line - 1, 0, 'U');
+	    }
+      break;
 
     case A4GLKEY_UP:
 #ifdef DEBUG
