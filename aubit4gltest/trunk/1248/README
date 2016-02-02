@@ -1,0 +1,1 @@
+This test does not work on informix12 unless TEMPTAB_NOLOG is set to 0
