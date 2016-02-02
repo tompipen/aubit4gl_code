@@ -24,10 +24,10 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.256 2015-01-15 19:48:15 mikeaubury Exp $
+# $Id: ioform.c,v 1.257 2016-02-02 15:19:17 mikeaubury Exp $
 #*/
 #ifndef lint
-static char const module_id[] = "$Id: ioform.c,v 1.256 2015-01-15 19:48:15 mikeaubury Exp $";
+static char const module_id[] = "$Id: ioform.c,v 1.257 2016-02-02 15:19:17 mikeaubury Exp $";
 #endif
 
 /**
@@ -4311,7 +4311,16 @@ A4GL_copy_field_data (struct s_form_dets *form, int var_dtype)
   FORM *mform;
   int ppr;
   int x = 0, y = 0;
+
   struct struct_scr_field *fprop;
+
+/*
+  if (!A4GL_isno(acl_getenv("INPUTARRDECIMALFIXUP"))) {
+		// Not sure we need this routine at all 
+		return 1;
+  }*/
+
+
   mform = form->form;
 #ifdef DEBUG
   A4GL_debug ("form->currentfield=%p", form->currentfield);
@@ -4391,18 +4400,14 @@ A4GL_copy_field_data (struct s_form_dets *form, int var_dtype)
 			A4GL_pop_param (buff, DTYPE_CHAR, A4GL_get_field_width (form->currentfield));
 
 
-			if (A4GL_is_numeric_datatype (fprop->datatype))
+			if (A4GL_is_numeric_datatype (fprop->datatype) && !A4GL_has_str_attribute (fprop, FA_S_FORMAT))
 			  {
-			    /* This doesn't seem to make any sense - surely the USING will put in the correct ',' or '.'
-			       depending on the decfmt ...
-			     */
-			    /*
-
+				// Only run this if theres not a format...
 			       A4GL_decstr_convert(buff,
 			       A4GL_get_convfmts()->posix_decfmt,
 			       A4GL_get_convfmts()->ui_decfmt,
 			       0, 1, sizeof(buff));
-			     */
+			     
 
 			  }
 
