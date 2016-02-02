@@ -3,21 +3,169 @@ Tue Feb  2 18:25:05 GMT 2016
 ---------------------------
 1.2_39 Released
 ---------------------------
-	2016-02-02 15:19  mikeaubury
 	
-	Tidy up changelog
-	
-	2016-02-02 15:19  mikeaubury
-	
-	Small fixup for "," decimal separator in input array
-	
-	2016-02-02 09:57  mikeaubury
-	
----------------------------
-Tue Feb  2 18:21:13 GMT 2016
----------------------------
-1.2_39 Released
----------------------------
+2016-02-02 15:19  mikeaubury
+
+Tidy up changelog
+
+2016-02-02 15:19  mikeaubury
+
+Small fixup for "," decimal separator in input array
+
+2016-01-26 08:36  mikeaubury
+
+Fix Shift-tab issue
+
+2016-01-25 18:49  mikeaubury
+
+try to fixup inserting decimals with a "," in them Added
+"FIXUPPG8IBINDDECIMAL" with a default of Y - set N for old
+behaviour
+
+2015-12-31 11:33  mikeaubury
+
+Add DLM changes
+
+2015-12-31 11:28  mikeaubury
+
+Add DLM changes
+
+2015-12-31 11:23  mikeaubury
+
+Add DLM changes
+
+2015-12-31 11:12  mikeaubury
+
+Add DLM changes
+
+2015-12-31 10:59  mikeaubury
+
+Add DLM changes
+
+2015-12-31 10:54  mikeaubury
+
+Add DLM changes
+
+2015-12-31 10:51  mikeaubury
+
+Add DLM changes
+
+2015-12-31 10:44  mikeaubury
+
+Add DLM changes
+
+2015-12-03 10:19  mikeaubury
+
+Minor updates to the still un-usable web interface
+
+2015-12-03 10:06  mikeaubury
+
+Slight Perform -> 4GL code generation fixups
+
+2015-12-03 10:05  mikeaubury
+
+Add parameter default values
+
+2015-12-03 10:04  mikeaubury
+
+Add default parameter value
+
+2015-09-17 18:23  mikeaubury
+
+Fixup for %S typo in sql convertion rules
+
+2015-09-17 14:52  mikeaubury
+
+fix aclfgl_replace_in_string
+
+2015-09-02 11:45  mikeaubury
+
+Add missing prototype
+
+2015-09-02 11:37  mikeaubury
+
+Add search of postgresql cpc files when searching for new error
+messages
+
+2015-08-11 18:53  mikeaubury
+
+Increase MAXLOADCOLS to 1024
+
+2015-08-11 18:53  mikeaubury
+
+Add a check for the maximum number of columns in LOAD for
+Postgresql in asql_p.4ae
+
+2015-07-02 11:52  mikeaubury
+
+Fix issue with LOAD when using a string, where there is an error
+with one of the lines
+
+2015-05-21 20:32  mikeaubury
+
+DECIMAL/MONEY -> Smallfloat fixup when A4GL_NUMERIC=,
+
+2015-05-19 09:31  mikeaubury
+
+Fixup SQLCmd
+
+2015-03-05 23:23  siverly
+
+allow 1 and 2 parameters
+
+2015-03-04 09:22  siverly
+
+added new parameter for ui.progress.settext
+
+2015-02-23 10:36  mikeaubury
+
+64 bit encryption fixup
+
+2015-02-20 12:50  siverly
+
+aded new function settingsonserver
+
+2015-02-18 17:00  mikeaubury
+
+Add NOSHOW form attribute for the VDC
+
+2015-02-18 16:59  mikeaubury
+
+Add noshow
+
+2015-02-18 16:57  mikeaubury
+
+Add NOSHOW form attribute for the VDC
+
+2015-02-12 13:12  mikeaubury
+
+Check for A4GL_SQLUID and SQLPWD for postgresql connection
+
+2015-01-29 12:25  mikeaubury
+
+Fix fcompile when using non standard base ext
+
+2015-01-27 10:19  mikeaubury
+
+Add OPTIONS CURRENT ROW DISPLAY
+
+2015-01-21 17:45  mikeaubury
+
+Add a :
+
+OPTIONS CURRENT FIELD DISPLAY "[attribute]"
+
+eg.	OPTIONS CURRENT FIELD DISPLAY "RED,REVERSE"
+
+This highlights the current field with that specific
+attribute (WIP/Experimental)
+
+2015-01-20 17:46  mikeaubury
+
+CURRENT FIELD DISPLAY for construct
+
+2015-01-19 18:37  mikeaubury
+
 ---------------------------
 Mon Jan 19 18:33:47 GMT 2015
 ---------------------------
