@@ -15,8 +15,6 @@ Mon Jan 19 18:33:47 GMT 2015
 	color=red reverse where evenlines,
 	color=blue reverse where oddlines;
 	
-	2015-01-13 09:09  mikeaubury
-	
 	2015-01-09 19:38  mikeaubury
 	
 	Add initial Session support for mysql
@@ -59,19 +57,13 @@ Mon Jan 19 18:33:47 GMT 2015
 	
 	end main
 	
-	2015-01-05 20:02  mikeaubury
-	
 	2015-01-05 13:58  siverly
 	
 	Increase XML Version bebause protocol changes in getclientfile()
 	
-	2014-12-30 13:32  mikeaubury
-	
 	2014-12-30 13:30  mikeaubury
 	
 	Allow sending of files from the client in "parts"
-	
-	2014-12-15 13:29  mikeaubury
 	
 	2014-11-12 17:36  pauldgardiner
 	
@@ -86,8 +78,6 @@ Mon Jan 19 18:33:47 GMT 2015
 	2014-10-15 17:20  mikeaubury
 	
 	Bison3 fixups
-	
-	2014-10-15 17:18  mikeaubury
 	
 	2014-10-15 17:08  mikeaubury
 	
