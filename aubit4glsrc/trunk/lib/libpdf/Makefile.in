@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile.in,v 1.33 2014-07-29 12:45:33 mikeaubury Exp $
+# $Id: Makefile.in,v 1.34 2016-02-02 18:29:39 mikeaubury Exp $
 #
 
 ROOT        =../..
@@ -96,13 +96,14 @@ ${PLUGINDIR}/libEXREPORT_NOPDF${SO_EXT}: ${OBJECTS_NOPDF}
 
 haru.test:
 	ls -l  ${PLUGINDIR}/libEXREPORT_HARU${SO_EXT} ${PLUGINDIR}/libEXREPORT_HARUs${SO_EXT}
-haru.dummy: ${PLUGINDIR}/libEXREPORT_HARU${SO_EXT} ${PLUGINDIR}/libEXREPORT_HARUs${SO_EXT}
+haru.dummy: ${PLUGINDIR}/libEXREPORT_HARU${SO_EXT} 
+#${PLUGINDIR}/libEXREPORT_HARUs${SO_EXT}
 
 ${PLUGINDIR}/libEXREPORT_HARU${SO_EXT}: ${OBJECTS_HARU}
 	${LD}  $(SO_LDFLAGS) ${OBJECTS_HARU} -o $@ ${LINKLIBS} ${HARU_LIBS} ${QRLIB} 
 
-${PLUGINDIR}/libEXREPORT_HARUs${SO_EXT}: ${OBJECTS_HARU}
-	${LD}  $(SO_LDFLAGS) ${OBJECTS_HARU} -o $@ ${LINKLIBS} /usr/local/lib/libhpdf.a  ${QRLIB} -lpng
+#${PLUGINDIR}/libEXREPORT_HARUs${SO_EXT}: ${OBJECTS_HARU}
+#	${LD}  $(SO_LDFLAGS) ${OBJECTS_HARU} -o $@ ${LINKLIBS} /usr/local/lib/libhpdf.a  ${QRLIB} -lpng
 
 
 clean:

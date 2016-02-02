@@ -2663,7 +2663,8 @@ union YYSTYPE
 
 
 
-	char	str[1024];  /* This would core dump in CygWin on call to */
+	/* DLM enlarged */
+	char	str[12288];  /* This would core dump in CygWin on call to */
 						/* yyparse in y.tab.c - 3100 in maximum. */
 
 	struct expr_str *ptr;
@@ -2763,7 +2764,7 @@ union YYSTYPE
 	struct spl_if_conds *spl_if_conds;
 	
 
-#line 2767 "y.tab.h" /* yacc.c:1909  */
+#line 2768 "y.tab.h" /* yacc.c:1909  */
 };
 # define YYSTYPE_IS_TRIVIAL 1
 # define YYSTYPE_IS_DECLARED 1
