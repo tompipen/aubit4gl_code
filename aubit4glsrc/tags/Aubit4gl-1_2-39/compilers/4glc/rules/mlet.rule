@@ -1,0 +1,6 @@
+mlet_cmd : KW_MLET atline obind_var_let_list EQUAL fgl_expr_c {
+                set_cmdlineno($<integer_val>2);
+                $<cmd>$=new_mlet_cmd($<ptr_list>3,$<ptr>5);
+                }
+;
+

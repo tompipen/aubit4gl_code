@@ -1,0 +1,29 @@
+Name: libLOGREPPROC_TXT
+Parent: aubit4glsrc
+Description: Generates TXT output from logical report meta data
+Functionality: Logical report processor
+Build:
+Example:
+Depends:
+Documentation:
+Regressed:
+Maintainer: MA
+Status: 4
+Todo:
+Notes:
+
+Name: libLOGREP_TXT
+Parent: aubit4glsrc
+Description: Text layout editor module for logical report meta data
+Functionality: Logical report processor
+Build:
+Example:
+Depends:
+Documentation:
+Regressed:
+Maintainer: MA
+Status: 4
+Todo:
+Notes:
+
+

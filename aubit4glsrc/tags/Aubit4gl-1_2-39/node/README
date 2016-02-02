@@ -1,0 +1,15 @@
+This is the latest code...
+
+By default - runs on port 8080 (see server.js)
+
+
+node server.js
+
+Then connect via browser to 
+
+
+http://[server IP Address]:8080/index.html
+
+
+Programs to be executed need to be in "baseProgs" - they are run via
+runProgram.sh - which should set up the environment first

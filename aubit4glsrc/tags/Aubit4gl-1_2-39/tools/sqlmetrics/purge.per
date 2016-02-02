@@ -1,0 +1,23 @@
+database formonly
+screen 
+{
+
+Tha SQLMetrics table contains [qty   ] rows
+   spanning from [min                ]
+              to [max                ]
+
+   rows [title  ] wich date do you want to delete?
+                 [time               ]
+
+}
+end
+attributes
+title = formonly.title,noentry;
+
+qty = formonly.lv_qty,noentry;
+min = formonly.lv_a_min,noentry;
+max = formonly.lv_a_max,noentry;
+time = formonly.lv_datetime,autonext;
+
+instructions
+delimiters " " 

@@ -1,0 +1,14 @@
+Name: libFORM_GENERIC
+Parent: aubit4glsrc
+Description: for all form files compiled using Aubit "packers"
+Functionality: Forms run-time support library
+Build:
+Example: A4GL_PACKER
+Depends: Aubit "packer" plug-in
+Documentation:
+Regressed: mostly
+Maintainer: MA
+Status: 4
+Todo:
+Notes:
+
