@@ -513,6 +513,7 @@ UILIB_A4GL_open_form (char *name)
       // this will callback to our UILIB_A4GL_read_metrics function..
 	set_reading_form(buff,name);
       form = A4GL_read_form (buff, name);
+	A4GL_add_pointer (name, S_FORMDETSCODE, form);
     }
     send_to_ui ("      },");
   suspend_flush (-1);

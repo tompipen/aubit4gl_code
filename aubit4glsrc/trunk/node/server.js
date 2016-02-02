@@ -102,13 +102,12 @@ io.sockets.on('connection', function (socket) {
 					try {
 						// Convert what we got into a javascript object..
 						var x=JSON.parse(allLines);
+						socket.emit('envelope',x);
 					} catch (e) {
 						console.log("Unable to parse :");
 						console.log(allLines);
 						console.log(e);
-						
 					}
-					socket.emit('envelope',x);
 					allLines="";
 				}
 			});

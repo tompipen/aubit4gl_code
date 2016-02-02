@@ -48,7 +48,7 @@ size_t A4GL_base64_decode(const char *src, unsigned char **outptr);
 void A4GL_get_top_of_stack (int a, int *d, int *s, void **ptr);
 
 
-static void local_trim (char *p);
+//static void local_trim (char *p);
 void brpoint (void);		// DUMMY FUNCTION USED FOR DEBUGGING...
 
 static int field_match (char *a, char *b);
@@ -404,13 +404,14 @@ char *A4GL_char_pop(void);
 static char *
 charpop (void)
 {
-  char s[1024];
+  //char s[1024];
 
   return A4GL_char_pop();
 
-  popstring (s, 1023);
-  local_trim (s);
-  return strdup (s);
+
+  //popstring (s, 1023);
+  //local_trim (s);
+  //return strdup (s);
 }
 
 static void
@@ -498,7 +499,13 @@ uilib_set_field_list_directly (char *s)
     {
       free (last_field_list);
     }
-  last_field_list = strdup (s);
+  if (s) {
+  	last_field_list = strdup (s);
+  } else {
+	printf("s==null ? ????\n");
+	A4GL_pause_execution();
+	last_field_list=0;
+  }
   return 0;
 }
 
@@ -1173,6 +1180,9 @@ uilib_menu_add (int nargs)
   send_to_ui
     ("         {\"CONTEXT\":%d,\"KEYS\":\"%s\",\"ID\":%d,\"TEXT\":\"%s\",\"DESCRIPTION\":\"%s\",\"HELPNO\":%d}, ",
      context, json_escape(char_encode(keys)), id, json_escape(char_encode(mn)), json_escape(char_encode(desc)), helpno);
+free(keys);
+free(desc);
+free(mn);
   return 0;
 }
 
@@ -1295,6 +1305,12 @@ uilib_menu_start (int nargs)
   pushint (cmenu);
   suspend_flush (1);
   send_to_ui ("      {\"type\":\"MENU\", \"CONTEXT\":%d,\"TITLE\":\"%s\",\"COMMENT\":\"%s\",\"STYLE\":\"%s\",\"IMAGE\":\"%s\", \"MenuCommands\" :[", cmenu, mt, json_escape(char_encode(comment)), json_escape(char_encode(style)), json_escape(char_encode(image)));
+
+  free(mt);
+free(image);
+free(style);
+free(comment);
+//free(mod);
 
   return 0;
 }
@@ -1817,6 +1833,9 @@ uilib_construct_start (int nargs)
   UIdebug (5, "Construct - state=%d", contexts[cconstruct].state);
   suspend_flush (1);
   UIdebug (5, "Construct start - state=%d", contexts[cconstruct].state);
+
+  A4GL_assertion(!last_field_list, "last_field_list is not set");
+
   send_to_ui ("      {\"type\":\"CONSTRUCT\",\"CONTEXT\":%d,\"ATTRIBUTE\":\"%s\",\"WRAP\":%d,%s,", cconstruct, attr, wrap,last_field_list);
   send_to_ui ("         \"Columns\":[");
   for (a = 2; a < nargs; a++)
@@ -2627,7 +2646,7 @@ uilib_save_file (char *id, char *s)
   if (f)
     {
 	unsigned char *buff;
-	int len;
+	int len=0;
 	int printed=0;
 
 	if (last_attr->sync.vals!=0) {
@@ -2886,7 +2905,7 @@ uilib_infield (int n)
 int
 uilib_fgl_drawbox (int n)
 {
-  int x1, x2, x3, x4, x5;
+  int x1=0, x2=0, x3=0, x4=0, x5=0;
   if (n == 4)
     {
       x1 = POPint ();
@@ -2902,6 +2921,8 @@ uilib_fgl_drawbox (int n)
       x4 = POPint ();
       x5 = POPint ();
     }
+UIdebug(5,"Drawbox : %d %d %d %d %d",x1,x2,x3,x4,x5);
+
   return 0;
 }
 
@@ -2917,7 +2938,7 @@ A4GL_assertion (int n, char *s)
 {
   if (n)
     {
-      printf ("%s\n", s);
+      printf (">>>>> %s\n", s);
       exit (2);
     }
   return 0;
@@ -2930,7 +2951,7 @@ A4GL_assertion_full (int n, char *s, char *mod, int ln)
   return 0;
 }
 
-
+/*
 static void
 local_trim (char *p)
 {
@@ -2941,7 +2962,7 @@ local_trim (char *p)
 	break;
       p[a] = 0;
     }
-}
+} */
 
 
 int

@@ -26,7 +26,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile,v 1.8 2015-12-31 11:12:05 mikeaubury Exp $
+# $Id: Makefile,v 1.9 2016-02-02 09:57:55 mikeaubury Exp $
 #
 
 ROOT        =../../..
@@ -39,7 +39,7 @@ include ${ROOT}/incl/Makefile-common
 ## ==================================================================
 
 CMODS   	= formxml.c wrapper.c 
-CMODS_JSON      = formjson.c wrapper_json.c
+CMODS_JSON      = formjson.c wrapper_json.c ../../libui/ui_json/libjson.c
 OBJS		=${CMODS:.c=.o}
 OBJS_JSON	=${CMODS_JSON:.c=.o}
 ALL 		=${PLUGINDIR}/libPACKER_FORMXML${SO_EXT} ${PLUGINDIR}/libPACKER_FORMJSON${SO_EXT}
@@ -61,8 +61,9 @@ ALL: ${ALL}
 
 ${PLUGINDIR}/libPACKER_FORMXML${SO_EXT}: ${OBJS}
 	${LD} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS}
+
 ${PLUGINDIR}/libPACKER_FORMJSON${SO_EXT}: ${OBJS_JSON}
-	${LD} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS}
+	${LD} ${SO_LDFLAGS} -o $@ $^ ${LINKLIBS} 
 
 #ifeq "${SO_EXT}" ".dll"
 #	${MV} TMP${SOEXP_EXT} $@.a

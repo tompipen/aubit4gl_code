@@ -6,6 +6,8 @@
 #include "pipe.h"
 #include "uilib/attr.h"
 #include "a4gl_API_ui_lib.h"
+#include "libjson.h"
+#include "readJsonForm.h"
 char *A4GL_pull_off_data_for_display (int n, int display_type);
 extern struct s_attr *last_attr;
 static char *get_field_with_subscript_as_string(char *field, int i);
@@ -104,7 +106,10 @@ int exiting_context[100];
 int exiting_context_state[100];
 int exiting_context_cnt = 0;
 
+//void set_xml_lastkey(void) ;
 //char *getlastkey(void);
+
+
 
 static void set_xml_lastkey(void) {
 	char *ptr=getlastkey();
@@ -112,6 +117,70 @@ static void set_xml_lastkey(void) {
 		A4GL_set_last_key(A4GL_key_val(ptr));
 	}
 }
+
+/*
+
+static char lastKey[20000];
+static int objLevel=0;
+static int collectingRecords=0;
+static int my_callback(void *userdata, int type, const char *data, uint32_t length) {
+struct_form *frm=(struct_form*)userdata;
+
+  FILE *output = stdout; //(userdata) ? userdata : stdout;
+        switch (type) {
+        case JSON_OBJECT_BEGIN:
+                objLevel++;
+                break;
+
+        case JSON_ARRAY_BEGIN:
+                //fprintf(output, "entering %s\r\n", (type == JSON_ARRAY_BEGIN) ? "array" : "object");
+                break;
+
+        case JSON_OBJECT_END:
+		A4GL_pause_execution();
+                objLevel--;
+		if (collectingRecords && objLevel==1) {
+			collectingRecords=0;
+		}
+                break;
+
+        case JSON_ARRAY_END:
+                //fprintf(output, "leaving %s\r\n", (type == JSON_ARRAY_END) ? "array" : "object");
+                break;
+        case JSON_KEY:
+                strcpy (lastKey, data);
+		if (strcmp(data, "Records")==0 && objLevel==1) {
+			collectingRecords=1;
+			printf(" objLevel=%d\n", objLevel);
+			A4GL_pause_execution();
+		}
+                fprintf(output, "key %*s\r\n", length, data);
+                break;
+
+        case JSON_STRING:
+        case JSON_INT:
+        case JSON_FLOAT:
+                if (strcmp(lastKey,"sqlDbName")==0) {
+                        frm->dbname=strdup(data);
+                        break;
+                }
+                fprintf(output, "value %*s\r\n", length, data);
+                break;
+        case JSON_NULL:
+                //fprintf(output, "constant null\r\n"); 
+break;
+        case JSON_TRUE:
+                //fprintf(output, "constant true\r\n"); 
+break;
+        case JSON_FALSE:
+                //fprintf(output, "constant false\r\n"); 
+break;
+        }
+return 0;
+}
+*/
+
+
 
 static void
 clr_exiting_context (int n)
@@ -177,6 +246,16 @@ isset_exiting_context (int n, int *state)
 }
 
 
+static void addFormDets(char *formname, struct_form *s) {
+struct s_form_dets *form;
+form=malloc(sizeof(struct s_form_dets));
+form->fileform=s;
+A4GL_add_pointer (formname, S_FORMDETSCODE, form);
+}
+
+
+
+
 static void
 A4GL_JSON_opening_form_xml (char *formname, char *formfile, char *fbuff)
 {
@@ -186,13 +265,43 @@ char buff2[2000];
 int len;
 int l;
 char *ptr;
-
+//json_parser parser;
+struct_form *s=NULL;
   int cnt;
+int ok=1;
 
   send_to_ui ("         {\"Name\":\"%s\",\"File\":\"%s\", \"Data\":[", formname, formfile);
 
   cnt=0;
   len=strlen(fbuff);
+
+/*
+ s=malloc(sizeof(struct_form));
+ s->tables.tables_val=0;
+ s->tables.tables_len=0;
+  if (json_parser_init(&parser, NULL, my_callback, s)) {
+        fprintf(stderr, "something wrong happened during init\n");
+  }
+
+  while (1) {
+	int ret;
+        ret = json_parser_string (&parser, fbuff, len, NULL);
+  if (ret)
+        {
+		ok=0;
+		break;
+        }
+	
+        if (json_parser_is_done (&parser))
+                break;
+  }
+*/
+
+ ok=readJsonForm(fbuff,len,&s);
+ if (ok) {
+    addFormDets(formname,s);
+ }
+
   A4GL_base64_encode(fbuff,len,&buff);
   l=strlen(buff);
   ptr=buff;
@@ -358,7 +467,7 @@ UILIB_A4GL_cr_window_form (char *name, int iswindow, int form_line,
   char *fname;
   int x;
   int y;
-  struct s_form_dets *form;
+  struct s_form_dets *form=NULL;
 
 
   fname = A4GL_char_pop ();
@@ -384,7 +493,7 @@ UILIB_A4GL_cr_window_form (char *name, int iswindow, int form_line,
   if (!A4GL_JSON_opening_form (fname, name,1))
     {
 	set_reading_form(fname,name);
-      form = A4GL_read_form (fname, name);
+        form = A4GL_read_form (fname, name);
     }
   send_to_ui ("},");
   suspend_flush (-1);
@@ -439,7 +548,7 @@ UILIB_A4GL_disp_fields_ap (int n, int attr, va_list * ap)
   while ((argp = va_arg (*ap, char *)))
     {
       int i;
-      i = va_arg (*ap, int);
+       i=va_arg (*ap, int);
       A4GL_trim (argp);
 	if (printed) send_to_ui(",");
 	printed=1;
@@ -462,10 +571,10 @@ UILIB_A4GL_disp_fields_ap (int n, int attr, va_list * ap)
 		printed=1;
 		if (arg_types[a]==DTYPE_BYTE || arg_types[a]==DTYPE_TEXT) {
 			fglbyte *b;
-			fglbyte **bp;
+			//fglbyte **bp;
 			char *ptr;
 			b=(fglbyte *)args[a];
-			bp=(fglbyte **)args[a];
+			//bp=(fglbyte **)args[a];
 			ptr=A4GL_byte_as_base64(b);
 			if (ptr) {
 				int l;
@@ -522,9 +631,12 @@ UILIB_A4GL_open_form (char *name)
       // Nope - lets send a non-xml form instead..
       // this will callback to our UILIB_A4GL_read_metrics function..
 	set_reading_form(buff,name);
-      form = A4GL_read_form (buff, name);
+        form = A4GL_read_form (buff, name);
 	if (!form) {
 			send_to_ui ("null");
+	} else {
+ 		A4GL_add_pointer (name, S_FORMDETSCODE, form);
+		//addFormDets(name,form);
 	}
     }
     send_to_ui ("      },");
@@ -915,7 +1027,7 @@ UILIB_A4GL_gen_field_chars_ap (void *field_list, void *formdets, va_list * ap,in
   while ((argp = va_arg (*ap, char *)))
     {
       int i;
-      i = va_arg (*ap, int);
+       i= va_arg (*ap, int);
       A4GL_trim (argp);
       if (i == 1 )
 	{
@@ -2933,7 +3045,7 @@ UILIB_A4GL_read_metrics (void *formdetsv)
 {
   struct s_form_dets *formdets;
   int metric_no, n;
-  char delims[3][2];
+  //char delims[3][2];
   char *widget;
   char *config;
   char *include;
@@ -2966,13 +3078,14 @@ UILIB_A4GL_read_metrics (void *formdetsv)
 	return 1;
   }
 fprintf(stderr,"not using XML form...\n");
-	
+	/*
   delims[0][0] = formdets->fileform->delim[0];
   delims[1][0] = formdets->fileform->delim[1];
   delims[2][0] = formdets->fileform->delim[2];
   delims[0][1] = 0;
   delims[1][1] = 0;
   delims[2][1] = 0;
+*/
   n = formdets->fileform->metrics.metrics_len;
   A4GL_debug ("metrics len=%d", n);
 
@@ -3313,8 +3426,8 @@ A4GL_debug("Got context as : %d\n",context);
 
   while ((argp = va_arg (*ap, char *)))
     {
-      int i;
-      i = va_arg (*ap, int);
+      //int i;
+       va_arg (*ap, int);
       A4GL_trim (argp);
       A4GL_push_int (context);
       A4GL_push_char (argp);
@@ -3352,8 +3465,8 @@ UILIB_A4GL_fgl_infield_ia_ap (void *inp, va_list * ap)
 
   while ((argp = va_arg (*ap, char *)))
     {
-      int i;
-      i = va_arg (*ap, int);
+      //int i;
+      va_arg (*ap, int);
       A4GL_trim (argp);
       A4GL_push_int (context);
       A4GL_push_char (argp);
@@ -3392,8 +3505,8 @@ UILIB_A4GL_fgl_getfldbuf_ap (void *inp, ts_field_name *orig_list,va_list * ap)
   n = 1;
   while ((argp = va_arg (*ap, char *)))
     {
-      int i;
-      i = va_arg (*ap, int);
+      //int i;
+       va_arg (*ap, int);
       A4GL_trim (argp);
       A4GL_push_char (argp);
       n++;
@@ -3417,8 +3530,8 @@ UILIB_A4GL_fgl_getfldbuf_ia_ap (void *inp, ts_field_name *orig_list,va_list * ap
   n = 1;
   while ((argp = va_arg (*ap, char *)))
     {
-      int i;
-      i = va_arg (*ap, int);
+      //int i;
+      va_arg (*ap, int);
       A4GL_trim (argp);
       A4GL_push_char (argp);
       n++;
@@ -3438,13 +3551,49 @@ UILIB_A4GL_disp_h_menu (void *menu)
 
 // NIY ----------------------------------------------------------------------------------
 
-
 int
 UILIB_A4GL_gen_field_list_from_slist (void *field_listv, void *formdetsv, void *listv)
 {
-  int rval=0;
-  niy ();
-  return rval;
+  int a;
+  void **field_list;
+  struct s_form_dets *formdets;
+  struct s_field_name_list *list;
+
+  field_list = field_listv;
+  formdets = formdetsv;
+  list = listv;
+
+  a = A4GL_gen_field_list_from_slist_internal (field_list, formdets, 9999, list);
+  return a;
+}
+
+/**
+ *  *
+ *   * @todo Describe function
+ *    */
+int
+A4GL_gen_field_list_from_slist_internal (void** field_list,
+                                         struct s_form_dets *formdets, int max_number, struct s_field_name_list *list)
+{
+static char buff[200000];
+int a;
+
+strcpy(buff, "\"Fields\":[");
+for (a=0;a<list->nfields;a++) {
+	char buff2[2000];
+	if ( list->field_name_list[a].fpos==0) {
+	sprintf(buff2,"{\"Name\":\"%s\"}", list->field_name_list[a].fname);
+	} else {
+	sprintf(buff2,"{\"Name\":\"%s[%d]\"}", list->field_name_list[a].fname,  list->field_name_list[a].fpos);
+	}
+	if (a) {
+		strcat(buff,",");
+	}
+	strcat(buff,buff2);
+}
+strcat(buff,"]");
+*field_list=buff;
+return 1;
 }
 
 long
@@ -3568,8 +3717,8 @@ UILIB_A4GL_fgl_fieldtouched_input_ap (void *input, va_list * ap)
 
   while ((argp = va_arg (*ap, char *)))
     {
-      int i;
-      i = va_arg (*ap, int);
+      //int i;
+       va_arg (*ap, int);
       A4GL_trim (argp);
       A4GL_push_char (argp);
       n++;
@@ -3595,8 +3744,8 @@ UILIB_A4GL_fgl_fieldtouched_input_array_ap (void *input, va_list * ap)
 
   while ((argp = va_arg (*ap, char *)))
     {
-      int i;
-      i = va_arg (*ap, int);
+      //int i;
+       va_arg (*ap, int);
       A4GL_trim (argp);
       A4GL_push_char (argp);
       n++;

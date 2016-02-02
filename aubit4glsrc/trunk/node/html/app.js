@@ -16,6 +16,11 @@ function createApplication(envelope) {
 		options:{ },
 		Forms:{},
 		programStartup: function(d) {
+			app.environmentVariables={};
+			Ext.Array.each(d.EnvironmentVariables, function(v) {
+				app.environmentVariables[v.name]=v.value;
+			});
+			AubitDesktop.FGLUtils._dbdate=app.environmentVariables["DBDATE"];
 		}
 	}
 

@@ -2,6 +2,8 @@
 
 #include "a4gl_libaubit4gl.h"
 #include "a4gl_API_packer_lib.h"
+#include "formjson.h"
+#include "../../libui/ui_json/libjson.h"
 
 
 static char *get_sql_dtype ( int dtype);
@@ -30,7 +32,7 @@ enum e_scrmodes {
 	SCRMODE_SCREEN
 };
 */
-#include "formxml.h"
+//#include "formxml.h"
 
 
 
@@ -492,8 +494,11 @@ void print_checkbox_attr(struct_form *f, int metric_no, int attr_no,int oldstyle
 char buff[2000];
 char posbuf[200];
 
+/*
 struct_scr_field *fprop;
 fprop=&f->attributes.attributes_val[attr_no];
+*/
+
  get_attribs(f, attr_no, buff,1,metric_no);
 	sprintf(posbuf," \"posY\":%d,\"posX\":%d, \"gridWidth\":%d", f->metrics.metrics_val[metric_no].y, f->metrics.metrics_val[metric_no].x, f->metrics.metrics_val[metric_no].w);
 	if (strcmp(why,"Table")==0) {
@@ -743,8 +748,10 @@ char posbuf[200];
 			f->metrics.metrics_val[metric_no].w,posbuf);
 
         } else {
+		/*
 		struct_scr_field *fprop;
 		fprop=&f->attributes.attributes_val[attr_no];
+		*/
 		char buff[2000];
 		char smbuff[200];
  		get_attribs(f, attr_no, buff,1,metric_no);
@@ -2139,20 +2146,20 @@ static char * get_sql_dtype ( int dtype)
       break;
 
     case DTYPE_DECIMAL:
-      sprintf (buff_dtype, " DECIMAL(%d,%d)", dtype_sz >> 8, dtype_sz & 255);
+      sprintf (buff_dtype, "DECIMAL(%d,%d)", dtype_sz >> 8, dtype_sz & 255);
       break;
 
     case DTYPE_MONEY:
-      sprintf (buff_dtype, " MONEY(%d,%d)", dtype_sz >> 8, dtype_sz & 255);
+      sprintf (buff_dtype, "MONEY(%d,%d)", dtype_sz >> 8, dtype_sz & 255);
       break;
 
 
     case DTYPE_DTIME:
-      sprintf (buff_dtype, " DATETIME %s TO %s", decode_dt (dtype_sz, 1), decode_dt (dtype_sz, 2));
+      sprintf (buff_dtype, "DATETIME %s TO %s", decode_dt (dtype_sz, 1), decode_dt (dtype_sz, 2));
       break;
 
     case DTYPE_INTERVAL:
-      sprintf (buff_dtype, " INTERVAL %s TO %s", decode_ival_define1 (dtype_sz), decode_ival_define2 (dtype_sz));
+      sprintf (buff_dtype, "INTERVAL %s TO %s", decode_ival_define1 (dtype_sz), decode_ival_define2 (dtype_sz));
       break;
 
 
@@ -2288,4 +2295,110 @@ static int isCharType(int n) {
                return 1;
    }
    return 0;
+}
+
+
+
+static char lastKey[20000];
+static int objLevel=0;
+static int my_callback(void *userdata, int type, const char *data, uint32_t length) {
+struct_form *frm=(struct_form*)userdata;
+
+  FILE *output = stdout; //(userdata) ? userdata : stdout;
+        switch (type) {
+        case JSON_OBJECT_BEGIN:
+		objLevel++;
+		break;
+
+        case JSON_ARRAY_BEGIN:
+                fprintf(output, "entering %s\r\n", (type == JSON_ARRAY_BEGIN) ? "array" : "object");
+                break;
+
+        case JSON_OBJECT_END:
+		objLevel--;
+		break;
+
+        case JSON_ARRAY_END:
+                fprintf(output, "leaving %s\r\n", (type == JSON_ARRAY_END) ? "array" : "object");
+                break;
+        case JSON_KEY:
+      		strcpy (lastKey, data);
+	        fprintf(output, "key %*s\r\n", length, data);
+                break;
+
+        case JSON_STRING:
+        case JSON_INT:
+        case JSON_FLOAT:
+		if (strcmp(lastKey,"sqlDbName")==0) {
+			frm->dbname=strdup(data);
+			break;
+		}
+                fprintf(output, "value %*s\r\n", length, data);
+                break;
+        case JSON_NULL:
+                fprintf(output, "constant null\r\n"); break;
+        case JSON_TRUE:
+                fprintf(output, "constant true\r\n"); break;
+        case JSON_FALSE:
+                fprintf(output, "constant false\r\n"); break;
+        }
+return 0;
+}
+
+
+int A4GLPacker_A4GL_unpack_all (char *name, void *s, char *filename) {
+json_parser parser;
+
+if (json_parser_init(&parser, NULL, my_callback, s)) {
+        fprintf(stderr, "something wrong happened during init\n");
+}
+
+
+((struct_form*)s)->fcompile_version = FCOMILE_XDR_VERSION;
+((struct_form*)s)->delim = "[]|";
+FILE *f;
+static char *buff=0;
+
+if (buff) {
+	acl_free(buff);
+}
+
+f=fopen(filename,"r");
+
+if (!f) {
+	char fname[20000];
+	strcpy(fname,filename);
+	if (strchr(fname,'.')) {
+		char *ptr=strrchr(fname,'.');
+		*ptr=0;
+		strcat(fname,".json");
+		f=fopen(fname,"r");
+	}
+}
+
+if (!f) {
+	return 0;
+}
+int ret;
+ fseek (f, 0, SEEK_END);
+int l;
+      l = ftell (f);
+      rewind (f);
+      buff = malloc (l + 1);
+      fread (buff, l, 1, f);
+      buff[l] = 0;
+      fclose (f);
+
+while (1) {
+	ret = json_parser_string (&parser, buff, strlen (buff), NULL);
+  if (ret)
+        {
+	printf("Error\n");
+	break;
+	}
+	if (json_parser_is_done (&parser))
+        	break;
+}
+
+	return 1;
 }

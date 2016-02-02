@@ -17,6 +17,8 @@ function getIconClass(nm, parentFormName, parentWindowName) {
 		case "Master": return "icon-"+nm;
 		case "Detail": return "icon-"+nm;
 		case "Exit": return "icon-"+nm;
+		case "Output": return "icon-output";
+		case "Current": return "icon-current";
 
 		case "6":
 			if (parentFormName=="custform") {

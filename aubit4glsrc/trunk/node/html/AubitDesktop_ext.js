@@ -156,33 +156,33 @@ Ext.define('AubitDesktop.FGLConstruct', {
 				return parseInt(brckt,10);
 
         		case  AubitDesktop.FGLUtils.FGLDataTypes.dTYPE_DTIME: 
-				if (AubitDesktop.FGLConstruct.contains("DAY TO DAY")) { return 0x33;}
-				if (AubitDesktop.FGLConstruct.contains("DAY TO FRACTION")) { return 0x38;}
-				if (AubitDesktop.FGLConstruct.contains("DAY TO HOUR")) { return 0x34;}
-				if (AubitDesktop.FGLConstruct.contains("DAY TO MINUTE")) { return 0x35;}
-				if (AubitDesktop.FGLConstruct.contains("DAY TO SECOND")) { return 0x36;}
-				if (AubitDesktop.FGLConstruct.contains("HOUR TO FRACTION")) { return 0x48;}
-				if (AubitDesktop.FGLConstruct.contains("HOUR TO HOUR")) { return 0x44;}
-				if (AubitDesktop.FGLConstruct.contains("HOUR TO MINUTE")) { return 0x45;}
-				if (AubitDesktop.FGLConstruct.contains("HOUR TO SECOND")) { return 0x46;}
-				if (AubitDesktop.FGLConstruct.contains("MINUTE TO FRACTION")) { return 0x58;}
-				if (AubitDesktop.FGLConstruct.contains("MINUTE TO MINUTE")) { return 0x55;}
-				if (AubitDesktop.FGLConstruct.contains("MINUTE TO SECOND")) { return 0x56;}
-				if (AubitDesktop.FGLConstruct.contains("MONTH TO DAY")) { return 0x23;}
-				if (AubitDesktop.FGLConstruct.contains("MONTH TO FRACTION")) { return 0x28;}
-				if (AubitDesktop.FGLConstruct.contains("MONTH TO HOUR")) { return 0x24;}
-				if (AubitDesktop.FGLConstruct.contains("MONTH TO MINUTE")) { return 0x25;}
-				if (AubitDesktop.FGLConstruct.contains("MONTH TO MONTH")) { return 0x22;}
-				if (AubitDesktop.FGLConstruct.contains("MONTH TO SECOND")) { return 0x26;}
-				if (AubitDesktop.FGLConstruct.contains("SECOND TO FRACTION")) { return 0x68;}
-				if (AubitDesktop.FGLConstruct.contains("SECOND TO SECOND")) { return 0x66;}
-				if (AubitDesktop.FGLConstruct.contains("YEAR TO DAY")) { return 0x13;}
-				if (AubitDesktop.FGLConstruct.contains("YEAR TO FRACTION")) { return 0x18;}
-				if (AubitDesktop.FGLConstruct.contains("YEAR TO HOUR")) { return 0x14;}
-				if (AubitDesktop.FGLConstruct.contains("YEAR TO MINUTE")) { return 0x15;}
-				if (AubitDesktop.FGLConstruct.contains("YEAR TO MONTH")) { return 0x12;}
-				if (AubitDesktop.FGLConstruct.contains("YEAR TO SECOND")) { return 0x16;}
-				if (AubitDesktop.FGLConstruct.contains("YEAR TO YEAR")) { return 0x11;}
+				if (AubitDesktop.FGLConstruct.contains(sqlType,"DAY TO DAY")) { return 0x33;}
+				if (AubitDesktop.FGLConstruct.contains(sqlType,"DAY TO FRACTION")) { return 0x38;}
+				if (AubitDesktop.FGLConstruct.contains(sqlType,"DAY TO HOUR")) { return 0x34;}
+				if (AubitDesktop.FGLConstruct.contains(sqlType,"DAY TO MINUTE")) { return 0x35;}
+				if (AubitDesktop.FGLConstruct.contains(sqlType,"DAY TO SECOND")) { return 0x36;}
+				if (AubitDesktop.FGLConstruct.contains(sqlType,"HOUR TO FRACTION")) { return 0x48;}
+				if (AubitDesktop.FGLConstruct.contains(sqlType,"HOUR TO HOUR")) { return 0x44;}
+				if (AubitDesktop.FGLConstruct.contains(sqlType,"HOUR TO MINUTE")) { return 0x45;}
+				if (AubitDesktop.FGLConstruct.contains(sqlType,"HOUR TO SECOND")) { return 0x46;}
+				if (AubitDesktop.FGLConstruct.contains(sqlType,"MINUTE TO FRACTION")) { return 0x58;}
+				if (AubitDesktop.FGLConstruct.contains(sqlType,"MINUTE TO MINUTE")) { return 0x55;}
+				if (AubitDesktop.FGLConstruct.contains(sqlType,"MINUTE TO SECOND")) { return 0x56;}
+				if (AubitDesktop.FGLConstruct.contains(sqlType,"MONTH TO DAY")) { return 0x23;}
+				if (AubitDesktop.FGLConstruct.contains(sqlType,"MONTH TO FRACTION")) { return 0x28;}
+				if (AubitDesktop.FGLConstruct.contains(sqlType,"MONTH TO HOUR")) { return 0x24;}
+				if (AubitDesktop.FGLConstruct.contains(sqlType,"MONTH TO MINUTE")) { return 0x25;}
+				if (AubitDesktop.FGLConstruct.contains(sqlType,"MONTH TO MONTH")) { return 0x22;}
+				if (AubitDesktop.FGLConstruct.contains(sqlType,"MONTH TO SECOND")) { return 0x26;}
+				if (AubitDesktop.FGLConstruct.contains(sqlType,"SECOND TO FRACTION")) { return 0x68;}
+				if (AubitDesktop.FGLConstruct.contains(sqlType,"SECOND TO SECOND")) { return 0x66;}
+				if (AubitDesktop.FGLConstruct.contains(sqlType,"YEAR TO DAY")) { return 0x13;}
+				if (AubitDesktop.FGLConstruct.contains(sqlType,"YEAR TO FRACTION")) { return 0x18;}
+				if (AubitDesktop.FGLConstruct.contains(sqlType,"YEAR TO HOUR")) { return 0x14;}
+				if (AubitDesktop.FGLConstruct.contains(sqlType,"YEAR TO MINUTE")) { return 0x15;}
+				if (AubitDesktop.FGLConstruct.contains(sqlType,"YEAR TO MONTH")) { return 0x12;}
+				if (AubitDesktop.FGLConstruct.contains(sqlType,"YEAR TO SECOND")) { return 0x16;}
+				if (AubitDesktop.FGLConstruct.contains(sqlType,"YEAR TO YEAR")) { return 0x11;}
 				return 0;
 
         		case  AubitDesktop.FGLUtils.FGLDataTypes.dTYPE_INTERVAL: 

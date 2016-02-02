@@ -19,8 +19,8 @@ CFLAGS+=-I$(ROOT)/incl -I. -I./uilib  -I./aubit4gl -Wall
 all: ${PLUGINDIR}/libUI_JSON${SO_EXT} $(PROXY)
 
 
-${PLUGINDIR}/libUI_JSON${SO_EXT}: json.o uilib/libuilib.a  $(ROOT)/lib/libpacker/formxml/formjson.o libjson.o
-	${LD} ${SO_LDFLAGS} ${CFLAGS} -o $@  json.o $(ROOT)/lib/libpacker/formxml/formjson.o -Bstatic  -Luilib -luilib -L../.. -laubit4gl $(LINKLIBS) libjson.o
+${PLUGINDIR}/libUI_JSON${SO_EXT}: json.o uilib/libuilib.a  $(ROOT)/lib/libpacker/formxml/formjson.o libjson.o readJsonForm.o
+	${LD} ${SO_LDFLAGS} ${CFLAGS} -o $@  json.o $(ROOT)/lib/libpacker/formxml/formjson.o -Bstatic  -Luilib -luilib -L../.. -laubit4gl $(LINKLIBS) libjson.o readJsonForm.o
 
 
 

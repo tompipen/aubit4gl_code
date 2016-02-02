@@ -10,6 +10,7 @@ if [ "$1" = "" ]
 then
 	./prog.4ae
 else
-	$AUBITDIR/node/baseProgs/$1.4ae
+	runforms.4ae $1
+	#$AUBITDIR/node/baseProgs/$1.4ae
 fi
 

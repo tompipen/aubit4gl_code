@@ -167,6 +167,7 @@ print_id (struct s_triggered_value *userdata)
 static void
 setData (struct s_attr *attr, const char *key, int type, const char *value)
 {
+//printf("Set data.. %s %s\n", key, value);
   if (strcmp (key, "ID") == 0)
     {
       attr->id = strdup (value);
@@ -315,7 +316,7 @@ my_callback (void *vuserdata, int type, const char *data, uint32_t length)
 {
   struct s_triggered_value *userdata;
   userdata = (struct s_triggered_value *) vuserdata;
-
+//fprintf(stderr,"In my callback.. %d %s\n",type, data);
   switch (type)
     {
     case JSON_OBJECT_BEGIN:
@@ -603,18 +604,23 @@ getTriggeredAttribute (int  sock_read)
 	}
       //strcpy(buff, "{ \"key\": 123 }");
       //printf("Forcing to --->%s<---\n", buff);
-	fprintf(stderr,"READ : %s\n", buff);
+	//fprintf(stderr,"READ : %s\n", buff);
       ret = json_parser_string (&parser, buff, strlen (buff), NULL);
+
+      //fprintf(stderr,"RET=%d\n", ret);
       if (ret)
 	{
 	  fprintf (stderr, "Internal error - unable to parse string \n");
 	  fprintf (stderr, "%s\n", buff);
 	  exit (2);
 	}
-      if (json_parser_is_done (&parser))
+	
+      if (json_parser_is_done (&parser)) {
+		//fprintf(stderr,"Parser is done\n");
 	break;
+	}
     }
-  fprintf (stderr,"Got full packet\n");
+  //fprintf (stderr,"Got full packet\n");
   //printPacket (&triggeredValue.attribute);
 
   json_parser_free(&parser);

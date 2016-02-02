@@ -1,9 +1,10 @@
 
 #include "a4gl_libaubit4gl.h"
+#include "formjson.h"
 #include "a4gl_API_packer_lib.h"
 
 
-void write_json_form(FILE *wofile, char *fname, struct_form *f) ;
+//void write_json_form(FILE *wofile, char *fname, struct_form *f) ;
 /**
  *  *
  *   * @todo Describe function

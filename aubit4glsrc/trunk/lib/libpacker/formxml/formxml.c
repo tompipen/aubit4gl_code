@@ -502,9 +502,10 @@ void print_checkbox_attr(struct_form *f, int metric_no, int attr_no,int oldstyle
 //char *s;
 char buff[2000];
 char posbuf[200];
-
+/*
 struct_scr_field *fprop;
 fprop=&f->attributes.attributes_val[attr_no];
+*/
  get_attribs(f, attr_no, buff,1,metric_no);
 	sprintf(posbuf," posY=\"%d\" posX=\"%d\" gridWidth=\"%d\"", f->metrics.metrics_val[metric_no].y, f->metrics.metrics_val[metric_no].x, f->metrics.metrics_val[metric_no].w);
 	if (strcmp(why,"Table")==0) {
@@ -742,8 +743,10 @@ char posbuf[200];
 			f->metrics.metrics_val[metric_no].w,posbuf);
 
         } else {
+		/*
 		struct_scr_field *fprop;
 		fprop=&f->attributes.attributes_val[attr_no];
+		*/
 		char buff[2000];
 		char smbuff[200];
  		get_attribs(f, attr_no, buff,1,metric_no);

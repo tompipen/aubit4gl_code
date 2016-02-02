@@ -163,7 +163,7 @@ console.log("Before Field");
 }
 
 
-function createFormField(lvl, d,miny) {
+function createFormField(lvl, d,miny, currentApplication) {
 if (d.noEntry===undefined) {
 	d.noEntry=false;
 }
@@ -178,6 +178,8 @@ var cfg= {
 		A4GL_sqlType: d.sqlType,
 		A4GL_noentry: d.noEntry,
 		constructName: d.colName,
+	    	datatype:AubitDesktop.FGLConstruct.decode_datatype(d.sqlType),
+	    	datatype_length:AubitDesktop.FGLConstruct.decode_datatype_length(d.sqlType),
 		//vtype ? ??
 		readOnly : d.noEntry,
 		tooltip:d.widget.comments,
@@ -224,9 +226,6 @@ var cfg= {
 	    var s_d=d;
 	    var currentContextType=me.currentContext.contextType;
 
-	    me.datatype=AubitDesktop.FGLConstruct.decode_datatype(me.A4GL_sqlType);
-
-	    me.datatype_length=AubitDesktop.FGLConstruct.decode_datatype_length(me.A4GL_sqlType);
 		console.log("currentContextType="+currentContextType);
             if (currentContextType == AubitDesktop.FGLContextType.contextConstruct)
             {
@@ -427,6 +426,8 @@ if (d.widget && d.widget.shift) {
 var item=null;
 
 switch (d.widget.type) {
+	case "DateEdit":
+	case "SpinEdit":
 	case "Edit": 
 		var minWidth= d.widget.gridWidth*xMultiplier;
 		if (d.widget.gridWidth<=3) {
@@ -440,7 +441,18 @@ switch (d.widget.type) {
 
 		});
 
-		item=Ext.widget("textfield",cfg);
+		var fieldType="textfield";
+
+		if (d.widget.type=="SpinEdit") {
+			fieldType="numberfield";
+		}
+
+		if (d.widget.type=="DateEdit") {
+			fieldType="datefield";
+			cfg.format=AubitDesktop.FGLUtils.getDBDATEFormat_dotnet();
+		}
+
+		item=Ext.widget(fieldType,cfg);
 
 		item.on('blur', function() {
 			afterField(item);
@@ -479,7 +491,7 @@ return item;
 
 
 
-function createHLine(lvl, d,miny) {
+function createHLine(lvl, d,miny, currentApplication) {
 var w;
 
 if (d.gridWidth) {
@@ -582,7 +594,7 @@ function findTable(currentApplication, screenRecord) {
 }
 
 var crTableCnt=0;
-function createTable(lvl, d,miny) {
+function createTable(lvl, d,miny, currentApplication) {
 
 crTableCnt++;
 var height=null
@@ -663,20 +675,20 @@ return Ext.widget("container", {
 }
 
 
-function createWidget(lvl, d,miny) {
+function createWidget(lvl, d,miny,currentApplication) {
 	if (d==null) return null;
 	s="";
 	var a;
 	for (a=0;a<lvl;a++) s+="   ";
 	console.log(s+"create " + d.type);
 	switch (d.type) {
-		case "Label": return createLabel(lvl,d,miny);
-		case "FormField": return createFormField(lvl,d,miny);
-		case "VBox": return createVBox(lvl,d,miny);
+		case "Label": return createLabel(lvl,d,miny,currentApplication);
+		case "FormField": return createFormField(lvl,d,miny,currentApplication);
+		case "VBox": return createVBox(lvl,d,miny,currentApplication);
 		case "Screen":
-		case "Grid": return createGrid(lvl,d,miny);
-		case "HLine": return createHLine(lvl,d,miny);
-		case "Table": return createTable(lvl,d,miny);
+		case "Grid": return createGrid(lvl,d,miny,currentApplication);
+		case "HLine": return createHLine(lvl,d,miny,currentApplication);
+		case "Table": return createTable(lvl,d,miny,currentApplication);
 	
 		default: 
 			console.log("Unhandled widget: " + d.type);
@@ -685,13 +697,13 @@ function createWidget(lvl, d,miny) {
 }
 
 
-function createWidgets(lvl,d,miny) {
+function createWidgets(lvl,d,miny,currentApplication) {
 	var items=[];
 	var itemCnt;
 
 	for(itemCnt=0;itemCnt<d.length;itemCnt++) {
 		var item;
-		item=createWidget(lvl+1, d[itemCnt],miny);
+		item=createWidget(lvl+1, d[itemCnt],miny,currentApplication);
 		if (item!=null) {
 			items.push(item);
 		}
@@ -733,7 +745,7 @@ for (a=0;a<d.items.length;a++) {
 */
 
 
-function createGrid(lvl,d,miny) {
+function createGrid(lvl,d,miny,currentApplication) {
 if (lvl) {
 	miny=getPosMin(d);
 } else {
@@ -742,7 +754,7 @@ if (lvl) {
 	console.log("miny="+miny);
 
 
-	var items=createWidgets(lvl+1,d.items, miny);
+	var items=createWidgets(lvl+1,d.items, miny,currentApplication);
 	var frm=Ext.create("Ext.container.Container", {
 			layout:'absolute',
 			flex:1,
@@ -756,8 +768,8 @@ if (lvl) {
 	return frm;
 }
 
-function createVBox(lvl,d, miny) {
-var items=createWidgets(lvl+1, d.items,miny);
+function createVBox(lvl,d, miny,currentApplication) {
+var items=createWidgets(lvl+1, d.items,miny,currentApplication);
 var i;
 // Setting flex on this will cause all the items
 // to have the same height :(
@@ -777,7 +789,7 @@ for (a=0;a<fieldList.length;a++) {
 return true;
 }
 
-function createForm(d) {
+function createForm(d,currentApplication) {
 //d=Data
 
 
@@ -798,7 +810,7 @@ var screens=[];
 for (scr=0;scr<frmDefinition.layout.length;scr++) {
 	var screen;
 	miny=0;
-	screen=createWidget(0, frmDefinition.layout[scr],miny);
+	screen=createWidget(0, frmDefinition.layout[scr],miny,currentApplication);
 	/*
 	if (frmDefinition.layout[scr].type=="Screen") {
 		var items=createWidgets(frmDefinition.layout[scr].items);

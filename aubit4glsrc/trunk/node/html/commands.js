@@ -153,7 +153,7 @@ switch (d.type) {
 
 	case "OPENFORM":
 		if (d.Form && d.Form.Data) {
-			var frm=createForm(d.Form.Data);
+			var frm=createForm(d.Form.Data, currentApplication);
 
 			currentApplication.Forms[d.FORMNAME]={
 				source: d.SOURCE,
@@ -279,7 +279,7 @@ switch (d.type) {
 		break;
 		
 	case "OPENWINDOWWITHFORM":
-		var frm=createForm(d.FORM.Data);
+		var frm=createForm(d.FORM.Data,currentApplication);
 		createWindow(currentApplication, d,frm);
 		break;
 

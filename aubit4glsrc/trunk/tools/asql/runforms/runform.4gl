@@ -191,6 +191,9 @@ while lv_next_option!="ALLDONE"
 			end if
 			set pause mode off
 			let mv_table_code=0
+			if mv_table_cnt=1 then
+				hide option "Table","Master","Detail"
+			end if
 	
 		# When using tables - we can 3T for the third table
 		# so we need to keep a track of these key presses..
@@ -584,6 +587,9 @@ code
 	  SET("s_screenio",_sio_2,"callback_function", NULL);
           SET ("s_screenio", _sio_2, "mode", 3);
           SET ("s_screenio", _sio_2, "nfields", A4GL_gen_field_list_from_slist ((void ***) GETPTR ("s_screenio", _sio_2, "field_list"), (void *) GET ("s_screenio", _sio_2, "currform"), &list ));
+	  //SET("s_screenio",_sio_2,"nfields",lv_cnt);
+
+
           {
             int _sf;
             _sf = A4GL_set_fields (&_sio_2);
