@@ -1132,12 +1132,15 @@ field_datatype_null :
 field_datatype : {strcpy($<str>$,"0"); dtype_size=0;}
 	| 	TYPE LIKE named_or_kw_any_pc DOT named_or_kw_any_pc {
 			sprintf($<str>$,"%d",A4GLF_getdatatype_fcompile($<str>5,$<str>3,1));
+        		dtype_size=A4GL_get_dtype_size();
 		}
 	| 	TYPE LIKE named_or_kw_any_pc {
 			sprintf($<str>$,"%d",A4GLF_getdatatype_fcompile($<str>3,"",1));
+        		dtype_size=A4GL_get_dtype_size();
 		}
 	| 	TYPE datatype {
 			strcpy($<str>$,$<str>2);
+			
 		}
 ;
 
