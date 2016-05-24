@@ -24,10 +24,10 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: formcntrl.c,v 1.177 2015-01-15 19:48:15 mikeaubury Exp $
+# $Id: formcntrl.c,v 1.178 2016-05-24 10:13:08 mikeaubury Exp $
 #*/
 #ifndef lint
-static char const module_id[] = "$Id: formcntrl.c,v 1.177 2015-01-15 19:48:15 mikeaubury Exp $";
+static char const module_id[] = "$Id: formcntrl.c,v 1.178 2016-05-24 10:13:08 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -292,11 +292,11 @@ A4GL_trim_trailing_in_wordwrap_field_on_stack (int width, char *buff_src)
     {
       if (c)
 	{
-	  char *ptr;
+	  //char *ptr;
 
 	  if (c <= n)
 	    {
-	      ptr = buff[c];
+	      //ptr = buff[c];
 	      //if (ptr[0]!=' ' ) {
 	      //if (a[strlen(a)-1]!=' ') {
 	      //strcat(a," ");
@@ -685,8 +685,7 @@ copyCurrentFieldDataToVariable (struct s_screenio *sio, int NormalMode_notSyncMo
 	}
 
 
-
-      A4GL_pop_param (sio->vars[field_no].ptr, sio->vars[field_no].dtype, sio->vars[field_no].size);
+      	A4GL_pop_param (sio->vars[field_no].ptr, sio->vars[field_no].dtype, sio->vars[field_no].size);
 
 
       if ((sio->vars[field_no].dtype & DTYPE_MASK) == DTYPE_CHAR)
@@ -837,9 +836,9 @@ process_control_stack_internal (struct s_screenio *sio, struct aclfgl_event_list
 	      for (c = 0; c <= sio->nfields; c++)
 		{
 		  FIELD *p;
-		  struct struct_scr_field *fprop = 0;
+		  //struct struct_scr_field *fprop = 0;
 		  p = sio->field_list[c];
-		  fprop = (struct struct_scr_field *) (field_userptr (p));
+		  //fprop = (struct struct_scr_field *) (field_userptr (p));
 #ifdef DEBUG
 		  A4GL_debug ("Flags=0");
 #endif
@@ -1152,13 +1151,13 @@ process_control_stack_internal (struct s_screenio *sio, struct aclfgl_event_list
 		  char fb[2000];
 		  int last_place = 0;
 		  int this_place = 0;
-		  FORM *mform;
+		  //FORM *mform;
 		  construct_not_added = 0;
 		  construct_not_moved = 0;
 #ifdef DEBUG
 		  A4GL_debug ("Here...\n");
 #endif
-		  mform = sio->currform->form;
+		  //mform = sio->currform->form;
 		  strcpy (fb, field_buffer (sio->currentfield, 0));
 		  //A4GL_int_form_driver (sio->currform->form, REQ_VALIDATION);
 		  last_place = A4GL_get_curr_field_col (sio->currform->form);
@@ -2269,15 +2268,15 @@ A4GL_proc_key_input (int a, FORM * mform, struct s_screenio *s)
 
   int isBlob = 0;
 
-  int at_first = 0;
-  int at_last = 0;
+  //int at_first = 0;
+  //int at_last = 0;
 
 #ifdef DEBUG
   A4GL_debug ("curcol");
 #endif
   if (A4GL_get_curr_field_col (mform) == 0)
     {
-      at_first = 1;
+      //at_first = 1;
     }
 
 #ifdef DEBUG
@@ -2288,7 +2287,7 @@ A4GL_proc_key_input (int a, FORM * mform, struct s_screenio *s)
 #ifdef DEBUG
       A4GL_debug ("AT LAST");
 #endif
-      at_last = 1;
+      //at_last = 1;
     }
 
   fd = A4GL_getfromform (mform);
@@ -3236,7 +3235,7 @@ UILIB_A4GL_reset_state_for (void *sio, char *siotype)
   if (strcmp (siotype, "s_inp_arr") == 0)
     {
 
-      static void *last_sio = 0;
+      //static void *last_sio = 0;
       struct s_inp_arr *s;
       static struct struct_screen_record *last_srec = 0;
 
@@ -3256,15 +3255,19 @@ UILIB_A4GL_reset_state_for (void *sio, char *siotype)
 		  A4GL_idraw_arr_all (s);
 		}
 	    }
-	  last_sio = sio;
+	  //last_sio = sio;
 	  last_srec = s->srec;
 	}
 
       if (s)
 	{
-	  A4GL_set_arr_curr (s->arr_line);
-	  A4GL_set_scr_line (s->scr_line);
-	  A4GL_set_arr_count (s->no_arr);
+	  if (!A4GL_isyes(acl_getenv("UIARRAYCOMPATMODE")))  {
+			// It seems informix doesnt reset these
+			// but it probably should...
+	  		A4GL_set_arr_curr (s->arr_line);
+	  		A4GL_set_scr_line (s->scr_line);
+	  		A4GL_set_arr_count (s->no_arr);
+		}
 	}
 
     }
@@ -3277,9 +3280,13 @@ UILIB_A4GL_reset_state_for (void *sio, char *siotype)
 
       if (s)
 	{
-	  A4GL_set_arr_curr (s->arr_line);
-	  A4GL_set_scr_line (s->scr_line);
-	  A4GL_set_arr_count (s->no_arr);
+	  if (!A4GL_isyes(acl_getenv("UIARRAYCOMPATMODE")))  {
+			// It seems informix doesnt reset these
+			// but it probably should...
+	  		A4GL_set_arr_curr (s->arr_line);
+	  		A4GL_set_scr_line (s->scr_line);
+	  		A4GL_set_arr_count (s->no_arr);
+		}
 	}
 
     }
