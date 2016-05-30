@@ -1749,7 +1749,7 @@ int ll;
 
   if (cmd_data->fetch->cursorname->expr_type==ET_EXPR_VARIABLE_IDENTIFIER) {
 	print_expr(cmd_data->fetch->cursorname);
-	printc("A4GL_char_pop(_cname,255);A4GL_trim(_cname);");
+	printc("A4GL_pop_char(_cname,255);A4GL_trim(_cname);");
 	sqcname=":_cname";
   	sqcname_no_colon="_cname";
   } else {
