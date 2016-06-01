@@ -1590,6 +1590,11 @@ dump_screen (struct_form * f, int scr, enum e_scrmodes scrmode,char *extra)
   int mw = 0;
   int a;
   int mh = 0;
+int lines[1000];
+
+for (a=0;a<1000;a++) {
+	lines[a]=0;
+}
   get_screen_size_dims (f, scr, &mw, &mh);
 
 
@@ -1612,11 +1617,15 @@ dump_screen (struct_form * f, int scr, enum e_scrmodes scrmode,char *extra)
 
       if (strlen (f->metrics.metrics_val[a].label))
 	{
+		// Mark some usage on the line...
+		lines[f->metrics.metrics_val[a].y]++;
+
 		continue; // Labels get dumped via 'dump_label'
 
 #ifdef OLD
 	  if (isline (f->metrics.metrics_val[a].label))
 	    {
+		lines[f->metrics.metrics_val[a].y]++;
 	      fprintf (ofile, "<HLine posY=\"%d\" posX=\"%d\" gridWidth=\"%d\"/>\n", f->metrics.metrics_val[a].y,
 		       f->metrics.metrics_val[a].x, strlen (f->metrics.metrics_val[a].label));
 	    }
@@ -1630,10 +1639,19 @@ dump_screen (struct_form * f, int scr, enum e_scrmodes scrmode,char *extra)
 	}
       else
 	{
-	  // Its a field...
-	  print_field (f, a);
+		// Mark some usage on the line...
+		lines[f->metrics.metrics_val[a].y]++;
+
+	  	// Its a field...
+	  	print_field (f, a);
 	}
     }
+
+   for (a=0;a<mh;a++) {
+	if(lines[a]==0) {
+		fprintf(ofile,"<BlankLine posY=\"%d\"/>\n", a);
+	}
+   }
 
    switch(scrmode) {
 	case SCRMODE_SCREEN:
