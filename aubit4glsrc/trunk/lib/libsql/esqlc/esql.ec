@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.264 2013-12-11 12:10:49 mikeaubury Exp $
+# $Id: esql.ec,v 1.265 2016-06-07 16:09:25 mikeaubury Exp $
 #
 */
 
@@ -196,7 +196,7 @@ static loc_t *add_blob(struct s_sid *sid, int n, struct s_extra_info *e,fglbyte 
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.264 2013-12-11 12:10:49 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.265 2016-06-07 16:09:25 mikeaubury Exp $";
 #endif
 
 
@@ -3922,8 +3922,8 @@ fixlength (int dtype, int length)
     {
       n1 = Infx_dt_to_A4gl_dt (TU_START (length));
       n2 = Infx_dt_to_A4gl_dt (TU_END (length));
-      n3 = length>>8;
-
+      //n3 = TU_LEN(length)-(n2-n1);
+      n3=TU_LEN( length ) + TU_START( length ) - TU_END( length );
       return (n3<<8)+(n1 * 16) + n2;
     }
 
