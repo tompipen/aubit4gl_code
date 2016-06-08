@@ -1647,9 +1647,11 @@ for (a=0;a<1000;a++) {
 	}
     }
 
+	int mlineCnt=1;
    for (a=0;a<mh;a++) {
+	
 	if(lines[a]==0) {
-		fprintf(ofile,"<BlankLine posY=\"%d\"/>\n", a);
+		fprintf(ofile,"<BlankLine posY=\"%d\" fieldId=\"-%d\"/>\n", a, mlineCnt++);
 	}
    }
 
