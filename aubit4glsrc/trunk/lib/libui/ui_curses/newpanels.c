@@ -24,11 +24,11 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: newpanels.c,v 1.194 2015-09-02 10:34:38 mikeaubury Exp $
+# $Id: newpanels.c,v 1.195 2016-06-17 15:24:43 mikeaubury Exp $
 #*/
 #ifndef lint
 	static char const module_id[] =
-		"$Id: newpanels.c,v 1.194 2015-09-02 10:34:38 mikeaubury Exp $";
+		"$Id: newpanels.c,v 1.195 2016-06-17 15:24:43 mikeaubury Exp $";
 #endif
 
 /**
@@ -4136,5 +4136,95 @@ void resize_screen_window(int w,int h) {
                         wresize(windows[0].win,h,w);
 }
 
+void dumpCurrentFormInfo() {
+FILE *outFile;
+outFile=stdout;
+      if (A4GL_isscrmode ())
+        {
+          A4GL_mja_endwin ();
+        }
+
+      fflush (stdout);
+
+      struct s_form_dets *s;
+                s=UILIB_A4GL_get_curr_form(0);
+                if (s) {
+      //strcpy(menu->parent_window_name, UILIB_A4GL_get_currwin_name());
+      fprintf(outFile,"\n<!-- SCREEN DEFINITION -->\n");
+      fprintf(outFile,"<Window Name=\"%s\" Border=\"%d\" x=\"%d\" y=\"%d\" form_line=\"%d\" w=\"%d\" h=\"%d\">\n", UILIB_A4GL_get_currwin_name(), 
+		windows[currwinno].winattr.border,
+		windows[currwinno].x,
+		windows[currwinno].y,
+		A4GL_getform_line(),
+		windows[currwinno].w,
+		windows[currwinno].h
+	);
+	int x;
+	int y;
+	fprintf(outFile,"<Dump>\n<![CDATA[\n");
+	for (y=windows[currwinno].winattr.border;y<windows[currwinno].h+windows[currwinno].winattr.border;y++) {
+	//fprintf(outFile, "Y%02d:", y);
+	  for (x=windows[currwinno].winattr.border;x<windows[currwinno].w+windows[currwinno].winattr.border;x++) {
+		int attr;
+ 		attr = mvwinch ( windows[currwinno].win, y, x);
+              if ((attr & 0xff) == (ACS_VLINE & 0xff) && (attr & A_ALTCHARSET))
+                {
+                  attr = (int) '|';
+                }
+              if ((attr & 0xff) == (ACS_HLINE & 0xff) && (attr & A_ALTCHARSET))
+                {
+                  attr = (int) '-';
+                }
+              if ((attr & 0xff) == (ACS_LLCORNER & 0xff) && (attr & A_ALTCHARSET))
+                {
+                  attr = (int) '+';
+                }
+              if ((attr & 0xff) == (ACS_LRCORNER & 0xff) && (attr & A_ALTCHARSET))
+                {
+                  attr = (int) '+';
+                }
+              if ((attr & 0xff) == (ACS_URCORNER & 0xff) && (attr & A_ALTCHARSET))
+                {
+                  attr = (int) '+';
+                }
+              if ((attr & 0xff) == (ACS_ULCORNER & 0xff) && (attr & A_ALTCHARSET))
+                {
+                  attr = (int) '+';
+                }
+              fprintf (outFile,"%c", attr & 255);
+	  }
+	  fprintf(outFile, "\n");
+        }
+	fprintf(outFile, "]]>\n</Dump>\n");
+	
+      fprintf(outFile,"<Form dbName=\"%s\" maxCol=\"%d\" maxLine=\"%d\" >\n", s->fileform->dbname, s->fileform->maxcol,  s->fileform->maxline);
+	int a;
+	for (a=0;a<s->fileform->attributes. attributes_len;a++) {
+		fprintf(outFile,"<Field id=\"%d\" tabname=\"%s\" colname=\"%s\" dtype=\"%d\" dtypeSize=\"%d\">\n", a, 
+				s->fileform->attributes. attributes_val[a].tabname, 
+				s->fileform->attributes. attributes_val[a].colname, 
+				s->fileform->attributes. attributes_val[a].datatype, 
+				s->fileform->attributes. attributes_val[a].dtype_size
+		);
+		int fno;
+		fno=s->fileform->attributes. attributes_val[a].field_no;
+		int b;
+
+		for (b=0;b<s->fileform->fields.fields_val[fno].metric.metric_len;b++) {
+			int metricNo=s->fileform->fields.fields_val[fno].metric.metric_val[b];
+			fprintf(outFile,"<Location x=\"%d\" y=\"%d\" w=\"%d\" h=\"%d\"/>\n", s->fileform->metrics.metrics_val[metricNo].x, s->fileform->metrics.metrics_val[metricNo].y, s->fileform->metrics.metrics_val[metricNo].w, s->fileform->metrics.metrics_val[metricNo].h);
+		}
+
+		fprintf(outFile,"</Field>\n");
+	}
+      fprintf(outFile,"</Form>\n");
+      fprintf(outFile,"</Window>\n");
+      fprintf(outFile,"<!-- END SCREEN DEFINITION -->\n");
+      fflush (outFile);
+                }
+
+                  clearok (curscr, 1);
+                  A4GL_mja_refresh ();
+}
 
 /* =============================== EOF =============================== */

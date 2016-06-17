@@ -3,7 +3,7 @@
 
 #ifndef lint
 	static char const module_id[] =
-		"$Id: dump_scr.c,v 1.14 2014-01-25 11:50:11 mikeaubury Exp $";
+		"$Id: dump_scr.c,v 1.15 2016-06-17 15:24:43 mikeaubury Exp $";
 #endif
 
 FILE *f;
@@ -106,6 +106,13 @@ UILIB_aclfgl_aclfgl_dump_screen (int n)
 #endif
       // We want to dump to to PRINTSCRFILE
       ptr = acl_getenv ("A4GL_PRINTSCRFILE");
+
+      if (strcmp(ptr,":dumpCurrentFormInfo")==0) {
+		dumpCurrentFormInfo();
+		return;
+      }
+
+
       if (ptr)
 	{
 	  if (strlen (ptr) == 0)
