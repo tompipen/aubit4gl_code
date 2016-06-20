@@ -1528,7 +1528,7 @@ UILIB_A4GL_display_internal (int x, int y, char *s, int a, int clr_line)
     }
   else
     {
-      send_to_ui ("<DISPLAYAT X=\"%d\" Y=\"%d\" ATTRIBUTE=\"%d\">%s</DISPLAYAT>", x, y, a, uilib_xml_escape (char_encode(s)));
+      send_to_ui ("<DISPLAYAT X=\"%d\" Y=\"%d\" ATTRIBUTE=\"%d\" CLRLINE=\"%d\">%s</DISPLAYAT>", x, y, a, clr_line, uilib_xml_escape (char_encode(s)));
     }
 }
 

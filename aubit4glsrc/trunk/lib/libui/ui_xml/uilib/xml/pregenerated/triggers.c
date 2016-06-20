@@ -9470,10 +9470,10 @@ static yyconst flex_int16_t yy_accept[839] =
         0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
         0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
 
-        0,    0,    0,    0,   16,    0,    0,    0,    0,    0,
-        0,   14,    0,   13,    0,    0,    0,    0,    0,    0,
+        0,    0,    0,    0,   15,    0,    0,    0,    0,    0,
+        0,   16,    0,   17,    0,    0,    0,    0,    0,    0,
         0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
-        0,    0,    0,    0,   15,    0,    0,   17
+        0,    0,    0,    0,   13,    0,    0,   14
     } ;
 
 static yyconst flex_int32_t yy_ec[256] =
@@ -9524,7 +9524,7 @@ int xml_yy_flex_debug = 0;
 char *xml_yytext;
 #line 1 "triggers.l"
 /* Validating XML processor for triggers.dtd.
- * Generated 2016/02/02 15:45:21.
+ * Generated 2016/02/02 18:31:47.
  *
  * This program was generated with the FleXML XML processor generator.
  * FleXML is Copyright (C) 1999-2005 Kristoffer Rose.  All rights reserved.
@@ -9603,75 +9603,75 @@ const char flexml_version[] = "1.9.6";
 int pcdata_ix;
 extern char *bufferstack;
 #define pcdata (bufferstack + pcdata_ix)
+AT_TRIGGERED_ENVELOPEID AX_TRIGGERED_ENVELOPEID;
+#define A_TRIGGERED_ENVELOPEID (bufferstack + AX_TRIGGERED_ENVELOPEID)
+short int TRIGGERED_ENVELOPEID_isset;
+AT_TRIGGERED_LASTKEY AX_TRIGGERED_LASTKEY;
+#define A_TRIGGERED_LASTKEY (bufferstack + AX_TRIGGERED_LASTKEY)
+short int TRIGGERED_LASTKEY_isset;
+AT_TRIGGERED_YOURID AX_TRIGGERED_YOURID;
+#define A_TRIGGERED_YOURID (bufferstack + AX_TRIGGERED_YOURID)
+short int TRIGGERED_YOURID_isset;
+AT_TRIGGERED_xmlns_c_xsd AX_TRIGGERED_xmlns_c_xsd;
+#define A_TRIGGERED_xmlns_c_xsd (bufferstack + AX_TRIGGERED_xmlns_c_xsd)
+short int TRIGGERED_xmlns_c_xsd_isset;
+AT_TRIGGERED_BUFFERTOUCHED AX_TRIGGERED_BUFFERTOUCHED;
+#define A_TRIGGERED_BUFFERTOUCHED (bufferstack + AX_TRIGGERED_BUFFERTOUCHED)
+short int TRIGGERED_BUFFERTOUCHED_isset;
+AT_TRIGGERED_TYPE AX_TRIGGERED_TYPE;
+#define A_TRIGGERED_TYPE (bufferstack + AX_TRIGGERED_TYPE)
+short int TRIGGERED_TYPE_isset;
+AT_SV_FT AX_SV_FT;
+#define A_SV_FT (bufferstack + AX_SV_FT)
+short int SV_FT_isset;
+AT_SV_T AX_SV_T;
+#define A_SV_T (bufferstack + AX_SV_T)
+short int SV_T_isset;
+AT_TRIGGERED_CNT AX_TRIGGERED_CNT;
+#define A_TRIGGERED_CNT (bufferstack + AX_TRIGGERED_CNT)
+short int TRIGGERED_CNT_isset;
+AT_TRIGGERED_MAXCNT AX_TRIGGERED_MAXCNT;
+#define A_TRIGGERED_MAXCNT (bufferstack + AX_TRIGGERED_MAXCNT)
+short int TRIGGERED_MAXCNT_isset;
 AT_TRIGGERED_INFIELD AX_TRIGGERED_INFIELD;
 #define A_TRIGGERED_INFIELD (bufferstack + AX_TRIGGERED_INFIELD)
 short int TRIGGERED_INFIELD_isset;
 AT_TRIGGERED_ARRCOUNT AX_TRIGGERED_ARRCOUNT;
 #define A_TRIGGERED_ARRCOUNT (bufferstack + AX_TRIGGERED_ARRCOUNT)
 short int TRIGGERED_ARRCOUNT_isset;
-AT_TRIGGERED_FILELEN AX_TRIGGERED_FILELEN;
-#define A_TRIGGERED_FILELEN (bufferstack + AX_TRIGGERED_FILELEN)
-short int TRIGGERED_FILELEN_isset;
-AT_TRIGGERED_ID AX_TRIGGERED_ID;
-#define A_TRIGGERED_ID (bufferstack + AX_TRIGGERED_ID)
-short int TRIGGERED_ID_isset;
-AT_TRIGGERED_xmlns_c_xsd AX_TRIGGERED_xmlns_c_xsd;
-#define A_TRIGGERED_xmlns_c_xsd (bufferstack + AX_TRIGGERED_xmlns_c_xsd)
-short int TRIGGERED_xmlns_c_xsd_isset;
-AT_TRIGGERED_ENVELOPEID AX_TRIGGERED_ENVELOPEID;
-#define A_TRIGGERED_ENVELOPEID (bufferstack + AX_TRIGGERED_ENVELOPEID)
-short int TRIGGERED_ENVELOPEID_isset;
-AT_SV_FT AX_SV_FT;
-#define A_SV_FT (bufferstack + AX_SV_FT)
-short int SV_FT_isset;
 AT_TRIGGERED_LASTCURSOR AX_TRIGGERED_LASTCURSOR;
 #define A_TRIGGERED_LASTCURSOR (bufferstack + AX_TRIGGERED_LASTCURSOR)
 short int TRIGGERED_LASTCURSOR_isset;
-AT_TRIGGERED_TYPE AX_TRIGGERED_TYPE;
-#define A_TRIGGERED_TYPE (bufferstack + AX_TRIGGERED_TYPE)
-short int TRIGGERED_TYPE_isset;
-AT_TRIGGERED_CNT AX_TRIGGERED_CNT;
-#define A_TRIGGERED_CNT (bufferstack + AX_TRIGGERED_CNT)
-short int TRIGGERED_CNT_isset;
-AT_TRIGGERED_YOURID AX_TRIGGERED_YOURID;
-#define A_TRIGGERED_YOURID (bufferstack + AX_TRIGGERED_YOURID)
-short int TRIGGERED_YOURID_isset;
-AT_SV_FN AX_SV_FN;
-#define A_SV_FN (bufferstack + AX_SV_FN)
-short int SV_FN_isset;
-AT_TRIGGERED_xmlns_c_xsi AX_TRIGGERED_xmlns_c_xsi;
-#define A_TRIGGERED_xmlns_c_xsi (bufferstack + AX_TRIGGERED_xmlns_c_xsi)
-short int TRIGGERED_xmlns_c_xsi_isset;
-AT_TRIGGERED_FILEID AX_TRIGGERED_FILEID;
-#define A_TRIGGERED_FILEID (bufferstack + AX_TRIGGERED_FILEID)
-short int TRIGGERED_FILEID_isset;
-AT_TRIGGERED_SCRLINE AX_TRIGGERED_SCRLINE;
-#define A_TRIGGERED_SCRLINE (bufferstack + AX_TRIGGERED_SCRLINE)
-short int TRIGGERED_SCRLINE_isset;
-AT_TRIGGERED_PROGRAMNAME AX_TRIGGERED_PROGRAMNAME;
-#define A_TRIGGERED_PROGRAMNAME (bufferstack + AX_TRIGGERED_PROGRAMNAME)
-short int TRIGGERED_PROGRAMNAME_isset;
-AT_TRIGGERED_DATA AX_TRIGGERED_DATA;
-#define A_TRIGGERED_DATA (bufferstack + AX_TRIGGERED_DATA)
-short int TRIGGERED_DATA_isset;
-AT_TRIGGERED_BUFFERTOUCHED AX_TRIGGERED_BUFFERTOUCHED;
-#define A_TRIGGERED_BUFFERTOUCHED (bufferstack + AX_TRIGGERED_BUFFERTOUCHED)
-short int TRIGGERED_BUFFERTOUCHED_isset;
-AT_SV_T AX_SV_T;
-#define A_SV_T (bufferstack + AX_SV_T)
-short int SV_T_isset;
-AT_TRIGGERED_ARRLINE AX_TRIGGERED_ARRLINE;
-#define A_TRIGGERED_ARRLINE (bufferstack + AX_TRIGGERED_ARRLINE)
-short int TRIGGERED_ARRLINE_isset;
 AT_ROW_SUBSCRIPT AX_ROW_SUBSCRIPT;
 #define A_ROW_SUBSCRIPT (bufferstack + AX_ROW_SUBSCRIPT)
 short int ROW_SUBSCRIPT_isset;
-AT_TRIGGERED_LASTKEY AX_TRIGGERED_LASTKEY;
-#define A_TRIGGERED_LASTKEY (bufferstack + AX_TRIGGERED_LASTKEY)
-short int TRIGGERED_LASTKEY_isset;
-AT_TRIGGERED_MAXCNT AX_TRIGGERED_MAXCNT;
-#define A_TRIGGERED_MAXCNT (bufferstack + AX_TRIGGERED_MAXCNT)
-short int TRIGGERED_MAXCNT_isset;
+AT_TRIGGERED_FILEID AX_TRIGGERED_FILEID;
+#define A_TRIGGERED_FILEID (bufferstack + AX_TRIGGERED_FILEID)
+short int TRIGGERED_FILEID_isset;
+AT_SV_FN AX_SV_FN;
+#define A_SV_FN (bufferstack + AX_SV_FN)
+short int SV_FN_isset;
+AT_TRIGGERED_FILELEN AX_TRIGGERED_FILELEN;
+#define A_TRIGGERED_FILELEN (bufferstack + AX_TRIGGERED_FILELEN)
+short int TRIGGERED_FILELEN_isset;
+AT_TRIGGERED_SCRLINE AX_TRIGGERED_SCRLINE;
+#define A_TRIGGERED_SCRLINE (bufferstack + AX_TRIGGERED_SCRLINE)
+short int TRIGGERED_SCRLINE_isset;
+AT_TRIGGERED_DATA AX_TRIGGERED_DATA;
+#define A_TRIGGERED_DATA (bufferstack + AX_TRIGGERED_DATA)
+short int TRIGGERED_DATA_isset;
+AT_TRIGGERED_ID AX_TRIGGERED_ID;
+#define A_TRIGGERED_ID (bufferstack + AX_TRIGGERED_ID)
+short int TRIGGERED_ID_isset;
+AT_TRIGGERED_ARRLINE AX_TRIGGERED_ARRLINE;
+#define A_TRIGGERED_ARRLINE (bufferstack + AX_TRIGGERED_ARRLINE)
+short int TRIGGERED_ARRLINE_isset;
+AT_TRIGGERED_xmlns_c_xsi AX_TRIGGERED_xmlns_c_xsi;
+#define A_TRIGGERED_xmlns_c_xsi (bufferstack + AX_TRIGGERED_xmlns_c_xsi)
+short int TRIGGERED_xmlns_c_xsi_isset;
+AT_TRIGGERED_PROGRAMNAME AX_TRIGGERED_PROGRAMNAME;
+#define A_TRIGGERED_PROGRAMNAME (bufferstack + AX_TRIGGERED_PROGRAMNAME)
+short int TRIGGERED_PROGRAMNAME_isset;
 
 /* XML state. */
 #ifdef FLEX_DEBUG
@@ -10234,31 +10234,31 @@ case 13:
 /* rule 13 can match eol */
 YY_RULE_SETUP
 #line 411 "triggers.l"
-SET(ROOT_SVS);
+SET(ROOT_SYNCROWS);
 	YY_BREAK
 case 14:
 /* rule 14 can match eol */
 YY_RULE_SETUP
 #line 412 "triggers.l"
-SET(ROOT_ROW);
+SET(ROOT_TRIGGERED);
 	YY_BREAK
 case 15:
 /* rule 15 can match eol */
 YY_RULE_SETUP
 #line 413 "triggers.l"
-SET(ROOT_SYNCROWS);
+SET(ROOT_SV);
 	YY_BREAK
 case 16:
 /* rule 16 can match eol */
 YY_RULE_SETUP
 #line 414 "triggers.l"
-SET(ROOT_SV);
+SET(ROOT_ROW);
 	YY_BREAK
 case 17:
 /* rule 17 can match eol */
 YY_RULE_SETUP
 #line 415 "triggers.l"
-SET(ROOT_TRIGGERED);
+SET(ROOT_SVS);
 	YY_BREAK
 case 18:
 /* rule 18 can match eol */
@@ -10636,8 +10636,8 @@ YY_RULE_SETUP
 #line 570 "triggers.l"
 FAIL("Unexpected character `%c': `</TRIGGERED>' expected.",xml_yytext[0]);
 	YY_BREAK
-case YY_STATE_EOF(S_TRIGGERED):
 case YY_STATE_EOF(E_TRIGGERED):
+case YY_STATE_EOF(S_TRIGGERED):
 #line 571 "triggers.l"
 FAIL("Premature EOF: `</TRIGGERED>' expected.");
 	YY_BREAK
@@ -10717,8 +10717,8 @@ YY_RULE_SETUP
 FAIL("Unexpected character `%c': `</SYNCROWS>' expected.",xml_yytext[0]);
 	YY_BREAK
 case YY_STATE_EOF(S_SYNCROWS):
-case YY_STATE_EOF(E_SYNCROWS):
 case YY_STATE_EOF(S_SYNCROWS_2):
+case YY_STATE_EOF(E_SYNCROWS):
 #line 608 "triggers.l"
 FAIL("Premature EOF: `</SYNCROWS>' expected.");
 	YY_BREAK
@@ -10790,7 +10790,7 @@ YY_RULE_SETUP
   ETag_ROW();
   popbuffer(); /* attribute */
   switch (YY_START) {
-   case S_SYNCROWS: case S_SYNCROWS_2: case S_SYNCROWS_1: SET(S_SYNCROWS_2); break;
+   case S_SYNCROWS_2: case S_SYNCROWS: case S_SYNCROWS_1: SET(S_SYNCROWS_2); break;
    case ROOT_ROW: SET(EPILOG); break;
   }
  }
@@ -10839,9 +10839,9 @@ YY_RULE_SETUP
 {
   LEAVE; STag_SVS(); pcdata_ix = 0; ETag_SVS(); popbuffer(); /* attribute */
   switch (YY_START) {
+   case S_TRIGGERED: SET(E_TRIGGERED); break;
    case ROOT_SVS: SET(EPILOG); break;
    case S_ROW: SET(E_ROW); break;
-   case S_TRIGGERED: SET(E_TRIGGERED); break;
   }
  }
 	YY_BREAK
@@ -10870,9 +10870,9 @@ YY_RULE_SETUP
   ETag_SVS();
   popbuffer(); /* attribute */
   switch (YY_START) {
+   case S_TRIGGERED: SET(E_TRIGGERED); break;
    case ROOT_SVS: SET(EPILOG); break;
    case S_ROW: SET(E_ROW); break;
-   case S_TRIGGERED: SET(E_TRIGGERED); break;
   }
  }
 	YY_BREAK
@@ -10964,8 +10964,8 @@ YY_RULE_SETUP
 {
   LEAVE; STag_SV(); pcdata_ix = 0; ETag_SV(); popbuffer(); /* attribute */
   switch (YY_START) {
-   case S_SVS_2: case S_SVS: case S_SVS_1: SET(S_SVS_2); break;
    case ROOT_SV: SET(EPILOG); break;
+   case S_SVS_2: case S_SVS: case S_SVS_1: SET(S_SVS_2); break;
   }
  }
 	YY_BREAK
@@ -10996,8 +10996,8 @@ YY_RULE_SETUP
   pcdata_ix = popbuffer();
   popbuffer(); /* attribute */
   switch (YY_START) {
-   case S_SVS_2: case S_SVS: case S_SVS_1: SET(S_SVS_2); break;
    case ROOT_SV: SET(EPILOG); break;
+   case S_SVS_2: case S_SVS: case S_SVS_1: SET(S_SVS_2); break;
   }
  }
 	YY_BREAK

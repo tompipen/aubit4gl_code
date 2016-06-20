@@ -1,5 +1,5 @@
 /* XML processor/application API for triggers.dtd.
- * Generated 2016/02/02 15:45:21.
+ * Generated 2016/02/02 18:31:47.
  *
  * This program was generated with the FleXML XML processor generator.
  * FleXML is Copyright (C) 1999-2005 Kristoffer Rose.  All rights reserved.
@@ -61,126 +61,126 @@ extern void STag_SV(void);
 extern void ETag_SV(void);
 
 /* XML application data. */
+typedef int AT_TRIGGERED_ENVELOPEID;
+#define AU_TRIGGERED_ENVELOPEID NULL
+typedef int AT_TRIGGERED_LASTKEY;
+#define AU_TRIGGERED_LASTKEY NULL
+typedef int AT_TRIGGERED_YOURID;
+#define AU_TRIGGERED_YOURID NULL
+typedef int AT_TRIGGERED_xmlns_c_xsd;
+#define AU_TRIGGERED_xmlns_c_xsd NULL
+typedef int AT_TRIGGERED_BUFFERTOUCHED;
+#define AU_TRIGGERED_BUFFERTOUCHED NULL
+typedef int AT_TRIGGERED_TYPE;
+#define AU_TRIGGERED_TYPE NULL
+typedef int AT_SV_FT;
+#define AU_SV_FT NULL
+typedef int AT_SV_T;
+#define AU_SV_T NULL
+typedef int AT_TRIGGERED_CNT;
+#define AU_TRIGGERED_CNT NULL
+typedef int AT_TRIGGERED_MAXCNT;
+#define AU_TRIGGERED_MAXCNT NULL
 typedef int AT_TRIGGERED_INFIELD;
 #define AU_TRIGGERED_INFIELD NULL
 typedef int AT_TRIGGERED_ARRCOUNT;
 #define AU_TRIGGERED_ARRCOUNT NULL
-typedef int AT_TRIGGERED_FILELEN;
-#define AU_TRIGGERED_FILELEN NULL
-typedef int AT_TRIGGERED_ID;
-#define AU_TRIGGERED_ID NULL
-typedef int AT_TRIGGERED_xmlns_c_xsd;
-#define AU_TRIGGERED_xmlns_c_xsd NULL
-typedef int AT_TRIGGERED_ENVELOPEID;
-#define AU_TRIGGERED_ENVELOPEID NULL
-typedef int AT_SV_FT;
-#define AU_SV_FT NULL
 typedef int AT_TRIGGERED_LASTCURSOR;
 #define AU_TRIGGERED_LASTCURSOR NULL
-typedef int AT_TRIGGERED_TYPE;
-#define AU_TRIGGERED_TYPE NULL
-typedef int AT_TRIGGERED_CNT;
-#define AU_TRIGGERED_CNT NULL
-typedef int AT_TRIGGERED_YOURID;
-#define AU_TRIGGERED_YOURID NULL
-typedef int AT_SV_FN;
-#define AU_SV_FN NULL
-typedef int AT_TRIGGERED_xmlns_c_xsi;
-#define AU_TRIGGERED_xmlns_c_xsi NULL
-typedef int AT_TRIGGERED_FILEID;
-#define AU_TRIGGERED_FILEID NULL
-typedef int AT_TRIGGERED_SCRLINE;
-#define AU_TRIGGERED_SCRLINE NULL
-typedef int AT_TRIGGERED_PROGRAMNAME;
-#define AU_TRIGGERED_PROGRAMNAME NULL
-typedef int AT_TRIGGERED_DATA;
-#define AU_TRIGGERED_DATA NULL
-typedef int AT_TRIGGERED_BUFFERTOUCHED;
-#define AU_TRIGGERED_BUFFERTOUCHED NULL
-typedef int AT_SV_T;
-#define AU_SV_T NULL
-typedef int AT_TRIGGERED_ARRLINE;
-#define AU_TRIGGERED_ARRLINE NULL
 typedef int AT_ROW_SUBSCRIPT;
 #define AU_ROW_SUBSCRIPT NULL
-typedef int AT_TRIGGERED_LASTKEY;
-#define AU_TRIGGERED_LASTKEY NULL
-typedef int AT_TRIGGERED_MAXCNT;
-#define AU_TRIGGERED_MAXCNT NULL
+typedef int AT_TRIGGERED_FILEID;
+#define AU_TRIGGERED_FILEID NULL
+typedef int AT_SV_FN;
+#define AU_SV_FN NULL
+typedef int AT_TRIGGERED_FILELEN;
+#define AU_TRIGGERED_FILELEN NULL
+typedef int AT_TRIGGERED_SCRLINE;
+#define AU_TRIGGERED_SCRLINE NULL
+typedef int AT_TRIGGERED_DATA;
+#define AU_TRIGGERED_DATA NULL
+typedef int AT_TRIGGERED_ID;
+#define AU_TRIGGERED_ID NULL
+typedef int AT_TRIGGERED_ARRLINE;
+#define AU_TRIGGERED_ARRLINE NULL
+typedef int AT_TRIGGERED_xmlns_c_xsi;
+#define AU_TRIGGERED_xmlns_c_xsi NULL
+typedef int AT_TRIGGERED_PROGRAMNAME;
+#define AU_TRIGGERED_PROGRAMNAME NULL
 
 /* FleXML-provided data. */
 extern int pcdata_ix;
 extern char *bufferstack;
 #define pcdata (bufferstack + pcdata_ix)
+extern AT_TRIGGERED_ENVELOPEID AX_TRIGGERED_ENVELOPEID;
+#define A_TRIGGERED_ENVELOPEID (bufferstack + AX_TRIGGERED_ENVELOPEID)
+extern short int TRIGGERED_ENVELOPEID_isset;
+extern AT_TRIGGERED_LASTKEY AX_TRIGGERED_LASTKEY;
+#define A_TRIGGERED_LASTKEY (bufferstack + AX_TRIGGERED_LASTKEY)
+extern short int TRIGGERED_LASTKEY_isset;
+extern AT_TRIGGERED_YOURID AX_TRIGGERED_YOURID;
+#define A_TRIGGERED_YOURID (bufferstack + AX_TRIGGERED_YOURID)
+extern short int TRIGGERED_YOURID_isset;
+extern AT_TRIGGERED_xmlns_c_xsd AX_TRIGGERED_xmlns_c_xsd;
+#define A_TRIGGERED_xmlns_c_xsd (bufferstack + AX_TRIGGERED_xmlns_c_xsd)
+extern short int TRIGGERED_xmlns_c_xsd_isset;
+extern AT_TRIGGERED_BUFFERTOUCHED AX_TRIGGERED_BUFFERTOUCHED;
+#define A_TRIGGERED_BUFFERTOUCHED (bufferstack + AX_TRIGGERED_BUFFERTOUCHED)
+extern short int TRIGGERED_BUFFERTOUCHED_isset;
+extern AT_TRIGGERED_TYPE AX_TRIGGERED_TYPE;
+#define A_TRIGGERED_TYPE (bufferstack + AX_TRIGGERED_TYPE)
+extern short int TRIGGERED_TYPE_isset;
+extern AT_SV_FT AX_SV_FT;
+#define A_SV_FT (bufferstack + AX_SV_FT)
+extern short int SV_FT_isset;
+extern AT_SV_T AX_SV_T;
+#define A_SV_T (bufferstack + AX_SV_T)
+extern short int SV_T_isset;
+extern AT_TRIGGERED_CNT AX_TRIGGERED_CNT;
+#define A_TRIGGERED_CNT (bufferstack + AX_TRIGGERED_CNT)
+extern short int TRIGGERED_CNT_isset;
+extern AT_TRIGGERED_MAXCNT AX_TRIGGERED_MAXCNT;
+#define A_TRIGGERED_MAXCNT (bufferstack + AX_TRIGGERED_MAXCNT)
+extern short int TRIGGERED_MAXCNT_isset;
 extern AT_TRIGGERED_INFIELD AX_TRIGGERED_INFIELD;
 #define A_TRIGGERED_INFIELD (bufferstack + AX_TRIGGERED_INFIELD)
 extern short int TRIGGERED_INFIELD_isset;
 extern AT_TRIGGERED_ARRCOUNT AX_TRIGGERED_ARRCOUNT;
 #define A_TRIGGERED_ARRCOUNT (bufferstack + AX_TRIGGERED_ARRCOUNT)
 extern short int TRIGGERED_ARRCOUNT_isset;
-extern AT_TRIGGERED_FILELEN AX_TRIGGERED_FILELEN;
-#define A_TRIGGERED_FILELEN (bufferstack + AX_TRIGGERED_FILELEN)
-extern short int TRIGGERED_FILELEN_isset;
-extern AT_TRIGGERED_ID AX_TRIGGERED_ID;
-#define A_TRIGGERED_ID (bufferstack + AX_TRIGGERED_ID)
-extern short int TRIGGERED_ID_isset;
-extern AT_TRIGGERED_xmlns_c_xsd AX_TRIGGERED_xmlns_c_xsd;
-#define A_TRIGGERED_xmlns_c_xsd (bufferstack + AX_TRIGGERED_xmlns_c_xsd)
-extern short int TRIGGERED_xmlns_c_xsd_isset;
-extern AT_TRIGGERED_ENVELOPEID AX_TRIGGERED_ENVELOPEID;
-#define A_TRIGGERED_ENVELOPEID (bufferstack + AX_TRIGGERED_ENVELOPEID)
-extern short int TRIGGERED_ENVELOPEID_isset;
-extern AT_SV_FT AX_SV_FT;
-#define A_SV_FT (bufferstack + AX_SV_FT)
-extern short int SV_FT_isset;
 extern AT_TRIGGERED_LASTCURSOR AX_TRIGGERED_LASTCURSOR;
 #define A_TRIGGERED_LASTCURSOR (bufferstack + AX_TRIGGERED_LASTCURSOR)
 extern short int TRIGGERED_LASTCURSOR_isset;
-extern AT_TRIGGERED_TYPE AX_TRIGGERED_TYPE;
-#define A_TRIGGERED_TYPE (bufferstack + AX_TRIGGERED_TYPE)
-extern short int TRIGGERED_TYPE_isset;
-extern AT_TRIGGERED_CNT AX_TRIGGERED_CNT;
-#define A_TRIGGERED_CNT (bufferstack + AX_TRIGGERED_CNT)
-extern short int TRIGGERED_CNT_isset;
-extern AT_TRIGGERED_YOURID AX_TRIGGERED_YOURID;
-#define A_TRIGGERED_YOURID (bufferstack + AX_TRIGGERED_YOURID)
-extern short int TRIGGERED_YOURID_isset;
-extern AT_SV_FN AX_SV_FN;
-#define A_SV_FN (bufferstack + AX_SV_FN)
-extern short int SV_FN_isset;
-extern AT_TRIGGERED_xmlns_c_xsi AX_TRIGGERED_xmlns_c_xsi;
-#define A_TRIGGERED_xmlns_c_xsi (bufferstack + AX_TRIGGERED_xmlns_c_xsi)
-extern short int TRIGGERED_xmlns_c_xsi_isset;
-extern AT_TRIGGERED_FILEID AX_TRIGGERED_FILEID;
-#define A_TRIGGERED_FILEID (bufferstack + AX_TRIGGERED_FILEID)
-extern short int TRIGGERED_FILEID_isset;
-extern AT_TRIGGERED_SCRLINE AX_TRIGGERED_SCRLINE;
-#define A_TRIGGERED_SCRLINE (bufferstack + AX_TRIGGERED_SCRLINE)
-extern short int TRIGGERED_SCRLINE_isset;
-extern AT_TRIGGERED_PROGRAMNAME AX_TRIGGERED_PROGRAMNAME;
-#define A_TRIGGERED_PROGRAMNAME (bufferstack + AX_TRIGGERED_PROGRAMNAME)
-extern short int TRIGGERED_PROGRAMNAME_isset;
-extern AT_TRIGGERED_DATA AX_TRIGGERED_DATA;
-#define A_TRIGGERED_DATA (bufferstack + AX_TRIGGERED_DATA)
-extern short int TRIGGERED_DATA_isset;
-extern AT_TRIGGERED_BUFFERTOUCHED AX_TRIGGERED_BUFFERTOUCHED;
-#define A_TRIGGERED_BUFFERTOUCHED (bufferstack + AX_TRIGGERED_BUFFERTOUCHED)
-extern short int TRIGGERED_BUFFERTOUCHED_isset;
-extern AT_SV_T AX_SV_T;
-#define A_SV_T (bufferstack + AX_SV_T)
-extern short int SV_T_isset;
-extern AT_TRIGGERED_ARRLINE AX_TRIGGERED_ARRLINE;
-#define A_TRIGGERED_ARRLINE (bufferstack + AX_TRIGGERED_ARRLINE)
-extern short int TRIGGERED_ARRLINE_isset;
 extern AT_ROW_SUBSCRIPT AX_ROW_SUBSCRIPT;
 #define A_ROW_SUBSCRIPT (bufferstack + AX_ROW_SUBSCRIPT)
 extern short int ROW_SUBSCRIPT_isset;
-extern AT_TRIGGERED_LASTKEY AX_TRIGGERED_LASTKEY;
-#define A_TRIGGERED_LASTKEY (bufferstack + AX_TRIGGERED_LASTKEY)
-extern short int TRIGGERED_LASTKEY_isset;
-extern AT_TRIGGERED_MAXCNT AX_TRIGGERED_MAXCNT;
-#define A_TRIGGERED_MAXCNT (bufferstack + AX_TRIGGERED_MAXCNT)
-extern short int TRIGGERED_MAXCNT_isset;
+extern AT_TRIGGERED_FILEID AX_TRIGGERED_FILEID;
+#define A_TRIGGERED_FILEID (bufferstack + AX_TRIGGERED_FILEID)
+extern short int TRIGGERED_FILEID_isset;
+extern AT_SV_FN AX_SV_FN;
+#define A_SV_FN (bufferstack + AX_SV_FN)
+extern short int SV_FN_isset;
+extern AT_TRIGGERED_FILELEN AX_TRIGGERED_FILELEN;
+#define A_TRIGGERED_FILELEN (bufferstack + AX_TRIGGERED_FILELEN)
+extern short int TRIGGERED_FILELEN_isset;
+extern AT_TRIGGERED_SCRLINE AX_TRIGGERED_SCRLINE;
+#define A_TRIGGERED_SCRLINE (bufferstack + AX_TRIGGERED_SCRLINE)
+extern short int TRIGGERED_SCRLINE_isset;
+extern AT_TRIGGERED_DATA AX_TRIGGERED_DATA;
+#define A_TRIGGERED_DATA (bufferstack + AX_TRIGGERED_DATA)
+extern short int TRIGGERED_DATA_isset;
+extern AT_TRIGGERED_ID AX_TRIGGERED_ID;
+#define A_TRIGGERED_ID (bufferstack + AX_TRIGGERED_ID)
+extern short int TRIGGERED_ID_isset;
+extern AT_TRIGGERED_ARRLINE AX_TRIGGERED_ARRLINE;
+#define A_TRIGGERED_ARRLINE (bufferstack + AX_TRIGGERED_ARRLINE)
+extern short int TRIGGERED_ARRLINE_isset;
+extern AT_TRIGGERED_xmlns_c_xsi AX_TRIGGERED_xmlns_c_xsi;
+#define A_TRIGGERED_xmlns_c_xsi (bufferstack + AX_TRIGGERED_xmlns_c_xsi)
+extern short int TRIGGERED_xmlns_c_xsi_isset;
+extern AT_TRIGGERED_PROGRAMNAME AX_TRIGGERED_PROGRAMNAME;
+#define A_TRIGGERED_PROGRAMNAME (bufferstack + AX_TRIGGERED_PROGRAMNAME)
+extern short int TRIGGERED_PROGRAMNAME_isset;
 
 /* XML application utilities. */
 extern int element_context(int);
