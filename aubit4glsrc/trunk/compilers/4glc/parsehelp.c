@@ -696,6 +696,7 @@ return ptr;
 }
 
 
+#ifdef REMOVED
 void xxxset_variables (variable_list *v,char why) {
 	if (why=='L') {
 			if (local_variables==NULL) {
@@ -745,6 +746,7 @@ void xxxset_variables (variable_list *v,char why) {
  	}
 
 }
+#endif
 
 
 
@@ -1619,16 +1621,16 @@ void A4GL_ensure_dtype_variables(expr_str_list *s) {
 }
 
 void set_report_orderby(struct variable_list *v, struct expr_str_list*params, struct s_report_orderby_section *orderby) {
-	expr_str_list *Eslist;
-	int number_of_variables_in_orderby=0;
+	//expr_str_list *Eslist;
+	//int number_of_variables_in_orderby=0;
 
-	if (orderby) {
-		if (orderby->variables) {
-			number_of_variables_in_orderby=orderby->variables->list.list_len;
-		}
-	}
+	//if (orderby) {
+		//if (orderby->variables) {
+			//number_of_variables_in_orderby=orderby->variables->list.list_len;
+		//}
+	//}
 
-	Eslist=expand_parameters(v, params);
+	//Eslist=expand_parameters(v, params);
 /*
 	if (Eslist) {
 		if (Eslist->list.list_len && number_of_variables_in_orderby==0) {
@@ -1810,6 +1812,30 @@ int a;
 			vu_next->next->object_type="";
 			vu_next->next->escope=E_SCOPE_NOTSET;
 			vu_next->next->variable_id=-1;
+
+				struct variable *v2;
+				v2=find_variable_vu_ptr(errbuff, vu_next, &scope,1);
+
+ 				if (v2 && v2->var_data.variable_type==VARIABLE_TYPE_RECORD) {
+					if (v->var_data.variable_data_u.v_record.variables.variables_val[a]->arr_subscripts.arr_subscripts_len==0) {
+							// Embedded record :(
+							struct expr_str_list *vlist;
+							vlist=get_variable_usage_for_record(vu_next,1) ;
+							int a;
+							for(a=0;a<vlist->list.list_len;a++) {
+								ensure_variable(errbuff, vlist->list.list_val[a],err_if_whole_array);
+								A4GL_assertion(vu_as_expr==NULL,"Variable should not be null");
+								A4GL_new_append_ptr_list(n,  vlist->list.list_val[a]);
+							}
+					continue;
+			
+					} else {
+						a4gl_yyerror("Unable to handle embedded array of records");
+					}
+				}
+			
+			
+
 
 			if (v->var_data.variable_data_u.v_record.variables.variables_val[a]->arr_subscripts.arr_subscripts_len) {
 				int l1=0;
