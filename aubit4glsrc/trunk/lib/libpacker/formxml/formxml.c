@@ -1612,8 +1612,7 @@ for (a=0;a<1000;a++) {
   
   for (a = 0; a < f->metrics.metrics_len; a++)
     {
-      if (f->metrics.metrics_val[a].scr != scr)
-	continue;
+	
 
       if (strlen (f->metrics.metrics_val[a].label))
 	{
@@ -1621,6 +1620,9 @@ for (a=0;a<1000;a++) {
 		lines[f->metrics.metrics_val[a].y]++;
 
 		continue; // Labels get dumped via 'dump_label'
+
+
+      		if (f->metrics.metrics_val[a].scr != scr) { continue; } 
 
 #ifdef OLD
 	  if (isline (f->metrics.metrics_val[a].label))
@@ -1639,6 +1641,7 @@ for (a=0;a<1000;a++) {
 	}
       else
 	{
+      		if (f->metrics.metrics_val[a].scr != scr) { continue; } 
 		// Mark some usage on the line...
 		lines[f->metrics.metrics_val[a].y]++;
 
