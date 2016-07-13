@@ -1641,9 +1641,9 @@ for (a=0;a<1000;a++) {
 	}
       else
 	{
-      		if (f->metrics.metrics_val[a].scr != scr) { continue; } 
 		// Mark some usage on the line...
 		lines[f->metrics.metrics_val[a].y]++;
+      		if (f->metrics.metrics_val[a].scr != scr) { continue; } 
 
 	  	// Its a field...
 	  	print_field (f, a);
