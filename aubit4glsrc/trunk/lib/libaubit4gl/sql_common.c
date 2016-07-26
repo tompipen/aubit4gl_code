@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: sql_common.c,v 1.110 2015-04-15 07:16:06 mikeaubury Exp $
+# $Id: sql_common.c,v 1.111 2016-07-26 12:30:07 mikeaubury Exp $
 #
 */
 
@@ -153,10 +153,19 @@ static int A4GL_findPreparedStatement (char *name);
 
 
 static char *cleanup(char *sql) {
-static char buff[21000];// no reentrant!  - doesnt need to be - only used for debugging stuff internally and then
+static char *buff=0;// no reentrant!  - doesnt need to be - only used for debugging stuff internally and then
 			// only once per call
+static int lastLen=0;
 int a, len;
 int b=0;
+int newLen;
+
+newLen=(strlen(sql)*2)+1;
+
+if (buff==0 || newLen>= lastLen) {
+	buff=realloc(buff, newLen);
+	lastLen=newLen;
+}
 for (a=0, len=strlen(sql); a<len; a++) {
         if (sql[a]<' ') {continue;}
         switch (sql[a]) {
