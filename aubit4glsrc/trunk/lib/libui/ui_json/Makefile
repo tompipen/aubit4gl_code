@@ -29,6 +29,5 @@ uilib/libuilib.a: uilib/comms.c uilib/uilib.c uilib/attr.c pipe.c debug.c uilib/
 
 
 clean: 
-	rm -f ${PLUGINDIR}/libUI_JSON${SO_EXT} `aubit-config DEFAULT_PLUGINDIR`/libUI_JSON${SO_EXT} libUI_JSON${SO_EXT} debug.o pipe.o proxy.o
+	${RM} ${PLUGINDIR}/libUI_JSON${SO_EXT} `aubit-config DEFAULT_PLUGINDIR`/libUI_JSON${SO_EXT} *.o
 	cd uilib && make clean 
-	#cd uilib/xml && make clean
