@@ -23,7 +23,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: Makefile,v 1.87 2014-08-26 16:38:47 locbook Exp $
+# $Id: Makefile,v 1.88 2016-09-01 13:36:12 locbook Exp $
 #
 
 #Save initial state of system varables, so we can undo changes 
@@ -618,6 +618,7 @@ cleanall: clean.root clean.bin clean.etc clean.incl clean.docs clean.install \
 	$(MAKE) -C lib/libui/ui_glade clean || true
 	$(MAKE) -C lib/libui/ui_console clean || true
 	$(MAKE) -C lib/libui/ui_curses clean || true
+	$(MAKE) -C lib/libui/ui_json clean || true
 #	$(MAKE) -C lib/libui/ui_gtk clean || true
 	$(MAKE) -C lib/extra_libs/file clean || true
 	$(MAKE) -C lib/extra_libs/pick clean || true
