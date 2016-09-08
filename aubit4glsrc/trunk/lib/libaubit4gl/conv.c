@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: conv.c,v 1.197 2015-05-21 19:32:09 mikeaubury Exp $
+# $Id: conv.c,v 1.198 2016-09-08 14:44:56 mikeaubury Exp $
 #
 */
 
@@ -394,7 +394,7 @@ A4GL_inttoint (void *a, void *b, int size)
   d->i_fractions=0;
   d->is_neg=0;
 
-  A4GL_inttoc (a, buff, 60);
+  A4GL_inttofullc (a, buff, 60);
   if ((e->stime & 0xf) == e->ltime)
     {
 
@@ -457,6 +457,51 @@ if (size==e->stime*16+e->ltime) {
 */
   return 1;
 }
+
+
+int
+A4GL_inttofullc (void *a1, void *b, int size)
+{
+  struct ival *a;
+  int s1;
+  int s2;
+  int e;
+  int isneg;
+  //int c;
+  int cnt;
+  //int cpc;
+  //int c2;
+  int data[10];
+  int nfrac = 0;
+  char buff[256];
+  char buff2[256];
+  //             0   1   2   3   4   5   6
+  char *pre[] = { " ", "-", "-", " ", ":", ":", "." };
+
+
+  //int spc[] = { 0, 4, 2, 2, 2, 2, 2, 5 };
+  a = a1;
+
+  data[0] = 0;
+  data[1] = 0;
+  data[2] = 0;
+  data[3] = 0;
+  data[4] = 0;
+  data[5] = 0;
+  data[6] = 0;
+  data[7] = 0;
+  data[8] = 0;
+  data[9] = 0;
+
+  A4GL_decode_interval (a, data, &isneg);
+
+  if ((a->stime&0xf)==1 || (a->stime&0xf)==2 ) {
+	sprintf(b,"%s%d-%d",isneg?"-":"", data[0], data[1]);
+  } else {
+	sprintf(b,"%s%d %02d:%02d:%02d.%05d",isneg?"-":"", data[2], data[3], data[4], data[5], data[6]);
+  }
+}
+
 
 
 /**
