@@ -24,10 +24,10 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.184 2016-01-26 08:36:07 mikeaubury Exp $
+# $Id: iarray.c,v 1.185 2016-09-08 12:54:07 mikeaubury Exp $
 #*/
 #ifndef lint
-static char const module_id[] = "$Id: iarray.c,v 1.184 2016-01-26 08:36:07 mikeaubury Exp $";
+static char const module_id[] = "$Id: iarray.c,v 1.185 2016-09-08 12:54:07 mikeaubury Exp $";
 #endif
 
 /**
@@ -3058,7 +3058,10 @@ process_control_stack_internal (struct s_inp_arr *arr,  struct aclfgl_event_list
 	{
 	  if (arr->fcntrl[a].extent == A4GLKEY_UP || arr->fcntrl[a].extent == A4GLKEY_PGUP)
 	    {
-
+		if (arr->scr_line==1 && arr->arr_line ==1 && arr->no_arr<=1 && arr->curr_line_is_new) {
+			//new_state=0;
+		} else {
+		
 
 	      // Are we moving away from a newly inserted line - which has not changed ?
 	      // If so - we can just remove that line and theres no AFTER INSERT
@@ -3077,6 +3080,7 @@ process_control_stack_internal (struct s_inp_arr *arr,  struct aclfgl_event_list
 		}
 	    }
 	   }
+}
 
 
 	  new_state = 25;
@@ -3238,6 +3242,7 @@ process_control_stack_internal (struct s_inp_arr *arr,  struct aclfgl_event_list
 #ifdef DEBUG
 		A4GL_debug("Calling A4GL_int_form_driver");
 #endif
+
 		  A4GL_int_form_driver (arr->currform->form, arr->fcntrl[a].extent);
 		  A4GL_int_form_driver (arr->currform->form, REQ_VALIDATION);
 		}
