@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.68 2014-09-09 14:23:16 mikeaubury Exp $
+# $Id: Makefile,v 1.69 2016-10-05 15:24:26 siverly Exp $
 #
 
 ROOT    	=../..
@@ -70,7 +70,7 @@ COMMONSRC= \
 	others.c ops.c outer.c  querix_compat.c \
 	pointers.c parsecommon.c \
 	read_dty.c readkeys.c report.c rexp2.c ${LIBROOT}/resource/resource.c \
-	screen.c sql_common.c sqlconvert.c stack_ops.c stack.c string.c nchar.c sqlca.c ui_objects/ui_combobox.c ui_objects/ui_curses.c ui_objects/ui_vdc.c ui_objects/ui_browser.c ui_objects/ui_gantt.c ui_objects/ui_progress.c \
+	screen.c sql_common.c sqlconvert.c stack_ops.c stack.c string.c nchar.c sqlca.c ui_objects/ui_combobox.c ui_objects/ui_curses.c ui_objects/ui_dashboard.c ui_objects/ui_vdc.c ui_objects/ui_browser.c ui_objects/ui_gantt.c ui_objects/ui_progress.c \
 	translate.c missing.c curl.c \
 	ui.c
 
