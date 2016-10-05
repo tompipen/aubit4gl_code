@@ -1085,6 +1085,55 @@ char *digits=NULL;
   return 1;
 }
  
+static int ui_vdc_playsound(long *objectID_IgnoredAsAlways0,int n) {
+int okToProcess=1;
+int _ni=1;
+struct BINDING _ibind[1]={
+    {NULL,0,0,0,0,0,NULL}
+};
+int _no=1;
+struct BINDING _obind[1]={
+    {NULL,0,0,0,0,0,NULL}
+};
+int rval_0;
+char *sound=NULL;
+      
+/* END OF DEFINE SECTION */
+        
+        
+if (n!=1) {
+   A4GL_pop_args(n);
+   okToProcess=0;
+}
+         
+if (okToProcess) {
+   
+   _ibind[0].ptr=sound;
+   _ibind[0].size=strlen(sound);
+}
+            
+if (okToProcess) {
+    _obind[0].ptr=&rval_0;
+    _obind[0].size=4;
+    _obind[0].dtype=DTYPE_INT;
+}
+              
+if (okToProcess) {
+    A4GL_ui_frontcall("INTERNAL","ui.vdc.playsound",_ibind,_ni,_obind,_no );
+}
+                
+if (sound) {
+    free(sound);
+}
+
+if (!okToProcess) {
+    A4GL_push_null(DTYPE_INT,0);
+} else {
+    A4GL_push_int(rval_0);
+}
+return 1;
+}
+
 void add_ui_vdc_support(void) {
 A4GL_add_object_type("ui.vdc");
   A4GL_add_datatype_function_i (DTYPE_OBJECT, ":ui.vdc.action", (void *)  ui_vdc_action);
@@ -1104,4 +1153,5 @@ A4GL_add_object_type("ui.vdc");
   A4GL_add_datatype_function_i (DTYPE_OBJECT, ":ui.vdc.openchartwindow", (void *)  ui_vdc_openchartwindow);
   A4GL_add_datatype_function_i (DTYPE_OBJECT, ":ui.vdc.systraymessage", (void *)  ui_vdc_systraymessage);
   A4GL_add_datatype_function_i (DTYPE_OBJECT, ":ui.vdc.texteditor", (void *)  ui_vdc_texteditor);
+  A4GL_add_datatype_function_i (DTYPE_OBJECT, ":ui.vdc.playsound", (void *)  ui_vdc_playsound);
 }
