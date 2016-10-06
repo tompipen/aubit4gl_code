@@ -1107,7 +1107,7 @@ if (n!=1) {
 }
          
 if (okToProcess) {
-   
+   sound=A4GL_char_pop(); 
    _ibind[0].ptr=sound;
    _ibind[0].size=strlen(sound);
 }
