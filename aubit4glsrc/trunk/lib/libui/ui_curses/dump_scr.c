@@ -3,7 +3,7 @@
 
 #ifndef lint
 	static char const module_id[] =
-		"$Id: dump_scr.c,v 1.15 2016-06-17 15:24:43 mikeaubury Exp $";
+		"$Id: dump_scr.c,v 1.16 2016-10-06 07:16:53 siverly Exp $";
 #endif
 
 FILE *f;
@@ -109,7 +109,7 @@ UILIB_aclfgl_aclfgl_dump_screen (int n)
 
       if (strcmp(ptr,":dumpCurrentFormInfo")==0) {
 		dumpCurrentFormInfo();
-		return;
+		return 0;
       }
 
 
