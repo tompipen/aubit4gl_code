@@ -15,7 +15,11 @@
 
 char * A4GL_lrtrim (char *str);
 char *A4GL_pull_off_data_for_display (int n, int display_type);
+int A4GL_isyes(char *s);
+char *acl_getenv(char *s);
 
+
+static int nonprintmode=-1;
 
 
 #define DTYPE_CHAR      0
@@ -102,6 +106,12 @@ xml_escape_int (char *s)
   int b;
   int allocated;
 int sl;
+if (nonprintmode==-1) {
+char *s=acl_getenv("NONPRINTXMLMODE");
+nonprintmode=0;
+if (strcmp(s,"1")==0) { nonprintmode=1; }
+if (strcmp(s,"2")==0) { nonprintmode=2; }
+}
 
 A4GL_assertion(s==NULL,"Null pointer passed to xml_escape_int");
 
@@ -181,8 +191,11 @@ sl=strlen(s);
 	  buff[b++] = ';';
 	  continue;
 	}
+
+
       if (s[a] < 31 || s[a] > 126)
 	{
+    if (nonprintmode==1) {
 	  int z1;
 	  char buff2[20];
 	  z1 = ((unsigned char) s[a]);
@@ -193,6 +206,21 @@ sl=strlen(s);
 	    }
 	  continue;
 	}
+
+    if (nonprintmode==2) {
+	  int z1;
+	  char buff2[20];
+	  z1 = ((unsigned char) s[a]);
+	  sprintf (buff2, "\\%02X", z1);
+	  for (z1 = 0; z1 < strlen (buff2); z1++)
+	    {
+	      buff[b++] = buff2[z1];
+	    }
+	  continue;
+	}
+      }
+
+
       buff[b++] = s[a];
     }
 if (b>=allocated) {
