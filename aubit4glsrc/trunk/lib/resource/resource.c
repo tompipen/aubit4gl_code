@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: resource.c,v 1.177 2014-09-10 17:09:57 pauldgardiner Exp $
+# $Id: resource.c,v 1.178 2016-11-07 09:51:23 mikeaubury Exp $
 #
 */
 
@@ -377,6 +377,7 @@ struct str_resource builtin_resource[] = {
   {"A4GL_RDYNAMIC", "-rdynamic","internal"},
   {"FGLCRANGECHK","Y","internal"},
   {"EXTENDEDDELIM","Y","internal"},
+  {"NONPRINTXMLMODE","0","internal"},
   
 
   /* 
