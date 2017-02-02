@@ -24,10 +24,10 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.257 2016-02-02 15:19:17 mikeaubury Exp $
+# $Id: ioform.c,v 1.258 2017-02-02 15:19:25 mikeaubury Exp $
 #*/
 #ifndef lint
-static char const module_id[] = "$Id: ioform.c,v 1.257 2016-02-02 15:19:17 mikeaubury Exp $";
+static char const module_id[] = "$Id: ioform.c,v 1.258 2017-02-02 15:19:25 mikeaubury Exp $";
 #endif
 
 /**
@@ -5298,9 +5298,12 @@ A4GL_form_field_chk_iarr (struct s_inp_arr *sio, int m)
 
 		if (A4GL_has_str_attribute (fprop, FA_S_INCLUDE))
 		  {
+  			int a1=A4GL_fprop_flag_get (form->currentfield, FLAG_FIELD_TOUCHED);
+			int a2=sio->curr_line_is_new;
+
 		    if (A4GL_check_field_for_include
 			(field_buffer (sio->currform->currentfield, 0),
-			 A4GL_get_str_attribute (fprop, FA_S_INCLUDE), fprop->datatype) == 0)
+			 A4GL_get_str_attribute (fprop, FA_S_INCLUDE), fprop->datatype) == 0 && a1==1)
 		      {
 			A4GL_error_nobox (acl_getenv ("FIELD_INCL_MSG"), 0);
 			A4GL_fprop_flag_clear (sio->currform->currentfield, FLAG_MOVED_IN_FIELD);
