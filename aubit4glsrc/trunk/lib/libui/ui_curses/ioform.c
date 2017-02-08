@@ -24,10 +24,10 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.258 2017-02-02 15:19:25 mikeaubury Exp $
+# $Id: ioform.c,v 1.259 2017-02-08 17:00:52 mikeaubury Exp $
 #*/
 #ifndef lint
-static char const module_id[] = "$Id: ioform.c,v 1.258 2017-02-02 15:19:25 mikeaubury Exp $";
+static char const module_id[] = "$Id: ioform.c,v 1.259 2017-02-08 17:00:52 mikeaubury Exp $";
 #endif
 
 /**
@@ -5091,28 +5091,6 @@ A4GL_form_field_chk_iarr (struct s_inp_arr *sio, int m)
 
 	    if (fprop != 0)
 	      {
-
-#ifdef DEBUG
-		A4GL_debug ("15 fprop!=0 flags=%d", fprop->flags);
-#endif
-		if ((fprop->datatype & DTYPE_MASK) != DTYPE_CHAR)
-		  {
-
-		    A4GL_modify_size (&buff[4],
-				      form->fileform->metrics.metrics_val[A4GL_get_metric_for (form, form->currentfield)].w);
-
-		    strcpy (&buff[4], field_buffer (form->currentfield, 0));
-		    strcpy (buff2, &buff[4]);
-		    A4GL_trim (buff2);
-		    getsyx (y, x);
-		    A4GL_trim (buff2);
-
-#ifdef DEBUG
-		    A4GL_debug ("15 Check buff2='%s'", buff2);
-#endif
-
-		    if (strlen (buff2) == 0)
-		      {
 			int chged = 0;
 			// Has the field changed ? 
 			// Are we on a new line ? 
@@ -5138,6 +5116,28 @@ A4GL_form_field_chk_iarr (struct s_inp_arr *sio, int m)
 				chged++;
 			      }
 			  }
+
+#ifdef DEBUG
+		A4GL_debug ("15 fprop!=0 flags=%d", fprop->flags);
+#endif
+		if ((fprop->datatype & DTYPE_MASK) != DTYPE_CHAR)
+		  {
+
+		    A4GL_modify_size (&buff[4],
+				      form->fileform->metrics.metrics_val[A4GL_get_metric_for (form, form->currentfield)].w);
+
+		    strcpy (&buff[4], field_buffer (form->currentfield, 0));
+		    strcpy (buff2, &buff[4]);
+		    A4GL_trim (buff2);
+		    getsyx (y, x);
+		    A4GL_trim (buff2);
+
+#ifdef DEBUG
+		    A4GL_debug ("15 Check buff2='%s'", buff2);
+#endif
+
+		    if (strlen (buff2) == 0)
+		      {
 #ifdef DEBUG
 			A4GL_debug ("changed=%d\n", chged);
 #endif
@@ -5296,21 +5296,22 @@ A4GL_form_field_chk_iarr (struct s_inp_arr *sio, int m)
 
 
 
-		if (A4GL_has_str_attribute (fprop, FA_S_INCLUDE))
+		if (A4GL_has_str_attribute (fprop, FA_S_INCLUDE) && chged && !A4GL_isno(acl_getenv("IARRINCLONCHG")))
 		  {
   			int a1=A4GL_fprop_flag_get (form->currentfield, FLAG_FIELD_TOUCHED);
 			int a2=sio->curr_line_is_new;
 
 		    if (A4GL_check_field_for_include
 			(field_buffer (sio->currform->currentfield, 0),
-			 A4GL_get_str_attribute (fprop, FA_S_INCLUDE), fprop->datatype) == 0 && a1==1)
+			 A4GL_get_str_attribute (fprop, FA_S_INCLUDE), fprop->datatype) == 0 )
 		      {
-			A4GL_error_nobox (acl_getenv ("FIELD_INCL_MSG"), 0);
-			A4GL_fprop_flag_clear (sio->currform->currentfield, FLAG_MOVED_IN_FIELD);
-			A4GL_fprop_flag_set (sio->currform->currentfield, FLAG_MOVING_TO_FIELD);
-			A4GL_int_form_driver (mform, REQ_BEG_FIELD);
-			set_current_field (mform, form->currentfield);
-			return -4;
+				A4GL_error_nobox (acl_getenv ("FIELD_INCL_MSG"), 0);
+				A4GL_fprop_flag_clear (sio->currform->currentfield, FLAG_MOVED_IN_FIELD);
+				A4GL_fprop_flag_set (sio->currform->currentfield, FLAG_MOVING_TO_FIELD);
+				A4GL_int_form_driver (mform, REQ_BEG_FIELD);
+				set_current_field (mform, form->currentfield);
+				return -4;
+			
 		      }
 		  }
 
