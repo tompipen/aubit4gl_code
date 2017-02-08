@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: builtin.c,v 1.169 2015-12-31 11:25:55 mikeaubury Exp $
+# $Id: builtin.c,v 1.170 2017-02-08 18:14:35 mikeaubury Exp $
 #
 */
 
@@ -372,11 +372,12 @@ A4GL_push_substr (char *ca, int dtype, int a, int b, ...)
       char *c;
       if (b == 0)
 	b = a;
-	if ((b-a)<0) {
+
+      if ((b-a)<0) {
 		//printf("a=%d b=%d p=%s\n",a,b,p);
 		A4GL_push_null(DTYPE_CHAR,1);
 		return 1;
-	}
+      }
       c = malloc (b - a + 2);
 
       memset (c, ' ', b - a + 2);

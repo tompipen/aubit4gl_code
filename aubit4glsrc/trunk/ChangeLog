@@ -1,4 +1,121 @@
 ---------------------------
+Wed Feb  8 18:13:58 GMT 2017
+---------------------------
+1.2_40 Released
+---------------------------
+	2017-02-08 17:00  mikeaubury
+	
+	"IARRINCLONCHG" - add better afterfield include checking for Input
+	Array
+	
+	2017-02-02 15:19  mikeaubury
+	
+	fix input array validation to only check INCLUDE values if the
+	field has been changed
+	
+	2017-01-20 15:05  siverly
+	
+	new function for tapi interface
+	
+	2016-11-07 09:51  mikeaubury
+	
+	2016-11-04 10:34  mikeaubury
+	
+	2016-10-06 15:43  siverly
+	
+	fixed segmentation fault
+	
+	2016-10-06 08:16  siverly
+	
+	Removed compile error. return value must be a int value.
+	
+	2016-10-05 16:41  siverly
+	
+	new function to play sound
+	
+	2016-10-05 16:24  siverly
+	
+	Added new dashboard object
+	
+	2016-09-08 15:44  mikeaubury
+	
+	Fix interval conversion bug where the character representation of
+	the interval is ambiguous
+	
+	2016-09-08 13:54  mikeaubury
+	
+	Try fixing input array issue reported by Dave Williams
+	
+	2016-09-01 14:38  locbook
+	
+	Fixup to clean libjson.o
+	
+	2016-09-01 14:36  locbook
+	
+	Fixup to 'make distclean' for missing removal of libjson.o
+	
+	2016-07-26 13:30  mikeaubury
+	
+	Fix potential buffer overflow with SQLMETRICS
+	
+	2016-07-13 20:53  mikeaubury
+	
+	2016-07-13 18:32  mikeaubury
+	
+	2016-06-22 10:42  mikeaubury
+	
+	Allow  embedded records to be used in SQL statements (records
+	within records)
+	
+	2016-06-20 16:36  mikeaubury
+	
+	Add CLRLINE
+	
+	2016-06-17 16:25  mikeaubury
+	
+	2016-06-17 16:24  mikeaubury
+	
+	Add dumpCurrentFormInfo for internal use
+	
+	2016-06-08 20:40  mikeaubury
+	
+	add fieldId to BlankLine
+	
+	2016-06-07 17:09  mikeaubury
+	
+	Fix INTERVAL(#)
+	
+	2016-06-01 11:08  mikeaubury
+	
+	Add <BlankLine ... > attribute
+	
+	2016-05-30 22:28  mikeaubury
+	
+	Fix ESQL/C generation when using a variable cursorname
+	
+	2016-05-24 11:13  mikeaubury
+	
+	Warning fixups
+	
+	2016-02-04 11:51  mikeaubury
+	
+	Fixup =formonly.blah TYPE ...
+	
+	2016-02-02 19:04  mikeaubury
+	
+	2016-02-02 18:29  mikeaubury
+	
+	2016-02-02 15:19  mikeaubury
+	
+	Tidy up changelog
+	
+	2016-02-02 15:19  mikeaubury
+	
+	Small fixup for "," decimal separator in input array
+	
+	2016-02-02 09:57  mikeaubury
+	
+---------------------------
 Tue Feb  2 18:25:05 GMT 2016
 ---------------------------
 1.2_39 Released
