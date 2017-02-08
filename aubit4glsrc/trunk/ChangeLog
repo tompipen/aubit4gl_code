@@ -17,10 +17,6 @@ Wed Feb  8 18:13:58 GMT 2017
 	
 	new function for tapi interface
 	
-	2016-11-07 09:51  mikeaubury
-	
-	2016-11-04 10:34  mikeaubury
-	
 	2016-10-06 15:43  siverly
 	
 	fixed segmentation fault
@@ -58,10 +54,6 @@ Wed Feb  8 18:13:58 GMT 2017
 	
 	Fix potential buffer overflow with SQLMETRICS
 	
-	2016-07-13 20:53  mikeaubury
-	
-	2016-07-13 18:32  mikeaubury
-	
 	2016-06-22 10:42  mikeaubury
 	
 	Allow  embedded records to be used in SQL statements (records
@@ -70,8 +62,6 @@ Wed Feb  8 18:13:58 GMT 2017
 	2016-06-20 16:36  mikeaubury
 	
 	Add CLRLINE
-	
-	2016-06-17 16:25  mikeaubury
 	
 	2016-06-17 16:24  mikeaubury
 	
@@ -100,10 +90,6 @@ Wed Feb  8 18:13:58 GMT 2017
 	2016-02-04 11:51  mikeaubury
 	
 	Fixup =formonly.blah TYPE ...
-	
-	2016-02-02 19:04  mikeaubury
-	
-	2016-02-02 18:29  mikeaubury
 	
 	2016-02-02 15:19  mikeaubury
 	
