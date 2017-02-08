@@ -1,0 +1,2 @@
+additem ( aktivitaet DTYPE_CHAR, icon DTYPE_CHAR, text DTYPE_CHAR, runtxt DTYPE_CHAR) DTYPE_INT
+getabonnements () DTYPE_CHAR
