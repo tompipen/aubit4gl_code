@@ -24,10 +24,10 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ioform.c,v 1.259 2017-02-08 17:00:52 mikeaubury Exp $
+# $Id: ioform.c,v 1.260 2017-02-17 09:30:39 mikeaubury Exp $
 #*/
 #ifndef lint
-static char const module_id[] = "$Id: ioform.c,v 1.259 2017-02-08 17:00:52 mikeaubury Exp $";
+static char const module_id[] = "$Id: ioform.c,v 1.260 2017-02-17 09:30:39 mikeaubury Exp $";
 #endif
 
 /**
@@ -5111,7 +5111,8 @@ A4GL_form_field_chk_iarr (struct s_inp_arr *sio, int m)
 
 			if (chged == 0)
 			  {
-			    if (!A4GL_entire_row_is_blank (sio, sio->scr_line - 1))
+			int hasDefault;
+			    if (!A4GL_entire_row_is_blank (sio, sio->scr_line - 1, &hasDefault))
 			      {
 				chged++;
 			      }

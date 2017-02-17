@@ -255,7 +255,7 @@ int chk_all_fields(struct s_screenio *sio);
 void
 A4GL_set_fields_sio (struct s_screenio *sio);
 int
-A4GL_entire_row_is_blank (struct s_inp_arr *s,int ln);
+A4GL_entire_row_is_blank (struct s_inp_arr *s,int ln,int *hasDefault);
 void debug_print_field_opts(struct s_form_dets *formdets);
 int A4GL_get_currwinno(void);
 

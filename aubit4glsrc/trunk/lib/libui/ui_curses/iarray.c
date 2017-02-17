@@ -24,10 +24,10 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.185 2016-09-08 12:54:07 mikeaubury Exp $
+# $Id: iarray.c,v 1.186 2017-02-17 09:30:39 mikeaubury Exp $
 #*/
 #ifndef lint
-static char const module_id[] = "$Id: iarray.c,v 1.185 2016-09-08 12:54:07 mikeaubury Exp $";
+static char const module_id[] = "$Id: iarray.c,v 1.186 2017-02-17 09:30:39 mikeaubury Exp $";
 #endif
 
 /**
@@ -58,6 +58,7 @@ char *A4GL_fld_data_ignore_format (struct struct_scr_field *fprop, char *fld_dat
 void A4GL_clr_field (FIELD * f);
 void A4GL_make_window_with_this_form_current (void *form);
 int UILIB_A4GL_inp_arr_v2_i (void *vinpa, int defs, char *srecname, int attrib, int init, void *vevt);
+static char * get_field_with_no_picture_or_default (FIELD * f);
 
 int A4GL_double_chk_arr_line (struct s_inp_arr *s, int ln, char why);
 static int A4GL_something_in_entire_row_has_changed (struct s_inp_arr *s, int ln);
@@ -4238,13 +4239,14 @@ A4GL_something_in_entire_row_has_changed (struct s_inp_arr *s, int ln)
 
 
 int
-A4GL_entire_row_is_blank (struct s_inp_arr *s, int ln)
+A4GL_entire_row_is_blank (struct s_inp_arr *s, int ln, int *AdefaultIsSet)
 {
   //struct struct_scr_field *fprop;
   //int a;
   int b;
   int nv;
   int isblank = 1;
+  *AdefaultIsSet=0;
 
   nv = s->nbind;
   if (s->start_slice != -1 && s->end_slice != -1)
@@ -4257,14 +4259,16 @@ A4GL_entire_row_is_blank (struct s_inp_arr *s, int ln)
       FIELD *f;
       char *p;
       f = s->field_list[ln][b];
+      p = get_field_with_no_picture_or_default (f);
+      // remove any attached picture...
+      A4GL_trim (p);
+      if (strlen (p)) { isblank = 0; break; }
+
+
       p = get_field_with_no_picture (f);
       // remove any attached picture...
       A4GL_trim (p);
-      if (strlen (p))
-	{
-	  isblank = 0;
-	  break;
-	}
+      if (strlen (p)==0) { *AdefaultIsSet=1; }
     }
   return isblank;
 }
@@ -4281,8 +4285,9 @@ A4GL_double_chk_line (struct s_inp_arr *s, int ln, char why)
   int is_all_blank = 0;
   if (ln < 0)
     return 1;
+int hasDefault;
 
-  is_all_blank = A4GL_entire_row_is_blank (s, ln);
+  is_all_blank = A4GL_entire_row_is_blank (s, ln, &hasDefault);
   nv = s->nbind;
 
 
@@ -4458,6 +4463,7 @@ get_field_with_no_picture (FIELD * f)
   static char *p = 0;
   struct struct_scr_field *fprop;
   char *picture;
+  char *defaultVal=0;
 
   if (p)
     free (p);
@@ -4467,6 +4473,10 @@ get_field_with_no_picture (FIELD * f)
   A4GL_debug ("FA_S_PICTURE");
 #endif
   picture = A4GL_get_str_attribute (fprop, FA_S_PICTURE);
+  if (A4GL_has_str_attribute (fprop, FA_S_DEFAULT)) {
+     defaultVal=A4GL_replace_sql_var (A4GL_strip_quotes (A4GL_get_str_attribute (fprop, FA_S_DEFAULT)));
+  }
+
   // remove any attached picture...
   if (picture)
     {
@@ -4483,5 +4493,60 @@ get_field_with_no_picture (FIELD * f)
 	    p[z] = ' ';
 	}
     }
+
+
+  return p;
+}
+
+
+static char * get_field_with_no_picture_or_default (FIELD * f)
+{
+  static char *p = 0;
+  struct struct_scr_field *fprop;
+  char *picture;
+  char *defaultVal=0;
+
+  if (p)
+    free (p);
+  fprop = (struct struct_scr_field *) (field_userptr (f));
+  p = strdup (field_buffer (f, 0));
+#ifdef DEBUG
+  A4GL_debug ("FA_S_PICTURE");
+#endif
+  picture = A4GL_get_str_attribute (fprop, FA_S_PICTURE);
+  if (A4GL_has_str_attribute (fprop, FA_S_DEFAULT)) {
+     defaultVal=A4GL_replace_sql_var (A4GL_strip_quotes (A4GL_get_str_attribute (fprop, FA_S_DEFAULT)));
+  }
+
+  if (defaultVal) {
+    	A4GL_lrtrim(defaultVal);
+    	char *p2;
+	p2=strdup(p);
+	A4GL_lrtrim(p2);
+	if (strlen(defaultVal) && strcmp(defaultVal, p2)==0) {
+	    memset(p,' ',strlen(p));
+	    return "";
+        }
+  }
+
+
+  // remove any attached picture...
+  if (picture)
+    {
+      int z;
+      for (z = 0; z < strlen (p); z++)
+	{
+	  if (z > strlen (picture))
+	    break;
+	  if (picture[z] == 'A')
+	    p[z] = ' ';
+	  if (picture[z] == 'X')
+	    p[z] = ' ';
+	  if (picture[z] == '#')
+	    p[z] = ' ';
+	}
+    }
+
+
   return p;
 }
