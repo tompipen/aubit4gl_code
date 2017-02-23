@@ -16,6 +16,7 @@
 %x instructions
 %x escaped
 %option yylineno
+%option prefix="a4gl_form_yy"
 /*%option interactive*/
 ID [a-zA-Z‰ﬂ£_]+[a-zA-Z\_0-9]*
 IDEXT [a-zA-Z‰ﬂ£\_0-9]+[a-zA-Z\_0-9]*

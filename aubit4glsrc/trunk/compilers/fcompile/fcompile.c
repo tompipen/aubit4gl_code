@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: fcompile.c,v 1.79 2013-11-10 09:53:48 mikeaubury Exp $
+# $Id: fcompile.c,v 1.80 2017-02-23 08:19:30 mikeaubury Exp $
 #*/
 
 /**
@@ -44,6 +44,13 @@
 #define yyparse a4gl_form_yyparse
 #include "a4gl_fcompile_int.h"
 #define DO_DEBUG
+
+#define NEWLEX
+#ifdef NEWLEX
+#define yyin a4gl_form_yyin
+#define yylineno a4gl_form_yylineno
+#define yywrap a4gl_form_yywrap
+#endif
 /*
 =====================================================================
                     Variables definitions

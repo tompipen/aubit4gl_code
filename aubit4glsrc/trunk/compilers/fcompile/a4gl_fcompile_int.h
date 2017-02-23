@@ -47,6 +47,7 @@ t_expression *create_special_expr (char *charval);
 t_expression *create_not_expr (t_expression * expr);
 t_expression *create_list_expr (void);
 t_expression *create_expr_expr (t_complex_expr * expr);
+t_expression * create_expr_oddline ();
 t_expression *create_expr_comp_expr (t_expression * expr1,
 				     t_expression * expr2, char *comp);
 t_expression *add_list_expr (t_expression * ptr, t_expression * expr);
