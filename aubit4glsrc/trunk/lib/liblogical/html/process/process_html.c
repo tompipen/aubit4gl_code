@@ -76,9 +76,9 @@ output_page (FILE * fout, int w, int h)
 			A4GL_trim(ptr);
 			if (ptr[0]==' ') {
 				A4GL_lrtrim(ptr);
-	  			fprintf (fout, "<td colspan=%d align=left>%s</td>\n", l,ptr);
+	  			fprintf (fout, "<td colspan=%d align=left>%s</td>\n", l,RP_xmlencode(ptr));
 			} else {
-	  			fprintf (fout, "<td colspan=%d align=left>%s</td>\n", l,ptr);
+	  			fprintf (fout, "<td colspan=%d align=left>%s</td>\n", l,RP_xmlencode(ptr));
 			}
 			x+=l-1;
 			skip=0;
@@ -154,7 +154,7 @@ int RP_process_report (void *rp, char *buff,void *rbx, int rbs)
   for (a = 0; a < report->page_length; a++)
     {
 	int x;
-      	lines[a] = acl_malloc2 (report->max_col+report->left_margin *sizeof(char *));	
+      	lines[a] = acl_malloc2 ((report->max_col+report->left_margin) *sizeof(char *));	
 	for (x=0;x<report->max_col+report->left_margin;x++) {
 		lines[a][x]=0;
 	}
