@@ -1816,7 +1816,9 @@ int a;
 				struct variable *v2;
 				v2=find_variable_vu_ptr(errbuff, vu_next, &scope,1);
 
- 				if (v2 && v2->var_data.variable_type==VARIABLE_TYPE_RECORD) {
+				// setting "ARRAYINRECORDFIXUP" will kill build test 227
+				// not sure why we need this code - so gating it out for now.
+ 				if (v2 && v2->var_data.variable_type==VARIABLE_TYPE_RECORD && A4GL_isyes(acl_getenv("ARRAYINRECORDFIXUP")) ) {
 					if (v->var_data.variable_data_u.v_record.variables.variables_val[a]->arr_subscripts.arr_subscripts_len==0) {
 							// Embedded record :(
 							struct expr_str_list *vlist;
