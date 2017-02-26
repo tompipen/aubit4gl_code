@@ -24,12 +24,12 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.557 2017-02-26 16:10:43 mikeaubury Exp $
+# $Id: compile_c.c,v 1.558 2017-02-26 16:11:42 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
-static char const module_id[] = "$Id: compile_c.c,v 1.557 2017-02-26 16:10:43 mikeaubury Exp $";
+static char const module_id[] = "$Id: compile_c.c,v 1.558 2017-02-26 16:11:42 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -5679,7 +5679,7 @@ print_variable_new (struct variable *v, enum e_scope scope, int level)
       char tmpbuff[256];
                                 char *(*function) (void);
                                 function=A4GL_get_datatype_function_n(upshift(v->var_data.variable_data_u.datatypeName),"OUTPUT");
-                                if ((int)function != -1 && (int)function != 0)
+                                if ((long)function != -1 && (long)function != 0)
                                 {
 					SPRINTF2(tmpbuff,"%s %s", function(), name);
 	  print_define (tmpbuff, static_extern_flg);
