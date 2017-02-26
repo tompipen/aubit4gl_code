@@ -103,15 +103,24 @@ static char * read_string (void)
 static void trim (char *s)
 {
   //char *p;
-  int a, b;
-  b = 0;
+  int a;
   for (a = strlen (s) - 1; a > 0; a--)
     {
-      if (A4GL_isblank (s[a])) s[a]=0;
+      if (A4GL_isblank (s[a]) ) s[a]=0;
 	else break;
     }
 }
 
+static void trimnl (char *s)
+{
+  //char *p;
+  int a;
+  for (a = strlen (s) - 1; a > 0; a--)
+    {
+      if (A4GL_isblank (s[a])||s[a]=='\n' || s[a]=='\r' ) s[a]=0;
+	else break;
+    }
+}
 
 static void
 check_for_max (int p, int l, int c, char *s)
@@ -558,15 +567,17 @@ int load_filter_file_header(char *fname, FILE **fin_save, char*msgbuff) {
         fgets(buff,255,fin_filter);
         sscanf(buff,"%s %s",rname,mname);
 
-        if (strcmp(rname,report->repName)!=0) {
-                sprintf(buff,"This doesn't look like its from the same report (%s != %s)",rname,report->repName);
-                strcpy(msgbuff, buff);
-        }
-
-        if (strcmp(mname,report->modName)!=0) {
-                sprintf(buff,"This doesn't look like its from the same module (%s != %s)",mname,report->modName);
-                strcpy(msgbuff, buff);
-        }
+	if (report!=NULL) {
+        	if (strcmp(rname,report->repName)!=0) {
+                	sprintf(buff,"This doesn't look like its from the same report (%s != %s)",rname,report->repName);
+                	strcpy(msgbuff, buff);
+        	}
+	
+        	if (strcmp(mname,report->modName)!=0) {
+                	sprintf(buff,"This doesn't look like its from the same module (%s != %s)",mname,report->modName);
+                	strcpy(msgbuff, buff);
+        	}
+	}
 
         fgets(buff,255,fin_filter);
         sprintf(orig,"Original output filename : %s",buff);
@@ -581,3 +592,270 @@ int load_filter_file_header(char *fname, FILE **fin_save, char*msgbuff) {
     return 0;
 
 }
+
+
+int load_filter_file_header_info(char *fname, FILE **fin_save, char*msgbuff,  char *rname, char *mname, char *logrep, char *buff) {
+  //int ok;
+  FILE *fin_filter;
+  //char buff[255];
+  //char logrep[255];
+  char orig[255];
+  //char rname[255];
+  //char mname[255];
+  if (fname)
+    {
+      char *ptr;
+      //printf ("fname==%s\n", fname);
+      ptr = strrchr (fname, '/');
+      if (ptr == 0)
+        ptr = fname;
+
+      fin_filter = fopen (fname, "r");
+	*fin_save=fin_filter;
+
+      if (!fin_filter) {
+        if (strchr (ptr, '.') == 0) {
+                        strcat (fname, ".lrf");
+                        fin_filter = fopen (fname, "w");
+                }
+        }
+
+        if (!fin_filter) {
+                strcpy(msgbuff,"I can't open that file..");
+                return 0;
+        }
+
+
+        fgets(buff,255,fin_filter);
+	trimnl(buff);
+        if (!sscanf(buff,"A4GL_LOGICAL_REPORT %s",logrep)) {
+                        strcpy(msgbuff, "This doesn't look like a valid layout file");
+                        return 0;
+        }
+
+        fgets(buff,255,fin_filter);
+trimnl(buff);
+        sscanf(buff,"%s %s",rname,mname);
+
+        fgets(buff,255,fin_filter);
+	trimnl(buff);
+	return 1;
+
+    }
+  else
+    {
+      strcpy(msgbuff,  "No load performed...");
+	return 0;
+    }
+    return 0;
+
+}
+
+
+
+static int nonprintmode=-1;
+static char *
+xml_escape_int (char *s)
+{
+  static char *buff = 0;
+  static int last_len = 0;
+  int c;
+  int a;
+  int l;
+  int b;
+  int allocated;
+int sl;
+if (nonprintmode==-1) {
+char *s=acl_getenv("NONPRINTXMLMODE");
+nonprintmode=0;
+if (strcmp(s,"1")==0) { nonprintmode=1; }
+if (strcmp(s,"2")==0) { nonprintmode=2; }
+}
+
+A4GL_assertion(s==NULL,"Null pointer passed to xml_escape_int");
+
+sl=strlen(s);
+
+  c = 0;
+  for (a=0;a<sl;a++) {
+                if (s[a]=='&' || s[a]=='<' || s[a]=='>' || s[a]=='"' || s[a]=='\'' || s[a]=='\n'  || s[a]=='\r' || s[a] < 31 || s[a] > 126) {
+                                c++;
+                         break;
+                }
+
+        }
+
+
+
+  if (c == 0)
+    {
+      return s;
+    }
+
+  l = strlen (s);
+  allocated = (l * 6) + 1;
+
+  if (l > last_len)
+    {
+      buff = realloc (buff, allocated);
+      last_len = l;
+    }
+
+  b = 0;
+  for (a = 0; a < l; a++)
+    {
+      if (s[a] == '>')
+        {
+          buff[b++] = '&';
+          buff[b++] = 'g';
+          buff[b++] = 't';
+          buff[b++] = ';';
+          continue;
+        }
+      if (s[a] == '<')
+        {
+          buff[b++] = '&';
+          buff[b++] = 'l';
+          buff[b++] = 't';
+          buff[b++] = ';';
+          continue;
+        }
+      if (s[a] == '&')
+        {
+          buff[b++] = '&';
+          buff[b++] = 'a';
+          buff[b++] = 'm';
+          buff[b++] = 'p';
+          buff[b++] = ';';
+          continue;
+        }
+      if (s[a] == '"')
+        {
+          buff[b++] = '&';
+          buff[b++] = 'q';
+          buff[b++] = 'u';
+          buff[b++] = 'o';
+          buff[b++] = 't';
+          buff[b++] = ';';
+          continue;
+        }
+      if (s[a] == '\'')
+        {
+          buff[b++] = '&';
+          buff[b++] = 'a';
+          buff[b++] = 'p';
+          buff[b++] = 'o';
+          buff[b++] = 's';
+          buff[b++] = ';';
+          continue;
+        }
+
+
+      if (s[a] < 31 || s[a] > 126)
+        {
+    if (nonprintmode==1) {
+          int z1;
+          char buff2[20];
+          z1 = ((unsigned char) s[a]);
+          sprintf (buff2, "&#x%02X;", z1);
+          for (z1 = 0; z1 < strlen (buff2); z1++)
+            {
+              buff[b++] = buff2[z1];
+            }
+          continue;
+        }
+
+    if (nonprintmode==2) {
+          int z1;
+          char buff2[20];
+          z1 = ((unsigned char) s[a]);
+          sprintf (buff2, "\\%02X", z1);
+          for (z1 = 0; z1 < strlen (buff2); z1++)
+            {
+              buff[b++] = buff2[z1];
+            }
+          continue;
+        }
+      }
+
+
+      buff[b++] = s[a];
+    }
+if (b>=allocated) {
+
+fprintf(stderr,"b=%d allocated=%d l=%d\n", b,allocated,l);
+}
+  if (b >= allocated ) {
+        fprintf(stderr, "XML escape buffer too small") ;
+        exit(2);
+  }
+  buff[b] = 0;
+  return buff;
+}
+
+
+char *RP_xmlencode (char *s) {
+char *rval;
+static int n=0;
+static char *buff[5]={NULL,NULL,NULL,NULL,NULL};
+A4GL_assertion(n<0||n>=5, "Buffer out of range - memory corruption?");
+if (buff[n]) {
+        free(buff[n]);
+        buff[n]=0;
+}
+if (s==0) return "NULL";
+
+buff[n]=strdup(xml_escape_int(s));
+
+
+rval=buff[n];
+n++;
+if (n>=5)  n=0;
+return rval;
+
+}
+
+
+
+
+char **RP_split_on_delimiter (char *str,int *nrecords)
+{
+  int cnt = 1;
+  int a;
+  int ml;
+  char *delim = "|";
+  static char *cptr[200];
+  char *lbuff=str;
+
+  ml = strlen (lbuff);
+  /* Convert to unix format - if its msdos */
+  if (lbuff[ml - 2] == '\r' && lbuff[ml - 1] == '\n')
+    {
+      ml--;
+      lbuff[ml - 2] = '\n';
+      lbuff[ml - 1] = 0;
+    }
+  cptr[0] = &lbuff[0];
+  for (a = 0; a <= ml; a++)
+    {
+      if (lbuff[a] == delim[0] || lbuff[a] == 0)
+        {
+          cptr[cnt++] = &lbuff[a + 1];
+        }
+    }
+
+  cnt--;
+
+  for (a = 1; a <= cnt; a++)
+    *(cptr[a] - 1) = 0;
+
+
+/*
+  for (a = 0; a < cnt; a++)
+    {
+      A4GL_push_char (cptr[a]);
+    }*/
+*nrecords=cnt;
+  return cptr;
+}
+

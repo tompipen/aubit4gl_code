@@ -24,7 +24,7 @@
 # +----------------------------------------------------------------------+
 
 #
-# $Id: Makefile,v 1.17 2010-05-10 14:17:47 mikeaubury Exp $
+# $Id: Makefile,v 1.18 2017-02-26 15:53:30 mikeaubury Exp $
 #
 ROOT		=../../..
 
@@ -65,9 +65,14 @@ endif
 ##                              Targets
 ## ==================================================================
 
-all: ${ROOT}/bin/process_report ${ROOT}/bin/quick_check_logrep
+all: ${ROOT}/bin/process_report ${ROOT}/bin/quick_check_logrep dump_lrf import_lrf
 ${ROOT}/bin/process_report: API_process.h ${OBJS} 
 	${LD} -g ${LDFLAGS} ${CFLAGS} ${OBJS} -o $@  -L$(LIBROOT) -l${AUBITLIBFULL} ${EXTRASYSTEMLIBS} ${LD_EXE_FLAGS}
+
+dump_lrf: API_process.h dump_lrf.o ../common/a4gl_lle.o API_process.o
+	${LD} -g ${LDFLAGS} ${CFLAGS} dump_lrf.o ../common/a4gl_lle.o API_process.o -o $@  -L$(LIBROOT) -l${AUBITLIBFULL} ${EXTRASYSTEMLIBS} ${LD_EXE_FLAGS}
+import_lrf: API_process.h import_lrf.o ../common/a4gl_lle.o API_process.o
+	${LD} -g ${LDFLAGS} ${CFLAGS} import_lrf.o ../common/a4gl_lle.o API_process.o -o $@  -L$(LIBROOT) -l${AUBITLIBFULL} ${EXTRASYSTEMLIBS} ${LD_EXE_FLAGS}
 
 API_process.c: API_process.spec
 	../../bin/dlmagic $^ > $@

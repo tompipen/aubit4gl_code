@@ -34,6 +34,126 @@ int RP_load_file (void *report, FILE *fin) {
 }
 
 
+int RP_dump_file(FILE* fin,FILE* fout) {
+	if (pdf_load_file(fin)==0) {
+		printf("Couldnt load input file\n");
+		return 0;
+	}
+        fprintf(fout, "PDF|");
+        fprintf(fout,"%s|", (layout.fontname));
+        fprintf(fout,"%d|", layout.fontsize);
+        fprintf(fout,"%f|", layout.leftmargin);
+        fprintf(fout,"%f|", layout.topmargin);
+        fprintf(fout,"%d|", layout.paper_type);
+        fprintf(fout,"%d|", layout.paper_orient);
+        fprintf(fout,"%s|",(layout.img_src));
+        fprintf(fout,"%d|",layout.img_x);
+        fprintf(fout,"%d|",layout.img_y);
+        fprintf(fout,"%s|",(layout.bluebar));
+        fprintf(fout,"%d\n",layout.nfonts);
+
+	int a;
+	for (a=0;a<layout.nfonts;a++) {
+		fprintf(fout, "%s|%d|%d|%d|%s|%lf|%lf\n",
+        		(layout.fonts[a].font),
+        		layout.fonts[a].size,
+        		layout.fonts[a].block,
+        		layout.fonts[a].entry,
+        		(layout.fonts[a].replacementtext),
+        		layout.fonts[a].xoffset,
+        		layout.fonts[a].yoffset);
+	}
+	fclose(fout);
+
+
+	return 1;
+
+}
+
+
+static void trimnl (char *s)
+{
+  int a;
+  for (a = strlen (s) - 1; a > 0; a--)
+    {
+      if (A4GL_isblank (s[a])||s[a]=='\n' || s[a]=='\r' ) s[a]=0;
+        else break;
+    }
+}
+
+
+int
+RP_import_file (FILE * fin, FILE *fout)
+{
+char **cptr;
+int lineno=0;
+char buff[5120];
+int a;
+int cnt;
+
+  fgets (buff, sizeof (buff), fin);
+	trimnl(buff);
+  lineno++;
+  if (strncmp(buff,"PDF|",4)!=0) {
+  	printf ("Invalid input file - not a csv\n");
+      return 0;
+	}
+  cptr = RP_split_on_delimiter (buff, &a);
+
+// cptr[0]= PDF
+strcpy(layout.fontname, cptr[1]);
+layout.fontsize=atoi( cptr[2]);
+layout.leftmargin=atof( cptr[3]);
+layout.topmargin=atof( cptr[4]);
+layout.paper_type=atoi( cptr[5]);
+layout.paper_orient=atoi( cptr[6]);
+strcpy(layout.img_src, cptr[7]);
+layout.img_x=atoi( cptr[8]);
+layout.img_y=atoi( cptr[9]);
+strcpy(layout.bluebar, cptr[10]);
+layout.nfonts=atoi( cptr[11]);
+if (layout.nfonts) {
+	layout.fonts=malloc(sizeof(layout.fonts[0])*layout.nfonts);
+} else {
+	layout.fonts=0;
+}
+
+if (layout.nfonts) {
+	for (cnt=0;cnt<layout.nfonts;cnt++) {
+  	fgets (buff, sizeof (buff), fin);
+		trimnl(buff);
+  		lineno++;
+  		cptr = RP_split_on_delimiter (buff, &a);
+		strcpy(layout.fonts[cnt].font, cptr[0]);
+		layout.fonts[cnt].size=atoi(cptr[1]);
+		layout.fonts[cnt].block=atoi(cptr[2]);
+		layout.fonts[cnt].entry=atoi(cptr[3]);
+		strcpy(layout.fonts[cnt].replacementtext,cptr[4]);
+		layout.fonts[cnt].xoffset=atof(cptr[5]);
+		layout.fonts[cnt].yoffset=atof(cptr[6]);
+
+	}
+}
+
+
+/*
+        fprintf(fout, "PDF|");
+        fprintf(fout,"%s|", (layout.fontname)); // 1
+        fprintf(fout,"%d|", layout.fontsize); 2
+        fprintf(fout,"%f|", layout.leftmargin); 3
+        fprintf(fout,"%f|", layout.topmargin); 4
+        fprintf(fout,"%d|", layout.paper_type); 5
+        fprintf(fout,"%d|", layout.paper_orient); 6
+        fprintf(fout,"%s|",(layout.img_src)); 7
+        fprintf(fout,"%d|",layout.img_x); 8
+        fprintf(fout,"%d|",layout.img_y);9 
+        fprintf(fout,"%s|",(layout.bluebar)); 10
+        fprintf(fout,"%d\n",layout.nfonts); 11
+*/
+
+return pdf_save_file(fout);
+}
+
 static void
 clear_page (int w, int h)
 {

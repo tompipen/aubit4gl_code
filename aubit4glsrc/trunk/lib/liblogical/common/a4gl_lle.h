@@ -79,3 +79,6 @@ struct r_report *read_report_output(char *fname);
 void obtain_rbs_rbx(struct r_report *report, int *ptr_rbs, struct s_rbx **ptr_rbx);
 
 int load_filter_file_header(char *fname, FILE **fin, char*msgbuff);
+char *RP_xmlencode(char *s);
+char **RP_split_on_delimiter (char *str,int *nrecords);
+int load_filter_file_header_info(char *fname, FILE **fin_save, char*msgbuff,  char *rname, char *mname, char *logrep, char *buff);

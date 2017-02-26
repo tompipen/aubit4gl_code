@@ -32,8 +32,8 @@ int pdf_load_file(FILE *fin) {
 	int ignore_err=0;
 	// We don't need to add anything to the output file
 	//printf("load file\n");
-	fread(&size,4,1,fin);
-	fread(&ver,4,1,fin);
+	fread(&size,sizeof(size),1,fin);
+	fread(&ver,sizeof(ver),1,fin);
 	if (A4GL_isyes(acl_getenv("IGNORESIZEERR"))) {
 		ignore_err=1;
 	}
@@ -75,8 +75,8 @@ int pdf_save_file(FILE *fin) {
 	int a;
 	size=sizeof(layout);
 	ver=VERSION;
-	fwrite(&size,4,1,fin);
-	fwrite(&ver,4,1,fin);
+	fwrite(&size,sizeof(size),1,fin);
+	fwrite(&ver,sizeof(ver),1,fin);
 	//printf("SAVING Size %d version %d - fontsize : %d\n", size,ver,layout.fontsize);
 	fwrite(&layout,sizeof(layout),1,fin);
 	for (a=0;a<layout.nfonts;a++) {
