@@ -24,12 +24,12 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: compile_c.c,v 1.556 2015-11-24 09:31:31 mikeaubury Exp $
+# $Id: compile_c.c,v 1.557 2017-02-26 16:10:43 mikeaubury Exp $
 # @TODO - Remove rep_cond & rep_cond_expr from everywhere and replace
 # with struct expr_str equivalent
 */
 #ifndef lint
-static char const module_id[] = "$Id: compile_c.c,v 1.556 2015-11-24 09:31:31 mikeaubury Exp $";
+static char const module_id[] = "$Id: compile_c.c,v 1.557 2017-02-26 16:10:43 mikeaubury Exp $";
 #endif
 /**
  * @file
@@ -682,12 +682,12 @@ open_outfile (void)
   char err[132];
   char *ptr;
   char *logtxt;
-  char *outputfilename;
+  //char *outputfilename;
   char *override;
   time_t ttime;
   char buff[256];
   override = acl_getenv_not_set_as_0 ("OVERRIDE_OUTPUT");
-  outputfilename = current_module->module_name;
+  //outputfilename = current_module->module_name;
 
 
   if (strlen (this_module_name) == 0)
@@ -1270,7 +1270,7 @@ print_arr_expr_fcall (void *optr)
 static void
 real_print_expr (struct expr_str *ptr)
 {
-  void *optr;
+  //void *optr;
   int a;
 #ifdef DEBUG
   A4GL_debug ("Print expr... %p", ptr);
@@ -1557,11 +1557,11 @@ real_print_expr (struct expr_str *ptr)
 
       {
 	int a;
-	int b;
+	//int b;
 	char lib[255];
 	int params;
 	struct expr_str_list *l;
-	b = 0;
+	//b = 0;
 	if (ptr)
 	  {
 	    l = ptr->expr_str_u.expr_function_call->parameters;
@@ -2489,7 +2489,7 @@ real_print_expr (struct expr_str *ptr)
 
     }
 
-  optr = ptr;
+  //optr = ptr;
 
   //free (optr);            // <----      THIS FREE SHOULD BE OK
 
@@ -6727,7 +6727,7 @@ LEXLIB_A4GL_write_generated_code (struct module_definition *m)
   for (a = 0; a < m->module_entries.module_entries_len; a++)
     {
       int ok = 1;
-      char *s;
+      //char *s;
 
       parent_stack_cnt = 0;
 
@@ -6863,7 +6863,7 @@ print_declare_associate_1 (char *variable, char *size, char *n)
   printc ("#define ASSOCIATE_%s(w,rw) %s[A4GL_ass_hash(_usg%s,%s+1,%s,w,sizeof(_usg%s),rw)]\n",
      upshift (variable), downshift (variable), downshift (variable), n, size, downshift (variable));
   printc ("#define ASSOCIATEI_%s(w,rw) %s[A4GL_get_hash_index(_usg%s, %s+1,w)]\n",
-     upshift (variable), downshift (variable), downshift (variable),  size, downshift (variable));
+     upshift (variable), downshift (variable), downshift (variable),  size);
 }
 
 /**
@@ -7025,8 +7025,8 @@ set_get_subscript_as_string_next (struct variable *sgs_topvar, struct variable_u
 
 static int isDynamicArraySubscript (struct variable *sgs_topvar, int a, expr_str * u)
 {
-  static char buff[256];
-  char smbuff[256];
+  //static char buff[256];
+  //char smbuff[256];
 
   if (sgs_topvar)
     {
@@ -7855,9 +7855,9 @@ local_expr_as_string (expr_str * s)
     case ET_EXPR_MEMBER_FCALL_NEW:
       {
 	struct s_expr_member_function_call_n *p;
-	int a;
-	int nparam = 0;
-	struct expr_str_list *l;
+	//int a;
+	//int nparam = 0;
+	//struct expr_str_list *l;
 
 
 	p = s->expr_str_u.expr_member_function_call_n;
@@ -7896,9 +7896,9 @@ local_expr_as_string (expr_str * s)
     case ET_EXPR_DYNARR_FCALL_NEW:
       {
 	struct s_expr_dynarr_function_call_n *p;
-	int a;
-	int nparam = 0;
-	struct expr_str_list *l;
+	//int a;
+	//int nparam = 0;
+	//struct expr_str_list *l;
 		p = s->expr_str_u.expr_dynarr_function_call_n;
 	    	sprintf (rbuff, "A4GL_call_dynarr_function_i_as_int(&%s,sizeof(_dynelem_%s),\"%s\",0)\n",
 		     generation_get_variable_usage_as_string_for_dynarr (p->var_usage_ptr->expr_str_u.expr_variable_usage,1),  
