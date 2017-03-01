@@ -1937,7 +1937,12 @@ copy_out_single_mysql_bind (MYSQL_STMT * stmt, void *associated_to,
     case DTYPE_INT:
       if (phase == PHASE_PRE_FETCH)
 	{
+
+	if (sizeof(long)==8) {
+	  mobind->buffer_type =MYSQL_TYPE_LONGLONG;
+	} else {
 	  mobind->buffer_type = MYSQL_TYPE_LONG;
+	}
 	  mobind->buffer = obind->ptr;
 	  mobind->is_null = ind;
 	  mobind->length = 0;
