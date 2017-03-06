@@ -32,5 +32,5 @@ ${PLUGINDIR}/libSQL_IDXFILESCHEMA${SO_EXT}: read_fileschema.o fileschema.xio.o f
 
 
 clean:
-	rm index_fileschema fileschema.x.h fileschema.xs.h ${PLUGINDIR}/libSQL_IDXFILESCHEMA${SO_EXT} *.o *${SO_EXT} *.bak *.base *.dll *.def *.exp *.a fileschema.xi.c fileschema.xio.c fileschema.xo.c  $(ROOT)/bin/index_fileschema
+	rm -f index_fileschema fileschema.x.h fileschema.xs.h ${PLUGINDIR}/libSQL_IDXFILESCHEMA${SO_EXT} *.o *${SO_EXT} *.bak *.base *.dll *.def *.exp *.a fileschema.xi.c fileschema.xio.c fileschema.xo.c  $(ROOT)/bin/index_fileschema
 #-------------------------------- EOF -------------------------------
