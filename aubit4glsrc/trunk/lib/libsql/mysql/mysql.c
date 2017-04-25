@@ -613,7 +613,7 @@ A4GLSQLLIB_A4GLSQL_init_connection_internal (char *dbName)
   }
   isconnected = 0;
 
-  A4GL_add_pointer ("default", SESSDB, strdup(dbname));
+  A4GL_add_pointer ("default", SESSDB, strdup(dbName));
 
   strcpy (dbname, dbName);
   A4GL_trim (dbname);
