@@ -2264,6 +2264,7 @@ execute_sql (MYSQL_STMT * stmt, char *sql, struct BINDING *ibind, int ni,
       A4GL_exitwith ("No statement");
 	return 0;
 	}
+  mysql_stmt_reset(stmt);
   param_count = mysql_stmt_param_count (stmt);	// Number of paramters...
   if (ni>param_count && !strcasecmp(ignoretoomanybinds,"yes")) {
       ni = param_count;
