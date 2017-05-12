@@ -1672,6 +1672,7 @@ copy_in_single_mysql_bind (MYSQL_STMT * stmt, void *associated_to,
       mibind->buffer = ibind->ptr;
       mibind->is_null = ind;
       mibind->length = 0;
+	  mibind->is_unsigned = 0;
       break;
 
     case DTYPE_INT:
@@ -1679,6 +1680,7 @@ copy_in_single_mysql_bind (MYSQL_STMT * stmt, void *associated_to,
       mibind->buffer = ibind->ptr;
       mibind->is_null = ind;
       mibind->length = 0;
+	  mibind->is_unsigned = 0;
       break;
 
     case DTYPE_FLOAT:
@@ -1686,6 +1688,7 @@ copy_in_single_mysql_bind (MYSQL_STMT * stmt, void *associated_to,
       mibind->buffer = ibind->ptr;
       mibind->is_null = ind;
       mibind->length = 0;
+	  mibind->is_unsigned = 0;
       break;
 
     case DTYPE_SMFLOAT:
@@ -1693,6 +1696,7 @@ copy_in_single_mysql_bind (MYSQL_STMT * stmt, void *associated_to,
       mibind->buffer = ibind->ptr;
       mibind->is_null = ind;
       mibind->length = 0;
+	  mibind->is_unsigned = 0;
       break;
 
 
@@ -1701,6 +1705,7 @@ copy_in_single_mysql_bind (MYSQL_STMT * stmt, void *associated_to,
       mibind->buffer = ibind->ptr;
       mibind->is_null = ind;
       mibind->length = 0;
+	  mibind->is_unsigned = 0;
       break;
 
 
@@ -1742,6 +1747,7 @@ copy_in_single_mysql_bind (MYSQL_STMT * stmt, void *associated_to,
       mibind->buffer = dptr;
       mibind->is_null = ind;
       mibind->length = 0;
+	  mibind->is_unsigned = 0;
       break;
 
     case DTYPE_MONEY:
@@ -1755,6 +1761,7 @@ copy_in_single_mysql_bind (MYSQL_STMT * stmt, void *associated_to,
       mibind->buffer = dptr;
       mibind->is_null = ind;
       mibind->length = 0;
+	  mibind->is_unsigned = 0;
       break;
 
 
@@ -1931,6 +1938,8 @@ copy_out_single_mysql_bind (MYSQL_STMT * stmt, void *associated_to,
 	  mobind->buffer = obind->ptr;
 	  mobind->is_null = ind;
 	  mobind->length = 0;
+	  mobind->is_unsigned = 0;
+
 	}
       break;
 
@@ -1946,6 +1955,7 @@ copy_out_single_mysql_bind (MYSQL_STMT * stmt, void *associated_to,
 	  mobind->buffer = obind->ptr;
 	  mobind->is_null = ind;
 	  mobind->length = 0;
+	  mobind->is_unsigned = 0;
 	}
       break;
 
@@ -1956,6 +1966,7 @@ copy_out_single_mysql_bind (MYSQL_STMT * stmt, void *associated_to,
 	  mobind->buffer = obind->ptr;
 	  mobind->is_null = ind;
 	  mobind->length = 0;
+	  mobind->is_unsigned = 0;
 	}
       break;
 
@@ -1966,6 +1977,7 @@ copy_out_single_mysql_bind (MYSQL_STMT * stmt, void *associated_to,
 	  mobind->buffer = obind->ptr;
 	  mobind->is_null = ind;
 	  mobind->length = 0;
+	  mobind->is_unsigned = 0;
 	}
       break;
 
@@ -1977,6 +1989,7 @@ copy_out_single_mysql_bind (MYSQL_STMT * stmt, void *associated_to,
 	  mobind->buffer = obind->ptr;
 	  mobind->is_null = ind;
 	  mobind->length = 0;
+	  mobind->is_unsigned = 0;
 	}
       break;
 
@@ -2011,6 +2024,7 @@ copy_out_single_mysql_bind (MYSQL_STMT * stmt, void *associated_to,
 	  mobind->buffer = dptr;
 	  mobind->is_null = ind;
 	  mobind->length = 0;
+	  mobind->is_unsigned = 0;
 	}
 
       if (phase == PHASE_POST_FETCH)
@@ -2031,6 +2045,7 @@ copy_out_single_mysql_bind (MYSQL_STMT * stmt, void *associated_to,
 	  mobind->buffer = dptr;
 	  mobind->is_null = ind;
 	  mobind->length = 0;
+	  mobind->is_unsigned = 0;
 	}
 
       if (phase == PHASE_POST_FETCH)
