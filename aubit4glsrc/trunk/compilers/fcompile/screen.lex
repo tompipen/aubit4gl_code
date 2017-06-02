@@ -320,6 +320,7 @@ master[ 	]+of 	{if (ignorekw) REJECT;strcpy(yylval.str,yytext); return KW_MASTER
 "layout"		{if (ign_kw(yystate, KW_LAYOUT)) REJECT;strcpy(yylval.str,yytext); return KW_LAYOUT;}
 "hidden"		{if (ign_kw(yystate, KW_HIDDEN)) REJECT;strcpy(yylval.str,yytext); return KW_HIDDEN;}
 "noshow"		{if (ign_kw(yystate, KW_NOSHOW)) REJECT;strcpy(yylval.str,yytext); return KW_NOSHOW;}
+"nohidemenu"	{if (ign_kw(yystate, KW_NOHIDEMENU)) REJECT;strcpy(yylval.str,yytext); return KW_NOHIDEMENU;}
 "scroll"		{if (ign_kw(yystate, KW_SCROLL)) REJECT;strcpy(yylval.str,yytext); return KW_SCROLL;}
 "textedit"		{if (ign_kw(yystate, KW_TEXTEDIT)) REJECT;strcpy(yylval.str,yytext); return KW_TEXTEDIT;}
 "edit"		{if (ign_kw(yystate, KW_EDIT)) REJECT;strcpy(yylval.str,yytext); return KW_EDIT;}

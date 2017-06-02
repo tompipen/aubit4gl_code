@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: form_x.x,v 1.36 2015-02-18 16:57:09 mikeaubury Exp $
+# $Id: form_x.x,v 1.37 2017-06-02 15:12:15 siverly Exp $
 #*/
 
 /**
@@ -99,7 +99,8 @@ enum FIELD_ATTRIBUTES_BOOL {
 	FA_B_BORDER,
 	FA_B_UNHIDABLE,
 	FA_B_WANTRETURNS,
-	FA_B_NOSHOW /* Attribute for the VDC where the field cannot be shown */
+	FA_B_NOSHOW, /* Attribute for the VDC where the field cannot be shown */
+	FA_B_NOHIDEMENU
 };
 
 enum FA_COLOUR {
