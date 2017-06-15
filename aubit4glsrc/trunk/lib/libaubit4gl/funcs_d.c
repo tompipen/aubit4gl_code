@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: funcs_d.c,v 1.117 2010-02-16 13:16:30 mikeaubury Exp $
+# $Id: funcs_d.c,v 1.118 2017-06-15 15:23:21 mikeaubury Exp $
 #
 */
 
@@ -1504,7 +1504,7 @@ int
 A4GL_wcswidth (char *mbs)
 {
   wchar_t *wstr;
-  size_t retc, mlen, wlen, width;
+  size_t retc, mlen,  width;
   mlen = strlen (mbs);
 
 #ifdef WIN32
@@ -1527,16 +1527,22 @@ A4GL_wcswidth (char *mbs)
       free (wstr);
       return 0;
     }
+/*
   wlen = wcslen (wstr);
+
+
+
   if (wlen < mlen)
     wlen = mlen;
+*/
 
-  width = wcswidth (wstr, wlen);
+  width = wcswidth (wstr, retc);
+/*
   if (width == -1 || width < mlen) {
 		// mlen is the lenth in bytes - so this normally be longer than width..
 		// even for a wide char ????
-    		width = mlen;		// not a wide character ? 
-  }
+    		//width = mlen;		// not a wide character ? 
+  }*/
   free (wstr);
   return width;
 #endif
