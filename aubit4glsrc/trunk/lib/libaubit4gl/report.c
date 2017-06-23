@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: report.c,v 1.212 2014-10-01 17:44:53 fortiz Exp $
+# $Id: report.c,v 1.213 2017-06-23 14:25:05 siverly Exp $
 #
 */
 
@@ -1149,9 +1149,12 @@ A4GL_rep_print (struct rep_structure *rep, int no_param, int dontwant_nl, int ri
 	      report_print (rep, entry, "%s", str);
 	    }
 	  /* rep->col_no += strlen (str); *//* utf8 */
-	  if (A4GL_isno (acl_getenv ("NO_UTF8")))
+        if (! A4GL_isno (acl_getenv ("NO_UTF8")))
 	    {
 	      rep->col_no += A4GL_wcswidth (str);
+#ifdef DEBUG
+         A4GL_debug ("A4GL_wcswidth: rep->col_no '%u' '%s':",  rep->col_no, str);
+#endif
 	    }
 	  else
 	    {
