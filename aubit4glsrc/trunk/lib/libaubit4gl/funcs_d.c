@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: funcs_d.c,v 1.118 2017-06-15 15:23:21 mikeaubury Exp $
+# $Id: funcs_d.c,v 1.119 2017-06-23 14:25:07 siverly Exp $
 #
 */
 
@@ -1507,6 +1507,10 @@ A4GL_wcswidth (char *mbs)
   size_t retc, mlen,  width;
   mlen = strlen (mbs);
 
+#ifdef DEBUG
+  A4GL_debug ("A4GL_wcswidth called mbs='%s' len='%u':", mbs, mlen);
+#endif
+
 #ifdef WIN32
   return mlen;
 #else
@@ -1536,7 +1540,23 @@ A4GL_wcswidth (char *mbs)
     wlen = mlen;
 */
 
-  width = wcswidth (wstr, retc);
+//  width = wcswidth (wstr, retc);
+  A4GL_debug ("A4GL_wcswidth screen witdh='%u' mlen='%u' mbs='%s':", width, mlen, mbs);
+   // wcswidth gives same as strlen
+   
+   // computing screen width of that str
+   width = 0;
+   int idx = 0;
+   while (wstr[idx]) {
+      if ((wstr[idx] & 0xc0) != 0xc0) // no mulitbyte-char
+      {
+        width++;
+      }
+      idx++;
+   }
+
+  A4GL_debug ("A4GL_wcswidth screen witdh='%u' mlen='%u' mbs='%s':", width, mlen, mbs);
+
 /*
   if (width == -1 || width < mlen) {
 		// mlen is the lenth in bytes - so this normally be longer than width..
