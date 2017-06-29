@@ -24,10 +24,10 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: iarray.c,v 1.186 2017-02-17 09:30:39 mikeaubury Exp $
+# $Id: iarray.c,v 1.187 2017-06-29 07:11:45 mikeaubury Exp $
 #*/
 #ifndef lint
-static char const module_id[] = "$Id: iarray.c,v 1.186 2017-02-17 09:30:39 mikeaubury Exp $";
+static char const module_id[] = "$Id: iarray.c,v 1.187 2017-06-29 07:11:45 mikeaubury Exp $";
 #endif
 
 /**
@@ -4051,6 +4051,7 @@ UILIB_A4GL_req_field_input_array (void *arrv, char type, va_list * ap)
 			int clr_it=1;
 			if (arr->fcntrl_cnt>=2) {
 		      		if (arr->fcntrl[arr->fcntrl_cnt-1].op == FORMCONTROL_BEFORE_ROW && arr->fcntrl[arr->fcntrl_cnt-1].state==50)  {
+					//A4GL_pause_execution();
 					// We need to finish off the BEFORE ROW - so we cant clear the whole stack..
 					// we'll just move the BEFORE ROW to the top of the stack instead...
 			      		memcpy (&arr->fcntrl[0], &arr->fcntrl[arr->fcntrl_cnt-1], sizeof (arr->fcntrl[0]));
@@ -4059,7 +4060,12 @@ UILIB_A4GL_req_field_input_array (void *arrv, char type, va_list * ap)
 				}
 			}
 
+			if (!A4GL_isyes(acl_getenv("ORIGINALIARR"))) {
+				clr_it=1;
+			}
+
 			if (clr_it) {
+				
 		  		A4GL_init_control_stack (arr, 0);
 			}
 		
