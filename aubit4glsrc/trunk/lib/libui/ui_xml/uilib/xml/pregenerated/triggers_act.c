@@ -1,6 +1,6 @@
 /* XML application for triggers.dtd.
  * Includes actions from triggers_act.act.
- * Generated 2017/02/08 17:51:29.
+ * Generated 2017/04/25 14:15:30.
  *
  * This program was generated with the FleXML XML processor generator.
  * FleXML is Copyright (C) 1999-2005 Kristoffer Rose.  All rights reserved.

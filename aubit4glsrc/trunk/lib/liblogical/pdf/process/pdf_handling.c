@@ -178,6 +178,8 @@ static int add_font(char *s) {
 	}
 
 
+//strcat(fontstyle," embedding");
+
 	loaded_fonts=realloc(loaded_fonts,sizeof(loaded_fonts[0])*nloaded_fonts);
 	loaded_fonts[nloaded_fonts-1].font=strdup(s);
 	loaded_fonts[nloaded_fonts-1].fontno= PDF_load_font (p, s2, 0, "host", fontstyle);

@@ -1,4 +1,110 @@
 ---------------------------
+Mon Jul  3 16:23:30 BST 2017
+---------------------------
+1.2_42 Released
+---------------------------
+	2017-06-29 08:11  mikeaubury
+	
+	Remove some 7 year old fixup code - which broke input array for
+	Cassens (that behaviour can be turned back on with ORIGINALIARR=Y -
+	until we get a new testcase for that)
+	
+	2017-06-23 15:25  siverly
+	
+	computing screen width of an utf8-str
+	
+	2017-06-23 15:25  siverly
+	
+	A4GL_wcswidth() was not called in utf8-enrironment
+	
+	2017-06-15 16:23  mikeaubury
+	
+	UTF8 report fixup ?
+	
+	2017-06-02 16:12  siverly
+	
+	Added new attribute
+	
+	2017-05-12 19:36  mikeaubury
+	
+	Bug fix - ensure unsigned flag is set to false for MYSQL driver
+	
+	2017-05-03 13:54  mikeaubury
+	
+	Reset statement before use
+	
+	2017-04-25 14:20  mikeaubury
+	
+	Small fix for storing a bad dbname
+	
+	2017-04-03 13:45  siverly
+	
+	new function
+	
+	2017-03-06 11:22  mikeaubury
+	
+	Use rm -f
+	
+	2017-03-06 10:35  mikeaubury
+	
+	use rm -f instead of plain old rm
+	
+	2017-03-01 11:03  mikeaubury
+	
+	64 bit mysql fixup
+	
+	2017-02-26 16:11  mikeaubury
+	
+	Warning fixups
+	
+	2017-02-26 16:10  mikeaubury
+	
+	warning fixups
+	
+	2017-02-26 15:53  mikeaubury
+	
+	Allow import/export of LRF files to allow moving from 32 to 64 bit
+	platforms
+	
+	2017-02-23 20:36  mikeaubury
+	
+	2017-02-23 08:20  mikeaubury
+	
+	Gate record in array check behind "ARRAYINRECORDFIXUP=Y" as it
+	breaks a build test
+	
+	2017-02-23 08:19  mikeaubury
+	
+	Use %option prefix
+	
+---------------------------
+Thu Feb 23 13:45:02 GMT 2017
+---------------------------
+1.2_41 Released
+---------------------------
+	2017-02-23 08:20  mikeaubury
+	
+	Gate record in array check behind "ARRAYINRECORDFIXUP=Y" as it
+	breaks a build test
+	
+	2017-02-23 08:19  mikeaubury
+	
+	Use %option prefix
+	
+	2017-02-17 09:30  mikeaubury
+	
+	Try fixing up "defaults" on a new row in input array
+	
+	2017-02-08 20:36  mikeaubury
+	
+	2017-02-08 18:14  mikeaubury
+	
+	2017-02-08 17:00  mikeaubury
+	
+	"IARRINCLONCHG" - add better afterfield include checking for Input
+	Array
+	
+---------------------------
 Wed Feb  8 18:13:58 GMT 2017
 ---------------------------
 1.2_40 Released

@@ -3605,10 +3605,10 @@ err_on_status();
 
 	if (fld->datatype==90&&!(A4GL_has_str_attribute(fld,FA_S_DEFAULT)))
 	{
-	        extern FILE *yyin;
+	        extern FILE *a4gl_form_yyin;
 
 #ifdef DEBUG
-			A4GL_debug("Currpos = %ld\n",ftell(yyin));
+			A4GL_debug("Currpos = %ld\n",ftell(a4gl_form_yyin));
 #endif
 	        yyerror("A button must have a default value for its caption");
 	        YYERROR;
@@ -6534,7 +6534,7 @@ yyreturn:
 
 
 
-#include "lex.yy.c"
+#include "lex.a4gl_form_yy.c"
 
 
 
