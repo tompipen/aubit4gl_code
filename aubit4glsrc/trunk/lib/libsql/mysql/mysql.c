@@ -3051,8 +3051,6 @@ A4GLSQLLIB_A4GLSQL_unload_data_internal (char *fname, char *delims, void *filter
 	  return;		// nothing to do...
 	}
 
-      // why is this done?  column 0 is out of range...
-      A4GL_describecolumn (stmt, 0, 0);
 
       if (nresultcols && nrows)
 	{
