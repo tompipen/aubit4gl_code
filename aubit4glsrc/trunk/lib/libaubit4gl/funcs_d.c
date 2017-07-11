@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: funcs_d.c,v 1.119 2017-06-23 14:25:07 siverly Exp $
+# $Id: funcs_d.c,v 1.120 2017-07-11 13:31:47 siverly Exp $
 #
 */
 
@@ -1541,21 +1541,15 @@ A4GL_wcswidth (char *mbs)
 */
 
 //  width = wcswidth (wstr, retc);
-  A4GL_debug ("A4GL_wcswidth screen witdh='%u' mlen='%u' mbs='%s':", width, mlen, mbs);
    // wcswidth gives same as strlen
    
    // computing screen width of that str
    width = 0;
    int idx = 0;
    while (wstr[idx]) {
-      if ((wstr[idx] & 0xc0) != 0xc0) // no mulitbyte-char
-      {
-        width++;
-      }
+      width++;
       idx++;
    }
-
-  A4GL_debug ("A4GL_wcswidth screen witdh='%u' mlen='%u' mbs='%s':", width, mlen, mbs);
 
 /*
   if (width == -1 || width < mlen) {
@@ -1563,7 +1557,9 @@ A4GL_wcswidth (char *mbs)
 		// even for a wide char ????
     		//width = mlen;		// not a wide character ? 
   }*/
+  A4GL_debug ("A4GL_wcswidth screen witdh='%u' mlen='%u' mbs='%s':", width, mlen, wstr);
   free (wstr);
+
   return width;
 #endif
 }
