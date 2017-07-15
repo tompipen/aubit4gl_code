@@ -1865,14 +1865,16 @@ copy_from_aubit_to_mysql (MYSQL_STMT * stmt, void *associated_to,
   my_bool *indicators;
 
 
-  mysql_ibind = A4GL_alloc_associated_mem (associated_to, sizeof (MYSQL_BIND) * ni);
-  indicators = A4GL_alloc_associated_mem (associated_to, sizeof (my_bool) * ni);
+  mysql_ibind = A4GL_alloc_associated_mem (associated_to, sizeof (MYSQL_BIND) * (ni));
+  indicators = A4GL_alloc_associated_mem (associated_to, sizeof (my_bool) * (ni));
+
+  memset(mysql_ibind,0, sizeof(MYSQL_BIND)*(ni)); 
+  //memset(indicators,0, sizeof(my_bool)*(ni)); 
 
   for (a = 0; a < ni; a++)
     {
 	A4GL_debug("Binding @ position %d of %d", a,ni);
-      copy_in_single_mysql_bind (stmt, associated_to, &ibind[a],
-				 &mysql_ibind[a], &indicators[a]);
+      copy_in_single_mysql_bind (stmt, associated_to, &ibind[a], &mysql_ibind[a], &indicators[a]);
     }
   return mysql_ibind;
 }
@@ -1912,9 +1914,10 @@ copy_out_single_mysql_bind (MYSQL_STMT * stmt, void *associated_to,
 	  mobind->buffer_type = MYSQL_TYPE_STRING;
 	  mobind->buffer = obind->ptr;
 	  mobind->is_null = ind;
-	  len = A4GL_alloc_associated_mem (associated_to, sizeof (long));
+	  len = malloc ( sizeof (long)); // 1
 	  mobind->buffer_length = obind->size;
 	  mobind->length = len;
+	  //((char*)mobind->buffer)[0]=0;
 	}
 
       if (phase == PHASE_POST_FETCH)
@@ -1928,6 +1931,7 @@ copy_out_single_mysql_bind (MYSQL_STMT * stmt, void *associated_to,
 	  	if ((obind->dtype & DTYPE_MASK) == DTYPE_CHAR) { A4GL_pad_string (obind->ptr, obind->size); }
 	  	if ((obind->dtype & DTYPE_MASK) == DTYPE_NCHAR) { A4GL_pad_nstring (obind->ptr, obind->size); }
 
+	free(mobind->length);
 		}
       break;
 
@@ -1998,8 +2002,7 @@ copy_out_single_mysql_bind (MYSQL_STMT * stmt, void *associated_to,
     case DTYPE_DATE:
       if (phase == PHASE_PRE_FETCH)
 	{
-	  mytime =
-	    A4GL_alloc_associated_mem (associated_to, sizeof (MYSQL_TIME));
+	  mytime = malloc ( sizeof (MYSQL_TIME)); // 1
 	  mobind->buffer_type = MYSQL_TYPE_DATE;
 	  mobind->buffer = mytime;
 	  mobind->is_null = ind;
@@ -2012,6 +2015,7 @@ copy_out_single_mysql_bind (MYSQL_STMT * stmt, void *associated_to,
 	  mytime = mobind->buffer;
 	  i_date = A4GL_gen_dateno (mytime->day, mytime->month, mytime->year);
 	  *(long *) obind->ptr = i_date;
+	free(mobind->buffer);
 	}
       break;
 
@@ -2019,7 +2023,7 @@ copy_out_single_mysql_bind (MYSQL_STMT * stmt, void *associated_to,
     case DTYPE_DECIMAL:
       if (phase == PHASE_PRE_FETCH)
 	{
-	  dptr = A4GL_alloc_associated_mem (associated_to, sizeof (double));
+	  dptr = malloc ( sizeof (double)); // 1
 	  mobind->buffer_type = MYSQL_TYPE_DOUBLE;
 	  mobind->buffer = dptr;
 	  mobind->is_null = ind;
@@ -2034,13 +2038,14 @@ copy_out_single_mysql_bind (MYSQL_STMT * stmt, void *associated_to,
 	  d = *(double *) mobind->buffer;
 	  A4GL_push_double (d);
 	  A4GL_pop_var2 (obind->ptr, dtype, obind->size);
+	free(mobind->buffer);
 	}
       break;
 
     case DTYPE_MONEY:
       if (phase == PHASE_PRE_FETCH)
 	{
-	  dptr = A4GL_alloc_associated_mem (associated_to, sizeof (double));
+	  dptr = malloc ( sizeof (double)); // 1
 	  mobind->buffer_type = MYSQL_TYPE_DOUBLE;
 	  mobind->buffer = dptr;
 	  mobind->is_null = ind;
@@ -2055,6 +2060,7 @@ copy_out_single_mysql_bind (MYSQL_STMT * stmt, void *associated_to,
 	  d = *(double *) mobind->buffer;
 	  A4GL_push_double (d);
 	  A4GL_pop_var2 (obind->ptr, dtype, obind->size);
+free(mobind->buffer);
 	}
       break;
 
@@ -2063,7 +2069,7 @@ copy_out_single_mysql_bind (MYSQL_STMT * stmt, void *associated_to,
     case DTYPE_DTIME:
       if (phase == PHASE_PRE_FETCH)
 	{
-	  mytime = A4GL_alloc_associated_mem (associated_to, sizeof (MYSQL_TIME));
+	  mytime = malloc ( sizeof (MYSQL_TIME)); // 1
 	  mobind->buffer_type = MYSQL_TYPE_DATETIME;
 	  mobind->buffer = mytime;
 	  mobind->is_null = ind;
@@ -2077,6 +2083,7 @@ copy_out_single_mysql_bind (MYSQL_STMT * stmt, void *associated_to,
 	  mytime = mobind->buffer;
 	  SPRINTF6 (buff, "%04d-%02d-%02d %02d:%02d:%02d", mytime->year, mytime->month, mytime->day, mytime->hour, mytime->minute, mytime->second);
 	  A4GL_ctodt (buff, obind->ptr, obind->size);
+		free(mobind->buffer);
 	}
       break;
 
@@ -2095,7 +2102,7 @@ copy_out_single_mysql_bind (MYSQL_STMT * stmt, void *associated_to,
 	  mobind->buffer = x->ptr;
 	  mobind->is_null = ind;
 	  mobind->buffer_length = x->memsize;
-	  len = A4GL_alloc_associated_mem (associated_to, sizeof (long));
+	  len = malloc ( sizeof (long)); // 1
 	  mobind->length = len;
 	}
 
@@ -2116,6 +2123,7 @@ copy_out_single_mysql_bind (MYSQL_STMT * stmt, void *associated_to,
 		x=obind->ptr;
 		x->memsize=*(mobind->length);
 		x->isnull=(*(mobind->is_null))?'Y':'N';
+		free(mobind->length);
 	}
       break;
 
@@ -2137,10 +2145,13 @@ static int
 fetch_from_mysql_to_aubit (MYSQL_STMT * stmt, void *associated_to,
 			   struct BINDING *obind, int no)
 {
-  MYSQL_BIND *mysql_obind;
+  static MYSQL_BIND *mysql_obind=0;
   int a;
   int x;
-  my_bool *indicators;
+static int lastno=0;
+  static my_bool *indicators=0;
+if (no==0) return 1;
+
 
   // All of this ntrb stuff allows the bind buffer list to be "NULL-terminated"
   // and ultimately makes it safe to bind fewer buffers than there are columns
@@ -2148,16 +2159,24 @@ fetch_from_mysql_to_aubit (MYSQL_STMT * stmt, void *associated_to,
   const char *ntrb;
   int ntrbextra;
   ntrb = acl_getenv ("SQLR_MYSQL_NULL_TERMINATED_RESULT_BINDS");
-  ntrbextra=0;
+  ntrbextra=1;
   if (no && ntrb && !strcasecmp(ntrb,"yes")) {
     ntrbextra=1;
   }
-  mysql_obind = A4GL_alloc_associated_mem (associated_to, sizeof (MYSQL_BIND) * (no + ntrbextra));
+
+  //mysql_obind = A4GL_alloc_associated_mem (associated_to, sizeof (MYSQL_BIND) * (no + ntrbextra));
+  if (no>lastno) { 
+    mysql_obind = realloc ( mysql_obind, sizeof (MYSQL_BIND) * (no + ntrbextra));
+    indicators = realloc (indicators,  sizeof (my_bool) * no);
+    lastno=no;
+  }
+
+  memset(mysql_obind,0, sizeof(MYSQL_BIND) * (no + ntrbextra)); 
+
   if (ntrbextra) {
   	memset(&mysql_obind[no],0, sizeof(MYSQL_BIND)); 
   }
 
-  indicators = A4GL_alloc_associated_mem (associated_to, sizeof (my_bool) * no);
   for (a = 0; a < no; a++)
     {
       /* Bind... */
@@ -2324,8 +2343,10 @@ execute_sql (MYSQL_STMT * stmt, char *sql, struct BINDING *ibind, int ni,
 	set_aubit4gl_error();
       return 0;
     }
+  //printf ("stmt=%d\n", mysql_stmt_affected_rows (stmt));
 
   no_warnings = mysql_warning_count (current_conn);
+
 
 
   A4GL_set_a4gl_sqlca_errd (2, mysql_stmt_affected_rows (stmt));
