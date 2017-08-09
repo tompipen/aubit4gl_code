@@ -25,7 +25,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: ops.c,v 1.215 2016-10-05 15:24:26 siverly Exp $
+# $Id: ops.c,v 1.216 2017-08-09 11:34:37 mikeaubury Exp $
 #
 */
 
@@ -8397,3 +8397,24 @@ push_dec_op_from_int_int (int a, int b, char op)
   m_apm_free (tmp);
 }
 
+
+
+int aclfgl_aclfgl_roundup(int n) {
+	double d;
+	d=A4GL_pop_double();
+	A4GL_push_double(ceil(d));
+	return 1;
+}
+int aclfgl_aclfgl_ceil(int n) {
+	double d;
+	d=A4GL_pop_double();
+	A4GL_push_double(ceil(d));
+	return 1;
+}
+
+int aclfgl_aclfgl_floor(int n) {
+	double d;
+	d=A4GL_pop_double();
+	A4GL_push_double(floor(d));
+	return 1;
+}
