@@ -235,8 +235,8 @@ char barcodeline[3000];
 	return 1;
 }
 
-static void
-set_text (int x, int y, char *s,int use_default)
+static int
+set_text (int x, int y, char *s,int use_default,int page_length)
 {
   char *ptr;
 /*int w;*/
@@ -282,8 +282,15 @@ set_font_style(FONT_STYLE_NORMAL);
 		}
 
 		if (use_default ) {
-  			ptr = lines[y - 1];
-  			memcpy (&ptr[x - 1], s, strlen (s));
+			if (y-1>=page_length) {
+				fprintf(stderr,"Printing beyond end of page ? %d %d ", y, page_length);
+  				ptr = lines[y - 2];
+  				memcpy (&ptr[x - 1], s, strlen (s));
+				return 0;
+			} else {
+  				ptr = lines[y - 1];
+  				memcpy (&ptr[x - 1], s, strlen (s));
+			}
 		} else {
 	                double y2;
 			double x2;
@@ -326,6 +333,7 @@ set_font_style(FONT_STYLE_NORMAL);
 
 
   page_touched = 1;
+return 1;
 }
 
 //extern struct r_report *report;
@@ -373,9 +381,9 @@ int RP_process_report (void *vreport, char *buff,void *rbx,int rbs)
   PDF_set_info(p,"Title",report->repName);
   PDF_set_info(p,"Subject",report->modName);
 
-  lines = acl_malloc2 (sizeof (char *) * report->page_length);
+  lines = acl_malloc2 (sizeof (char *) * (report->page_length+1));
 
-  for (a = 0; a < report->page_length; a++)
+  for (a = 0; a <= report->page_length; a++)
     {
       lines[a] = acl_malloc2 (report->max_col + 1+report->left_margin);	// for the \NULL
     }
@@ -411,7 +419,9 @@ int RP_process_report (void *vreport, char *buff,void *rbx,int rbs)
 	  y = centry->line_no; //+report->top_margin;
 	  uses_default_font=select_font_for(report->blocks[block].rb,centry->entry_id);
 	  //uses_default_font=0;
-	  set_text (x, y, centry->string,uses_default_font);
+	  if (!set_text (x, y, centry->string,uses_default_font, report->page_length)) {
+			fprintf(stderr," at line : %d\n", report->blocks[block].line);
+  	  }
 	}
     }
 

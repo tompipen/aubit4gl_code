@@ -336,6 +336,7 @@ process_block (int block_id, int entry_id, char *s)
   struct csv_entry *centry;
 
 
+
   for (a = 0; a < layout->nblocks; a++)
     {
       block = &layout->blocks[a];
@@ -346,8 +347,9 @@ process_block (int block_id, int entry_id, char *s)
 	    {
 	      if (centry[x].entry == entry_id && centry[x].rb == block_id)
 		{
-		  if (!centry[x].fixed_text)
+		  if (!centry[x].fixed_text) {
 		    centry[x].special = s;
+		  }
 		}
 	    }
 	}

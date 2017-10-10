@@ -181,7 +181,7 @@ rbx=vrbx;
   		csv_report_layout.blocks[a].nrows=0;
   		csv_report_layout.blocks[a].ncols=10;
 	}  else {
-  		csv_report_layout.blocks[a].ncols=10;
+  		csv_report_layout.blocks[a].ncols=40;
   		csv_report_layout.blocks[a].nrows=1;
 	}
   }
@@ -203,7 +203,6 @@ rbx=vrbx;
 			if (rbx[a].max_size_entry[b]) n++;
 			csv_report_layout.blocks[every].matrix[0]=acl_realloc( csv_report_layout.blocks[every].matrix[0], sizeof(struct csv_entry)*n);
   			entry=csv_report_layout.blocks[every].matrix[0];
-			//printf("Entry %d - %d/%d\n",n-1,rbx[a].rb,rbx[a].entry_nos[b]);
                         entry[n-1].rb=rbx[a].rb;
                         entry[n-1].entry=rbx[a].entry_nos[b];
                         entry[n-1].special=0;
