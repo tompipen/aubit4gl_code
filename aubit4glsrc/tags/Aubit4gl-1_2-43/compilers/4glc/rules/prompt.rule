@@ -1,0 +1,43 @@
+/*
+=====================================================================
+                        Source: prompt.rule
+=====================================================================
+*/
+
+prompt_cmd	:
+	PROMPT atline prompt_title opt_attributes KW_FOR opt_char ensured_variable_usage_expression opt_help_no_i opt_attributes {
+		map_ui_block("PROMPT");
+                push_blockcommand("PROMPT");
+		$<integer_val>$=get_sio_id("PROMPT");
+	} prompt_key_sec {
+			int blk;
+		add_feature("UI_PROMPT");
+		blk=get_sio_ids("PROMPT");
+                pop_blockcommand("PROMPT");
+		map_ui_endblock("PROMPT");
+                A4GL_lex_printcomment("/* END OF PROMPT */");
+   		set_cmdlineno($<integer_val>2);
+		$<cmd>$=new_prompt_cmd(make_fgl_expr_list($<ptr_list>3), $<attrib>4,$<attrib>9, $<e_boolean>6, $<ptr>7,$<integer_val>8,$<on_events>11,  $<integer_val>10,blk) ;
+                }
+
+;
+
+opt_char : /* empty */ {$<e_boolean>$=EB_FALSE;}
+| KW_CHAR {$<e_boolean>$=EB_TRUE;}
+;
+
+
+prompt_key_sec :  {$<on_events>$=0;}
+		| events_prompt END_PROMPT {$<on_events>$=$<on_events>1;}
+;
+
+
+prompt_title : fgl_expr_concat
+;
+
+
+
+/* ========================= prompt.rule ============================ */
+
+
+

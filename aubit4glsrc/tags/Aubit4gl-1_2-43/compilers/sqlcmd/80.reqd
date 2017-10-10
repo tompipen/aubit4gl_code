@@ -1,0 +1,279 @@
+identifier: NAMED 
+	| QUESTION_MARK
+	| ENVVAR
+	| USINGVAR
+;
+
+fetch_cursor_name_p: NAMED {
+                      $<ptr>$=A4GL_new_expr_simple_string(A4GL_get_clobbered_from($<str>$), ET_EXPR_IDENTIFIER);
+	}
+;
+
+real_number : NUMBER_VALUE 
+	| KW_DOT INT_VALUE { sprintf($<str>$,".%s",$<str>2); }
+;
+
+
+var_ident_qchar : NAMED
+	| CHAR_VALUE {strcpy($<str>$, A4GL_strip_quotes ($<str>1));}
+	| QUESTION_MARK 
+	| ENVVAR
+	| USINGVAR
+
+;
+
+
+opt_into_sel: {$<ptr_list>$=0;}
+;
+
+
+char_or_var : CHAR_VALUE 
+	| variable { if ((scan_variable($<str>1)&15)!=0) {a4gl_yyerror("Variable must be of type charr..");YYERROR;} }
+	| QUESTION_MARK 
+	| ENVVAR
+	| USINGVAR
+;
+
+opt_use : {strcpy($<str>$,"");} 
+	| USE_SESSION conn_id KW_FOR { print_use_session($<str>3); strcpy($<str>$,A4GL_get_undo_use()); }
+;
+
+conn_id : var_ident
+;
+
+
+variable : NOT_USED_1
+;
+
+obind_var_list: NOT_USED_2
+;
+
+fgl_sql_statement: NOT_USED_3
+;
+
+var_ident: identifier
+;
+
+
+
+ident_or_var: identifier
+	| QUESTION_MARK {
+			if (A4GL_isyes(acl_getenv("DOING_CM"))) {
+				strcpy($<str>$,"?@@PARAM@@?");
+			} else {
+				strcpy($<str>$,"?");
+			}
+	}
+	| ENVVAR
+	| USINGVAR
+;
+
+
+sql_statement :
+	individual_sql_statement {set_Cmd($<cmd>1);}
+;
+
+
+sql_bound_commands : insert_statement_c  {
+                        $<cmd>$=new_command (E_CMD_INSERT_CMD);
+                        memcpy(&$<cmd>$->cmd_data.command_data_u.insert_cmd, $<insert_cmd>1, sizeof($<cmd>$->cmd_data.command_data_u.insert_cmd));
+                        $<cmd>$->cmd_data.command_data_u.insert_cmd.connid=0;
+		}
+                | update_statement_c {
+                        $<cmd>$=new_command (E_CMD_UPDATE_CMD);
+                        memcpy(&$<cmd>$->cmd_data.command_data_u.update_cmd, $<update_cmd>1, sizeof($<cmd>$->cmd_data.command_data_u.update_cmd));
+                        $<cmd>$->cmd_data.command_data_u.update_cmd.connid=0;
+		}
+                | delete_statement_c {
+                        $<cmd>$=new_command (E_CMD_DELETE_CMD);
+                        memcpy(&$<cmd>$->cmd_data.command_data_u.delete_cmd, $<delete_cmd>1, sizeof($<cmd>$->cmd_data.command_data_u.delete_cmd));
+                        $<cmd>$->cmd_data.command_data_u.delete_cmd.connid=0;
+		}
+;
+
+
+
+individual_sql_statement : 
+	| set_database_cmd 
+	| sql_commands  		{ $<cmd>$=new_sql_cmd(0,$<sql_string>1); }
+	| select_statement_ss_select 	{ $<cmd>$=new_select_cmd(0,$<s_select>1,""); }
+	| set_cmd  			{ $<cmd>$=$<cmd>1; }
+	| sql_bound_commands 		{ $<cmd>$=$<cmd>1; }
+	| sql_transact_commands         { $<cmd>$=new_sql_transact_cmd(0, $<integer_val>1); }
+	|       execute_procedure_cmd {$<cmd>$=$<cmd>1;}
+
+	| error				{ $<cmd>$=0;}
+;
+
+var_ident_vl : var_ident
+;
+
+
+curs_forupdate : {strcpy($<str>$,"");}
+                | FOR_UPDATE {
+			strcpy($<str>$,A4GLSQLCV_get_forupdate(NULL));
+		}
+                | FOR_UPDATE_OF cur_update_list {
+			strcpy($<str>$,A4GLSQLCV_get_forupdate($<str>2));
+		}
+;
+
+cur_update_list : colident { strcpy($<str>$,$<str>1); } 
+		| cur_update_list KW_COMMA colident { sprintf($<str>$,"%s,%s",$<str>1,$<str>3); }
+;
+
+colident: identifier
+| identifier KW_DOT identifier {sprintf($<str>$,"%s.%s",A4GLSQLCV_ownerize_tablename(NULL, $<str>1),$<str>3);}
+| CHAR_VALUE KW_DOT identifier KW_DOT identifier {
+        sprintf($<str>$,"%s.%s", A4GLSQLCV_ownerize_tablename($<str>1, $<str>3), $<str>5);
+}
+                                                                                                                   
+;
+
+
+
+
+
+set_cmd : SQLSEOFF 		 { $<cmd>$=new_sql_cmd(NULL,$<str>1); }
+	| SQLSEON 		 { $<cmd>$=new_sql_cmd(NULL,$<str>1); }
+	| SQLSLMW op_fgl_expr    { sprintf($<str>$,"%s %s",$<str>1,$<str>2); $<cmd>$=new_sql_cmd(NULL,$<str>$); }
+	| SQLSLMNW		 { $<cmd>$=new_sql_cmd(NULL,$<str>1); }
+	| SQLSIDR		 { $<cmd>$=new_sql_cmd(NULL,$<str>1); }
+	| SQLSIRR		 { $<cmd>$=new_sql_cmd(NULL,$<str>1); }
+	| SQLSICS		 { $<cmd>$=new_sql_cmd(NULL,$<str>1); }
+	| SQLSICR		 { $<cmd>$=new_sql_cmd(NULL,$<str>1); }
+;
+
+
+var_ident_ibind_sli :  column_name_x { 
+	char *s;
+	s=acl_strdup($<str>1);
+	$<s_select_list_item>$=new_select_list_item_column_from_transform(s);
+	acl_free(s);
+	}
+	| QUESTION_MARK {  
+		$<s_select_list_item>$=new_select_list_item_builtin_const(E_SLI_QUERY_PLACEHOLDER);}
+	| replace_with_variable {
+		$<s_select_list_item>$=new_select_list_item_replace_var($<sql_string>1);
+	}
+	
+;
+
+var_ident_ibind_ss :  column_name_x { $<sql_string>$=acl_strdup($<str>1);}
+	 | QUESTION_MARK {  
+			if (A4GL_isyes(acl_getenv("DOING_CM"))) {
+				$<sql_string>$=acl_strdup("?@@PARAM@@?");
+			} else {
+				$<sql_string>$=acl_strdup("?");
+			}
+	}
+	| replace_with_variable {
+		$<sql_string>$=$<sql_string>1;
+	}
+;
+
+set_database_cmd :
+  	DATABASE var_ident_qchar op_db_exclusive {
+        add_feature("DATABASE_USED");
+        $<cmd>$=new_set_database_cmd($<ptr>2,$<e_boolean>3,NULL);
+}
+
+;
+
+
+replace_with_variable : MARK_VAR CHAR_VALUE END_MARK_VAR {
+		$<sql_string>$=acl_strdup($<str>2);
+}
+;
+
+
+arr_expr :
+	OPEN_BRACKET arr_expr CLOSE_BRACKET  {sprintf($<str>$,"(%s)",$<str>2);}
+	| arr_expr arr_next_math arr_expr { sprintf($<str>$,"%s%s%s",$<str>1,$<str>2,$<str>3);}
+	| INT_VALUE {sprintf($<str>$,"%d",atoi($<str>1));}
+	| arr_int_sign INT_VALUE {sprintf($<str>$,"(%s%s)",$<str>1,$<str>2);}
+	;
+
+
+arr_next_math:
+        KW_PLUS {strcpy($<str>$,"+");}
+|       KW_MINUS {strcpy($<str>$,"-");}
+|       KW_MULTIPLY {strcpy($<str>$,"*");}
+|       KW_DIVIDE {strcpy($<str>$,"/");}
+|       KW_MOD {strcpy($<str>$,"%");}
+;
+
+
+
+arr_int_sign    : KW_PLUS {strcpy($<str>$,"+");}
+                | KW_MINUS {strcpy($<str>$,"-");}
+;
+
+
+
+
+op_substr : {strcpy($<str>$,"");}
+	| OPEN_SQUARE arr_expr CLOSE_SQUARE {
+		sprintf($<str>$,"[%s]", $<str>2);
+	}
+	| OPEN_SQUARE arr_expr KW_COMMA arr_expr CLOSE_SQUARE {
+		sprintf($<str>$,"[%s,%s]", $<str>2,$<str>4);
+	}
+;
+
+column_name_x:
+	identifier {sprintf($<str>$,"%s", A4GLSQLCV_check_tablename($<str>1));}
+	| KW_TODAY  KW_DOT identifier  {sprintf($<str>$,"today.%s", $<str>3);}
+	| identifier KW_DOT KW_MULTIPLY {sprintf($<str>$,"%s.*", A4GLSQLCV_ownerize_tablename(NULL,$<str>1));}
+	| identifier KW_DOT KW_ROWID {sprintf($<str>$,"%s.%s", $<str>1,A4GLSQLCV_get_sqlconst ("rowid"));}
+	| identifier KW_DOT identifier {sprintf($<str>$,"%s.%s", A4GLSQLCV_ownerize_tablename(NULL,$<str>1),$<str>3);}
+	| identifier KW_DOT identifier KW_DOT identifier {sprintf($<str>$,"%s.%s", A4GLSQLCV_ownerize_tablename($<str>1,$<str>3),$<str>5);}
+	| CHAR_VALUE KW_DOT identifier KW_DOT identifier {sprintf($<str>$,"%s.%s", A4GLSQLCV_ownerize_tablename($<str>1,$<str>3),$<str>5);}
+	| identifier OPEN_SQUARE arr_expr CLOSE_SQUARE 						{sprintf($<str>$,"%s", $<str>1); strcpy($<str>$, A4GLSQLCV_make_substr_s($<str>1, 1,$<str>3,0));}
+	| identifier KW_DOT identifier  OPEN_SQUARE arr_expr CLOSE_SQUARE 			{char buff[256]; sprintf(buff,"%s.%s", A4GLSQLCV_ownerize_tablename(NULL,$<str>1),$<str>3); strcpy($<str>$, A4GLSQLCV_make_substr_s(buff,1,$<str>5,0));}
+	| identifier KW_DOT identifier KW_DOT identifier OPEN_SQUARE arr_expr CLOSE_SQUARE 	{char buff[256]; sprintf(buff,"%s.%s", A4GLSQLCV_ownerize_tablename($<str>1,$<str>3), $<str>5); strcpy($<str>$, A4GLSQLCV_make_substr_s(buff,1,$<str>7,0));  }
+	| CHAR_VALUE KW_DOT identifier KW_DOT identifier  OPEN_SQUARE arr_expr CLOSE_SQUARE 	{char buff[256]; sprintf(buff,"%s.%s", A4GLSQLCV_ownerize_tablename($<str>1,$<str>3), $<str>5);  strcpy($<str>$, A4GLSQLCV_make_substr_s(buff,1,$<str>7,0)); }
+	
+	| identifier OPEN_SQUARE arr_expr KW_COMMA arr_expr CLOSE_SQUARE 			{sprintf($<str>$,"%s", $<str>1); strcpy($<str>$, A4GLSQLCV_make_substr_s($<str>1, 2,$<str>3,$<str>5));}
+	| identifier KW_DOT identifier  OPEN_SQUARE arr_expr  KW_COMMA arr_expr CLOSE_SQUARE 			{char buff[256]; sprintf(buff,"%s.%s", A4GLSQLCV_ownerize_tablename(NULL,$<str>1),$<str>3); strcpy($<str>$, A4GLSQLCV_make_substr_s(buff,2,$<str>5,$<str>7));}
+	| identifier KW_DOT identifier KW_DOT identifier OPEN_SQUARE arr_expr  KW_COMMA arr_expr CLOSE_SQUARE 	{char buff[256]; sprintf(buff,"%s.%s", A4GLSQLCV_ownerize_tablename($<str>1,$<str>3), $<str>5); strcpy($<str>$, A4GLSQLCV_make_substr_s(buff,2,$<str>7,$<str>9));  }
+	| CHAR_VALUE KW_DOT identifier KW_DOT identifier  OPEN_SQUARE arr_expr  KW_COMMA arr_expr CLOSE_SQUARE 	{char buff[256]; sprintf(buff,"%s.%s", A4GLSQLCV_ownerize_tablename($<str>1,$<str>3), $<str>5);  strcpy($<str>$, A4GLSQLCV_make_substr_s(buff,2,$<str>7,$<str>9)); }
+;
+
+
+value_expression_initial_sli:
+        value_expression_initial_sli_nocast  {
+                $<s_select_list_item>$=$<s_select_list_item>1;
+        }
+        | value_expression_initial_sli_nocast  DOUBLE_COLON data_type {
+                $<s_select_list_item>$=new_select_list_item_cast($<s_select_list_item>1, $<str>3);
+        }
+
+;
+
+
+
+value_expression_initial_sli_nocast :
+        value_expression_complex_sli { $<s_select_list_item>1=$<s_select_list_item>1; }
+        | var_ident_ibind_sli    {$<s_select_list_item>1=$<s_select_list_item>1;}
+        | subquery_sli {  $<s_select_list_item>$=new_select_list_item_sq(E_SQE_DONT_CARE,$<s_select_list_item>1); }
+        | ALL subquery_sli   { $<s_select_list_item>$=new_select_list_item_sq(E_SQE_ALL,$<s_select_list_item>2); }
+        | ANY subquery_sli   { $<s_select_list_item>$=new_select_list_item_sq(E_SQE_ANY,$<s_select_list_item>2); }
+        | SOME subquery_sli  { $<s_select_list_item>$=new_select_list_item_sq(E_SQE_SOME,$<s_select_list_item>2); }
+;
+
+
+op_fgl_expr :  {strcpy($<str>$,"");}
+	| INT_VALUE {strcpy($<str>$,$<str>1);}
+;
+
+
+opt_use2_p:
+;
+
+
+spl_proc_name:
+        identifier {strcpy($<str>$,$<str>1);}
+        | identifier COLON identifier {sprintf($<str>$,"%s:%s",$<str>1,$<str>3);}
+;
+atline: ;

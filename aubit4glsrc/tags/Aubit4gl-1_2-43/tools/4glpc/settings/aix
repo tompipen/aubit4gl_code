@@ -1,0 +1,20 @@
+#4glpc 64 bits aix shared libs
+A4GL_DLL_OPTS=-shared -maix64 -Wl,-G,-b64
+
+#4glpc 64 bits linking
+A4GL_LINK_OPTS=-maix64 -Wl,-brtl,-b64
+
+#4glpc 64 bits aix C compiler
+A4GL_C_OPTS=-maix64
+
+#redefine ar command
+#A4GL_AR_CMD=
+
+#redefine ar command options
+A4GL_AR_OPTS=-q -X64
+
+#redefine ranlib command
+#A4GL_RANLIB_CMD=
+
+#redefine ranlib options
+A4GL_RANLIB_OPTS=-X64
