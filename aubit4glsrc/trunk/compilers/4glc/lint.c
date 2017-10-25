@@ -501,7 +501,6 @@ static int
 check_cmds_for_bad_key (int keycode, enum cmd_type cmd_type)
 {
   if (cmd_type == E_CMD_INPUT_CMD || cmd_type == E_CMD_PROMPT_CMD
-      || cmd_type == E_CMD_DISPLAY_ARRAY_CMD
       || cmd_type == E_CMD_CONSTRUCT_CMD)
     {
       if (keycode == A4GLKEY_NEXT || keycode == A4GLKEY_PREV
@@ -511,6 +510,18 @@ check_cmds_for_bad_key (int keycode, enum cmd_type cmd_type)
 	  return 1;
 	}
     }
+
+  if ( cmd_type == E_CMD_DISPLAY_ARRAY_CMD)
+    {
+      if (keycode == A4GLKEY_NEXT || keycode == A4GLKEY_PREV || keycode == A4GLKEY_INSERT || keycode == A4GLKEY_DELETE)
+
+	{
+	  return 1;
+	}
+    }
+
+
+
   return 0;
 }
 

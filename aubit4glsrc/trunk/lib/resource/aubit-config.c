@@ -24,7 +24,7 @@
 # | contact licensing@aubit.com                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: aubit-config.c,v 1.31 2009-03-14 14:30:58 mikeaubury Exp $
+# $Id: aubit-config.c,v 1.32 2017-10-25 13:43:58 mikeaubury Exp $
 #
 */
 
@@ -116,7 +116,7 @@ int c=1;
   /* load settings from config file(s): */
   A4GL_build_user_resources ();
   if (argc>1) {
-  if (strcmp(argv[1],"-verbose") ==0) {
+  if (strcmp(argv[1],"-verbose") ==0 || strcmp(argv[1],"-v") ==0 || strcmp(argv[1],"-V") ==0) {
 		c++;
 		debug=1;
   }

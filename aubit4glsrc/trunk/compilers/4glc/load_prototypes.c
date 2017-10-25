@@ -142,6 +142,7 @@ static void load_default_boltons(void) {
       add_bolton ("arr_curr","", "2");
       add_bolton ("scr_line","", "2");
       add_bolton ("fgl_settitle","0", "");
+      add_bolton ("fgl_fglgui","", "2");
       add_bolton ("length","0", "2");
       add_bolton ("showhelp","2", "");
       add_bolton ("fgl_winquestion","0,0,0,0,0,2", "0");

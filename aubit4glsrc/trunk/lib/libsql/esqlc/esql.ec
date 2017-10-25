@@ -24,7 +24,7 @@
 # | contact afalout@ihug.co.nz                                           |
 # +----------------------------------------------------------------------+
 #
-# $Id: esql.ec,v 1.265 2016-06-07 16:09:25 mikeaubury Exp $
+# $Id: esql.ec,v 1.266 2017-10-25 13:43:57 mikeaubury Exp $
 #
 */
 
@@ -196,7 +196,7 @@ static loc_t *add_blob(struct s_sid *sid, int n, struct s_extra_info *e,fglbyte 
 
 #ifndef lint
 static const char rcs[] =
-  "@(#)$Id: esql.ec,v 1.265 2016-06-07 16:09:25 mikeaubury Exp $";
+  "@(#)$Id: esql.ec,v 1.266 2017-10-25 13:43:57 mikeaubury Exp $";
 #endif
 
 
@@ -2550,6 +2550,8 @@ sid=vsid;
     }
   copy_sqlca_Stuff(1);
 
+int sql3; // preserve sqlerrd[2] (3 in 4gl)
+sql3=a4gl_sqlca.sqlerrd[2];
   if (sqlca.sqlcode == 0)
     {
       A4GL_debug ("ESQL : post");
@@ -2564,6 +2566,7 @@ sid=vsid;
 	}
     }
   copy_sqlca_Stuff(1);
+a4gl_sqlca.sqlerrd[2]=sql3;
 
   A4GL_set_status (sqlca.sqlcode, 1);
 

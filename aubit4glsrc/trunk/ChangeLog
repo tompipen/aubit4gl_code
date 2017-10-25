@@ -1,4 +1,35 @@
 ---------------------------
+Wed Oct 25 14:41:46 BST 2017
+---------------------------
+1.2_43 Released
+---------------------------
+	2017-10-10 07:50  mikeaubury
+	
+	2017-10-10 07:48  mikeaubury
+	
+	Fix for hanging curl request
+	
+	2017-08-09 12:34  mikeaubury
+	
+	Add aclfgl_floor aclfgl_ceil
+	
+	2017-07-15 09:57  mikeaubury
+	
+	Latest mysql fixups
+	
+	2017-07-11 14:31  siverly
+	
+	cause last char = 0
+	
+	2017-07-11 11:13  mikeaubury
+	
+	Fixup unload in mysql
+	
+	2017-07-03 17:32  mikeaubury
+	
+	2017-07-03 16:57  mikeaubury
+	
+---------------------------
 Mon Jul  3 16:23:30 BST 2017
 ---------------------------
 1.2_42 Released

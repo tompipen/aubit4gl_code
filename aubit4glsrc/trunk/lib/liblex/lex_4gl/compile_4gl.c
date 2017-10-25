@@ -9195,7 +9195,9 @@ dump_cmd (struct command *r, struct command *parent)
     case E_CMD_OUTPUT_CMD:
       set_nonewlines ();
       printc ("OUTPUT TO REPORT %s(", r->cmd_data.command_data_u.output_cmd.repname);
+	if (r->cmd_data.command_data_u.output_cmd.expressions!=0) {
       real_print_expr_list_with_separator (r->cmd_data.command_data_u.output_cmd.expressions, ",");
+}
       printc (")");
       clr_nonewlines ();
       break;
