@@ -1,0 +1,2 @@
+
+awk -F'|' '{print "." (($1+30000)*-1) ; print $2  }' <  $1 > help_aubit.msg

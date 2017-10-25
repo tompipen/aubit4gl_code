@@ -1,0 +1,22 @@
+
+ROOT            =../../..
+
+#All stuff common to more then one Aubit compiler make file is there:
+include ${ROOT}/incl/Makefile-common
+
+all: ${PLUGINDIR}/libSQL_esql${SO_EXT}
+
+
+${PLUGINDIR}/libSQL_esql${SO_EXT}  : esql.o
+	gcc -L/opt/informix/lib -L /opt/informix/lib/esql -L/opt/informix/lib/cli -g -z -Wl,+s -Wl,-E -shared -fPIC -g  esql.o -lifsql -lifasf -lifgen -lifos -lifgls -lnsl_s -lsec -lcl -lnsl_s /opt/informix/lib/esql/checkapi.o -lifglx -o ${PLUGINDIR}/libSQL_esql${SO_EXT}
+
+
+
+esql.c: esql.ec
+	esql -e esql.ec 
+
+esql.o: esql.c
+	gcc esql.c -fPIC -D__hpux__  -g -O2 -I/usr/local/include  -fPIC -I../../.. -DSRC_TREE -DDEBUG -DHAVE_CONFIG_H  -I$(AUBITDIR)/incl   -g -c esql.ec    -I.. -I$(AUBITDIR)/lib -I../../../compilers/fcompile -I$(AUBITDIR)/incl -I$(AUBITDIR)/incl -z -Wl,+s -Wl,-E -I/opt/informix -DSRC_TREE -DDEBUG -DHAVE_CONFIG_H -I${INFORMIXDIR}/incl -I${INFORMIXDIR}/incl/tools
+
+
+

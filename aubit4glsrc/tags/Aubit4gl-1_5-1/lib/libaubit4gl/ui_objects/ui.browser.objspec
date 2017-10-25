@@ -1,0 +1,7 @@
++create () THISOBJECT
+openUrl ( url DTYPE_CHAR) DTYPE_INT
+waitforclose() DTYPE_INT
+refresh () 
+backward ()
+forward ()
+close ()
