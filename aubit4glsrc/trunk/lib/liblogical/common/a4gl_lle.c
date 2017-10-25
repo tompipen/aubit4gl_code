@@ -167,7 +167,7 @@ read_report_output (char *fname)
 
 #if HAVE_LIBCURL
   gzfin = url_fopen (fname, "rz");
-  curl_easy_setopt(curl, CURLOPT_TIMEOUT_MS, 1000);
+  //curl_easy_setopt(curl, CURLOPT_TIMEOUT_MS, 1000);
 #else
   gzfin = A4GL_gzfopen (fname, "r");
 #endif
