@@ -452,7 +452,6 @@ obtain_rbs_rbx (struct r_report *report, int *ptr_rbs, struct s_rbx **ptr_rbx)
   int b;
   rbs = 0;
   rbx = 0;
-
   for (a = 0; a < report->nblocks; a++)
     {
       found = 0;
@@ -552,7 +551,7 @@ obtain_rbs_rbx (struct r_report *report, int *ptr_rbs, struct s_rbx **ptr_rbx)
       // Now - work out how many were actually used...
       int cntUsed = 0;
       int entry_id;
-      for (entry_id = 0; entry_id < max; entry_id++)
+      for (entry_id = 0; entry_id <= max; entry_id++)
 	{
 	  if (tmp_space_e[entry_id] >= 0 && tmp_space_s[entry_id] > 0)
 	    {
@@ -565,8 +564,9 @@ obtain_rbs_rbx (struct r_report *report, int *ptr_rbs, struct s_rbx **ptr_rbx)
       rbx[block_cnt].nentry_nos = cntUsed;
       rbx[block_cnt].max_size_entry = acl_malloc2 (cntUsed * sizeof (int));
 
+
       cntUsed = 0;
-      for (entry_id = 0; entry_id < max; entry_id++)
+      for (entry_id = 0; entry_id <= max; entry_id++)
 	{
 	  if (tmp_space_e[entry_id] >= 0 && tmp_space_s[entry_id] > 0)
 	    {
