@@ -6,7 +6,8 @@ include ${ROOT}/incl/Makefile-common
 LINKLIBS        =-l${AUBITLIBFULL}  ${GLIB_LFLAGS} -lgsoap 
 LFLAGS          = -L${ROOT}/lib
 SOAPDIR		=/programs/util
-XCFLAGS=${subst -DHAVE_CONFIG_H,,${CFLAGS}}
+XCFLAGS= $(LTPIC)
+#${subst -DHAVE_CONFIG_H,,${CFLAGS}}
 4GLC_CFLAGS     += -I. ${XCFLAGS} -DDEBUG
 SOAP_URL	=http://www.aubit.com/mantis/api/soap/mantisconnect.php
 
@@ -51,6 +52,7 @@ all: $(ALL)
 
 info:
 	echo $(GSOAP)
+	echo $(XCFLAGS)
 	echo "All=$(ALL)"
 
 installgsoap:
